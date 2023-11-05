@@ -27,4 +27,3 @@ theorem LinearMap.det_zero'' {R M : Type*} [CommRing R] [AddCommGroup M] [Module
   letI : Nonempty (Module.Free.ChooseBasisIndex R M) := (Module.Free.chooseBasis R M).index_nonempty
   nontriviality R
   exact LinearMap.det_zero' (Module.Free.chooseBasis R M)
-#align linear_map.det_zero'' LinearMap.det_zero''

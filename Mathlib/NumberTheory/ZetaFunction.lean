@@ -73,30 +73,25 @@ local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue 
 /-- Function whose Mellin transform is `π ^ (-s) * Γ(s) * zeta (2 * s)`, for `1 / 2 < Re s`. -/
 def zetaKernel₁ (t : ℝ) : ℂ :=
   ∑' n : ℕ, rexp (-π * t * ((n : ℝ) + 1) ^ 2)
-#align zeta_kernel₁ zetaKernel₁
 
 /-- Modified zeta kernel, whose Mellin transform is entire. --/
 def zetaKernel₂ : ℝ → ℂ :=
   zetaKernel₁ + indicator (Ioc 0 1) fun t => ((1 - 1 / sqrt t) / 2 : ℂ)
-#align zeta_kernel₂ zetaKernel₂
 
 /-- The completed Riemann zeta function with its poles removed, `Λ(s) + 1 / s - 1 / (s - 1)`. -/
 def riemannCompletedZeta₀ (s : ℂ) : ℂ :=
   mellin zetaKernel₂ (s / 2)
-#align riemann_completed_zeta₀ riemannCompletedZeta₀
 
 /-- The completed Riemann zeta function, `Λ(s)`, which satisfies
 `Λ(s) = π ^ (-s / 2) Γ(s / 2) ζ(s)` (up to a minor correction at `s = 0`). -/
 def riemannCompletedZeta (s : ℂ) : ℂ :=
   riemannCompletedZeta₀ s - 1 / s + 1 / (s - 1)
-#align riemann_completed_zeta riemannCompletedZeta
 
 /-- The Riemann zeta function `ζ(s)`. We set this to be irreducible to hide messy implementation
 details. -/
 irreducible_def riemannZeta :=
   Function.update (fun s : ℂ =>
     (π : ℂ) ^ (s / 2) * riemannCompletedZeta s / Gamma (s / 2)) 0 (-1 / 2)
-#align riemann_zeta riemannZeta
 
 /- Note the next lemma is true by definition; what's hard is to show that with this definition, `ζ`
 is continuous (and indeed analytic) at 0, see `differentiableAt_riemannZeta` below. -/
@@ -104,7 +99,6 @@ is continuous (and indeed analytic) at 0, see `differentiableAt_riemannZeta` bel
 theorem riemannZeta_zero : riemannZeta 0 = -1 / 2 := by
   rw [riemannZeta_def]
   exact Function.update_same _ _ _
-#align riemann_zeta_zero riemannZeta_zero
 
 /-!
 ## First properties of the zeta kernels
@@ -122,7 +116,6 @@ theorem summable_exp_neg_pi_mul_nat_sq {t : ℝ} (ht : 0 < t) :
   rw [show ↑π * I * ((n : ℂ) + 1) ^ 2 * (↑t * I) = ((π * t * ((n : ℝ) + 1) ^ 2) : ℝ) * I ^ 2 by
     push_cast; ring]
   rw [I_sq, mul_neg_one, ← ofReal_neg, ofReal_re, neg_mul, neg_mul]
-#align summable_exp_neg_pi_mul_nat_sq summable_exp_neg_pi_mul_nat_sq
 
 /-- Relate `zetaKernel₁` to the Jacobi theta function on `ℍ`. (We don't use this as the definition
 of `zetaKernel₁`, since the sum over `ℕ` rather than `ℤ` is more convenient for relating zeta to
@@ -135,7 +128,6 @@ theorem zetaKernel₁_eq_jacobiTheta {t : ℝ} (ht : 0 < t) :
   push_cast
   rw [(by ring : ↑π * I * ((n : ℂ) + 1) ^ 2 * (t * I) = I ^ 2 * π * t * ((n : ℂ) + 1) ^ 2),
     I_sq, neg_one_mul]
-#align zeta_kernel₁_eq_jacobi_theta zetaKernel₁_eq_jacobiTheta
 
 /-- Continuity of `zetaKernel₁`. -/
 theorem continuousAt_zetaKernel₁ {t : ℝ} (ht : 0 < t) : ContinuousAt zetaKernel₁ t := by
@@ -146,13 +138,11 @@ theorem continuousAt_zetaKernel₁ {t : ℝ} (ht : 0 < t) : ContinuousAt zetaKer
     · exact continuous_ofReal.continuousAt
   refine' this.congr (eventually_of_mem (Ioi_mem_nhds ht) fun u hu => _)
   rw [zetaKernel₁_eq_jacobiTheta hu]
-#align continuous_at_zeta_kernel₁ continuousAt_zetaKernel₁
 
 /-- Local integrability of `zetaKernel₁`. -/
 theorem locally_integrable_zetaKernel₁ : LocallyIntegrableOn zetaKernel₁ (Ioi 0) :=
   (ContinuousAt.continuousOn fun _ ht => continuousAt_zetaKernel₁ ht).locallyIntegrableOn
     measurableSet_Ioi
-#align locally_integrable_zeta_kernel₁ locally_integrable_zetaKernel₁
 
 /-- Local integrability of `zetaKernel₂`. -/
 theorem locally_integrable_zetaKernel₂ : LocallyIntegrableOn zetaKernel₂ (Ioi 0) := by
@@ -171,7 +161,6 @@ theorem locally_integrable_zetaKernel₂ : LocallyIntegrableOn zetaKernel₂ (Io
       refine ContinuousOn.div continuousOn_const ?_ fun x hx => ?_
       · exact (continuous_ofReal.comp continuous_sqrt).continuousOn
       exact ofReal_ne_zero.mpr (sqrt_ne_zero'.mpr hx)
-#align locally_integrable_zeta_kernel₂ locally_integrable_zetaKernel₂
 
 /-- Functional equation for `zetaKernel₂`. -/
 theorem zetaKernel₂_one_div {t : ℝ} (ht : 0 < t) :
@@ -201,7 +190,6 @@ theorem zetaKernel₂_one_div {t : ℝ} (ht : 0 < t) :
     rw [one_div_one_div] at this
     rw [this, ← mul_assoc, ← ofReal_mul, ← sqrt_mul ht.le, mul_one_div_cancel ht.ne', sqrt_one,
       ofReal_one, one_mul]
-#align zeta_kernel₂_one_div zetaKernel₂_one_div
 
 /-!
 ## Bounds for zeta kernels
@@ -223,8 +211,6 @@ theorem isBigO_atTop_zetaKernel₁ : IsBigO atTop zetaKernel₁ fun t => exp (-�
         (eventually_of_mem (Ioi_mem_atTop 0) fun t _ => _)).of_norm_left (E' := ℂ)
   · rw [Function.comp_apply, ← zetaKernel₁_eq_jacobiTheta ht]
   · rw [Function.comp_apply, mul_I_im, ofReal_re]
-set_option linter.uppercaseLean3 false in
-#align is_O_at_top_zeta_kernel₁ isBigO_atTop_zetaKernel₁
 
 /-- Bound for `zetaKernel₂` for large `t`. -/
 theorem isBigO_atTop_zetaKernel₂ : IsBigO atTop zetaKernel₂ fun t => exp (-π * t) := by
@@ -233,8 +219,6 @@ theorem isBigO_atTop_zetaKernel₂ : IsBigO atTop zetaKernel₂ fun t => exp (-�
       isBigO_atTop_zetaKernel₁
   rw [zetaKernel₂, Pi.add_apply, indicator_of_not_mem (not_mem_Ioc_of_gt (Set.mem_Iio.mp ht)),
     add_zero]
-set_option linter.uppercaseLean3 false in
-#align is_O_at_top_zeta_kernel₂ isBigO_atTop_zetaKernel₂
 
 /-- Precise but awkward-to-use bound for `zetaKernel₂` for `t → 0`. -/
 theorem isBigO_zero_zetaKernel₂ : IsBigO (𝓝[>] 0) zetaKernel₂ fun t => exp (-π / t) / sqrt t := by
@@ -254,8 +238,6 @@ theorem isBigO_zero_zetaKernel₂ : IsBigO (𝓝[>] 0) zetaKernel₂ fun t => ex
     dsimp only
     rw [Function.comp_apply, mul_one_div, one_div (sqrt x : ℂ), norm_inv, Complex.norm_eq_abs,
       abs_ofReal, abs_of_nonneg (sqrt_nonneg _), ← div_eq_mul_inv]
-set_option linter.uppercaseLean3 false in
-#align is_O_zero_zeta_kernel₂ isBigO_zero_zetaKernel₂
 
 /-- Weaker but more usable bound for `zetaKernel₂` for `t → 0`. -/
 theorem isBigO_zero_zetaKernel₂_rpow (a : ℝ) : IsBigO (𝓝[>] 0) zetaKernel₂ fun t => t ^ a := by
@@ -270,8 +252,6 @@ theorem isBigO_zero_zetaKernel₂_rpow (a : ℝ) : IsBigO (𝓝[>] 0) zetaKernel
     simp_rw [Function.comp_apply, sqrt_inv, ← div_eq_mul_inv]
   · refine eventually_of_mem self_mem_nhdsWithin fun x hx => ?_
     simp_rw [Function.comp_apply, inv_rpow (le_of_lt hx), rpow_neg (le_of_lt hx), inv_inv]
-set_option linter.uppercaseLean3 false in
-#align is_O_zero_zeta_kernel₂_rpow isBigO_zero_zetaKernel₂_rpow
 
 /-- Bound for `zetaKernel₁` for `t → 0`. -/
 theorem isBigO_zero_zetaKernel₁ : IsBigO (𝓝[>] 0) zetaKernel₁ fun t => t ^ (-(1 / 2) : ℝ) := by
@@ -294,8 +274,6 @@ theorem isBigO_zero_zetaKernel₁ : IsBigO (𝓝[>] 0) zetaKernel₁ fun t => t 
     refine le_mul_of_one_le_right (norm_nonneg _) ?_
     rw [norm_of_nonneg (rpow_nonneg_of_nonneg ht.1.le _), rpow_neg ht.1.le]
     exact one_le_inv (rpow_pos_of_pos ht.1 _) (rpow_le_one ht.1.le ht.2 one_half_pos.le)
-set_option linter.uppercaseLean3 false in
-#align is_O_zero_zeta_kernel₁ isBigO_zero_zetaKernel₁
 
 /-!
 ## Differentiability of the completed zeta function
@@ -306,18 +284,15 @@ theorem differentiableAt_mellin_zetaKernel₁ {s : ℂ} (hs : 1 / 2 < s.re) :
     DifferentiableAt ℂ (mellin zetaKernel₁) s :=
   mellin_differentiableAt_of_isBigO_rpow_exp pi_pos locally_integrable_zetaKernel₁
     isBigO_atTop_zetaKernel₁ isBigO_zero_zetaKernel₁ hs
-#align differentiable_at_mellin_zeta_kernel₁ differentiableAt_mellin_zetaKernel₁
 
 /-- The Mellin transform of the second zeta kernel is entire. -/
 theorem differentiable_mellin_zetaKernel₂ : Differentiable ℂ (mellin zetaKernel₂) := fun _ =>
   mellin_differentiableAt_of_isBigO_rpow_exp pi_pos locally_integrable_zetaKernel₂
     isBigO_atTop_zetaKernel₂ (isBigO_zero_zetaKernel₂_rpow _) ((sub_lt_self_iff _).mpr zero_lt_one)
-#align differentiable_mellin_zeta_kernel₂ differentiable_mellin_zetaKernel₂
 
 /-- The modified completed Riemann zeta function `Λ(s) + 1 / s - 1 / (s - 1)` is entire. -/
 theorem differentiable_completed_zeta₀ : Differentiable ℂ riemannCompletedZeta₀ :=
   differentiable_mellin_zetaKernel₂.comp (Differentiable.div_const differentiable_id 2)
-#align differentiable_completed_zeta₀ differentiable_completed_zeta₀
 
 /-- The completed Riemann zeta function `Λ(s)` is differentiable away from `s = 0` and `s = 1`
 (where it has simple poles). -/
@@ -327,7 +302,6 @@ theorem differentiableAt_completed_zeta {s : ℂ} (hs : s ≠ 0) (hs' : s ≠ 1)
   · exact (Differentiable.differentiableAt (differentiable_const _)).div differentiableAt_id hs
   · refine (differentiable_const _).differentiableAt.div ?_ (sub_ne_zero.mpr hs')
     exact differentiableAt_id.sub (differentiableAt_const _)
-#align differentiable_at_completed_zeta differentiableAt_completed_zeta
 
 /-- The Riemann zeta function is differentiable away from `s = 1`. -/
 theorem differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableAt ℂ riemannZeta s := by
@@ -403,7 +377,6 @@ theorem differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableA
     rw [isLittleO_iff_tendsto']
     · exact Tendsto.congr (fun x => by rw [← one_div, one_div_one_div]) nhdsWithin_le_nhds
     · exact eventually_of_mem self_mem_nhdsWithin fun x hx hx' => (hx <| inv_eq_zero.mp hx').elim
-#align differentiable_at_riemann_zeta differentiableAt_riemannZeta
 
 /-- The trivial zeroes of the zeta function. -/
 theorem riemannZeta_neg_two_mul_nat_add_one (n : ℕ) : riemannZeta (-2 * (n + 1)) = 0 := by
@@ -412,13 +385,11 @@ theorem riemannZeta_neg_two_mul_nat_add_one (n : ℕ) : riemannZeta (-2 * (n + 1
   rw [riemannZeta, Function.update_noteq this,
     show -2 * ((n : ℂ) + 1) / 2 = -↑(n + 1) by push_cast; ring, Complex.Gamma_neg_nat_eq_zero,
     div_zero]
-#align riemann_zeta_neg_two_mul_nat_add_one riemannZeta_neg_two_mul_nat_add_one
 
 /-- A formal statement of the Riemann hypothesis – constructing a term of this type is worth a
 million dollars. -/
 def RiemannHypothesis : Prop :=
   ∀ (s : ℂ) (_ : riemannCompletedZeta s = 0) (_ : ¬∃ n : ℕ, s = -2 * (n + 1)), s.re = 1 / 2
-#align riemann_hypothesis RiemannHypothesis
 
 /-!
 ## Relating the Mellin transforms of the two zeta kernels
@@ -435,7 +406,6 @@ theorem hasMellin_one_div_sqrt_Ioc {s : ℂ} (hs : 1 / 2 < re s) :
   convert hasMellin_cpow_Ioc (-1 / 2) _
   rwa [(by norm_num : (-1 / 2 : ℂ) = (-1 / 2 : ℝ)), ofReal_re, neg_div, ← sub_eq_add_neg,
     sub_pos]
-#align has_mellin_one_div_sqrt_Ioc hasMellin_one_div_sqrt_Ioc
 
 /-- Evaluate the Mellin transform of the "fudge factor" in `zetaKernel₂` -/
 theorem hasMellin_one_div_sqrt_sub_one_div_two_Ioc {s : ℂ} (hs : 1 / 2 < s.re) :
@@ -455,7 +425,6 @@ theorem hasMellin_one_div_sqrt_sub_one_div_two_Ioc {s : ℂ} (hs : 1 / 2 < s.re)
   simp_rw [HasMellin, mellin_div_const, step1.2, sub_div, div_div]
   refine ⟨step1.1.div_const _, ?_⟩
   rw [mul_comm, sub_mul, div_mul_cancel _ (two_ne_zero' ℂ), mul_comm s 2]
-#align has_mellin_one_div_sqrt_sub_one_div_two_Ioc hasMellin_one_div_sqrt_sub_one_div_two_Ioc
 
 theorem mellin_zetaKernel₂_eq_of_lt_re {s : ℂ} (hs : 1 / 2 < s.re) :
     mellin zetaKernel₂ s = mellin zetaKernel₁ s + 1 / (2 * s) - 1 / (2 * s - 1) := by
@@ -464,7 +433,6 @@ theorem mellin_zetaKernel₂_eq_of_lt_re {s : ℂ} (hs : 1 / 2 < s.re) :
       isBigO_atTop_zetaKernel₁ isBigO_zero_zetaKernel₁ hs
   have h' := hasMellin_one_div_sqrt_sub_one_div_two_Ioc hs
   simp_rw [zetaKernel₂, Pi.add_def, add_sub_assoc, (hasMellin_add h h'.1).2, h'.2]
-#align mellin_zeta_kernel₂_eq_of_lt_re mellin_zetaKernel₂_eq_of_lt_re
 
 theorem completed_zeta_eq_mellin_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
     riemannCompletedZeta s = mellin zetaKernel₁ (s / 2) := by
@@ -477,7 +445,6 @@ theorem completed_zeta_eq_mellin_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
   congr 1
   rw [mul_div_cancel' _ (two_ne_zero' ℂ)]
   abel
-#align completed_zeta_eq_mellin_of_one_lt_re completed_zeta_eq_mellin_of_one_lt_re
 
 /-!
 ## Relating the first zeta kernel to the Dirichlet series
@@ -505,7 +472,6 @@ theorem integral_cpow_mul_exp_neg_pi_mul_sq {s : ℂ} (hs : 0 < s.re) (n : ℕ) 
   congr 3
   conv_rhs => rw [← Nat.cast_two, rpow_nat_cast]
   ring
-#align integral_cpow_mul_exp_neg_pi_mul_sq integral_cpow_mul_exp_neg_pi_mul_sq
 
 theorem mellin_zetaKernel₁_eq_tsum {s : ℂ} (hs : 1 / 2 < s.re) :
     mellin zetaKernel₁ s = (π : ℂ) ^ (-s) * Gamma s * ∑' n : ℕ, 1 / ((n : ℂ) + 1) ^ (2 * s) := by
@@ -551,7 +517,6 @@ theorem mellin_zetaKernel₁_eq_tsum {s : ℂ} (hs : 1 / 2 < s.re) :
   simp_rw [← integral_cpow_mul_exp_neg_pi_mul_sq (one_half_pos.trans hs)]
   rw [← (hasSum_integral_of_dominated_convergence bd hf_meas h_le h_sum h_int h_sum').tsum_eq.symm]
   rfl
-#align mellin_zeta_kernel₁_eq_tsum mellin_zetaKernel₁_eq_tsum
 
 theorem completed_zeta_eq_tsum_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
     riemannCompletedZeta s =
@@ -560,7 +525,6 @@ theorem completed_zeta_eq_tsum_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
     mul_div_cancel' _ (two_ne_zero' ℂ)]
   rw [show s / 2 = ↑(2⁻¹ : ℝ) * s by push_cast; rw [mul_comm]; rfl]
   rwa [ofReal_mul_re, ← div_eq_inv_mul, div_lt_div_right (zero_lt_two' ℝ)]
-#align completed_zeta_eq_tsum_of_one_lt_re completed_zeta_eq_tsum_of_one_lt_re
 
 /-- The Riemann zeta function agrees with the naive Dirichlet-series definition when the latter
 converges. (Note that this is false without the assumption: when `re s ≤ 1` the sum is divergent,
@@ -575,7 +539,6 @@ theorem zeta_eq_tsum_one_div_nat_add_one_cpow {s : ℂ} (hs : 1 < re s) :
     exact mul_pos (inv_pos_of_pos two_pos) (zero_lt_one.trans hs)
   · rw [Ne.def, cpow_eq_zero_iff, not_and_or, ← Ne.def, ofReal_ne_zero]
     exact Or.inl pi_pos.ne'
-#align zeta_eq_tsum_one_div_nat_add_one_cpow zeta_eq_tsum_one_div_nat_add_one_cpow
 
 /-- Alternate formulation of `zeta_eq_tsum_one_div_nat_add_one_cpow` without the `+ 1`, using the
 fact that for `s ≠ 0` we define `0 ^ s = 0`.  -/
@@ -590,7 +553,6 @@ theorem zeta_eq_tsum_one_div_nat_cpow {s : ℂ} (hs : 1 < re s) :
       abs_cpow_eq_rpow_re_of_nonneg (Nat.cast_nonneg _) (zero_lt_one.trans hs).ne',
       summable_one_div_nat_rpow]
     assumption
-#align zeta_eq_tsum_one_div_nat_cpow zeta_eq_tsum_one_div_nat_cpow
 
 /-- Special case of `zeta_eq_tsum_one_div_nat_cpow` when the argument is in `ℕ`, so the power
 function can be expressed using naïve `pow` rather than `cpow`. -/
@@ -599,7 +561,6 @@ theorem zeta_nat_eq_tsum_of_gt_one {k : ℕ} (hk : 1 < k) :
   simp only [zeta_eq_tsum_one_div_nat_cpow
       (by rwa [← ofReal_nat_cast, ofReal_re, ← Nat.cast_one, Nat.cast_lt] : 1 < re k),
     cpow_nat_cast]
-#align zeta_nat_eq_tsum_of_gt_one zeta_nat_eq_tsum_of_gt_one
 
 /-- Explicit formula for `ζ (2 * k)`, for `k ∈ ℕ` with `k ≠ 0`: we have
 `ζ (2 * k) = (-1) ^ (k + 1) * 2 ^ (2 * k - 1) * π ^ (2 * k) * bernoulli (2 * k) / (2 * k)!`.
@@ -617,14 +578,12 @@ theorem riemannZeta_two_mul_nat {k : ℕ} (hk : k ≠ 0) :
       conv_lhs => rw [← mul_one 2]
       rwa [mul_le_mul_left (zero_lt_two' ℕ), Nat.one_le_iff_ne_zero]
   · norm_num
-#align riemann_zeta_two_mul_nat riemannZeta_two_mul_nat
 
 theorem riemannZeta_two : riemannZeta 2 = (π : ℂ) ^ 2 / 6 := by
   convert congr_arg ((↑) : ℝ → ℂ) hasSum_zeta_two.tsum_eq
   · rw [← Nat.cast_two, zeta_nat_eq_tsum_of_gt_one one_lt_two, ofReal_tsum]
     norm_num
   · norm_num
-#align riemann_zeta_two riemannZeta_two
 
 theorem riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
   convert congr_arg ((↑) : ℝ → ℂ) hasSum_zeta_four.tsum_eq
@@ -632,7 +591,6 @@ theorem riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
       zeta_nat_eq_tsum_of_gt_one (by norm_num : 1 < 4), ofReal_tsum]
     norm_num
   · norm_num
-#align riemann_zeta_four riemannZeta_four
 
 /-!
 ## Functional equation
@@ -653,7 +611,6 @@ theorem riemannCompletedZeta₀_one_sub (s : ℂ) :
   congr 2
   push_cast
   ring
-#align riemann_completed_zeta₀_one_sub riemannCompletedZeta₀_one_sub
 
 /-- Riemann zeta functional equation, formulated for `Λ`: for any complex `s` we have
 `Λ (1 - s) = Λ s`. -/
@@ -661,7 +618,6 @@ theorem riemannCompletedZeta_one_sub (s : ℂ) :
     riemannCompletedZeta (1 - s) = riemannCompletedZeta s := by
   simp_rw [riemannCompletedZeta, riemannCompletedZeta₀_one_sub, sub_add, (by abel : 1 - s - 1 = -s),
     (by abel : 1 - s = -(s - 1)), div_neg, neg_sub_neg]
-#align riemann_completed_zeta_one_sub riemannCompletedZeta_one_sub
 
 /-- Riemann zeta functional equation, formulated for `ζ`: if `1 - s ∉ ℕ`, then we have
 `ζ (1 - s) = 2 ^ (1 - s) * π ^ (-s) * Γ s * sin (π * (1 - s) / 2) * ζ s`. -/
@@ -724,7 +680,6 @@ theorem riemannZeta_one_sub {s : ℂ} (hs : ∀ n : ℕ, s ≠ -n) (hs' : s ≠ 
   push_cast
   field_simp
   ring
-#align riemann_zeta_one_sub riemannZeta_one_sub
 
 theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
     riemannZeta (-k) = (-1 : ℂ) ^ k * bernoulli (k + 1) / (k + 1) := by
@@ -798,4 +753,3 @@ theorem riemannZeta_neg_nat_eq_bernoulli (k : ℕ) :
     rw [(by intros; ring : ∀ a b c d e : ℂ, a * b * c * d * e = a * d * (b * e) * c)]
     rw [inv_mul_cancel (ofReal_ne_zero.mpr <| pow_ne_zero _ pi_pos.ne'),
       inv_mul_cancel (ofReal_ne_zero.mpr <| pow_ne_zero _ two_ne_zero), one_mul, one_mul]
-#align riemann_zeta_neg_nat_eq_bernoulli riemannZeta_neg_nat_eq_bernoulli

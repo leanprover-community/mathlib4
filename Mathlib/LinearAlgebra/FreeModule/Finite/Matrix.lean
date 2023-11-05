@@ -43,7 +43,6 @@ instance Module.Free.linearMap [Module.Finite R M] [Module.Finite R N] :
   · apply Module.Free.of_subsingleton'
   classical exact
       Module.Free.of_equiv (LinearMap.toMatrix (chooseBasis R M) (chooseBasis R N)).symm
-#align module.free.linear_map Module.Free.linearMap
 
 variable {R}
 
@@ -54,7 +53,6 @@ instance Module.Finite.linearMap [Module.Finite R M] [Module.Finite R N] :
   classical
     have f := (LinearMap.toMatrix (chooseBasis R M) (chooseBasis R N)).symm
     exact Module.Finite.of_surjective f.toLinearMap (LinearEquiv.surjective f)
-#align module.finite.linear_map Module.Finite.linearMap
 
 end CommRing
 
@@ -66,12 +64,10 @@ variable [AddCommGroup N] [Module.Finite ℤ N] [Module.Free ℤ N]
 
 instance Module.Finite.addMonoidHom : Module.Finite ℤ (M →+ N) :=
   Module.Finite.equiv (addMonoidHomLequivInt ℤ).symm
-#align module.finite.add_monoid_hom Module.Finite.addMonoidHom
 
 instance Module.Free.addMonoidHom : Module.Free ℤ (M →+ N) :=
   letI : Module.Free ℤ (M →ₗ[ℤ] N) := Module.Free.linearMap _ _ _
   Module.Free.of_equiv (addMonoidHomLequivInt ℤ).symm
-#align module.free.add_monoid_hom Module.Free.addMonoidHom
 
 end Integer
 
@@ -91,7 +87,6 @@ theorem FiniteDimensional.finrank_linearMap :
     have h := LinearMap.toMatrix (chooseBasis R M) (chooseBasis R N)
     simp_rw [h.finrank_eq, FiniteDimensional.finrank_matrix,
       FiniteDimensional.finrank_eq_card_chooseBasisIndex, mul_comm]
-#align finite_dimensional.finrank_linear_map FiniteDimensional.finrank_linearMap
 
 end CommRing
 
@@ -101,4 +96,3 @@ theorem Matrix.rank_vecMulVec {K m n : Type u} [CommRing K] [StrongRankCondition
   refine' le_trans (LinearMap.rank_comp_le_left _ _) _
   refine' (LinearMap.rank_le_domain _).trans_eq _
   rw [rank_fun', Fintype.card_unit, Nat.cast_one]
-#align matrix.rank_vec_mul_vec Matrix.rank_vecMulVec

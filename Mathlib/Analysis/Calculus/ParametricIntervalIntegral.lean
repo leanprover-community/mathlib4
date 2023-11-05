@@ -46,7 +46,6 @@ nonrec theorem hasFDerivAt_integral_of_dominated_loc_of_lip
   have := hasFDerivAt_integral_of_dominated_loc_of_lip ε_pos hF_meas hF_int hF'_meas h_lip
     bound_integrable h_diff
   exact ⟨this.1, this.2.const_smul _⟩
-#align interval_integral.has_fderiv_at_integral_of_dominated_loc_of_lip intervalIntegral.hasFDerivAt_integral_of_dominated_loc_of_lip
 
 /-- Differentiation under integral of `x ↦ ∫ F x a` at a given point `x₀`, assuming
 `F x₀` is integrable, `x ↦ F x a` is differentiable on a ball around `x₀` for ae `a` with
@@ -66,7 +65,6 @@ nonrec theorem hasFDerivAt_integral_of_dominated_of_fderiv_le
   simp only [intervalIntegral_eq_integral_uIoc]
   exact (hasFDerivAt_integral_of_dominated_of_fderiv_le ε_pos hF_meas hF_int hF'_meas h_bound
     bound_integrable h_diff).const_smul _
-#align interval_integral.has_fderiv_at_integral_of_dominated_of_fderiv_le intervalIntegral.hasFDerivAt_integral_of_dominated_of_fderiv_le
 
 /-- Derivative under integral of `x ↦ ∫ F x a` at a given point `x₀ : 𝕜`, `𝕜 = ℝ` or `𝕜 = ℂ`,
 assuming `F x₀` is integrable, `x ↦ F x a` is locally Lipschitz on a ball around `x₀` for ae `a`
@@ -88,7 +86,6 @@ nonrec theorem hasDerivAt_integral_of_dominated_loc_of_lip {F : 𝕜 → ℝ →
   have := hasDerivAt_integral_of_dominated_loc_of_lip ε_pos hF_meas hF_int hF'_meas h_lipsch
     bound_integrable h_diff
   exact ⟨this.1, this.2.const_smul _⟩
-#align interval_integral.has_deriv_at_integral_of_dominated_loc_of_lip intervalIntegral.hasDerivAt_integral_of_dominated_loc_of_lip
 
 /-- Derivative under integral of `x ↦ ∫ F x a` at a given point `x₀ : 𝕜`, `𝕜 = ℝ` or `𝕜 = ℂ`,
 assuming `F x₀` is integrable, `x ↦ F x a` is differentiable on an interval around `x₀` for ae `a`
@@ -110,6 +107,5 @@ nonrec theorem hasDerivAt_integral_of_dominated_loc_of_deriv_le
   have := hasDerivAt_integral_of_dominated_loc_of_deriv_le ε_pos hF_meas hF_int hF'_meas h_bound
     bound_integrable h_diff
   exact ⟨this.1, this.2.const_smul _⟩
-#align interval_integral.has_deriv_at_integral_of_dominated_loc_of_deriv_le intervalIntegral.hasDerivAt_integral_of_dominated_loc_of_deriv_le
 
 end intervalIntegral

@@ -39,12 +39,10 @@ def monoidOfSkeletalMonoidal (hC : Skeletal C) : Monoid C where
   one_mul X := hC ⟨λ_ X⟩
   mul_one X := hC ⟨ρ_ X⟩
   mul_assoc X Y Z := hC ⟨α_ X Y Z⟩
-#align category_theory.monoid_of_skeletal_monoidal CategoryTheory.monoidOfSkeletalMonoidal
 
 /-- If `C` is braided and skeletal, it is a commutative monoid. -/
 def commMonoidOfSkeletalBraided [BraidedCategory C] (hC : Skeletal C) : CommMonoid C :=
   { monoidOfSkeletalMonoidal hC with mul_comm := fun X Y => hC ⟨β_ X Y⟩ }
-#align category_theory.comm_monoid_of_skeletal_braided CategoryTheory.commMonoidOfSkeletalBraided
 
 namespace Skeleton
 

@@ -56,15 +56,11 @@ See `TopCat.Presheaf.isLocallySurjective_iff` below.
 -/
 def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
   CategoryTheory.IsLocallySurjective (Opens.grothendieckTopology X) T
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.is_locally_surjective TopCat.Presheaf.IsLocallySurjective
 
 theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔
       ∀ (U t), ∀ x ∈ U, ∃ (V : _) (ι : V ⟶ U), (∃ s, T.app _ s = t |_ₕ ι) ∧ x ∈ V :=
   Iff.rfl
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.is_locally_surjective_iff TopCat.Presheaf.isLocallySurjective_iff
 
 section SurjectiveOnStalks
 
@@ -112,8 +108,6 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     refine' ⟨W, hWU, ⟨ℱ.map hWV.op s, _⟩, hxW⟩
     convert h_eq using 1
     simp only [← comp_apply, T.naturality]
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.locally_surjective_iff_surjective_on_stalks TopCat.Presheaf.locally_surjective_iff_surjective_on_stalks
 
 end SurjectiveOnStalks
 

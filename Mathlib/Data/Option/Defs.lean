@@ -19,7 +19,6 @@ set_option autoImplicit true
 
 namespace Option
 
-#align option.lift_or_get Option.liftOrGet
 
 /-- Lifts a relation `α → β → Prop` to a relation `Option α → Option β → Prop` by just adding
 `none ~ none`. -/
@@ -28,7 +27,6 @@ inductive rel (r : α → β → Prop) : Option α → Option β → Prop
     some {a b} : r a b → rel r (some a) (some b)
   | /-- `none ~ none` -/
     none : rel r none none
-#align option.rel Option.rel
 
 /-- Traverse an object of `Option α` with a function `f : α → F β` for an applicative `F`. -/
 protected def traverse.{u, v}
@@ -36,7 +34,6 @@ protected def traverse.{u, v}
     Option α → F (Option β)
   | none => pure none
   | some x => some <$> f x
-#align option.traverse Option.traverse
 
 /-- If you maybe have a monadic computation in a `[Monad m]` which produces a term of type `α`,
 then there is a naturally associated way to always perform a computation in `m` which maybe
@@ -44,15 +41,11 @@ produces a result. -/
 def maybe.{u, v} {m : Type u → Type v} [Monad m] {α : Type u} : Option (m α) → m (Option α)
   | none => pure none
   | some fn => some <$> fn
-#align option.maybe Option.maybe
 
-#align option.mmap Option.mapM
-#align option.melim Option.elimM
 
 @[deprecated getDM]
 protected def getDM' [Monad m] (x : m (Option α)) (y : m α) : m α := do
   (← x).getDM y
-#align option.mget_or_else Option.getDM'
 
 variable {α : Type*} {β : Type*}
 
@@ -63,7 +56,6 @@ variable {α : Type*} {β : Type*}
 protected def elim' (b : β) (f : α → β) : Option α → β
   | some a => f a
   | none => b
-#align option.elim Option.elim'
 
 @[simp]
 theorem elim'_none (b : β) (f : α → β) : Option.elim' b f none = b := rfl
@@ -78,7 +70,6 @@ lemma elim'_eq_elim {α β : Type*} (b : β) (f : α → β) (a : Option α) :
 
 
 theorem mem_some_iff {α : Type*} {a b : α} : a ∈ some b ↔ b = a := by simp
-#align option.mem_some_iff Option.mem_some_iff
 
 /-- `o = none` is decidable even if the wrapped type does not have decidable equality.
 This is not an instance because it is not definitionally equal to `Option.decidableEq`.
@@ -87,7 +78,6 @@ Try to use `o.isNone` or `o.isSome` instead.
 @[inline]
 def decidableEqNone {o : Option α} : Decidable (o = none) :=
   decidable_of_decidable_of_iff isNone_iff_eq_none
-#align option.decidable_eq_none Option.decidableEqNone
 
 instance decidableForallMem {p : α → Prop} [DecidablePred p] :
     ∀ o : Option α, Decidable (∀ a ∈ o, p a)
@@ -106,16 +96,13 @@ instance decidableExistsMem {p : α → Prop} [DecidablePred p] :
 def iget [Inhabited α] : Option α → α
   | some x => x
   | none => default
-#align option.iget Option.iget
 
 theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
   rfl
-#align option.iget_some Option.iget_some
 
 @[simp]
 theorem mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
   cases o <;> simp [toList, eq_comm]
-#align option.mem_to_list Option.mem_toList
 
 instance liftOrGet_isCommutative (f : α → α → α) [IsCommutative α f] :
     IsCommutative (Option α) (liftOrGet f) :=
@@ -135,11 +122,6 @@ instance liftOrGet_isLeftId (f : α → α → α) : IsLeftId (Option α) (liftO
 instance liftOrGet_isRightId (f : α → α → α) : IsRightId (Option α) (liftOrGet f) none :=
   ⟨fun a ↦ by cases a <;> simp [liftOrGet]⟩
 
-#align option.lift_or_get_comm Option.liftOrGet_isCommutative
-#align option.lift_or_get_assoc Option.liftOrGet_isAssociative
-#align option.lift_or_get_idem Option.liftOrGet_isIdempotent
-#align option.lift_or_get_is_left_id Option.liftOrGet_isLeftId
-#align option.lift_or_get_is_right_id Option.liftOrGet_isRightId
 
 /-- Convert `undef` to `none` to make an `LOption` into an `Option`. -/
 def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α

@@ -40,7 +40,6 @@ class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extend
   smul_one : ∀ g : M, (g • (1 : R) : R) = 1
   /-- Scalar multiplication distributes across multiplication -/
   smul_mul : ∀ (g : M) (x y : R), g • (x * y) = g • x * g • y
-#align mul_semiring_action MulSemiringAction
 
 section Semiring
 
@@ -52,27 +51,20 @@ variable (A R S F : Type v) [AddMonoid A] [Semiring R] [CommSemiring S] [Divisio
 instance (priority := 100) MulSemiringAction.toMulDistribMulAction [h : MulSemiringAction M R] :
     MulDistribMulAction M R :=
   { h with }
-#align mul_semiring_action.to_mul_distrib_mul_action MulSemiringAction.toMulDistribMulAction
 
 /-- Each element of the monoid defines a semiring homomorphism. -/
 @[simps!]
 def MulSemiringAction.toRingHom [MulSemiringAction M R] (x : M) : R →+* R :=
   { MulDistribMulAction.toMonoidHom R x, DistribMulAction.toAddMonoidHom R x with }
-#align mul_semiring_action.to_ring_hom MulSemiringAction.toRingHom
-#align mul_semiring_action.to_ring_hom_apply MulSemiringAction.toRingHom_apply
 
 theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
     Function.Injective (MulSemiringAction.toRingHom M R) := fun _ _ h =>
   eq_of_smul_eq_smul fun r => RingHom.ext_iff.1 h r
-#align to_ring_hom_injective toRingHom_injective
 
 /-- Each element of the group defines a semiring isomorphism. -/
 @[simps!]
 def MulSemiringAction.toRingEquiv [MulSemiringAction G R] (x : G) : R ≃+* R :=
   { DistribMulAction.toAddEquiv R x, MulSemiringAction.toRingHom G R x with }
-#align mul_semiring_action.to_ring_equiv MulSemiringAction.toRingEquiv
-#align mul_semiring_action.to_ring_equiv_symm_apply MulSemiringAction.toRingEquiv_symm_apply
-#align mul_semiring_action.to_ring_equiv_apply MulSemiringAction.toRingEquiv_apply
 
 section
 
@@ -83,7 +75,6 @@ See note [reducible non-instances]. -/
 @[reducible]
 def MulSemiringAction.compHom (f : N →* M) [MulSemiringAction M R] : MulSemiringAction N R :=
   { DistribMulAction.compHom R f, MulDistribMulAction.compHom R f with }
-#align mul_semiring_action.comp_hom MulSemiringAction.compHom
 
 end
 
@@ -98,7 +89,6 @@ on `x`. -/
 @[simp]
 theorem smul_inv'' [MulSemiringAction M F] (x : M) (m : F) : x • m⁻¹ = (x • m)⁻¹ :=
   map_inv₀ (MulSemiringAction.toRingHom M F x) _
-#align smul_inv'' smul_inv''
 
 end SimpLemmas
 

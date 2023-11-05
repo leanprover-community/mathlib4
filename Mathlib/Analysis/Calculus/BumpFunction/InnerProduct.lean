@@ -57,4 +57,3 @@ noncomputable def ContDiffBumpBase.ofInnerProductSpace : ContDiffBumpBase E wher
 /-- Any inner product space has smooth bump functions. -/
 instance (priority := 100) hasContDiffBump_of_innerProductSpace : HasContDiffBump E :=
   ⟨⟨.ofInnerProductSpace E⟩⟩
-#align has_cont_diff_bump_of_inner_product_space hasContDiffBump_of_innerProductSpace

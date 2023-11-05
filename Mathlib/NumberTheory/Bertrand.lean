@@ -137,7 +137,6 @@ theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
   · exact Real.rpow_nonneg_of_nonneg (by norm_num1) _
   · refine' mul_nonneg (Nat.cast_nonneg _) _
     exact Real.rpow_nonneg_of_nonneg (mul_nonneg zero_le_two (Nat.cast_nonneg _)) _
-#align bertrand_main_inequality bertrand_main_inequality
 
 /-- A lemma that tells us that, in the case where Bertrand's postulate does not hold, the prime
 factorization of the central binomial coefficent only has factors at most `2 * n / 3 + 1`.
@@ -156,7 +155,6 @@ theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
   cases' no_prime hx with h h
   · rw [factorization_eq_zero_of_non_prime n.centralBinom h, Nat.pow_zero]
   · rw [factorization_centralBinom_of_two_mul_self_lt_three_mul n_large h h2x, Nat.pow_zero]
-#align central_binom_factorization_small centralBinom_factorization_small
 
 /-- An upper bound on the central binomial coefficient used in the proof of Bertrand's postulate.
 The bound splits the prime factors of `centralBinom n` into those
@@ -194,7 +192,6 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
       exact Nat.factorization_choose_le_one (sqrt_lt'.mp <| not_le.1 h2)
     refine' Finset.prod_le_prod_of_subset_of_one_le' (Finset.filter_subset _ _) _
     exact fun p hp _ => (Finset.mem_filter.1 hp).2.one_lt.le
-#align central_binom_le_of_no_bertrand_prime centralBinom_le_of_no_bertrand_prime
 
 namespace Nat
 
@@ -213,7 +210,6 @@ theorem exists_prime_lt_and_le_two_mul_eventually (n : ℕ) (n_big : 512 ≤ n) 
   have H3 : n.centralBinom ≤ (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) :=
     centralBinom_le_of_no_bertrand_prime n (lt_of_lt_of_le (by norm_num1) n_big) no_prime
   rw [mul_assoc] at H1; exact not_le.2 H2 ((mul_le_mul_left' H3 n).trans H1)
-#align nat.exists_prime_lt_and_le_two_mul_eventually Nat.exists_prime_lt_and_le_two_mul_eventually
 
 /-- Proves that Bertrand's postulate holds over all positive naturals less than n by identifying a
 descending list of primes, each no more than twice the next, such that the list contains a witness
@@ -224,7 +220,6 @@ theorem exists_prime_lt_and_le_two_mul_succ {n} (q) {p : ℕ} (prime_p : Nat.Pri
     ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n := by
   by_cases p ≤ 2 * n; · exact ⟨p, prime_p, hn, h⟩
   exact H (lt_of_mul_lt_mul_left' (lt_of_lt_of_le (not_le.1 h) covering))
-#align nat.exists_prime_lt_and_le_two_mul_succ Nat.exists_prime_lt_and_le_two_mul_succ
 
 /--
 **Bertrand's Postulate**: For any positive natural number, there is a prime which is greater than
@@ -247,10 +242,8 @@ theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
       evalTactic <| ←
         `(tactic| refine' exists_prime_lt_and_le_two_mul_succ $i (by norm_num1) (by norm_num1) _)
   exact fun h2 => ⟨2, prime_two, h2, Nat.mul_le_mul_left 2 (Nat.pos_of_ne_zero hn0)⟩
-#align nat.exists_prime_lt_and_le_two_mul Nat.exists_prime_lt_and_le_two_mul
 
 alias bertrand := Nat.exists_prime_lt_and_le_two_mul
-#align nat.bertrand Nat.bertrand
 
 end Nat
 

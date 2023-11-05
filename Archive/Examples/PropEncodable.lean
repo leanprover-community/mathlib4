@@ -35,7 +35,6 @@ inductive PropForm (α : Type*)
   | not : PropForm α → PropForm α
   | and : PropForm α → PropForm α → PropForm α
   | or : PropForm α → PropForm α → PropForm α
-#align prop_encodable.prop_form PropEncodable.PropForm
 
 /-!
 The next three functions make it easier to construct functions from a small

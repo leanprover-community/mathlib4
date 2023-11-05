@@ -43,8 +43,6 @@ instance semiringObj (F : J ⥤ SemiRingCatMax.{v, u}) (j) :
     Semiring ((F ⋙ forget SemiRingCat).obj j) := by
   change Semiring (F.obj j)
   infer_instance
-set_option linter.uppercaseLean3 false in
-#align SemiRing.semiring_obj SemiRingCat.semiringObj
 
 /-- The flat sections of a functor into `SemiRingCat` form a subsemiring of all sections.
 -/
@@ -56,14 +54,10 @@ def sectionsSubsemiring (F : J ⥤ SemiRingCatMax.{v, u}) : Subsemiring.{max v u
   { (MonCat.sectionsSubmonoid.{v, u} (J := J) g),
     (AddMonCat.sectionsAddSubmonoid.{v, u} (J := J) f) with
     carrier := (F ⋙ forget SemiRingCat).sections }
-set_option linter.uppercaseLean3 false in
-#align SemiRing.sections_subsemiring SemiRingCat.sectionsSubsemiring
 
 instance limitSemiring (F : J ⥤ SemiRingCatMax.{v, u}) :
     Semiring (Types.limitCone.{v, u} (F ⋙ forget SemiRingCat.{max v u})).pt :=
   (sectionsSubsemiring F).toSemiring
-set_option linter.uppercaseLean3 false in
-#align SemiRing.limit_semiring SemiRingCat.limitSemiring
 
 /-- `limit.π (F ⋙ forget SemiRingCat) j` as a `RingHom`. -/
 def limitπRingHom (F : J ⥤ SemiRingCatMax.{v, u}) (j) :
@@ -74,8 +68,6 @@ def limitπRingHom (F : J ⥤ SemiRingCatMax.{v, u}) (j) :
   { AddMonCat.limitπAddMonoidHom f j,
     MonCat.limitπMonoidHom (F ⋙ forget₂ SemiRingCat MonCat.{max v u}) j with
     toFun := (Types.limitCone (F ⋙ forget SemiRingCat)).π.app j }
-set_option linter.uppercaseLean3 false in
-#align SemiRing.limit_π_ring_hom SemiRingCat.limitπRingHom
 
 namespace HasLimits
 
@@ -91,8 +83,6 @@ def limitCone (F : J ⥤ SemiRingCatMax.{v, u}) : Cone F where
     { app := limitπRingHom.{v, u} F
       naturality := fun {_ _} f => RingHom.coe_inj
         ((Types.limitCone (F ⋙ forget _)).π.naturality f) }
-set_option linter.uppercaseLean3 false in
-#align SemiRing.has_limits.limit_cone SemiRingCat.HasLimits.limitCone
 
 /-- Witness that the limit cone in `SemiRingCat` is a limit cone.
 (Internal use only; use the limits API.)
@@ -106,8 +96,6 @@ def limitConeIsLimit (F : J ⥤ SemiRingCatMax.{v, u}) : IsLimit (limitCone F) :
         map_zero' := Subtype.ext <| funext fun j => by exact (s.π.app j).map_zero
         map_add' := fun x y => Subtype.ext <| funext fun j => by exact (s.π.app j).map_add x y })
     fun s => rfl
-set_option linter.uppercaseLean3 false in
-#align SemiRing.has_limits.limit_cone_is_limit SemiRingCat.HasLimits.limitConeIsLimit
 
 end HasLimits
 
@@ -118,13 +106,9 @@ open HasLimits
 instance hasLimitsOfSize : HasLimitsOfSize.{v} SemiRingCatMax.{v, u} :=
   { has_limits_of_shape := fun _ _ =>
       { has_limit := fun F => ⟨limitCone.{v, u} F, limitConeIsLimit.{v, u} F⟩ } }
-set_option linter.uppercaseLean3 false in
-#align SemiRing.has_limits_of_size SemiRingCat.hasLimitsOfSize
 
 instance hasLimits : HasLimits SemiRingCat.{u} :=
   SemiRingCat.hasLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align SemiRing.has_limits SemiRingCat.hasLimits
 
 /--
 Auxiliary lemma to prove the cone induced by `limitCone` is a limit cone.
@@ -132,8 +116,6 @@ Auxiliary lemma to prove the cone induced by `limitCone` is a limit cone.
 def forget₂AddCommMonPreservesLimitsAux (F : J ⥤ SemiRingCatMax.{v, u}) :
     IsLimit ((forget₂ SemiRingCat AddCommMonCat).mapCone (limitCone F)) := by
   apply AddCommMonCat.limitConeIsLimit.{v, u}
-set_option linter.uppercaseLean3 false in
-#align SemiRing.forget₂_AddCommMon_preserves_limits_aux SemiRingCat.forget₂AddCommMonPreservesLimitsAux
 
 /-- The forgetful functor from semirings to additive commutative monoids preserves all limits.
 -/
@@ -143,22 +125,16 @@ instance forget₂AddCommMonPreservesLimitsOfSize :
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
           (forget₂AddCommMonPreservesLimitsAux F) }
-set_option linter.uppercaseLean3 false in
-#align SemiRing.forget₂_AddCommMon_preserves_limits_of_size SemiRingCat.forget₂AddCommMonPreservesLimitsOfSize
 
 instance forget₂AddCommMonPreservesLimits :
     PreservesLimits (forget₂ SemiRingCat AddCommMonCat.{u}) :=
   SemiRingCat.forget₂AddCommMonPreservesLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align SemiRing.forget₂_AddCommMon_preserves_limits SemiRingCat.forget₂AddCommMonPreservesLimits
 
 /-- An auxiliary declaration to speed up typechecking.
 -/
 def forget₂MonPreservesLimitsAux (F : J ⥤ SemiRingCatMax.{v, u}) :
     IsLimit ((forget₂ SemiRingCat MonCat).mapCone (limitCone F)) := by
   apply MonCat.HasLimits.limitConeIsLimit (F ⋙ forget₂ SemiRingCat MonCat.{max v u})
-set_option linter.uppercaseLean3 false in
-#align SemiRing.forget₂_Mon_preserves_limits_aux SemiRingCat.forget₂MonPreservesLimitsAux
 
 /-- The forgetful functor from semirings to monoids preserves all limits.
 -/
@@ -168,13 +144,9 @@ instance forget₂MonPreservesLimitsOfSize :
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
           (forget₂MonPreservesLimitsAux.{v, u} F) }
-set_option linter.uppercaseLean3 false in
-#align SemiRing.forget₂_Mon_preserves_limits_of_size SemiRingCat.forget₂MonPreservesLimitsOfSize
 
 instance forget₂MonPreservesLimits : PreservesLimits (forget₂ SemiRingCat MonCat.{u}) :=
   SemiRingCat.forget₂MonPreservesLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align SemiRing.forget₂_Mon_preserves_limits SemiRingCat.forget₂MonPreservesLimits
 
 /-- The forgetful functor from semirings to types preserves all limits.
 -/
@@ -184,13 +156,9 @@ instance forgetPreservesLimitsOfSize :
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
           (Types.limitConeIsLimit.{v, u} (F ⋙ forget _)) }
-set_option linter.uppercaseLean3 false in
-#align SemiRing.forget_preserves_limits_of_size SemiRingCat.forgetPreservesLimitsOfSize
 
 instance forgetPreservesLimits : PreservesLimits (forget SemiRingCat.{u}) :=
   SemiRingCat.forgetPreservesLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align SemiRing.forget_preserves_limits SemiRingCat.forgetPreservesLimits
 
 end SemiRingCat
 
@@ -207,15 +175,11 @@ instance commSemiringObj (F : J ⥤ CommSemiRingCatMax.{v, u}) (j) :
     CommSemiring ((F ⋙ forget CommSemiRingCat).obj j) := by
   change CommSemiring (F.obj j)
   infer_instance
-set_option linter.uppercaseLean3 false in
-#align CommSemiRing.comm_semiring_obj CommSemiRingCat.commSemiringObj
 
 instance limitCommSemiring (F : J ⥤ CommSemiRingCatMax.{v, u}) :
     CommSemiring (Types.limitCone.{v, u} (F ⋙ forget CommSemiRingCat.{max v u})).pt :=
   @Subsemiring.toCommSemiring (∀ j, F.obj j) _
     (SemiRingCat.sectionsSubsemiring.{v, u} (F ⋙ forget₂ CommSemiRingCat SemiRingCat.{max v u}))
-set_option linter.uppercaseLean3 false in
-#align CommSemiRing.limit_comm_semiring CommSemiRingCat.limitCommSemiring
 
 /-- We show that the forgetful functor `CommSemiRingCat ⥤ SemiRingCat` creates limits.
 
@@ -260,16 +224,12 @@ instance (F : J ⥤ CommSemiRingCatMax.{v, u}) :
 -/
 def limitCone (F : J ⥤ CommSemiRingCatMax.{v, u}) : Cone F :=
   liftLimit (limit.isLimit (F ⋙ forget₂ CommSemiRingCatMax.{v, u} SemiRingCatMax.{v, u}))
-set_option linter.uppercaseLean3 false in
-#align CommSemiRing.limit_cone CommSemiRingCat.limitCone
 
 /-- The chosen cone is a limit cone.
 (Generally, you'll just want to use `limit.cone F`.)
 -/
 def limitConeIsLimit (F : J ⥤ CommSemiRingCatMax.{v, u}) : IsLimit (limitCone F) :=
   liftedLimitIsLimit _
-set_option linter.uppercaseLean3 false in
-#align CommSemiRing.limit_cone_is_limit CommSemiRingCat.limitConeIsLimit
 
 /- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of rings has all limits. -/
@@ -277,13 +237,9 @@ instance hasLimitsOfSize : HasLimitsOfSize.{v, v} CommSemiRingCatMax.{v, u} :=
   { has_limits_of_shape := fun _ _ =>
       { has_limit := fun F =>
           hasLimit_of_created F (forget₂ CommSemiRingCat SemiRingCatMax.{v, u}) } }
-set_option linter.uppercaseLean3 false in
-#align CommSemiRing.has_limits_of_size CommSemiRingCat.hasLimitsOfSize
 
 instance hasLimits : HasLimits CommSemiRingCat.{u} :=
   CommSemiRingCat.hasLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align CommSemiRing.has_limits CommSemiRingCat.hasLimits
 
 /-- The forgetful functor from rings to semirings preserves all limits.
 -/
@@ -293,14 +249,10 @@ instance forget₂SemiRingPreservesLimitsOfSize :
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
           (SemiRingCat.HasLimits.limitConeIsLimit _) }
-set_option linter.uppercaseLean3 false in
-#align CommSemiRing.forget₂_SemiRing_preserves_limits_of_size CommSemiRingCat.forget₂SemiRingPreservesLimitsOfSize
 
 instance forget₂SemiRingPreservesLimits :
     PreservesLimits (forget₂ CommSemiRingCat SemiRingCat.{u}) :=
   CommSemiRingCat.forget₂SemiRingPreservesLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align CommSemiRing.forget₂_SemiRing_preserves_limits CommSemiRingCat.forget₂SemiRingPreservesLimits
 
 /-- The forgetful functor from rings to types preserves all limits. (That is, the underlying
 types could have been computed instead as limits in the category of types.)
@@ -311,13 +263,9 @@ instance forgetPreservesLimitsOfSize :
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
           (Types.limitConeIsLimit.{v, u} _) }
-set_option linter.uppercaseLean3 false in
-#align CommSemiRing.forget_preserves_limits_of_size CommSemiRingCat.forgetPreservesLimitsOfSize
 
 instance forgetPreservesLimits : PreservesLimits (forget CommSemiRingCat.{u}) :=
   CommSemiRingCat.forgetPreservesLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align CommSemiRing.forget_preserves_limits CommSemiRingCat.forgetPreservesLimits
 
 end CommSemiRingCat
 
@@ -333,8 +281,6 @@ variable {J : Type v} [SmallCategory J]
 instance ringObj (F : J ⥤ RingCatMax.{v, u}) (j) : Ring ((F ⋙ forget RingCat).obj j) := by
   change Ring (F.obj j)
   infer_instance
-set_option linter.uppercaseLean3 false in
-#align Ring.ring_obj RingCat.ringObj
 
 /-- The flat sections of a functor into `RingCat` form a subring of all sections.
 -/
@@ -346,14 +292,10 @@ def sectionsSubring (F : J ⥤ RingCatMax.{v, u}) : Subring.{max v u} (∀ j, F.
   { AddGroupCat.sectionsAddSubgroup.{v, u} (J := J) f,
     SemiRingCat.sectionsSubsemiring.{v, u} (J := J) g with
     carrier := (F ⋙ forget RingCatMax.{v, u}).sections }
-set_option linter.uppercaseLean3 false in
-#align Ring.sections_subring RingCat.sectionsSubring
 
 instance limitRing (F : J ⥤ RingCatMax.{v, u}) :
     Ring.{max v u} (Types.limitCone.{v, u} (F ⋙ forget RingCatMax.{v, u})).pt :=
   (sectionsSubring F).toRing
-set_option linter.uppercaseLean3 false in
-#align Ring.limit_ring RingCat.limitRing
 
 /-- We show that the forgetful functor `CommRingCat ⥤ RingCat` creates limits.
 
@@ -382,16 +324,12 @@ instance (F : J ⥤ RingCatMax.{v, u}) :
 -/
 def limitCone (F : J ⥤ RingCatMax.{v, u}) : Cone F :=
   liftLimit (limit.isLimit (F ⋙ forget₂ RingCatMax.{v, u} SemiRingCatMax.{v, u}))
-set_option linter.uppercaseLean3 false in
-#align Ring.limit_cone RingCat.limitCone
 
 /-- The chosen cone is a limit cone.
 (Generally, you'll just want to use `limit.cone F`.)
 -/
 def limitConeIsLimit (F : J ⥤ RingCatMax.{v, u}) : IsLimit (limitCone F) :=
   liftedLimitIsLimit _
-set_option linter.uppercaseLean3 false in
-#align Ring.limit_cone_is_limit RingCat.limitConeIsLimit
 
 /- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of rings has all limits. -/
@@ -399,13 +337,9 @@ instance hasLimitsOfSize : HasLimitsOfSize.{v, v} RingCat.{max v u} :=
   { has_limits_of_shape := fun {_ _} =>
       { has_limit := fun {F} => hasLimit_of_created F
           (forget₂ RingCatMax.{v, u} SemiRingCatMax.{v, u}) } }
-set_option linter.uppercaseLean3 false in
-#align Ring.has_limits_of_size RingCat.hasLimitsOfSize
 
 instance hasLimits : HasLimits RingCat.{u} :=
   RingCat.hasLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align Ring.has_limits RingCat.hasLimits
 
 /-- The forgetful functor from rings to semirings preserves all limits.
 -/
@@ -415,13 +349,9 @@ instance forget₂SemiRingPreservesLimitsOfSize :
       { preservesLimit := fun {F} =>
           preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
             (SemiRingCat.HasLimits.limitConeIsLimit.{v, u} _) }
-set_option linter.uppercaseLean3 false in
-#align Ring.forget₂_SemiRing_preserves_limits_of_size RingCat.forget₂SemiRingPreservesLimitsOfSize
 
 instance forget₂SemiRingPreservesLimits : PreservesLimits (forget₂ RingCat SemiRingCat.{u}) :=
   RingCat.forget₂SemiRingPreservesLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align Ring.forget₂_SemiRing_preserves_limits RingCat.forget₂SemiRingPreservesLimits
 
 /-- An auxiliary declaration to speed up typechecking.
 -/
@@ -430,8 +360,6 @@ def forget₂AddCommGroupPreservesLimitsAux (F : J ⥤ RingCatMax.{v, u}) :
   -- Porting note : inline `f` would not compile
   letI f := (F ⋙ forget₂ RingCatMax.{v, u} AddCommGroupCat.{max v u})
   apply AddCommGroupCat.limitConeIsLimit.{v, u} f
-set_option linter.uppercaseLean3 false in
-#align Ring.forget₂_AddCommGroup_preserves_limits_aux RingCat.forget₂AddCommGroupPreservesLimitsAux
 
 /-- The forgetful functor from rings to additive commutative groups preserves all limits.
 -/
@@ -441,14 +369,10 @@ instance forget₂AddCommGroupPreservesLimitsOfSize :
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
           (forget₂AddCommGroupPreservesLimitsAux F) }
-set_option linter.uppercaseLean3 false in
-#align Ring.forget₂_AddCommGroup_preserves_limits_of_size RingCat.forget₂AddCommGroupPreservesLimitsOfSize
 
 instance forget₂AddCommGroupPreservesLimits :
     PreservesLimits (forget₂ RingCat AddCommGroupCat.{u}) :=
   RingCat.forget₂AddCommGroupPreservesLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align Ring.forget₂_AddCommGroup_preserves_limits RingCat.forget₂AddCommGroupPreservesLimits
 
 /-- The forgetful functor from rings to types preserves all limits. (That is, the underlying
 types could have been computed instead as limits in the category of types.)
@@ -458,13 +382,9 @@ instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize.{v, v} (forget Ring
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
           (Types.limitConeIsLimit.{v, u} _) }
-set_option linter.uppercaseLean3 false in
-#align Ring.forget_preserves_limits_of_size RingCat.forgetPreservesLimitsOfSize
 
 instance forgetPreservesLimits : PreservesLimits (forget RingCat.{u}) :=
   RingCat.forgetPreservesLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align Ring.forget_preserves_limits RingCat.forgetPreservesLimits
 
 end RingCat
 
@@ -481,15 +401,11 @@ instance commRingObj (F : J ⥤ CommRingCatMax.{v, u}) (j) :
     CommRing ((F ⋙ forget CommRingCat).obj j) := by
   change CommRing (F.obj j)
   infer_instance
-set_option linter.uppercaseLean3 false in
-#align CommRing.comm_ring_obj CommRingCat.commRingObj
 
 instance limitCommRing (F : J ⥤ CommRingCatMax.{v, u}) :
     CommRing.{max v u} (Types.limitCone.{v, u} (F ⋙ forget CommRingCatMax.{v, u})).pt :=
   @Subring.toCommRing (∀ j, F.obj j) _
     (RingCat.sectionsSubring.{v, u} (F ⋙ forget₂ CommRingCat RingCat.{max v u}))
-set_option linter.uppercaseLean3 false in
-#align CommRing.limit_comm_ring CommRingCat.limitCommRing
 
 /-- We show that the forgetful functor `CommRingCat ⥤ RingCat` creates limits.
 
@@ -539,16 +455,12 @@ def limitCone (F : J ⥤ CommRingCatMax.{v, u}) : Cone F :=
   -- Porting note : add this manually to get `liftLimit`
   letI : HasLimitsOfSize RingCatMax.{v, u} := RingCat.hasLimitsOfSize.{v, u}
   liftLimit (limit.isLimit (F ⋙ forget₂ CommRingCatMax.{v, u} RingCatMax.{v, u}))
-set_option linter.uppercaseLean3 false in
-#align CommRing.limit_cone CommRingCat.limitCone
 
 /-- The chosen cone is a limit cone.
 (Generally, you'll just want to use `limit.cone F`.)
 -/
 def limitConeIsLimit (F : J ⥤ CommRingCatMax.{v, u}) : IsLimit (limitCone.{v, u} F) :=
   liftedLimitIsLimit _
-set_option linter.uppercaseLean3 false in
-#align CommRing.limit_cone_is_limit CommRingCat.limitConeIsLimit
 
 /- ./././Mathport/Syntax/Translate/Command.lean:322:38: unsupported irreducible non-definition -/
 /-- The category of commutative rings has all limits. -/
@@ -558,13 +470,9 @@ instance hasLimitsOfSize : HasLimitsOfSize.{v, v} CommRingCatMax.{v, u} :=
   { has_limits_of_shape := fun {_ _} =>
       { has_limit := fun F => hasLimit_of_created F
           (forget₂ CommRingCatMax.{v, u} RingCatMax.{v, u}) } }
-set_option linter.uppercaseLean3 false in
-#align CommRing.has_limits_of_size CommRingCat.hasLimitsOfSize
 
 instance hasLimits : HasLimits CommRingCat.{u} :=
   CommRingCat.hasLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align CommRing.has_limits CommRingCat.hasLimits
 
 /-- The forgetful functor from commutative rings to rings preserves all limits.
 (That is, the underlying rings could have been computed instead as limits in the category of rings.)
@@ -575,21 +483,15 @@ instance forget₂RingPreservesLimitsOfSize :
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone.{v, v} (limitConeIsLimit.{v, u} F)
           (RingCat.limitConeIsLimit.{v, u} _) }
-set_option linter.uppercaseLean3 false in
-#align CommRing.forget₂_Ring_preserves_limits_of_size CommRingCat.forget₂RingPreservesLimitsOfSize
 
 instance forget₂RingPreservesLimits : PreservesLimits (forget₂ CommRingCat RingCat.{u}) :=
   CommRingCat.forget₂RingPreservesLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align CommRing.forget₂_Ring_preserves_limits CommRingCat.forget₂RingPreservesLimits
 
 /-- An auxiliary declaration to speed up typechecking.
 -/
 def forget₂CommSemiRingPreservesLimitsAux (F : J ⥤ CommRingCatMax.{v, u}) :
     IsLimit ((forget₂ CommRingCat CommSemiRingCat).mapCone (limitCone F)) := by
   apply CommSemiRingCat.limitConeIsLimit (F ⋙ forget₂ CommRingCat CommSemiRingCat.{max v u})
-set_option linter.uppercaseLean3 false in
-#align CommRing.forget₂_CommSemiRing_preserves_limits_aux CommRingCat.forget₂CommSemiRingPreservesLimitsAux
 
 /-- The forgetful functor from commutative rings to commutative semirings preserves all limits.
 (That is, the underlying commutative semirings could have been computed instead as limits
@@ -601,14 +503,10 @@ instance forget₂CommSemiRingPreservesLimitsOfSize :
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
           (forget₂CommSemiRingPreservesLimitsAux.{v, u} F) }
-set_option linter.uppercaseLean3 false in
-#align CommRing.forget₂_CommSemiRing_preserves_limits_of_size CommRingCat.forget₂CommSemiRingPreservesLimitsOfSize
 
 instance forget₂CommSemiRingPreservesLimits :
     PreservesLimits (forget₂ CommRingCat CommSemiRingCat.{u}) :=
   CommRingCat.forget₂CommSemiRingPreservesLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align CommRing.forget₂_CommSemiRing_preserves_limits CommRingCat.forget₂CommSemiRingPreservesLimits
 
 /-- The forgetful functor from commutative rings to types preserves all limits.
 (That is, the underlying types could have been computed instead as limits in the category of types.)
@@ -619,12 +517,8 @@ instance forgetPreservesLimitsOfSize :
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone.{v, v} (limitConeIsLimit.{v, u} F)
           (Types.limitConeIsLimit.{v, u} _) }
-set_option linter.uppercaseLean3 false in
-#align CommRing.forget_preserves_limits_of_size CommRingCat.forgetPreservesLimitsOfSize
 
 instance forgetPreservesLimits : PreservesLimits (forget CommRingCat.{u}) :=
   CommRingCat.forgetPreservesLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align CommRing.forget_preserves_limits CommRingCat.forgetPreservesLimits
 
 end CommRingCat

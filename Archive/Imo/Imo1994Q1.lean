@@ -45,7 +45,6 @@ theorem tedious (m : ℕ) (k : Fin (m + 1)) : m - (m + (m + 1 - ↑k)) % (m + 1)
     simp only [add_assoc, add_tsub_cancel_left, add_left_comm]
   rw [Fin.val_mk, this, Nat.add_mod_right, Nat.mod_eq_of_lt, Nat.add_sub_cancel]
   linarith
-#align imo1994_q1.tedious Imo1994Q1.tedious
 
 end Imo1994Q1
 
@@ -102,4 +101,3 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : A.card = m + 1)
     simpa using (hrange (a i) (ha i)).1
   -- A set of size `k+1` embed in one of size `k`, which yields a contradiction
   simpa [Fin.coe_sub, tedious] using card_le_of_subset hf
-#align imo1994_q1 imo1994_q1

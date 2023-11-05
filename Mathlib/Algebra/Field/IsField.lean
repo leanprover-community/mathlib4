@@ -35,30 +35,25 @@ structure IsField (R : Type u) [Semiring R] : Prop where
   mul_comm : ∀ x y : R, x * y = y * x
   /-- Nonzero elements have multiplicative inverses. -/
   mul_inv_cancel : ∀ {a : R}, a ≠ 0 → ∃ b, a * b = 1
-#align is_field IsField
 
 /-- Transferring from `Semifield` to `IsField`. -/
 theorem Semifield.toIsField (R : Type u) [Semifield R] : IsField R :=
   { ‹Semifield R› with
     mul_inv_cancel := @fun a ha => ⟨a⁻¹, mul_inv_cancel a ha⟩ }
-#align semifield.to_is_field Semifield.toIsField
 
 /-- Transferring from `Field` to `IsField`. -/
 theorem Field.toIsField (R : Type u) [Field R] : IsField R :=
   Semifield.toIsField _
-#align field.to_is_field Field.toIsField
 
 @[simp]
 theorem IsField.nontrivial {R : Type u} [Semiring R] (h : IsField R) : Nontrivial R :=
   ⟨h.exists_pair_ne⟩
-#align is_field.nontrivial IsField.nontrivial
 
 @[simp]
 theorem not_isField_of_subsingleton (R : Type u) [Semiring R] [Subsingleton R] : ¬IsField R :=
   fun h =>
   let ⟨_, _, h⟩ := h.exists_pair_ne
   h (Subsingleton.elim _ _)
-#align not_is_field_of_subsingleton not_isField_of_subsingleton
 
 open Classical
 
@@ -70,12 +65,10 @@ noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) 
     mul_inv_cancel := fun a ha => by
       convert Classical.choose_spec (IsField.mul_inv_cancel h ha)
       exact dif_neg ha }
-#align is_field.to_semifield IsField.toSemifield
 
 /-- Transferring from `IsField` to `Field`. -/
 noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field R :=
   { ‹Ring R›, IsField.toSemifield h with }
-#align is_field.to_field IsField.toField
 
 /-- For each field, and for each nonzero element of said field, there is a unique inverse.
 Since `IsField` doesn't remember the data of an `inv` function and as such,
@@ -91,6 +84,5 @@ theorem uniq_inv_of_isField (R : Type u) [Ring R] (hf : IsField R) :
       y = y * (x * z) := by rw [hxz, mul_one]
       _ = x * y * z := by rw [← mul_assoc, hf.mul_comm y x]
       _ = z := by rw [hxy, one_mul]
-#align uniq_inv_of_is_field uniq_inv_of_isField
 
 end IsField

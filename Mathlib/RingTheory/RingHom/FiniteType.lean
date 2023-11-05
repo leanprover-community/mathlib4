@@ -24,7 +24,6 @@ open scoped Pointwise
 theorem finiteType_stableUnderComposition : StableUnderComposition @FiniteType := by
   introv R hf hg
   exact hg.comp hf
-#align ring_hom.finite_type_stable_under_composition RingHom.finiteType_stableUnderComposition
 
 theorem finiteType_holdsForLocalizationAway : HoldsForLocalizationAway @FiniteType := by
   introv R _
@@ -33,7 +32,6 @@ theorem finiteType_holdsForLocalizationAway : HoldsForLocalizationAway @FiniteTy
     convert this; ext;
     rw [Algebra.smul_def]; rfl
   exact IsLocalization.finiteType_of_monoid_fg (Submonoid.powers r) S
-#align ring_hom.finite_type_holds_for_localization_away RingHom.finiteType_holdsForLocalizationAway
 
 theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteType := by
   -- Setup algebra intances.
@@ -89,15 +87,12 @@ theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteTy
       apply Algebra.subset_adjoin
       exact Or.inl (Or.inr r.2)
     · rw [ht]; trivial
-#align ring_hom.finite_type_of_localization_span_target RingHom.finiteType_ofLocalizationSpanTarget
 
 theorem finiteType_is_local : PropertyIsLocal @FiniteType :=
   ⟨localization_finiteType, finiteType_ofLocalizationSpanTarget, finiteType_stableUnderComposition,
     finiteType_holdsForLocalizationAway⟩
-#align ring_hom.finite_type_is_local RingHom.finiteType_is_local
 
 theorem finiteType_respectsIso : RingHom.RespectsIso @RingHom.FiniteType :=
   RingHom.finiteType_is_local.respectsIso
-#align ring_hom.finite_type_respects_iso RingHom.finiteType_respectsIso
 
 end RingHom

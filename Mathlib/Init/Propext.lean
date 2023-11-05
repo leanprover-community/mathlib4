@@ -14,7 +14,6 @@ import Mathlib.Mathport.Rename
 -- theorem forall_congr_eq {a : Sort u} {p q : a → Prop} (h : ∀ x, p x = q x) :
 --   (∀ x, p x) = ∀ x, q x :=
 -- (forall_congr fun a ↦ (h a))
-#align forall_congr_eq forall_congr
 
 theorem imp_congr_eq {a b c d : Prop} (h₁ : a = c) (h₂ : b = d) : (a → b) = (c → d) :=
   propext (imp_congr h₁.to_iff h₂.to_iff)

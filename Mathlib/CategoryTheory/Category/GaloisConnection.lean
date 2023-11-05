@@ -32,7 +32,6 @@ def GaloisConnection.adjunction {l : X → Y} {u : Y → X} (gc : GaloisConnecti
     { homEquiv := fun X Y =>
         ⟨fun f => CategoryTheory.homOfLE (gc.le_u f.le),
          fun f => CategoryTheory.homOfLE (gc.l_le f.le), _, _⟩ }
-#align galois_connection.adjunction GaloisConnection.adjunction
 
 end
 
@@ -45,6 +44,5 @@ variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 theorem Adjunction.gc {L : X ⥤ Y} {R : Y ⥤ X} (adj : L ⊣ R) : GaloisConnection L.obj R.obj :=
   fun x y =>
   ⟨fun h => ((adj.homEquiv x y).toFun h.hom).le, fun h => ((adj.homEquiv x y).invFun h.hom).le⟩
-#align category_theory.adjunction.gc CategoryTheory.Adjunction.gc
 
 end CategoryTheory

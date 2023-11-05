@@ -57,5 +57,3 @@ def ringEquivEndForget₂ (R : Type u) [Ring R] :
     dsimp
     simp only [AddCommGroupCat.ofHom_apply, DistribMulAction.toAddMonoidHom_apply, mul_smul]
     rfl
-
-#align ring_equiv_End_forget₂ ringEquivEndForget₂

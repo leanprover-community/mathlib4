@@ -72,7 +72,6 @@ class LaxMonoidal (F : C → D) [Functorial.{v₁, v₂} F] where
   /-- right unitality -/
   right_unitality : ∀ X : C, (ρ_ (F X)).hom = (𝟙 (F X) ⊗ ε) ≫ μ X (𝟙_ C) ≫ map F (ρ_ X).hom := by
     aesop_cat
-#align category_theory.lax_monoidal CategoryTheory.LaxMonoidal
 
 attribute [simp] LaxMonoidal.μ_natural
 
@@ -92,7 +91,6 @@ and `Functorial` and `LaxMonoidal` typeclasses.
 def of (F : C → D) [I₁ : Functorial.{v₁, v₂} F] [I₂ : LaxMonoidal.{v₁, v₂} F] :
     LaxMonoidalFunctor.{v₁, v₂} C D :=
   { I₁, I₂ with obj := F }
-#align category_theory.lax_monoidal_functor.of CategoryTheory.LaxMonoidalFunctor.of
 
 end LaxMonoidalFunctor
 
@@ -105,7 +103,6 @@ instance laxMonoidalId : LaxMonoidal.{v₁, v₁} (id : C → C)
     where
   ε := 𝟙 _
   μ X Y := 𝟙 _
-#align category_theory.lax_monoidal_id CategoryTheory.laxMonoidalId
 
 end
 

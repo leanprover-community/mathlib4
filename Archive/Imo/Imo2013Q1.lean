@@ -33,7 +33,6 @@ namespace Imo2013Q1
 
 -- porting note: simplified proof using `positivity`
 theorem arith_lemma (k n : ℕ) : 0 < 2 * n + 2 ^ k.succ := by positivity
-#align imo2013_q1.arith_lemma Imo2013Q1.arith_lemma
 
 theorem prod_lemma (m : ℕ → ℕ+) (k : ℕ) (nm : ℕ+) :
     ∏ i : ℕ in Finset.range k, ((1 : ℚ) + 1 / ↑(if i < k then m i else nm)) =
@@ -42,7 +41,6 @@ theorem prod_lemma (m : ℕ → ℕ+) (k : ℕ) (nm : ℕ+) :
   exact Finset.prod_congr rfl this
   intro i hi
   simp [Finset.mem_range.mp hi]
-#align imo2013_q1.prod_lemma Imo2013Q1.prod_lemma
 
 end Imo2013Q1
 
@@ -99,4 +97,3 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
       _ = (∏ i in Finset.range pk, (1 + 1 / (m i : ℚ))) * (1 + 1 / ↑(m pk)) := by
         rw [prod_lemma, hpm, ← hmpk, mul_comm]
       _ = ∏ i in Finset.range pk.succ, (1 + 1 / (m i : ℚ)) := by rw [← Finset.prod_range_succ _ pk]
-#align imo2013_q1 imo2013_q1

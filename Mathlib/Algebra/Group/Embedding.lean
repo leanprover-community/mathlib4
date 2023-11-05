@@ -26,10 +26,6 @@ by left multiplication by a fixed element.
 def mulLeftEmbedding {G : Type*} [LeftCancelSemigroup G] (g : G) : G ↪ G where
   toFun h := g * h
   inj' := mul_right_injective g
-#align mul_left_embedding mulLeftEmbedding
-#align add_left_embedding addLeftEmbedding
-#align add_left_embedding_apply addLeftEmbedding_apply
-#align mul_left_embedding_apply mulLeftEmbedding_apply
 
 /-- The embedding of a right cancellative semigroup into itself
 by right multiplication by a fixed element.
@@ -40,17 +36,11 @@ by right multiplication by a fixed element.
 def mulRightEmbedding {G : Type*} [RightCancelSemigroup G] (g : G) : G ↪ G where
   toFun h := h * g
   inj' := mul_left_injective g
-#align mul_right_embedding mulRightEmbedding
-#align add_right_embedding addRightEmbedding
-#align mul_right_embedding_apply mulRightEmbedding_apply
-#align add_right_embedding_apply addRightEmbedding_apply
 
 @[to_additive]
 theorem mulLeftEmbedding_eq_mulRightEmbedding {G : Type*} [CancelCommMonoid G] (g : G) :
     mulLeftEmbedding g = mulRightEmbedding g := by
   ext
   exact mul_comm _ _
-#align mul_left_embedding_eq_mul_right_embedding mulLeftEmbedding_eq_mulRightEmbedding
-#align add_left_embedding_eq_add_right_embedding addLeftEmbedding_eq_addRightEmbedding
 
 end LeftOrRightCancelSemigroup

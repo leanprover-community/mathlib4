@@ -41,4 +41,3 @@ def Matrix.dualNumberEquiv : Matrix n n (DualNumber R) ≃ₐ[R] DualNumber (Mat
       Algebra.id.map_eq_self, algebraMap_eq_inl, ← diagonal_map (inl_zero R), map_apply, fst_inl,
       snd_inl]
     rfl
-#align matrix.dual_number_equiv Matrix.dualNumberEquiv

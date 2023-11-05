@@ -47,7 +47,6 @@ set_option linter.uppercaseLean3 false -- `fdRep`
 /-- The category of finite dimensional `k`-linear representations of a monoid `G`. -/
 abbrev FdRep (k G : Type u) [Field k] [Monoid G] :=
   Action (FGModuleCat.{u} k) (MonCat.of G)
-#align fdRep FdRep
 
 namespace FdRep
 
@@ -81,12 +80,10 @@ instance (V W : FdRep k G) : FiniteDimensional k (V ⟶ W) :=
 /-- The monoid homomorphism corresponding to the action of `G` onto `V : FdRep k G`. -/
 def ρ (V : FdRep k G) : G →* V →ₗ[k] V :=
   Action.ρ V
-#align fdRep.ρ FdRep.ρ
 
 /-- The underlying `LinearEquiv` of an isomorphism of representations. -/
 def isoToLinearEquiv {V W : FdRep k G} (i : V ≅ W) : V ≃ₗ[k] W :=
   FGModuleCat.isoToLinearEquiv ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i)
-#align fdRep.iso_to_linear_equiv FdRep.isoToLinearEquiv
 
 theorem Iso.conj_ρ {V W : FdRep k G} (i : V ≅ W) (g : G) :
     W.ρ g = (FdRep.isoToLinearEquiv i).conj (V.ρ g) := by
@@ -94,21 +91,18 @@ theorem Iso.conj_ρ {V W : FdRep k G} (i : V ≅ W) (g : G) :
   erw [FdRep.isoToLinearEquiv, ← FGModuleCat.Iso.conj_eq_conj, Iso.conj_apply]
   rw [Iso.eq_inv_comp ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i)]
   exact (i.hom.comm g).symm
-#align fdRep.iso.conj_ρ FdRep.Iso.conj_ρ
 
 /-- Lift an unbundled representation to `FdRep`. -/
 @[simps ρ]
 def of {V : Type u} [AddCommGroup V] [Module k V] [FiniteDimensional k V]
     (ρ : Representation k G V) : FdRep k G :=
   ⟨FGModuleCat.of k V, ρ⟩
-#align fdRep.of FdRep.of
 
 instance : HasForget₂ (FdRep k G) (Rep k G) where
   forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)
 
 theorem forget₂_ρ (V : FdRep k G) : ((forget₂ (FdRep k G) (Rep k G)).obj V).ρ = V.ρ := by
   ext g v; rfl
-#align fdRep.forget₂_ρ FdRep.forget₂_ρ
 
 -- Verify that the monoidal structure is available.
 example : MonoidalCategory (FdRep k G) := by infer_instance
@@ -129,7 +123,6 @@ instance : HasKernels (FdRep k G) := by infer_instance
 theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FdRep k G) [Simple V] [Simple W] :
     finrank k (V ⟶ W) = if Nonempty (V ≅ W) then 1 else 0 :=
   CategoryTheory.finrank_hom_simple_simple k V W
-#align fdRep.finrank_hom_simple_simple FdRep.finrank_hom_simple_simple
 
 /-- The forgetful functor to `Rep k G` preserves hom-sets and their vector space structure. -/
 def forget₂HomLinearEquiv (X Y : FdRep k G) :
@@ -141,7 +134,6 @@ def forget₂HomLinearEquiv (X Y : FdRep k G) :
   invFun f := ⟨(forget₂ (FGModuleCat k) (ModuleCat k)).map f.hom, f.comm⟩
   left_inv _ := by ext; rfl
   right_inv _ := by ext; rfl
-#align fdRep.forget₂_hom_linear_equiv FdRep.forget₂HomLinearEquiv
 
 end FdRep
 
@@ -177,18 +169,15 @@ noncomputable def dualTensorIsoLinHomAux :
   -- Porting note: had to make all types explicit arguments
   @LinearEquiv.toFGModuleCatIso k _ (FdRep.of ρV.dual ⊗ W).V (V →ₗ[k] W)
     _ _ _ _ _ _ (dualTensorHomEquiv k V W)
-#align fdRep.dual_tensor_iso_lin_hom_aux FdRep.dualTensorIsoLinHomAux
 
 /-- When `V` and `W` are finite dimensional representations of a group `G`, the isomorphism
 `dualTensorHomEquiv k V W` of vector spaces induces an isomorphism of representations. -/
 noncomputable def dualTensorIsoLinHom : FdRep.of ρV.dual ⊗ W ≅ FdRep.of (linHom ρV W.ρ) := by
   refine Action.mkIso (dualTensorIsoLinHomAux ρV W) ?_
   convert dualTensorHom_comm ρV W.ρ
-#align fdRep.dual_tensor_iso_lin_hom FdRep.dualTensorIsoLinHom
 
 @[simp]
 theorem dualTensorIsoLinHom_hom_hom : (dualTensorIsoLinHom ρV W).hom.hom = dualTensorHom k V W :=
   rfl
-#align fdRep.dual_tensor_iso_lin_hom_hom_hom FdRep.dualTensorIsoLinHom_hom_hom
 
 end FdRep

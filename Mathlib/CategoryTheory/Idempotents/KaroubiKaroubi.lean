@@ -44,7 +44,6 @@ attribute [local simp] p_comm_f
 def inverse : Karoubi (Karoubi C) ⥤ Karoubi C where
   obj P := ⟨P.X.X, P.p.f, by simpa only [hom_ext_iff] using P.idem⟩
   map f := ⟨f.f.f, by simpa only [hom_ext_iff] using f.comm⟩
-#align category_theory.idempotents.karoubi_karoubi.inverse CategoryTheory.Idempotents.KaroubiKaroubi.inverse
 
 instance [Preadditive C] : Functor.Additive (inverse C) where
 
@@ -52,7 +51,6 @@ instance [Preadditive C] : Functor.Additive (inverse C) where
 @[simps!]
 def unitIso : 𝟭 (Karoubi C) ≅ toKaroubi (Karoubi C) ⋙ inverse C :=
   eqToIso (Functor.ext (by aesop_cat) (by aesop_cat))
-#align category_theory.idempotents.karoubi_karoubi.unit_iso CategoryTheory.Idempotents.KaroubiKaroubi.unitIso
 
 /-- The counit isomorphism of the equivalence -/
 @[simps]
@@ -69,7 +67,6 @@ def counitIso : inverse C ⋙ toKaroubi (Karoubi C) ≅ 𝟭 (Karoubi (Karoubi C
             { f := P.p.1
               comm := by simp }
           comm := by simp } }
-#align category_theory.idempotents.karoubi_karoubi.counit_iso CategoryTheory.Idempotents.KaroubiKaroubi.counitIso
 
 /-- The equivalence `Karoubi C ≌ Karoubi (Karoubi C)` -/
 @[simps]
@@ -78,15 +75,12 @@ def equivalence : Karoubi C ≌ Karoubi (Karoubi C) where
   inverse := KaroubiKaroubi.inverse C
   unitIso := KaroubiKaroubi.unitIso C
   counitIso := KaroubiKaroubi.counitIso C
-#align category_theory.idempotents.karoubi_karoubi.equivalence CategoryTheory.Idempotents.KaroubiKaroubi.equivalence
 
 instance equivalence.additive_functor [Preadditive C] :
   Functor.Additive (equivalence C).functor where
-#align category_theory.idempotents.karoubi_karoubi.equivalence.additive_functor CategoryTheory.Idempotents.KaroubiKaroubi.equivalence.additive_functor
 
 instance equivalence.additive_inverse [Preadditive C] :
   Functor.Additive (equivalence C).inverse where
-#align category_theory.idempotents.karoubi_karoubi.equivalence.additive_inverse CategoryTheory.Idempotents.KaroubiKaroubi.equivalence.additive_inverse
 
 end KaroubiKaroubi
 

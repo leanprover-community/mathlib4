@@ -51,7 +51,6 @@ theorem AddSubgroup.cyclic_of_min {H : AddSubgroup G} {a : G}
     have h' : ¬a ≤ g - k • a := not_le.mpr lt
     contradiction
   simp [sub_eq_zero.mp h_zero, AddSubgroup.mem_closure_singleton]
-#align add_subgroup.cyclic_of_min AddSubgroup.cyclic_of_min
 
 /-- If a nontrivial additive subgroup of a linear ordered additive commutative group is disjoint
 with the interval `Set.Ioo 0 a` for some positive `a`, then the set of positive elements of this
@@ -98,4 +97,3 @@ theorem Int.subgroup_cyclic (H : AddSubgroup ℤ) : ∃ a, H = AddSubgroup.closu
   have : Ioo (0 : ℤ) 1 = ∅ := eq_empty_of_forall_not_mem fun m hm =>
     hm.1.not_le (lt_add_one_iff.1 hm.2)
   AddSubgroup.cyclic_of_isolated_zero one_pos <| by simp [this]
-#align int.subgroup_cyclic Int.subgroup_cyclic

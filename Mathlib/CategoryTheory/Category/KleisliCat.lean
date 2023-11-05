@@ -33,19 +33,16 @@ yet. -/
 @[nolint unusedArguments]
 def KleisliCat (_ : Type u → Type v) :=
   Type u
-#align category_theory.Kleisli CategoryTheory.KleisliCat
 
 /-- Construct an object of the Kleisli category from a type. -/
 def KleisliCat.mk (m) (α : Type u) : KleisliCat m :=
   α
-#align category_theory.Kleisli.mk CategoryTheory.KleisliCat.mk
 
 instance KleisliCat.categoryStruct {m} [Monad.{u, v} m] :
     CategoryStruct (KleisliCat m) where
   Hom α β := α → m β
   id _ x := pure x
   comp f g := f >=> g
-#align category_theory.Kleisli.category_struct CategoryTheory.KleisliCat.categoryStruct
 
 instance KleisliCat.category {m} [Monad.{u, v} m] [LawfulMonad m] : Category (KleisliCat m) := by
   -- Porting note: was
@@ -53,17 +50,14 @@ instance KleisliCat.category {m} [Monad.{u, v} m] [LawfulMonad m] : Category (Kl
   --  simp only [(· >=> ·), functor_norm]
   refine' { id_comp := _, comp_id := _, assoc := _ } <;> intros <;> refine funext (fun x => ?_) <;>
   simp [CategoryStruct.id, CategoryStruct.comp, (· >=> ·)]
-#align category_theory.Kleisli.category CategoryTheory.KleisliCat.category
 
 @[simp]
 theorem KleisliCat.id_def {m} [Monad m] (α : KleisliCat m) : 𝟙 α = @pure m _ α :=
   rfl
-#align category_theory.Kleisli.id_def CategoryTheory.KleisliCat.id_def
 
 theorem KleisliCat.comp_def {m} [Monad m] (α β γ : KleisliCat m) (xs : α ⟶ β) (ys : β ⟶ γ) (a : α) :
     (xs ≫ ys) a = xs a >>= ys :=
   rfl
-#align category_theory.Kleisli.comp_def CategoryTheory.KleisliCat.comp_def
 
 instance : Inhabited (KleisliCat id) :=
   ⟨PUnit⟩

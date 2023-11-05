@@ -45,7 +45,6 @@ def toMon (M : Monad C) : Mon_ (C ⥤ C) where
   one := M.η
   mul := M.μ
   mul_assoc := by ext; simp [M.assoc]
-#align category_theory.Monad.to_Mon CategoryTheory.Monad.toMon
 
 variable (C)
 
@@ -54,7 +53,6 @@ variable (C)
 def monadToMon : Monad C ⥤ Mon_ (C ⥤ C) where
   obj := toMon
   map f := { hom := f.toNatTrans }
-#align category_theory.Monad.Monad_to_Mon CategoryTheory.Monad.monadToMon
 
 variable {C}
 
@@ -77,7 +75,6 @@ def ofMon (M : Mon_ (C ⥤ C)) : Monad C where
     -- Porting note: had to add this step:
     erw [M.mul_assoc]
     simp
-#align category_theory.Monad.of_Mon CategoryTheory.Monad.ofMon
 
 -- Porting note: `@[simps]` fails to generate `ofMon_obj`:
 @[simp] lemma ofMon_obj (M : Mon_ (C ⥤ C)) (X : C) : (ofMon M).obj X = M.X.obj X := rfl
@@ -100,7 +97,6 @@ def monToMonad : Mon_ (C ⥤ C) ⥤ Monad C where
         dsimp
         simp only [NatTrans.naturality, NatTrans.hcomp_app, assoc, NatTrans.comp_app,
           ofMon_μ] }
-#align category_theory.Monad.Mon_to_Monad CategoryTheory.Monad.monToMonad
 
 /-- Oh, monads are just monoids in the category of endofunctors (equivalence of categories). -/
 @[simps]
@@ -113,7 +109,6 @@ def monadMonEquiv : Monad C ≌ Mon_ (C ⥤ C) where
   counitIso :=
   { hom := { app := fun _ => { hom := 𝟙 _ } }
     inv := { app := fun _ => { hom := 𝟙 _ } } }
-#align category_theory.Monad.Monad_Mon_equiv CategoryTheory.Monad.monadMonEquiv
 
 -- Sanity check
 example (A : Monad C) {X : C} : ((monadMonEquiv C).unitIso.app A).hom.app X = 𝟙 _ :=

@@ -70,7 +70,6 @@ variable {R' : Type v} [CommRing R']
 /-- Definition of the Gauss sum associated to a multiplicative and an additive character. -/
 def gaussSum (χ : MulChar R R') (ψ : AddChar R R') : R' :=
   ∑ a, χ a * ψ a
-#align gauss_sum gaussSum
 
 /-- Replacing `ψ` by `mulShift ψ a` and multiplying the Gauss sum by `χ a` does not change it. -/
 theorem gaussSum_mulShift (χ : MulChar R R') (ψ : AddChar R R') (a : Rˣ) :
@@ -78,7 +77,6 @@ theorem gaussSum_mulShift (χ : MulChar R R') (ψ : AddChar R R') (a : Rˣ) :
   simp only [gaussSum, mulShift_apply, Finset.mul_sum]
   simp_rw [← mul_assoc, ← map_mul]
   exact Fintype.sum_bijective _ a.mulLeft_bijective _ _ fun x => rfl
-#align gauss_sum_mul_shift gaussSum_mulShift
 
 end GaussSumDef
 
@@ -122,7 +120,6 @@ theorem gaussSum_mul_gaussSum_eq_card {χ : MulChar R R'} (hχ : IsNontrivial χ
   simp_rw [← Finset.mul_sum, sum_mulShift _ hψ, sub_eq_zero, apply_ite, Nat.cast_zero, mul_zero]
   rw [Finset.sum_ite_eq' Finset.univ (1 : R)]
   simp only [Finset.mem_univ, map_one, one_mul, if_true]
-#align gauss_sum_mul_gauss_sum_eq_card gaussSum_mul_gaussSum_eq_card
 
 /-- When `χ` is a nontrivial quadratic character, then the square of `gaussSum χ ψ`
 is `χ(-1)` times the cardinality of `R`. -/
@@ -132,7 +129,6 @@ theorem gaussSum_sq {χ : MulChar R R'} (hχ₁ : IsNontrivial χ) (hχ₂ : IsQ
   congr
   rw [mul_comm, ← gaussSum_mulShift _ _ (-1 : Rˣ), inv_mulShift]
   rfl
-#align gauss_sum_sq gaussSum_sq
 
 end GaussSumProd
 
@@ -155,7 +151,6 @@ theorem gaussSum_frob (χ : MulChar R R') (ψ : AddChar R R') :
   rw [← frobenius_def, gaussSum, gaussSum, map_sum]
   simp_rw [pow_apply' χ fp.1.pos, map_mul, frobenius_def]
   rfl
-#align gauss_sum_frob gaussSum_frob
 
 /-- For a quadratic character `χ` and when the characteristic `p` of the target ring
 is a unit in the source ring, the `p`th power of the Gauss sum of`χ` and `ψ` is
@@ -166,7 +161,6 @@ nonrec theorem MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : Mul
   rw [gaussSum_frob, pow_mulShift, hχ.pow_char p, ← gaussSum_mulShift χ ψ hp.unit, ← mul_assoc,
     hp.unit_spec, ← pow_two, ← pow_apply' _ (by norm_num : 0 < 2), hχ.sq_eq_one, ← hp.unit_spec,
     one_apply_coe, one_mul]
-#align mul_char.is_quadratic.gauss_sum_frob MulChar.IsQuadratic.gaussSum_frob
 
 /-- For a quadratic character `χ` and when the characteristic `p` of the target ring
 is a unit in the source ring and `n` is a natural number, the `p^n`th power of the Gauss
@@ -178,7 +172,6 @@ theorem MulChar.IsQuadratic.gaussSum_frob_iter (n : ℕ) (hp : IsUnit (p : R)) {
   · rw [pow_zero, pow_one, pow_zero, MulChar.map_one, one_mul]
   · rw [pow_succ, mul_comm p, pow_mul, ih, mul_pow, hχ.gaussSum_frob _ hp, ← mul_assoc, pow_succ,
       mul_comm (p : R), map_mul, ← pow_apply' χ fp.1.pos ((p : R) ^ n), hχ.pow_char p]
-#align mul_char.is_quadratic.gauss_sum_frob_iter MulChar.IsQuadratic.gaussSum_frob_iter
 
 end gaussSum_frob
 
@@ -206,7 +199,6 @@ theorem Char.card_pow_char_pow {χ : MulChar R R'} (hχ : IsQuadratic χ) (ψ : 
   rw [← hg]; apply mul_right_cancel₀ this
   rw [← hχ.gaussSum_frob_iter p n hp ψ, ← pow_mul, mul_comm, ← pow_succ,
     Nat.two_mul_div_two_add_one_of_odd (fp.1.eq_two_or_odd'.resolve_left hp').pow]
-#align char.card_pow_char_pow Char.card_pow_char_pow
 
 /-- When `F` and `F'` are finite fields and `χ : F → F'` is a nontrivial quadratic character,
 then `(χ(-1) * #F)^(#F'/2) = χ(#F')`. -/
@@ -237,7 +229,6 @@ theorem Char.card_pow_card {F : Type*} [Field F] [Fintype F] {F' : Type*} [Field
     (gaussSum_sq (hχ₁.comp <| RingHom.injective _) (hχ₂.comp _) ψ.prim)
   simp_rw [FF'_def] at this
   exact this
-#align char.card_pow_card Char.card_pow_card
 
 end GaussSumValues
 
@@ -373,6 +364,5 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
   simp only [map_pow, map_ofNat, map_intCast]
   simp only [Nat.cast_ofNat, ringHomComp_apply, eq_intCast] at h
   exact h
-#align finite_field.two_pow_card FiniteField.two_pow_card
 
 end GaussSumTwo

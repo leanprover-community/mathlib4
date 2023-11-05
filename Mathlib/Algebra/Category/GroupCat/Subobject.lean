@@ -21,7 +21,5 @@ namespace AddCommGroupCat
 
 instance wellPowered_addCommGroupCat : WellPowered AddCommGroupCat.{u} :=
   wellPowered_of_equiv (forget₂ (ModuleCat.{u} ℤ) AddCommGroupCat.{u}).asEquivalence
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.well_powered_AddCommGroup AddCommGroupCat.wellPowered_addCommGroupCat
 
 end AddCommGroupCat

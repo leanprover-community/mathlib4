@@ -44,7 +44,6 @@ theorem adjoin_restrictScalars (C D E : Type*) [CommSemiring C] [CommSemiring D]
     exact ⟨⟨algebraMap D E y, ⟨y, ⟨Algebra.mem_top, rfl⟩⟩⟩, hy⟩
   · rintro ⟨⟨y, ⟨z, ⟨h0, h1⟩⟩⟩, h2⟩
     exact ⟨z, Eq.trans h1 h2⟩
-#align algebra.adjoin_restrict_scalars Algebra.adjoin_restrictScalars
 
 theorem adjoin_res_eq_adjoin_res (C D E F : Type*) [CommSemiring C] [CommSemiring D]
     [CommSemiring E] [CommSemiring F] [Algebra C D] [Algebra C E] [Algebra C F] [Algebra D F]
@@ -56,7 +55,6 @@ theorem adjoin_res_eq_adjoin_res (C D E F : Type*) [CommSemiring C] [CommSemirin
     ← Algebra.adjoin_image, ← AlgHom.coe_toRingHom, ← AlgHom.coe_toRingHom,
     IsScalarTower.coe_toAlgHom, IsScalarTower.coe_toAlgHom, ← adjoin_union_eq_adjoin_adjoin, ←
     adjoin_union_eq_adjoin_adjoin, Set.union_comm]
-#align algebra.adjoin_res_eq_adjoin_res Algebra.adjoin_res_eq_adjoin_res
 
 end Algebra
 
@@ -72,7 +70,6 @@ theorem Algebra.fg_trans' {R S A : Type*} [CommSemiring R] [CommSemiring S] [Sem
   ⟨s.image (algebraMap S A) ∪ t, by
     rw [Finset.coe_union, Finset.coe_image, Algebra.adjoin_algebraMap_image_union_eq_adjoin_adjoin,
       hs, Algebra.adjoin_top, ht, Subalgebra.restrictScalars_top, Subalgebra.restrictScalars_top]⟩
-#align algebra.fg_trans' Algebra.fg_trans'
 
 end
 
@@ -134,7 +131,6 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : 
   refine' fun r hr =>
     Submonoid.closure_induction hr (fun c hc => hxy c hc) (subset_span <| mem_insert_self _ _)
       fun p q hp hq => hyy <| Submodule.mul_mem_mul hp hq
-#align exists_subalgebra_of_fg exists_subalgebra_of_fg
 
 end Semiring
 
@@ -159,7 +155,6 @@ theorem fg_of_fg_of_fg [IsNoetherianRing A] (hAC : (⊤ : Subalgebra A C).FG)
       have : Module.Finite B₀ C := ⟨hB₀C⟩
       have : IsNoetherian B₀ C := isNoetherian_of_isNoetherianRing_of_finite B₀ C
       fg_of_injective (IsScalarTower.toAlgHom B₀ B C).toLinearMap hBCi
-#align fg_of_fg_of_fg fg_of_fg_of_fg
 
 end Ring
 

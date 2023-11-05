@@ -25,24 +25,20 @@ variable {α β : Type*} [TopologicalSpace α]
 theorem rtendsto_nhds {r : Rel β α} {l : Filter β} {a : α} :
     RTendsto r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.core s ∈ l :=
   all_mem_nhds_filter _ _ (fun _s _t => id) _
-#align rtendsto_nhds rtendsto_nhds
 
 theorem rtendsto'_nhds {r : Rel β α} {l : Filter β} {a : α} :
     RTendsto' r l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → r.preimage s ∈ l := by
   rw [rtendsto'_def]
   apply all_mem_nhds_filter
   apply Rel.preimage_mono
-#align rtendsto'_nhds rtendsto'_nhds
 
 theorem ptendsto_nhds {f : β →. α} {l : Filter β} {a : α} :
     PTendsto f l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → f.core s ∈ l :=
   rtendsto_nhds
-#align ptendsto_nhds ptendsto_nhds
 
 theorem ptendsto'_nhds {f : β →. α} {l : Filter β} {a : α} :
     PTendsto' f l (𝓝 a) ↔ ∀ s, IsOpen s → a ∈ s → f.preimage s ∈ l :=
   rtendsto'_nhds
-#align ptendsto'_nhds ptendsto'_nhds
 
 /-! ### Continuity and partial functions -/
 
@@ -52,11 +48,9 @@ variable [TopologicalSpace β]
 /-- Continuity of a partial function -/
 def PContinuous (f : α →. β) :=
   ∀ s, IsOpen s → IsOpen (f.preimage s)
-#align pcontinuous PContinuous
 
 theorem open_dom_of_pcontinuous {f : α →. β} (h : PContinuous f) : IsOpen f.Dom := by
   rw [← PFun.preimage_univ]; exact h _ isOpen_univ
-#align open_dom_of_pcontinuous open_dom_of_pcontinuous
 
 theorem pcontinuous_iff' {f : α →. β} :
     PContinuous f ↔ ∀ {x y} (h : y ∈ f x), PTendsto' f (𝓝 x) (𝓝 y) := by
@@ -81,9 +75,7 @@ theorem pcontinuous_iff' {f : α →. β} :
   apply h'
   rw [mem_nhds_iff]
   exact ⟨s, Set.Subset.refl _, os, ys⟩
-#align pcontinuous_iff' pcontinuous_iff'
 
 theorem continuousWithinAt_iff_ptendsto_res (f : α → β) {x : α} {s : Set α} :
     ContinuousWithinAt f s x ↔ PTendsto (PFun.res f s) (𝓝 x) (𝓝 (f x)) :=
   tendsto_iff_ptendsto _ _ _ _
-#align continuous_within_at_iff_ptendsto_res continuousWithinAt_iff_ptendsto_res

@@ -49,7 +49,6 @@ def powAddExpansion {R : Type*} [CommSemiring R] (x y : R) :
       _ = x ^ (n + 2) + ↑(n + 2) * x ^ (n + 1) * y + (x * z + (n + 1) * x ^ n + z * y) * y ^ 2 := by
         push_cast
         ring!
-#align polynomial.pow_add_expansion Polynomial.powAddExpansion
 
 variable [CommRing R]
 
@@ -85,7 +84,6 @@ def binomExpansion (f : R[X]) (x y : R) :
   · rw [derivative_eval]
     exact Finset.sum_mul.symm
   · exact Finset.sum_mul.symm
-#align polynomial.binom_expansion Polynomial.binomExpansion
 
 /-- `x^n - y^n` can be expressed as `z * (x - y)` for some `z` in the ring.
 -/
@@ -96,7 +94,6 @@ def powSubPowFactor (x y : R) : ∀ i : ℕ, { z : R // x ^ i - y ^ i = z * (x -
     cases' @powSubPowFactor x y (k + 1) with z hz
     exists z * x + y ^ (k + 1)
     linear_combination (norm := ring) x * hz
-#align polynomial.pow_sub_pow_factor Polynomial.powSubPowFactor
 
 /-- For any polynomial `f`, `f.eval x - f.eval y` can be expressed as `z * (x - y)`
 for some `z` in the ring.
@@ -108,7 +105,6 @@ def evalSubFactor (f : R[X]) (x y : R) : { z : R // f.eval x - f.eval y = z * (x
   dsimp
   congr with i
   rw [mul_assoc, ← (powSubPowFactor x y _).prop, mul_sub]
-#align polynomial.eval_sub_factor Polynomial.evalSubFactor
 
 end Identities
 

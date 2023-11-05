@@ -38,7 +38,6 @@ theorem injective_iff_preservesEpimorphisms_preadditiveYoneda_obj (J : C) :
       Functor.preservesEpimorphisms_of_preserves_of_reflects (preadditiveYoneda.obj J) (forget _)
   · intro
     exact (inferInstance : (preadditiveYoneda.obj J ⋙ forget _).PreservesEpimorphisms)
-#align category_theory.injective.injective_iff_preserves_epimorphisms_preadditive_yoneda_obj CategoryTheory.Injective.injective_iff_preservesEpimorphisms_preadditiveYoneda_obj
 
 theorem injective_iff_preservesEpimorphisms_preadditive_yoneda_obj' (J : C) :
     Injective J ↔ (preadditiveYonedaObj J).PreservesEpimorphisms := by
@@ -49,7 +48,6 @@ theorem injective_iff_preservesEpimorphisms_preadditive_yoneda_obj' (J : C) :
       Functor.preservesEpimorphisms_of_preserves_of_reflects (preadditiveYonedaObj J) (forget _)
   · intro
     exact (inferInstance : (preadditiveYonedaObj J ⋙ forget _).PreservesEpimorphisms)
-#align category_theory.injective.injective_iff_preserves_epimorphisms_preadditive_yoneda_obj' CategoryTheory.Injective.injective_iff_preservesEpimorphisms_preadditive_yoneda_obj'
 
 end Injective
 

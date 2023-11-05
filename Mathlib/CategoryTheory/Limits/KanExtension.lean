@@ -52,8 +52,6 @@ attribute [local simp] StructuredArrow.proj
 /-- The diagram indexed by `Ran.index ι x` used to define `Ran`. -/
 abbrev diagram (F : S ⥤ D) (x : L) : StructuredArrow x ι ⥤ D :=
   StructuredArrow.proj x ι ⋙ F
-set_option linter.uppercaseLean3 false in
-#align category_theory.Ran.diagram CategoryTheory.Ran.diagram
 
 variable {ι}
 
@@ -72,8 +70,6 @@ def cone {F : S ⥤ D} {G : L ⥤ D} (x : L) (f : ι ⋙ G ⟶ F) : Cone (diagra
         rw [ff]
         have := f.naturality
         aesop_cat }
-set_option linter.uppercaseLean3 false in
-#align category_theory.Ran.cone CategoryTheory.Ran.cone
 
 variable (ι)
 
@@ -107,8 +103,6 @@ def loc (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] : L ⥤ D
     erw [limit.pre_pre, limit.pre_π, limit.pre_π]
     congr 1
     aesop_cat
-set_option linter.uppercaseLean3 false in
-#align category_theory.Ran.loc CategoryTheory.Ran.loc
 
 /-- An auxiliary definition used to define `Ran` and `Ran.adjunction`. -/
 @[simps]
@@ -152,8 +146,6 @@ def equiv (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] (G : L ⥤ D) :
     rcases j with ⟨⟨⟩, _, _⟩
     aesop_cat
   right_inv := by aesop_cat
-set_option linter.uppercaseLean3 false in
-#align category_theory.Ran.equiv CategoryTheory.Ran.equiv
 
 end Ran
 
@@ -168,8 +160,6 @@ def ran [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] : (S ⥤ D) ⥤ L ⥤
     intros j
     dsimp [Ran.equiv]
     simp })
-set_option linter.uppercaseLean3 false in
-#align category_theory.Ran CategoryTheory.ran
 
 namespace Ran
 
@@ -179,8 +169,6 @@ variable (D)
 def adjunction [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
     (whiskeringLeft _ _ D).obj ι ⊣ ran ι :=
   Adjunction.adjunctionOfEquivRight _ _
-set_option linter.uppercaseLean3 false in
-#align category_theory.Ran.adjunction CategoryTheory.Ran.adjunction
 
 theorem reflective [Full ι] [Faithful ι] [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
     IsIso (adjunction D ι).counit := by
@@ -196,8 +184,6 @@ theorem reflective [Full ι] [Faithful ι] [∀ X, HasLimitsOfShape (StructuredA
     IsIso.of_iso
       ((limit.isLimit _).conePointUniqueUpToIso
         (limitOfDiagramInitial StructuredArrow.mkIdInitial _))
-set_option linter.uppercaseLean3 false in
-#align category_theory.Ran.reflective CategoryTheory.Ran.reflective
 
 end Ran
 
@@ -208,8 +194,6 @@ attribute [local simp] CostructuredArrow.proj
 /-- The diagram indexed by `Lan.index ι x` used to define `Lan`. -/
 abbrev diagram (F : S ⥤ D) (x : L) : CostructuredArrow ι x ⥤ D :=
   CostructuredArrow.proj ι x ⋙ F
-set_option linter.uppercaseLean3 false in
-#align category_theory.Lan.diagram CategoryTheory.Lan.diagram
 
 variable {ι}
 
@@ -226,8 +210,6 @@ def cocone {F : S ⥤ D} {G : L ⥤ D} (x : L) (f : F ⟶ ι ⋙ G) : Cocone (di
         simp only [Functor.comp_map, Category.comp_id, NatTrans.naturality_assoc]
         rw [← G.map_comp, ff]
         aesop_cat }
-set_option linter.uppercaseLean3 false in
-#align category_theory.Lan.cocone CategoryTheory.Lan.cocone
 
 variable (ι)
 
@@ -264,8 +246,6 @@ def loc (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] : L ⥤ D
     erw [colimit.pre_pre dd gg ff, colimit.ι_pre, colimit.ι_pre]
     congr 1
     simp
-set_option linter.uppercaseLean3 false in
-#align category_theory.Lan.loc CategoryTheory.Lan.loc
 
 /-- An auxiliary definition used to define `Lan` and `Lan.adjunction`. -/
 @[simps]
@@ -321,8 +301,6 @@ def equiv (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] (G : L ⥤ D) :
     simp only [CostructuredArrow.map_mk, Category.id_comp]
     rfl
   right_inv := by aesop_cat
-set_option linter.uppercaseLean3 false in
-#align category_theory.Lan.equiv CategoryTheory.Lan.equiv
 
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] CategoryTheory.Ran.equiv_symm_apply_app
@@ -342,8 +320,6 @@ def lan [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] : (S ⥤ D) ⥤ L
     -- This used to be the end of the proof before leanprover/lean4#2644
     erw [Equiv.coe_fn_mk, Equiv.coe_fn_mk]
     simp })
-set_option linter.uppercaseLean3 false in
-#align category_theory.Lan CategoryTheory.lan
 
 namespace Lan
 
@@ -353,8 +329,6 @@ variable (D)
 def adjunction [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] :
     lan ι ⊣ (whiskeringLeft _ _ D).obj ι :=
   Adjunction.adjunctionOfEquivLeft _ _
-set_option linter.uppercaseLean3 false in
-#align category_theory.Lan.adjunction CategoryTheory.Lan.adjunction
 
 theorem coreflective [Full ι] [Faithful ι] [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] :
     IsIso (adjunction D ι).unit := by
@@ -370,8 +344,6 @@ theorem coreflective [Full ι] [Faithful ι] [∀ X, HasColimitsOfShape (Costruc
     IsIso.of_iso
       ((colimit.isColimit _).coconePointUniqueUpToIso
           (colimitOfDiagramTerminal CostructuredArrow.mkIdTerminal _)).symm
-set_option linter.uppercaseLean3 false in
-#align category_theory.Lan.coreflective CategoryTheory.Lan.coreflective
 
 end Lan
 

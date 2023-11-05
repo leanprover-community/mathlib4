@@ -63,12 +63,10 @@ theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by
         linarith [add_one_lt_exp_of_nonzero h1.ne']
       _ = exp (z - y) * exp y - exp y := by ring
       _ ≤ exp z - exp y := by rw [← exp_add]; ring_nf; rfl
-#align strict_convex_on_exp strictConvexOn_exp
 
 /-- `Real.exp` is convex on the whole real line. -/
 theorem convexOn_exp : ConvexOn ℝ univ exp :=
   strictConvexOn_exp.convexOn
-#align convex_on_exp convexOn_exp
 
 /-- `x^n`, `n : ℕ` is convex on `[0, +∞)` for all `n`.
 
@@ -94,7 +92,6 @@ theorem convexOn_pow (n : ℕ) : ConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
     _ ≤ (μ * a + ν * b) * (μ * a ^ k + ν * b ^ k) + (b ^ k - a ^ k) * (b - a) * μ * ν := by linarith
     _ = (μ + ν) * (μ * a ^ k.succ + ν * b ^ k.succ) := by rw [Nat.succ_eq_add_one]; ring
     _ = μ * a ^ k.succ + ν * b ^ k.succ := by rw [h]; ring
-#align convex_on_pow convexOn_pow
 
 /-- `x^n`, `n : ℕ` is convex on the whole real line whenever `n` is even.
 
@@ -115,7 +112,6 @@ nonrec theorem Even.convexOn_pow {n : ℕ} (hn : Even n) :
     _ ≤ μ * a ^ (2 * k) + ν * b ^ (2 * k) := by ring_nf; rfl
   -- Porting note: `rw [mem_Ici]` was `dsimp`
   refine' (convexOn_pow k).2 _ _ hμ hν h <;> rw [mem_Ici] <;> positivity
-#align even.convex_on_pow Even.convexOn_pow
 
 open Int in
 /-- `x^m`, `m : ℤ` is convex on `(0, +∞)` for all `m`.
@@ -147,7 +143,6 @@ theorem convexOn_zpow : ∀ m : ℤ, ConvexOn ℝ (Ioi 0) fun x : ℝ => x ^ m
     · have : 0 < μ * a + ν * b := by cases le_or_lt a b <;> nlinarith
       positivity
     · positivity
-#align convex_on_zpow convexOn_zpow
 
 /- `Real.log` is strictly concave on $(0, +∞)$.
 
@@ -181,7 +176,6 @@ theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
       _ < -log (x / y) := by linarith [log_lt_sub_one_of_pos hxy' hxy'']
       _ = -(log x - log y) := by rw [log_div hx.ne' hy.ne']
       _ = log y - log x := by ring
-#align strict_concave_on_log_Ioi strictConcaveOn_log_Ioi
 
 /-- **Bernoulli's inequality** for real exponents, strict version: for `1 < p` and `-1 ≤ s`, with
 `s ≠ 0`, we have `1 + p * s < (1 + s) ^ p`. -/
@@ -215,7 +209,6 @@ theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
     · field_simp
     · field_simp
     · nlinarith
-#align one_add_mul_self_lt_rpow_one_add one_add_mul_self_lt_rpow_one_add
 
 /-- **Bernoulli's inequality** for real exponents, non-strict version: for `1 ≤ p` and `-1 ≤ s`
 we have `1 + p * s ≤ (1 + s) ^ p`. -/
@@ -226,7 +219,6 @@ theorem one_add_mul_self_le_rpow_one_add {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp
   by_cases hs' : s = 0
   · simp [hs']
   exact (one_add_mul_self_lt_rpow_one_add hs hs' hp).le
-#align one_add_mul_self_le_rpow_one_add one_add_mul_self_le_rpow_one_add
 
 /- For `p : ℝ` with `1 < p`, `fun x ↦ x ^ p` is strictly convex on $[0, +∞)$.
 
@@ -271,13 +263,11 @@ theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) 
       ring_nf at H ⊢
       field_simp at H ⊢
       linear_combination -H
-#align strict_convex_on_rpow strictConvexOn_rpow
 
 theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : ℝ => x ^ p := by
   rcases eq_or_lt_of_le hp with (rfl | hp)
   · simpa using convexOn_id (convex_Ici _)
   exact (strictConvexOn_rpow hp).convexOn
-#align convex_on_rpow convexOn_rpow
 
 theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
   refine' ⟨convex_Iio _, _⟩
@@ -290,5 +280,3 @@ theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
     _ < log (a • -x + b • -y) := (strictConcaveOn_log_Ioi.2 hx' hy' hxy' ha hb hab)
     _ = log (-(a • x + b • y)) := by congr 1; simp only [Algebra.id.smul_eq_mul]; ring
     _ = _ := by rw [log_neg_eq_log]
-
-#align strict_concave_on_log_Iio strictConcaveOn_log_Iio

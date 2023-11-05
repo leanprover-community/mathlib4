@@ -87,7 +87,6 @@ def candidates : Set (ProdSpaceFun X Y) :=
       ∀ x y z, f (x, z) ≤ f (x, y) + f (y, z)) ∧
       ∀ x, f (x, x) = 0) ∧
       ∀ x y, f (x, y) ≤ maxVar X Y }
-#align Gromov_Hausdorff.candidates GromovHausdorff.candidates
 
 /-- Version of the set of candidates in bounded_continuous_functions, to apply Arzela-Ascoli. -/
 private def candidatesB : Set (Cb X Y) :=
@@ -207,12 +206,10 @@ private theorem candidates_lipschitz (fA : f ∈ candidates X Y) :
 /-- candidates give rise to elements of `BoundedContinuousFunction`s -/
 def candidatesBOfCandidates (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) : Cb X Y :=
   BoundedContinuousFunction.mkOfCompact ⟨f, (candidates_lipschitz fA).continuous⟩
-#align Gromov_Hausdorff.candidates_b_of_candidates GromovHausdorff.candidatesBOfCandidates
 
 theorem candidatesBOfCandidates_mem (f : ProdSpaceFun X Y) (fA : f ∈ candidates X Y) :
     candidatesBOfCandidates f fA ∈ candidatesB X Y :=
   fA
-#align Gromov_Hausdorff.candidates_b_of_candidates_mem GromovHausdorff.candidatesBOfCandidates_mem
 
 /-- The distance on `X ⊕ Y` is a candidate -/
 private theorem dist_mem_candidates :
@@ -225,11 +222,9 @@ private theorem dist_mem_candidates :
 def candidatesBDist (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Inhabited X]
     [MetricSpace Y] [CompactSpace Y] [Inhabited Y] : Cb X Y :=
   candidatesBOfCandidates _ dist_mem_candidates
-#align Gromov_Hausdorff.candidates_b_dist GromovHausdorff.candidatesBDist
 
 theorem candidatesBDist_mem_candidatesB : candidatesBDist X Y ∈ candidatesB X Y :=
   candidatesBOfCandidates_mem _ _
-#align Gromov_Hausdorff.candidates_b_dist_mem_candidates_b GromovHausdorff.candidatesBDist_mem_candidatesB
 
 private theorem candidatesB_nonempty : (candidatesB X Y).Nonempty :=
   ⟨_, candidatesBDist_mem_candidatesB⟩
@@ -283,7 +278,6 @@ in a metric space setting, so we need to define our custom version of Hausdorff 
 called `HD`, and prove its basic properties. -/
 def HD (f : Cb X Y) :=
   max (⨆ x, ⨅ y, f (inl x, inr y)) (⨆ y, ⨅ x, f (inl x, inr y))
-#align Gromov_Hausdorff.HD GromovHausdorff.HD
 
 /- We will show that `HD` is continuous on `BoundedContinuousFunction`s, to deduce that its
 minimum on the compact set `candidatesB` is attained. Since it is defined in terms of
@@ -294,7 +288,6 @@ theorem HD_below_aux1 {f : Cb X Y} (C : ℝ) {x : X} :
     BddBelow (range fun y : Y => f (inl x, inr y) + C) :=
   let ⟨cf, hcf⟩ := (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).1
   ⟨cf + C, forall_range_iff.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
-#align Gromov_Hausdorff.HD_below_aux1 GromovHausdorff.HD_below_aux1
 
 private theorem HD_bound_aux1 (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun x : X => ⨅ y, f (inl x, inr y) + C) := by
@@ -308,7 +301,6 @@ theorem HD_below_aux2 {f : Cb X Y} (C : ℝ) {y : Y} :
     BddBelow (range fun x : X => f (inl x, inr y) + C) :=
   let ⟨cf, hcf⟩ := (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).1
   ⟨cf + C, forall_range_iff.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
-#align Gromov_Hausdorff.HD_below_aux2 GromovHausdorff.HD_below_aux2
 
 private theorem HD_bound_aux2 (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun y : Y => ⨅ x, f (inl x, inr y) + C) := by
@@ -341,7 +333,6 @@ theorem HD_candidatesBDist_le :
           gcongr <;>
             exact dist_le_diam_of_mem isBounded_of_compactSpace (mem_univ _) (mem_univ _)
     exact le_trans A B
-#align Gromov_Hausdorff.HD_candidates_b_dist_le GromovHausdorff.HD_candidatesBDist_le
 
 /- To check that `HD` is continuous, we check that it is Lipschitz. As `HD` is a max, we
 prove separately inequalities controlling the two terms (relying too heavily on copy-paste...) -/
@@ -448,7 +439,6 @@ def premetricOptimalGHDist : PseudoMetricSpace (X ⊕ Y) where
     congr
     simp only [max, left_eq_sup]
     exact candidates_nonneg (optimalGHDist_mem_candidatesB X Y)
-#align Gromov_Hausdorff.premetric_optimal_GH_dist GromovHausdorff.premetricOptimalGHDist
 
 attribute [local instance] premetricOptimalGHDist
 
@@ -456,7 +446,6 @@ attribute [local instance] premetricOptimalGHDist
 -- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 def OptimalGHCoupling : Type _ :=
   @UniformSpace.SeparationQuotient (X ⊕ Y) (premetricOptimalGHDist X Y).toUniformSpace
-#align Gromov_Hausdorff.optimal_GH_coupling GromovHausdorff.OptimalGHCoupling
 
 instance : MetricSpace (OptimalGHCoupling X Y) := by
   unfold OptimalGHCoupling
@@ -465,29 +454,24 @@ instance : MetricSpace (OptimalGHCoupling X Y) := by
 /-- Injection of `X` in the optimal coupling between `X` and `Y` -/
 def optimalGHInjl (x : X) : OptimalGHCoupling X Y :=
   Quotient.mk'' (inl x)
-#align Gromov_Hausdorff.optimal_GH_injl GromovHausdorff.optimalGHInjl
 
 /-- The injection of `X` in the optimal coupling between `X` and `Y` is an isometry. -/
 theorem isometry_optimalGHInjl : Isometry (optimalGHInjl X Y) :=
   Isometry.of_dist_eq fun _ _ => candidates_dist_inl (optimalGHDist_mem_candidatesB X Y) _ _
-#align Gromov_Hausdorff.isometry_optimal_GH_injl GromovHausdorff.isometry_optimalGHInjl
 
 /-- Injection of `Y` in the optimal coupling between `X` and `Y` -/
 def optimalGHInjr (y : Y) : OptimalGHCoupling X Y :=
   Quotient.mk'' (inr y)
-#align Gromov_Hausdorff.optimal_GH_injr GromovHausdorff.optimalGHInjr
 
 /-- The injection of `Y` in the optimal coupling between `X` and `Y` is an isometry. -/
 theorem isometry_optimalGHInjr : Isometry (optimalGHInjr X Y) :=
   Isometry.of_dist_eq fun _ _ => candidates_dist_inr (optimalGHDist_mem_candidatesB X Y) _ _
-#align Gromov_Hausdorff.isometry_optimal_GH_injr GromovHausdorff.isometry_optimalGHInjr
 
 /-- The optimal coupling between two compact spaces `X` and `Y` is still a compact space -/
 instance compactSpace_optimalGHCoupling : CompactSpace (OptimalGHCoupling X Y) := ⟨by
   rw [← range_quotient_mk']
   exact isCompact_range (continuous_sum_dom.2
     ⟨(isometry_optimalGHInjl X Y).continuous, (isometry_optimalGHInjr X Y).continuous⟩)⟩
-#align Gromov_Hausdorff.compact_space_optimal_GH_coupling GromovHausdorff.compactSpace_optimalGHCoupling
 
 /-- For any candidate `f`, `HD(f)` is larger than or equal to the Hausdorff distance in the
 optimal coupling. This follows from the fact that `HD` of the optimal candidate is exactly
@@ -520,7 +504,6 @@ theorem hausdorffDist_optimal_le_HD {f} (h : f ∈ candidatesB X Y) :
     rcases exists_lt_of_csInf_lt (range_nonempty _) I with ⟨r', ⟨z', rfl⟩, hr'⟩
     refine' ⟨optimalGHInjl X Y z', mem_range_self _, le_of_lt _⟩
     rwa [dist_comm]
-#align Gromov_Hausdorff.Hausdorff_dist_optimal_le_HD GromovHausdorff.hausdorffDist_optimal_le_HD
 
 end Consequences
 

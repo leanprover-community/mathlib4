@@ -45,29 +45,21 @@ instance commGroup: CommGroup PUnit where
 @[to_additive (attr := simp)]
 theorem one_eq : (1 : PUnit) = unit :=
   rfl
-#align punit.one_eq PUnit.one_eq
-#align punit.zero_eq PUnit.zero_eq
 
 -- note simp can prove this when the Boolean ring structure is introduced
 @[to_additive]
 theorem mul_eq : x * y = unit :=
   rfl
-#align punit.mul_eq PUnit.mul_eq
-#align punit.add_eq PUnit.add_eq
 
 -- `sub_eq` simplifies `PUnit.sub_eq`, but the latter is eligible for `dsimp`
 @[to_additive (attr := simp, nolint simpNF)]
 theorem div_eq : x / y = unit :=
   rfl
-#align punit.div_eq PUnit.div_eq
-#align punit.sub_eq PUnit.sub_eq
 
 -- `neg_eq` simplifies `PUnit.neg_eq`, but the latter is eligible for `dsimp`
 @[to_additive (attr := simp, nolint simpNF)]
 theorem inv_eq : x⁻¹ = unit :=
   rfl
-#align punit.inv_eq PUnit.inv_eq
-#align punit.neg_eq PUnit.neg_eq
 
 instance commRing: CommRing PUnit where
   __ := PUnit.commGroup
@@ -100,17 +92,14 @@ instance normalizedGCDMonoid: NormalizedGCDMonoid PUnit where
 --porting notes: simpNF lint: simp can prove this @[simp]
 theorem gcd_eq : gcd x y = unit :=
   rfl
-#align punit.gcd_eq PUnit.gcd_eq
 
 --porting notes: simpNF lint: simp can prove this @[simp]
 theorem lcm_eq : lcm x y = unit :=
   rfl
-#align punit.lcm_eq PUnit.lcm_eq
 
 @[simp]
 theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
   rfl
-#align punit.norm_unit_eq PUnit.norm_unit_eq
 
 instance canonicallyOrderedAddCommMonoid: CanonicallyOrderedAddCommMonoid PUnit := by
   refine'
@@ -136,8 +125,6 @@ instance smul : SMul R PUnit :=
 @[to_additive (attr := simp)]
 theorem smul_eq {R : Type*} (y : PUnit) (r : R) : r • y = unit :=
   rfl
-#align punit.smul_eq PUnit.smul_eq
-#align punit.vadd_eq PUnit.vadd_eq
 
 @[to_additive]
 instance : IsCentralScalar R PUnit :=

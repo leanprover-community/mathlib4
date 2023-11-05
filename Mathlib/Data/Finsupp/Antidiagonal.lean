@@ -33,7 +33,6 @@ The finitely supported function `antidiagonal s` is equal to the multiplicities 
 def antidiagonal' (f : α →₀ ℕ) : (α →₀ ℕ) × (α →₀ ℕ) →₀ ℕ :=
   Multiset.toFinsupp
     ((Finsupp.toMultiset f).antidiagonal.map (Prod.map Multiset.toFinsupp Multiset.toFinsupp))
-#align finsupp.antidiagonal' Finsupp.antidiagonal'
 
 /-- The antidiagonal of `s : α →₀ ℕ` is the finset of all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)`
 such that `t₁ + t₂ = s`. -/
@@ -44,13 +43,10 @@ instance instHasAntidiagonal : HasAntidiagonal (α →₀ ℕ) where
     simp [antidiagonal', ← and_assoc, Multiset.toFinsupp_eq_iff,
     ← Multiset.toFinsupp_eq_iff (f := f)]
 
-#align finsupp.antidiagonal_filter_fst_eq Finset.filter_fst_eq_antidiagonal
-#align finsupp.antidiagonal_filter_snd_eq Finset.filter_snd_eq_antidiagonal
 
 -- nolint as this is for dsimp
 @[simp, nolint simpNF]
 theorem antidiagonal_zero : antidiagonal (0 : α →₀ ℕ) = singleton (0, 0) := rfl
-#align finsupp.antidiagonal_zero Finsupp.antidiagonal_zero
 
 @[to_additive]
 theorem prod_antidiagonal_swap {M : Type*} [CommMonoid M] (n : α →₀ ℕ)
@@ -59,8 +55,6 @@ theorem prod_antidiagonal_swap {M : Type*} [CommMonoid M] (n : α →₀ ℕ)
   Finset.prod_bij (fun p _hp ↦ p.swap) (fun _p ↦ swap_mem_antidiagonal.2) (fun _p _hp ↦ rfl)
     (fun _p₁ _p₂ _ _ h ↦ Prod.swap_injective h) fun p hp ↦
     ⟨p.swap, swap_mem_antidiagonal.2 hp, p.swap_swap.symm⟩
-#align finsupp.prod_antidiagonal_swap Finsupp.prod_antidiagonal_swap
-#align finsupp.sum_antidiagonal_swap Finsupp.sum_antidiagonal_swap
 
 @[simp]
 theorem antidiagonal_single (a : α) (n : ℕ) :

@@ -33,7 +33,6 @@ An object `J` is injective iff every morphism into `J` can be obtained by extend
 -/
 class Injective (J : C) : Prop where
   factors : ∀ {X Y : C} (g : X ⟶ J) (f : X ⟶ Y) [Mono f], ∃ h : Y ⟶ J, f ≫ h = g
-#align category_theory.injective CategoryTheory.Injective
 
 attribute [inherit_doc Injective] Injective.factors
 
@@ -47,7 +46,6 @@ structure InjectivePresentation (X : C) where
   injective : Injective J := by infer_instance
   f : X ⟶ J
   mono : Mono f := by infer_instance
-#align category_theory.injective_presentation CategoryTheory.InjectivePresentation
 
 open InjectivePresentation in
 attribute [inherit_doc InjectivePresentation] J injective f mono
@@ -60,7 +58,6 @@ variable (C)
 i.e. if for every object `X` there is an injective object `J` and a monomorphism `X ↪ J`. -/
 class EnoughInjectives : Prop where
   presentation : ∀ X : C, Nonempty (InjectivePresentation X)
-#align category_theory.enough_injectives CategoryTheory.EnoughInjectives
 
 attribute [inherit_doc EnoughInjectives] EnoughInjectives.presentation
 
@@ -73,13 +70,11 @@ Let `J` be injective and `g` a morphism into `J`, then `g` can be factored throu
 -/
 def factorThru {J X Y : C} [Injective J] (g : X ⟶ J) (f : X ⟶ Y) [Mono f] : Y ⟶ J :=
   (Injective.factors g f).choose
-#align category_theory.injective.factor_thru CategoryTheory.Injective.factorThru
 
 @[simp]
 theorem comp_factorThru {J X Y : C} [Injective J] (g : X ⟶ J) (f : X ⟶ Y) [Mono f] :
     f ≫ factorThru g f = g :=
   (Injective.factors g f).choose_spec
-#align category_theory.injective.comp_factor_thru CategoryTheory.Injective.comp_factorThru
 
 section
 
@@ -87,7 +82,6 @@ open ZeroObject
 
 instance zero_injective [HasZeroObject C] [HasZeroMorphisms C] : Injective (0 : C) where
   factors g f := ⟨0, by ext⟩
-#align category_theory.injective.zero_injective CategoryTheory.Injective.zero_injective
 
 end
 
@@ -97,11 +91,9 @@ theorem of_iso {P Q : C} (i : P ≅ Q) (hP : Injective P) : Injective Q :=
       obtain ⟨h, h_eq⟩ := @Injective.factors C _ P _ _ _ (g ≫ i.inv) f mono
       refine' ⟨h ≫ i.hom, _⟩
       rw [← Category.assoc, h_eq, Category.assoc, Iso.inv_hom_id, Category.comp_id] }
-#align category_theory.injective.of_iso CategoryTheory.Injective.of_iso
 
 theorem iso_iff {P Q : C} (i : P ≅ Q) : Injective P ↔ Injective Q :=
   ⟨of_iso i, of_iso i.symm⟩
-#align category_theory.injective.iso_iff CategoryTheory.Injective.iso_iff
 
 /-- The axiom of choice says that every nonempty type is an injective object in `Type`. -/
 instance (X : Type u₁) [Nonempty X] : Injective X where
@@ -127,7 +119,6 @@ instance Type.enoughInjectives : EnoughInjectives (Type u₁) where
         mono := by
           rw [mono_iff_injective]
           exact Option.some_injective X }
-#align category_theory.injective.Type.enough_injectives CategoryTheory.Injective.Type.enoughInjectives
 
 instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injective (P ⨯ Q) where
   factors g f mono := by
@@ -180,17 +171,14 @@ instance {P : C} [Projective P] : Injective (op P) where
 
 theorem injective_iff_projective_op {J : C} : Injective J ↔ Projective (op J) :=
   ⟨fun _ => inferInstance, fun _ => show Injective (unop (op J)) from inferInstance⟩
-#align category_theory.injective.injective_iff_projective_op CategoryTheory.Injective.injective_iff_projective_op
 
 theorem projective_iff_injective_op {P : C} : Projective P ↔ Injective (op P) :=
   ⟨fun _ => inferInstance, fun _ => show Projective (unop (op P)) from inferInstance⟩
-#align category_theory.injective.projective_iff_injective_op CategoryTheory.Injective.projective_iff_injective_op
 
 theorem injective_iff_preservesEpimorphisms_yoneda_obj (J : C) :
     Injective J ↔ (yoneda.obj J).PreservesEpimorphisms := by
   rw [injective_iff_projective_op, Projective.projective_iff_preservesEpimorphisms_coyoneda_obj]
   exact Functor.preservesEpimorphisms.iso_iff (Coyoneda.objOpOp _)
-#align category_theory.injective.injective_iff_preserves_epimorphisms_yoneda_obj CategoryTheory.Injective.injective_iff_preservesEpimorphisms_yoneda_obj
 
 section Adjunction
 
@@ -204,7 +192,6 @@ theorem injective_of_adjoint (adj : L ⊣ R) (J : D) [Injective J] : Injective <
   ⟨fun {A} {_} g f im =>
     ⟨adj.homEquiv _ _ (factorThru ((adj.homEquiv A J).symm g) (L.map f)),
       (adj.homEquiv _ _).symm.injective (by simp)⟩⟩
-#align category_theory.injective.injective_of_adjoint CategoryTheory.Injective.injective_of_adjoint
 
 end Adjunction
 
@@ -217,22 +204,18 @@ a monomorphism `Injective.ι : X ⟶ Injective.under X`.
 -/
 def under (X : C) : C :=
   (EnoughInjectives.presentation X).some.J
-#align category_theory.injective.under CategoryTheory.Injective.under
 
 instance injective_under (X : C) : Injective (under X) :=
   (EnoughInjectives.presentation X).some.injective
-#align category_theory.injective.injective_under CategoryTheory.Injective.injective_under
 
 /-- The monomorphism `Injective.ι : X ⟶ Injective.under X`
 from the arbitrarily chosen injective object under `X`.
 -/
 def ι (X : C) : X ⟶ under X :=
   (EnoughInjectives.presentation X).some.f
-#align category_theory.injective.ι CategoryTheory.Injective.ι
 
 instance ι_mono (X : C) : Mono (ι X) :=
   (EnoughInjectives.presentation X).some.mono
-#align category_theory.injective.ι_mono CategoryTheory.Injective.ι_mono
 
 section
 
@@ -243,7 +226,6 @@ an arbitrarily chosen injective object under `cokernel f`.
 -/
 def syzygies : C :=
   under (cokernel f) -- Porting note: no deriving Injective
-#align category_theory.injective.syzygies CategoryTheory.Injective.syzygies
 
 instance : Injective <| syzygies f := injective_under (cokernel f)
 
@@ -255,7 +237,6 @@ instance : Injective <| syzygies f := injective_under (cokernel f)
 -/
 abbrev d : Y ⟶ syzygies f :=
   cokernel.π f ≫ ι (cokernel f)
-#align category_theory.injective.d CategoryTheory.Injective.d
 
 end
 
@@ -269,11 +250,9 @@ instance [EnoughProjectives C] : EnoughInjectives Cᵒᵖ :=
 
 theorem enoughProjectives_of_enoughInjectives_op [EnoughInjectives Cᵒᵖ] : EnoughProjectives C :=
   ⟨fun X => ⟨{ p := _, f := (Injective.ι (op X)).unop} ⟩⟩
-#align category_theory.injective.enough_projectives_of_enough_injectives_op CategoryTheory.Injective.enoughProjectives_of_enoughInjectives_op
 
 theorem enoughInjectives_of_enoughProjectives_op [EnoughProjectives Cᵒᵖ] : EnoughInjectives C :=
   ⟨fun X => ⟨⟨_, inferInstance, (Projective.π (op X)).unop, inferInstance⟩⟩⟩
-#align category_theory.injective.enough_injectives_of_enough_projectives_op CategoryTheory.Injective.enoughInjectives_of_enoughProjectives_op
 
 open Injective
 
@@ -295,13 +274,11 @@ Q --- f --> R --- g --> S
 def Exact.desc {J Q R S : C} [Injective J] (h : R ⟶ J) (f : Q ⟶ R) (g : R ⟶ S)
     (hgf : Exact g.op f.op) (w : f ≫ h = 0) : S ⟶ J :=
   (Exact.lift h.op g.op f.op hgf (congr_arg Quiver.Hom.op w)).unop
-#align category_theory.injective.exact.desc CategoryTheory.Injective.Exact.desc
 
 @[simp]
 theorem Exact.comp_desc {J Q R S : C} [Injective J] (h : R ⟶ J) (f : Q ⟶ R) (g : R ⟶ S)
     (hgf : Exact g.op f.op) (w : f ≫ h = 0) : g ≫ Exact.desc h f g hgf w = h := by
   convert congr_arg Quiver.Hom.unop (Exact.lift_comp h.op g.op f.op hgf (congrArg Quiver.Hom.op w))
-#align category_theory.injective.exact.comp_desc CategoryTheory.Injective.Exact.comp_desc
 
 end
 
@@ -319,7 +296,6 @@ theorem map_injective (adj : F ⊣ G) [F.PreservesMonomorphisms] (I : D) (hI : I
     use adj.unit.app Y ≫ G.map w
     rw [← unit_naturality_assoc, ← G.map_comp, h]
     simp⟩
-#align category_theory.adjunction.map_injective CategoryTheory.Adjunction.map_injective
 
 theorem injective_of_map_injective (adj : F ⊣ G) [Full G] [Faithful G] (I : D)
     (hI : Injective (G.obj I)) : Injective I :=
@@ -330,7 +306,6 @@ theorem injective_of_map_injective (adj : F ⊣ G) [Full G] [Faithful G] (I : D)
     use inv (adj.counit.app _) ≫ F.map w ≫ adj.counit.app _
     refine' Faithful.map_injective (F := G) _
     simpa⟩
-#align category_theory.adjunction.injective_of_map_injective CategoryTheory.Adjunction.injective_of_map_injective
 
 /-- Given an adjunction `F ⊣ G` such that `F` preserves monos, `G` maps an injective presentation
 of `X` to an injective presentation of `G(X)`. -/
@@ -341,7 +316,6 @@ def mapInjectivePresentation (adj : F ⊣ G) [F.PreservesMonomorphisms] (X : D)
   f := G.map I.f
   mono := by
     haveI : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjointPreservesLimits; infer_instance
-#align category_theory.adjunction.map_injective_presentation CategoryTheory.Adjunction.mapInjectivePresentation
 
 end Adjunction
 
@@ -360,7 +334,6 @@ def injectivePresentationOfMapInjectivePresentation (X : C)
   injective := Adjunction.map_injective F.toAdjunction I.J I.injective
   f := F.unit.app _ ≫ F.inverse.map I.f
   mono := mono_comp _ _
-#align category_theory.equivalence.injective_presentation_of_map_injective_presentation CategoryTheory.Equivalence.injectivePresentationOfMapInjectivePresentation
 
 theorem enoughInjectives_iff (F : C ≌ D) : EnoughInjectives C ↔ EnoughInjectives D := by
   constructor
@@ -371,7 +344,6 @@ theorem enoughInjectives_iff (F : C ≌ D) : EnoughInjectives C ↔ EnoughInject
   · exact
       F.injectivePresentationOfMapInjectivePresentation X
         (Nonempty.some (H.presentation (F.functor.obj X)))
-#align category_theory.equivalence.enough_injectives_iff CategoryTheory.Equivalence.enoughInjectives_iff
 
 end Equivalence
 

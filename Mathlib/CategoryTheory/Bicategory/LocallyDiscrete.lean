@@ -35,7 +35,6 @@ with the only morphisms being equalities.
 -/
 def LocallyDiscrete (C : Type u) :=
   C
-#align category_theory.locally_discrete CategoryTheory.LocallyDiscrete
 
 namespace LocallyDiscrete
 
@@ -53,7 +52,6 @@ instance (priority := 900) homSmallCategory (X Y : LocallyDiscrete C) : SmallCat
   let X' : C := X
   let Y' : C := Y
   CategoryTheory.discreteCategory (X' ⟶ Y')
-#align category_theory.locally_discrete.hom_small_category CategoryTheory.LocallyDiscrete.homSmallCategory
 
 -- Porting note: Manually adding this instance (inferInstance doesn't work)
 instance subsingleton2Hom {X Y : LocallyDiscrete C} (f g : X ⟶ Y) : Subsingleton (f ⟶ g) :=
@@ -66,7 +64,6 @@ instance subsingleton2Hom {X Y : LocallyDiscrete C} (f g : X ⟶ Y) : Subsinglet
 /-- Extract the equation from a 2-morphism in a locally discrete 2-category. -/
 theorem eq_of_hom {X Y : LocallyDiscrete C} {f g : X ⟶ Y} (η : f ⟶ g) : f = g :=
   Discrete.ext _ _ η.1.1
-#align category_theory.locally_discrete.eq_of_hom CategoryTheory.LocallyDiscrete.eq_of_hom
 
 end LocallyDiscrete
 
@@ -95,7 +92,6 @@ instance locallyDiscreteBicategory : Bicategory (LocallyDiscrete C)
       apply Discrete.ext
       change _ ≫ 𝟙 _ = _
       rw [Category.comp_id]
-#align category_theory.locally_discrete_bicategory CategoryTheory.locallyDiscreteBicategory
 
 /-- A locally discrete bicategory is strict. -/
 instance locallyDiscreteBicategory.strict : Strict (LocallyDiscrete C)
@@ -112,7 +108,6 @@ instance locallyDiscreteBicategory.strict : Strict (LocallyDiscrete C)
     intros
     apply Discrete.ext
     apply Category.assoc
-#align category_theory.locally_discrete_bicategory.strict CategoryTheory.locallyDiscreteBicategory.strict
 
 variable {I : Type u₁} [Category.{v₁} I] {B : Type u₂} [Bicategory.{w₂, v₂} B] [Strict B]
 
@@ -128,6 +123,5 @@ def Functor.toOplaxFunctor (F : I ⥤ B) : OplaxFunctor (LocallyDiscrete I) B
   map₂ η := eqToHom (congr_arg _ (LocallyDiscrete.eq_of_hom η))
   mapId i := eqToHom (F.map_id i)
   mapComp f g := eqToHom (F.map_comp f.as g.as)
-#align category_theory.functor.to_oplax_functor CategoryTheory.Functor.toOplaxFunctor
 
 end CategoryTheory

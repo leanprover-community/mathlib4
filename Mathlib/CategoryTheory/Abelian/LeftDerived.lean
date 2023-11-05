@@ -50,7 +50,6 @@ theorem preserves_exact_of_PreservesFiniteColimits_of_epi [PreservesFiniteColimi
     (ex : Exact f g) : Exact (F.map f) (F.map g) :=
   Abelian.exact_of_is_cokernel _ _ (by simp [← Functor.map_comp, ex.w]) <|
     Limits.isColimitCoforkMapOfIsColimit' _ ex.w (Abelian.isColimitOfExactOfEpi _ _ ex)
-#align category_theory.abelian.functor.preserves_exact_of_preserves_finite_colimits_of_epi CategoryTheory.Abelian.Functor.preserves_exact_of_PreservesFiniteColimits_of_epi
 
 theorem exact_of_map_projectiveResolution (P : ProjectiveResolution X)
     [PreservesFiniteColimits F] :
@@ -63,7 +62,6 @@ theorem exact_of_map_projectiveResolution (P : ProjectiveResolution X)
       simp only [Iso.symm_hom, HomologicalComplex.xPrevIso_comp_dTo]
       simp only [mapHomologicalComplex_obj_d, Iso.refl_hom, Category.comp_id]
       rfl) (by simp) (preserves_exact_of_PreservesFiniteColimits_of_epi _ P.exact₀)
-#align category_theory.abelian.functor.exact_of_map_projective_resolution CategoryTheory.Abelian.Functor.exact_of_map_projectiveResolution
 
 /-- Given `P : ProjectiveResolution X`, a morphism `(F.leftDerived 0).obj X ⟶ F.obj X`. -/
 def leftDerivedZeroToSelfApp [EnoughProjectives C] {X : C} (P : ProjectiveResolution X) :
@@ -75,7 +73,6 @@ def leftDerivedZeroToSelfApp [EnoughProjectives C] {X : C} (P : ProjectiveResolu
           HomologicalComplex.dTo_eq _ (by simp : (ComplexShape.down ℕ).Rel 1 0),
           mapHomologicalComplex_obj_d, Category.assoc, ← Functor.map_comp]
         simp)
-#align category_theory.abelian.functor.left_derived_zero_to_self_app CategoryTheory.Abelian.Functor.leftDerivedZeroToSelfApp
 
 /-- Given `P : ProjectiveResolution X`, a morphism `F.obj X ⟶ (F.leftDerived 0).obj X` given
 `PreservesFiniteColimits F`. -/
@@ -90,7 +87,6 @@ def leftDerivedZeroToSelfAppInv [EnoughProjectives C] [PreservesFiniteColimits F
   ext
   -- Porting note: this used to just be `simp`
   simp only [Category.assoc, kernel.lift_ι, Category.comp_id, Category.id_comp]
-#align category_theory.abelian.functor.left_derived_zero_to_self_app_inv CategoryTheory.Abelian.Functor.leftDerivedZeroToSelfAppInv
 
 theorem leftDerivedZeroToSelfApp_comp_inv [EnoughProjectives C] [PreservesFiniteColimits F] {X : C}
     (P : ProjectiveResolution X) :
@@ -117,7 +113,6 @@ theorem leftDerivedZeroToSelfApp_comp_inv [EnoughProjectives C] [PreservesFinite
   simp only [Category.id_comp]
   rw [Category.assoc, equalizer_as_kernel, kernel.lift_ι]
   simp only [Category.comp_id]
-#align category_theory.abelian.functor.left_derived_zero_to_self_app_comp_inv CategoryTheory.Abelian.Functor.leftDerivedZeroToSelfApp_comp_inv
 
 -- Porting note: linter thinks the `have` below is unused, but removing it makes a typeclass
 -- search fail
@@ -144,7 +139,6 @@ theorem leftDerivedZeroToSelfAppInv_comp [EnoughProjectives C] [PreservesFiniteC
   simp only [cokernel.π_desc_assoc, Category.assoc, cokernel.π_desc, homology'.desc']
   rw [← Category.assoc, ← Category.assoc (homology'IsoCokernelLift _ _ _).inv, Iso.inv_hom_id]
   simp only [Category.assoc, cokernel.π_desc, kernel.lift_ι_assoc, Category.id_comp]
-#align category_theory.abelian.functor.left_derived_zero_to_self_app_inv_comp CategoryTheory.Abelian.Functor.leftDerivedZeroToSelfAppInv_comp
 
 /-- Given `P : ProjectiveResolution X`, the isomorphism `(F.leftDerived 0).obj X ≅ F.obj X` if
 `PreservesFiniteColimits F`. -/
@@ -154,7 +148,6 @@ def leftDerivedZeroToSelfAppIso [EnoughProjectives C] [PreservesFiniteColimits F
   inv := leftDerivedZeroToSelfAppInv _ P
   hom_inv_id := leftDerivedZeroToSelfApp_comp_inv _ P
   inv_hom_id := leftDerivedZeroToSelfAppInv_comp _ P
-#align category_theory.abelian.functor.left_derived_zero_to_self_app_iso CategoryTheory.Abelian.Functor.leftDerivedZeroToSelfAppIso
 
 /-- Given `P : ProjectiveResolution X` and `Q : ProjectiveResolution Y` and a morphism `f : X ⟶ Y`,
 naturality of the square given by `leftDerived_zero_to_self_obj_hom`. -/
@@ -174,13 +167,11 @@ theorem leftDerived_zero_to_self_natural [EnoughProjectives C] {X : C} {Y : C} (
     homology'.π'_desc'_assoc, ← map_comp,
     show (ProjectiveResolution.lift f P Q).f 0 ≫ _ = _ ≫ f from
       HomologicalComplex.congr_hom (ProjectiveResolution.lift_commutes f P Q) 0]
-#align category_theory.abelian.functor.left_derived_zero_to_self_natural CategoryTheory.Abelian.Functor.leftDerived_zero_to_self_natural
 
 /-- Given `PreservesFiniteColimits F`, the natural isomorphism `(F.leftDerived 0) ≅ F`. -/
 def leftDerivedZeroIsoSelf [EnoughProjectives C] [PreservesFiniteColimits F] :
     F.leftDerived 0 ≅ F :=
   NatIso.ofComponents (fun X => leftDerivedZeroToSelfAppIso _ (ProjectiveResolution.of X))
     fun {_ _} _ => leftDerived_zero_to_self_natural _ _ _ _
-#align category_theory.abelian.functor.left_derived_zero_iso_self CategoryTheory.Abelian.Functor.leftDerivedZeroIsoSelf
 
 end CategoryTheory.Abelian.Functor

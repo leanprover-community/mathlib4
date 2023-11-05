@@ -41,7 +41,6 @@ theorem Complex.subfield_eq_of_closed {K : Subfield ℂ} (hc : IsClosed (K : Set
   rw [DenseRange.closure_range Rat.denseEmbedding_coe_real.dense]
   simp only [image_univ]
   rfl
-#align complex.subfield_eq_of_closed Complex.subfield_eq_of_closed
 
 /-- Let `K` a subfield of `ℂ` and let `ψ : K →+* ℂ` a ring homomorphism. Assume that `ψ` is uniform
 continuous, then `ψ` is either the inclusion map or the composition of the inclusion map with the
@@ -113,6 +112,5 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
         convert hy
         simp only [id.def, Set.image_id']
         rfl ⟩
-#align complex.uniform_continuous_ring_hom_eq_id_or_conj Complex.uniformContinuous_ringHom_eq_id_or_conj
 
 end ComplexSubfield

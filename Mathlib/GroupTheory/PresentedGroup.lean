@@ -34,7 +34,6 @@ variable {α : Type*}
 generators `x : α` and relations `rels` as a quotient of `FreeGroup α`. -/
 def PresentedGroup (rels : Set (FreeGroup α)) :=
   FreeGroup α ⧸ Subgroup.normalClosure rels
-#align presented_group PresentedGroup
 
 namespace PresentedGroup
 
@@ -45,7 +44,6 @@ instance (rels : Set (FreeGroup α)) : Group (PresentedGroup rels) :=
 mapped to the equivalence class of the image of `x` in `FreeGroup α`. -/
 def of {rels : Set (FreeGroup α)} (x : α) : PresentedGroup rels :=
   QuotientGroup.mk (FreeGroup.of x)
-#align presented_group.of PresentedGroup.of
 
 section ToGroup
 
@@ -64,29 +62,24 @@ variable (h : ∀ r ∈ rels, FreeGroup.lift f r = 1)
 
 theorem closure_rels_subset_ker : Subgroup.normalClosure rels ≤ MonoidHom.ker F :=
   Subgroup.normalClosure_le_normal fun x w ↦ (MonoidHom.mem_ker _).2 (h x w)
-#align presented_group.closure_rels_subset_ker PresentedGroup.closure_rels_subset_ker
 
 theorem to_group_eq_one_of_mem_closure : ∀ x ∈ Subgroup.normalClosure rels, F x = 1 :=
   fun _ w ↦ (MonoidHom.mem_ker _).1 <| closure_rels_subset_ker h w
-#align presented_group.to_group_eq_one_of_mem_closure PresentedGroup.to_group_eq_one_of_mem_closure
 
 /-- The extension of a map `f : α → G` that satisfies the given relations to a group homomorphism
 from `PresentedGroup rels → G`. -/
 def toGroup : PresentedGroup rels →* G :=
   QuotientGroup.lift (Subgroup.normalClosure rels) F (to_group_eq_one_of_mem_closure h)
-#align presented_group.to_group PresentedGroup.toGroup
 
 @[simp]
 theorem toGroup.of {x : α} : toGroup h (of x) = f x :=
   FreeGroup.lift.of
-#align presented_group.to_group.of PresentedGroup.toGroup.of
 
 theorem toGroup.unique (g : PresentedGroup rels →* G)
     (hg : ∀ x : α, g (PresentedGroup.of x) = f x) : ∀ {x}, g x = toGroup h x := by
   intro x
   refine' QuotientGroup.induction_on x _
   exact fun _ ↦ FreeGroup.lift.unique (g.comp (QuotientGroup.mk' _)) hg
-#align presented_group.to_group.unique PresentedGroup.toGroup.unique
 
 end ToGroup
 

@@ -53,19 +53,16 @@ def binaryProductLimitCone (G H : AddCommGroupCat.{u}) : Limits.LimitCone (pair 
       uniq := fun s m w => by
         simp_rw [← w ⟨WalkingPair.left⟩, ← w ⟨WalkingPair.right⟩]
         rfl }
-#align AddCommGroup.binary_product_limit_cone AddCommGroupCat.binaryProductLimitCone
 
 @[simp]
 theorem binaryProductLimitCone_cone_π_app_left (G H : AddCommGroupCat.{u}) :
     (binaryProductLimitCone G H).cone.π.app ⟨WalkingPair.left⟩ = AddMonoidHom.fst G H :=
   rfl
-#align AddCommGroup.binary_product_limit_cone_cone_π_app_left AddCommGroupCat.binaryProductLimitCone_cone_π_app_left
 
 @[simp]
 theorem binaryProductLimitCone_cone_π_app_right (G H : AddCommGroupCat.{u}) :
     (binaryProductLimitCone G H).cone.π.app ⟨WalkingPair.right⟩ = AddMonoidHom.snd G H :=
   rfl
-#align AddCommGroup.binary_product_limit_cone_cone_π_app_right AddCommGroupCat.binaryProductLimitCone_cone_π_app_right
 
 /-- We verify that the biproduct in `AddCommGroupCat` is isomorphic to
 the cartesian product of the underlying types:
@@ -74,7 +71,6 @@ the cartesian product of the underlying types:
 noncomputable def biprodIsoProd (G H : AddCommGroupCat.{u}) :
     (G ⊞ H : AddCommGroupCat) ≅ AddCommGroupCat.of (G × H) :=
   IsLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit G H) (binaryProductLimitCone G H).isLimit
-#align AddCommGroup.biprod_iso_prod AddCommGroupCat.biprodIsoProd
 
 -- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] AddCommGroupCat.biprodIsoProd_hom_apply
@@ -83,13 +79,11 @@ attribute [nolint simpNF] AddCommGroupCat.biprodIsoProd_hom_apply
 theorem biprodIsoProd_inv_comp_fst (G H : AddCommGroupCat.{u}) :
     (biprodIsoProd G H).inv ≫ biprod.fst = AddMonoidHom.fst G H :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ (Discrete.mk WalkingPair.left)
-#align AddCommGroup.biprod_iso_prod_inv_comp_fst AddCommGroupCat.biprodIsoProd_inv_comp_fst
 
 @[simp, elementwise]
 theorem biprodIsoProd_inv_comp_snd (G H : AddCommGroupCat.{u}) :
     (biprodIsoProd G H).inv ≫ biprod.snd = AddMonoidHom.snd G H :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ (Discrete.mk WalkingPair.right)
-#align AddCommGroup.biprod_iso_prod_inv_comp_snd AddCommGroupCat.biprodIsoProd_inv_comp_snd
 
 namespace HasLimit
 
@@ -107,7 +101,6 @@ def lift (s : Fan f) : s.pt ⟶ AddCommGroupCat.of (∀ j, f j) where
   map_add' x y := by
     simp only [Functor.const_obj_obj, map_add]
     rfl
-#align AddCommGroup.has_limit.lift AddCommGroupCat.HasLimit.lift
 
 /-- Construct limit data for a product in `AddCommGroupCat`, using
 `AddCommGroupCat.of (∀ j, F.obj j)`.
@@ -124,7 +117,6 @@ def productLimitCone : Limits.LimitCone (Discrete.functor f) where
         ext x
         funext j
         exact congr_arg (fun g : s.pt ⟶ f j => (g : s.pt → f j) x) (w ⟨j⟩) }
-#align AddCommGroup.has_limit.product_limit_cone AddCommGroupCat.HasLimit.productLimitCone
 
 end HasLimit
 
@@ -139,7 +131,6 @@ on the dependent function type.
 noncomputable def biproductIsoPi (f : J → AddCommGroupCat.{u}) :
     (⨁ f : AddCommGroupCat) ≅ AddCommGroupCat.of (∀ j, f j) :=
   IsLimit.conePointUniqueUpToIso (biproduct.isLimit f) (productLimitCone f).isLimit
-#align AddCommGroup.biproduct_iso_pi AddCommGroupCat.biproductIsoPi
 
 -- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] AddCommGroupCat.biproductIsoPi_hom_apply
@@ -148,6 +139,5 @@ attribute [nolint simpNF] AddCommGroupCat.biproductIsoPi_hom_apply
 theorem biproductIsoPi_inv_comp_π (f : J → AddCommGroupCat.{u}) (j : J) :
     (biproductIsoPi f).inv ≫ biproduct.π f j = Pi.evalAddMonoidHom (fun j => f j) j :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ (Discrete.mk j)
-#align AddCommGroup.biproduct_iso_pi_inv_comp_π AddCommGroupCat.biproductIsoPi_inv_comp_π
 
 end AddCommGroupCat

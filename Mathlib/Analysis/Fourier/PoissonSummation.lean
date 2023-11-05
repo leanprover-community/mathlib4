@@ -103,7 +103,6 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       congr 2
       push_cast
       ring
-#align real.fourier_coeff_tsum_comp_add Real.fourierCoeff_tsum_comp_add
 
 /-- **Poisson's summation formula**, most general form. -/
 theorem Real.tsum_eq_tsum_fourierIntegral {f : C(ℝ, ℂ)}
@@ -122,7 +121,6 @@ theorem Real.tsum_eq_tsum_fourierIntegral {f : C(ℝ, ℂ)}
   · congr 1 with n : 1
     rw [← Real.fourierCoeff_tsum_comp_add h_norm n, fourier_eval_zero, smul_eq_mul, mul_one]
     rfl
-#align real.tsum_eq_tsum_fourier_integral Real.tsum_eq_tsum_fourierIntegral
 
 section RpowDecay
 
@@ -173,8 +171,6 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   convert claim x (by linarith only [hx.1]) y.1 y.2.1
   · apply abs_of_nonneg; linarith [y.2.1]
   · exact abs_of_pos hx'.1
-set_option linter.uppercaseLean3 false in
-#align is_O_norm_Icc_restrict_at_top isBigO_norm_Icc_restrict_atTop
 
 theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
     (hf : IsBigO atBot f fun x : ℝ => |x| ^ (-b)) (R S : ℝ) :
@@ -195,8 +191,6 @@ theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   rw [ContinuousMap.restrict_apply_mk, ContinuousMap.comp_apply, ContinuousMap.coe_mk,
     ContinuousMap.coe_mk, neg_neg]
   exact ⟨by linarith [hx.2], by linarith [hx.1]⟩
-set_option linter.uppercaseLean3 false in
-#align is_O_norm_Icc_restrict_at_bot isBigO_norm_Icc_restrict_atBot
 
 theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
     (hf : IsBigO (cocompact ℝ) f fun x : ℝ => |x| ^ (-b)) (K : Compacts ℝ) :
@@ -219,8 +213,6 @@ theorem isBigO_norm_restrict_cocompact (f : C(ℝ, E)) {b : ℝ} (hb : 0 < b)
     simp_rw [norm_norm]; exact this
   · refine' (isBigO_of_le atTop _).trans (isBigO_norm_Icc_restrict_atTop hb hf.2 (-r) r)
     simp_rw [norm_norm]; exact this
-set_option linter.uppercaseLean3 false in
-#align is_O_norm_restrict_cocompact isBigO_norm_restrict_cocompact
 
 /-- **Poisson's summation formula**, assuming that `f` decays as
 `|x| ^ (-b)` for some `1 < b` and its Fourier transform is summable. -/
@@ -234,7 +226,6 @@ theorem Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable {f : ℝ →
               K).comp_tendsto
           Int.tendsto_coe_cofinite))
     hFf
-#align real.tsum_eq_tsum_fourier_integral_of_rpow_decay_of_summable Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable
 
 /-- **Poisson's summation formula**, assuming that both `f` and its Fourier transform decay as
 `|x| ^ (-b)` for some `1 < b`. (This is the one-dimensional case of Corollary VII.2.6 of Stein and
@@ -245,7 +236,6 @@ theorem Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay {f : ℝ → ℂ} (hc : 
     ∑' n : ℤ, f n = ∑' n : ℤ, 𝓕 f n :=
   Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay_of_summable hc hb hf
     (summable_of_isBigO (Real.summable_abs_int_rpow hb) (hFf.comp_tendsto Int.tendsto_coe_cofinite))
-#align real.tsum_eq_tsum_fourier_integral_of_rpow_decay Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay
 
 end RpowDecay
 
@@ -261,6 +251,5 @@ theorem SchwartzMap.tsum_eq_tsum_fourierIntegral (f g : SchwartzMap ℝ ℂ) (hf
     (f.isBigO_cocompact_rpow (-2))]
   rw [hfg]
   exact g.isBigO_cocompact_rpow (-2)
-#align schwartz_map.tsum_eq_tsum_fourier_integral SchwartzMap.tsum_eq_tsum_fourierIntegral
 
 end Schwartz

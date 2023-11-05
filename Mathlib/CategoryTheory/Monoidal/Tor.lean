@@ -43,8 +43,6 @@ variable (C)
 def Tor (n : ℕ) : C ⥤ C ⥤ C where
   obj X := Functor.leftDerived ((tensoringLeft C).obj X) n
   map f := NatTrans.leftDerived ((tensoringLeft C).map f) n
-set_option linter.uppercaseLean3 false in
-#align category_theory.Tor CategoryTheory.Tor
 
 /-- An alternative definition of `Tor`, where we left-derive in the first factor instead. -/
 @[simps! obj_obj]
@@ -52,8 +50,6 @@ def Tor' (n : ℕ) : C ⥤ C ⥤ C :=
   Functor.flip
     { obj := fun X => Functor.leftDerived ((tensoringRight C).obj X) n
       map := fun f => NatTrans.leftDerived ((tensoringRight C).map f) n }
-set_option linter.uppercaseLean3 false in
-#align category_theory.Tor' CategoryTheory.Tor'
 
 -- porting note: the `checkType` linter complains about the automatically generated
 -- lemma `Tor'_map_app`, but not about this one
@@ -73,16 +69,12 @@ open ZeroObject
 /-- The higher `Tor` groups for `X` and `Y` are zero if `Y` is projective. -/
 def torSuccOfProjective (X Y : C) [Projective Y] (n : ℕ) : ((Tor C (n + 1)).obj X).obj Y ≅ 0 :=
   ((tensoringLeft C).obj X).leftDerivedObjProjectiveSucc n Y
-set_option linter.uppercaseLean3 false in
-#align category_theory.Tor_succ_of_projective CategoryTheory.torSuccOfProjective
 
 /-- The higher `Tor'` groups for `X` and `Y` are zero if `X` is projective. -/
 def tor'SuccOfProjective (X Y : C) [Projective X] (n : ℕ) : ((Tor' C (n + 1)).obj X).obj Y ≅ 0 := by
   -- This unfortunately needs a manual `dsimp`, to avoid a slow unification problem.
   dsimp only [Tor', Functor.flip]
   exact ((tensoringRight C).obj Y).leftDerivedObjProjectiveSucc n X
-set_option linter.uppercaseLean3 false in
-#align category_theory.Tor'_succ_of_projective CategoryTheory.tor'SuccOfProjective
 
 end CategoryTheory
 

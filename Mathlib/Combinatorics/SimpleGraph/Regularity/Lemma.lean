@@ -152,4 +152,3 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
     exact stepBound_mono hP₃
   · rw [Nat.cast_succ, mul_add, mul_one]
     exact add_le_add_right hP₄ _
-#align szemeredi_regularity szemeredi_regularity

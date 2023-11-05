@@ -77,7 +77,6 @@ It is stated for an arbitrary field `α`, though it usually suffices to use `ℚ
 -/
 def partialOddGF (m : ℕ) [Field α] :=
   ∏ i in range m, (1 - (X : PowerSeries α) ^ (2 * i + 1))⁻¹
-#align theorems_100.partial_odd_gf Theorems100.partialOddGF
 
 /-- The partial product for the generating function for distinct partitions.
 TODO: As `m` tends to infinity, this converges (in the `X`-adic topology).
@@ -89,7 +88,6 @@ or `ℝ`.
 -/
 def partialDistinctGF (m : ℕ) [CommSemiring α] :=
   ∏ i in range m, (1 + (X : PowerSeries α) ^ (i + 1))
-#align theorems_100.partial_distinct_gf Theorems100.partialDistinctGF
 
 /--
 Functions defined only on `s`, which sum to `n`. In other words, a partition of `n` indexed by `s`.
@@ -102,7 +100,6 @@ def cut {ι : Type*} (s : Finset ι) (n : ℕ) : Finset (ι → ℕ) :=
     ((s.pi fun _ => range (n + 1)).map
       ⟨fun f i => if h : i ∈ s then f i h else 0, fun f g h => by
         ext i hi; simpa [dif_pos hi] using congr_fun h i⟩)
-#align theorems_100.cut Theorems100.cut
 
 theorem mem_cut {ι : Type*} (s : Finset ι) (n : ℕ) (f : ι → ℕ) :
     f ∈ cut s n ↔ s.sum f = n ∧ ∀ i, i ∉ s → f i = 0 := by
@@ -120,7 +117,6 @@ theorem mem_cut {ι : Type*} (s : Finset ι) (n : ℕ) (f : ι → ℕ) :
     · ext x
       rw [dite_eq_ite, ite_eq_left_iff, eq_comm]
       exact hf x
-#align theorems_100.mem_cut Theorems100.mem_cut
 
 theorem cut_equiv_antidiag (n : ℕ) :
     Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (cut univ n) = antidiagonal n := by
@@ -128,11 +124,9 @@ theorem cut_equiv_antidiag (n : ℕ) :
   simp_rw [Equiv.finsetCongr_apply, mem_map, Equiv.toEmbedding, Function.Embedding.coeFn_mk, ←
     Equiv.eq_symm_apply]
   simp [mem_cut, add_comm]
-#align theorems_100.cut_equiv_antidiag Theorems100.cut_equiv_antidiag
 
 theorem cut_univ_fin_eq_antidiagonalTuple (n : ℕ) (k : ℕ) :
     cut univ n = Nat.antidiagonalTuple k n := by ext; simp [Nat.mem_antidiagonalTuple, mem_cut]
-#align theorems_100.cut_univ_fin_eq_antidiagonal_tuple Theorems100.cut_univ_fin_eq_antidiagonalTuple
 
 /-- There is only one `cut` of 0. -/
 @[simp]
@@ -145,7 +139,6 @@ theorem cut_zero {ι : Type*} (s : Finset ι) : cut s 0 = {0} := by
   rw [sum_eq_zero_iff]
   intro x hx
   apply dif_pos hx
-#align theorems_100.cut_zero Theorems100.cut_zero
 
 @[simp]
 theorem cut_empty_succ {ι : Type*} (n : ℕ) : cut (∅ : Finset ι) (n + 1) = ∅ := by
@@ -153,7 +146,6 @@ theorem cut_empty_succ {ι : Type*} (n : ℕ) : cut (∅ : Finset ι) (n + 1) = 
   intro x hx
   rw [mem_cut, sum_empty] at hx
   cases hx.1
-#align theorems_100.cut_empty_succ Theorems100.cut_empty_succ
 
 theorem cut_insert {ι : Type*} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s) :
     cut (insert a s) n =
@@ -190,7 +182,6 @@ theorem cut_insert {ι : Type*} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s)
     · simp [sum_add_distrib, if_neg h, hg₂ _ h, add_comm]
     · rintro i ⟨h₁, h₂⟩
       simp [if_neg h₁, hg₂ _ h₂]
-#align theorems_100.cut_insert Theorems100.cut_insert
 
 theorem coeff_prod_range [CommSemiring α] {ι : Type*} (s : Finset ι) (f : ι → PowerSeries α)
     (n : ℕ) : coeff α n (∏ j in s, f j) = ∑ l in cut s n, ∏ i in s, coeff α (l i) (f i) := by
@@ -224,30 +215,24 @@ theorem coeff_prod_range [CommSemiring α] {ι : Type*} (s : Finset ι) (f : ι 
       obtain rfl : q₁ = q₂ := by simpa [sum_add_distrib, hp, hq, if_neg hi] using this
       obtain rfl : p₂ = p₁ := by simpa using h
       exact (t rfl).elim
-#align theorems_100.coeff_prod_range Theorems100.coeff_prod_range
 
 /-- A convenience constructor for the power series whose coefficients indicate a subset. -/
 def indicatorSeries (α : Type*) [Semiring α] (s : Set ℕ) : PowerSeries α :=
   PowerSeries.mk fun n => if n ∈ s then 1 else 0
-#align theorems_100.indicator_series Theorems100.indicatorSeries
 
 theorem coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) :
     coeff α n (indicatorSeries _ s) = if n ∈ s then 1 else 0 :=
   coeff_mk _ _
-#align theorems_100.coeff_indicator Theorems100.coeff_indicator
 
 theorem coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) :
     coeff α n (indicatorSeries _ s) = 1 := by rw [coeff_indicator, if_pos h]
-#align theorems_100.coeff_indicator_pos Theorems100.coeff_indicator_pos
 
 theorem coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) :
     coeff α n (indicatorSeries _ s) = 0 := by rw [coeff_indicator, if_neg h]
-#align theorems_100.coeff_indicator_neg Theorems100.coeff_indicator_neg
 
 theorem constantCoeff_indicator (s : Set ℕ) [Semiring α] :
     constantCoeff α (indicatorSeries _ s) = if 0 ∈ s then 1 else 0 :=
   rfl
-#align theorems_100.constant_coeff_indicator Theorems100.constantCoeff_indicator
 
 theorem two_series (i : ℕ) [Semiring α] :
     1 + (X : PowerSeries α) ^ i.succ = indicatorSeries α {0, i.succ} := by
@@ -257,7 +242,6 @@ theorem two_series (i : ℕ) [Semiring α] :
   cases' n with d
   · simp [(Nat.succ_ne_zero i).symm]
   · simp [Nat.succ_ne_zero d]
-#align theorems_100.two_series Theorems100.two_series
 
 theorem num_series' [Field α] (i : ℕ) :
     (1 - (X : PowerSeries α) ^ (i + 1))⁻¹ = indicatorSeries α {k | i + 1 ∣ k} := by
@@ -302,11 +286,9 @@ theorem num_series' [Field α] (i : ℕ) :
         apply h
         simp [← h₂]
   · simp [zero_pow]
-#align theorems_100.num_series' Theorems100.num_series'
 
 def mkOdd : ℕ ↪ ℕ :=
   ⟨fun i => 2 * i + 1, fun x y h => by linarith⟩
-#align theorems_100.mk_odd Theorems100.mkOdd
 
 -- The main workhorse of the partition theorem proof.
 theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ) (hs : ∀ i ∈ s, 0 < i)
@@ -375,7 +357,6 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
         rcases hf₃ i h with ⟨w, _, hw₂⟩
         apply Dvd.intro_left _ hw₂
       · rw [zero_smul, hf₂ i h]
-#align theorems_100.partial_gf_prop Theorems100.partialGF_prop
 
 theorem partialOddGF_prop [Field α] (n m : ℕ) :
     (Finset.card
@@ -406,7 +387,6 @@ theorem partialOddGF_prop [Field α] (n m : ℕ) :
       apply mul_comm
     rintro ⟨a_w, -, rfl⟩
     apply Dvd.intro_left a_w rfl
-#align theorems_100.partial_odd_gf_prop Theorems100.partialOddGF_prop
 
 /-- If m is big enough, the partial product's coefficient counts the number of odd partitions -/
 theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
@@ -429,7 +409,6 @@ theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
   · rintro ⟨a, -, rfl⟩
     rw [even_iff_two_dvd]
     apply Nat.two_not_dvd_two_mul_add_one
-#align theorems_100.odd_gf_prop Theorems100.oddGF_prop
 
 theorem partialDistinctGF_prop [CommSemiring α] (n m : ℕ) :
     (Finset.card
@@ -455,7 +434,6 @@ theorem partialDistinctGF_prop [CommSemiring α] (n m : ℕ) :
     simp_rw [Finset.prod_map, two_series]
     congr with i
     simp [Set.image_pair]
-#align theorems_100.partial_distinct_gf_prop Theorems100.partialDistinctGF_prop
 
 /-- If m is big enough, the partial product's coefficient counts the number of distinct partitions
 -/
@@ -471,7 +449,6 @@ theorem distinctGF_prop [CommSemiring α] (n m : ℕ) (h : n < m + 1) :
   refine' ⟨i - 1, _, Nat.succ_pred_eq_of_pos (p.parts_pos hi)⟩
   rw [tsub_lt_iff_right (Nat.one_le_iff_ne_zero.mpr (p.parts_pos hi).ne')]
   exact lt_of_le_of_lt this h
-#align theorems_100.distinct_gf_prop Theorems100.distinctGF_prop
 
 /-- The key proof idea for the partition theorem, showing that the generating functions for both
 sequences are ultimately the same (since the factor converges to 0 as m tends to infinity).
@@ -514,7 +491,6 @@ theorem same_gf [Field α] (m : ℕ) :
     _ = π₁ * π₂ * (1 + X ^ (m + 1)) := by ring
     _ = π₃ * (1 + X ^ (m + 1)) := by rw [ih]
     _ = _ := by rw [prod_range_succ]
-#align theorems_100.same_gf Theorems100.same_gf
 
 theorem same_coeffs [Field α] (m n : ℕ) (h : n ≤ m) :
     coeff α n (partialOddGF m) = coeff α n (partialDistinctGF m) := by
@@ -522,7 +498,6 @@ theorem same_coeffs [Field α] (m n : ℕ) (h : n ≤ m) :
   rintro i -
   rw [order_X_pow]
   exact_mod_cast Nat.lt_succ_of_le (le_add_right h)
-#align theorems_100.same_coeffs Theorems100.same_coeffs
 
 theorem partition_theorem (n : ℕ) :
     (Nat.Partition.odds n).card = (Nat.Partition.distincts n).card := by
@@ -532,7 +507,6 @@ theorem partition_theorem (n : ℕ) :
   rw [distinctGF_prop n (n + 1) (by linarith)]
   rw [oddGF_prop n (n + 1) (by linarith)]
   apply same_coeffs (n + 1) n n.le_succ
-#align theorems_100.partition_theorem Theorems100.partition_theorem
 
 end
 

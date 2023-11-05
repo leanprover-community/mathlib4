@@ -10,5 +10,3 @@ import Mathlib.Mathport.Rename
 /-!
 # Align statements for declarations from Std
 -/
-
-#align ordering.swap_inj Ordering.swap_inj

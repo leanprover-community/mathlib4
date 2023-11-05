@@ -91,13 +91,11 @@ for smoothness properties that hold when `E` is an inner-product space. -/
 @[simps! (config := .lemmasOnly)]
 def Homeomorph.unitBall : E ≃ₜ ball (0 : E) 1 :=
   (Homeomorph.Set.univ _).symm.trans LocalHomeomorph.univUnitBall.toHomeomorphSourceTarget
-#align homeomorph_unit_ball Homeomorph.unitBall
 
 @[simp]
 theorem Homeomorph.coe_unitBall_apply_zero :
     (Homeomorph.unitBall (0 : E) : E) = 0 :=
   LocalHomeomorph.univUnitBall_apply_zero
-#align coe_homeomorph_unit_ball_apply_zero Homeomorph.coe_unitBall_apply_zero
 
 variable {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
 

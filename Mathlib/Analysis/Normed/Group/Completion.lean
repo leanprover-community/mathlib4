@@ -34,7 +34,6 @@ instance [UniformSpace E] [Norm E] : Norm (Completion E) where
 @[simp]
 theorem norm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖ = ‖x‖ :=
   Completion.extension_coe uniformContinuous_norm x
-#align uniform_space.completion.norm_coe UniformSpace.Completion.norm_coe
 
 instance [SeminormedAddCommGroup E] : NormedAddCommGroup (Completion E) where
   dist_eq x y := by

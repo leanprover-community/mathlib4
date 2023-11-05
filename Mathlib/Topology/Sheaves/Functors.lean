@@ -53,8 +53,6 @@ open Presheaf
 theorem pushforward_sheaf_of_sheaf {F : X.Presheaf C} (h : F.IsSheaf) : (f _* F).IsSheaf :=
 pullback_isSheaf_of_coverPreserving (compatiblePreserving_opens_map f)
   (coverPreserving_opens_map f) ⟨F, h⟩
-set_option linter.uppercaseLean3 false in
-#align Top.sheaf.pushforward_sheaf_of_sheaf TopCat.Sheaf.pushforward_sheaf_of_sheaf
 
 variable (C)
 
@@ -62,8 +60,6 @@ variable (C)
 -/
 def pushforward (f : X ⟶ Y) : X.Sheaf C ⥤ Y.Sheaf C :=
 Sites.pullback _ (compatiblePreserving_opens_map f) (coverPreserving_opens_map f)
-set_option linter.uppercaseLean3 false in
-#align Top.sheaf.pushforward TopCat.Sheaf.pushforward
 
 lemma pushforward_forget (f : X ⟶ Y) :
     pushforward C f ⋙ forget C Y = forget C X ⋙ Presheaf.pushforward C f := rfl

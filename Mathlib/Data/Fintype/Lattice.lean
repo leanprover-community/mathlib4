@@ -28,12 +28,10 @@ variable [Fintype α] {s : Finset α}
 /-- A special case of `Finset.sup_eq_iSup` that omits the useless `x ∈ univ` binder. -/
 theorem sup_univ_eq_iSup [CompleteLattice β] (f : α → β) : Finset.univ.sup f = iSup f :=
   (sup_eq_iSup _ f).trans <| congr_arg _ <| funext fun _ => iSup_pos (mem_univ _)
-#align finset.sup_univ_eq_supr Finset.sup_univ_eq_iSup
 
 /-- A special case of `Finset.inf_eq_iInf` that omits the useless `x ∈ univ` binder. -/
 theorem inf_univ_eq_iInf [CompleteLattice β] (f : α → β) : Finset.univ.inf f = iInf f :=
   @sup_univ_eq_iSup _ βᵒᵈ _ _ (f : α → βᵒᵈ)
-#align finset.inf_univ_eq_infi Finset.inf_univ_eq_iInf
 
 @[simp]
 theorem fold_inf_univ [SemilatticeInf α] [OrderBot α] (a : α) :
@@ -42,7 +40,6 @@ theorem fold_inf_univ [SemilatticeInf α] [OrderBot α] (a : α) :
     (Finset.univ.fold (· ⊓ ·) a fun x => x) = ⊥ :=
   eq_bot_iff.2 <|
     ((Finset.fold_op_rel_iff_and <| @le_inf_iff α _).1 le_rfl).2 ⊥ <| Finset.mem_univ _
-#align finset.fold_inf_univ Finset.fold_inf_univ
 
 @[simp]
 theorem fold_sup_univ [SemilatticeSup α] [OrderTop α] (a : α) :
@@ -50,7 +47,6 @@ theorem fold_sup_univ [SemilatticeSup α] [OrderTop α] (a : α) :
     haveI : IsCommutative α (· ⊔ ·) := inferInstance
     (Finset.univ.fold (· ⊔ ·) a fun x => x) = ⊤ :=
   @fold_inf_univ αᵒᵈ _ _ _ _
-#align finset.fold_sup_univ Finset.fold_sup_univ
 
 end Finset
 
@@ -60,10 +56,8 @@ theorem Finite.exists_max [Finite α] [Nonempty α] [LinearOrder β] (f : α →
     ∃ x₀ : α, ∀ x, f x ≤ f x₀ := by
   cases nonempty_fintype α
   simpa using exists_max_image univ f univ_nonempty
-#align finite.exists_max Finite.exists_max
 
 theorem Finite.exists_min [Finite α] [Nonempty α] [LinearOrder β] (f : α → β) :
     ∃ x₀ : α, ∀ x, f x₀ ≤ f x := by
   cases nonempty_fintype α
   simpa using exists_min_image univ f univ_nonempty
-#align finite.exists_min Finite.exists_min

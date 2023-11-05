@@ -78,7 +78,6 @@ theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis
     _ = det (scalar ι' X - C.mapMatrix A') := by
       rw [← det_mul, hPQ, det_one, one_mul]
     _ = f.charpoly := rfl
-#align linear_map.charpoly_to_matrix LinearMap.charpoly_toMatrix
 
 end Basic
 

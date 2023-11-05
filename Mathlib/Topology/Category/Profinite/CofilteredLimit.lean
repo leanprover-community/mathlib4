@@ -112,8 +112,6 @@ theorem exists_clopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClop
       refine' ⟨s.1, s.2, _⟩
       rw [(hV s).2]
       rwa [dif_pos hs, ← Set.preimage_comp, ← Profinite.coe_comp, ← Functor.map_comp, C.w] at hx
-set_option linter.uppercaseLean3 false in
-#align Profinite.exists_clopen_of_cofiltered Profinite.exists_clopen_of_cofiltered
 
 theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.pt (Fin 2)) :
     ∃ (j : J) (g : LocallyConstant (F.obj j) (Fin 2)), f = g.comap (C.π.app _) := by
@@ -127,8 +125,6 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
   conv_rhs => rw [Set.preimage_comp]
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [LocallyConstant.ofClopen_fiber_zero hV, ← h]
-set_option linter.uppercaseLean3 false in
-#align Profinite.exists_locally_constant_fin_two Profinite.exists_locallyConstant_fin_two
 
 theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit C)
     (f : LocallyConstant C.pt α) : ∃ (j : J) (g : LocallyConstant (F.obj j) (α → Fin 2)),
@@ -174,8 +170,6 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
     change _ = (C.π.app j0 ≫ F.map (fs a)) x
     rw [C.w]; rfl
   · exact (F.map _).continuous
-set_option linter.uppercaseLean3 false in
-#align Profinite.exists_locally_constant_finite_aux Profinite.exists_locallyConstant_finite_aux
 
 theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempty α]
     (hC : IsLimit C) (f : LocallyConstant C.pt α) :
@@ -207,8 +201,6 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
     split_ifs at hhh with hh1
     · exact hh1.symm
     · exact False.elim (bot_ne_top hhh)
-set_option linter.uppercaseLean3 false in
-#align Profinite.exists_locally_constant_finite_nonempty Profinite.exists_locallyConstant_finite_nonempty
 
 /-- Any locally constant function from a cofiltered limit of profinite sets factors through
 one of the components. -/
@@ -250,7 +242,5 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
     dsimp at hj ⊢
     rw [← hj]
     rfl
-set_option linter.uppercaseLean3 false in
-#align Profinite.exists_locally_constant Profinite.exists_locallyConstant
 
 end Profinite

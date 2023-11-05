@@ -35,18 +35,12 @@ def adjoinOne : SemigroupCat.{u} ⥤ MonCat.{u} where
   map := WithOne.map
   map_id _ := WithOne.map_id
   map_comp := WithOne.map_comp
-#align adjoin_one adjoinOne
-#align adjoin_zero adjoinZero
 
 @[to_additive]
 instance hasForgetToSemigroup : HasForget₂ MonCat SemigroupCat where
   forget₂ :=
     { obj := fun M => SemigroupCat.of M
       map := MonoidHom.toMulHom }
-set_option linter.uppercaseLean3 false in
-#align has_forget_to_Semigroup hasForgetToSemigroup
-set_option linter.uppercaseLean3 false in
-#align has_forget_to_AddSemigroup hasForgetToAddSemigroup
 
 /-- The `adjoinOne`-forgetful adjunction from `SemigroupCat` to `MonCat`.-/
 @[to_additive "The `adjoinZero`-forgetful adjunction from `AddSemigroupCat` to `AddMonCat`"]
@@ -62,8 +56,6 @@ def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} SemigroupCat.{u} :=
         · rfl
         · simp
           rfl }
-#align adjoin_one_adj adjoinOneAdj
-#align adjoin_zero_adj adjoinZeroAdj
 
 /-- The free functor `Type u ⥤ MonCat` sending a type `X` to the free monoid on `X`. -/
 def free : Type u ⥤ MonCat.{u} where
@@ -71,14 +63,12 @@ def free : Type u ⥤ MonCat.{u} where
   map := FreeMonoid.map
   map_id _ := FreeMonoid.hom_eq (fun _ => rfl)
   map_comp _ _ := FreeMonoid.hom_eq (fun _ => rfl)
-#align free free
 
 /-- The free-forgetful adjunction for monoids. -/
 def adj : free ⊣ forget MonCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X G => FreeMonoid.lift.symm
       homEquiv_naturality_left_symm := fun _ _ => FreeMonoid.hom_eq (fun _ => rfl) }
-#align adj adj
 
 instance : IsRightAdjoint (forget MonCat.{u}) :=
   ⟨_, adj⟩

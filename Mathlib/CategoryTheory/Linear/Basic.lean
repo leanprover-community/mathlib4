@@ -49,7 +49,6 @@ class Linear (R : Type w) [Semiring R] (C : Type u) [Category.{v} C] [Preadditiv
   /-- compatibility of the scalar multiplication with the pre-composition -/
   comp_smul : ∀ (X Y Z : C) (f : X ⟶ Y) (r : R) (g : Y ⟶ Z), f ≫ (r • g) = r • f ≫ g := by
     aesop_cat
-#align category_theory.linear CategoryTheory.Linear
 
 attribute [instance] Linear.homModule
 
@@ -68,13 +67,11 @@ instance preadditiveNatLinear : Linear ℕ C
     where
   smul_comp X Y Z r f g := by exact (Preadditive.rightComp X g).map_nsmul f r
   comp_smul X Y Z f r g := by exact (Preadditive.leftComp Z f).map_nsmul g r
-#align category_theory.linear.preadditive_nat_linear CategoryTheory.Linear.preadditiveNatLinear
 
 instance preadditiveIntLinear : Linear ℤ C
     where
   smul_comp X Y Z r f g := by exact (Preadditive.rightComp X g).map_zsmul f r
   comp_smul X Y Z f r g := by exact (Preadditive.leftComp Z f).map_zsmul g r
-#align category_theory.linear.preadditive_int_linear CategoryTheory.Linear.preadditiveIntLinear
 
 section End
 
@@ -104,7 +101,6 @@ instance inducedCategory : Linear.{w, v} R (InducedCategory C F)
   homModule X Y := @Linear.homModule R _ C _ _ _ (F X) (F Y)
   smul_comp _ _ _ _ _ _ := smul_comp _ _ _ _ _ _
   comp_smul _ _ _ _ _ _ := comp_smul _ _ _ _ _ _
-#align category_theory.linear.induced_category CategoryTheory.Linear.inducedCategory
 
 end InducedCategory
 
@@ -113,7 +109,6 @@ instance fullSubcategory (Z : C → Prop) : Linear.{w, v} R (FullSubcategory Z)
   homModule X Y := @Linear.homModule R _ C _ _ _ X.obj Y.obj
   smul_comp _ _ _ _ _ _ := smul_comp _ _ _ _ _ _
   comp_smul _ _ _ _ _ _ := comp_smul _ _ _ _ _ _
-#align category_theory.linear.full_subcategory CategoryTheory.Linear.fullSubcategory
 
 variable (R)
 
@@ -124,7 +119,6 @@ def leftComp {X Y : C} (Z : C) (f : X ⟶ Y) : (Y ⟶ Z) →ₗ[R] X ⟶ Z
   toFun g := f ≫ g
   map_add' := by simp
   map_smul' := by simp
-#align category_theory.linear.left_comp CategoryTheory.Linear.leftComp
 
 /-- Composition by a fixed right argument as an `R`-linear map. -/
 @[simps]
@@ -133,7 +127,6 @@ def rightComp (X : C) {Y Z : C} (g : Y ⟶ Z) : (X ⟶ Y) →ₗ[R] X ⟶ Z
   toFun f := f ≫ g
   map_add' := by simp
   map_smul' := by simp
-#align category_theory.linear.right_comp CategoryTheory.Linear.rightComp
 
 instance {X Y : C} (f : X ⟶ Y) [Epi f] (r : R) [Invertible r] : Epi (r • f) :=
   ⟨fun g g' H => by
@@ -162,19 +155,16 @@ def homCongr (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C] [
       simp only [Iso.symm_hom, LinearMap.coe_comp, Function.comp_apply, rightComp_apply,
         leftComp_apply, LinearMap.toFun_eq_coe, Iso.inv_hom_id_assoc, Category.assoc,
         Iso.inv_hom_id, Category.comp_id] }
-#align category_theory.linear.hom_congr CategoryTheory.Linear.homCongr
 
 theorem homCongr_apply (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C]
     [Linear k C] {X Y W Z : C} (f₁ : X ≅ Y) (f₂ : W ≅ Z) (f : X ⟶ W) :
     homCongr k f₁ f₂ f = (f₁.inv ≫ f) ≫ f₂.hom :=
   rfl
-#align category_theory.linear.hom_congr_apply CategoryTheory.Linear.homCongr_apply
 
 theorem homCongr_symm_apply (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C]
     [Linear k C] {X Y W Z : C} (f₁ : X ≅ Y) (f₂ : W ≅ Z) (f : Y ⟶ Z) :
     (homCongr k f₁ f₂).symm f = f₁.hom ≫ f ≫ f₂.inv :=
   rfl
-#align category_theory.linear.hom_congr_symm_apply CategoryTheory.Linear.homCongr_symm_apply
 
 end
 
@@ -195,7 +185,6 @@ def comp (X Y Z : C) : (X ⟶ Y) →ₗ[S] (Y ⟶ Z) →ₗ[S] X ⟶ Z
     intros
     ext
     simp
-#align category_theory.linear.comp CategoryTheory.Linear.comp
 
 end
 

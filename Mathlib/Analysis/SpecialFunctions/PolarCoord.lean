@@ -92,7 +92,6 @@ def polarCoord : LocalHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       (g := Complex.arg) (fun z hz => _) _ A
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdClm.symm.continuous.continuousOn
-#align polar_coord polarCoord
 
 theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
     HasFDerivAt polarCoord.symm
@@ -103,7 +102,6 @@ theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
     (hasFDerivAt_fst.mul ((hasDerivAt_cos p.2).comp_hasFDerivAt p hasFDerivAt_snd))
     (hasFDerivAt_fst.mul ((hasDerivAt_sin p.2).comp_hasFDerivAt p hasFDerivAt_snd)) using 2 <;>
   simp [smul_smul, add_comm, neg_mul, neg_smul, smul_neg]
-#align has_fderiv_at_polar_coord_symm hasFDerivAt_polarCoord_symm
 
 -- Porting note: this instance is needed but not automatically synthesised
 instance : Measure.IsAddHaarMeasure volume (G := ℝ × ℝ) :=
@@ -123,7 +121,6 @@ theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
     simp at this
   simp only [ae_eq_univ]
   exact le_antisymm ((measure_mono A).trans (le_of_eq B)) bot_le
-#align polar_coord_source_ae_eq_univ polarCoord_source_ae_eq_univ
 
 theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : ℝ × ℝ → E) :
@@ -151,4 +148,3 @@ theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Normed
       apply set_integral_congr polarCoord.open_target.measurableSet fun x hx => ?_
       rw [B_det, abs_of_pos]
       exact hx.1
-#align integral_comp_polar_coord_symm integral_comp_polarCoord_symm

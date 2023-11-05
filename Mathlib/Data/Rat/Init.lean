@@ -14,5 +14,3 @@ import Std.Data.Rat
 namespace Rat
 
 @[inherit_doc] notation "ℚ" => Rat
-
-#align rat.denom Rat.den

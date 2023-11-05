@@ -27,14 +27,12 @@ If `R` is a ring, then negation is automatically smooth, as it is multiplication
 class SmoothRing (I : ModelWithCorners 𝕜 E H) (R : Type*) [Semiring R] [TopologicalSpace R]
     [ChartedSpace H R] extends SmoothAdd I R : Prop where
   smooth_mul : Smooth (I.prod I) I fun p : R × R => p.1 * p.2
-#align smooth_ring SmoothRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) SmoothRing.toSmoothMul (I : ModelWithCorners 𝕜 E H) (R : Type*)
     [Semiring R] [TopologicalSpace R] [ChartedSpace H R] [h : SmoothRing I R] :
     SmoothMul I R :=
   { h with }
-#align smooth_ring.to_has_smooth_mul SmoothRing.toSmoothMul
 
 -- see Note [lower instance priority]
 instance (priority := 100) SmoothRing.toLieAddGroup (I : ModelWithCorners 𝕜 E H) (R : Type*)
@@ -42,7 +40,6 @@ instance (priority := 100) SmoothRing.toLieAddGroup (I : ModelWithCorners 𝕜 E
   compatible := StructureGroupoid.compatible (contDiffGroupoid ⊤ I)
   smooth_add := smooth_add I
   smooth_neg := by simpa only [neg_one_mul] using @smooth_mul_left 𝕜 _ H _ E _ _ I R _ _ _ _ (-1)
-#align smooth_ring.to_lie_add_group SmoothRing.toLieAddGroup
 
 end SmoothRing
 
@@ -56,7 +53,6 @@ instance (priority := 100) fieldSmoothRing {𝕜 : Type*} [NontriviallyNormedFie
       simp only [mfld_simps]
       rw [contDiffOn_univ]
       exact contDiff_mul }
-#align field_smooth_ring fieldSmoothRing
 
 variable {𝕜 R E H : Type*} [TopologicalSpace R] [TopologicalSpace H] [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [ChartedSpace H R] (I : ModelWithCorners 𝕜 E H)
@@ -65,4 +61,3 @@ variable {𝕜 R E H : Type*} [TopologicalSpace R] [TopologicalSpace H] [Nontriv
 see note [Design choices about smooth algebraic structures]. -/
 theorem topologicalSemiring_of_smooth [Semiring R] [SmoothRing I R] : TopologicalSemiring R :=
   { continuousMul_of_smooth I, continuousAdd_of_smooth I with }
-#align topological_semiring_of_smooth topologicalSemiring_of_smooth

@@ -47,7 +47,6 @@ theorem imageToKernel_op {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 
     imageToKernel_arrow, kernelSubobject_arrow', kernel.lift_ι, ← op_comp, cokernel.π_desc,
     ← imageSubobject_arrow, ← imageUnopOp_inv_comp_op_factorThruImage g.op]
   rfl
-#align image_to_kernel_op imageToKernel_op
 
 theorem imageToKernel_unop {X Y Z : Vᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
     imageToKernel g.unop f.unop (by rw [← unop_comp, w, unop_zero]) =
@@ -60,7 +59,6 @@ theorem imageToKernel_unop {X Y Z : Vᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f 
   simp only [Iso.trans_hom, Iso.symm_hom, Iso.trans_inv, kernelUnopUnop_inv, Category.assoc,
     imageToKernel_arrow, kernelSubobject_arrow', kernel.lift_ι, cokernel.π_desc, Iso.unop_inv,
     ← unop_comp, factorThruImage_comp_imageUnopOp_inv, Quiver.Hom.unop_op, imageSubobject_arrow]
-#align image_to_kernel_unop imageToKernel_unop
 
 /-- Given `f, g` with `f ≫ g = 0`, the homology of `g.op, f.op` is the opposite of the homology of
 `f, g`. -/
@@ -70,7 +68,6 @@ def homology'Op {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
     cokernelOpOp _ ≪≫ (homology'IsoKernelDesc _ _ _ ≪≫
     kernelIsoOfEq (by ext; simp only [image.fac, cokernel.π_desc, cokernel.π_desc_assoc]) ≪≫
     kernelCompMono _ (image.ι g)).op
-#align homology_op homology'Op
 
 /-- Given morphisms `f, g` in `Vᵒᵖ` with `f ≫ g = 0`, the homology of `g.unop, f.unop` is the
 opposite of the homology of `f, g`. -/
@@ -81,7 +78,6 @@ def homology'Unop {X Y Z : Vᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0
     cokernelUnopUnop _ ≪≫ (homology'IsoKernelDesc _ _ _ ≪≫
     kernelIsoOfEq (by ext; simp only [image.fac, cokernel.π_desc, cokernel.π_desc_assoc]) ≪≫
     kernelCompMono _ (image.ι g)).unop
-#align homology_unop homology'Unop
 
 end
 
@@ -100,7 +96,6 @@ protected def op (X : HomologicalComplex V c) : HomologicalComplex Vᵒᵖ c.sym
   d i j := (X.d j i).op
   shape i j hij := by simp only; rw [X.shape j i hij, op_zero]
   d_comp_d' _ _ _ _ _ := by rw [← op_comp, X.d_comp_d, op_zero]
-#align homological_complex.op HomologicalComplex.op
 
 /-- Sends a complex `X` with objects in `V` to the corresponding complex with objects in `Vᵒᵖ`. -/
 @[simps]
@@ -109,7 +104,6 @@ protected def opSymm (X : HomologicalComplex V c.symm) : HomologicalComplex Vᵒ
   d i j := (X.d j i).op
   shape i j hij := by simp only; rw [X.shape j i hij, op_zero]
   d_comp_d' _ _ _ _ _ := by rw [← op_comp, X.d_comp_d, op_zero]
-#align homological_complex.op_symm HomologicalComplex.opSymm
 
 /-- Sends a complex `X` with objects in `Vᵒᵖ` to the corresponding complex with objects in `V`. -/
 @[simps]
@@ -118,7 +112,6 @@ protected def unop (X : HomologicalComplex Vᵒᵖ c) : HomologicalComplex V c.s
   d i j := (X.d j i).unop
   shape i j hij := by simp only; rw [X.shape j i hij, unop_zero]
   d_comp_d' _ _ _ _ _ := by rw [← unop_comp, X.d_comp_d, unop_zero]
-#align homological_complex.unop HomologicalComplex.unop
 
 /-- Sends a complex `X` with objects in `Vᵒᵖ` to the corresponding complex with objects in `V`. -/
 @[simps]
@@ -127,7 +120,6 @@ protected def unopSymm (X : HomologicalComplex Vᵒᵖ c.symm) : HomologicalComp
   d i j := (X.d j i).unop
   shape i j hij := by simp only; rw [X.shape j i hij, unop_zero]
   d_comp_d' _ _ _ _ _ := by rw [← unop_comp, X.d_comp_d, unop_zero]
-#align homological_complex.unop_symm HomologicalComplex.unopSymm
 
 variable (V c)
 
@@ -138,7 +130,6 @@ def opFunctor : (HomologicalComplex V c)ᵒᵖ ⥤ HomologicalComplex Vᵒᵖ c.
   map f :=
     { f := fun i => (f.unop.f i).op
       comm' := fun i j _ => by simp only [op_d, ← op_comp, f.unop.comm] }
-#align homological_complex.op_functor HomologicalComplex.opFunctor
 
 /-- Auxiliary definition for `opEquivalence`. -/
 @[simps]
@@ -147,7 +138,6 @@ def opInverse : HomologicalComplex Vᵒᵖ c.symm ⥤ (HomologicalComplex V c)�
   map f := Quiver.Hom.op
     { f := fun i => (f.f i).unop
       comm' := fun i j _ => by simp only [unopSymm_d, ← unop_comp, f.comm] }
-#align homological_complex.op_inverse HomologicalComplex.opInverse
 
 /-- Auxiliary definition for `opEquivalence`. -/
 def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInverse V c :=
@@ -164,13 +154,11 @@ def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInve
       simp only [Quiver.Hom.unop_op, Functor.id_map, Iso.op_hom, Functor.comp_map, unop_comp,
         comp_f, Hom.isoOfComponents_hom_f]
       erw [Category.id_comp, Category.comp_id (f.unop.f x)])
-#align homological_complex.op_unit_iso HomologicalComplex.opUnitIso
 
 /-- Auxiliary definition for `opEquivalence`. -/
 def opCounitIso : opInverse V c ⋙ opFunctor V c ≅ 𝟭 (HomologicalComplex Vᵒᵖ c.symm) :=
   NatIso.ofComponents
     fun X => HomologicalComplex.Hom.isoOfComponents fun i => Iso.refl _
-#align homological_complex.op_counit_iso HomologicalComplex.opCounitIso
 
 /-- Given a category of complexes with objects in `V`, there is a natural equivalence between its
 opposite category and a category of complexes with objects in `Vᵒᵖ`. -/
@@ -185,7 +173,6 @@ def opEquivalence : (HomologicalComplex V c)ᵒᵖ ≌ HomologicalComplex Vᵒ�
     simp only [opUnitIso, opCounitIso, NatIso.ofComponents_hom_app, Iso.op_hom, comp_f,
       opFunctor_map_f, Quiver.Hom.unop_op, Hom.isoOfComponents_hom_f]
     exact Category.comp_id _
-#align homological_complex.op_equivalence HomologicalComplex.opEquivalence
 
 /-- Auxiliary definition for `unopEquivalence`. -/
 @[simps]
@@ -194,7 +181,6 @@ def unopFunctor : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ⥤ HomologicalComplex V 
   map f :=
     { f := fun i => (f.unop.f i).unop
       comm' := fun i j _ => by simp only [unop_d, ← unop_comp, f.unop.comm] }
-#align homological_complex.unop_functor HomologicalComplex.unopFunctor
 
 /-- Auxiliary definition for `unopEquivalence`. -/
 @[simps]
@@ -203,7 +189,6 @@ def unopInverse : HomologicalComplex V c.symm ⥤ (HomologicalComplex Vᵒᵖ c)
   map f := Quiver.Hom.op
     { f := fun i => (f.f i).op
       comm' := fun i j _ => by simp only [opSymm_d, ← op_comp, f.comm] }
-#align homological_complex.unop_inverse HomologicalComplex.unopInverse
 
 /-- Auxiliary definition for `unopEquivalence`. -/
 def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c ⋙ unopInverse V c :=
@@ -220,13 +205,11 @@ def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c 
       simp only [Quiver.Hom.unop_op, Functor.id_map, Iso.op_hom, Functor.comp_map, unop_comp,
         comp_f, Hom.isoOfComponents_hom_f]
       erw [Category.id_comp, Category.comp_id (f.unop.f x)])
-#align homological_complex.unop_unit_iso HomologicalComplex.unopUnitIso
 
 /-- Auxiliary definition for `unopEquivalence`. -/
 def unopCounitIso : unopInverse V c ⋙ unopFunctor V c ≅ 𝟭 (HomologicalComplex V c.symm) :=
   NatIso.ofComponents
     fun X => HomologicalComplex.Hom.isoOfComponents fun i => Iso.refl _
-#align homological_complex.unop_counit_iso HomologicalComplex.unopCounitIso
 
 /-- Given a category of complexes with objects in `Vᵒᵖ`, there is a natural equivalence between its
 opposite category and a category of complexes with objects in `V`. -/
@@ -241,15 +224,12 @@ def unopEquivalence : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≌ HomologicalComple
     simp only [opUnitIso, opCounitIso, NatIso.ofComponents_hom_app, Iso.op_hom, comp_f,
       opFunctor_map_f, Quiver.Hom.unop_op, Hom.isoOfComponents_hom_f]
     exact Category.comp_id _
-#align homological_complex.unop_equivalence HomologicalComplex.unopEquivalence
 
 variable {V c}
 
 instance opFunctor_additive : (@opFunctor ι V _ c _).Additive where
-#align homological_complex.op_functor_additive HomologicalComplex.opFunctor_additive
 
 instance unopFunctor_additive : (@unopFunctor ι V _ c _).Additive where
-#align homological_complex.unop_functor_additive HomologicalComplex.unopFunctor_additive
 
 end
 
@@ -259,13 +239,11 @@ variable [Abelian V] (C : HomologicalComplex V c) (i : ι)
 def homology'OpDef : C.op.homology' i ≅
     _root_.homology' (C.dFrom i).op (C.dTo i).op (by rw [← op_comp, C.dTo_comp_dFrom i, op_zero]) :=
   Iso.refl _
-#align homological_complex.homology_op_def HomologicalComplex.homology'OpDef
 
 /-- Given a complex `C` of objects in `V`, the `i`th homology of its 'opposite' complex (with
 objects in `Vᵒᵖ`) is the opposite of the `i`th homology of `C`. -/
 nonrec def homology'Op : C.op.homology' i ≅ Opposite.op (C.homology' i) :=
   homology'OpDef _ _ ≪≫ homology'Op _ _ _
-#align homological_complex.homology_op HomologicalComplex.homology'Op
 
 /-- Auxiliary tautological definition for `homologyUnop`. -/
 def homology'UnopDef (C : HomologicalComplex Vᵒᵖ c) :
@@ -273,13 +251,11 @@ def homology'UnopDef (C : HomologicalComplex Vᵒᵖ c) :
       _root_.homology' (C.dFrom i).unop (C.dTo i).unop
         (by rw [← unop_comp, C.dTo_comp_dFrom i, unop_zero]) :=
   Iso.refl _
-#align homological_complex.homology_unop_def HomologicalComplex.homology'UnopDef
 
 /-- Given a complex `C` of objects in `Vᵒᵖ`, the `i`th homology of its 'opposite' complex (with
 objects in `V`) is the opposite of the `i`th homology of `C`. -/
 nonrec def homology'Unop (C : HomologicalComplex Vᵒᵖ c) :
     C.unop.homology' i ≅ Opposite.unop (C.homology' i) :=
   homology'UnopDef _ _ ≪≫ homology'Unop _ _ _
-#align homological_complex.homology_unop HomologicalComplex.homology'Unop
 
 end HomologicalComplex

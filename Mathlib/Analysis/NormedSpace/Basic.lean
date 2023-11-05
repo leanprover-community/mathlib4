@@ -43,7 +43,6 @@ typeclass can be used for "semi normed spaces" too, just as `Module` can be used
 class NormedSpace (α : Type*) (β : Type*) [NormedField α] [SeminormedAddCommGroup β] extends
   Module α β where
   norm_smul_le : ∀ (a : α) (b : β), ‖a • b‖ ≤ ‖a‖ * ‖b‖
-#align normed_space NormedSpace
 
 attribute [inherit_doc NormedSpace] NormedSpace.norm_smul_le
 
@@ -54,33 +53,26 @@ variable [NormedField α] [SeminormedAddCommGroup β]
 -- see Note [lower instance priority]
 instance (priority := 100) NormedSpace.boundedSMul [NormedSpace α β] : BoundedSMul α β :=
   BoundedSMul.of_norm_smul_le NormedSpace.norm_smul_le
-#align normed_space.has_bounded_smul NormedSpace.boundedSMul
 
 instance NormedField.toNormedSpace : NormedSpace α α where norm_smul_le a b := norm_mul_le a b
-#align normed_field.to_normed_space NormedField.toNormedSpace
 
 -- shortcut instance
 instance NormedField.to_boundedSMul : BoundedSMul α α :=
   NormedSpace.boundedSMul
-#align normed_field.to_has_bounded_smul NormedField.to_boundedSMul
 
 theorem norm_zsmul (α) [NormedField α] [NormedSpace α β] (n : ℤ) (x : β) :
     ‖n • x‖ = ‖(n : α)‖ * ‖x‖ := by rw [← norm_smul, ← Int.smul_one_eq_coe, smul_assoc, one_smul]
-#align norm_zsmul norm_zsmul
 
 @[simp]
 theorem abs_norm (z : β) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg _
-#align abs_norm abs_norm
 
 theorem inv_norm_smul_mem_closed_unit_ball [NormedSpace ℝ β] (x : β) :
     ‖x‖⁻¹ • x ∈ closedBall (0 : β) 1 := by
   simp only [mem_closedBall_zero_iff, norm_smul, norm_inv, norm_norm, ← _root_.div_eq_inv_mul,
     div_self_le_one]
-#align inv_norm_smul_mem_closed_unit_ball inv_norm_smul_mem_closed_unit_ball
 
 theorem norm_smul_of_nonneg [NormedSpace ℝ β] {t : ℝ} (ht : 0 ≤ t) (x : β) : ‖t • x‖ = t * ‖x‖ := by
   rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg ht]
-#align norm_smul_of_nonneg norm_smul_of_nonneg
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace α E]
 
@@ -91,20 +83,17 @@ theorem eventually_nhds_norm_smul_sub_lt (c : α) (x : E) {ε : ℝ} (h : 0 < ε
   have : Tendsto (fun y => ‖c • (y - x)‖) (𝓝 x) (𝓝 0) :=
     ((continuous_id.sub continuous_const).const_smul _).norm.tendsto' _ _ (by simp)
   this.eventually (gt_mem_nhds h)
-#align eventually_nhds_norm_smul_sub_lt eventually_nhds_norm_smul_sub_lt
 
 theorem Filter.Tendsto.zero_smul_isBoundedUnder_le {f : ι → α} {g : ι → E} {l : Filter ι}
     (hf : Tendsto f l (𝓝 0)) (hg : IsBoundedUnder (· ≤ ·) l (Norm.norm ∘ g)) :
     Tendsto (fun x => f x • g x) l (𝓝 0) :=
   hf.op_zero_isBoundedUnder_le hg (· • ·) norm_smul_le
-#align filter.tendsto.zero_smul_is_bounded_under_le Filter.Tendsto.zero_smul_isBoundedUnder_le
 
 theorem Filter.IsBoundedUnder.smul_tendsto_zero {f : ι → α} {g : ι → E} {l : Filter ι}
     (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) (hg : Tendsto g l (𝓝 0)) :
     Tendsto (fun x => f x • g x) l (𝓝 0) :=
   hg.op_zero_isBoundedUnder_le hf (flip (· • ·)) fun x y =>
     (norm_smul_le y x).trans_eq (mul_comm _ _)
-#align filter.is_bounded_under.smul_tendsto_zero Filter.IsBoundedUnder.smul_tendsto_zero
 
 theorem closure_ball [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
     closure (ball x r) = closedBall x r := by
@@ -120,12 +109,10 @@ theorem closure_ball [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
     rw [mem_closedBall, dist_eq_norm] at hy
     replace hr : 0 < r := ((norm_nonneg _).trans hy).lt_of_ne hr.symm
     apply mul_lt_mul' <;> assumption
-#align closure_ball closure_ball
 
 theorem frontier_ball [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
     frontier (ball x r) = sphere x r := by
   rw [frontier, closure_ball x hr, isOpen_ball.interior_eq, closedBall_diff_ball]
-#align frontier_ball frontier_ball
 
 theorem interior_closedBall [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
     interior (closedBall x r) = ball x r := by
@@ -146,22 +133,18 @@ theorem interior_closedBall [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0)
   intro c hc
   rw [mem_Icc, ← abs_le, ← Real.norm_eq_abs, ← mul_le_mul_right hr]
   simpa [dist_eq_norm, norm_smul] using hc
-#align interior_closed_ball interior_closedBall
 
 theorem frontier_closedBall [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
     frontier (closedBall x r) = sphere x r := by
   rw [frontier, closure_closedBall, interior_closedBall x hr, closedBall_diff_ball]
-#align frontier_closed_ball frontier_closedBall
 
 theorem interior_sphere [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
     interior (sphere x r) = ∅ := by
   rw [← frontier_closedBall x hr, interior_frontier isClosed_ball]
-#align interior_sphere interior_sphere
 
 theorem frontier_sphere [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
     frontier (sphere x r) = sphere x r := by
   rw [isClosed_sphere.frontier_eq, interior_sphere x hr, diff_empty]
-#align frontier_sphere frontier_sphere
 
 instance NormedSpace.discreteTopology_zmultiples
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℚ E] (e : E) :
@@ -190,7 +173,6 @@ instance Prod.normedSpace : NormedSpace α (E × F) :=
     norm_smul_le := fun s x => by
       simp only [norm_smul, Prod.norm_def, Prod.smul_snd, Prod.smul_fst,
         mul_max_of_nonneg, norm_nonneg, le_rfl] }
-#align prod.normed_space Prod.normedSpace
 
 /-- The product of finitely many normed spaces is a normed space, with the sup norm. -/
 instance Pi.normedSpace {E : ι → Type*} [Fintype ι] [∀ i, SeminormedAddCommGroup (E i)]
@@ -199,18 +181,15 @@ instance Pi.normedSpace {E : ι → Type*} [Fintype ι] [∀ i, SeminormedAddCom
     simp_rw [← coe_nnnorm, ← NNReal.coe_mul, NNReal.coe_le_coe, Pi.nnnorm_def,
       NNReal.mul_finset_sup]
     exact Finset.sup_mono_fun fun _ _ => norm_smul_le a _
-#align pi.normed_space Pi.normedSpace
 
 instance MulOpposite.normedSpace : NormedSpace α Eᵐᵒᵖ :=
   { MulOpposite.seminormedAddCommGroup (E := Eᵐᵒᵖ), MulOpposite.module _ with
     norm_smul_le := fun s x => norm_smul_le s x.unop }
-#align mul_opposite.normed_space MulOpposite.normedSpace
 
 /-- A subspace of a normed space is also a normed space, with the restriction of the norm. -/
 instance Submodule.normedSpace {𝕜 R : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] {E : Type*}
     [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E]
     (s : Submodule R E) : NormedSpace 𝕜 s where norm_smul_le c x := norm_smul_le c (x : E)
-#align submodule.normed_space Submodule.normedSpace
 
 end SeminormedAddCommGroup
 
@@ -229,7 +208,6 @@ def NormedSpace.induced {F : Type*} (α β γ : Type*) [NormedField α] [AddComm
   · intro a b
     change ‖(⇑f) (a • b)‖ ≤ ‖a‖ * ‖(⇑f) b‖
     exact (map_smul f a b).symm ▸ norm_smul_le a (f b)
-#align normed_space.induced NormedSpace.induced
 
 section NormedAddCommGroup
 
@@ -257,7 +235,6 @@ example
 gives some more context. -/
 instance (priority := 100) NormedSpace.toModule' : Module α F :=
   NormedSpace.toModule
-#align normed_space.to_module' NormedSpace.toModule'
 
 section Surj
 
@@ -270,21 +247,17 @@ theorem exists_norm_eq {c : ℝ} (hc : 0 ≤ c) : ∃ x : E, ‖x‖ = c := by
   rw [← norm_ne_zero_iff] at hx
   use c • ‖x‖⁻¹ • x
   simp [norm_smul, Real.norm_of_nonneg hc, abs_of_nonneg hc, inv_mul_cancel hx]
-#align exists_norm_eq exists_norm_eq
 
 @[simp]
 theorem range_norm : range (norm : E → ℝ) = Ici 0 :=
   Subset.antisymm (range_subset_iff.2 norm_nonneg) fun _ => exists_norm_eq E
-#align range_norm range_norm
 
 theorem nnnorm_surjective : Surjective (nnnorm : E → ℝ≥0) := fun c =>
   (exists_norm_eq E c.coe_nonneg).imp fun _ h => NNReal.eq h
-#align nnnorm_surjective nnnorm_surjective
 
 @[simp]
 theorem range_nnnorm : range (nnnorm : E → ℝ≥0) = univ :=
   (nnnorm_surjective E).range_eq
-#align range_nnnorm range_nnnorm
 
 end Surj
 
@@ -293,30 +266,25 @@ This is a particular case of `Module.punctured_nhds_neBot`. -/
 instance Real.punctured_nhds_module_neBot {E : Type*} [AddCommGroup E] [TopologicalSpace E]
     [ContinuousAdd E] [Nontrivial E] [Module ℝ E] [ContinuousSMul ℝ E] (x : E) : NeBot (𝓝[≠] x) :=
   Module.punctured_nhds_neBot ℝ E x
-#align real.punctured_nhds_module_ne_bot Real.punctured_nhds_module_neBot
 
 theorem interior_closedBall' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ) :
     interior (closedBall x r) = ball x r := by
   rcases eq_or_ne r 0 with (rfl | hr)
   · rw [closedBall_zero, ball_zero, interior_singleton]
   · exact interior_closedBall x hr
-#align interior_closed_ball' interior_closedBall'
 
 theorem frontier_closedBall' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ) :
     frontier (closedBall x r) = sphere x r := by
   rw [frontier, closure_closedBall, interior_closedBall' x r, closedBall_diff_ball]
-#align frontier_closed_ball' frontier_closedBall'
 
 @[simp]
 theorem interior_sphere' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ) :
     interior (sphere x r) = ∅ := by rw [← frontier_closedBall' x, interior_frontier isClosed_ball]
-#align interior_sphere' interior_sphere'
 
 @[simp]
 theorem frontier_sphere' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ) :
     frontier (sphere x r) = sphere x r := by
   rw [isClosed_sphere.frontier_eq, interior_sphere' x, diff_empty]
-#align frontier_sphere' frontier_sphere'
 
 end NormedAddCommGroup
 
@@ -333,28 +301,23 @@ theorem NormedSpace.exists_lt_norm (c : ℝ) : ∃ x : E, c < ‖x‖ := by
   use r • x
   rwa [norm_smul, ← _root_.div_lt_iff]
   rwa [norm_pos_iff]
-#align normed_space.exists_lt_norm NormedSpace.exists_lt_norm
 
 protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set E) := fun h =>
   let ⟨R, hR⟩ := isBounded_iff_forall_norm_le.1 h
   let ⟨x, hx⟩ := NormedSpace.exists_lt_norm 𝕜 E R
   hx.not_le (hR x trivial)
-#align normed_space.unbounded_univ NormedSpace.unbounded_univ
 
 /-- A normed vector space over a nontrivially normed field is a noncompact space. This cannot be
 an instance because in order to apply it, Lean would have to search for `NormedSpace 𝕜 E` with
 unknown `𝕜`. We register this as an instance in two cases: `𝕜 = E` and `𝕜 = ℝ`. -/
 protected theorem NormedSpace.noncompactSpace : NoncompactSpace E :=
   ⟨fun h => NormedSpace.unbounded_univ 𝕜 _ h.isBounded⟩
-#align normed_space.noncompact_space NormedSpace.noncompactSpace
 
 instance (priority := 100) NontriviallyNormedField.noncompactSpace : NoncompactSpace 𝕜 :=
   NormedSpace.noncompactSpace 𝕜 𝕜
-#align nontrivially_normed_field.noncompact_space NontriviallyNormedField.noncompactSpace
 
 instance (priority := 100) RealNormedSpace.noncompactSpace [NormedSpace ℝ E] : NoncompactSpace E :=
   NormedSpace.noncompactSpace ℝ E
-#align real_normed_space.noncompact_space RealNormedSpace.noncompactSpace
 
 end NontriviallyNormedSpace
 
@@ -372,7 +335,6 @@ variables [NormedModule 𝕜 𝕜'] [SMulCommClass 𝕜 𝕜' 𝕜'] [IsScalarTo
 class NormedAlgebra (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [SeminormedRing 𝕜'] extends
   Algebra 𝕜 𝕜' where
   norm_smul_le : ∀ (r : 𝕜) (x : 𝕜'), ‖r • x‖ ≤ ‖r‖ * ‖x‖
-#align normed_algebra NormedAlgebra
 
 attribute [inherit_doc NormedAlgebra] NormedAlgebra.norm_smul_le
 
@@ -382,7 +344,6 @@ instance (priority := 100) NormedAlgebra.toNormedSpace : NormedSpace 𝕜 𝕜' 
   -- Porting note: previous Lean could figure out what we were extending
   { NormedAlgebra.toAlgebra.toModule with
   norm_smul_le := NormedAlgebra.norm_smul_le }
-#align normed_algebra.to_normed_space NormedAlgebra.toNormedSpace
 
 /-- While this may appear identical to `NormedAlgebra.toNormedSpace`, it contains an implicit
 argument involving `NormedRing.toSeminormedRing` that typeclass inference has trouble inferring.
@@ -398,26 +359,21 @@ example
 See `NormedSpace.toModule'` for a similar situation. -/
 instance (priority := 100) NormedAlgebra.toNormedSpace' {𝕜'} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] :
     NormedSpace 𝕜 𝕜' := by infer_instance
-#align normed_algebra.to_normed_space' NormedAlgebra.toNormedSpace'
 
 theorem norm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ * ‖(1 : 𝕜')‖ := by
   rw [Algebra.algebraMap_eq_smul_one]
   exact norm_smul _ _
-#align norm_algebra_map norm_algebraMap
 
 theorem nnnorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ * ‖(1 : 𝕜')‖₊ :=
   Subtype.ext <| norm_algebraMap 𝕜' x
-#align nnnorm_algebra_map nnnorm_algebraMap
 
 @[simp]
 theorem norm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ := by
   rw [norm_algebraMap, norm_one, mul_one]
-#align norm_algebra_map' norm_algebraMap'
 
 @[simp]
 theorem nnnorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
   Subtype.ext <| norm_algebraMap' _ _
-#align nnnorm_algebra_map' nnnorm_algebraMap'
 
 section NNReal
 
@@ -426,12 +382,10 @@ variable [NormOneClass 𝕜'] [NormedAlgebra ℝ 𝕜']
 @[simp]
 theorem norm_algebraMap_nNReal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ = x :=
   (norm_algebraMap' 𝕜' (x : ℝ)).symm ▸ Real.norm_of_nonneg x.prop
-#align norm_algebra_map_nnreal norm_algebraMap_nNReal
 
 @[simp]
 theorem nnnorm_algebraMap_nNReal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
   Subtype.ext <| norm_algebraMap_nNReal 𝕜' x
-#align nnnorm_algebra_map_nnreal nnnorm_algebraMap_nNReal
 
 end NNReal
 
@@ -441,11 +395,9 @@ variable (𝕜)
 theorem algebraMap_isometry [NormOneClass 𝕜'] : Isometry (algebraMap 𝕜 𝕜') := by
   refine' Isometry.of_dist_eq fun x y => _
   rw [dist_eq_norm, dist_eq_norm, ← RingHom.map_sub, norm_algebraMap']
-#align algebra_map_isometry algebraMap_isometry
 
 instance NormedAlgebra.id : NormedAlgebra 𝕜 𝕜 :=
   { NormedField.toNormedSpace, Algebra.id 𝕜 with }
-#align normed_algebra.id NormedAlgebra.id
 
 -- Porting note: cannot synth scalar tower ℚ ℝ k
 /-- Any normed characteristic-zero division ring that is a normed algebra over the reals is also a
@@ -457,11 +409,9 @@ instance normedAlgebraRat {𝕜} [NormedDivisionRing 𝕜] [CharZero 𝕜] [Norm
     NormedAlgebra ℚ 𝕜 where
   norm_smul_le q x := by
     rw [← smul_one_smul ℝ q x, Rat.smul_one_eq_coe, norm_smul, Rat.norm_cast_real]
-#align normed_algebra_rat normedAlgebraRat
 
 instance PUnit.normedAlgebra : NormedAlgebra 𝕜 PUnit where
   norm_smul_le q _ := by simp only [norm_eq_zero, mul_zero, le_refl]
-#align punit.normed_algebra PUnit.normedAlgebra
 
 instance : NormedAlgebra 𝕜 (ULift 𝕜') :=
   { ULift.normedSpace, ULift.algebra with }
@@ -470,14 +420,12 @@ instance : NormedAlgebra 𝕜 (ULift 𝕜') :=
 instance Prod.normedAlgebra {E F : Type*} [SeminormedRing E] [SeminormedRing F] [NormedAlgebra 𝕜 E]
     [NormedAlgebra 𝕜 F] : NormedAlgebra 𝕜 (E × F) :=
   { Prod.normedSpace, Prod.algebra 𝕜 E F with }
-#align prod.normed_algebra Prod.normedAlgebra
 
 -- Porting note: Lean 3 could synth the algebra instances for Pi Pr
 /-- The product of finitely many normed algebras is a normed algebra, with the sup norm. -/
 instance Pi.normedAlgebra {E : ι → Type*} [Fintype ι] [∀ i, SeminormedRing (E i)]
     [∀ i, NormedAlgebra 𝕜 (E i)] : NormedAlgebra 𝕜 (∀ i, E i) :=
   { Pi.normedSpace, Pi.algebra _ E with }
-#align pi.normed_algebra Pi.normedAlgebra
 
 variable {E : Type*} [SeminormedRing E] [NormedAlgebra 𝕜 E]
 
@@ -485,7 +433,6 @@ instance MulOpposite.normedAlgebra {E : Type*} [SeminormedRing E] [NormedAlgebra
     NormedAlgebra 𝕜 Eᵐᵒᵖ :=
   { MulOpposite.normedSpace, MulOpposite.instAlgebra with }
 
-#align mul_opposite.normed_algebra MulOpposite.normedAlgebra
 
 end NormedAlgebra
 
@@ -503,13 +450,11 @@ def NormedAlgebra.induced {F : Type*} (α β γ : Type*) [NormedField α] [Ring 
   · intro a b
     change ‖(⇑f) (a • b)‖ ≤ ‖a‖ * ‖(⇑f) b‖
     exact (map_smul f a b).symm ▸ norm_smul_le a (f b)
-#align normed_algebra.induced NormedAlgebra.induced
 
 -- Porting note: failed to synth NonunitalAlgHomClass
 instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
   @NormedAlgebra.induced _ 𝕜 S A _ (SubringClass.toRing S) _ _ _ _ S.val
-#align subalgebra.to_normed_algebra Subalgebra.toNormedAlgebra
 
 section RestrictScalars
 
@@ -539,7 +484,6 @@ This is not an instance as it would be contrary to the purpose of `RestrictScala
 def Module.RestrictScalars.normedSpaceOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
     [SeminormedAddCommGroup E] [I : NormedSpace 𝕜' E] : NormedSpace 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
   I
-#align module.restrict_scalars.normed_space_orig Module.RestrictScalars.normedSpaceOrig
 
 /-- Warning: This declaration should be used judiciously.
 Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` instead.
@@ -550,6 +494,5 @@ inferred, and because it is likely to create instance diamonds.
 -/
 def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
   RestrictScalars.normedSpace _ 𝕜' _
-#align normed_space.restrict_scalars NormedSpace.restrictScalars
 
 end RestrictScalars

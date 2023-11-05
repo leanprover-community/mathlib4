@@ -37,8 +37,6 @@ instance forget₂AddCommGroupFull : Full (forget₂ (ModuleCat ℤ) AddCommGrou
         (fun n x => by
           convert AddMonoidHom.map_zsmul (show A.carrier →+ B.carrier from f) x n <;>
             ext <;> apply int_smul_eq_zsmul)
-set_option linter.uppercaseLean3 false in
-#align Module.forget₂_AddCommGroup_full ModuleCat.forget₂AddCommGroupFull
 
 /-- The forgetful functor from `ℤ` modules to `AddCommGroup` is essentially surjective. -/
 instance forget₂_addCommGroupCat_essSurj : EssSurj (forget₂ (ModuleCat ℤ) AddCommGroupCat.{u}) where
@@ -46,13 +44,9 @@ instance forget₂_addCommGroupCat_essSurj : EssSurj (forget₂ (ModuleCat ℤ) 
     ⟨ModuleCat.of ℤ A,
       ⟨{  hom := 𝟙 A
           inv := 𝟙 A }⟩⟩
-set_option linter.uppercaseLean3 false in
-#align Module.forget₂_AddCommGroup_ess_surj ModuleCat.forget₂_addCommGroupCat_essSurj
 
 noncomputable instance forget₂AddCommGroupIsEquivalence :
     IsEquivalence (forget₂ (ModuleCat ℤ) AddCommGroupCat.{u}) :=
   Equivalence.ofFullyFaithfullyEssSurj (forget₂ (ModuleCat ℤ) AddCommGroupCat)
-set_option linter.uppercaseLean3 false in
-#align Module.forget₂_AddCommGroup_is_equivalence ModuleCat.forget₂AddCommGroupIsEquivalence
 
 end ModuleCat

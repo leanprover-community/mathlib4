@@ -41,7 +41,6 @@ theorem isIso_of_shortExact_of_isIso_of_isIso (h : ShortExact f g) (h' : ShortEx
   all_goals try assumption
   all_goals try apply exact_zero_left_of_mono
   all_goals rwa [← epi_iff_exact_zero_right ]
-#align category_theory.is_iso_of_short_exact_of_is_iso_of_is_iso CategoryTheory.isIso_of_shortExact_of_isIso_of_isIso
 
 /-- To construct a splitting of `A -f⟶ B -g⟶ C` it suffices to supply
 a *morphism* `i : B ⟶ A ⊞ C` such that `f ≫ i` is the canonical map `biprod.inl : A ⟶ A ⊞ C` and
@@ -55,7 +54,6 @@ def Splitting.mk' (h : ShortExact f g) (i : B ⟶ A ⊞ C) (h1 : f ≫ i = bipro
   { iso := asIso i
     comp_iso_eq_inl := h1
     iso_comp_snd_eq := h2 }
-#align category_theory.splitting.mk' CategoryTheory.Splitting.mk'
 
 /-- To construct a splitting of `A -f⟶ B -g⟶ C` it suffices to supply
 a *morphism* `i : A ⊞ C ⟶ B` such that `p ≫ i = f` where `p` is the canonical map
@@ -69,7 +67,6 @@ def Splitting.mk'' (h : ShortExact f g) (i : A ⊞ C ⟶ B) (h1 : biprod.inl ≫
   { iso := (asIso i).symm
     comp_iso_eq_inl := by rw [Iso.symm_hom, asIso_inv, IsIso.comp_inv_eq, h1]
     iso_comp_snd_eq := by rw [Iso.symm_hom, asIso_inv, IsIso.inv_comp_eq, h2] }
-#align category_theory.splitting.mk'' CategoryTheory.Splitting.mk''
 
 /-- A short exact sequence that is left split admits a splitting. -/
 def LeftSplit.splitting {f : A ⟶ B} {g : B ⟶ C} (h : LeftSplit f g) : Splitting f g :=
@@ -79,7 +76,6 @@ def LeftSplit.splitting {f : A ⟶ B} {g : B ⟶ C} (h : LeftSplit f g) : Splitt
       · simpa only [biprod.inl_fst, biprod.lift_fst, Category.assoc] using h.left_split.choose_spec
       · simp only [biprod.inl_snd, biprod.lift_snd, Category.assoc, h.exact.w])
     (by simp only [biprod.lift_snd])
-#align category_theory.left_split.splitting CategoryTheory.LeftSplit.splitting
 
 /-- A short exact sequence that is right split admits a splitting. -/
 def RightSplit.splitting {f : A ⟶ B} {g : B ⟶ C} (h : RightSplit f g) : Splitting f g :=
@@ -88,6 +84,5 @@ def RightSplit.splitting {f : A ⟶ B} {g : B ⟶ C} (h : RightSplit f g) : Spli
       ext
       · rw [biprod.inl_snd, ← Category.assoc, biprod.inl_desc, h.exact.w]
       · rw [biprod.inr_snd, ← Category.assoc, biprod.inr_desc, h.right_split.choose_spec])
-#align category_theory.right_split.splitting CategoryTheory.RightSplit.splitting
 
 end CategoryTheory

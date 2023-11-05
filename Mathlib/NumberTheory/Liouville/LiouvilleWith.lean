@@ -48,7 +48,6 @@ A number is a Liouville number in the sense of `Liouville` if it is `LiouvilleWi
 exponent. -/
 def LiouvilleWith (p x : ℝ) : Prop :=
   ∃ C, ∃ᶠ n : ℕ in atTop, ∃ m : ℤ, x ≠ m / n ∧ |x - m / n| < C / n ^ p
-#align liouville_with LiouvilleWith
 
 /-- For `p = 1` (hence, for any `p ≤ 1`), the condition `LiouvilleWith p x` is trivial. -/
 theorem liouvilleWith_one (x : ℝ) : LiouvilleWith 1 x := by
@@ -63,7 +62,6 @@ theorem liouvilleWith_one (x : ℝ) : LiouvilleWith 1 x := by
     add_div_eq_mul_add_div _ _ hn'.ne', div_lt_div_right hn']
   convert add_lt_add_right ((Int.floor_le (x * n)).trans_lt (lt_add_one _)) 1 using 1 <;>
     (try push_cast) <;> ring
-#align liouville_with_one liouvilleWith_one
 
 namespace LiouvilleWith
 
@@ -81,7 +79,6 @@ theorem exists_pos (h : LiouvilleWith p x) :
   rintro n ⟨hle, m, hne, hlt⟩
   refine ⟨hle, m, hne, hlt.trans_le ?_⟩
   exact div_le_div_of_le (rpow_nonneg_of_nonneg n.cast_nonneg _) (le_max_left _ _)
-#align liouville_with.exists_pos LiouvilleWith.exists_pos
 
 /-- If a number is Liouville with exponent `p`, then it is Liouville with any smaller exponent. -/
 theorem mono (h : LiouvilleWith p x) (hle : q ≤ p) : LiouvilleWith q x := by
@@ -90,7 +87,6 @@ theorem mono (h : LiouvilleWith p x) (hle : q ≤ p) : LiouvilleWith q x := by
   refine ⟨m, hne, hlt.trans_le <| div_le_div_of_le_left hC₀.le ?_ ?_⟩
   exacts [rpow_pos_of_pos (Nat.cast_pos.2 hn) _,
     rpow_le_rpow_of_exponent_le (Nat.one_le_cast.2 hn) hle]
-#align liouville_with.mono LiouvilleWith.mono
 
 /-- If `x` satisfies Liouville condition with exponent `p` and `q < p`, then `x`
 satisfies Liouville condition with exponent `q` and constant `1`. -/
@@ -106,7 +102,6 @@ theorem frequently_lt_rpow_neg (h : LiouvilleWith p x) (hlt : q < p) :
   replace hn : (0 : ℝ) < n := Nat.cast_pos.2 hn
   refine ⟨m, hne, hlt.trans <| (div_lt_iff <| rpow_pos_of_pos hn _).2 ?_⟩
   rwa [mul_comm, ← rpow_add hn, ← sub_eq_add_neg]
-#align liouville_with.frequently_lt_rpow_neg LiouvilleWith.frequently_lt_rpow_neg
 
 /-- The product of a Liouville number and a nonzero rational number is again a Liouville number.  -/
 theorem mul_rat (h : LiouvilleWith p x) (hr : r ≠ 0) : LiouvilleWith p (x * r) := by
@@ -125,7 +120,6 @@ theorem mul_rat (h : LiouvilleWith p x) (hr : r ≠ 0) : LiouvilleWith p (x * r)
     · exact (rpow_pos_of_pos (Nat.cast_pos.2 r.pos) _).ne'
     · exact Nat.cast_nonneg _
     · exact Nat.cast_nonneg _
-#align liouville_with.mul_rat LiouvilleWith.mul_rat
 
 /-- The product `x * r`, `r : ℚ`, `r ≠ 0`, is a Liouville number with exponent `p` if and only if
 `x` satisfies the same condition. -/
@@ -134,49 +128,38 @@ theorem mul_rat_iff (hr : r ≠ 0) : LiouvilleWith p (x * r) ↔ LiouvilleWith p
     simpa only [mul_assoc, ← Rat.cast_mul, mul_inv_cancel hr, Rat.cast_one, mul_one] using
       h.mul_rat (inv_ne_zero hr),
     fun h => h.mul_rat hr⟩
-#align liouville_with.mul_rat_iff LiouvilleWith.mul_rat_iff
 
 /-- The product `r * x`, `r : ℚ`, `r ≠ 0`, is a Liouville number with exponent `p` if and only if
 `x` satisfies the same condition. -/
 theorem rat_mul_iff (hr : r ≠ 0) : LiouvilleWith p (r * x) ↔ LiouvilleWith p x := by
   rw [mul_comm, mul_rat_iff hr]
-#align liouville_with.rat_mul_iff LiouvilleWith.rat_mul_iff
 
 theorem rat_mul (h : LiouvilleWith p x) (hr : r ≠ 0) : LiouvilleWith p (r * x) :=
   (rat_mul_iff hr).2 h
-#align liouville_with.rat_mul LiouvilleWith.rat_mul
 
 theorem mul_int_iff (hm : m ≠ 0) : LiouvilleWith p (x * m) ↔ LiouvilleWith p x := by
   rw [← Rat.cast_coe_int, mul_rat_iff (Int.cast_ne_zero.2 hm)]
-#align liouville_with.mul_int_iff LiouvilleWith.mul_int_iff
 
 theorem mul_int (h : LiouvilleWith p x) (hm : m ≠ 0) : LiouvilleWith p (x * m) :=
   (mul_int_iff hm).2 h
-#align liouville_with.mul_int LiouvilleWith.mul_int
 
 theorem int_mul_iff (hm : m ≠ 0) : LiouvilleWith p (m * x) ↔ LiouvilleWith p x := by
   rw [mul_comm, mul_int_iff hm]
-#align liouville_with.int_mul_iff LiouvilleWith.int_mul_iff
 
 theorem int_mul (h : LiouvilleWith p x) (hm : m ≠ 0) : LiouvilleWith p (m * x) :=
   (int_mul_iff hm).2 h
-#align liouville_with.int_mul LiouvilleWith.int_mul
 
 theorem mul_nat_iff (hn : n ≠ 0) : LiouvilleWith p (x * n) ↔ LiouvilleWith p x := by
   rw [← Rat.cast_coe_nat, mul_rat_iff (Nat.cast_ne_zero.2 hn)]
-#align liouville_with.mul_nat_iff LiouvilleWith.mul_nat_iff
 
 theorem mul_nat (h : LiouvilleWith p x) (hn : n ≠ 0) : LiouvilleWith p (x * n) :=
   (mul_nat_iff hn).2 h
-#align liouville_with.mul_nat LiouvilleWith.mul_nat
 
 theorem nat_mul_iff (hn : n ≠ 0) : LiouvilleWith p (n * x) ↔ LiouvilleWith p x := by
   rw [mul_comm, mul_nat_iff hn]
-#align liouville_with.nat_mul_iff LiouvilleWith.nat_mul_iff
 
 theorem nat_mul (h : LiouvilleWith p x) (hn : n ≠ 0) : LiouvilleWith p (n * x) := by
   rw [mul_comm]; exact h.mul_nat hn
-#align liouville_with.nat_mul LiouvilleWith.nat_mul
 
 theorem add_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x + r) := by
   rcases h.exists_pos with ⟨C, _hC₀, hC⟩
@@ -193,54 +176,42 @@ theorem add_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x + r) := b
   refine ⟨by simpa, hlt.trans_le (le_of_eq ?_)⟩
   have : (r.den ^ p : ℝ) ≠ 0 := (rpow_pos_of_pos hr _).ne'
   simp [mul_rpow, Nat.cast_nonneg, mul_div_mul_left, this]
-#align liouville_with.add_rat LiouvilleWith.add_rat
 
 @[simp]
 theorem add_rat_iff : LiouvilleWith p (x + r) ↔ LiouvilleWith p x :=
   ⟨fun h => by simpa using h.add_rat (-r), fun h => h.add_rat r⟩
-#align liouville_with.add_rat_iff LiouvilleWith.add_rat_iff
 
 @[simp]
 theorem rat_add_iff : LiouvilleWith p (r + x) ↔ LiouvilleWith p x := by rw [add_comm, add_rat_iff]
-#align liouville_with.rat_add_iff LiouvilleWith.rat_add_iff
 
 theorem rat_add (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (r + x) :=
   add_comm x r ▸ h.add_rat r
-#align liouville_with.rat_add LiouvilleWith.rat_add
 
 @[simp]
 theorem add_int_iff : LiouvilleWith p (x + m) ↔ LiouvilleWith p x := by
   rw [← Rat.cast_coe_int m, add_rat_iff]
-#align liouville_with.add_int_iff LiouvilleWith.add_int_iff
 
 @[simp]
 theorem int_add_iff : LiouvilleWith p (m + x) ↔ LiouvilleWith p x := by rw [add_comm, add_int_iff]
-#align liouville_with.int_add_iff LiouvilleWith.int_add_iff
 
 @[simp]
 theorem add_nat_iff : LiouvilleWith p (x + n) ↔ LiouvilleWith p x := by
   rw [← Rat.cast_coe_nat n, add_rat_iff]
-#align liouville_with.add_nat_iff LiouvilleWith.add_nat_iff
 
 @[simp]
 theorem nat_add_iff : LiouvilleWith p (n + x) ↔ LiouvilleWith p x := by rw [add_comm, add_nat_iff]
-#align liouville_with.nat_add_iff LiouvilleWith.nat_add_iff
 
 theorem add_int (h : LiouvilleWith p x) (m : ℤ) : LiouvilleWith p (x + m) :=
   add_int_iff.2 h
-#align liouville_with.add_int LiouvilleWith.add_int
 
 theorem int_add (h : LiouvilleWith p x) (m : ℤ) : LiouvilleWith p (m + x) :=
   int_add_iff.2 h
-#align liouville_with.int_add LiouvilleWith.int_add
 
 theorem add_nat (h : LiouvilleWith p x) (n : ℕ) : LiouvilleWith p (x + n) :=
   h.add_int n
-#align liouville_with.add_nat LiouvilleWith.add_nat
 
 theorem nat_add (h : LiouvilleWith p x) (n : ℕ) : LiouvilleWith p (n + x) :=
   h.int_add n
-#align liouville_with.nat_add LiouvilleWith.nat_add
 
 protected theorem neg (h : LiouvilleWith p x) : LiouvilleWith p (-x) := by
   rcases h with ⟨C, hC⟩
@@ -250,63 +221,49 @@ protected theorem neg (h : LiouvilleWith p x) : LiouvilleWith p (-x) := by
   · convert hlt using 1
     rw [abs_sub_comm]
     congr! 1; push_cast; ring
-#align liouville_with.neg LiouvilleWith.neg
 
 @[simp]
 theorem neg_iff : LiouvilleWith p (-x) ↔ LiouvilleWith p x :=
   ⟨fun h => neg_neg x ▸ h.neg, LiouvilleWith.neg⟩
-#align liouville_with.neg_iff LiouvilleWith.neg_iff
 
 @[simp]
 theorem sub_rat_iff : LiouvilleWith p (x - r) ↔ LiouvilleWith p x := by
   rw [sub_eq_add_neg, ← Rat.cast_neg, add_rat_iff]
-#align liouville_with.sub_rat_iff LiouvilleWith.sub_rat_iff
 
 theorem sub_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x - r) :=
   sub_rat_iff.2 h
-#align liouville_with.sub_rat LiouvilleWith.sub_rat
 
 @[simp]
 theorem sub_int_iff : LiouvilleWith p (x - m) ↔ LiouvilleWith p x := by
   rw [← Rat.cast_coe_int, sub_rat_iff]
-#align liouville_with.sub_int_iff LiouvilleWith.sub_int_iff
 
 theorem sub_int (h : LiouvilleWith p x) (m : ℤ) : LiouvilleWith p (x - m) :=
   sub_int_iff.2 h
-#align liouville_with.sub_int LiouvilleWith.sub_int
 
 @[simp]
 theorem sub_nat_iff : LiouvilleWith p (x - n) ↔ LiouvilleWith p x := by
   rw [← Rat.cast_coe_nat, sub_rat_iff]
-#align liouville_with.sub_nat_iff LiouvilleWith.sub_nat_iff
 
 theorem sub_nat (h : LiouvilleWith p x) (n : ℕ) : LiouvilleWith p (x - n) :=
   sub_nat_iff.2 h
-#align liouville_with.sub_nat LiouvilleWith.sub_nat
 
 @[simp]
 theorem rat_sub_iff : LiouvilleWith p (r - x) ↔ LiouvilleWith p x := by simp [sub_eq_add_neg]
-#align liouville_with.rat_sub_iff LiouvilleWith.rat_sub_iff
 
 theorem rat_sub (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (r - x) :=
   rat_sub_iff.2 h
-#align liouville_with.rat_sub LiouvilleWith.rat_sub
 
 @[simp]
 theorem int_sub_iff : LiouvilleWith p (m - x) ↔ LiouvilleWith p x := by simp [sub_eq_add_neg]
-#align liouville_with.int_sub_iff LiouvilleWith.int_sub_iff
 
 theorem int_sub (h : LiouvilleWith p x) (m : ℤ) : LiouvilleWith p (m - x) :=
   int_sub_iff.2 h
-#align liouville_with.int_sub LiouvilleWith.int_sub
 
 @[simp]
 theorem nat_sub_iff : LiouvilleWith p (n - x) ↔ LiouvilleWith p x := by simp [sub_eq_add_neg]
-#align liouville_with.nat_sub_iff LiouvilleWith.nat_sub_iff
 
 theorem nat_sub (h : LiouvilleWith p x) (n : ℕ) : LiouvilleWith p (n - x) :=
   nat_sub_iff.2 h
-#align liouville_with.nat_sub LiouvilleWith.nat_sub
 
 theorem ne_cast_int (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := by
   rintro rfl; rename' m => M
@@ -319,7 +276,6 @@ theorem ne_cast_int (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := 
   rw [← zero_add (1 : ℤ), Int.add_one_le_iff, abs_pos, sub_ne_zero]
   rw [Ne.def, eq_div_iff hn'.ne'] at hne
   exact_mod_cast hne
-#align liouville_with.ne_cast_int LiouvilleWith.ne_cast_int
 
 /-- A number satisfying the Liouville condition with exponent `p > 1` is an irrational number. -/
 protected theorem irrational (h : LiouvilleWith p x) (hp : 1 < p) : Irrational x := by
@@ -329,7 +285,6 @@ protected theorem irrational (h : LiouvilleWith p x) (hp : 1 < p) : Irrational x
   · refine (h.mul_rat (inv_ne_zero h0)).ne_cast_int hp 1 ?_
     rw [Rat.cast_inv, mul_inv_cancel]
     exacts [Int.cast_one.symm, Rat.cast_ne_zero.mpr h0]
-#align liouville_with.irrational LiouvilleWith.irrational
 
 end LiouvilleWith
 
@@ -366,7 +321,6 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
     have hb0 : (0 : ℝ) < b := zero_lt_one.trans hb
     exact one_div_le_one_div_of_le (pow_pos hb0 _) (pow_le_pow hb.le hnm)
   · exact (hm b h hb _).not_lt hlt
-#align liouville.frequently_exists_num Liouville.frequently_exists_num
 
 /-- A Liouville number is a Liouville number with any real exponent. -/
 protected theorem liouvilleWith (hx : Liouville x) (p : ℝ) : LiouvilleWith p x := by
@@ -375,7 +329,6 @@ protected theorem liouvilleWith (hx : Liouville x) (p : ℝ) : LiouvilleWith p x
   rintro b ⟨_hb, a, hne, hlt⟩
   refine ⟨a, hne, ?_⟩
   rwa [rpow_nat_cast]
-#align liouville.liouville_with Liouville.liouvilleWith
 
 end Liouville
 
@@ -387,4 +340,3 @@ theorem forall_liouvilleWith_iff {x : ℝ} : (∀ p, LiouvilleWith p x) ↔ Liou
     ((H (n + 1)).frequently_lt_rpow_neg (lt_add_one (n : ℝ)))).exists
     with ⟨b, hb, a, hne, hlt⟩
   exact ⟨a, b, by exact_mod_cast hb, hne, by simpa [rpow_neg] using hlt⟩
-#align forall_liouville_with_iff forall_liouvilleWith_iff

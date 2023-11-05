@@ -33,17 +33,14 @@ variable {α : Type*}
 
 /-- A linear ordered semifield is a field with a linear order respecting the operations. -/
 class LinearOrderedSemifield (α : Type*) extends LinearOrderedCommSemiring α, Semifield α
-#align linear_ordered_semifield LinearOrderedSemifield
 
 /-- A linear ordered field is a field with a linear order respecting the operations. -/
 class LinearOrderedField (α : Type*) extends LinearOrderedCommRing α, Field α
-#align linear_ordered_field LinearOrderedField
 
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedField.toLinearOrderedSemifield [LinearOrderedField α] :
     LinearOrderedSemifield α :=
   { LinearOrderedRing.toLinearOrderedSemiring, ‹LinearOrderedField α› with }
-#align linear_ordered_field.to_linear_ordered_semifield LinearOrderedField.toLinearOrderedSemifield
 
 -- Guard against import creep.
 assert_not_exists MonoidHom

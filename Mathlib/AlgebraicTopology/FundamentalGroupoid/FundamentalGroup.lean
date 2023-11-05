@@ -33,7 +33,6 @@ open CategoryTheory
 in the fundamental groupoid. -/
 def FundamentalGroup (X : Type u) [TopologicalSpace X] (x : X) :=
   @Aut (FundamentalGroupoid X) _ x
-#align fundamental_group FundamentalGroup
 
 instance (X : Type u) [TopologicalSpace X] (x : X) : Group (FundamentalGroup X x) := by
   dsimp only [FundamentalGroup]
@@ -54,7 +53,6 @@ attribute [local instance] Path.Homotopic.setoid
 def fundamentalGroupMulEquivOfPath (p : Path x₀ x₁) :
     FundamentalGroup X x₀ ≃* FundamentalGroup X x₁ :=
   Aut.autMulEquivOfIso (asIso ⟦p⟧)
-#align fundamental_group.fundamental_group_mul_equiv_of_path FundamentalGroup.fundamentalGroupMulEquivOfPath
 
 variable (x₀ x₁)
 
@@ -62,27 +60,22 @@ variable (x₀ x₁)
 def fundamentalGroupMulEquivOfPathConnected [PathConnectedSpace X] :
     FundamentalGroup X x₀ ≃* FundamentalGroup X x₁ :=
   fundamentalGroupMulEquivOfPath (PathConnectedSpace.somePath x₀ x₁)
-#align fundamental_group.fundamental_group_mul_equiv_of_path_connected FundamentalGroup.fundamentalGroupMulEquivOfPathConnected
 
 /-- An element of the fundamental group as an arrow in the fundamental groupoid. -/
 abbrev toArrow {X : TopCat} {x : X} (p : FundamentalGroup X x) : x ⟶ x :=
   p.hom
-#align fundamental_group.to_arrow FundamentalGroup.toArrow
 
 /-- An element of the fundamental group as a quotient of homotopic paths. -/
 abbrev toPath {X : TopCat} {x : X} (p : FundamentalGroup X x) : Path.Homotopic.Quotient x x :=
   toArrow p
-#align fundamental_group.to_path FundamentalGroup.toPath
 
 /-- An element of the fundamental group, constructed from an arrow in the fundamental groupoid. -/
 abbrev fromArrow {X : TopCat} {x : X} (p : x ⟶ x) : FundamentalGroup X x where
   hom := p
   inv := CategoryTheory.Groupoid.inv p
-#align fundamental_group.from_arrow FundamentalGroup.fromArrow
 
 /-- An element of the fundamental group, constructed from a quotient of homotopic paths. -/
 abbrev fromPath {X : TopCat} {x : X} (p : Path.Homotopic.Quotient x x) : FundamentalGroup X x :=
   fromArrow p
-#align fundamental_group.from_path FundamentalGroup.fromPath
 
 end FundamentalGroup

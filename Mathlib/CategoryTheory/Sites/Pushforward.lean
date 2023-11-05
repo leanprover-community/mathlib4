@@ -53,7 +53,6 @@ same direction as `G`. -/
 @[simps!]
 def Sites.pushforward (G : C ⥤ D) : Sheaf J A ⥤ Sheaf K A :=
   sheafToPresheaf J A ⋙ lan G.op ⋙ presheafToSheaf K A
-#align category_theory.sites.pushforward CategoryTheory.Sites.pushforward
 
 instance (G : C ⥤ D) [RepresentablyFlat G] : PreservesFiniteLimits (Sites.pushforward A J K G) := by
   have : PreservesFiniteLimits (lan (Functor.op G) ⋙ presheafToSheaf K A) :=
@@ -67,6 +66,5 @@ def Sites.pullbackPushforwardAdjunction {G : C ⥤ D} (hG₁ : CompatiblePreserv
     (sheafToPresheaf J A) (𝟭 _)
     (NatIso.ofComponents fun _ => Iso.refl _)
     (NatIso.ofComponents fun _ => Iso.refl _)
-#align category_theory.sites.pullback_pushforward_adjunction CategoryTheory.Sites.pullbackPushforwardAdjunction
 
 end CategoryTheory

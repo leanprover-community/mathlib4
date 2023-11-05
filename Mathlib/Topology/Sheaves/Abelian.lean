@@ -66,15 +66,11 @@ variable [ReflectsIsomorphisms (forget D)]
 instance sheafIsAbelian [HasFiniteLimits D] : Abelian (Sheaf J D) :=
   let adj := sheafificationAdjunction J D
   abelianOfAdjunction _ _ (asIso adj.counit) adj
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf_is_abelian CategoryTheory.sheafIsAbelian
 
 attribute [local instance] preservesBinaryBiproductsOfPreservesBinaryProducts
 
 instance presheafToSheaf_additive : (presheafToSheaf J D).Additive :=
   (presheafToSheaf J D).additive_of_preservesBinaryBiproducts
-set_option linter.uppercaseLean3 false in
-#align category_theory.presheaf_to_Sheaf_additive CategoryTheory.presheafToSheaf_additive
 
 end Abelian
 

@@ -60,7 +60,6 @@ theorem lift_rank_mul_lift_rank :
   rw [← (Module.rank F K).lift_id, ← b.mk_eq_rank, ← (Module.rank K A).lift_id, ← c.mk_eq_rank, ←
     lift_umax.{w, v}, ← (b.smul c).mk_eq_rank, mk_prod, lift_mul, lift_lift, lift_lift, lift_lift,
     lift_lift, lift_umax.{v, w}]
-#align lift_rank_mul_lift_rank lift_rank_mul_lift_rank
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
@@ -71,7 +70,6 @@ theorem rank_mul_rank (F : Type u) (K A : Type v) [CommRing F] [Ring K] [AddComm
     [StrongRankCondition K] [Module.Free F K] [Module.Free K A] :
     Module.rank F K * Module.rank K A = Module.rank F A := by
   convert lift_rank_mul_lift_rank F K A <;> rw [lift_id]
-#align rank_mul_rank rank_mul_rank
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
@@ -82,7 +80,6 @@ theorem FiniteDimensional.finrank_mul_finrank' [Module.Finite F K]
   let c := Module.Free.chooseBasis K A
   rw [finrank_eq_card_basis b, finrank_eq_card_basis c, finrank_eq_card_basis (b.smul c),
     Fintype.card_prod]
-#align finite_dimensional.finrank_mul_finrank' FiniteDimensional.finrank_mul_finrank'
 
 end Ring
 
@@ -98,7 +95,6 @@ open IsNoetherian
 
 theorem trans [FiniteDimensional F K] [FiniteDimensional K A] : FiniteDimensional F A :=
   Module.Finite.trans K A
-#align finite_dimensional.trans FiniteDimensional.trans
 
 /-- In a tower of field extensions `L / K / F`, if `L / F` is finite, so is `K / F`.
 
@@ -109,14 +105,12 @@ Note this cannot be an instance as Lean cannot infer `L`.
 theorem left (K L : Type*) [Field K] [Algebra F K] [Ring L] [Nontrivial L] [Algebra F L]
     [Algebra K L] [IsScalarTower F K L] [FiniteDimensional F L] : FiniteDimensional F K :=
   FiniteDimensional.of_injective (IsScalarTower.toAlgHom F K L).toLinearMap (RingHom.injective _)
-#align finite_dimensional.left FiniteDimensional.left
 
 theorem right [hf : FiniteDimensional F A] : FiniteDimensional K A :=
   let ⟨⟨b, hb⟩⟩ := hf
   ⟨⟨b, Submodule.restrictScalars_injective F _ _ <| by
     rw [Submodule.restrictScalars_top, eq_top_iff, ← hb, Submodule.span_le]
     exact Submodule.subset_span⟩⟩
-#align finite_dimensional.right FiniteDimensional.right
 
 /-- Tower law: if `A` is a `K`-vector space and `K` is a field extension of `F` then
 `dim_F(A) = dim_F(K) * dim_K(A)`.
@@ -128,7 +122,6 @@ theorem finrank_mul_finrank [FiniteDimensional F K] : finrank F K * finrank K A 
     rw [finrank_mul_finrank']
   · rw [finrank_of_infinite_dimensional hA, mul_zero, finrank_of_infinite_dimensional]
     exact mt (@right F K A _ _ _ _ _ _ _) hA
-#align finite_dimensional.finrank_mul_finrank FiniteDimensional.finrank_mul_finrank
 
 theorem Subalgebra.isSimpleOrder_of_finrank_prime (A) [Ring A] [IsDomain A] [Algebra F A]
     (hp : (finrank F A).Prime) : IsSimpleOrder (Subalgebra F A) :=
@@ -142,7 +135,6 @@ theorem Subalgebra.isSimpleOrder_of_finrank_prime (A) [Ring A] [IsDomain A] [Alg
       · exact Subalgebra.eq_bot_of_finrank_one
       · exact
           Algebra.toSubmodule_eq_top.1 (eq_top_of_finrank_eq <| K.finrank_toSubmodule.trans h) }
-#align finite_dimensional.subalgebra.is_simple_order_of_finrank_prime FiniteDimensional.Subalgebra.isSimpleOrder_of_finrank_prime
 -- TODO: `IntermediateField` version
 
 -- TODO: generalize by removing [FiniteDimensional F K]
@@ -152,7 +144,6 @@ instance _root_.LinearMap.finite_dimensional'' (F : Type u) (K : Type v) (V : Ty
     [Field K] [Algebra F K] [FiniteDimensional F K] [AddCommGroup V] [Module F V]
     [FiniteDimensional F V] : FiniteDimensional K (V →ₗ[F] K) :=
   right F _ _
-#align linear_map.finite_dimensional'' LinearMap.finite_dimensional''
 
 theorem finrank_linear_map' (F : Type u) (K : Type v) (V : Type w) [Field F] [Field K] [Algebra F K]
     [FiniteDimensional F K] [AddCommGroup V] [Module F V] [FiniteDimensional F V] :
@@ -162,7 +153,6 @@ theorem finrank_linear_map' (F : Type u) (K : Type v) (V : Type w) [Field F] [Fi
       finrank F K * finrank K (V →ₗ[F] K) = finrank F (V →ₗ[F] K) := finrank_mul_finrank _ _ _
       _ = finrank F V * finrank F K := (finrank_linearMap F V K)
       _ = finrank F K * finrank F V := mul_comm _ _
-#align finite_dimensional.finrank_linear_map' FiniteDimensional.finrank_linear_map'
 
 end FiniteDimensional
 

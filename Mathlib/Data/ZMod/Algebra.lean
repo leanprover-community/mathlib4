@@ -37,7 +37,6 @@ def algebra' (h : m ∣ n) : Algebra (ZMod n) R :=
         rw [map_intCast]
         exact Commute.cast_int_left r k
     smul_def' := fun a r => rfl }
-#align zmod.algebra' ZMod.algebra'
 
 end
 
@@ -47,6 +46,5 @@ See note [reducible non-instances]. -/
 @[reducible]
 def algebra (p : ℕ) [CharP R p] : Algebra (ZMod p) R :=
   algebra' R p dvd_rfl
-#align zmod.algebra ZMod.algebra
 
 end ZMod

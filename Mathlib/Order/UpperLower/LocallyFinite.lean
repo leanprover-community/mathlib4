@@ -23,12 +23,10 @@ protected theorem Finite.upperClosure [LocallyFiniteOrderTop α] (hs : s.Finite)
     (upperClosure s : Set α).Finite := by
   rw [coe_upperClosure]
   exact hs.biUnion fun _ _ => finite_Ici _
-#align set.finite.upper_closure Set.Finite.upperClosure
 
 protected theorem Finite.lowerClosure [LocallyFiniteOrderBot α] (hs : s.Finite) :
     (lowerClosure s : Set α).Finite := by
   rw [coe_lowerClosure]
   exact hs.biUnion fun _ _ => finite_Iic _
-#align set.finite.lower_closure Set.Finite.lowerClosure
 
 end Set

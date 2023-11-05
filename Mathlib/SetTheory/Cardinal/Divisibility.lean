@@ -56,7 +56,6 @@ theorem isUnit_iff : IsUnit a ↔ a = 1 := by
     intro h
     rw [h, mul_zero] at ht
     exact zero_ne_one ht
-#align cardinal.is_unit_iff Cardinal.isUnit_iff
 
 instance : Unique Cardinal.{u}ˣ where
   default := 1
@@ -66,11 +65,9 @@ theorem le_of_dvd : ∀ {a b : Cardinal}, b ≠ 0 → a ∣ b → a ≤ b
   | a, x, b0, ⟨b, hab⟩ => by
     simpa only [hab, mul_one] using
       mul_le_mul_left' (one_le_iff_ne_zero.2 fun h : b = 0 => b0 (by rwa [h, mul_zero] at hab)) a
-#align cardinal.le_of_dvd Cardinal.le_of_dvd
 
 theorem dvd_of_le_of_aleph0_le (ha : a ≠ 0) (h : a ≤ b) (hb : ℵ₀ ≤ b) : a ∣ b :=
   ⟨b, (mul_eq_right hb h ha).symm⟩
-#align cardinal.dvd_of_le_of_aleph_0_le Cardinal.dvd_of_le_of_aleph0_le
 
 @[simp]
 theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
@@ -86,14 +83,12 @@ theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
   left
   have habc := le_of_dvd hz hbc
   rwa [mul_eq_max' <| ha.trans <| habc, max_def', if_pos h] at hbc
-#align cardinal.prime_of_aleph_0_le Cardinal.prime_of_aleph0_le
 
 theorem not_irreducible_of_aleph0_le (ha : ℵ₀ ≤ a) : ¬Irreducible a := by
   rw [irreducible_iff, not_and_or]
   refine' Or.inr fun h => _
   simpa [mul_aleph0_eq ha, isUnit_iff, (one_lt_aleph0.trans_le ha).ne', one_lt_aleph0.ne'] using
     h a ℵ₀
-#align cardinal.not_irreducible_of_aleph_0_le Cardinal.not_irreducible_of_aleph0_le
 
 @[simp, norm_cast]
 theorem nat_coe_dvd_iff : (n : Cardinal) ∣ m ↔ n ∣ m := by
@@ -105,7 +100,6 @@ theorem nat_coe_dvd_iff : (n : Cardinal) ∣ m ↔ n ∣ m := by
   iterate 2 simp only [h, mul_zero, zero_mul, Nat.cast_eq_zero] at hk; simp [hk]
   lift k to ℕ using hk'
   exact ⟨k, by exact_mod_cast hk⟩
-#align cardinal.nat_coe_dvd_iff Cardinal.nat_coe_dvd_iff
 
 @[simp]
 theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
@@ -131,14 +125,12 @@ theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
   rwa [mul_comm] at hbc
   rwa [mul_comm] at h'
   exact Or.inl (dvd_of_le_of_aleph0_le hn ((nat_lt_aleph0 n).le.trans hℵ₀b) hℵ₀b)
-#align cardinal.nat_is_prime_iff Cardinal.nat_is_prime_iff
 
 theorem is_prime_iff {a : Cardinal} : Prime a ↔ ℵ₀ ≤ a ∨ ∃ p : ℕ, a = p ∧ p.Prime := by
   cases' le_or_lt ℵ₀ a with h h
   · simp [h]
   lift a to ℕ using id h
   simp [not_le.mpr h]
-#align cardinal.is_prime_iff Cardinal.is_prime_iff
 
 theorem isPrimePow_iff {a : Cardinal} : IsPrimePow a ↔ ℵ₀ ≤ a ∨ ∃ n : ℕ, a = n ∧ IsPrimePow n := by
   by_cases h : ℵ₀ ≤ a
@@ -154,6 +146,5 @@ theorem isPrimePow_iff {a : Cardinal} : IsPrimePow a ↔ ℵ₀ ≤ a ∨ ∃ n 
   rw [power_one] at key
   lift p to ℕ using key.trans_lt (nat_lt_aleph0 a)
   exact ⟨a, rfl, p, k, nat_is_prime_iff.mp hp, hk, by exact_mod_cast hpk⟩
-#align cardinal.is_prime_pow_iff Cardinal.isPrimePow_iff
 
 end Cardinal

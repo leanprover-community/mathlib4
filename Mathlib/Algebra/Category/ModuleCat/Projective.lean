@@ -41,7 +41,6 @@ theorem IsProjective.iff_projective {R : Type u} [Ring R] {P : Type max u v} [Ad
     haveI : Epi (↟f) := (ModuleCat.epi_iff_surjective (↟f)).mpr s
     letI : Projective (ModuleCat.of R P) := h
     exact ⟨Projective.factorThru (↟g) (↟f), Projective.factorThru_comp (↟g) (↟f)⟩
-#align is_projective.iff_projective IsProjective.iff_projective
 
 namespace ModuleCat
 
@@ -52,8 +51,6 @@ variable {R : Type u} [Ring R] {M : ModuleCat.{max u v} R}
 theorem projective_of_free {ι : Type u'} (b : Basis ι R M) : Projective M :=
   Projective.of_iso (ModuleCat.ofSelfIso M)
     (IsProjective.iff_projective.{v,u}.mp (Module.Projective.of_basis b))
-set_option linter.uppercaseLean3 false in
-#align Module.projective_of_free ModuleCat.projective_of_free
 
 /-- The category of modules has enough projectives, since every module is a quotient of a free
     module. -/
@@ -73,7 +70,5 @@ instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
               erw [Finsupp.total_single]
               rw [one_smul]
               rfl ⟩) }⟩
-set_option linter.uppercaseLean3 false in
-#align Module.Module_enough_projectives ModuleCat.moduleCat_enoughProjectives
 
 end ModuleCat

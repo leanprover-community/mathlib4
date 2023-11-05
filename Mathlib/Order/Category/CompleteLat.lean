@@ -23,7 +23,6 @@ open CategoryTheory
 /-- The category of complete lattices. -/
 def CompleteLat :=
   Bundled CompleteLattice
-#align CompleteLat CompleteLat
 
 namespace CompleteLat
 
@@ -36,12 +35,10 @@ instance (X : CompleteLat) : CompleteLattice X :=
 /-- Construct a bundled `CompleteLat` from a `CompleteLattice`. -/
 def of (α : Type*) [CompleteLattice α] : CompleteLat :=
   Bundled.of α
-#align CompleteLat.of CompleteLat.of
 
 @[simp]
 theorem coe_of (α : Type*) [CompleteLattice α] : ↥(of α) = α :=
   rfl
-#align CompleteLat.coe_of CompleteLat.coe_of
 
 instance : Inhabited CompleteLat :=
   ⟨of PUnit⟩
@@ -62,7 +59,6 @@ instance hasForgetToBddLat : HasForget₂ CompleteLat BddLat where
     { obj := fun X => BddLat.of X
       map := fun {X Y} => CompleteLatticeHom.toBoundedLatticeHom }
   forget_comp := rfl
-#align CompleteLat.has_forget_to_BddLat CompleteLat.hasForgetToBddLat
 
 /-- Constructs an isomorphism of complete lattices from an order isomorphism between them. -/
 @[simps]
@@ -71,14 +67,12 @@ def Iso.mk {α β : CompleteLat.{u}} (e : α ≃o β) : α ≅ β where
   inv := (e.symm : CompleteLatticeHom _ _)
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
-#align CompleteLat.iso.mk CompleteLat.Iso.mk
 
 /-- `OrderDual` as a functor. -/
 @[simps]
 def dual : CompleteLat ⥤ CompleteLat where
   obj X := of Xᵒᵈ
   map {X Y} := CompleteLatticeHom.dual
-#align CompleteLat.dual CompleteLat.dual
 
 /-- The equivalence between `CompleteLat` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
@@ -87,7 +81,6 @@ def dualEquiv : CompleteLat ≌ CompleteLat where
   inverse := dual
   unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
   counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
-#align CompleteLat.dual_equiv CompleteLat.dualEquiv
 
 end CompleteLat
 
@@ -95,4 +88,3 @@ theorem completeLat_dual_comp_forget_to_bddLat :
     CompleteLat.dual ⋙ forget₂ CompleteLat BddLat =
     forget₂ CompleteLat BddLat ⋙ BddLat.dual :=
   rfl
-#align CompleteLat_dual_comp_forget_to_BddLat completeLat_dual_comp_forget_to_bddLat

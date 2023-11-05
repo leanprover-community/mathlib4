@@ -19,8 +19,6 @@ variable {α : Type*}
 @[to_additive]
 instance OrderDual.orderedCommGroup [OrderedCommGroup α] : OrderedCommGroup αᵒᵈ :=
   { OrderDual.orderedCommMonoid, OrderDual.instGroup with }
-#align order_dual.ordered_comm_group OrderDual.orderedCommGroup
-#align order_dual.ordered_add_comm_group OrderDual.orderedAddCommGroup
 
 @[to_additive]
 instance OrderDual.linearOrderedCommGroup [LinearOrderedCommGroup α] : LinearOrderedCommGroup αᵒᵈ :=

@@ -44,7 +44,6 @@ theorem two_pow_mod_seven (n : ℕ) : 2 ^ n ≡ 2 ^ (n % 3) [MOD 7] :=
 
 def ProblemPredicate (n : ℕ) : Prop :=
   7 ∣ 2 ^ n - 1
-#align imo1964_q1.problem_predicate Imo1964Q1.ProblemPredicate
 
 theorem imo1964_q1a (n : ℕ) (_ : 0 < n) : ProblemPredicate n ↔ 3 ∣ n := by
   let t := n % 3
@@ -55,7 +54,6 @@ theorem imo1964_q1a (n : ℕ) (_ : 0 < n) : ProblemPredicate n ↔ 3 ∣ n := by
     _ ↔ 2 ^ t ≡ 1 [MOD 7] := ⟨(two_pow_mod_seven n).symm.trans, (two_pow_mod_seven n).trans⟩
     _ ↔ t = 0 := by interval_cases t <;> decide
     _ ↔ 3 ∣ n := by rw [dvd_iff_mod_eq_zero]
-#align imo1964_q1.imo1964_q1a Imo1964Q1.imo1964_q1a
 
 end Imo1964Q1
 
@@ -69,4 +67,3 @@ theorem imo1964_q1b (n : ℕ) : ¬7 ∣ 2 ^ n + 1 := by
   · calc 2 ^ t + 1 ≡ 2 ^ n + 1 [MOD 7 ] := by gcongr ?_ + 1; exact (two_pow_mod_seven n).symm
       _ ≡ 0 [MOD 7] := h.modEq_zero_nat
   interval_cases t <;> norm_num at H
-#align imo1964_q1b imo1964_q1b

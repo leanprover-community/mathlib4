@@ -70,7 +70,6 @@ theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃
         exact (lt_div_iff' hlt).1 hxy₀
       _ ≤ dist x (y₀ + y) := (Metric.infDist_le_dist_of_mem hy₀y)
       _ = ‖x - y₀ - y‖ := by rw [sub_sub, dist_eq_norm]
-#align riesz_lemma riesz_lemma
 
 /--
 A version of Riesz lemma: given a strict closed subspace `F`, one may find an element of norm `≤ R`
@@ -105,7 +104,6 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
       ring
     _ ≤ ‖d‖ * ‖x - y'‖ := by gcongr; exact hx y' (by simp [Submodule.smul_mem _ _ hy])
     _ = ‖d • x - y‖ := by rw [yy', ←smul_sub, norm_smul]
-#align riesz_lemma_of_norm_lt riesz_lemma_of_norm_lt
 
 theorem Metric.closedBall_infDist_compl_subset_closure {x : F} {s : Set F} (hx : x ∈ s) :
     closedBall x (infDist x sᶜ) ⊆ closure s := by
@@ -114,4 +112,3 @@ theorem Metric.closedBall_infDist_compl_subset_closure {x : F} {s : Set F} (hx :
     exact closure_mono (singleton_subset_iff.2 hx)
   · rw [← closure_ball x h₀]
     exact closure_mono ball_infDist_compl_subset
-#align metric.closed_ball_inf_dist_compl_subset_closure Metric.closedBall_infDist_compl_subset_closure

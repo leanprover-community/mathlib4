@@ -23,17 +23,14 @@ class LinearOrderedCommMonoidWithZero (α : Type*) extends LinearOrderedCommMono
   CommMonoidWithZero α where
   /-- `0 ≤ 1` in any linearly ordered commutative monoid. -/
   zero_le_one : (0 : α) ≤ 1
-#align linear_ordered_comm_monoid_with_zero LinearOrderedCommMonoidWithZero
 
 instance (priority := 100) LinearOrderedCommMonoidWithZero.toZeroLeOneClass
     [LinearOrderedCommMonoidWithZero α] : ZeroLEOneClass α :=
   { ‹LinearOrderedCommMonoidWithZero α› with }
-#align linear_ordered_comm_monoid_with_zero.to_zero_le_one_class LinearOrderedCommMonoidWithZero.toZeroLeOneClass
 
 instance (priority := 100) canonicallyOrderedAddCommMonoid.toZeroLeOneClass
     [CanonicallyOrderedAddCommMonoid α] [One α] : ZeroLEOneClass α :=
   ⟨zero_le 1⟩
-#align canonically_ordered_add_monoid.to_zero_le_one_class canonicallyOrderedAddCommMonoid.toZeroLeOneClass
 
 namespace WithZero
 
@@ -48,25 +45,20 @@ instance orderBot [Preorder α] : OrderBot (WithZero α) :=
 
 theorem zero_le [Preorder α] (a : WithZero α) : 0 ≤ a :=
   bot_le
-#align with_zero.zero_le WithZero.zero_le
 
 theorem zero_lt_coe [Preorder α] (a : α) : (0 : WithZero α) < a :=
   WithBot.bot_lt_coe a
-#align with_zero.zero_lt_coe WithZero.zero_lt_coe
 
 theorem zero_eq_bot [Preorder α] : (0 : WithZero α) = ⊥ :=
   rfl
-#align with_zero.zero_eq_bot WithZero.zero_eq_bot
 
 @[simp, norm_cast]
 theorem coe_lt_coe [Preorder α] {a b : α} : (a : WithZero α) < b ↔ a < b :=
   WithBot.coe_lt_coe
-#align with_zero.coe_lt_coe WithZero.coe_lt_coe
 
 @[simp, norm_cast]
 theorem coe_le_coe [Preorder α] {a b : α} : (a : WithZero α) ≤ b ↔ a ≤ b :=
   WithBot.coe_le_coe
-#align with_zero.coe_le_coe WithZero.coe_le_coe
 
 instance lattice [Lattice α] : Lattice (WithZero α) :=
   WithBot.lattice
@@ -87,19 +79,16 @@ instance covariantClass_mul_le [Mul α] [Preorder α]
   -- `coe` and `WithBot.some`, even though they're definitionally equal as shown by the `refine'`
   rw [← coe_mul, coe_le_coe]
   exact mul_le_mul_left' hbc' _
-#align with_zero.covariant_class_mul_le WithZero.covariantClass_mul_le
 
 -- Porting note: @[simp] can prove this
 nonrec theorem le_max_iff [LinearOrder α] {a b c : α} :
     (a : WithZero α) ≤ max (b : WithZero α) c ↔ a ≤ max b c := by
   simp only [WithZero.coe_le_coe, le_max_iff]
-#align with_zero.le_max_iff WithZero.le_max_iff
 
 -- Porting note: @[simp] can prove this
 nonrec theorem min_le_iff [LinearOrder α] {a b c : α} :
     min (a : WithZero α) b ≤ c ↔ min a b ≤ c := by
   simp only [WithZero.coe_le_coe, min_le_iff]
-#align with_zero.min_le_iff WithZero.min_le_iff
 
 instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid (WithZero α) :=
   { WithZero.commMonoidWithZero.toCommMonoid, WithZero.partialOrder with
@@ -124,7 +113,6 @@ protected theorem covariantClass_add_le [AddZeroClass α] [Preorder α]
     refine le_trans ?_ (le_of_eq <| coe_add _ _)
     rw [← coe_add, coe_le_coe]
     exact add_le_add_left hbc' _
-#align with_zero.covariant_class_add_le WithZero.covariantClass_add_le
 
 /-
 Note 1 : the below is not an instance because it requires `zero_le`. It seems
@@ -141,7 +129,6 @@ protected def orderedAddCommMonoid [OrderedAddCommMonoid α] (zero_le : ∀ a : 
     OrderedAddCommMonoid (WithZero α) :=
   { WithZero.partialOrder, WithZero.addCommMonoid with
     add_le_add_left := @add_le_add_left _ _ _ (WithZero.covariantClass_add_le zero_le).. }
-#align with_zero.ordered_add_comm_monoid WithZero.orderedAddCommMonoid
 
 section CanonicallyOrderedCommMonoid
 
@@ -155,7 +142,6 @@ instance existsAddOfLE [Add α] [Preorder α] [ExistsAddOfLE α] :
     intro h
     obtain ⟨c, rfl⟩ := exists_add_of_le (WithZero.coe_le_coe.1 h)
     exact ⟨c, rfl⟩⟩
-#align with_zero.has_exists_add_of_le WithZero.existsAddOfLE
 
 -- This instance looks absurd: a monoid already has a zero
 /-- Adding a new zero to a canonically ordered additive monoid produces another one. -/
@@ -170,7 +156,6 @@ instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
       induction b using WithZero.cases_on
       · exact le_rfl
       · exact WithZero.coe_le_coe.2 le_self_add }
-#align with_zero.canonically_ordered_add_monoid WithZero.canonicallyOrderedAddCommMonoid
 
 end CanonicallyOrderedCommMonoid
 
@@ -180,7 +165,6 @@ instance canonicallyLinearOrderedAddCommMonoid (α : Type*)
     [CanonicallyLinearOrderedAddCommMonoid α] :
     CanonicallyLinearOrderedAddCommMonoid (WithZero α) :=
   { WithZero.canonicallyOrderedAddCommMonoid, WithZero.linearOrder with }
-#align with_zero.canonically_linear_ordered_add_monoid WithZero.canonicallyLinearOrderedAddCommMonoid
 
 end CanonicallyLinearOrderedCommMonoid
 

@@ -12,7 +12,6 @@ set_option autoImplicit true
 
 class Zero.{u} (α : Type u) where
   zero : α
-#align has_zero Zero
 
 instance Zero.toOfNat0 {α} [Zero α] : OfNat α (nat_lit 0) where
   ofNat := ‹Zero α›.1
@@ -24,7 +23,6 @@ instance Zero.ofOfNat0 {α} [OfNat α (nat_lit 0)] : Zero α where
 @[to_additive]
 class One (α : Type u) where
   one : α
-#align has_one One
 
 @[to_additive existing Zero.toOfNat0]
 instance One.toOfNat1 {α} [One α] : OfNat α (nat_lit 1) where

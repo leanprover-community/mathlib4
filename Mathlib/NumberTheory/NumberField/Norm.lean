@@ -34,23 +34,19 @@ variable {L : Type*} (K : Type*) [Field K] [Field L] [Algebra K L] [FiniteDimens
 @[simps!]
 noncomputable def norm [IsSeparable K L] : 𝓞 L →* 𝓞 K :=
   ((Algebra.norm K).restrict (𝓞 L)).codRestrict (𝓞 K) fun x => isIntegral_norm K x.2
-#align ring_of_integers.norm RingOfIntegers.norm
 
 theorem coe_algebraMap_norm [IsSeparable K L] (x : 𝓞 L) :
     (algebraMap (𝓞 K) (𝓞 L) (norm K x) : L) = algebraMap K L (Algebra.norm K (x : L)) :=
   rfl
-#align ring_of_integers.coe_algebra_map_norm RingOfIntegers.coe_algebraMap_norm
 
 theorem coe_norm_algebraMap [IsSeparable K L] (x : 𝓞 K) :
     (norm K (algebraMap (𝓞 K) (𝓞 L) x) : K) = Algebra.norm K (algebraMap K L x) :=
   rfl
-#align ring_of_integers.coe_norm_algebra_map RingOfIntegers.coe_norm_algebraMap
 
 theorem norm_algebraMap [IsSeparable K L] (x : 𝓞 K) :
     norm K (algebraMap (𝓞 K) (𝓞 L) x) = x ^ finrank K L := by
   rw [← Subtype.coe_inj, RingOfIntegers.coe_norm_algebraMap, Algebra.norm_algebraMap,
     SubsemiringClass.coe_pow]
-#align ring_of_integers.norm_algebra_map RingOfIntegers.norm_algebraMap
 
 theorem isUnit_norm_of_isGalois [IsGalois K L] {x : 𝓞 L} : IsUnit (norm K x) ↔ IsUnit x := by
   classical
@@ -66,7 +62,6 @@ theorem isUnit_norm_of_isGalois [IsGalois K L] {x : 𝓞 L} : IsUnit (norm K x) 
     ∏ σ : L ≃ₐ[K] L in {AlgEquiv.refl}, σ (x : L) = _
   · rw [prod_singleton, AlgEquiv.coe_refl, _root_.id]
   · rw [prod_sdiff <| subset_univ _, ← norm_eq_prod_automorphisms, coe_algebraMap_norm]
-#align ring_of_integers.is_unit_norm_of_is_galois RingOfIntegers.isUnit_norm_of_isGalois
 
 /-- If `L/K` is a finite Galois extension of fields, then, for all `(x : 𝓞 L)` we have that
 `x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x)`. -/
@@ -78,14 +73,12 @@ theorem dvd_norm [IsGalois K L] (x : 𝓞 L) : x ∣ algebraMap (𝓞 K) (𝓞 L
   refine' ⟨⟨_, hint⟩, Subtype.ext _⟩
   rw [coe_algebraMap_norm K x, norm_eq_prod_automorphisms]
   simp [← Finset.mul_prod_erase _ _ (mem_univ AlgEquiv.refl)]
-#align ring_of_integers.dvd_norm RingOfIntegers.dvd_norm
 
 variable (F : Type*) [Field F] [Algebra K F] [IsSeparable K F] [FiniteDimensional K F]
 
 theorem norm_norm [IsSeparable K L] [Algebra F L] [IsSeparable F L] [FiniteDimensional F L]
     [IsScalarTower K F L] (x : 𝓞 L) : norm K (norm F x) = norm K x := by
   rw [← Subtype.coe_inj, norm_apply_coe, norm_apply_coe, norm_apply_coe, Algebra.norm_norm]
-#align ring_of_integers.norm_norm RingOfIntegers.norm_norm
 
 variable {F}
 
@@ -105,6 +98,5 @@ theorem isUnit_norm [CharZero K] {x : 𝓞 F} : IsUnit (norm K x) ↔ IsUnit x :
     _ ↔ IsUnit (norm F (algebraMap (𝓞 F) (𝓞 L) x)) := (isUnit_norm_of_isGalois F).symm
     _ ↔ IsUnit (x ^ finrank F L) := (congr_arg IsUnit (norm_algebraMap F _)).to_iff
     _ ↔ IsUnit x := isUnit_pow_iff (pos_iff_ne_zero.mp finrank_pos)
-#align ring_of_integers.is_unit_norm RingOfIntegers.isUnit_norm
 
 end RingOfIntegers

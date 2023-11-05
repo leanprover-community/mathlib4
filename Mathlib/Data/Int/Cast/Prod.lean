@@ -26,11 +26,9 @@ instance : AddGroupWithOne (α × β) :=
 @[simp]
 theorem fst_intCast (n : ℤ) : (n : α × β).fst = n :=
   rfl
-#align prod.fst_int_cast Prod.fst_intCast
 
 @[simp]
 theorem snd_intCast (n : ℤ) : (n : α × β).snd = n :=
   rfl
-#align prod.snd_int_cast Prod.snd_intCast
 
 end Prod

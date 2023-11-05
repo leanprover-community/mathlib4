@@ -32,4 +32,3 @@ theorem LinearMap.isClosed_or_dense_ker (l : M →ₗ[R] N) :
   · rw [LinearMap.ker_zero]
     left
     exact isClosed_univ
-#align linear_map.is_closed_or_dense_ker LinearMap.isClosed_or_dense_ker

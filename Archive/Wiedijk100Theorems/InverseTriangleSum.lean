@@ -37,4 +37,3 @@ theorem Theorem100.inverse_triangle_sum :
   push_cast
   field_simp
   ring
-#align theorem_100.inverse_triangle_sum Theorem100.inverse_triangle_sum

@@ -46,13 +46,11 @@ theorem card_le : #L ≤ #R := by
     use (x, y)
     dsimp
     rwa [dif_pos <| show ↑y ∈ S from y.2, SetLike.eta]
-#align is_localization.card_le IsLocalization.card_le
 
 variable (L)
 
 /-- If you do not localize at any zero-divisors, localization preserves cardinality. -/
 theorem card (hS : S ≤ R⁰) : #R = #L :=
   (Cardinal.mk_le_of_injective (IsLocalization.injective L hS)).antisymm (card_le S)
-#align is_localization.card IsLocalization.card
 
 end IsLocalization

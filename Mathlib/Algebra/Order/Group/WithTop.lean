@@ -29,12 +29,10 @@ instance linearOrderedAddCommGroupWithTop : LinearOrderedAddCommGroupWithTop (Wi
     rintro (a | a) ha
     · exact (ha rfl).elim
     · exact WithTop.coe_add.symm.trans (WithTop.coe_eq_coe.2 (add_neg_self a))
-#align with_top.linear_ordered_add_comm_group_with_top WithTop.linearOrderedAddCommGroupWithTop
 
 @[simp, norm_cast]
 theorem coe_neg (a : α) : ((-a : α) : WithTop α) = -a :=
   rfl
-#align with_top.coe_neg WithTop.coe_neg
 
 end LinearOrderedAddCommGroup
 

@@ -36,11 +36,9 @@ This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean
 set_option autoImplicit true
 
 def Set (α : Type u) := α → Prop
-#align set Set
 
 def setOf {α : Type u} (p : α → Prop) : Set α :=
   p
-#align set_of setOf
 
 namespace Set
 
@@ -88,7 +86,6 @@ macro (priority := low) "{" t:term " | " bs:extBinders "}" : term =>
   `({x | ∃ᵉ $bs:extBinders, $t = x})
 
 def univ : Set α := {_a | True}
-#align set.univ Set.univ
 
 protected def insert (a : α) (s : Set α) : Set α := {b | b = a ∨ b ∈ s}
 
@@ -132,6 +129,5 @@ in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives ac
 to the dot notation. -/
 protected def Nonempty (s : Set α) : Prop :=
   ∃ x, x ∈ s
-#align set.nonempty Set.Nonempty
 
 end Set

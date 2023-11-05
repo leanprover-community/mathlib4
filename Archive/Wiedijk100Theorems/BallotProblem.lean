@@ -39,12 +39,10 @@ namespace Ballot
 /-- The set of nonempty lists of integers which suffix has positive sum. -/
 def staysPositive : Set (List ℤ) :=
   {l | ∀ l₂, l₂ ≠ [] → l₂ <:+ l → 0 < l₂.sum}
-#align ballot.stays_positive Ballot.staysPositive
 
 @[simp]
 theorem staysPositive_nil : [] ∈ staysPositive :=
   fun _ hl hl₁ => (hl (List.eq_nil_of_suffix_nil hl₁)).elim
-#align ballot.stays_positive_nil Ballot.staysPositive_nil
 
 theorem staysPositive_cons_pos (x : ℤ) (hx : 0 < x) (l : List ℤ) :
     (x::l) ∈ staysPositive ↔ l ∈ staysPositive := by
@@ -60,7 +58,6 @@ theorem staysPositive_cons_pos (x : ℤ) (hx : 0 < x) (l : List ℤ) :
       · simp
       · apply le_of_lt (hl (hd::tl) (List.cons_ne_nil hd tl) (hd::tl).suffix_refl)
     · apply hl _ hl₁ hl₂
-#align ballot.stays_positive_cons_pos Ballot.staysPositive_cons_pos
 
 /-- `countedSequence p q` is the set of lists of integers for which every element is `+1` or `-1`,
 there are `p` lots of `+1` and `q` lots of `-1`.
@@ -70,7 +67,6 @@ This represents vote sequences where candidate `+1` receives `p` votes and candi
 -/
 def countedSequence (p q : ℕ) : Set (List ℤ) :=
   {l | l.count 1 = p ∧ l.count (-1) = q ∧ ∀ x ∈ l, x = (1 : ℤ) ∨ x = -1}
-#align ballot.counted_sequence Ballot.countedSequence
 
 /-- An alternative definition of `countedSequence` that uses `List.Perm`. -/
 theorem mem_countedSequence_iff_perm {p q l} :
@@ -79,39 +75,31 @@ theorem mem_countedSequence_iff_perm {p q l} :
   · simp only [countedSequence, List.subset_def, mem_setOf_eq, List.mem_cons (b := (1 : ℤ)),
       List.mem_singleton]
   · norm_num1
-#align ballot.mem_counted_sequence_iff_perm Ballot.mem_countedSequence_iff_perm
 
 @[simp]
 theorem counted_right_zero (p : ℕ) : countedSequence p 0 = {List.replicate p 1} := by
   ext l; simp [mem_countedSequence_iff_perm]
-#align ballot.counted_right_zero Ballot.counted_right_zero
 
 @[simp]
 theorem counted_left_zero (q : ℕ) : countedSequence 0 q = {List.replicate q (-1)} := by
   ext l; simp [mem_countedSequence_iff_perm]
-#align ballot.counted_left_zero Ballot.counted_left_zero
 
 theorem mem_of_mem_countedSequence {p q} {l} (hl : l ∈ countedSequence p q) {x : ℤ} (hx : x ∈ l) :
     x = 1 ∨ x = -1 :=
   hl.2.2 x hx
-#align ballot.mem_of_mem_counted_sequence Ballot.mem_of_mem_countedSequence
 
 theorem length_of_mem_countedSequence {p q} {l : List ℤ} (hl : l ∈ countedSequence p q) :
     l.length = p + q := by simp [(mem_countedSequence_iff_perm.1 hl).length_eq]
-#align ballot.length_of_mem_counted_sequence Ballot.length_of_mem_countedSequence
 
 theorem counted_eq_nil_iff {p q : ℕ} {l : List ℤ} (hl : l ∈ countedSequence p q) :
     l = [] ↔ p = 0 ∧ q = 0 :=
   List.length_eq_zero.symm.trans <| by simp [length_of_mem_countedSequence hl]
-#align ballot.counted_eq_nil_iff Ballot.counted_eq_nil_iff
 
 theorem counted_ne_nil_left {p q : ℕ} (hp : p ≠ 0) {l : List ℤ} (hl : l ∈ countedSequence p q) :
     l ≠ [] := by simp [counted_eq_nil_iff hl, hp]
-#align ballot.counted_ne_nil_left Ballot.counted_ne_nil_left
 
 theorem counted_ne_nil_right {p q : ℕ} (hq : q ≠ 0) {l : List ℤ} (hl : l ∈ countedSequence p q) :
     l ≠ [] := by simp [counted_eq_nil_iff hl, hq]
-#align ballot.counted_ne_nil_right Ballot.counted_ne_nil_right
 
 -- Porting note: Added this helper function to help with golfing
 private theorem get0_eq_head! {l : List ℤ} (h : l ≠ []) :
@@ -157,7 +145,6 @@ theorem counted_succ_succ (p q : ℕ) :
       · rw [List.count_cons, if_pos rfl, ht₁]
       · rintro x (_ | _)
         exacts [Or.inr rfl, ht₂ x (by tauto)]
-#align ballot.counted_succ_succ Ballot.counted_succ_succ
 
 theorem countedSequence_finite : ∀ p q : ℕ, (countedSequence p q).Finite
   | 0, q => by simp
@@ -167,7 +154,6 @@ theorem countedSequence_finite : ∀ p q : ℕ, (countedSequence p q).Finite
       Set.finite_image_iff (List.cons_injective.injOn _)]
     exact ⟨countedSequence_finite _ _, countedSequence_finite _ _⟩
 termination_by _ p q => p + q -- Porting note: Added `termination_by`
-#align ballot.counted_sequence_finite Ballot.countedSequence_finite
 
 theorem countedSequence_nonempty : ∀ p q : ℕ, (countedSequence p q).Nonempty
   | 0, q => by simp
@@ -175,18 +161,15 @@ theorem countedSequence_nonempty : ∀ p q : ℕ, (countedSequence p q).Nonempty
   | p + 1, q + 1 => by
     rw [counted_succ_succ, union_nonempty, nonempty_image_iff]
     exact Or.inl (countedSequence_nonempty _ _)
-#align ballot.counted_sequence_nonempty Ballot.countedSequence_nonempty
 
 theorem sum_of_mem_countedSequence {p q} {l : List ℤ} (hl : l ∈ countedSequence p q) :
     l.sum = p - q := by simp [(mem_countedSequence_iff_perm.1 hl).sum_eq, sub_eq_add_neg]
-#align ballot.sum_of_mem_counted_sequence Ballot.sum_of_mem_countedSequence
 
 theorem disjoint_bits (p q : ℕ) :
     Disjoint (List.cons 1 '' countedSequence p (q + 1))
       (List.cons (-1) '' countedSequence (p + 1) q) := by
   simp_rw [disjoint_left, mem_image, not_exists, exists_imp]
   rintro _ _ ⟨_, rfl⟩ _ ⟨_, _, _⟩
-#align ballot.disjoint_bits Ballot.disjoint_bits
 
 open MeasureTheory.Measure
 
@@ -211,7 +194,6 @@ theorem count_countedSequence : ∀ p q : ℕ, count (countedSequence p q) = (p 
     · norm_cast
       rw [add_assoc, add_comm 1 q, ← Nat.choose_succ_succ, Nat.succ_eq_add_one, add_right_comm]
 termination_by _ p q => p + q -- Porting note: Added `termination_by`
-#align ballot.count_counted_sequence Ballot.count_countedSequence
 
 theorem first_vote_pos :
     ∀ p q,
@@ -250,12 +232,10 @@ theorem first_vote_pos :
             mul_comm]
         all_goals simp [(Nat.choose_pos <| (le_add_iff_nonneg_right _).2 zero_le').ne.symm]
     · simp
-#align ballot.first_vote_pos Ballot.first_vote_pos
 
 theorem headI_mem_of_nonempty {α : Type*} [Inhabited α] : ∀ {l : List α} (_ : l ≠ []), l.headI ∈ l
   | [], h => (h rfl).elim
   | x::l, _ => List.mem_cons_self x l
-#align ballot.head_mem_of_nonempty Ballot.headI_mem_of_nonempty
 
 theorem first_vote_neg (p q : ℕ) (h : 0 < p + q) :
     condCount (countedSequence p q) {l | l.headI = 1}ᶜ = q / (p + q) := by
@@ -269,7 +249,6 @@ theorem first_vote_neg (p q : ℕ) (h : 0 < p + q) :
     contradiction
   rw [eq_comm, ENNReal.eq_div_iff, ENNReal.mul_sub, ENNReal.mul_div_cancel']
   all_goals simp; try rintro rfl; rw [zero_add] at h; exact h.ne.symm
-#align ballot.first_vote_neg Ballot.first_vote_neg
 
 theorem ballot_same (p : ℕ) : condCount (countedSequence (p + 1) (p + 1)) staysPositive = 0 := by
   rw [condCount_eq_zero_iff (countedSequence_finite _ _), eq_empty_iff_forall_not_mem]
@@ -279,7 +258,6 @@ theorem ballot_same (p : ℕ) : condCount (countedSequence (p + 1) (p + 1)) stay
   · refine' List.ne_nil_of_length_pos _
     rw [length_of_mem_countedSequence hx]
     exact Nat.add_pos_left (Nat.succ_pos _) _
-#align ballot.ballot_same Ballot.ballot_same
 
 theorem ballot_edge (p : ℕ) : condCount (countedSequence (p + 1) 0) staysPositive = 1 := by
   rw [counted_right_zero]
@@ -290,7 +268,6 @@ theorem ballot_edge (p : ℕ) : condCount (countedSequence (p + 1) 0) staysPosit
     refine' fun l hl₁ hl₂ => List.sum_pos _ (fun x hx => _) hl₁
     rw [List.eq_of_mem_replicate (List.mem_of_mem_suffix hx hl₂)]
     norm_num
-#align ballot.ballot_edge Ballot.ballot_edge
 
 theorem countedSequence_int_pos_counted_succ_succ (p q : ℕ) :
     countedSequence (p + 1) (q + 1) ∩ {l | l.headI = 1} =
@@ -302,7 +279,6 @@ theorem countedSequence_int_pos_counted_succ_succ (p q : ℕ) :
         iff_false_iff, not_and, forall_exists_index, and_imp]
       rintro y _ rfl
       norm_num
-#align ballot.counted_sequence_int_pos_counted_succ_succ Ballot.countedSequence_int_pos_counted_succ_succ
 
 theorem ballot_pos (p q : ℕ) :
     condCount (countedSequence (p + 1) (q + 1) ∩ {l | l.headI = 1}) staysPositive =
@@ -330,7 +306,6 @@ theorem ballot_pos (p q : ℕ) :
       norm_num
   rw [this, count_injective_image]
   exact List.cons_injective
-#align ballot.ballot_pos Ballot.ballot_pos
 
 theorem countedSequence_int_neg_counted_succ_succ (p q : ℕ) :
     countedSequence (p + 1) (q + 1) ∩ {l | l.headI = 1}ᶜ =
@@ -343,7 +318,6 @@ theorem countedSequence_int_neg_counted_succ_succ (p q : ℕ) :
         iff_false_iff, not_and, forall_exists_index, and_imp]
       rintro y _ rfl
       norm_num
-#align ballot.counted_sequence_int_neg_counted_succ_succ Ballot.countedSequence_int_neg_counted_succ_succ
 
 theorem ballot_neg (p q : ℕ) (qp : q < p) :
     condCount (countedSequence (p + 1) (q + 1) ∩ {l | l.headI = 1}ᶜ) staysPositive =
@@ -371,7 +345,6 @@ theorem ballot_neg (p q : ℕ) (qp : q < p) :
       exact hl₂ _ hl₃ hl₄
   rw [this, count_injective_image]
   exact List.cons_injective
-#align ballot.ballot_neg Ballot.ballot_neg
 
 theorem ballot_problem' :
     ∀ q p, q < p → (condCount (countedSequence p q) staysPositive).toReal = (p - q) / (p + q) := by
@@ -413,7 +386,6 @@ theorem ballot_problem' :
       refine' (ENNReal.mul_lt_top _ _).ne
       exact (measure_lt_top _ _).ne
       simp [Ne.def, ENNReal.div_eq_top]
-#align ballot.ballot_problem' Ballot.ballot_problem'
 
 /-- The ballot problem. -/
 theorem ballot_problem :
@@ -434,6 +406,5 @@ theorem ballot_problem :
       not_false_iff, and_true_iff]
     push_neg
     exact ⟨fun _ _ => by linarith, (lt_of_le_of_lt tsub_le_self (ENNReal.nat_ne_top p).lt_top).ne⟩
-#align ballot.ballot_problem Ballot.ballot_problem
 
 end Ballot

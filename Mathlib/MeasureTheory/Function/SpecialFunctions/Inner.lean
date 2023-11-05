@@ -24,7 +24,6 @@ theorem Measurable.inner {_ : MeasurableSpace α} [MeasurableSpace E] [OpensMeas
     [TopologicalSpace.SecondCountableTopology E] {f g : α → E} (hf : Measurable f)
     (hg : Measurable g) : Measurable fun t => ⟪f t, g t⟫ :=
   Continuous.measurable2 continuous_inner hf hg
-#align measurable.inner Measurable.inner
 
 @[measurability]
 theorem Measurable.const_inner {_ : MeasurableSpace α} [MeasurableSpace E] [OpensMeasurableSpace E]
@@ -46,7 +45,6 @@ theorem AEMeasurable.inner {m : MeasurableSpace α} [MeasurableSpace E] [OpensMe
   refine' hf.ae_eq_mk.mp (hg.ae_eq_mk.mono fun x hxg hxf => _)
   dsimp only
   congr
-#align ae_measurable.inner AEMeasurable.inner
 
 set_option linter.unusedVariables false in
 @[measurability]

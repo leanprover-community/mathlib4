@@ -57,7 +57,6 @@ def asFunctor {T : Type*} [Category T] (C : HomologicalComplex (T ⥤ V) c) :
     ext i
     dsimp
     rw [Functor.map_comp]
-#align homological_complex.as_functor HomologicalComplex.asFunctor
 
 -- TODO in fact, this is an equivalence of categories.
 /-- The functorial version of `HomologicalComplex.asFunctor`. -/
@@ -72,6 +71,5 @@ def complexOfFunctorsToFunctorToComplex {T : Type*} [Category T] :
       naturality := fun t t' g => by
         ext i
         exact (f.f i).naturality g }
-#align homological_complex.complex_of_functors_to_functor_to_complex HomologicalComplex.complexOfFunctorsToFunctorToComplex
 
 end HomologicalComplex

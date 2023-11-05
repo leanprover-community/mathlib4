@@ -40,7 +40,6 @@ protected def oldMapIdx (f : ℕ → α → β) (as : List α) : List β :=
 @[simp]
 theorem mapIdx_nil {α β} (f : ℕ → α → β) : mapIdx f [] = [] :=
   rfl
-#align list.map_with_index_nil List.mapIdx_nil
 
 -- Porting note: new theorem.
 protected theorem oldMapIdxCore_eq (l : List α) (f : ℕ → α → β) (n : ℕ) :
@@ -169,35 +168,30 @@ theorem mapIdx_eq_enum_map (l : List α) (f : ℕ → α → β) :
   · rfl
   · rw [List.oldMapIdx, List.oldMapIdxCore, List.oldMapIdxCore_eq, hl]
     simp [map, enum_eq_zip_range, map_uncurry_zip_eq_zipWith]
-#align list.map_with_index_eq_enum_map List.mapIdx_eq_enum_map
 
 @[simp]
 theorem mapIdx_cons {α β} (l : List α) (f : ℕ → α → β) (a : α) :
     mapIdx f (a :: l) = f 0 a :: mapIdx (fun i ↦ f (i + 1)) l := by
   simp [mapIdx_eq_enum_map, enum_eq_zip_range, map_uncurry_zip_eq_zipWith,
     range_succ_eq_map, zipWith_map_left]
-#align list.map_with_index_cons List.mapIdx_cons
 
 theorem mapIdx_append {α} (K L : List α) (f : ℕ → α → β) :
     (K ++ L).mapIdx f = K.mapIdx f ++ L.mapIdx fun i a ↦ f (i + K.length) a := by
   induction' K with a J IH generalizing f
   · rfl
   · simp [IH fun i ↦ f (i + 1), add_assoc]
-#align list.map_with_index_append List.mapIdx_append
 
 @[simp]
 theorem length_mapIdx {α β} (l : List α) (f : ℕ → α → β) : (l.mapIdx f).length = l.length := by
   induction' l with hd tl IH generalizing f
   · rfl
   · simp [IH]
-#align list.length_map_with_index List.length_mapIdx
 
 @[simp, deprecated]
 theorem nthLe_mapIdx {α β} (l : List α) (f : ℕ → α → β) (i : ℕ) (h : i < l.length)
     (h' : i < (l.mapIdx f).length := h.trans_le (l.length_mapIdx f).ge) :
     (l.mapIdx f).nthLe i h' = f i (l.nthLe i h) := by
   simp [mapIdx_eq_enum_map, enum_eq_zip_range]
-#align list.nth_le_map_with_index List.nthLe_mapIdx
 
 -- Porting note: Changed the type to use `List.get` instead of deprecated `List.nthLe`.
 theorem mapIdx_eq_ofFn {α β} (l : List α) (f : ℕ → α → β) :
@@ -205,7 +199,6 @@ theorem mapIdx_eq_ofFn {α β} (l : List α) (f : ℕ → α → β) :
   induction' l with hd tl IH generalizing f
   · rfl
   · simp [IH]
-#align list.map_with_index_eq_of_fn List.mapIdx_eq_ofFn
 
 end MapIdx
 
@@ -215,37 +208,31 @@ section FoldrIdx
 /-- Specification of `foldrIdx`. -/
 def foldrIdxSpec (f : ℕ → α → β → β) (b : β) (as : List α) (start : ℕ) : β :=
   foldr (uncurry f) b <| enumFrom start as
-#align list.foldr_with_index_aux_spec List.foldrIdxSpecₓ
 
 theorem foldrIdxSpec_cons (f : ℕ → α → β → β) (b a as start) :
     foldrIdxSpec f b (a :: as) start = f start a (foldrIdxSpec f b as (start + 1)) :=
   rfl
-#align list.foldr_with_index_aux_spec_cons List.foldrIdxSpec_consₓ
 
 theorem foldrIdx_eq_foldrIdxSpec (f : ℕ → α → β → β) (b as start) :
     foldrIdx f b as start = foldrIdxSpec f b as start := by
   induction as generalizing start
   · rfl
   · simp only [foldrIdx, foldrIdxSpec_cons, *]
-#align list.foldr_with_index_aux_eq_foldr_with_index_aux_spec List.foldrIdx_eq_foldrIdxSpecₓ
 
 theorem foldrIdx_eq_foldr_enum (f : ℕ → α → β → β) (b : β) (as : List α) :
     foldrIdx f b as = foldr (uncurry f) b (enum as) := by
   simp only [foldrIdx, foldrIdxSpec, foldrIdx_eq_foldrIdxSpec, enum]
-#align list.foldr_with_index_eq_foldr_enum List.foldrIdx_eq_foldr_enum
 
 end FoldrIdx
 
 theorem indexesValues_eq_filter_enum (p : α → Prop) [DecidablePred p] (as : List α) :
     indexesValues p as = filter (p ∘ Prod.snd) (enum as) := by
   simp [indexesValues, foldrIdx_eq_foldr_enum, uncurry, filter_eq_foldr]
-#align list.indexes_values_eq_filter_enum List.indexesValues_eq_filter_enum
 
 theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : List α) :
     findIdxs p as = map Prod.fst (indexesValues p as) := by
   simp only [indexesValues_eq_filter_enum, map_filter_eq_foldr, findIdxs, uncurry,
     foldrIdx_eq_foldr_enum, decide_eq_true_eq, comp_apply, Bool.cond_decide]
-#align list.find_indexes_eq_map_indexes_values List.findIdxs_eq_map_indexesValues
 
 section FoldlIdx
 
@@ -253,24 +240,20 @@ section FoldlIdx
 /-- Specification of `foldlIdx`. -/
 def foldlIdxSpec (f : ℕ → α → β → α) (a : α) (bs : List β) (start : ℕ) : α :=
   foldl (fun a p ↦ f p.fst a p.snd) a <| enumFrom start bs
-#align list.foldl_with_index_aux_spec List.foldlIdxSpecₓ
 
 theorem foldlIdxSpec_cons (f : ℕ → α → β → α) (a b bs start) :
     foldlIdxSpec f a (b :: bs) start = foldlIdxSpec f (f start a b) bs (start + 1) :=
   rfl
-#align list.foldl_with_index_aux_spec_cons List.foldlIdxSpec_consₓ
 
 theorem foldlIdx_eq_foldlIdxSpec (f : ℕ → α → β → α) (a bs start) :
     foldlIdx f a bs start = foldlIdxSpec f a bs start := by
   induction bs generalizing start a
   · rfl
   · simp [foldlIdxSpec, *]
-#align list.foldl_with_index_aux_eq_foldl_with_index_aux_spec List.foldlIdx_eq_foldlIdxSpecₓ
 
 theorem foldlIdx_eq_foldl_enum (f : ℕ → α → β → α) (a : α) (bs : List β) :
     foldlIdx f a bs = foldl (fun a p ↦ f p.fst a p.snd) a (enum bs) := by
   simp only [foldlIdx, foldlIdxSpec, foldlIdx_eq_foldlIdxSpec, enum]
-#align list.foldl_with_index_eq_foldl_enum List.foldlIdx_eq_foldl_enum
 
 end FoldlIdx
 
@@ -282,12 +265,10 @@ variable {m : Type u → Type v} [Monad m]
 theorem foldrIdxM_eq_foldrM_enum {α β} (f : ℕ → α → β → m β) (b : β) (as : List α) [LawfulMonad m] :
     foldrIdxM f b as = foldrM (uncurry f) b (enum as) := by
   simp only [foldrIdxM, foldrM_eq_foldr, foldrIdx_eq_foldr_enum, uncurry]
-#align list.mfoldr_with_index_eq_mfoldr_enum List.foldrIdxM_eq_foldrM_enum
 
 theorem foldlIdxM_eq_foldlM_enum [LawfulMonad m] {α β} (f : ℕ → β → α → m β) (b : β) (as : List α) :
     foldlIdxM f b as = List.foldlM (fun b p ↦ f p.fst b p.snd) b (enum as) := by
   rw [foldlIdxM, foldlM_eq_foldl, foldlIdx_eq_foldl_enum]
-#align list.mfoldl_with_index_eq_mfoldl_enum List.foldlIdxM_eq_foldlM_enum
 
 end FoldIdxM
 
@@ -299,14 +280,12 @@ variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 /-- Specification of `mapIdxMAux`. -/
 def mapIdxMAuxSpec {α β} (f : ℕ → α → m β) (start : ℕ) (as : List α) : m (List β) :=
   List.traverse (uncurry f) <| enumFrom start as
-#align list.mmap_with_index_aux_spec List.mapIdxMAuxSpec
 
 -- Note: `traverse` the class method would require a less universe-polymorphic
 -- `m : Type u → Type u`.
 theorem mapIdxMAuxSpec_cons {α β} (f : ℕ → α → m β) (start : ℕ) (a : α) (as : List α) :
     mapIdxMAuxSpec f start (a :: as) = cons <$> f start a <*> mapIdxMAuxSpec f (start + 1) as :=
   rfl
-#align list.mmap_with_index_aux_spec_cons List.mapIdxMAuxSpec_cons
 
 theorem mapIdxMGo_eq_mapIdxMAuxSpec {α β} (f : ℕ → α → m β) (arr : Array β) (as : List α) :
     mapIdxM.go f as arr = (arr.toList ++ ·) <$> mapIdxMAuxSpec f arr.size as := by
@@ -326,13 +305,11 @@ theorem mapIdxMGo_eq_mapIdxMAuxSpec {α β} (f : ℕ → α → m β) (arr : Arr
       funext x
       simp only [Array.toList_eq, Array.push_data, append_assoc, singleton_append, Array.size_push,
         map_eq_pure_bind]
-#align list.mmap_with_index_aux_eq_mmap_with_index_aux_spec List.mapIdxMGo_eq_mapIdxMAuxSpec
 
 theorem mapIdxM_eq_mmap_enum {α β} (f : ℕ → α → m β) (as : List α) :
     as.mapIdxM f = List.traverse (uncurry f) (enum as) := by
   simp only [mapIdxM, mapIdxMGo_eq_mapIdxMAuxSpec, Array.toList_eq, Array.data_toArray,
     nil_append, mapIdxMAuxSpec, Array.size_toArray, length_nil, id_map', enum]
-#align list.mmap_with_index_eq_mmap_enum List.mapIdxM_eq_mmap_enum
 
 end MapIdxM
 
@@ -353,12 +330,10 @@ theorem mapIdxMAux'_eq_mapIdxMGo {α} (f : ℕ → α → m PUnit) (as : List α
     have : arr_1.size = arr.size + 1 := Array.size_push arr ⟨⟩
     rw [← this, ih arr_1]
     simp only [seqRight_eq, map_eq_pure_bind, seq_pure, LawfulMonad.bind_assoc, pure_bind]
-#align list.mmap_with_index'_aux_eq_mmap_with_index_aux List.mapIdxMAux'_eq_mapIdxMGo
 
 theorem mapIdxM'_eq_mapIdxM {α} (f : ℕ → α → m PUnit) (as : List α) :
     mapIdxM' f as = mapIdxM as f *> pure PUnit.unit :=
   mapIdxMAux'_eq_mapIdxMGo f as #[]
-#align list.mmap_with_index'_eq_mmap_with_index List.mapIdxM'_eq_mapIdxM
 
 end MapIdxM'
 

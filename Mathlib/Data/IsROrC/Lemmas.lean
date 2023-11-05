@@ -20,7 +20,6 @@ open Polynomial
 
 theorem ofReal_eval (p : ℝ[X]) (x : ℝ) : (↑(p.eval x) : K) = aeval (↑x) p :=
   (@aeval_algebraMap_apply_eq_algebraMap_eval ℝ K _ _ _ x p).symm
-#align polynomial.of_real_eval Polynomial.ofReal_eval
 
 end Polynomial
 
@@ -46,7 +45,6 @@ instance isROrC_to_real : FiniteDimensional ℝ K :=
       · rw [Submodule.mem_span_singleton]
         use im a
       simp [re_add_im a, Algebra.smul_def, algebraMap_eq_ofReal]⟩⟩
-#align finite_dimensional.is_R_or_C_to_real FiniteDimensional.isROrC_to_real
 
 variable (K E)
 variable [NormedAddCommGroup E] [NormedSpace K E]
@@ -59,14 +57,12 @@ theorem proper_isROrC [FiniteDimensional K E] : ProperSpace E := by
   letI : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ K E
   letI : FiniteDimensional ℝ E := FiniteDimensional.trans ℝ K E
   infer_instance
-#align finite_dimensional.proper_is_R_or_C FiniteDimensional.proper_isROrC
 
 variable {E}
 
 instance IsROrC.properSpace_submodule (S : Submodule K E) [FiniteDimensional K S] :
     ProperSpace S :=
   proper_isROrC K S
-#align finite_dimensional.is_R_or_C.proper_space_submodule FiniteDimensional.IsROrC.properSpace_submodule
 
 end FiniteDimensional
 
@@ -77,18 +73,15 @@ theorem reClm_norm : ‖(reClm : K →L[ℝ] ℝ)‖ = 1 := by
   apply le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _)
   convert ContinuousLinearMap.ratio_le_op_norm (reClm : K →L[ℝ] ℝ) (1 : K)
   simp
-#align is_R_or_C.re_clm_norm IsROrC.reClm_norm
 
 @[simp, isROrC_simps]
 theorem conjCle_norm : ‖(@conjCle K _ : K →L[ℝ] K)‖ = 1 :=
   (@conjLie K _).toLinearIsometry.norm_toContinuousLinearMap
-#align is_R_or_C.conj_cle_norm IsROrC.conjCle_norm
 
 @[simp, isROrC_simps]
 theorem ofRealClm_norm : ‖(ofRealClm : ℝ →L[ℝ] K)‖ = 1 :=
   -- Porting note: the following timed out
   -- LinearIsometry.norm_toContinuousLinearMap ofRealLi
   LinearIsometry.norm_toContinuousLinearMap _
-#align is_R_or_C.of_real_clm_norm IsROrC.ofRealClm_norm
 
 end IsROrC

@@ -38,7 +38,6 @@ variable {R B}
 theorem aeval_map_algebraMap (x : σ → B) (p : MvPolynomial σ R) :
     aeval x (map (algebraMap R A) p) = aeval x p := by
   rw [aeval_def, aeval_def, eval₂_map, IsScalarTower.algebraMap_eq R A B]
-#align mv_polynomial.aeval_map_algebra_map MvPolynomial.aeval_map_algebraMap
 
 end Semiring
 
@@ -56,18 +55,15 @@ theorem aeval_algebraMap_apply (x : σ → A) (p : MvPolynomial σ R) :
     IsScalarTower.algebraMap_eq]
   -- Porting note: added
   simp only [Function.comp]
-#align mv_polynomial.aeval_algebra_map_apply MvPolynomial.aeval_algebraMap_apply
 
 theorem aeval_algebraMap_eq_zero_iff [NoZeroSMulDivisors A B] [Nontrivial B] (x : σ → A)
     (p : MvPolynomial σ R) : aeval (algebraMap A B ∘ x) p = 0 ↔ aeval x p = 0 := by
   rw [aeval_algebraMap_apply, Algebra.algebraMap_eq_smul_one, smul_eq_zero,
     iff_false_intro (one_ne_zero' B), or_false_iff]
-#align mv_polynomial.aeval_algebra_map_eq_zero_iff MvPolynomial.aeval_algebraMap_eq_zero_iff
 
 theorem aeval_algebraMap_eq_zero_iff_of_injective {x : σ → A} {p : MvPolynomial σ R}
     (h : Function.Injective (algebraMap A B)) : aeval (algebraMap A B ∘ x) p = 0 ↔ aeval x p = 0 :=
   by rw [aeval_algebraMap_apply, ← (algebraMap A B).map_zero, h.eq_iff]
-#align mv_polynomial.aeval_algebra_map_eq_zero_iff_of_injective MvPolynomial.aeval_algebraMap_eq_zero_iff_of_injective
 
 end CommSemiring
 
@@ -84,7 +80,6 @@ variable {R A} [CommSemiring R] [CommSemiring A] [Algebra R A]
 @[simp]
 theorem mvPolynomial_aeval_coe (S : Subalgebra R A) (x : σ → S) (p : MvPolynomial σ R) :
     aeval (fun i => (x i : A)) p = aeval x p := by convert aeval_algebraMap_apply A x p
-#align subalgebra.mv_polynomial_aeval_coe Subalgebra.mvPolynomial_aeval_coe
 
 end CommSemiring
 

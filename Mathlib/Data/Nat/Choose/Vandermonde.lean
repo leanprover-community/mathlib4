@@ -34,4 +34,3 @@ theorem Nat.add_choose_eq (m n k : ℕ) :
     _ = ∑ ij : ℕ × ℕ in antidiagonal k, m.choose ij.1 * n.choose ij.2 := by
       rw [coeff_mul, Finset.sum_congr rfl]
       simp only [coeff_X_add_one_pow, Nat.cast_id, eq_self_iff_true, imp_true_iff]
-#align nat.add_choose_eq Nat.add_choose_eq

@@ -39,7 +39,6 @@ variable (R : Type u) [CommRing R]
 structure MaximalSpectrum where
   asIdeal : Ideal R
   IsMaximal : asIdeal.IsMaximal
-#align maximal_spectrum MaximalSpectrum
 
 attribute [instance] MaximalSpectrum.IsMaximal
 
@@ -54,11 +53,9 @@ instance [Nontrivial R] : Nonempty <| MaximalSpectrum R :=
 /-- The natural inclusion from the maximal spectrum to the prime spectrum. -/
 def toPrimeSpectrum (x : MaximalSpectrum R) : PrimeSpectrum R :=
   ⟨x.asIdeal, x.IsMaximal.isPrime⟩
-#align maximal_spectrum.to_prime_spectrum MaximalSpectrum.toPrimeSpectrum
 
 theorem toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_, _⟩ ⟨_, _⟩ h => by
   simpa only [MaximalSpectrum.mk.injEq] using (PrimeSpectrum.ext_iff _ _).mp h
-#align maximal_spectrum.to_prime_spectrum_injective MaximalSpectrum.toPrimeSpectrum_injective
 
 open PrimeSpectrum Set
 
@@ -67,13 +64,11 @@ theorem toPrimeSpectrum_range :
   simp only [isClosed_singleton_iff_isMaximal]
   ext ⟨x, _⟩
   exact ⟨fun ⟨y, hy⟩ => hy ▸ y.IsMaximal, fun hx => ⟨⟨x, hx⟩, rfl⟩⟩
-#align maximal_spectrum.to_prime_spectrum_range MaximalSpectrum.toPrimeSpectrum_range
 
 /-- The Zariski topology on the maximal spectrum of a commutative ring is defined as the subspace
 topology induced by the natural inclusion into the prime spectrum. -/
 instance zariskiTopology : TopologicalSpace <| MaximalSpectrum R :=
   PrimeSpectrum.zariskiTopology.induced toPrimeSpectrum
-#align maximal_spectrum.zariski_topology MaximalSpectrum.zariskiTopology
 
 instance : T1Space <| MaximalSpectrum R :=
   ⟨fun x => isClosed_induced_iff.mpr
@@ -82,7 +77,6 @@ instance : T1Space <| MaximalSpectrum R :=
 
 theorem toPrimeSpectrum_continuous : Continuous <| @toPrimeSpectrum R _ :=
   continuous_induced_dom
-#align maximal_spectrum.to_prime_spectrum_continuous MaximalSpectrum.toPrimeSpectrum_continuous
 
 variable (R)
 
@@ -116,7 +110,6 @@ theorem iInf_localization_eq_bot : (⨅ v : MaximalSpectrum R,
             (h ▸ hd) max.zero_mem]⟩
   · rintro ⟨y, rfl⟩ ⟨v, hv⟩
     exact ⟨y, 1, v.ne_top_iff_one.mp hv.ne_top, by rw [map_one, inv_one, mul_one]⟩
-#align maximal_spectrum.infi_localization_eq_bot MaximalSpectrum.iInf_localization_eq_bot
 
 end MaximalSpectrum
 
@@ -138,6 +131,5 @@ theorem iInf_localization_eq_bot : ⨅ v : PrimeSpectrum R,
   · rw [Algebra.mem_bot]
     rintro ⟨y, rfl⟩ ⟨v, hv⟩
     exact ⟨y, 1, v.ne_top_iff_one.mp hv.ne_top, by rw [map_one, inv_one, mul_one]⟩
-#align prime_spectrum.infi_localization_eq_bot PrimeSpectrum.iInf_localization_eq_bot
 
 end PrimeSpectrum

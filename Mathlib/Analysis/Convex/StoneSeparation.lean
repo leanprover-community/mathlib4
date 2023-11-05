@@ -77,7 +77,6 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
       mul_smul _ bz, ← smul_add]
     simp only [smul_add, List.foldr, Matrix.cons_val_succ', Fin.mk_one,
       Matrix.cons_val_one, Matrix.head_cons, add_zero]
-#align not_disjoint_segment_convex_hull_triple not_disjoint_segment_convexHull_triple
 
 /-- **Stone's Separation Theorem** -/
 theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) (hst : Disjoint s t) :
@@ -109,4 +108,3 @@ theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜
   rw [convexHull_insert ⟨z, hzC⟩, convexJoin_singleton_left]
   refine disjoint_iUnion₂_left.2 fun a ha => disjoint_iff_inter_eq_empty.2 (h a ?_)
   rwa [← hC.1.convexHull_eq]
-#align exists_convex_convex_compl_subset exists_convex_convex_compl_subset

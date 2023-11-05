@@ -69,7 +69,6 @@ namespace WittVector
 /-- `f : α → β` induces a map from `𝕎 α` to `𝕎 β` by applying `f` componentwise.
 If `f` is a ring homomorphism, then so is `f`, see `WittVector.map f`. -/
 def mapFun (f : α → β) : 𝕎 α → 𝕎 β := fun x => mk _ (f ∘ x.coeff)
-#align witt_vector.map_fun WittVector.mapFun
 
 namespace mapFun
 
@@ -78,12 +77,10 @@ theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : �
   intros _ _ h
   ext p
   exact hf (congr_arg (fun x => coeff x p) h : _)
-#align witt_vector.map_fun.injective WittVector.mapFun.injective
 
 theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 𝕎 α → 𝕎 β) := fun x =>
   ⟨mk _ fun n => Classical.choose <| hf <| x.coeff n,
     by ext n; simp only [mapFun, coeff_mk, comp_apply, Classical.choose_spec (hf (x.coeff n))]⟩
-#align witt_vector.map_fun.surjective WittVector.mapFun.surjective
 
 -- porting note: using `(x y : 𝕎 R)` instead of `(x y : WittVector p R)` produced sorries.
 variable (f : R →+* S) (x y : WittVector p R)
@@ -104,41 +101,30 @@ macro "map_fun_tac" : tactic => `(tactic| (
 --  and until `pow`.
 -- We do not tag these lemmas as `@[simp]` because they will be bundled in `map` later on.
 theorem zero : mapFun f (0 : 𝕎 R) = 0 := by map_fun_tac
-#align witt_vector.map_fun.zero WittVector.mapFun.zero
 
 theorem one : mapFun f (1 : 𝕎 R) = 1 := by map_fun_tac
-#align witt_vector.map_fun.one WittVector.mapFun.one
 
 theorem add : mapFun f (x + y) = mapFun f x + mapFun f y := by map_fun_tac
-#align witt_vector.map_fun.add WittVector.mapFun.add
 
 theorem sub : mapFun f (x - y) = mapFun f x - mapFun f y := by map_fun_tac
-#align witt_vector.map_fun.sub WittVector.mapFun.sub
 
 theorem mul : mapFun f (x * y) = mapFun f x * mapFun f y := by map_fun_tac
-#align witt_vector.map_fun.mul WittVector.mapFun.mul
 
 theorem neg : mapFun f (-x) = -mapFun f x := by map_fun_tac
-#align witt_vector.map_fun.neg WittVector.mapFun.neg
 
 theorem nsmul (n : ℕ) : mapFun f (n • x) = n • mapFun f x := by map_fun_tac
-#align witt_vector.map_fun.nsmul WittVector.mapFun.nsmul
 
 theorem zsmul (z : ℤ) : mapFun f (z • x) = z • mapFun f x := by map_fun_tac
-#align witt_vector.map_fun.zsmul WittVector.mapFun.zsmul
 
 theorem pow (n : ℕ) : mapFun f (x ^ n) = mapFun f x ^ n := by map_fun_tac
-#align witt_vector.map_fun.pow WittVector.mapFun.pow
 
 theorem nat_cast (n : ℕ) : mapFun f (n : 𝕎 R) = n :=
   show mapFun f n.unaryCast = (n : WittVector p S) by
     induction n <;> simp [*, Nat.unaryCast, add, one, zero] <;> rfl
-#align witt_vector.map_fun.nat_cast WittVector.mapFun.nat_cast
 
 theorem int_cast (n : ℤ) : mapFun f (n : 𝕎 R) = n :=
   show mapFun f n.castDef = (n : WittVector p S) by
     cases n <;> simp [*, Int.castDef, add, one, neg, zero, nat_cast] <;> rfl
-#align witt_vector.map_fun.int_cast WittVector.mapFun.int_cast
 
 end mapFun
 
@@ -181,7 +167,6 @@ variable (x y : WittVector p R)
 theorem matrix_vecEmpty_coeff {R} (i j) :
     @coeff p R (Matrix.vecEmpty i) j = (Matrix.vecEmpty i : ℕ → R) j := by
   rcases i with ⟨_ | _ | _ | _ | i_val, ⟨⟩⟩
-#align witt_vector.matrix_vec_empty_coeff WittVector.matrix_vecEmpty_coeff
 
 private theorem ghostFun_zero : ghostFun (0 : 𝕎 R) = 0 := by
   ghost_fun_tac 0, ![]
@@ -276,20 +261,16 @@ noncomputable def map (f : R →+* S) : 𝕎 R →+* 𝕎 S where
   map_one' := mapFun.one f
   map_add' := mapFun.add f
   map_mul' := mapFun.mul f
-#align witt_vector.map WittVector.map
 
 theorem map_injective (f : R →+* S) (hf : Injective f) : Injective (map f : 𝕎 R → 𝕎 S) :=
   mapFun.injective f hf
-#align witt_vector.map_injective WittVector.map_injective
 
 theorem map_surjective (f : R →+* S) (hf : Surjective f) : Surjective (map f : 𝕎 R → 𝕎 S) :=
   mapFun.surjective f hf
-#align witt_vector.map_surjective WittVector.map_surjective
 
 @[simp]
 theorem map_coeff (f : R →+* S) (x : 𝕎 R) (n : ℕ) : (map f x).coeff n = f (x.coeff n) :=
   rfl
-#align witt_vector.map_coeff WittVector.map_coeff
 
 /-- `WittVector.ghostMap` is a ring homomorphism that maps each Witt vector
 to the sequence of its ghost components. -/
@@ -299,22 +280,18 @@ def ghostMap : 𝕎 R →+* ℕ → R where
   map_one' := ghostFun_one
   map_add' := ghostFun_add
   map_mul' := ghostFun_mul
-#align witt_vector.ghost_map WittVector.ghostMap
 
 /-- Evaluates the `n`th Witt polynomial on the first `n` coefficients of `x`,
 producing a value in `R`. -/
 def ghostComponent (n : ℕ) : 𝕎 R →+* R :=
   (Pi.evalRingHom _ n).comp ghostMap
-#align witt_vector.ghost_component WittVector.ghostComponent
 
 theorem ghostComponent_apply (n : ℕ) (x : 𝕎 R) : ghostComponent n x = aeval x.coeff (W_ ℤ n) :=
   rfl
-#align witt_vector.ghost_component_apply WittVector.ghostComponent_apply
 
 @[simp]
 theorem ghostMap_apply (x : 𝕎 R) (n : ℕ) : ghostMap x n = ghostComponent n x :=
   rfl
-#align witt_vector.ghost_map_apply WittVector.ghostMap_apply
 
 section Invertible
 
@@ -324,16 +301,13 @@ variable [Invertible (p : R)]
 /-- `WittVector.ghostMap` is a ring isomorphism when `p` is invertible in `R`. -/
 def ghostEquiv : 𝕎 R ≃+* (ℕ → R) :=
   { (ghostMap : 𝕎 R →+* ℕ → R), ghostEquiv' p R with }
-#align witt_vector.ghost_equiv WittVector.ghostEquiv
 
 @[simp]
 theorem ghostEquiv_coe : (ghostEquiv p R : 𝕎 R →+* ℕ → R) = ghostMap :=
   rfl
-#align witt_vector.ghost_equiv_coe WittVector.ghostEquiv_coe
 
 theorem ghostMap.bijective_of_invertible : Function.Bijective (ghostMap : 𝕎 R → ℕ → R) :=
   (ghostEquiv p R).bijective
-#align witt_vector.ghost_map.bijective_of_invertible WittVector.ghostMap.bijective_of_invertible
 
 end Invertible
 
@@ -345,7 +319,6 @@ noncomputable def constantCoeff : 𝕎 R →+* R where
   map_one' := by simp
   map_add' := add_coeff_zero
   map_mul' := mul_coeff_zero
-#align witt_vector.constant_coeff WittVector.constantCoeff
 
 instance [Nontrivial R] : Nontrivial (𝕎 R) :=
   constantCoeff.domain_nontrivial

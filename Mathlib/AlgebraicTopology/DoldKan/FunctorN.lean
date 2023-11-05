@@ -53,15 +53,11 @@ def N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ) where
       idem := PInfty_idem }
   map f :=
     { f := PInfty ≫ AlternatingFaceMapComplex.map f }
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.N₁ AlgebraicTopology.DoldKan.N₁
 
 /-- The extension of `N₁` to the Karoubi envelope of `SimplicialObject C`. -/
 @[simps!]
 def N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ) :=
   (functorExtension₁ _ _).obj N₁
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.N₂ AlgebraicTopology.DoldKan.N₂
 
 -- porting note: added to ease the port of `AlgebraicTopology.DoldKan.NCompGamma`
 lemma compatibility_N₁_N₂ : toKaroubi (SimplicialObject C) ⋙ N₂ = N₁ :=

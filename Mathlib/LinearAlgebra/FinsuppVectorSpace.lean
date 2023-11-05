@@ -51,7 +51,6 @@ theorem linearIndependent_single {φ : ι → Type*} {f : ∀ ι, φ ι → M}
     · refine' iSup₂_mono fun i hi => _
       rw [span_le, range_coe]
       apply range_comp_subset_range _ (lsingle i)
-#align finsupp.linear_independent_single Finsupp.linearIndependent_single
 
 end Ring
 
@@ -97,13 +96,11 @@ protected def basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) : Basis (�
       map_smul' := fun c h => by
         ext ⟨i, x⟩
         simp only [coe_mk, smul_apply, LinearEquiv.map_smul, RingHom.id_apply] }
-#align finsupp.basis Finsupp.basis
 
 @[simp]
 theorem basis_repr {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) (g : ι →₀ M) (ix) :
     (Finsupp.basis b).repr g ix = (b ix.1).repr (g ix.1) ix.2 :=
   rfl
-#align finsupp.basis_repr Finsupp.basis_repr
 
 @[simp]
 theorem coe_basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) :
@@ -120,18 +117,15 @@ theorem coe_basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) :
         -- Porting note: previously `this` not needed
         simp only [basis_repr, single_apply, h, this, false_and_iff, if_false, LinearEquiv.map_zero,
         zero_apply]
-#align finsupp.coe_basis Finsupp.coe_basis
 
 /-- The basis on `ι →₀ M` with basis vectors `fun i ↦ single i 1`. -/
 @[simps]
 protected def basisSingleOne : Basis ι R (ι →₀ R) :=
   Basis.ofRepr (LinearEquiv.refl _ _)
-#align finsupp.basis_single_one Finsupp.basisSingleOne
 
 @[simp]
 theorem coe_basisSingleOne : (Finsupp.basisSingleOne : ι → ι →₀ R) = fun i => Finsupp.single i 1 :=
   funext fun _ => Basis.apply_eq_iff.mpr rfl
-#align finsupp.coe_basis_single_one Finsupp.coe_basisSingleOne
 
 end Semiring
 
@@ -148,7 +142,6 @@ noncomputable def basis {η : ι → Type*} (b : ∀ i, Basis (η i) R (M i)) :
     Basis (Σi, η i) R (Π₀ i, M i) :=
   .ofRepr
     ((mapRange.linearEquiv fun i => (b i).repr).trans (sigmaFinsuppLequivDFinsupp R).symm)
-#align dfinsupp.basis DFinsupp.basis
 
 end DFinsupp
 
@@ -178,7 +171,6 @@ theorem _root_.Finset.sum_single_ite (a : R) (i : n) :
     refine' ne_comm.mp _
     rwa [mem_singleton_iff] at hx
   simp [hx']
-#align finset.sum_single_ite Finset.sum_single_ite
 
 -- Porting note: LHS of equivFun_symm_stdBasis simplifies to this
 @[simp]
@@ -189,6 +181,5 @@ theorem _root_.Finset.sum_univ_ite (b : n → M) (i : n) :
 theorem equivFun_symm_stdBasis (b : Basis n R M) (i : n) :
     b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i := by
   simp
-#align basis.equiv_fun_symm_std_basis Basis.equivFun_symm_stdBasis
 
 end Basis

@@ -36,8 +36,6 @@ instance (x : SimplexCategory) : Fintype (CategoryTheory.ConcreteCategory.forget
   This is the object part of the functor `SimplexCategory.toTop`. -/
 def toTopObj (x : SimplexCategory) :=
   { f : x → ℝ≥0 | ∑ i, f i = 1 }
-set_option linter.uppercaseLean3 false in
-#align simplex_category.to_Top_obj SimplexCategory.toTopObj
 
 instance (x : SimplexCategory) : CoeFun x.toTopObj fun _ => x → ℝ≥0 :=
   ⟨fun f => (f : x → ℝ≥0)⟩
@@ -45,8 +43,6 @@ instance (x : SimplexCategory) : CoeFun x.toTopObj fun _ => x → ℝ≥0 :=
 @[ext]
 theorem toTopObj.ext {x : SimplexCategory} (f g : x.toTopObj) : (f : x → ℝ≥0) = g → f = g :=
   Subtype.ext
-set_option linter.uppercaseLean3 false in
-#align simplex_category.to_Top_obj.ext SimplexCategory.toTopObj.ext
 
 /-- A morphism in `SimplexCategory` induces a map on the associated topological spaces. -/
 def toTopMap {x y : SimplexCategory} (f : x ⟶ y) : x.toTopObj → y.toTopObj := fun g =>
@@ -66,23 +62,17 @@ def toTopMap {x y : SimplexCategory} (f : x ⟶ y) : x.toTopObj → y.toTopObj :
         ge_iff_le, Finset.le_eq_subset, Finset.inf_eq_inter, Finset.mem_inter,
         Finset.mem_filter, true_and] at he
       rw [← he.1, he.2]⟩
-set_option linter.uppercaseLean3 false in
-#align simplex_category.to_Top_map SimplexCategory.toTopMap
 
 @[simp]
 theorem coe_toTopMap {x y : SimplexCategory} (f : x ⟶ y) (g : x.toTopObj) (i : y) :
     toTopMap f g i = ∑ j in Finset.univ.filter fun k => f k = i, g j :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align simplex_category.coe_to_Top_map SimplexCategory.coe_toTopMap
 
 @[continuity]
 theorem continuous_toTopMap {x y : SimplexCategory} (f : x ⟶ y) : Continuous (toTopMap f) := by
   refine' Continuous.subtype_mk (continuous_pi fun i => _) _
   dsimp only [coe_toTopMap]
   exact continuous_finset_sum _ (fun j _ => (continuous_apply _).comp continuous_subtype_val)
-set_option linter.uppercaseLean3 false in
-#align simplex_category.continuous_to_Top_map SimplexCategory.continuous_toTopMap
 
 /-- The functor associating the topological `n`-simplex to `[n] : SimplexCategory`. -/
 @[simps]
@@ -118,8 +108,6 @@ def toTop : SimplexCategory ⥤ TopCat where
         ge_iff_le, Finset.le_eq_subset, Finset.inf_eq_inter, Finset.mem_inter,
         Finset.mem_filter, true_and] at he
       rw [← he.1, he.2]
-set_option linter.uppercaseLean3 false in
-#align simplex_category.to_Top SimplexCategory.toTop
 
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] SimplexCategory.toTop_map_apply

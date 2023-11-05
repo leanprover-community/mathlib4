@@ -14,7 +14,6 @@ set_option autoImplicit true
 
 namespace Thunk
 
-#align thunk.mk Thunk.mk
 
 -- Porting note: Added `Thunk.ext` to get `ext` tactic to work.
 @[ext]

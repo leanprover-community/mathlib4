@@ -78,12 +78,10 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
   refine' (((ENNReal.continuous_mul_const hb).comp
     (ENNReal.continuous_coe.comp (continuous_pow d))).tendsto' _ _ _).mono_left nhdsWithin_le_nhds
   simp
-#align convex.add_haar_frontier Convex.addHaar_frontier
 
 /-- A convex set in a finite dimensional real vector space is null measurable with respect to an
 additive Haar measure on this space. -/
 protected theorem nullMeasurableSet (hs : Convex ℝ s) : NullMeasurableSet s μ :=
   nullMeasurableSet_of_null_frontier (hs.addHaar_frontier μ)
-#align convex.null_measurable_set Convex.nullMeasurableSet
 
 end Convex

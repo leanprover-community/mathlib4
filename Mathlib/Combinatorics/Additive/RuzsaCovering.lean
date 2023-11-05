@@ -50,7 +50,5 @@ theorem exists_subset_mul_div (ht : t.Nonempty) :
   obtain ⟨b, hb, c, hc₁, hc₂⟩ := H
   refine' mem_mul.2 ⟨b, a / b, hb, _, by simp⟩
   exact mem_div.2 ⟨_, _, hc₂, hc₁, by simp [div_eq_mul_inv a b, mul_comm]⟩
-#align finset.exists_subset_mul_div Finset.exists_subset_mul_div
-#align finset.exists_subset_add_sub Finset.exists_subset_add_sub
 
 end Finset

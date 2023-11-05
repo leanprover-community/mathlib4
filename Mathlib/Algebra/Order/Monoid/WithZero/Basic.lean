@@ -35,6 +35,5 @@ instance contravariantClass_mul_lt [Mul α] [PartialOrder α]
   · exfalso; exact right_ne_zero_of_mul this rfl
   induction b using WithZero.recZeroCoe
   exacts [zero_lt_coe _, coe_lt_coe.mpr (lt_of_mul_lt_mul_left' <| coe_lt_coe.mp h)]
-#align with_zero.contravariant_class_mul_lt WithZero.contravariantClass_mul_lt
 
 end WithZero

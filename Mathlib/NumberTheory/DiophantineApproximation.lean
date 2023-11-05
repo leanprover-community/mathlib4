@@ -133,7 +133,6 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     convert_to |fract (ξ * y) * (n + 1) - fract (ξ * x) * (n + 1)| ≤ 1
     · congr; push_cast; simp only [fract]; ring
     exact (abs_sub_lt_one_of_floor_eq_floor hxy.symm).le
-#align real.exists_int_int_abs_mul_sub_le Real.exists_int_int_abs_mul_sub_le
 
 /-- *Dirichlet's approximation theorem:*
 For any real number `ξ` and positive natural `n`, there is a natural number `k`,
@@ -145,7 +144,6 @@ theorem exists_nat_abs_mul_sub_round_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   have hk := toNat_of_nonneg hk₀.le
   rw [← hk] at hk₀ hk₁ h
   exact ⟨k.toNat, coe_nat_pos.mp hk₀, Nat.cast_le.mp hk₁, (round_le (↑k.toNat * ξ) j).trans h⟩
-#align real.exists_nat_abs_mul_sub_round_le Real.exists_nat_abs_mul_sub_round_le
 
 /-- *Dirichlet's approximation theorem:*
 For any real number `ξ` and positive natural `n`, there is a fraction `q`
@@ -164,7 +162,6 @@ theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   refine' (mul_le_mul_of_nonneg_left (Int.cast_le.mpr hden : _ ≤ (k : ℝ)) (abs_nonneg _)).trans _
   rwa [← abs_of_pos hk₀', Rat.cast_div, Rat.cast_coe_int, Rat.cast_coe_int, ← abs_mul, sub_mul,
     div_mul_cancel _ hk₀'.ne', mul_comm]
-#align real.exists_rat_abs_sub_le_and_denom_le Real.exists_rat_abs_sub_le_and_den_le
 
 end Dirichlet
 
@@ -200,7 +197,6 @@ theorem exists_rat_abs_sub_lt_and_lt_of_irrational {ξ : ℝ} (hξ : Irrational 
                 exact_mod_cast (q'.pos : 1 ≤ q'.den)⟩
   rw [sq, one_div_lt_one_div md_pos (mul_pos den_pos den_pos), mul_lt_mul_right den_pos]
   exact lt_add_of_le_of_pos (Nat.cast_le.mpr hden) zero_lt_one
-#align real.exists_rat_abs_sub_lt_and_lt_of_irrational Real.exists_rat_abs_sub_lt_and_lt_of_irrational
 
 /-- If `ξ` is an irrational real number, then there are infinitely many good
 rational approximations to `ξ`. -/
@@ -212,7 +208,6 @@ theorem infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational {ξ : ℝ} (hξ : I
       ⟨⌊ξ⌋, by simp [abs_of_nonneg, Int.fract_lt_one]⟩
   obtain ⟨q', hmem, hbetter⟩ := exists_rat_abs_sub_lt_and_lt_of_irrational hξ q
   exact lt_irrefl _ (lt_of_le_of_lt (hq q' hmem) hbetter)
-#align real.infinite_rat_abs_sub_lt_one_div_denom_sq_of_irrational Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational
 
 end RatApprox
 
@@ -259,7 +254,6 @@ theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
     norm_cast at h₁ h₂
     exact
       ⟨sub_le_iff_le_add.mpr (Int.ceil_le.mpr h₁.le), sub_le_iff_le_add.mp (Int.le_floor.mpr h₂.le)⟩
-#align rat.denom_le_and_le_num_le_of_sub_lt_one_div_denom_sq Rat.den_le_and_le_num_le_of_sub_lt_one_div_den_sq
 
 /-- A rational number has only finitely many good rational approximations. -/
 theorem finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) :
@@ -281,7 +275,6 @@ theorem finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) :
     exact ⟨q.num, hn, hq₂⟩
   refine' Finite.of_finite_image (Finite.subset _ H) (injOn_of_injective hinj s)
   exact Finite.biUnion (finite_Ioc _ _) fun x _ => Finite.prod (finite_Icc _ _) (finite_singleton _)
-#align rat.finite_rat_abs_sub_lt_one_div_denom_sq Rat.finite_rat_abs_sub_lt_one_div_den_sq
 
 end Rat
 
@@ -295,7 +288,6 @@ theorem Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational (ξ : ℝ) :
   convert Rat.finite_rat_abs_sub_lt_one_div_den_sq ((a : ℚ) / b) with q
   rw [H, (by (push_cast; rfl) : (1 : ℝ) / (q.den : ℝ) ^ 2 = (1 / (q.den : ℚ) ^ 2 : ℚ))]
   norm_cast
-#align real.infinite_rat_abs_sub_lt_one_div_denom_sq_iff_irrational Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational
 
 /-!
 ### Legendre's Theorem on Rational Approximation
@@ -337,13 +329,11 @@ see `Real.continued_fraction_convergent_eq_convergent`.
 noncomputable def convergent : ℝ → ℕ → ℚ
   | ξ, 0 => ⌊ξ⌋
   | ξ, n + 1 => ⌊ξ⌋ + (convergent (fract ξ)⁻¹ n)⁻¹
-#align real.convergent Real.convergent
 
 /-- The zeroth convergent of `ξ` is `⌊ξ⌋`. -/
 @[simp]
 theorem convergent_zero (ξ : ℝ) : ξ.convergent 0 = ⌊ξ⌋ :=
   rfl
-#align real.convergent_zero Real.convergent_zero
 
 /-- The `(n+1)`th convergent of `ξ` is the `n`th convergent of `1/(fract ξ)`. -/
 @[simp]
@@ -352,7 +342,6 @@ theorem convergent_succ (ξ : ℝ) (n : ℕ) :
   -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026): was
   -- by simp only [convergent]
   rfl
-#align real.convergent_succ Real.convergent_succ
 
 /-- All convergents of `0` are zero. -/
 @[simp]
@@ -360,7 +349,6 @@ theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
   induction' n with n ih
   · simp only [Nat.zero_eq, convergent_zero, floor_zero, cast_zero]
   · simp only [ih, convergent_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
-#align real.convergent_of_zero Real.convergent_of_zero
 
 /-- If `ξ` is an integer, all its convergents equal `ξ`. -/
 @[simp]
@@ -369,7 +357,6 @@ theorem convergent_of_int {ξ : ℤ} (n : ℕ) : convergent ξ n = ξ := by
   · simp only [Nat.zero_eq, convergent_zero, floor_intCast]
   · simp only [convergent_succ, floor_intCast, fract_intCast, convergent_of_zero, add_zero,
       inv_zero]
-#align real.convergent_of_int Real.convergent_of_int
 
 /-!
 Our `convergent`s agree with `GeneralizedContinuedFraction.convergents`.
@@ -387,7 +374,6 @@ theorem continued_fraction_convergent_eq_convergent (ξ : ℝ) (n : ℕ) :
       Rat.cast_coe_int]
   · rw [convergents_succ, ih (fract ξ)⁻¹, convergent_succ, one_div]
     norm_cast
-#align real.continued_fraction_convergent_eq_convergent Real.continued_fraction_convergent_eq_convergent
 
 end Real
 
@@ -407,7 +393,6 @@ open Int
 def ContfracLegendre.Ass (ξ : ℝ) (u v : ℤ) : Prop :=
   IsCoprime u v ∧ (v = 1 → (-(1 / 2) : ℝ) < ξ - u) ∧
     |ξ - u / v| < ((v : ℝ) * (2 * v - 1))⁻¹
-#align real.contfrac_legendre.ass Real.ContfracLegendre.Ass
 
 -- ### Auxiliary lemmas
 -- This saves a few lines below, as it is frequently needed.
@@ -577,7 +562,6 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
     rw [convergent_succ, ← hn,
       (by exact_mod_cast toNat_of_nonneg huv₀.le : ((u - ⌊ξ⌋ * v).toNat : ℚ) = u - ⌊ξ⌋ * v),
       cast_ofNat, inv_div, sub_div, mul_div_cancel _ Hv, add_sub_cancel'_right]
-#align real.exists_rat_eq_convergent' Real.exists_rat_eq_convergent'
 
 /-- The main result, *Legendre's Theorem* on rational approximation:
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
@@ -595,7 +579,6 @@ theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ
     rw [cast_ofNat] at *
     rw [(by norm_cast : (q.num / q.den : ℝ) = (q.num / q.den : ℚ)), Rat.num_div_den]
     exact h.trans (by rw [← one_div, sq, one_div_lt_one_div hq₂ hq₁, ← sub_pos]; ring_nf; exact hq₀)
-#align real.exists_rat_eq_convergent Real.exists_rat_eq_convergent
 
 /-- The main result, *Legendre's Theorem* on rational approximation:
 if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
@@ -606,6 +589,5 @@ theorem exists_continued_fraction_convergent_eq_rat {q : ℚ}
     ∃ n, (GeneralizedContinuedFraction.of ξ).convergents n = q := by
   obtain ⟨n, hn⟩ := exists_rat_eq_convergent h
   exact ⟨n, hn.symm ▸ continued_fraction_convergent_eq_convergent ξ n⟩
-#align real.exists_continued_fraction_convergent_eq_rat Real.exists_continued_fraction_convergent_eq_rat
 
 end Real

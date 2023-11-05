@@ -67,7 +67,6 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
     · intro h; apply hb.1; apply_fun val at h
       simpa only [val_cast_of_lt hb.right, val_zero] using h
     · simp only [val_cast_of_lt hb.right, Units.val_mk0]
-#align zmod.wilsons_lemma ZMod.wilsons_lemma
 
 @[simp]
 theorem prod_Ico_one_prime : ∏ x in Ico 1 p, (x : ZMod p) = -1 := by
@@ -77,7 +76,6 @@ theorem prod_Ico_one_prime : ∏ x in Ico 1 p, (x : ZMod p) = -1 := by
     congr
     rw [← succ_sub_one p, succ_sub (Fact.out (p := p.Prime)).pos]
   rw [← prod_natCast, Finset.prod_Ico_id_eq_factorial, wilsons_lemma]
-#align zmod.prod_Ico_one_prime ZMod.prod_Ico_one_prime
 
 end ZMod
 
@@ -95,14 +93,12 @@ theorem prime_of_fac_equiv_neg_one (h : ((n - 1)! : ZMod n) = -1) (h1 : n ≠ 1)
   have hm : m ∣ (n - 1)! := Nat.dvd_factorial (pos_of_gt hm2) (le_pred_of_lt hm3)
   refine' hm2.ne' (Nat.dvd_one.mp ((Nat.dvd_add_right hm).mp (hm1.trans _)))
   rw [← ZMod.nat_cast_zmod_eq_zero_iff_dvd, cast_add, cast_one, h, add_left_neg]
-#align nat.prime_of_fac_equiv_neg_one Nat.prime_of_fac_equiv_neg_one
 
 /-- **Wilson's Theorem**: For `n ≠ 1`, `(n-1)!` is congruent to `-1` modulo `n` iff n is prime. -/
 theorem prime_iff_fac_equiv_neg_one (h : n ≠ 1) : Prime n ↔ ((n - 1)! : ZMod n) = -1 := by
   refine' ⟨fun h1 => _, fun h2 => prime_of_fac_equiv_neg_one h2 h⟩
   haveI := Fact.mk h1
   exact ZMod.wilsons_lemma n
-#align nat.prime_iff_fac_equiv_neg_one Nat.prime_iff_fac_equiv_neg_one
 
 end Nat
 

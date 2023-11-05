@@ -33,7 +33,6 @@ theorem Nat.Prime.sq_add_sq {p : ℕ} [Fact p.Prime] (hp : p % 4 ≠ 3) :
     ∃ a b : ℕ, a ^ 2 + b ^ 2 = p := by
   apply sq_add_sq_of_nat_prime_of_not_irreducible p
   rwa [PrincipalIdealRing.irreducible_iff_prime, prime_iff_mod_four_eq_three_of_nat_prime p]
-#align nat.prime.sq_add_sq Nat.Prime.sq_add_sq
 
 end Fermat
 
@@ -49,7 +48,6 @@ See also `sq_add_sq_mul_sq_add_sq`. -/
 theorem sq_add_sq_mul {R} [CommRing R] {a b x y u v : R} (ha : a = x ^ 2 + y ^ 2)
     (hb : b = u ^ 2 + v ^ 2) : ∃ r s : R, a * b = r ^ 2 + s ^ 2 :=
   ⟨x * u - y * v, x * v + y * u, by rw [ha, hb]; ring⟩
-#align sq_add_sq_mul sq_add_sq_mul
 
 /-- The set of natural numbers that are sums of two squares is closed under multiplication. -/
 theorem Nat.sq_add_sq_mul {a b x y u v : ℕ} (ha : a = x ^ 2 + y ^ 2) (hb : b = u ^ 2 + v ^ 2) :
@@ -58,7 +56,6 @@ theorem Nat.sq_add_sq_mul {a b x y u v : ℕ} (ha : a = x ^ 2 + y ^ 2) (hb : b =
   obtain ⟨r, s, h⟩ := _root_.sq_add_sq_mul ha hb
   refine' ⟨r.natAbs, s.natAbs, _⟩
   simpa only [Int.coe_natAbs, sq_abs]
-#align nat.sq_add_sq_mul Nat.sq_add_sq_mul
 
 end General
 
@@ -78,7 +75,6 @@ theorem ZMod.isSquare_neg_one_of_dvd {m n : ℕ} (hd : m ∣ n) (hs : IsSquare (
   let f : ZMod n →+* ZMod m := ZMod.castHom hd _
   rw [← RingHom.map_one f, ← RingHom.map_neg]
   exact hs.map f
-#align zmod.is_square_neg_one_of_dvd ZMod.isSquare_neg_one_of_dvd
 
 /-- If `-1` is a square modulo coprime natural numbers `m` and `n`, then `-1` is also
 a square modulo `m*n`. -/
@@ -91,7 +87,6 @@ theorem ZMod.isSquare_neg_one_mul {m n : ℕ} (hc : m.Coprime n) (hm : IsSquare 
     rw [hx, hy]
     exact ⟨(x, y), rfl⟩
   simpa only [RingEquiv.map_neg_one] using this.map (ZMod.chineseRemainder hc).symm
-#align zmod.is_square_neg_one_mul ZMod.isSquare_neg_one_mul
 
 /-- If a prime `p` divides `n` such that `-1` is a square modulo `n`, then `p % 4 ≠ 3`. -/
 theorem Nat.Prime.mod_four_ne_three_of_dvd_isSquare_neg_one {p n : ℕ} (hpp : p.Prime) (hp : p ∣ n)
@@ -100,7 +95,6 @@ theorem Nat.Prime.mod_four_ne_three_of_dvd_isSquare_neg_one {p n : ℕ} (hpp : p
   rw [← sq, eq_comm, show (-1 : ZMod p) = -1 ^ 2 by ring] at h
   haveI : Fact p.Prime := ⟨hpp⟩
   exact ZMod.mod_four_ne_three_of_sq_eq_neg_sq' one_ne_zero h
-#align nat.prime.mod_four_ne_three_of_dvd_is_square_neg_one Nat.Prime.mod_four_ne_three_of_dvd_isSquare_neg_one
 
 /-- If `n` is a squarefree natural number, then `-1` is a square modulo `n` if and only if
 `n` is not divisible by a prime `q` such that `q % 4 = 3`. -/
@@ -117,7 +111,6 @@ theorem ZMod.isSquare_neg_one_iff {n : ℕ} (hn : Squarefree n) :
     have hp₁ := ZMod.exists_sq_eq_neg_one_iff.mpr (H hpp (dvd_mul_right p n))
     exact ZMod.isSquare_neg_one_mul hcp hp₁
       (ih hn.of_mul_right fun hqp hqd => H hqp <| dvd_mul_of_dvd_right hqd _)
-#align zmod.is_square_neg_one_iff ZMod.isSquare_neg_one_iff
 
 /-- If `n` is a squarefree natural number, then `-1` is a square modulo `n` if and only if
 `n` has no divisor `q` that is `≡ 3 mod 4`. -/
@@ -135,7 +128,6 @@ theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
     rw [show 3 = 3 % 4 by norm_num, Ne.def, ← ZMod.nat_cast_eq_nat_cast_iff'] at hp hq ⊢
     rw [Nat.cast_mul]
     exact help p q hp hq
-#align zmod.is_square_neg_one_iff' ZMod.isSquare_neg_one_iff'
 
 /-!
 ### Relation to sums of two squares
@@ -153,7 +145,6 @@ theorem Nat.eq_sq_add_sq_of_isSquare_mod_neg_one {n : ℕ} (h : IsSquare (-1 : Z
     obtain ⟨u, v, huv⟩ := Nat.Prime.sq_add_sq (ZMod.exists_sq_eq_neg_one_iff.mp hp)
     obtain ⟨x, y, hxy⟩ := ih (ZMod.isSquare_neg_one_of_dvd ⟨p, mul_comm _ _⟩ h)
     exact Nat.sq_add_sq_mul huv.symm hxy
-#align nat.eq_sq_add_sq_of_is_square_mod_neg_one Nat.eq_sq_add_sq_of_isSquare_mod_neg_one
 
 /-- If the integer `n` is a sum of two squares of coprime integers,
 then `-1` is a square modulo `n`. -/
@@ -169,7 +160,6 @@ theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime {n x y : ℤ} (h : n 
   conv_rhs => tactic => norm_cast
   rw [(by norm_cast : (-1 : ZMod n.natAbs) = (-1 : ℤ))]
   exact (ZMod.int_cast_eq_int_cast_iff_dvd_sub _ _ _).mpr (Int.natAbs_dvd.mpr ⟨_, H⟩)
-#align zmod.is_square_neg_one_of_eq_sq_add_sq_of_is_coprime ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime
 
 /-- If the natural number `n` is a sum of two squares of coprime natural numbers, then
 `-1` is a square modulo `n`. -/
@@ -177,7 +167,6 @@ theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_coprime {n x y : ℕ} (h : n = 
     (hc : x.Coprime y) : IsSquare (-1 : ZMod n) := by
   zify at h
   exact ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime h hc.isCoprime
-#align zmod.is_square_neg_one_of_eq_sq_add_sq_of_coprime ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_coprime
 
 /-- A natural number `n` is a sum of two squares if and only if `n = a^2 * b` with natural
 numbers `a` and `b` such that `-1` is a square modulo `b`. -/
@@ -195,7 +184,6 @@ theorem Nat.eq_sq_add_sq_iff_eq_sq_mul {n : ℕ} :
   · rintro ⟨a, b, h₁, h₂⟩
     obtain ⟨x', y', h⟩ := Nat.eq_sq_add_sq_of_isSquare_mod_neg_one h₂
     exact ⟨a * x', a * y', by rw [h₁, h]; ring⟩
-#align nat.eq_sq_add_sq_iff_eq_sq_mul Nat.eq_sq_add_sq_iff_eq_sq_mul
 
 end NegOneSquare
 
@@ -237,6 +225,5 @@ theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
     simp_rw [← hab, padicValNat.mul (pow_ne_zero 2 ha₀.ne') hb₀.ne', hqb',
       padicValNat.pow 2 ha₀.ne']
     exact odd_two_mul_add_one _
-#align nat.eq_sq_add_sq_iff Nat.eq_sq_add_sq_iff
 
 end Main

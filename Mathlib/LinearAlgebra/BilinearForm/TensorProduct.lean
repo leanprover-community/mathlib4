@@ -51,7 +51,6 @@ def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm
   ∘ₗ (TensorProduct.AlgebraTensorModule.congr
     (BilinForm.toLin ≪≫ₗ TensorProduct.lift.equiv A _ _ _)
     (BilinForm.toLin ≪≫ₗ TensorProduct.lift.equiv R _ _ _)).toLinearMap
-#align bilin_form.tensor_distrib BilinForm.tensorDistrib
 
 -- TODO: make the RHS `MulOpposite.op (B₂ m₂ m₂') • B₁ m₁ m₁'` so that this has a nicer defeq for
 -- `R = A` of `B₁ m₁ m₁' * B₂ m₂ m₂'`, as it did before the generalization in #6306.
@@ -61,13 +60,11 @@ theorem tensorDistrib_tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) (
     tensorDistrib R A (B₁ ⊗ₜ B₂) (m₁ ⊗ₜ m₂) (m₁' ⊗ₜ m₂')
       = B₂ m₂ m₂' • B₁ m₁ m₁' :=
   rfl
-#align bilin_form.tensor_distrib_tmul BilinForm.tensorDistrib_tmulₓ
 
 /-- The tensor product of two bilinear forms, a shorthand for dot notation. -/
 @[reducible]
 protected def tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) : BilinForm A (M₁ ⊗[R] M₂) :=
   tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
-#align bilin_form.tmul BilinForm.tmul
 
 attribute [ext] TensorProduct.ext in
 /-- A tensor product of symmetric bilinear forms is symmetric. -/
@@ -121,7 +118,6 @@ noncomputable def tensorDistribEquiv :
   TensorProduct.dualDistribEquiv R (M₁ ⊗ M₁) (M₂ ⊗ M₂) ≪≫ₗ
   (TensorProduct.tensorTensorTensorComm R _ _ _ _).dualMap ≪≫ₗ
   (TensorProduct.lift.equiv R _ _ _).symm ≪≫ₗ LinearMap.toBilin
-#align bilin_form.tensor_distrib_equiv BilinForm.tensorDistribEquiv
 
 -- this is a dsimp lemma
 @[simp, nolint simpNF]
@@ -145,7 +141,6 @@ theorem tensorDistribEquiv_toLinearMap :
 theorem tensorDistribEquiv_apply (B : BilinForm R M₁ ⊗ BilinForm R M₂) :
     tensorDistribEquiv R (M₁ := M₁) (M₂ := M₂) B = tensorDistrib R R B :=
   FunLike.congr_fun (tensorDistribEquiv_toLinearMap R M₁ M₂) B
-#align bilin_form.tensor_distrib_equiv_apply BilinForm.tensorDistribEquiv_apply
 
 end CommRing
 

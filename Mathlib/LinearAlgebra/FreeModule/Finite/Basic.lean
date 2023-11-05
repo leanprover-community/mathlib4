@@ -41,7 +41,6 @@ noncomputable instance ChooseBasisIndex.fintype [Module.Finite R M] :
     infer_instance
   · obtain ⟨s, hs⟩ := id ‹Module.Finite R M›
     exact basis_finite_of_finite_spans (↑s) s.finite_toSet hs (chooseBasis _ _)
-#align module.free.choose_basis_index.fintype Module.Free.ChooseBasisIndex.fintype
 
 end Ring
 
@@ -60,14 +59,12 @@ theorem _root_.Module.Finite.of_basis {R M ι : Type*} [CommRing R] [AddCommGrou
   classical
     refine' ⟨⟨Finset.univ.image b, _⟩⟩
     simp only [Set.image_univ, Finset.coe_univ, Finset.coe_image, Basis.span_eq]
-#align module.finite.of_basis Module.Finite.of_basis
 
 instance _root_.Module.Finite.matrix {ι₁ ι₂ : Type*} [_root_.Finite ι₁] [_root_.Finite ι₂] :
     Module.Finite R (Matrix ι₁ ι₂ R) := by
   cases nonempty_fintype ι₁
   cases nonempty_fintype ι₂
   exact Module.Finite.of_basis (Pi.basis fun _ => Pi.basisFun R _)
-#align module.finite.matrix Module.Finite.matrix
 
 end CommRing
 

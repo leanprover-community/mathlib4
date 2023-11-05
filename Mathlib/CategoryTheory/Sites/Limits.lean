@@ -86,8 +86,6 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
         dsimp [Multifork.ofι]
         erw [Category.assoc, ← E.w f]
         aesop_cat }
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.multifork_evaluation_cone CategoryTheory.Sheaf.multiforkEvaluationCone
 
 variable [HasLimitsOfShape K D]
 
@@ -129,8 +127,6 @@ def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPres
       change _ = S.ι i ≫ _
       erw [← hm, Category.assoc, ← (E.π.app k).naturality, Category.assoc]
       rfl)
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.is_limit_multifork_of_is_limit CategoryTheory.Sheaf.isLimitMultiforkOfIsLimit
 
 /-- If `E` is a cone which is a limit on the level of presheaves,
 then the limit presheaf is again a sheaf.
@@ -142,8 +138,6 @@ theorem isSheaf_of_isLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshea
   rw [Presheaf.isSheaf_iff_multifork]
   intro X S
   exact ⟨isLimitMultiforkOfIsLimit _ _ hE _ _⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.is_sheaf_of_is_limit CategoryTheory.Sheaf.isSheaf_of_isLimit
 
 instance (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) :=
   createsLimitOfReflectsIso fun E hE =>
@@ -218,8 +212,6 @@ noncomputable def sheafifyCocone {F : K ⥤ Sheaf J D}
         ext1
         dsimp
         erw [Category.comp_id, ← Category.assoc, E.w f] }
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.sheafify_cocone CategoryTheory.Sheaf.sheafifyCocone
 
 /-- If `E` is a colimit cocone of presheaves, over a diagram factoring through sheaves,
 then `sheafifyCocone E` is a colimit cocone. -/
@@ -242,8 +234,6 @@ noncomputable def isColimitSheafifyCocone {F : K ⥤ Sheaf J D}
     dsimp
     simp only [← Category.assoc, ← hm] -- Porting note: was `simpa only [...]`
     rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.is_colimit_sheafify_cocone CategoryTheory.Sheaf.isColimitSheafifyCocone
 
 instance [HasColimitsOfShape K D] : HasColimitsOfShape K (Sheaf J D) :=
   ⟨fun _ => HasColimit.mk

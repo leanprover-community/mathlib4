@@ -41,7 +41,6 @@ variable (𝕜 : Type*) (B : Type*) (F : Type*) [NontriviallyNormedField 𝕜] [
 
 instance trivialization.isLinear : (trivialization B F).IsLinear 𝕜 where
   linear _ _ := ⟨fun _ _ => rfl, fun _ _ => rfl⟩
-#align bundle.trivial.trivialization.is_linear Bundle.Trivial.trivialization.isLinear
 
 variable {𝕜}
 
@@ -51,8 +50,6 @@ theorem trivialization.coordChangeL (b : B) :
   ext v
   rw [Trivialization.coordChangeL_apply']
   exacts [rfl, ⟨mem_univ _, mem_univ _⟩]
-set_option linter.uppercaseLean3 false in
-#align bundle.trivial.trivialization.coord_changeL Bundle.Trivial.trivialization.coordChangeL
 
 variable (𝕜)
 
@@ -65,7 +62,6 @@ instance vectorBundle : VectorBundle 𝕜 F (Bundle.Trivial B F) where
     obtain rfl := eq_trivialization B F e'
     simp only [trivialization.coordChangeL]
     exact continuous_const.continuousOn
-#align bundle.trivial.vector_bundle Bundle.Trivial.vectorBundle
 
 end Bundle.Trivial
 
@@ -88,7 +84,6 @@ variable [∀ x, AddCommMonoid (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
 instance prod.isLinear [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] : (e₁.prod e₂).IsLinear 𝕜 where
   linear := fun _ ⟨h₁, h₂⟩ =>
     (((e₁.linear 𝕜 h₁).mk' _).prodMap ((e₂.linear 𝕜 h₂).mk' _)).isLinear
-#align trivialization.prod.is_linear Trivialization.prod.isLinear
 
 @[simp]
 theorem coordChangeL_prod [e₁.IsLinear 𝕜] [e₁'.IsLinear 𝕜] [e₂.IsLinear 𝕜] [e₂'.IsLinear 𝕜] ⦃b⦄
@@ -102,8 +97,6 @@ theorem coordChangeL_prod [e₁.IsLinear 𝕜] [e₁'.IsLinear 𝕜] [e₂.IsLin
       (e₁.coordChangeL 𝕜 e₁' b v₁, e₂.coordChangeL 𝕜 e₂' b v₂)
   rw [e₁.coordChangeL_apply e₁', e₂.coordChangeL_apply e₂', (e₁.prod e₂).coordChangeL_apply']
   exacts [rfl, hb, ⟨hb.1.2, hb.2.2⟩, ⟨hb.1.1, hb.2.1⟩]
-set_option linter.uppercaseLean3 false in
-#align trivialization.coord_changeL_prod Trivialization.coordChangeL_prod
 
 variable {e₁ e₂} [∀ x : B, TopologicalSpace (E₁ x)] [∀ x : B, TopologicalSpace (E₂ x)]
   [FiberBundle F₁ E₁] [FiberBundle F₂ E₂]
@@ -113,7 +106,6 @@ theorem prod_apply [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] {x : B} (hx₁ : x 
     prod e₁ e₂ ⟨x, (v₁, v₂)⟩ =
       ⟨x, e₁.continuousLinearEquivAt 𝕜 x hx₁ v₁, e₂.continuousLinearEquivAt 𝕜 x hx₂ v₂⟩ :=
   rfl
-#align trivialization.prod_apply Trivialization.prod_apply
 
 end Trivialization
 
@@ -143,7 +135,6 @@ instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂
         (e₁.coordChangeL 𝕜 e₁' b v₁, e₂.coordChangeL 𝕜 e₂' b v₂)
       rw [e₁.coordChangeL_apply e₁', e₂.coordChangeL_apply e₂', (e₁.prod e₂).coordChangeL_apply']
       exacts [rfl, hb, ⟨hb.1.2, hb.2.2⟩, ⟨hb.1.1, hb.2.1⟩]
-#align vector_bundle.prod VectorBundle.prod
 
 variable {𝕜 F₁ E₁ F₂ E₂}
 
@@ -157,7 +148,6 @@ theorem Trivialization.continuousLinearEquivAt_prod {e₁ : Trivialization F₁ 
   obtain ⟨v₁, v₂⟩ := v
   rw [(e₁.prod e₂).continuousLinearEquivAt_apply 𝕜, Trivialization.prod]
   exact (congr_arg Prod.snd (prod_apply 𝕜 hx.1 hx.2 v₁ v₂) : _)
-#align trivialization.continuous_linear_equiv_at_prod Trivialization.continuousLinearEquivAt_prodₓ
 
 end
 
@@ -179,7 +169,6 @@ variable {E F} [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)] [Nontri
 instance Trivialization.pullback_linear (e : Trivialization F (π F E)) [e.IsLinear 𝕜] (f : K) :
     (@Trivialization.pullback _ _ _ B' _ _ _ _ _ _ _ e f).IsLinear 𝕜 where
   linear _ h := e.linear 𝕜 h
-#align trivialization.pullback_linear Trivialization.pullback_linear
 
 instance VectorBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E] [VectorBundle 𝕜 F E]
     (f : K) : VectorBundle 𝕜 F ((f : B' → B) *ᵖ E) where
@@ -194,6 +183,5 @@ instance VectorBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
     show ((e.pullback f).coordChangeL 𝕜 (e'.pullback f) b) v = (e.coordChangeL 𝕜 e' (f b)) v
     rw [e.coordChangeL_apply e' hb, (e.pullback f).coordChangeL_apply' _]
     exacts [rfl, hb]
-#align vector_bundle.pullback VectorBundle.pullback
 
 end

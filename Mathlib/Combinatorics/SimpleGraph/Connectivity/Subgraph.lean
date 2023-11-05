@@ -42,7 +42,6 @@ protected lemma preconnected_iff {H : G.Subgraph} :
 Note: This is a structure to make it so one can be precise about how dot notation resolves. -/
 protected structure Connected (H : G.Subgraph) : Prop where
   protected coe : H.coe.Connected
-#align simple_graph.subgraph.connected SimpleGraph.Subgraph.Connected
 
 instance {H : G.Subgraph} : Coe H.Connected H.coe.Connected := ⟨Connected.coe⟩
 
@@ -68,7 +67,6 @@ theorem singletonSubgraph_connected {v : V} : (G.singletonSubgraph v).Connected 
   simp only [singletonSubgraph_verts, Set.mem_singleton_iff] at ha hb
   subst_vars
   rfl
-#align simple_graph.singleton_subgraph_connected SimpleGraph.Subgraph.singletonSubgraph_connected
 
 @[simp]
 theorem subgraphOfAdj_connected {v w : V} (hvw : G.Adj v w) : (G.subgraphOfAdj hvw).Connected := by
@@ -77,7 +75,6 @@ theorem subgraphOfAdj_connected {v w : V} (hvw : G.Adj v w) : (G.subgraphOfAdj h
   simp only [subgraphOfAdj_verts, Set.mem_insert_iff, Set.mem_singleton_iff] at ha hb
   obtain rfl | rfl := ha <;> obtain rfl | rfl := hb <;>
     first | rfl | (apply Adj.reachable; simp)
-#align simple_graph.subgraph_of_adj_connected SimpleGraph.Subgraph.subgraphOfAdj_connected
 
 lemma top_induce_pair_connected_of_adj {u v : V} (huv : G.Adj u v) :
     ((⊤ : G.Subgraph).induce {u, v}).Connected := by

@@ -75,7 +75,6 @@ theorem toTypes_isSheaf (T : X → Type u) : (presheafToTypes X T).IsSheaf :=
       funext x
       exact congr_fun (ht (index x)) ⟨x.1, index_spec x⟩
 set_option linter.uppercaseLean3 false
-#align Top.presheaf.to_Types_is_sheaf TopCat.Presheaf.toTypes_isSheaf
 
 -- We verify that the non-dependent version is an immediate consequence:
 /-- The presheaf of not-necessarily-continuous functions to
@@ -83,7 +82,6 @@ a target type `T` satsifies the sheaf condition.
 -/
 theorem toType_isSheaf (T : Type u) : (presheafToType X T).IsSheaf :=
   toTypes_isSheaf X fun _ => T
-#align Top.presheaf.to_Type_is_sheaf TopCat.Presheaf.toType_isSheaf
 
 end TopCat.Presheaf
 
@@ -95,13 +93,11 @@ namespace TopCat
 def sheafToTypes (T : X → Type u) : Sheaf (Type u) X :=
   ⟨presheafToTypes X T, Presheaf.toTypes_isSheaf _ _⟩
 set_option linter.uppercaseLean3 false
-#align Top.sheaf_to_Types TopCat.sheafToTypes
 
 /-- The sheaf of not-necessarily-continuous functions on `X` with values in a type `T`.
 -/
 def sheafToType (T : Type u) : Sheaf (Type u) X :=
   ⟨presheafToType X T, Presheaf.toType_isSheaf _ _⟩
 set_option linter.uppercaseLean3 false
-#align Top.sheafToType TopCat.sheafToType
 
 end TopCat

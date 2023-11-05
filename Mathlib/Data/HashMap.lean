@@ -24,7 +24,6 @@ set_option autoImplicit true
 namespace Std.HashMap
 
 -- not an exact match, the Lean3 version was dependently-typed
-#align hash_map Std.HashMapₓ
 
 variable [BEq α] [Hashable α]
 

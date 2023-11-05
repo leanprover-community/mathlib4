@@ -74,7 +74,6 @@ open Finsupp
 class Module.Projective (R : Type*) [Semiring R] (P : Type*) [AddCommMonoid P] [Module R P] :
     Prop where
   out : ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.total P P R id) s
-#align module.projective Module.Projective
 
 namespace Module
 
@@ -86,12 +85,10 @@ variable {R : Type*} [Semiring R] {P : Type*} [AddCommMonoid P] [Module R P] {M 
 theorem projective_def :
     Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.total P P R id) s :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
-#align module.projective_def Module.projective_def
 
 theorem projective_def' :
     Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Finsupp.total P P R id ∘ₗ s = .id :=
   by simp_rw [projective_def, FunLike.ext_iff, Function.LeftInverse, comp_apply, id_apply]
-#align module.projective_def' Module.projective_def'
 
 /-- A projective R-module has the property that maps from it lift along surjections. -/
 theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g : P →ₗ[R] N)
@@ -113,7 +110,6 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
   ext p
   conv_rhs => rw [← hs p]
   simp [Finsupp.total_apply, Function.surjInv_eq hf, map_finsupp_sum]
-#align module.projective_lifting_property Module.projective_lifting_property
 
 /-- A module which satisfies the universal property is projective: If all surjections of
 `R`-modules `(P →₀ R) →ₗ[R] P` have `R`-linear left inverse maps, then `P` is
@@ -160,11 +156,9 @@ theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := 
   simp only [b.constr_apply, mul_one, id.def, Finsupp.smul_single', Finsupp.total_single,
     map_finsupp_sum]
   exact b.total_repr m
-#align module.projective_of_basis Module.Projective.of_basis
 
 instance (priority := 100) Projective.of_free [Module.Free R P] : Module.Projective R P :=
   .of_basis <| Module.Free.chooseBasis R P
-#align module.projective_of_free Module.Projective.of_free
 
 end Ring
 
@@ -183,7 +177,6 @@ theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max 
     -- then `P` is projective.
     Projective R P :=
   .of_lifting_property'' (huniv · _)
-#align module.projective_of_lifting_property' Module.Projective.of_lifting_property'
 
 -- porting note: todo: generalize to `P : Type v`?
 /-- A variant of `of_lifting_property'` when we're working over a `[Ring R]`,
@@ -197,7 +190,6 @@ theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type max u v} 
     -- then `P` is projective.
     Projective R P :=
   .of_lifting_property'' (huniv · _)
-#align module.projective_of_lifting_property Module.Projective.of_lifting_property
 
 end OfLiftingProperty
 

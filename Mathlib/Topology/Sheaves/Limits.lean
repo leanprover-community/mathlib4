@@ -47,13 +47,9 @@ theorem isSheaf_of_isLimit [HasLimits C] {X : TopCat} (F : J ⥤ Presheaf.{v} C 
   exact Presheaf.isSheaf_of_iso
     ((isLimitOfPreserves (Sheaf.forget C X) (limit.isLimit F')).conePointsIsoOfNatIso hc e)
     (limit F').2
-set_option linter.uppercaseLean3 false in
-#align Top.is_sheaf_of_is_limit TopCat.isSheaf_of_isLimit
 
 theorem limit_isSheaf [HasLimits C] {X : TopCat} (F : J ⥤ Presheaf.{v} C X)
     (H : ∀ j, (F.obj j).IsSheaf) : (limit F).IsSheaf :=
   isSheaf_of_isLimit F H (limit.isLimit F)
-set_option linter.uppercaseLean3 false in
-#align Top.limit_is_sheaf TopCat.limit_isSheaf
 
 end TopCat

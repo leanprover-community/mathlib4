@@ -32,15 +32,11 @@ variable {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 def normalMono (_ : Mono f) : NormalMono f :=
   equivalenceReflectsNormalMono (forget₂ (ModuleCat.{u} ℤ) AddCommGroupCat.{u}).inv <|
     ModuleCat.normalMono _ inferInstance
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.normal_mono AddCommGroupCat.normalMono
 
 /-- In the category of abelian groups, every epimorphism is normal. -/
 def normalEpi (_ : Epi f) : NormalEpi f :=
   equivalenceReflectsNormalEpi (forget₂ (ModuleCat.{u} ℤ) AddCommGroupCat.{u}).inv <|
     ModuleCat.normalEpi _ inferInstance
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.normal_epi AddCommGroupCat.normalEpi
 
 /-- The category of abelian groups is abelian. -/
 instance : Abelian AddCommGroupCat.{u} where

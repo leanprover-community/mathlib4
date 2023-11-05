@@ -22,4 +22,3 @@ instance (priority := 100) StrictOrderedSemiring.to_charZero [StrictOrderedSemir
       strictMono_nat_of_lt_succ fun n => by
         rw [Nat.cast_succ]
         apply lt_add_one⟩
-#align strict_ordered_semiring.to_char_zero StrictOrderedSemiring.to_charZero

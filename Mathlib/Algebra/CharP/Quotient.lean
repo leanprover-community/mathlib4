@@ -29,7 +29,6 @@ theorem quotient (R : Type u) [CommRing R] (p : ℕ) [hp1 : Fact p.Prime] (hp2 :
           Ideal.mem_span_singleton.1 <|
             Ideal.Quotient.eq_zero_iff_mem.1 <|
               @Subsingleton.elim _ (@CharOne.subsingleton _ _ (ringChar.of_eq h1)) _ _
-#align char_p.quotient CharP.quotient
 
 /-- If an ideal does not contain any coercions of natural numbers other than zero, then its quotient
 inherits the characteristic of the underlying ring. -/
@@ -40,7 +39,6 @@ theorem quotient' {R : Type*} [CommRing R] (p : ℕ) [CharP R p] (I : Ideal R)
     refine' Ideal.Quotient.eq.trans (_ : ↑x - 0 ∈ I ↔ _)
     rw [sub_zero]
     exact ⟨h x, fun h' => h'.symm ▸ I.zero_mem⟩⟩
-#align char_p.quotient' CharP.quotient'
 
 /-- `CharP.quotient'` as an `Iff`. -/
 theorem quotient_iff {R : Type*} [CommRing R] (n : ℕ) [CharP R n] (I : Ideal R) :
@@ -62,4 +60,3 @@ theorem Ideal.Quotient.index_eq_zero {R : Type*} [CommRing R] (I : Ideal R) :
   split_ifs with hq; swap; simp
   letI : Fintype (R ⧸ I) := @Fintype.ofFinite _ hq
   exact CharP.cast_card_eq_zero (R ⧸ I)
-#align ideal.quotient.index_eq_zero Ideal.Quotient.index_eq_zero

@@ -35,32 +35,24 @@ protected theorem IsUpperSet.thickening' (hs : IsUpperSet s) (ε : ℝ) :
     IsUpperSet (thickening ε s) := by
   rw [← ball_mul_one]
   exact hs.mul_left
-#align is_upper_set.thickening' IsUpperSet.thickening'
-#align is_upper_set.thickening IsUpperSet.thickening
 
 @[to_additive IsLowerSet.thickening]
 protected theorem IsLowerSet.thickening' (hs : IsLowerSet s) (ε : ℝ) :
     IsLowerSet (thickening ε s) := by
   rw [← ball_mul_one]
   exact hs.mul_left
-#align is_lower_set.thickening' IsLowerSet.thickening'
-#align is_lower_set.thickening IsLowerSet.thickening
 
 @[to_additive IsUpperSet.cthickening]
 protected theorem IsUpperSet.cthickening' (hs : IsUpperSet s) (ε : ℝ) :
     IsUpperSet (cthickening ε s) := by
   rw [cthickening_eq_iInter_thickening'']
   exact isUpperSet_iInter₂ fun δ _ => hs.thickening' _
-#align is_upper_set.cthickening' IsUpperSet.cthickening'
-#align is_upper_set.cthickening IsUpperSet.cthickening
 
 @[to_additive IsLowerSet.cthickening]
 protected theorem IsLowerSet.cthickening' (hs : IsLowerSet s) (ε : ℝ) :
     IsLowerSet (cthickening ε s) := by
   rw [cthickening_eq_iInter_thickening'']
   exact isLowerSet_iInter₂ fun δ _ => hs.thickening' _
-#align is_lower_set.cthickening' IsLowerSet.cthickening'
-#align is_lower_set.cthickening IsLowerSet.cthickening
 
 end MetricSpace
 
@@ -87,7 +79,6 @@ theorem IsUpperSet.mem_interior_of_forall_lt (hs : IsUpperSet s) (hx : x ∈ clo
   refine' hs (fun i => _) hz
   simp_rw [ball_pi _ hδ, Real.ball_eq_Ioo] at hw
   exact ((lt_sub_iff_add_lt.2 <| hyz _).trans (hw _ <| mem_univ _).1).le
-#align is_upper_set.mem_interior_of_forall_lt IsUpperSet.mem_interior_of_forall_lt
 
 theorem IsLowerSet.mem_interior_of_forall_lt (hs : IsLowerSet s) (hx : x ∈ closure s)
     (h : ∀ i, y i < x i) : y ∈ interior s := by
@@ -106,7 +97,6 @@ theorem IsLowerSet.mem_interior_of_forall_lt (hs : IsLowerSet s) (hx : x ∈ clo
   refine' hs (fun i => _) hz
   simp_rw [ball_pi _ hδ, Real.ball_eq_Ioo] at hw
   exact ((hw _ <| mem_univ _).2.trans <| hyz _).le
-#align is_lower_set.mem_interior_of_forall_lt IsLowerSet.mem_interior_of_forall_lt
 
 end Finite
 
@@ -131,7 +121,6 @@ theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s)
   dsimp at hxy hz
   rw [abs_sub_le_iff] at hxy hz
   linarith
-#align is_upper_set.exists_subset_ball IsUpperSet.exists_subset_ball
 
 theorem IsLowerSet.exists_subset_ball (hs : IsLowerSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
     ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s := by
@@ -150,6 +139,5 @@ theorem IsLowerSet.exists_subset_ball (hs : IsLowerSet s) (hx : x ∈ closure s)
   dsimp at hxy hz
   rw [abs_sub_le_iff] at hxy hz
   linarith
-#align is_lower_set.exists_subset_ball IsLowerSet.exists_subset_ball
 
 end Fintype

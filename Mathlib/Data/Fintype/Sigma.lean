@@ -30,9 +30,7 @@ instance {α : Type*} (β : α → Type*) [Fintype α] [∀ a, Fintype (β a)] :
 theorem Finset.univ_sigma_univ {α : Type*} {β : α → Type*} [Fintype α] [∀ a, Fintype (β a)] :
     ((univ : Finset α).sigma fun a => (univ : Finset (β a))) = univ :=
   rfl
-#align finset.univ_sigma_univ Finset.univ_sigma_univ
 
 instance PSigma.fintype {α : Type*} {β : α → Type*} [Fintype α] [∀ a, Fintype (β a)] :
     Fintype (Σ'a, β a) :=
   Fintype.ofEquiv _ (Equiv.psigmaEquivSigma _).symm
-#align psigma.fintype PSigma.fintype

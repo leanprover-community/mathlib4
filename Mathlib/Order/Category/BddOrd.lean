@@ -26,7 +26,6 @@ structure BddOrd where
   /-- The underlying object in the category of partial orders. -/
   toPartOrd : PartOrd
   [isBoundedOrder : BoundedOrder toPartOrd]
-#align BddOrd BddOrd
 
 namespace BddOrd
 
@@ -42,12 +41,10 @@ attribute [instance] BddOrd.isBoundedOrder
 def of (α : Type*) [PartialOrder α] [BoundedOrder α] : BddOrd :=
   -- Porting note: was ⟨⟨α⟩⟩, see https://github.com/leanprover-community/mathlib4/issues/4998
   ⟨{ α := α }⟩
-#align BddOrd.of BddOrd.of
 
 @[simp]
 theorem coe_of (α : Type*) [PartialOrder α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
-#align BddOrd.coe_of BddOrd.coe_of
 
 instance : Inhabited BddOrd :=
   ⟨of PUnit⟩
@@ -59,7 +56,6 @@ instance largeCategory : LargeCategory.{u} BddOrd where
   id_comp := BoundedOrderHom.comp_id
   comp_id := BoundedOrderHom.id_comp
   assoc _ _ _ := BoundedOrderHom.comp_assoc _ _ _
-#align BddOrd.large_category BddOrd.largeCategory
 
 -- Porting note: added.
 -- see https://github.com/leanprover-community/mathlib4/issues/5017
@@ -71,27 +67,23 @@ instance concreteCategory : ConcreteCategory BddOrd where
     { obj := (↥)
       map := FunLike.coe }
   forget_faithful := ⟨(FunLike.coe_injective ·)⟩
-#align BddOrd.concrete_category BddOrd.concreteCategory
 
 instance hasForgetToPartOrd : HasForget₂ BddOrd PartOrd where
   forget₂ :=
     { obj := fun X => X.toPartOrd
       map := fun {X Y} => BoundedOrderHom.toOrderHom }
-#align BddOrd.has_forget_to_PartOrd BddOrd.hasForgetToPartOrd
 
 instance hasForgetToBipointed : HasForget₂ BddOrd Bipointed where
   forget₂ :=
     { obj := fun X => ⟨X, ⊥, ⊤⟩
       map := fun f => ⟨f, f.map_bot', f.map_top'⟩ }
   forget_comp := rfl
-#align BddOrd.has_forget_to_Bipointed BddOrd.hasForgetToBipointed
 
 /-- `OrderDual` as a functor. -/
 @[simps]
 def dual : BddOrd ⥤ BddOrd where
   obj X := of Xᵒᵈ
   map {X Y} := BoundedOrderHom.dual
-#align BddOrd.dual BddOrd.dual
 
 /-- Constructs an equivalence between bounded orders from an order isomorphism between them. -/
 @[simps]
@@ -100,7 +92,6 @@ def Iso.mk {α β : BddOrd.{u}} (e : α ≃o β) : α ≅ β where
   inv := (e.symm : BoundedOrderHom _ _)
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
-#align BddOrd.iso.mk BddOrd.Iso.mk
 
 /-- The equivalence between `BddOrd` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
@@ -109,7 +100,6 @@ def dualEquiv : BddOrd ≌ BddOrd where
   inverse := dual
   unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
   counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
-#align BddOrd.dual_equiv BddOrd.dualEquiv
 
 end BddOrd
 
@@ -117,10 +107,8 @@ theorem bddOrd_dual_comp_forget_to_partOrd :
     BddOrd.dual ⋙ forget₂ BddOrd PartOrd =
     forget₂ BddOrd PartOrd ⋙ PartOrd.dual :=
   rfl
-#align BddOrd_dual_comp_forget_to_PartOrd bddOrd_dual_comp_forget_to_partOrd
 
 theorem bddOrd_dual_comp_forget_to_bipointed :
     BddOrd.dual ⋙ forget₂ BddOrd Bipointed =
     forget₂ BddOrd Bipointed ⋙ Bipointed.swap :=
   rfl
-#align BddOrd_dual_comp_forget_to_Bipointed bddOrd_dual_comp_forget_to_bipointed

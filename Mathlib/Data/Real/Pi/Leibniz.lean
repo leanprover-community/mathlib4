@@ -134,6 +134,5 @@ theorem tendsto_sum_pi_div_four :
       (le_trans (abs_add (f 1 - f U) (f U - f 0)) (add_le_add mvt1 mvt2))
     _ = 1 - U + (U : ℝ) ^ (2 * k) * U := by simp
     _ = 1 - u k + u k ^ (2 * (k : ℝ) + 1) := by rw [← pow_succ' (U : ℝ) (2 * k)]; norm_cast
-#align real.tendsto_sum_pi_div_four Real.tendsto_sum_pi_div_four
 
 end Real

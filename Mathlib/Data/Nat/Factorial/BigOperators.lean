@@ -27,7 +27,6 @@ variable {α : Type*} (s : Finset α) (f : α → ℕ)
 
 theorem prod_factorial_pos : 0 < ∏ i in s, (f i)! :=
   Finset.prod_pos fun i _ => factorial_pos (f i)
-#align nat.prod_factorial_pos Nat.prod_factorial_pos
 
 theorem prod_factorial_dvd_factorial_sum : (∏ i in s, (f i)!) ∣ (∑ i in s, f i)! := by
   classical
@@ -36,7 +35,6 @@ theorem prod_factorial_dvd_factorial_sum : (∏ i in s, (f i)!) ∣ (∑ i in s,
     · simp only [Finset.prod_insert has, Finset.sum_insert has]
       refine' dvd_trans (mul_dvd_mul_left (f a')! ih) _
       apply Nat.factorial_mul_factorial_dvd_factorial_add
-#align nat.prod_factorial_dvd_factorial_sum Nat.prod_factorial_dvd_factorial_sum
 
 theorem descFactorial_eq_prod_range (n : ℕ) : ∀ k, n.descFactorial k = ∏ i in range k, (n - i)
   | 0 => rfl

@@ -40,7 +40,6 @@ class Abs (α : Type*) where
   /-- The absolute value function. -/
   abs : α → α
 
-#align has_abs Abs
 
 export Abs (abs)
 
@@ -50,7 +49,6 @@ class PosPart (α : Type*) where
   /-- The positive part function. -/
   pos : α → α
 
-#align has_pos_part PosPart
 
 /-- The negative part of an element admitting a decomposition into positive and negative parts.
 -/
@@ -58,7 +56,6 @@ class NegPart (α : Type*) where
   /-- The negative part function. -/
   neg : α → α
 
-#align has_neg_part NegPart
 
 @[inherit_doc Abs.abs]
 macro:max atomic("|" noWs) a:term noWs "|" : term => `(abs $a)

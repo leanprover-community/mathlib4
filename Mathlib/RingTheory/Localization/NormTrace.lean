@@ -71,7 +71,6 @@ theorem Algebra.norm_localization [Module.Free R S] [Module.Finite R S] (a : S) 
   letI := Classical.decEq (Module.Free.ChooseBasisIndex R S)
   rw [Algebra.norm_eq_matrix_det (b.localizationLocalization Rₘ M Sₘ),
     Algebra.norm_eq_matrix_det b, RingHom.map_det, ← Algebra.map_leftMulMatrix_localization]
-#align algebra.norm_localization Algebra.norm_localization
 
 /-- Let `S` be an extension of `R` and `Rₘ Sₘ` be localizations at `M` of `R S` respectively.
 Then the trace of `a : Sₘ` over `Rₘ` is the trace of `a : S` over `R` if `S` is free as `R`-module.

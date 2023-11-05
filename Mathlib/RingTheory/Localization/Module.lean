@@ -52,7 +52,6 @@ theorem LinearIndependent.localization {ι : Type*} {b : ι → M} (hli : Linear
     rw [← IsScalarTower.algebraMap_smul Rₛ, hg' i hi, smul_assoc]
   refine' (IsLocalization.map_units Rₛ a).mul_right_eq_zero.mp _
   rw [← Algebra.smul_def, ← map_zero (algebraMap R Rₛ), ← hli, hg' i hi]
-#align linear_independent.localization LinearIndependent.localization
 
 end AddCommMonoid
 
@@ -88,7 +87,6 @@ theorem LinearIndependent.localization_localization {ι : Type*} {v : ι → A}
   specialize hv s _ hr i hi
   rw [← (IsLocalization.map_units Rₛ a).mul_right_eq_zero, ← Algebra.smul_def, ← hg' i hi]
   exact (IsLocalization.map_eq_zero_iff S _ _).2 ⟨⟨r, hrS⟩, hv⟩
-#align linear_independent.localization_localization LinearIndependent.localization_localization
 
 theorem SpanEqTop.localization_localization {v : Set A} (hv : span R v = ⊤) :
     span Rₛ (algebraMap A Aₛ '' v) = ⊤ := by
@@ -103,7 +101,6 @@ theorem SpanEqTop.localization_localization {v : Set A} (hv : span R v = ⊤) :
   refine' smul_mem _ _ (span_subset_span R Rₛ _ _)
   rw [← Algebra.coe_linearMap, ← LinearMap.coe_restrictScalars R, ← LinearMap.map_span]
   exact mem_map_of_mem (hv.symm ▸ mem_top)
-#align span_eq_top.localization_localization SpanEqTop.localization_localization
 
 /-- If `A` has an `R`-basis, then localizing `A` at `S` has a basis over `R` localized at `S`.
 
@@ -112,13 +109,11 @@ A suitable instance for `[Algebra A Aₛ]` is `localizationAlgebra`.
 noncomputable def Basis.localizationLocalization {ι : Type*} (b : Basis ι R A) : Basis ι Rₛ Aₛ :=
   Basis.mk (b.linearIndependent.localization_localization _ S _)
     (by rw [Set.range_comp, SpanEqTop.localization_localization Rₛ S Aₛ b.span_eq])
-#align basis.localization_localization Basis.localizationLocalization
 
 @[simp]
 theorem Basis.localizationLocalization_apply {ι : Type*} (b : Basis ι R A) (i) :
     b.localizationLocalization Rₛ S Aₛ i = algebraMap A Aₛ (b i) :=
   Basis.mk_apply _ _ _
-#align basis.localization_localization_apply Basis.localizationLocalization_apply
 
 @[simp]
 theorem Basis.localizationLocalization_repr_algebraMap {ι : Type*} (b : Basis ι R A) (x i) :
@@ -138,7 +133,6 @@ theorem Basis.localizationLocalization_repr_algebraMap {ι : Type*} (b : Basis �
       (Finset.sum_eq_single i (fun j _ hj => by simp [hj]) fun hi => by
         simp [Finsupp.not_mem_support_iff.mp hi])
     _ = algebraMap R Rₛ (b.repr x i) := by simp [Algebra.smul_def]
-#align basis.localization_localization_repr_algebra_map Basis.localizationLocalization_repr_algebraMap
 
 theorem Basis.localizationLocalization_span {ι : Type*} (b : Basis ι R A) :
     Submodule.span R (Set.range (b.localizationLocalization Rₛ S Aₛ)) =
@@ -162,7 +156,6 @@ theorem LinearIndependent.iff_fractionRing {ι : Type*} {b : ι → V} :
     LinearIndependent R b ↔ LinearIndependent K b :=
   ⟨LinearIndependent.localization K R⁰,
     LinearIndependent.restrict_scalars (smul_left_injective R one_ne_zero)⟩
-#align linear_independent.iff_fraction_ring LinearIndependent.iff_fractionRing
 
 end FractionRing
 

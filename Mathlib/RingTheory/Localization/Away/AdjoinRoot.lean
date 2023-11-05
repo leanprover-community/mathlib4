@@ -37,14 +37,11 @@ noncomputable def Localization.awayEquivAdjoin (r : R) : Away r ≃ₐ[R] Adjoin
     (Subsingleton.elim _ _)
     -- Porting note: fix since `IsLocalization.algHom_subsingleton` is no local instance anymore
     (Subsingleton.elim (h := IsLocalization.algHom_subsingleton (Submonoid.powers r)) _ _)
-#align localization.away_equiv_adjoin Localization.awayEquivAdjoin
 
 theorem IsLocalization.adjoin_inv (r : R) : IsLocalization.Away r (AdjoinRoot <| C r * X - 1) :=
   IsLocalization.isLocalization_of_algEquiv _ (Localization.awayEquivAdjoin r)
-#align is_localization.adjoin_inv IsLocalization.adjoin_inv
 
 theorem IsLocalization.Away.finitePresentation (r : R) {S} [CommRing S] [Algebra R S]
     [IsLocalization.Away r S] : Algebra.FinitePresentation R S :=
   (AdjoinRoot.finitePresentation _).equiv <|
     (Localization.awayEquivAdjoin r).symm.trans <| IsLocalization.algEquiv (Submonoid.powers r) _ _
-#align is_localization.away.finite_presentation IsLocalization.Away.finitePresentation

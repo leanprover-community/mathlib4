@@ -35,7 +35,6 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 theorem exact_d_f [EnoughProjectives C] {X Y : C} (f : X ⟶ Y) : Exact (d f) f :=
   (Abelian.exact_iff _ _).2 <|
     ⟨by simp, zero_of_epi_comp (π _) <| by rw [← Category.assoc, cokernel.condition]⟩
-#align category_theory.exact_d_f CategoryTheory.exact_d_f
 
 /-- The preadditive Co-Yoneda functor on `P` preserves colimits if `P` is projective. -/
 def preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective (P : C) [hP : Projective P] :
@@ -44,7 +43,6 @@ def preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective (P : C) [hP : Proj
   -- porting note: this next instance wasn't necessary in Lean 3
   haveI := @Functor.preservesEpimorphisms_of_preserves_of_reflects _ _ _ _ _ _ _ _ this _
   apply Functor.preservesFiniteColimitsOfPreservesEpisAndKernels
-#align category_theory.preserves_finite_colimits_preadditive_coyoneda_obj_of_projective CategoryTheory.preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective
 
 /-- An object is projective if its preadditive Co-Yoneda functor preserves finite colimits. -/
 theorem projective_of_preservesFiniteColimits_preadditiveCoyonedaObj (P : C)
@@ -53,7 +51,6 @@ theorem projective_of_preservesFiniteColimits_preadditiveCoyonedaObj (P : C)
   -- porting note: this next line wasn't necessary in Lean 3
   dsimp only [preadditiveCoyoneda]
   infer_instance
-#align category_theory.projective_of_preserves_finite_colimits_preadditive_coyoneda_obj CategoryTheory.projective_of_preservesFiniteColimits_preadditiveCoyonedaObj
 
 namespace ProjectiveResolution
 
@@ -77,8 +74,6 @@ def ofComplex (Z : C) : ChainComplex C ℕ :=
   ChainComplex.mk' (Projective.over Z) (Projective.syzygies (Projective.π Z))
     (Projective.d (Projective.π Z)) fun ⟨_, _, f⟩ =>
     ⟨Projective.syzygies f, Projective.d f, (exact_d_f f).w⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.ProjectiveResolution.of_complex CategoryTheory.ProjectiveResolution.ofComplex
 
 /- Porting note:
 
@@ -146,8 +141,6 @@ irreducible_def of (Z : C) : ProjectiveResolution Z :=
     exact₀ := by simpa using exact_d_f (Projective.π Z)
     exact := exact_ofComplex Z
     epi := Projective.π_epi Z }
-set_option linter.uppercaseLean3 false in
-#align category_theory.ProjectiveResolution.of CategoryTheory.ProjectiveResolution.of
 
 instance (priority := 100) (Z : C) : HasProjectiveResolution Z where out := ⟨of Z⟩
 
@@ -174,7 +167,5 @@ def toSingle₀ProjectiveResolution {X : ChainComplex C ℕ} {Y : C}
   exact₀ := HomologicalComplex.Hom.to_single₀_exact_d_f_at_zero f
   exact := HomologicalComplex.Hom.to_single₀_exact_at_succ f
   epi := HomologicalComplex.Hom.to_single₀_epi_at_zero f
-set_option linter.uppercaseLean3 false in
-#align homological_complex.hom.to_single₀_ProjectiveResolution HomologicalComplex.Hom.toSingle₀ProjectiveResolution
 
 end HomologicalComplex.Hom

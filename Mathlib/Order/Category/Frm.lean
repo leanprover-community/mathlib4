@@ -30,7 +30,6 @@ set_option linter.uppercaseLean3 false -- `Frm`
 /-- The category of frames. -/
 def Frm :=
   Bundled Frame
-#align Frm Frm
 
 namespace Frm
 
@@ -43,11 +42,9 @@ instance (X : Frm) : Frame X :=
 /-- Construct a bundled `Frm` from a `Frame`. -/
 def of (α : Type*) [Frame α] : Frm :=
   Bundled.of α
-#align Frm.of Frm.of
 
 @[simp]
 theorem coe_of (α : Type*) [Frame α] : ↥(of α) = α := rfl
-#align Frm.coe_of Frm.coe_of
 
 instance : Inhabited Frm :=
   ⟨of PUnit⟩
@@ -56,14 +53,12 @@ instance : Inhabited Frm :=
 Necessary for the category theory machinery. -/
 abbrev Hom (α β : Type*) [Frame α] [Frame β] : Type _ :=
   FrameHom α β
-#align Frm.hom Frm.Hom
 
 instance bundledHom : BundledHom Hom where
   toFun {α β} _ _ := ((↑) : FrameHom α β → α → β)
   id {α} _ := FrameHom.id α
   comp _ _ _ := FrameHom.comp
   hom_ext _ _ := FunLike.coe_injective
-#align Frm.bundled_hom Frm.bundledHom
 
 -- Porting note: Originally `deriving instance LargeCategory, ConcreteCategory for Frm`
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
@@ -77,7 +72,6 @@ instance hasForgetToLat : HasForget₂ Frm Lat where
   forget₂ :=
     { obj := fun X => ⟨X, _⟩
       map := fun {X Y} => FrameHom.toLatticeHom }
-#align Frm.has_forget_to_Lat Frm.hasForgetToLat
 
 /-- Constructs an isomorphism of frames from an order isomorphism between them. -/
 @[simps]
@@ -90,7 +84,6 @@ def Iso.mk {α β : Frm.{u}} (e : α ≃o β) : α ≅ β where
   inv_hom_id := by
     ext
     exact e.apply_symm_apply _
-#align Frm.iso.mk Frm.Iso.mk
 
 end Frm
 
@@ -100,9 +93,7 @@ def topCatOpToFrm : TopCatᵒᵖ ⥤ Frm where
   obj X := Frm.of (Opens (unop X : TopCat))
   map f := Opens.comap <| Quiver.Hom.unop f
   map_id X := Opens.comap_id
-#align Top_op_to_Frame topCatOpToFrm
 
 -- Note, `CompHaus` is too strong. We only need `T0Space`.
 instance CompHausOpToFrame.faithful : Faithful (compHausToTop.op ⋙ topCatOpToFrm.{u}) :=
   ⟨fun h => Quiver.Hom.unop_inj <| Opens.comap_injective h⟩
-#align CompHaus_op_to_Frame.faithful CompHausOpToFrame.faithful

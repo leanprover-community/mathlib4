@@ -67,7 +67,6 @@ instance functorCategoryLinear : Linear R (C ⥤ D)
     intros
     ext
     apply comp_smul
-#align category_theory.functor_category_linear CategoryTheory.functorCategoryLinear
 
 namespace NatTrans
 
@@ -80,12 +79,10 @@ def appLinearMap (X : C) : (F ⟶ G) →ₗ[R] F.obj X ⟶ G.obj X where
   toFun α := α.app X
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-#align category_theory.nat_trans.app_linear_map CategoryTheory.NatTrans.appLinearMap
 
 @[simp]
 theorem app_smul (X : C) (r : R) (α : F ⟶ G) : (r • α).app X = r • α.app X :=
   rfl
-#align category_theory.nat_trans.app_smul CategoryTheory.NatTrans.app_smul
 
 end NatTrans
 

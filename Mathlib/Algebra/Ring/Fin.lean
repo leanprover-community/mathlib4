@@ -29,6 +29,3 @@ def RingEquiv.piFinTwo (R : Fin 2 → Type*) [∀ i, Semiring (R i)] :
     toFun := piFinTwoEquiv R
     map_add' := fun _ _ => rfl
     map_mul' := fun _ _ => rfl }
-#align ring_equiv.pi_fin_two RingEquiv.piFinTwo
-#align ring_equiv.pi_fin_two_apply RingEquiv.piFinTwo_apply
-#align ring_equiv.pi_fin_two_symm_apply RingEquiv.piFinTwo_symm_apply

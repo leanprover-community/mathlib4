@@ -48,15 +48,11 @@ theorem homology'_ext {L M N K : ModuleCat R} {f : L ⟶ M} {g : M ⟶ N} (w : f
   obtain ⟨n, rfl⟩ := (kernelSubobjectIso g ≪≫
     ModuleCat.kernelIsoKer g).toLinearEquiv.toEquiv.symm.surjective n
   exact w n
-set_option linter.uppercaseLean3 false in
-#align Module.homology_ext ModuleCat.homology'_ext
 
 /-- Bundle an element `C.X i` such that `C.dFrom i x = 0` as a term of `C.cycles i`. -/
 abbrev toCycles' {C : HomologicalComplex (ModuleCat.{u} R) c} {i : ι}
     (x : LinearMap.ker (C.dFrom i)) : (C.cycles' i : Type u) :=
   toKernelSubobject x
-set_option linter.uppercaseLean3 false in
-#align Module.to_cycles ModuleCat.toCycles'
 
 @[ext]
 theorem cycles'_ext {C : HomologicalComplex (ModuleCat.{u} R) c} {i : ι}
@@ -64,8 +60,6 @@ theorem cycles'_ext {C : HomologicalComplex (ModuleCat.{u} R) c} {i : ι}
     (w : (C.cycles' i).arrow x = (C.cycles' i).arrow y) : x = y := by
   apply_fun (C.cycles' i).arrow using (ModuleCat.mono_iff_injective _).mp (cycles' C i).arrow_mono
   exact w
-set_option linter.uppercaseLean3 false in
-#align Module.cycles_ext ModuleCat.cycles'_ext
 
 -- porting note: both proofs by `rw` were proofs by `simp` which no longer worked
 -- see https://github.com/leanprover-community/mathlib4/issues/5026
@@ -78,22 +72,16 @@ theorem cycles'Map_toCycles' (f : C ⟶ D) {i : ι} (x : LinearMap.ker (C.dFrom 
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [cycles'Map_arrow_apply, toKernelSubobject_arrow, toKernelSubobject_arrow]
   rfl
-set_option linter.uppercaseLean3 false in
-#align Module.cycles_map_to_cycles ModuleCat.cycles'Map_toCycles'
 
 /-- Build a term of `C.homology i` from an element `C.X i` such that `C.d_from i x = 0`. -/
 abbrev toHomology' {C : HomologicalComplex (ModuleCat.{u} R) c} {i : ι}
     (x : LinearMap.ker (C.dFrom i)) : C.homology' i :=
   homology'.π (C.dTo i) (C.dFrom i) _ (toCycles' x)
-set_option linter.uppercaseLean3 false in
-#align Module.to_homology ModuleCat.toHomology'
 
 @[ext]
 theorem homology'_ext' {M : ModuleCat R} (i : ι) {h k : C.homology' i ⟶ M}
     (w : ∀ x : LinearMap.ker (C.dFrom i), h (toHomology' x) = k (toHomology' x)) : h = k :=
   homology'_ext _ w
-set_option linter.uppercaseLean3 false in
-#align Module.homology_ext' ModuleCat.homology'_ext'
 
 -- porting note: `erw` had to be used instead of `simp`
 -- see https://github.com/leanprover-community/mathlib4/issues/5026

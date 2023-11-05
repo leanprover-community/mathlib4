@@ -184,16 +184,12 @@ def basis : FreeGroupBasis (Generators G) G := FreeGroupBasis.ofRepr (MulEquiv G
 @[simps!]
 def toFreeGroup : G ≃* FreeGroup (Generators G) :=
   (MulEquiv G).symm
-#align is_free_group.to_free_group IsFreeGroup.toFreeGroup
-#align is_free_group.to_free_group_apply IsFreeGroup.toFreeGroup_apply
-#align is_free_group.to_free_group_symm_apply IsFreeGroup.toFreeGroup_symm_apply
 
 variable {G}
 
 /-- The canonical injection of G's generators into G -/
 def of : Generators G → G :=
   (MulEquiv G).toFun ∘ FreeGroup.of
-#align is_free_group.of IsFreeGroup.of
 
 variable {H : Type*} [Group H]
 
@@ -201,22 +197,18 @@ variable {H : Type*} [Group H]
 given by those generators. -/
 def lift : (Generators G → H) ≃ (G →* H) :=
   (basis G).lift
-#align is_free_group.lift IsFreeGroup.lift
 
 @[simp]
 theorem lift_of (f : Generators G → H) (a : Generators G) : lift f (of a) = f a :=
   congr_fun (lift.symm_apply_apply f) a
-#align is_free_group.lift_of IsFreeGroup.lift_of
 
 @[simp]
 theorem lift_symm_apply (f : G →* H) (a : Generators G) : (lift.symm f) a = f (of a) :=
   rfl
-#align is_free_group.lift_symm_apply IsFreeGroup.lift_symm_apply
 
 /- Do not register this as an ext lemma, as `Generators G` is not canonical. -/
 theorem ext_hom ⦃f g : G →* H⦄ (h : ∀ a : Generators G, f (of a) = g (of a)) : f = g :=
   lift.symm.injective (funext h)
-#align is_free_group.ext_hom IsFreeGroup.ext_hom
 
 /-- The universal property of a free group: A function from the generators of `G` to another
 group extends in a unique way to a homomorphism from `G`.
@@ -225,7 +217,6 @@ Note that since `IsFreeGroup.lift` is expressed as a bijection, it already
 expresses the universal property.  -/
 theorem unique_lift (f : Generators G → H) : ∃! F : G →* H, ∀ a, F (of a) = f a := by
   simpa only [Function.funext_iff] using lift.symm.bijective.existsUnique f
-#align is_free_group.unique_lift IsFreeGroup.unique_lift
 
 /-- If a group satisfies the universal property of a free group with respect to a given type, then
 it is free. Here, the universal property is expressed as in `IsFreeGroup.lift` and its

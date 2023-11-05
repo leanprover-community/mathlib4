@@ -26,4 +26,3 @@ variable {α : Type*}
 -- intance elsewhere.
 -- instance Array'.fintype {n : ℕ} {α : Type*} [Fintype α] : Fintype (Array' n α) :=
 --   DArray.fintype
-#align array.fintype Vector.fintypeₓ

@@ -34,7 +34,6 @@ isomorphisms of C. -/
 -- @[nolint has_nonempty_instance]
 
 def Core (C : Type u₁) := C
-#align category_theory.core CategoryTheory.Core
 
 variable {C : Type u₁} [Category.{v₁} C]
 
@@ -43,7 +42,6 @@ instance coreCategory : Groupoid.{v₁} (Core C) where
   id (X : C) := Iso.refl X
   comp f g := Iso.trans f g
   inv {X Y} f := Iso.symm f
-#align category_theory.core_category CategoryTheory.coreCategory
 
 namespace Core
 
@@ -51,12 +49,10 @@ namespace Core
 /- Porting note: abomination -/
 theorem id_hom (X : C) : Iso.hom (coreCategory.id X) = @CategoryStruct.id C _ X := by
   rfl
-#align category_theory.core.id_hom CategoryTheory.Core.id_hom
 
 @[simp]
 theorem comp_hom {X Y Z : Core C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl
-#align category_theory.core.comp_hom CategoryTheory.Core.comp_hom
 
 variable (C)
 
@@ -64,7 +60,6 @@ variable (C)
 def inclusion : Core C ⥤ C where
   obj := id
   map f := f.hom
-#align category_theory.core.inclusion CategoryTheory.Core.inclusion
 
 -- porting note: This worked without proof before.
 instance : Faithful (inclusion C) where
@@ -80,14 +75,12 @@ variable {C} {G : Type u₂} [Groupoid.{v₂} G]
 noncomputable def functorToCore (F : G ⥤ C) : G ⥤ Core C where
   obj X := F.obj X
   map f := ⟨F.map f, F.map (inv f), _, _⟩
-#align category_theory.core.functor_to_core CategoryTheory.Core.functorToCore
 
 /-- We can functorially associate to any functor from a groupoid to the core of a category `C`,
 a functor from the groupoid to `C`, simply by composing with the embedding `Core C ⥤ C`.
 -/
 def forgetFunctorToCore : (G ⥤ Core C) ⥤ G ⥤ C :=
   (whiskeringRight _ _ _).obj (inclusion C)
-#align category_theory.core.forget_functor_to_core CategoryTheory.Core.forgetFunctorToCore
 
 end Core
 
@@ -103,6 +96,5 @@ def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] : Core (Type u
     apply Iso.ext; funext x; dsimp
     erw [Iso.toEquiv_comp, EquivFunctor.map_trans']
     rw [Function.comp]
-#align category_theory.of_equiv_functor CategoryTheory.ofEquivFunctor
 
 end CategoryTheory

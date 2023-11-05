@@ -27,7 +27,6 @@ class OrderedCancelAddCommMonoid (α : Type u) extends AddCommMonoid α, Partial
   /-- Additive cancellation is compatible with the order in an ordered cancellative additive
     commutative monoid. -/
   protected le_of_add_le_add_left : ∀ a b c : α, a + b ≤ a + c → b ≤ c
-#align ordered_cancel_add_comm_monoid OrderedCancelAddCommMonoid
 
 /-- An ordered cancellative commutative monoid
 is a commutative monoid with a partial order,
@@ -37,7 +36,6 @@ class OrderedCancelCommMonoid (α : Type u) extends CommMonoid α, PartialOrder 
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c : α, c * a ≤ c * b
   /-- Cancellation is compatible with the order in an ordered cancellative commutative monoid. -/
   protected le_of_mul_le_mul_left : ∀ a b c : α, a * b ≤ a * c → b ≤ c
-#align ordered_cancel_comm_monoid OrderedCancelCommMonoid
 
 attribute [to_additive OrderedCancelAddCommMonoid] OrderedCancelCommMonoid
 
@@ -50,22 +48,16 @@ variable [OrderedCancelCommMonoid α] {a b c d : α}
 instance (priority := 200) OrderedCancelCommMonoid.to_contravariantClass_le_left :
     ContravariantClass α α (· * ·) (· ≤ ·) :=
   ⟨OrderedCancelCommMonoid.le_of_mul_le_mul_left⟩
-#align ordered_cancel_comm_monoid.to_contravariant_class_le_left OrderedCancelCommMonoid.to_contravariantClass_le_left
-#align ordered_cancel_add_comm_monoid.to_contravariant_class_le_left OrderedCancelAddCommMonoid.to_contravariantClass_le_left
 
 @[to_additive]
 theorem OrderedCancelCommMonoid.lt_of_mul_lt_mul_left : ∀ a b c : α, a * b < a * c → b < c :=
   contravariant_lt_of_contravariant_le α α _ ContravariantClass.elim
-#align ordered_cancel_comm_monoid.lt_of_mul_lt_mul_left OrderedCancelCommMonoid.lt_of_mul_lt_mul_left
-#align ordered_cancel_add_comm_monoid.lt_of_add_lt_add_left OrderedCancelAddCommMonoid.lt_of_add_lt_add_left
 
 @[to_additive]
 instance OrderedCancelCommMonoid.to_contravariantClass_left (M : Type*)
     [OrderedCancelCommMonoid M] :
     ContravariantClass M M (· * ·) (· < ·) where
   elim _ _ _ := OrderedCancelCommMonoid.lt_of_mul_lt_mul_left _ _ _
-#align ordered_cancel_comm_monoid.to_contravariant_class_left OrderedCancelCommMonoid.to_contravariantClass_left
-#align ordered_cancel_add_comm_monoid.to_contravariant_class_left OrderedCancelAddCommMonoid.to_contravariantClass_left
 
 /- This instance can be proven with `by infer_instance`.  However, by analogy with the
 instance `OrderedCancelCommMonoid.to_covariantClass_right` above, I imagine that without
@@ -76,15 +68,11 @@ instance OrderedCancelCommMonoid.to_contravariantClass_right (M : Type*)
     [OrderedCancelCommMonoid M] :
     ContravariantClass M M (swap (· * ·)) (· < ·) :=
   contravariant_swap_mul_of_contravariant_mul M _
-#align ordered_cancel_comm_monoid.to_contravariant_class_right OrderedCancelCommMonoid.to_contravariantClass_right
-#align ordered_cancel_add_comm_monoid.to_contravariant_class_right OrderedCancelAddCommMonoid.to_contravariantClass_right
 
 -- see Note [lower instance priority]
 @[to_additive]
 instance (priority := 100) OrderedCancelCommMonoid.toOrderedCommMonoid : OrderedCommMonoid α :=
   { ‹OrderedCancelCommMonoid α› with }
-#align ordered_cancel_comm_monoid.to_ordered_comm_monoid OrderedCancelCommMonoid.toOrderedCommMonoid
-#align ordered_cancel_add_comm_monoid.to_ordered_add_comm_monoid OrderedCancelAddCommMonoid.toOrderedAddCommMonoid
 
 -- see Note [lower instance priority]
 @[to_additive OrderedCancelAddCommMonoid.toCancelAddCommMonoid]
@@ -92,8 +80,6 @@ instance (priority := 100) OrderedCancelCommMonoid.toCancelCommMonoid : CancelCo
   { ‹OrderedCancelCommMonoid α› with
     mul_left_cancel :=
       fun a b c h => (le_of_mul_le_mul_left' h.le).antisymm <| le_of_mul_le_mul_left' h.ge }
-#align ordered_cancel_comm_monoid.to_cancel_comm_monoid OrderedCancelCommMonoid.toCancelCommMonoid
-#align ordered_cancel_add_comm_monoid.to_cancel_add_comm_monoid OrderedCancelAddCommMonoid.toCancelAddCommMonoid
 
 end OrderedCancelCommMonoid
 
@@ -102,14 +88,12 @@ is an additive commutative monoid with a decidable linear order
 in which addition is cancellative and monotone. -/
 class LinearOrderedCancelAddCommMonoid (α : Type u) extends OrderedCancelAddCommMonoid α,
     LinearOrderedAddCommMonoid α
-#align linear_ordered_cancel_add_comm_monoid LinearOrderedCancelAddCommMonoid
 
 /-- A linearly ordered cancellative commutative monoid
 is a commutative monoid with a linear order
 in which multiplication is cancellative and monotone. -/
 class LinearOrderedCancelCommMonoid (α : Type u) extends OrderedCancelCommMonoid α,
     LinearOrderedCommMonoid α
-#align linear_ordered_cancel_comm_monoid LinearOrderedCancelCommMonoid
 
 attribute [to_additive LinearOrderedCancelAddCommMonoid] LinearOrderedCancelCommMonoid
 attribute [to_additive existing] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid

@@ -61,4 +61,3 @@ theorem imo2011_q5 (f : ℤ → ℤ) (hpos : ∀ n : ℤ, 0 < f n) (hdvd : ∀ m
     exact (dvd_iff_dvd_of_dvd_sub h₂).mp dvd_rfl
   · -- m = n
     rw [h_fm_eq_fn]
-#align imo2011_q5 imo2011_q5

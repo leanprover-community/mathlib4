@@ -21,13 +21,11 @@ instance EquivFunctorUnique : EquivFunctor Unique where
   map e := Equiv.uniqueCongr e
   map_refl' α := by simp
   map_trans' := by simp
-#align equiv_functor_unique EquivFunctorUnique
 
 instance EquivFunctorPerm : EquivFunctor Perm where
   map e p := (e.symm.trans p).trans e
   map_refl' α := by ext; simp
   map_trans' _ _ := by ext; simp
-#align equiv_functor_perm EquivFunctorPerm
 
 -- There is a classical instance of `LawfulFunctor Finset` available,
 -- but we provide this computable alternative separately.
@@ -40,10 +38,8 @@ instance EquivFunctorFinset : EquivFunctor Finset where
       rw [← ha₂]; simp; apply ha₁
     · exists (Equiv.symm k) ((Equiv.symm h) a)
       simp [h']
-#align equiv_functor_finset EquivFunctorFinset
 
 instance EquivFunctorFintype : EquivFunctor Fintype where
   map e s := Fintype.ofBijective e e.bijective
   map_refl' α := by ext; simp
   map_trans' := by simp
-#align equiv_functor_fintype EquivFunctorFintype

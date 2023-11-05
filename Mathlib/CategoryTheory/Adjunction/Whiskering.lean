@@ -40,7 +40,6 @@ protected def whiskerRight (adj : F ⊣ G) :
       left_triangle  := by ext; dsimp; simp
       right_triangle := by ext; dsimp; simp
     }
-#align category_theory.adjunction.whisker_right CategoryTheory.Adjunction.whiskerRight
 
 /-- Given an adjunction `F ⊣ G`, this provides the natural adjunction
   `(whiskeringLeft _ _ C).obj G ⊣ (whiskeringLeft _ _ C).obj F`. -/
@@ -59,6 +58,5 @@ protected def whiskerLeft (adj : F ⊣ G) :
       left_triangle  := by ext x; dsimp; simp [Category.id_comp, Category.comp_id, ← x.map_comp]
       right_triangle := by ext x; dsimp; simp [Category.id_comp, Category.comp_id, ← x.map_comp]
     }
-#align category_theory.adjunction.whisker_left CategoryTheory.Adjunction.whiskerLeft
 
 end CategoryTheory.Adjunction

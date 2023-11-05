@@ -49,4 +49,3 @@ theorem imo1975_q1 :
   -- finally we need to show that `x` and `y` 'vary' together on `[1, n]` and this is due to both of
   -- them being `decreasing`
   exact AntitoneOn.monovaryOn hx hy
-#align imo1975_q1 imo1975_q1

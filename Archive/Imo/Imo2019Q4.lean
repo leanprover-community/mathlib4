@@ -78,7 +78,6 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
     _ ≤ A ! * (A + 1) ^ n' := by gcongr; exact le_sum
     _ ≤ (A + n')! := factorial_mul_pow_le_factorial
     _ = (∑ i in range (n' + 1), i)! := by rw [sum_range_succ]
-#align imo2019_q4.upper_bound Imo2019Q4.upper_bound
 
 end Imo2019Q4
 
@@ -106,4 +105,3 @@ theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
   · refine' monotone_factorial.ne_of_lt_of_lt_nat 7 _ _ _ h <;> norm_num
   -- n = 5
   · refine' monotone_factorial.ne_of_lt_of_lt_nat 10 _ _ _ h <;> norm_num
-#align imo2019_q4 imo2019_q4

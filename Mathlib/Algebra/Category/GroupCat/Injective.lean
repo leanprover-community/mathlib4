@@ -66,7 +66,6 @@ instance injective_of_divisible [DivisibleBy A ℤ] :
         rcases Submodule.mem_span_singleton.mp hn with ⟨n, rfl⟩
         rw [map_zsmul, LinearMap.toSpanSingleton_apply, DivisibleBy.div_cancel gₘ h0, ← map_zsmul g,
           SetLike.mk_smul_mk]
-#align AddCommGroup.injective_of_divisible AddCommGroupCat.injective_of_divisible
 
 instance injective_ratCircle : Injective <| of <| ULift.{u} <| AddCircle (1 : ℚ) :=
   have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩

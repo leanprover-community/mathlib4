@@ -64,7 +64,6 @@ a finite subset of objects and morphisms of `J`.
 def partialSections {J : Type u} [SmallCategory J] (F : J ⥤ TopCat.{v}) {G : Finset J}
     (H : Finset (FiniteDiagramArrow G)) : Set (∀ j, F.obj j) :=
   {u | ∀ {f : FiniteDiagramArrow G} (_ : f ∈ H), F.map f.2.2.2.2 (u f.1) = u f.2.1}
-#align Top.partial_sections TopCat.partialSections
 
 theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempty (F.obj j)]
     {G : Finset J} (H : Finset (FiniteDiagramArrow G)) : (partialSections F H).Nonempty := by
@@ -78,7 +77,6 @@ theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempt
   rintro ⟨X, Y, hX, hY, f⟩ hf
   dsimp only
   rwa [dif_pos hX, dif_pos hY, ← comp_app, ← F.map_comp, @IsCofiltered.infTo_commutes _ _ _ G H]
-#align Top.partial_sections.nonempty TopCat.partialSections.nonempty
 
 theorem partialSections.directed :
     Directed Superset fun G : FiniteDiagram J => partialSections F G.2 := by
@@ -101,7 +99,6 @@ theorem partialSections.directed :
       rw [Finset.mem_image]
       refine' ⟨f, hf, rfl⟩
     exact hu this
-#align Top.partial_sections.directed TopCat.partialSections.directed
 
 theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
     (H : Finset (FiniteDiagramArrow G)) : IsClosed (partialSections F H) := by
@@ -121,7 +118,6 @@ theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
   -- Porting note: used to be a single `continuity` that closed both goals
   · exact (F.map f.snd.snd.snd.snd).continuous.comp (continuous_apply f.fst)
   · continuity
-#align Top.partial_sections.closed TopCat.partialSections.closed
 
 /-- Cofiltered limits of nonempty compact Hausdorff spaces are nonempty topological spaces.
 -/
@@ -143,7 +139,6 @@ theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCatMax.
       {⟨X, Y, by simp only [true_or_iff, eq_self_iff_true, Finset.mem_insert], by
           simp only [eq_self_iff_true, or_true_iff, Finset.mem_insert, Finset.mem_singleton], f⟩}⟩
   exact hu _ ⟨G, rfl⟩ (Finset.mem_singleton_self _)
-#align Top.nonempty_limit_cone_of_compact_t2_cofiltered_system TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system
 
 end TopologicalKonig
 

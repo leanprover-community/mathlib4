@@ -41,4 +41,3 @@ instance : LinearOrder Char where
 theorem Char.ofNat_toNat {c : Char} (h : isValidCharNat c.toNat) : Char.ofNat c.toNat = c := by
   rw [Char.ofNat, dif_pos h]
   rfl
-#align char.of_nat_to_nat Char.ofNat_toNat

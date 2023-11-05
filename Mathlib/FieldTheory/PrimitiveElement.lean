@@ -63,14 +63,12 @@ theorem exists_primitive_element_of_finite_top [Finite E] : ∃ α : E, F⟮α�
     simp only at hn
     rw [show x = α ^ n by norm_cast; rw [hn, Units.val_mk0], Units.val_zpow_eq_zpow_val]
     exact zpow_mem (mem_adjoin_simple_self F (E := E) ↑α) n
-#align field.exists_primitive_element_of_finite_top Field.exists_primitive_element_of_finite_top
 
 /-- Primitive element theorem for finite dimensional extension of a finite field. -/
 theorem exists_primitive_element_of_finite_bot [Finite F] [FiniteDimensional F E] :
     ∃ α : E, F⟮α⟯ = ⊤ :=
   haveI : Finite E := finite_of_finite F E
   exists_primitive_element_of_finite_top F E
-#align field.exists_primitive_element_of_finite_bot Field.exists_primitive_element_of_finite_bot
 
 end PrimitiveElementFinite
 
@@ -91,7 +89,6 @@ theorem primitive_element_inf_aux_exists_c (f g : F[X]) :
   simp_rw [Finset.mem_preimage, Multiset.mem_toFinset, Multiset.mem_bind, Multiset.mem_map] at hc
   push_neg at hc
   exact ⟨c, hc⟩
-#align field.primitive_element_inf_aux_exists_c Field.primitive_element_inf_aux_exists_c
 
 variable (F)
 
@@ -172,7 +169,6 @@ theorem primitive_element_inf_aux [IsSeparable F E] : ∃ γ : E, F⟮α, β⟯ 
     convert (gcd_map (algebraMap F⟮γ⟯ E)).symm
   · simp [map_comp, Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
     congr
-#align field.primitive_element_inf_aux Field.primitive_element_inf_aux
 
 end PrimitiveElementInf
 
@@ -199,7 +195,6 @@ theorem exists_primitive_element : ∃ α : E, F⟮α⟯ = ⊤ := by
       exact ⟨γ, hγ.symm⟩
     exact induction_on_adjoin P base ih ⊤
   · exact exists_primitive_element_of_finite_bot F E
-#align field.exists_primitive_element Field.exists_primitive_element
 
 /-- Alternative phrasing of primitive element theorem:
 a finite separable field extension has a basis `1, α, α^2, ..., α^n`.
@@ -210,7 +205,6 @@ noncomputable def powerBasisOfFiniteOfSeparable : PowerBasis F E :=
   let pb := adjoin.powerBasis (IsSeparable.isIntegral F α)
   have e : F⟮α⟯ = ⊤ := (exists_primitive_element F E).choose_spec
   pb.map ((IntermediateField.equivOfEq e).trans IntermediateField.topEquiv)
-#align field.power_basis_of_finite_of_separable Field.powerBasisOfFiniteOfSeparable
 
 end SeparableAssumption
 
@@ -222,4 +216,3 @@ theorem AlgHom.card (F E K : Type*) [Field F] [Field E] [Field K] [IsAlgClosed K
     Fintype.card (E →ₐ[F] K) = finrank F E := by
   convert (AlgHom.card_of_powerBasis (L := K) (Field.powerBasisOfFiniteOfSeparable F E)
     (IsSeparable.separable _ _) (IsAlgClosed.splits_codomain _)).trans (PowerBasis.finrank _).symm
-#align alg_hom.card AlgHom.card

@@ -23,8 +23,6 @@ variable {α : Type*}
 instance Units.orderedCommGroup [OrderedCommMonoid α] : OrderedCommGroup αˣ :=
   { Units.instPartialOrderUnits, Units.instCommGroupUnits with
     mul_le_mul_left := fun _ _ h _ => (@mul_le_mul_left' α _ _ _ _ _ h _) }
-#align units.ordered_comm_group Units.orderedCommGroup
-#align add_units.ordered_add_comm_group AddUnits.orderedAddCommGroup
 
 -- porting note: the mathlib3 proof was
 -- mul_le_mul_left := fun a b h c => (mul_le_mul_left' (h : (a : α) ≤ b) _ : (c : α) * a ≤ c * b) }

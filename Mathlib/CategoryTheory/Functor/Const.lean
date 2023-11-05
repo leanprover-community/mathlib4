@@ -39,7 +39,6 @@ def const : C ⥤ J ⥤ C
     { obj := fun _ => X
       map := fun _ => 𝟙 X }
   map f := { app := fun _ => f }
-#align category_theory.functor.const CategoryTheory.Functor.const
 
 namespace const
 
@@ -55,7 +54,6 @@ def opObjOp (X : C) : (const Jᵒᵖ).obj (op X) ≅ ((const J).obj X).op
     where
   hom := { app := fun j => 𝟙 _ }
   inv := { app := fun j => 𝟙 _ }
-#align category_theory.functor.const.op_obj_op CategoryTheory.Functor.const.opObjOp
 
 /-- The constant functor `Jᵒᵖ ⥤ C` sending everything to `unop X`
 is (naturally isomorphic to) the opposite of
@@ -65,24 +63,20 @@ def opObjUnop (X : Cᵒᵖ) : (const Jᵒᵖ).obj (unop X) ≅ ((const J).obj X)
     where
   hom := { app := fun j => 𝟙 _ }
   inv := { app := fun j => 𝟙 _ }
-#align category_theory.functor.const.op_obj_unop CategoryTheory.Functor.const.opObjUnop
 
 -- Lean needs some help with universes here.
 @[simp]
 theorem opObjUnop_hom_app (X : Cᵒᵖ) (j : Jᵒᵖ) : (opObjUnop.{v₁, v₂} X).hom.app j = 𝟙 _ :=
   rfl
-#align category_theory.functor.const.op_obj_unop_hom_app CategoryTheory.Functor.const.opObjUnop_hom_app
 
 @[simp]
 theorem opObjUnop_inv_app (X : Cᵒᵖ) (j : Jᵒᵖ) : (opObjUnop.{v₁, v₂} X).inv.app j = 𝟙 _ :=
   rfl
-#align category_theory.functor.const.op_obj_unop_inv_app CategoryTheory.Functor.const.opObjUnop_inv_app
 
 @[simp]
 theorem unop_functor_op_obj_map (X : Cᵒᵖ) {j₁ j₂ : J} (f : j₁ ⟶ j₂) :
     (unop ((Functor.op (const J)).obj X)).map f = 𝟙 (unop X) :=
   rfl
-#align category_theory.functor.const.unop_functor_op_obj_map CategoryTheory.Functor.const.unop_functor_op_obj_map
 
 end const
 
@@ -98,7 +92,6 @@ def constComp (X : C) (F : C ⥤ D) : (const J).obj X ⋙ F ≅ (const J).obj (F
     where
   hom := { app := fun _ => 𝟙 _ }
   inv := { app := fun _ => 𝟙 _ }
-#align category_theory.functor.const_comp CategoryTheory.Functor.constComp
 
 /-- If `J` is nonempty, then the constant functor over `J` is faithful. -/
 instance [Nonempty J] : Faithful (const J : C ⥤ J ⥤ C) where

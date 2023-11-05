@@ -73,13 +73,11 @@ as a function in L1. -/
 def condexpIndL1Fin (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : G) : α →₁[μ] G :=
   (integrable_condexpIndSMul hm hs hμs x).toL1 _
-#align measure_theory.condexp_ind_L1_fin MeasureTheory.condexpIndL1Fin
 
 theorem condexpIndL1Fin_ae_eq_condexpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
     condexpIndL1Fin hm hs hμs x =ᵐ[μ] condexpIndSMul hm hs hμs x :=
   (integrable_condexpIndSMul hm hs hμs x).coeFn_toL1
-#align measure_theory.condexp_ind_L1_fin_ae_eq_condexp_ind_smul MeasureTheory.condexpIndL1Fin_ae_eq_condexpIndSMul
 
 variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
 
@@ -100,7 +98,6 @@ theorem condexpIndL1Fin_add (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x y : 
   rw [condexpIndSMul_add]
   refine' (Lp.coeFn_add _ _).trans (eventually_of_forall fun a => _)
   rfl
-#align measure_theory.condexp_ind_L1_fin_add MeasureTheory.condexpIndL1Fin_add
 
 theorem condexpIndL1Fin_smul (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : ℝ) (x : G) :
     condexpIndL1Fin hm hs hμs (c • x) = c • condexpIndL1Fin hm hs hμs x := by
@@ -111,7 +108,6 @@ theorem condexpIndL1Fin_smul (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : �
   refine' (Lp.coeFn_smul _ _).trans _
   refine' (condexpIndL1Fin_ae_eq_condexpIndSMul hm hs hμs x).mono fun y hy => _
   rw [Pi.smul_apply, Pi.smul_apply, hy]
-#align measure_theory.condexp_ind_L1_fin_smul MeasureTheory.condexpIndL1Fin_smul
 
 theorem condexpIndL1Fin_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs : MeasurableSet s)
     (hμs : μ s ≠ ∞) (c : 𝕜) (x : F) :
@@ -123,7 +119,6 @@ theorem condexpIndL1Fin_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs
   refine' (Lp.coeFn_smul _ _).trans _
   refine' (condexpIndL1Fin_ae_eq_condexpIndSMul hm hs hμs x).mono fun y hy => _
   rw [Pi.smul_apply, Pi.smul_apply, hy]
-#align measure_theory.condexp_ind_L1_fin_smul' MeasureTheory.condexpIndL1Fin_smul'
 
 theorem norm_condexpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
     ‖condexpIndL1Fin hm hs hμs x‖ ≤ (μ s).toReal * ‖x‖ := by
@@ -142,7 +137,6 @@ theorem norm_condexpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x 
     rw [hz]
   rw [h_eq, ofReal_norm_eq_coe_nnnorm]
   exact lintegral_nnnorm_condexpIndSMul_le hm hs hμs x
-#align measure_theory.norm_condexp_ind_L1_fin_le MeasureTheory.norm_condexpIndL1Fin_le
 
 theorem condexpIndL1Fin_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞)
     (hμt : μ t ≠ ∞) (hst : s ∩ t = ∅) (x : G) :
@@ -165,7 +159,6 @@ theorem condexpIndL1Fin_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSe
   refine' (Lp.coeFn_add _ _).trans _
   refine' eventually_of_forall fun y => _
   rfl
-#align measure_theory.condexp_ind_L1_fin_disjoint_union MeasureTheory.condexpIndL1Fin_disjoint_union
 
 end CondexpIndL1Fin
 
@@ -180,24 +173,20 @@ which are not both measurable and of finite measure is not used: we set it to 0.
 def condexpIndL1 {m m0 : MeasurableSpace α} (hm : m ≤ m0) (μ : Measure α) (s : Set α)
     [SigmaFinite (μ.trim hm)] (x : G) : α →₁[μ] G :=
   if hs : MeasurableSet s ∧ μ s ≠ ∞ then condexpIndL1Fin hm hs.1 hs.2 x else 0
-#align measure_theory.condexp_ind_L1 MeasureTheory.condexpIndL1
 
 variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
 
 theorem condexpIndL1_of_measurableSet_of_measure_ne_top (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : G) : condexpIndL1 hm μ s x = condexpIndL1Fin hm hs hμs x := by
   simp only [condexpIndL1, And.intro hs hμs, dif_pos, Ne.def, not_false_iff, and_self_iff]
-#align measure_theory.condexp_ind_L1_of_measurable_set_of_measure_ne_top MeasureTheory.condexpIndL1_of_measurableSet_of_measure_ne_top
 
 theorem condexpIndL1_of_measure_eq_top (hμs : μ s = ∞) (x : G) : condexpIndL1 hm μ s x = 0 := by
   simp only [condexpIndL1, hμs, eq_self_iff_true, not_true, Ne.def, dif_neg, not_false_iff,
     and_false_iff]
-#align measure_theory.condexp_ind_L1_of_measure_eq_top MeasureTheory.condexpIndL1_of_measure_eq_top
 
 theorem condexpIndL1_of_not_measurableSet (hs : ¬MeasurableSet s) (x : G) :
     condexpIndL1 hm μ s x = 0 := by
   simp only [condexpIndL1, hs, dif_neg, not_false_iff, false_and_iff]
-#align measure_theory.condexp_ind_L1_of_not_measurable_set MeasureTheory.condexpIndL1_of_not_measurableSet
 
 theorem condexpIndL1_add (x y : G) :
     condexpIndL1 hm μ s (x + y) = condexpIndL1 hm μ s x + condexpIndL1 hm μ s y := by
@@ -207,7 +196,6 @@ theorem condexpIndL1_add (x y : G) :
   · simp_rw [condexpIndL1_of_measure_eq_top hμs]; rw [zero_add]
   · simp_rw [condexpIndL1_of_measurableSet_of_measure_ne_top hs hμs]
     exact condexpIndL1Fin_add hs hμs x y
-#align measure_theory.condexp_ind_L1_add MeasureTheory.condexpIndL1_add
 
 theorem condexpIndL1_smul (c : ℝ) (x : G) :
     condexpIndL1 hm μ s (c • x) = c • condexpIndL1 hm μ s x := by
@@ -217,7 +205,6 @@ theorem condexpIndL1_smul (c : ℝ) (x : G) :
   · simp_rw [condexpIndL1_of_measure_eq_top hμs]; rw [smul_zero]
   · simp_rw [condexpIndL1_of_measurableSet_of_measure_ne_top hs hμs]
     exact condexpIndL1Fin_smul hs hμs c x
-#align measure_theory.condexp_ind_L1_smul MeasureTheory.condexpIndL1_smul
 
 theorem condexpIndL1_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜) (x : F) :
     condexpIndL1 hm μ s (c • x) = c • condexpIndL1 hm μ s x := by
@@ -227,7 +214,6 @@ theorem condexpIndL1_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (c : �
   · simp_rw [condexpIndL1_of_measure_eq_top hμs]; rw [smul_zero]
   · simp_rw [condexpIndL1_of_measurableSet_of_measure_ne_top hs hμs]
     exact condexpIndL1Fin_smul' hs hμs c x
-#align measure_theory.condexp_ind_L1_smul' MeasureTheory.condexpIndL1_smul'
 
 theorem norm_condexpIndL1_le (x : G) : ‖condexpIndL1 hm μ s x‖ ≤ (μ s).toReal * ‖x‖ := by
   by_cases hs : MeasurableSet s
@@ -239,11 +225,9 @@ theorem norm_condexpIndL1_le (x : G) : ‖condexpIndL1 hm μ s x‖ ≤ (μ s).t
     exact mul_nonneg ENNReal.toReal_nonneg (norm_nonneg _)
   · rw [condexpIndL1_of_measurableSet_of_measure_ne_top hs hμs x]
     exact norm_condexpIndL1Fin_le hs hμs x
-#align measure_theory.norm_condexp_ind_L1_le MeasureTheory.norm_condexpIndL1_le
 
 theorem continuous_condexpIndL1 : Continuous fun x : G => condexpIndL1 hm μ s x :=
   continuous_of_linear_of_bound condexpIndL1_add condexpIndL1_smul norm_condexpIndL1_le
-#align measure_theory.continuous_condexp_ind_L1 MeasureTheory.continuous_condexpIndL1
 
 theorem condexpIndL1_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞)
     (hμt : μ t ≠ ∞) (hst : s ∩ t = ∅) (x : G) :
@@ -254,7 +238,6 @@ theorem condexpIndL1_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSet t
     condexpIndL1_of_measurableSet_of_measure_ne_top ht hμt x,
     condexpIndL1_of_measurableSet_of_measure_ne_top (hs.union ht) hμst x]
   exact condexpIndL1Fin_disjoint_union hs ht hμs hμt hst x
-#align measure_theory.condexp_ind_L1_disjoint_union MeasureTheory.condexpIndL1_disjoint_union
 
 end CondexpIndL1
 
@@ -269,7 +252,6 @@ def condexpInd {m m0 : MeasurableSpace α} (hm : m ≤ m0) (μ : Measure α) [Si
   map_add' := condexpIndL1_add
   map_smul' := condexpIndL1_smul
   cont := continuous_condexpIndL1
-#align measure_theory.condexp_ind MeasureTheory.condexpInd
 
 variable {G}
 
@@ -278,7 +260,6 @@ theorem condexpInd_ae_eq_condexpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm
     condexpInd G hm μ s x =ᵐ[μ] condexpIndSMul hm hs hμs x := by
   refine' EventuallyEq.trans _ (condexpIndL1Fin_ae_eq_condexpIndSMul hm hs hμs x)
   simp [condexpInd, condexpIndL1, hs, hμs]; rfl
-#align measure_theory.condexp_ind_ae_eq_condexp_ind_smul MeasureTheory.condexpInd_ae_eq_condexpIndSMul
 
 variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
 
@@ -286,7 +267,6 @@ theorem aestronglyMeasurable'_condexpInd (hs : MeasurableSet s) (hμs : μ s ≠
     AEStronglyMeasurable' m (condexpInd G hm μ s x) μ :=
   AEStronglyMeasurable'.congr (aeStronglyMeasurable'_condexpIndSMul hm hs hμs x)
     (condexpInd_ae_eq_condexpIndSMul hm hs hμs x).symm
-#align measure_theory.ae_strongly_measurable'_condexp_ind MeasureTheory.aestronglyMeasurable'_condexpInd
 
 @[simp]
 theorem condexpInd_empty : condexpInd G hm μ ∅ = (0 : G →L[ℝ] α →₁[μ] G) := by
@@ -297,32 +277,26 @@ theorem condexpInd_empty : condexpInd G hm μ ∅ = (0 : G →L[ℝ] α →₁[�
   refine' (Lp.coeFn_zero G 2 μ).trans _
   refine' EventuallyEq.trans _ (Lp.coeFn_zero G 1 μ).symm
   rfl
-#align measure_theory.condexp_ind_empty MeasureTheory.condexpInd_empty
 
 theorem condexpInd_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜) (x : F) :
     condexpInd F hm μ s (c • x) = c • condexpInd F hm μ s x :=
   condexpIndL1_smul' c x
-#align measure_theory.condexp_ind_smul' MeasureTheory.condexpInd_smul'
 
 theorem norm_condexpInd_apply_le (x : G) : ‖condexpInd G hm μ s x‖ ≤ (μ s).toReal * ‖x‖ :=
   norm_condexpIndL1_le x
-#align measure_theory.norm_condexp_ind_apply_le MeasureTheory.norm_condexpInd_apply_le
 
 theorem norm_condexpInd_le : ‖(condexpInd G hm μ s : G →L[ℝ] α →₁[μ] G)‖ ≤ (μ s).toReal :=
   ContinuousLinearMap.op_norm_le_bound _ ENNReal.toReal_nonneg norm_condexpInd_apply_le
-#align measure_theory.norm_condexp_ind_le MeasureTheory.norm_condexpInd_le
 
 theorem condexpInd_disjoint_union_apply (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) (hst : s ∩ t = ∅) (x : G) :
     condexpInd G hm μ (s ∪ t) x = condexpInd G hm μ s x + condexpInd G hm μ t x :=
   condexpIndL1_disjoint_union hs ht hμs hμt hst x
-#align measure_theory.condexp_ind_disjoint_union_apply MeasureTheory.condexpInd_disjoint_union_apply
 
 theorem condexpInd_disjoint_union (hs : MeasurableSet s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞)
     (hμt : μ t ≠ ∞) (hst : s ∩ t = ∅) : (condexpInd G hm μ (s ∪ t) : G →L[ℝ] α →₁[μ] G) =
     condexpInd G hm μ s + condexpInd G hm μ t := by
   ext1 x; push_cast; exact condexpInd_disjoint_union_apply hs ht hμs hμt hst x
-#align measure_theory.condexp_ind_disjoint_union MeasureTheory.condexpInd_disjoint_union
 
 variable (G)
 
@@ -330,7 +304,6 @@ theorem dominatedFinMeasAdditive_condexpInd (hm : m ≤ m0) (μ : Measure α)
     [SigmaFinite (μ.trim hm)] :
     DominatedFinMeasAdditive μ (condexpInd G hm μ : Set α → G →L[ℝ] α →₁[μ] G) 1 :=
   ⟨fun _ _ => condexpInd_disjoint_union, fun _ _ _ => norm_condexpInd_le.trans (one_mul _).symm.le⟩
-#align measure_theory.dominated_fin_meas_additive_condexp_ind MeasureTheory.dominatedFinMeasAdditive_condexpInd
 
 variable {G}
 
@@ -341,7 +314,6 @@ theorem set_integral_condexpInd (hs : MeasurableSet[m] s) (ht : MeasurableSet t)
       set_integral_congr_ae (hm s hs)
         ((condexpInd_ae_eq_condexpIndSMul hm ht hμt x).mono fun _ hx _ => hx)
     _ = (μ (t ∩ s)).toReal • x := set_integral_condexpIndSMul hs ht hμs hμt x
-#align measure_theory.set_integral_condexp_ind MeasureTheory.set_integral_condexpInd
 
 theorem condexpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) (c : G) :
     condexpInd G hm μ s c = indicatorConstLp 1 (hm s hs) hμs c := by
@@ -354,14 +326,12 @@ theorem condexpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞)
   dsimp only
   rw [hx]
   by_cases hx_mem : x ∈ s <;> simp [hx_mem]
-#align measure_theory.condexp_ind_of_measurable MeasureTheory.condexpInd_of_measurable
 
 theorem condexpInd_nonneg {E} [NormedLatticeAddCommGroup E] [NormedSpace ℝ E] [OrderedSMul ℝ E]
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) (hx : 0 ≤ x) : 0 ≤ condexpInd E hm μ s x := by
   rw [← coeFn_le]
   refine' EventuallyLE.trans_eq _ (condexpInd_ae_eq_condexpIndSMul hm hs hμs x).symm
   exact (coeFn_zero E 1 μ).trans_le (condexpIndSMul_nonneg hs hμs x hx)
-#align measure_theory.condexp_ind_nonneg MeasureTheory.condexpInd_nonneg
 
 end CondexpInd
 
@@ -380,7 +350,6 @@ variable (F')
 def condexpL1Clm (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)] :
     (α →₁[μ] F') →L[ℝ] α →₁[μ] F' :=
   L1.setToL1 (dominatedFinMeasAdditive_condexpInd F' hm μ)
-#align measure_theory.condexp_L1_clm MeasureTheory.condexpL1Clm
 
 variable {F'}
 
@@ -388,17 +357,14 @@ theorem condexpL1Clm_smul (c : 𝕜) (f : α →₁[μ] F') :
     condexpL1Clm F' hm μ (c • f) = c • condexpL1Clm F' hm μ f := by
   refine' L1.setToL1_smul (dominatedFinMeasAdditive_condexpInd F' hm μ) _ c f
   exact fun c s x => condexpInd_smul' c x
-#align measure_theory.condexp_L1_clm_smul MeasureTheory.condexpL1Clm_smul
 
 theorem condexpL1Clm_indicatorConstLp (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : F') :
     (condexpL1Clm F' hm μ) (indicatorConstLp 1 hs hμs x) = condexpInd F' hm μ s x :=
   L1.setToL1_indicatorConstLp (dominatedFinMeasAdditive_condexpInd F' hm μ) hs hμs x
-#align measure_theory.condexp_L1_clm_indicator_const_Lp MeasureTheory.condexpL1Clm_indicatorConstLp
 
 theorem condexpL1Clm_indicatorConst (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : F') :
     (condexpL1Clm F' hm μ) ↑(simpleFunc.indicatorConst 1 hs hμs x) = condexpInd F' hm μ s x := by
   rw [Lp.simpleFunc.coe_indicatorConst]; exact condexpL1Clm_indicatorConstLp hs hμs x
-#align measure_theory.condexp_L1_clm_indicator_const MeasureTheory.condexpL1Clm_indicatorConst
 
 /-- Auxiliary lemma used in the proof of `set_integral_condexpL1Clm`. -/
 theorem set_integral_condexpL1Clm_of_measure_ne_top (f : α →₁[μ] F') (hs : MeasurableSet[m] s)
@@ -422,7 +388,6 @@ theorem set_integral_condexpL1Clm_of_measure_ne_top (f : α →₁[μ] F') (hs :
       hg]
   · exact (continuous_set_integral s).comp (condexpL1Clm F' hm μ).continuous
   · exact continuous_set_integral s
-#align measure_theory.set_integral_condexp_L1_clm_of_measure_ne_top MeasureTheory.set_integral_condexpL1Clm_of_measure_ne_top
 
 /-- The integral of the conditional expectation `condexpL1Clm` over an `m`-measurable set is equal
 to the integral of `f` on that set. See also `set_integral_condexp`, the similar statement for
@@ -460,7 +425,6 @@ theorem set_integral_condexpL1Clm (f : α →₁[μ] F') (hs : MeasurableSet[m] 
     rwa [← hs_eq] at h
   rw [h_eq_forall] at h_left
   exact tendsto_nhds_unique h_left h_right
-#align measure_theory.set_integral_condexp_L1_clm MeasureTheory.set_integral_condexpL1Clm
 
 theorem aestronglyMeasurable'_condexpL1Clm (f : α →₁[μ] F') :
     AEStronglyMeasurable' m (condexpL1Clm F' hm μ f) μ := by
@@ -478,7 +442,6 @@ theorem aestronglyMeasurable'_condexpL1Clm (f : α →₁[μ] F') :
     rw [this]
     refine' IsClosed.preimage (condexpL1Clm F' hm μ).continuous _
     exact isClosed_aeStronglyMeasurable' hm
-#align measure_theory.ae_strongly_measurable'_condexp_L1_clm MeasureTheory.aestronglyMeasurable'_condexpL1Clm
 
 theorem condexpL1Clm_lpMeas (f : lpMeas F' ℝ m 1 μ) :
     condexpL1Clm F' hm μ (f : α →₁[μ] F') = ↑f := by
@@ -502,36 +465,29 @@ theorem condexpL1Clm_lpMeas (f : lpMeas F' ℝ m 1 μ) :
       exact LinearIsometryEquiv.continuous _
     · refine' continuous_induced_dom.comp _
       exact LinearIsometryEquiv.continuous _
-#align measure_theory.condexp_L1_clm_Lp_meas MeasureTheory.condexpL1Clm_lpMeas
 
 theorem condexpL1Clm_of_aestronglyMeasurable' (f : α →₁[μ] F') (hfm : AEStronglyMeasurable' m f μ) :
     condexpL1Clm F' hm μ f = f :=
   condexpL1Clm_lpMeas (⟨f, hfm⟩ : lpMeas F' ℝ m 1 μ)
-#align measure_theory.condexp_L1_clm_of_ae_strongly_measurable' MeasureTheory.condexpL1Clm_of_aestronglyMeasurable'
 
 /-- Conditional expectation of a function, in L1. Its value is 0 if the function is not
 integrable. The function-valued `condexp` should be used instead in most cases. -/
 def condexpL1 (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)] (f : α → F') : α →₁[μ] F' :=
   setToFun μ (condexpInd F' hm μ) (dominatedFinMeasAdditive_condexpInd F' hm μ) f
-#align measure_theory.condexp_L1 MeasureTheory.condexpL1
 
 theorem condexpL1_undef (hf : ¬Integrable f μ) : condexpL1 hm μ f = 0 :=
   setToFun_undef (dominatedFinMeasAdditive_condexpInd F' hm μ) hf
-#align measure_theory.condexp_L1_undef MeasureTheory.condexpL1_undef
 
 theorem condexpL1_eq (hf : Integrable f μ) : condexpL1 hm μ f = condexpL1Clm F' hm μ (hf.toL1 f) :=
   setToFun_eq (dominatedFinMeasAdditive_condexpInd F' hm μ) hf
-#align measure_theory.condexp_L1_eq MeasureTheory.condexpL1_eq
 
 @[simp]
 theorem condexpL1_zero : condexpL1 hm μ (0 : α → F') = 0 :=
   setToFun_zero _
-#align measure_theory.condexp_L1_zero MeasureTheory.condexpL1_zero
 
 @[simp]
 theorem condexpL1_measure_zero (hm : m ≤ m0) : condexpL1 hm (0 : Measure α) f = 0 :=
   setToFun_measure_zero _ rfl
-#align measure_theory.condexp_L1_measure_zero MeasureTheory.condexpL1_measure_zero
 
 theorem aestronglyMeasurable'_condexpL1 {f : α → F'} :
     AEStronglyMeasurable' m (condexpL1 hm μ f) μ := by
@@ -541,16 +497,13 @@ theorem aestronglyMeasurable'_condexpL1 {f : α → F'} :
   · rw [condexpL1_undef hf]
     refine AEStronglyMeasurable'.congr ?_ (coeFn_zero _ _ _).symm
     exact StronglyMeasurable.aeStronglyMeasurable' (@stronglyMeasurable_zero _ _ m _ _)
-#align measure_theory.ae_strongly_measurable'_condexp_L1 MeasureTheory.aestronglyMeasurable'_condexpL1
 
 theorem condexpL1_congr_ae (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (h : f =ᵐ[μ] g) :
     condexpL1 hm μ f = condexpL1 hm μ g :=
   setToFun_congr_ae _ h
-#align measure_theory.condexp_L1_congr_ae MeasureTheory.condexpL1_congr_ae
 
 theorem integrable_condexpL1 (f : α → F') : Integrable (condexpL1 hm μ f) μ :=
   L1.integrable_coeFn _
-#align measure_theory.integrable_condexp_L1 MeasureTheory.integrable_condexpL1
 
 /-- The integral of the conditional expectation `condexpL1` over an `m`-measurable set is equal to
 the integral of `f` on that set. See also `set_integral_condexp`, the similar statement for
@@ -560,26 +513,21 @@ theorem set_integral_condexpL1 (hf : Integrable f μ) (hs : MeasurableSet[m] s) 
   simp_rw [condexpL1_eq hf]
   rw [set_integral_condexpL1Clm (hf.toL1 f) hs]
   exact set_integral_congr_ae (hm s hs) (hf.coeFn_toL1.mono fun x hx _ => hx)
-#align measure_theory.set_integral_condexp_L1 MeasureTheory.set_integral_condexpL1
 
 theorem condexpL1_add (hf : Integrable f μ) (hg : Integrable g μ) :
     condexpL1 hm μ (f + g) = condexpL1 hm μ f + condexpL1 hm μ g :=
   setToFun_add _ hf hg
-#align measure_theory.condexp_L1_add MeasureTheory.condexpL1_add
 
 theorem condexpL1_neg (f : α → F') : condexpL1 hm μ (-f) = -condexpL1 hm μ f :=
   setToFun_neg _ f
-#align measure_theory.condexp_L1_neg MeasureTheory.condexpL1_neg
 
 theorem condexpL1_smul (c : 𝕜) (f : α → F') : condexpL1 hm μ (c • f) = c • condexpL1 hm μ f := by
   refine' setToFun_smul _ _ c f
   exact fun c _ x => condexpInd_smul' c x
-#align measure_theory.condexp_L1_smul MeasureTheory.condexpL1_smul
 
 theorem condexpL1_sub (hf : Integrable f μ) (hg : Integrable g μ) :
     condexpL1 hm μ (f - g) = condexpL1 hm μ f - condexpL1 hm μ g :=
   setToFun_sub _ hf hg
-#align measure_theory.condexp_L1_sub MeasureTheory.condexpL1_sub
 
 theorem condexpL1_of_aestronglyMeasurable' (hfm : AEStronglyMeasurable' m f μ)
     (hfi : Integrable f μ) : condexpL1 hm μ f =ᵐ[μ] f := by
@@ -587,7 +535,6 @@ theorem condexpL1_of_aestronglyMeasurable' (hfm : AEStronglyMeasurable' m f μ)
   refine' EventuallyEq.trans _ (Integrable.coeFn_toL1 hfi)
   rw [condexpL1Clm_of_aestronglyMeasurable']
   exact AEStronglyMeasurable'.congr hfm (Integrable.coeFn_toL1 hfi).symm
-#align measure_theory.condexp_L1_of_ae_strongly_measurable' MeasureTheory.condexpL1_of_aestronglyMeasurable'
 
 theorem condexpL1_mono {E} [NormedLatticeAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
     [OrderedSMul ℝ E] {f g : α → E} (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
@@ -596,7 +543,6 @@ theorem condexpL1_mono {E} [NormedLatticeAddCommGroup E] [CompleteSpace E] [Norm
   have h_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x : E, 0 ≤ x → 0 ≤ condexpInd E hm μ s x :=
     fun s hs hμs x hx => condexpInd_nonneg hs hμs.ne x hx
   exact setToFun_mono (dominatedFinMeasAdditive_condexpInd E hm μ) h_nonneg hf hg hfg
-#align measure_theory.condexp_L1_mono MeasureTheory.condexpL1_mono
 
 end CondexpL1
 

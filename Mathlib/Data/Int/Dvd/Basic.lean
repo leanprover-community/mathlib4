@@ -28,24 +28,16 @@ theorem coe_nat_dvd {m n : ℕ} : (↑m : ℤ) ∣ ↑n ↔ m ∣ n :=
       subst a
       exact ⟨k, Int.ofNat.inj ae⟩,
     fun ⟨k, e⟩ => Dvd.intro k <| by rw [e, Int.ofNat_mul]⟩
-#align int.coe_nat_dvd Int.coe_nat_dvd
 
 theorem coe_nat_dvd_left {n : ℕ} {z : ℤ} : (↑n : ℤ) ∣ z ↔ n ∣ z.natAbs := by
   rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [←coe_nat_dvd]
-#align int.coe_nat_dvd_left Int.coe_nat_dvd_left
 
 theorem coe_nat_dvd_right {n : ℕ} {z : ℤ} : z ∣ (↑n : ℤ) ↔ z.natAbs ∣ n := by
   rcases natAbs_eq z with (eq | eq) <;> rw [eq] <;> simp [←coe_nat_dvd]
-#align int.coe_nat_dvd_right Int.coe_nat_dvd_right
 
-#align int.le_of_dvd Int.le_of_dvd
 
-#align int.eq_one_of_dvd_one Int.eq_one_of_dvd_one
 
-#align int.eq_one_of_mul_eq_one_right Int.eq_one_of_mul_eq_one_right
 
-#align int.eq_one_of_mul_eq_one_left Int.eq_one_of_mul_eq_one_left
 
-#align int.dvd_antisymm Int.dvd_antisymm
 
 end Int

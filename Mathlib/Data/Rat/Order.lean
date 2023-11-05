@@ -33,7 +33,6 @@ open Rat
 /-- A rational number is called nonnegative if its numerator is nonnegative. -/
 protected def Nonneg (r : ℚ) : Prop :=
   0 ≤ r.num
-#align rat.nonneg Rat.Nonneg
 
 @[simp]
 theorem divInt_nonneg (a : ℤ) {b : ℤ} (h : 0 < b) : (a /. b).Nonneg ↔ 0 ≤ a := by
@@ -48,7 +47,6 @@ theorem divInt_nonneg (a : ℤ) {b : ℤ} (h : 0 < b) : (a /. b).Nonneg ↔ 0 �
   · apply nonneg_of_mul_nonneg_left _ h
     rw [← this]
     exact mul_nonneg h₂ (Int.ofNat_zero_le _)
-#align rat.mk_nonneg Rat.divInt_nonneg
 
 protected theorem nonneg_add {a b} : Rat.Nonneg a → Rat.Nonneg b → Rat.Nonneg (a + b) :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
@@ -59,7 +57,6 @@ protected theorem nonneg_add {a b} : Rat.Nonneg a → Rat.Nonneg b → Rat.Nonne
         Nat.cast_eq_zero, not_false_iff]
       intro n₁0 n₂0
       apply add_nonneg <;> apply mul_nonneg <;> · first |assumption|apply Int.ofNat_zero_le
-#align rat.nonneg_add Rat.nonneg_add
 
 protected theorem nonneg_mul {a b} : Rat.Nonneg a → Rat.Nonneg b → Rat.Nonneg (a * b) :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>
@@ -69,7 +66,6 @@ protected theorem nonneg_mul {a b} : Rat.Nonneg a → Rat.Nonneg b → Rat.Nonne
       rw [mul_def' d₁0.ne.symm d₂0.ne.symm, divInt_nonneg _ d₁0, divInt_nonneg _ d₂0,
         divInt_nonneg _ (mul_pos d₁0 d₂0)]
       apply mul_nonneg
-#align rat.nonneg_mul Rat.nonneg_mul
 
 protected theorem nonneg_antisymm {a} : Rat.Nonneg a → Rat.Nonneg (-a) → a = 0 :=
   numDenCasesOn' a fun n d h => by
@@ -77,22 +73,18 @@ protected theorem nonneg_antisymm {a} : Rat.Nonneg a → Rat.Nonneg (-a) → a =
     rw [divInt_nonneg _ d0, neg_def, divInt_nonneg _ d0, Right.nonneg_neg_iff,
       divInt_eq_zero d0.ne.symm]
     exact fun h₁ h₂ => le_antisymm h₂ h₁
-#align rat.nonneg_antisymm Rat.nonneg_antisymm
 
 protected theorem nonneg_total : Rat.Nonneg a ∨ Rat.Nonneg (-a) := by
   cases' a with n; exact Or.imp_right neg_nonneg_of_nonpos (le_total 0 n)
-#align rat.nonneg_total Rat.nonneg_total
 
 instance decidableNonneg : Decidable (Rat.Nonneg a) := by
   cases a; unfold Rat.Nonneg; infer_instance
-#align rat.decidable_nonneg Rat.decidableNonneg
 
 -- Porting note: Now `Std` defines `≤` on `Rat`.
 -- This is the old mathlib3 definition.
 /-- Relation `a ≤ b` on `ℚ` defined as `a ≤ b ↔ Rat.Nonneg (b - a)`. Use `a ≤ b` instead of
 `Rat.le a b`. -/
 protected def le' (a b : ℚ) := Rat.Nonneg (b - a)
-#align rat.le Rat.le'
 
 /-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with rational
 numbers of the form `mk' n d` with `d ≠ 0`. -/
@@ -154,20 +146,17 @@ protected theorem le_def {a b c d : ℤ} (b0 : 0 < b) (d0 : 0 < d) :
   show Rat.Nonneg _ ↔ _
   rw [← sub_nonneg]
   simp [sub_eq_add_neg, ne_of_gt b0, ne_of_gt d0, mul_pos d0 b0]
-#align rat.le_def Rat.le_def
 
 protected theorem le_refl : a ≤ a := by
   rw [Rat.le_iff_Nonneg]
   show Rat.Nonneg (a - a)
   rw [sub_self]
   exact le_refl (0 : ℤ)
-#align rat.le_refl Rat.le_refl
 
 protected theorem le_total : a ≤ b ∨ b ≤ a := by
   have := Rat.nonneg_total (b - a)
   rw [Rat.le_iff_Nonneg, Rat.le_iff_Nonneg]
   rwa [neg_sub] at this
-#align rat.le_total Rat.le_total
 
 protected theorem le_antisymm {a b : ℚ} (hab : a ≤ b) (hba : b ≤ a) : a = b := by
   rw [Rat.le_iff_Nonneg] at hab hba
@@ -175,7 +164,6 @@ protected theorem le_antisymm {a b : ℚ} (hab : a ≤ b) (hba : b ≤ a) : a = 
   rw [←neg_sub, sub_eq_add_neg] at hab
   have := eq_neg_of_add_eq_zero_left (Rat.nonneg_antisymm hba hab)
   rwa [neg_neg] at this
-#align rat.le_antisymm Rat.le_antisymm
 
 protected theorem le_trans {a b c : ℚ} (hab : a ≤ b) (hbc : b ≤ c) : a ≤ c := by
   rw [Rat.le_iff_Nonneg] at hab hbc
@@ -185,7 +173,6 @@ protected theorem le_trans {a b c : ℚ} (hab : a ≤ b) (hbc : b ≤ c) : a ≤
     ← sub_eq_add_neg] at this
   rw [Rat.le_iff_Nonneg]
   exact this
-#align rat.le_trans Rat.le_trans
 
 protected theorem not_le {a b : ℚ} : ¬a ≤ b ↔ b < a := (Bool.not_eq_false _).to_iff
 
@@ -221,7 +208,6 @@ protected theorem le_def' {p q : ℚ} : p ≤ q ↔ p.num * q.den ≤ q.num * p.
   rw [← @num_den q, ← @num_den p]
   conv_rhs => simp only [num_den]
   exact Rat.le_def (by exact_mod_cast p.pos) (by exact_mod_cast q.pos)
-#align rat.le_def' Rat.le_def'
 
 protected theorem lt_def {p q : ℚ} : p < q ↔ p.num * q.den < q.num * p.den := by
   rw [lt_iff_le_and_ne, Rat.le_def']
@@ -231,25 +217,20 @@ protected theorem lt_def {p q : ℚ} : p < q ↔ p.num * q.den < q.num * p.den :
     · have tmp := lt_iff_le_and_ne.mp h
       exact ⟨tmp.left, this.mpr tmp.right⟩
   exact not_iff_not.mpr eq_iff_mul_eq_mul
-#align rat.lt_def Rat.lt_def
 
 theorem nonneg_iff_zero_le {a} : Rat.Nonneg a ↔ 0 ≤ a := by
   rw [Rat.le_iff_Nonneg]
   show Rat.Nonneg a ↔ Rat.Nonneg (a - 0)
   simp
-#align rat.nonneg_iff_zero_le Rat.nonneg_iff_zero_le
 
 theorem num_nonneg_iff_zero_le : ∀ {a : ℚ}, 0 ≤ a.num ↔ 0 ≤ a
   | ⟨n, d, h, c⟩ => @nonneg_iff_zero_le ⟨n, d, h, c⟩
-#align rat.num_nonneg_iff_zero_le Rat.num_nonneg_iff_zero_le
 
 protected theorem add_le_add_left {a b c : ℚ} : c + a ≤ c + b ↔ a ≤ b := by
   rw [Rat.le_iff_Nonneg, add_sub_add_left_eq_sub, Rat.le_iff_Nonneg]
-#align rat.add_le_add_left Rat.add_le_add_left
 
 protected theorem mul_nonneg {a b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := by
   rw [← nonneg_iff_zero_le] at ha hb ⊢; exact Rat.nonneg_mul ha hb
-#align rat.mul_nonneg Rat.mul_nonneg
 
 instance : LinearOrderedField ℚ :=
   { Rat.field, Rat.linearOrder, Rat.semiring with
@@ -281,7 +262,6 @@ instance : OrderedAddCommMonoid ℚ := by infer_instance
 theorem num_pos_iff_pos {a : ℚ} : 0 < a.num ↔ 0 < a :=
   lt_iff_lt_of_le_iff_le <| by
     simpa [(by cases a; rfl : (-a).num = -a.num)] using @num_nonneg_iff_zero_le (-a)
-#align rat.num_pos_iff_pos Rat.num_pos_iff_pos
 
 theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
     (a : ℚ) / b < c / d ↔ a * d < c * b := by
@@ -290,10 +270,8 @@ theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d
   · simp [div_num_den, Rat.le_def b_pos d_pos]
   · apply not_congr
     simp [div_num_den, Rat.le_def d_pos b_pos]
-#align rat.div_lt_div_iff_mul_lt_mul Rat.div_lt_div_iff_mul_lt_mul
 
 theorem lt_one_iff_num_lt_denom {q : ℚ} : q < 1 ↔ q.num < q.den := by simp [Rat.lt_def]
-#align rat.lt_one_iff_num_lt_denom Rat.lt_one_iff_num_lt_denom
 
 theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
   cases' le_total q 0 with hq hq
@@ -305,7 +283,6 @@ theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
     rw [← @num_den q, ← divInt_zero_one, Rat.le_def zero_lt_one (Int.coe_nat_pos.2 q.pos), mul_one,
       zero_mul] at hq
     rw [Int.natAbs_of_nonneg hq, num_den]
-#align rat.abs_def Rat.abs_def
 
 end Rat
 

@@ -32,22 +32,16 @@ instance [MulAction G α] (S : Subgroup G) : MulAction S α :=
 @[to_additive]
 theorem smul_def [MulAction G α] {S : Subgroup G} (g : S) (m : α) : g • m = (g : G) • m :=
   rfl
-#align subgroup.smul_def Subgroup.smul_def
-#align add_subgroup.vadd_def AddSubgroup.vadd_def
 
 @[to_additive]
 instance smulCommClass_left [MulAction G β] [SMul α β] [SMulCommClass G α β] (S : Subgroup G) :
     SMulCommClass S α β :=
   S.toSubmonoid.smulCommClass_left
-#align subgroup.smul_comm_class_left Subgroup.smulCommClass_left
-#align add_subgroup.vadd_comm_class_left AddSubgroup.vaddCommClass_left
 
 @[to_additive]
 instance smulCommClass_right [SMul α β] [MulAction G β] [SMulCommClass α G β] (S : Subgroup G) :
     SMulCommClass α S β :=
   S.toSubmonoid.smulCommClass_right
-#align subgroup.smul_comm_class_right Subgroup.smulCommClass_right
-#align add_subgroup.vadd_comm_class_right AddSubgroup.vaddCommClass_right
 
 /-- Note that this provides `IsScalarTower S G G` which is needed by `smul_mul_assoc`. -/
 instance [SMul α β] [MulAction G α] [MulAction G β] [IsScalarTower G α β] (S : Subgroup G) :
@@ -68,11 +62,9 @@ instance [Monoid α] [MulDistribMulAction G α] (S : Subgroup G) : MulDistribMul
 /-- The center of a group acts commutatively on that group. -/
 instance center.smulCommClass_left : SMulCommClass (center G) G G :=
   Submonoid.center.smulCommClass_left
-#align subgroup.center.smul_comm_class_left Subgroup.center.smulCommClass_left
 
 /-- The center of a group acts commutatively on that group. -/
 instance center.smulCommClass_right : SMulCommClass G (center G) G :=
   Submonoid.center.smulCommClass_right
-#align subgroup.center.smul_comm_class_right Subgroup.center.smulCommClass_right
 
 end Subgroup

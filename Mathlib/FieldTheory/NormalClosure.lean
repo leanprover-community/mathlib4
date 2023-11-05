@@ -64,7 +64,6 @@ theorem restrictScalars_eq_iSup_adjoin [h : Normal F L] :
     change aeval y (minpoly F (AdjoinSimple.gen F x)) = 0
     exact minpoly_gen F x ▸ aeval_eq_zero_of_mem_rootSet (Multiset.mem_toFinset.mpr hy)
 
-#align normal_closure.restrict_scalars_eq_supr_adjoin normalClosure.restrictScalars_eq_iSup_adjoin
 
 instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
   let ϕ := algebraMap K L
@@ -75,7 +74,6 @@ instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
   -- Porting note: use the `(_)` trick to obtain an instance by unification.
   apply Normal.of_isSplittingField (p := minpoly F x) (hFEp := _)
   exact adjoin_rootSet_isSplittingField (minpoly.algebraMap_eq ϕ.injective (A := F) x ▸ h.splits _)
-#align normal_closure.normal normalClosure.normal
 
 instance is_finiteDimensional [FiniteDimensional F K] :
     FiniteDimensional F (normalClosure F K L) := by

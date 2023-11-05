@@ -24,8 +24,6 @@ open CategoryTheory Order
 /-- The category of groups with zero. -/
 def GroupWithZeroCat :=
   Bundled GroupWithZero
-set_option linter.uppercaseLean3 false in
-#align GroupWithZero GroupWithZeroCat
 
 namespace GroupWithZeroCat
 
@@ -38,8 +36,6 @@ instance (X : GroupWithZeroCat) : GroupWithZero X :=
 /-- Construct a bundled `GroupWithZeroCat` from a `GroupWithZero`. -/
 def of (α : Type*) [GroupWithZero α] : GroupWithZeroCat :=
   Bundled.of α
-set_option linter.uppercaseLean3 false in
-#align GroupWithZero.of GroupWithZeroCat.of
 
 instance : Inhabited GroupWithZeroCat :=
   ⟨of (WithZero PUnit)⟩
@@ -79,15 +75,11 @@ instance hasForgetToBipointed : HasForget₂ GroupWithZeroCat Bipointed where
   forget₂ :=
       { obj := fun X => ⟨X, 0, 1⟩
         map := fun f => ⟨f, f.map_zero', f.map_one'⟩ }
-set_option linter.uppercaseLean3 false in
-#align GroupWithZero.has_forget_to_Bipointed GroupWithZeroCat.hasForgetToBipointed
 
 instance hasForgetToMon : HasForget₂ GroupWithZeroCat MonCat where
   forget₂ :=
       { obj := fun X => ⟨ X , _ ⟩
         map := fun f => f.toMonoidHom }
-set_option linter.uppercaseLean3 false in
-#align GroupWithZero.has_forget_to_Mon GroupWithZeroCat.hasForgetToMon
 
 -- porting note: this instance was not necessary in mathlib
 instance {X Y : GroupWithZeroCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
@@ -104,7 +96,5 @@ def Iso.mk {α β : GroupWithZeroCat.{u}} (e : α ≃* β) : α ≅ β where
   inv_hom_id := by
     ext
     exact e.apply_symm_apply _
-set_option linter.uppercaseLean3 false in
-#align GroupWithZero.iso.mk GroupWithZeroCat.Iso.mk
 
 end GroupWithZeroCat

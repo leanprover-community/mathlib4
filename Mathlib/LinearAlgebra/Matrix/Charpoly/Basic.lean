@@ -46,26 +46,22 @@ The determinant of this matrix is the characteristic polynomial.
 -/
 def charmatrix (M : Matrix n n R) : Matrix n n R[X] :=
   Matrix.scalar n (X : R[X]) - (C : R →+* R[X]).mapMatrix M
-#align charmatrix charmatrix
 
 theorem charmatrix_apply (M : Matrix n n R) (i j : n) :
     charmatrix M i j = X * (1 : Matrix n n R[X]) i j - C (M i j) :=
   rfl
-#align charmatrix_apply charmatrix_apply
 
 @[simp]
 theorem charmatrix_apply_eq (M : Matrix n n R) (i : n) :
     charmatrix M i i = (X : R[X]) - C (M i i) := by
   simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply_eq, map_apply]
 
-#align charmatrix_apply_eq charmatrix_apply_eq
 
 @[simp]
 theorem charmatrix_apply_ne (M : Matrix n n R) (i j : n) (h : i ≠ j) :
     charmatrix M i j = -C (M i j) := by
   simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply_ne _ _ _ h, map_apply,
     sub_eq_neg_self]
-#align charmatrix_apply_ne charmatrix_apply_ne
 
 theorem matPolyEquiv_charmatrix (M : Matrix n n R) : matPolyEquiv (charmatrix M) = X - C M := by
   ext k i j
@@ -77,26 +73,22 @@ theorem matPolyEquiv_charmatrix (M : Matrix n n R) : matPolyEquiv (charmatrix M)
     split_ifs <;> simp
   · rw [charmatrix_apply_ne _ _ _ h, coeff_X, coeff_neg, coeff_C, coeff_C]
     split_ifs <;> simp [h]
-#align mat_poly_equiv_charmatrix matPolyEquiv_charmatrix
 
 theorem charmatrix_reindex {m : Type v} [DecidableEq m] [Fintype m] (e : n ≃ m) (M : Matrix n n R) :
     charmatrix (reindex e e M) = reindex e e (charmatrix M) := by
   ext i j x
   by_cases h : i = j
   all_goals simp [h]
-#align charmatrix_reindex charmatrix_reindex
 
 /-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$.
 -/
 def Matrix.charpoly (M : Matrix n n R) : R[X] :=
   (charmatrix M).det
-#align matrix.charpoly Matrix.charpoly
 
 theorem Matrix.charpoly_reindex {m : Type v} [DecidableEq m] [Fintype m] (e : n ≃ m)
     (M : Matrix n n R) : (reindex e e M).charpoly = M.charpoly := by
   unfold Matrix.charpoly
   rw [charmatrix_reindex, Matrix.det_reindex_self]
-#align matrix.charpoly_reindex Matrix.charpoly_reindex
 
 -- This proof follows http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 /-- The **Cayley-Hamilton Theorem**, that the characteristic polynomial of a matrix,
@@ -127,4 +119,3 @@ theorem Matrix.aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 :
   rw [matPolyEquiv_smul_one, eval_map] at h
   -- Thus we have $χ_M(M) = 0$, which is the desired result.
   exact h
-#align matrix.aeval_self_charpoly Matrix.aeval_self_charpoly

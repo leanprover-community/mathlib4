@@ -39,8 +39,6 @@ variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
 whose forgetful functor preserves the correct limits. -/
 abbrev sheafForget : Sheaf J D ⥤ SheafOfTypes J :=
   sheafCompose J (forget D) ⋙ (sheafEquivSheafOfTypes J).functor
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf_forget CategoryTheory.sheafForget
 
 -- We need to sheafify...
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
@@ -55,8 +53,6 @@ noncomputable section
 of `X ⋙ G`. -/
 abbrev composeAndSheafify (G : E ⥤ D) : Sheaf J E ⥤ Sheaf J D :=
   sheafToPresheaf J E ⋙ (whiskeringRight _ _ _).obj G ⋙ presheafToSheaf J D
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.compose_and_sheafify CategoryTheory.Sheaf.composeAndSheafify
 
 /-- An auxiliary definition to be used in defining `CategoryTheory.Sheaf.adjunction` below. -/
 @[simps]
@@ -78,8 +74,6 @@ def composeEquiv (adj : G ⊣ F) (X : Sheaf J E) (Y : Sheaf J D) :
       dsimp
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [J.toSheafify_sheafifyLift, Equiv.apply_symm_apply] }
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.compose_equiv CategoryTheory.Sheaf.composeEquiv
 
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] CategoryTheory.Sheaf.composeEquiv_apply_val
@@ -105,8 +99,6 @@ def adjunction (adj : G ⊣ F) : composeAndSheafify J G ⊣ sheafCompose J F :=
         erw [Adjunction.homEquiv_unit, Adjunction.homEquiv_unit]
         dsimp
         simp }
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.adjunction CategoryTheory.Sheaf.adjunction
 
 instance [IsRightAdjoint F] : IsRightAdjoint (sheafCompose J F) :=
   ⟨_, adjunction J (Adjunction.ofRightAdjoint F)⟩
@@ -116,16 +108,12 @@ section ForgetToType
 /-- This is the functor sending a sheaf of types `X` to the sheafification of `X ⋙ G`. -/
 abbrev composeAndSheafifyFromTypes (G : Type max v u ⥤ D) : SheafOfTypes J ⥤ Sheaf J D :=
   (sheafEquivSheafOfTypes J).inverse ⋙ composeAndSheafify _ G
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.compose_and_sheafify_from_types CategoryTheory.Sheaf.composeAndSheafifyFromTypes
 
 /-- A variant of the adjunction between sheaf categories, in the case where the right adjoint
 is the forgetful functor to sheaves of types. -/
 def adjunctionToTypes {G : Type max v u ⥤ D} (adj : G ⊣ forget D) :
     composeAndSheafifyFromTypes J G ⊣ sheafForget J :=
   (sheafEquivSheafOfTypes J).symm.toAdjunction.comp (adjunction J adj)
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.adjunction_to_types CategoryTheory.Sheaf.adjunctionToTypes
 
 @[simp]
 theorem adjunctionToTypes_unit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ forget D)
@@ -136,8 +124,6 @@ theorem adjunctionToTypes_unit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ for
   dsimp [adjunctionToTypes, Adjunction.comp]
   simp
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.adjunction_to_types_unit_app_val CategoryTheory.Sheaf.adjunctionToTypes_unit_app_val
 
 @[simp]
 theorem adjunctionToTypes_counit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ forget D)
@@ -154,8 +140,6 @@ theorem adjunctionToTypes_counit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ f
     NatIso.ofComponents, Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]
   simp
 
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.adjunction_to_types_counit_app_val CategoryTheory.Sheaf.adjunctionToTypes_counit_app_val
 
 instance [IsRightAdjoint (forget D)] : IsRightAdjoint (sheafForget J : Sheaf J D ⥤ _) :=
   ⟨_, adjunctionToTypes J (Adjunction.ofRightAdjoint (forget D))⟩

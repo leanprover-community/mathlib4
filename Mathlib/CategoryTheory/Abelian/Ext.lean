@@ -57,8 +57,6 @@ def Ext (n : ℕ) : Cᵒᵖ ⥤ C ⥤ ModuleCat R :=
       -- This should be investigated further.
       map := fun f =>
         NatTrans.leftOp (NatTrans.leftDerived (NatTrans.rightOp ((linearYoneda R C).map f)) n) }
-set_option linter.uppercaseLean3 false in
-#align Ext Ext
 
 open ZeroObject
 
@@ -73,5 +71,3 @@ def extSuccOfProjective (X Y : C) [Projective X] (n : ℕ) :
         let Z : (ModuleCat R)ᵒᵖ := 0
         rw [← (0 : 0 ⟶ Z.unop).unop_op, ← (0 : Z.unop ⟶ 0).unop_op, ← unop_id, ← unop_comp]
         aesop }
-set_option linter.uppercaseLean3 false in
-#align Ext_succ_of_projective extSuccOfProjective

@@ -26,6 +26,5 @@ def unitsWithZeroEquiv {α : Type*} [Group α] : (WithZero α)ˣ ≃* α where
   left_inv _ := Units.ext <| by simp only [coe_unzero, Units.mk0_val]
   right_inv _ := rfl
   map_mul' _ _ := coe_inj.mp <| by simp only [Units.val_mul, coe_unzero, coe_mul]
-#align with_zero.units_with_zero_equiv WithZero.unitsWithZeroEquiv
 
 end WithZero

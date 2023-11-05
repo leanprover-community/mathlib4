@@ -51,4 +51,3 @@ theorem imo2019_q1 (f : ℤ → ℤ) :
   obtain rfl | rfl : 2 = m ∨ m = 0 := by simpa [H, mul_add, H3] using hf 0 1
   · right; use c; ext b; simp [H, add_comm]
   · left; ext b; simpa [H, two_ne_zero] using H3
-#align imo2019_q1 imo2019_q1

@@ -70,6 +70,5 @@ theorem heron {p1 p2 p3 : P} (h1 : p1 ≠ p2) (h2 : p3 ≠ p2) :
     _ = ↑1 / ↑4 * √ (s * (s - a) * (s - b) * (s - c) * ↑4 ^ 2) := by simp only; ring_nf
     _ = √ (s * (s - a) * (s - b) * (s - c)) := by
       rw [sqrt_mul', sqrt_sq, div_mul_eq_mul_div, one_mul, mul_div_cancel] <;> norm_num
-#align theorems_100.heron Theorems100.heron
 
 end Theorems100

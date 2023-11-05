@@ -43,4 +43,3 @@ instance SmoothVectorBundle.pullback : SmoothVectorBundle F (f *ᵖ E) IB' where
     show ((e.pullback f).coordChangeL 𝕜 (e'.pullback f) b) v = (e.coordChangeL 𝕜 e' (f b)) v
     rw [e.coordChangeL_apply e' hb, (e.pullback f).coordChangeL_apply' _]
     exacts [rfl, hb]
-#align smooth_vector_bundle.pullback SmoothVectorBundle.pullback

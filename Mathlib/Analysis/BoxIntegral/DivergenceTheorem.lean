@@ -137,7 +137,6 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
     _ = 2 * ε * c * ∏ j, (I.upper j - I.lower j) := by
       rw [← Measure.toBoxAdditive_apply, Box.volume_apply, ← I.volume_face_mul i]
       ac_rfl
-#align box_integral.norm_volume_sub_integral_face_upper_sub_lower_smul_le BoxIntegral.norm_volume_sub_integral_face_upper_sub_lower_smul_le
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
@@ -256,8 +255,6 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     · exact ⟨hJδ hy, Box.le_iff_Icc.1 hle hy⟩
     · rw [mul_right_comm (2 : ℝ), ← Box.volume_apply]
       exact mul_le_mul_of_nonneg_right hlt.le ENNReal.toReal_nonneg
-set_option linter.uppercaseLean3 false in
-#align box_integral.has_integral_GP_pderiv BoxIntegral.hasIntegral_GP_pderiv
 
 /-- Divergence theorem for a Henstock-Kurzweil style integral.
 
@@ -282,7 +279,5 @@ theorem hasIntegral_GP_divergence_of_forall_hasDerivWithinAt
   refine HasIntegral.sum fun i _ => ?_
   simp only [hasFDerivWithinAt_pi', continuousWithinAt_pi] at Hd Hs
   exact hasIntegral_GP_pderiv I _ _ s hs (fun x hx => Hs x hx i) (fun x hx => Hd x hx i) i
-set_option linter.uppercaseLean3 false in
-#align box_integral.has_integral_GP_divergence_of_forall_has_deriv_within_at BoxIntegral.hasIntegral_GP_divergence_of_forall_hasDerivWithinAt
 
 end BoxIntegral

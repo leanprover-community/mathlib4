@@ -39,13 +39,11 @@ instance addCommGroupObj (F : J ⥤ ModuleCatMax.{v, w, u} R) (j) :
   change AddCommGroup (F.obj j)
   infer_instance
 set_option linter.uppercaseLean3 false
-#align Module.add_comm_group_obj ModuleCat.addCommGroupObj
 
 instance moduleObj (F : J ⥤ ModuleCatMax.{v, w, u} R) (j) :
     Module.{u, max v w} R ((F ⋙ forget (ModuleCat R)).obj j) := by
   change Module R (F.obj j)
   infer_instance
-#align Module.module_obj ModuleCat.moduleObj
 
 /-- The flat sections of a functor into `ModuleCat R` form a submodule of all sections.
 -/
@@ -58,24 +56,20 @@ def sectionsSubmodule (F : J ⥤ ModuleCatMax.{v, w, u} R) : Submodule R (∀ j,
       simp only [forget_map, Functor.comp_map, Pi.smul_apply, map_smul]
       dsimp [Functor.sections] at sh
       rw [sh f] }
-#align Module.sections_submodule ModuleCat.sectionsSubmodule
 
 -- Adding the following instance speeds up `limitModule` noticeably,
 -- by preventing a bad unfold of `limitAddCommGroup`.
 instance limitAddCommMonoid (F : J ⥤ ModuleCatMax.{v, w, u} R) :
     AddCommMonoid (Types.limitCone.{v, w} (F ⋙ forget (ModuleCatMax.{v, w, u} R))).pt :=
   show AddCommMonoid (sectionsSubmodule F) by infer_instance
-#align Module.limit_add_comm_monoid ModuleCat.limitAddCommMonoid
 
 instance limitAddCommGroup (F : J ⥤ ModuleCatMax.{v, w, u} R) :
     AddCommGroup (Types.limitCone.{v, w} (F ⋙ forget (ModuleCatMax.{v, w, u} R))).pt :=
   show AddCommGroup (sectionsSubmodule F) by infer_instance
-#align Module.limit_add_comm_group ModuleCat.limitAddCommGroup
 
 instance limitModule (F : J ⥤ ModuleCatMax.{v, w, u} R) :
     Module R (Types.limitCone.{v, w} (F ⋙ forget (ModuleCat.{max v w} R))).pt :=
   show Module R (sectionsSubmodule F) by infer_instance
-#align Module.limit_module ModuleCat.limitModule
 
 /-- `limit.π (F ⋙ forget Ring) j` as a `RingHom`. -/
 def limitπLinearMap (F : J ⥤ ModuleCatMax.{v, w, u} R) (j) :
@@ -84,7 +78,6 @@ def limitπLinearMap (F : J ⥤ ModuleCatMax.{v, w, u} R) (j) :
   toFun := (Types.limitCone (F ⋙ forget (ModuleCat R))).π.app j
   map_smul' _ _ := rfl
   map_add' _ _ := rfl
-#align Module.limit_π_linear_map ModuleCat.limitπLinearMap
 
 namespace HasLimits
 
@@ -100,7 +93,6 @@ def limitCone (F : J ⥤ ModuleCatMax.{v, w, u} R) : Cone F where
     { app := limitπLinearMap F
       naturality := fun _ _ f =>
         LinearMap.coe_injective ((Types.limitCone (F ⋙ forget _)).π.naturality f) }
-#align Module.has_limits.limit_cone ModuleCat.HasLimits.limitCone
 
 /-- Witness that the limit cone in `ModuleCat R` is a limit cone.
 (Internal use only; use the limits API.)
@@ -114,7 +106,6 @@ def limitConeIsLimit (F : J ⥤ ModuleCatMax.{v, w, u} R) : IsLimit (limitCone.{
     dsimp [Types.limitConeIsLimit]
     simp
     rfl
-#align Module.has_limits.limit_cone_is_limit ModuleCat.HasLimits.limitConeIsLimit
 
 end HasLimits
 
@@ -129,11 +120,9 @@ lemma hasLimitsOfSize : HasLimitsOfSize.{v, v} (ModuleCatMax.{v, w, u} R) where
     { has_limit := fun F => HasLimit.mk
         { cone := limitCone F
           isLimit := limitConeIsLimit F } }
-#align Module.has_limits_of_size ModuleCat.hasLimitsOfSize
 
 instance hasLimits : HasLimits (ModuleCat.{w} R) :=
   ModuleCat.hasLimitsOfSize.{w, w, u}
-#align Module.has_limits ModuleCat.hasLimits
 
 instance (priority := high) hasLimits' : HasLimits (ModuleCat.{u} R) :=
   ModuleCat.hasLimitsOfSize.{u, u, u}
@@ -144,7 +133,6 @@ def forget₂AddCommGroupPreservesLimitsAux (F : J ⥤ ModuleCatMax.{v, w, u} R)
     IsLimit ((forget₂ (ModuleCat R) AddCommGroupCat).mapCone (limitCone F)) :=
   AddCommGroupCat.limitConeIsLimit
     (F ⋙ forget₂ (ModuleCatMax.{v, w, u} R) _ : J ⥤ AddCommGroupCat.{max v w})
-#align Module.forget₂_AddCommGroup_preserves_limits_aux ModuleCat.forget₂AddCommGroupPreservesLimitsAux
 
 /-- The forgetful functor from R-modules to abelian groups preserves all limits.
 -/
@@ -154,12 +142,10 @@ instance forget₂AddCommGroupPreservesLimitsOfSize :
   preservesLimitsOfShape :=
     { preservesLimit := preservesLimitOfPreservesLimitCone (limitConeIsLimit _)
           (forget₂AddCommGroupPreservesLimitsAux _) }
-#align Module.forget₂_AddCommGroup_preserves_limits_of_size ModuleCat.forget₂AddCommGroupPreservesLimitsOfSize
 
 instance forget₂AddCommGroupPreservesLimits :
     PreservesLimits (forget₂ (ModuleCat R) AddCommGroupCat.{w}) :=
   ModuleCat.forget₂AddCommGroupPreservesLimitsOfSize.{w, w}
-#align Module.forget₂_AddCommGroup_preserves_limits ModuleCat.forget₂AddCommGroupPreservesLimits
 
 /-- The forgetful functor from R-modules to types preserves all limits.
 -/
@@ -168,11 +154,9 @@ instance forgetPreservesLimitsOfSize :
   preservesLimitsOfShape :=
     { preservesLimit := preservesLimitOfPreservesLimitCone (limitConeIsLimit _)
         (Types.limitConeIsLimit (_ ⋙ forget _)) }
-#align Module.forget_preserves_limits_of_size ModuleCat.forgetPreservesLimitsOfSize
 
 instance forgetPreservesLimits : PreservesLimits (forget (ModuleCat.{w} R)) :=
   ModuleCat.forgetPreservesLimitsOfSize.{w, w}
-#align Module.forget_preserves_limits ModuleCat.forgetPreservesLimits
 
 section DirectLimit
 
@@ -203,7 +187,6 @@ def directLimitDiagram : ι ⥤ ModuleCat R where
     intro x
     symm
     apply Module.DirectedSystem.map_map
-#align Module.direct_limit_diagram ModuleCat.directLimitDiagram
 
 variable [DecidableEq ι]
 
@@ -220,7 +203,6 @@ def directLimitCocone : Cocone (directLimitDiagram G f) where
         apply LinearMap.ext
         intro x
         exact DirectLimit.of_f }
-#align Module.direct_limit_cocone ModuleCat.directLimitCocone
 
 /-- The unbundled `directLimit` of modules is a colimit
 in the sense of `CategoryTheory`. -/
@@ -248,7 +230,6 @@ def directLimitIsColimit [Nonempty ι] [IsDirected ι (· ≤ ·)] : IsColimit (
     intro x
     simp only [this]
     apply Module.DirectLimit.lift_unique
-#align Module.direct_limit_is_colimit ModuleCat.directLimitIsColimit
 
 end DirectLimit
 

@@ -47,7 +47,6 @@ open scoped Polynomial
 /-- The integers with infinitesimals adjoined. -/
 def IntWithEpsilon :=
   ℤ[X] deriving Nontrivial
-#align counterexample.int_with_epsilon Counterexample.IntWithEpsilon
 
 local notation "ℤ[ε]" => IntWithEpsilon
 
@@ -80,7 +79,6 @@ theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   convert hn.2
   exact (natTrailingDegree_le_of_ne_zero hn.2.ne').antisymm
     (le_natTrailingDegree (by rintro rfl; cases hn.2.false) fun m hm => (hn.1 _ hm).symm)
-#align counterexample.int_with_epsilon.pos_iff Counterexample.IntWithEpsilon.pos_iff
 
 instance : LinearOrderedCommRing ℤ[ε] :=
   { IntWithEpsilon.linearOrder, IntWithEpsilon.commRing, IntWithEpsilon.orderedAddCommGroup,
@@ -118,12 +116,10 @@ def forgetEpsilons : ℤ[ε] →+*o ℤ where
     cases' n with n
     · exact hn.2.le
     · exact (hn.1 _ n.zero_lt_succ).le)
-#align counterexample.int_with_epsilon.forget_epsilons Counterexample.IntWithEpsilon.forgetEpsilons
 
 @[simp]
 theorem forgetEpsilons_apply (p : ℤ[ε]) : forgetEpsilons p = coeff p 0 :=
   rfl
-#align counterexample.int_with_epsilon.forget_epsilons_apply Counterexample.IntWithEpsilon.forgetEpsilons_apply
 
 /-- The floor of `n - ε` is `n - 1` but its image under `forgetEpsilons` is `n`, whose floor is
 itself. -/
@@ -133,7 +129,6 @@ theorem forgetEpsilons_floor_lt (n : ℤ) :
   have : (0 : ℤ[ε]) < ε := ⟨1, by simp⟩
   exact (if_neg <| by rw [coeff_sub, int_cast_coeff_zero]; simp [this]).trans (by
     rw [coeff_sub, int_cast_coeff_zero]; simp)
-#align counterexample.int_with_epsilon.forget_epsilons_floor_lt Counterexample.IntWithEpsilon.forgetEpsilons_floor_lt
 
 /-- The ceil of `n + ε` is `n + 1` but its image under `forgetEpsilons` is `n`, whose ceil is
 itself. -/
@@ -142,7 +137,6 @@ theorem lt_forgetEpsilons_ceil (n : ℤ) :
   rw [← neg_lt_neg_iff, ← map_neg, ← cast_neg, ← floor_neg, ← floor_neg, ← map_neg, neg_add', ←
     cast_neg]
   exact forgetEpsilons_floor_lt _
-#align counterexample.int_with_epsilon.lt_forget_epsilons_ceil Counterexample.IntWithEpsilon.lt_forgetEpsilons_ceil
 
 end IntWithEpsilon
 

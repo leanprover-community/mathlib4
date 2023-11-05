@@ -35,7 +35,6 @@ theorem banach_steinhaus {ι : Type*} [CompleteSpace E] {g : ι → E →SL[σ�
   rw [show (∃ C, ∀ i, ‖g i‖ ≤ C) ↔ _ from (NormedSpace.equicontinuous_TFAE g).out 5 2]
   refine (norm_withSeminorms 𝕜₂ F).banach_steinhaus (fun _ x ↦ ?_)
   simpa [bddAbove_def, forall_range_iff] using h x
-#align banach_steinhaus banach_steinhaus
 
 open ENNReal
 
@@ -48,7 +47,6 @@ theorem banach_steinhaus_iSup_nnnorm {ι : Type*} [CompleteSpace E] {g : ι → 
   rw [show ((⨆ i, ↑‖g i‖₊) < ∞) ↔ _ from (NormedSpace.equicontinuous_TFAE g).out 8 2]
   refine (norm_withSeminorms 𝕜₂ F).banach_steinhaus (fun _ x ↦ ?_)
   simpa [← NNReal.bddAbove_coe, ← Set.range_comp] using ENNReal.iSup_coe_lt_top.1 (h x)
-#align banach_steinhaus_supr_nnnorm banach_steinhaus_iSup_nnnorm
 
 open Topology
 
@@ -62,4 +60,3 @@ abbrev continuousLinearMapOfTendsto {α : Type*} [CompleteSpace E] [T2Space F] {
     (h : Tendsto (fun n x ↦ g n x) l (𝓝 f)) :
     E →SL[σ₁₂] F :=
   (norm_withSeminorms 𝕜₂ F).continuousLinearMapOfTendsto g h
-#align continuous_linear_map_of_tendsto continuousLinearMapOfTendsto

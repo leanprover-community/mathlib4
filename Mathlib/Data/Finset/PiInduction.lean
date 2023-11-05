@@ -62,7 +62,6 @@ theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
     rw [ssubset_iff_of_subset (sigma_mono (Subset.refl _) _)]
     exacts [⟨⟨i, x⟩, mem_sigma.2 ⟨mem_univ _, by simp⟩, by simp [hx']⟩,
       (@le_update_iff _ _ _ _ g g i _).2 ⟨subset_insert _ _, fun _ _ ↦ le_rfl⟩]
-#align finset.induction_on_pi_of_choice Finset.induction_on_pi_of_choice
 
 /-- Given a predicate on functions `∀ i, Finset (α i)` defined on a finite type, it is true on all
 maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i, Finset (α i)`, an index
@@ -77,7 +76,6 @@ theorem induction_on_pi {p : (∀ i, Finset (α i)) → Prop} (f : ∀ i, Finset
     p f :=
   induction_on_pi_of_choice (fun _ x s ↦ x ∉ s) (fun _ s ⟨x, hx⟩ ↦ ⟨x, hx, not_mem_erase x s⟩) f
     h0 step
-#align finset.induction_on_pi Finset.induction_on_pi
 
 -- Porting note: this docstring is the exact translation of the one from mathlib3 but
 -- the last sentence (here and in the next lemma) does make much sense to me...
@@ -96,7 +94,6 @@ theorem induction_on_pi_max [∀ i, LinearOrder (α i)] {p : (∀ i, Finset (α 
     p f :=
   induction_on_pi_of_choice (fun _ x s ↦ ∀ y ∈ s, y < x)
     (fun _ s hs ↦ ⟨s.max' hs, s.max'_mem hs, fun _ ↦ s.lt_max'_of_mem_erase_max' _⟩) f h0 step
-#align finset.induction_on_pi_max Finset.induction_on_pi_max
 
 /-- Given a predicate on functions `∀ i, Finset (α i)` defined on a finite type, it is true on all
 maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i, Finset (α i)`, an index
@@ -112,6 +109,5 @@ theorem induction_on_pi_min [∀ i, LinearOrder (α i)] {p : (∀ i, Finset (α 
         (∀ y ∈ g i, x < y) → p g → p (update g i (insert x (g i)))) :
     p f :=
   @induction_on_pi_max ι (fun i ↦ (α i)ᵒᵈ) _ _ _ _ _ _ h0 step
-#align finset.induction_on_pi_min Finset.induction_on_pi_min
 
 end Finset

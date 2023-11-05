@@ -44,7 +44,6 @@ structure BundledHom where
     ∀ {α β γ : Type u} (Iα : c α) (Iβ : c β) (Iγ : c γ) (f : hom Iα Iβ) (g : hom Iβ Iγ),
       toFun Iα Iγ (comp Iα Iβ Iγ g f) = toFun Iβ Iγ g ∘ toFun Iα Iβ f := by
    aesop_cat
-#align category_theory.bundled_hom CategoryTheory.BundledHom
 
 attribute [class] BundledHom
 
@@ -71,7 +70,6 @@ instance category : Category (Bundled c) := by
             id_comp := _
             assoc := _ } <;> intros <;> apply 𝒞.hom_ext <;>
     aesop_cat
-#align category_theory.bundled_hom.category CategoryTheory.BundledHom.category
 
 /-- A category given by `BundledHom` is a concrete category. -/
 instance concreteCategory : ConcreteCategory.{u} (Bundled c)
@@ -82,7 +80,6 @@ instance concreteCategory : ConcreteCategory.{u} (Bundled c)
       map_id := fun X => 𝒞.id_toFun X.str
       map_comp := fun f g => by dsimp; erw [𝒞.comp_toFun];rfl }
   forget_faithful := { map_injective := by (intros; apply 𝒞.hom_ext) }
-#align category_theory.bundled_hom.concrete_category CategoryTheory.BundledHom.concreteCategory
 
 variable {hom}
 
@@ -97,7 +94,6 @@ def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (_ 
   HasForget₂.mk' (Bundled.map @obj) (fun _ => rfl) map (by
     intros X Y f
     rw [heq_eq_eq, forget_map_eq_coe, forget_map_eq_coe, h_map f])
-#align category_theory.bundled_hom.mk_has_forget₂ CategoryTheory.BundledHom.mkHasForget₂
 
 variable {d : Type u → Type u}
 
@@ -115,7 +111,6 @@ For typical usage, see the construction of `CommMonCat` from `MonCat`.
 @[reducible]
 def MapHom (F : ∀ {α}, d α → c α) : ∀ ⦃α β : Type u⦄ (_ : d α) (_ : d β), Type u :=
   fun _ _ iα iβ => hom (F iα) (F iβ)
-#align category_theory.bundled_hom.map_hom CategoryTheory.BundledHom.MapHom
 
 end
 
@@ -128,7 +123,6 @@ def map (F : ∀ {α}, d α → c α) : BundledHom (MapHom hom @F)
   id α {iα} := 𝒞.id (F iα)
   comp := @fun α β γ iα iβ iγ f g => 𝒞.comp (F iα) (F iβ) (F iγ) f g
   hom_ext := @fun α β iα iβ f g h => 𝒞.hom_ext (F iα) (F iβ) h
-#align category_theory.bundled_hom.map CategoryTheory.BundledHom.map
 
 section
 
@@ -143,7 +137,6 @@ this allows us to set up `CommMonCat` by defining an instance
 ```instance : ParentProjection (CommMonoid.toMonoid) := ⟨⟩```
 -/
 class ParentProjection (F : ∀ {α}, d α → c α) : Prop
-#align category_theory.bundled_hom.parent_projection CategoryTheory.BundledHom.ParentProjection
 
 end
 
@@ -152,18 +145,15 @@ end
 instance bundledHomOfParentProjection (F : ∀ {α}, d α → c α) [ParentProjection @F] :
     BundledHom (MapHom hom @F) :=
   map hom @F
-#align category_theory.bundled_hom.bundled_hom_of_parent_projection CategoryTheory.BundledHom.bundledHomOfParentProjection
 
 instance forget₂ (F : ∀ {α}, d α → c α) [ParentProjection @F] :
     HasForget₂ (Bundled d) (Bundled c) where
   forget₂ :=
     { obj := fun X => ⟨X, F X.2⟩
       map := @fun X Y f => f }
-#align category_theory.bundled_hom.forget₂ CategoryTheory.BundledHom.forget₂
 
 instance forget₂Full (F : ∀ {α}, d α → c α) [ParentProjection @F] :
     Full (CategoryTheory.forget₂ (Bundled d) (Bundled c)) where preimage X Y {f} := f
-#align category_theory.bundled_hom.forget₂_full CategoryTheory.BundledHom.forget₂Full
 
 end BundledHom
 

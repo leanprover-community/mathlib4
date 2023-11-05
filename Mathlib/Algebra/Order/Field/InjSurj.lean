@@ -34,7 +34,6 @@ def Injective.linearOrderedSemifield [LinearOrderedSemifield α] [Zero β] [One 
     (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) : LinearOrderedSemifield β :=
   { hf.linearOrderedSemiring f zero one add mul nsmul npow nat_cast hsup hinf,
     hf.semifield f zero one add mul inv div nsmul npow zpow nat_cast with }
-#align function.injective.linear_ordered_semifield Function.Injective.linearOrderedSemifield
 
 
 -- See note [reducible non-instances]
@@ -55,6 +54,5 @@ def Injective.linearOrderedField [LinearOrderedField α] [Zero β] [One β] [Add
   { hf.linearOrderedRing f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast hsup hinf,
     hf.field f zero one add mul neg sub inv div nsmul zsmul qsmul npow zpow nat_cast int_cast
       rat_cast with }
-#align function.injective.linear_ordered_field Function.Injective.linearOrderedField
 
 end Function

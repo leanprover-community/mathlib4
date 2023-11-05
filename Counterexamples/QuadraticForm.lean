@@ -30,21 +30,16 @@ set_option linter.uppercaseLean3 false
 def B : BilinForm F (F × F) :=
   BilinForm.linMulLin (LinearMap.fst _ _ _) (LinearMap.snd _ _ _) +
     BilinForm.linMulLin (LinearMap.snd _ _ _) (LinearMap.fst _ _ _)
-#align counterexample.B Counterexample.B
 
 @[simp]
 theorem B_apply (x y : F × F) : B F x y = x.1 * y.2 + x.2 * y.1 :=
   rfl
-#align counterexample.B_apply Counterexample.B_apply
 
 theorem isSymm_B : (B F).IsSymm := fun x y => by simp [mul_comm, add_comm]
-#align counterexample.is_symm_B Counterexample.isSymm_B
 
 theorem isAlt_B : (B F).IsAlt := fun x => by simp [mul_comm, CharTwo.add_self_eq_zero (x.1 * x.2)]
-#align counterexample.is_alt_B Counterexample.isAlt_B
 
 theorem B_ne_zero : B F ≠ 0 := fun h => by simpa using BilinForm.congr_fun h (1, 0) (1, 1)
-#align counterexample.B_ne_zero Counterexample.B_ne_zero
 
 /-- `BilinForm.toQuadraticForm` is not injective on symmetric bilinear forms.
 
@@ -59,6 +54,5 @@ theorem BilinForm.not_injOn_toQuadraticForm_isSymm.{u} :
   apply h (isSymm_B F) isSymm_zero
   rw [BilinForm.toQuadraticForm_zero, BilinForm.toQuadraticForm_eq_zero]
   exact isAlt_B F
-#align counterexample.bilin_form.not_inj_on_to_quadratic_form_is_symm Counterexample.BilinForm.not_injOn_toQuadraticForm_isSymm
 
 end Counterexample

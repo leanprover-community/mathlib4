@@ -41,7 +41,6 @@ def ofTypeMonad : Monad (Type u) where
   assoc' α := funext fun a => by apply joinM_map_joinM
   left_unit' α := funext fun a => by apply joinM_pure
   right_unit' α := funext fun a => by apply joinM_map_pure
-#align category_theory.of_type_monad CategoryTheory.ofTypeMonad
 
 /-- The `Kleisli` category of a `Control.Monad` is equivalent to the `Kleisli` category of its
 category-theoretic version, provided the monad is lawful.
@@ -82,7 +81,6 @@ def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
     change f >=> pure = pure >=> f
     simp [functor_norm]
   counitIso := NatIso.ofComponents fun X => Iso.refl X
-#align category_theory.eq CategoryTheory.eq
 
 end
 

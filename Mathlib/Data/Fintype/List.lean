@@ -40,18 +40,15 @@ def lists : Multiset α → Finset (List α) := fun s =>
     ext sl
     simp only [mem_permutations, List.mem_toFinset]
     exact ⟨fun hs => hs.trans h, fun hs => hs.trans h.symm⟩
-#align multiset.lists Multiset.lists
 
 @[simp]
 theorem lists_coe (l : List α) : lists (l : Multiset α) = l.permutations.toFinset :=
   rfl
-#align multiset.lists_coe Multiset.lists_coe
 
 @[simp]
 theorem mem_lists_iff (s : Multiset α) (l : List α) : l ∈ lists s ↔ s = ⟦l⟧ := by
   induction s using Quotient.inductionOn
   simpa using perm_comm
-#align multiset.mem_lists_iff Multiset.mem_lists_iff
 
 end Multiset
 
@@ -64,4 +61,3 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } :=
     · intro hl
       refine' ⟨⟨↑l, hl⟩, _⟩
       simp
-#align fintype_nodup_list fintypeNodupList

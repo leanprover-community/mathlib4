@@ -36,8 +36,6 @@ instance Discrete.monoidal : MonoidalCategory (Discrete M)
   leftUnitor X := Discrete.eqToIso (one_mul X.as)
   rightUnitor X := Discrete.eqToIso (mul_one X.as)
   associator X Y Z := Discrete.eqToIso (mul_assoc _ _ _)
-#align category_theory.discrete.monoidal CategoryTheory.Discrete.monoidal
-#align category_theory.discrete.add_monoidal CategoryTheory.Discrete.addMonoidal
 
 @[to_additive (attr := simp) Discrete.addMonoidal_tensorUnit_as]
 lemma Discrete.monoidal_tensorUnit_as : (𝟙_ (Discrete M)).as = 1 := rfl
@@ -54,8 +52,6 @@ def Discrete.monoidalFunctor (F : M →* N) : MonoidalFunctor (Discrete M) (Disc
   map f := Discrete.eqToHom (F.congr_arg (eq_of_hom f))
   ε := Discrete.eqToHom F.map_one.symm
   μ X Y := Discrete.eqToHom (F.map_mul X.as Y.as).symm
-#align category_theory.discrete.monoidal_functor CategoryTheory.Discrete.monoidalFunctor
-#align category_theory.discrete.add_monoidal_functor CategoryTheory.Discrete.addMonoidalFunctor
 
 /-- An additive morphism between add_monoids gives a
 monoidal functor between the corresponding discrete monoidal categories. -/
@@ -72,7 +68,5 @@ def Discrete.monoidalFunctorComp (F : M →* N) (G : N →* K) :
     where
   hom := { app := fun X => 𝟙 _ }
   inv := { app := fun X => 𝟙 _ }
-#align category_theory.discrete.monoidal_functor_comp CategoryTheory.Discrete.monoidalFunctorComp
-#align category_theory.discrete.add_monoidal_functor_comp CategoryTheory.Discrete.addMonoidalFunctorComp
 
 end CategoryTheory

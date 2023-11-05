@@ -40,7 +40,6 @@ and the morphisms of the monoidal category become the 2-morphisms.)
 @[nolint unusedArguments]
 def MonoidalSingleObj (C : Type*) [Category C] [MonoidalCategory C] :=
   PUnit --deriving Inhabited
-#align category_theory.monoidal_single_obj CategoryTheory.MonoidalSingleObj
 
 -- Porting note: `deriving` didn't work. Create this instance manually.
 instance : Inhabited (MonoidalSingleObj C) := by
@@ -72,7 +71,6 @@ namespace MonoidalSingleObj
 @[nolint unusedArguments]
 protected def star : MonoidalSingleObj C :=
   PUnit.unit
-#align category_theory.monoidal_single_obj.star CategoryTheory.MonoidalSingleObj.star
 
 /-- The monoidal functor from the endomorphisms of the single object
 when we promote a monoidal category to a single object bicategory,
@@ -90,7 +88,6 @@ def endMonoidalStarFunctor : MonoidalFunctor (EndMonoidal (MonoidalSingleObj.sta
     simp_rw [Category.id_comp, Category.comp_id]
     -- Should we provide further simp lemmas so this goal becomes visible?
     exact (tensor_id_comp_id_tensor _ _).symm
-#align category_theory.monoidal_single_obj.End_monoidal_star_functor CategoryTheory.MonoidalSingleObj.endMonoidalStarFunctor
 
 /-- The equivalence between the endomorphisms of the single object
 when we promote a monoidal category to a single object bicategory,
@@ -103,7 +100,6 @@ noncomputable def endMonoidalStarFunctorIsEquivalence :
       map := fun f => f }
   unitIso := NatIso.ofComponents fun X => asIso (𝟙 _)
   counitIso := NatIso.ofComponents fun X => asIso (𝟙 _)
-#align category_theory.monoidal_single_obj.End_monoidal_star_functor_is_equivalence CategoryTheory.MonoidalSingleObj.endMonoidalStarFunctorIsEquivalence
 
 end MonoidalSingleObj
 

@@ -43,4 +43,3 @@ theorem isConformalMap_iff (f : E →L[ℝ] F) :
         inv_mul_cancel_left₀ hc.ne', LinearMap.smul_apply, ContinuousLinearMap.coe_coe]
     · ext1 x
       exact (smul_inv_smul₀ hc.ne' (f x)).symm
-#align is_conformal_map_iff isConformalMap_iff

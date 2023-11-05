@@ -48,7 +48,6 @@ theorem associated_norm_prod_smith [Fintype ι] (b : Basis ι R S) {f : S} (hf :
   erw [mul_comm, ← smul_eq_mul, LinearEquiv.restrictScalars_apply, LinearEquiv.coord_apply_smul,
     Ideal.selfBasis_def]
   rfl
-#align associated_norm_prod_smith associated_norm_prod_smith
 
 end CommRing
 
@@ -82,6 +81,5 @@ theorem finrank_quotient_span_eq_natDegree_norm [Algebra F S] [IsScalarTower F F
   -- finrank_quotient_eq_sum slow
   congr with i
   exact (AdjoinRoot.powerBasis <| smithCoeffs_ne_zero b _ h i).finrank
-#align finrank_quotient_span_eq_nat_degree_norm finrank_quotient_span_eq_natDegree_norm
 
 end Field

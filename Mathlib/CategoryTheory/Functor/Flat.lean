@@ -63,7 +63,6 @@ is cofiltered for each `X : C`.
 -/
 class RepresentablyFlat (F : C ⥤ D) : Prop where
   cofiltered : ∀ X : D, IsCofiltered (StructuredArrow X F)
-#align category_theory.representably_flat CategoryTheory.RepresentablyFlat
 
 attribute [instance] RepresentablyFlat.cofiltered
 
@@ -85,7 +84,6 @@ instance RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := by
     use StructuredArrow.homMk Y.hom (by erw [Functor.id_map, Category.id_comp])
     ext
     trans Z.hom <;> simp
-#align category_theory.representably_flat.id CategoryTheory.RepresentablyFlat.id
 
 instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F]
     [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) := by
@@ -129,7 +127,6 @@ instance RepresentablyFlat.comp (F : C ⥤ D) (G : D ⥤ E) [RepresentablyFlat F
     use StructuredArrow.homMk h'.right (by simp [← G.map_comp])
     ext
     exact (congr_arg CommaMorphism.right h'_cond : _)
-#align category_theory.representably_flat.comp CategoryTheory.RepresentablyFlat.comp
 
 end RepresentablyFlat
 
@@ -143,7 +140,6 @@ theorem cofiltered_of_hasFiniteLimits [HasFiniteLimits C] : IsCofiltered C :=
   { cone_objs := fun A B => ⟨Limits.prod A B, Limits.prod.fst, Limits.prod.snd, trivial⟩
     cone_maps := fun _ _ f g => ⟨equalizer f g, equalizer.ι f g, equalizer.condition f g⟩
     Nonempty := ⟨⊤_ C⟩ }
-#align category_theory.cofiltered_of_has_finite_limits CategoryTheory.cofiltered_of_hasFiniteLimits
 
 theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [PreservesFiniteLimits F] :
     RepresentablyFlat F :=
@@ -155,7 +151,6 @@ theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [Preserv
       -- porting note: instance was inferred automatically in Lean 3
       infer_instance
     cofiltered_of_hasFiniteLimits⟩
-#align category_theory.flat_of_preserves_finite_limits CategoryTheory.flat_of_preservesFiniteLimits
 
 namespace PreservesFiniteLimitsOfFlat
 
@@ -178,11 +173,9 @@ noncomputable def lift : s.pt ⟶ F.obj c.pt :=
               ({ app := fun X => 𝟙 _ } :
                 (s.toStructuredArrow ⋙ pre s.pt K F) ⋙ proj s.pt F ⟶ K)).obj <|
           (StructuredArrow.proj s.pt F).mapCone s')
-#align category_theory.preserves_finite_limits_of_flat.lift CategoryTheory.PreservesFiniteLimitsOfFlat.lift
 
 theorem fac (x : J) : lift F hc s ≫ (F.mapCone c).π.app x = s.π.app x := by
   simp [lift, ← Functor.map_comp]
-#align category_theory.preserves_finite_limits_of_flat.fac CategoryTheory.PreservesFiniteLimitsOfFlat.fac
 
 theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     (f₁ f₂ : s.pt ⟶ F.obj c.pt) (h₁ : ∀ j : J, f₁ ≫ (F.mapCone c).π.app j = s.π.app j)
@@ -237,7 +230,6 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     _ = 𝟙 _ ≫ f₂ := g₂.w.symm
     _ = f₂ := by simp
 
-#align category_theory.preserves_finite_limits_of_flat.uniq CategoryTheory.PreservesFiniteLimitsOfFlat.uniq
 
 end PreservesFiniteLimitsOfFlat
 
@@ -255,7 +247,6 @@ noncomputable def preservesFiniteLimitsOfFlat (F : C ⥤ D) [RepresentablyFlat F
         apply PreservesFiniteLimitsOfFlat.uniq F hc
         exact h
         exact PreservesFiniteLimitsOfFlat.fac F hc s }
-#align category_theory.preserves_finite_limits_of_flat CategoryTheory.preservesFiniteLimitsOfFlat
 
 /-- If `C` is finitely cocomplete, then `F : C ⥤ D` is representably flat iff it preserves
 finite limits.
@@ -273,7 +264,6 @@ noncomputable def preservesFiniteLimitsIffFlat [HasFiniteLimits C] (F : C ⥤ D)
     -- porting note: this next line wasn't needed in lean 3
     apply Subsingleton.elim
 
-#align category_theory.preserves_finite_limits_iff_flat CategoryTheory.preservesFiniteLimitsIffFlat
 
 end HasLimit
 
@@ -310,8 +300,6 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
       rcases j with ⟨j_left, ⟨⟨⟩⟩, j_hom⟩
       congr
       rw [CostructuredArrow.map_mk, Category.id_comp, CostructuredArrow.mk])
-set_option linter.uppercaseLean3 false in
-#align category_theory.Lan_evaluation_iso_colim CategoryTheory.lanEvaluationIsoColim
 
 variable [ConcreteCategory.{u₁} E] [HasLimits E] [HasColimits E]
 
@@ -331,14 +319,10 @@ noncomputable instance lanPreservesFiniteLimitsOfFlat (F : C ⥤ D) [Representab
   haveI : IsFiltered (CostructuredArrow F.op K) :=
     IsFiltered.of_equivalence (structuredArrowOpEquivalence F (unop K))
   exact preservesLimitsOfShapeOfNatIso (lanEvaluationIsoColim _ _ _).symm
-set_option linter.uppercaseLean3 false in
-#align category_theory.Lan_preserves_finite_limits_of_flat CategoryTheory.lanPreservesFiniteLimitsOfFlat
 
 instance lan_flat_of_flat (F : C ⥤ D) [RepresentablyFlat F] :
     RepresentablyFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ E) :=
   flat_of_preservesFiniteLimits _
-set_option linter.uppercaseLean3 false in
-#align category_theory.Lan_flat_of_flat CategoryTheory.lan_flat_of_flat
 
 variable [HasFiniteLimits C]
 
@@ -346,8 +330,6 @@ noncomputable instance lanPreservesFiniteLimitsOfPreservesFiniteLimits (F : C �
     [PreservesFiniteLimits F] : PreservesFiniteLimits (lan F.op : _ ⥤ Dᵒᵖ ⥤ E) := by
   haveI := flat_of_preservesFiniteLimits F
   infer_instance
-set_option linter.uppercaseLean3 false in
-#align category_theory.Lan_preserves_finite_limits_of_preserves_finite_limits CategoryTheory.lanPreservesFiniteLimitsOfPreservesFiniteLimits
 
 theorem flat_iff_lan_flat (F : C ⥤ D) :
     RepresentablyFlat F ↔ RepresentablyFlat (lan F.op : _ ⥤ Dᵒᵖ ⥤ Type u₁) :=
@@ -358,8 +340,6 @@ theorem flat_iff_lan_flat (F : C ⥤ D) :
       apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{u₁}
       intros; skip; apply preservesLimitOfLanPreservesLimit
     apply flat_of_preservesFiniteLimits⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.flat_iff_Lan_flat CategoryTheory.flat_iff_lan_flat
 
 /-- If `C` is finitely complete, then `F : C ⥤ D` preserves finite limits iff
 `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves finite limits.
@@ -386,8 +366,6 @@ noncomputable def preservesFiniteLimitsIffLanPreservesFiniteLimits (F : C ⥤ D)
     congr
     -- porting note: next line wasn't necessary in lean 3
     apply Subsingleton.elim
-set_option linter.uppercaseLean3 false in
-#align category_theory.preserves_finite_limits_iff_Lan_preserves_finite_limits CategoryTheory.preservesFiniteLimitsIffLanPreservesFiniteLimits
 
 end SmallCategory
 

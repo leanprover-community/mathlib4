@@ -183,7 +183,6 @@ theorem zero_weightSpace_eq_top_of_nilpotent' [IsNilpotent R L M] :
     weightSpace M (0 : L → R) = ⊤ := by
   ext
   simp [weightSpace, weightSpaceOf]
-#align lie_module.zero_weight_space_eq_top_of_nilpotent' LieModule.zero_weightSpace_eq_top_of_nilpotent'
 
 theorem coe_weightSpace_of_top (χ : L → R) :
     (weightSpace M (χ ∘ (⊤ : LieSubalgebra R L).incl) : Submodule R M) = weightSpace M χ := by
@@ -191,7 +190,6 @@ theorem coe_weightSpace_of_top (χ : L → R) :
   simp only [mem_weightSpace, LieSubmodule.mem_coeSubmodule, Subtype.forall]
   apply forall_congr'
   simp
-#align lie_module.coe_weight_space_of_top LieModule.coe_weightSpace_of_top
 
 @[simp]
 theorem zero_weightSpace_eq_top_of_nilpotent [IsNilpotent R L M] :
@@ -202,7 +200,6 @@ theorem zero_weightSpace_eq_top_of_nilpotent [IsNilpotent R L M] :
   intro x
   obtain ⟨k, hk⟩ := exists_forall_pow_toEndomorphism_eq_zero R L M
   exact ⟨k, by simp [hk x]⟩
-#align lie_module.zero_weight_space_eq_top_of_nilpotent LieModule.zero_weightSpace_eq_top_of_nilpotent
 
 variable (R) in
 theorem exists_weightSpace_zero_le_ker_of_isNoetherian
@@ -224,7 +221,6 @@ theorem isNilpotent_toEndomorphism_weightSpace_zero [IsNoetherian R M]
     LieSubmodule.toEndomorphism_restrict_eq_toEndomorphism, LinearMap.pow_restrict, ←
     SetLike.coe_eq_coe, LinearMap.restrict_apply, Submodule.coe_mk, Submodule.coe_zero]
   exact hk hm
-#align lie_module.is_nilpotent_to_endomorphism_weight_space_zero LieModule.isNilpotent_toEndomorphism_weightSpace_zero
 
 /-- By Engel's theorem, the zero weight space of a Noetherian Lie module is nilpotent. -/
 instance [IsNoetherian R M] :

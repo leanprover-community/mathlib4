@@ -28,7 +28,6 @@ The internal hom functor `F ⟶[C] -` -/
 @[simps!]
 def closedIhom (F : D ⥤ C) : (D ⥤ C) ⥤ D ⥤ C :=
   ((whiskeringRight₂ D Cᵒᵖ C C).obj internalHom).obj (Groupoid.invFunctor D ⋙ F.op)
-#align category_theory.functor.closed_ihom CategoryTheory.Functor.closedIhom
 
 /-- Auxiliary definition for `CategoryTheory.Functor.closed`.
 The unit for the adjunction `(tensorLeft F) ⊣ (ihom F)`. -/
@@ -43,7 +42,6 @@ def closedUnit (F : D ⥤ C) : 𝟭 (D ⥤ C) ⟶ tensorLeft F ⋙ closedIhom F 
       dsimp
       rw [coev_app_comp_pre_app_assoc, ← Functor.map_comp]
       simp }
-#align category_theory.functor.closed_unit CategoryTheory.Functor.closedUnit
 
 /-- Auxiliary definition for `CategoryTheory.Functor.closed`.
 The counit for the adjunction `(tensorLeft F) ⊣ (ihom F)`. -/
@@ -57,7 +55,6 @@ def closedCounit (F : D ⥤ C) : closedIhom F ⋙ tensorLeft F ⟶ 𝟭 (D ⥤ C
       simp only [closedIhom_obj_map, pre_comm_ihom_map]
       rw [← tensor_id_comp_id_tensor, id_tensor_comp]
       simp }
-#align category_theory.functor.closed_counit CategoryTheory.Functor.closedCounit
 
 /-- If `C` is a monoidal closed category and `D` is a groupoid, then every functor `F : D ⥤ C` is
 closed in the functor category `F : D ⥤ C` with the pointwise monoidal structure. -/
@@ -69,14 +66,12 @@ instance closed (F : D ⥤ C) : Closed F where
     adj := Adjunction.mkOfUnitCounit
       { unit := closedUnit F
         counit := closedCounit F } }
-#align category_theory.functor.closed CategoryTheory.Functor.closed
 
 /-- If `C` is a monoidal closed category and `D` is groupoid, then the functor category `D ⥤ C`,
 with the pointwise monoidal structure, is monoidal closed. -/
 @[simps!]
 instance monoidalClosed : MonoidalClosed (D ⥤ C) where
   closed := by infer_instance
-#align category_theory.functor.monoidal_closed CategoryTheory.Functor.monoidalClosed
 
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] Functor.monoidalClosed_closed_isAdj_adj_homEquiv_apply_app
@@ -84,14 +79,11 @@ attribute [nolint simpNF] Functor.monoidalClosed_closed_isAdj_adj_homEquiv_apply
 
 theorem ihom_map (F : D ⥤ C) {G H : D ⥤ C} (f : G ⟶ H) : (ihom F).map f = (closedIhom F).map f :=
   rfl
-#align category_theory.functor.ihom_map CategoryTheory.Functor.ihom_map
 
 theorem ihom_ev_app (F G : D ⥤ C) : (ihom.ev F).app G = (closedCounit F).app G :=
   rfl
-#align category_theory.functor.ihom_ev_app CategoryTheory.Functor.ihom_ev_app
 
 theorem ihom_coev_app (F G : D ⥤ C) : (ihom.coev F).app G = (closedUnit F).app G :=
   rfl
-#align category_theory.functor.ihom_coev_app CategoryTheory.Functor.ihom_coev_app
 
 end CategoryTheory.Functor

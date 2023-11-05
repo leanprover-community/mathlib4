@@ -28,7 +28,6 @@ def associator : (C × D) × E ⥤ C × D × E
     where
   obj X := (X.1.1, (X.1.2, X.2))
   map := @fun _ _ f => (f.1.1, (f.1.2, f.2))
-#align category_theory.prod.associator CategoryTheory.prod.associator
 
 /-- The inverse associator functor `C × (D × E) ⥤ (C × D) × E `.
 -/
@@ -37,7 +36,6 @@ def inverseAssociator : C × D × E ⥤ (C × D) × E
     where
   obj X := ((X.1, X.2.1), X.2.2)
   map := @fun _ _ f => ((f.1, f.2.1), f.2.2)
-#align category_theory.prod.inverse_associator CategoryTheory.prod.inverseAssociator
 
 /-- The equivalence of categories expressing associativity of products of categories.
 -/
@@ -45,15 +43,12 @@ def associativity : (C × D) × E ≌ C × D × E :=
   Equivalence.mk (associator C D E) (inverseAssociator C D E)
     (NatIso.ofComponents fun X => eqToIso (by simp))
     (NatIso.ofComponents fun X => eqToIso (by simp))
-#align category_theory.prod.associativity CategoryTheory.prod.associativity
 
 instance associatorIsEquivalence : IsEquivalence (associator C D E) :=
   (by infer_instance : IsEquivalence (associativity C D E).functor)
-#align category_theory.prod.associator_is_equivalence CategoryTheory.prod.associatorIsEquivalence
 
 instance inverseAssociatorIsEquivalence : IsEquivalence (inverseAssociator C D E) :=
   (by infer_instance : IsEquivalence (associativity C D E).inverse)
-#align category_theory.prod.inverse_associator_is_equivalence CategoryTheory.prod.inverseAssociatorIsEquivalence
 
 -- TODO unitors?
 -- TODO pentagon natural transformation? ...satisfying?

@@ -50,7 +50,6 @@ theorem TensorProduct.toMatrix_map (f : M →ₗ[R] M') (g : N →ₗ[R] N') :
   ext ⟨i, j⟩ ⟨i', j'⟩
   simp_rw [Matrix.kroneckerMap_apply, toMatrix_apply, Basis.tensorProduct_apply,
     TensorProduct.map_tmul, Basis.tensorProduct_repr_tmul_apply]
-#align tensor_product.to_matrix_map TensorProduct.toMatrix_map
 
 /-- The matrix built from `Matrix.kronecker` corresponds to the linear map built from
 `TensorProduct.map`. -/
@@ -59,7 +58,6 @@ theorem Matrix.toLin_kronecker (A : Matrix ι' ι R) (B : Matrix κ' κ R) :
       TensorProduct.map (toLin bM bM' A) (toLin bN bN' B) := by
   rw [← LinearEquiv.eq_symm_apply, toLin_symm, TensorProduct.toMatrix_map, toMatrix_toLin,
     toMatrix_toLin]
-#align matrix.to_lin_kronecker Matrix.toLin_kronecker
 
 /-- `TensorProduct.comm` corresponds to a permutation of the identity matrix. -/
 theorem TensorProduct.toMatrix_comm :
@@ -70,7 +68,6 @@ theorem TensorProduct.toMatrix_comm :
     Basis.tensorProduct_repr_tmul_apply, Matrix.submatrix_apply, Prod.swap_prod_mk, id.def,
     Basis.repr_self_apply, Matrix.one_apply, Prod.ext_iff, ite_and, @eq_comm _ i', @eq_comm _ j']
   split_ifs <;> simp
-#align tensor_product.to_matrix_comm TensorProduct.toMatrix_comm
 
 /-- `TensorProduct.assoc` corresponds to a permutation of the identity matrix. -/
 theorem TensorProduct.toMatrix_assoc :
@@ -83,4 +80,3 @@ theorem TensorProduct.toMatrix_assoc :
     Equiv.prodAssoc_apply, id.def, Basis.repr_self_apply, Matrix.one_apply, Prod.ext_iff, ite_and,
     @eq_comm _ i', @eq_comm _ j', @eq_comm _ k']
   split_ifs <;> simp
-#align tensor_product.to_matrix_assoc TensorProduct.toMatrix_assoc

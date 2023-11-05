@@ -30,7 +30,6 @@ def restrictScalarsLinearMap : (M →ₗ[A] N) →ₗ[k] M →ₗ[k] N where
   toFun := LinearMap.restrictScalars k
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-#align linear_map.restrict_scalars_linear_map LinearMap.restrictScalarsLinearMap
 
 end RestrictScalars
 

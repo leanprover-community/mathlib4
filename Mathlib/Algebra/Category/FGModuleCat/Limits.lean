@@ -62,8 +62,6 @@ def forget₂CreatesLimit (F : J ⥤ FGModuleCat k) :
   createsLimitOfFullyFaithfulOfIso
     ⟨(limit (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)) : ModuleCat.{v} k), inferInstance⟩
     (Iso.refl _)
-set_option linter.uppercaseLean3 false in
-#align fgModule.forget₂_creates_limit FGModuleCat.forget₂CreatesLimit
 
 instance : CreatesLimitsOfShape J (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where
   CreatesLimit {F} := forget₂CreatesLimit F

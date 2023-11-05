@@ -50,20 +50,17 @@ namespace CategoryTheory.Abelian
   See `homologyIsoCokernelLift`. -/
 abbrev homologyC : A :=
   cokernel (kernel.lift g f w)
-#align category_theory.abelian.homology_c CategoryTheory.Abelian.homologyC
 
 /-- The kernel of `cokernel.desc f g w`. This is isomorphic to `homology f g w`.
   See `homologyIsoKernelDesc`. -/
 abbrev homologyK : A :=
   kernel (cokernel.desc f g w)
-#align category_theory.abelian.homology_k CategoryTheory.Abelian.homologyK
 
 /-- The canonical map from `homologyC` to `homologyK`.
   This is an isomorphism, and it is used in obtaining the API for `homology f g w`
   in the bottom of this file. -/
 abbrev homologyCToK : homologyC f g w ⟶ homologyK f g w :=
   cokernel.desc _ (kernel.lift _ (kernel.ι _ ≫ cokernel.π _) (by simp)) (by ext; simp)
-#align category_theory.abelian.homology_c_to_k CategoryTheory.Abelian.homologyCToK
 
 attribute [local instance] Pseudoelement.homToFun Pseudoelement.hasZero
 
@@ -109,7 +106,6 @@ end CategoryTheory.Abelian
 /-- The homology associated to `f` and `g` is isomorphic to a kernel. -/
 def homology'IsoKernelDesc : homology' f g w ≅ kernel (cokernel.desc f g w) :=
   homology'IsoCokernelLift _ _ _ ≪≫ asIso (CategoryTheory.Abelian.homologyCToK _ _ _)
-#align homology_iso_kernel_desc homology'IsoKernelDesc
 
 namespace homology'
 
@@ -117,48 +113,40 @@ namespace homology'
 /-- The canonical map from the kernel of `g` to the homology of `f` and `g`. -/
 def π' : kernel g ⟶ homology' f g w :=
   cokernel.π _ ≫ (homology'IsoCokernelLift _ _ _).inv
-#align homology.π' homology'.π'
 
 /-- The canonical map from the homology of `f` and `g` to the cokernel of `f`. -/
 def ι : homology' f g w ⟶ cokernel f :=
   (homology'IsoKernelDesc _ _ _).hom ≫ kernel.ι _
-#align homology.ι homology'.ι
 
 /-- Obtain a morphism from the homology, given a morphism from the kernel. -/
 def desc' {W : A} (e : kernel g ⟶ W) (he : kernel.lift g f w ≫ e = 0) : homology' f g w ⟶ W :=
   (homology'IsoCokernelLift _ _ _).hom ≫ cokernel.desc _ e he
-#align homology.desc' homology'.desc'
 
 /-- Obtain a moprhism to the homology, given a morphism to the kernel. -/
 def lift {W : A} (e : W ⟶ cokernel f) (he : e ≫ cokernel.desc f g w = 0) : W ⟶ homology' f g w :=
   kernel.lift _ e he ≫ (homology'IsoKernelDesc _ _ _).inv
-#align homology.lift homology'.lift
 
 @[reassoc (attr := simp)]
 theorem π'_desc' {W : A} (e : kernel g ⟶ W) (he : kernel.lift g f w ≫ e = 0) :
     π' f g w ≫ desc' f g w e he = e := by
   dsimp [π', desc']
   simp
-#align homology.π'_desc' homology'.π'_desc'
 
 @[reassoc (attr := simp)]
 theorem lift_ι {W : A} (e : W ⟶ cokernel f) (he : e ≫ cokernel.desc f g w = 0) :
     lift f g w e he ≫ ι _ _ _ = e := by
   dsimp [ι, lift]
   simp
-#align homology.lift_ι homology'.lift_ι
 
 @[reassoc (attr := simp)]
 theorem condition_π' : kernel.lift g f w ≫ π' f g w = 0 := by
   dsimp [π']
   simp
-#align homology.condition_π' homology'.condition_π'
 
 @[reassoc (attr := simp)]
 theorem condition_ι : ι f g w ≫ cokernel.desc f g w = 0 := by
   dsimp [ι]
   simp
-#align homology.condition_ι homology'.condition_ι
 
 @[ext]
 theorem hom_from_ext {W : A} (a b : homology' f g w ⟶ W)
@@ -171,7 +159,6 @@ theorem hom_from_ext {W : A} (a b : homology' f g w ⟶ W)
     simpa using hh
   simp only [Category.assoc] at h
   exact coequalizer.hom_ext h
-#align homology.hom_from_ext homology'.hom_from_ext
 
 @[ext]
 theorem hom_to_ext {W : A} (a b : W ⟶ homology' f g w) (h : a ≫ ι f g w = b ≫ ι f g w) : a = b := by
@@ -183,13 +170,11 @@ theorem hom_to_ext {W : A} (a b : W ⟶ homology' f g w) (h : a ≫ ι f g w = b
     simpa using hh
   simp only [← Category.assoc] at h
   exact equalizer.hom_ext h
-#align homology.hom_to_ext homology'.hom_to_ext
 
 @[reassoc (attr := simp)]
 theorem π'_ι : π' f g w ≫ ι f g w = kernel.ι _ ≫ cokernel.π _ := by
   dsimp [π', ι, homology'IsoKernelDesc]
   simp
-#align homology.π'_ι homology'.π'_ι
 
 @[reassoc (attr := simp)]
 theorem π'_eq_π : (kernelSubobjectIso _).hom ≫ π' f g w = π _ _ _ := by
@@ -198,7 +183,6 @@ theorem π'_eq_π : (kernelSubobjectIso _).hom ≫ π' f g w = π _ _ _ := by
   rw [Iso.comp_inv_eq]
   dsimp [π, homology'IsoCokernelImageToKernel']
   simp
-#align homology.π'_eq_π homology'.π'_eq_π
 
 section
 
@@ -234,7 +218,6 @@ theorem π'_map (α β h) : π' _ _ _ ≫ map w w' α β h =
   · rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv]
     dsimp [homology'IsoCokernelImageToKernel']
     simp
-#align homology.π'_map homology'.π'_map
 
 -- Porting note: need to fill in f,g,f',g' in the next few results or time out
 theorem map_eq_desc'_lift_left (α β h) :
@@ -252,7 +235,6 @@ theorem map_eq_desc'_lift_left (α β h) :
   dsimp [homology'IsoKernelDesc]
   ext
   simp [h]
-#align homology.map_eq_desc'_lift_left homology'.map_eq_desc'_lift_left
 
 theorem map_eq_lift_desc'_left (α β h) :
     map w w' α β h =
@@ -271,7 +253,6 @@ theorem map_eq_lift_desc'_left (α β h) :
   apply homology'.hom_to_ext
   apply homology'.hom_from_ext
   simp
-#align homology.map_eq_lift_desc'_left homology'.map_eq_lift_desc'_left
 
 theorem map_eq_desc'_lift_right (α β h) :
     map w w' α β h =
@@ -285,7 +266,6 @@ theorem map_eq_desc'_lift_right (α β h) :
   rw [map_eq_desc'_lift_left]
   ext
   simp [h]
-#align homology.map_eq_desc'_lift_right homology'.map_eq_desc'_lift_right
 
 theorem map_eq_lift_desc'_right (α β h) :
     map w w' α β h =
@@ -304,7 +284,6 @@ theorem map_eq_lift_desc'_right (α β h) :
   apply homology'.hom_to_ext
   apply homology'.hom_from_ext
   simp
-#align homology.map_eq_lift_desc'_right homology'.map_eq_lift_desc'_right
 
 @[reassoc (attr := simp)]
 theorem map_ι (α β h) :
@@ -315,7 +294,6 @@ theorem map_ι (α β h) :
   apply homology'.hom_from_ext
   simp only [← Category.assoc]
   rw [π'_ι, π'_desc', Category.assoc, Category.assoc, cokernel.π_desc]
-#align homology.map_ι homology'.map_ι
 
 end
 
@@ -341,7 +319,6 @@ noncomputable def homology'Iso (C : HomologicalComplex A c) (j : ι) :
         simp only [Category.assoc, imageToKernel_arrow]
         erw [kernelSubobject_arrow', imageSubobject_arrow']
         simp [← F.map_comp]))
-#align category_theory.functor.homology_iso CategoryTheory.Functor.homology'Iso
 
 /-- If `F` is an exact additive functor, then `F` commutes with `Hᵢ` (up to natural isomorphism). -/
 noncomputable def homology'FunctorIso (i : ι) :
@@ -366,6 +343,5 @@ noncomputable def homology'FunctorIso (i : ι) :
       rotate_right; simp
       rw [← kernel_map_comp_kernelSubobjectIso_inv]
       any_goals simp)
-#align category_theory.functor.homology_functor_iso CategoryTheory.Functor.homology'FunctorIso
 
 end CategoryTheory.Functor

@@ -31,7 +31,6 @@ open CategoryTheory.Subobject
 
 theorem subtype_val_mono {α : Type u} (s : Set α) : Mono (↾(Subtype.val : s → α)) :=
   (mono_iff_injective _).mpr Subtype.val_injective
-#align subtype_val_mono subtype_val_mono
 
 attribute [local instance] subtype_val_mono
 
@@ -53,7 +52,6 @@ noncomputable def Types.monoOverEquivalenceSet (α : Type u) : MonoOver α ≌ S
     NatIso.ofComponents fun f =>
       MonoOver.isoMk (Equiv.ofInjective f.1.hom ((mono_iff_injective _).mp f.2)).toIso
   counitIso := NatIso.ofComponents fun s => eqToIso Subtype.range_val
-#align types.mono_over_equivalence_set Types.monoOverEquivalenceSet
 
 instance : WellPowered (Type u) :=
   wellPowered_of_essentiallySmall_monoOver fun α =>
@@ -63,4 +61,3 @@ instance : WellPowered (Type u) :=
 -/
 noncomputable def Types.subobjectEquivSet (α : Type u) : Subobject α ≃o Set α :=
   (Types.monoOverEquivalenceSet α).thinSkeletonOrderIso
-#align types.subobject_equiv_set Types.subobjectEquivSet

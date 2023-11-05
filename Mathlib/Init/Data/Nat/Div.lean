@@ -10,5 +10,3 @@ import Mathlib.Mathport.Rename
 /-!
 # Align statements for declarations from Core
 -/
-
-#align nat.div_add_mod Nat.div_add_mod

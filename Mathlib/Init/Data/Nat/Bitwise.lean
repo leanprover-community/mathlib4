@@ -39,42 +39,34 @@ def boddDiv2 : ℕ → Bool × ℕ
     match boddDiv2 n with
     | (false, m) => (true, m)
     | (true, m) => (false, succ m)
-#align nat.bodd_div2 Nat.boddDiv2
 
 /-- `div2 n = ⌊n/2⌋` the greatest integer smaller than `n/2`-/
 def div2 (n : ℕ) : ℕ :=
   (boddDiv2 n).2
-#align nat.div2 Nat.div2
 
 /-- `bodd n` returns `true` if `n` is odd-/
 def bodd (n : ℕ) : Bool :=
   (boddDiv2 n).1
-#align nat.bodd Nat.bodd
 
 @[simp]
 theorem bodd_zero : bodd 0 = false :=
   rfl
-#align nat.bodd_zero Nat.bodd_zero
 
 theorem bodd_one : bodd 1 = true :=
   rfl
-#align nat.bodd_one Nat.bodd_one
 
 theorem bodd_two : bodd 2 = false :=
   rfl
-#align nat.bodd_two Nat.bodd_two
 
 @[simp]
 theorem bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
   simp only [bodd, boddDiv2]
   let ⟨b,m⟩ := boddDiv2 n
   cases b <;> rfl
-#align nat.bodd_succ Nat.bodd_succ
 
 @[simp]
 theorem bodd_add (m n : ℕ) : bodd (m + n) = bxor (bodd m) (bodd n) := by
   induction n <;> simp_all [add_succ, Bool.xor_not]
-#align nat.bodd_add Nat.bodd_add
 
 @[simp]
 theorem bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
@@ -82,7 +74,6 @@ theorem bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
   · simp
   · simp [mul_succ, IH]
     cases bodd m <;> cases bodd n <;> rfl
-#align nat.bodd_mul Nat.bodd_mul
 
 theorem mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
   have := congr_arg bodd (mod_add_div n 2)
@@ -95,20 +86,16 @@ theorem mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
     cases b <;> rfl
   rw [← this]
   cases' mod_two_eq_zero_or_one n with h h <;> rw [h] <;> rfl
-#align nat.mod_two_of_bodd Nat.mod_two_of_bodd
 
 @[simp]
 theorem div2_zero : div2 0 = 0 :=
   rfl
-#align nat.div2_zero Nat.div2_zero
 
 theorem div2_one : div2 1 = 0 :=
   rfl
-#align nat.div2_one Nat.div2_one
 
 theorem div2_two : div2 2 = 1 :=
   rfl
-#align nat.div2_two Nat.div2_two
 
 @[simp]
 theorem div2_succ (n : ℕ) : div2 (succ n) = cond (bodd n) (succ (div2 n)) (div2 n) := by
@@ -119,7 +106,6 @@ theorem div2_succ (n : ℕ) : div2 (succ n) = cond (bodd n) (succ (div2 n)) (div
     simp
   case mk.true =>
     simp
-#align nat.div2_succ Nat.div2_succ
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
 
@@ -131,51 +117,42 @@ theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
     cases bodd n <;> simp [cond, not]
     · rw [Nat.add_comm, Nat.add_succ]
     · rw [succ_mul, Nat.add_comm 1, Nat.add_succ]
-#align nat.bodd_add_div2 Nat.bodd_add_div2
 
 theorem div2_val (n) : div2 n = n / 2 := by
   refine'
     Nat.eq_of_mul_eq_mul_left (by decide)
       (Nat.add_left_cancel (Eq.trans _ (Nat.mod_add_div n 2).symm))
   rw [mod_two_of_bodd, bodd_add_div2]
-#align nat.div2_val Nat.div2_val
 
 /-- `bit b` appends the digit `b` to the binary representation of
   its natural number input. -/
 def bit (b : Bool) : ℕ → ℕ :=
   cond b bit1 bit0
-#align nat.bit Nat.bit
 
 theorem bit0_val (n : Nat) : bit0 n = 2 * n :=
   calc
     n + n = 0 + n + n := by rw [Nat.zero_add]
     _ = n * 2 := rfl
     _ = 2 * n := Nat.mul_comm _ _
-#align nat.bit0_val Nat.bit0_val
 
 theorem bit1_val (n : Nat) : bit1 n = 2 * n + 1 :=
   congr_arg succ (bit0_val _)
-#align nat.bit1_val Nat.bit1_val
 
 theorem bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
   cases b
   apply bit0_val
   apply bit1_val
-#align nat.bit_val Nat.bit_val
 
 theorem bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
   (bit_val _ _).trans <| (Nat.add_comm _ _).trans <| bodd_add_div2 _
-#align nat.bit_decomp Nat.bit_decomp
 
 /-- For a predicate `C : Nat → Sort*`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for any given natural number. -/
 def bitCasesOn {C : Nat → Sort u} (n) (h : ∀ b n, C (bit b n)) : C n := bit_decomp n ▸ h _ _
-#align nat.bit_cases_on Nat.bitCasesOn
 
 theorem bit_zero : bit false 0 = 0 :=
   rfl
-#align nat.bit_zero Nat.bit_zero
 
 /--`shiftLeft' b m n` performs a left shift of `m` `n` times
  and adds the bit `b` as the least significant bit each time.
@@ -183,7 +160,6 @@ theorem bit_zero : bit false 0 = 0 :=
 def shiftLeft' (b : Bool) (m : ℕ) : ℕ → ℕ
   | 0 => m
   | n + 1 => bit b (shiftLeft' b m n)
-#align nat.shiftl' Nat.shiftLeft'
 
 @[simp]
 theorem shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
@@ -208,7 +184,6 @@ theorem shiftLeft_succ (m n) : m <<< (n + 1) = 2 * (m <<< n) := by
 /-- `testBit m n` returns whether the `(n+1)ˢᵗ` least significant bit is `1` or `0`-/
 def testBit (m n : ℕ) : Bool :=
   bodd (m >>> n)
-#align nat.test_bit Nat.testBit
 
 lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
   rw [div2_val]
@@ -233,38 +208,29 @@ def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) 
       rw [←_x]
       exact f (bodd n) n' (binaryRec z f n')
   decreasing_by exact binaryRec_decreasing n0
-#align nat.binary_rec Nat.binaryRec
 
 /-- `size n` : Returns the size of a natural number in
 bits i.e. the length of its binary representation -/
 def size : ℕ → ℕ :=
   binaryRec 0 fun _ _ => succ
-#align nat.size Nat.size
 
 /-- `bits n` returns a list of Bools which correspond to the binary representation of n-/
 def bits : ℕ → List Bool :=
   binaryRec [] fun b _ IH => b :: IH
-#align nat.bits Nat.bits
 
-#align nat.bitwise Nat.bitwise
 
-#align nat.lor Nat.lor
-#align nat.land Nat.land
-#align nat.lxor Nat.xor
 
 /--`ldiff a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
   boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result.-/
 def ldiff : ℕ → ℕ → ℕ :=
   bitwise fun a b => a && not b
-#align nat.ldiff Nat.ldiff
 
 @[simp]
 theorem binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) :
     binaryRec z f 0 = z := by
   rw [binaryRec]
   rfl
-#align nat.binary_rec_zero Nat.binaryRec_zero
 
 /-! bitwise ops -/
 
@@ -273,18 +239,15 @@ theorem bodd_bit (b n) : bodd (bit b n) = b := by
   simp only [Nat.mul_comm, Nat.add_comm, bodd_add, bodd_mul, bodd_succ, bodd_zero, Bool.not_false,
     Bool.not_true, Bool.and_false, Bool.xor_false]
   cases b <;> cases bodd n <;> rfl
-#align nat.bodd_bit Nat.bodd_bit
 
 theorem div2_bit (b n) : div2 (bit b n) = n := by
   rw [bit_val, div2_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add]
   <;> cases b
   <;> exact by decide
-#align nat.div2_bit Nat.div2_bit
 
 theorem shiftLeft'_add (b m n) : ∀ k, shiftLeft' b m (n + k) = shiftLeft' b (shiftLeft' b m n) k
   | 0 => rfl
   | k + 1 => congr_arg (bit b) (shiftLeft'_add b m n k)
-#align nat.shiftl'_add Nat.shiftLeft'_add
 
 theorem shiftLeft_add (m n : Nat) : ∀ k, m <<< (n + k) = (m <<< n) <<< k := by
   intro k; simp only [← shiftLeft'_false, shiftLeft'_add]
@@ -295,7 +258,6 @@ theorem shiftLeft'_sub (b m) : ∀ {n k}, k ≤ n → shiftLeft' b m (n - k) = (
     rw [succ_sub_succ_eq_sub, shiftLeft', Nat.add_comm, shiftRight_add]
     simp only [shiftLeft'_sub, Nat.le_of_succ_le_succ h, shiftRight_succ, shiftRight_zero]
     simp [← div2_val, div2_bit]
-#align nat.shiftl'_sub Nat.shiftLeft'_sub
 
 theorem shiftLeft_sub : ∀ (m : Nat) {n k}, k ≤ n → m <<< (n - k) = (m <<< n) >>> k :=
   fun _ _ _ hk => by simp only [← shiftLeft'_false, shiftLeft'_sub false _ hk]
@@ -303,7 +265,6 @@ theorem shiftLeft_sub : ∀ (m : Nat) {n k}, k ≤ n → m <<< (n - k) = (m <<< 
 @[simp]
 theorem testBit_zero (b n) : testBit (bit b n) 0 = b :=
   bodd_bit _ _
-#align nat.test_bit_zero Nat.testBit_zero
 
 theorem testBit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   have : bodd (((bit b n) >>> 1) >>> m) = bodd (n >>> m) := by
@@ -311,7 +272,6 @@ theorem testBit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
     simp [← div2_val, div2_bit]
   rw [← shiftRight_add, Nat.add_comm] at this
   exact this
-#align nat.test_bit_succ Nat.testBit_succ
 
 theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
     (h : f false 0 z = z) (b n) : binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
@@ -338,7 +298,6 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
     revert e
     rw [bodd_bit, div2_bit]
     intros; rfl
-#align nat.binary_rec_eq Nat.binaryRec_eq
 #noalign nat.bitwise_bit_aux
 
 end Nat

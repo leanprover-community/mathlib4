@@ -131,7 +131,6 @@ theorem inner_vsub_vsub_of_dist_eq_of_dist_eq {c₁ c₂ p₁ p₂ : P} (hc₁ :
     (hc₂ : dist p₁ c₂ = dist p₂ c₂) : ⟪c₂ -ᵥ c₁, p₂ -ᵥ p₁⟫ = 0 := by
   rw [← Submodule.mem_orthogonal_singleton_iff_inner_left, ← direction_perpBisector]
   apply vsub_mem_direction <;> rwa [mem_perpBisector_iff_dist_eq']
-#align euclidean_geometry.inner_vsub_vsub_of_dist_eq_of_dist_eq EuclideanGeometry.inner_vsub_vsub_of_dist_eq_of_dist_eq
 
 end EuclideanGeometry
 

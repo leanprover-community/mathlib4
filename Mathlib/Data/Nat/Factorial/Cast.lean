@@ -33,7 +33,6 @@ variable [Semiring S] (a b : ℕ)
 -- Porting note: added type ascription around a + 1
 theorem cast_ascFactorial : (a.ascFactorial b : S) = (ascPochhammer S b).eval (a + 1 : S) := by
   rw [← ascPochhammer_nat_eq_ascFactorial, ascPochhammer_eval_cast, Nat.cast_add, Nat.cast_one]
-#align nat.cast_asc_factorial Nat.cast_ascFactorial
 
 -- Porting note: added type ascription around a - (b - 1)
 theorem cast_descFactorial :
@@ -46,11 +45,9 @@ theorem cast_descFactorial :
     · rw [descFactorial_of_lt (lt_succ_of_le h), descFactorial_of_lt (lt_succ_of_le _)]
       rw [tsub_eq_zero_iff_le.mpr h, zero_add]
     · rw [tsub_add_cancel_of_le h]
-#align nat.cast_desc_factorial Nat.cast_descFactorial
 
 theorem cast_factorial : (a ! : S) = (ascPochhammer S a).eval 1 := by
   rw [← zero_ascFactorial, cast_ascFactorial, cast_zero, zero_add]
-#align nat.cast_factorial Nat.cast_factorial
 
 end Semiring
 
@@ -67,7 +64,6 @@ theorem cast_descFactorial_two : (a.descFactorial 2 : S) = a * (a - 1) := by
   · rw [succ_sub_succ, tsub_zero, cast_succ, add_sub_cancel, ascPochhammer_succ_right,
       ascPochhammer_one, Polynomial.X_mul, Polynomial.eval_mul_X, Polynomial.eval_add,
       Polynomial.eval_X, cast_one, Polynomial.eval_one]
-#align nat.cast_desc_factorial_two Nat.cast_descFactorial_two
 
 end Ring
 

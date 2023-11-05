@@ -26,7 +26,6 @@ theorem isReduced_zmod {n : ℕ} : IsReduced (ZMod n) ↔ Squarefree n ∨ n = 0
       (ZMod.ringHom_surjective <| Int.castRingHom <| ZMod n),
       ZMod.ker_int_castRingHom, ← isRadical_iff_span_singleton, isRadical_iff_squarefree_or_zero,
       Int.squarefree_coe_nat, Nat.cast_eq_zero]
-#align is_reduced_zmod isReduced_zmod
 
 instance {n : ℕ} [Fact <| Squarefree n] : IsReduced (ZMod n) :=
   isReduced_zmod.2 <| Or.inl <| Fact.out

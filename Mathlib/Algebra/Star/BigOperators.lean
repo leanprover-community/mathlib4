@@ -21,9 +21,7 @@ open BigOperators
 @[simp]
 theorem star_prod [CommMonoid R] [StarMul R] {α : Type*} (s : Finset α) (f : α → R) :
     star (∏ x in s, f x) = ∏ x in s, star (f x) := map_prod (starMulAut : R ≃* R) _ _
-#align star_prod star_prod
 
 @[simp]
 theorem star_sum [AddCommMonoid R] [StarAddMonoid R] {α : Type*} (s : Finset α) (f : α → R) :
     star (∑ x in s, f x) = ∑ x in s, star (f x) := (starAddEquiv : R ≃+ R).map_sum _ _
-#align star_sum star_sum

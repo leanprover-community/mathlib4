@@ -36,8 +36,6 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 @[to_additive "Add an extra element `0` to a type"]
 def WithOne (α) :=
   Option α
-#align with_one WithOne
-#align with_zero WithZero
 
 namespace WithOne
 
@@ -61,20 +59,14 @@ instance monad : Monad WithOne :=
 @[to_additive]
 instance one : One (WithOne α) :=
   ⟨none⟩
-#align with_one.has_one WithOne.one
-#align with_zero.has_zero WithZero.zero
 
 @[to_additive]
 instance mul [Mul α] : Mul (WithOne α) :=
   ⟨Option.liftOrGet (· * ·)⟩
-#align with_one.has_mul WithOne.mul
-#align with_zero.has_add WithZero.add
 
 @[to_additive]
 instance inv [Inv α] : Inv (WithOne α) :=
   ⟨fun a => Option.map Inv.inv a⟩
-#align with_one.has_inv WithOne.inv
-#align with_zero.has_neg WithZero.neg
 
 @[to_additive]
 instance invOneClass [Inv α] : InvOneClass (WithOne α) :=
@@ -106,8 +98,6 @@ instance coeTC : CoeTC α (WithOne α) :=
 def recOneCoe {C : WithOne α → Sort*} (h₁ : C 1) (h₂ : ∀ a : α, C a) : ∀ n : WithOne α, C n
   | Option.none => h₁
   | Option.some x => h₂ x
-#align with_one.rec_one_coe WithOne.recOneCoe
-#align with_zero.rec_zero_coe WithZero.recZeroCoe
 
 -- porting note: in Lean 3 the to-additivised declaration
 -- would automatically get this; right now in Lean 4...I don't
@@ -121,20 +111,14 @@ attribute [elab_as_elim] WithZero.recZeroCoe
       "Deconstruct an `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`."]
 def unone {x : WithOne α} (hx : x ≠ 1) : α :=
   WithBot.unbot x hx
-#align with_one.unone WithOne.unone
-#align with_zero.unzero WithZero.unzero
 
 @[to_additive (attr := simp) unzero_coe]
 theorem unone_coe {x : α} (hx : (x : WithOne α) ≠ 1) : unone hx = x :=
   rfl
-#align with_one.unone_coe WithOne.unone_coe
-#align with_zero.unzero_coe WithZero.unzero_coe
 
 @[to_additive (attr := simp) coe_unzero]
 theorem coe_unone {x : WithOne α} (hx : x ≠ 1) : ↑(unone hx) = x :=
   WithBot.coe_unbot x hx
-#align with_one.coe_unone WithOne.coe_unone
-#align with_zero.coe_unzero WithZero.coe_unzero
 
 -- porting note: in Lean 4 the `some_eq_coe` lemmas present in the lean 3 version
 -- of this file are syntactic tautologies
@@ -144,38 +128,26 @@ theorem coe_unone {x : WithOne α} (hx : x ≠ 1) : ↑(unone hx) = x :=
 @[to_additive (attr := simp)]
 theorem coe_ne_one {a : α} : (a : WithOne α) ≠ (1 : WithOne α) :=
   Option.some_ne_none a
-#align with_one.coe_ne_one WithOne.coe_ne_one
-#align with_zero.coe_ne_zero WithZero.coe_ne_zero
 
 @[to_additive (attr := simp)]
 theorem one_ne_coe {a : α} : (1 : WithOne α) ≠ a :=
   coe_ne_one.symm
-#align with_one.one_ne_coe WithOne.one_ne_coe
-#align with_zero.zero_ne_coe WithZero.zero_ne_coe
 
 @[to_additive]
 theorem ne_one_iff_exists {x : WithOne α} : x ≠ 1 ↔ ∃ a : α, ↑a = x :=
   Option.ne_none_iff_exists
-#align with_one.ne_one_iff_exists WithOne.ne_one_iff_exists
-#align with_zero.ne_zero_iff_exists WithZero.ne_zero_iff_exists
 
 @[to_additive]
 instance canLift : CanLift (WithOne α) α (↑) fun a => a ≠ 1 where
   prf _ := ne_one_iff_exists.1
-#align with_one.can_lift WithOne.canLift
-#align with_zero.can_lift WithZero.canLift
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b :=
   Option.some_inj
-#align with_one.coe_inj WithOne.coe_inj
-#align with_zero.coe_inj WithZero.coe_inj
 
 @[to_additive (attr := elab_as_elim)]
 protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 → (∀ a : α, P a) → P x :=
   Option.casesOn
-#align with_one.cases_on WithOne.cases_on
-#align with_zero.cases_on WithZero.cases_on
 
 -- port note: I don't know if `elab_as_elim` is being added to the additivised declaration.
 attribute [elab_as_elim] WithZero.cases_on
@@ -198,14 +170,10 @@ instance commMonoid [CommSemigroup α] : CommMonoid (WithOne α) :=
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_mul [Mul α] (a b : α) : ((a * b : α) : WithOne α) = a * b :=
   rfl
-#align with_one.coe_mul WithOne.coe_mul
-#align with_zero.coe_add WithZero.coe_add
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_inv [Inv α] (a : α) : ((a⁻¹ : α) : WithOne α) = (a : WithOne α)⁻¹ :=
   rfl
-#align with_one.coe_inv WithOne.coe_inv
-#align with_zero.coe_neg WithZero.coe_neg
 
 end WithOne
 
@@ -217,7 +185,6 @@ instance one [one : One α] : One (WithZero α) :=
 @[simp, norm_cast]
 theorem coe_one [One α] : ((1 : α) : WithZero α) = 1 :=
   rfl
-#align with_zero.coe_one WithZero.coe_one
 
 instance mulZeroClass [Mul α] : MulZeroClass (WithZero α) :=
   { WithZero.zero with
@@ -228,7 +195,6 @@ instance mulZeroClass [Mul α] : MulZeroClass (WithZero α) :=
 @[simp, norm_cast]
 theorem coe_mul {α : Type u} [Mul α] {a b : α} : ((a * b : α) : WithZero α) = a * b :=
   rfl
-#align with_zero.coe_mul WithZero.coe_mul
 
 instance noZeroDivisors [Mul α] : NoZeroDivisors (WithZero α) :=
   ⟨Option.map₂_eq_none_iff.1⟩
@@ -257,7 +223,6 @@ instance pow [One α] [Pow α ℕ] : Pow (WithZero α) ℕ :=
 theorem coe_pow [One α] [Pow α ℕ] {a : α} (n : ℕ) :
     ↑(a ^ n : α) = ((a : WithZero α) ^ n : WithZero α) :=
   rfl
-#align with_zero.coe_pow WithZero.coe_pow
 
 instance monoidWithZero [Monoid α] : MonoidWithZero (WithZero α) :=
   { WithZero.mulZeroOneClass, WithZero.semigroupWithZero with
@@ -282,12 +247,10 @@ instance inv [Inv α] : Inv (WithZero α) :=
 @[simp, norm_cast]
 theorem coe_inv [Inv α] (a : α) : ((a⁻¹ : α) : WithZero α) = (↑a)⁻¹ :=
   rfl
-#align with_zero.coe_inv WithZero.coe_inv
 
 @[simp]
 theorem inv_zero [Inv α] : (0 : WithZero α)⁻¹ = 0 :=
   rfl
-#align with_zero.inv_zero WithZero.inv_zero
 
 instance invOneClass [InvOneClass α] : InvOneClass (WithZero α) :=
   { WithZero.one, WithZero.inv with inv_one := show ((1⁻¹ : α) : WithZero α) = 1 by simp }
@@ -298,7 +261,6 @@ instance div [Div α] : Div (WithZero α) :=
 @[norm_cast]
 theorem coe_div [Div α] (a b : α) : ↑(a / b : α) = (a / b : WithZero α) :=
   rfl
-#align with_zero.coe_div WithZero.coe_div
 
 instance [One α] [Pow α ℤ] : Pow (WithZero α) ℤ :=
   ⟨fun x n =>
@@ -311,7 +273,6 @@ instance [One α] [Pow α ℤ] : Pow (WithZero α) ℤ :=
 @[simp, norm_cast]
 theorem coe_zpow [DivInvMonoid α] {a : α} (n : ℤ) : ↑(a ^ n : α) = ((↑a : WithZero α) ^ n) :=
   rfl
-#align with_zero.coe_zpow WithZero.coe_zpow
 
 instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) :=
   { WithZero.div, WithZero.inv, WithZero.monoidWithZero with

@@ -56,7 +56,6 @@ inductive Prequotient
   | zero : Prequotient
   | neg : Prequotient → Prequotient
   | add : Prequotient → Prequotient → Prequotient
-#align AddCommGroup.colimits.prequotient AddCommGroupCat.Colimits.Prequotient
 
 instance : Inhabited (Prequotient.{w} F) :=
   ⟨Prequotient.zero⟩
@@ -90,7 +89,6 @@ inductive Relation : Prequotient.{w} F → Prequotient.{w} F → Prop
   | add_left_neg : ∀ x, Relation (add (neg x) x) zero
   | add_comm : ∀ x y, Relation (add x y) (add y x)
   | add_assoc : ∀ x y z, Relation (add (add x y) z) (add x (add y z))
-#align AddCommGroup.colimits.relation AddCommGroupCat.Colimits.Relation
 
 /--
 The setoid corresponding to group expressions modulo abelian group relations and identifications.
@@ -98,7 +96,6 @@ The setoid corresponding to group expressions modulo abelian group relations and
 def colimitSetoid : Setoid (Prequotient.{w} F) where
   r := Relation F
   iseqv := ⟨Relation.refl, fun r => Relation.symm _ _ r, fun r => Relation.trans _ _ _ r⟩
-#align AddCommGroup.colimits.colimit_setoid AddCommGroupCat.Colimits.colimitSetoid
 
 attribute [instance] colimitSetoid
 
@@ -106,7 +103,6 @@ attribute [instance] colimitSetoid
 -/
 def ColimitType : Type max u v w :=
   Quotient (colimitSetoid.{w} F)
-#align AddCommGroup.colimits.colimit_type AddCommGroupCat.Colimits.ColimitType
 
 instance : AddCommGroup (ColimitType.{w} F) where
   zero := Quotient.mk _ zero
@@ -125,14 +121,12 @@ instance ColimitTypeInhabited : Inhabited (ColimitType.{w} F) := ⟨0⟩
 @[simp]
 theorem quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType.{w} F) :=
   rfl
-#align AddCommGroup.colimits.quot_zero AddCommGroupCat.Colimits.quot_zero
 
 @[simp]
 theorem quot_neg (x) : Quot.mk Setoid.r (neg x) =
     -- Porting note : force Lean to treat `ColimitType F` no as `Quot _`
     Neg.neg (α := ColimitType.{w} F) (Quot.mk Setoid.r x : ColimitType.{w} F) :=
   rfl
-#align AddCommGroup.colimits.quot_neg AddCommGroupCat.Colimits.quot_neg
 
 @[simp]
 theorem quot_add (x y) :
@@ -140,17 +134,14 @@ theorem quot_add (x y) :
     -- Porting note : force Lean to treat `ColimitType F` no as `Quot _`
     Add.add (α := ColimitType.{w} F) (Quot.mk Setoid.r x) (Quot.mk Setoid.r y) :=
   rfl
-#align AddCommGroup.colimits.quot_add AddCommGroupCat.Colimits.quot_add
 
 /-- The bundled abelian group giving the colimit of a diagram. -/
 def colimit : AddCommGroupCat :=
   AddCommGroupCat.of (ColimitType.{w} F)
-#align AddCommGroup.colimits.colimit AddCommGroupCat.Colimits.colimit
 
 /-- The function from a given abelian group in the diagram to the colimit abelian group. -/
 def coconeFun (j : J) (x : F.obj j) : ColimitType.{w} F :=
   Quot.mk _ (Prequotient.of j x)
-#align AddCommGroup.colimits.cocone_fun AddCommGroupCat.Colimits.coconeFun
 
 /-- The group homomorphism from a given abelian group in the diagram to the colimit abelian
 group. -/
@@ -158,7 +149,6 @@ def coconeMorphism (j : J) : F.obj j ⟶ colimit.{w} F where
   toFun := coconeFun F j
   map_zero' := by apply Quot.sound; apply Relation.zero
   map_add' := by intros; apply Quot.sound; apply Relation.add
-#align AddCommGroup.colimits.cocone_morphism AddCommGroupCat.Colimits.coconeMorphism
 
 @[simp]
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
@@ -166,20 +156,17 @@ theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
   ext
   apply Quot.sound
   apply Relation.map
-#align AddCommGroup.colimits.cocone_naturality AddCommGroupCat.Colimits.cocone_naturality
 
 @[simp]
 theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
     (coconeMorphism.{w} F j') (F.map f x) = (coconeMorphism F j) x := by
   rw [← cocone_naturality F f]
   rfl
-#align AddCommGroup.colimits.cocone_naturality_components AddCommGroupCat.Colimits.cocone_naturality_components
 
 /-- The cocone over the proposed colimit abelian group. -/
 def colimitCocone : Cocone F where
   pt := colimit.{w} F
   ι := { app := coconeMorphism F }
-#align AddCommGroup.colimits.colimit_cocone AddCommGroupCat.Colimits.colimitCocone
 
 /-- The function from the free abelian group on the diagram to the cone point of any other
 cocone. -/
@@ -189,7 +176,6 @@ def descFunLift (s : Cocone F) : Prequotient.{w} F → s.pt
   | zero => 0
   | neg x => -descFunLift s x
   | add x y => descFunLift s x + descFunLift s y
-#align AddCommGroup.colimits.desc_fun_lift AddCommGroupCat.Colimits.descFunLift
 
 /-- The function from the colimit abelian group to the cone point of any other cocone. -/
 def descFun (s : Cocone F) : ColimitType.{w} F → s.pt := by
@@ -213,7 +199,6 @@ def descFun (s : Cocone F) : ColimitType.{w} F → s.pt := by
     | add_left_neg => dsimp; rw [add_left_neg]
     | add_comm => dsimp; rw [add_comm]
     | add_assoc => dsimp; rw [add_assoc]
-#align AddCommGroup.colimits.desc_fun AddCommGroupCat.Colimits.descFun
 
 /-- The group homomorphism from the colimit abelian group to the cone point of any other cocone. -/
 def descMorphism (s : Cocone F) : colimit.{w} F ⟶ s.pt where
@@ -221,7 +206,6 @@ def descMorphism (s : Cocone F) : colimit.{w} F ⟶ s.pt where
   map_zero' := rfl
   -- Porting note : in `mathlib3`, nothing needs to be done after `induction`
   map_add' x y := Quot.induction_on₂ x y fun _ _ => by dsimp [(· + ·)]; rw [←quot_add F]; rfl
-#align AddCommGroup.colimits.desc_morphism AddCommGroupCat.Colimits.descMorphism
 
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone.{w} F) where
@@ -239,7 +223,6 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{w} F) where
     | add x y ihx ihy =>
       simp only [quot_add]
       erw [m.map_add, (descMorphism F s).map_add, ihx, ihy]
-#align AddCommGroup.colimits.colimit_cocone_is_colimit AddCommGroupCat.Colimits.colimitCoconeIsColimit
 
 end Colimits
 
@@ -254,7 +237,6 @@ lemma hasColimitsOfSize : HasColimitsOfSize.{v, u} AddCommGroupCat.{max u v w} :
   ⟨fun _ => hasColimitsOfShape.{w} _⟩
 
 instance hasColimits : HasColimits AddCommGroupCat.{w} := hasColimitsOfSize.{w}
-#align AddCommGroup.colimits.has_colimits_AddCommGroup AddCommGroupCat.hasColimits
 
 instance : HasColimitsOfSize.{v, v} (AddCommGroupCatMax.{u, v}) := hasColimitsOfSize.{u}
 instance : HasColimitsOfSize.{u, u} (AddCommGroupCatMax.{u, v}) := hasColimitsOfSize.{v}
@@ -300,6 +282,5 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGroupCat.{u}} (f : G ⟶ H) 
   inv_hom_id := by
     ext x
     exact QuotientAddGroup.induction_on x <| cokernel.π_desc_apply f _ _
-#align AddCommGroup.cokernel_iso_quotient AddCommGroupCat.cokernelIsoQuotient
 
 end AddCommGroupCat

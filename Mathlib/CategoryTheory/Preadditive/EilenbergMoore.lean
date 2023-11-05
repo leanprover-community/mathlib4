@@ -103,10 +103,8 @@ instance Monad.algebraPreadditive : Preadditive (Monad.Algebra T) where
     intros
     ext
     apply comp_add
-#align category_theory.monad.algebra_preadditive CategoryTheory.Monad.algebraPreadditive
 
 instance Monad.forget_additive : (Monad.forget T).Additive where
-#align category_theory.monad.forget_additive CategoryTheory.Monad.forget_additive
 
 variable (U : Comonad C) [Functor.Additive (U : C ⥤ C)]
 
@@ -186,9 +184,7 @@ instance Comonad.coalgebraPreadditive : Preadditive (Comonad.Coalgebra U) where
     intros
     ext
     apply comp_add
-#align category_theory.comonad.coalgebra_preadditive CategoryTheory.Comonad.coalgebraPreadditive
 
 instance Comonad.forget_additive : (Comonad.forget U).Additive where
-#align category_theory.comonad.forget_additive CategoryTheory.Comonad.forget_additive
 
 end CategoryTheory

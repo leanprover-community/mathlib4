@@ -56,14 +56,12 @@ variable (Q)
 def even : Subalgebra R (CliffordAlgebra Q) :=
   (evenOdd Q 0).toSubalgebra (SetLike.one_mem_graded _) fun _x _y hx hy =>
     add_zero (0 : ZMod 2) ▸ SetLike.mul_mem_graded hx hy
-#align clifford_algebra.even CliffordAlgebra.even
 
 -- porting note: added, otherwise Lean can't find this when it needs it
 instance : AddCommMonoid (even Q) := AddSubmonoidClass.toAddCommMonoid _
 @[simp]
 theorem even_toSubmodule : Subalgebra.toSubmodule (even Q) = evenOdd Q 0 :=
   rfl
-#align clifford_algebra.even_to_submodule CliffordAlgebra.even_toSubmodule
 
 variable (A)
 
@@ -73,7 +71,6 @@ structure EvenHom : Type max uA uM where
   bilin : M →ₗ[R] M →ₗ[R] A
   contract (m : M) : bilin m m = algebraMap R A (Q m)
   contract_mid (m₁ m₂ m₃ : M) : bilin m₁ m₂ * bilin m₂ m₃ = Q m₂ • bilin m₁ m₃
-#align clifford_algebra.even_hom CliffordAlgebra.EvenHom
 
 variable {A Q}
 
@@ -84,7 +81,6 @@ def EvenHom.compr₂ (g : EvenHom Q A) (f : A →ₐ[R] B) : EvenHom Q B where
   contract _m := (f.congr_arg <| g.contract _).trans <| f.commutes _
   contract_mid _m₁ _m₂ _m₃ :=
     (f.map_mul _ _).symm.trans <| (f.congr_arg <| g.contract_mid _ _ _).trans <| f.map_smul _ _
-#align clifford_algebra.even_hom.compr₂ CliffordAlgebra.EvenHom.compr₂
 
 variable (Q)
 
@@ -104,7 +100,6 @@ nonrec def even.ι : EvenHom Q (even Q) where
         ι Q m₁ * ι Q m₂ * (ι Q m₂ * ι Q m₃) = ι Q m₁ * (ι Q m₂ * ι Q m₂ * ι Q m₃) := by
           simp only [mul_assoc]
         _ = Q m₂ • (ι Q m₁ * ι Q m₃) := by rw [Algebra.smul_def, ι_sq_scalar, Algebra.left_comm]
-#align clifford_algebra.even.ι CliffordAlgebra.even.ι
 
 instance : Inhabited (EvenHom Q (even Q)) :=
   ⟨even.ι Q⟩
@@ -128,7 +123,6 @@ theorem even.algHom_ext ⦃f g : even Q →ₐ[R] A⦄ (h : (even.ι Q).compr₂
   · intro m₁ m₂ x hx ih
     have := congr_arg₂ (· * ·) (LinearMap.congr_fun (LinearMap.congr_fun h m₁) m₂) ih
     exact (f.map_mul _ _).trans (this.trans <| (g.map_mul _ _).symm)
-#align clifford_algebra.even.alg_hom_ext CliffordAlgebra.even.algHom_ext
 
 variable {Q}
 
@@ -208,12 +202,10 @@ def aux (f : EvenHom Q A) : CliffordAlgebra.even Q →ₗ[R] A := by
   -- porting note: added, can't be found otherwise
   letI : AddCommGroup (S f) := AddSubgroupClass.toAddCommGroup _
   exact LinearMap.fst R _ _ ∘ₗ foldr Q (fFold f) (fFold_fFold f) (1, 0)
-#align clifford_algebra.even.lift.aux CliffordAlgebra.even.lift.aux
 
 @[simp]
 theorem aux_one : aux f 1 = 1 :=
   congr_arg Prod.fst (foldr_one _ _ _ _)
-#align clifford_algebra.even.lift.aux_one CliffordAlgebra.even.lift.aux_one
 
 @[simp]
 theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ :=
@@ -221,12 +213,10 @@ theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m
     (by
       rw [foldr_ι, foldr_ι]
       exact mul_one _)
-#align clifford_algebra.even.lift.aux_ι CliffordAlgebra.even.lift.aux_ι
 
 @[simp]
 theorem aux_algebraMap (r) (hr) : aux f ⟨algebraMap R _ r, hr⟩ = algebraMap R _ r :=
   (congr_arg Prod.fst (foldr_algebraMap _ _ _ _ _)).trans (Algebra.algebraMap_eq_smul_one r).symm
-#align clifford_algebra.even.lift.aux_algebra_map CliffordAlgebra.even.lift.aux_algebraMap
 
 @[simp]
 theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
@@ -245,7 +235,6 @@ theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
     rw [aux_apply, foldr_mul, foldr_mul, foldr_ι, foldr_ι, fst_fFold_fFold, ih, ← mul_assoc,
       Subtype.coe_mk, foldr_mul, foldr_mul, foldr_ι, foldr_ι, fst_fFold_fFold]
     rfl
-#align clifford_algebra.even.lift.aux_mul CliffordAlgebra.even.lift.aux_mul
 
 end even.lift
 
@@ -262,12 +251,10 @@ def even.lift : EvenHom Q A ≃ (CliffordAlgebra.even Q →ₐ[R] A) where
   invFun F := (even.ι Q).compr₂ F
   left_inv f := EvenHom.ext _ _ <| LinearMap.ext₂ <| even.lift.aux_ι f
   right_inv _ := even.algHom_ext Q <| EvenHom.ext _ _ <| LinearMap.ext₂ <| even.lift.aux_ι _
-#align clifford_algebra.even.lift CliffordAlgebra.even.lift
 
 -- @[simp] -- Porting note: simpNF linter times out on this one
 theorem even.lift_ι (f : EvenHom Q A) (m₁ m₂ : M) :
     even.lift Q f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ :=
   even.lift.aux_ι _ _ _
-#align clifford_algebra.even.lift_ι CliffordAlgebra.even.lift_ι
 
 end CliffordAlgebra

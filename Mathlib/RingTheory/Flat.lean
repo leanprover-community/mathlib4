@@ -73,7 +73,6 @@ open TensorProduct
 the canonical map `I ⊗ M →ₗ M` is injective. -/
 class Flat (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M] : Prop where
   out : ∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
-#align module.flat Module.Flat
 
 namespace Flat
 
@@ -89,7 +88,6 @@ instance self (R : Type u) [CommRing R] : Flat R R :=
     ext x
     simp only [Function.comp_apply, LinearEquiv.coe_toEquiv, rid_symm_apply, comp_apply, mul_one,
       lift.tmul, Submodule.subtype_apply, Algebra.id.smul_eq_mul, lsmul_apply]⟩
-#align module.flat.self Module.Flat.self
 
 variable (M : Type v) [AddCommGroup M] [Module R M]
 

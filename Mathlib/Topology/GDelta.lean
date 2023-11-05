@@ -57,33 +57,27 @@ variable [TopologicalSpace X]
 /-- A Gδ set is a countable intersection of open sets. -/
 def IsGδ (s : Set X) : Prop :=
   ∃ T : Set (Set X), (∀ t ∈ T, IsOpen t) ∧ T.Countable ∧ s = ⋂₀ T
-#align is_Gδ IsGδ
 
 /-- An open set is a Gδ set. -/
 theorem IsOpen.isGδ {s : Set X} (h : IsOpen s) : IsGδ s :=
   ⟨{s}, by simp [h], countable_singleton _, (Set.sInter_singleton _).symm⟩
-#align is_open.is_Gδ IsOpen.isGδ
 
 @[simp]
 theorem isGδ_empty : IsGδ (∅ : Set X) :=
   isOpen_empty.isGδ
-#align is_Gδ_empty isGδ_empty
 
 @[simp]
 theorem isGδ_univ : IsGδ (univ : Set X) :=
   isOpen_univ.isGδ
-#align is_Gδ_univ isGδ_univ
 
 theorem isGδ_biInter_of_open {I : Set ι} (hI : I.Countable) {f : ι → Set X}
     (hf : ∀ i ∈ I, IsOpen (f i)) : IsGδ (⋂ i ∈ I, f i) :=
   ⟨f '' I, by rwa [ball_image_iff], hI.image _, by rw [sInter_image]⟩
-#align is_Gδ_bInter_of_open isGδ_biInter_of_open
 
 -- porting note: TODO: generalize to `Sort*` + `Countable _`
 theorem isGδ_iInter_of_open [Encodable ι] {f : ι → Set X} (hf : ∀ i, IsOpen (f i)) :
     IsGδ (⋂ i, f i) :=
   ⟨range f, by rwa [forall_range_iff], countable_range _, by rw [sInter_range]⟩
-#align is_Gδ_Inter_of_open isGδ_iInter_of_open
 
 -- porting note: TODO: generalize to `Sort*` + `Countable _`
 /-- The intersection of an encodable family of Gδ sets is a Gδ set. -/
@@ -92,24 +86,20 @@ theorem isGδ_iInter [Encodable ι] {s : ι → Set X} (hs : ∀ i, IsGδ (s i))
   obtain rfl : s = fun i => ⋂₀ T i := funext hTs
   refine' ⟨⋃ i, T i, _, countable_iUnion hTc, (sInter_iUnion _).symm⟩
   simpa [@forall_swap ι] using hTo
-#align is_Gδ_Inter isGδ_iInter
 
 theorem isGδ_biInter {s : Set ι} (hs : s.Countable) {t : ∀ i ∈ s, Set X}
     (ht : ∀ (i) (hi : i ∈ s), IsGδ (t i hi)) : IsGδ (⋂ i ∈ s, t i ‹_›) := by
   rw [biInter_eq_iInter]
   haveI := hs.toEncodable
   exact isGδ_iInter fun x => ht x x.2
-#align is_Gδ_bInter isGδ_biInter
 
 /-- A countable intersection of Gδ sets is a Gδ set. -/
 theorem isGδ_sInter {S : Set (Set X)} (h : ∀ s ∈ S, IsGδ s) (hS : S.Countable) : IsGδ (⋂₀ S) := by
   simpa only [sInter_eq_biInter] using isGδ_biInter hS h
-#align is_Gδ_sInter isGδ_sInter
 
 theorem IsGδ.inter {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∩ t) := by
   rw [inter_eq_iInter]
   exact isGδ_iInter (Bool.forall_bool.2 ⟨ht, hs⟩)
-#align is_Gδ.inter IsGδ.inter
 
 /-- The union of two Gδ sets is a Gδ set. -/
 theorem IsGδ.union {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∪ t) := by
@@ -119,7 +109,6 @@ theorem IsGδ.union {s t : Set X} (hs : IsGδ s) (ht : IsGδ t) : IsGδ (s ∪ t
   apply isGδ_biInter_of_open (Scount.prod Tcount)
   rintro ⟨a, b⟩ ⟨ha, hb⟩
   exact (Sopen a ha).union (Topen b hb)
-#align is_Gδ.union IsGδ.union
 
 -- porting note: TODO: add `iUnion` and `sUnion` versions
 /-- The union of finitely many Gδ sets is a Gδ set. -/
@@ -128,7 +117,6 @@ theorem isGδ_biUnion {s : Set ι} (hs : s.Finite) {f : ι → Set X} (h : ∀ i
   refine' Finite.induction_on hs (by simp) _ h
   simp only [ball_insert_iff, biUnion_insert]
   exact fun _ _ ihs H => H.1.union (ihs H.2)
-#align is_Gδ_bUnion isGδ_biUnion
 
 -- Porting note: Did not recognize notation 𝓤 X, needed to replace with uniformity X
 theorem IsClosed.isGδ {X} [UniformSpace X] [IsCountablyGenerated (uniformity X)] {s : Set X}
@@ -137,7 +125,6 @@ theorem IsClosed.isGδ {X} [UniformSpace X] [IsCountablyGenerated (uniformity X)
   rw [← hs.closure_eq, ← hU.biInter_biUnion_ball]
   refine' isGδ_biInter (to_countable _) fun n _ => IsOpen.isGδ _
   exact isOpen_biUnion fun x _ => UniformSpace.isOpen_ball _ (hUo _).2
-#align is_closed.is_Gδ IsClosed.isGδ
 
 section T1Space
 
@@ -145,24 +132,19 @@ variable [T1Space X]
 
 theorem isGδ_compl_singleton (x : X) : IsGδ ({x}ᶜ : Set X) :=
   isOpen_compl_singleton.isGδ
-#align is_Gδ_compl_singleton isGδ_compl_singleton
 
 theorem Set.Countable.isGδ_compl {s : Set X} (hs : s.Countable) : IsGδ sᶜ := by
   rw [← biUnion_of_singleton s, compl_iUnion₂]
   exact isGδ_biInter hs fun x _ => isGδ_compl_singleton x
-#align set.countable.is_Gδ_compl Set.Countable.isGδ_compl
 
 theorem Set.Finite.isGδ_compl {s : Set X} (hs : s.Finite) : IsGδ sᶜ :=
   hs.countable.isGδ_compl
-#align set.finite.is_Gδ_compl Set.Finite.isGδ_compl
 
 theorem Set.Subsingleton.isGδ_compl {s : Set X} (hs : s.Subsingleton) : IsGδ sᶜ :=
   hs.finite.isGδ_compl
-#align set.subsingleton.is_Gδ_compl Set.Subsingleton.isGδ_compl
 
 theorem Finset.isGδ_compl (s : Finset X) : IsGδ (sᶜ : Set X) :=
   s.finite_toSet.isGδ_compl
-#align finset.is_Gδ_compl Finset.isGδ_compl
 
 variable [FirstCountableTopology X]
 
@@ -170,11 +152,9 @@ theorem isGδ_singleton (x : X) : IsGδ ({x} : Set X) := by
   rcases (nhds_basis_opens x).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
   rw [← biInter_basis_nhds h_basis.toHasBasis]
   exact isGδ_biInter (to_countable _) fun n _ => (hU n).2.isGδ
-#align is_Gδ_singleton isGδ_singleton
 
 theorem Set.Finite.isGδ {s : Set X} (hs : s.Finite) : IsGδ s :=
   Finite.induction_on hs isGδ_empty fun _ _ hs => (isGδ_singleton _).union hs
-#align set.finite.is_Gδ Set.Finite.isGδ
 
 end T1Space
 
@@ -194,7 +174,6 @@ theorem isGδ_setOf_continuousAt [UniformSpace Y] [IsCountablyGenerated (uniform
   refine' isGδ_iInter fun k => IsOpen.isGδ <| isOpen_iff_mem_nhds.2 fun x => _
   rintro ⟨s, ⟨hsx, hso⟩, hsU⟩
   filter_upwards [IsOpen.mem_nhds hso hsx] with _ hy using ⟨s, ⟨hy, hso⟩, hsU⟩
-#align is_Gδ_set_of_continuous_at isGδ_setOf_continuousAt
 
 end ContinuousAt
 
@@ -205,16 +184,13 @@ variable [TopologicalSpace X]
 /-- A set `s` is called *residual* if it includes a countable intersection of dense open sets. -/
 def residual (X : Type*) [TopologicalSpace X] : Filter X :=
   Filter.countableGenerate { t | IsOpen t ∧ Dense t }
-#align residual residual
 
 instance countableInterFilter_residual : CountableInterFilter (residual X) := by
   rw [residual]; infer_instance
-#align countable_Inter_filter_residual countableInterFilter_residual
 
 /-- Dense open sets are residual. -/
 theorem residual_of_dense_open {s : Set X} (ho : IsOpen s) (hd : Dense s) : s ∈ residual X :=
   CountableGenerateSets.basic ⟨ho, hd⟩
-#align residual_of_dense_open residual_of_dense_open
 
 /-- Dense Gδ sets are residual. -/
 theorem residual_of_dense_Gδ {s : Set X} (ho : IsGδ s) (hd : Dense s) : s ∈ residual X := by
@@ -222,14 +198,12 @@ theorem residual_of_dense_Gδ {s : Set X} (ho : IsGδ s) (hd : Dense s) : s ∈ 
   exact
     (countable_sInter_mem Tct).mpr fun t tT =>
       residual_of_dense_open (To t tT) (hd.mono (sInter_subset_of_mem tT))
-#align residual_of_dense_Gδ residual_of_dense_Gδ
 
 /-- A set is residual iff it includes a countable intersection of dense open sets. -/
 theorem mem_residual_iff {s : Set X} :
     s ∈ residual X ↔
       ∃ S : Set (Set X), (∀ t ∈ S, IsOpen t) ∧ (∀ t ∈ S, Dense t) ∧ S.Countable ∧ ⋂₀ S ⊆ s :=
   mem_countableGenerate_iff.trans <| by simp_rw [subset_def, mem_setOf, forall_and, and_assoc]
-#align mem_residual_iff mem_residual_iff
 
 end residual
 

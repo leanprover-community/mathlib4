@@ -20,4 +20,3 @@ universe w v
 instance (priority := 100) small_of_countable (α : Type v) [Countable α] : Small.{w} α :=
   let ⟨_, hf⟩ := exists_injective_nat α
   small_of_injective hf
-#align small_of_countable small_of_countable

@@ -47,7 +47,6 @@ such as groups, modules and rings.
 class HasQuotient (A : outParam <| Type u) (B : Type v) where
   /-- auxiliary quotient function, the one used will have `A` explicit -/
   quotient' : B → Type max u v
-#align has_quotient HasQuotient
 
 -- Will be provided by e.g. `Ideal.Quotient.inhabited`
 /-- `HasQuotient.Quotient A b` (with notation `A ⧸ b`) is the quotient
@@ -61,7 +60,6 @@ This differs from `HasQuotient.quotient'` in that the `A` argument is
 def HasQuotient.Quotient (A : outParam <| Type u) {B : Type v}
     [HasQuotient A B] (b : B) : Type max u v :=
   HasQuotient.quotient' b
-#align has_quotient.quotient HasQuotient.Quotient
 
 /-- Quotient notation based on the `HasQuotient` typeclass -/
 notation:35 G " ⧸ " H:34 => HasQuotient.Quotient G H

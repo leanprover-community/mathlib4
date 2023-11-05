@@ -50,14 +50,12 @@ theorem smoothOn_continuousLinearMapCoordChange
   have h₁ := smoothOn_coordChangeL IB e₁' e₁
   have h₂ := smoothOn_coordChangeL IB e₂ e₂'
   refine (h₁.mono ?_).cle_arrowCongr (h₂.mono ?_) <;> mfld_set_tac
-#align smooth_on_continuous_linear_map_coord_change smoothOn_continuousLinearMapCoordChange
 
 theorem hom_chart (y₀ y : LE₁E₂) :
     chartAt (ModelProd HB (F₁ →L[𝕜] F₂)) y₀ y =
       (chartAt HB y₀.1 y.1, inCoordinates F₁ E₁ F₂ E₂ y₀.1 y.1 y₀.1 y.1 y.2) := by
   rw [FiberBundle.chartedSpace_chartAt, trans_apply, LocalHomeomorph.prod_apply,
     Trivialization.coe_coe, LocalHomeomorph.refl_apply, Function.id_def, hom_trivializationAt_apply]
-#align hom_chart hom_chart
 
 variable {IB}
 
@@ -67,7 +65,6 @@ theorem contMDiffAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} {n : ℕ∞} :
         ContMDiffAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
           (fun x => inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   contMDiffAt_totalSpace ..
-#align cont_mdiff_at_hom_bundle contMDiffAt_hom_bundle
 
 theorem smoothAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
     SmoothAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) f x₀ ↔
@@ -75,7 +72,6 @@ theorem smoothAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
         SmoothAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂)
           (fun x => inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   contMDiffAt_hom_bundle f
-#align smooth_at_hom_bundle smoothAt_hom_bundle
 
 variable [SmoothVectorBundle F₁ E₁ IB] [SmoothVectorBundle F₂ E₂ IB]
 
@@ -86,9 +82,7 @@ instance Bundle.ContinuousLinearMap.vectorPrebundle.isSmooth :
     exact ⟨continuousLinearMapCoordChange (RingHom.id 𝕜) e₁ e₁' e₂ e₂',
       smoothOn_continuousLinearMapCoordChange IB,
       continuousLinearMapCoordChange_apply (RingHom.id 𝕜) e₁ e₁' e₂ e₂'⟩
-#align bundle.continuous_linear_map.vector_prebundle.is_smooth Bundle.ContinuousLinearMap.vectorPrebundle.isSmooth
 
 instance SmoothVectorBundle.continuousLinearMap :
     SmoothVectorBundle (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂) IB :=
   (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).smoothVectorBundle IB
-#align smooth_vector_bundle.continuous_linear_map SmoothVectorBundle.continuousLinearMap

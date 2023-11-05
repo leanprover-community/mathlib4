@@ -30,14 +30,12 @@ namespace Equiv.Perm
 /-- Elements which are considered equivalent if they differ only by swaps within α or β  -/
 abbrev ModSumCongr (α β : Type*) :=
   _ ⧸ (Equiv.Perm.sumCongrHom α β).range
-#align equiv.perm.mod_sum_congr Equiv.Perm.ModSumCongr
 
 theorem ModSumCongr.swap_smul_involutive {α β : Type*} [DecidableEq (Sum α β)] (i j : Sum α β) :
     Function.Involutive (SMul.smul (Equiv.swap i j) : ModSumCongr α β → ModSumCongr α β) :=
   fun σ => by
     refine Quotient.inductionOn' σ fun σ => ?_
     exact _root_.congr_arg Quotient.mk'' (Equiv.swap_mul_involutive i j σ)
-#align equiv.perm.mod_sum_congr.swap_smul_involutive Equiv.Perm.ModSumCongr.swap_smul_involutive
 
 end Equiv.Perm
 
@@ -69,7 +67,6 @@ def domCoprod.summand (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap 
       Function.comp_apply, Perm.coe_mul]
     -- Porting note: Was `rw`.
     erw [← a.map_congr_perm fun i => v (σ₁ _), ← b.map_congr_perm fun i => v (σ₁ _)]
-#align alternating_map.dom_coprod.summand AlternatingMap.domCoprod.summand
 
 theorem domCoprod.summand_mk'' (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap R' Mᵢ N₂ ιb)
     (σ : Equiv.Perm (Sum ιa ιb)) :
@@ -78,7 +75,6 @@ theorem domCoprod.summand_mk'' (a : AlternatingMap R' Mᵢ N₁ ιa) (b : Altern
         (MultilinearMap.domCoprod ↑a ↑b : MultilinearMap R' (fun _ => Mᵢ) (N₁ ⊗ N₂)).domDomCongr
           σ :=
   rfl
-#align alternating_map.dom_coprod.summand_mk' AlternatingMap.domCoprod.summand_mk''
 
 /-- Swapping elements in `σ` with equal values in `v` results in an addition that cancels -/
 theorem domCoprod.summand_add_swap_smul_eq_zero (a : AlternatingMap R' Mᵢ N₁ ιa)
@@ -95,7 +91,6 @@ theorem domCoprod.summand_add_swap_smul_eq_zero (a : AlternatingMap R' Mᵢ N₁
   convert add_right_neg (G := N₁ ⊗[R'] N₂) _ using 6 <;>
     · ext k
       rw [Equiv.apply_swap_eq_self hv]
-#align alternating_map.dom_coprod.summand_add_swap_smul_eq_zero AlternatingMap.domCoprod.summand_add_swap_smul_eq_zero
 
 /-- Swapping elements in `σ` with equal values in `v` result in zero if the swap has no effect
 on the quotient. -/
@@ -136,7 +131,6 @@ theorem domCoprod.summand_eq_zero_of_smul_invariant (a : AlternatingMap R' Mᵢ 
     convert smul_zero (M := ℤˣ) (A := N₁ ⊗[R'] N₂) _
     convert TensorProduct.zero_tmul (R := R') N₁ (N := N₂) _
     exact AlternatingMap.map_eq_zero_of_eq _ _ hv fun hij' => hij (hij' ▸ rfl)
-#align alternating_map.dom_coprod.summand_eq_zero_of_smul_invariant AlternatingMap.domCoprod.summand_eq_zero_of_smul_invariant
 
 /-- Like `MultilinearMap.domCoprod`, but ensures the result is also alternating.
 
@@ -172,14 +166,11 @@ def domCoprod (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap R' Mᵢ 
           (fun σ _ => mt <| domCoprod.summand_eq_zero_of_smul_invariant a b σ hv hij)
           (fun σ _ => Finset.mem_univ _) fun σ _ =>
           Equiv.Perm.ModSumCongr.swap_smul_involutive i j σ }
-#align alternating_map.dom_coprod AlternatingMap.domCoprod
-#align alternating_map.dom_coprod_apply AlternatingMap.domCoprod_apply
 
 theorem domCoprod_coe (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap R' Mᵢ N₂ ιb) :
     (↑(a.domCoprod b) : MultilinearMap R' (fun _ => Mᵢ) _) =
       ∑ σ : Perm.ModSumCongr ιa ιb, domCoprod.summand a b σ :=
   MultilinearMap.ext fun _ => rfl
-#align alternating_map.dom_coprod_coe AlternatingMap.domCoprod_coe
 
 /-- A more bundled version of `AlternatingMap.domCoprod` that maps
 `((ι₁ → N) → N₁) ⊗ ((ι₂ → N) → N₂)` to `(ι₁ ⊕ ι₂ → N) → N₁ ⊗ N₂`. -/
@@ -202,13 +193,11 @@ def domCoprod' :
         TensorProduct.tmul_smul, LinearMap.map_add, LinearMap.map_smul]
       first | rw [← smul_add] | rw [smul_comm]
       rfl
-#align alternating_map.dom_coprod' AlternatingMap.domCoprod'
 
 @[simp]
 theorem domCoprod'_apply (a : AlternatingMap R' Mᵢ N₁ ιa) (b : AlternatingMap R' Mᵢ N₂ ιb) :
     domCoprod' (a ⊗ₜ[R'] b) = domCoprod a b :=
   rfl
-#align alternating_map.dom_coprod'_apply AlternatingMap.domCoprod'_apply
 
 end AlternatingMap
 
@@ -226,7 +215,6 @@ theorem MultilinearMap.domCoprod_alternization_coe [DecidableEq ιa] [DecidableE
   simp_rw [TensorProduct.sum_tmul, TensorProduct.tmul_sum, _root_.map_sum,
     ← TensorProduct.smul_tmul', TensorProduct.tmul_smul]
   rfl
-#align multilinear_map.dom_coprod_alternization_coe MultilinearMap.domCoprod_alternization_coe
 
 open AlternatingMap
 
@@ -270,7 +258,6 @@ theorem MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ι
   -- pick up the pieces
   rw [MultilinearMap.domDomCongr_mul, Perm.sign_mul, Perm.sumCongrHom_apply,
     MultilinearMap.domCoprod_domDomCongr_sumCongr, Perm.sign_sumCongr, mul_smul, mul_smul]
-#align multilinear_map.dom_coprod_alternization MultilinearMap.domCoprod_alternization
 
 /-- Taking the `MultilinearMap.alternatization` of the `MultilinearMap.domCoprod` of two
 `AlternatingMap`s gives a scaled version of the `AlternatingMap.coprod` of those maps.
@@ -285,4 +272,3 @@ theorem MultilinearMap.domCoprod_alternization_eq [DecidableEq ιa] [DecidableEq
     ← TensorProduct.smul_tmul', TensorProduct.tmul_smul,
     LinearMap.map_smul_of_tower AlternatingMap.domCoprod',
     LinearMap.map_smul_of_tower AlternatingMap.domCoprod']
-#align multilinear_map.dom_coprod_alternization_eq MultilinearMap.domCoprod_alternization_eq

@@ -46,23 +46,19 @@ attribute [ext] ReaderT.ext StateT.ext ExceptT.ext OptionT.ext
 theorem map_eq_bind_pure_comp (m : Type u → Type v) [Monad m] [LawfulMonad m]
     (f : α → β) (x : m α) : f <$> x = x >>= pure ∘ f :=
   (bind_pure_comp f x).symm
-#align map_eq_bind_pure_comp map_eq_bind_pure_comp
 
 /-- run a `StateT` program and discard the final state -/
 def StateT.eval {m : Type u → Type v} [Functor m] (cmd : StateT σ m α) (s : σ) : m α :=
   Prod.fst <$> cmd.run s
-#align state_t.eval StateT.eval
 
 /-- reduce the equivalence between two state monads to the equivalence between
 their respective function spaces -/
 def StateT.equiv {m₁ : Type u₀ → Type v₀} {m₂ : Type u₁ → Type v₁}
     (F : (σ₁ → m₁ (α₁ × σ₁)) ≃ (σ₂ → m₂ (α₂ × σ₂))) : StateT σ₁ m₁ α₁ ≃ StateT σ₂ m₂ α₂ :=
   F
-#align state_t.equiv StateT.equiv
 
 /-- reduce the equivalence between two reader monads to the equivalence between
 their respective function spaces -/
 def ReaderT.equiv {m₁ : Type u₀ → Type v₀} {m₂ : Type u₁ → Type v₁}
     (F : (ρ₁ → m₁ α₁) ≃ (ρ₂ → m₂ α₂)) : ReaderT ρ₁ m₁ α₁ ≃ ReaderT ρ₂ m₂ α₂ :=
   F
-#align reader_t.equiv ReaderT.equiv

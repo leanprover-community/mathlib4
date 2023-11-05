@@ -33,7 +33,6 @@ variable {α : Type*}
 -/
 @[norm_cast]
 theorem cast_neg_natCast {R} [DivisionRing R] (n : ℕ) : ((-n : ℤ) : R) = -n := by simp
-#align int.cast_neg_nat_cast Int.cast_neg_natCast
 
 @[simp]
 theorem cast_div [DivisionRing α] {m n : ℤ} (n_dvd : n ∣ m) (n_nonzero : (n : α) ≠ 0) :
@@ -43,6 +42,5 @@ theorem cast_div [DivisionRing α] {m n : ℤ} (n_dvd : n ∣ m) (n_nonzero : (n
     rintro rfl
     simp at n_nonzero
   rw [Int.mul_ediv_cancel_left _ this, mul_comm n k, Int.cast_mul, mul_div_cancel _ n_nonzero]
-#align int.cast_div Int.cast_div
 
 end Int

@@ -45,10 +45,8 @@ instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual
             rw [Functor.map_inv, Category.id_comp, ← id_tensor_comp_tensor_id, ← Category.assoc,
               coevaluation_comp_rightAdjointMate, Category.assoc, ← comp_tensor_id,
               IsIso.inv_hom_id, tensor_id, Category.comp_id] } }
-#align category_theory.monoidal.functor_has_right_dual CategoryTheory.Monoidal.functorHasRightDual
 
 instance rightRigidFunctorCategory [RightRigidCategory D] : RightRigidCategory (C ⥤ D) where
-#align category_theory.monoidal.right_rigid_functor_category CategoryTheory.Monoidal.rightRigidFunctorCategory
 
 instance functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F where
   leftDual :=
@@ -70,12 +68,9 @@ instance functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F 
             rw [Functor.map_inv, Category.id_comp, ← tensor_id_comp_id_tensor, ← Category.assoc,
               coevaluation_comp_leftAdjointMate, Category.assoc, ← id_tensor_comp,
               IsIso.inv_hom_id, tensor_id, Category.comp_id] } }
-#align category_theory.monoidal.functor_has_left_dual CategoryTheory.Monoidal.functorHasLeftDual
 
 instance leftRigidFunctorCategory [LeftRigidCategory D] : LeftRigidCategory (C ⥤ D) where
-#align category_theory.monoidal.left_rigid_functor_category CategoryTheory.Monoidal.leftRigidFunctorCategory
 
 instance rigidFunctorCategory [RigidCategory D] : RigidCategory (C ⥤ D) where
-#align category_theory.monoidal.rigid_functor_category CategoryTheory.Monoidal.rigidFunctorCategory
 
 end CategoryTheory.Monoidal

@@ -35,8 +35,6 @@ the Dold-Kan equivalence for additive categories. -/
 @[simp]
 def N : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ) :=
   N₂
-set_option linter.uppercaseLean3 false in
-#align category_theory.preadditive.dold_kan.N CategoryTheory.Preadditive.DoldKan.N
 
 variable [HasFiniteCoproducts C]
 
@@ -45,7 +43,6 @@ the Dold-Kan equivalence for additive categories. -/
 @[simp]
 def Γ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C) :=
   Γ₂
-#align category_theory.preadditive.dold_kan.Γ CategoryTheory.Preadditive.DoldKan.Γ
 
 /-- The Dold-Kan equivalence `Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ)`
 for additive categories. -/
@@ -62,7 +59,6 @@ def equivalence : Karoubi (SimplicialObject C) ≌ Karoubi (ChainComplex C ℕ) 
     change 𝟙 _ = α.hom ≫ β.hom
     rw [← Iso.inv_comp_eq, comp_id, ← comp_id β.hom, ← Iso.inv_comp_eq]
     exact AlgebraicTopology.DoldKan.identity_N₂_objectwise P
-#align category_theory.preadditive.dold_kan.equivalence CategoryTheory.Preadditive.DoldKan.equivalence
 
 end DoldKan
 

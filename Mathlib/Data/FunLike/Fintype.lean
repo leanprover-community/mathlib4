@@ -41,7 +41,6 @@ See also `FunLike.finite`.
 -/
 noncomputable def FunLike.fintype [DecidableEq α] [Fintype α] [∀ i, Fintype (β i)] : Fintype F :=
   Fintype.ofInjective _ FunLike.coe_injective
-#align fun_like.fintype FunLike.fintype
 
 /-- All `FunLike`s are finite if their domain and codomain are.
 
@@ -50,7 +49,6 @@ This is not an instance because specific `FunLike` types might have a better-sui
 -/
 noncomputable def FunLike.fintype' [DecidableEq α] [Fintype α] [Fintype γ] : Fintype G :=
   FunLike.fintype G
-#align fun_like.fintype' FunLike.fintype'
 
 end Type'
 
@@ -65,7 +63,6 @@ Can't be an instance because it can cause infinite loops.
 -/
 theorem FunLike.finite [Finite α] [∀ i, Finite (β i)] : Finite F :=
   Finite.of_injective _ FunLike.coe_injective
-#align fun_like.finite FunLike.finite
 
 /-- All `FunLike`s are finite if their domain and codomain are.
 
@@ -74,6 +71,5 @@ Can't be an instance because it can cause infinite loops.
 -/
 theorem FunLike.finite' [Finite α] [Finite γ] : Finite G :=
   FunLike.finite G
-#align fun_like.finite' FunLike.finite'
 
 end Sort'

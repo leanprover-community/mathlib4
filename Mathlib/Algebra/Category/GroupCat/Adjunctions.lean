@@ -53,12 +53,10 @@ def free : Type u ⥤ AddCommGroupCat where
   map := FreeAbelianGroup.map
   map_id _ := AddMonoidHom.ext FreeAbelianGroup.map_id_apply
   map_comp _ _ := AddMonoidHom.ext FreeAbelianGroup.map_comp_apply
-#align AddCommGroup.free AddCommGroupCat.free
 
 @[simp]
 theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = FreeAbelianGroup α :=
   rfl
-#align AddCommGroup.free_obj_coe AddCommGroupCat.free_obj_coe
 
 -- This currently can't be a `simp` lemma,
 -- because `free_obj_coe` will simplify implicit arguments in the LHS.
@@ -66,7 +64,6 @@ theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = FreeAbelianGroup �
 theorem free_map_coe {α β : Type u} {f : α → β} (x : FreeAbelianGroup α) :
     (free.map f) x = f <$> x :=
   rfl
-#align AddCommGroup.free_map_coe AddCommGroupCat.free_map_coe
 
 /-- The free-forgetful adjunction for abelian groups.
 -/
@@ -79,7 +76,6 @@ def adj : free ⊣ forget AddCommGroupCat.{u} :=
         ext
         simp only [Equiv.symm_symm]
         apply FreeAbelianGroup.lift_comp }
-#align AddCommGroup.adj AddCommGroupCat.adj
 
 instance : IsRightAdjoint (forget AddCommGroupCat.{u}) :=
   ⟨_, adj⟩
@@ -109,7 +105,6 @@ def free : Type u ⥤ GroupCat where
   map_comp := by
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     intros; ext1; erw [←FreeGroup.map.unique] <;> intros <;> rfl
-#align Group.free GroupCat.free
 
 /-- The free-forgetful adjunction for groups.
 -/
@@ -125,7 +120,6 @@ def adj : free ⊣ forget GroupCat.{u} :=
         apply FreeGroup.lift.unique
         intros
         apply FreeGroup.lift.of }
-#align Group.adj GroupCat.adj
 
 instance : IsRightAdjoint (forget GroupCat.{u}) :=
   ⟨_, adj⟩
@@ -151,7 +145,6 @@ def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
   map_comp := by
     intros; simp only [coe_comp];
     apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr; rfl
-#align abelianize abelianize
 
 /-- The abelianization-forgetful adjuction from `Group` to `CommGroup`.-/
 def abelianizeAdj : abelianize ⊣ forget₂ CommGroupCat.{u} GroupCat.{u} :=
@@ -166,7 +159,6 @@ def abelianizeAdj : abelianize ⊣ forget₂ CommGroupCat.{u} GroupCat.{u} :=
         apply Abelianization.lift.unique
         intros
         apply Abelianization.lift.of }
-#align abelianize_adj abelianizeAdj
 
 end Abelianization
 
@@ -177,7 +169,6 @@ def MonCat.units : MonCat.{u} ⥤ GroupCat.{u} where
   map f := GroupCat.ofHom <| Units.map f
   map_id _ := MonoidHom.ext fun _ => Units.ext rfl
   map_comp _ _ := MonoidHom.ext fun _ => Units.ext rfl
-#align Mon.units MonCat.units
 
 /-- The forgetful-units adjunction between `Group` and `Mon`. -/
 def GroupCat.forget₂MonAdj : forget₂ GroupCat MonCat ⊣ MonCat.units.{u} where
@@ -194,7 +185,6 @@ def GroupCat.forget₂MonAdj : forget₂ GroupCat MonCat ⊣ MonCat.units.{u} wh
       naturality := by intros; exact MonoidHom.ext fun x => rfl }
   homEquiv_unit := MonoidHom.ext fun _ => Units.ext rfl
   homEquiv_counit := MonoidHom.ext fun _ => rfl
-#align Group.forget₂_Mon_adj GroupCat.forget₂MonAdj
 
 instance : IsRightAdjoint MonCat.units.{u} :=
   ⟨_, GroupCat.forget₂MonAdj⟩
@@ -206,7 +196,6 @@ def CommMonCat.units : CommMonCat.{u} ⥤ CommGroupCat.{u} where
   map f := CommGroupCat.ofHom <| Units.map f
   map_id _ := MonoidHom.ext fun _ => Units.ext rfl
   map_comp _ _ := MonoidHom.ext fun _ => Units.ext rfl
-#align CommMon.units CommMonCat.units
 
 /-- The forgetful-units adjunction between `CommGroup` and `CommMon`. -/
 def CommGroupCat.forget₂CommMonAdj : forget₂ CommGroupCat CommMonCat ⊣ CommMonCat.units.{u} where
@@ -223,7 +212,6 @@ def CommGroupCat.forget₂CommMonAdj : forget₂ CommGroupCat CommMonCat ⊣ Com
       naturality := by intros; exact MonoidHom.ext fun x => rfl }
   homEquiv_unit := MonoidHom.ext fun _ => Units.ext rfl
   homEquiv_counit := MonoidHom.ext fun _ => rfl
-#align CommGroup.forget₂_CommMon_adj CommGroupCat.forget₂CommMonAdj
 
 instance : IsRightAdjoint CommMonCat.units.{u} :=
   ⟨_, CommGroupCat.forget₂CommMonAdj⟩

@@ -31,13 +31,11 @@ variable {G : Type*} [AddCommGroup G] (B : AddGroupFilterBasis G)
 topological abelian group structure. -/
 protected def uniformSpace : UniformSpace G :=
   @TopologicalAddGroup.toUniformSpace G _ B.topology B.isTopologicalAddGroup
-#align add_group_filter_basis.uniform_space AddGroupFilterBasis.uniformSpace
 
 /-- The uniform space structure associated to an abelian group filter basis via the associated
 topological abelian group structure is compatible with its group structure. -/
 protected theorem uniformAddGroup : @UniformAddGroup G B.uniformSpace _ :=
   @comm_topologicalAddGroup_is_uniform G _ B.topology B.isTopologicalAddGroup
-#align add_group_filter_basis.uniform_add_group AddGroupFilterBasis.uniformAddGroup
 
 theorem cauchy_iff {F : Filter G} :
     @Cauchy G B.uniformSpace F ↔
@@ -49,6 +47,5 @@ theorem cauchy_iff {F : Filter G} :
   rw [uniformity_eq_comap_nhds_zero G, ← map_le_iff_le_comap]
   change Tendsto _ _ _ ↔ _
   simp [(basis_sets F).prod_self.tendsto_iff B.nhds_zero_hasBasis, @forall_swap (_ ∈ _) G]
-#align add_group_filter_basis.cauchy_iff AddGroupFilterBasis.cauchy_iff
 
 end AddGroupFilterBasis

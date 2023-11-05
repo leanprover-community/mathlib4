@@ -48,8 +48,6 @@ def pushoutCocone : Limits.PushoutCocone f g := by
   trans algebraMap R (A ⊗[R] B) r
   · exact Algebra.TensorProduct.includeLeft.commutes (R := R) r
   · exact (Algebra.TensorProduct.includeRight.commutes (R := R) r).symm
-set_option linter.uppercaseLean3 false in
-#align CommRing.pushout_cocone CommRingCat.pushoutCocone
 
 @[simp]
 theorem pushoutCocone_inl :
@@ -58,8 +56,6 @@ theorem pushoutCocone_inl :
       letI := g.toAlgebra
       exact Algebra.TensorProduct.includeLeftRingHom :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align CommRing.pushout_cocone_inl CommRingCat.pushoutCocone_inl
 
 @[simp]
 theorem pushoutCocone_inr :
@@ -68,8 +64,6 @@ theorem pushoutCocone_inr :
       letI := g.toAlgebra
       exact Algebra.TensorProduct.includeRight.toRingHom :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align CommRing.pushout_cocone_inr CommRingCat.pushoutCocone_inr
 
 @[simp]
 theorem pushoutCocone_pt :
@@ -78,8 +72,6 @@ theorem pushoutCocone_pt :
       letI := g.toAlgebra
       exact CommRingCat.of (A ⊗[R] B) :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align CommRing.pushout_cocone_X CommRingCat.pushoutCocone_pt
 
 /-- Verify that the `pushout_cocone` is indeed the colimit. -/
 def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
@@ -137,8 +129,6 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
     change _ = h (a ⊗ₜ 1) * h (1 ⊗ₜ b)
     rw [←h.map_mul, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
     rfl
-set_option linter.uppercaseLean3 false in
-#align CommRing.pushout_cocone_is_colimit CommRingCat.pushoutCoconeIsColimit
 
 end Pushout
 
@@ -150,8 +140,6 @@ def punitIsTerminal : IsTerminal (CommRingCat.of.{u} PUnit) := by
   · dsimp
   · intros; dsimp
   · intros f; ext; rfl
-set_option linter.uppercaseLean3 false in
-#align CommRing.punit_is_terminal CommRingCat.punitIsTerminal
 
 instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRingCat.{u} := by
   apply hasStrictTerminalObjects_of_terminal_is_strict (CommRingCat.of PUnit)
@@ -164,20 +152,14 @@ instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRin
   replace e : 0 * x = 1 * x := congr_arg (· * x) e
   rw [one_mul, zero_mul, ← f.map_zero] at e
   exact e
-set_option linter.uppercaseLean3 false in
-#align CommRing.CommRing_has_strict_terminal_objects CommRingCat.commRingCat_hasStrictTerminalObjects
 
 theorem subsingleton_of_isTerminal {X : CommRingCat} (hX : IsTerminal X) : Subsingleton X :=
   (hX.uniqueUpToIso punitIsTerminal).commRingCatIsoToRingEquiv.toEquiv.subsingleton_congr.mpr
     (show Subsingleton PUnit by infer_instance)
-set_option linter.uppercaseLean3 false in
-#align CommRing.subsingleton_of_is_terminal CommRingCat.subsingleton_of_isTerminal
 
 /-- `ℤ` is the initial object of `CommRingCat`. -/
 def zIsInitial : IsInitial (CommRingCat.of ℤ) :=
   IsInitial.ofUnique (h := fun R => ⟨⟨Int.castRingHom R⟩, fun a => a.ext_int _⟩)
-set_option linter.uppercaseLean3 false in
-#align CommRing.Z_is_initial CommRingCat.zIsInitial
 
 end Terminal
 
@@ -189,8 +171,6 @@ variable (A B : CommRingCat.{u})
 @[simps! pt]
 def prodFan : BinaryFan A B :=
   BinaryFan.mk (CommRingCat.ofHom <| RingHom.fst A B) (CommRingCat.ofHom <| RingHom.snd A B)
-set_option linter.uppercaseLean3 false in
-#align CommRing.prod_fan CommRingCat.prodFan
 
 /-- The product in `CommRingCat` is the cartesian product. -/
 def prodFanIsLimit : IsLimit (prodFan A B) where
@@ -210,8 +190,6 @@ def prodFanIsLimit : IsLimit (prodFan A B) where
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [←eq1, ←eq2]
     rfl
-set_option linter.uppercaseLean3 false in
-#align CommRing.prod_fan_is_limit CommRingCat.prodFanIsLimit
 
 end Product
 
@@ -224,8 +202,6 @@ def equalizerFork : Fork f g :=
   Fork.ofι (CommRingCat.ofHom (RingHom.eqLocus f g).subtype) <| by
       ext ⟨x, e⟩
       simpa using e
-set_option linter.uppercaseLean3 false in
-#align CommRing.equalizer_fork CommRingCat.equalizerFork
 
 /-- The equalizer in `CommRingCat` is the equalizer as sets. -/
 def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
@@ -240,8 +216,6 @@ def equalizerForkIsLimit : IsLimit (equalizerFork f g) := by
     rfl
   · intro m hm
     exact RingHom.ext fun x => Subtype.ext <| ConcreteCategory.congr_hom hm x
-set_option linter.uppercaseLean3 false in
-#align CommRing.equalizer_fork_is_limit CommRingCat.equalizerForkIsLimit
 
 instance : IsLocalRingHom (equalizerFork f g).ι := by
   constructor
@@ -265,8 +239,6 @@ instance equalizer_ι_isLocalRingHom (F : WalkingParallelPair ⥤ CommRingCat.{u
       WalkingParallelPair.zero]
   change IsLocalRingHom ((lim.map _ ≫ _ ≫ (equalizerFork _ _).ι) ≫ _)
   infer_instance
-set_option linter.uppercaseLean3 false in
-#align CommRing.equalizer_ι_is_local_ring_hom CommRingCat.equalizer_ι_isLocalRingHom
 
 open CategoryTheory.Limits.WalkingParallelPair Opposite
 
@@ -280,8 +252,6 @@ instance equalizer_ι_is_local_ring_hom' (F : WalkingParallelPairᵒᵖ ⥤ Comm
         WalkingParallelPair.zero : _)
   erw [← this]
   infer_instance
-set_option linter.uppercaseLean3 false in
-#align CommRing.equalizer_ι_is_local_ring_hom' CommRingCat.equalizer_ι_is_local_ring_hom'
 
 end Equalizer
 
@@ -301,8 +271,6 @@ def pullbackCone {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) : Pullbac
     (by
       ext ⟨x, e⟩
       simpa [CommRingCat.ofHom] using e)
-set_option linter.uppercaseLean3 false in
-#align CommRing.pullback_cone CommRingCat.pullbackCone
 
 /-- The constructed pullback cone is indeed the limit. -/
 def pullbackConeIsLimit {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) :
@@ -325,8 +293,6 @@ def pullbackConeIsLimit {A B C : CommRingCat.{u}} (f : A ⟶ C) (g : B ⟶ C) :
     have eq2 := (congr_arg (fun f : s.pt →+* B => f x) e₂ : _)
     rw [←eq1, ←eq2]
     rfl
-set_option linter.uppercaseLean3 false in
-#align CommRing.pullback_cone_is_limit CommRingCat.pullbackConeIsLimit
 
 end Pullback
 

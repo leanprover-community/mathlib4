@@ -10,7 +10,3 @@ import Mathlib.Mathport.Rename
 /-!
 # Align statements for declarations from Std
 -/
-
-#align int.zero_div Int.zero_div
-#align int.div_zero Int.div_zero
-#align int.mul_sign Int.mul_sign

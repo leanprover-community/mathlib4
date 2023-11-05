@@ -33,8 +33,6 @@ namespace CategoryTheory
 @[nolint checkUnivs]
 def Cat :=
   Bundled Category.{v, u}
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat CategoryTheory.Cat
 
 namespace Cat
 
@@ -47,14 +45,10 @@ instance : CoeSort Cat (Type u) :=
 
 instance str (C : Cat.{v, u}) : Category.{v, u} C :=
   Bundled.str C
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.str CategoryTheory.Cat.str
 
 /-- Construct a bundled `Cat` from the underlying type and the typeclass. -/
 def of (C : Type u) [Category.{v} C] : Cat.{v, u} :=
   Bundled.of C
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.of CategoryTheory.Cat.of
 
 /-- Bicategory structure on `Cat` -/
 instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u}
@@ -70,49 +64,35 @@ instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u}
   rightUnitor {A} B := Functor.rightUnitor
   pentagon := fun {A} {B} {C} {D} {E}=> Functor.pentagon
   triangle {A} {B} {C} := Functor.triangle
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.bicategory CategoryTheory.Cat.bicategory
 
 /-- `Cat` is a strict bicategory. -/
 instance bicategory.strict : Bicategory.Strict Cat.{v, u} where
   id_comp {C} {D} F := by cases F; rfl
   comp_id {C} {D} F := by cases F; rfl
   assoc := by intros; rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.bicategory.strict CategoryTheory.Cat.bicategory.strict
 
 /-- Category structure on `Cat` -/
 instance category : LargeCategory.{max v u} Cat.{v, u} :=
   StrictBicategory.category Cat.{v, u}
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.category CategoryTheory.Cat.category
 
 @[simp]
 theorem id_map {C : Cat} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⥤ C).map f = f :=
   Functor.id_map f
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.id_map CategoryTheory.Cat.id_map
 
 @[simp]
 theorem comp_obj {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) (X : C) : (F ≫ G).obj X = G.obj (F.obj X) :=
   Functor.comp_obj F G X
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.comp_obj CategoryTheory.Cat.comp_obj
 
 @[simp]
 theorem comp_map {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ Y) :
     (F ≫ G).map f = G.map (F.map f) :=
   Functor.comp_map F G f
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.comp_map CategoryTheory.Cat.comp_map
 
 /-- Functor that gets the set of objects of a category. It is not
 called `forget`, because it is not a faithful functor. -/
 def objects : Cat.{v, u} ⥤ Type u where
   obj C := C
   map F := F.obj
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.objects CategoryTheory.Cat.objects
 
 -- porting note: this instance was needed for CategoryTheory.Category.Cat.Limit
 instance (X : Cat.{v, u}) : Category (objects.obj X) := (inferInstance : Category X)
@@ -128,8 +108,6 @@ def equivOfIso {C D : Cat} (γ : C ≅ D) : C ≌ D
   inverse := γ.inv
   unitIso := eqToIso <| Eq.symm γ.hom_inv_id
   counitIso := eqToIso γ.inv_hom_id
-set_option linter.uppercaseLean3 false in
-#align category_theory.Cat.equiv_of_iso CategoryTheory.Cat.equivOfIso
 
 end
 
@@ -154,8 +132,6 @@ def typeToCat : Type u ⥤ Cat where
       aesop_cat
     · aesop_cat
   map_comp f g := by apply Functor.ext; aesop_cat
-set_option linter.uppercaseLean3 false in
-#align category_theory.Type_to_Cat CategoryTheory.typeToCat
 
 instance : Faithful typeToCat.{u} where
   map_injective {_X} {_Y} _f _g h :=

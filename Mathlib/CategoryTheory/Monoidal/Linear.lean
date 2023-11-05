@@ -36,7 +36,6 @@ class MonoidalLinear [MonoidalPreadditive C] : Prop where
     aesop_cat
   smul_tensor : ∀ {W X Y Z : C} (r : R) (f : W ⟶ X) (g : Y ⟶ Z), r • f ⊗ g = r • (f ⊗ g) := by
     aesop_cat
-#align category_theory.monoidal_linear CategoryTheory.MonoidalLinear
 
 attribute [simp] MonoidalLinear.tensor_smul MonoidalLinear.smul_tensor
 
@@ -44,16 +43,12 @@ variable {C}
 variable [MonoidalPreadditive C] [MonoidalLinear R C]
 
 instance tensorLeft_linear (X : C) : (tensorLeft X).Linear R where
-#align category_theory.tensor_left_linear CategoryTheory.tensorLeft_linear
 
 instance tensorRight_linear (X : C) : (tensorRight X).Linear R where
-#align category_theory.tensor_right_linear CategoryTheory.tensorRight_linear
 
 instance tensoringLeft_linear (X : C) : ((tensoringLeft C).obj X).Linear R where
-#align category_theory.tensoring_left_linear CategoryTheory.tensoringLeft_linear
 
 instance tensoringRight_linear (X : C) : ((tensoringRight C).obj X).Linear R where
-#align category_theory.tensoring_right_linear CategoryTheory.tensoringRight_linear
 
 /-- A faithful linear monoidal functor to a linear monoidal category
 ensures that the domain is linear monoidal. -/
@@ -70,6 +65,5 @@ theorem monoidalLinearOfFaithful {D : Type*} [Category D] [Preadditive D] [Linea
       apply F.toFunctor.map_injective
       simp only [F.toFunctor.map_smul r (f ⊗ g), F.toFunctor.map_smul r f, F.map_tensor,
         MonoidalLinear.smul_tensor, Linear.smul_comp, Linear.comp_smul] }
-#align category_theory.monoidal_linear_of_faithful CategoryTheory.monoidalLinearOfFaithful
 
 end CategoryTheory

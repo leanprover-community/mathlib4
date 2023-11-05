@@ -59,8 +59,6 @@ structure InjectiveResolution (Z : C) where
   exact₀ : Exact (ι.f 0) (cocomplex.d 0 1) := by infer_instance
   exact : ∀ n, Exact (cocomplex.d n (n + 1)) (cocomplex.d (n + 1) (n + 2)) := by infer_instance
   mono : Mono (ι.f 0) := by infer_instance
-set_option linter.uppercaseLean3 false in
-#align category_theory.InjectiveResolution CategoryTheory.InjectiveResolution
 
 open InjectiveResolution in
 attribute [inherit_doc InjectiveResolution]
@@ -71,7 +69,6 @@ attribute [instance] InjectiveResolution.injective InjectiveResolution.mono
 /-- An object admits an injective resolution. -/
 class HasInjectiveResolution (Z : C) : Prop where
   out : Nonempty (InjectiveResolution Z)
-#align category_theory.has_injective_resolution CategoryTheory.HasInjectiveResolution
 
 attribute [inherit_doc HasInjectiveResolution] HasInjectiveResolution.out
 
@@ -83,7 +80,6 @@ variable (C)
 `[EnoughInjectives C]` and `[Abelian C]`. -/
 class HasInjectiveResolutions : Prop where
   out : ∀ Z : C, HasInjectiveResolution Z
-#align category_theory.has_injective_resolutions CategoryTheory.HasInjectiveResolutions
 
 attribute [instance 100] HasInjectiveResolutions.out
 
@@ -95,22 +91,16 @@ namespace InjectiveResolution
 theorem ι_f_succ {Z : C} (I : InjectiveResolution Z) (n : ℕ) : I.ι.f (n + 1) = 0 := by
   apply zero_of_source_iso_zero
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.InjectiveResolution.ι_f_succ CategoryTheory.InjectiveResolution.ι_f_succ
 
 -- Porting note: removed @[simp] simp can prove this
 theorem ι_f_zero_comp_complex_d {Z : C} (I : InjectiveResolution Z) :
     I.ι.f 0 ≫ I.cocomplex.d 0 1 = 0 :=
   I.exact₀.w
-set_option linter.uppercaseLean3 false in
-#align category_theory.InjectiveResolution.ι_f_zero_comp_complex_d CategoryTheory.InjectiveResolution.ι_f_zero_comp_complex_d
 
 -- Porting note: removed @[simp] simp can prove this
 theorem complex_d_comp {Z : C} (I : InjectiveResolution Z) (n : ℕ) :
     I.cocomplex.d n (n + 1) ≫ I.cocomplex.d (n + 1) (n + 2) = 0 :=
   (I.exact _).w
-set_option linter.uppercaseLean3 false in
-#align category_theory.InjectiveResolution.complex_d_comp CategoryTheory.InjectiveResolution.complex_d_comp
 
 instance {Z : C} (I : InjectiveResolution Z) (n : ℕ) : CategoryTheory.Mono (I.ι.f n) := by
   cases n
@@ -134,8 +124,6 @@ def self (Z : C) [CategoryTheory.Injective Z] : InjectiveResolution Z where
   mono := by
     dsimp
     infer_instance
-set_option linter.uppercaseLean3 false in
-#align category_theory.InjectiveResolution.self CategoryTheory.InjectiveResolution.self
 
 end InjectiveResolution
 

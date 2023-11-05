@@ -66,10 +66,8 @@ private theorem free_and_finite :
 
 instance _root_.Module.Finite.multilinearMap : Module.Finite R (MultilinearMap R M₁ M₂) :=
   free_and_finite.2
-#align module.finite.multilinear_map Module.Finite.multilinearMap
 
 instance _root_.Module.Free.multilinearMap : Module.Free R (MultilinearMap R M₁ M₂) :=
   free_and_finite.1
-#align module.free.multilinear_map Module.Free.multilinearMap
 
 end MultilinearMap

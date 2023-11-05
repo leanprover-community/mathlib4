@@ -34,7 +34,6 @@ theorem choose_le_pow (r n : ℕ) : (n.choose r : α) ≤ (n ^ r : α) / r ! := 
     rw [← Nat.descFactorial_eq_factorial_mul_choose]
     exact n.descFactorial_le_pow r
   exact_mod_cast r.factorial_pos
-#align nat.choose_le_pow Nat.choose_le_pow
 
 -- horrific casting is due to ℕ-subtraction
 theorem pow_le_choose (r n : ℕ) : ((n + 1 - r : ℕ) ^ r : α) / r ! ≤ n.choose r := by
@@ -43,6 +42,5 @@ theorem pow_le_choose (r n : ℕ) : ((n + 1 - r : ℕ) ^ r : α) / r ! ≤ n.cho
     rw [← Nat.descFactorial_eq_factorial_mul_choose]
     exact n.pow_sub_le_descFactorial r
   exact_mod_cast r.factorial_pos
-#align nat.pow_le_choose Nat.pow_le_choose
 
 end Nat

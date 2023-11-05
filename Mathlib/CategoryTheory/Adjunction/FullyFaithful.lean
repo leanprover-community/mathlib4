@@ -61,8 +61,6 @@ instance unit_isIso_of_L_fully_faithful [Full L] [Faithful L] : IsIso (Adjunctio
             simp only [Adjunction.homEquiv_counit, preimage_comp, preimage_map, Category.assoc]
             rw [← h.unit_naturality]
             simp⟩⟩⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.unit_is_iso_of_L_fully_faithful CategoryTheory.unit_isIso_of_L_fully_faithful
 
 /-- If the right adjoint is fully faithful, then the counit is an isomorphism.
 
@@ -83,8 +81,6 @@ instance counit_isIso_of_R_fully_faithful [Full R] [Faithful R] : IsIso (Adjunct
               simp only [Adjunction.homEquiv_unit, preimage_comp, preimage_map]
               rw [← h.counit_naturality]
               simp⟩⟩⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.counit_is_iso_of_R_fully_faithful CategoryTheory.counit_isIso_of_R_fully_faithful
 
 /-- If the unit of an adjunction is an isomorphism, then its inverse on the image of L is given
 by L whiskered with the counit. -/
@@ -92,14 +88,11 @@ by L whiskered with the counit. -/
 theorem inv_map_unit {X : C} [IsIso (h.unit.app X)] :
     inv (L.map (h.unit.app X)) = h.counit.app (L.obj X) :=
   IsIso.inv_eq_of_hom_inv_id h.left_triangle_components
-#align category_theory.inv_map_unit CategoryTheory.inv_map_unit
 
 /-- If the unit is an isomorphism, bundle one has an isomorphism `L ⋙ R ⋙ L ≅ L`. -/
 @[simps!]
 noncomputable def whiskerLeftLCounitIsoOfIsIsoUnit [IsIso h.unit] : L ⋙ R ⋙ L ≅ L :=
   (L.associator R L).symm ≪≫ isoWhiskerRight (asIso h.unit).symm L ≪≫ Functor.leftUnitor _
-set_option linter.uppercaseLean3 false in
-#align category_theory.whisker_left_L_counit_iso_of_is_iso_unit CategoryTheory.whiskerLeftLCounitIsoOfIsIsoUnit
 
 /-- If the counit of an adjunction is an isomorphism, then its inverse on the image of R is given
 by R whiskered with the unit. -/
@@ -107,42 +100,31 @@ by R whiskered with the unit. -/
 theorem inv_counit_map {X : D} [IsIso (h.counit.app X)] :
     inv (R.map (h.counit.app X)) = h.unit.app (R.obj X) :=
   IsIso.inv_eq_of_inv_hom_id h.right_triangle_components
-#align category_theory.inv_counit_map CategoryTheory.inv_counit_map
 
 /-- If the counit of an is an isomorphism, one has an isomorphism `(R ⋙ L ⋙ R) ≅ R`. -/
 @[simps!]
 noncomputable def whiskerLeftRUnitIsoOfIsIsoCounit [IsIso h.counit] : R ⋙ L ⋙ R ≅ R :=
   (R.associator L R).symm ≪≫ isoWhiskerRight (asIso h.counit) R ≪≫ Functor.leftUnitor _
-set_option linter.uppercaseLean3 false in
-#align category_theory.whisker_left_R_unit_iso_of_is_iso_counit CategoryTheory.whiskerLeftRUnitIsoOfIsIsoCounit
 
 /-- If the unit is an isomorphism, then the left adjoint is full-/
 noncomputable def lFullOfUnitIsIso [IsIso h.unit] : Full L where
   preimage {X Y} f := h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y)
-set_option linter.uppercaseLean3 false in
-#align category_theory.L_full_of_unit_is_iso CategoryTheory.lFullOfUnitIsIso
 
 /-- If the unit is an isomorphism, then the left adjoint is faithful-/
 theorem L_faithful_of_unit_isIso [IsIso h.unit] : Faithful L :=
   ⟨fun {X Y f g} H => by
     rw [← (h.homEquiv X (L.obj Y)).apply_eq_iff_eq] at H
     simpa using H =≫ inv (h.unit.app Y)⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.L_faithful_of_unit_is_iso CategoryTheory.L_faithful_of_unit_isIso
 
 /-- If the counit is an isomorphism, then the right adjoint is full-/
 noncomputable def rFullOfCounitIsIso [IsIso h.counit] : Full R where
   preimage {X Y} f := inv (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f
-set_option linter.uppercaseLean3 false in
-#align category_theory.R_full_of_counit_is_iso CategoryTheory.rFullOfCounitIsIso
 
 /-- If the counit is an isomorphism, then the right adjoint is faithful-/
 theorem R_faithful_of_counit_isIso [IsIso h.counit] : Faithful R :=
   ⟨fun {X Y f g} H => by
     rw [← (h.homEquiv (R.obj X) Y).symm.apply_eq_iff_eq] at H
     simpa using inv (h.counit.app X) ≫= H⟩
-set_option linter.uppercaseLean3 false in
-#align category_theory.R_faithful_of_counit_is_iso CategoryTheory.R_faithful_of_counit_isIso
 
 instance whiskerLeft_counit_iso_of_L_fully_faithful [Full L] [Faithful L] :
     IsIso (whiskerLeft L h.counit) := by
@@ -150,8 +132,6 @@ instance whiskerLeft_counit_iso_of_L_fully_faithful [Full L] [Faithful L] :
   rw [← IsIso.eq_inv_comp] at this
   rw [this]
   infer_instance
-set_option linter.uppercaseLean3 false in
-#align category_theory.whisker_left_counit_iso_of_L_fully_faithful CategoryTheory.whiskerLeft_counit_iso_of_L_fully_faithful
 
 instance whiskerRight_counit_iso_of_L_fully_faithful [Full L] [Faithful L] :
     IsIso (whiskerRight h.counit R) := by
@@ -159,8 +139,6 @@ instance whiskerRight_counit_iso_of_L_fully_faithful [Full L] [Faithful L] :
   rw [← IsIso.eq_inv_comp] at this
   rw [this]
   infer_instance
-set_option linter.uppercaseLean3 false in
-#align category_theory.whisker_right_counit_iso_of_L_fully_faithful CategoryTheory.whiskerRight_counit_iso_of_L_fully_faithful
 
 instance whiskerLeft_unit_iso_of_R_fully_faithful [Full R] [Faithful R] :
     IsIso (whiskerLeft R h.unit) := by
@@ -168,8 +146,6 @@ instance whiskerLeft_unit_iso_of_R_fully_faithful [Full R] [Faithful R] :
   rw [← IsIso.eq_comp_inv] at this
   rw [this]
   infer_instance
-set_option linter.uppercaseLean3 false in
-#align category_theory.whisker_left_unit_iso_of_R_fully_faithful CategoryTheory.whiskerLeft_unit_iso_of_R_fully_faithful
 
 instance whiskerRight_unit_iso_of_R_fully_faithful [Full R] [Faithful R] :
     IsIso (whiskerRight h.unit L) := by
@@ -177,8 +153,6 @@ instance whiskerRight_unit_iso_of_R_fully_faithful [Full R] [Faithful R] :
   rw [← IsIso.eq_comp_inv] at this
   rw [this]
   infer_instance
-set_option linter.uppercaseLean3 false in
-#align category_theory.whisker_right_unit_iso_of_R_fully_faithful CategoryTheory.whiskerRight_unit_iso_of_R_fully_faithful
 
 -- TODO also do the statements from Riehl 4.5.13 for full and faithful separately?
 universe v₃ v₄ u₃ u₄
@@ -215,6 +189,5 @@ def Adjunction.restrictFullyFaithful (iC : C ⥤ C') (iD : D ⥤ D') {L' : C' �
         suffices R'.map (iD.map g) ≫ comm2.hom.app Y = comm2.hom.app Y' ≫ iC.map (R.map g) by
           simp [Trans.trans, this]
         apply comm2.hom.naturality g }
-#align category_theory.adjunction.restrict_fully_faithful CategoryTheory.Adjunction.restrictFullyFaithful
 
 end CategoryTheory

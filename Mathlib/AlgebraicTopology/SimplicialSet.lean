@@ -46,8 +46,6 @@ This is the category of contravariant functors from
 `SimplexCategory` to `Type u`. -/
 def SSet : Type (u + 1) :=
   SimplicialObject (Type u)
-set_option linter.uppercaseLean3 false in
-#align sSet SSet
 
 namespace SSet
 
@@ -73,8 +71,6 @@ lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = 
 is the Yoneda embedding of `n`. -/
 def standardSimplex : SimplexCategory ⥤ SSet :=
   yoneda
-set_option linter.uppercaseLean3 false in
-#align sSet.standard_simplex SSet.standardSimplex
 
 -- mathport name: standard_simplex
 scoped[Simplicial] notation "Δ[" n "]" => SSet.standardSimplex.obj (SimplexCategory.mk n)
@@ -88,8 +84,6 @@ section
 the monotone maps from `Fin (m+1)` to `Fin (n+1)`. -/
 def asOrderHom {n} {m} (α : Δ[n].obj m) : OrderHom (Fin (m.unop.len + 1)) (Fin (n + 1)) :=
   α.toOrderHom
-set_option linter.uppercaseLean3 false in
-#align sSet.as_order_hom SSet.asOrderHom
 
 end
 
@@ -103,16 +97,12 @@ def boundary (n : ℕ) : SSet where
       intro h
       apply α.property
       exact Function.Surjective.of_comp h⟩
-set_option linter.uppercaseLean3 false in
-#align sSet.boundary SSet.boundary
 
 -- mathport name: sSet.boundary
 scoped[Simplicial] notation "∂Δ[" n "]" => SSet.boundary n
 
 /-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
 def boundaryInclusion (n : ℕ) : ∂Δ[n] ⟶ Δ[n] where app m (α : { α : Δ[n].obj m // _ }) := α
-set_option linter.uppercaseLean3 false in
-#align sSet.boundary_inclusion SSet.boundaryInclusion
 
 /-- `horn n i` (or `Λ[n, i]`) is the `i`-th horn of the `n`-th standard simplex, where `i : n`.
 It consists of all `m`-simplices `α` of `Δ[n]`
@@ -127,8 +117,6 @@ def horn (n : ℕ) (i : Fin (n + 1)) : SSet where
       apply Or.imp _ id (h j)
       intro hj
       exact Set.range_comp_subset_range _ _ hj⟩
-set_option linter.uppercaseLean3 false in
-#align sSet.horn SSet.horn
 
 -- mathport name: sSet.horn
 scoped[Simplicial] notation "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
@@ -136,8 +124,6 @@ scoped[Simplicial] notation "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
 /-- The inclusion of the `i`-th horn of the `n`-th standard simplex into that standard simplex. -/
 def hornInclusion (n : ℕ) (i : Fin (n + 1)) : Λ[n, i] ⟶ Δ[n] where
   app m (α : { α : Δ[n].obj m // _ }) := α
-set_option linter.uppercaseLean3 false in
-#align sSet.horn_inclusion SSet.hornInclusion
 
 section Examples
 
@@ -148,16 +134,12 @@ noncomputable def S1 : SSet :=
   Limits.colimit <|
     Limits.parallelPair (standardSimplex.map <| SimplexCategory.δ 0 : Δ[0] ⟶ Δ[1])
       (standardSimplex.map <| SimplexCategory.δ 1)
-set_option linter.uppercaseLean3 false in
-#align sSet.S1 SSet.S1
 
 end Examples
 
 /-- Truncated simplicial sets. -/
 def Truncated (n : ℕ) :=
   SimplicialObject.Truncated (Type u) n
-set_option linter.uppercaseLean3 false in
-#align sSet.truncated SSet.Truncated
 
 instance Truncated.largeCategory (n : ℕ) : LargeCategory (Truncated n) := by
   dsimp only [Truncated]
@@ -180,8 +162,6 @@ lemma Truncated.hom_ext {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n 
 /-- The skeleton functor on simplicial sets. -/
 def sk (n : ℕ) : SSet ⥤ SSet.Truncated n :=
   SimplicialObject.sk n
-set_option linter.uppercaseLean3 false in
-#align sSet.sk SSet.sk
 
 instance {n} : Inhabited (SSet.Truncated n) :=
   ⟨(sk n).obj <| Δ[0]⟩
@@ -190,8 +170,6 @@ instance {n} : Inhabited (SSet.Truncated n) :=
 augmented simplicial objects. -/
 abbrev Augmented :=
   SimplicialObject.Augmented (Type u)
-set_option linter.uppercaseLean3 false in
-#align sSet.augmented SSet.Augmented
 
 namespace Augmented
 
@@ -212,8 +190,6 @@ noncomputable def standardSimplex : SimplexCategory ⥤ SSet.Augmented where
   map θ :=
     { left := SSet.standardSimplex.map θ
       right := terminal.from _ }
-set_option linter.uppercaseLean3 false in
-#align sSet.augmented.standard_simplex SSet.Augmented.standardSimplex
 
 end Augmented
 
@@ -222,25 +198,17 @@ end SSet
 /-- The functor associating the singular simplicial set to a topological space. -/
 noncomputable def TopCat.toSSet : TopCat ⥤ SSet :=
   ColimitAdj.restrictedYoneda SimplexCategory.toTop
-set_option linter.uppercaseLean3 false in
-#align Top.to_sSet TopCat.toSSet
 
 /-- The geometric realization functor. -/
 noncomputable def SSet.toTop : SSet ⥤ TopCat :=
   ColimitAdj.extendAlongYoneda SimplexCategory.toTop
-set_option linter.uppercaseLean3 false in
-#align sSet.to_Top SSet.toTop
 
 /-- Geometric realization is left adjoint to the singular simplicial set construction. -/
 noncomputable def sSetTopAdj : SSet.toTop ⊣ TopCat.toSSet :=
   ColimitAdj.yonedaAdjunction _
-set_option linter.uppercaseLean3 false in
-#align sSet_Top_adj sSetTopAdj
 
 /-- The geometric realization of the representable simplicial sets agree
   with the usual topological simplices. -/
 noncomputable def SSet.toTopSimplex :
     (yoneda : SimplexCategory ⥤ _) ⋙ SSet.toTop ≅ SimplexCategory.toTop :=
   ColimitAdj.isExtensionAlongYoneda _
-set_option linter.uppercaseLean3 false in
-#align sSet.to_Top_simplex SSet.toTopSimplex

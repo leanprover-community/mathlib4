@@ -35,29 +35,24 @@ variable {R : Type*}
   divide it are the squares of units. -/
 def Squarefree [Monoid R] (r : R) : Prop :=
   ∀ x : R, x * x ∣ r → IsUnit x
-#align squarefree Squarefree
 
 @[simp]
 theorem IsUnit.squarefree [CommMonoid R] {x : R} (h : IsUnit x) : Squarefree x := fun _ hdvd =>
   isUnit_of_mul_isUnit_left (isUnit_of_dvd_unit hdvd h)
-#align is_unit.squarefree IsUnit.squarefree
 
 -- @[simp] -- Porting note: simp can prove this
 theorem squarefree_one [CommMonoid R] : Squarefree (1 : R) :=
   isUnit_one.squarefree
-#align squarefree_one squarefree_one
 
 @[simp]
 theorem not_squarefree_zero [MonoidWithZero R] [Nontrivial R] : ¬Squarefree (0 : R) := by
   erw [not_forall]
   exact ⟨0, by simp⟩
-#align not_squarefree_zero not_squarefree_zero
 
 theorem Squarefree.ne_zero [MonoidWithZero R] [Nontrivial R] {m : R} (hm : Squarefree (m : R)) :
     m ≠ 0 := by
   rintro rfl
   exact not_squarefree_zero hm
-#align squarefree.ne_zero Squarefree.ne_zero
 
 @[simp]
 theorem Irreducible.squarefree [CommMonoid R] {x : R} (h : Irreducible x) : Squarefree x := by
@@ -66,24 +61,19 @@ theorem Irreducible.squarefree [CommMonoid R] {x : R} (h : Irreducible x) : Squa
   rcases h.isUnit_or_isUnit hz with (hu | hu)
   · exact hu
   · apply isUnit_of_mul_isUnit_left hu
-#align irreducible.squarefree Irreducible.squarefree
 
 @[simp]
 theorem Prime.squarefree [CancelCommMonoidWithZero R] {x : R} (h : Prime x) : Squarefree x :=
   h.irreducible.squarefree
-#align prime.squarefree Prime.squarefree
 
 theorem Squarefree.of_mul_left [CommMonoid R] {m n : R} (hmn : Squarefree (m * n)) : Squarefree m :=
   fun p hp => hmn p (dvd_mul_of_dvd_left hp n)
-#align squarefree.of_mul_left Squarefree.of_mul_left
 
 theorem Squarefree.of_mul_right [CommMonoid R] {m n : R} (hmn : Squarefree (m * n)) :
     Squarefree n := fun p hp => hmn p (dvd_mul_of_dvd_right hp m)
-#align squarefree.of_mul_right Squarefree.of_mul_right
 
 theorem Squarefree.squarefree_of_dvd [CommMonoid R] {x y : R} (hdvd : x ∣ y) (hsq : Squarefree y) :
     Squarefree x := fun _ h => hsq _ (h.trans hdvd)
-#align squarefree.squarefree_of_dvd Squarefree.squarefree_of_dvd
 
 section SquarefreeGcdOfSquarefree
 
@@ -91,11 +81,9 @@ variable {α : Type*} [CancelCommMonoidWithZero α] [GCDMonoid α]
 
 theorem Squarefree.gcd_right (a : α) {b : α} (hb : Squarefree b) : Squarefree (gcd a b) :=
   hb.squarefree_of_dvd (gcd_dvd_right _ _)
-#align squarefree.gcd_right Squarefree.gcd_right
 
 theorem Squarefree.gcd_left {a : α} (b : α) (ha : Squarefree a) : Squarefree (gcd a b) :=
   ha.squarefree_of_dvd (gcd_dvd_left _ _)
-#align squarefree.gcd_left Squarefree.gcd_left
 
 end SquarefreeGcdOfSquarefree
 
@@ -111,7 +99,6 @@ theorem squarefree_iff_multiplicity_le_one (r : R) :
   rw [← sq, pow_dvd_iff_le_multiplicity, or_iff_not_imp_left, not_le, imp_congr _ Iff.rfl]
   rw [←one_add_one_eq_two]
   simpa using PartENat.add_one_le_iff_lt (PartENat.natCast_ne_top 1)
-#align multiplicity.squarefree_iff_multiplicity_le_one multiplicity.squarefree_iff_multiplicity_le_one
 
 end CommMonoid
 
@@ -136,7 +123,6 @@ theorem finite_prime_left {a b : R} (ha : Prime a) (hb : b ≠ 0) : multiplicity
       exact
         ((multiplicity.squarefree_iff_multiplicity_le_one p).mp hp.squarefree a).resolve_right
           ha.not_unit
-#align multiplicity.finite_prime_left multiplicity.finite_prime_left
 
 end CancelCommMonoidWithZero
 
@@ -166,18 +152,15 @@ theorem irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree (r 
     simpa only [zero_dvd_iff, mul_zero] using hx
   obtain ⟨j, hj₁, hj₂⟩ := WfDvdMonoid.exists_irreducible_factor i this
   exact h _ hj₁ ((mul_dvd_mul hj₂ hj₂).trans hx)
-#align irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree
 
 theorem squarefree_iff_irreducible_sq_not_dvd_of_ne_zero {r : R} (hr : r ≠ 0) :
     Squarefree r ↔ ∀ x : R, Irreducible x → ¬x * x ∣ r := by
   simpa [hr] using (irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree r).symm
-#align squarefree_iff_irreducible_sq_not_dvd_of_ne_zero squarefree_iff_irreducible_sq_not_dvd_of_ne_zero
 
 theorem squarefree_iff_irreducible_sq_not_dvd_of_exists_irreducible {r : R}
     (hr : ∃ x : R, Irreducible x) : Squarefree r ↔ ∀ x : R, Irreducible x → ¬x * x ∣ r := by
   rw [irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree, ← not_exists]
   simp only [hr, not_true, false_or_iff, and_false_iff]
-#align squarefree_iff_irreducible_sq_not_dvd_of_exists_irreducible squarefree_iff_irreducible_sq_not_dvd_of_exists_irreducible
 
 end Irreducible
 
@@ -190,7 +173,6 @@ theorem IsRadical.squarefree {x : R} (h0 : x ≠ 0) (h : IsRadical x) : Squarefr
   specialize h 2 (z * w) ⟨w, by simp_rw [pow_two, mul_left_comm, ← mul_assoc]⟩
   rwa [← one_mul (z * w), mul_assoc, mul_dvd_mul_iff_right, ← isUnit_iff_dvd_one] at h
   rw [mul_assoc, mul_ne_zero_iff] at h0; exact h0.2
-#align is_radical.squarefree IsRadical.squarefree
 
 variable [GCDMonoid R]
 
@@ -208,7 +190,6 @@ theorem Squarefree.isRadical {x : R} (hx : Squarefree x) : IsRadical x :=
           rw [pow_two, mul_dvd_mul_iff_left h] at hy
           obtain ⟨w, hw⟩ := hy
           exact (hx z ⟨w, by rwa [mul_right_comm, ← hw]⟩).mul_right_dvd.2 dvd_rfl)
-#align squarefree.is_radical Squarefree.isRadical
 
 theorem isRadical_iff_squarefree_or_zero {x : R} : IsRadical x ↔ Squarefree x ∨ x = 0 :=
   ⟨fun hx => (em <| x = 0).elim Or.inr fun h => Or.inl <| hx.squarefree h,
@@ -216,11 +197,9 @@ theorem isRadical_iff_squarefree_or_zero {x : R} : IsRadical x ↔ Squarefree x 
       rintro rfl
       rw [zero_isRadical_iff]
       infer_instance⟩
-#align is_radical_iff_squarefree_or_zero isRadical_iff_squarefree_or_zero
 
 theorem isRadical_iff_squarefree_of_ne_zero {x : R} (h : x ≠ 0) : IsRadical x ↔ Squarefree x :=
   ⟨IsRadical.squarefree h, Squarefree.isRadical⟩
-#align is_radical_iff_squarefree_of_ne_zero isRadical_iff_squarefree_of_ne_zero
 
 end IsRadical
 
@@ -252,14 +231,12 @@ theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] [Decidabl
     rw [multiplicity_eq_count_normalizedFactors hib x0]
     specialize h (normalize b)
     assumption_mod_cast
-#align unique_factorization_monoid.squarefree_iff_nodup_normalized_factors UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors
 
 theorem dvd_pow_iff_dvd_of_squarefree {x y : R} {n : ℕ} (hsq : Squarefree x) (h0 : n ≠ 0) :
     x ∣ y ^ n ↔ x ∣ y := by
   classical
     haveI := UniqueFactorizationMonoid.toGCDMonoid R
     exact ⟨hsq.isRadical n y, fun h => h.pow h0⟩
-#align unique_factorization_monoid.dvd_pow_iff_dvd_of_squarefree UniqueFactorizationMonoid.dvd_pow_iff_dvd_of_squarefree
 
 end UniqueFactorizationMonoid
 
@@ -269,11 +246,9 @@ namespace Int
 theorem squarefree_natAbs {n : ℤ} : Squarefree n.natAbs ↔ Squarefree n := by
   simp_rw [Squarefree, natAbs_surjective.forall, ← natAbs_mul, natAbs_dvd_natAbs,
     isUnit_iff_natAbs_eq, Nat.isUnit_iff]
-#align int.squarefree_nat_abs Int.squarefree_natAbs
 
 @[simp]
 theorem squarefree_coe_nat {n : ℕ} : Squarefree (n : ℤ) ↔ Squarefree n := by
   rw [← squarefree_natAbs, natAbs_ofNat]
-#align int.squarefree_coe_nat Int.squarefree_coe_nat
 
 end Int

@@ -28,24 +28,20 @@ variable {J : Type v} [Category.{v'} J] {F : J ⥤ Discrete PUnit}
 /-- A trivial cone for a functor into `PUnit`. `punitConeIsLimit` shows it is a limit. -/
 def punitCone : Cone F :=
   ⟨⟨⟨⟩⟩, (Functor.punitExt _ _).hom⟩
-#align category_theory.limits.punit_cone CategoryTheory.Limits.punitCone
 
 /-- A trivial cocone for a functor into `PUnit`. `punitCoconeIsLimit` shows it is a colimit. -/
 def punitCocone : Cocone F :=
   ⟨⟨⟨⟩⟩, (Functor.punitExt _ _).hom⟩
-#align category_theory.limits.punit_cocone CategoryTheory.Limits.punitCocone
 
 /-- Any cone over a functor into `PUnit` is a limit cone.
 -/
 def punitConeIsLimit {c : Cone F} : IsLimit c where
   lift := fun s => eqToHom (by simp)
-#align category_theory.limits.punit_cone_is_limit CategoryTheory.Limits.punitConeIsLimit
 
 /-- Any cocone over a functor into `PUnit` is a colimit cocone.
 -/
 def punitCoconeIsColimit {c : Cocone F} : IsColimit c where
   desc := fun s => eqToHom (by simp)
-#align category_theory.limits.punit_cocone_is_colimit CategoryTheory.Limits.punitCoconeIsColimit
 
 instance : HasLimitsOfSize.{v', v} (Discrete PUnit) :=
   ⟨fun _ _ => ⟨fun _ => ⟨punitCone, punitConeIsLimit⟩⟩⟩

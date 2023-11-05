@@ -80,7 +80,6 @@ noncomputable def quotientEquivPiSpan (I : Ideal S) (b : Basis ι R S) (hI : I �
     let this :=
       Submodule.quotientPi (show ∀ _, Submodule R R from fun i => span ({a i} : Set R))
     exact this
-#align ideal.quotient_equiv_pi_span Ideal.quotientEquivPiSpan
 
 /-- Ideal quotients over a free finite extension of `ℤ` are isomorphic to a direct product of
 `ZMod`. -/
@@ -91,7 +90,6 @@ noncomputable def quotientEquivPiZMod (I : Ideal S) (b : Basis ι ℤ S) (hI : I
   let e' : (∀ i : ι, ℤ ⧸ span ({a i} : Set ℤ)) ≃+ ∀ i : ι, ZMod (a i).natAbs :=
     AddEquiv.piCongrRight fun i => ↑(Int.quotientSpanEquivZMod (a i))
   (↑(e : (S ⧸ I) ≃ₗ[ℤ] _) : S ⧸ I ≃+ _).trans e'
-#align ideal.quotient_equiv_pi_zmod Ideal.quotientEquivPiZMod
 
 /-- A nonzero ideal over a free finite extension of `ℤ` has a finite quotient.
 
@@ -106,7 +104,6 @@ noncomputable def fintypeQuotientOfFreeOfNeBot [Module.Free ℤ S] [Module.Finit
   haveI : ∀ i, NeZero (a i).natAbs := fun i =>
     ⟨Int.natAbs_ne_zero.mpr (smithCoeffs_ne_zero b I hI i)⟩
   classical exact Fintype.ofEquiv (∀ i, ZMod (a i).natAbs) e.symm
-#align ideal.fintype_quotient_of_free_of_ne_bot Ideal.fintypeQuotientOfFreeOfNeBot
 
 variable (F : Type*) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R S]
   (b : Basis ι R S) {I : Ideal S} (hI : I ≠ ⊥)
@@ -119,7 +116,6 @@ noncomputable def quotientEquivDirectSum :
   -- porting note: manual construction of `CompatibleSmul` typeclass no longer needed
   exact ((I.quotientEquivPiSpan b _).restrictScalars F).trans
     (DirectSum.linearEquivFunOnFintype _ _ _).symm
-#align ideal.quotient_equiv_direct_sum Ideal.quotientEquivDirectSum
 
 theorem finrank_quotient_eq_sum {ι} [Fintype ι] (b : Basis ι R S) [Nontrivial F]
     [∀ i, Module.Free F (R ⧸ span ({I.smithCoeffs b hI i} : Set R))]
@@ -128,6 +124,5 @@ theorem finrank_quotient_eq_sum {ι} [Fintype ι] (b : Basis ι R S) [Nontrivial
       ∑ i, FiniteDimensional.finrank F (R ⧸ span ({I.smithCoeffs b hI i} : Set R)) := by
   -- slow, and dot notation doesn't work
   rw [LinearEquiv.finrank_eq <| quotientEquivDirectSum F b hI, FiniteDimensional.finrank_directSum]
-#align ideal.finrank_quotient_eq_sum Ideal.finrank_quotient_eq_sum
 
 end Ideal

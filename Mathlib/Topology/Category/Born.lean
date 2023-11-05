@@ -22,8 +22,6 @@ open CategoryTheory
 /-- The category of bornologies. -/
 def Born :=
   Bundled Bornology
-set_option linter.uppercaseLean3 false in
-#align Born Born
 
 namespace Born
 
@@ -36,8 +34,6 @@ instance (X : Born) : Bornology X :=
 /-- Construct a bundled `Born` from a `Bornology`. -/
 def of (α : Type*) [Bornology α] : Born :=
   Bundled.of α
-set_option linter.uppercaseLean3 false in
-#align Born.of Born.of
 
 instance : Inhabited Born :=
   ⟨of PUnit⟩

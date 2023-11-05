@@ -29,7 +29,6 @@ variable {n m : ℕ} (F : TypeVec.{u} n → Type*) [fF : MvFunctor F] [q : MvQPF
 functors gives us one `m`-ary functor -/
 def Comp (v : TypeVec.{u} m) : Type _ :=
   F fun i : Fin2 n ↦ G i v
-#align mvqpf.comp MvQPF.Comp
 
 namespace Comp
 
@@ -41,38 +40,30 @@ instance [I : Inhabited (F fun i : Fin2 n ↦ G i α)] : Inhabited (Comp F G α)
 
 /-- Constructor for functor composition -/
 protected def mk (x : F fun i ↦ G i α) : Comp F G α := x
-#align mvqpf.comp.mk MvQPF.Comp.mk
 
 /-- Destructor for functor composition -/
 protected def get (x : Comp F G α) : F fun i ↦ G i α := x
-#align mvqpf.comp.get MvQPF.Comp.get
 
 @[simp]
 protected theorem mk_get (x : Comp F G α) : Comp.mk (Comp.get x) = x := rfl
-#align mvqpf.comp.mk_get MvQPF.Comp.mk_get
 
 @[simp]
 protected theorem get_mk (x : F fun i ↦ G i α) : Comp.get (Comp.mk x) = x := rfl
-#align mvqpf.comp.get_mk MvQPF.Comp.get_mk
 
 /-- map operation defined on a vector of functors -/
 protected def map' : (fun i : Fin2 n ↦ G i α) ⟹ fun i : Fin2 n ↦ G i β := fun _i ↦ map f
-#align mvqpf.comp.map' MvQPF.Comp.map'
 
 /-- The composition of functors is itself functorial -/
 protected def map : (Comp F G) α → (Comp F G) β :=
   (map fun _i ↦ map f : (F fun i ↦ G i α) → F fun i ↦ G i β)
-#align mvqpf.comp.map MvQPF.Comp.map
 
 instance : MvFunctor (Comp F G) where map := Comp.map
 
 theorem map_mk (x : F fun i ↦ G i α) :
     f <$$> Comp.mk x = Comp.mk ((fun i (x : G i α) ↦ f <$$> x) <$$> x) := rfl
-#align mvqpf.comp.map_mk MvQPF.Comp.map_mk
 
 theorem get_map (x : Comp F G α) :
     Comp.get (f <$$> x) = (fun i (x : G i α) ↦ f <$$> x) <$$> Comp.get x := rfl
-#align mvqpf.comp.get_map MvQPF.Comp.get_map
 
 instance : MvQPF (Comp F G) where
   P := MvPFunctor.comp (P F) fun i ↦ P <| G i

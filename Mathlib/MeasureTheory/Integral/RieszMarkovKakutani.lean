@@ -43,7 +43,6 @@ variable (Λ : (X →ᵇ ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 content, and will be shown to agree with the Riesz measure on the compact subsets `K ⊆ X`. -/
 def rieszContentAux : Compacts X → ℝ≥0 := fun K =>
   sInf (Λ '' { f : X →ᵇ ℝ≥0 | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x })
-#align riesz_content_aux rieszContentAux
 
 section RieszMonotone
 
@@ -55,7 +54,6 @@ theorem rieszContentAux_image_nonempty (K : Compacts X) :
   use (1 : X →ᵇ ℝ≥0)
   intro x _
   simp only [BoundedContinuousFunction.coe_one, Pi.one_apply]; rfl
-#align riesz_content_aux_image_nonempty rieszContentAux_image_nonempty
 
 /-- Riesz content λ (associated with a positive linear functional Λ) is
 monotone: if `K₁ ⊆ K₂` are compact subsets in X, then `λ(K₁) ≤ λ(K₂)`. -/
@@ -63,7 +61,6 @@ theorem rieszContentAux_mono {K₁ K₂ : Compacts X} (h : K₁ ≤ K₂) :
     rieszContentAux Λ K₁ ≤ rieszContentAux Λ K₂ :=
   csInf_le_csInf (OrderBot.bddBelow _) (rieszContentAux_image_nonempty Λ K₂)
     (image_subset Λ (setOf_subset_setOf.mpr fun _ f_hyp x x_in_K₁ => f_hyp x (h x_in_K₁)))
-#align riesz_content_aux_mono rieszContentAux_mono
 
 end RieszMonotone
 
@@ -74,7 +71,6 @@ content of K; namely `λ(K) ≤ Λ f`. -/
 theorem rieszContentAux_le {K : Compacts X} {f : X →ᵇ ℝ≥0} (h : ∀ x ∈ K, (1 : ℝ≥0) ≤ f x) :
     rieszContentAux Λ K ≤ Λ f :=
   csInf_le (OrderBot.bddBelow _) ⟨f, ⟨h, rfl⟩⟩
-#align riesz_content_aux_le rieszContentAux_le
 
 /-- The Riesz content can be approximated arbitrarily well by evaluating the positive linear
 functional on test functions: for any `ε > 0`, there exists a bounded continuous nonnegative
@@ -88,7 +84,6 @@ theorem exists_lt_rieszContentAux_add_pos (K : Compacts X) {ε : ℝ≥0} (εpos
   refine' ⟨f, f_hyp.left, _⟩
   rw [f_hyp.right]
   exact α_hyp
-#align exists_lt_riesz_content_aux_add_pos exists_lt_rieszContentAux_add_pos
 
 /-- The Riesz content λ associated to a given positive linear functional Λ is
 finitely subadditive: `λ(K₁ ∪ K₂) ≤ λ(K₁) + λ(K₂)` for any compact subsets `K₁, K₂ ⊆ X`. -/
@@ -111,6 +106,5 @@ theorem rieszContentAux_sup_le (K1 K2 : Compacts X) :
   apply lt_of_lt_of_le (_root_.add_lt_add f_test_function_K1.right f_test_function_K2.right)
     (le_of_eq _)
   rw [add_assoc, add_comm (ε / 2), add_assoc, add_halves ε, add_assoc]
-#align riesz_content_aux_sup_le rieszContentAux_sup_le
 
 end RieszSubadditive

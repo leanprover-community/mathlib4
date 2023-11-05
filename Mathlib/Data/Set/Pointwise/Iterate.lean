@@ -42,5 +42,3 @@ theorem smul_eq_self_of_preimage_zpow_eq_self {G : Type*} [CommGroup G] {n : ℤ
   replace hg' : (zpowGroupHom n)^[j] g' = 1
   · simpa [zpowGroupHom]
   rwa [iterate_map_mul, hg', one_mul]
-#align smul_eq_self_of_preimage_zpow_eq_self smul_eq_self_of_preimage_zpow_eq_self
-#align vadd_eq_self_of_preimage_zsmul_eq_self vadd_eq_self_of_preimage_zsmul_eq_self

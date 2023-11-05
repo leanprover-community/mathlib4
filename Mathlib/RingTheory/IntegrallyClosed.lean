@@ -38,7 +38,6 @@ class IsIntegrallyClosed (R : Type*) [CommRing R] : Prop where
   /-- All integral elements of `Frac(R)` are also elements of `R`. -/
   algebraMap_eq_of_integral :
     ∀ {x : FractionRing R}, IsIntegral R x → ∃ y, algebraMap R (FractionRing R) y = x
-#align is_integrally_closed IsIntegrallyClosed
 
 section Iff
 
@@ -60,7 +59,6 @@ theorem isIntegrallyClosed_iff :
     refine' ⟨fun hx => _⟩
     obtain ⟨y, hy⟩ := cl ((isIntegral_algEquiv e.symm).mpr hx)
     exact ⟨y, e.symm.algebraMap_eq_apply.mp hy⟩
-#align is_integrally_closed_iff isIntegrallyClosed_iff
 
 /-- `R` is integrally closed iff it is the integral closure of itself in its field of fractions. -/
 theorem isIntegrallyClosed_iff_isIntegralClosure : IsIntegrallyClosed R ↔ IsIntegralClosure R R K :=
@@ -73,7 +71,6 @@ theorem isIntegrallyClosed_iff_isIntegralClosure : IsIntegrallyClosed R ↔ IsIn
       exact isIntegral_algebraMap
     · rintro ⟨-, cl⟩ x hx
       exact cl.mp hx
-#align is_integrally_closed_iff_is_integral_closure isIntegrallyClosed_iff_isIntegralClosure
 
 end Iff
 
@@ -88,18 +85,15 @@ instance : IsIntegralClosure R R K :=
 
 theorem isIntegral_iff {x : K} : IsIntegral R x ↔ ∃ y : R, algebraMap R K y = x :=
   IsIntegralClosure.isIntegral_iff
-#align is_integrally_closed.is_integral_iff IsIntegrallyClosed.isIntegral_iff
 
 theorem exists_algebraMap_eq_of_isIntegral_pow {x : K} {n : ℕ} (hn : 0 < n)
     (hx : IsIntegral R <| x ^ n) : ∃ y : R, algebraMap R K y = x :=
   isIntegral_iff.mp <| isIntegral_of_pow hn hx
-#align is_integrally_closed.exists_algebra_map_eq_of_is_integral_pow IsIntegrallyClosed.exists_algebraMap_eq_of_isIntegral_pow
 
 theorem exists_algebraMap_eq_of_pow_mem_subalgebra {K : Type*} [CommRing K] [Algebra R K]
     {S : Subalgebra R K} [IsIntegrallyClosed S] [IsFractionRing S K] {x : K} {n : ℕ} (hn : 0 < n)
     (hx : x ^ n ∈ S) : ∃ y : S, algebraMap S K y = x :=
   exists_algebraMap_eq_of_isIntegral_pow hn <| isIntegral_iff.mpr ⟨⟨x ^ n, hx⟩, rfl⟩
-#align is_integrally_closed.exists_algebra_map_eq_of_pow_mem_subalgebra IsIntegrallyClosed.exists_algebraMap_eq_of_pow_mem_subalgebra
 
 variable (K)
 
@@ -112,14 +106,12 @@ theorem integralClosure_eq_bot_iff : integralClosure R K = ⊥ ↔ IsIntegrallyC
   · intro h x hx
     rw [Algebra.mem_bot, Set.mem_range]
     exact isIntegral_iff.mp hx
-#align is_integrally_closed.integral_closure_eq_bot_iff IsIntegrallyClosed.integralClosure_eq_bot_iff
 
 variable (R)
 
 @[simp]
 theorem integralClosure_eq_bot : integralClosure R K = ⊥ :=
   (integralClosure_eq_bot_iff K).mpr ‹_›
-#align is_integrally_closed.integral_closure_eq_bot IsIntegrallyClosed.integralClosure_eq_bot
 
 end IsIntegrallyClosed
 
@@ -140,6 +132,5 @@ theorem isIntegrallyClosedOfFiniteExtension [IsDomain R] [FiniteDimensional K L]
     IsIntegrallyClosed (integralClosure R L) :=
   letI : IsFractionRing (integralClosure R L) L := isFractionRing_of_finite_extension K L
   (integralClosure_eq_bot_iff L).mp integralClosure_idem
-#align integral_closure.is_integrally_closed_of_finite_extension integralClosure.isIntegrallyClosedOfFiniteExtension
 
 end integralClosure

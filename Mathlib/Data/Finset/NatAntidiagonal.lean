@@ -38,13 +38,11 @@ instance instHasAntidiagonal : HasAntidiagonal ℕ where
 /-- The cardinality of the antidiagonal of `n` is `n + 1`. -/
 @[simp]
 theorem card_antidiagonal (n : ℕ) : (antidiagonal n).card = n + 1 := by simp [antidiagonal]
-#align finset.nat.card_antidiagonal Finset.Nat.card_antidiagonal
 
 /-- The antidiagonal of `0` is the list `[(0, 0)]` -/
 -- nolint as this is for dsimp
 @[simp, nolint simpNF]
 theorem antidiagonal_zero : antidiagonal 0 = {(0, 0)} := rfl
-#align finset.nat.antidiagonal_zero Finset.Nat.antidiagonal_zero
 
 theorem antidiagonal_succ (n : ℕ) :
     antidiagonal (n + 1) =
@@ -55,7 +53,6 @@ theorem antidiagonal_succ (n : ℕ) :
   apply eq_of_veq
   rw [cons_val, map_val]
   · apply Multiset.Nat.antidiagonal_succ
-#align finset.nat.antidiagonal_succ Finset.Nat.antidiagonal_succ
 
 theorem antidiagonal_succ' (n : ℕ) :
     antidiagonal (n + 1) =
@@ -66,7 +63,6 @@ theorem antidiagonal_succ' (n : ℕ) :
   apply eq_of_veq
   rw [cons_val, map_val]
   exact Multiset.Nat.antidiagonal_succ'
-#align finset.nat.antidiagonal_succ' Finset.Nat.antidiagonal_succ'
 
 theorem antidiagonal_succ_succ' {n : ℕ} :
     antidiagonal (n + 2) =
@@ -79,7 +75,6 @@ theorem antidiagonal_succ_succ' {n : ℕ} :
         (by simp) := by
   simp_rw [antidiagonal_succ (n + 1), antidiagonal_succ', Finset.map_cons, map_map]
   rfl
-#align finset.nat.antidiagonal_succ_succ' Finset.Nat.antidiagonal_succ_succ'
 
 theorem antidiagonal.fst_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagonal n) : kl.1 < n + 1 :=
   Nat.lt_succ_of_le $ antidiagonal.fst_le hlk

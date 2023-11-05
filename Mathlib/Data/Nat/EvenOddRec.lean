@@ -26,13 +26,11 @@ def evenOddRec {P : ℕ → Sort*} (h0 : P 0) (h_even : ∀ (n) (_ : P n), P (2 
   binaryRec h0 (fun
     | false, i, hi => (bit0_val i ▸ h_even i hi : P (bit0 i))
     | true, i, hi => (bit1_val i ▸ h_odd i hi : P (bit1 i))) n
-#align nat.even_odd_rec Nat.evenOddRec
 
 @[simp]
 theorem evenOddRec_zero (P : ℕ → Sort*) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
     (h_odd : ∀ i, P i → P (2 * i + 1)) : @evenOddRec _ h0 h_even h_odd 0 = h0 :=
   binaryRec_zero _ _
-#align nat.even_odd_rec_zero Nat.evenOddRec_zero
 
 @[simp]
 theorem evenOddRec_even (n : ℕ) (P : ℕ → Sort*) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
@@ -42,7 +40,6 @@ theorem evenOddRec_even (n : ℕ) (P : ℕ → Sort*) (h0 : P 0) (h_even : ∀ i
       HEq (@evenOddRec _ h0 h_even h_odd a) (h_even n (evenOddRec h0 h_even h_odd n))
     | _, rfl => by rw [evenOddRec, binaryRec_eq]; apply eq_rec_heq; exact H
   eq_of_heq (this _ (bit0_val _))
-#align nat.even_odd_rec_even Nat.evenOddRec_even
 
 @[simp]
 theorem evenOddRec_odd (n : ℕ) (P : ℕ → Sort*) (h0 : P 0) (h_even : ∀ i, P i → P (2 * i))
@@ -52,6 +49,5 @@ theorem evenOddRec_odd (n : ℕ) (P : ℕ → Sort*) (h0 : P 0) (h_even : ∀ i,
       HEq (@evenOddRec _ h0 h_even h_odd a) (h_odd n (evenOddRec h0 h_even h_odd n))
     | _, rfl => by rw [evenOddRec, binaryRec_eq]; apply eq_rec_heq; exact H
   eq_of_heq (this _ (bit1_val _))
-#align nat.even_odd_rec_odd Nat.evenOddRec_odd
 
 end Nat

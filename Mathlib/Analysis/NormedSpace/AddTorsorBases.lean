@@ -38,18 +38,15 @@ theorem isOpenMap_barycentric_coord [Nontrivial ι] (b : AffineBasis ι 𝕜 P) 
   AffineMap.isOpenMap_linear_iff.mp <|
     (b.coord i).linear.isOpenMap_of_finiteDimensional <|
       (b.coord i).linear_surjective_iff.mpr (b.surjective_coord i)
-#align is_open_map_barycentric_coord isOpenMap_barycentric_coord
 
 variable [FiniteDimensional 𝕜 E] (b : AffineBasis ι 𝕜 P)
 
 @[continuity]
 theorem continuous_barycentric_coord (i : ι) : Continuous (b.coord i) :=
   (b.coord i).continuous_of_finiteDimensional
-#align continuous_barycentric_coord continuous_barycentric_coord
 
 theorem smooth_barycentric_coord (b : AffineBasis ι 𝕜 E) (i : ι) : ContDiff 𝕜 ⊤ (b.coord i) :=
   (⟨b.coord i, continuous_barycentric_coord b i⟩ : E →A[𝕜] 𝕜).contDiff
-#align smooth_barycentric_coord smooth_barycentric_coord
 
 end Barycentric
 
@@ -78,7 +75,6 @@ theorem AffineBasis.interior_convexHull {ι E : Type*} [Finite ι] [NormedAddCom
       IsOpenMap.preimage_interior_eq_interior_preimage (isOpenMap_barycentric_coord b _)
         (continuous_barycentric_coord b _),
       interior_Ici, mem_iInter, mem_setOf_eq, mem_Ioi, mem_preimage]
-#align affine_basis.interior_convex_hull AffineBasis.interior_convexHull
 
 variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
@@ -113,7 +109,6 @@ theorem IsOpen.exists_between_affineIndependent_span_eq_top {s u : Set P} (hu : 
     [exact hsu hps; exact hf p]
   · exact (ht₂.units_lineMap ⟨q, ht₁ hq⟩ w).range
   · rw [affineSpan_eq_affineSpan_lineMap_units (ht₁ hq) w, ht₃]
-#align is_open.exists_between_affine_independent_span_eq_top IsOpen.exists_between_affineIndependent_span_eq_top
 
 theorem IsOpen.exists_subset_affineIndependent_span_eq_top {u : Set P} (hu : IsOpen u)
     (hne : u.Nonempty) :
@@ -122,27 +117,23 @@ theorem IsOpen.exists_subset_affineIndependent_span_eq_top {u : Set P} (hu : IsO
   rcases hu.exists_between_affineIndependent_span_eq_top (singleton_subset_iff.mpr hx)
     (singleton_nonempty _) (affineIndependent_of_subsingleton _ _) with ⟨s, -, hsu, hs⟩
   exact ⟨s, hsu, hs⟩
-#align is_open.exists_subset_affine_independent_span_eq_top IsOpen.exists_subset_affineIndependent_span_eq_top
 
 /-- The affine span of a nonempty open set is `⊤`. -/
 theorem IsOpen.affineSpan_eq_top {u : Set P} (hu : IsOpen u) (hne : u.Nonempty) :
     affineSpan ℝ u = ⊤ :=
   let ⟨_, hsu, _, hs'⟩ := hu.exists_subset_affineIndependent_span_eq_top hne
   top_unique <| hs' ▸ affineSpan_mono _ hsu
-#align is_open.affine_span_eq_top IsOpen.affineSpan_eq_top
 
 theorem affineSpan_eq_top_of_nonempty_interior {s : Set V}
     (hs : (interior <| convexHull ℝ s).Nonempty) : affineSpan ℝ s = ⊤ :=
   top_unique <| isOpen_interior.affineSpan_eq_top hs ▸
     (affineSpan_mono _ interior_subset).trans_eq (affineSpan_convexHull _)
-#align affine_span_eq_top_of_nonempty_interior affineSpan_eq_top_of_nonempty_interior
 
 theorem AffineBasis.centroid_mem_interior_convexHull {ι} [Fintype ι] (b : AffineBasis ι ℝ V) :
     Finset.univ.centroid ℝ b ∈ interior (convexHull ℝ (range b)) := by
   haveI := b.nonempty
   simp only [b.interior_convexHull, mem_setOf_eq, b.coord_apply_centroid (Finset.mem_univ _),
     inv_pos, Nat.cast_pos, Finset.card_pos, Finset.univ_nonempty, forall_true_iff]
-#align affine_basis.centroid_mem_interior_convex_hull AffineBasis.centroid_mem_interior_convexHull
 
 theorem interior_convexHull_nonempty_iff_affineSpan_eq_top [FiniteDimensional ℝ V] {s : Set V} :
     (interior (convexHull ℝ s)).Nonempty ↔ affineSpan ℝ s = ⊤ := by
@@ -154,9 +145,7 @@ theorem interior_convexHull_nonempty_iff_affineSpan_eq_top [FiniteDimensional �
     mono*
   lift t to Finset V using b.finite_set
   exact ⟨_, b.centroid_mem_interior_convexHull⟩
-#align interior_convex_hull_nonempty_iff_affine_span_eq_top interior_convexHull_nonempty_iff_affineSpan_eq_top
 
 theorem Convex.interior_nonempty_iff_affineSpan_eq_top [FiniteDimensional ℝ V] {s : Set V}
     (hs : Convex ℝ s) : (interior s).Nonempty ↔ affineSpan ℝ s = ⊤ := by
   rw [← interior_convexHull_nonempty_iff_affineSpan_eq_top, hs.convexHull_eq]
-#align convex.interior_nonempty_iff_affine_span_eq_top Convex.interior_nonempty_iff_affineSpan_eq_top

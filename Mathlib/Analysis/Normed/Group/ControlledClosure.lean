@@ -109,7 +109,6 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
       _ ≤ (C + ε) * ‖h‖ := by
         rw [add_comm, add_mul]
         apply add_le_add_left this
-#align controlled_closure_of_complete controlled_closure_of_complete
 
 /-- Given `f : NormedAddGroupHom G H` for some complete `G`, if every element `x` of the image of
 an isometric immersion `j : NormedAddGroupHom K H` has a preimage under `f` whose norm is at most
@@ -128,4 +127,3 @@ theorem controlled_closure_range_of_complete {f : NormedAddGroupHom G H} {K : Ty
     rw [hj]
     exact hyp k
   exact controlled_closure_of_complete hC hε hyp
-#align controlled_closure_range_of_complete controlled_closure_range_of_complete

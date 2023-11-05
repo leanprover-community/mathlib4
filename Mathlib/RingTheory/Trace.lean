@@ -91,7 +91,6 @@ variable (R S)
 as an `R`-linear map. -/
 noncomputable def trace : S →ₗ[R] R :=
   (LinearMap.trace R S).comp (lmul R S).toLinearMap
-#align algebra.trace Algebra.trace
 
 variable {S}
 
@@ -99,11 +98,9 @@ variable {S}
 -- for example `trace_trace`
 theorem trace_apply (x) : trace R S x = LinearMap.trace R S (lmul R S x) :=
   rfl
-#align algebra.trace_apply Algebra.trace_apply
 
 theorem trace_eq_zero_of_not_exists_basis (h : ¬∃ s : Finset S, Nonempty (Basis s R S)) :
     trace R S = 0 := by ext s; simp [trace_apply, LinearMap.trace, h]
-#align algebra.trace_eq_zero_of_not_exists_basis Algebra.trace_eq_zero_of_not_exists_basis
 
 variable {R}
 
@@ -111,7 +108,6 @@ variable {R}
 theorem trace_eq_matrix_trace [DecidableEq ι] (b : Basis ι R S) (s : S) :
     trace R S s = Matrix.trace (Algebra.leftMulMatrix b s) := by
   rw [trace_apply, LinearMap.trace_eq_matrix_trace _ b, ← toMatrix_lmul_eq]; rfl
-#align algebra.trace_eq_matrix_trace Algebra.trace_eq_matrix_trace
 
 /-- If `x` is in the base field `K`, then the trace is `[L : K] * x`. -/
 theorem trace_algebraMap_of_basis (x : R) : trace R S (algebraMap R S x) = Fintype.card ι • x := by
@@ -121,7 +117,6 @@ theorem trace_algebraMap_of_basis (x : R) : trace R S (algebraMap R S x) = Finty
 -- Porting note: was `simp [-coe_lmul_eq_mul]`.
   simp only [AlgHom.commutes, toMatrix_algebraMap, diag_apply, Matrix.scalar_apply_eq]
 
-#align algebra.trace_algebra_map_of_basis Algebra.trace_algebraMap_of_basis
 
 /-- If `x` is in the base field `K`, then the trace is `[L : K] * x`.
 
@@ -132,7 +127,6 @@ theorem trace_algebraMap (x : K) : trace K L (algebraMap K L x) = finrank K L �
   by_cases H : ∃ s : Finset L, Nonempty (Basis s K L)
   · rw [trace_algebraMap_of_basis H.choose_spec.some, finrank_eq_card_basis H.choose_spec.some]
   · simp [trace_eq_zero_of_not_exists_basis K H, finrank_eq_zero_of_not_exists_basis_finset H]
-#align algebra.trace_algebra_map Algebra.trace_algebraMap
 
 theorem trace_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*} [Finite ι]
     [Finite κ] (b : Basis ι R S) (c : Basis κ S T) (x : T) :
@@ -150,26 +144,22 @@ theorem trace_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*}
   rw [Finset.sum_apply
       i (Finset.univ : Finset κ) fun y => leftMulMatrix b (leftMulMatrix c x y y)]
   apply Finset.sum_apply
-#align algebra.trace_trace_of_basis Algebra.trace_trace_of_basis
 
 theorem trace_comp_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*} [Finite ι]
     [Fintype κ] (b : Basis ι R S) (c : Basis κ S T) :
     (trace R S).comp ((trace S T).restrictScalars R) = trace R T := by
   ext
   rw [LinearMap.comp_apply, LinearMap.restrictScalars_apply, trace_trace_of_basis b c]
-#align algebra.trace_comp_trace_of_basis Algebra.trace_comp_trace_of_basis
 
 @[simp]
 theorem trace_trace [Algebra K T] [Algebra L T] [IsScalarTower K L T] [FiniteDimensional K L]
     [FiniteDimensional L T] (x : T) : trace K L (trace L T x) = trace K T x :=
   trace_trace_of_basis (Basis.ofVectorSpace K L) (Basis.ofVectorSpace L T) x
-#align algebra.trace_trace Algebra.trace_trace
 
 @[simp]
 theorem trace_comp_trace [Algebra K T] [Algebra L T] [IsScalarTower K L T] [FiniteDimensional K L]
     [FiniteDimensional L T] : (trace K L).comp ((trace L T).restrictScalars K) = trace K T := by
   ext; rw [LinearMap.comp_apply, LinearMap.restrictScalars_apply, trace_trace]
-#align algebra.trace_comp_trace Algebra.trace_comp_trace
 
 @[simp]
 theorem trace_prod_apply [Module.Free R S] [Module.Free R T] [Module.Finite R S] [Module.Finite R T]
@@ -180,12 +170,10 @@ theorem trace_prod_apply [Module.Free R S] [Module.Free R T] [Module.Finite R S]
     LinearMap.ext₂ Prod.mul_def
   simp_rw [trace, this]
   exact trace_prodMap' _ _
-#align algebra.trace_prod_apply Algebra.trace_prod_apply
 
 theorem trace_prod [Module.Free R S] [Module.Free R T] [Module.Finite R S] [Module.Finite R T] :
     trace R (S × T) = (trace R S).coprod (trace R T) :=
   LinearMap.ext fun p => by rw [coprod_apply, trace_prod_apply]
-#align algebra.trace_prod Algebra.trace_prod
 
 section TraceForm
 
@@ -196,7 +184,6 @@ It is a symmetric bilinear form and is nondegenerate if the extension is separab
 noncomputable def traceForm : BilinForm R S :=
 -- Porting note: dot notation `().toBilin` does not work anymore.
   LinearMap.toBilin (LinearMap.compr₂ (lmul R S).toLinearMap (trace R S))
-#align algebra.trace_form Algebra.traceForm
 
 variable {S}
 
@@ -204,20 +191,16 @@ variable {S}
 @[simp]
 theorem traceForm_apply (x y : S) : traceForm R S x y = trace R S (x * y) :=
   rfl
-#align algebra.trace_form_apply Algebra.traceForm_apply
 
 theorem traceForm_isSymm : (traceForm R S).IsSymm := fun _ _ => congr_arg (trace R S) (mul_comm _ _)
-#align algebra.trace_form_is_symm Algebra.traceForm_isSymm
 
 theorem traceForm_toMatrix [DecidableEq ι] (i j) :
     BilinForm.toMatrix b (traceForm R S) i j = trace R S (b i * b j) := by
   rw [BilinForm.toMatrix_apply, traceForm_apply]
-#align algebra.trace_form_to_matrix Algebra.traceForm_toMatrix
 
 theorem traceForm_toMatrix_powerBasis (h : PowerBasis R S) :
     BilinForm.toMatrix h.basis (traceForm R S) = of fun i j => trace R S (h.gen ^ (i.1 + j.1)) :=
   by ext; rw [traceForm_toMatrix, of_apply, pow_add, h.basis_eq_pow, h.basis_eq_pow]
-#align algebra.trace_form_to_matrix_power_basis Algebra.traceForm_toMatrix_powerBasis
 
 end TraceForm
 
@@ -239,7 +222,6 @@ theorem PowerBasis.trace_gen_eq_nextCoeff_minpoly [Nontrivial S] (pb : PowerBasi
   haveI : Nonempty (Fin pb.dim) := ⟨⟨0, d_pos⟩⟩
   rw [trace_eq_matrix_trace pb.basis, trace_eq_neg_charpoly_coeff, charpoly_leftMulMatrix, ←
     pb.natDegree_minpoly, Fintype.card_fin, ← nextCoeff_of_pos_natDegree _ d_pos']
-#align power_basis.trace_gen_eq_next_coeff_minpoly PowerBasis.trace_gen_eq_nextCoeff_minpoly
 
 /-- Given `pb : PowerBasis K S`, then the trace of `pb.gen` is
 `((minpoly K pb.gen).aroots F).sum`. -/
@@ -251,7 +233,6 @@ theorem PowerBasis.trace_gen_eq_sum_roots [Nontrivial S] (pb : PowerBasis K S)
     sum_roots_eq_nextCoeff_of_monic_of_split ((minpoly.monic (PowerBasis.isIntegral_gen _)).map _)
       ((splits_id_iff_splits _).2 hf),
     neg_neg]
-#align power_basis.trace_gen_eq_sum_roots PowerBasis.trace_gen_eq_sum_roots
 
 namespace IntermediateField.AdjoinSimple
 
@@ -265,7 +246,6 @@ theorem trace_gen_eq_zero {x : L} (hx : ¬IsIntegral K x) :
   refine' isIntegral_of_mem_of_FG K⟮x⟯.toSubalgebra _ x _
   · exact (Submodule.fg_iff_finiteDimensional _).mpr (FiniteDimensional.of_fintype_basis b)
   · exact subset_adjoin K _ (Set.mem_singleton x)
-#align intermediate_field.adjoin_simple.trace_gen_eq_zero IntermediateField.AdjoinSimple.trace_gen_eq_zero
 
 theorem trace_gen_eq_sum_roots (x : L) (hf : (minpoly K x).Splits (algebraMap K F)) :
     algebraMap K F (trace K K⟮x⟯ (AdjoinSimple.gen K x)) =
@@ -277,7 +257,6 @@ theorem trace_gen_eq_sum_roots (x : L) (hf : (minpoly K x).Splits (algebraMap K 
     rw [adjoin.powerBasis_gen hx, ← minpoly.algebraMap_eq injKxL] <;>
     try simp only [AdjoinSimple.algebraMap_gen _ _]
   exact hf
-#align intermediate_field.adjoin_simple.trace_gen_eq_sum_roots IntermediateField.AdjoinSimple.trace_gen_eq_sum_roots
 
 end IntermediateField.AdjoinSimple
 
@@ -293,7 +272,6 @@ theorem trace_eq_trace_adjoin [FiniteDimensional K L] (x : L) :
     lhs
     rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]
   rw [← @trace_trace _ _ K K⟮x⟯ _ _ _ _ _ _ _ _ _, trace_algebraMap, LinearMap.map_smul_of_tower]
-#align trace_eq_trace_adjoin trace_eq_trace_adjoin
 
 variable {K}
 
@@ -305,7 +283,6 @@ theorem trace_eq_sum_roots [FiniteDimensional K L] {x : L}
     IntermediateField.AdjoinSimple.trace_gen_eq_sum_roots _ hF]
 -- Porting note: last `simp` was `IsScalarTower.algebraMap_smul` inside the `rw`.
   simp only [eq_natCast, map_natCast, nsmul_eq_mul]
-#align trace_eq_sum_roots trace_eq_sum_roots
 
 end EqSumRoots
 
@@ -328,7 +305,6 @@ theorem Algebra.isIntegral_trace [FiniteDimensional L F] {x : F} (hx : IsIntegra
     rw [← aeval_def] at hy ⊢
     exact minpoly.aeval_of_isScalarTower R x y hy
   · apply IsAlgClosed.splits_codomain
-#align algebra.is_integral_trace Algebra.isIntegral_trace
 
 section EqSumEmbeddings
 
@@ -354,7 +330,6 @@ theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
   · intro x; rfl
   · intro σ
     rw [PowerBasis.liftEquiv'_apply_coe]
-#align trace_eq_sum_embeddings_gen trace_eq_sum_embeddings_gen
 
 variable [IsAlgClosed E]
 
@@ -379,7 +354,6 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [IsSeparable K F]
   · intro σ
     simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
       IsScalarTower.coe_toAlgHom']
-#align sum_embeddings_eq_finrank_mul sum_embeddings_eq_finrank_mul
 
 theorem trace_eq_sum_embeddings [FiniteDimensional K L] [IsSeparable K L] {x : L} :
     algebraMap K E (Algebra.trace K L x) = ∑ σ : L →ₐ[K] E, σ x := by
@@ -394,7 +368,6 @@ theorem trace_eq_sum_embeddings [FiniteDimensional K L] [IsSeparable K L] {x : L
     simp
   · haveI := isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
     exact IsSeparable.separable K _
-#align trace_eq_sum_embeddings trace_eq_sum_embeddings
 
 theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L] :
     algebraMap K L (Algebra.trace K L x) = ∑ σ : L ≃ₐ[K] L, σ x := by
@@ -408,7 +381,6 @@ theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L
   · intro σ
     simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
       AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, id.map_eq_id, RingHom.id_apply]
-#align trace_eq_sum_automorphisms trace_eq_sum_automorphisms
 
 end EqSumEmbeddings
 
@@ -426,17 +398,14 @@ open Finset
 `traceMatrix A b` as the matrix whose `(i j)`-th element is the trace of `b i * b j`. -/
 noncomputable def traceMatrix (b : κ → B) : Matrix κ κ A :=
   of fun i j => traceForm A B (b i) (b j)
-#align algebra.trace_matrix Algebra.traceMatrix
 
 -- TODO: set as an equation lemma for `traceMatrix`, see mathlib4#3024
 @[simp]
 theorem traceMatrix_apply (b : κ → B) (i j) : traceMatrix A b i j = traceForm A B (b i) (b j) :=
   rfl
-#align algebra.trace_matrix_apply Algebra.traceMatrix_apply
 
 theorem traceMatrix_reindex {κ' : Type*} (b : Basis κ A B) (f : κ ≃ κ') :
     traceMatrix A (b.reindex f) = reindex f f (traceMatrix A b) := by ext (x y); simp
-#align algebra.trace_matrix_reindex Algebra.traceMatrix_reindex
 
 variable {A}
 
@@ -459,7 +428,6 @@ theorem traceMatrix_of_matrix_vecMul [Fintype κ] (b : κ → B) (P : Matrix κ 
   ring_nf
   rw [mul_assoc]
   simp [mul_comm]
-#align algebra.trace_matrix_of_matrix_vec_mul Algebra.traceMatrix_of_matrix_vecMul
 
 theorem traceMatrix_of_matrix_mulVec [Fintype κ] (b : κ → B) (P : Matrix κ κ A) :
     traceMatrix A ((P.map (algebraMap A B)).mulVec b) = P * traceMatrix A b * Pᵀ := by
@@ -467,13 +435,11 @@ theorem traceMatrix_of_matrix_mulVec [Fintype κ] (b : κ → B) (P : Matrix κ 
   rw [transposeAddEquiv_apply, transposeAddEquiv_apply, ← vecMul_transpose, ← transpose_map,
     traceMatrix_of_matrix_vecMul, transpose_transpose, transpose_mul, transpose_transpose,
     transpose_mul]
-#align algebra.trace_matrix_of_matrix_mul_vec Algebra.traceMatrix_of_matrix_mulVec
 
 theorem traceMatrix_of_basis [Fintype κ] [DecidableEq κ] (b : Basis κ A B) :
     traceMatrix A b = BilinForm.toMatrix b (traceForm A B) := by
   ext (i j)
   rw [traceMatrix_apply, traceForm_apply, traceForm_toMatrix]
-#align algebra.trace_matrix_of_basis Algebra.traceMatrix_of_basis
 
 theorem traceMatrix_of_basis_mulVec (b : Basis ι A B) (z : B) :
     (traceMatrix A b).mulVec (b.equivFun z) = fun i => trace A B (z * b i) := by
@@ -496,7 +462,6 @@ theorem traceMatrix_of_basis_mulVec (b : Basis ι A B) (z : B) :
   rw [← Finset.mul_sum, mul_comm z]
   congr
   rw [b.sum_equivFun]
-#align algebra.trace_matrix_of_basis_mul_vec Algebra.traceMatrix_of_basis_mulVec
 
 variable (A)
 
@@ -505,14 +470,12 @@ variable (A)
   algebraically closed. -/
 def embeddingsMatrix (b : κ → B) : Matrix κ (B →ₐ[A] C) C :=
   of fun i (σ : B →ₐ[A] C) => σ (b i)
-#align algebra.embeddings_matrix Algebra.embeddingsMatrix
 
 -- TODO: set as an equation lemma for `embeddingsMatrix`, see mathlib4#3024
 @[simp]
 theorem embeddingsMatrix_apply (b : κ → B) (i) (σ : B →ₐ[A] C) :
     embeddingsMatrix A C b i σ = σ (b i) :=
   rfl
-#align algebra.embeddings_matrix_apply Algebra.embeddingsMatrix_apply
 
 /-- `embeddingsMatrixReindex A C b e : Matrix κ κ C` is the matrix whose `(i, j)` coefficient
   is `σⱼ (b i)`, where `σⱼ : B →ₐ[A] C` is the embedding corresponding to `j : κ` given by a
@@ -521,7 +484,6 @@ theorem embeddingsMatrix_apply (b : κ → B) (i) (σ : B →ₐ[A] C) :
   `e := equivOfCardEq ((AlgHom.card A B C).trans h.symm)`. -/
 def embeddingsMatrixReindex (b : κ → B) (e : κ ≃ (B →ₐ[A] C)) :=
   reindex (Equiv.refl κ) e.symm (embeddingsMatrix A C b)
-#align algebra.embeddings_matrix_reindex Algebra.embeddingsMatrixReindex
 
 variable {A}
 
@@ -530,7 +492,6 @@ theorem embeddingsMatrixReindex_eq_vandermonde (pb : PowerBasis A B)
     embeddingsMatrixReindex A C pb.basis e = (vandermonde fun i => e i pb.gen)ᵀ := by
   ext i j
   simp [embeddingsMatrixReindex, embeddingsMatrix]
-#align algebra.embeddings_matrix_reindex_eq_vandermonde Algebra.embeddingsMatrixReindex_eq_vandermonde
 
 section Field
 
@@ -545,14 +506,12 @@ variable (b : κ → L) (pb : PowerBasis K L)
 theorem traceMatrix_eq_embeddingsMatrix_mul_trans :
     (traceMatrix K b).map (algebraMap K E) = embeddingsMatrix K E b * (embeddingsMatrix K E b)ᵀ :=
   by ext (i j); simp [trace_eq_sum_embeddings, embeddingsMatrix, Matrix.mul_apply]
-#align algebra.trace_matrix_eq_embeddings_matrix_mul_trans Algebra.traceMatrix_eq_embeddingsMatrix_mul_trans
 
 theorem traceMatrix_eq_embeddingsMatrixReindex_mul_trans [Fintype κ] (e : κ ≃ (L →ₐ[K] E)) :
     (traceMatrix K b).map (algebraMap K E) =
       embeddingsMatrixReindex K E b e * (embeddingsMatrixReindex K E b e)ᵀ := by
   rw [traceMatrix_eq_embeddingsMatrix_mul_trans, embeddingsMatrixReindex, reindex_apply,
     transpose_submatrix, ← submatrix_mul_transpose_submatrix, ← Equiv.coe_refl, Equiv.refl_symm]
-#align algebra.trace_matrix_eq_embeddings_matrix_reindex_mul_trans Algebra.traceMatrix_eq_embeddingsMatrixReindex_mul_trans
 
 end Field
 
@@ -578,7 +537,6 @@ theorem det_traceMatrix_ne_zero' [IsSeparable K L] : det (traceMatrix K pb.basis
     rintro i ⟨_, j, hij, h⟩
     exact (Finset.mem_Ioi.mp hij).ne' (e.injective <| pb.algHom_ext h)
   · rw [AlgHom.card, pb.finrank]
-#align det_trace_matrix_ne_zero' det_traceMatrix_ne_zero'
 
 theorem det_traceForm_ne_zero [IsSeparable K L] [DecidableEq ι] (b : Basis ι K L) :
     det (BilinForm.toMatrix b (traceForm K L)) ≠ 0 := by
@@ -600,7 +558,6 @@ theorem det_traceForm_ne_zero [IsSeparable K L] [DecidableEq ι] (b : Basis ι K
         simp only [Basis.toMatrix_mul_toMatrix_flip, Matrix.transpose_one, Matrix.mul_one,
           Matrix.det_one]
   simpa only [traceMatrix_of_basis] using det_traceMatrix_ne_zero' pb
-#align det_trace_form_ne_zero det_traceForm_ne_zero
 
 variable (K L)
 
@@ -608,6 +565,5 @@ theorem traceForm_nondegenerate [FiniteDimensional K L] [IsSeparable K L] :
     (traceForm K L).Nondegenerate :=
   BilinForm.nondegenerate_of_det_ne_zero (traceForm K L) _
     (det_traceForm_ne_zero (FiniteDimensional.finBasis K L))
-#align trace_form_nondegenerate traceForm_nondegenerate
 
 end DetNeZero

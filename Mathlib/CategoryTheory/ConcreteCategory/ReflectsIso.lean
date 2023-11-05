@@ -39,6 +39,5 @@ theorem reflectsIsomorphisms_forget₂ [HasForget₂ C D] [ReflectsIsomorphisms 
         rw [← this]
         exact i'
       apply isIso_of_reflects_iso f (forget C) }
-#align category_theory.reflects_isomorphisms_forget₂ CategoryTheory.reflectsIsomorphisms_forget₂
 
 end CategoryTheory

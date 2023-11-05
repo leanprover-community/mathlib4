@@ -78,7 +78,6 @@ theorem div_eq_quo_add_rem_div_add_rem_div (f : R[X]) {g₁ g₂ : R[X]} (hg₁ 
   field_simp
   norm_cast
   linear_combination -1 * f * hcd + -1 * g₁ * hfc + -1 * g₂ * hfd
-#align div_eq_quo_add_rem_div_add_rem_div div_eq_quo_add_rem_div_add_rem_div
 
 end TwoDenominators
 
@@ -132,6 +131,5 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
     rw [if_neg]
     rintro rfl
     exact hab hxb
-#align div_eq_quo_add_sum_rem_div div_eq_quo_add_sum_rem_div
 
 end NDenominators

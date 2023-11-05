@@ -30,7 +30,6 @@ theorem continuousOn_Icc_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [
     · exact ⟨la, ha.mono_left <| nhdsWithin_mono _ Ioo_subset_Ioi_self⟩
     · exact ⟨lb, hb.mono_left <| nhdsWithin_mono _ Ioo_subset_Iio_self⟩
     · exact ⟨f x, hf x h⟩
-#align continuous_on_Icc_extend_from_Ioo continuousOn_Icc_extendFrom_Ioo
 
 theorem eq_lim_at_left_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α]
     [OrderTopology α] [TopologicalSpace β] [T2Space β] {f : α → β} {a b : α} {la : β} (hab : a < b)
@@ -39,7 +38,6 @@ theorem eq_lim_at_left_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [De
   · rw [closure_Ioo hab.ne]
     simp only [le_of_lt hab, left_mem_Icc, right_mem_Icc]
   · simpa [hab]
-#align eq_lim_at_left_extend_from_Ioo eq_lim_at_left_extendFrom_Ioo
 
 theorem eq_lim_at_right_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α]
     [OrderTopology α] [TopologicalSpace β] [T2Space β] {f : α → β} {a b : α} {lb : β} (hab : a < b)
@@ -48,7 +46,6 @@ theorem eq_lim_at_right_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [D
   · rw [closure_Ioo hab.ne]
     simp only [le_of_lt hab, left_mem_Icc, right_mem_Icc]
   · simpa [hab]
-#align eq_lim_at_right_extend_from_Ioo eq_lim_at_right_extendFrom_Ioo
 
 theorem continuousOn_Ico_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α]
     [OrderTopology α] [TopologicalSpace β] [RegularSpace β] {f : α → β} {a b : α} {la : β}
@@ -62,7 +59,6 @@ theorem continuousOn_Ico_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [
     · use la
       simpa [hab]
     · exact ⟨f x, hf x h⟩
-#align continuous_on_Ico_extend_from_Ioo continuousOn_Ico_extendFrom_Ioo
 
 theorem continuousOn_Ioc_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α]
     [OrderTopology α] [TopologicalSpace β] [RegularSpace β] {f : α → β} {a b : α} {lb : β}
@@ -71,4 +67,3 @@ theorem continuousOn_Ioc_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [
   have := @continuousOn_Ico_extendFrom_Ioo αᵒᵈ _ _ _ _ _ _ _ f _ _ lb hab
   erw [dual_Ico, dual_Ioi, dual_Ioo] at this
   exact this hf hb
-#align continuous_on_Ioc_extend_from_Ioo continuousOn_Ioc_extendFrom_Ioo

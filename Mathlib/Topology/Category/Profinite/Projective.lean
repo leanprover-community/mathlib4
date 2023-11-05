@@ -51,7 +51,6 @@ instance projective_ultrafilter (X : Type u) : Projective (of <| Ultrafilter X) 
     have : g'' ∘ g' = id := hg'.comp_eq_id
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, this, comp.left_id]
-#align Profinite.projective_ultrafilter Profinite.projective_ultrafilter
 
 /-- For any profinite `X`, the natural map `Ultrafilter X → X` is a projective presentation. -/
 def projectivePresentation (X : Profinite.{u}) : ProjectivePresentation X where
@@ -60,7 +59,6 @@ def projectivePresentation (X : Profinite.{u}) : ProjectivePresentation X where
   projective := Profinite.projective_ultrafilter X
   epi := ConcreteCategory.epi_of_surjective _ fun x =>
     ⟨(pure x : Ultrafilter X), congr_fun (ultrafilter_extend_extends (𝟙 X)) x⟩
-#align Profinite.projective_presentation Profinite.projectivePresentation
 
 instance : EnoughProjectives Profinite.{u} where presentation X := ⟨projectivePresentation X⟩
 

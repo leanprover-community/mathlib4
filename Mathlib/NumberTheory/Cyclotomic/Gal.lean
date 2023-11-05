@@ -80,7 +80,6 @@ theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
   -- Porting note: was `{occs := occurrences.pos [2]}`
   conv_rhs => rw [← hμ.val_toRootsOfUnity_coe]
   rw [orderOf_units, orderOf_subgroup]
-#align is_primitive_root.aut_to_pow_injective IsPrimitiveRoot.autToPow_injective
 
 end IsPrimitiveRoot
 
@@ -93,7 +92,6 @@ variable [CommRing L] [IsDomain L] (hμ : IsPrimitiveRoot μ n) [Algebra K L]
 noncomputable def Aut.commGroup : CommGroup (L ≃ₐ[K] L) :=
   ((zeta_spec n K L).autToPow_injective K).commGroup _ (map_one _) (map_mul _) (map_inv _)
     (map_div _) (map_pow _) (map_zpow _)
-#align is_cyclotomic_extension.aut.comm_group IsCyclotomicExtension.Aut.commGroup
 
 variable (h : Irreducible (cyclotomic n K)) {K} (L)
 
@@ -140,7 +138,6 @@ noncomputable def autEquivPow : (L ≃ₐ[K] L) ≃* (ZMod n)ˣ :=
         (zeta_spec n K L).eq_orderOf, ← ZMod.eq_iff_modEq_nat] at key
       simp only [ZMod.nat_cast_val, ZMod.cast_id', id.def] at key
       exact Units.ext key }
-#align is_cyclotomic_extension.aut_equiv_pow IsCyclotomicExtension.autEquivPow
 
 variable {L}
 
@@ -150,7 +147,6 @@ noncomputable def fromZetaAut : L ≃ₐ[K] L :=
   (autEquivPow L h).symm <|
     ZMod.unitOfCoprime hζ.choose <|
       ((zeta_spec n K L).pow_iff_coprime n.pos hζ.choose).mp <| hζ.choose_spec.2.symm ▸ hμ
-#align is_cyclotomic_extension.from_zeta_aut IsCyclotomicExtension.fromZetaAut
 
 theorem fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ := by
   simp_rw [fromZetaAut, autEquivPow_symm_apply]
@@ -161,7 +157,6 @@ theorem fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ := by
   rw [PowerBasis.equivOfMinpoly_gen, h1.powerBasis_gen K, ZMod.coe_unitOfCoprime,
     ZMod.val_cast_of_lt this.1]
   exact this.2
-#align is_cyclotomic_extension.from_zeta_aut_spec IsCyclotomicExtension.fromZetaAut_spec
 
 end IsCyclotomicExtension
 
@@ -177,7 +172,6 @@ noncomputable def galCyclotomicEquivUnitsZMod : (cyclotomic n K).Gal ≃* (ZMod 
   (AlgEquiv.autCongr
           (IsSplittingField.algEquiv L _ : L ≃ₐ[K] (cyclotomic n K).SplittingField)).symm.trans
     (IsCyclotomicExtension.autEquivPow L h)
-#align gal_cyclotomic_equiv_units_zmod galCyclotomicEquivUnitsZMod
 
 /-- `IsCyclotomicExtension.autEquivPow` repackaged in terms of `gal`.
 Asserts that the Galois group of `X ^ n - 1` is equivalent to `(ZMod n)ˣ`
@@ -187,6 +181,5 @@ noncomputable def galXPowEquivUnitsZMod : (X ^ (n : ℕ) - 1 : K[X]).Gal ≃* (Z
       (IsSplittingField.algEquiv L _ : L ≃ₐ[K] (X ^ (n : ℕ) - 1 : K[X]).SplittingField)).symm.trans
     (IsCyclotomicExtension.autEquivPow L h)
 set_option linter.uppercaseLean3 false
-#align gal_X_pow_equiv_units_zmod galXPowEquivUnitsZMod
 
 end Gal

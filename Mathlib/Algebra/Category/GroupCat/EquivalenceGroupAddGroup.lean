@@ -37,7 +37,6 @@ private instance (X : AddCommGroupCat) : AddZeroClass X.α := X.str.toAddZeroCla
 def toAddGroupCat : GroupCat ⥤ AddGroupCat where
   obj X := AddGroupCat.of (Additive X)
   map {X} {Y} := MonoidHom.toAdditive
-#align Group.to_AddGroup GroupCat.toAddGroupCat
 
 end GroupCat
 
@@ -49,7 +48,6 @@ namespace CommGroupCat
 def toAddCommGroupCat : CommGroupCat ⥤ AddCommGroupCat where
   obj X := AddCommGroupCat.of (Additive X)
   map {X} {Y} := MonoidHom.toAdditive
-#align CommGroup.to_AddCommGroup CommGroupCat.toAddCommGroupCat
 
 end CommGroupCat
 
@@ -61,7 +59,6 @@ namespace AddGroupCat
 def toGroupCat : AddGroupCat ⥤ GroupCat where
   obj X := GroupCat.of (Multiplicative X)
   map {X} {Y} := AddMonoidHom.toMultiplicative
-#align AddGroup.to_Group AddGroupCat.toGroupCat
 
 end AddGroupCat
 
@@ -73,7 +70,6 @@ namespace AddCommGroupCat
 def toCommGroupCat : AddCommGroupCat ⥤ CommGroupCat where
   obj X := CommGroupCat.of (Multiplicative X)
   map {X} {Y} := AddMonoidHom.toMultiplicative
-#align AddCommGroup.to_CommGroup AddCommGroupCat.toCommGroupCat
 
 end AddCommGroupCat
 
@@ -84,7 +80,6 @@ def groupAddGroupEquivalence : GroupCat ≌ AddGroupCat :=
   CategoryTheory.Equivalence.mk GroupCat.toAddGroupCat AddGroupCat.toGroupCat
     (NatIso.ofComponents fun X => MulEquiv.toGroupCatIso (MulEquiv.multiplicativeAdditive X))
     (NatIso.ofComponents fun X => AddEquiv.toAddGroupCatIso (AddEquiv.additiveMultiplicative X))
-#align Group_AddGroup_equivalence groupAddGroupEquivalence
 
 -- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] groupAddGroupEquivalence_unitIso_hom_app_apply
@@ -99,7 +94,6 @@ def commGroupAddCommGroupEquivalence : CommGroupCat ≌ AddCommGroupCat :=
   CategoryTheory.Equivalence.mk CommGroupCat.toAddCommGroupCat AddCommGroupCat.toCommGroupCat
     (NatIso.ofComponents fun X => MulEquiv.toCommGroupCatIso (MulEquiv.multiplicativeAdditive X))
     (NatIso.ofComponents fun X => AddEquiv.toAddCommGroupCatIso (AddEquiv.additiveMultiplicative X))
-#align CommGroup_AddCommGroup_equivalence commGroupAddCommGroupEquivalence
 
 -- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] commGroupAddCommGroupEquivalence_counitIso_hom_app_apply

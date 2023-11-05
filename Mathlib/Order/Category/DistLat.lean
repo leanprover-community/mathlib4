@@ -27,7 +27,6 @@ set_option linter.uppercaseLean3 false
 /-- The category of distributive lattices. -/
 def DistLat :=
   Bundled DistribLattice
-#align DistLat DistLat
 
 namespace DistLat
 
@@ -40,12 +39,10 @@ instance (X : DistLat) : DistribLattice X :=
 /-- Construct a bundled `DistLat` from a `DistribLattice` underlying type and typeclass. -/
 def of (α : Type*) [DistribLattice α] : DistLat :=
   Bundled.of α
-#align DistLat.of DistLat.of
 
 @[simp]
 theorem coe_of (α : Type*) [DistribLattice α] : ↥(of α) = α :=
   rfl
-#align DistLat.coe_of DistLat.coe_of
 
 instance : Inhabited DistLat :=
   ⟨of PUnit⟩
@@ -60,7 +57,6 @@ instance : ConcreteCategory DistLat :=
 
 instance hasForgetToLat : HasForget₂ DistLat Lat :=
   BundledHom.forget₂ _ _
-#align DistLat.has_forget_to_Lat DistLat.hasForgetToLat
 
 /-- Constructs an equivalence between distributive lattices from an order isomorphism between them.
 -/
@@ -74,14 +70,12 @@ def Iso.mk {α β : DistLat.{u}} (e : α ≃o β) : α ≅ β where
   inv_hom_id := by
     ext
     exact e.apply_symm_apply _
-#align DistLat.iso.mk DistLat.Iso.mk
 
 /-- `OrderDual` as a functor. -/
 @[simps]
 def dual : DistLat ⥤ DistLat where
   obj X := of Xᵒᵈ
   map := LatticeHom.dual
-#align DistLat.dual DistLat.dual
 
 /-- The equivalence between `DistLat` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
@@ -90,11 +84,9 @@ def dualEquiv : DistLat ≌ DistLat where
   inverse := dual
   unitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun _ => rfl
   counitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun _ => rfl
-#align DistLat.dual_equiv DistLat.dualEquiv
 
 end DistLat
 
 theorem distLat_dual_comp_forget_to_Lat :
     DistLat.dual ⋙ forget₂ DistLat Lat = forget₂ DistLat Lat ⋙ Lat.dual :=
   rfl
-#align DistLat_dual_comp_forget_to_Lat distLat_dual_comp_forget_to_Lat

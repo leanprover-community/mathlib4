@@ -16,7 +16,6 @@ variable {α : Type*}
 
 instance Vector.fintype [Fintype α] {n : ℕ} : Fintype (Vector α n) :=
   Fintype.ofEquiv _ (Equiv.vectorEquivFin _ _).symm
-#align vector.fintype Vector.fintype
 
 instance [DecidableEq α] [Fintype α] {n : ℕ} : Fintype (Sym.Sym' α n) := by
   refine @Quotient.fintype _ _ _ ?_

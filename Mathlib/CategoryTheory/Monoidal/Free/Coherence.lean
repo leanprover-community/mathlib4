@@ -57,7 +57,6 @@ variable (C)
 inductive NormalMonoidalObject : Type u
   | Unit : NormalMonoidalObject
   | tensor : NormalMonoidalObject → C → NormalMonoidalObject
-#align category_theory.free_monoidal_category.normal_monoidal_object CategoryTheory.FreeMonoidalCategory.NormalMonoidalObject
 
 end
 
@@ -75,13 +74,11 @@ instance (x y : N C) : Subsingleton (x ⟶ y) := Discrete.instSubsingletonDiscre
 def inclusionObj : NormalMonoidalObject C → F C
   | NormalMonoidalObject.Unit => Unit
   | NormalMonoidalObject.tensor n a => tensor (inclusionObj n) (of a)
-#align category_theory.free_monoidal_category.inclusion_obj CategoryTheory.FreeMonoidalCategory.inclusionObj
 
 /-- The discrete subcategory of objects in normal form includes into the free monoidal category. -/
 @[simp]
 def inclusion : N C ⥤ F C :=
   Discrete.functor inclusionObj
-#align category_theory.free_monoidal_category.inclusion CategoryTheory.FreeMonoidalCategory.inclusion
 
 /-- Auxiliary definition for `normalize`. -/
 @[simp]
@@ -89,18 +86,15 @@ def normalizeObj : F C → NormalMonoidalObject C → N C
   | Unit, n => ⟨n⟩
   | of X, n => ⟨NormalMonoidalObject.tensor n X⟩
   | tensor X Y, n => normalizeObj Y (normalizeObj X n).as
-#align category_theory.free_monoidal_category.normalize_obj CategoryTheory.FreeMonoidalCategory.normalizeObj
 
 @[simp]
 theorem normalizeObj_unitor (n : NormalMonoidalObject C) : normalizeObj (𝟙_ (F C)) n = ⟨n⟩ :=
   rfl
-#align category_theory.free_monoidal_category.normalize_obj_unitor CategoryTheory.FreeMonoidalCategory.normalizeObj_unitor
 
 @[simp]
 theorem normalizeObj_tensor (X Y : F C) (n : NormalMonoidalObject C) :
     normalizeObj (X ⊗ Y) n = normalizeObj Y (normalizeObj X n).as :=
   rfl
-#align category_theory.free_monoidal_category.normalize_obj_tensor CategoryTheory.FreeMonoidalCategory.normalizeObj_tensor
 
 section
 
@@ -127,7 +121,6 @@ def normalizeMapAux :
     dsimp
     exact Discrete.natTrans (fun ⟨X⟩ => (normalizeMapAux g).app (normalizeObj T X) ≫
       (Discrete.functor (normalizeObj W) : _ ⥤ N C).map ((normalizeMapAux f).app ⟨X⟩))
-#align category_theory.free_monoidal_category.normalize_map_aux CategoryTheory.FreeMonoidalCategory.normalizeMapAux
 
 end
 
@@ -142,7 +135,6 @@ variable (C)
 def normalize : F C ⥤ N C ⥤ N C where
   obj X := Discrete.functor (normalizeObj X)
   map {X Y} := Quotient.lift normalizeMapAux (by aesop_cat)
-#align category_theory.free_monoidal_category.normalize CategoryTheory.FreeMonoidalCategory.normalize
 
 /-- A variant of the normalization functor where we consider the result as an object in the free
     monoidal category (rather than an object of the discrete subcategory of objects in normal
@@ -150,13 +142,11 @@ def normalize : F C ⥤ N C ⥤ N C where
 @[simp]
 def normalize' : F C ⥤ N C ⥤ F C :=
   normalize C ⋙ (whiskeringRight _ _ _).obj inclusion
-#align category_theory.free_monoidal_category.normalize' CategoryTheory.FreeMonoidalCategory.normalize'
 
 /-- The normalization functor for the free monoidal category over `C`. -/
 def fullNormalize : F C ⥤ N C where
   obj X := ((normalize C).obj X).obj ⟨NormalMonoidalObject.Unit⟩
   map f := ((normalize C).map f).app ⟨NormalMonoidalObject.Unit⟩
-#align category_theory.free_monoidal_category.full_normalize CategoryTheory.FreeMonoidalCategory.fullNormalize
 
 /-- Given an object `X` of the free monoidal category and an object `n` in normal form, taking
     the tensor product `n ⊗ X` in the free monoidal category is functorial in both `X` and `n`. -/
@@ -164,11 +154,9 @@ def fullNormalize : F C ⥤ N C where
 def tensorFunc : F C ⥤ N C ⥤ F C where
   obj X := Discrete.functor fun n => inclusion.obj ⟨n⟩ ⊗ X
   map f := Discrete.natTrans (fun n => 𝟙 _ ⊗ f)
-#align category_theory.free_monoidal_category.tensor_func CategoryTheory.FreeMonoidalCategory.tensorFunc
 
 theorem tensorFunc_map_app {X Y : F C} (f : X ⟶ Y) (n) : ((tensorFunc C).map f).app n = 𝟙 _ ⊗ f :=
   rfl
-#align category_theory.free_monoidal_category.tensor_func_map_app CategoryTheory.FreeMonoidalCategory.tensorFunc_map_app
 
 theorem tensorFunc_obj_map (Z : F C) {n n' : N C} (f : n ⟶ n') :
     ((tensorFunc C).obj Z).map f = inclusion.map f ⊗ 𝟙 Z := by
@@ -179,7 +167,6 @@ theorem tensorFunc_obj_map (Z : F C) {n n' : N C} (f : n ⟶ n') :
   subst h
   simp
 
-#align category_theory.free_monoidal_category.tensor_func_obj_map CategoryTheory.FreeMonoidalCategory.tensorFunc_obj_map
 
 /-- Auxiliary definition for `normalizeIso`. Here we construct the isomorphism between
     `n ⊗ X` and `normalize X n`. -/
@@ -190,19 +177,16 @@ def normalizeIsoApp :
   | Unit, _ => ρ_ _
   | tensor X _, n =>
     (α_ _ _ _).symm ≪≫ tensorIso (normalizeIsoApp X n) (Iso.refl _) ≪≫ normalizeIsoApp _ _
-#align category_theory.free_monoidal_category.normalize_iso_app CategoryTheory.FreeMonoidalCategory.normalizeIsoApp
 
 @[simp]
 theorem normalizeIsoApp_tensor (X Y : F C) (n : N C) :
     normalizeIsoApp C (X ⊗ Y) n =
       (α_ _ _ _).symm ≪≫ tensorIso (normalizeIsoApp C X n) (Iso.refl _) ≪≫ normalizeIsoApp _ _ _ :=
   rfl
-#align category_theory.free_monoidal_category.normalize_iso_app_tensor CategoryTheory.FreeMonoidalCategory.normalizeIsoApp_tensor
 
 @[simp]
 theorem normalizeIsoApp_unitor (n : N C) : normalizeIsoApp C (𝟙_ (F C)) n = ρ_ _ :=
   rfl
-#align category_theory.free_monoidal_category.normalize_iso_app_unitor CategoryTheory.FreeMonoidalCategory.normalizeIsoApp_unitor
 
 /-- Auxiliary definition for `normalizeIso`. -/
 @[simp]
@@ -214,7 +198,6 @@ def normalizeIsoAux (X : F C) : (tensorFunc C).obj X ≅ (normalize' C).obj X :=
       subst f
       dsimp
       simp)
-#align category_theory.free_monoidal_category.normalize_iso_aux CategoryTheory.FreeMonoidalCategory.normalizeIsoAux
 
 section
 
@@ -224,12 +207,10 @@ variable {D : Type u} [Category.{u} D] {I : Type u} (f : I → D) (X : Discrete 
 @[simp]
 theorem discrete_functor_obj_eq_as : (Discrete.functor f).obj X = f X.as :=
   rfl
-#align category_theory.free_monoidal_category.discrete_functor_obj_eq_as CategoryTheory.FreeMonoidalCategory.discrete_functor_obj_eq_as
 
 -- TODO: move to discrete_category.lean, decide whether this should be a global simp lemma
 @[simp 1100]
 theorem discrete_functor_map_eq_id (g : X ⟶ X) : (Discrete.functor f).map g = 𝟙 _ := rfl
-#align category_theory.free_monoidal_category.discrete_functor_map_eq_id CategoryTheory.FreeMonoidalCategory.discrete_functor_map_eq_id
 
 end
 
@@ -309,7 +290,6 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
         erw [← reassoc_of% h₂]
         rw [← h₃, ← Category.assoc, ← id_tensor_comp_tensor_id, h₄]
         rfl)
-#align category_theory.free_monoidal_category.normalize_iso CategoryTheory.FreeMonoidalCategory.normalizeIso
 
 /-- The isomorphism between an object and its normal form is natural. -/
 def fullNormalizeIso : 𝟭 (F C) ≅ fullNormalize C ⋙ inclusion :=
@@ -322,7 +302,6 @@ def fullNormalizeIso : 𝟭 (F C) ≅ fullNormalize C ⋙ inclusion :=
       exact
         congr_arg (fun f => NatTrans.app f (Discrete.mk NormalMonoidalObject.Unit))
           ((normalizeIso.{u} C).hom.naturality f))
-#align category_theory.free_monoidal_category.full_normalize_iso CategoryTheory.FreeMonoidalCategory.fullNormalizeIso
 
 end
 
@@ -333,7 +312,6 @@ instance subsingleton_hom : Quiver.IsThin (F C) := fun X Y =>
     have hf := NatIso.naturality_2 (fullNormalizeIso.{u} C) f
     have hg := NatIso.naturality_2 (fullNormalizeIso.{u} C) g
     exact hf.symm.trans (Eq.trans (by simp only [Functor.comp_map, hfg]) hg)⟩
-#align category_theory.free_monoidal_category.subsingleton_hom CategoryTheory.FreeMonoidalCategory.subsingleton_hom
 
 section Groupoid
 
@@ -353,7 +331,6 @@ def inverseAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (Y ⟶ᵐ X)
   | _, _, l_inv _ => l_hom _
   | _, _, comp f g => (inverseAux g).comp (inverseAux f)
   | _, _, Hom.tensor f g => (inverseAux f).tensor (inverseAux g)
-#align category_theory.free_monoidal_category.inverse_aux CategoryTheory.FreeMonoidalCategory.inverseAux
 
 end
 

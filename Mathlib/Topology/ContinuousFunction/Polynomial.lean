@@ -41,7 +41,6 @@ Every polynomial with coefficients in a topological semiring gives a (bundled) c
 @[simps]
 def toContinuousMap (p : R[X]) : C(R, R) :=
   ⟨fun x : R => p.eval x, by continuity⟩
-#align polynomial.to_continuous_map Polynomial.toContinuousMap
 
 /-- A polynomial as a continuous function,
 with domain restricted to some subset of the semiring of coefficients.
@@ -52,7 +51,6 @@ with domain restricted to some subset of the semiring of coefficients.
 def toContinuousMapOn (p : R[X]) (X : Set R) : C(X, R) :=
   -- Porting note: Old proof was `⟨fun x : X => p.toContinuousMap x, by continuity⟩`
   ⟨fun x : X => p.toContinuousMap x, Continuous.comp (by continuity) (by continuity)⟩
-#align polynomial.to_continuous_map_on Polynomial.toContinuousMapOn
 
 -- TODO some lemmas about when `toContinuousMapOn` is injective?
 end
@@ -70,7 +68,6 @@ theorem aeval_continuousMap_apply (g : R[X]) (f : C(α, R)) (x : α) :
     simp [hp, hq]
   · intro n a
     simp [Pi.pow_apply]
-#align polynomial.aeval_continuous_map_apply Polynomial.aeval_continuousMap_apply
 
 end
 
@@ -98,7 +95,6 @@ def toContinuousMapAlgHom : R[X] →ₐ[R] C(R, R) where
   commutes' _ := by
     ext
     simp [Algebra.algebraMap_eq_smul_one]
-#align polynomial.to_continuous_map_alg_hom Polynomial.toContinuousMapAlgHom
 
 /-- The algebra map from `R[X]` to continuous functions `C(X, R)`, for any subset `X` of `R`.
 -/
@@ -120,7 +116,6 @@ def toContinuousMapOnAlgHom (X : Set R) : R[X] →ₐ[R] C(X, R) where
   commutes' _ := by
     ext
     simp [Algebra.algebraMap_eq_smul_one]
-#align polynomial.to_continuous_map_on_alg_hom Polynomial.toContinuousMapOnAlgHom
 
 end
 
@@ -137,14 +132,12 @@ The subalgebra of polynomial functions in `C(X, R)`, for `X` a subset of some to
 noncomputable -- Porting note: added noncomputable
 def polynomialFunctions (X : Set R) : Subalgebra R C(X, R) :=
   (⊤ : Subalgebra R R[X]).map (Polynomial.toContinuousMapOnAlgHom X)
-#align polynomial_functions polynomialFunctions
 
 @[simp]
 theorem polynomialFunctions_coe (X : Set R) :
     (polynomialFunctions X : Set C(X, R)) = Set.range (Polynomial.toContinuousMapOnAlgHom X) := by
   ext
   simp [polynomialFunctions]
-#align polynomial_functions_coe polynomialFunctions_coe
 
 -- TODO:
 -- if `f : R → R` is an affine equivalence, then pulling back along `f`
@@ -156,7 +149,6 @@ theorem polynomialFunctions_separatesPoints (X : Set R) : (polynomialFunctions X
   refine' ⟨_, ⟨⟨_, ⟨⟨Polynomial.X, ⟨Algebra.mem_top, rfl⟩⟩, rfl⟩⟩, _⟩⟩
   dsimp; simp only [Polynomial.eval_X]
   exact fun h' => h (Subtype.ext h')
-#align polynomial_functions_separates_points polynomialFunctions_separatesPoints
 
 open unitInterval
 
@@ -203,8 +195,6 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
     · simp
     · ext x
       simp [mul_comm]
-set_option linter.uppercaseLean3 false in
-#align polynomial_functions.comap_comp_right_alg_hom_Icc_homeo_I polynomialFunctions.comap_compRightAlgHom_iccHomeoI
 
 theorem polynomialFunctions.eq_adjoin_X (s : Set R) :
     polynomialFunctions s = Algebra.adjoin R {toContinuousMapOnAlgHom s X} := by

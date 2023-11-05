@@ -53,6 +53,5 @@ def coyonedaTensorUnit (C : Type u) [Category.{v} C] [MonoidalCategory C] :
       ext ⟨f, ⟨⟩⟩; dsimp at f
       dsimp; simp only [Category.assoc]
       rw [rightUnitor_naturality, unitors_inv_equal, Iso.inv_hom_id_assoc] }
-#align category_theory.coyoneda_tensor_unit CategoryTheory.coyonedaTensorUnit
 
 end CategoryTheory

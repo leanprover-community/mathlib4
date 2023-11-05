@@ -58,8 +58,6 @@ theorem isSheaf_iff_isSheaf_comp {C : Type u₁} [Category.{v} C] {D : Type u₂
     (G : C ⥤ D) [ReflectsIsomorphisms G] [HasLimits C] [PreservesLimits G]
     {X : TopCat.{v}} (F : Presheaf C X) : Presheaf.IsSheaf F ↔ Presheaf.IsSheaf (F ⋙ G) :=
   isSheaf_iff_isSheaf_comp' G F
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.is_sheaf_iff_is_sheaf_comp TopCat.Presheaf.isSheaf_iff_isSheaf_comp
 
 /-!
 As an example, we now have everything we need to check the sheaf condition

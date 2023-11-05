@@ -29,6 +29,5 @@ covariant in `Y`. -/
 def hom : Cᵒᵖ × C ⥤ Type v where
   obj p := unop p.1 ⟶ p.2
   map f h := f.1.unop ≫ h ≫ f.2
-#align category_theory.functor.hom CategoryTheory.Functor.hom
 
 end CategoryTheory.Functor

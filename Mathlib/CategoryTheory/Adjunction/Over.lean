@@ -35,7 +35,6 @@ The functor from `C` to `Over X` which sends `Y : C` to `π₁ : X ⨯ Y ⟶ X`,
 @[simps! obj_left obj_hom map_left]
 def star [HasBinaryProducts C] : C ⥤ Over X :=
   cofree _ ⋙ coalgebraToOver X
-#align category_theory.star CategoryTheory.star
 
 /-- The functor `Over.forget X : Over X ⥤ C` has a right adjoint given by `star X`.
 
@@ -44,7 +43,6 @@ Note that the binary products assumption is necessary: the existence of a right 
 -/
 def forgetAdjStar [HasBinaryProducts C] : Over.forget X ⊣ star X :=
   (coalgebraEquivOver X).symm.toAdjunction.comp (adj _)
-#align category_theory.forget_adj_star CategoryTheory.forgetAdjStar
 
 /-- Note that the binary products assumption is necessary: the existence of a right adjoint to
 `Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`.

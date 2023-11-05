@@ -86,7 +86,6 @@ def counitCoequalises [∀ X : B, RegularEpi (adj₁.counit.app X)] (X : B) :
     · intro m hm
       rw [← cancel_epi (adj₁.counit.app X)]
       apply hm.trans (RegularEpi.desc' (adj₁.counit.app X) s.π _).2.symm
-#align category_theory.lift_adjoint.counit_coequalises CategoryTheory.LiftAdjoint.counitCoequalises
 
 /-- (Implementation)
 To construct the left adjoint, we use the coequalizer of `F' U ε_Y` with the composite
@@ -99,7 +98,6 @@ We will show that this coequalizer exists and that it forms the object map for a
 -/
 def otherMap (X) : F'.obj (U.obj (F.obj (U.obj X))) ⟶ F'.obj (U.obj X) :=
   F'.map (U.map (F.map (adj₂.unit.app _) ≫ adj₁.counit.app _)) ≫ adj₂.counit.app _
-#align category_theory.lift_adjoint.other_map CategoryTheory.LiftAdjoint.otherMap
 
 /-- `(F'Uε_X, otherMap X)` is a reflexive pair: in particular if `A` has reflexive coequalizers then
 it has a coequalizer.
@@ -122,7 +120,6 @@ variable [HasReflexiveCoequalizers A]
 -/
 noncomputable def constructLeftAdjointObj (Y : B) : A :=
   coequalizer (F'.map (U.map (adj₁.counit.app Y))) (otherMap _ _ adj₁ adj₂ Y)
-#align category_theory.lift_adjoint.construct_left_adjoint_obj CategoryTheory.LiftAdjoint.constructLeftAdjointObj
 
 /-- The homset equivalence which helps show that `R` is a right adjoint. -/
 @[simps!] -- Porting note: Originally `@[simps (config := { rhsMd := semireducible })]`
@@ -151,7 +148,6 @@ noncomputable def constructLeftAdjointEquiv [∀ X : B, RegularEpi (adj₁.couni
         assoc, adj₁.counit_naturality, adj₁.counit_naturality_assoc]
       apply eq_comm
     _ ≃ (X ⟶ R.obj Y) := (Cofork.IsColimit.homIso (counitCoequalises adj₁ X) _).symm
-#align category_theory.lift_adjoint.construct_left_adjoint_equiv CategoryTheory.LiftAdjoint.constructLeftAdjointEquiv
 
 /-- Construct the left adjoint to `R`, with object map `constructLeftAdjointObj`. -/
 noncomputable def constructLeftAdjoint [∀ X : B, RegularEpi (adj₁.counit.app X)] : B ⥤ A := by
@@ -166,7 +162,6 @@ noncomputable def constructLeftAdjoint [∀ X : B, RegularEpi (adj₁.counit.app
   simp_rw [Functor.comp_map]
   -- This used to be `simp`, but we need `aesop_cat` after leanprover/lean4#2644
   aesop_cat
-#align category_theory.lift_adjoint.construct_left_adjoint CategoryTheory.LiftAdjoint.constructLeftAdjoint
 
 end LiftAdjoint
 
@@ -182,7 +177,6 @@ noncomputable def adjointTriangleLift {U : B ⥤ C} {F : C ⥤ B} (R : A ⥤ B) 
     [IsRightAdjoint (R ⋙ U)] : IsRightAdjoint R where
   left := LiftAdjoint.constructLeftAdjoint R _ adj₁ (Adjunction.ofRightAdjoint _)
   adj := Adjunction.adjunctionOfEquivLeft _ _
-#align category_theory.adjoint_triangle_lift CategoryTheory.adjointTriangleLift
 
 /-- If `R ⋙ U` has a left adjoint, the domain of `R` has reflexive coequalizers and `U` is a monadic
 functor, then `R` has a left adjoint.
@@ -205,7 +199,6 @@ noncomputable def monadicAdjointTriangleLift (U : B ⥤ C) [MonadicRightAdjoint 
     simp only [Monad.adj_counit]
     exact ⟨_, _, _, _, Monad.beckAlgebraCoequalizer X⟩
   exact adjointTriangleLift R' (Monad.adj _)
-#align category_theory.monadic_adjoint_triangle_lift CategoryTheory.monadicAdjointTriangleLift
 
 variable {D : Type u₄}
 
@@ -231,7 +224,6 @@ noncomputable def adjointSquareLift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (R
     IsRightAdjoint Q :=
   letI := Adjunction.rightAdjointOfNatIso comm
   adjointTriangleLift Q (Adjunction.ofRightAdjoint V)
-#align category_theory.adjoint_square_lift CategoryTheory.adjointSquareLift
 
 /-- Suppose we have a commutative square of functors
 
@@ -251,6 +243,5 @@ noncomputable def monadicAdjointSquareLift (Q : A ⥤ B) (V : B ⥤ D) (U : A �
     [HasReflexiveCoequalizers A] : IsRightAdjoint Q :=
   letI := Adjunction.rightAdjointOfNatIso comm
   monadicAdjointTriangleLift V
-#align category_theory.monadic_adjoint_square_lift CategoryTheory.monadicAdjointSquareLift
 
 end CategoryTheory
