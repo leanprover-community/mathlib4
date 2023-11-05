@@ -3,7 +3,7 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Homology.Homology
+import Mathlib.Algebra.Homology.HomologicalComplex
 
 #align_import algebra.homology.single from "leanprover-community/mathlib"@"324a7502510e835cdbd3de1519b6c66b51fb2467"
 
@@ -13,24 +13,12 @@ import Mathlib.Algebra.Homology.Homology
 We define `single V j c : V ⥤ HomologicalComplex V c`,
 which constructs complexes in `V` of shape `c`, supported in degree `j`.
 
-Similarly `single₀ V : V ⥤ ChainComplex V ℕ` is the special case for
-`ℕ`-indexed chain complexes, with the object supported in degree `0`,
-but with better definitional properties.
-
-In `toSingle₀Equiv` we characterize chain maps to an `ℕ`-indexed complex concentrated in degree 0;
-they are equivalent to `{ f : C.X 0 ⟶ X // C.d 1 0 ≫ f = 0 }`.
-(This is useful translating between a projective resolution and
-an augmented exact complex of projectives.)
 -/
 
 
 noncomputable section
 
-open CategoryTheory
-
-open CategoryTheory.Limits
-
-open ZeroObject
+open CategoryTheory Limits ZeroObject
 
 universe v u
 
@@ -41,12 +29,7 @@ namespace HomologicalComplex
 variable {ι : Type*} [DecidableEq ι] (c : ComplexShape ι)
 
 /-- The functor `V ⥤ HomologicalComplex V c` creating a chain complex supported in a single degree.
-
-See also `ChainComplex.single₀ : V ⥤ ChainComplex V ℕ`,
-which has better definitional properties,
-if you are working with `ℕ`-indexed complexes.
 -/
-@[simps]
 def single (j : ι) : V ⥤ HomologicalComplex V c where
   obj A :=
     { X := fun i => if i = j then A else 0
@@ -71,48 +54,67 @@ def single (j : ι) : V ⥤ HomologicalComplex V c where
     · simp
 #align homological_complex.single HomologicalComplex.single
 
-/-- The object in degree `j` of `(single V c h).obj A` is just `A`.
--/
-@[simps!]
+/-- The functor `V ⥤ ChainComplex V ℕ` creating a chain complex supported in degree zero. -/
+abbrev _root_.ChainComplex.single₀ : V ⥤ ChainComplex V ℕ :=
+  single V (ComplexShape.down ℕ) 0
+
+/-- The functor `V ⥤ CochainComplex V ℕ` creating a cochain complex supported in degree zero. -/
+abbrev _root_.CochainComplex.single₀ : V ⥤ CochainComplex V ℕ :=
+  single V (ComplexShape.up ℕ) 0
+
+variable {V}
+
+@[simp]
+lemma single_obj_X_self (j : ι) (A : V) :
+  ((single V c j).obj A).X j = A := if_pos rfl
+
+lemma isZero_single_obj_X (j : ι) (A : V) (i : ι) (hi : i ≠ j) :
+    IsZero (((single V c j).obj A).X i) := by
+  dsimp [single]
+  rw [if_neg hi]
+  exact Limits.isZero_zero V
+
+/-- The object in degree `i` of `(single V c h).obj A` is just `A` when `i = j`. -/
+def singleObjXIsoOfEq (j : ι) (A : V) (i : ι) (hi : i = j) :
+    ((single V c j).obj A).X i ≅ A := eqToIso (by subst hi; simp [single])
+
+/-- The object in degree `j` of `(single V c h).obj A` is just `A`. -/
 def singleObjXSelf (j : ι) (A : V) : ((single V c j).obj A).X j ≅ A :=
-  eqToIso (by simp)
+  singleObjXIsoOfEq c j A j rfl
 set_option linter.uppercaseLean3 false in
 #align homological_complex.single_obj_X_self HomologicalComplex.singleObjXSelf
 
-@[simp 1100]
+@[simp]
+lemma single_obj_d (j : ι) (A : V) (k l : ι) :
+  ((single V c j).obj A).d k l = 0 := rfl
+
+@[reassoc]
 theorem single_map_f_self (j : ι) {A B : V} (f : A ⟶ B) :
-    ((single V c j).map f).f j = (singleObjXSelf V c j A).hom ≫
-      f ≫ (singleObjXSelf V c j B).inv := by simp
+    ((single V c j).map f).f j = (singleObjXSelf c j A).hom ≫
+      f ≫ (singleObjXSelf c j B).inv := by
+  dsimp [single]
+  rw [dif_pos rfl]
+  rfl
 #align homological_complex.single_map_f_self HomologicalComplex.single_map_f_self
 
 instance (j : ι) : Faithful (single V c j) where
-  map_injective w := by
-    have := congr_hom w j
-    dsimp at this
-    simp only [dif_pos] at this
-    rw [← IsIso.inv_comp_eq, inv_eqToHom, eqToHom_trans_assoc, eqToHom_refl,
-      Category.id_comp, ← IsIso.comp_inv_eq, Category.assoc, inv_eqToHom, eqToHom_trans,
-      eqToHom_refl, Category.comp_id] at this
-    exact this
+  map_injective {A B f g} w := by
+    rw [← cancel_mono (singleObjXSelf c j B).inv,
+      ← cancel_epi (singleObjXSelf c j A).hom, ← single_map_f_self,
+      ← single_map_f_self, w]
 
 instance (j : ι) : Full (single V c j) where
-  preimage f := eqToHom (by simp) ≫ f.f j ≫ eqToHom (by simp)
+  preimage {A B} f := (singleObjXSelf c j A).inv ≫ f.f j ≫ (singleObjXSelf c j B).hom
   witness f := by
     ext i
-    dsimp
-    split_ifs with h
+    by_cases i = j
     · subst h
-      simp
-    · symm
-      apply zero_of_target_iso_zero
-      dsimp
-      rw [if_neg h]
+      simp [single_map_f_self]
+    · exact IsZero.eq_of_src (isZero_single_obj_X _ _ _ _ h) _ _
 
 end HomologicalComplex
 
-open HomologicalComplex
-
-namespace ChainComplex
+/-namespace ChainComplex
 
 /-- `ChainComplex.single₀ V` is the embedding of `V` into `ChainComplex V ℕ`
 as chain complexes supported in degree 0.
@@ -464,4 +466,4 @@ instance : Faithful (single₀ V) :=
 instance : Full (single₀ V) :=
   Full.ofIso (single₀IsoSingle V).symm
 
-end CochainComplex
+end CochainComplex-/
