@@ -136,7 +136,7 @@ variable {f : M → N} {x : M} {f' : TangentSpace I x ≃L[ℝ] TangentSpace J (
 
 /-- Given a `ContMDiff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible
 derivative at `x`, returns a `LocalHomeomorph` with `to_fun = f` and `x ∈ source`. -/
-theorem toLocalHomeomorph {n : ℕ∞} [I.Boundaryless] [J.Boundaryless]
+noncomputable def toLocalHomeomorph {n : ℕ∞} [I.Boundaryless] [J.Boundaryless]
     (hf : ContMDiffAt I J n f x) (hf' : HasMFDerivAt I J f x f') (hn : 1 ≤ n) : LocalHomeomorph M N := by
   -- This follows from the analogous statement on charts.
   -- Consider the charts φ and ψ on `M` resp. `N` around `x` and `f x`, respectively,
@@ -147,16 +147,16 @@ theorem toLocalHomeomorph {n : ℕ∞} [I.Boundaryless] [J.Boundaryless]
   -- `f_loc` maps `U` to `V`; these are open sets (at least morally).
   let U := φ '' (φ.source ∩ f ⁻¹' ψ.source)
   let V := ψ '' (f '' φ.source ∩ ψ.source)
-  have : MapsTo f_loc U V := by
-    intro x hx
-    rcases hx with ⟨x', hx', hx'x⟩
-    have : φ.invFun (φ x') = x' := φ.left_inv (mem_of_mem_inter_left hx')
-    have : f_loc x = (ψ ∘ f) x' := calc f_loc x
-      _ = (ψ ∘ f ∘ φ.invFun) (φ x') := by rw [hx'x]
-      _ = (ψ ∘ f) (φ.invFun (φ x')) := rfl
-      _ = (ψ ∘ f) x' := by rw [this]
-    --have : f x' ∈ (f '' φ.source ∩ ψ.source) := by aesop
-    aesop
+  -- have : MapsTo f_loc U V := by
+  --   intro x hx
+  --   rcases hx with ⟨x', hx', hx'x⟩
+  --   have : φ.invFun (φ x') = x' := φ.left_inv (mem_of_mem_inter_left hx')
+  --   have : f_loc x = (ψ ∘ f) x' := calc f_loc x
+  --     _ = (ψ ∘ f ∘ φ.invFun) (φ x') := by rw [hx'x]
+  --     _ = (ψ ∘ f) (φ.invFun (φ x')) := rfl
+  --     _ = (ψ ∘ f) x' := by rw [this]
+  --   --have : f x' ∈ (f '' φ.source ∩ ψ.source) := by aesop
+  --   aesop
   -- openness of U and V were obvious for just charts; it's not as obvious here
   -- for instance, a priori we only know `f` is continuous *at x*, not *near* `x`
   -- XXX: I'll see if we need this
@@ -182,8 +182,8 @@ theorem toLocalHomeomorph {n : ℕ∞} [I.Boundaryless] [J.Boundaryless]
   -- (If M and N are boundaryless, that is: otherwise, we'd have to work harder.)
   let φ' := (chartAt H x).trans I.toHomeomorph.toLocalHomeomorph
   let ψ' := (chartAt H (f x)).trans J.toHomeomorph.toLocalHomeomorph
-  have : φ'.toFun = φ.toFun := rfl
-  have : ψ'.toFun = ψ.toFun := rfl
+  -- have : φ'.toFun = φ.toFun := rfl
+  -- have : ψ'.toFun = ψ.toFun := rfl
   exact φ' ≫ₕ f_loc' ≫ₕ ψ'.symm
 
 -- TODO: sanity-check that I got the directions right?
@@ -226,7 +226,7 @@ lemma InvOn.mapsTo_image (hinv : InvOn g f s (f '' s)) : MapsTo g (f '' s) s := 
   rw [← hxy]
   exact mem_of_eq_of_mem (hinv.1 hxs) hxs
 
-/-- If f : H → H is a local structomorphism at `x` relative to `s` and has a local inverse `g`,
+/-- If `f : H → H` is a local structomorphism at `x` relative to `s` and has a local inverse `g`,
   then `g` is a local structomorphism at `f x` relative to `f '' x`. -/
 -- no differentiability here! wouldn't make sense either :-)
 lemma StructureGroupoid.localInverse_isLocalStructomorphWithin {f : H → H} {s : Set H} {x : H}
@@ -275,7 +275,6 @@ lemma StructureGroupoid.localInverse_isLocalStructomorphWithin {f : H → H} {s 
 -- step 4, specific: if f is C^k at x, then f_loc is C^k, hence also g_loc
 --> in the smooth case, get a diffeo between things (right phrasing touches the local diffeo q.)
 
-#exit
 end IFT
 
 variable {f : M → N} {x : M}
