@@ -201,24 +201,14 @@ end IsSepClosure
 
 namespace IsSepClosed
 
-open IsAlgClosed lift SubfieldWithHom
-
 variable {K : Type u} {L : Type v} {M : Type w} [Field K] [Field L] [Algebra K L] [Field M]
   [Algebra K M] [IsSepClosed M] [IsSeparable K L]
 
-theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier = ⊤ := by
-  rw [eq_top_iff]
-  intro x _
-  exact mem_maximalSubfieldWithHom_of_splits K L M
-    (fun x => IsIntegral.isAlgebraic K <| IsSeparable.isIntegral' x) x
-      (splits_codomain _ (IsSeparable.separable K x))
-
 /-- A (random) homomorphism from a separable extension L of K into a separably
   closed extension M of K. -/
-noncomputable irreducible_def lift : L →ₐ[K] M := by
-  exact (maximalSubfieldWithHom K L M).emb.comp <|
-    (maximalSubfieldWithHom_eq_top (K := K) (L := L) (M := M)).symm
-      ▸ Algebra.toTop
+noncomputable irreducible_def lift : L →ₐ[K] M := Classical.choice <|
+  IntermediateField.algHom_mk_adjoin_splits' (IntermediateField.adjoin_univ K L)
+    (fun x _ ↦ ⟨IsSeparable.isIntegral' x, splits_codomain _ (IsSeparable.separable K x)⟩)
 
 end IsSepClosed
 
