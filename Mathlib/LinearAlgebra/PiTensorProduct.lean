@@ -114,10 +114,9 @@ def PiTensorProduct : Type _ :=
 variable {R}
 
 unsuppress_compilation in
--- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product, given `s : ι → Type*`.
---scoped[TensorProduct] -- Porting note: `scoped` caused an error, so I commented it out.
-/-- notation for tensor product over some indexed type -/
-notation3:100"⨂["R"] "(...)", "r:(scoped f => PiTensorProduct R f) => r
+/-- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product `PiTensorProduct`,
+given an indexed family of types `s : ι → Type*`. -/
+scoped[TensorProduct] notation3:100"⨂["R"] "(...)", "r:(scoped f => PiTensorProduct R f) => r
 
 open TensorProduct
 
@@ -311,9 +310,8 @@ variable {R}
 
 unsuppress_compilation in
 /-- pure tensor in tensor product over some index type -/
--- Porting note: use `FunLike.coe` as an explicit coercion to help `notation3` pretty print,
--- was just `tprod R f`.
-notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => FunLike.coe (tprod R) f) => r
+-- TODO(kmill) The generated delaborator never applies; figure out why this doesn't pretty print.
+notation3:100 "⨂ₜ["R"] "(...)", "r:(scoped f => tprod R f) => r
 
 --Porting note: new theorem
 theorem tprod_eq_tprodCoeff_one :
