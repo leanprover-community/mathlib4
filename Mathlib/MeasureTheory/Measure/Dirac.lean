@@ -63,6 +63,16 @@ theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f
   ext fun s hs => by simp [hs, map_apply hf hs, hf hs, indicator_apply]
 #align measure_theory.measure.map_dirac MeasureTheory.Measure.map_dirac
 
+lemma map_const (μ : Measure α) (c : β) : μ.map (fun _ ↦ c) = (μ Set.univ) • dirac c := by
+  ext s hs
+  simp only [aemeasurable_const, measurable_const, smul_toOuterMeasure, OuterMeasure.coe_smul,
+    Pi.smul_apply, dirac_apply' _ hs, smul_eq_mul]
+  classical
+  rw [Measure.map_apply measurable_const hs, Set.preimage_const]
+  by_cases hsc : c ∈ s
+  · rw [(Set.indicator_eq_one_iff_mem _).mpr hsc, mul_one, if_pos hsc]
+  · rw [if_neg hsc, (Set.indicator_eq_zero_iff_not_mem _).mpr hsc, measure_empty, mul_zero]
+
 @[simp]
 theorem restrict_singleton (μ : Measure α) (a : α) : μ.restrict {a} = μ {a} • dirac a := by
   ext1 s hs

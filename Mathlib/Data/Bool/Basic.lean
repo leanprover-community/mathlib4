@@ -221,20 +221,9 @@ theorem eq_false_of_not_eq_true' {a : Bool} : !a = true → a = false := by
   cases a <;> decide
 #align bool.eq_ff_of_bnot_eq_tt Bool.eq_false_of_not_eq_true'
 
--- TODO: undo the rename in leanprover/std4#183?
-alias and_not_self := and_not_self_right
 #align bool.band_bnot_self Bool.and_not_self
-
--- TODO: undo the rename in leanprover/std4#183?
-alias not_and_self := and_not_self_left
 #align bool.bnot_band_self Bool.not_and_self
-
--- TODO: undo the rename in leanprover/std4#183?
-alias or_not_self := or_not_self_right
 #align bool.bor_bnot_self Bool.or_not_self
-
--- TODO: undo the rename in leanprover/std4#183?
-alias not_or_self := or_not_self_left
 #align bool.bnot_bor_self Bool.not_or_self
 
 theorem bne_eq_xor : bne = xor := by funext a b; revert a b; decide
@@ -245,14 +234,13 @@ attribute [simp] xor_assoc
 #align bool.bxor_assoc Bool.xor_assoc
 
 #align bool.bxor_left_comm Bool.xor_left_comm
-#align bool.bxor_bnot_left Bool.xor_not_left
-#align bool.bxor_bnot_right Bool.xor_not_right
+#align bool.bxor_bnot_left Bool.not_xor
+#align bool.bxor_bnot_right Bool.xor_not
 
-attribute [simp] xor_not_not
-#align bool.bxor_bnot_bnot Bool.xor_not_not
+#align bool.bxor_bnot_bnot Bool.not_xor_not
 
-#align bool.bxor_ff_left Bool.xor_false_left
-#align bool.bxor_ff_right Bool.xor_false_right
+#align bool.bxor_ff_left Bool.false_xor
+#align bool.bxor_ff_right Bool.xor_false
 #align bool.band_bxor_distrib_left Bool.and_xor_distrib_left
 #align bool.band_bxor_distrib_right Bool.and_xor_distrib_right
 
@@ -270,12 +258,14 @@ attribute [simp] not_or
 #align bool.bnot_inj Bool.not_inj
 
 instance linearOrder : LinearOrder Bool where
-  le_refl := Bool.le_refl
-  le_trans _ _ _ := Bool.le_trans
-  le_antisymm _ _ := Bool.le_antisymm
-  le_total := Bool.le_total
+  le_refl := by decide
+  le_trans := by decide
+  le_antisymm := by decide
+  le_total := by decide
   decidableLE := inferInstance
-  lt_iff_le_not_le _ _ := Bool.lt_iff_le_not_le
+  lt_iff_le_not_le := by decide
+  max_def := by decide
+  min_def := by decide
 #align bool.linear_order Bool.linearOrder
 
 attribute [simp] Bool.max_eq_or Bool.min_eq_and
