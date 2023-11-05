@@ -361,6 +361,8 @@ def IsTorsionFree :=
 #align monoid.is_torsion_free Monoid.IsTorsionFree
 #align add_monoid.is_torsion_free AddMonoid.IsTorsionFree
 
+variable {G}
+
 /-- A nontrivial monoid is not torsion-free if any nontrivial element has finite order. -/
 @[to_additive (attr := simp) "An additive monoid is not torsion free if any
   nontrivial element has finite order."]
@@ -368,6 +370,10 @@ theorem not_isTorsionFree_iff : ¬IsTorsionFree G ↔ ∃ g : G, g ≠ 1 ∧ IsO
   simp_rw [IsTorsionFree, Ne.def, not_forall, Classical.not_not, exists_prop]
 #align monoid.not_is_torsion_free_iff Monoid.not_isTorsionFree_iff
 #align add_monoid.not_is_torsion_free_iff AddMonoid.not_isTorsionFree_iff
+
+@[to_additive (attr := simp)]
+lemma isTorsionFree_of_subsingleton [Subsingleton G] : IsTorsionFree G :=
+  fun _a ha _ => ha <| Subsingleton.elim _ _
 
 end Monoid
 
