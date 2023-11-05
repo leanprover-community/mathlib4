@@ -12,8 +12,7 @@ def sectionsEquiv {J : Type u} [Category.{u, u} J] (K : J ⥤ Type u) :
   left_inv := by intro; apply ULift.ext; ext; rfl
   right_inv := by intro; ext; rfl
 
-noncomputable
-instance : CreatesLimitsOfSize.{u, u} uliftFunctor.{v, u} where
+noncomputable instance : CreatesLimitsOfSize.{u, u} uliftFunctor.{v, u} where
   CreatesLimitsOfShape := {
     CreatesLimit := fun {K} =>
       @createsLimitOfFullyFaithfulOfIso _ _ _ _ _ _ K uliftFunctor _ _ _ (limit K)
@@ -22,5 +21,4 @@ instance : CreatesLimitsOfSize.{u, u} uliftFunctor.{v, u} where
         (equivEquivIso (Types.isLimitEquivSections.{u, max u v}
         (limit.isLimit (K ⋙ uliftFunctor.{v, u})))).symm) }
 
-noncomputable
-instance : PreservesLimitsOfSize.{u, u} uliftFunctor := inferInstance
+noncomputable instance : PreservesLimitsOfSize.{u, u} uliftFunctor := inferInstance
