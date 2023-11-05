@@ -156,6 +156,93 @@ noncomputable def Structomorph.of_localStructomorphs {f : H → H}
   }
 end LocalDiffeos
 
+-- Work the on the concept of pregroupoids: hopefully, this is the right framework to *state*
+-- the Inverse Function theorem in general.
+section Pregroupoids
+variable (H : Type*) [TopologicalSpace H]
+-- warm-up: the pregroupoid of continuous functions
+-- I suspect the mathlib definition is misnamed... let me define my own, for practice
+def contPregroupoid : Pregroupoid H where
+  property := fun f s => ContinuousOn f s
+  comp := fun hf hg _ _ _ ↦ hg.comp' hf
+  id_mem := continuousOn_id
+  locality := fun _ h ↦ continuousOn_of_locally_continuousOn h
+  congr := fun _ congr hf ↦ hf.congr congr
+
+/-- A pregroupoid `P` on `H` is called **good** (placeholder name)
+  iff it is stable under local inverses:
+if `f` lies in `P` and has a local inverse function `g`, then `g` also lies in `P`.
+Simplest special case: if `P` is e.g. the contPregroupoid (which is monotone),
+suppose `f` is continuous on `U` (i.e., we have `contPregroupoid.property f U`)
+and g : H → H is a local inverse of `f` on `s`: we have `InvOn g f s t` for some `t ⊆ H`.
+Then, `g` is continuous on `t` (i.e. property `g t`). -/
+structure GoodPregroupoid (H : Type*) [TopologicalSpace H] extends Pregroupoid H where
+  inverse : ∀ {f g s t}, property f s → InvOn g f s t → property g t
+
+/- Note: If `f` is continuous on `u`, while `InvOn g f s t`,
+`InvOn.mono` implies `InvOn g f s∩u t∩f(u)`: thus, it suffices to consider the case `s=u`. -/
+example {X Y : Type*} {u s : Set X} {t : Set Y} {f : X → Y} {g : Y → X} (h : InvOn g f s t) :
+  InvOn g f (s ∩ u) (t ∩ (f '' u)) := h.mono (inter_subset_left s u) (inter_subset_left _ _)
+
+/-- The groupoid associated to a good pregroupoid. -/
+def GoodPregroupoid.groupoid (PG : GoodPregroupoid H) : StructureGroupoid H :=
+  (PG.toPregroupoid).groupoid
+
+-- If `H` is compact and Hausdorff, its continuous pregroupoid is good:
+-- a bijective function from a compact to a Hausdorff space is continuous.
+-- XXX: not enough, a priori `s` is any set!
+lemma contGoodPregroupoidReally? [CompactSpace H] [T2Space H] : GoodPregroupoid H where
+  toPregroupoid := contPregroupoid H
+  inverse := by
+    intro f g s t hf hinv
+    have : ContinuousOn f s := hf
+    show ContinuousOn g t
+    sorry
+
+variable {n : ℕ∞} {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+
+-- C^n functions on E: warm-up case (only one chart); full definition in SmoothManifoldsWithCorners
+def contDiffPregroupoidWarmup : Pregroupoid E := {
+  property := fun f s ↦ ContDiffOn 𝕜 n f s
+  comp := fun {f g} {u v} hf hg _ _ _ ↦ hg.comp' hf
+  id_mem := contDiffOn_id
+  locality := fun _ h ↦ contDiffOn_of_locally_contDiffOn h
+  congr := by intro f g u _ congr hf; exact (contDiffOn_congr congr).mpr hf
+}
+
+-- test this works: this is a good pregroupoid -> no, it doesn't, my assumptions are still too weak!
+lemma contDiffPregroupoidGoodWarmup : GoodPregroupoid E where
+  -- TODO: fix copy-paste!
+  property := fun f s ↦ ContDiffOn 𝕜 n f s
+  comp := fun {f g} {u v} hf hg _ _ _ ↦ hg.comp' hf
+  id_mem := contDiffOn_id
+  locality := fun _ h ↦ contDiffOn_of_locally_contDiffOn h
+  congr := by intro f g u _ congr hf; exact (contDiffOn_congr congr).mpr hf
+  --toPregroupoid := contDiffPregroupoidWarmup E
+  inverse := by
+    intro f g s t hf hinv
+    have : ContDiffOn 𝕜 n f s := hf
+    show ContDiffOn 𝕜 n g t
+    sorry
+
+/- my vision for the general IFT/general shape should go like this:
+    - consider a "good pregroupoid" P: inverses should exist;
+      basically, the necessary properties to the inverse by the IFT is also in P
+    - let G be the groupoid associated to P
+    - suppose f ∈ P is differentiable at x with invertible differential,
+      construct a local inverse (I have this already)
+    - categorical statement of the IFT on H, over any good pregroupoid P
+      if f : H → H, f ∈ P with differential df_x invertible,
+      yields f.isLocalStructomorphWithin s x for some s
+    - conceptual statement of the IFT, over any suitable pregroupoid:
+        pull up this property over charts using ChartedSpace.LiftPropOn
+    - perhaps: can I characterise, over any suitable pregroupoid, this as sth like
+        f:M → M' (ove the same model I) is a local structo for G iff f and f' are in P
+      generalising `isLocalStructomorphOn_contDiffGroupoid_iff` to all categories
+  specialise to specific categories: C^n and 𝕜-analytic ones, show they satisfy this. -/
+
+end Pregroupoids
+
 /-! Inverse function theorem for manifolds. -/
 section IFT
 namespace ContMDiffAt
