@@ -114,11 +114,21 @@ abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
     rw [← Category.assoc, Iso.eq_comp_inv]
     apply F.map_injective
     simp [fData.associator_eq, fData.whiskerLeft_eq, whisker_exchange_assoc]
-  comp_whiskerRight := sorry
-  whiskerRight_id := sorry
-  whiskerRight_tensor :=sorry
-  whisker_assoc := sorry
-  whisker_exchange := sorry
+  comp_whiskerRight {W X Y} f g Z := F.map_injective <| by cases fData; aesop_cat
+  whiskerRight_id {X Y} f := by
+    rw [← Category.assoc, Iso.eq_comp_inv]
+    apply F.map_injective
+    simp [fData.rightUnitor_eq, fData.whiskerRight_eq, ← whisker_exchange_assoc]
+  whiskerRight_tensor {X X'} f Y Z := by
+    rw [Iso.eq_inv_comp]
+    apply F.map_injective
+    simp [fData.associator_eq, fData.whiskerRight_eq, whisker_exchange_assoc]
+  whisker_assoc X Y Y' f Z := by
+    rw [← Category.assoc, Iso.eq_comp_inv]
+    apply F.map_injective
+    simp [fData.associator_eq, fData.whiskerLeft_eq, fData.whiskerRight_eq, whisker_exchange_assoc]
+  whisker_exchange f g := F.map_injective <| by
+    simp [fData.whiskerLeft_eq, fData.whiskerRight_eq, whisker_exchange_assoc]
   triangle X Y := F.map_injective <| by cases fData; aesop_cat
   pentagon W X Y Z := F.map_injective <| by
     simp only [Functor.map_comp, fData.whiskerRight_eq, fData.associator_eq, Iso.trans_assoc,
@@ -130,31 +140,6 @@ abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
       rw [← MonoidalCategory.whiskerLeft_comp, hom_inv_whiskerRight]
     rw [whisker_exchange_assoc]
     simp
-  -- leftUnitor_naturality {X Y : D} f := F.map_injective <| by
-  --   have := leftUnitor_naturality (F.map f)
-  --   simp only [Functor.map_comp, fData.tensorHom_eq, Functor.map_id, fData.leftUnitor_eq,
-  --     Iso.trans_assoc, Iso.trans_hom, Iso.symm_hom, tensorIso_hom, Iso.refl_hom, assoc,
-  --     Iso.hom_inv_id_assoc, id_tensor_comp_tensor_id_assoc, Iso.cancel_iso_inv_left]
-  --   rw [←this, ←assoc, ←tensor_comp, id_comp, comp_id]
-  -- rightUnitor_naturality {X Y : D} f := F.map_injective <| by
-  --   have := rightUnitor_naturality (F.map f)
-  --   simp only [Functor.map_comp, fData.tensorHom_eq, Functor.map_id, fData.rightUnitor_eq,
-  --     Iso.trans_assoc, Iso.trans_hom, Iso.symm_hom, tensorIso_hom, Iso.refl_hom, assoc,
-  --     Iso.hom_inv_id_assoc, tensor_id_comp_id_tensor_assoc, Iso.cancel_iso_inv_left]
-  --   rw [←this, ←assoc, ←tensor_comp, id_comp, comp_id]
-  -- associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := F.map_injective <| by
-  --   have := associator_naturality (F.map f₁) (F.map f₂) (F.map f₃)
-  --   simp [fData.associator_eq, fData.tensorHom_eq]
-  --   simp_rw [←assoc, ←tensor_comp, assoc, Iso.hom_inv_id, ←assoc]
-  --   congr 1
-  --   conv_rhs => rw [←comp_id (F.map f₁), ←id_comp (F.map f₁)]
-  --   simp only [tensor_comp]
-  --   simp only [tensor_id, comp_id, assoc, tensor_hom_inv_id_assoc, id_comp]
-  --   slice_rhs 2 3 => rw [←this]
-  --   simp only [← assoc, Iso.inv_hom_id, comp_id]
-  --   congr 2
-  --   simp_rw [←tensor_comp, id_comp]
-
 
 /--
 We can upgrade `F` to a monoidal functor from `D` to `E` with the induced structure.
@@ -236,7 +221,7 @@ instance instIsEquivalence_fromTransported (e : C ≌ D) :
 
 /-- We can upgrade `e.functor` to a monoidal functor from `C` to `D` with the transported structure.
 -/
-@[simps]
+@[simps!]
 def toTransported (e : C ≌ D) : MonoidalFunctor C (Transported e) :=
   monoidalInverse (fromTransported e)
 #align category_theory.monoidal.to_transported CategoryTheory.Monoidal.toTransported

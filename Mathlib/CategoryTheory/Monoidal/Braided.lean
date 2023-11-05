@@ -103,9 +103,9 @@ theorem braiding_inv_tensor_left (X Y Z : C) :
 
 @[simp]
 theorem braiding_inv_tensor_right (X Y Z : C) :
-  (β_ X (Y ⊗ Z)).inv  =
-    (α_ Y Z X).hom ≫ Y ◁ (β_ X Z).inv ≫ (α_ Y X Z).inv ≫
-      (β_ X Y).inv ▷ Z ≫ (α_ X Y Z).hom :=
+    (β_ X (Y ⊗ Z)).inv  =
+      (α_ Y Z X).hom ≫ Y ◁ (β_ X Z).inv ≫ (α_ Y X Z).inv ≫
+        (β_ X Y).inv ▷ Z ≫ (α_ X Y Z).hom :=
   eq_of_inv_eq_inv (by simp)
 
 @[reassoc (attr := simp)]
