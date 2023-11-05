@@ -1,3 +1,4 @@
+import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 import Mathlib.Condensed.Abelian
 import Mathlib.Condensed.Explicit
 import Mathlib.Topology.Category.Yoneda
@@ -6,10 +7,18 @@ universe u v
 
 open CategoryTheory Limits ContinuousMap
 
+instance : PreservesFiniteProducts compHausToTop.{u}.op where
+  preserves J _ := by
+    apply (config := { allowSynthFailures := true }) preservesLimitsOfShapeOp
+    exact preservesColimitsOfShapeOfEquiv (Discrete.opposite J).symm _
+
 noncomputable
-def TopCat.toCondensed (X : TopCat.{u+1}) : CondensedSet.{u} := sorry
-  -- @ofSheafCompHaus (ContinuousMap.coyoneda.{u, u+1, u, u+1} compHausToTop.{u} X)
-  -- (instPreservesFiniteProductsOppositeOppositeTypeTypesCoyoneda.{u, u+1} X.1 compHausToTop) sorry
+def TopCat.toCondensed (X : TopCat.{u+1}) : CondensedSet.{u} :=
+  @Condensed.ofSheafCompHaus (ContinuousMap.coyoneda.{u, u+1, u, u+1} compHausToTop.{u} X) _ (by
+    apply (config := { allowSynthFailures := true }) EqualizerConditionCoyoneda X compHausToTop.{u}
+    intro Z B π he
+    rw [CompHaus.effectiveEpi_iff_surjective] at he
+    apply QuotientMap.of_surjective_continuous he π.continuous )
 
 def topCatToCondensed : TopCat.{u+1} ⥤ CondensedSet.{u} := sorry
 
