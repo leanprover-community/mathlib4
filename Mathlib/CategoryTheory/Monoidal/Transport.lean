@@ -82,11 +82,6 @@ attribute [nolint docBlame]
   InducingFunctorData.leftUnitor_eq
   InducingFunctorData.rightUnitor_eq
 
-theorem InducingFunctorData.leftUnitor_inv_eq [MonoidalCategoryStruct D] {F : D ⥤ C} (fData : InducingFunctorData F) (X : D) :
-    F.map (λ_ X).inv = (((fData.μIso (𝟙_ D) X).symm ≪≫ (fData.εIso.symm ⊗ Iso.refl (F.obj X))) ≪≫ λ_ (F.obj X)).inv := by
-  rw [← Functor.mapIso_inv, Iso.inv_eq_inv]
-  simp [fData.leftUnitor_eq]
-
 /--
 Induce the lawfulness of the monoidal structure along an faithful functor of (plain) categories,
 where the operations are already defined on the destination type `D`.
@@ -101,8 +96,6 @@ abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [Faithful F]
   tensorHom_def {X₁ Y₁ X₂ Y₂} f g := F.map_injective <| by
     rw [fData.tensorHom_eq, Functor.map_comp, fData.whiskerRight_eq, fData.whiskerLeft_eq]
     simp only [tensorHom_def, assoc, Iso.hom_inv_id_assoc]
-  -- tensor_id X₁ X₂ := F.map_injective <| by cases fData; aesop_cat
-  -- tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂} f₁ f₂ g₁ g₂ := F.map_injective <| by cases fData; aesop_cat
   whiskerLeft_id X Y := F.map_injective <| by simp [fData.whiskerLeft_eq]
   whiskerLeft_comp W X Y Z f g := F.map_injective <| by cases fData; aesop_cat
   id_whiskerLeft {X Y} f := by
