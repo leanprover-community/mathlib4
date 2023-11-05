@@ -177,6 +177,8 @@ lemma mkHomFromSingle_f {K : HomologicalComplex V c} {j : ι} {A : V} (φ : A �
 
 end HomologicalComplex
 
+variable {V}
+
 namespace ChainComplex
 
 @[simp]
@@ -223,6 +225,8 @@ noncomputable def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
     exact f.2)
   left_inv φ := by aesop_cat
   right_inv := by aesop_cat
+
+end CochainComplex
 
 /-
 
