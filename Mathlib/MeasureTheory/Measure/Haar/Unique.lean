@@ -80,6 +80,9 @@ lemma IsCompact.measure_eq_biInf_integral_hasCompactSupport
 
 namespace MeasureTheory
 
+/-- The parameterized integral `x ↦ ∫ y, g (y⁻¹ * x) ∂μ` depends continuously on `y` when `g` is a
+compactly supported continuous function on a topological group `G`, and `μ` is finite on compact
+sets. -/
 @[to_additive]
 lemma continuous_integral_apply_inv_mul
     {G : Type*} [TopologicalSpace G] [LocallyCompactSpace G] [Group G] [TopologicalGroup G]
