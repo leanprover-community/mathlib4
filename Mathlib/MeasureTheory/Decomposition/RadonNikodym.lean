@@ -3,7 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Decomposition.Lebesgue
+import Mathlib.MeasureTheory.Decomposition.SignedLebesgue
 
 #align_import measure_theory.decomposition.radon_nikodym from "leanprover-community/mathlib"@"fc75855907eaa8ff39791039710f567f37d4556f"
 
@@ -99,6 +99,18 @@ lemma inv_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) (hνμ :
   rw [withDensity_inv_same (measurable_rnDeriv _ _)
     (by filter_upwards [hνμ.ae_le (rnDeriv_pos hμν)] with x hx using hx.ne')
     (rnDeriv_ne_top _ _)]
+
+lemma rnDeriv_mul_rnDeriv {μ ν κ : Measure α} [SigmaFinite κ]
+    [μ.HaveLebesgueDecomposition κ] [ν.HaveLebesgueDecomposition κ] [μ.HaveLebesgueDecomposition ν]
+    (hμν : μ ≪ ν) (hνκ : ν ≪ κ) :
+    μ.rnDeriv ν * ν.rnDeriv κ =ᵐ[κ] μ.rnDeriv κ := by
+  rw [← withDensity_eq_iff_of_sigmaFinite]
+  · rw [mul_comm,
+      withDensity_mul _ (Measure.measurable_rnDeriv _ _) (Measure.measurable_rnDeriv _ _),
+      Measure.withDensity_rnDeriv_eq _ _ (hμν.trans hνκ), Measure.withDensity_rnDeriv_eq _ _ hνκ,
+      Measure.withDensity_rnDeriv_eq _ _ hμν]
+  · exact ((Measure.measurable_rnDeriv _ _).mul (Measure.measurable_rnDeriv _ _)).aemeasurable
+  · exact (Measure.measurable_rnDeriv _ _).aemeasurable
 
 lemma set_lintegral_rnDeriv [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) {s : Set α}
     (hs : MeasurableSet s) :

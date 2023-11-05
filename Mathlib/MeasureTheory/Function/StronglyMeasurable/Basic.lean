@@ -948,29 +948,11 @@ theorem exists_spanning_measurableSet_norm_le [SeminormedAddCommGroup β] {m m0 
     ∃ s : ℕ → Set α,
       (∀ n, MeasurableSet[m] (s n) ∧ μ (s n) < ∞ ∧ ∀ x ∈ s n, ‖f x‖ ≤ n) ∧
       ⋃ i, s i = Set.univ := by
-  let sigma_finite_sets := spanningSets (μ.trim hm)
-  let norm_sets := fun n : ℕ => { x | ‖f x‖ ≤ n }
-  have norm_sets_spanning : ⋃ n, norm_sets n = Set.univ := by
-    ext1 x
-    simp only [Set.mem_iUnion, Set.mem_setOf_eq, Set.mem_univ, iff_true_iff]
-    exact ⟨⌈‖f x‖⌉₊, Nat.le_ceil ‖f x‖⟩
-  let sets n := sigma_finite_sets n ∩ norm_sets n
-  have h_meas : ∀ n, MeasurableSet[m] (sets n) := by
-    refine' fun n => MeasurableSet.inter _ _
-    · exact measurable_spanningSets (μ.trim hm) n
-    · exact hf.norm.measurableSet_le stronglyMeasurable_const
-  have h_finite : ∀ n, μ (sets n) < ∞ := by
-    refine' fun n => (measure_mono (Set.inter_subset_left _ _)).trans_lt _
-    exact (le_trim hm).trans_lt (measure_spanningSets_lt_top (μ.trim hm) n)
-  refine' ⟨sets, fun n => ⟨h_meas n, h_finite n, _⟩, _⟩
-  · exact fun x hx => hx.2
-  · have :
-      ⋃ i, sigma_finite_sets i ∩ norm_sets i = (⋃ i, sigma_finite_sets i) ∩ ⋃ i, norm_sets i := by
-      refine' Set.iUnion_inter_of_monotone (monotone_spanningSets (μ.trim hm)) fun i j hij x => _
-      simp only [Set.mem_setOf_eq]
-      refine' fun hif => hif.trans _
-      exact_mod_cast hij
-    rw [this, norm_sets_spanning, iUnion_spanningSets (μ.trim hm), Set.inter_univ]
+  obtain ⟨s, hs, hs_univ⟩ := exists_spanning_measurableSet_le hf.nnnorm.measurable (μ.trim hm)
+  refine ⟨s, fun n ↦ ⟨(hs n).1, (le_trim hm).trans_lt (hs n).2.1, fun x hx ↦ ?_⟩, hs_univ⟩
+  have hx_nnnorm : ‖f x‖₊ ≤ n := (hs n).2.2 x hx
+  rw [← coe_nnnorm]
+  norm_cast
 #align measure_theory.strongly_measurable.exists_spanning_measurable_set_norm_le MeasureTheory.StronglyMeasurable.exists_spanning_measurableSet_norm_le
 
 end StronglyMeasurable
