@@ -218,6 +218,8 @@ namespace KernelFork
 
 variable {f} {X' Y' : C} {f' : X' ⟶ Y'}
 
+/-- The morphism between points of kernel forks induced by a morphism
+in the category of arrows. -/
 def mapOfIsLimit (kf : KernelFork f) {kf' : KernelFork f'} (hf' : IsLimit kf')
     (φ : Arrow.mk f ⟶ Arrow.mk f') : kf.pt ⟶ kf'.pt :=
   hf'.lift (KernelFork.ofι (kf.ι ≫ φ.left) (by simp))
@@ -228,6 +230,8 @@ lemma mapOfIsLimit_ι (kf : KernelFork f) {kf' : KernelFork f'} (hf' : IsLimit k
     kf.mapOfIsLimit hf' φ ≫ kf'.ι = kf.ι ≫ φ.left :=
   hf'.fac _ _
 
+/-- The isomorphism between points of limit kernel forks induced by an isomorphism
+in the category of arrows. -/
 @[simps]
 def mapIsoOfIsLimit {kf : KernelFork f} {kf' : KernelFork f'}
     (hf : IsLimit kf) (hf' : IsLimit kf')
@@ -693,6 +697,8 @@ namespace CokernelCofork
 
 variable {f} {X' Y' : C} {f' : X' ⟶ Y'}
 
+/-- The morphism between points of cokernel coforks induced by a morphism
+in the category of arrows. -/
 def mapOfIsColimit {cc : CokernelCofork f} (hf : IsColimit cc) (cc' : CokernelCofork f')
     (φ : Arrow.mk f ⟶ Arrow.mk f') : cc.pt ⟶ cc'.pt :=
   hf.desc (CokernelCofork.ofπ (φ.right ≫ cc'.π) (by
@@ -704,6 +710,8 @@ lemma π_mapOfIsColimit {cc : CokernelCofork f} (hf : IsColimit cc) (cc' : Coker
     cc.π ≫ mapOfIsColimit hf cc' φ = φ.right ≫ cc'.π :=
   hf.fac _ _
 
+/-- The isomorphism between points of limit cokernel coforks induced by an isomorphism
+in the category of arrows. -/
 @[simps]
 def mapIsoOfIsColimit {cc : CokernelCofork f} {cc' : CokernelCofork f'}
     (hf : IsColimit cc) (hf' : IsColimit cc')
