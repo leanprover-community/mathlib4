@@ -62,8 +62,8 @@ attribute [local instance] endofunctorMonoidalCategory
     (α ⊗ β).app X = β.app (F.obj X) ≫ K.map (α.app X) := rfl
 
 @[simp] theorem endofunctorMonoidalCategory_whiskerLeft_app
-    {F G H : C ⥤ C} {α : F ⟶ G} (X : C) :
-    (H ◁ α).app X = α.app (H.obj X) := rfl
+    {F H K : C ⥤ C} {β : H ⟶ K} (X : C) :
+    (F ◁ β).app X = β.app (F.obj X) := rfl
 
 @[simp] theorem endofunctorMonoidalCategory_whiskerRight_app
     {F G H : C ⥤ C} {α : F ⟶ G} (X : C) :

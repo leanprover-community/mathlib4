@@ -155,16 +155,6 @@ class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCate
   tensorHom_def {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g: X₂ ⟶ Y₂) :
     f ⊗ g = (f ▷ X₂) ≫ (Y₁ ◁ g) := by
       aesop_cat
-  -- Porting note: Adding a prime here, so I can later define `tensorUnit` unprimed with explicit
-  --               argument `C`
-  /-- The tensor unity in the monoidal structure `𝟙_ C` -/
-  tensorUnit' : C
-  /-- The left unitor: `𝟙_ C ⊗ X ≃ X` -/
-  leftUnitor : ∀ X : C, tensorObj tensorUnit' X ≅ X
-  /-- The right unitor: `X ⊗ 𝟙_ C ≃ X` -/
-  rightUnitor : ∀ X : C, tensorObj X tensorUnit' ≅ X
-  /-- The associator isomorphism `(X ⊗ Y) ⊗ Z ≃ X ⊗ (Y ⊗ Z)` -/
-  associator : ∀ X Y Z : C, tensorObj (tensorObj X Y) Z ≅ tensorObj X (tensorObj Y Z)
   whiskerLeft_id : ∀ (X Y : C), whiskerLeft X (𝟙 Y) = 𝟙 (tensorObj X Y) := by
     aesop_cat
   whiskerLeft_comp :
@@ -173,7 +163,7 @@ class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCate
     aesop_cat
   id_whiskerLeft :
     ∀ {X Y : C} (f : X ⟶ Y),
-      whiskerLeft tensorUnit' f = (leftUnitor X).hom ≫ f ≫ (leftUnitor Y).inv := by
+      whiskerLeft tensorUnit f = (leftUnitor X).hom ≫ f ≫ (leftUnitor Y).inv := by
     aesop_cat
   tensor_whiskerLeft :
     ∀ (X Y : C) {Z Z' : C} (f : Z ⟶ Z'),
@@ -188,7 +178,7 @@ class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCate
     aesop_cat
   whiskerRight_id :
     ∀ {X Y : C} (f : X ⟶ Y),
-      whiskerRight f tensorUnit' = (rightUnitor X).hom ≫ f ≫ (rightUnitor Y).inv := by
+      whiskerRight f tensorUnit = (rightUnitor X).hom ≫ f ≫ (rightUnitor Y).inv := by
     aesop_cat
   whiskerRight_tensor :
     ∀ {X X' : C} (f : X ⟶ X') (Y Z : C),
@@ -210,14 +200,14 @@ class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCate
   -/
   pentagon :
     ∀ W X Y Z : C,
-      ((α_ W X Y).hom ⊗ 𝟙 Z) ≫ (α_ W (X ⊗ Y) Z).hom ≫ (𝟙 W ⊗ (α_ X Y Z).hom) =
+      ((α_ W X Y).hom ▷ Z) ≫ (α_ W (X ⊗ Y) Z).hom ≫ (W ◁ (α_ X Y Z).hom) =
         (α_ (W ⊗ X) Y Z).hom ≫ (α_ W X (Y ⊗ Z)).hom := by
     aesop_cat
   /--
   The identity relating the isomorphisms between `X ⊗ (𝟙_ C ⊗ Y)`, `(X ⊗ 𝟙_ C) ⊗ Y` and `X ⊗ Y`
   -/
   triangle :
-    ∀ X Y : C, (α_ X (𝟙_ _) Y).hom ≫ (𝟙 X ⊗ (λ_ Y).hom) = ((ρ_ X).hom ⊗ 𝟙 Y) := by
+    ∀ X Y : C, (α_ X (𝟙_ _) Y).hom ≫ (X ◁ (λ_ Y).hom) = ((ρ_ X).hom ▷ Y) := by
     aesop_cat
 #align category_theory.monoidal_category CategoryTheory.MonoidalCategory
 
@@ -234,36 +224,6 @@ attribute [simp]
   whiskerLeft_id whiskerRight_id
   whiskerLeft_comp id_whiskerLeft tensor_whiskerLeft comp_whiskerRight id_whiskerRight
   whiskerRight_tensor whisker_assoc
-
--- Porting Note: This is here to make `tensorUnit` explicitly depend on `C`, which was done in
---               Lean 3 using the `[]` notation in the `tensorUnit'` field.
-/-- The tensor unity in the monoidal structure `𝟙_ C` -/
-abbrev tensorUnit (C : Type u) [Category.{v} C] [MonoidalCategory C] : C :=
-  tensorUnit' (C := C)
-
-/-- Notation for `tensorObj`, the tensor product of objects in a monoidal category -/
-scoped infixr:70 " ⊗ " => tensorObj
-
-/-- Notation for the `whiskerLeft` operator of monoidal categories -/
-scoped infixr:81 " ◁ " => whiskerLeft
-
-/-- Notation for the `whiskerRight` operator of monoidal categories -/
-scoped infixl:81 " ▷ " => whiskerRight
-
-/-- Notation for `tensorHom`, the tensor product of morphisms in a monoidal category -/
-scoped infixr:70 " ⊗ " => tensorHom
-
-/-- Notation for `tensorUnit`, the two-sided identity of `⊗` -/
-scoped notation "𝟙_" => tensorUnit
-
-/-- Notation for the monoidal `associator`: `(X ⊗ Y) ⊗ Z) ≃ X ⊗ (Y ⊗ Z)` -/
-scoped notation "α_" => associator
-
-/-- Notation for the `leftUnitor`: `𝟙_C ⊗ X ≃ X` -/
-scoped notation "λ_" => leftUnitor
-
-/-- Notation for the `rightUnitor`: `X ⊗ 𝟙_C ≃ X` -/
-scoped notation "ρ_" => rightUnitor
 
 variable {C : Type u} [𝒞 : Category.{v} C] [MonoidalCategory C]
 
@@ -1102,7 +1062,7 @@ variable (C₂ : Type u₂) [Category.{v₂} C₂] [MonoidalCategory.{v₂} C₂
 attribute [local simp] associator_naturality leftUnitor_naturality rightUnitor_naturality pentagon
 attribute [local simp] tensorHom_def
 
-@[simps! tensorObj tensorUnit' whiskerLeft whiskerRight associator]
+@[simps! tensorObj tensorUnit whiskerLeft whiskerRight associator]
 instance prodMonoidal : MonoidalCategory (C₁ × C₂) where
   tensorObj X Y := (X.1 ⊗ Y.1, X.2 ⊗ Y.2)
   tensorHom f g := (f.1 ⊗ g.1, f.2 ⊗ g.2)

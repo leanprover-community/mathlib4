@@ -173,7 +173,7 @@ instance : MonoidalCategory (F C) where
   whiskerLeft := fun X _ _ f => Quotient.map (Hom.whiskerLeft X) (HomEquiv.whisker_left X) f
   whiskerRight := fun f Y =>
     Quotient.map (fun f' => Hom.whiskerRight f' Y) (fun _ _ h => HomEquiv.whisker_right _ _ _ h) f
-  tensorUnit' := FreeMonoidalCategory.Unit
+  tensorUnit := FreeMonoidalCategory.Unit
   associator X Y Z :=
     ⟨⟦Hom.α_hom X Y Z⟧, ⟦Hom.α_inv X Y Z⟧, Quotient.sound α_hom_inv, Quotient.sound α_inv_hom⟩
   leftUnitor X := ⟨⟦Hom.l_hom X⟧, ⟦Hom.l_inv X⟧, Quotient.sound l_hom_inv, Quotient.sound l_inv_hom⟩

@@ -251,7 +251,7 @@ instance : MonoidalCategory (Center C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
   whiskerLeft X _ _ f := whiskerLeft X f
   whiskerRight f X := whiskerRight f X
-  tensorUnit' := tensorUnit
+  tensorUnit := tensorUnit
   associator := associator
   leftUnitor := leftUnitor
   rightUnitor := rightUnitor

@@ -88,12 +88,10 @@ instance functorCategoryMonoidalStruct : MonoidalCategoryStruct (C ⥤ D) where
   tensorHom α β := tensorHom α β
   whiskerLeft F _ _ α := FunctorCategory.whiskerLeft F α
   whiskerRight α F := FunctorCategory.whiskerRight α F
-  tensorUnit' := (CategoryTheory.Functor.const C).obj (𝟙_ D)
+  tensorUnit := (CategoryTheory.Functor.const C).obj (𝟙_ D)
   leftUnitor F := NatIso.ofComponents fun X => λ_ (F.obj X)
   rightUnitor F := NatIso.ofComponents fun X => ρ_ (F.obj X)
   associator F G H := NatIso.ofComponents fun X => α_ (F.obj X) (G.obj X) (H.obj X)
-  whisker_exchange := by intros; ext; simp [whisker_exchange]
-#align category_theory.monoidal.functor_category_monoidal CategoryTheory.Monoidal.functorCategoryMonoidal
 
 @[simp]
 theorem tensorUnit_obj {X} : (𝟙_ (C ⥤ D)).obj X = 𝟙_ D :=
@@ -173,6 +171,7 @@ where `(F ⊗ G).obj X = F.obj X ⊗ G.obj X`.
 -/
 instance functorCategoryMonoidal : MonoidalCategory (C ⥤ D) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
+  whisker_exchange := by intros; ext; simp [whisker_exchange]
   pentagon F G H K := by ext X; dsimp; rw [pentagon]
 #align category_theory.monoidal.functor_category_monoidal CategoryTheory.Monoidal.functorCategoryMonoidal
 

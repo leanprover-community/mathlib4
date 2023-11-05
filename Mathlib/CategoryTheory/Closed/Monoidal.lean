@@ -70,7 +70,14 @@ def unitClosed : Closed (𝟙_ C) where
               { toFun := fun a => (leftUnitor X).inv ≫ a
                 invFun := fun a => (leftUnitor X).hom ≫ a
                 left_inv := by aesop_cat
-                right_inv := by aesop_cat } } }
+                right_inv := by aesop_cat }
+            homEquiv_naturality_left_symm := fun f g => by
+              dsimp
+              rw [leftUnitor_naturality_assoc]
+            -- This used to be automatic before leanprover/lean4#2644
+            homEquiv_naturality_right := by  -- aesop failure
+              dsimp
+              simp }}
 #align category_theory.unit_closed CategoryTheory.unitClosed
 
 variable (A B : C) {X X' Y Y' Z : C}
