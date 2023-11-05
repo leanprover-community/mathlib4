@@ -483,7 +483,7 @@ theorem geom_sum_alternating_of_le_neg_one [StrictOrderedRing α] (hx : x + 1 �
     if Even n then (∑ i in range n, x ^ i) ≤ 0 else 1 ≤ ∑ i in range n, x ^ i := by
   have hx0 : x ≤ 0 := (le_add_of_nonneg_right zero_le_one).trans hx
   induction' n with n ih
-  · simp only [Nat.zero_eq, range_zero, sum_empty, le_refl, ite_true]
+  · simp only [Nat.zero_eq, range_zero, sum_empty, le_refl, ite_true, even_zero]
   simp only [Nat.even_add_one, geom_sum_succ]
   split_ifs at ih with h
   · rw [if_neg (not_not_intro h), le_add_iff_nonneg_left]
@@ -497,7 +497,7 @@ theorem geom_sum_alternating_of_lt_neg_one [StrictOrderedRing α] (hx : x + 1 < 
     if Even n then (∑ i in range n, x ^ i) < 0 else 1 < ∑ i in range n, x ^ i := by
   have hx0 : x < 0 := ((le_add_iff_nonneg_right _).2 zero_le_one).trans_lt hx
   refine' Nat.le_induction _ _ n (show 2 ≤ n from hn)
-  · simp only [geom_sum_two, lt_add_iff_pos_left, ite_true, gt_iff_lt, hx]
+  · simp only [geom_sum_two, lt_add_iff_pos_left, ite_true, gt_iff_lt, hx, even_two]
   clear hn
   intro n _ ihn
   simp only [Nat.even_add_one, geom_sum_succ]
@@ -571,7 +571,7 @@ theorem geom_sum_eq_zero_iff_neg_one [LinearOrderedRing α] (hn : n ≠ 0) :
   have hx := eq_or_ne x (-1)
   cases' hx with hx hx
   · rw [hx, neg_one_geom_sum]
-    simp only [h hx, ne_eq, ite_eq_left_iff, one_ne_zero, not_forall, exists_prop, and_true]
+    simp only [h hx, ite_false, ne_eq, one_ne_zero, not_false_eq_true]
   · exact geom_sum_ne_zero hx hn
 #align geom_sum_eq_zero_iff_neg_one geom_sum_eq_zero_iff_neg_one
 

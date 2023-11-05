@@ -53,7 +53,7 @@ theorem bodd_subNatNat (m n : ℕ) : bodd (subNatNat m n) = xor m.bodd n.bodd :=
 
 @[simp]
 theorem bodd_negOfNat (n : ℕ) : bodd (negOfNat n) = n.bodd := by
-  cases n <;> simp
+  cases n <;> simp (config := {decide := true})
   rfl
 #align int.bodd_neg_of_nat Int.bodd_negOfNat
 
@@ -164,7 +164,7 @@ theorem bit_negSucc (b) (n : ℕ) : bit b -[n+1] = -[Nat.bit (not b) n+1] := by
 @[simp]
 theorem bodd_bit (b n) : bodd (bit b n) = b := by
   rw [bit_val]
-  cases b <;> cases bodd n <;> simp
+  cases b <;> cases bodd n <;> simp [(show bodd 2 = false by rfl)]
 #align int.bodd_bit Int.bodd_bit
 
 @[simp, deprecated]
@@ -293,12 +293,12 @@ theorem bitwise_xor : bitwise xor = Int.xor := by
 theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   cases' m with m m <;> cases' n with n n <;>
-  simp only [bitwise, ofNat_eq_coe, bit_coe_nat, natBitwise, Bool.not_false, Bool.not_eq_false',
+  simp [bitwise, ofNat_eq_coe, bit_coe_nat, natBitwise, Bool.not_false, Bool.not_eq_false',
     bit_negSucc]
-  · by_cases h : f false false <;> simp [h]
-  · by_cases h : f false true <;> simp [h]
-  · by_cases h : f true false <;> simp [h]
-  · by_cases h : f true true <;> simp [h]
+  · by_cases h : f false false <;> simp (config := {decide := true}) [h]
+  · by_cases h : f false true <;> simp (config := {decide := true}) [h]
+  · by_cases h : f true false <;> simp (config := {decide := true}) [h]
+  · by_cases h : f true true <;> simp (config := {decide := true}) [h]
 #align int.bitwise_bit Int.bitwise_bit
 
 @[simp]

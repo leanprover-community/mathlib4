@@ -323,7 +323,7 @@ theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
 #align bool.of_nat_le_of_nat Bool.ofNat_le_ofNat
 
 theorem toNat_le_toNat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toNat b₁ := by
-  cases b₀ <;> cases b₁ <;> simp_all
+  cases b₀ <;> cases b₁ <;> simp_all (config := { decide := true })
 #align bool.to_nat_le_to_nat Bool.toNat_le_toNat
 
 theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by

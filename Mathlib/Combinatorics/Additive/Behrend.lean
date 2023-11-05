@@ -213,7 +213,7 @@ theorem sum_lt : (∑ i : Fin n, d * (2 * d + 1) ^ (i : ℕ)) < (2 * d + 1) ^ n 
 theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
     (sphere n d k).card ≤ rothNumberNat ((2 * d - 1) ^ n) := by
   cases n
-  · dsimp; refine' (card_le_univ _).trans_eq _; simp
+  · dsimp; refine' (card_le_univ _).trans_eq _; rfl
   cases d
   · simp
   refine' addSalemSpencer_image_sphere.le_rothNumberNat _ _ (card_image_of_injOn _)
