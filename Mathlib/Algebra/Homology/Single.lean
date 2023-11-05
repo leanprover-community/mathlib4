@@ -66,7 +66,7 @@ variable {V}
 
 @[simp]
 lemma single_obj_X_self (j : ι) (A : V) :
-   ((single V c j).obj A).X j = A := if_pos rfl
+    ((single V c j).obj A).X j = A := if_pos rfl
 
 lemma isZero_single_obj_X (j : ι) (A : V) (i : ι) (hi : i ≠ j) :
     IsZero (((single V c j).obj A).X i) := by
