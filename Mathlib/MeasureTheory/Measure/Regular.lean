@@ -220,15 +220,15 @@ theorem exists_subset_lt_add (H : InnerRegularWRT μ p q) (h0 : p ∅) (hU : q U
 
 protected theorem map {α β} [MeasurableSpace α] [MeasurableSpace β]
     {μ : Measure α} {pa qa : Set α → Prop}
-    (H : InnerRegularWRT μ pa qa) (f : α ≃ β) (hf : AEMeasurable f μ) {pb qb : Set β → Prop}
+    (H : InnerRegularWRT μ pa qa) {f : α → β} (hf : AEMeasurable f μ) {pb qb : Set β → Prop}
     (hAB : ∀ U, qb U → qa (f ⁻¹' U)) (hAB' : ∀ K, pa K → pb (f '' K))
-    (hB₁ : ∀ K, pb K → MeasurableSet K) (hB₂ : ∀ U, qb U → MeasurableSet U) :
+    (hB₂ : ∀ U, qb U → MeasurableSet U) :
     InnerRegularWRT (map f μ) pb qb := by
   intro U hU r hr
   rw [map_apply_of_aemeasurable hf (hB₂ _ hU)] at hr
   rcases H (hAB U hU) r hr with ⟨K, hKU, hKc, hK⟩
-  refine' ⟨f '' K, image_subset_iff.2 hKU, hAB' _ hKc, _⟩
-  rwa [map_apply_of_aemeasurable hf (hB₁ _ <| hAB' _ hKc), f.preimage_image]
+  refine ⟨f '' K, image_subset_iff.2 hKU, hAB' _ hKc, ?_⟩
+  exact hK.trans_le (le_map_apply_image hf _)
 #align measure_theory.measure.inner_regular.map MeasureTheory.Measure.InnerRegularWRT.map
 
 theorem map' {α β} [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α} {pa qa : Set α → Prop}
@@ -666,10 +666,15 @@ theorem _root_.MeasurableSet.exists_lt_isCompact [InnerRegular μ] ⦃A : Set α
     ∃ K, K ⊆ A ∧ IsCompact K ∧ r < μ K :=
   InnerRegular.innerRegular hA _ hr
 
+protected theorem map_of_continuous [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
+    [BorelSpace β] [h : InnerRegular μ] {f : α → β} (hf : Continuous f) :
+    InnerRegular (Measure.map f μ) :=
+  ⟨InnerRegularWRT.map h.innerRegular hf.aemeasurable (fun _s hs ↦hf.measurable hs)
+    (fun _K hK ↦ hK.image hf) (fun _s hs ↦ hs)⟩
+
 protected theorem map [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] [InnerRegular μ] (f : α ≃ₜ β) : (Measure.map f μ).InnerRegular :=
-  ⟨InnerRegular.innerRegular.map' f.toMeasurableEquiv
-    (fun _U hU ↦ f.measurable hU) (fun _K hK ↦ hK.image f.continuous)⟩
+  InnerRegular.map_of_continuous f.continuous
 
 protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] (f : α ≃ₜ β) :
@@ -810,26 +815,12 @@ instance (priority := 80) [InnerRegularCompactLTTop μ] [SigmaFinite μ] : Inner
 protected theorem map_of_continuous [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] [h : InnerRegularCompactLTTop μ] {f : α → β} (hf : Continuous f) :
     InnerRegularCompactLTTop (Measure.map f μ) := by
-  refine ⟨fun s ⟨s_meas, hs⟩ r hr ↦ ?_⟩
-  rw [map_apply hf.measurable s_meas] at hr hs
-  obtain ⟨K, Ks, K_comp, hK⟩ : ∃ K ⊆ f ⁻¹' s, IsCompact K ∧ r < μ K :=
-    h.innerRegular ⟨hf.measurable s_meas, hs⟩ _ hr
-  refine ⟨f '' K, mapsTo'.mp Ks, K_comp.image hf, ?_⟩
-  apply hK.trans_le
-  have : Measurable f := hf.measurable
-
-
-
-
-
-
-#exit
-
-
-  ⟨InnerRegular.innerRegular.map' f.toMeasurableEquiv
-    (fun _U hU ↦ f.measurable hU) (fun _K hK ↦ hK.image f.continuous)⟩
-
-#exit
+  constructor
+  refine InnerRegularWRT.map h.innerRegular hf.aemeasurable ?_ (fun K hK ↦ hK.image hf) ?_
+  · rintro s ⟨hs, h's⟩
+    exact ⟨hf.measurable hs, by rwa [map_apply hf.measurable hs] at h's⟩
+  · rintro s ⟨hs, -⟩
+    exact hs
 
 end InnerRegularCompactLTTop
 
