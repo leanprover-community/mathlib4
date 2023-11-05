@@ -73,9 +73,8 @@ variable (hI : IsInitial I)
 
 -- This is the data of a particular disjoint coproduct in `C`.
 variable {α : Type} (X : α → C) [HasCoproduct X] [(ofArrows X (Sigma.ι X)).hasPullbacks]
-    (hd : ∀ i j [HasInitial C], i ≠ j →
+    [HasInitial C] [∀ i, Mono (Sigma.ι X i)] (hd : ∀ i j, i ≠ j →
       IsPullback (initial.to _) (initial.to _) (Sigma.ι X i) (Sigma.ι X j))
-    [∀ i, Mono (Sigma.ι X i)]
 
 /--
 The two parallel maps in the equalizer diagram for the sheaf condition corresponding to the
@@ -93,7 +92,6 @@ theorem firstMap_eq_secondMap : Equalizer.Presieve.Arrows.firstMap F X (Sigma.ι
     apply Mono.right_cancellation (f := Sigma.ι X i)
     exact pullback.condition
   · haveI := preservesTerminalOfIsSheafForEmpty F hF hI
-    haveI := hI.hasInitial
     let i₁ : op (pullback (Sigma.ι X i) (Sigma.ι X j)) ≅ op (⊥_ _) :=
       ((hd i j hi).isoPullback).op
     let i₂ : op (⊥_ C) ≅ (⊤_ Cᵒᵖ) :=
