@@ -104,8 +104,8 @@ theorem firstMap_eq_secondMap : Equalizer.Presieve.Arrows.firstMap F X (Sigma.ι
 
 theorem piComparison_fac' {Z : C} (π : (i : α) → X i ⟶ Z) [IsIso (Sigma.desc π)] :
     piComparison F (fun x ↦ op (X x)) =
-    F.map ((opCoproductIsoProduct X).inv ≫ (inv (Sigma.desc π)).op) ≫
-    Equalizer.Presieve.Arrows.forkMap F X π := by
+      F.map ((opCoproductIsoProduct X).inv ≫ (inv (Sigma.desc π)).op) ≫
+        Equalizer.Presieve.Arrows.forkMap F X π := by
   have h₁ : Pi.lift (fun i ↦ F.map (π i).op) =
       F.map (Pi.lift (fun i ↦ (π i).op)) ≫ piComparison F _ := by simp
   have h₂ : (opCoproductIsoProduct X).inv ≫ (inv (Sigma.desc π)).op =
