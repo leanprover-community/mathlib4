@@ -210,13 +210,16 @@ end ContMDiffAt
 lemma StructureGroupoid.localInverse_isLocalStructomorphWithin {f : H → H} (s : Set H) (x : H)
     (G : StructureGroupoid H) (hf : G.IsLocalStructomorphWithinAt f s x)
     -- TODO: changing to f '' s to s should fail somewhere...!
-    {g : H → H} (hg: LeftInvOn g f s) (hg' : RightInvOn g f (f '' s)) :
+    {g : H → H} (hinv : InvOn g f s (f '' s)) (hgx : g (f x) = x) :
     G.IsLocalStructomorphWithinAt g (f '' s) (f x) := by
   intro hfx
-  -- pretend this is true: otherwise pass to g(f(x)) instead and simplify then, also works.
-  have : x ∈ s := sorry
-  rcases hf this with ⟨e, ⟨heg, heq, hxsource⟩⟩
-  refine ⟨e.symm, symm G heg, ?_, ?_⟩
+  -- `hgx` is required so this is true: need to exclude the case x ∉ s, but f x ∈ f'' s.
+  have : x ∈ s := by
+    rcases hfx with ⟨x', hx's, hx'y⟩
+    have : x = x' := by rw [(hinv.1 hx's).symm, hx'y, hgx]
+    exact mem_of_eq_of_mem this hx's
+  rcases hf this with ⟨e, heg, heq, hxsource⟩
+  refine ⟨e.symm, G.symm heg, ?_, ?_⟩
   · -- g = e.symm on f '' s ∩ e.symm.source
     show EqOn g e.symm (f '' s ∩ e.symm.source)
     -- heq tells us: EqOn f (↑e.toLocalEquiv) (s ∩ e.source)
