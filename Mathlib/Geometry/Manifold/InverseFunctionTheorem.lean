@@ -223,14 +223,6 @@ end ContMDiffAt
 
 -- do I want counterparts of mem_toLocalHomeomorph_source, image_mem_toLocalHomeomorph_target also?
 
--- step 2, separately in each category
--- if f is C^k, analytic, etc. and df_x is invertible, then f_loc is a local structo within thingy
--- StructureGroupoid.IsLocalStructomorphWithinAt
--- this has been shown for C^n already, just quote it!
-
--- step 3, general: if f_loc is a `IsLocalStructomorphWithinAt`, so is the local inverse
--- (general nonsense, structure groupoid is closed under inverses)
-
 -- XXX: good name for this?
 variable {X Y : Type*} {f f' : X → Y} {g g' : Y → X} {s : Set X} {t : Set Y} in
 lemma InvOn.eqOn_inverse_of_eqOn (h : InvOn g f s t) (h' : InvOn g' f' s t) (heq : EqOn f f' s)
@@ -298,6 +290,57 @@ lemma StructureGroupoid.localInverse_isLocalStructomorphWithin {f : H → H} {s 
     rw [(e.restr s).symm_source, e.restr_target' hs]
     rw [image_eq]
     apply mem_image_of_mem f (mem_inter hxsource hxs)
+
+/-- If `f : M → N` is a local `G`-structomorphism, so is its inverse. -/
+-- This is the global version of the previous lemma.
+lemma aux (f : LocalHomeomorph M N) (G : StructureGroupoid H) [ClosedUnderRestriction G] -- needed?!
+    (hf : ChartedSpace.LiftPropOn G.IsLocalStructomorphWithinAt f f.source) :
+    ChartedSpace.LiftPropOn G.IsLocalStructomorphWithinAt f.symm f.symm.source := by
+  intro y hy
+  let x := f.symm y
+  rcases hf x (f.map_target hy) with ⟨_, h2⟩
+  -- *Essentially*, this reduces to the local statement shown before.
+  -- Need to check a number of details though:
+  --   - local reps of f and f.symm are mutually inverse (use f.invOn plus extra argument)
+  --   - the inverse map g_loc maps x to x
+  --   - possibly some more things I didn't check yet
+  -- Introduce notation to make the goal readable.
+  let s := G.localInverse_isLocalStructomorphWithin h2
+  set f_loc := (chartAt H (f x)) ∘ f ∘ (chartAt H x).symm with eq
+  set g_loc := (chartAt H x) ∘ f.symm ∘ (chartAt H (f x)).symm
+  set x' := (chartAt H x) x
+  set U := (chartAt H x).symm ⁻¹' f.source
+  -- Details to prove. TODO!
+  have aux1 : IsOpen U := sorry
+  have aux2 : InvOn g_loc f_loc U (f_loc '' U) := sorry
+  have aux3 : g_loc (f_loc x') = x' := sorry -- if x ∈ U, this follows from aux2
+  -- This is the local statement from the previous lemma: now lift back to a global statement.
+  let s := s aux1 aux2 aux3
+  refine ⟨f.continuous_invFun y hy, ?_⟩
+  · sorry -- is s, up to change of notation??!!
+
+-- Corollary: if `f` in the IFT is a local structomorphism, so is the local inverse.
+-- XXX: can I write this more nicely, not with such exploding terms?
+lemma aux_cor (f : LocalHomeomorph M N) (G : StructureGroupoid H) [ClosedUnderRestriction G]
+    -- suppose f has a local inverse per the IFT. TODO: pare down these assumptions!
+    {n : ℕ∞} [I.Boundaryless] [J.Boundaryless] [CompleteSpace E] {x : M}
+    (hfdiff : ContMDiffAt I J n f x) {f' : TangentSpace I x ≃L[ℝ] TangentSpace J (f x)}
+    (hf' : HasMFDerivAt I J f x f') (hn : 1 ≤ n)
+    -- and f is a local structo wrt G
+    (hf : ChartedSpace.LiftPropOn G.IsLocalStructomorphWithinAt f f.source) :
+    ChartedSpace.LiftPropOn G.IsLocalStructomorphWithinAt (hfdiff.toLocalHomeomorph I J hf' hn).symm
+      (hfdiff.toLocalHomeomorph I J hf' hn).symm.source := by
+  set r := hfdiff.toLocalHomeomorph I J hf' hn
+  let s := aux f G hf
+  -- missing piece: hfdiff.toLocalHomeomorph produces the inverse
+  have : r.symm = f.symm := sorry
+  rw [this]
+  exact s
+
+-- step 2, separately in each category
+-- if f is C^k, analytic, etc. and df_x is invertible, then f_loc is a local structo within thingy
+-- StructureGroupoid.IsLocalStructomorphWithinAt
+-- this has been shown for C^n already, just quote it!
 
 -- step 4, specific: if f is C^k at x, then f_loc is C^k, hence also g_loc
 --> in the smooth case, get a diffeo between things (right phrasing touches the local diffeo q.)
