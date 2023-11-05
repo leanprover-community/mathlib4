@@ -203,7 +203,7 @@ theorem sum_range_id_mul_two (n : ℕ) : (∑ i in range n, i) * 2 = n * (n - 1)
     by rw [sum_range_reflect (fun i => i) n, mul_two]
     _ = ∑ i in range n, (i + (n - 1 - i)) := sum_add_distrib.symm
     _ = ∑ i in range n, (n - 1) :=
-      sum_congr rfl fun i hi => add_tsub_cancel_of_le <| Nat.le_pred_of_lt <| mem_range.1 hi
+      sum_congr rfl fun i hi => add_tsub_cancel_of_le <| Nat.le_sub_one_of_lt <| mem_range.1 hi
     _ = n * (n - 1) := by rw [sum_const, card_range, Nat.nsmul_eq_mul]
 #align finset.sum_range_id_mul_two Finset.sum_range_id_mul_two
 
@@ -275,7 +275,7 @@ theorem sum_Ico_by_parts (hmn : m < n) :
   have h₂ :
     (∑ i in Ico (m + 1) n, f i • G (i + 1)) =
       (∑ i in Ico m (n - 1), f i • G (i + 1)) + f (n - 1) • G n - f m • G (m + 1) := by
-    rw [← sum_Ico_sub_bot _ hmn, ← sum_Ico_succ_sub_top _ (Nat.le_pred_of_lt hmn),
+    rw [← sum_Ico_sub_bot _ hmn, ← sum_Ico_succ_sub_top _ (Nat.le_sub_one_of_lt hmn),
       Nat.sub_add_cancel (pos_of_gt hmn), sub_add_cancel]
   rw [sum_eq_sum_Ico_succ_bot hmn]
   -- porting note: the following used to be done with `conv`

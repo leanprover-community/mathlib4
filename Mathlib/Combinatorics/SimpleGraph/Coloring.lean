@@ -351,7 +351,7 @@ theorem chromaticNumber_eq_card_of_forall_surj [Fintype α] (C : G.Coloring α)
     specialize h (G.recolorOfEmbedding f C')
     have h1 : Function.Surjective f := Function.Surjective.of_comp h
     have h2 := Fintype.card_le_of_surjective _ h1
-    exact Nat.lt_le_antisymm hc h2
+    exact Nat.lt_le_asymm hc h2
 #align simple_graph.chromatic_number_eq_card_of_forall_surj SimpleGraph.chromaticNumber_eq_card_of_forall_surj
 
 theorem chromaticNumber_bot [Nonempty V] : (⊥ : SimpleGraph V).chromaticNumber = 1 := by
@@ -446,7 +446,7 @@ protected theorem Colorable.cliqueFree {n m : ℕ} (hc : G.Colorable n) (hm : n 
   by_contra h
   simp only [CliqueFree, isNClique_iff, not_forall, Classical.not_not] at h
   obtain ⟨s, h, rfl⟩ := h
-  exact Nat.lt_le_antisymm hm (h.card_le_of_colorable hc)
+  exact Nat.lt_le_asymm hm (h.card_le_of_colorable hc)
 #align simple_graph.colorable.clique_free SimpleGraph.Colorable.cliqueFree
 
 -- TODO eliminate `Finite V` constraint once chromatic numbers are refactored.
