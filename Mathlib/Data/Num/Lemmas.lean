@@ -417,10 +417,6 @@ instance commSemiring : CommSemiring Num := by
     simp [add_comm, mul_add, add_mul, mul_assoc, mul_comm, mul_left_comm]
 #align num.comm_semiring Num.commSemiring
 
-@[simp, norm_cast]
-lemma toNat_nsmul (m : ℕ) (n : Num) : (m • n : ℕ) = m • (n : ℕ) := by
-  induction m <;> simp [zero_nsmul, succ_nsmul', *, add_mul, add_to_nat, Nat.succ_mul]
-
 instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid Num where
   le := (· ≤ ·)
   lt := (· < ·)
