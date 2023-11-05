@@ -368,21 +368,6 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero α)
           rw [Nat.cast_succ, coe_add, coe_one]
       }
 
-instance instDistrib [AddZeroClass α] [MulZeroClass α] [Distrib α]  :
-    Distrib (WithZero α) where
-      mul := (· * ·)
-      add := (· + ·)
-      left_distrib a b c := by
-        cases' a with a; · rfl
-        cases' b with b <;> cases' c with c <;> try rfl
-        exact congr_arg some (left_distrib _ _ _)
-      right_distrib a b c := by
-        cases' c with c
-        · change (a + b) * 0 = a * 0 + b * 0
-          simp
-        cases' a with a <;> cases' b with b <;> try rfl
-        exact congr_arg some (right_distrib _ _ _)
-
 instance instLeftDistribClass [AddZeroClass α] [MulZeroClass α] [LeftDistribClass α]  :
     LeftDistribClass (WithZero α) where
   left_distrib a b c := by
@@ -398,6 +383,20 @@ instance instRightDistribClass [AddZeroClass α] [MulZeroClass α] [RightDistrib
       simp
     cases' a with a <;> cases' b with b <;> try rfl
     exact congr_arg some (right_distrib _ _ _)
+
+instance instDistrib [Distrib α] : Distrib (WithZero α) where
+      mul := (· * ·)
+      add := (· + ·)
+      left_distrib a b c := by
+        cases' a with a; · rfl
+        cases' b with b <;> cases' c with c <;> try rfl
+        exact congr_arg some (left_distrib _ _ _)
+      right_distrib a b c := by
+        cases' c with c
+        · change (a + b) * 0 = a * 0 + b * 0
+          simp
+        cases' a with a <;> cases' b with b <;> try rfl
+        exact congr_arg some (right_distrib _ _ _)
 
 instance semiring [Semiring α] : Semiring (WithZero α) :=
   { WithZero.addMonoidWithOne, WithZero.addCommMonoid, WithZero.mulZeroClass,
