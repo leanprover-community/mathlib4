@@ -459,6 +459,47 @@ theorem diagonal_smul [Monoid R] [AddMonoid α] [DistribMulAction R α] (r : R) 
   simp [h]
 #align matrix.diagonal_smul Matrix.diagonal_smul
 
+@[simp]
+theorem diagonal_neg [DecidableEq n] [NegZeroClass α] (d : n → α) :
+    -diagonal d = diagonal fun i => -d i := by
+  ext i j
+  by_cases h : i = j <;>
+  simp [h]
+#align matrix.diagonal_neg Matrix.diagonal_neg
+
+@[simp]
+theorem diagonal_sub [SubNegZeroMonoid α] (d₁ d₂ : n → α) :
+    diagonal d₁ - diagonal d₂ = diagonal fun i => d₁ i - d₂ i := by
+  ext i j
+  by_cases h : i = j <;>
+  simp [h]
+
+instance [Zero α] [NatCast α] : NatCast (Matrix n n α) where
+  natCast m := diagonal fun _ => m
+
+@[norm_cast]
+theorem diagonal_natCast [Zero α] [NatCast α] (m : ℕ) : diagonal (fun _ : n => (m : α)) = m := rfl
+
+@[norm_cast]
+theorem diagonal_natCast' [Zero α] [NatCast α] (m : ℕ) : diagonal ((m : n → α)) = m := rfl
+
+-- See note [no_index around OfNat.ofNat]
+theorem diagonal_ofNat [Zero α] [NatCast α] (m : ℕ) [m.AtLeastTwo] :
+    diagonal (fun _ : n => no_index (OfNat.ofNat m : α)) = OfNat.ofNat m := rfl
+
+-- See note [no_index around OfNat.ofNat]
+theorem diagonal_ofNat' [Zero α] [NatCast α] (m : ℕ) [m.AtLeastTwo] :
+    diagonal (no_index (OfNat.ofNat m : n → α)) = OfNat.ofNat m := rfl
+
+instance [Zero α] [IntCast α] : IntCast (Matrix n n α) where
+  intCast m := diagonal fun _ => m
+
+@[norm_cast]
+theorem diagonal_intCast [Zero α] [IntCast α] (m : ℤ) : diagonal (fun _ : n => (m : α)) = m := rfl
+
+@[norm_cast]
+theorem diagonal_intCast' [Zero α] [IntCast α] (m : ℤ) : diagonal ((m : n → α)) = m := rfl
+
 variable (n α)
 
 /-- `Matrix.diagonal` as an `AddMonoidHom`. -/
@@ -538,6 +579,30 @@ theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (f := fun _
 #align matrix.one_eq_pi_single Matrix.one_eq_pi_single
 
 end One
+
+instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (Matrix n n α) where
+  natCast_zero := show diagonal _ = _ by
+    rw [Nat.cast_zero, diagonal_zero]
+  natCast_succ n := show diagonal _ = diagonal _ + _ by
+    rw [Nat.cast_succ, ←diagonal_add, diagonal_one]
+
+instance instAddGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (Matrix n n α) where
+  intCast_ofNat n := show diagonal _ = diagonal _ by
+    rw [Int.cast_ofNat]
+  intCast_negSucc n := show diagonal _ = -(diagonal _) by
+    rw [Int.cast_negSucc, diagonal_neg]
+  __ := addGroup
+  __ := instAddMonoidWithOne
+
+instance instAddCommMonoidWithOne [AddCommMonoidWithOne α] :
+    AddCommMonoidWithOne (Matrix n n α) where
+  __ := addCommMonoid
+  __ := instAddMonoidWithOne
+
+instance instAddCommGroupWithOne [AddCommGroupWithOne α] :
+    AddCommGroupWithOne (Matrix n n α) where
+  __ := addCommGroup
+  __ := instAddGroupWithOne
 
 section Numeral
 
@@ -910,12 +975,6 @@ theorem mul_apply' [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {
   rfl
 #align matrix.mul_apply' Matrix.mul_apply'
 
-@[simp]
-theorem diagonal_neg [DecidableEq n] [AddGroup α] (d : n → α) :
-    -diagonal d = diagonal fun i => -d i :=
-  ((diagonalAddMonoidHom n α).map_neg d).symm
-#align matrix.diagonal_neg Matrix.diagonal_neg
-
 theorem sum_apply [AddCommMonoid α] (i : m) (j : n) (s : Finset β) (g : β → Matrix m n α) :
     (∑ c in s, g c) i j = ∑ c in s, g c i j :=
   (congr_fun (s.sum_apply i g) j).trans (s.sum_apply j _)
@@ -1077,18 +1136,10 @@ protected theorem mul_one [Fintype n] [DecidableEq n] (M : Matrix m n α) :
 #align matrix.mul_one Matrix.mul_one
 
 instance nonAssocSemiring [Fintype n] [DecidableEq n] : NonAssocSemiring (Matrix n n α) :=
-  { Matrix.nonUnitalNonAssocSemiring with
+  { Matrix.nonUnitalNonAssocSemiring, Matrix.instAddCommMonoidWithOne with
     one := 1
     one_mul := Matrix.one_mul
-    mul_one := Matrix.mul_one
-    natCast := fun n => diagonal fun _ => n
-    natCast_zero := by
-      ext
-      simp [Nat.cast]
-    natCast_succ := fun n => by
-      ext i j
-      by_cases i = j <;>
-      simp [Nat.cast, *]}
+    mul_one := Matrix.mul_one }
 
 @[simp]
 theorem map_mul [Fintype n] {L : Matrix m n α} {M : Matrix n o α} [NonAssocSemiring β]
@@ -1171,11 +1222,11 @@ instance instNonUnitalRing [Fintype n] [NonUnitalRing α] : NonUnitalRing (Matri
 
 instance instNonAssocRing [Fintype n] [DecidableEq n] [NonAssocRing α] :
     NonAssocRing (Matrix n n α) :=
-  { Matrix.nonAssocSemiring, Matrix.addCommGroup with }
+  { Matrix.nonAssocSemiring, Matrix.instAddCommGroupWithOne with }
 #align matrix.non_assoc_ring Matrix.instNonAssocRing
 
 instance instRing [Fintype n] [DecidableEq n] [Ring α] : Ring (Matrix n n α) :=
-  { Matrix.semiring, Matrix.addCommGroup with }
+  { Matrix.semiring, Matrix.instAddCommGroupWithOne with }
 #align matrix.ring Matrix.instRing
 
 section Semiring
