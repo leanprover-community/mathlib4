@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Shing Tak Lam
+Authors: Shing Tak Lam, Newell Jensen
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Exponent
@@ -95,9 +95,14 @@ theorem sr_mul_sr (i j : ZMod n) : sr i * sr j = r (j - i) :=
   rfl
 #align dihedral_group.sr_mul_sr DihedralGroup.sr_mul_sr
 
+@[simp]
 theorem one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
 #align dihedral_group.one_def DihedralGroup.one_def
+
+@[simp]
+theorem r_inv_eq_r_neg {i : ZMod n} : (r i)⁻¹ = r (-i) :=
+  rfl
 
 private def fintypeHelper : Sum (ZMod n) (ZMod n) ≃ DihedralGroup n where
   invFun i := match i with
@@ -142,12 +147,32 @@ theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
     rw [Nat.one_add]
 #align dihedral_group.r_one_pow DihedralGroup.r_one_pow
 
+@[simp]
+theorem r_one_zpow (n : ℕ) (i : ℤ) :
+    r (1 : ZMod n) ^ i = r i := by
+  obtain ⟨j, hj⟩ := i.eq_nat_or_neg
+  rcases hj with rfl | rfl
+  · simp only [zpow_coe_nat, r_one_pow, Int.cast_ofNat]
+  · simp only [zpow_neg, zpow_coe_nat, r_one_pow, Int.cast_neg, Int.cast_ofNat, r_inv_eq_r_neg]
+
 -- @[simp] -- Porting note: simp changes the goal to `r 0 = 1`. `r_one_pow_n` is no longer useful.
 theorem r_one_pow_n : r (1 : ZMod n) ^ n = 1 := by
   rw [r_one_pow, one_def]
   congr 1
   exact ZMod.nat_cast_self _
 #align dihedral_group.r_one_pow_n DihedralGroup.r_one_pow_n
+
+@[simp]
+theorem r_zpow_n {i : ZMod n} [NeZero n] : r i ^ n = 1 := by
+  have h1 : r 1 ^ i.val = r i := by
+    simp only [r_one_pow, r.injEq]
+    exact ZMod.nat_cast_zmod_val i
+  have h2 : (r 1 ^ i.val) ^ n = r 1 ^ (i.val * n) := by
+    exact Eq.symm (pow_mul (r 1 : DihedralGroup n) i.val n)
+  have h3 : (r 1) ^ (i.val * n) = (1 : DihedralGroup n) := by
+    simp only [r_one_pow, Nat.cast_mul, ZMod.nat_cast_val, ZMod.cast_id',
+      id_eq, CharP.cast_eq_zero, mul_zero, one_def]
+  rw [← h1, h2, h3]
 
 -- @[simp] -- Porting note: simp changes the goal to `r 0 = 1`. `sr_mul_self` is no longer useful.
 theorem sr_mul_self (i : ZMod n) : sr i * sr i = 1 := by rw [sr_mul_sr, sub_self, one_def]
