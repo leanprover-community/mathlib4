@@ -275,9 +275,11 @@ theorem filter_append_perm (p : α → Bool) (l : List α) :
   induction' l with x l ih
   · rfl
   · by_cases h : p x
-    · simp only [h, filter_cons_of_pos, filter_cons_of_neg, not_true, not_false_iff, cons_append]
+    · simp only [h, filter_cons_of_pos, filter_cons_of_neg, not_true, not_false_iff, cons_append,
+        decide_False]
       exact ih.cons x
-    · simp only [h, filter_cons_of_neg, not_false_iff, filter_cons_of_pos]
+    · simp only [h, filter_cons_of_neg, not_false_iff, filter_cons_of_pos, cons_append,
+        not_false_eq_true, decide_True]
       refine' Perm.trans _ (ih.cons x)
       exact perm_append_comm.trans (perm_append_comm.cons _)
 #align list.filter_append_perm List.filter_append_perm
@@ -1197,10 +1199,9 @@ theorem perm_of_mem_permutationsAux :
   refine' permutationsAux.rec (by simp) _
   introv IH1 IH2 m
   rw [permutationsAux_cons, permutations, mem_foldr_permutationsAux2] at m
-  rcases m with (m | ⟨l₁, l₂, m, _, e⟩)
+  rcases m with (m | ⟨l₁, l₂, m, _, rfl⟩)
   · exact (IH1 _ m).trans perm_middle
-  · subst e
-    have p : l₁ ++ l₂ ~ is := by
+  · have p : l₁ ++ l₂ ~ is := by
       simp [permutations] at m
       cases' m with e m
       · simp [e]

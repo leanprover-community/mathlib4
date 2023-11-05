@@ -115,11 +115,11 @@ theorem factorization_inj : Set.InjOn factorization { x : ℕ | x ≠ 0 } := fun
 #align nat.factorization_inj Nat.factorization_inj
 
 @[simp]
-theorem factorization_zero : factorization 0 = 0 := by simp [factorization]
+theorem factorization_zero : factorization 0 = 0 := by decide
 #align nat.factorization_zero Nat.factorization_zero
 
 @[simp]
-theorem factorization_one : factorization 1 = 0 := by simp [factorization]
+theorem factorization_one : factorization 1 = 0 := by decide
 #align nat.factorization_one Nat.factorization_one
 
 /-- The support of `n.factorization` is exactly `n.factors.toFinset` -/

@@ -135,6 +135,19 @@ theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0
       · rw [exp_log hz]
 #align real.geom_mean_le_arith_mean_weighted Real.geom_mean_le_arith_mean_weighted
 
+/-- AM-GM inequality: the **geometric mean is less than or equal to the arithmetic mean**. --/
+theorem geom_mean_le_arith_mean {ι : Type*} (s : Finset ι) (w : ι → ℝ) (z : ι → ℝ)
+    (hw : ∀ i ∈ s, 0 ≤ w i) (hw' : 0 < ∑ i in s, w i) (hz : ∀ i ∈ s, 0 ≤ z i) :
+    (∏ i in s, z i ^ w i) ^ (∑ i in s, w i)⁻¹  ≤  (∑ i in s, w i * z i) / (∑ i in s, w i) := by
+  convert geom_mean_le_arith_mean_weighted s (fun i => (w i) / ∑ i in s, w i) z ?_ ?_ hz using 2
+  · rw [← finset_prod_rpow _ _ (fun i hi => rpow_nonneg_of_nonneg (hz _ hi) _) _]
+    refine Finset.prod_congr rfl (fun _ ih => ?_)
+    rw [div_eq_mul_inv, rpow_mul (hz _ ih)]
+  · simp_rw [div_eq_mul_inv, mul_assoc, mul_comm, ← mul_assoc, ← Finset.sum_mul, mul_comm]
+  · exact fun _ hi => div_nonneg (hw _ hi) (le_of_lt hw')
+  · simp_rw [div_eq_mul_inv, ← Finset.sum_mul]
+    exact mul_inv_cancel (by linarith)
+
 theorem geom_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i in s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) (hx : ∀ i ∈ s, w i ≠ 0 → z i = x) :
     ∏ i in s, z i ^ w i = x :=
@@ -610,11 +623,7 @@ theorem inner_le_Lp_mul_Lq_tsum_of_nonneg (hpq : p.IsConjugateExponent q) (hf : 
   lift f to ι → ℝ≥0 using hf
   lift g to ι → ℝ≥0 using hg
   -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
-<<<<<<< HEAD
-  dsimp at *
-=======
   beta_reduce at *
->>>>>>> bump/v4.4.0
   norm_cast at *
   exact NNReal.inner_le_Lp_mul_Lq_tsum hpq hf_sum hg_sum
 #align real.inner_le_Lp_mul_Lq_tsum_of_nonneg Real.inner_le_Lp_mul_Lq_tsum_of_nonneg
@@ -645,10 +654,14 @@ theorem inner_le_Lp_mul_Lq_hasSum_of_nonneg (hpq : p.IsConjugateExponent q) {A B
   lift B to ℝ≥0 using hB
   -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
 <<<<<<< HEAD
+<<<<<<< HEAD
   dsimp at *
 =======
   beta_reduce at *
 >>>>>>> bump/v4.4.0
+=======
+  beta_reduce at *
+>>>>>>> nightly-testing-2023-11-04
   norm_cast at hf_sum hg_sum
   obtain ⟨C, hC, H⟩ := NNReal.inner_le_Lp_mul_Lq_hasSum hpq hf_sum hg_sum
   refine' ⟨C, C.prop, hC, _⟩
@@ -688,10 +701,14 @@ theorem Lp_add_le_tsum_of_nonneg (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : �
   lift g to ι → ℝ≥0 using hg
   -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
 <<<<<<< HEAD
+<<<<<<< HEAD
   dsimp at *
 =======
   beta_reduce at *
 >>>>>>> bump/v4.4.0
+=======
+  beta_reduce at *
+>>>>>>> nightly-testing-2023-11-04
   norm_cast0 at *
   exact NNReal.Lp_add_le_tsum hp hf_sum hg_sum
 #align real.Lp_add_le_tsum_of_nonneg Real.Lp_add_le_tsum_of_nonneg
@@ -727,10 +744,14 @@ theorem Lp_add_le_hasSum_of_nonneg (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : 
   use C
   -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
 <<<<<<< HEAD
+<<<<<<< HEAD
   dsimp
 =======
   beta_reduce
 >>>>>>> bump/v4.4.0
+=======
+  beta_reduce
+>>>>>>> nightly-testing-2023-11-04
   norm_cast
   exact ⟨zero_le _, hC₁, hC₂⟩
 #align real.Lp_add_le_has_sum_of_nonneg Real.Lp_add_le_hasSum_of_nonneg

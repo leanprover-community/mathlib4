@@ -47,8 +47,8 @@ To turn this into a lean proof we need to manipulate, use properties of natural 
 -/
 private theorem sqrt_isSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
   match n with
-  | 0 => simp [IsSqrt]
-  | 1 => simp [IsSqrt]
+  | 0 => simp [IsSqrt, sqrt]
+  | 1 => simp [IsSqrt, sqrt]
   | n + 2 =>
     have h : ¬ (n + 2) ≤ 1 := by simp
     simp only [IsSqrt, sqrt, h, ite_false]

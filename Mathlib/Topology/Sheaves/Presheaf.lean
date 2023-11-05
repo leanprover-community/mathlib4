@@ -335,7 +335,7 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
         · refine' (homOfLE _).op
           apply (Set.image_subset f s.pt.hom.unop.le).trans
           exact Set.image_preimage.l_u_le (SetLike.coe s.pt.left.unop)
-        · simp
+        · simp [autoParam]
       -- porting note : add `fac`, `uniq` manually
       fac := fun _ _ => by ext; simp
       uniq := fun _ _ _ => by ext; simp }

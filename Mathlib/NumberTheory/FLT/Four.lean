@@ -131,7 +131,7 @@ theorem exists_odd_minimal {a b c : ℤ} (h : Fermat42 a b c) :
         Int.dvd_gcd (Int.dvd_of_emod_eq_zero hap) (Int.dvd_of_emod_eq_zero hbp)
       rw [Int.gcd_eq_one_iff_coprime.mpr (coprime_of_minimal hf)] at h1
       revert h1
-      norm_num
+      decide
     · exact ⟨b0, ⟨a0, ⟨c0, minimal_comm hf, hbp⟩⟩⟩
   exact ⟨a0, ⟨b0, ⟨c0, hf, hap⟩⟩⟩
 #align fermat_42.exists_odd_minimal Fermat42.exists_odd_minimal
@@ -179,7 +179,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   -- it helps if we know the parity of a ^ 2 (and the sign of c):
   have ha22 : a ^ 2 % 2 = 1 := by
     rw [sq, Int.mul_emod, ha2]
-    norm_num
+    decide
   obtain ⟨m, n, ht1, ht2, ht3, ht4, ht5, ht6⟩ := ht.coprime_classification' h2 ha22 hc
   -- Now a, n, m form a pythagorean triple and so we can obtain r and s such that
   -- a = r ^ 2 - s ^ 2, n = 2 * r * s and m = r ^ 2 + s ^ 2

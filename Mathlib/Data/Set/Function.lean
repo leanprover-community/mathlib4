@@ -876,6 +876,17 @@ theorem surjOn_iff_surjective : SurjOn f s univ ↔ Surjective (s.restrict f) :=
     ⟨a, as, e⟩⟩
 #align set.surj_on_iff_surjective Set.surjOn_iff_surjective
 
+@[simp]
+theorem MapsTo.restrict_surjective_iff (h : MapsTo f s t) :
+    Surjective (MapsTo.restrict _ _ _ h) ↔ SurjOn f s t := by
+  refine ⟨fun h' b hb ↦ ?_, fun h' ⟨b, hb⟩ ↦ ?_⟩
+  · obtain ⟨⟨a, ha⟩, ha'⟩ := h' ⟨b, hb⟩
+    replace ha' : f a = b := by simpa [Subtype.ext_iff] using ha'
+    rw [← ha']
+    exact mem_image_of_mem f ha
+  · obtain ⟨a, ha, rfl⟩ := h' hb
+    exact ⟨⟨a, ha⟩, rfl⟩
+
 theorem SurjOn.image_eq_of_mapsTo (h₁ : SurjOn f s t) (h₂ : MapsTo f s t) : f '' s = t :=
   eq_of_subset_of_subset h₂.image_subset h₁
 #align set.surj_on.image_eq_of_maps_to Set.SurjOn.image_eq_of_mapsTo

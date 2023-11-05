@@ -229,7 +229,7 @@ theorem HasFiniteIntegral.smul_measure {f : α → β} (h : HasFiniteIntegral f 
 @[simp]
 theorem hasFiniteIntegral_zero_measure {m : MeasurableSpace α} (f : α → β) :
     HasFiniteIntegral f (0 : Measure α) := by
-  simp only [HasFiniteIntegral, lintegral_zero_measure, WithTop.zero_lt_top]
+  simp only [HasFiniteIntegral, lintegral_zero_measure, zero_lt_top]
 #align measure_theory.has_finite_integral_zero_measure MeasureTheory.hasFiniteIntegral_zero_measure
 
 variable (α β μ)
@@ -405,11 +405,7 @@ theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β]
       refine' lintegral_mono _
       intro i
       -- After leanprover/lean4#2734, we need to do beta reduction `exact_mod_cast`
-<<<<<<< HEAD
-      dsimp
-=======
       beta_reduce
->>>>>>> bump/v4.4.0
       exact_mod_cast (nnnorm_smul_le c (f i))
     _ < ∞ := by
       rw [lintegral_const_mul']
