@@ -84,8 +84,8 @@ end Prerequisites
 section LocalDiffeos
 variable {G : StructureGroupoid H}
 
-/-- A structomorph induces a map in the structure groupoid. -/
-lemma Structomorph.toFun_mem_groupoid (h : Structomorph G H H) : h.toLocalHomeomorph ∈ G := by
+/-- A `Structomorph` on the model space `H` lies in the structure groupoid. -/
+lemma Structomorph.toLocalHomeomorph_mem_groupoid (h : Structomorph G H H) : h.toLocalHomeomorph ∈ G := by
   -- FIXME: is there a more elegant way to prove this?
   have : ∀ (c c' : LocalHomeomorph H H), c ∈ atlas H H → c' ∈ atlas H H → h.toLocalHomeomorph ∈ G := by
     intro c c' hc hc'
@@ -95,10 +95,37 @@ lemma Structomorph.toFun_mem_groupoid (h : Structomorph G H H) : h.toLocalHomeom
     exact this ▸ (h.mem_groupoid c c' hc hc')
   apply this (c := LocalHomeomorph.refl H) (c' := LocalHomeomorph.refl H) rfl rfl
 
-/-- If `h` is a `Structomorph` on `H`,it is also a local structomorphism at every point. -/
+/-- If a local homeomorphism on the model space `H` lies in the structure groupoid,
+  it induces a `Structomorph` on the model space `H`. -/
+def LocalHomeomorph.toStructomorph_of_mem_groupoid (e : LocalHomeomorph H H)
+    (hs : e.source = univ) (ht : e.target = univ) (h : e ∈ G) : Structomorph G H H := by
+  -- XXX: can I simplify this, e.g. by rewriting e.toHomeomorphSourceTarget?
+  let ehom : Homeomorph H H := {
+    toFun := e.toFun
+    invFun := e.invFun
+    left_inv := fun x ↦e.left_inv' (by rw [hs]; trivial)
+    right_inv := fun x ↦e.right_inv' (by rw [ht]; trivial)
+    continuous_toFun := by
+      let r := hs ▸ e.continuous_toFun
+      exact continuous_iff_continuousOn_univ.mpr r
+    continuous_invFun := by
+      let r := ht ▸ e.continuous_invFun
+      exact continuous_iff_continuousOn_univ.mpr r
+  }
+  exact {
+    ehom with
+    mem_groupoid := by
+      -- As `H` has only one chart, we only need to check ehom ∈ G: but ehom is equal to e.
+      intro c c' hc hc'
+      rw [chartedSpaceSelf_atlas.mp hc, chartedSpaceSelf_atlas.mp hc']
+      simp only [LocalHomeomorph.refl_symm, LocalHomeomorph.trans_refl, LocalHomeomorph.refl_trans]
+      exact G.eq_on_source h (⟨hs.symm, eqOn_refl _ _⟩)
+  }
+
+/-- If `h` is a `Structomorph` on `H`, it is also a local structomorphism at every point. -/
 lemma Structomorph.toLocalStructomorphAt (h : Structomorph G H H) {x : H} :
     G.IsLocalStructomorphWithinAt h.toFun univ x :=
-  fun y ↦ ⟨h.toLocalHomeomorph, h.toFun_mem_groupoid, eqOn_refl h.toFun _, y⟩
+  fun y ↦ ⟨h.toLocalHomeomorph, h.toLocalHomeomorph_mem_groupoid, eqOn_refl h.toFun _, y⟩
 
 /-- If `f : H → H` is a local structomorphism at each `x`, it induces a structomorphism on `H`. -/
 noncomputable def Structomorph.of_localStructomorphs {f : H → H}
