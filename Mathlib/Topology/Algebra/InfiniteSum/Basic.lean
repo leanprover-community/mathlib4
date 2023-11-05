@@ -1191,20 +1191,33 @@ theorem Summable.subtype (hf : Summable f) (s : Set β) : Summable (f ∘ (↑) 
 
 theorem summable_iff_vanishing_tsum : Summable f ↔
     ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t : Set β, Disjoint t s → (∑' b : t, f b) ∈ e := by
-  refine ⟨fun hsum e he ↦ ?_, fun mem_nhds ↦ summable_iff_vanishing.mpr fun e he ↦ ?_⟩
+  refine ⟨fun hsum e he ↦ ?_, fun mem_nhd ↦ summable_iff_vanishing.mpr fun e he ↦ ?_⟩
   · obtain ⟨e', he', closed, hsub⟩ := exists_mem_nhds_isClosed_subset he
     obtain ⟨s, hs⟩ := summable_iff_vanishing.mp hsum e' he'
     refine ⟨s, fun t hts ↦ hsub <| closed.mem_of_tendsto (hsum.subtype _).hasSum <|
       eventually_of_forall fun t' ↦ ?_⟩
-    rw [← Finset.sum_subtype_map_embedding fun _ _ ↦ by rfl]
+    rw [← sum_subtype_map_embedding fun _ _ ↦ by rfl]
     apply hs
-    simp_rw [Finset.disjoint_left, Set.disjoint_left, Finset.mem_map] at hts ⊢
+    simp_rw [disjoint_left, Set.disjoint_left, Finset.mem_map] at hts ⊢
     rintro _ ⟨b, -, rfl⟩
     exact hts b.2
-  · obtain ⟨s, hs⟩ := mem_nhds _ he
+  · obtain ⟨s, hs⟩ := mem_nhd _ he
     refine ⟨s, fun t hts ↦ ?_⟩
-    simp only [Finset.disjoint_left, Set.disjoint_left] at hs hts
+    simp only [disjoint_left, Set.disjoint_left] at hs hts
     exact (t.tsum_subtype f).symm ▸ hs _ hts
+
+theorem summable_iff_vanishing_nat_tsum {f : ℕ → α} : Summable f ↔
+    ∀ e ∈ 𝓝 (0 : α), ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∑' b : t, f b) ∈ e := by
+  simp_rw [summable_iff_vanishing_tsum, Set.disjoint_left]
+  refine ⟨fun mem_nhd e he ↦ ?_, fun mem_nhd e he ↦ ?_⟩
+  · obtain ⟨s, hs⟩ := mem_nhd e he
+    refine ⟨if h : s.Nonempty then s.max' h + 1 else 0, fun t ht ↦ hs _ ?_⟩
+    split_ifs at ht with h
+    · exact fun m hmt hms ↦
+        (s.le_max' _ hms).not_lt ((Nat.lt_succ_self _).trans_le <| ht hmt)
+    · exact fun _ _ hs ↦ h ⟨_, hs⟩
+  · obtain ⟨N, hN⟩ := mem_nhd e he
+    exact ⟨range N, fun t ht ↦ hN _ fun n hnt ↦ le_of_not_lt fun h ↦ ht hnt (mem_range.mpr h)⟩
 
 theorem summable_subtype_and_compl {s : Set β} :
     ((Summable fun x : s => f x) ∧ Summable fun x : ↑sᶜ => f x) ↔ Summable f :=
