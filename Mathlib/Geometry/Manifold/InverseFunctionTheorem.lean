@@ -188,19 +188,14 @@ example {X Y : Type*} {u s : Set X} {t : Set Y} {f : X → Y} {g : Y → X} (h :
 def GoodPregroupoid.groupoid (PG : GoodPregroupoid H) : StructureGroupoid H :=
   (PG.toPregroupoid).groupoid
 
--- If `H` is compact and Hausdorff, its continuous pregroupoid is good:
--- a bijective function from a compact to a Hausdorff space is continuous.
+-- The continuous pregroupoid is not good: not in general, not even if `H` is compact and Hausdorff.
+-- Need to show that f continuous on s (and g being the point-wise inverse) implies g cont on t;
+-- this is simply false: a bijective function is not bi-continuous in general.
+-- A *variant* assuming only compact s were true. Not interesting to use.
 -- XXX: not enough, a priori `s` is any set!
-lemma contGoodPregroupoidReally? [CompactSpace H] [T2Space H] : GoodPregroupoid H where
-  toPregroupoid := contPregroupoid H
-  inverse := by
-    intro f g s t hf hinv
-    have : ContinuousOn f s := hf
-    show ContinuousOn g t
-    sorry
 
-variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
---{𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+-- XXX: generalise to any field 𝕜 which is ℝ or ℂ
 
 -- C^n functions on E: warm-up case (only one chart); full definition in SmoothManifoldsWithCorners
 def contDiffPregroupoidWarmup : Pregroupoid E := {
@@ -226,55 +221,44 @@ lemma contDiffPregroupoidGoodWarmup : GoodPregroupoid E where
     show ContDiffOn ℝ n g t
     sorry
 
--- try another definition, slightly stronger: want f to be a local homeo with inverse g
-
-structure BetterPregroupoid (H : Type*) [TopologicalSpace H] extends Pregroupoid H where
+-- FIXME: this is getting close; make it match exactly!
+structure BetterPregroupoid (H : Type*) [TopologicalSpace H]
+  [NormedAddCommGroup H] [NormedSpace ℝ H]
+  extends Pregroupoid H where
   -- If `f ∈ P` defines a homeomorphism `s → t` with inverse `g`, then `g ∈ P` also.
   -- For instance, if `f` is a local homeo at `x`, we're good.
-  -- xxx: do we really need all these assumptions (s and t open, mapsto stuff?)
-  inverse : ∀ {f g s t}, IsOpen s → IsOpen t → property f s → InvOn g f s t →
-    MapsTo f s t → MapsTo g t s → ContinuousOn f s → ContinuousOn g t → property g t
+  inverse : ∀ {f g s t x}, ∀ {f' : H ≃L[ℝ] H}, x ∈ s → IsOpen s → property f s →
+    /- HasFDerivAt (𝕜 := ℝ) f f' x →-/ -- TODO: this is not accepted by Lean!
+    InvOn g f s t → property g t
 
-variable [CompleteSpace E] [Module ℝ E] --[IsROrC 𝕜]
+-- this is the key lemma I need to showing that C^n maps define a better pregroupoid
+-- only done in the affine case, FIXME generalise
+-- FIXME: not entirely true; I get that g is ContDiff in *some* nhd of x, might be smaller than t!
+-- we need to work over ℝ or ℂ, otherwise `toLocalInverse` doesn't apply
+lemma Iwant {f g : E → E} {s t : Set E} {x : E} {f' : E ≃L[ℝ] E} (hinv : InvOn g f s t)
+    (hf : ContDiffAt ℝ n f x) (hf' : HasFDerivAt (𝕜 := ℝ) f f' x) (hn : 1 ≤ n) :
+    ContDiffOn ℝ n g t := by
+  let r := hf.to_localInverse (f' := f') hf' hn -- ContDiffAt ℝ n (hf.localInverse hf' hn) (f x)
+  sorry
 
-lemma contDiffPregroupoidBetterWarmup  {x : E} : BetterPregroupoid E where
+lemma contDiffPregroupoidBetterWarmup (hn : 1 ≤ n) {x : E} : BetterPregroupoid E where
   -- TODO: fix copy-paste!
   property := fun f s ↦ ContDiffOn ℝ n f s
   comp := fun {f g} {u v} hf hg _ _ _ ↦ hg.comp' hf
   id_mem := contDiffOn_id
   locality := fun _ h ↦ contDiffOn_of_locally_contDiffOn h
   congr := by intro f g u _ congr hf; exact (contDiffOn_congr congr).mpr hf
-  --toPregroupoid := contDiffPregroupoidWarmup E
   inverse := by
-    intro f g s t hs ht hf hinv hmf hmg hfcont hgcont
+    intro f g s t x f' hx hs hf hinv
     have : ContDiffOn ℝ n f s := hf
     show ContDiffOn ℝ n g t
-    let h : LocalHomeomorph E E := {
-      toFun := f
-      invFun := g
-      source := s
-      target := t
-      map_source' := hmf
-      map_target' := hmg
-      left_inv' := hinv.1
-      right_inv' := hinv.2
-      open_source := hs
-      open_target := ht
-      continuous_toFun := hfcont
-      continuous_invFun := hgcont
-    }
-    have : ContDiffAt ℝ n f x := hf.contDiffAt sorry /- s ∈ 𝓝 x -/
-    -- by chain rule, df_x is invertible: also holds over any field
-    -- let f' : E ≃L[ℝ] E := sorry--let f' : E ≃L[𝕜] E := sorry
-    -- have hf' : HasFDerivAt (𝕜 := ℝ) f sorry x := sorry --a) (hn : 1 ≤ n)
-    -- have hn : 1 ≤ n := sorry
-    -- for 𝕜 being ℝ or ℂ, ContDiffAt.to_localInverse shows our local inverse is invertible, or so
-    -- left to show: the inverse equals g; that's because of uniqueness
-    sorry
+    -- TODO: add this to the groupoid assumptions...
+    have : HasFDerivAt (𝕜 := ℝ) f f' x := sorry
+    exact Iwant hinv (hf.contDiffAt (hs.mem_nhds hx)) this hn
 
 /- my vision for the general IFT/general shape should go like this:
     - consider a "good pregroupoid" P: inverses should exist;
-      basically, the necessary properties to the inverse by the IFT is also in P
+      basically, we put all the necessary properties so the inverse by the IFT is also in P
     - let G be the groupoid associated to P
     - suppose f ∈ P is differentiable at x with invertible differential,
       construct a local inverse (I have this already)
