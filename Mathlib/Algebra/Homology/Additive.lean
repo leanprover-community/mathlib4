@@ -308,8 +308,9 @@ variable (F : V ⥤ W) [Functor.Additive F] (c) [DecidableEq ι]
 
 @[simp]
 theorem singleMapHomologicalComplex_hom_app_self (j : ι) (X : V) :
-    ((singleMapHomologicalComplex F c j).hom.app X).f j = eqToHom (by simp) := by
-  simp [singleMapHomologicalComplex]
+    ((singleMapHomologicalComplex F c j).hom.app X).f j =
+      F.map (singleObjXSelf c j X).hom ≫ (singleObjXSelf c j (F.obj X)).inv := by
+  simp [singleMapHomologicalComplex, singleObjXSelf, singleObjXIsoOfEq, eqToHom_map]
 #align homological_complex.single_map_homological_complex_hom_app_self HomologicalComplex.singleMapHomologicalComplex_hom_app_self
 
 @[simp]
@@ -320,8 +321,9 @@ theorem singleMapHomologicalComplex_hom_app_ne {i j : ι} (h : i ≠ j) (X : V) 
 
 @[simp]
 theorem singleMapHomologicalComplex_inv_app_self (j : ι) (X : V) :
-    ((singleMapHomologicalComplex F c j).inv.app X).f j = eqToHom (by simp) := by
-  simp [singleMapHomologicalComplex]
+    ((singleMapHomologicalComplex F c j).inv.app X).f j =
+      (singleObjXSelf c j (F.obj X)).hom ≫ F.map (singleObjXSelf c j X).inv := by
+  simp [singleMapHomologicalComplex, singleObjXSelf, singleObjXIsoOfEq, eqToHom_map]
 #align homological_complex.single_map_homological_complex_inv_app_self HomologicalComplex.singleMapHomologicalComplex_inv_app_self
 
 @[simp]
