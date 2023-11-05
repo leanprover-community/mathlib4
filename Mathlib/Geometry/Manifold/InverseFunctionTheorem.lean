@@ -311,8 +311,24 @@ lemma aux (f : LocalHomeomorph M N) (G : StructureGroupoid H) [ClosedUnderRestri
   set x' := (chartAt H x) x
   set U := (chartAt H x).symm ⁻¹' f.source
   -- Details to prove. TODO!
-  have aux1 : IsOpen U := sorry
-  have aux2 : InvOn g_loc f_loc U (f_loc '' U) := sorry
+  -- XXX: I might need to tweak this, by restricting to a smaller set,
+  -- so f.source and chart domains play nicely with each other: in essence, use trans instead of ∘
+  have aux1 : IsOpen U := sorry -- need chartAt H x.source contains f.source or so; then it's easy
+  have aux2 : InvOn g_loc f_loc U (f_loc '' U) := by
+    refine ⟨?_, sorry⟩ -- other sorry the same
+    · intro y hy
+      let x'' := (chartAt H x).symm y
+      have : x'' ∈ f.source := sorry -- from hx
+      calc g_loc (f_loc y)
+        _ = ((chartAt H x) ∘ f.symm ∘ (chartAt H (f x)).symm ∘ (chartAt H (f x)) ∘ f ∘ (chartAt H x).symm) y := rfl
+        -- x'' ∈ f.source by hypothesis hx, so f x'' ∈ f.target
+        _ = ((chartAt H x) ∘ f.symm ∘ (chartAt H (f x)).symm ∘ (chartAt H (f x)) ∘ f) x'' := rfl
+        -- cancel middle two charts: xxx need f x'' nice enough
+        _ = ((chartAt H x) ∘ f.symm ∘ f) x'' := sorry
+        -- cancel, as in f.target
+        _ = (chartAt H x) x'' := sorry
+        _ = ((chartAt H x) ∘ (chartAt H x).symm) y := rfl
+        _ = y := sorry -- cancel again: somehow, assume x lies in the chart source/target whatever
   have aux3 : g_loc (f_loc x') = x' := sorry -- if x ∈ U, this follows from aux2
   -- This is the local statement from the previous lemma: now lift back to a global statement.
   let s := s aux1 aux2 aux3
