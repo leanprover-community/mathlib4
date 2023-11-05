@@ -217,19 +217,17 @@ lemma contDiffPregroupoidGoodWarmup : GoodPregroupoid E where
   --toPregroupoid := contDiffPregroupoidWarmup E
   inverse := by
     intro f g s t hf hinv
-    have : ContDiffOn ℝ n f s := hf
+    --have : ContDiffOn ℝ n f s := hf
     show ContDiffOn ℝ n g t
     sorry
 
--- FIXME: this is getting close; make it match exactly!
-structure BetterPregroupoid (H : Type*) [TopologicalSpace H]
-  [NormedAddCommGroup H] [NormedSpace ℝ H]
+structure BetterPregroupoid (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H]
   extends Pregroupoid H where
   -- If `f ∈ P` defines a homeomorphism `s → t` with inverse `g`, then `g ∈ P` also.
   -- For instance, if `f` is a local homeo at `x`, we're good.
+  -- TODO: extend docstring
   inverse : ∀ {f g s t x}, ∀ {f' : H ≃L[ℝ] H}, x ∈ s → IsOpen s → property f s →
-    /- HasFDerivAt (𝕜 := ℝ) f f' x →-/ -- TODO: this is not accepted by Lean!
-    InvOn g f s t → property g t
+    HasFDerivAt (𝕜 := ℝ) f f' x → InvOn g f s t → property g t
 
 -- this is the key lemma I need to showing that C^n maps define a better pregroupoid
 -- only done in the affine case, FIXME generalise
@@ -249,12 +247,8 @@ lemma contDiffPregroupoidBetterWarmup (hn : 1 ≤ n) {x : E} : BetterPregroupoid
   locality := fun _ h ↦ contDiffOn_of_locally_contDiffOn h
   congr := by intro f g u _ congr hf; exact (contDiffOn_congr congr).mpr hf
   inverse := by
-    intro f g s t x f' hx hs hf hinv
-    have : ContDiffOn ℝ n f s := hf
-    show ContDiffOn ℝ n g t
-    -- TODO: add this to the groupoid assumptions...
-    have : HasFDerivAt (𝕜 := ℝ) f f' x := sorry
-    exact Iwant hinv (hf.contDiffAt (hs.mem_nhds hx)) this hn
+    intro f g s t x f' hx hs hf hf' hinv
+    exact Iwant hinv (hf.contDiffAt (hs.mem_nhds hx)) hf' hn
 
 /- my vision for the general IFT/general shape should go like this:
     - consider a "good pregroupoid" P: inverses should exist;
