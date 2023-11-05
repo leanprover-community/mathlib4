@@ -118,7 +118,7 @@ theorem piComparison_fac' {Z : C} (π : (i : α) → X i ⟶ Z) [IsIso (Sigma.de
 
 theorem piComparison_fac : piComparison F (fun x ↦ op (X x)) =
     F.map (opCoproductIsoProduct X).inv ≫
-    Equalizer.Presieve.Arrows.forkMap F X (Sigma.ι X) := by
+      Equalizer.Presieve.Arrows.forkMap F X (Sigma.ι X) := by
   have : Sigma.desc (Sigma.ι X) = 𝟙 _ := by ext; simp
   have _ : IsIso (Sigma.desc (Sigma.ι X)) := by rw [this]; infer_instance
   rw [piComparison_fac' (π := (Sigma.ι X))]
