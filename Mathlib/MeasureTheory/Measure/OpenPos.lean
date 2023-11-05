@@ -264,26 +264,25 @@ but is dense (in particular, not meagre).
 However, with respect to a measure which is positive on non-empty open sets, **closed** measure
 zero sets are nowhere dense and σ-compact measure zero sets in a Hausdorff space are meagre.
 -/
-open Function TopologicalSpace Set MeasureTheory Measure
 
-variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
+variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X] {s : Set X}
   {μ : Measure X} [IsOpenPosMeasure μ]
 
-lemma eq_empty_of_isOpen_null {s : Set X} (hs : IsOpen s) (hs' : μ s = 0) : s = ∅ :=
+lemma eq_empty_of_isOpen_null (hs : IsOpen s) (hs' : μ s = 0) : s = ∅ :=
   (IsOpen.measure_eq_zero_iff μ hs).mp hs'
 
 /-- A measure zero subset has empty interior. -/
-lemma empty_interior_of_null {s : Set X} (hs : μ s = 0) : interior s = ∅ :=
+lemma empty_interior_of_null (hs : μ s = 0) : interior s = ∅ :=
   eq_empty_of_isOpen_null isOpen_interior (measure_mono_null interior_subset hs)
 
 /-- A *closed* measure zero subset is nowhere dense.
 (Closedness is required: there are generalised Cantor sets of positive Lebesgue measure.) -/
-lemma isNowhereDense_of_isClosed_null {s : Set X} (h₁s : IsClosed s) (h₂s : μ s = 0) :
+lemma isNowhereDense_of_isClosed_null (h₁s : IsClosed s) (h₂s : μ s = 0) :
     IsNowhereDense s := h₁s.isNowhereDense_iff.mpr (empty_interior_of_null h₂s)
 
 /-- A σ-compact measure zero subset is meagre. -/
-lemma isMeagre_of_isSigmaCompact_null [T2Space X] {s : Set X}
-    (h₁s : IsSigmaCompact s) (h₂s : μ s = 0) : IsMeagre s := by
+lemma isMeagre_of_isSigmaCompact_null [T2Space X] (h₁s : IsSigmaCompact s) (h₂s : μ s = 0) :
+    IsMeagre s := by
   rcases h₁s with ⟨K, hcompact, hcover⟩
   have h : ∀ (n : ℕ), IsNowhereDense (K n) := by
     intro n
