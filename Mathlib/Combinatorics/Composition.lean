@@ -340,7 +340,7 @@ theorem sizeUpTo_index_le (j : Fin n) : c.sizeUpTo (c.index j) ≤ j := by
   have i₁_succ : i₁.succ = i := Nat.succ_pred_eq_of_pos i_pos
   have := Nat.find_min (c.index_exists j.2) i₁_lt_i
   simp [lt_trans i₁_lt_i (c.index j).2, i₁_succ] at this
-  exact Nat.lt_le_antisymm H this
+  exact Nat.lt_le_asymm H this
 #align composition.size_up_to_index_le Composition.sizeUpTo_index_le
 
 /-- Mapping an element `j` of `Fin n` to the element in the block containing it, identified with

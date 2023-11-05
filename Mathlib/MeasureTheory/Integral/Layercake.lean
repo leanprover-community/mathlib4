@@ -79,7 +79,7 @@ theorem countable_meas_le_ne_meas_lt (g : α → R) :
   intro t ht
   have : μ {a | t < g a} < μ {a | t ≤ g a} :=
     lt_of_le_of_ne (measure_mono (fun a ha ↦ le_of_lt ha)) (Ne.symm ht)
-  refine ⟨μ {a | t < g a}, this, fun s hs ↦ measure_mono (fun a ha ↦ hs.trans_le ha)⟩
+  exact ⟨μ {a | t < g a}, this, fun s hs ↦ measure_mono (fun a ha ↦ hs.trans_le ha)⟩
 
 theorem meas_le_ae_eq_meas_lt {R : Type*} [LinearOrder R] [MeasurableSpace R]
     (ν : Measure R) [NoAtoms ν] (g : α → R) :
