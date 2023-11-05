@@ -21,7 +21,7 @@ As in other polynomial files, we typically use the notation:
 
 + `σ : Type*` (indexing the variables)
 
-+ `R : Type _` `[CommRing R]` (the coefficients)
++ `R : Type*` `[CommRing R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
 This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
@@ -45,7 +45,7 @@ variable {R : Type u} {S : Type v}
 
 namespace MvPolynomial
 
-variable {σ : Type _} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
+variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
 
 section CommRing
 
@@ -53,7 +53,7 @@ variable [CommRing R]
 
 variable {p q : MvPolynomial σ R}
 
-instance : CommRing (MvPolynomial σ R) :=
+instance instCommRingMvPolynomial : CommRing (MvPolynomial σ R) :=
   AddMonoidAlgebra.commRing
 
 variable (σ a a')

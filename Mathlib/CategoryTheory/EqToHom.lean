@@ -26,6 +26,8 @@ This file introduces various `simp` lemmas which in favourable circumstances
 result in the various `eqToHom` morphisms to drop out at the appropriate moment!
 -/
 
+set_option autoImplicit true
+
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -212,6 +214,12 @@ theorem ext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
     simpa using h_map X Y f
 #align category_theory.functor.ext CategoryTheory.Functor.ext
 
+lemma ext_of_iso {F G : C ⥤ D} (e : F ≅ G) (hobj : ∀ X, F.obj X = G.obj X)
+    (happ : ∀ X, e.hom.app X = eqToHom (hobj X)) : F = G :=
+  Functor.ext hobj (fun X Y f => by
+    rw [← cancel_mono (e.hom.app Y), e.hom.naturality f, happ, happ, Category.assoc,
+    Category.assoc, eqToHom_trans, eqToHom_refl, Category.comp_id])
+
 /-- Two morphisms are conjugate via eqToHom if and only if they are heterogeneously equal. -/
 theorem conj_eqToHom_iff_heq {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) (h : W = Y) (h' : X = Z) :
     f = eqToHom h ≫ g ≫ eqToHom h'.symm ↔ HEq f g := by
@@ -319,7 +327,7 @@ theorem eq_conj_eqToHom {X Y : C} (f : X ⟶ Y) : f = eqToHom rfl ≫ f ≫ eqTo
   simp only [Category.id_comp, eqToHom_refl, Category.comp_id]
 #align category_theory.eq_conj_eq_to_hom CategoryTheory.eq_conj_eqToHom
 
-theorem dcongr_arg {ι : Type _} {F G : ι → C} (α : ∀ i, F i ⟶ G i) {i j : ι} (h : i = j) :
+theorem dcongr_arg {ι : Type*} {F G : ι → C} (α : ∀ i, F i ⟶ G i) {i j : ι} (h : i = j) :
     α i = eqToHom (congr_arg F h) ≫ α j ≫ eqToHom (congr_arg G h.symm) := by
   subst h
   simp

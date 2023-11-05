@@ -9,6 +9,8 @@ import Lean
 # Helper functions for working with typed syntaxes.
 -/
 
+set_option autoImplicit true
+
 namespace Lean
 
 /--

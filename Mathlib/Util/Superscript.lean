@@ -25,6 +25,8 @@ However, note that Unicode has a rather restricted character set for superscript
 parser for complex expressions.
 -/
 
+set_option autoImplicit true
+
 namespace Mathlib.Tactic
 open Lean Parser PrettyPrinter
 namespace Superscript

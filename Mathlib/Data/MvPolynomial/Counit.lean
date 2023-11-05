@@ -29,7 +29,7 @@ namespace MvPolynomial
 
 open Function
 
-variable (A B R : Type _) [CommSemiring A] [CommSemiring B] [CommRing R] [Algebra A B]
+variable (A B R : Type*) [CommSemiring A] [CommSemiring B] [CommRing R] [Algebra A B]
 
 /-- `MvPolynomial.ACounit A B` is the natural surjective algebra homomorphism
 `MvPolynomial B A →ₐ[A] B` obtained by `X a ↦ a`.

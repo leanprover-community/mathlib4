@@ -106,7 +106,7 @@ theorem trans [FiniteDimensional F K] [FiniteDimensional K A] : FiniteDimensiona
 
 Note this cannot be an instance as Lean cannot infer `L`.
 -/
-theorem left (K L : Type _) [Field K] [Algebra F K] [Ring L] [Nontrivial L] [Algebra F L]
+theorem left (K L : Type*) [Field K] [Algebra F K] [Ring L] [Nontrivial L] [Algebra F L]
     [Algebra K L] [IsScalarTower F K L] [FiniteDimensional F L] : FiniteDimensional F K :=
   FiniteDimensional.of_injective (IsScalarTower.toAlgHom F K L).toLinearMap (RingHom.injective _)
 #align finite_dimensional.left FiniteDimensional.left
@@ -126,7 +126,7 @@ theorem finrank_mul_finrank [FiniteDimensional F K] : finrank F K * finrank K A 
   by_cases hA : FiniteDimensional K A
   · replace hA : FiniteDimensional K A := hA -- porting note: broken instance cache
     rw [finrank_mul_finrank']
-  · rw [finrank_of_infinite_dimensional hA, MulZeroClass.mul_zero, finrank_of_infinite_dimensional]
+  · rw [finrank_of_infinite_dimensional hA, mul_zero, finrank_of_infinite_dimensional]
     exact mt (@right F K A _ _ _ _ _ _ _) hA
 #align finite_dimensional.finrank_mul_finrank FiniteDimensional.finrank_mul_finrank
 

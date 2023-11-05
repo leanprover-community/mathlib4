@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
 -/
 import Mathlib.Topology.Separation
-import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.LocallyConstant.Basic
 
 #align_import topology.discrete_quotient from "leanprover-community/mathlib"@"d101e93197bb5f6ea89bd7ba386b7f7dff1f3903"
@@ -65,11 +64,11 @@ of finite discrete spaces.
 
 open Set Function
 
-variable {α X Y Z : Type _} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+variable {α X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 /-- The type of discrete quotients of a topological space. -/
 @[ext] -- porting note: in Lean 4, uses projection to `r` instead of `Setoid`.
-structure DiscreteQuotient (X : Type _) [TopologicalSpace X] extends Setoid X where
+structure DiscreteQuotient (X : Type*) [TopologicalSpace X] extends Setoid X where
   /-- For every point `x`, the set `{ y | Rel x y }` is a clopen set. -/
   protected isOpen_setOf_rel : ∀ x, IsOpen (setOf (toSetoid.Rel x))
 #align discrete_quotient DiscreteQuotient
@@ -384,7 +383,7 @@ theorem exists_of_compat [CompactSpace X] (Qs : (Q : DiscreteQuotient X) → Q)
     exact fiber_subset_ofLE _ _
   obtain ⟨x, hx⟩ : Set.Nonempty (⋂ Q, proj Q ⁻¹' {Qs Q}) :=
     IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
-      (fun Q : DiscreteQuotient X => Q.proj ⁻¹' {Qs _}) (directed_of_inf H₁)
+      (fun Q : DiscreteQuotient X => Q.proj ⁻¹' {Qs _}) (directed_of_isDirected_ge H₁)
       (fun Q => (singleton_nonempty _).preimage Q.proj_surjective)
       (fun Q => (Q.isClosed_preimage {Qs _}).isCompact) fun Q => Q.isClosed_preimage _
   exact ⟨x, mem_iInter.1 hx⟩

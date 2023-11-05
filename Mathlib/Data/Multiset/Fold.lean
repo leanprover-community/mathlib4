@@ -15,7 +15,7 @@ import Mathlib.Data.List.MinMax
 
 namespace Multiset
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-! ### fold -/
 
@@ -80,7 +80,7 @@ theorem fold_add (b₁ b₂ : α) (s₁ s₂ : Multiset α) :
       ha.assoc])
 #align multiset.fold_add Multiset.fold_add
 
-theorem fold_bind {ι : Type _} (s : Multiset ι) (t : ι → Multiset α) (b : ι → α) (b₀ : α) :
+theorem fold_bind {ι : Type*} (s : Multiset ι) (t : ι → Multiset α) (b : ι → α) (b₀ : α) :
     (s.bind t).fold op ((s.map b).fold op b₀) =
     (s.map fun i => (t i).fold op (b i)).fold op b₀ := by
   induction' s using Multiset.induction_on with a ha ih
@@ -124,7 +124,7 @@ end Fold
 
 section Order
 
-theorem max_le_of_forall_le {α : Type _} [CanonicallyLinearOrderedAddMonoid α] (l : Multiset α)
+theorem max_le_of_forall_le {α : Type*} [CanonicallyLinearOrderedAddCommMonoid α] (l : Multiset α)
     (n : α) (h : ∀ x ∈ l, x ≤ n) : l.fold max ⊥ ≤ n := by
   induction l using Quotient.inductionOn
   simpa using List.max_le_of_forall_le _ _ h

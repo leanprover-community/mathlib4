@@ -43,7 +43,7 @@ submultiplicative: for a composition of maps, we have only `‖f.comp g‖ ≤ �
 
 namespace ContinuousAffineMap
 
-variable {𝕜 R V W W₂ P Q Q₂ : Type _}
+variable {𝕜 R V W W₂ P Q Q₂ : Type*}
 
 variable [NormedAddCommGroup V] [MetricSpace P] [NormedAddTorsor V P]
 
@@ -197,7 +197,7 @@ noncomputable instance : NormedAddCommGroup (V →A[𝕜] W) :=
         simp only [coe_add, max_le_iff]
         -- Porting note: previously `Pi.add_apply, add_contLinear, ` in the previous `simp only`
         -- suffices, but now they don't fire.
-        rw [ContinuousAffineMap.add_apply, add_contLinear]
+        rw [add_contLinear]
         exact
           ⟨(norm_add_le _ _).trans (add_le_add (le_max_left _ _) (le_max_left _ _)),
             (norm_add_le _ _).trans (add_le_add (le_max_right _ _) (le_max_right _ _))⟩

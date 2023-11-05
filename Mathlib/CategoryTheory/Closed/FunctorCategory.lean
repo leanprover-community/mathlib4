@@ -21,7 +21,7 @@ open CategoryTheory CategoryTheory.MonoidalCategory CategoryTheory.MonoidalClose
 
 namespace CategoryTheory.Functor
 
-variable {D C : Type _} [Groupoid D] [Category C] [MonoidalCategory C] [MonoidalClosed C]
+variable {D C : Type*} [Groupoid D] [Category C] [MonoidalCategory C] [MonoidalClosed C]
 
 /-- Auxiliary definition for `CategoryTheory.Functor.closed`.
 The internal hom functor `F ⟶[C] -` -/
@@ -77,6 +77,10 @@ with the pointwise monoidal structure, is monoidal closed. -/
 instance monoidalClosed : MonoidalClosed (D ⥤ C) where
   closed := by infer_instance
 #align category_theory.functor.monoidal_closed CategoryTheory.Functor.monoidalClosed
+
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] Functor.monoidalClosed_closed_isAdj_adj_homEquiv_apply_app
+  Functor.monoidalClosed_closed_isAdj_adj_homEquiv_symm_apply_app
 
 theorem ihom_map (F : D ⥤ C) {G H : D ⥤ C} (f : G ⟶ H) : (ihom F).map f = (closedIhom F).map f :=
   rfl

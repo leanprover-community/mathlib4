@@ -137,7 +137,7 @@ def unitCube : Cube n :=
 
 @[simp]
 theorem side_unitCube {j : Fin n} : unitCube.side j = Ico 0 1 := by
-  rw [unitCube, side]; norm_num
+  norm_num [unitCube, side]
 #align theorems_100.«82».cube.side_unit_cube Theorems100.«82».Cube.side_unitCube
 
 end Cube
@@ -254,7 +254,7 @@ theorem valley_unitCube [Nontrivial ι] (h : Correct cs) : Valley cs unitCube :=
     intro h0 hv
     have : v ∈ (unitCube : Cube (n + 1)).toSet := by
       dsimp only [toSet, unitCube, mem_setOf_eq]
-      rw [forall_fin_succ, h0]; constructor; rw [side, unitCube]; norm_num; exact hv
+      rw [forall_fin_succ, h0]; constructor; norm_num [side, unitCube]; exact hv
     rw [← h.2, mem_iUnion] at this; rcases this with ⟨i, hi⟩
     use i
     constructor

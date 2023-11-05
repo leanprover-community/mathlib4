@@ -23,7 +23,7 @@ open scoped Topology
 
 section OrderClosedTopology
 
-variable {α : Type _} [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α] {a b c d : α}
+variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α] {a b c d : α}
 
 /-!
 # Formulae for `𝓝ˢ` of intervals
@@ -57,7 +57,7 @@ theorem nhdsSet_Icc (h : a ≤ b) : 𝓝ˢ (Icc a b) = 𝓝 a ⊔ 𝓝 b ⊔ �
 theorem Ioi_mem_nhdsSet_Ici_iff : Ioi a ∈ 𝓝ˢ (Ici b) ↔ a < b := by
   rw [isOpen_Ioi.mem_nhdsSet, Ici_subset_Ioi]
 
-alias Ioi_mem_nhdsSet_Ici_iff ↔ _ Ioi_mem_nhdsSet_Ici
+alias ⟨_, Ioi_mem_nhdsSet_Ici⟩ := Ioi_mem_nhdsSet_Ici_iff
 
 theorem Ici_mem_nhdsSet_Ici (h : a < b) : Ici a ∈ 𝓝ˢ (Ici b) :=
   mem_of_superset (Ioi_mem_nhdsSet_Ici h) Ioi_subset_Ici_self
@@ -69,7 +69,7 @@ theorem Ici_mem_nhdsSet_Ici (h : a < b) : Ici a ∈ 𝓝ˢ (Ici b) :=
 theorem Iio_mem_nhdsSet_Iic_iff : Iio b ∈ 𝓝ˢ (Iic a) ↔ a < b :=
   Ioi_mem_nhdsSet_Ici_iff (α := αᵒᵈ)
 
-alias Iio_mem_nhdsSet_Iic_iff ↔ _ Iio_mem_nhdsSet_Iic
+alias ⟨_, Iio_mem_nhdsSet_Iic⟩ := Iio_mem_nhdsSet_Iic_iff
 
 theorem Iic_mem_nhdsSet_Iic (h : a < b) : Iic b ∈ 𝓝ˢ (Iic a) :=
   Ici_mem_nhdsSet_Ici (α := αᵒᵈ) h
@@ -164,7 +164,7 @@ end OrderClosedTopology
 ### Filter bases of `𝓝ˢ (Iic a)` and `𝓝ˢ (Ici a)`
 -/
 
-variable {α : Type _} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
+variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
 
 theorem hasBasis_nhdsSet_Iic_Iio (a : α) [h : Nonempty (Ioi a)] :
     HasBasis (𝓝ˢ (Iic a)) (a < ·) Iio := by

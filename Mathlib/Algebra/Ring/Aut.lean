@@ -3,8 +3,8 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Aut
 import Mathlib.Algebra.GroupRingAction.Basic
-import Mathlib.Algebra.Hom.Aut
 import Mathlib.Algebra.Ring.Equiv
 
 #align_import algebra.ring.aut from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
@@ -31,7 +31,7 @@ RingAut
 
 /-- The group of ring automorphisms. -/
 @[reducible]
-def RingAut (R : Type _) [Mul R] [Add R] :=
+def RingAut (R : Type*) [Mul R] [Add R] :=
   RingEquiv R R
 #align ring_aut RingAut
 
@@ -39,7 +39,7 @@ namespace RingAut
 
 section mul_add
 
-variable (R : Type _) [Mul R] [Add R]
+variable (R : Type*) [Mul R] [Add R]
 
 /-- The group operation on automorphisms of a ring is defined by
 `fun g h => RingEquiv.trans h g`.
@@ -92,7 +92,7 @@ def toMulAut : RingAut R →* MulAut R := by
 #align ring_aut.to_mul_aut RingAut.toMulAut
 
 /-- Monoid homomorphism from ring automorphisms to permutations. -/
-def toPerm : RingAut R →* Equiv.Perm R :=by
+def toPerm : RingAut R →* Equiv.Perm R := by
   refine'
   { toFun := RingEquiv.toEquiv
     .. } <;> (intros; rfl)
@@ -102,7 +102,7 @@ end mul_add
 
 section Semiring
 
-variable {G R : Type _} [Group G] [Semiring R]
+variable {G R : Type*} [Group G] [Semiring R]
 
 /-- The tautological action by the group of automorphism of a ring `R` on `R`.-/
 instance applyMulSemiringAction :

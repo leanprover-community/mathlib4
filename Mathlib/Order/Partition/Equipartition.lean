@@ -24,7 +24,7 @@ open Finset Fintype
 
 namespace Finpartition
 
-variable {α : Type _} [DecidableEq α] {s t : Finset α} (P : Finpartition s)
+variable {α : Type*} [DecidableEq α] {s t : Finset α} (P : Finpartition s)
 
 /-- An equipartition is a partition whose parts are all the same size, up to a difference of `1`. -/
 def IsEquipartition : Prop :=

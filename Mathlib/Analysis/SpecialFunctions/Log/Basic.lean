@@ -22,6 +22,8 @@ We prove some basic properties of this function and show that it is continuous.
 logarithm, continuity
 -/
 
+set_option autoImplicit true
+
 
 open Set Filter Function
 
@@ -375,7 +377,7 @@ theorem continuousAt_log_iff : ContinuousAt log x ↔ x ≠ 0 := by
 
 open BigOperators
 
-theorem log_prod {α : Type _} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
+theorem log_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
     log (∏ i in s, f i) = ∑ i in s, log (f i) := by
   induction' s using Finset.cons_induction_on with a s ha ih
   · simp
@@ -384,7 +386,7 @@ theorem log_prod {α : Type _} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ 
 #align real.log_prod Real.log_prod
 
 -- Porting note: new theorem
-protected theorem _root_.Finsupp.log_prod {α β : Type _} [Zero β] (f : α →₀ β) (g : α → β → ℝ)
+protected theorem _root_.Finsupp.log_prod {α β : Type*} [Zero β] (f : α →₀ β) (g : α → β → ℝ)
     (hg : ∀ a, g a (f a) = 0 → f a = 0) : log (f.prod g) = f.sum fun a b ↦ log (g a b) :=
   log_prod _ _ fun _x hx h₀ ↦ Finsupp.mem_support_iff.1 hx <| hg _ h₀
 
@@ -426,7 +428,7 @@ section Continuity
 
 open Real
 
-variable {α : Type _}
+variable {α : Type*}
 
 theorem Filter.Tendsto.log {f : α → ℝ} {l : Filter α} {x : ℝ} (h : Tendsto f l (𝓝 x)) (hx : x ≠ 0) :
     Tendsto (fun x => log (f x)) l (𝓝 (log x)) :=
@@ -525,7 +527,7 @@ lemma log_nz_of_isRat : (NormNum.IsRat e n d) → (decide ((0 : ℚ) < n / d))
     exact ne_of_lt <| Real.log_neg h₁' h₂'
 
 lemma log_nz_of_isRat_neg : (NormNum.IsRat e n d) → (decide (n / d < (0 : ℚ)))
-      → (decide ((-1 : ℚ) < n / d)) → (Real.log (e : ℝ) ≠ 0)
+    → (decide ((-1 : ℚ) < n / d)) → (Real.log (e : ℝ) ≠ 0)
   | ⟨inv, eq⟩, h₁, h₂ => by
     rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
     have h₁' : (n : ℝ) / d < 0 := by exact_mod_cast of_decide_eq_true h₁

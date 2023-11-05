@@ -29,7 +29,7 @@ open Asymptotics Polynomial Topology
 
 namespace Polynomial
 
-variable {𝕜 : Type _} [NormedLinearOrderedField 𝕜] (P Q : 𝕜[X])
+variable {𝕜 : Type*} [NormedLinearOrderedField 𝕜] (P Q : 𝕜[X])
 
 theorem eventually_no_roots (hP : P ≠ 0) : ∀ᶠ x in atTop, ¬P.IsRoot x :=
   atTop_le_cofinite <| (finite_setOf_isRoot hP).compl_mem_cofinite
@@ -107,7 +107,7 @@ theorem tendsto_nhds_iff {c : 𝕜} :
   refine' ⟨fun h => _, fun h => _⟩
   · have := P.isEquivalent_atTop_lead.tendsto_nhds h
     by_cases hP : P.leadingCoeff = 0
-    · simp only [hP, MulZeroClass.zero_mul, tendsto_const_nhds_iff] at this
+    · simp only [hP, zero_mul, tendsto_const_nhds_iff] at this
       refine' ⟨_root_.trans hP this, by simp [leadingCoeff_eq_zero.1 hP]⟩
     · rw [tendsto_const_mul_pow_nhds_iff hP, natDegree_eq_zero_iff_degree_le_zero] at this
       exact this.symm
@@ -140,7 +140,7 @@ theorem div_tendsto_zero_of_degree_lt (hdeg : P.degree < Q.degree) :
   · simp [hP, tendsto_const_nhds]
   rw [← natDegree_lt_natDegree_iff hP] at hdeg
   refine' (isEquivalent_atTop_div P Q).symm.tendsto_nhds _
-  rw [← MulZeroClass.mul_zero]
+  rw [← mul_zero]
   refine' (tendsto_zpow_atTop_zero _).const_mul _
   linarith
 #align polynomial.div_tendsto_zero_of_degree_lt Polynomial.div_tendsto_zero_of_degree_lt

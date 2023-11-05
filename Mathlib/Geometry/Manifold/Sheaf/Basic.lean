@@ -37,7 +37,7 @@ open Set TopologicalSpace StructureGroupoid StructureGroupoid.LocalInvariantProp
 
 universe u
 
-variable {H : Type _} [TopologicalSpace H] {H' : Type _} [TopologicalSpace H']
+variable {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H']
   {G : StructureGroupoid H} {G' : StructureGroupoid H'} {P : (H → H') → Set H → H → Prop}
   (M : Type u) [TopologicalSpace M] [ChartedSpace H M] (M' : Type u) [TopologicalSpace M']
   [ChartedSpace H' M']

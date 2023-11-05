@@ -31,7 +31,7 @@ Fleuriot, Tobias Nipkow, Christian Sternagel.
 
 open Classical Set
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-! ### Chains -/
 
@@ -102,6 +102,15 @@ theorem IsChain.image (r : α → α → Prop) (s : β → β → Prop) (f : α 
   fun _ ⟨_, ha₁, ha₂⟩ _ ⟨_, hb₁, hb₂⟩ =>
   ha₂ ▸ hb₂ ▸ fun hxy => (hrc ha₁ hb₁ <| ne_of_apply_ne f hxy).imp (h _ _) (h _ _)
 #align is_chain.image IsChain.image
+
+theorem Monotone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
+    IsChain (· ≤ ·) (range f) := by
+  rw [← image_univ]
+  exact (isChain_of_trichotomous _).image (· ≤ ·) _ _ hf
+
+theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·) s) :
+    IsChain (· < ·) s := fun _a ha _b hb hne ↦
+  (h ha hb hne).imp hne.lt_of_le hne.lt_of_le'
 
 section Total
 
@@ -282,7 +291,7 @@ end Chain
 
 
 /-- The type of flags, aka maximal chains, of an order. -/
-structure Flag (α : Type _) [LE α] where
+structure Flag (α : Type*) [LE α] where
   /-- The `carrier` of a flag is the underlying set. -/
   carrier : Set α
   /-- By definition, a flag is a chain -/
@@ -366,8 +375,7 @@ section PartialOrder
 
 variable [PartialOrder α]
 
-theorem chain_lt (s : Flag α) : IsChain (· < ·) (s : Set α) := fun _ ha _ hb h =>
-  (s.le_or_le ha hb).imp h.lt_of_le h.lt_of_le'
+theorem chain_lt (s : Flag α) : IsChain (· < ·) (s : Set α) := s.chain_le.lt_of_le
 #align flag.chain_lt Flag.chain_lt
 
 instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] (s : Flag α) :

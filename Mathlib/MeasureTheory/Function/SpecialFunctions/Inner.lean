@@ -13,7 +13,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 -/
 
 
-variable {α : Type _} {𝕜 : Type _} {E : Type _}
+variable {α : Type*} {𝕜 : Type*} {E : Type*}
 
 variable [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 

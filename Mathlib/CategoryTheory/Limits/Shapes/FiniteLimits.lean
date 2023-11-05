@@ -69,9 +69,9 @@ theorem hasFiniteLimits_of_hasFiniteLimits_of_size
     HasFiniteLimits C where
   out := fun J hJ hhJ => by
     haveI := h (ULiftHom.{w} (ULift.{w} J)) <| @CategoryTheory.finCategoryUlift J hJ hhJ
-    have l :
-      @Equivalence J (ULiftHom (ULift J)) hJ (@ULiftHom.category (ULift J) (@uliftCategory J hJ))
-      := @ULiftHomULiftCategory.equiv J hJ
+    have l : @Equivalence J (ULiftHom (ULift J)) hJ
+                          (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) :=
+      @ULiftHomULiftCategory.equiv J hJ
     apply @hasLimitsOfShape_of_equivalence (ULiftHom (ULift J))
       (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) C _ J hJ
       (@Equivalence.symm J hJ (ULiftHom (ULift J))
@@ -114,9 +114,9 @@ theorem hasFiniteColimits_of_hasFiniteColimits_of_size
     HasFiniteColimits C where
   out := fun J hJ hhJ => by
     haveI := h (ULiftHom.{w} (ULift.{w} J)) <| @CategoryTheory.finCategoryUlift J hJ hhJ
-    have l :
-      @Equivalence J (ULiftHom (ULift J)) hJ (@ULiftHom.category (ULift J) (@uliftCategory J hJ))
-      := @ULiftHomULiftCategory.equiv J hJ
+    have l : @Equivalence J (ULiftHom (ULift J)) hJ
+                           (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) :=
+      @ULiftHomULiftCategory.equiv J hJ
     apply @hasColimitsOfShape_of_equivalence (ULiftHom (ULift J))
       (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) C _ J hJ
       (@Equivalence.symm J hJ (ULiftHom (ULift J))
@@ -134,7 +134,8 @@ instance fintypeWalkingParallelPair : Fintype WalkingParallelPair where
 
 -- attribute [local tidy] tactic.case_bash Porting note: no tidy; no case_bash
 
-instance (j j' : WalkingParallelPair) : Fintype (WalkingParallelPairHom j j') where
+instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
+    Fintype (WalkingParallelPairHom j j') where
   elems :=
     WalkingParallelPair.recOn j
       (WalkingParallelPair.recOn j' [WalkingParallelPairHom.id zero].toFinset

@@ -157,7 +157,7 @@ end IsWeaklyEisensteinAt
 
 section ScaleRoots
 
-variable {A : Type _} [CommRing R] [CommRing A]
+variable {A : Type*} [CommRing R] [CommRing A]
 
 theorem scaleRoots.isWeaklyEisensteinAt (p : R[X]) {x : R} {P : Ideal R} (hP : x ∈ P) :
     (scaleRoots p x).IsWeaklyEisensteinAt P := by

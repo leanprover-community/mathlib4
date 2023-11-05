@@ -37,14 +37,14 @@ open Order.PFilter
 
 namespace Order
 
-variable {P : Type _}
+variable {P : Type*}
 
 namespace Ideal
 
 /-- A pair of an `Order.Ideal` and an `Order.PFilter` which form a partition of `P`.
 -/
 -- porting note: no attr @[nolint has_nonempty_instance]
-structure PrimePair (P : Type _) [Preorder P] where
+structure PrimePair (P : Type*) [Preorder P] where
   I : Ideal P
   F : PFilter P
   isCompl_I_F : IsCompl (I : Set P) F
@@ -198,8 +198,7 @@ instance (priority := 100) IsPrime.isMaximal [IsPrime I] : IsMaximal I := by
   simp only [IsMaximal_iff, Set.eq_univ_iff_forall, IsPrime.toIsProper, true_and]
   intro J hIJ x
   rcases Set.exists_of_ssubset hIJ with ⟨y, hyJ, hyI⟩
-  suffices ass : x ⊓ y ⊔ x ⊓ yᶜ ∈ J
-  · rwa [sup_inf_inf_compl] at ass
+  suffices ass : x ⊓ y ⊔ x ⊓ yᶜ ∈ J by rwa [sup_inf_inf_compl] at ass
   exact
     sup_mem (J.lower inf_le_right hyJ)
       (hIJ.le <| I.lower inf_le_right <| IsPrime.mem_compl_of_not_mem ‹_› hyI)

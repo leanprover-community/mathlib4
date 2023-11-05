@@ -41,7 +41,7 @@ namespace Ordinal
 
 /-- Inducts on the base `b` expansion of an ordinal. -/
 @[elab_as_elim]
-noncomputable def CNFRec (b : Ordinal) {C : Ordinal → Sort _} (H0 : C 0)
+noncomputable def CNFRec (b : Ordinal) {C : Ordinal → Sort*} (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) : ∀ o, C o := fun o ↦ by
     by_cases h : o = 0
     · rw [h]; exact H0
@@ -52,14 +52,14 @@ set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_rec Ordinal.CNFRec
 
 @[simp]
-theorem CNFRec_zero {C : Ordinal → Sort _} (b : Ordinal) (H0 : C 0)
+theorem CNFRec_zero {C : Ordinal → Sort*} (b : Ordinal) (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) : @CNFRec b C H0 H 0 = H0 := by
   rw [CNFRec, dif_pos rfl]
   rfl
 set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_rec_zero Ordinal.CNFRec_zero
 
-theorem CNFRec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort _} (ho : o ≠ 0) (H0 : C 0)
+theorem CNFRec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o ≠ 0) (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) :
     @CNFRec b C H0 H o = H o ho (@CNFRec b C H0 H _) := by rw [CNFRec, dif_neg ho]
 set_option linter.uppercaseLean3 false in

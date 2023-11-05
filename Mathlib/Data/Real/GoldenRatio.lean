@@ -40,9 +40,9 @@ def goldenConj :=
   (1 - Real.sqrt 5) / 2
 #align golden_conj goldenConj
 
-@[inherit_doc goldenRatio] scoped[Real] notation "φ" => goldenRatio
-@[inherit_doc goldenConj] scoped[Real] notation "ψ" => goldenConj
-open Real
+@[inherit_doc goldenRatio] scoped[goldenRatio] notation "φ" => goldenRatio
+@[inherit_doc goldenConj] scoped[goldenRatio] notation "ψ" => goldenConj
+open Real goldenRatio
 
 /-- The inverse of the golden ratio is the opposite of its conjugate. -/
 theorem inv_gold : φ⁻¹ = -ψ := by
@@ -162,7 +162,7 @@ theorem goldConj_irrational : Irrational ψ := by
 
 section Fibrec
 
-variable {α : Type _} [CommSemiring α]
+variable {α : Type*} [CommSemiring α]
 
 /-- The recurrence relation satisfied by the Fibonacci sequence. -/
 def fibRec : LinearRecurrence α where
@@ -175,7 +175,7 @@ section Poly
 open Polynomial
 
 /-- The characteristic polynomial of `fibRec` is `X² - (X + 1)`. -/
-theorem fibRec_charPoly_eq {β : Type _} [CommRing β] :
+theorem fibRec_charPoly_eq {β : Type*} [CommRing β] :
     fibRec.charPoly = X ^ 2 - (X + (1 : β[X])) := by
   rw [fibRec, LinearRecurrence.charPoly]
   simp [Finset.sum_fin_eq_sum_range, Finset.sum_range_succ', ← smul_X_eq_monomial]

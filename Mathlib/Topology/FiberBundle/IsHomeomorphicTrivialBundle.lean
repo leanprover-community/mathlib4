@@ -20,7 +20,7 @@ refactors, there is no longer a direct connection.
 -/
 
 
-variable {B : Type _} (F : Type _) {Z : Type _} [TopologicalSpace B] [TopologicalSpace F]
+variable {B : Type*} (F : Type*) {Z : Type*} [TopologicalSpace B] [TopologicalSpace F]
   [TopologicalSpace Z]
 
 /-- A trivial fiber bundle with fiber `F` over a base `B` is a space `Z`

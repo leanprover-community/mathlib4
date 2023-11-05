@@ -33,6 +33,8 @@ This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean
 
 -/
 
+set_option autoImplicit true
+
 def Set (α : Type u) := α → Prop
 #align set Set
 
@@ -94,7 +96,7 @@ instance : Insert α (Set α) := ⟨Set.insert⟩
 
 protected def singleton (a : α) : Set α := {b | b = a}
 
-instance : Singleton α (Set α) := ⟨Set.singleton⟩
+instance instSingletonSet : Singleton α (Set α) := ⟨Set.singleton⟩
 
 protected def union (s₁ s₂ : Set α) : Set α := {a | a ∈ s₁ ∨ a ∈ s₂}
 
@@ -124,5 +126,12 @@ instance : LawfulFunctor Set where
     ⟨λ ⟨a, ⟨h₁, h₂⟩⟩ => ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
      λ ⟨_, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
   map_const := rfl
+
+/-- The property `s.Nonempty` expresses the fact that the set `s` is not empty. It should be used
+in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks
+to the dot notation. -/
+protected def Nonempty (s : Set α) : Prop :=
+  ∃ x, x ∈ s
+#align set.nonempty Set.Nonempty
 
 end Set

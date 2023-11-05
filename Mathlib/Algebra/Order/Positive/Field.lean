@@ -16,7 +16,7 @@ ordered commutative group.
 -/
 
 
-variable {K : Type _} [LinearOrderedField K]
+variable {K : Type*} [LinearOrderedField K]
 
 namespace Positive
 

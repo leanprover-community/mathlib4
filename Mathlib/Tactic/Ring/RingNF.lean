@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Tim Baanen
+Authors: Mario Carneiro, Anne Baanen
 -/
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Conv
@@ -16,6 +16,8 @@ prove some equations that `ring` cannot because they involve ring reasoning insi
 such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 
 -/
+
+set_option autoImplicit true
 
 -- In this file we would like to be able to use multi-character auto-implicits.
 set_option relaxedAutoImplicit true

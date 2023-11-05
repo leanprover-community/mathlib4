@@ -224,13 +224,12 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
       (Gamma_integrand_deriv_integrable_B hs hX),
     intervalIntegral.integral_neg, neg_add, neg_neg] at int_eval
   rw [eq_sub_of_add_eq int_eval, sub_neg_eq_add, neg_sub, add_comm, add_sub]
-  simp only [sub_left_inj, add_left_inj]
   have : (fun x => (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) =
       (fun x => s * (-x).exp * x ^ (s - 1) : ℝ → ℂ) := by ext1; ring
   rw [this]
   have t := @integral_const_mul 0 X volume _ _ s fun x : ℝ => (-x).exp * x ^ (s - 1)
-  dsimp at t; rw [← t, ofReal_zero, zero_cpow]
-  · rw [MulZeroClass.mul_zero, add_zero]; congr 2; ext1; ring
+  rw [← t, ofReal_zero, zero_cpow]
+  · rw [mul_zero, add_zero]; congr 2; ext1; ring
   · contrapose! hs; rw [hs, zero_re]
 #align complex.partial_Gamma_add_one Complex.partialGamma_add_one
 
@@ -523,7 +522,7 @@ theorem Gamma_neg_nat_eq_zero (n : ℕ) : Gamma (-n) = 0 := by
 theorem Gamma_pos_of_pos {s : ℝ} (hs : 0 < s) : 0 < Gamma s := by
   rw [Gamma_eq_integral hs]
   have : (Function.support fun x : ℝ => exp (-x) * x ^ (s - 1)) ∩ Ioi 0 = Ioi 0 := by
-    rw [inter_eq_right_iff_subset]
+    rw [inter_eq_right]
     intro x hx
     rw [Function.mem_support]
     exact mul_ne_zero (exp_pos _).ne' (rpow_pos_of_pos hx _).ne'
@@ -534,6 +533,24 @@ theorem Gamma_pos_of_pos {s : ℝ} (hs : 0 < s) : 0 < Gamma s := by
     exact fun x hx => (mul_pos (exp_pos _) (rpow_pos_of_pos hx _)).le
   · exact GammaIntegral_convergent hs
 #align real.Gamma_pos_of_pos Real.Gamma_pos_of_pos
+
+theorem Gamma_nonneg_of_nonneg {s : ℝ} (hs : 0 ≤ s) : 0 ≤ Gamma s := by
+  obtain rfl | h := eq_or_lt_of_le hs
+  · rw [Gamma_zero]
+  · exact (Gamma_pos_of_pos h).le
+
+open Lean.Meta Qq in
+/-- The `positivity` extension which identifies expressions of the form `Gamma a`. -/
+@[positivity Gamma (_ : ℝ)]
+def _root_.Mathlib.Meta.Positivity.evalGamma :
+    Mathlib.Meta.Positivity.PositivityExt where eval {_ _α} zα pα (e : Q(ℝ)) := do
+  let ~q(Gamma $a) := e | throwError "failed to match on Gamma application"
+  match ← Mathlib.Meta.Positivity.core zα pα a with
+  | .positive (pa : Q(0 < $a)) =>
+    pure (.positive (q(Gamma_pos_of_pos $pa) : Q(0 < $e)))
+  | .nonnegative (pa : Q(0 ≤ $a)) =>
+    pure (.nonnegative (q(Gamma_nonneg_of_nonneg $pa) : Q(0 ≤ $e)))
+  | _ => pure .none
 
 /-- The Gamma function does not vanish on `ℝ` (except at non-positive integers, where the function
 is mathematically undefined and we set it to `0` by convention). -/

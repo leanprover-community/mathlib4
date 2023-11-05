@@ -22,7 +22,7 @@ namespace IsLocalization
 
 section CommSemiring
 
-variable {R : Type _} [CommSemiring R] (M : Submonoid R) (S : Type _) [CommSemiring S]
+variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
 
 variable [Algebra R S] [IsLocalization M S]
 
@@ -163,7 +163,7 @@ end CommSemiring
 
 section CommRing
 
-variable {R : Type _} [CommRing R] (M : Submonoid R) (S : Type _) [CommRing S]
+variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
 
 variable [Algebra R S] [IsLocalization M S]
 

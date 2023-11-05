@@ -22,7 +22,7 @@ open Fin2 Nat
 
 universe u
 
-variable {α : Type _} {m n : ℕ}
+variable {α : Type*} {m n : ℕ}
 
 /-- Alternate definition of `Vector` based on `Fin2`. -/
 def Vector3 (α : Type u) (n : ℕ) : Type u :=

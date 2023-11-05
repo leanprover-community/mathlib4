@@ -104,7 +104,7 @@ theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
 theorem inter_consecutive (n m l : ℕ) : Ico n m ∩ Ico m l = [] := by
   apply eq_nil_iff_forall_not_mem.2
   intro a
-  simp only [and_imp, not_and, not_lt, List.mem_inter, List.Ico.mem]
+  simp only [and_imp, not_and, not_lt, List.mem_inter_iff, List.Ico.mem]
   intro _ h₂ h₃
   exfalso
   exact not_lt_of_ge h₃ h₂

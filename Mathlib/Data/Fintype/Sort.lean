@@ -24,12 +24,12 @@ open Finset
 `monoEquivOfFin α h` is the increasing bijection between `Fin k` and `α`. Here, `h` is a proof
 that the cardinality of `α` is `k`. We use this instead of an isomorphism `Fin (card α) ≃o α` to
 avoid casting issues in further uses of this function. -/
-def monoEquivOfFin (α : Type _) [Fintype α] [LinearOrder α] {k : ℕ} (h : Fintype.card α = k) :
+def monoEquivOfFin (α : Type*) [Fintype α] [LinearOrder α] {k : ℕ} (h : Fintype.card α = k) :
     Fin k ≃o α :=
   (univ.orderIsoOfFin h).trans <| (OrderIso.setCongr _ _ coe_univ).trans OrderIso.Set.univ
 #align mono_equiv_of_fin monoEquivOfFin
 
-variable {α : Type _} [DecidableEq α] [Fintype α] [LinearOrder α] {m n : ℕ} {s : Finset α}
+variable {α : Type*} [DecidableEq α] [Fintype α] [LinearOrder α] {m n : ℕ} {s : Finset α}
 
 /-- If `α` is a linearly ordered fintype, `s : Finset α` has cardinality `m` and its complement has
 cardinality `n`, then `Fin m ⊕ Fin n ≃ α`. The equivalence sends elements of `Fin m` to

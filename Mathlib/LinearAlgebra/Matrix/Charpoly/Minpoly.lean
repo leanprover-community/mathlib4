@@ -38,20 +38,20 @@ variable (M : Matrix n n R)
 
 @[simp]
 theorem minpoly_toLin' : minpoly R (toLin' M) = minpoly R M :=
-  minpoly.minpoly_algEquiv (toLinAlgEquiv' : Matrix n n R ≃ₐ[R] _) M
+  minpoly.algEquiv_eq (toLinAlgEquiv' : Matrix n n R ≃ₐ[R] _) M
 #align matrix.minpoly_to_lin' Matrix.minpoly_toLin'
 
 @[simp]
 theorem minpoly_toLin (b : Basis n R N) (M : Matrix n n R) :
     minpoly R (toLin b b M) = minpoly R M :=
-  minpoly.minpoly_algEquiv (toLinAlgEquiv b : Matrix n n R ≃ₐ[R] _) M
+  minpoly.algEquiv_eq (toLinAlgEquiv b : Matrix n n R ≃ₐ[R] _) M
 #align matrix.minpoly_to_lin Matrix.minpoly_toLin
 
 theorem isIntegral : IsIntegral R M :=
   ⟨M.charpoly, ⟨charpoly_monic M, aeval_self_charpoly M⟩⟩
 #align matrix.is_integral Matrix.isIntegral
 
-theorem minpoly_dvd_charpoly {K : Type _} [Field K] (M : Matrix n n K) : minpoly K M ∣ M.charpoly :=
+theorem minpoly_dvd_charpoly {K : Type*} [Field K] (M : Matrix n n K) : minpoly K M ∣ M.charpoly :=
   minpoly.dvd _ _ (aeval_self_charpoly M)
 #align matrix.minpoly_dvd_charpoly Matrix.minpoly_dvd_charpoly
 
@@ -61,13 +61,13 @@ namespace LinearMap
 
 @[simp]
 theorem minpoly_toMatrix' (f : (n → R) →ₗ[R] n → R) : minpoly R (toMatrix' f) = minpoly R f :=
-  minpoly.minpoly_algEquiv (toMatrixAlgEquiv' : _ ≃ₐ[R] Matrix n n R) f
+  minpoly.algEquiv_eq (toMatrixAlgEquiv' : _ ≃ₐ[R] Matrix n n R) f
 #align linear_map.minpoly_to_matrix' LinearMap.minpoly_toMatrix'
 
 @[simp]
 theorem minpoly_toMatrix (b : Basis n R N) (f : N →ₗ[R] N) :
     minpoly R (toMatrix b b f) = minpoly R f :=
-  minpoly.minpoly_algEquiv (toMatrixAlgEquiv b : _ ≃ₐ[R] Matrix n n R) f
+  minpoly.algEquiv_eq (toMatrixAlgEquiv b : _ ≃ₐ[R] Matrix n n R) f
 #align linear_map.minpoly_to_matrix LinearMap.minpoly_toMatrix
 
 end LinearMap
@@ -82,7 +82,7 @@ In combination with `det_eq_sign_charpoly_coeff` or `trace_eq_neg_charpoly_coeff
 and a bit of rewriting, this will allow us to conclude the
 field norm resp. trace of `x` is the product resp. sum of `x`'s conjugates.
 -/
-theorem charpoly_leftMulMatrix {S : Type _} [Ring S] [Algebra R S] (h : PowerBasis R S) :
+theorem charpoly_leftMulMatrix {S : Type*} [Ring S] [Algebra R S] (h : PowerBasis R S) :
     (leftMulMatrix h.basis h.gen).charpoly = minpoly R h.gen := by
   cases subsingleton_or_nontrivial R; · apply Subsingleton.elim
   apply minpoly.unique' R h.gen (charpoly_monic _)

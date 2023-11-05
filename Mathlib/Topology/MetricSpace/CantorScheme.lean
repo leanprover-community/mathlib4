@@ -47,7 +47,7 @@ open List Function Filter Set PiNat
 
 open Classical Topology
 
-variable {β α : Type _} (A : List β → Set α)
+variable {β α : Type*} (A : List β → Set α)
 
 /-- From a `β`-scheme on `α` `A`, we define a partial function from `(ℕ → β)` to `α`
 which sends each infinite sequence `x` to an element of the intersection along the

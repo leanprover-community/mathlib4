@@ -532,7 +532,7 @@ abbrev prod (X Y : C) [HasBinaryProduct X Y] :=
   limit (pair X Y)
 #align category_theory.limits.prod CategoryTheory.Limits.prod
 
-/-- If we have a coproduct of `X` and `Y`, we can access it using `coprod X Y ` or
+/-- If we have a coproduct of `X` and `Y`, we can access it using `coprod X Y` or
     `X ⨿ Y`. -/
 abbrev coprod (X Y : C) [HasBinaryCoproduct X Y] :=
   colimit (pair X Y)
@@ -798,7 +798,7 @@ instance isIso_prod {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] 
   IsIso.of_iso (prod.mapIso (asIso f) (asIso g))
 #align category_theory.limits.is_iso_prod CategoryTheory.Limits.isIso_prod
 
-instance prod.map_mono {C : Type _} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
+instance prod.map_mono {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
     [Mono g] [HasBinaryProduct W X] [HasBinaryProduct Y Z] : Mono (prod.map f g) :=
   ⟨fun i₁ i₂ h => by
     ext
@@ -938,7 +938,7 @@ instance isIso_coprod {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct
   IsIso.of_iso (coprod.mapIso (asIso f) (asIso g))
 #align category_theory.limits.is_iso_coprod CategoryTheory.Limits.isIso_coprod
 
-instance coprod.map_epi {C : Type _} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
+instance coprod.map_epi {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
     [Epi g] [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] : Epi (coprod.map f g) :=
   ⟨fun i₁ i₂ h => by
     ext
