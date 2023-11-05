@@ -426,6 +426,17 @@ instance (priority := 100) RightCancelSemigroup.toIsRightCancelMul (G : Type u)
 #align right_cancel_semigroup.to_is_right_cancel_mul RightCancelSemigroup.toIsRightCancelMul
 #align add_right_cancel_semigroup.to_is_right_cancel_add AddRightCancelSemigroup.toIsRightCancelAdd
 
+/-- An `AddCancelSemigroup` is an additive semigroup such that `a + b = a + c` implies `b = c`,
+and `a + c = b + c` implies `a = b`. -/
+class AddCancelSemigroup (α : Type*) extends AddLeftCancelSemigroup α, AddRightCancelSemigroup α
+
+/-- A `CancelSemigroup` is a semigroup such that `a * b = a * c` implies `b = c`, and
+`a * c = b * c` implies `a = b`. -/
+@[to_additive]
+class CancelSemigroup (α : Type*) extends LeftCancelSemigroup α, RightCancelSemigroup α
+
+attribute [to_additive existing] CancelSemigroup.toRightCancelSemigroup
+
 /-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
 class MulOneClass (M : Type u) extends One M, Mul M where
@@ -719,15 +730,15 @@ section CancelMonoid
 /-- An additive monoid in which addition is cancellative on both sides.
 Main examples are `ℕ` and groups. This is the right typeclass for many sum lemmas, as having a zero
 is useful to define the sum over the empty set, so `AddRightCancelMonoid` is not enough. -/
-class AddCancelMonoid (M : Type u) extends AddLeftCancelMonoid M, AddRightCancelMonoid M
+class AddCancelMonoid (M : Type u) extends AddLeftCancelMonoid M, AddRightCancelMonoid M, AddCancelSemigroup M
 #align add_cancel_monoid AddCancelMonoid
 
 /-- A monoid in which multiplication is cancellative. -/
 @[to_additive]
-class CancelMonoid (M : Type u) extends LeftCancelMonoid M, RightCancelMonoid M
+class CancelMonoid (M : Type u) extends LeftCancelMonoid M, RightCancelMonoid M, CancelSemigroup M
 #align cancel_monoid CancelMonoid
 
-attribute [to_additive existing] CancelMonoid.toRightCancelMonoid
+attribute [to_additive existing] CancelMonoid.toRightCancelMonoid CancelMonoid.toCancelSemigroup
 
 /-- Commutative version of `AddCancelMonoid`. -/
 class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMonoid M
