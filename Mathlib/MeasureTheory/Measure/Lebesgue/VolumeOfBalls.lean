@@ -12,9 +12,9 @@ import Mathlib.MeasureTheory.Constructions.HaarToSphere
 We give a formula `measure_unitBall_eq_integral_div_gamma` for computing the volume of the unit ball
 in normed finite dimension `ℝ`-vector space `E` with an Haar measure. We also provide a theorem
 `measure_lt_one_eq_integral_div_gamma` to compute the volume of the ball `{x : E | g x ≤ 1}` for a
-function `g` defining a norm on `E`. This provides a way to compute the volume of the unit balls for
-the norms `L_p` for `1 ≤ p` in any dimension over the reals `volume_sum_rpow_lt_one` and the complex
-`Complex.volume_sum_rpow_lt_one`.
+function `g` defining a norm on `E`. This provides, in particular, a way to compute the volume of
+the unit balls for the norms `L_p` for `1 ≤ p` in any dimension over the reals
+`volume_sum_rpow_lt_one` and the complex `Complex.volume_sum_rpow_lt_one`.
 -/
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
@@ -23,7 +23,7 @@ section integrals
 
 open Real Set MeasureTheory MeasureTheory.Measure
 
-theorem integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 0 < p)  (hq : - 1 < q) :
+theorem integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 0 < p) (hq : - 1 < q) :
     ∫ x in Ioi (0:ℝ), x ^ q * exp (- x ^ p) = (1 / p) * Gamma ((q + 1) / p) := by
   calc
     _ = ∫ (x : ℝ) in Ioi 0,  (1 / p * x ^ (1 / p - 1)) • ((x ^ (1 / p)) ^ q * exp (-x)) := by
@@ -41,11 +41,37 @@ theorem integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 0 < p)  (hq : - 1 < q) 
       simp_rw [show 1 / p - 1 + q / p = (q + 1) / p - 1 by field_simp; ring, ← integral_mul_left,
         ← mul_assoc]
 
+theorem integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : - 1 < q) (hb : 0 < b) :
+    ∫ x in Ioi (0:ℝ), x ^ q * exp (- b * x ^ p) =
+      b ^ (-(q + 1) / p) * (1 / p) * Gamma ((q + 1) / p) := by
+  calc
+    _ = ∫ x in Ioi (0:ℝ), b ^ (-p⁻¹ * q) * ((b ^ p⁻¹ * x) ^ q * rexp (-(b ^ p⁻¹ * x) ^ p)) := by
+      refine set_integral_congr measurableSet_Ioi (fun _ hx => ?_)
+      rw [mul_rpow _ (le_of_lt hx), mul_rpow _ (le_of_lt hx), ← rpow_mul, ← rpow_mul,
+        inv_mul_cancel, rpow_one, mul_assoc, ← mul_assoc, ← rpow_add, neg_mul p⁻¹, add_left_neg,
+        rpow_zero, one_mul, neg_mul]
+      all_goals positivity
+    _ = (b ^ p⁻¹)⁻¹ * ∫ x in Ioi (0:ℝ), b ^ (-p⁻¹ * q) * (x ^ q * rexp (-x ^ p)) := by
+      rw [integral_comp_mul_left_Ioi (fun x => b ^ (-p⁻¹ * q) * (x ^ q * exp (- x ^ p))) 0,
+        mul_zero, abs_eq_self.mpr ?_, smul_eq_mul]
+      all_goals positivity
+    _ = b ^ (-(q + 1) / p) * (1 / p) * Gamma ((q + 1) / p) := by
+      rw [integral_mul_left, integral_rpow_mul_exp_neg_rpow _ hq, mul_assoc, ← mul_assoc,
+        ← rpow_neg_one, ← rpow_mul, ← rpow_add]
+      congr; ring
+      all_goals positivity
+
 theorem integral_exp_neg_rpow {p : ℝ} (hp : 0 < p) :
     ∫ x in Ioi (0:ℝ), exp (- x ^ p) = Gamma (1 / p + 1) := by
   convert (integral_rpow_mul_exp_neg_rpow hp neg_one_lt_zero) using 1
   · simp_rw [rpow_zero, one_mul]
   · rw [zero_add, Gamma_add_one (one_div_ne_zero (ne_of_gt hp))]
+
+theorem integral_exp_neg_mul_rpow {p b : ℝ} (hp : 0 < p) (hb : 0 < b) :
+    ∫ x in Ioi (0:ℝ), exp (- b * x ^ p) = b ^ (- 1 / p) * Gamma (1 / p + 1) := by
+  convert (integral_rpow_mul_exp_neg_mul_rpow hp neg_one_lt_zero hb) using 1
+  · simp_rw [rpow_zero, one_mul]
+  · rw [zero_add, Gamma_add_one (one_div_ne_zero (ne_of_gt hp)), mul_assoc]
 
 theorem Complex.integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 1 ≤ p) (hq : - 2 < q) :
     ∫ x : ℂ, ‖x‖ ^ q * rexp (- ‖x‖ ^ p) = (2 * π / p) * Real.Gamma ((q + 2) / p) := by
@@ -67,13 +93,46 @@ theorem Complex.integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 1 ≤ p) (hq : 
       rw [abs_eq_self.mpr (le_of_lt (by exact hx)), rpow_add hx, rpow_one]
       ring
     _ = (2 * Real.pi / p) * Real.Gamma ((q + 2) / p) := by
-      rw [_root_.integral_rpow_mul_exp_neg_rpow (by linarith), add_assoc, one_add_one_eq_two]
-      · ring
-      · linarith
+      rw [_root_.integral_rpow_mul_exp_neg_rpow (by linarith) (by linarith), add_assoc,
+        one_add_one_eq_two]
+      ring
+
+theorem Complex.integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 1 ≤ p) (hq : - 2 < q)
+    (hb : 0 < b) :
+    ∫ x : ℂ, ‖x‖ ^ q * rexp (- b * ‖x‖ ^ p) = (2 * π / p) *
+      b ^ (-(q + 2) / p) * Real.Gamma ((q + 2) / p) := by
+  calc
+    _ = ∫ x in Ioi (0:ℝ) ×ˢ Ioo (-π) π, x.1 * (|x.1| ^ q * rexp (- b * |x.1| ^ p)) := by
+      rw [← Complex.integral_comp_polarCoord_symm, polarCoord_target]
+      simp_rw [Complex.norm_eq_abs, Complex.polardCoord_symm_abs, smul_eq_mul]
+    _ = (∫ x in Ioi (0:ℝ), x * |x| ^ q * rexp (- b * |x| ^ p)) * ∫ _ in Ioo (-π) π, 1 := by
+      rw [← set_integral_prod_mul, volume_eq_prod]
+      simp_rw [mul_one]
+      congr! 2; ring
+    _ = 2 * π * ∫ x in Ioi (0:ℝ), x * |x| ^ q * rexp (- b * |x| ^ p) := by
+      simp_rw [integral_const, Measure.restrict_apply MeasurableSet.univ, Set.univ_inter,
+        volume_Ioo, sub_neg_eq_add, ← two_mul, ENNReal.toReal_ofReal (by positivity : 0 ≤ 2 * π),
+        smul_eq_mul, mul_one, mul_comm]
+    _ = 2 * π * ∫ x in Ioi (0:ℝ), x ^ (q + 1) * rexp (-b * x ^ p) := by
+      congr 1
+      refine set_integral_congr measurableSet_Ioi (fun x hx => ?_)
+      rw [abs_eq_self.mpr (le_of_lt (by exact hx)), rpow_add hx, rpow_one]
+      ring
+    _ = (2 * π / p) * b ^ (-(q + 2) / p) * Real.Gamma ((q + 2) / p) := by
+      rw [_root_.integral_rpow_mul_exp_neg_mul_rpow (by linarith) (by linarith) hb, add_assoc,
+        one_add_one_eq_two]
+      ring
 
 theorem Complex.integral_exp_neg_rpow {p : ℝ} (hp : 1 ≤ p) :
     ∫ x : ℂ, rexp (- ‖x‖ ^ p) = π * Real.Gamma (2 / p + 1) := by
   convert (integral_rpow_mul_exp_neg_rpow hp (by linarith : (-2:ℝ) < 0)) using 1
+  · simp_rw [norm_eq_abs, rpow_zero, one_mul]
+  · rw [zero_add, Real.Gamma_add_one (div_ne_zero two_ne_zero (by linarith))]
+    ring
+
+theorem Complex.integral_exp_neg_mul_rpow {p b : ℝ} (hp : 1 ≤ p) (hb : 0 < b) :
+    ∫ x : ℂ, rexp (- b * ‖x‖ ^ p) = π * b ^ (-2 / p) * Real.Gamma (2 / p + 1) := by
+  convert (integral_rpow_mul_exp_neg_mul_rpow hp (by linarith : (-2:ℝ) < 0)) hb using 1
   · simp_rw [norm_eq_abs, rpow_zero, one_mul]
   · rw [zero_add, Real.Gamma_add_one (div_ne_zero two_ne_zero (by linarith))]
     ring
@@ -106,7 +165,7 @@ theorem MeasureTheory.integral_finset_prod_eq_pow' {E : Type*} {n : ℕ} (f : E 
         _ = (∫ x, f x) * (∫ x, f x) ^ n := by rw [← n_ih, ← integral_prod_mul, volume_eq_prod]
         _ = (∫ x, f x) ^ n.succ := by rw [← pow_succ]
 
-theorem MeasureTheory.integral_finset_prod_eq_pow {E : Type*} (ι : Type*) [Fintype ι]  (f : E → ℝ)
+theorem MeasureTheory.integral_finset_prod_eq_pow {E : Type*} (ι : Type*) [Fintype ι] (f : E → ℝ)
     [MeasureSpace E] [SigmaFinite (volume : Measure E)] :
     ∫ x : ι → E, ∏ i, f (x i) = (∫ x, f x) ^ (card ι) := by
   let p := measurePreserving_piCongrLeft (fun _ => (volume : Measure E)) (equivFin ι)
@@ -272,7 +331,7 @@ section Lp_norm
 
 open BigOperators Real Fintype
 
-variable (ι : Type*) [Fintype ι] [Nonempty ι] {p : ℝ} (hp : 1 ≤ p)
+variable (ι : Type*) [Fintype ι] [Nontrivial ι] {p : ℝ} (hp : 1 ≤ p)
 
 theorem volume_sum_rpow_lt_one :
     volume {x : ι → ℝ | ∑ i, |x i| ^ p < 1} =
