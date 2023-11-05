@@ -216,6 +216,7 @@ example {a : ℤ} (ha : 1 < a) : 0 < |(3:ℤ) + a| := by positivity
 
 example : 0 < NNReal.sqrt 5 := by positivity
 example : 0 ≤ Real.sqrt (-5) := by positivity
+example (x : ℝ) : 0 ≤ Real.sqrt x := by positivity
 example : 0 < Real.sqrt 5 := by positivity
 
 example {a : ℝ} (_ha : 0 ≤ a) : 0 ≤ Real.sqrt a := by positivity
@@ -295,9 +296,9 @@ example {a : ℕ} (ha : 0 < a) : (0 : ℚ) < a := by positivity
 example {a : ℤ} (ha : a ≠ 0) : (a : ℚ) ≠ 0 := by positivity
 example {a : ℤ} (ha : 0 ≤ a) : (0 : ℚ) ≤ a := by positivity
 example {a : ℤ} (ha : 0 < a) : (0 : ℚ) < a := by positivity
--- example {a : ℚ} (ha : a ≠ 0) : (a : ℝ) ≠ 0 := by positivity
--- example {a : ℚ} (ha : 0 ≤ a) : (0 : ℝ) ≤ a := by positivity
--- example {a : ℚ} (ha : 0 < a) : (0 : ℝ) < a := by positivity
+example {a : ℚ} (ha : a ≠ 0) : (a : ℝ) ≠ 0 := by positivity
+example {a : ℚ} (ha : 0 ≤ a) : (0 : ℝ) ≤ a := by positivity
+example {a : ℚ} (ha : 0 < a) : (0 : ℝ) < a := by positivity
 example {r : ℝ≥0} : (0 : ℝ) ≤ r := by positivity
 example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ) < r := by positivity
 -- example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ≥0∞) < r := by positivity
