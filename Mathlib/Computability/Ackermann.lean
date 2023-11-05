@@ -317,7 +317,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
   · exact ⟨0, ack_pos 0⟩
   -- Successor function:
   · refine' ⟨1, fun n => _⟩
-    rw [← one_add]
+    rw [succ_eq_one_add]
     apply add_lt_ack
   -- Left projection:
   · refine' ⟨0, fun n => _⟩

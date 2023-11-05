@@ -255,7 +255,7 @@ theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k
     rw [tsub_zero, pow_one, charmatrix_apply, coeff_sub, coeff_X_mul_zero, coeff_C_zero, zero_sub]
     apply neg_mem  -- porting note: was `rw [neg_mem_iff]`, but Lean could not synth `NegMemClass`
     exact h (c i) i
-  · rw [← Nat.one_add, tsub_self_add, pow_zero, Ideal.one_eq_top]
+  · rw [Nat.succ_eq_one_add, tsub_self_add, pow_zero, Ideal.one_eq_top]
     exact Submodule.mem_top
 #align coeff_charpoly_mem_ideal_pow coeff_charpoly_mem_ideal_pow
 
