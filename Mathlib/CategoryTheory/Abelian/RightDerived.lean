@@ -317,8 +317,6 @@ theorem rightDerivedZeroToSelf_natural [EnoughInjectives C] {X : C} {Y : C} (f :
   rw [← Category.assoc, ← Functor.map_comp, ← Category.assoc,
     HomologicalComplex.Hom.sqFrom_left, mapHomologicalComplex_map_f, ← Functor.map_comp,
     InjectiveResolution.desc_commutes_zero f Q P]
-  --  show f ≫ Q.ι.f 0 = P.ι.f 0 ≫ (InjectiveResolution.desc f Q P).f 0 from
-  --    HomologicalComplex.congr_hom (InjectiveResolution.desc_commutes f Q P).symm 0]
   rfl -- Porting note: extra rfl
 #align category_theory.abelian.functor.right_derived_zero_to_self_natural CategoryTheory.Abelian.Functor.rightDerivedZeroToSelf_natural
 
