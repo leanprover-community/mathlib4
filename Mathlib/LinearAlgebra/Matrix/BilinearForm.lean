@@ -184,16 +184,22 @@ This section deals with the conversion between matrices and bilinear forms on `n
 
 variable [DecidableEq n] [DecidableEq o]
 
-/-- The linear equivalence between bilinear forms on `n → R` and `n × n` matrices -/
-def BilinForm.toMatrix' : BilinForm R₂ (n → R₂) ≃ₗ[R₂] Matrix n n R₂ :=
-  { BilinForm.toMatrixAux fun j =>
+/-- The linear equivalence between bilinear maps on `n → R` and `n × n` matrices -/
+def BilinForm.toMatrix'' : ((n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] R₂) ≃ₗ[R₂] Matrix n n R₂ :=
+  { BilinForm.toMatrixAux' fun j =>
       stdBasis R₂ (fun _ => R₂) j
         1 with
-    invFun := Matrix.toBilin'Aux
-    left_inv := fun B ↦ by convert toBilin'Aux_toMatrixAux B
+    invFun := Matrix.toBilin'Aux'
+    left_inv := fun B ↦ by convert toBilin'Aux_toMatrixAux' B
     right_inv := fun M => by
       ext i j
-      simp only [toFun_eq_coe, BilinForm.toMatrixAux_apply, Matrix.toBilin'Aux_stdBasis] }
+      simp only [AddHom.toFun_eq_coe, coe_toAddHom, toMatrixAux_apply']
+      exact toBilin'Aux_stdBasis' M i j
+       }
+
+/-- The linear equivalence between bilinear forms on `n → R` and `n × n` matrices -/
+def BilinForm.toMatrix' : BilinForm R₂ (n → R₂) ≃ₗ[R₂] Matrix n n R₂ :=
+  BilinForm.toLin ≪≫ₗ  BilinForm.toMatrix''
 #align bilin_form.to_matrix' BilinForm.toMatrix'
 
 @[simp]
