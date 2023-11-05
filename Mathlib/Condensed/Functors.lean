@@ -12,15 +12,9 @@ open CategoryTheory Limits ContinuousMap
 
 section Universes
 
--- noncomputable instance : PreservesLimitsOfSize.{u+1} uliftFunctor.{u+1, u} := sorry
-
 def Condensed.ulift : Condensed.{u} (Type u) ⥤ CondensedSet.{u} := by
   refine @sheafCompose _ _ _ _ _ _ (coherentTopology CompHaus) uliftFunctor.{u+1, u} ?_
   intro X S P
-  let K := MulticospanIndex.multicospan (GrothendieckTopology.Cover.index S P)
-  let I := WalkingMulticospan (GrothendieckTopology.Cover.index S P).fstTo
-    (GrothendieckTopology.Cover.index S P).sndTo
-  cases' S with S hS
   sorry
   -- We need to preserve a large limit...
   -- TODO: define `sheafCompose` for the coherent topology, where it is enough to preserve a finite
