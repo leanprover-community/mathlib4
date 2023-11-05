@@ -81,7 +81,7 @@ variable {α : Type} (X : α → C) [HasCoproduct X] [(ofArrows X (Sigma.ι X)).
 The two parallel maps in the equalizer diagram for the sheaf condition corresponding to the
 inclusion maps in a disjoint coproduct are equal.
 -/
-theorem firstMap_eq_secondMap : Equalizer.Presieve.Arrows.firstMap F X (fun j ↦ Sigma.ι X j) =
+theorem firstMap_eq_secondMap : Equalizer.Presieve.Arrows.firstMap F X (Sigma.ι X) =
     Equalizer.Presieve.Arrows.secondMap F X (fun j ↦ Sigma.ι X j) := by
   ext a ⟨i, j⟩
   simp only [Equalizer.Presieve.Arrows.firstMap, Types.pi_lift_π_apply, types_comp_apply,
