@@ -39,55 +39,55 @@ variable [Semiring R]
 
 namespace Ring
 
-/-- `ascPochEval` directly evaluates the `n`-th ascending Pochhammer polynomial at an element `r`.-/
-def ascPochEval (r : R) : ℕ → R
+/-- `Ring.ascFactorial r k` is the product `r(r+1)⋯(r+k-1)`.-/
+def ascFactorial (r : R) : ℕ → R
   | 0 => 1
-  | (k + 1) => (ascPochEval r k) * (r + k)
+  | (k + 1) => (ascFactorial r k) * (r + k)
 
-theorem ascPochEval_zero (r : R) : ascPochEval r 0 = 1 := rfl
+theorem ascFactorial_zero (r : R) : ascFactorial r 0 = 1 := rfl
 
-theorem ascPochEval_succ (r : R) (k : ℕ) :
-    ascPochEval r (k.succ) = (ascPochEval r k) * (r + k) := rfl
+theorem ascFactorial_succ (r : R) (k : ℕ) :
+    ascFactorial r (k.succ) = (ascFactorial r k) * (r + k) := rfl
 
 theorem add_cast_succ (r : R) (k : ℕ) : r + @Nat.cast R Semiring.toNatCast (k + 1) =
     r + (@Nat.cast R Semiring.toNatCast k + 1) := by norm_cast
 
-theorem ascPochEval_succ_left (r : R) : ∀ (k : ℕ),
-    ascPochEval r (k.succ) = r * (ascPochEval (r+1) k)
+theorem ascFactorial_succ_left (r : R) : ∀ (k : ℕ),
+    ascFactorial r (k.succ) = r * (ascFactorial (r+1) k)
   | 0 => by
-    rw[ascPochEval_zero, ascPochEval_succ, ascPochEval_zero]
+    rw[ascFactorial_zero, ascFactorial_succ, ascFactorial_zero]
     simp only [Nat.cast_zero, add_zero, one_mul, mul_one]
   | (k+1) => by
-    rw [ascPochEval_succ, ascPochEval_succ_left r k, ascPochEval_succ]
+    rw [ascFactorial_succ, ascFactorial_succ_left r k, ascFactorial_succ]
     rw [add_assoc, add_comm 1]
     rw [add_cast_succ, mul_assoc]
 
-theorem ascPochEval_cast (n : ℕ) : ∀ (k : ℕ), ascPochEval (n : R) k = ascPochEval n k
-  | 0 => by rw [ascPochEval_zero, ascPochEval_zero, Nat.cast_one]
+theorem ascFactorial_cast (n : ℕ) : ∀ (k : ℕ), ascFactorial (n : R) k = ascFactorial n k
+  | 0 => by rw [ascFactorial_zero, ascFactorial_zero, Nat.cast_one]
   | (k + 1) => by
-    rw [ascPochEval_succ, ascPochEval_succ, Nat.cast_mul, ascPochEval_cast n k, Nat.cast_add]
+    rw [ascFactorial_succ, ascFactorial_succ, Nat.cast_mul, ascFactorial_cast n k, Nat.cast_add]
     norm_cast
 
-theorem ascPochEval_eq_ascPochhammer_eval (r : R) :
-    ∀ (k : ℕ), ascPochEval r k = Polynomial.eval r (ascPochhammer R k)
-  | 0 => by rw [ascPochhammer_zero, Polynomial.eval_one, ascPochEval_zero]
+theorem ascFactorial_eq_ascPochhammer_eval (r : R) :
+    ∀ (k : ℕ), ascFactorial r k = Polynomial.eval r (ascPochhammer R k)
+  | 0 => by rw [ascPochhammer_zero, Polynomial.eval_one, ascFactorial_zero]
   | (k + 1) => by
-    rw [ascPochhammer_succ_eval, ← ascPochEval_eq_ascPochhammer_eval r k, ascPochEval_succ]
+    rw [ascPochhammer_succ_eval, ← ascFactorial_eq_ascPochhammer_eval r k, ascFactorial_succ]
 
-theorem translate_comm_ascPochEval (r s : R) (k : ℕ) (h : Commute r s) : ∀ (n : ℕ),
-    Commute (r + k) (ascPochEval s n)
+theorem translate_comm_ascFactorial (r s : R) (k : ℕ) (h : Commute r s) : ∀ (n : ℕ),
+    Commute (r + k) (ascFactorial s n)
   | 0 => by
-    rw [ascPochEval_zero]
+    rw [ascFactorial_zero]
     exact Commute.one_right (r + ↑k)
   | (n + 1) => by
-    rw [ascPochEval_succ]
-    exact (translate_comm_ascPochEval r s k h n).mul_right (Nat.add_cast_commute_add_cast r s k n h)
+    rw [ascFactorial_succ]
+    exact (translate_comm_ascFactorial r s k h n).mul_right (Nat.add_cast_commute_add_cast r s k n h)
 
-theorem ascPochEval_add_right (r : R) (n : ℕ) : ∀ (k : ℕ),
-    ascPochEval r (n + k) = ascPochEval r n * ascPochEval (r + n) k
-  | 0 => by rw [add_zero, ascPochEval_zero, mul_one]
+theorem ascFactorial_add_right (r : R) (n : ℕ) : ∀ (k : ℕ),
+    ascFactorial r (n + k) = ascFactorial r n * ascFactorial (r + n) k
+  | 0 => by rw [add_zero, ascFactorial_zero, mul_one]
   | (k + 1) => by
-    rw [← add_assoc, ascPochEval_succ, ascPochEval_add_right r n k, ascPochEval_succ, mul_assoc,
+    rw [← add_assoc, ascFactorial_succ, ascFactorial_add_right r n k, ascFactorial_succ, mul_assoc,
     Nat.cast_add, add_assoc]
 
 end Ring
@@ -96,16 +96,16 @@ end Semiring
 
 section BinomialSemiring
 
-/-- A semiring is binomial if multiplication by nonzero natural numbers is injective and pochhammer
-evaluations are divisible by the corresponding factorial. -/
+/-- A semiring is binomial if multiplication by nonzero natural numbers is injective and ascending
+factorials are divisible by the corresponding factorial. -/
 class BinomialSemiring (R: Type u) extends Semiring R where
   /-- Multiplication by positive integers is injective -/
   inj_smul_pos (n : ℕ) (r s : R) (h: n ≠ 0) : n * r = n * s → r = s
-  /-- The multichoose function witnesses the divisibility of pochhammer n (evaluated at r) by n! -/
+  /-- The multichoose function witnesses the divisibility of the ascending factorial by n! -/
   multichoose : R → ℕ → R
-  /-- pochhammer n (evaluated at r) is divisible by n! (witnessed by multichoose) -/
+  /-- the ascending factorial is divisible by n! (witnessed by multichoose) -/
   factorial_mul_multichoose : ∀ (r : R) (n : ℕ),
-    n.factorial * multichoose r n = Ring.ascPochEval r n
+    n.factorial * multichoose r n = Ring.ascFactorial r n
 
 namespace Ring
 
@@ -121,25 +121,25 @@ replacement. -/
 def multichoose [BinomialSemiring R] (r : R) (n : ℕ) : R :=
   BinomialSemiring.multichoose r n
 
-theorem factorial_mul_multichoose_eq_ascPochEval [BinomialSemiring R] (r : R) (n : ℕ) :
-    n.factorial * multichoose r n = ascPochEval r n :=
+theorem factorial_mul_multichoose_eq_ascFactorial [BinomialSemiring R] (r : R) (n : ℕ) :
+    n.factorial * multichoose r n = ascFactorial r n :=
   BinomialSemiring.factorial_mul_multichoose r n
 
-theorem ascPochEval_nat_eq_descFactorial (n : ℕ) : ∀ (k : ℕ),
-    ascPochEval n k = Nat.descFactorial (n+k-1) k
+theorem ascFactorial_nat_eq_descFactorial (n : ℕ) : ∀ (k : ℕ),
+    ascFactorial n k = Nat.descFactorial (n+k-1) k
   | 0 => by
-    rw[add_zero, Nat.descFactorial_zero, ascPochEval_zero]
+    rw[add_zero, Nat.descFactorial_zero, ascFactorial_zero]
   | (k+1) => by
-    rw[ascPochEval_succ_left, Nat.descFactorial_succ, ascPochEval_nat_eq_descFactorial (n+1) k]
+    rw[ascFactorial_succ_left, Nat.descFactorial_succ, ascFactorial_nat_eq_descFactorial (n+1) k]
     simp only [ge_iff_le, Nat.succ_add_sub_one, Nat.add_succ_sub_one, add_le_iff_nonpos_left,
       nonpos_iff_eq_zero, add_tsub_cancel_right]
 
-theorem ascPochEval_nat_eq_fact_mul_choose (n : ℕ) : ∀ (k:ℕ),
-    ascPochEval n k = k.factorial * Nat.choose (n+k-1) k
-| 0 => by rw [Nat.factorial_zero, Nat.add_zero, Nat.choose, ascPochEval_zero, one_mul]
+theorem ascFactorial_nat_eq_fact_mul_choose (n : ℕ) : ∀ (k:ℕ),
+    ascFactorial n k = k.factorial * Nat.choose (n+k-1) k
+| 0 => by rw [Nat.factorial_zero, Nat.add_zero, Nat.choose, ascFactorial_zero, one_mul]
 | (k+1) => by
-  rw [← Nat.descFactorial_eq_factorial_mul_choose, ascPochEval_succ_left,
-    ascPochEval_nat_eq_descFactorial, Nat.descFactorial_succ]
+  rw [← Nat.descFactorial_eq_factorial_mul_choose, ascFactorial_succ_left,
+    ascFactorial_nat_eq_descFactorial, Nat.descFactorial_succ]
   simp only [ge_iff_le, Nat.add_succ_sub_one, add_le_iff_nonpos_left, add_tsub_cancel_right]
   rw [add_assoc, add_comm 1 k]
   simp only [ge_iff_le, Nat.add_succ_sub_one]
@@ -150,13 +150,13 @@ instance naturals_binomial_semiring : BinomialSemiring ℕ := by
   refine Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero npos) h
   use fun n k => Nat.multichoose n k
   intro n k
-  rw [Nat.multichoose_eq, ascPochEval_nat_eq_fact_mul_choose]
+  rw [Nat.multichoose_eq, ascFactorial_nat_eq_fact_mul_choose]
   norm_cast
 
 theorem multichoose_eq_nat_multichoose (n k : ℕ) : multichoose n k = Nat.multichoose n k := by
   refine eq_of_mul_eq_mul_factorial k ?_
-  rw [factorial_mul_multichoose_eq_ascPochEval, Nat.multichoose_eq,
-    ascPochEval_nat_eq_fact_mul_choose n k]
+  rw [factorial_mul_multichoose_eq_ascFactorial, Nat.multichoose_eq,
+    ascFactorial_nat_eq_fact_mul_choose n k]
   norm_cast
 
 end Ring
@@ -170,7 +170,7 @@ variable [Ring R]
 namespace Ring
 
 /-- `descFactorial` is a direct generalization of the natural number descending factorial function,
-  given by r(r-1) ··· (r-n+1) -/
+  given by `r(r-1) ··· (r-n+1)` -/
 def descFactorial (r:R) : ℕ → R
   | 0 => 1
   | (n+1) => (r-n) * (descFactorial r n)
@@ -191,12 +191,12 @@ theorem zero_descFactorial_succ [Ring R] : ∀ (k : ℕ), descFactorial (0:R) k.
     | succ n =>
       simp [zero_descFactorial_succ n]
 
-theorem ascPochEval_eq_descFactorial (r : R) : ∀ (k : ℕ),
-    ascPochEval r k = descFactorial (r+k-1) k
+theorem ascFactorial_eq_descFactorial (r : R) : ∀ (k : ℕ),
+    ascFactorial r k = descFactorial (r+k-1) k
   | 0 => by
-    rw [descFactorial_zero, ascPochEval_zero]
+    rw [descFactorial_zero, ascFactorial_zero]
   | (k+1) => by
-    rw [ascPochEval_succ_left, descFactorial_succ, ascPochEval_eq_descFactorial (r+1) k,
+    rw [ascFactorial_succ_left, descFactorial_succ, ascFactorial_eq_descFactorial (r+1) k,
       add_cast_succ]
     have h₁: r + 1 + (k:R) - 1 = r + k := by
       rw [add_sub_right_comm, add_sub_cancel]
@@ -208,7 +208,7 @@ end Ring
 
 end descFactorial
 
-/-- A ring is binomial if multiplication by factorials is injective and pochhammer evaluations
+/-- A ring is binomial if multiplication by factorials is injective and ascending factorials
   are divisible by the corresponding factorial. -/
 class BinomialRing (R: Type u) extends Ring R, BinomialSemiring R
 
@@ -224,7 +224,7 @@ def choose {R: Type _} [BinomialRing R] (r : R) (n : ℕ): R :=
 theorem descFactorial_eq_factorial_mul_choose [BinomialRing R] (r : R) (n : ℕ) :
     descFactorial r n = n.factorial * choose r n := by
   unfold choose
-  rw [factorial_mul_multichoose_eq_ascPochEval, ascPochEval_eq_descFactorial, sub_add,
+  rw [factorial_mul_multichoose_eq_ascFactorial, ascFactorial_eq_descFactorial, sub_add,
     add_sub_assoc, sub_add_cancel]
 
 theorem choose_zero_right [BinomialRing R] (r : R) : choose r 0 = 1 := by
