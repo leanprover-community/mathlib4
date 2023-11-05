@@ -263,14 +263,11 @@ attribute above
 theorem functorCategoryEquivalence.functor_def :
     (functorCategoryEquivalence V G).functor = FunctorCategoryEquivalence.functor :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align Action.functor_category_equivalence.functor_def Action.functorCategoryEquivalence.functor_def
 
 theorem functorCategoryEquivalence.inverse_def :
     (functorCategoryEquivalence V G).inverse = FunctorCategoryEquivalence.inverse :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align Action.functor_category_equivalence.inverse_def Action.functorCategoryEquivalence.inverse_def-/
+-/
 
 instance [HasFiniteProducts V] : HasFiniteProducts (Action V G) where
   out _ :=
