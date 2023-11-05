@@ -19,7 +19,7 @@ See `MeasureTheory.Measure.absolutelyContinuous_iff_withDensity_rnDeriv_eq`.
 
 -/
 
-assert_not_exists NormedSpace -- see WithDensityIntegral.lean for properties in normed spaces
+assert_not_exists NormedSpace
 
 open Set hiding restrict restrict_apply
 
