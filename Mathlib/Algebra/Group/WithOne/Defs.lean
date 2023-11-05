@@ -368,7 +368,7 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero α)
           rw [Nat.cast_succ, coe_add, coe_one]
       }
 
-instance leftDistribClass [AddZeroClass α] [MulZeroClass α] [LeftDistribClass α]  :
+instance instLeftDistribClass [AddZeroClass α] [MulZeroClass α] [LeftDistribClass α]  :
     LeftDistribClass (WithZero α) where
   left_distrib a b c := by
     cases' a with a; · rfl
