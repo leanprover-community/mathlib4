@@ -214,12 +214,6 @@ lemma InvOn.eqOn_inverse_of_eqOn (h : InvOn g f s t) (h' : InvOn g' f' s t) (heq
   rw [← (h.2 hy), heq (hg hy)]
   exact (h'.1 (hg hy)).symm
 
--- xxx: why is my variant better?
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (e : LocalHomeomorph X Y) in
-lemma LocalHomeomorph.restr_target' {s : Set X} (hs : IsOpen s) :
-    (e.restr s).target = e '' (e.source ∩ s) := by
-  rw [← (e.restr s).image_source_eq_target, e.restr_source s, hs.interior_eq, e.restr_apply]
-
 variable {X Y : Type*} {s : Set X} {f : X → Y} {g : Y → X} in
 lemma InvOn.mapsTo_image (hinv : InvOn g f s (f '' s)) : MapsTo g (f '' s) s := by
   rintro y ⟨x, hxs, hxy⟩
