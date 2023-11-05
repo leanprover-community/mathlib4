@@ -7,7 +7,6 @@ import Mathlib.Init.Logic
 import Mathlib.Init.Function
 import Mathlib.Init.Algebra.Classes
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.LeftRight
 import Std.Util.LibraryNote
 import Std.Tactic.Lint.Basic
 
@@ -357,11 +356,9 @@ theorem Or.imp3 (had : a → d) (hbe : b → e) (hcf : c → f) : a ∨ b ∨ c 
 
 #align or_imp_distrib or_imp
 
-theorem or_iff_not_imp_left : a ∨ b ↔ ¬a → b := Decidable.or_iff_not_imp_left
-#align or_iff_not_imp_left or_iff_not_imp_left
-
-theorem or_iff_not_imp_right : a ∨ b ↔ ¬b → a := Decidable.or_iff_not_imp_right
-#align or_iff_not_imp_right or_iff_not_imp_right
+export Classical (or_iff_not_imp_left or_iff_not_imp_right)
+#align or_iff_not_imp_left Classical.or_iff_not_imp_left
+#align or_iff_not_imp_right Classical.or_iff_not_imp_right
 
 theorem not_or_of_imp : (a → b) → ¬a ∨ b := Decidable.not_or_of_imp
 #align not_or_of_imp not_or_of_imp

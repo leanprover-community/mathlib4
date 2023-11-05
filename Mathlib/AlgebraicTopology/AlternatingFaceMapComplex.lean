@@ -112,7 +112,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
     · rintro rfl
       simp only [Fin.val_zero, not_lt_zero'] at hij'
     · simpa only [Finset.mem_univ, forall_true_left, Prod.forall, ge_iff_le, Finset.mem_filter,
-        Fin.coe_castSucc, Fin.coe_pred, true_and] using Nat.le_pred_of_lt hij'
+        Fin.coe_castSucc, Fin.coe_pred, true_and] using Nat.le_sub_one_of_lt hij'
     · simp only [Fin.castLT_castSucc, Fin.succ_pred]
 #align algebraic_topology.alternating_face_map_complex.d_squared AlgebraicTopology.AlternatingFaceMapComplex.d_squared
 
