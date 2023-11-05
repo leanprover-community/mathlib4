@@ -66,7 +66,7 @@ variable {V}
 
 @[simp]
 lemma single_obj_X_self (j : ι) (A : V) :
-  ((single V c j).obj A).X j = A := if_pos rfl
+   ((single V c j).obj A).X j = A := if_pos rfl
 
 lemma isZero_single_obj_X (j : ι) (A : V) (i : ι) (hi : i ≠ j) :
     IsZero (((single V c j).obj A).X i) := by
@@ -76,7 +76,8 @@ lemma isZero_single_obj_X (j : ι) (A : V) (i : ι) (hi : i ≠ j) :
 
 /-- The object in degree `i` of `(single V c h).obj A` is just `A` when `i = j`. -/
 def singleObjXIsoOfEq (j : ι) (A : V) (i : ι) (hi : i = j) :
-    ((single V c j).obj A).X i ≅ A := eqToIso (by subst hi; simp [single])
+    ((single V c j).obj A).X i ≅ A :=
+  eqToIso (by subst hi; simp [single])
 
 /-- The object in degree `j` of `(single V c h).obj A` is just `A`. -/
 def singleObjXSelf (j : ι) (A : V) : ((single V c j).obj A).X j ≅ A :=
@@ -86,7 +87,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 lemma single_obj_d (j : ι) (A : V) (k l : ι) :
-  ((single V c j).obj A).d k l = 0 := rfl
+    ((single V c j).obj A).d k l = 0 := rfl
 
 @[reassoc]
 theorem single_map_f_self (j : ι) {A B : V} (f : A ⟶ B) :

@@ -66,7 +66,7 @@ noncomputable def singleObjHomologySelfIso :
 lemma singleObjCyclesSelfIso_inv_iCycles :
     (singleObjCyclesSelfIso _ _ _).inv ≫ ((single C c j).obj A).iCycles j =
       (singleObjXSelf c j A).inv := by
-    simp [singleObjCyclesSelfIso]
+  simp [singleObjCyclesSelfIso]
 
 @[reassoc (attr := simp)]
 lemma homologyπ_singleObjHomologySelfIso_hom :
@@ -76,8 +76,8 @@ lemma homologyπ_singleObjHomologySelfIso_hom :
 
 @[reassoc (attr := simp)]
 lemma singleObjHomologySelfIso_hom_singleObjHomologySelfIso_inv :
-  (singleObjCyclesSelfIso c j A).hom ≫ (singleObjHomologySelfIso c j A).inv =
-    ((single C c j).obj A).homologyπ j := by
+    (singleObjCyclesSelfIso c j A).hom ≫ (singleObjHomologySelfIso c j A).inv =
+      ((single C c j).obj A).homologyπ j := by
   simp only [← cancel_mono (singleObjHomologySelfIso _ _ _).hom, assoc,
     Iso.inv_hom_id, comp_id, homologyπ_singleObjHomologySelfIso_hom]
 
