@@ -72,9 +72,10 @@ section Product
 variable (hI : IsInitial I)
 
 -- This is the data of a particular disjoint coproduct in `C`.
-variable {α : Type} {X : α → C} {c : Cofan X} (hc : IsColimit c) [(ofArrows X c.inj).hasPullbacks]
-  [HasInitial C] [∀ i, Mono (c.inj i)]
-  (hd : ∀ i j , i ≠ j → IsPullback (initial.to _) (initial.to _) (c.inj i) (c.inj j))
+variable {α : Type} (X : α → C) [HasCoproduct X] [(ofArrows X (Sigma.ι X)).hasPullbacks]
+    (hd : ∀ i j [HasInitial C], i ≠ j →
+      IsPullback (initial.to _) (initial.to _) (Sigma.ι X i) (Sigma.ι X j))
+    [∀ i, Mono (Sigma.ι X i)]
 
 /--
 The two parallel maps in the equalizer diagram for the sheaf condition corresponding to the
