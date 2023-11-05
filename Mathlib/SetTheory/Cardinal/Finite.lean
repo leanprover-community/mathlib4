@@ -43,13 +43,21 @@ theorem card_eq_fintype_card [Fintype α] : Nat.card α = Fintype.card α :=
   mk_toNat_eq_card
 #align nat.card_eq_fintype_card Nat.card_eq_fintype_card
 
-@[simp]
-theorem card_eq_zero_of_infinite [Infinite α] : Nat.card α = 0 :=
-  mk_toNat_of_infinite
+@[simp] lemma card_eq_zero_of_isEmpty [IsEmpty α] : Nat.card α = 0 := mk_toNat_of_isEmpty
+@[simp] lemma card_eq_zero_of_infinite [Infinite α] : Nat.card α = 0 := mk_toNat_of_infinite
 #align nat.card_eq_zero_of_infinite Nat.card_eq_zero_of_infinite
 
-theorem finite_of_card_ne_zero (h : Nat.card α ≠ 0) : Finite α :=
-  not_infinite_iff_finite.mp <| h ∘ @Nat.card_eq_zero_of_infinite α
+lemma card_eq_zero : Nat.card α = 0 ↔ IsEmpty α ∨ Infinite α := by
+  simp [Nat.card, mk_eq_zero_iff, aleph0_le_mk_iff]
+
+lemma card_ne_zero : Nat.card α ≠ 0 ↔ Nonempty α ∧ Finite α := by simp [card_eq_zero, not_or]
+
+lemma card_pos_iff : 0 < Nat.card α ↔ Nonempty α ∧ Finite α := by
+  simp [Nat.card, mk_eq_zero_iff, mk_lt_aleph0_iff]
+
+@[simp] lemma card_pos [Nonempty α] [Finite α] : 0 < Nat.card α := card_pos_iff.2 ⟨‹_›, ‹_›⟩
+
+theorem finite_of_card_ne_zero (h : Nat.card α ≠ 0) : Finite α := (card_ne_zero.1 h).2
 #align nat.finite_of_card_ne_zero Nat.finite_of_card_ne_zero
 
 theorem card_congr (f : α ≃ β) : Nat.card α = Nat.card β :=
@@ -171,6 +179,9 @@ theorem card_uLift (α : Type*) : card (ULift α) = card α :=
 theorem card_pLift (α : Type*) : card (PLift α) = card α :=
   card_congr Equiv.plift
 #align part_enat.card_plift PartENat.card_pLift
+
+lemma card_mono {s t : Set α} (ht : t.Finite) (h : s ⊆ t) : Nat.card s ≤ Nat.card t :=
+  toNat_le_of_le_of_lt_aleph0 ht.lt_aleph0 <| mk_le_mk_of_subset h
 
 theorem card_image_of_injOn {α : Type u} {β : Type v} {f : α → β} {s : Set α} (h : Set.InjOn f s) :
     card (f '' s) = card s :=

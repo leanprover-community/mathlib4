@@ -1614,6 +1614,9 @@ theorem infinite_iff {α : Type u} : Infinite α ↔ ℵ₀ ≤ #α := by
   rw [← not_lt, lt_aleph0_iff_finite, not_finite_iff_infinite]
 #align cardinal.infinite_iff Cardinal.infinite_iff
 
+lemma aleph0_le_mk_iff : aleph0 ≤ mk α ↔ Infinite α := infinite_iff.symm
+lemma mk_lt_aleph0_iff : mk α < aleph0 ↔ Finite α := by simp [← not_le, aleph0_le_mk_iff]
+
 @[simp]
 theorem aleph0_le_mk (α : Type u) [Infinite α] : ℵ₀ ≤ #α :=
   infinite_iff.1 ‹_›
@@ -1691,6 +1694,8 @@ theorem ofNat_add_aleph0 {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n)
 theorem aleph0_add_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ + no_index (OfNat.ofNat n) = ℵ₀ :=
   aleph0_add_nat n
 
+variable {c : Cardinal}
+
 /-- This function sends finite cardinals to the corresponding natural, and infinite cardinals
   to 0. -/
 def toNat : ZeroHom Cardinal ℕ where
@@ -1701,6 +1706,15 @@ def toNat : ZeroHom Cardinal ℕ where
     rw [dif_pos h, ← Cardinal.natCast_inj, ← Classical.choose_spec (lt_aleph0.1 h),
       Nat.cast_zero]
 #align cardinal.to_nat Cardinal.toNat
+
+@[simp]
+lemma toNat_eq_zero : toNat c = 0 ↔ c = 0 ∨ ℵ₀ ≤ c := by
+  simp only [toNat, ZeroHom.coe_mk, dite_eq_right_iff, or_iff_not_imp_right, not_le]
+  refine' forall_congr' fun h => _
+  rw [←@Nat.cast_eq_zero Cardinal, ← Classical.choose_spec (p := fun n : ℕ ↦ c = n)]
+
+lemma toNat_ne_zero : toNat c ≠ 0 ↔ c ≠ 0 ∧ c < ℵ₀ := by simp [not_or]
+@[simp] lemma toNat_pos : 0 < toNat c ↔ c ≠ 0 ∧ c < ℵ₀ := pos_iff_ne_zero.trans toNat_ne_zero
 
 theorem toNat_apply_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) :
     toNat c = Classical.choose (lt_aleph0.1 h) :=
@@ -1768,6 +1782,8 @@ theorem exists_nat_eq_of_le_nat {c : Cardinal} {n : ℕ} (h : c ≤ n) : ∃ m, 
   let he := cast_toNat_of_lt_aleph0 (h.trans_lt <| nat_lt_aleph0 n)
   ⟨toNat c, natCast_le.1 (he.trans_le h), he.symm⟩
 #align cardinal.exists_nat_eq_of_le_nat Cardinal.exists_nat_eq_of_le_nat
+
+lemma mk_toNat_of_isEmpty [IsEmpty α] : toNat #α = 0 := by simp
 
 @[simp]
 theorem mk_toNat_of_infinite [h : Infinite α] : toNat #α = 0 :=
