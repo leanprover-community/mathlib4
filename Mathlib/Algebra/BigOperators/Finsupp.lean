@@ -220,7 +220,7 @@ theorem prod_eq_single {f : α →₀ M} (a : α) {g : α → M → N}
   · exact h₀ b (mem_support_iff.mp hb₁) hb₂
   · simp only [not_mem_support_iff] at h
     rw [h]
-    refine h₁ h
+    exact h₁ h
 
 end SumProd
 

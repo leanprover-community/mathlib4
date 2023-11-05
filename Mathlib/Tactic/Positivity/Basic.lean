@@ -7,6 +7,9 @@ import Std.Lean.Parser
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Rat.Order
+import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.HaveI
 import Mathlib.Algebra.GroupPower.Order
@@ -460,6 +463,26 @@ def evalIntCast : PositivityExt where eval {u α} _zα _pα e := do
   | .none =>
     pure .none
 
+/-- Extension for Rat.cast. -/
+@[positivity Rat.cast _]
+def evalRatCast : PositivityExt where eval {u α} _zα _pα e := do
+  let _rα : Q(RatCast $α) ← synthInstanceQ (q(RatCast $α))
+  let ~q(Rat.cast ($a : ℚ)) := e | throwError "not Rat.cast"
+  let zα' : Q(Zero ℚ) := q(inferInstance)
+  let pα' : Q(PartialOrder ℚ) := q(inferInstance)
+  match ← core zα' pα' a with
+  | .positive pa =>
+    let _oα ← synthInstanceQ (q(LinearOrderedField $α) : Q(Type u))
+    pure (.positive (q((Rat.cast_pos (K := $α)).mpr $pa) : Expr))
+  | .nonnegative pa =>
+    let _oα ← synthInstanceQ (q(LinearOrderedField $α) : Q(Type u))
+    pure (.nonnegative (q((Rat.cast_nonneg (K := $α)).mpr $pa) : Expr))
+  | .nonzero pa =>
+    let _oα ← synthInstanceQ (q(DivisionRing $α) : Q(Type u))
+    let _cα ← synthInstanceQ (q(CharZero $α) : Q(Prop))
+    pure (.nonzero (q((Rat.cast_ne_zero (α := $α)).mpr $pa) : Expr))
+  | .none => pure .none
+
 /-- Extension for Nat.succ. -/
 @[positivity Nat.succ _]
 def evalNatSucc : PositivityExt where eval {_u _α} _zα _pα e := do
@@ -468,6 +491,12 @@ def evalNatSucc : PositivityExt where eval {_u _α} _zα _pα e := do
 
 /-- Extension for Nat.factorial. -/
 @[positivity Nat.factorial _]
-def evalFactorial : PositivityExt where eval {_ _} _ _ e := do
-  let .app _ (a : Q(Nat)) ← whnfR e | throwError "not Nat.factorial"
+def evalFactorial : PositivityExt where eval {_ _} _ _ (e : Q(ℕ)) := do
+  let ~q(Nat.factorial $a) := e | throwError "failed to match Nat.factorial"
   pure (.positive (q(Nat.factorial_pos $a) : Expr))
+
+/-- Extension for Nat.ascFactorial. -/
+@[positivity Nat.ascFactorial _ _]
+def evalAscFactorial : PositivityExt where eval {_ _} _ _ (e : Q(ℕ)) := do
+  let ~q(Nat.ascFactorial $n $k) := e | throwError "failed to match Nat.ascFactorial"
+  pure (.positive (q(Nat.ascFactorial_pos $n $k) : Expr))

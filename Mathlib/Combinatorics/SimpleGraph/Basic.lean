@@ -135,6 +135,8 @@ structure SimpleGraph (V : Type u) where
 #align simple_graph SimpleGraph
 -- porting note: changed `obviously` to `aesop` in the `structure`
 
+initialize_simps_projections SimpleGraph (Adj → adj)
+
 /-- Constructor for simple graphs using a symmetric irreflexive boolean function. -/
 @[simps]
 def SimpleGraph.mk' {V : Type u} :
@@ -145,7 +147,7 @@ def SimpleGraph.mk' {V : Type u} :
     simp only [mk.injEq, Subtype.mk.injEq]
     intro h
     funext v w
-    simpa [Bool.coe_bool_iff] using congr_fun₂ h v w
+    simpa [Bool.coe_iff_coe] using congr_fun₂ h v w
 
 /-- We can enumerate simple graphs by enumerating all functions `V → V → Bool`
 and filtering on whether they are symmetric and irreflexive. -/
@@ -2126,7 +2128,7 @@ end Maps
 @[simps!]
 def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
   toEquiv := Equiv.Set.univ V
-  map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_Adj, Embedding.coe_subtype,
+  map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_adj, Embedding.coe_subtype,
                                 Subtype.forall, Set.mem_univ, forall_true_left, implies_true]
 
 end SimpleGraph

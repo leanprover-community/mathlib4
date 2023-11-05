@@ -3,9 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Hom.Equiv.Basic
-import Mathlib.Data.Part
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.Part
 import Mathlib.Tactic.NormNum
 
 #align_import data.nat.part_enat from "leanprover-community/mathlib"@"3ff3f2d6a3118b8711063de7111a0d77a53219a8"
@@ -755,7 +755,7 @@ theorem lt_wf : @WellFounded PartENat (· < ·) := by
   classical
     change WellFounded fun a b : PartENat => a < b
     simp_rw [← withTopEquiv_lt]
-    exact InvImage.wf _ (WithTop.wellFounded_lt Nat.lt_wfRel.wf)
+    exact InvImage.wf _ wellFounded_lt
 #align part_enat.lt_wf PartENat.lt_wf
 
 instance : WellFoundedLT PartENat :=

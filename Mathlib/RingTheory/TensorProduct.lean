@@ -733,9 +733,14 @@ protected nonrec def lid : R ⊗[R] A ≃ₐ[R] A :=
 @[simp] theorem lid_toLinearEquiv :
     (TensorProduct.lid R A).toLinearEquiv = _root_.TensorProduct.lid R A := rfl
 
+variable {R} {A} in
 @[simp]
-theorem lid_tmul (r : R) (a : A) : (TensorProduct.lid R A : R ⊗ A → A) (r ⊗ₜ a) = r • a := rfl
+theorem lid_tmul (r : R) (a : A) : TensorProduct.lid R A (r ⊗ₜ a) = r • a := rfl
 #align algebra.tensor_product.lid_tmul Algebra.TensorProduct.lid_tmul
+
+variable {A} in
+@[simp]
+theorem lid_symm_apply (a : A) : (TensorProduct.lid R A).symm a = 1 ⊗ₜ a := rfl
 
 variable (S)
 
@@ -757,6 +762,9 @@ variable {R A} in
 theorem rid_tmul (r : R) (a : A) : TensorProduct.rid R S A (a ⊗ₜ r) = r • a := rfl
 #align algebra.tensor_product.rid_tmul Algebra.TensorProduct.rid_tmul
 
+variable {A} in
+@[simp]
+theorem rid_symm_apply (a : A) : (TensorProduct.rid R S A).symm a = a ⊗ₜ 1 := rfl
 
 section
 
@@ -771,11 +779,22 @@ protected def comm : A ⊗[R] B ≃ₐ[R] B ⊗[R] A :=
 @[simp] theorem comm_toLinearEquiv :
     (Algebra.TensorProduct.comm R A B).toLinearEquiv = _root_.TensorProduct.comm R A B := rfl
 
+variable {A B} in
 @[simp]
 theorem comm_tmul (a : A) (b : B) :
-    (TensorProduct.comm R A B : A ⊗[R] B → B ⊗[R] A) (a ⊗ₜ b) = b ⊗ₜ a :=
+    TensorProduct.comm R A B (a ⊗ₜ b) = b ⊗ₜ a :=
   rfl
 #align algebra.tensor_product.comm_tmul Algebra.TensorProduct.comm_tmul
+
+variable {A B} in
+@[simp]
+theorem comm_symm_tmul (a : A) (b : B) :
+    (TensorProduct.comm R A B).symm (b ⊗ₜ a) = a ⊗ₜ b :=
+  rfl
+
+theorem comm_symm :
+    (TensorProduct.comm R A B).symm = TensorProduct.comm R B A := by
+  ext; rfl
 
 theorem adjoin_tmul_eq_top : adjoin R { t : A ⊗[R] B | ∃ a b, a ⊗ₜ[R] b = t } = ⊤ :=
   top_le_iff.mp <| (top_le_iff.mpr <| span_tmul_eq_top R A B).trans (span_le_adjoin R _)
@@ -816,9 +835,14 @@ variable {A B C}
 
 @[simp]
 theorem assoc_tmul (a : A) (b : B) (c : C) :
-    Algebra.TensorProduct.assoc R A B C (a ⊗ₜ b ⊗ₜ c) = a ⊗ₜ (b ⊗ₜ c) :=
+    Algebra.TensorProduct.assoc R A B C ((a ⊗ₜ b) ⊗ₜ c) = a ⊗ₜ (b ⊗ₜ c) :=
   rfl
 #align algebra.tensor_product.assoc_tmul Algebra.TensorProduct.assoc_tmul
+
+@[simp]
+theorem assoc_symm_tmul (a : A) (b : B) (c : C) :
+    (Algebra.TensorProduct.assoc R A B C).symm (a ⊗ₜ (b ⊗ₜ c)) = (a ⊗ₜ b) ⊗ₜ c :=
+  rfl
 
 end
 
