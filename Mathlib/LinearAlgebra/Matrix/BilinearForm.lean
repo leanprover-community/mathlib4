@@ -162,7 +162,6 @@ theorem toBilin'Aux_toMatrixAux' [DecidableEq n] (B₂ : (n → R₂) →ₗ[R�
     Matrix.toBilin'Aux' (BilinForm.toMatrixAux' (R₂ := R₂)
       (fun j => stdBasis R₂ (fun _ => R₂) j 1) B₂) = B₂ := by
   refine' LinearMap.ext_basis (Pi.basisFun R₂ n) (Pi.basisFun R₂ n) (fun i j => _)
-  --fun i => sorry
   rw [Pi.basisFun_apply, Pi.basisFun_apply,Matrix.toBilin'Aux_stdBasis',
     BilinForm.toMatrixAux_apply']
 
@@ -170,9 +169,9 @@ theorem toBilin'Aux_toMatrixAux [DecidableEq n] (B₂ : BilinForm R₂ (n → R�
     -- porting note: had to hint the base ring even though it should be clear from context...
     Matrix.toBilin'Aux (BilinForm.toMatrixAux (R₂ := R₂)
       (fun j => stdBasis R₂ (fun _ => R₂) j 1) B₂) = B₂ := by
-  refine' ext_basis (Pi.basisFun R₂ n) fun i j => _
-  rw [Pi.basisFun_apply, Pi.basisFun_apply, Matrix.toBilin'Aux_stdBasis,
-    BilinForm.toMatrixAux_apply]
+  rw [BilinForm.toMatrixAux, Matrix.toBilin'Aux, coe_comp, Function.comp_apply,
+    toBilin'Aux_toMatrixAux']
+  exact rfl
 #align to_bilin'_aux_to_matrix_aux toBilin'Aux_toMatrixAux
 
 section ToMatrix'
