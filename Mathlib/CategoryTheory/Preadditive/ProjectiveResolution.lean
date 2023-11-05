@@ -209,6 +209,12 @@ theorem lift_commutes {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.lift_commutes CategoryTheory.ProjectiveResolution.lift_commutes
 
+@[reassoc (attr := simp)]
+theorem lift_commutes_zero {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
+    (Q : ProjectiveResolution Z) :
+    (lift f P Q).f 0 ≫ Q.π.f 0 = P.π.f 0 ≫ f :=
+  (HomologicalComplex.congr_hom (lift_commutes f P Q) 0).trans (by simp)
+
 -- Now that we've checked this property of the lift,
 -- we can seal away the actual definition.
 end ProjectiveResolution
