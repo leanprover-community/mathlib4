@@ -39,7 +39,7 @@ inductive Perm : List α → List α → Prop
   | trans {l₁ l₂ l₃ : List α} : Perm l₁ l₂ → Perm l₂ l₃ → Perm l₁ l₃
 #align list.perm List.Perm
 
-instance {α : Type*} : Trans (@List.Perm α) (@List.Perm α) (@List.Perm α) where
+instance {α : Type*} : Trans (@List.Perm α) (@List.Perm α) List.Perm where
   trans := @List.Perm.trans α
 
 open Perm (swap)
