@@ -97,6 +97,24 @@ theorem single_map_f_self (j : ι) {A B : V} (f : A ⟶ B) :
   rfl
 #align homological_complex.single_map_f_self HomologicalComplex.single_map_f_self
 
+@[ext]
+lemma from_single_hom_ext {K : HomologicalComplex V c} {j : ι} {A : V}
+    {f g : (single V c j).obj A ⟶ K} (hfg : f.f j = g.f j) : f = g := by
+  ext i
+  by_cases i = j
+  · subst h
+    exact hfg
+  · apply (isZero_single_obj_X c j A i h).eq_of_src
+
+@[ext]
+lemma to_single_hom_ext {K : HomologicalComplex V c} {j : ι} {A : V}
+    {f g : K ⟶ (single V c j).obj A} (hfg : f.f j = g.f j) : f = g := by
+  ext i
+  by_cases i = j
+  · subst h
+    exact hfg
+  · apply (isZero_single_obj_X c j A i h).eq_of_tgt
+
 instance (j : ι) : Faithful (single V c j) where
   map_injective {A B f g} w := by
     rw [← cancel_mono (singleObjXSelf c j B).inv,
@@ -106,11 +124,57 @@ instance (j : ι) : Faithful (single V c j) where
 instance (j : ι) : Full (single V c j) where
   preimage {A B} f := (singleObjXSelf c j A).inv ≫ f.f j ≫ (singleObjXSelf c j B).hom
   witness f := by
-    ext i
-    by_cases i = j
-    · subst h
-      simp [single_map_f_self]
-    · exact IsZero.eq_of_src (isZero_single_obj_X _ _ _ _ h) _ _
+    ext
+    simp [single_map_f_self]
+
+variable {c}
+
+def mkHomToSingle {K : HomologicalComplex V c} {j : ι} {A : V} (φ : K.X j ⟶ A)
+    (hφ : ∀ (i : ι), c.Rel i j → K.d i j ≫ φ = 0) :
+    K ⟶ (single V c j).obj A where
+  f i :=
+    if hi : i = j
+      then (K.XIsoOfEq hi).hom ≫ φ ≫ (singleObjXIsoOfEq c j A i hi).inv
+      else 0
+  comm' i k hik := by
+    dsimp
+    rw [comp_zero]
+    split_ifs with hk
+    · subst hk
+      simp only [XIsoOfEq_rfl, Iso.refl_hom, Category.id_comp, reassoc_of% hφ i hik, zero_comp]
+    · apply (isZero_single_obj_X c j A k hk).eq_of_tgt
+
+@[simp]
+lemma mkHomToSingle_f {K : HomologicalComplex V c} {j : ι} {A : V} (φ : K.X j ⟶ A)
+    (hφ : ∀ (i : ι), c.Rel i j → K.d i j ≫ φ = 0) :
+    (mkHomToSingle φ hφ).f j = φ ≫ (singleObjXSelf c j A).inv := by
+  dsimp [mkHomToSingle]
+  rw [dif_pos rfl, Category.id_comp]
+  rfl
+
+def mkHomFromSingle {K : HomologicalComplex V c} {j : ι} {A : V} (φ : A ⟶ K.X j)
+    (hφ : ∀ (k : ι), c.Rel j k → φ ≫ K.d j k = 0) :
+    (single V c j).obj A ⟶ K where
+  f i :=
+    if hi : i = j
+      then (singleObjXIsoOfEq c j A i hi).hom ≫ φ ≫ (K.XIsoOfEq hi).inv
+      else 0
+  comm' i k hik := by
+    dsimp
+    rw [zero_comp]
+    split_ifs with hi
+    · subst hi
+      simp only [XIsoOfEq_rfl, Iso.refl_inv, Category.comp_id,
+        Category.assoc, hφ k hik, comp_zero]
+    · apply (isZero_single_obj_X c j A i hi).eq_of_src
+
+@[simp]
+lemma mkHomFromSingle_f {K : HomologicalComplex V c} {j : ι} {A : V} (φ : A ⟶ K.X j)
+    (hφ : ∀ (k : ι), c.Rel j k → φ ≫ K.d j k = 0) :
+    (mkHomFromSingle φ hφ).f j = (singleObjXSelf c j A).hom ≫ φ := by
+  dsimp [mkHomFromSingle]
+  rw [dif_pos rfl, Category.comp_id]
+  rfl
 
 end HomologicalComplex
 
