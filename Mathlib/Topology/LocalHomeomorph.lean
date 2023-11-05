@@ -448,7 +448,8 @@ theorem preimage_open_of_open {s : Set β} (hs : IsOpen s) : IsOpen (e.source �
 #align local_homeomorph.preimage_open_of_open LocalHomeomorph.preimage_open_of_open
 
 /-- A local homeomorphism is an open map on its source. -/
-lemma isOpen_image_of_subset_source {s : Set α} (hs : IsOpen s) (hse : s ⊆ e.source) : IsOpen (e '' s) := by
+lemma isOpen_image_of_subset_source {s : Set α} (hs : IsOpen s) (hse : s ⊆ e.source) :
+    IsOpen (e '' s) := by
   rw [(image_eq_target_inter_inv_preimage (e := e) hse)]
   exact e.continuous_invFun.preimage_open_of_open e.open_target hs
 
