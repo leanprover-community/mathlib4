@@ -178,7 +178,6 @@ instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   associator X Y Z := (α_ (unop X) (unop Y) (unop Z)).symm.op
   leftUnitor X := (λ_ (unop X)).symm.op
   rightUnitor X := (ρ_ (unop X)).symm.op
-  associator X Y Z := (α_ (unop X) (unop Y) (unop Z)).symm.op
   whiskerLeft_id X Y := Quiver.Hom.unop_inj (by simp)
   whiskerLeft_comp W X Y Z f g := Quiver.Hom.unop_inj (by simp)
   id_whiskerLeft f := Quiver.Hom.unop_inj (by simp)
@@ -211,7 +210,6 @@ instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   associator X Y Z := (α_ (unmop Z) (unmop Y) (unmop X)).symm.mop
   leftUnitor X := (ρ_ (unmop X)).mop
   rightUnitor X := (λ_ (unmop X)).mop
-  associator X Y Z := (α_ (unmop Z) (unmop Y) (unmop X)).symm.mop
   whiskerLeft_id X Y := unmop_inj (by simp)
   whiskerLeft_comp W X Y Z f g := unmop_inj (by simp)
   id_whiskerLeft f := unmop_inj (by simp)
