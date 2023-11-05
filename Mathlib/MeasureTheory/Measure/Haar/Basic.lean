@@ -13,11 +13,10 @@ import Mathlib.Topology.Algebra.Group.Compact
 /-!
 # Haar measure
 
-In this file we prove the existence and uniqueness (up to scalar multiples) of Haar measure
-for a locally compact Hausdorff topological group.
+In this file we prove the existence of Haar measure for a locally compact Hausdorff topological
+group.
 
-For the construction, we follow the write-up by Jonathan Gleason,
-*Existence and Uniqueness of Haar Measure*.
+We follow the write-up by Jonathan Gleason, *Existence and Uniqueness of Haar Measure*.
 This is essentially the same argument as in
 https://en.wikipedia.org/wiki/Haar_measure#A_construction_using_compact_subsets.
 
@@ -31,12 +30,14 @@ formally using Tychonoff's theorem.
 This function `h` forms a content, which we can extend to an outer measure and then a measure
 (`haarMeasure`).
 We normalize the Haar measure so that the measure of `K₀` is `1`.
-We show that for second countable spaces any left invariant Borel measure is a scalar multiple of
-the Haar measure.
 
 Note that `μ` need not coincide with `h` on compact sets, according to
 [halmos1950measure, ch. X, §53 p.233]. However, we know that `h(K)` lies between `μ(Kᵒ)` and `μ(K)`,
 where `ᵒ` denotes the interior.
+
+We also give a form of uniqueness of Haar measure, for σ-finite measures on second-countable
+locally compact groups. For more involved statements not assuming second-countability, see
+the file `MeasureTheory.Measure.Haar.Unique`.
 
 ## Main Declarations
 
@@ -50,8 +51,8 @@ where `ᵒ` denotes the interior.
   it is invariant and gives finite mass to compact sets and positive mass to nonempty open sets.
 * `haar` : some choice of a Haar measure, on a locally compact Hausdorff group, constructed as
   `haarMeasure K` where `K` is some arbitrary choice of a compact set with nonempty interior.
-* `haarMeasure_unique`: Every σ-finite left invariant measure on a locally compact Hausdorff group
-  is a scalar multiple of the Haar measure.
+* `haarMeasure_unique`: Every σ-finite left invariant measure on a second-countable locally compact
+  Hausdorff group is a scalar multiple of the Haar measure.
 
 ## References
 * Paul Halmos (1950), Measure Theory, §53
@@ -677,55 +678,6 @@ noncomputable def haar [LocallyCompactSpace G] : Measure G :=
 #align measure_theory.measure.haar MeasureTheory.Measure.haar
 #align measure_theory.measure.add_haar MeasureTheory.Measure.addHaar
 
-section SecondCountable
-
-variable [SecondCountableTopology G]
-
-/-- The Haar measure is unique up to scaling. More precisely: every σ-finite left invariant measure
-  is a scalar multiple of the Haar measure.
-  This is slightly weaker than assuming that `μ` is a Haar measure (in particular we don't require
-  `μ ≠ 0`). -/
-@[to_additive
-"The additive Haar measure is unique up to scaling. More precisely: every σ-finite left invariant
-measure is a scalar multiple of the additive Haar measure. This is slightly weaker than assuming
-that `μ` is an additive Haar measure (in particular we don't require `μ ≠ 0`)."]
-theorem haarMeasure_unique (μ : Measure G) [SigmaFinite μ] [IsMulLeftInvariant μ]
-    (K₀ : PositiveCompacts G) : μ = μ K₀ • haarMeasure K₀ :=
-  (measure_eq_div_smul μ (haarMeasure K₀) K₀.isCompact.measurableSet
-        (measure_pos_of_nonempty_interior _ K₀.interior_nonempty).ne'
-        K₀.isCompact.measure_lt_top.ne).trans
-    (by rw [haarMeasure_self, div_one])
-#align measure_theory.measure.haar_measure_unique MeasureTheory.Measure.haarMeasure_unique
-#align measure_theory.measure.add_haar_measure_unique MeasureTheory.Measure.addHaarMeasure_unique
-
-/-- Let `μ` be a σ-finite left invariant measure on `G`. Then `μ` is equal to the Haar measure
-defined by `K₀` iff `μ K₀ = 1`. -/
-@[to_additive]
-theorem haarMeasure_eq_iff (K₀ : PositiveCompacts G) (μ : Measure G) [SigmaFinite μ]
-    [IsMulLeftInvariant μ] :
-    haarMeasure K₀ = μ ↔ μ K₀ = 1 :=
-  ⟨fun h => h.symm ▸ haarMeasure_self, fun h => by rw [haarMeasure_unique μ K₀, h, one_smul]⟩
-
-example [LocallyCompactSpace G] (μ : Measure G) [IsHaarMeasure μ] (K₀ : PositiveCompacts G) :
-    μ = μ K₀.1 • haarMeasure K₀ :=
-  haarMeasure_unique μ K₀
-
-/-- To show that an invariant σ-finite measure is regular it is sufficient to show that it is finite
-  on some compact set with non-empty interior. -/
-@[to_additive
-"To show that an invariant σ-finite measure is regular it is sufficient to show that it is finite on
-some compact set with non-empty interior."]
-theorem regular_of_isMulLeftInvariant {μ : Measure G} [SigmaFinite μ] [IsMulLeftInvariant μ]
-    {K : Set G} (hK : IsCompact K) (h2K : (interior K).Nonempty) (hμK : μ K ≠ ∞) : Regular μ := by
-  rw [haarMeasure_unique μ ⟨⟨K, hK⟩, h2K⟩]; exact Regular.smul hμK
-#align measure_theory.measure.regular_of_is_mul_left_invariant MeasureTheory.Measure.regular_of_isMulLeftInvariant
-#align measure_theory.measure.regular_of_is_add_left_invariant MeasureTheory.Measure.regular_of_isAddLeftInvariant
-
-#noalign measure_theory.measure.regular_of_is_haar_measure
-#noalign measure_theory.measure.regular_of_is_add_haar_measure
-
-end SecondCountable
-
 /-! Steinhaus theorem: if `E` has positive measure, then `E / E` contains a neighborhood of zero.
 Note that this is not true for general regular Haar measures: in `ℝ × ℝ` where the first factor
 has the discrete topology, then `E = ℝ × {0}` has infinite measure for the regular Haar measure,
@@ -742,7 +694,7 @@ theorem div_mem_nhds_one_of_haar_pos (μ : Measure G) [IsHaarMeasure μ] [Locall
     [InnerRegular μ] (E : Set G) (hE : MeasurableSet E) (hEpos : 0 < μ E) :
     E / E ∈ 𝓝 (1 : G) := by
   /- For any regular measure `μ` and set `E` of positive measure, we can find a compact set `K` of
-       positive measure inside `E`. Further, for any outer regular measure `μ` there exists an open
+       positive measure inside `E`. Further, there exists an open
        set `U` containing `K` with measure arbitrarily close to `K` (here `μ U < 2 * μ K` suffices).
        Then, we can pick an open neighborhood of `1`, say `V` such that such that `V * K` is
        contained in `U`. Now note that for any `v` in `V`, the sets `K` and `{v} * K` can not be
@@ -782,6 +734,68 @@ theorem div_mem_nhds_one_of_haar_pos (μ : Measure G) [IsHaarMeasure μ] [Locall
   · simp only [div_eq_iff_eq_mul, ← mul_assoc, mul_right_inv, one_mul]
 #align measure_theory.measure.div_mem_nhds_one_of_haar_pos MeasureTheory.Measure.div_mem_nhds_one_of_haar_pos
 #align measure_theory.measure.sub_mem_nhds_zero_of_add_haar_pos MeasureTheory.Measure.sub_mem_nhds_zero_of_addHaar_pos
+
+
+section SecondCountable_SigmaFinite
+/-! In this section, we investigate uniqueness of left-invariant measures without assuming that
+the measure is finite on compact sets, but assuming σ-finiteness instead. We also rely on
+second-countability, to ensure that the group operations are measurable: in this case, one can
+bypass all topological arguments, and conclude using uniquenss of σ-finite left-invariant measures
+in measurable groups.
+
+For more general uniqueness statements without second-countability assumptions,
+see the file `MeasureTheory.Measure.Haar.Unique`.
+-/
+
+variable [SecondCountableTopology G]
+
+/-- **Uniqueness of left-invariant measures**: In a second-countable locally compact group, any
+  σ-finite left-invariant measure is a scalar multiple of the Haar measure.
+  This is slightly weaker than assuming that `μ` is a Haar measure (in particular we don't require
+  `μ ≠ 0`).
+  See also `isHaarMeasure_eq_smul_of_regular` for a statement not assuming second-countability. -/
+@[to_additive
+"**Uniqueness of left-invariant measures**: In a second-countable locally compact additive group,
+  any σ-finite left-invariant measure is a scalar multiple of the additive Haar measure.
+  This is slightly weaker than assuming that `μ` is a additive Haar measure (in particular we don't
+  require `μ ≠ 0`).
+  See also `isAddHaarMeasure_eq_smul_of_regular` for a statement not assuming second-countability."]
+theorem haarMeasure_unique (μ : Measure G) [SigmaFinite μ] [IsMulLeftInvariant μ]
+    (K₀ : PositiveCompacts G) : μ = μ K₀ • haarMeasure K₀ :=
+  (measure_eq_div_smul μ (haarMeasure K₀) K₀.isCompact.measurableSet
+        (measure_pos_of_nonempty_interior _ K₀.interior_nonempty).ne'
+        K₀.isCompact.measure_lt_top.ne).trans
+    (by rw [haarMeasure_self, div_one])
+#align measure_theory.measure.haar_measure_unique MeasureTheory.Measure.haarMeasure_unique
+#align measure_theory.measure.add_haar_measure_unique MeasureTheory.Measure.addHaarMeasure_unique
+
+/-- Let `μ` be a σ-finite left invariant measure on `G`. Then `μ` is equal to the Haar measure
+defined by `K₀` iff `μ K₀ = 1`. -/
+@[to_additive]
+theorem haarMeasure_eq_iff (K₀ : PositiveCompacts G) (μ : Measure G) [SigmaFinite μ]
+    [IsMulLeftInvariant μ] :
+    haarMeasure K₀ = μ ↔ μ K₀ = 1 :=
+  ⟨fun h => h.symm ▸ haarMeasure_self, fun h => by rw [haarMeasure_unique μ K₀, h, one_smul]⟩
+
+example [LocallyCompactSpace G] (μ : Measure G) [IsHaarMeasure μ] (K₀ : PositiveCompacts G) :
+    μ = μ K₀.1 • haarMeasure K₀ :=
+  haarMeasure_unique μ K₀
+
+/-- To show that an invariant σ-finite measure is regular it is sufficient to show that it is finite
+  on some compact set with non-empty interior. -/
+@[to_additive
+"To show that an invariant σ-finite measure is regular it is sufficient to show that it is finite on
+some compact set with non-empty interior."]
+theorem regular_of_isMulLeftInvariant {μ : Measure G} [SigmaFinite μ] [IsMulLeftInvariant μ]
+    {K : Set G} (hK : IsCompact K) (h2K : (interior K).Nonempty) (hμK : μ K ≠ ∞) : Regular μ := by
+  rw [haarMeasure_unique μ ⟨⟨K, hK⟩, h2K⟩]; exact Regular.smul hμK
+#align measure_theory.measure.regular_of_is_mul_left_invariant MeasureTheory.Measure.regular_of_isMulLeftInvariant
+#align measure_theory.measure.regular_of_is_add_left_invariant MeasureTheory.Measure.regular_of_isAddLeftInvariant
+
+#noalign measure_theory.measure.regular_of_is_haar_measure
+#noalign measure_theory.measure.regular_of_is_add_haar_measure
+
+end SecondCountable_SigmaFinite
 
 end Group
 

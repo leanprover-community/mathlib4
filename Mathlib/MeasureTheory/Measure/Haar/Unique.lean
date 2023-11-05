@@ -43,16 +43,23 @@ characteristic functions of set.
 To prove `integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport`, we use a change of variables
 to express integrals with respect to a left-invariant measure as integrals with respect to a given
 right-invariant measure (with a suitable density function). The uniqueness readily follows.
+
+On second-countable groups, one can arrive to slightly different uniqueness results by using that
+the operations are measurable. In particular, one can get uniqueness assuming σ-finiteness of
+the measures but discarding the assumption that they are finite on compact sets. See
+`haarMeasure_unique` in the file `MeasureTheory.Measure.Haar.Basic`.
 -/
 
 open MeasureTheory Filter Set TopologicalSpace Function MeasureTheory Measure
 open scoped Uniformity Topology ENNReal Pointwise NNReal
 
-lemma _root_.IsCompact.measure_eq_biInf_integral_hasCompactSupport
+/-- In a locally compact regular space with an inner regular measure, the measure of a compact
+set `k` is the infimum of the integrals of compactly supported functions equal to `1` on `k`. -/
+lemma IsCompact.measure_eq_biInf_integral_hasCompactSupport
     {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
     {k : Set X} (hk : IsCompact k)
     (μ : Measure X) [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ]
-    [LocallyCompactSpace X] [ClosableCompactSubsetOpenSpace X] :
+    [LocallyCompactSpace X] [RegularSpace X] :
     μ k = ⨅ (f : X → ℝ) (_ : Continuous f) (_ : HasCompactSupport f) (_ : EqOn f 1 k)
       (_ : 0 ≤ f), ENNReal.ofReal (∫ x, f x ∂μ) := by
   apply le_antisymm
@@ -71,14 +78,12 @@ lemma _root_.IsCompact.measure_eq_biInf_integral_hasCompactSupport
     refine ⟨f, f_cont, f_comp, fk, fun x ↦ (f_range x).1, ?_⟩
     exact (integral_le_measure (fun x _hx ↦ (f_range x).2) (fun x hx ↦ (fU hx).le)).trans_lt mu_U
 
-
 namespace MeasureTheory
-
-variable {G : Type*} [TopologicalSpace G] [LocallyCompactSpace G] [Group G] [TopologicalGroup G]
-  [MeasurableSpace G] [BorelSpace G]
 
 @[to_additive]
 lemma continuous_integral_apply_inv_mul
+    {G : Type*} [TopologicalSpace G] [LocallyCompactSpace G] [Group G] [TopologicalGroup G]
+    [MeasurableSpace G] [BorelSpace G]
     {μ : Measure G} [IsFiniteMeasureOnCompacts μ] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] {g : G → E}
     (hg : Continuous g) (h'g : HasCompactSupport g) :
@@ -100,6 +105,15 @@ lemma continuous_integral_apply_inv_mul
 
 namespace Measure
 
+section Group
+
+variable {G : Type*} [TopologicalSpace G] [LocallyCompactSpace G] [Group G] [TopologicalGroup G]
+  [MeasurableSpace G] [BorelSpace G]
+
+/-- In a group with a left invariant measure `μ` and a right invariant measure `ν`, one can express
+integrals with respect to `μ` as integrals with respect to `ν` up to a constant scaling factor
+(given in the statement as `∫ x, g x ∂μ` where `g` is a fixed reference function) and an
+explicit density `y ↦ 1/∫ z, g (z⁻¹ * y) ∂ν`. -/
 @[to_additive]
 lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
     {μ ν : Measure G} [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts ν]
@@ -388,6 +402,8 @@ theorem absolutelyContinuous_isHaarMeasure [LocallyCompactSpace G] [T2Space G]
   rw [haarMeasure_unique μ K, h, smul_smul]
   exact AbsolutelyContinuous.smul (Eq.absolutelyContinuous rfl) _
 
+end Group
+
 section CommGroup
 
 variable {G : Type*} [CommGroup G] [TopologicalSpace G] [TopologicalGroup G]
@@ -396,8 +412,7 @@ variable {G : Type*} [CommGroup G] [TopologicalSpace G] [TopologicalGroup G]
 /-- Any regular Haar measure is invariant under inversion in an abelian group. -/
 @[to_additive "Any regular additive Haar measure is invariant under negation in an abelian group."]
 instance (priority := 100) IsHaarMeasure.isInvInvariant_of_regular
-    [LocallyCompactSpace G] [Regular μ] :
-    IsInvInvariant μ := by
+    [LocallyCompactSpace G] [Regular μ] : IsInvInvariant μ := by
   -- the image measure is a Haar measure. By uniqueness up to multiplication, it is of the form
   -- `c μ`. Applying again inversion, one gets the measure `c^2 μ`. But since inversion is an
   -- involution, this is also `μ`. Hence, `c^2 = 1`, which implies `c = 1`.
@@ -448,7 +463,6 @@ instance (priority := 100) IsHaarMeasure.isInvInvariant_of_innerRegular
   have : c = 1 := (ENNReal.pow_strictMono two_ne_zero).injective this
   rw [hc, this, one_smul]
 
--- TODO: weaken assumptions?
 @[to_additive]
 theorem measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ]
     [InnerRegularCompactLTTop μ] {n : ℤ} (hn : n ≠ 0) :
@@ -459,10 +473,7 @@ theorem measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ]
       have hf : Continuous f := continuous_zpow n
       have : (μ.map f).IsHaarMeasure :=
         isHaarMeasure_map_of_isFiniteMeasure μ f hf (RootableBy.surjective_pow G ℤ hn)
-      have : InnerRegularCompactLTTop (μ.map f) := by infer_instance
-      have : InnerRegular μ := by infer_instance
-      have : IsFiniteMeasure μ := by infer_instance
-      have : Regular μ := by infer_instance
+      have : InnerRegular (μ.map f) := InnerRegular.map_of_continuous hf
       obtain ⟨C, -, -, hC⟩ := isHaarMeasure_eq_smul_of_innerRegular (μ.map f) μ
       suffices C = 1 by rwa [this, one_smul] at hC
       have h_univ : (μ.map f) univ = μ univ := by
@@ -477,7 +488,7 @@ theorem measurePreserving_zpow [CompactSpace G] [RootableBy G ℤ]
 
 @[to_additive]
 theorem MeasurePreserving.zpow [CompactSpace G] [RootableBy G ℤ]
-    [T2Space G] [SecondCountableTopology G] {n : ℤ} (hn : n ≠ 0) {X : Type*}
+    [InnerRegularCompactLTTop μ] {n : ℤ} (hn : n ≠ 0) {X : Type*}
     [MeasurableSpace X] {μ' : Measure X} {f : X → G} (hf : MeasurePreserving f μ' μ) :
     MeasurePreserving (fun x => f x ^ n) μ' μ :=
   (measurePreserving_zpow μ hn).comp hf
