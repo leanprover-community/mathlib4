@@ -194,13 +194,11 @@ theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x 
     simp only [← Functor.map_inv, ← FunctorToTypes.map_comp_apply, ← op_comp,
       Iso.inv_hom_id, op_id, FunctorToTypes.map_id_apply]
 
-theorem isSheafFor_iff_preservesProduct : (ofArrows X (Sigma.ι X)).IsSheafFor F ↔
+theorem isSheafFor_iff_preservesProduct : (ofArrows X c.inj).IsSheafFor F ↔
     Nonempty (PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F) := by
-  refine ⟨fun hF' ↦ ⟨preservesProductOfIsSheafFor _ hF hI X hd hF'⟩, fun hF' ↦ ?_⟩
+  refine ⟨fun hF' ↦ ⟨preservesProductOfIsSheafFor _ hF hI c hc hd hF'⟩, fun hF' ↦ ?_⟩
   let _ := hF'.some
-  have : Sigma.desc (Sigma.ι X) = 𝟙 _ := by ext; simp
-  have _ : IsIso (Sigma.desc (Sigma.ι X)) := by rw [this]; infer_instance
-  exact isSheafFor_of_preservesProduct F X (Sigma.ι X)
+  exact isSheafFor_of_preservesProduct F c hc
 
 end Product
 
