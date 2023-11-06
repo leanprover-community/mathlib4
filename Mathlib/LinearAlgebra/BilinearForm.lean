@@ -674,6 +674,11 @@ theorem comp_inj (B₁ B₂ : BilinForm R M') {l r : M →ₗ[R] M'} (hₗ : Fun
     rw [h]
 #align bilin_form.comp_inj BilinForm.comp_inj
 
+/-
+theorem toLin_comp [Module R₂ M] [Module R₂ M'] {B : BilinForm R₂ M'} {l r : M →ₗ[R₂] M'} :
+    toLin (comp B l r) = LinearMap.compl₁₂ (toLin B) l r := rfl
+-/
+
 end Comp
 
 variable {M₂' M₂'' : Type*}
