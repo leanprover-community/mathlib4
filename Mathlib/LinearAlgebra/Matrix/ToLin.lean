@@ -121,7 +121,7 @@ theorem range_vecMulLinear (M : Matrix m n R) :
 
 theorem Matrix.vecMulLinear_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} :
     Function.Injective M.vecMulLinear ↔ LinearIndependent R (fun i ↦ M i) := by
-  simp only [←LinearMap.ker_eq_bot, Fintype.linearIndependent_iff, Submodule.eq_bot_iff,
+  simp only [← LinearMap.ker_eq_bot, Fintype.linearIndependent_iff, Submodule.eq_bot_iff,
      LinearMap.mem_ker, vecMulLinear_apply, vecMul, dotProduct]
   refine ⟨fun h c h0 i ↦ ?_, fun h c h0 ↦ funext fun i ↦ ?_⟩
   · rw [h c, Pi.zero_apply]
@@ -311,12 +311,12 @@ theorem Matrix.mulVec_stdBasis_apply [DecidableEq n] (M : Matrix m n R) (j) :
 
 theorem Matrix.range_mulVecLin (M : Matrix m n R) :
     LinearMap.range M.mulVecLin = span R (range Mᵀ) := by
-  rw [←vecMulLinear_transpose, range_vecMulLinear]
+  rw [← vecMulLinear_transpose, range_vecMulLinear]
 #align matrix.range_mul_vec_lin Matrix.range_mulVecLin
 
 theorem Matrix.mulVecLin_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} :
     Function.Injective M.mulVecLin ↔ LinearIndependent R (fun i ↦ Mᵀ i) := by
-  rw [←vecMulLinear_transpose, vecMulLinear_injective_iff]
+  rw [← vecMulLinear_transpose, vecMulLinear_injective_iff]
 
 end mulVec
 
