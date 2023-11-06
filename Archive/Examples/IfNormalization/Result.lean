@@ -107,6 +107,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
     | some b =>
       have i' := normalize l (.ite (lit b) t e); ⟨i'.1, ◾⟩
   termination_by normalize e => e.normSize
+  decreasing_by { decreasing_with simp (config := { arith := true }) [Zero.zero]; done }
 
 /-
 We recall the statement of the if-normalization problem.
