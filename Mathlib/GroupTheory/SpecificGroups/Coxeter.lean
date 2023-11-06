@@ -43,7 +43,7 @@ And the six exceptional systems:
 
 ## Tags
 
-coxeter group basis, coxeter group
+coxeter system, coxeter group
 -/
 
 noncomputable section
