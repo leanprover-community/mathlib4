@@ -314,8 +314,7 @@ end GradedRing
 The semiring homomorphism from `A` to `𝒜 0` sending every `a : A` to `a₀`.
 -/
 def GradedRing.projZeroRingHom' : A →+* (𝒜 0) :=
-  ((GradedRing.projZeroRingHom 𝒜).codRestrict _ fun _x => SetLike.coe_mem _ :
-  A →+* GradeZero.subsemiring 𝒜)
+  ((GradedRing.projZeroRingHom 𝒜).codRestrict _ fun _x => SetLike.coe_mem _ : A →+* GradeZero.subsemiring 𝒜)
 
 @[simp] lemma GradedRing.coe_projZeroRingHom'_apply (a : A) :
     (GradedRing.projZeroRingHom' 𝒜 a : A) = GradedRing.projZeroRingHom 𝒜 a := rfl
@@ -413,8 +412,7 @@ end GradedRing
 The ring homomorphism from `A` to `𝒜 0` sending every `a : A` to `a₀`.
 -/
 def GradedRing.projZeroRingHom'' : A →+* (𝒜 0) :=
-  ((GradedRing.projZeroRingHom 𝒜).codRestrict _ fun _x => SetLike.coe_mem _ :
-  A →+* GradeZero.subring 𝒜)
+  ((GradedRing.projZeroRingHom 𝒜).codRestrict _ fun _x => SetLike.coe_mem _ : A →+* GradeZero.subring 𝒜)
 
 @[simp] lemma GradedRing.coe_projZeroRingHom''_apply (a : A) :
     (GradedRing.projZeroRingHom'' 𝒜 a : A) = GradedRing.projZeroRingHom 𝒜 a := rfl
