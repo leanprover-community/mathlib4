@@ -238,7 +238,7 @@ theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] :
 theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
   induction' x with _ _ ih generalizing P Q
-  · simp only [rmatch, matchEpsilon, Bool.or_coe_iff]
+  · simp only [rmatch, matchEpsilon, Bool.coe_or_iff]
   · repeat' rw [rmatch]
     rw [deriv_add]
     exact ih _ _
@@ -252,7 +252,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     · intro h
       refine' ⟨[], [], rfl, _⟩
       rw [rmatch, rmatch]
-      rwa [Bool.and_coe_iff] at h
+      rwa [Bool.coe_and_iff] at h
     · rintro ⟨t, u, h₁, h₂⟩
       cases' List.append_eq_nil.1 h₁.symm with ht hu
       subst ht

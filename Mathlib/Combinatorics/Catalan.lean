@@ -50,7 +50,7 @@ open BigOperators
 
 open Finset
 
-open Finset.Nat.antidiagonal (fst_le snd_le)
+open Finset.antidiagonal (fst_le snd_le)
 
 /-- The recursive definition of the sequence of Catalan numbers:
 `catalan (n + 1) = ∑ i : Fin n.succ, catalan i * catalan (n - i)` -/
@@ -70,7 +70,7 @@ theorem catalan_succ (n : ℕ) : catalan (n + 1) = ∑ i : Fin n.succ, catalan i
 #align catalan_succ catalan_succ
 
 theorem catalan_succ' (n : ℕ) :
-    catalan (n + 1) = ∑ ij in Nat.antidiagonal n, catalan ij.1 * catalan ij.2 := by
+    catalan (n + 1) = ∑ ij in antidiagonal n, catalan ij.1 * catalan ij.2 := by
   rw [catalan_succ, Nat.sum_antidiagonal_eq_sum_range_succ (fun x y => catalan x * catalan y) n,
     sum_range]
 #align catalan_succ' catalan_succ'
@@ -163,7 +163,7 @@ def pairwiseNode (a b : Finset (Tree Unit)) : Finset (Tree Unit) :=
 def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
   | 0 => {nil}
   | n + 1 =>
-    (Finset.Nat.antidiagonal n).attach.biUnion fun ijh =>
+    (antidiagonal n).attach.biUnion fun ijh =>
       -- Porting note: `unusedHavesSuffices` linter is not happy with this. Commented out.
       -- have := Nat.lt_succ_of_le (fst_le ijh.2)
       -- have := Nat.lt_succ_of_le (snd_le ijh.2)
@@ -181,7 +181,7 @@ theorem treesOfNumNodesEq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNu
 
 theorem treesOfNumNodesEq_succ (n : ℕ) :
     treesOfNumNodesEq (n + 1) =
-      (Nat.antidiagonal n).biUnion fun ij =>
+      (antidiagonal n).biUnion fun ij =>
         pairwiseNode (treesOfNumNodesEq ij.1) (treesOfNumNodesEq ij.2) := by
   rw [treesOfNumNodesEq]
   ext

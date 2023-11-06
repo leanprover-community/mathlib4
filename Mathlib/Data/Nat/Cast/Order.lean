@@ -34,12 +34,12 @@ theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
 #align nat.mono_cast Nat.mono_cast
 
--- See also `Nat.cast_nonneg`, specialised for an `OrderedSemiring`.
+/-- See also `Nat.cast_nonneg`, specialised for an `OrderedSemiring`. -/
 @[simp low]
 theorem cast_nonneg' (n : ℕ) : 0 ≤ (n : α) :=
   @Nat.cast_zero α _ ▸ mono_cast (Nat.zero_le n)
 
--- Specialisation of `Nat.cast_nonneg'`, which seems to be easier for Lean to use.
+/-- Specialisation of `Nat.cast_nonneg'`, which seems to be easier for Lean to use. -/
 @[simp]
 theorem cast_nonneg {α} [OrderedSemiring α] (n : ℕ) : 0 ≤ (n : α) :=
   cast_nonneg' n
@@ -63,11 +63,11 @@ theorem cast_add_one_pos (n : ℕ) : 0 < (n : α) + 1 :=
   zero_lt_one.trans_le <| le_add_of_nonneg_left n.cast_nonneg'
 #align nat.cast_add_one_pos Nat.cast_add_one_pos
 
--- See also `Nat.cast_pos`, a specialisation of this to an `OrderedSemiring`.
+/-- See also `Nat.cast_pos`, a specialisation of this to an `OrderedSemiring`. -/
 @[simp low]
 theorem cast_pos' {n : ℕ} : (0 : α) < n ↔ 0 < n := by cases n <;> simp [cast_add_one_pos]
 
--- Specialisation of `Nat.cast_pos'`, which seems to be easier for Lean to use.
+/-- Specialisation of `Nat.cast_pos'`, which seems to be easier for Lean to use. -/
 @[simp]
 theorem cast_pos {α} [OrderedSemiring α] [Nontrivial α] {n : ℕ} : (0 : α) < n ↔ 0 < n := cast_pos'
 #align nat.cast_pos Nat.cast_pos

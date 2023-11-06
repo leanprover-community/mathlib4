@@ -3,8 +3,8 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Aut
 import Mathlib.Algebra.GroupRingAction.Basic
-import Mathlib.Algebra.Hom.Aut
 import Mathlib.Algebra.Ring.Equiv
 
 #align_import algebra.ring.aut from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"

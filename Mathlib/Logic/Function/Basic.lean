@@ -122,23 +122,30 @@ protected def Injective.decidableEq [DecidableEq β] (I : Injective f) : Decidab
   fun _ _ ↦ decidable_of_iff _ I.eq_iff
 #align function.injective.decidable_eq Function.Injective.decidableEq
 
-theorem Injective.of_comp {g : γ → α} (I : Injective (f ∘ g)) : Injective g := fun x y h ↦
-  I <| show f (g x) = f (g y) from congr_arg f h
+theorem Injective.of_comp {g : γ → α} (I : Injective (f ∘ g)) : Injective g :=
+  fun _ _ h ↦ I <| congr_arg f h
 #align function.injective.of_comp Function.Injective.of_comp
 
 @[simp]
-theorem Injective.of_comp_iff {f : α → β} (hf : Injective f) (g : γ → α) :
+theorem Injective.of_comp_iff (hf : Injective f) (g : γ → α) :
     Injective (f ∘ g) ↔ Injective g :=
   ⟨Injective.of_comp, hf.comp⟩
 #align function.injective.of_comp_iff Function.Injective.of_comp_iff
 
+theorem Injective.of_comp_right {g : γ → α} (I : Injective (f ∘ g)) (hg : Surjective g) :
+    Injective f := fun x y h ↦ by
+  obtain ⟨x, rfl⟩ := hg x
+  obtain ⟨y, rfl⟩ := hg y
+  exact congr_arg g (I h)
+
+theorem Surjective.bijective₂_of_injective {g : γ → α} (hf : Surjective f) (hg : Surjective g)
+    (I : Injective (f ∘ g)) : Bijective f ∧ Bijective g :=
+  ⟨⟨I.of_comp_right hg, hf⟩, I.of_comp, hg⟩
+
 @[simp]
 theorem Injective.of_comp_iff' (f : α → β) {g : γ → α} (hg : Bijective g) :
     Injective (f ∘ g) ↔ Injective f :=
-⟨ λ h x y => let ⟨_, hx⟩ := hg.surjective x
-             let ⟨_, hy⟩ := hg.surjective y
-             hx ▸ hy ▸ λ hf => h hf ▸ rfl,
-  λ h => h.comp hg.injective⟩
+  ⟨fun I ↦ I.of_comp_right hg.2, fun h ↦ h.comp hg.injective⟩
 #align function.injective.of_comp_iff' Function.Injective.of_comp_iff'
 
 /-- Composition by an injective function on the left is itself injective. -/
@@ -176,13 +183,17 @@ theorem Surjective.of_comp_iff (f : α → β) {g : γ → α} (hg : Surjective 
   ⟨Surjective.of_comp, fun h ↦ h.comp hg⟩
 #align function.surjective.of_comp_iff Function.Surjective.of_comp_iff
 
+theorem Surjective.of_comp_left {g : γ → α} (S : Surjective (f ∘ g)) (hf : Injective f) :
+    Surjective g := fun a ↦ let ⟨c, hc⟩ := S (f a); ⟨c, hf hc⟩
+
+theorem Injective.bijective₂_of_surjective {g : γ → α} (hf : Injective f) (hg : Injective g)
+    (S : Surjective (f ∘ g)) : Bijective f ∧ Bijective g :=
+  ⟨⟨hf, S.of_comp⟩, hg, S.of_comp_left hf⟩
+
 @[simp]
 theorem Surjective.of_comp_iff' (hf : Bijective f) (g : γ → α) :
     Surjective (f ∘ g) ↔ Surjective g :=
-  ⟨fun h x ↦
-    let ⟨x', hx'⟩ := h (f x)
-    ⟨x', hf.injective hx'⟩,
-    hf.surjective.comp⟩
+  ⟨fun S ↦ S.of_comp_left hf.1, hf.surjective.comp⟩
 #align function.surjective.of_comp_iff' Function.Surjective.of_comp_iff'
 
 instance decidableEqPfun (p : Prop) [Decidable p] (α : p → Type*) [∀ hp, DecidableEq (α hp)] :
