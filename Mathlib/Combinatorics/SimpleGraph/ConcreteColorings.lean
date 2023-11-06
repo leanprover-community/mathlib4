@@ -17,6 +17,8 @@ This file defines colorings for some common graphs
 * `SimpleGraph.pathGraph.bicoloring`: Bicoloring of a path graph
 -/
 
+namespace SimpleGraph
+
 theorem suc_mod2_neq (m : ℕ) : (m % 2 == 0) ≠ ((m + 1) % 2 == 0) := by
   intro h
   rw [Bool.eq_iff_eq_true_iff, beq_iff_eq] at h
@@ -24,8 +26,8 @@ theorem suc_mod2_neq (m : ℕ) : (m % 2 == 0) ≠ ((m + 1) % 2 == 0) := by
   exact not_iff_self h.symm
 
 /-- Bicoloring of a path graph -/
-def SimpleGraph.pathGraph.bicoloring (n : ℕ) :
-    SimpleGraph.Coloring (pathGraph n) Bool :=
+def pathGraph.bicoloring (n : ℕ) :
+    Coloring (pathGraph n) Bool :=
   Coloring.mk (fun u ↦ u.val % 2 == 0)
     (by
       intro u v h
@@ -42,14 +44,14 @@ def SimpleGraph.pathGraph.bicoloring (n : ℕ) :
           exact (suc_mod2_neq v).symm)
 
 /-- Convert a coloring to bool to a coloring to Fin 2 -/
-def SimpleGraph.Coloring.BoolToFin2 {α} {G : SimpleGraph α} (c : SimpleGraph.Coloring G Bool) :
-    SimpleGraph.Coloring G (Fin 2) :=
-  (SimpleGraph.recolorOfEquiv G (finTwoEquiv)).invFun c
+def Coloring.BoolToFin2 {α} {G : SimpleGraph α} (c : Coloring G Bool) :
+    Coloring G (Fin 2) :=
+  (recolorOfEquiv G (finTwoEquiv)).invFun c
 
-theorem SimpleGraph.pathGraph.clique (n : ℕ) (h : n > 1) :
-    SimpleGraph.IsClique (pathGraph n) {⟨0, Nat.zero_lt_of_lt h⟩, ⟨1, h⟩} := by
+theorem pathGraph.clique (n : ℕ) (h : n > 1) :
+    IsClique (pathGraph n) {⟨0, Nat.zero_lt_of_lt h⟩, ⟨1, h⟩} := by
   let s : Finset (Fin n) := {⟨0, Nat.zero_lt_of_lt h⟩, ⟨1, h⟩}
-  have hs : SimpleGraph.IsClique (pathGraph n) s := by
+  have hs : IsClique (pathGraph n) s := by
     refine (pairwise_subtype_iff_pairwise_set s (pathGraph n).Adj).mp ?_
     intro (x : s) (y : s) (hxy : x ≠ y)
     -- Adj (pathGraph n) ↑x ↑y
@@ -65,13 +67,15 @@ theorem SimpleGraph.pathGraph.clique (n : ℕ) (h : n > 1) :
   simp_all [Finset.mem_singleton, Fin.mk.injEq, Finset.coe_insert,
             Finset.coe_singleton, Set.mem_singleton_iff]
 
-theorem SimpleGraph.pathGraph.chromaticNumber (n : ℕ) (h : n > 1) :
+theorem pathGraph.chromaticNumber (n : ℕ) (h : n > 1) :
     (pathGraph n).chromaticNumber = 2 := by
   refine Nat.le_antisymm_iff.mpr ?_
   apply And.intro
-  · apply SimpleGraph.chromaticNumber_le_of_colorable
-    exact Nonempty.intro (SimpleGraph.pathGraph.bicoloring n).BoolToFin2
+  · apply chromaticNumber_le_of_colorable
+    exact Nonempty.intro (pathGraph.bicoloring n).BoolToFin2
   · let s : Finset (Fin n) := {⟨0, Nat.zero_lt_of_lt h⟩, ⟨1, h⟩}
-    have hs : SimpleGraph.IsClique (pathGraph n) s := by
-      simp [(SimpleGraph.pathGraph.clique n)]
-    apply SimpleGraph.IsClique.card_le_chromaticNumber hs
+    have hs : IsClique (pathGraph n) s := by
+      simp [(pathGraph.clique n)]
+    apply IsClique.card_le_chromaticNumber hs
+
+end SimpleGraph
