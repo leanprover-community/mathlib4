@@ -91,7 +91,7 @@ a group `W` and the group presentation corresponding to a Coxeter matrix. Equiva
 be seen as a list of generators of `W` parameterized by the underlying type of `M`, which
 satisfy the relations of the Coxeter matrix `M`. -/
 structure CoxeterSystem (W : Type*) [Group W] where
-  /-- `CoxeterSystem.ofRepr` constructs a basis given an equivalence with the group
+  /-- `CoxeterSystem.ofRepr` constructs a Coxeter system given an equivalence with the group
   presentation corresponding to a Coxeter matrix `M`. -/
   ofRepr ::
     /-- `repr` is the isomorphism between the group `W` and the group presentation
@@ -100,7 +100,7 @@ structure CoxeterSystem (W : Type*) [Group W] where
 
 /-- A group is a Coxeter group if it is registered in a Coxeter System. -/
 class IsCoxeterGroup (W : Type*) [Group W] : Prop where
-  nonempty_basis : ∃ (M : Matrix B B ℕ∞), M.IsCoxeter ∧ Nonempty (CoxeterSystem B M W)
+  nonempty_system : ∃ (M : Matrix B B ℕ∞), M.IsCoxeter ∧ Nonempty (CoxeterSystem B M W)
 
 namespace CoxeterMatrix
 
