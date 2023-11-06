@@ -59,13 +59,14 @@ def op_prod : (Cᵒᵖ × C) ⥤ (Cᵒᵖ × C)ᵒᵖ where
 
 /-- Opposite of a difunctor.
 -/
-@[simps]
+@[simps!]
 def Functor.diop (F : Cᵒᵖ × C ⥤ D) : Cᵒᵖ × C ⥤ Dᵒᵖ := op_prod ⋙ F.op
 
 variable {F G H : Cᵒᵖ × C ⥤ D}
 
 /-- Post-composition with a natural transformation.
 -/
+@[simps]
 def DinatTrans.compNatTrans (δ : F ⤞ G) (α : G ⟶ H) : F ⤞ H
     where
   app X := δ.app X ≫ α.app (op X, X)
@@ -74,6 +75,7 @@ def DinatTrans.compNatTrans (δ : F ⤞ G) (α : G ⟶ H) : F ⤞ H
 
 /-- Pre-composition with a natural transformation.
 -/
+@[simps]
 def DinatTrans.precompNatTrans (δ : G ⤞ H) (α : F ⟶ G) : F ⤞ H
     where
   app X := α.app (op X, X) ≫ δ.app X
@@ -82,6 +84,7 @@ def DinatTrans.precompNatTrans (δ : G ⤞ H) (α : F ⟶ G) : F ⤞ H
 
 /-- Opposite of a dinatural transformation.
 -/
+@[simps]
 def DinatTrans.op (α : F ⤞ G) : G.diop ⤞ F.diop
     where
   app X := (α.app X).op
