@@ -26,7 +26,7 @@ variable {E E' H H' M N : Type*}
   using (pre-)groupoids and local structomorphisms.
   This unifies e.g. the smooth and analytic categories. -/
 section IFTBasic
-variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] --[CompleteSpace E]
+variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 -- XXX: generalise to any field 𝕜 which is ℝ or ℂ
 
 /-- A pregroupoid which satisfies the necessary conditions for the implicit function theorem.
@@ -126,10 +126,8 @@ def contDiffPregroupoidBasic : Pregroupoid E := {
 
 -- this is the key lemma I need to showing that C^n maps define a better pregroupoid
 -- we need to work over ℝ or ℂ, otherwise `toLocalInverse` doesn't apply
--- FIXME: generalise to charted spaces
--- FIXME: not entirely true; I get that g is ContDiff in *some* nhd of x, might be smaller than t!
-lemma Iwant [CompleteSpace E] {f g : E → E} {s t : Set E} {x : E} {f' : E ≃L[ℝ] E}
-    (hf : ContDiffAt ℝ n f x) (hf' : HasFDerivAt (𝕜 := ℝ) f f' x)
+lemma contDiffPregroupoindIsIFT_aux [CompleteSpace E] {f g : E → E} {s t : Set E} {x : E}
+    {f' : E ≃L[ℝ] E} (hf : ContDiffAt ℝ n f x) (hf' : HasFDerivAt (𝕜 := ℝ) f f' x)
     (hinv : InvOn g f s t) (hm : MapsTo g t s) (hn : 1 ≤ n) : ContDiffAt ℝ n g (f x) := by
   let r := hf.to_localInverse (f' := f') hf' hn -- ContDiffAt ℝ n (hf.localInverse hf' hn) (f x)
   set g' := ContDiffAt.localInverse hf hf' hn with eq
@@ -166,17 +164,17 @@ lemma Iwant [CompleteSpace E] {f g : E → E} {s t : Set E} {x : E} {f' : E ≃L
   The proof relies on the mean value theorem, which is why ℝ or ℂ is required. -/
 def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroupoid E where
   toPregroupoid := contDiffPregroupoidBasic (n := n)
-  monotonicity := sorry
+  monotonicity := fun {f} _ _ _ hst hf ↦ hf.mono hst
   inverse := by
     intro f g s t x f' hs hx hf hf' hinv
     unfold contDiffPregroupoidBasic
     simp only
-    -- Since f is cont. differentiable on s, there's a neighbourhood U of x s.t. df_x' is an isomorphism
-    -- for all x'. We use this neighbourhood.
+    -- Since f is continuously differentiable on s, there's a neighbourhood U of x s.t.
+    -- df_x' is an isomorphism for all `x' ∈ U`.
     rcases mem_nhds_iff.mp f'.nhds with ⟨t', ht, htopen, hft⟩
     let U := (fun x ↦ fderiv ℝ f x) ⁻¹' t' ∩ s
     have : IsOpen U := by
-      have : ContinuousOn (fun x ↦ fderiv ℝ f x) s := sorry -- as f is contDiff on s
+      have : ContinuousOn (fun x ↦ fderiv ℝ f x) s := hf.continuousOn_fderiv_of_open hs hn
       apply IsOpen.inter _ hs
       refine this.isOpen_preimage (t := t') hs ?_ htopen
       sorry -- xxx: finish arguing why this is ⊆ s
@@ -204,7 +202,7 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
       have : HasFDerivAt f f'' x'' := sorry -- standard, skipped for now
       -- last: upgrade f'' to an isomorphism, then can apply r
       -- let h := hf.contDiffAt (hs.mem_nhds (mem_of_mem_inter_right hx''U))
-      -- exact Iwant h this hinv hm hn
+      -- exact contDiffPregroupoindIsIFT_aux h this hinv hm hn
       sorry
     sorry -- TODO: adjust conclusion of statement!
 
