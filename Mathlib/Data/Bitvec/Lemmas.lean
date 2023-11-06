@@ -115,6 +115,7 @@ theorem addLsb_div_two {x b} : addLsb x b / 2 = x := by
   rw [← Nat.div2_val, Nat.div2_bit]
 #align bitvec.add_lsb_div_two Std.BitVec.addLsb_div_two
 
+set_option linter.deprecated false in -- unfold `bit0` and `bit1`
 theorem decide_addLsb_mod_two {x b} : decide (addLsb x b % 2 = 1) = b := by
   cases b <;>  simp [addLsb, bit0, bit1]
   · rw [decide_eq_false_iff_not, ←two_mul, Nat.mul_mod_right]
