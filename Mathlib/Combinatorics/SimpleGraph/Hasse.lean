@@ -117,4 +117,8 @@ theorem pathGraph_connected (n : ℕ) : (pathGraph (n + 1)).Connected :=
   ⟨pathGraph_preconnected _⟩
 #align simple_graph.path_graph_connected SimpleGraph.pathGraph_connected
 
+theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
+  ext u v
+  fin_cases u <;> fin_cases v <;> simp [pathGraph, ← Fin.coe_covby_iff, Nat.covby_iff_succ_eq]
+
 end SimpleGraph

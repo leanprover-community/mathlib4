@@ -28,39 +28,22 @@ def pathGraph.bicoloring (n : ℕ) :
     rw [pathGraph_adj]
     rintro (h | h) <;> simp [← h, not_iff, Nat.succ_mod_two_eq_zero_iff]
 
-/-- Convert a coloring to bool to a coloring to Fin 2 -/
-def Coloring.BoolToFin2 {α} {G : SimpleGraph α} (c : Coloring G Bool) :
-    Coloring G (Fin 2) :=
-  (recolorOfEquiv G (finTwoEquiv)).invFun c
+def pathGraph_two_embedding (n : ℕ) (h : 2 ≤ n) : pathGraph 2 ↪g pathGraph n where
+  toFun v := ⟨v, trans v.2 h⟩
+  inj' := by
+    rintro v w
+    rw [Fin.mk.injEq]
+    exact Fin.ext
+  map_rel_iff' := by
+    intro v w
+    fin_cases v <;> fin_cases w <;> simp [pathGraph, ← Fin.coe_covby_iff]
 
-theorem pathGraph.clique (n : ℕ) (h : n > 1) :
-    IsClique (pathGraph n) {⟨0, Nat.zero_lt_of_lt h⟩, ⟨1, h⟩} := by
-  let s : Finset (Fin n) := {⟨0, Nat.zero_lt_of_lt h⟩, ⟨1, h⟩}
-  have hs : IsClique (pathGraph n) s := by
-    refine (pairwise_subtype_iff_pairwise_set s (pathGraph n).Adj).mp ?_
-    intro (x : s) (y : s) (hxy : x ≠ y)
-    -- Adj (pathGraph n) ↑x ↑y
-    simp [pathGraph]
-    -- ↑x ⋖ ↑y ∨ ↑y ⋖ ↑x
-    have : (x : ℕ) = 0 ↔ (y : ℕ) = 1 := by aesop
-    have : (x : ℕ) = 1 ↔ (y : ℕ) = 0 := by aesop
-    have x_val : (x : ℕ) = 0 ∨ (x : ℕ) = 1 := by aesop
-    apply Or.elim x_val
-    repeat
-      intro _
-      simp_all [Fin.coe_covby_iff.symm, Nat.covby_iff_succ_eq.mpr rfl]
-  simp_all [Finset.mem_singleton, Fin.mk.injEq, Finset.coe_insert,
-            Finset.coe_singleton, Set.mem_singleton_iff]
-
-theorem pathGraph.chromaticNumber (n : ℕ) (h : n > 1) :
+theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
     (pathGraph n).chromaticNumber = 2 := by
-  refine Nat.le_antisymm_iff.mpr ?_
-  apply And.intro
-  · apply chromaticNumber_le_of_colorable
-    exact Nonempty.intro (pathGraph.bicoloring n).BoolToFin2
-  · let s : Finset (Fin n) := {⟨0, Nat.zero_lt_of_lt h⟩, ⟨1, h⟩}
-    have hs : IsClique (pathGraph n) s := by
-      simp [(pathGraph.clique n)]
-    apply IsClique.card_le_chromaticNumber hs
+  have hc := (pathGraph.bicoloring n).to_colorable
+  apply le_antisymm
+  · exact chromaticNumber_le_of_colorable hc
+  · simpa only [pathGraph_two_eq_top, chromaticNumber_top] using
+      hc.chromaticNumber_mono_of_embedding (pathGraph_two_embedding n h)
 
 end SimpleGraph
