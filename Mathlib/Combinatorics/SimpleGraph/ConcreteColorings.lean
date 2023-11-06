@@ -16,8 +16,7 @@ This file defines colorings for some common graphs
 ## Main declarations
 
 * `SimpleGraph.pathGraph.bicoloring`: Bicoloring of a path graph.
-* `SimpleGraph.pathGraph_two_embedding`: Embedding of `pathGraph 2` into the first
-  two elements of `pathGraph n` for `2 ≤ n`.
+
 -/
 
 namespace SimpleGraph
@@ -30,6 +29,7 @@ def pathGraph.bicoloring (n : ℕ) :
     rw [pathGraph_adj]
     rintro (h | h) <;> simp [← h, not_iff, Nat.succ_mod_two_eq_zero_iff]
 
+/-- Embedding of `pathGraph 2` into the first two elements of `pathGraph n` for `2 ≤ n` -/
 def pathGraph_two_embedding (n : ℕ) (h : 2 ≤ n) : pathGraph 2 ↪g pathGraph n where
   toFun v := ⟨v, trans v.2 h⟩
   inj' := by
