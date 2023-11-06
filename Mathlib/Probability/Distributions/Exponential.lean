@@ -13,17 +13,17 @@ import Mathlib.Probability.Cdf
 Define the Exponential Measure over the Reals
 
 ## Main definitions
-* `exponentialPdfReal`: the function `rate x ↦ rate * (Real.exp (-(↑rate * ↑x))` for `0 ≤ x`
+* `exponentialPdfReal`: the function `r x ↦ r * (Real.exp (-(↑r * ↑x))` for `0 ≤ x`
   or `0` else, which is the probability density function of a exponential distribution with
-  rate `rate` (when `ratePos : 0 < rate`).
+  rate `r` (when `hr : 0 < r`).
 * `exponentialPdf`: `ℝ≥0∞`-valued pdf,
-  `exponentialPdf rate ratePos = ENNReal.ofReal (exponentialPdfReal rate ratePos)`.
-* `expMeasure`: an exponential measure on `ℝ`, parametrized by its rate `rate`.
+  `exponentialPdf r hr = ENNReal.ofReal (exponentialPdfReal r hr)`.
+* `expMeasure`: an exponential measure on `ℝ`, parametrized by its rate `r`.
 * `exponentialCdfReal` : the Cdf given by the Definition of CDF in `ProbabilityTheory.Cdf` on
 
 ## Main results
 * `ExpCDF_eq`: Proof that the `exponentialCdfReal` given by the Definition equals the known
-  function given as `rate x ↦ 1 - (Real.exp (-(↑rate * ↑x))` for `0 ≤ x` or `0` else.
+  function given as `r x ↦ 1 - (Real.exp (-(↑r * ↑x))` for `0 ≤ x` or `0` else.
 -/
 
 open scoped ENNReal NNReal Real
@@ -77,25 +77,25 @@ section ExponentialPdf
 
 /-- Define the PDF of the exponential distribution depending on its rate-/
 noncomputable
-def exponentialPdfReal (rate : ℝ) (ratePos : 0 < rate) (x : ℝ): ℝ :=
-ite (0 ≤ x) (rate*(Real.exp (-(↑rate*↑x)))) 0
+def exponentialPdfReal (r : ℝ) (hr : 0 < r) (x : ℝ): ℝ :=
+ite (0 ≤ x) (r*(Real.exp (-(↑r*↑x)))) 0
 
 /- The PDF on the extended real Numbers-/
 noncomputable
-def exponentialPdf (rate : ℝ) (ratePos : rate > 0) (x : ℝ) : ℝ≥0∞ :=
-  ENNReal.ofReal (exponentialPdfReal rate ratePos x)
+def exponentialPdf (r : ℝ) (hr : 0 < r) (x : ℝ) : ℝ≥0∞ :=
+  ENNReal.ofReal (exponentialPdfReal r hr x)
 
-lemma antiDeriv_expDeriv_pos' {rate : ℝ} (ratePos : 0 < rate)  : ∀ x ∈ (Set.Ici 0),
-    HasDerivAt (fun a => -1/(↑rate) * (Real.exp (-(↑rate * a)))) (Real.exp (-(↑rate * x))) x := by
-  intro x _; convert (((hasDerivAt_id x).const_mul (-↑rate)).exp.const_mul (-1/(↑ rate))) using 1;
+lemma antiDeriv_expDeriv_pos' {r : ℝ} (hr : 0 < r)  : ∀ x ∈ (Set.Ici 0),
+    HasDerivAt (fun a => -1/(↑r) * (Real.exp (-(↑r * a)))) (Real.exp (-(↑r * x))) x := by
+  intro x _; convert (((hasDerivAt_id x).const_mul (-↑r)).exp.const_mul (-1/(↑ r))) using 1;
   · simp only [id_eq, neg_mul];
   · simp only [id_eq, neg_mul, mul_one, mul_neg]
-    rw[mul_comm (rexp _),<-neg_mul (-1/rate),<- neg_div, <-mul_assoc]; simp only [neg_neg,
-      one_div, ne_eq]; rw[inv_mul_cancel ?_]; ring; exact ne_of_gt ratePos
+    rw[mul_comm (rexp _),<-neg_mul (-1/r),<- neg_div, <-mul_assoc]; simp only [neg_neg,
+      one_div, ne_eq]; rw[inv_mul_cancel ?_]; ring; exact ne_of_gt hr
 
 /-- the Lebesgue-Integral of the exponential PDF over nonpositive Reals equals 0-/
-lemma lintegral_nonpos {x rate : ℝ} (ratePos: 0 < rate) (xNonpos: x ≤ 0) :
-    ∫⁻ (y : ℝ) in Set.Iio x, (exponentialPdf rate ratePos y) = ENNReal.ofReal 0 := by
+lemma lintegral_nonpos {x r : ℝ} (hr: 0 < r) (hx: x ≤ 0) :
+    ∫⁻ (y : ℝ) in Set.Iio x, (exponentialPdf r hr y) = ENNReal.ofReal 0 := by
   unfold exponentialPdf exponentialPdfReal;
   rw [set_lintegral_congr_fun (g:=(fun _ => 0)) measurableSet_Iio];
   · rw [@lintegral_zero]; exact ENNReal.ofReal_zero.symm
@@ -105,37 +105,39 @@ lemma lintegral_nonpos {x rate : ℝ} (ratePos: 0 < rate) (xNonpos: x ≤ 0) :
 
 
 /-- The exponential pdf is measurable. -/
-lemma measurable_exponentialPdfReal (rate : ℝ) (ratePos : rate > 0) :
-    Measurable (exponentialPdfReal rate ratePos) := by
+lemma measurable_exponentialPdfReal (r : ℝ) (hr : 0 < r) :
+    Measurable (exponentialPdfReal r hr) := by
   unfold exponentialPdfReal;
-  refine Measurable.ite ?hp ((measurable_id'.const_mul rate).neg.exp.const_mul rate) ?hg;
+  refine Measurable.ite ?hp ((measurable_id'.const_mul r).neg.exp.const_mul r) ?hg;
   · refine MeasurableSet.of_compl ?hp.h;
     apply  IsOpen.measurableSet; rw [comp_of_ge]; exact isOpen_gt' 0
   · exact measurable_const
 
 
 /-- The exponential Pdf is strongly measurable. Needed to transfer lintegral to integral -/
-lemma stronglyMeasurable_exponentialPdfReal (rate : ℝ) (ratePos : rate > 0) :
-    StronglyMeasurable (exponentialPdfReal rate ratePos) :=
-  (measurable_exponentialPdfReal rate ratePos).stronglyMeasurable
+lemma stronglyMeasurable_exponentialPdfReal (r : ℝ) (hr :0 < r) :
+    StronglyMeasurable (exponentialPdfReal r hr) :=
+  (measurable_exponentialPdfReal r hr).stronglyMeasurable
 
 /-- the exponential Pdf is positive for all positive reals-/
-lemma exponentialPdfReal_pos (xPos : 0 < x) : exponentialPdfReal rate ratePos x > 0 := by
+lemma exponentialPdfReal_pos {x r : ℝ} {hr : 0 < r} (hx : 0 < x) :
+   0 < exponentialPdfReal r hr x := by
   unfold exponentialPdfReal
   conv =>
-    lhs
-    rw[if_pos (le_of_lt xPos)]
-  exact mul_pos ratePos (Real.exp_pos _)
+    rhs
+    rw[if_pos (le_of_lt hx)]
+  exact mul_pos hr (Real.exp_pos _)
 
 /-- The exponential Pdf is nonnegative-/
-lemma exponentialPdfReal_nonneg :∀ x : ℝ, exponentialPdfReal rate ratePos x ≥ 0 := by
+lemma exponentialPdfReal_nonneg {r : ℝ} {hr : 0 < r} :
+    ∀ x : ℝ, exponentialPdfReal r hr x ≥ 0 := by
   unfold exponentialPdfReal
   intro x;
   by_cases x ≥  0
   · conv =>
       lhs
       rw[if_pos h]
-    exact mul_nonneg (le_of_lt ratePos) (le_of_lt (Real.exp_pos _))
+    exact mul_nonneg (le_of_lt hr) (le_of_lt (Real.exp_pos _))
   · conv  =>
       lhs
       rw[if_neg h]
@@ -146,87 +148,87 @@ lemma exp_neg_integrableOn_Ioc {b x : ℝ} (hb : 0 < b) :
   simp only [neg_mul_eq_neg_mul]
   apply IntegrableOn.mono_set (t:=Set.Ioi 0) (exp_neg_integrableOn_Ioi _ hb) Set.Ioc_subset_Ioi_self
 
-lemma if_eval_pos : ∀ᵐ  x : ℝ ∂ volume , (x ∈ {x|x < 0} →
-    ENNReal.ofReal (if ((x : ℝ) ≥  0) then ( (rate * rexp (-(↑rate * x)))) else 0 ) = 0 ):= by
+lemma if_eval_pos {r : ℝ} : ∀ᵐ  x : ℝ ∂ volume , (x ∈ {x|x < 0} →
+    ENNReal.ofReal (if ((x : ℝ) ≥  0) then ( (r * rexp (-(↑r * x)))) else 0 ) = 0 ):= by
   apply ae_of_all
   intro x hx; split_ifs with h; simp only [ge_iff_le] at h
   · contrapose h; push_neg; exact hx
   · exact ENNReal.ofReal_zero
 
-lemma if_eval_neg :  ∀ᵐ  x : ℝ ∂ volume , (x ∈ {x|x ≥ 0} →
-    ENNReal.ofReal (ite ((x : ℝ) ≥  0) (rate * rexp (-(↑rate * x))) 0 ) =
-    ENNReal.ofReal (rate * rexp (-(↑rate * x)))):= by
+lemma if_eval_neg {r : ℝ} :  ∀ᵐ  x : ℝ ∂ volume , (x ∈ {x|x ≥ 0} →
+    ENNReal.ofReal (ite ((x : ℝ) ≥  0) (r * rexp (-(↑r * x))) 0 ) =
+    ENNReal.ofReal (r * rexp (-(↑r * x)))):= by
   apply ae_of_all
   intro x hx; split_ifs with h; simp only [ge_iff_le] at h
   · rfl
   · contrapose h; simp only [ge_iff_le, not_le, not_lt]; exact hx
 
-lemma antiDerivTendsZero {rate : ℝ} (ratePos : 0 < rate) :
-    Filter.Tendsto (fun x => -1/(rate) * (Real.exp (-(rate * x)))) Filter.atTop (nhds 0) := by
+lemma antiDerivTendsZero {r : ℝ} (hr : 0 < r) :
+    Filter.Tendsto (fun x => -1/(r) * (Real.exp (-(r * x)))) Filter.atTop (nhds 0) := by
   rw [@Metric.tendsto_atTop]; intro ε εpos;
-  by_cases ε * rate < 1
-  · use (2*(-(rate)⁻¹*(Real.log (ε * rate)))); intro n hn
+  by_cases ε * r < 1
+  · use (2*(-(r)⁻¹*(Real.log (ε * r)))); intro n hn
     simp only [dist_zero_right, norm_mul, norm_div, norm_neg, norm_one, Real.norm_eq_abs, abs_eq,
     Real.abs_exp, one_div, ne_eq, NNReal.coe_eq_zero];
-    apply lt_of_mul_lt_mul_left _ (le_of_lt ratePos);
-    rw[<-mul_assoc, abs_eq_self.2 (le_of_lt ratePos) , mul_inv_cancel (by linarith), one_mul,
-      <-Real.lt_log_iff_exp_lt (mul_pos ratePos εpos), neg_lt];
-    have invPos: (0 : ℝ) < (↑rate)⁻¹  := by apply inv_pos.2 ratePos
-    apply lt_of_mul_lt_mul_left (b:=-Real.log (↑rate * ε)) _ (le_of_lt invPos);
+    apply lt_of_mul_lt_mul_left _ (le_of_lt hr);
+    rw[<-mul_assoc, abs_eq_self.2 (le_of_lt hr) , mul_inv_cancel (by linarith), one_mul,
+      <-Real.lt_log_iff_exp_lt (mul_pos hr εpos), neg_lt];
+    have invPos: (0 : ℝ) < (↑r)⁻¹  := by apply inv_pos.2 hr
+    apply lt_of_mul_lt_mul_left (b:=-Real.log (↑r * ε)) _ (le_of_lt invPos);
     simp only [NNReal.val_eq_coe, NNReal.coe_inv, mul_neg, NNReal.coe_eq_zero]
     rw[<-mul_assoc, inv_mul_cancel (by linarith), one_mul]
     apply lt_of_le_of_lt' hn; rw[mul_comm ε, neg_mul];
-    nth_rw 1 [<-one_mul (-((↑rate)⁻¹ * Real.log (↑rate * ε)))]
+    nth_rw 1 [<-one_mul (-((↑r)⁻¹ * Real.log (↑r * ε)))]
     apply mul_lt_mul_of_pos_right; norm_num; simp only [Left.neg_pos_iff];
     apply mul_neg_of_pos_of_neg invPos;
-    apply Real.log_neg; exact mul_pos ratePos εpos; linarith
+    apply Real.log_neg; exact mul_pos hr εpos; linarith
   · push_neg at h
     use 1; intro n hn; simp only [dist_zero_right, norm_mul, norm_div, norm_neg, norm_one,
-      Real.norm_eq_abs, one_div, Real.abs_exp, abs_eq_self.2 (le_of_lt ratePos)];
-    apply lt_of_mul_lt_mul_left _ (le_of_lt ratePos);
-    rw[<-mul_assoc, mul_inv_cancel, one_mul, mul_comm rate ε];
+      Real.norm_eq_abs, one_div, Real.abs_exp, abs_eq_self.2 (le_of_lt hr)];
+    apply lt_of_mul_lt_mul_left _ (le_of_lt hr);
+    rw[<-mul_assoc, mul_inv_cancel, one_mul, mul_comm r ε];
     apply lt_of_le_of_lt' h; refine Real.exp_lt_one_iff.mpr ?_; refine neg_lt_zero.mpr ?_;
-    exact lt_mul_of_lt_of_one_le_of_nonneg ratePos hn (le_of_lt ratePos)
+    exact lt_mul_of_lt_of_one_le_of_nonneg hr hn (le_of_lt hr)
     linarith
 
 open Measure
 
-lemma lintegral_exponentialPdfReal_eq_one (rate : ℝ) (ratePos : 0 < rate) :
-    ∫⁻ (x : ℝ), exponentialPdf rate ratePos x = 1 := by
-  rw [lintegral_split (exponentialPdf rate ratePos) 0, ←ENNReal.toReal_eq_one_iff];
-  have leftSide: ∫⁻ (x : ℝ) in {x | x < 0}, exponentialPdf rate ratePos x = 0 := by
+lemma lintegral_exponentialPdfReal_eq_one (r : ℝ) (hr : 0 < r) :
+    ∫⁻ (x : ℝ), exponentialPdf r hr x = 1 := by
+  rw [lintegral_split (exponentialPdf r hr) 0, ←ENNReal.toReal_eq_one_iff];
+  have leftSide: ∫⁻ (x : ℝ) in {x | x < 0}, exponentialPdf r hr x = 0 := by
     unfold exponentialPdf exponentialPdfReal;
     rw [set_lintegral_congr_fun ( IsOpen.measurableSet (isOpen_gt' 0)) if_eval_pos];
     exact lintegral_zero
-  have rightSide: ∫⁻ (x : ℝ) in {x | x ≥ 0}, exponentialPdf rate ratePos x
-    = ∫⁻ (x : ℝ) in {x | x ≥ 0}, ENNReal.ofReal (rate * rexp (-(rate * x))) := by
+  have rightSide: ∫⁻ (x : ℝ) in {x | x ≥ 0}, exponentialPdf r hr x
+    = ∫⁻ (x : ℝ) in {x | x ≥ 0}, ENNReal.ofReal (r * rexp (-(r * x))) := by
       unfold exponentialPdf exponentialPdfReal; apply set_lintegral_congr_fun _ _
       · refine MeasurableSet.of_compl ?h; rw [comp_of_ge];
         refine IsOpen.measurableSet ?h.h; exact isOpen_gt' 0;
       · exact if_eval_neg
   rw [leftSide]; simp only [ge_iff_le, add_zero];
   rw [rightSide, ENNReal.toReal_eq_one_iff, ←ENNReal.toReal_eq_one_iff]
-  have hf : 0 ≤ᵐ[(restrictₗ {x:ℝ | x ≥ 0}) ℙ] (fun x => rate * (rexp (-(rate * x)))) := by
+  have hf : 0 ≤ᵐ[(restrictₗ {x:ℝ | x ≥ 0}) ℙ] (fun x => r * (rexp (-(r * x)))) := by
     apply ae_of_all _ ?a;
     simp only [Pi.zero_apply, gt_iff_lt, NNReal.coe_pos]; intro a; apply le_of_lt;
-    rw[<-zero_mul 0]; apply mul_lt_mul'' ratePos (Real.exp_pos (-(rate * a))); trivial; trivial
+    rw[<-zero_mul 0]; apply mul_lt_mul'' hr (Real.exp_pos (-(r * a))); trivial; trivial
   rw [← @restrictₗ_apply, ← integral_eq_lintegral_of_nonneg_ae hf ?_]
   · simp only [ge_iff_le, restrictₗ_apply]; rw [@integral_mul_left, Set.Ici_def];
     rw [@integral_Ici_eq_integral_Ioi]
-    have IntegrOn : IntegrableOn (fun x => rexp (-(rate * x))) (Set.Ioi 0) := by
-      simp only [<-neg_mul]; apply exp_neg_integrableOn_Ioi 0 ratePos
-    rw [integral_Ioi_of_hasDerivAt_of_tendsto' (antiDeriv_expDeriv_pos' ratePos)
-      IntegrOn (antiDerivTendsZero ratePos)]
+    have IntegrOn : IntegrableOn (fun x => rexp (-(r * x))) (Set.Ioi 0) := by
+      simp only [<-neg_mul]; apply exp_neg_integrableOn_Ioi 0 hr
+    rw [integral_Ioi_of_hasDerivAt_of_tendsto' (antiDeriv_expDeriv_pos' hr)
+      IntegrOn (antiDerivTendsZero hr)]
     simp only [mul_zero, neg_zero, Real.exp_zero, mul_one, _root_.zero_sub]; rw [neg_div];
     simp only [one_div,neg_neg, ne_eq, NNReal.coe_eq_zero]; rw[mul_inv_cancel]; linarith
   · apply ((measurable_id'.const_mul
-      rate).neg.exp.const_mul rate).stronglyMeasurable.aestronglyMeasurable
+      r).neg.exp.const_mul r).stronglyMeasurable.aestronglyMeasurable
 
 /-- The Pdf of the exponential Distribution integrates to 1-/
 @[simp]
-lemma lintegral_exponentialPdf_eq_one (rate : ℝ) (ratePos : (0 : ℝ) < rate) :
-    ∫⁻ x, exponentialPdf rate ratePos x = 1 :=
-  lintegral_exponentialPdfReal_eq_one rate ratePos
+lemma lintegral_exponentialPdf_eq_one (r : ℝ) (hr : 0 < r) :
+    ∫⁻ x, exponentialPdf r hr x = 1 :=
+  lintegral_exponentialPdfReal_eq_one r hr
 
 end ExponentialPdf
 
@@ -235,21 +237,21 @@ open MeasureTheory
 /- Measure defined by the exponential Distribution -/
 
 noncomputable
-def expMeasure (rate : ℝ) (ratePos : rate > 0) : Measure ℝ :=
-  volume.withDensity (exponentialPdf rate ratePos)
+def expMeasure (r : ℝ) (hr : 0 < r) : Measure ℝ :=
+  volume.withDensity (exponentialPdf r hr)
 
-instance instIsProbabilityMeasureExponential (rate : ℝ) (ratePos: 0 < rate) :
-    IsProbabilityMeasure (expMeasure rate ratePos) where
+instance instIsProbabilityMeasureExponential (r : ℝ) (hr: 0 < r) :
+    IsProbabilityMeasure (expMeasure r hr) where
   measure_univ := by unfold expMeasure; simp only [MeasurableSet.univ, withDensity_apply,
     Measure.restrict_univ, lintegral_exponentialPdf_eq_one]
 
 /-- CDF of the exponential Distribution -/
 noncomputable
-def exponentialCdfReal (rate : ℝ) (ratePos : 0 < rate) : StieltjesFunction :=
-    ProbabilityTheory.cdf (expMeasure rate ratePos)
+def exponentialCdfReal (r : ℝ) (hr : 0 < r) : StieltjesFunction :=
+    ProbabilityTheory.cdf (expMeasure r hr)
 
-lemma ExpCDF_eq_integral (rate : ℝ) (ratePos: 0 < rate) : ((exponentialCdfReal rate ratePos))
-    = fun x => ∫ x in (Set.Iic x), exponentialPdfReal rate ratePos x := by
+lemma ExpCDF_eq_integral (r : ℝ) (hr: 0 < r) : ((exponentialCdfReal r hr))
+    = fun x => ∫ x in (Set.Iic x), exponentialPdfReal r hr x := by
   ext x;
   unfold exponentialCdfReal; rw [ProbabilityTheory.cdf_eq_toReal];
   unfold expMeasure; simp only [measurableSet_Iic, withDensity_apply];
@@ -257,10 +259,10 @@ lemma ExpCDF_eq_integral (rate : ℝ) (ratePos: 0 < rate) : ((exponentialCdfReal
   · apply ae_of_all _ ?a; simp only [Pi.zero_apply]; intro a; exact exponentialPdfReal_nonneg a
   · refine AEStronglyMeasurable.restrict ?hfm.hfm;
     refine Measurable.aestronglyMeasurable ?hfm.hfm.hf;
-    exact measurable_exponentialPdfReal rate ratePos
+    exact measurable_exponentialPdfReal r hr
 
-lemma ExpCDF_eq_lintegral (rate : ℝ) (ratePos: 0 < rate) : ((exponentialCdfReal rate ratePos)) =
-    fun x => ENNReal.toReal (∫⁻ x in (Set.Iic x), (exponentialPdf rate ratePos x)) := by
+lemma ExpCDF_eq_lintegral (r : ℝ) (hr: 0 < r) : ((exponentialCdfReal r hr)) =
+    fun x => ENNReal.toReal (∫⁻ x in (Set.Iic x), (exponentialPdf r hr x)) := by
   ext x;
   unfold exponentialPdf exponentialCdfReal; rw [ProbabilityTheory.cdf_eq_toReal];
   unfold expMeasure; simp only [measurableSet_Iic, withDensity_apply];
@@ -268,16 +270,16 @@ lemma ExpCDF_eq_lintegral (rate : ℝ) (ratePos: 0 < rate) : ((exponentialCdfRea
 
 open Topology
 
-lemma antiDeriv_expDeriv_pos {rate : ℝ} : ∀ x ∈ (Set.Ici 0),
-    HasDerivAt (fun a => -1* (Real.exp (-(↑rate * a)))) (rate * Real.exp (-(↑rate * x))) x := by
-  intro x _; convert (((hasDerivAt_id x).const_mul (-↑rate)).exp.const_mul (-1)) using 1;
+lemma antiDeriv_expDeriv_pos {r : ℝ} : ∀ x ∈ (Set.Ici 0),
+    HasDerivAt (fun a => -1* (Real.exp (-(↑r * a)))) (r * Real.exp (-(↑r * x))) x := by
+  intro x _; convert (((hasDerivAt_id x).const_mul (-↑r)).exp.const_mul (-1)) using 1;
   · simp only [id_eq, neg_mul];
   simp only [id_eq, neg_mul, mul_one, mul_neg, one_mul, neg_neg, mul_comm]
 
 
-lemma lint_eq_antiDeriv (rate : ℝ) (ratePos: 0 < rate) : ∀ x:ℝ,
-    (∫⁻ y in (Set.Iic x),  (exponentialPdf rate ratePos y) =
-    ENNReal.ofReal ( ite (0 ≤ x) (1 - Real.exp (-(rate * x))) 0)) := by
+lemma lint_eq_antiDeriv (r : ℝ) (hr: 0 < r) : ∀ x:ℝ,
+    (∫⁻ y in (Set.Iic x),  (exponentialPdf r hr y) =
+    ENNReal.ofReal ( ite (0 ≤ x) (1 - Real.exp (-(r * x))) 0)) := by
   intro x'; split_ifs with h
   case neg; unfold exponentialPdf exponentialPdfReal;
   rw [set_lintegral_congr_fun (g:=(fun _ => 0)), @lintegral_zero]; exact ENNReal.ofReal_zero.symm
@@ -287,47 +289,47 @@ lemma lint_eq_antiDeriv (rate : ℝ) (ratePos: 0 < rate) : ∀ x:ℝ,
   rw [if_neg]; linarith
   rw [lint_split_bounded _ h, lintegral_nonpos _ (le_refl 0), ENNReal.ofReal_zero, zero_add];
   unfold exponentialPdf exponentialPdfReal;
-  rw[set_lintegral_congr_fun (g:=(fun x => ENNReal.ofReal (rate * rexp (-(rate * x)))))
+  rw[set_lintegral_congr_fun (g:=(fun x => ENNReal.ofReal (r * rexp (-(r * x)))))
     measurableSet_Icc ?ifpos]
   case ifpos; refine ae_of_all ℙ ?ifpos.a;
   simp only [ge_iff_le, not_le, gt_iff_lt, Set.mem_Icc, and_imp]; intro a h0a _; rw [if_pos h0a]
   rw [<-ENNReal.toReal_eq_toReal,  <-integral_eq_lintegral_of_nonneg_ae];
   rw [@integral_Icc_eq_integral_Ioc, <-(Set.uIoc_of_le h)]
-  have : (∫ a in Set.uIoc 0 x', rate * rexp (-(rate * a))) =
-    (∫ a in (0)..x', rate * rexp (-(rate * a))) := by
+  have : (∫ a in Set.uIoc 0 x', r * rexp (-(r * a))) =
+    (∫ a in (0)..x', r * rexp (-(r * a))) := by
       rw [intervalIntegral.intervalIntegral_eq_integral_uIoc, smul_eq_mul, if_pos h, one_mul]
   rw[this]
   rw [intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le h
-    (f:= fun a => -1* (rexp (-(↑rate * a)))) _ _]
+    (f:= fun a => -1* (rexp (-(↑r * a)))) _ _]
   simp only [neg_mul, one_mul, mul_zero, neg_zero, Real.exp_zero, mul_one, sub_neg_eq_add,
     sub_nonneg, Real.exp_le_one_iff, Left.neg_nonpos_iff, gt_iff_lt]
   rw [ENNReal.toReal_ofReal_eq_iff.2 _]; linarith
   simp only [sub_nonneg, Real.exp_le_one_iff, Left.neg_nonpos_iff, gt_iff_lt];
-  exact (zero_le_mul_left ratePos).mpr h
+  exact (zero_le_mul_left hr).mpr h
   rw [@intervalIntegrable_iff, (Set.uIoc_of_le h), ← @integrableOn_Icc_iff_integrableOn_Ioc];
   rw [@integrableOn_Icc_iff_integrableOn_Ioc]; apply Integrable.const_mul;
-  exact exp_neg_integrableOn_Ioc ratePos; refine Continuous.continuousOn ?h;
-  have : Continuous (fun a => rexp (-(rate * a))) := by
-    simp only [<-neg_mul]; refine Continuous.exp ?inter; exact continuous_mul_left (-rate)
+  exact exp_neg_integrableOn_Ioc hr; refine Continuous.continuousOn ?h;
+  have : Continuous (fun a => rexp (-(r * a))) := by
+    simp only [<-neg_mul]; refine Continuous.exp ?inter; exact continuous_mul_left (-r)
   refine Continuous.comp' ?hg this; exact continuous_mul_left (-1);
   intro x hx; refine HasDerivAt.hasDerivWithinAt ?hx; apply antiDeriv_expDeriv_pos
   simp only [Set.mem_Ici]; simp only [gt_iff_lt, not_lt, ge_iff_le, Set.mem_Ioo] at hx; linarith
   apply Filter.eventually_of_forall
-  intro x; simp only [Pi.zero_apply, gt_iff_lt]; exact le_of_lt (mul_pos ratePos (Real.exp_pos _))
+  intro x; simp only [Pi.zero_apply, gt_iff_lt]; exact le_of_lt (mul_pos hr (Real.exp_pos _))
   refine Integrable.aestronglyMeasurable ?_; apply Integrable.const_mul; rw [← @integrableOn_def];
-  rw [@integrableOn_Icc_iff_integrableOn_Ioc]; exact exp_neg_integrableOn_Ioc ratePos
+  rw [@integrableOn_Icc_iff_integrableOn_Ioc]; exact exp_neg_integrableOn_Ioc hr
   refine LT.lt.ne ?_; refine IntegrableOn.set_lintegral_lt_top ?_;
   rw [@integrableOn_Icc_iff_integrableOn_Ioc];
-  apply Integrable.const_mul (exp_neg_integrableOn_Ioc ratePos)
+  apply Integrable.const_mul (exp_neg_integrableOn_Ioc hr)
   exact ENNReal.ofReal_ne_top
 
 
-/-- The Definition of the CDF equals the known Formular ``1 - exp (-(rate * x))``-/
+/-- The Definition of the CDF equals the known Formular ``1 - exp (-(r * x))``-/
 
-lemma ExpCDF_eq : (exponentialCdfReal rate ratePos) =
-    fun x => ite (0 ≤ x) (1 - Real.exp (-(rate * x))) 0 := by
+lemma ExpCDF_eq {r : ℝ} {hr : 0 < r} : (exponentialCdfReal r hr) =
+    fun x => ite (0 ≤ x) (1 - Real.exp (-(r * x))) 0 := by
   rw[ExpCDF_eq_lintegral]; ext x; rw [lint_eq_antiDeriv]; rw[@ENNReal.toReal_ofReal_eq_iff]
   split_ifs with h
   · simp only [sub_nonneg, Real.exp_le_one_iff, Left.neg_nonpos_iff, gt_iff_lt]
-    exact (mul_nonneg ratePos.le h)
+    exact (mul_nonneg hr.le h)
   · linarith
