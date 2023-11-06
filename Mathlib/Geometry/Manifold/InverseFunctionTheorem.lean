@@ -167,10 +167,11 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
   monotonicity := fun {f} _ _ _ hst hf ↦ hf.mono hst
   inverse := by
     intro f g s t x f' hs hx hf hf' hinv
+    -- FIXME: is there a better way than these two lines?
     unfold contDiffPregroupoidBasic
     simp only
-    -- Since f is continuously differentiable on s, there's a neighbourhood U of x s.t.
-    -- df_x' is an isomorphism for all `x' ∈ U`.
+    -- Since f is continuously differentiable on s, there's a neighbourhood `U` of `x` s.t.
+    -- `df_x'` is an isomorphism for all `x' ∈ U`.
     rcases mem_nhds_iff.mp f'.nhds with ⟨t', ht, htopen, hft⟩
     let U := (fun x ↦ fderiv ℝ f x) ⁻¹' t' ∩ s
     have : IsOpen U := by
@@ -179,31 +180,25 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
       refine this.isOpen_preimage (t := t') hs ?_ htopen
       sorry -- xxx: finish arguing why this is ⊆ s
     -- each fderiv ℝ f x' for x' ∈ U is an isomorphism
-    --use U
     have : MapsTo f s t := sorry -- assume; check if really needed!
     have hm : MapsTo g t s := sorry
-    have scifi : f '' U ⊆ t := sorry -- f '' U ⊆ f '' s ⊆ t: first I just showed
+    have scifi : f '' U ⊆ t :=
+      Subset.trans (image_subset _ (inter_subset_right _ _)) (mapsTo'.mp this)
     have scifi2 : IsOpen (f '' U) := sorry -- need to argue harder: f is a local homeo or so
     have hinv' : InvOn g f U (f '' U) := hinv.mono (inter_subset_right _ _) scifi
     have : ∃ V ⊆ t, IsOpen V ∧ ContDiffOn ℝ n g V := by
-      use f '' U
-      refine ⟨scifi, scifi2, ?_⟩
-      -- run the argument below with each f' := fderiv ℝ f y
-      -- unclear: how to state in Lean "df_x" is an iso
+      refine ⟨f ''U , scifi, scifi2, ?_⟩
       suffices ∀ y : f '' U, ContDiffAt ℝ n g y by
         exact fun y hy ↦ (this ⟨y, hy⟩).contDiffWithinAt
-      intro ⟨y, hy⟩
-      let x' := g y
-      have eq : g y = x' := rfl
-      have : f x' = y := hinv.2 (scifi hy)
-      rcases hy with ⟨x'', hx''U, hx''y⟩
-      have : x' ∈ U := by rw [← eq, ← hx''y, hinv.1 (mem_of_mem_inter_right hx''U)]; exact hx''U
-      let f'' := fderiv ℝ f x'
-      have : HasFDerivAt f f'' x'' := sorry -- standard, skipped for now
-      -- last: upgrade f'' to an isomorphism, then can apply r
-      -- let h := hf.contDiffAt (hs.mem_nhds (mem_of_mem_inter_right hx''U))
-      -- exact contDiffPregroupoindIsIFT_aux h this hinv hm hn
-      sorry
+      -- Show g is continuously differentiable at each y ∈ f(U).
+      intro ⟨y, x'', hx''U, hx''y⟩
+      have : x'' ∈ (fun x ↦ fderiv ℝ f x) ⁻¹' t' := mem_of_mem_inter_left hx''U
+      -- Last step: upgrade `fderiv ℝ f x'` to an isomorphism.
+      rcases ht this with ⟨f'', hf''eq⟩
+      have : HasFDerivAt f (fderiv ℝ f x'') x'' := sorry -- standard, skipped for now
+      have : HasFDerivAt f f''.toContinuousLinearMap x'' := sorry -- should follow from hf''eq
+      let h := hf.contDiffAt (hs.mem_nhds (mem_of_mem_inter_right hx''U))
+      exact hx''y ▸ (contDiffPregroupoindIsIFT_aux h this hinv hm hn)
     sorry -- TODO: adjust conclusion of statement!
 
 -- FIXME: show that the analytic pregroupoid is also IFT
