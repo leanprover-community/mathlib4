@@ -31,10 +31,19 @@ variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] --[
 
 /-- A pregroupoid which satisfies the necessary conditions for the implicit function theorem.
 
-Over the real or complex numbers, this includes the `C^n` and analytic pre-groupoids. -/
+Over the real or complex numbers, this includes the `C^n` and analytic pre-groupoids.
+
+There's a design choice when defining this: one can either
+  - assume that `P` contains only continuously differentiable functions on `s`
+  (making this a slightly stronger condition, excluding e.g. the category PDiff), or
+  - assume in the IFT hypothesis that `f` is cont. differentiable on some open set `s ∋ x`.
+  With this definition, even the trivial and the continuous pregroupoid (over ℝ or ℂ) is an
+  IFT groupoid, as the inverse `g` needs to satisfy fewer conditions.
+xxx: I have chosen X because Y.
+-/
 structure IFTPregroupoid (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] extends Pregroupoid E where
-  -- If `f ∈ P` defines a homeomorphism `s → t` with inverse `g`, then `g ∈ P` also.
-  -- TODO: extend docstring
+  -- If `f ∈ P` is differentiable at `x` with invertible derivative
+  -- defines a homeomorphism `s → t` with inverse `g`, then `g ∈ P` also.
   inverse : ∀ {f g s t x}, ∀ {f' : E ≃L[ℝ] E}, x ∈ s → IsOpen s → property f s →
     HasFDerivAt (𝕜 := ℝ) f f' x → InvOn g f s t → property g t
 
@@ -42,8 +51,32 @@ structure IFTPregroupoid (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] 
 def IFTPregroupoid.groupoid (PG : IFTPregroupoid E) : StructureGroupoid E :=
   (PG.toPregroupoid).groupoid
 
--- TODO: name and tag @simp
--- lemma IFTPregroupoid. {P : IFTPregroupoid E} : P.groupoid = P.toPregroupoid.groupoid := rfl
+@[simp]
+lemma IFTPregroupoid.groupoid_coe {P : IFTPregroupoid E} : P.groupoid = P.toPregroupoid.groupoid :=
+  rfl
+
+/-- Categorical statement of the Inverse Function Theorem on a Banach space.
+  Suppose `f` has invertible differential at `x` and lies in an IFTPregroupoid `P` on `s ∋ x`.
+  Then `f` is a local structomorphism at `x`.
+
+  For `P=contDiffPregroupoid n`, this recovers the standard statement. -/
+lemma IFT_categorical [CompleteSpace E] {f : E → E} {s : Set E} {x : E}
+    (hf : ContDiffOn ℝ n f s) {f' : E ≃L[ℝ] E} (hf' : HasFDerivAt (𝕜 := ℝ) f f' x) (hs : IsOpen s) (hx : x ∈ s) (hn : 1 ≤ n)
+    {P : IFTPregroupoid E} (hfP : P.property f s) : P.groupoid.IsLocalStructomorphWithinAt f s x := by
+  set G := P.groupoid
+  -- Apply the local lemma to find a local inverse `g` of `f` on `U ⊆ s`.
+  -- xxx: do we actually get the inclusion; do we care?
+  let f_loc := (hf.contDiffAt (hs.mem_nhds hx)).toLocalHomeomorph f hf' hn
+  -- Since `P` is an IFTPregroupoid, `P.property g t'` for `t' := f_loc.target ⊆ t` open.
+  have hx : x ∈ f_loc.source := (hf.contDiffAt (hs.mem_nhds hx)).mem_toLocalHomeomorph_source  hf' hn
+  have hfP' : P.property f f_loc.source := sorry -- TODO: need some monotonicity?
+  let p := P.inverse hx f_loc.open_source hfP' hf' f_loc.invOn
+  -- Thus, f and g define a local homeomorphism.
+  have : P.groupoid.IsLocalStructomorphWithinAt f f_loc.source x := by
+    intro hx
+    refine ⟨f_loc, ?_, eqOn_refl f _, hx⟩
+    apply mem_groupoid_of_pregroupoid.mpr ⟨hfP', p⟩
+  sorry -- TODO: adapt conclusion of this theorem, the above is what we get
 
 /-- The pregroupoid of `C^n` functions on `E`. -/
 def contDiffPregroupoidBasic : Pregroupoid E := {
@@ -138,30 +171,6 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
 
 -- FIXME: show that the analytic pregroupoid is also IFT
 
-/-- Categorical statement of the Inverse Function Theorem, on a complete normed space.
-  Suppose f has invertible differential at `x` and lies in an IFTPregroupoid `P` on `s ∋ x`.
-  Then `f` is a local structomorphism at `x`.
-
-  For `P=contDiffPregroupoid n`, this recovers the standard statement.
--/
--- design question: should I include a differentiability hypothesis for f on s?
-lemma IFT_categorical [CompleteSpace E] {f : E → E} {s : Set E} {x : E}
-    (hf : ContDiffOn ℝ n f s) {f' : E ≃L[ℝ] E} (hf' : HasFDerivAt (𝕜 := ℝ) f f' x) (hs : IsOpen s) (hx : x ∈ s) (hn : 1 ≤ n)
-    {P : IFTPregroupoid E} (hfP : P.property f s) : P.groupoid.IsLocalStructomorphWithinAt f s x := by
-  set G := P.groupoid
-  -- Apply the local lemma to find a local inverse `g` of `f` on `U ⊆ s`.
-  -- xxx: do we actually get the inclusion; do we care?
-  let f_loc := (hf.contDiffAt (hs.mem_nhds hx)).toLocalHomeomorph f hf' hn
-  -- Since `P` is an IFTPregroupoid, `P.property g t'` for `t' := f_loc.target ⊆ t` open.
-  have hx : x ∈ f_loc.source := (hf.contDiffAt (hs.mem_nhds hx)).mem_toLocalHomeomorph_source  hf' hn
-  have hfP' : P.property f f_loc.source := sorry -- TODO: need some monotonicity?
-  let p := P.inverse hx f_loc.open_source hfP' hf' f_loc.invOn
-  -- Thus, f and g define a local homeomorphism.
-  have : P.groupoid.IsLocalStructomorphWithinAt f f_loc.source x := by
-    intro hx
-    refine ⟨f_loc, ?_, eqOn_refl f _, hx⟩
-    apply mem_groupoid_of_pregroupoid.mpr ⟨hfP', p⟩
-  sorry -- TODO: adapt conclusion of this theorem, the above is what we get
 end IFTBasic
 
 /-! General version of the IFT on manifolds. -/
