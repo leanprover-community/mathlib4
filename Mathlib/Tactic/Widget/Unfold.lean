@@ -20,6 +20,7 @@ def Lean.Expr.headName : Expr → Option Name
   | .app fn _ => fn.headName
   | _ => none
 
+/-- Return the link text and inserted text for the unfold widget. -/
 @[nolint unusedArguments]
 def insertUnfold (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
     (_ : SelectInsertParams) : MetaM (String × String × Option (String.Pos × String.Pos)) := do
