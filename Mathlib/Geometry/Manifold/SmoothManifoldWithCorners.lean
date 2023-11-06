@@ -595,7 +595,7 @@ theorem contDiffGroupoid_zero_eq : contDiffGroupoid 0 I = continuousGroupoid H :
   -- we have to check that every local homeomorphism belongs to `contDiffGroupoid 0 I`,
   -- by unfolding its definition
   change u ∈ contDiffGroupoid 0 I
-  rw [contDiffGroupoid, mem_groupoid_of_pregroupoid]
+  rw [contDiffGroupoid, mem_groupoid_of_pregroupoid, contDiffPregroupoid]
   simp only [contDiffOn_zero]
   constructor
   · refine' I.continuous.comp_continuousOn (u.continuousOn.comp I.continuousOn_symm _)
@@ -611,7 +611,7 @@ theorem ofSet_mem_contDiffGroupoid {s : Set H} (hs : IsOpen s) :
     PartialHomeomorph.ofSet s hs ∈ contDiffGroupoid n I := by
   rw [contDiffGroupoid, mem_groupoid_of_pregroupoid]
   suffices h : ContDiffOn 𝕜 n (I ∘ I.symm) (I.symm ⁻¹' s ∩ range I)
-  · simp [h]
+  · simp [h, contDiffPregroupoid]
   have : ContDiffOn 𝕜 n id (univ : Set E) := contDiff_id.contDiffOn
   exact this.congr_mono (fun x hx => I.right_inv hx.2) (subset_univ _)
 #align of_set_mem_cont_diff_groupoid ofSet_mem_contDiffGroupoid
@@ -634,7 +634,8 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
   cases' he with he he_symm
   cases' he' with he' he'_symm
   simp only at he he_symm he' he'_symm
-  constructor <;> simp only [PartialEquiv.prod_source, PartialHomeomorph.prod_toPartialEquiv]
+  constructor <;> simp only [PartialEquiv.prod_source, PartialHomeomorph.prod_toPartialEquiv,
+    contDiffPregroupoid]
   · have h3 := ContDiffOn.prod_map he he'
     rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
     rw [← (I.prod I').image_eq]
@@ -806,7 +807,7 @@ theorem mem_analyticGroupoid_of_boundaryless [CompleteSpace E] [I.Boundaryless]
   · intro he
     apply And.intro
     all_goals apply mem_groupoid_of_pregroupoid.mpr; simp only [I.image_eq, I.range_eq_univ,
-      interior_univ, subset_univ, and_true] at he ⊢
+      interior_univ, subset_univ, and_true, contDiffPregroupoid] at he ⊢
     · exact ⟨he.left.contDiffOn, he.right.contDiffOn⟩
     · exact he
 
