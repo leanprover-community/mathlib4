@@ -79,7 +79,7 @@ theorem ofFin_val {n : ℕ} (i : Fin <| 2 ^ n) : (ofFin i).toNat = i.val := by
 #align bitvec.of_fin_val Std.BitVec.ofFin_val
 
 theorem addLsb_eq_twice_add_one {x b} : addLsb x b = 2 * x + cond b 1 0 := by
-  simp [addLsb, two_mul]
+  simp [addLsb, two_mul]; cases b <;> rfl
 #align bitvec.add_lsb_eq_twice_add_one Std.BitVec.addLsb_eq_twice_add_one
 
 @[simp] lemma bodd_bit {b x} : bodd (bit b x) = b := by
