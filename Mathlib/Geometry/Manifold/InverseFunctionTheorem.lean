@@ -111,4 +111,37 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
       sorry
     sorry -- TODO: adjust conclusion of statement!
 
+-- FIXME: show the same for the analytic pregroupoid
+
+/-- Categorical statement of the Inverse Function Theorem, on a complete normed space.
+  Suppose f has invertible differential at `x` and lies in an IFTPregroupoid `P` on `s ∋ x`.
+  Then `f` is a local structomorphism at `x`.
+
+  For `P=contDiffPregroupoid n`, this recovers the standard statement.
+-/
+-- design decision: do not include a differentiability hypothesis for now (hf : ContDiffOn ℝ n f s)
+lemma IFT_categorical [CompleteSpace E] {f : E → E} {s : Set E} {x : E} (hx : x ∈ s)
+    {f' : E ≃L[ℝ] E} (hf' : HasFDerivAt (𝕜 := ℝ) f f' x)
+    {P : IFTPregroupoid E} (hf : P.property f s) : P.groupoid.IsLocalStructomorphWithinAt f s x := by
+  set G := P.groupoid
+  -- apply local lemma: ∃ g, which is a local inverse of f on U ⊆ s
+  -- P is an IFTPregroupoid: ∃ t' ⊆ t open such that P.property g t'
+  -- contPregroupoid ≤ P (assume this!), hence `g` is continuous on t'
+  -- thus, f and g define a local homeo
+  -- now, check all conditions
+  sorry
 end IFTBasic
+
+/-! General version of the IFT on manifolds. -/
+section IFTFull
+-- define IFTPregroupoids on H, via (E, I)
+-- define contDiffPregroupoid: copy-paste from standard def (later: deduplicate)
+
+-- theorem: contDiffPregroupoid is an IFT pregroupoid
+-- local inverse of IFT (mostly already done)
+
+-- categorical IFT: using LiftProp and G.IsLocalStructomorphWithinAt
+
+-- finally: (try to) prove that LiftProp (G.isLocalStructomorphWithinAt) iff f and f.symm ∈ P
+-- this would generalise isLocalStructomorphOn_contDiffGroupoid_iff
+section IFTFull
