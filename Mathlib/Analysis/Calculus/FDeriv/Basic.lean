@@ -720,9 +720,9 @@ theorem fderivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : fderivWithin 𝕜 f s x = 
   rw [← fderivWithin_univ, ← univ_inter s, fderivWithin_inter h]
 #align fderiv_within_of_mem_nhds fderivWithin_of_mem_nhds
 
-theorem fderivWithin_of_open (hs : IsOpen s) (hx : x ∈ s) : fderivWithin 𝕜 f s x = fderiv 𝕜 f x :=
+theorem fderivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) : fderivWithin 𝕜 f s x = fderiv 𝕜 f x :=
   fderivWithin_of_mem_nhds (hs.mem_nhds hx)
-#align fderiv_within_of_open fderivWithin_of_open
+#align fderiv_within_of_open fderivWithin_of_isOpen
 
 theorem fderivWithin_eq_fderiv (hs : UniqueDiffWithinAt 𝕜 s x) (h : DifferentiableAt 𝕜 f x) :
     fderivWithin 𝕜 f s x = fderiv 𝕜 f x := by
