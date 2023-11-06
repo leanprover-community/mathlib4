@@ -156,12 +156,14 @@ noncomputable def Structomorph.of_localStructomorphs {f : H → H}
   }
 end LocalDiffeos
 
--- Work the on the concept of pregroupoids: hopefully, this is the right framework to *state*
--- the Inverse Function theorem in general.
+/-! Work the on the concept of pregroupoids: this is the proper categorical framework
+to state and prove the inverse function theorem in general,
+unifying e.g. the smooth and analytic categories. -/
 section Pregroupoids
 variable (H : Type*) [TopologicalSpace H]
--- warm-up: the pregroupoid of continuous functions
--- I suspect the mathlib definition is misnamed... let me define my own, for practice
+/-- The pre-groupoid of continuous functions on H. -/
+-- NB: mathlib has `continuousPregroupoid`, but that doesn't actually require continuity;
+-- I suspect it's just misnamed.
 def contPregroupoid : Pregroupoid H where
   property := fun f s => ContinuousOn f s
   comp := fun hf hg _ _ _ ↦ hg.comp' hf
@@ -179,6 +181,16 @@ Then, `g` is continuous on `t` (i.e. property `g t`). -/
 structure GoodPregroupoid (H : Type*) [TopologicalSpace H] extends Pregroupoid H where
   inverse : ∀ {f g s t}, property f s → InvOn g f s t → property g t
 
+-- The continuous pregroupoid is not good: not in general, not even if `H` is compact and Hausdorff.
+-- Need to show that f continuous on s (and g being the point-wise inverse) implies g cont on t;
+-- this is simply false: a bijective function is not bi-continuous in general.
+-- A *variant* assuming only compact s were true. Not interesting to use.
+-- XXX: not enough, a priori `s` is any set!
+
+-- This is **NOT** good enough, though: f being differentiable and g a local inverse
+-- does not imply g is differentiable yet. Not openness of the set,
+-- and the differential to be invertible (to imply injectivity...)
+
 /- Note: If `f` is continuous on `u`, while `InvOn g f s t`,
 `InvOn.mono` implies `InvOn g f s∩u t∩f(u)`: thus, it suffices to consider the case `s=u`. -/
 example {X Y : Type*} {u s : Set X} {t : Set Y} {f : X → Y} {g : Y → X} (h : InvOn g f s t) :
@@ -187,12 +199,6 @@ example {X Y : Type*} {u s : Set X} {t : Set Y} {f : X → Y} {g : Y → X} (h :
 /-- The groupoid associated to a good pregroupoid. -/
 def GoodPregroupoid.groupoid (PG : GoodPregroupoid H) : StructureGroupoid H :=
   (PG.toPregroupoid).groupoid
-
--- The continuous pregroupoid is not good: not in general, not even if `H` is compact and Hausdorff.
--- Need to show that f continuous on s (and g being the point-wise inverse) implies g cont on t;
--- this is simply false: a bijective function is not bi-continuous in general.
--- A *variant* assuming only compact s were true. Not interesting to use.
--- XXX: not enough, a priori `s` is any set!
 
 variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 -- XXX: generalise to any field 𝕜 which is ℝ or ℂ
@@ -206,21 +212,6 @@ def contDiffPregroupoidWarmup : Pregroupoid E := {
   congr := by intro f g u _ congr hf; exact (contDiffOn_congr congr).mpr hf
 }
 
--- test this works: this is a good pregroupoid -> no, it doesn't, my assumptions are still too weak!
-lemma contDiffPregroupoidGoodWarmup : GoodPregroupoid E where
-  -- TODO: fix copy-paste!
-  property := fun f s ↦ ContDiffOn ℝ n f s
-  comp := fun {f g} {u v} hf hg _ _ _ ↦ hg.comp' hf
-  id_mem := contDiffOn_id
-  locality := fun _ h ↦ contDiffOn_of_locally_contDiffOn h
-  congr := by intro f g u _ congr hf; exact (contDiffOn_congr congr).mpr hf
-  --toPregroupoid := contDiffPregroupoidWarmup E
-  inverse := by
-    intro f g s t hf hinv
-    --have : ContDiffOn ℝ n f s := hf
-    show ContDiffOn ℝ n g t
-    sorry
-
 structure BetterPregroupoid (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ H]
   extends Pregroupoid H where
   -- If `f ∈ P` defines a homeomorphism `s → t` with inverse `g`, then `g ∈ P` also.
@@ -230,16 +221,16 @@ structure BetterPregroupoid (H : Type*) [NormedAddCommGroup H] [NormedSpace ℝ 
     HasFDerivAt (𝕜 := ℝ) f f' x → InvOn g f s t → property g t
 
 -- this is the key lemma I need to showing that C^n maps define a better pregroupoid
--- only done in the affine case, FIXME generalise
--- FIXME: not entirely true; I get that g is ContDiff in *some* nhd of x, might be smaller than t!
 -- we need to work over ℝ or ℂ, otherwise `toLocalInverse` doesn't apply
+-- FIXME: generalise to charted spaces
+-- FIXME: not entirely true; I get that g is ContDiff in *some* nhd of x, might be smaller than t!
 lemma Iwant {f g : E → E} {s t : Set E} {x : E} {f' : E ≃L[ℝ] E} (hinv : InvOn g f s t)
     (hf : ContDiffAt ℝ n f x) (hf' : HasFDerivAt (𝕜 := ℝ) f f' x) (hn : 1 ≤ n) :
     ContDiffOn ℝ n g t := by
   let r := hf.to_localInverse (f' := f') hf' hn -- ContDiffAt ℝ n (hf.localInverse hf' hn) (f x)
   sorry
 
-lemma contDiffPregroupoidBetterWarmup (hn : 1 ≤ n) {x : E} : BetterPregroupoid E where
+def contDiffPregroupoidBetterWarmup (hn : 1 ≤ n) : BetterPregroupoid E where
   -- TODO: fix copy-paste!
   property := fun f s ↦ ContDiffOn ℝ n f s
   comp := fun {f g} {u v} hf hg _ _ _ ↦ hg.comp' hf
