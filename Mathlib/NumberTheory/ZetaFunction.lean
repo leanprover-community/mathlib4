@@ -30,7 +30,7 @@ I haven't checked exactly what they are).
 * `differentiableAt_completed_zeta` : the function `Λ(s)` is differentiable away from `s = 0` and
   `s = 1`.
 * `differentiableAt_riemannZeta` : the function `ζ(s)` is differentiable away from `s = 1`.
-* `zeta_eq_tsum_of_one_lt_re` : for `1 < re s`, we have
+* `zeta_eq_tsum_one_div_nat_add_one_cpow` : for `1 < re s`, we have
   `ζ(s) = ∑' (n : ℕ), 1 / (n + 1) ^ s`.
 * `riemannCompletedZeta₀_one_sub`, `riemannCompletedZeta_one_sub`, and `riemannZeta_one_sub` :
   functional equation relating values at `s` and `1 - s`
