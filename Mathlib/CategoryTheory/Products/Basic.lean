@@ -359,18 +359,18 @@ open Opposite
 
 /-- The equivalence between the opposite of a product and the product of the opposites. -/
 @[simps]
-def prodOp : (C × D)ᵒᵖ ≌ Cᵒᵖ × Dᵒᵖ where
+def prodOpEquiv : (C × D)ᵒᵖ ≌ Cᵒᵖ × Dᵒᵖ where
   functor :=
     { obj := λ X => ⟨op X.unop.1, op X.unop.2⟩,
       map := λ f => ⟨f.unop.1.op, f.unop.2.op⟩ }
   inverse :=
-    {
-      obj := λ ⟨X,Y⟩ => op ⟨X.unop, Y.unop⟩,
+    { obj := λ ⟨X,Y⟩ => op ⟨X.unop, Y.unop⟩,
       map := λ ⟨f,g⟩ => op ⟨f.unop, g.unop⟩ }
-  unitIso := by aesop_cat
-  counitIso := by aesop_cat
-  functor_unitIso_comp := λ ⟨⟨X,Y⟩⟩ => by
-    simp; rw[Category.id_comp (𝟙 (op X)),Category.id_comp (𝟙 (op Y))]; simp
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+  functor_unitIso_comp := fun ⟨X, Y⟩ => by
+    dsimp
+    ext <;> simpa using Category.id_comp _
 
 end Opposite
 
