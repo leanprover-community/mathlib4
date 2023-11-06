@@ -2,17 +2,9 @@
  "packagesDir": "lake-packages",
  "packages":
  [{"git":
-   {"url": "https://github.com/leanprover/std4",
-    "subDir?": null,
-    "rev": "869c615eb10130c0637a7bc038e2b80253559913",
-    "opts": {},
-    "name": "std",
-    "inputRev?": "main",
-    "inherited": false}},
-  {"git":
    {"url": "https://github.com/gebner/quote4",
     "subDir?": null,
-    "rev": "511eb96eca98a7474683b8ae55193a7e7c51bc39",
+    "rev": "a387c0eb611857e2460cf97a8e861c944286e6b2",
     "opts": {},
     "name": "Qq",
     "inputRev?": "master",
@@ -20,7 +12,7 @@
   {"git":
    {"url": "https://github.com/JLimperg/aesop",
     "subDir?": null,
-    "rev": "cb87803274405db79ec578fc07c4730c093efb90",
+    "rev": "4f8b397237411249930791f1cba0a9d2880a02dd",
     "opts": {},
     "name": "aesop",
     "inputRev?": "master",
@@ -32,6 +24,14 @@
     "opts": {},
     "name": "Cli",
     "inputRev?": "nightly",
+    "inherited": false}},
+  {"git":
+   {"url": "https://github.com/leanprover/std4",
+    "subDir?": null,
+    "rev": "f2df4ab8c0726fce3bafb73a5727336b0c3120ea",
+    "opts": {},
+    "name": "std",
+    "inputRev?": "main",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/EdAyers/ProofWidgets4",
