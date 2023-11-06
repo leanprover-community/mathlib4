@@ -16,9 +16,9 @@ open Lean Meta Server ProofWidgets
 /-- If the given expression is a constant, return its name, if it is an application of a constant,
 returns its name, otherwise return `none`. -/
 def Lean.Expr.headName : Expr → Option Name
-| .const n .. => n
-| .app fn _ => fn.headName
-| _ => none
+  | .const n .. => n
+  | .app fn _ => fn.headName
+  | _ => none
 
 @[nolint unusedArguments]
 def insertUnfold (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
