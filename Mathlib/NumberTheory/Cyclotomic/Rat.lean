@@ -300,24 +300,29 @@ theorem zeta_sub_one_prime' [h : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimi
   convert zeta_sub_one_prime (k := 0) (by simpa) hodd
   simpa
 
-theorem two_pow_zeta_sub_one_prime (hk : 2 ≤ k) [IsCyclotomicExtension {(2 : ℕ+) ^ k} ℚ K]
-    (hζ : IsPrimitiveRoot ζ ↑((2 : ℕ+) ^ k)) :
-    Prime (⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral ((2 : ℕ+) ^ k).pos)
+theorem two_pow_zeta_sub_one_prime [IsCyclotomicExtension {(2 : ℕ+) ^ (k + 1)} ℚ K]
+    (hζ : IsPrimitiveRoot ζ ↑((2 : ℕ+) ^ (k + 1))) :
+    Prime (⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral ((2 : ℕ+) ^ _).pos)
     (Subalgebra.one_mem _)⟩ : 𝓞 K) := by
-  letI := IsCyclotomicExtension.numberField {(2 : ℕ+) ^ k} ℚ K
+  letI := IsCyclotomicExtension.numberField {(2 : ℕ+) ^ (k + 1)} ℚ K
   refine Ideal.prime_of_irreducible_absNorm_span (fun h ↦ ?_) ?_
   · rw [← Subalgebra.coe_eq_zero, sub_eq_zero] at h
-    exact hζ.pow_ne_one_of_pos_of_lt zero_lt_one
-      (one_lt_pow (by norm_num) (by linarith)) (by simp [h])
+    exact hζ.pow_ne_one_of_pos_of_lt zero_lt_one (one_lt_pow (by norm_num) (by simp)) (by simp [h])
   rw [Nat.irreducible_iff_prime, Ideal.absNorm_span_singleton, ← Nat.prime_iff,
     ← Int.prime_iff_natAbs_prime]
+  cases k
+  · convert Prime.neg Int.prime_two
+    apply RingHom.injective_int (algebraMap ℤ ℚ)
+    rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ), Subalgebra.algebraMap_eq]
+    simp only [Nat.zero_eq, PNat.pow_coe, id.map_eq_id, RingHomCompTriple.comp_eq, RingHom.coe_coe,
+      Subalgebra.coe_val, algebraMap_int_eq, map_neg, map_ofNat]
+    simpa using hζ.pow_sub_one_norm_two (cyclotomic.irreducible_rat (by simp))
   convert Nat.prime_iff_prime_int.1 Nat.prime_two
   apply RingHom.injective_int (algebraMap ℤ ℚ)
   rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ), Subalgebra.algebraMap_eq]
   simp only [PNat.pow_coe, id.map_eq_id, RingHomCompTriple.comp_eq, RingHom.coe_coe,
     Subalgebra.coe_val, algebraMap_int_eq, map_natCast]
-  refine hζ.sub_one_norm_two hk (Polynomial.cyclotomic.irreducible_rat ?_)
-  simp
+  exact hζ.sub_one_norm_two Nat.AtLeastTwo.prop (cyclotomic.irreducible_rat (by simp))
 
 end IsPrimitiveRoot
 
