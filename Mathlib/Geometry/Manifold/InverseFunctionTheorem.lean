@@ -63,24 +63,29 @@ lemma Iwant [CompleteSpace E] {f g : E → E} {s t : Set E} {x : E} {f' : E ≃L
     (hinv : InvOn g f s t) (hm : MapsTo g t s) (hn : 1 ≤ n) : ContDiffAt ℝ n g (f x) := by
   let r := hf.to_localInverse (f' := f') hf' hn -- ContDiffAt ℝ n (hf.localInverse hf' hn) (f x)
   set g' := ContDiffAt.localInverse hf hf' hn with eq
-  have : EqOn g g' t := by
-    -- XXX: there should be a shorter proof!
-    have hinv' : InvOn g' f s t := by
-      let h := hf.toLocalHomeomorph f hf' hn
-      let start := h.invOn
-      have aux1 : hf.localInverse hf' hn = h.symm := hf.localInverse_eq_toLocalHomeomorph_symm hf' hn
-      rw [← aux1] at start
-      have aux3 : h.source = s := by sorry
-      have aux4 : h.target = t := sorry
-      rw [aux3, aux4] at start
-      apply start
+  let h := hf.toLocalHomeomorph f hf' hn
+  -- XXX: not true! s, t are subsets --> should replace t by the source of the local homeo
+  have : EqOn g g' h.target := by
+    have hinv' : InvOn g' f h.source h.target := by
+      apply (hf.localInverse_eq_toLocalHomeomorph_symm hf' hn) ▸ h.invOn
     -- xxx: extract into lemma: if MapsTo g t s, and if g and g' are inverses of f on s, g=g' on s.
     intro y hy
     let x := g y
-    have hx : x ∈ s := hm hy
+    have hm' : MapsTo g h.target h.source := by
+      -- show MapsTo g' h.target h.source -- rewrite by EqOn...
+      have : MapsTo g' h.target h.source := by
+        have : g' = h.symm := (hf.localInverse_eq_toLocalHomeomorph_symm hf' hn)
+        rw [this]
+        exact h.symm_mapsTo
+      sorry -- rewrite by EqOn from the previous have
+    have hx : x ∈ h.source := hm' hy
+    -- these should both be routine
+    have : h.target ⊆ t := sorry
+    have hy : y ∈ t := this hy
+    have : h.source ⊆ s := sorry
     calc g y
       _ = g (f x) := by rw [hinv.2 hy]
-      _ = x := by rw [hinv.1 hx]
+      _ = x := by rw [hinv.1 (this hx)]
       _ = g' (f x) := by rw [hinv'.1 hx]
       _ = g' y := by rw [hinv.2 hy]
   -- apply fderiv_congr to rewrite g' with g
