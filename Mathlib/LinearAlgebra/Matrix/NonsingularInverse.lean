@@ -166,9 +166,15 @@ theorem isUnit_of_left_inverse (h : B * A = 1) : IsUnit A :=
   ⟨⟨A, B, mul_eq_one_comm.mp h, h⟩, rfl⟩
 #align matrix.is_unit_of_left_inverse Matrix.isUnit_of_left_inverse
 
+theorem exists_left_inverse_iff_isUnit : (∃ B, B * A = 1) ↔ IsUnit A :=
+  ⟨fun ⟨_, h⟩ ↦ isUnit_of_left_inverse h, fun h ↦ have := h.invertible; ⟨⅟A, invOf_mul_self' A⟩⟩
+
 theorem isUnit_of_right_inverse (h : A * B = 1) : IsUnit A :=
   ⟨⟨A, B, h, mul_eq_one_comm.mp h⟩, rfl⟩
 #align matrix.is_unit_of_right_inverse Matrix.isUnit_of_right_inverse
+
+theorem exists_right_inverse_iff_isUnit : (∃ B, A * B = 1) ↔ IsUnit A :=
+  ⟨fun ⟨_, h⟩ ↦ isUnit_of_right_inverse h, fun h ↦ have := h.invertible; ⟨⅟A, mul_invOf_self' A⟩⟩
 
 theorem isUnit_det_of_left_inverse (h : B * A = 1) : IsUnit A.det :=
   @isUnit_of_invertible _ _ _ (detInvertibleOfLeftInverse _ _ h)
@@ -366,7 +372,7 @@ section vecMul
 
 variable [Fintype m] [DecidableEq m] {K : Type*} [Field K]
 
-theorem mulVec_surjective_iff_exists_rightInverse {A : Matrix m n α} :
+theorem mulVec_surjective_iff_exists_right_inverse {A : Matrix m n α} :
     Function.Surjective A.mulVec ↔ ∃ B : Matrix n m α, A * B = 1 := by
   refine ⟨fun h ↦ ?_, fun ⟨B, hBA⟩ y ↦ ⟨B.mulVec y, by simp [hBA]⟩⟩
   have hch : ∀ i : m, ∃ x, A.mulVec x = Pi.single i 1 := fun _ ↦ h _
@@ -379,22 +385,20 @@ theorem mulVec_surjective_iff_exists_rightInverse {A : Matrix m n α} :
   rw [Pi.single_apply]
   rfl
 
-theorem vecMul_surjective_iff_exists_leftInverse {A : Matrix m n α} :
+theorem vecMul_surjective_iff_exists_left_inverse {A : Matrix m n α} :
     Function.Surjective A.vecMul ↔ ∃ B : Matrix n m α, B * A = 1 := by
-  simp_rw [← mulVec_transpose, mulVec_surjective_iff_exists_rightInverse]
+  simp_rw [← mulVec_transpose, mulVec_surjective_iff_exists_right_inverse]
   refine ⟨fun ⟨B, hB⟩ ↦ ⟨Bᵀ, ?_⟩, fun ⟨B, hB⟩ ↦ ⟨Bᵀ, by rw [←transpose_mul, hB, transpose_one]⟩⟩
   apply_fun Matrix.transpose using transpose_injective
   rw [transpose_mul, transpose_transpose, hB, transpose_one]
 
 theorem vecMul_surjective_iff_isUnit {A : Matrix m m α} :
     Function.Surjective A.vecMul ↔ IsUnit A := by
-  rw [vecMul_surjective_iff_exists_leftInverse]
-  exact ⟨fun ⟨B, hBA⟩ ↦ isUnit_of_left_inverse hBA,
-    fun h ↦ ⟨A⁻¹, @inv_mul_of_invertible _ _ _ _ _ A h.invertible ⟩⟩
+  rw [vecMul_surjective_iff_exists_left_inverse, exists_left_inverse_iff_isUnit]
 
 theorem mulVec_surjective_iff_isUnit {A : Matrix m m α} :
     Function.Surjective A.mulVec ↔ IsUnit A := by
-  rw [← isUnit_transpose, ← vecMul_surjective_iff_isUnit]; convert Iff.rfl; rw [vecMul_transpose]
+  rw [mulVec_surjective_iff_exists_right_inverse, exists_right_inverse_iff_isUnit]
 
 theorem mulVec_injective_iff_isUnit {A : Matrix m m K} :
     Function.Injective A.mulVec ↔ IsUnit A := by
@@ -403,7 +407,7 @@ theorem mulVec_injective_iff_isUnit {A : Matrix m m K} :
     simp_rw [vecMul_transpose]
     exact LinearMap.surjective_of_injective (f := A.mulVecLin) h
   change Function.Injective A.mulVecLin
-  rw [←LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
+  rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
   intro c hc
   replace h := h.invertible
   simpa using congr_arg A⁻¹.mulVecLin hc
