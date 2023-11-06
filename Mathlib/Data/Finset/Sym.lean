@@ -45,52 +45,24 @@ protected def sym2 (s : Finset α) : Finset (Sym2 α) := ⟨s.1.sym2, s.2.sym2�
 section
 variable {s t : Finset α} {a b : α}
 
+@[simp]
+theorem sym2_eq_empty_iff : s.sym2 = ∅ ↔ s = ∅ := by
+  rw [← val_eq_zero, sym2_val, Multiset.sym2_eq_zero_iff, val_eq_zero]
+#align finset.sym2_eq_empty Finset.sym2_eq_empty_iff
+
 theorem mk_mem_sym2_iff : ⟦(a, b)⟧ ∈ s.sym2 ↔ a ∈ s ∧ b ∈ s := by
-  rw [Finset.sym2, ← Finset.mem_coe]
-  simp only [mem_coe, mem_mk, Multiset.mk_mem_sym2_iff, mem_val]
+  rw [mem_mk, sym2_val, Multiset.mk_mem_sym2_iff, mem_mk, mem_mk]
 #align finset.mk_mem_sym2_iff Finset.mk_mem_sym2_iff
 
 @[simp]
 theorem mem_sym2_iff {m : Sym2 α} : m ∈ s.sym2 ↔ ∀ a ∈ m, a ∈ s := by
-  refine Quotient.recOnSubsingleton m ?_
-  rintro ⟨x, y⟩
-  rw [mk_mem_sym2_iff]
-  simp only [Sym2.mem_iff, forall_eq_or_imp, forall_eq]
+  rw [mem_mk, sym2_val, Multiset.mem_sym2_iff]
+  simp only [mem_val]
 #align finset.mem_sym2_iff Finset.mem_sym2_iff
 
 instance instFintypeSym2 [Fintype α] : Fintype (Sym2 α) where
   elems := Finset.univ.sym2
-  complete := by simp
-
-theorem sym2_toFinset [DecidableEq α] (m : Multiset α) :
-    m.toFinset.sym2 = m.sym2.toFinset := by
-  ext z
-  refine z.recOnSubsingleton ?_
-  rintro ⟨x, y⟩
-  simp only [mk_mem_sym2_iff, Multiset.mem_toFinset, Multiset.mk_mem_sym2_iff]
-
-@[simp]
-theorem sym2_empty : (∅ : Finset α).sym2 = ∅ := rfl
-#align finset.sym2_empty Finset.sym2_empty
-
-@[simp]
-theorem sym2_eq_empty : s.sym2 = ∅ ↔ s = ∅ := by
-  classical
-  rw [← Finset.val_toFinset s, sym2_toFinset]
-  simp
-#align finset.sym2_eq_empty Finset.sym2_eq_empty
-
-@[simp]
-theorem sym2_nonempty : s.sym2.Nonempty ↔ s.Nonempty := by
-  rw [← not_iff_not]
-  simp only [not_nonempty_iff_eq_empty, sym2_eq_empty]
-#align finset.sym2_nonempty Finset.sym2_nonempty
-
-alias ⟨_, Nonempty.sym2⟩ := sym2_nonempty
-#align finset.nonempty.sym2 Finset.Nonempty.sym2
-
--- Porting note: attribute does not exist
--- attribute [protected] Nonempty.sym2
+  complete := fun x ↦ by rw [mem_sym2_iff]; exact (fun a _ ↦ mem_univ a)
 
 -- Note(kmill): Using a default argument to make this simp lemma more general.
 @[simp]
@@ -100,14 +72,43 @@ theorem sym2_univ [Fintype α] (inst : Fintype (Sym2 α) := instFintypeSym2) :
   simp only [mem_sym2_iff, mem_univ, implies_true]
 #align finset.sym2_univ Finset.sym2_univ
 
+@[simp, mono]
+theorem sym2_mono (h : s ⊆ t) : s.sym2 ⊆ t.sym2 := by
+  rw [← val_le_iff, sym2_val, sym2_val]
+  apply Multiset.sym2_mono
+  rwa [val_le_iff]
+#align finset.sym2_mono Finset.sym2_mono
+
+theorem sym2_toFinset [DecidableEq α] (m : Multiset α) :
+    m.toFinset.sym2 = m.sym2.toFinset := by
+  ext z
+  refine z.ind fun x y ↦ ?_
+  simp only [mk_mem_sym2_iff, Multiset.mem_toFinset, Multiset.mk_mem_sym2_iff]
+
+@[simp]
+theorem sym2_empty : (∅ : Finset α).sym2 = ∅ := rfl
+#align finset.sym2_empty Finset.sym2_empty
+
+@[simp]
+theorem sym2_nonempty : s.sym2.Nonempty ↔ s.Nonempty := by
+  rw [← not_iff_not]
+  simp_rw [not_nonempty_iff_eq_empty, sym2_eq_empty_iff]
+#align finset.sym2_nonempty Finset.sym2_nonempty
+
+alias ⟨_, Nonempty.sym2⟩ := sym2_nonempty
+#align finset.nonempty.sym2 Finset.Nonempty.sym2
+
+-- Porting note: attribute does not exist
+-- attribute [protected] Nonempty.sym2
+
 @[simp]
 theorem sym2_singleton (a : α) : ({a} : Finset α).sym2 = {Sym2.diag a} := rfl
 #align finset.sym2_singleton Finset.sym2_singleton
 
-@[simp]
-theorem sym2_mono (h : s ⊆ t) : s.sym2 ⊆ t.sym2 := fun _m he ↦
-  mem_sym2_iff.2 fun _a ha ↦ h <| mem_sym2_iff.1 he _ ha
-#align finset.sym2_mono Finset.sym2_mono
+/-- Finset **stars and bars** for the case `n = 2`. -/
+theorem card_sym2 (s : Finset α) : s.sym2.card = s.card * (s.card + 1) / 2 := by
+  rw [card_def, sym2_val, Multiset.card_sym2, ← card_def]
+#align finset.card_sym2 Finset.card_sym2
 
 end
 
@@ -115,8 +116,7 @@ variable [DecidableEq α] {s t : Finset α} {a b : α}
 
 theorem sym2_eq_image : s.sym2 = (s ×ˢ s).image (Quotient.mk _) := by
   ext z
-  refine Quotient.recOnSubsingleton z ?_
-  rintro ⟨x, y⟩
+  refine z.ind fun x y ↦ ?_
   rw [mk_mem_sym2_iff, mem_image]
   constructor
   · intro h

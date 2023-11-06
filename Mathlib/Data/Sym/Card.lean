@@ -194,20 +194,6 @@ theorem card_subtype_not_diag [Fintype α] :
   exact and_iff_right ⟨a, mem_univ _, ha⟩
 #align sym2.card_subtype_not_diag Sym2.card_subtype_not_diag
 
-/-- Finset **stars and bars** for the case `n = 2`. -/
-theorem _root_.Finset.card_sym2 (s : Finset α) : s.sym2.card = s.card * (s.card + 1) / 2 := by
-  rw [← image_diag_union_image_offDiag, card_union_eq, Sym2.card_image_diag,
-    Sym2.card_image_offDiag, Nat.choose_two_right, add_comm, ← Nat.triangle_succ, Nat.succ_sub_one,
-    mul_comm]
-  rw [disjoint_left]
-  rintro m ha hb
-  rw [mem_image] at ha hb
-  obtain ⟨⟨a, ha, rfl⟩, ⟨b, hb, hab⟩⟩ := ha, hb
-  refine' not_isDiag_mk_of_mem_offDiag hb _
-  rw [hab]
-  exact isDiag_mk_of_mem_diag ha
-#align finset.card_sym2 Finset.card_sym2
-
 /-- Type **stars and bars** for the case `n = 2`. -/
 protected theorem card [Fintype α] : card (Sym2 α) = card α * (card α + 1) / 2 :=
   Finset.card_sym2 _

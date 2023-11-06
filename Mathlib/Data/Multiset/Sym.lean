@@ -40,16 +40,32 @@ protected def sym2 (m : Multiset α) : Multiset (Sym2 α) :=
 
 @[simp] theorem sym2_coe (xs : List α) : (xs : Multiset α).sym2 = xs.sym2 := rfl
 
+@[simp]
+theorem sym2_eq_zero_iff {m : Multiset α} : m.sym2 = 0 ↔ m = 0 :=
+  m.inductionOn fun xs => by simp
+
 theorem mk_mem_sym2_iff {m : Multiset α} {a b : α} :
-    Quotient.mk _ (a, b) ∈ m.sym2 ↔ a ∈ m ∧ b ∈ m :=
-  m.recOnSubsingleton fun xs => by simp [List.mk_mem_sym2_iff]
+    ⟦(a, b)⟧ ∈ m.sym2 ↔ a ∈ m ∧ b ∈ m :=
+  m.inductionOn fun xs => by simp [List.mk_mem_sym2_iff]
+
+theorem mem_sym2_iff {m : Multiset α} {z : Sym2 α} :
+    z ∈ m.sym2 ↔ ∀ y ∈ z, y ∈ m :=
+  m.inductionOn fun xs => by simp [List.mem_sym2_iff]
 
 protected theorem Nodup.sym2 {m : Multiset α} (h : m.Nodup) : m.sym2.Nodup :=
-  Quotient.recOnSubsingleton m (fun _ h => List.Nodup.sym2 h) h
+  m.inductionOn (fun _ h => List.Nodup.sym2 h) h
 
-@[simp]
-theorem sym2_eq_zero {m : Multiset α} : m.sym2 = 0 ↔ m = 0 :=
-  m.recOnSubsingleton fun xs => by simp
+@[simp, mono]
+theorem sym2_mono {m m' : Multiset α} (h : m ≤ m') : m.sym2 ≤ m'.sym2 := by
+  refine Quotient.inductionOn₂ m m' (fun xs ys h => ?_) h
+  simp only [quot_mk_to_coe, coe_le, sym2_coe] at h ⊢
+  obtain ⟨xs', hx, h⟩ := h
+  exact hx.sym2.symm.subperm.trans h.sym2.subperm
+
+theorem card_sym2 {m : Multiset α} :
+    Multiset.card m.sym2 = Multiset.card m * (Multiset.card m + 1) / 2 := by
+  refine m.inductionOn fun xs => ?_
+  simp [List.length_sym2]
 
 end Sym2
 
