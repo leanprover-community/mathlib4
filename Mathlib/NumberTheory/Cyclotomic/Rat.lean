@@ -182,11 +182,14 @@ noncomputable def integralPowerBasis [IsCyclotomicExtension {p ^ k} ℚ K]
   (Algebra.adjoin.powerBasis' (hζ.isIntegral (p ^ k).pos)).map hζ.adjoinEquivRingOfIntegers
 #align is_primitive_root.integral_power_basis IsPrimitiveRoot.integralPowerBasis
 
+/-- Abbreviation to see a primitive root of unity as a membmer of the ring of integers. -/
+abbrev toInteger {k : ℕ+} (hζ :IsPrimitiveRoot ζ k) : 𝓞 K := ⟨ζ, hζ.isIntegral k.pos⟩
+
 --Porting note: the proof changed because `simp` unfolds too much.
 @[simp]
 theorem integralPowerBasis_gen [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ k)) :
-    hζ.integralPowerBasis.gen = ⟨ζ, hζ.isIntegral (p ^ k).pos⟩ :=
+    hζ.integralPowerBasis.gen = hζ.toInteger :=
   Subtype.ext <| show algebraMap _ K hζ.integralPowerBasis.gen = _ by
     rw [integralPowerBasis, PowerBasis.map_gen, adjoin.powerBasis'_gen]
     simp only [adjoinEquivRingOfIntegers_apply, IsIntegralClosure.algebraMap_lift]
@@ -222,9 +225,6 @@ noncomputable def integralPowerBasis' [hcycl : IsCyclotomicExtension {p} ℚ K]
   @integralPowerBasis p 1 K _ _ _ _ (by convert hcycl; rw [pow_one]) (by rwa [pow_one])
 #align is_primitive_root.integral_power_basis' IsPrimitiveRoot.integralPowerBasis'
 
-abbrev toInteger {k : ℕ+} (hζ :IsPrimitiveRoot ζ k) : 𝓞 K :=
-  ⟨ζ, hζ.isIntegral k.pos⟩
-
 @[simp]
 theorem integralPowerBasis'_gen [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p) :
     hζ.integralPowerBasis'.gen = hζ.toInteger :=
@@ -246,7 +246,7 @@ noncomputable def subOneIntegralPowerBasis [IsCyclotomicExtension {p ^ k} ℚ K]
     (isIntegral_of_mem_ringOfIntegers <|
       Subalgebra.sub_mem _ (hζ.isIntegral (p ^ k).pos) (Subalgebra.one_mem _))
     (by
-      simp only [integralPowerBasis_gen]
+      simp only [integralPowerBasis_gen, toInteger]
       convert Subalgebra.add_mem _ (self_mem_adjoin_singleton ℤ (⟨ζ - 1, _⟩ : 𝓞 K))
         (Subalgebra.one_mem _)
 -- Porting note: `simp` was able to finish the proof.
@@ -325,8 +325,7 @@ theorem two_pow_zeta_sub_one_prime [IsCyclotomicExtension {(2 : ℕ+) ^ (k + 1)}
 
 /-- `ζ - 1` is prime if `ζ` is a primitive `p ^ (k + 1)`-th root of unity. -/
 theorem zeta_sub_one_prime [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
-    (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) :
-    Prime (hζ.toInteger - 1) := by
+    (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) : Prime (hζ.toInteger - 1) := by
   by_cases htwo : p = 2
   · subst htwo
     apply hζ.two_pow_zeta_sub_one_prime
@@ -334,14 +333,13 @@ theorem zeta_sub_one_prime [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
 
 /-- `ζ - 1` is prime if `ζ` is a primitive `p`-th root of unity. -/
 theorem zeta_sub_one_prime' [h : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p) :
-    Prime (⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral p.pos) (Subalgebra.one_mem _)⟩ : 𝓞 K) := by
+    Prime ((hζ.toInteger - 1)) := by
   convert zeta_sub_one_prime (k := 0) (by simpa)
   simpa
 
 theorem subOneIntegralPowerBasis_gen_prime [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) :
     Prime hζ.subOneIntegralPowerBasis.gen := by simpa using hζ.zeta_sub_one_prime
-
 
 theorem subOneIntegralPowerBasis_gen_prime' [IsCyclotomicExtension {p} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑p) :
