@@ -61,8 +61,6 @@ import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Lint
 import Mathlib.Tactic.MkIffOfInductiveProp
--- NormCast imports `Mathlib.Algebra.Group.Defs`
--- import Mathlib.Tactic.NormCast
 -- NormNum imports `Mathlib.Algebra.GroupPower.Lemmas` and `Mathlib.Algebra.Order.Invertible`
 -- import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NthRewrite

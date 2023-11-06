@@ -2,7 +2,7 @@
 Tests for norm_cast
 -/
 
-import Mathlib.Tactic.NormCast
+import Std.Tactic.NormCast
 import Mathlib.Tactic.Ring
 import Mathlib.Data.Option.Defs
 -- import data.complex.basic -- ℕ, ℤ, ℚ, ℝ, ℂ
