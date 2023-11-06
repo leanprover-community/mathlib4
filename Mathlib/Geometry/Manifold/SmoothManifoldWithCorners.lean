@@ -529,46 +529,51 @@ variable {m n : ℕ∞} {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*
 
 variable (n)
 
-/-- Given a model with corners `(E, H)`, we define the groupoid of `C^n` transformations of `H` as
-the maps that are `C^n` when read in `E` through `I`. -/
+/-- Given a model with corners `(E, H)`, we define the pregroupoid of `C^n` transformations of `H`
+as the maps that are `C^n` when read in `E` through `I`. -/
+def contDiffPregroupoid : Pregroupoid H := {
+  property := fun f s => ContDiffOn 𝕜 n (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)
+  comp := fun {f g u v} hf hg _ _ _ => by
+    have : I ∘ (g ∘ f) ∘ I.symm = (I ∘ g ∘ I.symm) ∘ I ∘ f ∘ I.symm := by ext x; simp
+    simp only [this]
+    refine hg.comp (hf.mono ?_) ?_
+    · rintro x ⟨hx1, hx2⟩
+      exact ⟨hx1.1, hx2⟩
+    · rintro x ⟨hx1, _⟩
+      simp only [mfld_simps] at hx1 ⊢
+      exact hx1.2
+  id_mem := by
+    apply ContDiffOn.congr contDiff_id.contDiffOn
+    rintro x ⟨_, hx2⟩
+    rcases mem_range.1 hx2 with ⟨y, hy⟩
+    rw [← hy]
+    simp only [mfld_simps]
+  locality := fun {f u} _ H => by
+    apply contDiffOn_of_locally_contDiffOn
+    rintro y ⟨hy1, hy2⟩
+    rcases mem_range.1 hy2 with ⟨x, hx⟩
+    rw [← hx] at hy1 ⊢
+    simp only [mfld_simps] at hy1 ⊢
+    rcases H x hy1 with ⟨v, v_open, xv, hv⟩
+    have : I.symm ⁻¹' (u ∩ v) ∩ range I = I.symm ⁻¹' u ∩ range I ∩ I.symm ⁻¹' v := by
+      rw [preimage_inter, inter_assoc, inter_assoc]
+      congr 1
+      rw [inter_comm]
+    rw [this] at hv
+    exact ⟨I.symm ⁻¹' v, v_open.preimage I.continuous_symm, by simpa, hv⟩
+  congr := fun {f g u} _ fg hf => by
+    apply hf.congr
+    rintro y ⟨hy1, hy2⟩
+    rcases mem_range.1 hy2 with ⟨x, hx⟩
+    rw [← hx] at hy1 ⊢
+    simp only [mfld_simps] at hy1 ⊢
+    rw [fg _ hy1]
+}
+
+/-- Given a model with corners `(E, H)`, we define the groupoid of invertible `C^n` transformations
+  of `H` as the invertible maps that are `C^n` when read in `E` through `I`. -/
 def contDiffGroupoid : StructureGroupoid H :=
-  Pregroupoid.groupoid
-    { property := fun f s => ContDiffOn 𝕜 n (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)
-      comp := fun {f g u v} hf hg _ _ _ => by
-        have : I ∘ (g ∘ f) ∘ I.symm = (I ∘ g ∘ I.symm) ∘ I ∘ f ∘ I.symm := by ext x; simp
-        simp only [this]
-        refine hg.comp (hf.mono ?_) ?_
-        · rintro x ⟨hx1, hx2⟩
-          exact ⟨hx1.1, hx2⟩
-        · rintro x ⟨hx1, _⟩
-          simp only [mfld_simps] at hx1 ⊢
-          exact hx1.2
-      id_mem := by
-        apply ContDiffOn.congr contDiff_id.contDiffOn
-        rintro x ⟨_, hx2⟩
-        rcases mem_range.1 hx2 with ⟨y, hy⟩
-        rw [← hy]
-        simp only [mfld_simps]
-      locality := fun {f u} _ H => by
-        apply contDiffOn_of_locally_contDiffOn
-        rintro y ⟨hy1, hy2⟩
-        rcases mem_range.1 hy2 with ⟨x, hx⟩
-        rw [← hx] at hy1 ⊢
-        simp only [mfld_simps] at hy1 ⊢
-        rcases H x hy1 with ⟨v, v_open, xv, hv⟩
-        have : I.symm ⁻¹' (u ∩ v) ∩ range I = I.symm ⁻¹' u ∩ range I ∩ I.symm ⁻¹' v := by
-          rw [preimage_inter, inter_assoc, inter_assoc]
-          congr 1
-          rw [inter_comm]
-        rw [this] at hv
-        exact ⟨I.symm ⁻¹' v, v_open.preimage I.continuous_symm, by simpa, hv⟩
-      congr := fun {f g u} _ fg hf => by
-        apply hf.congr
-        rintro y ⟨hy1, hy2⟩
-        rcases mem_range.1 hy2 with ⟨x, hx⟩
-        rw [← hx] at hy1 ⊢
-        simp only [mfld_simps] at hy1 ⊢
-        rw [fg _ hy1] }
+  Pregroupoid.groupoid (contDiffPregroupoid n I)
 #align cont_diff_groupoid contDiffGroupoid
 
 variable {n}
