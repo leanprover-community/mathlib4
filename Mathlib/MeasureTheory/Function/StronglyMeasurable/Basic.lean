@@ -1785,8 +1785,7 @@ theorem aestronglyMeasurable_uIoc_iff [LinearOrder α] [PseudoMetrizableSpace β
       AEStronglyMeasurable f (μ.restrict <| Ioc a b) ∧
         AEStronglyMeasurable f (μ.restrict <| Ioc b a) :=
   by rw [uIoc_eq_union, aestronglyMeasurable_union_iff]
-#align measure_theory.ae_strongly_measurable.ae_strongly_measurable_uIoc_iff
-MeasureTheory.AEStronglyMeasurable.aestronglyMeasurable_uIoc_iff
+#align measure_theory.ae_strongly_measurable.ae_strongly_measurable_uIoc_iff MeasureTheory.AEStronglyMeasurable.aestronglyMeasurable_uIoc_iff
 
 @[measurability]
 theorem smul_measure {R : Type*} [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
@@ -1915,8 +1914,7 @@ theorem finStronglyMeasurable_mk (hf : AEFinStronglyMeasurable f μ) :
 
 theorem ae_eq_mk (hf : AEFinStronglyMeasurable f μ) : f =ᵐ[μ] hf.mk f :=
   hf.choose_spec.2
-#align measure_theory.ae_fin_strongly_measurable.ae_eq_mk
-MeasureTheory.AEFinStronglyMeasurable.ae_eq_mk
+#align measure_theory.ae_fin_strongly_measurable.ae_eq_mk MeasureTheory.AEFinStronglyMeasurable.ae_eq_mk
 
 @[aesop 10% apply (rule_sets [Measurable])]
 protected theorem aemeasurable {β} [Zero β] [MeasurableSpace β] [TopologicalSpace β]
