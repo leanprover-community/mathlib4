@@ -197,13 +197,11 @@ theorem isSheafFor_of_preservesProduct' {Z : C} (π : (i : α) → X i ⟶ Z)
     [HasCoproduct X] [IsIso (Sigma.desc π)]
     [PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F] [(ofArrows X π).hasPullbacks] :
     (ofArrows X π).IsSheafFor F := by
-  have : (Cofan.mk Z π).inj = π := rfl
-  rw [← this]
+  change (ofArrows X (Cofan.mk Z π).inj).IsSheafFor F
   haveI : (ofArrows (fun b ↦ X b) (Cofan.inj (Cofan.mk Z π))).hasPullbacks := by
-    rw [this]
+    change (ofArrows X π).hasPullbacks
     infer_instance
-  refine isSheafFor_of_preservesProduct F (Cofan.mk Z π) ?_
-  sorry
+  refine isSheafFor_of_preservesProduct F (Cofan.mk Z π) (isCoproduct_of_sigma_desc_iso π)
 
 theorem isSheafFor_iff_preservesProduct : (ofArrows X c.inj).IsSheafFor F ↔
     Nonempty (PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F) := by
