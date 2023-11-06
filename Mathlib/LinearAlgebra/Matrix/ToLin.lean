@@ -84,15 +84,14 @@ variable {R : Type*} [Semiring R]
 variable {l m n : Type*}
 
 /-- `Matrix.vecMul M` is a linear map. -/
-@[simps]
 def Matrix.vecMulLinear [Fintype m] (M : Matrix m n R) : (m → R) →ₗ[R] n → R where
   toFun x := M.vecMul x
   map_add' _ _ := funext fun _ => add_dotProduct _ _ _
   map_smul' _ _ := funext fun _ => smul_dotProduct _ _ _
 #align matrix.vec_mul_linear Matrix.vecMulLinear
 
-@[simp] theorem Matrix.vecMulLinear_apply' {R m n : Type _} [Semiring R] [Fintype m]
-    (M : Matrix m n R) (x : m → R) : M.vecMulLinear x = M.vecMul x := rfl
+@[simp] theorem Matrix.vecMulLinear_apply [Fintype m] (M : Matrix m n R) (x : m → R) :
+    M.vecMulLinear x = M.vecMul x := rfl
 
 theorem Matrix.coe_vecMulLinear [Fintype m] (M : Matrix m n R) :
     (M.vecMulLinear : _ → _) = M.vecMul := rfl
@@ -111,12 +110,12 @@ theorem Matrix.vecMul_stdBasis (M : Matrix m n R) (i j) :
   · rw [Function.update_noteq (Ne.symm h), Pi.zero_apply]
 #align matrix.vec_mul_std_basis Matrix.vecMul_stdBasis
 
-theorem range_vecMulLinear {R m n : Type*} [CommSemiring R] [Fintype m] (M : Matrix m n R) :
+theorem range_vecMulLinear (M : Matrix m n R) :
     LinearMap.range M.vecMulLinear = span R (range M) := by
   letI := Classical.decEq m
   simp_rw [range_eq_map, ← iSup_range_stdBasis, Submodule.map_iSup, range_eq_map, ←
     Ideal.span_singleton_one, Ideal.span, Submodule.map_span, image_image, image_singleton,
-    Matrix.vecMulLinear_apply', iSup_span, range_eq_iUnion, vecMul, iUnion_singleton_eq_range,
+    Matrix.vecMulLinear_apply, iSup_span, range_eq_iUnion, vecMul, iUnion_singleton_eq_range,
     dotProduct, stdBasis_apply', ite_mul, one_mul, zero_mul, Finset.sum_ite_eq,
     Finset.mem_univ, ite_true]
 
