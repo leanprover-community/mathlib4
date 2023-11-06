@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Kevin Buzzard, Fangming Li
+Authors: Mario Carneiro, Kevin Buzzard
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Tower
@@ -627,25 +627,3 @@ theorem IsNoetherianRing.isNilpotent_nilradical (R : Type*) [CommRing R] [IsNoet
   obtain ⟨n, hn⟩ := Ideal.exists_radical_pow_le_of_fg (⊥ : Ideal R) (IsNoetherian.noetherian _)
   exact ⟨n, eq_bot_iff.mpr hn⟩
 #align is_noetherian_ring.is_nilpotent_nilradical IsNoetherianRing.isNilpotent_nilradical
-
-section GradedRing
-
-variable {ι A σ : Type*}
-variable [Ring A]
-variable [DecidableEq ι] [CanonicallyOrderedAddMonoid ι]
-variable [SetLike σ A] [AddSubgroupClass σ A]
-variable (𝒜 : ι → σ) [GradedRing 𝒜]
-
-namespace GradedRing
-
-/--
-If the internally graded ring `A` is Noetherian, then `𝒜 0` is a Noetherian ring.
--/
-theorem GradeZero.subring_isNoetherianRing_of_isNoetherianRing [IsNoetherianRing A] :
-    IsNoetherianRing (𝒜 0) :=
-  isNoetherianRing_of_surjective A (𝒜 0) (GradedRing.projZeroRingHom'' 𝒜)
-  (GradedRing.projZeroRingHom''_surjective 𝒜)
-
-end GradedRing
-
-end GradedRing
