@@ -101,25 +101,25 @@ theorem firstMap_eq_secondMap : Equalizer.Presieve.Arrows.firstMap F X c.inj =
 
 theorem piComparison_fac'' :
     haveI : HasCoproduct X := ⟨⟨c, hc⟩⟩
-    piComparison F (fun x ↦ op (X x)) =
-    F.map ((opCoproductIsoProduct X).inv ≫
+    piComparison F (fun x ↦ op (X x)) = F.map ((opCoproductIsoProduct X).inv ≫
     ((coproductIsCoproduct X).coconePointUniqueUpToIso hc).op.inv) ≫
     Equalizer.Presieve.Arrows.forkMap F X (fun i ↦ c.ι.app ⟨i⟩) := by
   simp only [Cofan.mk_pt, Equalizer.Presieve.Arrows.forkMap, Category.assoc]
-  haveI : HasCoproduct fun i ↦ ((Discrete.functor X).obj { as := i }) := ⟨⟨c, hc⟩⟩
-  sorry
-  -- have h₁ : Pi.lift (fun i ↦ F.map (c.ι.app ⟨i⟩).op) =
-  --     F.map (Pi.lift (fun i ↦ (c.ι.app ⟨i⟩).op)) ≫ piComparison F _ := by
-  --   simp only [Discrete.functor_obj, Functor.const_obj_obj, piComparison]
-  --   ext
-  --   simp only [types_comp_apply, Types.pi_lift_π_apply]
-  -- have h₂ : (opCoproductIsoProduct X).inv ≫ (inv (Sigma.desc π)).op =
-  --     inv ((Sigma.desc π).op ≫ (opCoproductIsoProduct X).hom) := by
-  --   simp only [op_inv, IsIso.inv_comp, IsIso.Iso.inv_hom]
-  -- simp only [Equalizer.Presieve.Arrows.forkMap, h₂, h₁,  ← desc_op_comp_opCoproductIsoProduct_hom,
-  --   ← Category.assoc, ← Functor.map_comp, IsIso.inv_comp, IsIso.Iso.inv_hom,
-  --   Category.assoc, IsIso.inv_hom_id, Category.comp_id, Iso.inv_hom_id, Functor.map_id,
-  --   Category.id_comp]
+  haveI : HasCoproduct X := ⟨⟨c, hc⟩⟩
+  haveI : HasCoproduct (fun i ↦ (Discrete.functor X).obj ⟨i⟩) := ⟨⟨c, hc⟩⟩
+  have h₁' : Pi.lift (fun i ↦ F.map (c.ι.app ⟨i⟩).op) =
+      F.map (Pi.lift (fun i ↦ (c.ι.app ⟨i⟩).op)) ≫ piComparison F _ := by simp
+  erw [h₁', ← Category.assoc, ← Functor.map_comp,
+    ← desc_op_comp_opCoproductIsoProduct_hom' hc (π := fun i ↦ c.ι.app ⟨i⟩)]
+  have h₂ : Cofan.IsColimit.desc hc (fun i ↦ c.ι.app ⟨i⟩) = 𝟙 _ := hc.desc_self
+  rw [h₂]
+  simp only [Discrete.functor_obj, Iso.op_inv, op_id, Cofan.mk_pt, Iso.op_hom, Category.id_comp,
+    Category.assoc, ← Functor.map_comp]
+  rw [← Category.id_comp (piComparison F fun x ↦ op (X x))]
+  congr
+  rw [← F.map_id]
+  congr
+  simp [Iso.eq_inv_comp, ← Category.assoc, ← op_comp, eq_comm, ← Iso.eq_comp_inv]
 
 theorem piComparison_fac' {Z : C} [HasCoproduct X] (π : (i : α) → X i ⟶ Z) [IsIso (Sigma.desc π)] :
     piComparison F (fun x ↦ op (X x)) =
@@ -155,39 +155,44 @@ def preservesProductOfIsSheafFor (hF' : (ofArrows X c.inj).IsSheafFor F) :
     PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F := by
   haveI : HasCoproduct X := ⟨⟨c, hc⟩⟩
   refine @PreservesProduct.ofIsoComparison _ _ _ _ F _ (fun x ↦ op (X x)) _ _ ?_
-  rw [piComparison_fac]
+  rw [piComparison_fac'' (hc := hc)]
   refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
   rw [isIso_iff_bijective, Function.bijective_iff_existsUnique]
   rw [Equalizer.Presieve.Arrows.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at hF'
   haveI : (ofArrows X (Cofan.mk _ (Sigma.ι X)).inj).hasPullbacks := sorry
-  intro b
-  have := hF' b-- (congr_fun (firstMap_eq_secondMap F hF hI (Cofan.mk _ (Sigma.ι X)) (coproductIsCoproduct _) hm hd) b)
-  -- refine fun b ↦ hF' b (congr_fun (firstMap_eq_secondMap F hF hI (Cofan.mk _ (Sigma.ι X)) (coproductIsCoproduct _) hm hd) b)
+  exact fun b ↦ hF' b (congr_fun (firstMap_eq_secondMap F hF hI c hd) b)
 
 /--
 If `F` preserves a particular product, then it `IsSheafFor` the corresponging presieve of arrows.
 -/
-theorem isSheafFor_of_preservesProduct {Z : C} (π : (i : α) → X i ⟶ Z) [IsIso (Sigma.desc π)]
-    [PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F] [(ofArrows X π).hasPullbacks] :
-    (ofArrows X π).IsSheafFor F := by
+theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F] :
+    (ofArrows X c.inj).IsSheafFor F := by
   rw [Equalizer.Presieve.Arrows.sheaf_condition, Limits.Types.type_equalizer_iff_unique]
-  have hc : IsIso (piComparison F (fun x ↦ op (X x))) := inferInstance
-  rw [piComparison_fac' (π := π), isIso_iff_bijective, Function.bijective_iff_existsUnique] at hc
+  haveI : HasCoproduct X := ⟨⟨c, hc⟩⟩
+  have hi : IsIso (piComparison F (fun x ↦ op (X x))) := inferInstance
+  rw [piComparison_fac'' (hc := hc), isIso_iff_bijective, Function.bijective_iff_existsUnique] at hi
   intro b _
-  obtain ⟨t, ht₁, ht₂⟩ := hc b
-  refine ⟨F.map ((opCoproductIsoProduct X).inv ≫ (inv (Sigma.desc π)).op ) t, ht₁, fun y hy ↦ ?_⟩
-  specialize ht₂ (F.map ((Sigma.desc π).op ≫ (opCoproductIsoProduct X).hom) y)
-  apply_fun F.map ((Sigma.desc π).op ≫ (opCoproductIsoProduct X).hom) using injective_of_mono _
-  simp only [← FunctorToTypes.map_comp_apply]
-  simp only [op_inv, Category.assoc, IsIso.inv_hom_id_assoc,
-    Iso.inv_hom_id, FunctorToTypes.map_id_apply]
-  apply ht₂
-  rw [← hy]
-  simp only [op_inv, Functor.map_comp, Functor.map_inv,
-    types_comp_apply, FunctorToTypes.map_inv_map_hom_apply]
-  congr
-  simp only [← Functor.map_inv, ← FunctorToTypes.map_comp_apply, IsIso.hom_inv_id,
-    FunctorToTypes.map_id_apply]
+  obtain ⟨t, ht₁, ht₂⟩ := hi b
+  -- F.map ((opCoproductIsoProduct X).inv ≫ ((coproductIsCoproduct X).coconePointUniqueUpToIso hc).op.inv)
+  refine ⟨F.map ((opCoproductIsoProduct X).inv ≫
+    ((coproductIsCoproduct X).coconePointUniqueUpToIso hc).op.inv) t, ht₁, fun y hy ↦ ?_⟩
+  specialize ht₂ (F.map (((coproductIsCoproduct X).coconePointUniqueUpToIso hc).hom.op ≫
+    (opCoproductIsoProduct X).hom) y)
+  apply_fun F.map (((coproductIsCoproduct X).coconePointUniqueUpToIso hc).hom.op ≫
+    (opCoproductIsoProduct X).hom) using injective_of_mono _
+  simp only [← FunctorToTypes.map_comp_apply, Iso.op, Category.assoc]
+  rw [ht₂ ?_]
+  · change (𝟙 (F.obj (∏ fun x ↦ op (X x)))) t = _
+    rw [← Functor.map_id]
+    refine congrFun ?_ t
+    congr
+    simp [Iso.eq_inv_comp, ← Category.assoc, ← op_comp, eq_comm, ← Iso.eq_comp_inv]
+  · rw [← hy]
+    simp only [Cofan.mk_pt, Iso.op_inv, Functor.map_comp, FunctorToTypes.map_comp_apply,
+      types_comp_apply, FunctorToTypes.map_inv_map_hom_apply]
+    congr
+    simp only [← Functor.map_inv, ← FunctorToTypes.map_comp_apply, ← op_comp,
+      Iso.inv_hom_id, op_id, FunctorToTypes.map_id_apply]
 
 theorem isSheafFor_iff_preservesProduct : (ofArrows X (Sigma.ι X)).IsSheafFor F ↔
     Nonempty (PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F) := by
