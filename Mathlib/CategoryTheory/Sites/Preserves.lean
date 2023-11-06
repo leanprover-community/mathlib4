@@ -159,7 +159,6 @@ def preservesProductOfIsSheafFor (hF' : (ofArrows X c.inj).IsSheafFor F) :
   refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
   rw [isIso_iff_bijective, Function.bijective_iff_existsUnique]
   rw [Equalizer.Presieve.Arrows.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at hF'
-  haveI : (ofArrows X (Cofan.mk _ (Sigma.ι X)).inj).hasPullbacks := sorry
   exact fun b ↦ hF' b (congr_fun (firstMap_eq_secondMap F hF hI c hd) b)
 
 /--
