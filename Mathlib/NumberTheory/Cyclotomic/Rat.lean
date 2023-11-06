@@ -5,6 +5,7 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.NumberTheory.Cyclotomic.Discriminant
 import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
+import Mathlib.RingTheory.Ideal.Norm
 
 #align_import number_theory.cyclotomic.rat from "leanprover-community/mathlib"@"b353176c24d96c23f0ce1cc63efc3f55019702d9"
 
@@ -273,6 +274,31 @@ theorem subOneIntegralPowerBasis'_gen [hcycl : IsCyclotomicExtension {p} ℚ K]
       ⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral p.pos) (Subalgebra.one_mem _)⟩ :=
   @subOneIntegralPowerBasis_gen p 1 K _ _ _ _ (by convert hcycl; rw [pow_one]) (by rwa [pow_one])
 #align is_primitive_root.sub_one_integral_power_basis'_gen IsPrimitiveRoot.subOneIntegralPowerBasis'_gen
+
+/-- `ζ - 1` is prime if `p ≠ 2`. -/
+theorem zeta_sub_one_prime [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
+    (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) (hodd : p ≠ 2) :
+    Prime (⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral (p ^ _).pos)
+    (Subalgebra.one_mem _)⟩ : 𝓞 K) := by
+  letI := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
+  refine Ideal.prime_of_irreducible_absNorm_span (fun h ↦ ?_) ?_
+  · rw [← Subalgebra.coe_eq_zero, sub_eq_zero] at h
+    exact hζ.pow_ne_one_of_pos_of_lt zero_lt_one (one_lt_pow hp.out.one_lt (by simp)) (by simp [h])
+  rw [Nat.irreducible_iff_prime, Ideal.absNorm_span_singleton, ← Nat.prime_iff,
+    ← Int.prime_iff_natAbs_prime]
+  convert Nat.prime_iff_prime_int.1 hp.out
+  apply RingHom.injective_int (algebraMap ℤ ℚ)
+  rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ), Subalgebra.algebraMap_eq]
+  simp only [PNat.pow_coe, id.map_eq_id, RingHomCompTriple.comp_eq, RingHom.coe_coe,
+    Subalgebra.coe_val, algebraMap_int_eq, map_natCast]
+  refine hζ.sub_one_norm_prime_ne_two (Polynomial.cyclotomic.irreducible_rat ?_) hodd
+  simp
+
+theorem zeta_sub_one_prime' [h : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p)
+    (hodd : p ≠ 2) :
+    Prime (⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral p.pos) (Subalgebra.one_mem _)⟩ : 𝓞 K) := by
+  convert zeta_sub_one_prime (k := 0) (by simpa) hodd
+  simpa
 
 end IsPrimitiveRoot
 
