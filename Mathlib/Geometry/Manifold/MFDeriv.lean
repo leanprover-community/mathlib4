@@ -642,7 +642,7 @@ theorem mfderivWithin_inter (ht : t ∈ 𝓝 x) :
 theorem mfderivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : mfderivWithin I I' f s x = mfderiv I I' f x := by
   rw [← mfderivWithin_univ, ← univ_inter s, mfderivWithin_inter h]
 
-lemma mfderivWithin_of_open (hs : IsOpen s) (hx : x ∈ s) :
+lemma mfderivWithin_of_isOpen (hs : IsOpen s) (hx : x ∈ s) :
     mfderivWithin I I' f s x = mfderiv I I' f x :=
   mfderivWithin_of_mem_nhds (hs.mem_nhds hx)
 
