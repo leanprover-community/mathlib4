@@ -1337,7 +1337,7 @@ theorem StructureGroupoid.restriction_chart (he : e ∈ atlas H M) (hs : Set.Non
   exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.restriction_in_maximalAtlas he)
 
 /-- Each chart of a charted space is a structomorphism between its source and target. -/
-lemma LocalHomeomorphism.toStructomorph (he : e ∈ atlas H M)
+def LocalHomeomorphism.toStructomorph (he : e ∈ atlas H M)
     [HasGroupoid M G] [ClosedUnderRestriction G] :
     let s : Opens M := { carrier := e.source, is_open' := e.open_source }
     let t : Opens H := { carrier := e.target, is_open' := e.open_target }
