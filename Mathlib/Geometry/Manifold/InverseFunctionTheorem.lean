@@ -76,19 +76,39 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
     intro f g s t x f' hx hs hf hf' hinv
     unfold contDiffPregroupoidBasic
     simp only
-    -- Since f is cont. differentiable on s, there's a neighbourhood s.t. df_x' is an isomorphism
+    -- Since f is cont. differentiable on s, there's a neighbourhood U of x s.t. df_x' is an isomorphism
     -- for all x'. We use this neighbourhood.
-    -- Then, run the argument below with f' := fderiv ℝ f x'.
-
-    show ContDiffOn ℝ n g t
-    suffices ∀ y : t, ContDiffAt ℝ n g y by
-      exact fun y hy ↦ (this ⟨y, hy⟩).contDiffWithinAt
-    intro ⟨y, hy⟩
-    let x := g y
-    have : f x = y := hinv.2 hy
-    have : x ∈ s := sorry -- need some mapsTo
-    -- mismatch: differential disagrees
-    -- let r := Iwant hinv (hf.contDiffAt (hs.mem_nhds this)) hf' hn
-    sorry
+    rcases mem_nhds_iff.mp f'.nhds with ⟨t', ht, htopen, hft⟩
+    let U := (fun x ↦ fderiv ℝ f x) ⁻¹' t' ∩ s
+    have : IsOpen U := by
+      have : ContinuousOn (fun x ↦ fderiv ℝ f x) s := sorry -- as f is contDiff on s
+      apply IsOpen.inter _ hs
+      refine this.isOpen_preimage (t := t') hs ?_ htopen
+      sorry -- xxx: finish arguing why this is ⊆ s
+    -- each fderiv ℝ f x' for x' ∈ U is an isomorphism
+    --use U
+    have : MapsTo f s t := sorry -- assume; check if really needed!
+    have scifi : f '' U ⊆ t := sorry -- f '' U ⊆ f '' s ⊆ t: first I just showed
+    have scifi2 : IsOpen (f '' U) := sorry -- need to argue harder: f is a local homeo or so
+    have hinv' : InvOn g f U (f '' U) := hinv.mono (inter_subset_right _ _) scifi
+    have : ∃ V ⊆ t, IsOpen V ∧ ContDiffOn ℝ n g V := by
+      use f '' U
+      refine ⟨scifi, scifi2, ?_⟩
+      -- run the argument below with each f' := fderiv ℝ f y
+      -- unclear: how to state in Lean "df_x" is an iso
+      suffices ∀ y : f '' U, ContDiffAt ℝ n g y by
+        exact fun y hy ↦ (this ⟨y, hy⟩).contDiffWithinAt
+      intro ⟨y, hy⟩
+      let x' := g y
+      have eq : g y = x' := rfl
+      have : f x' = y := hinv.2 (scifi hy)
+      rcases hy with ⟨x'', hx''U, hx''y⟩
+      have : x' ∈ U := by rw [← eq, ← hx''y, hinv.1 (mem_of_mem_inter_right hx''U)]; exact hx''U
+      let f'' := fderiv ℝ f x'
+      have : HasFDerivAt f f'' x'' := sorry -- standard
+      -- last: upgrade f'' to an isomorphism, then can apply r
+      -- exact Iwant hinv (hf.contDiffAt (hs.mem_nhds (mem_of_mem_inter_right hx''U))) this hn
+      sorry
+    sorry -- TODO: adjust conclusion of statement!
 
 end IFTBasic
