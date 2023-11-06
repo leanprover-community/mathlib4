@@ -57,17 +57,38 @@ def contDiffPregroupoidBasic : Pregroupoid E := {
 -- FIXME: not entirely true; I get that g is ContDiff in *some* nhd of x, might be smaller than t!
 lemma Iwant [CompleteSpace E] {f g : E → E} {s t : Set E} {x : E} {f' : E ≃L[ℝ] E}
     (hinv : InvOn g f s t) (hf : ContDiffAt ℝ n f x) (hf' : HasFDerivAt (𝕜 := ℝ) f f' x)
-    (hn : 1 ≤ n) : ContDiffOn ℝ n g t := by
+    (hn : 1 ≤ n) : ContDiffAt ℝ n g (f x) := by
   let r := hf.to_localInverse (f' := f') hf' hn -- ContDiffAt ℝ n (hf.localInverse hf' hn) (f x)
+  set g' := ContDiffAt.localInverse hf hf' hn
+  have : EqOn g g' s := by
+    have : InvOn g' f s t := sorry -- by construction
+    -- now, should be a basic lemma
+    sorry
+  -- apply fderiv_congr to rewrite g' with g
   sorry
 
 /-- If `E` is complete and `n ≥ 1`, the pregroupoid of `C^n` functions
   is an IFT pregroupoid.
-  Proof relies on the mean value theorem, which is why ℝ or ℂ is required. -/
+  The proof relies on the mean value theorem, which is why ℝ or ℂ is required. -/
 def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroupoid E where
-  toPregroupoid := contDiffPregroupoidBasic
+  toPregroupoid := contDiffPregroupoidBasic (n := n)
   inverse := by
     intro f g s t x f' hx hs hf hf' hinv
-    exact Iwant hinv (hf.contDiffAt (hs.mem_nhds hx)) hf' hn
+    unfold contDiffPregroupoidBasic
+    simp only
+    -- Since f is cont. differentiable on s, there's a neighbourhood s.t. df_x' is an isomorphism
+    -- for all x'. We use this neighbourhood.
+    -- Then, run the argument below with f' := fderiv ℝ f x'.
+
+    show ContDiffOn ℝ n g t
+    suffices ∀ y : t, ContDiffAt ℝ n g y by
+      exact fun y hy ↦ (this ⟨y, hy⟩).contDiffWithinAt
+    intro ⟨y, hy⟩
+    let x := g y
+    have : f x = y := hinv.2 hy
+    have : x ∈ s := sorry -- need some mapsTo
+    -- mismatch: differential disagrees
+    -- let r := Iwant hinv (hf.contDiffAt (hs.mem_nhds this)) hf' hn
+    sorry
 
 end IFTBasic
