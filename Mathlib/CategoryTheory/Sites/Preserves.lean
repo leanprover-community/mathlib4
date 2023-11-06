@@ -72,35 +72,56 @@ section Product
 variable (hI : IsInitial I)
 
 -- This is the data of a particular disjoint coproduct in `C`.
-variable {α : Type} (X : α → C) [HasCoproduct X] [(ofArrows X (Sigma.ι X)).hasPullbacks]
-    [HasInitial C] [∀ i, Mono (Sigma.ι X i)] (hd : ∀ i j, i ≠ j →
-    IsPullback (initial.to _) (initial.to _) (Sigma.ι X i) (Sigma.ι X j))
+variable {α : Type} {X : α → C} (c : Cofan X) (hc : IsColimit c) [(ofArrows X c.inj).hasPullbacks]
+    [HasInitial C] [∀ i, Mono (c.inj i)]
+    (hd : ∀ i j, i ≠ j → IsPullback (initial.to _) (initial.to _) (c.inj i) (c.inj j))
 
 /--
 The two parallel maps in the equalizer diagram for the sheaf condition corresponding to the
 inclusion maps in a disjoint coproduct are equal.
 -/
-theorem firstMap_eq_secondMap : Equalizer.Presieve.Arrows.firstMap F X (Sigma.ι X) =
-    Equalizer.Presieve.Arrows.secondMap F X (fun j ↦ Sigma.ι X j) := by
+theorem firstMap_eq_secondMap : Equalizer.Presieve.Arrows.firstMap F X c.inj =
+    Equalizer.Presieve.Arrows.secondMap F X c.inj := by
   ext a ⟨i, j⟩
   simp only [Equalizer.Presieve.Arrows.firstMap, Types.pi_lift_π_apply, types_comp_apply,
     Equalizer.Presieve.Arrows.secondMap]
   by_cases hi : i = j
   · subst hi
-    suffices pullback.fst (f := Sigma.ι X i) (g := Sigma.ι X i) =
-      pullback.snd (f := Sigma.ι X i) (g := Sigma.ι X i) by rw [this]
-    apply Mono.right_cancellation (f := Sigma.ι X i)
-    exact pullback.condition
+    suffices pullback.fst (f := c.inj i) (g := c.inj i) =
+      pullback.snd (f := c.inj i) (g := c.inj i) by rw [this]
+    exact Mono.right_cancellation _ _ pullback.condition
   · haveI := preservesTerminalOfIsSheafForEmpty F hF hI
-    let i₁ : op (pullback (Sigma.ι X i) (Sigma.ι X j)) ≅ op (⊥_ _) :=
-      ((hd i j hi).isoPullback).op
-    let i₂ : op (⊥_ C) ≅ (⊤_ Cᵒᵖ) :=
-      (terminalIsoIsTerminal (terminalOpOfInitial initialIsInitial)).symm
-    apply_fun (F.mapIso i₁ ≪≫ F.mapIso i₂ ≪≫ (PreservesTerminal.iso F)).hom using
+    -- let i₁ : op (pullback (c.inj i) (c.inj j)) ≅ op (⊥_ _) := ((hd i j hi).isoPullback).op
+    -- let i₂ : op (⊥_ C) ≅ (⊤_ Cᵒᵖ) :=
+    --   (terminalIsoIsTerminal (terminalOpOfInitial initialIsInitial)).symm
+    apply_fun (F.mapIso ((hd i j hi).isoPullback).op ≪≫ F.mapIso (terminalIsoIsTerminal
+      (terminalOpOfInitial initialIsInitial)).symm ≪≫ (PreservesTerminal.iso F)).hom using
       injective_of_mono _
     simp
 
-theorem piComparison_fac' {Z : C} (π : (i : α) → X i ⟶ Z) [IsIso (Sigma.desc π)] :
+theorem piComparison_fac'' :
+    haveI : HasCoproduct X := ⟨⟨c, hc⟩⟩
+    piComparison F (fun x ↦ op (X x)) =
+    F.map ((opCoproductIsoProduct X).inv ≫
+    ((coproductIsCoproduct X).coconePointUniqueUpToIso hc).op.inv) ≫
+    Equalizer.Presieve.Arrows.forkMap F X (fun i ↦ c.ι.app ⟨i⟩) := by
+  simp only [Cofan.mk_pt, Equalizer.Presieve.Arrows.forkMap, Category.assoc]
+  haveI : HasCoproduct fun i ↦ ((Discrete.functor X).obj { as := i }) := ⟨⟨c, hc⟩⟩
+  sorry
+  -- have h₁ : Pi.lift (fun i ↦ F.map (c.ι.app ⟨i⟩).op) =
+  --     F.map (Pi.lift (fun i ↦ (c.ι.app ⟨i⟩).op)) ≫ piComparison F _ := by
+  --   simp only [Discrete.functor_obj, Functor.const_obj_obj, piComparison]
+  --   ext
+  --   simp only [types_comp_apply, Types.pi_lift_π_apply]
+  -- have h₂ : (opCoproductIsoProduct X).inv ≫ (inv (Sigma.desc π)).op =
+  --     inv ((Sigma.desc π).op ≫ (opCoproductIsoProduct X).hom) := by
+  --   simp only [op_inv, IsIso.inv_comp, IsIso.Iso.inv_hom]
+  -- simp only [Equalizer.Presieve.Arrows.forkMap, h₂, h₁,  ← desc_op_comp_opCoproductIsoProduct_hom,
+  --   ← Category.assoc, ← Functor.map_comp, IsIso.inv_comp, IsIso.Iso.inv_hom,
+  --   Category.assoc, IsIso.inv_hom_id, Category.comp_id, Iso.inv_hom_id, Functor.map_id,
+  --   Category.id_comp]
+
+theorem piComparison_fac' {Z : C} [HasCoproduct X] (π : (i : α) → X i ⟶ Z) [IsIso (Sigma.desc π)] :
     piComparison F (fun x ↦ op (X x)) =
     F.map ((opCoproductIsoProduct X).inv ≫ (inv (Sigma.desc π)).op) ≫
     Equalizer.Presieve.Arrows.forkMap F X π := by
@@ -114,7 +135,7 @@ theorem piComparison_fac' {Z : C} (π : (i : α) → X i ⟶ Z) [IsIso (Sigma.de
     Category.assoc, IsIso.inv_hom_id, Category.comp_id, Iso.inv_hom_id, Functor.map_id,
     Category.id_comp]
 
-theorem piComparison_fac : piComparison F (fun x ↦ op (X x)) =
+theorem piComparison_fac [HasCoproduct X] : piComparison F (fun x ↦ op (X x)) =
     F.map (opCoproductIsoProduct X).inv ≫
     Equalizer.Presieve.Arrows.forkMap F X (Sigma.ι X) := by
   have : Sigma.desc (Sigma.ι X) = 𝟙 _ := by ext; simp
@@ -130,14 +151,18 @@ If `F` is a presheaf which `IsSheafFor` a presieve of arrows and the empty presi
 preserves the product corresponding to the presieve of arrows.
 -/
 noncomputable
-def preservesProductOfIsSheafFor (hF' : (ofArrows X (Sigma.ι X)).IsSheafFor F) :
+def preservesProductOfIsSheafFor (hF' : (ofArrows X c.inj).IsSheafFor F) :
     PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F := by
+  haveI : HasCoproduct X := ⟨⟨c, hc⟩⟩
   refine @PreservesProduct.ofIsoComparison _ _ _ _ F _ (fun x ↦ op (X x)) _ _ ?_
   rw [piComparison_fac]
   refine @IsIso.comp_isIso _ _ _ _ _ _ _ inferInstance ?_
   rw [isIso_iff_bijective, Function.bijective_iff_existsUnique]
   rw [Equalizer.Presieve.Arrows.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at hF'
-  exact fun b ↦ hF' b (congr_fun (firstMap_eq_secondMap F hF hI X hd) b)
+  haveI : (ofArrows X (Cofan.mk _ (Sigma.ι X)).inj).hasPullbacks := sorry
+  intro b
+  have := hF' b-- (congr_fun (firstMap_eq_secondMap F hF hI (Cofan.mk _ (Sigma.ι X)) (coproductIsCoproduct _) hm hd) b)
+  -- refine fun b ↦ hF' b (congr_fun (firstMap_eq_secondMap F hF hI (Cofan.mk _ (Sigma.ι X)) (coproductIsCoproduct _) hm hd) b)
 
 /--
 If `F` preserves a particular product, then it `IsSheafFor` the corresponging presieve of arrows.

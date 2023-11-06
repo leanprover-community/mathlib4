@@ -414,7 +414,6 @@ instance : HasProduct (fun z ↦ op (Z z)) := hasLimitOfIso
     Discrete.functor (fun z ↦ op (Z z)))
 
 /-- The isomorphism from the opposite of the coproduct to the product. -/
-@[simp]
 noncomputable
 def opCoproductIsoProduct : op (∐ Z) ≅ ∏ (fun z => op (Z z)) :=
   IsLimit.conePointUniqueUpToIso (isLimitCoconeOp _ (coproductIsCoproduct fun b ↦ Z b))
@@ -422,36 +421,57 @@ def opCoproductIsoProduct : op (∐ Z) ≅ ∏ (fun z => op (Z z)) :=
     (productIsProduct (fun z ↦ op (Z z))) (limit.isLimit _) (Discrete.opposite α).symm
     (Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl))).symm
 
-lemma opCoproductIsoProduct_inv_comp_ι (b : α) :
-    (opCoproductIsoProduct Z).inv ≫ (Sigma.ι (fun a => Z a) b).op =
+lemma opCoproductIsoProduct_inv_comp_ι' {c : Cofan Z} (hc : IsColimit c) (b : α) :
+    (opCoproductIsoProduct Z).inv ≫
+    ((coproductIsCoproduct Z).coconePointUniqueUpToIso hc).op.inv ≫ (c.inj b).op =
     Pi.π (fun a => op (Z a)) b := by
-  dsimp only [opCoproductIsoProduct]
-  simp only [Iso.trans_inv]
-  have := IsLimit.conePointUniqueUpToIso_inv_comp
-    (isLimitCoconeOp _ (coproductIsCoproduct fun b ↦ Z b)) (limit.isLimit _) (op ⟨b⟩)
-  dsimp at this
-  rw [Category.assoc, this]
-  simp only [limit.cone_x, Fan.mk_pt, Equivalence.symm_functor, Discrete.natIsoFunctor,
-    Functor.comp_obj, Functor.op_obj, Iso.symm_inv, IsLimit.conePointsIsoOfEquivalence_hom,
-    Equivalence.symm_inverse, Cones.equivalenceOfReindexing_functor, Iso.trans_hom, Iso.symm_hom,
-    isoWhiskerLeft_inv, Iso.trans_inv, whiskerLeft_comp, Cones.whiskering_obj, limit.isLimit_lift,
+  simp only [Cofan.mk_pt, Iso.op_inv, opCoproductIsoProduct, Iso.trans_inv, ← op_comp]
+  erw [(by rfl : c.inj b = c.ι.app ⟨b⟩), IsColimit.comp_coconePointUniqueUpToIso_inv
+    (coproductIsCoproduct Z) hc ⟨b⟩, Category.assoc, IsLimit.conePointUniqueUpToIso_inv_comp
+    (isLimitCoconeOp _ (coproductIsCoproduct Z)) (limit.isLimit _) (op ⟨b⟩)]
+  simp only [limit.cone_x, Fan.mk_pt, Equivalence.symm_functor, Discrete.natIsoFunctor, comp_obj,
+    op_obj, Iso.symm_inv, IsLimit.conePointsIsoOfEquivalence_hom, Equivalence.symm_inverse,
+    Cones.equivalenceOfReindexing_functor, Iso.trans_hom, Iso.symm_hom, isoWhiskerLeft_inv,
+    Iso.trans_inv, whiskerLeft_comp, Cones.whiskering_obj, limit.isLimit_lift, limit.cone_π,
     limit.lift_π, Cones.postcompose_obj_pt, Cone.whisker_pt, Cones.postcompose_obj_π,
-    Cone.whisker_π, Category.assoc, NatTrans.comp_app, Functor.const_obj_obj, unop_op,
-    Discrete.functor_obj, whiskerLeft_app, Fan.mk_π_app, Discrete.opposite_functor_obj_as,
-    Discrete.natIso_inv_app, Iso.refl_inv, Equivalence.invFunIdAssoc_hom_app, Functor.id_obj,
-    Functor.op_map, Discrete.functor_map_id, op_id]
+    Cone.whisker_π, Category.assoc, NatTrans.comp_app, const_obj_obj, unop_op, Discrete.functor_obj,
+    whiskerLeft_app, Fan.mk_π_app, Discrete.opposite_functor_obj_as, Discrete.natIso_inv_app,
+    Iso.refl_inv, Equivalence.invFunIdAssoc_hom_app, id_obj, op_map, Discrete.functor_map_id, op_id]
   simp only [Discrete.functor, Function.comp_apply, id_eq, Discrete.opposite, Equivalence.mk,
     id_obj, comp_obj, leftOp_obj, unop_op, op_obj, Category.comp_id]
 
+lemma opCoproductIsoProduct_inv_comp_ι (b : α) :
+    (opCoproductIsoProduct Z).inv ≫ (Sigma.ι (fun a => Z a) b).op =
+    Pi.π (fun a => op (Z a)) b := by
+  rw [← opCoproductIsoProduct_inv_comp_ι' Z (coproductIsCoproduct Z)]
+  congr
+  simp only [unop_op, Cofan.mk_pt, cofan_mk_inj, Quiver.Hom.unop_op, Iso.op_inv]
+  suffices ((coproductIsCoproduct Z).coconePointUniqueUpToIso (coproductIsCoproduct Z)).inv =
+        𝟙 _ by rw [this]; simp
+  simp [IsColimit.coconePointUniqueUpToIso]
+
+lemma desc_op_comp_opCoproductIsoProduct_hom' {c : Cofan Z} (hc : IsColimit c)
+    {X : C} (π : (a : α) → Z a ⟶ X) : (Cofan.IsColimit.desc hc π).op ≫
+      ((coproductIsCoproduct Z).coconePointUniqueUpToIso hc).op.hom ≫
+        (opCoproductIsoProduct Z).hom = Pi.lift (fun a => Quiver.Hom.op (π a)) := by
+  rw [← Category.assoc, ← Iso.eq_comp_inv (opCoproductIsoProduct Z)]
+  apply Quiver.Hom.unop_inj
+  refine' Sigma.hom_ext (f := Z) _ _ (fun a => _)
+  rw [← Quiver.Hom.unop_op (Sigma.ι Z a), ← unop_comp, ← unop_comp, Category.assoc, Category.assoc,
+    opCoproductIsoProduct_inv_comp_ι]
+  simp only [unop_op, Cofan.mk_pt, Iso.op_hom, unop_comp, Quiver.Hom.unop_op, Category.assoc,
+    limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
+  erw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc]
+  simp only [Discrete.functor_obj, Cofan.IsColimit.desc, IsColimit.fac, Cofan.mk_pt, Cofan.mk_ι_app]
+
 lemma desc_op_comp_opCoproductIsoProduct_hom {X : C} (π : (a : α) → Z a ⟶ X) :
     (Sigma.desc π).op ≫ (opCoproductIsoProduct Z).hom = Pi.lift (fun a => Quiver.Hom.op (π a)) := by
-  rw [← Iso.eq_comp_inv (opCoproductIsoProduct Z)]
+  rw [← desc_op_comp_opCoproductIsoProduct_hom' Z (coproductIsCoproduct _) π]
   congr
-  refine' Sigma.hom_ext (f := Z) _ _ (fun a => _)
-  rw [← Category.assoc, colimit.ι_desc, ← Quiver.Hom.unop_op (Sigma.ι Z a), ← unop_comp,
-    opCoproductIsoProduct_inv_comp_ι, ← unop_comp]
-  simp only [Cofan.mk_pt, Cofan.mk_ι_app, Pi.lift, Pi.π, limit.lift_π, Fan.mk_pt, Fan.mk_π_app,
-    Quiver.Hom.unop_op]
+  · simp [Cofan.IsColimit.desc, coproductIsCoproduct]
+  · suffices ((coproductIsCoproduct Z).coconePointUniqueUpToIso (coproductIsCoproduct Z)).op.hom =
+        𝟙 _ by rw [this]; simp
+    simp [IsColimit.coconePointUniqueUpToIso]
 
 end OppositeCoproducts
 
