@@ -222,9 +222,12 @@ noncomputable def integralPowerBasis' [hcycl : IsCyclotomicExtension {p} ℚ K]
   @integralPowerBasis p 1 K _ _ _ _ (by convert hcycl; rw [pow_one]) (by rwa [pow_one])
 #align is_primitive_root.integral_power_basis' IsPrimitiveRoot.integralPowerBasis'
 
+abbrev toInteger {k : ℕ+} (hζ :IsPrimitiveRoot ζ k) : 𝓞 K :=
+  ⟨ζ, hζ.isIntegral k.pos⟩
+
 @[simp]
 theorem integralPowerBasis'_gen [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p) :
-    hζ.integralPowerBasis'.gen = ⟨ζ, hζ.isIntegral p.pos⟩ :=
+    hζ.integralPowerBasis'.gen = hζ.toInteger :=
   @integralPowerBasis_gen p 1 K _ _ _ _ (by convert hcycl; rw [pow_one]) (by rwa [pow_one])
 #align is_primitive_root.integral_power_basis'_gen IsPrimitiveRoot.integralPowerBasis'_gen
 
@@ -270,8 +273,7 @@ noncomputable def subOneIntegralPowerBasis' [hcycl : IsCyclotomicExtension {p} �
 @[simp]
 theorem subOneIntegralPowerBasis'_gen [hcycl : IsCyclotomicExtension {p} ℚ K]
     (hζ : IsPrimitiveRoot ζ p) :
-    hζ.subOneIntegralPowerBasis'.gen =
-      ⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral p.pos) (Subalgebra.one_mem _)⟩ :=
+    hζ.subOneIntegralPowerBasis'.gen = hζ.toInteger - 1 :=
   @subOneIntegralPowerBasis_gen p 1 K _ _ _ _ (by convert hcycl; rw [pow_one]) (by rwa [pow_one])
 #align is_primitive_root.sub_one_integral_power_basis'_gen IsPrimitiveRoot.subOneIntegralPowerBasis'_gen
 
@@ -279,11 +281,11 @@ theorem subOneIntegralPowerBasis'_gen [hcycl : IsCyclotomicExtension {p} ℚ K]
   See `zeta_sub_one_prime` for a general statement. -/
 theorem zeta_sub_one_prime_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) (hodd : p ≠ 2) :
-    Prime (⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral (p ^ _).pos)
-    (Subalgebra.one_mem _)⟩ : 𝓞 K) := by
+    Prime (hζ.toInteger - 1) := by
   letI := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
   refine Ideal.prime_of_irreducible_absNorm_span (fun h ↦ ?_) ?_
-  · rw [← Subalgebra.coe_eq_zero, sub_eq_zero] at h
+  · rw [← Subalgebra.coe_eq_zero] at h
+    simp only [AddSubgroupClass.coe_sub, OneMemClass.coe_one, sub_eq_zero] at h
     exact hζ.pow_ne_one_of_pos_of_lt zero_lt_one (one_lt_pow hp.out.one_lt (by simp)) (by simp [h])
   rw [Nat.irreducible_iff_prime, Ideal.absNorm_span_singleton, ← Nat.prime_iff,
     ← Int.prime_iff_natAbs_prime]
@@ -299,11 +301,11 @@ theorem zeta_sub_one_prime_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
   See `zeta_sub_one_prime` for a general statement. -/
 theorem two_pow_zeta_sub_one_prime [IsCyclotomicExtension {(2 : ℕ+) ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑((2 : ℕ+) ^ (k + 1))) :
-    Prime (⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral ((2 : ℕ+) ^ _).pos)
-    (Subalgebra.one_mem _)⟩ : 𝓞 K) := by
+    Prime (hζ.toInteger - 1) := by
   letI := IsCyclotomicExtension.numberField {(2 : ℕ+) ^ (k + 1)} ℚ K
   refine Ideal.prime_of_irreducible_absNorm_span (fun h ↦ ?_) ?_
-  · rw [← Subalgebra.coe_eq_zero, sub_eq_zero] at h
+  · rw [← Subalgebra.coe_eq_zero] at h
+    simp only [AddSubgroupClass.coe_sub, OneMemClass.coe_one, sub_eq_zero] at h
     exact hζ.pow_ne_one_of_pos_of_lt zero_lt_one (one_lt_pow (by norm_num) (by simp)) (by simp [h])
   rw [Nat.irreducible_iff_prime, Ideal.absNorm_span_singleton, ← Nat.prime_iff,
     ← Int.prime_iff_natAbs_prime]
@@ -324,8 +326,7 @@ theorem two_pow_zeta_sub_one_prime [IsCyclotomicExtension {(2 : ℕ+) ^ (k + 1)}
 /-- `ζ - 1` is prime if `ζ` is a primitive `p ^ (k + 1)`-th root of unity. -/
 theorem zeta_sub_one_prime [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) :
-    Prime (⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral (p ^ _).pos)
-    (Subalgebra.one_mem _)⟩ : 𝓞 K) := by
+    Prime (hζ.toInteger - 1) := by
   by_cases htwo : p = 2
   · subst htwo
     apply hζ.two_pow_zeta_sub_one_prime
@@ -339,11 +340,12 @@ theorem zeta_sub_one_prime' [h : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimi
 
 theorem subOneIntegralPowerBasis_gen_prime [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) :
-    Prime hζ.subOneIntegralPowerBasis.gen := by simp [hζ.zeta_sub_one_prime]
+    Prime hζ.subOneIntegralPowerBasis.gen := by simpa using hζ.zeta_sub_one_prime
+
 
 theorem subOneIntegralPowerBasis_gen_prime' [IsCyclotomicExtension {p} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑p) :
-    Prime hζ.subOneIntegralPowerBasis'.gen := by simp [hζ.zeta_sub_one_prime']
+    Prime hζ.subOneIntegralPowerBasis'.gen := by simpa using hζ.zeta_sub_one_prime'
 
 end IsPrimitiveRoot
 
