@@ -5,6 +5,7 @@ Authors: Iván Renison
 -/
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Hasse
+import Mathlib.Data.Nat.Parity
 import Mathlib.Data.ZMod.Basic
 
 /-!
@@ -19,29 +20,13 @@ This file defines colorings for some common graphs
 
 namespace SimpleGraph
 
-theorem suc_mod2_neq (m : ℕ) : (m % 2 == 0) ≠ ((m + 1) % 2 == 0) := by
-  intro h
-  rw [Bool.eq_iff_eq_true_iff, beq_iff_eq] at h
-  simp only [beq_iff_eq, ←Nat.even_iff, Nat.even_add_one] at h
-  exact not_iff_self h.symm
-
 /-- Bicoloring of a path graph -/
 def pathGraph.bicoloring (n : ℕ) :
     Coloring (pathGraph n) Bool :=
-  Coloring.mk (fun u ↦ u.val % 2 == 0)
-    (by
-      intro u v h
-      simp
-      have : u ⋖ v ∨ v ⋖ u := by simp_all [pathGraph]
-      have : u.val ⋖ v.val ∨ v.val ⋖ u.val := by simp_all [Fin.coe_covby_iff]
-      have : u.val + 1 = v.val ∨ v.val + 1 = u.val := by simp_all [Nat.covby_iff_succ_eq]
-      match this with
-        | Or.inl h' =>
-          rw [←h']
-          exact suc_mod2_neq u
-        | Or.inr h' =>
-          rw [←h']
-          exact (suc_mod2_neq v).symm)
+  Coloring.mk (fun u ↦ u.val % 2 = 0) <| by
+    intro u v
+    rw [pathGraph_adj]
+    rintro (h | h) <;> simp [← h, not_iff, Nat.succ_mod_two_eq_zero_iff]
 
 /-- Convert a coloring to bool to a coloring to Fin 2 -/
 def Coloring.BoolToFin2 {α} {G : SimpleGraph α} (c : Coloring G Bool) :

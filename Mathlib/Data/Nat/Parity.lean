@@ -238,11 +238,9 @@ theorem one_add_div_two_mul_two_of_odd (h : Odd n) : 1 + n / 2 * 2 = n := by
 
 theorem succ_mod_two_eq_zero_iff {m : ℕ} : (m + 1) % 2 = 0 ↔ m % 2 = 1 := by
   simp [← Nat.even_iff, ← Nat.not_even_iff, parity_simps]
-#align nat.succ_mod_two_eq_zero_iff Nat.succ_mod_two_eq_zero_iff
 
 theorem succ_mod_two_eq_one_iff {m : ℕ} : (m + 1) % 2 = 1 ↔ m % 2 = 0 := by
   simp [← Nat.even_iff, ← Nat.not_even_iff, parity_simps]
-#align nat.succ_mod_two_eq_one_iff Nat.succ_mod_two_eq_one_iff
 
 set_option linter.deprecated false in
 section
