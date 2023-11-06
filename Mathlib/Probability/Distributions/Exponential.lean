@@ -17,7 +17,7 @@ Define the Exponential Measure over the Reals
   or `0` else, which is the probability density function of a exponential distribution with
   rate `r` (when `hr : 0 < r`).
 * `exponentialPdf`: `ℝ≥0∞`-valued pdf,
-  `exponentialPdf r hr = ENNReal.ofReal (exponentialPdfReal r hr)`.
+  `exponentialPdf r = ENNReal.ofReal (exponentialPdfReal r)`.
 * `expMeasure`: an exponential measure on `ℝ`, parametrized by its rate `r`.
 * `exponentialCdfReal` : the Cdf given by the Definition of CDF in `ProbabilityTheory.Cdf` on
 
@@ -77,13 +77,13 @@ section ExponentialPdf
 
 /-- Define the PDF of the exponential distribution depending on its rate-/
 noncomputable
-def exponentialPdfReal (r : ℝ) (_ : 0 < r) (x : ℝ): ℝ :=
+def exponentialPdfReal (r : ℝ) (x : ℝ) : ℝ :=
 ite (0 ≤ x) (r*(Real.exp (-(↑r*↑x)))) 0
 
 /-- The PDF of the exponential Distribution on the extended real Numbers-/
 noncomputable
-def exponentialPdf (r : ℝ) (hr : 0 < r) (x : ℝ) : ℝ≥0∞ :=
-  ENNReal.ofReal (exponentialPdfReal r hr x)
+def exponentialPdf (r : ℝ) (x : ℝ) : ℝ≥0∞ :=
+  ENNReal.ofReal (exponentialPdfReal r x)
 
 lemma antiDeriv_expDeriv_pos' {r x: ℝ} (hr : 0 < r)  :
     HasDerivAt (fun a => -1/(↑r) * (Real.exp (-(↑r * a)))) (Real.exp (-(↑r * x))) x := by
@@ -94,8 +94,8 @@ lemma antiDeriv_expDeriv_pos' {r x: ℝ} (hr : 0 < r)  :
       one_div, ne_eq]; rw[inv_mul_cancel ?_]; ring; exact ne_of_gt hr
 
 /-- the Lebesgue-Integral of the exponential PDF over nonpositive Reals equals 0-/
-lemma lintegral_nonpos {x r : ℝ} (hr: 0 < r) (hx: x ≤ 0) :
-    ∫⁻ (y : ℝ) in Set.Iio x, (exponentialPdf r hr y) = ENNReal.ofReal 0 := by
+lemma lintegral_nonpos {x r : ℝ} (hx: x ≤ 0) :
+    ∫⁻ (y : ℝ) in Set.Iio x, (exponentialPdf r y) = ENNReal.ofReal 0 := by
   unfold exponentialPdf exponentialPdfReal;
   rw [set_lintegral_congr_fun (g:=(fun _ => 0)) measurableSet_Iio];
   · rw [@lintegral_zero]; exact ENNReal.ofReal_zero.symm
@@ -105,8 +105,8 @@ lemma lintegral_nonpos {x r : ℝ} (hr: 0 < r) (hx: x ≤ 0) :
 
 
 /-- The exponential pdf is measurable. -/
-lemma measurable_exponentialPdfReal (r : ℝ) (hr : 0 < r) :
-    Measurable (exponentialPdfReal r hr) := by
+lemma measurable_exponentialPdfReal (r : ℝ) :
+    Measurable (exponentialPdfReal r) := by
   unfold exponentialPdfReal;
   refine Measurable.ite ?hp ((measurable_id'.const_mul r).neg.exp.const_mul r) ?hg;
   · refine MeasurableSet.of_compl ?hp.h;
@@ -115,13 +115,13 @@ lemma measurable_exponentialPdfReal (r : ℝ) (hr : 0 < r) :
 
 
 /-- The exponential Pdf is strongly measurable. Needed to transfer lintegral to integral -/
-lemma stronglyMeasurable_exponentialPdfReal (r : ℝ) (hr :0 < r) :
-    StronglyMeasurable (exponentialPdfReal r hr) :=
-  (measurable_exponentialPdfReal r hr).stronglyMeasurable
+lemma stronglyMeasurable_exponentialPdfReal (r : ℝ) :
+    StronglyMeasurable (exponentialPdfReal r) :=
+  (measurable_exponentialPdfReal r).stronglyMeasurable
 
 /-- the exponential Pdf is positive for all positive reals-/
 lemma exponentialPdfReal_pos {x r : ℝ} {hr : 0 < r} (hx : 0 < x) :
-    0 < exponentialPdfReal r hr x := by
+    0 < exponentialPdfReal r x := by
   unfold exponentialPdfReal
   conv =>
     rhs
@@ -129,17 +129,17 @@ lemma exponentialPdfReal_pos {x r : ℝ} {hr : 0 < r} (hx : 0 < x) :
   exact mul_pos hr (Real.exp_pos _)
 
 /-- The exponential Pdf is nonnegative-/
-lemma exponentialPdfReal_nonneg {r : ℝ} {hr : 0 < r} :
-    ∀ x : ℝ, exponentialPdfReal r hr x ≥ 0 := by
+lemma exponentialPdfReal_nonneg {r : ℝ} (hr : 0 < r) :
+    ∀ x : ℝ, 0 ≤ exponentialPdfReal r x := by
   unfold exponentialPdfReal
   intro x;
   by_cases x ≥  0
   · conv =>
-      lhs
+      rhs
       rw[if_pos h]
     exact mul_nonneg (le_of_lt hr) (le_of_lt (Real.exp_pos _))
   · conv  =>
-      lhs
+      rhs
       rw[if_neg h]
 
 /-- A negative exponential function is integrable on Intervals in R≥0 -/
@@ -194,13 +194,13 @@ lemma antiDerivTendsZero {r : ℝ} (hr : 0 < r) :
 open Measure
 
 lemma lintegral_exponentialPdfReal_eq_one (r : ℝ) (hr : 0 < r) :
-    ∫⁻ (x : ℝ), exponentialPdf r hr x = 1 := by
-  rw [lintegral_split (exponentialPdf r hr) 0, ←ENNReal.toReal_eq_one_iff];
-  have leftSide: ∫⁻ (x : ℝ) in {x | x < 0}, exponentialPdf r hr x = 0 := by
+    ∫⁻ (x : ℝ), exponentialPdf r x = 1 := by
+  rw [lintegral_split (exponentialPdf r) 0, ←ENNReal.toReal_eq_one_iff];
+  have leftSide: ∫⁻ (x : ℝ) in {x | x < 0}, exponentialPdf r x = 0 := by
     unfold exponentialPdf exponentialPdfReal;
     rw [set_lintegral_congr_fun ( IsOpen.measurableSet (isOpen_gt' 0)) if_eval_pos];
     exact lintegral_zero
-  have rightSide: ∫⁻ (x : ℝ) in {x | x ≥ 0}, exponentialPdf r hr x
+  have rightSide: ∫⁻ (x : ℝ) in {x | x ≥ 0}, exponentialPdf r x
     = ∫⁻ (x : ℝ) in {x | x ≥ 0}, ENNReal.ofReal (r * rexp (-(r * x))) := by
       unfold exponentialPdf exponentialPdfReal; apply set_lintegral_congr_fun _ _
       · refine MeasurableSet.of_compl ?h; rw [comp_of_ge];
@@ -227,7 +227,7 @@ lemma lintegral_exponentialPdfReal_eq_one (r : ℝ) (hr : 0 < r) :
 /-- The Pdf of the exponential Distribution integrates to 1-/
 @[simp]
 lemma lintegral_exponentialPdf_eq_one (r : ℝ) (hr : 0 < r) :
-    ∫⁻ x, exponentialPdf r hr x = 1 :=
+    ∫⁻ x, exponentialPdf r x = 1 :=
   lintegral_exponentialPdfReal_eq_one r hr
 
 end ExponentialPdf
@@ -236,32 +236,33 @@ open MeasureTheory
 
 /-- Measure defined by the exponential Distribution -/
 noncomputable
-def expMeasure (r : ℝ) (hr : 0 < r) : Measure ℝ :=
-  volume.withDensity (exponentialPdf r hr)
+def expMeasure (r : ℝ) : Measure ℝ :=
+  volume.withDensity (exponentialPdf r)
 
-instance instIsProbabilityMeasureExponential (r : ℝ) (hr: 0 < r) :
-    IsProbabilityMeasure (expMeasure r hr) where
+instance instIsProbabilityMeasureExponential (r : ℝ) [Fact (0 < r)] :
+    IsProbabilityMeasure (expMeasure r) where
   measure_univ := by unfold expMeasure; simp only [MeasurableSet.univ, withDensity_apply,
-    Measure.restrict_univ, lintegral_exponentialPdf_eq_one]
+    Measure.restrict_univ, lintegral_exponentialPdf_eq_one r Fact.out]
 
 /-- CDF of the exponential Distribution -/
 noncomputable
-def exponentialCdfReal (r : ℝ) (hr : 0 < r) : StieltjesFunction :=
-    ProbabilityTheory.cdf (expMeasure r hr)
+def exponentialCdfReal (r : ℝ) : StieltjesFunction :=
+    ProbabilityTheory.cdf (expMeasure r)
 
-lemma ExpCDF_eq_integral (r : ℝ) (hr: 0 < r) : ((exponentialCdfReal r hr))
-    = fun x => ∫ x in (Set.Iic x), exponentialPdfReal r hr x := by
+lemma ExpCDF_eq_integral (r : ℝ) [Fact (0 < r)] : ((exponentialCdfReal r))
+    = fun x => ∫ x in (Set.Iic x), exponentialPdfReal r x := by
   ext x;
+  --have := instIsProbabilityMeasureExponential r hr
   unfold exponentialCdfReal; rw [ProbabilityTheory.cdf_eq_toReal];
   unfold expMeasure; simp only [measurableSet_Iic, withDensity_apply];
   rw [integral_eq_lintegral_of_nonneg_ae]; exact rfl;
-  · apply ae_of_all _ ?a; simp only [Pi.zero_apply]; intro a; exact exponentialPdfReal_nonneg a
+  · apply ae_of_all _ ?a; simp only [Pi.zero_apply]; intro a; exact exponentialPdfReal_nonneg Fact.out a
   · refine AEStronglyMeasurable.restrict ?hfm.hfm;
     refine Measurable.aestronglyMeasurable ?hfm.hfm.hf;
-    exact measurable_exponentialPdfReal r hr
+    exact measurable_exponentialPdfReal r
 
-lemma ExpCDF_eq_lintegral (r : ℝ) (hr: 0 < r) : ((exponentialCdfReal r hr)) =
-    fun x => ENNReal.toReal (∫⁻ x in (Set.Iic x), (exponentialPdf r hr x)) := by
+lemma ExpCDF_eq_lintegral (r : ℝ) [Fact (0 < r)] : ((exponentialCdfReal r)) =
+    fun x => ENNReal.toReal (∫⁻ x in (Set.Iic x), (exponentialPdf r x)) := by
   ext x;
   unfold exponentialPdf exponentialCdfReal; rw [ProbabilityTheory.cdf_eq_toReal];
   unfold expMeasure; simp only [measurableSet_Iic, withDensity_apply];
@@ -271,14 +272,13 @@ open Topology
 
 lemma antiDeriv_expDeriv_pos {r x : ℝ} :
     HasDerivAt (fun a => -1* (Real.exp (-(↑r * a)))) (r * Real.exp (-(↑r * x))) x := by
-  
   convert (((hasDerivAt_id x).const_mul (-↑r)).exp.const_mul (-1)) using 1;
   · simp only [id_eq, neg_mul];
   simp only [id_eq, neg_mul, mul_one, mul_neg, one_mul, neg_neg, mul_comm]
 
 
 lemma lint_eq_antiDeriv (r : ℝ) (hr: 0 < r) : ∀ x : ℝ,
-    (∫⁻ y in (Set.Iic x),  (exponentialPdf r hr y) =
+    (∫⁻ y in (Set.Iic x),  (exponentialPdf r y) =
     ENNReal.ofReal ( ite (0 ≤ x) (1 - Real.exp (-(r * x))) 0)) := by
   intro x'; split_ifs with h
   case neg; unfold exponentialPdf exponentialPdfReal;
@@ -287,7 +287,7 @@ lemma lint_eq_antiDeriv (r : ℝ) (hr: 0 < r) : ∀ x : ℝ,
   refine ae_of_all ℙ ?_; intro a ha; simp only [Set.mem_Iic] at ha;
   simp only [ge_iff_le, ENNReal.ofReal_eq_zero]
   rw [if_neg]; linarith
-  rw [lint_split_bounded _ h, lintegral_nonpos _ (le_refl 0), ENNReal.ofReal_zero, zero_add];
+  rw [lint_split_bounded _ h, lintegral_nonpos (le_refl 0), ENNReal.ofReal_zero, zero_add];
   unfold exponentialPdf exponentialPdfReal;
   rw[set_lintegral_congr_fun (g:=(fun x => ENNReal.ofReal (r * rexp (-(r * x)))))
     measurableSet_Icc ?ifpos]
@@ -325,10 +325,11 @@ lemma lint_eq_antiDeriv (r : ℝ) (hr: 0 < r) : ∀ x : ℝ,
 
 /-- The Definition of the CDF equals the known Formular ``1 - exp (-(r * x))``-/
 
-lemma ExpCDF_eq {r : ℝ} {hr : 0 < r} : (exponentialCdfReal r hr) =
+lemma ExpCDF_eq {r : ℝ} [Fact (0 < r)] : (exponentialCdfReal r) =
     fun x => ite (0 ≤ x) (1 - Real.exp (-(r * x))) 0 := by
-  rw[ExpCDF_eq_lintegral]; ext x; rw [lint_eq_antiDeriv]; rw[@ENNReal.toReal_ofReal_eq_iff]
+  rw[ExpCDF_eq_lintegral]; ext x; rw [lint_eq_antiDeriv _ Fact.out];
+  rw[@ENNReal.toReal_ofReal_eq_iff]
   split_ifs with h
   · simp only [sub_nonneg, Real.exp_le_one_iff, Left.neg_nonpos_iff, gt_iff_lt]
-    exact (mul_nonneg hr.le h)
+    exact (mul_nonneg (le_of_lt (Fact.out)) h);
   · linarith
