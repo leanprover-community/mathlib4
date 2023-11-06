@@ -216,7 +216,7 @@ namespace lift
   closed extension is proven to exist. The assumption that M is algebraically closed could probably
   easily be switched to an assumption that M contains all the roots of polynomials in K -/
 variable {K : Type u} {L : Type v} {M : Type w} [Field K] [Field L] [Algebra K L] [Field M]
-  [Algebra K M]
+  [Algebra K M] [IsAlgClosed M] (hL : Algebra.IsAlgebraic K L)
 
 variable (K L M)
 
@@ -308,21 +308,15 @@ theorem maximalSubfieldWithHom_is_maximal :
 
 -- porting note: this was much faster in lean 3
 set_option synthInstance.maxHeartbeats 200000 in
-theorem mem_maximalSubfieldWithHom_of_splits (hL : Algebra.IsAlgebraic K L) (x : L)
-    (hsplit : Splits (algebraMap K M) (minpoly K x)) :
-    x ∈ (maximalSubfieldWithHom K L M).carrier := by
+theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier = ⊤ := by
+  rw [eq_top_iff]
+  intro x _
   let N : Subalgebra K L := (maximalSubfieldWithHom K L M).carrier
   letI : Field N := (Subalgebra.isField_of_algebraic N hL).toField
   letI : Algebra N M := (maximalSubfieldWithHom K L M).emb.toRingHom.toAlgebra
-  have : ∃ y : M, aeval y (minpoly N x) = 0 := by
-    rw [IsScalarTower.algebraMap_eq K N M, ← splits_map_iff] at hsplit
-    have h0 : Polynomial.map (algebraMap K N) (minpoly K x) ≠ 0 := Polynomial.map_ne_zero <|
-      minpoly.ne_zero <| isAlgebraic_iff_isIntegral.1 <| Algebra.isAlgebraic_of_larger_base K hL x
-    have h1 := ne_of_gt <| minpoly.degree_pos <| isAlgebraic_iff_isIntegral.1 <|
-      Algebra.isAlgebraic_of_larger_base N hL x
-    exact exists_root_of_splits' _ (splits_of_splits_of_dvd _ h0 hsplit <|
-      minpoly.dvd_map_of_isScalarTower K N x) (by rw [degree_map]; exact h1)
-  obtain ⟨y, hy⟩ := this
+  obtain ⟨y, hy⟩ := IsAlgClosed.exists_aeval_eq_zero M (minpoly N x) <|
+    (minpoly.degree_pos
+      (isAlgebraic_iff_isIntegral.1 (Algebra.isAlgebraic_of_larger_base _ hL x))).ne'
   let O : Subalgebra N L := Algebra.adjoin N {(x : L)}
   letI : Algebra N O := Subalgebra.algebra O
   -- Porting note: there are some tricky unfolds going on here:
@@ -345,12 +339,6 @@ theorem mem_maximalSubfieldWithHom_of_splits (hL : Algebra.IsAlgebraic K L) (x :
   refine' (maximalSubfieldWithHom_is_maximal K L M O' hO').fst _
   show x ∈ Algebra.adjoin N {(x : L)}
   exact Algebra.subset_adjoin (Set.mem_singleton x)
-
-theorem maximalSubfieldWithHom_eq_top [IsAlgClosed M] (hL : Algebra.IsAlgebraic K L) :
-    (maximalSubfieldWithHom K L M).carrier = ⊤ := by
-  rw [eq_top_iff]
-  intro x _
-  exact mem_maximalSubfieldWithHom_of_splits K L M hL x (splits_codomain _)
 #align lift.subfield_with_hom.maximal_subfield_with_hom_eq_top IsAlgClosed.lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top
 
 end SubfieldWithHom
