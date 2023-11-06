@@ -93,7 +93,7 @@ lemma IFT_categorical [CompleteSpace E] {f : E → E} {s : Set E} {x : E}
   let f_loc := diff.toLocalHomeomorph f hf' hn
   have hx' : x ∈ f_loc.source := diff.mem_toLocalHomeomorph_source  hf' hn
 
-  -- Two sets in play here: f is `P` on s; we get a local inverse `f_loc` on `f_loc.source`.
+  -- Two sets in play here: `f` is `P` on `s`; we get a local inverse `f_loc` on `f_loc.source`.
   -- Our IFT groupoid property applies on the intersection, hence we need monotonity of `P`.
   let s' := (f_loc.source ∩ s)
   have hs' : IsOpen s' := f_loc.open_source.inter hs
