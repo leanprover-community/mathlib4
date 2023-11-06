@@ -173,7 +173,6 @@ theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x 
   rw [piComparison_fac'' (hc := hc), isIso_iff_bijective, Function.bijective_iff_existsUnique] at hi
   intro b _
   obtain ⟨t, ht₁, ht₂⟩ := hi b
-  -- F.map ((opCoproductIsoProduct X).inv ≫ ((coproductIsCoproduct X).coconePointUniqueUpToIso hc).op.inv)
   refine ⟨F.map ((opCoproductIsoProduct X).inv ≫
     ((coproductIsCoproduct X).coconePointUniqueUpToIso hc).op.inv) t, ht₁, fun y hy ↦ ?_⟩
   specialize ht₂ (F.map (((coproductIsCoproduct X).coconePointUniqueUpToIso hc).hom.op ≫
@@ -193,6 +192,18 @@ theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x 
     congr
     simp only [← Functor.map_inv, ← FunctorToTypes.map_comp_apply, ← op_comp,
       Iso.inv_hom_id, op_id, FunctorToTypes.map_id_apply]
+
+theorem isSheafFor_of_preservesProduct' {Z : C} (π : (i : α) → X i ⟶ Z)
+    [HasCoproduct X] [IsIso (Sigma.desc π)]
+    [PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F] [(ofArrows X π).hasPullbacks] :
+    (ofArrows X π).IsSheafFor F := by
+  have : (Cofan.mk Z π).inj = π := rfl
+  rw [← this]
+  haveI : (ofArrows (fun b ↦ X b) (Cofan.inj (Cofan.mk Z π))).hasPullbacks := by
+    rw [this]
+    infer_instance
+  refine isSheafFor_of_preservesProduct F (Cofan.mk Z π) ?_
+  sorry
 
 theorem isSheafFor_iff_preservesProduct : (ofArrows X c.inj).IsSheafFor F ↔
     Nonempty (PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F) := by
