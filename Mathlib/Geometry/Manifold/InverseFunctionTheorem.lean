@@ -59,14 +59,30 @@ def contDiffPregroupoidBasic : Pregroupoid E := {
 -- FIXME: generalise to charted spaces
 -- FIXME: not entirely true; I get that g is ContDiff in *some* nhd of x, might be smaller than t!
 lemma Iwant [CompleteSpace E] {f g : E → E} {s t : Set E} {x : E} {f' : E ≃L[ℝ] E}
-    (hinv : InvOn g f s t) (hf : ContDiffAt ℝ n f x) (hf' : HasFDerivAt (𝕜 := ℝ) f f' x)
-    (hn : 1 ≤ n) : ContDiffAt ℝ n g (f x) := by
+    (hf : ContDiffAt ℝ n f x) (hf' : HasFDerivAt (𝕜 := ℝ) f f' x)
+    (hinv : InvOn g f s t) (hm : MapsTo g t s) (hn : 1 ≤ n) : ContDiffAt ℝ n g (f x) := by
   let r := hf.to_localInverse (f' := f') hf' hn -- ContDiffAt ℝ n (hf.localInverse hf' hn) (f x)
-  set g' := ContDiffAt.localInverse hf hf' hn
-  have : EqOn g g' s := by
-    have : InvOn g' f s t := sorry -- by construction
-    -- now, should be a basic lemma
-    sorry
+  set g' := ContDiffAt.localInverse hf hf' hn with eq
+  have : EqOn g g' t := by
+    -- XXX: there should be a shorter proof!
+    have hinv' : InvOn g' f s t := by
+      let h := hf.toLocalHomeomorph f hf' hn
+      let start := h.invOn
+      have aux1 : hf.localInverse hf' hn = h.symm := hf.localInverse_eq_toLocalHomeomorph_symm hf' hn
+      rw [← aux1] at start
+      have aux3 : h.source = s := by sorry
+      have aux4 : h.target = t := sorry
+      rw [aux3, aux4] at start
+      apply start
+    -- xxx: extract into lemma: if MapsTo g t s, and if g and g' are inverses of f on s, g=g' on s.
+    intro y hy
+    let x := g y
+    have hx : x ∈ s := hm hy
+    calc g y
+      _ = g (f x) := by rw [hinv.2 hy]
+      _ = x := by rw [hinv.1 hx]
+      _ = g' (f x) := by rw [hinv'.1 hx]
+      _ = g' y := by rw [hinv.2 hy]
   -- apply fderiv_congr to rewrite g' with g
   sorry
 
@@ -91,6 +107,7 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
     -- each fderiv ℝ f x' for x' ∈ U is an isomorphism
     --use U
     have : MapsTo f s t := sorry -- assume; check if really needed!
+    have hm : MapsTo g t s := sorry
     have scifi : f '' U ⊆ t := sorry -- f '' U ⊆ f '' s ⊆ t: first I just showed
     have scifi2 : IsOpen (f '' U) := sorry -- need to argue harder: f is a local homeo or so
     have hinv' : InvOn g f U (f '' U) := hinv.mono (inter_subset_right _ _) scifi
@@ -108,9 +125,9 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
       rcases hy with ⟨x'', hx''U, hx''y⟩
       have : x' ∈ U := by rw [← eq, ← hx''y, hinv.1 (mem_of_mem_inter_right hx''U)]; exact hx''U
       let f'' := fderiv ℝ f x'
-      have : HasFDerivAt f f'' x'' := sorry -- standard
+      have : HasFDerivAt f f'' x'' := sorry -- standard, skipped for now
       -- last: upgrade f'' to an isomorphism, then can apply r
-      -- exact Iwant hinv (hf.contDiffAt (hs.mem_nhds (mem_of_mem_inter_right hx''U))) this hn
+      -- exact Iwant (hf.contDiffAt (hs.mem_nhds (mem_of_mem_inter_right hx''U))) this hinv hm hn
       sorry
     sorry -- TODO: adjust conclusion of statement!
 
