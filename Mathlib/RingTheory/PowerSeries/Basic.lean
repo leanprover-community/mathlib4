@@ -1463,9 +1463,16 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_zero_C (a : R) : coeff R 0 (C R a) = a := by
-  rw [← monomial_zero_eq_C_apply, coeff_monomial_same 0 a]
+  rw [coeff_C, if_pos rfl]
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_zero_C PowerSeries.coeff_zero_C
+
+theorem coeff_ne_zero_C {a : R} {n : ℕ} (h : n ≠ 0) : coeff R n (C R a) = 0 := by
+  rw [coeff_C, if_neg h]
+
+@[simp]
+theorem coeff_succ_C {a : R} {n : ℕ} : coeff R (n + 1) (C R a) = 0 :=
+  coeff_ne_zero_C n.succ_ne_zero
 
 theorem X_eq : (X : R⟦X⟧) = monomial R 1 1 :=
   rfl
