@@ -60,8 +60,6 @@ def Matrix.IsCoxeter (M : Matrix B B ℕ∞) : Prop :=
 
 namespace CoxeterGroup
 
-open ENat
-
 variable {B}
 
 namespace Relations
