@@ -46,6 +46,8 @@ variable (I) in
 /--
 If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on any
 object, then `F` takes that object to the terminal object.
+If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on any
+object, then `F` takes that object to the terminal object.
 -/
 noncomputable
 def isTerminal_of_isSheafFor_empty_presieve : IsTerminal (F.obj (op I)) := by
@@ -123,8 +125,8 @@ theorem piComparison_fac'' :
 
 theorem piComparison_fac' {Z : C} [HasCoproduct X] (π : (i : α) → X i ⟶ Z) [IsIso (Sigma.desc π)] :
     piComparison F (fun x ↦ op (X x)) =
-    F.map ((opCoproductIsoProduct X).inv ≫ (inv (Sigma.desc π)).op) ≫
-    Equalizer.Presieve.Arrows.forkMap F X π := by
+      F.map ((opCoproductIsoProduct X).inv ≫ (inv (Sigma.desc π)).op) ≫
+        Equalizer.Presieve.Arrows.forkMap F X π := by
   have h₁ : Pi.lift (fun i ↦ F.map (π i).op) =
       F.map (Pi.lift (fun i ↦ (π i).op)) ≫ piComparison F _ := by simp
   have h₂ : (opCoproductIsoProduct X).inv ≫ (inv (Sigma.desc π)).op =
