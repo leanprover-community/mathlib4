@@ -119,6 +119,19 @@ theorem range_vecMulLinear (M : Matrix m n R) :
     dotProduct, stdBasis_apply', ite_mul, one_mul, zero_mul, Finset.sum_ite_eq,
     Finset.mem_univ, ite_true]
 
+theorem Matrix.vecMulLinear_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} :
+    Function.Injective M.vecMulLinear ↔ LinearIndependent R (fun i ↦ M i) := by
+  simp only [←LinearMap.ker_eq_bot, Fintype.linearIndependent_iff, Submodule.eq_bot_iff,
+     LinearMap.mem_ker, vecMulLinear_apply, vecMul, dotProduct]
+  refine ⟨fun h c h0 i ↦ ?_, fun h c h0 ↦ funext fun i ↦ ?_⟩
+  · rw [h c, Pi.zero_apply]
+    rw [←h0]
+    ext; simp [mul_comm]
+  rw [h c, Pi.zero_apply]
+  rw [←h0]
+  ext j
+  simp [mul_comm]
+
 /-- Linear maps `(m → R) →ₗ[R] (n → R)` are linearly equivalent over `Rᵐᵒᵖ` to `Matrix m n R`,
 by having matrices act by right multiplication.
  -/
@@ -303,16 +316,7 @@ theorem Matrix.range_mulVecLin (M : Matrix m n R) :
 
 theorem Matrix.mulVecLin_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} :
     Function.Injective M.mulVecLin ↔ LinearIndependent R (fun i ↦ Mᵀ i) := by
-  simp only [←LinearMap.ker_eq_bot, Fintype.linearIndependent_iff, Submodule.eq_bot_iff,
-     LinearMap.mem_ker, mulVecLin_apply, mulVec, dotProduct]
-  refine ⟨fun h c h0 i ↦ ?_, fun h c h0 ↦ funext fun i ↦ ?_⟩
-  · rw [h c, Pi.zero_apply]
-    rw [←h0]
-    ext; simp [mul_comm]
-  rw [h c, Pi.zero_apply]
-  rw [←h0]
-  ext j
-  simp [mul_comm]
+  rw [←vecMulLinear_transpose, vecMulLinear_injective_iff]
 
 end mulVec
 
