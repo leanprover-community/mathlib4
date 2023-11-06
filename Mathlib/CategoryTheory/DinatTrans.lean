@@ -45,6 +45,8 @@ structure DinatTrans (F G : Cᵒᵖ × C ⥤ D) : Type max u₁ v₂ where
       F.map (X := ⟨_,_⟩) (Y := ⟨_,_⟩) (𝟙 (op _), f) ≫ app Y ≫ G.map (Y := ⟨_,_⟩) (f.op, 𝟙 _) :=
         by aesop_cat
 
+attribute [reassoc (attr := simp)] DinatTrans.dinaturality
+
 /-- Notation for dinatural transformations. -/
 infixr:50 " ⤞ " => DinatTrans
 
@@ -57,32 +59,26 @@ def op_prod : (Cᵒᵖ × C) ⥤ (Cᵒᵖ × C)ᵒᵖ where
 
 /-- Opposite of a difunctor.
 -/
-@[simp]
+@[simps]
 def Functor.diop (F : Cᵒᵖ × C ⥤ D) : Cᵒᵖ × C ⥤ Dᵒᵖ := op_prod ⋙ F.op
 
 variable {F G H : Cᵒᵖ × C ⥤ D}
 
 /-- Post-composition with a natural transformation.
 -/
-def DinatTrans.nat_comp (δ : F ⤞ G) (α : G ⟶ H) : F ⤞ H
+def DinatTrans.compNatTrans (δ : F ⤞ G) (α : G ⟶ H) : F ⤞ H
     where
   app X := δ.app X ≫ α.app (op X, X)
   dinaturality f := by
-    simp;
-    rw [←α.naturality]
-    rw [reassoc_of% δ.dinaturality f]
-    rw [←α.naturality]
+    rw [Category.assoc, Category.assoc, ← α.naturality, δ.dinaturality_assoc, ← α.naturality]
 
 /-- Pre-composition with a natural transformation.
 -/
-def DinatTrans.comp_nat (δ : G ⤞ H) (α : F ⟶ G) : F ⤞ H
+def DinatTrans.precompNatTrans (δ : G ⤞ H) (α : F ⟶ G) : F ⤞ H
     where
   app X := α.app (op X, X) ≫ δ.app X
   dinaturality f := by
-    simp
-    erw [reassoc_of% α.naturality]
-    rw [δ.dinaturality f]
-    erw [reassoc_of% α.naturality]
+    erw [Category.assoc, Category.assoc, α.naturality_assoc, δ.dinaturality, α.naturality_assoc]
 
 /-- Opposite of a dinatural transformation.
 -/
