@@ -275,8 +275,9 @@ theorem subOneIntegralPowerBasis'_gen [hcycl : IsCyclotomicExtension {p} ℚ K]
   @subOneIntegralPowerBasis_gen p 1 K _ _ _ _ (by convert hcycl; rw [pow_one]) (by rwa [pow_one])
 #align is_primitive_root.sub_one_integral_power_basis'_gen IsPrimitiveRoot.subOneIntegralPowerBasis'_gen
 
-/-- `ζ - 1` is prime if `p ≠ 2`. -/
-theorem zeta_sub_one_prime [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
+/-- `ζ - 1` is prime if `p ≠ 2` and `ζ` is a primitive `p ^ (k + 1)`-th root of unity.
+  See `zeta_sub_one_prime` for a general statement. -/
+theorem zeta_sub_one_prime_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) (hodd : p ≠ 2) :
     Prime (⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral (p ^ _).pos)
     (Subalgebra.one_mem _)⟩ : 𝓞 K) := by
@@ -294,12 +295,8 @@ theorem zeta_sub_one_prime [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
   refine hζ.sub_one_norm_prime_ne_two (Polynomial.cyclotomic.irreducible_rat ?_) hodd
   simp
 
-theorem zeta_sub_one_prime' [h : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p)
-    (hodd : p ≠ 2) :
-    Prime (⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral p.pos) (Subalgebra.one_mem _)⟩ : 𝓞 K) := by
-  convert zeta_sub_one_prime (k := 0) (by simpa) hodd
-  simpa
-
+/-- `ζ - 1` is prime if `ζ` is a primitive `2 ^ (k + 1)`-th root of unity.
+  See `zeta_sub_one_prime` for a general statement. -/
 theorem two_pow_zeta_sub_one_prime [IsCyclotomicExtension {(2 : ℕ+) ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑((2 : ℕ+) ^ (k + 1))) :
     Prime (⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral ((2 : ℕ+) ^ _).pos)
@@ -323,6 +320,22 @@ theorem two_pow_zeta_sub_one_prime [IsCyclotomicExtension {(2 : ℕ+) ^ (k + 1)}
   simp only [PNat.pow_coe, id.map_eq_id, RingHomCompTriple.comp_eq, RingHom.coe_coe,
     Subalgebra.coe_val, algebraMap_int_eq, map_natCast]
   exact hζ.sub_one_norm_two Nat.AtLeastTwo.prop (cyclotomic.irreducible_rat (by simp))
+
+/-- `ζ - 1` is prime if `ζ` is a primitive `p ^ (k + 1)`-th root of unity. -/
+theorem zeta_sub_one_prime [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
+    (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) :
+    Prime (⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral (p ^ _).pos)
+    (Subalgebra.one_mem _)⟩ : 𝓞 K) := by
+  by_cases htwo : p = 2
+  · subst htwo
+    apply hζ.two_pow_zeta_sub_one_prime
+  · apply hζ.zeta_sub_one_prime_ne_two htwo
+
+/-- `ζ - 1` is prime if `ζ` is a primitive `p`-th root of unity. -/
+theorem zeta_sub_one_prime' [h : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p) :
+    Prime (⟨ζ - 1, Subalgebra.sub_mem _ (hζ.isIntegral p.pos) (Subalgebra.one_mem _)⟩ : 𝓞 K) := by
+  convert zeta_sub_one_prime (k := 0) (by simpa)
+  simpa
 
 end IsPrimitiveRoot
 
