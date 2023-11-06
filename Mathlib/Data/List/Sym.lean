@@ -3,6 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Sym.Sym2
 
 /-! # Unordered tuples of elements of a list
@@ -167,21 +168,12 @@ protected theorem Sublist.sym2 {xs ys : List α} (h : xs <+ ys) : xs.sym2 <+ ys.
     simp only [List.sym2, map_cons, cons_append]
     exact cons₂ _ (append (Sublist.map _ h) ih)
 
-private lemma length_sym2.aux (n : ℕ) :
-    n + n * (n + 1) / 2 + 1 = (n + 1) * (n + 1 + 1) / 2 := by
-  simp [Nat.mul_succ, Nat.succ_mul]
-  rw [add_assoc _ _ (n + 1), ← two_mul]
-  convert_to _ = (n * n + n) / 2 + (n + 1)
-  rw [Nat.add_mul_div_left]
-  · exact Nat.succ_pos 1
-  simp [add_assoc, add_left_comm]
-
-theorem length_sym2 {xs : List α} : xs.sym2.length = xs.length * (xs.length + 1) / 2 := by
+theorem length_sym2 {xs : List α} : xs.sym2.length = Nat.choose (xs.length + 1) 2 := by
   induction xs with
   | nil => rfl
   | cons x xs ih =>
-    simp [List.sym2, ih, Nat.succ_eq_add_one]
-    apply length_sym2.aux
+    rw [List.sym2, length_append, length_map, length_cons,
+        Nat.choose_succ_succ, ← ih, Nat.choose_one_right]
 
 end Sym2
 

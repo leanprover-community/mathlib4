@@ -195,7 +195,7 @@ theorem card_subtype_not_diag [Fintype α] :
 #align sym2.card_subtype_not_diag Sym2.card_subtype_not_diag
 
 /-- Type **stars and bars** for the case `n = 2`. -/
-protected theorem card [Fintype α] : card (Sym2 α) = card α * (card α + 1) / 2 :=
+protected theorem card [Fintype α] : card (Sym2 α) = Nat.choose (card α + 1) 2 :=
   Finset.card_sym2 _
 #align sym2.card Sym2.card
 

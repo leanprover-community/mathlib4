@@ -63,7 +63,7 @@ theorem sym2_mono {m m' : Multiset α} (h : m ≤ m') : m.sym2 ≤ m'.sym2 := by
   exact hx.sym2.symm.subperm.trans h.sym2.subperm
 
 theorem card_sym2 {m : Multiset α} :
-    Multiset.card m.sym2 = Multiset.card m * (Multiset.card m + 1) / 2 := by
+    Multiset.card m.sym2 = Nat.choose (Multiset.card m + 1) 2 := by
   refine m.inductionOn fun xs => ?_
   simp [List.length_sym2]
 

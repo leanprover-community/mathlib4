@@ -106,7 +106,7 @@ theorem sym2_singleton (a : α) : ({a} : Finset α).sym2 = {Sym2.diag a} := rfl
 #align finset.sym2_singleton Finset.sym2_singleton
 
 /-- Finset **stars and bars** for the case `n = 2`. -/
-theorem card_sym2 (s : Finset α) : s.sym2.card = s.card * (s.card + 1) / 2 := by
+theorem card_sym2 (s : Finset α) : s.sym2.card = Nat.choose (s.card + 1) 2 := by
   rw [card_def, sym2_val, Multiset.card_sym2, ← card_def]
 #align finset.card_sym2 Finset.card_sym2
 
