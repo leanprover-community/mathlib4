@@ -698,6 +698,9 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
     simp (config := { contextual := true })
 #align polynomial.coeff_comp_degree_mul_degree Polynomial.coeff_comp_degree_mul_degree
 
+@[simp] lemma sum_comp (s : Finset ι) (p : ι → R[X]) (q : R[X]) :
+    (∑ i in s, p i).comp q = ∑ i in s, (p i).comp q := Polynomial.eval₂_finset_sum _ _ _ _
+
 end Comp
 
 section Map
@@ -1242,14 +1245,6 @@ end CommSemiring
 section Ring
 
 variable [Ring R] {p q r : R[X]}
-
-theorem C_neg : C (-a) = -C a :=
-  RingHom.map_neg C a
-#align polynomial.C_neg Polynomial.C_neg
-
-theorem C_sub : C (a - b) = C a - C b :=
-  RingHom.map_sub C a b
-#align polynomial.C_sub Polynomial.C_sub
 
 @[simp]
 protected theorem map_sub {S} [Ring S] (f : R →+* S) : (p - q).map f = p.map f - q.map f :=

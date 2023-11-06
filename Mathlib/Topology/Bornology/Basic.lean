@@ -173,6 +173,12 @@ theorem isBounded_empty : IsBounded (∅ : Set α) := by
   exact univ_mem
 #align bornology.is_bounded_empty Bornology.isBounded_empty
 
+theorem nonempty_of_not_isBounded (h : ¬IsBounded s) : s.Nonempty := by
+  rw [nonempty_iff_ne_empty]
+  rintro rfl
+  exact h isBounded_empty
+#align metric.nonempty_of_unbounded Bornology.nonempty_of_not_isBounded
+
 @[simp]
 theorem isBounded_singleton : IsBounded ({x} : Set α) := by
   rw [isBounded_def]
@@ -334,6 +340,11 @@ class BoundedSpace (α : Type*) [Bornology α] : Prop where
   /-- The `Set.univ` is bounded. -/
   bounded_univ : Bornology.IsBounded (univ : Set α)
 #align bounded_space BoundedSpace
+
+/-- A finite space is bounded. -/
+instance (priority := 100) BoundedSpace.of_finite {α : Type*} [Bornology α] [Finite α] :
+    BoundedSpace α where
+  bounded_univ := (toFinite _).isBounded
 
 namespace Bornology
 

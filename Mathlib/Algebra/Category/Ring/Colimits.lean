@@ -325,11 +325,16 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     induction x with
     | zero => erw [quot_zero, map_zero (f := m), (descMorphism F s).map_zero]
     | one => erw [quot_one, map_one (f := m), (descMorphism F s).map_one]
-    | neg x ih => erw [quot_neg, map_neg (f := m), (descMorphism F s).map_neg, ih]
+    -- extra rfl with leanprover/lean4#2644
+    | neg x ih => erw [quot_neg, map_neg (f := m), (descMorphism F s).map_neg, ih]; rfl
     | of j x =>
       exact congr_fun (congr_arg (fun f : F.obj j ⟶ s.pt => (f : F.obj j → s.pt)) (w j)) x
-    | add x y ih_x ih_y => erw [quot_add, map_add (f := m), (descMorphism F s).map_add, ih_x, ih_y]
-    | mul x y ih_x ih_y => erw [quot_mul, map_mul (f := m), (descMorphism F s).map_mul, ih_x, ih_y]
+    | add x y ih_x ih_y =>
+    -- extra rfl with leanprover/lean4#2644
+        erw [quot_add, map_add (f := m), (descMorphism F s).map_add, ih_x, ih_y]; rfl
+    | mul x y ih_x ih_y =>
+    -- extra rfl with leanprover/lean4#2644
+        erw [quot_mul, map_mul (f := m), (descMorphism F s).map_mul, ih_x, ih_y]; rfl
 #align CommRing.colimits.colimit_is_colimit CommRingCat.Colimits.colimitIsColimit
 
 instance hasColimits_commRingCat : HasColimits CommRingCat where

@@ -3,9 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Hom.Equiv.Basic
-import Mathlib.Data.Part
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.Part
 import Mathlib.Tactic.NormNum
 
 #align_import data.nat.part_enat from "leanprover-community/mathlib"@"3ff3f2d6a3118b8711063de7111a0d77a53219a8"
@@ -21,7 +21,7 @@ implementation. Use `ℕ∞` instead unless you care about computability.
 The following instances are defined:
 
 * `OrderedAddCommMonoid PartENat`
-* `CanonicallyOrderedAddMonoid PartENat`
+* `CanonicallyOrderedAddCommMonoid PartENat`
 * `CompleteLinearOrder PartENat`
 
 There is no additive analogue of `MonoidWithZero`; if there were then `PartENat` could
@@ -426,7 +426,7 @@ noncomputable instance orderedAddCommMonoid : OrderedAddCommMonoid PartENat :=
         ⟨fun h => And.intro (dom_natCast _) (h₁ h.2), fun h => by
           simpa only [coe_add_get] using add_le_add_left (h₂ _) c⟩ }
 
-noncomputable instance : CanonicallyOrderedAddMonoid PartENat :=
+noncomputable instance : CanonicallyOrderedAddCommMonoid PartENat :=
   { PartENat.semilatticeSup, PartENat.orderBot,
     PartENat.orderedAddCommMonoid with
     le_self_add := fun a b =>
@@ -755,7 +755,7 @@ theorem lt_wf : @WellFounded PartENat (· < ·) := by
   classical
     change WellFounded fun a b : PartENat => a < b
     simp_rw [← withTopEquiv_lt]
-    exact InvImage.wf _ (WithTop.wellFounded_lt Nat.lt_wfRel.wf)
+    exact InvImage.wf _ wellFounded_lt
 #align part_enat.lt_wf PartENat.lt_wf
 
 instance : WellFoundedLT PartENat :=
