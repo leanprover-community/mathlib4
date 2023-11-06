@@ -63,7 +63,7 @@ class IsSepClosed : Prop where
 
 /-- An algebraically closed field is also separably closed. -/
 instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
-  ⟨fun p _ => IsAlgClosed.splits p⟩
+  ⟨fun p _ ↦ IsAlgClosed.splits p⟩
 
 variable {k} {K}
 
@@ -185,7 +185,7 @@ variable {k} {K}
 
 theorem isSepClosure_iff [Algebra k K] :
     IsSepClosure k K ↔ IsSepClosed K ∧ IsSeparable k K :=
-  ⟨fun h => ⟨h.1, h.2⟩, fun h => ⟨h.1, h.2⟩⟩
+  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 namespace IsSepClosure
 
@@ -193,9 +193,8 @@ instance isSeparable [Algebra k K] [IsSepClosure k K] : IsSeparable k K :=
   IsSepClosure.separable
 
 instance (priority := 100) normal [Algebra k K] [IsSepClosure k K] : Normal k K :=
-  ⟨fun x => IsIntegral.isAlgebraic k <| IsSeparable.isIntegral' x,
-    fun x => @IsSepClosed.splits_codomain _ _ _ _ (IsSepClosure.sep_closed k) _ _
-      (have : IsSeparable k K := IsSepClosure.separable; IsSeparable.separable k x)⟩
+  ⟨fun x ↦ (IsSeparable.isIntegral' x).isAlgebraic k,
+    fun x ↦ (IsSepClosure.sep_closed k).splits_codomain _ (IsSeparable.separable k x)⟩
 
 end IsSepClosure
 
