@@ -327,6 +327,36 @@ theorem BilinForm.toMatrix'_apply (B : BilinForm R₂ (n → R₂)) (i j : n) :
   rfl
 #align bilin_form.to_matrix'_apply BilinForm.toMatrix'_apply
 
+@[default_instance 100]
+instance SMatrixLeftMul {m : Type*} [Fintype m] :
+    HSMul (Matrix m n R₂) (Matrix n o N₂) (Matrix m o N₂) where
+  hSMul M₁ M₂ := fun i k => ∑ j, M₁ i j • M₂ j k
+
+@[default_instance 100]
+instance SMatrixRightMul {m : Type*} [Fintype m] :
+    HSMul (Matrix m n N₂) (Matrix n o R₂) (Matrix m o N₂) where
+  hSMul M₁ M₂ := fun i k => ∑ j, M₂ j k • M₁ i j
+
+@[simp]
+theorem LinearMap.toMatrix'_comp'' (B : (n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] N₂)
+    (l r : (o → R₂) →ₗ[R₂] n → R₂) : BilinForm.toMatrix'' (B.compl₁₂ l r) =
+      (LinearMap.toMatrix' l)ᵀ • ((BilinForm.toMatrix'' B) • (LinearMap.toMatrix' r)) := by
+  ext i j
+  simp only [toMatrix'_apply', compl₁₂_apply, SMatrixLeftMul, toMatrix', LinearEquiv.coe_mk,
+    SMatrixRightMul, of_apply, transpose_apply, smul_sum]
+  conv_lhs => rw [← LinearMap.sum_repr_mul_repr_mul (Pi.basisFun R₂ n) (Pi.basisFun R₂ n)]
+  rw [Finsupp.sum_fintype]
+  · apply sum_congr rfl
+    rintro i' -
+    rw [Finsupp.sum_fintype]
+    · apply sum_congr rfl
+      rintro j' -
+      simp only [Pi.basisFun_repr, Pi.basisFun_apply]
+    · intros
+      simp only [zero_smul, smul_zero]
+  · intros
+    simp only [zero_smul, Finsupp.sum_zero]
+
 @[simp]
 theorem LinearMap.toMatrix'_comp' (B : (n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] R₂)
     (l r : (o → R₂) →ₗ[R₂] n → R₂) : BilinForm.toMatrix'' (B.compl₁₂ l r) =
