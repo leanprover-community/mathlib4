@@ -61,9 +61,22 @@ def IFTPregroupoid.groupoid (P : IFTPregroupoid E) : StructureGroupoid E :=
 lemma IFTPregroupoid.groupoid_coe {P : IFTPregroupoid E} : P.groupoid = P.toPregroupoid.groupoid :=
   rfl
 
--- monotonicity implies the induced groupoid is `ClosedUnderRestriction`
+/-- If `P` is an `IFTPregroupoid`, its induced groupoid is `ClosedUnderRestriction`. -/
+-- FUTURE: this proof only uses monotonicity, hence could be generalised to
+-- "a monotone pregroupoid induces a groupoid closed under restriction".
+-- Is it worth refactoring existing proofs of ClosedUnderRestriction this way?
 lemma IFTPregroupoid.isClosedUnderRestriction_groupoid (P : IFTPregroupoid E) :
-  ClosedUnderRestriction (P.groupoid) := sorry
+    ClosedUnderRestriction (P.groupoid) := by
+  refine { closedUnderRestriction := ?_ }
+  intro e he s hs
+  obtain ⟨l, r ⟩ := mem_groupoid_of_pregroupoid.mp he
+  apply mem_groupoid_of_pregroupoid.mpr
+  constructor
+  · rw [e.restr_source' s hs]
+    exact P.monotonicity (e.open_source.inter hs) (inter_subset_left _ _) l
+  · show P.property (e.restr s).symm (e.restr s).symm.source
+    rw [(e.restr s).symm_source]
+    exact P.monotonicity (e.restr s).open_target (by simp) r
 
 /-- Categorical statement of the Inverse Function Theorem on a Banach space.
   Suppose `f` has invertible differential at `x` and lies in an IFTPregroupoid `P` on `s ∋ x`.

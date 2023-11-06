@@ -719,6 +719,12 @@ theorem restr_source' (s : Set α) (hs : IsOpen s) : (e.restr s).source = e.sour
   rw [e.restr_source, hs.interior_eq]
 #align local_homeomorph.restr_source' LocalHomeomorph.restr_source'
 
+theorem restr_target' (s : Set α) (hs : IsOpen s) :
+    (e.restr s).target = e '' (e.source ∩ s) := by
+  rw [← LocalHomeomorph.image_source_eq_target, ← (e.restrOpen_source s hs)]
+  simp says simp only [restr_apply, restr_toLocalEquiv, restrOpen_toLocalEquiv]
+  rw [hs.interior_eq]
+
 theorem restr_toLocalEquiv' (s : Set α) (hs : IsOpen s) :
     (e.restr s).toLocalEquiv = e.toLocalEquiv.restr s := by
   rw [e.restr_toLocalEquiv, hs.interior_eq]
