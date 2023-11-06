@@ -106,6 +106,12 @@ namespace CoxeterMatrix
 
 variable {m n : ℕ}
 
+/-- Auxilary definition for `Bₙ`. -/
+def AₙAux : (Fin n) → (Fin n) → ℕ∞ :=
+  fun i j =>
+    if i == j then 1
+      else (if i == n - 1 ∨ j == n - 1 then 2 else 3)
+
 /-- The Coxeter matrix of family Aₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -113,11 +119,6 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-def AₙAux : (Fin n) → (Fin n) → ℕ∞ :=
-  fun i j =>
-    if i == j then 1
-      else (if i == n - 1 ∨ j == n - 1 then 2 else 3)
-
 def Aₙ : Matrix (Fin n) (Fin n) ℕ∞ :=
   Matrix.of AₙAux
 
@@ -132,6 +133,13 @@ theorem AₙIsCoxeter : Aₙ.IsCoxeter (Fin n) where
     unfold Aₙ AₙAux
     aesop
 
+/-- Auxilary definition for `Bₙ`. -/
+def BₙAux [NeZero n] : (Fin n) → (Fin n) → ℕ∞ :=
+  fun i j =>
+    if i == j then 1
+      else (if i == (1 : Fin n) ∨ (j == (1 : Fin n)) then 4
+        else (if i == n - 1 ∨ j == n - 1 then 2 else 3))
+
 /-- The Coxeter matrix of family Bₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -140,12 +148,6 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-def BₙAux [NeZero n] : (Fin n) → (Fin n) → ℕ∞ :=
-  fun i j =>
-    if i == j then 1
-      else (if i == (1 : Fin n) ∨ (j == (1 : Fin n)) then 4
-        else (if i == n - 1 ∨ j == n - 1 then 2 else 3))
-
 def Bₙ [NeZero n] : Matrix (Fin n) (Fin n) ℕ∞ :=
   Matrix.of BₙAux
 
@@ -162,6 +164,13 @@ theorem BₙIsCoxeter [NeZero n] : Bₙ.IsCoxeter (Fin n) where
     simp [Matrix.IsCoxeter]
     split_ifs <;> aesop
 
+/-- Auxilary definition for `Dₙ`. -/
+def DₙAux [NeZero n] : (Fin n) → (Fin n) → ℕ∞ :=
+  fun i j =>
+    if i == j then 1
+      else (if i == (1 : Fin n) ∨ (j == (1 : Fin n)) then 4
+        else (if i == n - 1 ∨ j == n - 1 then 2 else 3))
+
 /-- The Coxeter matrix of family Dₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -173,12 +182,6 @@ The corresponding Coxeter-Dynkin diagram is:
     o
 ```
 -/
-def DₙAux [NeZero n] : (Fin n) → (Fin n) → ℕ∞ :=
-  fun i j =>
-    if i == j then 1
-      else (if i == (1 : Fin n) ∨ (j == (1 : Fin n)) then 4
-        else (if i == n - 1 ∨ j == n - 1 then 2 else 3))
-
 def Dₙ [NeZero n] : Matrix (Fin n) (Fin n) ℕ∞ :=
   Matrix.of DₙAux
 
@@ -195,6 +198,10 @@ theorem DₙIsCoxeter [NeZero n] : Dₙ.IsCoxeter (Fin n) where
     simp [Matrix.IsCoxeter]
     split_ifs <;> aesop
 
+/-- Auxilary definition for `I₂ₘ`. -/
+def I₂ₘAux : (Fin 2) → (Fin 2) → ℕ∞ :=
+  fun i j => if i == j then 1 else m
+
 /-- The Coxeter matrix of family I₂(m).
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -203,9 +210,6 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o
 ```
 -/
-def I₂ₘAux : (Fin 2) → (Fin 2) → ℕ∞ :=
-  fun i j => if i == j then 1 else m
-
 def I₂ₘ : Matrix (Fin 2) (Fin 2) ℕ∞ :=
   Matrix.of @I₂ₘAux m
 
