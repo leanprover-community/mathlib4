@@ -15,7 +15,9 @@ This file defines colorings for some common graphs
 
 ## Main declarations
 
-* `SimpleGraph.pathGraph.bicoloring`: Bicoloring of a path graph
+* `SimpleGraph.pathGraph.bicoloring`: Bicoloring of a path graph.
+* `SimpleGraph.pathGraph_two_embedding`: Embedding of `pathGraph 2` into the first
+  two elements of `pathGraph n` for `2 ≤ n`.
 -/
 
 namespace SimpleGraph
