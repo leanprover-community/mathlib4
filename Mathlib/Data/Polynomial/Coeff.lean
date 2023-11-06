@@ -111,13 +111,13 @@ theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
 #align polynomial.coeff_sum Polynomial.coeff_sum
 
 /-- Decomposes the coefficient of the product `p * q` as a sum
-over `Nat.antidiagonal`. A version which sums over `range (n + 1)` can be obtained
+over `antidiagonal`. A version which sums over `range (n + 1)` can be obtained
 by using `Finset.Nat.sum_antidiagonal_eq_sum_range_succ`. -/
 theorem coeff_mul (p q : R[X]) (n : ℕ) :
-    coeff (p * q) n = ∑ x in Nat.antidiagonal n, coeff p x.1 * coeff q x.2 := by
+    coeff (p * q) n = ∑ x in antidiagonal n, coeff p x.1 * coeff q x.2 := by
   rcases p with ⟨p⟩; rcases q with ⟨q⟩
   simp_rw [← ofFinsupp_mul, coeff]
-  exact AddMonoidAlgebra.mul_apply_antidiagonal p q n _ Nat.mem_antidiagonal
+  exact AddMonoidAlgebra.mul_apply_antidiagonal p q n _ Finset.mem_antidiagonal
 #align polynomial.coeff_mul Polynomial.coeff_mul
 
 @[simp]
@@ -211,7 +211,7 @@ theorem support_binomial {k m : ℕ} (hkm : k ≠ m) {x y : R} (hx : x ≠ 0) (h
   apply subset_antisymm (support_binomial' k m x y)
   simp_rw [insert_subset_iff, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
     coeff_X_pow_self, mul_one, coeff_X_pow, if_neg hkm, if_neg hkm.symm, mul_zero, zero_add,
-    add_zero, Ne.def, hx, hy]
+    add_zero, Ne.def, hx, hy, not_false_eq_true, and_true]
 #align polynomial.support_binomial Polynomial.support_binomial
 
 theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} (hx : x ≠ 0)
@@ -221,7 +221,7 @@ theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} 
   simp_rw [insert_subset_iff, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
     coeff_X_pow_self, mul_one, coeff_X_pow, if_neg hkm.ne, if_neg hkm.ne', if_neg hmn.ne,
     if_neg hmn.ne', if_neg (hkm.trans hmn).ne, if_neg (hkm.trans hmn).ne', mul_zero, add_zero,
-    zero_add, Ne.def, hx, hy, hz]
+    zero_add, Ne.def, hx, hy, hz, not_false_eq_true, and_true]
 #align polynomial.support_trinomial Polynomial.support_trinomial
 
 theorem card_support_binomial {k m : ℕ} (h : k ≠ m) {x y : R} (hx : x ≠ 0) (hy : y ≠ 0) :
@@ -247,10 +247,10 @@ theorem coeff_mul_X_pow (p : R[X]) (n d : ℕ) :
     rw [coeff_X_pow, if_neg, mul_zero]
     rintro rfl
     apply h2
-    rw [Nat.mem_antidiagonal, add_right_cancel_iff] at h1
+    rw [mem_antidiagonal, add_right_cancel_iff] at h1
     subst h1
     rfl
-  · exact fun h1 => (h1 (Nat.mem_antidiagonal.2 rfl)).elim
+  · exact fun h1 => (h1 (mem_antidiagonal.2 rfl)).elim
 #align polynomial.coeff_mul_X_pow Polynomial.coeff_mul_X_pow
 
 @[simp]
@@ -264,7 +264,7 @@ theorem coeff_mul_X_pow' (p : R[X]) (n d : ℕ) :
   · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
   · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
     rw [coeff_X_pow, if_neg, mul_zero]
-    exact ((le_of_add_le_right (Finset.Nat.mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
+    exact ((le_of_add_le_right (mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
 #align polynomial.coeff_mul_X_pow' Polynomial.coeff_mul_X_pow'
 
 theorem coeff_X_pow_mul' (p : R[X]) (n d : ℕ) :
