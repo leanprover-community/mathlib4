@@ -77,7 +77,7 @@ section ExponentialPdf
 
 /-- Define the PDF of the exponential distribution depending on its rate-/
 noncomputable
-def exponentialPdfReal (r : ℝ) (hr : 0 < r) (x : ℝ): ℝ :=
+def exponentialPdfReal (r : ℝ) (_ : 0 < r) (x : ℝ): ℝ :=
 ite (0 ≤ x) (r*(Real.exp (-(↑r*↑x)))) 0
 
 /- The PDF on the extended real Numbers-/
@@ -121,7 +121,7 @@ lemma stronglyMeasurable_exponentialPdfReal (r : ℝ) (hr :0 < r) :
 
 /-- the exponential Pdf is positive for all positive reals-/
 lemma exponentialPdfReal_pos {x r : ℝ} {hr : 0 < r} (hx : 0 < x) :
-   0 < exponentialPdfReal r hr x := by
+    0 < exponentialPdfReal r hr x := by
   unfold exponentialPdfReal
   conv =>
     rhs
