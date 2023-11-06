@@ -80,14 +80,14 @@ noncomputable
 def exponentialPdfReal (r : ℝ) (_ : 0 < r) (x : ℝ): ℝ :=
 ite (0 ≤ x) (r*(Real.exp (-(↑r*↑x)))) 0
 
-/- The PDF on the extended real Numbers-/
+/-- The PDF of the exponential Distribution on the extended real Numbers-/
 noncomputable
 def exponentialPdf (r : ℝ) (hr : 0 < r) (x : ℝ) : ℝ≥0∞ :=
   ENNReal.ofReal (exponentialPdfReal r hr x)
 
-lemma antiDeriv_expDeriv_pos' {r : ℝ} (hr : 0 < r)  : ∀ x ∈ (Set.Ici 0),
+lemma antiDeriv_expDeriv_pos' {r x: ℝ} (hr : 0 < r)  :
     HasDerivAt (fun a => -1/(↑r) * (Real.exp (-(↑r * a)))) (Real.exp (-(↑r * x))) x := by
-  intro x _; convert (((hasDerivAt_id x).const_mul (-↑r)).exp.const_mul (-1/(↑ r))) using 1;
+  convert (((hasDerivAt_id x).const_mul (-↑r)).exp.const_mul (-1/(↑ r))) using 1;
   · simp only [id_eq, neg_mul];
   · simp only [id_eq, neg_mul, mul_one, mul_neg]
     rw[mul_comm (rexp _),<-neg_mul (-1/r),<- neg_div, <-mul_assoc]; simp only [neg_neg,
@@ -217,7 +217,7 @@ lemma lintegral_exponentialPdfReal_eq_one (r : ℝ) (hr : 0 < r) :
     rw [@integral_Ici_eq_integral_Ioi]
     have IntegrOn : IntegrableOn (fun x => rexp (-(r * x))) (Set.Ioi 0) := by
       simp only [<-neg_mul]; apply exp_neg_integrableOn_Ioi 0 hr
-    rw [integral_Ioi_of_hasDerivAt_of_tendsto' (antiDeriv_expDeriv_pos' hr)
+    rw [integral_Ioi_of_hasDerivAt_of_tendsto' (by  intro x _; exact antiDeriv_expDeriv_pos' hr)
       IntegrOn (antiDerivTendsZero hr)]
     simp only [mul_zero, neg_zero, Real.exp_zero, mul_one, _root_.zero_sub]; rw [neg_div];
     simp only [one_div,neg_neg, ne_eq, NNReal.coe_eq_zero]; rw[mul_inv_cancel]; linarith
@@ -234,8 +234,7 @@ end ExponentialPdf
 
 open MeasureTheory
 
-/- Measure defined by the exponential Distribution -/
-
+/-- Measure defined by the exponential Distribution -/
 noncomputable
 def expMeasure (r : ℝ) (hr : 0 < r) : Measure ℝ :=
   volume.withDensity (exponentialPdf r hr)
@@ -270,14 +269,15 @@ lemma ExpCDF_eq_lintegral (r : ℝ) (hr: 0 < r) : ((exponentialCdfReal r hr)) =
 
 open Topology
 
-lemma antiDeriv_expDeriv_pos {r : ℝ} : ∀ x ∈ (Set.Ici 0),
+lemma antiDeriv_expDeriv_pos {r x : ℝ} :
     HasDerivAt (fun a => -1* (Real.exp (-(↑r * a)))) (r * Real.exp (-(↑r * x))) x := by
-  intro x _; convert (((hasDerivAt_id x).const_mul (-↑r)).exp.const_mul (-1)) using 1;
+  
+  convert (((hasDerivAt_id x).const_mul (-↑r)).exp.const_mul (-1)) using 1;
   · simp only [id_eq, neg_mul];
   simp only [id_eq, neg_mul, mul_one, mul_neg, one_mul, neg_neg, mul_comm]
 
 
-lemma lint_eq_antiDeriv (r : ℝ) (hr: 0 < r) : ∀ x:ℝ,
+lemma lint_eq_antiDeriv (r : ℝ) (hr: 0 < r) : ∀ x : ℝ,
     (∫⁻ y in (Set.Iic x),  (exponentialPdf r hr y) =
     ENNReal.ofReal ( ite (0 ≤ x) (1 - Real.exp (-(r * x))) 0)) := by
   intro x'; split_ifs with h
@@ -312,8 +312,7 @@ lemma lint_eq_antiDeriv (r : ℝ) (hr: 0 < r) : ∀ x:ℝ,
   have : Continuous (fun a => rexp (-(r * a))) := by
     simp only [<-neg_mul]; refine Continuous.exp ?inter; exact continuous_mul_left (-r)
   refine Continuous.comp' ?hg this; exact continuous_mul_left (-1);
-  intro x hx; refine HasDerivAt.hasDerivWithinAt ?hx; apply antiDeriv_expDeriv_pos
-  simp only [Set.mem_Ici]; simp only [gt_iff_lt, not_lt, ge_iff_le, Set.mem_Ioo] at hx; linarith
+  intro x _; refine HasDerivAt.hasDerivWithinAt ?hx; apply antiDeriv_expDeriv_pos
   apply Filter.eventually_of_forall
   intro x; simp only [Pi.zero_apply, gt_iff_lt]; exact le_of_lt (mul_pos hr (Real.exp_pos _))
   refine Integrable.aestronglyMeasurable ?_; apply Integrable.const_mul; rw [← @integrableOn_def];
