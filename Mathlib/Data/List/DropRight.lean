@@ -144,7 +144,7 @@ theorem dropRightWhile_eq_nil_iff : dropRightWhile p l = [] ↔ ∀ x ∈ l, p x
 
 -- it is in this file because it requires `List.Infix`
 @[simp]
-theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.nthLe 0 hl) := by
+theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l.get ⟨0, hl⟩) := by
   cases' l with hd tl
   · simp only [dropWhile, true_iff]
     intro h
@@ -153,13 +153,13 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
   · rw [dropWhile]
     refine' ⟨fun h => _, fun h => _⟩
     · intro _ H
-      rw [nthLe, get] at H
+      rw [get] at H
       refine' (cons_ne_self hd tl) (Sublist.antisymm _ (sublist_cons _ _))
       rw [← h]
       simp only [H]
       exact List.IsSuffix.sublist (dropWhile_suffix p)
     · have := h (by simp only [length, Nat.succ_pos])
-      rw [nthLe, get] at this
+      rw [get] at this
       simp_rw [this]
 #align list.drop_while_eq_self_iff List.dropWhile_eq_self_iff
 
@@ -167,14 +167,13 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
  the `l ≠ []` condition if `hl` is not `intro`'d yet -/
 @[simp]
 theorem dropRightWhile_eq_self_iff : dropRightWhile p l = l ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
-  simp only [dropRightWhile, reverse_eq_iff, dropWhile_eq_self_iff, getLast_eq_get]
-  refine' ⟨fun h hl => _, fun h hl => _⟩
-  · rw [← length_pos, ← length_reverse] at hl
-    have := h hl
-    rwa [nthLe, get_reverse'] at this
-  · rw [length_reverse, length_pos] at hl
-    have := h hl
-    rwa [nthLe, get_reverse']
+  simp only [dropRightWhile._eq_1, reverse_eq_iff, dropWhile_eq_self_iff, length_reverse,
+    ←length_pos, ne_eq, Bool.not_eq_true, getLast_eq_get, ge_iff_le]
+  refine forall_congr' ?_
+  intro h
+  rw [get_reverse']
+  · simp
+  · exact Nat.pred_lt h.ne'
 #align list.rdrop_while_eq_self_iff List.dropRightWhile_eq_self_iff
 
 variable (p) (l)
