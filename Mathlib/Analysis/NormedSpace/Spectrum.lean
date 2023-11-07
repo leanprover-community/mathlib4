@@ -374,52 +374,22 @@ end GelfandFormula
 
 section NonemptySpectrum
 
--- needs to go with Liouville's theorem
-open Filter Bornology Topology
-theorem _root_.Differentiable.eq_const_of_tendsto_cocompact
-    {E : Type*} [Nontrivial E] [NormedAddCommGroup E] [NormedSpace ℂ E] {F : Type*}
-    [NormedAddCommGroup F] [NormedSpace ℂ F] {f : E → F} (hf : Differentiable ℂ f) {c : F}
-    (hb : Tendsto f (cocompact E) (𝓝 c)) :
-    f = Function.const E c := by
-  have h_bdd : Bornology.IsBounded (Set.range f) := by
-    obtain ⟨M, hM⟩ := hb.norm.isBoundedUnder_le
-    obtain ⟨t, ht, ht'⟩ := mem_cocompact.mp hM
-    replace hM : Bornology.IsBounded (f '' {a | ‖f a‖ ≤ M}) :=
-      isBounded_iff_forall_norm_le.mpr ⟨M, by simp⟩
-    apply ((ht.image hf.continuous).isBounded.union hM).subset
-    rw [← Set.image_union, ←Set.image_univ]
-    exact Set.image_subset _ <| calc
-      Set.univ = t ∪ tᶜ := t.union_compl_self.symm
-      _        ⊆ t ∪ _  := by gcongr; exact ht'
-  obtain ⟨c', hc'⟩ := hf.exists_eq_const_of_bounded h_bdd
-  convert hc'
-  exact tendsto_nhds_unique hb (by simpa [hc'] using tendsto_const_nhds)
-
-theorem _root_.Differentiable.apply_eq_const_of_tendsto_cocompact
-    {E : Type*} [Nontrivial E] [NormedAddCommGroup E] [NormedSpace ℂ E] {F : Type*}
-    [NormedAddCommGroup F] [NormedSpace ℂ F] {f : E → F} (hf : Differentiable ℂ f) {c : F}
-    (x : E) (hb : Tendsto f (cocompact E) (𝓝 c)) :
-    f x = c :=
-  congr($(hf.eq_const_of_tendsto_cocompact hb) x)
-
 variable [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [Nontrivial A] (a : A)
 
 /-- In a (nontrivial) complex Banach algebra, every element has nonempty spectrum. -/
 protected theorem nonempty : (spectrum ℂ a).Nonempty := by
   /- Suppose `σ a = ∅`, then resolvent set is `ℂ`, any `(z • 1 - a)` is a unit, and `resolvent`
     is differentiable on `ℂ`. -/
-  rw [Set.nonempty_iff_ne_empty]
-  by_contra h
+  by_contra' h
   have H₀ : resolventSet ℂ a = Set.univ := by rwa [spectrum, Set.compl_empty_iff] at h
   have H₁ : Differentiable ℂ fun z : ℂ => resolvent a z := fun z =>
     (hasDerivAt_resolvent (H₀.symm ▸ Set.mem_univ z : z ∈ resolventSet ℂ a)).differentiableAt
   /- The norm of the resolvent is small for all sufficiently large `z`, and by compactness and
     continuity it is bounded on the complement of a large ball, thus uniformly bounded on `ℂ`.
     By Liouville's theorem `fun z ↦ resolvent a z` is constant. -/
-  have H₃ := H₁.apply_eq_const_of_tendsto_cocompact 0 <|
-    by simpa [Metric.cobounded_eq_cocompact] using resolvent_tendsto_cobounded a (𝕜 := ℂ)
-  exact not_isUnit_zero
-    (H₃.subst (isUnit_resolvent.mp (mem_resolventSet_iff.mp (H₀.symm ▸ Set.mem_univ 0))))
+  have H₃ := H₁.apply_eq_of_tendsto_cocompact 0 <| by
+    simpa [Metric.cobounded_eq_cocompact] using resolvent_tendsto_cobounded a (𝕜 := ℂ)
+  exact not_isUnit_zero <| H₃ ▸ (isUnit_resolvent.mp <| H₀.symm ▸ Set.mem_univ 0)
 #align spectrum.nonempty spectrum.nonempty
 
 /-- In a complex Banach algebra, the spectral radius is always attained by some element of the
