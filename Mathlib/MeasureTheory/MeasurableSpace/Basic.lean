@@ -1718,7 +1718,7 @@ theorem coe_sumPiEquivProdPi_symm (α : δ ⊕ δ' → Type*) [∀ i, Measurable
     ⇑(MeasurableEquiv.sumPiEquivProdPi α).symm = (Equiv.sumPiEquivProdPi α).symm := by rfl
 
 /-- The measurable equivalence `(∀ i : s, π i) × (∀ i : t, π i) ≃ᵐ (∀ i : s ∪ t, π i)`
-  for disjoint finsets `s` and `t`. -/
+  for disjoint finsets `s` and `t`. `Equiv.piFinsetUnion` as a measurable equivalence. -/
 def piFinsetUnion [DecidableEq δ'] {s t : Finset δ'} (h : Disjoint s t) :
     ((∀ i : s, π i) × ∀ i : t, π i) ≃ᵐ ∀ i : (s ∪ t : Finset δ'), π i :=
   let e := Finset.union s t h
