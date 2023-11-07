@@ -137,7 +137,8 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
           isOpen_lt' _ with ⟨v, ⟨hv⟩, vu⟩
       simp [Set.ext_iff] at vu
       have : Ioi a = ⋃ x : v, (Iio x.1.1)ᶜ := by
-        simp [Set.ext_iff]
+        simp only [compl_Iio, iUnion_coe_set, Set.ext_iff, mem_Ioi, mem_iUnion, mem_Ici,
+          exists_prop, Subtype.exists, exists_and_right]
         refine' fun x => ⟨fun ax => _, fun ⟨a', ⟨h, _⟩, ax⟩ => lt_of_lt_of_le h ax⟩
         rcases (vu x).2 (by
           refine' not_imp_comm.1 (fun h => _) h
@@ -230,13 +231,21 @@ def addBorelInstance (e : Expr) : TacticM Unit := do
 /-- Given a type `e`, an assumption `i : MeasurableSpace e`, and an instance `[BorelSpace e]`,
 replace `i` with `borel e`. -/
 def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
-  let t ← Lean.Elab.Term.exprToSyntax e
+  let te ← Lean.Elab.Term.exprToSyntax e
   evalTactic <| ← `(tactic|
-    have := @BorelSpace.measurable_eq $t _ _ _)
-  liftMetaTactic fun m => return [← subst m i]
+    have := @BorelSpace.measurable_eq $te _ _ _)
+  try
+    liftMetaTactic fun m => return [← subst m i]
+  catch _ =>
+    let et ← synthInstance (← mkAppOptM ``TopologicalSpace #[e])
+    throwError
+      (m!"`‹TopologicalSpace {e}› := {et}" ++ MessageData.ofFormat Format.line ++
+        m!"depends on" ++ MessageData.ofFormat Format.line ++
+        m!"{Expr.fvar i} : MeasurableSpace {e}`" ++ MessageData.ofFormat Format.line ++
+        "so `borelize` isn't avaliable")
   evalTactic <| ← `(tactic|
     refine_lift
-      letI : MeasurableSpace $t := borel $t
+      letI : MeasurableSpace $te := borel $te
       ?_)
 
 /-- Given a type `$t`, if there is an assumption `[i : MeasurableSpace $t]`, then try to prove
@@ -759,7 +768,7 @@ theorem ext_of_Ioc_finite {α : Type*} [TopologicalSpace α] {m : MeasurableSpac
   exact h hab
 #align measure_theory.measure.ext_of_Ioc_finite MeasureTheory.Measure.ext_of_Ioc_finite
 
-/-- Two measures which are finite on closed-open intervals are equal if the agree on all
+/-- Two measures which are finite on closed-open intervals are equal if they agree on all
 closed-open intervals. -/
 theorem ext_of_Ico' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
     [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α] [NoMaxOrder α]
@@ -785,7 +794,7 @@ theorem ext_of_Ico' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
     exact h hlt
 #align measure_theory.measure.ext_of_Ico' MeasureTheory.Measure.ext_of_Ico'
 
-/-- Two measures which are finite on closed-open intervals are equal if the agree on all
+/-- Two measures which are finite on closed-open intervals are equal if they agree on all
 open-closed intervals. -/
 theorem ext_of_Ioc' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
     [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α] [NoMinOrder α]
@@ -795,7 +804,7 @@ theorem ext_of_Ioc' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
   exacts [hμ hab, h hab]
 #align measure_theory.measure.ext_of_Ioc' MeasureTheory.Measure.ext_of_Ioc'
 
-/-- Two measures which are finite on closed-open intervals are equal if the agree on all
+/-- Two measures which are finite on closed-open intervals are equal if they agree on all
 closed-open intervals. -/
 theorem ext_of_Ico {α : Type*} [TopologicalSpace α] {_m : MeasurableSpace α}
     [SecondCountableTopology α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
@@ -804,7 +813,7 @@ theorem ext_of_Ico {α : Type*} [TopologicalSpace α] {_m : MeasurableSpace α}
   μ.ext_of_Ico' ν (fun _ _ _ => measure_Ico_lt_top.ne) h
 #align measure_theory.measure.ext_of_Ico MeasureTheory.Measure.ext_of_Ico
 
-/-- Two measures which are finite on closed-open intervals are equal if the agree on all
+/-- Two measures which are finite on closed-open intervals are equal if they agree on all
 open-closed intervals. -/
 theorem ext_of_Ioc {α : Type*} [TopologicalSpace α] {_m : MeasurableSpace α}
     [SecondCountableTopology α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
@@ -820,7 +829,7 @@ theorem ext_of_Iic {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
     [IsFiniteMeasure μ] (h : ∀ a, μ (Iic a) = ν (Iic a)) : μ = ν := by
   refine' ext_of_Ioc_finite μ ν _ fun a b hlt => _
   · rcases exists_countable_dense_bot_top α with ⟨s, hsc, hsd, -, hst⟩
-    have : DirectedOn (· ≤ ·) s := directedOn_iff_directed.2 (directed_of_sup fun _ _ => id)
+    have : DirectedOn (· ≤ ·) s := directedOn_iff_directed.2 (Subtype.mono_coe _).directed_le
     simp only [← biSup_measure_Iic hsc (hsd.exists_ge' hst) this, h]
   rw [← Iic_diff_Iic, measure_diff (Iic_subset_Iic.2 hlt.le) measurableSet_Iic,
     measure_diff (Iic_subset_Iic.2 hlt.le) measurableSet_Iic, h a, h b]
@@ -2091,6 +2100,14 @@ instance instMeasurableSub₂ : MeasurableSub₂ ℝ≥0∞ :=
 instance instMeasurableInv : MeasurableInv ℝ≥0∞ :=
   ⟨continuous_inv.measurable⟩
 #align ennreal.has_measurable_inv ENNReal.instMeasurableInv
+
+instance : MeasurableSMul ℝ≥0 ℝ≥0∞ where
+  measurable_const_smul := by
+    simp_rw [ENNReal.smul_def]
+    exact fun _ ↦ MeasurableSMul.measurable_const_smul _
+  measurable_smul_const := fun x ↦ by
+    simp_rw [ENNReal.smul_def]
+    exact measurable_coe_nnreal_ennreal.mul_const _
 
 end ENNReal
 

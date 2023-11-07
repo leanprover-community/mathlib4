@@ -26,7 +26,7 @@ noncomputable section
 
 open Function Polynomial Finsupp Finset
 
-open BigOperators Classical Polynomial
+open BigOperators Polynomial
 
 namespace Polynomial
 
@@ -48,7 +48,7 @@ def trailingDegree (p : R[X]) : ℕ∞ :=
 #align polynomial.trailing_degree Polynomial.trailingDegree
 
 theorem trailingDegree_lt_wf : WellFounded fun p q : R[X] => trailingDegree p < trailingDegree q :=
-  InvImage.wf trailingDegree (WithTop.wellFounded_lt Nat.lt_wfRel.2)
+  InvImage.wf trailingDegree wellFounded_lt
 #align polynomial.trailing_degree_lt_wf Polynomial.trailingDegree_lt_wf
 
 /-- `natTrailingDegree p` forces `trailingDegree p` to `ℕ`, by defining
@@ -207,10 +207,12 @@ theorem natTrailingDegree_monomial (ha : a ≠ 0) : natTrailingDegree (monomial 
 #align polynomial.nat_trailing_degree_monomial Polynomial.natTrailingDegree_monomial
 
 theorem natTrailingDegree_monomial_le : natTrailingDegree (monomial n a) ≤ n :=
+  letI := Classical.decEq R
   if ha : a = 0 then by simp [ha] else (natTrailingDegree_monomial ha).le
 #align polynomial.nat_trailing_degree_monomial_le Polynomial.natTrailingDegree_monomial_le
 
 theorem le_trailingDegree_monomial : ↑n ≤ trailingDegree (monomial n a) :=
+  letI := Classical.decEq R
   if ha : a = 0 then by simp [ha] else (trailingDegree_monomial ha).ge
 #align polynomial.le_trailing_degree_monomial Polynomial.le_trailingDegree_monomial
 

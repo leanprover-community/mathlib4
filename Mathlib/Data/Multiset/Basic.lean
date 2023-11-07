@@ -302,7 +302,8 @@ theorem cons_eq_cons {a b : α} {as bs : Multiset α} :
     · have : a ∈ b ::ₘ bs := eq ▸ mem_cons_self _ _
       have : a ∈ bs := by simpa [h]
       rcases exists_cons_of_mem this with ⟨cs, hcs⟩
-      simp [h, hcs]
+      simp only [h, hcs, false_and, ne_eq, not_false_eq_true, cons_inj_right, exists_eq_right',
+        true_and, false_or]
       have : a ::ₘ as = b ::ₘ a ::ₘ cs := by simp [eq, hcs]
       have : a ::ₘ as = a ::ₘ b ::ₘ cs := by rwa [cons_swap]
       simpa using this
@@ -868,14 +869,12 @@ theorem strongDownwardInductionOn_eq {p : Multiset α → Sort*} (s : Multiset �
   rw [strongDownwardInduction]
 #align multiset.strong_downward_induction_on_eq Multiset.strongDownwardInductionOn_eq
 
-/-- Another way of expressing `strongInductionOn`: the `(<)` relation is well-founded. -/
-theorem wellFounded_lt : WellFounded ((· < ·) : Multiset α → Multiset α → Prop) :=
-  Subrelation.wf Multiset.card_lt_of_lt (measure Multiset.card).2
-#align multiset.well_founded_lt Multiset.wellFounded_lt
+#align multiset.well_founded_lt wellFounded_lt
 
-instance is_wellFounded_lt : WellFoundedLT (Multiset α) :=
-  ⟨wellFounded_lt⟩
-#align multiset.is_well_founded_lt Multiset.is_wellFounded_lt
+/-- Another way of expressing `strongInductionOn`: the `(<)` relation is well-founded. -/
+instance instWellFoundedLT : WellFoundedLT (Multiset α) :=
+  ⟨Subrelation.wf Multiset.card_lt_of_lt (measure Multiset.card).2⟩
+#align multiset.is_well_founded_lt Multiset.instWellFoundedLT
 
 /-! ### `Multiset.replicate` -/
 
@@ -1033,6 +1032,12 @@ theorem erase_of_not_mem {a : α} {s : Multiset α} : a ∉ s → s.erase a = s 
 theorem cons_erase {s : Multiset α} {a : α} : a ∈ s → a ::ₘ s.erase a = s :=
   Quot.inductionOn s fun _l h => Quot.sound (perm_cons_erase h).symm
 #align multiset.cons_erase Multiset.cons_erase
+
+theorem erase_cons_tail_of_mem (h : a ∈ s) :
+    (b ::ₘ s).erase a = b ::ₘ s.erase a := by
+  rcases eq_or_ne a b with rfl | hab
+  · simp [cons_erase h]
+  · exact s.erase_cons_tail hab.symm
 
 theorem le_cons_erase (s : Multiset α) (a : α) : s ≤ a ::ₘ s.erase a :=
   if h : a ∈ s then le_of_eq (cons_erase h).symm
@@ -1340,6 +1345,13 @@ theorem map_erase [DecidableEq α] [DecidableEq β] (f : α → β) (hf : Functi
     simp
   · rw [s.erase_cons_tail hxy, map_cons, map_cons, (s.map f).erase_cons_tail (hf.ne hxy), ih]
 #align multiset.map_erase Multiset.map_erase
+
+theorem map_erase_of_mem [DecidableEq α] [DecidableEq β] (f : α → β)
+    (s : Multiset α) {x : α} (h : x ∈ s) : (s.erase x).map f = (s.map f).erase (f x) := by
+  induction' s using Multiset.induction_on with y s ih; simp
+  rcases eq_or_ne y x with rfl | hxy; simp
+  replace h : x ∈ s := by simpa [hxy.symm] using h
+  rw [s.erase_cons_tail hxy, map_cons, map_cons, ih h, erase_cons_tail_of_mem (mem_map_of_mem f h)]
 
 theorem map_surjective_of_surjective {f : α → β} (hf : Function.Surjective f) :
     Function.Surjective (map f) := by

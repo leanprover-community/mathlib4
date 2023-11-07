@@ -74,6 +74,8 @@ open BigOperators Polynomial
 
 open Finset (antidiagonal mem_antidiagonal)
 
+open Finset (antidiagonal mem_antidiagonal)
+
 /-- Multivariate formal power series, where `σ` is the index set of the variables
 and `R` is the coefficient ring.-/
 def MvPowerSeries (σ : Type*) (R : Type*) :=
@@ -237,7 +239,8 @@ theorem coeff_monomial_mul (a : R) :
     ∀ p ∈ antidiagonal m,
       coeff R (p : (σ →₀ ℕ) × (σ →₀ ℕ)).1 (monomial R n a) * coeff R p.2 φ ≠ 0 → p.1 = n :=
     fun p _ hp => eq_of_coeff_monomial_ne_zero (left_ne_zero_of_mul hp)
-  rw [coeff_mul, ← Finset.sum_filter_of_ne this, antidiagonal_filter_fst_eq, Finset.sum_ite_index]
+  rw [coeff_mul, ← Finset.sum_filter_of_ne this, Finset.filter_fst_eq_antidiagonal _ n,
+    Finset.sum_ite_index]
   simp only [Finset.sum_singleton, coeff_monomial_same, Finset.sum_empty]
 #align mv_power_series.coeff_monomial_mul MvPowerSeries.coeff_monomial_mul
 
@@ -248,7 +251,8 @@ theorem coeff_mul_monomial (a : R) :
     ∀ p ∈ antidiagonal m,
       coeff R (p : (σ →₀ ℕ) × (σ →₀ ℕ)).1 φ * coeff R p.2 (monomial R n a) ≠ 0 → p.2 = n :=
     fun p _ hp => eq_of_coeff_monomial_ne_zero (right_ne_zero_of_mul hp)
-  rw [coeff_mul, ← Finset.sum_filter_of_ne this, antidiagonal_filter_snd_eq, Finset.sum_ite_index]
+  rw [coeff_mul, ← Finset.sum_filter_of_ne this, Finset.filter_snd_eq_antidiagonal _ n,
+    Finset.sum_ite_index]
   simp only [Finset.sum_singleton, coeff_monomial_same, Finset.sum_empty]
 #align mv_power_series.coeff_mul_monomial MvPowerSeries.coeff_mul_monomial
 
@@ -771,6 +775,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
     rintro ⟨i, j⟩ hij
     rw [coeff_X_pow, if_neg, zero_mul]
     contrapose! h
+    dsimp at h
     subst i
     rw [mem_antidiagonal] at hij
     rw [← hij, Finsupp.add_apply, Finsupp.single_eq_same]
@@ -855,16 +860,11 @@ theorem coeff_inv_aux [DecidableEq σ] (n : σ →₀ ℕ) (a : R) (φ : MvPower
       if n = 0 then a
       else
         -a *
-          ∑ x in antidiagonal n,
-            if x.2 < n then coeff R x.1 φ * coeff R x.2 (inv.aux a φ) else 0 := by
-  change inv.aux a φ n = _
-  nth_rewrite 1 [inv.aux]
-  split_ifs
-  · rfl
-  · apply congr_arg₂ _ rfl
-    apply Finset.sum_congr
-    rw [Subsingleton.elim (Classical.decEq σ) ‹DecidableEq σ›]
-    intros; simp only [dite_eq_ite]; rfl
+          ∑ x in antidiagonal n, if x.2 < n then coeff R x.1 φ * coeff R x.2 (inv.aux a φ) else 0 :=
+  show inv.aux a φ n = _ by
+    cases Subsingleton.elim ‹DecidableEq σ› (Classical.decEq σ)
+    rw [inv.aux]
+    rfl
 #align mv_power_series.coeff_inv_aux MvPowerSeries.coeff_inv_aux
 
 /-- A multivariate formal power series is invertible if the constant coefficient is invertible.-/
@@ -1465,9 +1465,16 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_zero_C (a : R) : coeff R 0 (C R a) = a := by
-  rw [← monomial_zero_eq_C_apply, coeff_monomial_same 0 a]
+  rw [coeff_C, if_pos rfl]
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_zero_C PowerSeries.coeff_zero_C
+
+theorem coeff_ne_zero_C {a : R} {n : ℕ} (h : n ≠ 0) : coeff R n (C R a) = 0 := by
+  rw [coeff_C, if_neg h]
+
+@[simp]
+theorem coeff_succ_C {a : R} {n : ℕ} : coeff R (n + 1) (C R a) = 0 :=
+  coeff_ne_zero_C n.succ_ne_zero
 
 theorem X_eq : (X : R⟦X⟧) = monomial R 1 1 :=
   rfl
@@ -2542,7 +2549,8 @@ theorem X_pow_order_dvd (h : (order φ).Dom) : X ^ (order φ).get h ∣ φ := by
   refine' ⟨PowerSeries.mk fun n => coeff R (n + (order φ).get h) φ, _⟩
   ext n
   simp only [coeff_mul, coeff_X_pow, coeff_mk, boole_mul, Finset.sum_ite,
-    Finset.Nat.filter_fst_eq_antidiagonal, Finset.sum_const_zero, add_zero]
+    Finset.sum_const_zero, add_zero]
+  rw [Finset.filter_fst_eq_antidiagonal n (Part.get (order φ) h)]
   split_ifs with hn
   · simp [tsub_add_cancel_of_le hn]
   · simp only [Finset.sum_empty]
