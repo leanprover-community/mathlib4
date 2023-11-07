@@ -3,7 +3,7 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Algebra.Hom.Equiv.TypeTags
+import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Data.ZMod.Quotient
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.Norm
@@ -211,7 +211,7 @@ theorem fromUnit_ker [hn : Fact <| 0 < n] :
   ext ⟨_, _, _, _⟩
   constructor
   · intro hx
-    rcases(QuotientGroup.eq_one_iff _).mp (Subtype.mk.inj hx) with ⟨⟨v, i, vi, iv⟩, hx⟩
+    rcases (QuotientGroup.eq_one_iff _).mp (Subtype.mk.inj hx) with ⟨⟨v, i, vi, iv⟩, hx⟩
     have hv : ↑(_ ^ n : Kˣ) = algebraMap R K _ := by exact congr_arg Units.val hx
     have hi : ↑(_ ^ n : Kˣ)⁻¹ = algebraMap R K _ := by exact congr_arg Units.inv hx
     rw [Units.val_pow_eq_pow_val] at hv

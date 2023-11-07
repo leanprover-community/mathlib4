@@ -241,7 +241,7 @@ theorem types_ι_jointly_surjective (D : GlueData (Type*)) (x : D.glued) :
   rw [← show (colimit.isoColimitCocone (Types.coproductColimitCocone _)).inv _ = x' from
       ConcreteCategory.congr_hom
         (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom_inv_id x']
-  rcases(colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom x' with ⟨i, y⟩
+  rcases (colimit.isoColimitCocone (Types.coproductColimitCocone _)).hom x' with ⟨i, y⟩
   exact ⟨i, y, by
     simp [← Multicoequalizer.ι_sigmaπ, -Multicoequalizer.ι_sigmaπ]
     rfl ⟩

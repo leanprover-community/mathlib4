@@ -101,7 +101,7 @@ noncomputable def primeSpectrumProd :
           · exact False.elim (hJ.ne_top h.right)
           · simp only [h]
         · rintro ⟨I, hI⟩
-          rcases(Ideal.ideal_prod_prime I).mp hI with (⟨p, ⟨hp, rfl⟩⟩ | ⟨p, ⟨hp, rfl⟩⟩)
+          rcases (Ideal.ideal_prod_prime I).mp hI with (⟨p, ⟨hp, rfl⟩⟩ | ⟨p, ⟨hp, rfl⟩⟩)
           · exact ⟨Sum.inl ⟨p, hp⟩, rfl⟩
           · exact ⟨Sum.inr ⟨p, hp⟩, rfl⟩)
 #align prime_spectrum.prime_spectrum_prod PrimeSpectrum.primeSpectrumProd
@@ -298,7 +298,7 @@ theorem zeroLocus_empty_iff_eq_top {I : Ideal R} : zeroLocus (I : Set R) = ∅ �
   · contrapose!
     intro h
     rcases Ideal.exists_le_maximal I h with ⟨M, hM, hIM⟩
-    exact Set.Nonempty.ne_empty ⟨⟨M, hM.isPrime⟩, hIM⟩
+    exact ⟨⟨M, hM.isPrime⟩, hIM⟩
   · rintro rfl
     apply zeroLocus_empty_of_one_mem
     trivial

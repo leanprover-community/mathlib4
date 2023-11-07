@@ -3,11 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Ideal.QuotientOperations
-import Mathlib.Algebra.Hom.Equiv.TypeTags
+import Mathlib.RingTheory.Int.Basic
 
 #align_import data.zmod.quotient from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
