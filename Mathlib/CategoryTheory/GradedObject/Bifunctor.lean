@@ -13,7 +13,7 @@ When we have a map `p : I × J → K` and that suitable coproducts exists, we al
 a functor
 `mapBifunctorMap F p : GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject K C₃`.
 
-In case `p : I × I → I` is the addition on a monoid and `F` is tensor product on a monoidal
+In case `p : I × I → I` is the addition on a monoid and `F` is the tensor product on a monoidal
 category `C`, these definitions shall be used in order to construct a monoidal structure
 on `GradedObject I C` (TODO @joelriou).
 
