@@ -132,4 +132,36 @@ theorem exists_eq_const_of_bounded {f : E → F} (hf : Differentiable ℂ f)
   (hf.exists_const_forall_eq_of_bounded hb).imp fun _ => funext
 #align differentiable.exists_eq_const_of_bounded Differentiable.exists_eq_const_of_bounded
 
+-- reviewers, do we not have something like this? obviously if it stays it should be moved.
+theorem _root_.Filter.Tendsto.exists_isBounded_image {α β : Type*} [PseudoMetricSpace β]
+    {l : Filter α} {f : α → β} {x : β} (hf : Tendsto f l (𝓝 x)) :
+    ∃ s ∈ l, IsBounded (f '' s)  := by
+  refine ⟨_, hf <| nhds_basis_ball.mem_of_mem zero_lt_one, ?_⟩
+  apply Metric.isBounded_ball (x := x) (r := 1) |>.subset
+  rintro - ⟨y, hy, rfl⟩
+  exact hy
+
+theorem eq_const_of_tendsto_cocompact
+    {E : Type*} [Nontrivial E] [NormedAddCommGroup E] [NormedSpace ℂ E] {F : Type*}
+    [NormedAddCommGroup F] [NormedSpace ℂ F] {f : E → F} (hf : Differentiable ℂ f) {c : F}
+    (hb : Tendsto f (cocompact E) (𝓝 c)) :
+    f = Function.const E c := by
+  have h_bdd : Bornology.IsBounded (Set.range f) := by
+    obtain ⟨s, hs, hs_bdd⟩ := hb.exists_isBounded_image
+    obtain ⟨t, ht, hts⟩ := mem_cocompact.mp hs
+    apply ((ht.image hf.continuous).isBounded.union hs_bdd).subset
+    simpa [Set.image_union, Set.image_univ] using Set.image_subset _ <| calc
+      Set.univ = t ∪ tᶜ := t.union_compl_self.symm
+      _        ⊆ t ∪ _  := by gcongr
+  obtain ⟨c', hc'⟩ := hf.exists_eq_const_of_bounded h_bdd
+  convert hc'
+  exact tendsto_nhds_unique hb (by simpa [hc'] using tendsto_const_nhds)
+
+theorem apply_eq_of_tendsto_cocompact
+    {E : Type*} [Nontrivial E] [NormedAddCommGroup E] [NormedSpace ℂ E] {F : Type*}
+    [NormedAddCommGroup F] [NormedSpace ℂ F] {f : E → F} (hf : Differentiable ℂ f) {c : F}
+    (x : E) (hb : Tendsto f (cocompact E) (𝓝 c)) :
+    f x = c :=
+  congr($(hf.eq_const_of_tendsto_cocompact hb) x)
+
 end Differentiable
