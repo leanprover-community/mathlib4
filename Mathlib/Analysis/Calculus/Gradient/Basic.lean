@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Ziyu Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ziyu Wang, Chenyi Li, Sgouezel, Penghao Yu, Zhipeng Cao
+Authors: Ziyu Wang, Chenyi Li, sgouezel, Penghao Yu, Zhipeng Cao
 -/
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.Calculus.FDeriv.Basic
@@ -175,7 +175,7 @@ theorem gradient_deriv : ∇ g u = starRingEnd 𝕜 (deriv g u) := by
     exact Eq.symm (IsROrC.conj_conj (∇ g u))
   · rw [Gradient_zero_of_not_differentiableAt h, deriv_zero_of_not_differentiableAt h]
     exact Eq.symm (RingHom.map_zero (starRingEnd 𝕜))
-  
+
 end OneDimension
 
 section OneDimensionReal
@@ -187,7 +187,7 @@ theorem HasGradientAtFilter.hasDerivAtFilter' (h : HasGradientAtFilter g g' u L'
 
 theorem HasDerivAtFilter.hasGradientAtFilter' (h : HasDerivAtFilter g g' u L') :
     HasGradientAtFilter g g' u L' := h.hasGradientAtFilter
-  
+
 theorem HasGradientAt.hasDerivAt' (h : HasGradientAt g g' u) :
     HasDerivAt g g' u := h.hasDerivAt
 
