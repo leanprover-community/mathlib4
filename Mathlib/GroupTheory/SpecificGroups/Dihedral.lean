@@ -5,6 +5,7 @@ Authors: Shing Tak Lam, Newell Jensen
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Exponent
+import Mathlib.GroupTheory.PresentedGroup
 
 #align_import group_theory.specific_groups.dihedral from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -189,6 +190,29 @@ theorem orderOf_sr (i : ZMod n) : orderOf (sr i) = 2 := by
     simp_rw [one_def, ne_eq, forall_const]
 #align dihedral_group.order_of_sr DihedralGroup.orderOf_sr
 
+-- @[simp]
+-- theorem sr_one_pow (k : ℕ) : (sr 1 : DihedralGroup n) ^ k = sr k := by
+--   induction' k with k IH
+--   · rw [Nat.cast_zero]
+--     simp only [Nat.zero_eq, pow_zero]
+
+
+--   · rw [pow_succ, IH, r_mul_r]
+--     congr 1
+--     norm_cast
+--     rw [Nat.one_add]
+
+
+-- @[simp]
+-- theorem sr_one_zpow (n : ℕ) (i : ℤ) :
+--     (sr (1 : ZMod n)) ^ i = sr i := by
+
+--   obtain ⟨j, hj⟩ := i.eq_nat_or_neg
+--   rcases hj with rfl | rfl
+--   · simp only [zpow_coe_nat, Int.cast_ofNat]
+
+--   · simp only [zpow_neg, zpow_coe_nat, sr_one_pow, Int.cast_neg, Int.cast_ofNat]
+
 /-- If `0 < n`, then `r 1` has order `n`.
 -/
 @[simp]
@@ -281,5 +305,150 @@ lemma card_conjClasses_odd (hn : Odd n) :
   rw [←Nat.mul_div_mul_left _ 2 hn.pos, ← card_commute_odd hn, mul_comm,
     card_comm_eq_card_conjClasses_mul_card, nat_card, Nat.mul_div_left _ (mul_pos two_pos hn.pos)]
 
-
 end DihedralGroup
+
+namespace PresentedDihedralGroup
+
+variable {n : ℕ}
+
+inductive Generators (n : ℕ)
+  | a : Generators n
+  | b : Generators n
+  deriving DecidableEq
+
+open DihedralGroup Generators
+
+/-- a² = sr² = 1, bⁿ = rⁿ = 1 -/
+def GenMap : Generators n → DihedralGroup n
+  | a => sr 1
+  | b => r 1
+
+/-- Presentation ⟨a, b | a² = 1, bⁿ = 1, (a * b)² = 1⟩  -/
+def Rels (n : ℕ) : Set (FreeGroup (Generators n)) :=
+  {FreeGroup.of b ^ n} ∪ {FreeGroup.of a * FreeGroup.of a} ∪
+  {(FreeGroup.of a * FreeGroup.of b) * (FreeGroup.of a * FreeGroup.of b)}
+
+abbrev PresentedDihedralGroup (n : ℕ) := PresentedGroup <| Rels n
+
+def GenMapInv : DihedralGroup n → PresentedDihedralGroup n
+  | sr i => QuotientGroup.mk (FreeGroup.of a ^ (i : ℤ))
+  | r i => QuotientGroup.mk (FreeGroup.of b ^ (i : ℤ))
+
+theorem one_of_Rels : ∀ r ∈ Rels n, FreeGroup.lift GenMap r = 1 := by
+  intro r hr
+  simp only [Rels] at hr
+  simp only [Set.union_singleton, Set.mem_singleton_iff, Set.mem_insert_iff] at hr
+  rcases hr with hr₁ | hr₂ | hr₃
+  · rw [hr₁]
+    simp only [map_pow, map_mul, FreeGroup.lift.of]
+    simp [GenMap]
+  · rw [hr₂]
+    simp only [map_mul, FreeGroup.lift.of]
+    simp [GenMap]
+  · rw [hr₃]
+    simp only [map_pow, FreeGroup.lift.of, one_def]
+    simp [GenMap]
+
+/-- Group presentation induced morphism to the DihedarlGroup n. -/
+@[simp] theorem presentedGroupHom : PresentedDihedralGroup n →* DihedralGroup n :=
+    PresentedGroup.toGroup (f := GenMap) one_of_Rels
+
+lemma powLaw1 {i k : ZMod n} :
+    QuotientGroup.mk (FreeGroup.of b) ^ ((i + k : ZMod n) : ℤ) =
+    QuotientGroup.mk (s := Subgroup.normalClosure (Rels n)) (FreeGroup.of b) ^ (i : ℤ) *
+    QuotientGroup.mk (FreeGroup.of b) ^ (k : ℤ) := by
+  have h1 := ZMod.coe_add_eq_ite i k
+  symm at h1
+  obtain ⟨h2, h3⟩ := ite_eq_iff'.mp h1
+  push_neg at h3
+  by_cases H : (i : ℤ) + (k : ℤ) < n
+  · rw [← h3 H]
+    exact zpow_add (QuotientGroup.mk (FreeGroup.of b)) (i : ℤ) (k : ℤ)
+  · push_neg at H
+    rw [← h2 H]
+    have h5 : (i : ℤ) + (k : ℤ) = (i : ℤ) + (k : ℤ) - (n : ℤ) + (n : ℤ) := by linarith
+    have h6 := zpow_add ((QuotientGroup.mk (s := Subgroup.normalClosure (Rels n))
+      (FreeGroup.of (@b n))) * (QuotientGroup.mk (FreeGroup.of b)))
+      (i : ℤ) (k : ℤ)
+    sorry
+    -- have h7 := @a_b_zpow_mem_normalClosure_eq_identity n
+    -- rw [h5] at h6
+    -- rw [← h6]
+    -- have h8 := zpow_add ((QuotientGroup.mk (s := Subgroup.normalClosure (Rels n))
+    --   (FreeGroup.of (@a n))) * (QuotientGroup.mk (FreeGroup.of b)))
+    --   (i + k - n : ℤ) (n : ℤ)
+    -- simp only [QuotientGroup.mk_mul] at h7
+    -- rw [h8, h7, mul_one]
+
+lemma map_mul' : ∀ a b : DihedralGroup n, GenMapInv (a * b) = GenMapInv a * GenMapInv b := by
+  intro d₁ d₂
+  simp only [GenMapInv]
+  rcases d₁ with i | j
+  · rcases d₂ with k | l
+    · simp only [r_mul_r, QuotientGroup.mk_zpow]
+      exact powLaw1
+    · simp only [r_mul_sr, QuotientGroup.mk_zpow]
+      sorry
+  · rcases d₂ with k | l
+    · simp only [sr_mul_r, QuotientGroup.mk_zpow]
+      sorry
+    · simp only [sr_mul_sr, QuotientGroup.mk_zpow]
+      sorry
+
+/-- Homorphism from DihedralGroup n to group presentation of DihedralGroup n. -/
+def dihedralGroupHom : DihedralGroup n →* PresentedDihedralGroup n where
+  toFun := GenMapInv
+  map_one' := by
+    simp only [GenMapInv, one_def, QuotientGroup.mk_zpow, QuotientGroup.mk_mul,
+      ZMod.cast_zero, zpow_zero]
+  map_mul' := map_mul'
+
+lemma dihedralGroupHom1 {i : ZMod n} : dihedralGroupHom (r i : DihedralGroup n) =
+    (PresentedGroup.of b) ^ (i : ℤ) := by
+  unfold dihedralGroupHom
+  simp only [MonoidHom.coe_mk, OneHom.coe_mk, GenMapInv, PresentedGroup.of,
+    QuotientGroup.mk_zpow, QuotientGroup.mk_mul]
+
+lemma dihedralGroupHom2 {i : ZMod n} : dihedralGroupHom (sr i : DihedralGroup n) =
+    (PresentedGroup.of a) ^ (i : ℤ) := by
+  unfold dihedralGroupHom
+  simp only [MonoidHom.coe_mk, OneHom.coe_mk, GenMapInv, PresentedGroup.of,
+    QuotientGroup.mk_zpow, QuotientGroup.mk_mul]
+
+theorem rightInverseHoms : Function.RightInverse (@dihedralGroupHom n) (@presentedGroupHom n) := by
+  intro dn
+  rcases dn with i | i
+  · rw [dihedralGroupHom1]
+    unfold presentedGroupHom
+    simp only [map_mul, PresentedGroup.toGroup.of]
+    simp_rw [GenMap]
+    simp only [map_zpow, PresentedGroup.toGroup.of, r_one_zpow,
+      ZMod.int_cast_cast, ZMod.cast_id', id_eq]
+  · rw [dihedralGroupHom2]
+    unfold presentedGroupHom
+    simp only [map_mul, PresentedGroup.toGroup.of, map_zpow]
+    simp [GenMap]
+    sorry
+
+theorem tryingToFigureOut : (@dihedralGroupHom n).comp (@presentedGroupHom n) =
+    MonoidHom.id (PresentedDihedralGroup n) := by
+  refine PresentedGroup.ext ?_
+
+theorem leftInverseHoms : Function.LeftInverse (@dihedralGroupHom n) (@presentedGroupHom n) := by
+  intro pd
+  unfold dihedralGroupHom
+  simp only [MonoidHom.coe_mk, OneHom.coe_mk]
+  simp [GenMapInv]
+  match presentedGroupHom pd with
+  | r i => sorry
+  | sr i => sorry
+
+noncomputable
+def DihedralGroupIsoPresentedDihedralGroup : PresentedDihedralGroup n ≃* DihedralGroup n where
+  toFun := sorry
+  invFun := dihedralGroupHom
+  left_inv := sorry
+  right_inv := sorry
+  map_mul' x y := sorry -- by simp only [map_mul]
+
+end PresentedDihedralGroup
