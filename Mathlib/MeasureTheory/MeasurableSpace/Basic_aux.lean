@@ -3,7 +3,8 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Data.Fintype.BigOperators_aux
+-- import Mathlib.Data.Fintype.BigOperators_aux
+import Mathlib.Data.Finset.Update
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 
 /-!
@@ -72,7 +73,7 @@ variable [∀ i, MeasurableSpace (α i)]
 variable (α) in
 def MeasurableEquiv.piFinsetUnion [DecidableEq ι] {s t : Finset ι} (h : Disjoint s t) :
     ((∀ i : s, α i) × ∀ i : t, α i) ≃ᵐ ∀ i : (s ∪ t : Finset ι), α i :=
-  let e := (Finset.union s t h).symm
+  let e := Finset.union s t h
   MeasurableEquiv.sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans <|
     .piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e
 

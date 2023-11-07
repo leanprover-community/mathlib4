@@ -5,9 +5,9 @@ Authors: Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.Analysis.Calculus.Deriv.Pi
 import Mathlib.Data.Finset.Interval
-import Mathlib.MeasureTheory.Integral.Bochner_aux
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper_aux
-import Mathlib.MeasureTheory.Integral.MeanInequalities_aux
+import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+import Mathlib.MeasureTheory.Integral.MeanInequalities
 
 /-!
 # Gagliardo-Nirenberg-Sobolev inequality
@@ -221,7 +221,7 @@ theorem T_marginal_antitone (hp₀ : 0 ≤ p) (hp : (#ι - 1 : ℝ) * p ≤ 1)
     Antitone (fun s ↦ T μ p (∫⋯∫_sᶜ, f ∂μ) s) := by
   -- Reformulate (by induction): a function is decreasing on `Finset ι` if it decreases under the
   -- insertion of any element to any set.
-  rw [Finset.antitone_iff']
+  rw [Finset.antitone_iff_forall_insert_le]
   intro s i hi
   -- apply the lemma designed to encapsulate the inductive step
   convert T_insert_le_T_marginal_singleton μ hp₀ s ?_ i hi (hf.marginal μ) using 2
@@ -235,7 +235,7 @@ theorem T_marginal_antitone (hp₀ : 0 ≤ p) (hp : (#ι - 1 : ℝ) * p ≤ 1)
     refine le_trans ?_ hp
     gcongr
     suffices (s.card : ℝ) + 1 ≤ #ι by linarith
-    rw [← s.card_add_card_compl]
+    rw [← card_add_card_compl s]
     norm_cast
     gcongr
     have hi' : sᶜ.Nonempty := ⟨i, by rwa [Finset.mem_compl]⟩
@@ -320,9 +320,9 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux {u : (ι → ℝ) → ℝ} (hu
         have h3u : ContDiff ℝ 1 (u ∘ update x i) := hu.comp (contDiff_update 1 x i)
         have h4u : HasCompactSupport (u ∘ update x i) :=
           h2u.comp_closedEmbedding (closedEmbedding_update x i)
-        simp [h4u.integral_deriv_eq h3u (x i)]
+        simp [HasCompactSupport.integral_Iic_deriv_eq h3u h4u (x i), neg_le_self_iff]
     _ ≤ ∫⁻ xᵢ in Iic (x i), ‖deriv (u ∘ update x i) xᵢ‖₊ :=
-        nnnorm_integral_le_lintegral_nnnorm _ -- apply the triangle inequality
+        ennnorm_integral_le_lintegral_ennnorm _ -- apply the triangle inequality
     _ ≤ ∫⁻ xᵢ, (‖fderiv ℝ u (update x i xᵢ)‖₊ : ℝ≥0∞) := ?_
   gcongr with y; swap; exact Measure.restrict_le_self
   -- bound the derivative which appears

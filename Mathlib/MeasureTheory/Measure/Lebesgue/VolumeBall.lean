@@ -42,11 +42,6 @@ theorem Finset.constant_of_eq_insert {α β : Type _} (f : Finset α → β)
 
 noncomputable section
 
-theorem Real.Gamma_nonneg_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 0 ≤ Real.Gamma x := by
-    obtain rfl | hx := eq_or_lt_of_le hx
-    · simp [Gamma_zero]
-    · exact (Gamma_pos_of_pos hx).le
-
 @[simp, norm_cast]
 theorem Nat.cast_le_zero [OrderedSemiring R] [CharZero R] {n : ℕ} :
     (n : R) ≤ 0 ↔ n = 0 := by rw [← cast_zero, cast_le, le_zero_iff]
@@ -163,7 +158,7 @@ theorem lintegral_cos_pow_eq_beta (n : ℕ) :
   rw [← ofReal_integral_eq_lintegral_ofReal, integral_Icc_eq_integral_Ioc,
     ← intervalIntegral.integral_of_le, integral_cos_pow_eq_beta, ← ofReal_coe_nnreal]
   · rfl
-  · simp; positivity
+  · simp [neg_le_self_iff]; positivity
   · exact Continuous.integrableOn_Icc <| continuous_cos.pow _
   · rw [Filter.EventuallyLE, ae_restrict_iff' measurableSet_Icc]
     apply Filter.eventually_of_forall
@@ -257,7 +252,7 @@ lemma integral_sub_sq_sqrt_pow {R : ℝ} (hR : 0 ≤ R) :
         rw [Set.uIcc_of_le] at hx
         · rw [← cos_eq_sqrt_one_sub_sin_sq hx.1 hx.2] -- lemma: wrong = order, wrong hyp statement
           ring
-        simp; positivity
+        simp [neg_le_self_iff]; positivity
 
 /-- auxiliary one-variable integral -/
 theorem lintegral_I_sub_sq_nnreal (n : ℕ) (R : ℝ≥0) :
@@ -278,7 +273,7 @@ theorem lintegral_I_sub_sq_nnreal (n : ℕ) (R : ℝ≥0) :
         rw [← ofReal_integral_eq_lintegral_ofReal, integral_Icc_eq_integral_Ioc,
           ← intervalIntegral.integral_of_le]
         · rfl
-        · simp
+        · simp [neg_le_self_iff]
         · apply Continuous.integrableOn_Icc
           exact continuous_const.sub (continuous_id.pow 2) |>.sqrt.pow n
         · rw [Filter.EventuallyLE, ae_restrict_iff' measurableSet_Icc]
