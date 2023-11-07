@@ -16,7 +16,7 @@ exists, we define a functor
 which sets `j` to the coproduct of the objects `((F.obj (X₁ i₁)).obj (X₂ i₂)).obj (X₃ i₃)`
 for `p ⟨i₁, i₂, i₃⟩ = j`.
 
-This shall be used in order to constructor the associator isomorphism for the monoidal
+This shall be used in order to construct the associator isomorphism for the monoidal
 category structure on `GradedObject I C` induced by a monoidal structure on `C` and
 an additive monoid structure on `I` (TODO @joelriou).
 
