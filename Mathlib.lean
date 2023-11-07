@@ -1439,7 +1439,6 @@ import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finite.Set
 import Mathlib.Data.Finmap
 import Mathlib.Data.Finset.Antidiagonal
-import Mathlib.Data.Finset.PiAntidiagonal
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Fin
@@ -1456,6 +1455,7 @@ import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Finset.NoncommProd
 import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Order
+import Mathlib.Data.Finset.PiAntidiagonal
 import Mathlib.Data.Finset.PImage
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Pi
