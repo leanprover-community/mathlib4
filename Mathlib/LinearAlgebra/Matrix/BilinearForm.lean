@@ -571,10 +571,20 @@ theorem Matrix.toBilin_apply (M : Matrix n n R₂) (x y : M₂) :
 #align matrix.to_bilin_apply Matrix.toBilin_apply
 
 -- Not a `simp` lemma since `BilinForm.toMatrix` needs an extra argument
+theorem BilinearForm.toMatrixAux_eq' (B : M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) :
+    BilinForm.toMatrixAux' (R₂ := R₂) b B = BilinForm.toMatrix''' b B :=
+  ext fun i j => by rw [BilinForm.toMatrix_apply', BilinForm.toMatrixAux_apply']
+
+-- Not a `simp` lemma since `BilinForm.toMatrix` needs an extra argument
 theorem BilinearForm.toMatrixAux_eq (B : BilinForm R₂ M₂) :
     BilinForm.toMatrixAux (R₂ := R₂) b B = BilinForm.toMatrix b B :=
   ext fun i j => by rw [BilinForm.toMatrix_apply, BilinForm.toMatrixAux_apply]
 #align bilinear_form.to_matrix_aux_eq BilinearForm.toMatrixAux_eq
+
+@[simp]
+theorem BilinForm.toMatrix_symm' :
+    (BilinForm.toMatrix''' b).symm = Matrix.toBilin''' (N₂ := N₂) b :=
+  rfl
 
 @[simp]
 theorem BilinForm.toMatrix_symm : (BilinForm.toMatrix b).symm = Matrix.toBilin b :=
@@ -582,9 +592,19 @@ theorem BilinForm.toMatrix_symm : (BilinForm.toMatrix b).symm = Matrix.toBilin b
 #align bilin_form.to_matrix_symm BilinForm.toMatrix_symm
 
 @[simp]
+theorem Matrix.toBilin_symm' : (Matrix.toBilin''' b).symm = BilinForm.toMatrix''' (N₂ := N₂) b :=
+  (BilinForm.toMatrix''' b).symm_symm
+
+@[simp]
 theorem Matrix.toBilin_symm : (Matrix.toBilin b).symm = BilinForm.toMatrix b :=
   (BilinForm.toMatrix b).symm_symm
 #align matrix.to_bilin_symm Matrix.toBilin_symm
+
+theorem Matrix.toBilin_basisFun' :
+    Matrix.toBilin''' (Pi.basisFun R₂ n) = Matrix.toBilin'' (N₂ := N₂) := by
+  ext M
+  simp only [coe_comp, coe_single, Function.comp_apply, toBilin_apply', Pi.basisFun_repr, ne_eq,
+    toBilin'_apply'']
 
 theorem Matrix.toBilin_basisFun : Matrix.toBilin (Pi.basisFun R₂ n) = Matrix.toBilin' := by
   ext M
