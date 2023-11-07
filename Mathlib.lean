@@ -9,7 +9,6 @@ import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Data.Finset.PiAntidiagonal
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Spectrum
@@ -1440,6 +1439,7 @@ import Mathlib.Data.Finite.Defs
 import Mathlib.Data.Finite.Set
 import Mathlib.Data.Finmap
 import Mathlib.Data.Finset.Antidiagonal
+import Mathlib.Data.Finset.PiAntidiagonal
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Fin
