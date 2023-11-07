@@ -39,7 +39,7 @@ section Universes
 
 /-- Increase the size of the target category of condensed sets. -/
 def Condensed.ulift : Condensed.{u} (Type u) ⥤ CondensedSet.{u} :=
-  sheafCompose' (coherentTopology CompHaus) uliftFunctor.{u+1, u}
+  sheafCompose (coherentTopology CompHaus) uliftFunctor.{u+1, u}
 
 end Universes
 

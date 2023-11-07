@@ -9,8 +9,12 @@ import Mathlib.CategoryTheory.Limits.Types
 /-!
 # `ULift` creates small (co)limits
 
-This file shows that `uliftFunctor.{v, u}` creates (and hence preserves) `u`-small limits and
-colimits.
+This file shows that `uliftFunctor.{v, u}` creates (and hence preserves) limits and colimits indexed
+by `J` with `[Category.{u, u} J]`.
+
+It also shows that `uliftFunctor.{v, u}` *preserves* "all" limits (i.e. of size `max u v`,
+potentially too big to exist in `Type u`).
+
 -/
 
 universe v u
@@ -46,15 +50,18 @@ The equivalence between `K.sections` and `(K ⋙ uliftFunctor.{v, u}).sections`
 that `uliftFunctor` preserves limits that are too possibly too large to exist in the source
 category.
 -/
-def sectionsEquiv' {J : Type max u v} [Category.{u, max u v} J] (K : J ⥤ Type u) :
+def sectionsEquiv' {J : Type*} [Category J] (K : J ⥤ Type u) :
     K.sections ≃ (K ⋙ uliftFunctor.{v, u}).sections where
   toFun := fun ⟨u, hu⟩ => ⟨fun j => ⟨u j⟩, fun f => by simp [hu f]⟩
   invFun := fun ⟨u, hu⟩ => ⟨fun j => (u j).down, @fun j j' f => by simp [← hu f]⟩
   left_inv := by intro; ext; rfl
   right_inv := by intro; ext; rfl
 
+/--
+The functor `uliftFunctor : Type u ⥤ Type (max u v)` preserves limits.
+-/
 noncomputable
-instance : PreservesLimitsOfSize.{u, max u v} uliftFunctor.{v, u} where
+instance : PreservesLimits uliftFunctor.{v, u} where
   preservesLimitsOfShape {J} := {
     preservesLimit := fun {K} => {
       preserves := fun {c} hc => by

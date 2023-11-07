@@ -114,8 +114,6 @@ def mapMultifork :
 
 end GrothendieckTopology.Cover
 
-section Multicospan
-
 variable [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan F]
 variable [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan G]
 variable [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan H]
@@ -158,44 +156,5 @@ lemma sheafCompose_id : sheafCompose_map (F := F) J (𝟙 _) = 𝟙 _ := rfl
 @[simp]
 lemma sheafCompose_comp :
     sheafCompose_map J (η ≫ γ) = sheafCompose_map J η ≫ sheafCompose_map J γ := rfl
-
-end Multicospan
-
-section Preserves
-
-variable [PreservesLimitsOfSize.{v₁, max v₁ u₁} F] [PreservesLimitsOfSize.{v₁, max v₁ u₁} G]
-  [PreservesLimitsOfSize.{v₁, max v₁ u₁} H] (J)
-
-/--
-Composing a sheaf with a functor preserving limits of the same size as the hom sets in `C` yields a
-functor between sheaf categories.
-
-Note: the size of the limit `(S.index P).multicospan` that `F` is required to preserve in
-`CategoryTheory.sheafCompose` is in general larger than this.
--/
-@[simps]
-def sheafCompose' : Sheaf J A ⥤ Sheaf J B where
-  obj G := ⟨G.val ⋙ F, Presheaf.isSheaf_comp_of_isSheaf J _ F G.cond⟩
-  map η := ⟨whiskerRight η.val _⟩
-  map_id _ := Sheaf.Hom.ext _ _ <| whiskerRight_id _
-  map_comp _ _ := Sheaf.Hom.ext _ _ <| whiskerRight_comp _ _ _
-
-variable {F G}
-
-/--
-If `η : F ⟶ G` is a natural transformation then we obtain a morphism of functors
-`sheafCompose' J F ⟶ sheafCompose' J G` by whiskering with `η` on the level of presheaves.
--/
-def sheafCompose'_map : sheafCompose' J F ⟶ sheafCompose' J G where
-  app := fun X => .mk <| whiskerLeft _ η
-
-@[simp]
-lemma sheafCompose'_id : sheafCompose'_map (F := F) J (𝟙 _) = 𝟙 _ := rfl
-
-@[simp]
-lemma sheafCompose'_comp :
-    sheafCompose'_map J (η ≫ γ) = sheafCompose'_map J η ≫ sheafCompose'_map J γ := rfl
-
-end Preserves
 
 end CategoryTheory
