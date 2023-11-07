@@ -45,11 +45,6 @@ protected def sym2 (s : Finset α) : Finset (Sym2 α) := ⟨s.1.sym2, s.2.sym2�
 section
 variable {s t : Finset α} {a b : α}
 
-@[simp]
-theorem sym2_eq_empty_iff : s.sym2 = ∅ ↔ s = ∅ := by
-  rw [← val_eq_zero, sym2_val, Multiset.sym2_eq_zero_iff, val_eq_zero]
-#align finset.sym2_eq_empty Finset.sym2_eq_empty_iff
-
 theorem mk_mem_sym2_iff : ⟦(a, b)⟧ ∈ s.sym2 ↔ a ∈ s ∧ b ∈ s := by
   rw [mem_mk, sym2_val, Multiset.mk_mem_sym2_iff, mem_mk, mem_mk]
 #align finset.mk_mem_sym2_iff Finset.mk_mem_sym2_iff
@@ -90,9 +85,14 @@ theorem sym2_empty : (∅ : Finset α).sym2 = ∅ := rfl
 #align finset.sym2_empty Finset.sym2_empty
 
 @[simp]
+theorem sym2_eq_empty : s.sym2 = ∅ ↔ s = ∅ := by
+  rw [← val_eq_zero, sym2_val, Multiset.sym2_eq_zero_iff, val_eq_zero]
+#align finset.sym2_eq_empty Finset.sym2_eq_empty
+
+@[simp]
 theorem sym2_nonempty : s.sym2.Nonempty ↔ s.Nonempty := by
   rw [← not_iff_not]
-  simp_rw [not_nonempty_iff_eq_empty, sym2_eq_empty_iff]
+  simp_rw [not_nonempty_iff_eq_empty, sym2_eq_empty]
 #align finset.sym2_nonempty Finset.sym2_nonempty
 
 alias ⟨_, Nonempty.sym2⟩ := sym2_nonempty
