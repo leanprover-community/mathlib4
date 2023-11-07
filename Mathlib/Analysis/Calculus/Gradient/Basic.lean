@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Ziyu Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ziyu Wang, Chenyi Li, Yu Penghao, Cao Zhipeng
+Authors: Ziyu Wang, Chenyi Li, Sgouezel, Penghao Yu, Zhipeng Cao
 -/
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.Calculus.FDeriv.Basic
@@ -136,30 +136,26 @@ theorem HasGradientAt.gradient (h : HasGradientAt f f' x) : ∇ f x = f' :=
 theorem gradient_eq {f' : F → F} (h : ∀ x, HasGradientAt f (f' x) x) : ∇ f = f' :=
   funext fun x => (h x).gradient
 
-variable {g : 𝕜 → 𝕜} {g' u : 𝕜} {L' : Filter 𝕜}
-
 section OneDimension
 
-theorem Mul_one_eq_SterRingEnd (g' : 𝕜) : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜)
-    (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g' := by
-  refine Iff.mpr ContinuousLinearMap.ext_iff ?_
-  simp; intro v; rw [toDual_apply, IsROrC.inner_apply, mul_comm]
-
-theorem SterRingEnd_eq_Mul_one (g' : 𝕜) : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜)
-    g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g') := by
-  refine Iff.mpr ContinuousLinearMap.ext_iff ?_
-  simp; intro; rw [toDual_apply, IsROrC.inner_apply, mul_comm]
-  rw [RingHomCompTriple.comp_apply, RingHom.id_apply]
-
-end OneDimension
+variable {g : 𝕜 → 𝕜} {g' u : 𝕜} {L' : Filter 𝕜}
 
 theorem HasGradientAtFilter.hasDerivAtFilter (h : HasGradientAtFilter g g' u L') :
     HasDerivAtFilter g (starRingEnd 𝕜 g') u L' := by
-  rw [HasDerivAtFilter, Mul_one_eq_SterRingEnd]; exact h
+  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜)
+      (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g' := by
+    refine Iff.mpr ContinuousLinearMap.ext_iff ?_
+    simp; intro v; rw [toDual_apply, IsROrC.inner_apply, mul_comm]
+  rw [HasDerivAtFilter, this]; exact h
 
 theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
     HasGradientAtFilter g (starRingEnd 𝕜 g') u L' := by
-  rw [HasGradientAtFilter, ← SterRingEnd_eq_Mul_one]; exact h
+  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜)
+      g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g') := by
+    refine Iff.mpr ContinuousLinearMap.ext_iff ?_
+    simp; intro; rw [toDual_apply, IsROrC.inner_apply, mul_comm]
+    rw [RingHomCompTriple.comp_apply, RingHom.id_apply]
+  rw [HasGradientAtFilter, ← this]; exact h
 
 theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) :
     HasDerivAt g (starRingEnd 𝕜 g') u := by
@@ -167,17 +163,11 @@ theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) :
   rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt, this] at h
   exact h
 
-theorem HasGradientAt.hasDerivAt' {g : ℝ → ℝ} {g' u : ℝ} (h : HasGradientAt g g' u) :
-    HasDerivAt g g' u := h.hasDerivAt
-
 theorem HasDerivAt.hasGradientAt (h : HasDerivAt g g' u) :
     HasGradientAt g (starRingEnd 𝕜 g') u := by
   have : g' = ((toDual 𝕜 𝕜) ((starRingEnd 𝕜) g')) 1 := by simp
   rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt, ← this]
   exact h
-
-theorem HasDerivAt.hasGradientAt' {g : ℝ → ℝ} {g' u: ℝ} (h :HasDerivAt g g' u) :
-    HasGradientAt g g' u := h.hasGradientAt
 
 theorem gradient_deriv : ∇ g u = starRingEnd 𝕜 (deriv g u) := by
   by_cases h: DifferentiableAt 𝕜 g u
@@ -185,8 +175,28 @@ theorem gradient_deriv : ∇ g u = starRingEnd 𝕜 (deriv g u) := by
     exact Eq.symm (IsROrC.conj_conj (∇ g u))
   · rw [Gradient_zero_of_not_differentiableAt h, deriv_zero_of_not_differentiableAt h]
     exact Eq.symm (RingHom.map_zero (starRingEnd 𝕜))
+  
+end OneDimension
 
-theorem gradient_deriv' {g : ℝ → ℝ} {u: ℝ} : ∇ g u = deriv g u := gradient_deriv
+section OneDimensionReal
+
+variable {g : ℝ → ℝ} {g' u : ℝ} {L' : Filter ℝ}
+
+theorem HasGradientAtFilter.hasDerivAtFilter' (h : HasGradientAtFilter g g' u L') :
+    HasDerivAtFilter g g' u L' := h.hasDerivAtFilter
+
+theorem HasDerivAtFilter.hasGradientAtFilter' (h : HasDerivAtFilter g g' u L') :
+    HasGradientAtFilter g g' u L' := h.hasGradientAtFilter
+  
+theorem HasGradientAt.hasDerivAt' (h : HasGradientAt g g' u) :
+    HasDerivAt g g' u := h.hasDerivAt
+
+theorem HasDerivAt.hasGradientAt' (h :HasDerivAt g g' u) :
+    HasGradientAt g g' u := h.hasGradientAt
+
+theorem gradient_deriv' : ∇ g u = deriv g u := gradient_deriv
+
+end OneDimensionReal
 
 open Filter
 
