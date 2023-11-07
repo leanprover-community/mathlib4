@@ -221,8 +221,8 @@ theorem hasGradientWithinAt_congr_set {s t : Set F} (h : s =ᶠ[𝓝 x] t) :
     HasGradientWithinAt f f' s x ↔ HasGradientWithinAt f f' t x := hasFDerivWithinAt_congr_set h
 
 theorem hasGradientAt_iff_isLittleO_nhds_zero : HasGradientAt f f' x ↔
-    (fun h => f (x + h) - f x - ⟪f' , h⟫)
-    =o[𝓝 0] fun h => h := hasFDerivAt_iff_isLittleO_nhds_zero
+    (fun h => f (x + h) - f x - ⟪f' , h⟫) =o[𝓝 0] fun h => h :=
+  hasFDerivAt_iff_isLittleO_nhds_zero
 
 end GradientProperties
 
