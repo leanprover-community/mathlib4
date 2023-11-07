@@ -52,3 +52,26 @@ example {z : Int} : ∃ n : Nat, ↑n = z := by
   set_option pp.all true in
   extract_goal
   sorry
+
+-- Contradiction proof gives full context:
+/--
+info: theorem extracted_1 (h : 1 = 2) : False := sorry
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+example (h : 1 = 2) : False := by
+  extract_goal
+  sorry
+
+-- Check mdata is cleared:
+/--
+info: theorem extracted_1 (h : 1 = 2) : False := sorry
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+example : False := by
+  have h : 1 = 2 := sorry
+  extract_goal
+  sorry

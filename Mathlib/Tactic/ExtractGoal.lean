@@ -105,7 +105,8 @@ It tries to produce an output that can be copy-pasted and just work,
 but its success depends on whether the expressions are amenable
 to being unambiguously pretty printed.
 
-By default it cleans up the local context. To use the full local context, use `extract_goal*`.
+By default it cleans up the local context unless the goal is `False`.
+To use the full local context, use `extract_goal*`.
 
 The tactic responds to pretty printing options.
 For example, `set_option pp.all true in extract_goal` gives the `pp.all` form.
@@ -116,7 +117,11 @@ elab (name := extractGoal) "extract_goal" full?:&"*"? name?:(colGt ppSpace ident
              else mkAuxName ((← getCurrNamespace) ++ `extracted) 1
   let msg ← withoutModifyingEnv <| withoutModifyingState do
     let mut g ← getMainGoal
-    unless full?.isSome do
+    let mut cleanup := full?.isNone
+    if (← g.getType >>= instantiateMVars).consumeMData.isConstOf ``False then
+      -- In a contradiction proof, it is not very helpful to clear all hypotheses!
+      cleanup := false
+    if cleanup then
       g ← g.cleanup
     (g, _) ← g.renameInaccessibleFVars
     (_, g) ← g.revert (clearAuxDeclsInsteadOfRevert := true) (← g.getDecl).lctx.getFVarIds
