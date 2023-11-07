@@ -306,6 +306,6 @@ theorem HasGradientAt.continuousAt (h : HasGradientAt f f' x) : ContinuousAt f x
 
 protected theorem HasGradientAt.continuousOn {f' : F → F}
     (hderiv : ∀ x ∈ s, HasGradientAt f (f' x) x) :
-  ContinuousOn f s := fun x hx => (hderiv x hx).continuousAt.continuousWithinAt
+    ContinuousOn f s := fun x hx => (hderiv x hx).continuousAt.continuousWithinAt
 
 end Continuous
