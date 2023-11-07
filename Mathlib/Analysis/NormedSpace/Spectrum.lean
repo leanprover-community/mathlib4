@@ -9,7 +9,6 @@ import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Topology.Algebra.Module.CharacterSpace
 import Mathlib.Analysis.NormedSpace.Exponential
-import Mathlib.Analysis.NormedSpace.InvCobounded
 
 #align_import analysis.normed_space.spectrum from "leanprover-community/mathlib"@"d608fc5d4e69d4cc21885913fb573a88b0deb521"
 
@@ -232,7 +231,7 @@ theorem resolvent_isBigO_inv (a : A) :
     resolvent a =O[cobounded 𝕜] Inv.inv :=
   have h : (fun z ↦ resolvent (z⁻¹ • a) (1 : 𝕜)) =O[cobounded 𝕜] (fun _ ↦ (1 : ℝ)) := by
     simpa [Function.comp, resolvent] using (NormedRing.inverse_one_sub_norm (R := A)).comp_tendsto
-      (by simpa using (tendsto_inv₀_cobounded 𝕜).smul_const a)
+      (by simpa using (tendsto_inv₀_cobounded (α := 𝕜)).smul_const a)
   calc
     resolvent a
     _ =ᶠ[cobounded 𝕜] fun z ↦ z⁻¹ • resolvent (z⁻¹ • a) (1 : 𝕜) := by
@@ -245,7 +244,7 @@ theorem resolvent_isBigO_inv (a : A) :
 
 theorem resolvent_tendsto_cobounded (a : A) :
     Tendsto (resolvent a) (cobounded 𝕜) (𝓝 0) :=
-  (resolvent_isBigO_inv a).trans_tendsto <| tendsto_inv₀_cobounded 𝕜
+  (resolvent_isBigO_inv a).trans_tendsto <| tendsto_inv₀_cobounded
 
 end resolvent
 
