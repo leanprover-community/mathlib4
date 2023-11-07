@@ -1455,10 +1455,10 @@ import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Finset.NoncommProd
 import Mathlib.Data.Finset.Option
 import Mathlib.Data.Finset.Order
-import Mathlib.Data.Finset.PiAntidiagonal
 import Mathlib.Data.Finset.PImage
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Pi
+import Mathlib.Data.Finset.PiAntidiagonal
 import Mathlib.Data.Finset.PiInduction
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Finset.Powerset
