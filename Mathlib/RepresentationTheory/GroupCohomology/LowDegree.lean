@@ -240,10 +240,10 @@ theorem oneCocycles_map_mul_of_isTrivial [A.IsTrivial] (f : oneCocycles A) (g h 
 
 theorem mem_oneCocycles_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
     f ∘ Additive.ofMul ∈ oneCocycles A :=
-(mem_oneCocycles_iff _).2 fun g h => by
-  simp only [Function.comp_apply, ofMul_mul, map_add,
-    oneCocycles_map_mul_of_isTrivial, apply_eq_self A.ρ g (f (Additive.ofMul h)),
-    add_comm (f (Additive.ofMul g))]
+  (mem_oneCocycles_iff _).2 fun g h => by
+    simp only [Function.comp_apply, ofMul_mul, map_add,
+      oneCocycles_map_mul_of_isTrivial, apply_eq_self A.ρ g (f (Additive.ofMul h)),
+      add_comm (f (Additive.ofMul g))]
 
 variable (A)
 
@@ -316,7 +316,7 @@ variable {A}
 
 theorem mem_oneCoboundaries_of_dZero_apply (x : A) :
     ⟨dZero A x, LinearMap.ext_iff.1 (dOne_comp_dZero A) x⟩ ∈ oneCoboundaries A :=
-LinearMap.mem_range_self _ _
+  LinearMap.mem_range_self _ _
 
 theorem mem_oneCoboundaries_of_mem_range (f : G → A) (h : f ∈ LinearMap.range (dZero A)) :
     ⟨f, LinearMap.range_le_ker_iff.2 (dOne_comp_dZero A) h⟩ ∈ oneCoboundaries A := by
@@ -333,7 +333,7 @@ theorem oneCoboundaries_eq_bot_of_isTrivial (A : Rep k G) [A.IsTrivial] :
 
 theorem mem_twoCoboundaries_of_dOne_apply (x : G → A) :
     ⟨dOne A x, LinearMap.ext_iff.1 (dTwo_comp_dOne A) x⟩ ∈ twoCoboundaries A :=
-LinearMap.mem_range_self _ _
+  LinearMap.mem_range_self _ _
 
 theorem mem_twoCoboundaries_of_mem_range (f : G × G → A) (h : f ∈ LinearMap.range (dOne A)) :
     ⟨f, LinearMap.range_le_ker_iff.2 (dTwo_comp_dOne A) h⟩ ∈ twoCoboundaries A := by
@@ -389,8 +389,8 @@ section H1
 group homs `G → A`. -/
 def H1LequivOfIsTrivial [A.IsTrivial] :
     H1 A ≃ₗ[k] Additive G →+ A :=
-(Submodule.quotEquivOfEqBot _ (oneCoboundaries_eq_bot_of_isTrivial A)).trans
-  (oneCocyclesLequivOfIsTrivial A)
+  (Submodule.quotEquivOfEqBot _ (oneCoboundaries_eq_bot_of_isTrivial A)).trans
+    (oneCocyclesLequivOfIsTrivial A)
 
 theorem H1LequivOfIsTrivial_comp_H1_π [A.IsTrivial] :
     (H1LequivOfIsTrivial A).comp (H1_π A) = oneCocyclesLequivOfIsTrivial A := by
