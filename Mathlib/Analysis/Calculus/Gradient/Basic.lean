@@ -299,7 +299,7 @@ nonrec theorem HasGradientAtFilter.tendsto_nhds (hL : L ≤ 𝓝 x) (h : HasGrad
     Tendsto f L (𝓝 (f x)) := h.tendsto_nhds hL
 
 theorem HasGradientWithinAt.continuousWithinAt (h : HasGradientWithinAt f f' s x) :
-    ContinuousWithinAt f s x := by apply HasGradientAtFilter.tendsto_nhds inf_le_left h
+    ContinuousWithinAt f s x := HasGradientAtFilter.tendsto_nhds inf_le_left h
 
 theorem HasGradientAt.continuousAt (h : HasGradientAt f f' x) : ContinuousAt f x :=
   HasGradientAtFilter.tendsto_nhds le_rfl h
