@@ -159,11 +159,8 @@ theorem essInf_mono_ae {f g : α → β} (hfg : f ≤ᵐ[μ] g) : essInf f μ �
   liminf_le_liminf hfg
 #align ess_inf_mono_ae essInf_mono_ae
 
-theorem essSup_le_of_ae_le {f : α → β} (c : β) (hf : f ≤ᵐ[μ] fun _ => c) : essSup f μ ≤ c := by
-  refine' (essSup_mono_ae hf).trans _
-  by_cases hμ : μ = 0
-  · simp [hμ]
-  · rwa [essSup_const]
+theorem essSup_le_of_ae_le {f : α → β} (c : β) (hf : f ≤ᵐ[μ] fun _ => c) : essSup f μ ≤ c :=
+  limsup_le_of_le (by isBoundedDefault) hf
 #align ess_sup_le_of_ae_le essSup_le_of_ae_le
 
 theorem le_essInf_of_ae_le {f : α → β} (c : β) (hf : (fun _ => c) ≤ᵐ[μ] f) : c ≤ essInf f μ :=

@@ -487,13 +487,11 @@ theorem rpow_eq_top_iff_of_pos {x : ℝ≥0∞} {y : ℝ} (hy : 0 < y) : x ^ y =
   simp [rpow_eq_top_iff, hy, asymm hy]
 #align ennreal.rpow_eq_top_iff_of_pos ENNReal.rpow_eq_top_iff_of_pos
 
+lemma rpow_lt_top_iff_of_pos {x : ℝ≥0∞} {y : ℝ} (hy : 0 < y) : x ^ y < ⊤ ↔ x < ⊤ := by
+  simp only [lt_top_iff_ne_top, Ne.def, rpow_eq_top_iff_of_pos hy]
+
 theorem rpow_eq_top_of_nonneg (x : ℝ≥0∞) {y : ℝ} (hy0 : 0 ≤ y) : x ^ y = ⊤ → x = ⊤ := by
-  rw [ENNReal.rpow_eq_top_iff]
-  rintro (h|h)
-  · exfalso
-    rw [lt_iff_not_ge] at h
-    exact h.right hy0
-  · exact h.left
+  simp (config := {contextual := true}) [ENNReal.rpow_eq_top_iff, hy0.not_lt]
 #align ennreal.rpow_eq_top_of_nonneg ENNReal.rpow_eq_top_of_nonneg
 
 theorem rpow_ne_top_of_nonneg {x : ℝ≥0∞} {y : ℝ} (hy0 : 0 ≤ y) (h : x ≠ ⊤) : x ^ y ≠ ⊤ :=
@@ -552,9 +550,11 @@ theorem rpow_nat_cast (x : ℝ≥0∞) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by
 #align ennreal.rpow_nat_cast ENNReal.rpow_nat_cast
 
 @[simp]
-theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := by
-  rw [← rpow_nat_cast]
-  simp only [Nat.cast_ofNat]
+lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
+    x ^ (no_index (OfNat.ofNat n) : ℝ) = x ^ (OfNat.ofNat n) :=
+  rpow_nat_cast x n
+
+theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
 #align ennreal.rpow_two ENNReal.rpow_two
 
 theorem mul_rpow_eq_ite (x y : ℝ≥0∞) (z : ℝ) :
