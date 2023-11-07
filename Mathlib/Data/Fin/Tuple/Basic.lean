@@ -651,7 +651,7 @@ theorem snoc_eq_append {α : Type*} (xs : Fin n → α) (x : α) :
 
 theorem append_snoc {n m} {α : Type*} (xs : Fin n → α) (x : α) (ys : Fin m → α) :
     Fin.append (Fin.snoc xs x) ys =
-      Fin.append xs (Fin.cons x ys) ∘ Fin.cast (by rw [Nat.add_assoc, Nat.add_comm 1]) := by
+      Fin.append xs (Fin.cons x ys) ∘ Fin.cast (Nat.succ_add_eq_succ_add ..) := by
   rw [snoc_eq_append, append_assoc, append_left_eq_cons, append_cast_right]; rfl
 
 theorem append_cons {n m} {α : Type*} (xs : Fin n → α) (y : α) (ys : Fin m → α) :
