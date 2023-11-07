@@ -507,6 +507,18 @@ def LinearMap.congr {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂'] (e
     ext
     simp only [compl₁₂_apply, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply]
 
+@[simp]
+theorem LinearMap.congr_apply {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂'] (e : M₂ ≃ₗ[R₂] M₂')
+    (B : M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) (x y : M₂') : congr e B x y = B (e.symm x) (e.symm y) :=
+  rfl
+
+@[simp]
+theorem LinearMap.congr_symm {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂'] (e : M₂ ≃ₗ[R₂] M₂') :
+    (LinearMap.congr e).symm = @LinearMap.congr R₂ M₂' _ _ _ N₂ _ _ M₂ _ _  e.symm := by
+  ext
+  simp only [LinearMap.congr_apply, LinearEquiv.symm_symm]
+  rfl
+
 /-- `BilinForm.toMatrix b` is the equivalence between `R`-bilinear forms on `M` and
 `n`-by-`n` matrices with entries in `R`, if `b` is an `R`-basis for `M`. -/
 noncomputable def BilinForm.toMatrix''' : (M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) ≃ₗ[R₂] Matrix n n N₂ :=
@@ -515,8 +527,13 @@ noncomputable def BilinForm.toMatrix''' : (M₂ →ₗ[R₂] M₂ →ₗ[R₂] N
 /-- `BilinForm.toMatrix b` is the equivalence between `R`-bilinear forms on `M` and
 `n`-by-`n` matrices with entries in `R`, if `b` is an `R`-basis for `M`. -/
 noncomputable def BilinForm.toMatrix : BilinForm R₂ M₂ ≃ₗ[R₂] Matrix n n R₂ :=
-  (BilinForm.congr b.equivFun).trans BilinForm.toMatrix'
+    BilinForm.toLin ≪≫ₗ (BilinForm.toMatrix''' b)
 #align bilin_form.to_matrix BilinForm.toMatrix
+
+/-- `BilinForm.toMatrix b` is the equivalence between `R`-bilinear maps on `M` and
+`n`-by-`n` matrices with entries in `N₂`, if `b` is an `R`-basis for `M`. -/
+noncomputable def Matrix.toBilin''' : Matrix n n N₂ ≃ₗ[R₂] (M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) :=
+  (BilinForm.toMatrix''' b).symm
 
 /-- `BilinForm.toMatrix b` is the equivalence between `R`-bilinear forms on `M` and
 `n`-by-`n` matrices with entries in `R`, if `b` is an `R`-basis for `M`. -/
@@ -525,18 +542,32 @@ noncomputable def Matrix.toBilin : Matrix n n R₂ ≃ₗ[R₂] BilinForm R₂ M
 #align matrix.to_bilin Matrix.toBilin
 
 @[simp]
+theorem BilinForm.toMatrix_apply' (B : M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) (i j : n) :
+    BilinForm.toMatrix''' b B i j = B (b i) (b j) := by
+  rw [BilinForm.toMatrix''', LinearEquiv.trans_apply, BilinForm.toMatrix'_apply',
+    LinearMap.congr_apply, b.equivFun_symm_stdBasis, b.equivFun_symm_stdBasis]
+
+@[simp]
 theorem BilinForm.toMatrix_apply (B : BilinForm R₂ M₂) (i j : n) :
     BilinForm.toMatrix b B i j = B (b i) (b j) := by
-  rw [BilinForm.toMatrix, LinearEquiv.trans_apply, BilinForm.toMatrix'_apply, congr_apply,
-    b.equivFun_symm_stdBasis, b.equivFun_symm_stdBasis]
+  rw [BilinForm.toMatrix, LinearEquiv.trans_apply, toMatrix_apply', toLin_apply]
 #align bilin_form.to_matrix_apply BilinForm.toMatrix_apply
+
+@[simp]
+theorem Matrix.toBilin_apply' (M : Matrix n n N₂) (x y : M₂) :
+    Matrix.toBilin''' b M x y = ∑ i, ∑ j, b.repr x i • b.repr y j • M i j  := by
+  rw [Matrix.toBilin''', toMatrix''', LinearEquiv.symm_trans_apply, ← Matrix.toBilin'']
+  simp only [LinearMap.congr_symm, LinearMap.congr_apply, LinearEquiv.symm_symm,
+    Basis.equivFun_apply, toBilin'_apply'']
 
 @[simp]
 theorem Matrix.toBilin_apply (M : Matrix n n R₂) (x y : M₂) :
     Matrix.toBilin b M x y = ∑ i, ∑ j, b.repr x i * M i j * b.repr y j := by
-  rw [Matrix.toBilin, BilinForm.toMatrix, LinearEquiv.symm_trans_apply, ← Matrix.toBilin']
-  simp only [congr_symm, congr_apply, LinearEquiv.symm_symm, Matrix.toBilin'_apply,
-    Basis.equivFun_apply]
+  have e1: ∑ i, ∑ j, b.repr x i * M i j * b.repr y j =
+      ∑ i, ∑ j, b.repr x i • b.repr y j • M i j := by
+    simp_rw [smul_eq_mul, mul_assoc, mul_comm]
+  rw [e1, ← Matrix.toBilin_apply']
+  exact rfl
 #align matrix.to_bilin_apply Matrix.toBilin_apply
 
 -- Not a `simp` lemma since `BilinForm.toMatrix` needs an extra argument
