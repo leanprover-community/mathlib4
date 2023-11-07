@@ -223,10 +223,13 @@ variable (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C₄)
 of a type `I₁₂`, maps `p : I₁ × I₂ → I₁₂` and `q : I₁₂ × I₃ → J`, such that `r` is obtained
 by composition of `p` and `q`. -/
 structure BifunctorComp₁₂IndexData :=
+  /-- an auxiliary type -/
   I₁₂ : Type*
+  /-- a map `I₁ × I₂ → I₁₂` -/
   p : I₁ × I₂ → I₁₂
+  /-- a map `I₁₂ × I₃ → J` -/
   q : I₁₂ × I₃ → J
-  hpq : ∀ (i : I₁ × I₂ × I₃), q ⟨p ⟨i.1, i.2.1⟩, i.2.2⟩ = r i
+  hpq (i : I₁ × I₂ × I₃) : q ⟨p ⟨i.1, i.2.1⟩, i.2.2⟩ = r i
 
 variable {r} (ρ₁₂ : BifunctorComp₁₂IndexData r)
   (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ : GradedObject I₃ C₃)
