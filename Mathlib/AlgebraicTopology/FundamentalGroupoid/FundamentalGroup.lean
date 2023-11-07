@@ -64,8 +64,9 @@ def fundamentalGroupMulEquivOfPathConnected [PathConnectedSpace X] :
   fundamentalGroupMulEquivOfPath (PathConnectedSpace.somePath x₀ x₁)
 #align fundamental_group.fundamental_group_mul_equiv_of_path_connected FundamentalGroup.fundamentalGroupMulEquivOfPathConnected
 
+open FundamentalGroupoid
 /-- An element of the fundamental group as an arrow in the fundamental groupoid. -/
-abbrev toArrow {X : TopCat} {x : X} (p : FundamentalGroup X x) : x ⟶ x :=
+abbrev toArrow {X : TopCat} {x : X} (p : FundamentalGroup X x) : fromTop x ⟶ fromTop x :=
   p.hom
 #align fundamental_group.to_arrow FundamentalGroup.toArrow
 
@@ -75,7 +76,7 @@ abbrev toPath {X : TopCat} {x : X} (p : FundamentalGroup X x) : Path.Homotopic.Q
 #align fundamental_group.to_path FundamentalGroup.toPath
 
 /-- An element of the fundamental group, constructed from an arrow in the fundamental groupoid. -/
-abbrev fromArrow {X : TopCat} {x : X} (p : x ⟶ x) : FundamentalGroup X x where
+abbrev fromArrow {X : TopCat} {x : X} (p : fromTop x ⟶ fromTop x) : FundamentalGroup X x where
   hom := p
   inv := CategoryTheory.Groupoid.inv p
 #align fundamental_group.from_arrow FundamentalGroup.fromArrow
@@ -87,6 +88,6 @@ abbrev fromPath {X : TopCat} {x : X} (p : Path.Homotopic.Quotient x x) : Fundame
 
 /-- The homomorphism between fundamental groups induced by a continuous map. -/
 def map (f : C(X, Y)) : FundamentalGroup X x₀ →* FundamentalGroup Y (f x₀) :=
-  (FundamentalGroupoid.map f).mapAut x₀
+  (FundamentalGroupoid.map f).mapAut (fromTop' x₀)
 
 end FundamentalGroup

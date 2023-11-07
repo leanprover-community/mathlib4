@@ -83,8 +83,8 @@ abbrev hcast {X : TopCat} {x₀ x₁ : X} (hx : x₀ = x₁) : fromTop x₀ ⟶ 
 #align continuous_map.homotopy.hcast ContinuousMap.Homotopy.hcast
 
 @[simp]
-theorem hcast_def {X : TopCat} {x₀ x₁ : X} (hx₀ : x₀ = x₁) : hcast hx₀ = eqToHom hx₀ :=
-  rfl
+theorem hcast_def {X : TopCat} {x₀ x₁ : X} (hx₀ : x₀ = x₁) :
+    hcast hx₀ = eqToHom (congrArg fromTop hx₀) := rfl
 #align continuous_map.homotopy.hcast_def ContinuousMap.Homotopy.hcast_def
 
 variable {X₁ X₂ Y : TopCat.{u}} {f : C(X₁, Y)} {g : C(X₂, Y)} {x₀ x₁ : X₁} {x₂ x₃ : X₂}
@@ -188,7 +188,8 @@ theorem apply_one_path : (πₘ g).map p = hcast (H.apply_one x₀).symm ≫
 
 /-- Proof that `H.evalAt x = H(0 ⟶ 1, x ⟶ x)`, with the appropriate casts -/
 theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
-    (πₘ H.uliftMap).map (prodToProdTopI uhpath01 (𝟙 x)) ≫ hcast (H.apply_one x).symm.symm := by
+    (πₘ H.uliftMap).map (prodToProdTopI uhpath01 <| 𝟙 (fromTop x)) ≫
+    hcast (H.apply_one x).symm.symm := by
   dsimp only [prodToProdTopI, uhpath01, hcast]
   refine' (@Functor.conj_eqToHom_iff_heq (πₓ Y) _ _ _ _ _ _ _ _ (H.apply_one x).symm).mpr _
   simp only [id_eq_path_refl, prodToProdTop_map, Path.Homotopic.prod_lift, map_eq, ←
@@ -197,10 +198,14 @@ theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
 #align continuous_map.homotopy.eval_at_eq ContinuousMap.Homotopy.evalAt_eq
 
 -- Finally, we show `d = f(p) ≫ H₁ = H₀ ≫ g(p)`
-theorem eq_diag_path : (πₘ f).map p ≫ ⟦H.evalAt x₁⟧ = H.diagonalPath' p ∧
-    (⟦H.evalAt x₀⟧ ≫ (πₘ g).map p : fromTop (f x₀) ⟶ fromTop (g x₁)) = H.diagonalPath' p := by
-  rw [H.apply_zero_path, H.apply_one_path, H.evalAt_eq]
-  erw [H.evalAt_eq] -- Porting note: `rw` didn't work, so using `erw`
+theorem eq_diag_path :
+    (πₘ f).map p ≫ fromPath ⟦H.evalAt x₁⟧ = H.diagonalPath' p ∧
+    fromPath ⟦H.evalAt x₀⟧ ≫ (πₘ g).map p = H.diagonalPath' p := by
+  rw [H.apply_zero_path, H.apply_one_path]
+  erw [H.evalAt_eq, H.evalAt_eq] -- Porting note: `rw` didn't work, so using `erw`
+  rw [prodToProdTopI]
+  --simp
+  sorry
   dsimp only [prodToProdTopI]
   constructor
   · slice_lhs 2 4 => rw [eqToHom_trans, eqToHom_refl] -- Porting note: this ↓ `simp` didn't do this

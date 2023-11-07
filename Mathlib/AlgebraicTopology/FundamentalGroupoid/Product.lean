@@ -31,7 +31,7 @@ set_option linter.uppercaseLean3 false
 
 noncomputable section
 
-open scoped FundamentalGroupoid CategoryTheory
+open FundamentalGroupoid CategoryTheory
 
 namespace FundamentalGroupoidFunctor
 
@@ -55,40 +55,36 @@ theorem proj_map (i : I) (x₀ x₁ : πₓ (TopCat.of (∀ i, X i))) (p : x₀ 
 #align fundamental_groupoid_functor.proj_map FundamentalGroupoidFunctor.proj_map
 
 -- Porting note: losing the instance with a concrete category again
-instance : (i : I) → TopologicalSpace (πₓ (X i)).α := fun i => TopCat.topologicalSpace_coe (X i)
+--instance : (i : I) → TopologicalSpace (πₓ (X i)).α := fun i => TopCat.topologicalSpace_coe (X i)
 
 /-- The map taking the pi product of a family of fundamental groupoids to the fundamental
 groupoid of the pi product. This is actually an isomorphism (see `piIso`)
 -/
 @[simps]
 def piToPiTop : (∀ i, πₓ (X i)) ⥤ πₓ (TopCat.of (∀ i, X i)) where
-  obj g := g
+  obj g := fromTop fun i ↦ toTop (g i)
   map p := Path.Homotopic.pi p
-  map_id x := by
-    change (Path.Homotopic.pi fun i => 𝟙 (x i)) = _
-    simp only [FundamentalGroupoid.id_eq_path_refl, Path.Homotopic.pi_lift]
-    rfl
-  map_comp f g := (Path.Homotopic.comp_pi_eq_pi_comp f g).symm
+  map_id _ := (Path.Homotopic.pi_lift _).trans (id_eq_path_refl _).symm
+  map_comp _ _ := (Path.Homotopic.comp_pi_eq_pi_comp _ _).symm
 #align fundamental_groupoid_functor.pi_to_pi_Top FundamentalGroupoidFunctor.piToPiTop
 
 /-- Shows `piToPiTop` is an isomorphism, whose inverse is precisely the pi product
 of the induced projections. This shows that `fundamentalGroupoidFunctor` preserves products.
 -/
 @[simps]
-def piIso : CategoryTheory.Grpd.of (∀ i : I, πₓ (X i)) ≅ πₓ (TopCat.of (∀ i, X i)) where
+def piIso : Grpd.of (∀ i : I, πₓ (X i)) ≅ πₓ (TopCat.of (∀ i, X i)) where
   hom := piToPiTop X
-  inv := CategoryTheory.Functor.pi' (proj X)
+  inv := Functor.pi' (proj X)
   hom_inv_id := by
-    change piToPiTop X ⋙ CategoryTheory.Functor.pi' (proj X) = 𝟭 _
+    change piToPiTop X ⋙ Functor.pi' (proj X) = 𝟭 _
     apply CategoryTheory.Functor.ext ?_ ?_
     · intros; rfl
     · intros; ext; simp
   inv_hom_id := by
-    change CategoryTheory.Functor.pi' (proj X) ⋙ piToPiTop X = 𝟭 _
+    change Functor.pi' (proj X) ⋙ piToPiTop X = 𝟭 _
     apply CategoryTheory.Functor.ext
     · intro _ _ f
-      suffices Path.Homotopic.pi ((CategoryTheory.Functor.pi' (proj X)).map f) = f by simpa
-      change Path.Homotopic.pi (fun i => (CategoryTheory.Functor.pi' (proj X)).map f i) = _
+      change Path.Homotopic.pi (fun i ↦ _) = _
       simp
     · intros; rfl
 #align fundamental_groupoid_functor.pi_iso FundamentalGroupoidFunctor.piIso
@@ -99,7 +95,7 @@ open CategoryTheory
 
 /-- Equivalence between the categories of cones over the objects `π Xᵢ` written in two ways -/
 def coneDiscreteComp :
-    Limits.Cone (Discrete.functor X ⋙ π) ≌ Limits.Cone (Discrete.functor fun i => πₓ (X i)) :=
+    Limits.Cone (Discrete.functor X ⋙ π) ≌ Limits.Cone (Discrete.functor fun i ↦ πₓ (X i)) :=
   Limits.Cones.postcomposeEquivalence (Discrete.compNatIsoDiscrete X π)
 #align fundamental_groupoid_functor.cone_discrete_comp FundamentalGroupoidFunctor.coneDiscreteComp
 

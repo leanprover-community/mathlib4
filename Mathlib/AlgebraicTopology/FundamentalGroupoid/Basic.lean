@@ -243,67 +243,86 @@ end Path
 
 /-- The fundamental groupoid of a space `X` is defined to be a type synonym for `X`, and we
 subsequently put a `CategoryTheory.Groupoid` structure on it. -/
-def FundamentalGroupoid (X : Type u) := X
+def FundamentalGroupoid (X : Type u) [TopologicalSpace X] : Grpd where
+  α := X
+  str :=
+  { Hom := Path.Homotopic.Quotient
+    id := fun x ↦ ⟦Path.refl x⟧
+    comp := Path.Homotopic.Quotient.comp
+    id_comp := by rintro _ _ ⟨f⟩; exact Quotient.sound ⟨Path.Homotopy.reflTrans f⟩
+    comp_id := by rintro _ _ ⟨f⟩; exact Quotient.sound ⟨Path.Homotopy.transRefl f⟩
+    assoc := by rintro _ _ _ _ ⟨f⟩ ⟨g⟩ ⟨h⟩; exact Quotient.sound ⟨Path.Homotopy.transAssoc f g h⟩
+    inv := Quotient.lift (fun f ↦ ⟦f.symm⟧) (by rintro a b ⟨h⟩; exact Quotient.sound ⟨h.symm₂⟩)
+    inv_comp := by rintro _ _ ⟨f⟩; exact Quotient.sound ⟨(Path.Homotopy.reflSymmTrans f).symm⟩
+    comp_inv := by rintro _ _ ⟨f⟩; exact Quotient.sound ⟨(Path.Homotopy.reflTransSymm f).symm⟩ }
 #align fundamental_groupoid FundamentalGroupoid
 
 namespace FundamentalGroupoid
 
-scoped notation "πₓ" => FundamentalGroupoid
+/-- The designated way to consider a point of X as an object in the fundamental groupoid of X. -/
+def as : X ≃ FundamentalGroupoid X := Equiv.refl _
 
-/-- Help the typechecker by converting a point in a groupoid back to a point in
-the underlying topological space. -/
-def toTop {X} (x : πₓ X) : X := x
-#align fundamental_groupoid.to_top FundamentalGroupoid.toTop
+-- These are special cases of Equiv lemmas, but we prove them by `rfl` here to use as dsimp lemmas.
+@[simp] lemma as_apply_symm_apply (x : FundamentalGroupoid X) : as (as.symm x) = x := rfl
+@[simp] lemma symm_apply_as_apply (x : X) : as.symm (as x) = x := rfl
+@[simp] lemma hom_eq (x y : FundamentalGroupoid X) :
+    (x ⟶ y) = Path.Homotopic.Quotient (as.symm x) (as.symm y) := rfl
 
-/-- Help the typechecker by converting a point in a topological space to a
-point in the fundamental groupoid of that space. -/
-def fromTop {X} (x : X) : πₓ X := x
-#align fundamental_groupoid.from_top FundamentalGroupoid.fromTop
+instance [h : Inhabited X] : Inhabited (FundamentalGroupoid X) := h
 
-instance {X : Type u} [h : Inhabited X] : Inhabited (FundamentalGroupoid X) := h
+--attribute [local instance] Path.Homotopic.setoid
 
-attribute [local instance] Path.Homotopic.setoid
-
-instance : CategoryTheory.Groupoid (FundamentalGroupoid X) where
-  Hom x y := Path.Homotopic.Quotient (toTop x) (toTop y)
-  id x := ⟦Path.refl (toTop x)⟧
-  comp := Path.Homotopic.Quotient.comp
-  id_comp f := Quotient.inductionOn f fun a ↦ Quotient.sound ⟨Path.Homotopy.reflTrans a⟩
-  comp_id f := Quotient.inductionOn f fun a ↦ Quotient.sound ⟨Path.Homotopy.transRefl a⟩
-  assoc := by rintro _ _ _ _ ⟨f⟩ ⟨g⟩ ⟨h⟩; exact Quotient.sound ⟨Path.Homotopy.transAssoc f g h⟩
-  inv p := Quotient.lift (fun l ↦ ⟦l.symm⟧) (by rintro a b ⟨h⟩; exact Quotient.sound ⟨h.symm₂⟩) p
-  inv_comp f := Quotient.inductionOn f fun a ↦ Quotient.sound ⟨(Path.Homotopy.reflSymmTrans a).symm⟩
-  comp_inv f := Quotient.inductionOn f fun a ↦ Quotient.sound ⟨(Path.Homotopy.reflTransSymm a).symm⟩
-
-theorem comp_eq (x y z : FundamentalGroupoid X) (p : x ⟶ y) (q : y ⟶ z) : p ≫ q = p.comp q := rfl
+theorem comp_eq (x y z : FundamentalGroupoid X) (p : x ⟶ y) (q : y ⟶ z) :
+    p ≫ q = @Path.Homotopic.Quotient.comp X _ (as.symm x) (as.symm y) (as.symm z) p q := rfl
 #align fundamental_groupoid.comp_eq FundamentalGroupoid.comp_eq
 
-theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl (toTop x)⟧ := rfl
+theorem id_eq_path_refl (x : FundamentalGroupoid X) :
+    𝟙 x = (⟦Path.refl (as.symm x)⟧ : Path.Homotopic.Quotient (as.symm x) (as.symm x)) := rfl
 #align fundamental_groupoid.id_eq_path_refl FundamentalGroupoid.id_eq_path_refl
 
 /-- The functor on fundamental groupoid induced by a continuous map. -/
 def map (f : C(X, Y)) : FundamentalGroupoid X ⥤ FundamentalGroupoid Y where
-  obj x := fromTop (f (toTop x))
+  obj x := as (f (as.symm x))
   map p := p.mapFn f
   map_id _ := rfl
-  map_comp := by rintro _ _ _ ⟨p⟩ ⟨q⟩; exact congr_arg Quotient.mk' (p.map_trans q f.2)
+  map_comp := by rintro _ _ _ ⟨p⟩ ⟨q⟩; exact congr_arg Quotient.mk'' (p.map_trans q f.2)
 
 /-- The functor sending a topological space `X` to its fundamental groupoid. -/
-def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
-  obj X := { α := FundamentalGroupoid X }
+abbrev fundamentalGroupoidFunctor : TopCat ⥤ Grpd where
+  obj X := FundamentalGroupoid X
   map := map
   map_id X := by simp only [map]; congr; ext x y ⟨p⟩; rfl
   map_comp f g := by simp only [map]; congr; ext x y ⟨p⟩; rfl
 #align fundamental_groupoid.fundamental_groupoid_functor FundamentalGroupoid.fundamentalGroupoidFunctor
 
-scoped notation "πₘ" => FundamentalGroupoid.map
+scoped notation "πₓ" => FundamentalGroupoid.fundamentalGroupoidFunctor.obj
+scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
 scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
 
 theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :
     (πₘ f).map p = p.mapFn f := rfl
 #align fundamental_groupoid.map_eq FundamentalGroupoid.map_eq
 
-#noalign fundamental_groupoid.to_path
-#noalign fundamental_groupoid.from_path
+/-- Help the typechecker by converting a point in a groupoid back to a point in
+the underlying topological space. -/
+abbrev toTop {X : TopCat} (x : πₓ X) : X := as.symm x
+#align fundamental_groupoid.to_top FundamentalGroupoid.toTop
+
+/-- Help the typechecker by converting a point in a topological space to a
+point in the fundamental groupoid of that space. -/
+abbrev fromTop {X : TopCat} (x : X) : πₓ X := as x
+#align fundamental_groupoid.from_top FundamentalGroupoid.fromTop
+
+/-- Help the typechecker by converting an arrow in the fundamental groupoid of
+a topological space back to a path in that space (i.e., `Path.Homotopic.Quotient`). -/
+abbrev toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
+    Path.Homotopic.Quotient (toTop x₀) (toTop x₁) := p
+#align fundamental_groupoid.to_path FundamentalGroupoid.toPath
+
+/-- Help the typechecker by converting a path in a topological space to an arrow in the
+fundamental groupoid of that space. -/
+abbrev fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
+    fromTop x₀ ⟶ fromTop x₁ := p
+#align fundamental_groupoid.from_path FundamentalGroupoid.fromPath
 
 end FundamentalGroupoid
