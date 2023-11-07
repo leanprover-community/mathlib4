@@ -96,15 +96,14 @@ lemma finSepDegree_nezero_of_finiteDimensional [FiniteDimensional F E] :
 /-- A random isomorphism between `Emb F E` and `Emb F E'` when `E` and `E'` are isomorphic
 as `F`-algebras. -/
 def emb_equiv_of_equiv (E' : Type v') [Field E'] [Algebra F E'] (i : E ≃ₐ[F] E') :
-    Emb F E ≃ Emb F E' := AlgEquiv.arrowCongr i <|
-  show (AlgebraicClosure E) ≃ₐ[F] (AlgebraicClosure E') from AlgEquiv.symm <| by
-    letI : Algebra E E' := i.toAlgHom.toRingHom.toAlgebra
-    apply AlgEquiv.restrictScalars (R := F) (S := E)
-    apply IsAlgClosure.equivOfAlgebraic E E' (AlgebraicClosure E') (AlgebraicClosure E)
-    intro x
-    have h := isAlgebraic_algebraMap (R := E) (A := E') (i.symm.toAlgHom x)
-    rw [show ∀ y : E, (algebraMap E E') y = i.toAlgHom y from fun y ↦ rfl] at h
-    simpa only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe, AlgEquiv.apply_symm_apply] using h
+    Emb F E ≃ Emb F E' := AlgEquiv.arrowCongr i <| AlgEquiv.symm <| by
+  letI : Algebra E E' := i.toAlgHom.toRingHom.toAlgebra
+  apply AlgEquiv.restrictScalars (R := F) (S := E)
+  apply IsAlgClosure.equivOfAlgebraic E E' (AlgebraicClosure E') (AlgebraicClosure E)
+  intro x
+  have h := isAlgebraic_algebraMap (R := E) (A := E') (i.symm.toAlgHom x)
+  rw [show ∀ y : E, (algebraMap E E') y = i.toAlgHom y from fun y ↦ rfl] at h
+  simpa only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe, AlgEquiv.apply_symm_apply] using h
 
 /-- If `E` and `E'` are isomorphic as `F`-algebras, then they have the same separable degree
 over `F`. -/
