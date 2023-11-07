@@ -205,7 +205,7 @@ end SpectrumCompact
 
 section resolvent
 
-open Filter Asymptotics
+open Filter Asymptotics Bornology Topology
 
 variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
@@ -220,10 +220,8 @@ theorem hasDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ ρ a) :
   simpa [resolvent, sq, hk.unit_spec, ← Ring.inverse_unit hk.unit] using H₁.comp_hasDerivAt k H₂
 #align spectrum.has_deriv_at_resolvent spectrum.hasDerivAt_resolvent
 
-open Bornology Topology
-
 theorem eventually_isUnit_resolvent (a : A) : ∀ᶠ z in cobounded 𝕜, IsUnit (resolvent a z) := by
-  rw [←comap_norm_atTop, (atTop_basis.comap (‖·‖)).eventually_iff]
+  rw [←comap_norm_atTop, atTop_basis.comap (‖·‖) |>.eventually_iff]
   refine ⟨‖a‖ * ‖(1 : A)‖ + 1, by trivial, fun z hz ↦ ?_⟩
   exact isUnit_resolvent.mp <| mem_resolventSet_of_norm_lt_mul <| (lt_add_one (‖a‖ * _)).trans_le hz
 
@@ -236,15 +234,13 @@ theorem resolvent_isBigO_inv (a : A) :
     resolvent a
     _ =ᶠ[cobounded 𝕜] fun z ↦ z⁻¹ • resolvent (z⁻¹ • a) (1 : 𝕜) := by
       filter_upwards [isBounded_singleton (x := 0)] with z hz
-      simp only [Set.mem_compl_iff, Set.mem_singleton_iff] at hz
       lift z to 𝕜ˣ using Ne.isUnit hz
       simpa [Units.smul_def] using congr(z⁻¹ • $(units_smul_resolvent_self (r := z) (a := a)))
     _ =O[cobounded 𝕜] (· ⁻¹) := IsBigO.of_norm_right <| by
       simpa using (isBigO_refl (· ⁻¹) (cobounded 𝕜)).norm_right.smul h
 
-theorem resolvent_tendsto_cobounded (a : A) :
-    Tendsto (resolvent a) (cobounded 𝕜) (𝓝 0) :=
-  (resolvent_isBigO_inv a).trans_tendsto <| tendsto_inv₀_cobounded
+theorem resolvent_tendsto_cobounded (a : A) : Tendsto (resolvent a) (cobounded 𝕜) (𝓝 0) :=
+  resolvent_isBigO_inv a |>.trans_tendsto tendsto_inv₀_cobounded
 
 end resolvent
 
