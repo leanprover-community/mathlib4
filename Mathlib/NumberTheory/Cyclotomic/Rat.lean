@@ -316,7 +316,7 @@ theorem two_pow_zeta_sub_one_prime [IsCyclotomicExtension {(2 : ℕ+) ^ (k + 1)}
     simp only [Nat.zero_eq, PNat.pow_coe, id.map_eq_id, RingHomCompTriple.comp_eq, RingHom.coe_coe,
       Subalgebra.coe_val, algebraMap_int_eq, map_neg, map_ofNat]
     simpa using hζ.pow_sub_one_norm_two (cyclotomic.irreducible_rat (by simp))
-  convert Nat.prime_iff_prime_int.1 Nat.prime_two
+  convert Int.prime_two
   apply RingHom.injective_int (algebraMap ℤ ℚ)
   rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ), Subalgebra.algebraMap_eq]
   simp only [PNat.pow_coe, id.map_eq_id, RingHomCompTriple.comp_eq, RingHom.coe_coe,
