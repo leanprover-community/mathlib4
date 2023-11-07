@@ -379,7 +379,7 @@ def toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
 fundamental groupoid of that space. -/
 @[reducible]
 def fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
-  FundamentalGroupoid.mk x₀ ⟶ FundamentalGroupoid.mk x₁ := p
+    FundamentalGroupoid.mk x₀ ⟶ FundamentalGroupoid.mk x₁ := p
 #align fundamental_groupoid.from_path FundamentalGroupoid.fromPath
 
 end FundamentalGroupoid
