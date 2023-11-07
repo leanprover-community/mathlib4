@@ -191,7 +191,8 @@ theorem apply_one_path : (πₘ g).map p = hcast (H.apply_one x₀).symm ≫
 
 /-- Proof that `H.evalAt x = H(0 ⟶ 1, x ⟶ x)`, with the appropriate casts -/
 theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
-    (πₘ H.uliftMap).map (prodToProdTopI uhpath01 (𝟙 (fromTop x))) ≫ hcast (H.apply_one x).symm.symm := by
+    (πₘ H.uliftMap).map (prodToProdTopI uhpath01 (𝟙 (fromTop x))) ≫
+      hcast (H.apply_one x).symm.symm := by
   dsimp only [prodToProdTopI, uhpath01, hcast]
   refine' (@Functor.conj_eqToHom_iff_heq (πₓ Y) _ _ _ _ _ _ _ _
     (FundamentalGroupoid.ext _ _ <| H.apply_one x).symm).mpr _
