@@ -770,9 +770,8 @@ theorem lintegral_indicator_le (f : α → ℝ≥0∞) (s : Set α) :
   · simp [H]
   congr with x
   simp only [mem_preimage, mem_singleton_iff, mem_inter_iff, iff_self_and]
-  intro hx
+  rintro rfl
   contrapose! H
-  rw [← hx]
   simpa [H] using hg x
 
 @[simp]

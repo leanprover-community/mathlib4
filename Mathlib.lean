@@ -1469,6 +1469,7 @@ import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Finset.Sups
 import Mathlib.Data.Finset.Sym
+import Mathlib.Data.Finset.Update
 import Mathlib.Data.Finsupp.AList
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Data.Finsupp.Basic
@@ -1561,6 +1562,7 @@ import Mathlib.Data.List.Cycle
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Destutter
+import Mathlib.Data.List.DropRight
 import Mathlib.Data.List.Duplicate
 import Mathlib.Data.List.EditDistance.Bounds
 import Mathlib.Data.List.EditDistance.Defs
@@ -1587,7 +1589,6 @@ import Mathlib.Data.List.Permutation
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
-import Mathlib.Data.List.Rdrop
 import Mathlib.Data.List.Rotate
 import Mathlib.Data.List.Sections
 import Mathlib.Data.List.Sigma
