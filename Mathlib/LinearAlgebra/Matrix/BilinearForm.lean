@@ -491,6 +491,27 @@ a module with a fixed basis.
 
 variable [DecidableEq n] (b : Basis n R₂ M₂)
 
+-- TODO use different ranges / equivalences
+-- Move to BilinearMap
+/-- Apply a linear equivalence on the arguments of a bilinear map. -/
+def LinearMap.congr {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂'] (e : M₂ ≃ₗ[R₂] M₂') :
+    (M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) ≃ₗ[R₂] (M₂' →ₗ[R₂] M₂' →ₗ[R₂] N₂) where
+  toFun B := B.compl₁₂ e.symm e.symm
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  invFun B := B.compl₁₂ e e
+  left_inv _ := by
+    ext
+    simp only [compl₁₂_apply, LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
+  right_inv _ := by
+    ext
+    simp only [compl₁₂_apply, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply]
+
+/-- `BilinForm.toMatrix b` is the equivalence between `R`-bilinear forms on `M` and
+`n`-by-`n` matrices with entries in `R`, if `b` is an `R`-basis for `M`. -/
+noncomputable def BilinForm.toMatrix''' : (M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) ≃ₗ[R₂] Matrix n n N₂ :=
+  (LinearMap.congr b.equivFun).trans BilinForm.toMatrix''
+
 /-- `BilinForm.toMatrix b` is the equivalence between `R`-bilinear forms on `M` and
 `n`-by-`n` matrices with entries in `R`, if `b` is an `R`-basis for `M`. -/
 noncomputable def BilinForm.toMatrix : BilinForm R₂ M₂ ≃ₗ[R₂] Matrix n n R₂ :=
