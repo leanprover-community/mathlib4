@@ -216,30 +216,7 @@ end
 section
 
 variable (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C₄)
-
-/-- Auxiliary definition for `bifunctorComp₁₂`. -/
-@[simps]
-def _root_.CategoryTheory.bifunctorComp₁₂Obj (X₁ : C₁) : C₂ ⥤ C₃ ⥤ C₄ where
-  obj X₂ :=
-    { obj := fun X₃ => (G.obj ((F₁₂.obj X₁).obj X₂)).obj X₃
-      map := fun {X₃ Y₃} φ => (G.obj ((F₁₂.obj X₁).obj X₂)).map φ }
-  map {X₂ Y₂} φ :=
-    { app := fun X₃ => (G.map ((F₁₂.obj X₁).map φ)).app X₃ }
-
-/-- Given two bifunctors `F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂` and `G : C₁₂ ⥤ C₃ ⥤ C₄`, this is
-the trifunctor `C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` obtained by composition. -/
-@[simps]
-def _root_.CategoryTheory.bifunctorComp₁₂ : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ where
-  obj X₁ := _root_.CategoryTheory.bifunctorComp₁₂Obj F₁₂ G X₁
-  map {X₁ Y₁} φ :=
-    { app := fun X₂ =>
-        { app := fun X₃ => (G.map ((F₁₂.map φ).app X₂)).app X₃ }
-      naturality := fun {X₂ Y₂} ψ => by
-        ext X₃
-        dsimp
-        simp only [← NatTrans.comp_app, ← G.map_comp, NatTrans.naturality] }
-
-variable {I₁ I₂ I₃ J : Type*} (r : I₁ × I₂ × I₃ → J)
+  {I₁ I₂ I₃ J : Type*} (r : I₁ × I₂ × I₃ → J)
 
 structure BifunctorComp₁₂IndexData :=
   I₁₂ : Type*
