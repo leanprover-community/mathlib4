@@ -206,7 +206,7 @@ def prodIso : CategoryTheory.Grpd.of (πₓ A × πₓ B) ≅ πₓ (TopCat.of (
   inv_hom_id := by
     change (projLeft A B).prod' (projRight A B) ⋙ prodToProdTop A B = 𝟭 _
     apply CategoryTheory.Functor.hext
-    · intros; apply FundamentalGroupoid.ext ; apply Prod.ext <;> simp <;> rfl
+    · intros; apply FundamentalGroupoid.ext; apply Prod.ext <;> simp <;> rfl
     rintro ⟨x₀, x₁⟩ ⟨y₀, y₁⟩ f
     have := Path.Homotopic.prod_projLeft_projRight f
     -- Porting note: was simpa but TopSpace instances might be getting in the way
