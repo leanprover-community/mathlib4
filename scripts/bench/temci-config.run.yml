@@ -19,6 +19,15 @@
     cmd: |
       make lint
 - attributes:
+    description: open Mathlib
+  run_config:
+    runner: perf_stat
+    perf_stat:
+      properties: ['wall-clock', 'instructions']
+    rusage_properties: ['maxrss']
+    cmd: |
+      LEAN_PATH=$(lake print-paths --no-build Mathlib | jq -r '.oleanPath | join(":")') lean Mathlib.lean
+- attributes:
     description: size
   run_config:
     cmd: |
