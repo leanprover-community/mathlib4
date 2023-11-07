@@ -9,6 +9,7 @@ import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Topology.Algebra.Module.CharacterSpace
 import Mathlib.Analysis.NormedSpace.Exponential
+import Mathlib.Analysis.NormedSpace.InvCobounded
 
 #align_import analysis.normed_space.spectrum from "leanprover-community/mathlib"@"d608fc5d4e69d4cc21885913fb573a88b0deb521"
 
@@ -220,41 +221,31 @@ theorem hasDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ ρ a) :
   simpa [resolvent, sq, hk.unit_spec, ← Ring.inverse_unit hk.unit] using H₁.comp_hasDerivAt k H₂
 #align spectrum.has_deriv_at_resolvent spectrum.hasDerivAt_resolvent
 
-/- TODO: Once there is sufficient API for bornology, we should get a nice filter / asymptotics
-version of this, for example: `Tendsto (resolvent a) (cobounded 𝕜) (𝓝 0)` or more specifically
-`(resolvent a) =O[cobounded 𝕜] (fun z ↦ z⁻¹)`. -/
-theorem norm_resolvent_le_forall (a : A) :
-    ∀ ε > 0, ∃ R > 0, ∀ z : 𝕜, R ≤ ‖z‖ → ‖resolvent a z‖ ≤ ε := by
-  obtain ⟨c, c_pos, hc⟩ := (@NormedRing.inverse_one_sub_norm A _ _).exists_pos
-  rw [isBigOWith_iff, eventually_iff, Metric.mem_nhds_iff] at hc
-  rcases hc with ⟨δ, δ_pos, hδ⟩
-  simp only [CstarRing.norm_one, mul_one] at hδ
-  intro ε hε
-  have ha₁ : 0 < ‖a‖ + 1 := lt_of_le_of_lt (norm_nonneg a) (lt_add_one _)
-  have min_pos : 0 < min (δ * (‖a‖ + 1)⁻¹) (ε * c⁻¹) :=
-    lt_min (mul_pos δ_pos (inv_pos.mpr ha₁)) (mul_pos hε (inv_pos.mpr c_pos))
-  refine' ⟨(min (δ * (‖a‖ + 1)⁻¹) (ε * c⁻¹))⁻¹, inv_pos.mpr min_pos, fun z hz => _⟩
-  have hnz : z ≠ 0 := norm_pos_iff.mp (lt_of_lt_of_le (inv_pos.mpr min_pos) hz)
-  replace hz := inv_le_of_inv_le min_pos hz
-  rcases (⟨Units.mk0 z hnz, Units.val_mk0 hnz⟩ : IsUnit z) with ⟨z, rfl⟩
-  have lt_δ : ‖z⁻¹ • a‖ < δ := by
-    rw [Units.smul_def, norm_smul, Units.val_inv_eq_inv_val, norm_inv]
-    calc
-      ‖(z : 𝕜)‖⁻¹ * ‖a‖ ≤ δ * (‖a‖ + 1)⁻¹ * ‖a‖ :=
-        mul_le_mul_of_nonneg_right (hz.trans (min_le_left _ _)) (norm_nonneg _)
-      _ < δ := by
-        conv => rw [mul_assoc]; rhs; rw [(mul_one δ).symm]
-        exact mul_lt_mul_of_pos_left
-          ((inv_mul_lt_iff ha₁).mpr ((mul_one (‖a‖ + 1)).symm ▸ lt_add_one _)) δ_pos
-  rw [← inv_smul_smul z (resolvent a (z : 𝕜)), units_smul_resolvent_self, resolvent,
-    Algebra.algebraMap_eq_smul_one, one_smul, Units.smul_def, norm_smul, Units.val_inv_eq_inv_val,
-    norm_inv]
+open Bornology Topology
+
+theorem eventually_isUnit_resolvent (a : A) : ∀ᶠ z in cobounded 𝕜, IsUnit (resolvent a z) := by
+  rw [←comap_norm_atTop, (atTop_basis.comap (‖·‖)).eventually_iff]
+  refine ⟨‖a‖ * ‖(1 : A)‖ + 1, by trivial, fun z hz ↦ ?_⟩
+  exact isUnit_resolvent.mp <| mem_resolventSet_of_norm_lt_mul <| (lt_add_one (‖a‖ * _)).trans_le hz
+
+theorem resolvent_isBigO_inv (a : A) :
+    resolvent a =O[cobounded 𝕜] Inv.inv :=
+  have h : (fun z ↦ resolvent (z⁻¹ • a) (1 : 𝕜)) =O[cobounded 𝕜] (fun _ ↦ (1 : ℝ)) := by
+    simpa [Function.comp, resolvent] using (NormedRing.inverse_one_sub_norm (R := A)).comp_tendsto
+      (by simpa using (tendsto_inv₀_cobounded 𝕜).smul_const a)
   calc
-    _ ≤ ε * c⁻¹ * c :=
-      mul_le_mul (hz.trans (min_le_right _ _)) (hδ (mem_ball_zero_iff.mpr lt_δ)) (norm_nonneg _)
-        (mul_pos hε (inv_pos.mpr c_pos)).le
-    _ = _ := inv_mul_cancel_right₀ c_pos.ne.symm ε
-#align spectrum.norm_resolvent_le_forall spectrum.norm_resolvent_le_forall
+    resolvent a
+    _ =ᶠ[cobounded 𝕜] fun z ↦ z⁻¹ • resolvent (z⁻¹ • a) (1 : 𝕜) := by
+      filter_upwards [isBounded_singleton (x := 0)] with z hz
+      simp only [Set.mem_compl_iff, Set.mem_singleton_iff] at hz
+      lift z to 𝕜ˣ using Ne.isUnit hz
+      simpa [Units.smul_def] using congr(z⁻¹ • $(units_smul_resolvent_self (r := z) (a := a)))
+    _ =O[cobounded 𝕜] (· ⁻¹) := IsBigO.of_norm_right <| by
+      simpa using (isBigO_refl (· ⁻¹) (cobounded 𝕜)).norm_right.smul h
+
+theorem resolvent_tendsto_cobounded (a : A) :
+    Tendsto (resolvent a) (cobounded 𝕜) (𝓝 0) :=
+  (resolvent_isBigO_inv a).trans_tendsto <| tendsto_inv₀_cobounded 𝕜
 
 end resolvent
 
@@ -384,6 +375,34 @@ end GelfandFormula
 
 section NonemptySpectrum
 
+-- needs to go with Liouville's theorem
+open Filter Bornology Topology
+theorem _root_.Differentiable.eq_const_of_tendsto_cocompact
+    {E : Type*} [Nontrivial E] [NormedAddCommGroup E] [NormedSpace ℂ E] {F : Type*}
+    [NormedAddCommGroup F] [NormedSpace ℂ F] {f : E → F} (hf : Differentiable ℂ f) {c : F}
+    (hb : Tendsto f (cocompact E) (𝓝 c)) :
+    f = Function.const E c := by
+  have h_bdd : Bornology.IsBounded (Set.range f) := by
+    obtain ⟨M, hM⟩ := hb.norm.isBoundedUnder_le
+    obtain ⟨t, ht, ht'⟩ := mem_cocompact.mp hM
+    replace hM : Bornology.IsBounded (f '' {a | ‖f a‖ ≤ M}) :=
+      isBounded_iff_forall_norm_le.mpr ⟨M, by simp⟩
+    apply ((ht.image hf.continuous).isBounded.union hM).subset
+    rw [← Set.image_union, ←Set.image_univ]
+    exact Set.image_subset _ <| calc
+      Set.univ = t ∪ tᶜ := t.union_compl_self.symm
+      _        ⊆ t ∪ _  := by gcongr; exact ht'
+  obtain ⟨c', hc'⟩ := hf.exists_eq_const_of_bounded h_bdd
+  convert hc'
+  exact tendsto_nhds_unique hb (by simpa [hc'] using tendsto_const_nhds)
+
+theorem _root_.Differentiable.apply_eq_const_of_tendsto_cocompact
+    {E : Type*} [Nontrivial E] [NormedAddCommGroup E] [NormedSpace ℂ E] {F : Type*}
+    [NormedAddCommGroup F] [NormedSpace ℂ F] {f : E → F} (hf : Differentiable ℂ f) {c : F}
+    (x : E) (hb : Tendsto f (cocompact E) (𝓝 c)) :
+    f x = c :=
+  congr($(hf.eq_const_of_tendsto_cocompact hb) x)
+
 variable [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [Nontrivial A] (a : A)
 
 /-- In a (nontrivial) complex Banach algebra, every element has nonempty spectrum. -/
@@ -398,26 +417,10 @@ protected theorem nonempty : (spectrum ℂ a).Nonempty := by
   /- The norm of the resolvent is small for all sufficiently large `z`, and by compactness and
     continuity it is bounded on the complement of a large ball, thus uniformly bounded on `ℂ`.
     By Liouville's theorem `fun z ↦ resolvent a z` is constant. -/
-  have H₂ := norm_resolvent_le_forall (𝕜 := ℂ) a
-  have H₃ : ∀ z : ℂ, resolvent a z = resolvent a (0 : ℂ) := by
-    refine' fun z => H₁.apply_eq_apply_of_bounded (isBounded_iff_forall_norm_le.mpr _) z 0
-    rcases H₂ 1 zero_lt_one with ⟨R, _, hR⟩
-    rcases (ProperSpace.isCompact_closedBall (0 : ℂ) R).exists_bound_of_continuousOn
-        H₁.continuous.continuousOn with
-      ⟨C, hC⟩
-    use max C 1
-    rintro _ ⟨w, rfl⟩
-    refine' Or.elim (em (‖w‖ ≤ R)) (fun hw => _) fun hw => _
-    · exact (hC w (mem_closedBall_zero_iff.mpr hw)).trans (le_max_left _ _)
-    · exact (hR w (not_le.mp hw).le).trans (le_max_right _ _)
-  -- `resolvent a 0 = 0`, which is a contradiction because it isn't a unit.
-  have H₅ : resolvent a (0 : ℂ) = 0 := by
-    refine' norm_eq_zero.mp (le_antisymm (le_of_forall_pos_le_add fun ε hε => _) (norm_nonneg _))
-    rcases H₂ ε hε with ⟨R, _, hR⟩
-    simpa only [H₃ R] using (zero_add ε).symm.subst (hR R (by simp [le_abs_self]))
-  -- `not_isUnit_zero` is where we need `Nontrivial A`, it is unavoidable.
+  have H₃ := H₁.apply_eq_const_of_tendsto_cocompact 0 <|
+    by simpa [Metric.cobounded_eq_cocompact] using resolvent_tendsto_cobounded a (𝕜 := ℂ)
   exact not_isUnit_zero
-    (H₅.subst (isUnit_resolvent.mp (mem_resolventSet_iff.mp (H₀.symm ▸ Set.mem_univ 0))))
+    (H₃.subst (isUnit_resolvent.mp (mem_resolventSet_iff.mp (H₀.symm ▸ Set.mem_univ 0))))
 #align spectrum.nonempty spectrum.nonempty
 
 /-- In a complex Banach algebra, the spectral radius is always attained by some element of the
