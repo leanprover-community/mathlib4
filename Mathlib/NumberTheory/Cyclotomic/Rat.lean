@@ -294,8 +294,7 @@ theorem zeta_sub_one_prime_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
   rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ), Subalgebra.algebraMap_eq]
   simp only [PNat.pow_coe, id.map_eq_id, RingHomCompTriple.comp_eq, RingHom.coe_coe,
     Subalgebra.coe_val, algebraMap_int_eq, map_natCast]
-  refine hζ.sub_one_norm_prime_ne_two (Polynomial.cyclotomic.irreducible_rat ?_) hodd
-  simp
+  exact hζ.sub_one_norm_prime_ne_two (Polynomial.cyclotomic.irreducible_rat (PNat.pos _)) hodd
 
 /-- `ζ - 1` is prime if `ζ` is a primitive `2 ^ (k + 1)`-th root of unity.
   See `zeta_sub_one_prime` for a general statement. -/
