@@ -166,8 +166,8 @@ theorem summable_of_norm_bounded_eventually {f : ι → E} (g : ι → ℝ) (hg 
 
 theorem summable_of_nnnorm_bounded {f : ι → E} (g : ι → ℝ≥0) (hg : Summable g)
     (h : ∀ i, ‖f i‖₊ ≤ g i) : Summable f :=
-  summable_of_norm_bounded (fun i => (g i : ℝ)) (NNReal.summable_coe.2 hg) fun i => by
-    exact_mod_cast h i
+  summable_of_norm_bounded (fun i => (g i : ℝ)) (NNReal.summable_coe.2 hg) fun i =>
+    mod_cast h i
 #align summable_of_nnnorm_bounded summable_of_nnnorm_bounded
 
 theorem summable_of_summable_norm {f : ι → E} (hf : Summable fun a => ‖f a‖) : Summable f :=

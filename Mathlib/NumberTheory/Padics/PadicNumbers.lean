@@ -677,7 +677,7 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
 open Classical
 
 private theorem div_nat_pos (n : ℕ) : 0 < 1 / (n + 1 : ℚ) :=
-  div_pos zero_lt_one (by exact_mod_cast succ_pos _)
+  div_pos zero_lt_one (mod_cast succ_pos _)
 
 /-- `limSeq f`, for `f` a Cauchy sequence of `p`-adic numbers, is a sequence of rationals with the
 same limit point as `f`. -/
@@ -689,10 +689,10 @@ theorem exi_rat_seq_conv {ε : ℚ} (hε : 0 < ε) :
     ∃ N, ∀ i ≥ N, padicNormE (f i - (limSeq f i : ℚ_[p]) : ℚ_[p]) < ε := by
   refine' (exists_nat_gt (1 / ε)).imp fun N hN i hi ↦ _
   have h := Classical.choose_spec (rat_dense' (f i) (div_nat_pos i))
-  refine' lt_of_lt_of_le h ((div_le_iff' <| by exact_mod_cast succ_pos _).mpr _)
+  refine' lt_of_lt_of_le h ((div_le_iff' <| mod_cast succ_pos _).mpr _)
   rw [right_distrib]
   apply le_add_of_le_of_nonneg
-  · exact (div_le_iff hε).mp (le_trans (le_of_lt hN) (by exact_mod_cast hi))
+  · exact (div_le_iff hε).mp (le_trans (le_of_lt hN) (mod_cast hi))
   · apply le_of_lt
     simpa
 #align padic.exi_rat_seq_conv Padic.exi_rat_seq_conv
@@ -718,10 +718,10 @@ theorem exi_rat_seq_conv_cauchy : IsCauSeq (padicNorm p) (limSeq f) := fun ε h�
         · apply padicNormE.add_le
         · apply _root_.add_lt_add
           · rw [padicNormE.map_sub]
-            apply_mod_cast hN j
+            apply mod_cast hN j
             exact le_of_max_le_left hj
           · exact hN2 _ (le_of_max_le_right hj) _ (le_max_right _ _)
-      · apply_mod_cast hN (max N N2)
+      · apply mod_cast hN (max N N2)
         apply le_max_left
 #align padic.exi_rat_seq_conv_cauchy Padic.exi_rat_seq_conv_cauchy
 
@@ -823,7 +823,7 @@ theorem nonarchimedean (q r : ℚ_[p]) : ‖q + r‖ ≤ max ‖q‖ ‖r‖ := 
 
 theorem add_eq_max_of_ne {q r : ℚ_[p]} (h : ‖q‖ ≠ ‖r‖) : ‖q + r‖ = max ‖q‖ ‖r‖ := by
   dsimp [norm] at h ⊢
-  have : padicNormE q ≠ padicNormE r := by exact_mod_cast h
+  have : padicNormE q ≠ padicNormE r := mod_cast h
   exact_mod_cast add_eq_max_of_ne' this
 #align padic_norm_e.add_eq_max_of_ne padicNormE.add_eq_max_of_ne
 
@@ -923,7 +923,7 @@ theorem norm_int_lt_one_iff_dvd (k : ℤ) : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
     calc
       ‖(k : ℚ_[p])‖ = ‖((k : ℚ) : ℚ_[p])‖ := by norm_cast
       _ = padicNorm p k := (padicNormE.eq_padicNorm _)
-      _ = 1 := by exact_mod_cast (int_eq_one_iff k).mpr h
+      _ = 1 := mod_cast (int_eq_one_iff k).mpr h
   · rintro ⟨x, rfl⟩
     push_cast
     rw [padicNormE.mul]
@@ -967,7 +967,7 @@ variable {p : ℕ} [hp : Fact p.Prime]
 instance complete : CauSeq.IsComplete ℚ_[p] norm where
   isComplete := fun f => by
     have cau_seq_norm_e : IsCauSeq padicNormE f := fun ε hε => by
-      have h := isCauSeq f ε (by exact_mod_cast hε)
+      have h := isCauSeq f ε (mod_cast hε)
       dsimp [norm] at h
       exact_mod_cast h
     -- Porting note: Padic.complete' works with `f i - q`, but the goal needs `q - f i`,
@@ -1062,7 +1062,7 @@ theorem norm_eq_pow_val {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.va
 
 @[simp]
 theorem valuation_p : valuation (p : ℚ_[p]) = 1 := by
-  have h : (1 : ℝ) < p := by exact_mod_cast (Fact.out : p.Prime).one_lt
+  have h : (1 : ℝ) < p := mod_cast (Fact.out : p.Prime).one_lt
   refine' neg_injective ((zpow_strictMono h).injective <| (norm_eq_pow_val _).symm.trans _)
   · exact_mod_cast (Fact.out : p.Prime).ne_zero
   · simp
@@ -1166,7 +1166,7 @@ theorem norm_le_pow_iff_norm_lt_pow_add_one (x : ℚ_[p]) (n : ℤ) :
   by_cases hx0 : x = 0
   · simp [hx0, norm_zero, aux, le_of_lt (aux _)]
   rw [norm_eq_pow_val hx0]
-  have h1p : 1 < (p : ℝ) := by exact_mod_cast hp.1.one_lt
+  have h1p : 1 < (p : ℝ) := mod_cast hp.1.one_lt
   have H := zpow_strictMono h1p
   rw [H.le_iff_le, H.lt_iff_lt, Int.lt_add_one_iff]
 #align padic.norm_le_pow_iff_norm_lt_pow_add_one Padic.norm_le_pow_iff_norm_lt_pow_add_one

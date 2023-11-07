@@ -220,7 +220,7 @@ instance : Preorder ℚ := by infer_instance
 protected theorem le_def' {p q : ℚ} : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := by
   rw [← @num_den q, ← @num_den p]
   conv_rhs => simp only [num_den]
-  exact Rat.le_def (by exact_mod_cast p.pos) (by exact_mod_cast q.pos)
+  exact Rat.le_def (mod_cast p.pos) (mod_cast q.pos)
 #align rat.le_def' Rat.le_def'
 
 protected theorem lt_def {p q : ℚ} : p < q ↔ p.num * q.den < q.num * p.den := by

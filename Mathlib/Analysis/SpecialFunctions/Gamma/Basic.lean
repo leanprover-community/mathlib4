@@ -432,7 +432,7 @@ theorem differentiableAt_GammaAux (s : ℂ) (n : ℕ) (h1 : 1 - s.re < n) (h2 : 
 
 theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : DifferentiableAt ℂ Gamma s := by
   let n := ⌊1 - s.re⌋₊ + 1
-  have hn : 1 - s.re < n := by exact_mod_cast Nat.lt_floor_add_one (1 - s.re)
+  have hn : 1 - s.re < n := mod_cast Nat.lt_floor_add_one (1 - s.re)
   apply (differentiableAt_GammaAux s n hn hs).congr_of_eventuallyEq
   let S := {t : ℂ | 1 - t.re < n}
   have : S ∈ 𝓝 s := by

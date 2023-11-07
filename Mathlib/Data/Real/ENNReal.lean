@@ -425,7 +425,7 @@ theorem toReal_eq_toReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ �
 
 @[simp]
 nonrec theorem one_lt_two : (1 : ℝ≥0∞) < 2 :=
-  coe_one ▸ coe_two ▸ by exact_mod_cast (one_lt_two : 1 < 2)
+  coe_one ▸ coe_two ▸ mod_cast (one_lt_two : 1 < 2)
 #align ennreal.one_lt_two ENNReal.one_lt_two
 
 theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top

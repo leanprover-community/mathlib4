@@ -95,7 +95,7 @@ def sMod (p : ℕ) : ℕ → ℤ
 #align lucas_lehmer.s_mod LucasLehmer.sMod
 
 theorem mersenne_int_pos {p : ℕ} (hp : 0 < p) : (0 : ℤ) < 2 ^ p - 1 :=
-  sub_pos.2 <| by exact_mod_cast Nat.one_lt_two_pow p hp
+  sub_pos.2 <| mod_cast Nat.one_lt_two_pow p hp
 
 theorem mersenne_int_ne_zero (p : ℕ) (w : 0 < p) : (2 ^ p - 1 : ℤ) ≠ 0 :=
   (mersenne_int_pos w).ne'

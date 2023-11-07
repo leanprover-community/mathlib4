@@ -169,7 +169,7 @@ theorem ne_nat (h : Irrational x) (m : ℕ) : x ≠ m :=
   h.ne_int m
 #align irrational.ne_nat Irrational.ne_nat
 
-theorem ne_zero (h : Irrational x) : x ≠ 0 := by exact_mod_cast h.ne_nat 0
+theorem ne_zero (h : Irrational x) : x ≠ 0 := mod_cast h.ne_nat 0
 #align irrational.ne_zero Irrational.ne_zero
 
 theorem ne_one (h : Irrational x) : x ≠ 1 := by simpa only [Nat.cast_one] using h.ne_nat 1

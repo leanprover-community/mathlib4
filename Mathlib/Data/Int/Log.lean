@@ -102,7 +102,7 @@ theorem zpow_log_le_self {b : ℕ} {r : R} (hb : 1 < b) (hr : 0 < r) : (b : R) ^
 theorem lt_zpow_succ_log_self {b : ℕ} (hb : 1 < b) (r : R) : r < (b : R) ^ (log b r + 1) := by
   cases' le_or_lt r 0 with hr hr
   · rw [log_of_right_le_zero _ hr, zero_add, zpow_one]
-    exact hr.trans_lt (zero_lt_one.trans_le <| by exact_mod_cast hb.le)
+    exact hr.trans_lt (zero_lt_one.trans_le <| mod_cast hb.le)
   cases' le_or_lt 1 r with hr1 hr1
   · rw [log_of_one_le_right _ hr1]
     rw [Int.ofNat_add_one_out, zpow_ofNat, ← Nat.cast_pow]
@@ -160,10 +160,10 @@ variable (R)
 def zpowLogGi {b : ℕ} (hb : 1 < b) :
     GaloisCoinsertion
       (fun z : ℤ =>
-        Subtype.mk ((b : R) ^ z) <| zpow_pos_of_pos (by exact_mod_cast zero_lt_one.trans hb) z)
+        Subtype.mk ((b : R) ^ z) <| zpow_pos_of_pos (mod_cast zero_lt_one.trans hb) z)
       fun r : Set.Ioi (0 : R) => Int.log b (r : R) :=
-  GaloisCoinsertion.monotoneIntro (fun r₁ r₂ => log_mono_right r₁.2)
-    (fun z₁ z₂ hz => Subtype.coe_le_coe.mp <| (zpow_strictMono <| by exact_mod_cast hb).monotone hz)
+  GaloisCoinsertion.monotoneIntro (fun r₁ _ => log_mono_right r₁.2)
+    (fun _ _ hz => Subtype.coe_le_coe.mp <| (zpow_strictMono <| mod_cast hb).monotone hz)
     (fun r => Subtype.coe_le_coe.mp <| zpow_log_le_self hb r.2) fun _ => log_zpow (R := R) hb _
 #align int.zpow_log_gi Int.zpowLogGi
 
@@ -281,11 +281,11 @@ variable (R)
 /-- Over suitable subtypes, `Int.clog` and `zpow` form a galois insertion -/
 def clogZpowGi {b : ℕ} (hb : 1 < b) :
     GaloisInsertion (fun r : Set.Ioi (0 : R) => Int.clog b (r : R)) fun z : ℤ =>
-      ⟨(b : R) ^ z, zpow_pos_of_pos (by exact_mod_cast zero_lt_one.trans hb) z⟩ :=
+      ⟨(b : R) ^ z, zpow_pos_of_pos (mod_cast zero_lt_one.trans hb) z⟩ :=
   GaloisInsertion.monotoneIntro
-    (fun z₁ z₂ hz => Subtype.coe_le_coe.mp <| (zpow_strictMono <| by exact_mod_cast hb).monotone hz)
-    (fun r₁ r₂ => clog_mono_right r₁.2)
-    (fun r => Subtype.coe_le_coe.mp <| self_le_zpow_clog hb _) fun _ => clog_zpow (R := R) hb _
+    (fun _ _ hz => Subtype.coe_le_coe.mp <| (zpow_strictMono <| mod_cast hb).monotone hz)
+    (fun r₁ _ => clog_mono_right r₁.2)
+    (fun _ => Subtype.coe_le_coe.mp <| self_le_zpow_clog hb _) fun _ => clog_zpow (R := R) hb _
 #align int.clog_zpow_gi Int.clogZpowGi
 
 variable {R}

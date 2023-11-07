@@ -70,11 +70,11 @@ example : p 42 := by
   -- guard_target = p 42
   exact ⟨⟩
 
--- example (h : (an : ℝ) = 0) : an = 0 := by exact_mod_cast h
--- example (h : (an : ℝ) = 42) : an = 42 := by exact_mod_cast h
--- example (h : (an + 42) ≠ 42) : (an : ℝ) + 42 ≠ 42 := by exact_mod_cast h
+-- example (h : (an : ℝ) = 0) : an = 0 := mod_cast h
+-- example (h : (an : ℝ) = 42) : an = 42 := mod_cast h
+-- example (h : (an + 42) ≠ 42) : (an : ℝ) + 42 ≠ 42 := mod_cast h
 
-example (n : ℤ) (h : n + 1 > 0) : ((n + 1 : ℤ) : ℚ) > 0 := by exact_mod_cast h
+example (n : ℤ) (h : n + 1 > 0) : ((n + 1 : ℤ) : ℚ) > 0 := mod_cast h
 
 -- testing the heuristic
 example (h : bn ≤ an) : an - bn = 1 ↔ (an - bn : ℤ) = 1 :=
@@ -108,8 +108,7 @@ instance [Mul α] : MulZeroClass (WithZero α) where
 @[norm_cast] lemma mul_coe [Mul α] (a b : α) :
   ((a * b : α) : WithZero α) = (a : WithZero α) * b := rfl
 
-example [Mul α] [One α] (x y : α) (h : (x : WithZero α) * y = 1) : x * y = 1 := by
-  exact_mod_cast h
+example [Mul α] [One α] (x y : α) (h : (x : WithZero α) * y = 1) : x * y = 1 := mod_cast h
 
 end hidden
 

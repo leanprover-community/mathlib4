@@ -186,7 +186,7 @@ theorem mul_edgeDensity_le_edgeDensity (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁)
     (s₂.card : ℚ) / s₁.card * (t₂.card / t₁.card) * edgeDensity r s₂ t₂ ≤ edgeDensity r s₁ t₁ := by
   have hst : (s₂.card : ℚ) * t₂.card ≠ 0 := by simp [hs₂.ne_empty, ht₂.ne_empty]
   rw [edgeDensity, edgeDensity, div_mul_div_comm, mul_comm, div_mul_div_cancel _ hst]
-  refine' div_le_div_of_le (by exact_mod_cast (s₁.card * t₁.card).zero_le) _
+  refine' div_le_div_of_le (mod_cast (s₁.card * t₁.card).zero_le) _
   exact_mod_cast card_le_of_subset (interedges_mono hs ht)
 #align rel.mul_edge_density_le_edge_density Rel.mul_edgeDensity_le_edgeDensity
 

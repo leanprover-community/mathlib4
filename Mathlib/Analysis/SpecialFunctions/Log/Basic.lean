@@ -227,7 +227,7 @@ theorem log_nat_cast_nonneg (n : ℕ) : 0 ≤ log n := by
   by_cases hn : n = 0
   case pos => simp [hn]
   case neg =>
-    have : (1 : ℝ) ≤ n := by exact_mod_cast Nat.one_le_of_lt <| Nat.pos_of_ne_zero hn
+    have : (1 : ℝ) ≤ n := mod_cast Nat.one_le_of_lt <| Nat.pos_of_ne_zero hn
     exact log_nonneg this
 
 theorem log_neg_nat_cast_nonneg (n : ℕ) : 0 ≤ log (-n) := by
@@ -237,7 +237,7 @@ theorem log_neg_nat_cast_nonneg (n : ℕ) : 0 ≤ log (-n) := by
 theorem log_int_cast_nonneg (n : ℤ) : 0 ≤ log n := by
   cases lt_trichotomy 0 n with
   | inl hn =>
-      have : (1 : ℝ) ≤ n := by exact_mod_cast hn
+      have : (1 : ℝ) ≤ n := mod_cast hn
       exact log_nonneg this
   | inr hn =>
       cases hn with

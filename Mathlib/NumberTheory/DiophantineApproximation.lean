@@ -95,7 +95,7 @@ See also `Real.exists_nat_abs_mul_sub_round_le`. -/
 theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     ∃ j k : ℤ, 0 < k ∧ k ≤ n ∧ |↑k * ξ - j| ≤ 1 / (n + 1) := by
   let f : ℤ → ℤ := fun m => ⌊fract (ξ * m) * (n + 1)⌋
-  have hn : 0 < (n : ℝ) + 1 := by exact_mod_cast Nat.succ_pos _
+  have hn : 0 < (n : ℝ) + 1 := mod_cast Nat.succ_pos _
   have hfu := fun m : ℤ => mul_lt_of_lt_one_left hn <| fract_lt_one (ξ * ↑m)
   conv in |_| ≤ _ => rw [mul_comm, le_div_iff hn, ← abs_of_pos hn, ← abs_mul]
   let D := Icc (0 : ℤ) n
@@ -118,7 +118,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   · -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5127): added `not_and`
     simp_rw [not_exists, not_and] at H
     have hD : (Ico (0 : ℤ) n).card < D.card := by rw [card_Icc, card_Ico]; exact lt_add_one n
-    have hfu' : ∀ m, f m ≤ n := fun m => lt_add_one_iff.mp (floor_lt.mpr (by exact_mod_cast hfu m))
+    have hfu' : ∀ m, f m ≤ n := fun m => lt_add_one_iff.mp (floor_lt.mpr (mod_cast hfu m))
     have hwd : ∀ m : ℤ, m ∈ D → f m ∈ Ico (0 : ℤ) n := fun x hx =>
       mem_Ico.mpr
         ⟨floor_nonneg.mpr (mul_nonneg (fract_nonneg (ξ * x)) hn.le), Ne.lt_of_le (H x hx) (hfu' x)⟩
@@ -196,8 +196,8 @@ theorem exists_rat_abs_sub_lt_and_lt_of_irrational {ξ : ℝ} (hξ : Irrational 
         (one_div_lt md_pos h).mpr <|
           hm.trans <|
             lt_of_lt_of_le (lt_add_one _) <|
-              (le_mul_iff_one_le_right <| add_pos m_pos zero_lt_one).mpr <| by
-                exact_mod_cast (q'.pos : 1 ≤ q'.den)⟩
+              (le_mul_iff_one_le_right <| add_pos m_pos zero_lt_one).mpr <|
+                mod_cast (q'.pos : 1 ≤ q'.den)⟩
   rw [sq, one_div_lt_one_div md_pos (mul_pos den_pos den_pos), mul_lt_mul_right den_pos]
   exact lt_add_of_le_of_pos (Nat.cast_le.mpr hden) zero_lt_one
 #align real.exists_rat_abs_sub_lt_and_lt_of_irrational Real.exists_rat_abs_sub_lt_and_lt_of_irrational
@@ -479,7 +479,7 @@ private theorem aux₃ :
   obtain ⟨hu₀, huv⟩ := aux₂ hv h
   have hξ₀ := aux₁ hv h
   set u' := u - ⌊ξ⌋ * v with hu'
-  have hu'ℝ : (u' : ℝ) = u - ⌊ξ⌋ * v := by exact_mod_cast hu'
+  have hu'ℝ : (u' : ℝ) = u - ⌊ξ⌋ * v := mod_cast hu'
   rw [← hu'ℝ]
   replace hu'ℝ := (eq_sub_iff_add_eq.mp hu'ℝ).symm
   obtain ⟨Hu, Hu'⟩ := aux₀ hu₀
@@ -514,7 +514,7 @@ private theorem aux₃ :
 
 -- The conditions `ass ξ u v` persist in the inductive step.
 private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋ * v) := by
-  refine' ⟨_, fun huv => _, by exact_mod_cast aux₃ hv h⟩
+  refine' ⟨_, fun huv => _, mod_cast aux₃ hv h⟩
   · rw [sub_eq_add_neg, ← neg_mul, isCoprime_comm, IsCoprime.add_mul_right_left_iff]
     exact h.1
   · obtain hv₀' := (aux₀ (zero_lt_two.trans_le hv)).2
@@ -575,7 +575,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
     obtain ⟨n, hn⟩ := ih (u - ⌊ξ⌋ * v).toNat huv₁' inv
     use n + 1
     rw [convergent_succ, ← hn,
-      (by exact_mod_cast toNat_of_nonneg huv₀.le : ((u - ⌊ξ⌋ * v).toNat : ℚ) = u - ⌊ξ⌋ * v),
+      (mod_cast toNat_of_nonneg huv₀.le : ((u - ⌊ξ⌋ * v).toNat : ℚ) = u - ⌊ξ⌋ * v),
       cast_ofNat, inv_div, sub_div, mul_div_cancel _ Hv, add_sub_cancel'_right]
 #align real.exists_rat_eq_convergent' Real.exists_rat_eq_convergent'
 

@@ -430,7 +430,7 @@ theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
   have : (2 * dValue N - 1) ^ nValue N ≤ (2 * dValue N) ^ nValue N :=
     Nat.pow_le_pow_of_le_left (Nat.sub_le _ _) _
   apply this.trans
-  suffices ((2 * dValue N) ^ nValue N : ℝ) ≤ N by exact_mod_cast this
+  suffices ((2 * dValue N) ^ nValue N : ℝ) ≤ N from mod_cast this
   suffices i : (2 * dValue N : ℝ) ≤ (N : ℝ) ^ (1 / nValue N : ℝ)
   · apply (rpow_le_rpow (mul_nonneg zero_le_two (cast_nonneg _)) i (cast_nonneg _)).trans
     rw [← rpow_mul (cast_nonneg _), one_div_mul_cancel, rpow_one]

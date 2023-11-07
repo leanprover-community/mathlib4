@@ -96,8 +96,8 @@ def z {n : ℕ} (k : Fin (n + 1)) : I :=
   ⟨(k : ℝ) / n, by
     cases' n with n
     · norm_num
-    · have h₁ : 0 < (n.succ : ℝ) := by exact_mod_cast Nat.succ_pos _
-      have h₂ : ↑k ≤ n.succ := by exact_mod_cast Fin.le_last k
+    · have h₁ : 0 < (n.succ : ℝ) := mod_cast Nat.succ_pos _
+      have h₂ : ↑k ≤ n.succ := mod_cast Fin.le_last k
       rw [Set.mem_Icc, le_div_iff h₁, div_le_iff h₁]
       norm_cast
       simp [h₂]⟩

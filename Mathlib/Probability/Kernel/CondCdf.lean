@@ -717,8 +717,8 @@ theorem condCdf'_eq_condCdfRat (ρ : Measure (α × ℝ)) (a : α) (r : ℚ) :
   rw [← inf_gt_condCdfRat ρ a r, condCdf']
   refine' Equiv.iInf_congr _ _
   · exact
-      { toFun := fun t => ⟨t.1, by exact_mod_cast t.2⟩
-        invFun := fun t => ⟨t.1, by exact_mod_cast t.2⟩
+      { toFun := fun t => ⟨t.1, mod_cast t.2⟩
+        invFun := fun t => ⟨t.1, mod_cast t.2⟩
         left_inv := fun t => by simp only [Subtype.coe_eta]
         right_inv := fun t => by simp only [Subtype.coe_eta] }
   · intro t

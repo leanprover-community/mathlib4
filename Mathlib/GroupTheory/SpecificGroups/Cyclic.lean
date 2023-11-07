@@ -177,9 +177,9 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
     obtain ⟨k, hk⟩ := h x
     dsimp at hk
     obtain ⟨k, rfl | rfl⟩ := k.eq_nat_or_neg
-    · exact ⟨k, by exact_mod_cast hk⟩
+    · exact ⟨k, mod_cast hk⟩
     rw [zpow_eq_mod_orderOf] at hk
-    have : 0 ≤ (-k % orderOf g : ℤ) := Int.emod_nonneg (-k) (by exact_mod_cast ho.ne')
+    have : 0 ≤ (-k % orderOf g : ℤ) := Int.emod_nonneg (-k) (mod_cast ho.ne')
     refine' ⟨(-k % orderOf g : ℤ).toNat, _⟩
     rwa [← zpow_ofNat, Int.toNat_of_nonneg this]
 #align infinite.order_of_eq_zero_of_forall_mem_zpowers Infinite.orderOf_eq_zero_of_forall_mem_zpowers
