@@ -45,7 +45,7 @@ variable {I J K : Type*} (p : I × J → K)
 
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃`, graded objects `X : GradedObject I C₁` and
  `Y : GradedObject J C₂` and a map `p : I × J → K`, this is the `K`-graded object sending
-`k` to the coproduct of `(F.obj (X i)).obj (Y j)` for `i + j = k`. -/
+`k` to the coproduct of `(F.obj (X i)).obj (Y j)` for `p ⟨i, j⟩ = k`. -/
 @[simp]
 noncomputable def mapBifunctorMapObj (X : GradedObject I C₁) (Y : GradedObject J C₂)
   [HasMap (((mapBifunctor F I J).obj X).obj Y) p] : GradedObject K C₃ :=
@@ -85,8 +85,8 @@ attribute [local simp] mapBifunctorMapMap
 
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` and a map `p : I × J → K`, this is the
 functor `GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject K C₃` sending
-`X : GradedObject I C₁` and  `Y : GradedObject J C₂` to the `K`-graded object sending
-`k` to the coproduct of `(F.obj (X i)).obj (Y j)` for `i + j = k`. -/
+`X : GradedObject I C₁` and `Y : GradedObject J C₂` to the `K`-graded object sending
+`k` to the coproduct of `(F.obj (X i)).obj (Y j)` for `p ⟨i, j⟩ = k`. -/
 @[simps]
 noncomputable def mapBifunctorMap [∀ X Y, HasMap (((mapBifunctor F I J).obj X).obj Y) p] :
     GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject K C₃ where
