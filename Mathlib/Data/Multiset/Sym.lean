@@ -58,9 +58,9 @@ protected theorem Nodup.sym2 {m : Multiset α} (h : m.Nodup) : m.sym2.Nodup :=
 @[simp, mono]
 theorem sym2_mono {m m' : Multiset α} (h : m ≤ m') : m.sym2 ≤ m'.sym2 := by
   refine Quotient.inductionOn₂ m m' (fun xs ys h => ?_) h
-  simp only [quot_mk_to_coe, coe_le, sym2_coe] at h ⊢
-  obtain ⟨xs', hx, h⟩ := h
-  exact hx.sym2.symm.subperm.trans h.sym2.subperm
+  suffices : xs <+~ ys
+  · exact this.sym2
+  simpa only [quot_mk_to_coe, coe_le, sym2_coe] using h
 
 theorem card_sym2 {m : Multiset α} :
     Multiset.card m.sym2 = Nat.choose (Multiset.card m + 1) 2 := by

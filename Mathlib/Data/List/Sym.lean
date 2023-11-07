@@ -18,36 +18,16 @@ from a given list. These are list versions of `Nat.multichoose`.
 * `List.sym2`: `xs.sym2` is a list of all unordered pairs of elements from `xs`,
   with multiplicity. The list's values are in `Sym2 α`.
 
+## Todo
+
+* Prove `protected theorem Perm.sym (n : ℕ) {xs ys : List α} (h : xs ~ ys) : xs.sym n ~ ys.sym n`
+  and lift the result to `Multiset` and `Finset`.
+
 -/
 
 namespace List
 
 variable {α : Type*}
-
-section Sym
-
-/-- `xs.sym n` is all unordered `n`-tuples from the list `xs` in some order. -/
-protected def sym : (n : Nat) → List α → List (Sym α n)
-  | 0, _ => [.nil]
-  | _, [] => []
-  | n + 1, x :: xs => ((x :: xs).sym n |>.map fun p => x ::ₛ p) ++ xs.sym (n + 1)
-termination_by _ n xs => n + xs.length
-
-theorem sym_one_eq {xs : List α} : xs.sym 1 = xs.map (· ::ₛ .nil) := by
-  induction xs with
-  | nil => rfl
-  | cons x xs ih =>
-    rw [map_cons, ← ih, List.sym, List.sym, map_singleton, singleton_append]
-
--- theorem first_mem_of_mem_sym {xs : List α} {n : ℕ} {a : α} {as : Sym α n}
---     (h : a ::ₛ as ∈ xs.sym (n + 1)) : a ∈ xs := by
---   sorry
-
--- protected theorem Perm.sym2 {xs ys : List α} (h : xs ~ ys) {n : ℕ} :
---     xs.sym n ~ ys.sym n := by
---   sorry
-
-end Sym
 
 section Sym2
 
@@ -56,13 +36,6 @@ If `xs` has no duplicates then neither does `xs.sym2`. -/
 protected def sym2 : List α → List (Sym2 α)
   | [] => []
   | x::xs => ((x::xs).map fun y => ⟦(x, y)⟧) ++ xs.sym2
-
-theorem sym2_eq_sym_two {xs : List α} : xs.sym2.map (Sym2.equivSym α) = xs.sym 2 := by
-  induction xs with
-  | nil => rfl
-  | cons x xs ih =>
-    rw [List.sym, ← ih, sym_one_eq, map_map, List.sym2, map_append, map_map]
-    rfl
 
 theorem mem_sym2_cons_iff {x : α} {xs : List α} {z : Sym2 α} :
     z ∈ (x :: xs).sym2 ↔ z = ⟦(x, x)⟧ ∨ (∃ y, y ∈ xs ∧ z = ⟦(x, y)⟧) ∨ z ∈ xs.sym2 := by
@@ -160,13 +133,15 @@ protected theorem Sublist.sym2 {xs ys : List α} (h : xs <+ ys) : xs.sym2 <+ ys.
   induction h with
   | slnil => apply slnil
   | cons a h ih =>
-    simp only [List.sym2, map_cons, cons_append]
-    apply Sublist.cons
-    rw [← nil_append (List.sym2 _)]
+    simp only [List.sym2]
     exact Sublist.append (nil_sublist _) ih
   | cons₂ a h ih =>
     simp only [List.sym2, map_cons, cons_append]
     exact cons₂ _ (append (Sublist.map _ h) ih)
+
+protected theorem Subperm.sym2 {xs ys : List α} (h : xs <+~ ys) : xs.sym2 <+~ ys.sym2 := by
+  obtain ⟨xs', hx, h⟩ := h
+  exact hx.sym2.symm.subperm.trans h.sym2.subperm
 
 theorem length_sym2 {xs : List α} : xs.sym2.length = Nat.choose (xs.length + 1) 2 := by
   induction xs with
@@ -176,5 +151,114 @@ theorem length_sym2 {xs : List α} : xs.sym2.length = Nat.choose (xs.length + 1)
         Nat.choose_succ_succ, ← ih, Nat.choose_one_right]
 
 end Sym2
+
+section Sym
+
+/-- `xs.sym n` is all unordered `n`-tuples from the list `xs` in some order. -/
+protected def sym : (n : ℕ) → List α → List (Sym α n)
+  | 0, _ => [.nil]
+  | _, [] => []
+  | n + 1, x :: xs => ((x :: xs).sym n |>.map fun p => x ::ₛ p) ++ xs.sym (n + 1)
+  termination_by _ n xs => n + xs.length
+
+variable {xs ys : List α} {n : ℕ}
+
+theorem sym_one_eq : xs.sym 1 = xs.map (· ::ₛ .nil) := by
+  induction xs with
+  | nil => rfl
+  | cons x xs ih =>
+    rw [map_cons, ← ih, List.sym, List.sym, map_singleton, singleton_append]
+
+theorem sym2_eq_sym_two : xs.sym2.map (Sym2.equivSym α) = xs.sym 2 := by
+  induction xs with
+  | nil => rfl
+  | cons x xs ih =>
+    rw [List.sym, ← ih, sym_one_eq, map_map, List.sym2, map_append, map_map]
+    rfl
+
+theorem sym_map {β : Type*} (f : α → β) (n : ℕ) (xs : List α) :
+    (xs.map f).sym n = (xs.sym n).map (Sym.map f) :=
+  match n, xs with
+  | 0, _ => by simp [List.sym]
+  | n + 1, [] => by simp [List.sym]
+  | n + 1, x :: xs => by
+    rw [map_cons, List.sym, ← map_cons, sym_map f n (x :: xs), sym_map f (n + 1) xs]
+    simp only [map_map, List.sym, map_append, append_cancel_right_eq]
+    congr
+    ext s
+    simp only [Function.comp_apply, Sym.map_cons]
+  termination_by _ n xs => n + xs.length
+
+protected theorem Sublist.sym (n : ℕ) {xs ys : List α} (h : xs <+ ys) : xs.sym n <+ ys.sym n :=
+  match n, h with
+  | 0, _ => by simp [List.sym]
+  | n + 1, .slnil => .slnil
+  | n + 1, .cons a h => by
+    rw [List.sym, ← nil_append (List.sym (n + 1) xs)]
+    apply Sublist.append (nil_sublist _)
+    exact h.sym (n + 1)
+  | n + 1, .cons₂ a h => by
+    rw [List.sym, List.sym]
+    apply Sublist.append
+    · exact ((cons₂ a h).sym n).map _
+    · exact h.sym (n + 1)
+  termination_by _ n xs ys h => n + xs.length + ys.length
+
+theorem sym_sublist_sym_cons {a : α} : xs.sym n <+ (a :: xs).sym n :=
+  (sublist_cons a xs).sym n
+
+theorem mem_of_mem_of_mem_sym {n : ℕ} {xs : List α} {a : α} {z : Sym α n}
+    (ha : a ∈ z) (hz : z ∈ xs.sym n) : a ∈ xs :=
+  match n, xs with
+  | 0, xs => by
+    cases Sym.eq_nil_of_card_zero z
+    simp at ha
+  | n + 1, [] => by simp [List.sym] at hz
+  | n + 1, x :: xs => by
+    rw [List.sym, mem_append, mem_map] at hz
+    obtain ⟨z, hz, rfl⟩ | hz := hz
+    · rw [Sym.mem_cons] at ha
+      obtain rfl | ha := ha
+      · simp
+      · exact mem_of_mem_of_mem_sym ha hz
+    · rw [mem_cons]
+      right
+      exact mem_of_mem_of_mem_sym ha hz
+  termination_by _ n xs _ _ _ _ => n + xs.length
+
+theorem first_mem_of_cons_mem_sym {xs : List α} {n : ℕ} {a : α} {z : Sym α n}
+    (h : a ::ₛ z ∈ xs.sym (n + 1)) : a ∈ xs :=
+  mem_of_mem_of_mem_sym (Sym.mem_cons_self a z) h
+
+protected theorem Nodup.sym (n : ℕ) {xs : List α} (h : xs.Nodup) : (xs.sym n).Nodup :=
+  match n, xs with
+  | 0, _ => by simp [List.sym]
+  | n + 1, [] => by simp [List.sym]
+  | n + 1, x :: xs => by
+    rw [List.sym]
+    refine Nodup.append (Nodup.map ?inj (Nodup.sym n h)) (Nodup.sym (n + 1) h.of_cons) ?disj
+    case inj =>
+      intro z z'
+      simp
+    case disj =>
+      intro z hz hz'
+      rw [mem_map] at hz
+      obtain ⟨z, _hz, rfl⟩ := hz
+      have := first_mem_of_cons_mem_sym hz'
+      simp only [nodup_cons, this, false_and] at h
+  termination_by _ n xs _ => n + xs.length
+
+theorem length_sym {n : ℕ} {xs : List α} :
+    (xs.sym n).length = Nat.multichoose xs.length n :=
+  match n, xs with
+  | 0, _ => by rw [List.sym, Nat.multichoose]; rfl
+  | n + 1, [] => rfl
+  | n + 1, x :: xs => by
+    rw [List.sym, length_append, length_map, length_cons]
+    rw [@length_sym n (x :: xs), @length_sym (n + 1) xs]
+    rw [Nat.multichoose_succ_succ, length_cons, add_comm]
+  termination_by _ n xs => n + xs.length
+
+end Sym
 
 end List
