@@ -3,8 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.Nerve
+import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.Linarith
 
 /-!
 # Composable arrows
@@ -14,12 +17,19 @@ to the type of functors `Fin (n + 1) ⥤ C`, which can be thought as families of
 arrows in `C`. In this file, we introduce and study this category `ComposableArrows C n`
 of `n` composable arrows in `C`.
 
+If `F : ComposableArrows C n`, we define `F.left` as the leftmost object, `F.right` as the
+rightmost object, and `F.hom : F.left ⟶ F.right` is the canonical map.
+
+The most significant definition in this file is the constructor
+`F.precomp f : ComposableArrows C (n + 1)` for `F : ComposableArrows C n` and `f : X ⟶ F.left`:
+"it shifts `F` towards the right and inserts `f` on the left". This `precomp` has
+good definitional properties.
+
+In the namespace `CategoryTheory.ComposableArrows`, we provide constructors
+like `mk₁ f`, `mk₂ f g`, `mk₃ f g h` for `ComposableArrows C n` for small `n`.
+
 TODO (@joelriou):
 * define various constructors for objects, morphisms, isomorphisms in `ComposableArrows C n`
-* construction of `precomp F f : ComposableArrows C (n + 1)` when `F : ComposableArrows C n`
-and `f : X ⟶ F.left` with good definitional properties.
-* constructors like `mk₃ f g h : ComposableArrows C 3` which would take as inputs a certain
-number of composable morphisms
 * redefine `Arrow C` as `ComposableArrow C 1`?
 * construct some elements in `ComposableArrows m (Fin (n + 1))` for small `n`
 the precomposition with which shall induce funtors
@@ -38,14 +48,9 @@ variable (C : Type*) [Category C]
 /-- `ComposableArrows C n` is the type of functors `Fin (n + 1) ⥤ C`. -/
 abbrev ComposableArrows (n : ℕ) := Fin (n + 1) ⥤ C
 
-/-- The type of `n`-simplices in the simplicial set `nerve C` is
-definitionally equal to `ComposableArrows C n`. -/
-lemma nerve_obj_eq_composableArrows (n : ℕ) :
-    (nerve C).obj (Opposite.op (SimplexCategory.mk n)) = ComposableArrows C n := rfl
-
 namespace ComposableArrows
 
-variable {C} {n : ℕ}
+variable {C} {n m : ℕ}
 variable (F G : ComposableArrows C n)
 
 /-- The `i`th object (with `i : ℕ` such that `i ≤ n`) of `F : ComposableArrows C n`. -/
@@ -257,6 +262,180 @@ lemma ext₁ {F G : ComposableArrows C 1}
 lemma mk₁_surjective (X : ComposableArrows C 1) : ∃ (X₀ X₁ : C) (f : X₀ ⟶ X₁), X = mk₁ f :=
   ⟨_, _, X.map' 0 1, ext₁ rfl rfl (by simp)⟩
 
+variable (F)
+
+namespace Precomp
+
+variable (X : C)
+
+/-- The map `Fin (n + 1 + 1) → C` which "shifts" `F.obj'` to the right and inserts `X` in
+the zeroth position. -/
+def obj : Fin (n + 1 + 1) → C
+  | ⟨0, _⟩ => X
+  | ⟨i + 1, hi⟩ => F.obj' i
+
+@[simp]
+lemma obj_zero : obj F X 0 = X := rfl
+
+@[simp]
+lemma obj_one : obj F X 1 = F.obj' 0 := rfl
+
+@[simp]
+lemma obj_succ (i : ℕ) (hi : i + 1 < n + 1 + 1) : obj F X ⟨i + 1, hi⟩ = F.obj' i := rfl
+
+variable {X} (f : X ⟶ F.left)
+
+/-- Auxiliary definition for the action on maps of the functor `F.precomp f`.
+It sends `0 ≤ 1` to `f` and `i + 1 ≤ j + 1` to `F.map' i j`. -/
+def map : ∀ (i j : Fin (n + 1 + 1)) (_ : i ≤ j), obj F X i ⟶ obj F X j
+  | ⟨0, _⟩, ⟨0, _⟩, _ => 𝟙 X
+  | ⟨0, _⟩, ⟨1, _⟩, _ => f
+  | ⟨0, _⟩, ⟨j + 2, hj⟩, _ => f ≫ F.map' 0 (j + 1)
+  | ⟨i + 1, hi⟩, ⟨j + 1, hj⟩, hij => F.map' i j (by simpa using hij)
+
+@[simp]
+lemma map_zero_zero : map F f 0 0 (by simp) = 𝟙 X := rfl
+
+@[simp]
+lemma map_one_one : map F f 1 1 (by simp) = F.map (𝟙 _) := rfl
+
+@[simp]
+lemma map_zero_one : map F f 0 1 (by simp) = f := rfl
+
+@[simp]
+lemma map_zero_one' : map F f 0 ⟨0 + 1, by simp⟩ (by simp) = f := rfl
+
+@[simp]
+lemma map_zero_succ_succ (j : ℕ) (hj : j + 2 < n + 1 + 1) :
+    map F f 0 ⟨j + 2, hj⟩ (by simp) = f ≫ F.map' 0 (j+1) := rfl
+
+@[simp]
+lemma map_succ_succ (i j : ℕ) (hi : i + 1 < n + 1 + 1) (hj : j + 1 < n + 1 + 1)
+    (hij : i + 1 ≤ j + 1) :
+    map F f ⟨i + 1, hi⟩ ⟨j + 1, hj⟩ hij = F.map' i j := rfl
+
+@[simp]
+lemma map_one_succ (j : ℕ) (hj : j + 1 < n + 1 + 1) :
+    map F f 1 ⟨j + 1, hj⟩ (by simp [Fin.le_def]) = F.map' 0 j := rfl
+
+lemma map_id (i : Fin (n + 1 + 1)) : map F f i i (by simp) = 𝟙 _ := by
+  obtain ⟨i, hi⟩ := i
+  cases i
+  · rfl
+  · apply F.map_id
+
+lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
+    map F f i k (hij.trans hjk) = map F f i j hij ≫ map F f j k hjk := by
+  obtain ⟨i, hi⟩ := i
+  obtain ⟨j, hj⟩ := j
+  obtain ⟨k, hk⟩ := k
+  cases i
+  · obtain _ | _ | j := j
+    · dsimp
+      rw [id_comp]
+    · obtain _ | _ | k := k
+      · simp at hjk
+      · dsimp
+        rw [F.map_id, comp_id]
+      · rfl
+    · obtain _ | _ | k := k
+      · simp [Fin.ext_iff] at hjk
+      · simp [Fin.le_def, Nat.succ_eq_add_one] at hjk
+      · dsimp
+        rw [assoc, ← F.map_comp, homOfLE_comp]
+  · obtain _ | j := j
+    · simp [Fin.ext_iff] at hij
+    · obtain _ | k := k
+      · simp [Fin.ext_iff] at hjk
+      · dsimp
+        rw [← F.map_comp, homOfLE_comp]
+
+end Precomp
+
+/-- "Precomposition" of `F : ComposableArrows C n` by a morphism `f : X ⟶ F.left`. -/
+@[simps]
+def precomp {X : C} (f : X ⟶ F.left) : ComposableArrows C (n + 1) where
+  obj := Precomp.obj F X
+  map g := Precomp.map F f _ _ (leOfHom g)
+  map_id := Precomp.map_id F f
+  map_comp g g' := (Precomp.map_comp F f (leOfHom g) (leOfHom g'))
+
+/-- Constructor for `ComposableArrows C 2`. -/
+@[simp]
+def mk₂ {X₀ X₁ X₂ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) : ComposableArrows C 2 :=
+  (mk₁ g).precomp f
+
+/-- Constructor for `ComposableArrows C 3`. -/
+@[simp]
+def mk₃ {X₀ X₁ X₂ X₃ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃) : ComposableArrows C 3 :=
+  (mk₂ g h).precomp f
+
+section
+
+variable {X₀ X₁ X₂ X₃ X₄ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) (h : X₂ ⟶ X₃) (i : X₃ ⟶ X₄)
+
+/-! These examples are meant to test the good definitional properties of `precomp`,
+and that `dsimp` can see through. -/
+
+example : map' (mk₂ f g) 0 1 = f := by dsimp
+example : map' (mk₂ f g) 1 2 = g := by dsimp
+example : map' (mk₂ f g) 0 2 = f ≫ g := by dsimp
+example : (mk₂ f g).hom = f ≫ g := by dsimp
+example : map' (mk₂ f g) 0 0 = 𝟙 _ := by dsimp
+example : map' (mk₂ f g) 1 1 = 𝟙 _ := by dsimp
+example : map' (mk₂ f g) 2 2 = 𝟙 _ := by dsimp
+
+example : map' (mk₃ f g h) 0 1 = f := by dsimp
+example : map' (mk₃ f g h) 1 2 = g := by dsimp
+example : map' (mk₃ f g h) 2 3 = h := by dsimp
+example : map' (mk₃ f g h) 0 3 = f ≫ g ≫ h := by dsimp
+example : (mk₃ f g h).hom = f ≫ g ≫ h := by dsimp
+example : map' (mk₃ f g h) 0 2 = f ≫ g := by dsimp
+example : map' (mk₃ f g h) 1 3 = g ≫ h := by dsimp
+
+end
+
+/-- The map `ComposableArrows C m → ComposableArrows C n` obtained by precomposition with
+a functor `Fin (n + 1) ⥤ Fin (m + 1)`. -/
+@[simps!]
+def whiskerLeft (F : ComposableArrows C m) (Φ : Fin (n + 1) ⥤ Fin (m + 1)) :
+    ComposableArrows C n := Φ ⋙ F
+
+/-- The functor `ComposableArrows C m ⥤ ComposableArrows C n` obtained by precomposition with
+a functor `Fin (n + 1) ⥤ Fin (m + 1)`. -/
+@[simps!]
+def whiskerLeftFunctor (Φ : Fin (n + 1) ⥤ Fin (m + 1)) :
+    ComposableArrows C m ⥤ ComposableArrows C n where
+  obj F := F.whiskerLeft Φ
+  map f := CategoryTheory.whiskerLeft Φ f
+
+/-- The functor `Fin n ⥤ Fin (n + 1)` which sends `i` to `i.succ`. -/
+@[simps]
+def _root_.Fin.succFunctor (n : ℕ) : Fin n ⥤ Fin (n + 1) where
+  obj i := i.succ
+  map {i j} hij := homOfLE (Fin.succ_le_succ_iff.2 (leOfHom hij))
+
+/-- The functor `ComposableArrows C (n + 1) ⥤ ComposableArrows C n` which forgets
+the first arrow. -/
+@[simps!]
+def δ₀Functor : ComposableArrows C (n + 1) ⥤ ComposableArrows C n :=
+  whiskerLeftFunctor (Fin.succFunctor (n + 1))
+
+/-- The `ComposableArrows C n` obtained by forgetting the first arrow. -/
+abbrev δ₀ (F : ComposableArrows C (n + 1)) := δ₀Functor.obj F
+
+@[simp]
+lemma precomp_δ₀ {X : C} (f : X ⟶ F.left) : (F.precomp f).δ₀ = F := rfl
+
 end ComposableArrows
+
+variable {C}
+
+/-- The functor `ComposableArrows C n ⥤ ComposableArrows D n` obtained by postcomposition
+with a functor `C ⥤ D`. -/
+@[simps!]
+def Functor.mapComposableArrows {D : Type*} [Category D] (G : C ⥤ D) (n : ℕ) :
+    ComposableArrows C n ⥤ ComposableArrows D n :=
+  (whiskeringRight _ _ _).obj G
 
 end CategoryTheory
