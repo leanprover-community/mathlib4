@@ -131,19 +131,19 @@ instance isIso_indexCone_lift [DecidableEq ι] :
 
 /-- The canonical map from `C` to the explicit limit as an isomorphism. -/
 noncomputable
-def isoindexConeLift [DecidableEq ι] :
+def isoindexConeLift :
     @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _ ≅
     (Profinite.limitCone (indexFunctor hC)).pt :=
   asIso <| (Profinite.limitConeIsLimit _).lift (indexCone hC)
 
 /-- The isomorphism of cones induced by `isoindexConeLift`. -/
 noncomputable
-def asLimitindexConeIso [DecidableEq ι] : indexCone hC ≅ Profinite.limitCone _ :=
+def asLimitindexConeIso : indexCone hC ≅ Profinite.limitCone _ :=
   Limits.Cones.ext (isoindexConeLift hC) fun _ => rfl
 
 /-- `indexCone` is a limit cone. -/
 noncomputable
-def indexCone_isLimit [DecidableEq ι] : CategoryTheory.Limits.IsLimit (indexCone hC) :=
+def indexCone_isLimit : CategoryTheory.Limits.IsLimit (indexCone hC) :=
   Limits.IsLimit.ofIsoLimit (Profinite.limitConeIsLimit _) (asLimitindexConeIso hC).symm
 
 end Profinite
