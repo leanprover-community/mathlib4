@@ -16,7 +16,7 @@ This file proves Nöbeling's theorem.
 
 ## Main result
 
-* `LocallyConstant.freeOfProfinite`: Nöbeling's theorem. 
+* `LocallyConstant.freeOfProfinite`: Nöbeling's theorem.
   For `S : Profinite`, the `ℤ`-module `LocallyConstant S ℤ` is free.
 
 ## Proof idea
