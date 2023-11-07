@@ -404,9 +404,9 @@ instance {α : Type} [Fintype α] {Z : α → C} {F : C ⥤ Type w}
 theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [S.extensive]
     (F : Cᵒᵖ ⥤ Type max u v) [PreservesFiniteProducts F] :
     Presieve.IsSheafFor F S := by
-  obtain ⟨_, _, Z, π, hS, _⟩ := Presieve.extensive.arrows_sigma_desc_iso (R := S)
+  obtain ⟨_, _, _, π, hS, _⟩ := Presieve.extensive.arrows_sigma_desc_iso (R := S)
   subst hS
-  exact Presieve.isSheafFor_of_preservesProduct F (X := Z) π
+  exact Presieve.isSheafFor_of_preservesProduct' F π
 
 instance {α : Type} [Fintype α] (Z : α → C) :
     (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)).extensive where
@@ -429,9 +429,17 @@ theorem isSheaf_iff_preservesFiniteProducts [FinitaryExtensive C] (F : Cᵒᵖ �
     intro K
     rw [Presieve.isSheaf_coverage] at hF
     let Z : α → C := fun i ↦ unop (K.obj ⟨i⟩)
+    haveI : (Presieve.ofArrows Z (Cofan.mk (∐ Z) (Sigma.ι Z)).inj).hasPullbacks := by
+      change (Presieve.ofArrows Z (Sigma.ι Z)).hasPullbacks
+      infer_instance
+      -- This is annoying
+    haveI : ∀ (i : α), Mono (Cofan.inj (Cofan.mk (∐ Z) (Sigma.ι Z)) i) := by
+      change ∀ (i : α), Mono (Sigma.ι Z i)
+      infer_instance
+      -- This is annoying
     let _ : PreservesLimit (Discrete.functor (fun i ↦ op (Z i))) F :=
-        Presieve.preservesProductOfIsSheafFor F ?_ initialIsInitial Z
-        (fun _ _ ↦ FinitaryExtensive.isPullback_initial_to_sigma_ι Z _ _)
+        Presieve.preservesProductOfIsSheafFor F ?_ initialIsInitial _ (coproductIsCoproduct Z)
+        (FinitaryExtensive.isPullback_initial_to_sigma_ι Z)
         (hF (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)) ?_)
     let i : K ≅ Discrete.functor (fun i ↦ op (Z i)) := Discrete.natIsoFunctor
     · exact preservesLimitOfIsoDiagram F i.symm
