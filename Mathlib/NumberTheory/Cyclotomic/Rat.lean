@@ -284,9 +284,9 @@ theorem zeta_sub_one_prime_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     Prime (hζ.toInteger - 1) := by
   letI := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
   refine Ideal.prime_of_irreducible_absNorm_span (fun h ↦ ?_) ?_
-  · rw [← Subalgebra.coe_eq_zero] at h
-    simp only [AddSubgroupClass.coe_sub, OneMemClass.coe_one, sub_eq_zero] at h
-    exact hζ.pow_ne_one_of_pos_of_lt zero_lt_one (one_lt_pow hp.out.one_lt (by simp)) (by simp [h])
+  · apply hζ.pow_ne_one_of_pos_of_lt zero_lt_one (one_lt_pow hp.out.one_lt (by simp))
+    rw [← Subalgebra.coe_eq_zero] at h
+    simpa [sub_eq_zero] using h
   rw [Nat.irreducible_iff_prime, Ideal.absNorm_span_singleton, ← Nat.prime_iff,
     ← Int.prime_iff_natAbs_prime]
   convert Nat.prime_iff_prime_int.1 hp.out
@@ -304,9 +304,9 @@ theorem two_pow_zeta_sub_one_prime [IsCyclotomicExtension {(2 : ℕ+) ^ (k + 1)}
     Prime (hζ.toInteger - 1) := by
   letI := IsCyclotomicExtension.numberField {(2 : ℕ+) ^ (k + 1)} ℚ K
   refine Ideal.prime_of_irreducible_absNorm_span (fun h ↦ ?_) ?_
-  · rw [← Subalgebra.coe_eq_zero] at h
-    simp only [AddSubgroupClass.coe_sub, OneMemClass.coe_one, sub_eq_zero] at h
-    exact hζ.pow_ne_one_of_pos_of_lt zero_lt_one (one_lt_pow (by norm_num) (by simp)) (by simp [h])
+  · apply hζ.pow_ne_one_of_pos_of_lt zero_lt_one (one_lt_pow (by norm_num) (by simp))
+    rw [← Subalgebra.coe_eq_zero] at h
+    simpa [sub_eq_zero] using h
   rw [Nat.irreducible_iff_prime, Ideal.absNorm_span_singleton, ← Nat.prime_iff,
     ← Int.prime_iff_natAbs_prime]
   cases k
