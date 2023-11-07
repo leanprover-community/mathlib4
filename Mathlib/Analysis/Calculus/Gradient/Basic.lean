@@ -99,8 +99,9 @@ section GradientUniqueness
 variable {gradf gradg : F}
 
 theorem HasGradientAt.unique (hf : HasGradientAt f gradf x) (hg : HasGradientAt f gradg x) :
-    gradf = gradg := (toDual 𝕜 F).injective
-  ((HasGradientAt_iff_HasFDerivAt.mp hf).unique (HasGradientAt_iff_HasFDerivAt.mp hg))
+    gradf = gradg :=
+  (toDual 𝕜 F).injective
+    ((HasGradientAt_iff_HasFDerivAt.mp hf).unique (HasGradientAt_iff_HasFDerivAt.mp hg))
 
 end GradientUniqueness
 
