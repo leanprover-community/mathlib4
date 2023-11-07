@@ -363,6 +363,11 @@ theorem append_left_eq_cons {α : Type*} {n : ℕ} (x₀ : Fin 1 → α) (x : Fi
     exact Fin.cons_succ _ _ _
 #align fin.append_left_eq_cons Fin.append_left_eq_cons
 
+/-- `Fin.cons` is the same as appending a one-tuple to the left. -/
+theorem cons_eq_append {α : Type*} (x : α) (xs : Fin n → α) :
+    cons x xs = append (cons x Fin.elim0) xs ∘ Fin.cast (add_comm ..) := by
+  funext i; simp [append_left_eq_cons]
+
 @[simp] lemma append_cast_left {n m} {α : Type*} (xs : Fin n → α) (ys : Fin m → α) (n' : ℕ)
     (h : n' = n) :
     Fin.append (xs ∘ Fin.cast h) ys = Fin.append xs ys ∘ (Fin.cast <| by rw[h]) := by
