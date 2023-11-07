@@ -195,7 +195,7 @@ theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x 
       Iso.inv_hom_id, op_id, FunctorToTypes.map_id_apply]
 
 /--
-A version of `isSheafFor_of_preservesProduct` for "the" coproduct instead of a general coproduct 
+A version of `isSheafFor_of_preservesProduct` for "the" coproduct instead of a general coproduct
 cone.
 -/
 theorem isSheafFor_of_preservesProduct' {Z : C} (π : (i : α) → X i ⟶ Z)
