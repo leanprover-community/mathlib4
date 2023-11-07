@@ -45,7 +45,8 @@ class HasPiAntidiagonal (μ : Type*) [AddCommMonoid μ]
   {ι : Type*} (s : Finset ι) where
   /-- The piAntidiagonal function -/
   piAntidiagonal : μ → Finset (ι → μ)
-  /-- A function belongs to `piAntidiagonal n` iff its support is contained in s and the sum of its components is equal to `n` -/
+  /-- A function belongs to `piAntidiagonal n`
+    iff its support is contained in s and the sum of its components is equal to `n` -/
   mem_piAntidiagonal {n} {f} : f ∈ piAntidiagonal n ↔ f.support ≤ s ∧ s.sum f = n
 
 section HasAntidiagonal
@@ -71,7 +72,8 @@ lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d → μ) :
   revert n f
   induction d with
   | zero => exact fun n f => (by
-      simp only [Nat.zero_eq, finAntidiagonal, Pi.const_zero, Matrix.zero_empty, univ_eq_empty, sum_empty]
+      simp only [Nat.zero_eq, finAntidiagonal, Pi.const_zero,
+        Matrix.zero_empty, univ_eq_empty, sum_empty]
       by_cases hn : n = 0
       · rw [if_pos hn, hn]
         simp only [mem_singleton, eq_iff_true_of_subsingleton]
@@ -79,7 +81,8 @@ lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d → μ) :
         simp only [not_mem_empty, false_iff]
         intro hn'; apply hn; rw [← hn'])
   | succ d ih => exact fun n f => (by
-      simp only [finAntidiagonal, mem_biUnion, mem_map, Embedding.coeFn_mk, Prod.exists, exists_and_right]
+      simp only [finAntidiagonal, mem_biUnion, mem_map, Embedding.coeFn_mk,
+        Prod.exists, exists_and_right]
       constructor
       · rintro ⟨a, b, hab, g, hg, hf⟩
         rw [ih b g] at hg
@@ -98,22 +101,23 @@ lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d → μ) :
         · apply Fin.cons_self_tail)
 
 /-- HasPiAntidiagonal for `Fin d` and `Finset.univ` -/
-def _root_.Fin.hasPiAntidiagonal_univ (d : ℕ) : HasPiAntidiagonal μ (Finset.univ : Finset (Fin d)) := {
+def _root_.Fin.hasPiAntidiagonal_univ (d : ℕ) :
+    HasPiAntidiagonal μ (Finset.univ : Finset (Fin d)) := {
   piAntidiagonal := finAntidiagonal d
   mem_piAntidiagonal := fun {n} {f} => by
     rw [mem_finAntidiagonal]
     simp only [coe_univ, Set.le_eq_subset, Set.subset_univ, true_and] }
 
 /-- HasPiAntidiagonal for a `Fintype` -/
-noncomputable def _root_.Fintype.hasPiAntidiagonal_univ (ι : Type*) [Fintype ι] : HasPiAntidiagonal μ (Finset.univ : Finset ι) := {
-  piAntidiagonal := by
-    have e : Finset (ι → μ) ≃ Finset (Fin (Fintype.card ι) → μ) :=
-      Equiv.finsetCongr (Equiv.piCongrLeft' _ (Fintype.equivFin ι))
-    intro n
-    refine e.symm (finAntidiagonal _ n)
+noncomputable def _root_.Fintype.hasPiAntidiagonal_univ (ι : Type*) [Fintype ι] :
+    HasPiAntidiagonal μ (Finset.univ : Finset ι) := { piAntidiagonal := by
+  have e : Finset (ι → μ) ≃ Finset (Fin (Fintype.card ι) → μ) :=
+    Equiv.finsetCongr (Equiv.piCongrLeft' _ (Fintype.equivFin ι))
+  intro n
+  refine e.symm (finAntidiagonal _ n)
   mem_piAntidiagonal := fun {n} {f} => by
-    simp only [Equiv.finsetCongr_symm, Equiv.finsetCongr_apply, mem_map_equiv, Equiv.symm_symm, coe_univ,
-      Set.le_eq_subset, Set.subset_univ, true_and]
+    simp only [Equiv.finsetCongr_symm, Equiv.finsetCongr_apply, mem_map_equiv,
+      Equiv.symm_symm, coe_univ, Set.le_eq_subset, Set.subset_univ, true_and]
     rw [mem_finAntidiagonal]
     simp only [Equiv.piCongrLeft'_apply]
     let h := Finset.sum_map Finset.univ ((Fintype.equivFin ι).symm.toEmbedding) f
@@ -122,7 +126,8 @@ noncomputable def _root_.Fintype.hasPiAntidiagonal_univ (ι : Type*) [Fintype ι
 
 /-- general construction of HasPiAntidiagonal
 
-It is noncomputable because it uses an unknown parametrization of `s` as well as `Function.extend` -/
+It is noncomputable because it uses an unknown parametrization of `s`
+  as well as `Function.extend` -/
 noncomputable
 def hasPiAntidiagonal' (ι : Type*) (s : Finset ι) :
     HasPiAntidiagonal μ s := by
@@ -227,8 +232,8 @@ def Pi.AddSubmonoid_ofSupport (s : Set ι) : AddSubmonoid (ι → μ) := {
     · exact hb i (h hi)
     · exact ha i hi
   zero_mem' := by
-    simp only [Set.le_eq_subset, support_subset_iff, ne_eq, Set.mem_setOf_eq, Pi.zero_apply, not_true,
-      IsEmpty.forall_iff, implies_true] }
+    simp only [Set.le_eq_subset, support_subset_iff, ne_eq, Set.mem_setOf_eq,
+      Pi.zero_apply, not_true, IsEmpty.forall_iff, implies_true] }
 
 variable {μ}
 
