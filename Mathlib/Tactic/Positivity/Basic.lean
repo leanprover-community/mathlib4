@@ -383,6 +383,7 @@ def evalZpow : PositivityExt where eval {u α} zα pα e := do
     let .true := b.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ n where n is a literal"
     let some n := (b.getRevArg! 1).natLit? | throwError "not a ^ n where n is a literal"
     guard (n % 2 = 0)
+    -- The next line is flagged by the unusedHavesSuffices linter even though it is clearly needed
     have b_mod_two : ($b % 2) =Q 0 := ⟨⟩
     have b_even : Q(Even $b) := q(Int.even_iff.mpr $b_mod_two)
     let _a ← synthInstanceQ q(LinearOrderedField $α)
