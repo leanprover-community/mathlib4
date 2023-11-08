@@ -528,6 +528,16 @@ def stabilizer (a : α) : Subgroup G :=
 #align mul_action.stabilizer MulAction.stabilizer
 #align add_action.stabilizer AddAction.stabilizer
 
+@[to_additive (attr := simp)]
+theorem stabilizer_toSubmonoid_eq_stabilizerSubmonoid (a : α) :
+    (stabilizer G a).toSubmonoid = stabilizerSubmonoid G a :=
+  rfl
+
+-- @[to_additive (attr := simp)]
+-- theorem mem_stabilizer_iff_mem_stabilizerSubmonoid (a : α) (g : G) :
+--     g ∈ stabilizer G a ↔ g ∈ stabilizerSubmonoid G a :=
+--   Iff.rfl
+
 variable {G}
 
 @[to_additive]
