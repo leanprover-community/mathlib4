@@ -309,8 +309,8 @@ theorem BilinForm.toMatrix_apply (B : BilinForm R₂ M₂) (i j : n) :
 theorem Matrix.toBilin_apply (M : Matrix n n R₂) (x y : M₂) :
     Matrix.toBilin b M x y = ∑ i, ∑ j, b.repr x i * M i j * b.repr y j := by
   rw [Matrix.toBilin, BilinForm.toMatrix, LinearEquiv.symm_trans_apply, ← Matrix.toBilin']
-  simp only [BilinForm.congr_symm, BilinForm.congr_apply, LinearEquiv.symm_symm,
-    Matrix.toBilin'_apply, Basis.equivFun_apply]
+  simp only [congr_symm, congr_apply, LinearEquiv.symm_symm, Matrix.toBilin'_apply,
+    Basis.equivFun_apply]
 #align matrix.to_bilin_apply Matrix.toBilin_apply
 
 -- Not a `simp` lemma since `BilinForm.toMatrix` needs an extra argument
