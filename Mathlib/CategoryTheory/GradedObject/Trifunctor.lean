@@ -153,7 +153,7 @@ lemma ι_mapTrifunctorMapMap {X₁ Y₁ : GradedObject I₁ C₁} (f₁ : X₁ �
   rw [assoc, assoc]
 
 @[ext]
-noncomputable def mapTrifunctorMapObj_ext {X₁ : GradedObject I₁ C₁} {X₂ : GradedObject I₂ C₂}
+lemma mapTrifunctorMapObj_ext {X₁ : GradedObject I₁ C₁} {X₂ : GradedObject I₂ C₂}
     {X₃ : GradedObject I₃ C₃} {Y : C₄} (j : J)
     [HasMap ((((mapTrifunctor F I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) p]
     {φ φ' : mapTrifunctorMapObj F p X₁ X₂ X₃ j ⟶ Y}
