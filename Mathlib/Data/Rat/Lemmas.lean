@@ -233,6 +233,7 @@ theorem coe_int_div_self (n : ℤ) : ((n / n : ℤ) : ℚ) = n / n := by
   by_cases hn : n = 0
   · subst hn
     simp only [Int.cast_zero, Int.zero_div, zero_div]
+    rfl
   · have : (n : ℚ) ≠ 0 := by rwa [← coe_int_inj] at hn
     simp only [Int.ediv_self hn, Int.cast_one, Ne.def, not_false_iff, div_self this]
 #align rat.coe_int_div_self Rat.coe_int_div_self

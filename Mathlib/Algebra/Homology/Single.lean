@@ -265,7 +265,8 @@ def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) : ((single₀ V).obj X �
       comm' := fun i j h => by
         cases i <;> cases j <;>
           simp only [shape, ComplexShape.down_Rel, Nat.one_ne_zero, not_false_iff,
-            zero_comp, single₀_obj_X_d, Nat.zero_eq, add_eq_zero, comp_zero] }
+            zero_comp, single₀_obj_X_d, Nat.zero_eq, add_eq_zero, comp_zero, not_false_eq_true,
+            Nat.succ_ne_zero, and_self] }
   left_inv f := by
     ext i
     cases i

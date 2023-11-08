@@ -433,14 +433,6 @@ theorem not_not_mem : ¬a ∉ s ↔ a ∈ s :=
 
 /-! ### Non-empty sets -/
 
-
-/-- The property `s.Nonempty` expresses the fact that the set `s` is not empty. It should be used
-in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks
-to the dot notation. -/
-protected def Nonempty (s : Set α) : Prop :=
-  ∃ x, x ∈ s
-#align set.nonempty Set.Nonempty
-
 -- Porting note: we seem to need parentheses at `(↥s)`,
 -- even if we increase the right precedence of `↥` in `Mathlib.Tactic.Coe`.
 -- Porting note: removed `simp` as it is competing with `nonempty_subtype`.
@@ -771,7 +763,7 @@ theorem mem_union (x : α) (a b : Set α) : x ∈ a ∪ b ↔ x ∈ a ∨ x ∈ 
 
 @[simp]
 theorem union_self (a : Set α) : a ∪ a = a :=
-  ext fun _ => or_self_iff _
+  ext fun _ => or_self_iff
 #align set.union_self Set.union_self
 
 @[simp]
@@ -925,7 +917,7 @@ theorem mem_of_mem_inter_right {x : α} {a b : Set α} (h : x ∈ a ∩ b) : x �
 
 @[simp]
 theorem inter_self (a : Set α) : a ∩ a = a :=
-  ext fun _ => and_self_iff _
+  ext fun _ => and_self_iff
 #align set.inter_self Set.inter_self
 
 @[simp]

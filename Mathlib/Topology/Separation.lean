@@ -29,12 +29,16 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
   there is two disjoint open sets, one containing `x`, and the other `y`.
 * `T25Space`: A T₂.₅/Urysohn space is a space where, for every two points `x ≠ y`,
   there is two open sets, one containing `x`, and the other `y`, whose closures are disjoint.
-* `T3Space`: A T₃ space, is one where given any closed `C` and `x ∉ C`,
-  there is disjoint open sets containing `x` and `C` respectively. In `mathlib`, T₃ implies T₂.₅.
+* `RegularSpace`: A regular space is one where, given any closed `C` and `x ∉ C`,
+  there are disjoint open sets containing `x` and `C` respectively. Such a space is not necessarily
+  Hausdorff.
+* `T3Space`: A T₃ space is a T0 regular space. In `mathlib`, T₃ implies T₂.₅.
 * `NormalSpace`: A normal space, is one where given two disjoint closed sets,
   we can find two open sets that separate them.
 * `T4Space`: A T₄ space is a normal T₁ space. T₄ implies T₃.
-* `T5Space`: A T₅ space, also known as a *completely normal Hausdorff space*
+* `T5Space`: A T₅ space, also known as a *completely normal Hausdorff space*, is a space in which,
+  given two sets `s` and `t` such that the closure of `s` is disjoint from `t`, and conversely,
+  then `s` and `t` have disjoint neighborhoods.
 
 ## Main results
 
@@ -1594,6 +1598,12 @@ theorem RegularSpace.ofExistsMemNhdsIsClosedSubset
   Iff.mpr ((regularSpace_TFAE X).out 0 3) h
 #align regular_space.of_exists_mem_nhds_is_closed_subset RegularSpace.ofExistsMemNhdsIsClosedSubset
 
+/-- A locally compact T2 space is regular. -/
+instance [LocallyCompactSpace X] [T2Space X] : RegularSpace X := by
+  apply RegularSpace.ofExistsMemNhdsIsClosedSubset (fun x s hx ↦ ?_)
+  rcases local_compact_nhds hx with ⟨k, kx, ks, hk⟩
+  exact ⟨k, kx, hk.isClosed, ks⟩
+
 variable [RegularSpace X] {x : X} {s : Set X}
 
 theorem disjoint_nhdsSet_nhds : Disjoint (𝓝ˢ s) (𝓝 x) ↔ x ∉ closure s := by
@@ -1716,6 +1726,76 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
   regularSpace_iInf fun _ => regularSpace_induced _
 
 end RegularSpace
+
+section ClosableCompactSubsetOpenSpace
+
+/-- A class of topological spaces in which, given a compact set included inside an open set, then
+the closure of the compact set is also included in the open set.
+Satisfied notably for T2 spaces and regular spaces, and useful when discussing classes of
+regular measures. Equivalent to regularity among locally compact spaces. -/
+class ClosableCompactSubsetOpenSpace (X : Type*) [TopologicalSpace X] : Prop :=
+  closure_subset_of_isOpen : ∀ (K U : Set X), IsCompact K → IsOpen U → K ⊆ U → closure K ⊆ U
+
+theorem IsCompact.closure_subset_of_isOpen [ClosableCompactSubsetOpenSpace X]
+    {s : Set X} (hs : IsCompact s) {u : Set X} (hu : IsOpen u) (h : s ⊆ u) :
+    closure s ⊆ u :=
+  ClosableCompactSubsetOpenSpace.closure_subset_of_isOpen s u hs hu h
+
+instance (priority := 150) [T2Space X] : ClosableCompactSubsetOpenSpace X :=
+  ⟨fun K _U K_comp _U_open KU ↦ by rwa [K_comp.isClosed.closure_eq]⟩
+
+/-- In a (possibly non-Hausdorff) regular space, if a compact set `s` is contained in an
+open set `u`, then its closure is also contained in `u`. -/
+instance (priority := 150) [RegularSpace X] : ClosableCompactSubsetOpenSpace X := by
+  refine ⟨fun s u hs hu h ↦ ?_⟩
+  obtain ⟨F, sF, F_closed, Fu⟩ : ∃ F, s ⊆ F ∧ IsClosed F ∧ F ⊆ u := by
+    apply hs.induction_on (p := fun t ↦ ∃ F, t ⊆ F ∧ IsClosed F ∧ F ⊆ u)
+    · exact ⟨∅, by simp⟩
+    · intro t' t ht't ⟨F, tF, F_closed, Fu⟩
+      exact ⟨F, ht't.trans tF, F_closed, Fu⟩
+    · intro t t' ⟨F, tF, F_closed, Fu⟩ ⟨F', t'F', F'_closed, F'u⟩
+      exact ⟨F ∪ F', union_subset_union tF t'F', F_closed.union F'_closed, union_subset Fu F'u⟩
+    · intro x hx
+      rcases exists_mem_nhds_isClosed_subset (hu.mem_nhds (h hx)) with ⟨F, F_mem, F_closed, Fu⟩
+      exact ⟨F, nhdsWithin_le_nhds F_mem, F, Subset.rfl, F_closed, Fu⟩
+  exact (closure_minimal sF F_closed).trans Fu
+
+/-- In a (possibly non-Hausdorff) locally compact space with the `ClosableCompactSubsetOpenSpace`
+  property (for instance regular spaces), for every containment `K ⊆ U` of a compact set `K` in an
+  open set `U`, there is a compact closed neighborhood `L` such that `K ⊆ L ⊆ U`: equivalently,
+  there is a compact closed set `L` such that `K ⊆ interior L` and `L ⊆ U`. -/
+theorem exists_compact_closed_between [LocallyCompactSpace X] [ClosableCompactSubsetOpenSpace X]
+    {K U : Set X} (hK : IsCompact K) (hU : IsOpen U) (h_KU : K ⊆ U) :
+    ∃ L, IsCompact L ∧ IsClosed L ∧ K ⊆ interior L ∧ L ⊆ U := by
+  rcases exists_compact_between hK hU h_KU with ⟨L, L_comp, KL, LU⟩
+  rcases exists_compact_between hK isOpen_interior KL with ⟨M, M_comp, KM, ML⟩
+  refine ⟨closure M, ?_, isClosed_closure, ?_, ?_⟩
+  · have : closure M ∩ L = closure M := by
+      apply inter_eq_self_of_subset_left
+      exact (M_comp.closure_subset_of_isOpen isOpen_interior ML).trans interior_subset
+    rw [← this]
+    apply L_comp.inter_left isClosed_closure
+  · exact KM.trans (interior_mono subset_closure)
+  · apply M_comp.closure_subset_of_isOpen hU
+    exact ML.trans (interior_subset.trans LU)
+
+/-- A locally compact space with the `ClosableCompactSubsetOpenSpace` is `Regular`. -/
+instance (priority := 80) [LocallyCompactSpace X] [ClosableCompactSubsetOpenSpace X] :
+    RegularSpace X := by
+  apply RegularSpace.ofExistsMemNhdsIsClosedSubset (fun x s hx ↦ ?_)
+  rcases _root_.mem_nhds_iff.1 hx with ⟨u, us, u_open, xu⟩
+  rcases exists_compact_closed_between (isCompact_singleton (a := x)) u_open (by simpa using xu)
+    with ⟨t, -, t_closed, xt, tu⟩
+  have : interior t ∈ 𝓝 x := isOpen_interior.mem_nhds (by simpa using xt)
+  exact ⟨t, interior_mem_nhds.mp this, t_closed, tu.trans us⟩
+
+protected theorem IsCompact.closure [WeaklyLocallyCompactSpace X] [ClosableCompactSubsetOpenSpace X]
+    {K : Set X} (hK : IsCompact K) : IsCompact (closure K) := by
+  rcases exists_compact_superset hK with ⟨L, L_comp, hL⟩
+  exact L_comp.of_isClosed_subset isClosed_closure
+    ((hK.closure_subset_of_isOpen isOpen_interior hL).trans interior_subset)
+
+end ClosableCompactSubsetOpenSpace
 
 section T3
 

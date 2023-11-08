@@ -99,7 +99,7 @@ theorem coprime_of_minimal {a b c : ℤ} (h : Minimal a b c) : IsCoprime a b := 
   obtain ⟨c1, rfl⟩ := hpc
   have hf : Fermat42 a1 b1 c1 :=
     (Fermat42.mul (Int.coe_nat_ne_zero.mpr (Nat.Prime.ne_zero hp))).mpr h.1
-  apply Nat.le_lt_antisymm (h.2 _ _ _ hf)
+  apply Nat.le_lt_asymm (h.2 _ _ _ hf)
   rw [Int.natAbs_mul, lt_mul_iff_one_lt_left, Int.natAbs_pow, Int.natAbs_ofNat]
   · exact Nat.one_lt_pow _ _ zero_lt_two (Nat.Prime.one_lt hp)
   · exact Nat.pos_of_ne_zero (Int.natAbs_ne_zero.2 (ne_zero hf))
@@ -131,7 +131,7 @@ theorem exists_odd_minimal {a b c : ℤ} (h : Fermat42 a b c) :
         Int.dvd_gcd (Int.dvd_of_emod_eq_zero hap) (Int.dvd_of_emod_eq_zero hbp)
       rw [Int.gcd_eq_one_iff_coprime.mpr (coprime_of_minimal hf)] at h1
       revert h1
-      norm_num
+      decide
     · exact ⟨b0, ⟨a0, ⟨c0, minimal_comm hf, hbp⟩⟩⟩
   exact ⟨a0, ⟨b0, ⟨c0, hf, hap⟩⟩⟩
 #align fermat_42.exists_odd_minimal Fermat42.exists_odd_minimal
@@ -179,7 +179,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   -- it helps if we know the parity of a ^ 2 (and the sign of c):
   have ha22 : a ^ 2 % 2 = 1 := by
     rw [sq, Int.mul_emod, ha2]
-    norm_num
+    decide
   obtain ⟨m, n, ht1, ht2, ht3, ht4, ht5, ht6⟩ := ht.coprime_classification' h2 ha22 hc
   -- Now a, n, m form a pythagorean triple and so we can obtain r and s such that
   -- a = r ^ 2 - s ^ 2, n = 2 * r * s and m = r ^ 2 + s ^ 2
