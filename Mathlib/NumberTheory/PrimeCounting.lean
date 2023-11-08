@@ -76,13 +76,8 @@ theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
 /-- The cardninality of the finset `primesBelow n` equals the counting function
 `primeCounting'` at `n`. -/
 lemma primesBelow_card_eq_primeCounting' (n : ℕ) : n.primesBelow.card = primeCounting' n := by
-  induction n with
-  | zero => simp only
-  | succ n ih =>
-      simp only [primesBelow_succ, primeCounting', count_succ] at ih ⊢
-      split_ifs
-      · rw [Finset.card_insert_of_not_mem (not_mem_primesBelow n), ih]
-      · rwa [add_zero]
+  simp only [primesBelow, primeCounting']
+  exact (count_eq_card_filter_range Prime n).symm
 
 /-- A linear upper bound on the size of the `primeCounting'` function -/
 theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
