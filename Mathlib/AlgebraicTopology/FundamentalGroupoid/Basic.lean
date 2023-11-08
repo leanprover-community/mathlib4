@@ -266,10 +266,11 @@ end Homotopy
 
 end Path
 
-/-- The fundamental groupoid of a space `X` is defined to be a type synonym for `X`, and we
+/-- The fundamental groupoid of a space `X` is defined to be a wrapper around `X`, and we
 subsequently put a `CategoryTheory.Groupoid` structure on it. -/
 @[ext]
 structure FundamentalGroupoid (X : Type u) where
+  /-- View a term of `FundamentalGroupoid X` as a term of `X`.-/
   as : X
 #align fundamental_groupoid FundamentalGroupoid
 
