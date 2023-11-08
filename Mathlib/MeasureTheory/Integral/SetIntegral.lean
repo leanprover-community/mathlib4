@@ -810,6 +810,37 @@ theorem set_integral_nonpos_le {s : Set α} (hs : MeasurableSet s) (hf : Strongl
       (hfi.indicator hs) (indicator_nonpos_le_indicator s f)
 #align measure_theory.set_integral_nonpos_le MeasureTheory.set_integral_nonpos_le
 
+lemma Integrable.measure_le_integral {f : α → ℝ} (f_int : Integrable f μ) (f_nonneg : 0 ≤ᵐ[μ] f)
+    {s : Set α} (hs : ∀ x ∈ s, 1 ≤ f x) :
+    μ s ≤ ENNReal.ofReal (∫ x, f x ∂μ) := by
+  rw [ofReal_integral_eq_lintegral_ofReal f_int f_nonneg]
+  apply meas_le_lintegral₀
+  · exact ENNReal.continuous_ofReal.measurable.comp_aemeasurable f_int.1.aemeasurable
+  · intro x hx
+    simpa using ENNReal.ofReal_le_ofReal (hs x hx)
+
+lemma integral_le_measure {f : α → ℝ} {s : Set α}
+    (hs : ∀ x ∈ s, f x ≤ 1) (h's : ∀ x ∈ sᶜ, f x ≤ 0) :
+    ENNReal.ofReal (∫ x, f x ∂μ) ≤ μ s := by
+  by_cases H : Integrable f μ; swap
+  · simp [integral_undef H]
+  let g x := max (f x) 0
+  have g_int : Integrable g μ := H.pos_part
+  have : ENNReal.ofReal (∫ x, f x ∂μ) ≤ ENNReal.ofReal (∫ x, g x ∂μ) := by
+    apply ENNReal.ofReal_le_ofReal
+    exact integral_mono H g_int (fun x ↦ le_max_left _ _)
+  apply this.trans
+  rw [ofReal_integral_eq_lintegral_ofReal g_int (eventually_of_forall (fun x ↦ le_max_right _ _))]
+  apply lintegral_le_meas
+  · intro x
+    apply ENNReal.ofReal_le_of_le_toReal
+    by_cases H : x ∈ s
+    · simpa using hs x H
+    · apply le_trans _ zero_le_one
+      simpa using h's x H
+  · intro x hx
+    simpa using h's x hx
+
 end Nonneg
 
 section IntegrableUnion
