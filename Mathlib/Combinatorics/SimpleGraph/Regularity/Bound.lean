@@ -32,8 +32,6 @@ This entire file is internal to the proof of Szemerédi Regularity Lemma.
 
 open Finset Fintype Function Real
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open BigOperators
 
 namespace SzemerediRegularity

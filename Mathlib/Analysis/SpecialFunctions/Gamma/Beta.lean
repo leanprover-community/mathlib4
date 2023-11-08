@@ -40,8 +40,6 @@ refined properties of the Gamma function using these relations.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 set_option linter.uppercaseLean3 false
 
 open Filter intervalIntegral Set Real MeasureTheory

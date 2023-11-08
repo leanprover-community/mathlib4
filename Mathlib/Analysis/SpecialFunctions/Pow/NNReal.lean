@@ -18,8 +18,6 @@ We construct the power functions `x ^ y` where
 We also prove basic properties of these functions.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open Classical Real NNReal ENNReal BigOperators ComplexConjugate

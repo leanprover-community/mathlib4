@@ -43,6 +43,7 @@ First we prove some facts about `SemiconjBy` and `Commute`. They do not require 
 `pow` and/or `nsmul` and will be useful later in this file.
 -/
 
+macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 section Pow
 

@@ -23,8 +23,6 @@ The proof is based on the Cauchy integral formula for the derivative of an analy
 -/
 
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory Bornology
 
 open scoped Topology Filter NNReal Real

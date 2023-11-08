@@ -26,8 +26,6 @@ open Complex Real Asymptotics Filter
 
 open scoped Real BigOperators UpperHalfPlane
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 /-- Jacobi's theta function `∑' (n : ℤ), exp (π * I * n ^ 2 * τ)`. -/
 noncomputable def jacobiTheta (z : ℂ) : ℂ :=
   ∑' n : ℤ, cexp (π * I * (n : ℂ) ^ 2 * z)

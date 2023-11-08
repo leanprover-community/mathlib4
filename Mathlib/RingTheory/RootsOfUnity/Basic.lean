@@ -265,8 +265,6 @@ section Reduced
 
 variable (R) [CommRing R] [IsReduced R]
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 -- @[simp] -- Porting note: simp normal form is `mem_rootsOfUnity_prime_pow_mul_iff'`
 theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ+) [hp : Fact p.Prime] [CharP R p]
     {ζ : Rˣ} : ζ ∈ rootsOfUnity (⟨p, hp.1.pos⟩ ^ k * m) R ↔ ζ ∈ rootsOfUnity m R := by

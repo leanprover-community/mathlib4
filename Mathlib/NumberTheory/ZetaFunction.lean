@@ -68,8 +68,6 @@ noncomputable section
 ## Definition of the Riemann zeta function and related functions
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 /-- Function whose Mellin transform is `π ^ (-s) * Γ(s) * zeta (2 * s)`, for `1 / 2 < Re s`. -/
 def zetaKernel₁ (t : ℝ) : ℂ :=
   ∑' n : ℕ, rexp (-π * t * ((n : ℝ) + 1) ^ 2)

@@ -20,8 +20,6 @@ measure `1` to the parallelepiped spanned by any orthonormal basis, and that it 
 the canonical `volume` from the `MeasureSpace` instance.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open FiniteDimensional MeasureTheory MeasureTheory.Measure Set
 
 variable {ι F : Type*}

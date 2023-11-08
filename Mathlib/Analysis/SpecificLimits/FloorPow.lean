@@ -19,8 +19,6 @@ We state several auxiliary results pertaining to sequences of the form `âŒŠc^nâŒ
   to `1/j^2`, up to a multiplicative constant.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Filter Finset
 
 open Topology BigOperators

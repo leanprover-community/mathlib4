@@ -19,8 +19,6 @@ This file collects facts about the unitary matrices over `𝕜` (either `ℝ` or
 
 open scoped BigOperators Matrix
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 variable {𝕜 m n E : Type*}
 
 section EntrywiseSupNorm

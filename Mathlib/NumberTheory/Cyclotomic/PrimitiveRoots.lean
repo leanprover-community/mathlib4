@@ -71,8 +71,6 @@ universe u v w z
 variable {p n : ℕ+} (A : Type w) (B : Type z) (K : Type u) {L : Type v} (C : Type w)
 
 variable [CommRing A] [CommRing B] [Algebra A B] [IsCyclotomicExtension {n} A B]
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 section Zeta
 
 namespace IsCyclotomicExtension

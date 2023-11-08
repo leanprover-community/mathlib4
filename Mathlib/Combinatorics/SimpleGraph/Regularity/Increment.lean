@@ -38,8 +38,6 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 open Finset Fintype SimpleGraph SzemerediRegularity
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open scoped BigOperators Classical SzemerediRegularity.Positivity
 
 variable {α : Type*} [Fintype α] {P : Finpartition (univ : Finset α)} (hP : P.IsEquipartition)

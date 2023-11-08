@@ -32,8 +32,6 @@ for `x ∈ K`, we have `Π_w ‖x‖_w = |norm(x)|` where the product is over th
 number field, embeddings, places, infinite places
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open scoped Classical
 
 namespace NumberField.Embeddings
