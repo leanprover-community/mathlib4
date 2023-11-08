@@ -98,6 +98,8 @@ instance instHSMul [SMul α β] : HSMul α β β where
 
 attribute [to_additive existing (reorder := 1 2)] instHPow
 
+macro_rules | `($x ^ $y) => `(@HPow.hPow _ _ _ instHPow $x $y) -- Porting note: See issue lean4#2220
+
 universe u
 
 variable {G : Type*}
