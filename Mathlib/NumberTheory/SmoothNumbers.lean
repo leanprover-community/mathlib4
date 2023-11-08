@@ -24,7 +24,8 @@ namespace Nat
 def primesBelow (n : ℕ) : Finset ℕ := (Finset.range n).filter (fun p ↦ p.Prime)
 
 @[simp]
-lemma primesBelow_zero : primesBelow 0 = ∅ := rfl
+lemma primesBelow_zero : primesBelow 0 = ∅ := by
+  rw [primesBelow, Finset.range_zero, Finset.filter_empty]
 
 lemma prime_of_mem_primesBelow {p n : ℕ} (h : p ∈ n.primesBelow) : p.Prime :=
   (Finset.mem_filter.mp h).2
@@ -48,24 +49,20 @@ lemma mem_smoothNumbers {n m : ℕ} : m ∈ smoothNumbers n ↔ m ≠ 0 ∧ ∀ 
 
 @[simp]
 lemma smoothNumbers_zero : smoothNumbers 0 = {1} := by
-  have h (m : ℕ) : (∀ p ∈ factors m, p < 0) ↔ m.factors = []
-  · rw [List.eq_nil_iff_forall_not_mem]
-    exact ⟨fun H p hp ↦ not_succ_le_zero p (H p hp), fun H p hp ↦ False.elim <| H p hp⟩
   ext m
-  rw [smoothNumbers, Set.mem_setOf, h, factors_eq_nil,
-      (show m ∈ ({1} : Set ℕ) ↔ m = 1 from Set.mem_def), Ne.def]
-  exact ⟨fun ⟨H₁, H₂⟩ ↦ H₂.resolve_left H₁, fun H ↦ ⟨H.symm ▸ one_ne_zero, Or.inr H⟩⟩
+  rw [Set.mem_singleton_iff, mem_smoothNumbers]
+  simp_rw [not_lt_zero]
+  rw [← List.eq_nil_iff_forall_not_mem, factors_eq_nil, and_or_left, not_and_self_iff, false_or,
+    ne_and_eq_iff_right zero_ne_one]
 
 /-- The product of the prime factors of `n` that are less than `N` is an `N`-smooth number. -/
 lemma prod_mem_smoothNumbers (n N : ℕ) : (n.factors.filter (· < N)).prod ∈ smoothNumbers N := by
   have h₀ : (n.factors.filter (· < N)).prod ≠ 0 :=
-    List.prod_ne_zero fun h => (pos_of_mem_factors (List.mem_of_mem_filter h)).false
-  refine ⟨h₀, fun p H ↦ ?_⟩
-  rw [mem_factors h₀] at H
-  obtain ⟨q, hq₁, hq₂⟩ := (Prime.dvd_prod_iff <| prime_iff.mp H.1).mp H.2
-  obtain rfl : p = q :=
-    (prime_dvd_prime_iff_eq H.1 <| prime_of_mem_factors <| List.mem_of_mem_filter hq₁).mp hq₂
-  simpa only [decide_eq_true_eq] using List.of_mem_filter hq₁
+    List.prod_ne_zero fun h ↦ (pos_of_mem_factors (List.mem_of_mem_filter h)).false
+  refine ⟨h₀, fun p hp ↦ ?_⟩
+  obtain ⟨H₁, H₂⟩ := (mem_factors h₀).mp hp
+  simpa only [decide_eq_true_eq] using List.of_mem_filter <| mem_list_primes_of_dvd_prod H₁.prime
+    (fun _ hq ↦ (prime_of_mem_factors (List.mem_of_mem_filter hq)).prime) H₂
 
 /-- The sets of `N`-smooth and of `(N+1)`-smooth numbers are the same when `N` is not prime.
 See `Nat.equivProdNatSmoothNumbers` for when `N` is prime. -/
