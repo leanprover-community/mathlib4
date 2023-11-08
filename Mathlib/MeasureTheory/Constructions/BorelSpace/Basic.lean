@@ -2015,6 +2015,11 @@ theorem Measurable.ennreal_ofReal {f : α → ℝ} (hf : Measurable f) :
   ENNReal.continuous_ofReal.measurable.comp hf
 #align measurable.ennreal_of_real Measurable.ennreal_ofReal
 
+@[measurability]
+lemma AEMeasurable.ennreal_ofReal {f : α → ℝ} {μ : Measure α} (hf : AEMeasurable f μ) :
+    AEMeasurable (fun x ↦ ENNReal.ofReal (f x)) μ :=
+  ENNReal.continuous_ofReal.measurable.comp_aemeasurable hf
+
 @[simp, norm_cast]
 theorem measurable_coe_nnreal_real_iff {f : α → ℝ≥0} :
     Measurable (fun x => f x : α → ℝ) ↔ Measurable f :=
@@ -2247,6 +2252,37 @@ theorem AEMeasurable.coe_ereal_ennreal {f : α → ℝ≥0∞} {μ : Measure α}
     AEMeasurable (fun x => (f x : EReal)) μ :=
   measurable_coe_ennreal_ereal.comp_aemeasurable hf
 #align ae_measurable.coe_ereal_ennreal AEMeasurable.coe_ereal_ennreal
+
+/-- If a function `f` is measurable and the measure is σ-finite , then there exists spanning
+measurable sets with finite measure on which `f` is bounded. -/
+theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → ℝ≥0}
+    (hf : Measurable f) (μ : Measure α) [SigmaFinite μ] :
+    ∃ s : ℕ → Set α,
+      (∀ n, MeasurableSet (s n) ∧ μ (s n) < ∞ ∧ ∀ x ∈ s n, f x ≤ n) ∧
+      ⋃ i, s i = Set.univ := by
+  let sigma_finite_sets := spanningSets μ
+  let norm_sets := fun n : ℕ => { x | f x ≤ n }
+  have norm_sets_spanning : ⋃ n, norm_sets n = Set.univ := by
+    ext1 x
+    simp only [Set.mem_iUnion, Set.mem_setOf_eq, Set.mem_univ, iff_true_iff]
+    exact exists_nat_ge (f x)
+  let sets n := sigma_finite_sets n ∩ norm_sets n
+  have h_meas : ∀ n, MeasurableSet (sets n) := by
+    refine' fun n => MeasurableSet.inter _ _
+    · exact measurable_spanningSets μ n
+    · exact hf measurableSet_Iic
+  have h_finite : ∀ n, μ (sets n) < ∞ := by
+    refine' fun n => (measure_mono (Set.inter_subset_left _ _)).trans_lt _
+    exact measure_spanningSets_lt_top μ n
+  refine' ⟨sets, fun n => ⟨h_meas n, h_finite n, _⟩, _⟩
+  · exact fun x hx => hx.2
+  · have :
+      ⋃ i, sigma_finite_sets i ∩ norm_sets i = (⋃ i, sigma_finite_sets i) ∩ ⋃ i, norm_sets i := by
+      refine' Set.iUnion_inter_of_monotone (monotone_spanningSets μ) fun i j hij x => _
+      simp only [Set.mem_setOf_eq]
+      refine' fun hif => hif.trans _
+      exact_mod_cast hij
+    rw [this, norm_sets_spanning, iUnion_spanningSets μ, Set.inter_univ]
 
 section NormedAddCommGroup
 
