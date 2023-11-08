@@ -275,6 +275,46 @@ structure FundamentalGroupoid (X : Type u) where
 
 namespace FundamentalGroupoid
 
+/-- The equivalence between `X` and the underlying type of its fundamental groupoid.
+  This is useful for transferring constructions (instances, etc.)
+  from `X` to `πₓ X`. -/
+@[simps]
+def equiv (X : Type*) : FundamentalGroupoid X ≃ X where
+  toFun x := x.as
+  invFun x := .mk x
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+@[simp]
+lemma isEmpty_iff (X : Type*) :
+    IsEmpty (FundamentalGroupoid X) ↔ IsEmpty X :=
+  equiv _ |>.isEmpty_congr
+
+instance (X : Type*) [IsEmpty X] :
+    IsEmpty (FundamentalGroupoid X) :=
+  equiv _ |>.isEmpty
+
+@[simp]
+lemma nonempty_iff (X : Type*) :
+    Nonempty (FundamentalGroupoid X) ↔ Nonempty X :=
+  equiv _ |>.nonempty_congr
+
+instance (X : Type*) [Nonempty X] :
+    Nonempty (FundamentalGroupoid X) :=
+  equiv _ |>.nonempty
+
+@[simp]
+lemma subsingleton_iff (X : Type*) :
+    Subsingleton (FundamentalGroupoid X) ↔ Subsingleton X :=
+  equiv _ |>.subsingleton_congr
+
+instance (X : Type*) [Subsingleton X] :
+    Subsingleton (FundamentalGroupoid X) :=
+  equiv _ |>.subsingleton
+
+-- TODO: It seems that `Equiv.nontrivial_congr` doesn't exist.
+-- Once it is added, please add the corresponding lemma and instance.
+
 instance {X : Type u} [Inhabited X] : Inhabited (FundamentalGroupoid X) :=
   ⟨⟨default⟩⟩
 
