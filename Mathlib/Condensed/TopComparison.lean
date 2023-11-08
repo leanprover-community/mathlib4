@@ -147,7 +147,8 @@ Associate to a `(u+1)`-small topological space the corresponding condensed set, 
 -/
 noncomputable def TopCat.toCondensed (X : TopCat.{u+1}) : CondensedSet.{u} :=
   @Condensed.ofSheafCompHaus (yonedaPresheaf.{u, u+1, u, u+1} compHausToTop.{u} X) _ (by
-    apply (config := { allowSynthFailures := true }) equalizerCondition_yonedaPresheaf compHausToTop.{u} X
+    apply (config := { allowSynthFailures := true }) equalizerCondition_yonedaPresheaf
+      compHausToTop.{u} X
     intro Z B π he
     rw [CompHaus.effectiveEpi_iff_surjective] at he
     apply QuotientMap.of_surjective_continuous he π.continuous )

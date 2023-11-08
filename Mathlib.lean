@@ -1352,6 +1352,7 @@ import Mathlib.Condensed.Abelian
 import Mathlib.Condensed.Basic
 import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
+import Mathlib.Condensed.TopComparison
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.Bifunctor
