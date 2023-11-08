@@ -2101,8 +2101,8 @@ theorem coe_normGroupNorm : ⇑(normGroupNorm E) = norm :=
   rfl
 #align coe_norm_group_norm coe_normGroupNorm
 
-@[to_additive comap_norm_nhds_right_zero]
-lemma comap_norm_nhds_right_zero' : comap norm (𝓝[>] 0) = 𝓝[≠] (1 : E) := by
+@[to_additive comap_norm_nhdsWithin_Ioi_zero]
+lemma comap_norm_nhdsWithin_Ioi_zero' : comap norm (𝓝[>] 0) = 𝓝[≠] (1 : E) := by
   simp [nhdsWithin, comap_norm_nhds_one, Set.preimage, Set.compl_def]
 
 end NormedGroup
