@@ -504,10 +504,20 @@ set_option linter.uppercaseLean3 false in
 #align Action.tensor_rho Action.tensor_rho
 
 @[simp]
-theorem tensorHom {W X Y Z : Action V G} (f : W ⟶ X) (g : Y ⟶ Z) : (f ⊗ g).hom = f.hom ⊗ g.hom :=
+theorem tensor_hom {W X Y Z : Action V G} (f : W ⟶ X) (g : Y ⟶ Z) : (f ⊗ g).hom = f.hom ⊗ g.hom :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align Action.tensor_hom Action.tensorHom
+#align Action.tensor_hom Action.tensor_hom
+
+@[simp]
+theorem whiskerLeft_hom (X : Action V G) {Y Z : Action V G} (f : Y ⟶ Z) :
+    (X ◁ f).hom = X.V ◁ f.hom :=
+  rfl
+
+@[simp]
+theorem whiskerRight_hom {X Y : Action V G} (f : X ⟶ Y) (Z : Action V G) :
+    (f ▷ Z).hom = f.hom ▷ Z.V :=
+  rfl
 
 -- porting note: removed @[simp] as the simpNF linter complains
 theorem associator_hom_hom {X Y Z : Action V G} :
