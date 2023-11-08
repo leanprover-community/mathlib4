@@ -256,7 +256,7 @@ noncomputable def rTensorHomEquivHomRTensor : (M →ₗ[R] P) ⊗[R] Q ≃ₗ[R]
 theorem lTensorHomEquivHomLTensor_toLinearMap :
     (lTensorHomEquivHomLTensor R M P Q).toLinearMap = lTensorHomToHomLTensor R M P Q := by
   classical -- Porting note: missing decidable for choosing basis
-  let e := TensorProduct.congr (LinearEquiv.refl R P) (dualTensorHomEquiv R M Q)
+  let e := congr (LinearEquiv.refl R P) (dualTensorHomEquiv R M Q)
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine' (cancel_right h).1 _
   ext f q m
@@ -271,7 +271,7 @@ theorem lTensorHomEquivHomLTensor_toLinearMap :
 theorem rTensorHomEquivHomRTensor_toLinearMap :
     (rTensorHomEquivHomRTensor R M P Q).toLinearMap = rTensorHomToHomRTensor R M P Q := by
   classical -- Porting note: missing decidable for choosing basis
-  let e := TensorProduct.congr (dualTensorHomEquiv R M P) (LinearEquiv.refl R Q)
+  let e := congr (dualTensorHomEquiv R M P) (LinearEquiv.refl R Q)
   have h : Function.Surjective e.toLinearMap := e.surjective
   refine' (cancel_right h).1 _
   ext f p q m
