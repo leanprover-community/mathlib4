@@ -37,7 +37,7 @@ namespace Finset
 variable {α : Type*}
 
 /-- `s.sym2` is the finset of all unordered pairs of elements from `s`.
-It is image of `s ×ˢ s` under the quotient `α × α → Sym2 α`. -/
+It is the image of `s ×ˢ s` under the quotient `α × α → Sym2 α`. -/
 @[simps]
 protected def sym2 (s : Finset α) : Finset (Sym2 α) := ⟨s.1.sym2, s.2.sym2⟩
 #align finset.sym2 Finset.sym2

@@ -12,24 +12,23 @@ unordered n-tuples from a given multiset. These are multiset versions of `Nat.mu
 
 ## Main declarations
 
-* `Multiset.sym`: `xs.sym n` is the multiset of all unordered n-tuples of elements from `xs`,
-  with multiplicity. The multiset's values are in `Sym α n`.
 * `Multiset.sym2`: `xs.sym2` is the multiset of all unordered pairs of elements from `xs`,
   with multiplicity. The multiset's values are in `Sym2 α`.
+
+## TODO
+
+* Once `List.Perm.sym` is defined, define
+  ```lean
+  protected def sym (n : Nat) (m : Multiset α) : Multiset (Sym α n) :=
+    m.liftOn (fun xs => xs.sym n) (List.perm.sym n)
+  ```
+  and then use this to remove the `DecidableEq` assumption from `Finset.sym`.
 
 -/
 
 namespace Multiset
 
 variable {α : Type*}
-
-section Sym
-
--- /-- `xs.sym n` is all unordered `n`-tuples from the multiset `xs`. -/
--- protected def sym (n : Nat) (m : Multiset α) : Multiset (Sym α n) :=
---   m.liftOn (fun xs => xs.sym n) sorry
-
-end Sym
 
 section Sym2
 
