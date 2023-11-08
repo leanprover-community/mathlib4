@@ -11,6 +11,12 @@ example (i j k : ℕ) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := by
   extract_goal
   exact h₀.trans h₁
 
+/-- info: theorem extracted_1 (i j k : ℕ) (h₁ : j ≤ k) : i ≤ k := sorry -/
+#guard_msgs (info) in
+example (i j k : ℕ) (h₀ : i ≤ j) (h₁ : j ≤ k) : i ≤ k := by
+  extract_goal h₁
+  exact h₀.trans h₁
+
 -- an example with all binder types
 /-- info: theorem extracted_1.{v, u} {α : Type u} {β : Type v} [h : Sub β] (f : α → β) (a : α) {b : β} :
   f a - b = f a - b := sorry
@@ -51,6 +57,62 @@ warning: declaration uses 'sorry'
 example {z : Int} : ∃ n : Nat, ↑n = z := by
   set_option pp.all true in
   extract_goal
+  sorry
+
+/--
+info: theorem foo : True := sorry
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+example (n : ℕ) : True := by
+  extract_goal using foo
+  sorry
+
+/--
+info: theorem foo (n : ℕ) : True := sorry
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+example (n : ℕ) : True := by
+  extract_goal n using foo
+  sorry
+
+/-- error: unknown identifier 'k' -/
+#guard_msgs in
+example (n : ℕ) : True := by
+  extract_goal k
+
+/--
+info: theorem extracted_1 (n : ℕ) : True := sorry
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+example (n : ℕ) : True := by
+  extract_goal *
+  sorry
+
+-- Clears `i` neither `n` nor the goal depends on it.
+/--
+info: theorem extracted_1 (n : ℕ) : True := sorry
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+example (n : ℕ) (i : Fin n) : True := by
+  extract_goal n
+  sorry
+
+/--
+info: theorem extracted_1 (n : ℕ) (i : Fin n) : True := sorry
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+example (n : ℕ) (i : Fin n) : True := by
+  extract_goal i
   sorry
 
 -- Contradiction proof gives full context:
