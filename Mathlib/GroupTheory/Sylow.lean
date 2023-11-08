@@ -710,6 +710,7 @@ theorem coe_ofCard [Fintype G] {p : ℕ} [Fact p.Prime] (H : Subgroup G) [Fintyp
   rfl
 #align sylow.coe_of_card Sylow.coe_ofCard
 
+/-- If `G` has a normal Sylow `p`-subgroup, then it is the only Sylow `p`-subgroup. -/
 noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (h : (P : Subgroup G).Normal) : Unique (Sylow p G) := by
   refine { uniq := fun Q ↦ ?_ }
