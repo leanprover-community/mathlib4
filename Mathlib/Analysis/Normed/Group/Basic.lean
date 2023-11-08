@@ -421,6 +421,10 @@ theorem tendsto_norm_atTop_iff_cobounded' {f : α → E} {l : Filter α} :
 theorem tendsto_norm_cobounded_atTop' : Tendsto norm (cobounded E) atTop :=
   tendsto_norm_atTop_iff_cobounded'.2 tendsto_id
 
+@[to_additive eventually_cobounded_le_norm]
+lemma eventually_cobounded_le_norm' (a : ℝ) : ∀ᶠ x in cobounded E, a ≤ ‖x‖ :=
+  tendsto_norm_cobounded_atTop'.eventually_ge_atTop a
+
 @[to_additive tendsto_norm_cocompact_atTop]
 theorem tendsto_norm_cocompact_atTop' [ProperSpace E] : Tendsto norm (cocompact E) atTop :=
   cobounded_eq_cocompact (α := E) ▸ tendsto_norm_cobounded_atTop'
