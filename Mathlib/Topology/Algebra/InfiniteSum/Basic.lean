@@ -1103,9 +1103,8 @@ variable [UniformAddGroup α] {f g : β → α} {a a₁ a₂ : α}
 theorem cauchySeq_finset_iff_vanishing :
     (CauchySeq fun s : Finset β => ∑ b in s, f b) ↔
       ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∑ b in t, f b) ∈ e := by
-  simp only [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
-    uniformity_eq_comap_nhds_zero α, tendsto_comap_iff, (· ∘ ·), atTop_neBot, true_and]
-  rw [tendsto_atTop']
+  simp_rw [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
+    uniformity_eq_comap_nhds_zero α, tendsto_comap_iff, (· ∘ ·), tendsto_atTop']
   constructor
   · intro h e he
     obtain ⟨⟨s₁, s₂⟩, h⟩ := h e he
@@ -1123,32 +1122,6 @@ theorem cauchySeq_finset_iff_vanishing :
     simp only [this]
     exact hde _ (h _ Finset.sdiff_disjoint) _ (h _ Finset.sdiff_disjoint)
 #align cauchy_seq_finset_iff_vanishing cauchySeq_finset_iff_vanishing
-
-/-- The sum over the complement of a finset tends to `0` when the finset grows to cover the whole
-space. This does not need a summability assumption, as otherwise all sums are zero. -/
-theorem tendsto_tsum_compl_atTop_zero (f : β → α) :
-    Tendsto (fun s : Finset β => ∑' b : { x // x ∉ s }, f b) atTop (𝓝 0) := by
-  by_cases H : Summable f
-  · intro e he
-    rcases exists_mem_nhds_isClosed_subset he with ⟨o, ho, o_closed, oe⟩
-    simp only [le_eq_subset, Set.mem_preimage, mem_atTop_sets, Filter.mem_map, ge_iff_le]
-    obtain ⟨s, hs⟩ : ∃ s : Finset β, ∀ t : Finset β, Disjoint t s → (∑ b : β in t, f b) ∈ o :=
-      cauchySeq_finset_iff_vanishing.1 (Tendsto.cauchySeq H.hasSum) o ho
-    refine' ⟨s, fun a sa => oe _⟩
-    have A : Summable fun b : { x // x ∉ a } => f b := a.summable_compl_iff.2 H
-    refine' IsClosed.mem_of_tendsto o_closed A.hasSum (eventually_of_forall fun b => _)
-    have : Disjoint (Finset.image (fun i : { x // x ∉ a } => (i : β)) b) s := by
-      refine' disjoint_left.2 fun i hi his => _
-      rcases mem_image.1 hi with ⟨i', _, rfl⟩
-      exact i'.2 (sa his)
-    convert hs _ this using 1
-    rw [sum_image]
-    intro i _ j _ hij
-    exact Subtype.ext hij
-  · convert tendsto_const_nhds (α := α) (β := Finset β) (f := atTop) (a := 0)
-    apply tsum_eq_zero_of_not_summable
-    rwa [Finset.summable_compl_iff]
-#align tendsto_tsum_compl_at_top_zero tendsto_tsum_compl_atTop_zero
 
 variable [CompleteSpace α]
 
@@ -1188,36 +1161,6 @@ theorem Summable.comp_injective {i : γ → β} (hf : Summable f) (hi : Injectiv
 theorem Summable.subtype (hf : Summable f) (s : Set β) : Summable (f ∘ (↑) : s → α) :=
   hf.comp_injective Subtype.coe_injective
 #align summable.subtype Summable.subtype
-
-theorem summable_iff_vanishing_tsum : Summable f ↔
-    ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t : Set β, Disjoint t s → (∑' b : t, f b) ∈ e := by
-  refine ⟨fun hsum e he ↦ ?_, fun mem_nhd ↦ summable_iff_vanishing.mpr fun e he ↦ ?_⟩
-  · obtain ⟨e', he', closed, hsub⟩ := exists_mem_nhds_isClosed_subset he
-    obtain ⟨s, hs⟩ := summable_iff_vanishing.mp hsum e' he'
-    refine ⟨s, fun t hts ↦ hsub <| closed.mem_of_tendsto (hsum.subtype _).hasSum <|
-      eventually_of_forall fun t' ↦ ?_⟩
-    rw [← sum_subtype_map_embedding fun _ _ ↦ by rfl]
-    apply hs
-    simp_rw [disjoint_left, Set.disjoint_left, Finset.mem_map] at hts ⊢
-    rintro _ ⟨b, -, rfl⟩
-    exact hts b.2
-  · obtain ⟨s, hs⟩ := mem_nhd _ he
-    refine ⟨s, fun t hts ↦ ?_⟩
-    simp only [disjoint_left, Set.disjoint_left] at hs hts
-    exact (t.tsum_subtype f).symm ▸ hs _ hts
-
-theorem summable_iff_vanishing_nat_tsum {f : ℕ → α} : Summable f ↔
-    ∀ e ∈ 𝓝 (0 : α), ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∑' b : t, f b) ∈ e := by
-  simp_rw [summable_iff_vanishing_tsum, Set.disjoint_left]
-  refine ⟨fun mem_nhd e he ↦ ?_, fun mem_nhd e he ↦ ?_⟩
-  · obtain ⟨s, hs⟩ := mem_nhd e he
-    refine ⟨if h : s.Nonempty then s.max' h + 1 else 0, fun t ht ↦ hs _ ?_⟩
-    split_ifs at ht with h
-    · exact fun m hmt hms ↦
-        (s.le_max' _ hms).not_lt ((Nat.lt_succ_self _).trans_le <| ht hmt)
-    · exact fun _ _ hs ↦ h ⟨_, hs⟩
-  · obtain ⟨N, hN⟩ := mem_nhd e he
-    exact ⟨range N, fun t ht ↦ hN _ fun n hnt ↦ le_of_not_lt fun h ↦ ht hnt (mem_range.mpr h)⟩
 
 theorem summable_subtype_and_compl {s : Set β} :
     ((Summable fun x : s => f x) ∧ Summable fun x : ↑sᶜ => f x) ↔ Summable f :=
@@ -1280,6 +1223,42 @@ theorem Summable.vanishing (hf : Summable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (0
   exact cauchySeq_finset_iff_vanishing.1 hy.cauchySeq e he
 #align summable.vanishing Summable.vanishing
 
+theorem Summable.tsum_vanishing (hf : Summable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 0) :
+    ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∑' b : t, f b) ∈ e := by
+  obtain ⟨e', he', closed, hsub⟩ := exists_mem_nhds_isClosed_subset he
+  obtain ⟨s, hs⟩ := hf.vanishing he'
+  refine ⟨s, fun t hts ↦ hsub ?_⟩
+  by_cases ht : Summable fun a : t ↦ f a
+  · refine closed.mem_of_tendsto ht.hasSum (eventually_of_forall fun t' ↦ ?_)
+    rw [← sum_subtype_map_embedding fun _ _ ↦ by rfl]
+    apply hs
+    simp_rw [disjoint_left, Set.disjoint_left, Finset.mem_map] at hts ⊢
+    rintro _ ⟨b, -, rfl⟩
+    exact hts b.2
+  · exact tsum_eq_zero_of_not_summable ht ▸ mem_of_mem_nhds he'
+
+/-- The sum over the complement of a finset tends to `0` when the finset grows to cover the whole
+space. This does not need a summability assumption, as otherwise all sums are zero. -/
+theorem tendsto_tsum_compl_atTop_zero (f : α → G) :
+    Tendsto (fun s : Finset α ↦ ∑' a : { x // x ∉ s }, f a) atTop (𝓝 0) := by
+  by_cases H : Summable f
+  · intro e he
+    obtain ⟨s, hs⟩ := H.tsum_vanishing he
+    rw [Filter.mem_map, mem_atTop_sets]
+    exact ⟨s, fun t hts ↦ hs _ <| Set.disjoint_left.mpr fun a ha has ↦ ha (hts has)⟩
+  · convert tendsto_const_nhds (α := G) (β := Finset α) (f := atTop) (a := 0)
+    apply tsum_eq_zero_of_not_summable
+    rwa [Finset.summable_compl_iff]
+#align tendsto_tsum_compl_at_top_zero tendsto_tsum_compl_atTop_zero
+
+theorem Summable.nat_tsum_vanishing {f : ℕ → G} (hf : Summable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 0) :
+    ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∑' n : t, f n) ∈ e := by
+  obtain ⟨s, hs⟩ := hf.tsum_vanishing he
+  refine ⟨if h : s.Nonempty then s.max' h + 1 else 0, fun t ht ↦ hs _ <| Set.disjoint_left.mpr ?_⟩
+  split_ifs at ht with h
+  · exact fun m hmt hms ↦ (s.le_max' _ hms).not_lt (Nat.succ_le_iff.mp <| ht hmt)
+  · exact fun _ _ hs ↦ h ⟨_, hs⟩
+
 /-- Series divergence test: if `f` is a convergent series, then `f x` tends to zero along
 `cofinite`. -/
 theorem Summable.tendsto_cofinite_zero (hf : Summable f) : Tendsto f cofinite (𝓝 0) := by
@@ -1300,6 +1279,27 @@ theorem Summable.countable_support [TopologicalSpace.FirstCountableTopology G] [
   simpa only [ker_nhds] using hf.tendsto_cofinite_zero.countable_compl_preimage_ker
 
 end TopologicalGroup
+
+section CompleteUniformAddGroup
+
+variable {G : Type*} [AddCommGroup G] [UniformSpace G] [UniformAddGroup G] [CompleteSpace G]
+
+theorem summable_iff_tsum_vanishing {f : α → G} : Summable f ↔
+    ∀ e ∈ 𝓝 (0 : G), ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∑' a : t, f a) ∈ e := by
+  refine ⟨Summable.tsum_vanishing, fun vanish ↦ summable_iff_vanishing.mpr fun e he ↦ ?_⟩
+  obtain ⟨s, hs⟩ := vanish _ he
+  refine ⟨s, fun t hts ↦ ?_⟩
+  simp only [disjoint_left, Set.disjoint_left] at hs hts
+  exact (t.tsum_subtype f).symm ▸ hs _ hts
+
+theorem summable_iff_vanishing_nat_tsum {f : ℕ → G} : Summable f ↔
+    ∀ e ∈ 𝓝 (0 : G), ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∑' n : t, f n) ∈ e := by
+  refine ⟨Summable.nat_tsum_vanishing, fun vanish ↦ summable_iff_tsum_vanishing.mpr fun e he ↦ ?_⟩
+  obtain ⟨N, hN⟩ := vanish e he
+  exact ⟨range N, fun t ht ↦ hN _ fun n hnt ↦
+    le_of_not_lt fun h ↦ Set.disjoint_left.mp ht hnt (mem_range.mpr h)⟩
+
+end CompleteUniformAddGroup
 
 section ConstSmul
 
