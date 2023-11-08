@@ -54,10 +54,6 @@ theorem proj_map (i : I) (x₀ x₁ : πₓ (TopCat.of (∀ i, X i))) (p : x₀ 
   rfl
 #align fundamental_groupoid_functor.proj_map FundamentalGroupoidFunctor.proj_map
 
--- Porting note: losing the instance with a concrete category again
---instance : (i : I) → TopologicalSpace (πₓ (X i)).α :=
---  fun i => TopCat.topologicalSpace_coe (X i)
-
 /-- The map taking the pi product of a family of fundamental groupoids to the fundamental
 groupoid of the pi product. This is actually an isomorphism (see `piIso`)
 -/
