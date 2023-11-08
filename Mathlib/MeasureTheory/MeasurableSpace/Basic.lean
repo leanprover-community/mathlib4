@@ -267,7 +267,7 @@ theorem measurable_of_subsingleton_codomain [Subsingleton β] (f : α → β) : 
   fun s _ => Subsingleton.set_cases MeasurableSet.empty MeasurableSet.univ s
 #align measurable_of_subsingleton_codomain measurable_of_subsingleton_codomain
 
-@[measurability, to_additive]
+@[to_additive (attr := measurability)]
 theorem measurable_one [One α] : Measurable (1 : β → α) :=
   @measurable_const _ _ _ _ 1
 #align measurable_one measurable_one
