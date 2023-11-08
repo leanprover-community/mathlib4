@@ -7,6 +7,7 @@ import Std.Lean.Parser
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Int.Parity
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.HaveI
 import Mathlib.Algebra.GroupPower.Order
@@ -373,7 +374,7 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     | .nonzero pa => ofNonzero pa (← synthInstanceQ (_ : Q(Type u)))
     | .none => pure .none
 
-set_option linter.deprecated false in
+--set_option linter.deprecated false in
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℤ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity (_ : α) ^ (_ : ℤ), Pow.pow _ (_ : ℤ)]
@@ -383,12 +384,12 @@ def evalZpow : PositivityExt where eval {u α} zα pα e := do
     let .true := b.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ n where n is a literal"
     let some n := (b.getRevArg! 1).natLit? | throwError "not a ^ n where n is a literal"
     guard (n % 2 = 0)
-    have m : Q(ℕ) := mkRawNatLit (n / 2)
-    haveI' : $b =Q bit0 $m := ⟨⟩
+    have b_mod_two : ($b % 2) =Q 0 := ⟨⟩
+    have b_even : Q(Even $b) := q(Int.even_iff.mpr $b_mod_two)
     let _a ← synthInstanceQ q(LinearOrderedField $α)
     haveI' : $e =Q $a ^ $b := ⟨⟩
     assumeInstancesCommute
-    pure (by exact .nonnegative q(zpow_bit0_nonneg $a $m))
+    pure (by exact .nonnegative q(Even.zpow_nonneg (n := $b) $b_even $a))
   orElse result do
     let ra ← core zα pα a
     let ofNonneg (pa : Q(0 ≤ $a)) (_oα : Q(LinearOrderedSemifield $α)) :
