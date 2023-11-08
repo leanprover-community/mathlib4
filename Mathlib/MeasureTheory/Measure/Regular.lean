@@ -531,8 +531,8 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
 #align measure_theory.measure.inner_regular.weakly_regular_of_finite MeasureTheory.Measure.InnerRegularWRT.weaklyRegular_of_finite
 
 /-- If the restrictions of a measure to a monotone sequence of sets covering the space are
-inner regular for some property `p` and all measurable sets, then the measure itself satisfies
-the same property. -/
+inner regular for some property `p` and all measurable sets, then the measure itself is
+inner regular. -/
 lemma of_restrict {μ : Measure α} {s : ℕ → Set α}
     (h : ∀ n, InnerRegularWRT (μ.restrict (s n)) p MeasurableSet)
     (hs : univ ⊆ ⋃ n, s n) (hmono : Monotone s) : InnerRegularWRT μ p MeasurableSet := by
@@ -545,7 +545,7 @@ lemma of_restrict {μ : Measure α} {s : ℕ → Set α}
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
   rw [← restrict_apply hF] at hn
   rcases h n hF _ hn with ⟨K, KF, hKp, hK⟩
-  refine ⟨K, KF, hKp, hK.trans_le (restrict_apply_le _ _)⟩
+  exact ⟨K, KF, hKp, hK.trans_le (restrict_apply_le _ _)⟩
 
 /-- In a metrizable space (or even a pseudo metrizable space), an open set can be approximated from
 inside by closed sets. -/
@@ -669,7 +669,7 @@ theorem _root_.MeasurableSet.exists_lt_isCompact [InnerRegular μ] ⦃A : Set α
 protected theorem map_of_continuous [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] [h : InnerRegular μ] {f : α → β} (hf : Continuous f) :
     InnerRegular (Measure.map f μ) :=
-  ⟨InnerRegularWRT.map h.innerRegular hf.aemeasurable (fun _s hs ↦hf.measurable hs)
+  ⟨InnerRegularWRT.map h.innerRegular hf.aemeasurable (fun _s hs ↦ hf.measurable hs)
     (fun _K hK ↦ hK.image hf) (fun _s hs ↦ hs)⟩
 
 protected theorem map [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
