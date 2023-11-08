@@ -708,15 +708,15 @@ index. -/
 @[to_additive (attr := simps!)
   "A family indexed by a nonempty subsingleton type is
   equivalent to the element at the single index."]
-def piSubsingleton {ι : Type*} (M : ι → Type*) [∀ j, Mul (M j)] [Subsingleton ι]
-    (i : ι) : (∀ j, M j) ≃* M i :=
-  { Equiv.piSubsingleton M i with map_mul' := fun _ _ => Pi.mul_apply _ _ _ }
-#align mul_equiv.Pi_subsingleton MulEquiv.piSubsingleton
-#align add_equiv.Pi_subsingleton AddEquiv.piSubsingleton
-#align mul_equiv.Pi_subsingleton_apply MulEquiv.piSubsingleton_apply
-#align add_equiv.Pi_subsingleton_apply AddEquiv.piSubsingleton_apply
-#align mul_equiv.Pi_subsingleton_symm_apply MulEquiv.piSubsingleton_symm_apply
-#align add_equiv.Pi_subsingleton_symm_apply AddEquiv.piSubsingleton_symm_apply
+def piUnique {ι : Type*} (M : ι → Type*) [∀ j, Mul (M j)] [Unique ι] :
+    (∀ j, M j) ≃* M default :=
+  { Equiv.piUnique M with map_mul' := fun _ _ => Pi.mul_apply _ _ _ }
+#align mul_equiv.Pi_subsingleton MulEquiv.piUnique
+#align add_equiv.Pi_subsingleton AddEquiv.piUnique
+#align mul_equiv.Pi_subsingleton_apply MulEquiv.piUnique_apply
+#align add_equiv.Pi_subsingleton_apply AddEquiv.piUnique_apply
+#align mul_equiv.Pi_subsingleton_symm_apply MulEquiv.piUnique_symm_apply
+#align add_equiv.Pi_subsingleton_symm_apply AddEquiv.piUnique_symm_apply
 
 /-!
 # Groups

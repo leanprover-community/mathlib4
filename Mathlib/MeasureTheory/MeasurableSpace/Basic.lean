@@ -1643,7 +1643,7 @@ def piMeasurableEquivTProd [DecidableEq δ'] {l : List δ'} (hnd : l.Nodup) (h :
 
 variable (π) in
 /-- The measurable equivalence `(∀ i, π i) ≃ᵐ π ⋆` when the domain of `π` only contains `⋆` -/
-@[simps (config := .asFn)]
+@[simps! (config := .asFn)]
 def piUnique [Unique δ'] : (∀ i, π i) ≃ᵐ π default where
   toEquiv := Equiv.piUnique π
   measurable_toFun := measurable_pi_apply _

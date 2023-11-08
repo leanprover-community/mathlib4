@@ -798,7 +798,7 @@ noncomputable def directProductOfNormal [Fintype G]
     haveI hp' := Fact.mk (Nat.prime_of_mem_factorization hp)
     haveI := subsingleton_of_normal _ (hn (P p))
     change (∀ P : Sylow p G, P) ≃* P p
-    exact MulEquiv.piSubsingleton _ _
+    apply MulEquiv.piUnique
   show (∀ p : ps, P p) ≃* G
   apply MulEquiv.ofBijective (Subgroup.noncommPiCoprod hcomm)
   apply (bijective_iff_injective_and_card _).mpr
