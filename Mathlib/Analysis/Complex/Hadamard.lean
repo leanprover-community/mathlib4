@@ -19,7 +19,7 @@ We think this result generalises well by a change of variables.
 Hadamard three-line theorem on `re ⁻¹' [0,1]`: If `f` is a bounded function, continuous on
 `re ⁻¹' [0,1]` and differentiable on `re ⁻¹' (0,1)`, then for
 `M(x) := sup ((abs ∘ f) '' (re ⁻¹' {x}))`, that is `M(x)` is the supremum of the absolute value of
-`f` along the vertical lines `re z = x`, we have that `∀ z ∈ re ⁻¹' [0,1]` the inequality 
+`f` along the vertical lines `re z = x`, we have that `∀ z ∈ re ⁻¹' [0,1]` the inequality
 `|f(z)| ≤ |M(0)^(1-z)| * |M(1)^z|` holds. This can be seen to be equivalent to the statement
 that `log M(re z)` is a convex function on `[0,1]`.
 
