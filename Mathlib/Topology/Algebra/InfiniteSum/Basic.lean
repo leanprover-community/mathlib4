@@ -1225,17 +1225,17 @@ theorem Summable.vanishing (hf : Summable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (0
 
 theorem Summable.tsum_vanishing (hf : Summable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 0) :
     ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∑' b : t, f b) ∈ e := by
-  obtain ⟨e', he', closed, hsub⟩ := exists_mem_nhds_isClosed_subset he
-  obtain ⟨s, hs⟩ := hf.vanishing he'
-  refine ⟨s, fun t hts ↦ hsub ?_⟩
+  obtain ⟨o, ho, o_closed, oe⟩ := exists_mem_nhds_isClosed_subset he
+  obtain ⟨s, hs⟩ := hf.vanishing ho
+  refine ⟨s, fun t hts ↦ oe ?_⟩
   by_cases ht : Summable fun a : t ↦ f a
-  · refine closed.mem_of_tendsto ht.hasSum (eventually_of_forall fun t' ↦ ?_)
+  · refine o_closed.mem_of_tendsto ht.hasSum (eventually_of_forall fun t' ↦ ?_)
     rw [← sum_subtype_map_embedding fun _ _ ↦ by rfl]
     apply hs
     simp_rw [disjoint_left, Set.disjoint_left, Finset.mem_map] at hts ⊢
     rintro _ ⟨b, -, rfl⟩
     exact hts b.2
-  · exact tsum_eq_zero_of_not_summable ht ▸ mem_of_mem_nhds he'
+  · exact tsum_eq_zero_of_not_summable ht ▸ mem_of_mem_nhds ho
 
 /-- The sum over the complement of a finset tends to `0` when the finset grows to cover the whole
 space. This does not need a summability assumption, as otherwise all sums are zero. -/
