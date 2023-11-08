@@ -2253,8 +2253,10 @@ theorem AEMeasurable.coe_ereal_ennreal {f : α → ℝ≥0∞} {μ : Measure α}
   measurable_coe_ennreal_ereal.comp_aemeasurable hf
 #align ae_measurable.coe_ereal_ennreal AEMeasurable.coe_ereal_ennreal
 
-/-- If a function `f` is measurable and the measure is σ-finite , then there exists spanning
-measurable sets with finite measure on which `f` is bounded. -/
+/-- If a function `f : α → ℝ≥0` is measurable and the measure is σ-finite, then there exists
+spanning measurable sets with finite measure on which `f` is bounded.
+See also `StronglyMeasurable.exists_spanning_measurableSet_norm_le` for functions into normed
+groups. -/
 theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → ℝ≥0}
     (hf : Measurable f) (μ : Measure α) [SigmaFinite μ] :
     ∃ s : ℕ → Set α,
