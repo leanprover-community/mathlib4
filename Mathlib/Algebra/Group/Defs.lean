@@ -437,6 +437,13 @@ class CancelSemigroup (α : Type*) extends LeftCancelSemigroup α, RightCancelSe
 
 attribute [to_additive existing] CancelSemigroup.toRightCancelSemigroup
 
+/-- Any cancellative semigroup has cancellative multiplication. -/
+@[to_additive toIsCancelAdd "Any cancellative semigroup has cancellative addition."]
+instance (priority := 100) CancelSemigroup.toIsCancelMul (M : Type*) [CancelSemigroup M] :
+    IsCancelMul M :=
+  { mul_left_cancel := LeftCancelSemigroup.mul_left_cancel
+    mul_right_cancel := RightCancelSemigroup.mul_right_cancel }
+
 /-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
 class MulOneClass (M : Type u) extends One M, Mul M where
@@ -764,14 +771,8 @@ instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelC
 #align cancel_comm_monoid.to_cancel_monoid CancelCommMonoid.toCancelMonoid
 #align add_cancel_comm_monoid.to_cancel_add_monoid AddCancelCommMonoid.toAddCancelMonoid
 
-/-- Any `CancelMonoid G` satisfies `IsCancelMul G`. -/
-@[to_additive toIsCancelAdd "Any `AddCancelMonoid G` satisfies `IsCancelAdd G`."]
-instance (priority := 100) CancelMonoid.toIsCancelMul (M : Type u) [CancelMonoid M] :
-    IsCancelMul M :=
-  { mul_left_cancel := LeftCancelSemigroup.mul_left_cancel
-    mul_right_cancel := RightCancelSemigroup.mul_right_cancel }
-#align cancel_monoid.to_is_cancel_mul CancelMonoid.toIsCancelMul
-#align add_cancel_monoid.to_is_cancel_add AddCancelMonoid.toIsCancelAdd
+#noalign cancel_monoid.to_is_cancel_mul
+#noalign add_cancel_monoid.to_is_cancel_add
 
 end CancelMonoid
 
