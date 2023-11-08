@@ -54,7 +54,7 @@ noncomputable section
 
 open scoped unitInterval
 
-open Path ContinuousMap Set.Icc TopologicalSpace
+open Path Function Set.Icc TopologicalSpace
 
 /-- A topological space `X` is an H-space if it behaves like a (potentially non-associative)
 topological group, but where the axioms for a group only hold up to homotopy.
@@ -63,10 +63,8 @@ class HSpace (X : Type u) [TopologicalSpace X] where
   hmul : C(X × X, X)
   e : X
   hmul_e_e : hmul (e, e) = e
-  eHmul :
-    (hmul.comp <| (const X e).prodMk <| ContinuousMap.id X).HomotopyRel (ContinuousMap.id X) {e}
-  hmulE :
-    (hmul.comp <| (ContinuousMap.id X).prodMk <| const X e).HomotopyRel (ContinuousMap.id X) {e}
+  eHmul : (hmul ⟨e, ·⟩).HomotopyRel id {e}
+  hmulE : (hmul ⟨·, e⟩).HomotopyRel id {e}
 #align H_space HSpace
 
 -- We use the notation `⋀`, typeset as \And, to denote the binary operation `hmul` on an H-space
@@ -77,18 +75,18 @@ open HSpaces
 
 instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
     [HSpace Y] : HSpace (X × Y) where
-  hmul := ⟨fun p => (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by
-    -- porting note: was `continuity`
-    exact ((map_continuous HSpace.hmul).comp ((continuous_fst.comp continuous_fst).prod_mk
+  hmul := ⟨fun p ↦ (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2),
+    -- porting note: was `by continuity`
+      ((map_continuous HSpace.hmul).comp ((continuous_fst.comp continuous_fst).prod_mk
         (continuous_fst.comp continuous_snd))).prod_mk ((map_continuous HSpace.hmul).comp
-        ((continuous_snd.comp continuous_fst).prod_mk (continuous_snd.comp continuous_snd)))
-  ⟩
+        ((continuous_snd.comp continuous_fst).prod_mk (continuous_snd.comp continuous_snd)))⟩
   e := (HSpace.e, HSpace.e)
   hmul_e_e := by
     simp only [ContinuousMap.coe_mk, Prod.mk.inj_iff]
     exact ⟨HSpace.hmul_e_e, HSpace.hmul_e_e⟩
   eHmul := by
-    let G : I × X × Y → X × Y := fun p => (HSpace.eHmul (p.1, p.2.1), HSpace.eHmul (p.1, p.2.2))
+    let G : I × X × Y → X × Y := fun p ↦
+      (HSpace.eHmul.toFun (p.1, p.2.1), HSpace.eHmul.toFun (p.1, p.2.2))
     have hG : Continuous G :=
       (Continuous.comp HSpace.eHmul.1.1.2
           (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
@@ -103,7 +101,8 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
       replace h := Prod.mk.inj_iff.mp h
       exact Prod.ext (HSpace.eHmul.2 t x h.1) (HSpace.eHmul.2 t y h.2)
   hmulE := by
-    let G : I × X × Y → X × Y := fun p => (HSpace.hmulE (p.1, p.2.1), HSpace.hmulE (p.1, p.2.2))
+    let G : I × X × Y → X × Y :=
+      fun p ↦ (HSpace.hmulE.toFun (p.1, p.2.1), HSpace.hmulE.toFun (p.1, p.2.2))
     have hG : Continuous G :=
       (Continuous.comp HSpace.hmulE.1.1.2
             (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
@@ -135,8 +134,8 @@ def toHSpace (M : Type u) [MulOneClass M] [TopologicalSpace M] [ContinuousMul M]
   hmul := ⟨Function.uncurry Mul.mul, continuous_mul⟩
   e := 1
   hmul_e_e := one_mul 1
-  eHmul := (HomotopyRel.refl _ _).cast rfl (by ext1; apply one_mul)
-  hmulE := (HomotopyRel.refl _ _).cast rfl (by ext1; apply mul_one)
+  eHmul := (HomotopyRel.refl (ContinuousMap.id M) _).cast (by ext1; symm; apply one_mul) rfl
+  hmulE := (HomotopyRel.refl (ContinuousMap.id M) _).cast (by ext1; symm; apply mul_one) rfl
 #align topological_group.to_H_space TopologicalGroup.toHSpace
 #align topological_add_group.to_H_space TopologicalAddGroup.toHSpace
 

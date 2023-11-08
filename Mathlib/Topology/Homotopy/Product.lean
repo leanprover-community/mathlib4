@@ -49,14 +49,12 @@ of products.
 
 noncomputable section
 
-namespace ContinuousMap
-
-open ContinuousMap
+namespace Function
 
 section Pi
 
 variable {I A : Type*} {X : I → Type*} [∀ i, TopologicalSpace (X i)] [TopologicalSpace A]
-  {f g : ∀ i, C(A, X i)} {S : Set A}
+  {f g : ∀ i, A → X i} {S : Set A}
 
 -- Porting note: this definition is already in `Topology.Homotopy.Basic`
 -- /-- The product homotopy of `homotopies` between functions `f` and `g` -/
@@ -71,45 +69,44 @@ variable {I A : Type*} {X : I → Type*} [∀ i, TopologicalSpace (X i)] [Topolo
 /-- The relative product homotopy of `homotopies` between functions `f` and `g` -/
 @[simps!]
 def HomotopyRel.pi (homotopies : ∀ i : I, HomotopyRel (f i) (g i) S) :
-    HomotopyRel (pi f) (pi g) S :=
+    HomotopyRel (fun a i ↦ f i a) (fun a i ↦ g i a) S :=
   { Homotopy.pi fun i => (homotopies i).toHomotopy with
     prop' := by
       intro t x hx
-      dsimp only [coe_mk, pi_eval, toFun_eq_coe, HomotopyWith.coe_toContinuousMap]
       simp only [Function.funext_iff, ← forall_and]
       intro i
       exact (homotopies i).prop' t x hx }
-#align continuous_map.homotopy_rel.pi ContinuousMap.HomotopyRel.pi
+#align continuous_map.homotopy_rel.pi Function.HomotopyRel.pi
 
 end Pi
 
 section Prod
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {A : Type*} [TopologicalSpace A]
-  {f₀ f₁ : C(A, α)} {g₀ g₁ : C(A, β)} {S : Set A}
+  {f₀ f₁ : A → α} {g₀ g₁ : A → β} {S : Set A}
 
 /-- The product of homotopies `F` and `G`,
   where `F` takes `f₀` to `f₁` and `G` takes `g₀` to `g₁` -/
 @[simps]
 def Homotopy.prod (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
-    Homotopy (ContinuousMap.prodMk f₀ g₀) (ContinuousMap.prodMk f₁ g₁) where
+    Homotopy (fun a ↦ (f₀ a, g₀ a)) (fun a ↦ (f₁ a, g₁ a)) where
   toFun t := (F t, G t)
-  map_zero_left x := by simp only [prod_eval, Homotopy.apply_zero]
-  map_one_left x := by simp only [prod_eval, Homotopy.apply_one]
-#align continuous_map.homotopy.prod ContinuousMap.Homotopy.prod
+  map_zero_left x := by simp only [Homotopy.apply_zero]
+  map_one_left x := by simp only [Homotopy.apply_one]
+#align continuous_map.homotopy.prod Function.Homotopy.prod
 
 /-- The relative product of homotopies `F` and `G`,
   where `F` takes `f₀` to `f₁` and `G` takes `g₀` to `g₁` -/
 @[simps!]
 def HomotopyRel.prod (F : HomotopyRel f₀ f₁ S) (G : HomotopyRel g₀ g₁ S) :
-    HomotopyRel (prodMk f₀ g₀) (prodMk f₁ g₁) S where
+    HomotopyRel (fun a ↦ (f₀ a, g₀ a)) (fun a ↦ (f₁ a, g₁ a)) S where
   toHomotopy := Homotopy.prod F.toHomotopy G.toHomotopy
   prop' t x hx := Prod.ext (F.prop' t x hx) (G.prop' t x hx)
-#align continuous_map.homotopy_rel.prod ContinuousMap.HomotopyRel.prod
+#align continuous_map.homotopy_rel.prod Function.HomotopyRel.prod
 
 end Prod
 
-end ContinuousMap
+end Function
 
 namespace Path.Homotopic
 
@@ -124,7 +121,7 @@ variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] {as bs 
 /-- The product of a family of path homotopies. This is just a specialization of `HomotopyRel`. -/
 def piHomotopy (γ₀ γ₁ : ∀ i, Path (as i) (bs i)) (H : ∀ i, Path.Homotopy (γ₀ i) (γ₁ i)) :
     Path.Homotopy (Path.pi γ₀) (Path.pi γ₁) :=
-  ContinuousMap.HomotopyRel.pi H
+  Function.HomotopyRel.pi H
 #align path.homotopic.pi_homotopy Path.Homotopic.piHomotopy
 
 /-- The product of a family of path homotopy classes. -/
@@ -187,7 +184,7 @@ variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {a₁ a₂ 
     This is `HomotopyRel.prod` specialized for path homotopies. -/
 def prodHomotopy (h₁ : Path.Homotopy p₁ p₁') (h₂ : Path.Homotopy p₂ p₂') :
     Path.Homotopy (p₁.prod p₂) (p₁'.prod p₂') :=
-  ContinuousMap.HomotopyRel.prod h₁ h₂
+  Function.HomotopyRel.prod h₁ h₂
 #align path.homotopic.prod_homotopy Path.Homotopic.prodHomotopy
 
 /-- The product of path classes q₁ and q₂. This is `Path.prod` descended to the quotient. -/
