@@ -740,6 +740,15 @@ def toOrderHom {X Y : Type*} [Preorder X] [Preorder Y] (f : X ↪o Y) : X →o Y
 #align order_embedding.to_order_hom OrderEmbedding.toOrderHom
 #align order_embedding.to_order_hom_coe OrderEmbedding.toOrderHom_coe
 
+/-- The trivial embedding from an empty preorder to another preorder -/
+@[simps] def ofIsEmpty [IsEmpty α] : α ↪o β where
+  toFun := isEmptyElim
+  inj' := isEmptyElim
+  map_rel_iff' {a} := isEmptyElim a
+
+@[simp, norm_cast]
+lemma coe_ofIsEmpty [IsEmpty α] : (ofIsEmpty : α ↪o β) = (isEmptyElim : α → β) := rfl
+
 end OrderEmbedding
 
 section RelHom
