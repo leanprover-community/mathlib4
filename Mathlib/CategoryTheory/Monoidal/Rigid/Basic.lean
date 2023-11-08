@@ -217,15 +217,10 @@ theorem leftAdjointMate_comp {X Y Z : C} [HasLeftDual X] [HasLeftDual Y] {f : X 
       (λ_ _).inv ≫
         (η_ (ᘁX) X ▷ _) ≫ ((g ⊗ f) ▷ _) ≫ (α_ _ _ _).hom ≫ (_ ◁ ε_ _ _) ≫ (ρ_ _).hom := by
   dsimp only [leftAdjointMate]
-  -- simp only [whisker_assoc, Category.assoc, Iso.inv_hom_id_assoc, tensorHom_def', comp_whiskerRight,
-  --   Iso.cancel_iso_inv_left]
-  -- congr 3
-  -- rw [associator_naturality_left_assoc, ← whisker_exchange_assoc]
-  -- coherence
-  simp_rw [← id_tensorHom, ← tensorHom_id]
-  rw [Category.assoc, Category.assoc, associator_naturality_assoc, associator_naturality_assoc, ←
-    id_tensor_comp_tensor_id _ g, Category.assoc, Category.assoc, Category.assoc, Category.assoc,
-    tensor_id_comp_id_tensor_assoc, ← rightUnitor_naturality', id_tensor_comp_tensor_id_assoc]
+  simp only [whisker_assoc, Category.assoc, Iso.inv_hom_id_assoc, tensorHom_def',
+    comp_whiskerRight, Iso.cancel_iso_inv_left]
+  rw [associator_naturality_left_assoc, ← whisker_exchange_assoc]
+  coherence
 #align category_theory.left_adjoint_mate_comp CategoryTheory.leftAdjointMate_comp
 
 /-- The composition of right adjoint mates is the adjoint mate of the composition. -/
