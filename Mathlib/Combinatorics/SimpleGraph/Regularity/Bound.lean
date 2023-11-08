@@ -65,11 +65,9 @@ open SzemerediRegularity
 variable {α : Type*} [DecidableEq α] [Fintype α] {P : Finpartition (univ : Finset α)}
   {u : Finset α} {ε : ℝ}
 
-local notation3 (prettyPrint := false)
-  "m" => (card α / stepBound P.parts.card : ℕ)
+local notation3 "m" => (card α / stepBound P.parts.card : ℕ)
 
-local notation3 (prettyPrint := false)
-  "a" => (card α / P.parts.card - m * 4 ^ P.parts.card : ℕ)
+local notation3 "a" => (card α / P.parts.card - m * 4 ^ P.parts.card : ℕ)
 
 namespace SzemerediRegularity.Positivity
 
@@ -150,7 +148,7 @@ theorem a_add_one_le_four_pow_parts_card : a + 1 ≤ 4 ^ P.parts.card := by
   rw [stepBound, ← Nat.div_div_eq_div_mul]
   conv_rhs => rw [← Nat.sub_add_cancel h]
   rw [add_le_add_iff_right, tsub_le_iff_left, ← Nat.add_sub_assoc h]
-  exact Nat.le_pred_of_lt (Nat.lt_div_mul_add h)
+  exact Nat.le_sub_one_of_lt (Nat.lt_div_mul_add h)
 #align szemeredi_regularity.a_add_one_le_four_pow_parts_card SzemerediRegularity.a_add_one_le_four_pow_parts_card
 
 theorem card_aux₁ (hucard : u.card = m * 4 ^ P.parts.card + a) :

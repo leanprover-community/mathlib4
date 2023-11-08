@@ -561,6 +561,26 @@ by polyrith
 --   polyrith,
 -- end
 
+/-
+
+### Examples with exponent
+
+-/
+
+example (x y z : ℚ) (h : x = y) (h2 : x * y = 0) : x + y*z = 0 := by
+  polyrith
+
+example (K : Type)
+    [Field K]
+    [CharZero K]
+    {x y z : K}
+    (h₂ : y ^ 3 + x * (3 * z ^ 2) = 0)
+    (h₁ : x ^ 3 + z * (3 * y ^ 2) = 0)
+    (h₀ : y * (3 * x ^ 2) + z ^ 3 = 0)
+    (h : x ^ 3 * y + y ^ 3 * z + z ^ 3 * x = 0) :
+    x = 0 := by
+  polyrith
+
 /-!
 ### With trace enabled
 Here, the tactic will trace the command that gets sent to sage,

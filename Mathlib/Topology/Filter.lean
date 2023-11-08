@@ -95,7 +95,7 @@ protected theorem HasBasis.nhds {l : Filter α} {p : ι → Prop} {s : ι → Se
 protected theorem tendsto_pure_self (l : Filter X) :
     Tendsto (pure : X → Filter X) l (𝓝 l) := by
   rw [Filter.tendsto_nhds]
-  refine fun s hs ↦ Eventually.mono hs fun x ↦ id
+  exact fun s hs ↦ Eventually.mono hs fun x ↦ id
 
 /-- Neighborhoods of a countably generated filter is a countably generated filter. -/
 instance {l : Filter α} [IsCountablyGenerated l] : IsCountablyGenerated (𝓝 l) :=
