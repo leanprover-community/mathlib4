@@ -684,7 +684,7 @@ section congr
 
 /-- Apply a linear equivalence on the arguments of a bilinear form. -/
 def congr (e : M₂ ≃ₗ[R₂] M₂') : BilinForm R₂ M₂ ≃ₗ[R₂] BilinForm R₂ M₂' :=
-  BilinForm.toLin ≪≫ₗ LinearMap.congr e e ≪≫ₗ LinearMap.toBilin
+  BilinForm.toLin ≪≫ₗ LinearMap.congrl₁₂ e e ≪≫ₗ LinearMap.toBilin
 #align bilin_form.congr BilinForm.congr
 
 @[simp]
@@ -695,7 +695,7 @@ theorem congr_apply (e : M₂ ≃ₗ[R₂] M₂') (B : BilinForm R₂ M₂) (x y
 
 @[simp]
 theorem congr_symm (e : M₂ ≃ₗ[R₂] M₂') : (congr e).symm = congr e.symm := by
-  simp only [congr, LinearEquiv.trans_symm, LinearMap.toBilin_symm, LinearMap.congr_symm,
+  simp only [congr, LinearEquiv.trans_symm, LinearMap.toBilin_symm, LinearMap.congrl₁₂_symm,
     toLin_symm]
   rfl
 #align bilin_form.congr_symm BilinForm.congr_symm
