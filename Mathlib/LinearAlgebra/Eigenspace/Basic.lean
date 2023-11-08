@@ -340,7 +340,12 @@ theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M)
       (s.sup fun μ ↦ ⨆ k, f.generalizedEigenspace μ k) by
     simp_rw [CompleteLattice.independent_iff_supIndep_of_injOn f.injOn_generalizedEigenspace,
       Finset.supIndep_iff_disjoint_erase]
+    exact fun s μ _ ↦ this _ _ (s.not_mem_erase μ)
+  intro μ₁ s
+  induction' s using Finset.induction_on with μ₂ s _ ih; simp
+  intro hμ₁₂
   obtain ⟨hμ₁₂ : μ₁ ≠ μ₂, hμ₁ : μ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hμ₁₂
+  specialize ih hμ₁
   rw [Finset.sup_insert, disjoint_iff, Submodule.eq_bot_iff]
   rintro x ⟨hx, hx'⟩
   simp only [SetLike.mem_coe] at hx hx'
