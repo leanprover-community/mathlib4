@@ -528,14 +528,6 @@ def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : Exac
   evaluation' := (Y ◁ i.hom) ≫ ε_ _ _
   coevaluation' := η_ _ _ ≫ (i.inv ▷ Y)
   evaluation_coevaluation' := by
-    simp only [comp_whiskerRight, MonoidalCategory.whiskerLeft_comp, Category.assoc]
-    slice_lhs 2 3 => rw [associator_naturality_left]
-    slice_lhs 3 4 => rw [← whisker_exchange]
-    slice_lhs 4 5 => rw [← whisker_exchange]
-    slice_lhs 2 3 => rw [← associator_naturality_right]
-    slice_lhs 1 2 => rw [← whisker_exchange]
-    slice_lhs 2 4 => rw [evaluation_coevaluation]
-    simp
     calc
       _ = 𝟙 _ ⊗≫ (η_ X' Y ▷ X ⊗≫ (i.inv ▷ (Y ⊗ X) ≫ X ◁ (Y ◁ i.hom)) ⊗≫ X ◁ ε_ X' Y) ⊗≫ 𝟙 _ := by
         coherence
