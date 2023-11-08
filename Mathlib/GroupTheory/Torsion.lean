@@ -387,7 +387,7 @@ variable [Group G]
 @[to_additive AddMonoid.IsTorsion.not_torsion_free
       "A nontrivial additive torsion group is not torsion-free."]
 theorem IsTorsion.not_torsion_free [hN : Nontrivial G] : IsTorsion G → ¬IsTorsionFree G := fun tG =>
-  (not_isTorsionFree_iff _).mpr <| by
+  not_isTorsionFree_iff.mpr <| by
     obtain ⟨x, hx⟩ := (nontrivial_iff_exists_ne (1 : G)).mp hN
     exact ⟨x, hx, tG x⟩
 #align is_torsion.not_torsion_free IsTorsion.not_torsion_free
