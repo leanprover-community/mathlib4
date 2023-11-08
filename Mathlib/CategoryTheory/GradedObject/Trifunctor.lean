@@ -108,7 +108,6 @@ variable {I₁ I₂ I₃ J : Type*} (p : I₁ × I₂ × I₃ → J)
 `X₂ : GradedObject I₂ C₂`, `X₃ : GradedObject I₃ C₃`, and a map `p : I₁ × I₂ × I₃ → J`,
 this is the `J`-graded object sending `j` to the coproduct of
 `((F.obj (X₁ i₁)).obj (X₂ i₂)).obj (X₃ i₃)` for `p ⟨i₁, i₂, i₃⟩ = k`. -/
-@[simp]
 noncomputable def mapTrifunctorMapObj (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂)
     (X₃ : GradedObject I₃ C₃)
     [HasMap ((((mapTrifunctor F I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) p] :
@@ -124,10 +123,8 @@ noncomputable def ιMapTrifunctorMapObj (X₁ : GradedObject I₁ C₁) (X₂ : 
     ((F.obj (X₁ i₁)).obj (X₂ i₂)).obj (X₃ i₃) ⟶ mapTrifunctorMapObj F p X₁ X₂ X₃ j :=
   ((((mapTrifunctor F I₁ I₂ I₃).obj X₁).obj X₂).obj X₃).ιMapObj p ⟨i₁, i₂, i₃⟩ j h
 
-
 /-- The maps `mapTrifunctorMapObj F p X₁ X₂ X₃ ⟶ mapTrifunctorMapObj F p Y₁ Y₂ Y₃` which
 express the functoriality of `mapTrifunctorMapObj`, see `mapTrifunctorMap` -/
-@[simp]
 noncomputable def mapTrifunctorMapMap {X₁ Y₁ : GradedObject I₁ C₁} (f₁ : X₁ ⟶ Y₁)
     {X₂ Y₂ : GradedObject I₂ C₂} (f₂ : X₂ ⟶ Y₂)
     {X₃ Y₃ : GradedObject I₃ C₃} (f₃ : X₃ ⟶ Y₃)
@@ -138,6 +135,7 @@ noncomputable def mapTrifunctorMapMap {X₁ Y₁ : GradedObject I₁ C₁} (f₁
     (((mapTrifunctor F I₁ I₂ I₃).obj Y₁).map f₂).app X₃ ≫
     (((mapTrifunctor F I₁ I₂ I₃).obj Y₁).obj Y₂).map f₃) p
 
+@[reassoc (attr := simp)]
 lemma ι_mapTrifunctorMapMap {X₁ Y₁ : GradedObject I₁ C₁} (f₁ : X₁ ⟶ Y₁)
     {X₂ Y₂ : GradedObject I₂ C₂} (f₂ : X₂ ⟶ Y₂)
     {X₃ Y₃ : GradedObject I₃ C₃} (f₃ : X₃ ⟶ Y₃)
@@ -154,11 +152,22 @@ lemma ι_mapTrifunctorMapMap {X₁ Y₁ : GradedObject I₁ C₁} (f₁ : X₁ �
   dsimp
   rw [assoc, assoc]
 
+@[ext]
+noncomputable def mapTrifunctorMapObj_ext {X₁ : GradedObject I₁ C₁} {X₂ : GradedObject I₂ C₂}
+    {X₃ : GradedObject I₃ C₃} {Y : C₄} (j : J)
+    [HasMap ((((mapTrifunctor F I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) p]
+    {φ φ' : mapTrifunctorMapObj F p X₁ X₂ X₃ j ⟶ Y}
+    (h : ∀ (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (h : p ⟨i₁, i₂, i₃⟩ = j),
+      ιMapTrifunctorMapObj F p X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ φ =
+        ιMapTrifunctorMapObj F p X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ φ') : φ = φ' := by
+  apply mapObj_ext
+  rintro ⟨i₁, i₂, i₃⟩ hi
+  apply h
+
 instance (X₁ : GradedObject I₁ C₁) (X₂ : GradedObject I₂ C₂) (X₃ : GradedObject I₃ C₃)
   [h : HasMap ((((mapTrifunctor F I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) p] :
       HasMap (((mapTrifunctorObj F X₁ I₂ I₃).obj X₂).obj X₃) p := h
 
-set_option maxHeartbeats 400000 in
 /-- Given a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄`, a map `p : I₁ × I₂ × I₃ → J`, and
 graded objects `X₁ : GradedObject I₁ C₁`, `X₂ : GradedObject I₂ C₂` and `X₃ : GradedObject I₃ C₃`,
 this is the `J`-graded object sending `j` to the coproduct of
@@ -169,17 +178,37 @@ noncomputable def mapTrifunctorMapFunctorObj (X₁ : GradedObject I₁ C₁)
     GradedObject I₂ C₂ ⥤ GradedObject I₃ C₃ ⥤ GradedObject J C₄ where
   obj X₂ :=
     { obj := fun X₃ => mapTrifunctorMapObj F p X₁ X₂ X₃
-      map := fun {X₃ Y₃} φ => mapTrifunctorMapMap F p (𝟙 X₁) (𝟙 X₂) φ }
+      map := fun {X₃ Y₃} φ => mapTrifunctorMapMap F p (𝟙 X₁) (𝟙 X₂) φ
+      map_id := fun X₃ => by
+        ext j i₁ i₂ i₃ h
+        dsimp
+        simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
+          NatTrans.id_app, id_comp, comp_id]
+      map_comp := fun {X₃ Y₃ Z₃} φ ψ => by
+        ext j i₁ i₂ i₃ h
+        dsimp
+        simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
+          NatTrans.id_app, categoryOfGradedObjects_comp, Functor.map_comp, assoc, id_comp,
+          ι_mapTrifunctorMapMap_assoc] }
   map {X₂ Y₂} φ :=
     { app := fun X₃ => mapTrifunctorMapMap F p (𝟙 X₁) φ (𝟙 X₃)
-      naturality := fun {X₃ Y₃} φ => by
+      naturality := fun {X₃ Y₃} ψ => by
+        ext j i₁ i₂ i₃ h
         dsimp
-        simp only [Functor.map_id, mapTrifunctor_obj, NatTrans.id_app,
-          Category.id_comp, Category.comp_id, ← mapMap_comp]
-        apply congr_mapMap
-        simp }
+        simp only [ι_mapTrifunctorMapMap_assoc, categoryOfGradedObjects_id, Functor.map_id,
+          NatTrans.id_app, ι_mapTrifunctorMapMap, id_comp, NatTrans.naturality_assoc] }
+  map_id X₂ := by
+    ext X₃ j i₁ i₂ i₃ h
+    dsimp
+    simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
+      NatTrans.id_app, id_comp, comp_id]
+  map_comp {X₂ Y₂ Z₂} φ ψ := by
+    ext X₃ j i₁ i₂ i₃
+    dsimp
+    simp only [ι_mapTrifunctorMapMap, categoryOfGradedObjects_id, Functor.map_id,
+      NatTrans.id_app, categoryOfGradedObjects_comp, Functor.map_comp, NatTrans.comp_app,
+      id_comp, assoc, ι_mapTrifunctorMapMap_assoc]
 
-set_option maxHeartbeats 400000 in
 /-- Given a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` and a map `p : I₁ × I₂ × I₃ → J`,
 this is the functor
 `GradedObject I₁ C₁ ⥤ GradedObject I₂ C₂ ⥤ GradedObject I₃ C₃ ⥤ GradedObject J C₄`
@@ -195,20 +224,18 @@ noncomputable def mapTrifunctorMap
     { app := fun X₂ =>
         { app := fun X₃ => mapTrifunctorMapMap F p φ (𝟙 X₂) (𝟙 X₃)
           naturality := fun {X₃ Y₃} φ => by
-            dsimp [mapTrifunctorMapFunctorObj]
-            simp only [Functor.map_id, mapTrifunctor_obj, NatTrans.id_app,
-              Category.id_comp, Category.comp_id, ← mapMap_comp]
-            apply congr_mapMap
-            simp }
-      naturality := fun {X₂ Y₂} φ => by
-        ext X₃ : 2
-        dsimp [mapTrifunctorMapFunctorObj]
-        simp only [Functor.map_id, mapTrifunctor_obj, NatTrans.id_app,
-          Category.comp_id, Category.id_comp, ← mapMap_comp]
-        apply congr_mapMap
-        simp only [← NatTrans.comp_app]
-        congr 1
-        simp }
+            dsimp
+            ext j i₁ i₂ i₃ h
+            dsimp
+            simp only [ι_mapTrifunctorMapMap_assoc, categoryOfGradedObjects_id, Functor.map_id,
+              NatTrans.id_app, ι_mapTrifunctorMapMap, id_comp, NatTrans.naturality_assoc] }
+      naturality := fun {X₂ Y₂} ψ => by
+        ext X₃ j
+        dsimp
+        ext i₁ i₂ i₃ h
+        simp only [ι_mapTrifunctorMapMap_assoc, categoryOfGradedObjects_id, Functor.map_id,
+          NatTrans.id_app, ι_mapTrifunctorMapMap, id_comp,
+          NatTrans.naturality_app_assoc] }
 
 end
 
