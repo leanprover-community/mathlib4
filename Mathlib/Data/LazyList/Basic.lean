@@ -66,6 +66,7 @@ instance : Traversable LazyList where
   map := @LazyList.traverse Id _
   traverse := @LazyList.traverse
 
+@[nolint unusedHavesSuffices] -- Otherwise the linter complains, after leanprover/lean4#2825
 instance : LawfulTraversable LazyList := by
   apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> ext <;> rename_i f xs
   · induction' xs using LazyList.rec with _ _ _ _ ih

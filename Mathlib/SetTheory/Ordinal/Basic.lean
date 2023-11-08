@@ -921,7 +921,6 @@ instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·
     refine inductionOn b (fun α₂ r₂ _ ↦ ?_)
     rintro c ⟨⟨⟨f, fo⟩, fi⟩⟩
     refine inductionOn c (fun β s _ ↦ ?_)
-    have := (Embedding.refl β).sumMap f
     refine ⟨⟨⟨(Embedding.refl.{u+1} _).sumMap f, ?_⟩, ?_⟩⟩
     · intros a b
       match a, b with
