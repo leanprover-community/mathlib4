@@ -1127,22 +1127,27 @@ theorem Lifts.exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F
     mem_adjoin_simple_self x.carrier s⟩
 #align intermediate_field.lifts.exists_lift_of_splits IntermediateField.Lifts.exists_lift_of_splits
 
-theorem algHom_mk_adjoin_splits
-    (hK : ∀ s ∈ S, IsIntegral F (s : E) ∧ (minpoly F s).Splits (algebraMap F K)) :
-    Nonempty (adjoin F S →ₐ[F] K) := by
-  obtain ⟨x, hx⟩ : ∃ m : Lifts F E K, ∀ a, m ≤ a → a = m :=
-    zorn_partialOrder Lifts.exists_upper_bound
-  refine ⟨x.emb.comp (inclusion <| adjoin_le_iff.mpr fun s hs ↦ ?_)⟩
-  rcases x.exists_lift_of_splits (hK s hs).1 (hK s hs).2 with ⟨y, h1, h2⟩
-  rwa [hx y h1] at h2
+variable {L : IntermediateField F E} (f : L →ₐ[F] K) (hL : L ≤ adjoin F S) (hS : adjoin F S = ⊤)
+    (hK : ∀ s ∈ S, IsIntegral F (s : E) ∧ (minpoly F s).Splits (algebraMap F K))
+
+theorem algHom_mk_adjoin_splits₀ : ∃ φ : adjoin F S →ₐ[F] K, φ.comp (inclusion hL) = f := by
+  obtain ⟨φ, hfφ, hφ⟩ := zorn_nonempty_Ici₀ _
+    (fun c _ hc _ _ ↦ Lifts.exists_upper_bound c hc) ⟨L, f⟩ le_rfl
+  refine ⟨φ.emb.comp (inclusion <| adjoin_le_iff.mpr fun s hs ↦ ?_), ?_⟩
+  · rcases φ.exists_lift_of_splits (hK s hs).1 (hK s hs).2 with ⟨y, h1, h2⟩
+    exact (hφ y h1).1 h2
+  · ext; apply hfφ.2
+
+theorem algHom_mk_adjoin_splits : Nonempty (adjoin F S →ₐ[F] K) :=
+  have ⟨φ, _⟩ := algHom_mk_adjoin_splits₀ (⊥ : Lifts F E K).emb bot_le hK; ⟨φ⟩
 #align intermediate_field.alg_hom_mk_adjoin_splits IntermediateField.algHom_mk_adjoin_splits
 
-theorem algHom_mk_adjoin_splits' (hS : adjoin F S = ⊤)
-    (hK : ∀ x ∈ S, IsIntegral F (x : E) ∧ (minpoly F x).Splits (algebraMap F K)) :
-    Nonempty (E →ₐ[F] K) := by
-  cases' algHom_mk_adjoin_splits hK with ϕ
-  rw [hS] at ϕ
-  exact ⟨ϕ.comp topEquiv.symm.toAlgHom⟩
+theorem algHom_mk_adjoin_splits₀' : ∃ φ : E →ₐ[F] K, φ.comp L.val = f :=
+  have ⟨φ, hφ⟩ := algHom_mk_adjoin_splits₀ f (hS.symm ▸ le_top) hK
+  ⟨φ.comp ((equivOfEq hS).trans topEquiv).symm.toAlgHom, hφ⟩
+
+theorem algHom_mk_adjoin_splits' : Nonempty (E →ₐ[F] K) :=
+  have ⟨φ, _⟩ := algHom_mk_adjoin_splits₀' (⊥ : Lifts F E K).emb hS hK; ⟨φ⟩
 #align intermediate_field.alg_hom_mk_adjoin_splits' IntermediateField.algHom_mk_adjoin_splits'
 
 end AlgHomMkAdjoinSplits
