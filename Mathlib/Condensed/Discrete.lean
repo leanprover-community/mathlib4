@@ -6,6 +6,17 @@ Authors: Dagur Asgeirsson
 import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.Condensed.Abelian
 
+/-!
+
+# Discrete-underlying adjunction
+
+Given a well-behaved concrete category `C`, we define a functor `C ⥤ Condensed C` which associates
+to an object of `C` the corresponding "discrete" condensed object (see `Condensed.discrete`).
+
+In `Condensed.discrete_underlying_adj` we prove that this functor is left adjoint to the forgetful
+functor from `Condensed C` to `C`.
+-/
+
 universe u v w
 
 open CategoryTheory Limits GrothendieckTopology
