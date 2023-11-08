@@ -1326,7 +1326,7 @@ variable (α)
 /-- Let `α` be a densely ordered linear order with order topology. If `α` is a separable space, then
 it has second countable topology. Note that the "densely ordered" assumption cannot be dropped, see
 [double arrow space](https://topology.pi-base.org/spaces/S000093) for a counterexample. -/
-theorem TopologicalSpace.SecondCountableTopology.of_separableSpace_orderTopology [DenselyOrdered α]
+theorem SecondCountableTopology.of_separableSpace_orderTopology [DenselyOrdered α]
     [SeparableSpace α] : SecondCountableTopology α := by
   rcases exists_countable_dense α with ⟨s, hc, hd⟩
   refine ⟨⟨_, ?_, hd.topology_eq_generateFrom⟩⟩
