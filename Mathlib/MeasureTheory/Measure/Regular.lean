@@ -26,7 +26,7 @@ A measure is `Regular` if it satisfies the following properties:
   set `U` is the supremum of `μ K` over all compact sets `K` contained in `U`.
 
 A measure is `InnerRegular` if it is inner regular for measurable sets with respect to compact
-closed sets: the measure of any measurable set `s` is the supremum of `μ K` over all compact
+sets: the measure of any measurable set `s` is the supremum of `μ K` over all compact
 sets contained in `s`.
 
 A measure is `InnerRegularCompactLTTop` if it is inner regular for measurable sets of finite
