@@ -72,6 +72,8 @@ noncomputable section
 
 open BigOperators Polynomial
 
+open Finset (antidiagonal mem_antidiagonal)
+
 /-- Multivariate formal power series, where `σ` is the index set of the variables
 and `R` is the coefficient ring.-/
 def MvPowerSeries (σ : Type*) (R : Type*) :=
@@ -212,10 +214,10 @@ instance : AddMonoidWithOne (MvPowerSeries σ R) :=
 
 instance : Mul (MvPowerSeries σ R) :=
   letI := Classical.decEq σ
-  ⟨fun φ ψ n => ∑ p in Finsupp.antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ⟩
+  ⟨fun φ ψ n => ∑ p in antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ⟩
 
 theorem coeff_mul [DecidableEq σ] :
-    coeff R n (φ * ψ) = ∑ p in Finsupp.antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
+    coeff R n (φ * ψ) = ∑ p in antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
   refine Finset.sum_congr ?_ fun _ _ => rfl
   rw [Subsingleton.elim (Classical.decEq σ) ‹DecidableEq σ›]
 #align mv_power_series.coeff_mul MvPowerSeries.coeff_mul
@@ -235,7 +237,8 @@ theorem coeff_monomial_mul (a : R) :
     ∀ p ∈ antidiagonal m,
       coeff R (p : (σ →₀ ℕ) × (σ →₀ ℕ)).1 (monomial R n a) * coeff R p.2 φ ≠ 0 → p.1 = n :=
     fun p _ hp => eq_of_coeff_monomial_ne_zero (left_ne_zero_of_mul hp)
-  rw [coeff_mul, ← Finset.sum_filter_of_ne this, antidiagonal_filter_fst_eq, Finset.sum_ite_index]
+  rw [coeff_mul, ← Finset.sum_filter_of_ne this, Finset.filter_fst_eq_antidiagonal _ n,
+    Finset.sum_ite_index]
   simp only [Finset.sum_singleton, coeff_monomial_same, Finset.sum_empty]
 #align mv_power_series.coeff_monomial_mul MvPowerSeries.coeff_monomial_mul
 
@@ -246,7 +249,8 @@ theorem coeff_mul_monomial (a : R) :
     ∀ p ∈ antidiagonal m,
       coeff R (p : (σ →₀ ℕ) × (σ →₀ ℕ)).1 φ * coeff R p.2 (monomial R n a) ≠ 0 → p.2 = n :=
     fun p _ hp => eq_of_coeff_monomial_ne_zero (right_ne_zero_of_mul hp)
-  rw [coeff_mul, ← Finset.sum_filter_of_ne this, antidiagonal_filter_snd_eq, Finset.sum_ite_index]
+  rw [coeff_mul, ← Finset.sum_filter_of_ne this, Finset.filter_snd_eq_antidiagonal _ n,
+    Finset.sum_ite_index]
   simp only [Finset.sum_singleton, coeff_monomial_same, Finset.sum_empty]
 #align mv_power_series.coeff_mul_monomial MvPowerSeries.coeff_mul_monomial
 
@@ -771,7 +775,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
     contrapose! h
     dsimp at h
     subst i
-    rw [Finsupp.mem_antidiagonal] at hij
+    rw [mem_antidiagonal] at hij
     rw [← hij, Finsupp.add_apply, Finsupp.single_eq_same]
     exact Nat.le_add_right n _
   · intro h
@@ -782,7 +786,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
       · rw [coeff_X_pow, if_pos rfl, one_mul]
         simpa using congr_arg (fun m : σ →₀ ℕ => coeff R m φ) H.symm
       · rintro ⟨i, j⟩ hij hne
-        rw [Finsupp.mem_antidiagonal] at hij
+        rw [mem_antidiagonal] at hij
         rw [coeff_X_pow]
         split_ifs with hi
         · exfalso
@@ -795,10 +799,10 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
       · intro hni
         exfalso
         apply hni
-        rwa [Finsupp.mem_antidiagonal, add_comm]
+        rwa [mem_antidiagonal, add_comm]
     · rw [h, coeff_mul, Finset.sum_eq_zero]
       · rintro ⟨i, j⟩ hij
-        rw [Finsupp.mem_antidiagonal] at hij
+        rw [mem_antidiagonal] at hij
         rw [coeff_X_pow]
         split_ifs with hi
         · exfalso
@@ -845,7 +849,7 @@ protected noncomputable def inv.aux (a : R) (φ : MvPowerSeries σ R) : MvPowerS
     if n = 0 then a
     else
       -a *
-        ∑ x in n.antidiagonal, if _ : x.2 < n then coeff R x.1 φ * inv.aux a φ x.2 else 0
+        ∑ x in antidiagonal n, if _ : x.2 < n then coeff R x.1 φ * inv.aux a φ x.2 else 0
 termination_by _ n => n
 #align mv_power_series.inv.aux MvPowerSeries.inv.aux
 
@@ -854,11 +858,11 @@ theorem coeff_inv_aux [DecidableEq σ] (n : σ →₀ ℕ) (a : R) (φ : MvPower
       if n = 0 then a
       else
         -a *
-          ∑ x in n.antidiagonal, if x.2 < n then coeff R x.1 φ * coeff R x.2 (inv.aux a φ) else 0 :=
+          ∑ x in antidiagonal n, if x.2 < n then coeff R x.1 φ * coeff R x.2 (inv.aux a φ) else 0 :=
   show inv.aux a φ n = _ by
+    cases Subsingleton.elim ‹DecidableEq σ› (Classical.decEq σ)
     rw [inv.aux]
-    -- unify `Decidable` instances
-    convert rfl
+    rfl
 #align mv_power_series.coeff_inv_aux MvPowerSeries.coeff_inv_aux
 
 /-- A multivariate formal power series is invertible if the constant coefficient is invertible.-/
@@ -871,7 +875,7 @@ theorem coeff_invOfUnit [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries
       if n = 0 then ↑u⁻¹
       else
         -↑u⁻¹ *
-          ∑ x in n.antidiagonal,
+          ∑ x in antidiagonal n,
             if x.2 < n then coeff R x.1 φ * coeff R x.2 (invOfUnit φ u) else 0 := by
   convert coeff_inv_aux n (↑u⁻¹) φ
 #align mv_power_series.coeff_inv_of_unit MvPowerSeries.coeff_invOfUnit
@@ -892,7 +896,7 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ 
       simp [coeff_mul, support_single_ne_zero, h]
     else by
       classical
-      have : ((0 : σ →₀ ℕ), n) ∈ n.antidiagonal := by rw [Finsupp.mem_antidiagonal, zero_add]
+      have : ((0 : σ →₀ ℕ), n) ∈ antidiagonal n := by rw [mem_antidiagonal, zero_add]
       rw [coeff_one, if_neg H, coeff_mul, ← Finset.insert_erase this,
         Finset.sum_insert (Finset.not_mem_erase _ _), coeff_zero_eq_constantCoeff_apply, h,
         coeff_invOfUnit, if_neg H, neg_mul, mul_neg, Units.mul_inv_cancel_left, ←
@@ -900,7 +904,7 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ 
         Finset.insert_erase this, if_neg (not_lt_of_ge <| le_rfl), zero_add, add_comm, ←
         sub_eq_add_neg, sub_eq_zero, Finset.sum_congr rfl]
       rintro ⟨i, j⟩ hij
-      rw [Finset.mem_erase, Finsupp.mem_antidiagonal] at hij
+      rw [Finset.mem_erase, mem_antidiagonal] at hij
       cases' hij with h₁ h₂
       subst n
       rw [if_pos]
@@ -971,7 +975,7 @@ theorem coeff_inv [DecidableEq σ] (n : σ →₀ ℕ) (φ : MvPowerSeries σ k)
       if n = 0 then (constantCoeff σ k φ)⁻¹
       else
         -(constantCoeff σ k φ)⁻¹ *
-          ∑ x in n.antidiagonal, if x.2 < n then coeff k x.1 φ * coeff k x.2 φ⁻¹ else 0 :=
+          ∑ x in antidiagonal n, if x.2 < n then coeff k x.1 φ * coeff k x.2 φ⁻¹ else 0 :=
   coeff_inv_aux n _ φ
 #align mv_power_series.coeff_inv MvPowerSeries.coeff_inv
 
@@ -1459,9 +1463,16 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem coeff_zero_C (a : R) : coeff R 0 (C R a) = a := by
-  rw [← monomial_zero_eq_C_apply, coeff_monomial_same 0 a]
+  rw [coeff_C, if_pos rfl]
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_zero_C PowerSeries.coeff_zero_C
+
+theorem coeff_ne_zero_C {a : R} {n : ℕ} (h : n ≠ 0) : coeff R n (C R a) = 0 := by
+  rw [coeff_C, if_neg h]
+
+@[simp]
+theorem coeff_succ_C {a : R} {n : ℕ} : coeff R (n + 1) (C R a) = 0 :=
+  coeff_ne_zero_C n.succ_ne_zero
 
 theorem X_eq : (X : R⟦X⟧) = monomial R 1 1 :=
   rfl
@@ -1517,7 +1528,7 @@ theorem coeff_zero_one : coeff R 0 (1 : R⟦X⟧) = 1 :=
 #align power_series.coeff_zero_one PowerSeries.coeff_zero_one
 
 theorem coeff_mul (n : ℕ) (φ ψ : R⟦X⟧) :
-    coeff R n (φ * ψ) = ∑ p in Finset.Nat.antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
+    coeff R n (φ * ψ) = ∑ p in antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
   -- `rw` can't see that `PowerSeries = MvPowerSeries Unit`, so use `.trans`
   refine (MvPowerSeries.coeff_mul _ φ ψ).trans ?_
   rw [Finsupp.antidiagonal_single, Finset.sum_map]
@@ -1620,10 +1631,10 @@ theorem coeff_mul_X_pow (p : R⟦X⟧) (n d : ℕ) :
     rw [coeff_X_pow, if_neg, mul_zero]
     rintro rfl
     apply h2
-    rw [Finset.Nat.mem_antidiagonal, add_right_cancel_iff] at h1
+    rw [mem_antidiagonal, add_right_cancel_iff] at h1
     subst h1
     rfl
-  · exact fun h1 => (h1 (Finset.Nat.mem_antidiagonal.2 rfl)).elim
+  · exact fun h1 => (h1 (mem_antidiagonal.2 rfl)).elim
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_mul_X_pow PowerSeries.coeff_mul_X_pow
 
@@ -1635,11 +1646,11 @@ theorem coeff_X_pow_mul (p : R⟦X⟧) (n d : ℕ) :
     rw [coeff_X_pow, if_neg, zero_mul]
     rintro rfl
     apply h2
-    rw [Finset.Nat.mem_antidiagonal, add_comm, add_right_cancel_iff] at h1
+    rw [mem_antidiagonal, add_comm, add_right_cancel_iff] at h1
     subst h1
     rfl
   · rw [add_comm]
-    exact fun h1 => (h1 (Finset.Nat.mem_antidiagonal.2 rfl)).elim
+    exact fun h1 => (h1 (mem_antidiagonal.2 rfl)).elim
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_X_pow_mul PowerSeries.coeff_X_pow_mul
 
@@ -1649,7 +1660,7 @@ theorem coeff_mul_X_pow' (p : R⟦X⟧) (n d : ℕ) :
   · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
   · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
     rw [coeff_X_pow, if_neg, mul_zero]
-    exact ((le_of_add_le_right (Finset.Nat.mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
+    exact ((le_of_add_le_right (mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_mul_X_pow' PowerSeries.coeff_mul_X_pow'
 
@@ -1660,7 +1671,7 @@ theorem coeff_X_pow_mul' (p : R⟦X⟧) (n d : ℕ) :
     simp
   · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
     rw [coeff_X_pow, if_neg, zero_mul]
-    have := Finset.Nat.mem_antidiagonal.mp hx
+    have := mem_antidiagonal.mp hx
     rw [add_comm] at this
     exact ((le_of_add_le_right this.le).trans_lt <| not_le.mp h).ne
 set_option linter.uppercaseLean3 false in
@@ -1785,7 +1796,7 @@ noncomputable def rescale (a : R) : R⟦X⟧ →+* R⟦X⟧ where
     ext
     rw [PowerSeries.coeff_mul, PowerSeries.coeff_mk, PowerSeries.coeff_mul, Finset.mul_sum]
     apply sum_congr rfl
-    simp only [coeff_mk, Prod.forall, Nat.mem_antidiagonal]
+    simp only [coeff_mk, Prod.forall, mem_antidiagonal]
     intro b c H
     rw [← H, pow_add, mul_mul_mul_comm]
 #align power_series.rescale PowerSeries.rescale
@@ -1956,7 +1967,7 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
       if n = 0 then a
       else
         -a *
-          ∑ x in Finset.Nat.antidiagonal n,
+          ∑ x in antidiagonal n,
             if x.2 < n then coeff R x.1 φ * coeff R x.2 (inv.aux a φ) else 0 := by
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [coeff, inv.aux, MvPowerSeries.coeff_inv_aux]
@@ -1966,8 +1977,8 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
   symm
   apply Finset.sum_bij fun (p : ℕ × ℕ) _h => (single () p.1, single () p.2)
   · rintro ⟨i, j⟩ hij
-    rw [Finset.Nat.mem_antidiagonal] at hij
-    rw [Finsupp.mem_antidiagonal, ← Finsupp.single_add, hij]
+    rw [mem_antidiagonal] at hij
+    rw [mem_antidiagonal, ← Finsupp.single_add, hij]
   · rintro ⟨i, j⟩ _hij
     by_cases H : j < n
     · rw [if_pos H, if_pos]
@@ -1988,8 +1999,8 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
     simpa only [Prod.mk.inj_iff, Finsupp.unique_single_eq_iff] using id
   · rintro ⟨f, g⟩ hfg
     refine' ⟨(f (), g ()), _, _⟩
-    · rw [Finsupp.mem_antidiagonal] at hfg
-      rw [Finset.Nat.mem_antidiagonal, ← Finsupp.add_apply, hfg, Finsupp.single_eq_same]
+    · rw [mem_antidiagonal] at hfg
+      rw [mem_antidiagonal, ← Finsupp.add_apply, hfg, Finsupp.single_eq_same]
     · rw [Prod.mk.inj_iff]
       dsimp
       exact ⟨Finsupp.unique_single f, Finsupp.unique_single g⟩
@@ -2005,7 +2016,7 @@ theorem coeff_invOfUnit (n : ℕ) (φ : R⟦X⟧) (u : Rˣ) :
       if n = 0 then ↑u⁻¹
       else
         -↑u⁻¹ *
-          ∑ x in Finset.Nat.antidiagonal n,
+          ∑ x in antidiagonal n,
             if x.2 < n then coeff R x.1 φ * coeff R x.2 (invOfUnit φ u) else 0 :=
   coeff_inv_aux n (↑u⁻¹ : R) φ
 #align power_series.coeff_inv_of_unit PowerSeries.coeff_invOfUnit
@@ -2096,7 +2107,7 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors R] (φ ψ : R⟦X⟧) 
     · specialize hm₂ _ hi
       push_neg at hm₂
       rw [hm₂, zero_mul]
-    rw [Finset.Nat.mem_antidiagonal] at hij
+    rw [mem_antidiagonal] at hij
     push_neg at hi hj
     suffices m < i by
       have : m + n < i + j := add_lt_add_of_lt_of_le this hj
@@ -2107,7 +2118,7 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors R] (φ ψ : R⟦X⟧) 
     simpa [Ne.def, Prod.mk.inj_iff] using (add_right_inj m).mp hij
   · contrapose!
     intro
-    rw [Finset.Nat.mem_antidiagonal]
+    rw [mem_antidiagonal]
 #align power_series.eq_zero_or_eq_zero_of_mul_eq_zero PowerSeries.eq_zero_or_eq_zero_of_mul_eq_zero
 
 instance [NoZeroDivisors R] : NoZeroDivisors R⟦X⟧ where
@@ -2211,7 +2222,7 @@ theorem coeff_inv (n) (φ : PowerSeries k) :
       if n = 0 then (constantCoeff k φ)⁻¹
       else
         -(constantCoeff k φ)⁻¹ *
-          ∑ x in Finset.Nat.antidiagonal n,
+          ∑ x in antidiagonal n,
             if x.2 < n then coeff k x.1 φ * coeff k x.2 φ⁻¹ else 0 :=
   by rw [inv_eq_inv_aux, coeff_inv_aux n (constantCoeff k φ)⁻¹ φ]
 #align power_series.coeff_inv PowerSeries.coeff_inv
@@ -2473,7 +2484,7 @@ theorem order_mul_ge (φ ψ : R⟦X⟧) : order φ + order ψ ≤ order (φ * ψ
   · rw [coeff_of_lt_order i hi, zero_mul]
   by_cases hj : ↑j < order ψ
   · rw [coeff_of_lt_order j hj, mul_zero]
-  rw [not_lt] at hi hj; rw [Finset.Nat.mem_antidiagonal] at hij
+  rw [not_lt] at hi hj; rw [mem_antidiagonal] at hij
   exfalso
   apply ne_of_lt (lt_of_lt_of_le hn <| add_le_add hi hj)
   rw [← Nat.cast_add, hij]
@@ -2503,13 +2514,13 @@ theorem order_monomial_of_ne_zero (n : ℕ) (a : R) (h : a ≠ 0) : order (monom
 with any other power series is `0`. -/
 theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order) :
     coeff R n (φ * ψ) = 0 := by
-  suffices : coeff R n (φ * ψ) = ∑ p in Finset.Nat.antidiagonal n, 0
+  suffices : coeff R n (φ * ψ) = ∑ p in antidiagonal n, 0
   rw [this, Finset.sum_const_zero]
   rw [coeff_mul]
   apply Finset.sum_congr rfl
   intro x hx
   refine' mul_eq_zero_of_right (coeff R x.fst φ) (coeff_of_lt_order x.snd (lt_of_le_of_lt _ h))
-  rw [Finset.Nat.mem_antidiagonal] at hx
+  rw [mem_antidiagonal] at hx
   norm_cast
   linarith
 #align power_series.coeff_mul_of_lt_order PowerSeries.coeff_mul_of_lt_order
@@ -2536,7 +2547,8 @@ theorem X_pow_order_dvd (h : (order φ).Dom) : X ^ (order φ).get h ∣ φ := by
   refine' ⟨PowerSeries.mk fun n => coeff R (n + (order φ).get h) φ, _⟩
   ext n
   simp only [coeff_mul, coeff_X_pow, coeff_mk, boole_mul, Finset.sum_ite,
-    Finset.Nat.filter_fst_eq_antidiagonal, Finset.sum_const_zero, add_zero]
+    Finset.sum_const_zero, add_zero]
+  rw [Finset.filter_fst_eq_antidiagonal n (Part.get (order φ) h)]
   split_ifs with hn
   · simp [tsub_add_cancel_of_le hn]
   · simp only [Finset.sum_empty]

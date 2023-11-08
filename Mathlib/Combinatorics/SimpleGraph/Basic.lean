@@ -136,6 +136,8 @@ structure SimpleGraph (V : Type u) where
 #align simple_graph SimpleGraph
 -- porting note: changed `obviously` to `aesop` in the `structure`
 
+initialize_simps_projections SimpleGraph (Adj → adj)
+
 /-- Constructor for simple graphs using a symmetric irreflexive boolean function. -/
 @[simps]
 def SimpleGraph.mk' {V : Type u} :
