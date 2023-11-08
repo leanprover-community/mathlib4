@@ -41,7 +41,7 @@ We define the trace / Killing form in this file and prove some basic properties.
  * Prove that in characteristic zero, a semisimple Lie algebra has non-singular Killing form.
 -/
 
-variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+variable (K R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
   [Module.Free R M] [Module.Finite R M]
 
@@ -317,6 +317,90 @@ instance isSemisimple [IsDomain R] [IsPrincipalIdealRing R] : IsSemisimple R L :
 -- TODO: formalize a positive-characteristic counterexample to the above instance
 
 end IsKilling
+
+section field
+
+variable {R K L M}
+variable [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [IsNilpotent K L]
+
+-- https://github.com/leanprover-community/mathlib/pull/14399
+instance : Finite (Ideal K) := sorry
+
+instance : IsArtinianRing K := ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
+
+instance [Subsingleton L] : IsLieAbelian L := sorry
+
+open BigOperators
+
+variable (R M) in
+lemma foo' {ι : Type*} {N : ι → Submodule R M} (h_ind : CompleteLattice.Independent N) :
+    Set.Finite {i | N i ≠ ⊥} := by
+  -- Because of `Module.Finite R M`
+  sorry
+
+variable (K L M) in
+lemma foo [FiniteDimensional K M] : Set.Finite {χ : L → K | LieModule.weightSpace M χ ≠ ⊥} := by
+  sorry
+
+lemma bar' {ι : Type*} {N : ι → Submodule R M}
+    (h_ind : CompleteLattice.Independent N) (h_sup : ⨆ i, N i = ⊤)
+    {f : M →ₗ[R] M} (hf : ∀ i, Set.MapsTo f (N i) (N i))
+    (h_fin : Set.Finite {i | N i ≠ ⊥} := foo' R M h_ind) :
+    trace R M f = ∑ i in h_fin.toFinset, trace R (N i) (f.restrict (hf i)) := by
+  -- If we want to try and use the direct sum machinery:
+  classical
+  have := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top h_ind h_sup
+  sorry
+
+variable (K L M) in
+lemma bar [LieModule.IsTriangularizable K L M] [FiniteDimensional K M] :
+    LieModule.traceForm K L M =
+    ∑ χ in (foo K L M).toFinset, LieModule.traceForm K L (LieModule.weightSpace M χ) := by
+  have h_ind := LieModule.independent_weightSpace K L M
+  have h_sup := LieModule.iSup_weightSpace_eq_top K L M
+  replace h_ind : CompleteLattice.Independent
+      fun (χ : L → K) ↦ (LieModule.weightSpace M χ : Submodule K M) := sorry
+  replace h_sup : ⨆ (χ : L → K), (LieModule.weightSpace M χ : Submodule K M) = ⊤ := sorry
+  ext x y
+  simp only [ne_eq, LinearMap.coeFn_sum, Finset.sum_apply, LieModule.traceForm_apply_apply]
+  have hxy : ∀ χ : L → K,
+      Set.MapsTo ((LieModule.toEndomorphism K L M x).comp (LieModule.toEndomorphism K L M y))
+      (LieModule.weightSpace M χ) (LieModule.weightSpace M χ) :=
+    fun χ m hm ↦ LieSubmodule.lie_mem _ <| LieSubmodule.lie_mem _ hm
+  rw [bar' h_ind h_sup hxy]
+  exact Finset.sum_congr (by simp) (fun χ hχ ↦ rfl)
+
+-- TODO drop `IsTriangularizable` assumption by passing to algebraic closure
+lemma baz [LieModule.IsTriangularizable K L M] [FiniteDimensional K M]
+    (h : LinearMap.ker (LieModule.traceForm K L M) = ⊥) :
+    IsLieAbelian L := by
+  suffices LieModule.lowerCentralSeriesLast K L L ≤ LinearMap.ker (LieModule.traceForm K L M) by
+    replace this : ¬ Nontrivial (LieModule.lowerCentralSeriesLast K L L) := by
+      rwa [h, LieIdeal.coe_to_lieSubalgebra_to_submodule, le_bot_iff,
+        ← Submodule.subsingleton_iff_eq_bot, ← not_nontrivial_iff_subsingleton] at this
+    nontriviality L
+    have contra := LieModule.nontrivial_lowerCentralSeriesLast K L L
+    contradiction
+  rintro z (hz : z ∈ LieModule.lowerCentralSeriesLast K L L)
+  suffices ∀ χ : L → K, LieModule.traceForm K L (LieModule.weightSpace M χ) z = 0 by
+    simp [bar K L M, this]
+  intro χ
+  ext x
+  simp only [LinearMap.zero_apply]
+  have hz' : z ∈ center K L := LieModule.lowerCentralSeriesLast_le_max_triv K L L hz
+  -- Wait are Seligman / Zassenhaus right? It looks to me like we don't need `hz'`
+  -- and can thus prove the stronger result that `derivedSeries K L 1` is orthogonal to `L`
+  -- (usually proved using Lie's theorem in char 0). No wait, I think I do need `hz'`. Oh well.
+  sorry
+
+lemma qux [IsKilling K L] [FiniteDimensional K L]
+    (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [LieModule.IsTriangularizable K H L] :
+    IsLieAbelian H :=
+  have : IsNoetherian K L := IsNoetherian.iff_fg.mpr inferInstance
+  have : IsArtinian K L := isArtinian_of_fg_of_artinian' <| Module.finite_def.mp inferInstance
+  baz <| IsKilling.ker_restrictBilinear_of_isCartanSubalgebra_eq_bot K L H
+
+end field
 
 end LieAlgebra
 
