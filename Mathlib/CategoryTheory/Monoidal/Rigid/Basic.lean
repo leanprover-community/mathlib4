@@ -107,23 +107,13 @@ lemma evaluation_coevaluation :
     (η_ _ _ ▷ X) ≫ (α_ _ _ _).hom ≫ (X ◁ ε_ _ Y) = (λ_ X).hom ≫ (ρ_ X).inv :=
   evaluation_coevaluation'
 
-lemma coevaluation_evaluation''' :
+lemma coevaluation_evaluation'' :
     (Y ◁ η_ X Y) ⊗≫ (ε_ X Y ▷ Y) = 𝟙 _ ⊗≫ 𝟙 _ := by
   convert coevaluation_evaluation X Y <;> simp [Mathlib.Tactic.Coherence.monoidalComp]
 
-lemma evaluation_coevaluation''' :
+lemma evaluation_coevaluation'' :
     (η_ X Y ▷ X) ⊗≫ (X ◁ ε_ X Y) = 𝟙 _ ⊗≫ 𝟙 _ := by
   convert evaluation_coevaluation X Y <;> simp [Mathlib.Tactic.Coherence.monoidalComp]
-
--- -- temporary lemma
--- lemma coevaluation_evaluation'' :
---     (𝟙 Y ⊗ η_ _ _) ≫ (α_ _ _ _).inv ≫ (ε_ X _ ⊗ 𝟙 Y) = (ρ_ Y).hom ≫ (λ_ Y).inv := by
---   simp [coevaluation_evaluation]
-
--- -- temporary lemma
--- lemma evaluation_coevaluation'' :
---     (η_ _ _ ⊗ 𝟙 X) ≫ (α_ _ _ _).hom ≫ (𝟙 X ⊗ ε_ _ Y) = (λ_ X).hom ≫ (ρ_ X).inv := by
---   simp [evaluation_coevaluation]
 
 end ExactPairing
 
@@ -257,7 +247,7 @@ theorem comp_rightAdjointMate {X Y Z : C} [HasRightDual X] [HasRightDual Y] [Has
     _ = η_ X Xᘁ ⊗≫ f ▷ Xᘁ ⊗≫ (η_ Y Yᘁ ▷ Y ⊗≫ Y ◁ ε_ Y Yᘁ) ▷ Xᘁ ⊗≫ g ▷ Xᘁ ⊗≫ 𝟙 _ := by
       rw [← whisker_exchange]; coherence
     _ = η_ X Xᘁ ≫ f ▷ Xᘁ ≫ g ▷ Xᘁ := by
-      rw [evaluation_coevaluation''']; coherence
+      rw [evaluation_coevaluation'']; coherence
 #align category_theory.comp_right_adjoint_mate CategoryTheory.comp_rightAdjointMate
 
 /-- The composition of left adjoint mates is the adjoint mate of the composition. -/
@@ -277,7 +267,7 @@ theorem comp_leftAdjointMate {X Y Z : C} [HasLeftDual X] [HasLeftDual Y] [HasLef
     _ = 𝟙 _ ⊗≫ η_ (ᘁX) X ⊗≫ ((ᘁX) ◁ f) ⊗≫ (ᘁX) ◁ (Y ◁ η_ (ᘁY) Y ⊗≫ ε_ (ᘁY) Y ▷ Y) ⊗≫ (ᘁX) ◁ g := by
       rw [whisker_exchange]; coherence
     _ = η_ (ᘁX) X ≫ (ᘁX) ◁ f ≫ (ᘁX) ◁ g := by
-      rw [coevaluation_evaluation''']; coherence
+      rw [coevaluation_evaluation'']; coherence
 #align category_theory.comp_left_adjoint_mate CategoryTheory.comp_leftAdjointMate
 
 open Mathlib.Tactic.Coherence in
@@ -300,7 +290,7 @@ def tensorLeftHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (Y' ⊗ X ⟶ Z) ≃
       _ = 𝟙 _ ⊗≫ (Y' ◁ η_ Y Y' ⊗≫ ε_ Y Y' ▷ Y') ▷ X ⊗≫ f := by
         rw [whisker_exchange]; coherence
       _ = f := by
-        rw [coevaluation_evaluation''']; coherence
+        rw [coevaluation_evaluation'']; coherence
   right_inv f := by
     calc
       _ = 𝟙 _ ⊗≫ (η_ Y Y' ▷ X ≫ (Y ⊗ Y') ◁ f) ⊗≫ Y ◁ ε_ Y Y' ▷ Z ⊗≫ 𝟙 _ := by
@@ -308,7 +298,7 @@ def tensorLeftHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (Y' ⊗ X ⟶ Z) ≃
       _ = f ⊗≫ (η_ Y Y' ▷ Y ⊗≫ Y ◁ ε_ Y Y') ▷ Z ⊗≫ 𝟙 _ := by
         rw [← whisker_exchange]; coherence
       _ = f := by
-        rw [evaluation_coevaluation''']; coherence
+        rw [evaluation_coevaluation'']; coherence
 #align category_theory.tensor_left_hom_equiv CategoryTheory.tensorLeftHomEquiv
 
 /-- Given an exact pairing on `Y Y'`,
@@ -325,7 +315,7 @@ def tensorRightHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (X ⊗ Y ⟶ Z) ≃
       _ = 𝟙 _ ⊗≫ X ◁ (η_ Y Y' ▷ Y ⊗≫ Y ◁ ε_ Y Y') ⊗≫ f := by
         rw [← whisker_exchange]; coherence
       _ = f := by
-        rw [evaluation_coevaluation''']; coherence
+        rw [evaluation_coevaluation'']; coherence
   right_inv f := by
     calc
       _ = 𝟙 _ ⊗≫ (X ◁ η_ Y Y' ≫ f ▷ (Y ⊗ Y')) ⊗≫ Z ◁ ε_ Y Y' ▷ Y' ⊗≫ 𝟙 _ := by
@@ -333,7 +323,7 @@ def tensorRightHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (X ⊗ Y ⟶ Z) ≃
       _ = f ⊗≫ Z ◁ (Y' ◁ η_ Y Y' ⊗≫ ε_ Y Y' ▷ Y') ⊗≫ 𝟙 _ := by
         rw [whisker_exchange]; coherence
       _ = f := by
-        rw [coevaluation_evaluation''']; coherence
+        rw [coevaluation_evaluation'']; coherence
 #align category_theory.tensor_right_hom_equiv CategoryTheory.tensorRightHomEquiv
 
 theorem tensorLeftHomEquiv_naturality {X Y Y' Z Z' : C} [ExactPairing Y Y'] (f : Y' ⊗ X ⟶ Z)
@@ -536,7 +526,7 @@ def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : Exac
       _ = 𝟙 _ ⊗≫ i.hom ⊗≫ (η_ X' Y ▷ X' ⊗≫ X' ◁ ε_ X' Y) ⊗≫ i.inv ⊗≫ 𝟙 (X ⊗ 𝟙_ C) := by
         rw [← whisker_exchange, ← whisker_exchange]; coherence
       _ = 𝟙 _ ⊗≫ (i.hom ≫ i.inv) ⊗≫ 𝟙 _ := by
-        rw [evaluation_coevaluation''']; coherence
+        rw [evaluation_coevaluation'']; coherence
       _ = (λ_ X).hom ≫ (ρ_ X).inv := by
         rw [Iso.hom_inv_id]
         -- coherence failed
@@ -568,7 +558,7 @@ def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : Exa
       _ = 𝟙 _ ⊗≫ i.hom ⊗≫ (Y' ◁ η_ X Y' ⊗≫ ε_ X Y' ▷ Y') ⊗≫ i.inv ⊗≫ 𝟙 _ := by
         rw [whisker_exchange, whisker_exchange]; coherence
       _ = 𝟙 _ ⊗≫ (i.hom ≫ i.inv) ⊗≫ 𝟙 _ := by
-        rw [coevaluation_evaluation''']; coherence
+        rw [coevaluation_evaluation'']; coherence
       _ = (ρ_ Y).hom ≫ (λ_ Y).inv := by
         rw [Iso.hom_inv_id]
         -- coherence failed
