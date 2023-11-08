@@ -3,11 +3,9 @@ Copyright (c) 2021 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
-import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.Totient
-import Mathlib.Data.Finset.LocallyFinite
-import Mathlib.Data.Nat.Count
 import Mathlib.Data.Nat.Nth
+import Mathlib.NumberTheory.SmoothNumbers
 
 #align_import number_theory.prime_counting from "leanprover-community/mathlib"@"7fdd4f3746cb059edfdb5d52cba98f66fce418c0"
 
@@ -74,6 +72,17 @@ theorem primeCounting'_nth_eq (n : ℕ) : π' (nth Prime n) = n :=
 theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
   nth_mem_of_infinite infinite_setOf_prime _
 #align nat.prime_nth_prime Nat.prime_nth_prime
+
+/-- The cardninality of the finset `primesBelow n` equals the counting function
+`primeCounting'` at `n`. -/
+lemma primesBelow_card_eq_primeCounting' (n : ℕ) : n.primesBelow.card = primeCounting' n := by
+  induction n with
+  | zero => simp only
+  | succ n ih =>
+      simp only [primesBelow_succ, primeCounting', count_succ] at ih ⊢
+      split_ifs
+      · rw [Finset.card_insert_of_not_mem (not_mem_primesBelow n), ih]
+      · rwa [add_zero]
 
 /-- A linear upper bound on the size of the `primeCounting'` function -/
 theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
