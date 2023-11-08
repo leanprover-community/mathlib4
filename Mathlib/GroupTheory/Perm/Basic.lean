@@ -703,17 +703,17 @@ variable {α : Type*} {f : Perm α} {s : Set α}
 lemma BijOn.perm_inv (hf : BijOn f s s) : BijOn ↑(f⁻¹) s s := hf.symm f.invOn
 #align set.bij_on.perm_inv Set.BijOn.perm_inv
 
-lemma MapsTo.perm_pow : MapsTo f s s → ∀ n : ℕ, MapsTo (f ^ n) s s := by
+lemma MapsTo.perm_pow : MapsTo f s s → ∀ n : ℕ, MapsTo ↑(f ^ n) s s := by
   simp_rw [Equiv.Perm.coe_pow]; exact MapsTo.iterate
 #align set.maps_to.perm_pow Set.MapsTo.perm_pow
-lemma SurjOn.perm_pow : SurjOn f s s → ∀ n : ℕ, SurjOn (f ^ n) s s := by
+lemma SurjOn.perm_pow : SurjOn f s s → ∀ n : ℕ, SurjOn ↑(f ^ n) s s := by
   simp_rw [Equiv.Perm.coe_pow]; exact SurjOn.iterate
 #align set.surj_on.perm_pow Set.SurjOn.perm_pow
-lemma BijOn.perm_pow : BijOn f s s → ∀ n : ℕ, BijOn (f ^ n) s s := by
+lemma BijOn.perm_pow : BijOn f s s → ∀ n : ℕ, BijOn ↑(f ^ n) s s := by
   simp_rw [Equiv.Perm.coe_pow]; exact BijOn.iterate
 #align set.bij_on.perm_pow Set.BijOn.perm_pow
 
-lemma BijOn.perm_zpow (hf : BijOn f s s) : ∀ n : ℤ, BijOn (f ^ n) s s
+lemma BijOn.perm_zpow (hf : BijOn f s s) : ∀ n : ℤ, BijOn ↑(f ^ n) s s
   | (Int.ofNat _) => hf.perm_pow _
   | (Int.negSucc _) => (hf.perm_pow _).perm_inv
 #align set.bij_on.perm_zpow Set.BijOn.perm_zpow
