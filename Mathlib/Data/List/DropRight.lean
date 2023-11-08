@@ -235,6 +235,7 @@ theorem takeRightWhile_eq_nil_iff : takeRightWhile p l = [] ↔ ∀ hl : l ≠ [
     intro f; contradiction
   · simp only [takeRightWhile, reverse_append, takeWhile, reverse_eq_nil, getLast_append, ne_eq,
   append_eq_nil, and_false, forall_true_left]
+    rw [not_false_eq_true,true_imp_iff]
     refine' ⟨fun h => _ , fun h => _⟩
     · intro pa; simp only [pa] at h
     · simp only [h]
