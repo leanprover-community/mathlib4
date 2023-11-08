@@ -52,7 +52,7 @@ needed.
 
 noncomputable section
 
-open Function Set
+open Function Set Bornology
 
 open scoped Topology ENNReal NNReal Classical
 
@@ -520,6 +520,13 @@ theorem mapsTo_closedBall (x : α) (r' : ℝ) :
     MapsTo (f : α → β) (Metric.closedBall x r') (Metric.closedBall (f x) (ratio f * r')) :=
   fun y hy => (dist_eq f y x).trans_le <| mul_le_mul_of_nonneg_left hy (NNReal.coe_nonneg _)
 #align dilation.maps_to_closed_ball Dilation.mapsTo_closedBall
+
+lemma tendsto_cobounded : Filter.Tendsto f (cobounded α) (cobounded β) :=
+  (Dilation.antilipschitz f).tendsto_cobounded
+
+@[simp]
+lemma comap_cobounded : Filter.comap f (cobounded β) = cobounded α :=
+  le_antisymm (lipschitz f).comap_cobounded_le (tendsto_cobounded f).le_comap
 
 end PseudoMetricDilation
 
