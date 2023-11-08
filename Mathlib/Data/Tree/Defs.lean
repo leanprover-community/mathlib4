@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 mathlib community. All rights reserved.
+ (c) 2019 mathlib community. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Wojciech Nawrocki
+Authors: Mario Carneiro, Wojciech Nawrocki, Brendan Murphy
 -/
 import Std.Data.RBMap.Basic
 import Mathlib.Data.Num.Basic
@@ -27,7 +27,6 @@ additional data. We provide the notation `a △ b` for making a `Tree Unit` with
 <https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html>
 -/
 
-
 /-- A binary tree with values stored in non-leaf nodes. -/
 inductive Tree.{u} (α : Type u) : Type u
   | nil : Tree α
@@ -43,9 +42,6 @@ variable {α : Type u}
 
 -- Porting note: replaced with `deriving Repr` which builds a better instance anyway
 #noalign tree.repr
-
-instance : Inhabited (Tree α) :=
-  ⟨nil⟩
 
 open Std (RBNode)
 
@@ -86,50 +82,21 @@ def getOrElse (n : PosNum) (t : Tree α) (v : α) : α :=
   (t.get n).getD v
 #align tree.get_or_else Tree.getOrElse
 
-/-- Apply a function to each value in the tree.  This is the `map` function for the `Tree` functor.
-TODO: implement `Traversable Tree`. -/
+/-- Apply a function to each value in the tree.  This is the `map` function for the `Tree` functor. -/
 def map {β} (f : α → β) : Tree α → Tree β
   | nil => nil
   | node a l r => node (f a) (map f l) (map f r)
 #align tree.map Tree.map
 
-/-- The number of internal nodes (i.e. not including leaves) of a binary tree -/
-@[simp]
-def numNodes : Tree α → ℕ
-  | nil => 0
-  | node _ a b => a.numNodes + b.numNodes + 1
-#align tree.num_nodes Tree.numNodes
+/-- Tree with a single given element. -/
+@[inline] protected
+def ret (a : α) := node a nil nil
 
-/-- The number of leaves of a binary tree -/
-@[simp]
-def numLeaves : Tree α → ℕ
-  | nil => 1
-  | node _ a b => a.numLeaves + b.numLeaves
-#align tree.num_leaves Tree.numLeaves
-
-/-- The height - length of the longest path from the root - of a binary tree -/
-@[simp]
-def height : Tree α → ℕ
-  | nil => 0
-  | node _ a b => max a.height b.height + 1
-#align tree.height Tree.height
-
-theorem numLeaves_eq_numNodes_succ (x : Tree α) : x.numLeaves = x.numNodes + 1 := by
-  induction x <;> simp [*, Nat.add_comm, Nat.add_assoc, Nat.add_left_comm]
-#align tree.num_leaves_eq_num_nodes_succ Tree.numLeaves_eq_numNodes_succ
-
-theorem numLeaves_pos (x : Tree α) : 0 < x.numLeaves := by
-  rw [numLeaves_eq_numNodes_succ]
-  exact x.numNodes.zero_lt_succ
-#align tree.num_leaves_pos Tree.numLeaves_pos
-
-theorem height_le_numNodes : ∀ x : Tree α, x.height ≤ x.numNodes
-  | nil => le_rfl
-  | node _ a b =>
-    Nat.succ_le_succ
-      (max_le (_root_.trans a.height_le_numNodes <| a.numNodes.le_add_right _)
-        (_root_.trans b.height_le_numNodes <| b.numNodes.le_add_left _))
-#align tree.height_le_num_nodes Tree.height_le_numNodes
+/-- Map each element of a Tree to an action and evaluate these actions in
+preorder traversal, then collect the results. -/
+def traverse {m : Type _ → Type _} [Applicative m] {α β} (f : α → m β) : Tree α → m (Tree β)
+  | nil => pure nil
+  | node a l r => node <$> f a <*> traverse f l <*> traverse f r
 
 /-- The left child of the tree, or `nil` if the tree is `nil` -/
 @[simp]
