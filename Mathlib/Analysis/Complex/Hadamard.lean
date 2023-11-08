@@ -86,7 +86,7 @@ def cocompactStrip (a b : ℝ) : Filter ℂ :=
 This is also known as the function `M` -/
 noncomputable def sSupAbsIm (f : ℂ → ℂ) (x : ℝ) : ℝ  :=  sSup ((abs ∘ f) '' (re ⁻¹' {x}))
 
-/-- 
+/--
 The inverse of the interpolation of `sSupAbsIm` on the two boundaries.
 In other words, this is the inverse of the right side of the target inequality:
 `|f(z)| ≤ |M(0)^(1-z)| * |M(1)^z|`.
