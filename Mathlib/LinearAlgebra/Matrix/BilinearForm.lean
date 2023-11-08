@@ -328,12 +328,12 @@ theorem BilinForm.toMatrix'_apply (B : BilinForm R₂ (n → R₂)) (i j : n) :
 #align bilin_form.to_matrix'_apply BilinForm.toMatrix'_apply
 
 @[default_instance 100]
-instance SMatrixLeftMul {m : Type*} [Fintype m] :
+instance SMatrixLeftMul {m : Type*} :
     HSMul (Matrix m n R₂) (Matrix n o N₂) (Matrix m o N₂) where
   hSMul M₁ M₂ := fun i k => ∑ j, M₁ i j • M₂ j k
 
 @[default_instance 100]
-instance SMatrixRightMul {m : Type*} [Fintype m] :
+instance SMatrixRightMul {m : Type*} :
     HSMul (Matrix m n N₂) (Matrix n o R₂) (Matrix m o N₂) where
   hSMul M₁ M₂ := fun i k => ∑ j, M₂ j k • M₁ i j
 
@@ -373,11 +373,11 @@ lemma SMatrixRight.mul_one [Fintype n] [DecidableEq n] (M : Matrix n n M₂) :
   ext
   rw [← diagonal_one, SMatrixRight.mul_diagonal, one_smul]
 
-lemma SMatrixLeftMul_eq_Mul {m : Type*} [Fintype m] (M₁ : Matrix m n R₂) (M₂ : Matrix n o R₂) :
+lemma SMatrixLeftMul_eq_Mul {m : Type*} (M₁ : Matrix m n R₂) (M₂ : Matrix n o R₂) :
     SMatrixLeftMul.hSMul M₁ M₂ = M₁ * M₂ := by
   simp only [SMatrixLeftMul, smul_eq_mul, instHMulMatrixMatrixMatrix, dotProduct]
 
-lemma SMatrixRightMul_eq_Mul {m : Type*} [Fintype m] (M₁ : Matrix m n R₂) (M₂ : Matrix n o R₂) :
+lemma SMatrixRightMul_eq_Mul {m : Type*} (M₁ : Matrix m n R₂) (M₂ : Matrix n o R₂) :
     SMatrixRightMul.hSMul M₁ M₂ = M₁ * M₂ := by
   simp [SMatrixRightMul, smul_eq_mul, instHMulMatrixMatrixMatrix, dotProduct, mul_comm]
 
