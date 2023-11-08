@@ -94,7 +94,7 @@ example (n : ℕ) : True := by
   extract_goal *
   sorry
 
--- Clears `i` neither `n` nor the goal depends on it.
+-- Clears `i` since neither `n` nor the goal depends on it.
 /--
 info: theorem extracted_1 (n : ℕ) : True := sorry
 ---

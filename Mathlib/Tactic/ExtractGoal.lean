@@ -107,7 +107,7 @@ syntax config := star <|> (colGt ppSpace ident)*
 /--
 - `extract_goal` formats the current goal as a stand-alone theorem or definition after
   cleaning up the local context of irrelevant variables.
-  A variable is *revelant* if (1) it occurs in the target type, (2) there is a relevant variable
+  A variable is *relevant* if (1) it occurs in the target type, (2) there is a relevant variable
   that depends on it, or (3) the type of the variable is a proposition that depends on a
   relevant variable.
 
