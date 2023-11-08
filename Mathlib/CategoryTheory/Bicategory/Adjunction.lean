@@ -149,6 +149,7 @@ theorem comp_right_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂
       simp_rw [right_triangle]; simp [bicategoricalComp]
 
 /-- Composition of adjunctions. -/
+@[simps]
 def comp (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) : f₁ ≫ f₂ ⊣ g₂ ≫ g₁ where
   unit := compUnit adj₁ adj₂
   counit := compCounit adj₁ adj₂
