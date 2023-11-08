@@ -70,8 +70,7 @@ lemma smoothNumbers_succ {N : ℕ} (hN : ¬ N.Prime) : N.succ.smoothNumbers = N.
   ext m
   refine ⟨fun hm ↦ ⟨hm.1, fun p hp ↦ ?_⟩,
          fun hm ↦ ⟨hm.1, fun p hp ↦ (hm.2 p hp).trans <| lt.base N⟩⟩
-  have H : p ≠ N := fun h ↦ hN <| h ▸ prime_of_mem_factors hp
-  exact Nat.lt_of_le_of_ne (lt_succ.mp <| hm.2 p hp) H
+  exact lt_of_le_of_ne (lt_succ.mp <| hm.2 p hp) fun h ↦ hN <| h ▸ prime_of_mem_factors hp
 
 @[simp] lemma smoothNumbers_one : smoothNumbers 1 = {1} := by simp [smoothNumbers_succ]
 
@@ -89,20 +88,20 @@ lemma smoothNumbers_compl (N : ℕ) : (N.smoothNumbers)ᶜ \ {0} ⊆ {n | N ≤ 
 /-- If `p` is positive and `n` is `p`-smooth, then every product `p^e * n` is `(p+1)`-smooth. -/
 lemma pow_mul_mem_smoothNumbers {p n : ℕ} (hp : p ≠ 0) (e : ℕ) (hn : n ∈ smoothNumbers p) :
     p ^ e * n ∈ smoothNumbers (succ p) := by
-  have hp' (e : ℕ) : p ^ e ≠ 0 := pow_ne_zero e hp
-  refine ⟨mul_ne_zero (hp' e) hn.1, fun q hq ↦ ?_⟩
-  rcases (mem_factors_mul (hp' e) hn.1).mp hq with H | H
-  · rw [mem_factors <| hp' e] at H
+  have hp' := pow_ne_zero e hp
+  refine ⟨mul_ne_zero hp' hn.1, fun q hq ↦ ?_⟩
+  rcases (mem_factors_mul hp' hn.1).mp hq with H | H
+  · rw [mem_factors hp'] at H
     exact lt_succ.mpr <| le_of_dvd hp.bot_lt <| Prime.dvd_of_dvd_pow H.1 H.2
   · exact (hn.2 q H).trans <| lt.base p
 
 /-- If `p` is a prime and `n` is `p`-smooth, then `p` and `n` are coprime. -/
 lemma Prime.smoothNumbers_coprime {p n : ℕ} (hp : p.Prime) (hn : n ∈ smoothNumbers p) :
     Nat.Coprime p n := by
-  rw [Prime.coprime_iff_not_dvd hp, ← mem_factors_iff_dvd hn.1 hp]
-  exact fun H ↦ lt_irrefl p <| hn.2 p H
+  rw [hp.coprime_iff_not_dvd, ← mem_factors_iff_dvd hn.1 hp]
+  exact fun H ↦ (hn.2 p H).false
 
-open List in
+open List Perm in
 /-- We establish the bijection from `ℕ × smoothNumbers p` to `smoothNumbers (p+1)`
 given by `(e, n) ↦ p^e * n` when `p` is a prime. See `Nat.smoothNumbers_succ` for
 when `p` is not prime. -/
@@ -110,7 +109,7 @@ def equivProdNatSmoothNumbers {p : ℕ} (hp: p.Prime) :
     ℕ × smoothNumbers p ≃ smoothNumbers p.succ where
   toFun := fun ⟨e, n⟩ ↦ ⟨p ^ e * n, pow_mul_mem_smoothNumbers hp.ne_zero e n.2⟩
   invFun := fun ⟨m, _⟩  ↦ (m.factorization p,
-                               ⟨(m.factors.filter (· < p)).prod, prod_mem_smoothNumbers ..⟩)
+                            ⟨(m.factors.filter (· < p)).prod, prod_mem_smoothNumbers ..⟩)
   left_inv := by
     rintro ⟨e, m, hm₀, hm⟩
     simp (config := { etaStruct := .all }) only
@@ -121,10 +120,9 @@ def equivProdNatSmoothNumbers {p : ℕ} (hp: p.Prime) :
         Pi.coe_nat, cast_id, Pi.add_apply, Pi.mul_apply, Prime.factorization_self hp,
         mul_one, add_right_eq_self]
       rw [← factors_count_eq, count_eq_zero]
-      exact fun H ↦ lt_irrefl p <| hm p H
+      exact fun H ↦ (hm p H).false
     · nth_rw 2 [← prod_factors hm₀]
-      refine Perm.prod_eq <|
-        Perm.trans (Perm.filter _ <| perm_factors_mul (pow_ne_zero e hp.ne_zero) hm₀) ?_
+      refine prod_eq <| (filter _ <| perm_factors_mul (pow_ne_zero e hp.ne_zero) hm₀).trans ?_
       rw [filter_append, hp.factors_pow,
           filter_eq_nil.mpr <| fun q hq ↦ by rw [mem_replicate] at hq; simp [hq.2],
           nil_append, filter_eq_self.mpr <| fun q hq ↦ by simp [hm q hq]]
@@ -133,16 +131,13 @@ def equivProdNatSmoothNumbers {p : ℕ} (hp: p.Prime) :
     simp only [Set.coe_setOf, Set.mem_setOf_eq, Subtype.mk.injEq]
     rw [← factors_count_eq, ← prod_replicate, ← prod_append]
     nth_rw 3 [← prod_factors hm₀]
-    refine Perm.prod_eq ?_
-    rw [← filter_eq']
     have : m.factors.filter (· = p) = m.factors.filter (¬ · < p)
     · refine (filter_congr' <| fun q hq ↦ ?_).symm
       have H : ¬ p < q := fun hf ↦ Nat.lt_le_asymm hf <| lt_succ_iff.mp (hm q hq)
       simp only [not_lt, le_iff_eq_or_lt, H, or_false, eq_comm, Bool.true_eq_decide_iff]
-    rw [this]
-    refine perm_append_comm.trans ?_
+    refine prod_eq <| (filter_eq' m.factors p).symm ▸ this ▸ perm_append_comm.trans ?_
     convert filter_append_perm ..
-    simp
+    simp only [decide_eq_true_eq]
 
 @[simp]
 lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp: p.Prime) (hm : m ∈ p.smoothNumbers) :
