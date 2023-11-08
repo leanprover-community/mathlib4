@@ -82,7 +82,7 @@ class LaxMonoidal (F : C → D) [Functorial.{v₁, v₂} F] extends LaxMonoidalS
 -- but that isn't the immediate plan.
 open LaxMonoidalStruct in
 /-- An unbundled description of lax monoidal functors. -/
-def LaxMonoidal.ofTensorHom (F : C → D) [Functorial.{v₁, v₂} F] [LaxMonoidalStruct F]
+abbrev LaxMonoidal.ofTensorHom (F : C → D) [Functorial.{v₁, v₂} F] [LaxMonoidalStruct F]
     /- naturality -/
     (μ_natural :
       ∀ {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'),
