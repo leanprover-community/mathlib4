@@ -3,11 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Ring.Canonical
-import Std.Data.Option.Lemmas
+import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Tactic.Tauto
+import Std.Data.Option.Lemmas
 
 #align_import algebra.order.ring.with_top from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
@@ -67,7 +67,7 @@ theorem mul_eq_top_iff {a b : WithTop α} : a * b = ⊤ ↔ a ≠ 0 ∧ b = ⊤ 
 
 theorem mul_lt_top' [LT α] {a b : WithTop α} (ha : a < ⊤) (hb : b < ⊤) : a * b < ⊤ := by
   rw [WithTop.lt_top_iff_ne_top] at *
-  simp only [Ne.def, mul_eq_top_iff, *, and_false, false_and, false_or]
+  simp only [Ne.def, mul_eq_top_iff, *, and_false, false_and, or_self, not_false_eq_true]
 #align with_top.mul_lt_top' WithTop.mul_lt_top'
 
 theorem mul_lt_top [LT α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b < ⊤ :=

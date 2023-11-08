@@ -41,6 +41,7 @@ fundamental system `fundSystem`.
 number field, units
  -/
 
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open scoped NumberField
 
@@ -226,7 +227,7 @@ theorem mult_log_place_eq_zero {x : (𝓞 K)ˣ} {w : InfinitePlace K} :
     mult w * Real.log (w x) = 0 ↔ w x = 1 := by
   rw [mul_eq_zero, or_iff_right, Real.log_eq_zero, or_iff_right, or_iff_left]
   · linarith [(map_nonneg _ _ : 0 ≤ w x)]
-  · simp only [ne_eq, map_eq_zero, coe_ne_zero x]
+  · simp only [ne_eq, map_eq_zero, coe_ne_zero x, not_false_eq_true]
   · refine (ne_of_gt ?_)
     rw [mult]; split_ifs <;> norm_num
 
@@ -321,9 +322,6 @@ sequence defining the same ideal and their quotient is the desired unit `u_w₁`
 
 open NumberField.mixedEmbedding NNReal
 
--- See: https://github.com/leanprover/lean4/issues/2220
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y)
-
 variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowskiBound K < (convexBodyLtFactor K) * B)
 
 /-- This result shows that there always exists a next term in the sequence. -/
@@ -347,7 +345,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
           simp_rw [← NNReal.coe_pow, ← NNReal.coe_prod]
           exact le_of_eq (congr_arg toReal h_gprod)
     · refine div_lt_self ?_ (by norm_num)
-      simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, hx]
+      simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, hx, not_false_eq_true]
   intro _ _
   rw [ne_eq, Nonneg.mk_eq_zero, div_eq_zero_iff, map_eq_zero, not_or, ZeroMemClass.coe_eq_zero]
   exact ⟨hx, by norm_num⟩
@@ -405,15 +403,14 @@ image by the `logEmbedding` of these units is `ℝ`-linearly independent, see
 theorem exists_unit (w₁ : InfinitePlace K) :
     ∃ u : (𝓞 K)ˣ, ∀ w : InfinitePlace K, w ≠ w₁ → Real.log (w u) < 0 := by
   obtain ⟨B, hB⟩ : ∃ B : ℕ, minkowskiBound K < (convexBodyLtFactor K) * B := by
-    simp_rw [mul_comm]
-    refine ENNReal.exists_nat_mul_gt ?_ ?_
-    exact ne_of_gt (convexBodyLtFactor_pos K)
-    exact ne_of_lt (minkowskiBound_lt_top K)
+    conv => congr; ext; rw [mul_comm]
+    exact ENNReal.exists_nat_mul_gt (ne_of_gt (convexBodyLtFactor_pos K))
+      (ne_of_lt (minkowskiBound_lt_top K))
   rsuffices ⟨n, m, hnm, h⟩ : ∃ n m, n < m ∧
       (Ideal.span ({ (seq K w₁ hB n : 𝓞 K) }) = Ideal.span ({ (seq K w₁ hB m : 𝓞 K) }))
   · have hu := Ideal.span_singleton_eq_span_singleton.mp h
     refine ⟨hu.choose, fun w hw => Real.log_neg ?_ ?_⟩
-    · simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, ne_zero]
+    · simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, ne_zero, not_false_eq_true]
     · calc
         _ = w ((seq K w₁ hB m : K) * (seq K w₁ hB n : K)⁻¹) := by
           rw [← congr_arg ((↑) : (𝓞 K) → K) hu.choose_spec, mul_comm, Submonoid.coe_mul,

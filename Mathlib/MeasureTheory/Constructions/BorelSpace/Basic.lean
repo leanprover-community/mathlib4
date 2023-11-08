@@ -1645,8 +1645,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow [MeasurableSpace �
       simp only [mem_singleton_iff, mem_union, mem_Ioo, mem_Ioi, mem_preimage]
       have H : f x = ∞ ∨ f x < ∞ := eq_or_lt_of_le le_top
       cases' H with H H
-      · simp only [H, eq_self_iff_true, or_false_iff, WithTop.zero_lt_top, not_top_lt,
-          and_false_iff]
+      · simp only [H, eq_self_iff_true, or_false_iff, zero_lt_top, not_top_lt, and_false_iff]
       · simp only [H, H.ne, and_true_iff, false_or_iff]
     · refine disjoint_left.2 fun x hx h'x => ?_
       have : f x < ∞ := h'x.2.2

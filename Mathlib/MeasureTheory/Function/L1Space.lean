@@ -229,7 +229,7 @@ theorem HasFiniteIntegral.smul_measure {f : α → β} (h : HasFiniteIntegral f 
 @[simp]
 theorem hasFiniteIntegral_zero_measure {m : MeasurableSpace α} (f : α → β) :
     HasFiniteIntegral f (0 : Measure α) := by
-  simp only [HasFiniteIntegral, lintegral_zero_measure, WithTop.zero_lt_top]
+  simp only [HasFiniteIntegral, lintegral_zero_measure, zero_lt_top]
 #align measure_theory.has_finite_integral_zero_measure MeasureTheory.hasFiniteIntegral_zero_measure
 
 variable (α β μ)
@@ -405,7 +405,7 @@ theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β]
       refine' lintegral_mono _
       intro i
       -- After leanprover/lean4#2734, we need to do beta reduction `exact_mod_cast`
-      dsimp
+      beta_reduce
       exact_mod_cast (nnnorm_smul_le c (f i))
     _ < ∞ := by
       rw [lintegral_const_mul']
@@ -671,7 +671,7 @@ theorem Integrable.add' {f g : α → β} (hf : Integrable f μ) (hg : Integrabl
     (∫⁻ a, ‖f a + g a‖₊ ∂μ) ≤ ∫⁻ a, ‖f a‖₊ + ‖g a‖₊ ∂μ :=
       lintegral_mono fun a => by
         -- After leanprover/lean4#2734, we need to do beta reduction before `exact_mod_cast`
-        dsimp
+        beta_reduce
         exact_mod_cast nnnorm_add_le _ _
     _ = _ := (lintegral_nnnorm_add_left hf.aestronglyMeasurable _)
     _ < ∞ := add_lt_top.2 ⟨hf.hasFiniteIntegral, hg.hasFiniteIntegral⟩

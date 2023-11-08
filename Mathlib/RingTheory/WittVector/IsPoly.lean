@@ -328,8 +328,8 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
       AlgHom.map_pow, bind₁_X_right, AlgHom.map_mul]
   · rw [Finset.mem_range]
     -- porting note: was `decide`
-    simp only [add_pos_iff, or_true, not_true, pow_zero, map_one, ge_iff_le, nonpos_iff_eq_zero,
-      tsub_zero, one_mul, gt_iff_lt, IsEmpty.forall_iff]
+    intro h
+    simp only [add_pos_iff, zero_lt_one, or_true, not_true_eq_false] at h
 #align witt_vector.bind₁_one_poly_witt_polynomial WittVector.bind₁_onePoly_wittPolynomial
 
 /-- The function that is constantly one on Witt vectors is a polynomial function. -/
