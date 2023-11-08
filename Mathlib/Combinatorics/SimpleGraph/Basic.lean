@@ -425,11 +425,11 @@ instance [Subsingleton V] : Unique (SimpleGraph V) where
   default := ⊥
   uniq G := by ext a b; simp [Subsingleton.elim a b]
 
--- porting note: Was
--- ⟨⟨⊥, ⊤, fun h => not_subsingleton V ⟨by simpa [ext_iff, Function.funext_iff] using h⟩⟩⟩
 instance [Nontrivial V] : Nontrivial (SimpleGraph V) :=
-  ⟨⟨⊥, ⊤, fun h ↦ not_subsingleton V ⟨by simpa only [SimpleGraph.ext_iff, Function.funext_iff,
-    top_adj, bot_adj, ne_eq, eq_iff_iff, false_iff, not_not] using h⟩⟩⟩
+  ⟨⟨⊥, ⊤, fun h ↦ not_subsingleton V ⟨by
+    -- porting note: Was `simpa [ext_iff, Function.funext_iff] using h`
+    simpa only [SimpleGraph.ext_iff, Function.funext_iff,
+      top_adj, bot_adj, ne_eq, eq_iff_iff, false_iff, not_not] using h⟩⟩⟩
 
 section Decidable
 

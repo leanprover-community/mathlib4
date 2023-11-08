@@ -428,6 +428,8 @@ def cliqueSet (n : ℕ) : Set (Finset α) :=
   { s | G.IsNClique n s }
 #align simple_graph.clique_set SimpleGraph.cliqueSet
 
+variable {G H}
+
 @[simp]
 theorem mem_cliqueSet_iff : s ∈ G.cliqueSet n ↔ G.IsNClique n s :=
   Iff.rfl
@@ -438,10 +440,7 @@ theorem cliqueSet_eq_empty_iff : G.cliqueSet n = ∅ ↔ G.CliqueFree n := by
   simp_rw [CliqueFree, Set.eq_empty_iff_forall_not_mem, mem_cliqueSet_iff]
 #align simple_graph.clique_set_eq_empty_iff SimpleGraph.cliqueSet_eq_empty_iff
 
-variable {G H}
-
-protected theorem CliqueFree.cliqueSet : G.CliqueFree n → G.cliqueSet n = ∅ :=
-  G.cliqueSet_eq_empty_iff.2
+protected alias ⟨_, CliqueFree.cliqueSet⟩ := cliqueSet_eq_empty_iff
 #align simple_graph.clique_free.clique_set SimpleGraph.CliqueFree.cliqueSet
 
 @[mono]
@@ -510,27 +509,25 @@ def cliqueFinset (n : ℕ) : Finset (Finset α) :=
   univ.filter <| G.IsNClique n
 #align simple_graph.clique_finset SimpleGraph.cliqueFinset
 
+@[simp, norm_cast]
+theorem coe_cliqueFinset (n : ℕ) : (G.cliqueFinset n : Set (Finset α)) = G.cliqueSet n := by
+  ext; simp [cliqueFinset]
+#align simple_graph.coe_clique_finset SimpleGraph.coe_cliqueFinset
+
+variable {G}
+
 @[simp]
 theorem mem_cliqueFinset_iff : s ∈ G.cliqueFinset n ↔ G.IsNClique n s :=
   mem_filter.trans <| and_iff_right <| mem_univ _
 #align simple_graph.mem_clique_finset_iff SimpleGraph.mem_cliqueFinset_iff
-
-@[simp, norm_cast]
-theorem coe_cliqueFinset (n : ℕ) : (G.cliqueFinset n : Set (Finset α)) = G.cliqueSet n :=
-  Set.ext fun _ ↦ mem_cliqueFinset_iff _
-#align simple_graph.coe_clique_finset SimpleGraph.coe_cliqueFinset
 
 @[simp]
 theorem cliqueFinset_eq_empty_iff : G.cliqueFinset n = ∅ ↔ G.CliqueFree n := by
   simp_rw [CliqueFree, eq_empty_iff_forall_not_mem, mem_cliqueFinset_iff]
 #align simple_graph.clique_finset_eq_empty_iff SimpleGraph.cliqueFinset_eq_empty_iff
 
-alias ⟨_, CliqueFree.cliqueFinset⟩ := cliqueFinset_eq_empty_iff
+protected alias ⟨_, CliqueFree.cliqueFinset⟩ := cliqueFinset_eq_empty_iff
 #align simple_graph.clique_free.clique_finset SimpleGraph.CliqueFree.cliqueFinset
-
---attribute [protected] CliqueFree.cliqueFinset -- porting note: removed
-
-variable {G}
 
 theorem card_cliqueFinset_le : (G.cliqueFinset n).card ≤ (card α).choose n := by
   rw [← card_univ, ← card_powersetCard]
