@@ -1720,6 +1720,27 @@ theorem _root_.exists_stronglyMeasurable_limit_of_tendsto_ae [PseudoMetrizableSp
   rwa [h'x] at hx
 #align exists_strongly_measurable_limit_of_tendsto_ae exists_stronglyMeasurable_limit_of_tendsto_ae
 
+theorem piecewise {s : Set α} [DecidablePred (· ∈ s)]
+    (hs : MeasurableSet s) (hf : AEStronglyMeasurable f (μ.restrict s))
+    (hg : AEStronglyMeasurable g (μ.restrict sᶜ)) :
+    AEStronglyMeasurable (s.piecewise f g) μ := by
+  refine ⟨s.piecewise (hf.mk f) (hg.mk g),
+    StronglyMeasurable.piecewise hs hf.stronglyMeasurable_mk hg.stronglyMeasurable_mk, ?_⟩
+  refine ae_of_ae_restrict_of_ae_restrict_compl s ?_ ?_
+  · have h := hf.ae_eq_mk
+    rw [Filter.EventuallyEq, ae_restrict_iff' hs] at h
+    rw [ae_restrict_iff' hs]
+    filter_upwards [h] with x hx
+    intro hx_mem
+    simp only [hx_mem, Set.piecewise_eq_of_mem, hx hx_mem]
+  · have h := hg.ae_eq_mk
+    rw [Filter.EventuallyEq, ae_restrict_iff' hs.compl] at h
+    rw [ae_restrict_iff' hs.compl]
+    filter_upwards [h] with x hx
+    intro hx_mem
+    rw [Set.mem_compl_iff] at hx_mem
+    simp only [hx_mem, not_false_eq_true, Set.piecewise_eq_of_not_mem, hx hx_mem]
+
 theorem sum_measure [PseudoMetrizableSpace β] {m : MeasurableSpace α} {μ : ι → Measure α}
     (h : ∀ i, AEStronglyMeasurable f (μ i)) : AEStronglyMeasurable f (Measure.sum μ) := by
   borelize β

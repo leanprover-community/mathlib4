@@ -254,8 +254,8 @@ noncomputable def ofEmbedding (f : X → Y) (hf : Embedding f) : X ≃ₜ Set.ra
   toEquiv := Equiv.ofInjective f hf.inj
 #align homeomorph.of_embedding Homeomorph.ofEmbedding
 
-protected theorem secondCountableTopology [TopologicalSpace.SecondCountableTopology Y]
-    (h : X ≃ₜ Y) : TopologicalSpace.SecondCountableTopology X :=
+protected theorem secondCountableTopology [SecondCountableTopology Y]
+    (h : X ≃ₜ Y) : SecondCountableTopology X :=
   h.inducing.secondCountableTopology
 #align homeomorph.second_countable_topology Homeomorph.secondCountableTopology
 
