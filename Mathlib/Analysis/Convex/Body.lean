@@ -164,7 +164,7 @@ instance : Module ℝ≥0 (ConvexBody V) where
   zero_smul K := SetLike.ext' <| Set.zero_smul_set K.nonempty
 
 theorem smul_le_of_le (K : ConvexBody V) (h_zero : 0 ∈ K) {a b : ℝ≥0} (h : a ≤ b) :
-      a • K ≤ b • K := by
+    a • K ≤ b • K := by
   rw [← SetLike.coe_subset_coe, coe_smul', coe_smul']
   by_cases ha : a = 0
   · rw [ha, Set.zero_smul_set K.nonempty, Set.zero_subset]
