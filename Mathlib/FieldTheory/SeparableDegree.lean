@@ -6,6 +6,7 @@ Authors: Jz Pan
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.Separable
+import Mathlib.FieldTheory.NormalClosure
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.Polynomial.SeparableDegree
 
@@ -30,13 +31,13 @@ This file contains basics about the separable degree of a field extension.
 
 ## Main results
 
-- `emb_equiv_of_equiv`: a random isomorphism between `Emb F E` and `Emb F E'` when `E` and `E'` are
+- `embEquivOfEquiv`: a random isomorphism between `Emb F E` and `Emb F E'` when `E` and `E'` are
   isomorphic as `F`-algebras.
 
 - `sepDegree_eq_of_equiv`, `finSepDegree_eq_of_equiv`: if `E` and `E'` are isomorphic as
   `F`-algebras, then they have the same separable degree over `F`.
 
-- `emb_equiv_of_isAlgClosed`: a random isomorphism between `Emb F E` and `E →ₐ[F] K` when `E / F`
+- `embEquivOfIsAlgClosed`: a random isomorphism between `Emb F E` and `E →ₐ[F] K` when `E / F`
   is algebraic and `K / F` is algebraically closed.
 
 - `sepDegree_eq_of_isAlgClosed`, `finSepDegree_eq_of_isAlgClosed`: the separable degree of `E / F`
@@ -95,7 +96,7 @@ lemma finSepDegree_nezero_of_finiteDimensional [FiniteDimensional F E] :
 
 /-- A random isomorphism between `Emb F E` and `Emb F E'` when `E` and `E'` are isomorphic
 as `F`-algebras. -/
-def emb_equiv_of_equiv (E' : Type v') [Field E'] [Algebra F E'] (i : E ≃ₐ[F] E') :
+def embEquivOfEquiv (E' : Type v') [Field E'] [Algebra F E'] (i : E ≃ₐ[F] E') :
     Emb F E ≃ Emb F E' := AlgEquiv.arrowCongr i <| AlgEquiv.symm <| by
   letI : Algebra E E' := i.toAlgHom.toRingHom.toAlgebra
   apply AlgEquiv.restrictScalars (R := F) (S := E)
@@ -110,7 +111,7 @@ over `F`. -/
 theorem sepDegree_eq_of_equiv (E' : Type v') [Field E'] [Algebra F E'] (i : E ≃ₐ[F] E') :
     Cardinal.lift.{v'} (sepDegree F E) = Cardinal.lift.{v} (sepDegree F E') := by
   have := ((Equiv.ulift.{v'} (α := E →ₐ[F] (AlgebraicClosure E))).trans
-    (emb_equiv_of_equiv F E E' i)).trans
+    (embEquivOfEquiv F E E' i)).trans
       (Equiv.ulift.{v} (α := E' →ₐ[F] (AlgebraicClosure E'))).symm
   simpa only [Cardinal.mk_uLift] using this.cardinal_eq
 
@@ -275,8 +276,9 @@ end Adhoc
 
 /-- A random isomorphism between `Emb F E` and `E →ₐ[F] K` when `E / F` is algebraic
 and `K / F` is algebraically closed. -/
+-- TODO: use `AlgEquiv.arrowCongr` instead
 -- TODO: `IsAlgClosed K` should be replaced by `∀ α : E, Splits (algebraMap F K) (minpoly F α)`
-def emb_equiv_of_isAlgClosed (halg : Algebra.IsAlgebraic F E)
+def embEquivOfIsAlgClosed (halg : Algebra.IsAlgebraic F E)
     (K : Type w) [Field K] [Algebra F K] [IsAlgClosed K] :
     Emb F E ≃ (E →ₐ[F] K) := by
   have hac := IsAlgClosure.ofAlgebraic F E (AlgebraicClosure E) halg
@@ -295,7 +297,7 @@ def emb_equiv_of_isAlgClosed (halg : Algebra.IsAlgebraic F E)
     simp only
     rw [AlgHom.comp_assoc, ← AlgHom.comp_assoc, test1]
     rfl
-  exact ⟨toFun, invFun, fun f ↦ h2 <| right_inv <| i.comp f, right_inv⟩
+  exact ⟨toFun, invFun, fun f ↦ h2 <| right_inv <| toFun f, right_inv⟩
 
 /-- The separable degree of `E / F` is equal to the cardinality of `E →ₐ[F] K` when `E / F`
 is algebraic and `K / F` is algebraically closed. -/
@@ -303,7 +305,7 @@ theorem sepDegree_eq_of_isAlgClosed (halg : Algebra.IsAlgebraic F E)
     (K : Type w) [Field K] [Algebra F K] [IsAlgClosed K] :
     Cardinal.lift.{w} (sepDegree F E) = Cardinal.mk (E →ₐ[F] K) := by
   simpa only [Cardinal.mk_uLift] using ((Equiv.ulift.{w} (α := Emb F E)).trans
-    (emb_equiv_of_isAlgClosed F E halg K)).cardinal_eq
+    (embEquivOfIsAlgClosed F E halg K)).cardinal_eq
 
 /-- The `finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K` as a natural number,
 when `E / F` is algebraic and `K / F` is algebraically closed. -/
@@ -312,5 +314,91 @@ theorem finSepDegree_eq_of_isAlgClosed (halg : Algebra.IsAlgebraic F E)
     finSepDegree F E = Cardinal.toNat (Cardinal.mk (E →ₐ[F] K)) := by
   simpa only [Cardinal.toNat_lift] using congr_arg Cardinal.toNat
     (sepDegree_eq_of_isAlgClosed F E halg K)
+
+def algHomEquivNormalClosure (K : Type w) [Field K] [Algebra F K] :
+    (E →ₐ[F] K) ≃ (E →ₐ[F] (normalClosure F E K)) :=
+  ⟨fun f ↦ (IntermediateField.inclusion f.fieldRange_le_normalClosure) |>.comp
+    (AlgEquiv.ofInjectiveField f).toAlgHom, normalClosure F E K |>.val.comp,
+      fun _ ↦ rfl, fun _ ↦ rfl⟩
+
+lemma test101 (K : Type w) [Field K] [Algebra F K]
+    {S : Set E} (hS : adjoin F S = ⊤) :
+    adjoin F (⨆ f : E →ₐ[F] K, f '' S) = normalClosure F E K := by
+  simp only [normalClosure, gc.l_iSup]
+  congr
+  funext f
+  rw [← adjoin_map, hS, AlgHom.fieldRange_eq_map]
+
+lemma test102 (K : Type w) [Field K] [Algebra F K] {S : Set E} (hS : adjoin F S = ⊤)
+    (hK : ∀ s ∈ S, IsIntegral F s ∧ Polynomial.Splits (algebraMap F K) (minpoly F s)) :
+    ∀ s ∈ S, Polynomial.Splits (algebraMap F (normalClosure F E K)) (minpoly F s) := by
+  intro s hs
+  sorry
+
+def normalClosureEquivOfAdjoinSplits' (K : Type w) [Field K] [Algebra F K]
+    (K' : Type v') [Field K'] [Algebra F K']
+    {S : Set E} (hS : adjoin F S = ⊤)
+    (hK : ∀ s ∈ S, IsIntegral F s ∧ Polynomial.Splits (algebraMap F K) (minpoly F s) ∧
+      Polynomial.Splits (algebraMap F K') (minpoly F s)) :
+    (normalClosure F E K) ≃ₐ[F] (normalClosure F E K') := by
+  refine AlgEquiv.ofBijective _ (Algebra.IsAlgebraic.algHom_bijective₂ ?_ ?_ ?_).1
+  · rw [← test101 F E K hS, gc.l_iSup]
+    apply isAlgebraic_iSup
+    intro f
+    have : f '' S = ⨆ x : { x // x ∈ f '' S }, {x.1} := by
+      simp only [Set.iSup_eq_iUnion, Set.iUnion_singleton_eq_range, Subtype.range_coe_subtype,
+        Set.setOf_mem_eq]
+    rw [this, gc.l_iSup]
+    apply isAlgebraic_iSup
+    rintro ⟨y, hy⟩
+    simp only [Set.mem_image] at hy
+    obtain ⟨x, hx, rfl⟩ := hy
+    haveI := adjoin.finiteDimensional <| map_isIntegral f (hK x hx).1
+    exact Algebra.isAlgebraic_of_finite _ _
+  · rw [← test101 F E K hS]
+    refine Classical.choice (algHom_mk_adjoin_splits ?_)
+    intro s hs
+    simp only [Set.iSup_eq_iUnion, Set.mem_iUnion, Set.mem_image] at hs
+    obtain ⟨f, x, hx, rfl⟩ := hs
+    use map_isIntegral f (hK x hx).1
+    rw [minpoly.algHom_eq f f.injective x]
+    exact test102 F E K' hS (fun s hs ↦ ⟨(hK s hs).1, (hK s hs).2.2⟩) x hx
+  · rw [← test101 F E K' hS]
+    refine Classical.choice (algHom_mk_adjoin_splits ?_)
+    intro s hs
+    simp only [Set.iSup_eq_iUnion, Set.mem_iUnion, Set.mem_image] at hs
+    obtain ⟨f, x, hx, rfl⟩ := hs
+    use map_isIntegral f (hK x hx).1
+    rw [minpoly.algHom_eq f f.injective x]
+    exact test102 F E K hS (fun s hs ↦ ⟨(hK s hs).1, (hK s hs).2.1⟩) x hx
+
+def embEquivOfAdjoinSplits' (K : Type w) [Field K] [Algebra F K] {S : Set E}
+    (hS : adjoin F S = ⊤)
+    (hK : ∀ s ∈ S, IsIntegral F s ∧ Polynomial.Splits (algebraMap F K) (minpoly F s)) :
+    Emb F E ≃ (E →ₐ[F] K) := by
+  let L := normalClosure F E (AlgebraicClosure E)
+  -- let S' : Set (AlgebraicClosure E) := ⨆ f : E →ₐ[F] (AlgebraicClosure E), f '' S
+  -- have hK : ∀ s ∈ S', IsIntegral F s ∧ Polynomial.Splits (algebraMap F K) (minpoly F s) := by
+  --   intro s hs
+  --   simp only [Set.iSup_eq_iUnion, Set.mem_iUnion, Set.mem_image] at hs
+  --   obtain ⟨f, x, hx, rfl⟩ := hs
+  --   exact ⟨map_isIntegral f (hK x hx).1,  (minpoly.algHom_eq f f.injective x).symm ▸ (hK x hx).2⟩
+  -- have hL : adjoin F S' = L := by
+  --   simp only [normalClosure, gc.l_iSup]
+  --   congr
+  --   funext f
+  --   rw [← adjoin_map, hS, AlgHom.fieldRange_eq_map]
+  -- have i : L →ₐ[F] K := hL ▸ Classical.choice (algHom_mk_adjoin_splits hK)
+  let L' := normalClosure F E K
+  let i : L ≃ₐ[F] L' := normalClosureEquivOfAdjoinSplits' F E (AlgebraicClosure E) K hS <|
+    fun s hs ↦ ⟨(hK s hs).1, IsAlgClosed.splits_codomain _, (hK s hs).2⟩
+  -- have h2 : Function.Injective (i.comp (A := E)) := fun j j' h ↦ by
+  --   apply_fun fun x ↦ (x : E → K) at h
+  --   simp only [AlgHom.coe_comp] at h
+  --   exact AlgHom.ext (congrFun (Function.Injective.comp_left i.injective h))
+  let equiv1 := algHomEquivNormalClosure F E (AlgebraicClosure E)
+  let equiv2 := AlgEquiv.arrowCongr (@AlgEquiv.refl F E _ _ _) i
+  let equiv3 := algHomEquivNormalClosure F E K
+  exact equiv1.trans equiv2 |>.trans equiv3.symm
 
 end Field
