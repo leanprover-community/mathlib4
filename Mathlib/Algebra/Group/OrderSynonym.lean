@@ -202,6 +202,9 @@ instance [h : LeftCancelSemigroup α] : LeftCancelSemigroup (Lex α) := h
 instance [h : RightCancelSemigroup α] : RightCancelSemigroup (Lex α) := h
 
 @[to_additive]
+instance [h : CancelSemigroup α] : CancelSemigroup (Lex α) := h
+
+@[to_additive]
 instance [h : MulOneClass α] : MulOneClass (Lex α) := h
 
 @[to_additive]

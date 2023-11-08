@@ -440,9 +440,10 @@ attribute [to_additive existing] CancelSemigroup.toRightCancelSemigroup
 /-- Any cancellative semigroup has cancellative multiplication. -/
 @[to_additive toIsCancelAdd "Any cancellative semigroup has cancellative addition."]
 instance (priority := 100) CancelSemigroup.toIsCancelMul (M : Type*) [CancelSemigroup M] :
-    IsCancelMul M :=
-  { mul_left_cancel := LeftCancelSemigroup.mul_left_cancel
-    mul_right_cancel := RightCancelSemigroup.mul_right_cancel }
+    IsCancelMul M where
+
+#align cancel_monoid.to_is_cancel_mul CancelSemigroup.toIsCancelMul
+#align add_cancel_monoid.to_is_cancel_add AddCancelSemigroup.toIsCancelAdd
 
 /-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
 `1 * a = a` and `a * 1 = a` for all `a : M`. -/
@@ -770,9 +771,6 @@ instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelC
   { CommSemigroup.IsLeftCancelMul.toIsRightCancelMul M with }
 #align cancel_comm_monoid.to_cancel_monoid CancelCommMonoid.toCancelMonoid
 #align add_cancel_comm_monoid.to_cancel_add_monoid AddCancelCommMonoid.toAddCancelMonoid
-
-#noalign cancel_monoid.to_is_cancel_mul
-#noalign add_cancel_monoid.to_is_cancel_add
 
 end CancelMonoid
 
