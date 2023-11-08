@@ -374,10 +374,9 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     | .nonzero pa => ofNonzero pa (← synthInstanceQ (_ : Q(Type u)))
     | .none => pure .none
 
---set_option linter.deprecated false in
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℤ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/
-@[positivity (_ : α) ^ (_ : ℤ), Pow.pow _ (_ : ℤ)]
+@[nolint unusedHavesSuffices, positivity (_ : α) ^ (_ : ℤ), Pow.pow _ (_ : ℤ)]
 def evalZpow : PositivityExt where eval {u α} zα pα e := do
   let .app (.app _ (a : Q($α))) (b : Q(ℤ)) ← withReducible (whnf e) | throwError "not ^"
   let result ← catchNone do
