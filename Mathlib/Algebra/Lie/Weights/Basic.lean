@@ -34,6 +34,8 @@ Basic definitions and properties of the above ideas are provided in this file.
   * `LieModule.iSup_ucs_eq_weightSpace_zero`
   * `LieModule.iInf_lowerCentralSeries_eq_posFittingComp`
   * `LieModule.isCompl_weightSpace_zero_posFittingComp`
+  * `LieModule.iSup_weightSpace_eq_top`
+  * `LieModule.independent_weightSpace`
 
 ## References
 
@@ -46,6 +48,13 @@ lie character, eigenvalue, eigenspace, weight, weight vector, root, root vector
 
 variable {K R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [LieAlgebra.IsNilpotent R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+
+lemma LieSubmodule.mapsTo_pow_toEndomorphism_sub_algebraMap
+    (N : LieSubmodule R L M) {φ : R} {k : ℕ} {x : L} :
+    Set.MapsTo ((LieModule.toEndomorphism R L M x - algebraMap R (Module.End R M) φ) ^ k) N N := by
+  rw [LinearMap.coe_pow]
+  refine Set.MapsTo.iterate (fun m hm ↦ ?_) k
+  exact sub_mem (N.lie_mem hm) (N.smul_mem _ hm)
 
 namespace LieModule
 
@@ -508,6 +517,67 @@ lemma isCompl_weightSpace_zero_posFittingComp :
   exact hN _ (LieSubmodule.map_incl_lt_iff_lt_top.mpr hN')
 
 end fitting_decomposition
+
+lemma disjoint_weightSpace [NoZeroSMulDivisors R M] {χ₁ χ₂ : L → R} (h : χ₁ ≠ χ₂) :
+    Disjoint (weightSpace M χ₁) (weightSpace M χ₂) := by
+  obtain ⟨x, hx⟩ : ∃ x, χ₁ x ≠ χ₂ x := Function.ne_iff.mp h
+  have : Disjoint (weightSpaceOf M (χ₁ x) x) (weightSpaceOf M (χ₂ x) x) := by
+    simp only [weightSpaceOf, Submodule.eta, disjoint_iff, ← LieSubmodule.coe_toSubmodule_eq_iff,
+      LieSubmodule.inf_coe_toSubmodule, LieSubmodule.bot_coeSubmodule]
+    rw [← disjoint_iff]
+    exact Module.End.disjoint_iSup_generalizedEigenspace _ hx
+  exact this.mono (weightSpace_le_weightSpaceOf M x χ₁) (weightSpace_le_weightSpaceOf M x χ₂)
+
+lemma injOn_weightSpace [NoZeroSMulDivisors R M] :
+    Set.InjOn (fun (χ : L → R) ↦ weightSpace M χ) {χ | weightSpace M χ ≠ ⊥} := by
+  rintro χ₁ _ χ₂ hχ₂ (hχ₁₂ : weightSpace M χ₁ = weightSpace M χ₂)
+  by_contra contra
+  apply hχ₂
+  simpa only [hχ₁₂, disjoint_self] using disjoint_weightSpace R L M contra
+
+lemma independent_weightSpace [NoZeroSMulDivisors R M] :
+    CompleteLattice.Independent fun (χ : L → R) ↦ weightSpace M χ := by
+  classical
+  suffices ∀ χ (s : Finset (L → R)) (_ : χ ∉ s), Disjoint (weightSpace M χ)
+      (s.sup fun (χ : L → R) ↦ weightSpace M χ) by
+    simp_rw [CompleteLattice.independent_iff_supIndep_of_injOn (injOn_weightSpace R L M),
+      Finset.supIndep_iff_disjoint_erase]
+    exact fun s χ _ ↦ this _ _ (s.not_mem_erase χ)
+  intro χ₁ s
+  induction' s using Finset.induction_on with χ₂ s _ ih; simp
+  intro hχ₁₂
+  obtain ⟨hχ₁₂ : χ₁ ≠ χ₂, hχ₁ : χ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hχ₁₂
+  specialize ih hχ₁
+  rw [Finset.sup_insert, disjoint_iff, LieSubmodule.eq_bot_iff]
+  rintro x ⟨hx, hx'⟩
+  simp only [SetLike.mem_coe, LieSubmodule.mem_coeSubmodule] at hx hx'
+  suffices x ∈ weightSpace M χ₂ by
+    rw [← LieSubmodule.mem_bot (R := R) (L := L), ← (disjoint_weightSpace R L M hχ₁₂).eq_bot]
+    exact ⟨hx, this⟩
+  obtain ⟨y, hy, z, hz, rfl⟩ := (LieSubmodule.mem_sup _ _ _).mp hx'; clear hx'
+  suffices ∀ l, ∃ (k : ℕ),
+      ((toEndomorphism R L M l - algebraMap R (Module.End R M) (χ₂ l)) ^ k) (y + z) ∈
+      weightSpace M χ₁ ⊓ Finset.sup s fun χ ↦ weightSpace M χ by
+    simpa only [ih.eq_bot, LieSubmodule.mem_bot, mem_weightSpace] using this
+  intro l
+  let g : Module.End R M := toEndomorphism R L M l - algebraMap R (Module.End R M) (χ₂ l)
+  obtain ⟨k, hk : (g ^ k) y = 0⟩ := (mem_weightSpace _ _ _).mp hy l
+  refine ⟨k, (LieSubmodule.mem_inf _ _ _).mp ⟨?_, ?_⟩⟩
+  · simp only [SetLike.mem_coe, LieSubmodule.mem_coeSubmodule]
+    exact LieSubmodule.mapsTo_pow_toEndomorphism_sub_algebraMap _ hx
+  · rw [map_add, hk, zero_add]
+    simp only [SetLike.mem_coe, LieSubmodule.mem_coeSubmodule]
+    suffices (s.sup fun χ ↦ weightSpace M χ : Submodule R M).map (g ^ k) ≤
+        s.sup fun χ ↦ weightSpace M χ by
+      refine this (Submodule.mem_map_of_mem ?_)
+      simp_rw [← LieSubmodule.mem_coeSubmodule, Finset.sup_eq_iSup,
+        LieSubmodule.iSup_coe_toSubmodule, ← Finset.sup_eq_iSup] at hz
+      exact hz
+    simp_rw [Finset.sup_eq_iSup, Submodule.map_iSup (ι := L → R), Submodule.map_iSup (ι := _ ∈ s),
+      LieSubmodule.iSup_coe_toSubmodule]
+    refine iSup₂_mono fun χ _ ↦ ?_
+    rintro - ⟨u, hu, rfl⟩
+    exact LieSubmodule.mapsTo_pow_toEndomorphism_sub_algebraMap _ hu
 
 /-- A Lie module `M` of a Lie algebra `L` is triangularizable if the endomorhpism of `M` defined by
 any `x : L` is triangularizable. -/
