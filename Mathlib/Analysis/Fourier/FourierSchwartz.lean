@@ -18,27 +18,72 @@ import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 open MeasureTheory RealInnerProductSpace Complex Real
 
-variable (E : Type*) [NormedAddCommGroup E] [InnerProductSpace ℝ E] [MeasurableSpace E]
-  [BorelSpace E] [FiniteDimensional ℝ E]
+variable (E F : Type*) [NormedAddCommGroup E] [InnerProductSpace ℝ E] [MeasurableSpace E]
+  [BorelSpace E] [FiniteDimensional ℝ E] [NormedAddCommGroup F] [NormedSpace ℂ F]
 
 noncomputable section
 
-abbrev intergalFourier (f : SchwartzMap E ℂ) := (VectorFourier.fourierIntegral (E := ℂ)) Real.fourierChar (volume : Measure E) (innerₛₗ ℝ) f
+abbrev integralFourier (f : SchwartzMap E F) := (VectorFourier.fourierIntegral (E := F)) Real.fourierChar (volume : Measure E) (innerₛₗ ℝ) f
 
 -- belongs in Mathlib.Analysis.InnerProductSpace.Calculus
 -- TODO : Add after `HasFDerivAt.inner`
 theorem hasFDerivAt_inner (𝕜 : Type*) {E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E]
-    [InnerProductSpace 𝕜 E] [NormedSpace ℝ E] (v : E) (x : E) : HasFDerivAt (inner (𝕜 := 𝕜) v)
+    [InnerProductSpace 𝕜 E] (v : E) (x : E) : HasFDerivAt (inner (𝕜 := 𝕜) v)
     (innerSL 𝕜 v) x := (innerSL 𝕜 v).hasFDerivAt
---   by
---   have := @innerSL 𝕜 E _ _ _ v
---   have := @ContinuousLinearMap.hasFDerivAt 𝕜 _ E _ _ E _ _
--- #exit
+
+-- theorem : applying a continuous linear map to a schwartz map gives a schwartz map
+
+-- collection of little lemmas about Schwartz maps
+
+-- bub a Schwartz with a polynomial growth scalar is Schwartz
+
+-- don't pull out f_hat on its own
+def f_hat (f : SchwartzMap E ℂ) (x : E) : SchwartzMap E (E →L[ℝ] ℂ) := {
+    toFun := fun v ↦ f v • (Complex.ofRealClm ∘L (innerSL ℝ) v)
+    smooth' := by
+      sorry
+    decay' := by
+      sorry
+  }
+
+def FourierDeriv (f : SchwartzMap E ℂ) (x : E) : (E →L[ℝ] ℂ) := by
+  have f_hat : SchwartzMap E (E →L[ℝ] ℂ) := {
+      toFun := fun v ↦ f v • (Complex.ofRealClm ∘L (innerSL ℝ) v)
+      smooth' := by
+        sorry
+      decay' := by
+        sorry
+    }
+  exact integralFourier E (E →L[ℝ] ℂ) f_hat x
+
+-- where
+--   toFun := by
+--     intro u
+--     let f_hat : SchwartzMap E ℂ := {
+--       toFun := fun v ↦ ⟪v, u⟫_ℝ • f v
+--       smooth' := by
+--         sorry
+--       decay' := by
+--         sorry
+--     }
+--     exact -(2 * π * I) * integralFourier E ℂ f_hat x
+
+--     --  fun v w : E ↦
+--     -- ((-(2 * π * I * Real.fourierChar (-⟪w,v⟫_ℝ))) * (f v)) • (Complex.ofRealClm ∘L (innerSL ℝ) v)
+--   map_add' := by
+--     sorry
+--   map_smul' := by
+--     sorry
+--   cont := by
+--     sorry
+
 
 -- theorem hasFDerivAt_inner' {E : Type*} [NormedAddCommGroup E]
---     [InnerProductSpace ℝ E] [NormedSpace ℝ E] (v : E) (x : E) : HasFDerivAt (𝕜 := ℝ) (fun w : E ↦ ⟪v,w⟫_ℝ)
---     (innerSL ℝ v) x := sorry
--- #exit
+--     [InnerProductSpace ℝ E] (v : E) (x : E) : HasFDerivAt (𝕜 := ℝ) (fun w : E ↦ ⟪w,v⟫_ℝ)
+--     (innerSL ℝ v) x := by
+--   convert (innerSL ℝ v).hasFDerivAt using 2 with w
+--   rw [real_inner_comm]
+--   rfl
 
 /-
 I think what's going wrong here is the following.
@@ -63,18 +108,21 @@ So the theorems we're calling for this are getting the wrong variable...???
 But if we put the variables the other way around, the derivative isn't right...
 -/
 theorem hasFDerivAt_fourier (f : SchwartzMap E ℂ) (x : E) :
-    HasFDerivAt (intergalFourier E f)
-      ((-(2 * π * I) * intergalFourier E f x) • (Complex.ofRealClm ∘L (innerSL ℝ) x)) x := by
-  dsimp [intergalFourier]
-  --have := ((innerFourier E f x) • (Complex.ofRealClm ∘L (innerSL ℝ x : E →L[ℝ] ℝ)))
+    HasFDerivAt (integralFourier E ℂ f)
+      (FourierDeriv E f x) x := by
+  dsimp [integralFourier, FourierDeriv]
   let F' := fun v w : E ↦
-    ((-(2 * π * I * Real.fourierChar (-⟪w,v⟫_ℝ))) * (f w)) • (Complex.ofRealClm ∘L (innerSL ℝ) w)
+    ((-(2 * π * I * Real.fourierChar (-⟪w,v⟫_ℝ))) * (f v)) • (Complex.ofRealClm ∘L (innerSL ℝ) v)
+
+
   convert (@hasFDerivAt_integral_of_dominated_of_fderiv_le (𝕜 := ℝ)
     (ε_pos := (by norm_num : (0:ℝ) < 1)) (α := E) (H := E) (E := ℂ) _ volume _ _ _ _ _ _
     _ _ F' x ?_ ?_ ?_ ?_ ?_ ?_ ?_)
-  · simp only [VectorFourier.fourierIntegral, fourierChar, Multiplicative.toAdd,
-      Multiplicative.ofAdd_symm_eq, ofAdd_neg, map_inv, MonoidHom.coe_mk, OneHom.coe_mk,
-      toAdd_ofAdd, coe_inv_unitSphere, expMapCircle_apply, ofReal_mul, ofReal_ofNat, smul_eq_mul]
+
+
+  · simp only [FourierDeriv, neg_mul, real_smul, fourierChar, Multiplicative.toAdd,
+    Multiplicative.ofAdd_symm_eq, MonoidHom.coe_mk, OneHom.coe_mk, expMapCircle_apply, ofReal_mul,
+    ofReal_ofNat, neg_smul]
     calc _ = (∫ (v : E), (-(2 * π * I)) * (cexp (2 * π * (((innerₛₗ ℝ) v) x) * I))⁻¹ * f v) •
               ofRealClm.comp ((innerSL ℝ) x) := ?_
         _ = ∫ (v : E), ((-(2 * π * I) * (cexp (2 * π * (((innerₛₗ ℝ) v) x) * I))⁻¹ * f v)) •
