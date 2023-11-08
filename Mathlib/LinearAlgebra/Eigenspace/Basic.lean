@@ -310,13 +310,10 @@ lemma disjoint_generalizedEigenspace [NoZeroSMulDivisors R M]
   let f₂ : End R p := (f - algebraMap R (End R M) μ₂).restrict <| MapsTo.inter_inter
     (mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₂) μ₁ k)
     (mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₂) μ₂ l)
-  have hn₁ : IsNilpotent f₁ := by
-    use k; ext ⟨x, hx⟩; simpa [LinearMap.restrict_apply, LinearMap.pow_restrict _] using hx.1
-  have hn₂ : IsNilpotent f₂ := by
-    use l; ext ⟨x, hx⟩; simpa [LinearMap.restrict_apply, LinearMap.pow_restrict _] using hx.2
   have : IsNilpotent (f₂ - f₁) := by
-    apply Commute.isNilpotent_sub _ hn₂ hn₁
-    ext; simp [smul_sub, sub_sub, smul_comm μ₁, add_sub_left_comm]
+    apply Commute.isNilpotent_sub (x := f₂) (y := f₁) _ ⟨l, ?_⟩ ⟨k, ?_⟩
+    · ext; simp [smul_sub, sub_sub, smul_comm μ₁, add_sub_left_comm]
+    all_goals ext ⟨x, _, _⟩; simpa [LinearMap.restrict_apply, LinearMap.pow_restrict _] using ‹_›
   have hf₁₂ : f₂ - f₁ = algebraMap R (End R p) (μ₁ - μ₂) := by ext; simp [sub_smul]
   rw [hf₁₂, IsNilpotent.map_iff (NoZeroSMulDivisors.algebraMap_injective _ _),
     isNilpotent_iff_eq_zero, sub_eq_zero] at this
