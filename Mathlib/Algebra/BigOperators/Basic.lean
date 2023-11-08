@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Lemmas
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.GroupPower.Lemmas
-import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Sigma
@@ -341,6 +341,10 @@ theorem prod_insert_one [DecidableEq α] (h : f a = 1) : ∏ x in insert a s, f 
   prod_insert_of_eq_one_if_not_mem fun _ => h
 #align finset.prod_insert_one Finset.prod_insert_one
 #align finset.sum_insert_zero Finset.sum_insert_zero
+
+@[to_additive]
+theorem prod_insert_div {M : Type*} [CommGroup M] [DecidableEq α] (ha : a ∉ s) {f : α → M} :
+    (∏ x in insert a s, f x) / f a = ∏ x in s, f x := by simp [ha]
 
 @[to_additive (attr := simp)]
 theorem prod_singleton (f : α → β) (a : α) : ∏ x in singleton a, f x = f a :=

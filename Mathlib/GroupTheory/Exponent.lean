@@ -80,6 +80,21 @@ noncomputable def exponent :=
 
 variable {G}
 
+@[simp]
+theorem _root_.AddMonoid.exponent_additive :
+    AddMonoid.exponent (Additive G) = exponent G := rfl
+
+@[simp]
+theorem exponent_multiplicative {G : Type*} [AddMonoid G] :
+    exponent (Multiplicative G) = AddMonoid.exponent G := rfl
+
+open MulOpposite in
+@[to_additive (attr := simp)]
+theorem _root_.MulOpposite.exponent : exponent (MulOpposite G) = exponent G := by
+  simp only [Monoid.exponent, ExponentExists]
+  congr!
+  all_goals exact ⟨(op_injective <| · <| op ·), (unop_injective <| . <| unop .)⟩
+
 @[to_additive]
 theorem exponentExists_iff_ne_zero : ExponentExists G ↔ exponent G ≠ 0 := by
   rw [exponent]
@@ -432,8 +447,8 @@ theorem Monoid.exponent_pi {ι : Type*} [Fintype ι] {M : ι → Type*} [∀ i, 
 
 /-- The exponent of product of two monoids is the `lcm` of the exponents of the
 individuaul monoids. -/
-@[to_additive "The exponent of product of two additive monoids is the `lcm` of the exponents of the
-individuaul additive monoids."]
+@[to_additive AddMonoid.exponent_prod "The exponent of product of two additive monoids is the `lcm`
+of the exponents of the individuaul additive monoids."]
 theorem Monoid.exponent_prod {M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] :
     exponent (M₁ × M₂) = lcm (exponent M₁) (exponent M₂) := by
   refine dvd_antisymm ?_ (lcm_dvd ?_ ?_)
