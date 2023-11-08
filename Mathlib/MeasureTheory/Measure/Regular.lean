@@ -170,6 +170,16 @@ Once this statement is proved, one deduces results for `σ`-finite measures from
 restricting them to finite measure sets (and proving that this restriction is weakly regular, using
 again the same statement).
 
+For non-Hausdorff spaces, one may argue whether the right condition for inner regularity is with
+respect to compact sets, or to compact closed sets. For instance,
+[Fremlin, *Measure Theory* (volume 4, 411J)][fremlin_vol4] considers measures which are inner
+regular with respect to compact closed sets (and calls them *tight*). However, since most of the
+literature uses mere compact sets, we have chosen to follow this convention. It doesn't make a
+difference in Hausdorff spaces, of course. In locally compact topological groups, the two
+conditions coincide, since if a compact set `k` is contained in a measurable set `u`, then the
+closure of `k` is a compact closed set still contained in `u`, see
+`IsCompact.closure_subset_of_measurableSet_of_group`.
+
 ## References
 
 [Halmos, Measure Theory, §52][halmos1950measure]. Note that Halmos uses an unusual definition of
@@ -254,8 +264,15 @@ theorem trans {q' : Set α → Prop} (H : InnerRegularWRT μ p q) (H' : InnerReg
   exact ⟨K, hKF.trans hFU, hpK, hrK⟩
 #align measure_theory.measure.inner_regular.trans MeasureTheory.Measure.InnerRegularWRT.trans
 
-theorem of_imp (h : ∀ (s : Set α), q s → p s) : InnerRegularWRT μ p q :=
+theorem rfl {p : Set α → Prop} : InnerRegularWRT μ p p :=
+  fun U hU _r hr ↦ ⟨U, Subset.rfl, hU, hr⟩
+
+theorem of_imp (h : ∀ s, q s → p s) : InnerRegularWRT μ p q :=
   fun U hU _ hr ↦ ⟨U, Subset.rfl, h U hU, hr⟩
+
+theorem mono {p' q' : Set α → Prop} (H : InnerRegularWRT μ p q)
+    (h : ∀ s, q' s → q s) (h' : ∀ s, p s → p' s) : InnerRegularWRT μ p' q' :=
+  of_imp h' |>.trans H |>.trans (of_imp h)
 
 end InnerRegularWRT
 
