@@ -73,10 +73,7 @@ theorem bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
 
 @[simp]
 theorem bodd_add (m n : ℕ) : bodd (m + n) = bxor (bodd m) (bodd n) := by
-  induction' n with n IH
-  · simp
-  · simp [add_succ, IH]
-    cases bodd m <;> cases bodd n <;> rfl
+  induction n <;> simp_all [add_succ, Bool.xor_not]
 #align nat.bodd_add Nat.bodd_add
 
 @[simp]
@@ -208,21 +205,6 @@ theorem shiftLeft_zero (m) : m <<< 0 = m := rfl
 theorem shiftLeft_succ (m n) : m <<< (n + 1) = 2 * (m <<< n) := by
   simp only [shiftLeft_eq, Nat.pow_add, Nat.pow_one, ← Nat.mul_assoc, Nat.mul_comm]
 
-@[simp]
-theorem shiftRight_zero : n >>> 0 = n := rfl
-
-@[simp]
-theorem shiftRight_succ (m n) : m >>> (n + 1) = (m >>> n) / 2 := rfl
-
-@[simp]
-theorem zero_shiftRight : ∀ n, 0 >>> n = 0 := by
-  intro n
-  induction' n with n IH
-  case zero =>
-    simp [shiftRight]
-  case succ =>
-    simp [shiftRight, IH]
-
 /-- `testBit m n` returns whether the `(n+1)ˢᵗ` least significant bit is `1` or `0`-/
 def testBit (m n : ℕ) : Bool :=
   bodd (m >>> n)
@@ -259,7 +241,8 @@ def size : ℕ → ℕ :=
   binaryRec 0 fun _ _ => succ
 #align nat.size Nat.size
 
-/-- `bits n` returns a list of Bools which correspond to the binary representation of n-/
+/-- `bits n` returns a list of Bools which correspond to the binary representation of n, where
+    the head of the list represents the least significant bit -/
 def bits : ℕ → List Bool :=
   binaryRec [] fun b _ IH => b :: IH
 #align nat.bits Nat.bits
@@ -289,7 +272,7 @@ theorem binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (b
 theorem bodd_bit (b n) : bodd (bit b n) = b := by
   rw [bit_val]
   simp only [Nat.mul_comm, Nat.add_comm, bodd_add, bodd_mul, bodd_succ, bodd_zero, Bool.not_false,
-    Bool.not_true, Bool.and_false, Bool.xor_false_right]
+    Bool.not_true, Bool.and_false, Bool.xor_false]
   cases b <;> cases bodd n <;> rfl
 #align nat.bodd_bit Nat.bodd_bit
 
@@ -306,10 +289,6 @@ theorem shiftLeft'_add (b m n) : ∀ k, shiftLeft' b m (n + k) = shiftLeft' b (s
 
 theorem shiftLeft_add (m n : Nat) : ∀ k, m <<< (n + k) = (m <<< n) <<< k := by
   intro k; simp only [← shiftLeft'_false, shiftLeft'_add]
-
-theorem shiftRight_add (m n : Nat) : ∀ k, m >>> (n + k) = (m >>> n) >>> k
-  | 0 => rfl
-  | k + 1 => by simp [add_succ, shiftRight_add]
 
 theorem shiftLeft'_sub (b m) : ∀ {n k}, k ≤ n → shiftLeft' b m (n - k) = (shiftLeft' b m n) >>> k
   | n, 0, _ => rfl

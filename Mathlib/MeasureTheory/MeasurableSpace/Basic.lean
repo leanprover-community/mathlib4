@@ -20,7 +20,7 @@ import Mathlib.Data.Set.UnionLift
 # Measurable spaces and measurable functions
 
 This file provides properties of measurable spaces and the functions and isomorphisms
-between them. The definition of a measurable space is in `MeasureTheory.MeasurableSpaceDef`.
+between them. The definition of a measurable space is in `MeasureTheory.MeasurableSpace.Defs`.
 
 A measurable space is a set equipped with a σ-algebra, a collection of
 subsets closed under complementation and countable union. A function
@@ -267,7 +267,7 @@ theorem measurable_of_subsingleton_codomain [Subsingleton β] (f : α → β) : 
   fun s _ => Subsingleton.set_cases MeasurableSet.empty MeasurableSet.univ s
 #align measurable_of_subsingleton_codomain measurable_of_subsingleton_codomain
 
-@[measurability, to_additive]
+@[to_additive (attr := measurability)]
 theorem measurable_one [One α] : Measurable (1 : β → α) :=
   @measurable_const _ _ _ _ 1
 #align measurable_one measurable_one
@@ -1315,13 +1315,17 @@ def refl (α : Type*) [MeasurableSpace α] : α ≃ᵐ α where
 instance instInhabited : Inhabited (α ≃ᵐ α) := ⟨refl α⟩
 
 /-- The composition of equivalences between measurable spaces. -/
+@[pp_dot]
 def trans (ab : α ≃ᵐ β) (bc : β ≃ᵐ γ) : α ≃ᵐ γ where
   toEquiv := ab.toEquiv.trans bc.toEquiv
   measurable_toFun := bc.measurable_toFun.comp ab.measurable_toFun
   measurable_invFun := ab.measurable_invFun.comp bc.measurable_invFun
 #align measurable_equiv.trans MeasurableEquiv.trans
 
+theorem coe_trans (ab : α ≃ᵐ β) (bc : β ≃ᵐ γ) : ⇑(ab.trans bc) = bc ∘ ab := rfl
+
 /-- The inverse of an equivalence between measurable spaces. -/
+@[pp_dot]
 def symm (ab : α ≃ᵐ β) : β ≃ᵐ α where
   toEquiv := ab.toEquiv.symm
   measurable_toFun := ab.measurable_invFun

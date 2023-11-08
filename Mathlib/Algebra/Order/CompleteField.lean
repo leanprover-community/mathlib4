@@ -155,7 +155,8 @@ theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b :=
       rw [coe_mem_cutMap_iff]
       exact_mod_cast sub_lt_comm.mp hq₁q
   · rintro _ ⟨_, _, ⟨qa, ha, rfl⟩, ⟨qb, hb, rfl⟩, rfl⟩
-    refine' ⟨qa + qb, _, by norm_cast⟩
+    -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
+    refine' ⟨qa + qb, _, by beta_reduce; norm_cast⟩
     rw [mem_setOf_eq, cast_add]
     exact add_lt_add ha hb
 #align linear_ordered_field.cut_map_add LinearOrderedField.cutMap_add
