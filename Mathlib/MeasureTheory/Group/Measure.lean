@@ -815,11 +815,11 @@ variable [Group G] [TopologicalSpace G] (μ : Measure G) [IsHaarMeasure μ]
 /-! Check that typeclass inference knows that a Haar measure on a locally compact second countable
 topological group is automatically regular and inner regular. -/
 
-example [TopologicalGroup G] [LocallyCompactSpace G] [TopologicalSpace.SecondCountableTopology G]
-    [BorelSpace G] : Regular μ := by infer_instance
+example [TopologicalGroup G] [LocallyCompactSpace G] [SecondCountableTopology G] [BorelSpace G] :
+    Regular μ := by infer_instance
 
-example [TopologicalGroup G] [LocallyCompactSpace G] [TopologicalSpace.SecondCountableTopology G]
-    [BorelSpace G] : InnerRegular μ := by infer_instance
+example [TopologicalGroup G] [LocallyCompactSpace G] [SecondCountableTopology G] [BorelSpace G] :
+    InnerRegular μ := by infer_instance
 
 @[to_additive (attr := simp)]
 theorem Haar_singleton [TopologicalGroup G] [BorelSpace G] (g : G) : μ {g} = μ {(1 : G)} := by
