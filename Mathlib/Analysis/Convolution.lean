@@ -619,7 +619,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     rcases eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_addGroup hk A B with H|H
     · simp [H] at hx
     · exact H
-  /- Since `G` is locally compact, one may thicken a little bit `k` into a larger compact set
+  /- Since `G` is locally compact, one may thicken `k` a little bit into a larger compact set
   `(-k) + t`, outside of which all functions that appear in the convolution vanish. Then we can
   apply a continuity statement for integrals depending on a parameter, with respect to
   locally integrable functions and compactly supported continuous functions. -/

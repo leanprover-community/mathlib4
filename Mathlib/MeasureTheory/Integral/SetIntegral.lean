@@ -1480,8 +1480,8 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
       apply Continuous.stronglyMeasurable_of_support_subset_isCompact (A p hp) hk
       apply support_subset_iff'.2 (fun x hx ↦ hfs p x hp hx)
     · apply eventually_of_forall (fun x ↦ (le_op_norm₂ L (g x) (f p x)).trans ?_)
-      specialize hC x
       gcongr
+      apply hC
   filter_upwards [v_mem, self_mem_nhdsWithin] with p hp h'p
   calc
   ‖∫ x, L (g x) (f p x) ∂μ - ∫ x, L (g x) (f q x) ∂μ‖
