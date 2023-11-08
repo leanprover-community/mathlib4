@@ -254,7 +254,7 @@ end Function
 
 section Pi
 
-variable {ι : Type*} {α : ι → Type*}
+variable {ι : Sort*} {α : ι → Sort*}
 /-- Given one value over a unique, we get a dependent function. -/
 def uniqueElim [Unique ι] (x : α (default : ι)) (i : ι) : α i := by
   rw [Unique.eq_default i]

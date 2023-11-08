@@ -1645,12 +1645,7 @@ variable (π) in
 /-- The measurable equivalence `(∀ i, π i) ≃ᵐ π ⋆` when the domain of `π` only contains `⋆` -/
 @[simps (config := .asFn)]
 def piUnique [Unique δ'] : (∀ i, π i) ≃ᵐ π default where
-  toFun := fun f => f default
-  invFun := uniqueElim
-  left_inv := fun f => funext fun i => by
-    cases Unique.eq_default i
-    rfl
-  right_inv := fun x => rfl
+  toEquiv := Equiv.piUnique π
   measurable_toFun := measurable_pi_apply _
   measurable_invFun := measurable_uniqueElim
 

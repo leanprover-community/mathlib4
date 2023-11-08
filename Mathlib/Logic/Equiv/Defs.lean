@@ -625,6 +625,14 @@ is equivalent to `β a`. -/
 #align equiv.Pi_subsingleton_symm_apply Equiv.piSubsingleton_symm_apply
 #align equiv.Pi_subsingleton Equiv.piSubsingleton
 
+/-- The equivalence `(∀ i, β i) ≃ β ⋆` when the domain of `β` only contains `⋆` -/
+@[simps (config := .asFn)]
+def piUnique [Unique α] (β : α → Sort*) : (∀ i, β i) ≃ β default where
+  toFun f := f default
+  invFun := uniqueElim
+  left_inv f := by ext i; cases Unique.eq_default i; rfl
+  right_inv x := rfl
+
 /-- If `α` has a unique term, then the type of function `α → β` is equivalent to `β`. -/
 @[simps! (config := { fullyApplied := false }) apply]
 def funUnique (α β) [Unique.{u} α] : (α → β) ≃ β := piSubsingleton _ default
