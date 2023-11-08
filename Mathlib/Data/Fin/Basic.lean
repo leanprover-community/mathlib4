@@ -1191,20 +1191,12 @@ instance instInvolutiveNeg (n : ℕ) : InvolutiveNeg (Fin n) where
 #align fin.involutive_neg Fin.instInvolutiveNeg
 
 /-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
-instance instIsCancelAdd (n : ℕ) : IsCancelAdd (Fin n) where
+instance instAddCancelSemigroup (n : ℕ) : AddCancelSemigroup (Fin n)  where
   add_left_cancel := Nat.casesOn n finZeroElim fun _i _ _ _ => add_left_cancel
   add_right_cancel := Nat.casesOn n finZeroElim fun _i _ _ _ => add_right_cancel
-#align fin.is_cancel_add Fin.instIsCancelAdd
-
-/-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
-instance instAddLeftCancelSemigroup (n : ℕ) : AddLeftCancelSemigroup (Fin n) :=
-  { Fin.addCommSemigroup n, Fin.instIsCancelAdd n with }
-#align fin.add_left_cancel_semigroup Fin.instAddLeftCancelSemigroup
-
-/-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
-instance instAddRightCancelSemigroup (n : ℕ) : AddRightCancelSemigroup (Fin n) :=
-  { Fin.addCommSemigroup n, Fin.instIsCancelAdd n with }
-#align fin.add_right_cancel_semigroup Fin.instAddRightCancelSemigroup
+#noalign fin.is_cancel_add
+#noalign fin.add_left_cancel_semigroup
+#noalign fin.add_right_cancel_semigroup
 
 protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
   rfl

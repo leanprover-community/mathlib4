@@ -242,6 +242,10 @@ instance rightCancelSemigroup [RightCancelSemigroup α] : RightCancelSemigroup (
 #align ulift.add_right_cancel_semigroup ULift.addRightCancelSemigroup
 
 @[to_additive]
+instance cancelSemigroup [CancelSemigroup α] : CancelSemigroup (ULift α) :=
+  Equiv.ulift.injective.cancelSemigroup _ fun _ _ => rfl
+
+@[to_additive]
 instance leftCancelMonoid [LeftCancelMonoid α] : LeftCancelMonoid (ULift α) :=
   Equiv.ulift.injective.leftCancelMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 #align ulift.left_cancel_monoid ULift.leftCancelMonoid

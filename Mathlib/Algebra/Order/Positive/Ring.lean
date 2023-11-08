@@ -54,6 +54,10 @@ instance addRightCancelSemigroup {M : Type*} [AddRightCancelMonoid M] [Preorder 
   Subtype.coe_injective.addRightCancelSemigroup _ coe_add
 #align positive.subtype.add_right_cancel_semigroup Positive.addRightCancelSemigroup
 
+instance addCancelSemigroup {M : Type*} [AddCancelMonoid M] [Preorder M]
+    [CovariantClass M M (· + ·) (· < ·)] : AddCancelSemigroup { x : M // 0 < x } :=
+  Subtype.coe_injective.addCancelSemigroup _ coe_add
+
 instance covariantClass_add_lt :
     CovariantClass { x : M // 0 < x } { x : M // 0 < x } (· + ·) (· < ·) :=
   ⟨fun _ y z hyz => Subtype.coe_lt_coe.1 <| add_lt_add_left (show (y : M) < z from hyz) _⟩

@@ -107,7 +107,7 @@ def mk : M ≃ Mᵈᵐᵃ := MulOpposite.opEquiv
 set_option hygiene false in
 run_cmd
   for n in [`Mul, `One, `Inv, `Semigroup, `CommSemigroup, `LeftCancelSemigroup,
-    `RightCancelSemigroup, `MulOneClass, `Monoid, `CommMonoid, `LeftCancelMonoid,
+    `RightCancelSemigroup, `CancelSemigroup, `MulOneClass, `Monoid, `CommMonoid, `LeftCancelMonoid,
     `RightCancelMonoid, `CancelMonoid, `CancelCommMonoid, `InvolutiveInv, `DivInvMonoid,
     `InvOneClass, `DivInvOneMonoid, `DivisionMonoid, `DivisionCommMonoid, `Group,
     `CommGroup].map Lean.mkIdent do

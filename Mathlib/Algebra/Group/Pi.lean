@@ -192,6 +192,10 @@ instance rightCancelSemigroup [∀ i, RightCancelSemigroup <| f i] :
 #align pi.add_right_cancel_semigroup Pi.addRightCancelSemigroup
 
 @[to_additive]
+instance cancelSemigroup [∀ i, CancelSemigroup <| f i] : CancelSemigroup (∀ i : I, f i) :=
+  { leftCancelSemigroup, rightCancelSemigroup with }
+
+@[to_additive]
 instance leftCancelMonoid [∀ i, LeftCancelMonoid <| f i] : LeftCancelMonoid (∀ i : I, f i) :=
   { leftCancelSemigroup, monoid with }
 #align pi.left_cancel_monoid Pi.leftCancelMonoid

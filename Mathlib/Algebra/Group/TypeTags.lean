@@ -214,6 +214,13 @@ instance Multiplicative.rightCancelSemigroup [AddRightCancelSemigroup α] :
     RightCancelSemigroup (Multiplicative α) :=
   { Multiplicative.semigroup, Multiplicative.isRightCancelMul with }
 
+instance Additive.addCancelSemigroup [CancelSemigroup α] : AddCancelSemigroup (Additive α) :=
+  { Additive.addLeftCancelSemigroup, Additive.addRightCancelSemigroup with }
+
+instance Multiplicative.cancelSemigroup [AddCancelSemigroup α] :
+    CancelSemigroup (Multiplicative α) :=
+  { Multiplicative.leftCancelSemigroup, Multiplicative.rightCancelSemigroup with }
+
 instance [One α] : Zero (Additive α) :=
   ⟨Additive.ofMul 1⟩
 

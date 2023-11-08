@@ -379,6 +379,10 @@ instance rightCancelSemigroup [RightCancelSemigroup M] : RightCancelSemigroup (G
         coe_eq.2 <| (coe_eq.1 H).mono fun _x => mul_right_cancel }
 
 @[to_additive]
+instance cancelSemigroup [CancelSemigroup M] : CancelSemigroup (Germ l M) :=
+  { Germ.leftCancelSemigroup, Germ.rightCancelSemigroup with }
+
+@[to_additive]
 instance mulOneClass [MulOneClass M] : MulOneClass (Germ l M) :=
   { one_mul := Quotient.ind' fun _ => congrArg ofFun <| one_mul _
     mul_one := Quotient.ind' fun _ => congrArg ofFun <| mul_one _ }

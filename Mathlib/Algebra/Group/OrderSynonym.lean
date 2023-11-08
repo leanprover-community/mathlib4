@@ -57,6 +57,9 @@ instance [h : LeftCancelSemigroup α] : LeftCancelSemigroup αᵒᵈ := h
 instance [h : RightCancelSemigroup α] : RightCancelSemigroup αᵒᵈ := h
 
 @[to_additive]
+instance [h : CancelSemigroup α] : CancelSemigroup αᵒᵈ := h
+
+@[to_additive]
 instance [h : MulOneClass α] : MulOneClass αᵒᵈ := h
 
 @[to_additive]

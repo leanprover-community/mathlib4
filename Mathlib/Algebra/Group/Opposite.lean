@@ -45,6 +45,9 @@ instance addLeftCancelSemigroup [AddLeftCancelSemigroup α] : AddLeftCancelSemig
 instance addRightCancelSemigroup [AddRightCancelSemigroup α] : AddRightCancelSemigroup αᵐᵒᵖ :=
   unop_injective.addRightCancelSemigroup _ fun _ _ => rfl
 
+instance addCancelSemigroup [AddCancelSemigroup α] : AddCancelSemigroup αᵐᵒᵖ :=
+  unop_injective.addCancelSemigroup _ fun _ _ => rfl
+
 instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup αᵐᵒᵖ :=
   unop_injective.addCommSemigroup _ fun _ _ => rfl
 
@@ -300,6 +303,9 @@ instance leftCancelSemigroup [LeftCancelSemigroup α] : LeftCancelSemigroup α�
 
 instance rightCancelSemigroup [RightCancelSemigroup α] : RightCancelSemigroup αᵃᵒᵖ :=
   unop_injective.rightCancelSemigroup _ fun _ _ => rfl
+
+instance cancelSemigroup [CancelSemigroup α] : CancelSemigroup αᵃᵒᵖ :=
+  unop_injective.cancelSemigroup _ fun _ _ => rfl
 
 instance commSemigroup [CommSemigroup α] : CommSemigroup αᵃᵒᵖ :=
   unop_injective.commSemigroup _ fun _ _ => rfl

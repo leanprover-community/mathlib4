@@ -82,6 +82,14 @@ protected def rightCancelSemigroup [RightCancelSemigroup M₂] (f : M₁ → M�
 #align function.injective.right_cancel_semigroup Function.Injective.rightCancelSemigroup
 #align function.injective.add_right_cancel_semigroup Function.Injective.addRightCancelSemigroup
 
+/-- A type endowed with `*` is a cancellative semigroup, if it admits an injective map that
+preserves `*` to a cancellative semigroup.  See note [reducible non-instances]. -/
+@[to_additive (attr := reducible) "A type endowed with `+` is an additive cancellative semigroup, if
+it admits an injective map that preserves `+` to an additive cancellative semigroup."]
+protected def cancelSemigroup [CancelSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
+    (mul : ∀ x y, f (x * y) = f x * f y) : CancelSemigroup M₁ :=
+  { hf.leftCancelSemigroup f mul, hf.rightCancelSemigroup f mul with }
+
 variable [One M₁]
 
 /-- A type endowed with `1` and `*` is a `MulOneClass`, if it admits an injective map that
