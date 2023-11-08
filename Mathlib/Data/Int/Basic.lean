@@ -34,7 +34,7 @@ instance instCommRingInt : CommRing ℤ where
   right_distrib := Int.add_mul
   mul_one := Int.mul_one
   one_mul := Int.one_mul
-  npow n x := x ^ n
+  npow n x := HPow.hPow x n  -- can be change back to `^` once lean4#2220 is resolved.
   npow_zero _ := rfl
   npow_succ _ _ := by rw [Int.mul_comm]; rfl
   mul_assoc := Int.mul_assoc
