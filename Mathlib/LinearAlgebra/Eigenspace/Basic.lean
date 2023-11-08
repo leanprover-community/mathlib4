@@ -291,10 +291,8 @@ lemma mapsTo_generalizedEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ
 
 lemma mapsTo_iSup_generalizedEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) :
     MapsTo g ↑(⨆ k, f.generalizedEigenspace μ k) ↑(⨆ k, f.generalizedEigenspace μ k) := by
-  intro x hx
-  simp only [Submodule.coe_iSup_of_chain, mem_iUnion, SetLike.mem_coe] at hx
-  obtain ⟨k, hk : x ∈ f.generalizedEigenspace μ k⟩ := hx
-  simp only [Submodule.coe_iSup_of_chain, mem_iUnion, SetLike.mem_coe]
+  simp only [MapsTo, Submodule.coe_iSup_of_chain, mem_iUnion, SetLike.mem_coe]
+  rintro x ⟨k, hk⟩
   exact ⟨k, f.mapsTo_generalizedEigenspace_of_comm h μ k hk⟩
 
 lemma disjoint_generalizedEigenspace [NoZeroSMulDivisors R M]
@@ -306,21 +304,16 @@ lemma disjoint_generalizedEigenspace [NoZeroSMulDivisors R M]
   set p := f.generalizedEigenspace μ₁ k ⊓ f.generalizedEigenspace μ₂ l
   by_contra hp
   replace hp : Nontrivial p := Submodule.nontrivial_iff_ne_bot.mpr hp
-  have hc₁ : Commute f (f - algebraMap R (End R M) μ₁) :=
-    Commute.sub_right rfl (Algebra.commute_algebraMap_right μ₁ f)
-  have hc₂ : Commute f (f - algebraMap R (End R M) μ₂) :=
-    Commute.sub_right rfl (Algebra.commute_algebraMap_right μ₂ f)
-  let f₁ : End R p := LinearMap.restrict (f - algebraMap R (End R M) μ₁) (MapsTo.inter_inter
-    (mapsTo_generalizedEigenspace_of_comm hc₁ μ₁ k) (mapsTo_generalizedEigenspace_of_comm hc₁ μ₂ l))
-  let f₂ : End R p := LinearMap.restrict (f - algebraMap R (End R M) μ₂) (MapsTo.inter_inter
-    (mapsTo_generalizedEigenspace_of_comm hc₂ μ₁ k) (mapsTo_generalizedEigenspace_of_comm hc₂ μ₂ l))
-  have hn₁ : IsNilpotent f₁ := by
-    use k; ext ⟨x, hx⟩; simpa [LinearMap.restrict_apply, LinearMap.pow_restrict _] using hx.1
-  have hn₂ : IsNilpotent f₂ := by
-    use l; ext ⟨x, hx⟩; simpa [LinearMap.restrict_apply, LinearMap.pow_restrict _] using hx.2
+  let f₁ : End R p := (f - algebraMap R (End R M) μ₁).restrict <| MapsTo.inter_inter
+    (mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₁) μ₁ k)
+    (mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₁) μ₂ l)
+  let f₂ : End R p := (f - algebraMap R (End R M) μ₂).restrict <| MapsTo.inter_inter
+    (mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₂) μ₁ k)
+    (mapsTo_generalizedEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ₂) μ₂ l)
   have : IsNilpotent (f₂ - f₁) := by
-    apply Commute.isNilpotent_sub _ hn₂ hn₁
-    ext; simp [smul_sub, sub_sub, smul_comm μ₁, add_sub_left_comm]
+    apply Commute.isNilpotent_sub (x := f₂) (y := f₁) _ ⟨l, ?_⟩ ⟨k, ?_⟩
+    · ext; simp [smul_sub, sub_sub, smul_comm μ₁, add_sub_left_comm]
+    all_goals ext ⟨x, _, _⟩; simpa [LinearMap.restrict_apply, LinearMap.pow_restrict _] using ‹_›
   have hf₁₂ : f₂ - f₁ = algebraMap R (End R p) (μ₁ - μ₂) := by ext; simp [sub_smul]
   rw [hf₁₂, IsNilpotent.map_iff (NoZeroSMulDivisors.algebraMap_injective _ _),
     isNilpotent_iff_eq_zero, sub_eq_zero] at this
@@ -334,8 +327,7 @@ lemma disjoint_iSup_generalizedEigenspace [NoZeroSMulDivisors R M]
   exact disjoint_generalizedEigenspace f hμ
 
 lemma injOn_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
-    InjOn (fun μ ↦ ⨆ k, f.generalizedEigenspace μ k)
-      {μ | ⨆ k, f.generalizedEigenspace μ k ≠ ⊥} := by
+    InjOn (⨆ k, f.generalizedEigenspace · k) {μ | ⨆ k, f.generalizedEigenspace μ k ≠ ⊥} := by
   rintro μ₁ _ μ₂ hμ₂ (hμ₁₂ : ⨆ k, f.generalizedEigenspace μ₁ k = ⨆ k, f.generalizedEigenspace μ₂ k)
   by_contra contra
   apply hμ₂
@@ -348,12 +340,7 @@ theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M)
       (s.sup fun μ ↦ ⨆ k, f.generalizedEigenspace μ k) by
     simp_rw [CompleteLattice.independent_iff_supIndep_of_injOn f.injOn_generalizedEigenspace,
       Finset.supIndep_iff_disjoint_erase]
-    exact fun s μ _ ↦ this _ _ (s.not_mem_erase μ)
-  intro μ₁ s
-  induction' s using Finset.induction_on with μ₂ s _ ih; simp
-  intro hμ₁₂
   obtain ⟨hμ₁₂ : μ₁ ≠ μ₂, hμ₁ : μ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hμ₁₂
-  specialize ih hμ₁
   rw [Finset.sup_insert, disjoint_iff, Submodule.eq_bot_iff]
   rintro x ⟨hx, hx'⟩
   simp only [SetLike.mem_coe] at hx hx'
