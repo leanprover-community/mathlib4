@@ -16,8 +16,8 @@ We think this result generalises well by a change of variables.
 ## Main result
 
 - `abs_le_interp_on_closed_strip` :
-Hadamard three-line theorem on `re ⁻¹' [0,1]`: If `f` is a bounded function, continuous on 
-`re ⁻¹' [0,1]` and differentiable on `re ⁻¹' (0,1)`, then for 
+Hadamard three-line theorem on `re ⁻¹' [0,1]`: If `f` is a bounded function, continuous on
+`re ⁻¹' [0,1]` and differentiable on `re ⁻¹' (0,1)`, then for
 `M(x) := sup ((abs ∘ f) '' (re ⁻¹' {x}))`, that is `M(x)` is the supremum of the absolute value of
 `f` along the vertical lines `re z = x`, we have that `∀ z ∈ re ⁻¹' [0,1]` the inequality 
 `|f(z)| ≤ |M(0)^(1-z)| * |M(1)^z|` holds. This can be seen to be equivalent to the statement
