@@ -22,20 +22,8 @@ There is also a version asserting this inequality only for `x` and `y` in some s
 Finally, `f : α → β` is called *locally Lipschitz continuous* if each `x : α` has a neighbourhood
 on which `f` is Lipschitz continuous (with some constant).
 
-In this file we provide various ways to prove that various combinations of Lipschitz continuous
-functions are Lipschitz continuous. We also prove that Lipschitz continuous functions are
-uniformly continuous, and that locally Lipschitz functions are continuous.
-
-## Main definitions and lemmas
-
-* `LipschitzWith K f`: states that `f` is Lipschitz with constant `K : ℝ≥0`
-* `LipschitzOnWith K f s`: states that `f` is Lipschitz with constant `K : ℝ≥0` on a set `s`
-* `LipschitzWith.uniformContinuous`: a Lipschitz function is uniformly continuous
-* `LipschitzOnWith.uniformContinuousOn`: a function which is Lipschitz on a set `s` is uniformly
-  continuous on `s`.
-* `LocallyLipschitz f`: states that `f` is locally Lipschitz
-* `LocallyLipschitz.continuous`: a locally Lipschitz function is continuous.
-
+In this file we specialize various facts about Lipschitz continuous maps
+to the case of (pseudo) metric spaces.
 
 ## Implementation notes
 
@@ -321,10 +309,11 @@ end Metric
 end LipschitzOnWith
 
 namespace LocallyLipschitz
-variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ] {f : α → β}
 
 section Real
-variable {f g : α → ℝ}
+
+variable [PseudoEMetricSpace α] {f g : α → ℝ}
+
 /-- The minimum of locally Lipschitz functions is locally Lipschitz. -/
 protected lemma min (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
     LocallyLipschitz (fun x => min (f x) (g x)) :=
@@ -352,10 +341,11 @@ end LocallyLipschitz
 
 open Metric
 
+variable [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β}
+
 /-- If a function is locally Lipschitz around a point, then it is continuous at this point. -/
-theorem continuousAt_of_locally_lipschitz [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β}
-    {x : α} {r : ℝ} (hr : 0 < r) (K : ℝ) (h : ∀ y, dist y x < r → dist (f y) (f x) ≤ K * dist y x) :
-    ContinuousAt f x := by
+theorem continuousAt_of_locally_lipschitz {x : α} {r : ℝ} (hr : 0 < r) (K : ℝ)
+    (h : ∀ y, dist y x < r → dist (f y) (f x) ≤ K * dist y x) : ContinuousAt f x := by
   -- We use `h` to squeeze `dist (f y) (f x)` between `0` and `K * dist y x`
   refine tendsto_iff_dist_tendsto_zero.2 (squeeze_zero' (eventually_of_forall fun _ => dist_nonneg)
     (mem_of_superset (ball_mem_nhds _ hr) h) ?_)
@@ -366,8 +356,8 @@ theorem continuousAt_of_locally_lipschitz [PseudoMetricSpace α] [PseudoMetricSp
 
 /-- A function `f : α → ℝ` which is `K`-Lipschitz on a subset `s` admits a `K`-Lipschitz extension
 to the whole space. -/
-theorem LipschitzOnWith.extend_real [PseudoMetricSpace α] {f : α → ℝ} {s : Set α} {K : ℝ≥0}
-    (hf : LipschitzOnWith K f s) : ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn f g s := by
+theorem LipschitzOnWith.extend_real {f : α → ℝ} {s : Set α} {K : ℝ≥0} (hf : LipschitzOnWith K f s) :
+    ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn f g s := by
   /- An extension is given by `g y = Inf {f x + K * dist y x | x ∈ s}`. Taking `x = y`, one has
     `g y ≤ f y` for `y ∈ s`, and the other inequality holds because `f` is `K`-Lipschitz, so that it
     can not counterbalance the growth of `K * dist y x`. One readily checks from the formula that
@@ -403,7 +393,7 @@ theorem LipschitzOnWith.extend_real [PseudoMetricSpace α] {f : α → ℝ} {s :
 /-- A function `f : α → (ι → ℝ)` which is `K`-Lipschitz on a subset `s` admits a `K`-Lipschitz
 extension to the whole space. The same result for the space `ℓ^∞ (ι, ℝ)` over a possibly infinite
 type `ι` is implemented in `LipschitzOnWith.extend_lp_infty`.-/
-theorem LipschitzOnWith.extend_pi [PseudoMetricSpace α] [Fintype ι] {f : α → ι → ℝ} {s : Set α}
+theorem LipschitzOnWith.extend_pi [Fintype ι] {f : α → ι → ℝ} {s : Set α}
     {K : ℝ≥0} (hf : LipschitzOnWith K f s) : ∃ g : α → ι → ℝ, LipschitzWith K g ∧ EqOn f g s := by
   have : ∀ i, ∃ g : α → ℝ, LipschitzWith K g ∧ EqOn (fun x => f x i) g s := fun i => by
     have : LipschitzOnWith K (fun x : α => f x i) s :=
@@ -411,9 +401,8 @@ theorem LipschitzOnWith.extend_pi [PseudoMetricSpace α] [Fintype ι] {f : α �
         (dist_le_pi_dist _ _ i).trans (hf.dist_le_mul x hx y hy)
     exact this.extend_real
   choose g hg using this
-  refine' ⟨fun x i => g i x, LipschitzWith.of_dist_le_mul fun x y => _, _⟩
+  refine ⟨fun x i => g i x, LipschitzWith.of_dist_le_mul fun x y => ?_, fun x hx ↦ ?_⟩
   · exact (dist_pi_le_iff (mul_nonneg K.2 dist_nonneg)).2 fun i => (hg i).1.dist_le_mul x y
-  · intro x hx
-    ext1 i
+  · ext1 i
     exact (hg i).2 hx
 #align lipschitz_on_with.extend_pi LipschitzOnWith.extend_pi
