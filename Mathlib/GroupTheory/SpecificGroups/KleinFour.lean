@@ -89,7 +89,7 @@ theorem exponent : Monoid.exponent KleinFour = 2 := by
 theorem notIsCyclic : ¬ IsCyclic KleinFour := by
   intro h
   have h₁ := IsCyclic.iff_exponent_eq_card.mp h
-  rw [exponent,card] at h₁
+  rw [exponent, card] at h₁
   contradiction
 
 /-- Klein four-group is isomorphic to the Dihedral group of order 4. -/
@@ -104,12 +104,8 @@ def mulEquivDihedralGroup2 : KleinFour ≃* DihedralGroup 2 where
     | sr 1 => (0, 1)
     | r 1 => (1, 0)
     | sr 1 * r 1 => (1, 1)
-  left_inv := fun
-    | (0, 0) => rfl
-    | (0, 1) => rfl
-    | (1, 0) => rfl
-    | (1, 1) => rfl
-  right_inv := by simp
+  left_inv := by decide
+  right_inv := by decide
   map_mul' := by simp
 
 end KleinFour
