@@ -231,6 +231,10 @@ theorem HasFDerivAt.norm_sq {f : G → F} {f' : G →L[ℝ] F} (hf : HasFDerivAt
     HasFDerivAt (‖f ·‖ ^ 2) (2 • (innerSL ℝ (f x)).comp f') x :=
   (hasStrictFDerivAt_norm_sq _).hasFDerivAt.comp x hf
 
+theorem HasDerivAt.norm_sq {f : ℝ → F} {f' : F} {x : ℝ} (hf : HasDerivAt f f' x) :
+    HasDerivAt (‖f ·‖ ^ 2) (2 * Inner.inner (f x) f') x :=
+  by simpa using hf.hasFDerivAt.norm_sq.hasDerivAt
+
 theorem HasFDerivWithinAt.norm_sq {f : G → F} {f' : G →L[ℝ] F} (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (‖f ·‖ ^ 2) (2 • (innerSL ℝ (f x)).comp f') s x :=
   (hasStrictFDerivAt_norm_sq _).hasFDerivAt.comp_hasFDerivWithinAt x hf
