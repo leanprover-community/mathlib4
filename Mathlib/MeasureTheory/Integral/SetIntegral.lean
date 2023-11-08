@@ -810,6 +810,37 @@ theorem set_integral_nonpos_le {s : Set α} (hs : MeasurableSet s) (hf : Strongl
       (hfi.indicator hs) (indicator_nonpos_le_indicator s f)
 #align measure_theory.set_integral_nonpos_le MeasureTheory.set_integral_nonpos_le
 
+lemma Integrable.measure_le_integral {f : α → ℝ} (f_int : Integrable f μ) (f_nonneg : 0 ≤ᵐ[μ] f)
+    {s : Set α} (hs : ∀ x ∈ s, 1 ≤ f x) :
+    μ s ≤ ENNReal.ofReal (∫ x, f x ∂μ) := by
+  rw [ofReal_integral_eq_lintegral_ofReal f_int f_nonneg]
+  apply meas_le_lintegral₀
+  · exact ENNReal.continuous_ofReal.measurable.comp_aemeasurable f_int.1.aemeasurable
+  · intro x hx
+    simpa using ENNReal.ofReal_le_ofReal (hs x hx)
+
+lemma integral_le_measure {f : α → ℝ} {s : Set α}
+    (hs : ∀ x ∈ s, f x ≤ 1) (h's : ∀ x ∈ sᶜ, f x ≤ 0) :
+    ENNReal.ofReal (∫ x, f x ∂μ) ≤ μ s := by
+  by_cases H : Integrable f μ; swap
+  · simp [integral_undef H]
+  let g x := max (f x) 0
+  have g_int : Integrable g μ := H.pos_part
+  have : ENNReal.ofReal (∫ x, f x ∂μ) ≤ ENNReal.ofReal (∫ x, g x ∂μ) := by
+    apply ENNReal.ofReal_le_ofReal
+    exact integral_mono H g_int (fun x ↦ le_max_left _ _)
+  apply this.trans
+  rw [ofReal_integral_eq_lintegral_ofReal g_int (eventually_of_forall (fun x ↦ le_max_right _ _))]
+  apply lintegral_le_meas
+  · intro x
+    apply ENNReal.ofReal_le_of_le_toReal
+    by_cases H : x ∈ s
+    · simpa using hs x H
+    · apply le_trans _ zero_le_one
+      simpa using h's x H
+  · intro x hx
+    simpa using h's x hx
+
 end Nonneg
 
 section IntegrableUnion
@@ -862,7 +893,7 @@ end IntegrableUnion
 
 section TendstoMono
 
-variable {μ : Measure α} [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E] {s : ℕ → Set α}
+variable {μ : Measure α} [NormedAddCommGroup E] [NormedSpace ℝ E] {s : ℕ → Set α}
   {f : α → E}
 
 theorem _root_.Antitone.tendsto_set_integral (hsm : ∀ i, MeasurableSet (s i)) (h_anti : Antitone s)
@@ -1095,7 +1126,7 @@ variable {μ : Measure α} {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [No
 
 namespace ContinuousLinearMap
 
-variable [CompleteSpace F] [NormedSpace ℝ F]
+variable [NormedSpace ℝ F]
 
 theorem integral_compLp (L : E →L[𝕜] F) (φ : Lp E p μ) :
     (∫ a, (L.compLp φ) a ∂μ) = ∫ a, L (φ a) ∂μ :=
@@ -1115,7 +1146,7 @@ theorem continuous_integral_comp_L1 (L : E →L[𝕜] F) :
 set_option linter.uppercaseLean3 false in
 #align continuous_linear_map.continuous_integral_comp_L1 ContinuousLinearMap.continuous_integral_comp_L1
 
-variable [CompleteSpace E] [NormedSpace ℝ E]
+variable [CompleteSpace E] [CompleteSpace F] [NormedSpace ℝ E]
 
 theorem integral_comp_comm (L : E →L[𝕜] F) {φ : α → E} (φ_int : Integrable φ μ) :
     (∫ a, L (φ a) ∂μ) = L (∫ a, φ a ∂μ) := by
@@ -1173,15 +1204,19 @@ end LinearIsometry
 
 namespace ContinuousLinearEquiv
 
-variable [CompleteSpace F] [NormedSpace ℝ F] [CompleteSpace E] [NormedSpace ℝ E]
+variable [NormedSpace ℝ F] [NormedSpace ℝ E]
 
-theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : α → E) : (∫ a, L (φ a) ∂μ) = L (∫ a, φ a ∂μ) :=
-  L.toContinuousLinearMap.integral_comp_comm' L.antilipschitz _
+theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : α → E) : (∫ a, L (φ a) ∂μ) = L (∫ a, φ a ∂μ) := by
+  have : CompleteSpace E ↔ CompleteSpace F :=
+    completeSpace_congr (e := L.toEquiv) L.uniformEmbedding
+  by_cases hE : CompleteSpace E
+  · have : CompleteSpace F := this.1 hE
+    exact L.toContinuousLinearMap.integral_comp_comm' L.antilipschitz _
+  · have := this.not.1 hE
+    simp [integral, *]
 #align continuous_linear_equiv.integral_comp_comm ContinuousLinearEquiv.integral_comp_comm
 
 end ContinuousLinearEquiv
-
-variable [CompleteSpace E] [NormedSpace ℝ E] [CompleteSpace F] [NormedSpace ℝ F]
 
 @[norm_cast]
 theorem integral_ofReal {f : α → ℝ} : (∫ a, (f a : 𝕜) ∂μ) = ↑(∫ a, f a ∂μ) :=
@@ -1224,21 +1259,34 @@ theorem set_integral_re_add_im {f : α → 𝕜} {i : Set α} (hf : IntegrableOn
   integral_re_add_im hf
 #align set_integral_re_add_im set_integral_re_add_im
 
-theorem fst_integral {f : α → E × F} (hf : Integrable f μ) : (∫ x, f x ∂μ).1 = ∫ x, (f x).1 ∂μ :=
-  ((ContinuousLinearMap.fst ℝ E F).integral_comp_comm hf).symm
+variable [NormedSpace ℝ E] [NormedSpace ℝ F]
+
+lemma swap_integral (f : α → E × F) : (∫ x, f x ∂μ).swap = ∫ x, (f x).swap ∂μ :=
+  .symm <| (ContinuousLinearEquiv.prodComm ℝ E F).integral_comp_comm f
+
+theorem fst_integral [CompleteSpace F] {f : α → E × F} (hf : Integrable f μ) :
+    (∫ x, f x ∂μ).1 = ∫ x, (f x).1 ∂μ := by
+  by_cases hE : CompleteSpace E
+  · exact ((ContinuousLinearMap.fst ℝ E F).integral_comp_comm hf).symm
+  · have : ¬(CompleteSpace (E × F)) := fun h ↦ hE <| .fst_of_prod (β := F)
+    simp [integral, *]
 #align fst_integral fst_integral
 
-theorem snd_integral {f : α → E × F} (hf : Integrable f μ) : (∫ x, f x ∂μ).2 = ∫ x, (f x).2 ∂μ :=
-  ((ContinuousLinearMap.snd ℝ E F).integral_comp_comm hf).symm
+theorem snd_integral [CompleteSpace E] {f : α → E × F} (hf : Integrable f μ) :
+    (∫ x, f x ∂μ).2 = ∫ x, (f x).2 ∂μ := by
+  rw [← Prod.fst_swap, swap_integral]
+  exact fst_integral <| hf.snd.prod_mk hf.fst
 #align snd_integral snd_integral
 
-theorem integral_pair {f : α → E} {g : α → F} (hf : Integrable f μ) (hg : Integrable g μ) :
+theorem integral_pair [CompleteSpace E] [CompleteSpace F] {f : α → E} {g : α → F}
+    (hf : Integrable f μ) (hg : Integrable g μ) :
     (∫ x, (f x, g x) ∂μ) = (∫ x, f x ∂μ, ∫ x, g x ∂μ) :=
   have := hf.prod_mk hg
   Prod.ext (fst_integral this) (snd_integral this)
 #align integral_pair integral_pair
 
-theorem integral_smul_const {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] (f : α → 𝕜) (c : E) :
+theorem integral_smul_const {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [CompleteSpace E]
+    (f : α → 𝕜) (c : E) :
     ∫ x, f x • c ∂μ = (∫ x, f x ∂μ) • c := by
   by_cases hf : Integrable f μ
   · exact ((1 : 𝕜 →L[𝕜] 𝕜).smulRight c).integral_comp_comm hf
@@ -1251,6 +1299,7 @@ theorem integral_smul_const {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] (f
 
 theorem integral_withDensity_eq_integral_smul {f : α → ℝ≥0} (f_meas : Measurable f) (g : α → E) :
     ∫ a, g a ∂μ.withDensity (fun x => f x) = ∫ a, f a • g a ∂μ := by
+  by_cases hE : CompleteSpace E; swap; · simp [integral, hE]
   by_cases hg : Integrable g (μ.withDensity fun x => f x); swap
   · rw [integral_undef hg, integral_undef]
     rwa [← integrable_withDensity_iff_integrable_smul f_meas]

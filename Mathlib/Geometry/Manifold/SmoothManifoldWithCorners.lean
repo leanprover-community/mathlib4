@@ -425,7 +425,7 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
     [∀ i, TopologicalSpace (H i)] (I : ∀ i, ModelWithCorners 𝕜 (E i) (H i)) :
     ModelWithCorners 𝕜 (∀ i, E i) (ModelPi H) where
   toLocalEquiv := LocalEquiv.pi fun i => (I i).toLocalEquiv
-  source_eq := by simp only [Set.pi_univ, mfld_simps]
+  source_eq := by simp only [pi_univ, mfld_simps]
   unique_diff' := UniqueDiffOn.pi ι E _ _ fun i _ => (I i).unique_diff'
   continuous_toFun := continuous_pi fun i => (I i).continuous.comp (continuous_apply i)
   continuous_invFun := continuous_pi fun i => (I i).continuous_symm.comp (continuous_apply i)
@@ -631,11 +631,11 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
   simp only at he he_symm he' he'_symm
   constructor <;> simp only [LocalEquiv.prod_source, LocalHomeomorph.prod_toLocalEquiv]
   · have h3 := ContDiffOn.prod_map he he'
-    rw [← I.image_eq, ← I'.image_eq, Set.prod_image_image_eq] at h3
+    rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
     rw [← (I.prod I').image_eq]
     exact h3
   · have h3 := ContDiffOn.prod_map he_symm he'_symm
-    rw [← I.image_eq, ← I'.image_eq, Set.prod_image_image_eq] at h3
+    rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
     rw [← (I.prod I').image_eq]
     exact h3
 #align cont_diff_groupoid_prod contDiffGroupoid_prod
@@ -718,7 +718,7 @@ def analyticGroupoid : StructureGroupoid H :=
         apply And.intro
         · intro x hx
           rcases h (I.symm x) (mem_preimage.mp hx.left) with ⟨v, hv⟩
-          exact hv.right.right.left x ⟨Set.mem_preimage.mpr ⟨hx.left, hv.right.left⟩, hx.right⟩
+          exact hv.right.right.left x ⟨mem_preimage.mpr ⟨hx.left, hv.right.left⟩, hx.right⟩
         · apply mapsTo'.mp
           simp only [MapsTo]
           intro x hx
@@ -986,6 +986,10 @@ theorem mapsTo_extend (hs : s ⊆ f.source) :
 theorem extend_left_inv {x : M} (hxf : x ∈ f.source) : (f.extend I).symm (f.extend I x) = x :=
   (f.extend I).left_inv <| by rwa [f.extend_source]
 #align local_homeomorph.extend_left_inv LocalHomeomorph.extend_left_inv
+
+/-- Variant of `f.extend_left_inv I`, stated in terms of images. -/
+lemma extend_left_inv' (ht: t ⊆ f.source) : ((f.extend I).symm ∘ (f.extend I)) '' t = t :=
+  EqOn.image_eq_self (fun _ hx ↦ f.extend_left_inv I (ht hx))
 
 theorem extend_source_mem_nhds {x : M} (h : x ∈ f.source) : (f.extend I).source ∈ 𝓝 x :=
   (isOpen_extend_source f I).mem_nhds <| by rwa [f.extend_source I]
@@ -1563,3 +1567,21 @@ theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
   simp_all only [mfld_simps, chartAt_comp]
 
 end ExtendedCharts
+
+section Topology
+-- Let `M` be a topological manifold over the field 𝕜.
+variable
+  {E : Type*} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  [HasGroupoid M (contDiffGroupoid 0 I)]
+
+/-- A finite-dimensional manifold modelled on a locally compact field
+  (such as ℝ, ℂ or the `p`-adic numbers) is locally compact. -/
+lemma Manifold.locallyCompact_of_finiteDimensional [LocallyCompactSpace 𝕜]
+    [FiniteDimensional 𝕜 E] : LocallyCompactSpace M := by
+  have : ProperSpace E := FiniteDimensional.proper 𝕜 E
+  have : LocallyCompactSpace H := I.locallyCompactSpace
+  exact ChartedSpace.locallyCompactSpace H M
+
+end Topology

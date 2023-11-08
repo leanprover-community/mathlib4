@@ -1520,7 +1520,7 @@ theorem tendsto_setToFun_of_L1 (hT : DominatedFinMeasAdditive μ T C) {ι} (f : 
       rw [Lp.tendsto_Lp_iff_tendsto_ℒp']
       simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply]
       refine' (tendsto_congr' _).mp hfs
-      filter_upwards [hfsi]with i hi
+      filter_upwards [hfsi] with i hi
       refine' lintegral_congr_ae _
       filter_upwards [hi.coeFn_toL1, hfi.coeFn_toL1] with x hxi hxf
       simp_rw [dif_pos hi, hxi, hxf]

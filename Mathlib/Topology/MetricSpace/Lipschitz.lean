@@ -3,13 +3,14 @@ Copyright (c) 2018 Rohan Mitta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Data.Set.Intervals.ProjIcc
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.EMetricSpace.Lipschitz
+import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.Bounded
 
-#align_import topology.metric_space.lipschitz from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
+#align_import topology.metric_space.lipschitz from "leanprover-community/mathlib"@"c8f305514e0d47dfaa710f5a52f0d21b588e6328"
 
 /-!
 # Lipschitz continuous functions
@@ -302,6 +303,18 @@ protected theorem iff_le_add_mul {f : α → ℝ} {K : ℝ≥0} :
     LipschitzOnWith K f s ↔ ∀ x ∈ s, ∀ y ∈ s, f x ≤ f y + K * dist x y :=
   ⟨LipschitzOnWith.le_add_mul, LipschitzOnWith.of_le_add_mul K⟩
 #align lipschitz_on_with.iff_le_add_mul LipschitzOnWith.iff_le_add_mul
+
+theorem isBounded_image2 (f : α → β → γ) {K₁ K₂ : ℝ≥0} {s : Set α} {t : Set β}
+    (hs : Bornology.IsBounded s) (ht : Bornology.IsBounded t)
+    (hf₁ : ∀ b ∈ t, LipschitzOnWith K₁ (fun a => f a b) s)
+    (hf₂ : ∀ a ∈ s, LipschitzOnWith K₂ (f a) t) : Bornology.IsBounded (Set.image2 f s t) :=
+  Metric.isBounded_iff_ediam_ne_top.2 <|
+    ne_top_of_le_ne_top
+      (ENNReal.add_ne_top.mpr
+        ⟨ENNReal.mul_ne_top ENNReal.coe_ne_top hs.ediam_ne_top,
+          ENNReal.mul_ne_top ENNReal.coe_ne_top ht.ediam_ne_top⟩)
+      (ediam_image2_le _ _ _ hf₁ hf₂)
+#align lipschitz_on_with.bounded_image2 LipschitzOnWith.isBounded_image2
 
 end Metric
 
