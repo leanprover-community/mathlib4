@@ -4,14 +4,18 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Data.Countable.Small
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.Fintype.Shrink
 import Mathlib.Data.Fintype.Sum
 
 /-!
 # The Hales-Jewett theorem
 
-We prove the Hales-Jewett theorem and deduce Van der Waerden's theorem as a corollary.
+We prove the Hales-Jewett theorem. We deduce Van der Waerden's theorem and the extended Hales-Jewett
+theorem as corollaries.
 
 The Hales-Jewett theorem is a result in Ramsey theory dealing with *combinatorial lines*. Given
 an 'alphabet' `α : Type*` and `a b : α`, an example of a combinatorial line in `α^5` is
@@ -22,6 +26,10 @@ huge) finite type `ι` such that whenever `ι → α` is `κ`-colored (i.e. for 
 the idea of *color focusing* and a *product argument*. See the proof of
 `Combinatorics.Line.exists_mono_in_high_dimension'` for details.
 
+*Combinatorial subspaces* are higher-dimensional analogues of combinatorial lines, defined in
+`Combinatorics.Subspace`. The extended Hales-Jewett theorem generalises the statement above from
+combinatorial lines to combinatorial subspaces of a fixed dimension.
+
 The version of Van der Waerden's theorem in this file states that whenever a commutative monoid `M`
 is finitely colored and `S` is a finite subset, there exists a monochromatic homothetic copy of `S`.
 This follows from the Hales-Jewett theorem by considering the map `(ι → S) → M` sending `v`
@@ -29,8 +37,9 @@ to `∑ i : ι, v i`, which sends a combinatorial line to a homothetic copy of `
 
 ## Main results
 
-- `Combinatorics.Line.exists_mono_in_high_dimension`: the Hales-Jewett theorem.
-- `Combinatorics.exists_mono_homothetic_copy`: a generalization of Van der Waerden's theorem.
+- `Combinatorics.Line.exists_mono_in_high_dimension`: The Hales-Jewett theorem.
+- `Combinatorics.Subspace.exists_mono_in_high_dimension`: The extended Hales-Jewett theorem.
+- `Combinatorics.exists_mono_homothetic_copy`: A generalization of Van der Waerden's theorem.
 
 ## Implementation details
 
@@ -57,10 +66,11 @@ combinatorial line, Ramsey theory, arithmetic progression
 
 -/
 
-
+open Function
 open scoped Classical
 
 universe u v
+variable {η α ι κ : Type*}
 
 namespace Combinatorics
 
@@ -74,6 +84,7 @@ Formally, a line is represented by a word `l.idxFun : ι → Option α` which sa
 `l.idxFun i = some y`).
 
 When `α` has size `1` there can be many elements of `Line α ι` defining the same function. -/
+@[ext]
 structure Line (α ι : Type*) where
   /-- The word representing a combinatorial line. `l.idxfun i = none` means that
   `l x i = x` for all `x` and `l.idxfun i = some y` means that `l x i = y`. -/
@@ -83,10 +94,21 @@ structure Line (α ι : Type*) where
   proper : ∃ i, idxFun i = none
 
 namespace Line
+variable {l : Line α ι} {i : ι} {a x : α}
 
 -- This lets us treat a line `l : Line α ι` as a function `α → ι → α`.
 instance (α ι) : CoeFun (Line α ι) fun _ => α → ι → α :=
   ⟨fun l x i => (l.idxFun i).getD x⟩
+
+instance instFunLike [Nontrivial α] : FunLike (Line α ι) α fun _ => ι → α where
+  coe := (⇑)
+  coe_injective' l m hlm := by
+    ext i a
+    obtain ⟨b, hba⟩ := exists_ne a
+    simp only [Option.mem_def, funext_iff] at hlm ⊢
+    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · cases hi : idxFun m i <;> simpa [@eq_comm _ a, hi, h, hba] using hlm b i
+    · cases hi : idxFun l i <;> simpa [@eq_comm _ a, hi, h, hba] using hlm b i
 
 /-- A line is monochromatic if all its points are the same color. -/
 def IsMono {α ι κ} (C : (ι → α) → κ) (l : Line α ι) : Prop :=
@@ -136,7 +158,7 @@ instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C)
   refine ⟨⟨0, fun _ => none, fun h => ?_, Multiset.nodup_zero⟩⟩
   simp only [Multiset.not_mem_zero, IsEmpty.forall_iff]
 
-/-- A function `f : α → α'` determines a function `line α ι → line α' ι`. For a coordinate `i`,
+/-- A function `f : α → α'` determines a function `line α ι → line α' ι`. For a coordinate `i`
 `l.map f` is the identity at `i` if `l` is, and constantly `f y` if `l` is constantly `y` at `i`. -/
 def map {α α' ι} (f : α → α') (l : Line α ι) : Line α' ι where
   idxFun i := (l.idxFun i).map f
@@ -157,19 +179,16 @@ def prod {α ι ι'} (l : Line α ι) (l' : Line α ι') : Line α (Sum ι ι') 
   idxFun := Sum.elim l.idxFun l'.idxFun
   proper := ⟨Sum.inl l.proper.choose, l.proper.choose_spec⟩
 
-theorem apply {α ι} (l : Line α ι) (x : α) : l x = fun i => (l.idxFun i).getD x :=
-  rfl
+theorem apply_def (l : Line α ι) (x : α) : l x = fun i => (l.idxFun i).getD x := rfl
 
 theorem apply_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFun i = none) : l x i = x := by
-  simp only [Option.getD_none, h, l.apply]
+  simp only [Option.getD_none, h, l.apply_def]
 
-theorem apply_of_ne_none {α ι} (l : Line α ι) (x : α) (i : ι) (h : l.idxFun i ≠ none) :
-    some (l x i) = l.idxFun i := by rw [l.apply, Option.getD_of_ne_none h]
+lemma apply_some (h : l.idxFun i = some a) : l x i = a := by simp [l.apply_def, h]
 
 @[simp]
 theorem map_apply {α α' ι} (f : α → α') (l : Line α ι) (x : α) : l.map f (f x) = f ∘ l x := by
-  simp only [Line.apply, Line.map, Option.getD_map]
-  rfl
+  simp only [Line.apply_def, Line.map, Option.getD_map, comp_def]
 
 @[simp]
 theorem vertical_apply {α ι ι'} (v : ι → α) (l : Line α ι') (x : α) :
@@ -303,8 +322,9 @@ private theorem exists_mono_in_high_dimension' :
     · rw [Multiset.card_cons, Multiset.card_map, sr])
 -- Porting note: Remove align on private declas
 
-/-- The Hales-Jewett theorem: for any finite types `α` and `κ`, there exists a finite type `ι` such
-that whenever the hypercube `ι → α` is `κ`-colored, there is a monochromatic combinatorial line. -/
+/-- The **Hales-Jewett theorem**: For any finite types `α` and `κ`, there exists a finite type `ι`
+such that whenever the hypercube `ι → α` is `κ`-colored, there is a monochromatic combinatorial
+line. -/
 theorem exists_mono_in_high_dimension (α : Type u) [Finite α] (κ : Type v) [Finite κ] :
     ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Line α ι, l.IsMono C :=
   let ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension'.{u,v} α (ULift.{u,v} κ)
@@ -344,4 +364,90 @@ theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset
     obtain ⟨y, hy⟩ := Option.ne_none_iff_exists.mp hi.right
     simp_rw [← hy, Option.map_some', Option.getD]
 
+/-- The type of combinatorial subspaces. A subspace `l : Subspace η α ι` in the hypercube `ι → α`
+defines a function `(η → α) → ι → α` from `η → α` to the hypercube, such that for each coordinate
+`i : ι` and direction `e : η`, the function `fun x ↦ l x i` is either `fun x ↦ x e` for some
+direction `e : η` or constant. We require subspaces to be non-degenerate in the sense that, for
+every `e : η`, `fun x ↦ l x i` is `fun x ↦ x e` for at least one `i`.
+
+Formally, a subspace is represented by a word `l.idxFun : ι → α ⊕ η` which says whether
+`fun x ↦ l x i` is `fun x ↦ x e` (corresponding to `l.idxFun i = Sum.inr e`) or constantly `a`
+(corresponding to `l.idxFun i = Sum.inl a`).
+
+When `α` has size `1` there can be many elements of `Subspace η α ι` defining the same function. -/
+@[ext]
+structure Subspace (η α ι : Type*) where
+  /-- The word representing a combinatorial subspace. `l.idxfun i = Sum.inr e` means that
+  `l x i = x e` for all `x` and `l.idxfun i = some a` means that `l x i = a` for all `x`. -/
+  idxFun : ι → α ⊕ η
+  /-- We require combinatorial subspaces to be nontrivial in the sense that `fun x ↦ l x i` is
+  `fun x ↦ x e` for at least one coordinate `i`. -/
+  proper : ∀ e, ∃ i, idxFun i = Sum.inr e
+
+namespace Subspace
+variable {η α ι κ : Type*} {l : Subspace η α ι} {x : η → α} {i : ι} {a : α} {e : η}
+
+/-- The combinatorial subspace corresponding to the identity embedding `(ι → α) → (ι → α)`. -/
+instance : Inhabited (Subspace ι α ι) := ⟨⟨Sum.inr, fun i ↦ ⟨i, rfl⟩⟩⟩
+
+instance instCoeFun : CoeFun (Subspace η α ι) (fun _ ↦ (η → α) → ι → α) :=
+  ⟨fun l x i ↦ (l.idxFun i).elim id x⟩
+
+instance instFunLike [Nontrivial α] : FunLike (Subspace η α ι) (η → α) (fun _ ↦ ι → α) where
+  coe := (⇑)
+  coe_injective' l m hlm := by
+    ext i
+    simp only [funext_iff] at hlm
+    cases hl : idxFun l i with
+    | inl a =>
+      obtain ⟨b, hba⟩ := exists_ne a
+      cases hm : idxFun m i <;> simpa [hl, hm, hba.symm] using hlm (const _ b) i
+    | inr e =>
+      cases hm : idxFun m i with
+      | inl a =>
+        obtain ⟨b, hba⟩ := exists_ne a
+        simpa [hl, hm, hba] using hlm (const _ b) i
+      | inr f =>
+        obtain ⟨a, b, hab⟩ := exists_pair_ne α
+        simp only [Sum.inr.injEq]
+        by_contra' hef
+        simpa [hl, hm, hef, hab] using hlm (Function.update (const _ a) f b) i
+
+lemma apply_def (l : Subspace η α ι) (x : η → α) (i : ι) : l x i = (l.idxFun i).elim id x := rfl
+lemma apply_inl (h : l.idxFun i = Sum.inl a) : l x i = a := by simp [apply_def, h]
+lemma apply_inr (h : l.idxFun i = Sum.inr e) : l x i = x e := by simp [apply_def, h]
+
+/-- Given a coloring `C` of `ι → α` and a combinatorial subspace `l` of `ι → α`, `l.IsMono C`
+means that `l` is monochromatic with regard to `C`. -/
+def IsMono (C : (ι → α) → κ) (l : Subspace η α ι) : Prop := ∃ c, ∀ x, C (l x) = c
+
+/-- The **extended Hales-Jewett theorem**: For any finite types `η`, `α` and `κ`, there exists a
+finite type `ι` such that whenever the hypercube `ι → α` is `κ`-colored, there is a monochromatic
+combinatorial subspace of dimension `η`. -/
+theorem exists_mono_in_high_dimension (α κ η) [Fintype α] [Fintype κ] [Fintype η] :
+    ∃ (ι : Type) (_ : Fintype ι), ∀ C : (ι → α) → κ, ∃ l : Subspace η α ι, l.IsMono C := by
+  obtain ⟨ι, _, hι⟩ := Line.exists_mono_in_high_dimension (η → α) κ
+  refine ⟨ι × Shrink η, inferInstance, fun C ↦ ?_⟩
+  obtain ⟨l, c, lC⟩ := hι fun x ↦ C <| fun (i, e) ↦ x i <| (equivShrink.{0} η).symm e
+  refine ⟨⟨fun p ↦ (l.idxFun p.fst).elim (Sum.inr <| (equivShrink.{0} η).symm p.snd)
+    fun x ↦ Sum.inl <| x <| (equivShrink.{0} η).symm p.snd, fun e ↦ ?_⟩, c, fun xs ↦ ?_⟩
+  · obtain ⟨i, hi⟩ := l.proper
+    use (i, equivShrink.{0} η e)
+    simp [hi]
+  convert lC xs with ⟨i, e⟩
+  cases hi : l.idxFun i <;> simp [hi]
+
+/-- A variant of the **extended Hales-Jewett theorem** `exists_mono_in_high_dimension` where the
+returned type is some `Fin n` instead of a general fintype. -/
+theorem exists_mono_in_high_dimension_fin (α κ η) [Fintype α] [Fintype κ] [Fintype η] :
+    ∃ n, ∀ C : (Fin n → α) → κ, ∃ l : Subspace η α (Fin n), l.IsMono C := by
+  obtain ⟨ι, ιfin, hι⟩ := exists_mono_in_high_dimension α κ η
+  refine ⟨Fintype.card ι, fun C ↦ ?_⟩
+  obtain ⟨l, c, cl⟩ := hι fun v ↦ C (v ∘ (Fintype.equivFin _).symm)
+  refine ⟨⟨l.idxFun ∘ (Fintype.equivFin _).symm, fun e ↦ ?_⟩, c, cl⟩
+  obtain ⟨i, hi⟩ := l.proper e
+  use Fintype.equivFin _ i
+  simpa using hi
+
+end Subspace
 end Combinatorics
