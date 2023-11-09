@@ -489,7 +489,7 @@ theorem rpow_eq_top_iff_of_pos {x : ℝ≥0∞} {y : ℝ} (hy : 0 < y) : x ^ y =
   simp [rpow_eq_top_iff, hy, asymm hy]
 #align ennreal.rpow_eq_top_iff_of_pos ENNReal.rpow_eq_top_iff_of_pos
 
-lemma rpow_lt_top_iff_of_pos {x : ℝ≥0∞} {y : ℝ} (hy : 0 < y) : x ^ y < ⊤ ↔ x < ⊤ := by
+lemma rpow_lt_top_iff_of_pos {x : ℝ≥0∞} {y : ℝ} (hy : 0 < y) : x ^ y < ∞ ↔ x < ∞ := by
   simp only [lt_top_iff_ne_top, Ne.def, rpow_eq_top_iff_of_pos hy]
 
 theorem rpow_eq_top_of_nonneg (x : ℝ≥0∞) {y : ℝ} (hy0 : 0 ≤ y) : x ^ y = ⊤ → x = ⊤ := by
