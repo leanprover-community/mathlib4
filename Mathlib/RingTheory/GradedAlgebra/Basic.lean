@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang
+Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang, Fangming Li
 -/
 import Mathlib.Algebra.DirectSum.Algebra
 import Mathlib.Algebra.DirectSum.Decomposition
@@ -307,6 +307,50 @@ def GradedRing.projZeroRingHom : A →+* A where
       simp only [add_mul, decompose_add, add_apply, AddMemClass.coe_add, ha, hb]
 #align graded_ring.proj_zero_ring_hom GradedRing.projZeroRingHom
 
+section GradeZero
+
+namespace GradedRing
+
+/--
+The subsemiring `𝒜 0` of the internally graded semiring `A`.
+-/
+def GradeZero.subsemiring : Subsemiring A where
+  carrier := 𝒜 0
+  mul_mem' ha hb := add_zero (0 : ι) ▸ SetLike.mul_mem_graded ha hb
+  one_mem' := SetLike.one_mem_graded 𝒜
+  add_mem' := fun ha hb ↦ add_mem ha hb
+  zero_mem' := zero_mem (𝒜 0)
+
+/--
+The semiring `𝒜 0` derived from `GradedRing 𝒜`.
+-/
+instance GradeZero.semiring : Semiring (𝒜 0) := (GradeZero.subsemiring 𝒜).toSemiring
+
+end GradedRing
+
+/--
+The semiring homomorphism from `A` to `𝒜 0` sending every `a : A` to `a₀`.
+-/
+def GradedRing.projZeroRingHom' : A →+* (𝒜 0) :=
+  ((GradedRing.projZeroRingHom 𝒜).codRestrict _ fun _x => SetLike.coe_mem _ :
+  A →+* GradeZero.subsemiring 𝒜)
+
+@[simp] lemma GradedRing.coe_projZeroRingHom'_apply (a : A) :
+    (GradedRing.projZeroRingHom' 𝒜 a : A) = GradedRing.projZeroRingHom 𝒜 a := rfl
+
+lemma GradedRing.projZeroRingHom'_apply_coe (a : 𝒜 0) :
+    GradedRing.projZeroRingHom' 𝒜 a = a := by
+  ext; simp only [coe_projZeroRingHom'_apply, projZeroRingHom_apply, decompose_coe, of_eq_same]
+
+/--
+The semiring homomorphism `GradedRing.projZeroRingHom' 𝒜` is surjective.
+-/
+lemma GradedRing.projZeroRingHom'_surjective :
+    Function.Surjective (GradedRing.projZeroRingHom' 𝒜) :=
+  Function.RightInverse.surjective (GradedRing.projZeroRingHom'_apply_coe 𝒜)
+
+end GradeZero
+
 variable {a b : A} {n i : ι}
 
 namespace DirectSum
@@ -352,3 +396,56 @@ theorem coe_decompose_mul_of_right_mem (n) [Decidable (i ≤ n)] (b_mem : b ∈ 
 end DirectSum
 
 end CanonicalOrder
+
+section GradeZero
+
+variable {ι A σ : Type*}
+variable [Ring A]
+variable [DecidableEq ι] [CanonicallyOrderedAddMonoid ι]
+variable [SetLike σ A] [AddSubgroupClass σ A]
+variable (𝒜 : ι → σ) [GradedRing 𝒜]
+
+namespace GradedRing
+
+/--
+The subring `𝒜 0` of the internally graded ring `A`.
+-/
+def GradeZero.subring : Subring A where
+  carrier := 𝒜 0
+  mul_mem' := by
+    intro a b ha hb; let hab := SetLike.mul_mem_graded ha hb;
+    simp only [add_zero] at hab; exact hab
+  one_mem' := SetLike.one_mem_graded 𝒜
+  add_mem' := fun ha hb ↦ add_mem ha hb
+  zero_mem' := zero_mem (𝒜 0)
+  neg_mem' := by simp only [SetLike.mem_coe, neg_mem_iff, imp_self, forall_const]
+
+/--
+The ring `𝒜 0` derived from `GradedRing 𝒜`.
+-/
+instance GradeZero.ring : Ring (𝒜 0) := (GradeZero.subring 𝒜).toRing
+
+end GradedRing
+
+/--
+The ring homomorphism from `A` to `𝒜 0` sending every `a : A` to `a₀`.
+-/
+def GradedRing.projZeroRingHom'' : A →+* (𝒜 0) :=
+  ((GradedRing.projZeroRingHom 𝒜).codRestrict _ fun _x => SetLike.coe_mem _ :
+  A →+* GradeZero.subring 𝒜)
+
+@[simp] lemma GradedRing.coe_projZeroRingHom''_apply (a : A) :
+    (GradedRing.projZeroRingHom'' 𝒜 a : A) = GradedRing.projZeroRingHom 𝒜 a := rfl
+
+lemma GradedRing.projZeroRingHom''_apply_coe (a : 𝒜 0) :
+    GradedRing.projZeroRingHom'' 𝒜 a = a := by
+  ext; simp only [coe_projZeroRingHom''_apply, projZeroRingHom_apply, decompose_coe, of_eq_same]
+
+/--
+The ring homomorphism `GradedRing.projZeroRingHom'' 𝒜` is surjective.
+-/
+lemma GradedRing.projZeroRingHom''_surjective :
+    Function.Surjective (GradedRing.projZeroRingHom'' 𝒜) :=
+  Function.RightInverse.surjective (GradedRing.projZeroRingHom''_apply_coe 𝒜)
+
+end GradeZero
