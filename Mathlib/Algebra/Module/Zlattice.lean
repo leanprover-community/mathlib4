@@ -5,7 +5,6 @@ Authors: Xavier Roblot
 -/
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.MeasureTheory.Group.FundamentalDomain
-import Mathlib.MeasureTheory.Group.Measure
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.RingTheory.Localization.Module
 
