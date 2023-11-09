@@ -58,7 +58,7 @@ theorem toNat_append {msbs : BitVec w} {lsbs : BitVec v} :
   rw [toNat_ofNat (Nat.add_comm w v ▸ append_lt hl hm)]
 
 #noalign bitvec.bits_to_nat_to_bool
-#noalign bitvec.to_nat_of_nat
+#align bitvec.to_nat_of_nat Std.BitVec.toNat_ofNat
 
 @[simp]
 lemma extractLsb_eq {w : ℕ} (hi lo : ℕ) (a : BitVec w) :
@@ -82,46 +82,22 @@ theorem addLsb_eq_twice_add_one {x b} : addLsb x b = 2 * x + cond b 1 0 := by
   simp [addLsb, two_mul]; cases b <;> rfl
 #align bitvec.add_lsb_eq_twice_add_one Std.BitVec.addLsb_eq_twice_add_one
 
-@[simp] lemma bodd_bit {b x} : bodd (bit b x) = b := by
-  cases b <;> simp only [bit_false, bodd_bit0, bit_true, bodd_bit1]
-
-@[simp] lemma div2_bit {b x} : div2 (bit b x) = x := by
-  cases b <;> simp only [bit_false, div2_bit0, bit_true, div2_bit1]
-
-@[simp] lemma bits_bit {b x} (h : bit b x ≠ zero) :
-    bits (bit b x) = b :: bits x := by
-  rw [bits, binaryRec_of_ne_zero (h:=h)]
-  simp
-
-@[simp] lemma foldr_bit_bits (v : Nat) :
-    v.bits.foldr bit 0 = v := by
-  induction' v using Nat.binaryRec with b v ih
-  · rfl
-  · by_cases h : bit b v = 0
-    · simp only [h, zero_bits, List.foldr_nil]
-    · simp [bits_bit h, ih]
-
-theorem toNat_eq_foldr_reverse {n : ℕ} (v : BitVec n) :
-    v.toNat = v.toNat.bits.foldr bit 0 :=
-  (foldr_bit_bits ..).symm
-#align bitvec.to_nat_eq_foldr_reverse Std.BitVec.toNat_eq_foldr_reverse
+theorem toNat_eq_foldl_toBEList {n : ℕ} (v : BitVec n) :
+    v.toNat = v.toBEList.foldl (flip bit) 0 := by
+  simp [toBEList]
+  sorry
+#align bitvec.to_nat_eq_foldr_reverse Std.BitVec.toNat_eq_foldl_toBEList
 
 theorem toNat_lt {n : ℕ} (v : BitVec n) : v.toNat < 2 ^ n := by
   exact v.toFin.2
 #align bitvec.to_nat_lt Std.BitVec.toNat_lt
 
 theorem addLsb_div_two {x b} : addLsb x b / 2 = x := by
-  unfold addLsb
-  rw [← Nat.div2_val, Nat.div2_bit]
+  rw [addLsb, ← Nat.div2_val, Nat.div2_bit]
 #align bitvec.add_lsb_div_two Std.BitVec.addLsb_div_two
 
-set_option linter.deprecated false in -- unfold `bit0` and `bit1`
-theorem decide_addLsb_mod_two {x b} : decide (addLsb x b % 2 = 1) = b := by
-  cases b <;>  simp [addLsb, bit0, bit1]
-  · rw [decide_eq_false_iff_not, ←two_mul, Nat.mul_mod_right]
-    decide
-  · rw [decide_eq_true_iff, ←two_mul, add_comm, Nat.add_mul_mod_self_left]
-    decide
+theorem decide_addLsb_mod_two {x b} : decide (addLsb x b % 2 = 1) = b :=
+  decide_bit_mod_two ..
 #align bitvec.to_bool_add_lsb_mod_two Std.BitVec.decide_addLsb_mod_two
 
 @[simp]
