@@ -203,6 +203,15 @@ theorem zetaKernel₂_one_div {t : ℝ} (ht : 0 < t) :
       ofReal_one, one_mul]
 #align zeta_kernel₂_one_div zetaKernel₂_one_div
 
+theorem zetaKernel₂_one_div_zero :
+    zetaKernel₂ 0 = 0 := by
+  simp [zetaKernel₂, zetaKernel₁]
+  rw [tsum_const_smul]
+
+
+#exit
+
+
 /-!
 ## Bounds for zeta kernels
 
