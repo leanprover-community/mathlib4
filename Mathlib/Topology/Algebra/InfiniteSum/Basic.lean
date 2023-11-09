@@ -1094,14 +1094,14 @@ variable [AddCommGroup α] [UniformSpace α]
 
 /-- The **Cauchy criterion** for infinite sums, also known as the **Cauchy convergence test** -/
 theorem summable_iff_cauchySeq_finset [CompleteSpace α] {f : β → α} :
-    Summable f ↔ CauchySeq fun s : Finset β => ∑ b in s, f b :=
+    Summable f ↔ CauchySeq fun s : Finset β ↦ ∑ b in s, f b :=
   cauchy_map_iff_exists_tendsto.symm
 #align summable_iff_cauchy_seq_finset summable_iff_cauchySeq_finset
 
 variable [UniformAddGroup α] {f g : β → α} {a a₁ a₂ : α}
 
 theorem cauchySeq_finset_iff_vanishing :
-    (CauchySeq fun s : Finset β => ∑ b in s, f b) ↔
+    (CauchySeq fun s : Finset β ↦ ∑ b in s, f b) ↔
       ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∑ b in t, f b) ∈ e := by
   simp_rw [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
     uniformity_eq_comap_nhds_zero α, tendsto_comap_iff, (· ∘ ·), tendsto_atTop']
@@ -1122,6 +1122,38 @@ theorem cauchySeq_finset_iff_vanishing :
     simp only [this]
     exact hde _ (h _ Finset.sdiff_disjoint) _ (h _ Finset.sdiff_disjoint)
 #align cauchy_seq_finset_iff_vanishing cauchySeq_finset_iff_vanishing
+
+theorem cauchySeq_finset_iff_tsum_vanishing :
+    (CauchySeq fun s : Finset β ↦ ∑ b in s, f b) ↔
+      ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t : Set β, Disjoint t s → (∑' b : t, f b) ∈ e := by
+  simp_rw [cauchySeq_finset_iff_vanishing, Set.disjoint_left, disjoint_left]
+  refine ⟨fun vanish e he ↦ ?_, fun vanish e he ↦ ?_⟩
+  · obtain ⟨o, ho, o_closed, oe⟩ := exists_mem_nhds_isClosed_subset he
+    obtain ⟨s, hs⟩ := vanish o ho
+    refine ⟨s, fun t hts ↦ oe ?_⟩
+    by_cases ht : Summable fun a : t ↦ f a
+    · refine o_closed.mem_of_tendsto ht.hasSum (eventually_of_forall fun t' ↦ ?_)
+      rw [← sum_subtype_map_embedding fun _ _ ↦ by rfl]
+      apply hs
+      simp_rw [Finset.mem_map]
+      rintro _ ⟨b, -, rfl⟩
+      exact hts b.prop
+    · exact tsum_eq_zero_of_not_summable ht ▸ mem_of_mem_nhds ho
+  obtain ⟨s, hs⟩ := vanish _ he
+  exact ⟨s, fun t hts ↦ (t.tsum_subtype f).symm ▸ hs _ hts⟩
+
+theorem cauchySeq_finset_iff_nat_tsum_vanishing {f : ℕ → α} :
+    (CauchySeq fun s : Finset ℕ ↦ ∑ n in s, f n) ↔
+      ∀ e ∈ 𝓝 (0 : α), ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∑' n : t, f n) ∈ e := by
+  refine cauchySeq_finset_iff_tsum_vanishing.trans ⟨fun van e he ↦ ?_, fun van e he ↦ ?_⟩ -- slow!
+  · obtain ⟨s, hs⟩ := van e he
+    refine ⟨if h : s.Nonempty then s.max' h + 1 else 0, fun t ht ↦ hs _ <| Set.disjoint_left.mpr ?_⟩
+    split_ifs at ht with h
+    · exact fun m hmt hms ↦ (s.le_max' _ hms).not_lt (Nat.succ_le_iff.mp <| ht hmt)
+    · exact fun _ _ hs ↦ h ⟨_, hs⟩
+  · obtain ⟨N, hN⟩ := van e he
+    exact ⟨range N, fun t ht ↦ hN _ fun n hnt ↦
+      le_of_not_lt fun h ↦ Set.disjoint_left.mp ht hnt (mem_range.mpr h)⟩
 
 variable [CompleteSpace α]
 
@@ -1216,26 +1248,17 @@ section TopologicalGroup
 variable {G : Type*} [TopologicalSpace G] [AddCommGroup G] [TopologicalAddGroup G] {f : α → G}
 
 theorem Summable.vanishing (hf : Summable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (0 : G)) :
-    ∃ s : Finset α, ∀ t, Disjoint t s → (∑ k in t, f k) ∈ e := by
+    ∃ s : Finset α, ∀ t, Disjoint t s → (∑ k in t, f k) ∈ e :=
   letI : UniformSpace G := TopologicalAddGroup.toUniformSpace G
-  letI : UniformAddGroup G := comm_topologicalAddGroup_is_uniform
-  rcases hf with ⟨y, hy⟩
-  exact cauchySeq_finset_iff_vanishing.1 hy.cauchySeq e he
+  have : UniformAddGroup G := comm_topologicalAddGroup_is_uniform
+  cauchySeq_finset_iff_vanishing.1 hf.hasSum.cauchySeq e he
 #align summable.vanishing Summable.vanishing
 
 theorem Summable.tsum_vanishing (hf : Summable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 0) :
-    ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∑' b : t, f b) ∈ e := by
-  obtain ⟨o, ho, o_closed, oe⟩ := exists_mem_nhds_isClosed_subset he
-  obtain ⟨s, hs⟩ := hf.vanishing ho
-  refine ⟨s, fun t hts ↦ oe ?_⟩
-  by_cases ht : Summable fun a : t ↦ f a
-  · refine o_closed.mem_of_tendsto ht.hasSum (eventually_of_forall fun t' ↦ ?_)
-    rw [← sum_subtype_map_embedding fun _ _ ↦ by rfl]
-    apply hs
-    simp_rw [disjoint_left, Set.disjoint_left, Finset.mem_map] at hts ⊢
-    rintro _ ⟨b, -, rfl⟩
-    exact hts b.2
-  · exact tsum_eq_zero_of_not_summable ht ▸ mem_of_mem_nhds ho
+    ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∑' b : t, f b) ∈ e :=
+  letI : UniformSpace G := TopologicalAddGroup.toUniformSpace G
+  have : UniformAddGroup G := comm_topologicalAddGroup_is_uniform
+  cauchySeq_finset_iff_tsum_vanishing.1 hf.hasSum.cauchySeq e he
 
 /-- The sum over the complement of a finset tends to `0` when the finset grows to cover the whole
 space. This does not need a summability assumption, as otherwise all sums are zero. -/
@@ -1252,12 +1275,10 @@ theorem tendsto_tsum_compl_atTop_zero (f : α → G) :
 #align tendsto_tsum_compl_at_top_zero tendsto_tsum_compl_atTop_zero
 
 theorem Summable.nat_tsum_vanishing {f : ℕ → G} (hf : Summable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 0) :
-    ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∑' n : t, f n) ∈ e := by
-  obtain ⟨s, hs⟩ := hf.tsum_vanishing he
-  refine ⟨if h : s.Nonempty then s.max' h + 1 else 0, fun t ht ↦ hs _ <| Set.disjoint_left.mpr ?_⟩
-  split_ifs at ht with h
-  · exact fun m hmt hms ↦ (s.le_max' _ hms).not_lt (Nat.succ_le_iff.mp <| ht hmt)
-  · exact fun _ _ hs ↦ h ⟨_, hs⟩
+    ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∑' n : t, f n) ∈ e :=
+  letI : UniformSpace G := TopologicalAddGroup.toUniformSpace G
+  have : UniformAddGroup G := comm_topologicalAddGroup_is_uniform
+  cauchySeq_finset_iff_nat_tsum_vanishing.1 hf.hasSum.cauchySeq e he
 
 /-- Series divergence test: if `f` is a convergent series, then `f x` tends to zero along
 `cofinite`. -/
@@ -1279,27 +1300,6 @@ theorem Summable.countable_support [TopologicalSpace.FirstCountableTopology G] [
   simpa only [ker_nhds] using hf.tendsto_cofinite_zero.countable_compl_preimage_ker
 
 end TopologicalGroup
-
-section CompleteUniformAddGroup
-
-variable {G : Type*} [AddCommGroup G] [UniformSpace G] [UniformAddGroup G] [CompleteSpace G]
-
-theorem summable_iff_tsum_vanishing {f : α → G} : Summable f ↔
-    ∀ e ∈ 𝓝 (0 : G), ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∑' a : t, f a) ∈ e := by
-  refine ⟨Summable.tsum_vanishing, fun vanish ↦ summable_iff_vanishing.mpr fun e he ↦ ?_⟩
-  obtain ⟨s, hs⟩ := vanish _ he
-  refine ⟨s, fun t hts ↦ ?_⟩
-  simp only [disjoint_left, Set.disjoint_left] at hs hts
-  exact (t.tsum_subtype f).symm ▸ hs _ hts
-
-theorem summable_iff_vanishing_nat_tsum {f : ℕ → G} : Summable f ↔
-    ∀ e ∈ 𝓝 (0 : G), ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∑' n : t, f n) ∈ e := by
-  refine ⟨Summable.nat_tsum_vanishing, fun vanish ↦ summable_iff_tsum_vanishing.mpr fun e he ↦ ?_⟩
-  obtain ⟨N, hN⟩ := vanish e he
-  exact ⟨range N, fun t ht ↦ hN _ fun n hnt ↦
-    le_of_not_lt fun h ↦ Set.disjoint_left.mp ht hnt (mem_range.mpr h)⟩
-
-end CompleteUniformAddGroup
 
 section ConstSmul
 
