@@ -53,11 +53,6 @@ theorem tendsto_one_div_add_atTop_nhds_0_nat :
   (tendsto_add_atTop_iff_nat 1).2 (_root_.tendsto_const_div_atTop_nhds_0_nat 1)
 #align tendsto_one_div_add_at_top_nhds_0_nat tendsto_one_div_add_atTop_nhds_0_nat
 
-theorem NNReal.tendsto_const_div_add_atTop_nhds_0_nat (C : ℝ≥0) :
-    Tendsto (fun n : ℕ => C / ((n:ℝ≥0) + 1)) atTop (𝓝 0) :=
-  suffices Tendsto (fun n : ℕ => C / (↑(n + 1) : ℝ≥0)) atTop (𝓝 0) by simpa
-  (tendsto_add_atTop_iff_nat 1).2 (tendsto_const_div_atTop_nhds_0_nat C)
-
 theorem NNReal.tendsto_algebraMap_inverse_atTop_nhds_0_nat (𝕜 : Type*) [Semiring 𝕜] [Algebra ℝ≥0 𝕜]
     [TopologicalSpace 𝕜] [TopologicalSemiring 𝕜] [ContinuousSMul ℝ≥0 𝕜] :
     Tendsto (algebraMap ℝ≥0 𝕜 ∘ fun n : ℕ => (n : ℝ≥0)⁻¹) atTop (nhds 0) := by
