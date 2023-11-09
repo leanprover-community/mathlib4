@@ -730,11 +730,9 @@ lemma Memℒp.piecewise [DecidablePred (· ∈ s)]
   · simp only [hp_zero, memℒp_zero_iff_aestronglyMeasurable]
     exact AEStronglyMeasurable.piecewise hs hf.1 hg.1
   refine ⟨AEStronglyMeasurable.piecewise hs hf.1 hg.1, ?_⟩
-  by_cases hp_top : p = ∞
-  · have hf2 := hf.2
-    have hg2 := hg.2
-    simp only [hp_top] at hf2 hg2 ⊢
-    exact (snorm_top_piecewise_le f g hs).trans_lt (max_lt_iff.mpr ⟨hf2, hg2⟩)
+  rcases eq_or_ne p ∞ with rfl |  hp_top
+  · rw [snorm_top_piecewise f g hs]
+    exact max_lt hf.2 hg.2
   rw [snorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top hp_zero hp_top, ← lintegral_add_compl _ hs,
     ENNReal.add_lt_top]
   constructor
