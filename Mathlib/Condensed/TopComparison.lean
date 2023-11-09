@@ -32,6 +32,7 @@ namespace ContinuousMap
 A universe polymorphic "Yoneda presheaf" on `C` given by continuous maps into a topoological space
 `Y`.
 -/
+@[simps]
 def yonedaPresheaf : Cᵒᵖ ⥤ Type (max w w') where
   obj X := C(F.obj (unop X), Y)
   map f g := ContinuousMap.comp g (F.map f.unop)
@@ -40,6 +41,7 @@ def yonedaPresheaf : Cᵒᵖ ⥤ Type (max w w') where
 A universe polymorphic Yoneda presheaf on `TopCat` given by continuous maps into a topoological
 space `Y`.
 -/
+@[simps]
 def yonedaPresheaf' : TopCat.{w}ᵒᵖ ⥤ Type (max w w') where
   obj X := C((unop X).1, Y)
   map f g := ContinuousMap.comp g f.unop
@@ -156,12 +158,7 @@ noncomputable def TopCat.toCondensed (X : TopCat.{u+1}) : CondensedSet.{u} :=
 /--
 `TopCat.toCondensed` yields a functor from `TopCat.{u+1}` to `CondensedSet.{u}`.
 -/
+@[simps!, nolint simpNF]
 noncomputable def topCatToCondensed : TopCat.{u+1} ⥤ CondensedSet.{u} where
   obj X := X.toCondensed
   map f := ⟨⟨fun _ g ↦ f.comp g, by aesop⟩⟩
-
-theorem topCatToCondensed_obj (X : TopCat.{u+1}) (S : CompHaus.{u}) :
-    (topCatToCondensed.obj X).val.obj (op S) = C(S, X) := rfl
-
-theorem topCatToCondensed_map {X Y : TopCat.{u+1}} {S : CompHaus.{u}} (g : C(S, X)) (f : X ⟶ Y) :
-    (topCatToCondensed.map f).val.app (op S) g = f.comp g := rfl
