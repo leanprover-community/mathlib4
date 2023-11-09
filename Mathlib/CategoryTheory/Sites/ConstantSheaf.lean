@@ -14,15 +14,13 @@ We define the constant sheaf functor (the sheafification of the constant preshea
 object (see `constantSheafAdj`).
 -/
 
-universe w v u
-
 namespace CategoryTheory
 
 open Limits Opposite
 
-variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
+variable {C : Type*} [Category C] (J : GrothendieckTopology C)
 
-variable (D : Type w) [Category.{max v u} D]
+variable (D : Type*) [Category D]
 
 /-- The constant presheaf functor is left adjoint to evaluation at a terminal object. -/
 noncomputable def constantPresheafAdj {T : C} (hT : IsTerminal T) :
@@ -39,7 +37,7 @@ noncomputable def constantPresheafAdj {T : C} (hT : IsTerminal T) :
           simp }
       naturality := by intros; ext; simp /- Note: `aesop` works but is kind of slow -/ } }
 
-variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
+variable [ConcreteCategory D] [PreservesLimits (forget D)]
   [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [ReflectsIsomorphisms (forget D)]
