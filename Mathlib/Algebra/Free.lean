@@ -657,8 +657,7 @@ theorem traverse_mul (x y : FreeSemigroup α) :
   List.recOn L1 (fun x ↦ rfl)
     (fun hd tl ih x ↦ show
         (· * ·) <$> pure <$> F x <*> traverse F (mk hd tl * mk y L2) =
-          (· * ·) <$> ((· * ·) <$> pure <$> F x <*> traverse F (mk hd tl)) <*> traverse F (mk y L2)
-        by
+        (· * ·) <$> ((· * ·) <$> pure <$> F x <*> traverse F (mk hd tl)) <*> traverse F (mk y L2) by
           rw [ih]
           simp only [Function.comp_def, (mul_assoc _ _ _).symm, functor_norm])
     x
