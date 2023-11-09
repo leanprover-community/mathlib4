@@ -60,6 +60,14 @@ open FiniteDimensional Polynomial IntermediateField
 
 noncomputable section
 
+-- TODO: use the corresponding version once #8221 is merged
+axiom IntermediateField.algHom_mk_adjoin_splits₀'
+    {F : Type*} {E : Type*} {K : Type*} [Field F] [Field E] [Field K]
+    [Algebra F E] [Algebra F K] {S : Set E}
+    {L : IntermediateField F E} (f : L →ₐ[F] K) (hS : adjoin F S = ⊤)
+    (hK : ∀ s ∈ S, IsIntegral F (s : E) ∧ (minpoly F s).Splits (algebraMap F K)) :
+    ∃ φ : E →ₐ[F] K, φ.comp L.val = f
+
 universe u v v' w
 
 variable (F : Type u) (E : Type v) [Field F] [Field E]
@@ -333,7 +341,25 @@ lemma test102 (K : Type w) [Field K] [Algebra F K] {S : Set E} (hS : adjoin F S 
     (hK : ∀ s ∈ S, IsIntegral F s ∧ Polynomial.Splits (algebraMap F K) (minpoly F s)) :
     ∀ s ∈ S, Polynomial.Splits (algebraMap F (normalClosure F E K)) (minpoly F s) := by
   intro s hs
-  sorry
+  have hcomp : algebraMap F K = (algebraMap (normalClosure F E K) K).comp
+    (algebraMap F (normalClosure F E K)) := rfl
+  refine splits_of_comp _ _ (hcomp ▸ (hK s hs).2) <| fun a ha ↦ ?_
+  rw [← hcomp] at ha
+  -- let f := Algebra.adjoin.liftSingleton F s a <| by
+  --   simp only [mem_roots', IsRoot, eval_map] at ha
+  --   exact ha.2
+  -- have hf : f ⟨s, Algebra.self_mem_adjoin_singleton F s⟩ = a := by
+  --   simp only
+  --   sorry
+  have f : F⟮s⟯ →ₐ[F] K := sorry
+  have hf : f ⟨s, mem_adjoin_simple_self F s⟩ = a := sorry
+  obtain ⟨φ, hφ⟩ := algHom_mk_adjoin_splits₀' f hS hK
+  have : a ∈ φ.fieldRange := by
+    use s
+    rw [← hf, ← hφ]
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgHom.coe_comp, coe_val,
+      Function.comp_apply]
+  exact RingHom.mem_range.2 ⟨⟨a, φ.fieldRange_le_normalClosure this⟩, rfl⟩
 
 lemma normalClosure_isAlgebraic_of_adjoin_isIntegral' (K : Type w) [Field K] [Algebra F K]
     {S : Set E} (hS : adjoin F S = ⊤)
