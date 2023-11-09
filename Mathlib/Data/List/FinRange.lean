@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Kenny Lau, Scott Morrison
+Authors: Mario Carneiro, Kenny Lau, Scott Morrison, Alex Keizer
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Perm
@@ -33,6 +33,11 @@ theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map
     map_map]
   simp only [Function.comp, Fin.val_succ]
 #align list.fin_range_succ_eq_map List.finRange_succ_eq_map
+
+theorem finRange_succ (n : ℕ) :
+    finRange n.succ = (finRange n |>.map Fin.castSucc |>.concat ⟨n, Nat.lt.base _⟩) := by
+  apply map_injective_iff.mpr Fin.val_injective
+  simp [range_succ, show Fin.val ∘ Fin.castSucc = @Fin.val n from rfl]
 
 -- Porting note : `map_nth_le` moved to `List.finRange_map_get` in Data.List.Range
 
@@ -66,6 +71,35 @@ theorem nodup_ofFn {α n} {f : Fin n → α} : Nodup (ofFn f) ↔ Function.Injec
     simp_rw [ofFn_succ, Fin.cons_succ, nodup_cons, Fin.cons_zero, mem_ofFn] at h
     exact h.imp_right ih
 #align list.nodup_of_fn List.nodup_ofFn
+
+/-- Folding over a list obtained from a function `g : Fin n → α` is equivalent to
+    folding over the list of indices `0, 1, ..., n-1` and invoking `g` for each index -/
+theorem List.foldl_ofFn {α β n} (f : α → β → α) (init : α) (g : Fin n → β) :
+    (List.ofFn g).foldl f init = (List.finRange n).foldl (fun a i => f a (g i)) init := by
+  induction' n with n ih generalizing init
+  · rfl
+  · simp [List.finRange_succ_eq_map, List.foldl_map, ih]
+
+/-- Folding over a list obtained from a function `g : Fin n → α` is equivalent to
+    folding over the list of indices `0, 1, ..., n-1` and invoking `g` for each index -/
+theorem List.foldr_ofFn {α β n} (f : β → α → α) (init : α) (g : Fin n → β) :
+    (List.ofFn g).foldr f init = (List.finRange n).foldr (fun i a => f (g i) a) init := by
+  -- suffices
+  suffices ∀ {m} (h : n ≤ m) (g : Fin m → β),
+    (ofFn fun i ↦ g (i.castLE h)).foldr f init  =
+    (finRange n |>.map (Fin.castLE h)).foldr (fun i a ↦ f (g i) a) init
+  by
+    specialize this (Nat.le.refl) g
+    simp at this
+    exact this
+  clear g
+  intro m h g
+  induction' n with n ih generalizing init
+  · rfl
+  · simp only [ofFn_succ', Fin.castLE_castSucc, concat_eq_append, foldr_append, foldr_cons,
+      foldr_nil, ih, finRange_succ, map_append, map_map, Fin.castLE_comp_castSucc, map_cons,
+      Fin.castLE_mk, map_nil]
+    rfl
 
 end List
 
