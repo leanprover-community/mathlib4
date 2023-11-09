@@ -88,7 +88,7 @@ theorem HasFDerivAt.hasGradientAt {frechet : F →L[𝕜] 𝕜} (h : HasFDerivAt
   rw [← (toDual 𝕜 F).apply_symm_apply frechet] at h
   exact HasGradientAt_iff_HasFDerivAt.mpr h
 
-theorem Gradient_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : ∇ f x = 0 := by
+theorem gradient_eq_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : ∇ f x = 0 := by
   have : (toDual 𝕜 F).symm 0 = 0 := by simp only [map_zero]
   rw [← fderiv_zero_of_not_differentiableAt h] at this
   exact this
