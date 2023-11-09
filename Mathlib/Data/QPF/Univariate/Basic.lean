@@ -13,19 +13,19 @@ import Mathlib.Data.PFunctor.Univariate.M
 
 We assume the following:
 
-`P`   : a polynomial functor
-`W`   : its W-type
-`M`   : its M-type
-`F`   : a functor
+* `P`: a polynomial functor
+* `W`: its W-type
+* `M`: its M-type
+* `F`: a functor
 
 We define:
 
-`q`   : `QPF` data, representing `F` as a quotient of `P`
+* `q`: `QPF` data, representing `F` as a quotient of `P`
 
 The main goal is to construct:
 
-`Fix`   : the initial algebra with structure map `F Fix → Fix`.
-`Cofix` : the final coalgebra with structure map `Cofix → F Cofix`
+* `Fix`: the initial algebra with structure map `F Fix → Fix`.
+* `Cofix`: the final coalgebra with structure map `Cofix → F Cofix`
 
 We also show that the composition of qpfs is a qpf, and that the quotient of a qpf
 is a qpf.

@@ -837,6 +837,17 @@ theorem ker_le_ker_comp (f : M →ₛₗ[τ₁₂] M₂) (g : M₂ →ₛₗ[τ�
     ker f ≤ ker (g.comp f : M →ₛₗ[τ₁₃] M₃) := by rw [ker_comp]; exact comap_mono bot_le
 #align linear_map.ker_le_ker_comp LinearMap.ker_le_ker_comp
 
+theorem ker_sup_ker_le_ker_comp_of_commute {f g : M →ₗ[R] M} (h : Commute f g) :
+    ker f ⊔ ker g ≤ ker (f ∘ₗ g) := by
+  refine sup_le_iff.mpr ⟨?_, ker_le_ker_comp g f⟩
+  rw [← mul_eq_comp, h.eq, mul_eq_comp]
+  exact ker_le_ker_comp f g
+
+@[simp]
+theorem ker_le_comap {p : Submodule R₂ M₂} (f : M →ₛₗ[τ₁₂] M₂) :
+    ker f ≤ p.comap f :=
+  fun x hx ↦ by simp [mem_ker.mp hx]
+
 theorem disjoint_ker {f : F} {p : Submodule R M} : Disjoint p (ker f) ↔ ∀ x ∈ p, f x = 0 → x = 0 :=
   by simp [disjoint_def]
 #align linear_map.disjoint_ker LinearMap.disjoint_ker
@@ -1034,6 +1045,11 @@ theorem ker_le_iff [RingHomSurjective τ₁₂] {p : Submodule R M} :
     have : x ∈ S ⊓ LinearMap.ker f := ⟨hx, h'x⟩
     rw [h] at this
     simpa using this
+
+@[simp] theorem injective_restrict_iff_disjoint {p : Submodule R M} {f : M →ₗ[R] M}
+    (hf : ∀ x ∈ p, f x ∈ p) :
+    Injective (f.restrict hf) ↔ Disjoint p (ker f) := by
+  rw [← ker_eq_bot, ker_restrict hf, ker_eq_bot, injective_domRestrict_iff, disjoint_iff]
 
 end Ring
 
