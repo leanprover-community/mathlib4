@@ -35,7 +35,7 @@ section Sym2
 If `xs` has no duplicates then neither does `xs.sym2`. -/
 protected def sym2 : List α → List (Sym2 α)
   | [] => []
-  | x::xs => ((x::xs).map fun y => ⟦(x, y)⟧) ++ xs.sym2
+  | x :: xs => (x :: xs).map (fun y => ⟦(x, y)⟧) ++ xs.sym2
 
 theorem mem_sym2_cons_iff {x : α} {xs : List α} {z : Sym2 α} :
     z ∈ (x :: xs).sym2 ↔ z = ⟦(x, x)⟧ ∨ (∃ y, y ∈ xs ∧ z = ⟦(x, y)⟧) ∨ z ∈ xs.sym2 := by

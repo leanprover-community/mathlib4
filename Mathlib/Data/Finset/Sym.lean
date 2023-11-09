@@ -24,7 +24,7 @@ This file defines the symmetric powers of a finset as `Finset (Sym α n)` and `F
   whose elements are in `s`.
 * `Finset.sym2`: The symmetric square of a finset. `s.sym2` is all the pairs whose elements are in
   `s`.
-* A `Finset (Sym2 α)` instance that does not require `DecidableEq α`.
+* A `Fintype (Sym2 α)` instance that does not require `DecidableEq α`.
 
 ## TODO
 
@@ -55,13 +55,13 @@ theorem mem_sym2_iff {m : Sym2 α} : m ∈ s.sym2 ↔ ∀ a ∈ m, a ∈ s := by
   simp only [mem_val]
 #align finset.mem_sym2_iff Finset.mem_sym2_iff
 
-instance instFintypeSym2 [Fintype α] : Fintype (Sym2 α) where
+instance _root_.Sym2.instFintype [Fintype α] : Fintype (Sym2 α) where
   elems := Finset.univ.sym2
   complete := fun x ↦ by rw [mem_sym2_iff]; exact (fun a _ ↦ mem_univ a)
 
 -- Note(kmill): Using a default argument to make this simp lemma more general.
 @[simp]
-theorem sym2_univ [Fintype α] (inst : Fintype (Sym2 α) := instFintypeSym2) :
+theorem sym2_univ [Fintype α] (inst : Fintype (Sym2 α) := Sym2.instFintype) :
     (univ : Finset α).sym2 = univ := by
   ext
   simp only [mem_sym2_iff, mem_univ, implies_true]
@@ -95,11 +95,8 @@ theorem sym2_nonempty : s.sym2.Nonempty ↔ s.Nonempty := by
   simp_rw [not_nonempty_iff_eq_empty, sym2_eq_empty]
 #align finset.sym2_nonempty Finset.sym2_nonempty
 
-alias ⟨_, Nonempty.sym2⟩ := sym2_nonempty
+protected alias ⟨_, Nonempty.sym2⟩ := sym2_nonempty
 #align finset.nonempty.sym2 Finset.Nonempty.sym2
-
--- Porting note: attribute does not exist
--- attribute [protected] Nonempty.sym2
 
 @[simp]
 theorem sym2_singleton (a : α) : ({a} : Finset α).sym2 = {Sym2.diag a} := rfl
