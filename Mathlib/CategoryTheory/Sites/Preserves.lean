@@ -201,12 +201,11 @@ cone.
 theorem isSheafFor_of_preservesProduct' {Z : C} (π : (i : α) → X i ⟶ Z)
     [HasCoproduct X] [IsIso (Sigma.desc π)]
     [PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F] [(ofArrows X π).hasPullbacks] :
-    (ofArrows X π).IsSheafFor F := by
-  change (ofArrows X (Cofan.mk Z π).inj).IsSheafFor F
-  haveI : (ofArrows (fun b ↦ X b) (Cofan.inj (Cofan.mk Z π))).hasPullbacks := by
-    change (ofArrows X π).hasPullbacks
-    infer_instance
-  refine isSheafFor_of_preservesProduct F (Cofan.mk Z π) (isCoproduct_of_sigma_desc_iso π)
+    (ofArrows X π).IsSheafFor F :=
+  have : (ofArrows X (Cofan.mk Z π).inj).hasPullbacks :=
+    (inferInstance : (ofArrows X π).hasPullbacks)
+  have : IsIso (Sigma.desc (Cofan.mk Z π).inj) := (inferInstance : IsIso (Sigma.desc π))
+  isSheafFor_of_preservesProduct F (Cofan.mk Z π) (Cofan.mk Z π).isColimitOfIsIsoSigmaDesc
 
 theorem isSheafFor_iff_preservesProduct : (ofArrows X c.inj).IsSheafFor F ↔
     Nonempty (PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F) := by
