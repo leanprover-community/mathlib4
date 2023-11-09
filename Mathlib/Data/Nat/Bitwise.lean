@@ -348,13 +348,10 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
 theorem testBit_two_pow_mul_add {n b w i} (h: i < w) :
     Nat.testBit (2 ^ w * b + n) i = Nat.testBit n i := by
   simp only [testBit, shiftRight_eq_div_pow, bodd_eq_bodd_iff]
-  rw [Nat.add_div_of_dvd_right (by simp [Dvd.dvd.mul_right, pow_dvd_pow, le_of_lt h]), add_mod]
-  have h1: (2 ^ w / 2 ^ i) % 2 = 0 := by
-    rw [← Nat.dvd_iff_mod_eq_zero]
-    use 2 ^ (w - (i + 1))
-    rw [Nat.pow_div (by linarith) (by decide), mul_comm, ← pow_succ 2 _, succ_eq_add_one]
-    simp [← Nat.sub_add_comm, succ_le_of_lt h]
-  simp [mul_comm, Nat.mul_div_assoc b (pow_dvd_pow 2 (le_of_lt h)), mul_mod, h1]
+  rw [← Nat.add_sub_of_le (succ_le_of_lt h), Nat.succ_eq_add_one, Nat.add_assoc]
+  rw [Nat.pow_add, Nat.add_comm, Nat.mul_assoc, add_mul_div_left _ _ (two_pow_pos _), add_mod]
+  rw [Nat.pow_add, Nat.pow_one, Nat.mul_assoc]
+  simp
 
 theorem testBit_two_pow_mul_toNat_add {n w b} (h: n < 2 ^ w) :
     testBit (2 ^ w * b.toNat + n) w = b := by
