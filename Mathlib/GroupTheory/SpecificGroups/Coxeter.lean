@@ -50,20 +50,16 @@ noncomputable section
 
 variable {B : Type*} [DecidableEq B]
 
-variable (M : Matrix B B ℕ∞)
-
-variable (B)
+variable (M : Matrix B B ℕ+)
 
 /-- A matrix `IsCoxeter` if it is a symmetric matrix with ones on the diagonal
 and off-diagonal elements are greater than or equal to two. -/
-class Matrix.IsCoxeter (M : Matrix B B ℕ∞) : Prop where
-  symmetric : M.IsSymm
-  diagonal : ∀ i j : B, i = j → M i j = 1
-  off_diagonal : ∀ i j : B, i ≠ j → 2 ≤ M i j
+class Matrix.IsCoxeter (M : Matrix B B ℕ+) : Prop where
+  symmetric : M.IsSymm := by aesop
+  diagonal : ∀ i : B, M i i = 1 := by aesop
+  off_diagonal : ∀ i j : B, i ≠ j → 2 ≤ M i j := by aesop
 
 namespace CoxeterGroup
-
-variable {B}
 
 namespace Relations
 
@@ -96,49 +92,34 @@ structure CoxeterSystem (W : Type*) [Group W] where
   ofRepr ::
     /-- `repr` is the isomorphism between the group `W` and the group presentation
     corresponding to a Coxeter matrix `M`. -/
-    repr : Matrix.CoxeterGroup B M ≃* W
+    repr : Matrix.CoxeterGroup M ≃* W
 
 /-- A group is a Coxeter group if it is registered in a Coxeter System. -/
 class IsCoxeterGroup (W : Type*) [Group W] : Prop where
-  nonempty_system : ∃ (M : Matrix B B ℕ∞), M.IsCoxeter ∧ Nonempty (CoxeterSystem B M W)
+  nonempty_system : ∃ (M : Matrix B B ℕ+), M.IsCoxeter ∧ Nonempty (CoxeterSystem M W)
 
 namespace CoxeterMatrix
 
-variable {m n : ℕ}
+open Matrix
 
-/-- Auxilary definition for `Bₙ`. -/
-def AₙAux : (Fin n) → (Fin n) → ℕ∞ :=
-  fun i j =>
-    if i == j then 1
-      else (if i == n - 1 ∨ j == n - 1 then 2 else 3)
+variable {n : ℕ+}
 
-/-- The Coxeter matrix of family Aₙ.
+/-- The Coxeter matrix of family A(n).
 
 The corresponding Coxeter-Dynkin diagram is:
 ```
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-def Aₙ : Matrix (Fin n) (Fin n) ℕ∞ :=
-  Matrix.of AₙAux
-
-theorem AₙIsCoxeter : Aₙ.IsCoxeter (Fin n) where
-  symmetric := by
-    unfold Aₙ AₙAux
-    aesop
-  diagonal := by
-    unfold Aₙ AₙAux
-    aesop
-  off_diagonal := by
-    unfold Aₙ AₙAux
-    aesop
-
-/-- Auxilary definition for `Bₙ`. -/
-def BₙAux [NeZero n] : (Fin n) → (Fin n) → ℕ∞ :=
-  fun i j =>
+abbrev Aₙ (n : ℕ+) : Matrix (Fin n) (Fin n) ℕ+ :=
+  Matrix.of fun i j : Fin n =>
     if i == j then 1
-      else (if i == (1 : Fin n) ∨ (j == (1 : Fin n)) then 4
-        else (if i == n - 1 ∨ j == n - 1 then 2 else 3))
+      else (if i == n - 1 ∨ j == n - 1 then 2 else 3)
+
+instance AₙIsCoxeter : IsCoxeter (Aₙ n) where
+  symmetric := by aesop
+  diagonal := by aesop
+  off_diagonal := by aesop
 
 /-- The Coxeter matrix of family Bₙ.
 
@@ -148,28 +129,16 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-def Bₙ [NeZero n] : Matrix (Fin n) (Fin n) ℕ∞ :=
-  Matrix.of BₙAux
-
-theorem BₙIsCoxeter [NeZero n] : Bₙ.IsCoxeter (Fin n) where
-  symmetric := by
-    unfold Bₙ BₙAux
-    aesop
-  diagonal := by
-    unfold Bₙ BₙAux
-    aesop
-  off_diagonal := by
-    unfold Bₙ BₙAux
-    intro _ _
-    simp [Matrix.IsCoxeter]
-    split_ifs <;> aesop
-
-/-- Auxilary definition for `Dₙ`. -/
-def DₙAux [NeZero n] : (Fin n) → (Fin n) → ℕ∞ :=
-  fun i j =>
+abbrev Bₙ (n : ℕ+) : Matrix (Fin n) (Fin n) ℕ+ :=
+  Matrix.of fun i j =>
     if i == j then 1
       else (if i == (1 : Fin n) ∨ (j == (1 : Fin n)) then 4
         else (if i == n - 1 ∨ j == n - 1 then 2 else 3))
+
+instance BₙIsCoxeter : IsCoxeter (Bₙ n) where
+  symmetric := by aesop
+  diagonal := by aesop
+  off_diagonal := by aesop
 
 /-- The Coxeter matrix of family Dₙ.
 
@@ -182,25 +151,16 @@ The corresponding Coxeter-Dynkin diagram is:
     o
 ```
 -/
-def Dₙ [NeZero n] : Matrix (Fin n) (Fin n) ℕ∞ :=
-  Matrix.of DₙAux
+abbrev Dₙ (n : ℕ+) : Matrix (Fin n) (Fin n) ℕ+ :=
+  Matrix.of fun i j =>
+    if i == j then 1
+      else (if i == (1 : Fin n) ∨ (j == (1 : Fin n)) then 4
+        else (if i == n - 1 ∨ j == n - 1 then 2 else 3))
 
-theorem DₙIsCoxeter [NeZero n] : Dₙ.IsCoxeter (Fin n) where
-  symmetric := by
-    unfold Dₙ DₙAux
-    aesop
-  diagonal := by
-    unfold Dₙ DₙAux
-    aesop
-  off_diagonal := by
-    unfold Dₙ DₙAux
-    intro _ _
-    simp [Matrix.IsCoxeter]
-    split_ifs <;> aesop
-
-/-- Auxilary definition for `I₂ₘ`. -/
-def I₂ₘAux : (Fin 2) → (Fin 2) → ℕ∞ :=
-  fun i j => if i == j then 1 else m
+instance DₙIsCoxeter : IsCoxeter (Dₙ n) where
+  symmetric := by aesop
+  diagonal := by aesop
+  off_diagonal := by aesop
 
 /-- The Coxeter matrix of family I₂(m).
 
@@ -210,20 +170,16 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o
 ```
 -/
-def I₂ₘ : Matrix (Fin 2) (Fin 2) ℕ∞ :=
-  Matrix.of @I₂ₘAux m
+abbrev I₂ₘ (m : ℕ+) : Matrix (Fin 2) (Fin 2) ℕ+ :=
+  Matrix.of fun i j => if i == j then 1 else m
 
-theorem I₂ₙIsCoxeter (h : 3 ≤ (m : ℕ∞)) : Matrix.IsCoxeter (Fin 2) (@I₂ₘ m) where
-  symmetric := by
-    unfold I₂ₘ I₂ₘAux
-    aesop
-  diagonal := by
-    unfold I₂ₘ I₂ₘAux
-    aesop
+instance I₂ₘIsCoxeter (m : ℕ+) (h : 3 ≤ (m : ℕ+)) : IsCoxeter (I₂ₘ m) where
+  symmetric := by aesop
+  diagonal := by aesop
   off_diagonal := by
-    unfold I₂ₘ I₂ₘAux
+    unfold I₂ₘ
     intro _ _
-    simp [Matrix.IsCoxeter]
+    simp [IsCoxeter]
     split_ifs
     · aesop
     · intro _
@@ -240,7 +196,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o --- o
 ```
 -/
-def E₆ : Matrix (Fin 6) (Fin 6) ℕ∞ :=
+def E₆ : Matrix (Fin 6) (Fin 6) ℕ+ :=
   !![1, 2, 3, 2, 2, 2;
      2, 1, 2, 3, 2, 2;
      3, 2, 1, 3, 2, 2;
@@ -248,7 +204,7 @@ def E₆ : Matrix (Fin 6) (Fin 6) ℕ∞ :=
      2, 2, 2, 3, 1, 3;
      2, 2, 2, 2, 3, 1]
 
-theorem E₆IsCoxeter : E₆.IsCoxeter (Fin 6) where
+instance E₆IsCoxeter : IsCoxeter E₆ where
   symmetric := by simp [Matrix.IsSymm]
   diagonal := by decide
   off_diagonal := by decide
@@ -262,7 +218,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o --- o --- o
 ```
 -/
-def E₇ : Matrix (Fin 7) (Fin 7) ℕ∞ :=
+def E₇ : Matrix (Fin 7) (Fin 7) ℕ+ :=
   !![1, 2, 3, 2, 2, 2, 2;
      2, 1, 2, 3, 2, 2, 2;
      3, 2, 1, 3, 2, 2, 2;
@@ -271,7 +227,7 @@ def E₇ : Matrix (Fin 7) (Fin 7) ℕ∞ :=
      2, 2, 2, 2, 3, 1, 3;
      2, 2, 2, 2, 2, 3, 1]
 
-theorem E₇IsCoxeter : E₇.IsCoxeter (Fin 7) where
+instance E₇IsCoxeter : IsCoxeter E₇ where
   symmetric := by simp [Matrix.IsSymm]
   diagonal := by decide
   off_diagonal := by decide
@@ -285,7 +241,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o --- o --- o --- o
 ```
 -/
-def E₈ : Matrix (Fin 8) (Fin 8) ℕ∞ :=
+def E₈ : Matrix (Fin 8) (Fin 8) ℕ+ :=
   !![1, 2, 3, 2, 2, 2, 2, 2;
      2, 1, 2, 3, 2, 2, 2, 2;
      3, 2, 1, 3, 2, 2, 2, 2;
@@ -295,7 +251,7 @@ def E₈ : Matrix (Fin 8) (Fin 8) ℕ∞ :=
      2, 2, 2, 2, 2, 3, 1, 3;
      2, 2, 2, 2, 2, 2, 3, 1]
 
-theorem E₈IsCoxeter : E₈.IsCoxeter (Fin 8) where
+instance E₈IsCoxeter : IsCoxeter E₈ where
   symmetric := by simp [Matrix.IsSymm]
   diagonal := by decide
   off_diagonal := by decide
@@ -308,13 +264,13 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o
 ```
 -/
-def F₄ : Matrix (Fin 4) (Fin 4) ℕ∞ :=
+def F₄ : Matrix (Fin 4) (Fin 4) ℕ+ :=
   !![1, 3, 2, 2;
      3, 1, 4, 2;
      2, 4, 1, 3;
      2, 2, 3, 1]
 
-theorem F₄IsCoxeter : F₄.IsCoxeter (Fin 4) where
+instance F₄IsCoxeter : IsCoxeter F₄ where
   symmetric := by simp [Matrix.IsSymm]
   diagonal := by decide
   off_diagonal := by decide
@@ -327,11 +283,11 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o
 ```
 -/
-def G₂ : Matrix (Fin 2) (Fin 2) ℕ∞ :=
+def G₂ : Matrix (Fin 2) (Fin 2) ℕ+ :=
   !![1, 6;
      6, 1]
 
-theorem G₂IsCoxeter : G₂.IsCoxeter (Fin 2) where
+instance G₂IsCoxeter : IsCoxeter G₂ where
   symmetric := by simp [Matrix.IsSymm]
   diagonal := by decide
   off_diagonal := by decide
@@ -344,12 +300,12 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o
 ```
 -/
-def H₃ : Matrix (Fin 3) (Fin 3) ℕ∞ :=
+def H₃ : Matrix (Fin 3) (Fin 3) ℕ+ :=
   !![1, 3, 2;
      3, 1, 5;
      2, 5, 1]
 
-theorem H₃IsCoxeter : H₃.IsCoxeter (Fin 3) where
+instance H₃IsCoxeter : IsCoxeter H₃ where
   symmetric := by simp [Matrix.IsSymm]
   diagonal := by decide
   off_diagonal := by decide
@@ -362,16 +318,15 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o
 ```
 -/
-def H₄ : Matrix (Fin 4) (Fin 4) ℕ∞ :=
+def H₄ : Matrix (Fin 4) (Fin 4) ℕ+ :=
   !![1, 3, 2, 2;
      3, 1, 3, 2;
      2, 3, 1, 5;
      2, 2, 5, 1]
 
-theorem H₄IsCoxeter : H₄.IsCoxeter (Fin 4) where
+instance H₄IsCoxeter : IsCoxeter H₄ where
   symmetric := by simp [Matrix.IsSymm]
   diagonal := by decide
   off_diagonal := by decide
-
 
 end CoxeterMatrix
