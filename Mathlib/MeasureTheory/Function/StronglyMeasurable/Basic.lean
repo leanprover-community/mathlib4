@@ -1534,9 +1534,11 @@ protected theorem indicator [Zero β] (hfm : AEStronglyMeasurable f μ) {s : Set
 theorem nullMeasurableSet_eq_fun {E} [TopologicalSpace E] [MetrizableSpace E] {f g : α → E}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     NullMeasurableSet { x | f x = g x } μ := by
-  refine ⟨_, hf.stronglyMeasurable_mk.measurableSet_eq_fun hg.stronglyMeasurable_mk, ?_⟩
+  apply
+    (hf.stronglyMeasurable_mk.measurableSet_eq_fun
+          hg.stronglyMeasurable_mk).nullMeasurableSet.congr
   filter_upwards [hf.ae_eq_mk, hg.ae_eq_mk] with x hfx hgx
-  change (f x = g x) = (hf.mk f x = hg.mk g x)
+  change (hf.mk f x = hg.mk g x) = (f x = g x)
   simp only [hfx, hgx]
 #align measure_theory.ae_strongly_measurable.null_measurable_set_eq_fun MeasureTheory.AEStronglyMeasurable.nullMeasurableSet_eq_fun
 
