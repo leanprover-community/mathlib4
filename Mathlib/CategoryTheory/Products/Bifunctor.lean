@@ -83,12 +83,12 @@ variable {D₁ D₂ C₁ C₂ E₁ E₂}
 
 /- Action of two-variable functors on morphisms. -/
 def map2 (H : C ⥤ D ⥤ E) (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) :
-  (H.obj2 C₁ D₁ ⟶ H.obj2 C₂ D₂) := (H.map f).app _ ≫ (H.obj C₂).map g
+    (H.obj2 C₁ D₁ ⟶ H.obj2 C₂ D₂) :=
+  (H.map f).app _ ≫ (H.obj C₂).map g
 
 /- Action of three-variable functors on morphisms. -/
-def map3 (H : C ⥤ D ⥤ E ⥤ F) {D₁ D₂ : D} {E₁ E₂ : E}
-    (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) (h : E₁ ⟶ E₂) :
-  (H.obj3 C₁ D₁ E₁ ⟶ H.obj3 C₂ D₂ E₂) :=
+def map3 (H : C ⥤ D ⥤ E ⥤ F) (f : C₁ ⟶ C₂) (g : D₁ ⟶ D₂) (h : E₁ ⟶ E₂) :
+    (H.obj3 C₁ D₁ E₁ ⟶ H.obj3 C₂ D₂ E₂) :=
   (H.map2 f g).app _ ≫ (H.obj2 C₂ D₂).map h
 
 end CategoryTheory.Functor
@@ -97,8 +97,8 @@ end CategoryTheory.Functor
 namespace CategoryTheory.NatTrans
 
 /- Apply a natural transformation between bifunctors to two objects. -/
-def app2 {F G : C ⥤ D ⥤ E} (α : NatTrans F G) (X : C) (Y : D)
-    : F.obj2 X Y ⟶ G.obj2 X Y :=
+def app2 {F G : C ⥤ D ⥤ E} (α : NatTrans F G) (X : C) (Y : D) :
+    F.obj2 X Y ⟶ G.obj2 X Y :=
   (α.app X).app Y
 
 /- Apply a natural transformation between bifunctors in three variables to three objects. -/
