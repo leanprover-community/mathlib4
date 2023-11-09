@@ -144,14 +144,18 @@ theorem HasGradientAtFilter.hasDerivAtFilter (h : HasGradientAtFilter g g' u L')
     HasDerivAtFilter g (starRingEnd 𝕜 g') u L' := by
   have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜)
       (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g' := by
-    ext; simp
+    ext; rw [InnerProductSpace.toDual_apply]
+    simp only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, smul_eq_mul,
+      one_mul, IsROrC.inner_apply, mul_one]
   rw [HasDerivAtFilter, this]; exact h
 
 theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
     HasGradientAtFilter g (starRingEnd 𝕜 g') u L' := by
   have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜)
       g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g') := by
-    ext; simp
+    ext; rw [InnerProductSpace.toDual_apply]
+    simp only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, smul_eq_mul,
+      one_mul, IsROrC.inner_apply, RingHomCompTriple.comp_apply, RingHom.id_apply, mul_one]
   rw [HasGradientAtFilter, ← this]; exact h
 
 theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) :
