@@ -868,10 +868,10 @@ theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type*} [Group
 #align measure_theory.measure.is_add_haar_measure_map MeasureTheory.Measure.isAddHaarMeasure_map
 
 /-- The image of a finite Haar measure under a continuous surjective group homomorphism is again
-a Haar measure. -/
+a Haar measure. See also `isHaarMeasure_map`.-/
 @[to_additive
 "The image of a finite additive Haar measure under a continuous surjective additive group
-homomorphism is again an additive Haar measure. See also `AddEquiv.isAddHaarMeasure_map`."]
+homomorphism is again an additive Haar measure. See also `isAddHaarMeasure_map`."]
 theorem isHaarMeasure_map_of_isFiniteMeasure
     [BorelSpace G] [TopologicalGroup G] {H : Type*} [Group H]
     [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H] [TopologicalGroup H] [IsFiniteMeasure μ]
