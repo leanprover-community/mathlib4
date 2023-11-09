@@ -5,6 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Data.Int.Units
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Basic
 import Mathlib.GroupTheory.GroupAction.Group
@@ -299,6 +300,12 @@ variable {R}
 theorem sub_smul (r s : R) (y : M) : (r - s) • y = r • y - s • y := by
   simp [add_smul, sub_eq_add_neg]
 #align sub_smul sub_smul
+
+lemma Int.units_smul_smul (r : ℤˣ) (s : R) (m : M) : r • (s • m) = (r • s) • m := by
+  obtain rfl | rfl := Int.units_eq_one_or r <;> simp
+
+lemma Int.smul_units_smul (r : R) (s : ℤˣ) (m : M) : r • (s • m) = (s • r) • m := by
+  obtain rfl | rfl := Int.units_eq_one_or s <;> simp
 
 end Module
 
