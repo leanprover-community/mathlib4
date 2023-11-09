@@ -7,6 +7,8 @@ import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 
+import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+
 #align_import analysis.mellin_transform from "leanprover-community/mathlib"@"917c3c072e487b3cccdbfeff17e75b40e45f66cb"
 
 /-! # The Mellin transform
@@ -121,23 +123,33 @@ theorem mellin_div_const (f : ℝ → ℂ) (s a : ℂ) : mellin (fun t => f t / 
   simp_rw [mellin, smul_eq_mul, ← mul_div_assoc, integral_div]
 #align mellin_div_const mellin_div_const
 
+open scoped ENNReal
 
-lemma foo1 {s t : ℝ} (ht : 0 < t) : IntegrableOn (fun x ↦ x ^ s) (Ioi t) ↔ s < -1 := sorry
+#check finite_integral_rpow_sub_one_pow_aux
+
+lemma foo1 {s t : ℝ} (ht : 0 < t) : IntegrableOn (fun x ↦ x ^ s) (Ioi t) ↔ s < -1 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · contrapose! h
+    have : ∫⁻ x in Ioi t, x ^ s = ∞ := by
+      exact?
+
+
+
+#exit
 
 lemma foo2 {s t : ℝ} (ht : 0 < t) : IntegrableOn (fun x ↦ x ^ s) (Ioo (0 : ℝ) t) ↔ -1 < s := sorry
 
 lemma foo3 (s : ℂ) : ∫ (x : ℝ) in Ioi 0, ↑x ^ s = 0 := by
   apply integral_undef (fun h ↦ ?_)
-  have B : IntegrableOn (fun a ↦ a ^ (s.re - 1)) (Ioi (0 : ℝ)) := by
+  have B : IntegrableOn (fun a ↦ a ^ s.re) (Ioi (0 : ℝ)) := by
     apply (integrableOn_congr_fun _ measurableSet_Ioi).1 h.norm
     intro a ha
     simp [abs_cpow_eq_rpow_re_of_pos ha]
-  have : s.re - 1 < -1 :=
+  have : s.re < -1 :=
     (foo1 zero_lt_one).1 (B.mono (Ioi_subset_Ioi zero_le_one) le_rfl)
-  have : -1 < s.re - 1 :=
+  have : -1 < s.re :=
     (foo2 zero_lt_one).1 (B.mono Ioo_subset_Ioi_self le_rfl)
   linarith
-
 
 theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
     mellin (fun t => f (t ^ a)) s = |a|⁻¹ • mellin f (s / a) := by
@@ -182,7 +194,7 @@ theorem mellin_comp_mul_right (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
 #align mellin_comp_mul_right mellin_comp_mul_right
 
 theorem mellin_comp_inv (f : ℝ → E) (s : ℂ) : mellin (fun t => f t⁻¹) s = mellin f (-s) := by
-  simp_rw [← rpow_neg_one, mellin_comp_rpow _ _ (neg_ne_zero.mpr one_ne_zero), abs_neg, abs_one,
+  simp_rw [← rpow_neg_one, mellin_comp_rpow _ _ _, abs_neg, abs_one,
     inv_one, one_smul, ofReal_neg, ofReal_one, div_neg, div_one]
 #align mellin_comp_inv mellin_comp_inv
 
