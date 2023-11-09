@@ -374,6 +374,8 @@ def evalHSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
           (a : Q($M))) (b : Q($α)) ← whnfR e | throwError "failed to match hSMul"
   let zM : Q(Zero $M) ← synthInstanceQ (q(Zero $M))
   let pM : Q(PartialOrder $M) ← synthInstanceQ (q(PartialOrder $M))
+  -- Using `q()` here would be impractical, as we would have to manually `synthInstanceQ` all the
+  -- required typeclasses. Ideally we could tell `q()` to do this automatically.
   match ← core zM pM a, ← core zα pα b with
   | .positive pa, .positive pb =>
       pure (.positive (← mkAppM ``smul_pos #[pa, pb]))
