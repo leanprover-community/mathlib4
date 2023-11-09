@@ -419,7 +419,8 @@ theorem descFactorial_eq_zero_iff_lt {n : ℕ} : ∀ {k : ℕ}, n.descFactorial 
 alias ⟨_, descFactorial_of_lt⟩ := descFactorial_eq_zero_iff_lt
 #align nat.desc_factorial_of_lt Nat.descFactorial_of_lt
 
-theorem add_descFactorial_eq_ascFactorial (n : ℕ) : ∀ k : ℕ, (n + k).descFactorial k = (n + 1).ascFactorial k
+theorem add_descFactorial_eq_ascFactorial (n : ℕ) : ∀ k : ℕ,
+    (n + k).descFactorial k = (n + 1).ascFactorial k
   | 0 => by rw [ascFactorial_zero, descFactorial_zero]
   | succ k => by
     rw [Nat.add_succ, succ_descFactorial_succ, ascFactorial_succ,

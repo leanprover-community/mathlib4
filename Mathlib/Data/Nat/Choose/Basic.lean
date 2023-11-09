@@ -245,8 +245,8 @@ theorem ascFactorial_eq_factorial_mul_choose' (n k : ℕ) :
   cases hn : n
   cases hk : k
   rw [ascFactorial_zero, choose_zero_right, factorial_zero, mul_one]
-  simp only [zero_ascFactorial, zero_eq, zero_add, ge_iff_le, succ_sub_succ_eq_sub, nonpos_iff_eq_zero, tsub_zero,
-    choose_succ_self, mul_zero]
+  simp only [zero_ascFactorial, zero_eq, zero_add, ge_iff_le, succ_sub_succ_eq_sub,
+    nonpos_iff_eq_zero, tsub_zero, choose_succ_self, mul_zero]
   rw [ascFactorial_eq_factorial_mul_choose]
   simp only [ge_iff_le, succ_add_sub_one]
 
