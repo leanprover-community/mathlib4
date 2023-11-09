@@ -173,19 +173,10 @@ The corresponding Coxeter-Dynkin diagram is:
 abbrev I₂ₘ (m : ℕ+) : Matrix (Fin 2) (Fin 2) ℕ+ :=
   Matrix.of fun i j => if i == j then 1 else m
 
-instance I₂ₘIsCoxeter (m : ℕ+) (h : 3 ≤ m) : IsCoxeter (I₂ₘ m) where
+instance I₂ₘIsCoxeter (m : ℕ+) (h : 2 ≤ m) : IsCoxeter (I₂ₘ m) where
   symmetric := by aesop
   diagonal := by aesop
-  off_diagonal := by
-    unfold I₂ₘ
-    intro _ _
-    simp [IsCoxeter]
-    split_ifs
-    · aesop
-    · intro _
-      calc
-        2 ≤ 3 := by simp
-        _ ≤ ↑m := h
+  off_diagonal := by aesop
 
 /-- The Coxeter matrix of system E₆.
 
