@@ -19,11 +19,11 @@ The colex ordering likes to avoid large values: If the biggest element of `t` is
 elements of `s`, then `s < t`.
 
 In the special case of `ℕ`, it can be thought of as the "binary" ordering. That is, order `s` based
-on `∑_{i ∈ s} 2^i`. It's defined here on `Finset α` for any linear order `α`.
+on $∑_{i ∈ s} 2^i$. It's defined here on `Finset α` for any linear order `α`.
 
 In the context of the Kruskal-Katona theorem, we are interested in how colex behaves for sets of a
 fixed size. For example, for size 3, the colex order on ℕ starts
-`123, 124, 134, 234, 125, 135, 235, 145, 245, 345, ...`
+`012, 013, 023, 123, 014, 024, 124, 034, 134, 234, ...`
 
 ## Main statements
 
@@ -69,18 +69,16 @@ namespace Finset
 /-- Type synonym of `Finset α` equipped with the colexicographic order rather than the inclusion
 order. -/
 @[ext]
-structure Colex (α) := toColex :: (ofColex : Finset α)
+structure Colex (α) :=
+  /-- `toColex` is the "identity" function between `Finset α` and `Finset.Colex α`. -/
+  toColex ::
+  /-- `ofColex` is the "identity" function between `Finset.Colex α` and `Finset α`. -/
+  (ofColex : Finset α)
 
 -- TODO: Why can't we export?
 --export Colex (toColex)
 
 open Colex
-
-/-- `toColex` is the "identity" function between `Finset α` and `Finset.Colex α`. -/
-add_decl_doc toColex
-
-/-- `ofColex` is the "identity" function between `Finset.Colex α` and `Finset α`. -/
-add_decl_doc ofColex
 
 instance : Inhabited (Colex α) := ⟨⟨∅⟩⟩
 
@@ -100,8 +98,8 @@ section PartialOrder
 variable [PartialOrder α] [PartialOrder β] {f : α → β} {𝒜 𝒜₁ 𝒜₂ : Finset (Finset α)}
   {s t u : Finset α} {a b : α}
 
-instance instLE : LE (Colex α) :=
-  ⟨fun s t ↦ ∀ ⦃a⦄, a ∈ ofColex s → a ∉ ofColex t → ∃ b, b ∈ ofColex t ∧ b ∉ ofColex s ∧ a ≤ b⟩
+instance instLE : LE (Colex α) where
+  le s t := ∀ ⦃a⦄, a ∈ ofColex s → a ∉ ofColex t → ∃ b, b ∈ ofColex t ∧ b ∉ ofColex s ∧ a ≤ b
 
 private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toColex u)
     (a : α) (has : a ∈ s) (hat : a ∉ t) :
@@ -156,6 +154,14 @@ lemma toColex_mono : Monotone (toColex : Finset α → Colex α) :=
 not form a linear order. -/
 lemma toColex_strictMono : StrictMono (toColex : Finset α → Colex α) :=
   toColex_mono.strictMono_of_injective toColex_injective
+
+/-- If `s ⊆ t`, then `s ≤ t` in the colex order. Note the converse does not hold, as inclusion does
+not form a linear order. -/
+lemma toColex_le_toColex_of_subset (h : s ⊆ t) : toColex s ≤ toColex t := toColex_mono h
+
+/-- If `s ⊂ t`, then `s < t` in the colex order. Note the converse does not hold, as inclusion does
+not form a linear order. -/
+lemma toColex_lt_toColex_of_ssubset (h : s ⊂ t) : toColex s < toColex t := toColex_strictMono h
 
 instance instOrderBot : OrderBot (Colex α) where
   bot := toColex ∅
@@ -222,13 +228,13 @@ lemma le_iff_sdiff_subset_lowerClosure {s t : Colex α} :
     s ≤ t ↔ (ofColex s : Set α) \ ofColex t ⊆ lowerClosure (ofColex t \ ofColex s : Set α) := by
   simp [le_def, Set.subset_def, and_assoc]
 
-/-- The colexigraphic order is insensitive to removing elements. -/
+/-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_le_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
     toColex (s \ u) ≤ toColex (t \ u) ↔ toColex s ≤ toColex t := by
   simp_rw [toColex_le_toColex, ←and_imp, ←and_assoc, ←mem_sdiff, sdiff_sdiff_sdiff_cancel_right hus,
     sdiff_sdiff_sdiff_cancel_right hut]
 
-/-- The colexigraphic order is insensitive to removing elements. -/
+/-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_lt_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
     toColex (s \ u) < toColex (t \ u) ↔ toColex s < toColex t :=
   lt_iff_lt_of_le_iff_le' (toColex_sdiff_le_toColex_sdiff hut hus) <|
