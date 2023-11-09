@@ -611,8 +611,8 @@ theorem isOpenPosMeasure_of_mulLeftInvariant_of_regular [Regular μ] (h₀ : μ 
 #align measure_theory.is_open_pos_measure_of_mul_left_invariant_of_regular MeasureTheory.isOpenPosMeasure_of_mulLeftInvariant_of_regular
 #align measure_theory.is_open_pos_measure_of_add_left_invariant_of_regular MeasureTheory.isOpenPosMeasure_of_addLeftInvariant_of_regular
 
-/-- A nonzero left-invariant regular measure gives positive mass to any open set. -/
-@[to_additive "A nonzero left-invariant regular measure gives positive mass to any open set."]
+/-- A nonzero left-invariant inner regular measure gives positive mass to any open set. -/
+@[to_additive "A nonzero left-invariant inner regular measure gives positive mass to any open set."]
 theorem isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular [InnerRegular μ] (h₀ : μ ≠ 0) :
     IsOpenPosMeasure μ :=
   let ⟨K, hK, h2K⟩ := InnerRegular.exists_compact_not_null.mpr h₀
