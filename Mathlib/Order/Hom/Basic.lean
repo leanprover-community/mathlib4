@@ -709,7 +709,7 @@ def ofMapLEIff {α β} [PartialOrder α] [Preorder β] (f : α → β) (hf : ∀
 
 @[simp]
 theorem coe_ofMapLEIff {α β} [PartialOrder α] [Preorder β] {f : α → β} (h) :
-    ⇑ofMapLEIff f h = f :=
+    ⇑(ofMapLEIff f h) = f :=
   rfl
 #align order_embedding.coe_of_map_le_iff OrderEmbedding.coe_ofMapLEIff
 
@@ -720,7 +720,7 @@ def ofStrictMono {α β} [LinearOrder α] [Preorder β] (f : α → β) (h : Str
 
 @[simp]
 theorem coe_ofStrictMono {α β} [LinearOrder α] [Preorder β] {f : α → β} (h : StrictMono f) :
-    ⇑ofStrictMono f h = f :=
+    ⇑(ofStrictMono f h) = f :=
   rfl
 #align order_embedding.coe_of_strict_mono OrderEmbedding.coe_ofStrictMono
 
@@ -839,7 +839,7 @@ def refl (α : Type*) [LE α] : α ≃o α :=
 #align order_iso.refl OrderIso.refl
 
 @[simp]
-theorem coe_refl : ⇑refl α = id :=
+theorem coe_refl : ⇑(refl α) = id :=
   rfl
 #align order_iso.coe_refl OrderIso.coe_refl
 
@@ -902,7 +902,7 @@ def trans (e : α ≃o β) (e' : β ≃o γ) : α ≃o γ :=
 #align order_iso.trans OrderIso.trans
 
 @[simp]
-theorem coe_trans (e : α ≃o β) (e' : β ≃o γ) : ⇑e.trans e' = e' ∘ e :=
+theorem coe_trans (e : α ≃o β) (e' : β ≃o γ) : ⇑(e.trans e') = e' ∘ e :=
   rfl
 #align order_iso.coe_trans OrderIso.coe_trans
 
@@ -957,7 +957,7 @@ def dualDual : α ≃o αᵒᵈᵒᵈ :=
 #align order_iso.dual_dual OrderIso.dualDual
 
 @[simp]
-theorem coe_dualDual : ⇑dualDual α = toDual ∘ toDual :=
+theorem coe_dualDual : ⇑(dualDual α) = toDual ∘ toDual :=
   rfl
 #align order_iso.coe_dual_dual OrderIso.coe_dualDual
 
@@ -1129,7 +1129,7 @@ def toOrderIso (e : α ≃ β) (h₁ : Monotone e) (h₂ : Monotone e.symm) : α
 
 @[simp]
 theorem coe_toOrderIso (e : α ≃ β) (h₁ : Monotone e) (h₂ : Monotone e.symm) :
-    ⇑e.toOrderIso h₁ h₂ = e :=
+    ⇑(e.toOrderIso h₁ h₂) = e :=
   rfl
 #align equiv.coe_to_order_iso Equiv.coe_toOrderIso
 
