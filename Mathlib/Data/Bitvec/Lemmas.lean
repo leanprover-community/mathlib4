@@ -5,6 +5,7 @@ Authors: Harun Khan
 -/
 
 import Mathlib.Data.Bitvec.Defs
+import Mathlib.Data.List.FinRange
 
 /-!
 # Basic Theorems About Bitvectors
@@ -13,6 +14,8 @@ This file contains theorems about bitvectors.
 -/
 
 namespace Std.BitVec
+
+set_option linter.deprecated false -- silence warnings about `addLsb`
 
 open Nat
 
@@ -82,10 +85,20 @@ theorem addLsb_eq_twice_add_one {x b} : addLsb x b = 2 * x + cond b 1 0 := by
   simp [addLsb, two_mul]; cases b <;> rfl
 #align bitvec.add_lsb_eq_twice_add_one Std.BitVec.addLsb_eq_twice_add_one
 
+-- TODO: remove once #8306 is merged
+theorem List.foldl_ofFn {α β n} (f : α → β → α) (init : α) (g : Fin n → β) :
+    (List.ofFn g).foldl f init = (List.finRange n).foldl (fun a i => f a (g i)) init := by
+  induction' n with n ih generalizing init
+  · rfl
+  · simp [List.finRange_succ_eq_map, List.foldl_map, ih]
+
 theorem toNat_eq_foldl_toBEList {n : ℕ} (v : BitVec n) :
     v.toNat = v.toBEList.foldl (flip bit) 0 := by
-  simp [toBEList]
-  sorry
+  simp [toBEList, getMsb', getMsb, getLsb, List.foldl_ofFn, flip]
+  induction' n with n ih
+  · simp [BitVec.toNat]
+  · have : ∃ hd tl, v = consMsb hd tl
+    simp
 #align bitvec.to_nat_eq_foldr_reverse Std.BitVec.toNat_eq_foldl_toBEList
 
 theorem toNat_lt {n : ℕ} (v : BitVec n) : v.toNat < 2 ^ n := by
