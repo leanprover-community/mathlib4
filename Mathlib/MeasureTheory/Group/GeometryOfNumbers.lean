@@ -58,15 +58,13 @@ theorem exists_pair_mem_lattice_not_disjoint_vadd [AddCommGroup L] [Countable L]
       (measure_mono <| Set.iUnion_subset fun _ => Set.inter_subset_right _ _)
 #align measure_theory.exists_pair_mem_lattice_not_disjoint_vadd MeasureTheory.exists_pair_mem_lattice_not_disjoint_vadd
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [BorelSpace E] [FiniteDimensional ℝ E]
-  [IsAddHaarMeasure μ] {L : AddSubgroup E} [Countable L] (fund : IsAddFundamentalDomain L F μ)
-   (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s)
-
 /-- The **Minkowski Convex Body Theorem**. If `s` is a convex symmetric domain of `E` whose volume
 is large enough compared to the covolume of a lattice `L` of `E`, then it contains a non-zero
 lattice point of `L`.  -/
-theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
-    (h : μ F * 2 ^ finrank ℝ E < μ s) :
+theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddCommGroup E]
+    [NormedSpace ℝ E] [BorelSpace E] [FiniteDimensional ℝ E] [IsAddHaarMeasure μ]
+    {L : AddSubgroup E} [Countable L] (fund : IsAddFundamentalDomain L F μ)
+    (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s) (h : μ F * 2 ^ finrank ℝ E < μ s) :
     ∃ (x : _) (_ : x ≠ 0), ((x : L) : E) ∈ s := by
   have h_vol : μ F < μ ((2⁻¹ : ℝ) • s) := by
     rw [addHaar_smul_of_nonneg μ (by norm_num : 0 ≤ (2 : ℝ)⁻¹) s, ←
@@ -85,11 +83,16 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
   refine' h_conv hw (h_symm _ hv) _ _ _ <;> norm_num
 #align measure_theory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
 
-variable  (h_cpt : IsCompact s) (h_mes : μ s ≠ 0) [DiscreteTopology L] [Nontrivial E]
-
-/-- The version of Minkowski Convex Body Theorem where we assume in addition that `s` is compact.
-In this case, the strict inequality can be replaced by a weak inequality. -/
-theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure
+/-- The **Minkowski Convex Body Theorem for compact domain**. If `s` is a convex compact symmetric
+domain of `E` whose volume is large enough compared to the covolume of a lattice `L` of `E`, then it
+contains a non-zero lattice point of `L`. Compared to
+`exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure`, this version requires in addition
+that `s` is compact and `L` is discrete but provides a weaker inequality rather than a strict
+inequality. -/
+theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddCommGroup E]
+    [NormedSpace ℝ E] [BorelSpace E] [FiniteDimensional ℝ E] [Nontrivial E] [IsAddHaarMeasure μ]
+    {L : AddSubgroup E} [Countable L] [DiscreteTopology L] (fund : IsAddFundamentalDomain L F μ)
+    (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s) (h_cpt : IsCompact s) (h_mes : μ s ≠ 0)
     (h : μ F * 2 ^ finrank ℝ E ≤ μ s) :
     ∃ (x : _) (_ : x ≠ 0), ((x : L) : E) ∈ s := by
   have h_nemp : s.Nonempty := nonempty_of_measure_ne_zero h_mes
