@@ -130,7 +130,7 @@ instance instMulZeroOneClassWithTop [MulZeroOneClass α] [Nontrivial α] :
       | (a : α) => by rw [← coe_one, ← coe_mul, mul_one] }
 
 /-- A version of `WithTop.map` for `MonoidWithZeroHom`s. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass R] [DecidableEq R]
     [Nontrivial R] [MulZeroOneClass S] [DecidableEq S] [Nontrivial S] (f : R →*₀ S)
     (hf : Function.Injective f) : WithTop R →*₀ WithTop S :=
@@ -203,7 +203,7 @@ instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
   eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero}
 
 /-- A version of `WithTop.map` for `RingHom`s. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 protected def _root_.RingHom.withTopMap {R S : Type*} [CanonicallyOrderedCommSemiring R]
     [DecidableEq R] [Nontrivial R] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S]
     (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
