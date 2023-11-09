@@ -179,12 +179,12 @@ theorem homCongr_symm_apply (k : Type*) {C : Type*} [Category C] [Semiring k] [P
 variable {R}
 
 @[simp]
-lemma smul_units_comp {X Y Z : C} (r : Rˣ) (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma units_smul_comp {X Y Z : C} (r : Rˣ) (f : X ⟶ Y) (g : Y ⟶ Z) :
     (r • f) ≫ g = r • f ≫ g := by
   apply Linear.smul_comp
 
 @[simp]
-lemma comp_smul_units {X Y Z : C} (f : X ⟶ Y) (r : Rˣ) (g : Y ⟶ Z) :
+lemma comp_units_smul {X Y Z : C} (f : X ⟶ Y) (r : Rˣ) (g : Y ⟶ Z) :
     f ≫ (r • g) = r • f ≫ g := by
   apply Linear.comp_smul
 
