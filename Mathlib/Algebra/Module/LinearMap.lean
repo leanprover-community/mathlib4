@@ -1173,34 +1173,34 @@ variable {f' : M →ₗ[R] M}
 theorem iterate_succ (n : ℕ) : f' ^ (n + 1) = comp (f' ^ n) f' := by rw [pow_succ', mul_eq_comp]
 #align linear_map.iterate_succ LinearMap.iterate_succ
 
-theorem iterate_surjective (h : Surjective f') : ∀ n : ℕ, Surjective (f' ^ n)
+theorem iterate_surjective (h : Surjective f') : ∀ n : ℕ, Surjective ↑(f' ^ n)
   | 0 => surjective_id
   | n + 1 => by
     rw [iterate_succ]
     exact (iterate_surjective h n).comp h
 #align linear_map.iterate_surjective LinearMap.iterate_surjective
 
-theorem iterate_injective (h : Injective f') : ∀ n : ℕ, Injective (f' ^ n)
+theorem iterate_injective (h : Injective f') : ∀ n : ℕ, Injective ↑(f' ^ n)
   | 0 => injective_id
   | n + 1 => by
     rw [iterate_succ]
     exact (iterate_injective h n).comp h
 #align linear_map.iterate_injective LinearMap.iterate_injective
 
-theorem iterate_bijective (h : Bijective f') : ∀ n : ℕ, Bijective (f' ^ n)
+theorem iterate_bijective (h : Bijective f') : ∀ n : ℕ, Bijective ↑(f' ^ n)
   | 0 => bijective_id
   | n + 1 => by
     rw [iterate_succ]
     exact (iterate_bijective h n).comp h
 #align linear_map.iterate_bijective LinearMap.iterate_bijective
 
-theorem injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective (f' ^ n)) :
+theorem injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective ↑(f' ^ n)) :
     Injective f' := by
   rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn), iterate_succ, coe_comp] at h
   exact h.of_comp
 #align linear_map.injective_of_iterate_injective LinearMap.injective_of_iterate_injective
 
-theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective (f' ^ n)) :
+theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective ↑(f' ^ n)) :
     Surjective f' := by
   rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn), pow_succ, coe_mul] at h
   exact Surjective.of_comp h

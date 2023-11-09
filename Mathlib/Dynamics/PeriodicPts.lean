@@ -661,7 +661,7 @@ theorem pow_smul_mod_minimalPeriod (n : ℕ) :
 
 @[to_additive (attr := simp)]
 theorem zpow_smul_mod_minimalPeriod (n : ℤ) :
-    a ^ (n % (Function.minimalPeriod ((· • ·) a) b : ℤ)) • b = a ^ n • b := by
+    a ^ (n % ↑(Function.minimalPeriod ((· • ·) a) b)) • b = a ^ n • b := by
   conv_rhs =>
     rw [← Int.emod_add_ediv n (minimalPeriod ((a • ·)) b), zpow_add, mul_smul,
       zpow_smul_eq_iff_minimalPeriod_dvd.mpr (dvd_mul_right _ _)]
