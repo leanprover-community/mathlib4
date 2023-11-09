@@ -173,7 +173,7 @@ theorem gradient_eq_deriv : ∇ g u = starRingEnd 𝕜 (deriv g u) := by
   by_cases h: DifferentiableAt 𝕜 g u
   · rw [h.hasGradientAt.hasDerivAt.deriv]
     exact Eq.symm (IsROrC.conj_conj (∇ g u))
-  · rw [Gradient_zero_of_not_differentiableAt h, deriv_zero_of_not_differentiableAt h]
+  · rw [gradient_eq_zero_of_not_differentiableAt h, deriv_zero_of_not_differentiableAt h]
     exact Eq.symm (RingHom.map_zero (starRingEnd 𝕜))
 
 end OneDimension
