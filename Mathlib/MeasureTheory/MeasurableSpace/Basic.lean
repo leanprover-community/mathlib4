@@ -1619,7 +1619,7 @@ def piCongrLeft (f : δ ≃ δ') : (∀ b, π (f b)) ≃ᵐ ∀ a, π a := by
   exact fun i => measurable_pi_apply (f i)
 
 theorem coe_piCongrLeft (f : δ ≃ δ') :
-    ⇑MeasurableEquiv.piCongrLeft π f = f.piCongrLeft π := by rfl
+    ⇑(MeasurableEquiv.piCongrLeft π f) = f.piCongrLeft π := by rfl
 
 /-- Pi-types are measurably equivalent to iterated products. -/
 @[simps! (config := { fullyApplied := false })]
@@ -1690,7 +1690,7 @@ def sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)]
     exact measurable_pi_iff.1 measurable_snd _
 
 theorem coe_sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
-    ⇑MeasurableEquiv.sumPiEquivProdPi α = Equiv.sumPiEquivProdPi α := by rfl
+    ⇑(MeasurableEquiv.sumPiEquivProdPi α) = Equiv.sumPiEquivProdPi α := by rfl
 
 theorem coe_sumPiEquivProdPi_symm (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
     ⇑(MeasurableEquiv.sumPiEquivProdPi α).symm = (Equiv.sumPiEquivProdPi α).symm := by rfl
