@@ -92,8 +92,8 @@ lemma pow_mul_mem_smoothNumbers {p n : ℕ} (hp : p ≠ 0) (e : ℕ) (hn : n ∈
   refine ⟨mul_ne_zero hp' hn.1, fun q hq ↦ ?_⟩
   rcases (mem_factors_mul hp' hn.1).mp hq with H | H
   · rw [mem_factors hp'] at H
-    exact lt_succ.mpr <| le_of_dvd hp.bot_lt <| Prime.dvd_of_dvd_pow H.1 H.2
-  · exact (hn.2 q H).trans <| lt.base p
+    exact lt_succ.mpr <| le_of_dvd hp.bot_lt <| H.1.dvd_of_dvd_pow H.2
+  · exact (hn.2 q H).trans <| lt_succ_self p
 
 /-- If `p` is a prime and `n` is `p`-smooth, then `p` and `n` are coprime. -/
 lemma Prime.smoothNumbers_coprime {p n : ℕ} (hp : p.Prime) (hn : n ∈ smoothNumbers p) :
@@ -117,7 +117,7 @@ def equivProdNatSmoothNumbers {p : ℕ} (hp: p.Prime) :
     constructor
     · rw [factorization_mul (pos_iff_ne_zero.mp <| pos_pow_of_pos e hp.pos) hm₀]
       simp only [factorization_pow, Finsupp.coe_add, Finsupp.coe_smul, nsmul_eq_mul,
-        Pi.coe_nat, cast_id, Pi.add_apply, Pi.mul_apply, Prime.factorization_self hp,
+        Pi.coe_nat, cast_id, Pi.add_apply, Pi.mul_apply, hp.factorization_self,
         mul_one, add_right_eq_self]
       rw [← factors_count_eq, count_eq_zero]
       exact fun H ↦ (hm p H).false
