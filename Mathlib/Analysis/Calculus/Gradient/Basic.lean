@@ -194,7 +194,7 @@ theorem HasGradientAt.hasDerivAt' (h : HasGradientAt g g' u) :
 theorem HasDerivAt.hasGradientAt' (h :HasDerivAt g g' u) :
     HasGradientAt g g' u := h.hasGradientAt
 
-theorem gradient_deriv' : ∇ g u = deriv g u := gradient_deriv
+theorem gradient_eq_deriv' : ∇ g u = deriv g u := gradient_eq_deriv
 
 end OneDimensionReal
 
