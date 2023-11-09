@@ -548,22 +548,11 @@ end IsAlgClosure
   the roots in `A` of the minimal polynomial of `x` over `F`. -/
 theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly {F K} (A) [Field F] [Field K] [Field A]
     [IsAlgClosed A] [Algebra F K] (hK : Algebra.IsAlgebraic F K) [Algebra F A] (x : K) :
-    (Set.range fun ψ : K →ₐ[F] A => ψ x) = (minpoly F x).rootSet A := by
+    (Set.range fun ψ : K →ₐ[F] A ↦ ψ x) = (minpoly F x).rootSet A := by
   have hFK := Algebra.isAlgebraic_iff_isIntegral.1 hK
   ext a
   rw [mem_rootSet_of_ne (minpoly.ne_zero (hFK x))]
-  refine' ⟨_, fun ha => _⟩
-  · rintro ⟨ψ, rfl⟩; rw [aeval_algHom_apply ψ x, minpoly.aeval, map_zero]
-  let Fx := AdjoinRoot (minpoly F x)
-  have hx : aeval x (minpoly F x) = 0 := minpoly.aeval F x
-  letI : Algebra Fx A := (AdjoinRoot.lift (algebraMap F A) a ha).toAlgebra
-  letI : Algebra Fx K := (AdjoinRoot.lift (algebraMap F K) x hx).toAlgebra
-  haveI : IsScalarTower F Fx A := IsScalarTower.of_ring_hom (AdjoinRoot.liftHom _ a ha)
-  haveI : IsScalarTower F Fx K := IsScalarTower.of_ring_hom (AdjoinRoot.liftHom _ x hx)
-  haveI : Fact (Irreducible <| minpoly F x) := ⟨minpoly.irreducible <| hFK x⟩
-  let ψ₀ : K →ₐ[Fx] A := IsAlgClosed.lift (Algebra.isAlgebraic_of_larger_base Fx hK)
-  exact
-    ⟨ψ₀.restrictScalars F,
-      (congr_arg ψ₀ (AdjoinRoot.lift_root hx).symm).trans <|
-        (ψ₀.commutes _).trans <| AdjoinRoot.lift_root ha⟩
+  refine ⟨fun ⟨ψ, hψ⟩ ↦ ?_, fun ha ↦ IntermediateField.exists_algHom_of_splits_of_aeval
+    (fun x ↦ ⟨hFK x, IsAlgClosed.splits_codomain _⟩) ha⟩
+  rw [← hψ, aeval_algHom_apply ψ x, minpoly.aeval, map_zero]
 #align algebra.is_algebraic.range_eval_eq_root_set_minpoly Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly
