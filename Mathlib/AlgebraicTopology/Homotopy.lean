@@ -43,6 +43,9 @@ namespace SSet
 
 universe u
 
+class IsKan (X : SSet) : Prop where
+  cond : ∀ n i (f : Λ[n,i] ⟶ X), ∃ (g : Δ[n] ⟶ X), f = hornInclusion _ _ ≫ g
+
 def 𝕀 : SSet.{0} := Δ[1]
 def pt : SSet.{0} := Δ[0]
 
@@ -75,14 +78,14 @@ structure Path {X : SSet.{0}} (a b : pt ⟶ X) where
   hp1 : i1 ≫ p = b
 
 def Path.rfl {X : SSet.{0}} (a : pt ⟶ X) : Path a a where
-  p := sorry
-  hp0 := sorry
-  hp1 := sorry
+  p := ptIsTerminal.from _ ≫ a
+  hp0 := by slice_lhs 1 2 => simp
+  hp1 := by slice_lhs 1 2 => simp
 
-def Path.trans {X : SSet.{0}} {a b c : pt ⟶ X} :
+def Path.trans {X : SSet.{0}} {a b c : pt ⟶ X} [IsKan X] :
   Path a b → Path b c → Path a c := sorry
 
-def Path.symm {X : SSet.{0}} {a b : pt ⟶ X} :
+def Path.symm {X : SSet.{0}} {a b : pt ⟶ X} [IsKan X] :
   Path a b → Path b a := sorry
 
 /-
@@ -93,8 +96,8 @@ structure homotopy {X Y : SSet.{0}} (f g : X ⟶ Y) where
   F1 : (leftUnitor X).inv ≫ (prod.map i1 (𝟙 X)) ≫ F = g
 -/
 
-class HomotopyInvariant {X : SSet.{0}} (motive : ⦃a b : pt ⟶ X⦄ → Path a b → Sort u) where
-  ind : (rfl : (x : pt ⟶ X) → motive (Path.rfl x)) → ⦃x y : pt ⟶ X⦄ → (p : Path x y) → motive p
-  ind_rfl : (rfl : (x : pt ⟶ X) → motive (Path.rfl x)) → ind rfl (Path.rfl x) = rfl x
+--class HomotopyInvariant {X : SSet.{0}} (motive : ⦃a b : pt ⟶ X⦄ → Path a b → Sort u) where
+--  ind : (rfl : (x : pt ⟶ X) → motive (Path.rfl x)) → ⦃x y : pt ⟶ X⦄ → (p : Path x y) → motive p
+--  ind_rfl : (rfl : (x : pt ⟶ X) → motive (Path.rfl x)) → ind rfl (Path.rfl x) = rfl x
 
 end SSet
