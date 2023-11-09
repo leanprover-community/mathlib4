@@ -1,5 +1,3 @@
-/build
 /.cache
 .DS_Store
-/lakefile.olean
 /.lake
