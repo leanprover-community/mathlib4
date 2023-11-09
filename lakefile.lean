@@ -29,6 +29,7 @@ package mathlib where
 lean_lib Mathlib where
   moreLeanArgs := moreLeanArgs
   weakLeanArgs := weakLeanArgs
+  extraDepTargets := #[`cacheGet]
 
 /-- `lake exe runMathlibLinter` runs the linter on all of Mathlib (or individual files). -/
 -- Due to a change in Lake at v4.1.0-rc1, we need to give this a different name
@@ -37,6 +38,7 @@ lean_lib Mathlib where
 lean_exe runMathlibLinter where
   root := `scripts.runMathlibLinter
   supportInterpreter := true
+  extraDepTargets := #[`cacheGet]
 
 /-- `lake exe checkYaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
 lean_exe checkYaml where
@@ -60,6 +62,33 @@ lean_lib Cache where
 /-- `lake exe cache get` retrieves precompiled `.olean` files from a central server. -/
 lean_exe cache where
   root := `Cache.Main
+
+partial def pipeLines (i o : IO.FS.Stream) : BaseIO Unit := do
+  if let .ok ln ← i.getLine.toBaseIO then
+    unless ln.isEmpty do
+      discard <| o.putStr ln |>.toBaseIO
+      pipeLines i o
+
+-- When run as `lake build -KnoCacheGet`, do not invoke `lake exe cache get` automatically.
+def noCacheGet := get_config? noCacheGet |>.isSome
+
+/-- A target which performs `lake exe cache get`. -/
+target cacheGet : Unit := do
+  if noCacheGet then
+    return .nil
+  let cache ← cache.fetch
+  cache.bindSync fun fname _ => do
+  -- Pipe output directly to `stderr` so progress is visible and no `stdout:` prefix is produced.
+  let child ← IO.Process.spawn {
+    cmd := fname.toString, args := #["get"], env := ← getAugmentedEnv,
+    stdout := .piped, stderr := .inherit
+  }
+  let outTask ← pipeLines (.ofHandle child.stdout) (← IO.getStderr) |>.asTask .dedicated
+  let exitCode ← child.wait
+  IO.wait outTask
+  if exitCode ≠ 0 then
+    error s!"cache command '{fname.toString}' exited with code {exitCode}"
+  return ((), .nil)
 
 lean_lib MathlibExtras where
   roots := #[`MathlibExtras]
