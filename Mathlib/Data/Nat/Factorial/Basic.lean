@@ -266,11 +266,11 @@ theorem succ_ascFactorial (n : ℕ) :
 /-- `(n + 1).ascFactorial k = (n + k) ! / n !` but without ℕ-division. See
 `Nat.ascFactorial_eq_div` for the version with ℕ-division. -/
 theorem factorial_mul_ascFactorial (n : ℕ) : ∀ k, n ! * (n + 1).ascFactorial k = (n + k)!
-| 0 => by
-  rw [add_zero, ascFactorial_zero, mul_one]
-| k + 1 => by
-  rw [ascFactorial_succ, ← add_assoc, factorial_succ, mul_comm (n + 1 + k), ← mul_assoc,
-    factorial_mul_ascFactorial n k, mul_comm, add_right_comm]
+  | 0 => by
+    rw [add_zero, ascFactorial_zero, mul_one]
+  | k + 1 => by
+    rw [ascFactorial_succ, ← add_assoc, factorial_succ, mul_comm (n + 1 + k), ← mul_assoc,
+      factorial_mul_ascFactorial n k, mul_comm, add_right_comm]
 #align nat.factorial_mul_asc_factorial Nat.factorial_mul_ascFactorial
 
 /-- `n.ascFactorial k = (n + k - 1)! / (n - 1)!` for `n > 0` but without ℕ-division. See
@@ -278,7 +278,7 @@ theorem factorial_mul_ascFactorial (n : ℕ) : ∀ k, n ! * (n + 1).ascFactorial
 `factorial_mul_ascFactorial` to avoid complications of ℕ-subtraction. -/
 theorem factorial_mul_ascFactorial' (n k : ℕ) (h : 0 < n) :
     (n - 1) ! * n.ascFactorial k = (n + k - 1)! := by
-  rw [Nat.sub_add_comm h, Nat.sub_one]--ascFactorial_succ, mul_left_comm, factorial_mul_ascFactorial' n h k, ← add_assoc]
+  rw [Nat.sub_add_comm h, Nat.sub_one]
   nth_rw 2 [Nat.eq_add_of_sub_eq h rfl]
   rw [Nat.sub_one, factorial_mul_ascFactorial]
 
