@@ -1126,6 +1126,10 @@ def liftLinear {m0 : MeasurableSpace α} (f : OuterMeasure α →ₗ[ℝ≥0∞]
       smul_apply, hs]
 #align measure_theory.measure.lift_linear MeasureTheory.Measure.liftLinear
 
+lemma liftLinear_apply₀ {f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β} (hf) {s : Set β}
+    (hs : NullMeasurableSet s (liftLinear f hf μ)) : liftLinear f hf μ s = f μ.toOuterMeasure s :=
+  toMeasure_apply₀ _ (hf μ) hs
+
 @[simp]
 theorem liftLinear_apply {f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β} (hf) {s : Set β}
     (hs : MeasurableSet s) : liftLinear f hf μ s = f μ.toOuterMeasure s :=
@@ -1218,14 +1222,18 @@ protected theorem map_smul_nnreal (c : ℝ≥0) (μ : Measure α) (f : α → β
   μ.map_smul (c : ℝ≥0∞) f
 #align measure_theory.measure.map_smul_nnreal MeasureTheory.Measure.map_smul_nnreal
 
+lemma map_apply₀ {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
+    (hs : NullMeasurableSet s (map f μ)) : μ.map f s = μ (f ⁻¹' s) := by
+  rw [map, dif_pos hf, mapₗ, dif_pos hf.measurable_mk] at hs ⊢
+  rw [liftLinear_apply₀ _ hs, measure_congr (hf.ae_eq_mk.preimage s)]
+  rfl
+
 /-- We can evaluate the pushforward on measurable sets. For non-measurable sets, see
   `MeasureTheory.Measure.le_map_apply` and `MeasurableEquiv.map_apply`. -/
 @[simp]
 theorem map_apply_of_aemeasurable {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
-    (hs : MeasurableSet s) : μ.map f s = μ (f ⁻¹' s) := by
-  simpa only [mapₗ, hf.measurable_mk, hs, dif_pos, liftLinear_apply, OuterMeasure.map_apply,
-    ← mapₗ_mk_apply_of_aemeasurable hf] using
-    measure_congr (hf.ae_eq_mk.symm.preimage s)
+    (hs : MeasurableSet s) : μ.map f s = μ (f ⁻¹' s) :=
+  map_apply₀ hf hs.nullMeasurableSet
 #align measure_theory.measure.map_apply_of_ae_measurable MeasureTheory.Measure.map_apply_of_aemeasurable
 
 @[simp]
@@ -1270,8 +1278,11 @@ theorem le_map_apply {f : α → β} (hf : AEMeasurable f μ) (s : Set β) : μ 
     _ = μ.map f (toMeasurable (μ.map f) s) :=
       (map_apply_of_aemeasurable hf <| measurableSet_toMeasurable _ _).symm
     _ = μ.map f s := measure_toMeasurable _
-
 #align measure_theory.measure.le_map_apply MeasureTheory.Measure.le_map_apply
+
+theorem le_map_apply_image {f : α → β} (hf : AEMeasurable f μ) (s : Set α) :
+    μ s ≤ μ.map f (f '' s) :=
+  (measure_mono (subset_preimage_image f s)).trans (le_map_apply hf _)
 
 /-- Even if `s` is not measurable, `map f μ s = 0` implies that `μ (f ⁻¹' s) = 0`. -/
 theorem preimage_null_of_map_null {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
@@ -1387,7 +1398,6 @@ theorem comap_preimage {β} [MeasurableSpace α] {mβ : MeasurableSpace β} (f :
 section Subtype
 
 /-! ### Subtype of a measure space -/
-
 
 section ComapAnyMeasure
 
@@ -1604,6 +1614,9 @@ theorem le_restrict_apply (s t : Set α) : μ (t ∩ s) ≤ μ.restrict s t :=
     μ (t ∩ s) = μ.restrict s (t ∩ s) := (restrict_eq_self μ (inter_subset_right _ _)).symm
     _ ≤ μ.restrict s t := measure_mono (inter_subset_left _ _)
 #align measure_theory.measure.le_restrict_apply MeasureTheory.Measure.le_restrict_apply
+
+theorem restrict_apply_le (s t : Set α) : μ.restrict s t ≤ μ t :=
+  Measure.le_iff'.1 restrict_le_self _
 
 theorem restrict_apply_superset (h : s ⊆ t) : μ.restrict s t = μ s :=
   ((measure_mono (subset_univ _)).trans_eq <| restrict_apply_univ _).antisymm
@@ -2900,7 +2913,7 @@ instance isFiniteMeasureZero : IsFiniteMeasure (0 : Measure α) :=
   ⟨by simp⟩
 #align measure_theory.is_finite_measure_zero MeasureTheory.isFiniteMeasureZero
 
-instance (priority := 100) isFiniteMeasureOfIsEmpty [IsEmpty α] : IsFiniteMeasure μ := by
+instance (priority := 50) isFiniteMeasureOfIsEmpty [IsEmpty α] : IsFiniteMeasure μ := by
   rw [eq_zero_of_isEmpty μ]
   infer_instance
 #align measure_theory.is_finite_measure_of_is_empty MeasureTheory.isFiniteMeasureOfIsEmpty
@@ -3686,7 +3699,7 @@ theorem sigmaFinite_of_le (μ : Measure α) [hs : SigmaFinite μ] (h : ν ≤ μ
   ext s hs
   rw [← ENNReal.add_right_inj (measure_mono (inter_subset_right s _) |>.trans_lt <|
     measure_spanningSets_lt_top μ i).ne]
-  simp [Measure.ext_iff'] at h
+  simp only [ext_iff', add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply] at h
   simp [hs, h]
 
 @[simp] lemma add_left_inj (μ ν₁ ν₂ : Measure α) [SigmaFinite μ] :
@@ -3881,9 +3894,15 @@ protected theorem IsFiniteMeasureOnCompacts.smul [TopologicalSpace α] (μ : Mea
   ⟨fun _K hK => ENNReal.mul_lt_top hc hK.measure_lt_top.ne⟩
 #align measure_theory.is_finite_measure_on_compacts.smul MeasureTheory.IsFiniteMeasureOnCompacts.smul
 
-/-- Note this cannot be an instance because it would form a typeclass loop with
-`isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure`. -/
-theorem CompactSpace.isFiniteMeasure [TopologicalSpace α] [CompactSpace α]
+instance IsFiniteMeasureOnCompacts.smul_nnreal [TopologicalSpace α] (μ : Measure α)
+    [IsFiniteMeasureOnCompacts μ] (c : ℝ≥0) : IsFiniteMeasureOnCompacts (c • μ) :=
+  IsFiniteMeasureOnCompacts.smul μ coe_ne_top
+
+instance instIsFiniteMeasureOnCompactsRestrict [TopologicalSpace α] {μ : Measure α}
+    [IsFiniteMeasureOnCompacts μ] {s : Set α} : IsFiniteMeasureOnCompacts (μ.restrict s) :=
+  ⟨fun _k hk ↦ (restrict_apply_le _ _).trans_lt hk.measure_lt_top⟩
+
+instance (priority := 100) CompactSpace.isFiniteMeasure [TopologicalSpace α] [CompactSpace α]
     [IsFiniteMeasureOnCompacts μ] : IsFiniteMeasure μ :=
   ⟨IsFiniteMeasureOnCompacts.lt_top_of_isCompact isCompact_univ⟩
 #align measure_theory.compact_space.is_finite_measure MeasureTheory.CompactSpace.isFiniteMeasure
@@ -3904,9 +3923,8 @@ instance (priority := 100) sigmaFinite_of_locallyFinite [TopologicalSpace α]
   rwa [sUnion_image]
 #align measure_theory.sigma_finite_of_locally_finite MeasureTheory.sigmaFinite_of_locallyFinite
 
-/-- A measure which is finite on compact sets in a locally compact space is locally finite.
-Not registered as an instance to avoid a loop with the other direction. -/
-theorem isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts [TopologicalSpace α]
+/-- A measure which is finite on compact sets in a locally compact space is locally finite. -/
+instance (priority := 100) isLocallyFiniteMeasure_of_isFiniteMeasureOnCompacts [TopologicalSpace α]
     [WeaklyLocallyCompactSpace α] [IsFiniteMeasureOnCompacts μ] : IsLocallyFiniteMeasure μ :=
   ⟨fun x ↦
     let ⟨K, K_compact, K_mem⟩ := exists_compact_mem_nhds x
