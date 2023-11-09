@@ -136,15 +136,15 @@ noncomputable instance : Unique (AddUnits ℝ≥0∞) where
 instance : Inhabited ℝ≥0∞ := ⟨0⟩
 
 /-- Coercion from `ℝ≥0` to `ℝ≥0∞`. -/
-@[coe, match_pattern] def some : ℝ≥0 → ℝ≥0∞ := WithTop.some
+@[coe, match_pattern] def ofNNReal : ℝ≥0 → ℝ≥0∞ := WithTop.some
 
-instance : Coe ℝ≥0 ℝ≥0∞ := ⟨some⟩
+instance : Coe ℝ≥0 ℝ≥0∞ := ⟨ofNNReal⟩
 
-/-- A version of `WithTop.recTopCoe` that uses `ENNReal.some`. -/
+/-- A version of `WithTop.recTopCoe` that uses `ENNReal.ofNNReal`. -/
 def recTopCoe {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) (x : ℝ≥0∞) : C x :=
   WithTop.recTopCoe top coe x
 
-instance canLift : CanLift ℝ≥0∞ ℝ≥0 some (· ≠ ∞) := WithTop.canLift
+instance canLift : CanLift ℝ≥0∞ ℝ≥0 ofNNReal (· ≠ ∞) := WithTop.canLift
 #align ennreal.can_lift ENNReal.canLift
 
 @[simp] theorem none_eq_top : (none : ℝ≥0∞) = ∞ := rfl
@@ -157,8 +157,8 @@ instance canLift : CanLift ℝ≥0∞ ℝ≥0 some (· ≠ ∞) := WithTop.canLi
 
 protected theorem coe_injective : Function.Injective ((↑) : ℝ≥0 → ℝ≥0∞) := WithTop.coe_injective
 
-theorem range_coe' : range some = Iio ∞ := WithTop.range_coe
-theorem range_coe : range some = {∞}ᶜ := (isCompl_range_some_none ℝ≥0).symm.compl_eq.symm
+theorem range_coe' : range ofNNReal = Iio ∞ := WithTop.range_coe
+theorem range_coe : range ofNNReal = {∞}ᶜ := (isCompl_range_some_none ℝ≥0).symm.compl_eq.symm
 
 /-- `toNNReal x` returns `x` if it is real, otherwise 0. -/
 protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
@@ -178,7 +178,7 @@ theorem toNNReal_coe : (r : ℝ≥0∞).toNNReal = r := rfl
 
 @[simp]
 theorem coe_toNNReal : ∀ {a : ℝ≥0∞}, a ≠ ∞ → ↑a.toNNReal = a
-  | some _, _ => rfl
+  | ofNNReal _, _ => rfl
   | ⊤, h => (h rfl).elim
 #align ennreal.coe_to_nnreal ENNReal.coe_toNNReal
 
@@ -196,8 +196,8 @@ theorem toReal_ofReal' {r : ℝ} : (ENNReal.ofReal r).toReal = max r 0 := rfl
 #align ennreal.to_real_of_real' ENNReal.toReal_ofReal'
 
 theorem coe_toNNReal_le_self : ∀ {a : ℝ≥0∞}, ↑a.toNNReal ≤ a
-  | some r => by rw [toNNReal_coe]
-  | none => le_top
+  | ofNNReal r => by rw [toNNReal_coe]
+  | ⊤ => le_top
 #align ennreal.coe_to_nnreal_le_self ENNReal.coe_toNNReal_le_self
 
 theorem coe_nnreal_eq (r : ℝ≥0) : (r : ℝ≥0∞) = ENNReal.ofReal r := by
@@ -205,7 +205,7 @@ theorem coe_nnreal_eq (r : ℝ≥0) : (r : ℝ≥0∞) = ENNReal.ofReal r := by
 #align ennreal.coe_nnreal_eq ENNReal.coe_nnreal_eq
 
 theorem ofReal_eq_coe_nnreal {x : ℝ} (h : 0 ≤ x) :
-    ENNReal.ofReal x = some ⟨x, h⟩ :=
+    ENNReal.ofReal x = ofNNReal ⟨x, h⟩ :=
   (coe_nnreal_eq ⟨x, h⟩).symm
 #align ennreal.of_real_eq_coe_nnreal ENNReal.ofReal_eq_coe_nnreal
 
@@ -362,10 +362,10 @@ attribute [gcongr] ENNReal.coe_le_coe_of_le
 alias ⟨_, coe_lt_coe_of_le⟩ := coe_lt_coe
 attribute [gcongr] ENNReal.coe_lt_coe_of_le
 
-theorem coe_mono : Monotone some := fun _ _ => coe_le_coe.2
+theorem coe_mono : Monotone ofNNReal := fun _ _ => coe_le_coe.2
 #align ennreal.coe_mono ENNReal.coe_mono
 
-theorem coe_strictMono : StrictMono some := fun _ _ => coe_lt_coe.2
+theorem coe_strictMono : StrictMono ofNNReal := fun _ _ => coe_lt_coe.2
 
 @[simp, norm_cast] theorem coe_eq_zero : (↑r : ℝ≥0∞) = 0 ↔ r = 0 := coe_eq_coe
 #align ennreal.coe_eq_zero ENNReal.coe_eq_zero
@@ -942,11 +942,11 @@ theorem iInter_Ioi_coe_nat : ⋂ n : ℕ, Ioi (n : ℝ≥0∞) = {∞} := by
 #align ennreal.add_lt_add ENNReal.add_lt_add
 
 @[simp, norm_cast]
-theorem coe_min : ((min r p : ℝ≥0) : ℝ≥0∞) = min (r : ℝ≥0∞) p := rfl
+theorem coe_min (r p : ℝ≥0) : ((min r p : ℝ≥0) : ℝ≥0∞) = min (r : ℝ≥0∞) p := rfl
 #align ennreal.coe_min ENNReal.coe_min
 
 @[simp, norm_cast]
-theorem coe_max : ((max r p : ℝ≥0) : ℝ≥0∞) = max (r : ℝ≥0∞) p := rfl
+theorem coe_max (r p : ℝ≥0) : ((max r p : ℝ≥0) : ℝ≥0∞) = max (r : ℝ≥0∞) p := rfl
 #align ennreal.coe_max ENNReal.coe_max
 
 theorem le_of_top_imp_top_of_toNNReal_le {a b : ℝ≥0∞} (h : a = ⊤ → b = ⊤)
@@ -985,7 +985,7 @@ theorem coe_iInf {ι : Sort*} [Nonempty ι] (f : ι → ℝ≥0) : (↑(iInf f) 
 #align ennreal.coe_infi ENNReal.coe_iInf
 
 theorem coe_mem_upperBounds {s : Set ℝ≥0} :
-    ↑r ∈ upperBounds (some '' s) ↔ r ∈ upperBounds s := by
+    ↑r ∈ upperBounds (ofNNReal '' s) ↔ r ∈ upperBounds s := by
   simp (config := { contextual := true }) [upperBounds, ball_image_iff, -mem_image, *]
 #align ennreal.coe_mem_upper_bounds ENNReal.coe_mem_upperBounds
 
@@ -2686,11 +2686,11 @@ def evalENNRealOfReal : PositivityExt where eval {_ _} _zα _pα e := do
   | .positive pa => pure (.positive (q(Iff.mpr (@ENNReal.ofReal_pos $a) $pa) : Expr))
   | _ => pure .none
 
-/-- Extension for the `positivity` tactic: `ENNReal.some`. -/
-@[positivity ENNReal.some _]
-def evalENNRealSome : PositivityExt where eval {_ _} _zα _pα e := do
-  let (.app (f : Q(NNReal → ENNReal)) (a : Q(NNReal))) ← whnfR e | throwError "not ENNReal.some"
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ENNReal.some)
+/-- Extension for the `positivity` tactic: `ENNReal.ofNNReal`. -/
+@[positivity ENNReal.ofNNReal _]
+def evalENNRealOfNNReal : PositivityExt where eval {_ _} _zα _pα e := do
+  let (.app (f : Q(NNReal → ENNReal)) (a : Q(NNReal))) ← whnfR e | throwError "not ENNReal.ofNNReal"
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ENNReal.ofNNReal)
   let zα' ← synthInstanceQ (q(Zero NNReal) : Q(Type))
   let pα' ← synthInstanceQ (q(PartialOrder NNReal) : Q(Type))
   let ra ← core zα' pα' a
