@@ -117,8 +117,7 @@ theorem totallyDisconnectedSpace_iff_connectedComponent_subsingleton :
   rcases eq_empty_or_nonempty s with (rfl | ⟨x, x_in⟩)
   · exact subsingleton_empty
   · exact (h x).anti (hs.subset_connectedComponent x_in)
-#align totally_disconnected_space_iff_connected_component_subsingleton
-  totallyDisconnectedSpace_iff_connectedComponent_subsingleton
+#align totally_disconnected_space_iff_connected_component_subsingleton totallyDisconnectedSpace_iff_connectedComponent_subsingleton
 
 /-- A space is totally disconnected iff its connected components are singletons. -/
 theorem totallyDisconnectedSpace_iff_connectedComponent_singleton :
@@ -127,8 +126,7 @@ theorem totallyDisconnectedSpace_iff_connectedComponent_singleton :
   refine forall_congr' fun x => ?_
   rw [subsingleton_iff_singleton]
   exact mem_connectedComponent
-#align totally_disconnected_space_iff_connected_component_singleton
-  totallyDisconnectedSpace_iff_connectedComponent_singleton
+#align totally_disconnected_space_iff_connected_component_singleton totallyDisconnectedSpace_iff_connectedComponent_singleton
 
 @[simp] theorem connectedComponent_eq_singleton [TotallyDisconnectedSpace α] (x : α) :
     connectedComponent x = {x} :=
@@ -228,8 +226,7 @@ class TotallySeparatedSpace (α : Type u) [TopologicalSpace α] : Prop where
 instance (priority := 100) TotallySeparatedSpace.totallyDisconnectedSpace (α : Type u)
     [TopologicalSpace α] [TotallySeparatedSpace α] : TotallyDisconnectedSpace α :=
   ⟨TotallySeparatedSpace.isTotallySeparated_univ.isTotallyDisconnected⟩
-#align totally_separated_space.totally_disconnected_space
-  TotallySeparatedSpace.totallyDisconnectedSpace
+#align totally_separated_space.totally_disconnected_space TotallySeparatedSpace.totallyDisconnectedSpace
 
 -- see Note [lower instance priority]
 instance (priority := 100) TotallySeparatedSpace.of_discrete (α : Type*) [TopologicalSpace α]

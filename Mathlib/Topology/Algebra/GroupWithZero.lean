@@ -154,7 +154,7 @@ lemma nhds_inv₀ (hx : x ≠ 0) : 𝓝 x⁻¹ = (𝓝 x)⁻¹ := by
   refine le_antisymm (inv_le_iff_le_inv.1 ?_) (tendsto_inv₀ hx)
   simpa only [inv_inv] using tendsto_inv₀ (inv_ne_zero hx)
 
-lemma tendsto_inv_iff₀ {α : Type*} {l : Filter α} {f : α → G₀} (hx : x ≠ 0) :
+lemma tendsto_inv_iff₀ {l : Filter α} {f : α → G₀} (hx : x ≠ 0) :
     Tendsto (fun x ↦ (f x)⁻¹) l (𝓝 x⁻¹) ↔ Tendsto f l (𝓝 x) := by
   simp only [nhds_inv₀ hx, ← Filter.comap_inv, tendsto_comap_iff, (· ∘ ·), inv_inv]
 
