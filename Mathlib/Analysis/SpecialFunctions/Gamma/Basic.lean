@@ -306,7 +306,7 @@ theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
 
 /-- The `Γ` function (of a complex variable `s`). -/
 -- @[pp_nodot] -- Porting note: removed
-def Gamma (s : ℂ) : ℂ :=
+irreducible_def Gamma (s : ℂ) : ℂ :=
   GammaAux ⌊1 - s.re⌋₊ s
 #align complex.Gamma Complex.Gamma
 
@@ -377,7 +377,8 @@ theorem Gamma_neg_nat_eq_zero (n : ℕ) : Gamma (-n) = 0 := by
 #align complex.Gamma_neg_nat_eq_zero Complex.Gamma_neg_nat_eq_zero
 
 theorem Gamma_conj (s : ℂ) : Gamma (conj s) = conj (Gamma s) := by
-  suffices : ∀ (n : ℕ) (s : ℂ), GammaAux n (conj s) = conj (GammaAux n s); exact this _ _
+  suffices ∀ (n : ℕ) (s : ℂ), GammaAux n (conj s) = conj (GammaAux n s) by
+    simp [Gamma, this]
   intro n
   induction' n with n IH
   · rw [GammaAux]; exact GammaIntegral_conj

@@ -99,8 +99,6 @@ theorem MellinConvergent.comp_rpow {f : ℝ → E} {s : ℂ} {a : ℝ} (ha : a �
     add_sub_assoc, sub_add_cancel]
 #align mellin_convergent.comp_rpow MellinConvergent.comp_rpow
 
-variable [CompleteSpace E]
-
 /-- The Mellin transform of a function `f` (for a complex exponent `s`), defined as the integral of
 `t ^ (s - 1) • f` over `Ioi 0`. -/
 def mellin (f : ℝ → E) (s : ℂ) : E :=
@@ -123,19 +121,41 @@ theorem mellin_div_const (f : ℝ → ℂ) (s a : ℂ) : mellin (fun t => f t / 
   simp_rw [mellin, smul_eq_mul, ← mul_div_assoc, integral_div]
 #align mellin_div_const mellin_div_const
 
-theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : a ≠ 0) :
+
+lemma foo1 {s t : ℝ} (ht : 0 < t) : IntegrableOn (fun x ↦ x ^ s) (Ioi t) ↔ s < -1 := sorry
+
+lemma foo2 {s t : ℝ} (ht : 0 < t) : IntegrableOn (fun x ↦ x ^ s) (Ioo (0 : ℝ) t) ↔ -1 < s := sorry
+
+lemma foo3 (s : ℂ) : ∫ (x : ℝ) in Ioi 0, ↑x ^ s = 0 := by
+  apply integral_undef (fun h ↦ ?_)
+  have B : IntegrableOn (fun a ↦ a ^ (s.re - 1)) (Ioi (0 : ℝ)) := by
+    apply (integrableOn_congr_fun _ measurableSet_Ioi).1 h.norm
+    intro a ha
+    simp [abs_cpow_eq_rpow_re_of_pos ha]
+  have : s.re - 1 < -1 :=
+    (foo1 zero_lt_one).1 (B.mono (Ioi_subset_Ioi zero_le_one) le_rfl)
+  have : -1 < s.re - 1 :=
+    (foo2 zero_lt_one).1 (B.mono Ioo_subset_Ioi_self le_rfl)
+  linarith
+
+
+theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
     mellin (fun t => f (t ^ a)) s = |a|⁻¹ • mellin f (s / a) := by
-  -- note: this is also true for a = 0 (both sides are zero), but this is mathematically
-  -- uninteresting and rather time-consuming to check
-  simp_rw [mellin]
-  conv_rhs => rw [← integral_comp_rpow_Ioi _ ha, ← integral_smul]
-  refine' set_integral_congr measurableSet_Ioi fun t ht => _
-  dsimp only
-  rw [← mul_smul, ← mul_assoc, inv_mul_cancel (mt abs_eq_zero.1 ha), one_mul, ← smul_assoc,
-    real_smul]
-  rw [ofReal_cpow (le_of_lt ht), ← cpow_mul_ofReal_nonneg (le_of_lt ht), ←
-    cpow_add _ _ (ofReal_ne_zero.mpr <| ne_of_gt ht), ofReal_sub, ofReal_one, mul_sub,
-    mul_div_cancel' _ (ofReal_ne_zero.mpr ha), add_comm, ← add_sub_assoc, mul_one, sub_add_cancel]
+  /- This is true for `a = 0` as all sides are undefined but turn out to vanish thanks to our
+  convention. The interesting case is `a ≠ 0` -/
+  rcases eq_or_ne a 0 with rfl|ha
+  · by_cases hE : CompleteSpace E
+    · simp [integral_smul_const, mellin, foo3]
+    · simp [integral, mellin, hE]
+  · simp_rw [mellin]
+    conv_rhs => rw [← integral_comp_rpow_Ioi _ ha, ← integral_smul]
+    refine' set_integral_congr measurableSet_Ioi fun t ht => _
+    dsimp only
+    rw [← mul_smul, ← mul_assoc, inv_mul_cancel (mt abs_eq_zero.1 ha), one_mul, ← smul_assoc,
+      real_smul]
+    rw [ofReal_cpow (le_of_lt ht), ← cpow_mul_ofReal_nonneg (le_of_lt ht), ←
+      cpow_add _ _ (ofReal_ne_zero.mpr <| ne_of_gt ht), ofReal_sub, ofReal_one, mul_sub,
+      mul_div_cancel' _ (ofReal_ne_zero.mpr ha), add_comm, ← add_sub_assoc, mul_one, sub_add_cancel]
 #align mellin_comp_rpow mellin_comp_rpow
 
 theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :

@@ -867,7 +867,7 @@ open Real
 
 open scoped Interval
 
-variable {E : Type*} {f : ℝ → E} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} {f : ℝ → E} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Change-of-variables formula for `Ioi` integrals of vector-valued functions, proved by taking
 limits from the result for finite intervals. -/
