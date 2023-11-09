@@ -411,7 +411,7 @@ theorem map_id : map (@id α) = id :=
 
 theorem map_comp {f : α → β} {g : β → γ} (hf : UniformContinuous f) (hg : UniformContinuous g) :
     map g ∘ map f = map (g ∘ f) :=
-  (map_unique (hg.comp hf) <| by simp only [Function.comp, map_mk, hf, hg]).symm
+  (map_unique (hg.comp hf) <| by simp only [Function.comp_def, map_mk, hf, hg]).symm
 #align uniform_space.separation_quotient.map_comp UniformSpace.SeparationQuotient.map_comp
 
 end SeparationQuotient

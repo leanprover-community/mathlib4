@@ -1460,7 +1460,8 @@ theorem sSup_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
 @[simp]
 theorem bsup_eq_sup' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → Ordinal.{max u v}) :
     bsup.{_, v} _ (bfamilyOfFamily' r f) = sup.{_, v} f := by
-  simp only [← sup_eq_bsup' r, enum_typein, familyOfBFamily', bfamilyOfFamily']
+  simp (config := { unfoldPartialApp := true }) only [← sup_eq_bsup' r, enum_typein,
+    familyOfBFamily', bfamilyOfFamily']
 #align ordinal.bsup_eq_sup' Ordinal.bsup_eq_sup'
 
 theorem bsup_eq_bsup {ι : Type u} (r r' : ι → ι → Prop) [IsWellOrder ι r] [IsWellOrder ι r']
