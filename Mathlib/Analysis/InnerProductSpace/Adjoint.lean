@@ -250,6 +250,7 @@ theorem isAdjointPair_inner (A : E →L[𝕜] F) :
       (sesqFormOfInner : F →ₗ[𝕜] F →ₗ⋆[𝕜] 𝕜) A (A†) := by
   intro x y
   simp only [sesqFormOfInner_apply_apply, adjoint_inner_left, coe_coe]
+#align continuous_linear_map.is_adjoint_pair_inner ContinuousLinearMap.isAdjointPair_inner
 
 end ContinuousLinearMap
 
