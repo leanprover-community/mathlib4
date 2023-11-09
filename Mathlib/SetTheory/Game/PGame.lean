@@ -399,12 +399,12 @@ instance le : LE PGame :=
 /-- The less or fuzzy relation on pre-games.
 
 If `0 ⧏ x`, then Left can win `x` as the first player. -/
-def Lf (x y : PGame) : Prop :=
+def LF (x y : PGame) : Prop :=
   ¬y ≤ x
-#align pgame.lf SetTheory.PGame.Lf
+#align pgame.lf SetTheory.PGame.LF
 
 @[inherit_doc]
-scoped infixl:50 " ⧏ " => PGame.Lf
+scoped infixl:50 " ⧏ " => PGame.LF
 
 @[simp]
 protected theorem not_le {x y : PGame} : ¬x ≤ y ↔ y ⧏ x :=
@@ -420,9 +420,9 @@ theorem _root_.LE.le.not_gf {x y : PGame} : x ≤ y → ¬y ⧏ x :=
   not_lf.2
 #align has_le.le.not_gf LE.le.not_gf
 
-theorem Lf.not_ge {x y : PGame} : x ⧏ y → ¬y ≤ x :=
+theorem LF.not_ge {x y : PGame} : x ⧏ y → ¬y ≤ x :=
   id
-#align pgame.lf.not_ge SetTheory.PGame.Lf.not_ge
+#align pgame.lf.not_ge SetTheory.PGame.LF.not_ge
 
 /-- Definition of `x ≤ y` on pre-games, in terms of `⧏`.
 
@@ -454,7 +454,7 @@ The ordering here is chosen so that `or.inl` refer to moves by Left, and `or.inr
 moves by Right. -/
 theorem lf_iff_exists_le {x y : PGame} :
     x ⧏ y ↔ (∃ i, x ≤ y.moveLeft i) ∨ ∃ j, x.moveRight j ≤ y := by
-  rw [Lf, le_iff_forall_lf, not_and_or]
+  rw [LF, le_iff_forall_lf, not_and_or]
   simp
 #align pgame.lf_iff_exists_le SetTheory.PGame.lf_iff_exists_le
 
@@ -581,8 +581,8 @@ instance : Trans (· ⧏ ·) (· ≤ ·) (· ⧏ ·) := ⟨lf_of_lf_of_le⟩
 alias _root_.LE.le.trans_lf := lf_of_le_of_lf
 #align has_le.le.trans_lf LE.le.trans_lf
 
-alias Lf.trans_le := lf_of_lf_of_le
-#align pgame.lf.trans_le SetTheory.PGame.Lf.trans_le
+alias LF.trans_le := lf_of_lf_of_le
+#align pgame.lf.trans_le SetTheory.PGame.LF.trans_le
 
 @[trans]
 theorem lf_of_lt_of_lf {x y z : PGame} (h₁ : x < y) (h₂ : y ⧏ z) : x ⧏ z :=
@@ -597,8 +597,8 @@ theorem lf_of_lf_of_lt {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y < z) : x ⧏ z
 alias _root_.LT.lt.trans_lf := lf_of_lt_of_lf
 #align has_lt.lt.trans_lf LT.lt.trans_lf
 
-alias Lf.trans_lt := lf_of_lf_of_lt
-#align pgame.lf.trans_lt SetTheory.PGame.Lf.trans_lt
+alias LF.trans_lt := lf_of_lf_of_lt
+#align pgame.lf.trans_lt SetTheory.PGame.LF.trans_lt
 
 theorem moveLeft_lf {x : PGame} : ∀ i, x.moveLeft i ⧏ x :=
   le_rfl.moveLeft_lf
@@ -809,14 +809,14 @@ instance : Trans
     ((· ≤ ·) : PGame → PGame → Prop) where
   trans := le_of_equiv_of_le
 
-theorem Lf.not_equiv {x y : PGame} (h : x ⧏ y) : ¬(x ≈ y) := fun h' => h.not_ge h'.2
-#align pgame.lf.not_equiv SetTheory.PGame.Lf.not_equiv
+theorem LF.not_equiv {x y : PGame} (h : x ⧏ y) : ¬(x ≈ y) := fun h' => h.not_ge h'.2
+#align pgame.lf.not_equiv SetTheory.PGame.LF.not_equiv
 
-theorem Lf.not_equiv' {x y : PGame} (h : x ⧏ y) : ¬(y ≈ x) := fun h' => h.not_ge h'.1
-#align pgame.lf.not_equiv' SetTheory.PGame.Lf.not_equiv'
+theorem LF.not_equiv' {x y : PGame} (h : x ⧏ y) : ¬(y ≈ x) := fun h' => h.not_ge h'.1
+#align pgame.lf.not_equiv' SetTheory.PGame.LF.not_equiv'
 
-theorem Lf.not_gt {x y : PGame} (h : x ⧏ y) : ¬y < x := fun h' => h.not_ge h'.le
-#align pgame.lf.not_gt SetTheory.PGame.Lf.not_gt
+theorem LF.not_gt {x y : PGame} (h : x ⧏ y) : ¬y < x := fun h' => h.not_ge h'.le
+#align pgame.lf.not_gt SetTheory.PGame.LF.not_gt
 
 theorem le_congr_imp {x₁ y₁ x₂ y₂ : PGame} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) (h : x₁ ≤ y₁) : x₂ ≤ y₂ :=
   hx.2.trans (h.trans hy.1)

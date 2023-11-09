@@ -491,6 +491,10 @@ theorem continuous_swap : Continuous (Prod.swap : α × β → β × α) :=
   continuous_snd.prod_mk continuous_fst
 #align continuous_swap continuous_swap
 
+lemma isClosedMap_swap : IsClosedMap (Prod.swap : α × β → β × α) := fun s hs ↦ by
+  rw [image_swap_eq_preimage_swap]
+  exact hs.preimage continuous_swap
+
 theorem continuous_uncurry_left {f : α → β → γ} (a : α) (h : Continuous (uncurry f)) :
     Continuous (f a) :=
   h.comp (Continuous.Prod.mk _)
@@ -522,20 +526,15 @@ theorem nhdsWithin_prod_eq (a : α) (b : β) (s : Set α) (t : Set β) :
   simp only [nhdsWithin, nhds_prod_eq, ← prod_inf_prod, prod_principal_principal]
 #align nhds_within_prod_eq nhdsWithin_prod_eq
 
-/-- If a function `f x y` is such that `y ↦ f x y` is continuous for all `x`, and `x` lives in a
-discrete space, then `f` is continuous. -/
-theorem continuous_uncurry_of_discreteTopology [DiscreteTopology α] {f : α → β → γ}
-    (hf : ∀ a, Continuous (f a)) : Continuous (uncurry f) := by
-  apply continuous_iff_continuousAt.2
-  rintro ⟨a, x⟩
-  change map _ _ ≤ _
-  rw [nhds_prod_eq, nhds_discrete, Filter.map_pure_prod]
-  exact (hf a).continuousAt
-#align continuous_uncurry_of_discrete_topology continuous_uncurry_of_discreteTopology
+#noalign continuous_uncurry_of_discrete_topology
 
 theorem mem_nhds_prod_iff {a : α} {b : β} {s : Set (α × β)} :
     s ∈ 𝓝 (a, b) ↔ ∃ u ∈ 𝓝 a, ∃ v ∈ 𝓝 b, u ×ˢ v ⊆ s := by rw [nhds_prod_eq, mem_prod_iff]
 #align mem_nhds_prod_iff mem_nhds_prod_iff
+
+theorem mem_nhdsWithin_prod_iff {a : α} {b : β} {s : Set (α × β)} {ta : Set α} {tb : Set β} :
+    s ∈ 𝓝[ta ×ˢ tb] (a, b) ↔ ∃ u ∈ 𝓝[ta] a, ∃ v ∈ 𝓝[tb] b, u ×ˢ v ⊆ s :=
+  by rw [nhdsWithin_prod_eq, mem_prod_iff]
 
 -- porting note: moved up
 theorem Filter.HasBasis.prod_nhds {ιa ιb : Type*} {pa : ιa → Prop} {pb : ιb → Prop}
@@ -676,12 +675,7 @@ theorem prod_induced_induced (f : α → β) (g : γ → δ) :
   rfl
 #align prod_induced_induced prod_induced_induced
 
-theorem continuous_uncurry_of_discreteTopology_left [DiscreteTopology α] {f : α → β → γ}
-    (h : ∀ a, Continuous (f a)) : Continuous (uncurry f) :=
-  continuous_iff_continuousAt.2 fun ⟨a, b⟩ => by
-    simp only [ContinuousAt, nhds_prod_eq, nhds_discrete α, pure_prod, tendsto_map'_iff, (· ∘ ·),
-      uncurry, (h a).tendsto]
-#align continuous_uncurry_of_discrete_topology_left continuous_uncurry_of_discreteTopology_left
+#noalign continuous_uncurry_of_discrete_topology_left
 
 /-- Given a neighborhood `s` of `(x, x)`, then `(x, x)` has a square open neighborhood
   that is a subset of `s`. -/
@@ -1039,7 +1033,7 @@ lemma IsClosedMap.restrictPreimage {f : α → β} (hcl : IsClosedMap f) (T : Se
     IsClosedMap (T.restrictPreimage f) := by
   rw [isClosedMap_iff_clusterPt] at hcl ⊢
   intro A ⟨y, hyT⟩ hy
-  rw [restrictPreimage, MapClusterPt, ← inducing_subtype_val.mapClusterPt_iff, MapClusterPt,
+  rw [Set.restrictPreimage, MapClusterPt, ← inducing_subtype_val.mapClusterPt_iff, MapClusterPt,
       map_map, MapsTo.restrict_commutes, ← map_map, ← MapClusterPt, map_principal] at hy
   rcases hcl _ y hy with ⟨x, hxy, hx⟩
   have hxT : f x ∈ T := hxy ▸ hyT
@@ -1207,7 +1201,7 @@ end Quotient
 section Pi
 
 variable {ι : Type*} {π : ι → Type*} {κ : Type*} [TopologicalSpace α]
-  [∀ i, TopologicalSpace (π i)] {f : α → ∀ i : ι, π i}
+  [T : ∀ i, TopologicalSpace (π i)] {f : α → ∀ i : ι, π i}
 
 theorem continuous_pi_iff : Continuous f ↔ ∀ i, Continuous fun a => f a i := by
   simp only [continuous_iInf_rng, continuous_induced_rng, comp]
@@ -1251,6 +1245,42 @@ theorem continuousAt_pi {f : α → ∀ i, π i} {x : α} :
     ContinuousAt f x ↔ ∀ i, ContinuousAt (fun y => f y i) x :=
   tendsto_pi_nhds
 #align continuous_at_pi continuousAt_pi
+
+theorem Pi.continuous_precomp' {ι' : Type*} (φ : ι' → ι) :
+    Continuous (fun (f : (∀ i, π i)) (j : ι') ↦ f (φ j)) :=
+  continuous_pi fun j ↦ continuous_apply (φ j)
+
+theorem Pi.continuous_precomp {ι' : Type*} (φ : ι' → ι) :
+    Continuous (· ∘ φ : (ι → α) → (ι' → α)) :=
+  Pi.continuous_precomp' φ
+
+theorem Pi.continuous_postcomp' {ρ : ι → Type*} [∀ i, TopologicalSpace (ρ i)]
+    {g : ∀ i, π i → ρ i} (hg : ∀ i, Continuous (g i)) :
+    Continuous (fun (f : (∀ i, π i)) (i : ι) ↦ g i (f i)) :=
+  continuous_pi fun i ↦ (hg i).comp <| continuous_apply i
+
+theorem Pi.continuous_postcomp [TopologicalSpace β] {g : α → β} (hg : Continuous g) :
+    Continuous (g ∘ · : (ι → α) → (ι → β)) :=
+  Pi.continuous_postcomp' fun _ ↦ hg
+
+lemma Pi.induced_precomp' {ι' : Type*} (φ : ι' → ι) :
+    induced (fun (f : (∀ i, π i)) (j : ι') ↦ f (φ j)) Pi.topologicalSpace =
+    ⨅ i', induced (eval (φ i')) (T (φ i')) := by
+  simp [Pi.topologicalSpace, induced_iInf, induced_compose, comp]
+
+lemma Pi.induced_precomp [TopologicalSpace β] {ι' : Type*} (φ : ι' → ι) :
+    induced (· ∘ φ) Pi.topologicalSpace =
+    ⨅ i', induced (eval (φ i')) ‹TopologicalSpace β› :=
+  induced_precomp' φ
+
+lemma Pi.continuous_restrict (S : Set ι) :
+    Continuous (S.restrict : (∀ i : ι, π i) → (∀ i : S, π i)) :=
+  Pi.continuous_precomp' ((↑) : S → ι)
+
+lemma Pi.induced_restrict (S : Set ι) :
+    induced (S.restrict) Pi.topologicalSpace =
+    ⨅ i ∈ S, induced (eval i) (T i) := by
+  simp [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι), Set.restrict]
 
 theorem Filter.Tendsto.update [DecidableEq ι] {l : Filter β} {f : β → ∀ i, π i} {x : ∀ i, π i}
     (hf : Tendsto f l (𝓝 x)) (i : ι) {g : β → π i} {xi : π i} (hg : Tendsto g l (𝓝 xi)) :

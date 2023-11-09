@@ -99,7 +99,7 @@ macro "map_fun_tac" : tactic => `(tactic| (
   try { cases n <;> simp <;> done } <;>  -- porting note: this line solves `one`
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl <;>
   ext ⟨i, k⟩ <;>
-    fin_cases i <;> rfl ))
+    fin_cases i <;> rfl))
 
 --  and until `pow`.
 -- We do not tag these lemmas as `@[simp]` because they will be bundled in `map` later on.

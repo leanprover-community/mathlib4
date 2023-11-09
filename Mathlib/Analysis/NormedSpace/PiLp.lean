@@ -399,7 +399,6 @@ theorem antilipschitzWith_equiv_aux :
       (∑ i, edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) ≤
           (∑ _i, edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) ^ p.toReal) ^ (1 / p.toReal) := by
         refine ENNReal.rpow_le_rpow ?_ nonneg
-        swap
         refine Finset.sum_le_sum fun i _ => ?_
         apply ENNReal.rpow_le_rpow _ (le_of_lt pos)
         exact Finset.le_sup (f := fun i => edist (x i) (y i)) (Finset.mem_univ i)

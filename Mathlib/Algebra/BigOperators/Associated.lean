@@ -50,6 +50,26 @@ theorem exists_mem_finset_dvd {s : Finset β} {f : β → α} : p ∣ s.prod f �
 
 end Prime
 
+theorem Prod.associated_iff {M N : Type*} [Monoid M] [Monoid N] {x z : M × N} :
+    x ~ᵤ z ↔ x.1 ~ᵤ z.1 ∧ x.2 ~ᵤ z.2 :=
+  ⟨fun ⟨u, hu⟩ => ⟨⟨(MulEquiv.prodUnits.toFun u).1, (Prod.eq_iff_fst_eq_snd_eq.1 hu).1⟩,
+    ⟨(MulEquiv.prodUnits.toFun u).2, (Prod.eq_iff_fst_eq_snd_eq.1 hu).2⟩⟩,
+  fun ⟨⟨u₁, h₁⟩, ⟨u₂, h₂⟩⟩ =>
+    ⟨MulEquiv.prodUnits.invFun (u₁, u₂), Prod.eq_iff_fst_eq_snd_eq.2 ⟨h₁, h₂⟩⟩⟩
+
+theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) (f : ι → M)
+    (g : ι → M) (h : ∀ i, i ∈ s → (f i) ~ᵤ (g i)) : (∏ i in s, f i) ~ᵤ (∏ i in s, g i) := by
+  induction s using Finset.induction with
+  | empty =>
+    simp only [Finset.prod_empty]
+    rfl
+  | @insert j s hjs IH =>
+    classical
+    convert_to (∏ i in insert j s, f i) ~ᵤ (∏ i in insert j s, g i)
+    rw [Finset.prod_insert hjs, Finset.prod_insert hjs]
+    exact Associated.mul_mul (h j (Finset.mem_insert_self j s))
+      (IH (fun i hi ↦ h i (Finset.mem_insert_of_mem hi)))
+
 theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero α] {p : α} (hp : Prime p)
     {s : Multiset α} : (∀ r ∈ s, Prime r) → p ∣ s.prod → ∃ q ∈ s, p ~ᵤ q :=
   Multiset.induction_on s (by simp [mt isUnit_iff_dvd_one.2 hp.not_unit]) fun a s ih hs hps => by

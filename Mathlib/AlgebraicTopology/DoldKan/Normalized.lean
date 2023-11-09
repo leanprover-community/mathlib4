@@ -18,7 +18,7 @@ defined in `FunctorN.lean` and the composition of
 `normalizedMooreComplex A` with the inclusion
 `ChainComplex A ℕ ⥤ Karoubi (ChainComplex A ℕ)`.
 
-This isomorphism shall be used in `equivalence.lean` in order to obtain
+This isomorphism shall be used in `Equivalence.lean` in order to obtain
 the Dold-Kan equivalence
 `CategoryTheory.Abelian.DoldKan.equivalence : SimplicialObject A ≌ ChainComplex A ℕ`
 with a functor (definitionally) equal to `normalizedMooreComplex A`.

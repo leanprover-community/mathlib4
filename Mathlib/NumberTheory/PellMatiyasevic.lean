@@ -260,7 +260,7 @@ instance dnsq : Zsqrtd.Nonsquare (d a1) :=
 theorem xn_ge_a_pow : ∀ n : ℕ, a ^ n ≤ xn a1 n
   | 0 => le_refl 1
   | n + 1 => by
-    simp [_root_.pow_succ']
+    simp only [_root_.pow_succ', xn_succ]
     exact le_trans (Nat.mul_le_mul_right _ (xn_ge_a_pow n)) (Nat.le_add_right _ _)
 #align pell.xn_ge_a_pow Pell.xn_ge_a_pow
 
@@ -271,7 +271,7 @@ theorem n_lt_a_pow : ∀ n : ℕ, n < a ^ n
     have : a ^ n + a ^ n ≤ a ^ n * a := by
       rw [← mul_two]
       exact Nat.mul_le_mul_left _ a1
-    simp [_root_.pow_succ']
+    simp only [_root_.pow_succ', gt_iff_lt]
     refine' lt_of_lt_of_le _ this
     exact add_lt_add_of_lt_of_le IH (lt_of_le_of_lt (Nat.zero_le _) IH)
 #align pell.n_lt_a_pow Pell.n_lt_a_pow
@@ -391,7 +391,7 @@ theorem yz_sub {m n} (h : n ≤ m) : yz a1 (m - n) = xz a1 n * yz a1 m - xz a1 m
   exact congr_arg Zsqrtd.im (pellZd_sub a1 h)
 #align pell.yz_sub Pell.yz_sub
 
-theorem xy_coprime (n) : (xn a1 n).coprime (yn a1 n) :=
+theorem xy_coprime (n) : (xn a1 n).Coprime (yn a1 n) :=
   Nat.coprime_of_dvd' fun k _ kx ky => by
     let p := pell_eq a1 n
     rw [← p]
@@ -436,8 +436,8 @@ theorem y_dvd_iff (m n) : yn a1 m ∣ yn a1 n ↔ m ∣ n :=
   ⟨fun h =>
     Nat.dvd_of_mod_eq_zero <|
       (Nat.eq_zero_or_pos _).resolve_right fun hp => by
-        have co : Nat.coprime (yn a1 m) (xn a1 (m * (n / m))) :=
-          Nat.coprime.symm <| (xy_coprime a1 _).coprime_dvd_right (y_mul_dvd a1 m (n / m))
+        have co : Nat.Coprime (yn a1 m) (xn a1 (m * (n / m))) :=
+          Nat.Coprime.symm <| (xy_coprime a1 _).coprime_dvd_right (y_mul_dvd a1 m (n / m))
         have m0 : 0 < m :=
           m.eq_zero_or_pos.resolve_left fun e => by
             rw [e, Nat.mod_zero] at hp;rw [e] at h
@@ -855,10 +855,10 @@ theorem matiyasevic {a k x y} :
       let v := yn a1 m
       have ky : k ≤ y := yn_ge_n a1 k
       have yv : y * y ∣ v := (ysq_dvd_yy a1 k).trans <| (y_dvd_iff _ _ _).2 <| dvd_mul_left _ _
-      have uco : Nat.coprime u (4 * y) :=
+      have uco : Nat.Coprime u (4 * y) :=
         have : 2 ∣ v :=
           modEq_zero_iff_dvd.1 <| (yn_modEq_two _ _).trans (dvd_mul_right _ _).modEq_zero_nat
-        have : Nat.coprime u 2 := (xy_coprime a1 m).coprime_dvd_right this
+        have : Nat.Coprime u 2 := (xy_coprime a1 m).coprime_dvd_right this
         (this.mul_right this).mul_right <|
           (xy_coprime _ _).coprime_dvd_right (dvd_of_mul_left_dvd yv)
       let ⟨b, ba, bm1⟩ := chineseRemainder uco a 1

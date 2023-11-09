@@ -110,8 +110,8 @@ theorem prod_self_subset {U} (hU : U ∈ nhds (1 : G × G)) :
 
 /-- The cartesian product of two nonarchimedean groups is nonarchimedean. -/
 @[to_additive "The cartesian product of two nonarchimedean groups is nonarchimedean."]
-instance : NonarchimedeanGroup (G × K)
-    where is_nonarchimedean U hU :=
+instance : NonarchimedeanGroup (G × K) where
+  is_nonarchimedean U hU :=
     let ⟨V, W, h⟩ := prod_subset hU
     ⟨V.prod W, ‹_›⟩
 
@@ -130,8 +130,8 @@ variable [Ring R] [TopologicalSpace R] [NonarchimedeanRing R]
 variable [Ring S] [TopologicalSpace S] [NonarchimedeanRing S]
 
 /-- The cartesian product of two nonarchimedean rings is nonarchimedean. -/
-instance : NonarchimedeanRing (R × S)
-    where is_nonarchimedean := NonarchimedeanAddGroup.is_nonarchimedean
+instance : NonarchimedeanRing (R × S) where
+  is_nonarchimedean := NonarchimedeanAddGroup.is_nonarchimedean
 
 /-- Given an open subgroup `U` and an element `r` of a nonarchimedean ring, there is an open
   subgroup `V` such that `r • V` is contained in `U`. -/

@@ -345,7 +345,7 @@ theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
   rintro x ⟨y, hy⟩
   rw [Nat.isUnit_iff]
   by_contra hx
-  refine' lt_le_antisymm _ (Finset.le_max' S ((b * x) ^ 2) _)
+  refine' Nat.lt_le_asymm _ (Finset.le_max' S ((b * x) ^ 2) _)
   -- Porting note: these two goals were in the opposite order in Lean 3
   · convert lt_mul_of_one_lt_right hlts
       (one_lt_pow 2 x zero_lt_two (one_lt_iff_ne_zero_and_ne_one.mpr ⟨fun h => by simp_all, hx⟩))
@@ -368,21 +368,21 @@ theorem sq_mul_squarefree (n : ℕ) : ∃ a b : ℕ, b ^ 2 * a = n ∧ Squarefre
     exact ⟨a, b, h₁, h₂⟩
 #align nat.sq_mul_squarefree Nat.sq_mul_squarefree
 
-/-- `squarefree` is multiplicative. Note that the → direction does not require `hmn`
-and generalizes to arbitrary commutative monoids. See `squarefree.of_mul_left` and
-`squarefree.of_mul_right` above for auxiliary lemmas. -/
-theorem squarefree_mul {m n : ℕ} (hmn : m.coprime n) :
+/-- `Squarefree` is multiplicative. Note that the → direction does not require `hmn`
+and generalizes to arbitrary commutative monoids. See `Squarefree.of_mul_left` and
+`Squarefree.of_mul_right` above for auxiliary lemmas. -/
+theorem squarefree_mul {m n : ℕ} (hmn : m.Coprime n) :
     Squarefree (m * n) ↔ Squarefree m ∧ Squarefree n := by
   simp only [squarefree_iff_prime_squarefree, ← sq, ← forall_and]
   refine' ball_congr fun p hp => _
   simp only [hmn.isPrimePow_dvd_mul (hp.isPrimePow.pow two_ne_zero), not_or]
 #align nat.squarefree_mul Nat.squarefree_mul
 
-theorem coprime_of_squarefree_mul {m n : ℕ} (h : Squarefree (m * n)) : m.coprime n :=
+theorem coprime_of_squarefree_mul {m n : ℕ} (h : Squarefree (m * n)) : m.Coprime n :=
   coprime_of_dvd fun p hp hm hn => squarefree_iff_prime_squarefree.mp h p hp (mul_dvd_mul hm hn)
 
 theorem squarefree_mul_iff {m n : ℕ} :
-    Squarefree (m * n) ↔ m.coprime n ∧ Squarefree m ∧ Squarefree n :=
+    Squarefree (m * n) ↔ m.Coprime n ∧ Squarefree m ∧ Squarefree n :=
   ⟨fun h => ⟨coprime_of_squarefree_mul h, (squarefree_mul $ coprime_of_squarefree_mul h).mp h⟩,
     fun h => (squarefree_mul h.1).mpr h.2⟩
 

@@ -31,6 +31,14 @@ def inferLinearOrderedField (α : Q(Type u)) : MetaM Q(LinearOrderedField $α) :
   return ← synthInstanceQ (q(LinearOrderedField $α) : Q(Type u)) <|>
     throwError "not a linear ordered field"
 
+theorem isNat_le_true [OrderedSemiring α] : {a b : α} → {a' b' : ℕ} →
+    IsNat a a' → IsNat b b' → Nat.ble a' b' = true → a ≤ b
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Nat.mono_cast (Nat.le_of_ble_eq_true h)
+
+theorem isNat_lt_false [OrderedSemiring α] {a b : α} {a' b' : ℕ}
+    (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble b' a' = true) : ¬a < b :=
+  not_lt_of_le (isNat_le_true hb ha h)
+
 theorem isRat_le_true [LinearOrderedRing α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db →
     decide (Int.mul na (.ofNat db) ≤ Int.mul nb (.ofNat da)) → a ≤ b
@@ -71,6 +79,22 @@ theorem isNat_lt_true [OrderedSemiring α] [CharZero α] : {a b : α} → {a' b'
 theorem isNat_le_false [OrderedSemiring α] [CharZero α] {a b : α} {a' b' : ℕ}
     (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble a' b' = false) : ¬a ≤ b :=
   not_le_of_lt (isNat_lt_true hb ha h)
+
+theorem isInt_le_true [OrderedRing α] : {a b : α} → {a' b' : ℤ} →
+    IsInt a a' → IsInt b b' → decide (a' ≤ b') → a ≤ b
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Int.cast_mono <| of_decide_eq_true h
+
+theorem isInt_lt_true [OrderedRing α] [Nontrivial α] : {a b : α} → {a' b' : ℤ} →
+    IsInt a a' → IsInt b b' → decide (a' < b') → a < b
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Int.cast_lt.2 <| of_decide_eq_true h
+
+theorem isInt_le_false [OrderedRing α] [Nontrivial α] {a b : α} {a' b' : ℤ}
+    (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' < a')) : ¬a ≤ b :=
+  not_le_of_lt (isInt_lt_true hb ha h)
+
+theorem isInt_lt_false [OrderedRing α] {a b : α} {a' b' : ℤ}
+    (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' ≤ a')) : ¬a < b :=
+  not_lt_of_le (isInt_le_true hb ha h)
 
 /-- The `norm_num` extension which identifies expressions of the form `a ≤ b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/

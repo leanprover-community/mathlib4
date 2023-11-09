@@ -517,7 +517,8 @@ theorem integral_sub_zpow_of_ne {n : ℤ} (hn : n ≠ -1) (c w : ℂ) (R : ℝ) 
 end circleIntegral
 
 /-- The power series that is equal to
-$\sum_{n=0}^{\infty} \oint_{|z-c|=R} \left(\frac{w-c}{z - c}\right)^n \frac{1}{z-c}f(z)\,dz$ at
+$\frac{1}{2πi}\sum_{n=0}^{\infty}
+  \oint_{|z-c|=R} \left(\frac{w-c}{z - c}\right)^n \frac{1}{z-c}f(z)\,dz$ at
 `w - c`. The coefficients of this power series depend only on `f ∘ circleMap c R`, and the power
 series converges to `f w` if `f` is differentiable on the closed ball `Metric.closedBall c R` and
 `w` belongs to the corresponding open ball. For any circle integrable function `f`, this power
@@ -635,10 +636,7 @@ theorem hasFPowerSeriesOn_cauchy_integral {f : ℂ → E} {c : ℂ} {R : ℝ≥0
       (cauchyPowerSeries f c R) c R :=
   { r_le := le_radius_cauchyPowerSeries _ _ _
     r_pos := ENNReal.coe_pos.2 hR
-    hasSum := fun hy => by
-      refine' hasSum_cauchyPowerSeries_integral hf _
-      rw [← norm_eq_abs, ← coe_nnnorm, NNReal.coe_lt_coe, ← ENNReal.coe_lt_coe]
-      exact mem_emetric_ball_zero_iff.1 hy }
+    hasSum := fun hy ↦ hasSum_cauchyPowerSeries_integral hf <| by simpa using hy }
 #align has_fpower_series_on_cauchy_integral hasFPowerSeriesOn_cauchy_integral
 
 namespace circleIntegral

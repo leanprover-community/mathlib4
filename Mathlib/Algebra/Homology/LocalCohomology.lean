@@ -122,7 +122,6 @@ variable {R : Type max u v v'} [CommRing R] {D : Type v} [SmallCategory D]
 
 variable {E : Type v'} [SmallCategory E] (I' : E ⥤ D) (I : D ⥤ Ideal R)
 
-set_option maxHeartbeats 250000 in
 /-- Local cohomology along a composition of diagrams. -/
 def diagramComp (i : ℕ) : diagram (I' ⋙ I) i ≅ I'.op ⋙ diagram I i :=
   Iso.refl _
@@ -159,8 +158,8 @@ def SelfLERadical (J : Ideal R) : Type u :=
 instance (J : Ideal R) : Category (SelfLERadical J) :=
   (FullSubcategory.category _)
 
-instance SelfLERadical.inhabited (J : Ideal R) : Inhabited (SelfLERadical J)
-    where default := ⟨J, Ideal.le_radical⟩
+instance SelfLERadical.inhabited (J : Ideal R) : Inhabited (SelfLERadical J) where
+  default := ⟨J, Ideal.le_radical⟩
 #align local_cohomology.self_le_radical.inhabited localCohomology.SelfLERadical.inhabited
 
 /-- The diagram of all ideals with radical containing `J`, represented as a functor.
