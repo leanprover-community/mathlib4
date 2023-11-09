@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 -/
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Algebra.Order.Monoid.CharZero
 import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Tactic.Common
 
