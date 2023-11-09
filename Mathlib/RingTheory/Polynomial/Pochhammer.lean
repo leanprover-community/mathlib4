@@ -160,7 +160,7 @@ theorem ascPochhammer_nat_eq_ascFactorial (n : ℕ) :
 
 theorem ascPochhammer_nat_eq_descFactorial (a b : ℕ) :
     (ascPochhammer ℕ b).eval a = (a + b - 1).descFactorial b := by
-  rw [ascPochhammer_nat_eq_ascFactorial, Nat.add_descFactorial_eq_ascFactorial]
+  rw [ascPochhammer_nat_eq_ascFactorial, Nat.add_descFactorial_eq_ascFactorial']
 #align pochhammer_nat_eq_desc_factorial ascPochhammer_nat_eq_descFactorial
 
 @[simp]
@@ -206,9 +206,7 @@ theorem ascPochhammer_eval_one (S : Type*) [Semiring S] (n : ℕ) :
 
 theorem factorial_mul_ascPochhammer (S : Type*) [Semiring S] (r n : ℕ) :
     (r ! : S) * (ascPochhammer S n).eval (r + 1 : S) = (r + n)! := by
-  nth_rw 1 [← Nat.add_sub_cancel r 1]
-  rw_mod_cast [ascPochhammer_nat_eq_ascFactorial, Nat.factorial_mul_ascFactorial, succ_add_sub_one]
-  exact succ_pos r
+  rw_mod_cast [ascPochhammer_nat_eq_ascFactorial, Nat.factorial_mul_ascFactorial]
 #align factorial_mul_pochhammer factorial_mul_ascPochhammer
 
 theorem ascPochhammer_nat_eval_succ (r : ℕ) :
@@ -355,7 +353,7 @@ theorem descPochhammer_int_eq_descFactorial (n : ℕ) :
 
 theorem descPochhammer_int_eq_ascFactorial (a b : ℕ) :
     (descPochhammer ℤ b).eval (a + b : ℤ) = (a + 1).ascFactorial b := by
-  rw [← Nat.cast_add, descPochhammer_int_eq_descFactorial (a + b) b, ← Nat.succ_add_sub_one a b,
-      Nat.add_descFactorial_eq_ascFactorial]
+  rw [← Nat.cast_add, descPochhammer_int_eq_descFactorial (a + b) b,
+    Nat.add_descFactorial_eq_ascFactorial]
 
 end Ring
