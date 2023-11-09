@@ -616,44 +616,24 @@ theorem Filter.tendsto_mul_right_cobounded {a : α} (ha : a ≠ 0) :
     tendsto_comap.atTop_mul (norm_pos_iff.2 ha) tendsto_const_nhds
 #align filter.tendsto_mul_right_cobounded Filter.tendsto_mul_right_cobounded
 
-theorem Filter.tendsto_inv₀_cobounded : Tendsto Inv.inv (cobounded α) (𝓝 0) := by
-  rw [←comap_norm_atTop, @NormedAddCommGroup.tendsto_nhds_zero]
-  intro ε hε
-  filter_upwards [(atTop_basis.comap (‖·‖)).mem_of_mem (i := (ε / 2)⁻¹) (by trivial)] with x hx
-  simp only [Set.mem_preimage, Set.mem_Ici] at hx
-  rw [norm_inv, inv_lt (lt_of_lt_of_le (by positivity) hx) hε]
-  exact ((inv_lt_inv hε (half_pos hε)).mpr <| half_lt_self hε).trans_le hx
+@[simp]
+lemma Filter.inv_cobounded₀ : (cobounded α)⁻¹ = 𝓝[≠] 0 := by
+  rw [← comap_norm_atTop, ← Filter.comap_inv, ← comap_norm_nhdsWithin_Ioi_zero,
+    ← inv_atTop₀, ← Filter.comap_inv]
+  simp only [comap_comap, (· ∘ ·), norm_inv]
 
-lemma Filter.tendsto_inv₀_cobounded' : Tendsto Inv.inv (cobounded α) (𝓝[≠] 0) := by
-  rw [nhdsWithin, tendsto_inf]
-  refine And.intro tendsto_inv₀_cobounded <| calc
-    map Inv.inv (cobounded α) ≤ map Inv.inv cofinite := map_mono (le_cofinite α)
-    _                         ≤ cofinite := inv_injective.tendsto_cofinite
-    _                         ≤ 𝓟 {0}ᶜ := by simp
+@[simp]
+lemma Filter.inv_nhdsWithin_ne_zero : (𝓝[≠] (0 : α))⁻¹ = cobounded α := by
+  rw [← inv_cobounded₀, inv_inv]
 
-lemma Filter.tendsto_inv₀_nhdsWithin_ne_zero : Tendsto Inv.inv (𝓝[≠] 0) (cobounded α) := by
-  rw [←comap_norm_atTop, tendsto_comap_iff]
-  rw [(nhdsWithin_hasBasis Metric.nhds_basis_ball _).tendsto_iff (atTop_basis' 1)]
-  refine fun x hx ↦ ⟨x⁻¹, by positivity, fun y ⟨hy₁, hy₂⟩ ↦ ?_⟩
-  simp only [Set.mem_inter_iff, Metric.mem_ball, dist_zero_right, Set.mem_compl_iff,
-    Set.mem_singleton_iff, Function.comp_apply, norm_inv, Set.mem_Ici] at *
-  exact le_inv (by positivity) (norm_pos_iff.mpr hy₂) |>.mpr hy₁.le
+lemma Filter.tendsto_inv₀_cobounded' : Tendsto Inv.inv (cobounded α) (𝓝[≠] 0) :=
+  inv_cobounded₀.le
 
-lemma Filter.map_inv₀_cobounded : map Inv.inv (cobounded α) = 𝓝[≠] 0 :=
-  le_antisymm tendsto_inv₀_cobounded' <| le_map_of_right_inverse
-    (by simpa using EventuallyEq.rfl) tendsto_inv₀_nhdsWithin_ne_zero
+theorem Filter.tendsto_inv₀_cobounded : Tendsto Inv.inv (cobounded α) (𝓝 0) :=
+  tendsto_inv₀_cobounded'.mono_right inf_le_left
 
-lemma Filter.map_inv₀_nhdsWithin_ne_zero : map Inv.inv (𝓝[≠] 0) = cobounded α :=
-  le_antisymm tendsto_inv₀_nhdsWithin_ne_zero <| le_map_of_right_inverse
-    (by simpa using EventuallyEq.rfl) tendsto_inv₀_cobounded'
-
-lemma Filter.comap_inv₀_cobounded : comap Inv.inv (cobounded α) = 𝓝[≠] 0 := by
-  have := congr(comap Inv.inv $map_inv₀_nhdsWithin_ne_zero (α := α)).symm
-  rwa [comap_map inv_injective] at this
-
-lemma Filter.comap_inv₀_nhdsWithin_ne_zero : comap Inv.inv (𝓝[≠] 0) = cobounded α := by
-  have := congr(comap Inv.inv $map_inv₀_cobounded (α := α)).symm
-  rwa [comap_map inv_injective] at this
+lemma Filter.tendsto_inv₀_nhdsWithin_ne_zero : Tendsto Inv.inv (𝓝[≠] 0) (cobounded α) :=
+  inv_nhdsWithin_ne_zero.le
 
 -- see Note [lower instance priority]
 instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContinuousInv₀ α := by
