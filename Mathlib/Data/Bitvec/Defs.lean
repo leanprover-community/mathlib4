@@ -140,7 +140,8 @@ def sbb {n} (x y : BitVec n) (b : Bool) : Bool × BitVec n :=
   (x < y, x - y)
 #align bitvec.sbb Std.BitVec.sbb
 
-/-- `add_lsb r b` is `r + r + 1` if `b` is `true` and `r + r` otherwise. -/
+/-- `addLsb r b` is `r + r + 1` if `b` is `true` and `r + r` otherwise. -/
+@[deprecated Nat.bit]
 def addLsb (r : ℕ) (b : Bool) :=
   Nat.bit b r
 
