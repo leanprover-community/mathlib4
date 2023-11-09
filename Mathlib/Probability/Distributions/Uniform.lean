@@ -55,9 +55,9 @@ noncomputable
 def uniformPdf (a b x : ℝ) : ℝ≥0∞ :=
  ENNReal.ofReal (uniformPdfReal a b x)
 
-lemma uniformPdf_eq (a b : ℝ) : uniformPdf a b =
-    fun x ↦ ENNReal.ofReal (if x ∈ Icc (a ⊓ b) (a ⊔ b) then (fun x ↦ 1 / abs (b - a)) x else 0) := by
-    ext x; unfold uniformPdf uniformPdfReal indicator uIcc; congr
+lemma uniformPdf_eq (a b : ℝ) : uniformPdf a b = fun x ↦
+    ENNReal.ofReal (if x ∈ Icc (a ⊓ b) (a ⊔ b) then (fun x ↦ 1 / abs (b - a)) x else 0) := by
+  ext x; unfold uniformPdf uniformPdfReal indicator uIcc; congr
 
 lemma split_uniformLintegral : (∫⁻ (x : ℝ), uniformPdf a b x) =
     (∫⁻ (x : ℝ) in Iio (a ⊓ b) , uniformPdf a b x) + (∫⁻ (x : ℝ) in uIcc a b, uniformPdf a b x) +
@@ -162,7 +162,8 @@ lemma uniformCdf_eq_dirac {a b : ℝ} (hab : a = b) :
   unfold uniformCdfReal
   ext x
   rw [ProbabilityTheory.cdf_eq_toReal]
-  simp only [uniformMeasure, if_pos hab, measurableSet_Iic, dirac_apply', mem_Iic, not_le, indicator];
+  simp only [uniformMeasure, if_pos hab, measurableSet_Iic, dirac_apply',
+    mem_Iic, not_le, indicator]
   rw [ENNReal.toReal_eq_toReal_iff]; left; rfl
 
 
