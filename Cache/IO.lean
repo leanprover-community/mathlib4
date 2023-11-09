@@ -78,7 +78,7 @@ def LEANTARBIN :=
   IO.CACHEDIR / s!"leantar-{LEANTARVERSION}{EXE}"
 
 def LAKEPACKAGESDIR : FilePath :=
-  ⟨"lake-packages"⟩
+  ".lake" / "packages"
 
 def getCurl : IO String := do
   return if (← CURLBIN.pathExists) then CURLBIN.toString else "curl"
