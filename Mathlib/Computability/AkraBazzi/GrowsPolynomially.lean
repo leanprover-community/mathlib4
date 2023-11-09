@@ -7,6 +7,7 @@ Authors: Frédéric Dupuis
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Order.Filter.EventuallyConst
+import Mathlib.Algebra.Order.ToIntervalMod
 
 /-!
 # Akra-Bazzi theorem: The polynomial growth condition
@@ -62,51 +63,150 @@ lemma iff_eventuallyEq {f g : ℝ → ℝ} (h : f =ᶠ[atTop] g) :
     GrowsPolynomially f ↔ GrowsPolynomially g :=
   ⟨fun hf => congr_of_eventuallyEq h.symm hf, fun hg => congr_of_eventuallyEq h hg⟩
 
-lemma _root_.induction_Ico_add {R : Type*} [LinearOrderedField R] [FloorSemiring R] {P : R → Prop}
+theorem _root_.toIcoDiv_zsmul_eq_sub {α : Type*} [LinearOrderedAddCommGroup α] [hα : Archimedean α]
+    {p : α} (hp : 0 < p) (a : α) (b : α) : toIcoDiv hp a b • p = b - toIcoMod hp a b := by
+  apply eq_sub_of_add_eq
+  simp only [toIcoDiv_zsmul_sub_toIcoMod]
+
+@[gcongr]
+lemma _root_.toIcoDiv_le_toIcoDiv {α : Type*} [LinearOrderedAddCommGroup α] [Archimedean α] {p : α}
+    (hp : 0 < p) (a : α) (b₁ b₂ : α) (hb : b₁ ≤ b₂) : toIcoDiv hp a b₁ ≤ toIcoDiv hp a b₂ := by
+  let n₁ := toIcoDiv hp a b₁
+  let n₂ := toIcoDiv hp a b₂
+  have hn₁ : b₁ - n₁ • p ∈ Set.Ico a (a + p) := sub_toIcoDiv_zsmul_mem_Ico hp a b₁
+  have hn₂ : b₂ - n₂ • p ∈ Set.Ico a (a + p) := sub_toIcoDiv_zsmul_mem_Ico hp a b₂
+  by_contra h
+  have h' : b₂ - n₂ • p < a + p := hn₂.2
+  have h'' : a + p ≤ b₂ - n₂ • p := calc
+    a + p ≤ b₁ - n₁ • p + 1 • p := by have := hn₁.1; gcongr; simp
+        _ = b₁ - (n₁ - 1) • p := by rw [sub_smul]; abel
+        _ ≤ b₁ - n₂ • p := by gcongr; exact zsmul_le_zsmul (le_of_lt hp) (by linarith)
+        _ ≤ b₂ - n₂ • p := by gcongr
+  rw [←not_le] at h'
+  exact h' h''
+
+lemma _root_.monotone_toIcoDiv {α : Type*} [LinearOrderedAddCommGroup α] [Archimedean α] {p : α}
+    (hp : 0 < p) (a : α) : Monotone (toIcoDiv hp a) := toIcoDiv_le_toIcoDiv hp a
+
+--@[gcongr]
+--lemma _root_.toIcoDiv_lt_toIcoDiv {α : Type*} [LinearOrderedAddCommGroup α] [Archimedean α] {p : α}
+--    (hp : 0 < p) (a : α) (b₁ b₂ : α) (hb : b₁ + p ≤ b₂) : toIcoDiv hp a b₁ < toIcoDiv hp a b₂ := by
+--  let n₁ := toIcoDiv hp a b₁
+--  let n₂ := toIcoDiv hp a b₂
+--  have hn₁ : b₁ - n₁ • p ∈ Set.Ico a (a + p) := sub_toIcoDiv_zsmul_mem_Ico hp a b₁
+--  have hn₂ : b₂ - n₂ • p ∈ Set.Ico a (a + p) := sub_toIcoDiv_zsmul_mem_Ico hp a b₂
+--  by_contra h
+--  have h' : b₂ - n₂ • p < a + p := hn₂.2
+--  have h'' : a + p ≤ b₂ - n₂ • p := calc
+--    a + p ≤ b₁ - n₁ • p + p := by have := hn₁.1; gcongr
+--        _ ≤ b₁ - n₂ • p + p := by gcongr; exact zsmul_le_zsmul (le_of_lt hp) (by linarith)
+--        _ ≤ b₂ - p - n₂ • p + p := by gcongr; rwa [le_sub_iff_add_le]
+--        _ = b₂ - n₂ • p := by abel
+--  rw [←not_le] at h'
+--  exact h' h''
+
+-- Should go in Mathlib.Algebra.Order.ToIntervalMod
+lemma _root_.induction_Ico_add {R : Type*} [LinearOrderedAddCommGroup R] [Archimedean R] {P : R → Prop}
     (x₀ r : R) (hr : 0 < r) (base : ∀ x ∈ Set.Ico x₀ (x₀ + r), P x)
-    (step : ∀ n : ℕ, n ≥ 1 → (∀ z ∈ Set.Ico x₀ (x₀ + r*n), P z) →
-      (∀ z ∈ Set.Ico (x₀ + r*n) (x₀ + r*(n+1)), P z)) :
+    (step : ∀ n : ℤ, n ≥ 1 → (∀ z ∈ Set.Ico x₀ (x₀ + n • r), P z) →
+      (∀ z ∈ Set.Ico (x₀ + n • r) (x₀ + (n+1) • r), P z)) :
     ∀ x ≥ x₀, P x :=
   fun x hx =>
     if hx' : x < x₀ + r then
       base x ⟨hx, hx'⟩
     else by
       push_neg at hx'
-      refine step (Nat.floor ((x - x₀)/r)) ?ge_one ?main x ?memIco
+      refine step (toIcoDiv hr 0 (x - x₀)) ?ge_one ?main x ?memIco
       case ge_one =>
-        calc 1 = Nat.floor ((x₀ + r - x₀)/r) := by simp [div_self (ne_of_lt hr).symm]
+        calc 1 = toIcoDiv hr 0 (0 + r) := (toIcoDiv_apply_right hr 0).symm
+             _ = toIcoDiv hr 0 (x₀ + r - x₀) := by
+                    have : 0 + r = x₀ + r - x₀ := by abel
+                    rw [this]
              _ ≤ _ := by gcongr
       case main =>
         intro z hz
         -- Needed by termination checker
-        have _ : Nat.floor ((z - x₀)/r) < Nat.floor ((x - x₀)/r) := by
-          let xtmp := x₀ + r * ↑⌊(x - x₀) / r⌋₊
-          have hz_nonneg : 0 ≤ (z - x₀)/r := by
-            have : 0 ≤ z - x₀ := sub_nonneg.mpr hz.1
-            positivity
-          rw [Nat.floor_lt hz_nonneg]
-          calc _ < (xtmp - x₀) / r := by have := hz.2; gcongr
-               _ = _ := by simp [mul_comm r, mul_div_assoc _ r, div_self (ne_of_lt hr).symm]
+        have toIcoDiv_nonneg_x : 0 ≤ toIcoDiv hr 0 (x - x₀) := by
+          calc 0 = toIcoDiv hr 0 0 := (toIcoDiv_apply_left hr 0).symm
+               _ ≤ _ := by gcongr; exact sub_nonneg_of_le hx
+        have toIcoDiv_nonneg_z : 0 ≤ toIcoDiv hr 0 (z - x₀) := by
+          calc 0 = toIcoDiv hr 0 0 := (toIcoDiv_apply_left hr 0).symm
+               _ ≤ _ := by gcongr; exact sub_nonneg_of_le hz.1
+        have _ : Int.natAbs (toIcoDiv hr 0 (z - x₀)) < Int.natAbs (toIcoDiv hr 0 (x - x₀)) := by
+          zify
+          rw [abs_of_nonneg toIcoDiv_nonneg_x, abs_of_nonneg toIcoDiv_nonneg_z]
+          have hmain := calc
+            toIcoDiv hr 0 (z - x₀) • r = 0 + toIcoDiv hr 0 (z - x₀) • r := by abel
+            _ ≤ toIcoMod hr 0 (z - x₀) + toIcoDiv hr 0 (z - x₀) • r := by
+                  gcongr
+                  exact left_le_toIcoMod hr 0 (z - x₀)
+            _ = z - x₀ := by rw [toIcoMod_add_toIcoDiv_zsmul hr 0]
+            _ < toIcoDiv hr 0 (x - x₀) • r := by rw [sub_lt_iff_lt_add, add_comm]; exact hz.2
+          rwa [zsmul_lt_zsmul_iff hr] at hmain
         exact induction_Ico_add x₀ r hr base step z hz.1
       case memIco =>
         refine ⟨?lb, ?ub⟩
         case lb =>
-          calc _ ≤ x₀ + r * ((x - x₀)/r) := by
-                  gcongr
-                  refine Nat.floor_le ?_
-                  have : 0 ≤ x - x₀ := sub_nonneg.mpr hx
-                  positivity
-               _ ≤ _ := by rw [mul_comm r, div_mul_cancel _ (ne_of_lt hr).symm]; simp
+          refine add_le_of_le_sub_left ?_
+          nth_rewrite 2 [←toIcoMod_add_toIcoDiv_zsmul hr 0 (x - x₀)]
+          nth_rewrite 1 [←zero_add (toIcoDiv hr 0 (x - x₀) • r)]
+          gcongr
+          exact left_le_toIcoMod hr 0 _
         case ub =>
-          calc x ≤ x₀ + r * ((x - x₀)/r) := by
-                  rw [mul_comm r, div_mul_cancel _ (ne_of_lt hr).symm]; simp
-               _ < _ := by gcongr; exact Nat.lt_floor_add_one _
-  termination_by induction_Ico_add x₀ r hr base step x hx => Nat.floor ((x-x₀)/r)
+          refine lt_add_of_sub_left_lt ?_
+          nth_rewrite 1 [←toIcoMod_add_toIcoDiv_zsmul hr 0 (x - x₀)]
+          rw [add_zsmul, one_zsmul, add_comm _ r]
+          gcongr
+          conv_rhs => rw [←zero_add r]
+          exact toIcoMod_lt_right hr _ (x - x₀)
+  termination_by induction_Ico_add x₀ r hr base step x hx => Int.natAbs (toIcoDiv hr 0 (x - x₀))
+
+
+--lemma _root_.induction_Ico_add {R : Type*} [LinearOrderedField R] [FloorSemiring R] {P : R → Prop}
+--    (x₀ r : R) (hr : 0 < r) (base : ∀ x ∈ Set.Ico x₀ (x₀ + r), P x)
+--    (step : ∀ n : ℕ, n ≥ 1 → (∀ z ∈ Set.Ico x₀ (x₀ + r*n), P z) →
+--      (∀ z ∈ Set.Ico (x₀ + r*n) (x₀ + r*(n+1)), P z)) :
+--    ∀ x ≥ x₀, P x :=
+--  fun x hx =>
+--    if hx' : x < x₀ + r then
+--      base x ⟨hx, hx'⟩
+--    else by
+--      push_neg at hx'
+--      refine step (Nat.floor ((x - x₀)/r)) ?ge_one ?main x ?memIco
+--      case ge_one =>
+--        calc 1 = Nat.floor ((x₀ + r - x₀)/r) := by simp [div_self (ne_of_lt hr).symm]
+--             _ ≤ _ := by gcongr
+--      case main =>
+--        intro z hz
+--        -- Needed by termination checker
+--        have _ : Nat.floor ((z - x₀)/r) < Nat.floor ((x - x₀)/r) := by
+--          let xtmp := x₀ + r * ↑⌊(x - x₀) / r⌋₊
+--          have hz_nonneg : 0 ≤ (z - x₀)/r := by
+--            have : 0 ≤ z - x₀ := sub_nonneg.mpr hz.1
+--            positivity
+--          rw [Nat.floor_lt hz_nonneg]
+--          calc _ < (xtmp - x₀) / r := by have := hz.2; gcongr
+--               _ = _ := by simp [mul_comm r, mul_div_assoc _ r, div_self (ne_of_lt hr).symm]
+--        exact induction_Ico_add x₀ r hr base step z hz.1
+--      case memIco =>
+--        refine ⟨?lb, ?ub⟩
+--        case lb =>
+--          calc _ ≤ x₀ + r * ((x - x₀)/r) := by
+--                  gcongr
+--                  refine Nat.floor_le ?_
+--                  have : 0 ≤ x - x₀ := sub_nonneg.mpr hx
+--                  positivity
+--               _ ≤ _ := by rw [mul_comm r, div_mul_cancel _ (ne_of_lt hr).symm]; simp
+--        case ub =>
+--          calc x ≤ x₀ + r * ((x - x₀)/r) := by
+--                  rw [mul_comm r, div_mul_cancel _ (ne_of_lt hr).symm]; simp
+--               _ < _ := by gcongr; exact Nat.lt_floor_add_one _
+--  termination_by induction_Ico_add x₀ r hr base step x hx => Nat.floor ((x-x₀)/r)
 
 open Real in
 lemma _root_.Real.induction_Ico_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx₀ : 0 < x₀)
     (base : ∀ x ∈ Set.Ico x₀ (r * x₀), P x)
-    (step : ∀ n : ℕ, n ≥ 1 → (∀ z ∈ Set.Ico x₀ (r ^ n * x₀), P z) →
+    (step : ∀ n : ℤ, n ≥ 1 → (∀ z ∈ Set.Ico x₀ (r ^ n * x₀), P z) →
       (∀ z ∈ Set.Ico (r ^ n * x₀) (r ^ (n+1) * x₀), P z)) :
     ∀ x ≥ x₀, P x := by
   have hr_nonzero : r ≠ 0 := by positivity
@@ -124,9 +224,9 @@ lemma _root_.Real.induction_Ico_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < 
     rwa [←log_mul (ne_of_lt hx₀).symm hr_nonzero, exp_log hx₀r_pos, mul_comm] at h₂
   case step =>
     intro n hn hyp_ind z hz
-    have h₃ : r^n ≠ 0 := by positivity
+    have h₃ : r^n ≠ 0 := zpow_ne_zero _ hr_nonzero
     have h₄ : x₀ ≠ 0 := by positivity
-    have h₅ : r^(n+1) ≠ 0 := by positivity
+    have h₅ : r^(n+1) ≠ 0 := zpow_ne_zero _ hr_nonzero
     refine step n hn ?main (exp z) ?z_prop
     case main =>
       intro z hz
@@ -135,18 +235,24 @@ lemma _root_.Real.induction_Ico_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < 
         _ ≤ z := hz.1
       rw [←exp_log z_pos]
       refine hyp_ind (log z) ⟨log_le_log' hx₀ hz.1, ?_⟩
-      have h₂ := strictMonoOn_log z_pos (by simp; positivity) hz.2
-      rwa [log_mul h₃ h₄, log_pow, mul_comm, add_comm] at h₂
+      have h₂ := by
+        refine strictMonoOn_log z_pos ?_ hz.2
+        simp only [Set.mem_Ioi, gt_iff_lt]
+        refine mul_pos (zpow_pos_of_pos (by positivity) _) hx₀
+      rwa [log_mul h₃ h₄, log_zpow, add_comm, ←zsmul_eq_mul] at h₂
     case z_prop =>
       refine ⟨?lb, ?ub⟩
       case lb =>
         have h₂ := exp_monotone hz.1
         have hrn : r * n ≠ 0 := by positivity
-        rwa [mul_comm, ←log_pow, ←log_mul h₄ h₃, exp_log (by positivity), mul_comm] at h₂
+        have hrn' : 0 < r ^ n := zpow_pos_of_pos (by positivity) _
+        have hmulpos₁ : 0 < x₀ * r ^ n := mul_pos hx₀ hrn'
+        rwa [zsmul_eq_mul, ←log_zpow, ←log_mul h₄ h₃, exp_log hmulpos₁, mul_comm] at h₂
       case ub =>
         have h₂ := exp_strictMono hz.2
-        have hcast : (n + 1 : ℝ) = Nat.cast (n + 1) := by simp
-        rwa [mul_comm, hcast, ←log_pow, ←log_mul h₄ h₅, exp_log (by positivity), mul_comm] at h₂
+        have hcast : (n + 1 : ℝ) = Int.cast (n + 1) := by simp
+        have hmulpos₂ : 0 < x₀ * r ^ (n+1) := mul_pos hx₀ (zpow_pos_of_pos (by positivity) _)
+        rwa [zsmul_eq_mul, ←log_zpow, ←log_mul h₄ h₅, exp_log hmulpos₂, mul_comm] at h₂
 
 variable {f : ℝ → ℝ}
 
@@ -195,33 +301,29 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
       case step =>
         intro n hn hyp_ind z hz
         have z_nonneg : 0 ≤ z := by
-          calc (0:ℝ) ≤ (2:ℝ)^n * max n₀ 2 := by positivity
+          calc (0:ℝ) ≤ (2:ℝ)^n * max n₀ 2 := by
+                        exact mul_nonneg (zpow_nonneg (by norm_num) _) (by norm_num)
                   _ ≤ z := hz.1
-        have le_2n : max n₀ 2 ≤ 2^n * max n₀ 2 := by
+        have le_2n : max n₀ 2 ≤ (2:ℝ)^n * max n₀ 2 := by
           nth_rewrite 1 [←one_mul (max n₀ 2)]
           gcongr
-          norm_cast
-          rw [←pow_zero 2]
-          gcongr
-          · norm_num
-          · simp
+          exact one_le_zpow_of_nonneg (by norm_num) (by linarith)
         have n₀_le_z : n₀ ≤ z := by
           calc n₀ ≤ max n₀ 2 := by simp
-                _ ≤ 2^n * max n₀ 2 := le_2n
+                _ ≤ (2:ℝ)^n * max n₀ 2 := le_2n
                 _ ≤ _ := by exact_mod_cast hz.1
         have fz_eq_c₂fz : f z = c₂ * f z := hn₀ z n₀_le_z z ⟨by linarith, le_rfl⟩
         have z_to_half_z' : f (1/2 * z) = c₂ * f z := hn₀ z n₀_le_z (1/2 * z) ⟨le_rfl, by linarith⟩
         have z_to_half_z : f (1/2 * z) = f z := by rwa [←fz_eq_c₂fz] at z_to_half_z'
         have half_z_to_base : f (1/2 * z) = f (max n₀ 2) := by
-          -- via hyp_ind
           refine hyp_ind (1/2 * z) ⟨?lb, ?ub⟩
           case lb =>
-            calc max n₀ 2 ≤ ((1:ℝ)/(2:ℝ)) * 2 ^ 1 * max n₀ 2 := by simp
-                        _ ≤ ((1:ℝ)/(2:ℝ)) * 2 ^ n * max n₀ 2 := by gcongr; norm_num
+            calc max n₀ 2 ≤ ((1:ℝ)/(2:ℝ)) * (2:ℝ) ^ (1:ℤ)  * max n₀ 2 := by simp
+                        _ ≤ ((1:ℝ)/(2:ℝ)) * (2:ℝ) ^ n * max n₀ 2 := by gcongr; norm_num
                         _ ≤ _ := by rw [mul_assoc]; gcongr; exact_mod_cast hz.1
           case ub =>
-            have h₁ : (2:ℝ)^n = ((1:ℝ)/(2:ℝ)) * 2^(n+1) := by
-              simp only [one_div, pow_add, pow_one, Nat.cast_mul, Nat.cast_pow, Nat.cast_ofNat]
+            have h₁ : (2:ℝ)^n = ((1:ℝ)/(2:ℝ)) * (2:ℝ)^(n+1) := by
+              rw [one_div, zpow_add₀ (by norm_num : (2:ℝ) ≠ 0), zpow_one]
               ring
             rw [h₁, mul_assoc]
             gcongr
