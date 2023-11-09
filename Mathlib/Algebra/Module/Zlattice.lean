@@ -317,6 +317,12 @@ protected theorem isAddFundamentalDomain [Finite ι] [MeasurableSpace E] [OpensM
     fun x => exist_unique_vadd_mem_fundamentalDomain b x
 #align zspan.is_add_fundamental_domain Zspan.isAddFundamentalDomain
 
+theorem measure_fundamentalDomain_ne_zero [Finite ι] [MeasurableSpace E] [BorelSpace E]
+    {μ : Measure E} [Measure.IsAddHaarMeasure μ] (hμ : μ ≠ 0) :
+    μ (fundamentalDomain b) ≠ 0 := by
+  convert (Zspan.isAddFundamentalDomain b μ).measure_ne_zero hμ
+  exact (by infer_instance : Countable (span ℤ (Set.range b)))
+
 theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] (b₀ : Basis ι ℝ E) :
     μ (fundamentalDomain b) = ENNReal.ofReal |(b₀.toMatrix b).det| * μ (fundamentalDomain b₀) := by
