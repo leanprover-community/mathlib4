@@ -367,22 +367,27 @@ It takes a boolean function `f` on each bit the number of bits `i`.  It is
 almost always specialized  `i = w`; the length of the binary representation.
 This is an alternative to using `List`. It will be used for bitadd, bitneg, bitmul etc.-/
 def ofBits {n : Nat} (f : Fin n → Bool) : Nat :=
-  go f 0
+  go n (fun i =>
+    if h : i < n then
+      f ⟨i, h⟩
+    else
+      false
+  ) 0
   where
-    /-- A helper method where `z` the starting point.
+    /-- A helper method where `z` is the starting point.
     Note that `ofBits.go f z = 2 ^ n * z + ofBits f i` which we prove next. -/
-    go {n : Nat} (f : Fin n → Bool) (z : Nat) : Nat :=
+    go (n : Nat) (f : Nat → Bool) (z : Nat) : Nat :=
     match n with
     | 0 => z
-    | _ + 1 => go (f ∘ Fin.castSucc) (z.bit (f (.last _)))
+    | n + 1 => go n f (bit (f n) z)
 
-@[simp]
-theorem ofBits_cons {n} (x : Bool) (f : Fin n → Bool) :
-    ofBits (Fin.cons x f) = bit x (ofBits f) := by
-  rw [ofBits, ofBits]
-  sorry
+-- @[simp]
+-- theorem ofBits_cons {n} (x : Bool) (f : Fin n → Bool) :
+--     ofBits (Fin.cons x f) = bit x (ofBits f) := by
+--   rw [ofBits, ofBits]
+--   sorry
 
-theorem ofBits_go_eq_pow_mul_add {n} (f : Fin n → Bool) (z : Nat) :
+theorem ofBits_go_eq_pow_mul_add (n : ℕ) (f : ℕ → Bool) (z : ℕ) :
     ofBits.go f z = 2 ^ n * z + ofBits f := by
   induction' n with i ih generalizing z
   · simp [ofBits, ofBits.go, bit_val]
