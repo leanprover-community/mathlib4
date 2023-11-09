@@ -88,10 +88,10 @@ theorem List.foldr_ofFn {α β n} (f : β → α → α) (init : α) (g : Fin n 
   suffices ∀ {m} (h : n ≤ m) (g : Fin m → β),
     (ofFn fun i ↦ g (i.castLE h)).foldr f init  =
     (finRange n |>.map (Fin.castLE h)).foldr (fun i a ↦ f (g i) a) init
-  by
-    specialize this (Nat.le.refl) g
-    simp at this
-    exact this
+    by
+      specialize this (Nat.le.refl) g
+      simp at this
+      exact this
   clear g
   intro m h g
   induction' n with n ih generalizing init
