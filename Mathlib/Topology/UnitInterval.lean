@@ -76,7 +76,7 @@ instance : ZeroLEOneClass I := ⟨@zero_le_one ℝ _ _ _ _⟩
 
 instance : BoundedOrder I := Set.Icc.boundedOrder zero_le_one
 
-lemma univ_eq_Icc : (univ : Set I) = Icc 0 1 := by
+lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := by
   ext ⟨t, t0, t1⟩; simp_rw [mem_univ, true_iff]; exact ⟨t0, t1⟩
 
 theorem coe_ne_zero {x : I} : (x : ℝ) ≠ 0 ↔ x ≠ 0 :=
@@ -135,12 +135,13 @@ theorem continuous_symm : Continuous σ :=
   (continuous_const.add continuous_induced_dom.neg).subtype_mk _
 #align unit_interval.continuous_symm unitInterval.continuous_symm
 
-lemma strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
+theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
 
-lemma bijective_symm : Function.Bijective σ :=
-  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+theorem involutive_symm : Function.Involutive σ := symm_symm
 
-lemma half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 2 := by
+theorem bijective_symm : Function.Bijective σ := involutive_symm.bijective
+
+theorem half_le_symm_iff (t : I) : 1 / 2 ≤ (σ t : ℝ) ↔ (t : ℝ) ≤ 1 / 2 := by
   rw [coe_symm_eq, le_sub_iff_add_le, add_comm, ←le_sub_iff_add_le, sub_half]
 
 instance : ConnectedSpace I :=
@@ -211,7 +212,8 @@ lemma _root_.Set.abs_projIcc_sub_projIcc : (|projIcc a b h c - projIcc a b h d| 
   · rwa [sub_self, abs_zero]
   · exact (abs_eq_self.mpr hdc).le
 
-/-- Equally spaced points in a closed interval. -/
+/-- When `h : a ≤ b` and `δ > 0`, `addNsmul h δ` is a sequence of points in the closed interval
+  `[a,b]`, which is initially equally spaced but eventually stays at the right endpoint `b`. -/
 def addNsmul (δ : α) (n : ℕ) : Icc a b := projIcc a b h (a + n • δ)
 
 lemma addNsmul_zero : addNsmul h δ 0 = a := by
