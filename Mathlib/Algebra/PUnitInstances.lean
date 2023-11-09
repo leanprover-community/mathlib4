@@ -18,12 +18,10 @@ This file collects facts about algebraic structures on the one-element type, e.g
 commutative ring.
 -/
 
-set_option autoImplicit true
-
 namespace PUnit
 
 @[to_additive]
-instance commGroup: CommGroup PUnit where
+instance commGroup : CommGroup PUnit where
   mul _ _ := unit
   one := unit
   inv _ := unit
