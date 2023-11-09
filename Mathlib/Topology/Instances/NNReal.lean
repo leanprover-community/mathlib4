@@ -89,7 +89,7 @@ theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
 #align nnreal.continuous_coe NNReal.continuous_coe
 
 /-- Embedding of `ℝ≥0` to `ℝ` as a bundled continuous map. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def _root_.ContinuousMap.coeNNRealReal : C(ℝ≥0, ℝ) :=
   ⟨(↑), continuous_coe⟩
 #align continuous_map.coe_nnreal_real ContinuousMap.coeNNRealReal
