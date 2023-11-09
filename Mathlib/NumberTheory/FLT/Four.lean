@@ -99,7 +99,7 @@ theorem coprime_of_minimal {a b c : ℤ} (h : Minimal a b c) : IsCoprime a b := 
   obtain ⟨c1, rfl⟩ := hpc
   have hf : Fermat42 a1 b1 c1 :=
     (Fermat42.mul (Int.coe_nat_ne_zero.mpr (Nat.Prime.ne_zero hp))).mpr h.1
-  apply Nat.le_lt_antisymm (h.2 _ _ _ hf)
+  apply Nat.le_lt_asymm (h.2 _ _ _ hf)
   rw [Int.natAbs_mul, lt_mul_iff_one_lt_left, Int.natAbs_pow, Int.natAbs_ofNat]
   · exact Nat.one_lt_pow _ _ zero_lt_two (Nat.Prime.one_lt hp)
   · exact Nat.pos_of_ne_zero (Int.natAbs_ne_zero.2 (ne_zero hf))
@@ -305,8 +305,22 @@ theorem not_fermat_42 {a b c : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) : a ^ 4 + b ^ 
   apply Fermat42.not_minimal hf h2 hp
 #align not_fermat_42 not_fermat_42
 
-theorem fermatLastTheoremFour : FermatLastTheoremWith ℤ 4 := by
+theorem fermatLastTheoremFour : FermatLastTheoremFor 4 := by
+  rw [fermatLastTheoremFor_iff_int]
   intro a b c ha hb _ heq
   apply @not_fermat_42 _ _ (c ^ 2) ha hb
   rw [heq]; ring
 #align not_fermat_4 fermatLastTheoremFour
+
+/--
+To prove Fermat's Last Theorem, it suffices to prove it for odd prime exponents, and the case of
+exponent 4 proved above.
+-/
+theorem FermatLastTheorem.of_odd_primes
+    (hprimes : ∀ p : ℕ, Nat.Prime p → Odd p → FermatLastTheoremFor p) : FermatLastTheorem := by
+  intro n h
+  rw [ge_iff_le, Nat.succ_le_iff] at h
+  obtain hdvd|⟨p, hpprime, hdvd, hpodd⟩ := Nat.four_dvd_or_exists_odd_prime_and_dvd_of_two_lt h <;>
+    apply FermatLastTheoremWith.mono hdvd
+  · exact fermatLastTheoremFour
+  · exact hprimes p hpprime hpodd

@@ -62,10 +62,21 @@ def trivial : Representation k G V :=
 #align representation.trivial Representation.trivial
 
 -- Porting note: why is `V` implicit
-@[simp]
 theorem trivial_def (g : G) (v : V) : trivial k (V := V) g v = v :=
   rfl
 #align representation.trivial_def Representation.trivial_def
+
+variable {k}
+
+/-- A predicate for representations that fix every element. -/
+class IsTrivial (ρ : Representation k G V) : Prop where
+  out : ∀ g x, ρ g x = x := by aesop
+
+instance : IsTrivial (trivial k (G := G) (V := V)) where
+
+@[simp] theorem apply_eq_self
+    (ρ : Representation k G V) (g : G) (x : V) [h : IsTrivial ρ] :
+    ρ g x = x := h.out g x
 
 end trivial
 
@@ -356,7 +367,7 @@ open TensorProduct
 /-- Given representations of `G` on `V` and `W`, there is a natural representation of `G` on their
 tensor product `V ⊗[k] W`.
 -/
-def tprod : Representation k G (V ⊗[k] W) where
+noncomputable def tprod : Representation k G (V ⊗[k] W) where
   toFun g := TensorProduct.map (ρV g) (ρW g)
   map_one' := by simp only [_root_.map_one, TensorProduct.map_one]
   map_mul' g h := by simp only [_root_.map_mul, TensorProduct.map_mul]

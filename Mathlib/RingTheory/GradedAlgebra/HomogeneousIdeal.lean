@@ -634,19 +634,19 @@ variable [Semiring A]
 
 variable [DecidableEq ι]
 
-variable [CanonicallyOrderedAddMonoid ι]
+variable [CanonicallyOrderedAddCommMonoid ι]
 
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
 
 open GradedRing SetLike.GradedMonoid DirectSum
 
-/-- For a graded ring `⨁ᵢ 𝒜ᵢ` graded by a `CanonicallyOrderedAddMonoid ι`, the irrelevant ideal
+/-- For a graded ring `⨁ᵢ 𝒜ᵢ` graded by a `CanonicallyOrderedAddCommMonoid ι`, the irrelevant ideal
 refers to `⨁_{i>0} 𝒜ᵢ`, or equivalently `{a | a₀ = 0}`. This definition is used in `Proj`
 construction where `ι` is always `ℕ` so the irrelevant ideal is simply elements with `0` as
 0-th coordinate.
 
 # Future work
-Here in the definition, `ι` is assumed to be `CanonicallyOrderedAddMonoid`. However, the notion
+Here in the definition, `ι` is assumed to be `CanonicallyOrderedAddCommMonoid`. However, the notion
 of irrelevant ideal makes sense in a more general setting by defining it as the ideal of elements
 with `0` as i-th coordinate for all `i ≤ 0`, i.e. `{a | ∀ (i : ι), i ≤ 0 → aᵢ = 0}`.
 -/

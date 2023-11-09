@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Monoid.Cancel.Basic
+import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Subsemigroup.Operations
@@ -1371,6 +1371,13 @@ theorem eq_bot_iff_forall : S = ⊥ ↔ ∀ x ∈ S, x = (1 : M) :=
   SetLike.ext_iff.trans <| by simp (config := { contextual := true }) [iff_def, S.one_mem]
 #align submonoid.eq_bot_iff_forall Submonoid.eq_bot_iff_forall
 #align add_submonoid.eq_bot_iff_forall AddSubmonoid.eq_bot_iff_forall
+
+@[to_additive]
+theorem eq_bot_of_subsingleton [Subsingleton S] : S = ⊥ := by
+  rw [eq_bot_iff_forall]
+  intro y hy
+  change ((⟨y, hy⟩ : S) : M) = (1 : S)
+  rw [Subsingleton.elim (⟨y, hy⟩ : S) 1]
 
 @[to_additive]
 theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x ∈ S, x ≠ (1 : M) :=

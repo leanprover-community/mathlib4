@@ -49,20 +49,17 @@ instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ 
 @[to_additive
       "The product of a family of canonically ordered additive monoids is
 a canonically ordered additive monoid."]
-instance {ι : Type*} {Z : ι → Type*} [∀ i, CanonicallyOrderedMonoid (Z i)] :
-    CanonicallyOrderedMonoid (∀ i, Z i) :=
+instance {ι : Type*} {Z : ι → Type*} [∀ i, CanonicallyOrderedCommMonoid (Z i)] :
+    CanonicallyOrderedCommMonoid (∀ i, Z i) :=
   { Pi.orderBot, Pi.orderedCommMonoid, Pi.existsMulOfLe with
     le_self_mul := fun _ _ _ => le_self_mul }
 
 @[to_additive]
 instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
-    OrderedCancelCommMonoid (∀ i : I, f i) :=
-  { Pi.partialOrder, Pi.commMonoid with
-    npow := Monoid.npow,
-    le_of_mul_le_mul_left := fun _ _ _ h i =>
-      OrderedCancelCommMonoid.le_of_mul_le_mul_left _ _ _ (h i)
-    mul_le_mul_left := fun _ _ c h i =>
-      OrderedCancelCommMonoid.mul_le_mul_left _ _ (c i) (h i) }
+    OrderedCancelCommMonoid (∀ i : I, f i) where
+  __ := Pi.commMonoid
+  le_of_mul_le_mul_left _ _ _ h i := le_of_mul_le_mul_left' (h i)
+  mul_le_mul_left _ _ c h i := mul_le_mul_left' (c i) (h i)
 --Porting note: Old proof was
   -- refine_struct
   --     { Pi.partialOrder, Pi.monoid with

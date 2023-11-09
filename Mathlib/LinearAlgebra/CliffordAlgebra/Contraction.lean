@@ -289,7 +289,7 @@ theorem changeForm.neg_proof : (-B).toQuadraticForm = Q - Q' :=
 #align clifford_algebra.change_form.neg_proof CliffordAlgebra.changeForm.neg_proof
 
 theorem changeForm.associated_neg_proof [Invertible (2 : R)] :
-    (QuadraticForm.associated (R₁ := R) (M := M) (-Q)).toQuadraticForm = 0 - Q := by
+    (QuadraticForm.associated (R := R) (M := M) (-Q)).toQuadraticForm = 0 - Q := by
   simp [QuadraticForm.toQuadraticForm_associated]
 #align clifford_algebra.change_form.associated_neg_proof CliffordAlgebra.changeForm.associated_neg_proof
 
@@ -398,5 +398,9 @@ divisible by two; but that would be more awkward to use. -/
 def equivExterior [Invertible (2 : R)] : CliffordAlgebra Q ≃ₗ[R] ExteriorAlgebra R M :=
   changeFormEquiv changeForm.associated_neg_proof
 #align clifford_algebra.equiv_exterior CliffordAlgebra.equivExterior
+
+/-- A `CliffordAlgebra` over a nontrivial ring is nontrivial, in characteristic not two. -/
+instance [Nontrivial R] [Invertible (2 : R)] :
+    Nontrivial (CliffordAlgebra Q) := (equivExterior Q).symm.injective.nontrivial
 
 end CliffordAlgebra
