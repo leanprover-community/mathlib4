@@ -135,7 +135,7 @@ theorem continuous_symm : Continuous σ :=
   (continuous_const.add continuous_induced_dom.neg).subtype_mk _
 #align unit_interval.continuous_symm unitInterval.continuous_symm
 
-lemma antitone_symm : Antitone σ := fun _ _ h ↦ sub_le_sub_left (α := ℝ) h _
+lemma strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
 
 lemma bijective_symm : Function.Bijective σ :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
