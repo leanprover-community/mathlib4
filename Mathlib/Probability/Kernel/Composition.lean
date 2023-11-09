@@ -405,8 +405,9 @@ theorem lintegral_compProd' (κ : kernel α β) [IsSFiniteKernel κ] (η : kerne
       ∫⁻ (a_1 : β), ∫⁻ (c : γ), f (a_1, c) ∂η (a, a_1) ∂κ a)) _ _ (F n)
   · intro c s hs
     classical -- Porting note: Added `classical` for `Set.piecewise_eq_indicator`
-    simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
-      SimpleFunc.coe_zero, Set.piecewise_eq_indicator, Function.const, lintegral_indicator_const hs]
+    simp (config := { unfoldPartialApp := true }) only [SimpleFunc.const_zero,
+      SimpleFunc.coe_piecewise, SimpleFunc.coe_const, SimpleFunc.coe_zero,
+      Set.piecewise_eq_indicator, Function.const, lintegral_indicator_const hs]
     rw [compProd_apply κ η _ hs, ← lintegral_const_mul c _]
     swap
     · exact (measurable_kernel_prod_mk_left ((measurable_fst.snd.prod_mk measurable_snd) hs)).comp
