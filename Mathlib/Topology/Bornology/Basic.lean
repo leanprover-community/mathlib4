@@ -312,6 +312,9 @@ theorem isBounded_iUnion [Finite ι] {s : ι → Set α} : IsBounded (⋃ i, s i
   by rw [← sUnion_range, isBounded_sUnion (finite_range s), forall_range_iff]
 #align bornology.is_bounded_Union Bornology.isBounded_iUnion
 
+lemma eventually_ne_cobounded (a : α) : ∀ᶠ x in cobounded α, x ≠ a :=
+  le_cofinite_iff_eventually_ne.1 (le_cofinite _) a
+
 end Bornology
 
 open Bornology
@@ -324,6 +327,10 @@ theorem Filter.HasBasis.disjoint_cobounded_iff [Bornology α] {ι : Sort*} {p : 
 theorem Set.Finite.isBounded [Bornology α] {s : Set α} (hs : s.Finite) : IsBounded s :=
   Bornology.le_cofinite α hs.compl_mem_cofinite
 #align set.finite.is_bounded Set.Finite.isBounded
+
+nonrec lemma Filter.Tendsto.eventually_ne_cobounded [Bornology α] {f : β → α} {l : Filter β}
+    (h : Tendsto f l (cobounded α)) (a : α) : ∀ᶠ x in l, f x ≠ a :=
+  h.eventually <| eventually_ne_cobounded a
 
 instance : Bornology PUnit :=
   ⟨⊥, bot_le⟩

@@ -191,6 +191,10 @@ theorem eqOn_singleton : Set.EqOn f₁ f₂ {a} ↔ f₁ a = f₂ a := by
 #align set.eq_on_singleton Set.eqOn_singleton
 
 @[simp]
+theorem eqOn_univ (f₁ f₂ : α → β) : EqOn f₁ f₂ univ ↔ f₁ = f₂ := by
+  simp [EqOn, funext_iff]
+
+@[simp]
 theorem restrict_eq_restrict_iff : restrict s f₁ = restrict s f₂ ↔ EqOn f₁ f₂ s :=
   restrict_eq_iff
 #align set.restrict_eq_restrict_iff Set.restrict_eq_restrict_iff
@@ -220,6 +224,10 @@ theorem EqOn.trans (h₁ : EqOn f₁ f₂ s) (h₂ : EqOn f₂ f₃ s) : EqOn f�
 theorem EqOn.image_eq (heq : EqOn f₁ f₂ s) : f₁ '' s = f₂ '' s :=
   image_congr heq
 #align set.eq_on.image_eq Set.EqOn.image_eq
+
+/-- Variant of `EqOn.image_eq`, for one function being the identity. -/
+theorem EqOn.image_eq_self {f : α → α} (h : Set.EqOn f id s) : f '' s = s := by
+  rw [h.image_eq, image_id]
 
 theorem EqOn.inter_preimage_eq (heq : EqOn f₁ f₂ s) (t : Set β) : s ∩ f₁ ⁻¹' t = s ∩ f₂ ⁻¹' t :=
   ext fun x => and_congr_right_iff.2 fun hx => by rw [mem_preimage, mem_preimage, heq hx]
@@ -875,6 +883,17 @@ theorem surjOn_iff_surjective : SurjOn f s univ ↔ Surjective (s.restrict f) :=
     let ⟨⟨a, as⟩, e⟩ := H b
     ⟨a, as, e⟩⟩
 #align set.surj_on_iff_surjective Set.surjOn_iff_surjective
+
+@[simp]
+theorem MapsTo.restrict_surjective_iff (h : MapsTo f s t) :
+    Surjective (MapsTo.restrict _ _ _ h) ↔ SurjOn f s t := by
+  refine ⟨fun h' b hb ↦ ?_, fun h' ⟨b, hb⟩ ↦ ?_⟩
+  · obtain ⟨⟨a, ha⟩, ha'⟩ := h' ⟨b, hb⟩
+    replace ha' : f a = b := by simpa [Subtype.ext_iff] using ha'
+    rw [← ha']
+    exact mem_image_of_mem f ha
+  · obtain ⟨a, ha, rfl⟩ := h' hb
+    exact ⟨⟨a, ha⟩, rfl⟩
 
 theorem SurjOn.image_eq_of_mapsTo (h₁ : SurjOn f s t) (h₂ : MapsTo f s t) : f '' s = t :=
   eq_of_subset_of_subset h₂.image_subset h₁
