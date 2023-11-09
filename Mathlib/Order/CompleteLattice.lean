@@ -1947,7 +1947,7 @@ theorem snd_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).snd = 
 
 theorem swap_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).swap = ⨅ i, (f i).swap := by
   simp_rw [iInf, swap_sInf, ←range_comp]
-  simp (config := { unfoldPartialApp := true }) [Function.comp]  -- Porting note: need to unfold `∘`
+  simp [Function.comp_def]
 #align prod.swap_infi Prod.swap_iInf
 
 theorem iInf_mk [InfSet α] [InfSet β] (f : ι → α) (g : ι → β) :
@@ -1965,7 +1965,7 @@ theorem snd_iSup [SupSet α] [SupSet β] (f : ι → α × β) : (iSup f).snd = 
 
 theorem swap_iSup [SupSet α] [SupSet β] (f : ι → α × β) : (iSup f).swap = ⨆ i, (f i).swap := by
   simp_rw [iSup, swap_sSup, ←range_comp]
-  simp (config := { unfoldPartialApp := true }) [Function.comp]  -- Porting note: need to unfold `∘`
+  simp [Function.comp_def]
 #align prod.swap_supr Prod.swap_iSup
 
 theorem iSup_mk [SupSet α] [SupSet β] (f : ι → α) (g : ι → β) :

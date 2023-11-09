@@ -144,7 +144,7 @@ theorem map_map (f : α ↪ β) (g : β ↪ γ) (s : Finset α) : (s.map f).map 
 theorem map_comm {β'} {f : β ↪ γ} {g : α ↪ β} {f' : α ↪ β'} {g' : β' ↪ γ}
     (h_comm : ∀ a, f (g a) = g' (f' a)) : (s.map g).map f = (s.map f').map g' := by
   simp_rw [map_map, Embedding.trans]
-  simp (config := { unfoldPartialApp := true }) only [Function.comp, h_comm]
+  simp only [Function.comp_def, h_comm]
 #align finset.map_comm Finset.map_comm
 
 theorem _root_.Function.Semiconj.finset_map {f : α ↪ β} {ga : α ↪ α} {gb : β ↪ β}
@@ -190,8 +190,7 @@ theorem filter_map {p : β → Prop} [DecidablePred p] :
 
 theorem map_filter {f : α ≃ β} {p : α → Prop} [DecidablePred p] :
     (s.filter p).map f.toEmbedding = (s.map f.toEmbedding).filter (p ∘ f.symm) := by
-  simp (config := { unfoldPartialApp := true }) only [filter_map, Function.comp,
-    Equiv.toEmbedding_apply, Equiv.symm_apply_apply]
+  simp only [filter_map, Function.comp_def, Equiv.toEmbedding_apply, Equiv.symm_apply_apply]
 #align finset.map_filter Finset.map_filter
 
 @[simp]
@@ -435,7 +434,7 @@ theorem image_comm {β'} [DecidableEq β'] [DecidableEq γ] {f : β → γ} {g :
     {g' : β' → γ} (h_comm : ∀ a, f (g a) = g' (f' a)) :
     (s.image g).image f = (s.image f').image g' := by
   simp_rw [image_image]
-  simp (config := { unfoldPartialApp := true }) only [comp, h_comm]
+  simp only [comp_def, h_comm]
 #align finset.image_comm Finset.image_comm
 
 theorem _root_.Function.Semiconj.finset_image [DecidableEq α] {f : α → β} {ga : α → α} {gb : β → β}

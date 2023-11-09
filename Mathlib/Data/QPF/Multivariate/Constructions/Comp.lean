@@ -81,8 +81,8 @@ instance : MvQPF (Comp F G) where
               (map fun i ↦ (repr : G i α → (fun i : Fin2 n ↦ Obj (P (G i)) α) i)) ∘ Comp.get
   abs_repr := by
     intros
-    simp (config := { unfoldPartialApp := true }) only [(· ∘ ·), comp.get_mk, abs_repr, map_map,
-      TypeVec.comp, MvFunctor.id_map', Comp.mk_get]
+    simp (config := { unfoldPartialApp := true }) only [Function.comp_def, comp.get_mk, abs_repr,
+      map_map, TypeVec.comp, MvFunctor.id_map', Comp.mk_get]
   abs_map := by
     intros
     simp only [(· ∘ ·)]

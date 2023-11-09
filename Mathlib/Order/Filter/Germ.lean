@@ -548,7 +548,7 @@ instance addGroupWithOne [AddGroupWithOne G] : AddGroupWithOne (Germ l G) :=
   { intCast, addMonoidWithOne, addGroup with
     intCast_ofNat := fun _ => congrArg ofFun <| by simp
     intCast_negSucc := fun _ => congrArg ofFun <| by
-      simp (config := { unfoldPartialApp := true }) [Function.comp]
+      simp [Function.comp_def]
       rfl }
 
 end Monoid

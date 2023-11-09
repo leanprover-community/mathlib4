@@ -97,13 +97,13 @@ theorem map_pure (f : α → β) (x : α) : (f <$> pure x : Comp F G β) = pure 
 
 theorem seq_pure (f : Comp F G (α → β)) (x : α) : f <*> pure x = (fun g : α → β => g x) <$> f :=
   Comp.ext <| by
-    simp (config := { unfoldPartialApp := true }) [(· ∘ ·), functor_norm]
+    simp [Function.comp_def, functor_norm]
 #align functor.comp.seq_pure Functor.Comp.seq_pure
 
 theorem seq_assoc (x : Comp F G α) (f : Comp F G (α → β)) (g : Comp F G (β → γ)) :
     g <*> (f <*> x) = @Function.comp α β γ <$> g <*> f <*> x :=
   Comp.ext <| by
-    simp (config := { unfoldPartialApp := true }) [(· ∘ ·), functor_norm]
+    simp [Function.comp_def, functor_norm]
 #align functor.comp.seq_assoc Functor.Comp.seq_assoc
 
 theorem pure_seq_eq_map (f : α → β) (x : Comp F G α) : pure f <*> x = f <$> x :=
@@ -141,7 +141,7 @@ instance {f : Type u → Type w} {g : Type v → Type u} [Applicative f] [Applic
   intros
   simp! [map, Seq.seq, functor_norm]
   rw [commutative_map]
-  simp (config := { unfoldPartialApp := true }) only [mk, flip, seq_map_assoc, Function.comp, map_map]
+  simp only [mk, flip, seq_map_assoc, Function.comp_def, map_map]
   congr
   funext x y
   rw [commutative_map]
