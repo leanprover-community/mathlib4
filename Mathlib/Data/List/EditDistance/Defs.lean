@@ -133,7 +133,7 @@ theorem impl_length (d : {r : List δ // 0 < r.length}) (w : d.1.length = xs.len
     | ⟨d₁ :: d₂ :: ds, _⟩, w =>
       dsimp
       congr 1
-      refine ih ⟨d₂ :: ds, (by simp)⟩ (by simpa using w)
+      exact ih ⟨d₂ :: ds, (by simp)⟩ (by simpa using w)
 
 end Levenshtein
 
