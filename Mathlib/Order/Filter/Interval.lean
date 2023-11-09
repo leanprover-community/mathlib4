@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module order.filter.interval
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.OrdConnected
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.AtTopBot
+
+#align_import order.filter.interval from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # Convergence of intervals
@@ -47,7 +44,7 @@ that need topology are defined in `Mathlib/Topology/Algebra/Ordered`.
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 open Filter Set Function
 
@@ -68,11 +65,11 @@ eventually to `Set.Iic a`, then the interval `Set.Ico (u₁ n) (u₂ n)` is even
 We mark `l₂` as an `outParam` so that Lean can automatically find an appropriate `l₂` based on
 `Ixx` and `l₁`. This way, e.g., `tendsto.Ico h₁ h₂` works without specifying explicitly `l₂`. -/
 class TendstoIxxClass (Ixx : α → α → Set α) (l₁ : Filter α) (l₂ : outParam <| Filter α) : Prop where
-  /-- `Function.uncurry Ixx` tends to `l₂.smallSets` along `l₁ ×ᶠ l₁`. In other words, for any
+  /-- `Function.uncurry Ixx` tends to `l₂.smallSets` along `l₁ ×ˢ l₁`. In other words, for any
   `s ∈ l₂` there exists `t ∈ l₁` such that `Ixx x y ⊆ s` whenever `x ∈ t` and `y ∈ t`.
 
   Use lemmas like `Filter.Tendsto.Icc` instead. -/
-  tendsto_Ixx : Tendsto (fun p : α × α => Ixx p.1 p.2) (l₁ ×ᶠ l₁) l₂.smallSets
+  tendsto_Ixx : Tendsto (fun p : α × α => Ixx p.1 p.2) (l₁ ×ˢ l₁) l₂.smallSets
 #align filter.tendsto_Ixx_class Filter.TendstoIxxClass
 
 protected theorem Tendsto.Icc {l₁ l₂ : Filter α} [TendstoIxxClass Icc l₁ l₂] {lb : Filter β}
@@ -116,7 +113,7 @@ theorem tendstoIxxClass_of_subset {l₁ l₂ : Filter α} {Ixx Ixx' : α → α 
   ⟨h'.1.smallSets_mono <| eventually_of_forall <| Prod.forall.2 h⟩
 #align filter.tendsto_Ixx_class_of_subset Filter.tendstoIxxClass_of_subset
 
-theorem HasBasis.tendstoIxxClass {ι : Type _} {p : ι → Prop} {s} {l : Filter α}
+theorem HasBasis.tendstoIxxClass {ι : Type*} {p : ι → Prop} {s} {l : Filter α}
     (hl : l.HasBasis p s) {Ixx : α → α → Set α}
     (H : ∀ i, p i → ∀ x ∈ s i, ∀ y ∈ s i, Ixx x y ⊆ s i) : TendstoIxxClass Ixx l l :=
   ⟨(hl.prod_self.tendsto_iff hl.smallSets).2 fun i hi => ⟨i, hi, fun _ h => H i hi _ h.1 _ h.2⟩⟩

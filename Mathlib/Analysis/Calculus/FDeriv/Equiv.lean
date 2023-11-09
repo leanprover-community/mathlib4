@@ -2,14 +2,11 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.calculus.fderiv.equiv
-! leanprover-community/mathlib commit e3fb84046afd187b710170887195d50bada934ee
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
+
+#align_import analysis.calculus.fderiv.equiv from "leanprover-community/mathlib"@"e3fb84046afd187b710170887195d50bada934ee"
 
 /-!
 # The derivative of a linear equivalence
@@ -30,15 +27,15 @@ noncomputable section
 
 section
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-variable {G : Type _} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-variable {G' : Type _} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 variable {f f₀ f₁ g : E → F}
 
@@ -450,12 +447,12 @@ section
 
 /-
   In the special case of a normed space over the reals,
-  we can use  scalar multiplication in the `tendsto` characterization
+  we can use scalar multiplication in the `tendsto` characterization
   of the Fréchet derivative.
 -/
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 variable {f : E → F} {f' : E →L[ℝ] F} {x : E}
 
@@ -463,7 +460,7 @@ theorem has_fderiv_at_filter_real_equiv {L : Filter E} :
     Tendsto (fun x' : E => ‖x' - x‖⁻¹ * ‖f x' - f x - f' (x' - x)‖) L (𝓝 0) ↔
       Tendsto (fun x' : E => ‖x' - x‖⁻¹ • (f x' - f x - f' (x' - x))) L (𝓝 0) := by
   symm
-  rw [tendsto_iff_norm_tendsto_zero]
+  rw [tendsto_iff_norm_sub_tendsto_zero]
   refine' tendsto_congr fun x' => _
   simp [norm_smul]
 #align has_fderiv_at_filter_real_equiv has_fderiv_at_filter_real_equiv
@@ -479,8 +476,8 @@ end
 
 section TangentCone
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {s : Set E}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {s : Set E}
   {f' : E →L[𝕜] F}
 
 /-- The image of a tangent cone under the differential of a map is included in the tangent cone to

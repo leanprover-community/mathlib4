@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Group.limits
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.Algebra.Category.GroupCat.Preadditive
@@ -14,6 +9,8 @@ import Mathlib.CategoryTheory.Over
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+
+#align_import algebra.category.Group.limits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # The category of (commutative) (additive) groups has all limits
@@ -24,22 +21,13 @@ the underlying types are just the limits in the category of types.
 -/
 
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits
 
 universe v u
 
 noncomputable section
 
 variable {J : Type v} [SmallCategory J]
-
--- Porting note: typemax hack to fix universe complaints
-/-- An alias for `GroupCat.{max u v}`, to deal around unification issues. -/
-@[to_additive (attr := nolint checkUnivs)
-  "An alias for `AddGroupCat.{max u v}`, to deal around unification issues."]
-abbrev GroupCatMax.{u1, u2} := GroupCat.{max u1 u2}
-
 
 namespace GroupCat
 
@@ -52,15 +40,12 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddGroup.add_group_obj AddGroupCat.addGroupObj
 
-/-- The flat sections of a functor into `Group` form a subgroup of all sections.
+/-- The flat sections of a functor into `GroupCat` form a subgroup of all sections.
 -/
 @[to_additive
-  "The flat sections of a functor into `AddGroup` form an additive subgroup of all sections."]
+  "The flat sections of a functor into `AddGroupCat` form an additive subgroup of all sections."]
 def sectionsSubgroup (F : J ⥤ GroupCat) : Subgroup (∀ j, F.obj j) :=
-  {
-    MonCat.sectionsSubmonoid
-      (F ⋙ forget₂ GroupCat
-          MonCat) with
+  { MonCat.sectionsSubmonoid (F ⋙ forget₂ GroupCat MonCat) with
     carrier := (F ⋙ forget GroupCat).sections
     inv_mem' := fun {a} ah j j' f => by
       simp only [Functor.comp_map, Pi.inv_apply, MonoidHom.map_inv, inv_inj]
@@ -72,7 +57,7 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.sections_add_subgroup AddGroupCat.sectionsAddSubgroup
 
 @[to_additive]
-instance limitGroup (F : J ⥤ GroupCatMax.{v, u}) :
+noncomputable instance limitGroup (F : J ⥤ GroupCatMax.{v, u}) :
     Group (Types.limitCone.{v, u} (F ⋙ forget GroupCat)).pt := by
   change Group (sectionsSubgroup.{v, u} F)
   infer_instance
@@ -81,17 +66,17 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddGroup.limit_add_group AddGroupCat.limitAddGroup
 
-/-- We show that the forgetful functor `Group ⥤ Mon` creates limits.
+/-- We show that the forgetful functor `GroupCat ⥤ MonCat` creates limits.
 
-All we need to do is notice that the limit point has a `group` instance available, and then reuse
+All we need to do is notice that the limit point has a `Group` instance available, and then reuse
 the existing limit. -/
-@[to_additive "We show that the forgetful functor `AddGroup ⥤ AddMon` creates limits.
+@[to_additive "We show that the forgetful functor `AddGroupCat ⥤ AddMonCat` creates limits.
 
-All we need to do is notice that the limit point has an `add_group` instance available, and then
+All we need to do is notice that the limit point has an `AddGroup` instance available, and then
 reuse the existing limit."]
 noncomputable instance Forget₂.createsLimit (F : J ⥤ GroupCatMax.{v, u}) :
     CreatesLimit F (forget₂ GroupCatMax.{v, u} MonCatMax.{v, u}) :=
-  -- Porting note: need to add `forget₂ Grp Mon` reflects isomorphism
+  -- Porting note: need to add `forget₂ GrpCat MonCat` reflects isomorphism
   letI : ReflectsIsomorphisms (forget₂ GroupCatMax.{v, u} MonCatMax.{v, u}) :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   createsLimitOfReflectsIso (K := F) (F := (forget₂ GroupCat.{max v u} MonCat.{max v u}))
@@ -112,10 +97,10 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddGroup.forget₂.creates_limit AddGroupCat.Forget₂.createsLimit
 
-/-- A choice of limit cone for a functor into `Group`.
+/-- A choice of limit cone for a functor into `GroupCat`.
 (Generally, you'll just want to use `limit F`.)
 -/
-@[to_additive "A choice of limit cone for a functor into `Group`.
+@[to_additive "A choice of limit cone for a functor into `GroupCat`.
   (Generally, you'll just want to use `limit F`.)"]
 noncomputable def limitCone (F : J ⥤ GroupCatMax.{v, u}) : Cone F :=
   -- Porting note: add this instance to help Lean unify universe levels
@@ -142,8 +127,8 @@ set_option linter.uppercaseLean3 false in
 
 /-- The category of groups has all limits. -/
 @[to_additive "The category of additive groups has all limits."]
-instance hasLimitsOfSize : HasLimitsOfSize.{v, v} GroupCatMax.{v, u}
-    where has_limits_of_shape J _ :=
+instance hasLimitsOfSize : HasLimitsOfSize.{v, v} GroupCatMax.{v, u} where
+  has_limits_of_shape J _ :=
     { has_limit :=
         -- Porting note: add this instance to help Lean unify universe levels
         fun F => letI : HasLimit (F ⋙ forget₂ GroupCatMax.{v, u} MonCat.{max v u}) :=
@@ -172,8 +157,8 @@ This means the underlying monoid of a limit can be computed as a limit in the ca
   This means the underlying additive monoid of a limit can be computed as a limit in the category of
   additive monoids."]
 noncomputable instance forget₂MonPreservesLimitsOfSize :
-    PreservesLimitsOfSize.{v, v} (forget₂ GroupCatMax.{v, u} MonCat.{max v u})
-    where preservesLimitsOfShape {J _} := { preservesLimit := fun {F} =>
+    PreservesLimitsOfSize.{v, v} (forget₂ GroupCatMax.{v, u} MonCat.{max v u}) where
+  preservesLimitsOfShape {J _} := { preservesLimit := fun {F} =>
       -- Porting note: add this instance to help Lean unify universe levels
       letI : HasLimit (F ⋙ forget₂ GroupCatMax.{v, u} MonCat.{max v u}) :=
         (MonCat.hasLimitsOfSize.{v, u}.1 J).1 _
@@ -226,12 +211,6 @@ set_option linter.uppercaseLean3 false in
 
 end GroupCat
 
--- Porting note: typemax hack to fix universe complaints
-/-- An alias for `CommGroupCat.{max u v}`, to deal around unification issues. -/
-@[to_additive (attr := nolint checkUnivs)
-  "An alias for `AddCommGroupCat.{max u v}`, to deal around unification issues."]
-abbrev CommGroupCatMax.{u1, u2} := CommGroupCat.{max u1 u2}
-
 namespace CommGroupCat
 
 @[to_additive]
@@ -255,14 +234,14 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.limit_add_comm_group AddCommGroupCat.limitAddCommGroup
 
-/-- We show that the forgetful functor `CommGroup ⥤ Group` creates limits.
+/-- We show that the forgetful functor `CommGroupCat ⥤ GroupCat` creates limits.
 
-All we need to do is notice that the limit point has a `comm_group` instance available,
+All we need to do is notice that the limit point has a `CommGroup` instance available,
 and then reuse the existing limit.
 -/
-@[to_additive "We show that the forgetful functor `AddCommGroup ⥤ AddGroup` creates limits.
+@[to_additive "We show that the forgetful functor `AddCommGroupCat ⥤ AddGroupCat` creates limits.
 
-  All we need to do is notice that the limit point has an `add_comm_group` instance available,
+  All we need to do is notice that the limit point has an `AddCommGroup` instance available,
   and then reuse the existing limit."]
 noncomputable instance Forget₂.createsLimit (F : J ⥤ CommGroupCatMax.{v, u}) :
     CreatesLimit F (forget₂ CommGroupCat GroupCatMax.{v, u}) :=
@@ -284,11 +263,11 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.forget₂.creates_limit AddCommGroupCat.Forget₂.createsLimit
 
-/-- A choice of limit cone for a functor into `CommGroup`.
+/-- A choice of limit cone for a functor into `CommGroupCat`.
 (Generally, you'll just want to use `limit F`.)
 -/
 @[to_additive
-  "A choice of limit cone for a functor into `CommGroup`.
+  "A choice of limit cone for a functor into `AddCommGroupCat`.
   (Generally, you'll just want to use `limit F`.)"]
 noncomputable def limitCone (F : J ⥤ CommGroupCat.{max v u}) : Cone F :=
   liftLimit (limit.isLimit (F ⋙ forget₂ CommGroupCatMax.{v, u} GroupCatMax.{v, u}))
@@ -302,7 +281,7 @@ set_option linter.uppercaseLean3 false in
 -/
 @[to_additive
   "The chosen cone is a limit cone.
-  (Generally, you'll just wantto use `limit.cone F`.)"]
+  (Generally, you'll just want to use `limit.cone F`.)"]
 noncomputable def limitConeIsLimit (F : J ⥤ CommGroupCatMax.{v, u}) :
     IsLimit (limitCone.{v, u} F) :=
   liftedLimitIsLimit _
@@ -339,8 +318,8 @@ of groups.)
   (That is, the underlying group could have been computed instead as limits in the category
     of additive groups.)"]
 noncomputable instance forget₂GroupPreservesLimitsOfSize :
-    PreservesLimitsOfSize.{v, v} (forget₂ CommGroupCatMax.{v, u} GroupCatMax.{v, u})
-    where preservesLimitsOfShape {J 𝒥} := { preservesLimit := fun {F} => by infer_instance }
+    PreservesLimitsOfSize.{v, v} (forget₂ CommGroupCatMax.{v, u} GroupCatMax.{v, u}) where
+  preservesLimitsOfShape {J 𝒥} := { preservesLimit := fun {F} => by infer_instance }
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget₂_Group_preserves_limits_of_size CommGroupCat.forget₂GroupPreservesLimitsOfSize
 set_option linter.uppercaseLean3 false in
@@ -376,10 +355,9 @@ in the category of commutative monoids.)
   preserves all limits. (That is, the underlying additive commutative monoids could have been
   computed instead as limits in the category of additive commutative monoids.)"]
 noncomputable instance forget₂CommMonPreservesLimitsOfSize :
-    PreservesLimitsOfSize.{v, v} (forget₂ CommGroupCat CommMonCat.{max v u})
-    where preservesLimitsOfShape :=
-    {
-      preservesLimit := fun {F} =>
+    PreservesLimitsOfSize.{v, v} (forget₂ CommGroupCat CommMonCat.{max v u}) where
+  preservesLimitsOfShape :=
+    { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
           (forget₂CommMonPreservesLimitsAux.{v, u} F) }
 set_option linter.uppercaseLean3 false in
@@ -390,13 +368,13 @@ set_option linter.uppercaseLean3 false in
 /-- The forgetful functor from commutative groups to types preserves all limits. (That is, the
 underlying types could have been computed instead as limits in the category of types.)
 -/
-@[to_additive AddCommGroupCat.forgetPreservesLimits
+@[to_additive
   "The forgetful functor from additive commutative groups to types preserves all limits.
   (That is, the underlying types could have been computed instead as limits in the category of
   types.)"]
 noncomputable instance forgetPreservesLimitsOfSize :
-    PreservesLimitsOfSize.{v, v} (forget CommGroupCatMax.{v, u})
-  where preservesLimitsOfShape {J _} :=
+    PreservesLimitsOfSize.{v, v} (forget CommGroupCatMax.{v, u}) where
+  preservesLimitsOfShape {J _} :=
   { preservesLimit := fun {F} =>
     -- Porting note : add these instance to help Lean unify universe levels
     letI : HasLimit (F ⋙ forget₂ CommGroupCatMax.{v, u} GroupCat.{max v u}) :=
@@ -407,7 +385,11 @@ noncomputable instance forgetPreservesLimitsOfSize :
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget_preserves_limits_of_size CommGroupCat.forgetPreservesLimitsOfSize
 set_option linter.uppercaseLean3 false in
-#align AddCommGroup.forget_preserves_limits AddCommGroupCat.forgetPreservesLimits
+#align AddCommGroup.forget_preserves_limits AddCommGroupCat.forgetPreservesLimitsOfSize
+
+@[to_additive]
+noncomputable instance forgetPreservesLimits : PreservesLimits (forget CommGroupCat.{u}) :=
+  CommGroupCat.forgetPreservesLimitsOfSize.{u, u}
 
 -- Verify we can form limits indexed over smaller categories.
 example (f : ℕ → AddCommGroupCat) : HasProduct f := by infer_instance
@@ -416,7 +398,7 @@ end CommGroupCat
 
 namespace AddCommGroupCat
 
-/-- The categorical kernel of a morphism in `AddCommGroup`
+/-- The categorical kernel of a morphism in `AddCommGroupCat`
 agrees with the usual group-theoretical kernel.
 -/
 def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
@@ -425,7 +407,7 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     { toFun := fun g => ⟨kernel.ι f g, FunLike.congr_fun (kernel.condition f) g⟩
       map_zero' := by
         refine Subtype.ext ?_
-        simpa using (AddSubgroup.coe_zero _).symm
+        simp [(AddSubgroup.coe_zero _).symm]
       map_add' := fun g g' => by
         refine Subtype.ext ?_
         change _ = _ + _
@@ -437,6 +419,8 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     rintro ⟨x, (hx : f _ = 0)⟩
     exact hx
   hom_inv_id := by
+    -- Porting note: it would be nice to do the next two steps by a single `ext`,
+    -- but this will require thinking carefully about the relative priorities of `@[ext]` lemmas.
     refine equalizer.hom_ext ?_
     ext x
     dsimp
@@ -457,7 +441,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem kernelIsoKer_hom_comp_subtype {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
-    (kernelIsoKer f).hom ≫ AddSubgroup.subtype f.ker = kernel.ι f := by ext ; rfl
+    (kernelIsoKer f).hom ≫ AddSubgroup.subtype f.ker = kernel.ι f := by ext; rfl
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker_hom_comp_subtype AddCommGroupCat.kernelIsoKer_hom_comp_subtype
 
@@ -477,8 +461,12 @@ agrees with the `subtype` map.
 @[simps! hom_left_apply_coe inv_left_apply]
 def kernelIsoKerOver {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     Over.mk (kernel.ι f) ≅ @Over.mk _ _ G (AddCommGroupCat.of f.ker) (AddSubgroup.subtype f.ker) :=
-  Over.isoMk (kernelIsoKer f) <| by simp
+  Over.isoMk (kernelIsoKer f)
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker_over AddCommGroupCat.kernelIsoKerOver
+
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AddCommGroupCat.kernelIsoKerOver_inv_left_apply
+  AddCommGroupCat.kernelIsoKerOver_hom_left_apply_coe
 
 end AddCommGroupCat

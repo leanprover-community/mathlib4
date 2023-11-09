@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.finite_presentation
-! leanprover-community/mathlib commit da420a8c6dd5bdfb85c4ced85c34388f633bc6ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.MvPolynomial.Tower
 import Mathlib.RingTheory.Ideal.QuotientOperations
+
+#align_import ring_theory.finite_presentation from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -27,6 +24,8 @@ In this file we define several notions of finiteness that are common in commutat
   all of these express that some object is finitely presented *as algebra* over some base ring.
 
 -/
+
+set_option autoImplicit true
 
 open Function (Surjective)
 
@@ -146,7 +145,7 @@ theorem of_surjective {f : A →ₐ[R] B} (hf : Function.Surjective f) (hker : f
 
 theorem iff :
     FinitePresentation R A ↔
-      ∃ (n : _)(I : Ideal (MvPolynomial (Fin n) R)) (_ : (_ ⧸ I) ≃ₐ[R] A), I.FG := by
+      ∃ (n : _) (I : Ideal (MvPolynomial (Fin n) R)) (_ : (_ ⧸ I) ≃ₐ[R] A), I.FG := by
   constructor
   · rintro ⟨n, f, hf⟩
     exact ⟨n, RingHom.ker f.toRingHom, Ideal.quotientKerAlgEquivOfSurjective hf.1, hf.2⟩
@@ -158,7 +157,7 @@ theorem iff :
 variables are indexed by a fintype by a finitely generated ideal. -/
 theorem iff_quotient_mvPolynomial' :
     FinitePresentation R A ↔
-      ∃ (ι : Type _) (_ : Fintype ι) (f : MvPolynomial ι R →ₐ[R] A),
+      ∃ (ι : Type*) (_ : Fintype ι) (f : MvPolynomial ι R →ₐ[R] A),
         Surjective f ∧ f.toRingHom.ker.FG := by
   constructor
   · rintro ⟨n, f, hfs, hfk⟩
@@ -382,7 +381,7 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
     exact Set.mem_image_of_mem _ hx
 #align algebra.finite_presentation.ker_fg_of_mv_polynomial Algebra.FinitePresentation.ker_fg_of_mvPolynomial
 
-/-- If `f : A →ₐ[R] B` is a sujection between finitely-presented `R`-algebras, then the kernel of
+/-- If `f : A →ₐ[R] B` is a surjection between finitely-presented `R`-algebras, then the kernel of
 `f` is finitely generated. -/
 theorem ker_fG_of_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f)
     (hRA : FinitePresentation R A) (hRB : FinitePresentation R B) : f.toRingHom.ker.FG := by
@@ -400,7 +399,7 @@ end ModuleAndAlgebra
 
 namespace RingHom
 
-variable {A B C : Type _} [CommRing A] [CommRing B] [CommRing C]
+variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 
 /-- A ring morphism `A →+* B` is of `RingHom.FinitePresentation` if `B` is finitely presented as
 `A`-algebra. -/
@@ -476,7 +475,7 @@ end RingHom
 
 namespace AlgHom
 
-variable {R A B C : Type _} [CommRing R]
+variable {R A B C : Type*} [CommRing R]
 
 variable [CommRing A] [CommRing B] [CommRing C]
 
@@ -518,7 +517,7 @@ theorem comp_surjective {f : A →ₐ[R] B} {g : B →ₐ[R] C} (hf : f.FinitePr
 
 theorem of_surjective (f : A →ₐ[R] B) (hf : Surjective f) (hker : f.toRingHom.ker.FG) :
     f.FinitePresentation := by
-  -- Porting note: added `convert
+  -- Porting note: added `convert`
   convert RingHom.FinitePresentation.of_surjective f hf hker
 #align alg_hom.finite_presentation.of_surjective AlgHom.FinitePresentation.of_surjective
 

@@ -12,7 +12,7 @@ example [_dont_delete_this : Inhabited Nat] : Inhabited Nat := by
   clear_
   assumption
 
--- Confirms that clear_ clears _delete_ths but not dont_delete_this
+-- Confirms that clear_ clears _delete_this but not dont_delete_this
 example (_delete_this : Nat) (dont_delete_this : Int) : Nat := by
   clear_
   fail_if_success assumption

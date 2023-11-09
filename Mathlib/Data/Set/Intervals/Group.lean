@@ -2,22 +2,18 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
-Ported by: Winston Yin
-
-! This file was ported from Lean 3 source module data.set.intervals.group
-! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.GroupPower.Lemmas
 
+#align_import data.set.intervals.group from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
+
 /-! ### Lemmas about arithmetic operations and intervals. -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Set
 
@@ -137,7 +133,7 @@ theorem sub_mem_Ioo_iff_right : a - b ∈ Set.Ioo c d ↔ b ∈ Set.Ioo (a - d) 
 
 -- I think that symmetric intervals deserve attention and API: they arise all the time,
 -- for instance when considering metric balls in `ℝ`.
-theorem mem_Icc_iff_abs_le {R : Type _} [LinearOrderedAddCommGroup R] {x y z : R} :
+theorem mem_Icc_iff_abs_le {R : Type*} [LinearOrderedAddCommGroup R] {x y z : R} :
     |x - y| ≤ z ↔ y ∈ Icc (x - z) (x + z) :=
   abs_le.trans <| and_comm.trans <| and_congr sub_le_comm neg_le_sub_iff_le_add
 #align set.mem_Icc_iff_abs_le Set.mem_Icc_iff_abs_le

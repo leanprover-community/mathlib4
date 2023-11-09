@@ -2,15 +2,14 @@
 Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module algebra.regular.basic
-! leanprover-community/mathlib commit 5cd3c25312f210fec96ba1edb2aebfb2ccf2010f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Group.Commute
+import Mathlib.Algebra.Group.Commute.Defs
+import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Order.Monoid.Lemmas
 import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Tactic.NthRewrite
+
+#align_import algebra.regular.basic from "leanprover-community/mathlib"@"5cd3c25312f210fec96ba1edb2aebfb2ccf2010f"
 
 /-!
 # Regular elements
@@ -31,7 +30,7 @@ The final goal is to develop part of the API to prove, eventually, results about
 -/
 
 
-variable {R : Type _}
+variable {R : Type*}
 
 section Mul
 
@@ -57,7 +56,7 @@ def IsRightRegular (c : R) :=
 
 /-- An add-regular element is an element `c` such that addition by `c` both on the left and
 on the right is injective. -/
-structure IsAddRegular {R : Type _} [Add R] (c : R) : Prop where
+structure IsAddRegular {R : Type*} [Add R] (c : R) : Prop where
   /-- An add-regular element `c` is left-regular -/
   left : IsAddLeftRegular c -- Porting note: It seems like to_additive is misbehaving
   /-- An add-regular element `c` is right-regular -/
@@ -72,6 +71,8 @@ structure IsRegular (c : R) : Prop where
   /-- A regular element `c` is right-regular -/
   right : IsRightRegular c
 #align is_regular IsRegular
+
+attribute [simp] IsRegular.left IsRegular.right
 
 attribute [to_additive] IsRegular
 
@@ -116,7 +117,7 @@ theorem IsRightRegular.mul (rra : IsRightRegular a) (rrb : IsRightRegular b) :
 /-- If an element `b` becomes left-regular after multiplying it on the left by a left-regular
 element, then `b` is left-regular. -/
 @[to_additive "If an element `b` becomes add-left-regular after adding to it on the left
-a add-left-regular element, then `b` is add-left-regular."]
+an add-left-regular element, then `b` is add-left-regular."]
 theorem IsLeftRegular.of_mul (ab : IsLeftRegular (a * b)) : IsLeftRegular b :=
   Function.Injective.of_comp (by rwa [comp_mul_left a b])
 #align is_left_regular.of_mul IsLeftRegular.of_mul
@@ -125,7 +126,7 @@ theorem IsLeftRegular.of_mul (ab : IsLeftRegular (a * b)) : IsLeftRegular b :=
 /-- An element is left-regular if and only if multiplying it on the left by a left-regular element
 is left-regular. -/
 @[to_additive (attr := simp) "An element is add-left-regular if and only if adding to it on the left
-a add-left-regular element is add-left-regular."]
+an add-left-regular element is add-left-regular."]
 theorem mul_isLeftRegular_iff (b : R) (ha : IsLeftRegular a) :
     IsLeftRegular (a * b) ↔ IsLeftRegular b :=
   ⟨fun ab => IsLeftRegular.of_mul ab, fun ab => IsLeftRegular.mul ha ab⟩
@@ -135,7 +136,7 @@ theorem mul_isLeftRegular_iff (b : R) (ha : IsLeftRegular a) :
 /-- If an element `b` becomes right-regular after multiplying it on the right by a right-regular
 element, then `b` is right-regular. -/
 @[to_additive "If an element `b` becomes add-right-regular after adding to it on the right
-a add-right-regular element, then `b` is add-right-regular."]
+an add-right-regular element, then `b` is add-right-regular."]
 theorem IsRightRegular.of_mul (ab : IsRightRegular (b * a)) : IsRightRegular b := by
   refine' fun x y xy => ab (_ : x * (b * a) = y * (b * a))
   rw [← mul_assoc, ← mul_assoc]
@@ -147,7 +148,7 @@ theorem IsRightRegular.of_mul (ab : IsRightRegular (b * a)) : IsRightRegular b :
 element is right-regular. -/
 @[to_additive (attr := simp)
 "An element is add-right-regular if and only if adding it on the right to
-a add-right-regular element is add-right-regular."]
+an add-right-regular element is add-right-regular."]
 theorem mul_isRightRegular_iff (b : R) (ha : IsRightRegular a) :
     IsRightRegular (b * a) ↔ IsRightRegular b :=
   ⟨fun ab => IsRightRegular.of_mul ab, fun ab => IsRightRegular.mul ab ha⟩
@@ -268,6 +269,14 @@ theorem not_isRightRegular_zero [nR : Nontrivial R] : ¬IsRightRegular (0 : R) :
 /-- In a non-trivial ring, the element `0` is not regular -- with typeclasses. -/
 theorem not_isRegular_zero [Nontrivial R] : ¬IsRegular (0 : R) := fun h => IsRegular.ne_zero h rfl
 #align not_is_regular_zero not_isRegular_zero
+
+@[simp] lemma IsLeftRegular.mul_left_eq_zero_iff (hb : IsLeftRegular b) : b * a = 0 ↔ a = 0 := by
+  nth_rw 1 [← mul_zero b]
+  exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha, mul_zero]⟩
+
+@[simp] lemma IsRightRegular.mul_right_eq_zero_iff (hb : IsRightRegular b) : a * b = 0 ↔ a = 0 := by
+  nth_rw 1 [← zero_mul b]
+  exact ⟨fun h ↦ hb h, fun ha ↦ by rw [ha, zero_mul]⟩
 
 end MulZeroClass
 

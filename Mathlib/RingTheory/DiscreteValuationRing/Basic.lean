@@ -2,17 +2,14 @@
 Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
-
-! This file was ported from Lean 3 source module ring_theory.discrete_valuation_ring.basic
-! leanprover-community/mathlib commit c163ec99dfc664628ca15d215fce0a5b9c265b68
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.LinearAlgebra.AdicCompletion
+
+#align_import ring_theory.discrete_valuation_ring.basic from "leanprover-community/mathlib"@"c163ec99dfc664628ca15d215fce0a5b9c265b68"
 
 /-!
 # Discrete valuation rings
@@ -76,7 +73,7 @@ variable {R}
 
 open PrincipalIdealRing
 
-theorem irreducible_of_span_eq_maximalIdeal {R : Type _} [CommRing R] [LocalRing R] [IsDomain R]
+theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommRing R] [LocalRing R] [IsDomain R]
     (ϖ : R) (hϖ : ϖ ≠ 0) (h : maximalIdeal R = Ideal.span {ϖ}) : Irreducible ϖ := by
   have h2 : ¬IsUnit ϖ := show ϖ ∈ maximalIdeal R from h.symm ▸ Submodule.mem_span_singleton_self ϖ
   refine' ⟨h2, _⟩
@@ -159,7 +156,7 @@ end DiscreteValuationRing
 
 namespace DiscreteValuationRing
 
-variable (R : Type _)
+variable (R : Type*)
 
 /-- Alternative characterisation of discrete valuation rings. -/
 def HasUnitMulPowIrreducibleFactorization [CommRing R] : Prop :=
@@ -217,7 +214,7 @@ theorem toUniqueFactorizationMonoid : UniqueFactorizationMonoid R :=
       rw [mul_assoc, mul_left_comm, IsUnit.dvd_mul_left _ _ _ (Units.isUnit _)] at h
       rw [IsUnit.dvd_mul_right (Units.isUnit _)]
       by_cases hm : m = 0
-      · simp only [hm, one_mul, pow_zero] at h⊢
+      · simp only [hm, one_mul, pow_zero] at h ⊢
         right
         exact h
       left
@@ -237,7 +234,7 @@ theorem of_ufd_of_unique_irreducible [UniqueFactorizationMonoid R] (h₁ : ∃ p
   cases' WfDvdMonoid.exists_factors x hx with fx hfx
   refine' ⟨Multiset.card fx, _⟩
   have H := hfx.2
-  rw [← Associates.mk_eq_mk_iff_associated] at H⊢
+  rw [← Associates.mk_eq_mk_iff_associated] at H ⊢
   rw [← H, ← Associates.prod_mk, Associates.mk_pow, ← Multiset.prod_replicate]
   congr 1
   symm
@@ -331,7 +328,7 @@ theorem associated_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irred
   cases' WfDvdMonoid.exists_factors x hx with fx hfx
   use Multiset.card fx
   have H := hfx.2
-  rw [← Associates.mk_eq_mk_iff_associated] at H⊢
+  rw [← Associates.mk_eq_mk_iff_associated] at H ⊢
   rw [← H, ← Associates.prod_mk, Associates.mk_pow, ← Multiset.prod_replicate]
   congr 1
   rw [Multiset.eq_replicate]
@@ -345,7 +342,7 @@ theorem associated_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irred
 #align discrete_valuation_ring.associated_pow_irreducible DiscreteValuationRing.associated_pow_irreducible
 
 theorem eq_unit_mul_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irreducible ϖ) :
-    ∃ (n : ℕ)(u : Rˣ), x = u * ϖ ^ n := by
+    ∃ (n : ℕ) (u : Rˣ), x = u * ϖ ^ n := by
   obtain ⟨n, hn⟩ := associated_pow_irreducible hx hirr
   obtain ⟨u, rfl⟩ := hn.symm
   use n, u
@@ -481,7 +478,7 @@ theorem addVal_add {a b : R} : min (addVal R a) (addVal R b) ≤ addVal R (a + b
 
 end
 
-instance (R : Type _) [CommRing R] [IsDomain R] [DiscreteValuationRing R] :
+instance (R : Type*) [CommRing R] [IsDomain R] [DiscreteValuationRing R] :
     IsHausdorff (maximalIdeal R) R where
   haus' x hx := by
     obtain ⟨ϖ, hϖ⟩ := exists_irreducible R

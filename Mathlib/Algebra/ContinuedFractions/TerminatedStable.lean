@@ -2,13 +2,10 @@
 Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
-
-! This file was ported from Lean 3 source module algebra.continued_fractions.terminated_stable
-! leanprover-community/mathlib commit a7e36e48519ab281320c4d192da6a7b348ce40ad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.ContinuedFractions.Translations
+
+#align_import algebra.continued_fractions.terminated_stable from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
 /-!
 # Stabilisation of gcf Computations Under Termination
@@ -21,7 +18,7 @@ We show that the continuants and convergents of a gcf stabilise once the gcf ter
 
 namespace GeneralizedContinuedFraction
 
-variable {K : Type _} {g : GeneralizedContinuedFraction K} {n m : ℕ}
+variable {K : Type*} {g : GeneralizedContinuedFraction K} {n m : ℕ}
 
 /-- If a gcf terminated at position `n`, it also terminated at `m ≥ n`.-/
 theorem terminated_stable (n_le_m : n ≤ m) (terminated_at_n : g.TerminatedAt n) :

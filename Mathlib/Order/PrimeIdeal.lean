@@ -2,14 +2,11 @@
 Copyright (c) 2021 Noam Atar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Noam Atar
-
-! This file was ported from Lean 3 source module order.prime_ideal
-! leanprover-community/mathlib commit 740acc0e6f9adf4423f92a485d0456fc271482da
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Ideal
 import Mathlib.Order.PFilter
+
+#align_import order.prime_ideal from "leanprover-community/mathlib"@"740acc0e6f9adf4423f92a485d0456fc271482da"
 
 /-!
 # Prime ideals
@@ -19,9 +16,9 @@ import Mathlib.Order.PFilter
 Throughout this file, `P` is at least a preorder, but some sections require more
 structure, such as a bottom element, a top element, or a join-semilattice structure.
 
-- `Order.Ideal.PrimePair`: A pair of an `ideal` and a `pfilter` which form a partition of `P`.
-  This is useful as giving the data of a prime ideal is the same as giving the data of a prime
-  filter.
+- `Order.Ideal.PrimePair`: A pair of an `Order.Ideal` and an `Order.PFilter` which form a partition
+  of `P`.  This is useful as giving the data of a prime ideal is the same as giving the data of a
+  prime filter.
 - `Order.Ideal.IsPrime`: a predicate for prime ideals. Dual to the notion of a prime filter.
 - `Order.PFilter.IsPrime`: a predicate for prime filters. Dual to the notion of a prime ideal.
 
@@ -40,14 +37,14 @@ open Order.PFilter
 
 namespace Order
 
-variable {P : Type _}
+variable {P : Type*}
 
 namespace Ideal
 
-/-- A pair of an `ideal` and a `pfilter` which form a partition of `P`.
+/-- A pair of an `Order.Ideal` and an `Order.PFilter` which form a partition of `P`.
 -/
 -- porting note: no attr @[nolint has_nonempty_instance]
-structure PrimePair (P : Type _) [Preorder P] where
+structure PrimePair (P : Type*) [Preorder P] where
   I : Ideal P
   F : PFilter P
   isCompl_I_F : IsCompl (I : Set P) F
@@ -94,7 +91,7 @@ end PrimePair
 -/
 @[mk_iff]
 class IsPrime [Preorder P] (I : Ideal P) extends IsProper I : Prop where
-  compl_filter : IsPFilter ((I : Set P)ᶜ)
+  compl_filter : IsPFilter (I : Set P)ᶜ
 #align order.ideal.is_prime Order.Ideal.IsPrime
 
 section Preorder
@@ -201,8 +198,7 @@ instance (priority := 100) IsPrime.isMaximal [IsPrime I] : IsMaximal I := by
   simp only [IsMaximal_iff, Set.eq_univ_iff_forall, IsPrime.toIsProper, true_and]
   intro J hIJ x
   rcases Set.exists_of_ssubset hIJ with ⟨y, hyJ, hyI⟩
-  suffices ass : x ⊓ y ⊔ x ⊓ yᶜ ∈ J
-  · rwa [sup_inf_inf_compl] at ass
+  suffices ass : x ⊓ y ⊔ x ⊓ yᶜ ∈ J by rwa [sup_inf_inf_compl] at ass
   exact
     sup_mem (J.lower inf_le_right hyJ)
       (hIJ.le <| I.lower inf_le_right <| IsPrime.mem_compl_of_not_mem ‹_› hyI)
@@ -220,7 +216,7 @@ variable [Preorder P]
 -/
 @[mk_iff]
 class IsPrime (F : PFilter P) : Prop where
-  compl_ideal : IsIdeal ((F : Set P)ᶜ)
+  compl_ideal : IsIdeal (F : Set P)ᶜ
 #align order.pfilter.is_prime Order.PFilter.IsPrime
 
 /-- Create an element of type `Order.Ideal.PrimePair` from a filter satisfying the predicate

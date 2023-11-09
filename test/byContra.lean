@@ -1,8 +1,10 @@
 -- tests for byContra' tactic
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Rename
+import Mathlib.Tactic.Set
 import Mathlib.Data.Nat.Basic
 
+set_option autoImplicit true
 example (a b : ℕ) (foo : False)  : a < b := by
   by_contra'
   guard_hyp this : b ≤ a
@@ -32,3 +34,24 @@ example (p : Prop) (bar : False) : ¬ ¬ ¬ ¬ ¬ ¬ P := by
   by_contra' : ¬ ¬ ¬ P
   guard_hyp this : ¬ ¬ ¬ P
   exact bar
+
+variable [LinearOrder α] [One α] [Mul α]
+
+example (x : α) (f : False) : x ≤ 1 := by
+  set a := x * x
+  by_contra' h
+  guard_hyp h : 1 < x
+  assumption
+
+example (x : α) (f : False) : x ≤ 1 := by
+  let _a := x * x
+  by_contra' h
+  guard_hyp h : 1 < x
+  assumption
+
+example (x : α) (f : False) : x ≤ 1 := by
+  set a := x * x
+  have : a ≤ a := le_rfl
+  by_contra' h
+  guard_hyp h : 1 < x
+  assumption

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module dynamics.ergodic.measure_preserving
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.AEMeasurable
+
+#align_import dynamics.ergodic.measure_preserving from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Measure preserving maps
@@ -31,7 +28,7 @@ measure preserving map, measure
 -/
 
 
-variable {α β γ δ : Type _} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
+variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
   [MeasurableSpace δ]
 
 namespace MeasureTheory
@@ -64,6 +61,11 @@ protected theorem id (μ : Measure α) : MeasurePreserving id μ μ :=
 protected theorem aemeasurable {f : α → β} (hf : MeasurePreserving f μa μb) : AEMeasurable f μa :=
   hf.1.aemeasurable
 #align measure_theory.measure_preserving.ae_measurable MeasureTheory.MeasurePreserving.aemeasurable
+
+@[nontriviality]
+theorem of_isEmpty [IsEmpty β] (f : α → β) (μa : Measure α) (μb : Measure β) :
+    MeasurePreserving f μa μb :=
+  ⟨measurable_of_subsingleton_codomain _, Subsingleton.elim _ _⟩
 
 theorem symm (e : α ≃ᵐ β) {μa : Measure α} {μb : Measure β} (h : MeasurePreserving e μa μb) :
     MeasurePreserving e.symm μb μa :=
@@ -102,6 +104,14 @@ protected theorem comp {g : β → γ} {f : α → β} (hg : MeasurePreserving g
   ⟨hg.1.comp hf.1, by rw [← map_map hg.1 hf.1, hf.2, hg.2]⟩
 #align measure_theory.measure_preserving.comp MeasureTheory.MeasurePreserving.comp
 
+/-- An alias of `MeasureTheory.MeasurePreserving.comp` with a convenient defeq and argument order
+for `MeasurableEquiv` -/
+protected theorem trans {e : α ≃ᵐ β} {e' : β ≃ᵐ γ}
+    {μa : Measure α} {μb : Measure β} {μc : Measure γ}
+    (h : MeasurePreserving e μa μb) (h' : MeasurePreserving e' μb μc) :
+    MeasurePreserving (e.trans e') μa μc :=
+  h'.comp h
+
 protected theorem comp_left_iff {g : α → β} {e : β ≃ᵐ γ} (h : MeasurePreserving e μb μc) :
     MeasurePreserving (e ∘ g) μa μc ↔ MeasurePreserving g μa μb := by
   refine' ⟨fun hg => _, fun hg => h.comp hg⟩
@@ -131,18 +141,27 @@ theorem measure_preimage_emb {f : α → β} (hf : MeasurePreserving f μa μb)
 #align measure_theory.measure_preserving.measure_preimage_emb MeasureTheory.MeasurePreserving.measure_preimage_emb
 
 protected theorem iterate {f : α → α} (hf : MeasurePreserving f μa μa) :
-    ∀ n, MeasurePreserving (f^[n]) μa μa
+    ∀ n, MeasurePreserving f^[n] μa μa
   | 0 => MeasurePreserving.id μa
   | n + 1 => (MeasurePreserving.iterate hf n).comp hf
 #align measure_theory.measure_preserving.iterate MeasureTheory.MeasurePreserving.iterate
 
 variable {μ : Measure α} {f : α → α} {s : Set α}
 
+lemma measure_symmDiff_preimage_iterate_le
+    (hf : MeasurePreserving f μ μ) (hs : MeasurableSet s) (n : ℕ) :
+    μ (s ∆ (f^[n] ⁻¹' s)) ≤ n • μ (s ∆ (f ⁻¹' s)) := by
+  induction' n with n ih; simp
+  simp only [add_smul, one_smul, ← n.add_one]
+  refine' le_trans (measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)) (add_le_add ih _)
+  replace hs : MeasurableSet (s ∆ (f ⁻¹' s)) := hs.symmDiff $ hf.measurable hs
+  rw [iterate_succ', preimage_comp, ← preimage_symmDiff, (hf.iterate n).measure_preimage hs]
+
 /-- If `μ univ < n * μ s` and `f` is a map preserving measure `μ`,
 then for some `x ∈ s` and `0 < m < n`, `f^[m] x ∈ s`. -/
 theorem exists_mem_image_mem_of_volume_lt_mul_volume (hf : MeasurePreserving f μ μ)
     (hs : MeasurableSet s) {n : ℕ} (hvol : μ (Set.univ : Set α) < n * μ s) :
-    ∃ x ∈ s, ∃ m ∈ Set.Ioo 0 n, (f^[m]) x ∈ s := by
+    ∃ x ∈ s, ∃ m ∈ Set.Ioo 0 n, f^[m] x ∈ s := by
   have A : ∀ m, MeasurableSet (f^[m] ⁻¹' s) := fun m => (hf.iterate m).measurable hs
   have B : ∀ m, μ (f^[m] ⁻¹' s) = μ s := fun m => (hf.iterate m).measure_preimage hs
   have : μ (Set.univ : Set α) < (Finset.range n).sum fun m => μ (f^[m] ⁻¹' s) := by
@@ -152,7 +171,7 @@ theorem exists_mem_image_mem_of_volume_lt_mul_volume (hf : MeasurePreserving f �
   wlog hlt : i < j generalizing i j
   · exact this j hj i hi hij.symm hxj hxi (hij.lt_or_lt.resolve_left hlt)
   simp only [Set.mem_preimage, Finset.mem_range] at hi hj hxi hxj
-  refine' ⟨(f^[i]) x, hxi, j - i, ⟨tsub_pos_of_lt hlt, lt_of_le_of_lt (j.sub_le i) hj⟩, _⟩
+  refine' ⟨f^[i] x, hxi, j - i, ⟨tsub_pos_of_lt hlt, lt_of_le_of_lt (j.sub_le i) hj⟩, _⟩
   rwa [← iterate_add_apply, tsub_add_cancel_of_le hlt.le]
 #align measure_theory.measure_preserving.exists_mem_image_mem_of_volume_lt_mul_volume MeasureTheory.MeasurePreserving.exists_mem_image_mem_of_volume_lt_mul_volume
 
@@ -160,8 +179,8 @@ theorem exists_mem_image_mem_of_volume_lt_mul_volume (hf : MeasurePreserving f �
 `x ∈ s` comes back to `s` under iterations of `f`. Actually, a.e. point of `s` comes back to `s`
 infinitely many times, see `MeasureTheory.MeasurePreserving.conservative` and theorems about
 `MeasureTheory.Conservative`. -/
-theorem exists_mem_image_mem [FiniteMeasure μ] (hf : MeasurePreserving f μ μ)
-    (hs : MeasurableSet s) (hs' : μ s ≠ 0) : ∃ x ∈ s, ∃ (m : _) (_ : m ≠ 0), (f^[m]) x ∈ s := by
+theorem exists_mem_image_mem [IsFiniteMeasure μ] (hf : MeasurePreserving f μ μ)
+    (hs : MeasurableSet s) (hs' : μ s ≠ 0) : ∃ x ∈ s, ∃ (m : _) (_ : m ≠ 0), f^[m] x ∈ s := by
   rcases ENNReal.exists_nat_mul_gt hs' (measure_ne_top μ (Set.univ : Set α)) with ⟨N, hN⟩
   rcases hf.exists_mem_image_mem_of_volume_lt_mul_volume hs hN with ⟨x, hx, m, hm, hmx⟩
   exact ⟨x, hx, m, hm.1.ne', hmx⟩

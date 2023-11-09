@@ -2,15 +2,12 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module order.height
-! leanprover-community/mathlib commit bf27744463e9620ca4e4ebe951fe83530ae6949b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Tactic.TFAE
+
+#align_import order.height from "leanprover-community/mathlib"@"bf27744463e9620ca4e4ebe951fe83530ae6949b"
 
 /-!
 
@@ -51,7 +48,7 @@ open OrderDual
 
 universe u v
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Set
 
@@ -98,7 +95,7 @@ theorem exists_chain_of_le_chainHeight {n : ℕ} (hn : ↑n ≤ s.chainHeight) :
   cases' (le_top : s.chainHeight ≤ ⊤).eq_or_lt with ha ha <;>
     rw [chainHeight_eq_iSup_subtype] at ha
   · obtain ⟨_, ⟨⟨l, h₁, h₂⟩, rfl⟩, h₃⟩ :=
-      not_bddAbove_iff'.mp ((WithTop.iSup_coe_eq_top _).mp ha) n
+      not_bddAbove_iff'.mp (WithTop.iSup_coe_eq_top.1 ha) n
     exact ⟨l.take n, ⟨h₁.take _, fun x h ↦ h₂ _ <| take_subset _ _ h⟩,
       (l.length_take n).trans <| min_eq_left <| le_of_not_ge h₃⟩
   · rw [ENat.iSup_coe_lt_top] at ha
@@ -111,12 +108,10 @@ theorem exists_chain_of_le_chainHeight {n : ℕ} (hn : ↑n ≤ s.chainHeight) :
 
 theorem le_chainHeight_TFAE (n : ℕ) :
     TFAE [↑n ≤ s.chainHeight, ∃ l ∈ s.subchain, length l = n, ∃ l ∈ s.subchain, n ≤ length l] := by
-  apply_rules [tfae_of_cycle, Chain.cons, Chain.nil]
-  · exact s.exists_chain_of_le_chainHeight
-  · rintro ⟨l, hls, he⟩
-    exact ⟨l, hls, he.ge⟩
-  · rintro ⟨l, hs, hn⟩
-    exact le_iSup₂_of_le l hs (Nat.cast_le.2 hn)
+  tfae_have 1 → 2; · exact s.exists_chain_of_le_chainHeight
+  tfae_have 2 → 3; · rintro ⟨l, hls, he⟩; exact ⟨l, hls, he.ge⟩
+  tfae_have 3 → 1; · rintro ⟨l, hs, hn⟩; exact le_iSup₂_of_le l hs (WithTop.coe_le_coe.2 hn)
+  tfae_finish
 #align set.le_chain_height_tfae Set.le_chainHeight_TFAE
 
 variable {s t}
@@ -176,7 +171,7 @@ theorem chainHeight_add_le_chainHeight_add (s : Set α) (t : Set β) (n m : ℕ)
   · suffices t.chainHeight = ⊤ by
       rw [this, top_add]
       exact le_top
-    rw [chainHeight_eq_top_iff] at h⊢
+    rw [chainHeight_eq_top_iff] at h ⊢
     intro k
     have := (le_chainHeight_TFAE t k).out 1 2
     rw [this]
@@ -192,8 +187,9 @@ theorem chainHeight_add_le_chainHeight_add (s : Set α) (t : Set β) (n m : ℕ)
 theorem chainHeight_le_chainHeight_TFAE (s : Set α) (t : Set β) :
     TFAE [s.chainHeight ≤ t.chainHeight, ∀ l ∈ s.subchain, ∃ l' ∈ t.subchain, length l = length l',
       ∀ l ∈ s.subchain, ∃ l' ∈ t.subchain, length l ≤ length l'] := by
-  tfae_have 1 ↔ 3; · convert ← chainHeight_add_le_chainHeight_add s t 0 0 <;> apply add_zero
-  tfae_have 2 ↔ 3;
+  tfae_have 1 ↔ 3
+  · convert ← chainHeight_add_le_chainHeight_add s t 0 0 <;> apply add_zero
+  tfae_have 2 ↔ 3
   · refine' forall₂_congr fun l hl ↦ _
     simp_rw [← (le_chainHeight_TFAE t l.length).out 1 2, eq_comm]
   tfae_finish
@@ -248,7 +244,7 @@ theorem chainHeight_dual : (ofDual ⁻¹' s).chainHeight = s.chainHeight := by
   apply le_antisymm <;>
   · rw [chainHeight_le_chainHeight_iff]
     rintro l ⟨h₁, h₂⟩
-    exact ⟨l.reverse, ⟨chain'_reverse.mpr h₁, fun i h ↦ h₂ i ((mem_reverse i l).mp h)⟩,
+    exact ⟨l.reverse, ⟨chain'_reverse.mpr h₁, fun i h ↦ h₂ i (mem_reverse.mp h)⟩,
       (length_reverse _).symm⟩
 #align set.chain_height_dual Set.chainHeight_dual
 

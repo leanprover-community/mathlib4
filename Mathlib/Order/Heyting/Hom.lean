@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.heyting.hom
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.Lattice
+
+#align_import order.heyting.hom from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Heyting algebra morphisms
@@ -22,58 +19,55 @@ be satisfied by itself and all stricter types.
 ## Types of morphisms
 
 * `HeytingHom`: Heyting homomorphisms.
-* `Coheytinghom`: Co-Heyting homomorphisms.
+* `CoheytingHom`: Co-Heyting homomorphisms.
 * `BiheytingHom`: Bi-Heyting homomorphisms.
 
 ## Typeclasses
 
 * `HeytingHomClass`
-* `CoheytinghomClass`
-* `BiheytinghomClass`
+* `CoheytingHomClass`
+* `BiheytingHomClass`
 -/
 
 
 open Function
 
-variable {F α β γ δ : Type _}
+variable {F α β γ δ : Type*}
 
 /-- The type of Heyting homomorphisms from `α` to `β`. Bounded lattice homomorphisms that preserve
 Heyting implication. -/
--- @[protect_proj] -- Porting note: Not yet implemented
-structure HeytingHom (α β : Type _) [HeytingAlgebra α] [HeytingAlgebra β] extends
+structure HeytingHom (α β : Type*) [HeytingAlgebra α] [HeytingAlgebra β] extends
   LatticeHom α β where
   /-- The proposition that a Heyting homomorphism preserves the bottom element.-/
-  map_bot' : toFun ⊥ = ⊥
+  protected map_bot' : toFun ⊥ = ⊥
   /-- The proposition that a Heyting homomorphism preserves the Heyting implication.-/
-  map_himp' : ∀ a b, toFun (a ⇨ b) = toFun a ⇨ toFun b
+  protected map_himp' : ∀ a b, toFun (a ⇨ b) = toFun a ⇨ toFun b
 #align heyting_hom HeytingHom
 
 /-- The type of co-Heyting homomorphisms from `α` to `β`. Bounded lattice homomorphisms that
 preserve difference. -/
--- @[protect_proj] -- Porting note: Not yet implemented
-structure CoheytingHom (α β : Type _) [CoheytingAlgebra α] [CoheytingAlgebra β] extends
+structure CoheytingHom (α β : Type*) [CoheytingAlgebra α] [CoheytingAlgebra β] extends
   LatticeHom α β where
   /-- The proposition that a co-Heyting homomorphism preserves the top element.-/
-  map_top' : toFun ⊤ = ⊤
+  protected map_top' : toFun ⊤ = ⊤
   /-- The proposition that a co-Heyting homomorphism preserves the difference operation.-/
-  map_sdiff' : ∀ a b, toFun (a \ b) = toFun a \ toFun b
+  protected map_sdiff' : ∀ a b, toFun (a \ b) = toFun a \ toFun b
 #align coheyting_hom CoheytingHom
 
 /-- The type of bi-Heyting homomorphisms from `α` to `β`. Bounded lattice homomorphisms that
 preserve Heyting implication and difference. -/
--- @[protect_proj] -- Porting note: Not yet implemented
-structure BiheytingHom (α β : Type _) [BiheytingAlgebra α] [BiheytingAlgebra β] extends
+structure BiheytingHom (α β : Type*) [BiheytingAlgebra α] [BiheytingAlgebra β] extends
   LatticeHom α β where
   /-- The proposition that a bi-Heyting homomorphism preserves the Heyting implication.-/
-  map_himp' : ∀ a b, toFun (a ⇨ b) = toFun a ⇨ toFun b
+  protected map_himp' : ∀ a b, toFun (a ⇨ b) = toFun a ⇨ toFun b
   /-- The proposition that a bi-Heyting homomorphism preserves the difference operation.-/
-  map_sdiff' : ∀ a b, toFun (a \ b) = toFun a \ toFun b
+  protected map_sdiff' : ∀ a b, toFun (a \ b) = toFun a \ toFun b
 #align biheyting_hom BiheytingHom
 
 /-- `HeytingHomClass F α β` states that `F` is a type of Heyting homomorphisms.
 
 You should extend this class when you extend `HeytingHom`. -/
-class HeytingHomClass (F : Type _) (α β : outParam <| Type _) [HeytingAlgebra α]
+class HeytingHomClass (F : Type*) (α β : outParam <| Type*) [HeytingAlgebra α]
   [HeytingAlgebra β] extends LatticeHomClass F α β where
   /-- The proposition that a Heyting homomorphism preserves the bottom element.-/
   map_bot (f : F) : f ⊥ = ⊥
@@ -84,7 +78,7 @@ class HeytingHomClass (F : Type _) (α β : outParam <| Type _) [HeytingAlgebra 
 /-- `CoheytingHomClass F α β` states that `F` is a type of co-Heyting homomorphisms.
 
 You should extend this class when you extend `CoheytingHom`. -/
-class CoheytingHomClass (F : Type _) (α β : outParam <| Type _) [CoheytingAlgebra α]
+class CoheytingHomClass (F : Type*) (α β : outParam <| Type*) [CoheytingAlgebra α]
   [CoheytingAlgebra β] extends LatticeHomClass F α β where
   /-- The proposition that a co-Heyting homomorphism preserves the top element.-/
   map_top (f : F) : f ⊤ = ⊤
@@ -95,7 +89,7 @@ class CoheytingHomClass (F : Type _) (α β : outParam <| Type _) [CoheytingAlge
 /-- `BiheytingHomClass F α β` states that `F` is a type of bi-Heyting homomorphisms.
 
 You should extend this class when you extend `BiheytingHom`. -/
-class BiheytingHomClass (F : Type _) (α β : outParam <| Type _) [BiheytingAlgebra α]
+class BiheytingHomClass (F : Type*) (α β : outParam <| Type*) [BiheytingAlgebra α]
   [BiheytingAlgebra β] extends LatticeHomClass F α β where
   /-- The proposition that a bi-Heyting homomorphism preserves the Heyting implication.-/
   map_himp (f : F) : ∀ a b, f (a ⇨ b) = f a ⇨ f b
@@ -134,7 +128,7 @@ instance (priority := 100) BiheytingHomClass.toHeytingHomClass [BiheytingAlgebra
 
 -- See note [lower instance priority]
 instance (priority := 100) BiheytingHomClass.toCoheytingHomClass [BiheytingAlgebra α]
-    { _ : BiheytingAlgebra β}  [BiheytingHomClass F α β] : CoheytingHomClass F α β :=
+    { _ : BiheytingAlgebra β} [BiheytingHomClass F α β] : CoheytingHomClass F α β :=
   { ‹BiheytingHomClass F α β› with
     map_top := fun f => by rw [← @himp_self α _ ⊥, ← himp_self, map_himp] }
 #align biheyting_hom_class.to_coheyting_hom_class BiheytingHomClass.toCoheytingHomClass
@@ -193,7 +187,7 @@ section HeytingAlgebra
 variable [HeytingAlgebra α] [HeytingAlgebra β] [HeytingHomClass F α β] (f : F)
 
 @[simp]
-theorem map_compl (a : α) : f (aᶜ) = f aᶜ := by rw [← himp_bot, ← himp_bot, map_himp, map_bot]
+theorem map_compl (a : α) : f aᶜ = (f a)ᶜ := by rw [← himp_bot, ← himp_bot, map_himp, map_bot]
 #align map_compl map_compl
 
 @[simp]
@@ -247,7 +241,7 @@ namespace HeytingHom
 
 variable [HeytingAlgebra α] [HeytingAlgebra β] [HeytingAlgebra γ] [HeytingAlgebra δ]
 
-instance : HeytingHomClass (HeytingHom α β) α β where
+instance instHeytingHomClass : HeytingHomClass (HeytingHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
   map_sup f := f.map_sup'
@@ -358,10 +352,12 @@ theorem id_comp (f : HeytingHom α β) : (HeytingHom.id β).comp f = f :=
   ext fun _ => rfl
 #align heyting_hom.id_comp HeytingHom.id_comp
 
+@[simp]
 theorem cancel_right (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align heyting_hom.cancel_right HeytingHom.cancel_right
 
+@[simp]
 theorem cancel_left (hg : Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => HeytingHom.ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align heyting_hom.cancel_left HeytingHom.cancel_left
@@ -422,7 +418,7 @@ theorem copy_eq (f : CoheytingHom α β) (f' : α → β) (h : f' = f) : f.copy 
 
 variable (α)
 
-/-- `id` as a `Coheytinghom`. -/
+/-- `id` as a `CoheytingHom`. -/
 protected def id : CoheytingHom α α :=
   { TopHom.id _ with
     toLatticeHom := LatticeHom.id _
@@ -483,10 +479,12 @@ theorem id_comp (f : CoheytingHom α β) : (CoheytingHom.id β).comp f = f :=
   ext fun _ => rfl
 #align coheyting_hom.id_comp CoheytingHom.id_comp
 
+@[simp]
 theorem cancel_right (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align coheyting_hom.cancel_right CoheytingHom.cancel_right
 
+@[simp]
 theorem cancel_left (hg : Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => CoheytingHom.ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align coheyting_hom.cancel_left CoheytingHom.cancel_left
@@ -605,10 +603,12 @@ theorem id_comp (f : BiheytingHom α β) : (BiheytingHom.id β).comp f = f :=
   ext fun _ => rfl
 #align biheyting_hom.id_comp BiheytingHom.id_comp
 
+@[simp]
 theorem cancel_right (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| FunLike.ext_iff.1 h, congr_arg (fun a ↦ comp a f)⟩
 #align biheyting_hom.cancel_right BiheytingHom.cancel_right
 
+@[simp]
 theorem cancel_left (hg : Injective g) : g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => BiheytingHom.ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 #align biheyting_hom.cancel_left BiheytingHom.cancel_left

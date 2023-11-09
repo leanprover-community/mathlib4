@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
-
-! This file was ported from Lean 3 source module analysis.special_functions.trigonometric.inverse
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Topology.Algebra.Order.ProjIcc
+
+#align_import analysis.special_functions.trigonometric.inverse from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Inverse trigonometric functions.
@@ -57,7 +54,7 @@ theorem neg_pi_div_two_le_arcsin (x : ℝ) : -(π / 2) ≤ arcsin x :=
 #align real.neg_pi_div_two_le_arcsin Real.neg_pi_div_two_le_arcsin
 
 theorem arcsin_projIcc (x : ℝ) : arcsin (projIcc (-1) 1 (neg_le_self zero_le_one) x) = arcsin x :=
-  by rw [arcsin, Function.comp_apply, Icc_extend_coe, Function.comp_apply, IccExtend,
+  by rw [arcsin, Function.comp_apply, IccExtend_val, Function.comp_apply, IccExtend,
         Function.comp_apply]
 #align real.arcsin_proj_Icc Real.arcsin_projIcc
 

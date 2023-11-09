@@ -2,14 +2,11 @@
 Copyright (c) 2023 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
-
-! This file was ported from Lean 3 source module combinatorics.quiver.single_obj
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Quiver.Cast
 import Mathlib.Combinatorics.Quiver.Symmetric
+
+#align_import combinatorics.quiver.single_obj from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # Single-object quiver
@@ -18,7 +15,7 @@ Single object quiver with a given arrows type.
 
 ## Main definitions
 
-Given a type `α`, `SingleObj α` is the `unit` type, whose single object is called `star α`, with
+Given a type `α`, `SingleObj α` is the `Unit` type, whose single object is called `star α`, with
 `Quiver` structure such that `star α ⟶ star α` is the type `α`.
 An element `x : α` can be reinterpreted as an element of `star α ⟶ star α` using
 `toHom`.
@@ -26,13 +23,15 @@ More generally, a list of elements of `a` can be reinterpreted as a path from `s
 itself using `pathEquivList`.
 -/
 
+set_option autoImplicit true
+
 
 namespace Quiver
 
 /-- Type tag on `Unit` used to define single-object quivers. -/
 -- Porting note: Removed `deriving Unique`.
 @[nolint unusedArguments]
-def SingleObj (_ : Type _) : Type :=
+def SingleObj (_ : Type*) : Type :=
   Unit
 #align quiver.single_obj Quiver.SingleObj
 
@@ -43,7 +42,7 @@ instance : Unique (SingleObj α) where
 
 namespace SingleObj
 
-variable (α β γ : Type _)
+variable (α β γ : Type*)
 
 instance : Quiver (SingleObj α) :=
   ⟨fun _ _ => α⟩

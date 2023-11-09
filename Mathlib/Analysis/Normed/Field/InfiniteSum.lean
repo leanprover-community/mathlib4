@@ -2,14 +2,11 @@
 Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
-
-! This file was ported from Lean 3 source module analysis.normed.field.infinite_sum
-! leanprover-community/mathlib commit 008205aa645b3f194c1da47025c5f110c8406eab
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.InfiniteSum
+
+#align_import analysis.normed.field.infinite_sum from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
 /-! # Multiplying two infinite sums in a normed ring
 
@@ -23,7 +20,7 @@ We first establish results about arbitrary index types, `ι` and `ι'`, and then
 -/
 
 
-variable {R : Type _} {ι : Type _} {ι' : Type _} [NormedRing R]
+variable {R : Type*} {ι : Type*} {ι' : Type*} [NormedRing R]
 
 open BigOperators Classical
 
@@ -67,7 +64,7 @@ We prove two versions of the Cauchy product formula. The first one is
 In order to avoid `Nat` subtraction, we also provide
 `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm`,
 where the `n`-th term is a sum over all pairs `(k, l)` such that `k+l=n`, which corresponds to the
-`Finset` `Finset.Nat.antidiagonal n`. -/
+`Finset` `Finset.antidiagonal n`. -/
 
 
 section Nat
@@ -85,12 +82,11 @@ theorem summable_norm_sum_mul_antidiagonal_of_summable_norm {f g : ℕ → R}
   calc
     ‖∑ kl in antidiagonal n, f kl.1 * g kl.2‖ ≤ ∑ kl in antidiagonal n, ‖f kl.1 * g kl.2‖ :=
       norm_sum_le _ _
-    _ ≤ ∑ kl in antidiagonal n, ‖f kl.1‖ * ‖g kl.2‖ := sum_le_sum fun i _ => norm_mul_le _ _
-    
+    _ ≤ ∑ kl in antidiagonal n, ‖f kl.1‖ * ‖g kl.2‖ := by gcongr; apply norm_mul_le
 #align summable_norm_sum_mul_antidiagonal_of_summable_norm summable_norm_sum_mul_antidiagonal_of_summable_norm
 
 /-- The Cauchy product formula for the product of two infinite sums indexed by `ℕ`,
-    expressed by summing on `Finset.Nat.antidiagonal`.
+    expressed by summing on `Finset.antidiagonal`.
     See also `tsum_mul_tsum_eq_tsum_sum_antidiagonal` if `f` and `g` are
     *not* absolutely summable. -/
 theorem tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm [CompleteSpace R] {f g : ℕ → R}
@@ -118,4 +114,3 @@ theorem tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm [CompleteSpace R] {f g 
 #align tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm tsum_mul_tsum_eq_tsum_sum_range_of_summable_norm
 
 end Nat
-

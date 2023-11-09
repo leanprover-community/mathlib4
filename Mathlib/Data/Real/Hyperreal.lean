@@ -2,14 +2,11 @@
 Copyright (c) 2019 Abhimanyu Pallavi Sudhir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abhimanyu Pallavi Sudhir
-
-! This file was ported from Lean 3 source module data.real.hyperreal
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.FilterProduct
 import Mathlib.Analysis.SpecificLimits.Basic
+
+#align_import data.real.hyperreal from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Construction of the hyperreal numbers as an ultraproduct of real sequences.
@@ -516,22 +513,22 @@ theorem infiniteNeg_iff_infinite_of_neg {x : ℝ*} (hn : x < 0) : InfiniteNeg x 
   .symm <| or_iff_right fun h ↦ h.pos.not_lt hn
 #align hyperreal.infinite_neg_iff_infinite_of_neg Hyperreal.infiniteNeg_iff_infinite_of_neg
 
-theorem infinitePos_abs_iff_infinite_abs {x : ℝ*} : InfinitePos (|x|) ↔ Infinite (|x|) :=
+theorem infinitePos_abs_iff_infinite_abs {x : ℝ*} : InfinitePos |x| ↔ Infinite |x| :=
   infinitePos_iff_infinite_of_nonneg (abs_nonneg _)
 #align hyperreal.infinite_pos_abs_iff_infinite_abs Hyperreal.infinitePos_abs_iff_infinite_abs
 
 -- porting note: swapped LHS with RHS; added @[simp]
-@[simp] theorem infinite_abs_iff {x : ℝ*} : Infinite (|x|) ↔ Infinite x := by
+@[simp] theorem infinite_abs_iff {x : ℝ*} : Infinite |x| ↔ Infinite x := by
   cases le_total 0 x <;> simp [*, abs_of_nonneg, abs_of_nonpos, infinite_neg]
 #align hyperreal.infinite_iff_infinite_abs Hyperreal.infinite_abs_iffₓ
 
 -- porting note: swapped LHS with RHS; todo: make it a `simp` lemma
-@[simp] theorem infinitePos_abs_iff_infinite {x : ℝ*} : InfinitePos (|x|) ↔ Infinite x :=
+@[simp] theorem infinitePos_abs_iff_infinite {x : ℝ*} : InfinitePos |x| ↔ Infinite x :=
   infinitePos_abs_iff_infinite_abs.trans infinite_abs_iff
 #align hyperreal.infinite_iff_infinite_pos_abs Hyperreal.infinitePos_abs_iff_infiniteₓ
 
 theorem infinite_iff_abs_lt_abs {x : ℝ*} : Infinite x ↔ ∀ r : ℝ, (|r| : ℝ*) < |x| :=
-  infinitePos_abs_iff_infinite.symm.trans ⟨fun hI r => coe_abs r ▸ hI (|r|), fun hR r =>
+  infinitePos_abs_iff_infinite.symm.trans ⟨fun hI r => coe_abs r ▸ hI |r|, fun hR r =>
     (le_abs_self _).trans_lt (hR r)⟩
 #align hyperreal.infinite_iff_abs_lt_abs Hyperreal.infinite_iff_abs_lt_abs
 
@@ -678,7 +675,7 @@ theorem gt_of_neg_of_infinitesimal {x : ℝ*} (hi : Infinitesimal x) (r : ℝ) (
 #align hyperreal.gt_of_neg_of_infinitesimal Hyperreal.gt_of_neg_of_infinitesimal
 
 theorem abs_lt_real_iff_infinitesimal {x : ℝ*} : Infinitesimal x ↔ ∀ r : ℝ, r ≠ 0 → |x| < |↑r| :=
-  ⟨fun hi r hr ↦ abs_lt.mpr (coe_abs r ▸ infinitesimal_def.mp hi (|r|) (abs_pos.2 hr)), fun hR ↦
+  ⟨fun hi r hr ↦ abs_lt.mpr (coe_abs r ▸ infinitesimal_def.mp hi |r| (abs_pos.2 hr)), fun hR ↦
     infinitesimal_def.mpr fun r hr => abs_lt.mp <| (abs_of_pos <| coe_pos.2 hr) ▸ hR r <| hr.ne'⟩
 #align hyperreal.abs_lt_real_iff_infinitesimal Hyperreal.abs_lt_real_iff_infinitesimal
 
@@ -743,7 +740,7 @@ theorem infinitePos_iff_infinitesimal_inv_pos {x : ℝ*} :
     @_root_.by_cases (r = 0) (↑r < x) (fun h => Eq.substr h (inv_pos.mp hp)) fun h =>
       lt_of_le_of_lt (coe_le_coe.2 (le_abs_self r))
         ((inv_lt_inv (inv_pos.mp hp) (coe_lt_coe.2 (abs_pos.2 h))).mp
-          ((infinitesimal_def.mp hi) (|r|)⁻¹ (inv_pos.2 (abs_pos.2 h))).2)⟩
+          ((infinitesimal_def.mp hi) |r|⁻¹ (inv_pos.2 (abs_pos.2 h))).2)⟩
 #align hyperreal.infinite_pos_iff_infinitesimal_inv_pos Hyperreal.infinitePos_iff_infinitesimal_inv_pos
 
 theorem infiniteNeg_iff_infinitesimal_inv_neg {x : ℝ*} :

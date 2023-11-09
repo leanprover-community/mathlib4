@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.regularity.equitabilise
-! leanprover-community/mathlib commit bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Partition.Equipartition
+
+#align_import combinatorics.simple_graph.regularity.equitabilise from "leanprover-community/mathlib"@"bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d"
 
 /-!
 # Equitabilising a partition
@@ -35,7 +32,7 @@ open Finset Nat
 
 namespace Finpartition
 
-variable {α : Type _} [DecidableEq α] {s t : Finset α} {m n a b : ℕ} {P : Finpartition s}
+variable {α : Type*} [DecidableEq α] {s t : Finset α} {m n a b : ℕ} {P : Finpartition s}
 
 /-- Given a partition `P` of `s`, as well as a proof that `a * m + b * (m + 1) = s.card`, we can
 find a new partition `Q` of `s` where each part has size `m` or `m + 1`, every part of `P` is the
@@ -99,7 +96,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
     rw [card_insert_of_not_mem, hR₃, if_neg ha, tsub_add_cancel_of_le]
     · exact hab.resolve_left ha
     · intro H; exact ht.ne_empty (le_sdiff_iff.1 <| R.le <| filter_subset _ _ H)
-  push_neg  at h
+  push_neg at h
   obtain ⟨u, hu₁, hu₂⟩ := h
   obtain ⟨t, htu, htn⟩ := exists_smaller_set _ _ (hn₁.trans hu₂)
   have ht : t.Nonempty := by rwa [← card_pos, htn]
@@ -121,7 +118,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
       refine'
         (card_le_of_subset fun i => _).trans
           (hR₂ (u \ t) <| P.mem_avoid.2 ⟨u, hu₁, fun i => hut <| i.antisymm htu, rfl⟩)
-      -- Porting note: `not_and` required because `∃ x ∈ s, p x` is defined diferently
+      -- Porting note: `not_and` required because `∃ x ∈ s, p x` is defined differently
       simp only [not_exists, not_and, mem_biUnion, and_imp, mem_union, mem_filter, mem_sdiff,
         id.def, not_or]
       exact fun hi₁ hi₂ hi₃ =>

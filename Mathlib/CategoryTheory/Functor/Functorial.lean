@@ -2,13 +2,10 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.functor.functorial
-! leanprover-community/mathlib commit afad8e438d03f9d89da2914aa06cb4964ba87a18
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.Basic
+
+#align_import category_theory.functor.functorial from "leanprover-community/mathlib"@"afad8e438d03f9d89da2914aa06cb4964ba87a18"
 
 /-!
 # Unbundled functors, as a typeclass decorating the object-level function.
@@ -24,7 +21,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 -- Perhaps in the future we could redefine `Functor` in terms of this, but that isn't the
 -- immediate plan.
-/-- A unbundled functor. -/
+/-- An unbundled functor. -/
 class Functorial (F : C → D) : Type max v₁ v₂ u₁ u₂ where
   /-- A functorial map extends to an action on morphisms. -/
   map' : ∀ {X Y : C}, (X ⟶ Y) → (F X ⟶ F Y)

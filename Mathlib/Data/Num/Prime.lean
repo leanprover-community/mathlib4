@@ -2,15 +2,12 @@
 Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.num.prime
-! leanprover-community/mathlib commit 58581d0fe523063f5651df0619be2bf65012a94a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Num.Lemmas
 import Mathlib.Data.Nat.Prime
 import Mathlib.Tactic.Ring
+
+#align_import data.num.prime from "leanprover-community/mathlib"@"58581d0fe523063f5651df0619be2bf65012a94a"
 
 /-!
 # Primality for binary natural numbers
@@ -52,7 +49,7 @@ theorem minFacAux_to_nat {fuel : ℕ} {n k : PosNum} (h : Nat.sqrt n < fuel + k.
   simp_rw [← mul_to_nat]
   simp only [cast_lt, dvd_to_nat]
   split_ifs <;> try rfl
-  rw [ih] <;> [congr , convert Nat.lt_succ_of_lt h using 1] <;>
+  rw [ih] <;> [congr; convert Nat.lt_succ_of_lt h using 1] <;>
     simp only [_root_.bit1, _root_.bit0, cast_bit1, cast_succ, Nat.succ_eq_add_one, add_assoc,
       add_left_comm, ← one_add_one_eq_two]
 #align pos_num.min_fac_aux_to_nat PosNum.minFacAux_to_nat

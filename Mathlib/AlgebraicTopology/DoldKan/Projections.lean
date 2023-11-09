@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.projections
-! leanprover-community/mathlib commit ed98c07faf6d9de3e52771d5b00394c4294ccb4d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.Faces
 import Mathlib.CategoryTheory.Idempotents.Basic
+
+#align_import algebraic_topology.dold_kan.projections from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 
@@ -26,8 +23,9 @@ and `P_f_naturality`) and are compatible with the application
 of additive functors (see `map_P`).
 
 By passing to the limit, these endomorphisms `P q` shall be used in `PInfty.lean`
-in order to define `PInfty : K[X] ⟶ K[X]`, see `Equivalence.lean` for the general
-strategy of proof of the Dold-Kan equivalence.
+in order to define `PInfty : K[X] ⟶ K[X]`.
+
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
 
@@ -43,7 +41,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type _} [Category C] [Preadditive C] {X : SimplicialObject C}
+variable {C : Type*} [Category C] [Preadditive C] {X : SimplicialObject C}
 
 /-- This is the inductive definition of the projections `P q : K[X] ⟶ K[X]`,
 with `P 0 := 𝟙 _` and `P (q+1) := P q ≫ (𝟙 _ + Hσ q)`. -/
@@ -56,7 +54,7 @@ set_option linter.uppercaseLean3 false in
 -- porting note: `P_zero` and `P_succ` have been added to ease the port, because
 -- `unfold P` would sometimes unfold to a `match` rather than the induction formula
 lemma P_zero : (P 0 : K[X] ⟶ K[X]) = 𝟙 _ := rfl
-lemma P_succ (q : ℕ): (P (q+1) : K[X] ⟶ K[X]) = P q ≫ (𝟙 _ + Hσ q) := rfl
+lemma P_succ (q : ℕ) : (P (q+1) : K[X] ⟶ K[X]) = P q ≫ (𝟙 _ + Hσ q) := rfl
 
 /-- All the `P q` coincide with `𝟙 _` in degree 0. -/
 @[simp]
@@ -129,7 +127,7 @@ theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFa
       comp_id, ← assoc, hq v.of_succ, add_right_eq_self]
     by_cases hqn : n < q
     · exact v.of_succ.comp_Hσ_eq_zero hqn
-    . obtain ⟨a, ha⟩ := Nat.le.dest (not_lt.mp hqn)
+    · obtain ⟨a, ha⟩ := Nat.le.dest (not_lt.mp hqn)
       have hnaq : n = a + q := by linarith
       simp only [v.of_succ.comp_Hσ_eq hnaq, neg_eq_zero, ← assoc]
       have eq := v ⟨a, by linarith⟩ (by
@@ -219,7 +217,7 @@ def natTransQ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComp
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.nat_trans_Q AlgebraicTopology.DoldKan.natTransQ
 
-theorem map_P {D : Type _} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+theorem map_P {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n : ℕ) :
     G.map ((P q : K[X] ⟶ _).f n) = (P q : K[((whiskering C D).obj G).obj X] ⟶ _).f n := by
   induction' q with q hq
@@ -230,7 +228,7 @@ theorem map_P {D : Type _} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additiv
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.map_P AlgebraicTopology.DoldKan.map_P
 
-theorem map_Q {D : Type _} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+theorem map_Q {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n : ℕ) :
     G.map ((Q q : K[X] ⟶ _).f n) = (Q q : K[((whiskering C D).obj G).obj X] ⟶ _).f n := by
   rw [← add_right_inj (G.map ((P q : K[X] ⟶ _).f n)), ← G.map_add, map_P G X q n, P_add_Q_f,

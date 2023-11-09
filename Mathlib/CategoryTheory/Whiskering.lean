@@ -2,21 +2,17 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-Ported by: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.whiskering
-! leanprover-community/mathlib commit d012cd09a9b256d870751284dd6a29882b0be105
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 
+#align_import category_theory.whiskering from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
+
 /-!
 # Whiskering
 
-Given a functor `F  : C ⥤ D` and functors `G H : D ⥤ E` and a natural transformation `α : G ⟶ H`,
+Given a functor `F : C ⥤ D` and functors `G H : D ⥤ E` and a natural transformation `α : G ⟶ H`,
 we can construct a new natural transformation `F ⋙ G ⟶ F ⋙ H`,
 called `whiskerLeft F α`. This is the same as the horizontal composition of `𝟙 F` with `α`.
 
@@ -113,8 +109,9 @@ variable {C} {D} {E}
 
 instance faithful_whiskeringRight_obj {F : D ⥤ E} [Faithful F] :
     Faithful ((whiskeringRight C D E).obj F) where
-  map_injective hαβ := NatTrans.ext _ _
-    (funext fun X => (F.map_injective <| congr_fun (congr_arg NatTrans.app hαβ) X))
+  map_injective hαβ := by
+    ext X
+    exact (F.map_injective <| congr_fun (congr_arg NatTrans.app hαβ) X)
 #align category_theory.faithful_whiskering_right_obj CategoryTheory.faithful_whiskeringRight_obj
 
 @[simp]

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
-
-! This file was ported from Lean 3 source module ring_theory.coprime.ideal
-! leanprover-community/mathlib commit 2bbc7e3884ba234309d2a43b19144105a753292e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.LinearAlgebra.Dfinsupp
+import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.RingTheory.Ideal.Operations
+
+#align_import ring_theory.coprime.ideal from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
 
 /-!
 # An additional lemma about coprime ideals
@@ -21,7 +18,7 @@ It is on a separate file due to import requirements.
 
 namespace Ideal
 
-variable {ι R : Type _} [CommSemiring R]
+variable {ι R : Type*} [CommSemiring R]
 
 /-- A finite family of ideals is pairwise coprime (that is, any two of them generate the whole ring)
 iff when taking all the possible intersections of all but one of these ideals, the resulting family
@@ -32,7 +29,7 @@ For example with three ideals : `I ⊔ J = I ⊔ K = J ⊔ K = ⊤ ↔ (I ⊓ J)
 When ideals are all of the form `I i = R ∙ s i`, this is equivalent to the
 `exists_sum_eq_one_iff_pairwise_coprime` lemma.-/
 theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι → Ideal R) :
-    (⨆ i ∈ t, ⨅ (j) (_hj : j ∈ t) (_ij : j ≠ i), I j) = ⊤ ↔
+    (⨆ i ∈ t, ⨅ (j) (_ : j ∈ t) (_ : j ≠ i), I j) = ⊤ ↔
       (t : Set ι).Pairwise fun i j => I i ⊔ I j = ⊤ := by
   haveI : DecidableEq ι := Classical.decEq ι
   rw [eq_top_iff_one, Submodule.mem_iSup_finset_iff_exists_sum]
@@ -93,12 +90,12 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
     rw [eq_top_iff_one, Submodule.mem_sup] at this
     obtain ⟨u, hu, v, hv, huv⟩ := this
     refine' ⟨fun i => if hi : i = a then ⟨v, _⟩ else ⟨u * μ i, _⟩, _⟩
-    · simp only [mem_iInf] at hv⊢
+    · simp only [mem_iInf] at hv ⊢
       intro j hj ij
       rw [Finset.mem_cons, ← hi] at hj
       exact hv _ (hj.resolve_left ij)
     · have := Submodule.coe_mem (μ i)
-      simp only [mem_iInf] at this⊢
+      simp only [mem_iInf] at this ⊢
       intro j hj ij
       rcases Finset.mem_cons.mp hj with (rfl | hj)
       · exact mul_mem_right _ _ hu

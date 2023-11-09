@@ -2,16 +2,13 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.algebra.nonarchimedean.adic_topology
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.Algebra.UniformRing
+
+#align_import topology.algebra.nonarchimedean.adic_topology from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Adic topology
@@ -42,12 +39,12 @@ corresponding adic topology to the type class inference system.
 ## Implementation notes
 
 The `I`-adic topology on a ring `R` has a contrived definition using `I^n • ⊤` instead of `I`
-to make sure it is definitionally equal to the `I`-topology on `R` seen as a `R`-module.
+to make sure it is definitionally equal to the `I`-topology on `R` seen as an `R`-module.
 
 -/
 
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 open Set TopologicalAddGroup Submodule Filter
 
@@ -115,7 +112,7 @@ theorem hasBasis_nhds_adic (I : Ideal R) (x : R) :
   rwa [map_add_left_nhds_zero x] at this
 #align ideal.has_basis_nhds_adic Ideal.hasBasis_nhds_adic
 
-variable (I : Ideal R) (M : Type _) [AddCommGroup M] [Module R M]
+variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
 theorem adic_module_basis :
     I.ringFilterBasis.SubmodulesBasis fun n : ℕ => I ^ n • (⊤ : Submodule R M) :=
@@ -130,7 +127,7 @@ theorem adic_module_basis :
         exact smul_mem_smul a_in mem_top⟩ }
 #align ideal.adic_module_basis Ideal.adic_module_basis
 
-/-- The topology on a `R`-module `M` associated to an ideal `M`. Submodules $I^n M$,
+/-- The topology on an `R`-module `M` associated to an ideal `M`. Submodules $I^n M$,
 written `I^n • ⊤` form a basis of neighborhoods of zero. -/
 def adicModuleTopology : TopologicalSpace M :=
   @ModuleFilterBasis.topology R M _ I.adic_basis.topology _ _
@@ -138,7 +135,7 @@ def adicModuleTopology : TopologicalSpace M :=
 #align ideal.adic_module_topology Ideal.adicModuleTopology
 
 /-- The elements of the basis of neighborhoods of zero for the `I`-adic topology
-on a `R`-module `M`, seen as open additive subgroups of `M`. -/
+on an `R`-module `M`, seen as open additive subgroups of `M`. -/
 def openAddSubgroup (n : ℕ) : @OpenAddSubgroup R _ I.adicTopology := by
   letI := I.adicTopology
   refine ⟨(I ^ n).toAddSubgroup, ?_⟩
@@ -191,7 +188,7 @@ theorem isAdic_iff [top : TopologicalSpace R] [TopologicalRing R] {J : Ideal R} 
 variable [TopologicalSpace R] [TopologicalRing R]
 
 theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : IsAdic (J ^ n) := by
-  rw [isAdic_iff] at h⊢
+  rw [isAdic_iff] at h ⊢
   constructor
   · intro m
     rw [← pow_mul]
@@ -208,7 +205,7 @@ theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : 
     apply Nat.le_add_left
 #align is_ideal_adic_pow is_ideal_adic_pow
 
-theorem is_bot_adic_iff {A : Type _} [CommRing A] [TopologicalSpace A] [TopologicalRing A] :
+theorem is_bot_adic_iff {A : Type*} [CommRing A] [TopologicalSpace A] [TopologicalRing A] :
     IsAdic (⊥ : Ideal A) ↔ DiscreteTopology A := by
   rw [isAdic_iff]
   constructor
@@ -226,7 +223,7 @@ theorem is_bot_adic_iff {A : Type _} [CommRing A] [TopologicalSpace A] [Topologi
 end IsAdic
 
 /-- The ring `R` is equipped with a preferred ideal. -/
-class WithIdeal (R : Type _) [CommRing R] where
+class WithIdeal (R : Type*) [CommRing R] where
   i : Ideal R
 #align with_ideal WithIdeal
 
@@ -248,9 +245,9 @@ instance (priority := 100) : UniformSpace R :=
 instance (priority := 100) : UniformAddGroup R :=
   comm_topologicalAddGroup_is_uniform
 
-/-- The adic topology on a `R` module coming from the ideal `WithIdeal.I`.
+/-- The adic topology on an `R` module coming from the ideal `WithIdeal.I`.
 This cannot be an instance because `R` cannot be inferred from `M`. -/
-def topologicalSpaceModule (M : Type _) [AddCommGroup M] [Module R M] : TopologicalSpace M :=
+def topologicalSpaceModule (M : Type*) [AddCommGroup M] [Module R M] : TopologicalSpace M :=
   (i : Ideal R).adicModuleTopology M
 #align with_ideal.topological_space_module WithIdeal.topologicalSpaceModule
 
@@ -262,13 +259,13 @@ example : NonarchimedeanRing R := by infer_instance
 
 example : TopologicalRing (UniformSpace.Completion R) := by infer_instance
 
-example (M : Type _) [AddCommGroup M] [Module R M] :
+example (M : Type*) [AddCommGroup M] [Module R M] :
     @TopologicalAddGroup M (WithIdeal.topologicalSpaceModule R M) _ := by infer_instance
 
-example (M : Type _) [AddCommGroup M] [Module R M] :
+example (M : Type*) [AddCommGroup M] [Module R M] :
     @ContinuousSMul R M _ _ (WithIdeal.topologicalSpaceModule R M) := by infer_instance
 
-example (M : Type _) [AddCommGroup M] [Module R M] :
+example (M : Type*) [AddCommGroup M] [Module R M] :
     @NonarchimedeanAddGroup M _ (WithIdeal.topologicalSpaceModule R M) :=
   SubmodulesBasis.nonarchimedean _
 

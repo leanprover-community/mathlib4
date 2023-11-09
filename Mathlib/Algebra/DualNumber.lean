@@ -2,13 +2,10 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.dual_number
-! leanprover-community/mathlib commit b8d2eaa69d69ce8f03179a5cda774fc0cde984e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.TrivSqZeroExt
+
+#align_import algebra.dual_number from "leanprover-community/mathlib"@"b8d2eaa69d69ce8f03179a5cda774fc0cde984e4"
 
 /-!
 # Dual numbers
@@ -40,22 +37,23 @@ Rather than duplicating the API of `TrivSqZeroExt`, this file reuses the functio
 -/
 
 
-variable {R : Type _}
+variable {R : Type*}
 
-/-- The type of dual numbers, numbers of the form $a + bε$ where $ε^2 = 0$.-/
-abbrev DualNumber (R : Type _) : Type _ :=
+/-- The type of dual numbers, numbers of the form $a + bε$ where $ε^2 = 0$.
+`R[ε]` is notation for `DualNumber R`. -/
+abbrev DualNumber (R : Type*) : Type _ :=
   TrivSqZeroExt R R
 #align dual_number DualNumber
 
-/-- The unit element $ε$ that squares to zero. -/
+/-- The unit element $ε$ that squares to zero, with notation `ε`. -/
 def DualNumber.eps [Zero R] [One R] : DualNumber R :=
   TrivSqZeroExt.inr 1
 #align dual_number.eps DualNumber.eps
 
--- mathport name: dual_number.eps
+@[inherit_doc]
 scoped[DualNumber] notation "ε" => DualNumber.eps
 
--- mathport name: dual_number
+@[inherit_doc]
 scoped[DualNumber] postfix:1024 "[ε]" => DualNumber
 
 open DualNumber
@@ -87,8 +85,15 @@ theorem eps_mul_eps [Semiring R] : (ε * ε : R[ε]) = 0 :=
 
 @[simp]
 theorem inr_eq_smul_eps [MulZeroOneClass R] (r : R) : inr r = (r • ε : R[ε]) :=
-  ext (MulZeroClass.mul_zero r).symm (mul_one r).symm
+  ext (mul_zero r).symm (mul_one r).symm
 #align dual_number.inr_eq_smul_eps DualNumber.inr_eq_smul_eps
+
+/-- `ε` commutes with every element of the algebra. -/
+theorem commute_eps_left [Semiring R] (x : DualNumber R) : Commute ε x := by
+  ext <;> simp
+
+/-- `ε` commutes with every element of the algebra. -/
+theorem commute_eps_right [Semiring R] (x : DualNumber R) : Commute x ε := (commute_eps_left x).symm
 
 /-- For two algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
 @[ext]
@@ -97,12 +102,12 @@ theorem algHom_ext {A} [CommSemiring R] [Semiring A] [Algebra R A] ⦃f g : R[ε
   algHom_ext' <| LinearMap.ext_ring <| h
 #align dual_number.alg_hom_ext DualNumber.algHom_ext
 
-variable {A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 /-- A universal property of the dual numbers, providing a unique `R[ε] →ₐ[R] A` for every element
 of `A` which squares to `0`.
 
-This isomorphism is named to match the very similar `complex.lift`. -/
+This isomorphism is named to match the very similar `Complex.lift`. -/
 @[simps!]
 def lift : { e : A // e * e = 0 } ≃ (R[ε] →ₐ[R] A) :=
   Equiv.trans
@@ -114,13 +119,13 @@ def lift : { e : A // e * e = 0 } ≃ (R[ε] →ₐ[R] A) :=
     TrivSqZeroExt.lift
 #align dual_number.lift DualNumber.lift
 
--- When applied to `ε`, `DualNumber.lift` produces the element of `A` that squares to 0.
+/-- When applied to `ε`, `DualNumber.lift` produces the element of `A` that squares to 0. -/
 -- @[simp] -- Porting note: simp can prove this
 theorem lift_apply_eps (e : { e : A // e * e = 0 }) : @lift R _ _ _ _ e (ε : R[ε]) = e := by
   simp only [lift_apply_apply, fst_eps, map_zero, snd_eps, one_smul, zero_add]
 #align dual_number.lift_apply_eps DualNumber.lift_apply_eps
 
--- Lifting `DualNumber.eps` itself gives the identity.
+/-- Lifting `DualNumber.eps` itself gives the identity. -/
 @[simp]
 theorem lift_eps : lift ⟨ε, eps_mul_eps⟩ = AlgHom.id R R[ε] :=
   algHom_ext <| lift_apply_eps _

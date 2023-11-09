@@ -2,17 +2,14 @@
 Copyright (c) 2020 Patrick Stevens. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Yury Kudryashov
-
-! This file was ported from Lean 3 source module number_theory.primorial
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Nat.Prime
+
+#align_import number_theory.primorial from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-!
 # Primorial

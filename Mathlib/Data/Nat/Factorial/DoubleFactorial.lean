@@ -2,15 +2,12 @@
 Copyright (c) 2023 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
-
-! This file was ported from Lean 3 source module data.nat.factorial.double_factorial
-! leanprover-community/mathlib commit 7daeaf3072304c498b653628add84a88d0e78767
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Tactic.Ring
+
+#align_import data.nat.factorial.double_factorial from "leanprover-community/mathlib"@"7daeaf3072304c498b653628add84a88d0e78767"
 
 /-!
 # Double factorials

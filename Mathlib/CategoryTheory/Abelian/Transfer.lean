@@ -2,15 +2,12 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.abelian.transfer
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Adjunction.Limits
+
+#align_import category_theory.abelian.transfer from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Transferring "abelian-ness" across a functor
@@ -25,7 +22,7 @@ See <https://stacks.math.columbia.edu/tag/03A3>
 
 ## Notes
 The hypotheses, following the statement from the Stacks project,
-may appear suprising: we don't ask that the counit of the adjunction is an isomorphism,
+may appear surprising: we don't ask that the counit of the adjunction is an isomorphism,
 but just that we have some potentially unrelated isomorphism `i : F ⋙ G ≅ 𝟭 C`.
 
 However Lemma A1.1.1 from [Elephant] shows that in this situation the counit itself

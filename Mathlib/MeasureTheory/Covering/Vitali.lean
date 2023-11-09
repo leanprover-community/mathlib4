@@ -2,15 +2,11 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.covering.vitali
-! leanprover-community/mathlib commit bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Covering.VitaliFamily
+
+#align_import measure_theory.covering.vitali from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
 /-!
 # Vitali covering theorems
@@ -39,7 +35,7 @@ This version is given in `Vitali.vitaliFamily`.
 -/
 
 
-variable {α ι : Type _}
+variable {α ι : Type*}
 
 open Set Metric MeasureTheory TopologicalSpace Filter
 
@@ -128,7 +124,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
   -- we claim that `u ∪ {a'}` still belongs to `T`, contradicting the maximality of `u`.
   refine' ⟨insert a' u, ⟨_, _, _⟩, subset_insert _ _, (ne_insert_of_not_mem _ a'_ne_u).symm⟩
   · -- check that `u ∪ {a'}` is made of elements of `t`.
-    rw [insert_subset]
+    rw [insert_subset_iff]
     exact ⟨a'A.1, uT.1⟩
   · -- Check that `u ∪ {a'}` is a disjoint family. This follows from the fact that `a'` does not
     -- intersect `u`.
@@ -146,7 +142,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
       -- Moreover, `δ c` is smaller than the maximum `m` of `δ` over `A`, which is `≤ δ a' / τ`
       -- thanks to the good choice of `a'`. This is the desired inequality.
       push_neg at H
-      simp only [← not_disjoint_iff_nonempty_inter, Classical.not_not] at H
+      simp only [← disjoint_iff_inter_eq_empty] at H
       rcases mem_insert_iff.1 ba'u with (rfl | H')
       · refine' ⟨b, mem_insert _ _, hcb, _⟩
         calc
@@ -204,7 +200,7 @@ Then one can extract from `t` a disjoint subfamily that covers almost all `s`.
 For more flexibility, we give a statement with a parameterized family of sets.
 -/
 theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
-    [SecondCountableTopology α] (μ : Measure α) [LocallyFiniteMeasure μ] (s : Set α) (t : Set ι)
+    [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (s : Set α) (t : Set ι)
     (C : ℝ≥0) (r : ι → ℝ) (c : ι → α) (B : ι → Set α) (hB : ∀ a ∈ t, B a ⊆ closedBall (c a) (r a))
     (μB : ∀ a ∈ t, μ (closedBall (c a) (3 * r a)) ≤ C * μ (B a))
     (ht : ∀ a ∈ t, (interior (B a)).Nonempty) (h't : ∀ a ∈ t, IsClosed (B a))
@@ -332,8 +328,8 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
   have M : (s \ ⋃ a ∈ u, B a) ∩
       ball x (R x) ⊆ ⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a) := by
     intro z hz
-    set k := ⋃ (a : v) (ha : a ∈ w), B a
-    have k_closed : IsClosed k := isClosed_biUnion w.finite_toSet fun i _ => h't _ (ut (vu i.2))
+    set k := ⋃ (a : v) (_ : a ∈ w), B a
+    have k_closed : IsClosed k := isClosed_biUnion_finset fun i _ => h't _ (ut (vu i.2))
     have z_notmem_k : z ∉ k := by
       simp only [not_exists, exists_prop, mem_iUnion, mem_sep_iff, forall_exists_index,
         SetCoe.exists, not_and, exists_and_right, Subtype.coe_mk]
@@ -403,7 +399,7 @@ doubling. Then the set of closed sets `a` with nonempty interior contained in `c
 covering a fixed proportion `1/C` of the ball `closedBall x (3 * r)` forms a Vitali family.
 This is essentially a restatement of the measurable Vitali theorem. -/
 protected def vitaliFamily [MetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
-    [SecondCountableTopology α] (μ : Measure α) [LocallyFiniteMeasure μ] (C : ℝ≥0)
+    [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (C : ℝ≥0)
     (h : ∀ x, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r)) :
     VitaliFamily μ where
   setsAt x := { a | IsClosed a ∧ (interior a).Nonempty ∧

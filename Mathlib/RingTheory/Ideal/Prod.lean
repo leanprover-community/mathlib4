@@ -2,13 +2,10 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module ring_theory.ideal.prod
-! leanprover-community/mathlib commit 052f6013363326d50cb99c6939814a4b8eb7b301
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Operations
+
+#align_import ring_theory.ideal.prod from "leanprover-community/mathlib"@"052f6013363326d50cb99c6939814a4b8eb7b301"
 
 /-!
 # Ideals in product rings
@@ -165,10 +162,10 @@ theorem ideal_prod_prime (I : Ideal (R × S)) :
     intro hI
     rcases ideal_prod_prime_aux hI with (h | h)
     · right
-      rw [h] at hI⊢
+      rw [h] at hI ⊢
       exact ⟨_, ⟨isPrime_of_isPrime_prod_top' hI, rfl⟩⟩
     · left
-      rw [h] at hI⊢
+      rw [h] at hI ⊢
       exact ⟨_, ⟨isPrime_of_isPrime_prod_top hI, rfl⟩⟩
   · rintro (⟨p, ⟨h, rfl⟩⟩ | ⟨p, ⟨h, rfl⟩⟩)
     · exact isPrime_ideal_prod_top

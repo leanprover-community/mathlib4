@@ -2,15 +2,12 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.multiset.nodup
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.Multiset.Bind
 import Mathlib.Data.Multiset.Range
+
+#align_import data.multiset.nodup from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # The `Nodup` predicate for multisets without duplicate elements.
@@ -21,7 +18,7 @@ namespace Multiset
 
 open Function List
 
-variable {α β γ : Type _} {r : α → α → Prop} {s t : Multiset α} {a : α}
+variable {α β γ : Type*} {r : α → α → Prop} {s t : Multiset α} {a : α}
 
 -- nodup
 /-- `Nodup s` means that `s` has no duplicates, i.e. the multiplicity of
@@ -187,11 +184,11 @@ theorem Nodup.not_mem_erase [DecidableEq α] {a : α} {s} (h : Nodup s) : a ∉ 
   (h.mem_erase_iff.1 ha).1 rfl
 #align multiset.nodup.not_mem_erase Multiset.Nodup.not_mem_erase
 
-protected theorem Nodup.product {t : Multiset β} : Nodup s → Nodup t → Nodup (product s t) :=
+protected theorem Nodup.product {t : Multiset β} : Nodup s → Nodup t → Nodup (s ×ˢ t) :=
   Quotient.inductionOn₂ s t fun l₁ l₂ d₁ d₂ => by simp [List.Nodup.product d₁ d₂]
 #align multiset.nodup.product Multiset.Nodup.product
 
-protected theorem Nodup.sigma {σ : α → Type _} {t : ∀ a, Multiset (σ a)} :
+protected theorem Nodup.sigma {σ : α → Type*} {t : ∀ a, Multiset (σ a)} :
     Nodup s → (∀ a, Nodup (t a)) → Nodup (s.sigma t) :=
   Quot.induction_on s fun l₁ => by
     choose f hf using fun a => Quotient.exists_rep (t a)

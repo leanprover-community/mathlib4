@@ -2,15 +2,12 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.subobject.comma
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Subobject.WellPowered
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+
+#align_import category_theory.subobject.comma from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Subobjects in the category of structured arrows
@@ -20,7 +17,7 @@ and `S : D` as a subtype of the subobjects of `A.right`. We deduce that `Structu
 well-powered if `C` is.
 
 ## Main declarations
-* `StructuredArrow.subobjectEquiv `: the order-equivalence between `Subobject A` and a subtype of
+* `StructuredArrow.subobjectEquiv`: the order-equivalence between `Subobject A` and a subtype of
   `Subobject A.right`.
 
 ## Implementation notes
@@ -112,16 +109,20 @@ def subobjectEquiv [HasLimits C] [PreservesLimits T] (A : StructuredArrow S T) :
     refine' ⟨fun h => Subobject.mk_le_mk_of_comm _ _, fun h => _⟩
     · exact homMk (Subobject.ofMkLEMk _ _ h)
         ((cancel_mono (T.map g.right)).1 (by simp [← T.map_comp]))
-    . aesop_cat
-    . refine' Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).right _
+    · aesop_cat
+    · refine' Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).right _
       exact congr_arg CommaMorphism.right (Subobject.ofMkLEMk_comp h)
 #align category_theory.structured_arrow.subobject_equiv CategoryTheory.StructuredArrow.subobjectEquiv
+
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] CategoryTheory.StructuredArrow.subobjectEquiv_symm_apply
+  CategoryTheory.StructuredArrow.subobjectEquiv_apply_coe
 
 /-- If `C` is well-powered and complete and `T` preserves limits, then `StructuredArrow S T` is
     well-powered. -/
 instance wellPowered_structuredArrow [WellPowered C] [HasLimits C] [PreservesLimits T] :
-    WellPowered (StructuredArrow S T)
-    where subobject_small X := small_map (subobjectEquiv X).toEquiv
+    WellPowered (StructuredArrow S T) where
+  subobject_small X := small_map (subobjectEquiv X).toEquiv
 #align category_theory.structured_arrow.well_powered_structured_arrow CategoryTheory.StructuredArrow.wellPowered_structuredArrow
 
 end StructuredArrow
@@ -224,7 +225,7 @@ def quotientEquiv [HasColimits C] [PreservesColimits S] (A : CostructuredArrow S
       dsimp
       simp only [← S.map_comp_assoc, unop_left_comp_ofMkLEMk_unop, unop_op, CommaMorphism.w,
         Functor.const_obj_obj, right_eq_id, Functor.const_obj_map, Category.comp_id]
-    . apply Quiver.Hom.unop_inj
+    · apply Quiver.Hom.unop_inj
       ext
       exact unop_left_comp_ofMkLEMk_unop _
     · refine' Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).unop.left.op _
@@ -238,8 +239,8 @@ def quotientEquiv [HasColimits C] [PreservesColimits S] (A : CostructuredArrow S
 /-- If `C` is well-copowered and cocomplete and `S` preserves colimits, then
     `CostructuredArrow S T` is well-copowered. -/
 instance well_copowered_costructuredArrow [WellPowered Cᵒᵖ] [HasColimits C] [PreservesColimits S] :
-    WellPowered (CostructuredArrow S T)ᵒᵖ
-    where subobject_small X := small_map (quotientEquiv (unop X)).toEquiv
+    WellPowered (CostructuredArrow S T)ᵒᵖ where
+  subobject_small X := small_map (quotientEquiv (unop X)).toEquiv
 #align category_theory.costructured_arrow.well_copowered_costructured_arrow CategoryTheory.CostructuredArrow.well_copowered_costructuredArrow
 
 end CostructuredArrow

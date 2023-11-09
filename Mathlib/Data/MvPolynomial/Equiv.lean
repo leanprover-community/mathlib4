@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.mv_polynomial.equiv
-! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.Polynomial.AlgebraMap
@@ -14,6 +9,8 @@ import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Algebra.BigOperators.Fin
+
+#align_import data.mv_polynomial.equiv from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Equivalences between polynomial rings
@@ -25,9 +22,9 @@ based on equivalences between the underlying types.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ : Type _` (indexing the variables)
++ `σ : Type*` (indexing the variables)
 
-+ `R : Type _` `[CommSemiring R]` (the coefficients)
++ `R : Type*` `[CommSemiring R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
 This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
@@ -55,7 +52,7 @@ variable {R : Type u} {S₁ : Type v} {S₂ : Type w} {S₃ : Type x}
 
 namespace MvPolynomial
 
-variable {σ : Type _} {a a' a₁ a₂ : R} {e : ℕ} {s : σ →₀ ℕ}
+variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {s : σ →₀ ℕ}
 
 section Equiv
 
@@ -123,7 +120,7 @@ theorem mapEquiv_trans [CommSemiring S₁] [CommSemiring S₂] [CommSemiring S�
       map_map]
 #align mv_polynomial.map_equiv_trans MvPolynomial.mapEquiv_trans
 
-variable {A₁ A₂ A₃ : Type _} [CommSemiring A₁] [CommSemiring A₂] [CommSemiring A₃]
+variable {A₁ A₂ A₃ : Type*} [CommSemiring A₁] [CommSemiring A₂] [CommSemiring A₃]
 
 variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 
@@ -159,7 +156,7 @@ variable (S₁ S₂ S₃)
 
 /-- The function from multivariable polynomials in a sum of two types,
 to multivariable polynomials in one of the types,
-with coefficents in multivariable polynomials in the other type.
+with coefficients in multivariable polynomials in the other type.
 
 See `sumRingEquiv` for the ring isomorphism.
 -/
@@ -186,7 +183,7 @@ set_option linter.uppercaseLean3 false in
 #align mv_polynomial.sum_to_iter_Xr MvPolynomial.sumToIter_Xr
 
 /-- The function from multivariable polynomials in one type,
-with coefficents in multivariable polynomials in another type,
+with coefficients in multivariable polynomials in another type,
 to multivariable polynomials in the sum of the two types.
 
 See `sumRingEquiv` for the ring isomorphism.
@@ -217,11 +214,9 @@ and the ground ring. -/
 @[simps!]
 def isEmptyAlgEquiv [he : IsEmpty σ] : MvPolynomial σ R ≃ₐ[R] R :=
   AlgEquiv.ofAlgHom (aeval (IsEmpty.elim he)) (Algebra.ofId _ _)
+    (by ext)
     (by
-      ext
-      simp [Algebra.ofId_apply, algebraMap_eq])
-    (by
-      ext (i m)
+      ext i m
       exact IsEmpty.elim' he i)
 #align mv_polynomial.is_empty_alg_equiv MvPolynomial.isEmptyAlgEquiv
 
@@ -251,7 +246,7 @@ def mvPolynomialEquivMvPolynomial [CommSemiring S₃] (f : MvPolynomial S₁ R �
 
 /-- The ring isomorphism between multivariable polynomials in a sum of two types,
 and multivariable polynomials in one of the types,
-with coefficents in multivariable polynomials in the other type.
+with coefficients in multivariable polynomials in the other type.
 -/
 def sumRingEquiv : MvPolynomial (Sum S₁ S₂) R ≃+* MvPolynomial S₁ (MvPolynomial S₂ R) := by
   apply mvPolynomialEquivMvPolynomial R (Sum S₁ S₂) _ _ (sumToIter R S₁ S₂) (iterToSum R S₁ S₂)
@@ -265,15 +260,15 @@ def sumRingEquiv : MvPolynomial (Sum S₁ S₂) R ≃+* MvPolynomial S₁ (MvPol
 
 /-- The algebra isomorphism between multivariable polynomials in a sum of two types,
 and multivariable polynomials in one of the types,
-with coefficents in multivariable polynomials in the other type.
+with coefficients in multivariable polynomials in the other type.
 -/
 def sumAlgEquiv : MvPolynomial (Sum S₁ S₂) R ≃ₐ[R] MvPolynomial S₁ (MvPolynomial S₂ R) :=
   { sumRingEquiv R S₁ S₂ with
     commutes' := by
       intro r
-      have A : algebraMap R (MvPolynomial S₁ (MvPolynomial S₂ R)) r = (C (C r) : _) := by rfl
-      have B : algebraMap R (MvPolynomial (Sum S₁ S₂) R) r = C r := by rfl
-      simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe_apply,
+      have A : algebraMap R (MvPolynomial S₁ (MvPolynomial S₂ R)) r = (C (C r) : _) := rfl
+      have B : algebraMap R (MvPolynomial (Sum S₁ S₂) R) r = C r := rfl
+      simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe,
         Equiv.coe_fn_mk, B, sumToIter_C, A] }
 #align mv_polynomial.sum_alg_equiv MvPolynomial.sumAlgEquiv
 
@@ -426,6 +421,26 @@ theorem support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} 
   · intro h
     simpa [mem_support_iff, ← finSuccEquiv_coeff_coeff m f i] using h
 #align mv_polynomial.support_coeff_fin_succ_equiv MvPolynomial.support_coeff_finSuccEquiv
+
+/--
+The `totalDegree` of a multivariable polynomial `p` is at least `i` more than the `totalDegree` of
+the `i`th coefficient of `finSuccEquiv` applied to `p`, if this is nonzero.
+-/
+lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (i : ℕ)
+    (hi : (finSuccEquiv R n f).coeff i ≠ 0) :
+    totalDegree ((finSuccEquiv R n f).coeff i) + i ≤ totalDegree f := by
+  have hf'_sup : ((finSuccEquiv R n f).coeff i).support.Nonempty := by
+    rw [Finset.nonempty_iff_ne_empty, ne_eq, support_eq_empty]
+    exact hi
+  -- Let σ be a monomial index of ((finSuccEquiv R n p).coeff i) of maximal total degree
+  have ⟨σ, hσ1, hσ2⟩ := Finset.exists_mem_eq_sup (support _) hf'_sup
+                          (fun s => Finsupp.sum s fun _ e => e)
+  -- Then cons i σ is a monomial index of p with total degree equal to the desired bound
+  let σ' : Fin (n+1) →₀ ℕ := cons i σ
+  convert le_totalDegree (s := σ') _
+  · rw [totalDegree, hσ2, sum_cons, add_comm]
+  · rw [←support_coeff_finSuccEquiv]
+    exact hσ1
 
 theorem finSuccEquiv_support (f : MvPolynomial (Fin (n + 1)) R) :
     (finSuccEquiv R n f).support = Finset.image (fun m : Fin (n + 1) →₀ ℕ => m 0) f.support := by

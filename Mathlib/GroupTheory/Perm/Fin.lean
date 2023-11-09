@@ -2,16 +2,13 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.perm.fin
-! leanprover-community/mathlib commit 7e1c1263b6a25eb90bf16e80d8f47a657e403c4c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.GroupTheory.Perm.Option
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Logic.Equiv.Fintype
+
+#align_import group_theory.perm.fin from "leanprover-community/mathlib"@"7e1c1263b6a25eb90bf16e80d8f47a657e403c4c"
 
 /-!
 # Permutations of `Fin n`
@@ -155,7 +152,7 @@ namespace Fin
 /-- `Fin.cycleRange i` is the cycle `(0 1 2 ... i)` leaving `(i+1 ... (n-1))` unchanged. -/
 def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
   (finRotate (i + 1)).extendDomain
-    (Equiv.ofLeftInverse' (Fin.castLE (Nat.succ_le_of_lt i.is_lt)).toEmbedding (↑)
+    (Equiv.ofLeftInverse' (Fin.castLEEmb (Nat.succ_le_of_lt i.is_lt)).toEmbedding (↑)
       (by
         intro x
         ext
@@ -163,8 +160,8 @@ def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
 #align fin.cycle_range Fin.cycleRange
 
 theorem cycleRange_of_gt {n : ℕ} {i j : Fin n.succ} (h : i < j) : cycleRange i j = j := by
-  rw [cycleRange, ofLeftInverse'_eq_ofInjective, ←
-    Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
+  rw [cycleRange, ofLeftInverse'_eq_ofInjective,
+    ← Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
     viaFintypeEmbedding_apply_not_mem_range]
   simpa
 #align fin.cycle_range_of_gt Fin.cycleRange_of_gt
@@ -174,12 +171,12 @@ theorem cycleRange_of_le {n : ℕ} {i j : Fin n.succ} (h : j ≤ i) :
   cases n
   · exact Subsingleton.elim (α := Fin 1) _ _  --Porting note; was `simp`
   have : j = (Fin.castLE (Nat.succ_le_of_lt i.is_lt))
-    ⟨j, lt_of_le_of_lt h (Nat.lt_succ_self i)⟩ :=
-    by simp
+    ⟨j, lt_of_le_of_lt h (Nat.lt_succ_self i)⟩ := by simp
   ext
   erw [this, cycleRange, ofLeftInverse'_eq_ofInjective, ←
     Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
-    viaFintypeEmbedding_apply_image, coe_castLE, coe_finRotate]
+    viaFintypeEmbedding_apply_image, castLEEmb_toEmbedding, Function.Embedding.coeFn_mk,
+    coe_castLE, coe_finRotate]
   simp only [Fin.ext_iff, val_last, val_mk, val_zero, Fin.eta, castLE_mk]
   split_ifs with heq
   · rfl

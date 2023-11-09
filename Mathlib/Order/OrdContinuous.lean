@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.ord_continuous
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.RelIso.Basic
+
+#align_import order.ord_continuous from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Order continuity
@@ -36,14 +33,14 @@ open Function OrderDual Set
 
 
 /-- A function `f` between preorders is left order continuous if it preserves all suprema.  We
-define it using `is_lub` instead of `Sup` so that the proof works both for complete lattices and
+define it using `IsLUB` instead of `sSup` so that the proof works both for complete lattices and
 conditionally complete lattices. -/
 def LeftOrdContinuous [Preorder α] [Preorder β] (f : α → β) :=
   ∀ ⦃s : Set α⦄ ⦃x⦄, IsLUB s x → IsLUB (f '' s) (f x)
 #align left_ord_continuous LeftOrdContinuous
 
 /-- A function `f` between preorders is right order continuous if it preserves all infima.  We
-define it using `is_glb` instead of `Inf` so that the proof works both for complete lattices and
+define it using `IsGLB` instead of `sInf` so that the proof works both for complete lattices and
 conditionally complete lattices. -/
 def RightOrdContinuous [Preorder α] [Preorder β] (f : α → β) :=
   ∀ ⦃s : Set α⦄ ⦃x⦄, IsGLB s x → IsGLB (f '' s) (f x)
@@ -82,7 +79,7 @@ theorem comp (hg : LeftOrdContinuous g) (hf : LeftOrdContinuous f) : LeftOrdCont
 
 -- PORTING NOTE: how to do this in non-tactic mode?
 protected theorem iterate {f : α → α} (hf : LeftOrdContinuous f) (n : ℕ) :
-    LeftOrdContinuous (f^[n]) :=
+    LeftOrdContinuous f^[n] :=
 by induction n with
 | zero => exact LeftOrdContinuous.id α
 | succ n ihn => exact ihn.comp hf
@@ -191,7 +188,7 @@ theorem comp (hg : RightOrdContinuous g) (hf : RightOrdContinuous f) : RightOrdC
 #align right_ord_continuous.comp RightOrdContinuous.comp
 
 protected theorem iterate {f : α → α} (hf : RightOrdContinuous f) (n : ℕ) :
-    RightOrdContinuous (f^[n]) :=
+    RightOrdContinuous f^[n] :=
   hf.orderDual.iterate n
 #align right_ord_continuous.iterate RightOrdContinuous.iterate
 
@@ -215,7 +212,7 @@ theorem lt_iff (hf : RightOrdContinuous f) (h : Injective f) {x y} : f x < f y �
 
 variable (f)
 
-/-- Convert an injective left order continuous function to a `order_embedding`. -/
+/-- Convert an injective left order continuous function to an `OrderEmbedding`. -/
 def toOrderEmbedding (hf : RightOrdContinuous f) (h : Injective f) : α ↪o β :=
   ⟨⟨f, h⟩, hf.le_iff h⟩
 #align right_ord_continuous.to_order_embedding RightOrdContinuous.toOrderEmbedding

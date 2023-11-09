@@ -2,13 +2,10 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.sites.pretopology
-! leanprover-community/mathlib commit 9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Grothendieck
+
+#align_import category_theory.sites.pretopology from "leanprover-community/mathlib"@"9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a"
 
 /-!
 # Grothendieck pretopologies
@@ -181,7 +178,7 @@ def trivial : Pretopology C where
     rintro ⟨Z, g, i, rfl⟩
     refine' ⟨pullback g f, pullback.snd, _, _⟩
     · refine' ⟨⟨pullback.lift (f ≫ inv g) (𝟙 _) (by simp), ⟨_, by aesop_cat⟩⟩⟩
-      apply pullback.hom_ext
+      ext
       · rw [assoc, pullback.lift_fst, ← pullback.condition_assoc]
         simp
       · simp

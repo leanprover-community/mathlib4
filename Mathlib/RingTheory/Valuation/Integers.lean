@@ -2,13 +2,10 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.valuation.integers
-! leanprover-community/mathlib commit 7b7da89322fe46a16bf03eeb345b0acfc73fe10e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Valuation.Basic
+
+#align_import ring_theory.valuation.integers from "leanprover-community/mathlib"@"7b7da89322fe46a16bf03eeb345b0acfc73fe10e"
 
 /-!
 # Ring of integers under a given valuation
@@ -36,7 +33,7 @@ def integer : Subring R where
   mul_mem' {x y} hx hy := by simp only [Set.mem_setOf_eq, _root_.map_mul, mul_le_one' hx hy]
   zero_mem' := by simp only [Set.mem_setOf_eq, _root_.map_zero, zero_le']
   add_mem' {x y} hx hy := le_trans (v.map_add x y) (max_le hx hy)
-  neg_mem' {x} hx :=by simp only [Set.mem_setOf_eq] at hx; simpa only [Set.mem_setOf_eq, map_neg]
+  neg_mem' {x} hx := by simp only [Set.mem_setOf_eq] at hx; simpa only [Set.mem_setOf_eq, map_neg]
 #align valuation.integer Valuation.integer
 
 end Ring

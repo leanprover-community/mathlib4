@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.equiv.list
-! leanprover-community/mathlib commit d11893b411025250c8e61ff2f12ccbd7ee35ab15
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Vector.Basic
 import Mathlib.Logic.Denumerable
+
+#align_import logic.equiv.list from "leanprover-community/mathlib"@"d11893b411025250c8e61ff2f12ccbd7ee35ab15"
 
 /-!
 # Equivalences involving `List`-like types
@@ -24,7 +21,7 @@ open Nat List
 
 namespace Encodable
 
-variable {α : Type _}
+variable {α : Type*}
 
 section List
 
@@ -53,7 +50,7 @@ instance _root_.List.encodable : Encodable (List α) :=
     induction' l with a l IH <;> simp [encodeList, decodeList, unpair_pair, encodek, *]⟩
 #align list.encodable List.encodable
 
-instance _root_.List.countable {α : Type _} [Countable α] : Countable (List α) := by
+instance _root_.List.countable {α : Type*} [Countable α] : Countable (List α) := by
   haveI := Encodable.ofCountable α
   infer_instance
 #align list.countable List.countable
@@ -113,7 +110,7 @@ def encodeMultiset (s : Multiset α) : ℕ :=
 
 /-- Explicit decoding function for `Multiset α` -/
 def decodeMultiset (n : ℕ) : Option (Multiset α) :=
-  ((↑) : List α →  Multiset α) <$> decode (α := List α) n
+  ((↑) : List α → Multiset α) <$> decode (α := List α) n
 #align encodable.decode_multiset Encodable.decodeMultiset
 
 /-- If `α` is encodable, then so is `Multiset α`. -/
@@ -122,7 +119,7 @@ instance _root_.Multiset.encodable : Encodable (Multiset α) :=
 #align multiset.encodable Multiset.encodable
 
 /-- If `α` is countable, then so is `Multiset α`. -/
-instance _root_.Multiset.countable {α : Type _} [Countable α] : Countable (Multiset α) :=
+instance _root_.Multiset.countable {α : Type*} [Countable α] : Countable (Multiset α) :=
   Quotient.countable
 #align multiset.countable Multiset.countable
 
@@ -135,7 +132,7 @@ def encodableOfList [DecidableEq α] (l : List α) (H : ∀ x, x ∈ l) : Encoda
 
 /-- A finite type is encodable. Because the encoding is not unique, we wrap it in `Trunc` to
 preserve computability. -/
-def _root_.Fintype.truncEncodable (α : Type _) [DecidableEq α] [Fintype α] : Trunc (Encodable α) :=
+def _root_.Fintype.truncEncodable (α : Type*) [DecidableEq α] [Fintype α] : Trunc (Encodable α) :=
   @Quot.recOnSubsingleton' _ _ (fun s : Multiset α => (∀ x : α, x ∈ s) → Trunc (Encodable α)) _
     Finset.univ.1 (fun l H => Trunc.mk <| encodableOfList l H) Finset.mem_univ
 #align fintype.trunc_encodable Fintype.truncEncodable
@@ -143,7 +140,7 @@ def _root_.Fintype.truncEncodable (α : Type _) [DecidableEq α] [Fintype α] : 
 /-- A noncomputable way to arbitrarily choose an ordering on a finite type.
 It is not made into a global instance, since it involves an arbitrary choice.
 This can be locally made into an instance with `local attribute [instance] Fintype.toEncodable`. -/
-noncomputable def _root_.Fintype.toEncodable (α : Type _) [Fintype α] : Encodable α := by
+noncomputable def _root_.Fintype.toEncodable (α : Type*) [Fintype α] : Encodable α := by
   classical exact (Fintype.truncEncodable α).out
 #align fintype.to_encodable Fintype.toEncodable
 
@@ -162,7 +159,7 @@ instance finArrow [Encodable α] {n} : Encodable (Fin n → α) :=
   ofEquiv _ (Equiv.vectorEquivFin _ _).symm
 #align encodable.fin_arrow Encodable.finArrow
 
-instance finPi (n) (π : Fin n → Type _) [∀ i, Encodable (π i)] : Encodable (∀ i, π i) :=
+instance finPi (n) (π : Fin n → Type*) [∀ i, Encodable (π i)] : Encodable (∀ i, π i) :=
   ofEquiv _ (Equiv.piEquivSubtypeSigma (Fin n) π)
 #align encodable.fin_pi Encodable.finPi
 
@@ -181,7 +178,7 @@ instance _root_.Finset.countable [Countable α] : Countable (Finset α) :=
 -- TODO: Unify with `fintypePi` and find a better name
 /-- When `α` is finite and `β` is encodable, `α → β` is encodable too. Because the encoding is not
 unique, we wrap it in `Trunc` to preserve computability. -/
-def fintypeArrow (α : Type _) (β : Type _) [DecidableEq α] [Fintype α] [Encodable β] :
+def fintypeArrow (α : Type*) (β : Type*) [DecidableEq α] [Fintype α] [Encodable β] :
     Trunc (Encodable (α → β)) :=
   (Fintype.truncEquivFin α).map fun f =>
     Encodable.ofEquiv (Fin (Fintype.card α) → β) <| Equiv.arrowCongr f (Equiv.refl _)
@@ -189,7 +186,7 @@ def fintypeArrow (α : Type _) (β : Type _) [DecidableEq α] [Fintype α] [Enco
 
 /-- When `α` is finite and all `π a` are encodable, `Π a, π a` is encodable too. Because the
 encoding is not unique, we wrap it in `Trunc` to preserve computability. -/
-def fintypePi (α : Type _) (π : α → Type _) [DecidableEq α] [Fintype α] [∀ a, Encodable (π a)] :
+def fintypePi (α : Type*) (π : α → Type*) [DecidableEq α] [Fintype α] [∀ a, Encodable (π a)] :
     Trunc (Encodable (∀ a, π a)) :=
   (Fintype.truncEncodable α).bind fun a =>
     (@fintypeArrow α (Σa, π a) _ _ (@Sigma.encodable _ _ a _)).bind fun f =>
@@ -224,7 +221,7 @@ theorem sortedUniv_toFinset (α) [Fintype α] [Encodable α] [DecidableEq α] :
   Finset.sort_toFinset _ _
 #align encodable.sorted_univ_to_finset Encodable.sortedUniv_toFinset
 
-/-- An encodable `Fintype` is equivalent to the same size `fin`. -/
+/-- An encodable `Fintype` is equivalent to the same size `Fin`. -/
 def fintypeEquivFin {α} [Fintype α] [Encodable α] : α ≃ Fin (Fintype.card α) :=
   haveI : DecidableEq α := Encodable.decidableEqOfEncodable _
   -- Porting note: used the `trans` tactic
@@ -233,7 +230,7 @@ def fintypeEquivFin {α} [Fintype α] [Encodable α] : α ≃ Fin (Fintype.card 
 #align encodable.fintype_equiv_fin Encodable.fintypeEquivFin
 
 /-- If `α` and `β` are encodable and `α` is a fintype, then `α → β` is encodable as well. -/
-instance fintypeArrowOfEncodable {α β : Type _} [Encodable α] [Fintype α] [Encodable β] :
+instance fintypeArrowOfEncodable {α β : Type*} [Encodable α] [Fintype α] [Encodable β] :
     Encodable (α → β) :=
   ofEquiv (Fin (Fintype.card α) → β) <| Equiv.arrowCongr fintypeEquivFin (Equiv.refl _)
 #align encodable.fintype_arrow_of_encodable Encodable.fintypeArrowOfEncodable
@@ -242,7 +239,7 @@ end Encodable
 
 namespace Denumerable
 
-variable {α : Type _} {β : Type _} [Denumerable α] [Denumerable β]
+variable {α : Type*} {β : Type*} [Denumerable α] [Denumerable β]
 
 open Encodable
 
@@ -318,7 +315,7 @@ theorem raise_chain : ∀ l n, List.Chain (· ≤ ·) n (raise l n)
   | _ :: _, _ => List.Chain.cons (Nat.le_add_left _ _) (raise_chain _ _)
 #align denumerable.raise_chain Denumerable.raise_chain
 
-/-- `raise l n` is an non-decreasing sequence. -/
+/-- `raise l n` is a non-decreasing sequence. -/
 theorem raise_sorted : ∀ l n, List.Sorted (· ≤ ·) (raise l n)
   | [], _ => List.sorted_nil
   | _ :: _, _ => List.chain_iff_pairwise.1 (raise_chain _ _)
@@ -422,7 +419,7 @@ def listNatEquivNat : List ℕ ≃ ℕ :=
 #align equiv.list_nat_equiv_nat Equiv.listNatEquivNat
 
 /-- If `α` is equivalent to `ℕ`, then `List α` is equivalent to `α`. -/
-def listEquivSelfOfEquivNat {α : Type _} (e : α ≃ ℕ) : List α ≃ α :=
+def listEquivSelfOfEquivNat {α : Type*} (e : α ≃ ℕ) : List α ≃ α :=
   calc
     List α ≃ List ℕ := listEquivOfEquiv e
     _ ≃ ℕ := listNatEquivNat
