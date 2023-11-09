@@ -31,7 +31,7 @@ open scoped ENNReal NNReal Real
 open MeasureTheory Real Set Filter Topology
 
 @[simp]
-lemma comp_of_ge : {x : ℝ | x ≥ 0}ᶜ =  {x | x < 0} := by
+lemma compl_setOf_le (y : ℝ) : {x : ℝ | y ≤ x}ᶜ =  {x | x < y} := by
   ext x;
   constructor <;>
   simp only [ge_iff_le, mem_compl_iff, mem_setOf_eq, not_le, imp_self]
