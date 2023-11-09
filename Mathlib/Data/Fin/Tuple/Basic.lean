@@ -1007,4 +1007,43 @@ theorem sigma_eq_iff_eq_comp_cast {α : Type*} {a b : Σii, Fin ii → α} :
     sigma_eq_of_eq_comp_cast _ h'⟩
 #align fin.sigma_eq_iff_eq_comp_cast Fin.sigma_eq_iff_eq_comp_cast
 
+section ExtendFun
+
+/-- Extend a function `f : Fin n → α` to a function on all natural numbers, by
+    defining `f i = a` for all `i ≥ n` and some given constant `a` -/
+def extendFun {α : Type*} {n: ℕ} (f : Fin n → α) (a : α) : ℕ → α :=
+  fun i =>
+    if h : i < n then
+      f ⟨i, h⟩
+    else
+      a
+
+@[simp] lemma extendFun_val' {α a n} (m) {f : Fin (n+m) → α} {i : Fin n} :
+    extendFun f a i.val = f (i.castAdd _) := by
+  have : i.val < n + m := Nat.lt_of_lt_of_le (i.prop) (Nat.le_add_right ..)
+  simp only [extendFun, this, dite_true]
+  rfl
+
+@[simp] lemma extendFun_val {α a n} {f : Fin n → α} {i : Fin n} :
+    extendFun f a i.val = f i := by
+  rw [extendFun_val' 0]; rfl
+
+@[simp] lemma extendFun_comp_val' {α a n} (m) {f : Fin (n+m) → α} :
+    (extendFun f a) ∘ val = f ∘ (castAdd m) := by
+  funext i; apply extendFun_val'
+
+@[simp] lemma extendFun_comp_val {α a n} {f : Fin n → α} :
+    (extendFun f a) ∘ val = f := by
+  funext i; apply extendFun_val
+
+@[simp] lemma extendFun_add {α a n} (m) {f : Fin (n+(m+1)) → α} :
+    (extendFun f a) n = f ⟨n, by simp⟩ := by
+  simp [extendFun]
+
+@[simp] lemma extendFun_succ {α a n} {f : Fin (n+1) → α} :
+    (extendFun f a) n = f ⟨n, Nat.lt.base ..⟩ := by
+  simp [extendFun]
+
+end ExtendFun
+
 end Fin
