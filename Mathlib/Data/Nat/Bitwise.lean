@@ -397,15 +397,9 @@ def Fin.extendFun {α : Type*} {n: ℕ} (f : Fin n → α) (a : α) : ℕ → α
     (extendFun f a) n = f ⟨n, lt.base ..⟩ := by
   simp [extendFun]
 
--- @[simp] lemma Fin.extendFun_extendFun {α a n} {f : Fin n → α} {i : Fin n} :
---     extendFun (extendFun f a ∘ Fin.val) = f i := by
---   simp [extendFun]
 
-
-/-- Generic method to create a natural number by appending bits tail-recursively.
-It takes a boolean function `f` on each bit the number of bits `i`.  It is
-almost always specialized  `i = w`; the length of the binary representation.
-This is an alternative to using `List`. It will be used for bitadd, bitneg, bitmul etc.-/
+/-- Create a natural number by appending bits tail-recursively, where a boolean function `f` gives
+    the value of each bit such that `f 0` is the least significant bit. -/
 def ofBits {n : ℕ} (f : Fin n → Bool) : ℕ :=
   go (Fin.extendFun f false) 0 n
   where
