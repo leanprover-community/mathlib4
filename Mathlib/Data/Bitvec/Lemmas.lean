@@ -92,15 +92,6 @@ theorem List.foldl_ofFn {α β n} (f : α → β → α) (init : α) (g : Fin n 
   · rfl
   · simp [List.finRange_succ_eq_map, List.foldl_map, ih]
 
-theorem toNat_eq_foldl_toBEList {n : ℕ} (v : BitVec n) :
-    v.toNat = v.toBEList.foldl (flip bit) 0 := by
-  simp [toBEList, getMsb', getMsb, getLsb, List.foldl_ofFn, flip]
-  induction' n with n ih
-  · simp [BitVec.toNat]
-  · have : ∃ hd tl, v = consMsb hd tl
-    simp
-#align bitvec.to_nat_eq_foldr_reverse Std.BitVec.toNat_eq_foldl_toBEList
-
 theorem toNat_lt {n : ℕ} (v : BitVec n) : v.toNat < 2 ^ n := by
   exact v.toFin.2
 #align bitvec.to_nat_lt Std.BitVec.toNat_lt
@@ -145,5 +136,50 @@ theorem toFin_ofFin {n} (i : Fin <| 2 ^ n) : (ofFin i).toFin = i :=
 theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := by
   rfl
 #align bitvec.of_fin_to_fin Std.BitVec.ofFin_toFin
+
+/-- There is only one `empty` bitvector, namely, `nil` -/
+theorem zero_length_eq_nil :
+    ∀ (xs : BitVec 0), xs = nil := by
+  intro xs
+  have : xs.toNat < 2 ^ 0 := xs.toFin.prop
+  simp only [Nat.pow_zero, Nat.lt_one_iff] at this
+  have : xs.toNat = nil.toNat := this
+  simp only [nil, BitVec.zero, toNat_inj] at this
+  simp only [this]
+
+theorem concatMsb_msb_dropMsb {n} (xs : BitVec (n+1)) :
+    concatMsb xs.msb xs.dropMsb = xs := by
+  simp [concatMsb, BitVec.msb, getMsb, dropMsb, getLsb]
+  sorry
+
+/-- A custom recursion principle for bitvectors in terms of `nil` and `consLsb` -/
+@[elab_as_elim]
+def consRec {motive : {n : Nat} → BitVec n → Sort*}
+    (nil : motive nil)
+    (consLsb : {n : Nat} → (x : Bool) → (xs : BitVec n) → motive xs → motive (consLsb x xs))
+    {n : Nat} (xs : BitVec n) : motive xs :=
+  sorry
+
+/-- A custom recursion principle for bitvectors in terms of `nil` and `concatMsb` -/
+@[elab_as_elim]
+def concatRec {motive : {n : Nat} → BitVec n → Sort*}
+    (nil : motive nil)
+    (concatMsb : {n : Nat} → (x : Bool) → (xs : BitVec n) → motive xs → motive (concatMsb x xs))
+    {n : Nat} (xs : BitVec n) : motive xs :=
+  match n with
+  | 0   => _root_.cast (by rw [zero_length_eq_nil xs]) nil
+  | n+1 =>
+    _root_.cast (by rw [concatMsb_msb_dropMsb]) <|
+      concatMsb xs.msb xs.dropMsb (concatRec nil concatMsb xs.dropMsb)
+
+theorem toNat_eq_foldl_toBEList {n : ℕ} (v : BitVec n) :
+    v.toNat = v.toBEList.foldl (flip bit) 0 := by
+  simp [toBEList, getMsb', List.foldl_ofFn, flip]
+  induction' v using concatRec with n v₀ v ih
+  · simp [BitVec.toNat]
+  · -- have : ∃ hd tl, v = consMsb hd tl
+    simp [List.finRange_succ_eq_map, List.foldl_map]
+#align bitvec.to_nat_eq_foldr_reverse Std.BitVec.toNat_eq_foldl_toBEList
+
 
 end Std.BitVec

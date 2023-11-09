@@ -146,4 +146,24 @@ def addLsb (r : ℕ) (b : Bool) :=
   Nat.bit b r
 #align bitvec.add_lsb Std.BitVec.addLsb
 
+/-!
+## Structural
+-/
+
+/-- The empty bitvector -/
+def nil : BitVec 0 :=
+  BitVec.zero 0
+
+/-- Prepend a single bit to the front of a bitvector. The new bit is the least significant bit -/
+def consLsb {n} (x : Bool) (xs : BitVec n) : BitVec (n+1) :=
+  BitVec.ofNat (n + 1) (2 * BitVec.toNat xs + bif x then 1 else 0)
+
+/-- Append a single bit to the end of a bitvector. The new bit is the most significant bit -/
+def concatMsb {n} (x : Bool) (xs : BitVec n) : BitVec (n+1) :=
+  BitVec.ofNat (n + 1) (BitVec.toNat xs + bif x then 2^n else 0)
+
+/-- Drop the most significant bit from a bitvector -/
+def dropMsb {n} (xs : BitVec (n+1)) : BitVec n :=
+  BitVec.ofNat n xs.toNat
+
 end Std.BitVec
