@@ -37,10 +37,9 @@ noncomputable
 def uniformPdf (a b x : ℝ) : ℝ≥0∞ :=
  ENNReal.ofReal (uniformPdfReal a b x)
 
-lemma uniformPdf_eq (a b x : ℝ) : uniformPdf a b x =
-    ENNReal.ofReal (if x ∈ Icc (a ⊓ b) (a ⊔ b) then (fun x ↦ 1 / abs (b - a)) x else 0) := by
-    unfold uniformPdf uniformPdfReal indicator uIcc
-    congr
+lemma uniformPdf_eq (a b : ℝ) : uniformPdf a b =
+    fun x ↦ ENNReal.ofReal (if x ∈ Icc (a ⊓ b) (a ⊔ b) then (fun x ↦ 1 / abs (b - a)) x else 0) := by
+    ext x; unfold uniformPdf uniformPdfReal indicator uIcc; congr
 
 /- Copied from exponential distribution-/
 lemma lintegral_split_bounded {y z : ℝ}(f : ℝ → ENNReal) ( hzy : z ≤ y) :
@@ -107,7 +106,7 @@ lemma lintegral_uniformPdfReal_eq_one (a b : ℝ) (hab : a ≠ b) :
   rw [carrier_of_uniformlintegral]
   unfold uniformPdf uniformPdfReal indicator uIcc
   rw [set_lintegral_congr_fun measurableSet_Icc (ae_of_all _  (fun _ hx ↦ by rw [if_pos hx])),
-      @set_lintegral_const, Real.volume_Icc, one_div, LatticeOrderedGroup.sup_sub_inf_eq_abs_sub,
+      set_lintegral_const, Real.volume_Icc, one_div, LatticeOrderedGroup.sup_sub_inf_eq_abs_sub,
       <-ENNReal.ofReal_mul' (abs_nonneg (b - a)), inv_mul_cancel ?neq, ENNReal.ofReal_one]
   exact ne_iff_lt_or_gt.mpr (Or.inr (abs_pos.mpr (sub_ne_zero.mpr hab.symm)))
 
@@ -174,7 +173,7 @@ lemma uniformCdf_eq_fromInf (x : ℝ) (h : a ⊓ b ≤ x) (hab : a ≠ b) : ((un
 lemma uniformCdf_eq_toSup (x : ℝ) (h : a ⊔ b ≤ x) (hab : a ≠ b) : ((uniformCdfReal a b) x) =
     ENNReal.toReal (∫⁻ (x' : ℝ) in Icc (a ⊓ b) (a ⊔ b), uniformPdf a b x') := by
   rw [uniformCdf_eq_fromInf _ (le_trans inf_le_sup h) hab, (Icc_union_Ioc_eq_Icc inf_le_sup h).symm,
-      lintegral_union measurableSet_Ioc ?dis]
+      lintegral_union measurableSet_Ioc]
   have : ∫⁻ (a_1 : ℝ) in Ioc (a ⊔ b) x, uniformPdf a b a_1 = 0 := by
     unfold uniformPdf uniformPdfReal indicator uIcc
     rw [set_lintegral_congr_fun measurableSet_Ioc, lintegral_zero]
@@ -186,47 +185,26 @@ lemma uniformCdf_eq_toSup (x : ℝ) (h : a ⊔ b ≤ x) (hab : a ≠ b) : ((unif
   rw [Set.disjoint_iff]
   rintro x ⟨⟨_, h2⟩, ⟨h3, _⟩⟩; linarith
 
-lemma uniformCdf_eq' {a b : ℝ} (hab : a ≠ b) : (uniformCdfReal a b) =
-    fun x ↦ ite ((a ⊓ b) ≤ x) (min ((x- (a ⊓ b))/((a ⊔ b) - (a ⊓ b))) 1) 0 := by
-  ext top; by_cases (top < (a ⊓ b))
-  · rw [if_neg (by linarith)]; exact uniformCdf_eq_zero top h
-  by_cases h' : top ≤ (a ⊔ b)
-  · push_neg at h
-    rw [uniformCdf_eq_fromInf _ h hab];
-    unfold uniformPdf uniformPdfReal indicator uIcc;
-    · simp only [ge_iff_le, inf_le_iff, gt_iff_lt, lt_inf_iff, le_sup_iff, inf_le_left, inf_le_right, or_self,
-        not_true, sup_lt_iff, lt_self_iff_false, false_and, and_false, and_self, mem_Icc]
-      rw [set_lintegral_congr_fun measurableSet_Icc (g := (fun _ ↦ENNReal.ofReal (1 / ((a ⊔ b) - (a ⊓ b)))))]
-      rw [if_pos (by simp at h; exact h)]
-      rw [min_eq_left]
-      simp only [ge_iff_le, inf_le_iff, gt_iff_lt, lt_inf_iff, lintegral_const, MeasurableSet.univ,
-        Measure.restrict_apply, univ_inter, Real.volume_Icc, ENNReal.toReal_mul, inv_nonneg, sub_nonneg, le_sup_iff,
-        inf_le_left, inf_le_right, or_self, ENNReal.toReal_ofReal]
-      simp only [ge_iff_le, one_div, inv_nonneg, sub_nonneg, le_sup_iff, inf_le_left, inf_le_right, or_self,
-        ENNReal.toReal_ofReal, inf_le_iff]
-      rw [@inv_mul_eq_div, ENNReal.toReal_ofReal]; linarith
-      rw [div_le_one]; linarith;
-      simp only [ge_iff_le, sub_pos, lt_sup_iff, inf_lt_left, not_le, inf_lt_right, lt_or_lt_iff_ne];
-      exact id (Ne.symm hab)
-      apply ae_of_all; rintro x ⟨hab, htop⟩
-      rw [if_pos]; rw [@LatticeOrderedGroup.sup_sub_inf_eq_abs_sub]
-      simp at hab; simp at h'; constructor; exact hab; rcases h'; left; linarith; right; linarith
-  · push_neg at h'
-    rw [uniformCdf_eq_toSup _ h'.le hab]
-    unfold uniformPdf uniformPdfReal indicator uIcc;
-    rw [set_lintegral_congr_fun measurableSet_Icc (g := (fun _ ↦ ENNReal.ofReal (1 / ((a ⊔ b) - (a ⊓ b)))))]
-    · rw [if_pos (by push_neg at h; exact h)]
-      simp only [ge_iff_le, le_sup_iff, inf_le_left, inf_le_right, or_self, not_true, gt_iff_lt, lt_inf_iff, sup_lt_iff,
-        lt_self_iff_false, false_and, and_false, and_self, one_div, lintegral_const, MeasurableSet.univ, Measure.restrict_apply,
-        univ_inter, Real.volume_Icc, ENNReal.toReal_mul, inv_nonneg, sub_nonneg, ENNReal.toReal_ofReal, ne_eq]
-      rw [inv_mul_cancel, min_eq_right];
-      rw [one_le_div];
-      · simp only [ge_iff_le, tsub_le_iff_right, sub_add_cancel]; exact le_of_lt h';
-      rw [@sub_pos]; exact inf_lt_sup.mpr hab
-      rw [@sub_ne_zero]; apply (ne_of_lt (inf_lt_sup.mpr hab)).symm
-    apply ae_of_all; intro x hx; rw [if_pos hx, @LatticeOrderedGroup.sup_sub_inf_eq_abs_sub]
+lemma uniformCdf_eq' {a b : ℝ} (hab : a ≠ b) : (uniformCdfReal a b) = fun x ↦
+    if ((a ⊓ b) ≤ x) then if x < (a ⊔ b) then (x- (a ⊓ b))/((a ⊔ b) - (a ⊓ b)) else 1 else 0 := by
+  ext top; split_ifs with h h'<;> push_neg at *
+  · rw [uniformCdf_eq_fromInf _ h hab]
+    unfold uniformPdf uniformPdfReal indicator uIcc
+    rw [set_lintegral_congr_fun measurableSet_Icc (g := fun _ ↦ ENNReal.ofReal (1 / (a ⊔ b - a ⊓ b)))]
+    · simp only [inv_nonneg, sub_nonneg, le_sup_iff, inf_le_left, inf_le_right, one_div,
+      lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter, Real.volume_Icc,
+      ENNReal.toReal_mul, mem_Icc, ENNReal.toReal_ofReal, ENNReal.toReal_ofReal]
+      rw [inv_mul_eq_div, ENNReal.toReal_ofReal]; linarith
+    · apply ae_of_all; rintro x ⟨hab, htop⟩
+      rw [if_pos ⟨hab, by linarith⟩, LatticeOrderedGroup.sup_sub_inf_eq_abs_sub]
+  · rw [uniformCdf_eq_toSup _ h' hab]
+    unfold uniformPdf uniformPdfReal indicator uIcc
+    rw [set_lintegral_congr_fun measurableSet_Icc (g := fun _ ↦ ENNReal.ofReal (1 / (a ⊔ b - a ⊓ b)))]
+    · simp [inv_mul_cancel (sub_ne_zero.2 (ne_of_lt (inf_lt_sup.mpr hab)).symm)]
+    · apply ae_of_all; intro x hx; rw [if_pos hx, LatticeOrderedGroup.sup_sub_inf_eq_abs_sub]
+  . exact uniformCdf_eq_zero top h
 
 lemma uniformCdf_eq (a b : ℝ) : uniformCdfReal a b =
     if a = b then fun x ↦ ENNReal.toReal (if a ≤ x then 1 else 0)
-    else fun x ↦ ite ((a ⊓ b) ≤ x) (min ((x- (a ⊓ b))/((a ⊔ b) - (a ⊓ b))) 1) 0 := by
+    else fun x ↦ if ((a ⊓ b) ≤ x) then if x < (a ⊔ b) then (x- (a ⊓ b))/((a ⊔ b) - (a ⊓ b)) else 1 else 0 := by
   split_ifs with hab; exact uniformCdf_eq_dirac hab; exact uniformCdf_eq' hab
