@@ -170,6 +170,16 @@ Once this statement is proved, one deduces results for `σ`-finite measures from
 restricting them to finite measure sets (and proving that this restriction is weakly regular, using
 again the same statement).
 
+For non-Hausdorff spaces, one may argue whether the right condition for inner regularity is with
+respect to compact sets, or to compact closed sets. For instance,
+[Fremlin, *Measure Theory* (volume 4, 411J)][fremlin_vol4] considers measures which are inner
+regular with respect to compact closed sets (and calls them *tight*). However, since most of the
+literature uses mere compact sets, we have chosen to follow this convention. It doesn't make a
+difference in Hausdorff spaces, of course. In locally compact topological groups, the two
+conditions coincide, since if a compact set `k` is contained in a measurable set `u`, then the
+closure of `k` is a compact closed set still contained in `u`, see
+`IsCompact.closure_subset_of_measurableSet_of_group`.
+
 ## References
 
 [Halmos, Measure Theory, §52][halmos1950measure]. Note that Halmos uses an unusual definition of
@@ -254,8 +264,15 @@ theorem trans {q' : Set α → Prop} (H : InnerRegularWRT μ p q) (H' : InnerReg
   exact ⟨K, hKF.trans hFU, hpK, hrK⟩
 #align measure_theory.measure.inner_regular.trans MeasureTheory.Measure.InnerRegularWRT.trans
 
-theorem of_imp (h : ∀ (s : Set α), q s → p s) : InnerRegularWRT μ p q :=
+theorem rfl {p : Set α → Prop} : InnerRegularWRT μ p p :=
+  fun U hU _r hr ↦ ⟨U, Subset.rfl, hU, hr⟩
+
+theorem of_imp (h : ∀ s, q s → p s) : InnerRegularWRT μ p q :=
   fun U hU _ hr ↦ ⟨U, Subset.rfl, h U hU, hr⟩
+
+theorem mono {p' q' : Set α → Prop} (H : InnerRegularWRT μ p q)
+    (h : ∀ s, q' s → q s) (h' : ∀ s, p s → p' s) : InnerRegularWRT μ p' q' :=
+  of_imp h' |>.trans H |>.trans (of_imp h)
 
 end InnerRegularWRT
 
@@ -531,8 +548,8 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
 #align measure_theory.measure.inner_regular.weakly_regular_of_finite MeasureTheory.Measure.InnerRegularWRT.weaklyRegular_of_finite
 
 /-- If the restrictions of a measure to a monotone sequence of sets covering the space are
-inner regular for some property `p` and all measurable sets, then the measure itself satisfies
-the same property. -/
+inner regular for some property `p` and all measurable sets, then the measure itself is
+inner regular. -/
 lemma of_restrict {μ : Measure α} {s : ℕ → Set α}
     (h : ∀ n, InnerRegularWRT (μ.restrict (s n)) p MeasurableSet)
     (hs : univ ⊆ ⋃ n, s n) (hmono : Monotone s) : InnerRegularWRT μ p MeasurableSet := by
@@ -545,7 +562,7 @@ lemma of_restrict {μ : Measure α} {s : ℕ → Set α}
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
   rw [← restrict_apply hF] at hn
   rcases h n hF _ hn with ⟨K, KF, hKp, hK⟩
-  refine ⟨K, KF, hKp, hK.trans_le (restrict_apply_le _ _)⟩
+  exact ⟨K, KF, hKp, hK.trans_le (restrict_apply_le _ _)⟩
 
 /-- In a metrizable space (or even a pseudo metrizable space), an open set can be approximated from
 inside by closed sets. -/
@@ -669,7 +686,7 @@ theorem _root_.MeasurableSet.exists_lt_isCompact [InnerRegular μ] ⦃A : Set α
 protected theorem map_of_continuous [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] [h : InnerRegular μ] {f : α → β} (hf : Continuous f) :
     InnerRegular (Measure.map f μ) :=
-  ⟨InnerRegularWRT.map h.innerRegular hf.aemeasurable (fun _s hs ↦hf.measurable hs)
+  ⟨InnerRegularWRT.map h.innerRegular hf.aemeasurable (fun _s hs ↦ hf.measurable hs)
     (fun _K hK ↦ hK.image hf) (fun _s hs ↦ hs)⟩
 
 protected theorem map [BorelSpace α] [MeasurableSpace β] [TopologicalSpace β]
