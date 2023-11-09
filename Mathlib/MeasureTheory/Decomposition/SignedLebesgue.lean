@@ -14,8 +14,6 @@ theorem states that, given two σ-finite measures `μ` and `ν`, there exists a 
 and a measurable function `f` such that `μ = ξ + fν` and `ξ` is mutually singular with respect
 to `ν`.
 
-The Lebesgue decomposition provides the Radon-Nikodym theorem readily.
-
 ## Main definitions
 
 * `MeasureTheory.SignedMeasure.HaveLebesgueDecomposition` : A signed measure `s` and a
@@ -34,7 +32,7 @@ The Lebesgue decomposition provides the Radon-Nikodym theorem readily.
 * `MeasureTheory.SignedMeasure.singularPart_add_withDensity_rnDeriv_eq` :
   the Lebesgue decomposition theorem between a signed measure and a σ-finite positive measure.
 
-# Tags
+## Tags
 
 Lebesgue decomposition theorem
 -/

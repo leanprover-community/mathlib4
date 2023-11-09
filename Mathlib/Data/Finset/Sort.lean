@@ -125,7 +125,7 @@ theorem sorted_last_eq_max'_aux (s : Finset α)
   · have : s.max' H ∈ l := (Finset.mem_sort (α := α) (· ≤ ·)).mpr (s.max'_mem H)
     obtain ⟨i, hi⟩ : ∃ i, l.get i = s.max' H := List.mem_iff_get.1 this
     rw [← hi]
-    exact (s.sort_sorted (· ≤ ·)).rel_nthLe_of_le _ _ (Nat.le_pred_of_lt i.prop)
+    exact (s.sort_sorted (· ≤ ·)).rel_nthLe_of_le _ _ (Nat.le_sub_one_of_lt i.prop)
 #align finset.sorted_last_eq_max'_aux Finset.sorted_last_eq_max'_aux
 
 theorem sorted_last_eq_max' {s : Finset α}

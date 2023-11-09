@@ -99,7 +99,7 @@ theorem isPartition_iff_iUnion_eq : IsPartition π ↔ π.iUnion = I :=
 #align box_integral.tagged_prepartition.is_partition_iff_Union_eq BoxIntegral.TaggedPrepartition.isPartition_iff_iUnion_eq
 
 /-- The tagged partition made of boxes of `π` that satisfy predicate `p`. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def filter (p : Box ι → Prop) : TaggedPrepartition I :=
   ⟨π.1.filter p, π.2, π.3⟩
 #align box_integral.tagged_prepartition.filter BoxIntegral.TaggedPrepartition.filter
@@ -178,7 +178,7 @@ returns the tagged partition of `I` into all the boxes of all `πi J hJ`. The ta
 is defined to be the `π.tag` of the box of the partition `π` that includes `J`.
 
 Note that usually the result is not a Henstock partition. -/
-@[simps (config := { fullyApplied := false }) tag]
+@[simps (config := .asFn) tag]
 def biUnionPrepartition (π : TaggedPrepartition I) (πi : ∀ J : Box ι, Prepartition J) :
     TaggedPrepartition I where
   toPrepartition := π.toPrepartition.biUnion πi
@@ -289,7 +289,7 @@ theorem IsSubordinate.diam_le [Fintype ι] {π : TaggedPrepartition I} (h : π.I
 #align box_integral.tagged_prepartition.is_subordinate.diam_le BoxIntegral.TaggedPrepartition.IsSubordinate.diam_le
 
 /-- Tagged prepartition with single box and prescribed tag. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def single (I J : Box ι) (hJ : J ≤ I) (x : ι → ℝ) (h : x ∈ Box.Icc I) : TaggedPrepartition I :=
   ⟨Prepartition.single I J hJ, fun _ => x, fun _ => h⟩
 #align box_integral.tagged_prepartition.single BoxIntegral.TaggedPrepartition.single

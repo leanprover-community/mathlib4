@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Topology.LocalHomeomorph
+import Mathlib.Topology.SeparatedMap
 
 #align_import topology.is_locally_homeomorph from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 
@@ -125,7 +126,7 @@ def IsLocallyHomeomorph :=
   ∀ x : X, ∃ e : LocalHomeomorph X Y, x ∈ e.source ∧ f = e
 #align is_locally_homeomorph IsLocallyHomeomorph
 
-theorem isLocallyHomeomorph_homeomorph (f : X ≃ₜ Y) : IsLocallyHomeomorph f :=
+theorem Homeomorph.isLocallyHomeomorph (f : X ≃ₜ Y) : IsLocallyHomeomorph f :=
   fun _ ↦ ⟨f.toLocalHomeomorph, trivial, rfl⟩
 
 variable {f s}
@@ -163,6 +164,9 @@ theorem mk (h : ∀ x : X, ∃ e : LocalHomeomorph X Y, x ∈ e.source ∧ ∀ y
 
 variable {g f}
 
+lemma isLocallyInjective (hf : IsLocallyHomeomorph f) : IsLocallyInjective f :=
+  fun x ↦ by obtain ⟨f, hx, rfl⟩ := hf x; exact ⟨f.source, f.open_source, hx, f.injOn⟩
+
 theorem of_comp (hgf : IsLocallyHomeomorph (g ∘ f)) (hg : IsLocallyHomeomorph g)
     (cont : Continuous f) : IsLocallyHomeomorph f :=
   isLocallyHomeomorph_iff_isLocallyHomeomorphOn_univ.mpr <|
@@ -196,7 +200,7 @@ theorem openEmbedding_of_comp (hf : IsLocallyHomeomorph g) (hgf : OpenEmbedding 
   (hgf.isLocallyHomeomorph.of_comp hf cont).openEmbedding_of_injective hgf.inj.of_comp
 
 open TopologicalSpace in
-/-- Ranges of continuous local sections of a local homeomorphism form a basis of the total space. -/
+/-- Ranges of continuous local sections of a local homeomorphism form a basis of the source space.-/
 theorem isTopologicalBasis (hf : IsLocallyHomeomorph f) : IsTopologicalBasis
     {U : Set X | ∃ V : Set Y, IsOpen V ∧ ∃ s : C(V,X), f ∘ s = (↑) ∧ Set.range s = U} := by
   refine isTopologicalBasis_of_open_of_nhds ?_ fun x U hx hU ↦ ?_

@@ -41,7 +41,7 @@ The Lebesgue decomposition provides the Radon-Nikodym theorem readily.
   measure mutually singular to `ν` and `f` is a measurable function such that `μ = s + fν`,
   then `f = μ.rnDeriv ν`.
 
-# Tags
+## Tags
 
 Lebesgue decomposition theorem
 -/
