@@ -4,10 +4,10 @@
  [{"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "4167e5e4f60a47906d6fc42000b64cd93205f710",
+    "rev": "b3b7603d93e92b7383aa8ba89377031dcb48da7b",
     "opts": {},
     "name": "std",
-    "inputRev?": "nightly-testing",
+    "inputRev?": "lean-pr-testing-2816",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/leanprover-community/quote4",
