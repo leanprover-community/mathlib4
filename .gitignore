@@ -3,4 +3,4 @@
 /.cache
 .DS_Store
 /lakefile.olean
-/_lake
+/.lake
