@@ -415,7 +415,7 @@ def ofBits {n : ℕ} (f : Fin n → Bool) : ℕ :=
     | 0 => z
     | i + 1 => go f (bit (f i) z) i
 
-theorem ofBits_eq_pow_mul_add (f z i) :
+theorem ofBits.go_eq_pow_mul_add (f z i) :
     ofBits.go f z i = 2 ^ i * z + ofBits (f ∘ Fin.val : Fin i → _) := by
   induction' i with i ih generalizing z f
   · simp [ofBits, ofBits.go, bit_val]
@@ -431,72 +431,23 @@ theorem ofBits_lt {i} {f : Fin i → Bool} : ofBits f < 2 ^ i := by
   induction' i with i ih
   · simp [ofBits, ofBits.go, bit_val, lt_succ, Bool.toNat_le_one]
   · simp only [ofBits, ofBits.go, bit_zero]
-    rw [ofBits_eq_pow_mul_add]
+    rw [ofBits.go_eq_pow_mul_add]
     cases' (Fin.extendFun f false i) <;> simp [two_pow_succ, ofBits, Nat.lt_of_lt_of_le ih]
 
-/-- The `ith` bit of `ofBits` is the function at `i`.
-This is used extensively in the proof of each of the bitadd, bitneg, bitmul etc.-/
-theorem testBit_ofBits {f i j} (h1: i < j) : (ofBits f j).testBit i = f i := by
-  induction' j, (pos_of_gt h1) using Nat.le_induction with j _ ih generalizing i
-  · simp only [ofBits, ofBits.go, bit_zero, lt_one_iff.1 h1]; cases (f 0) <;> rfl
-  · cases' lt_or_eq_of_le (lt_succ_iff.mp h1) with h1 h1
-    · rw [← ih h1, ofBits, ofBits.go, ofBits_eq_pow_mul_add, ofBits, testBit_two_pow_mul_add h1]
-    · rw [h1, ofBits, ofBits.go, ofBits_eq_pow_mul_add, bit_zero,
-        testBit_two_pow_mul_toNat_add (ofBits_lt)]
-
-theorem ofBits_go_eq_pow_mul_add (n : ℕ) (f : ℕ → Bool) (z : ℕ) :
-    ofBits.go n f z = 2 ^ n * z + ofBits (f ∘ Fin.val : Fin n → _) := by
-  induction' n with i ih generalizing z
-  · simp [ofBits, ofBits.go, bit_val]
-  · simp only [ofBits, ofBits.go, ih (bit (f _) 0), ih (bit (f _) z)]
-    rw [bit_val, mul_add, ← mul_assoc, ← pow_succ]
-    simp [bit_val, add_assoc]
-
-theorem ofBits_lt {n} (f : Fin n → Bool) : ofBits f < 2 ^ n := by
-  induction' n with i ih
-  · simp [ofBits, ofBits.go, bit_val, lt_succ, Bool.toNat_le_one]
-  · simp only [ofBits, ofBits.go]
-    rw [ofBits_go_eq_pow_mul_add]
-    replace ih := ih (f ∘ Fin.castSucc)
-    rw [ofBits] at ih
-    cases' (f <| .last _) <;> simp [two_pow_succ, ih, ofBits]; linarith
-
-/-- The `ith` bit of `ofBits` is the function at `i`.
-This is used extensively in the proof of each of the bitadd, bitneg, bitmul etc.-/
--- theorem testBit_ofBits {f i j} (h1: i < j) : (ofBits f j).testBit i = f i := by
-theorem testBit_ofBits {j} {i : Fin j } {f : Fin j → Bool } : (ofBits f).testBit i = f i := by
-  stop
-  induction' j, (pos_of_gt i.2) using Nat.le_induction with j _ ih -- generalizing i
-  · simp only [Fin.fin_one_eq_zero, ofBits, ofBits.go, bit_zero, lt_one_iff.1 i.2,
-      Fin.coe_fin_one]; cases (f 0) <;> rfl
-  · cases' i using Fin.reverseInduction
-    · rw [ofBits, ofBits.go, ofBits_go_eq_pow_mul_add, bit_zero]
-      have H := ofBits_lt f
-      -- have K := testBit_two_pow_mul_toNat_add H
-
-
-        -- testBit_two_pow_mul_toNat_add (ofBits_lt)]
-    simp only [Fin.fin_zero_eq_last, ofBits, ofBits.go, bit_zero, Fin.coe_last]
-    cases (f .last) <;> rfl
-    · simp only [Fin.coe_last, Fin.coe_cast_succ, ofBits, ofBits.go, bit_val]
-      rw [testBit_two_pow_mul_add (Nat.lt_succ_of_le (Nat.le_of_lt_succ i.2)), ih]
-      cases' (f i) <;> simp
-
-  -- v TODO: this should probably be related by a cases on the `i` or something.
-  · cases' lt_or_eq_of_le (lt_succ_iff.mp i.2) with h1 h1
-    -- · let i' : Fin j := { val := i.val, isLt := h1 }
-    · let i' : Fin j := i.castPred
-      have I'VAL : (↑i' : Nat) = (↑i : Nat) := by simp[Fin.coe_castPred i' h1]
-      rw [← I'VAL]
-      -- ← ih (i := i') (f := f),
-      rw [ofBits, ofBits.go, ofBits_go_eq_pow_mul_add, ofBits,
-          testBit_two_pow_mul_add h1]
-      unfold ofBits at ih
-      rw [← I'VAL]
-      rw [ih (i := i') (f := f ∘ Fin.castSucc)]
-      rw[Fin.castSucc_castPred] -- this is going to be a pain, because it expects Fin (i + 2).
-    · rw [h1, ofBits, ofBits.go, ofBits_go_eq_pow_mul_add, bit_zero,
-        testBit_two_pow_mul_toNat_add (ofBits_lt)]
+/-- The `ith` bit of `ofBits` is the function at `i` -/
+theorem testBit_ofBits {j} {i : Fin j} {f : Fin j → Bool} : (ofBits f).testBit i = f i := by
+  unfold ofBits
+  rcases i with ⟨i, hi⟩
+  induction' j, (pos_of_gt hi) using Nat.le_induction with j _ ih generalizing i
+  · simp only [ofBits.go, Fin.extendFun_succ, Fin.zero_eta, bit_zero, lt_one_iff.1 hi]
+    cases (f 0) <;> rfl
+  · simp only
+    cases' lt_or_eq_of_le (lt_succ_iff.mp hi) with hi hi
+    · have : f ⟨i, by assumption⟩ = (f ∘ Fin.castAdd 1) ⟨i, hi⟩ := rfl
+      rw [this, ← ih (f := f ∘ Fin.castAdd 1) i hi, ofBits.go, ofBits.go_eq_pow_mul_add, ofBits, testBit_two_pow_mul_add hi, Fin.extendFun_comp_val']
+    · subst hi
+      simp only [ofBits.go, add_eq, add_zero, Fin.extendFun_add, bit_zero, ofBits.go_eq_pow_mul_add,
+        Fin.extendFun_comp_val', testBit_two_pow_mul_toNat_add (ofBits_lt)]
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
     is also commutative. -/
