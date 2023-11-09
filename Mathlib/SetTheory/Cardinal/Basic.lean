@@ -538,9 +538,9 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   mul_comm := mul_comm'
   left_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodSumDistrib α β γ
   right_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumProdDistrib α β γ
-  npow n c := c ^' n
+  npow n c := c ^ (n : Cardinal)
   npow_zero := @power_zero
-  npow_succ n c := show c ^' (n + 1 :) = c * (c ^' n)
+  npow_succ n c := show c ^ (↑(n + 1) : Cardinal) = c * c ^ (↑n : Cardinal)
     by rw [Cardinal.cast_succ, power_add, power_one, mul_comm']
   natCast := (fun n => lift.{u} #(Fin n) : ℕ → Cardinal.{u})
   natCast_zero := rfl
@@ -563,7 +563,7 @@ theorem power_bit1 (a b : Cardinal) : a ^ bit1 b = a ^ b * a ^ b * a := by
 end deprecated
 
 @[simp]
-theorem one_power {a : Cardinal} : 1 ^' a = 1 :=
+theorem one_power {a : Cardinal} : (1 : Cardinal) ^ a = 1 :=
   inductionOn a fun _ => mk_eq_one _
 #align cardinal.one_power Cardinal.one_power
 
@@ -578,7 +578,7 @@ theorem mk_Prop : #Prop = 2 := by simp
 #align cardinal.mk_Prop Cardinal.mk_Prop
 
 @[simp]
-theorem zero_power {a : Cardinal} : a ≠ 0 → 0 ^' a = 0 :=
+theorem zero_power {a : Cardinal} : a ≠ 0 → (0 : Cardinal) ^ a = 0 :=
   inductionOn a fun _ heq =>
     mk_eq_zero_iff.2 <|
       isEmpty_pi.2 <|
@@ -1347,7 +1347,7 @@ theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
 -- Porting note: was `simp`. LHS is not normal form.
 -- @[simp, norm_cast]
 @[norm_cast]
-theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = ↑m ^' ↑n := by
+theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) := by
   induction n <;> simp [pow_succ', power_add, *, Pow.pow]
 #align cardinal.nat_cast_pow Cardinal.natCast_pow
 
