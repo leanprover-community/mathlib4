@@ -554,7 +554,7 @@ instance Measure.Regular.inv [ContinuousInv G] [Regular μ] : Regular μ.inv :=
 variable [TopologicalGroup G]
 
 @[to_additive]
-theorem regular_inv_iff [T2Space G] : μ.inv.Regular ↔ μ.Regular := by
+theorem regular_inv_iff : μ.inv.Regular ↔ μ.Regular := by
   constructor
   · intro h; rw [← μ.inv_inv]; exact Measure.Regular.inv
   · intro h; exact Measure.Regular.inv
