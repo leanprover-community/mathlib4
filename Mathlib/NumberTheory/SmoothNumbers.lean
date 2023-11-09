@@ -47,6 +47,15 @@ def smoothNumbers (n : ℕ) : Set ℕ := {m | m ≠ 0 ∧ ∀ p ∈ factors m, p
 lemma mem_smoothNumbers {n m : ℕ} : m ∈ smoothNumbers n ↔ m ≠ 0 ∧ ∀ p ∈ factors m, p < n :=
   Iff.rfl
 
+/-- `m` is `n`-smooth if and only if all prime divisors of `m` are less than `n`. -/
+lemma mem_smoothNumbers' {n m : ℕ} : m ∈ smoothNumbers n ↔ ∀ p, p.Prime → p ∣ m → p < n := by
+  rw [mem_smoothNumbers]
+  refine ⟨fun H p hp h ↦ H.2 p <| (mem_factors_iff_dvd H.1 hp).mpr h,
+          fun H ↦ ⟨?_, fun p hp ↦ H p (prime_of_mem_factors hp) (dvd_of_mem_factors hp)⟩⟩
+  rintro rfl
+  obtain ⟨p, hp₁, hp₂⟩ := exists_infinite_primes n
+  exact ((H p hp₂ <| dvd_zero _).trans_le hp₁).false
+
 @[simp]
 lemma smoothNumbers_zero : smoothNumbers 0 = {1} := by
   ext m
