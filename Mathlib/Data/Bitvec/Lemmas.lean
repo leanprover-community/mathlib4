@@ -172,6 +172,23 @@ def concatRec {motive : {n : Nat} → BitVec n → Sort*}
     _root_.cast (by rw [concatMsb_msb_dropMsb]) <|
       concatMsb xs.msb xs.dropMsb (concatRec nil concatMsb xs.dropMsb)
 
+@[simp] lemma Fin.rev_zero (n) : Fin.rev 0 = Fin.last n := rfl
+
+@[simp] lemma Fin.rev_succ {n} (i : Fin n) : i.succ.rev = i.rev.castSucc := by
+  simp only [Fin.rev, Fin.succ, ge_iff_le, succ_sub_succ_eq_sub, Fin.castSucc, Fin.castAdd_mk]
+
+theorem List.reverse_ofFn {n α} (f : Fin n → α) :
+    (List.ofFn f).reverse = List.ofFn (fun i => f i.rev) := by
+  induction' n with n ih
+  · rfl
+  · conv_lhs => rw [List.ofFn_succ']
+    simp [List.ofFn_succ, List.reverse_cons, ih]
+
+theorem reverse_toBEList {n} (v : BitVec n) :
+    v.toBEList.reverse = v.toLEList := by
+  simp [toBEList, toLEList, getMsb', getMsb, getLsb', getLsb, List.reverse_ofFn]
+  congr
+
 theorem toNat_eq_foldl_toBEList {n : ℕ} (v : BitVec n) :
     v.toNat = v.toBEList.foldl (flip bit) 0 := by
   simp [toBEList, getMsb', List.foldl_ofFn, flip]
