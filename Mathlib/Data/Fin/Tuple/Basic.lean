@@ -649,15 +649,15 @@ theorem snoc_eq_append {α : Type*} (xs : Fin n → α) (x : α) :
     snoc xs x = append xs (cons x Fin.elim0) :=
   (append_right_eq_snoc xs (cons x Fin.elim0)).symm
 
-theorem append_snoc {n m} {α : Type*} (xs : Fin n → α) (x : α) (ys : Fin m → α) :
+theorem append_left_snoc {n m} {α : Type*} (xs : Fin n → α) (x : α) (ys : Fin m → α) :
     Fin.append (Fin.snoc xs x) ys =
       Fin.append xs (Fin.cons x ys) ∘ Fin.cast (Nat.succ_add_eq_succ_add ..) := by
   rw [snoc_eq_append, append_assoc, append_left_eq_cons, append_cast_right]; rfl
 
-theorem append_cons {n m} {α : Type*} (xs : Fin n → α) (y : α) (ys : Fin m → α) :
+theorem append_right_cons {n m} {α : Type*} (xs : Fin n → α) (y : α) (ys : Fin m → α) :
     Fin.append xs (Fin.cons y ys) =
       Fin.append (Fin.snoc xs y) ys ∘ Fin.cast (Nat.succ_add_eq_succ_add ..).symm := by
-  rw [append_snoc]; rfl
+  rw [append_left_snoc]; rfl
 
 theorem comp_init {α : Type*} {β : Type*} (g : α → β) (q : Fin n.succ → α) :
     g ∘ init q = init (g ∘ q) := by
