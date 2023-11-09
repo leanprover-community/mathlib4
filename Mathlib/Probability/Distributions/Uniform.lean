@@ -31,14 +31,14 @@ open MeasureTheory Measure Set Filter
 
 noncomputable
 def uniformPdfReal (a b x : ℝ) : ℝ :=
-  indicator (uIcc a b) (fun _ => 1/(abs (b-a))) x
+  indicator (uIcc a b) (fun _ ↦ 1/(abs (b-a))) x
 
 noncomputable
 def uniformPdf (a b x : ℝ) : ℝ≥0∞ :=
  ENNReal.ofReal (uniformPdfReal a b x)
 
 lemma uniformPdf_eq (a b x : ℝ) : uniformPdf a b x =
-    ENNReal.ofReal (if x ∈ Icc (a ⊓ b) (a ⊔ b) then (fun x => 1 / abs (b - a)) x else 0) := by
+    ENNReal.ofReal (if x ∈ Icc (a ⊓ b) (a ⊔ b) then (fun x ↦ 1 / abs (b - a)) x else 0) := by
     unfold uniformPdf uniformPdfReal indicator uIcc
     congr
 
@@ -106,7 +106,7 @@ lemma lintegral_uniformPdfReal_eq_one (a b : ℝ) (hab : a ≠ b) :
     ∫⁻ (x : ℝ), uniformPdf a b x = 1 := by
   rw [carrier_of_uniformlintegral]
   unfold uniformPdf uniformPdfReal indicator uIcc
-  rw [set_lintegral_congr_fun measurableSet_Icc (ae_of_all _  (fun _ hx => by rw [if_pos hx])),
+  rw [set_lintegral_congr_fun measurableSet_Icc (ae_of_all _  (fun _ hx ↦ by rw [if_pos hx])),
       @set_lintegral_const, Real.volume_Icc, one_div, LatticeOrderedGroup.sup_sub_inf_eq_abs_sub,
       <-ENNReal.ofReal_mul' (abs_nonneg (b - a)), inv_mul_cancel ?neq, ENNReal.ofReal_one]
   exact ne_iff_lt_or_gt.mpr (Or.inr (abs_pos.mpr (sub_ne_zero.mpr hab.symm)))
@@ -137,14 +137,14 @@ def uniformCdfReal (a b : ℝ) : StieltjesFunction :=
   ProbabilityTheory.cdf (uniformMeasure a b)
 
 lemma uniformCdf_eq_Lintegral {a b : ℝ} (hab : a ≠ b) :
-    ((uniformCdfReal a b)) = fun x => ENNReal.toReal (∫⁻ x in (Iic x), (uniformPdf a b x)) := by
+    ((uniformCdfReal a b)) = fun x ↦ ENNReal.toReal (∫⁻ x in (Iic x), (uniformPdf a b x)) := by
   unfold uniformCdfReal uniformPdf
   ext x
   rw [ProbabilityTheory.cdf_eq_toReal]
   simp only [uniformMeasure, if_neg hab, measurableSet_Iic, withDensity_apply, uniformPdf]
 
 lemma uniformCdf_eq_dirac {a b : ℝ} (hab : a = b) :
-    ((uniformCdfReal a b)) = fun x => ENNReal.toReal (if a ≤ x then 1 else 0) := by
+    ((uniformCdfReal a b)) = fun x ↦ ENNReal.toReal (if a ≤ x then 1 else 0) := by
   unfold uniformCdfReal
   ext x
   rw [ProbabilityTheory.cdf_eq_toReal]
@@ -186,8 +186,8 @@ lemma uniformCdf_eq_toSup (x : ℝ) (h : a ⊔ b ≤ x) (hab : a ≠ b) : ((unif
   rw [Set.disjoint_iff]
   rintro x ⟨⟨_, h2⟩, ⟨h3, _⟩⟩; linarith
 
-lemma uniformCdf_eq {a b : ℝ} (hab : a ≠ b) : (uniformCdfReal a b) =
-    fun x => ite ((a ⊓ b) ≤ x) (min ((x- (a ⊓ b))/((a ⊔ b) - (a ⊓ b))) 1) 0 := by
+lemma uniformCdf_eq' {a b : ℝ} (hab : a ≠ b) : (uniformCdfReal a b) =
+    fun x ↦ ite ((a ⊓ b) ≤ x) (min ((x- (a ⊓ b))/((a ⊔ b) - (a ⊓ b))) 1) 0 := by
   ext top; by_cases (top < (a ⊓ b))
   · rw [if_neg (by linarith)]; exact uniformCdf_eq_zero top h
   by_cases h' : top ≤ (a ⊔ b)
@@ -196,7 +196,7 @@ lemma uniformCdf_eq {a b : ℝ} (hab : a ≠ b) : (uniformCdfReal a b) =
     unfold uniformPdf uniformPdfReal indicator uIcc;
     · simp only [ge_iff_le, inf_le_iff, gt_iff_lt, lt_inf_iff, le_sup_iff, inf_le_left, inf_le_right, or_self,
         not_true, sup_lt_iff, lt_self_iff_false, false_and, and_false, and_self, mem_Icc]
-      rw [set_lintegral_congr_fun measurableSet_Icc (g := (fun _ =>ENNReal.ofReal (1 / ((a ⊔ b) - (a ⊓ b)))))]
+      rw [set_lintegral_congr_fun measurableSet_Icc (g := (fun _ ↦ENNReal.ofReal (1 / ((a ⊔ b) - (a ⊓ b)))))]
       rw [if_pos (by simp at h; exact h)]
       rw [min_eq_left]
       simp only [ge_iff_le, inf_le_iff, gt_iff_lt, lt_inf_iff, lintegral_const, MeasurableSet.univ,
@@ -214,7 +214,7 @@ lemma uniformCdf_eq {a b : ℝ} (hab : a ≠ b) : (uniformCdfReal a b) =
   · push_neg at h'
     rw [uniformCdf_eq_toSup _ h'.le hab]
     unfold uniformPdf uniformPdfReal indicator uIcc;
-    rw [set_lintegral_congr_fun measurableSet_Icc (g := (fun _ =>ENNReal.ofReal (1 / ((a ⊔ b) - (a ⊓ b)))))]
+    rw [set_lintegral_congr_fun measurableSet_Icc (g := (fun _ ↦ ENNReal.ofReal (1 / ((a ⊔ b) - (a ⊓ b)))))]
     · rw [if_pos (by push_neg at h; exact h)]
       simp only [ge_iff_le, le_sup_iff, inf_le_left, inf_le_right, or_self, not_true, gt_iff_lt, lt_inf_iff, sup_lt_iff,
         lt_self_iff_false, false_and, and_false, and_self, one_div, lintegral_const, MeasurableSet.univ, Measure.restrict_apply,
@@ -225,3 +225,8 @@ lemma uniformCdf_eq {a b : ℝ} (hab : a ≠ b) : (uniformCdfReal a b) =
       rw [@sub_pos]; exact inf_lt_sup.mpr hab
       rw [@sub_ne_zero]; apply (ne_of_lt (inf_lt_sup.mpr hab)).symm
     apply ae_of_all; intro x hx; rw [if_pos hx, @LatticeOrderedGroup.sup_sub_inf_eq_abs_sub]
+
+lemma uniformCdf_eq (a b : ℝ) : uniformCdfReal a b =
+    if a = b then fun x ↦ ENNReal.toReal (if a ≤ x then 1 else 0)
+    else fun x ↦ ite ((a ⊓ b) ≤ x) (min ((x- (a ⊓ b))/((a ⊔ b) - (a ⊓ b))) 1) 0 := by
+  split_ifs with hab; exact uniformCdf_eq_dirac hab; exact uniformCdf_eq' hab
