@@ -1336,6 +1336,14 @@ theorem surjOn_iff_exists_bijOn_subset : SurjOn f s t ↔ ∃ (s' : _) (_ : s' �
     exact hfs'.surjOn.mono hs' (Subset.refl _)
 #align set.surj_on_iff_exists_bij_on_subset Set.surjOn_iff_exists_bijOn_subset
 
+lemma exists_image_eq_and_injOn : ∃ u, f '' u =  f '' s ∧ InjOn f u :=
+  let ⟨u, _, hfu⟩ := surjOn_iff_exists_bijOn_subset.mp (surjOn_image f s)
+  ⟨u, hfu.image_eq, hfu.injOn⟩
+
+lemma exists_image_eq_injOn_of_subset_range (ht : t ⊆ range f) :
+    ∃ s, f '' s = t ∧ InjOn f s :=
+  image_preimage_eq_of_subset ht ▸ exists_image_eq_and_injOn
+
 theorem preimage_invFun_of_mem [n : Nonempty α] {f : α → β} (hf : Injective f) {s : Set α}
     (h : Classical.choice n ∈ s) : invFun f ⁻¹' s = f '' s ∪ (range f)ᶜ := by
   ext x
