@@ -335,6 +335,31 @@ lemma test102 (K : Type w) [Field K] [Algebra F K] {S : Set E} (hS : adjoin F S 
   intro s hs
   sorry
 
+lemma normalClosure_isAlgebraic_of_adjoin_isIntegral' (K : Type w) [Field K] [Algebra F K]
+    {S : Set E} (hS : adjoin F S = ⊤)
+    (hK : ∀ s ∈ S, IsIntegral F s) :
+    Algebra.IsAlgebraic F (normalClosure F E K) := by
+  rw [← test101 F E K hS, gc.l_iSup]
+  refine isAlgebraic_iSup (fun f ↦ ?_)
+  have : f '' S = ⨆ x : { x // x ∈ f '' S }, {x.1} := by simp only [Set.iSup_eq_iUnion,
+    Set.iUnion_singleton_eq_range, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+  rw [this, gc.l_iSup]
+  refine isAlgebraic_iSup (fun y ↦ ?_)
+  obtain ⟨x, hx, hy⟩ := (Set.mem_image f S _).1 y.2
+  haveI := adjoin.finiteDimensional <| hy ▸ map_isIntegral f (hK x hx)
+  exact Algebra.isAlgebraic_of_finite _ _
+
+def normalClosureHomOfAdjoinSplits' (K : Type w) [Field K] [Algebra F K]
+    (K' : Type v') [Field K'] [Algebra F K']
+    {S : Set E} (hS : adjoin F S = ⊤)
+    (hK : ∀ s ∈ S, IsIntegral F s ∧ Polynomial.Splits (algebraMap F K') (minpoly F s)) :
+    (normalClosure F E K) →ₐ[F] (normalClosure F E K') := by
+  refine (test101 F E K hS).symm ▸ Classical.choice (algHom_mk_adjoin_splits <| fun s hs ↦ ?_)
+  simp only [Set.iSup_eq_iUnion, Set.mem_iUnion, Set.mem_image] at hs
+  obtain ⟨f, x, hx, rfl⟩ := hs
+  rw [minpoly.algHom_eq f f.injective x]
+  exact ⟨map_isIntegral f (hK x hx).1, test102 F E K' hS hK x hx⟩
+
 def normalClosureEquivOfAdjoinSplits' (K : Type w) [Field K] [Algebra F K]
     (K' : Type v') [Field K'] [Algebra F K']
     {S : Set E} (hS : adjoin F S = ⊤)
@@ -342,41 +367,20 @@ def normalClosureEquivOfAdjoinSplits' (K : Type w) [Field K] [Algebra F K]
       Polynomial.Splits (algebraMap F K') (minpoly F s)) :
     (normalClosure F E K) ≃ₐ[F] (normalClosure F E K') := by
   refine AlgEquiv.ofBijective _ (Algebra.IsAlgebraic.algHom_bijective₂ ?_ ?_ ?_).1
-  · rw [← test101 F E K hS, gc.l_iSup]
-    apply isAlgebraic_iSup
-    intro f
-    have : f '' S = ⨆ x : { x // x ∈ f '' S }, {x.1} := by
-      simp only [Set.iSup_eq_iUnion, Set.iUnion_singleton_eq_range, Subtype.range_coe_subtype,
-        Set.setOf_mem_eq]
-    rw [this, gc.l_iSup]
-    apply isAlgebraic_iSup
-    rintro ⟨y, hy⟩
-    simp only [Set.mem_image] at hy
-    obtain ⟨x, hx, rfl⟩ := hy
-    haveI := adjoin.finiteDimensional <| map_isIntegral f (hK x hx).1
-    exact Algebra.isAlgebraic_of_finite _ _
-  · rw [← test101 F E K hS]
-    refine Classical.choice (algHom_mk_adjoin_splits ?_)
-    intro s hs
-    simp only [Set.iSup_eq_iUnion, Set.mem_iUnion, Set.mem_image] at hs
-    obtain ⟨f, x, hx, rfl⟩ := hs
-    use map_isIntegral f (hK x hx).1
-    rw [minpoly.algHom_eq f f.injective x]
-    exact test102 F E K' hS (fun s hs ↦ ⟨(hK s hs).1, (hK s hs).2.2⟩) x hx
-  · rw [← test101 F E K' hS]
-    refine Classical.choice (algHom_mk_adjoin_splits ?_)
-    intro s hs
-    simp only [Set.iSup_eq_iUnion, Set.mem_iUnion, Set.mem_image] at hs
-    obtain ⟨f, x, hx, rfl⟩ := hs
-    use map_isIntegral f (hK x hx).1
-    rw [minpoly.algHom_eq f f.injective x]
-    exact test102 F E K hS (fun s hs ↦ ⟨(hK s hs).1, (hK s hs).2.1⟩) x hx
+  · exact normalClosure_isAlgebraic_of_adjoin_isIntegral' F E K hS <| fun s hs ↦ (hK s hs).1
+  · exact normalClosureHomOfAdjoinSplits' F E K K' hS <| fun s hs ↦ ⟨(hK s hs).1, (hK s hs).2.2⟩
+  · exact normalClosureHomOfAdjoinSplits' F E K' K hS <| fun s hs ↦ ⟨(hK s hs).1, (hK s hs).2.1⟩
 
 def embEquivOfAdjoinSplits' (K : Type w) [Field K] [Algebra F K] {S : Set E}
     (hS : adjoin F S = ⊤)
     (hK : ∀ s ∈ S, IsIntegral F s ∧ Polynomial.Splits (algebraMap F K) (minpoly F s)) :
-    Emb F E ≃ (E →ₐ[F] K) := by
-  let L := normalClosure F E (AlgebraicClosure E)
+    Emb F E ≃ (E →ₐ[F] K) :=
+  algHomEquivNormalClosure F E (AlgebraicClosure E) |>.trans
+    (AlgEquiv.arrowCongr (@AlgEquiv.refl F E _ _ _) <|
+      normalClosureEquivOfAdjoinSplits' F E (AlgebraicClosure E) K hS <|
+        fun s hs ↦ ⟨(hK s hs).1, IsAlgClosed.splits_codomain _, (hK s hs).2⟩) |>.trans
+          (algHomEquivNormalClosure F E K).symm
+  -- let L := normalClosure F E (AlgebraicClosure E)
   -- let S' : Set (AlgebraicClosure E) := ⨆ f : E →ₐ[F] (AlgebraicClosure E), f '' S
   -- have hK : ∀ s ∈ S', IsIntegral F s ∧ Polynomial.Splits (algebraMap F K) (minpoly F s) := by
   --   intro s hs
@@ -389,16 +393,12 @@ def embEquivOfAdjoinSplits' (K : Type w) [Field K] [Algebra F K] {S : Set E}
   --   funext f
   --   rw [← adjoin_map, hS, AlgHom.fieldRange_eq_map]
   -- have i : L →ₐ[F] K := hL ▸ Classical.choice (algHom_mk_adjoin_splits hK)
-  let L' := normalClosure F E K
-  let i : L ≃ₐ[F] L' := normalClosureEquivOfAdjoinSplits' F E (AlgebraicClosure E) K hS <|
-    fun s hs ↦ ⟨(hK s hs).1, IsAlgClosed.splits_codomain _, (hK s hs).2⟩
+  -- let L' := normalClosure F E K
+  -- let i : L ≃ₐ[F] L' := normalClosureEquivOfAdjoinSplits' F E (AlgebraicClosure E) K hS <|
+  --  fun s hs ↦ ⟨(hK s hs).1, IsAlgClosed.splits_codomain _, (hK s hs).2⟩
   -- have h2 : Function.Injective (i.comp (A := E)) := fun j j' h ↦ by
   --   apply_fun fun x ↦ (x : E → K) at h
   --   simp only [AlgHom.coe_comp] at h
   --   exact AlgHom.ext (congrFun (Function.Injective.comp_left i.injective h))
-  let equiv1 := algHomEquivNormalClosure F E (AlgebraicClosure E)
-  let equiv2 := AlgEquiv.arrowCongr (@AlgEquiv.refl F E _ _ _) i
-  let equiv3 := algHomEquivNormalClosure F E K
-  exact equiv1.trans equiv2 |>.trans equiv3.symm
 
 end Field
