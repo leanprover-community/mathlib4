@@ -645,7 +645,6 @@ theorem lt_iff_lt {a b} : f a < f b ↔ a < b :=
   f.ltEmbedding.map_rel_iff
 #align order_embedding.lt_iff_lt OrderEmbedding.lt_iff_lt
 
-@[simp]
 theorem eq_iff_eq {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 #align order_embedding.eq_iff_eq OrderEmbedding.eq_iff_eq
@@ -739,6 +738,15 @@ def toOrderHom {X Y : Type*} [Preorder X] [Preorder Y] (f : X ↪o Y) : X →o Y
   monotone' := f.monotone
 #align order_embedding.to_order_hom OrderEmbedding.toOrderHom
 #align order_embedding.to_order_hom_coe OrderEmbedding.toOrderHom_coe
+
+/-- The trivial embedding from an empty preorder to another preorder -/
+@[simps] def ofIsEmpty [IsEmpty α] : α ↪o β where
+  toFun := isEmptyElim
+  inj' := isEmptyElim
+  map_rel_iff' {a} := isEmptyElim a
+
+@[simp, norm_cast]
+lemma coe_ofIsEmpty [IsEmpty α] : (ofIsEmpty : α ↪o β) = (isEmptyElim : α → β) := rfl
 
 end OrderEmbedding
 

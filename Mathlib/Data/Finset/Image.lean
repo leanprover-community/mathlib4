@@ -3,12 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Algebra.Hom.Embedding
+import Mathlib.Algebra.Group.Embedding
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Int.Order.Basic
 
-#align_import data.finset.image from "leanprover-community/mathlib"@"b685f506164f8d17a6404048bc4d696739c5d976"
+#align_import data.finset.image from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-! # Image and map operations on finite sets
 
@@ -23,6 +23,8 @@ choosing between `insert` and `Finset.cons`, or between `Finset.union` and `Fins
 
 * `Finset.image`: Given a function `f : α → β`, `s.image f` is the image finset in `β`.
 * `Finset.map`: Given an embedding `f : α ↪ β`, `s.map f` is the image finset in `β`.
+* `Finset.filterMap` Given a function `f : α → Option β`, `s.filterMap f` is the
+  image finset in `β`, filtering out `none`s.
 * `Finset.subtype`: `s.subtype p` is the finset of `Subtype p` whose elements belong to `s`.
 * `Finset.fin`:`s.fin n` is the finset of all elements of `s` less than `n`.
 
@@ -184,6 +186,25 @@ theorem filter_map {p : β → Prop} [DecidablePred p] :
     (s.map f).filter p = (s.filter (p ∘ f)).map f :=
   eq_of_veq (map_filter _ _ _)
 #align finset.filter_map Finset.filter_map
+
+lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finset α)
+    [DecidablePred (∃ a, p a ∧ f a = ·)] :
+    (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
+  simp [(· ∘ ·), filter_map, f.injective.eq_iff]
+#align finset.map_filter' Finset.map_filter'
+
+lemma filter_attach' [DecidableEq α] (s : Finset α) (p : s → Prop) [DecidablePred p] :
+    s.attach.filter p =
+      (s.filter fun x => ∃ h, p ⟨x, h⟩).attach.map
+        ⟨Subtype.map id <| filter_subset _ _, Subtype.map_injective _ injective_id⟩ :=
+  eq_of_veq <| Multiset.filter_attach' _ _
+#align finset.filter_attach' Finset.filter_attach'
+
+lemma filter_attach (p : α → Prop) [DecidablePred p] (s : Finset α) :
+    s.attach.filter (fun a : s ↦ p a) =
+      (s.filter p).attach.map ((Embedding.refl _).subtypeMap mem_of_mem_filter) :=
+  eq_of_veq <| Multiset.filter_attach _ _
+#align finset.filter_attach Finset.filter_attach
 
 theorem map_filter {f : α ≃ β} {p : α → Prop} [DecidablePred p] :
     (s.filter p).map f.toEmbedding = (s.map f.toEmbedding).filter (p ∘ f.symm) := by
@@ -656,6 +677,49 @@ theorem biUnion_singleton {f : α → β} : (s.biUnion fun a => {f a}) = s.image
 #align finset.bUnion_singleton Finset.biUnion_singleton
 
 end Image
+
+/-! ### filterMap -/
+
+section FilterMap
+
+/-- `filterMap f s` is a combination filter/map operation on `s`.
+  The function `f : α → Option β` is applied to each element of `s`;
+  if `f a` is `some b` then `b` is included in the result, otherwise
+  `a` is excluded from the resulting finset.
+
+  In notation, `filterMap f s` is the finset `{b : β | ∃ a ∈ s , f a = some b}`. -/
+-- TODO: should there be `filterImage` too?
+def filterMap (f : α → Option β) (s : Finset α)
+    (f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') : Finset β :=
+  ⟨s.val.filterMap f, s.nodup.filterMap f f_inj⟩
+
+variable (f : α → Option β) (s' : Finset α) {s t : Finset α}
+  {f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a'}
+
+@[simp]
+theorem filterMap_val : (filterMap f s' f_inj).1 = s'.1.filterMap f := rfl
+
+@[simp]
+theorem filterMap_empty : (∅ : Finset α).filterMap f f_inj = ∅ := rfl
+
+@[simp]
+theorem mem_filterMap {b : β} : b ∈ s.filterMap f f_inj ↔ ∃ a ∈ s, f a = some b :=
+  s.val.mem_filterMap f
+
+@[simp, norm_cast]
+theorem coe_filterMap : (s.filterMap f f_inj : Set β) = {b | ∃ a ∈ s, f a = some b} :=
+  Set.ext (by simp only [mem_coe, mem_filterMap, Option.mem_def, Set.mem_setOf_eq, implies_true])
+
+@[simp]
+theorem filterMap_some : s.filterMap some (by simp) = s :=
+  ext fun _ => by simp only [mem_filterMap, Option.some.injEq, exists_eq_right]
+
+theorem filterMap_mono (h : s ⊆ t) :
+    filterMap f s f_inj ⊆ filterMap f t f_inj := by
+  rw [←val_le_iff] at h ⊢
+  exact Multiset.filterMap_le_filterMap f h
+
+end FilterMap
 
 /-! ### Subtype -/
 

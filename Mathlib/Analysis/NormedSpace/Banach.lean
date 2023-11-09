@@ -106,14 +106,14 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
       have : a + d • y ∈ ball a ε := by
         simp [dist_eq_norm, lt_of_le_of_lt ydlt.le (half_lt_self εpos)]
       rcases Metric.mem_closure_iff.1 (H this) _ δpos with ⟨z₁, z₁im, h₁⟩
-      rcases(mem_image _ _ _).1 z₁im with ⟨x₁, hx₁, xz₁⟩
+      rcases (mem_image _ _ _).1 z₁im with ⟨x₁, hx₁, xz₁⟩
       rw [← xz₁] at h₁
       rw [mem_ball, dist_eq_norm, sub_zero] at hx₁
       have : a ∈ ball a ε := by
         simp only [mem_ball, dist_self]
         exact εpos
       rcases Metric.mem_closure_iff.1 (H this) _ δpos with ⟨z₂, z₂im, h₂⟩
-      rcases(mem_image _ _ _).1 z₂im with ⟨x₂, hx₂, xz₂⟩
+      rcases (mem_image _ _ _).1 z₂im with ⟨x₂, hx₂, xz₂⟩
       rw [← xz₂] at h₂
       rw [mem_ball, dist_eq_norm, sub_zero] at hx₂
       let x := x₁ - x₂
