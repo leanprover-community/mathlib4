@@ -60,7 +60,7 @@ open FiniteDimensional Polynomial IntermediateField
 
 noncomputable section
 
--- TODO: use the corresponding version once #8221 is merged
+/-- TODO: use the corresponding version once #8221 is merged -/
 axiom IntermediateField.algHom_mk_adjoin_splits₀'
     {F : Type*} {E : Type*} {K : Type*} [Field F] [Field E] [Field K]
     [Algebra F E] [Algebra F K] {S : Set E}
@@ -234,6 +234,7 @@ lemma normalClosure_isAlgebraic_of_adjoin_isIntegral' (K : Type w) [Field K] [Al
   haveI := adjoin.finiteDimensional <| hy ▸ map_isIntegral f (hK x hx)
   exact Algebra.isAlgebraic_of_finite _ _
 
+/-- The standard isomorphism between `E →ₐ[F] K` and `E →ₐ[F] (normalClosure F E K)`. -/
 def algHomEquivNormalClosure (K : Type w) [Field K] [Algebra F K] :
     (E →ₐ[F] K) ≃ (E →ₐ[F] (normalClosure F E K)) :=
   ⟨fun f ↦ (IntermediateField.inclusion f.fieldRange_le_normalClosure) |>.comp
