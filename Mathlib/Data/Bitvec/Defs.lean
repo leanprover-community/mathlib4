@@ -144,7 +144,6 @@ def sbb {n} (x y : BitVec n) (b : Bool) : Bool × BitVec n :=
 @[deprecated Nat.bit]
 def addLsb (r : ℕ) (b : Bool) :=
   Nat.bit b r
-
 #align bitvec.add_lsb Std.BitVec.addLsb
 
 end Std.BitVec
