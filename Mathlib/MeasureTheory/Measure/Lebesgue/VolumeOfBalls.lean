@@ -10,10 +10,10 @@ import Mathlib.MeasureTheory.Constructions.HaarToSphere
 # Volume of balls
 
 We give a formula `measure_unitBall_eq_integral_div_gamma` for computing the volume of the unit ball
-in normed finite dimension `ℝ`-vector space `E` with an Haar measure. We also provide a theorem
-`measure_lt_one_eq_integral_div_gamma` to compute the volume of the ball `{x : E | g x ≤ 1}` for a
-function `g` defining a norm on `E`. This provides, in particular, a way to compute the volume of
-the unit balls for the norms `L_p` for `1 ≤ p` in any dimension over the reals
+in a normed finite dimensional `ℝ`-vector space `E` equipped with an Haar measure. We also provide a
+theorem `measure_lt_one_eq_integral_div_gamma` to compute the volume of the set
+`{x : E | g x ≤ 1}` for a function `g` defining a norm on `E`. From this result, we compute the
+volume of the unit balls for the norms `L_p` for `1 ≤ p` in any dimension over the reals
 `volume_sum_rpow_lt_one` and the complex `Complex.volume_sum_rpow_lt_one`.
 -/
 
