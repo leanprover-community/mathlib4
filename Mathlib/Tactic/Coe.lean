@@ -44,7 +44,7 @@ elab "(" "↑" ")" : term <= expectedType =>
       throwError "cannot coerce{indentExpr x}\nto type{indentExpr b}"
 
 /-- `⇑ t` coerces `t` to a function. -/
--- the precendence matches that of `coeNotation`
+-- the precedence matches that of `coeNotation`
 elab:1024 (name := coeFunNotation) "⇑" m:term:1024 : term => do
   let x ← elabTerm m none
   if let some ty ← coerceToFunction? x then
