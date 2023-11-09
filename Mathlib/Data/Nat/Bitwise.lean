@@ -389,6 +389,14 @@ def Fin.extendFun {α : Type*} {n: ℕ} (f : Fin n → α) (a : α) : ℕ → α
     (extendFun f a) ∘ Fin.val = f := by
   funext i; apply extendFun_val
 
+@[simp] lemma Fin.extendFun_add {α a n} (m) {f : Fin (n+(m+1)) → α} :
+    (extendFun f a) n = f ⟨n, by simp⟩ := by
+  simp [extendFun]
+
+@[simp] lemma Fin.extendFun_succ {α a n} {f : Fin (n+1) → α} :
+    (extendFun f a) n = f ⟨n, lt.base ..⟩ := by
+  simp [extendFun]
+
 -- @[simp] lemma Fin.extendFun_extendFun {α a n} {f : Fin n → α} {i : Fin n} :
 --     extendFun (extendFun f a ∘ Fin.val) = f i := by
 --   simp [extendFun]
@@ -418,15 +426,13 @@ theorem ofBits_eq_pow_mul_add (f z i) :
     simp only [add_assoc, Fin.extendFun, lt_succ_self, comp_apply, dite_eq_ite, ite_true, bit_val,
       mul_zero, zero_add]
 
-
 theorem ofBits_lt {i} {f : Fin i → Bool} : ofBits f < 2 ^ i := by
   unfold ofBits
   induction' i with i ih
   · simp [ofBits, ofBits.go, bit_val, lt_succ, Bool.toNat_le_one]
   · simp only [ofBits, ofBits.go, bit_zero]
     rw [ofBits_eq_pow_mul_add]
-    -- rw [ofBits] at ih
-    cases' (f i) <;> simp [two_pow_succ, ih, ofBits]; linarith
+    cases' (Fin.extendFun f false i) <;> simp [two_pow_succ, ofBits, Nat.lt_of_lt_of_le ih]
 
 /-- The `ith` bit of `ofBits` is the function at `i`.
 This is used extensively in the proof of each of the bitadd, bitneg, bitmul etc.-/
