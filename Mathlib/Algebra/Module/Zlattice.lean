@@ -317,9 +317,9 @@ protected theorem isAddFundamentalDomain [Finite ι] [MeasurableSpace E] [OpensM
 #align zspan.is_add_fundamental_domain Zspan.isAddFundamentalDomain
 
 theorem measure_fundamentalDomain_ne_zero [Finite ι] [MeasurableSpace E] [BorelSpace E]
-    {μ : Measure E} [Measure.IsAddHaarMeasure μ] (hμ : μ ≠ 0) :
+    {μ : Measure E} [Measure.IsAddHaarMeasure μ] :
     μ (fundamentalDomain b) ≠ 0 := by
-  convert (Zspan.isAddFundamentalDomain b μ).measure_ne_zero hμ
+  convert (Zspan.isAddFundamentalDomain b μ).measure_ne_zero (NeZero.ne μ)
   exact (by infer_instance : Countable (span ℤ (Set.range b)))
 
 theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
