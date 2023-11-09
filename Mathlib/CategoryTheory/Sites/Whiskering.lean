@@ -163,8 +163,8 @@ end Multicospan
 
 section Preserves
 
-variable [PreservesLimitsOfSize.{v₁} F] [PreservesLimitsOfSize.{v₁} G]
-  [PreservesLimitsOfSize.{v₁} H] (J)
+variable [PreservesLimitsOfSize.{v₁, max u₁ v₁} F] [PreservesLimitsOfSize.{v₁, max u₁ v₁} G]
+  [PreservesLimitsOfSize.{v₁, max u₁ v₁} H] (J)
 
 /--
 Composing a sheaf with a functor preserving limits of the same size as the hom sets in `C` yields a
