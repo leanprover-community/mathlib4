@@ -227,7 +227,7 @@ Registering this separately allows for a future norm-like structure on `PiLp p �
 satisfying a relaxed triangle inequality. These are called *quasi-norms*. -/
 instance hasNorm : Norm (PiLp p β) where
   norm f :=
-    if p = 0 then {i | ‖f i‖ ≠ 0 }.toFinite.toFinset.card
+    if p = 0 then {i | ‖f i‖ ≠ 0}.toFinite.toFinset.card
     else if p = ∞ then ⨆ i, ‖f i‖ else (∑ i, ‖f i‖ ^ p.toReal) ^ (1 / p.toReal)
 #align pi_Lp.has_norm PiLp.hasNorm
 
