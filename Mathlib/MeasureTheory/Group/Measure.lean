@@ -786,8 +786,8 @@ gives finite mass to compact sets and positive mass to open sets.
 Textbooks generally require an additional regularity assumption to ensure nice behavior on
 arbitrary locally compact groups. Use `[IsAddHaarMeasure μ] [Regular μ]` or
 `[IsAddHaarMeasure μ] [InnerRegular μ]` in these situations. Note that a Haar measure in our
-sense is automatically regular and inner regular on second countable locally compact groups, see
-`...`. -/
+sense is automatically regular and inner regular on second countable locally compact groups, as
+checked just below this definition. -/
 class IsAddHaarMeasure {G : Type*} [AddGroup G] [TopologicalSpace G] [MeasurableSpace G]
   (μ : Measure G) extends IsFiniteMeasureOnCompacts μ, IsAddLeftInvariant μ, IsOpenPosMeasure μ :
   Prop
