@@ -102,7 +102,7 @@ lemma measurable_exponentialPdfReal (r : ℝ) :
   unfold exponentialPdfReal;
   refine Measurable.ite ?hp ((measurable_id'.const_mul r).neg.exp.const_mul r) ?hg;
   · refine MeasurableSet.of_compl ?hp.h;
-    apply  IsOpen.measurableSet; rw [comp_of_ge]; exact isOpen_gt' 0
+    apply  IsOpen.measurableSet; rw [compl_setOf_le]; exact isOpen_gt' 0
   · exact measurable_const
 
 /-- The exponential Pdf is strongly measurable -/
