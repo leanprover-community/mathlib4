@@ -402,7 +402,8 @@ theorem testBit_ofBits {j} {i : Fin j} {f : Fin j → Bool} : (ofBits f).testBit
   · simp only
     cases' lt_or_eq_of_le (lt_succ_iff.mp hi) with hi hi
     · have : f ⟨i, by assumption⟩ = (f ∘ Fin.castAdd 1) ⟨i, hi⟩ := rfl
-      rw [this, ← ih (f := f ∘ Fin.castAdd 1) i hi, ofBits.go, ofBits.go_eq_pow_mul_add, ofBits, testBit_two_pow_mul_add hi, Fin.extendFun_comp_val']
+      rw [this, ← ih (f := f ∘ Fin.castAdd 1) i hi, ofBits.go, ofBits.go_eq_pow_mul_add, ofBits,
+        testBit_two_pow_mul_add hi, Fin.extendFun_comp_val']
     · subst hi
       simp only [ofBits.go, add_eq, add_zero, Fin.extendFun_add, bit_zero, ofBits.go_eq_pow_mul_add,
         Fin.extendFun_comp_val', testBit_two_pow_mul_toNat_add (ofBits_lt)]
