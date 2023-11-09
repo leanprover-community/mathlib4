@@ -3,8 +3,8 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Sheafification
-import Mathlib.Condensed.Abelian
+import Mathlib.CategoryTheory.Sites.ConstantSheaf
+import Mathlib.Condensed.Basic
 
 /-!
 
@@ -19,7 +19,7 @@ functor from `Condensed C` to `C`.
 
 universe u v w
 
-open CategoryTheory Limits GrothendieckTopology
+open CategoryTheory Limits Opposite GrothendieckTopology
 
 variable (C : Type w) [Category.{u+1} C] [ConcreteCategory C]
   [PreservesLimits (forget C)] [ReflectsIsomorphisms (forget C)]
@@ -41,11 +41,11 @@ The underlying object of a condensed object in `C` is the condensed object eval
 This can be viewed as a sort of forgetful functor from `Condensed C` to `C`
 -/
 @[simps!]
-noncomputable def Condensed.underlying : Condensed.{u} C ⥤ C := sheafToUnderlying _ C
+noncomputable def Condensed.underlying : Condensed.{u} C ⥤ C := (sheafSections _ _).obj (op (⊤_ _))
 
 /--
 Discreteness is left adjoint to the forgetful functor. When `C` is `Type*`, this is analogous to
 `TopCat.adj₁ : TopCat.discrete ⊣ forget TopCat`.  
 -/
 noncomputable def Condensed.discrete_underlying_adj : discrete C ⊣ underlying C :=
-  constantSheaf.adj _ _
+  constantSheafAdj _ _ terminalIsTerminal
