@@ -822,11 +822,11 @@ example [TopologicalGroup G] [LocallyCompactSpace G] [SecondCountableTopology G]
     InnerRegular μ := by infer_instance
 
 @[to_additive (attr := simp)]
-theorem Haar_singleton [TopologicalGroup G] [BorelSpace G] (g : G) : μ {g} = μ {(1 : G)} := by
+theorem haar_singleton [TopologicalGroup G] [BorelSpace G] (g : G) : μ {g} = μ {(1 : G)} := by
   convert measure_preimage_mul μ g⁻¹ _
   simp only [mul_one, preimage_mul_left_singleton, inv_inv]
-#align measure_theory.measure.haar_singleton MeasureTheory.Measure.Haar_singleton
-#align measure_theory.measure.add_haar_singleton MeasureTheory.Measure.AddHaar_singleton
+#align measure_theory.measure.haar_singleton MeasureTheory.Measure.haar_singleton
+#align measure_theory.measure.add_haar_singleton MeasureTheory.Measure.addHaar_singleton
 
 @[to_additive IsAddHaarMeasure.smul]
 theorem IsHaarMeasure.smul {c : ℝ≥0∞} (cpos : c ≠ 0) (ctop : c ≠ ∞) : IsHaarMeasure (c • μ) :=
@@ -977,7 +977,7 @@ instance (priority := 100) IsHaarMeasure.noAtoms [TopologicalGroup G] [BorelSpac
   | inr h =>
     obtain ⟨K, K_compact, K_nhds⟩ : ∃ K : Set G, IsCompact K ∧ K ∈ 𝓝 1 := exists_compact_mem_nhds 1
     have K_inf : Set.Infinite K := infinite_of_mem_nhds (1 : G) K_nhds
-    exact absurd (K_inf.meas_eq_top ⟨_, h, fun x _ ↦ (Haar_singleton _ _).ge⟩)
+    exact absurd (K_inf.meas_eq_top ⟨_, h, fun x _ ↦ (haar_singleton _ _).ge⟩)
       K_compact.measure_lt_top.ne
 #align measure_theory.measure.is_haar_measure.has_no_atoms MeasureTheory.Measure.IsHaarMeasure.noAtoms
 #align measure_theory.measure.is_add_haar_measure.has_no_atoms MeasureTheory.Measure.IsAddHaarMeasure.noAtoms
