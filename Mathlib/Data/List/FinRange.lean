@@ -85,8 +85,8 @@ theorem List.foldl_ofFn {α β n} (f : α → β → α) (init : α) (g : Fin n 
 theorem List.foldr_ofFn {α β n} (f : β → α → α) (init : α) (g : Fin n → β) :
     (List.ofFn g).foldr f init = (List.finRange n).foldr (fun i a => f (g i) a) init := by
   suffices ∀ {m} (h : n ≤ m) (g : Fin m → β),
-      (ofFn fun i ↦ g (i.castLE h)).foldr f init  =
-      (finRange n |>.map (Fin.castLE h)).foldr (fun i a ↦ f (g i) a) init by
+      (ofFn fun i ↦ g (i.castLE h)).foldr f init
+      = (finRange n |>.map (Fin.castLE h)).foldr (fun i a ↦ f (g i) a) init by
     specialize this (Nat.le.refl) g
     simp at this
     exact this
