@@ -268,7 +268,7 @@ lemma cpow_ofReal (x : ℂ) (y : ℝ) :
 lemma cpow_ofReal_re (x : ℂ) (y : ℝ) : (x ^ (y : ℂ)).re = (abs x) ^ y * Real.cos (arg x * y) := by
   rw [cpow_ofReal]; generalize arg x * y = z; simp [Real.cos]
 
-lemma cpow_ofReal_im (x : ℂ) (y : ℝ) : (x ^ y).im = (abs x) ^ y * Real.sin (arg x * y) := by
+lemma cpow_ofReal_im (x : ℂ) (y : ℝ) : (x ^ (y : ℂ)).im = (abs x) ^ y * Real.sin (arg x * y) := by
   rw [cpow_ofReal]; generalize arg x * y = z; simp [Real.sin]
 
 theorem abs_cpow_of_ne_zero {z : ℂ} (hz : z ≠ 0) (w : ℂ) :
