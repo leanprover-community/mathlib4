@@ -516,6 +516,11 @@ end Measure
 end IsComplete
 
 section indicator
+-- Q: Is there a better place for these analogues of `Mathlib.Topology.IndicatorConstPointwise`?
+-- They are needed in `Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable`
+-- and `Mathlib.MeasureTheory.Integral.Lebesgue` (they have for example
+-- `Mathlib.MeasureTheory.MeasureSpace` as a common ancestor, but this file or a completely new one
+-- seem more appropriate places).
 
 open Topology
 
