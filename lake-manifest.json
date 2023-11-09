@@ -1,5 +1,5 @@
 {"version": 6,
- "packagesDir": ".lake/packages",
+ "packagesDir": "_lake/packages",
  "packages":
  [{"git":
    {"url": "https://github.com/leanprover/std4",
@@ -42,4 +42,4 @@
     "inputRev?": "v0.0.22-pre",
     "inherited": false}}],
  "name": "mathlib",
- "lakeDir": ".lake"}
+ "lakeDir": "_lake"}
