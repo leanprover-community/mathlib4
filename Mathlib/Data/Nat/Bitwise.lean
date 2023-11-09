@@ -362,36 +362,87 @@ theorem testBit_two_pow_mul_toNat_add {n w b} (h: n < 2 ^ w) :
   rw [Nat.add_div_of_dvd_right (Dvd.intro _ rfl), Nat.div_eq_of_lt h, add_zero]
   cases' b <;> simp
 
+/-- Extend a function `f : Fin n → α` to a function on all natural numbers, by
+    defining `f i = a` for all `i ≥ n` and some given constant `a` -/
+def Fin.extendFun {α : Type*} {n: ℕ} (f : Fin n → α) (a : α) : ℕ → α :=
+  fun i =>
+    if h : i < n then
+      f ⟨i, h⟩
+    else
+      a
+
+@[simp] lemma Fin.extendFun_val' {α a n} (m) {f : Fin (n+m) → α} {i : Fin n} :
+    extendFun f a i.val = f (i.castAdd _) := by
+  have : i.val < n + m := Nat.lt_of_lt_of_le (i.prop) (Nat.le_add_right ..)
+  simp only [extendFun, this, dite_true]
+  rfl
+
+@[simp] lemma Fin.extendFun_val {α a n} {f : Fin n → α} {i : Fin n} :
+    extendFun f a i.val = f i := by
+  rw [extendFun_val' 0]; rfl
+
+@[simp] lemma Fin.extendFun_comp_val' {α a n} (m) {f : Fin (n+m) → α} :
+    (extendFun f a) ∘ Fin.val = f ∘ (Fin.castAdd m) := by
+  funext i; apply extendFun_val'
+
+@[simp] lemma Fin.extendFun_comp_val {α a n} {f : Fin n → α} :
+    (extendFun f a) ∘ Fin.val = f := by
+  funext i; apply extendFun_val
+
+-- @[simp] lemma Fin.extendFun_extendFun {α a n} {f : Fin n → α} {i : Fin n} :
+--     extendFun (extendFun f a ∘ Fin.val) = f i := by
+--   simp [extendFun]
+
+
 /-- Generic method to create a natural number by appending bits tail-recursively.
 It takes a boolean function `f` on each bit the number of bits `i`.  It is
 almost always specialized  `i = w`; the length of the binary representation.
 This is an alternative to using `List`. It will be used for bitadd, bitneg, bitmul etc.-/
-def ofBits {n : Nat} (f : Fin n → Bool) : Nat :=
-  go n (fun i =>
-    if h : i < n then
-      f ⟨i, h⟩
-    else
-      false
-  ) 0
+def ofBits {n : ℕ} (f : Fin n → Bool) : ℕ :=
+  go (Fin.extendFun f false) 0 n
   where
-    /-- A helper method where `z` is the starting point.
-    Note that `ofBits.go f z = 2 ^ n * z + ofBits f i` which we prove next. -/
-    go (n : Nat) (f : Nat → Bool) (z : Nat) : Nat :=
-    match n with
+    /-- A helper method where `z` the starting point.
+    Note that `ofBits.go f z i = 2 ^ i * z + ofBits f i` which we prove next. -/
+    go (f : ℕ → Bool) (z : ℕ) : ℕ → ℕ
     | 0 => z
-    | n + 1 => go n f (bit (f n) z)
+    | i + 1 => go f (bit (f i) z) i
 
--- @[simp]
--- theorem ofBits_cons {n} (x : Bool) (f : Fin n → Bool) :
---     ofBits (Fin.cons x f) = bit x (ofBits f) := by
---   rw [ofBits, ofBits]
---   sorry
+theorem ofBits_eq_pow_mul_add (f z i) :
+    ofBits.go f z i = 2 ^ i * z + ofBits (f ∘ Fin.val : Fin i → _) := by
+  induction' i with i ih generalizing z f
+  · simp [ofBits, ofBits.go, bit_val]
+  · simp only [ofBits, ofBits.go]
+    conv_rhs => rw [ih]
+    have : (f ∘ Fin.val) ∘ Fin.castAdd 1 = (f ∘ Fin.val : Fin i → _) := rfl
+    rw [ih, bit_val, mul_add, ← mul_assoc, ← pow_succ, Fin.extendFun_comp_val' 1, this]
+    simp only [add_assoc, Fin.extendFun, lt_succ_self, comp_apply, dite_eq_ite, ite_true, bit_val,
+      mul_zero, zero_add]
+
+
+theorem ofBits_lt {i} {f : Fin i → Bool} : ofBits f < 2 ^ i := by
+  unfold ofBits
+  induction' i with i ih
+  · simp [ofBits, ofBits.go, bit_val, lt_succ, Bool.toNat_le_one]
+  · simp only [ofBits, ofBits.go, bit_zero]
+    rw [ofBits_eq_pow_mul_add]
+    -- rw [ofBits] at ih
+    cases' (f i) <;> simp [two_pow_succ, ih, ofBits]; linarith
+
+/-- The `ith` bit of `ofBits` is the function at `i`.
+This is used extensively in the proof of each of the bitadd, bitneg, bitmul etc.-/
+theorem testBit_ofBits {f i j} (h1: i < j) : (ofBits f j).testBit i = f i := by
+  induction' j, (pos_of_gt h1) using Nat.le_induction with j _ ih generalizing i
+  · simp only [ofBits, ofBits.go, bit_zero, lt_one_iff.1 h1]; cases (f 0) <;> rfl
+  · cases' lt_or_eq_of_le (lt_succ_iff.mp h1) with h1 h1
+    · rw [← ih h1, ofBits, ofBits.go, ofBits_eq_pow_mul_add, ofBits, testBit_two_pow_mul_add h1]
+    · rw [h1, ofBits, ofBits.go, ofBits_eq_pow_mul_add, bit_zero,
+        testBit_two_pow_mul_toNat_add (ofBits_lt)]
 
 theorem ofBits_go_eq_pow_mul_add (n : ℕ) (f : ℕ → Bool) (z : ℕ) :
-    ofBits.go f z = 2 ^ n * z + ofBits f := by
+    ofBits.go n f z = 2 ^ n * z + ofBits (f ∘ Fin.val : Fin n → _) := by
   induction' n with i ih generalizing z
   · simp [ofBits, ofBits.go, bit_val]
-  · simp only [ofBits, ofBits.go, ih _ (bit (f _) 0), @ih _ (bit (f _) z)]
+  · simp only [ofBits, ofBits.go, ih (bit (f _) 0), ih (bit (f _) z)]
     rw [bit_val, mul_add, ← mul_assoc, ← pow_succ]
     simp [bit_val, add_assoc]
 
