@@ -546,7 +546,7 @@ section TopologicalGroup
 variable [TopologicalSpace G] [BorelSpace G] {μ : Measure G} [Group G]
 
 @[to_additive]
-instance Measure.Regular.inv [ContinuousInv G] [T2Space G] [Regular μ] : Regular μ.inv :=
+instance Measure.Regular.inv [ContinuousInv G] [Regular μ] : Regular μ.inv :=
   Regular.map (Homeomorph.inv G)
 #align measure_theory.measure.regular.inv MeasureTheory.Measure.Regular.inv
 #align measure_theory.measure.regular.neg MeasureTheory.Measure.Regular.neg
