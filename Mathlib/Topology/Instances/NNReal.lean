@@ -20,7 +20,7 @@ Instances for the following typeclasses are defined:
 
 * `TopologicalSpace ℝ≥0`
 * `TopologicalSemiring ℝ≥0`
-* `TopologicalSpace.SecondCountableTopology ℝ≥0`
+* `SecondCountableTopology ℝ≥0`
 * `OrderTopology ℝ≥0`
 * `ContinuousSub ℝ≥0`
 * `HasContinuousInv₀ ℝ≥0` (continuity of `x⁻¹` away from `0`)

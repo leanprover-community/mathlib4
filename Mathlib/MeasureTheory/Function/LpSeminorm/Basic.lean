@@ -202,6 +202,34 @@ theorem memℒp_top_of_bound {f : α → E} (hf : AEStronglyMeasurable f μ) (C 
   ⟨hf, snorm_top_lt_top_of_ae_bound hfC⟩
 #align measure_theory.mem_ℒp_top_of_bound MeasureTheory.memℒp_top_of_bound
 
+lemma snormEssSup_piecewise_le {s : Set α} (f g : α → E) [DecidablePred (· ∈ s)]
+    (hs : MeasurableSet s) :
+    snormEssSup (Set.piecewise s f g) μ
+      ≤ max (snormEssSup f (μ.restrict s)) (snormEssSup g (μ.restrict sᶜ)) := by
+  refine essSup_le_of_ae_le (max (snormEssSup f (μ.restrict s)) (snormEssSup g (μ.restrict sᶜ))) ?_
+  have hf : ∀ᵐ y ∂(μ.restrict s), ↑‖f y‖₊ ≤ snormEssSup f (μ.restrict s) :=
+    ae_le_snormEssSup (μ := μ.restrict s) (f := f)
+  have hg : ∀ᵐ y ∂(μ.restrict sᶜ), ↑‖g y‖₊ ≤ snormEssSup g (μ.restrict sᶜ) :=
+    ae_le_snormEssSup (μ := μ.restrict sᶜ) (f := g)
+  refine ae_of_ae_restrict_of_ae_restrict_compl s ?_ ?_
+  · rw [ae_restrict_iff' hs] at hf ⊢
+    filter_upwards [hf] with x hx
+    intro hx_mem
+    simp only [hx_mem, Set.piecewise_eq_of_mem]
+    exact (hx hx_mem).trans (le_max_left _ _)
+  · rw [ae_restrict_iff' hs.compl] at hg ⊢
+    filter_upwards [hg] with x hx
+    intro hx_mem
+    rw [Set.mem_compl_iff] at hx_mem
+    simp only [hx_mem, not_false_eq_true, Set.piecewise_eq_of_not_mem]
+    exact (hx hx_mem).trans (le_max_right _ _)
+
+lemma snorm_top_piecewise_le {s : Set α} (f g : α → E) [DecidablePred (· ∈ s)]
+    (hs : MeasurableSet s) :
+    snorm (Set.piecewise s f g) ∞ μ
+      ≤ max (snorm f ∞ (μ.restrict s)) (snorm g ∞ (μ.restrict sᶜ)) :=
+  snormEssSup_piecewise_le f g hs
+
 end ExponentTop
 
 section Mono

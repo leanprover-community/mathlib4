@@ -1427,7 +1427,7 @@ theorem succAbove_castLT {x y : Fin (n + 1)} (h : x < y)
 theorem succAbove_pred {x y : Fin (n + 1)} (h : x < y)
     (hy : y ≠ 0 := (x.zero_le.trans_lt h).ne') : x.succAbove (y.pred hy) = y := by
   rw [succAbove_above, succ_pred]
-  simpa [le_iff_val_le_val] using Nat.le_pred_of_lt h
+  simpa [le_iff_val_le_val] using Nat.le_sub_one_of_lt h
 #align fin.succ_above_pred Fin.succAbove_pred
 
 theorem castLT_succAbove {x : Fin n} {y : Fin (n + 1)} (h : castSucc x < y)
@@ -1667,7 +1667,7 @@ theorem succAbove_predAbove {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p)
     rw [if_neg]
     · simp
     · simp only [pred, Fin.mk_lt_mk, not_lt]
-      exact Nat.le_pred_of_lt (h.symm.lt_of_le H)
+      exact Nat.le_sub_one_of_lt (h.symm.lt_of_le H)
     · exact lt_of_le_of_ne H h.symm
 #align fin.succ_above_pred_above Fin.succAbove_predAbove
 
@@ -1682,7 +1682,7 @@ theorem predAbove_succAbove (p : Fin n) (i : Fin n) :
   dsimp
   split_ifs with h₁ h₂ h₃
   · simp only [← val_fin_lt, not_lt] at h₁ h₂
-    exact (lt_le_antisymm h₁ (le_of_lt h₂)).elim
+    exact (Nat.lt_le_asymm h₁ (le_of_lt h₂)).elim
   · rfl
   · rfl
   · simp only [← val_fin_lt, not_lt] at h₁ h₃
