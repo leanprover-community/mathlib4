@@ -1126,6 +1126,10 @@ def liftLinear {m0 : MeasurableSpace α} (f : OuterMeasure α →ₗ[ℝ≥0∞]
       smul_apply, hs]
 #align measure_theory.measure.lift_linear MeasureTheory.Measure.liftLinear
 
+lemma liftLinear_apply₀ {f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β} (hf) {s : Set β}
+    (hs : NullMeasurableSet s (liftLinear f hf μ)) : liftLinear f hf μ s = f μ.toOuterMeasure s :=
+  toMeasure_apply₀ _ (hf μ) hs
+
 @[simp]
 theorem liftLinear_apply {f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β} (hf) {s : Set β}
     (hs : MeasurableSet s) : liftLinear f hf μ s = f μ.toOuterMeasure s :=
@@ -1218,14 +1222,18 @@ protected theorem map_smul_nnreal (c : ℝ≥0) (μ : Measure α) (f : α → β
   μ.map_smul (c : ℝ≥0∞) f
 #align measure_theory.measure.map_smul_nnreal MeasureTheory.Measure.map_smul_nnreal
 
+lemma map_apply₀ {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
+    (hs : NullMeasurableSet s (map f μ)) : μ.map f s = μ (f ⁻¹' s) := by
+  rw [map, dif_pos hf, mapₗ, dif_pos hf.measurable_mk] at hs ⊢
+  rw [liftLinear_apply₀ _ hs, measure_congr (hf.ae_eq_mk.preimage s)]
+  rfl
+
 /-- We can evaluate the pushforward on measurable sets. For non-measurable sets, see
   `MeasureTheory.Measure.le_map_apply` and `MeasurableEquiv.map_apply`. -/
 @[simp]
 theorem map_apply_of_aemeasurable {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
-    (hs : MeasurableSet s) : μ.map f s = μ (f ⁻¹' s) := by
-  simpa only [mapₗ, hf.measurable_mk, hs, dif_pos, liftLinear_apply, OuterMeasure.map_apply,
-    ← mapₗ_mk_apply_of_aemeasurable hf] using
-    measure_congr (hf.ae_eq_mk.symm.preimage s)
+    (hs : MeasurableSet s) : μ.map f s = μ (f ⁻¹' s) :=
+  map_apply₀ hf hs.nullMeasurableSet
 #align measure_theory.measure.map_apply_of_ae_measurable MeasureTheory.Measure.map_apply_of_aemeasurable
 
 @[simp]
@@ -1270,7 +1278,6 @@ theorem le_map_apply {f : α → β} (hf : AEMeasurable f μ) (s : Set β) : μ 
     _ = μ.map f (toMeasurable (μ.map f) s) :=
       (map_apply_of_aemeasurable hf <| measurableSet_toMeasurable _ _).symm
     _ = μ.map f s := measure_toMeasurable _
-
 #align measure_theory.measure.le_map_apply MeasureTheory.Measure.le_map_apply
 
 /-- Even if `s` is not measurable, `map f μ s = 0` implies that `μ (f ⁻¹' s) = 0`. -/
@@ -1387,7 +1394,6 @@ theorem comap_preimage {β} [MeasurableSpace α] {mβ : MeasurableSpace β} (f :
 section Subtype
 
 /-! ### Subtype of a measure space -/
-
 
 section ComapAnyMeasure
 
