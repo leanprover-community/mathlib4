@@ -515,4 +515,51 @@ end Measure
 
 end IsComplete
 
+section indicator
+
+open Topology
+
+variable {α : Type*} [MeasurableSpace α] {A : Set α}
+variable {ι : Type*} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}
+
+lemma ae_tendsto_indicator_const_iff_ae_eventually' {μ : Measure α}
+    {β : Type*} [Zero β] [TopologicalSpace β] (b : β) {B O : Set β}
+    (B_nhd : B ∈ 𝓝 b) (nin_B : 0 ∉ B) (O_nhd : O ∈ 𝓝 0) (nin_O : b ∉ O) :
+    (∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b) x) L
+        (𝓝 (A.indicator (fun (_ : α) ↦ b) x)))
+      ↔ ∀ᵐ x ∂μ, ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A) := by
+  constructor <;> intro h
+  · filter_upwards [h] with x hx
+    by_cases hxA : x ∈ A
+    · simp [hxA] at hx
+      filter_upwards [mem_map.mp (hx B_nhd)] with i hi
+      simp only [Set.mem_preimage, Set.mem_Ioi] at hi
+      simp only [show As i x ↔ x ∈ As i by rfl, hxA, eq_iff_iff, iff_true]
+      by_contra con
+      apply nin_B (by simpa [con] using hi)
+    · simp [hxA] at hx
+      filter_upwards [mem_map.mp (hx O_nhd)] with i hi
+      simp only [Set.mem_preimage, Set.mem_Ioi] at hi
+      simp only [show As i x ↔ x ∈ As i by rfl, hxA, eq_iff_iff, iff_false]
+      intro con
+      simp [con] at hi
+      apply nin_O (by simpa [con] using hi)
+  · filter_upwards [h] with x hx
+    apply Tendsto.congr' (h := tendsto_const_nhds)
+    filter_upwards [hx] with i hi
+    by_cases x ∈ A <;> · simp [h, hi]
+
+@[simp] lemma ae_tendsto_indicator_const_iff_ae_eventually {μ : Measure α} {β : Type*} [Zero β]
+    [TopologicalSpace β] [T1Space β] (b : β) [NeZero b] :
+    (∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b) x) L
+        (𝓝 (A.indicator (fun (_ : α) ↦ b) x)))
+      ↔ ∀ᵐ x ∂μ, ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A) := by
+  apply ae_tendsto_indicator_const_iff_ae_eventually' _ b (B := {0}ᶜ) (O := {b}ᶜ)
+  · simp only [compl_singleton_mem_nhds_iff, ne_eq, NeZero.ne]
+  · exact (Set.not_mem_compl_iff).mpr rfl
+  · simp only [compl_singleton_mem_nhds_iff, ne_eq, (NeZero.ne b).symm]
+  · exact (Set.not_mem_compl_iff).mpr rfl
+
+end indicator
+
 end MeasureTheory
