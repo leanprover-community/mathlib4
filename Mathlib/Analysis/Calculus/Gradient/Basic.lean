@@ -169,7 +169,7 @@ theorem HasDerivAt.hasGradientAt (h : HasDerivAt g g' u) :
   rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt, ← this]
   exact h
 
-theorem gradient_deriv : ∇ g u = starRingEnd 𝕜 (deriv g u) := by
+theorem gradient_eq_deriv : ∇ g u = starRingEnd 𝕜 (deriv g u) := by
   by_cases h: DifferentiableAt 𝕜 g u
   · rw [h.hasGradientAt.hasDerivAt.deriv]
     exact Eq.symm (IsROrC.conj_conj (∇ g u))
