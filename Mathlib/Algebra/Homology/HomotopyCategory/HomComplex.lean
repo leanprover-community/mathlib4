@@ -441,7 +441,7 @@ def δ_hom : Cochain F G n →ₗ[R] Cochain F G m where
         Linear.smul_comp, smul_add, add_right_inj, Int.units_smul_smul, Int.smul_units_smul]
     · simp only [δ_shape _ _ h, smul_zero]
 
-variable {F G S}
+variable {F G R}
 
 @[simp] lemma δ_add (z₁ z₂ : Cochain F G n) : δ n m (z₁ + z₂) = δ n m z₁ + δ n m z₂ :=
   (δ_hom ℤ F G n m).map_add z₁ z₂
