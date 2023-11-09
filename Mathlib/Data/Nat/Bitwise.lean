@@ -362,42 +362,6 @@ theorem testBit_two_pow_mul_toNat_add {n w b} (h: n < 2 ^ w) :
   rw [Nat.add_div_of_dvd_right (Dvd.intro _ rfl), Nat.div_eq_of_lt h, add_zero]
   cases' b <;> simp
 
-/-- Extend a function `f : Fin n → α` to a function on all natural numbers, by
-    defining `f i = a` for all `i ≥ n` and some given constant `a` -/
-def Fin.extendFun {α : Type*} {n: ℕ} (f : Fin n → α) (a : α) : ℕ → α :=
-  fun i =>
-    if h : i < n then
-      f ⟨i, h⟩
-    else
-      a
-
-@[simp] lemma Fin.extendFun_val' {α a n} (m) {f : Fin (n+m) → α} {i : Fin n} :
-    extendFun f a i.val = f (i.castAdd _) := by
-  have : i.val < n + m := Nat.lt_of_lt_of_le (i.prop) (Nat.le_add_right ..)
-  simp only [extendFun, this, dite_true]
-  rfl
-
-@[simp] lemma Fin.extendFun_val {α a n} {f : Fin n → α} {i : Fin n} :
-    extendFun f a i.val = f i := by
-  rw [extendFun_val' 0]; rfl
-
-@[simp] lemma Fin.extendFun_comp_val' {α a n} (m) {f : Fin (n+m) → α} :
-    (extendFun f a) ∘ Fin.val = f ∘ (Fin.castAdd m) := by
-  funext i; apply extendFun_val'
-
-@[simp] lemma Fin.extendFun_comp_val {α a n} {f : Fin n → α} :
-    (extendFun f a) ∘ Fin.val = f := by
-  funext i; apply extendFun_val
-
-@[simp] lemma Fin.extendFun_add {α a n} (m) {f : Fin (n+(m+1)) → α} :
-    (extendFun f a) n = f ⟨n, by simp⟩ := by
-  simp [extendFun]
-
-@[simp] lemma Fin.extendFun_succ {α a n} {f : Fin (n+1) → α} :
-    (extendFun f a) n = f ⟨n, lt.base ..⟩ := by
-  simp [extendFun]
-
-
 /-- Create a natural number by appending bits tail-recursively, where a boolean function `f` gives
     the value of each bit such that `f 0` is the least significant bit. -/
 def ofBits {n : ℕ} (f : Fin n → Bool) : ℕ :=
