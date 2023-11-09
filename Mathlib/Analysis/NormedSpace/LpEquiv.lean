@@ -74,7 +74,7 @@ theorem coe_equiv_lpPiLp_symm (f : PiLp p E) : (Equiv.lpPiLp.symm f : ∀ i, E i
 
 theorem equiv_lpPiLp_norm (f : lp E p) : ‖Equiv.lpPiLp f‖ = ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | h)
-  · rw [PiLp.norm_eq_card, lp.norm_eq_card_dsupport]
+  · simp [Equiv.lpPiLp, PiLp.norm_eq_card, lp.norm_eq_card_dsupport]
   · rw [PiLp.norm_eq_ciSup, lp.norm_eq_ciSup]; rfl
   · rw [PiLp.norm_eq_sum h, lp.norm_eq_tsum_rpow h, tsum_fintype]; rfl
 #align equiv_lp_pi_Lp_norm equiv_lpPiLp_norm
