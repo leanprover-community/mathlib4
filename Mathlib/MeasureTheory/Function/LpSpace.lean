@@ -641,17 +641,8 @@ theorem Memℒp.indicator (hs : MeasurableSet s) (hf : Memℒp f p μ) : Memℒp
 
 theorem snormEssSup_indicator_eq_snormEssSup_restrict {f : α → F} (hs : MeasurableSet s) :
     snormEssSup (s.indicator f) μ = snormEssSup f (μ.restrict s) := by
-  simp_rw [snormEssSup, nnnorm_indicator_eq_indicator_nnnorm, ENNReal.coe_indicator]
-  by_cases hs_null : μ s = 0
-  · rw [Measure.restrict_zero_set hs_null]
-    simp only [essSup_measure_zero, ENNReal.essSup_eq_zero_iff, ENNReal.bot_eq_zero]
-    have hs_empty : s =ᵐ[μ] (∅ : Set α) := by rw [ae_eq_set]; simpa using hs_null
-    refine' (indicator_ae_eq_of_ae_eq_set hs_empty).trans _
-    rw [Set.indicator_empty]
-    rfl
-  rw [essSup_indicator_eq_essSup_restrict (eventually_of_forall fun x => ?_) hs hs_null]
-  rw [Pi.zero_apply]
-  exact zero_le _
+  simp_rw [snormEssSup, nnnorm_indicator_eq_indicator_nnnorm, ENNReal.coe_indicator,
+    ENNReal.essSup_indicator_eq_essSup_restrict hs]
 #align measure_theory.snorm_ess_sup_indicator_eq_snorm_ess_sup_restrict MeasureTheory.snormEssSup_indicator_eq_snormEssSup_restrict
 
 theorem snorm_indicator_eq_snorm_restrict {f : α → F} (hs : MeasurableSet s) :
