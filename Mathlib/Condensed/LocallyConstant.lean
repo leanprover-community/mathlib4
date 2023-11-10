@@ -79,12 +79,13 @@ instance : PreservesLimit (Discrete.functor (Z f)) Y.val := by
   exact (preservesLimitsOfShapeOfEquiv i.symm Y.val).1
 
 def isoProduct : op S ≅ ∏ (Z f) := by
-  refine (?_ : ∐ (fun i ↦ unop (Z f i)) ≅ S).op ≪≫ opCoproductIsoProduct _
-  refine CompHaus.isoOfBijective (Sigma.desc (fun i ↦ (⟨fun x ↦ x.val, by continuity⟩))) ⟨?_, ?_⟩
-  · intro a b h
-    sorry
-    --apply ((forget CompHaus).mapIso (CompHaus.coproductIsoCoproduct _)).hom
-  · sorry
+  sorry
+  -- refine (?_ : CompHaus.of (Σ (i : Set.range f), (unop (Z f i)).1) ≅ S).op ≪≫ ?_-- opCoproductIsoProduct' (CompHaus.finiteCoproduct.isColimit (fun (i : Set.range f) ↦ unop (Z f i))) (productIsProduct (Z f))
+  -- refine CompHaus.isoOfBijective (Sigma.desc (fun i ↦ (⟨fun x ↦ x.val, by continuity⟩))) ⟨?_, ?_⟩
+  -- · intro a b h
+  --   sorry
+  --   --apply ((forget CompHaus).mapIso (CompHaus.coproductIsoCoproduct _)).hom
+  -- · sorry
 
 
 def isoProduct' : Y.val.obj (op S) ≅ ∏ fun i => Y.val.obj (Z f i) :=
