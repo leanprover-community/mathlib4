@@ -86,7 +86,7 @@ lemma stronglyMeasurable_uniformPdfReal (a b : ℝ) :
   (measurable_uniformPdfReal a b).stronglyMeasurable
 
 @[simp]
-lemma Iio_eq_zero : (∫⁻ (x : ℝ) in Iio (a ⊓ b) , uniformPdf a b x) = 0 := by
+lemma Iio_eq_zero {a b : ℝ} : (∫⁻ (x : ℝ) in Iio (a ⊓ b) , uniformPdf a b x) = 0 := by
   rw [set_lintegral_congr_fun measurableSet_Iio];
   · exact lintegral_zero
   · apply ae_of_all
@@ -96,7 +96,7 @@ lemma Iio_eq_zero : (∫⁻ (x : ℝ) in Iio (a ⊓ b) , uniformPdf a b x) = 0 :
     rintro ⟨ _, _ ⟩; linarith
 
 @[simp]
-lemma Ioi_eq_zero : (∫⁻ (x : ℝ) in Ioi (a ⊔ b) , uniformPdf a b x) = 0 := by
+lemma Ioi_eq_zero {a b : ℝ} : (∫⁻ (x : ℝ) in Ioi (a ⊔ b) , uniformPdf a b x) = 0 := by
   rw [set_lintegral_congr_fun measurableSet_Ioi];
   · exact lintegral_zero;
   · apply ae_of_all
@@ -106,7 +106,7 @@ lemma Ioi_eq_zero : (∫⁻ (x : ℝ) in Ioi (a ⊔ b) , uniformPdf a b x) = 0 :
     rintro ⟨ _, _ ⟩; linarith
 
 /-- The integral of the uniform PDF is equal to integrating over `uIcc a b`-/
-lemma carrier_of_uniform_lintegral : (∫⁻ (x : ℝ), uniformPdf a b x) =
+lemma carrier_of_uniform_lintegral {a b : ℝ} : (∫⁻ (x : ℝ), uniformPdf a b x) =
     (∫⁻ (x : ℝ) in uIcc a b, uniformPdf a b x) := by
   rw [split_uniform_lintegral]; simp only [ge_iff_le, Iio_eq_zero, zero_add, Ioi_eq_zero, add_zero]
 
@@ -167,7 +167,7 @@ lemma uniformCdf_eq_dirac {a b : ℝ} (hab : a = b) :
   rw [ENNReal.toReal_eq_toReal_iff]; left; rfl
 
 
-lemma uniformCdf_eq_zero (x : ℝ) (hx: x < a ⊓ b) : ((uniformCdfReal a b) x) = 0 := by
+lemma uniformCdf_eq_zero {a b : ℝ} (x : ℝ) (hx: x < a ⊓ b) : ((uniformCdfReal a b) x) = 0 := by
   by_cases hab : a = b
   · rw [uniformCdf_eq_dirac hab]
     dsimp
@@ -180,13 +180,15 @@ lemma uniformCdf_eq_zero (x : ℝ) (hx: x < a ⊓ b) : ((uniformCdfReal a b) x) 
   rw [if_neg _, ENNReal.ofReal_zero]
   rintro ⟨ _, _ ⟩; linarith
 
-lemma uniformCdf_eq_fromInf (x : ℝ) (h : a ⊓ b ≤ x) (hab : a ≠ b) : ((uniformCdfReal a b) x) =
+lemma uniformCdf_eq_fromInf {a b : ℝ} (x : ℝ) (h : a ⊓ b ≤ x) (hab : a ≠ b) :
+    ((uniformCdfReal a b) x) =
     ENNReal.toReal (∫⁻ (x' : ℝ) in Icc (a ⊓ b) x, uniformPdf a b x')  := by
   rw [uniformCdf_eq_Lintegral hab]; dsimp
   rw [lintegral_split_bounded _ h];
   simp only [ge_iff_le, Iio_eq_zero, inf_le_iff, gt_iff_lt, lt_inf_iff, zero_add]
 
-lemma uniformCdf_eq_toSup (x : ℝ) (h : a ⊔ b ≤ x) (hab : a ≠ b) : ((uniformCdfReal a b) x) =
+lemma uniformCdf_eq_toSup {a b : ℝ} (x : ℝ) (h : a ⊔ b ≤ x) (hab : a ≠ b) :
+    ((uniformCdfReal a b) x) =
     ENNReal.toReal (∫⁻ (x' : ℝ) in Icc (a ⊓ b) (a ⊔ b), uniformPdf a b x') := by
   rw [uniformCdf_eq_fromInf _ (le_trans inf_le_sup h) hab, (Icc_union_Ioc_eq_Icc inf_le_sup h).symm,
       lintegral_union measurableSet_Ioc]
