@@ -1336,6 +1336,8 @@ theorem surjOn_iff_exists_bijOn_subset : SurjOn f s t ↔ ∃ s' ⊆ s, BijOn f 
     exact hfs'.surjOn.mono hs' (Subset.refl _)
 #align set.surj_on_iff_exists_bij_on_subset Set.surjOn_iff_exists_bijOn_subset
 
+alias ⟨SurjOn.exists_bijOn_subset, _⟩ := Set.surjOn_iff_exists_bijOn_subset
+
 variable (f s)
 
 lemma exists_subset_bijOn : ∃ s' ⊆ s, BijOn f s' (f '' s) :=
