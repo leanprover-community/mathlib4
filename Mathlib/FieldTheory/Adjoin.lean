@@ -671,20 +671,6 @@ instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensio
     exact IntermediateField.finiteDimensional_sup _ _
 #align intermediate_field.finite_dimensional_supr_of_finite IntermediateField.finiteDimensional_iSup_of_finite
 
-/-- If `L / K` is an algebraic extension, then for any finite subset `S` of `L`, `K(S) / K` is a
-finite extension. A direct corollary of `finiteDimensional_iSup_of_finite`. -/
-theorem finiteDimensional_adjoin_of_finite_of_isAlgebraic
-    (halg : Algebra.IsAlgebraic K L) (S : Set L) [Finite S] :
-    FiniteDimensional K (adjoin K S) := by
-  let t : S → IntermediateField K L := fun x ↦ K⟮x.1⟯
-  have h : ∀ x : S, FiniteDimensional K (t x) := fun x ↦
-    adjoin.finiteDimensional <| isAlgebraic_iff_isIntegral.1 (halg x.1)
-  have hfin := finiteDimensional_iSup_of_finite (t := t)
-  have := (gc (F := K) (E := L)).l_iSup (f := fun (x : S) ↦ {x.1})
-  rw [Set.iSup_eq_iUnion, Set.iUnion_singleton_eq_range, Subtype.range_coe_subtype,
-    Set.setOf_mem_eq] at this
-  rwa [← this] at hfin
-
 instance finiteDimensional_iSup_of_finset
     /-Porting note: changed `h` from `∀ i ∈ s, FiniteDimensional K (t i)` because this caused an
       error. See `finiteDimensional_iSup_of_finset'` for a stronger version, that was the one
@@ -1069,6 +1055,12 @@ theorem isAlgebraic_adjoin {S : Set L} (hS : ∀ x ∈ S, IsIntegral K x) :
     Algebra.IsAlgebraic K (adjoin K S) := by
   rw [← biSup_adjoin_simple, ← iSup_subtype'']
   exact isAlgebraic_iSup fun x ↦ isAlgebraic_adjoin_simple (hS x x.2)
+
+theorem finiteDimensional_adjoin {S : Set L} [Finite S] (hS : ∀ x ∈ S, IsIntegral K x) :
+    FiniteDimensional K (adjoin K S) := by
+  rw [← biSup_adjoin_simple, ← iSup_subtype'']
+  haveI := fun (x : S) ↦ adjoin.finiteDimensional (hS x.1 x.2)
+  exact finiteDimensional_iSup_of_finite
 
 end PowerBasis
 
