@@ -67,14 +67,6 @@ open FiniteDimensional Polynomial IntermediateField
 
 noncomputable section
 
-/-- TODO: use the corresponding version once #8221 is merged -/
-axiom IntermediateField.algHom_mk_adjoin_splits₀'
-    {F : Type*} {E : Type*} {K : Type*} [Field F] [Field E] [Field K]
-    [Algebra F E] [Algebra F K] {S : Set E}
-    {L : IntermediateField F E} (f : L →ₐ[F] K) (hS : adjoin F S = ⊤)
-    (hK : ∀ s ∈ S, IsIntegral F (s : E) ∧ (minpoly F s).Splits (algebraMap F K)) :
-    ∃ φ : E →ₐ[F] K, φ.comp L.val = f
-
 universe u v v' w
 
 variable (F : Type u) (E : Type v) [Field F] [Field E]
@@ -216,7 +208,7 @@ lemma splits_in_normalClosure_of_adjoin_splits'
   let f : F⟮s⟯ →ₐ[F] K := (algHomAdjoinIntegralEquiv F (hK s hs).1).symm a'
   have hf : f (AdjoinSimple.gen F s) = a :=
     algHomAdjoinIntegralEquiv_symm_apply_gen F (hK s hs).1 a'
-  obtain ⟨φ, hφ⟩ := algHom_mk_adjoin_splits₀' f hS hK
+  obtain ⟨φ, hφ⟩ := exists_algHom_of_adjoin_splits hK f hS
   have : a ∈ φ.fieldRange := by
     use s
     rw [← hf, ← hφ]
@@ -257,7 +249,7 @@ def normalClosureHomOfAdjoinSplits' (K : Type w) [Field K] [Algebra F K]
     (hK : ∀ s ∈ S, IsIntegral F s ∧ Polynomial.Splits (algebraMap F K') (minpoly F s)) :
     (normalClosure F E K) →ₐ[F] (normalClosure F E K') := by
   refine (normalClosure_eq_adjoin' F E K hS) ▸
-    Classical.choice (algHom_mk_adjoin_splits <| fun s hs ↦ ?_)
+    Classical.choice (nonempty_algHom_adjoin_of_splits <| fun s hs ↦ ?_)
   simp only [Set.iSup_eq_iUnion, Set.mem_iUnion, Set.mem_image] at hs
   obtain ⟨f, x, hx, rfl⟩ := hs
   rw [minpoly.algHom_eq f f.injective x]
