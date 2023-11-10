@@ -75,13 +75,13 @@ theorem «exists» {p : PLift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (PLi
 #align plift.exists PLift.exists
 
 lemma map_injective (hf : Injective f) : Injective (PLift.map f) :=
-  up_injective.comp $ hf.comp down_injective
+  up_injective.comp <| hf.comp down_injective
 
 lemma map_surjective (hf : Surjective f) : Surjective (PLift.map f) :=
-  up_surjective.comp $ hf.comp down_surjective
+  up_surjective.comp <| hf.comp down_surjective
 
 lemma map_bijective (hf : Bijective f) : Bijective (PLift.map f) :=
-  up_bijective.comp $ hf.comp down_bijective
+  up_bijective.comp <| hf.comp down_bijective
 
 end PLift
 
@@ -140,13 +140,13 @@ theorem «exists» {p : ULift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (ULi
 #align ulift.exists ULift.exists
 
 lemma map_injective (hf : Injective f) : Injective (ULift.map f : ULift.{u'} α → ULift.{v'} β) :=
-  up_injective.comp $ hf.comp down_injective
+  up_injective.comp <| hf.comp down_injective
 
 lemma map_surjective (hf : Surjective f) : Surjective (ULift.map f : ULift.{u'} α → ULift.{v'} β) :=
-  up_surjective.comp $ hf.comp down_surjective
+  up_surjective.comp <| hf.comp down_surjective
 
 lemma map_bijective (hf : Bijective f) : Bijective (ULift.map f : ULift.{u'} α → ULift.{v'} β) :=
-  up_bijective.comp $ hf.comp down_bijective
+  up_bijective.comp <| hf.comp down_bijective
 
 @[ext]
 theorem ext (x y : ULift α) (h : x.down = y.down) : x = y :=

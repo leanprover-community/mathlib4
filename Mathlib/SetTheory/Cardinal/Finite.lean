@@ -42,7 +42,7 @@ theorem card_eq_fintype_card [Fintype α] : Nat.card α = Fintype.card α :=
   mk_toNat_eq_card
 #align nat.card_eq_fintype_card Nat.card_eq_fintype_card
 
-lemma card_eq_zero_of_isEmpty [IsEmpty α] : Nat.card α = 0 := mk_toNat_of_isEmpty
+lemma card_eq_zero_of_isEmpty [IsEmpty α] : Nat.card α = 0 := by simp [Nat.card]
 @[simp] lemma card_eq_zero_of_infinite [Infinite α] : Nat.card α = 0 := mk_toNat_of_infinite
 #align nat.card_eq_zero_of_infinite Nat.card_eq_zero_of_infinite
 
