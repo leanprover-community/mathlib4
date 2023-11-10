@@ -75,7 +75,7 @@ theorem unpair_pair (a b : ℕ) : unpair (pair a b) = (a, b) := by
 #align nat.unpair_mkpair Nat.unpair_pair
 
 /-- An equivalence between `ℕ × ℕ` and `ℕ`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def pairEquiv : ℕ × ℕ ≃ ℕ :=
   ⟨uncurry pair, unpair, fun ⟨a, b⟩ => unpair_pair a b, pair_unpair⟩
 #align nat.mkpair_equiv Nat.pairEquiv

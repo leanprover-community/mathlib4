@@ -6,7 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad
 import Mathlib.Init.CCLemmas
 import Mathlib.Data.Finset.Image
 
-#align_import data.finset.card from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
+#align_import data.finset.card from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-!
 # Cardinality of a finite set
@@ -47,6 +47,9 @@ def card (s : Finset α) : ℕ :=
 theorem card_def (s : Finset α) : s.card = Multiset.card s.1 :=
   rfl
 #align finset.card_def Finset.card_def
+
+@[simp] lemma card_val (s : Finset α) : Multiset.card s.1 = s.card := rfl
+#align finset.card_val Finset.card_val
 
 @[simp]
 theorem card_mk {m nodup} : (⟨m, nodup⟩ : Finset α).card = Multiset.card m :=

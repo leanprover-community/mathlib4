@@ -69,10 +69,10 @@ theorem div_eq_quo_add_rem_div_add_rem_div (f : R[X]) {g₁ g₂ : R[X]} (hg₁ 
       degree_modByMonic_lt _ hg₂, _⟩
   have hg₁' : (↑g₁ : K) ≠ 0 := by
     norm_cast
-    exact hg₁.ne_zero_of_ne zero_ne_one
+    exact hg₁.ne_zero
   have hg₂' : (↑g₂ : K) ≠ 0 := by
     norm_cast
-    exact hg₂.ne_zero_of_ne zero_ne_one
+    exact hg₂.ne_zero
   have hfc := modByMonic_add_div (f * c) hg₂
   have hfd := modByMonic_add_div (f * d) hg₁
   field_simp

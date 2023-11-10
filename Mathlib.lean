@@ -362,8 +362,6 @@ import Mathlib.Algebra.Order.Kleene
 import Mathlib.Algebra.Order.LatticeGroup
 import Mathlib.Algebra.Order.Module
 import Mathlib.Algebra.Order.Monoid.Basic
-import Mathlib.Algebra.Order.Monoid.Cancel.Basic
-import Mathlib.Algebra.Order.Monoid.Cancel.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Lemmas
@@ -1917,6 +1915,7 @@ import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
 import Mathlib.Data.Sum.Interval
+import Mathlib.Data.Sum.Lattice
 import Mathlib.Data.Sum.Order
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Card
@@ -2469,6 +2468,7 @@ import Mathlib.MeasureTheory.Decomposition.Jordan
 import Mathlib.MeasureTheory.Decomposition.Lebesgue
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 import Mathlib.MeasureTheory.Decomposition.SignedHahn
+import Mathlib.MeasureTheory.Decomposition.SignedLebesgue
 import Mathlib.MeasureTheory.Decomposition.UnsignedHahn
 import Mathlib.MeasureTheory.Function.AEEqFun
 import Mathlib.MeasureTheory.Function.AEEqFun.DomAct
@@ -3218,6 +3218,7 @@ import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.LegendreSymbol
+import Mathlib.Tactic.NormNum.Mod
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.OfScientific
@@ -3241,6 +3242,8 @@ import Mathlib.Tactic.Qify
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recall
 import Mathlib.Tactic.Recover
+import Mathlib.Tactic.ReduceModChar
+import Mathlib.Tactic.ReduceModChar.Ext
 import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.Relation.Trans
@@ -3443,6 +3446,7 @@ import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.DiscreteQuotient
 import Mathlib.Topology.DiscreteSubset
 import Mathlib.Topology.EMetricSpace.Basic
+import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.ExtendFrom
 import Mathlib.Topology.ExtremallyDisconnected
