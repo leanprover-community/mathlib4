@@ -602,4 +602,46 @@ theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b <
   · rw [decide_eq_true_iff, ←two_mul, add_comm, Nat.add_mul_mod_self_left]
     decide
 
+lemma div2_succ_lt_succ (x) : div2 (succ x) < succ x := by
+  rw [div2_val]; apply div_lt_self'
+
+@[simp]
+lemma bitwise_self_self (f x) (hf : f false false = false) :
+    bitwise f x x = if f true true then x else 0 := by
+  induction' x using Nat.strongInductionOn with x ih
+  cases' x with x
+  · simp only [zero_eq, ne_eq, bitwise_zero_right, ite_self]
+  · simp only [ne_eq, succ_ne_zero, not_false_eq_true, bitwise_of_ne_zero,
+      ih (succ x / 2) (div_lt_self' x 0)]
+    cases hft : f true true
+    · cases bodd (succ x) <;> simp [hft, hf]
+    · have (b) : f b b = b := by cases b <;> simp [hf, hft]
+      simp only [this, ite_true, ←div2_val, bit_decomp]
+
+@[simp]
+lemma bitwise_bitwise (f g h) (x y)
+    (hf : f false false = false) (hg : g false false = false) (hh : h false false = false) :
+    bitwise f (bitwise g x y) (bitwise h x y) = bitwise (fun x y => f (g x y) (h x y)) x y := by
+  induction' y using Nat.strongInductionOn with y ih generalizing x
+  cases' y with y
+  · simp
+    cases hg' : g true false <;> cases hh' : h true false <;> simp[hf]
+  · rw [←bit_decomp x, ←bit_decomp (succ y)]
+    simp only [bitwise_bit hg, bitwise_bit hh, bitwise_bit hf,
+      bitwise_bit (f := fun x y ↦ f (g x y) (h x y)) (by simp [hf, hg, hh]),
+      ih _ (div2_succ_lt_succ _)]
+
+lemma bitwise_fst {x y} : bitwise (fun a _ => a) x y = x := by
+  induction' y using Nat.strongInductionOn with y ih generalizing x
+  cases' x with x <;> cases' y with y <;> (try rfl)
+  simp only [ne_eq, succ_ne_zero, not_false_eq_true, bitwise_of_ne_zero]
+  rw [ih (succ y / 2) (div_lt_self' ..), ←div2_val, bit_decomp]
+
+@[simp]
+theorem and_or_ldiff (x y : ℕ) : (x &&& y) ||| (x.ldiff y) = x := by
+  have (x y : Bool) : (x && y || x && !y) = x := by
+    cases x <;> cases y <;> rfl
+  simp only [HOr.hOr, OrOp.or, lor, HAnd.hAnd, AndOp.and, land, ne_eq, ldiff, Bool.or_self,
+    Bool.and_self, Bool.not_false, Bool.and_true, bitwise_bitwise, this, bitwise_fst]
+
 end Nat
