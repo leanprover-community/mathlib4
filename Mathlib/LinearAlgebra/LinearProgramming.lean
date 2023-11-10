@@ -60,9 +60,10 @@ lemma LinearProgram.feasibles_mkOfEqs
       Function.Involutive.exists_mem_and_apply_eq_iff, neg_involutive] at hyp
     constructor
     · intro constr_eq mem_equalities
-      have hyp_neg := @hyp (-constr_eq) (by simp [mem_equalities])
-      simp only [AffineMap.coe_neg, Pi.neg_apply, Left.nonneg_neg_iff] at hyp_neg
-      exact le_antisymm hyp_neg (hyp (by simp [mem_equalities]))
+      refine le_antisymm ?neg (hyp (by simp [mem_equalities]))
+      rw [← Left.nonneg_neg_iff, ← Pi.neg_apply, ← AffineMap.coe_neg]
+      apply hyp
+      simp [mem_equalities]
     · intro constr_le mem_inequalities
       exact hyp (by simp [mem_inequalities])
   · intro hyp
