@@ -154,6 +154,9 @@ theorem mem_factors {n p} (hn : n ≠ 0) : p ∈ factors n ↔ Prime p ∧ p ∣
     (mem_factors_iff_dvd hn hprime).mpr hdvd⟩
 #align nat.mem_factors Nat.mem_factors
 
+@[simp] lemma mem_factors' {n p} : p ∈ n.factors ↔ p.Prime ∧ p ∣ n ∧ n ≠ 0 := by
+  cases n <;> simp [mem_factors, *]
+
 theorem le_of_mem_factors {n p : ℕ} (h : p ∈ n.factors) : p ≤ n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
   · rw [factors_zero] at h

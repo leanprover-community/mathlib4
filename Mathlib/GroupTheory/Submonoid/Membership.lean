@@ -197,11 +197,11 @@ namespace Submonoid
 @[to_additive]
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Submonoid M} (hS : Directed (· ≤ ·) S)
     {x : M} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
-  refine' ⟨_, fun ⟨i, hi⟩ => (SetLike.le_def.1 <| le_iSup S i) hi⟩
+  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   suffices x ∈ closure (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
     simpa only [closure_iUnion, closure_eq (S _)] using this
-  refine' fun hx => closure_induction hx (fun _ => mem_iUnion.1) _ _
-  · exact hι.elim fun i => ⟨i, (S i).one_mem⟩
+  refine fun hx ↦ closure_induction hx (fun _ ↦ mem_iUnion.1) ?_ ?_
+  · exact hι.elim fun i ↦ ⟨i, (S i).one_mem⟩
   · rintro x y ⟨i, hi⟩ ⟨j, hj⟩
     rcases hS i j with ⟨k, hki, hkj⟩
     exact ⟨k, (S k).mul_mem (hki hi) (hkj hj)⟩
@@ -210,8 +210,8 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Submonoid M} (
 
 @[to_additive]
 theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Submonoid M} (hS : Directed (· ≤ ·) S) :
-    ((⨆ i, S i : Submonoid M) : Set M) = ⋃ i, ↑(S i) :=
-  Set.ext fun x => by simp [mem_iSup_of_directed hS]
+    ((⨆ i, S i : Submonoid M) : Set M) = ⋃ i, S i :=
+  Set.ext fun x ↦ by simp [mem_iSup_of_directed hS]
 #align submonoid.coe_supr_of_directed Submonoid.coe_iSup_of_directed
 #align add_submonoid.coe_supr_of_directed AddSubmonoid.coe_iSup_of_directed
 
