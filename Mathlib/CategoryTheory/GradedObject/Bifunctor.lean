@@ -28,7 +28,7 @@ variable {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃
 
 namespace GradedObject
 
-/-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` and types `I` and `J`, this is obvious
+/-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` and types `I` and `J`, this is the obvious
 functor `GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃`. -/
 @[simps]
 def mapBifunctor (I J : Type*) :
