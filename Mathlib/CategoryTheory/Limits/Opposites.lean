@@ -448,7 +448,7 @@ def opCoproductIsoProduct :
 theorem opCoproductIsoProduct'_inv_comp_inj {c : Cofan Z} {f : Fan (fun a ↦ op (Z a))}
     (hc : IsColimit c) (hf : IsLimit f) (b : α) :
     (opCoproductIsoProduct' hc hf).inv ≫ (c.inj b).op = f.proj b :=
-  IsLimit.conePointUniqueUpToIso_inv_comp _ _ _
+  IsLimit.conePointUniqueUpToIso_inv_comp (Cofan.IsColimit.op hc) hf ⟨b⟩
 
 variable (Z) in
 theorem opCoproductIsoProduct_inv_comp_ι (b : α) : (opCoproductIsoProduct Z).inv ≫
