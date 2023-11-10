@@ -68,9 +68,7 @@ theorem iInf_of_empty {ι : Sort*} [IsEmpty ι] (f : ι → ℕ) : iInf f = 0 :=
 
 @[simp]
 lemma iInf_const_zero {ι : Sort*} : ⨅ i : ι, 0 = 0 := by
-  cases isEmpty_or_nonempty ι
-  · exact iInf_empty _
-  · exact ciInf_const
+    (isEmpty_or_nonempty ι).elim (fun h => by simp) (fun h => sInf_eq_zero.2 <| by simp)
 
 theorem sInf_mem {s : Set ℕ} (h : s.Nonempty) : sInf s ∈ s := by
   rw [Nat.sInf_def h]
