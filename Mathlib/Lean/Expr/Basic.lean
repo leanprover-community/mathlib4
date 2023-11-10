@@ -194,6 +194,7 @@ def bvarIdx? : Expr → Option Nat
 def getAppFnArgs (e : Expr) : Name × Array Expr :=
   withApp e λ e a => (e.constName, a)
 
+/-- Invariant: `i : ℕ` should be less than the size of `as : Array Expr`. -/
 private def getAppAppsAux : Expr → Array Expr → Nat → Array Expr
   | .app f a, as, i => getAppAppsAux f (as.set! i (.app f a)) (i-1)
   | _,       as, _ => as
