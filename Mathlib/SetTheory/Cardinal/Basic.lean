@@ -1783,8 +1783,6 @@ theorem exists_nat_eq_of_le_nat {c : Cardinal} {n : ℕ} (h : c ≤ n) : ∃ m, 
   ⟨toNat c, natCast_le.1 (he.trans_le h), he.symm⟩
 #align cardinal.exists_nat_eq_of_le_nat Cardinal.exists_nat_eq_of_le_nat
 
-lemma mk_toNat_of_isEmpty [IsEmpty α] : toNat #α = 0 := by simp
-
 @[simp]
 theorem mk_toNat_of_infinite [h : Infinite α] : toNat #α = 0 :=
   dif_neg (infinite_iff.1 h).not_lt
