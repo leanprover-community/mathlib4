@@ -73,13 +73,13 @@ theorem nat_card : Nat.card KleinFour = 4 := by
   rfl
 
 @[simp] theorem orderOf_a : orderOf a = 2 :=
-  orderOf_eq_prime a_order_two (by decide)
+  orderOf_eq_prime a_sq (by decide)
 
 @[simp] theorem orderOf_b : orderOf b = 2 :=
-  orderOf_eq_prime b_order_two (by decide)
+  orderOf_eq_prime b_sq (by decide)
 
 @[simp] theorem orderOf_c : orderOf c = 2 :=
-  orderOf_eq_prime c_order_two (by decide)
+  orderOf_eq_prime c_sq (by decide)
 
 @[simp high]
 theorem exponent : Monoid.exponent KleinFour = 2 := by
