@@ -1183,13 +1183,8 @@ protected theorem UniformSpace.le_sInf {tt : Set (UniformSpace α)} {t : Uniform
     (h : ∀ t' ∈ tt, t ≤ t') : t ≤ sInf tt :=
   show 𝓤[t] ≤ ⨅ u ∈ tt, 𝓤[u] from le_iInf₂ h
 
--- porting note: todo: replace `toTopologicalSpace` with `⊤`
 instance : Top (UniformSpace α) :=
-  ⟨UniformSpace.ofCore
-      { uniformity := ⊤
-        refl := le_top
-        symm := le_top
-        comp := le_top }⟩
+  ⟨.ofNhdsEqComap ⟨⊤, le_top, le_top, le_top⟩ ⊤ fun x ↦ by simp only [nhds_top, comap_top]⟩
 
 instance : Bot (UniformSpace α) :=
   ⟨{  toTopologicalSpace := ⊥
@@ -1342,33 +1337,32 @@ theorem UniformContinuous.continuous [UniformSpace α] [UniformSpace β] {f : α
   continuous_iff_le_induced.mpr <| toTopologicalSpace_mono <| uniformContinuous_iff.1 hf
 #align uniform_continuous.continuous UniformContinuous.continuous
 
-theorem toTopologicalSpace_bot : @UniformSpace.toTopologicalSpace α ⊥ = ⊥ :=
-  rfl
-#align to_topological_space_bot toTopologicalSpace_bot
+namespace UniformSpace
 
-theorem toTopologicalSpace_top : @UniformSpace.toTopologicalSpace α ⊤ = ⊤ :=
-  top_unique fun s hs =>
-    s.eq_empty_or_nonempty.elim (fun this => this.symm ▸ @isOpen_empty _ ⊤) fun ⟨x, hx⟩ =>
-      have : s = univ := top_unique fun y _ => hs x hx (x, y) rfl
-      this.symm ▸ @isOpen_univ _ ⊤
-#align to_topological_space_top toTopologicalSpace_top
+theorem toTopologicalSpace_bot : @UniformSpace.toTopologicalSpace α ⊥ = ⊥ := rfl
+#align to_topological_space_bot UniformSpace.toTopologicalSpace_bot
+
+theorem toTopologicalSpace_top : @UniformSpace.toTopologicalSpace α ⊤ = ⊤ := rfl
+#align to_topological_space_top UniformSpace.toTopologicalSpace_top
 
 theorem toTopologicalSpace_iInf {ι : Sort*} {u : ι → UniformSpace α} :
     (iInf u).toTopologicalSpace = ⨅ i, (u i).toTopologicalSpace :=
   eq_of_nhds_eq_nhds fun a => by simp only [@nhds_eq_comap_uniformity _ (iInf u), nhds_iInf,
-    iInf_uniformity, @nhds_eq_comap_uniformity _ (u _), comap_iInf]
-#align to_topological_space_infi toTopologicalSpace_iInf
+    iInf_uniformity, @nhds_eq_comap_uniformity _ (u _), Filter.comap_iInf]
+#align to_topological_space_infi UniformSpace.toTopologicalSpace_iInf
 
 theorem toTopologicalSpace_sInf {s : Set (UniformSpace α)} :
     (sInf s).toTopologicalSpace = ⨅ i ∈ s, @UniformSpace.toTopologicalSpace α i := by
   rw [sInf_eq_iInf]
   simp only [← toTopologicalSpace_iInf]
-#align to_topological_space_Inf toTopologicalSpace_sInf
+#align to_topological_space_Inf UniformSpace.toTopologicalSpace_sInf
 
 theorem toTopologicalSpace_inf {u v : UniformSpace α} :
     (u ⊓ v).toTopologicalSpace = u.toTopologicalSpace ⊓ v.toTopologicalSpace :=
   rfl
-#align to_topological_space_inf toTopologicalSpace_inf
+#align to_topological_space_inf UniformSpace.toTopologicalSpace_inf
+
+end UniformSpace
 
 /-- Uniform space structure on `ULift α`. -/
 instance ULift.uniformSpace [UniformSpace α] : UniformSpace (ULift α) :=
