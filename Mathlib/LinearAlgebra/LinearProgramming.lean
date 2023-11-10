@@ -39,8 +39,8 @@ def LinearProgram.mkOfEqs
 def LinearProgram.feasibles (lp : LinearProgram K P) : Set P :=
   { x : P | ∀ a ∈ lp.constraints, 0 ≤ a x }
 
-lemma LinearProgram.feasible_iff (lp : LinearProgram K P) (x : P) :
-    x ∈ lp.feasibles ↔ ∀ a ∈ lp.constraints, 0 ≤ a x :=
+@[simp] lemma LinearProgram.mem_feasibles {lp : LinearProgram K P} {x : P} :
+    x ∈ lp.feasibles ↔ ∀ ⦃a⦄, a ∈ lp.constraints → 0 ≤ a x :=
   Iff.rfl
 
 /-- Given linear program is minimized at given point. -/
