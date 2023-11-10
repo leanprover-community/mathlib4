@@ -1158,7 +1158,7 @@ theorem Filter.HasBasis.uniformContinuousOn_iff {ι'} [UniformSpace β] {p : ι 
 
 end UniformSpace
 
-open uniformity
+open Uniformity
 
 section Constructions
 
@@ -1185,21 +1185,17 @@ protected theorem UniformSpace.le_sInf {tt : Set (UniformSpace α)} {t : Uniform
 
 -- porting note: todo: replace `toTopologicalSpace` with `⊤`
 instance : Top (UniformSpace α) :=
-  ⟨UniformSpace.ofCore
-      { uniformity := ⊤
-        refl := le_top
-        symm := le_top
-        comp := le_top }⟩
+  ⟨.ofNhdsEqComap ⟨⊤, le_top, le_top, le_top⟩ ⊤ fun x ↦ by simp only [nhds_top, comap_top]⟩
 
 instance : Bot (UniformSpace α) :=
-  ⟨{  toTopologicalSpace := ⊥
-      uniformity := 𝓟 idRel
+  ⟨.ofNhdsEqComap
+    { uniformity := 𝓟 idRel
       refl := le_rfl
       symm := by simp [Tendsto]
-      comp := lift'_le (mem_principal_self _) <| principal_mono.2 id_compRel.subset
-      isOpen_uniformity := fun s => by
-        let _ : TopologicalSpace α := ⊥; have := discreteTopology_bot α
-        simp [subset_def, idRel] }⟩
+      comp := lift'_le (mem_principal_self _) <| principal_mono.2 id_compRel.subset }
+    ⊥ fun x ↦ by
+      let _ : TopologicalSpace α := ⊥; have : DiscreteTopology α := ⟨rfl⟩
+      simp [Set.preimage]⟩
 
 instance : Inf (UniformSpace α) :=
   ⟨fun u₁ u₂ => .ofNhdsEqComap
@@ -1342,15 +1338,17 @@ theorem UniformContinuous.continuous [UniformSpace α] [UniformSpace β] {f : α
   continuous_iff_le_induced.mpr <| toTopologicalSpace_mono <| uniformContinuous_iff.1 hf
 #align uniform_continuous.continuous UniformContinuous.continuous
 
-theorem toTopologicalSpace_bot : @UniformSpace.toTopologicalSpace α ⊥ = ⊥ :=
-  rfl
+theorem toTopologicalSpace_bot : @UniformSpace.toTopologicalSpace α ⊥ = ⊥ := rfl
 #align to_topological_space_bot toTopologicalSpace_bot
 
-theorem toTopologicalSpace_top : @UniformSpace.toTopologicalSpace α ⊤ = ⊤ :=
-  top_unique fun s hs =>
-    s.eq_empty_or_nonempty.elim (fun this => this.symm ▸ @isOpen_empty _ ⊤) fun ⟨x, hx⟩ =>
-      have : s = univ := top_unique fun y _ => hs x hx (x, y) rfl
-      this.symm ▸ @isOpen_univ _ ⊤
+lemma uniformSpace_eq_bot {u : UniformSpace α} : u = ⊥ ↔ idRel ∈ 𝓤[u] :=
+  le_bot_iff.symm.trans le_principal_iff
+
+protected lemma Filter.HasBasis.uniformSpace_eq_bot {ι p} {s : ι → Set (α × α)} {u : UniformSpace α}
+    (h : 𝓤[u].HasBasis p s) : u = ⊥ ↔ ∃ i, p i ∧ Pairwise fun x y : α ↦ (x, y) ∉ s i := by
+  simp [uniformSpace_eq_bot, h.mem_iff, subset_def, Pairwise, not_imp_not]
+
+theorem toTopologicalSpace_top : @UniformSpace.toTopologicalSpace α ⊤ = ⊤ := rfl
 #align to_topological_space_top toTopologicalSpace_top
 
 theorem toTopologicalSpace_iInf {ι : Sort*} {u : ι → UniformSpace α} :

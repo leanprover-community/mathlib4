@@ -320,6 +320,17 @@ theorem frontier_sphere' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ) :
 
 end NormedAddCommGroup
 
+section NormedSpace
+
+variable (𝕜 E : Type*) [NormedField 𝕜] [Infinite 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [Nontrivial E]
+
+lemma NormedSpace.noncompactSpace : NoncompactSpace E := by
+  
+   
+
+end NormedSpace
+
 section NontriviallyNormedSpace
 
 variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -340,6 +351,9 @@ protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set
   let ⟨x, hx⟩ := NormedSpace.exists_lt_norm 𝕜 E R
   hx.not_le (hR x trivial)
 #align normed_space.unbounded_univ NormedSpace.unbounded_univ
+
+protected lemma NormedSpace.cobounded_neBot : (Bornology.cobounded E).NeBot :=
+  ⟨mt Bornology.cobounded_eq_bot_iff.1 fun ⟨h⟩ ↦ NormedSpace.unbounded_univ 𝕜 E h⟩
 
 /-- A normed vector space over a nontrivially normed field is a noncompact space. This cannot be
 an instance because in order to apply it, Lean would have to search for `NormedSpace 𝕜 E` with
