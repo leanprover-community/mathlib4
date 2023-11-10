@@ -161,7 +161,7 @@ theorem sublists_append (l₁ l₂ : List α) :
   · case nil => simp
   · case cons a l₁ ih =>
       rw [foldr_cons, ih]
-      simp [List.bind, join_join, Function.comp]
+      simp [List.bind, join_join, Function.comp_def]
 #align list.sublists_append List.sublists_append
 
 --Portin note: New theorem
@@ -181,7 +181,7 @@ theorem sublists_concat (l : List α) (a : α) :
 theorem sublists_reverse (l : List α) : sublists (reverse l) = map reverse (sublists' l) := by
   induction' l with hd tl ih <;> [rfl;
     simp only [reverse_cons, sublists_append, sublists'_cons, map_append, ih, sublists_singleton,
-      map_eq_map, bind_eq_bind, map_map, cons_bind, append_nil, nil_bind, (· ∘ ·)]]
+      map_eq_map, bind_eq_bind, map_map, cons_bind, append_nil, nil_bind, Function.comp_def]]
 #align list.sublists_reverse List.sublists_reverse
 
 theorem sublists_eq_sublists' (l : List α) : sublists l = map reverse (sublists' (reverse l)) := by
@@ -189,7 +189,7 @@ theorem sublists_eq_sublists' (l : List α) : sublists l = map reverse (sublists
 #align list.sublists_eq_sublists' List.sublists_eq_sublists'
 
 theorem sublists'_reverse (l : List α) : sublists' (reverse l) = map reverse (sublists l) := by
-  simp only [sublists_eq_sublists', map_map, map_id' reverse_reverse, Function.comp]
+  simp only [sublists_eq_sublists', map_map, map_id' reverse_reverse, Function.comp_def]
 #align list.sublists'_reverse List.sublists'_reverse
 
 theorem sublists'_eq_sublists (l : List α) : sublists' l = map reverse (sublists (reverse l)) := by
@@ -408,7 +408,8 @@ theorem sublists_map (f : α → β) : ∀ (l : List α),
 theorem sublists'_map (f : α → β) : ∀ (l : List α),
     sublists' (map f l) = map (map f) (sublists' l)
   | [] => by simp
-  | a::l => by simp [map_cons, sublists'_cons, sublists'_map f l, Function.comp]
+  | a::l => by
+    simp [map_cons, sublists'_cons, sublists'_map f l, Function.comp_def]
 
 --Porting note: moved because it is now used to prove `sublists_cons_perm_append`
 theorem sublists_perm_sublists' (l : List α) : sublists l ~ sublists' l := by

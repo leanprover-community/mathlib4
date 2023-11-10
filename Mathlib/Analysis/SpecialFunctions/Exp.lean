@@ -423,7 +423,7 @@ namespace Complex
 theorem comap_exp_comap_abs_atTop : comap exp (comap abs atTop) = comap re atTop :=
   calc
     comap exp (comap abs atTop) = comap re (comap Real.exp atTop) := by
-      simp only [comap_comap, (· ∘ ·), abs_exp]
+      simp only [comap_comap, Function.comp_def, abs_exp]
     _ = comap re atTop := by rw [Real.comap_exp_atTop]
 
 #align complex.comap_exp_comap_abs_at_top Complex.comap_exp_comap_abs_atTop
@@ -431,7 +431,7 @@ theorem comap_exp_comap_abs_atTop : comap exp (comap abs atTop) = comap re atTop
 theorem comap_exp_nhds_zero : comap exp (𝓝 0) = comap re atBot :=
   calc
     comap exp (𝓝 0) = comap re (comap Real.exp (𝓝 0)) := by
-      simp only [comap_comap, ← comap_abs_nhds_zero, (· ∘ ·), abs_exp]
+      simp only [comap_comap, ← comap_abs_nhds_zero, Function.comp_def, abs_exp]
     _ = comap re atBot := by rw [Real.comap_exp_nhds_zero]
 
 #align complex.comap_exp_nhds_zero Complex.comap_exp_nhds_zero

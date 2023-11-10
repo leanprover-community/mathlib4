@@ -45,7 +45,7 @@ variable {α}
 theorem uniformContinuous_pi {β : Type*} [UniformSpace β] {f : β → ∀ i, α i} :
     UniformContinuous f ↔ ∀ i, UniformContinuous fun x => f x i := by
   -- porting note: required `Function.comp` to close
-  simp only [UniformContinuous, Pi.uniformity, tendsto_iInf, tendsto_comap_iff, Function.comp]
+  simp only [UniformContinuous, Pi.uniformity, tendsto_iInf, tendsto_comap_iff, Function.comp_def]
 #align uniform_continuous_pi uniformContinuous_pi
 
 variable (α)
@@ -74,7 +74,7 @@ theorem Pi.uniformContinuous_postcomp {α : Type*} [UniformSpace α] {g : α →
 lemma Pi.uniformSpace_comap_precomp' (φ : ι' → ι) :
     UniformSpace.comap (fun g i' ↦ g (φ i')) (Pi.uniformSpace (fun i' ↦ α (φ i'))) =
     ⨅ i', UniformSpace.comap (eval (φ i')) (U (φ i')) := by
-  simp [Pi.uniformSpace_eq, UniformSpace.comap_iInf, ← UniformSpace.comap_comap, comp]
+  simp [Pi.uniformSpace_eq, UniformSpace.comap_iInf, ← UniformSpace.comap_comap, comp_def]
 
 lemma Pi.uniformSpace_comap_precomp (φ : ι' → ι) :
     UniformSpace.comap (· ∘ φ) (Pi.uniformSpace (fun _ ↦ β)) =
@@ -88,7 +88,8 @@ lemma Pi.uniformContinuous_restrict (S : Set ι) :
 lemma Pi.uniformSpace_comap_restrict (S : Set ι) :
     UniformSpace.comap (S.restrict) (Pi.uniformSpace (fun i : S ↦ α i)) =
     ⨅ i ∈ S, UniformSpace.comap (eval i) (U i) := by
-  simp [← iInf_subtype'', ← uniformSpace_comap_precomp' _ ((↑) : S → ι), Set.restrict]
+  simp (config := { unfoldPartialApp := true })
+    [← iInf_subtype'', ← uniformSpace_comap_precomp' _ ((↑) : S → ι), Set.restrict]
 
 lemma cauchy_pi_iff [Nonempty ι] {l : Filter (∀ i, α i)} :
     Cauchy l ↔ ∀ i, Cauchy (map (eval i) l) := by

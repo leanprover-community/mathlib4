@@ -1752,7 +1752,9 @@ theorem map_join (f : α → β) (L : List (List α)) : map f (join L) = join (m
 
 theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) = map f l := by
   unfold List.bind
-  induction l <;> simp [map, join, List.ret, cons_append, nil_append, *] at *
+  induction l <;>
+    simp (config := { unfoldPartialApp := true })
+      [map, join, List.ret, cons_append, nil_append, *] at *
   assumption
 #align list.bind_ret_eq_map List.bind_ret_eq_map
 

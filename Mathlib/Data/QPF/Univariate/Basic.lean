@@ -193,7 +193,8 @@ theorem recF_eq_of_Wequiv {α : Type u} (u : F α → α) (x y : q.P.W) :
     Wequiv x y → recF u x = recF u y := by
   intro h
   induction h
-  case ind a f f' _ ih => simp only [recF_eq', PFunctor.map_eq, Function.comp, ih]
+  case ind a f f' _ ih =>
+    simp only [recF_eq', PFunctor.map_eq, Function.comp_def, ih]
   case abs a f a' f' h => simp only [recF_eq', abs_map, h]
   case trans x y z _ _ ih₁ ih₂ => exact Eq.trans ih₁ ih₂
 set_option linter.uppercaseLean3 false in
@@ -547,7 +548,7 @@ def comp : QPF (Functor.Comp F₂ F₁) where
     cases' h' : repr (f x) with b g
     dsimp; rw [← h', abs_repr]
   abs_map {α β} f := by
-    dsimp [Functor.Comp, PFunctor.comp]
+    dsimp (config := { unfoldPartialApp := true }) [Functor.Comp, PFunctor.comp]
     intro p
     cases' p with a g; dsimp
     cases' a with b h; dsimp
@@ -557,7 +558,7 @@ def comp : QPF (Functor.Comp F₂ F₁) where
     apply abs_map
     congr
     rw [PFunctor.map_eq]
-    dsimp [Function.comp]
+    dsimp [Function.comp_def]
     congr
     ext x
     rw [← abs_map]

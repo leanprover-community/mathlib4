@@ -1149,7 +1149,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
     -- but we need to massage it to take care of the dependent setting.
     rintro ⟨c, d⟩
     have : map List.sum (ofFn fun i : Fin (Composition.length c) => (d i).blocks) = c.blocks := by
-      simp [map_ofFn, (· ∘ ·), Composition.blocks_sum, Composition.ofFn_blocksFun]
+      simp [map_ofFn, Function.comp_def, Composition.blocks_sum, Composition.ofFn_blocksFun]
     rw [sigma_pi_composition_eq_iff]
     dsimp
     congr! 1
@@ -1188,9 +1188,9 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
     r c.1.length fun i : Fin c.1.length =>
       q (c.2 i).length (applyComposition p (c.2 i) (v ∘ c.1.embedding i))
   suffices ∑ c, f c = ∑ c, g c by
-    simpa only [FormalMultilinearSeries.comp, ContinuousMultilinearMap.sum_apply,
-      compAlongComposition_apply, Finset.sum_sigma', applyComposition,
-      ContinuousMultilinearMap.map_sum]
+    simpa (config := { unfoldPartialApp := true }) only [FormalMultilinearSeries.comp,
+      ContinuousMultilinearMap.sum_apply, compAlongComposition_apply, Finset.sum_sigma',
+      applyComposition, ContinuousMultilinearMap.map_sum]
   /- Now, we use `Composition.sigmaEquivSigmaPi n` to change
     variables in the second sum, and check that we get exactly the same sums. -/
   rw [← (sigmaEquivSigmaPi n).sum_comp]
