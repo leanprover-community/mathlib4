@@ -70,8 +70,8 @@ lemma card_le_card_of_injective {α : Type u} {β : Type v} [Finite β] (f : α 
 
 lemma card_le_card_of_surjective {α : Type u} {β : Type v} [Finite α] (f : α → β)
     (hf : Surjective f) : Nat.card β ≤ Nat.card α := by
-  simpa using toNat_le_of_le_of_lt_aleph0 (by simp [lt_aleph0_of_finite]) $
-    mk_le_of_surjective (α := ULift.{max u v} α) (β := ULift.{max u v} β) $ ULift.map_surjective.2 hf
+  simpa using toNat_le_of_le_of_lt_aleph0 (by simp [lt_aleph0_of_finite]) $ mk_le_of_surjective
+    (α := ULift.{max u v} α) (β := ULift.{max u v} β) $ ULift.map_surjective.2 hf
 
 theorem card_eq_of_bijective (f : α → β) (hf : Function.Bijective f) : Nat.card α = Nat.card β :=
   card_congr (Equiv.ofBijective f hf)
