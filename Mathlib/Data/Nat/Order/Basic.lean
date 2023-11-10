@@ -506,26 +506,6 @@ theorem add_mod_eq_ite :
   · exact Nat.mod_eq_of_lt (lt_of_not_ge h)
 #align nat.add_mod_eq_ite Nat.add_mod_eq_ite
 
-theorem div_mul_div_comm (hmn : n ∣ m) (hkl : l ∣ k) : m / n * (k / l) = m * k / (n * l) :=
-  have exi1 : ∃ x, m = n * x := hmn
-  have exi2 : ∃ y, k = l * y := hkl
-  if hn : n = 0 then by simp [hn]
-  else
-    have : 0 < n := Nat.pos_of_ne_zero hn
-    if hl : l = 0 then by simp [hl]
-    else by
-      have : 0 < l := Nat.pos_of_ne_zero hl
-      cases' exi1 with x hx
-      cases' exi2 with y hy
-      rw [hx, hy, Nat.mul_div_cancel_left, Nat.mul_div_cancel_left]
-      apply Eq.symm
-      apply Nat.div_eq_of_eq_mul_left
-      apply mul_pos
-      repeat' assumption
-      -- Porting note: this line was `cc` in Lean3
-      simp only [mul_comm, mul_left_comm, mul_assoc]
-#align nat.div_mul_div_comm Nat.div_mul_div_comm
-
 theorem div_eq_self : m / n = m ↔ m = 0 ∨ n = 1 := by
   constructor
   · intro
