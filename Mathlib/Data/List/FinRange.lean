@@ -72,18 +72,6 @@ theorem nodup_ofFn {α n} {f : Fin n → α} : Nodup (ofFn f) ↔ Function.Injec
     exact h.imp_right ih
 #align list.nodup_of_fn List.nodup_ofFn
 
-/-- Folding over a list obtained from a function `g : Fin n → α` is equivalent to
-    folding over the list of indices `0, 1, ..., n-1` and invoking `g` for each index -/
-theorem foldl_ofFn {α β n} (f : α → β → α) (init : α) (g : Fin n → β) :
-    (List.ofFn g).foldl f init = (List.finRange n).foldl (fun a i => f a (g i)) init := by
-  rw [ofFn_eq_map, foldl_map]
-
-/-- Folding over a list obtained from a function `g : Fin n → α` is equivalent to
-    folding over the list of indices `0, 1, ..., n-1` and invoking `g` for each index -/
-theorem foldr_ofFn {α β n} (f : β → α → α) (init : α) (g : Fin n → β) :
-    (List.ofFn g).foldr f init = (List.finRange n).foldr (fun i a => f (g i) a) init := by
-  rw [ofFn_eq_map, foldr_map]
-
 end List
 
 open List
