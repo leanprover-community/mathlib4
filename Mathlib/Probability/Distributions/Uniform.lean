@@ -59,7 +59,7 @@ lemma uniformPdf_eq (a b : ℝ) : uniformPdf a b = fun x ↦
     ENNReal.ofReal (if x ∈ Icc (a ⊓ b) (a ⊔ b) then (fun x ↦ 1 / abs (b - a)) x else 0) := by
   ext x; unfold uniformPdf uniformPdfReal indicator uIcc; congr
 
-lemma split_uniformLintegral : (∫⁻ (x : ℝ), uniformPdf a b x) =
+lemma split_uniform_lintegral : (∫⁻ (x : ℝ), uniformPdf a b x) =
     (∫⁻ (x : ℝ) in Iio (a ⊓ b) , uniformPdf a b x) + (∫⁻ (x : ℝ) in uIcc a b, uniformPdf a b x) +
     (∫⁻ (x : ℝ) in Ioi (a ⊔ b), uniformPdf a b x) := by
   have union : Iio (a ⊓ b) ∪ uIcc a b ∪ Ioi (a ⊔ b) = univ := by
@@ -106,13 +106,13 @@ lemma Ioi_eq_zero : (∫⁻ (x : ℝ) in Ioi (a ⊔ b) , uniformPdf a b x) = 0 :
     rintro ⟨ _, _ ⟩ ; linarith
 
 /-- The integral of the uniform PDF is equal to integrating over `uIcc a b`-/
-lemma carrier_of_uniformlintegral : (∫⁻ (x : ℝ), uniformPdf a b x) =
+lemma carrier_of_uniform_lintegral : (∫⁻ (x : ℝ), uniformPdf a b x) =
     (∫⁻ (x : ℝ) in uIcc a b, uniformPdf a b x) := by
-  rw [split_uniformLintegral]; simp only [ge_iff_le, Iio_eq_zero, zero_add, Ioi_eq_zero, add_zero]
+  rw [split_uniform_lintegral]; simp only [ge_iff_le, Iio_eq_zero, zero_add, Ioi_eq_zero, add_zero]
 
 lemma lintegral_uniformPdfReal_eq_one (a b : ℝ) (hab : a ≠ b) :
     ∫⁻ (x : ℝ), uniformPdf a b x = 1 := by
-  rw [carrier_of_uniformlintegral]
+  rw [carrier_of_uniform_lintegral]
   unfold uniformPdf uniformPdfReal indicator uIcc
   rw [set_lintegral_congr_fun measurableSet_Icc (ae_of_all _  (fun _ hx ↦ by rw [if_pos hx])),
       set_lintegral_const, Real.volume_Icc, one_div, LatticeOrderedGroup.sup_sub_inf_eq_abs_sub,
@@ -132,7 +132,7 @@ noncomputable
 def uniformMeasure (a b : ℝ) : Measure ℝ :=
   if a = b then Measure.dirac a else volume.withDensity (uniformPdf a b)
 
-/-- Uniformmeasure as Instance of Probabilitymeasure-/
+/-- Uniformmeasure as an Instance of a Probabilitymeasure-/
 instance instIsProbabilityMeasureUniform (a b : ℝ) :
     IsProbabilityMeasure (uniformMeasure a b) where
   measure_univ := by
@@ -148,7 +148,7 @@ noncomputable
 def uniformCdfReal (a b : ℝ) : StieltjesFunction :=
   ProbabilityTheory.cdf (uniformMeasure a b)
 
-/- The uniform CDF equals the integration of the Pddf-/
+/- The uniform CDF equals the integration of the PDF-/
 lemma uniformCdf_eq_Lintegral {a b : ℝ} (hab : a ≠ b) :
     ((uniformCdfReal a b)) = fun x ↦ ENNReal.toReal (∫⁻ x in (Iic x), (uniformPdf a b x)) := by
   unfold uniformCdfReal uniformPdf
@@ -224,6 +224,7 @@ lemma uniformCdf_eq' {a b : ℝ} (hab : a ≠ b) : (uniformCdfReal a b) = fun x 
     · simp [inv_mul_cancel (sub_ne_zero.2 (ne_of_lt (inf_lt_sup.mpr hab)).symm)]
     · apply ae_of_all; intro x hx; rw [if_pos hx, LatticeOrderedGroup.sup_sub_inf_eq_abs_sub]
   . exact uniformCdf_eq_zero top h
+
 /-- General case of the equation of the CDF of the uniform distribution-/
 lemma uniformCdf_eq (a b : ℝ) : uniformCdfReal a b =
     if a = b then fun x ↦ ENNReal.toReal (if a ≤ x then 1 else 0) else fun x ↦
