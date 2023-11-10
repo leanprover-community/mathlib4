@@ -342,15 +342,24 @@ variable (K L M) in
 lemma foo [FiniteDimensional K M] : Set.Finite {χ : L → K | LieModule.weightSpace M χ ≠ ⊥} := by
   sorry
 
+-- Should I consider generalizing this to result about charpolys?
 lemma bar' {ι : Type*} {N : ι → Submodule R M}
     (h_ind : CompleteLattice.Independent N) (h_sup : ⨆ i, N i = ⊤)
     {f : M →ₗ[R] M} (hf : ∀ i, Set.MapsTo f (N i) (N i))
     (h_fin : Set.Finite {i | N i ≠ ⊥} := foo' R M h_ind) :
     trace R M f = ∑ i in h_fin.toFinset, trace R (N i) (f.restrict (hf i)) := by
-  -- If we want to try and use the direct sum machinery:
   classical
-  have := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top h_ind h_sup
+  have h₁ := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top h_ind h_sup
+  have h₂ : ∀ i, Module.Finite R (N i) := sorry -- TODO Promote to assumption or just use field
+  have h₃ : ∀ i, Module.Free R (N i) := sorry -- TODO Promote to assumption or just use field
+  let f := fun i ↦ Module.Free.chooseBasis R (N i)
   sorry
+
+#check Module.Free.chooseBasis
+#check LinearMap.charpoly
+#check DirectSum.IsInternal.collectedBasis
+
+#exit
 
 variable (K L M) in
 lemma bar [LieModule.IsTriangularizable K L M] [FiniteDimensional K M] :
