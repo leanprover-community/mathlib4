@@ -368,6 +368,29 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
     rfl
 #align integral_rpow integral_rpow
 
+
+open MeasureTheory Filter
+open scoped Topology
+
+#check Real.tendsto_log_nhdsWithin_zero
+
+theorem not_integrableOn_deriv_of_tendsto_atTop
+    {f : ℝ → ℝ} {x y : ℝ} (hxy : x < y) (hf : DifferentiableOn ℝ f (Ioo x y))
+    (h'f : Tendsto f (𝓝[>] x) atBot) : ¬(IntegrableOn (deriv f) (Ioo x y)) := sorry
+
+theorem glou {t : ℝ} (ht : 0 < t) : ¬(IntegrableOn (fun (x : ℝ) ↦ 1/x) (Ioo (0 : ℝ) t)) := by
+  have : (fun x ↦ 1/x) = deriv Real.log := by
+    ext x; simp only [one_div, deriv_log']
+  rw [this]
+  apply not_integrableOn_deriv_of_tendsto_atTop ht
+  sorry
+  exact?
+
+
+
+#exit
+
+
 theorem integral_zpow {n : ℤ} (h : 0 ≤ n ∨ n ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]]) :
     ∫ x in a..b, x ^ n = (b ^ (n + 1) - a ^ (n + 1)) / (n + 1) := by
   replace h : -1 < (n : ℝ) ∨ (n : ℝ) ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]]; · exact_mod_cast h
