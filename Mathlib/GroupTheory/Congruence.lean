@@ -122,7 +122,7 @@ instance : Inhabited (Con M) :=
 /-- A coercion from a congruence relation to its underlying binary relation. -/
 @[to_additive "A coercion from an additive congruence relation to its underlying binary relation."]
 instance : FunLike (Con M) M (fun _ => M → Prop) :=
-  { coe := fun c => fun x y => @Setoid.r _ c.toSetoid x y
+  { coe := fun c => fun x y => c.r x y
     coe_injective' := fun x y h => by
       rcases x with ⟨⟨x, _⟩, _⟩
       rcases y with ⟨⟨y, _⟩, _⟩
@@ -178,11 +178,7 @@ variable {c}
 /-- The map sending a congruence relation to its underlying binary relation is injective. -/
 @[to_additive "The map sending an additive congruence relation to its underlying binary relation
 is injective."]
-theorem ext' {c d : Con M} (H : c.r = d.r) : c = d := by
-  rcases c with ⟨⟨⟩⟩
-  rcases d with ⟨⟨⟩⟩
-  cases H
-  congr
+theorem ext' {c d : Con M} (H : ⇑c = ⇑d) : c = d := FunLike.coe_injective H
 #align con.ext' Con.ext'
 #align add_con.ext' AddCon.ext'
 
@@ -211,7 +207,7 @@ theorem ext_iff {c d : Con M} : (∀ x y, c x y ↔ d x y) ↔ c = d :=
 /-- Two congruence relations are equal iff their underlying binary relations are equal. -/
 @[to_additive "Two additive congruence relations are equal iff their underlying binary relations
 are equal."]
-theorem ext'_iff {c d : Con M} : c.r = d.r ↔ c = d :=
+theorem ext'_iff {c d : Con M} : ⇑c = ⇑d ↔ c = d :=
   ⟨ext', fun h => h ▸ rfl⟩
 #align con.ext'_iff Con.ext'_iff
 #align add_con.ext'_iff AddCon.ext'_iff
@@ -447,13 +443,13 @@ theorem sInf_toSetoid (S : Set (Con M)) : (sInf S).toSetoid = sInf (toSetoid '' 
     under the map to the underlying binary relation. -/
 @[to_additive "The infimum of a set of additive congruence relations is the same as the infimum
 of the set's image under the map to the underlying binary relation."]
-theorem sInf_def (S : Set (Con M)) :
+theorem coe_sInf (S : Set (Con M)) :
     ⇑(sInf S) = sInf (@Set.image (Con M) (M → M → Prop) (↑) S) := by
   ext
   simp only [sInf_image, iInf_apply, iInf_Prop_eq]
   rfl
-#align con.Inf_def Con.sInf_def
-#align add_con.Inf_def AddCon.sInf_def
+#align con.Inf_def Con.coe_sInf
+#align add_con.Inf_def AddCon.coe_sInf
 
 @[to_additive]
 instance : PartialOrder (Con M) where
@@ -483,10 +479,10 @@ instance : CompleteLattice (Con M) where
     operations. -/
 @[to_additive "The infimum of two additive congruence relations equals the infimum of the
 underlying binary operations."]
-theorem inf_def {c d : Con M} : (c ⊓ d).r = c.r ⊓ d.r :=
+theorem coe_inf {c d : Con M} : ⇑(c ⊓ d) = ⇑c ⊓ ⇑d :=
   rfl
-#align con.inf_def Con.inf_def
-#align add_con.inf_def AddCon.inf_def
+#align con.inf_def Con.coe_inf
+#align add_con.inf_def AddCon.coe_inf
 
 /-- Definition of the infimum of two congruence relations. -/
 @[to_additive "Definition of the infimum of two additive congruence relations."]
@@ -502,9 +498,9 @@ containing a binary relation `r` equals the infimum of the set of additive congr
 containing `r`."]
 theorem conGen_eq (r : M → M → Prop) : conGen r = sInf { s : Con M | ∀ x y, r x y → s x y } :=
   le_antisymm
-    (le_sInf (fun s hs x y (hxy : (conGen r).r x y) =>
-      show s.r x y by
-        apply ConGen.Rel.recOn (motive := fun x y _ => s.r x y) hxy
+    (le_sInf (fun s hs x y (hxy : (conGen r) x y) =>
+      show s x y by
+        apply ConGen.Rel.recOn (motive := fun x y _ => s x y) hxy
         · exact fun x y h => hs x y h
         · exact s.refl'
         · exact fun _ => s.symm'
@@ -518,7 +514,7 @@ theorem conGen_eq (r : M → M → Prop) : conGen r = sInf { s : Con M | ∀ x y
     congruence relation containing `r`. -/
 @[to_additive addConGen_le "The smallest additive congruence relation containing a binary
 relation `r` is contained in any additive congruence relation containing `r`."]
-theorem conGen_le {r : M → M → Prop} {c : Con M} (h : ∀ x y, r x y → @Setoid.r _ c.toSetoid x y) :
+theorem conGen_le {r : M → M → Prop} {c : Con M} (h : ∀ x y, r x y → c x y) :
     conGen r ≤ c := by rw [conGen_eq]; exact sInf_le h
 #align con.con_gen_le Con.conGen_le
 #align add_con.add_con_gen_le AddCon.addConGen_le
@@ -568,7 +564,7 @@ theorem sup_eq_conGen (c d : Con M) : c ⊔ d = conGen fun x y => c x y ∨ d x 
     the supremum of the underlying binary operations. -/
 @[to_additive "The supremum of two additive congruence relations equals the smallest additive
 congruence relation containing the supremum of the underlying binary operations."]
-theorem sup_def {c d : Con M} : c ⊔ d = conGen (c.r ⊔ d.r) := by rw [sup_eq_conGen]; rfl
+theorem sup_def {c d : Con M} : c ⊔ d = conGen (⇑c ⊔ ⇑d) := by rw [sup_eq_conGen]; rfl
 #align con.sup_def Con.sup_def
 #align add_con.sup_def AddCon.sup_def
 
