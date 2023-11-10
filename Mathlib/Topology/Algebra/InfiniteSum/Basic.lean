@@ -1093,14 +1093,14 @@ section UniformGroup
 variable [AddCommGroup α] [UniformSpace α]
 
 /-- The **Cauchy criterion** for infinite sums, also known as the **Cauchy convergence test** -/
-theorem summable_iff_cauchySeq_finset [CompleteSpace α] {f : β → α} :
+theorem summable_iff_cauchySeq_finset [CompleteSpace α] [DecidableEq β] {f : β → α} :
     Summable f ↔ CauchySeq fun s : Finset β ↦ ∑ b in s, f b :=
   cauchy_map_iff_exists_tendsto.symm
 #align summable_iff_cauchy_seq_finset summable_iff_cauchySeq_finset
 
 variable [UniformAddGroup α] {f g : β → α} {a a₁ a₂ : α}
 
-theorem cauchySeq_finset_iff_vanishing :
+theorem cauchySeq_finset_iff_vanishing [DecidableEq β] :
     (CauchySeq fun s : Finset β ↦ ∑ b in s, f b) ↔
       ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∑ b in t, f b) ∈ e := by
   simp_rw [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
@@ -1123,7 +1123,7 @@ theorem cauchySeq_finset_iff_vanishing :
     exact hde _ (h _ Finset.sdiff_disjoint) _ (h _ Finset.sdiff_disjoint)
 #align cauchy_seq_finset_iff_vanishing cauchySeq_finset_iff_vanishing
 
-theorem cauchySeq_finset_iff_tsum_vanishing :
+theorem cauchySeq_finset_iff_tsum_vanishing [DecidableEq β] :
     (CauchySeq fun s : Finset β ↦ ∑ b in s, f b) ↔
       ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t : Set β, Disjoint t s → (∑' b : t, f b) ∈ e := by
   simp_rw [cauchySeq_finset_iff_vanishing, Set.disjoint_left, disjoint_left]
@@ -1146,9 +1146,6 @@ theorem cauchySeq_finset_iff_nat_tsum_vanishing {f : ℕ → α} :
     (CauchySeq fun s : Finset ℕ ↦ ∑ n in s, f n) ↔
       ∀ e ∈ 𝓝 (0 : α), ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∑' n : t, f n) ∈ e := by
   refine cauchySeq_finset_iff_tsum_vanishing.trans ⟨fun vanish e he ↦ ?_, fun vanish e he ↦ ?_⟩
-  /- This is slow because CauchySeq requires SemilatticeSup (Finset ℕ) which requires
-    DecidableEq ℕ, which is the classical instance in `cauchySeq_finset_iff_tsum_vanishing`,
-    but a constructive one here. -/
   · obtain ⟨s, hs⟩ := vanish e he
     refine ⟨if h : s.Nonempty then s.max' h + 1 else 0, fun t ht ↦ hs _ <| Set.disjoint_left.mpr ?_⟩
     split_ifs at ht with h
@@ -1171,7 +1168,7 @@ theorem summable_iff_tsum_vanishing : Summable f ↔
 
 theorem summable_iff_nat_tsum_vanishing {f : ℕ → α} : Summable f ↔
     ∀ e ∈ 𝓝 (0 : α), ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∑' n : t, f n) ∈ e := by
-  erw [summable_iff_cauchySeq_finset, cauchySeq_finset_iff_nat_tsum_vanishing]
+  rw [summable_iff_cauchySeq_finset, cauchySeq_finset_iff_nat_tsum_vanishing]
 
 -- TODO: generalize to monoid with a uniform continuous subtraction operator: `(a + b) - b = a`
 theorem Summable.summable_of_eq_zero_or_self (hf : Summable f) (h : ∀ b, g b = 0 ∨ g b = f b) :
