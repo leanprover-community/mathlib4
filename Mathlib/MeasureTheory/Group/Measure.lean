@@ -604,26 +604,26 @@ theorem isOpenPosMeasure_of_mulLeftInvariant_of_compact (K : Set G) (hK : IsComp
 
 /-- A nonzero left-invariant regular measure gives positive mass to any open set. -/
 @[to_additive "A nonzero left-invariant regular measure gives positive mass to any open set."]
-theorem isOpenPosMeasure_of_mulLeftInvariant_of_regular [Regular μ] (h₀ : μ ≠ 0) :
+instance (priority := 80) isOpenPosMeasure_of_mulLeftInvariant_of_regular [Regular μ] [NeZero μ] :
     IsOpenPosMeasure μ :=
-  let ⟨K, hK, h2K⟩ := Regular.exists_compact_not_null.mpr h₀
+  let ⟨K, hK, h2K⟩ := Regular.exists_compact_not_null.mpr (NeZero.ne μ)
   isOpenPosMeasure_of_mulLeftInvariant_of_compact K hK h2K
 #align measure_theory.is_open_pos_measure_of_mul_left_invariant_of_regular MeasureTheory.isOpenPosMeasure_of_mulLeftInvariant_of_regular
 #align measure_theory.is_open_pos_measure_of_add_left_invariant_of_regular MeasureTheory.isOpenPosMeasure_of_addLeftInvariant_of_regular
 
 /-- A nonzero left-invariant inner regular measure gives positive mass to any open set. -/
 @[to_additive "A nonzero left-invariant inner regular measure gives positive mass to any open set."]
-theorem isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular [InnerRegular μ] (h₀ : μ ≠ 0) :
+instance (priority := 80) isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular [InnerRegular μ] [NeZero μ] :
     IsOpenPosMeasure μ :=
-  let ⟨K, hK, h2K⟩ := InnerRegular.exists_compact_not_null.mpr h₀
+  let ⟨K, hK, h2K⟩ := InnerRegular.exists_compact_not_null.mpr (NeZero.ne μ)
   isOpenPosMeasure_of_mulLeftInvariant_of_compact K hK h2K
 
 @[to_additive]
 theorem null_iff_of_isMulLeftInvariant [Regular μ] {s : Set G} (hs : IsOpen s) :
     μ s = 0 ↔ s = ∅ ∨ μ = 0 := by
-  by_cases h3μ : μ = 0; · simp [h3μ]
-  · haveI := isOpenPosMeasure_of_mulLeftInvariant_of_regular h3μ
-    simp only [h3μ, or_false_iff, hs.measure_eq_zero_iff μ]
+  rcases eq_zero_or_neZero μ with rfl|hμ
+  · simp
+  · simp only [or_false_iff, hs.measure_eq_zero_iff μ, NeZero.ne μ]
 #align measure_theory.null_iff_of_is_mul_left_invariant MeasureTheory.null_iff_of_isMulLeftInvariant
 #align measure_theory.null_iff_of_is_add_left_invariant MeasureTheory.null_iff_of_isAddLeftInvariant
 
