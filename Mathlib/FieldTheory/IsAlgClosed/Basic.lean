@@ -306,17 +306,6 @@ theorem maximalSubfieldWithHom_is_maximal :
   Classical.choose_spec (exists_maximal_subfieldWithHom K L M)
 #align lift.subfield_with_hom.maximal_subfield_with_hom_is_maximal IsAlgClosed.lift.SubfieldWithHom.maximalSubfieldWithHom_is_maximal
 
--- Porting note: split out this definition from `maximalSubfieldWithHom_eq_top`
-/-- Produce an algebra homomorphism `Adjoin R {x} →ₐ[R] T` sending `x` to
-a root of `x`'s minimal polynomial in `T`. -/
-noncomputable def _root_.Algebra.adjoin.liftSingleton (R : Type*) [Field R] {S T : Type*}
-  [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
-  (x : S) (y : T) (h : aeval y (minpoly R x) = 0) :
-  Algebra.adjoin R {x} →ₐ[R] T :=
-AlgHom.comp
-  (AdjoinRoot.liftHom _ y h)
-  (AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly R x).toAlgHom
-
 -- porting note: this was much faster in lean 3
 set_option synthInstance.maxHeartbeats 200000 in
 theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier = ⊤ := by
@@ -362,10 +351,9 @@ variable {K : Type u} [Field K] {L : Type v} {M : Type w} [Field L] [Algebra K L
 variable (K L M)
 
 /-- Less general version of `lift`. -/
-private noncomputable irreducible_def lift_aux : L →ₐ[K] M :=
-  (lift.SubfieldWithHom.maximalSubfieldWithHom K L M).emb.comp <|
-    (lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top (K := K) (L := L) (M := M) (hL := hL)).symm
-      ▸ Algebra.toTop
+private noncomputable irreducible_def lift_aux : L →ₐ[K] M := Classical.choice <|
+  IntermediateField.algHom_mk_adjoin_splits' (IntermediateField.adjoin_univ K L)
+    (fun x _ ↦ ⟨isAlgebraic_iff_isIntegral.1 (hL x), splits_codomain (minpoly K x)⟩)
 
 variable {R : Type u} [CommRing R]
 
@@ -436,19 +424,11 @@ variable [Algebra R L] [NoZeroSMulDivisors R L] [IsAlgClosure R L]
 /-- A (random) isomorphism between two algebraic closures of `R`. -/
 noncomputable def equiv : L ≃ₐ[R] M :=
   -- Porting note: added to replace local instance above
+  haveI : IsAlgClosed L := IsAlgClosure.alg_closed R
   haveI : IsAlgClosed M := IsAlgClosure.alg_closed R
-  let f : L →ₐ[R] M := IsAlgClosed.lift IsAlgClosure.algebraic
-  AlgEquiv.ofBijective f
-    ⟨RingHom.injective f.toRingHom, by
-      letI : Algebra L M := RingHom.toAlgebra f
-      letI : IsScalarTower R L M := IsScalarTower.of_algebraMap_eq <| by
-        simp only [RingHom.algebraMap_toAlgebra, RingHom.coe_coe, AlgHom.commutes, forall_const]
-      letI : IsAlgClosed L := IsAlgClosure.alg_closed R
-      show Function.Surjective (algebraMap L M)
-      exact
-        IsAlgClosed.algebraMap_surjective_of_isAlgebraic
-          (Algebra.isAlgebraic_of_larger_base_of_injective
-            (NoZeroSMulDivisors.algebraMap_injective R _) IsAlgClosure.algebraic)⟩
+  AlgEquiv.ofBijective _ (IsAlgClosure.algebraic.algHom_bijective₂
+    (IsAlgClosed.lift IsAlgClosure.algebraic : L →ₐ[R] M)
+    (IsAlgClosed.lift IsAlgClosure.algebraic : M →ₐ[R] L)).1
 #align is_alg_closure.equiv IsAlgClosure.equiv
 
 end

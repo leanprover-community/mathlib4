@@ -86,7 +86,7 @@ end AlgEquivClass
 
 namespace AlgEquiv
 
-universe uR  uA₁ uA₂ uA₃ uA₁' uA₂' uA₃'
+universe uR uA₁ uA₂ uA₃ uA₁' uA₂' uA₃'
 variable {R : Type uR}
 variable {A₁ : Type uA₁} {A₂ : Type uA₂} {A₃ : Type uA₃}
 variable {A₁' : Type uA₁'} {A₂' : Type uA₂'} {A₃' : Type uA₃'}
