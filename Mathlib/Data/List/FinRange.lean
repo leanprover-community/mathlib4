@@ -37,7 +37,7 @@ theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map
 theorem finRange_succ (n : ℕ) :
     finRange n.succ = (finRange n |>.map Fin.castSucc |>.concat (.last _)) := by
   apply map_injective_iff.mpr Fin.val_injective
-  simp [range_succ, show Fin.val ∘ Fin.castSucc = @Fin.val n from rfl]
+  simp [range_succ, Function.comp_def]
 
 -- Porting note : `map_nth_le` moved to `List.finRange_map_get` in Data.List.Range
 
