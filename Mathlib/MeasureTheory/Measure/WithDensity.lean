@@ -474,6 +474,45 @@ theorem exists_absolutelyContinuous_isFiniteMeasure {m : MeasurableSpace α} (μ
   exact withDensity_absolutelyContinuous _ _
 #align measure_theory.exists_absolutely_continuous_is_finite_measure MeasureTheory.exists_absolutelyContinuous_isFiniteMeasure
 
+lemma SigmaFinite.withDensity [SigmaFinite μ] {f : α → ℝ≥0} (hf : AEMeasurable f μ) :
+    SigmaFinite (μ.withDensity (fun x ↦ f x)) := by
+  have h : (fun x ↦ (f x : ℝ≥0∞)) =ᵐ[μ] fun x ↦ ((hf.mk f x : ℝ≥0) : ℝ≥0∞) := by
+    filter_upwards [hf.ae_eq_mk] with x hx using by rw [hx]
+  rw [withDensity_congr_ae h]
+  obtain ⟨s, hs, h⟩ := exists_spanning_measurableSet_le
+    hf.measurable_mk μ
+  constructor
+  refine ⟨s, by simp, fun i ↦ ?_, h⟩
+  rw [withDensity_apply _ (hs i).1]
+  calc ∫⁻ a in s i, ((hf.mk f a : ℝ≥0) : ℝ≥0∞) ∂μ
+    ≤ ∫⁻ _ in s i, i ∂μ := by
+        refine set_lintegral_mono hf.measurable_mk.coe_nnreal_ennreal
+          measurable_const (fun x hxs ↦ ?_)
+        norm_cast
+        exact (hs i).2.2 x hxs
+  _ = i * μ (s i) := by rw [set_lintegral_const]
+  _ < ⊤ := ENNReal.mul_lt_top (by simp) (hs i).2.1.ne
+
+lemma SigmaFinite.withDensity_of_ne_top' [SigmaFinite μ] {f : α → ℝ≥0∞}
+    (hf : AEMeasurable f μ) (hf_ne_top : ∀ x, f x ≠ ∞) :
+    SigmaFinite (μ.withDensity f) := by
+  lift f to (α → ℝ≥0) using hf_ne_top
+  rw [aemeasurable_coe_nnreal_ennreal_iff] at hf
+  exact SigmaFinite.withDensity hf
+
+lemma SigmaFinite.withDensity_of_ne_top [SigmaFinite μ] {f : α → ℝ≥0∞}
+    (hf : AEMeasurable f μ) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
+    SigmaFinite (μ.withDensity f) := by
+  let f' := fun x ↦ if f x = ∞ then 0 else f x
+  have hff' : f =ᵐ[μ] f' := by filter_upwards [hf_ne_top] with x hx using by simp [hx]
+  have hf'_ne_top : ∀ x, f' x ≠ ∞ := fun x ↦ by by_cases hfx : f x = ∞ <;> simp [hfx]
+  rw [withDensity_congr_ae hff']
+  exact SigmaFinite.withDensity_of_ne_top' (hf.congr hff') hf'_ne_top
+
+lemma SigmaFinite.withDensity_ofReal [SigmaFinite μ] {f : α → ℝ} (hf : AEMeasurable f μ) :
+    SigmaFinite (μ.withDensity (fun x ↦ ENNReal.ofReal (f x))) := by
+  refine SigmaFinite.withDensity_of_ne_top hf.ennreal_ofReal (ae_of_all _ (by simp))
+
 variable [TopologicalSpace α] [OpensMeasurableSpace α] [IsLocallyFiniteMeasure μ]
 
 lemma IsLocallyFiniteMeasure.withDensity_coe {f : α → ℝ≥0} (hf : Continuous f) :
