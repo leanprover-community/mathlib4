@@ -613,7 +613,8 @@ instance (priority := 80) isOpenPosMeasure_of_mulLeftInvariant_of_regular [Regul
 
 /-- A nonzero left-invariant inner regular measure gives positive mass to any open set. -/
 @[to_additive "A nonzero left-invariant inner regular measure gives positive mass to any open set."]
-instance (priority := 80) isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular [InnerRegular μ] [NeZero μ] :
+instance (priority := 80) isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular
+    [InnerRegular μ] [NeZero μ] :
     IsOpenPosMeasure μ :=
   let ⟨K, hK, h2K⟩ := InnerRegular.exists_compact_not_null.mpr (NeZero.ne μ)
   isOpenPosMeasure_of_mulLeftInvariant_of_compact K hK h2K
