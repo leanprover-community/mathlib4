@@ -31,18 +31,25 @@ This file contains basics about the separable degree of a field extension.
 
 ## Main results
 
-- `embEquivOfEquiv`: a random isomorphism between `Emb F E` and `Emb F E'` when `E` and `E'` are
-  isomorphic as `F`-algebras.
+- `embEquivOfEquiv`, `sepDegree_eq_of_equiv`, `finSepDegree_eq_of_equiv`: a random isomorphism
+  between `Emb F E` and `Emb F E'` when `E` and `E'` are isomorphic as `F`-algebras.
+  In particular, they have the same cardinality (so `sepDegree` and `finSepDegree` are equal).
 
-- `sepDegree_eq_of_equiv`, `finSepDegree_eq_of_equiv`: if `E` and `E'` are isomorphic as
-  `F`-algebras, then they have the same separable degree over `F`.
+- `embEquivOfAdjoinSplits'`, `sepDegree_eq_of_adjoin_splits'`, `finSepDegree_eq_of_adjoin_splits'`:
+  a random isomorphism between `Emb F E` and `E →ₐ[F] K` if `E = F(S)` such that every element
+  `s` of `S` is integral (= algebraic) over `F` and whose minimal polynomial splits in `K`.
+  In particular, they have the same cardinality.
 
-- `embEquivOfIsAlgClosed`: a random isomorphism between `Emb F E` and `E →ₐ[F] K` when `E / F`
+- `embEquivOfIsAlgClosed`, `sepDegree_eq_of_isAlgClosed`, `finSepDegree_eq_of_isAlgClosed`:
+  a random isomorphism between `Emb F E` and `E →ₐ[F] K` when `E / F`
   is algebraic and `K / F` is algebraically closed.
+  In particular, they have the same cardinality.
 
-- `sepDegree_eq_of_isAlgClosed`, `finSepDegree_eq_of_isAlgClosed`: the separable degree of `E / F`
-  is equal to the cardinality of `E →ₐ[F] K` when `E / F` is algebraic and `K / F` is
-  algebraically closed.
+- `embMulEmbOfIsAlgebraic`, `lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`,
+  `sepDegree_mul_sepDegree_of_isAlgebraic`, `finSepDegree_mul_finSepDegree_of_isAlgebraic`:
+  if `K / E / F` is a field extension tower, such that `K / E` is algebraic,
+  then there is a non-canonical isomorphism `(Emb F E) × (Emb E K) ≃ (Emb F K)`.
+  In particular, the separable degree satisfies the tower law (see `lift_rank_mul_lift_rank`).
 
 ## Tags
 
@@ -118,10 +125,10 @@ def embEquivOfEquiv (E' : Type v') [Field E'] [Algebra F E'] (i : E ≃ₐ[F] E'
 over `F`. -/
 theorem sepDegree_eq_of_equiv (E' : Type v') [Field E'] [Algebra F E'] (i : E ≃ₐ[F] E') :
     Cardinal.lift.{v'} (sepDegree F E) = Cardinal.lift.{v} (sepDegree F E') := by
-  have := ((Equiv.ulift.{v'} (α := E →ₐ[F] (AlgebraicClosure E))).trans
-    (embEquivOfEquiv F E E' i)).trans
-      (Equiv.ulift.{v} (α := E' →ₐ[F] (AlgebraicClosure E'))).symm
-  simpa only [Cardinal.mk_uLift] using this.cardinal_eq
+  have := (Equiv.ulift.{v'} (α := Emb F E)).trans
+    (embEquivOfEquiv F E E' i) |>.trans
+      (Equiv.ulift.{v} (α := Emb F E')).symm |>.cardinal_eq
+  simpa only [Cardinal.mk_uLift] using this
 
 /-- If `E` and `E'` are isomorphic as `F`-algebras, then they have the same `finSepDegree`
 over `F`. -/
@@ -284,6 +291,26 @@ def embEquivOfAdjoinSplits' (K : Type w) [Field K] [Algebra F K] {S : Set E}
         fun s hs ↦ ⟨(hK s hs).1, IsAlgClosed.splits_codomain _, (hK s hs).2⟩) |>.trans
           (algHomEquivNormalClosure F E K).symm
 
+/-- The separable degree of `E / F` is equal to the cardinality of `E →ₐ[F] K`
+if `E = F(S)` such that every element
+`s` of `S` is integral (= algebraic) over `F` and whose minimal polynomial splits in `K`. -/
+theorem sepDegree_eq_of_adjoin_splits'  (K : Type w) [Field K] [Algebra F K] {S : Set E}
+    (hS : adjoin F S = ⊤)
+    (hK : ∀ s ∈ S, IsIntegral F s ∧ Polynomial.Splits (algebraMap F K) (minpoly F s)) :
+    Cardinal.lift.{w} (sepDegree F E) = Cardinal.mk (E →ₐ[F] K) := by
+  simpa only [Cardinal.mk_uLift] using (Equiv.ulift.{w} (α := Emb F E)).trans
+    (embEquivOfAdjoinSplits' F E K hS hK) |>.cardinal_eq
+
+/-- The `finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K`
+if `E = F(S)` such that every element
+`s` of `S` is integral (= algebraic) over `F` and whose minimal polynomial splits in `K`. -/
+theorem finSepDegree_eq_of_adjoin_splits'  (K : Type w) [Field K] [Algebra F K] {S : Set E}
+    (hS : adjoin F S = ⊤)
+    (hK : ∀ s ∈ S, IsIntegral F s ∧ Polynomial.Splits (algebraMap F K) (minpoly F s)) :
+    finSepDegree F E = Cardinal.toNat (Cardinal.mk (E →ₐ[F] K)) := by
+  simpa only [Cardinal.toNat_lift] using congr_arg Cardinal.toNat
+    (sepDegree_eq_of_adjoin_splits' F E K hS hK)
+
 /-- A random isomorphism between `Emb F E` and `E →ₐ[F] K` when `E / F` is algebraic
 and `K / F` is algebraically closed. -/
 def embEquivOfIsAlgClosed (halg : Algebra.IsAlgebraic F E)
@@ -297,8 +324,8 @@ is algebraic and `K / F` is algebraically closed. -/
 theorem sepDegree_eq_of_isAlgClosed (halg : Algebra.IsAlgebraic F E)
     (K : Type w) [Field K] [Algebra F K] [IsAlgClosed K] :
     Cardinal.lift.{w} (sepDegree F E) = Cardinal.mk (E →ₐ[F] K) := by
-  simpa only [Cardinal.mk_uLift] using ((Equiv.ulift.{w} (α := Emb F E)).trans
-    (embEquivOfIsAlgClosed F E halg K)).cardinal_eq
+  simpa only [Cardinal.mk_uLift] using (Equiv.ulift.{w} (α := Emb F E)).trans
+    (embEquivOfIsAlgClosed F E halg K) |>.cardinal_eq
 
 /-- The `finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K` as a natural number,
 when `E / F` is algebraic and `K / F` is algebraically closed. -/
@@ -307,5 +334,50 @@ theorem finSepDegree_eq_of_isAlgClosed (halg : Algebra.IsAlgebraic F E)
     finSepDegree F E = Cardinal.toNat (Cardinal.mk (E →ₐ[F] K)) := by
   simpa only [Cardinal.toNat_lift] using congr_arg Cardinal.toNat
     (sepDegree_eq_of_isAlgClosed F E halg K)
+
+/-- If `K / E / F` is a field extension tower, such that `K / E` is algebraic,
+then there is a non-canonical isomorphism
+`(Emb F E) × (Emb E K) ≃ (Emb F K)`. A corollary of `algHomEquivSigma`. -/
+def embMulEmbOfIsAlgebraic
+    (K : Type w) [Field K] [Algebra F K] [Algebra E K]
+    [IsScalarTower F E K] (halg : Algebra.IsAlgebraic E K) :
+    (Emb F E) × (Emb E K) ≃ (Emb F K) :=
+  let e : ∀ f : E →ₐ[F] (AlgebraicClosure K), (@AlgHom E K (AlgebraicClosure K) _ _ _ _
+      f.toRingHom.toAlgebra) ≃ (Emb E K) := fun f ↦
+    (@embEquivOfIsAlgClosed E K _ _ _ halg (AlgebraicClosure K) _ f.toRingHom.toAlgebra _).symm
+  (algHomEquivSigma (A := F) (B := E) (C := K) (D := AlgebraicClosure K) |>.trans
+    (Equiv.sigmaEquivProdOfEquiv e) |>.trans <| Equiv.prodCongrLeft <|
+      fun _ : Emb E K ↦ AlgEquiv.arrowCongr (@AlgEquiv.refl F E _ _ _) <|
+        (IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K) (AlgebraicClosure E)
+          halg).restrictScalars F).symm
+
+/-- If `K / E / F` is a field extension tower, such that `K / E` is algebraic, then
+$[E:F]_s [K:E]_s = [K:F]_s$. See also `lift_rank_mul_lift_rank`. -/
+theorem lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic
+    (K : Type w) [Field K] [Algebra F K] [Algebra E K]
+    [IsScalarTower F E K] (halg : Algebra.IsAlgebraic E K) :
+    Cardinal.lift.{w} (sepDegree F E) * Cardinal.lift.{v} (sepDegree E K) =
+      Cardinal.lift.{v} (sepDegree F K) := by
+  have := (embMulEmbOfIsAlgebraic F E K halg).trans
+    (Equiv.ulift.{v} (α := Emb F K)).symm |>.cardinal_eq
+  simpa only [Cardinal.mk_prod, Cardinal.mk_uLift] using this
+
+/-- The same-universe version of `lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`.
+See also `rank_mul_rank`. -/
+theorem sepDegree_mul_sepDegree_of_isAlgebraic
+    (A : Type u) (B : Type u) [Field A] [Field B] [Algebra A B]
+    (C : Type u) [Field C] [Algebra A C] [Algebra B C]
+    [IsScalarTower A B C] (halg : Algebra.IsAlgebraic B C) :
+    (sepDegree A B) * (sepDegree B C) = (sepDegree A C) := by
+  simpa only [Cardinal.lift_id] using lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic A B C halg
+
+/-- The `finSepDegree` version of `lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`.
+See also `FiniteDimensional.finrank_mul_finrank'`. -/
+theorem finSepDegree_mul_finSepDegree_of_isAlgebraic
+    (K : Type w) [Field K] [Algebra F K] [Algebra E K]
+    [IsScalarTower F E K] (halg : Algebra.IsAlgebraic E K) :
+    finSepDegree F E * finSepDegree E K = finSepDegree F K := by
+  simpa only [Cardinal.toNat_mul, Cardinal.toNat_lift] using congr_arg Cardinal.toNat
+    (lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic F E K halg)
 
 end Field
