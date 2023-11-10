@@ -50,11 +50,11 @@ noncomputable section
 
 variable {B : Type*} [DecidableEq B]
 
-variable (M : Matrix B B ℕ+)
+variable (M : Matrix B B ℕ)
 
 /-- A matrix `IsCoxeter` if it is a symmetric matrix with ones on the diagonal
 and off-diagonal elements are greater than or equal to two. -/
-class Matrix.IsCoxeter (M : Matrix B B ℕ+) : Prop where
+class Matrix.IsCoxeter (M : Matrix B B ℕ) : Prop where
   symmetric : M.IsSymm := by aesop
   diagonal : ∀ i : B, M i i = 1 := by aesop
   off_diagonal : ∀ i j : B, i ≠ j → 2 ≤ M i j := by aesop
@@ -96,13 +96,13 @@ structure CoxeterSystem (W : Type*) [Group W] where
 
 /-- A group is a Coxeter group if it is registered in a Coxeter System. -/
 class IsCoxeterGroup (W : Type*) [Group W] : Prop where
-  nonempty_system : ∃ (M : Matrix B B ℕ+), M.IsCoxeter ∧ Nonempty (CoxeterSystem M W)
+  nonempty_system : ∃ (M : Matrix B B ℕ), M.IsCoxeter ∧ Nonempty (CoxeterSystem M W)
 
 namespace CoxeterMatrix
 
 open Matrix
 
-variable {n : ℕ+}
+variable (n : ℕ) [NeZero n]
 
 /-- The Coxeter matrix of family A(n).
 
@@ -111,15 +111,12 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-abbrev Aₙ (n : ℕ+) : Matrix (Fin n) (Fin n) ℕ+ :=
+abbrev Aₙ : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j : Fin n =>
     if i == j then 1
       else (if i == n - 1 ∨ j == n - 1 then 2 else 3)
 
 instance AₙIsCoxeter : IsCoxeter (Aₙ n) where
-  symmetric := by aesop
-  diagonal := by aesop
-  off_diagonal := by aesop
 
 /-- The Coxeter matrix of family Bₙ.
 
@@ -129,16 +126,13 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-abbrev Bₙ (n : ℕ+) : Matrix (Fin n) (Fin n) ℕ+ :=
+abbrev Bₙ : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j =>
     if i == j then 1
       else (if i == (1 : Fin n) ∨ (j == (1 : Fin n)) then 4
         else (if i == n - 1 ∨ j == n - 1 then 2 else 3))
 
-instance BₙIsCoxeter : IsCoxeter (Bₙ n) where
-  symmetric := by aesop
-  diagonal := by aesop
-  off_diagonal := by aesop
+instance BₙIsCoxeter [NeZero n] : IsCoxeter (Bₙ n) where
 
 /-- The Coxeter matrix of family Dₙ.
 
@@ -151,16 +145,13 @@ The corresponding Coxeter-Dynkin diagram is:
     o
 ```
 -/
-abbrev Dₙ (n : ℕ+) : Matrix (Fin n) (Fin n) ℕ+ :=
+abbrev Dₙ : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j =>
     if i == j then 1
       else (if i == (1 : Fin n) ∨ (j == (1 : Fin n)) then 4
         else (if i == n - 1 ∨ j == n - 1 then 2 else 3))
 
 instance DₙIsCoxeter : IsCoxeter (Dₙ n) where
-  symmetric := by aesop
-  diagonal := by aesop
-  off_diagonal := by aesop
 
 /-- The Coxeter matrix of family I₂(m).
 
@@ -170,13 +161,10 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o
 ```
 -/
-abbrev I₂ₘ (m : ℕ+) : Matrix (Fin 2) (Fin 2) ℕ+ :=
+abbrev I₂ₘ (m : ℕ) : Matrix (Fin 2) (Fin 2) ℕ :=
   Matrix.of fun i j => if i == j then 1 else m
 
-instance I₂ₘIsCoxeter (m : ℕ+) (h : 2 ≤ m) : IsCoxeter (I₂ₘ m) where
-  symmetric := by aesop
-  diagonal := by aesop
-  off_diagonal := by aesop
+instance I₂ₘIsCoxeter (m : ℕ) (h : 2 ≤ m) : IsCoxeter (I₂ₘ m) where
 
 /-- The Coxeter matrix of system E₆.
 
@@ -187,7 +175,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o --- o
 ```
 -/
-def E₆ : Matrix (Fin 6) (Fin 6) ℕ+ :=
+def E₆ : Matrix (Fin 6) (Fin 6) ℕ :=
   !![1, 2, 3, 2, 2, 2;
      2, 1, 2, 3, 2, 2;
      3, 2, 1, 3, 2, 2;
@@ -209,7 +197,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o --- o --- o
 ```
 -/
-def E₇ : Matrix (Fin 7) (Fin 7) ℕ+ :=
+def E₇ : Matrix (Fin 7) (Fin 7) ℕ :=
   !![1, 2, 3, 2, 2, 2, 2;
      2, 1, 2, 3, 2, 2, 2;
      3, 2, 1, 3, 2, 2, 2;
@@ -232,7 +220,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o --- o --- o --- o
 ```
 -/
-def E₈ : Matrix (Fin 8) (Fin 8) ℕ+ :=
+def E₈ : Matrix (Fin 8) (Fin 8) ℕ :=
   !![1, 2, 3, 2, 2, 2, 2, 2;
      2, 1, 2, 3, 2, 2, 2, 2;
      3, 2, 1, 3, 2, 2, 2, 2;
@@ -255,7 +243,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o
 ```
 -/
-def F₄ : Matrix (Fin 4) (Fin 4) ℕ+ :=
+def F₄ : Matrix (Fin 4) (Fin 4) ℕ :=
   !![1, 3, 2, 2;
      3, 1, 4, 2;
      2, 4, 1, 3;
@@ -274,7 +262,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o
 ```
 -/
-def G₂ : Matrix (Fin 2) (Fin 2) ℕ+ :=
+def G₂ : Matrix (Fin 2) (Fin 2) ℕ :=
   !![1, 6;
      6, 1]
 
@@ -291,7 +279,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o
 ```
 -/
-def H₃ : Matrix (Fin 3) (Fin 3) ℕ+ :=
+def H₃ : Matrix (Fin 3) (Fin 3) ℕ :=
   !![1, 3, 2;
      3, 1, 5;
      2, 5, 1]
@@ -309,7 +297,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o
 ```
 -/
-def H₄ : Matrix (Fin 4) (Fin 4) ℕ+ :=
+def H₄ : Matrix (Fin 4) (Fin 4) ℕ :=
   !![1, 3, 2, 2;
      3, 1, 3, 2;
      2, 3, 1, 5;
