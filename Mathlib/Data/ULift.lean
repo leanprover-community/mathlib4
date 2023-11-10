@@ -74,14 +74,14 @@ theorem «exists» {p : PLift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (PLi
   up_surjective.exists
 #align plift.exists PLift.exists
 
-lemma map_injective (hf : Injective f) : Injective (PLift.map f) :=
-  up_injective.comp <| hf.comp down_injective
+@[simp] lemma map_injective : Injective (PLift.map f) ↔ Injective f :=
+  (Injective.of_comp_iff' _ down_bijective).trans $ up_injective.of_comp_iff _
 
-lemma map_surjective (hf : Surjective f) : Surjective (PLift.map f) :=
-  up_surjective.comp <| hf.comp down_surjective
+@[simp] lemma map_surjective : Surjective (PLift.map f) ↔ Surjective f :=
+  (down_surjective.of_comp_iff _).trans $ Surjective.of_comp_iff' up_bijective _
 
-lemma map_bijective (hf : Bijective f) : Bijective (PLift.map f) :=
-  up_bijective.comp <| hf.comp down_bijective
+@[simp] lemma map_bijective : Bijective (PLift.map f) ↔ Bijective f :=
+  (down_bijective.of_comp_iff _).trans $ Bijective.of_comp_iff' up_bijective _
 
 end PLift
 
@@ -139,14 +139,15 @@ theorem «exists» {p : ULift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (ULi
   up_surjective.exists
 #align ulift.exists ULift.exists
 
-lemma map_injective (hf : Injective f) : Injective (ULift.map f : ULift.{u'} α → ULift.{v'} β) :=
-  up_injective.comp <| hf.comp down_injective
+@[simp] lemma map_injective : Injective (ULift.map f : ULift.{u'} α → ULift.{v'} β) ↔ Injective f :=
+  (Injective.of_comp_iff' _ down_bijective).trans $ up_injective.of_comp_iff _
 
-lemma map_surjective (hf : Surjective f) : Surjective (ULift.map f : ULift.{u'} α → ULift.{v'} β) :=
-  up_surjective.comp <| hf.comp down_surjective
+@[simp] lemma map_surjective :
+    Surjective (ULift.map f : ULift.{u'} α → ULift.{v'} β) ↔ Surjective f :=
+  (down_surjective.of_comp_iff _).trans $ Surjective.of_comp_iff' up_bijective _
 
-lemma map_bijective (hf : Bijective f) : Bijective (ULift.map f : ULift.{u'} α → ULift.{v'} β) :=
-  up_bijective.comp <| hf.comp down_bijective
+@[simp] lemma map_bijective : Bijective (ULift.map f : ULift.{u'} α → ULift.{v'} β) ↔ Bijective f :=
+  (down_bijective.of_comp_iff _).trans $ Bijective.of_comp_iff' up_bijective _
 
 @[ext]
 theorem ext (x y : ULift α) (h : x.down = y.down) : x = y :=
