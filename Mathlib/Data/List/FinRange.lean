@@ -35,7 +35,7 @@ theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map
 #align list.fin_range_succ_eq_map List.finRange_succ_eq_map
 
 theorem finRange_succ (n : ℕ) :
-    finRange n.succ = (finRange n |>.map Fin.castSucc |>.concat ⟨n, Nat.lt.base _⟩) := by
+    finRange n.succ = (finRange n |>.map Fin.castSucc |>.concat (.last _)) := by
   apply map_injective_iff.mpr Fin.val_injective
   simp [range_succ, show Fin.val ∘ Fin.castSucc = @Fin.val n from rfl]
 
