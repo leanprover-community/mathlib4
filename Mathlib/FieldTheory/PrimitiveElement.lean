@@ -248,7 +248,7 @@ section FiniteIntermediateField
 theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
     (heq : F⟮α ^ m⟯ = F⟮α ^ n⟯) : IsAlgebraic F α := by
   wlog hmn : m < n
-  · exact this F E hneq.symm heq.symm (Or.resolve_left hneq.lt_or_lt hmn)
+  · exact this F E hneq.symm heq.symm (hneq.lt_or_lt.resolve_left hmn)
   by_cases hm : m = 0
   · rw [hm] at heq hmn
     simp only [pow_zero, adjoin_one] at heq
@@ -277,11 +277,9 @@ theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
     · simp only [map_sub, map_mul, map_pow, aeval_X, expand_aeval, h]
 
 theorem isAlgebraic_of_finite_intermediateField
-    [Finite (IntermediateField F E)] : Algebra.IsAlgebraic F E := by
-  intro α
-  let f : ℕ → IntermediateField F E := fun n ↦ F⟮α ^ n⟯
-  obtain ⟨m, n, hneq, heq⟩ := Finite.exists_ne_map_eq_of_infinite f
-  exact isAlgebraic_of_adjoin_eq_adjoin F E hneq heq
+    [Finite (IntermediateField F E)] : Algebra.IsAlgebraic F E := fun α ↦
+  have ⟨_m, _n, hneq, heq⟩ := Finite.exists_ne_map_eq_of_infinite fun n ↦ F⟮α ^ n⟯
+  isAlgebraic_of_adjoin_eq_adjoin F E hneq heq
 
 theorem finiteDimensional_of_finite_intermediateField
     [Finite (IntermediateField F E)] : FiniteDimensional F E := by
