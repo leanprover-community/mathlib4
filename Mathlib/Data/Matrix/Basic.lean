@@ -1156,6 +1156,14 @@ theorem map_mul [Fintype n] {L : Matrix m n α} {M : Matrix n o α} [NonAssocSem
   simp [mul_apply, map_sum]
 #align matrix.map_mul Matrix.map_mul
 
+theorem smul_one_eq_diagonal [Fintype m] [DecidableEq m] (a : α) :
+    a • (1 : Matrix m m α) = diagonal fun _ => a := by
+  rw [smul_eq_diagonal_mul, mul_one]
+
+theorem op_smul_one_eq_diagonal [Fintype m] [DecidableEq m] (a : α) :
+    MulOpposite.op a • (1 : Matrix m m α) = diagonal fun _ => a := by
+  rw [op_smul_eq_mul_diagonal, one_mul]
+
 variable (α n)
 
 /-- `Matrix.diagonal` as a `RingHom`. -/
