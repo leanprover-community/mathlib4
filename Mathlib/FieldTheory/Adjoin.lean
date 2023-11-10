@@ -1056,10 +1056,13 @@ theorem isAlgebraic_adjoin {S : Set L} (hS : ∀ x ∈ S, IsIntegral K x) :
   rw [← biSup_adjoin_simple, ← iSup_subtype'']
   exact isAlgebraic_iSup fun x ↦ isAlgebraic_adjoin_simple (hS x x.2)
 
+/-- If `L / K` is a field extension, `S` is a finite subset of `L`, such that every element of `S`
+is integral (= algebraic) over `K`, then `K(S) / K` is a finite extension.
+A direct corollary of `finiteDimensional_iSup_of_finite`. -/
 theorem finiteDimensional_adjoin {S : Set L} [Finite S] (hS : ∀ x ∈ S, IsIntegral K x) :
     FiniteDimensional K (adjoin K S) := by
   rw [← biSup_adjoin_simple, ← iSup_subtype'']
-  haveI := fun (x : S) ↦ adjoin.finiteDimensional (hS x.1 x.2)
+  haveI (x : S) := adjoin.finiteDimensional (hS x.1 x.2)
   exact finiteDimensional_iSup_of_finite
 
 end PowerBasis
