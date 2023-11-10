@@ -381,6 +381,12 @@ lemma SMatrixRightMul_eq_Mul {m : Type*} (M₁ : Matrix m n R₂) (M₂ : Matrix
     SMatrixRightMul.hSMul M₁ M₂ = M₁ * M₂ := by
   simp [SMatrixRightMul, smul_eq_mul, instHMulMatrixMatrixMatrix, dotProduct, mul_comm]
 
+theorem SMatrixLeftMul.mul_apply {m : Type*}  {M₁ : Matrix m n R₂} {M₂ : Matrix n o N₂} {i k} :
+  (M₁ • M₂) i k = ∑ j, M₁ i j • M₂ j k := rfl
+
+theorem SMatrixRightMul.mul_apply {m : Type*}  {M₁ : Matrix m n N₂} {M₂ : Matrix n o R₂} {i k} :
+  (M₁ • M₂) i k = ∑ j,  M₂ j k • M₁ i j := rfl
+
 @[simp]
 theorem LinearMap.toMatrix'_comp' (B : (n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] N₂)
     (l r : (o → R₂) →ₗ[R₂] n → R₂) : BilinForm.toMatrix'' (R₂ := R₂) (B.compl₁₂ l r) =
@@ -608,26 +614,34 @@ variable (c : Basis o R₂ M₂')
 variable [DecidableEq o]
 
 -- Cannot be a `simp` lemma because `b` must be inferred.
-theorem BilinForm.toMatrix_comp (B : BilinForm R₂ M₂) (l r : M₂' →ₗ[R₂] M₂) :
-    BilinForm.toMatrix c (B.comp l r) =
-      (LinearMap.toMatrix c b l)ᵀ * BilinForm.toMatrix b B * LinearMap.toMatrix c b r := by
+theorem BilinForm.toMatrix_comp' (B : M₂ →ₗ[R₂] M₂ →ₗ[R₂] N₂) (l r : M₂' →ₗ[R₂] M₂) :
+    BilinForm.toMatrix''' c (B.compl₁₂ l r) =
+      (LinearMap.toMatrix c b l)ᵀ • BilinForm.toMatrix''' b B • LinearMap.toMatrix c b r := by
   ext i j
-  simp only [BilinForm.toMatrix_apply, BilinForm.comp_apply, transpose_apply, Matrix.mul_apply,
-    LinearMap.toMatrix', LinearEquiv.coe_mk, sum_mul]
-  rw [sum_comm]
-  conv_lhs => rw [← BilinForm.sum_repr_mul_repr_mul b]
+  simp only [toMatrix_apply', compl₁₂_apply, SMatrixLeftMul, LinearMap.toMatrix, SMatrixRightMul,
+    SMatrixLeftMul.mul_apply, transpose_apply, smul_sum]
+  conv_lhs => rw [← LinearMap.sum_repr_mul_repr_mul b b (l (c i)) (r (c j))]
   rw [Finsupp.sum_fintype]
   · apply sum_congr rfl
     rintro i' -
     rw [Finsupp.sum_fintype]
-    · apply sum_congr rfl
-      rintro j' -
-      simp only [smul_eq_mul, LinearMap.toMatrix_apply, Basis.equivFun_apply, mul_assoc, mul_comm,
-        mul_left_comm]
+    · simp only [LinearEquiv.trans_apply, LinearMap.toMatrix'_apply, LinearEquiv.arrowCongr_apply,
+      Basis.equivFun_symm_apply, map_sum, SMulHomClass.map_smul, Basis.equivFun_apply,
+      Finset.sum_apply, Pi.smul_apply, smul_eq_mul, ite_mul, one_mul, zero_mul, sum_ite_eq',
+      mem_univ, ite_true]
     · intros
       simp only [zero_smul, smul_zero]
   · intros
     simp only [zero_smul, Finsupp.sum_zero]
+
+-- Cannot be a `simp` lemma because `b` must be inferred.
+theorem BilinForm.toMatrix_comp (B : BilinForm R₂ M₂) (l r : M₂' →ₗ[R₂] M₂) :
+    BilinForm.toMatrix c (B.comp l r) =
+      (LinearMap.toMatrix c b l)ᵀ * BilinForm.toMatrix b B * LinearMap.toMatrix c b r := by
+  rw [BilinForm.toMatrix, BilinForm.toMatrix, LinearEquiv.trans_apply, LinearEquiv.trans_apply,
+    Matrix.mul_assoc, ← SMatrixLeftMul_eq_Mul, ← SMatrixRightMul_eq_Mul,
+    ← BilinForm.toMatrix_comp']
+  rfl
 #align bilin_form.to_matrix_comp BilinForm.toMatrix_comp
 
 theorem BilinForm.toMatrix_compLeft (B : BilinForm R₂ M₂) (f : M₂ →ₗ[R₂] M₂) :
