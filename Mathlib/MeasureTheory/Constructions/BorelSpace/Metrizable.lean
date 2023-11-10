@@ -67,7 +67,7 @@ theorem measurable_of_tendsto_metrizable' {ι} {f : ι → α → β} {g : α �
     [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :
     Measurable g := by
   letI : PseudoMetricSpace β := pseudoMetrizableSpacePseudoMetric β
-  apply measurable_of_is_closed'
+  apply measurable_of_isClosed'
   intro s h1s h2s h3s
   have : Measurable fun x => infNndist (g x) s := by
     suffices : Tendsto (fun i x => infNndist (f i x) s) u (𝓝 fun x => infNndist (g x) s)
