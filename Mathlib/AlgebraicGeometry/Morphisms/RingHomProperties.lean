@@ -265,7 +265,6 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso @P)
 variable (hP : RingHom.PropertyIsLocal @P)
 
 -- Porting note: the terms here are getting huge ~ 1/2 Gb for the goal midway (with `pp.explicit`)
-set_option maxHeartbeats 400000 in
 theorem sourceAffineLocally_of_source_open_cover_aux (h₁ : RingHom.RespectsIso @P)
     (h₃ : RingHom.OfLocalizationSpanTarget @P) {X Y : Scheme} (f : X ⟶ Y) (U : X.affineOpens)
     (s : Set (X.presheaf.obj (op U.1))) (hs : Ideal.span s = ⊤)
@@ -279,9 +278,11 @@ theorem sourceAffineLocally_of_source_open_cover_aux (h₁ : RingHom.RespectsIso
     (@AlgebraicGeometry.Γ_restrict_isLocalization _ U.2 s)).toRingEquiv.toCommRingCatIso.hom).mp ?_
   subst hs
   rw [CommRingCat.comp_eq_ring_hom_comp, ← RingHom.comp_assoc]
-  -- Porting note: added a bunch of `conv`
+  -- Porting note: added the `dsimp only` below and a bunch of `conv`
+  dsimp only [CommRingCat.of, Bundled.of]
   conv =>
-    arg 1; conv =>
+    arg 1
+    conv =>
       arg 1
       -- Porting note: the `erw` below is where it gets bad; previously
       -- `erw [IsLocalization.map_comp]`. ask Lean to synthesize instances and it runs away
@@ -290,15 +291,12 @@ theorem sourceAffineLocally_of_source_open_cover_aux (h₁ : RingHom.RespectsIso
             (Scheme.Γ.obj (Opposite.op ((X.restrict _).restrict ((X.restrict _).basicOpen
               (X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op r)).openEmbedding)))
             _ (le_of_eq rfl) (_) (@AlgebraicGeometry.Γ_restrict_isLocalization _ U.2 _)]
-      erw [RingHom.comp_id]
-      rw [RingHom.algebraMap_toAlgebra]
-    rw [op_comp, Functor.map_comp, ←CommRingCat.comp_eq_ring_hom_comp, Scheme.Γ_map_op,
-        Scheme.Γ_map_op, Category.assoc]
+    conv => rhs; rw [op_comp, Functor.map_comp]
+    rw [←CommRingCat.comp_eq_ring_hom_comp, Category.assoc]
     conv => rhs; erw [← X.presheaf.map_comp]
   rw [← h₁.cancel_right_isIso _ (X.presheaf.map (eqToHom _))]
   convert hs' ⟨r, hr⟩ using 1
-  · erw [Category.assoc]
-    rw [← X.presheaf.map_comp]
+  · rw [Category.assoc, ← X.presheaf.map_comp]
     conv_rhs => rw [op_comp, Scheme.Γ.map_comp]
     dsimp [Functor.op]
     conv_lhs => rw [Opens.openEmbedding_obj_top]
