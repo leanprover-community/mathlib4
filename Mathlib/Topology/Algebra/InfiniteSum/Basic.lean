@@ -215,6 +215,10 @@ theorem hasSum_single {f : β → α} (b : β) (hf : ∀ (b') (_ : b' ≠ b), f 
   hasSum_sum_of_ne_finset_zero <| by simpa [hf]
 #align has_sum_single hasSum_single
 
+lemma hasSum_singleton (m : β) (f : β → α) : HasSum (fun x : ({m} : Set β) ↦ f x) (f m) := by
+  convert_to HasSum (fun x : ({m} : Set β) ↦ f x) (f (⟨m, rfl⟩ : ({m} : Set β)))
+  exact hasSum_single (α := α) _ <| fun m' h ↦ False.elim <| h <| Subtype.ext m'.2
+
 theorem hasSum_ite_eq (b : β) [DecidablePred (· = b)] (a : α) :
     HasSum (fun b' => if b' = b then a else 0) a := by
   convert @hasSum_single _ _ _ _ (fun b' => if b' = b then a else 0) b (fun b' hb' => if_neg hb')
@@ -638,6 +642,20 @@ theorem tsum_range {g : γ → β} (f : β → α) (hg : Injective g) :
   simp_rw [← comp_apply (g := g), tsum_univ (f ∘ g)]
 #align tsum_range tsum_range
 
+open Set in
+/-- If `f b = 0`, then the sum over all `f a` is the same as the sum over `f a` for `a ≠ b`. -/
+lemma tsum_eq_tsum_diff_singleton [T2Space α] {f : β → α} (s : Set β) (b : β) (hf₀ : f b = 0) :
+    ∑' a : s, f a = ∑' a : (s \ {b} : Set β), f a := by
+  simp_rw [_root_.tsum_subtype]
+  refine tsum_congr fun b' ↦ ?_
+  by_cases hs : b' ∈ s \ {b}
+  · rw [indicator_of_mem hs f, indicator_of_mem (mem_of_mem_diff hs) f]
+  · rw [indicator_of_not_mem hs f]
+    rcases eq_or_ne b b' with rfl | hb
+    · by_cases h₀ : b ∈ s
+      · rwa [indicator_of_mem h₀ f]
+      · rw [indicator_of_not_mem h₀ f]
+    · rw [indicator_of_not_mem (not_and'.mp (mt mem_diff_singleton.mpr hs) hb.symm) f]
 section ContinuousAdd
 
 variable [ContinuousAdd α]
