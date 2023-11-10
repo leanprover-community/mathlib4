@@ -1378,8 +1378,8 @@ lemma comap_symm (G : SimpleGraph V) (e : V ≃ W) :
   ext; simp only [Equiv.apply_eq_iff_eq_symm_apply, comap_adj, map_adj, Equiv.toEmbedding_apply,
     exists_eq_right_right, exists_eq_right]
 
-lemma map_symm (G : SimpleGraph W) (e : V ≃ W) : G.map e.symm.toEmbedding = G.comap e.toEmbedding :=
-by rw [←comap_symm, e.symm_symm]
+lemma map_symm (G : SimpleGraph W) (e : V ≃ W) :
+    G.map e.symm.toEmbedding = G.comap e.toEmbedding := by rw [←comap_symm, e.symm_symm]
 
 theorem comap_monotone (f : V ↪ W) : Monotone (SimpleGraph.comap f) := by
   intro G G' h _ _ ha
