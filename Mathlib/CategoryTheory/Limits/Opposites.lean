@@ -415,7 +415,7 @@ instance : HasProduct (fun z ↦ op (Z z)) := hasLimitOfIso
 
 /-- A `Cofan` gives a `Fan` in the opposite category.  -/
 @[simp]
-def Cofan.op (c : Cofan Z) : Fan (fun a ↦ op (Z a)) := Fan.mk _ (fun a ↦ (c.inj a).op)
+def Cofan.op (c : Cofan Z) : Fan (op <| Z ·) := Fan.mk _ (fun a ↦ (c.inj a).op)
 
 /-- If a `Cofan` is colimit, then its opposite is limit. -/
 def Cofan.IsColimit.op {c : Cofan Z} (hc : IsColimit c) : IsLimit c.op := by
