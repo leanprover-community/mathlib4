@@ -657,7 +657,7 @@ theorem tsum_sum {f : γ → β → α} {s : Finset γ} (hf : ∀ i ∈ s, Summa
 
 /-- Version of `tsum_eq_add_tsum_ite` for `AddCommMonoid` rather than `AddCommGroup`.
 Requires a different convergence assumption involving `Function.update`. -/
-theorem tsum_eq_add_tsum_ite' [DecidableEq β ]{f : β → α} (b : β) (hf : Summable (update f b 0)) :
+theorem tsum_eq_add_tsum_ite' [DecidableEq β] {f : β → α} (b : β) (hf : Summable (update f b 0)) :
     ∑' x, f x = f b + ∑' x, ite (x = b) 0 (f x) :=
   calc
     ∑' x, f x = ∑' x, (ite (x = b) (f x) 0 + update f b 0 x) :=
