@@ -29,7 +29,7 @@ open Function
 namespace AddHom
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def mulLeft [Distrib R] (r : R) : AddHom R R where
   toFun := (· * ·) r
   map_add' := mul_add r
@@ -37,7 +37,7 @@ def mulLeft [Distrib R] (r : R) : AddHom R R where
 #align add_hom.mul_left_apply AddHom.mulLeft_apply
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def mulRight [Distrib R] (r : R) : AddHom R R where
   toFun a := a * r
   map_add' _ _ := add_mul _ _ r

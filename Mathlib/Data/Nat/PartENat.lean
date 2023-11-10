@@ -108,15 +108,31 @@ theorem some_eq_natCast (n : ℕ) : some n = n :=
   rfl
 #align part_enat.some_eq_coe PartENat.some_eq_natCast
 
-@[simp, norm_cast]
+instance : CharZero PartENat where
+  cast_injective := Part.some_injective
+
+/-- Alias of `Nat.cast_inj` specialized to `PartENat` --/
 theorem natCast_inj {x y : ℕ} : (x : PartENat) = y ↔ x = y :=
-  Part.some_inj
+  Nat.cast_inj
 #align part_enat.coe_inj PartENat.natCast_inj
 
 @[simp]
 theorem dom_natCast (x : ℕ) : (x : PartENat).Dom :=
   trivial
 #align part_enat.dom_coe PartENat.dom_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem dom_ofNat (x : ℕ) [x.AtLeastTwo] : (no_index (OfNat.ofNat x : PartENat)).Dom :=
+  trivial
+
+@[simp]
+theorem dom_zero : (0 : PartENat).Dom :=
+  trivial
+
+@[simp]
+theorem dom_one : (1 : PartENat).Dom :=
+  trivial
 
 instance : CanLift PartENat ℕ (↑) Dom :=
   ⟨fun n hn => ⟨n.get hn, Part.some_get _⟩⟩
@@ -192,6 +208,12 @@ theorem get_one (h : (1 : PartENat).Dom) : (1 : PartENat).get h = 1 :=
   rfl
 #align part_enat.get_one PartENat.get_one
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem get_ofNat' (x : ℕ) [x.AtLeastTwo] (h : (no_index (OfNat.ofNat x : PartENat)).Dom) :
+    Part.get (no_index (OfNat.ofNat x : PartENat)) h = (no_index (OfNat.ofNat x)) :=
+  get_natCast' x h
+
 nonrec theorem get_eq_iff_eq_some {a : PartENat} {ha : a.Dom} {b : ℕ} : a.get ha = b ↔ a = some b :=
   get_eq_iff_eq_some
 #align part_enat.get_eq_iff_eq_some PartENat.get_eq_iff_eq_some
@@ -220,17 +242,9 @@ instance decidableLe (x y : PartENat) [Decidable x.Dom] [Decidable y.Dom] : Deci
     else isTrue ⟨fun h => (hy h).elim, fun h => (hy h).elim⟩
 #align part_enat.decidable_le PartENat.decidableLe
 
-/-- The coercion `ℕ → PartENat` preserves `0` and addition. -/
-def natCast_AddMonoidHom : ℕ →+ PartENat where
-  toFun := some
-  map_zero' := Nat.cast_zero
-  map_add' := Nat.cast_add
-#align part_enat.coe_hom PartENat.natCast_AddMonoidHom
-
-@[simp]
-theorem coe_coeHom : natCast_AddMonoidHom = some :=
-  rfl
-#align part_enat.coe_coe_hom PartENat.coe_coeHom
+-- Porting note: Removed. Use `Nat.castAddMonoidHom` instead.
+#noalign part_enat.coe_hom
+#noalign part_enat.coe_coe_hom
 
 instance partialOrder : PartialOrder PartENat where
   le := (· ≤ ·)
@@ -262,14 +276,41 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
     exact ⟨⟨fun _ => hx, fun hy => (H hy).le⟩, fun hxy h => not_lt_of_le (h _) (H _)⟩
 #align part_enat.lt_def PartENat.lt_def
 
-@[simp, norm_cast]
-theorem coe_le_coe {x y : ℕ} : (x : PartENat) ≤ y ↔ x ≤ y := by
-  exact ⟨fun ⟨_, h⟩ => h trivial, fun h => ⟨fun _ => trivial, fun _ => h⟩⟩
+noncomputable instance orderedAddCommMonoid : OrderedAddCommMonoid PartENat :=
+  { PartENat.partialOrder, PartENat.addCommMonoid with
+    add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
+      PartENat.casesOn c (by simp [top_add]) fun c =>
+        ⟨fun h => And.intro (dom_natCast _) (h₁ h.2), fun h => by
+          simpa only [coe_add_get] using add_le_add_left (h₂ _) c⟩ }
+
+instance semilatticeSup : SemilatticeSup PartENat :=
+  { PartENat.partialOrder with
+    sup := (· ⊔ ·)
+    le_sup_left := fun _ _ => ⟨And.left, fun _ => le_sup_left⟩
+    le_sup_right := fun _ _ => ⟨And.right, fun _ => le_sup_right⟩
+    sup_le := fun _ _ _ ⟨hx₁, hx₂⟩ ⟨hy₁, hy₂⟩ =>
+      ⟨fun hz => ⟨hx₁ hz, hy₁ hz⟩, fun _ => sup_le (hx₂ _) (hy₂ _)⟩ }
+#align part_enat.semilattice_sup PartENat.semilatticeSup
+
+instance orderBot : OrderBot PartENat where
+  bot := ⊥
+  bot_le _ := ⟨fun _ => trivial, fun _ => Nat.zero_le _⟩
+#align part_enat.order_bot PartENat.orderBot
+
+instance orderTop : OrderTop PartENat where
+  top := ⊤
+  le_top _ := ⟨fun h => False.elim h, fun hy => False.elim hy⟩
+#align part_enat.order_top PartENat.orderTop
+
+instance : ZeroLEOneClass PartENat where
+  zero_le_one := bot_le
+
+/-- Alias of `Nat.cast_le` specialized to `PartENat` --/
+theorem coe_le_coe {x y : ℕ} : (x : PartENat) ≤ y ↔ x ≤ y := Nat.cast_le
 #align part_enat.coe_le_coe PartENat.coe_le_coe
 
-@[simp, norm_cast]
-theorem coe_lt_coe {x y : ℕ} : (x : PartENat) < y ↔ x < y := by
-  rw [lt_iff_le_not_le, lt_iff_le_not_le, coe_le_coe, coe_le_coe]
+/-- Alias of `Nat.cast_lt` specialized to `PartENat` --/
+theorem coe_lt_coe {x y : ℕ} : (x : PartENat) < y ↔ x < y := Nat.cast_lt
 #align part_enat.coe_lt_coe PartENat.coe_lt_coe
 
 @[simp]
@@ -300,29 +341,6 @@ theorem coe_lt_iff (n : ℕ) (x : PartENat) : (n : PartENat) < x ↔ ∀ h : x.D
   rfl
 #align part_enat.coe_lt_iff PartENat.coe_lt_iff
 
-instance NeZero.one : NeZero (1 : PartENat) :=
-  ⟨natCast_inj.not.mpr (by decide)⟩
-#align part_enat.ne_zero.one PartENat.NeZero.one
-
-instance semilatticeSup : SemilatticeSup PartENat :=
-  { PartENat.partialOrder with
-    sup := (· ⊔ ·)
-    le_sup_left := fun _ _ => ⟨And.left, fun _ => le_sup_left⟩
-    le_sup_right := fun _ _ => ⟨And.right, fun _ => le_sup_right⟩
-    sup_le := fun _ _ _ ⟨hx₁, hx₂⟩ ⟨hy₁, hy₂⟩ =>
-      ⟨fun hz => ⟨hx₁ hz, hy₁ hz⟩, fun _ => sup_le (hx₂ _) (hy₂ _)⟩ }
-#align part_enat.semilattice_sup PartENat.semilatticeSup
-
-instance orderBot : OrderBot PartENat where
-  bot := ⊥
-  bot_le _ := ⟨fun _ => trivial, fun _ => Nat.zero_le _⟩
-#align part_enat.order_bot PartENat.orderBot
-
-instance orderTop : OrderTop PartENat where
-  top := ⊤
-  le_top _ := ⟨fun h => False.elim h, fun hy => False.elim hy⟩
-#align part_enat.order_top PartENat.orderTop
-
 nonrec theorem eq_zero_iff {x : PartENat} : x = 0 ↔ x ≤ 0 :=
   eq_bot_iff
 #align part_enat.eq_zero_iff PartENat.eq_zero_iff
@@ -345,9 +363,35 @@ theorem natCast_lt_top (x : ℕ) : (x : PartENat) < ⊤ :=
 #align part_enat.coe_lt_top PartENat.natCast_lt_top
 
 @[simp]
+theorem zero_lt_top : (0 : PartENat) < ⊤ :=
+  natCast_lt_top 0
+
+@[simp]
+theorem one_lt_top : (1 : PartENat) < ⊤ :=
+  natCast_lt_top 1
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_lt_top (x : ℕ) [x.AtLeastTwo] : (no_index (OfNat.ofNat x : PartENat)) < ⊤ :=
+  natCast_lt_top x
+
+@[simp]
 theorem natCast_ne_top (x : ℕ) : (x : PartENat) ≠ ⊤ :=
   ne_of_lt (natCast_lt_top x)
 #align part_enat.coe_ne_top PartENat.natCast_ne_top
+
+@[simp]
+theorem zero_ne_top : (0 : PartENat) ≠ ⊤ :=
+  natCast_ne_top 0
+
+@[simp]
+theorem one_ne_top : (1 : PartENat) ≠ ⊤ :=
+  natCast_ne_top 1
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_ne_top (x : ℕ) [x.AtLeastTwo] : (no_index (OfNat.ofNat x : PartENat)) ≠ ⊤ :=
+  natCast_ne_top x
 
 theorem not_isMax_natCast (x : ℕ) : ¬IsMax (x : PartENat) :=
   not_isMax_of_lt (natCast_lt_top x)
@@ -418,13 +462,6 @@ noncomputable instance lattice : Lattice PartENat :=
     inf_le_left := min_le_left
     inf_le_right := min_le_right
     le_inf := fun _ _ _ => le_min }
-
-noncomputable instance orderedAddCommMonoid : OrderedAddCommMonoid PartENat :=
-  { PartENat.linearOrder, PartENat.addCommMonoid with
-    add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
-      PartENat.casesOn c (by simp [top_add]) fun c =>
-        ⟨fun h => And.intro (dom_natCast _) (h₁ h.2), fun h => by
-          simpa only [coe_add_get] using add_le_add_left (h₂ _) c⟩ }
 
 noncomputable instance : CanonicallyOrderedAddCommMonoid PartENat :=
   { PartENat.semilatticeSup, PartENat.orderBot,
@@ -568,6 +605,15 @@ theorem toWithTop_zero' {h : Decidable (0 : PartENat).Dom} : toWithTop 0 = 0 := 
   convert toWithTop_zero
 #align part_enat.to_with_top_zero' PartENat.toWithTop_zero'
 
+theorem toWithTop_one :
+    have : Decidable (1 : PartENat).Dom := someDecidable 1
+    toWithTop 1 = 1 :=
+  rfl
+
+@[simp]
+theorem toWithTop_one' {h : Decidable (1 : PartENat).Dom} : toWithTop 1 = 1 := by
+  convert toWithTop_one
+
 theorem toWithTop_some (n : ℕ) : toWithTop (some n) = n :=
   rfl
 #align part_enat.to_with_top_some PartENat.toWithTop_some
@@ -578,10 +624,14 @@ theorem toWithTop_natCast (n : ℕ) {_ : Decidable (n : PartENat).Dom} : toWithT
 #align part_enat.to_with_top_coe PartENat.toWithTop_natCast
 
 @[simp]
-theorem toWithTop_natCast' (n : ℕ) {h : Decidable (n : PartENat).Dom} :
+theorem toWithTop_natCast' (n : ℕ) {_ : Decidable (n : PartENat).Dom} :
     toWithTop (n : PartENat) = n := by
   rw [toWithTop_natCast n]
 #align part_enat.to_with_top_coe' PartENat.toWithTop_natCast'
+
+@[simp]
+theorem toWithTop_ofNat (n : ℕ) [n.AtLeastTwo] {_ : Decidable (OfNat.ofNat n : PartENat).Dom} :
+    toWithTop (no_index (OfNat.ofNat n : PartENat)) = OfNat.ofNat n := toWithTop_natCast' n
 
 -- Porting note: statement changed. Mathlib 3 statement was
 -- ```
@@ -700,6 +750,15 @@ theorem withTopEquiv_zero : withTopEquiv 0 = 0 := by
 #align part_enat.with_top_equiv_zero PartENat.withTopEquiv_zero
 
 @[simp]
+theorem withTopEquiv_one : withTopEquiv 1 = 1 := by
+  simpa only [Nat.cast_one] using withTopEquiv_natCast 1
+
+@[simp]
+theorem withTopEquiv_ofNat (n : Nat) [n.AtLeastTwo] :
+    withTopEquiv (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+  withTopEquiv_natCast n
+
+@[simp]
 theorem withTopEquiv_le {x y : PartENat} : withTopEquiv x ≤ withTopEquiv y ↔ x ≤ y :=
   toWithTop_le
 #align part_enat.with_top_equiv_le PartENat.withTopEquiv_le
@@ -728,6 +787,15 @@ theorem withTopEquiv_symm_coe (n : Nat) : withTopEquiv.symm n = n :=
 theorem withTopEquiv_symm_zero : withTopEquiv.symm 0 = 0 :=
   rfl
 #align part_enat.with_top_equiv_symm_zero PartENat.withTopEquiv_symm_zero
+
+@[simp]
+theorem withTopEquiv_symm_one : withTopEquiv.symm 1 = 1 :=
+  rfl
+
+@[simp]
+theorem withTopEquiv_symm_ofNat (n : Nat) [n.AtLeastTwo] :
+    withTopEquiv.symm (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+  rfl
 
 @[simp]
 theorem withTopEquiv_symm_le {x y : ℕ∞} : withTopEquiv.symm x ≤ withTopEquiv.symm y ↔ x ≤ y := by

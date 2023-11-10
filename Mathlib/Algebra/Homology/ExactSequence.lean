@@ -106,8 +106,7 @@ lemma IsExact.exact' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by linarit
 
 /-- Functoriality maps for `ComposableArrows.sc'`. -/
 @[simps]
-def sc'Map {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂)
-    (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
+def sc'Map {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂) (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
     (i j k : ℕ) (hij : i + 1 = j := by linarith)
     (hjk : j + 1 = k := by linarith) (hk : k ≤ n := by linarith) :
     S₁.sc' h₁ i j k ⟶ S₂.sc' h₂ i j k where
@@ -117,8 +116,7 @@ def sc'Map {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂)
 
 /-- Functoriality maps for `ComposableArrows.sc`. -/
 @[simps!]
-def scMap {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂)
-    (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
+def scMap {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂) (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
     (i : ℕ) (hi : i + 2 ≤ n := by linarith) :
     S₁.sc h₁ i ⟶ S₂.sc h₂ i :=
   sc'Map φ h₁ h₂ i (i + 1) (i + 2)
@@ -127,8 +125,7 @@ def scMap {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂)
 in `ComposableArrows C n`. -/
 @[simps]
 def sc'MapIso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂)
-    (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
-    (i j k : ℕ) (hij : i + 1 = j := by linarith)
+    (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by linarith)
     (hjk : j + 1 = k := by linarith) (hk : k ≤ n := by linarith) :
     S₁.sc' h₁ i j k ≅ S₂.sc' h₂ i j k where
   hom := sc'Map e.hom h₁ h₂ i j k
