@@ -1089,6 +1089,7 @@ import Mathlib.CategoryTheory.Internal.Preadditive
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.IsomorphismClasses
+import Mathlib.CategoryTheory.JointlyReflect.Isomorphisms
 import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.Limits.Absolute
@@ -1224,6 +1225,7 @@ import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Monoidal.CommMon_
 import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.DiscreteNat
+import Mathlib.CategoryTheory.Monoidal.DiscreteQuotient
 import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.Free.Basic
 import Mathlib.CategoryTheory.Monoidal.Free.Coherence
@@ -1324,6 +1326,7 @@ import Mathlib.CategoryTheory.Sites.Grothendieck
 import Mathlib.CategoryTheory.Sites.InducedTopology
 import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.CategoryTheory.Sites.Limits
+import Mathlib.CategoryTheory.Sites.Over
 import Mathlib.CategoryTheory.Sites.Plus
 import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.CategoryTheory.Sites.Pushforward
