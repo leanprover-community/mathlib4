@@ -7,6 +7,7 @@ Authors: Claus Clausen
 import Mathlib.Probability.Density
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.Probability.Cdf
+import Mathlib.Probability.Distributions.Exponential
 
 /-! # Uniform distributions over ℝ
 
@@ -31,14 +32,6 @@ Define the Uniform Measure over Intervals on the reals
 open scoped ENNReal NNReal Real
 
 open MeasureTheory Measure Set Filter
-
-/- Copied from exponential distribution-/
-lemma lintegral_split_bounded {y z : ℝ}(f : ℝ → ENNReal) ( hzy : z ≤ y) :
-    ∫⁻ (x : ℝ) in Iic y, f x  =  (∫⁻ (x : ℝ) in Iio z, f x) +  ∫⁻ (x : ℝ) in Icc z y, f x := by
-  rw [(Iio_union_Icc_eq_Iic  hzy).symm, lintegral_union measurableSet_Icc]
-  rw [Set.disjoint_iff];
-  rintro x ⟨h1 : (x < _), h2, _ ⟩;
-  linarith
 
 namespace ProbabilityTheory
 
