@@ -93,7 +93,7 @@ lemma Iio_eq_zero : (∫⁻ (x : ℝ) in Iio (a ⊓ b) , uniformPdf a b x) = 0 :
     unfold uniformPdf uniformPdfReal uIcc indicator
     rintro x (hxab : x < _)
     rw [if_neg, ENNReal.ofReal_zero]
-    rintro ⟨ _, _ ⟩ ; linarith
+    rintro ⟨ _, _ ⟩; linarith
 
 @[simp]
 lemma Ioi_eq_zero : (∫⁻ (x : ℝ) in Ioi (a ⊔ b) , uniformPdf a b x) = 0 := by
@@ -103,7 +103,7 @@ lemma Ioi_eq_zero : (∫⁻ (x : ℝ) in Ioi (a ⊔ b) , uniformPdf a b x) = 0 :
     unfold uniformPdf uniformPdfReal uIcc indicator
     rintro x (hxab : (_ < x))
     rw [if_neg, ENNReal.ofReal_zero]
-    rintro ⟨ _, _ ⟩ ; linarith
+    rintro ⟨ _, _ ⟩; linarith
 
 /-- The integral of the uniform PDF is equal to integrating over `uIcc a b`-/
 lemma carrier_of_uniform_lintegral : (∫⁻ (x : ℝ), uniformPdf a b x) =
@@ -138,8 +138,8 @@ instance instIsProbabilityMeasureUniform (a b : ℝ) :
   measure_univ := by
     unfold uniformMeasure;
     split_ifs with hab
-    . exact measure_univ
-    . simp [lintegral_uniformPdf_eq_one a b hab]
+    · exact measure_univ
+    · simp [lintegral_uniformPdf_eq_one a b hab]
 
 section UniformCdf
 
@@ -223,7 +223,7 @@ lemma uniformCdf_eq' {a b : ℝ} (hab : a ≠ b) : (uniformCdfReal a b) = fun x 
         (g := fun _ ↦ ENNReal.ofReal (1 / (a ⊔ b - a ⊓ b)))]
     · simp [inv_mul_cancel (sub_ne_zero.2 (ne_of_lt (inf_lt_sup.mpr hab)).symm)]
     · apply ae_of_all; intro x hx; rw [if_pos hx, LatticeOrderedGroup.sup_sub_inf_eq_abs_sub]
-  . exact uniformCdf_eq_zero top h
+  · exact uniformCdf_eq_zero top h
 
 /-- General case of the equation of the CDF of the uniform distribution-/
 lemma uniformCdf_eq (a b : ℝ) : uniformCdfReal a b =
