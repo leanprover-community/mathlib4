@@ -125,19 +125,7 @@ theorem mellin_div_const (f : ℝ → ℂ) (s a : ℂ) : mellin (fun t => f t / 
 
 open scoped ENNReal
 
-#check finite_integral_rpow_sub_one_pow_aux
-
-lemma foo1 {s t : ℝ} (ht : 0 < t) : IntegrableOn (fun x ↦ x ^ s) (Ioi t) ↔ s < -1 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · contrapose! h
-    have : ∫⁻ x in Ioi t, x ^ s = ∞ := by
-      exact?
-
-
-
 #exit
-
-lemma foo2 {s t : ℝ} (ht : 0 < t) : IntegrableOn (fun x ↦ x ^ s) (Ioo (0 : ℝ) t) ↔ -1 < s := sorry
 
 lemma foo3 (s : ℂ) : ∫ (x : ℝ) in Ioi 0, ↑x ^ s = 0 := by
   apply integral_undef (fun h ↦ ?_)

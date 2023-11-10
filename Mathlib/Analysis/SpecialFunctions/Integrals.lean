@@ -5,6 +5,7 @@ Authors: Benjamin Davidson
 -/
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
+import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 
 #align_import analysis.special_functions.integrals from "leanprover-community/mathlib"@"011cafb4a5bc695875d186e245d6b3df03bf6c40"
 
@@ -94,6 +95,34 @@ theorem intervalIntegrable_rpow' {r : ℝ} (h : -1 < r) :
     simp only [Pi.smul_apply, Algebra.id.smul_eq_mul, log_neg_eq_log, mul_comm,
       rpow_def_of_pos hx.1, rpow_def_of_neg (by linarith [hx.1] : -x < 0)]
 #align interval_integral.interval_integrable_rpow' intervalIntegral.intervalIntegrable_rpow'
+
+lemma foo2 {s t : ℝ} (ht : 0 < t) : IntegrableOn (fun x ↦ x ^ s) (Ioo (0 : ℝ) t) ↔ -1 < s := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · contrapose! h
+    intro H
+    have H' : IntegrableOn (fun x ↦ x ^ s) (Ioo 0 (min 1 t)) := sorry
+    have : IntegrableOn (fun x ↦ x⁻¹) (Ioo 0 (min 1 t)) := by
+      apply H'.mono' measurable_inv.aestronglyMeasurable
+      filter_upwards [ae_restrict_mem measurableSet_Ioo] with x hx
+      simp only [norm_inv, Real.norm_eq_abs, abs_of_nonneg (le_of_lt hx.1)]
+      rwa [← Real.rpow_neg_one x, Real.rpow_le_rpow_left_iff_of_base_lt_one hx.1]
+      exact lt_of_lt_of_le hx.2 (min_le_left _ _)
+    have : IntervalIntegrable (fun x ↦ x⁻¹) volume 0 (min 1 t) := sorry
+    have I : 0 < min 1 t := lt_min zero_lt_one ht
+    simp [intervalIntegrable_inv_iff, I.ne] at this
+  · have Z := interval_integrable_rpow'
+
+
+
+
+
+#exit
+
+
+lemma foo1 {s t : ℝ} (ht : 0 < t) : IntegrableOn (fun x ↦ x ^ s) (Ioi t) ↔ s < -1 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+
+
 
 /-- See `intervalIntegrable_cpow'` for a version with a weaker hypothesis on `r`, but assuming the
 measure is volume. -/
@@ -367,32 +396,6 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
     simp_rw [div_eq_inv_mul, ← Complex.ofReal_inv, Complex.ofReal_mul_re, Complex.sub_re]
     rfl
 #align integral_rpow integral_rpow
-
-
-open MeasureTheory Filter
-open scoped Topology
-
-#check Real.tendsto_log_nhdsWithin_zero
-
-theorem isBounded_image_of_integrableOn_deriv {f : ℝ → ℝ} {s : Set ℝ} (hs : DifferentiableOn f s)
-    (h' : IntegrableOn (deriv f) s) (hs : ordConnected s) : IsBounded (f '' s) := sorry
-
-theorem not_integrableOn_deriv_of_tendsto_atTop
-    {f : ℝ → ℝ} {x y : ℝ} (hxy : x < y) (hf : DifferentiableOn ℝ f (Ioo x y))
-    (h'f : Tendsto f (𝓝[>] x) atBot) : ¬(IntegrableOn (deriv f) (Ioo x y)) := sorry
-
-theorem glou {t : ℝ} (ht : 0 < t) : ¬(IntegrableOn (fun (x : ℝ) ↦ 1/x) (Ioo (0 : ℝ) t)) := by
-  have : (fun x ↦ 1/x) = deriv Real.log := by
-    ext x; simp only [one_div, deriv_log']
-  rw [this]
-  apply not_integrableOn_deriv_of_tendsto_atTop ht
-  sorry
-  exact?
-
-
-
-#exit
-
 
 theorem integral_zpow {n : ℤ} (h : 0 ≤ n ∨ n ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]]) :
     ∫ x in a..b, x ^ n = (b ^ (n + 1) - a ^ (n + 1)) / (n + 1) := by
