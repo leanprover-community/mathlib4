@@ -318,6 +318,12 @@ def ofNat (n : Nat) : Bool :=
 @[simp] lemma toNat_true  : toNat true = 1  := rfl
 @[simp] lemma toNat_false : toNat false = 0 := rfl
 
+@[simp] lemma toNat_beq_zero (b) : (Bool.toNat b == 0) = !b := by
+  cases b <;> rfl
+
+@[simp] lemma toNat_bne_zero (b) : (Bool.toNat b != 0) = b := by
+  rw [bne, toNat_beq_zero, not_not]
+
 theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
   simp only [ofNat, ne_eq, _root_.decide_not]
   cases Nat.decEq n 0 with
