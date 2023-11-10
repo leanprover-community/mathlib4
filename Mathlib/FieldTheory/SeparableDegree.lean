@@ -19,15 +19,16 @@ This file contains basics about the separable degree of a field extension.
 ## Main definitions
 
 - `Emb F E`: the type of `F`-algebra homomorphisms from `E` to the algebraic closure of `E`.
+  Usually denoted by $\operatorname{Emb}_F(E)$ in textbooks.
 
-- `sepDegree F E`: the separable degree of an algebraic extension `E / F` of fields, defined to be
-  the cardinal of `F`-algebra homomorphisms from `E` to the algebraic closure of `E`.
+- `sepDegree F E`: the separable degree $[E:F]_s$ of an algebraic extension `E / F` of fields,
+  defined to be the cardinal of `F`-algebra homomorphisms from `E` to the algebraic closure of `E`.
   (Mathematically, it should be the algebraic closure of `F`, but in order to make the type
   compatible with `Module.rank F E`, we use the algebraic closure of `E`.)
   Note that if `E / F` is not algebraic, then this definition makes no mathematical sense.
 
-- `finSepDegree F E`: the separable degree of `E / F` as a natural number, which is zero if
-  `sepDegree F E` is not finite.
+- `finSepDegree F E`: the separable degree $[E:F]_s$ of `E / F` as a natural number, which is zero
+  if `sepDegree F E` is not finite.
 
 ## Main results
 
@@ -49,7 +50,8 @@ This file contains basics about the separable degree of a field extension.
   `sepDegree_mul_sepDegree_of_isAlgebraic`, `finSepDegree_mul_finSepDegree_of_isAlgebraic`:
   if `K / E / F` is a field extension tower, such that `K / E` is algebraic,
   then there is a non-canonical isomorphism `(Emb F E) × (Emb E K) ≃ (Emb F K)`.
-  In particular, the separable degree satisfies the tower law (see `lift_rank_mul_lift_rank`).
+  In particular, the separable degree satisfies the tower law: $[E:F]_s [K:E]_s = [K:F]_s$
+  (see `lift_rank_mul_lift_rank`).
 
 ## Tags
 
@@ -57,7 +59,29 @@ separable degree, degree, polynomial
 
 ## TODO
 
-- ...
+- If `E / F` is a finite extension, then $[E:F]_s \mid [E:F]$. Thus we can define the inseparable
+  degree $[E:F]_i$ to be $[E:F]$ divided by $[E:F]_s$.
+
+- Define the separable degree of a polynomial over a field to be the number of distinct roots
+  in algebraic closure, and prove that it's equal to `Polynomial.HasSeparableContraction.degree`.
+
+- If `a` is an element algebraic over `F`, then $[F(a):F]_s$ is equal to the separable degree of
+  the minimal polynomial of `a` over `F`. In particular, `a` is separable over `F` if and only if
+  $[F(a):F]_s = [F(a):F]$.
+
+- If `E / F` is a finite extension, then $[E:F]_s = [E:F]$ if and only if every element of `E` is
+  separable over `F`, namely, `E / F` is a separable extension.
+
+- As a corollary, if `S` is a subset of `E` consisting of separable elements, then `F(S) / F` is a
+  separable extension.
+
+- Define maximal separable subextension (or called relative separable closure)
+  `separableClosure F E : IntermediateField F E` of `E / F`, and prove that its degree over `F`
+  is $[E:F]_s$ if `E / F` is finite.
+
+- Prove that `separableClosure F (AlgebraicClosure F)` is a separable closure of `F`.
+
+- Prove that `[E:F]_s = 1` if and only if `E / F` is purely inseparable.
 
 -/
 
