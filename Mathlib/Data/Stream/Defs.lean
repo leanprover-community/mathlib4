@@ -16,6 +16,12 @@ A stream `Stream' α` is a lazy infinite list with elements of `α` where all el
 are computed on-demand. (This is logically sound because `Stream' α` is dealed as `ℕ → α` in the
 kernel.) In this file we define `Stream'` and some functions that take and/or return streams.
 Note that we already have `Stream` to represent a similar object, hence the awkward naming.
+
+## Main definitions
+
+Given a type `α` and a function `f : ℕ → α`:
+
+* `Stream' α` : the type of streams whose elements have type `α`
 -/
 
 set_option autoImplicit true
@@ -159,6 +165,13 @@ theorem get_eq_getComputable : @get.{u} = @getComputable.{u} := by
   induction n generalizing s with
   | zero => simp
   | succ n hn => simp [← hn]
+
+instance : GetElem (Stream' α) ℕ α (fun _ _ => True) where
+  getElem s n _ := get s n
+
+@[simp]
+theorem getElem_eq_get (s : Stream' α) (n : ℕ) (h : True) : s[n]'h = get s n :=
+  rfl
 
 /-- Drop first `n` elements of a stream. -/
 def drop : ℕ → Stream' α → Stream' α
@@ -719,6 +732,21 @@ def const (a : α) : Stream' α where
 instance [Inhabited α] : Inhabited (Stream' α) :=
   ⟨Stream'.const default⟩
 
+instance : Functor Stream' where
+  map f s := map f s
+  mapConst a _ := const a
+
+instance : Pure Stream' where
+  pure a := const a
+
+@[simp]
+theorem map_eq_map {α β : Type u} (f : α → β) : Functor.map f = map f :=
+  rfl
+
+@[simp]
+theorem mapConst_eq_const {α β : Type u} (a : α) (s : Stream' β) : Functor.mapConst a s = const a :=
+  rfl
+
 abbrev corecOn (a : α) (f : α → β) (g : α → α) : Stream' β :=
   corec f g a
 #align stream.corec_on Stream'.corecOn
@@ -731,14 +759,11 @@ def corecState {σ α} (cmd : StateM σ α) (s : σ) : Stream' α :=
   corec Prod.fst (cmd.run ∘ Prod.snd) (cmd.run s)
 #align stream.corec_state Stream'.corecState
 
--- corec is also known as unfold
-abbrev unfolds (g : α → β) (f : α → α) (a : α) : Stream' β :=
-  corec g f a
-#align stream.unfolds Stream'.unfolds
+#align stream.unfolds Stream'.corec
 
 /-- Interleave two streams. -/
 def interleave (s₁ s₂ : Stream' α) : Stream' α :=
-  corecOn (s₁, s₂) (fun ⟨s₁, _⟩ => head s₁) fun ⟨s₁, s₂⟩ => (s₂, tail s₁)
+  corecOn (s₁, s₂) (fun (s₁, _) => head s₁) (fun (s₁, s₂) => (s₂, tail s₁))
 #align stream.interleave Stream'.interleave
 
 infixl:65 " ⋈ " => interleave
@@ -754,17 +779,18 @@ def odd (s : Stream' α) : Stream' α :=
 #align stream.odd Stream'.odd
 
 /-- Append a stream to a list. -/
-def appendStream' : List α → Stream' α → Stream' α
-  | [], s => s
-  | List.cons a l, s => a ::ₛ appendStream' l s
-#align stream.append_stream Stream'.appendStream'
+def appendList : List α → Stream' α → Stream' α
+  | []    , s => s
+  | a :: l, s => a ::ₛ appendList l s
+#align stream.append_stream Stream'.appendList
 
-infixl:65 " ++ₛ " => appendStream'
+instance : HAppend (List α) (Stream' α) (Stream' α) where
+  hAppend := appendList
 
 /-- `take n s` returns a list of the `n` first elements of stream `s` -/
 def take : ℕ → Stream' α → List α
-  | 0, _ => []
-  | n + 1, s => List.cons (head s) (take n (tail s))
+  | 0    , _ => []
+  | n + 1, s => head s :: take n (tail s)
 #align stream.take Stream'.take
 
 /-- An auxiliary definition for `Stream'.cycle` corecursive def -/
@@ -774,14 +800,14 @@ protected def cycleF : α × List α × α × List α → α
 
 /-- An auxiliary definition for `Stream'.cycle` corecursive def -/
 protected def cycleG : α × List α × α × List α → α × List α × α × List α
-  | (_, [], v₀, l₀) => (v₀, l₀, v₀, l₀)
-  | (_, List.cons v₂ l₂, v₀, l₀) => (v₂, l₂, v₀, l₀)
+  | (_, []      , v₀, l₀) => (v₀, l₀, v₀, l₀)
+  | (_, v₂ :: l₂, v₀, l₀) => (v₂, l₂, v₀, l₀)
 #align stream.cycle_g Stream'.cycleG
 
 /-- Interpret a nonempty list as a cyclic stream. -/
 def cycle : ∀ l : List α, l ≠ [] → Stream' α
-  | [], h => absurd rfl h
-  | List.cons a l, _ => corec Stream'.cycleF Stream'.cycleG (a, l, a, l)
+  | []    , h => absurd rfl h
+  | a :: l, _ => corec Stream'.cycleF Stream'.cycleG (a, l, a, l)
 #align stream.cycle Stream'.cycle
 
 /-- Tails of a stream, starting with `Stream'.tail s`. -/
@@ -791,9 +817,7 @@ def tails (s : Stream' α) : Stream' (Stream' α) :=
 
 /-- An auxiliary definition for `Stream'.inits`. -/
 def initsCore (l : List α) (s : Stream' α) : Stream' (List α) :=
-  corecOn (l, s) (fun ⟨a, _⟩ => a) fun p =>
-    match p with
-    | (l', s') => (l' ++ [head s'], tail s')
+  corecOn (l, s) (fun (a, _) => a) (fun (l', s') => (l' ++ [head s'], tail s'))
 #align stream.inits_core Stream'.initsCore
 
 /-- Nonempty initial segments of a stream. -/
@@ -801,10 +825,11 @@ def inits (s : Stream' α) : Stream' (List α) :=
   initsCore [head s] (tail s)
 #align stream.inits Stream'.inits
 
-/-- A constant stream, same as `Stream'.const`. -/
-def pure (a : α) : Stream' α :=
-  const a
-#align stream.pure Stream'.pure
+#align stream.pure Stream'.const
+
+@[simp]
+theorem pure_eq_const {a : α} : (Pure.pure a : Stream' α) = const a :=
+  rfl
 
 /-- Given a stream of functions and a stream of values, apply `n`-th function to `n`-th value. -/
 def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β where
