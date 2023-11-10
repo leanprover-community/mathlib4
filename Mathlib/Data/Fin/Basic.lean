@@ -785,7 +785,7 @@ def castLEEmb (h : n ≤ m) : Fin n ↪o Fin m :=
     (Fin.castLE h ∘ Fin.castSucc) = Fin.castLE (Nat.le_of_succ_le h) :=
   rfl
 
-@[simp] lemma castLE_refl (n : ℕ) : Fin.castLE (Nat.le_refl n) = id :=
+@[simp] lemma castLE_refl (n : ℕ) : Fin.castLE le_rfl = id :=
   rfl
 
 @[simp]
