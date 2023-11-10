@@ -59,7 +59,7 @@ lemma uniformPdf_eq (a b : ℝ) : uniformPdf a b = fun x ↦
     ENNReal.ofReal (if x ∈ Icc (a ⊓ b) (a ⊔ b) then (fun x ↦ 1 / abs (b - a)) x else 0) := by
   ext x; unfold uniformPdf uniformPdfReal indicator uIcc; congr
 
-lemma split_uniform_lintegral : (∫⁻ (x : ℝ), uniformPdf a b x) =
+lemma split_uniform_lintegral {a b : ℝ} : (∫⁻ (x : ℝ), uniformPdf a b x) =
     (∫⁻ (x : ℝ) in Iio (a ⊓ b) , uniformPdf a b x) + (∫⁻ (x : ℝ) in uIcc a b, uniformPdf a b x) +
     (∫⁻ (x : ℝ) in Ioi (a ⊔ b), uniformPdf a b x) := by
   have union : Iio (a ⊓ b) ∪ uIcc a b ∪ Ioi (a ⊔ b) = univ := by
