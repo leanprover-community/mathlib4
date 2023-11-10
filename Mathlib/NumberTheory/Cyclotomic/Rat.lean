@@ -327,8 +327,8 @@ theorem zeta_sub_one_prime [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) : Prime (hζ.toInteger - 1) := by
   by_cases htwo : p = 2
   · subst htwo
-    apply hζ.two_pow_zeta_sub_one_prime
-  · apply hζ.zeta_sub_one_prime_ne_two htwo
+    apply hζ.zeta_sub_one_prime_of_two_pow
+  · apply hζ.zeta_sub_one_prime_of_ne_two htwo
 
 /-- `ζ - 1` is prime if `ζ` is a primitive `p`-th root of unity. -/
 theorem zeta_sub_one_prime' [h : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p) :
