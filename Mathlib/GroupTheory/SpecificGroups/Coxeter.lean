@@ -27,8 +27,8 @@ And the six exceptional systems:
 
 ## Main definitions
 
-* `Matrix.IsCoxeter` : A matrix `IsCoxeter` if it is a symmetric matrix with ones on
-  the diagonal and off-diagonal elements are greater than or equal to two.
+* `Matrix.IsCoxeter` : A matrix `IsCoxeter` if it is a symmetric matrix with diagonal entries
+  equal to one and off-diagonal entries distinct from one.
 * `Matrix.CoxeterGroup` : The group presentation corresponding to a Coxeter matrix.
 * `CoxeterSystem` : A structure recording the isomorphism between a group `W` and the group
   presentation corresponding to a Coxeter matrix, i.e. `Matrix.CoxeterGroup B M`.
@@ -52,12 +52,12 @@ variable {B : Type*} [DecidableEq B]
 
 variable (M : Matrix B B ℕ)
 
-/-- A matrix `IsCoxeter` if it is a symmetric matrix with ones on the diagonal
-and off-diagonal elements are greater than or equal to two. -/
+/-- A matrix `IsCoxeter` if it is a symmetric matrix with diagonal entries equal to one
+and off-diagonal entries distinct from one. -/
 class Matrix.IsCoxeter (M : Matrix B B ℕ) : Prop where
   symmetric : M.IsSymm := by aesop
   diagonal : ∀ i : B, M i i = 1 := by aesop
-  off_diagonal : ∀ i j : B, i ≠ j → 2 ≤ M i j := by aesop
+  off_diagonal : ∀ i j : B, i ≠ j → M i j ≠ 1 := by aesop
 
 namespace CoxeterGroup
 
@@ -102,7 +102,7 @@ namespace CoxeterMatrix
 
 open Matrix
 
-variable (n : ℕ) [NeZero n]
+variable (n : ℕ)
 
 /-- The Coxeter matrix of family A(n).
 
@@ -126,10 +126,10 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-abbrev Bₙ : Matrix (Fin n) (Fin n) ℕ :=
-  Matrix.of fun i j =>
+abbrev Bₙ [NeZero n] : Matrix (Fin n) (Fin n) ℕ :=
+  Matrix.of fun i j : Fin n =>
     if i == j then 1
-      else (if i == (1 : Fin n) ∨ (j == (1 : Fin n)) then 4
+      else (if i == 1 ∨ j == 1 then 4
         else (if i == n - 1 ∨ j == n - 1 then 2 else 3))
 
 instance BₙIsCoxeter [NeZero n] : IsCoxeter (Bₙ n) where
@@ -145,26 +145,26 @@ The corresponding Coxeter-Dynkin diagram is:
     o
 ```
 -/
-abbrev Dₙ : Matrix (Fin n) (Fin n) ℕ :=
-  Matrix.of fun i j =>
+abbrev Dₙ [NeZero n] : Matrix (Fin n) (Fin n) ℕ :=
+  Matrix.of fun i j : Fin n =>
     if i == j then 1
-      else (if i == (1 : Fin n) ∨ (j == (1 : Fin n)) then 4
+      else (if i == 1 ∨ j == 1 then 4
         else (if i == n - 1 ∨ j == n - 1 then 2 else 3))
 
-instance DₙIsCoxeter : IsCoxeter (Dₙ n) where
+instance DₙIsCoxeter [NeZero n] : IsCoxeter (Dₙ n) where
 
-/-- The Coxeter matrix of family I₂(m).
+/-- The Coxeter matrix of m-indexed family I₂(m).
 
 The corresponding Coxeter-Dynkin diagram is:
 ```
-       n
+     m + 2
     o --- o
 ```
 -/
 abbrev I₂ₘ (m : ℕ) : Matrix (Fin 2) (Fin 2) ℕ :=
-  Matrix.of fun i j => if i == j then 1 else m
+  Matrix.of fun i j => if i == j then 1 else m + 2
 
-instance I₂ₘIsCoxeter (m : ℕ) (h : 2 ≤ m) : IsCoxeter (I₂ₘ m) where
+instance I₂ₘIsCoxeter (m : ℕ) : IsCoxeter (I₂ₘ m) where
 
 /-- The Coxeter matrix of system E₆.
 
