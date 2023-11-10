@@ -662,7 +662,7 @@ open Set in
 `a ∈ s ∖ {b}`. -/
 lemma tsum_eq_tsum_diff_singleton [T2Space α] {f : β → α} (s : Set β) {b : β} (hf₀ : f b = 0) :
     ∑' a : s, f a = ∑' a : (s \ {b} : Set β), f a :=
-  tsum_eq_tsum_diff s {b} fun a ha ↦ ha ▸ hf₀
+  tsum_eq_tsum_diff s {b} fun _ ha ↦ ha ▸ hf₀
 
 section ContinuousAdd
 
