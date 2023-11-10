@@ -473,7 +473,7 @@ def reduceProjStruct? (e : Expr) : MetaM (Option Expr) :=
         else
           throwError
             (m!"ill-formed expression, {sc} is the {pinfo.i}-th projection function" ++
-              m!" but {sarg} has not enough arguments")
+              m!" but {sarg} does not have enough arguments")
     else
       return none
 
