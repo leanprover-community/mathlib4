@@ -212,7 +212,7 @@ If `pf` is a proof of a strict inequality `(a : ℤ) < b`,
 and similarly if `pf` proves a negated weak inequality.
 -/
 def mkNonstrictIntProof (pf : Expr) : MetaM Expr := do
-  match (← inferType pf).getAppFnArgs with
+  match (← whnfR (← inferType pf)).getAppFnArgs with
   | (``LT.lt, #[_, _, a, b]) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
   | (``GT.gt, #[_, _, a, b]) =>
@@ -233,7 +233,7 @@ into a proof of `t1 ≤ t2 + 1`. -/
 def strengthenStrictInt : Preprocessor where
   name := "strengthen strict inequalities over int"
   transform h := do
-    if isStrictIntComparison (← inferType h) then
+    if isStrictIntComparison (← whnfR (← inferType h)) then
       return [← mkNonstrictIntProof h]
     else
       return [h]

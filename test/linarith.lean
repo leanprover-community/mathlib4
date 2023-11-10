@@ -538,3 +538,8 @@ example {α : Type} [LinearOrderedCommRing α]
 example (x : ℚ) (h : x * (2⁻¹ + 2 / 3) = 1) : x = 6 / 7 := by linarith
 
 example {α} [LinearOrderedCommSemiring α] (x : α) (_ : 0 ≤ x) : 0 ≤ 1 := by linarith
+
+-- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/linarith.20fails.20in.20a.20simple.20example/near/401267407.
+example (k : ℤ) (h : k < 1) (h₁ : -1 < k) : k = 0 := by
+  change -1 < _ at h₁
+  linarith
