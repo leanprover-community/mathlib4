@@ -591,7 +591,7 @@ theorem sSup_eq_conGen (S : Set (Con M)) :
 additive congruence relation containing the supremum of the set's image under the map to the
 underlying binary relation."]
 theorem sSup_def {S : Set (Con M)} :
-    sSup S = conGen (sSup (@Set.image (Con M) (M → M → Prop) ((⇑) : Con M → M → M → Prop) S)) := by
+    sSup S = conGen (sSup ((⇑) '' S)) := by
   rw [sSup_eq_conGen, sSup_image]
   congr with (x y)
   simp only [sSup_image, iSup_apply, iSup_Prop_eq, exists_prop, rel_eq_coe]
