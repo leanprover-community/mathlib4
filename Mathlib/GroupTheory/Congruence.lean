@@ -441,10 +441,11 @@ theorem sInf_toSetoid (S : Set (Con M)) : (sInf S).toSetoid = sInf (toSetoid '' 
 
 /-- The infimum of a set of congruence relations is the same as the infimum of the set's image
     under the map to the underlying binary relation. -/
-@[to_additive "The infimum of a set of additive congruence relations is the same as the infimum
-of the set's image under the map to the underlying binary relation."]
+@[to_additive (attr := simp, norm_cast)
+  "The infimum of a set of additive congruence relations is the same as the infimum
+  of the set's image under the map to the underlying binary relation."]
 theorem coe_sInf (S : Set (Con M)) :
-    ⇑(sInf S) = sInf (@Set.image (Con M) (M → M → Prop) (↑) S) := by
+    ⇑(sInf S) = sInf ((⇑) '' S) := by
   ext
   simp only [sInf_image, iInf_apply, iInf_Prop_eq]
   rfl
@@ -477,8 +478,9 @@ instance : CompleteLattice (Con M) where
 
 /-- The infimum of two congruence relations equals the infimum of the underlying binary
     operations. -/
-@[to_additive "The infimum of two additive congruence relations equals the infimum of the
-underlying binary operations."]
+@[to_additive (attr := simp, norm_cast)
+  "The infimum of two additive congruence relations equals the infimum of the underlying binary
+  operations."]
 theorem coe_inf {c d : Con M} : ⇑(c ⊓ d) = ⇑c ⊓ ⇑d :=
   rfl
 #align con.inf_def Con.coe_inf
