@@ -19,7 +19,8 @@ then `f * g` tends to positive infinity.
 -/
 
 
-open Set Filter TopologicalSpace Function Topology Classical
+open Set Filter TopologicalSpace Function
+open scoped Pointwise Topology
 open OrderDual (toDual ofDual)
 
 /-- If a (possibly non-unital and/or non-associative) ring `R` admits a submultiplicative
@@ -117,20 +118,22 @@ theorem Filter.Tendsto.neg_mul_atBot {C : 𝕜} (hC : C < 0) (hf : Tendsto f l (
   simpa only [mul_comm] using hg.atBot_mul_neg hC hf
 #align filter.tendsto.neg_mul_at_bot Filter.Tendsto.neg_mul_atBot
 
+@[simp]
+lemma inv_atTop₀ : (atTop : Filter 𝕜)⁻¹ = 𝓝[>] 0 :=
+  (((atTop_basis_Ioi' (0 : 𝕜)).map _).comp_surjective inv_surjective).eq_of_same_basis <|
+    (nhdsWithin_Ioi_basis _).congr (by simp) fun a ha ↦ by simp [inv_Ioi (inv_pos.2 ha)]
+
+@[simp] lemma inv_nhdsWithin_Ioi_zero : (𝓝[>] (0 : 𝕜))⁻¹ = atTop := by
+  rw [← inv_atTop₀, inv_inv]
+
 /-- The function `x ↦ x⁻¹` tends to `+∞` on the right of `0`. -/
-theorem tendsto_inv_zero_atTop : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 : 𝕜)) atTop := by
-  refine' (atTop_basis' 1).tendsto_right_iff.2 fun b hb => _
-  have hb' : 0 < b := by positivity
-  filter_upwards [Ioc_mem_nhdsWithin_Ioi
-      ⟨le_rfl, inv_pos.2 hb'⟩] with x hx using(le_inv hx.1 hb').1 hx.2
+theorem tendsto_inv_zero_atTop : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 : 𝕜)) atTop :=
+  inv_nhdsWithin_Ioi_zero.le
 #align tendsto_inv_zero_at_top tendsto_inv_zero_atTop
 
 /-- The function `r ↦ r⁻¹` tends to `0` on the right as `r → +∞`. -/
-theorem tendsto_inv_atTop_zero' : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝[>] (0 : 𝕜)) := by
-  refine (atTop_basis.tendsto_iff ⟨fun s => mem_nhdsWithin_Ioi_iff_exists_Ioc_subset⟩).2 ?_
-  refine fun b hb => ⟨b⁻¹, trivial, fun x hx => ?_⟩
-  have : 0 < x := lt_of_lt_of_le (inv_pos.2 hb) hx
-  exact ⟨inv_pos.2 this, (inv_le this hb).2 hx⟩
+theorem tendsto_inv_atTop_zero' : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝[>] (0 : 𝕜)) :=
+  inv_atTop₀.le
 #align tendsto_inv_at_top_zero' tendsto_inv_atTop_zero'
 
 theorem tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0) :=
