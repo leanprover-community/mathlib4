@@ -63,13 +63,13 @@ theorem card : Fintype.card KleinFour = 4 :=
 theorem nat_card : Nat.card KleinFour = 4 := by
   simp only [Nat.card_eq_fintype_card]
 
-@[simp] theorem a_order_two : a ^ 2 = 1 :=
+@[simp] theorem a_sq : a ^ 2 = 1 :=
   rfl
 
-@[simp] theorem b_order_two : b ^ 2 = 1 :=
+@[simp] theorem b_sq : b ^ 2 = 1 :=
   rfl
 
-@[simp] theorem c_order_two : c ^ 2 = 1 :=
+@[simp] theorem c_sq : c ^ 2 = 1 :=
   rfl
 
 @[simp] theorem orderOf_a : orderOf a = 2 :=
@@ -93,7 +93,8 @@ theorem notIsCyclic : ¬ IsCyclic KleinFour := by
   contradiction
 
 /-- Klein four-group is isomorphic to the Dihedral group of order 4. -/
-def mulEquivDihedralGroup2 : KleinFour ≃* DihedralGroup 2 where
+@[simps]
+def mulEquivDihedralGroupTwo : KleinFour ≃* DihedralGroup 2 where
   toFun := fun
     | (0, 0) => 1
     | (0, 1) => sr 1
