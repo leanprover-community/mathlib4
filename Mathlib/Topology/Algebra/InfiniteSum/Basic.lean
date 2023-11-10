@@ -644,7 +644,7 @@ theorem tsum_range {g : γ → β} (f : β → α) (hg : Injective g) :
 
 open Set in
 /-- If `f b = 0`, then the sum over all `f a` is the same as the sum over `f a` for `a ≠ b`. -/
-lemma tsum_eq_tsum_diff_singleton [T2Space α] {f : β → α} (s : Set β) (b : β) (hf₀ : f b = 0) :
+lemma tsum_eq_tsum_diff_singleton {f : β → α} (s : Set β) {b : β} (hf₀ : f b = 0) :
     ∑' a : s, f a = ∑' a : (s \ {b} : Set β), f a := by
   simp_rw [_root_.tsum_subtype]
   refine tsum_congr fun b' ↦ ?_
