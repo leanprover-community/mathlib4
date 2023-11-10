@@ -602,4 +602,13 @@ theorem IsCyclic.exponent_eq_zero_of_infinite [Group α] [IsCyclic α] [Infinite
 #align is_cyclic.exponent_eq_zero_of_infinite IsCyclic.exponent_eq_zero_of_infinite
 #align is_add_cyclic.exponent_eq_zero_of_infinite IsAddCyclic.exponent_eq_zero_of_infinite
 
+instance ZMod.instIsAddCyclic (n : ℕ) : IsAddCyclic (ZMod n) where
+  exists_generator := ⟨1, fun n ↦ ⟨n, by simp⟩⟩
+
+@[simp]
+protected theorem ZMod.exponent (n : ℕ) : AddMonoid.exponent (ZMod n) = n := by
+  cases n
+  · rw [IsAddCyclic.exponent_eq_zero_of_infinite]
+  · rw [IsAddCyclic.exponent_eq_card, card]
+
 end Exponent
