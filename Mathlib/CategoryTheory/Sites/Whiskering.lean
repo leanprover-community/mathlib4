@@ -42,16 +42,16 @@ variable {U : C} (R : Presieve U)
 variable (F G H : A ⥤ B) (η : F ⟶ G) (γ : G ⟶ H)
 
 /-- Describes the property of a functor to "preserve sheaves". -/
-class Functor.HasSheafCompose : Prop where
+class GrothendieckTopology.HasSheafCompose : Prop where
   /-- For every sheaf `P`, `P ⋙ F` is a sheaf. -/
   isSheaf (P : Cᵒᵖ ⥤ A) (hP : Presheaf.IsSheaf J P) : Presheaf.IsSheaf J (P ⋙ F)
 
-variable [F.HasSheafCompose J] [G.HasSheafCompose J] [H.HasSheafCompose J]
+variable [J.HasSheafCompose F] [J.HasSheafCompose G] [J.HasSheafCompose H]
 
 /-- Composing a functor which `HasSheafCompose`, yields a functor between sheaf categories. -/
 @[simps]
-def sheafCompose [F.HasSheafCompose J] : Sheaf J A ⥤ Sheaf J B where
-  obj G := ⟨G.val ⋙ F, Functor.HasSheafCompose.isSheaf G.val G.2⟩
+def sheafCompose : Sheaf J A ⥤ Sheaf J B where
+  obj G := ⟨G.val ⋙ F, GrothendieckTopology.HasSheafCompose.isSheaf G.val G.2⟩
   map η := ⟨whiskerRight η.val _⟩
   map_id _ := Sheaf.Hom.ext _ _ <| whiskerRight_id _
   map_comp _ _ := Sheaf.Hom.ext _ _ <| whiskerRight_comp _ _ _
@@ -149,29 +149,20 @@ def mapMultifork :
 
 end GrothendieckTopology.Cover
 
-section Multicospan
-
-variable [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan F]
-variable (F)
-
-theorem Presheaf.IsSheaf.comp {P : Cᵒᵖ ⥤ A} (hP : Presheaf.IsSheaf J P) :
-    Presheaf.IsSheaf J (P ⋙ F) := by
-  rw [Presheaf.isSheaf_iff_multifork] at hP ⊢
-  intro X S
-  obtain ⟨h⟩ := hP X S
-  replace h := isLimitOfPreserves F h
-  replace h := Limits.IsLimit.ofIsoLimit h (S.mapMultifork F P)
-  exact ⟨Limits.IsLimit.postcomposeHomEquiv (S.multicospanComp F P) _ h⟩
-#align category_theory.presheaf.is_sheaf.comp CategoryTheory.Presheaf.IsSheaf.comp
-
-instance hasSheafCompose_of_preservesMulticospan : F.HasSheafCompose J where
-  isSheaf _ hP := Presheaf.IsSheaf.comp J F hP
-
-end Multicospan
-
-section Preserves
-
-variable [PreservesLimitsOfSize.{v₁, max u₁ v₁} F]
+/--
+Composing a sheaf with a functor preserving the limit of `(S.index P).multicospan` yields a functor
+between sheaf categories.
+-/
+instance hasSheafCompose_of_preservesMulticospan (F : A ⥤ B)
+    [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan F] :
+    J.HasSheafCompose F where
+  isSheaf P hP := by
+    rw [Presheaf.isSheaf_iff_multifork] at hP ⊢
+    intro X S
+    obtain ⟨h⟩ := hP X S
+    replace h := isLimitOfPreserves F h
+    replace h := Limits.IsLimit.ofIsoLimit h (S.mapMultifork F P)
+    exact ⟨Limits.IsLimit.postcomposeHomEquiv (S.multicospanComp F P) _ h⟩
 
 /--
 Composing a sheaf with a functor preserving limits of the same size as the hom sets in `C` yields a
@@ -180,9 +171,8 @@ functor between sheaf categories.
 Note: the size of the limit that `F` is required to preserve in
 `hasSheafCompose_of_preservesMulticospan` is in general larger than this.
 -/
-instance hasSheafCompose_of_preservesLimitsOfSize : F.HasSheafCompose J where
+instance hasSheafCompose_of_preservesLimitsOfSize [PreservesLimitsOfSize.{v₁, max u₁ v₁} F] :
+    J.HasSheafCompose F where
   isSheaf _ hP := Presheaf.isSheaf_comp_of_isSheaf J _ F hP
-
-end Preserves
 
 end CategoryTheory
