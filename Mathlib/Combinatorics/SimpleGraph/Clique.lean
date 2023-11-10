@@ -393,7 +393,7 @@ theorem cliqueFreeOn_of_card_lt {s : Finset α} (h : s.card < n) : G.CliqueFreeO
   fun _t hts ht => h.not_le <| ht.2.symm.trans_le <| card_mono hts
 #align simple_graph.clique_free_on_of_card_lt SimpleGraph.cliqueFreeOn_of_card_lt
 
---TOOD: Restate using `simple_graph.indep_set` once we have it
+-- TODO: Restate using `SimpleGraph.IndepSet` once we have it
 @[simp]
 theorem cliqueFreeOn_two : G.CliqueFreeOn s 2 ↔ s.Pairwise (G.Adjᶜ) := by
   classical
