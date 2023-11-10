@@ -538,7 +538,7 @@ def iota : ℕ → Stream' ℕ :=
 #align lazy_list.iota Stream'.iota
 
 /-- The stream of natural numbers. -/
-abbrev nats : Stream' ℕ :=
+def nats : Stream' ℕ :=
   iota 0
 #align stream.nats Stream'.nats
 
@@ -549,15 +549,24 @@ theorem head_iota (n : ℕ) : head (iota n) = n :=
   head_iterate _ _
 
 @[simp]
+theorem head_nats : head nats = 0 :=
+  head_iota 0
+
+@[simp]
 theorem tail_iota (n : ℕ) : tail (iota n) = iota (n + 1) :=
   tail_iterate _ _
+
+@[simp]
+theorem tail_nats : tail nats = iota 1 :=
+  tail_iota 0
 
 @[simp]
 theorem get_iota (m n : ℕ) : get (iota m) n = m + n := by
   simp [iota, Nat.succ_iterate]
 
+@[simp]
 theorem get_nats (n : ℕ) : get nats n = n := by
-  simp
+  simp [nats]
 #align stream.nth_nats Stream'.get_nats
 
 theorem iota_eq (n : ℕ) : iota n = n ::ₛ iota (n + 1) := by
@@ -640,9 +649,13 @@ theorem zipWith_eq_zipWithComputable : @zipWith.{u, v, w} = @zipWithComputable.{
 def zip : Stream' α → Stream' β → Stream' (α × β) :=
   zipWith Prod.mk
 
+/-- Like `enum` but it allows you to specify the initial index. -/
+def enumFrom (n : ℕ) (s : Stream' α) : Stream' (ℕ × α) :=
+  zip (iota n) s
+
 /-- Enumerate a stream by tagging each element with its index. -/
 def enum (s : Stream' α) : Stream' (ℕ × α) :=
-  zip nats s
+  enumFrom 0 s
 #align stream.enum Stream'.enum
 
 section Zip
@@ -679,8 +692,21 @@ theorem enum_eq_zip (s : Stream' α) : enum s = zip nats s :=
 #align stream.enum_eq_zip Stream'.enum_eq_zip
 
 @[simp]
+theorem head_enumFrom (n : ℕ) (s : Stream' α) : head (enumFrom n s) = (n, head s) :=
+  head_zip (iota n) s
+
+@[simp]
+theorem tail_enumFrom (n : ℕ) (s : Stream' α) : tail (enumFrom n s) = enumFrom (n + 1) (tail s) :=
+  tail_zip (iota n) s
+
+@[simp]
+theorem get_enumFrom (m : ℕ) (s : Stream' α) (n : ℕ) :
+    get (enumFrom m s) n = (m + n, s.get n) := by
+  simp [enumFrom]
+
+@[simp]
 theorem get_enum (s : Stream' α) (n : ℕ) : get (enum s) n = (n, s.get n) := by
-  simp [enum_eq_zip]
+  simp [enum]
 #align stream.nth_enum Stream'.get_enum
 
 end Zip
@@ -693,7 +719,7 @@ def const (a : α) : Stream' α where
 instance [Inhabited α] : Inhabited (Stream' α) :=
   ⟨Stream'.const default⟩
 
-def corecOn (a : α) (f : α → β) (g : α → α) : Stream' β :=
+abbrev corecOn (a : α) (f : α → β) (g : α → α) : Stream' β :=
   corec f g a
 #align stream.corec_on Stream'.corecOn
 
@@ -787,10 +813,5 @@ def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β where
 
 infixl:75 " ⊛ " => apply
 -- PORTING NOTE: "input as \o*" was here but doesn't work for the above notation
-
-/-- The stream of natural numbers: `Stream'.get n Stream'.nats = n`. -/
-def nats : Stream' ℕ where
-  get n := n
-#align stream.nats Stream'.nats
 
 end Stream'
