@@ -1016,14 +1016,10 @@ section ExtendFun
 abbrev extendFun {α : Type*} {n : ℕ} (f : Fin n → α) (a : α) : ℕ → α :=
   Subtype.extendFun (f ∘ equivSubtype.symm) (fun _ _ => a)
 
-example (i : Fin n) : i.val = (i.castAdd m).val := by
-  rfl
-
 @[simp] lemma extendFun_val' {α a n} (m) {f : Fin (n+m) → α} {i : Fin n} :
     extendFun f a i.val = f (i.castAdd _) := by
-  have : i.val < n + m := Nat.lt_of_lt_of_le (i.prop) (Nat.le_add_right ..)
-  simp only [extendFun, Subtype.extendFun, Set.piecewiseMem, Membership.mem, Set.Mem, setOf, this,
-    comp_apply, equivSubtype_symm_apply, dite_true]
+  have : i.val = (Subtype.val <| equivSubtype <| i.castAdd m) := rfl
+  rw [this, extendFun, Subtype.extendFun_val]
   rfl
 
 @[simp] lemma extendFun_comp_val' {α a n} (m) {f : Fin (n+m) → α} :
