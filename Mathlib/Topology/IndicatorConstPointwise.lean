@@ -58,35 +58,3 @@ lemma tendsto_indicator_const_iff_tendsto_pi_pure {β : Type*} [Zero β] [Topolo
   rw [tendsto_indicator_const_iff_forall_eventually _ b, tendsto_pi]
   simp_rw [tendsto_pure]
   aesop
-
-/- TODO: Update the following
-
-    tendsto_indicator_cthickening_indicator_closure Mathlib.Topology.MetricSpace.ThickenedIndicator
-    ∀ {α : Type u_1} [inst : PseudoEMetricSpace α] {β : Type u_2} [inst_1 : Zero β] [inst_2 : TopologicalSpace β] (f : α → β) (E : Set α), Filter.Tendsto (fun δ => Set.indicator (Metric.cthickening δ E) f) (nhds 0) (nhds (Set.indicator (closure E) f))
-
-    tendsto_indicator_thickening_indicator_closure Mathlib.Topology.MetricSpace.ThickenedIndicator
-    ∀ {α : Type u_1} [inst : PseudoEMetricSpace α] {β : Type u_2} [inst_1 : Zero β] [inst_2 : TopologicalSpace β] (f : α → β) (E : Set α), Filter.Tendsto (fun δ => Set.indicator (Metric.thickening δ E) f) (nhdsWithin 0 (Set.Ioi 0)) (nhds (Set.indicator (closure E) f))
-
-
-
-
-
-    MeasureTheory.tendsto_measure_of_tendsto_indicator_of_isFiniteMeasure Mathlib.MeasureTheory.Integral.Indicator
-    ∀ {α : Type u_1} [inst : MeasurableSpace α] {A : Set α} {ι : Type u_2} (L : Filter ι) [inst_1 : Filter.IsCountablyGenerated L] {As : ι → Set α} [inst_2 : Filter.NeBot L] (μ : MeasureTheory.Measure α) [inst_3 : MeasureTheory.IsFiniteMeasure μ], (∀ (i : ι), MeasurableSet (As i)) → Filter.Tendsto (fun i => Set.indicator (As i) 1) L (nhds (Set.indicator A 1)) → Filter.Tendsto (fun i => ↑↑μ (As i)) L (nhds (↑↑μ A))
-
-    MeasureTheory.tendsto_measure_of_tendsto_indicator Mathlib.MeasureTheory.Integral.Indicator
-    ∀ {α : Type u_1} [inst : MeasurableSpace α] {A : Set α} {ι : Type u_2} (L : Filter ι) [inst_1 : Filter.IsCountablyGenerated L] {As : ι → Set α} [inst_2 : Filter.NeBot L] {μ : MeasureTheory.Measure α}, (∀ (i : ι), MeasurableSet (As i)) → ∀ {B : Set α}, MeasurableSet B → ↑↑μ B ≠ ⊤ → (∀ᶠ (i : ι) in L, As i ⊆ B) → Filter.Tendsto (fun i => Set.indicator (As i) 1) L (nhds (Set.indicator A 1)) → Filter.Tendsto (fun i => ↑↑μ (As i)) L (nhds (↑↑μ A))
-
-    MeasureTheory.tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure Mathlib.MeasureTheory.Integral.Lebesgue
-    ∀ {α : Type u_5} [inst : MeasurableSpace α] {A : Set α} {ι : Type u_6} (L : Filter ι) {As : ι → Set α} [inst_1 : Filter.IsCountablyGenerated L] {μ : MeasureTheory.Measure α} [inst_2 : MeasureTheory.IsFiniteMeasure μ], MeasurableSet A → (∀ (i : ι), MeasurableSet (As i)) → (∀ᵐ (x : α) ∂μ, Filter.Tendsto (fun i => Set.indicator (As i) 1 x) L (nhds (Set.indicator A 1 x))) → Filter.Tendsto (fun i => ↑↑μ (As i)) L (nhds (↑↑μ A))
-
-    MeasureTheory.tendsto_measure_of_ae_tendsto_indicator Mathlib.MeasureTheory.Integral.Lebesgue
-    ∀ {α : Type u_5} [inst : MeasurableSpace α] {A : Set α} {ι : Type u_6} (L : Filter ι) [inst_1 : Filter.IsCountablyGenerated L] {As : ι → Set α} {μ : MeasureTheory.Measure α}, MeasurableSet A → (∀ (i : ι), MeasurableSet (As i)) → ∀ {B : Set α}, MeasurableSet B → ↑↑μ B ≠ ⊤ → (∀ᶠ (i : ι) in L, As i ⊆ B) → (∀ᵐ (x : α) ∂μ, Filter.Tendsto (fun i => Set.indicator (As i) 1 x) L (nhds (Set.indicator A 1 x))) → Filter.Tendsto (fun i => ↑↑μ (As i)) L (nhds (↑↑μ A))
-
-    measurableSet_of_tendsto_indicator Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
-    ∀ {α : Type u_3} [inst : MeasurableSpace α] {A : Set α} {ι : Type u_4} (L : Filter ι) [inst_1 : Filter.IsCountablyGenerated L] {As : ι → Set α} [inst_2 : Filter.NeBot L], (∀ (i : ι), MeasurableSet (As i)) → Filter.Tendsto (fun i => Set.indicator (As i) 1) L (nhds (Set.indicator A 1)) → MeasurableSet A
-
-    nullMeasurableSet_of_tendsto_indicator Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
-    ∀ {α : Type u_3} [inst : MeasurableSpace α] {A : Set α} {ι : Type u_4} (L : Filter ι) [inst_1 : Filter.IsCountablyGenerated L] {As : ι → Set α} [inst_2 : Filter.NeBot L] {μ : MeasureTheory.Measure α}, (∀ (i : ι), MeasureTheory.NullMeasurableSet (As i)) → (∀ᵐ (x : α) ∂μ, Filter.Tendsto (fun i => Set.indicator (As i) 1 x) L (nhds (Set.indicator A 1 x))) → MeasureTheory.NullMeasurableSet A
-
--/
