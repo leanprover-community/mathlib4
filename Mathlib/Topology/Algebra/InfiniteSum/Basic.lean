@@ -31,9 +31,9 @@ set_option autoImplicit true
 
 noncomputable section
 
-open Classical Filter Finset Function
+open Filter Finset Function
 
-open BigOperators Classical Topology
+open scoped BigOperators Topology
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
@@ -63,6 +63,7 @@ def Summable (f : β → α) : Prop :=
   ∃ a, HasSum f a
 #align summable Summable
 
+open Classical in
 /-- `∑' i, f i` is the sum of `f` it exists, or 0 otherwise. -/
 irreducible_def tsum {β} (f : β → α) :=
   if h : Summable f then
@@ -299,8 +300,8 @@ theorem HasSum.tendsto_sum_nat {f : ℕ → α} (h : HasSum f a) :
   h.comp tendsto_finset_range
 #align has_sum.tendsto_sum_nat HasSum.tendsto_sum_nat
 
-theorem HasSum.unique {a₁ a₂ : α} [T2Space α] : HasSum f a₁ → HasSum f a₂ → a₁ = a₂ :=
-  tendsto_nhds_unique
+theorem HasSum.unique {a₁ a₂ : α} [T2Space α] : HasSum f a₁ → HasSum f a₂ → a₁ = a₂ := by
+  classical exact tendsto_nhds_unique
 #align has_sum.unique HasSum.unique
 
 theorem Summable.hasSum_iff_tendsto_nat [T2Space α] {f : ℕ → α} {a : α} (hf : Summable f) :
@@ -329,8 +330,9 @@ theorem Summable.add (hf : Summable f) (hg : Summable g) : Summable fun b => f b
 #align summable.add Summable.add
 
 theorem hasSum_sum {f : γ → β → α} {a : γ → α} {s : Finset γ} :
-    (∀ i ∈ s, HasSum (f i) (a i)) → HasSum (fun b => ∑ i in s, f i b) (∑ i in s, a i) :=
-  Finset.induction_on s (by simp only [hasSum_zero, sum_empty, forall_true_iff]) <| by
+    (∀ i ∈ s, HasSum (f i) (a i)) → HasSum (fun b => ∑ i in s, f i b) (∑ i in s, a i) := by
+  classical
+  exact Finset.induction_on s (by simp only [hasSum_zero, sum_empty, forall_true_iff]) <| by
     -- Porting note: with some help, `simp` used to be able to close the goal
     simp (config := { contextual := true }) only [mem_insert, forall_eq_or_imp, not_false_iff,
       sum_insert, and_imp]
@@ -399,6 +401,7 @@ theorem Summable.even_add_odd {f : ℕ → α} (he : Summable fun k => f (2 * k)
 
 theorem HasSum.sigma [RegularSpace α] {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g : β → α} {a : α}
     (ha : HasSum f a) (hf : ∀ b, HasSum (fun c => f ⟨b, c⟩) (g b)) : HasSum g a := by
+  classical
   refine' (atTop_basis.tendsto_iff (closed_nhds_basis a)).mpr _
   rintro s ⟨hs, hsc⟩
   rcases mem_atTop_sets.mp (ha hs) with ⟨u, hu⟩
@@ -437,7 +440,7 @@ theorem HasSum.sigma_of_hasSum [T3Space α] {γ : β → Type*} {f : (Σb : β, 
 Rather than showing that `f.update` has a specific sum in terms of `HasSum`,
 it gives a relationship between the sums of `f` and `f.update` given that both exist. -/
 theorem HasSum.update' {α β : Type*} [TopologicalSpace α] [AddCommMonoid α] [T2Space α]
-    [ContinuousAdd α] {f : β → α} {a a' : α} (hf : HasSum f a) (b : β) (x : α)
+    [ContinuousAdd α] [DecidableEq β] {f : β → α} {a a' : α} (hf : HasSum f a) (b : β) (x : α)
     (hf' : HasSum (update f b x) a') : a + x = a' + f b := by
   have : ∀ b', f b' + ite (b' = b) x 0 = update f b x b' + ite (b' = b) (f b) 0 := by
     intro b'
@@ -453,7 +456,7 @@ theorem HasSum.update' {α β : Type*} [TopologicalSpace α] [AddCommMonoid α] 
 Rather than showing that the `ite` expression has a specific sum in terms of `HasSum`,
 it gives a relationship between the sums of `f` and `ite (n = b) 0 (f n)` given that both exist. -/
 theorem eq_add_of_hasSum_ite {α β : Type*} [TopologicalSpace α] [AddCommMonoid α] [T2Space α]
-    [ContinuousAdd α] {f : β → α} {a : α} (hf : HasSum f a) (b : β) (a' : α)
+    [ContinuousAdd α] [DecidableEq β] {f : β → α} {a : α} (hf : HasSum f a) (b : β) (a' : α)
     (hf' : HasSum (fun n => ite (n = b) 0 (f n)) a') : a = a' + f b := by
   refine' (add_zero a).symm.trans (hf.update' b 0 _)
   convert hf'
@@ -654,7 +657,7 @@ theorem tsum_sum {f : γ → β → α} {s : Finset γ} (hf : ∀ i ∈ s, Summa
 
 /-- Version of `tsum_eq_add_tsum_ite` for `AddCommMonoid` rather than `AddCommGroup`.
 Requires a different convergence assumption involving `Function.update`. -/
-theorem tsum_eq_add_tsum_ite' {f : β → α} (b : β) (hf : Summable (update f b 0)) :
+theorem tsum_eq_add_tsum_ite' [DecidableEq β ]{f : β → α} (b : β) (hf : Summable (update f b 0)) :
     ∑' x, f x = f b + ∑' x, ite (x = b) 0 (f x) :=
   calc
     ∑' x, f x = ∑' x, (ite (x = b) (f x) 0 + update f b 0 x) :=
@@ -1159,11 +1162,13 @@ variable [CompleteSpace α]
 
 theorem summable_iff_vanishing :
     Summable f ↔ ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∑ b in t, f b) ∈ e := by
+  classical
   rw [summable_iff_cauchySeq_finset, cauchySeq_finset_iff_vanishing]
 #align summable_iff_vanishing summable_iff_vanishing
 
 theorem summable_iff_tsum_vanishing : Summable f ↔
     ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t : Set β, Disjoint t s → (∑' b : t, f b) ∈ e := by
+  classical
   rw [summable_iff_cauchySeq_finset, cauchySeq_finset_iff_tsum_vanishing]
 
 theorem summable_iff_nat_tsum_vanishing {f : ℕ → α} : Summable f ↔
@@ -1172,8 +1177,9 @@ theorem summable_iff_nat_tsum_vanishing {f : ℕ → α} : Summable f ↔
 
 -- TODO: generalize to monoid with a uniform continuous subtraction operator: `(a + b) - b = a`
 theorem Summable.summable_of_eq_zero_or_self (hf : Summable f) (h : ∀ b, g b = 0 ∨ g b = f b) :
-    Summable g :=
-  summable_iff_vanishing.2 fun e he =>
+    Summable g := by
+  classical
+  exact summable_iff_vanishing.2 fun e he =>
     let ⟨s, hs⟩ := summable_iff_vanishing.1 hf e he
     ⟨s, fun t ht =>
       have eq : ∑ b in t.filter fun b => g b = f b, f b = ∑ b in t, g b :=
@@ -1256,22 +1262,25 @@ section TopologicalGroup
 variable {G : Type*} [TopologicalSpace G] [AddCommGroup G] [TopologicalAddGroup G] {f : α → G}
 
 theorem Summable.vanishing (hf : Summable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (0 : G)) :
-    ∃ s : Finset α, ∀ t, Disjoint t s → (∑ k in t, f k) ∈ e :=
+    ∃ s : Finset α, ∀ t, Disjoint t s → (∑ k in t, f k) ∈ e := by
+  classical
   letI : UniformSpace G := TopologicalAddGroup.toUniformSpace G
   have : UniformAddGroup G := comm_topologicalAddGroup_is_uniform
-  cauchySeq_finset_iff_vanishing.1 hf.hasSum.cauchySeq e he
+  exact cauchySeq_finset_iff_vanishing.1 hf.hasSum.cauchySeq e he
 #align summable.vanishing Summable.vanishing
 
 theorem Summable.tsum_vanishing (hf : Summable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 0) :
-    ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∑' b : t, f b) ∈ e :=
+    ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∑' b : t, f b) ∈ e := by
+  classical
   letI : UniformSpace G := TopologicalAddGroup.toUniformSpace G
   have : UniformAddGroup G := comm_topologicalAddGroup_is_uniform
-  cauchySeq_finset_iff_tsum_vanishing.1 hf.hasSum.cauchySeq e he
+  exact cauchySeq_finset_iff_tsum_vanishing.1 hf.hasSum.cauchySeq e he
 
 /-- The sum over the complement of a finset tends to `0` when the finset grows to cover the whole
 space. This does not need a summability assumption, as otherwise all sums are zero. -/
 theorem tendsto_tsum_compl_atTop_zero (f : α → G) :
     Tendsto (fun s : Finset α ↦ ∑' a : { x // x ∉ s }, f a) atTop (𝓝 0) := by
+  classical
   by_cases H : Summable f
   · intro e he
     obtain ⟨s, hs⟩ := H.tsum_vanishing he
@@ -1385,7 +1394,7 @@ theorem Pi.hasSum {f : ι → ∀ x, π x} {g : ∀ x, π x} :
 #align pi.has_sum Pi.hasSum
 
 theorem Pi.summable {f : ι → ∀ x, π x} : Summable f ↔ ∀ x, Summable fun i => f i x := by
-  simp only [Summable, Pi.hasSum, skolem]
+  simp only [Summable, Pi.hasSum, Classical.skolem]
 #align pi.summable Pi.summable
 
 theorem tsum_apply [∀ x, T2Space (π x)] {f : ι → ∀ x, π x} {x : α} (hf : Summable f) :
