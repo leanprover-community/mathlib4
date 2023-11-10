@@ -227,6 +227,11 @@ theorem disjoint_nhdsSet_cobounded {s : Set α} (hs : IsCompact s) : Disjoint (�
 theorem disjoint_cobounded_nhdsSet {s : Set α} (hs : IsCompact s) : Disjoint (cobounded α) (𝓝ˢ s) :=
   (disjoint_nhdsSet_cobounded hs).symm
 
+theorem exists_isBounded_image_of_tendsto {α β : Type*} [PseudoMetricSpace β]
+    {l : Filter α} {f : α → β} {x : β} (hf : Tendsto f l (𝓝 x)) :
+    ∃ s ∈ l, IsBounded (f '' s) :=
+  (l.basis_sets.map f).disjoint_iff_left.mp <| (disjoint_nhds_cobounded x).mono_left hf
+
 /-- If a function is continuous within a set `s` at every point of a compact set `k`, then it is
 bounded on some open neighborhood of `k` in `s`. -/
 theorem exists_isOpen_isBounded_image_inter_of_isCompact_of_forall_continuousWithinAt
