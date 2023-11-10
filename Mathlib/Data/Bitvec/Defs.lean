@@ -150,20 +150,22 @@ def addLsb (r : ℕ) (b : Bool) :=
 ## Structural
 -/
 
+/-- Turn a `Bool` into a bitvector of length `1` -/
+def ofBool : Bool → BitVec 1
+  | true  => 1
+  | false => 0
+
 /-- The empty bitvector -/
 def nil : BitVec 0 :=
   BitVec.zero 0
 
-/-- Prepend a single bit to the front of a bitvector. The new bit is the least significant bit -/
-def consLsb {n} (x : Bool) (xs : BitVec n) : BitVec (n+1) :=
-  BitVec.ofNat (n + 1) (2 * BitVec.toNat xs + bif x then 1 else 0)
+/-- Append a single bit to the end of a bitvector, using big endian order (see `append`).
+    That is, the new bit is the least significant bit. -/
+def concat {n} (msbs : BitVec n) (lsb : Bool) : BitVec (n+1) := msbs ++ (ofBool lsb)
 
-/-- Append a single bit to the end of a bitvector. The new bit is the most significant bit -/
-def concatMsb {n} (x : Bool) (xs : BitVec n) : BitVec (n+1) :=
-  BitVec.ofNat (n + 1) (BitVec.toNat xs + bif x then 2^n else 0)
-
-/-- Drop the most significant bit from a bitvector -/
-def dropMsb {n} (xs : BitVec (n+1)) : BitVec n :=
-  BitVec.ofNat n xs.toNat
+/-- Prepend a single bit to the front of a bitvector, using big endian order (see `append`).
+    That is, the new bit is the most significant bit. -/
+def cons {n} (msb : Bool) (lsbs : BitVec n) : BitVec (n+1) :=
+  ((ofBool msb) ++ lsbs).cast (Nat.add_comm ..)
 
 end Std.BitVec
