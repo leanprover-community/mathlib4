@@ -279,7 +279,7 @@ theorem subOneIntegralPowerBasis'_gen [hcycl : IsCyclotomicExtension {p} ℚ K]
 
 /-- `ζ - 1` is prime if `p ≠ 2` and `ζ` is a primitive `p ^ (k + 1)`-th root of unity.
   See `zeta_sub_one_prime` for a general statement. -/
-theorem zeta_sub_one_prime_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
+theorem zeta_sub_one_prime_of_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) (hodd : p ≠ 2) :
     Prime (hζ.toInteger - 1) := by
   letI := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
