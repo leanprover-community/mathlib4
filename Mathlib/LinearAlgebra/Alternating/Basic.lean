@@ -450,7 +450,7 @@ def ofSubsingleton [Subsingleton ι] (i : ι) : AlternatingMap R M M ι :=
 variable (ι)
 
 /-- The constant map is alternating when `ι` is empty. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def constOfIsEmpty [IsEmpty ι] (m : N) : AlternatingMap R M N ι :=
   { MultilinearMap.constOfIsEmpty R _ m with
     toFun := Function.const _ m
@@ -954,7 +954,7 @@ theorem compMultilinearMap_alternatization (g : N' →ₗ[R] N'₂)
     MultilinearMap.alternatization (g.compMultilinearMap f)
       = g.compAlternatingMap (MultilinearMap.alternatization f) := by
   ext
-  simp [MultilinearMap.alternatization_def, map_sum]
+  simp [MultilinearMap.alternatization_def]
 #align linear_map.comp_multilinear_map_alternatization LinearMap.compMultilinearMap_alternatization
 
 end LinearMap

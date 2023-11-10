@@ -64,7 +64,7 @@ theorem terminates_parallel.aux :
     cases' e with a e
     have : corec parallel.aux1 (l, S.toSeqO) = Computation.pure a := by
       apply destruct_eq_pure
-      simp [parallel.aux1]
+      simp only [parallel.aux1, rmap, corec_eq]
       rw [e]
     rw [this]
     -- Porting note: This line is required.
@@ -76,14 +76,14 @@ theorem terminates_parallel.aux :
     induction' l with c l IH <;> simp at m
     cases' m with e m
     · rw [← e]
-      simp [parallel.aux2]
+      simp only [parallel.aux2, rmap, List.foldr_cons, destruct_pure]
       cases' List.foldr (fun c o =>
         match o with
         | Sum.inl a => Sum.inl a
         | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c)) (Sum.inr []) l with a' ls
       exacts [⟨a', rfl⟩, ⟨a, rfl⟩]
     · cases' IH m with a' e
-      simp [parallel.aux2]
+      simp only [parallel.aux2, rmap, List.foldr_cons]
       simp [parallel.aux2] at e
       rw [e]
       exact ⟨a', rfl⟩
@@ -118,7 +118,7 @@ theorem terminates_parallel.aux :
     · exact lem1 _ _ ⟨a, h⟩
     · have H2 : corec parallel.aux1 (l, S.toSeqO) = think _ := by
         apply destruct_eq_think
-        simp [parallel.aux1]
+        simp only [parallel.aux1, rmap, corec_eq]
         rw [h]
       rw [H2]
       refine @Computation.think_terminates _ _ ?_
@@ -155,7 +155,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
       skip
       infer_instance
     · apply destruct_eq_think
-      simp [parallel.aux1]
+      simp only [corec_eq, rmap, parallel.aux1._eq_1]
       rw [h, H]
     · rw [C]
       refine @Computation.think_terminates _ _ ?_
@@ -175,7 +175,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
       skip
       infer_instance
     · apply destruct_eq_think
-      simp [parallel.aux1]
+      simp only [corec_eq, rmap, parallel.aux1._eq_1]
       rw [h]
     · rw [C]
       refine @Computation.think_terminates _ _ ?_
@@ -190,7 +190,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
           rw [e]
           rfl
         rw [D]
-        simp [parallel.aux1]
+        simp only
         have TT := TT l'
         rwa [Seq.destruct_eq_nil D, Seq.tail_nil] at TT
       · have D : Seq.destruct S = some (o, S.tail) := by

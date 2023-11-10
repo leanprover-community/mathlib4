@@ -732,6 +732,35 @@ theorem exists_snorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (h�
   exact mul_le_mul_left' (ENNReal.rpow_le_rpow hs hp₀') _
 #align measure_theory.exists_snorm_indicator_le MeasureTheory.exists_snorm_indicator_le
 
+lemma Memℒp.piecewise [DecidablePred (· ∈ s)]
+    (hs : MeasurableSet s) (hf : Memℒp f p (μ.restrict s)) (hg : Memℒp g p (μ.restrict sᶜ)) :
+    Memℒp (s.piecewise f g) p μ := by
+  by_cases hp_zero : p = 0
+  · simp only [hp_zero, memℒp_zero_iff_aestronglyMeasurable]
+    exact AEStronglyMeasurable.piecewise hs hf.1 hg.1
+  refine ⟨AEStronglyMeasurable.piecewise hs hf.1 hg.1, ?_⟩
+  by_cases hp_top : p = ∞
+  · have hf2 := hf.2
+    have hg2 := hg.2
+    simp only [hp_top] at hf2 hg2 ⊢
+    exact (snorm_top_piecewise_le f g hs).trans_lt (max_lt_iff.mpr ⟨hf2, hg2⟩)
+  rw [snorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top hp_zero hp_top, ← lintegral_add_compl _ hs,
+    ENNReal.add_lt_top]
+  constructor
+  · have h : ∀ᵐ (x : α) ∂μ, x ∈ s →
+        (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) ^ p.toReal = (‖f x‖₊ : ℝ≥0∞) ^ p.toReal := by
+      refine ae_of_all _ (fun a ha ↦ ?_)
+      simp [ha]
+    rw [set_lintegral_congr_fun hs h]
+    exact lintegral_rpow_nnnorm_lt_top_of_snorm_lt_top hp_zero hp_top hf.2
+  · have h : ∀ᵐ (x : α) ∂μ, x ∈ sᶜ →
+        (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) ^ p.toReal = (‖g x‖₊ : ℝ≥0∞) ^ p.toReal := by
+      refine ae_of_all _ (fun a ha ↦ ?_)
+      have ha' : a ∉ s := ha
+      simp [ha']
+    rw [set_lintegral_congr_fun hs.compl h]
+    exact lintegral_rpow_nnnorm_lt_top_of_snorm_lt_top hp_zero hp_top hg.2
+
 end Indicator
 
 section IndicatorConstLp
@@ -1082,7 +1111,7 @@ namespace ContinuousLinearMap
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
-/-- Composing `f : Lp ` with `L : E →L[𝕜] F`. -/
+/-- Composing `f : Lp` with `L : E →L[𝕜] F`. -/
 def compLp (L : E →L[𝕜] F) (f : Lp E p μ) : Lp F p μ :=
   L.lipschitz.compLp (map_zero L) f
 #align continuous_linear_map.comp_Lp ContinuousLinearMap.compLp

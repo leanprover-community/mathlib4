@@ -22,13 +22,13 @@ the multiplicity of `p` in this factors multiset being the p-adic valuation of `
 * `FactorMultiset n`: Multiset of prime factors of `n`.
 -/
 
--- Porting note: `deriving` contained
--- Inhabited, CanonicallyOrderedAddMonoid, DistribLattice, SemilatticeSup, OrderBot, Sub, OrderedSub
+-- Porting note: `deriving` contained Inhabited, CanonicallyOrderedAddCommMonoid, DistribLattice,
+-- SemilatticeSup, OrderBot, Sub, OrderedSub
 /-- The type of multisets of prime numbers.  Unique factorization
  gives an equivalence between this set and ℕ+, as we will formalize
  below. -/
 def PrimeMultiset :=
-  Multiset Nat.Primes deriving Inhabited, CanonicallyOrderedAddMonoid, DistribLattice,
+  Multiset Nat.Primes deriving Inhabited, CanonicallyOrderedAddCommMonoid, DistribLattice,
   SemilatticeSup, Sub
 #align prime_multiset PrimeMultiset
 

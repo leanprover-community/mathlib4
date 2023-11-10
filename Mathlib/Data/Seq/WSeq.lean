@@ -1579,7 +1579,7 @@ theorem liftRel_append (R : α → β → Prop) {s1 s2 : WSeq α} {t1 t2 : WSeq 
       intro a b; apply LiftRelO.imp_right
       intro s t; apply Or.inl
     | _, _, Or.inr ⟨s1, t1, rfl, rfl, h⟩ => by
-      simp [destruct_append]
+      simp only [LiftRelO, exists_and_left, destruct_append, destruct_append.aux]
       apply Computation.liftRel_bind _ _ (liftRel_destruct h)
       intro o p h
       cases' o with a <;> cases' p with b

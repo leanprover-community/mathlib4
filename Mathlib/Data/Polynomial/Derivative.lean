@@ -3,7 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Hom.Iterate
+import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Data.Polynomial.Eval
 
 #align_import data.polynomial.derivative from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
@@ -21,7 +21,7 @@ noncomputable section
 
 open Finset
 
-open BigOperators Classical Polynomial
+open BigOperators Polynomial
 
 namespace Polynomial
 
@@ -200,6 +200,7 @@ theorem degree_derivative_lt {p : R[X]} (hp : p ≠ 0) : p.derivative.degree < p
 #align polynomial.degree_derivative_lt Polynomial.degree_derivative_lt
 
 theorem degree_derivative_le {p : R[X]} : p.derivative.degree ≤ p.degree :=
+  letI := Classical.decEq R
   if H : p = 0 then le_of_eq <| by rw [H, derivative_zero] else (degree_derivative_lt H).le
 #align polynomial.degree_derivative_le Polynomial.degree_derivative_le
 
@@ -215,7 +216,7 @@ theorem natDegree_derivative_lt {p : R[X]} (hp : p.natDegree ≠ 0) :
 theorem natDegree_derivative_le (p : R[X]) : p.derivative.natDegree ≤ p.natDegree - 1 := by
   by_cases p0 : p.natDegree = 0
   · simp [p0, derivative_of_natDegree_zero]
-  · exact Nat.le_pred_of_lt (natDegree_derivative_lt p0)
+  · exact Nat.le_sub_one_of_lt (natDegree_derivative_lt p0)
 #align polynomial.nat_degree_derivative_le Polynomial.natDegree_derivative_le
 
 theorem natDegree_iterate_derivative (p : R[X]) (k : ℕ) :
@@ -548,7 +549,7 @@ theorem derivative_eval₂_C (p q : R[X]) :
 set_option linter.uppercaseLean3 false in
 #align polynomial.derivative_eval₂_C Polynomial.derivative_eval₂_C
 
-theorem derivative_prod {s : Multiset ι} {f : ι → R[X]} :
+theorem derivative_prod [DecidableEq ι] {s : Multiset ι} {f : ι → R[X]} :
     derivative (Multiset.map f s).prod =
       (Multiset.map (fun i => (Multiset.map f (s.erase i)).prod * derivative (f i)) s).sum := by
   refine' Multiset.induction_on s (by simp) fun i s h => _
@@ -635,7 +636,8 @@ theorem iterate_derivative_comp_one_sub_X (p : R[X]) (k : ℕ) :
 set_option linter.uppercaseLean3 false in
 #align polynomial.iterate_derivative_comp_one_sub_X Polynomial.iterate_derivative_comp_one_sub_X
 
-theorem eval_multiset_prod_X_sub_C_derivative {S : Multiset R} {r : R} (hr : r ∈ S) :
+theorem eval_multiset_prod_X_sub_C_derivative [DecidableEq R]
+    {S : Multiset R} {r : R} (hr : r ∈ S) :
     eval r (derivative (Multiset.map (fun a => X - C a) S).prod) =
       (Multiset.map (fun a => r - a) (S.erase r)).prod := by
   nth_rw 1 [← Multiset.cons_erase hr]

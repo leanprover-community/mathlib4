@@ -125,7 +125,7 @@ export sInfHomClass (map_sInf)
 
 attribute [simp] map_sSup map_sInf
 
-theorem map_iSup [SupSet α] [SupSet β] [sSupHomClass F α β] (f : F) (g : ι → α) :
+@[simp] theorem map_iSup [SupSet α] [SupSet β] [sSupHomClass F α β] (f : F) (g : ι → α) :
     f (⨆ i, g i) = ⨆ i, f (g i) := by simp [iSup, ← Set.range_comp, Function.comp]
 #align map_supr map_iSup
 
@@ -133,7 +133,7 @@ theorem map_iSup₂ [SupSet α] [SupSet β] [sSupHomClass F α β] (f : F) (g : 
     f (⨆ (i) (j), g i j) = ⨆ (i) (j), f (g i j) := by simp_rw [map_iSup]
 #align map_supr₂ map_iSup₂
 
-theorem map_iInf [InfSet α] [InfSet β] [sInfHomClass F α β] (f : F) (g : ι → α) :
+@[simp] theorem map_iInf [InfSet α] [InfSet β] [sInfHomClass F α β] (f : F) (g : ι → α) :
     f (⨅ i, g i) = ⨅ i, f (g i) := by simp [iInf, ← Set.range_comp, Function.comp]
 #align map_infi map_iInf
 
@@ -254,11 +254,10 @@ instance : sSupHomClass (sSupHom α β) α β
 -- instance : CoeFun (sSupHom α β) fun _ => α → β :=
 --   FunLike.hasCoeToFun
 
--- Porting note: times out
-@[simp]
-theorem toFun_eq_coe {f : sSupHom α β} : f.toFun = ⇑f :=
-  rfl
+@[simp] lemma toFun_eq_coe (f : sSupHom α β) : f.toFun = f := rfl
 #align Sup_hom.to_fun_eq_coe sSupHom.toFun_eq_coe
+
+@[simp, norm_cast] lemma coe_mk (f : α → β) (hf) : ⇑(mk f hf) = f := rfl
 
 @[ext]
 theorem ext {f g : sSupHom α β} (h : ∀ a, f a = g a) : f = g :=
@@ -401,10 +400,10 @@ instance : sInfHomClass (sInfHom α β) α β
 -- instance : CoeFun (sInfHom α β) fun _ => α → β :=
 --   FunLike.hasCoeToFun
 
-@[simp]
-theorem toFun_eq_coe {f : sInfHom α β} : f.toFun = ⇑f :=
-  rfl
+@[simp] lemma toFun_eq_coe (f : sInfHom α β) : f.toFun = f := rfl
 #align Inf_hom.to_fun_eq_coe sInfHom.toFun_eq_coe
+
+@[simp] lemma coe_mk (f : α → β) (hf) : ⇑(mk f hf) = f := rfl
 
 @[ext]
 theorem ext {f g : sInfHom α β} (h : ∀ a, f a = g a) : f = g :=
@@ -553,16 +552,12 @@ def toLatticeHom (f : FrameHom α β) : LatticeHom α β :=
   f
 #align frame_hom.to_lattice_hom FrameHom.toLatticeHom
 
-/- Porting note: SimpNF linter complains that lhs can be simplified,
-added _aux version with [simp] attribute -/
--- @[simp]
-theorem toFun_eq_coe {f : FrameHom α β} : f.toFun = ⇑f :=
-  rfl
+lemma toFun_eq_coe (f : FrameHom α β) : f.toFun = f := rfl
 #align frame_hom.to_fun_eq_coe FrameHom.toFun_eq_coe
 
-@[simp]
-theorem toFun_eq_coe_aux {f : FrameHom α β} : ↑f.toInfTopHom = ⇑f :=
-  rfl
+@[simp] lemma coe_toInfTopHom (f : FrameHom α β) : ⇑f.toInfTopHom = f := rfl
+@[simp] lemma coe_toLatticeHom (f : FrameHom α β) : ⇑f.toLatticeHom = f := rfl
+@[simp] lemma coe_mk (f : InfTopHom α β) (hf) : ⇑(mk f hf) = f := rfl
 
 @[ext]
 theorem ext {f g : FrameHom α β} (h : ∀ a, f a = g a) : f = g :=
@@ -685,16 +680,14 @@ def toBoundedLatticeHom (f : CompleteLatticeHom α β) : BoundedLatticeHom α β
 -- instance : CoeFun (CompleteLatticeHom α β) fun _ => α → β :=
 --   FunLike.hasCoeToFun
 
-/- Porting note: SimpNF linter complains that lhs can be simplified,
-added _aux version with [simp] attribute -/
--- @[simp]
-theorem toFun_eq_coe {f : CompleteLatticeHom α β} : f.toFun = ⇑f :=
-  rfl
+lemma toFun_eq_coe (f : CompleteLatticeHom α β) : f.toFun = f := rfl
 #align complete_lattice_hom.to_fun_eq_coe CompleteLatticeHom.toFun_eq_coe
 
-@[simp]
-theorem toFun_eq_coe_aux {f : CompleteLatticeHom α β} : ↑f.tosInfHom = ⇑f :=
-  rfl
+@[simp] lemma coe_tosInfHom (f : CompleteLatticeHom α β) : ⇑f.tosInfHom = f := rfl
+@[simp] lemma coe_tosSupHom (f : CompleteLatticeHom α β) : ⇑f.tosSupHom = f := rfl
+@[simp] lemma coe_toBoundedLatticeHom (f : CompleteLatticeHom α β) : ⇑f.toBoundedLatticeHom = f :=
+rfl
+@[simp] lemma coe_mk (f : sInfHom α β) (hf) : ⇑(mk f hf) = f := rfl
 
 @[ext]
 theorem ext {f g : CompleteLatticeHom α β} (h : ∀ a, f a = g a) : f = g :=
