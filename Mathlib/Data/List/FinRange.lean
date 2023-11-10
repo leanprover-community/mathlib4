@@ -97,7 +97,6 @@ theorem List.foldr_ofFn {α β n} (f : β → α → α) (init : α) (g : Fin n 
   · simp only [ofFn_succ', Fin.castLE_castSucc, concat_eq_append, foldr_append, foldr_cons,
       foldr_nil, ih, finRange_succ, map_append, map_map, Fin.castLE_comp_castSucc, map_cons,
       Fin.castLE_mk, map_nil]
-    rfl
 
 end List
 
