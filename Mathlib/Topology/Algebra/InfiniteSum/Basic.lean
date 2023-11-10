@@ -1139,19 +1139,22 @@ theorem cauchySeq_finset_iff_tsum_vanishing :
       rintro _ ⟨b, -, rfl⟩
       exact hts b.prop
     · exact tsum_eq_zero_of_not_summable ht ▸ mem_of_mem_nhds ho
-  obtain ⟨s, hs⟩ := vanish _ he
-  exact ⟨s, fun t hts ↦ (t.tsum_subtype f).symm ▸ hs _ hts⟩
+  · obtain ⟨s, hs⟩ := vanish _ he
+    exact ⟨s, fun t hts ↦ (t.tsum_subtype f).symm ▸ hs _ hts⟩
 
 theorem cauchySeq_finset_iff_nat_tsum_vanishing {f : ℕ → α} :
     (CauchySeq fun s : Finset ℕ ↦ ∑ n in s, f n) ↔
       ∀ e ∈ 𝓝 (0 : α), ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∑' n : t, f n) ∈ e := by
-  refine cauchySeq_finset_iff_tsum_vanishing.trans ⟨fun van e he ↦ ?_, fun van e he ↦ ?_⟩ -- slow!
-  · obtain ⟨s, hs⟩ := van e he
+  refine cauchySeq_finset_iff_tsum_vanishing.trans ⟨fun vanish e he ↦ ?_, fun vanish e he ↦ ?_⟩
+  /- This is slow because CauchySeq requires SemilatticeSup (Finset ℕ) which requires
+    DecidableEq ℕ, which is the classical instance in `cauchySeq_finset_iff_tsum_vanishing`,
+    but a constructive one here. -/
+  · obtain ⟨s, hs⟩ := vanish e he
     refine ⟨if h : s.Nonempty then s.max' h + 1 else 0, fun t ht ↦ hs _ <| Set.disjoint_left.mpr ?_⟩
     split_ifs at ht with h
     · exact fun m hmt hms ↦ (s.le_max' _ hms).not_lt (Nat.succ_le_iff.mp <| ht hmt)
     · exact fun _ _ hs ↦ h ⟨_, hs⟩
-  · obtain ⟨N, hN⟩ := van e he
+  · obtain ⟨N, hN⟩ := vanish e he
     exact ⟨range N, fun t ht ↦ hN _ fun n hnt ↦
       le_of_not_lt fun h ↦ Set.disjoint_left.mp ht hnt (mem_range.mpr h)⟩
 
@@ -1161,6 +1164,14 @@ theorem summable_iff_vanishing :
     Summable f ↔ ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∑ b in t, f b) ∈ e := by
   rw [summable_iff_cauchySeq_finset, cauchySeq_finset_iff_vanishing]
 #align summable_iff_vanishing summable_iff_vanishing
+
+theorem summable_iff_tsum_vanishing : Summable f ↔
+    ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t : Set β, Disjoint t s → (∑' b : t, f b) ∈ e := by
+  rw [summable_iff_cauchySeq_finset, cauchySeq_finset_iff_tsum_vanishing]
+
+theorem summable_iff_nat_tsum_vanishing {f : ℕ → α} : Summable f ↔
+    ∀ e ∈ 𝓝 (0 : α), ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∑' n : t, f n) ∈ e := by
+  erw [summable_iff_cauchySeq_finset, cauchySeq_finset_iff_nat_tsum_vanishing]
 
 -- TODO: generalize to monoid with a uniform continuous subtraction operator: `(a + b) - b = a`
 theorem Summable.summable_of_eq_zero_or_self (hf : Summable f) (h : ∀ b, g b = 0 ∨ g b = f b) :
