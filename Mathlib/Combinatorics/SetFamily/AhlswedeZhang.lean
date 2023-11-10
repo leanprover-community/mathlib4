@@ -118,7 +118,7 @@ variable [SemilatticeSup α] [OrderTop α] [@DecidableRel α (· ≤ ·)] [Semil
 private lemma sup_aux : a ∈ lowerClosure s → (s.filter fun b ↦ a ≤ b).Nonempty :=
   fun ⟨b, hb, hab⟩ ↦ ⟨b, mem_filter.2 ⟨hb, hab⟩⟩
 
-/-- The infimum of the elements of `s` less than `a` if there are some, otherwise `⊤`. -/
+/-- The supremum of the elements of `s` less than `a` if there are some, otherwise `⊤`. -/
 def truncatedSup (s : Finset α) (a : α) : α :=
   if h : a ∈ lowerClosure s then (s.filter fun b ↦ a ≤ b).sup' (sup_aux h) id else ⊤
 
