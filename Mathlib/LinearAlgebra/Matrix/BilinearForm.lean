@@ -382,7 +382,7 @@ lemma SMatrixRightMul_eq_Mul {m : Type*} (M₁ : Matrix m n R₂) (M₂ : Matrix
   simp [SMatrixRightMul, smul_eq_mul, instHMulMatrixMatrixMatrix, dotProduct, mul_comm]
 
 theorem SMatrixLeftMul.mul_apply {m : Type*}  {M₁ : Matrix m n R₂} {M₂ : Matrix n o N₂} {i k} :
-  (M₁ • M₂) i k = ∑ j, M₁ i j • M₂ j k := rfl
+    (M₁ • M₂) i k = ∑ j, M₁ i j • M₂ j k := rfl
 
 theorem SMatrixRightMul.mul_apply {m : Type*}  {M₁ : Matrix m n N₂} {M₂ : Matrix n o R₂} {i k} :
   (M₁ • M₂) i k = ∑ j,  M₂ j k • M₁ i j := rfl
