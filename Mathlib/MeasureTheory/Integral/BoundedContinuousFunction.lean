@@ -30,9 +30,8 @@ lemma apply_le_nndist_zero {X : Type*} [TopologicalSpace X] (f : X →ᵇ ℝ≥
 variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
 
 lemma lintegral_le_edist_mul (f : X →ᵇ ℝ≥0) (μ : Measure X) :
-    (∫⁻ x, f x ∂μ) ≤ edist 0 f * (μ Set.univ) := by
-  apply le_trans (lintegral_mono (fun x ↦ ENNReal.coe_le_coe.mpr (f.apply_le_nndist_zero x)))
-  simp
+    (∫⁻ x, f x ∂μ) ≤ edist 0 f * (μ Set.univ) :=
+  le_trans (lintegral_mono (fun x ↦ ENNReal.coe_le_coe.mpr (f.apply_le_nndist_zero x))) (by simp)
 
 theorem measurable_coe_ennreal_comp (f : X →ᵇ ℝ≥0) :
     Measurable fun x ↦ (f x : ℝ≥0∞) :=

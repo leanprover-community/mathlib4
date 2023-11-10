@@ -623,9 +623,8 @@ lemma tendsto_integral_of_forall_integral_le_liminf_integral {ι : Type*} {L : F
     (h : ∀ f : Ω →ᵇ ℝ, 0 ≤ f → ∫ x, (f x) ∂μ ≤ L.liminf (fun i ↦ ∫ x, (f x) ∂ (μs i)))
     (f : Ω →ᵇ ℝ) :
     Tendsto (fun i ↦ ∫ x, (f x) ∂ (μs i)) L (𝓝 (∫ x, (f x) ∂μ)) := by
-  by_cases L_bot : L = ⊥
-  · simp only [L_bot, tendsto_bot]
-  have : NeBot L := ⟨L_bot⟩
+  rcases eq_or_neBot L with rfl|hL
+  · simp only [tendsto_bot]
   have obs := BoundedContinuousFunction.isBounded_range_integral μs f
   have bdd_above : IsBoundedUnder (· ≤ ·) L (fun i ↦ ∫ (x : Ω), f x ∂μs i) :=
     isBounded_le_map_of_bounded_range _ obs
