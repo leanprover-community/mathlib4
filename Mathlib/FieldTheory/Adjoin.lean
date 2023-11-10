@@ -1255,7 +1255,7 @@ theorem exists_algHom_of_adjoin_splits : ∃ φ : E →ₐ[F] K, φ.comp L.val =
 
 theorem nonempty_algHom_of_adjoin_splits : Nonempty (E →ₐ[F] K) :=
   have ⟨φ, _⟩ := exists_algHom_of_adjoin_splits hK (⊥ : Lifts F E K).emb hS; ⟨φ⟩
-#align intermediate_field.alg_hom_mk_adjoin_splits' IntermediateField.exists_algHom_of_adjoin_splits
+#align intermediate_field.alg_hom_mk_adjoin_splits' IntermediateField.nonempty_algHom_of_adjoin_splits
 
 variable {x : E} (hx : x ∈ adjoin F S) {y : K} (hy : aeval y (minpoly F x) = 0)
 
