@@ -241,7 +241,7 @@ end Set.Icc
 
 open scoped unitInterval
 
-/-- Any open cover of a closed interval in ℝ can be refined to
+/-- Any open cover `c` of a closed interval `[a, b]` in ℝ can be refined to
   a finite partition into subintervals. -/
 lemma lebesgue_number_lemma_Icc {ι} {a b : ℝ} (h : a ≤ b) {c : ι → Set (Icc a b)}
     (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : univ ⊆ ⋃ i, c i) : ∃ t : ℕ → Icc a b, t 0 = a ∧
