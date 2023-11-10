@@ -525,8 +525,8 @@ theorem proj_comp_opProductIsoCoproduct'_hom {f : Fan Z} {c : Cofan (fun a ↦ o
   IsColimit.comp_coconePointUniqueUpToIso_hom (Fan.IsLimit.op hf) hc ⟨b⟩
 
 variable (Z) in
-theorem proj_comp_opProductIsoCoproduct_hom (b : α) : (Pi.π Z b).op ≫ (opProductIsoCoproduct Z).hom =
-    Sigma.ι (fun a ↦ op (Z a)) b :=
+theorem proj_comp_opProductIsoCoproduct_hom (b : α) :
+    (Pi.π Z b).op ≫ (opProductIsoCoproduct Z).hom = Sigma.ι (fun a ↦ op (Z a)) b :=
   proj_comp_opProductIsoCoproduct'_hom _ _ b
 
 theorem opProductIsoCoproduct'_inv_comp_lift {f : Fan Z} {c : Cofan (fun a ↦ op (Z a))}
