@@ -374,6 +374,9 @@ open scoped Topology
 
 #check Real.tendsto_log_nhdsWithin_zero
 
+theorem isBounded_image_of_integrableOn_deriv {f : ℝ → ℝ} {s : Set ℝ} (hs : DifferentiableOn f s)
+    (h' : IntegrableOn (deriv f) s) (hs : ordConnected s) : IsBounded (f '' s) := sorry
+
 theorem not_integrableOn_deriv_of_tendsto_atTop
     {f : ℝ → ℝ} {x y : ℝ} (hxy : x < y) (hf : DifferentiableOn ℝ f (Ioo x y))
     (h'f : Tendsto f (𝓝[>] x) atBot) : ¬(IntegrableOn (deriv f) (Ioo x y)) := sorry
