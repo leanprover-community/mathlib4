@@ -37,7 +37,7 @@ def LinearProgram.mkOfEqs
 
 /-- The set of all admissible solutions to given linear program. -/
 def LinearProgram.feasibles (lp : LinearProgram K P) : Set P :=
-  { x : P | ∀ a ∈ lp.constraints, 0 ≤ a x }
+  {x | ∀ ⦃a⦄, a ∈ lp.constraints → 0 ≤ a x}
 
 @[simp] lemma LinearProgram.mem_feasibles {lp : LinearProgram K P} {x : P} :
     x ∈ lp.feasibles ↔ ∀ ⦃a⦄, a ∈ lp.constraints → 0 ≤ a x :=
