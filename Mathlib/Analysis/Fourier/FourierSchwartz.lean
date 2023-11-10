@@ -34,6 +34,8 @@ theorem hasFDerivAt_inner (𝕜 : Type*) {E : Type*} [IsROrC 𝕜] [NormedAddCom
     [InnerProductSpace 𝕜 E] (v : E) (x : E) : HasFDerivAt (inner (𝕜 := 𝕜) v)
     (innerSL 𝕜 v) x := (innerSL 𝕜 v).hasFDerivAt
 
+--- TO DO : 11/10 : generalize to arbitrary codomain `F` (not just `ℂ`)
+
 theorem hasFDerivAt_fourier {f : E → ℂ} (hf_int : Integrable f)
     (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) (x : E) :
     HasFDerivAt (integralFourier E ℂ f)
