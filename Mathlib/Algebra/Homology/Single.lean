@@ -226,23 +226,9 @@ to an `ℕ`-indexed chain complex `C` are the same as morphisms `f : X → C.X 0
 noncomputable def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
     ((single₀ V).obj X ⟶ C) ≃ (X ⟶ C.X 0) where
   toFun f := f.f 0
-  invFun f :=
-    { f := fun i =>
-        match i with
-        | 0 => f
-        | n + 1 => 0
-      comm' := fun i j h => by
-        cases i <;> cases j <;>
-          simp only [shape, ComplexShape.down_Rel, Nat.one_ne_zero, not_false_iff,
-            zero_comp, single₀_obj_X_d, Nat.zero_eq, add_eq_zero, comp_zero, not_false_eq_true,
-            Nat.succ_ne_zero, and_self] }
-  left_inv f := by
-    ext i
-    cases i
-    · rfl
-    · dsimp
-      ext
-  right_inv g := rfl
+  invFun f := HomologicalComplex.mkHomFromSingle f (fun i hi => by simp at hi)
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
 #align chain_complex.from_single₀_equiv ChainComplex.fromSingle₀Equiv
 
 @[simp]
