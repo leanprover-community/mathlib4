@@ -7,6 +7,7 @@ import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.MeasureTheory.Integral.Layercake
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+import Mathlib.Topology.Order.Bounded
 
 #align_import measure_theory.measure.portmanteau from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -79,24 +80,6 @@ probability measure
 noncomputable section
 
 open MeasureTheory Set Filter BoundedContinuousFunction
-
--- Q: Where do these belong? (Tried `Topology.Instances.Real` and `Order.LiminfLimsup` and
--- `Topology.Algebra.Order.LiminfLimsup` but none worked. `#find_home` suggests the present file.)
-
-lemma Filter.isBounded_le_map_of_bounded_range {ι : Type*} (F : Filter ι) {f : ι → ℝ}
-    (h : Bornology.IsBounded (Set.range f)) :
-    (F.map f).IsBounded (· ≤ ·) := by
-  rw [Real.isBounded_iff_bddBelow_bddAbove] at h
-  obtain ⟨c, hc⟩ := h.2
-  refine isBoundedUnder_of ⟨c, by simpa [mem_upperBounds] using hc⟩
-
-lemma Filter.isBounded_ge_map_of_bounded_range {ι : Type*} (F : Filter ι) {f : ι → ℝ}
-    (h : Bornology.IsBounded (Set.range f)) :
-    (F.map f).IsBounded (· ≥ ·) := by
-  rw [Real.isBounded_iff_bddBelow_bddAbove] at h
-  obtain ⟨c, hc⟩ := h.1
-  apply isBoundedUnder_of ⟨c, by simpa [mem_lowerBounds] using hc⟩
-
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
 namespace MeasureTheory
