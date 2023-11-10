@@ -1614,8 +1614,8 @@ theorem infinite_iff {α : Type u} : Infinite α ↔ ℵ₀ ≤ #α := by
   rw [← not_lt, lt_aleph0_iff_finite, not_finite_iff_infinite]
 #align cardinal.infinite_iff Cardinal.infinite_iff
 
-lemma aleph0_le_mk_iff : aleph0 ≤ mk α ↔ Infinite α := infinite_iff.symm
-lemma mk_lt_aleph0_iff : mk α < aleph0 ↔ Finite α := by simp [← not_le, aleph0_le_mk_iff]
+lemma aleph0_le_mk_iff : ℵ₀ ≤ #α ↔ Infinite α := infinite_iff.symm
+lemma mk_lt_aleph0_iff : #α < ℵ₀ ↔ Finite α := by simp [← not_le, aleph0_le_mk_iff]
 
 @[simp]
 theorem aleph0_le_mk (α : Type u) [Infinite α] : ℵ₀ ≤ #α :=
