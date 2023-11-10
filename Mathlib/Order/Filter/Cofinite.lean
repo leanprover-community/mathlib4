@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
-
-! This file was ported from Lean 3 source module order.filter.cofinite
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Order.Filter.Pi
+
+#align_import order.filter.cofinite from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # The cofinite filter
@@ -27,7 +24,7 @@ Define filters for other cardinalities of the complement.
 
 open Set Function
 
-variable {ι α β : Type _} {l : Filter α}
+variable {ι α β : Type*} {l : Filter α}
 
 namespace Filter
 
@@ -96,7 +93,7 @@ theorem eventually_cofinite_ne (x : α) : ∀ᶠ a in cofinite, a ≠ x :=
 
 theorem le_cofinite_iff_compl_singleton_mem : l ≤ cofinite ↔ ∀ x, {x}ᶜ ∈ l := by
   refine' ⟨fun h x => h (finite_singleton x).compl_mem_cofinite, fun h s (hs : sᶜ.Finite) => _⟩
-  rw [← compl_compl s, ← bunionᵢ_of_singleton (sᶜ), compl_unionᵢ₂, Filter.binterᵢ_mem hs]
+  rw [← compl_compl s, ← biUnion_of_singleton sᶜ, compl_iUnion₂, Filter.biInter_mem hs]
   exact fun x _ => h x
 #align filter.le_cofinite_iff_compl_singleton_mem Filter.le_cofinite_iff_compl_singleton_mem
 
@@ -120,7 +117,7 @@ theorem coprod_cofinite : (cofinite : Filter α).coprod (cofinite : Filter β) =
     simp only [compl_mem_coprod, mem_cofinite, compl_compl, finite_image_fst_and_snd_iff]
 #align filter.coprod_cofinite Filter.coprod_cofinite
 
-theorem coprodᵢ_cofinite {α : ι → Type _} [Finite ι] :
+theorem coprodᵢ_cofinite {α : ι → Type*} [Finite ι] :
     (Filter.coprodᵢ fun i => (cofinite : Filter (α i))) = cofinite :=
   Filter.coext fun s => by
     simp only [compl_mem_coprodᵢ, mem_cofinite, compl_compl, forall_finite_image_eval_iff]
@@ -139,6 +136,18 @@ theorem disjoint_cofinite_right : Disjoint l cofinite ↔ ∃ s ∈ l, Set.Finit
   disjoint_comm.trans disjoint_cofinite_left
 #align filter.disjoint_cofinite_right Filter.disjoint_cofinite_right
 
+/-- If `l ≥ Filter.cofinite` is a countably generated filter, then `l.ker` is cocountable. -/
+theorem countable_compl_ker [l.IsCountablyGenerated] (h : cofinite ≤ l) : Set.Countable l.kerᶜ := by
+  rcases exists_antitone_basis l with ⟨s, hs⟩
+  simp only [hs.ker, iInter_true, compl_iInter]
+  exact countable_iUnion fun n ↦ Set.Finite.countable <| h <| hs.mem _
+
+/-- If `f` tends to a countably generated filter `l` along `Filter.cofinite`,
+then for all but countably many elements, `f x ∈ l.ker`. -/
+theorem Tendsto.countable_compl_preimage_ker {f : α → β}
+    {l : Filter β} [l.IsCountablyGenerated] (h : Tendsto f cofinite l) :
+    Set.Countable (f ⁻¹' l.ker)ᶜ := by rw [←ker_comap]; exact countable_compl_ker h.le_comap
+
 end Filter
 
 open Filter
@@ -155,7 +164,7 @@ theorem Nat.frequently_atTop_iff_infinite {p : ℕ → Prop} :
   rw [← Nat.cofinite_eq_atTop, frequently_cofinite_iff_infinite]
 #align nat.frequently_at_top_iff_infinite Nat.frequently_atTop_iff_infinite
 
-theorem Filter.Tendsto.exists_within_forall_le {α β : Type _} [LinearOrder β] {s : Set α}
+theorem Filter.Tendsto.exists_within_forall_le {α β : Type*} [LinearOrder β] {s : Set α}
     (hs : s.Nonempty) {f : α → β} (hf : Filter.Tendsto f Filter.cofinite Filter.atTop) :
     ∃ a₀ ∈ s, ∀ a ∈ s, f a₀ ≤ f a := by
   rcases em (∃ y ∈ s, ∃ x, f y < x) with (⟨y, hys, x, hx⟩ | not_all_top)
@@ -167,7 +176,7 @@ theorem Filter.Tendsto.exists_within_forall_le {α β : Type _} [LinearOrder β]
     refine' ⟨a₀, ha₀s, fun a has => (lt_or_le (f a) x).elim _ (le_trans ha₀.le)⟩
     exact fun h => others_bigger a ⟨h, has⟩
   · -- in this case, f is constant because all values are at top
-    push_neg  at not_all_top
+    push_neg at not_all_top
     obtain ⟨a₀, ha₀s⟩ := hs
     exact ⟨a₀, ha₀s, fun a ha => not_all_top a ha (f a₀)⟩
 #align filter.tendsto.exists_within_forall_le Filter.Tendsto.exists_within_forall_le

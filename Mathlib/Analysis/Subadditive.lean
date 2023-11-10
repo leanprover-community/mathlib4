@@ -2,14 +2,11 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.subadditive
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Instances.Real
 import Mathlib.Order.Filter.Archimedean
+
+#align_import analysis.subadditive from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Convergence of subadditive sequences
@@ -42,13 +39,13 @@ variable {u : ℕ → ℝ} (h : Subadditive u)
 this limit is given in `Subadditive.tendsto_lim` -/
 @[nolint unusedArguments] -- porting note: was irreducible
 protected def lim (_h : Subadditive u) :=
-  infₛ ((fun n : ℕ => u n / n) '' Ici 1)
+  sInf ((fun n : ℕ => u n / n) '' Ici 1)
 #align subadditive.lim Subadditive.lim
 
 theorem lim_le_div (hbdd : BddBelow (range fun n => u n / n)) {n : ℕ} (hn : n ≠ 0) :
     h.lim ≤ u n / n := by
   rw [Subadditive.lim]
-  exact cinfₛ_le (hbdd.mono <| image_subset_range _ _) ⟨n, hn.bot_lt, rfl⟩
+  exact csInf_le (hbdd.mono <| image_subset_range _ _) ⟨n, hn.bot_lt, rfl⟩
 #align subadditive.lim_le_div Subadditive.lim_le_div
 
 theorem apply_mul_add_le (k n r) : u (k * n + r) ≤ k * u n + u r := by
@@ -92,11 +89,10 @@ theorem tendsto_lim (hbdd : BddBelow (range fun n => u n / n)) :
       ⟨1, fun n hn => hl.trans_le (h.lim_le_div hbdd (zero_lt_one.trans_le hn).ne')⟩
   · obtain ⟨n, npos, hn⟩ : ∃ n : ℕ, 0 < n ∧ u n / n < L := by
       rw [Subadditive.lim] at hL
-      rcases exists_lt_of_cinfₛ_lt (by simp) hL with ⟨x, hx, xL⟩
+      rcases exists_lt_of_csInf_lt (by simp) hL with ⟨x, hx, xL⟩
       rcases (mem_image _ _ _).1 hx with ⟨n, hn, rfl⟩
       exact ⟨n, zero_lt_one.trans_le hn, xL⟩
     exact h.eventually_div_lt_of_div_lt npos.ne' hn
 #align subadditive.tendsto_lim Subadditive.tendsto_lim
 
 end Subadditive
-

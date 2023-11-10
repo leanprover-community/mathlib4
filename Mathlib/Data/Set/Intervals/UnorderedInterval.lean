@@ -2,16 +2,12 @@
 Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
-
-! This file was ported from Lean 3 source module data.set.intervals.unordered_interval
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Data.Set.Intervals.Image
 import Mathlib.Order.Bounds.Basic
-import Mathlib.Data.Set.Intervals.Basic
-import Mathlib.Tactic.ScopedNS
-import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.Common
+
+#align_import data.set.intervals.unordered_interval from "leanprover-community/mathlib"@"4020ddee5b4580a409bfda7d2f42726ce86ae674"
 
 /-!
 # Intervals without endpoints ordering
@@ -34,7 +30,7 @@ subcube containing both `a` and `b`.
 
 ## Notation
 
-We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the locale `interval` to
+We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the locale `Interval` to
 make the notation available.
 
 -/
@@ -44,13 +40,13 @@ open Function
 
 open OrderDual (toDual ofDual)
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Set
 
 section Lattice
 
-variable [Lattice α] {a a₁ a₂ b b₁ b₂ c x : α}
+variable [Lattice α] [Lattice β] {a a₁ a₂ b b₁ b₂ c x : α}
 
 /-- `uIcc a b` is the set of elements lying between `a` and `b`, with `a` and `b` included.
 Note that we define it more generally in a lattice as `Set.Icc (a ⊓ b) (a ⊔ b)`. In a product type,
@@ -109,17 +105,17 @@ lemma mem_uIcc_of_ge (hb : b ≤ x) (ha : x ≤ a) : x ∈ [[a, b]] := Icc_subse
 #align set.mem_uIcc_of_ge Set.mem_uIcc_of_ge
 
 lemma uIcc_subset_uIcc (h₁ : a₁ ∈ [[a₂, b₂]]) (h₂ : b₁ ∈ [[a₂, b₂]]) :
-  [[a₁, b₁]] ⊆ [[a₂, b₂]] :=
+    [[a₁, b₁]] ⊆ [[a₂, b₂]] :=
   Icc_subset_Icc (le_inf h₁.1 h₂.1) (sup_le h₁.2 h₂.2)
 #align set.uIcc_subset_uIcc Set.uIcc_subset_uIcc
 
 lemma uIcc_subset_Icc (ha : a₁ ∈ Icc a₂ b₂) (hb : b₁ ∈ Icc a₂ b₂) :
-  [[a₁, b₁]] ⊆ Icc a₂ b₂ :=
+    [[a₁, b₁]] ⊆ Icc a₂ b₂ :=
   Icc_subset_Icc (le_inf ha.1 hb.1) (sup_le ha.2 hb.2)
 #align set.uIcc_subset_Icc Set.uIcc_subset_Icc
 
 lemma uIcc_subset_uIcc_iff_mem :
-  [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ a₁ ∈ [[a₂, b₂]] ∧ b₁ ∈ [[a₂, b₂]] :=
+    [[a₁, b₁]] ⊆ [[a₂, b₂]] ↔ a₁ ∈ [[a₂, b₂]] ∧ b₁ ∈ [[a₂, b₂]] :=
   Iff.intro (fun h => ⟨h left_mem_uIcc, h right_mem_uIcc⟩) fun h =>
     uIcc_subset_uIcc h.1 h.2
 #align set.uIcc_subset_uIcc_iff_mem Set.uIcc_subset_uIcc_iff_mem
@@ -142,6 +138,19 @@ lemma bdd_below_bdd_above_iff_subset_uIcc (s : Set α) :
   bddBelow_bddAbove_iff_subset_Icc.trans
     ⟨fun ⟨a, b, h⟩ => ⟨a, b, fun _ hx => Icc_subset_uIcc (h hx)⟩, fun ⟨_, _, h⟩ => ⟨_, _, h⟩⟩
 #align set.bdd_below_bdd_above_iff_subset_uIcc Set.bdd_below_bdd_above_iff_subset_uIcc
+
+section Prod
+
+@[simp]
+theorem uIcc_prod_uIcc (a₁ a₂ : α) (b₁ b₂ : β) :
+    [[a₁, a₂]] ×ˢ [[b₁, b₂]] = [[(a₁, b₁), (a₂, b₂)]] :=
+  Icc_prod_Icc _ _ _ _
+#align set.uIcc_prod_uIcc Set.uIcc_prod_uIcc
+
+theorem uIcc_prod_eq (a b : α × β) : [[a, b]] = [[a.1, b.1]] ×ˢ [[a.2, b.2]] := by simp
+#align set.uIcc_prod_eq Set.uIcc_prod_eq
+
+end Prod
 
 end Lattice
 
@@ -171,8 +180,42 @@ lemma uIcc_injective_left (a : α) : Injective (uIcc a) := by
 end DistribLattice
 
 section LinearOrder
+variable [LinearOrder α]
 
-variable [LinearOrder α] [LinearOrder β] {f : α → β} {s : Set α} {a a₁ a₂ b b₁ b₂ c x : α}
+section Lattice
+variable [Lattice β] {f : α → β} {s : Set α} {a b : α}
+
+lemma _root_.MonotoneOn.mapsTo_uIcc (hf : MonotoneOn f (uIcc a b)) :
+    MapsTo f (uIcc a b) (uIcc (f a) (f b)) := by
+  rw [uIcc, uIcc, ←hf.map_sup, ←hf.map_inf] <;>
+    apply_rules [left_mem_uIcc, right_mem_uIcc, hf.mapsTo_Icc]
+
+lemma _root_.AntitoneOn.mapsTo_uIcc (hf : AntitoneOn f (uIcc a b)) :
+    MapsTo f (uIcc a b) (uIcc (f a) (f b)) := by
+  rw [uIcc, uIcc, ←hf.map_sup, ←hf.map_inf] <;>
+    apply_rules [left_mem_uIcc, right_mem_uIcc, hf.mapsTo_Icc]
+
+lemma _root_.Monotone.mapsTo_uIcc (hf : Monotone f) : MapsTo f (uIcc a b) (uIcc (f a) (f b)) :=
+  (hf.monotoneOn _).mapsTo_uIcc
+
+lemma _root_.Antitone.mapsTo_uIcc (hf : Antitone f) : MapsTo f (uIcc a b) (uIcc (f a) (f b)) :=
+  (hf.antitoneOn _).mapsTo_uIcc
+
+lemma _root_.MonotoneOn.image_uIcc_subset (hf : MonotoneOn f (uIcc a b)) :
+    f '' uIcc a b ⊆ uIcc (f a) (f b) := hf.mapsTo_uIcc.image_subset
+
+lemma _root_.AntitoneOn.image_uIcc_subset (hf : AntitoneOn f (uIcc a b)) :
+    f '' uIcc a b ⊆ uIcc (f a) (f b) := hf.mapsTo_uIcc.image_subset
+
+lemma _root_.Monotone.image_uIcc_subset (hf : Monotone f) : f '' uIcc a b ⊆ uIcc (f a) (f b) :=
+  (hf.monotoneOn _).image_uIcc_subset
+
+lemma _root_.Antitone.image_uIcc_subset (hf : Antitone f) : f '' uIcc a b ⊆ uIcc (f a) (f b) :=
+  (hf.antitoneOn _).image_uIcc_subset
+
+end Lattice
+
+variable [LinearOrder β] {f : α → β} {s : Set α} {a a₁ a₂ b b₁ b₂ c d x : α}
 
 theorem Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
   rfl
@@ -214,7 +257,7 @@ lemma monotone_or_antitone_iff_uIcc :
     Monotone f ∨ Antitone f ↔ ∀ a b c, c ∈ [[a, b]] → f c ∈ [[f a, f b]] := by
   constructor
   · rintro (hf | hf) a b c <;> simp_rw [← Icc_min_max, ← hf.map_min, ← hf.map_max]
-    exacts[fun hc => ⟨hf hc.1, hf hc.2⟩, fun hc => ⟨hf hc.2, hf hc.1⟩]
+    exacts [fun hc => ⟨hf hc.1, hf hc.2⟩, fun hc => ⟨hf hc.2, hf hc.1⟩]
   contrapose!
   rw [not_monotone_not_antitone_iff_exists_le_le]
   rintro ⟨a, b, c, hab, hbc, ⟨hfab, hfcb⟩ | ⟨hfba, hfbc⟩⟩

@@ -2,13 +2,10 @@
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
-
-! This file was ported from Lean 3 source module computability.regular_expressions
-! leanprover-community/mathlib commit 369525b73f229ccd76a6ec0e0e0bf2be57599768
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Computability.Language
+
+#align_import computability.regular_expressions from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
 /-!
 # Regular Expressions
@@ -32,7 +29,7 @@ open Computability
 
 universe u
 
-variable {α β γ : Type _} [dec : DecidableEq α]
+variable {α β γ : Type*} [dec : DecidableEq α]
 
 /-- This is the definition of regular expressions. The names used here is to mirror the definition
 of a Kleene algebra (https://en.wikipedia.org/wiki/Kleene_algebra).
@@ -226,22 +223,22 @@ theorem one_rmatch_iff (x : List α) : rmatch 1 x ↔ x = [] := by
 
 theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] := by
   cases' x with _ x
-  . exact of_decide_eq_true rfl
+  · exact of_decide_eq_true rfl
   cases' x with head tail
-  . rw [rmatch, deriv]
+  · rw [rmatch, deriv]
     split_ifs
-    . tauto
-    . simp [List.singleton_inj]; tauto
-  . rw [rmatch, rmatch, deriv]
+    · tauto
+    · simp [List.singleton_inj]; tauto
+  · rw [rmatch, rmatch, deriv]
     split_ifs with h
-    . simp only [deriv_one, zero_rmatch, cons.injEq, and_false]
-    . simp only [deriv_zero, zero_rmatch, cons.injEq, and_false]
+    · simp only [deriv_one, zero_rmatch, cons.injEq, and_false]
+    · simp only [deriv_zero, zero_rmatch, cons.injEq, and_false]
 #align regular_expression.char_rmatch_iff RegularExpression.char_rmatch_iff
 
 theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
   induction' x with _ _ ih generalizing P Q
-  · simp only [rmatch, matchEpsilon, Bool.or_coe_iff]
+  · simp only [rmatch, matchEpsilon, Bool.coe_or_iff]
   · repeat' rw [rmatch]
     rw [deriv_add]
     exact ih _ _
@@ -255,7 +252,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     · intro h
       refine' ⟨[], [], rfl, _⟩
       rw [rmatch, rmatch]
-      rwa [Bool.and_coe_iff] at h
+      rwa [Bool.coe_and_iff] at h
     · rintro ⟨t, u, h₁, h₂⟩
       cases' List.append_eq_nil.1 h₁.symm with ht hu
       subst ht
@@ -323,7 +320,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
             simp only [ne_eq, not_false_iff, true_and, rmatch]
             exact ht
           case tail ht' => exact helem t' ht'
-    · rintro ⟨S, hsum, helem⟩ ; dsimp
+    · rintro ⟨S, hsum, helem⟩
       cases' x with a x
       · rfl
       · rw [rmatch, deriv, mul_rmatch_iff]
@@ -338,8 +335,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
             rw [rmatch] at helem
             convert helem.2
             exact hsum.1
-          · have hwf : U.join.length < (List.cons a x).length :=
-              by
+          · have hwf : U.join.length < (List.cons a x).length := by
               rw [hsum.1, hsum.2]
               simp only [List.length_append, List.length_join, List.length]
               apply A
@@ -351,8 +347,8 @@ theorem star_rmatch_iff (P : RegularExpression α) :
 #align regular_expression.star_rmatch_iff RegularExpression.star_rmatch_iff
 
 @[simp]
-theorem rmatch_iff_matches' (P : RegularExpression α) : ∀ x : List α, P.rmatch x ↔ x ∈ P.matches' :=
-by
+theorem rmatch_iff_matches' (P : RegularExpression α) :
+    ∀ x : List α, P.rmatch x ↔ x ∈ P.matches' := by
   intro x
   induction P generalizing x
   all_goals
@@ -399,11 +395,8 @@ by
       tauto
 #align regular_expression.rmatch_iff_matches RegularExpression.rmatch_iff_matches'
 
-instance (P : RegularExpression α) : DecidablePred P.matches' := by
-  intro x
-  change Decidable (x ∈ P.matches')
-  rw [← rmatch_iff_matches']
-  exact instDecidableEqBool (rmatch P x) True
+instance (P : RegularExpression α) : DecidablePred (· ∈ P.matches') := fun _ ↦
+  decidable_of_iff _ (rmatch_iff_matches' _ _)
 
 /-- Map the alphabet of a regular expression. -/
 @[simp]
@@ -457,9 +450,9 @@ theorem matches'_map (f : α → β) :
   | R * S => by simp only [matches'_map, map, matches'_mul]; rw [map_mul]
   | star R => by
     simp_rw [map, matches', matches'_map]
-    rw [Language.kstar_eq_supᵢ_pow, Language.kstar_eq_supᵢ_pow]
+    rw [Language.kstar_eq_iSup_pow, Language.kstar_eq_iSup_pow]
     simp_rw [← map_pow]
-    exact image_unionᵢ.symm
+    exact image_iUnion.symm
 #align regular_expression.matches_map RegularExpression.matches'_map
 
 end RegularExpression

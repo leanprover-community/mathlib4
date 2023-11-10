@@ -2,13 +2,10 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.cau_seq_filter
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Field.Basic
+
+#align_import topology.metric_space.cau_seq_filter from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Completeness in terms of `Cauchy` filters vs `isCauSeq` sequences
@@ -85,23 +82,23 @@ theorem CauSeq.cauchySeq (f : CauSeq β norm) : CauchySeq f := by
 #align cau_seq.cauchy_seq CauSeq.cauchySeq
 
 /-- In a normed field, `CauSeq` coincides with the usual notion of Cauchy sequences. -/
-theorem cau_seq_iff_cauchySeq {α : Type u} [NormedField α] {u : ℕ → α} :
+theorem isCauSeq_iff_cauchySeq {α : Type u} [NormedField α] {u : ℕ → α} :
     IsCauSeq norm u ↔ CauchySeq u :=
   ⟨fun h => CauSeq.cauchySeq ⟨u, h⟩, fun h => h.isCauSeq⟩
-#align cau_seq_iff_cauchy_seq cau_seq_iff_cauchySeq
+#align cau_seq_iff_cauchy_seq isCauSeq_iff_cauchySeq
 
 -- see Note [lower instance priority]
 /-- A complete normed field is complete as a metric space, as Cauchy sequences converge by
 assumption and this suffices to characterize completeness. -/
-instance (priority := 100) completeSpace_of_cau_seq_complete [CauSeq.IsComplete β norm] :
+instance (priority := 100) completeSpace_of_cauSeq_isComplete [CauSeq.IsComplete β norm] :
     CompleteSpace β := by
   apply complete_of_cauchySeq_tendsto
   intro u hu
-  have C : IsCauSeq norm u := cau_seq_iff_cauchySeq.2 hu
+  have C : IsCauSeq norm u := isCauSeq_iff_cauchySeq.2 hu
   exists CauSeq.lim ⟨u, C⟩
   rw [Metric.tendsto_atTop]
   intro ε εpos
   cases' (CauSeq.equiv_lim ⟨u, C⟩) _ εpos with N hN
   exists N
   simpa [dist_eq_norm] using hN
-#align complete_space_of_cau_seq_complete completeSpace_of_cau_seq_complete
+#align complete_space_of_cau_seq_complete completeSpace_of_cauSeq_isComplete

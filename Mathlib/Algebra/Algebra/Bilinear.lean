@@ -2,16 +2,14 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.algebra.bilinear
-! leanprover-community/mathlib commit 657df4339ae6ceada048c8a2980fb10e393143ec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Hom.Iterate
-import Mathlib.Algebra.Hom.NonUnitalAlg
+import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Algebra.NonUnitalHom
+import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.LinearAlgebra.TensorProduct
+
+#align_import algebra.algebra.bilinear from "leanprover-community/mathlib"@"657df4339ae6ceada048c8a2980fb10e393143ec"
 
 /-!
 # Facts about algebras involving bilinear maps and tensor products
@@ -21,16 +19,13 @@ in order to avoid importing `LinearAlgebra.BilinearMap` and
 `LinearAlgebra.TensorProduct` unnecessarily.
 -/
 
-
-open TensorProduct
-
-open Module
+open TensorProduct Module
 
 namespace LinearMap
 
 section NonUnitalNonAssoc
 
-variable (R A : Type _) [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+variable (R A : Type*) [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
   [SMulCommClass R A A] [IsScalarTower R A A]
 
 /-- The multiplication in a non-unital non-associative algebra is a bilinear map.
@@ -41,7 +36,7 @@ def mul : A →ₗ[R] A →ₗ[R] A :=
 #align linear_map.mul LinearMap.mul
 
 /-- The multiplication map on a non-unital algebra, as an `R`-linear map from `A ⊗[R] A` to `A`. -/
-def mul' : A ⊗[R] A →ₗ[R] A :=
+noncomputable def mul' : A ⊗[R] A →ₗ[R] A :=
   TensorProduct.lift (mul R A)
 #align linear_map.mul' LinearMap.mul'
 
@@ -63,14 +58,14 @@ def mulLeftRight (ab : A × A) : A →ₗ[R] A :=
 #align linear_map.mul_left_right LinearMap.mulLeftRight
 
 @[simp]
-theorem mulLeft_toAddMonoid_hom (a : A) : (mulLeft R a : A →+ A) = AddMonoidHom.mulLeft a :=
+theorem mulLeft_toAddMonoidHom (a : A) : (mulLeft R a : A →+ A) = AddMonoidHom.mulLeft a :=
   rfl
-#align linear_map.mul_left_to_add_monoid_hom LinearMap.mulLeft_toAddMonoid_hom
+#align linear_map.mul_left_to_add_monoid_hom LinearMap.mulLeft_toAddMonoidHom
 
 @[simp]
-theorem mulRight_toAddMonoid_hom (a : A) : (mulRight R a : A →+ A) = AddMonoidHom.mulRight a :=
+theorem mulRight_toAddMonoidHom (a : A) : (mulRight R a : A →+ A) = AddMonoidHom.mulRight a :=
   rfl
-#align linear_map.mul_right_to_add_monoid_hom LinearMap.mulRight_toAddMonoid_hom
+#align linear_map.mul_right_to_add_monoid_hom LinearMap.mulRight_toAddMonoidHom
 
 variable {R}
 
@@ -113,13 +108,13 @@ end NonUnitalNonAssoc
 
 section NonUnital
 
-variable (R A : Type _) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [SMulCommClass R A A]
+variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [SMulCommClass R A A]
   [IsScalarTower R A A]
 
 /-- The multiplication in a non-unital algebra is a bilinear map.
 
 A weaker version of this for non-unital non-associative algebras exists as `LinearMap.mul`. -/
-def NonUnitalAlgHom.lmul : A →ₙₐ[R] End R A :=
+def _root_.NonUnitalAlgHom.lmul : A →ₙₐ[R] End R A :=
   { mul R A with
     map_mul' := by
       intro a b
@@ -128,14 +123,14 @@ def NonUnitalAlgHom.lmul : A →ₙₐ[R] End R A :=
     map_zero' := by
       ext a
       exact zero_mul a }
-#align non_unital_alg_hom.lmul LinearMap.NonUnitalAlgHom.lmul
+#align non_unital_alg_hom.lmul NonUnitalAlgHom.lmul
 
 variable {R A}
 
 @[simp]
-theorem NonUnitalAlgHom.coe_lmul_eq_mul : ⇑(NonUnitalAlgHom.lmul R A) = mul R A :=
+theorem _root_.NonUnitalAlgHom.coe_lmul_eq_mul : ⇑(NonUnitalAlgHom.lmul R A) = mul R A :=
   rfl
-#align non_unital_alg_hom.coe_lmul_eq_mul LinearMap.NonUnitalAlgHom.coe_lmul_eq_mul
+#align non_unital_alg_hom.coe_lmul_eq_mul NonUnitalAlgHom.coe_lmul_eq_mul
 
 theorem commute_mulLeft_right (a b : A) : Commute (mulLeft R a) (mulRight R b) := by
   ext c
@@ -158,15 +153,25 @@ end NonUnital
 
 section Semiring
 
-variable (R A : Type _) [CommSemiring R] [Semiring A] [Algebra R A]
+variable (R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+
+variable {R A B} in
+/-- A `LinearMap` preserves multiplication if pre- and post- composition with `LinearMap.mul` are
+equivalent. By converting the statement into an equality of `LinearMap`s, this lemma allows various
+specialized `ext` lemmas about `→ₗ[R]` to then be applied.
+
+This is the `LinearMap` version of `AddMonoidHom.map_mul_iff`. -/
+theorem map_mul_iff (f : A →ₗ[R] B) :
+    (∀ x y, f (x * y) = f x * f y) ↔
+      (LinearMap.mul R A).compr₂ f = (LinearMap.mul R B ∘ₗ f).compl₂ f :=
+  Iff.symm LinearMap.ext_iff₂
 
 /-- The multiplication in an algebra is an algebra homomorphism into the endomorphisms on
 the algebra.
 
 A weaker version of this for non-unital algebras exists as `NonUnitalAlgHom.mul`. -/
-def Algebra.lmul : A →ₐ[R] End R A :=
-  { LinearMap.mul R
-      A with
+def _root_.Algebra.lmul : A →ₐ[R] End R A :=
+  { LinearMap.mul R A with
     map_one' := by
       ext a
       exact one_mul a
@@ -181,14 +186,14 @@ def Algebra.lmul : A →ₐ[R] End R A :=
       intro r
       ext a
       exact (Algebra.smul_def r a).symm }
-#align algebra.lmul LinearMap.Algebra.lmul
+#align algebra.lmul Algebra.lmul
 
 variable {R A}
 
 @[simp]
-theorem Algebra.coe_lmul_eq_mul : ⇑(Algebra.lmul R A) = mul R A :=
+theorem _root_.Algebra.coe_lmul_eq_mul : ⇑(Algebra.lmul R A) = mul R A :=
   rfl
-#align algebra.coe_lmul_eq_mul LinearMap.Algebra.coe_lmul_eq_mul
+#align algebra.coe_lmul_eq_mul Algebra.coe_lmul_eq_mul
 
 @[simp]
 theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
@@ -236,13 +241,7 @@ end Semiring
 
 section Ring
 
-variable {R A : Type _} [CommSemiring R] [Ring A] [Algebra R A]
-
-/-- This instance should not be necessary. porting note: drop after lean4#2074 resolved? -/
-local instance : Module R A := Algebra.toModule
-
-/-- This instance should not be necessary. porting note: drop after lean4#2074 resolved? -/
-local instance : Module A A := Semiring.toModule
+variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
 
 theorem mulLeft_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
     Function.Injective (mulLeft R x) := by

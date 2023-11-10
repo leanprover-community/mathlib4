@@ -2,16 +2,14 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module logic.equiv.option
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.EquivFunctor
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.Cases
+
+#align_import logic.equiv.option from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Equivalences for `Option α`
@@ -24,12 +22,13 @@ We define
   both sides.
 -/
 
+universe u
 
 namespace Equiv
 
 open Option
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 section OptionCongr
 
@@ -61,7 +60,7 @@ theorem optionCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
 
 /-- When `α` and `β` are in the same universe, this is the same as the result of
 `EquivFunctor.mapEquiv`. -/
-theorem optionCongr_eq_equivFunctor_mapEquiv {α β : Type _} (e : α ≃ β) :
+theorem optionCongr_eq_equivFunctor_mapEquiv {α β : Type u} (e : α ≃ β) :
     optionCongr e = EquivFunctor.mapEquiv Option e :=
   rfl
 #align equiv.option_congr_eq_equiv_function_map_equiv Equiv.optionCongr_eq_equivFunctor_mapEquiv
@@ -114,8 +113,7 @@ theorem removeNone_aux_inv (x : α) : removeNone_aux e.symm (removeNone_aux e x)
 
       · rw [removeNone_aux_some _ ⟨_, h1⟩]
         rw [removeNone_aux_some _ ⟨_, h2⟩]
-        simp
-        )
+        simp)
 -- Porting note: private
 -- #align equiv.remove_none_aux_inv Equiv.removeNone_aux_inv
 
@@ -151,13 +149,11 @@ theorem some_removeNone_iff {x : α} : some (removeNone e x) = e none ↔ e.symm
   cases' h : e (some x) with a
   · rw [removeNone_none _ h]
     simpa using (congr_arg e.symm h).symm
-
   · rw [removeNone_some _ ⟨a, h⟩]
     have h1 := congr_arg e.symm h
     rw [symm_apply_apply] at h1
     simp only [false_iff_iff, apply_eq_iff_eq]
     simp [h1, apply_eq_iff_eq]
-
 #align equiv.some_remove_none_iff Equiv.some_removeNone_iff
 
 @[simp]

@@ -2,17 +2,13 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.connected_components
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Chain
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.FullSubcategory
-import Mathlib.Tactic.LibrarySearch
+
+#align_import category_theory.connected_components from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Connected components of a category
@@ -26,6 +22,8 @@ particular `Decomposed J` is the category (definitionally) given by the sigma-ty
 components of `J`, and it is shown that this is equivalent to `J`.
 -/
 
+set_option autoImplicit true
+
 
 universe v₁ v₂ v₃ u₁ u₂
 
@@ -35,7 +33,7 @@ open CategoryTheory.Category
 
 namespace CategoryTheory
 
-attribute [instance] IsConnected.is_nonempty
+attribute [instance 100] IsConnected.is_nonempty
 
 variable {J : Type u₁} [Category.{v₁} J]
 
@@ -138,9 +136,9 @@ instance : Full (decomposedTo J)
   preimage := by
     rintro ⟨j', X, hX⟩ ⟨k', Y, hY⟩ f
     dsimp at f
-    have : j' = k'
-    rw [← hX, ← hY, Quotient.eq'']
-    exact Relation.ReflTransGen.single (Or.inl ⟨f⟩)
+    have : j' = k' := by
+      rw [← hX, ← hY, Quotient.eq'']
+      exact Relation.ReflTransGen.single (Or.inl ⟨f⟩)
     subst this
     exact Sigma.SigmaHom.mk f
   witness := by
@@ -161,7 +159,7 @@ instance : EssSurj (decomposedTo J) where mem_essImage j := ⟨⟨_, j, rfl⟩, 
 instance : IsEquivalence (decomposedTo J) :=
   Equivalence.ofFullyFaithfullyEssSurj _
 
--- portint note: it was originally @[simps (config := { rhsMd := semireducible }) Functor]
+-- porting note: it was originally @[simps (config := { rhsMd := semireducible }) Functor]
 /-- This gives that any category is equivalent to a disjoint union of connected categories. -/
 @[simps! functor]
 def decomposedEquiv : Decomposed J ≌ J :=

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Bhavik Mehta, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
-
-! This file was ported from Lean 3 source module data.finset.slice
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Nat.Interval
 import Mathlib.Order.Antichain
+
+#align_import data.finset.slice from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # `r`-sets and slice
@@ -36,11 +33,11 @@ open Finset Nat
 
 open BigOperators
 
-variable {α : Type _} {ι : Sort _} {κ : ι → Sort _}
+variable {α : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 namespace Set
 
-variable {A B : Set (Finset α)} {r : ℕ}
+variable {A B : Set (Finset α)} {s : Finset α} {r : ℕ}
 
 /-! ### Families of `r`-sets -/
 
@@ -53,26 +50,29 @@ def Sized (r : ℕ) (A : Set (Finset α)) : Prop :=
 theorem Sized.mono (h : A ⊆ B) (hB : B.Sized r) : A.Sized r := fun _x hx => hB <| h hx
 #align set.sized.mono Set.Sized.mono
 
+@[simp] lemma sized_empty : (∅ : Set (Finset α)).Sized r := by simp [Sized]
+@[simp] lemma sized_singleton : ({s} : Set (Finset α)).Sized r ↔ s.card = r := by simp [Sized]
+
 theorem sized_union : (A ∪ B).Sized r ↔ A.Sized r ∧ B.Sized r :=
   ⟨fun hA => ⟨hA.mono <| subset_union_left _ _, hA.mono <| subset_union_right _ _⟩, fun hA _x hx =>
     hx.elim (fun h => hA.1 h) fun h => hA.2 h⟩
 #align set.sized_union Set.sized_union
 
-alias sized_union ↔ _ sized.union
+alias ⟨_, sized.union⟩ := sized_union
 #align set.sized.union Set.sized.union
 
---TODO: A `forall_unionᵢ` lemma would be handy here.
+--TODO: A `forall_iUnion` lemma would be handy here.
 @[simp]
-theorem sized_unionᵢ {f : ι → Set (Finset α)} : (⋃ i, f i).Sized r ↔ ∀ i, (f i).Sized r := by
-  simp_rw [Set.Sized, Set.mem_unionᵢ, forall_exists_index]
+theorem sized_iUnion {f : ι → Set (Finset α)} : (⋃ i, f i).Sized r ↔ ∀ i, (f i).Sized r := by
+  simp_rw [Set.Sized, Set.mem_iUnion, forall_exists_index]
   exact forall_swap
-#align set.sized_Union Set.sized_unionᵢ
+#align set.sized_Union Set.sized_iUnion
 
 -- @[simp] -- Porting note: left hand side is not simp-normal form.
-theorem sized_unionᵢ₂ {f : ∀ i, κ i → Set (Finset α)} :
+theorem sized_iUnion₂ {f : ∀ i, κ i → Set (Finset α)} :
     (⋃ (i) (j), f i j).Sized r ↔ ∀ i j, (f i j).Sized r :=
- by simp only [Set.sized_unionᵢ]
-#align set.sized_Union₂ Set.sized_unionᵢ₂
+ by simp only [Set.sized_iUnion]
+#align set.sized_Union₂ Set.sized_iUnion₂
 
 protected theorem Sized.isAntichain (hA : A.Sized r) : IsAntichain (· ⊆ ·) A :=
   fun _s hs _t ht h hst => h <| Finset.eq_of_subset_of_card_le hst ((hA ht).trans (hA hs).symm).le
@@ -94,9 +94,9 @@ theorem Sized.univ_mem_iff [Fintype α] (hA : A.Sized r) : Finset.univ ∈ A ↔
   hA.isAntichain.top_mem_iff
 #align set.sized.univ_mem_iff Set.Sized.univ_mem_iff
 
-theorem sized_powersetLen (s : Finset α) (r : ℕ) : (powersetLen r s : Set (Finset α)).Sized r :=
-  fun _t ht => (mem_powersetLen.1 ht).2
-#align set.sized_powerset_len Set.sized_powersetLen
+theorem sized_powersetCard (s : Finset α) (r : ℕ) : (powersetCard r s : Set (Finset α)).Sized r :=
+  fun _t ht => (mem_powersetCard.1 ht).2
+#align set.sized_powerset_len Set.sized_powersetCard
 
 end Set
 
@@ -106,18 +106,18 @@ section Sized
 
 variable [Fintype α] {𝒜 : Finset (Finset α)} {s : Finset α} {r : ℕ}
 
-theorem subset_powersetLen_univ_iff : 𝒜 ⊆ powersetLen r univ ↔ (𝒜 : Set (Finset α)).Sized r :=
-  forall_congr' fun A => by rw [mem_powerset_len_univ_iff, mem_coe]
-#align finset.subset_powerset_len_univ_iff Finset.subset_powersetLen_univ_iff
+theorem subset_powersetCard_univ_iff : 𝒜 ⊆ powersetCard r univ ↔ (𝒜 : Set (Finset α)).Sized r :=
+  forall_congr' fun A => by rw [mem_powersetCard_univ, mem_coe]
+#align finset.subset_powerset_len_univ_iff Finset.subset_powersetCard_univ_iff
 
-alias subset_powersetLen_univ_iff ↔ _ _root_.Set.Sized.subset_powersetLen_univ
-#align set.sized.subset_powerset_len_univ Set.Sized.subset_powersetLen_univ
+alias ⟨_, _root_.Set.Sized.subset_powersetCard_univ⟩ := subset_powersetCard_univ_iff
+#align set.sized.subset_powerset_len_univ Set.Sized.subset_powersetCard_univ
 
-theorem Set.Sized.card_le (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
+theorem _root_.Set.Sized.card_le (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     card 𝒜 ≤ (Fintype.card α).choose r := by
-  rw [Fintype.card, ← card_powersetLen]
-  exact card_le_of_subset (subset_powersetLen_univ_iff.mpr h𝒜)
-#align set.sized.card_le Finset.Set.Sized.card_le
+  rw [Fintype.card, ← card_powersetCard]
+  exact card_le_of_subset (subset_powersetCard_univ_iff.mpr h𝒜)
+#align set.sized.card_le Set.Sized.card_le
 
 end Sized
 
@@ -168,19 +168,18 @@ theorem pairwiseDisjoint_slice : (Set.univ : Set ℕ).PairwiseDisjoint (slice �
 variable [Fintype α] (𝒜)
 
 @[simp]
-theorem bunionᵢ_slice [DecidableEq α] : (Iic <| Fintype.card α).bunionᵢ 𝒜.slice = 𝒜 :=
-  Subset.antisymm (bunionᵢ_subset.2 fun _r _ => slice_subset) fun s hs =>
-    mem_bunionᵢ.2 ⟨s.card, mem_Iic.2 <| s.card_le_univ, mem_slice.2 <| ⟨hs, rfl⟩⟩
-#align finset.bUnion_slice Finset.bunionᵢ_slice
+theorem biUnion_slice [DecidableEq α] : (Iic <| Fintype.card α).biUnion 𝒜.slice = 𝒜 :=
+  Subset.antisymm (biUnion_subset.2 fun _r _ => slice_subset) fun s hs =>
+    mem_biUnion.2 ⟨s.card, mem_Iic.2 <| s.card_le_univ, mem_slice.2 <| ⟨hs, rfl⟩⟩
+#align finset.bUnion_slice Finset.biUnion_slice
 
 @[simp]
 theorem sum_card_slice : (∑ r in Iic (Fintype.card α), (𝒜 # r).card) = 𝒜.card := by
   letI := Classical.decEq α
-  rw [← card_bunionᵢ, bunionᵢ_slice]
+  rw [← card_biUnion, biUnion_slice]
   exact Finset.pairwiseDisjoint_slice.subset (Set.subset_univ _)
 #align finset.sum_card_slice Finset.sum_card_slice
 
 end Slice
 
 end Finset
-

@@ -2,13 +2,10 @@
 Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
-
-! This file was ported from Lean 3 source module algebra.cubic_discriminant
-! leanprover-community/mathlib commit 930133160e24036d5242039fe4972407cd4f1222
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Splits
+
+#align_import algebra.cubic_discriminant from "leanprover-community/mathlib"@"930133160e24036d5242039fe4972407cd4f1222"
 
 /-!
 # Cubics and discriminants
@@ -40,7 +37,7 @@ noncomputable section
 
 /-- The structure representing a cubic polynomial. -/
 @[ext]
-structure Cubic (R : Type _) where
+structure Cubic (R : Type*) where
   (a b c d : R)
 #align cubic Cubic
 
@@ -50,7 +47,7 @@ open Cubic Polynomial
 
 open Polynomial
 
-variable {R S F K : Type _}
+variable {R S F K : Type*}
 
 instance [Inhabited R] : Inhabited (Cubic R) :=
   ⟨⟨default, default, default, default⟩⟩
@@ -138,7 +135,7 @@ theorem toPoly_injective (P Q : Cubic R) : P.toPoly = Q.toPoly ↔ P = Q :=
 #align cubic.to_poly_injective Cubic.toPoly_injective
 
 theorem of_a_eq_zero (ha : P.a = 0) : P.toPoly = C P.b * X ^ 2 + C P.c * X + C P.d := by
-  rw [toPoly, ha, C_0, MulZeroClass.zero_mul, zero_add]
+  rw [toPoly, ha, C_0, zero_mul, zero_add]
 #align cubic.of_a_eq_zero Cubic.of_a_eq_zero
 
 theorem of_a_eq_zero' : toPoly ⟨0, b, c, d⟩ = C b * X ^ 2 + C c * X + C d :=
@@ -146,7 +143,7 @@ theorem of_a_eq_zero' : toPoly ⟨0, b, c, d⟩ = C b * X ^ 2 + C c * X + C d :=
 #align cubic.of_a_eq_zero' Cubic.of_a_eq_zero'
 
 theorem of_b_eq_zero (ha : P.a = 0) (hb : P.b = 0) : P.toPoly = C P.c * X + C P.d := by
-  rw [of_a_eq_zero ha, hb, C_0, MulZeroClass.zero_mul, zero_add]
+  rw [of_a_eq_zero ha, hb, C_0, zero_mul, zero_add]
 #align cubic.of_b_eq_zero Cubic.of_b_eq_zero
 
 theorem of_b_eq_zero' : toPoly ⟨0, 0, c, d⟩ = C c * X + C d :=
@@ -154,7 +151,7 @@ theorem of_b_eq_zero' : toPoly ⟨0, 0, c, d⟩ = C c * X + C d :=
 #align cubic.of_b_eq_zero' Cubic.of_b_eq_zero'
 
 theorem of_c_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) : P.toPoly = C P.d := by
-  rw [of_b_eq_zero ha hb, hc, C_0, MulZeroClass.zero_mul, zero_add]
+  rw [of_b_eq_zero ha hb, hc, C_0, zero_mul, zero_add]
 #align cubic.of_c_eq_zero Cubic.of_c_eq_zero
 
 theorem of_c_eq_zero' : toPoly ⟨0, 0, 0, d⟩ = C d :=
@@ -294,7 +291,7 @@ def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
     -- Porting note: Added `simp only [Nat.zero_eq, Nat.succ_eq_add_one] <;> ring_nf`
     -- There's probably a better way to do this.
     ext (_ | _ | _ | _ | n) <;> simp only [Nat.zero_eq, Nat.succ_eq_add_one] <;> ring_nf
-      <;> simp only [coeffs]
+      <;> try simp only [coeffs]
     have h3 : 3 < 4 + n := by linarith only
     rw [coeff_eq_zero h3,
       (degree_le_iff_coeff_zero (f : R[X]) 3).mp f.2 _ <| WithBot.coe_lt_coe.mpr (by exact h3)]
@@ -531,8 +528,6 @@ theorem eq_prod_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z})
   rw [prod_cons, prod_cons, prod_singleton, mul_assoc, mul_assoc]
 #align cubic.eq_prod_three_roots Cubic.eq_prod_three_roots
 
--- Porting note: Increased heartbeat limit for `C_mul_prod_X_sub_C_eq`
-set_option maxHeartbeats 500000 in
 theorem eq_sum_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
     map φ P =
       ⟨φ P.a, φ P.a * -(x + y + z), φ P.a * (x * y + x * z + y * z), φ P.a * -(x * y * z)⟩ := by
@@ -564,7 +559,7 @@ end Split
 section Discriminant
 
 /-- The discriminant of a cubic polynomial. -/
-def disc {R : Type _} [Ring R] (P : Cubic R) : R :=
+def disc {R : Type*} [Ring R] (P : Cubic R) : R :=
   P.b ^ 2 * P.c ^ 2 - 4 * P.a * P.c ^ 3 - 4 * P.b ^ 3 * P.d - 27 * P.a ^ 2 * P.d ^ 2 +
     18 * P.a * P.b * P.c * P.d
 #align cubic.disc Cubic.disc

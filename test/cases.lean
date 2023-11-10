@@ -2,6 +2,7 @@ import Mathlib.Tactic.Cases
 import Mathlib.Init.Logic
 import Mathlib.Init.Data.Nat.Notation
 
+set_option autoImplicit true
 example (x : α × β × γ) : True := by
   cases' x with a b; cases' b with b c
   guard_hyp a : α
@@ -29,9 +30,9 @@ example (x : ℕ) : True := by
   case soo => guard_hyp h : x = y + 1; trivial
 
 inductive Foo (α β)
-| A (a : α)
-| B (a' : α) (b' : β)
-| C (a'' : α) (b'' : β) (c'' : Foo α β)
+  | A (a : α)
+  | B (a' : α) (b' : β)
+  | C (a'' : α) (b'' : β) (c'' : Foo α β)
 
 example (x : Foo α β) : True := by
   cases' x with a₀ a₁ _ a₂ b₂ c₂
@@ -40,8 +41,8 @@ example (x : Foo α β) : True := by
   · guard_hyp a₂ : α; guard_hyp b₂ : β; guard_hyp c₂ : Foo α β; trivial
 
 inductive Bar : ℕ → Type
-| A (a b : Nat) : Bar 1
-| B (c d : Nat) : Bar (c + 1) → Bar c
+  | A (a b : Nat) : Bar 1
+  | B (c d : Nat) : Bar (c + 1) → Bar c
 
 example (x : Bar 0) : True := by
   cases' x with a b c d h
@@ -104,3 +105,24 @@ example (p q : Prop) : (p → ¬ q) → ¬ (p ∧ q) := by
   cases' hpq with hp hq
   assumption
   exact hpq.2
+
+-- Ensure that `induction'` removes generalized variables. Here: `a` and `h`
+example (a b : ℕ) (h : a + b = a) : b = 0 := by
+  induction' a with d hd
+  · -- Test the generalized vars have been removed
+    revert h
+    fail_if_success (guard_hyp a : Nat)
+    fail_if_success (guard_hyp h : a + b = a)
+    intro h
+    -- Sample proof
+    rw [Nat.zero_eq, Nat.zero_add] at h
+    assumption
+  · -- Test the generalized vars have been removed
+    revert h
+    fail_if_success (guard_hyp a : Nat)
+    fail_if_success (guard_hyp h : a + b = a)
+    intro h
+    -- Sample proof
+    rw [Nat.succ_add, Nat.succ.injEq] at h
+    apply hd
+    assumption

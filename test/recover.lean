@@ -14,7 +14,7 @@ example : 3 < 4 := by
     recover decide
 
 example : 1 = 1 := by
-    recover skip ; rfl
+    recover skip; rfl
 
 example : 2 = 2 := by
     recover skip

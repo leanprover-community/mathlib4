@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.localization.opposite
-! leanprover-community/mathlib commit 8efef279998820353694feb6ff5631ed0d309ecc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Localization.Predicate
+
+#align_import category_theory.localization.opposite from "leanprover-community/mathlib"@"8efef279998820353694feb6ff5631ed0d309ecc"
 
 /-!
 
@@ -26,22 +23,20 @@ open CategoryTheory CategoryTheory.Category
 
 namespace CategoryTheory
 
-variable {C D : Type _} [Category C] [Category D] {L : C ⥤ D} {W : MorphismProperty C}
+variable {C D : Type*} [Category C] [Category D] {L : C ⥤ D} {W : MorphismProperty C}
 
 namespace Localization
 
 /-- If `L : C ⥤ D` satisfies the universal property of the localisation
-for `W : morphism_property C`, then `L.op` also does. -/
-def StrictUniversalPropertyFixedTarget.op {E : Type _} [Category E]
+for `W : MorphismProperty C`, then `L.op` also does. -/
+def StrictUniversalPropertyFixedTarget.op {E : Type*} [Category E]
     (h : StrictUniversalPropertyFixedTarget L W Eᵒᵖ) :
-    StrictUniversalPropertyFixedTarget L.op W.op E
-    where
+    StrictUniversalPropertyFixedTarget L.op W.op E where
   inverts := h.inverts.op
   lift F hF := (h.lift F.rightOp hF.rightOp).leftOp
   fac F hF := by
     convert congr_arg Functor.leftOp (h.fac F.rightOp hF.rightOp)
-  uniq F₁ F₂ eq :=
-    by
+  uniq F₁ F₂ eq := by
     suffices F₁.rightOp = F₂.rightOp by
       rw [← F₁.rightOp_leftOp_eq, ← F₂.rightOp_leftOp_eq, this]
     have eq' := congr_arg Functor.rightOp eq

@@ -2,14 +2,11 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Benjamin Davidson
-
-! This file was ported from Lean 3 source module data.int.parity
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.Abel
+
+#align_import data.int.parity from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
 
 /-!
 # Parity of integers
@@ -30,8 +27,7 @@ theorem emod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
   cases' emod_two_eq_zero_or_one n with h h <;> simp [h]
 #align int.mod_two_ne_one Int.emod_two_ne_one
 
--- Porting note: This comment from mathlib3 refers to a future file, revisit it once ported:
--- euclidean_domain.mod_eq_zero uses (2 ∣ n) as normal form
+-- `EuclideanDomain.mod_eq_zero` uses (2 ∣ n) as normal form
 @[local simp]
 theorem emod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
   cases' emod_two_eq_zero_or_one n with h h <;> simp [h]
@@ -165,6 +161,13 @@ theorem even_pow' {n : ℕ} (h : n ≠ 0) : Even (m ^ n) ↔ Even m :=
 #align int.even_pow' Int.even_pow'
 
 @[parity_simps]
+theorem odd_pow {n : ℕ} : Odd (m ^ n) ↔ Odd m ∨ n = 0 := by
+  rw [← not_iff_not, ← Int.even_iff_not_odd, not_or, ← Int.even_iff_not_odd, Int.even_pow]
+
+theorem odd_pow' {n : ℕ} (h : n ≠ 0) : Odd (m ^ n) ↔ Odd m :=
+  odd_pow.trans <| or_iff_left h
+
+@[parity_simps]
 theorem odd_add : Odd (m + n) ↔ (Odd m ↔ Even n) := by
   rw [odd_iff_not_even, even_add, not_iff, odd_iff_not_even]
 #align int.odd_add Int.odd_add
@@ -212,10 +215,10 @@ theorem natAbs_odd : Odd n.natAbs ↔ Odd n := by
   rw [odd_iff_not_even, Nat.odd_iff_not_even, natAbs_even]
 #align int.nat_abs_odd Int.natAbs_odd
 
-alias natAbs_even ↔ _ _root_.Even.natAbs
+alias ⟨_, _root_.Even.natAbs⟩ := natAbs_even
 #align even.nat_abs Even.natAbs
 
-alias natAbs_odd ↔ _ _root_.Odd.natAbs
+alias ⟨_, _root_.Odd.natAbs⟩ := natAbs_odd
 #align odd.nat_abs Odd.natAbs
 
 -- Porting note: "protected"-attribute not implemented yet.
@@ -274,7 +277,7 @@ theorem two_mul_ediv_two_of_odd (h : Odd n) : 2 * (n / 2) = n - 1 :=
   eq_sub_of_add_eq (two_mul_ediv_two_add_one_of_odd h)
 #align int.two_mul_div_two_of_odd Int.two_mul_ediv_two_of_odd
 
--- Here are examples of how `parity_simps` can be used with `int`.
+-- Here are examples of how `parity_simps` can be used with `Int`.
 example (m n : ℤ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
   simp [*, (by decide : ¬2 = 0), parity_simps]
 

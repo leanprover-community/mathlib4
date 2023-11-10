@@ -2,15 +2,12 @@
 Copyright (c) 2018 Sean Leather. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sean Leather, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.finmap
-! leanprover-community/mathlib commit cea83e192eae2d368ab2b500a0975667da42c920
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.AList
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Part
+
+#align_import data.finmap from "leanprover-community/mathlib"@"cea83e192eae2d368ab2b500a0975667da42c920"
 
 /-!
 # Finite maps over `Multiset`
@@ -50,7 +47,7 @@ theorem coe_nodupKeys {l : List (Sigma β)} : @NodupKeys α β l ↔ l.NodupKeys
 lemma nodup_keys {m : Multiset (Σ a, β a)} : m.keys.Nodup ↔ m.NodupKeys := by
   rcases m with ⟨l⟩; rfl
 
-alias nodup_keys ↔ _ NodupKeys.nodup_keys
+alias ⟨_, NodupKeys.nodup_keys⟩ := nodup_keys
 
 protected lemma NodupKeys.nodup {m : Multiset (Σ a, β a)} (h : m.NodupKeys) : m.Nodup :=
   h.nodup_keys.of_map _
@@ -62,7 +59,7 @@ end Multiset
 /-- `Finmap β` is the type of finite maps over a multiset. It is effectively
   a quotient of `AList β` by permutation of the underlying list. -/
 structure Finmap (β : α → Type v) : Type max u v where
-  /-- The underlying `Multiset` of an `Finmap` -/
+  /-- The underlying `Multiset` of a `Finmap` -/
   entries : Multiset (Sigma β)
   /-- There are no duplicate keys in `entries` -/
   nodupKeys : entries.NodupKeys
@@ -115,7 +112,6 @@ def liftOn {γ} (s : Finmap β) (f : AList β → γ)
     revert this
     rcases s.entries with ⟨l⟩
     exact id
-
 #align finmap.lift_on Finmap.liftOn
 
 @[simp]
@@ -137,14 +133,14 @@ def liftOn₂ {γ} (s₁ s₂ : Finmap β) (f : AList β → AList β → γ)
 @[simp]
 theorem liftOn₂_toFinmap {γ} (s₁ s₂ : AList β) (f : AList β → AList β → γ) (H) :
     liftOn₂ ⟦s₁⟧ ⟦s₂⟧ f H = f s₁ s₂ :=
-      by cases s₁ ; cases s₂ ; rfl
+      by cases s₁; cases s₂; rfl
 #align finmap.lift_on₂_to_finmap Finmap.liftOn₂_toFinmap
 
 /-! ### Induction -/
 
 @[elab_as_elim]
 theorem induction_on {C : Finmap β → Prop} (s : Finmap β) (H : ∀ a : AList β, C ⟦a⟧) : C s := by
-  rcases s with ⟨⟨a⟩, h⟩ ; exact H ⟨a, h⟩
+  rcases s with ⟨⟨a⟩, h⟩; exact H ⟨a, h⟩
 #align finmap.induction_on Finmap.induction_on
 
 @[elab_as_elim]
@@ -249,7 +245,7 @@ theorem keys_singleton (a : α) (b : β a) : (singleton a b).keys = {a} :=
 
 @[simp]
 theorem mem_singleton (x y : α) (b : β y) : x ∈ singleton y b ↔ x = y := by
-  simp only [singleton] ; erw [mem_cons, mem_nil_iff, or_false_iff]
+  simp only [singleton]; erw [mem_cons, mem_nil_iff, or_false_iff]
 #align finmap.mem_singleton Finmap.mem_singleton
 
 section
@@ -481,8 +477,8 @@ def insert (a : α) (b : β a) (s : Finmap β) : Finmap β :=
 #align finmap.insert Finmap.insert
 
 @[simp]
-theorem insert_toFinmap (a : α) (b : β a) (s : AList β)
-  : insert a b (AList.toFinmap s) = AList.toFinmap (s.insert a b) := by
+theorem insert_toFinmap (a : α) (b : β a) (s : AList β) :
+    insert a b (AList.toFinmap s) = AList.toFinmap (s.insert a b) := by
   simp [insert]
 #align finmap.insert_to_finmap Finmap.insert_toFinmap
 
@@ -528,16 +524,14 @@ theorem toFinmap_cons (a : α) (b : β a) (xs : List (Sigma β)) :
 
 theorem mem_list_toFinmap (a : α) (xs : List (Sigma β)) :
     a ∈ xs.toFinmap ↔ ∃ b : β a, Sigma.mk a b ∈ xs := by
-  induction' xs with x xs <;> [skip, cases' x with fst_i snd_i] <;>
-      -- Porting note: `Sigma.mk.inj_iff` required because `simp` behaves differently
-      simp only [toFinmap_cons, *, not_mem_empty, exists_or, not_mem_nil, toFinmap_nil,
-        exists_false, mem_cons, mem_insert, exists_and_left, Sigma.mk.inj_iff];
-      apply or_congr _ Iff.rfl
-  conv =>
-    lhs
-    rw [← and_true_iff (a = fst_i)]
-  apply and_congr_right
-  rintro ⟨⟩
+  -- Porting note: golfed
+  induction' xs with x xs
+  · simp only [toFinmap_nil, not_mem_empty, find?, not_mem_nil, exists_false]
+  cases' x with fst_i snd_i
+  -- Porting note: `Sigma.mk.inj_iff` required because `simp` behaves differently
+  simp only [toFinmap_cons, *, exists_or, mem_cons, mem_insert, exists_and_left, Sigma.mk.inj_iff]
+  refine (or_congr_left <| and_iff_left_of_imp ?_).symm
+  rintro rfl
   simp only [exists_eq, heq_iff_eq]
 #align finmap.mem_list_to_finmap Finmap.mem_list_toFinmap
 
@@ -577,8 +571,8 @@ theorem mem_union {a} {s₁ s₂ : Finmap β} : a ∈ s₁ ∪ s₂ ↔ a ∈ s�
 #align finmap.mem_union Finmap.mem_union
 
 @[simp]
-theorem union_toFinmap (s₁ s₂ : AList β)
-  : (toFinmap s₁) ∪ (toFinmap s₂) = toFinmap (s₁ ∪ s₂) := by simp [(· ∪ ·), union]
+theorem union_toFinmap (s₁ s₂ : AList β) : (toFinmap s₁) ∪ (toFinmap s₂) = toFinmap (s₁ ∪ s₂) := by
+  simp [(· ∪ ·), union]
 #align finmap.union_to_finmap Finmap.union_toFinmap
 
 theorem keys_union {s₁ s₂ : Finmap β} : (s₁ ∪ s₂).keys = s₁.keys ∪ s₂.keys :=

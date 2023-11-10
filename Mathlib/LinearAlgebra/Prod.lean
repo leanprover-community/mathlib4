@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.prod
-! leanprover-community/mathlib commit bd9851ca476957ea4549eb19b40e7b5ade9428cc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Span
 import Mathlib.Order.PartialSups
 import Mathlib.Algebra.Algebra.Prod
+
+#align_import linear_algebra.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
 /-! ### Products of modules
 
@@ -41,13 +38,13 @@ universe u v w x y z u' v' w' y'
 
 variable {R : Type u} {K : Type u'} {M : Type v} {V : Type v'} {M₂ : Type w} {V₂ : Type w'}
 variable {M₃ : Type y} {V₃ : Type y'} {M₄ : Type z} {ι : Type x}
-variable {M₅ M₆ : Type _}
+variable {M₅ M₆ : Type*}
 
 section Prod
 
 namespace LinearMap
 
-variable (S : Type _) [Semiring R] [Semiring S]
+variable (S : Type*) [Semiring R] [Semiring S]
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
 variable [AddCommMonoid M₅] [AddCommMonoid M₆]
 variable [Module R M] [Module R M₂] [Module R M₃] [Module R M₄]
@@ -92,8 +89,7 @@ theorem snd_surjective : Function.Surjective (snd R M M₂) := fun x => ⟨(0, x
 
 /-- The prod of two linear maps is a linear map. -/
 @[simps]
-def prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : M →ₗ[R] M₂ × M₃
-    where
+def prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : M →ₗ[R] M₂ × M₃ where
   toFun := Pi.prod f g
   map_add' x y := by simp only [Pi.prod, Prod.mk_add_mk, map_add]
   map_smul' c x := by simp only [Pi.prod, Prod.smul_mk, map_smul, RingHom.id_apply]
@@ -104,19 +100,20 @@ theorem coe_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : ⇑(f.prod g) =
 #align linear_map.coe_prod LinearMap.coe_prod
 
 @[simp]
-theorem fst_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : (fst R M₂ M₃).comp (prod f g) = f := by
-  ext; rfl
+theorem fst_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : (fst R M₂ M₃).comp (prod f g) = f := rfl
 #align linear_map.fst_prod LinearMap.fst_prod
 
 @[simp]
-theorem snd_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : (snd R M₂ M₃).comp (prod f g) = g := by
-  ext; rfl
+theorem snd_prod (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) : (snd R M₂ M₃).comp (prod f g) = g := rfl
 #align linear_map.snd_prod LinearMap.snd_prod
 
 @[simp]
-theorem pair_fst_snd : prod (fst R M M₂) (snd R M M₂) = LinearMap.id :=
-  FunLike.coe_injective Pi.prod_fst_snd
+theorem pair_fst_snd : prod (fst R M M₂) (snd R M M₂) = LinearMap.id := rfl
 #align linear_map.pair_fst_snd LinearMap.pair_fst_snd
+
+theorem prod_comp (f : M₂ →ₗ[R] M₃) (g : M₂ →ₗ[R] M₄)
+    (h : M →ₗ[R] M₂) : (f.prod g).comp h = (f.comp h).prod (g.comp h) :=
+  rfl
 
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains.
@@ -124,8 +121,7 @@ their codomains.
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used. -/
 @[simps]
 def prodEquiv [Module S M₂] [Module S M₃] [SMulCommClass R S M₂] [SMulCommClass R S M₃] :
-    ((M →ₗ[R] M₂) × (M →ₗ[R] M₃)) ≃ₗ[S] M →ₗ[R] M₂ × M₃
-    where
+    ((M →ₗ[R] M₂) × (M →ₗ[R] M₃)) ≃ₗ[S] M →ₗ[R] M₂ × M₃ where
   toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
   left_inv f := by ext <;> rfl
@@ -237,6 +233,12 @@ theorem coprod_inl_inr : coprod (inl R M M₂) (inr R M M₂) = LinearMap.id := 
     simp only [Prod.mk_add_mk, add_zero, id_apply, coprod_apply, inl_apply, inr_apply, zero_add]
 #align linear_map.coprod_inl_inr LinearMap.coprod_inl_inr
 
+theorem coprod_zero_left (g : M₂ →ₗ[R] M₃) : (0 : M →ₗ[R] M₃).coprod g = g.comp (snd R M M₂) :=
+  zero_add _
+
+theorem coprod_zero_right (f : M →ₗ[R] M₃) : f.coprod (0 : M₂ →ₗ[R] M₃) = f.comp (fst R M M₂) :=
+  add_zero _
+
 theorem comp_coprod (f : M₃ →ₗ[R] M₄) (g₁ : M →ₗ[R] M₃) (g₂ : M₂ →ₗ[R] M₃) :
     f.comp (g₁.coprod g₂) = (f.comp g₁).coprod (f.comp g₂) :=
   ext fun x => f.map_add (g₁ x.1) (g₂ x.2)
@@ -257,8 +259,7 @@ theorem coprod_comp_prod (f : M₂ →ₗ[R] M₄) (g : M₃ →ₗ[R] M₄) (f'
 @[simp]
 theorem coprod_map_prod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) (S : Submodule R M)
     (S' : Submodule R M₂) : (Submodule.prod S S').map (LinearMap.coprod f g) = S.map f ⊔ S'.map g :=
-  SetLike.coe_injective <|
-    by
+  SetLike.coe_injective <| by
     simp only [LinearMap.coprod_apply, Submodule.coe_sup, Submodule.map_coe]
     rw [← Set.image2_add, Set.image2_image_left, Set.image2_image_right]
     exact Set.image_prod fun m m₂ => f m + g m₂
@@ -274,7 +275,7 @@ def coprodEquiv [Module S M₃] [SMulCommClass R S M₃] :
     where
   toFun f := f.1.coprod f.2
   invFun f := (f.comp (inl _ _ _), f.comp (inr _ _ _))
-  left_inv f := by simp only [Prod.mk.eta, coprod_inl, coprod_inr]
+  left_inv f := by simp only [coprod_inl, coprod_inr]
   right_inv f := by simp only [← comp_coprod, comp_id, coprod_inl_inr]
   map_add' a b := by
     ext
@@ -295,7 +296,7 @@ Split equality of linear maps from a product into linear maps over each componen
 to apply lemmas specific to `M →ₗ M₃` and `M₂ →ₗ M₃`.
 
 See note [partially-applied ext lemmas]. -/
-@[ext]
+@[ext 1100]
 theorem prod_ext {f g : M × M₂ →ₗ[R] M₃} (hl : f.comp (inl _ _ _) = g.comp (inl _ _ _))
     (hr : f.comp (inr _ _ _) = g.comp (inr _ _ _)) : f = g :=
   prod_ext_iff.2 ⟨hl, hr⟩
@@ -329,12 +330,12 @@ theorem ker_prodMap (f : M →ₗ[R] M₂) (g : M₃ →ₗ[R] M₄) :
 
 @[simp]
 theorem prodMap_id : (id : M →ₗ[R] M).prodMap (id : M₂ →ₗ[R] M₂) = id :=
-  LinearMap.ext fun _ => Prod.mk.eta
+  rfl
 #align linear_map.prod_map_id LinearMap.prodMap_id
 
 @[simp]
 theorem prodMap_one : (1 : M →ₗ[R] M).prodMap (1 : M₂ →ₗ[R] M₂) = 1 :=
-  LinearMap.ext fun _ => Prod.mk.eta
+  rfl
 #align linear_map.prod_map_one LinearMap.prodMap_one
 
 theorem prodMap_comp (f₁₂ : M →ₗ[R] M₂) (f₂₃ : M₂ →ₗ[R] M₃) (g₁₂ : M₄ →ₗ[R] M₅)
@@ -391,9 +392,9 @@ variable {R M M₂ M₃ M₄}
 
 section map_mul
 
-variable {A : Type _} [NonUnitalNonAssocSemiring A] [Module R A]
+variable {A : Type*} [NonUnitalNonAssocSemiring A] [Module R A]
 
-variable {B : Type _} [NonUnitalNonAssocSemiring B] [Module R B]
+variable {B : Type*} [NonUnitalNonAssocSemiring B] [Module R B]
 
 theorem inl_map_mul (a₁ a₂ : A) :
     LinearMap.inl R A B (a₁ * a₂) = LinearMap.inl R A B a₁ * LinearMap.inl R A B a₂ :=
@@ -444,7 +445,7 @@ theorem isCompl_range_inl_inr : IsCompl (range $ inl R M M₂) (range $ inr R M 
   constructor
   · rw [disjoint_def]
     rintro ⟨_, _⟩ ⟨x, hx⟩ ⟨y, hy⟩
-    simp only [Prod.ext_iff, inl_apply, inr_apply, mem_bot] at hx hy⊢
+    simp only [Prod.ext_iff, inl_apply, inr_apply, mem_bot] at hx hy ⊢
     exact ⟨hy.1.symm, hx.2.symm⟩
   · rw [codisjoint_iff_le_sup]
     rintro ⟨x, y⟩ -
@@ -503,21 +504,20 @@ theorem range_prod_le (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) :
   exact ⟨⟨x, rfl⟩, ⟨x, rfl⟩⟩
 #align linear_map.range_prod_le LinearMap.range_prod_le
 
-theorem ker_prod_ker_le_ker_coprod {M₂ : Type _} [AddCommGroup M₂] [Module R M₂] {M₃ : Type _}
+theorem ker_prod_ker_le_ker_coprod {M₂ : Type*} [AddCommGroup M₂] [Module R M₂] {M₃ : Type*}
     [AddCommGroup M₃] [Module R M₃] (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) :
     (ker f).prod (ker g) ≤ ker (f.coprod g) := by
   rintro ⟨y, z⟩
   simp (config := { contextual := true })
 #align linear_map.ker_prod_ker_le_ker_coprod LinearMap.ker_prod_ker_le_ker_coprod
 
-theorem ker_coprod_of_disjoint_range {M₂ : Type _} [AddCommGroup M₂] [Module R M₂] {M₃ : Type _}
+theorem ker_coprod_of_disjoint_range {M₂ : Type*} [AddCommGroup M₂] [Module R M₂] {M₃ : Type*}
     [AddCommGroup M₃] [Module R M₃] (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃)
     (hd : Disjoint (range f) (range g)) : ker (f.coprod g) = (ker f).prod (ker g) := by
   apply le_antisymm _ (ker_prod_ker_le_ker_coprod f g)
   rintro ⟨y, z⟩ h
-  simp only [mem_ker, mem_prod, coprod_apply] at h⊢
-  have : f y ∈ (range f) ⊓ (range g) :=
-    by
+  simp only [mem_ker, mem_prod, coprod_apply] at h ⊢
+  have : f y ∈ (range f) ⊓ (range g) := by
     simp only [true_and_iff, mem_range, mem_inf, exists_apply_eq_apply]
     use -z
     rwa [eq_comm, map_neg, ← sub_eq_zero, sub_neg_eq_add]
@@ -607,7 +607,8 @@ def fst : Submodule R (M × M₂) :=
 
 /-- `M` as a submodule of `M × N` is isomorphic to `M`. -/
 @[simps]
-def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where -- Porting note: proofs were `tidy` or `simp`
+def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
+  -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.1
   invFun m := ⟨⟨m, 0⟩, by simp only [fst, comap_bot, mem_ker, snd_apply]⟩
   map_add' := by simp only [AddSubmonoid.coe_add, coe_toAddSubmonoid, Prod.fst_add, Subtype.forall,
@@ -642,7 +643,8 @@ def snd : Submodule R (M × M₂) :=
 
 /-- `N` as a submodule of `M × N` is isomorphic to `N`. -/
 @[simps]
-def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where -- Porting note: proofs were `tidy` or `simp`
+def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
+  -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.2
   invFun n := ⟨⟨0, n⟩, by simp only [snd, comap_bot, mem_ker, fst_apply]⟩
   map_add' := by simp only [AddSubmonoid.coe_add, coe_toAddSubmonoid, Prod.snd_add, Subtype.forall,
@@ -736,12 +738,56 @@ namespace LinearEquiv
 
 /-- Product of modules is commutative up to linear isomorphism. -/
 @[simps apply]
-def prodComm (R M N : Type _) [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M]
+def prodComm (R M N : Type*) [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M]
     [Module R N] : (M × N) ≃ₗ[R] N × M :=
   { AddEquiv.prodComm with
     toFun := Prod.swap
     map_smul' := fun _r ⟨_m, _n⟩ => rfl }
 #align linear_equiv.prod_comm LinearEquiv.prodComm
+
+section prodComm
+
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂]
+
+theorem fst_comp_prodComm :
+    (LinearMap.fst R M₂ M).comp (prodComm R M M₂).toLinearMap = (LinearMap.snd R M M₂) := by
+  ext <;> simp
+
+theorem snd_comp_prodComm :
+    (LinearMap.snd R M₂ M).comp (prodComm R M M₂).toLinearMap = (LinearMap.fst R M M₂) := by
+  ext <;> simp
+
+end prodComm
+
+section
+
+variable (R M M₂ M₃ M₄)
+variable [Semiring R]
+variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
+variable [Module R M] [Module R M₂] [Module R M₃] [Module R M₄]
+
+/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
+@[simps apply]
+def prodProdProdComm : ((M × M₂) × M₃ × M₄) ≃ₗ[R] (M × M₃) × M₂ × M₄ :=
+  { AddEquiv.prodProdProdComm M M₂ M₃ M₄ with
+    toFun := fun mnmn => ((mnmn.1.1, mnmn.2.1), (mnmn.1.2, mnmn.2.2))
+    invFun := fun mmnn => ((mmnn.1.1, mmnn.2.1), (mmnn.1.2, mmnn.2.2))
+    map_smul' := fun _c _mnmn => rfl }
+#align linear_equiv.prod_prod_prod_comm LinearEquiv.prodProdProdComm
+
+@[simp]
+theorem prodProdProdComm_symm :
+    (prodProdProdComm R M M₂ M₃ M₄).symm = prodProdProdComm R M M₃ M₂ M₄ :=
+  rfl
+#align linear_equiv.prod_prod_prod_comm_symm LinearEquiv.prodProdProdComm_symm
+
+@[simp]
+theorem prodProdProdComm_toAddEquiv :
+    (prodProdProdComm R M M₂ M₃ M₄ : _ ≃+ _) = AddEquiv.prodProdProdComm M M₂ M₃ M₄ :=
+  rfl
+#align linear_equiv.prod_prod_prod_comm_to_add_equiv LinearEquiv.prodProdProdComm_toAddEquiv
+
+end
 
 section
 
@@ -812,9 +858,6 @@ end
 
 end LinearEquiv
 
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
-
 namespace LinearMap
 
 open Submodule
@@ -868,7 +911,7 @@ noncomputable section Tunnel
 -- which requires cancellation.)
 variable [Ring R]
 
-variable {N : Type _} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable {N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 open Function
 
@@ -984,8 +1027,7 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommGroup M₃]
 def graph : Submodule R (M × M₂)
     where
   carrier := { p | p.2 = f p.1 }
-  add_mem' (ha : _ = _) (hb : _ = _) :=
-    by
+  add_mem' (ha : _ = _) (hb : _ = _) := by
     change _ + _ = f (_ + _)
     rw [map_add, ha, hb]
   zero_mem' := Eq.symm (map_zero f)

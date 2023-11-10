@@ -2,7 +2,6 @@
 Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-Ported by: Heather Macbeth
 -/
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.SolveByElim
@@ -49,8 +48,8 @@ elab_rules : tactic
   if let some w := w then throwErrorAt w (msg "'with'")
   if let some u := u then throwErrorAt u (msg "'using'")
   let cfg ← elabApplyRulesConfig <| mkNullNode #[]
-  let cfg := { cfg.noBackTracking with
+  let cfg := { cfg with
+    backtracking := false
     transparency := .reducible
-    failAtMaxDepth := false
     exfalso := false }
   liftMetaTactic fun g => do solveByElim.processSyntax cfg false false [] [] #[mkIdent `mono] [g]

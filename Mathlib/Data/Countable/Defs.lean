@@ -2,19 +2,16 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.countable.defs
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finite.Defs
-import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.Common
+
+#align_import data.countable.defs from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Countable types
 
-In this file we define a typeclass saying that a given `Sort _` is countable. See also `Encodable`
+In this file we define a typeclass saying that a given `Sort*` is countable. See also `Encodable`
 for a version that singles out a specific encoding of elements of `α` by natural numbers.
 
 This file also provides a few instances of this typeclass. More instances can be found in other
@@ -40,9 +37,8 @@ class Countable (α : Sort u) : Prop where
 #align countable Countable
 #align countable_iff_exists_injective countable_iff_exists_injective
 
-lemma Countable.exists_injective_nat (α : Sort u) [Countable α] :
-  ∃ f : α → ℕ, Injective f :=
-Countable.exists_injective_nat'
+lemma Countable.exists_injective_nat (α : Sort u) [Countable α] : ∃ f : α → ℕ, Injective f :=
+  Countable.exists_injective_nat'
 
 instance : Countable ℕ :=
   ⟨⟨id, injective_id⟩⟩
@@ -50,13 +46,13 @@ instance : Countable ℕ :=
 export Countable (exists_injective_nat)
 
 protected theorem Function.Injective.countable [Countable β] {f : α → β} (hf : Injective f) :
-  Countable α :=
+    Countable α :=
   let ⟨g, hg⟩ := exists_injective_nat β
   ⟨⟨g ∘ f, hg.comp hf⟩⟩
 #align function.injective.countable Function.Injective.countable
 
 protected theorem Function.Surjective.countable [Countable α] {f : α → β} (hf : Surjective f) :
-  Countable β :=
+    Countable β :=
   (injective_surjInv hf).countable
 #align function.surjective.countable Function.Surjective.countable
 
@@ -69,7 +65,7 @@ theorem countable_iff_exists_surjective [Nonempty α] : Countable α ↔ ∃ f :
   ⟨@exists_surjective_nat _ _, fun ⟨_, hf⟩ ↦ hf.countable⟩
 #align countable_iff_exists_surjective countable_iff_exists_surjective
 
-theorem Countable.of_equiv (α : Sort _) [Countable α] (e : α ≃ β) : Countable β :=
+theorem Countable.of_equiv (α : Sort*) [Countable α] (e : α ≃ β) : Countable β :=
   e.symm.injective.countable
 #align countable.of_equiv Countable.of_equiv
 
@@ -81,7 +77,7 @@ instance {β : Type v} [Countable β] : Countable (ULift.{u} β) :=
   Countable.of_equiv _ Equiv.ulift.symm
 
 /-!
-### Operations on `Sort _`s
+### Operations on `Sort*`s
 -/
 
 

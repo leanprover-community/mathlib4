@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Alistair Tucker
-
-! This file was ported from Lean 3 source module topology.algebra.order.intermediate_value
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Topology.Order.Basic
+
+#align_import topology.algebra.order.intermediate_value from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Intermediate Value Theorem
@@ -247,59 +244,59 @@ variable {α : Type u} {β : Type v} {γ : Type w} [ConditionallyCompleteLinearO
 
 /-- A bounded connected subset of a conditionally complete linear order includes the open interval
 `(Inf s, Sup s)`. -/
-theorem IsConnected.Ioo_cinfₛ_csupₛ_subset {s : Set α} (hs : IsConnected s) (hb : BddBelow s)
-    (ha : BddAbove s) : Ioo (infₛ s) (supₛ s) ⊆ s := fun _x hx =>
-  let ⟨_y, ys, hy⟩ := (isGLB_lt_iff (isGLB_cinfₛ hs.nonempty hb)).1 hx.1
-  let ⟨_z, zs, hz⟩ := (lt_isLUB_iff (isLUB_csupₛ hs.nonempty ha)).1 hx.2
+theorem IsConnected.Ioo_csInf_csSup_subset {s : Set α} (hs : IsConnected s) (hb : BddBelow s)
+    (ha : BddAbove s) : Ioo (sInf s) (sSup s) ⊆ s := fun _x hx =>
+  let ⟨_y, ys, hy⟩ := (isGLB_lt_iff (isGLB_csInf hs.nonempty hb)).1 hx.1
+  let ⟨_z, zs, hz⟩ := (lt_isLUB_iff (isLUB_csSup hs.nonempty ha)).1 hx.2
   hs.Icc_subset ys zs ⟨hy.le, hz.le⟩
-#align is_connected.Ioo_cInf_cSup_subset IsConnected.Ioo_cinfₛ_csupₛ_subset
+#align is_connected.Ioo_cInf_cSup_subset IsConnected.Ioo_csInf_csSup_subset
 
-theorem eq_Icc_cinfₛ_csupₛ_of_connected_bdd_closed {s : Set α} (hc : IsConnected s)
-    (hb : BddBelow s) (ha : BddAbove s) (hcl : IsClosed s) : s = Icc (infₛ s) (supₛ s) :=
-  (subset_Icc_cinfₛ_csupₛ hb ha).antisymm <|
-    hc.Icc_subset (hcl.cinfₛ_mem hc.nonempty hb) (hcl.csupₛ_mem hc.nonempty ha)
-#align eq_Icc_cInf_cSup_of_connected_bdd_closed eq_Icc_cinfₛ_csupₛ_of_connected_bdd_closed
+theorem eq_Icc_csInf_csSup_of_connected_bdd_closed {s : Set α} (hc : IsConnected s)
+    (hb : BddBelow s) (ha : BddAbove s) (hcl : IsClosed s) : s = Icc (sInf s) (sSup s) :=
+  (subset_Icc_csInf_csSup hb ha).antisymm <|
+    hc.Icc_subset (hcl.csInf_mem hc.nonempty hb) (hcl.csSup_mem hc.nonempty ha)
+#align eq_Icc_cInf_cSup_of_connected_bdd_closed eq_Icc_csInf_csSup_of_connected_bdd_closed
 
-theorem IsPreconnected.Ioi_cinfₛ_subset {s : Set α} (hs : IsPreconnected s) (hb : BddBelow s)
-    (ha : ¬BddAbove s) : Ioi (infₛ s) ⊆ s := fun x hx =>
+theorem IsPreconnected.Ioi_csInf_subset {s : Set α} (hs : IsPreconnected s) (hb : BddBelow s)
+    (ha : ¬BddAbove s) : Ioi (sInf s) ⊆ s := fun x hx =>
   have sne : s.Nonempty := nonempty_of_not_bddAbove ha
-  let ⟨_y, ys, hy⟩ : ∃ y ∈ s, y < x := (isGLB_lt_iff (isGLB_cinfₛ sne hb)).1 hx
+  let ⟨_y, ys, hy⟩ : ∃ y ∈ s, y < x := (isGLB_lt_iff (isGLB_csInf sne hb)).1 hx
   let ⟨_z, zs, hz⟩ : ∃ z ∈ s, x < z := not_bddAbove_iff.1 ha x
   hs.Icc_subset ys zs ⟨hy.le, hz.le⟩
-#align is_preconnected.Ioi_cInf_subset IsPreconnected.Ioi_cinfₛ_subset
+#align is_preconnected.Ioi_cInf_subset IsPreconnected.Ioi_csInf_subset
 
-theorem IsPreconnected.Iio_csupₛ_subset {s : Set α} (hs : IsPreconnected s) (hb : ¬BddBelow s)
-    (ha : BddAbove s) : Iio (supₛ s) ⊆ s :=
-  @IsPreconnected.Ioi_cinfₛ_subset αᵒᵈ _ _ _ s hs ha hb
-#align is_preconnected.Iio_cSup_subset IsPreconnected.Iio_csupₛ_subset
+theorem IsPreconnected.Iio_csSup_subset {s : Set α} (hs : IsPreconnected s) (hb : ¬BddBelow s)
+    (ha : BddAbove s) : Iio (sSup s) ⊆ s :=
+  @IsPreconnected.Ioi_csInf_subset αᵒᵈ _ _ _ s hs ha hb
+#align is_preconnected.Iio_cSup_subset IsPreconnected.Iio_csSup_subset
 
 /-- A preconnected set in a conditionally complete linear order is either one of the intervals
 `[Inf s, Sup s]`, `[Inf s, Sup s)`, `(Inf s, Sup s]`, `(Inf s, Sup s)`, `[Inf s, +∞)`,
 `(Inf s, +∞)`, `(-∞, Sup s]`, `(-∞, Sup s)`, `(-∞, +∞)`, or `∅`. The converse statement requires
-`α` to be densely ordererd. -/
+`α` to be densely ordered. -/
 theorem IsPreconnected.mem_intervals {s : Set α} (hs : IsPreconnected s) :
     s ∈
-      ({Icc (infₛ s) (supₛ s), Ico (infₛ s) (supₛ s), Ioc (infₛ s) (supₛ s), Ioo (infₛ s) (supₛ s),
-          Ici (infₛ s), Ioi (infₛ s), Iic (supₛ s), Iio (supₛ s), univ, ∅} :
+      ({Icc (sInf s) (sSup s), Ico (sInf s) (sSup s), Ioc (sInf s) (sSup s), Ioo (sInf s) (sSup s),
+          Ici (sInf s), Ioi (sInf s), Iic (sSup s), Iio (sSup s), univ, ∅} :
         Set (Set α)) := by
   rcases s.eq_empty_or_nonempty with (rfl | hne)
   · apply_rules [Or.inr, mem_singleton]
   have hs' : IsConnected s := ⟨hne, hs⟩
   by_cases hb : BddBelow s <;> by_cases ha : BddAbove s
-  · rcases mem_Icc_Ico_Ioc_Ioo_of_subset_of_subset (hs'.Ioo_cinfₛ_csupₛ_subset hb ha)
-        (subset_Icc_cinfₛ_csupₛ hb ha) with (hs | hs | hs | hs)
+  · rcases mem_Icc_Ico_Ioc_Ioo_of_subset_of_subset (hs'.Ioo_csInf_csSup_subset hb ha)
+        (subset_Icc_csInf_csSup hb ha) with (hs | hs | hs | hs)
     · exact Or.inl hs
     · exact Or.inr <| Or.inl hs
     · exact Or.inr <| Or.inr <| Or.inl hs
     · exact Or.inr <| Or.inr <| Or.inr <| Or.inl hs
   · refine' Or.inr <| Or.inr <| Or.inr <| Or.inr _
     cases'
-      mem_Ici_Ioi_of_subset_of_subset (hs.Ioi_cinfₛ_subset hb ha) fun x hx => cinfₛ_le hb hx with
+      mem_Ici_Ioi_of_subset_of_subset (hs.Ioi_csInf_subset hb ha) fun x hx => csInf_le hb hx with
       hs hs
     · exact Or.inl hs
     · exact Or.inr (Or.inl hs)
   · iterate 6 apply Or.inr
-    cases' mem_Iic_Iio_of_subset_of_subset (hs.Iio_csupₛ_subset hb ha) fun x hx => le_csupₛ ha hx
+    cases' mem_Iic_Iio_of_subset_of_subset (hs.Iio_csSup_subset hb ha) fun x hx => le_csSup ha hx
       with hs hs
     · exact Or.inl hs
     · exact Or.inr (Or.inl hs)
@@ -319,14 +316,14 @@ theorem setOf_isPreconnected_subset_of_ordered :
       (range Ici ∪ range Ioi ∪ range Iic ∪ range Iio ∪ {univ, ∅}) := by
   intro s hs
   rcases hs.mem_intervals with (hs | hs | hs | hs | hs | hs | hs | hs | hs | hs)
-  · exact Or.inl <| Or.inl <| Or.inl <| Or.inl ⟨(infₛ s, supₛ s), hs.symm⟩
-  · exact Or.inl <| Or.inl <| Or.inl <| Or.inr ⟨(infₛ s, supₛ s), hs.symm⟩
-  · exact Or.inl <| Or.inl <| Or.inr ⟨(infₛ s, supₛ s), hs.symm⟩
-  · exact Or.inl <| Or.inr ⟨(infₛ s, supₛ s), hs.symm⟩
-  · exact Or.inr <| Or.inl <| Or.inl <| Or.inl <| Or.inl ⟨infₛ s, hs.symm⟩
-  · exact Or.inr <| Or.inl <| Or.inl <| Or.inl <| Or.inr ⟨infₛ s, hs.symm⟩
-  · exact Or.inr <| Or.inl <| Or.inl <| Or.inr ⟨supₛ s, hs.symm⟩
-  · exact Or.inr <| Or.inl <| Or.inr ⟨supₛ s, hs.symm⟩
+  · exact Or.inl <| Or.inl <| Or.inl <| Or.inl ⟨(sInf s, sSup s), hs.symm⟩
+  · exact Or.inl <| Or.inl <| Or.inl <| Or.inr ⟨(sInf s, sSup s), hs.symm⟩
+  · exact Or.inl <| Or.inl <| Or.inr ⟨(sInf s, sSup s), hs.symm⟩
+  · exact Or.inl <| Or.inr ⟨(sInf s, sSup s), hs.symm⟩
+  · exact Or.inr <| Or.inl <| Or.inl <| Or.inl <| Or.inl ⟨sInf s, hs.symm⟩
+  · exact Or.inr <| Or.inl <| Or.inl <| Or.inl <| Or.inr ⟨sInf s, hs.symm⟩
+  · exact Or.inr <| Or.inl <| Or.inl <| Or.inr ⟨sSup s, hs.symm⟩
+  · exact Or.inr <| Or.inl <| Or.inr ⟨sSup s, hs.symm⟩
   · exact Or.inr <| Or.inr <| Or.inl hs
   · exact Or.inr <| Or.inr <| Or.inr hs
 #align set_of_is_preconnected_subset_of_ordered setOf_isPreconnected_subset_of_ordered
@@ -347,14 +344,14 @@ theorem IsClosed.mem_of_ge_of_forall_exists_gt {a b : α} {s : Set α} (hs : IsC
   replace ha : a ∈ S
   exact ⟨ha, left_mem_Icc.2 hab⟩
   have Sbd : BddAbove S := ⟨b, fun z hz => hz.2.2⟩
-  let c := supₛ (s ∩ Icc a b)
-  have c_mem : c ∈ S := hs.csupₛ_mem ⟨_, ha⟩ Sbd
-  have c_le : c ≤ b := csupₛ_le ⟨_, ha⟩ fun x hx => hx.2.2
+  let c := sSup (s ∩ Icc a b)
+  have c_mem : c ∈ S := hs.csSup_mem ⟨_, ha⟩ Sbd
+  have c_le : c ≤ b := csSup_le ⟨_, ha⟩ fun x hx => hx.2.2
   cases' eq_or_lt_of_le c_le with hc hc
   exact hc ▸ c_mem.1
   exfalso
   rcases hgt c ⟨c_mem.1, c_mem.2.1, hc⟩ with ⟨x, xs, cx, xb⟩
-  exact not_lt_of_le (le_csupₛ Sbd ⟨xs, le_trans (le_csupₛ Sbd ha) (le_of_lt cx), xb⟩) cx
+  exact not_lt_of_le (le_csSup Sbd ⟨xs, le_trans (le_csSup Sbd ha) (le_of_lt cx), xb⟩) cx
 #align is_closed.mem_of_ge_of_forall_exists_gt IsClosed.mem_of_ge_of_forall_exists_gt
 
 /-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
@@ -363,10 +360,8 @@ is not empty, then `[a, b] ⊆ s`. -/
 theorem IsClosed.Icc_subset_of_forall_exists_gt {a b : α} {s : Set α} (hs : IsClosed (s ∩ Icc a b))
     (ha : a ∈ s) (hgt : ∀ x ∈ s ∩ Ico a b, ∀ y ∈ Ioi x, (s ∩ Ioc x y).Nonempty) : Icc a b ⊆ s := by
   intro y hy
-  have : IsClosed (s ∩ Icc a y) :=
-    by
-    suffices s ∩ Icc a y = s ∩ Icc a b ∩ Icc a y
-      by
+  have : IsClosed (s ∩ Icc a y) := by
+    suffices s ∩ Icc a y = s ∩ Icc a b ∩ Icc a y by
       rw [this]
       exact IsClosed.inter hs isClosed_Icc
     rw [inter_assoc]
@@ -402,8 +397,7 @@ theorem isPreconnected_Icc_aux (x y : α) (s t : Set α) (hxy : x ≤ y) (hs : I
   apply (IsClosed.inter hs isClosed_Icc).Icc_subset_of_forall_mem_nhdsWithin hx.2
   rintro z ⟨zs, hz⟩
   have zt : z ∈ tᶜ := fun zt => hst ⟨z, xyab <| Ico_subset_Icc_self hz, zs, zt⟩
-  have : tᶜ ∩ Ioc z y ∈ 𝓝[>] z :=
-    by
+  have : tᶜ ∩ Ioc z y ∈ 𝓝[>] z := by
     rw [← nhdsWithin_Ioc_eq_nhdsWithin_Ioi hz.2]
     exact mem_nhdsWithin.2 ⟨tᶜ, ht.isOpen_compl, zt, Subset.rfl⟩
   apply mem_of_superset this
@@ -503,7 +497,7 @@ instance (priority := 100) ordered_connected_space : PreconnectedSpace α :=
 
 /-- In a dense conditionally complete linear order, the set of preconnected sets is exactly
 the set of the intervals `Icc`, `Ico`, `Ioc`, `Ioo`, `Ici`, `Ioi`, `Iic`, `Iio`, `(-∞, +∞)`,
-or `∅`. Though one can represent `∅` as `(infₛ s, infₛ s)`, we include it into the list of
+or `∅`. Though one can represent `∅` as `(sInf s, sInf s)`, we include it into the list of
 possible cases to improve readability. -/
 theorem setOf_isPreconnected_eq_of_ordered :
     { s : Set α | IsPreconnected s } =
@@ -527,7 +521,7 @@ continuous on an interval.
 -/
 
 
-variable {δ : Type _} [LinearOrder δ] [TopologicalSpace δ] [OrderClosedTopology δ]
+variable {δ : Type*} [LinearOrder δ] [TopologicalSpace δ] [OrderClosedTopology δ]
 
 /-- **Intermediate Value Theorem** for continuous functions on closed intervals, case
 `f a ≤ t ≤ f b`.-/
@@ -615,7 +609,7 @@ theorem ContinuousOn.surjOn_uIcc {s : Set α} [hs : OrdConnected s] {f : α → 
   by cases' le_total (f a) (f b) with hab hab <;> simp [hf.surjOn_Icc, *]
 #align continuous_on.surj_on_uIcc ContinuousOn.surjOn_uIcc
 
-/-- A continuous function which tendsto `Fitler.atTop` along `Filter.atTop` and to `atBot` along
+/-- A continuous function which tendsto `Filter.atTop` along `Filter.atTop` and to `atBot` along
 `at_bot` is surjective. -/
 theorem Continuous.surjective {f : α → δ} (hf : Continuous f) (h_top : Tendsto f atTop atTop)
     (h_bot : Tendsto f atBot atBot) : Function.Surjective f := fun p =>

@@ -2,14 +2,11 @@
 Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
-
-! This file was ported from Lean 3 source module data.qpf.multivariate.constructions.comp
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PFunctor.Multivariate.Basic
 import Mathlib.Data.QPF.Multivariate.Basic
+
+#align_import data.qpf.multivariate.constructions.comp from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # The composition of QPFs is itself a QPF
@@ -25,7 +22,7 @@ namespace MvQPF
 
 open MvFunctor
 
-variable {n m : ℕ} (F : TypeVec.{u} n → Type _) [fF : MvFunctor F] [q : MvQPF F]
+variable {n m : ℕ} (F : TypeVec.{u} n → Type*) [fF : MvFunctor F] [q : MvQPF F]
   (G : Fin2 n → TypeVec.{u} m → Type u) [fG : ∀ i, MvFunctor <| G i] [q' : ∀ i, MvQPF <| G i]
 
 /-- Composition of an `n`-ary functor with `n` `m`-ary
@@ -43,15 +40,15 @@ variable {F G} {α β : TypeVec.{u} m} (f : α ⟹ β)
 instance [I : Inhabited (F fun i : Fin2 n ↦ G i α)] : Inhabited (Comp F G α) := I
 
 /-- Constructor for functor composition -/
-protected def mk (x : F fun i ↦ G i α) : (Comp F G) α := x
+protected def mk (x : F fun i ↦ G i α) : Comp F G α := x
 #align mvqpf.comp.mk MvQPF.Comp.mk
 
 /-- Destructor for functor composition -/
-protected def get (x : (Comp F G) α) : F fun i ↦ G i α := x
+protected def get (x : Comp F G α) : F fun i ↦ G i α := x
 #align mvqpf.comp.get MvQPF.Comp.get
 
 @[simp]
-protected theorem mk_get (x : (Comp F G) α) : Comp.mk (Comp.get x) = x := rfl
+protected theorem mk_get (x : Comp F G α) : Comp.mk (Comp.get x) = x := rfl
 #align mvqpf.comp.mk_get MvQPF.Comp.mk_get
 
 @[simp]

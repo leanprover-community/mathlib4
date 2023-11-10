@@ -2,14 +2,11 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.strong_epi
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Balanced
 import Mathlib.CategoryTheory.LiftingProperties.Basic
+
+#align_import category_theory.limits.shapes.strong_epi from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Strong epimorphisms
@@ -82,9 +79,9 @@ theorem StrongMono.mk' {f : P ⟶ Q} [Mono f]
   rlp := fun {X Y} z hz => ⟨fun {u v} sq => hf X Y z hz u v sq⟩
 #align category_theory.strong_mono.mk' CategoryTheory.StrongMono.mk'
 
-attribute [instance] StrongEpi.llp
+attribute [instance 100] StrongEpi.llp
 
-attribute [instance] StrongMono.rlp
+attribute [instance 100] StrongMono.rlp
 
 instance (priority := 100) epi_of_strongEpi (f : P ⟶ Q) [StrongEpi f] : Epi f :=
   StrongEpi.epi
@@ -246,4 +243,3 @@ instance (priority := 100) balanced_of_strongMonoCategory [StrongMonoCategory C]
 end
 
 end CategoryTheory
-

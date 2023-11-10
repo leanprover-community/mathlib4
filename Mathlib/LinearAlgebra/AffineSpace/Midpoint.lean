@@ -2,14 +2,10 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.midpoint
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Invertible
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+
+#align_import linear_algebra.affine_space.midpoint from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 # Midpoint of a segment
@@ -40,7 +36,7 @@ open AffineMap AffineEquiv
 
 section
 
-variable (R : Type _) {V V' P P' : Type _} [Ring R] [Invertible (2 : R)] [AddCommGroup V]
+variable (R : Type*) {V V' P P' : Type*} [Ring R] [Invertible (2 : R)] [AddCommGroup V]
   [Module R V] [AddTorsor V P] [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 /-- `midpoint x y` is the midpoint of the segment `[x, y]`. -/
@@ -105,6 +101,16 @@ theorem midpoint_eq_iff {x y z : P} : midpoint R x y = z ↔ pointReflection R z
 #align midpoint_eq_iff midpoint_eq_iff
 
 @[simp]
+theorem midpoint_pointReflection_left (x y : P) :
+    midpoint R (Equiv.pointReflection x y) y = x :=
+  midpoint_eq_iff.2 <| Equiv.pointReflection_involutive _ _
+
+@[simp]
+theorem midpoint_pointReflection_right (x y : P) :
+    midpoint R y (Equiv.pointReflection x y) = x :=
+  midpoint_eq_iff.2 rfl
+
+@[simp]
 theorem midpoint_vsub_left (p₁ p₂ : P) : midpoint R p₁ p₂ -ᵥ p₁ = (⅟ 2 : R) • (p₂ -ᵥ p₁) :=
   lineMap_vsub_left _ _ _
 #align midpoint_vsub_left midpoint_vsub_left
@@ -127,7 +133,7 @@ theorem right_vsub_midpoint (p₁ p₂ : P) : p₂ -ᵥ midpoint R p₁ p₂ = (
 theorem midpoint_vsub (p₁ p₂ p : P) :
     midpoint R p₁ p₂ -ᵥ p = (⅟ 2 : R) • (p₁ -ᵥ p) + (⅟ 2 : R) • (p₂ -ᵥ p) := by
   rw [← vsub_sub_vsub_cancel_right p₁ p p₂, smul_sub, sub_eq_add_neg, ← smul_neg,
-    neg_vsub_eq_vsub_rev, add_assoc, inv_of_two_smul_add_inv_of_two_smul, ← vadd_vsub_assoc,
+    neg_vsub_eq_vsub_rev, add_assoc, invOf_two_smul_add_invOf_two_smul, ← vadd_vsub_assoc,
     midpoint_comm, midpoint, lineMap_apply]
 #align midpoint_vsub midpoint_vsub
 
@@ -190,7 +196,7 @@ theorem midpoint_eq_iff' {x y z : P} : midpoint R x y = z ↔ Equiv.pointReflect
 #align midpoint_eq_iff' midpoint_eq_iff'
 
 /-- `midpoint` does not depend on the ring `R`. -/
-theorem midpoint_unique (R' : Type _) [Ring R'] [Invertible (2 : R')] [Module R' V] (x y : P) :
+theorem midpoint_unique (R' : Type*) [Ring R'] [Invertible (2 : R')] [Module R' V] (x y : P) :
     midpoint R x y = midpoint R' x y :=
   (midpoint_eq_iff' R).2 <| (midpoint_eq_iff' R').1 rfl
 #align midpoint_unique midpoint_unique
@@ -205,7 +211,6 @@ theorem midpoint_add_self (x y : V) : midpoint R x y + midpoint R x y = x + y :=
   calc
     midpoint R x y +ᵥ midpoint R x y = midpoint R x y +ᵥ midpoint R y x := by rw [midpoint_comm]
     _ = x + y := by rw [midpoint_vadd_midpoint, vadd_eq_add, vadd_eq_add, add_comm, midpoint_self]
-
 #align midpoint_add_self midpoint_add_self
 
 theorem midpoint_zero_add (x y : V) : midpoint R 0 (x + y) = midpoint R x y :=
@@ -240,7 +245,7 @@ end
 
 namespace AddMonoidHom
 
-variable (R R' : Type _) {E F : Type _} [Ring R] [Invertible (2 : R)] [AddCommGroup E] [Module R E]
+variable (R R' : Type*) {E F : Type*} [Ring R] [Invertible (2 : R)] [AddCommGroup E] [Module R E]
   [Ring R'] [Invertible (2 : R')] [AddCommGroup F] [Module R' F]
 
 /-- A map `f : E → F` sending zero to zero and midpoints to midpoints is an `AddMonoidHom`. -/
@@ -256,7 +261,6 @@ def ofMapMidpoint (f : E → F) (h0 : f 0 = 0)
         (midpoint_add_self _ _ _).symm
       _ = f (midpoint R x y) + f (midpoint R x y) := by rw [← hm, midpoint_zero_add]
       _ = f x + f y := by rw [hm, midpoint_add_self]
-
 #align add_monoid_hom.of_map_midpoint AddMonoidHom.ofMapMidpoint
 
 @[simp]

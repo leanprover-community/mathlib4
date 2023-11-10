@@ -3,12 +3,11 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, David Renshaw
 -/
-import Mathlib.Tactic.Backtracking
-import Lean.Meta.Tactic.Apply
-import Mathlib.Lean.LocalContext
+import Mathlib.Tactic.Backtrack
 import Mathlib.Tactic.Relation.Symm
-import Mathlib.Data.Sum.Basic
-import Mathlib.Tactic.LabelAttr
+import Lean.Meta.Tactic.Apply
+import Std.Tactic.LabelAttr
+import Std.Data.Sum.Basic
 
 /-!
 # `solve_by_elim`, `apply_rules`, and `apply_assumption`.
@@ -32,18 +31,26 @@ we can perform backtracking search based on applying a list of lemmas.
 calls to `apply` succeeded or failed.
 -/
 def applyTactics (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .default)
-    (lemmas : List Expr) :
-    MVarId → MetaM (List (MetaM (List MVarId))) :=
-  fun g => pure <|
-    lemmas.map fun e =>
-      withTraceNode `Meta.Tactic.solveByElim (return m!"{·.emoji} trying to apply: {e}") do
-        let goals ← withTransparency transparency (g.apply e cfg)
-        -- When we call `apply` interactively, `Lean.Elab.Tactic.evalApplyLikeTactic`
-        -- deals with closing new typeclass goals by calling
-        -- `Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing`.
-        -- It seems we can't reuse that machinery down here in `MetaM`,
-        -- so we just settle for trying to close each subgoal using `inferInstance`.
-        goals.filterM fun g => try g.inferInstance; pure false catch _ => pure true
+    (lemmas : List Expr) (g : MVarId) : Nondet MetaM (List MVarId) :=
+  (Nondet.ofList lemmas).filterMapM fun e => observing? do
+    withTraceNode `Meta.Tactic.solveByElim (return m!"{·.emoji} trying to apply: {e}") do
+      let goals ← withTransparency transparency (g.apply e cfg)
+      -- When we call `apply` interactively, `Lean.Elab.Tactic.evalApplyLikeTactic`
+      -- deals with closing new typeclass goals by calling
+      -- `Lean.Elab.Term.synthesizeSyntheticMVarsNoPostponing`.
+      -- It seems we can't reuse that machinery down here in `MetaM`,
+      -- so we just settle for trying to close each subgoal using `inferInstance`.
+      goals.filterM fun g => try g.inferInstance; pure false catch _ => pure true
+
+/--
+`applyFirst lemmas goal` applies the first of the `lemmas`
+which can be successfully applied to `goal`, and fails if none apply.
+
+We use this in `apply_rules` and `apply_assumption` where backtracking is not needed.
+-/
+def applyFirst (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .default)
+    (lemmas : List Expr) (g : MVarId) : MetaM (List MVarId) :=
+  (applyTactics cfg transparency lemmas g).head
 
 /--
 Configuration structure to control the behaviour of `solve_by_elim`:
@@ -59,6 +66,7 @@ structure Config extends BacktrackConfig, ApplyConfig where
   /-- Try proving the goal via `exfalso` if `solve_by_elim` otherwise fails.
   This is only used when operating on a single goal. -/
   exfalso : Bool := true
+  backtracking : Bool := true
 
 instance : Coe Config BacktrackConfig := ⟨Config.toBacktrackConfig⟩
 
@@ -84,41 +92,65 @@ namespace Config
 
 /-- Create or modify a `Config` which allows a class of goals to be returned as subgoals. -/
 def accept (cfg : Config := {}) (test : MVarId → MetaM Bool) : Config :=
-{ cfg with
-  discharge := fun g => do
-    if (← test g) then
-      pure none
-    else
-      cfg.discharge g }
-
-/-- Create or modify a `Config` which does no backtracking. -/
-def noBackTracking (cfg : Config := {}) : Config := cfg.accept fun _ => pure true
+  { cfg with
+    discharge := fun g => do
+      if (← test g) then
+        pure none
+      else
+        cfg.discharge g }
 
 /--
 Create or modify a `Config` which runs a tactic on the main goal.
 If that tactic fails, fall back to the `proc` behaviour of `cfg`.
 -/
 def mainGoalProc (cfg : Config := {}) (proc : MVarId → MetaM (List MVarId)) : Config :=
-{ cfg with
-  proc := fun orig goals => match goals with
-  | [] => cfg.proc orig []
-  | g :: gs => try
-      return (← proc g) ++ gs
-    catch _ => cfg.proc orig goals }
+  { cfg with
+    proc := fun orig goals => match goals with
+    | [] => cfg.proc orig []
+    | g :: gs => try
+        return (← proc g) ++ gs
+      catch _ => cfg.proc orig goals }
 
 /-- Create or modify a `Config` which calls `intro` on each goal before applying lemmas. -/
+-- Because `SolveByElim` works on each goal in sequence, even though
+-- `mainGoalProc` only applies this operation on the main goal,
+-- it is applied to every goal before lemmas are applied.
 def intros (cfg : Config := {}) : Config :=
-  mainGoalProc cfg fun g => do pure [(← g.intro1P).2]
+  cfg.mainGoalProc fun g => do pure [(← g.intro1P).2]
+
+/-- Attempt typeclass inference on each goal, before applying lemmas. -/
+-- Because `SolveByElim` works on each goal in sequence, even though
+-- `mainGoalProc` only applies this operation on the main goal,
+-- it is applied to every goal before lemmas are applied.
+def synthInstance (cfg : Config := {}) : Config :=
+  cfg.mainGoalProc fun g => do g.synthInstance; pure []
+
+/-- Add a discharging tactic, falling back to the original discharging tactic if it fails.
+Return `none` to return the goal as a new subgoal, or `some goals` to replace it. -/
+def withDischarge (cfg : Config := {}) (discharge : MVarId → MetaM (Option (List MVarId))) :
+    Config :=
+  { cfg with
+    discharge := fun g => try discharge g
+      catch _ => cfg.discharge g }
+
+/-- Create or modify a `Config` which calls `intro` on any goal for which no lemma applies. -/
+def introsAfter (cfg : Config := {}) : Config :=
+  cfg.withDischarge fun g => do pure [(← g.intro1P).2]
+
+/-- Create or modify a `Config` which
+calls `synthInstance` on any goal for which no lemma applies. -/
+def synthInstanceAfter (cfg : Config := {}) : Config :=
+  cfg.withDischarge fun g => do g.synthInstance; pure (some [])
 
 /--
 Create or modify a `Config` which rejects branches for which `test`,
 applied to the instantiations of the original goals, fails or returns `false`.
 -/
 def testPartialSolutions (cfg : Config := {}) (test : List Expr → MetaM Bool) : Config :=
-{ cfg with
-  proc := fun orig goals => do
-    let .true ← test (← orig.mapM fun m => m.withContext do instantiateMVars (.mvar m)) | failure
-    cfg.proc orig goals }
+  { cfg with
+    proc := fun orig goals => do
+      let .true ← test (← orig.mapM fun m => m.withContext do instantiateMVars (.mvar m)) | failure
+      cfg.proc orig goals }
 
 /--
 Create or modify a `Config` which rejects complete solutions for which `test`,
@@ -147,13 +179,25 @@ See `mkAssumptionSet` for an explanation of why this is needed.
 -/
 def elabContextLemmas (g : MVarId) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) :
     MetaM (List Expr) := do
-  g.withContext (Elab.Term.TermElabM.run' do pure ((← lemmas.mapM id) ++ (← ctx)))
+  g.withContext (Elab.Term.TermElabM.run' do pure ((← ctx) ++ (← lemmas.mapM id)))
 
 /-- Returns the list of tactics corresponding to applying the available lemmas to the goal. -/
 def applyLemmas (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
-    (g : MVarId) : MetaM (List (MetaM (List MVarId))) := do
+    (g : MVarId) : Nondet MetaM (List MVarId) := Nondet.squash fun _ => do
+  -- We handle `cfg.symm` by saturating hypotheses of all goals using `symm`.
+  -- This has better performance that the mathlib3 approach.
+  let g ← if cfg.symm then g.symmSaturate else pure g
+  let es ← elabContextLemmas g lemmas ctx
+  return applyTactics cfg.toApplyConfig cfg.transparency es g
+
+/-- Applies the first possible lemma to the goal. -/
+def applyFirstLemma (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
+    (g : MVarId) : MetaM (List MVarId) := do
+-- We handle `cfg.symm` by saturating hypotheses of all goals using `symm`.
+-- This has better performance that the mathlib3 approach.
+let g ← if cfg.symm then g.symmSaturate else pure g
 let es ← elabContextLemmas g lemmas ctx
-applyTactics cfg.toApplyConfig cfg.transparency es g
+applyFirst cfg.toApplyConfig cfg.transparency es g
 
 /--
 Solve a collection of goals by repeatedly applying lemmas, backtracking as necessary.
@@ -173,50 +217,40 @@ Custom wrappers (e.g. `apply_assumption` and `apply_rules`) may modify this beha
 -/
 def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
     (goals : List MVarId) : MetaM (List MVarId) := do
-  -- We handle `cfg.symm` by saturating hypotheses of all goals using `symm`.
-  -- Implementation note:
-  -- (We used to apply `symm` all throughout the `solve_by_elim` stage.)
-  -- I initially reproduced the mathlib3 approach, but it had bad performance so switched to this.
-  let goals ← if cfg.symm then
-    goals.mapM fun g => g.symmSaturate
+  try
+    run goals
+  catch e => do
+    -- Implementation note: as with `cfg.symm`, this is different from the mathlib3 approach,
+    -- for (not as severe) performance reasons.
+    match goals, cfg.exfalso with
+    | [g], true =>
+      withTraceNode `Meta.Tactic.solveByElim
+          (fun _ => return m!"⏮️ starting over using `exfalso`") do
+        run [← g.exfalso]
+    | _, _ => throw e
+where
+  -- Run either backtracking search, or repeated application, on the list of goals.
+  run : List MVarId → MetaM (List MVarId) := if cfg.backtracking then
+    backtrack cfg `Meta.Tactic.solveByElim (applyLemmas cfg lemmas ctx)
   else
-    pure goals
-
-  let alternatives := applyLemmas cfg lemmas ctx
-  let run := backtrack cfg `Meta.Tactic.solveByElim alternatives
-  -- Implementation note: as with `cfg.symm`, this is different from the mathlib3 approach,
-  -- for (not as bad) performance reasons.
-  match cfg.exfalso, goals with
-    | true, [g] => try
-        run [g]
-      catch _ => do
-        withTraceNode `Meta.Tactic.solveByElim
-            (fun _ => return m!"⏮️ starting over using `exfalso`") do
-          let g ← g.exfalso
-          run [g]
-    | _, _ =>
-      run goals
+    repeat1' (maxIters := cfg.maxDepth) (applyFirstLemma cfg lemmas ctx)
 
 /--
 A `MetaM` analogue of the `apply_rules` user tactic.
 
-Since `apply_rules` does not backtrack, we don't need to worry about stuck metavariables
-and can pass the lemmas as a `List Expr`.
-
-TODO: this is incorrect behaviour: stuck metavariables come from applying the same lemma twice,
-not from backtracking.
+We pass the lemmas as `TermElabM Expr` rather than just `Expr`,
+so they can be generated fresh for each application, to avoid stuck metavariables.
 
 By default it uses all local hypotheses, but you can disable this with `only := true`.
 If you need to remove particular local hypotheses, call `solveByElim` directly.
 -/
-def _root_.Lean.MVarId.applyRules (cfg : Config) (lemmas : List Expr) (only : Bool := false)
-    (g : MVarId) : MetaM (List MVarId) := do
-  let lemmas := lemmas.map pure
+def _root_.Lean.MVarId.applyRules (cfg : Config) (lemmas : List (TermElabM Expr))
+    (only : Bool := false) (g : MVarId) : MetaM (List MVarId) := do
   let ctx : TermElabM (List Expr) := if only then pure [] else do pure (← getLocalHyps).toList
-  solveByElim { cfg.noBackTracking with failAtMaxDepth := false } lemmas ctx [g]
+  solveByElim { cfg with backtracking := false } lemmas ctx [g]
 
 open Lean.Parser.Tactic
-open Mathlib.Tactic.LabelAttr
+open Std.Tactic.LabelAttr
 
 /--
 `mkAssumptionSet` builds a collection of lemmas for use in
@@ -299,7 +333,7 @@ syntax star := "*"
 /-- Syntax for adding or removing a term, or `*`, in `solve_by_elim`. -/
 syntax arg := star <|> erase <|> term
 /-- Syntax for adding and removing terms in `solve_by_elim`. -/
-syntax args := " [" SolveByElim.arg,* "] "
+syntax args := " [" SolveByElim.arg,* "]"
 /-- Syntax for using all lemmas labelled with an attribute in `solve_by_elim`. -/
 syntax using_ := " using " ident,*
 
@@ -325,8 +359,8 @@ def parseArgs (s : Option (TSyntax ``args)) :
     | _ => panic! "Unreachable parse of solve_by_elim arguments."
   let args := args.toList
   (args.contains none,
-    args.filterMap fun o => o.bind Sum.getLeft,
-    args.filterMap fun o => o.bind Sum.getRight)
+    args.filterMap fun o => o.bind Sum.getLeft?,
+    args.filterMap fun o => o.bind Sum.getRight?)
 
 /-- Parse the `using ...` argument for `solve_by_elim`. -/
 def parseUsing (s : Option (TSyntax ``using_)) : Array Ident :=
@@ -427,8 +461,8 @@ elab_rules : tactic |
   let use := parseUsing use
   let cfg ← elabConfig (mkOptionalNode cfg)
   let cfg := { cfg with
-    maxDepth := 1
-    failAtMaxDepth := false }
+    backtracking := false
+    maxDepth := 1 }
   replaceMainGoal (← solveByElim.processSyntax cfg o.isSome star add remove use [← getMainGoal])
 
 /--
@@ -458,10 +492,10 @@ syntax (name := applyRulesSyntax) "apply_rules" (config)? (&" only")? (args)? (u
 
 -- See also `Lean.MVarId.applyRules` for a `MetaM` level analogue of this tactic.
 elab_rules : tactic |
-    `(tactic| apply_rules $[$cfg]? $[only%$o]? $[$t:args]? $[$use:using_]?)  => do
+    `(tactic| apply_rules $[$cfg]? $[only%$o]? $[$t:args]? $[$use:using_]?) => do
   let (star, add, remove) := parseArgs t
   let use := parseUsing use
   let cfg ← elabApplyRulesConfig (mkOptionalNode cfg)
-  let cfg := { cfg.noBackTracking with
-    failAtMaxDepth := false }
+  let cfg := { cfg with
+    backtracking := false }
   liftMetaTactic fun g => solveByElim.processSyntax cfg o.isSome star add remove use [g]

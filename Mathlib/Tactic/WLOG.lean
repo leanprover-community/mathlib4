@@ -100,8 +100,10 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   let (⟨easyGoal, hyp⟩, ⟨reductionGoal, negHyp⟩) ←
     reductionGoal.byCases P <| if inaccessible then `_ else h
   easyGoal.withContext do
+    -- Exclude ldecls from the `mkAppN` arguments
+    let HArgFVarIds ← revertedFVars.filterM (notM ·.isLetVar)
     let HApp ← instantiateMVars <|
-      mkAppN (.fvar HFVarId) (revertedFVars.map .fvar) |>.app (.fvar hyp)
+      mkAppN (.fvar HFVarId) (HArgFVarIds.map .fvar) |>.app (.fvar hyp)
     ensureHasNoMVars HApp
     easyGoal.assign HApp
   return ⟨reductionGoal, (HFVarId, negHyp), hGoal, hFVar, revertedFVars⟩
@@ -125,7 +127,6 @@ By default, the entire context is reverted. -/
 syntax (name := wlog) "wlog " binderIdent " : " term
   (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
 
-open private Lean.Elab.Term.expandBinderIdent from Lean.Elab.Binders in
 elab_rules : tactic
 | `(tactic| wlog $h:binderIdent : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) =>
   withMainContext do

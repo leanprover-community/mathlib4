@@ -2,14 +2,11 @@
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.disjoint_coproduct
-! leanprover-community/mathlib commit c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+
+#align_import category_theory.limits.shapes.disjoint_coproduct from "leanprover-community/mathlib"@"c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e"
 
 /-!
 # Disjoint coproducts
@@ -40,9 +37,9 @@ variable {C : Type u} [Category.{v} C]
 
 /-- Given any pullback diagram of the form
 
-Z  ⟶  X₁
+Z ⟶ X₁
 ↓      ↓
-X₂ ⟶  X
+X₂ ⟶ X
 
 where `X₁ ⟶ X ← X₂` is a coproduct diagram, then `Z` is initial, and both `X₁ ⟶ X` and `X₂ ⟶ X`
 are mono.
@@ -58,9 +55,9 @@ class CoproductDisjoint (X₁ X₂ : C) where
 
 /-- If the coproduct of `X₁` and `X₂` is disjoint, then given any pullback square
 
-Z  ⟶  X₁
+Z ⟶ X₁
 ↓      ↓
-X₂ ⟶  X
+X₂ ⟶ X
 
 where `X₁ ⟶ X ← X₂` is a coproduct, then `Z` is initial.
 -/
@@ -72,9 +69,9 @@ def isInitialOfIsPullbackOfIsCoproduct {Z X₁ X₂ X : C} [CoproductDisjoint X�
 
 /-- If the coproduct of `X₁` and `X₂` is disjoint, then given any pullback square
 
-Z  ⟶  X₁
+Z ⟶ X₁
 ↓       ↓
-X₂ ⟶  X₁ ⨿ X₂
+X₂ ⟶ X₁ ⨿ X₂
 
 `Z` is initial.
 -/
@@ -90,7 +87,7 @@ pullback is an initial object:
 
         X₁
         ↓
-X₂ ⟶  X
+X₂ ⟶ X
 -/
 noncomputable def isInitialOfPullbackOfIsCoproduct {X X₁ X₂ : C} [CoproductDisjoint X₁ X₂]
     {pX₁ : X₁ ⟶ X} {pX₂ : X₂ ⟶ X} [HasPullback pX₁ pX₂] (cX : IsColimit (BinaryCofan.mk pX₁ pX₂)) :
@@ -120,7 +117,7 @@ class CoproductsDisjoint (C : Type u) [Category.{v} C] where
   CoproductDisjoint : ∀ X Y : C, CoproductDisjoint X Y
 #align category_theory.limits.coproducts_disjoint CategoryTheory.Limits.CoproductsDisjoint
 
-attribute [instance] CoproductsDisjoint.CoproductDisjoint
+attribute [instance 999] CoproductsDisjoint.CoproductDisjoint
 
 /-- If `C` has disjoint coproducts, any morphism out of initial is mono. Note it isn't true in
 general that `C` has strict initial objects, for instance consider the category of types and

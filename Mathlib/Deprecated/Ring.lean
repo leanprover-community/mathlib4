@@ -2,13 +2,10 @@
 Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module deprecated.ring
-! leanprover-community/mathlib commit 5a3e819569b0f12cbec59d740a2613018e7b8eec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Deprecated.Group
+
+#align_import deprecated.ring from "leanprover-community/mathlib"@"5a3e819569b0f12cbec59d740a2613018e7b8eec"
 
 /-!
 # Unbundled semiring and ring homomorphisms (deprecated)
@@ -105,7 +102,6 @@ theorem map_zero (hf : IsRingHom f) : f 0 = 0 :=
   calc
     f 0 = f (0 + 0) - f 0 := by rw [hf.map_add]; simp
     _ = 0 := by simp
-
 #align is_ring_hom.map_zero IsRingHom.map_zero
 
 /-- Ring homomorphisms preserve additive inverses. -/
@@ -113,7 +109,6 @@ theorem map_neg (hf : IsRingHom f) : f (-x) = -f x :=
   calc
     f (-x) = f (-x + x) - f x := by rw [hf.map_add]; simp
     _ = -f x := by simp [hf.map_zero]
-
 #align is_ring_hom.map_neg IsRingHom.map_neg
 
 /-- Ring homomorphisms preserve subtraction. -/

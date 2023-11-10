@@ -11,6 +11,8 @@ import Mathlib.Init.Logic
 These are ported from the Lean 3 standard library file `init/data/quot.lean`.
 -/
 
+set_option autoImplicit true
+
 section
 variable {α : Type u}
 variable (r : α → α → Prop)
@@ -21,7 +23,6 @@ inductive EqvGen : α → α → Prop
   | refl : ∀ x, EqvGen x x
   | symm : ∀ x y, EqvGen x y → EqvGen y x
   | trans : ∀ x y z, EqvGen x y → EqvGen y z → EqvGen x z
-
 #align eqv_gen EqvGen
 
 theorem EqvGen.is_equivalence : Equivalence (@EqvGen α r) :=

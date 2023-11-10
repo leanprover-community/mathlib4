@@ -2,16 +2,13 @@
 Copyright (c) 2019 Scott Morrison All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.core
-! leanprover-community/mathlib commit 369525b73f229ccd76a6ec0e0e0bf2be57599768
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.EquivFunctor
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.Types
+
+#align_import category_theory.core from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
 /-!
 # The core of a category
@@ -69,7 +66,7 @@ def inclusion : Core C ⥤ C where
   map f := f.hom
 #align category_theory.core.inclusion CategoryTheory.Core.inclusion
 
--- porting note: This worked wihtout proof before.
+-- porting note: This worked without proof before.
 instance : Faithful (inclusion C) where
   map_injective := by
     intro _ _

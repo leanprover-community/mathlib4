@@ -2,19 +2,16 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Bhavik Mehta, Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.big_operators.multiset.lemmas
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.BigOperators.Lemmas
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 
+#align_import algebra.big_operators.multiset.lemmas from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
+
 /-! # Lemmas about `Multiset.sum` and `Multiset.prod` requiring extra algebra imports -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Multiset
 
@@ -23,7 +20,7 @@ theorem dvd_prod [CommMonoid α] {s : Multiset α} {a : α} : a ∈ s → a ∣ 
 #align multiset.dvd_prod Multiset.dvd_prod
 
 @[to_additive]
-theorem prod_eq_one_iff [CanonicallyOrderedMonoid α] {m : Multiset α} :
+theorem prod_eq_one_iff [CanonicallyOrderedCommMonoid α] {m : Multiset α} :
     m.prod = 1 ↔ ∀ x ∈ m, x = (1 : α) :=
   Quotient.inductionOn m fun l => by simpa using List.prod_eq_one_iff l
 #align multiset.prod_eq_one_iff Multiset.prod_eq_one_iff

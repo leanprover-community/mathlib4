@@ -2,20 +2,17 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.limits
-! leanprover-community/mathlib commit e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+#align_import category_theory.limits.preserves.limits from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 
 /-!
 # Isomorphisms about functors which preserve (co)limits
 
 If `G` preserves limits, and `C` and `D` have limits, then for any diagram `F : J ⥤ C` we have a
 canonical isomorphism `preservesLimitsIso : G.obj (Limit F) ≅ Limit (F ⋙ G)`.
-We also show that we can commute `IsLimit.lift` of a preserved limit with `functor.map_cone`:
+We also show that we can commute `IsLimit.lift` of a preserved limit with `Functor.mapCone`:
 `(PreservesLimit.preserves t).lift (G.mapCone c₂) = G.map (t.lift c₂)`.
 
 The duals of these are also given. For functors which preserve (co)limits of specific shapes, see
@@ -89,7 +86,7 @@ def preservesLimitNatIso : lim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ lim :
   NatIso.ofComponents (fun F => preservesLimitIso G F)
     (by
       intro _ _ f
-      apply Limits.limit.hom_ext; intro j
+      apply limit.hom_ext; intro j
       dsimp
       simp only [preservesLimitsIso_hom_π, whiskerRight_app, limMap_π, Category.assoc,
         preservesLimitsIso_hom_π_assoc, ← G.map_comp])
@@ -147,7 +144,7 @@ def preservesColimitNatIso : colim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ c
     (by
       intro _ _ f
       rw [← Iso.inv_comp_eq, ← Category.assoc, ← Iso.eq_comp_inv]
-      apply Limits.colimit.hom_ext; intro j
+      apply colimit.hom_ext; intro j
       dsimp
       erw [ι_colimMap_assoc]
       simp only [ι_preservesColimitsIso_inv, whiskerRight_app, Category.assoc,

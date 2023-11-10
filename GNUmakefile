@@ -1,4 +1,4 @@
-TESTS = $(wildcard test/*.lean)
+TESTS := $(shell find test -name '*.lean')
 
 .PHONY: all build test lint
 
@@ -13,4 +13,4 @@ test/%.run: build
 	lake env lean test/$*
 
 lint: build
-	./build/bin/runLinter
+	env LEAN_ABORT_ON_PANIC=1 lake exe runMathlibLinter

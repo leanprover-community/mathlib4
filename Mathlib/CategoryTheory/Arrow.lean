@@ -2,13 +2,10 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.arrow
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Comma
+
+#align_import category_theory.arrow from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # The category of arrows
@@ -44,13 +41,18 @@ def Arrow :=
 instance : Category (Arrow T) := commaCategory
 
 -- Satisfying the inhabited linter
-instance Arrow.inhabited [Inhabited T] : Inhabited (Arrow T)
-    where default := show Comma (𝟭 T) (𝟭 T) from default
+instance Arrow.inhabited [Inhabited T] : Inhabited (Arrow T) where
+  default := show Comma (𝟭 T) (𝟭 T) from default
 #align category_theory.arrow.inhabited CategoryTheory.Arrow.inhabited
 
 end
 
 namespace Arrow
+
+@[ext]
+lemma hom_ext {X Y : Arrow T} (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) :
+    f = g :=
+  CommaMorphism.ext _ _ h₁ h₂
 
 @[simp]
 theorem id_left (f : Arrow T) : CommaMorphism.left (𝟙 f) = 𝟙 f.left :=
@@ -61,6 +63,16 @@ theorem id_left (f : Arrow T) : CommaMorphism.left (𝟙 f) = 𝟙 f.left :=
 theorem id_right (f : Arrow T) : CommaMorphism.right (𝟙 f) = 𝟙 f.right :=
   rfl
 #align category_theory.arrow.id_right CategoryTheory.Arrow.id_right
+
+-- porting note: added to ease automation
+@[simp, reassoc]
+theorem comp_left {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).left = f.left ≫ g.left := rfl
+
+-- porting note: added to ease automation
+@[simp, reassoc]
+theorem comp_right {X Y Z : Arrow T} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).right = f.right ≫ g.right := rfl
 
 /-- An object in the arrow category is simply a morphism in `T`. -/
 @[simps]
@@ -76,8 +88,8 @@ theorem mk_eq (f : Arrow T) : Arrow.mk f.hom = f := by
   rfl
 #align category_theory.arrow.mk_eq CategoryTheory.Arrow.mk_eq
 
-theorem mk_injective (A B : T) : Function.Injective (Arrow.mk : (A ⟶ B) → Arrow T) := fun f g h =>
-  by
+theorem mk_injective (A B : T) :
+    Function.Injective (Arrow.mk : (A ⟶ B) → Arrow T) := fun f g h => by
   cases h
   rfl
 #align category_theory.arrow.mk_injective CategoryTheory.Arrow.mk_injective
@@ -123,33 +135,27 @@ theorem w_mk_right {f : Arrow T} {X Y : T} {g : X ⟶ Y} (sq : f ⟶ mk g) :
   sq.w
 #align category_theory.arrow.w_mk_right CategoryTheory.Arrow.w_mk_right
 
-theorem isIso_of_iso_left_of_isIso_right {f g : Arrow T} (ff : f ⟶ g) [IsIso ff.left]
+theorem isIso_of_isIso_left_of_isIso_right {f g : Arrow T} (ff : f ⟶ g) [IsIso ff.left]
     [IsIso ff.right] : IsIso ff where
   out := by
     let inverse : g ⟶ f := ⟨inv ff.left, inv ff.right, (by simp)⟩
     apply Exists.intro inverse
-    constructor
-    · apply CommaMorphism.ext
-      · rw [Comma.comp_left, IsIso.hom_inv_id, ←Comma.id_left]
-      · rw [Comma.comp_right, IsIso.hom_inv_id, ←Comma.id_right]
-    · apply CommaMorphism.ext
-      · rw [Comma.comp_left, IsIso.inv_hom_id, ←Comma.id_left]
-      · rw [Comma.comp_right, IsIso.inv_hom_id, ←Comma.id_right]
-#align category_theory.arrow.is_iso_of_iso_left_of_is_iso_right CategoryTheory.Arrow.isIso_of_iso_left_of_isIso_right
+    aesop_cat
+#align category_theory.arrow.is_iso_of_iso_left_of_is_iso_right CategoryTheory.Arrow.isIso_of_isIso_left_of_isIso_right
 
 /-- Create an isomorphism between arrows,
 by providing isomorphisms between the domains and codomains,
 and a proof that the square commutes. -/
 @[simps!]
 def isoMk {f g : Arrow T} (l : f.left ≅ g.left) (r : f.right ≅ g.right)
-    (h : l.hom ≫ g.hom = f.hom ≫ r.hom) : f ≅ g :=
+    (h : l.hom ≫ g.hom = f.hom ≫ r.hom := by aesop_cat) : f ≅ g :=
   Comma.isoMk l r h
 #align category_theory.arrow.iso_mk CategoryTheory.Arrow.isoMk
 
 /-- A variant of `Arrow.isoMk` that creates an iso between two `Arrow.mk`s with a better type
 signature. -/
 abbrev isoMk' {W X Y Z : T} (f : W ⟶ X) (g : Y ⟶ Z) (e₁ : W ≅ Y) (e₂ : X ≅ Z)
-    (h : e₁.hom ≫ g = f ≫ e₂.hom) : Arrow.mk f ≅ Arrow.mk g :=
+    (h : e₁.hom ≫ g = f ≫ e₂.hom := by aesop_cat) : Arrow.mk f ≅ Arrow.mk g :=
   Arrow.isoMk e₁ e₂ h
 #align category_theory.arrow.iso_mk' CategoryTheory.Arrow.isoMk'
 
@@ -164,8 +170,8 @@ theorem hom.congr_right {f g : Arrow T} {φ₁ φ₂ : f ⟶ g} (h : φ₁ = φ�
 
 theorem iso_w {f g : Arrow T} (e : f ≅ g) : g.hom = e.inv.left ≫ f.hom ≫ e.hom.right := by
   have eq := Arrow.hom.congr_right e.inv_hom_id
-  dsimp at eq
-  erw [Arrow.w_assoc, ←Comma.comp_right, eq, Category.comp_id]
+  rw [Arrow.comp_right, Arrow.id_right] at eq
+  erw [Arrow.w_assoc, eq, Category.comp_id]
 #align category_theory.arrow.iso_w CategoryTheory.Arrow.iso_w
 
 theorem iso_w' {W X Y Z : T} {f : W ⟶ X} {g : Y ⟶ Z} (e : Arrow.mk f ≅ Arrow.mk g) :
@@ -242,6 +248,22 @@ instance epi_right [Epi sq] : Epi sq.right where
     · exact h
 #align category_theory.arrow.epi_right CategoryTheory.Arrow.epi_right
 
+@[reassoc (attr := simp)]
+lemma hom_inv_id_left (e : f ≅ g) : e.hom.left ≫ e.inv.left = 𝟙 _ := by
+  rw [← comp_left, e.hom_inv_id, id_left]
+
+@[reassoc (attr := simp)]
+lemma inv_hom_id_left (e : f ≅ g) : e.inv.left ≫ e.hom.left = 𝟙 _ := by
+  rw [← comp_left, e.inv_hom_id, id_left]
+
+@[reassoc (attr := simp)]
+lemma hom_inv_id_right (e : f ≅ g) : e.hom.right ≫ e.inv.right = 𝟙 _ := by
+  rw [← comp_right, e.hom_inv_id, id_right]
+
+@[reassoc (attr := simp)]
+lemma inv_hom_id_right (e : f ≅ g) : e.inv.right ≫ e.hom.right = 𝟙 _ := by
+  rw [← comp_right, e.inv_hom_id, id_right]
+
 end
 
 /-- Given a square from an arrow `i` to an isomorphism `p`, express the source part of `sq`
@@ -315,20 +337,40 @@ def mapArrow (F : C ⥤ D) : Arrow C ⥤ Arrow D where
         simp only [id_map] at w
         dsimp
         simp only [← F.map_comp, w] }
-  map_id := by aesop_cat
-  map_comp := fun f g => by
-    apply CommaMorphism.ext
-    · dsimp; rw [Comma.comp_left,F.map_comp]; rw [Comma.comp_left]
-    · dsimp; rw [Comma.comp_right,F.map_comp]; rw [Comma.comp_right]
 #align category_theory.functor.map_arrow CategoryTheory.Functor.mapArrow
+
+variable (C D)
+
+/-- The functor `(C ⥤ D) ⥤ (Arrow C ⥤ Arrow D)` which sends
+a functor `F : C ⥤ D` to `F.mapArrow`. -/
+@[simps]
+def mapArrowFunctor : (C ⥤ D) ⥤ (Arrow C ⥤ Arrow D) where
+  obj F := F.mapArrow
+  map τ :=
+    { app := fun f =>
+        { left := τ.app _
+          right := τ.app _ } }
+
+variable {C D}
+
+/-- The equivalence of categories `Arrow C ≌ Arrow D` induced by an equivalence `C ≌ D`. -/
+def mapArrowEquivalence (e : C ≌ D) : Arrow C ≌ Arrow D where
+  functor := e.functor.mapArrow
+  inverse := e.inverse.mapArrow
+  unitIso := Functor.mapIso (mapArrowFunctor C C) e.unitIso
+  counitIso := Functor.mapIso (mapArrowFunctor D D) e.counitIso
+
+instance isEquivalenceMapArrow (F : C ⥤ D) [IsEquivalence F] :
+    IsEquivalence F.mapArrow :=
+  IsEquivalence.ofEquivalence (mapArrowEquivalence (asEquivalence F))
 
 end Functor
 
 /-- The images of `f : Arrow C` by two isomorphic functors `F : C ⥤ D` are
 isomorphic arrows in `D`. -/
-def Arrow.isoOfNatIso {C D : Type _} [Category C] [Category D] {F G : C ⥤ D} (e : F ≅ G)
+def Arrow.isoOfNatIso {C D : Type*} [Category C] [Category D] {F G : C ⥤ D} (e : F ≅ G)
     (f : Arrow C) : F.mapArrow.obj f ≅ G.mapArrow.obj f :=
-  Arrow.isoMk (e.app f.left) (e.app f.right) (by simp)
+  Arrow.isoMk (e.app f.left) (e.app f.right)
 #align category_theory.arrow.iso_of_nat_iso CategoryTheory.Arrow.isoOfNatIso
 
 end CategoryTheory

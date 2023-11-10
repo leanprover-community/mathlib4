@@ -2,14 +2,11 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.adjunction.mates
-! leanprover-community/mathlib commit cea27692b3fdeb328a2ddba6aabf181754543184
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Conj
+
+#align_import category_theory.adjunction.mates from "leanprover-community/mathlib"@"cea27692b3fdeb328a2ddba6aabf181754543184"
 
 /-!
 # Mate of natural transformations
@@ -157,7 +154,6 @@ def transferNatTransSelf : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
     (L₂ ⟶ L₁) ≃ _ := (Iso.homCongr L₂.leftUnitor L₁.rightUnitor).symm
     _ ≃ _ := transferNatTrans adj₁ adj₂
     _ ≃ (R₁ ⟶ R₂) := R₁.rightUnitor.homCongr R₂.leftUnitor
-
 #align category_theory.transfer_nat_trans_self CategoryTheory.transferNatTransSelf
 
 theorem transferNatTransSelf_counit (f : L₂ ⟶ L₁) (X) :
@@ -204,7 +200,6 @@ theorem transferNatTransSelf_comp (f g) :
   simp only [id_comp, comp_id]
   rw [← adj₃.unit_naturality_assoc, ← R₃.map_comp, g.naturality_assoc, L₂.map_comp, assoc,
     adj₂.counit_naturality, adj₂.left_triangle_components_assoc, assoc]
-  simp
 #align category_theory.transfer_nat_trans_self_comp CategoryTheory.transferNatTransSelf_comp
 
 theorem transferNatTransSelf_adjunction_id {L R : C ⥤ C} (adj : L ⊣ R) (f : 𝟭 C ⟶ L) (X : C) :

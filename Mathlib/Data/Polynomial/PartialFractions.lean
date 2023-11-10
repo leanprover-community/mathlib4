@@ -2,11 +2,6 @@
 Copyright (c) Sidharth Hariharan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Sidharth Hariharan
-
-! This file was ported from Lean 3 source module data.polynomial.partial_fractions
-! leanprover-community/mathlib commit 6e70e0d419bf686784937d64ed4bfde866ff229e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Div
 import Mathlib.Data.ZMod.Basic
@@ -14,6 +9,8 @@ import Mathlib.Logic.Function.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
+
+#align_import data.polynomial.partial_fractions from "leanprover-community/mathlib"@"6e70e0d419bf686784937d64ed4bfde866ff229e"
 
 /-!
 
@@ -50,8 +47,6 @@ variable (R : Type) [CommRing R] [IsDomain R]
 
 open Polynomial
 
-open Polynomial
-
 variable (K : Type) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
 
 section TwoDenominators
@@ -74,10 +69,10 @@ theorem div_eq_quo_add_rem_div_add_rem_div (f : R[X]) {g₁ g₂ : R[X]} (hg₁ 
       degree_modByMonic_lt _ hg₂, _⟩
   have hg₁' : (↑g₁ : K) ≠ 0 := by
     norm_cast
-    exact hg₁.ne_zero_of_ne zero_ne_one
+    exact hg₁.ne_zero
   have hg₂' : (↑g₂ : K) ≠ 0 := by
     norm_cast
-    exact hg₂.ne_zero_of_ne zero_ne_one
+    exact hg₂.ne_zero
   have hfc := modByMonic_add_div (f * c) hg₂
   have hfd := modByMonic_add_div (f * d) hg₁
   field_simp
@@ -89,7 +84,7 @@ end TwoDenominators
 
 section NDenominators
 
-open BigOperators Classical
+open BigOperators
 
 --Porting note: added for scoped `Algebra.cast` instance
 open algebraMap
@@ -98,11 +93,12 @@ open algebraMap
 Then, a fraction of the form f / ∏ (g i) can be rewritten as q + ∑ (r i) / (g i), where
 deg(r i) < deg(g i), provided that the g i are monic and pairwise coprime.
 -/
-theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type _} {g : ι → R[X]} {s : Finset ι}
+theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s : Finset ι}
     (hg : ∀ i ∈ s, (g i).Monic) (hcop : Set.Pairwise ↑s fun i j => IsCoprime (g i) (g j)) :
-    ∃ (q : R[X])(r : ι → R[X]),
+    ∃ (q : R[X]) (r : ι → R[X]),
       (∀ i ∈ s, (r i).degree < (g i).degree) ∧
         ((↑f : K) / ∏ i in s, ↑(g i)) = ↑q + ∑ i in s, (r i : K) / (g i : K) := by
+  classical
   induction' s using Finset.induction_on with a b hab Hind f generalizing f
   · refine' ⟨f, fun _ : ι => (0 : R[X]), fun i => _, by simp⟩
     rintro ⟨⟩
@@ -126,7 +122,7 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type _} {g : ι → R[X]} {s
         exact hdeg₁
       · intro hi
         exact hrdeg i (Finset.mem_of_mem_insert_of_ne hi h1)
-    norm_cast  at hf IH⊢
+    norm_cast at hf IH ⊢
     rw [Finset.prod_insert hab, hf, IH, Finset.sum_insert hab, if_pos rfl]
     trans (↑(q₀ + q : R[X]) : K) + (↑r₁ / ↑(g a) + ∑ i : ι in b, (r i : K) / (g i : K))
     · push_cast
