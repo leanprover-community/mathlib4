@@ -462,10 +462,10 @@ theorem lift_top (K : IntermediateField F E) :
 
 @[simp]
 theorem adjoin_self (K : IntermediateField F E) :
-    adjoin F {x | x ∈ K} = K := le_antisymm (adjoin_le_iff.2 fun _ ↦ id) (subset_adjoin F _)
+    adjoin F K = K := le_antisymm (adjoin_le_iff.2 fun _ ↦ id) (subset_adjoin F _)
 
 theorem restrictScalars_adjoin (K : IntermediateField F E) (S : Set E) :
-    restrictScalars (K := F) (adjoin K S) = adjoin F ({x | x ∈ K} ∪ S) := by
+    restrictScalars F (adjoin K S) = adjoin F (K ∪ S) := by
   rw [← adjoin_self _ K, adjoin_adjoin_left, adjoin_self _ K]
 
 theorem algebra_adjoin_le_adjoin : Algebra.adjoin F S ≤ (adjoin F S).toSubalgebra :=
