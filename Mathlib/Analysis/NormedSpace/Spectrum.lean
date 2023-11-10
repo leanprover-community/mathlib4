@@ -225,14 +225,12 @@ theorem eventually_isUnit_resolvent (a : A) : ∀ᶠ z in cobounded 𝕜, IsUnit
   refine ⟨‖a‖ * ‖(1 : A)‖ + 1, by trivial, fun z hz ↦ ?_⟩
   exact isUnit_resolvent.mp <| mem_resolventSet_of_norm_lt_mul <| (lt_add_one (‖a‖ * _)).trans_le hz
 
-theorem resolvent_isBigO_inv (a : A) :
-    resolvent a =O[cobounded 𝕜] Inv.inv :=
+theorem resolvent_isBigO_inv (a : A) : resolvent a =O[cobounded 𝕜] Inv.inv :=
   have h : (fun z ↦ resolvent (z⁻¹ • a) (1 : 𝕜)) =O[cobounded 𝕜] (fun _ ↦ (1 : ℝ)) := by
     simpa [Function.comp, resolvent] using (NormedRing.inverse_one_sub_norm (R := A)).comp_tendsto
       (by simpa using (tendsto_inv₀_cobounded (α := 𝕜)).smul_const a)
   calc
-    resolvent a
-    _ =ᶠ[cobounded 𝕜] fun z ↦ z⁻¹ • resolvent (z⁻¹ • a) (1 : 𝕜) := by
+    resolvent a =ᶠ[cobounded 𝕜] fun z ↦ z⁻¹ • resolvent (z⁻¹ • a) (1 : 𝕜) := by
       filter_upwards [isBounded_singleton (x := 0)] with z hz
       lift z to 𝕜ˣ using Ne.isUnit hz
       simpa [Units.smul_def] using congr(z⁻¹ • $(units_smul_resolvent_self (r := z) (a := a)))
@@ -374,15 +372,14 @@ variable [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [Nontrivial A] (
 
 /-- In a (nontrivial) complex Banach algebra, every element has nonempty spectrum. -/
 protected theorem nonempty : (spectrum ℂ a).Nonempty := by
-  /- Suppose `σ a = ∅`, then resolvent set is `ℂ`, any `(z • 1 - a)` is a unit, and `resolvent`
+  /- Suppose `σ a = ∅`, then resolvent set is `ℂ`, any `(z • 1 - a)` is a unit, and `resolvent a`
     is differentiable on `ℂ`. -/
   by_contra' h
   have H₀ : resolventSet ℂ a = Set.univ := by rwa [spectrum, Set.compl_empty_iff] at h
   have H₁ : Differentiable ℂ fun z : ℂ => resolvent a z := fun z =>
     (hasDerivAt_resolvent (H₀.symm ▸ Set.mem_univ z : z ∈ resolventSet ℂ a)).differentiableAt
-  /- The norm of the resolvent is small for all sufficiently large `z`, and by compactness and
-    continuity it is bounded on the complement of a large ball, thus uniformly bounded on `ℂ`.
-    By Liouville's theorem `fun z ↦ resolvent a z` is constant. -/
+  /- Since `resolvent a` tends to zero at infinity, by Liouville's theorem `resolvent a = 0`,
+  which contradicts that `resolvent a z` is invertible. -/
   have H₃ := H₁.apply_eq_of_tendsto_cocompact 0 <| by
     simpa [Metric.cobounded_eq_cocompact] using resolvent_tendsto_cobounded a (𝕜 := ℂ)
   exact not_isUnit_zero <| H₃ ▸ (isUnit_resolvent.mp <| H₀.symm ▸ Set.mem_univ 0)
