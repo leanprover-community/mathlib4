@@ -1011,17 +1011,13 @@ section ExtendFun
 
 /-- Extend a function `f : Fin n → α` to a function on all natural numbers, by
     defining `f i = a` for all `i ≥ n` and some given constant `a` -/
-def extendFun {α : Type*} {n: ℕ} (f : Fin n → α) (a : α) : ℕ → α :=
-  fun i =>
-    if h : i < n then
-      f ⟨i, h⟩
-    else
-      a
+abbrev extendFun {α : Type*} {n : ℕ} (f : Fin n → α) (a : α) : ℕ → α :=
+  Set.piecewiseMem (· < n) (fun i h => f ⟨i, h⟩) (fun _ _ => a)
 
 @[simp] lemma extendFun_val' {α a n} (m) {f : Fin (n+m) → α} {i : Fin n} :
     extendFun f a i.val = f (i.castAdd _) := by
   have : i.val < n + m := Nat.lt_of_lt_of_le (i.prop) (Nat.le_add_right ..)
-  simp only [extendFun, this, dite_true]
+  simp only [extendFun, this, dite_true, Set.piecewiseMem, Membership.mem, Set.Mem]
   rfl
 
 @[simp] lemma extendFun_val {α a n} {f : Fin n → α} {i : Fin n} :
@@ -1034,11 +1030,11 @@ def extendFun {α : Type*} {n: ℕ} (f : Fin n → α) (a : α) : ℕ → α :=
 
 @[simp] lemma extendFun_comp_val {α a n} {f : Fin n → α} :
     (extendFun f a) ∘ val = f := by
-  funext i; apply extendFun_val
+  simp [extendFun_comp_val' 0]
 
 @[simp] lemma extendFun_add {α a n} (m) {f : Fin (n+(m+1)) → α} :
     (extendFun f a) n = f ⟨n, by simp⟩ := by
-  simp [extendFun]
+  simp [extendFun, Set.piecewiseMem, Membership.mem, Set.Mem]
 
 @[simp] lemma extendFun_succ {α a n} {f : Fin (n+1) → α} :
     (extendFun f a) n = f ⟨n, Nat.lt.base ..⟩ := by

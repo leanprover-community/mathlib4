@@ -51,6 +51,11 @@ protected def Mem (a : α) (s : Set α) : Prop :=
 instance : Membership α (Set α) :=
   ⟨Set.Mem⟩
 
+/-- A `Set` is just a predicate, so membership of the set is decidable whenever the predicate is
+    decidable -/
+instance {α} (s : Set α) [DecidablePred s] : DecidablePred (· ∈ s) :=
+  inferInstanceAs (DecidablePred s)
+
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
   funext (fun x ↦ propext (h x))
 

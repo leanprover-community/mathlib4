@@ -1394,21 +1394,28 @@ namespace Set
 variable {δ : α → Sort*} (s : Set α) (f g : ∀ i, δ i)
 
 @[simp]
-theorem piecewise_empty [∀ i : α, Decidable (i ∈ (∅ : Set α))] : piecewise ∅ f g = g := by
-  ext i
-  simp [piecewise]
+theorem piecewiseMem_empty (f : ∀ i ∈ ∅, δ i) (g : ∀ i ∉ ∅, δ i) :
+    piecewiseMem ∅ f g = (g · (not_mem_empty _)) :=
+  rfl
+
+@[simp]
+theorem piecewiseMem_univ (f : ∀ i ∈ Set.univ, δ i) (g : ∀ i ∉ Set.univ, δ i) :
+    piecewiseMem Set.univ f g = (f · (mem_univ _)) :=
+  rfl
+
+@[simp]
+theorem piecewise_empty : piecewise ∅ f g = g :=
+  rfl
 #align set.piecewise_empty Set.piecewise_empty
 
 @[simp]
-theorem piecewise_univ [∀ i : α, Decidable (i ∈ (Set.univ : Set α))] :
-    piecewise Set.univ f g = f := by
-  ext i
-  simp [piecewise]
+theorem piecewise_univ : piecewise Set.univ f g = f :=
+  rfl
 #align set.piecewise_univ Set.piecewise_univ
 
 --@[simp] -- Porting note: simpNF linter complains
 theorem piecewise_insert_self {j : α} [∀ i, Decidable (i ∈ insert j s)] :
-    (insert j s).piecewise f g j = f j := by simp [piecewise]
+    (insert j s).piecewise f g j = f j := by simp [piecewise, piecewiseMem]
 #align set.piecewise_insert_self Set.piecewise_insert_self
 
 variable [∀ j, Decidable (j ∈ s)]
@@ -1419,7 +1426,7 @@ instance Compl.decidableMem (j : α) : Decidable (j ∈ sᶜ) :=
 
 theorem piecewise_insert [DecidableEq α] (j : α) [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g = Function.update (s.piecewise f g) j (f j) := by
-  simp only [piecewise, mem_insert_iff]
+  simp only [piecewise, piecewiseMem, mem_insert_iff]
   ext i
   by_cases h : i = j
   · rw [h]
@@ -1473,7 +1480,8 @@ theorem piecewise_le_piecewise {δ : α → Type*} [∀ i, Preorder (δ i)] {s :
 
 @[simp]
 theorem piecewise_insert_of_ne {i j : α} (h : i ≠ j) [∀ i, Decidable (i ∈ insert j s)] :
-    (insert j s).piecewise f g i = s.piecewise f g i := by simp [piecewise, h]
+    (insert j s).piecewise f g i = s.piecewise f g i := by
+  simp [piecewise, piecewiseMem, h]
 #align set.piecewise_insert_of_ne Set.piecewise_insert_of_ne
 
 @[simp]

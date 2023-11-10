@@ -1000,10 +1000,16 @@ end Sometimes
 
 end Function
 
+/-- `s.piecewiseMem f g` is the function equal to `f` on the set `s`, and to `g` on its complement,
+    where `f` and `g` have access to a proof of the (non-)membership in `s` of their argument -/
+def Set.piecewiseMem {α : Type u} {β : α → Sort v} (s : Set α) [DecidablePred (· ∈ s)]
+    (f : ∀ i ∈ s, β i) (g : ∀ i ∉ s, β i) : ∀ i, β i :=
+  fun i ↦ if h : i ∈ s then f i h  else g i h
+
 /-- `s.piecewise f g` is the function equal to `f` on the set `s`, and to `g` on its complement. -/
 def Set.piecewise {α : Type u} {β : α → Sort v} (s : Set α) (f g : ∀ i, β i)
-    [∀ j, Decidable (j ∈ s)] : ∀ i, β i :=
-  fun i ↦ if i ∈ s then f i else g i
+    [DecidablePred (· ∈ s)] : ∀ i, β i :=
+  s.piecewiseMem (fun i _ => f i) (fun i _ => g i)
 #align set.piecewise Set.piecewise
 
 /-! ### Bijectivity of `Eq.rec`, `Eq.mp`, `Eq.mpr`, and `cast` -/
