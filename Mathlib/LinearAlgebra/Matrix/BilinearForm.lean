@@ -385,7 +385,7 @@ theorem SMatrixLeftMul.mul_apply {m : Type*}  {M₁ : Matrix m n R₂} {M₂ : M
     (M₁ • M₂) i k = ∑ j, M₁ i j • M₂ j k := rfl
 
 theorem SMatrixRightMul.mul_apply {m : Type*}  {M₁ : Matrix m n N₂} {M₂ : Matrix n o R₂} {i k} :
-  (M₁ • M₂) i k = ∑ j,  M₂ j k • M₁ i j := rfl
+    (M₁ • M₂) i k = ∑ j,  M₂ j k • M₁ i j := rfl
 
 @[simp]
 theorem LinearMap.toMatrix'_comp' (B : (n → R₂) →ₗ[R₂] (n → R₂) →ₗ[R₂] N₂)
