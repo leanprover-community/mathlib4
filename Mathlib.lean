@@ -1908,7 +1908,6 @@ import Mathlib.Data.Sigma.Lex
 import Mathlib.Data.Sigma.Order
 import Mathlib.Data.Sign
 import Mathlib.Data.Stream
-import Mathlib.Data.Stream
 import Mathlib.Data.String.Basic
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
