@@ -5,7 +5,7 @@ Authors: David Wärn
 -/
 import Mathlib.Topology.StoneCech
 import Mathlib.Topology.Algebra.Semigroup
-import Mathlib.Data.Stream.Init
+import Mathlib.Data.Stream
 
 #align_import combinatorics.hindman from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
