@@ -3,7 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.Grothendieck
+import Mathlib.CategoryTheory.Sites.CoverLifting
 
 /-! Localization
 
@@ -12,7 +12,8 @@ a Grothendieck topology `J.over X` on the category `Over X`. In order to do this
 we first construct a bijection `Sieve.overEquiv Y : Sieve Y ≃ Sieve Y.left`
 for all `Y : Over X`. Then, as it is stated in SGA 4 III 5.2.1, a sieve of `Y : Over X`
 is covering for `J.over X` if and only if the corresponding sieve of `Y.left`
-is covering for `J`.
+is covering for `J`. As a result, the forgetful functor
+`Over.forget X : Over X ⥤ X` is both cover-preserving and cover-lifting.
 
 -/
 
@@ -118,6 +119,14 @@ lemma mem_over_iff {X : C} {Y : Over X} (S : Sieve Y) :
 lemma overEquiv_symm_mem_over {X : C} (Y : Over X) (S : Sieve Y.left) (hS : S ∈ J Y.left) :
     (Sieve.overEquiv Y).symm S ∈ (J.over X) Y := by
   simpa only [mem_over_iff, Equiv.apply_symm_apply] using hS
+
+lemma over_forget_coverPreserving (X : C) :
+    CoverPreserving (J.over X) J (Over.forget X) where
+  cover_preserve hS := hS
+
+lemma over_forget_coverLifting (X : C) :
+    CoverLifting (J.over X) J (Over.forget X) where
+  cover_lift hS := J.overEquiv_symm_mem_over _ _ hS
 
 end GrothendieckTopology
 
