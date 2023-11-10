@@ -14,14 +14,19 @@ namespace Subtype
 
 variable {α β : Type*} {p : α → Prop} [DecidablePred p]
 
-def extendFun (f : Subtype p → β) (g : (a : α) → ¬p a → β) : α → β :=
+@[simp]
+abbrev extendFun (f : Subtype p → β) (g : (a : α) → ¬p a → β) : α → β :=
   Set.piecewiseMem {x | p x} (f ⟨·, ·⟩) g
 
-variable {f : Subtype p → β} (g : (a : α) → ¬p a → β)
+variable {f : Subtype p → β} {g : (a : α) → ¬p a → β}
 
-@[simp] lemma extendFun_val {a : Subtype p} :
+@[simp] lemma extendFun_val (a : Subtype p) :
     extendFun f g a.val = f a := by
   have : ↑a ∈ {x | p x} := by exact a.property
   simp only [extendFun, Set.piecewiseMem, coe_eta, this, dite_true]
+
+@[simp] lemma extendFun_comp_val : extendFun f g ∘ Subtype.val = f := by
+  funext a; rw [Function.comp_apply, extendFun_val]
+
 
 end Subtype

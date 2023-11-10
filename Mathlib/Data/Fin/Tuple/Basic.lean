@@ -6,6 +6,7 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Pi.Lex
 import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Data.Subtype.ExtendFun
 
 #align_import data.fin.tuple.basic from "leanprover-community/mathlib"@"ef997baa41b5c428be3fb50089a7139bf4ee886b"
 
@@ -1011,34 +1012,31 @@ section ExtendFun
 
 /-- Extend a function `f : Fin n → α` to a function on all natural numbers, by
     defining `f i = a` for all `i ≥ n` and some given constant `a` -/
+@[simp]
 abbrev extendFun {α : Type*} {n : ℕ} (f : Fin n → α) (a : α) : ℕ → α :=
-  Set.piecewiseMem {x | x < n} (fun i h => f ⟨i, h⟩) (fun _ _ => a)
+  Subtype.extendFun (f ∘ equivSubtype.symm) (fun _ _ => a)
+
+example (i : Fin n) : i.val = (i.castAdd m).val := by
+  rfl
 
 @[simp] lemma extendFun_val' {α a n} (m) {f : Fin (n+m) → α} {i : Fin n} :
     extendFun f a i.val = f (i.castAdd _) := by
   have : i.val < n + m := Nat.lt_of_lt_of_le (i.prop) (Nat.le_add_right ..)
-  simp only [extendFun, this, dite_true, Set.piecewiseMem, Membership.mem, Set.Mem, setOf]
+  simp only [extendFun, Subtype.extendFun, Set.piecewiseMem, Membership.mem, Set.Mem, setOf, this,
+    comp_apply, equivSubtype_symm_apply, dite_true]
   rfl
-
-@[simp] lemma extendFun_val {α a n} {f : Fin n → α} {i : Fin n} :
-    extendFun f a i.val = f i := by
-  rw [extendFun_val' 0]; rfl
 
 @[simp] lemma extendFun_comp_val' {α a n} (m) {f : Fin (n+m) → α} :
     (extendFun f a) ∘ val = f ∘ (castAdd m) := by
   funext i; apply extendFun_val'
 
-@[simp] lemma extendFun_comp_val {α a n} {f : Fin n → α} :
-    (extendFun f a) ∘ val = f := by
-  simp [extendFun_comp_val' 0]
-
 @[simp] lemma extendFun_add {α a n} (m) {f : Fin (n+(m+1)) → α} :
     (extendFun f a) n = f ⟨n, by simp⟩ := by
-  simp [extendFun, Set.piecewiseMem, Membership.mem, Set.Mem]
+  simp [Set.piecewiseMem, Membership.mem, Set.Mem]
 
 @[simp] lemma extendFun_succ {α a n} {f : Fin (n+1) → α} :
     (extendFun f a) n = f (Fin.last n) := by
-  simp [extendFun, Set.piecewiseMem, Fin.last]
+  simp [Set.piecewiseMem, Fin.last]
 
 end ExtendFun
 
