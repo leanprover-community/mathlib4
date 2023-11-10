@@ -1,5 +1,18 @@
+/-
+Copyright (c) 2023 Kalle Kytölä. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kalle Kytölä
+-/
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Topology.Separation
+
+/-!
+# Pointwise convergence of indicator functions
+
+In this file, we prove the equivalence of three different ways to phrase that the indicator
+functions of sets converge pointwise.
+-/
+
 
 open Filter Topology
 
