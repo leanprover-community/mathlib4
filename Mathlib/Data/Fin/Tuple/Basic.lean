@@ -1018,9 +1018,8 @@ abbrev extendFun {α : Type*} {n : ℕ} (f : Fin n → α) (a : α) : ℕ → α
 
 @[simp] lemma extendFun_val' {α a n} (m) {f : Fin (n+m) → α} {i : Fin n} :
     extendFun f a i.val = f (i.castAdd _) := by
-  have : i.val = (Subtype.val <| equivSubtype <| i.castAdd m) := rfl
-  rw [this, extendFun, Subtype.extendFun_val]
-  rfl
+  apply Subtype.extendFun_of_p
+  apply Nat.lt_add_right _ _ _ i.isLt
 
 @[simp] lemma extendFun_comp_val' {α a n} (m) {f : Fin (n+m) → α} :
     (extendFun f a) ∘ val = f ∘ (castAdd m) := by
@@ -1028,11 +1027,12 @@ abbrev extendFun {α : Type*} {n : ℕ} (f : Fin n → α) (a : α) : ℕ → α
 
 @[simp] lemma extendFun_add {α a n} (m) {f : Fin (n+(m+1)) → α} :
     (extendFun f a) n = f ⟨n, by simp⟩ := by
-  simp [Set.piecewiseMem, Membership.mem, Set.Mem]
+  apply Subtype.extendFun_of_p; simp
 
-@[simp] lemma extendFun_succ {α a n} {f : Fin (n+1) → α} :
-    (extendFun f a) n = f (Fin.last n) := by
-  simp [Set.piecewiseMem, Fin.last]
+@[simp (high)] -- specialize `extendFun_add` for the case when `m=0`
+lemma extendFun_succ {α a n} {f : Fin (n+1) → α} :
+    (extendFun f a) n = f (Fin.last n) :=
+  extendFun_add 0
 
 end ExtendFun
 

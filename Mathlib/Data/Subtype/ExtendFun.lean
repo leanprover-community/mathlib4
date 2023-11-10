@@ -19,10 +19,13 @@ abbrev extendFun (f : Subtype p → β) (g : (a : α) → ¬p a → β) : α →
 
 variable {f : Subtype p → β} {g : (a : α) → ¬p a → β}
 
-@[simp] lemma extendFun_val (a : Subtype p) :
-    extendFun f g a.val = f a := by
-  have : ↑a ∈ {x | p x} := by exact a.property
+lemma extendFun_of_p (a : α) (h : p a) : extendFun f g a = f ⟨a, h⟩ := by
+  have : a ∈ {x | p x} := h
   simp only [extendFun, Set.piecewiseMem, coe_eta, this, dite_true]
+
+@[simp] lemma extendFun_val (a : Subtype p) :
+    extendFun f g a.val = f a :=
+  extendFun_of_p a.val a.property
 
 @[simp] lemma extendFun_comp_val : extendFun f g ∘ Subtype.val = f := by
   funext a; rw [Function.comp_apply, extendFun_val]
