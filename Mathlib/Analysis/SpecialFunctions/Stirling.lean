@@ -75,7 +75,7 @@ theorem log_stirlingSeq_formula (n : ℕ) :
    `∑ 1 / (2 * (k + 1) + 1) * (1 / 2 * (m + 1) + 1)^(2 * (k + 1))`
 -/
 theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
-    HasSum (fun k : ℕ => ↑1 / (↑2 * ↑(k + 1) + ↑1) * (((1:ℝ)/(↑2 * (m + 1 :) + ↑1)) ^ 2) ^ ↑(k + 1))
+    HasSum (fun k : ℕ => ↑1 / (↑2 * ↑(k + 1) + ↑1) * (((1:ℝ)/(↑2 * ↑(m + 1) + ↑1)) ^ 2) ^ ↑(k + 1))
       (log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))) := by
   change HasSum
     ((fun b : ℕ => (1:ℝ) / ((2:ℝ) * b + (1:ℝ)) * (((1:ℝ) / (2 * (m + 1 :) + 1)) ^ 2) ^ b) ∘ succ) _
