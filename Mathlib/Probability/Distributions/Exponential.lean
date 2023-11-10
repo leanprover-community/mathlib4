@@ -38,15 +38,11 @@ lemma compl_setOf_le (y : ℝ) : {x : ℝ | y ≤ x}ᶜ =  {x | x < y} := by
 
   /-- A Lebesgue Integral from -∞ to y can be expressed
     as the sum of one from -∞ to 0 and 0 to x -/
-lemma lintegral_split_bounded {y z : ℝ}(f: ℝ → ENNReal) (ygez: z ≤ y) : ∫⁻ (x : ℝ) in Iic y, f x =
-    (∫⁻ (x : ℝ) in Iio z, f x) +  ∫⁻ (x : ℝ) in Icc z y, f x := by
-  have union : Iic y = Iio z ∪ Icc z y := by
-    exact (Iio_union_Icc_eq_Iic ygez).symm
-  rw[union]
-  apply lintegral_union measurableSet_Icc
-  rw [Set.disjoint_iff]
-  rintro x ⟨h1, h2⟩
-  simp only [mem_Iio, mem_Icc] at h1 h2
+lemma lintegral_split_bounded {y z : ℝ}(f : ℝ → ENNReal) ( hzy : z ≤ y) :
+    ∫⁻ (x : ℝ) in Iic y, f x  =  (∫⁻ (x : ℝ) in Iio z, f x) +  ∫⁻ (x : ℝ) in Icc z y, f x := by
+  rw [(Iio_union_Icc_eq_Iic  hzy).symm, lintegral_union measurableSet_Icc]
+  rw [Set.disjoint_iff];
+  rintro x ⟨h1 : (x < _), h2, _ ⟩;
   linarith
 
 lemma lintegral_split (f : ℝ → ENNReal) (c : ℝ) : ∫⁻ (x : ℝ), f x  =
