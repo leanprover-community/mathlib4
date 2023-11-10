@@ -3,6 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Data.ULift
 import Mathlib.Data.ZMod.Defs
 import Mathlib.SetTheory.Cardinal.Basic
 
@@ -21,12 +22,10 @@ import Mathlib.SetTheory.Cardinal.Basic
 
 set_option autoImplicit true
 
-
-open Cardinal
+open Cardinal Function
+open scoped BigOperators
 
 noncomputable section
-
-open BigOperators
 
 variable {α β : Type*}
 
@@ -63,6 +62,11 @@ theorem finite_of_card_ne_zero (h : Nat.card α ≠ 0) : Finite α := (card_ne_z
 theorem card_congr (f : α ≃ β) : Nat.card α = Nat.card β :=
   Cardinal.toNat_congr f
 #align nat.card_congr Nat.card_congr
+
+lemma card_le_card_of_injective {α : Type u} {β : Type v} [Finite β] (f : α → β)
+    (hf : Injective f) : Nat.card α ≤ Nat.card β := by
+  simpa using toNat_le_of_le_of_lt_aleph0 (by simp [lt_aleph0_of_finite]) $
+    mk_le_of_injective (α := ULift.{max u v} α) (β := ULift.{max u v} β) $ ULift.map_injective hf
 
 theorem card_eq_of_bijective (f : α → β) (hf : Function.Bijective f) : Nat.card α = Nat.card β :=
   card_congr (Equiv.ofBijective f hf)

@@ -3,6 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Control.ULift
 import Mathlib.Logic.Equiv.Basic
 
 #align_import data.ulift from "leanprover-community/mathlib"@"41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3"
@@ -15,13 +16,13 @@ In this file we provide `Subsingleton`, `Unique`, `DecidableEq`, and `isEmpty` i
 `PLift.exists`.
 -/
 
-universe u v
+universe u v u' v'
 
 open Function
 
 namespace PLift
 
-variable {α : Sort u} {β : Sort v}
+variable {α : Sort u} {β : Sort v} {f : α → β}
 
 instance [Subsingleton α] : Subsingleton (PLift α) :=
   Equiv.plift.subsingleton
@@ -73,11 +74,20 @@ theorem «exists» {p : PLift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (PLi
   up_surjective.exists
 #align plift.exists PLift.exists
 
+lemma map_injective (hf : Injective f) : Injective (PLift.map f) :=
+  up_injective.comp $ hf.comp down_injective
+
+lemma map_surjective (hf : Surjective f) : Surjective (PLift.map f) :=
+  up_surjective.comp $ hf.comp down_surjective
+
+lemma map_bijective (hf : Bijective f) : Bijective (PLift.map f) :=
+  up_bijective.comp $ hf.comp down_bijective
+
 end PLift
 
 namespace ULift
 
-variable {α : Type u} {β : Type v}
+variable {α : Type u} {β : Type v} {f : α → β}
 
 instance [Subsingleton α] : Subsingleton (ULift α) :=
   Equiv.ulift.subsingleton
@@ -128,6 +138,15 @@ theorem «forall» {p : ULift α → Prop} : (∀ x, p x) ↔ ∀ x : α, p (ULi
 theorem «exists» {p : ULift α → Prop} : (∃ x, p x) ↔ ∃ x : α, p (ULift.up x) :=
   up_surjective.exists
 #align ulift.exists ULift.exists
+
+lemma map_injective (hf : Injective f) : Injective (ULift.map f : ULift.{u'} α → ULift.{v'} β) :=
+  up_injective.comp $ hf.comp down_injective
+
+lemma map_surjective (hf : Surjective f) : Surjective (ULift.map f : ULift.{u'} α → ULift.{v'} β) :=
+  up_surjective.comp $ hf.comp down_surjective
+
+lemma map_bijective (hf : Bijective f) : Bijective (ULift.map f : ULift.{u'} α → ULift.{v'} β) :=
+  up_bijective.comp $ hf.comp down_bijective
 
 @[ext]
 theorem ext (x y : ULift α) (h : x.down = y.down) : x = y :=
