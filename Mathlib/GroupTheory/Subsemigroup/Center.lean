@@ -63,9 +63,10 @@ theorem zero_mem_center [MulZeroClass M] : (0 : M) ∈ Set.center M := by simp [
 theorem natCast_mem_center [NonAssocSemiring M] (n : ℕ) : (n : M) ∈ Set.center M :=
   (Nat.commute_cast · _)
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_mem_center [NonAssocSemiring M] (n : ℕ) [n.AtLeastTwo] :
-    OfNat.ofNat n ∈ Set.center M :=
+    (no_index (OfNat.ofNat n)) ∈ Set.center M :=
   natCast_mem_center M n
 
 @[simp]
