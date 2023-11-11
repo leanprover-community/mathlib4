@@ -6,7 +6,7 @@ Authors: Robert Y. Lewis
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Util.SynthesizeUsing
-import Mathlib.Data.Tree
+import Mathlib.Data.Tree.Defs
 import Mathlib.Util.Qq
 
 /-!

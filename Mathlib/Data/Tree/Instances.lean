@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
 import Mathlib.Data.Tree.Defs
-import Mathlib.Control.Traversable.Basic
+import Mathlib.Control.Fold
+import Mathlib.Control.Bitraversable.Basic
 
 namespace Tree
 
@@ -15,8 +16,6 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 instance : Inhabited (Tree α) := ⟨nil⟩
 
 @[simp] theorem default_def {α} : (default : Tree α) = nil := rfl
-
-instance : Pure Tree := ⟨Tree.ret⟩
 
 @[simp] theorem pure_def {α} : (pure : α → Tree α) = Tree.ret := rfl
 
@@ -85,5 +84,20 @@ instance : LawfulTraversable Tree where
       simp only [ApplicativeTransformation.app_eq_coe, Function.comp_apply]
       rw [ApplicativeTransformation.preserves_map]
       congr <;> ext <;> assumption
+
+@[simp]
+lemma foldmap_def {ω : Type u} [One ω] [Mul ω] (f : α → ω)
+  : ∀ (t : Tree α), Traversable.foldMap f t
+                  = Tree.rec (1 : ω) (fun a _ _ l' r' => f a * l' * r') t
+  | nil => rfl
+  | node _ l r => congr_arg₂ _ (congr_arg _ $ foldmap_def f l) (foldmap_def f r)
+
+@[simp]
+lemma toList_def (t : Tree α)
+  : Traversable.toList t = Tree.rec [] (fun a _ _ l r => [a] ++ l ++ r) t := by
+    rw [Traversable.toList_spec, Tree.foldmap_def]
+    induction t <;> simp [*]
+
+#print Traversable.toList
 
 end Tree
