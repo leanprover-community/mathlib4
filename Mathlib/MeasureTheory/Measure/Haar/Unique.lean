@@ -384,8 +384,6 @@ lemma isMulLeftInvariant_eq_of_isProbabilityMeasure
     (μ' μ : Measure G) [IsProbabilityMeasure μ] [IsProbabilityMeasure μ']
     [InnerRegularCompactLTTop μ] [InnerRegularCompactLTTop μ']
     [IsMulLeftInvariant μ] [IsMulLeftInvariant μ'] : μ' = μ := by
-  have : IsOpenPosMeasure μ :=
-    isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular (IsProbabilityMeasure.ne_zero μ)
   rcases isMulLeftInvariant_eq_smul_of_regular μ' μ with ⟨c, hc⟩
   have : ((c : ℝ≥0∞) • μ) univ = μ' univ := by rw [hc]; rfl
   simp only [smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, measure_univ, smul_eq_mul,
