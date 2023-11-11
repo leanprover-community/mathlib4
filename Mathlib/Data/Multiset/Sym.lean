@@ -24,6 +24,10 @@ unordered n-tuples from a given multiset. These are multiset versions of `Nat.mu
   ```
   and then use this to remove the `DecidableEq` assumption from `Finset.sym`.
 
+* `theorem injective_sym2 : Function.Injective (Multiset.sym2 : Multiset α → _)`
+
+* `theorem strictMono_sym2 : StrictMono (Multiset.sym2 : Multiset α → _)`
+
 -/
 
 namespace Multiset
@@ -60,6 +64,8 @@ theorem sym2_mono {m m' : Multiset α} (h : m ≤ m') : m.sym2 ≤ m'.sym2 := by
   suffices : xs <+~ ys
   · exact this.sym2
   simpa only [quot_mk_to_coe, coe_le, sym2_coe] using h
+
+theorem monotone_sym2 : Monotone (Multiset.sym2 : Multiset α → _) := fun _ _ => sym2_mono
 
 theorem card_sym2 {m : Multiset α} :
     Multiset.card m.sym2 = Nat.choose (Multiset.card m + 1) 2 := by

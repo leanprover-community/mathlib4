@@ -8,7 +8,6 @@ Authors: Yaël Dillies
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Vector
-import Mathlib.Data.Sym.Sym2
 import Mathlib.Data.Multiset.Sym
 
 #align_import data.finset.sym from "leanprover-community/mathlib"@"02ba8949f486ebecf93fe7460f1ed0564b5e442c"
@@ -73,6 +72,17 @@ theorem sym2_mono (h : s ⊆ t) : s.sym2 ⊆ t.sym2 := by
   apply Multiset.sym2_mono
   rwa [val_le_iff]
 #align finset.sym2_mono Finset.sym2_mono
+
+theorem monotone_sym2 : Monotone (Finset.sym2 : Finset α → _) := fun _ _ => sym2_mono
+
+theorem injective_sym2 : Function.Injective (Finset.sym2 : Finset α → _) := by
+  intro s t h
+  ext x
+  apply_fun (⟦(x, x)⟧ ∈ ·) at h
+  simpa using h
+
+theorem strictMono_sym2 : StrictMono (Finset.sym2 : Finset α → _) :=
+  monotone_sym2.strictMono_of_injective injective_sym2
 
 theorem sym2_toFinset [DecidableEq α] (m : Multiset α) :
     m.toFinset.sym2 = m.sym2.toFinset := by
