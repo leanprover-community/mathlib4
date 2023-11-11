@@ -102,6 +102,21 @@ theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := by
 -- #align bitvec.of_fin_to_fin Std.BitVec.ofFin_toFin
 
 /-!
+  ### Distributivity of ofFin
+  We add simp-lemmas that show how `ofFin` distributes over various bitvector operations, showing
+  that bitvector operations are equivalent to `Fin` operations
+-/
+@[simp] lemma neg_ofFin (x : Fin (2^w)) : -(ofFin x) = ofFin (-x) := by
+  rw [neg_eq_zero_sub]; rfl
+
+@[simp] lemma ofFin_and_ofFin (x y : Fin (2^w)) : (ofFin x) &&& (ofFin y) = ofFin (x &&& y) := rfl
+@[simp] lemma ofFin_or_ofFin  (x y : Fin (2^w)) : (ofFin x) ||| (ofFin y) = ofFin (x ||| y) := rfl
+@[simp] lemma ofFin_xor_ofFin (x y : Fin (2^w)) : (ofFin x) ^^^ (ofFin y) = ofFin (x ^^^ y) := rfl
+@[simp] lemma ofFin_add_ofFin (x y : Fin (2^w)) : (ofFin x) + (ofFin y) = ofFin (x + y)     := rfl
+@[simp] lemma ofFin_sub_ofFin (x y : Fin (2^w)) : (ofFin x) - (ofFin y) = ofFin (x - y)     := rfl
+@[simp] lemma ofFin_mul_ofFin (x y : Fin (2^w)) : (ofFin x) * (ofFin y) = ofFin (x * y)     := rfl
+
+/-!
 ## Extract / Get bits
 -/
 
