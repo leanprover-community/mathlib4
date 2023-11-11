@@ -1399,10 +1399,11 @@ lemma Basis.mem_center_iff {A}
     [Semiring R] [NonUnitalNonAssocSemiring A]
     [Module R A] [SMulCommClass R A A] [SMulCommClass R R A] [IsScalarTower R A A]
     (b : Basis ι R A) {z : A} :
-    z ∈ Set.center A ↔ (∀ i, Commute (b i) z) ∧ ∀ i j,
-    z * (b i * b j) = (z * b i) * b j
-    ∧ (b i * z) * b j = b i * (z * b j)
-    ∧ (b i * b j) * z = b i * (b j * z) := by
+    z ∈ Set.center A ↔
+      (∀ i, Commute (b i) z) ∧ ∀ i j,
+        z * (b i * b j) = (z * b i) * b j
+          ∧ (b i * z) * b j = b i * (z * b j)
+          ∧ (b i * b j) * z = b i * (b j * z) := by
   constructor
   · intro h;
     constructor
