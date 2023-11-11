@@ -503,7 +503,7 @@ namespace Sylow
 theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Finite (H : Set G)]
     {x : G} : (x : G ⧸ H) ∈ MulAction.fixedPoints H (G ⧸ H) ↔ x ∈ normalizer H :=
   ⟨fun hx =>
-    have ha : ∀ {y : G ⧸ H}, y ∈ orbit H (x : G ⧸ H) → y = x := (mem_fixedPoints' _).1 hx _
+    have ha : ∀ {y : G ⧸ H}, y ∈ orbit H (x : G ⧸ H) → y = x := mem_fixedPoints'.1 hx _
     (inv_mem_iff (G := G)).1
       (mem_normalizer_fintype fun n (hn : n ∈ H) =>
         have : (n⁻¹ * x)⁻¹ * x ∈ H := QuotientGroup.eq.1 (ha ⟨⟨n⁻¹, inv_mem hn⟩, rfl⟩)
@@ -512,7 +512,7 @@ theorem mem_fixedPoints_mul_left_cosets_iff_mem_normalizer {H : Subgroup G} [Fin
           convert this
           rw [inv_inv]),
     fun hx : ∀ n : G, n ∈ H ↔ x * n * x⁻¹ ∈ H =>
-    (mem_fixedPoints' _).2 fun y =>
+    mem_fixedPoints'.2 fun y =>
       Quotient.inductionOn' y fun y hy =>
         QuotientGroup.eq.2
           (let ⟨⟨b, hb₁⟩, hb₂⟩ := hy
@@ -710,15 +710,15 @@ theorem coe_ofCard [Fintype G] {p : ℕ} [Fact p.Prime] (H : Subgroup G) [Fintyp
   rfl
 #align sylow.coe_of_card Sylow.coe_ofCard
 
-theorem subsingleton_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
-    (h : (P : Subgroup G).Normal) : Subsingleton (Sylow p G) := by
-  apply Subsingleton.intro
-  intro Q R
+/-- If `G` has a normal Sylow `p`-subgroup, then it is the only Sylow `p`-subgroup. -/
+noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
+    (h : (P : Subgroup G).Normal) : Unique (Sylow p G) := by
+  refine { uniq := fun Q ↦ ?_ }
   obtain ⟨x, h1⟩ := exists_smul_eq G P Q
-  obtain ⟨x, h2⟩ := exists_smul_eq G P R
+  obtain ⟨x, h2⟩ := exists_smul_eq G P default
   rw [Sylow.smul_eq_of_normal] at h1 h2
   rw [← h1, ← h2]
-#align sylow.subsingleton_of_normal Sylow.subsingleton_of_normal
+#align sylow.subsingleton_of_normal Sylow.unique_of_normal
 
 section Pointwise
 
@@ -726,7 +726,7 @@ open Pointwise
 
 theorem characteristic_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (h : (P : Subgroup G).Normal) : (P : Subgroup G).Characteristic := by
-  haveI := Sylow.subsingleton_of_normal P h
+  haveI := Sylow.unique_of_normal P h
   rw [characteristic_iff_map_eq]
   intro Φ
   show (Φ • P).toSubgroup = P.toSubgroup
@@ -778,14 +778,14 @@ of these Sylow subgroups.
 -/
 noncomputable def directProductOfNormal [Fintype G]
     (hn : ∀ {p : ℕ} [Fact p.Prime] (P : Sylow p G), (↑P : Subgroup G).Normal) :
-    (∀ p : (card G).factorization.support, ∀ P : Sylow p G, (↑P : Subgroup G)) ≃* G := by
-  set ps := (Fintype.card G).factorization.support
+    (∀ p : (card G).primeFactors, ∀ P : Sylow p G, (↑P : Subgroup G)) ≃* G := by
+  set ps := (Fintype.card G).primeFactors
   -- “The” Sylow subgroup for p
   let P : ∀ p, Sylow p G := default
   have hcomm : Pairwise fun p₁ p₂ : ps => ∀ x y : G, x ∈ P p₁ → y ∈ P p₂ → Commute x y := by
     rintro ⟨p₁, hp₁⟩ ⟨p₂, hp₂⟩ hne
-    haveI hp₁' := Fact.mk (Nat.prime_of_mem_factorization hp₁)
-    haveI hp₂' := Fact.mk (Nat.prime_of_mem_factorization hp₂)
+    haveI hp₁' := Fact.mk (Nat.prime_of_mem_primeFactors hp₁)
+    haveI hp₂' := Fact.mk (Nat.prime_of_mem_primeFactors hp₂)
     have hne' : p₁ ≠ p₂ := by simpa using hne
     apply Subgroup.commute_of_normal_of_disjoint _ _ (hn (P p₁)) (hn (P p₂))
     apply IsPGroup.disjoint_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup' (P p₂).isPGroup'
@@ -795,10 +795,9 @@ noncomputable def directProductOfNormal [Fintype G]
   · -- here we need to help the elaborator with an explicit instantiation
     apply @MulEquiv.piCongrRight ps (fun p => ∀ P : Sylow p G, P) (fun p => P p) _ _
     rintro ⟨p, hp⟩
-    haveI hp' := Fact.mk (Nat.prime_of_mem_factorization hp)
-    haveI := subsingleton_of_normal _ (hn (P p))
-    change (∀ P : Sylow p G, P) ≃* P p
-    exact MulEquiv.piSubsingleton _ _
+    haveI hp' := Fact.mk (Nat.prime_of_mem_primeFactors hp)
+    letI := unique_of_normal _ (hn (P p))
+    apply MulEquiv.piUnique
   show (∀ p : ps, P p) ≃* G
   apply MulEquiv.ofBijective (Subgroup.noncommPiCoprod hcomm)
   apply (bijective_iff_injective_and_card _).mpr
@@ -807,8 +806,8 @@ noncomputable def directProductOfNormal [Fintype G]
   · apply Subgroup.injective_noncommPiCoprod_of_independent
     apply independent_of_coprime_order hcomm
     rintro ⟨p₁, hp₁⟩ ⟨p₂, hp₂⟩ hne
-    haveI hp₁' := Fact.mk (Nat.prime_of_mem_factorization hp₁)
-    haveI hp₂' := Fact.mk (Nat.prime_of_mem_factorization hp₂)
+    haveI hp₁' := Fact.mk (Nat.prime_of_mem_primeFactors hp₁)
+    haveI hp₂' := Fact.mk (Nat.prime_of_mem_primeFactors hp₂)
     have hne' : p₁ ≠ p₂ := by simpa using hne
     apply IsPGroup.coprime_card_of_ne p₁ p₂ hne' _ _ (P p₁).isPGroup' (P p₂).isPGroup'
   show card (∀ p : ps, P p) = card G
@@ -816,7 +815,7 @@ noncomputable def directProductOfNormal [Fintype G]
       card (∀ p : ps, P p) = ∏ p : ps, card (P p) := Fintype.card_pi
       _ = ∏ p : ps, p.1 ^ (card G).factorization p.1 := by
         congr 1 with ⟨p, hp⟩
-        exact @card_eq_multiplicity _ _ _ p ⟨Nat.prime_of_mem_factorization hp⟩ (P p)
+        exact @card_eq_multiplicity _ _ _ p ⟨Nat.prime_of_mem_primeFactors hp⟩ (P p)
       _ = ∏ p in ps, p ^ (card G).factorization p :=
         (Finset.prod_finset_coe (fun p => p ^ (card G).factorization p) _)
       _ = (card G).factorization.prod (· ^ ·) := rfl
