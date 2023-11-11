@@ -7,8 +7,6 @@ Authors: Harun Khan, Alex Keizer, Abdalrhman M Mohamed
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Data.Fin.Basic
 import Std.Data.BitVec
-import Mathlib.Tactic
-
 
 /-!
 # Basic operations on bitvectors
