@@ -142,6 +142,7 @@ theorem GammaIntegral_ofReal (s : ℝ) :
   simp
 #align complex.Gamma_integral_of_real Complex.GammaIntegral_ofReal
 
+@[simp]
 theorem GammaIntegral_one : GammaIntegral 1 = 1 := by
   simpa only [← ofReal_one, GammaIntegral_ofReal, ofReal_inj, sub_self, rpow_zero,
     mul_one] using integral_exp_neg_Ioi_zero
@@ -340,17 +341,24 @@ theorem Gamma_eq_integral {s : ℂ} (hs : 0 < s.re) : Gamma s = GammaIntegral s 
   Gamma_eq_GammaAux s 0 (by norm_cast; linarith)
 #align complex.Gamma_eq_integral Complex.Gamma_eq_integral
 
-theorem Gamma_one : Gamma 1 = 1 := by rw [Gamma_eq_integral]; simpa using GammaIntegral_one; simp
+@[simp]
+theorem Gamma_one : Gamma 1 = 1 := by rw [Gamma_eq_integral]; simp; simp
 #align complex.Gamma_one Complex.Gamma_one
 
 theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by
   induction' n with n hn
-  · simpa using Gamma_one
+  · simp
   · rw [Gamma_add_one n.succ <| Nat.cast_ne_zero.mpr <| Nat.succ_ne_zero n]
     simp only [Nat.cast_succ, Nat.factorial_succ, Nat.cast_mul]; congr
 #align complex.Gamma_nat_eq_factorial Complex.Gamma_nat_eq_factorial
 
+@[simp]
+theorem Gamma_ofNat_eq_factorial (n : ℕ) [(n + 1).AtLeastTwo] :
+    Gamma (no_index (OfNat.ofNat (n + 1) : ℂ)) = n ! := by
+  exact_mod_cast Gamma_nat_eq_factorial (n : ℕ)
+
 /-- At `0` the Gamma function is undefined; by convention we assign it the value `0`. -/
+@[simp]
 theorem Gamma_zero : Gamma 0 = 0 := by
   simp_rw [Gamma, zero_re, sub_zero, Nat.floor_one, GammaAux, div_zero]
 #align complex.Gamma_zero Complex.Gamma_zero
@@ -493,6 +501,7 @@ theorem Gamma_add_one {s : ℝ} (hs : s ≠ 0) : Gamma (s + 1) = s * Gamma s := 
   rwa [Complex.ofReal_ne_zero]
 #align real.Gamma_add_one Real.Gamma_add_one
 
+@[simp]
 theorem Gamma_one : Gamma 1 = 1 := by
   rw [Gamma, Complex.ofReal_one, Complex.Gamma_one, Complex.one_re]
 #align real.Gamma_one Real.Gamma_one
@@ -506,7 +515,13 @@ theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by
     Complex.Gamma_nat_eq_factorial, ← Complex.ofReal_nat_cast, Complex.ofReal_re]
 #align real.Gamma_nat_eq_factorial Real.Gamma_nat_eq_factorial
 
+@[simp]
+theorem Gamma_ofNat_eq_factorial (n : ℕ) [(n + 1).AtLeastTwo] :
+    Gamma (no_index (OfNat.ofNat (n + 1) : ℝ)) = n ! := by
+  exact_mod_cast Gamma_nat_eq_factorial (n : ℕ)
+
 /-- At `0` the Gamma function is undefined; by convention we assign it the value `0`. -/
+@[simp]
 theorem Gamma_zero : Gamma 0 = 0 := by
   simpa only [← Complex.ofReal_zero, Complex.Gamma_ofReal, Complex.ofReal_inj] using
     Complex.Gamma_zero
