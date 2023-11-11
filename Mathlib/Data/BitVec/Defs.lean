@@ -26,8 +26,6 @@ comment them out for now.
 * `Std.BitVec.sge`: Signed greater-equals comparison of bitvectors
 * `Std.BitVec.ugt`: Unsigned greater-than comparison of bitvectors
 * `Std.BitVec.uge`: Unsigned greater-equals comparison of bitvectors
-* `Std.BitVec.ofLEList`: Turn a little-endian list of Booleans into a bitvector
-* `Std.BitVec.ofBEList`: Turn a big-endian list of Booleans into a bitvector
 
 -/
 
