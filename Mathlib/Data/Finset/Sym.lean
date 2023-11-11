@@ -78,8 +78,7 @@ theorem monotone_sym2 : Monotone (Finset.sym2 : Finset α → _) := fun _ _ => s
 theorem injective_sym2 : Function.Injective (Finset.sym2 : Finset α → _) := by
   intro s t h
   ext x
-  apply_fun (⟦(x, x)⟧ ∈ ·) at h
-  simpa using h
+  simpa using congr(⟦(x, x)⟧ ∈ $h)
 
 theorem strictMono_sym2 : StrictMono (Finset.sym2 : Finset α → _) :=
   monotone_sym2.strictMono_of_injective injective_sym2
