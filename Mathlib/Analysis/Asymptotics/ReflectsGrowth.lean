@@ -225,7 +225,7 @@ lemma comp_tendsto {β : Type*} {l' : Filter β} {u : β → α} [NeBot l']
 
 lemma mono (hl : ReflectsGrowthAddMul f g l) {l'} [NeBot l'] (hle : l' ≤ l) :
     ReflectsGrowthAddMul f g l' := hl.comp_tendsto hle
-  
+
 end ReflectsGrowthAddMul
 
 lemma reflectsGrowthAddMul_zpow_cobounded {𝕜 : Type*} [NontriviallyNormedField 𝕜] :
