@@ -261,7 +261,7 @@ theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
   · simp only [hzero, div_zero, pow_eq_zero_iff hm] at h
     exact h.symm ▸ isAlgebraic_zero
   · rw [eq_div_iff hzero, ← sub_eq_zero] at h
-    replace hzero : s ≠ 0 := by rintro rfl; simp only [map_zero] at hzero
+    replace hzero : s ≠ 0 := by rintro rfl; simp only [map_zero, not_true_eq_false] at hzero
     let f : F[X] := X ^ m * expand F n s - expand F n r
     refine ⟨f, ?_, ?_⟩
     · have : f.coeff (n * s.natDegree + m) ≠ 0 := by
@@ -273,7 +273,7 @@ theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
           coeff_expand hn r, hndvd, ite_false, sub_zero]
         exact leadingCoeff_ne_zero.2 hzero
       intro h
-      simp only [h, coeff_zero, ne_eq] at this
+      simp only [h, coeff_zero, ne_eq, not_true_eq_false] at this
     · simp only [map_sub, map_mul, map_pow, aeval_X, expand_aeval, h]
 
 theorem isAlgebraic_of_finite_intermediateField
