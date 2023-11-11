@@ -693,12 +693,12 @@ for any measurable set `E` of positive measure, the set `E - E` is a neighbourho
 theorem div_mem_nhds_one_of_haar_pos (μ : Measure G) [IsHaarMeasure μ] [LocallyCompactSpace G]
     [InnerRegular μ] (E : Set G) (hE : MeasurableSet E) (hEpos : 0 < μ E) :
     E / E ∈ 𝓝 (1 : G) := by
-  /- For any regular measure `μ` and set `E` of positive measure, we can find a compact set `K` of
-       positive measure inside `E`. Further, there exists an open
+  /- For any inner regular measure `μ` and set `E` of positive measure, we can find a compact
+       set `K` of positive measure inside `E`. Further, there exists an open
        set `U` containing `K` with measure arbitrarily close to `K` (here `μ U < 2 * μ K` suffices).
        Then, we can pick an open neighborhood of `1`, say `V` such that such that `V * K` is
        contained in `U`. Now note that for any `v` in `V`, the sets `K` and `{v} * K` can not be
-       disjoint because they are both of measure `μ K` (since `μ` is left regular) and also
+       disjoint because they are both of measure `μ K` (since `μ` is left invariant) and also
        contained in `U`, yet we have that `μ U < 2 * μ K`. This show that `K / K` contains the
        neighborhood `V` of `1`, and therefore that it is itself such a neighborhood. -/
   obtain ⟨K, hKE, hK, K_closed, hKpos⟩ :
