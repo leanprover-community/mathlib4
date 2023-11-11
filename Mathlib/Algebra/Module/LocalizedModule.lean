@@ -719,7 +719,7 @@ noncomputable def fromLocalizedModule' : LocalizedModule S M → M' := fun p =>
       -- Porting note: We remove `generalize_proofs h1 h2`.
       erw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, ←map_smul, ←map_smul,
         Module.End_algebraMap_isUnit_inv_apply_eq_iff', ←map_smul]
-      exact (IsLocalizedModule.eq_iff_exists S f).mpr ⟨c, eq1⟩)
+      exact (IsLocalizedModule.eq_iff_exists S f).mpr ⟨c, eq1.symm⟩)
 #align is_localized_module.from_localized_module' IsLocalizedModule.fromLocalizedModule'
 
 @[simp]
@@ -1070,10 +1070,11 @@ theorem mkOfAlgebra {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S'] [Al
       change (x : R) • (_ * a) = _
       rw [Algebra.smul_def, ← mul_assoc, IsUnit.mul_val_inv, one_mul]
   · exact h₂
-  · intros
+  · intros x y
     dsimp only [AlgHom.toLinearMap_apply]
-    rw [eq_comm, ← sub_eq_zero, ← map_sub, h₃]
+    rw [← sub_eq_zero, ← map_sub, h₃]
     simp_rw [smul_sub, sub_eq_zero]
+    exact id
 #align is_localized_module.mk_of_algebra IsLocalizedModule.mkOfAlgebra
 
 end Algebra
