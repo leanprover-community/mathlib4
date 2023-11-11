@@ -257,4 +257,10 @@ theorem zeroRootSubalgebra_eq_iff_is_cartan [IsNoetherian R L] :
   ⟨is_cartan_of_zeroRootSubalgebra_eq R L H, by intros; simp⟩
 #align lie_algebra.zero_root_subalgebra_eq_iff_is_cartan LieAlgebra.zeroRootSubalgebra_eq_iff_is_cartan
 
+@[simp]
+theorem rootSpace_zero_eq (H : LieSubalgebra R L) [H.IsCartanSubalgebra] [IsNoetherian R L] :
+    rootSpace H 0 = H.toLieSubmodule := by
+  rw [← LieSubmodule.coe_toSubmodule_eq_iff, ← coe_zeroRootSubalgebra,
+    zeroRootSubalgebra_eq_of_is_cartan R L H, LieSubalgebra.coe_toLieSubmodule]
+
 end LieAlgebra

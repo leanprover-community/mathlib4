@@ -191,7 +191,7 @@ theorem integrableOn_union : IntegrableOn f (s ∪ t) μ ↔ IntegrableOn f s μ
 theorem integrableOn_singleton_iff {x : α} [MeasurableSingletonClass α] :
     IntegrableOn f {x} μ ↔ f x = 0 ∨ μ {x} < ∞ := by
   have : f =ᵐ[μ.restrict {x}] fun _ => f x := by
-    filter_upwards [ae_restrict_mem (measurableSet_singleton x)]with _ ha
+    filter_upwards [ae_restrict_mem (measurableSet_singleton x)] with _ ha
     simp only [mem_singleton_iff.1 ha]
   rw [IntegrableOn, integrable_congr this, integrable_const_iff]
   simp
@@ -342,7 +342,7 @@ theorem IntegrableOn.integrable_of_ae_not_mem_eq_zero (hf : IntegrableOn f s μ)
     (h't : ∀ᵐ x ∂μ, x ∉ s → f x = 0) : Integrable f μ := by
   rw [← integrableOn_univ]
   apply hf.of_ae_diff_eq_zero nullMeasurableSet_univ
-  filter_upwards [h't]with x hx h'x using hx h'x.2
+  filter_upwards [h't] with x hx h'x using hx h'x.2
 #align measure_theory.integrable_on.integrable_of_ae_not_mem_eq_zero MeasureTheory.IntegrableOn.integrable_of_ae_not_mem_eq_zero
 
 /-- If a function is integrable on a set `s` and vanishes everywhere on its complement,
@@ -423,7 +423,7 @@ protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [NormedAddCommGroup �
     [BoundedSMul 𝕜 E] {f : α → E} (hf : IntegrableAtFilter f l μ) (c : 𝕜) :
     IntegrableAtFilter (c • f) l μ := by
   rcases hf with ⟨s, sl, hs⟩
-  refine ⟨s, sl, hs.smul c⟩
+  exact ⟨s, sl, hs.smul c⟩
 
 theorem IntegrableAtFilter.filter_mono (hl : l ≤ l') (hl' : IntegrableAtFilter f l' μ) :
     IntegrableAtFilter f l μ :=

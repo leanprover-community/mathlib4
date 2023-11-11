@@ -3,11 +3,10 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
+import Mathlib.RingTheory.Discriminant
 import Mathlib.Algebra.Module.Zlattice
 import Mathlib.MeasureTheory.Group.GeometryOfNumbers
-import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.NumberTheory.NumberField.Embeddings
-import Mathlib.RingTheory.Discriminant
 
 #align_import number_theory.number_field.canonical_embedding from "leanprover-community/mathlib"@"60da01b41bbe4206f05d34fd70c8dd7498717a30"
 
@@ -21,27 +20,29 @@ into the type `(K →+* ℂ) → ℂ` of `ℂ`-vectors indexed by the complex em
 
 ## Main definitions and results
 
-* `canonicalEmbedding`: the ring homorphism `K →+* ((K →+* ℂ) → ℂ)` defined by sending `x : K` to
-the vector `(φ x)` indexed by `φ : K →+* ℂ`.
+* `NumberField.canonicalEmbedding`: the ring homorphism `K →+* ((K →+* ℂ) → ℂ)` defined by
+sending `x : K` to the vector `(φ x)` indexed by `φ : K →+* ℂ`.
 
-* `canonicalEmbedding.integerLattice.inter_ball_finite`: the intersection of the
+* `NumberField.canonicalEmbedding.integerLattice.inter_ball_finite`: the intersection of the
 image of the ring of integers by the canonical embedding and any ball centered at `0` of finite
 radius is finite.
 
-* `mixedEmbedding`: the ring homomorphism from `K →+* ({ w // IsReal w } → ℝ) ×
+* `NumberField.mixedEmbedding`: the ring homomorphism from `K →+* ({ w // IsReal w } → ℝ) ×
 ({ w // IsComplex w } → ℂ)` that sends `x ∈ K` to `(φ_w x)_w` where `φ_w` is the embedding
 associated to the infinite place `w`. In particular, if `w` is real then `φ_w : K →+* ℝ` and, if
 `w` is complex, `φ_w` is an arbitrary choice between the two complex embeddings defining the place
 `w`.
 
-* `exists_ne_zero_mem_ringOfIntegers_lt`: let `f : InfinitePlace K → ℝ≥0`, if the product
-`∏ w, f w` is large enough, then there exists a nonzero algebraic integer `a` in `K` such that
-`w a < f w` for all infinite places `w`.
+* `NumberField.mixedEmbedding.exists_ne_zero_mem_ringOfIntegers_lt`: let
+`f : InfinitePlace K → ℝ≥0`, if the product `∏ w, f w` is large enough, then there exists a
+nonzero algebraic integer `a` in `K` such that `w a < f w` for all infinite places `w`.
 
 ## Tags
 
 number field, infinite places
 -/
+
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 variable (K : Type*) [Field K]
 
@@ -161,7 +162,7 @@ end NumberField.canonicalEmbedding
 
 namespace NumberField.mixedEmbedding
 
-open NumberField NumberField.InfinitePlace NumberField.ComplexEmbedding FiniteDimensional
+open NumberField NumberField.InfinitePlace FiniteDimensional
 
 /-- The space `ℝ^r₁ × ℂ^r₂` with `(r₁, r₂)` the signature of `K`. -/
 local notation "E" K =>
@@ -221,7 +222,7 @@ theorem commMap_canonical_eq_mixed (x : K) :
 /-- This is a technical result to ensure that the image of the `ℂ`-basis of `ℂ^n` defined in
 `canonicalEmbedding.latticeBasis` is a `ℝ`-basis of `ℝ^r₁ × ℂ^r₂`,
 see `mixedEmbedding.latticeBasis`. -/
-theorem disjoint_span_commMap_ker [NumberField K]:
+theorem disjoint_span_commMap_ker [NumberField K] :
     Disjoint (Submodule.span ℝ (Set.range (canonicalEmbedding.latticeBasis K)))
       (LinearMap.ker (commMap K)) := by
   refine LinearMap.disjoint_ker.mpr (fun x h_mem h_zero => ?_)
@@ -231,7 +232,7 @@ theorem disjoint_span_commMap_ker [NumberField K]:
     exact ⟨integralBasis K i, (canonicalEmbedding.latticeBasis_apply K i).symm⟩
   ext1 φ
   rw [Pi.zero_apply]
-  by_cases hφ : IsReal φ
+  by_cases hφ : ComplexEmbedding.IsReal φ
   · rw [show x φ = (x φ).re by
       rw [eq_comm, ← Complex.conj_eq_iff_re, canonicalEmbedding.conj_apply _ h_mem,
         ComplexEmbedding.isReal_iff.mp hφ], ← Complex.ofReal_zero]
@@ -319,10 +320,9 @@ theorem convexBodyLt_convex : Convex ℝ (convexBodyLt K f) :=
 
 open Classical Fintype MeasureTheory MeasureTheory.Measure BigOperators
 
--- See: https://github.com/leanprover/lean4/issues/2220
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y)
-
 variable [NumberField K]
+
+instance : IsAddHaarMeasure (volume : Measure (E K)) := prod.instIsAddHaarMeasure volume volume
 
 /-- The fudge factor that appears in the formula for the volume of `convexBodyLt`. -/
 noncomputable abbrev convexBodyLtFactor : ℝ≥0∞ :=
@@ -389,21 +389,74 @@ theorem adjust_f {w₁ : InfinitePlace K} (B : ℝ≥0) (hf : ∀ w, w ≠ w₁�
 
 end convexBodyLt
 
+section convexBodySum
+
+open ENNReal BigOperators Classical MeasureTheory Fintype
+
+variable [NumberField K] (B : ℝ)
+
+/-- The convex body equal to the set of points `x : E` such that
+  `∑ w real, ‖x w‖ + 2 * ∑ w complex, ‖x w‖ ≤ B`. -/
+abbrev convexBodySum : Set (E K)  := { x | ∑ w, ‖x.1 w‖ + 2 * ∑ w, ‖x.2 w‖ ≤ B }
+
+theorem convexBodySum_empty {B} (h : B < 0) : convexBodySum K B = ∅ := by
+  ext x
+  refine ⟨fun hx => ?_, fun h => h.elim⟩
+  · rw [Set.mem_setOf] at hx
+    have : 0 ≤ ∑ w, ‖x.1 w‖ + 2 * ∑ w, ‖x.2 w‖ := by
+      refine add_nonneg ?_ ?_
+      · exact Finset.sum_nonneg (fun _ _ => norm_nonneg _)
+      · exact mul_nonneg zero_le_two (Finset.sum_nonneg (fun _ _ => norm_nonneg _))
+    linarith
+
+theorem convexBodySum_mem {x : K} :
+    mixedEmbedding K x ∈ (convexBodySum K B) ↔
+      ∑ w : InfinitePlace K, (mult w) * w.val x ≤ B := by
+  simp_rw [Set.mem_setOf_eq, mixedEmbedding, RingHom.prod_apply, Pi.ringHom_apply,
+    ← Complex.norm_real, embedding_of_isReal_apply, norm_embedding_eq, mult, Nat.cast_ite, ite_mul,
+    Finset.sum_ite, Finset.filter_congr (fun _ _ => not_isReal_iff_isComplex), Finset.mul_sum,
+    ← Finset.sum_subtype_eq_sum_filter, Finset.subtype_univ, Nat.cast_one, one_mul, Nat.cast_ofNat]
+  rfl
+
+theorem convexBodySum_symmetric (x : E K) (hx : x ∈ (convexBodySum K B)) :
+    -x ∈ (convexBodySum K B) := by
+  simp_rw [Set.mem_setOf_eq, Prod.fst_neg, Prod.snd_neg, Pi.neg_apply, norm_neg]
+  exact hx
+
+theorem convexBodySum_convex : Convex ℝ (convexBodySum K B) := by
+  refine Convex_subadditive_le ?_ ?_ B
+  · intro x y
+    simp_rw [Prod.fst_add, Pi.add_apply, Prod.snd_add]
+    refine le_trans (add_le_add
+      (Finset.sum_le_sum (fun w _ => norm_add_le (x.1 w) (y.1 w)))
+      (mul_le_mul_of_nonneg_left
+        (Finset.sum_le_sum (fun w _ => norm_add_le (x.2 w) (y.2 w))) (by norm_num))) ?_
+    simp_rw [Finset.sum_add_distrib, mul_add]
+    exact le_of_eq (by ring)
+  · intro _ _ h
+    simp_rw [Prod.smul_fst, Prod.smul_snd, Pi.smul_apply, smul_eq_mul, Complex.real_smul, norm_mul,
+      Complex.norm_real, Real.norm_of_nonneg h, ← Finset.mul_sum]
+    exact le_of_eq (by ring)
+
+end convexBodySum
+
 section minkowski
 
-open MeasureTheory MeasureTheory.Measure Classical NNReal ENNReal FiniteDimensional Zspan
+open MeasureTheory MeasureTheory.Measure Classical FiniteDimensional Zspan Real
+
+open scoped ENNReal NNReal
 
 variable [NumberField K]
 
 /-- The bound that appears in Minkowski Convex Body theorem, see
 `MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure`. -/
 noncomputable def minkowskiBound : ℝ≥0∞ :=
-  volume (fundamentalDomain (latticeBasis K)) * 2 ^ (finrank ℝ (E K))
+  volume (fundamentalDomain (latticeBasis K)) * (2:ℝ≥0∞) ^ (finrank ℝ (E K))
 
 theorem minkowskiBound_lt_top : minkowskiBound K < ⊤ := by
-  refine mul_lt_top ?_ ?_
+  refine ENNReal.mul_lt_top ?_ ?_
   · exact ne_of_lt (fundamentalDomain_isBounded (latticeBasis K)).measure_lt_top
-  · exact ne_of_lt (pow_lt_top (lt_top_iff_ne_top.mpr two_ne_top) _)
+  · exact ne_of_lt (ENNReal.pow_lt_top (lt_top_iff_ne_top.mpr ENNReal.two_ne_top) _)
 
 variable {f : InfinitePlace K → ℝ≥0}
 
@@ -414,7 +467,6 @@ the computation of this volume), then there exists a nonzero algebraic integer `
 that `w a < f w` for all infinite places `w`. -/
 theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K < volume (convexBodyLt K f)) :
     ∃ (a : 𝓞 K), a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
-  have : @IsAddHaarMeasure (E K) _ _ _ volume := prod.instIsAddHaarMeasure volume volume
   have h_fund := Zspan.isAddFundamentalDomain (latticeBasis K) volume
   have : Countable (Submodule.span ℤ (Set.range (latticeBasis K))).toAddSubgroup := by
     change Countable (Submodule.span ℤ (Set.range (latticeBasis K)): Set (E K))
@@ -426,6 +478,39 @@ theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K < volume (con
   refine ⟨⟨a, ha⟩, ?_, (convexBodyLt_mem K f).mp h_mem⟩
   rw [ne_eq, AddSubgroup.mk_eq_zero_iff, map_eq_zero, ← ne_eq] at h_nzr
   exact Subtype.ne_of_val_ne h_nzr
+
+theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le {B : ℝ}
+    (h : (minkowskiBound K) < volume (convexBodySum K B)) :
+    ∃ (a : 𝓞 K), a ≠ 0 ∧ |Algebra.norm ℚ (a:K)| ≤ (B / (finrank ℚ K)) ^ (finrank ℚ K) := by
+  have hB : 0 ≤ B := by
+    contrapose! h
+    rw [convexBodySum_empty K h, measure_empty]
+    exact zero_le (minkowskiBound K)
+  -- Some inequalities that will be useful later on
+  have h1 : 0 < (finrank ℚ K : ℝ)⁻¹ := inv_pos.mpr (Nat.cast_pos.mpr finrank_pos)
+  have h2 : 0 ≤ B / (finrank ℚ K) := div_nonneg hB (Nat.cast_nonneg _)
+  have h_fund := Zspan.isAddFundamentalDomain (latticeBasis K) volume
+  have : Countable (Submodule.span ℤ (Set.range (latticeBasis K))).toAddSubgroup := by
+    change Countable (Submodule.span ℤ (Set.range (latticeBasis K)): Set (E K))
+    infer_instance
+  obtain ⟨⟨x, hx⟩, h_nzr, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
+    h_fund h (convexBodySum_symmetric K B) (convexBodySum_convex K B)
+  rw [Submodule.mem_toAddSubgroup, mem_span_latticeBasis] at hx
+  obtain ⟨a, ha, rfl⟩ := hx
+  refine ⟨⟨a, ha⟩, ?_, ?_⟩
+  · rw [ne_eq, AddSubgroup.mk_eq_zero_iff, map_eq_zero, ← ne_eq] at h_nzr
+    exact Subtype.ne_of_val_ne h_nzr
+  · rw [← rpow_nat_cast, ← rpow_le_rpow_iff (by simp only [Rat.cast_abs, abs_nonneg])
+      (rpow_nonneg_of_nonneg h2 _) h1, ← rpow_mul h2,  mul_inv_cancel (Nat.cast_ne_zero.mpr
+      (ne_of_gt finrank_pos)), rpow_one, le_div_iff' (Nat.cast_pos.mpr finrank_pos)]
+    refine le_trans ?_ ((convexBodySum_mem K B).mp h_mem)
+    rw [← le_div_iff' (Nat.cast_pos.mpr finrank_pos), ← sum_mult_eq, Nat.cast_sum]
+    refine le_trans ?_ (geom_mean_le_arith_mean Finset.univ _ _ (fun _ _ => Nat.cast_nonneg _)
+      ?_ (fun _ _ => AbsoluteValue.nonneg _ _))
+    · simp_rw [← prod_eq_abs_norm, rpow_nat_cast]
+      exact le_of_eq rfl
+    · rw [← Nat.cast_sum, sum_mult_eq, Nat.cast_pos]
+      exact finrank_pos
 
 end minkowski
 

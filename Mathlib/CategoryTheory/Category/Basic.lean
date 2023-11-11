@@ -143,11 +143,6 @@ attribute [aesop safe tactic (rule_sets [CategoryTheory])] Std.Tactic.Ext.extCor
 -- We turn on the mathlib version of `rfl` inside `aesop_cat`.
 attribute [aesop safe tactic (rule_sets [CategoryTheory])] Mathlib.Tactic.rflTac
 
--- Porting note:
--- Workaround for issue discussed at https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Failure.20of.20TC.20search.20in.20.60simp.60.20with.20.60etaExperiment.60.2E
--- now that etaExperiment is always on.
-attribute [aesop safe (rule_sets [CategoryTheory])] Subsingleton.elim
-
 /-- The typeclass `Category C` describes morphisms associated to objects of type `C`.
 The universe levels of the objects and morphisms are unconstrained, and will often need to be
 specified explicitly, as `Category.{v} C`. (See also `LargeCategory` and `SmallCategory`.)

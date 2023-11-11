@@ -345,10 +345,10 @@ directly. -/
 instance : FunLike (SupHom α β) α fun _ => β :=
   SupHomClass.toFunLike
 
-@[simp]
-theorem toFun_eq_coe {f : SupHom α β} : f.toFun = (f : α → β) :=
-  rfl
+@[simp] lemma toFun_eq_coe (f : SupHom α β) : f.toFun = f := rfl
 #align sup_hom.to_fun_eq_coe SupHom.toFun_eq_coe
+
+@[simp, norm_cast] lemma coe_mk (f : α → β) (hf) : ⇑(mk f hf) = f := rfl
 
 @[ext]
 theorem ext {f g : SupHom α β} (h : ∀ a, f a = g a) : f = g :=
@@ -532,10 +532,10 @@ directly. -/
 instance : FunLike (InfHom α β) α fun _ => β :=
   InfHomClass.toFunLike
 
-@[simp]
-theorem toFun_eq_coe {f : InfHom α β} : f.toFun = (f : α → β) :=
-  rfl
+@[simp] lemma toFun_eq_coe (f : InfHom α β) : f.toFun = (f : α → β) := rfl
 #align inf_hom.to_fun_eq_coe InfHom.toFun_eq_coe
+
+@[simp, norm_cast] lemma coe_mk (f : α → β) (hf) : ⇑(mk f hf) = f := rfl
 
 @[ext]
 theorem ext {f g : InfHom α β} (h : ∀ a, f a = g a) : f = g :=
@@ -728,19 +728,12 @@ instance : SupBotHomClass (SupBotHom α β) α β
 instance : FunLike (SupBotHom α β) α fun _ => β :=
   SupHomClass.toFunLike
 
--- porting note: this is the `simp`-normal version of `toFun_eq_coe`
-@[simp]
-theorem coe_toSupHom {f : SupBotHom α β} : (f.toSupHom : α → β) = (f : α → β) :=
-  rfl
-
--- porting note: adding this since we also added `coe_toSupHom`
-@[simp]
-theorem coe_toBotHom {f : SupBotHom α β} : (f.toBotHom : α → β) = (f : α → β) :=
-  rfl
-
-theorem toFun_eq_coe {f : SupBotHom α β} : f.toFun = (f : α → β) :=
-  rfl
+lemma toFun_eq_coe (f : SupBotHom α β) : f.toFun = f := rfl
 #align sup_bot_hom.to_fun_eq_coe SupBotHom.toFun_eq_coe
+
+@[simp] lemma coe_toSupHom (f : SupBotHom α β) : ⇑f.toSupHom = f := rfl
+@[simp] lemma coe_toBotHom (f : SupBotHom α β) : ⇑f.toBotHom = f := rfl
+@[simp] lemma coe_mk (f : SupHom α β) (hf) : ⇑(mk f hf) = f := rfl
 
 @[ext]
 theorem ext {f g : SupBotHom α β} (h : ∀ a, f a = g a) : f = g :=
@@ -891,18 +884,12 @@ directly. -/
 instance : FunLike (InfTopHom α β) α fun _ => β :=
   InfHomClass.toFunLike
 
--- porting note: this is the `simp`-normal version of `toFun_eq_coe`
-@[simp]
-theorem coe_toInfHom {f : InfTopHom α β} : (f.toInfHom : α → β) = (f : α → β) :=
-  rfl
-
--- porting note: adding this since we also added `coe_toInfHom`
-@[simp]
-theorem coe_toTopHom {f : InfTopHom α β} : (f.toTopHom : α → β) = (f : α → β) :=
-  rfl
-
-theorem toFun_eq_coe {f : InfTopHom α β} : f.toFun = (f : α → β) := rfl
+theorem toFun_eq_coe (f : InfTopHom α β) : f.toFun = f := rfl
 #align inf_top_hom.to_fun_eq_coe InfTopHom.toFun_eq_coe
+
+@[simp] lemma coe_toInfHom (f : InfTopHom α β) : ⇑f.toInfHom = f := rfl
+@[simp] lemma coe_toTopHom (f : InfTopHom α β) : ⇑f.toTopHom = f := rfl
+@[simp] lemma coe_mk (f : InfHom α β) (hf) : ⇑(mk f hf) = f := rfl
 
 @[ext]
 theorem ext {f g : InfTopHom α β} (h : ∀ a, f a = g a) : f = g :=
@@ -1046,18 +1033,12 @@ directly. -/
 instance : FunLike (LatticeHom α β) α fun _ => β :=
   SupHomClass.toFunLike
 
--- porting note: this is the `simp`-normal version of `toFun_eq_coe`
-@[simp]
-theorem coe_toSupHom {f : LatticeHom α β} : (f.toSupHom : α → β) = (f : α → β) :=
-  rfl
-
--- porting note: adding this since we also added `coe_toSupHom`
-@[simp]
-theorem coe_toInfHom {f : LatticeHom α β} : (f.toInfHom : α → β) = (f : α → β) :=
-  rfl
-
-theorem toFun_eq_coe {f : LatticeHom α β} : f.toFun = (f : α → β) := rfl
+lemma toFun_eq_coe (f : LatticeHom α β) : f.toFun = f := rfl
 #align lattice_hom.to_fun_eq_coe LatticeHom.toFun_eq_coe
+
+@[simp] lemma coe_toSupHom (f : LatticeHom α β) : ⇑f.toSupHom = f := rfl
+@[simp] lemma coe_toInfHom (f : LatticeHom α β) : ⇑f.toInfHom = f := rfl
+@[simp] lemma coe_mk (f : SupHom α β) (hf) : ⇑(mk f hf) = f := rfl
 
 @[ext]
 theorem ext {f g : LatticeHom α β} (h : ∀ a, f a = g a) : f = g :=
@@ -1237,15 +1218,14 @@ instance instBoundedLatticeHomClass : BoundedLatticeHomClass (BoundedLatticeHom 
   map_top f := f.map_top'
   map_bot f := f.map_bot'
 
--- porting note: this is the `simp`-normal version of `toFun_eq_coe`
-@[simp]
-theorem coe_toLatticeHom {f : BoundedLatticeHom α β} : (f.toLatticeHom : α → β) = (f : α → β) :=
-  rfl
-
-@[simp]
-theorem toFun_eq_coe {f : BoundedLatticeHom α β} : f.toFun = (f : α → β) :=
-  rfl
+@[simp] lemma toFun_eq_coe (f : BoundedLatticeHom α β) : f.toFun = f := rfl
 #align bounded_lattice_hom.to_fun_eq_coe BoundedLatticeHom.toFun_eq_coe
+
+@[simp] lemma coe_toLatticeHom (f : BoundedLatticeHom α β) : ⇑f.toLatticeHom = f := rfl
+@[simp] lemma coe_toSupBotHom (f : BoundedLatticeHom α β) : ⇑f.toSupBotHom = f := rfl
+@[simp] lemma coe_toInfTopHom (f : BoundedLatticeHom α β) : ⇑f.toInfTopHom = f := rfl
+@[simp] lemma coe_toBoundedOrderHom (f : BoundedLatticeHom α β) : ⇑f.toBoundedOrderHom = f := rfl
+@[simp] lemma coe_mk (f : LatticeHom α β) (hf hf') : ⇑(mk f hf hf') = f := rfl
 
 @[ext]
 theorem ext {f g : BoundedLatticeHom α β} (h : ∀ a, f a = g a) : f = g :=

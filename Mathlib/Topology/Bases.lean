@@ -255,7 +255,7 @@ protected theorem IsTopologicalBasis.prod {β} [TopologicalSpace β] {B₁ : Set
   · rintro _ ⟨u₁, u₂, hu₁, hu₂, rfl⟩
     exact (h₁.isOpen hu₁).prod (h₂.isOpen hu₂)
   · rintro ⟨a, b⟩ u hu uo
-    rcases(h₁.nhds_hasBasis.prod_nhds h₂.nhds_hasBasis).mem_iff.1 (IsOpen.mem_nhds uo hu) with
+    rcases (h₁.nhds_hasBasis.prod_nhds h₂.nhds_hasBasis).mem_iff.1 (IsOpen.mem_nhds uo hu) with
       ⟨⟨s, t⟩, ⟨⟨hs, ha⟩, ht, hb⟩, hu⟩
     exact ⟨s ×ˢ t, mem_image2_of_mem hs ht, ⟨ha, hb⟩, hu⟩
 #align topological_space.is_topological_basis.prod TopologicalSpace.IsTopologicalBasis.prod
@@ -284,7 +284,7 @@ theorem isTopologicalBasis_of_cover {ι} {U : ι → Set α} (Uo : ∀ i, IsOpen
   · intro a u ha uo
     rcases iUnion_eq_univ_iff.1 Uc a with ⟨i, hi⟩
     lift a to ↥(U i) using hi
-    rcases(hb i).exists_subset_of_mem_open ha (uo.preimage continuous_subtype_val) with
+    rcases (hb i).exists_subset_of_mem_open ha (uo.preimage continuous_subtype_val) with
       ⟨v, hvb, hav, hvu⟩
     exact ⟨(↑) '' v, mem_iUnion.2 ⟨i, mem_image_of_mem _ hvb⟩, mem_image_of_mem _ hav,
       image_subset_iff.2 hvu⟩

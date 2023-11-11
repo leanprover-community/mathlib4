@@ -156,11 +156,13 @@ variable {R : Type u₁} [Ring R] (f : R →+* R) (hf : f = RingHom.id R)
 identity functor. -/
 def restrictScalarsId' : ModuleCat.restrictScalars.{v} f ≅ 𝟭 _ := by subst hf; rfl
 
-@[simp]
+-- This lemma has always been bad, but lean4#2644 made `simp` start noticing
+@[simp, nolint simpNF]
 lemma restrictScalarsId'_inv_apply (M : ModuleCat R) (x : M) :
     (restrictScalarsId' f hf).inv.app M x = x := by subst hf; rfl
 
-@[simp]
+-- This lemma has always been bad, but lean4#2644 made `simp` start noticing
+@[simp, nolint simpNF]
 lemma restrictScalarsId'_hom_apply (M : ModuleCat R) (x : M) :
     (restrictScalarsId' f hf).hom.app M x = x := by subst hf; rfl
 
@@ -182,11 +184,14 @@ composition of the restriction of scalars functors. -/
 def restrictScalarsComp' :
     ModuleCat.restrictScalars.{v} gf ≅
       ModuleCat.restrictScalars g ⋙ ModuleCat.restrictScalars f := by subst hgf; rfl
-@[simp]
+
+-- This lemma has always been bad, but lean4#2644 made `simp` start noticing
+@[simp, nolint simpNF]
 lemma restrictScalarsComp'_hom_apply (M : ModuleCat R₃) (x : M) :
     (restrictScalarsComp' f g gf hgf).hom.app M x = x := by subst hgf; rfl
 
-@[simp]
+-- This lemma has always been bad, but lean4#2644 made `simp` start noticing
+@[simp, nolint simpNF]
 lemma restrictScalarsComp'_inv_apply (M : ModuleCat R₃) (x : M) :
     (restrictScalarsComp' f g gf hgf).inv.app M x = x := by subst hgf; rfl
 
@@ -743,8 +748,10 @@ def counit : restrictScalars.{max v u₂,u₁,u₂} f ⋙ extendScalars f ⟶ �
     · rw [map_zero, map_zero]
     · dsimp
       rw [ModuleCat.coe_comp, ModuleCat.coe_comp,Function.comp,Function.comp,
-        ExtendScalars.map_tmul, restrictScalars.map_apply, Counit.map_apply, Counit.map_apply,
-        lift.tmul, lift.tmul, LinearMap.coe_mk, LinearMap.coe_mk]
+        ExtendScalars.map_tmul, restrictScalars.map_apply]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [Counit.map_apply]
+      rw [lift.tmul, LinearMap.coe_mk, LinearMap.coe_mk]
       set s' : S := s'
       change s' • g y = g (s' • y)
       rw [map_smul]
@@ -772,8 +779,12 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
       letI m2 : Module R Y := Module.compHom Y f
       induction' x using TensorProduct.induction_on with s x _ _ _ _
       · rw [map_zero, map_zero]
-      · rw [ExtendRestrictScalarsAdj.homEquiv_symm_apply, ModuleCat.coe_comp, Function.comp_apply,
-          ExtendRestrictScalarsAdj.counit_app, ExtendRestrictScalarsAdj.Counit.map_apply]
+      · rw [ExtendRestrictScalarsAdj.homEquiv_symm_apply]
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+        erw [ModuleCat.coe_comp]
+        rw [Function.comp_apply, ExtendRestrictScalarsAdj.counit_app]
+        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+        erw [ExtendRestrictScalarsAdj.Counit.map_apply]
         dsimp
         rw [TensorProduct.lift.tmul]
         rfl

@@ -3,10 +3,10 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.RingTheory.NonUnitalSubring.Basic
-import Mathlib.Algebra.Hom.NonUnitalAlg
+import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Data.Set.UnionLift
 import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.RingTheory.NonUnitalSubring.Basic
 
 /-!
 # Non-unital Subalgebras over Commutative Semirings
@@ -514,6 +514,7 @@ theorem adjoin_toSubmodule (s : Set A) :
     (adjoin R s).toSubmodule = Submodule.span R (NonUnitalSubsemiring.closure s : Set A) :=
   rfl
 
+@[aesop safe 20 apply (rule_sets [SetLike])]
 theorem subset_adjoin {s : Set A} : s ⊆ adjoin R s :=
   NonUnitalSubsemiring.subset_closure.trans Submodule.subset_span
 

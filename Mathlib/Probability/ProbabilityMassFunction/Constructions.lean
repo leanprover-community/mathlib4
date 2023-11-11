@@ -25,6 +25,7 @@ and `filter` uses this to filter the support of a `PMF` and re-normalize the new
 
 -/
 
+universe u
 
 namespace PMF
 
@@ -43,7 +44,7 @@ def map (f : α → β) (p : PMF α) : PMF β :=
 
 variable (f : α → β) (p : PMF α) (b : β)
 
-theorem monad_map_eq_map {α β : Type _} (f : α → β) (p : PMF α) : f <$> p = p.map f := rfl
+theorem monad_map_eq_map {α β : Type u} (f : α → β) (p : PMF α) : f <$> p = p.map f := rfl
 #align pmf.monad_map_eq_map PMF.monad_map_eq_map
 
 @[simp]
@@ -116,7 +117,7 @@ def seq (q : PMF (α → β)) (p : PMF α) : PMF β :=
 
 variable (q : PMF (α → β)) (p : PMF α) (b : β)
 
-theorem monad_seq_eq_seq {α β : Type _} (q : PMF (α → β)) (p : PMF α) : q <*> p = q.seq p := rfl
+theorem monad_seq_eq_seq {α β : Type u} (q : PMF (α → β)) (p : PMF α) : q <*> p = q.seq p := rfl
 #align pmf.monad_seq_eq_seq PMF.monad_seq_eq_seq
 
 @[simp]

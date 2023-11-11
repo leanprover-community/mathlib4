@@ -942,9 +942,9 @@ open Bool
 
 instance Bool.boundedOrder : BoundedOrder Bool where
   top := true
-  le_top _ := le_true
+  le_top := Bool.le_true
   bot := false
-  bot_le _ := false_le
+  bot_le := Bool.false_le
 
 @[simp]
 theorem top_eq_true : ⊤ = true :=

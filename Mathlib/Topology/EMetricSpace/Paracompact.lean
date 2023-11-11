@@ -118,7 +118,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   · intro x
     rcases Dcov x with ⟨n, i, hn⟩
     have : D n i ∈ 𝓝 x := IsOpen.mem_nhds (Dopen _ _) hn
-    rcases(nhds_basis_uniformity uniformity_basis_edist_inv_two_pow).mem_iff.1 this with
+    rcases (nhds_basis_uniformity uniformity_basis_edist_inv_two_pow).mem_iff.1 this with
       ⟨k, -, hsub : ball x (2⁻¹ ^ k) ⊆ D n i⟩
     set B := ball x (2⁻¹ ^ (n + k + 1))
     refine' ⟨B, ball_mem_nhds _ (pow_pos _), _⟩
