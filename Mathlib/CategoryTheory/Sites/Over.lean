@@ -17,7 +17,7 @@ is covering for `J`. As a result, the forgetful functor
 
 -/
 
-universe v u
+universe v' v u' u
 
 namespace CategoryTheory
 
@@ -127,6 +127,19 @@ lemma over_forget_coverPreserving (X : C) :
 lemma over_forget_coverLifting (X : C) :
     CoverLifting (J.over X) J (Over.forget X) where
   cover_lift hS := J.overEquiv_symm_mem_over _ _ hS
+
+lemma over_forget_compatiblePreserving (X : C) :
+    CompatiblePreserving J (Over.forget X) where
+  Compatible {F Z T x hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by
+    let W' : Over X := Over.mk (f₁ ≫ Y₁.hom)
+    let g₁' : W' ⟶ Y₁ := Over.homMk f₁
+    let g₂' : W' ⟶ Y₂ := Over.homMk f₂ (by simpa using h.symm =≫ Z.hom)
+    exact hx g₁' g₂' hg₁ hg₂ (by ext; exact h)
+
+/-- The pullback functor `Sheaf J A ⥤ Sheaf (J.over X) A` -/
+abbrev overPullback (A : Type u') [Category.{v'} A] (X : C) :
+    Sheaf J A ⥤ Sheaf (J.over X) A :=
+  Sites.pullback A (J.over_forget_compatiblePreserving X) (J.over_forget_coverPreserving X)
 
 end GrothendieckTopology
 
