@@ -385,13 +385,11 @@ instance instRightDistribClass [Mul α] [Add α] [RightDistribClass α] :
     exact congr_arg some (right_distrib _ _ _)
 
 instance instDistrib [Distrib α] : Distrib (WithZero α) where
-      left_distrib := mul_add
-      right_distrib := add_mul
+  left_distrib := left_distrib
+  right_distrib := right_distrib
 
 instance semiring [Semiring α] : Semiring (WithZero α) :=
   { WithZero.addMonoidWithOne, WithZero.addCommMonoid, WithZero.mulZeroClass,
-    WithZero.monoidWithZero with
-    left_distrib := left_distrib
-    right_distrib := right_distrib }
+    WithZero.monoidWithZero, WithZero.instDistrib with }
 
 end WithZero
