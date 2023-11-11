@@ -54,6 +54,10 @@ theorem logb_one : logb b 1 = 0 := by simp [logb]
 #align real.logb_one Real.logb_one
 
 @[simp]
+lemma logb_self_eq_one (hb : 1 < b) : logb b b = 1 :=
+  div_self (fun H => (ne_of_lt (log_pos hb)).symm H)
+
+@[simp]
 theorem logb_abs (x : ℝ) : logb b |x| = logb b x := by rw [logb, logb, log_abs]
 #align real.logb_abs Real.logb_abs
 
@@ -178,6 +182,11 @@ theorem logb_le_logb (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ x �
   rw [logb, logb, div_le_div_right (log_pos hb), log_le_log h h₁]
 #align real.logb_le_logb Real.logb_le_logb
 
+@[gcongr]
+theorem logb_le_logb_of_le (h : 0 < x) (h₁ : 0 < y) (hxy : x ≤ y) : logb b x ≤ logb b y :=
+  (logb_le_logb hb h h₁).mpr hxy
+
+@[gcongr]
 theorem logb_lt_logb (hx : 0 < x) (hxy : x < y) : logb b x < logb b y := by
   rw [logb, logb, div_lt_div_right (log_pos hb)]
   exact log_lt_log hx hxy
@@ -427,3 +436,67 @@ theorem logb_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ 
 #align real.logb_prod Real.logb_prod
 
 end Real
+
+section Induction
+
+open Real in
+/-- Induction principle for intervals of real numbers: if a proposition `P` is true
+on `[x₀, r * x₀)` and if `P` for `[x₀, r^n * x₀)` implies `P` for `[r^n * x₀, r^(n+1) * x₀)`,
+then `P` is true for all `x ≥ x₀`. -/
+lemma Real.induction_Ico_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx₀ : 0 < x₀)
+    (base : ∀ x ∈ Set.Ico x₀ (r * x₀), P x)
+    (step : ∀ n : ℕ, n ≥ 1 → (∀ z ∈ Set.Ico x₀ (r ^ n * x₀), P z) →
+      (∀ z ∈ Set.Ico (r ^ n * x₀) (r ^ (n+1) * x₀), P z)) :
+    ∀ x ≥ x₀, P x :=
+  fun x hx =>
+    have h₁ : r ≠ 1 := (ne_of_lt hr).symm
+    have h₂ : 0 < r := zero_lt_one.trans hr
+    have h₃ : x₀ ≠ 0 := (ne_of_lt hx₀).symm
+    have h₄ : 0 < x := by linarith
+    if hx' : x < r * x₀ then
+      base x ⟨hx, hx'⟩
+    else by
+      push_neg at hx'
+      refine step ⌊logb r (x / x₀)⌋₊ ?ge_one ?main x ?memIco
+      case ge_one =>
+        calc 1 = ⌊logb r (r * x₀ / x₀)⌋₊ := by
+                simp [mul_div_cancel _ (ne_of_lt hx₀).symm, hr]
+             _ ≤ ⌊logb r (x / x₀)⌋₊ := by gcongr; exact hr
+      case main =>
+        intro z ⟨z_lb, z_ub⟩
+        have z_pos : 0 < z := by linarith
+        have h_nonneg : 0 ≤ logb r (z / x₀) := logb_nonneg hr ((one_le_div hx₀).mpr z_lb)
+        have hlogb : logb r (r ^ ⌊logb r (x / x₀)⌋₊ * x₀ / x₀) =  ⌊logb r (x / x₀)⌋₊ := by
+          rw [mul_div_cancel _ (ne_of_lt hx₀).symm, logb_rpow h₂ h₁]
+        -- Needed by the termination checker
+        have _well_founded : ⌊logb r (z / x₀)⌋₊ < ⌊logb r (x / x₀)⌋₊ := by
+          rw [Nat.floor_lt h_nonneg]
+          calc logb r (z / x₀) < logb r (r ^ ⌊logb r (x / x₀)⌋₊ * x₀ / x₀) := by
+                    refine (logb_lt_logb_iff hr (div_pos z_pos hx₀) (by positivity)).mpr ?_
+                    gcongr
+               _ = ⌊logb r (r ^ ⌊logb r (x / x₀)⌋₊ * x₀ / x₀)⌋₊ := by
+                    nth_rewrite 1 [hlogb]
+                    norm_cast
+                    rw [←rpow_nat_cast, hlogb]
+                    simp
+               _ = ⌊logb r (x / x₀)⌋₊ := by simp only [hlogb, Nat.floor_coe]
+        exact induction_Ico_mul x₀ r hr hx₀ base step z z_lb
+      case memIco =>
+        have h₅ : x = r ^ logb r (x / x₀) * x₀ := by
+          rw [rpow_logb h₂ h₁ (by positivity), div_mul_cancel _ h₃]
+        refine ⟨?lb, ?ub⟩
+        case lb =>
+          calc _ ≤ r ^ logb r (x / x₀) * x₀ := by
+                  gcongr
+                  · exact le_of_lt hr
+                  · exact Nat.floor_le (logb_nonneg hr (by rwa [one_le_div hx₀]))
+               _ = x := by rw [←h₅]
+        case ub =>
+          calc _ = r ^ logb r (x / x₀) * x₀ := by rw [←h₅]
+               _ < r ^ (⌊logb r (x / x₀)⌋₊ + 1) * x₀ := by
+                  gcongr
+                  simp [rpow_lt_rpow_left_iff hr, Nat.lt_floor_add_one]
+  termination_by induction_Ico_mul x₀ r hr hx₀ base step x hx => ⌊logb r (x / x₀)⌋₊
+
+
+end Induction
