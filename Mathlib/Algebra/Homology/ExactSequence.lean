@@ -225,28 +225,14 @@ lemma exact_iff_δ₀ (S : ComposableArrows C (n + 2)) :
       · exact h.exact 0
       · exact h₀.exact i
 
+/-- If `S : ComposableArrows C (n + 2)` is such that the first two arrows form
+an exact sequence and that the tail `S.δ₀` is exact, then `S` is also exact.
+See `ShortComplex.SnakeInput.snake_lemma` in `Algebra.Homology.ShortComplex.SnakeLemma`
+for a use of this lemma. -/
 lemma exact_of_δ₀ {S : ComposableArrows C (n + 2)}
     (h : (mk₂ (S.map' 0 1) (S.map' 1 2)).Exact) (h₀ : S.δ₀.Exact) : S.Exact := by
   rw [exact_iff_δ₀]
   constructor <;> assumption
-
-section
--- this is only a test of the usability of the API, it shall be removed
--- when it is applied to the case of the snake lemma
-
-variable {X₀ X₁ X₂ X₃ X₄ X₅ : C} {f₁ : X₀ ⟶ X₁} {f₂ : X₁ ⟶ X₂}
-  {f₃ : X₂ ⟶ X₃} {f₄ : X₃ ⟶ X₄} {f₅ : X₄ ⟶ X₅}
-  {w₁ : f₁ ≫ f₂ = 0} {w₂ : f₂ ≫ f₃ = 0} {w₃ : f₃ ≫ f₄ = 0} {w₄ : f₄ ≫ f₅ = 0}
-  (ex₁ : (ShortComplex.mk _ _ w₁).Exact)
-  (ex₂ : (ShortComplex.mk _ _ w₂).Exact)
-  (ex₃ : (ShortComplex.mk _ _ w₃).Exact)
-  (ex₄ : (ShortComplex.mk _ _ w₄).Exact)
-
-example : (((mk₃ f₃ f₄ f₅).precomp f₂).precomp f₁).Exact :=
-  exact_of_δ₀ (exact₂_mk _ _ ex₁) (exact_of_δ₀ (exact₂_mk _ _ ex₂)
-    (exact_of_δ₀ (exact₂_mk _ _ ex₃) ((exact₂_mk _ _ ex₄))))
-
-end
 
 end ComposableArrows
 
