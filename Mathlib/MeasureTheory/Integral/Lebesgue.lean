@@ -1839,23 +1839,6 @@ lemma tendsto_measure_of_ae_tendsto_indicator {μ : Measure α} (A_mble : Measur
     exact eventually_of_forall (fun x ↦ indicator_le_indicator_of_subset hi (by simp) x)
   · rwa [← lintegral_indicator_one B_mble] at B_finmeas
 
-/-
-lemma tendsto_measure_of_ae_tendsto_indicator₀ {μ : Measure α} (A_mble : MeasurableSet A)
-    (As_mble : ∀ i, MeasurableSet (As i)) {B : Set α} (B_mble : MeasurableSet B)
-    (B_finmeas : μ B ≠ ∞) (As_le_B : ∀ᶠ i in L, As i ⊆ B)
-    (h_lim : ∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞) x)
-      L (𝓝 (A.indicator 1 x))) :
-    Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
-  simp_rw [← MeasureTheory.lintegral_indicator_one A_mble,
-           ← MeasureTheory.lintegral_indicator_one (As_mble _)]
-  refine tendsto_lintegral_filter_of_dominated_convergence (B.indicator (1 : α → ℝ≥0∞))
-          (eventually_of_forall ?_) ?_ ?_ h_lim
-  · exact fun i ↦ Measurable.indicator measurable_const (As_mble i)
-  · filter_upwards [As_le_B] with i hi
-    exact eventually_of_forall (fun x ↦ indicator_le_indicator_of_subset hi (by simp) x)
-  · rwa [← lintegral_indicator_one B_mble] at B_finmeas
- -/
-
 /-- If `μ` is a finite measure and the indicators of measurable sets `Aᵢ` tend pointwise
 almost everywhere to the indicator of a measurable set `A`, then the measures `μ Aᵢ` tend to
 the measure `μ A`. -/

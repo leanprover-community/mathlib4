@@ -58,16 +58,6 @@ lemma tendsto_measure_of_tendsto_indicator_of_isFiniteMeasure [NeBot L]
   apply tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure L ?_ As_mble (ae_of_all μ h_lim)
   exact measurableSet_of_tendsto_indicator L As_mble h_lim
 
-/-
-lemma tendsto_measure_of_tendsto_indicator_of_isFiniteMeasure₀ [NeBot L]
-    (μ : Measure α) [IsFiniteMeasure μ] (As_mble : ∀ i, MeasurableSet (As i))
-    (h_lim : Tendsto (fun i ↦ (As i).indicator (1 : α → ℝ≥0∞)) L (𝓝 (A.indicator 1))) :
-    Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
-  apply tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure L ?_ As_mble
-  · exact eventually_of_forall (by simpa only [tendsto_pi_nhds] using h_lim)
-  · exact measurableSet_of_tendsto_indicator L As_mble h_lim
- -/
-
 end TendstoIndicator -- section
 
 end MeasureTheory
