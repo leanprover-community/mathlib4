@@ -90,7 +90,15 @@ lemma InternalHom.isAmalgamation_iff {X : C} (S : Sieve X) {T : Type _}
     dsimp at y₁ y₂ ⊢
     ext (t : T) ⟨W⟩
     dsimp
-    sorry-/
+    rw [InternalHom.isAmalgamation_iff _ _ _ _ hx] at hy₁ hy₂
+    obtain ⟨Y, u, rfl⟩ : ∃ (Y : C) (u : Y ⟶ X), W = Over.mk u := ⟨_, W.hom, rfl⟩
+    refine' hG.hom_ext ⟨S.pullback u, J.pullback_stable _ hS⟩ _ _ _
+    rintro ⟨T, v, hv⟩
+    dsimp
+    let φ : Over.mk (v ≫ u) ⟶ Over.mk u := Over.homMk v
+    erw [← (y₁ t).naturality φ.op, ← (y₂ t).naturality φ.op]
+    congr 1
+    exact (hy₁ t _ (v ≫ u) hv).trans (hy₂ t _ (v ≫ u) hv).symm-/
 
 end
 
