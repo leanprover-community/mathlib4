@@ -800,12 +800,29 @@ theorem finite_of_compact_of_discrete [CompactSpace α] [DiscreteTopology α] : 
   Finite.of_finite_univ <| isCompact_univ.finite_of_discrete
 #align finite_of_compact_of_discrete finite_of_compact_of_discrete
 
+lemma Set.Infinite.exists_accPt_cofinite_inf_principal_of_subset_isCompact
+    {K : Set α} (hs : s.Infinite) (hK : IsCompact K) (hsub : s ⊆ K) :
+    ∃ x ∈ K, AccPt x (cofinite ⊓ 𝓟 s) :=
+  (@hK _ hs.cofinite_inf_principal_neBot (inf_le_right.trans <| principal_mono.2 hsub)).imp
+    fun x hx ↦ by rwa [acc_iff_cluster, inf_comm, inf_right_comm,
+      (finite_singleton _).cofinite_inf_principal_compl]
+
+lemma Set.Infinite.exists_accPt_of_subset_isCompact {K : Set α} (hs : s.Infinite)
+    (hK : IsCompact K) (hsub : s ⊆ K) : ∃ x ∈ K, AccPt x (𝓟 s) :=
+  let ⟨x, hxK, hx⟩ := hs.exists_accPt_cofinite_inf_principal_of_subset_isCompact hK hsub
+  ⟨x, hxK, hx.mono inf_le_right⟩
+
+lemma Set.Infinite.exists_accPt_cofinite_inf_principal [CompactSpace α] (hs : s.Infinite) :
+    ∃ x, AccPt x (cofinite ⊓ 𝓟 s) := by
+  simpa only [mem_univ, true_and]
+    using hs.exists_accPt_cofinite_inf_principal_of_subset_isCompact isCompact_univ s.subset_univ
+
+lemma Set.Infinite.exists_accPt_principal [CompactSpace α] (hs : s.Infinite) : ∃ x, AccPt x (𝓟 s) :=
+  hs.exists_accPt_cofinite_inf_principal.imp fun _x hx ↦ hx.mono inf_le_right
+
 theorem exists_nhds_ne_neBot (α : Type*) [TopologicalSpace α] [CompactSpace α] [Infinite α] :
     ∃ z : α, (𝓝[≠] z).NeBot := by
-  by_contra' H
-  simp_rw [not_neBot] at H
-  haveI := discreteTopology_iff_nhds_ne.2 H
-  exact Infinite.not_finite (finite_of_compact_of_discrete : Finite α)
+  simpa [AccPt] using (@infinite_univ α _).exists_accPt_principal
 #align exists_nhds_ne_ne_bot exists_nhds_ne_neBot
 
 theorem finite_cover_nhds_interior [CompactSpace α] {U : α → Set α} (hU : ∀ x, U x ∈ 𝓝 x) :
@@ -942,10 +959,8 @@ theorem IsCompact.finite {s : Set α} (hs : IsCompact s) (hs' : DiscreteTopology
 #align is_compact.finite IsCompact.finite
 
 theorem exists_nhds_ne_inf_principal_neBot {s : Set α} (hs : IsCompact s) (hs' : s.Infinite) :
-    ∃ z ∈ s, (𝓝[≠] z ⊓ 𝓟 s).NeBot := by
-  by_contra' H
-  simp_rw [not_neBot] at H
-  exact hs' (hs.finite <| discreteTopology_subtype_iff.mpr H)
+    ∃ z ∈ s, (𝓝[≠] z ⊓ 𝓟 s).NeBot :=
+  hs'.exists_accPt_of_subset_isCompact hs Subset.rfl
 #align exists_nhds_ne_inf_principal_ne_bot exists_nhds_ne_inf_principal_neBot
 
 protected theorem ClosedEmbedding.noncompactSpace [NoncompactSpace α] {f : α → β}
@@ -995,27 +1010,10 @@ instance [Finite ι] [∀ i, TopologicalSpace (π i)] [∀ i, CompactSpace (π i
 /-- The coproduct of the cocompact filters on two topological spaces is the cocompact filter on
 their product. -/
 theorem Filter.coprod_cocompact :
-    (Filter.cocompact α).coprod (Filter.cocompact β) = Filter.cocompact (α × β) := by
-  ext S
-  simp only [mem_coprod_iff, exists_prop, mem_comap, Filter.mem_cocompact]
-  constructor
-  · rintro ⟨⟨A, ⟨t, ht, hAt⟩, hAS⟩, B, ⟨t', ht', hBt'⟩, hBS⟩
-    refine' ⟨t ×ˢ t', ht.prod ht', _⟩
-    refine' Subset.trans _ (union_subset hAS hBS)
-    rw [compl_subset_comm] at hAt hBt' ⊢
-    refine' Subset.trans (fun x => _) (Set.prod_mono hAt hBt')
-    simp only [compl_union, mem_inter_iff, mem_prod, mem_preimage, mem_compl_iff]
-    tauto
-  · rintro ⟨t, ht, htS⟩
-    refine' ⟨⟨(Prod.fst '' t)ᶜ, _, _⟩, ⟨(Prod.snd '' t)ᶜ, _, _⟩⟩
-    · exact ⟨Prod.fst '' t, ht.image continuous_fst, Subset.rfl⟩
-    · rw [preimage_compl]
-      rw [compl_subset_comm] at htS ⊢
-      exact htS.trans (subset_preimage_image Prod.fst _)
-    · exact ⟨Prod.snd '' t, ht.image continuous_snd, Subset.rfl⟩
-    · rw [preimage_compl]
-      rw [compl_subset_comm] at htS ⊢
-      exact htS.trans (subset_preimage_image Prod.snd _)
+    (Filter.cocompact α).coprod (Filter.cocompact β) = Filter.cocompact (α × β) :=
+  (sup_le (comap_cocompact_le continuous_fst) (comap_cocompact_le continuous_snd)).antisymm <|
+    (hasBasis_cocompact.le_basis_iff (hasBasis_cocompact.coprod hasBasis_cocompact)).2 fun K hK ↦
+      ⟨_, hK.1.prod hK.2, fun x hx ↦ by simpa [or_iff_not_imp_left] using hx⟩
 #align filter.coprod_cocompact Filter.coprod_cocompact
 
 theorem Prod.noncompactSpace_iff :

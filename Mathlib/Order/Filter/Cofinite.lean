@@ -65,9 +65,18 @@ theorem cofinite_eq_bot [Finite α] : @cofinite α = ⊥ := cofinite_eq_bot_iff.
 
 theorem frequently_cofinite_iff_infinite {p : α → Prop} :
     (∃ᶠ x in cofinite, p x) ↔ Set.Infinite { x | p x } := by
-  simp only [Filter.Frequently, Filter.Eventually, mem_cofinite, compl_setOf, not_not,
-    Set.Infinite]
+  simp only [Filter.Frequently, eventually_cofinite, not_not, Set.Infinite]
 #align filter.frequently_cofinite_iff_infinite Filter.frequently_cofinite_iff_infinite
+
+lemma frequently_cofinite_mem_iff_infinite {s : Set α} : (∃ᶠ x in cofinite, x ∈ s) ↔ s.Infinite :=
+  frequently_cofinite_iff_infinite
+
+alias ⟨_, _root_.Set.Infinite.frequently_cofinite⟩ := frequently_cofinite_mem_iff_infinite
+
+lemma cofinite_inf_principal_neBot_iff {s : Set α} : (cofinite ⊓ 𝓟 s).NeBot ↔ s.Infinite :=
+  frequently_mem_iff_neBot.symm.trans frequently_cofinite_mem_iff_infinite
+
+alias ⟨_, _root_.Set.Infinite.cofinite_inf_principal_neBot⟩ := cofinite_inf_principal_neBot_iff
 
 theorem _root_.Set.Finite.compl_mem_cofinite {s : Set α} (hs : s.Finite) : sᶜ ∈ @cofinite α :=
   mem_cofinite.2 <| (compl_compl s).symm ▸ hs
@@ -151,6 +160,14 @@ theorem Tendsto.countable_compl_preimage_ker {f : α → β}
 end Filter
 
 open Filter
+
+lemma Set.Finite.cofinite_inf_principal_compl {s : Set α} (hs : s.Finite) :
+    cofinite ⊓ 𝓟 sᶜ = cofinite := by
+  simpa using hs.compl_mem_cofinite
+
+lemma Set.Finite.cofinite_inf_principal_diff {s t : Set α} (ht : t.Finite) :
+    cofinite ⊓ 𝓟 (s \ t) = cofinite ⊓ 𝓟 s := by
+  rw [diff_eq, ← inf_principal, ← inf_assoc, inf_right_comm, ht.cofinite_inf_principal_compl]
 
 /-- For natural numbers the filters `Filter.cofinite` and `Filter.atTop` coincide. -/
 theorem Nat.cofinite_eq_atTop : @cofinite ℕ = atTop := by
