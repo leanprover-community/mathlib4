@@ -276,7 +276,7 @@ lemma measure_isMulLeftInvariant_eq_smul_of_ne_top
         hk.measure_eq_biInf_integral_hasCompactSupport (c • μ)]
     congr! 7 with f f_cont f_comp _fk _f_nonneg
     exact hc f f_cont f_comp
-  /- By regularity, every measurable set of finite measure may be approximated by compactsets.
+  /- By regularity, every measurable set of finite measure may be approximated by compact sets.
   Therefore, the measures coincide on measurable sets of finite measure. -/
   have B : ∀ s, MeasurableSet s → μ s < ∞ → μ' s < ∞ → μ' s = (c • μ) s := by
     intro s s_meas hs h's
