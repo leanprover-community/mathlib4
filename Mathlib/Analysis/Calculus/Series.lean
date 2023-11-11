@@ -43,8 +43,8 @@ theorem tendstoUniformlyOn_tsum {f : α → β → F} (hu : Summable u) {s : Set
   refine' tendstoUniformlyOn_iff.2 fun ε εpos => _
   filter_upwards [(tendsto_order.1 (tendsto_tsum_compl_atTop_zero u)).2 _ εpos] with t ht x hx
   have A : Summable fun n => ‖f n x‖ :=
-    summable_of_nonneg_of_le (fun n => norm_nonneg _) (fun n => hfu n x hx) hu
-  rw [dist_eq_norm, ← sum_add_tsum_subtype_compl (summable_of_summable_norm A) t, add_sub_cancel']
+    .of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun n => hfu n x hx) hu
+  rw [dist_eq_norm, ← sum_add_tsum_subtype_compl A.of_norm t, add_sub_cancel']
   apply lt_of_le_of_lt _ ht
   apply (norm_tsum_le_tsum_norm (A.subtype _)).trans
   exact tsum_le_tsum (fun n => hfu _ _ hx) (A.subtype _) (hu.subtype _)
@@ -202,7 +202,7 @@ theorem iteratedFDeriv_tsum (hf : ∀ i, ContDiff 𝕜 N (f i))
     exact (continuousMultilinearCurryFin0 𝕜 E F).symm.toContinuousLinearEquiv.map_tsum
   · have h'k : (k : ℕ∞) < N := lt_of_lt_of_le (WithTop.coe_lt_coe.2 (Nat.lt_succ_self _)) hk
     have A : Summable fun n => iteratedFDeriv 𝕜 k (f n) 0 :=
-      summable_of_norm_bounded (v k) (hv k h'k.le) fun n => h'f k n 0 h'k.le
+      .of_norm_bounded (v k) (hv k h'k.le) fun n => h'f k n 0 h'k.le
     simp_rw [iteratedFDeriv_succ_eq_comp_left, IH h'k.le]
     rw [fderiv_tsum (hv _ hk) (fun n => (hf n).differentiable_iteratedFDeriv h'k) _ A]
     · ext1 x
@@ -279,7 +279,7 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
         fun x => ∑' i : { i // i ∉ T }, f i x := by
       ext1 x
       refine' (sum_add_tsum_subtype_compl _ T).symm
-      refine' summable_of_norm_bounded_eventually _ (hv 0 (zero_le _)) _
+      refine' .of_norm_bounded_eventually _ (hv 0 (zero_le _)) _
       filter_upwards [h'f 0 (zero_le _)] with i hi
       simpa only [norm_iteratedFDeriv_zero] using hi x
     rw [this]

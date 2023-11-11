@@ -67,7 +67,7 @@ theorem exists_summable_bound_exp_mul_sq {R : ℝ} (hR : 0 < R) :
 theorem summable_exp_mul_sq {z : ℂ} (hz : 0 < z.im) :
     Summable fun n : ℤ => cexp (π * I * (n : ℂ) ^ 2 * z) :=
   let ⟨_, h, h'⟩ := exists_summable_bound_exp_mul_sq hz
-  summable_norm_iff.mp (summable_of_nonneg_of_le (fun _ => norm_nonneg _) (h' <| le_refl _) h)
+  .of_norm_bounded _ h (h' <| le_refl _)
 #align summable_exp_mul_sq summable_exp_mul_sq
 
 theorem jacobiTheta_two_add (z : ℂ) : jacobiTheta (2 + z) = jacobiTheta z := by
