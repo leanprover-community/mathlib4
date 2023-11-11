@@ -22,7 +22,6 @@ We prove the following theorems:
 
 -/
 
-
 open Set LinearMap
 
 open Classical Pointwise
