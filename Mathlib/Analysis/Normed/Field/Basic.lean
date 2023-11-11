@@ -734,14 +734,6 @@ end NormedField
 
 namespace NormedField
 
-/-- If `𝕜` is an infinite normed field, then there exists `x ≠ 1` of norm `≥ 1`. -/
-lemma exists_one_le_norm (𝕜 : Type*) [NormedField 𝕜] [Infinite 𝕜] :
-    ∃ x : 𝕜, x ≠ 1 ∧ 1 ≤ ‖x‖ := by
-  rcases ({0, 1} : Set 𝕜).toFinite.infinite_compl.nonempty with ⟨x, hx⟩
-  rcases le_total ‖x‖ 1 with hle | hle
-  · use x⁻¹; simp_all [not_or, one_le_inv]
-  · use x; simp_all [not_or]
-
 section Nontrivially
 
 variable (α) [NontriviallyNormedField α]
@@ -765,12 +757,6 @@ theorem exists_norm_lt_one : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < 1 :=
   exists_norm_lt α one_pos
 #align normed_field.exists_norm_lt_one NormedField.exists_norm_lt_one
 
-/-- A nontrivially normed field is unbounded. -/
-lemma unbounded_univ : ¬(Bornology.IsBounded (Set.univ : Set α)) := fun h ↦ by
-  rcases h.exists_norm_le with ⟨r, hr⟩
-  rcases exists_lt_norm α r with ⟨x, hx⟩
-  exact hx.not_le (hr x trivial)
-
 variable {α}
 
 @[instance]
@@ -786,9 +772,6 @@ theorem punctured_nhds_neBot (x : α) : NeBot (𝓝[≠] x) := by
 theorem nhdsWithin_isUnit_neBot : NeBot (𝓝[{ x : α | IsUnit x }] 0) := by
   simpa only [isUnit_iff_ne_zero] using punctured_nhds_neBot (0 : α)
 #align normed_field.nhds_within_is_unit_ne_bot NormedField.nhdsWithin_isUnit_neBot
-
-/-- A nontrivially normed field is infinite. -/
-instance infinite : Infinite α := ⟨mt Set.finite_univ_iff.2 fun h ↦ unbounded_univ α h.isBounded⟩
 
 end Nontrivially
 
@@ -825,44 +808,6 @@ theorem denseRange_nnnorm : DenseRange (nnnorm : α → ℝ≥0) :=
 #align normed_field.dense_range_nnnorm NormedField.denseRange_nnnorm
 
 end Densely
-
-end NormedField
-
-/-- A normed field is nontrivially normed
-provided that the norm of some nonzero element is not one. -/
-def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
-    (h : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1) : NontriviallyNormedField 𝕜 where
-  toNormedField := h'
-  non_trivial := by
-    rcases h with ⟨x, hx, hx1⟩
-    rcases hx1.lt_or_lt with hlt | hlt
-    · use x⁻¹
-      rw [norm_inv]
-      exact one_lt_inv (norm_pos_iff.2 hx) hlt
-    · exact ⟨x, hlt⟩
-
-namespace NormedField
-
-variable {𝕜 : Type*} [NormedField 𝕜]
-
-/-- A normed field is a compact topological space iff it is finite.  -/
-lemma compactSpace_iff_finite : CompactSpace 𝕜 ↔ Finite 𝕜 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
-  by_cases H : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1
-  · let _ := NontriviallyNormedField.ofNormNeOne H
-    exact absurd h.1.isBounded (unbounded_univ 𝕜)
-  · push_neg at H
-    have : DiscreteTopology 𝕜 := .of_forall_le_norm one_pos fun x hx ↦ (H x hx).ge
-    exact finite_of_compact_of_discrete
-
-/-- A normed field is a noncompact topological space iff it is infinite.  -/
-lemma noncompactSpace_iff_infinite : NoncompactSpace 𝕜 ↔ Infinite 𝕜 := by
-  rw [← not_compactSpace_iff, compactSpace_iff_finite, not_finite_iff_infinite]
-
-/-- An infinite normed field is a noncompact topological space. -/
-instance (priority := 100) NormedField.noncompactSpace (𝕜 : Type*) [NormedField 𝕜] [Infinite 𝕜] :
-    NoncompactSpace 𝕜 :=
-  noncompactSpace_iff_infinite.2 ‹_›
 
 end NormedField
 
