@@ -335,9 +335,7 @@ theorem isFractionRing_of_algebraic (alg : IsAlgebraic A L)
         by
           simp only
           rw [algebraMap_mk', ← IsScalarTower.algebraMap_apply A C L, hxy]⟩
-    eq_iff_exists' := fun {x y} =>
-      ⟨fun h => ⟨1, by simpa using algebraMap_injective C A L h⟩, fun ⟨c, hc⟩ =>
-        congr_arg (algebraMap _ L) (mul_left_cancel₀ (mem_nonZeroDivisors_iff_ne_zero.mp c.2) hc)⟩ }
+    exists_of_eq := fun {x y} h => ⟨1, by simpa using algebraMap_injective C A L h⟩ }
 #align is_integral_closure.is_fraction_ring_of_algebraic IsIntegralClosure.isFractionRing_of_algebraic
 
 variable (K L)

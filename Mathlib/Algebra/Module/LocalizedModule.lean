@@ -550,11 +550,11 @@ variable [Module R M] [Module R M'] [Module R M''] (f : M →ₗ[R] M') (g : M �
 class IsLocalizedModule : Prop where
   map_units : ∀ x : S, IsUnit (algebraMap R (Module.End R M') x)
   surj' : ∀ y : M', ∃ x : M × S, x.2 • y = f x.1
-  eq_iff_exists' : ∀ {x₁ x₂}, f x₁ = f x₂ ↔ ∃ c : S, c • x₂ = c • x₁
+  exists_of_eq : ∀ {x₁ x₂}, f x₁ = f x₂ → ∃ c : S, c • x₁ = c • x₂
 #align is_localized_module IsLocalizedModule
 
 attribute [nolint docBlame] IsLocalizedModule.map_units IsLocalizedModule.surj'
-  IsLocalizedModule.eq_iff_exists'
+  IsLocalizedModule.exists_of_eq
 
 -- Porting note: Manually added to make `S` and `f` explicit.
 lemma IsLocalizedModule.surj [IsLocalizedModule S f] (y : M') : ∃ x : M × S, x.2 • y = f x.1 :=
@@ -562,9 +562,11 @@ lemma IsLocalizedModule.surj [IsLocalizedModule S f] (y : M') : ∃ x : M × S, 
 
 -- Porting note: Manually added to make `S` and `f` explicit.
 lemma IsLocalizedModule.eq_iff_exists [IsLocalizedModule S f] {x₁ x₂} :
-    f x₁ = f x₂ ↔ ∃ c : S, c • x₂ = c • x₁ :=
-eq_iff_exists'
-
+    f x₁ = f x₂ ↔ ∃ c : S, c • x₁ = c • x₂ :=
+  Iff.intro exists_of_eq fun ⟨c, h⟩ ↦ by
+    apply_fun f at h
+    simp_rw [f.map_smul_of_tower, Submonoid.smul_def, ← Module.algebraMap_end_apply R R] at h
+    exact ((Module.End_isUnit_iff _).mp <| map_units f c).1 h
 namespace LocalizedModule
 
 /--
@@ -699,10 +701,7 @@ instance localizedModuleIsLocalizedModule : IsLocalizedModule S (LocalizedModule
         refine' ⟨⟨m, t⟩, _⟩
         erw [LocalizedModule.smul'_mk, LocalizedModule.mkLinearMap_apply, Submonoid.coe_subtype,
           LocalizedModule.mk_cancel t])
-  eq_iff_exists' :=
-    { mp := fun eq1 => by simpa only [eq_comm, one_smul] using LocalizedModule.mk_eq.mp eq1
-      mpr := fun ⟨c, eq1⟩ =>
-        LocalizedModule.mk_eq.mpr ⟨c, by simpa only [eq_comm, one_smul] using eq1⟩ }
+  exists_of_eq eq1 := by simpa only [eq_comm, one_smul] using LocalizedModule.mk_eq.mp eq1
 #align localized_module_is_localized_module localizedModuleIsLocalizedModule
 
 namespace IsLocalizedModule
