@@ -24,10 +24,25 @@ comment them out for now.
 
 ## Main definitions
 
+### Constants
+* `Std.BitVec.one`: Constant `1`
+
+### Structural
+* `Std.BitVec.zeroExtendLE`: Zero extend a bitvector to a statically known larger size
+* `Std.BitVec.ofBool`: Turn a Boolean into a bitvector of length 1
+* `Std.BitVec.nil`: The empty bitvector
+* `Std.BitVec.concat`: Append a new MSB to a bitvector
+* `Std.BitVec.cons`: Prepend a new LSB to a bitvector
+
+### Comparisons
 * `Std.BitVec.sgt`: Signed greater-than comparison of bitvectors
 * `Std.BitVec.sge`: Signed greater-equals comparison of bitvectors
 * `Std.BitVec.ugt`: Unsigned greater-than comparison of bitvectors
 * `Std.BitVec.uge`: Unsigned greater-equals comparison of bitvectors
+
+### Arithmetic
+* `Std.BitVec.adc`: Add with carry (no overflow)
+* `Std.BitVec.sbb`: Subtract with borrow
 
 -/
 
@@ -106,7 +121,7 @@ def cons {n} (msb : Bool) (lsbs : BitVec n) : BitVec (n+1) :=
   ((ofBool msb) ++ lsbs).cast (Nat.add_comm ..)
 
 /-!
-## Bitwise operations
+## Comparisons
 -/
 
 /-- Signed greater than for bitvectors. -/
@@ -145,7 +160,7 @@ def sbb {n} (x y : BitVec n) (b : Bool) : Bool × BitVec n :=
 
 /-- `addLsb r b` is `r + r + 1` if `b` is `true` and `r + r` otherwise. -/
 @[deprecated Nat.bit] -- `addLsb` is just `flip Nat.bit`, prefer the latter
-def addLsb (r : ℕ) (b : Bool) :=
+def addLsb (r : ℕ) (b : Bool) : ℕ :=
   Nat.bit b r
 -- #align bitvec.add_lsb Std.BitVec.addLsb
 
