@@ -493,6 +493,12 @@ theorem countP_eq_countP_filter_add (l : List α) (p q : α → Bool) :
   exact Perm.countP_eq _ (filter_append_perm _ _).symm
 #align list.countp_eq_countp_filter_add List.countP_eq_countP_filter_add
 
+lemma count_eq_count_filter_add [DecidableEq α] (P : α → Prop) [DecidablePred P]
+    (l : List α) (a : α) :
+    count a l = count a (l.filter P) + count a (l.filter (¬ P ·)) := by
+  convert countP_eq_countP_filter_add l _ P
+  simp only [decide_eq_true_eq]
+
 theorem Perm.count_eq [DecidableEq α] {l₁ l₂ : List α} (p : l₁ ~ l₂) (a) :
     count a l₁ = count a l₂ :=
   p.countP_eq _

@@ -181,16 +181,6 @@ theorem prod_eq_pow_single [Monoid α] (a : α)
 #align list.prod_eq_pow_single List.prod_eq_pow_single
 #align list.sum_eq_nsmul_single List.sum_eq_nsmul_single
 
-lemma count_filter_add_count_filter {α} [DecidableEq α] (P : α → Prop) [DecidablePred P]
-    (l : List α) (a : α) :
-    count a (l.filter P) + count a (l.filter (¬ P ·)) = count a l := by
-  induction l with
-  | nil => simp
-  | cons head tail ih =>
-      rcases eq_or_ne head a with rfl | ha
-      · by_cases h : P head <;> simpa [h] using ih
-      · by_cases h : P head <;> simpa [h, List.count_cons_of_ne ha.symm] using ih
-
 end Count
 
 end List
