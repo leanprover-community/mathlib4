@@ -995,27 +995,10 @@ instance [Finite ι] [∀ i, TopologicalSpace (π i)] [∀ i, CompactSpace (π i
 /-- The coproduct of the cocompact filters on two topological spaces is the cocompact filter on
 their product. -/
 theorem Filter.coprod_cocompact :
-    (Filter.cocompact α).coprod (Filter.cocompact β) = Filter.cocompact (α × β) := by
-  ext S
-  simp only [mem_coprod_iff, exists_prop, mem_comap, Filter.mem_cocompact]
-  constructor
-  · rintro ⟨⟨A, ⟨t, ht, hAt⟩, hAS⟩, B, ⟨t', ht', hBt'⟩, hBS⟩
-    refine' ⟨t ×ˢ t', ht.prod ht', _⟩
-    refine' Subset.trans _ (union_subset hAS hBS)
-    rw [compl_subset_comm] at hAt hBt' ⊢
-    refine' Subset.trans (fun x => _) (Set.prod_mono hAt hBt')
-    simp only [compl_union, mem_inter_iff, mem_prod, mem_preimage, mem_compl_iff]
-    tauto
-  · rintro ⟨t, ht, htS⟩
-    refine' ⟨⟨(Prod.fst '' t)ᶜ, _, _⟩, ⟨(Prod.snd '' t)ᶜ, _, _⟩⟩
-    · exact ⟨Prod.fst '' t, ht.image continuous_fst, Subset.rfl⟩
-    · rw [preimage_compl]
-      rw [compl_subset_comm] at htS ⊢
-      exact htS.trans (subset_preimage_image Prod.fst _)
-    · exact ⟨Prod.snd '' t, ht.image continuous_snd, Subset.rfl⟩
-    · rw [preimage_compl]
-      rw [compl_subset_comm] at htS ⊢
-      exact htS.trans (subset_preimage_image Prod.snd _)
+    (Filter.cocompact α).coprod (Filter.cocompact β) = Filter.cocompact (α × β) :=
+  (sup_le (comap_cocompact_le continuous_fst) (comap_cocompact_le continuous_snd)).antisymm <|
+    (hasBasis_cocompact.le_basis_iff (hasBasis_cocompact.coprod hasBasis_cocompact)).2 fun K hK ↦
+      ⟨_, hK.1.prod hK.2, fun x hx ↦ by simpa [or_iff_not_imp_left] using hx⟩
 #align filter.coprod_cocompact Filter.coprod_cocompact
 
 theorem Prod.noncompactSpace_iff :
