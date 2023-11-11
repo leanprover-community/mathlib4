@@ -6,8 +6,6 @@ Authors: Harun Khan, Alex Keizer, Abdalrhman M Mohamed
 
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Data.Fin.Basic
--- import Mathlib.Data.Nat.Bitwise
--- import Mathlib.Data.ZMod.Defs
 import Std.Data.BitVec
 import Mathlib.Tactic
 
