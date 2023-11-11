@@ -628,7 +628,7 @@ lemma tendsto_integral_of_forall_integral_le_liminf_integral {ι : Type*} {L : F
   · exact bdd_below
 
 /-- One implication of the portmanteau theorem:
-If for all open sets G we have the liminf condition `μ(G) ≤ liminf μsᵢ(G)`, then the measures
+If for all open sets G we have the liminf condition `μ(G) ≤ liminf μsₙ(G)`, then the measures
 μsₙ converge weakly to the measure μ. -/
 theorem tendsto_of_forall_isOpen_le_liminf {μ : ProbabilityMeasure Ω}
     {μs : ℕ → ProbabilityMeasure Ω}
