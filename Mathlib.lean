@@ -1914,6 +1914,7 @@ import Mathlib.Data.String.Basic
 import Mathlib.Data.String.Defs
 import Mathlib.Data.String.Lemmas
 import Mathlib.Data.Subtype
+import Mathlib.Data.Subtype.ExtendFun
 import Mathlib.Data.Sum.Basic
 import Mathlib.Data.Sum.Interval
 import Mathlib.Data.Sum.Order
@@ -2204,7 +2205,6 @@ import Mathlib.Init.Data.Rat.Basic
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Init.Data.Sigma.Lex
 import Mathlib.Init.Data.Subtype.Basic
-import Mathlib.Init.Data.Subtype.ExtendFun
 import Mathlib.Init.Function
 import Mathlib.Init.IteSimp
 import Mathlib.Init.Logic
