@@ -3,7 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.Grothendieck
+import Mathlib.CategoryTheory.Sites.CoverLifting
 
 /-! Localization
 
@@ -12,11 +12,12 @@ a Grothendieck topology `J.over X` on the category `Over X`. In order to do this
 we first construct a bijection `Sieve.overEquiv Y : Sieve Y ≃ Sieve Y.left`
 for all `Y : Over X`. Then, as it is stated in SGA 4 III 5.2.1, a sieve of `Y : Over X`
 is covering for `J.over X` if and only if the corresponding sieve of `Y.left`
-is covering for `J`.
+is covering for `J`. As a result, the forgetful functor
+`Over.forget X : Over X ⥤ X` is both cover-preserving and cover-lifting.
 
 -/
 
-universe v u
+universe v v' u u'
 
 namespace CategoryTheory
 
@@ -118,6 +119,26 @@ lemma mem_over_iff {X : C} {Y : Over X} (S : Sieve Y) :
 lemma overEquiv_symm_mem_over {X : C} (Y : Over X) (S : Sieve Y.left) (hS : S ∈ J Y.left) :
     (Sieve.overEquiv Y).symm S ∈ (J.over X) Y := by
   simpa only [mem_over_iff, Equiv.apply_symm_apply] using hS
+
+lemma over_forget_coverPreserving (X : C) :
+    CoverPreserving (J.over X) J (Over.forget X) where
+  cover_preserve hS := hS
+
+lemma over_forget_coverLifting (X : C) :
+    CoverLifting (J.over X) J (Over.forget X) where
+  cover_lift hS := J.overEquiv_symm_mem_over _ _ hS
+
+lemma over_forget_compatiblePreserving (X : C) :
+    CompatiblePreserving J (Over.forget X) where
+  Compatible {F Z T x hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by
+    let W' : Over X := Over.mk (f₁ ≫ Y₁.hom)
+    let g₁' : W' ⟶ Y₁ := Over.homMk f₁
+    let g₂' : W' ⟶ Y₂ := Over.homMk f₂ (by simpa using h.symm =≫ Z.hom)
+    exact hx g₁' g₂' hg₁ hg₂ (by ext; exact h)
+
+abbrev overPullback (A : Type u') [Category.{v'} A] (X : C) :
+    Sheaf J A ⥤ Sheaf (J.over X) A :=
+  Sites.pullback A (J.over_forget_compatiblePreserving X) (J.over_forget_coverPreserving X)
 
 end GrothendieckTopology
 
