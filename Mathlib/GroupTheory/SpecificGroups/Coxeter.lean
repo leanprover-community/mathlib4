@@ -66,7 +66,7 @@ namespace Relations
 /-- The relation terms corresponding to a Coxeter matrix. -/
 def ofMatrix : B × B → FreeGroup B :=
   Function.uncurry fun i j =>
-    (FreeGroup.of i * FreeGroup.of j) ^ orderOf (M i j)
+    (FreeGroup.of i * FreeGroup.of j) ^ M i j
 
 /-- The relations corresponding to a Coxeter matrix. -/
 def toSet : Set (FreeGroup B) :=
