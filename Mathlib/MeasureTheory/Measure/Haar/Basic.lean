@@ -740,7 +740,7 @@ section SecondCountable_SigmaFinite
 /-! In this section, we investigate uniqueness of left-invariant measures without assuming that
 the measure is finite on compact sets, but assuming σ-finiteness instead. We also rely on
 second-countability, to ensure that the group operations are measurable: in this case, one can
-bypass all topological arguments, and conclude using uniquenss of σ-finite left-invariant measures
+bypass all topological arguments, and conclude using uniqueness of σ-finite left-invariant measures
 in measurable groups.
 
 For more general uniqueness statements without second-countability assumptions,
