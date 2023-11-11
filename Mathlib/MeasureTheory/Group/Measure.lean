@@ -604,26 +604,27 @@ theorem isOpenPosMeasure_of_mulLeftInvariant_of_compact (K : Set G) (hK : IsComp
 
 /-- A nonzero left-invariant regular measure gives positive mass to any open set. -/
 @[to_additive "A nonzero left-invariant regular measure gives positive mass to any open set."]
-theorem isOpenPosMeasure_of_mulLeftInvariant_of_regular [Regular μ] (h₀ : μ ≠ 0) :
+instance (priority := 80) isOpenPosMeasure_of_mulLeftInvariant_of_regular [Regular μ] [NeZero μ] :
     IsOpenPosMeasure μ :=
-  let ⟨K, hK, h2K⟩ := Regular.exists_compact_not_null.mpr h₀
+  let ⟨K, hK, h2K⟩ := Regular.exists_compact_not_null.mpr (NeZero.ne μ)
   isOpenPosMeasure_of_mulLeftInvariant_of_compact K hK h2K
 #align measure_theory.is_open_pos_measure_of_mul_left_invariant_of_regular MeasureTheory.isOpenPosMeasure_of_mulLeftInvariant_of_regular
 #align measure_theory.is_open_pos_measure_of_add_left_invariant_of_regular MeasureTheory.isOpenPosMeasure_of_addLeftInvariant_of_regular
 
-/-- A nonzero left-invariant regular measure gives positive mass to any open set. -/
-@[to_additive "A nonzero left-invariant regular measure gives positive mass to any open set."]
-theorem isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular [InnerRegular μ] (h₀ : μ ≠ 0) :
+/-- A nonzero left-invariant inner regular measure gives positive mass to any open set. -/
+@[to_additive "A nonzero left-invariant inner regular measure gives positive mass to any open set."]
+instance (priority := 80) isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular
+    [InnerRegular μ] [NeZero μ] :
     IsOpenPosMeasure μ :=
-  let ⟨K, hK, h2K⟩ := InnerRegular.exists_compact_not_null.mpr h₀
+  let ⟨K, hK, h2K⟩ := InnerRegular.exists_compact_not_null.mpr (NeZero.ne μ)
   isOpenPosMeasure_of_mulLeftInvariant_of_compact K hK h2K
 
 @[to_additive]
 theorem null_iff_of_isMulLeftInvariant [Regular μ] {s : Set G} (hs : IsOpen s) :
     μ s = 0 ↔ s = ∅ ∨ μ = 0 := by
-  by_cases h3μ : μ = 0; · simp [h3μ]
-  · haveI := isOpenPosMeasure_of_mulLeftInvariant_of_regular h3μ
-    simp only [h3μ, or_false_iff, hs.measure_eq_zero_iff μ]
+  rcases eq_zero_or_neZero μ with rfl|hμ
+  · simp
+  · simp only [or_false_iff, hs.measure_eq_zero_iff μ, NeZero.ne μ]
 #align measure_theory.null_iff_of_is_mul_left_invariant MeasureTheory.null_iff_of_isMulLeftInvariant
 #align measure_theory.null_iff_of_is_add_left_invariant MeasureTheory.null_iff_of_isAddLeftInvariant
 
@@ -722,7 +723,7 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
 #align measure_theory.measure_univ_of_is_add_left_invariant MeasureTheory.measure_univ_of_isAddLeftInvariant
 
 @[to_additive]
-lemma _root_.MeasurableSet.mul_set_closure_one_eq {s : Set G} (hs : MeasurableSet s) :
+lemma _root_.MeasurableSet.mul_closure_one_eq {s : Set G} (hs : MeasurableSet s) :
     s * (closure {1} : Set G) = s := by
   apply MeasurableSet.induction_on_open (C := fun t ↦ t • (closure {1} : Set G) = t) ?_ ?_ ?_ hs
   · intro U hU
@@ -736,24 +737,24 @@ lemma _root_.MeasurableSet.mul_set_closure_one_eq {s : Set G} (hs : MeasurableSe
 @[to_additive]
 lemma _root_.IsCompact.closure_subset_of_measurableSet_of_group {k s : Set G}
     (hk : IsCompact k) (hs : MeasurableSet s) (h : k ⊆ s) : closure k ⊆ s := by
-  rw [← hk.mul_closure_one_eq_closure, ← hs.mul_set_closure_one_eq]
+  rw [← hk.mul_closure_one_eq_closure, ← hs.mul_closure_one_eq]
   exact mul_subset_mul_right h
 
 @[to_additive (attr := simp)]
-lemma measure_mul_set_closure_one (s : Set G) (μ : Measure G) :
+lemma measure_mul_closure_one (s : Set G) (μ : Measure G) :
     μ (s * (closure {1} : Set G)) = μ s := by
   apply le_antisymm ?_ (measure_mono (subset_mul_closure_one s))
   conv_rhs => rw [measure_eq_iInf]
   simp only [le_iInf_iff]
   intro t kt t_meas
   apply measure_mono
-  rw [← t_meas.mul_set_closure_one_eq]
+  rw [← t_meas.mul_closure_one_eq]
   exact smul_subset_smul_right kt
 
 @[to_additive]
 lemma _root_.IsCompact.measure_closure_eq_of_group {k : Set G} (hk : IsCompact k) (μ : Measure G) :
     μ (closure k) = μ k := by
-  rw [← hk.mul_closure_one_eq_closure, measure_mul_set_closure_one]
+  rw [← hk.mul_closure_one_eq_closure, measure_mul_closure_one]
 
 end TopologicalGroup
 
