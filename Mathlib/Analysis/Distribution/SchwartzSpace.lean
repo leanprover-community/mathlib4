@@ -597,7 +597,7 @@ instance instLocallyConvexSpace : LocallyConvexSpace ℝ 𝓢(E, F) :=
   (schwartz_withSeminorms ℝ E F).toLocallyConvexSpace
 #align schwartz_map.locally_convex_space SchwartzMap.instLocallyConvexSpace
 
-instance instFirstCountableTopology : TopologicalSpace.FirstCountableTopology 𝓢(E, F) :=
+instance instFirstCountableTopology : FirstCountableTopology 𝓢(E, F) :=
   (schwartz_withSeminorms ℝ E F).first_countable
 #align schwartz_map.topological_space.first_countable_topology SchwartzMap.instFirstCountableTopology
 
