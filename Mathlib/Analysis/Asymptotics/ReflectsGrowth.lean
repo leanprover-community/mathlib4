@@ -29,7 +29,7 @@ of a triple `(f, g, l)` satisfying the above axioms.
 asymptotics
 -/
 
-open Filter Bornology
+open Function Filter Bornology
 open scoped Topology
 
 namespace Asymptotics
@@ -89,7 +89,7 @@ end ReflectsGrowth
 variable [Zero ι] [Zero β]
 
 structure ReflectsGrowth₀ (f : ι → α → E) (g : ι → β) (l : Filter α)
-    extends ReflectsGrowth f g l where
+    extends ReflectsGrowth f g l : Prop where
   protected map_zero : g 0 = 0 := by simp
   isTheta_map_zero_one : f 0 =Θ[l] (1 : α → ℝ)
 
@@ -123,6 +123,18 @@ lemma tendsto_norm_atTop (h : ReflectsGrowth₀ f g l) {a} :
     Tendsto (‖f a ·‖) l atTop ↔ 0 < g a :=
   (isLittleO_one_left_iff _).symm.trans h.isLittleO_one_left
 
+protected lemma comp {ι' : Type*} [Zero ι'] (h : ReflectsGrowth₀ f g l) {u : ι' → ι}
+    (hu : u 0 = 0) : ReflectsGrowth₀ (f ∘ u) (g ∘ u) l where
+  toReflectsGrowth := h.toReflectsGrowth.comp u
+  map_zero := by simp only [comp_def, hu, h.map_zero]
+  isTheta_map_zero_one := by simp only [comp_def, hu, h.isTheta_map_zero_one]
+
+lemma congr_right {γ : Type*} [LinearOrder γ] [Zero γ] {g' : ι → γ} (h : ReflectsGrowth₀ f g l)
+    (hg : ∀ {i j}, g i < g j ↔ g' i < g' j) (h₀ : g' 0 = 0) : ReflectsGrowth₀ f g' l where
+  toReflectsGrowth := h.1.congr_right hg
+  map_zero := h₀
+  __ := h
+
 end ReflectsGrowth₀
 
 end
@@ -136,7 +148,8 @@ structure ReflectsGrowthAddMul (f : G → α → E) (g : G →+ H) (l : Filter �
   eventuallyEq_norm_map_add (a b : G) : (‖f (a + b) ·‖) =ᶠ[l] fun x ↦ ‖f a x‖ * ‖f b x‖
   tendsto_of_pos {a : G} (ha : 0 < g a) : Tendsto (‖f a ·‖) l atTop
   isBigO_of_eq_zero {a : G} (ha : g a = 0) : (1 : α → ℝ) =O[l] f a
-  frequently_ne {a : G} : ∃ᶠ x in l, f a x ≠ 0
+  [neBot : l.NeBot]
+  eventually_ne {a : G} : ∀ᶠ x in l, f a x ≠ 0
 
 namespace ReflectsGrowthAddMul
 
@@ -164,7 +177,7 @@ lemma reflectsGrowth₀ (h : ReflectsGrowthAddMul f g l) : ReflectsGrowth₀ f g
       _ =O[l] fun x ↦ ‖f (b - a) x‖ * ‖f a x‖ :=
         (h.isBigO_of_eq_zero <| by simp [heq]).norm_right.mul (isBigO_refl _ _)
       _ =ᶠ[l] (‖f b ·‖) := by simpa using (h.eventuallyEq_norm_map_add (b - a) a).symm
-  frequently_ne := h.frequently_ne
+  frequently_ne := have := h.neBot; h.eventually_ne.frequently
   isTheta_map_zero_one := h.isTheta_map_zero_one
 
 lemma isLittleO (h : ReflectsGrowthAddMul f g l) {a b} : f a =o[l] f b ↔ g a < g b :=
@@ -202,34 +215,41 @@ lemma tendsto_norm_atTop (h : ReflectsGrowthAddMul f g l) {a} :
     Tendsto (‖f a ·‖) l atTop ↔ 0 < g a :=
   (isLittleO_one_left_iff _).symm.trans h.isLittleO_one_left
 
-lemma mono (hl : ReflectsGrowthAddMul f g l) {l'} (hle : l' ≤ l)
-    (h₀ : ∀ {a}, ∃ᶠ x in l', f a x ≠ 0) : ReflectsGrowthAddMul f g l' where
-  eventuallyEq_norm_map_add a b := (hl.eventuallyEq_norm_map_add a b).filter_mono hle
-  tendsto_of_pos hpos := (hl.tendsto_of_pos hpos).mono_left hle
-  isBigO_of_eq_zero hzero := (hl.isBigO_of_eq_zero hzero).mono hle
-  frequently_ne := h₀
+lemma comp_tendsto {β : Type*} {l' : Filter β} {u : β → α} [NeBot l']
+    (hl : ReflectsGrowthAddMul f g l) (hu : Tendsto u l' l) :
+    ReflectsGrowthAddMul (fun x y ↦ f x (u y)) g l' where
+  eventuallyEq_norm_map_add a b := hu.eventually (hl.eventuallyEq_norm_map_add a b)
+  tendsto_of_pos hpos := (hl.tendsto_of_pos hpos).comp hu
+  isBigO_of_eq_zero hzero := (hl.isBigO_of_eq_zero hzero).comp_tendsto hu
+  eventually_ne := hu.eventually hl.eventually_ne
+
+lemma mono (hl : ReflectsGrowthAddMul f g l) {l'} [NeBot l'] (hle : l' ≤ l) :
+    ReflectsGrowthAddMul f g l' := hl.comp_tendsto hle
   
 end ReflectsGrowthAddMul
 
-lemma reflectsGrowthAddMul_zpow_cobounded {𝕜 : Type*} [NormedDivisionRing 𝕜] :
+lemma reflectsGrowthAddMul_zpow_cobounded {𝕜 : Type*} [NontriviallyNormedField 𝕜] :
     ReflectsGrowthAddMul (fun (n : ℤ) (x : 𝕜) ↦ x ^ n) (AddMonoidHom.id ℤ) (cobounded 𝕜) where
   eventuallyEq_norm_map_add _ _ := (eventually_ne_cobounded 0).mono fun x hx ↦ by
     simp only [zpow_add₀ hx, norm_mul]
-  -- tendsto_of_pos h := tendsto_abs_atTop_atTop.comp (tendsto_zpow_atTop_atTop h)
+  tendsto_of_pos h := by
+    simpa only [norm_zpow] using (tendsto_zpow_atTop_atTop h).comp tendsto_norm_cobounded_atTop
   isBigO_of_eq_zero _ := by simp_all [isBoundedUnder_const]
-  frequently_ne := (eventually_ne_cobounded 0).frequently.mono fun _ ↦ zpow_ne_zero _
+  eventually_ne := (eventually_ne_cobounded 0).mono fun _ ↦ zpow_ne_zero _
 
 lemma reflectsGrowthAddMul_zpow_atTop :
-    ReflectsGrowthAddMul (fun (n : ℤ) (x : ℝ) ↦ x ^ n) (AddMonoidHom.id ℤ) atTop where
-  eventuallyEq_norm_map_add _ _ := (eventually_ne_atTop 0).mono fun x hx ↦ by
-    simp only [zpow_add₀ hx, norm_mul]
-  tendsto_of_pos h := tendsto_abs_atTop_atTop.comp (tendsto_zpow_atTop_atTop h)
-  isBigO_of_eq_zero _ := by simp_all [isBigO_refl, Pi.one_def]
-  frequently_ne := (eventually_ne_atTop 0).frequently.mono fun _ ↦ zpow_ne_zero _
+    ReflectsGrowthAddMul (fun (n : ℤ) (x : ℝ) ↦ x ^ n) (AddMonoidHom.id ℤ) atTop :=
+  reflectsGrowthAddMul_zpow_cobounded.mono (by simp)
+
+lemma reflectsGrowthAddMul_zpow_atBot :
+    ReflectsGrowthAddMul (fun (n : ℤ) (x : ℝ) ↦ x ^ n) (AddMonoidHom.id ℤ) atBot :=
+  reflectsGrowthAddMul_zpow_cobounded.mono (by simp)
 
 @[simp]
 lemma isLittleO_zpow_zpow_atTop {m n : ℤ} : (· ^ m : ℝ → ℝ) =o[atTop] (· ^ n) ↔ m < n :=
   reflectsGrowthAddMul_zpow_atTop.isLittleO
 
-lemma reflectsGrowth_pow_atTop : ReflectsGrowth (fun (n : ℕ) (x : ℝ) ↦ x ^ n) id atTop :=
-  reflectsGrowthAddMul_zpow_atTop
+lemma reflectsGrowth₀_pow_atTop : ReflectsGrowth₀ (fun (n : ℕ) (x : ℝ) ↦ x ^ n) id atTop := by
+  simpa [comp_def]
+    using (reflectsGrowthAddMul_zpow_atTop.reflectsGrowth₀.comp
+      Nat.cast_zero).congr_right Nat.cast_lt
