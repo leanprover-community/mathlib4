@@ -168,7 +168,7 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
   classical
     rw [orderOf_eq_zero_iff']
     refine' fun n hn hgn => _
-    have ho := orderOf_pos' ((isOfFinOrder_iff_pow_eq_one g).mpr ⟨n, hn, hgn⟩)
+    have ho := ((isOfFinOrder_iff_pow_eq_one g).mpr ⟨n, hn, hgn⟩).orderOf_pos
     obtain ⟨x, hx⟩ :=
       Infinite.exists_not_mem_finset
         (Finset.image (fun x => g ^ x) <| Finset.range <| orderOf g)
@@ -178,7 +178,7 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
     dsimp at hk
     obtain ⟨k, rfl | rfl⟩ := k.eq_nat_or_neg
     · exact ⟨k, by exact_mod_cast hk⟩
-    rw [zpow_eq_mod_orderOf] at hk
+    rw [←zpow_mod_orderOf] at hk
     have : 0 ≤ (-k % orderOf g : ℤ) := Int.emod_nonneg (-k) (by exact_mod_cast ho.ne')
     refine' ⟨(-k % orderOf g : ℤ).toNat, _⟩
     rwa [← zpow_ofNat, Int.toNat_of_nonneg this]

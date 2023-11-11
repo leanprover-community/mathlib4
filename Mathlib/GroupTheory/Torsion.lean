@@ -76,7 +76,7 @@ noncomputable def IsTorsion.group [Monoid G] (tG : IsTorsion G) : Group G :=
     inv := fun g => g ^ (orderOf g - 1)
     mul_left_inv := fun g => by
       erw [← pow_succ', tsub_add_cancel_of_le, pow_orderOf_eq_one]
-      exact orderOf_pos' (tG g) }
+      exact (tG g).orderOf_pos }
 #align is_torsion.group IsTorsion.group
 #align is_torsion.add_group IsTorsion.addGroup
 
@@ -141,7 +141,7 @@ theorem ExponentExists.isTorsion (h : ExponentExists G) : IsTorsion G := fun g =
 theorem IsTorsion.exponentExists (tG : IsTorsion G)
     (bounded : (Set.range fun g : G => orderOf g).Finite) : ExponentExists G :=
   exponentExists_iff_ne_zero.mpr <|
-    (exponent_ne_zero_iff_range_orderOf_finite fun g => orderOf_pos' (tG g)).mpr bounded
+    (exponent_ne_zero_iff_range_orderOf_finite fun g => (tG g).orderOf_pos).mpr bounded
 #align is_torsion.exponent_exists IsTorsion.exponentExists
 #align is_add_torsion.exponent_exists IsAddTorsion.exponentExists
 

@@ -267,7 +267,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
             (fun b _ => let ⟨n, hn⟩ := hx b
               ⟨n % orderOf x, mem_range.2 (Nat.mod_lt _ (orderOf_pos _)),
                -- Porting note: have to use `dsimp` to apply the function
-               by dsimp at hn ⊢; rw [← pow_eq_mod_orderOf, hn]⟩)
+               by dsimp at hn ⊢; rw [pow_mod_orderOf, hn]⟩)
       _ = 0 := ?_
 
     rw [← mul_left_inj' hx1, zero_mul, geom_sum_mul]
