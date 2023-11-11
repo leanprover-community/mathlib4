@@ -289,6 +289,9 @@ def equivRealProdAddHom : ℂ ≃+ ℝ × ℝ :=
   { equivRealProd with map_add' := by simp }
 #align complex.equiv_real_prod_add_hom Complex.equivRealProdAddHom
 
+theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
+    Complex.equivRealProdAddHom.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
+
 /-- The natural `LinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
 def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
@@ -297,6 +300,8 @@ def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
     map_smul' := fun r c => by simp [equivRealProdAddHom, (Prod.smul_def), smul_eq_mul] }
 #align complex.equiv_real_prod_lm Complex.equivRealProdLm
 
+theorem equivRealProdLm_symm_apply (p : ℝ × ℝ) :
+    Complex.equivRealProdLm.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
 section lift
 
 variable {A : Type*} [Ring A] [Algebra ℝ A]
