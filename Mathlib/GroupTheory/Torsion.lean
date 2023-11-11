@@ -105,14 +105,12 @@ theorem IsTorsion.of_surjective {f : G →* H} (hf : Function.Surjective f) (tG 
 /-- Torsion groups are closed under extensions. -/
 @[to_additive AddIsTorsion.extension_closed "Additive torsion groups are closed under extensions."]
 theorem IsTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsTorsion H)
-    (tN : IsTorsion N) : IsTorsion G := fun g =>
-  (isOfFinOrder_iff_pow_eq_one _).mpr <| by
-    obtain ⟨ngn, ngnpos, hngn⟩ := (isOfFinOrder_iff_pow_eq_one _).mp (tH <| f g)
+    (tN : IsTorsion N) : IsTorsion G := fun g => by
+    obtain ⟨ngn, ngnpos, hngn⟩ := (tH <| f g).exists_pow_eq_one
     have hmem := f.mem_ker.mpr ((f.map_pow g ngn).trans hngn)
     lift g ^ ngn to N using hN.symm ▸ hmem with gn h
-    obtain ⟨nn, nnpos, hnn⟩ := (isOfFinOrder_iff_pow_eq_one _).mp (tN gn)
-    exact
-      ⟨ngn * nn, mul_pos ngnpos nnpos, by
+    obtain ⟨nn, nnpos, hnn⟩ := (tN gn).exists_pow_eq_one
+    exact isOfFinOrder_iff_pow_eq_one.mpr <| ⟨ngn * nn, mul_pos ngnpos nnpos, by
         rw [pow_mul, ← h, ← Subgroup.coe_pow, hnn, Subgroup.coe_one]⟩
 #align is_torsion.extension_closed IsTorsion.extension_closed
 #align add_is_torsion.extension_closed AddIsTorsion.extension_closed
@@ -131,7 +129,7 @@ theorem IsTorsion.quotient_iff {f : G →* H} (hf : Function.Surjective f) (hN :
       "If a group exponent exists, the group is additively torsion."]
 theorem ExponentExists.isTorsion (h : ExponentExists G) : IsTorsion G := fun g => by
   obtain ⟨n, npos, hn⟩ := h
-  exact (isOfFinOrder_iff_pow_eq_one g).mpr ⟨n, npos, hn g⟩
+  exact isOfFinOrder_iff_pow_eq_one.mpr ⟨n, npos, hn g⟩
 #align exponent_exists.is_torsion ExponentExists.isTorsion
 #align exponent_exists.is_add_torsion ExponentExists.is_add_torsion
 
@@ -438,11 +436,11 @@ variable (G) [CommGroup G]
 theorem IsTorsionFree.quotient_torsion : IsTorsionFree <| G ⧸ torsion G := fun g hne hfin =>
   hne <| by
     induction' g using QuotientGroup.induction_on' with g
-    obtain ⟨m, mpos, hm⟩ := (isOfFinOrder_iff_pow_eq_one _).mp hfin
-    obtain ⟨n, npos, hn⟩ := (isOfFinOrder_iff_pow_eq_one _).mp ((QuotientGroup.eq_one_iff _).mp hm)
+    obtain ⟨m, mpos, hm⟩ := hfin.exists_pow_eq_one
+    obtain ⟨n, npos, hn⟩ := ((QuotientGroup.eq_one_iff _).mp hm).exists_pow_eq_one
     exact
       (QuotientGroup.eq_one_iff g).mpr
-        ((isOfFinOrder_iff_pow_eq_one _).mpr ⟨m * n, mul_pos mpos npos, (pow_mul g m n).symm ▸ hn⟩)
+        (isOfFinOrder_iff_pow_eq_one.mpr ⟨m * n, mul_pos mpos npos, (pow_mul g m n).symm ▸ hn⟩)
 #align is_torsion_free.quotient_torsion IsTorsionFree.quotient_torsion
 #align add_is_torsion_free.quotient_torsion AddIsTorsionFree.quotient_torsion
 

@@ -168,7 +168,7 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
   classical
     rw [orderOf_eq_zero_iff']
     refine' fun n hn hgn => _
-    have ho := (isOfFinOrder_iff_pow_eq_one g).mpr ⟨n, hn, hgn⟩
+    have ho := isOfFinOrder_iff_pow_eq_one.mpr ⟨n, hn, hgn⟩
     obtain ⟨x, hx⟩ :=
       Infinite.exists_not_mem_finset
         (Finset.image (fun x => g ^ x) <| Finset.range <| orderOf g)
