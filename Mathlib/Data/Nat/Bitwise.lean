@@ -427,11 +427,11 @@ theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy: y < 2 ^ n) (h: f false false 
   rw [testBit_two_pow_of_ne (ne_of_lt hj)]
 
 lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy: y < 2 ^ m) : y <<< n ||| x < 2 ^ (n + m) := by
-  have H: x < 2 ^ (n + m) ∧ y * 2 ^ n < 2 ^ (n + m):= by
-    apply And.intro
-    · exact lt_of_lt_of_le hx ((pow_add 2 n m).symm ▸ le_mul_of_one_le_right' (by linarith))
-    · rw [pow_add, mul_comm]; simp[hy, mul_lt_mul_left (two_pow_pos n)]
-  simp only [lor, shiftLeft_eq]; exact bitwise_lt H.2 H.1 rfl
+  simp only [lor, shiftLeft_eq]
+  apply bitwise_lt
+  · rw [pow_add, mul_comm]; simp[hy, mul_lt_mul_left (two_pow_pos n)]
+  · exact lt_of_lt_of_le hx ((pow_add 2 n m).symm ▸ le_mul_of_one_le_right' (by linarith))
+  · rfl
 
 theorem lor_comm (n m : ℕ) : n ||| m = m ||| n :=
   bitwise_comm Bool.or_comm n m
