@@ -349,10 +349,10 @@ protected lemma NormedSpace.cobounded_neBot : NeBot (cobounded E) := by
 instance (priority := 100) NontriviallyNormedField.cobounded_neBot : NeBot (cobounded 𝕜) :=
   NormedSpace.cobounded_neBot 𝕜 𝕜
 
-instance (priority := 100) RealNormedSpace.cobounded_neBot [NormedSpace ℝ E] :
+instance (priority := 80) RealNormedSpace.cobounded_neBot [NormedSpace ℝ E] :
     NeBot (cobounded E) := NormedSpace.cobounded_neBot ℝ E
 
-instance (priority := 100) NontriviallyNormedField.infinite : Infinite 𝕜 :=
+instance (priority := 80) NontriviallyNormedField.infinite : Infinite 𝕜 :=
   ⟨fun _ ↦ NormedSpace.unbounded_univ 𝕜 𝕜 (Set.toFinite _).isBounded⟩
 
 end NontriviallyNormedSpace
