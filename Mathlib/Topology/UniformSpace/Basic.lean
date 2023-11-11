@@ -1231,9 +1231,12 @@ theorem iInf_uniformity {ι : Sort*} {u : ι → UniformSpace α} : 𝓤[iInf u]
   iInf_range
 #align infi_uniformity iInf_uniformity
 
-theorem inf_uniformity {u v : UniformSpace α} : 𝓤[u ⊓ v] = 𝓤[u] ⊓ 𝓤[v] :=
-  rfl
+theorem inf_uniformity {u v : UniformSpace α} : 𝓤[u ⊓ v] = 𝓤[u] ⊓ 𝓤[v] := rfl
 #align inf_uniformity inf_uniformity
+
+lemma bot_uniformity : 𝓤[(⊥ : UniformSpace α)] = 𝓟 idRel := rfl
+
+lemma top_uniformity : 𝓤[(⊤ : UniformSpace α)] = ⊤ := rfl
 
 instance inhabitedUniformSpace : Inhabited (UniformSpace α) :=
   ⟨⊥⟩
@@ -1310,34 +1313,29 @@ theorem uniformContinuous_comap {f : α → β} [u : UniformSpace β] :
   tendsto_comap
 #align uniform_continuous_comap uniformContinuous_comap
 
-theorem toTopologicalSpace_comap {f : α → β} {u : UniformSpace β} :
-    @UniformSpace.toTopologicalSpace _ (UniformSpace.comap f u) =
-      TopologicalSpace.induced f (@UniformSpace.toTopologicalSpace β u) :=
-  rfl
-#align to_topological_space_comap toTopologicalSpace_comap
-
 theorem uniformContinuous_comap' {f : γ → β} {g : α → γ} [v : UniformSpace β] [u : UniformSpace α]
     (h : UniformContinuous (f ∘ g)) : @UniformContinuous α γ u (UniformSpace.comap f v) g :=
   tendsto_comap_iff.2 h
 #align uniform_continuous_comap' uniformContinuous_comap'
 
+namespace UniformSpace
+
 theorem to_nhds_mono {u₁ u₂ : UniformSpace α} (h : u₁ ≤ u₂) (a : α) :
     @nhds _ (@UniformSpace.toTopologicalSpace _ u₁) a ≤
       @nhds _ (@UniformSpace.toTopologicalSpace _ u₂) a :=
   by rw [@nhds_eq_uniformity α u₁ a, @nhds_eq_uniformity α u₂ a]; exact lift'_mono h le_rfl
-#align to_nhds_mono to_nhds_mono
+#align to_nhds_mono UniformSpace.to_nhds_mono
 
 theorem toTopologicalSpace_mono {u₁ u₂ : UniformSpace α} (h : u₁ ≤ u₂) :
     @UniformSpace.toTopologicalSpace _ u₁ ≤ @UniformSpace.toTopologicalSpace _ u₂ :=
   le_of_nhds_le_nhds <| to_nhds_mono h
-#align to_topological_space_mono toTopologicalSpace_mono
+#align to_topological_space_mono UniformSpace.toTopologicalSpace_mono
 
-theorem UniformContinuous.continuous [UniformSpace α] [UniformSpace β] {f : α → β}
-    (hf : UniformContinuous f) : Continuous f :=
-  continuous_iff_le_induced.mpr <| toTopologicalSpace_mono <| uniformContinuous_iff.1 hf
-#align uniform_continuous.continuous UniformContinuous.continuous
-
-namespace UniformSpace
+theorem toTopologicalSpace_comap {f : α → β} {u : UniformSpace β} :
+    @UniformSpace.toTopologicalSpace _ (UniformSpace.comap f u) =
+      TopologicalSpace.induced f (@UniformSpace.toTopologicalSpace β u) :=
+  rfl
+#align to_topological_space_comap UniformSpace.toTopologicalSpace_comap
 
 theorem toTopologicalSpace_bot : @UniformSpace.toTopologicalSpace α ⊥ = ⊥ := rfl
 #align to_topological_space_bot UniformSpace.toTopologicalSpace_bot
@@ -1363,6 +1361,12 @@ theorem toTopologicalSpace_inf {u v : UniformSpace α} :
 #align to_topological_space_inf UniformSpace.toTopologicalSpace_inf
 
 end UniformSpace
+
+theorem UniformContinuous.continuous [UniformSpace α] [UniformSpace β] {f : α → β}
+    (hf : UniformContinuous f) : Continuous f :=
+  continuous_iff_le_induced.mpr <| UniformSpace.toTopologicalSpace_mono <|
+    uniformContinuous_iff.1 hf
+#align uniform_continuous.continuous UniformContinuous.continuous
 
 /-- Uniform space structure on `ULift α`. -/
 instance ULift.uniformSpace [UniformSpace α] : UniformSpace (ULift α) :=
