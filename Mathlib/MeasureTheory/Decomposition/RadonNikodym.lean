@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kexing Ying
+Authors: Kexing Ying, Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Decomposition.SignedLebesgue
 
@@ -86,7 +86,48 @@ lemma rnDeriv_pos [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) :
     ae_withDensity_iff (Measure.measurable_rnDeriv _ _), Measure.withDensity_rnDeriv_eq _ _  hμν]
   exact ae_of_all _ (fun x hx ↦ lt_of_le_of_ne (zero_le _) hx.symm)
 
-lemma inv_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) (hνμ : ν ≪ μ) :
+lemma rnDeriv_pos' [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
+    ∀ᵐ x ∂μ, 0 < ν.rnDeriv μ x := by
+  refine (absolutelyContinuous_withDensity_rnDeriv hμν).ae_le ?_
+  filter_upwards [Measure.rnDeriv_pos (withDensity_absolutelyContinuous μ (ν.rnDeriv μ)),
+    (withDensity_absolutelyContinuous μ (ν.rnDeriv μ)).ae_le
+    (Measure.rnDeriv_withDensity μ (Measure.measurable_rnDeriv ν μ))] with x hx hx2
+  rwa [← hx2]
+
+lemma rnDeriv_add_right_of_mutuallySingular {ν' : Measure α}
+    [SigmaFinite μ] [SigmaFinite ν] [SigmaFinite ν']
+    (hμν : μ ≪ ν) (hνν' : ν ⟂ₘ ν') :
+    μ.rnDeriv (ν + ν') =ᵐ[μ] μ.rnDeriv ν := by
+  obtain ⟨t, ht, htν, htν'⟩ := hνν'
+  refine ae_of_ae_restrict_of_ae_restrict_compl t ?_ ?_
+  · have : μ.restrict t = 0 := by
+      ext s hs
+      simp only [hs, Measure.restrict_apply, Measure.zero_toOuterMeasure, OuterMeasure.coe_zero,
+        Pi.zero_apply]
+      exact measure_mono_null (Set.inter_subset_right _ _) (hμν htν)
+    simp [this]
+  · have : (ν.restrict tᶜ).withDensity (μ.rnDeriv (ν + ν'))
+        = (ν.restrict tᶜ).withDensity (μ.rnDeriv ν) := by
+      have : (ν.restrict tᶜ).withDensity (μ.rnDeriv (ν + ν'))
+          = ((ν + ν').restrict tᶜ).withDensity (μ.rnDeriv (ν + ν')) := by
+        rw [Measure.restrict_add]
+        suffices ν'.restrict tᶜ = 0 by rw [this, add_zero]
+        simp [htν']
+      rw [this, ← restrict_withDensity ht.compl, ← restrict_withDensity ht.compl,
+        Measure.withDensity_rnDeriv_eq, Measure.withDensity_rnDeriv_eq _ _ hμν]
+      exact Measure.AbsolutelyContinuous.add_right hμν _
+    rw [withDensity_eq_iff_of_sigmaFinite (Measure.measurable_rnDeriv _ _).aemeasurable
+      (Measure.measurable_rnDeriv _ _).aemeasurable] at this
+    exact (Measure.AbsolutelyContinuous.restrict hμν tᶜ).ae_le this
+
+lemma rnDeriv_withDensity_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
+    μ.rnDeriv (μ.withDensity (ν.rnDeriv μ)) =ᵐ[μ] μ.rnDeriv ν := by
+  conv_rhs => rw [ν.haveLebesgueDecomposition_add μ, add_comm]
+  refine (rnDeriv_add_right_of_mutuallySingular
+    (absolutelyContinuous_withDensity_rnDeriv hμν) ?_).symm
+  exact (Measure.mutuallySingular_singularPart ν μ).symm.withDensity
+
+lemma inv_rnDeriv_aux [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) (hνμ : ν ≪ μ) :
     (μ.rnDeriv ν)⁻¹ =ᵐ[μ] ν.rnDeriv μ := by
   suffices μ.withDensity (μ.rnDeriv ν)⁻¹ = μ.withDensity (ν.rnDeriv μ) by
     calc (μ.rnDeriv ν)⁻¹ =ᵐ[μ] (μ.withDensity (μ.rnDeriv ν)⁻¹).rnDeriv μ :=
@@ -99,6 +140,19 @@ lemma inv_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) (hνμ :
   rw [withDensity_inv_same (measurable_rnDeriv _ _)
     (by filter_upwards [hνμ.ae_le (rnDeriv_pos hμν)] with x hx using hx.ne')
     (rnDeriv_ne_top _ _)]
+
+lemma inv_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
+    (μ.rnDeriv ν)⁻¹ =ᵐ[μ] ν.rnDeriv μ := by
+  suffices (μ.rnDeriv ν)⁻¹ =ᵐ[μ] (μ.rnDeriv (μ.withDensity (ν.rnDeriv μ)))⁻¹
+      ∧ ν.rnDeriv μ =ᵐ[μ] (μ.withDensity (ν.rnDeriv μ)).rnDeriv μ by
+    refine (this.1.trans (Filter.EventuallyEq.trans ?_ this.2.symm))
+    exact Measure.inv_rnDeriv_aux (absolutelyContinuous_withDensity_rnDeriv hμν)
+      (withDensity_absolutelyContinuous _ _)
+  constructor
+  · filter_upwards [rnDeriv_withDensity_rnDeriv hμν] with x hx
+    simp only [Pi.inv_apply, inv_inj]
+    exact hx.symm
+  · exact (Measure.rnDeriv_withDensity μ (Measure.measurable_rnDeriv ν μ)).symm
 
 lemma set_lintegral_rnDeriv [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) {s : Set α}
     (hs : MeasurableSet s) :

@@ -168,6 +168,24 @@ theorem withDensity_rnDeriv_le (μ ν : Measure α) : ν.withDensity (μ.rnDeriv
     exact Measure.zero_le μ
 #align measure_theory.measure.with_density_rn_deriv_le MeasureTheory.Measure.withDensity_rnDeriv_le
 
+lemma absolutelyContinuous_withDensity_rnDeriv {μ ν : Measure α} [HaveLebesgueDecomposition ν μ]
+    (hμν : μ ≪ ν) :
+    μ ≪ μ.withDensity (ν.rnDeriv μ) := by
+  rw [haveLebesgueDecomposition_add ν μ] at hμν
+  refine AbsolutelyContinuous.mk (fun s _ hνs ↦ ?_)
+  obtain ⟨t, _, ht1, ht2⟩ := mutuallySingular_singularPart ν μ
+  have hs_eq_union : s = s ∩ t ∪ s ∩ tᶜ := by ext x; simp
+  rw [hs_eq_union]
+  refine le_antisymm ((measure_union_le (s ∩ t) (s ∩ tᶜ)).trans ?_) (zero_le _)
+  simp only [nonpos_iff_eq_zero, add_eq_zero]
+  constructor
+  · refine hμν ?_
+    simp only [add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply, add_eq_zero]
+    constructor
+    · exact measure_mono_null (Set.inter_subset_right _ _) ht1
+    · exact measure_mono_null (Set.inter_subset_left _ _) hνs
+  · exact measure_mono_null (Set.inter_subset_right _ _) ht2
+
 @[simp]
 lemma withDensity_rnDeriv_eq_zero (μ ν : Measure α) [μ.HaveLebesgueDecomposition ν] :
     ν.withDensity (μ.rnDeriv ν) = 0 ↔ μ ⟂ₘ ν := by
@@ -440,6 +458,9 @@ theorem eq_rnDeriv [SigmaFinite ν] {s : Measure α} {f : α → ℝ≥0∞} (hf
     (hadd : μ = s + ν.withDensity f) : f =ᵐ[ν] μ.rnDeriv ν :=
   eq_rnDeriv₀ hf.aemeasurable hs hadd
 #align measure_theory.measure.eq_rn_deriv MeasureTheory.Measure.eq_rnDeriv
+
+lemma rnDeriv_self (μ : Measure α) [SigmaFinite μ] : μ.rnDeriv μ =ᵐ[μ] fun _ ↦ 1 :=
+  (eq_rnDeriv (measurable_const) MutuallySingular.zero_left (by simp)).symm
 
 /-- The Radon-Nikodym derivative of `f ν` with respect to `ν` is `f`. -/
 theorem rnDeriv_withDensity (ν : Measure α) [SigmaFinite ν] {f : α → ℝ≥0∞} (hf : Measurable f) :
