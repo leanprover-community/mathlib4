@@ -1268,7 +1268,17 @@ theorem mem_monotoneClosureOperator_iff {a : α} :
     a ∈ G.monotoneClosureOperator s ↔ (∀ {t}, s ⊆ t → G.closure t = t → a ∈ t) := by
   simp only [monotoneClosureOperator, mem_univ, Finset.mem_filter, true_and]
 
-theorem subset_monotoneClosureOperator : s ⊆ G.monotoneClosureOperator s := by
+-- TODO: Rename.
+theorem subset_closure_of_subset_monotoneClosureOperator
+  (h₁ : s ⊆ G.monotoneClosureOperator t)
+  {u : Finset α} (h₂ : t ⊆ u) :
+    s ⊆ G.closure u := by
+  intro e he
+  have h₃ := h₁ he
+  rw [mem_monotoneClosureOperator_iff] at h₃
+  exact h₃ (subset_trans h₂ self_subset_closure) closure_idempotent
+
+theorem subset_monotoneClosureOperator_self : s ⊆ G.monotoneClosureOperator s := by
   intro _ hx
   rw [mem_monotoneClosureOperator_iff]
   intro _ h _
@@ -1277,7 +1287,7 @@ theorem subset_monotoneClosureOperator : s ⊆ G.monotoneClosureOperator s := by
 @[simp]
 theorem monotoneClosureOperator_idempotent :
     G.monotoneClosureOperator (G.monotoneClosureOperator s) = G.monotoneClosureOperator s := by
-  apply subset_antisymm _ subset_monotoneClosureOperator
+  apply subset_antisymm _ subset_monotoneClosureOperator_self
   intro a ha
   rw [mem_monotoneClosureOperator_iff] at *
   intro _ ht₁ ht₂
@@ -1604,12 +1614,30 @@ theorem rankFeasibleFamily_submodular
   apply le_trans _ (G.basisRank_union_add_rank_inter_le_basisRank_add_basisRank s t)
   simp only [add_le_add_iff_right, rank_le_basisRank]
 
+-- Chapter V. Theorem 3.4
 theorem rankFeasible_iff_subset_subset_monotoneClosure :
     G.rankFeasible s ↔ ∀ {t}, t ∈ G.bases s → s ⊆ G.monotoneClosureOperator t := by
   constructor <;> intro h
-  · intro t ht
+  · intro t ht e he
+    rw [mem_monotoneClosureOperator_iff]
+    intro u hu₁ hu₂
+    by_contra' h'
+    let ⟨b, hb⟩ : Nonempty (G.bases t) := G.bases_nonempty
+    -- have ⟨x, hx₁, hx₂, hx₃, hx₄⟩ := exchangeProperty_exists_superset_of_card_le G.exchangeProperty
+    --   (G.basis_mem_feasible ht) (G.basis_mem_feasible hb) (card_le_of_subset (G.basis_subset hb))
+    --   le_rfl (card_le_of_subset (G.basis_subset hb))
     sorry
-  · sorry
+  · let ⟨x, hx⟩ : Nonempty (G.bases s) := G.bases_nonempty
+    let ⟨b, hb⟩ : Nonempty G.base := G.base_nonempty
+    have ⟨a, ha₁, ha₂, ha₃, ha₄⟩ := exchangeProperty_exists_superset_of_card_le G.exchangeProperty
+      (G.basis_mem_feasible (G.base_bases_eq ▸ hb)) (G.basis_mem_feasible hx)
+      (basis_card_le_of_subset_bases hx (G.base_bases_eq ▸ hb) (subset_univ _))
+      le_rfl (basis_card_le_of_subset_bases hx (G.base_bases_eq ▸ hb) (subset_univ _))
+    have h₁ : a ∩ s = x := by
+      sorry
+    have h₂ : a \ x ⊆ b \ s := by
+      sorry
+    sorry
 
 /- The following instance will be created later.
 instance : Accessible G.rankFeasibleFamily where
