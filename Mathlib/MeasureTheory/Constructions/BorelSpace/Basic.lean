@@ -1211,7 +1211,7 @@ theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ 
   let g_seq := (aeSeqSet hf p).piecewise g fun _ => hα.some
   have hg_seq : ∀ b, IsLUB { a | ∃ i, aeSeq hf p i b = a } (g_seq b) := by
     intro b
-    simp only [aeSeq, Set.piecewise]
+    simp only [aeSeq, Set.piecewise, Set.piecewiseMem]
     split_ifs with h
     · have h_set_eq : { a : α | ∃ i : ι, (hf i).mk (f i) b = a } =
         { a : α | ∃ i : ι, f i b = a } := by

@@ -87,9 +87,7 @@ theorem nearestPt_zero (e : ℕ → α) : nearestPt e 0 = const α (e 0) :=
 theorem nearestPtInd_succ (e : ℕ → α) (N : ℕ) (x : α) :
     nearestPtInd e (N + 1) x =
       if ∀ k ≤ N, edist (e (N + 1)) x < edist (e k) x then N + 1 else nearestPtInd e N x := by
-  simp only [nearestPtInd, coe_piecewise, Set.piecewise]
-  congr
-  simp
+  simp [nearestPtInd, coe_piecewise, Set.piecewise, Set.piecewiseMem]
 #align measure_theory.simple_func.nearest_pt_ind_succ MeasureTheory.SimpleFunc.nearestPtInd_succ
 
 theorem nearestPtInd_le (e : ℕ → α) (N : ℕ) (x : α) : nearestPtInd e N x ≤ N := by
