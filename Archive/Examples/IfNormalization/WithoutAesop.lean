@@ -107,7 +107,7 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
           · simp_all? says simp_all only [ne_eq, hasNestedIf, Bool.or_self, hasConstantIf,
               and_self, hasRedundantIf, Bool.or_false, beq_eq_false_iff_ne, not_false_eq_true,
               disjoint, List.disjoint, decide_not, Bool.and_true, Bool.and_eq_true,
-              Bool.not_eq_true', Bool.decide_false_iff, true_and]
+              Bool.not_eq_true', decide_eq_false_iff_not, true_and]
             constructor <;> assumption
         · have := ht₃ w
           have := he₃ w
