@@ -145,8 +145,6 @@ set_option autoImplicit true
 
 noncomputable section
 
-open TopologicalSpace (SecondCountableTopology)
-
 open MeasureTheory Set Classical Filter Function
 
 open scoped Classical Topology Filter ENNReal BigOperators Interval NNReal

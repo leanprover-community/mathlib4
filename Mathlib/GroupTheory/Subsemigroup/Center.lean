@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.GroupTheory.Subsemigroup.Operations
 import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Tactic.LibrarySearch
 
 #align_import group_theory.subsemigroup.center from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
@@ -28,12 +27,11 @@ We provide `Submonoid.center`, `AddSubmonoid.center`, `Subgroup.center`, `AddSub
 ## References
 
 * [Cabrera García and Rodríguez Palacios, Non-associative normed algebras. Volume 1]
+  [cabreragarciarodriguezpalacios2014]
 -/
 
 
 variable {M : Type*}
-
-namespace Set
 
 /-- Conditions for an element to be additively central -/
 structure IsAddCentral [Add M] (z : M) : Prop where
@@ -50,7 +48,7 @@ structure IsAddCentral [Add M] (z : M) : Prop where
 @[to_additive]
 structure IsMulCentral [Mul M] (z : M) : Prop where
   /-- multiplication commutes -/
-  comm (a : M): z * a = a * z
+  comm (a : M) : z * a = a * z
   /-- associative property for left multiplication -/
   left_assoc (b c : M) : z * (b * c) = (z * b) * c
   /-- middle associative multiplication property -/
@@ -58,46 +56,101 @@ structure IsMulCentral [Mul M] (z : M) : Prop where
   /-- associative property for right multiplication -/
   right_assoc (a b : M) : (a * b) * z = a * (b * z)
 
-variable (M)
+namespace IsMulCentral
+
+variable {a b c : M} [Mul M]
+
+-- c.f. Commute.left_comm
+@[to_additive]
+protected theorem left_comm (h : IsMulCentral a) (b c) : a * (b * c) = b * (a * c) :=
+  by simp only [h.comm, h.right_assoc]
+
+-- c.f. Commute.right_comm
+@[to_additive]
+protected theorem right_comm (h : IsMulCentral c) (a b) : a * b * c = a * c * b :=
+  by simp only [h.right_assoc, h.mid_assoc, h.comm]
+
+end IsMulCentral
+
+namespace Set
+
+section Mul
+variable (M) [Mul M]
 
 /-- The center of a magma. -/
 @[to_additive addCenter " The center of an additive magma. "]
-def center [Mul M] : Set M :=
-   { z | (IsMulCentral z) }
+def center : Set M :=
+  { z | IsMulCentral z }
 #align set.center Set.center
 #align set.add_center Set.addCenter
 
 -- porting note: The `to_additive` version used to be `mem_addCenter` without the iff
 @[to_additive mem_addCenter_iff]
-theorem mem_center_iff [Mul M] {z : M} : z ∈ center M ↔ IsMulCentral z :=
+theorem mem_center_iff {z : M} : z ∈ center M ↔ IsMulCentral z :=
   Iff.rfl
 #align set.mem_center_iff Set.mem_center_iff
 #align set.mem_add_center Set.mem_addCenter_iff
 
 variable {M}
 
+@[to_additive (attr := simp) add_mem_addCenter]
+theorem mul_mem_center [Mul M] {z₁ z₂ : M} (hz₁ : z₁ ∈ Set.center M) (hz₂ : z₂ ∈ Set.center M) :
+    z₁ * z₂ ∈ Set.center M where
+  comm a := calc
+    z₁ * z₂ * a = z₂ * z₁ * a := by rw [hz₁.comm]
+    _ = z₂ * (z₁ * a) := by rw [hz₁.mid_assoc z₂]
+    _ = (a * z₁) * z₂ := by rw [hz₁.comm, hz₂.comm]
+    _ = a * (z₁ * z₂) := by rw [hz₂.right_assoc a z₁]
+  left_assoc (b c : M) := calc
+    z₁ * z₂ * (b * c) = z₁ * (z₂ * (b * c)) := by rw [hz₂.mid_assoc]
+    _ = z₁ * ((z₂ * b) * c) := by rw [hz₂.left_assoc]
+    _ = (z₁ * (z₂ * b)) * c := by rw [hz₁.left_assoc]
+    _ = z₁ * z₂ * b * c := by rw [hz₂.mid_assoc]
+  mid_assoc (a c : M) := calc
+    a * (z₁ * z₂) * c = ((a * z₁) * z₂) * c := by rw [hz₁.mid_assoc]
+    _ = (a * z₁) * (z₂ * c) := by rw [hz₂.mid_assoc]
+    _ = a * (z₁ * (z₂ * c)) := by rw [hz₁.mid_assoc]
+    _ = a * (z₁ * z₂ * c) := by rw [hz₂.mid_assoc]
+  right_assoc (a b : M) := calc
+    a * b * (z₁ * z₂) = ((a * b) * z₁) * z₂ := by rw [hz₂.right_assoc]
+    _ = (a * (b * z₁)) * z₂ := by rw [hz₁.right_assoc]
+    _ =  a * ((b * z₁) * z₂) := by rw [hz₂.right_assoc]
+    _ = a * (b * (z₁ * z₂)) := by rw [hz₁.mid_assoc]
+#align set.mul_mem_center Set.mul_mem_center
+#align set.add_mem_add_center Set.add_mem_addCenter
+
+end Mul
+
+section Semigroup
+variable [Semigroup M]
+
 @[to_additive]
-theorem _root_.Semigroup.mem_center_iff [Semigroup M] {z : M} :
-    z ∈ Set.center M ↔ ∀ g, g * z = z * g := by
-  constructor
-  · exact fun a g ↦ by rw [Set.IsMulCentral.comm a g]
-  · intro h
-    constructor
-    · intro _
-      rw [h]
-    · intros _ _
-      rw [mul_assoc]
-    · intros _ _
-      rw [mul_assoc]
-    · intros _ _
-      rw [mul_assoc]
+theorem _root_.Semigroup.mem_center_iff {z : M} :
+    z ∈ Set.center M ↔ ∀ g, g * z = z * g := ⟨fun a g ↦ by rw [IsMulCentral.comm a g],
+  fun h ↦ ⟨fun _ ↦ (Commute.eq (h _)).symm, fun _ _ ↦ (mul_assoc z _ _).symm,
+  fun _ _ ↦ mul_assoc _ z _, fun _ _ ↦ mul_assoc _ _ z⟩ ⟩
 
 variable (M)
 
 -- TODO Add `instance : Decidable (IsMulCentral a)` for `instance decidableMemCenter [Mul M]`
-instance decidableMemCenter [Semigroup M] [∀ a : M, Decidable <| ∀ b : M, b * a = a * b] :
+instance decidableMemCenter [∀ a : M, Decidable <| ∀ b : M, b * a = a * b] :
     DecidablePred (· ∈ center M) := fun _ => decidable_of_iff' _ (Semigroup.mem_center_iff)
 #align set.decidable_mem_center Set.decidableMemCenter
+
+end Semigroup
+
+section CommSemigroup
+variable (M)
+
+@[to_additive (attr := simp) addCenter_eq_univ]
+theorem center_eq_univ [CommSemigroup M] : center M = univ :=
+  (Subset.antisymm (subset_univ _)) fun _ _ => Semigroup.mem_center_iff.mpr (fun _ => mul_comm _ _)
+#align set.center_eq_univ Set.center_eq_univ
+#align set.add_center_eq_univ Set.addCenter_eq_univ
+
+end CommSemigroup
+
+variable (M)
 
 @[to_additive (attr := simp) zero_mem_addCenter]
 theorem one_mem_center [MulOneClass M] : (1 : M) ∈ Set.center M where
@@ -154,7 +207,7 @@ theorem intCast_mem_center [NonAssocRing M] (n : ℤ) : (n : M) ∈ Set.center M
         rw [neg_mul, mul_neg, mul_one, mul_neg, neg_mul, neg_mul]
         rw [(natCast_mem_center _ n).mid_assoc _ _]
         simp only [mul_neg]
-  right_assoc a b := match n with
+  right_assoc _ _ := match n with
     | (n : ℕ) => by rw [Int.cast_ofNat, (natCast_mem_center _ n).right_assoc _ _]
     | Int.negSucc n => by
         simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev]
@@ -162,32 +215,6 @@ theorem intCast_mem_center [NonAssocRing M] (n : ℤ) : (n : M) ∈ Set.center M
           add_right_inj, (natCast_mem_center _ n).right_assoc _ _, mul_neg, mul_neg]
 
 variable {M}
-
-@[to_additive (attr := simp) add_mem_addCenter]
-theorem mul_mem_center [Mul M] {z₁ z₂ : M} (hz₁ : z₁ ∈ Set.center M) (hz₂ : z₂ ∈ Set.center M) :
-    z₁ * z₂ ∈ Set.center M where
-  comm a := calc
-    z₁ * z₂ * a = z₂ * z₁ * a := by rw [hz₁.comm]
-    _ = z₂ * (z₁ * a) := by rw [hz₁.mid_assoc z₂]
-    _ = (a * z₁) * z₂ := by rw [hz₁.comm, hz₂.comm]
-    _ = a * (z₁ * z₂) := by rw [hz₂.right_assoc a z₁]
-  left_assoc (b c : M) := calc
-    z₁ * z₂ * (b * c) = z₁ * (z₂ * (b * c)) := by rw [hz₂.mid_assoc]
-    _ = z₁ * ((z₂ * b) * c) := by rw [hz₂.left_assoc]
-    _ = (z₁ * (z₂ * b)) * c := by rw [hz₁.left_assoc]
-    _ = z₁ * z₂ * b * c := by rw [hz₂.mid_assoc]
-  mid_assoc (a c : M) := calc
-    a * (z₁ * z₂) * c = ((a * z₁) * z₂) * c := by rw [hz₁.mid_assoc]
-    _ = (a * z₁) * (z₂ * c) := by rw [hz₂.mid_assoc]
-    _ = a * (z₁ * (z₂ * c)) := by rw [hz₁.mid_assoc]
-    _ = a * (z₁ * z₂ * c) := by rw [hz₂.mid_assoc]
-  right_assoc (a b : M) := calc
-    a * b * (z₁ * z₂) = ((a * b) * z₁) * z₂ := by rw [hz₂.right_assoc]
-    _ = (a * (b * z₁)) * z₂ := by rw [hz₁.right_assoc]
-    _ =  a * ((b * z₁) * z₂) := by rw [hz₂.right_assoc]
-    _ = a * (b * (z₁ * z₂)) := by rw [hz₁.mid_assoc]
-#align set.mul_mem_center Set.mul_mem_center
-#align set.add_mem_add_center Set.add_mem_addCenter
 
 @[to_additive (attr := simp) neg_mem_addCenter]
 theorem inv_mem_center [Group M] {a : M} (ha : a ∈ Set.center M) : a⁻¹ ∈ Set.center M := by
@@ -217,7 +244,7 @@ theorem neg_mem_center [NonUnitalNonAssocRing M] {a : M} (ha : a ∈ Set.center 
 
 @[to_additive subset_addCenter_add_units]
 theorem subset_center_units [Monoid M] : ((↑) : Mˣ → M) ⁻¹' center M ⊆ Set.center Mˣ :=
-  fun a ha => by
+  fun _ ha => by
   rw [_root_.Semigroup.mem_center_iff]
   intro _
   rw [←Units.eq_iff, Units.val_mul, Units.val_mul, ha.comm]
@@ -225,7 +252,7 @@ theorem subset_center_units [Monoid M] : ((↑) : Mˣ → M) ⁻¹' center M ⊆
 #align set.subset_add_center_add_units Set.subset_addCenter_add_units
 
 theorem center_units_subset [GroupWithZero M] : Set.center Mˣ ⊆ ((↑) : Mˣ → M) ⁻¹' center M :=
-  fun a ha => by
+  fun _ ha => by
     rw [mem_preimage, _root_.Semigroup.mem_center_iff]
     intro b
     obtain rfl | hb := eq_or_ne b 0
@@ -274,56 +301,19 @@ theorem div_mem_center₀ [GroupWithZero M] {a b : M} (ha : a ∈ Set.center M)
   exact mul_mem_center ha (inv_mem_center₀ hb)
 #align set.div_mem_center₀ Set.div_mem_center₀
 
-variable (M)
-
-@[to_additive (attr := simp) addCenter_eq_univ]
-theorem center_eq_univ [CommSemigroup M] : center M = Set.univ :=
-  (Subset.antisymm (subset_univ _)) (by
-    intros _ _
-    rw [_root_.Semigroup.mem_center_iff]
-    intro _
-    rw [mul_comm]
-    )
-#align set.center_eq_univ Set.center_eq_univ
-#align set.add_center_eq_univ Set.addCenter_eq_univ
-
 end Set
 
-namespace Mul
-
-section
-
-variable (M) [Mul M]
-
-/-- The center of a magma `M` is the set of elements that commute with everything in `M` -/
-@[to_additive
-      "The center of a magma `M` is the set of elements that commute with everything in `M`"]
-def center : Subsemigroup M where
-  carrier := Set.center M
-  mul_mem' := Set.mul_mem_center
-
-variable {M}
-
-/-- The center of a magma is commutative. -/
-@[to_additive "The center of an additive magma is commutative."]
-instance : CommSemigroup (Mul.center M) where
-  mul_assoc := fun _ b _ => Subtype.ext <| b.2.mid_assoc _ _
-  mul_comm := fun a _ => Subtype.ext <| a.2.comm _
-
-end
-
-end Mul
+/-! ### `Set.center` as a `Subsemigroup`. -/
 
 namespace Subsemigroup
 
-section
-
-variable (M)
+section Mul
+variable (M) [Mul M]
 
 /-- The center of a semigroup `M` is the set of elements that commute with everything in `M` -/
 @[to_additive
       "The center of a semigroup `M` is the set of elements that commute with everything in `M`"]
-def center [Mul M] : Subsemigroup M where
+def center : Subsemigroup M where
   carrier := Set.center M
   mul_mem' := Set.mul_mem_center
 #align subsemigroup.center Subsemigroup.center
@@ -333,7 +323,20 @@ def center [Mul M] : Subsemigroup M where
 #noalign subsemigroup.coe_center
 #noalign add_subsemigroup.coe_center
 
-variable {M} [Semigroup M]
+variable {M}
+
+/-- The center of a magma is commutative and associative. -/
+@[to_additive "The center of an additive magma is commutative and associative."]
+instance center.commSemigroup : CommSemigroup (center M) where
+  mul_assoc _ b _ := Subtype.ext <| b.2.mid_assoc _ _
+  mul_comm a _ := Subtype.ext <| a.2.comm _
+#align subsemigroup.center.comm_semigroup Subsemigroup.center.commSemigroup
+#align add_subsemigroup.center.add_comm_semigroup AddSubsemigroup.center.addCommSemigroup
+
+end Mul
+
+section Semigroup
+variable [Semigroup M]
 
 @[to_additive]
 theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
@@ -343,22 +346,15 @@ theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
 #align add_subsemigroup.mem_center_iff AddSubsemigroup.mem_center_iff
 
 @[to_additive]
-instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decidable (a ∈ center M) :=
+instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] :
+    Decidable (a ∈ center M) :=
   decidable_of_iff' _ Semigroup.mem_center_iff
 #align subsemigroup.decidable_mem_center Subsemigroup.decidableMemCenter
 #align add_subsemigroup.decidable_mem_center AddSubsemigroup.decidableMemCenter
 
-/-- The center of a semigroup is commutative. -/
-@[to_additive "The center of an additive semigroup is commutative."]
-instance center.commSemigroup : CommSemigroup (center M) :=
-  { MulMemClass.toSemigroup (center M) with mul_comm := fun a _ => Subtype.ext <| a.2.comm _ }
-#align subsemigroup.center.comm_semigroup Subsemigroup.center.commSemigroup
-#align add_subsemigroup.center.add_comm_semigroup AddSubsemigroup.center.addCommSemigroup
+end Semigroup
 
-end
-
-section
-
+section CommSemigroup
 variable (M) [CommSemigroup M]
 
 @[to_additive (attr := simp)]
@@ -367,7 +363,7 @@ theorem center_eq_top : center M = ⊤ :=
 #align subsemigroup.center_eq_top Subsemigroup.center_eq_top
 #align add_subsemigroup.center_eq_top AddSubsemigroup.center_eq_top
 
-end
+end CommSemigroup
 
 end Subsemigroup
 

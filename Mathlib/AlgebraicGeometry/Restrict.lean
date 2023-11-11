@@ -179,7 +179,7 @@ lemma Scheme.restrictRestrict_inv_restrict_restrict (X : Scheme) (U : Opens X.ca
 noncomputable
 def Scheme.restrictIsoOfEq (X : Scheme) {U V : Opens X.carrier} (e : U = V) :
     X ∣_ᵤ U ≅ X ∣_ᵤ V := by
-  refine IsOpenImmersion.isoOfRangeEq (ιOpens U) (ιOpens V) (by rw [e])
+  exact IsOpenImmersion.isoOfRangeEq (ιOpens U) (ιOpens V) (by rw [e])
 
 end
 
@@ -426,7 +426,7 @@ def morphismRestrictStalkMap {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (x) :
 instance {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) [IsOpenImmersion f] :
     IsOpenImmersion (f ∣_ U) := by
   delta morphismRestrict
-  refine PresheafedSpace.IsOpenImmersion.comp _ _
+  exact PresheafedSpace.IsOpenImmersion.comp _ _
 
 end MorphismRestrict
 

@@ -23,13 +23,15 @@ other files.
 
 namespace Submonoid
 
-section
+section MulOneClass
 
-variable (M : Type*) [Monoid M]
+variable (M : Type*) [MulOneClass M]
 
-/-- The center of a monoid `M` is the set of elements that commute with everything in `M` -/
+/-- The center of a multiplication with unit `M` is the set of elements that commute with everything
+in `M` -/
 @[to_additive
-      "The center of a monoid `M` is the set of elements that commute with everything in `M`"]
+      "The center of a addition with zero `M` is the set of elements that commute with everything in
+      `M`"]
 def center : Submonoid M where
   carrier := Set.center M
   one_mem' := Set.one_mem_center M
@@ -50,6 +52,30 @@ theorem center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center 
 
 variable {M}
 
+/-- The center of a multiplication with unit is commutative and associative.
+
+This is not an instance as it forms an non-defeq diamond with `Submonoid.toMonoid` in the `npow`
+field. -/
+@[to_additive "The center of an addition with zero is commutative and associative."]
+abbrev center.commMonoid' : CommMonoid (center M) :=
+  { (center M).toMulOneClass, Subsemigroup.center.commSemigroup with }
+
+end MulOneClass
+
+section Monoid
+
+variable {M} [Monoid M]
+
+/-- The center of a monoid is commutative. -/
+@[to_additive]
+instance center.commMonoid : CommMonoid (center M) :=
+  { (center M).toMonoid, Subsemigroup.center.commSemigroup with }
+
+-- no instance diamond, unlike the primed version
+example :
+    center.commMonoid.toMonoid = Submonoid.toMonoid (center M) :=
+  rfl
+
 @[to_additive]
 theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
   rw [← Semigroup.mem_center_iff]
@@ -63,10 +89,7 @@ instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decida
 #align submonoid.decidable_mem_center Submonoid.decidableMemCenter
 #align add_submonoid.decidable_mem_center AddSubmonoid.decidableMemCenter
 
-/-- The center of a monoid is commutative. -/
-instance center.commMonoid : CommMonoid (center M) :=
-  { (center M).toMonoid with
-    mul_comm := fun a _ => Subtype.ext <| a.prop.comm _ }
+
 
 /-- The center of a monoid acts commutatively on that monoid. -/
 instance center.smulCommClass_left : SMulCommClass (center M) M M where
@@ -83,7 +106,7 @@ instance center.smulCommClass_right : SMulCommClass M (center M) M :=
 
 example : SMulCommClass (center M) (center M) M := by infer_instance
 
-end
+end Monoid
 
 section
 
@@ -105,18 +128,12 @@ equivalence in general; one case when it is is for groups with zero, which is co
 `centerUnitsEquivUnitsCenter`. -/
 @[to_additive (attr := simps! apply_coe_val)
   "For an additive monoid, the units of the center inject into the center of the units."]
-def unitsCenterToCenterUnits [Monoid M] : (Submonoid.center M)ˣ →* Submonoid.center (Mˣ) where
-  toFun := fun x => {
-    val := (Units.map (Submonoid.center M).subtype) x
-    property := by
-      rw [Submonoid.mem_center_iff]
-      intro a
-      apply Units.ext
-      rw [Units.val_mul, Units.coe_map, Submonoid.coe_subtype, Units.val_mul, Units.coe_map,
-        Submonoid.coe_subtype, x.1.prop.comm a]
-  }
-  map_one' := rfl
-  map_mul' := fun _ _ ↦ rfl
+def unitsCenterToCenterUnits [Monoid M] : (Submonoid.center M)ˣ →* Submonoid.center (Mˣ) :=
+  (Units.map (Submonoid.center M).subtype).codRestrict _ <|
+      fun u ↦ Submonoid.mem_center_iff.mpr <|
+        fun r ↦ Units.ext <| by
+        rw [Units.val_mul, Units.coe_map, Submonoid.coe_subtype, Units.val_mul, Units.coe_map,
+          Submonoid.coe_subtype, u.1.prop.comm r]
 
 @[to_additive]
 theorem unitsCenterToCenterUnits_injective [Monoid M] :
