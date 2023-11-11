@@ -5,7 +5,6 @@ Authors: Yaël Dillies, Christopher Hoskin
 -/
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.GroupPower.Lemmas
-import Mathlib.Algebra.Hom.GroupInstances
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
@@ -443,7 +442,7 @@ lemma center_iff_op_centroid (a : α) :
     · apply AddMonoidHom.ext
       intro b
       rw [AddMonoid.End.mulLeft_apply_apply, AddMonoid.End.mulRight_apply_apply]
-      exact Set.IsMulCentral.comm ha b
+      exact IsMulCentral.comm ha b
     · rw [Set.mem_range]
       use centerToCentroid ⟨a, ha⟩
       rfl
