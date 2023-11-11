@@ -86,6 +86,20 @@ theorem log_mul_ofReal (r : ℝ) (hr : 0 < r) (x : ℂ) (hx : x ≠ 0) :
     log (x * r) = Real.log r + log x := by rw [mul_comm, log_ofReal_mul hr hx, add_comm]
 #align complex.log_mul_of_real Complex.log_mul_ofReal
 
+lemma log_mul' {x y : ℂ} {a₁ a₂ b₁ b₂ : ℝ} (h₁ : -Real.pi ≤ a₁ + b₁) (h₂ : a₂ + b₂ ≤ Real.pi)
+    (hx₀ : x ≠ 0) (hx₁ : a₁ < x.arg) (hx₂ : x.arg ≤ a₂)
+    (hy₀ : y ≠ 0) (hy₁ : b₁ < y.arg) (hy₂ : y.arg ≤ b₂) :
+    (x * y).log = x.log + y.log := by
+  refine ext_iff.mpr ⟨?_, ?_⟩
+  · simp_rw [add_re, log_re, map_mul, Real.log_mul (abs.ne_zero hx₀) (abs.ne_zero hy₀)]
+  · simp_rw [add_im, log_im, arg_mul' h₁ h₂ hx₀ hx₁ hx₂ hy₀ hy₁ hy₂]
+
+lemma log_mul {x y : ℂ} (hx₀ : x ≠ 0) (hx₁ : -Real.pi / 2 < x.arg) (hx₂ : x.arg ≤ Real.pi / 2)
+    (hy₀ : y ≠ 0) (hy₁ : -Real.pi / 2 < y.arg) (hy₂ : y.arg ≤ Real.pi / 2) :
+    (x * y).log = x.log + y.log :=
+  log_mul' (a₁ := -Real.pi / 2) (a₂ := Real.pi / 2) (b₁ := -Real.pi / 2) (b₂ := Real.pi / 2)
+    (by linarith) (by linarith) hx₀ hx₁ hx₂ hy₀ hy₁ hy₂
+
 @[simp]
 theorem log_zero : log 0 = 0 := by simp [log]
 #align complex.log_zero Complex.log_zero
