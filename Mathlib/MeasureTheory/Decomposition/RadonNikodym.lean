@@ -89,10 +89,6 @@ lemma inv_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) (hνμ :
     (by filter_upwards [hνμ.ae_le (rnDeriv_pos hμν)] with x hx using hx.ne')
     (rnDeriv_ne_top _ _)]
 
-lemma set_lintegral_rnDeriv_eq_withDensity {s : Set α} (hs : MeasurableSet s) :
-    ∫⁻ x in s, μ.rnDeriv ν x ∂ν = ν.withDensity (μ.rnDeriv ν) s :=
-  (withDensity_apply _ hs).symm
-
 lemma set_lintegral_rnDeriv_le (s : Set α) :
     ∫⁻ x in s, μ.rnDeriv ν x ∂ν ≤ μ s := by
   let t := toMeasurable μ s
@@ -106,7 +102,7 @@ lemma set_lintegral_rnDeriv_le (s : Set α) :
 lemma set_lintegral_rnDeriv [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) {s : Set α}
     (hs : MeasurableSet s) :
     ∫⁻ x in s, μ.rnDeriv ν x ∂ν = μ s := by
-  rw [set_lintegral_rnDeriv_eq_withDensity hs, Measure.withDensity_rnDeriv_eq _ _ hμν]
+  rw [← withDensity_apply _ hs, Measure.withDensity_rnDeriv_eq _ _ hμν]
 
 lemma lintegral_rnDeriv [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) :
     ∫⁻ x, μ.rnDeriv ν x ∂ν = μ Set.univ := by
@@ -121,7 +117,7 @@ lemma set_integral_toReal_rnDeriv_eq_withDensity [SigmaFinite μ]
     {s : Set α} (hs : MeasurableSet s) :
     ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (ν.withDensity (μ.rnDeriv ν) s).toReal := by
   rw [integral_toReal (Measure.measurable_rnDeriv _ _).aemeasurable]
-  · rw [ENNReal.toReal_eq_toReal_iff, set_lintegral_rnDeriv_eq_withDensity hs]
+  · rw [ENNReal.toReal_eq_toReal_iff, ← withDensity_apply _ hs]
     simp
   · exact ae_restrict_of_ae (Measure.rnDeriv_lt_top _ _)
 
