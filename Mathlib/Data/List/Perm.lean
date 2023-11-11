@@ -8,7 +8,7 @@ import Mathlib.Data.List.Permutation
 import Mathlib.Data.List.Range
 import Mathlib.Data.Nat.Factorial.Basic
 
-#align_import data.list.perm from "leanprover-community/mathlib"@"47adfab39a11a072db552f47594bf8ed2cf8a722"
+#align_import data.list.perm from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-!
 # List Permutations
@@ -475,7 +475,7 @@ theorem Subperm.countP_le (p : α → Bool) {l₁ l₂ : List α} :
 #align list.subperm.countp_le List.Subperm.countP_le
 
 theorem Perm.countP_congr (s : l₁ ~ l₂) {p p' : α → Bool}
-    (hp : ∀ x ∈ l₁, p x = p' x) : l₁.countP p = l₂.countP p' := by
+    (hp : ∀ x ∈ l₁, p x ↔ p' x) : l₁.countP p = l₂.countP p' := by
   rw [← s.countP_eq p']
   clear s
   induction' l₁ with y s hs

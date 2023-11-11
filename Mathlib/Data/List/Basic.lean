@@ -10,7 +10,7 @@ import Mathlib.Init.Core
 import Std.Data.List.Lemmas
 import Mathlib.Tactic.Common
 
-#align_import data.list.basic from "leanprover-community/mathlib"@"9da1b3534b65d9661eb8f42443598a92bbb49211"
+#align_import data.list.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-!
 # Basic properties of lists
@@ -2989,6 +2989,9 @@ end ModifyLast
 #align list.pmap List.pmap
 #align list.attach List.attach
 
+@[simp] lemma attach_nil : ([] : List α).attach = [] := rfl
+#align list.attach_nil List.attach_nil
+
 theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l) :
     SizeOf.sizeOf x < SizeOf.sizeOf l := by
   induction' l with h t ih <;> cases hx <;> rw [cons.sizeOf_spec]
@@ -3480,7 +3483,34 @@ theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
 
 #align list.map_filter List.map_filter
 
+lemma map_filter' {f : α → β} (hf : Injective f) (l : List α)
+    [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
+    (l.filter p).map f = (l.map f).filter fun b => ∃ a, p a ∧ f a = b := by
+  simp [(· ∘ ·), map_filter, hf.eq_iff]
+#align list.map_filter' List.map_filter'
+
+lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α] :
+    l.attach.filter p =
+      (l.filter fun x => ∃ h, p ⟨x, h⟩).attach.map (Subtype.map id fun x => mem_of_mem_filter) := by
+  classical
+  refine' map_injective_iff.2 Subtype.coe_injective _
+  simp [(· ∘ ·), map_filter' _ Subtype.coe_injective]
+#align list.filter_attach' List.filter_attach'
+
+-- porting note: `Lean.Internal.coeM` forces us to type-ascript `{x // x ∈ l}`
+lemma filter_attach (l : List α) (p : α → Bool) :
+    (l.attach.filter fun x => p x : List {x // x ∈ l}) =
+      (l.filter p).attach.map (Subtype.map id fun x => mem_of_mem_filter) :=
+  map_injective_iff.2 Subtype.coe_injective <| by
+    simp_rw [map_map, (· ∘ ·), Subtype.map, id.def, ←Function.comp_apply (g := Subtype.val),
+      ←map_filter, attach_map_val]
+#align list.filter_attach List.filter_attach
+
 #align list.filter_filter List.filter_filter
+
+lemma filter_comm (q) (l : List α) : filter p (filter q l) = filter q (filter p l) := by
+  simp [and_comm]
+#align list.filter_comm List.filter_comm
 
 @[simp]
 theorem filter_true (l : List α) :
