@@ -877,7 +877,7 @@ theorem Specializes.joinedIn (h : x ⤳ y) (hx : x ∈ F) (hy : y ∈ F) : Joine
   refine ⟨⟨⟨Set.piecewise {1} (const I y) (const I x), ?_⟩, by simp, by simp⟩, fun t ↦ ?_⟩
   · exact isClosed_singleton.continuous_piecewise_of_specializes continuous_const continuous_const
       fun _ ↦ h
-  · simp only [Path.coe_mk_mk, piecewise]
+  · simp only [Path.coe_mk_mk, piecewise, piecewiseMem]
     split_ifs <;> assumption
 
 theorem Inseparable.joinedIn (h : Inseparable x y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y :=

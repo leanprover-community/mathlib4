@@ -4453,7 +4453,7 @@ theorem piecewise_ae_eq_restrict_compl (hs : MeasurableSet s) :
 #align piecewise_ae_eq_restrict_compl piecewise_ae_eq_restrict_compl
 
 theorem piecewise_ae_eq_of_ae_eq_set (hst : s =ᵐ[μ] t) : s.piecewise f g =ᵐ[μ] t.piecewise f g :=
-  hst.mem_iff.mono fun x hx => by simp [piecewise, hx]
+  hst.mem_iff.mono fun x hx => by simp [piecewise, piecewiseMem, hx]
 #align piecewise_ae_eq_of_ae_eq_set piecewise_ae_eq_of_ae_eq_set
 
 end Piecewise
