@@ -8,6 +8,7 @@ import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.Algebra.Order.ToIntervalMod
+import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!
 # Akra-Bazzi theorem: The polynomial growth condition
@@ -203,8 +204,27 @@ lemma _root_.induction_Ico_add {R : Type*} [LinearOrderedAddCommGroup R] [Archim
 --               _ < _ := by gcongr; exact Nat.lt_floor_add_one _
 --  termination_by induction_Ico_add x₀ r hr base step x hx => Nat.floor ((x-x₀)/r)
 
-open Real in
 lemma _root_.Real.induction_Ico_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx₀ : 0 < x₀)
+    (base : ∀ x ∈ Set.Ico x₀ (r * x₀), P x)
+    (step : ∀ n : ℤ, n ≥ 1 → (∀ z ∈ Set.Ico x₀ (r ^ n * x₀), P z) →
+      (∀ z ∈ Set.Ico (r ^ n * x₀) (r ^ (n+1) * x₀), P z)) :
+    ∀ x ≥ x₀, P x :=
+  fun x hx =>
+    if hx' : x < r * x₀ then
+      base x ⟨hx, hx'⟩
+    else by
+      push_neg at hx'
+      refine step ⌊logb r (x / x₀)⌋ ?ge_one ?main x ?memIco
+      case ge_one =>
+        calc 1 = ⌊logb r (r * x₀ / x₀)⌋ := by sorry
+             _ ≤ ⌊logb r (x / x₀)⌋ := by sorry
+      case main =>
+        sorry
+      case memIco =>
+        sorry
+
+open Real in
+lemma _root_.Real.induction_Ico_mul' {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx₀ : 0 < x₀)
     (base : ∀ x ∈ Set.Ico x₀ (r * x₀), P x)
     (step : ∀ n : ℤ, n ≥ 1 → (∀ z ∈ Set.Ico x₀ (r ^ n * x₀), P z) →
       (∀ z ∈ Set.Ico (r ^ n * x₀) (r ^ (n+1) * x₀), P z)) :
@@ -290,7 +310,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
       refine ⟨f (max n₀ 2), ?_⟩
       rw [eventually_atTop]
       refine ⟨max n₀ 2, ?_⟩
-      refine Real.induction_Ico_mul _ 2 (by norm_num) (by positivity) ?base ?step
+      refine Real.induction_Ico_mul' _ 2 (by norm_num) (by positivity) ?base ?step
       case base =>
         intro x ⟨hxlb, hxub⟩
         have h₁ := calc n₀ ≤ 1 * max n₀ 2 := by simp
