@@ -2189,11 +2189,11 @@ alias ⟨_, ofReal_of_nonpos⟩ := ofReal_eq_zero
 
 @[simp]
 lemma ofReal_lt_nat_cast {p : ℝ} {n : ℕ} (hn : n ≠ 0) : ENNReal.ofReal p < n ↔ p < n := by
-  exact_mod_cast ofReal_lt_ofReal_iff (Nat.cast_pos.2 hn.bot_lt)
+  exact mod_cast ofReal_lt_ofReal_iff (Nat.cast_pos.2 hn.bot_lt)
 
 @[simp]
 lemma ofReal_lt_one {p : ℝ} : ENNReal.ofReal p < 1 ↔ p < 1 := by
-  exact_mod_cast ofReal_lt_nat_cast one_ne_zero
+  exact mod_cast ofReal_lt_nat_cast one_ne_zero
 
 @[simp]
 lemma ofReal_lt_ofNat {p : ℝ} {n : ℕ} [h : n.AtLeastTwo] :
@@ -2206,7 +2206,7 @@ lemma nat_cast_le_ofReal {n : ℕ} {p : ℝ} (hn : n ≠ 0) : n ≤ ENNReal.ofRe
 
 @[simp]
 lemma one_le_ofReal {p : ℝ} : 1 ≤ ENNReal.ofReal p ↔ 1 ≤ p := by
-  exact_mod_cast nat_cast_le_ofReal one_ne_zero
+  exact mod_cast nat_cast_le_ofReal one_ne_zero
 
 @[simp]
 lemma ofNat_le_ofReal {n : ℕ} [h : n.AtLeastTwo] {p : ℝ} :

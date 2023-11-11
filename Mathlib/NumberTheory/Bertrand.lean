@@ -132,7 +132,7 @@ theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
       (Bertrand.real_main_inequality (mod_cast n_large))
   · refine' mul_le_mul_of_nonneg_left _ (Nat.cast_nonneg _)
     refine' Real.rpow_le_rpow_of_exponent_le (mod_cast n2_pos) _
-    exact_mod_cast Real.nat_sqrt_le_real_sqrt
+    exact mod_cast Real.nat_sqrt_le_real_sqrt
   · exact Real.rpow_le_rpow_of_exponent_le (by norm_num1) (cast_div_le.trans (by norm_cast))
   · exact Real.rpow_nonneg_of_nonneg (by norm_num1) _
   · refine' mul_nonneg (Nat.cast_nonneg _) _

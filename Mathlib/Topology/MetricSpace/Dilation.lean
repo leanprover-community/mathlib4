@@ -268,7 +268,7 @@ theorem lipschitz : LipschitzWith (ratio f) (f : α → β) := fun x y => (edist
 
 theorem antilipschitz : AntilipschitzWith (ratio f)⁻¹ (f : α → β) := fun x y => by
   have hr : ratio f ≠ 0 := ratio_ne_zero f
-  exact_mod_cast
+  exact mod_cast
     (ENNReal.mul_le_iff_le_inv (ENNReal.coe_ne_zero.2 hr) ENNReal.coe_ne_top).1 (edist_eq f x y).ge
 #align dilation.antilipschitz Dilation.antilipschitz
 

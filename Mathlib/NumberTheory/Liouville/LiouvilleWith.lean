@@ -318,7 +318,7 @@ theorem ne_cast_int (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := 
   norm_cast
   rw [← zero_add (1 : ℤ), Int.add_one_le_iff, abs_pos, sub_ne_zero]
   rw [Ne.def, eq_div_iff hn'.ne'] at hne
-  exact_mod_cast hne
+  exact mod_cast hne
 #align liouville_with.ne_cast_int LiouvilleWith.ne_cast_int
 
 /-- A number satisfying the Liouville condition with exponent `p > 1` is an irrational number. -/

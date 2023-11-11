@@ -133,10 +133,10 @@ theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b ((b : R) ^ z : R) = z 
   obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg z
   · rw [log_of_one_le_right _ (one_le_zpow_of_nonneg _ <| Int.coe_nat_nonneg _), zpow_ofNat, ←
       Nat.cast_pow, Nat.floor_coe, Nat.log_pow hb]
-    exact_mod_cast hb.le
+    exact mod_cast hb.le
   · rw [log_of_right_le_one _ (zpow_le_one_of_nonpos _ <| neg_nonpos.mpr (Int.coe_nat_nonneg _)),
       zpow_neg, inv_inv, zpow_ofNat, ← Nat.cast_pow, Nat.ceil_natCast, Nat.clog_pow _ _ hb]
-    exact_mod_cast hb.le
+    exact mod_cast hb.le
 #align int.log_zpow Int.log_zpow
 
 @[mono]

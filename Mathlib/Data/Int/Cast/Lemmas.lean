@@ -266,7 +266,7 @@ theorem ext_int {f g : ℤ →* M} (h_neg_one : f (-1) = g (-1))
   · exact (FunLike.congr_fun h_nat x : _)
   · rw [Int.negSucc_eq, ← neg_one_mul, f.map_mul, g.map_mul]
     congr 1
-    exact_mod_cast (FunLike.congr_fun h_nat (x + 1) : _)
+    exact mod_cast (FunLike.congr_fun h_nat (x + 1) : _)
 #align monoid_hom.ext_int MonoidHom.ext_int
 
 end MonoidHom

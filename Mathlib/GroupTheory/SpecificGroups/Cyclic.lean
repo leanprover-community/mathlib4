@@ -213,7 +213,7 @@ instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup 
         have hk₂ : g ^ ((Nat.find hex : ℤ) * (k / Nat.find hex : ℤ)) ∈ H := by
           rw [zpow_mul]
           apply H.zpow_mem
-          exact_mod_cast (Nat.find_spec hex).2
+          exact mod_cast (Nat.find_spec hex).2
         have hk₃ : g ^ (k % Nat.find hex : ℤ) ∈ H :=
           (Subgroup.mul_mem_cancel_right H hk₂).1 <| by
             rw [← zpow_add, Int.emod_add_ediv, hk]; exact hx

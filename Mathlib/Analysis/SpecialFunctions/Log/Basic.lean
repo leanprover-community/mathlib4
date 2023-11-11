@@ -243,7 +243,7 @@ theorem log_int_cast_nonneg (n : ℤ) : 0 ≤ log n := by
       cases hn with
       | inl hn => simp [hn.symm]
       | inr hn =>
-          have : (1 : ℝ) ≤ -n := by rw [←neg_zero, ←lt_neg] at hn; exact_mod_cast hn
+          have : (1 : ℝ) ≤ -n := by rw [←neg_zero, ←lt_neg] at hn; exact mod_cast hn
           rw [←log_neg_eq_log]
           exact log_nonneg this
 

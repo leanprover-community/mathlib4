@@ -115,7 +115,7 @@ theorem derivative_bernoulli (k : ℕ) :
     Polynomial.derivative (bernoulli k) = k * bernoulli (k - 1) := by
   cases k with
   | zero => rw [Nat.cast_zero, zero_mul, bernoulli_zero, derivative_one]
-  | succ k => exact_mod_cast derivative_bernoulli_add_one k
+  | succ k => exact mod_cast derivative_bernoulli_add_one k
 #align polynomial.derivative_bernoulli Polynomial.derivative_bernoulli
 
 @[simp]

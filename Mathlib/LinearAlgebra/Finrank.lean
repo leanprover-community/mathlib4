@@ -62,7 +62,7 @@ noncomputable def finrank (R V : Type*) [Semiring R] [AddCommGroup V] [Module R 
 theorem finrank_eq_of_rank_eq {n : ℕ} (h : Module.rank K V = ↑n) : finrank K V = n := by
   apply_fun toNat at h
   rw [toNat_cast] at h
-  exact_mod_cast h
+  exact mod_cast h
 #align finite_dimensional.finrank_eq_of_rank_eq FiniteDimensional.finrank_eq_of_rank_eq
 
 lemma rank_eq_one_iff_finrank_eq_one : Module.rank K V = 1 ↔ finrank K V = 1 :=

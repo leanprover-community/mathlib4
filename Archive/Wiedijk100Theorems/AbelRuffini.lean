@@ -89,7 +89,7 @@ theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b)
   apply irreducible_of_eisenstein_criterion
   · rwa [span_singleton_prime (Int.coe_nat_ne_zero.mpr hp.ne_zero), Int.prime_iff_natAbs_prime]
   · rw [leadingCoeff_Phi, mem_span_singleton]
-    exact_mod_cast mt Nat.dvd_one.mp hp.ne_one
+    exact mod_cast mt Nat.dvd_one.mp hp.ne_one
   · intro n hn
     rw [mem_span_singleton]
     rw [degree_Phi] at hn; norm_cast at hn

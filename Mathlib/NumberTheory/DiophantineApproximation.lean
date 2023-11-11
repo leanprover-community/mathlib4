@@ -109,7 +109,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
         --   zero_mul, Set.left_mem_Ico, zero_lt_one]
         simp only [cast_zero, mul_zero, fract_zero, zero_mul, floor_zero]
       refine' Ne.lt_of_le (fun h => n_pos.ne _) (mem_Icc.mp hm).1
-      exact_mod_cast hf₀.symm.trans (h.symm ▸ hf : f 0 = n)
+      exact mod_cast hf₀.symm.trans (h.symm ▸ hf : f 0 = n)
     refine' ⟨⌊ξ * m⌋ + 1, m, hm₀, (mem_Icc.mp hm).2, _⟩
     rw [cast_add, ← sub_sub, sub_mul, cast_one, one_mul, abs_le]
     refine'
@@ -451,7 +451,7 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
     rw [←sub_one_lt_iff, zero_sub]
     replace h := h.1
     rw [← lt_sub_iff_add_lt, ← mul_assoc, ← sub_mul] at h
-    exact_mod_cast
+    exact mod_cast
       h.trans_le
         ((mul_le_mul_right <| hv₀').mpr <|
           (sub_le_sub_iff_left (u : ℝ)).mpr ((mul_le_mul_right hv₀).mpr (floor_le ξ)))
@@ -465,7 +465,7 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
         ((sub_lt_sub_iff_left (u : ℝ)).mpr <|
           (mul_lt_mul_right hv₀).mpr <| sub_right_lt_of_lt_add <| lt_floor_add_one ξ)
     rw [sub_mul ξ, one_mul, ← sub_add, add_mul] at this
-    exact_mod_cast this.trans h
+    exact mod_cast this.trans h
   have huv_cop : IsCoprime (u - ⌊ξ⌋ * v) v := by
     rwa [sub_eq_add_neg, ← neg_mul, IsCoprime.add_mul_right_left_iff]
   refine' ⟨lt_of_le_of_ne' hu₀ fun hf => _, lt_of_le_of_ne hu₁ fun hf => _⟩ <;>
@@ -496,7 +496,7 @@ private theorem aux₃ :
       lt_sub_iff_add_lt, ← mul_lt_mul_left Hv', this] at h
     refine' LE.le.trans _ h.le
     rw [sub_le_sub_iff_left, div_le_one Hv, add_comm]
-    exact_mod_cast huv
+    exact mod_cast huv
   have help₁ : ∀ {a b c : ℝ}, a ≠ 0 → b ≠ 0 → c ≠ 0 → |a⁻¹ - b / c| = |(a - c / b) * (b / c / a)| :=
     by intros; rw [abs_sub_comm]; congr 1; field_simp; ring
   have help₂ :

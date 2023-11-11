@@ -120,7 +120,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   -- For `i = 0`, the dummy equipartition is enough.
   · refine' ⟨dum, hdum₁, hdum₂.ge, hdum₂.le, Or.inr _⟩
     rw [Nat.cast_zero, mul_zero]
-    exact_mod_cast dum.energy_nonneg G
+    exact mod_cast dum.energy_nonneg G
   -- For the induction step at `i + 1`, find `P` the equipartition at `i`.
   obtain ⟨P, hP₁, hP₂, hP₃, hP₄⟩ := ih
   by_cases huniform : P.IsUniform G ε

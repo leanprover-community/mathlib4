@@ -143,7 +143,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
       rw [mul_neg_one, sub_eq_add_neg]
   on_goal 2 =>
     split_ifs with h₂
-    · exact_mod_cast h
+    · exact mod_cast h
     suffices (i - n : ℤ).natAbs = n - i by
       rw [this]
       apply tsub_lt_self hn.bot_lt
@@ -169,10 +169,10 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
   convert Complex.arg_cos_add_sin_mul_I _
   · push_cast
     rw [← sub_one_mul, sub_div, div_self]
-    exact_mod_cast hn
+    exact mod_cast hn
   · push_cast
     rw [← sub_one_mul, sub_div, div_self]
-    exact_mod_cast hn
+    exact mod_cast hn
   field_simp [hn]
   refine' ⟨_, le_trans _ Real.pi_pos.le⟩
   on_goal 2 =>
@@ -182,6 +182,6 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
   rw [← mul_rotate', mul_div_assoc, neg_lt, ← mul_neg, mul_lt_iff_lt_one_right Real.pi_pos, ←
     neg_div, ← neg_mul, neg_sub, div_lt_iff, one_mul, sub_mul, sub_lt_comm, ← mul_sub_one]
   norm_num
-  exact_mod_cast not_le.mp h₂
+  exact mod_cast not_le.mp h₂
   · exact Nat.cast_pos.mpr hn.bot_lt
 #align is_primitive_root.arg IsPrimitiveRoot.arg

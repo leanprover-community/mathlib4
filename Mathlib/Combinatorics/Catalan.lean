@@ -115,7 +115,7 @@ private theorem gosper_catalan_sub_eq_central_binom_div (n : ℕ) : gosperCatala
 theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n + 1) := by
   suffices (catalan n : ℚ) = Nat.centralBinom n / (n + 1) by
     have h := Nat.succ_dvd_centralBinom n
-    exact_mod_cast this
+    exact mod_cast this
   induction' n using Nat.case_strong_induction_on with d hd
   · simp
   · simp_rw [catalan_succ, Nat.cast_sum, Nat.cast_mul]

@@ -233,8 +233,8 @@ theorem norm_eq_pow_val {f : PadicSeq p} (hf : ¬f ≈ 0) : f.norm = (p : ℚ) ^
 theorem val_eq_iff_norm_eq {f g : PadicSeq p} (hf : ¬f ≈ 0) (hg : ¬g ≈ 0) :
     f.valuation = g.valuation ↔ f.norm = g.norm := by
   rw [norm_eq_pow_val hf, norm_eq_pow_val hg, ← neg_inj, zpow_inj]
-  · exact_mod_cast (Fact.out : p.Prime).pos
-  · exact_mod_cast (Fact.out : p.Prime).ne_one
+  · exact mod_cast (Fact.out : p.Prime).pos
+  · exact mod_cast (Fact.out : p.Prime).ne_one
 #align padic_seq.val_eq_iff_norm_eq PadicSeq.val_eq_iff_norm_eq
 
 end Valuation
@@ -707,7 +707,7 @@ theorem exi_rat_seq_conv_cauchy : IsCauSeq (padicNorm p) (limSeq f) := fun ε h�
     padicNormE (limSeq f j - f (max N N2) + (f (max N N2) - limSeq f (max N N2)) : ℚ_[p]) < ε by
     ring_nf at this ⊢
     rw [← padicNormE.eq_padic_norm']
-    exact_mod_cast this
+    exact mod_cast this
   · apply lt_of_le_of_lt
     · apply padicNormE.add_le
     · rw [←add_thirds ε]
@@ -767,12 +767,12 @@ instance metricSpace : MetricSpace ℚ_[p] where
   dist_comm x y := by simp [dist, ← padicNormE.map_neg (x - y : ℚ_[p])]
   dist_triangle x y z := by
     dsimp [dist]
-    exact_mod_cast padicNormE.sub_le x y z
+    exact mod_cast padicNormE.sub_le x y z
   eq_of_dist_eq_zero := by
     dsimp [dist]; intro _ _ h
     apply eq_of_sub_eq_zero
     apply padicNormE.eq_zero.1
-    exact_mod_cast h
+    exact mod_cast h
   -- Porting note: added because autoparam was not ported
   edist_dist := by intros; exact (ENNReal.ofReal_eq_coe_nnreal _).symm
 
@@ -818,13 +818,13 @@ protected theorem is_norm (q : ℚ_[p]) : ↑(padicNormE q) = ‖q‖ := rfl
 
 theorem nonarchimedean (q r : ℚ_[p]) : ‖q + r‖ ≤ max ‖q‖ ‖r‖ := by
   dsimp [norm]
-  exact_mod_cast nonarchimedean' _ _
+  exact mod_cast nonarchimedean' _ _
 #align padic_norm_e.nonarchimedean padicNormE.nonarchimedean
 
 theorem add_eq_max_of_ne {q r : ℚ_[p]} (h : ‖q‖ ≠ ‖r‖) : ‖q + r‖ = max ‖q‖ ‖r‖ := by
   dsimp [norm] at h ⊢
   have : padicNormE q ≠ padicNormE r := mod_cast h
-  exact_mod_cast add_eq_max_of_ne' this
+  exact mod_cast add_eq_max_of_ne' this
 #align padic_norm_e.add_eq_max_of_ne padicNormE.add_eq_max_of_ne
 
 @[simp]
@@ -844,7 +844,7 @@ theorem norm_p : ‖(p : ℚ_[p])‖ = (p : ℝ)⁻¹ := by
 theorem norm_p_lt_one : ‖(p : ℚ_[p])‖ < 1 := by
   rw [norm_p]
   apply inv_lt_one
-  exact_mod_cast hp.1.one_lt
+  exact mod_cast hp.1.one_lt
 #align padic_norm_e.norm_p_lt_one padicNormE.norm_p_lt_one
 
 -- Porting note : Linter thinks this is a duplicate simp lemma, so `priority` is assigned
@@ -864,7 +864,7 @@ instance : NontriviallyNormedField ℚ_[p] :=
     non_trivial :=
       ⟨p⁻¹, by
         rw [norm_inv, norm_p, inv_inv]
-        exact_mod_cast hp.1.one_lt⟩ }
+        exact mod_cast hp.1.one_lt⟩ }
 
 protected theorem image {q : ℚ_[p]} : q ≠ 0 → ∃ n : ℤ, ‖q‖ = ↑((p : ℚ) ^ (-n)) :=
   Quotient.inductionOn q fun f hf ↦
@@ -933,7 +933,7 @@ theorem norm_int_lt_one_iff_dvd (k : ℤ) : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
       _ < 1 := by
         rw [mul_one, padicNormE.norm_p]
         apply inv_lt_one
-        exact_mod_cast hp.1.one_lt
+        exact mod_cast hp.1.one_lt
 #align padic_norm_e.norm_int_lt_one_iff_dvd padicNormE.norm_int_lt_one_iff_dvd
 
 theorem norm_int_le_pow_iff_dvd (k : ℤ) (n : ℕ) :
@@ -969,7 +969,7 @@ instance complete : CauSeq.IsComplete ℚ_[p] norm where
     have cau_seq_norm_e : IsCauSeq padicNormE f := fun ε hε => by
       have h := isCauSeq f ε (mod_cast hε)
       dsimp [norm] at h
-      exact_mod_cast h
+      exact mod_cast h
     -- Porting note: Padic.complete' works with `f i - q`, but the goal needs `q - f i`,
     -- using `rewrite [padicNormE.map_sub]` causes time out, so a separate lemma is created
     cases' Padic.complete'' ⟨f, cau_seq_norm_e⟩ with q hq
@@ -984,7 +984,7 @@ instance complete : CauSeq.IsComplete ℚ_[p] norm where
     change norm (f i - q) < ε
     refine lt_trans ?_ hε'.2
     dsimp [norm]
-    exact_mod_cast h
+    exact mod_cast h
 #align padic.complete Padic.complete
 
 theorem padicNormE_lim_le {f : CauSeq ℚ_[p] norm} {a : ℝ} (ha : 0 < a) (hf : ∀ i, ‖f i‖ ≤ a) :
@@ -1064,7 +1064,7 @@ theorem norm_eq_pow_val {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.va
 theorem valuation_p : valuation (p : ℚ_[p]) = 1 := by
   have h : (1 : ℝ) < p := mod_cast (Fact.out : p.Prime).one_lt
   refine' neg_injective ((zpow_strictMono h).injective <| (norm_eq_pow_val _).symm.trans _)
-  · exact_mod_cast (Fact.out : p.Prime).ne_zero
+  · exact mod_cast (Fact.out : p.Prime).ne_zero
   · simp
 #align padic.valuation_p Padic.valuation_p
 

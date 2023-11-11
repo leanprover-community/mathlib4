@@ -2194,7 +2194,7 @@ theorem secondCountable_of_almost_dense_set
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 ε0 with ⟨ε', ε'0, ε'ε⟩
   choose s hsc y hys hyx using H ε' (mod_cast ε'0)
   refine' ⟨s, hsc, iUnion₂_eq_univ_iff.2 fun x => ⟨y x, hys _, le_trans _ ε'ε.le⟩⟩
-  exact_mod_cast hyx x
+  exact mod_cast hyx x
 #align metric.second_countable_of_almost_dense_set Metric.secondCountable_of_almost_dense_set
 
 end SecondCountable

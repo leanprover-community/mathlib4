@@ -105,7 +105,7 @@ theorem cardPowDegree_isEuclidean : IsEuclidean (cardPowDegree : AbsoluteValue F
           not_false_iff]
       · simp only [hp, hq, degree_zero, not_lt_bot, (pow_pos _).not_lt]
       · rw [degree_eq_natDegree hp, degree_eq_natDegree hq, Nat.cast_lt, pow_lt_pow_iff]
-        exact_mod_cast @Fintype.one_lt_card Fq _ _ }
+        exact mod_cast @Fintype.one_lt_card Fq _ _ }
 #align polynomial.card_pow_degree_is_euclidean Polynomial.cardPowDegree_isEuclidean
 
 end Polynomial

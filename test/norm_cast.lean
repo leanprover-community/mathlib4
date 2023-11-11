@@ -17,8 +17,8 @@ variable (an bn cn dn : ℕ) (az bz cz dz : ℤ)
 variable (aq bq cq dq : ℚ)
 variable (ar br cr dr : ℝ) (ac bc cc dc : ℂ)
 
-example : (an : ℤ) = bn → an = bn := by intro h; exact_mod_cast h
-example : an = bn → (an : ℤ) = bn := by intro h; exact_mod_cast h
+example : (an : ℤ) = bn → an = bn := by intro h; exact mod_cast h
+example : an = bn → (an : ℤ) = bn := by intro h; exact mod_cast h
 example : az = bz ↔ (az : ℚ) = bz := by norm_cast
 
 example : (aq : ℝ) = br ↔ (aq : ℂ) = br := by norm_cast

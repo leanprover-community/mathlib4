@@ -174,7 +174,7 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
       rw [sub_le_comm, ←
         cast_sub (card_le_of_subset <| biUnion_star_subset_nonuniformWitness hP G ε hU V), ←
         card_sdiff (biUnion_star_subset_nonuniformWitness hP G ε hU V)]
-      exact_mod_cast card_nonuniformWitness_sdiff_biUnion_star hV hUV hunif
+      exact mod_cast card_nonuniformWitness_sdiff_biUnion_star hV hUV hunif
 
 /-! ### `chunk` -/
 
@@ -213,7 +213,7 @@ private theorem le_sum_card_subset_chunk_parts (h𝒜 : 𝒜 ⊆ (chunk hP G ε 
   refine' mul_le_mul _ _ (cast_nonneg _) (cast_nonneg _)
   · rw [← (ofSubset _ h𝒜 rfl).sum_card_parts, ofSubset_parts, ← cast_mul, cast_le]
     exact card_nsmul_le_sum _ _ _ fun x hx => m_le_card_of_mem_chunk_parts <| h𝒜 hx
-  · exact_mod_cast card_le_m_add_one_of_mem_chunk_parts (h𝒜 hs)
+  · exact mod_cast card_le_m_add_one_of_mem_chunk_parts (h𝒜 hs)
 
 private theorem sum_card_subset_chunk_parts_le (m_pos : (0 : ℝ) < m)
     (h𝒜 : 𝒜 ⊆ (chunk hP G ε hU).parts) (hs : s ∈ 𝒜) :
@@ -223,7 +223,7 @@ private theorem sum_card_subset_chunk_parts_le (m_pos : (0 : ℝ) < m)
   · norm_cast
     refine' card_biUnion_le_card_mul _ _ _ fun x hx => _
     apply card_le_m_add_one_of_mem_chunk_parts (h𝒜 hx)
-  · exact_mod_cast m_le_card_of_mem_chunk_parts (h𝒜 hs)
+  · exact mod_cast m_le_card_of_mem_chunk_parts (h𝒜 hs)
 
 private theorem one_sub_le_m_div_m_add_one_sq [Nonempty α]
     (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5) :
@@ -265,7 +265,7 @@ private theorem density_sub_eps_le_sum_density_div_card [Nonempty α]
       (↑1 - ε ^ 5 / 50) * G.edgeDensity (A.biUnion id) (B.biUnion id) := by
     rw [sub_mul, one_mul, sub_le_sub_iff_left]
     refine' mul_le_of_le_one_right (by sz_positivity) _
-    exact_mod_cast G.edgeDensity_le_one _ _
+    exact mod_cast G.edgeDensity_le_one _ _
   refine' this.trans _
   conv_rhs => -- Porting note: LHS and RHS need separate treatment to get the desired form
     simp only [SimpleGraph.edgeDensity_def, sum_div, Rat.cast_div, div_div]
@@ -284,7 +284,7 @@ private theorem density_sub_eps_le_sum_density_div_card [Nonempty α]
     rw [div_mul_eq_mul_div, ← mul_assoc, mul_assoc]
     refine' div_le_one_of_le _ (by positivity)
     refine' (mul_le_mul_of_nonneg_right (one_sub_le_m_div_m_add_one_sq hPα hPε) _).trans _
-    · exact_mod_cast _root_.zero_le _
+    · exact mod_cast _root_.zero_le _
     rw [sq, mul_mul_mul_comm, mul_comm ((m : ℝ) / _), mul_comm ((m : ℝ) / _)]
     refine' mul_le_mul _ _ _ (cast_nonneg _)
     apply le_sum_card_subset_chunk_parts hA hx
@@ -303,7 +303,7 @@ private theorem sum_density_div_card_le_density_add_eps [Nonempty α]
       G.edgeDensity (A.biUnion id) (B.biUnion id) + ε ^ 5 / 49 := by
     rw [add_mul, one_mul, add_le_add_iff_left]
     refine' mul_le_of_le_one_right (by sz_positivity) _
-    exact_mod_cast G.edgeDensity_le_one _ _
+    exact mod_cast G.edgeDensity_le_one _ _
   refine' le_trans _ this
   conv_lhs => -- Porting note: LHS and RHS need separate treatment to get the desired form
     simp only [SimpleGraph.edgeDensity, edgeDensity, sum_div, Rat.cast_div, div_div]
@@ -323,7 +323,7 @@ private theorem sum_density_div_card_le_density_add_eps [Nonempty α]
     · rw [sq, mul_mul_mul_comm, mul_comm (_ / (m : ℝ)), mul_comm (_ / (m : ℝ))]
       exact mul_le_mul (sum_card_subset_chunk_parts_le (by sz_positivity) hA hx)
         (sum_card_subset_chunk_parts_le (by sz_positivity) hB hy) (by positivity) (by positivity)
-    · exact_mod_cast _root_.zero_le _
+    · exact mod_cast _root_.zero_le _
     rw [← cast_mul, cast_pos]
     apply mul_pos <;> rw [Finset.card_pos, sup_eq_biUnion, biUnion_nonempty]
     · exact ⟨_, hx, nonempty_of_mem_parts _ (hA hx)⟩
@@ -356,8 +356,8 @@ private theorem edgeDensity_chunk_aux [Nonempty α]
       (G.edgeDensity ab.1 ab.2 : ℝ)) / ↑16 ^ P.parts.card) ^ 2 := by
   obtain hGε | hGε := le_total (G.edgeDensity U V : ℝ) (ε ^ 5 / 50)
   · refine' (sub_nonpos_of_le <| (sq_le _ _).trans <| hGε.trans _).trans (sq_nonneg _)
-    · exact_mod_cast G.edgeDensity_nonneg _ _
-    · exact_mod_cast G.edgeDensity_le_one _ _
+    · exact mod_cast G.edgeDensity_nonneg _ _
+    · exact mod_cast G.edgeDensity_le_one _ _
     · exact div_le_div_of_le_left (by sz_positivity) (by norm_num) (by norm_num)
   rw [← sub_nonneg] at hGε
   have : ↑(G.edgeDensity U V) - ε ^ 5 / ↑50 ≤
@@ -451,9 +451,9 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
   set t : ℝ := ↑(G.edgeDensity U V)
   have hrs : |r - s| ≤ ε / 5 := abs_density_star_sub_density_le_eps hPε hε₁ hUVne hUV
   have hst : ε ≤ |s - t| := by
-    -- After leanprover/lean4#2734, we need to do the zeta reduction before `norm_cast`.
+    -- After leanprover/lean4#2734, we need to do the zeta reduction before `mod_cast`.
     unfold_let s t
-    exact_mod_cast G.nonuniformWitness_spec hUVne hUV
+    exact mod_cast G.nonuniformWitness_spec hUVne hUV
   have hpr : |p - r| ≤ ε ^ 5 / 49 :=
     average_density_near_total_density hPα hPε hε₁ star_subset_chunk star_subset_chunk
   have hqt : |q - t| ≤ ε ^ 5 / 49 := by

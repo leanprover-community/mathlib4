@@ -261,7 +261,7 @@ theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
     by exact tendsto_norm_cocompact_atTop.comp this
   have : ((p 0 : ℝ) ^ 2 + (p 1 : ℝ) ^ 2)⁻¹ ≠ 0 := by
     apply inv_ne_zero
-    exact_mod_cast hp.sq_add_sq_ne_zero
+    exact mod_cast hp.sq_add_sq_ne_zero
   let f := Homeomorph.mulRight₀ _ this
   let ff := Homeomorph.addRight
     (((p 1 : ℂ) * z - p 0) / (((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) * (p 0 * z + p 1))).re
@@ -270,7 +270,7 @@ theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
     ((g : SL(2, ℤ)) • z).re =
       lcRow0 p ↑(↑g : SL(2, ℝ)) / ((p 0 : ℝ) ^ 2 + (p 1 : ℝ) ^ 2) +
         Complex.re (((p 1 : ℂ) * z - p 0) / (((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) * (p 0 * z + p 1)))
-  exact_mod_cast congr_arg Complex.re (smul_eq_lcRow0_add z hp g.2)
+  exact mod_cast congr_arg Complex.re (smul_eq_lcRow0_add z hp g.2)
 #align modular_group.tendsto_abs_re_smul ModularGroup.tendsto_abs_re_smul
 
 end TendstoLemmas

@@ -226,7 +226,7 @@ def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
       norm_num
       rw [RootableBy.root_cancel]
       rw [Int.ofNat_eq_coe] at hn
-      exact_mod_cast hn
+      exact mod_cast hn
     · change (RootableBy.root a _)⁻¹ ^ _ = a
       norm_num
       rw [RootableBy.root_cancel]

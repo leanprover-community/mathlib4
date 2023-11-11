@@ -166,7 +166,7 @@ nonrec theorem NNReal.tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) :
   obtain ⟨c, hc⟩ := tendsto_atTop_atTop.mp (tendsto_rpow_atTop hy) b
   use c.toNNReal
   intro a ha
-  exact_mod_cast hc a (Real.toNNReal_le_iff_le_coe.mp ha)
+  exact mod_cast hc a (Real.toNNReal_le_iff_le_coe.mp ha)
 #align nnreal.tendsto_rpow_at_top NNReal.tendsto_rpow_atTop
 
 theorem ENNReal.tendsto_rpow_at_top {y : ℝ} (hy : 0 < y) :
@@ -184,7 +184,7 @@ theorem ENNReal.tendsto_rpow_at_top {y : ℝ} (hy : 0 < y) :
   -- Porting note: reduced defeq abuse
   simp only [Set.mem_Ioi, coe_lt_coe] at ha hc
   rw [ENNReal.coe_rpow_of_nonneg _ hy.le]
-  exact_mod_cast hc a ha
+  exact mod_cast hc a ha
 #align ennreal.tendsto_rpow_at_top ENNReal.tendsto_rpow_at_top
 
 end Limits

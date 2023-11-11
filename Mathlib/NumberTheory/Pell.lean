@@ -433,7 +433,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ring
   · qify [hd₂]
     refine' div_ne_zero_iff.mpr ⟨_, hm₀⟩
-    exact_mod_cast mt sub_eq_zero.mp (mt Rat.eq_iff_mul_eq_mul.mpr hne)
+    exact mod_cast mt sub_eq_zero.mp (mt Rat.eq_iff_mul_eq_mul.mpr hne)
 #align pell.exists_of_not_is_square Pell.exists_of_not_isSquare
 
 /-- If `d` is a positive integer, then there is a nontrivial solution
@@ -528,7 +528,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   -- to avoid having to show that the predicate is decidable
   let x₁ := Nat.find P
   obtain ⟨hx, y₁, hy₀, hy₁⟩ := Nat.find_spec P
-  refine' ⟨mk x₁ y₁ hy₁, by rw [x_mk]; exact_mod_cast hx, hy₀, fun {b} hb => _⟩
+  refine' ⟨mk x₁ y₁ hy₁, by rw [x_mk]; exact mod_cast hx, hy₀, fun {b} hb => _⟩
   rw [x_mk]
   have hb' := (Int.toNat_of_nonneg <| zero_le_one.trans hb.le).symm
   have hb'' := hb
