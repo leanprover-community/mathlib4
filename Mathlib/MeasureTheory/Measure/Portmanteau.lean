@@ -641,8 +641,8 @@ theorem tendsto_of_forall_isOpen_le_liminf {μ : ProbabilityMeasure Ω}
   intro G G_open
   specialize h_opens G G_open
   simp only at h_opens
-  have aux : ENNReal.some (liminf (fun i ↦ ENNReal.toNNReal ((μs i : Measure Ω) G)) atTop) =
-              liminf (ENNReal.some ∘ fun i ↦ (ENNReal.toNNReal ((μs i : Measure Ω) G))) atTop := by
+  have aux : ENNReal.ofNNReal (liminf (fun i ↦ ENNReal.toNNReal ((μs i : Measure Ω) G)) atTop) =
+          liminf (ENNReal.ofNNReal ∘ fun i ↦ (ENNReal.toNNReal ((μs i : Measure Ω) G))) atTop := by
     refine Monotone.map_liminf_of_continuousAt (F := atTop) ENNReal.coe_mono (μs · G) ?_ ?_ ?_
     · apply ENNReal.continuous_coe.continuousAt
     · use 1
