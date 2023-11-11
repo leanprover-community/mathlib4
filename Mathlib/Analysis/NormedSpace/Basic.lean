@@ -357,6 +357,8 @@ instance (priority := 100) NontriviallyNormedField.infinite : Infinite 𝕜 :=
 
 end NontriviallyNormedSpace
 
+section NormedSpace
+
 variable (𝕜 E : Type*) [NormedField 𝕜] [Infinite 𝕜] [NormedAddCommGroup E] [Nontrivial E]
   [NormedSpace 𝕜 E]
 
@@ -384,8 +386,6 @@ instance (priority := 100) NormedField.noncompactSpace : NoncompactSpace 𝕜 :=
 instance (priority := 100) RealNormedSpace.noncompactSpace [NormedSpace ℝ E] : NoncompactSpace E :=
   NormedSpace.noncompactSpace ℝ E
 #align real_normed_space.noncompact_space RealNormedSpace.noncompactSpace
-
-section NormedSpace
 
 end NormedSpace
 
