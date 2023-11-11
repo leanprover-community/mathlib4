@@ -116,7 +116,7 @@ lemma set_integral_toReal_rnDeriv_eq_withDensity {μ ν : Measure α} [SigmaFini
   · exact ae_restrict_of_ae (Measure.rnDeriv_lt_top _ _)
 
 lemma set_integral_toReal_rnDeriv_le {μ ν : Measure α} [SigmaFinite μ]
-    [HaveLebesgueDecomposition μ ν] {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) :
+    {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) :
     ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν ≤ (μ s).toReal := by
   rw [set_integral_toReal_rnDeriv_eq_withDensity hs, ENNReal.toReal_le_toReal _ hμs]
   · exact withDensity_rnDeriv_le _ _ _ hs
