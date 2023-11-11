@@ -197,7 +197,7 @@ theorem tendsto_insertNth {n : ℕ} {i : Fin (n + 1)} {a : α} :
       Tendsto (fun p : α × Vector α n => insertNth p.1 i p.2) (𝓝 a ×ˢ 𝓝 l) (𝓝 (insertNth a i l))
   | ⟨l, hl⟩ => by
     rw [insertNth, tendsto_subtype_rng]
-    simp [insertNth_val]
+    simp only [insertNth_val]
     exact List.tendsto_insertNth tendsto_fst (Tendsto.comp continuousAt_subtype_val tendsto_snd : _)
 #align vector.tendsto_insert_nth Vector.tendsto_insertNth
 

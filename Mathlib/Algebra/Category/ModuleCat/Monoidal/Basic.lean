@@ -92,6 +92,26 @@ def associator (M : ModuleCat.{v} R) (N : ModuleCat.{w} R) (K : ModuleCat.{x} R)
   (TensorProduct.assoc R M N K).toModuleIso
 #align Module.monoidal_category.associator ModuleCat.MonoidalCategory.associator
 
+/-- (implementation) the left unitor for R-modules -/
+def leftUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (R ⊗[R] M) ≅ M :=
+  (LinearEquiv.toModuleIso (TensorProduct.lid R M) : of R (R ⊗ M) ≅ of R M).trans (ofSelfIso M)
+#align Module.monoidal_category.left_unitor ModuleCat.MonoidalCategory.leftUnitor
+
+/-- (implementation) the right unitor for R-modules -/
+def rightUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (M ⊗[R] R) ≅ M :=
+  (LinearEquiv.toModuleIso (TensorProduct.rid R M) : of R (M ⊗ R) ≅ of R M).trans (ofSelfIso M)
+#align Module.monoidal_category.right_unitor ModuleCat.MonoidalCategory.rightUnitor
+
+instance : MonoidalCategoryStruct (ModuleCat.{u} R) where
+  tensorObj := tensorObj
+  whiskerLeft := whiskerLeft
+  whiskerRight := whiskerRight
+  tensorHom f g := TensorProduct.map f g
+  tensorUnit := ModuleCat.of R R
+  associator := associator
+  leftUnitor := leftUnitor
+  rightUnitor := rightUnitor
+
 section
 
 /-! The `associator_naturality` and `pentagon` lemmas below are very slow to elaborate.
@@ -136,19 +156,12 @@ theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : ModuleCat R} (f�
   by convert associator_naturality_aux f₁ f₂ f₃ using 1
 #align Module.monoidal_category.associator_naturality ModuleCat.MonoidalCategory.associator_naturality
 
--- Porting note: very slow!
-set_option maxHeartbeats 1200000 in
 theorem pentagon (W X Y Z : ModuleCat R) :
     tensorHom (associator W X Y).hom (𝟙 Z) ≫
         (associator W (tensorObj X Y) Z).hom ≫ tensorHom (𝟙 W) (associator X Y Z).hom =
       (associator (tensorObj W X) Y Z).hom ≫ (associator W X (tensorObj Y Z)).hom := by
   convert pentagon_aux R W X Y Z using 1
 #align Module.monoidal_category.pentagon ModuleCat.MonoidalCategory.pentagon
-
-/-- (implementation) the left unitor for R-modules -/
-def leftUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (R ⊗[R] M) ≅ M :=
-  (LinearEquiv.toModuleIso (TensorProduct.lid R M) : of R (R ⊗ M) ≅ of R M).trans (ofSelfIso M)
-#align Module.monoidal_category.left_unitor ModuleCat.MonoidalCategory.leftUnitor
 
 theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom (𝟙 (ModuleCat.of R R)) f ≫ (leftUnitor N).hom = (leftUnitor M).hom ≫ f := by
@@ -163,11 +176,6 @@ theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
   rw [LinearMap.map_smul]
   rfl
 #align Module.monoidal_category.left_unitor_naturality ModuleCat.MonoidalCategory.leftUnitor_naturality
-
-/-- (implementation) the right unitor for R-modules -/
-def rightUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (M ⊗[R] R) ≅ M :=
-  (LinearEquiv.toModuleIso (TensorProduct.rid R M) : of R (M ⊗ R) ≅ of R M).trans (ofSelfIso M)
-#align Module.monoidal_category.right_unitor ModuleCat.MonoidalCategory.rightUnitor
 
 theorem rightUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom f (𝟙 (ModuleCat.of R R)) ≫ (rightUnitor N).hom = (rightUnitor M).hom ≫ f := by
@@ -199,17 +207,8 @@ end MonoidalCategory
 
 open MonoidalCategory
 
+set_option maxHeartbeats 400000 in
 instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCategory.ofTensorHom
-  -- data
-  (tensorObj := MonoidalCategory.tensorObj)
-  (tensorHom := @tensorHom _ _)
-  (whiskerLeft := @whiskerLeft _ _)
-  (whiskerRight := @whiskerRight _ _)
-  (tensorUnit' := ModuleCat.of R R)
-  (associator := associator)
-  (leftUnitor := leftUnitor)
-  (rightUnitor := rightUnitor)
-  -- properties
   (tensor_id := fun M N ↦ tensor_id M N)
   (tensor_comp := fun f g h ↦ MonoidalCategory.tensor_comp f g h)
   (associator_naturality := fun f g h ↦ MonoidalCategory.associator_naturality f g h)
@@ -230,6 +229,18 @@ theorem hom_apply {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K
     (f ⊗ g) (k ⊗ₜ m) = f k ⊗ₜ g m :=
   rfl
 #align Module.monoidal_category.hom_apply ModuleCat.MonoidalCategory.hom_apply
+
+@[simp]
+theorem whiskerLeft_apply (L : ModuleCat.{u} R) {M N : ModuleCat.{u} R} (f : M ⟶ N)
+    (l : L) (m : M) :
+      (L ◁ f) (l ⊗ₜ m) = l ⊗ₜ f m :=
+  rfl
+
+@[simp]
+theorem whiskerRight_apply {L M : ModuleCat.{u} R} (f : L ⟶ M) (N : ModuleCat.{u} R)
+    (l : L) (n : N) :
+      (f ▷ N) (l ⊗ₜ n) = f l ⊗ₜ n :=
+  rfl
 
 @[simp]
 theorem leftUnitor_hom_apply {M : ModuleCat.{u} R} (r : R) (m : M) :

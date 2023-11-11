@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Analysis.Calculus.ContDiff
+import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Data.Nat.Cast.WithTop
 
 #align_import analysis.calculus.series from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
@@ -107,6 +107,7 @@ theorem summable_of_summable_hasFDerivAt_of_isPreconnected (hu : Summable u) (hs
     (h's : IsPreconnected s) (hf : ∀ n x, x ∈ s → HasFDerivAt (f n) (f' n x) x)
     (hf' : ∀ n x, x ∈ s → ‖f' n x‖ ≤ u n) (hx₀ : x₀ ∈ s) (hf0 : Summable (f · x₀)) {x : E}
     (hx : x ∈ s) : Summable fun n => f n x := by
+  haveI := Classical.decEq α
   rw [summable_iff_cauchySeq_finset] at hf0 ⊢
   have A : UniformCauchySeqOn (fun t : Finset α => fun x => ∑ i in t, f' i x) atTop s :=
     (tendstoUniformlyOn_tsum hu hf').uniformCauchySeqOn

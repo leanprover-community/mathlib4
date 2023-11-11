@@ -3,11 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Hom.Ring.Defs
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Ring.Canonical
-import Std.Data.Option.Lemmas
+import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Tactic.Tauto
+import Std.Data.Option.Lemmas
 
 #align_import algebra.order.ring.with_top from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
@@ -130,7 +130,7 @@ instance instMulZeroOneClassWithTop [MulZeroOneClass α] [Nontrivial α] :
       | (a : α) => by rw [← coe_one, ← coe_mul, mul_one] }
 
 /-- A version of `WithTop.map` for `MonoidWithZeroHom`s. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass R] [DecidableEq R]
     [Nontrivial R] [MulZeroOneClass S] [DecidableEq S] [Nontrivial S] (f : R →*₀ S)
     (hf : Function.Injective f) : WithTop R →*₀ WithTop S :=
@@ -185,7 +185,7 @@ private theorem distrib' (a b c : WithTop α) : (a + b) * c = a * c + b * c := b
   · by_cases ha : a = 0 <;> simp [ha]
   · by_cases hc : c = 0
     · simp [hc]
-    simp [mul_coe hc]
+    simp only [mul_coe hc]
     cases a <;> cases b
     repeat' first | rfl |exact congr_arg some (add_mul _ _ _)
 
@@ -203,7 +203,7 @@ instance [Nontrivial α] : CanonicallyOrderedCommSemiring (WithTop α) :=
   eq_zero_or_eq_zero_of_mul_eq_zero := eq_zero_or_eq_zero_of_mul_eq_zero}
 
 /-- A version of `WithTop.map` for `RingHom`s. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 protected def _root_.RingHom.withTopMap {R S : Type*} [CanonicallyOrderedCommSemiring R]
     [DecidableEq R] [Nontrivial R] [CanonicallyOrderedCommSemiring S] [DecidableEq S] [Nontrivial S]
     (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
