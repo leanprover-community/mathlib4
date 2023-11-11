@@ -230,7 +230,7 @@ theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
   | succ n hn =>
     rw [Function.iterate_succ, Function.comp_apply, Nat.succ_eq_add_one, add_assoc, ← hn]
     congr 2
-    rw [← Nat.succ_eq_one_add]
+    rw [Nat.one_add]
     exact Finsupp.mapDomain_single
 #align polynomial_module.monomial_smul_single PolynomialModule.monomial_smul_single
 

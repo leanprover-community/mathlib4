@@ -1077,12 +1077,12 @@ theorem coe_inclusion {S T : Subalgebra R A} (h : S ≤ T) (s : S) : (inclusion 
 
 This is the `Subalgebra` version of `LinearEquiv.ofEq` and `Equiv.Set.ofEq`. -/
 @[simps apply]
-def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T :=
-  { LinearEquiv.ofEq _ _ (congr_arg toSubmodule h) with
-    toFun := fun x => ⟨x, h ▸ x.2⟩
-    invFun := fun x => ⟨x, h.symm ▸ x.2⟩
-    map_mul' := fun _ _ => rfl
-    commutes' := fun _ => rfl }
+def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T where
+  __ := LinearEquiv.ofEq _ _ (congr_arg toSubmodule h)
+  toFun x := ⟨x, h ▸ x.2⟩
+  invFun x := ⟨x, h.symm ▸ x.2⟩
+  map_mul' _ _ := rfl
+  commutes' _ := rfl
 #align subalgebra.equiv_of_eq Subalgebra.equivOfEq
 
 @[simp]
@@ -1141,44 +1141,29 @@ theorem prod_inf_prod {S T : Subalgebra R A} {S₁ T₁ : Subalgebra R B} :
 
 end Prod
 
-section SuprLift
+section iSupLift
 
-variable {ι : Type*}
+variable {ι : Type*} [Nonempty ι] {K : ι → Subalgebra R A} (dir : Directed (· ≤ ·) K)
 
-theorem coe_iSup_of_directed [Nonempty ι] {S : ι → Subalgebra R A} (dir : Directed (· ≤ ·) S) :
-    ↑(iSup S) = ⋃ i, (S i : Set A) :=
-  -- Porting note: moved up the `let i` to use it in `zero_mem'` and `one_mem'`
-  let i := @Nonempty.some ι inferInstance
-  let K : Subalgebra R A :=
-    { carrier := ⋃ i, S i
-      -- Porting note: auto_params failing, need to provide these explicitly
-      zero_mem' := by simp only [Set.mem_iUnion, SetLike.mem_coe]; exact ⟨i, zero_mem _⟩
-      one_mem' := by simp only [Set.mem_iUnion, SetLike.mem_coe]; exact ⟨i, one_mem _⟩
-      mul_mem' := fun hx hy =>
-        let ⟨i, hi⟩ := Set.mem_iUnion.1 hx
-        let ⟨j, hj⟩ := Set.mem_iUnion.1 hy
-        let ⟨k, hik, hjk⟩ := dir i j
-        Set.mem_iUnion.2 ⟨k, Subalgebra.mul_mem (S k) (hik hi) (hjk hj)⟩
-      add_mem' := fun hx hy =>
-        let ⟨i, hi⟩ := Set.mem_iUnion.1 hx
-        let ⟨j, hj⟩ := Set.mem_iUnion.1 hy
-        let ⟨k, hik, hjk⟩ := dir i j
-        Set.mem_iUnion.2 ⟨k, Subalgebra.add_mem (S k) (hik hi) (hjk hj)⟩
-      algebraMap_mem' := fun _ ↦
-        Set.mem_iUnion.2 ⟨i, Subalgebra.algebraMap_mem _ _⟩ }
-  have : iSup S = K :=
-    le_antisymm (iSup_le fun i => Set.subset_iUnion (fun i => (↑(S i) : Set A)) i)
-      (SetLike.coe_subset_coe.1 (Set.iUnion_subset fun i => SetLike.coe_subset_coe.2 (le_iSup _ _)))
+theorem coe_iSup_of_directed : ↑(iSup K) = ⋃ i, (K i : Set A) :=
+  let s : Subalgebra R A :=
+    { __ := Subsemiring.copy _ _ (Subsemiring.coe_iSup_of_directed dir).symm
+      algebraMap_mem' := fun _ ↦ Set.mem_iUnion.2
+        ⟨Classical.arbitrary ι, Subalgebra.algebraMap_mem _ _⟩ }
+  have : iSup K = s := le_antisymm
+    (iSup_le fun i ↦ le_iSup (fun i ↦ (K i : Set A)) i) (Set.iUnion_subset fun _ ↦ le_iSup K _)
   this.symm ▸ rfl
 #align subalgebra.coe_supr_of_directed Subalgebra.coe_iSup_of_directed
+
+variable (K)
+variable (f : ∀ i, K i →ₐ[R] B) (hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h))
+  (T : Subalgebra R A) (hT : T = iSup K)
 
 -- Porting note: TODO: turn `hT` into an assumption `T ≤ iSup K`. That's what `Set.iUnionLift` needs
 -- Porting note: the proofs of `map_{zero,one,add,mul}` got a bit uglier, probably unification trbls
 /-- Define an algebra homomorphism on a directed supremum of subalgebras by defining
 it on each subalgebra, and proving that it agrees on the intersection of subalgebras. -/
-noncomputable def iSupLift [Nonempty ι] (K : ι → Subalgebra R A) (dir : Directed (· ≤ ·) K)
-    (f : ∀ i, K i →ₐ[R] B) (hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h))
-    (T : Subalgebra R A) (hT : T = iSup K) : ↥T →ₐ[R] B :=
+noncomputable def iSupLift : ↥T →ₐ[R] B :=
   { toFun := Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x)
         (fun i j x hxi hxj => by
           let ⟨k, hik, hjk⟩ := dir i j
@@ -1203,9 +1188,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → Subalgebra R A) (dir : Dire
       apply Set.iUnionLift_const _ (fun _ => algebraMap R _ r) <;> simp }
 #align subalgebra.supr_lift Subalgebra.iSupLift
 
-variable [Nonempty ι] {K : ι → Subalgebra R A} {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
-  {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)} {T : Subalgebra R A}
-  {hT : T = iSup K}
+variable {K dir f hf T hT}
 
 @[simp]
 theorem iSupLift_inclusion {i : ι} (x : K i) (h : K i ≤ T) :
@@ -1232,7 +1215,7 @@ theorem iSupLift_of_mem {i : ι} (x : T) (hx : (x : A) ∈ K i) :
   rw [Set.iUnionLift_of_mem]
 #align subalgebra.supr_lift_of_mem Subalgebra.iSupLift_of_mem
 
-end SuprLift
+end iSupLift
 
 /-! ## Actions by `Subalgebra`s
 
