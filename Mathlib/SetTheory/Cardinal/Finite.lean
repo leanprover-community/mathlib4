@@ -3,6 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Data.ULift
 import Mathlib.Data.ZMod.Defs
 import Mathlib.SetTheory.Cardinal.Basic
 
@@ -21,12 +22,10 @@ import Mathlib.SetTheory.Cardinal.Basic
 
 set_option autoImplicit true
 
-
-open Cardinal
+open Cardinal Function
+open scoped BigOperators
 
 noncomputable section
-
-open BigOperators
 
 variable {α β : Type*}
 
@@ -43,18 +42,36 @@ theorem card_eq_fintype_card [Fintype α] : Nat.card α = Fintype.card α :=
   mk_toNat_eq_card
 #align nat.card_eq_fintype_card Nat.card_eq_fintype_card
 
-@[simp]
-theorem card_eq_zero_of_infinite [Infinite α] : Nat.card α = 0 :=
-  mk_toNat_of_infinite
+lemma card_eq_zero_of_isEmpty [IsEmpty α] : Nat.card α = 0 := by simp [Nat.card]
+@[simp] lemma card_eq_zero_of_infinite [Infinite α] : Nat.card α = 0 := mk_toNat_of_infinite
 #align nat.card_eq_zero_of_infinite Nat.card_eq_zero_of_infinite
 
-theorem finite_of_card_ne_zero (h : Nat.card α ≠ 0) : Finite α :=
-  not_infinite_iff_finite.mp <| h ∘ @Nat.card_eq_zero_of_infinite α
+lemma card_eq_zero : Nat.card α = 0 ↔ IsEmpty α ∨ Infinite α := by
+  simp [Nat.card, mk_eq_zero_iff, aleph0_le_mk_iff]
+
+lemma card_ne_zero : Nat.card α ≠ 0 ↔ Nonempty α ∧ Finite α := by simp [card_eq_zero, not_or]
+
+lemma card_pos_iff : 0 < Nat.card α ↔ Nonempty α ∧ Finite α := by
+  simp [Nat.card, mk_eq_zero_iff, mk_lt_aleph0_iff]
+
+@[simp] lemma card_pos [Nonempty α] [Finite α] : 0 < Nat.card α := card_pos_iff.2 ⟨‹_›, ‹_›⟩
+
+theorem finite_of_card_ne_zero (h : Nat.card α ≠ 0) : Finite α := (card_ne_zero.1 h).2
 #align nat.finite_of_card_ne_zero Nat.finite_of_card_ne_zero
 
 theorem card_congr (f : α ≃ β) : Nat.card α = Nat.card β :=
   Cardinal.toNat_congr f
 #align nat.card_congr Nat.card_congr
+
+lemma card_le_card_of_injective {α : Type u} {β : Type v} [Finite β] (f : α → β)
+    (hf : Injective f) : Nat.card α ≤ Nat.card β := by
+  simpa using toNat_le_of_le_of_lt_aleph0 (by simp [lt_aleph0_of_finite]) $
+    mk_le_of_injective (α := ULift.{max u v} α) (β := ULift.{max u v} β) $ ULift.map_injective.2 hf
+
+lemma card_le_card_of_surjective {α : Type u} {β : Type v} [Finite α] (f : α → β)
+    (hf : Surjective f) : Nat.card β ≤ Nat.card α := by
+  simpa using toNat_le_of_le_of_lt_aleph0 (by simp [lt_aleph0_of_finite]) $ mk_le_of_surjective
+    (α := ULift.{max u v} α) (β := ULift.{max u v} β) $ ULift.map_surjective.2 hf
 
 theorem card_eq_of_bijective (f : α → β) (hf : Function.Bijective f) : Nat.card α = Nat.card β :=
   card_congr (Equiv.ofBijective f hf)
@@ -172,6 +189,9 @@ theorem card_pLift (α : Type*) : card (PLift α) = card α :=
   card_congr Equiv.plift
 #align part_enat.card_plift PartENat.card_pLift
 
+lemma card_mono {s t : Set α} (ht : t.Finite) (h : s ⊆ t) : Nat.card s ≤ Nat.card t :=
+  toNat_le_of_le_of_lt_aleph0 ht.lt_aleph0 <| mk_le_mk_of_subset h
+
 theorem card_image_of_injOn {α : Type u} {β : Type v} {f : α → β} {s : Set α} (h : Set.InjOn f s) :
     card (f '' s) = card s :=
   card_congr (Equiv.Set.imageOfInjOn f s h).symm
@@ -185,38 +205,38 @@ theorem card_image_of_injective {α : Type u} {β : Type v} (f : α → β) (s :
 -- Should I keeep the 6 following lemmas ?
 @[simp]
 theorem _root_.Cardinal.natCast_le_toPartENat_iff {n : ℕ} {c : Cardinal} :
-  ↑n ≤ toPartENat c ↔ ↑n ≤ c := by
+    ↑n ≤ toPartENat c ↔ ↑n ≤ c := by
   rw [← toPartENat_cast n, toPartENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
 #align cardinal.coe_nat_le_to_part_enat_iff Cardinal.natCast_le_toPartENat_iff
 
 @[simp]
 theorem _root_.Cardinal.toPartENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
-  toPartENat c ≤ n ↔ c ≤ n := by
+    toPartENat c ≤ n ↔ c ≤ n := by
   rw [← toPartENat_cast n, toPartENat_le_iff_of_lt_aleph0 (nat_lt_aleph0 n)]
 #align cardinal.to_part_enat_le_coe_nat_iff Cardinal.toPartENat_le_natCast_iff
 
 @[simp]
 theorem _root_.Cardinal.natCast_eq_toPartENat_iff {n : ℕ} {c : Cardinal} :
-  ↑n = toPartENat c ↔ ↑n = c := by
+    ↑n = toPartENat c ↔ ↑n = c := by
   rw [le_antisymm_iff, le_antisymm_iff, Cardinal.toPartENat_le_natCast_iff,
     Cardinal.natCast_le_toPartENat_iff]
 #align cardinal.coe_nat_eq_to_part_enat_iff Cardinal.natCast_eq_toPartENat_iff
 
 @[simp]
 theorem _root_.Cardinal.toPartENat_eq_natCast_iff {c : Cardinal} {n : ℕ} :
-  Cardinal.toPartENat c = n ↔ c = n := by
+    Cardinal.toPartENat c = n ↔ c = n := by
 rw [eq_comm, Cardinal.natCast_eq_toPartENat_iff, eq_comm]
 #align cardinal.to_part_nat_eq_coe_nat_iff_eq Cardinal.toPartENat_eq_natCast_iff
 
 @[simp]
 theorem _root_.Cardinal.natCast_lt_toPartENat_iff {n : ℕ} {c : Cardinal} :
-  ↑n < toPartENat c ↔ ↑n < c := by
+    ↑n < toPartENat c ↔ ↑n < c := by
   simp only [← not_le, Cardinal.toPartENat_le_natCast_iff]
 #align part_enat.coe_nat_lt_coe_iff_lt Cardinal.natCast_lt_toPartENat_iff
 
 @[simp]
 theorem _root_.Cardinal.toPartENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
-   toPartENat c < ↑n ↔ c < ↑n :=
+    toPartENat c < ↑n ↔ c < ↑n :=
 by simp only [← not_le, Cardinal.natCast_le_toPartENat_iff]
 #align lt_coe_nat_iff_lt Cardinal.toPartENat_lt_natCast_iff
 

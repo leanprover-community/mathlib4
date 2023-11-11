@@ -217,12 +217,12 @@ def limit.coneMorphism {F : J ⥤ C} [HasLimit F] (c : Cone F) : c ⟶ limit.con
 
 @[simp]
 theorem limit.coneMorphism_hom {F : J ⥤ C} [HasLimit F] (c : Cone F) :
-    (limit.coneMorphism c).Hom = limit.lift F c :=
+    (limit.coneMorphism c).hom = limit.lift F c :=
   rfl
 #align category_theory.limits.limit.cone_morphism_hom CategoryTheory.Limits.limit.coneMorphism_hom
 
 theorem limit.coneMorphism_π {F : J ⥤ C} [HasLimit F] (c : Cone F) (j : J) :
-    (limit.coneMorphism c).Hom ≫ limit.π F j = c.π.app j := by simp
+    (limit.coneMorphism c).hom ≫ limit.π F j = c.π.app j := by simp
 #align category_theory.limits.limit.cone_morphism_π CategoryTheory.Limits.limit.coneMorphism_π
 
 @[reassoc (attr := simp)]
@@ -582,6 +582,13 @@ def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim where
       right_inv := by aesop_cat }
   unit := { app := fun c => limit.lift _ ⟨_, 𝟙 _⟩ }
   counit := { app := fun g => { app := limit.π _ } }
+  -- This used to be automatic before leanprover/lean4#2644
+  homEquiv_unit := by
+    -- Sad that aesop can no longer do this!
+    intros
+    dsimp
+    ext
+    simp
 #align category_theory.limits.const_lim_adj CategoryTheory.Limits.constLimAdj
 
 instance : IsRightAdjoint (lim : (J ⥤ C) ⥤ C) :=
@@ -783,12 +790,12 @@ def colimit.coconeMorphism {F : J ⥤ C} [HasColimit F] (c : Cocone F) : colimit
 
 @[simp]
 theorem colimit.coconeMorphism_hom {F : J ⥤ C} [HasColimit F] (c : Cocone F) :
-    (colimit.coconeMorphism c).Hom = colimit.desc F c :=
+    (colimit.coconeMorphism c).hom = colimit.desc F c :=
   rfl
 #align category_theory.limits.colimit.cocone_morphism_hom CategoryTheory.Limits.colimit.coconeMorphism_hom
 
 theorem colimit.ι_coconeMorphism {F : J ⥤ C} [HasColimit F] (c : Cocone F) (j : J) :
-    colimit.ι F j ≫ (colimit.coconeMorphism c).Hom = c.ι.app j := by simp
+    colimit.ι F j ≫ (colimit.coconeMorphism c).hom = c.ι.app j := by simp
 #align category_theory.limits.colimit.ι_cocone_morphism CategoryTheory.Limits.colimit.ι_coconeMorphism
 
 @[reassoc (attr := simp)]

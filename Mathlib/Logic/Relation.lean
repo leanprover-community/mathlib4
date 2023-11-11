@@ -6,7 +6,10 @@ Authors: Johannes Hölzl
 import Mathlib.Logic.Relator
 import Mathlib.Init.Propext
 import Mathlib.Init.Data.Quot
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Cases
+import Mathlib.Tactic.Use
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.SimpRw
 
 #align_import logic.relation from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
@@ -683,7 +686,7 @@ theorem transitive_join (ht : Transitive r) (h : ∀ a b c, r a b → r a c → 
 #align relation.transitive_join Relation.transitive_join
 
 theorem equivalence_join (hr : Reflexive r) (ht : Transitive r)
-  (h : ∀ a b c, r a b → r a c → Join r b c) : Equivalence (Join r) :=
+    (h : ∀ a b c, r a b → r a c → Join r b c) : Equivalence (Join r) :=
   ⟨reflexive_join hr, @symmetric_join _ _, @transitive_join _ _ ht h⟩
 #align relation.equivalence_join Relation.equivalence_join
 

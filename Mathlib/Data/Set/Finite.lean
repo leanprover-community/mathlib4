@@ -7,7 +7,7 @@ import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Finite.Basic
 
-#align_import data.set.finite from "leanprover-community/mathlib"@"7fdd4f3746cb059edfdb5d52cba98f66fce418c0"
+#align_import data.set.finite from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-!
 # Finite sets
@@ -1208,10 +1208,7 @@ theorem empty_card' {h : Fintype.{u} (∅ : Set α)} : @Fintype.card (∅ : Set 
 
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
-  rw [fintypeInsertOfNotMem, Fintype.card_ofFinset]
-  simp only [Finset.card, toFinset, Finset.map_val, Embedding.coe_subtype,
-             Multiset.card_cons, Multiset.card_map, add_left_inj]
-  rfl
+  simp [fintypeInsertOfNotMem, Fintype.card_ofFinset]
 #align set.card_fintype_insert_of_not_mem Set.card_fintypeInsertOfNotMem
 
 @[simp]
@@ -1595,7 +1592,7 @@ theorem Finite.exists_maximal_wrt [PartialOrder β] (f : α → β) (s : Set α)
   is finite rather than `s` itself. -/
 theorem Finite.exists_maximal_wrt' [PartialOrder β] (f : α → β) (s : Set α) (h : (f '' s).Finite)
     (hs : s.Nonempty) : (∃ a ∈ s, ∀ (a' : α), a' ∈ s → f a ≤ f a' → f a = f a') := by
-  obtain ⟨_, ⟨a, ha,rfl⟩, hmax⟩ := Finite.exists_maximal_wrt id (f '' s) h (hs.image f)
+  obtain ⟨_, ⟨a, ha, rfl⟩, hmax⟩ := Finite.exists_maximal_wrt id (f '' s) h (hs.image f)
   exact ⟨a, ha, fun a' ha' hf ↦ hmax _ (mem_image_of_mem f ha') hf⟩
 
 theorem Finite.exists_minimal_wrt [PartialOrder β] (f : α → β) (s : Set α) (h : s.Finite)
@@ -1610,7 +1607,7 @@ lemma Finite.exists_minimal_wrt' [PartialOrder β] (f : α → β) (s : Set α) 
 
 section
 
-variable [SemilatticeSup α] [Nonempty α] {s : Set α}
+variable [Preorder α] [IsDirected α (· ≤ ·)] [Nonempty α] {s : Set α}
 
 /-- A finite set is bounded above.-/
 protected theorem Finite.bddAbove (hs : s.Finite) : BddAbove s :=
@@ -1632,23 +1629,20 @@ end
 
 section
 
-variable [SemilatticeInf α] [Nonempty α] {s : Set α}
+variable [Preorder α] [IsDirected α (· ≥ ·)] [Nonempty α] {s : Set α}
 
 /-- A finite set is bounded below.-/
 protected theorem Finite.bddBelow (hs : s.Finite) : BddBelow s :=
-  @Finite.bddAbove αᵒᵈ _ _ _ hs
+  @Finite.bddAbove αᵒᵈ _ _ _ _ hs
 #align set.finite.bdd_below Set.Finite.bddBelow
 
 /-- A finite union of sets which are all bounded below is still bounded below.-/
 theorem Finite.bddBelow_biUnion {I : Set β} {S : β → Set α} (H : I.Finite) :
     BddBelow (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddBelow (S i) :=
-  @Finite.bddAbove_biUnion αᵒᵈ _ _ _ _ _ H
+  @Finite.bddAbove_biUnion αᵒᵈ _ _ _ _ _ _ H
 #align set.finite.bdd_below_bUnion Set.Finite.bddBelow_biUnion
 
-theorem infinite_of_not_bddBelow : ¬BddBelow s → s.Infinite := by
-  contrapose!
-  rw [not_infinite]
-  exact Finite.bddBelow
+theorem infinite_of_not_bddBelow : ¬BddBelow s → s.Infinite := mt Finite.bddBelow
 #align set.infinite_of_not_bdd_below Set.infinite_of_not_bddBelow
 
 end

@@ -243,8 +243,8 @@ theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
     · congr 1
       rw [length_drop] at hm
       have hm' := tsub_le_iff_left.1 hm
-      have : n % length l + m - length l < length l
-      · rw [tsub_lt_iff_left hm']
+      have : n % length l + m - length l < length l := by
+        rw [tsub_lt_iff_left hm']
         exact Nat.add_lt_add hlt hml
       conv_rhs => rw [add_comm m, ← mod_add_mod, mod_eq_sub_mod hm', mod_eq_of_lt this]
       rw [← add_right_inj l.length, ← add_tsub_assoc_of_le, add_tsub_tsub_cancel,

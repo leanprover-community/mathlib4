@@ -6,7 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Logic.IsEmpty
 import Mathlib.Init.Logic
 import Mathlib.Init.Data.Fin.Basic
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Inhabit
 
 #align_import logic.unique from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
@@ -204,10 +204,12 @@ instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, �
   default := isEmptyElim
   uniq _ := funext isEmptyElim
 
-theorem eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (f default) := by
-  ext x
-  rw [Subsingleton.elim x default]
-  rfl
+theorem eq_const_of_subsingleton [Subsingleton α] (f : α → β) (a : α) :
+    f = Function.const α (f a) :=
+  funext fun x ↦ Subsingleton.elim x a ▸ rfl
+
+theorem eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (f default) :=
+  eq_const_of_subsingleton ..
 #align eq_const_of_unique eq_const_of_unique
 
 theorem heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) :
@@ -249,6 +251,20 @@ def Surjective.uniqueOfSurjectiveConst (α : Type*) {β : Type*} (b : β)
 #align function.surjective.unique_of_surjective_const Function.Surjective.uniqueOfSurjectiveConst
 
 end Function
+
+section Pi
+
+variable {ι : Type*} {α : ι → Type*}
+/-- Given one value over a unique, we get a dependent function. -/
+def uniqueElim [Unique ι] (x : α (default : ι)) (i : ι) : α i := by
+  rw [Unique.eq_default i]
+  exact x
+
+@[simp]
+theorem uniqueElim_default {_ : Unique ι} (x : α (default : ι)) : uniqueElim x (default : ι) = x :=
+  rfl
+
+end Pi
 
 -- TODO: Mario turned this off as a simp lemma in Std, wanting to profile it.
 attribute [simp] eq_iff_true_of_subsingleton in

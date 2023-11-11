@@ -463,10 +463,7 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
     obtain ⟨r, rfl⟩ := hx
     exact hr r
   revert hx
-  -- porting note: workaround for lean4#1926, was `simp_rw [pow_succ']`
-  suffices h_lean4_1926 : ∀ (hx' : x ∈ M ^ n * M), C (Nat.succ n) x (by rwa [pow_succ']) from
-    fun hx => h_lean4_1926 (by rwa [← pow_succ'])
-  -- porting note: end workaround
+  simp_rw [pow_succ']
   intro hx
   exact
     Submodule.mul_induction_on' (fun m hm x ih => hmul _ _ hm (n_ih _) _ ih)
@@ -638,7 +635,7 @@ instance moduleSet : Module (SetSemiring A) (Submodule R A) where
 variable {R A}
 
 theorem smul_def (s : SetSemiring A) (P : Submodule R A) :
-  s • P = span R (SetSemiring.down s) * P :=
+    s • P = span R (SetSemiring.down s) * P :=
   rfl
 #align submodule.smul_def Submodule.smul_def
 

@@ -172,7 +172,7 @@ theorem coe_ofComplex : ⇑ofComplex = coeComplex := rfl
 
 /-- The norm of the components as a euclidean vector equals the norm of the quaternion. -/
 theorem norm_piLp_equiv_symm_equivTuple (x : ℍ) :
-    ‖(PiLp.equiv 2 fun _ : Fin 4 => _).symm (equivTuple ℝ x)‖ = ‖x‖ := by
+    ‖(WithLp.equiv 2 (Fin 4 → _)).symm (equivTuple ℝ x)‖ = ‖x‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner, inner_self, normSq_def', PiLp.inner_apply,
     Fin.sum_univ_four]
   simp_rw [IsROrC.inner_apply, starRingEnd_apply, star_trivial, ← sq]
@@ -184,8 +184,8 @@ set_option linter.uppercaseLean3 false in
 @[simps apply symm_apply]
 noncomputable def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin 4) :=
   { (QuaternionAlgebra.linearEquivTuple (-1 : ℝ) (-1 : ℝ)).trans
-      (PiLp.linearEquiv 2 ℝ fun _ : Fin 4 => ℝ).symm with
-    toFun := fun a => (PiLp.equiv _ fun _ : Fin 4 => _).symm ![a.1, a.2, a.3, a.4]
+      (WithLp.linearEquiv 2 ℝ (Fin 4 → ℝ)).symm with
+    toFun := fun a => (WithLp.equiv _ (Fin 4 → _)).symm ![a.1, a.2, a.3, a.4]
     invFun := fun a => ⟨a 0, a 1, a 2, a 3⟩
     norm_map' := norm_piLp_equiv_symm_equivTuple }
 #align quaternion.linear_isometry_equiv_tuple Quaternion.linearIsometryEquivTuple

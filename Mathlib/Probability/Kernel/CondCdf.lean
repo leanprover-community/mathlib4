@@ -66,7 +66,7 @@ theorem sequence_le (a : α) : f (hf.sequence f (Encodable.encode a + 1)) ≤ f 
 
 end Directed
 
--- todo: move to data/set/lattice next to prod_Union or prod_sInter
+-- todo: move to data/set/lattice next to prod_sUnion or prod_sInter
 theorem prod_iInter {s : Set α} {t : ι → Set β} [hι : Nonempty ι] :
     (s ×ˢ ⋂ i, t i) = ⋂ i, s ×ˢ t i := by
   ext x
@@ -858,9 +858,7 @@ theorem measurable_condCdf (ρ : Measure (α × ℝ)) (x : ℝ) : Measurable fun
     congr with q
     rw [condCdf_eq_condCdfRat]
   rw [this]
-  exact
-    measurable_ciInf (fun q => measurable_condCdfRat ρ q) fun a =>
-      bddBelow_range_condCdfRat_gt ρ a _
+  exact measurable_iInf (fun q => measurable_condCdfRat ρ q)
 #align probability_theory.measurable_cond_cdf ProbabilityTheory.measurable_condCdf
 
 /-- Auxiliary lemma for `set_lintegral_cond_cdf`. -/

@@ -61,7 +61,14 @@ def vecCons {n : ℕ} (h : α) (t : Fin n → α) : Fin n.succ → α :=
   Fin.cons h t
 #align matrix.vec_cons Matrix.vecCons
 
-/-- Construct a vector `Fin n → α` using `Matrix.vecEmpty` and `Matrix.vecCons`. -/
+/-- `![...]` notation is used to construct a vector `Fin n → α` using `Matrix.vecEmpty` and
+`Matrix.vecCons`.
+
+For instance, `![a, b, c] : Fin 3` is syntax for `vecCons a (vecCons b (vecCons c vecEmpty))`.
+
+Note that this should not be used as syntax for `Matrix` as it generates a term with the wrong type.
+The `!![a, b; c, d]` syntax (provided by `Matrix.matrixNotation`) should be used instead.
+-/
 syntax (name := vecNotation) "![" term,* "]" : term
 
 macro_rules
@@ -259,7 +266,7 @@ This turns out to be helpful when providing simp lemmas to reduce `![a, b, c] n`
 that `vecAppend ho u v 0` is valid. `Fin.append u v 0` is not valid in this case because there is
 no `Zero (Fin (m + n))` instance. -/
 def vecAppend {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) : Fin o → α :=
-  Fin.append u v ∘ Fin.castIso ho
+  Fin.append u v ∘ Fin.cast ho
 #align matrix.vec_append Matrix.vecAppend
 
 theorem vecAppend_eq_ite {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) :

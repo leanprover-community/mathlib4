@@ -289,6 +289,16 @@ theorem Finset.card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
   Finset.card_univ_diff s
 #align finset.card_compl Finset.card_compl
 
+@[simp]
+theorem Finset.card_add_card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
+    s.card + sᶜ.card = Fintype.card α := by
+  rw [Finset.card_compl, ← Nat.add_sub_assoc (card_le_univ s), Nat.add_sub_cancel_left]
+
+@[simp]
+theorem Finset.card_compl_add_card [DecidableEq α] [Fintype α] (s : Finset α) :
+    sᶜ.card + s.card = Fintype.card α := by
+  rw [add_comm, card_add_card_compl]
+
 theorem Fintype.card_compl_set [Fintype α] (s : Set α) [Fintype s] [Fintype (↥sᶜ : Sort _)] :
     Fintype.card (↥sᶜ : Sort _) = Fintype.card α - Fintype.card s := by
   classical rw [← Set.toFinset_card, ← Set.toFinset_card, ← Finset.card_compl, Set.toFinset_compl]
@@ -298,6 +308,15 @@ theorem Fintype.card_compl_set [Fintype α] (s : Set α) [Fintype s] [Fintype (�
 theorem Fintype.card_fin (n : ℕ) : Fintype.card (Fin n) = n :=
   List.length_finRange n
 #align fintype.card_fin Fintype.card_fin
+
+theorem Fintype.card_fin_lt_of_le {m n : ℕ} (h : m ≤ n) :
+    Fintype.card {i : Fin n // i < m} = m := by
+  conv_rhs => rw [← Fintype.card_fin m]
+  apply Fintype.card_congr
+  exact { toFun := fun ⟨⟨i, _⟩, hi⟩ ↦ ⟨i, hi⟩
+          invFun := fun ⟨i, hi⟩ ↦ ⟨⟨i, lt_of_lt_of_le hi h⟩, hi⟩
+          left_inv := fun i ↦ rfl
+          right_inv := fun i ↦ rfl }
 
 @[simp]
 theorem Finset.card_fin (n : ℕ) : Finset.card (Finset.univ : Finset (Fin n)) = n := by
@@ -312,7 +331,7 @@ theorem fin_injective : Function.Injective Fin := fun m n h =>
 
 /-- A reversed version of `Fin.cast_eq_cast` that is easier to rewrite with. -/
 theorem Fin.cast_eq_cast' {n m : ℕ} (h : Fin n = Fin m) :
-    _root_.cast h = ⇑(Fin.castIso <| fin_injective h) := by
+    _root_.cast h = Fin.cast (fin_injective h) := by
   cases fin_injective h
   rfl
 #align fin.cast_eq_cast' Fin.cast_eq_cast'
@@ -540,6 +559,7 @@ theorem card_pos [h : Nonempty α] : 0 < card α :=
   card_pos_iff.mpr h
 #align fintype.card_pos Fintype.card_pos
 
+@[simp]
 theorem card_ne_zero [Nonempty α] : card α ≠ 0 :=
   _root_.ne_of_gt card_pos
 #align fintype.card_ne_zero Fintype.card_ne_zero
@@ -566,10 +586,7 @@ theorem card_le_one_iff_subsingleton : card α ≤ 1 ↔ Subsingleton α :=
 #align fintype.card_le_one_iff_subsingleton Fintype.card_le_one_iff_subsingleton
 
 theorem one_lt_card_iff_nontrivial : 1 < card α ↔ Nontrivial α := by
-  classical
-    rw [← not_iff_not]
-    push_neg
-    rw [not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton]
+  rw [← not_iff_not, not_lt, not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton]
 #align fintype.one_lt_card_iff_nontrivial Fintype.one_lt_card_iff_nontrivial
 
 theorem exists_ne_of_one_lt_card (h : 1 < card α) (a : α) : ∃ b : α, b ≠ a :=
@@ -585,6 +602,13 @@ theorem exists_pair_of_one_lt_card (h : 1 < card α) : ∃ a b : α, a ≠ b :=
 theorem card_eq_one_of_forall_eq {i : α} (h : ∀ j, j = i) : card α = 1 :=
   Fintype.card_eq_one_iff.2 ⟨i, h⟩
 #align fintype.card_eq_one_of_forall_eq Fintype.card_eq_one_of_forall_eq
+
+theorem exists_unique_iff_card_one {α} [Fintype α] (p : α → Prop) [DecidablePred p] :
+    (∃! a : α, p a) ↔ (Finset.univ.filter p).card = 1 := by
+  rw [Finset.card_eq_one]
+  refine' exists_congr fun x => _
+  simp only [forall_true_left, Subset.antisymm_iff, subset_singleton_iff', singleton_subset_iff,
+      true_and, and_comm, mem_univ, mem_filter]
 
 theorem one_lt_card [h : Nontrivial α] : 1 < Fintype.card α :=
   Fintype.one_lt_card_iff_nontrivial.mpr h
@@ -870,12 +894,12 @@ theorem Fintype.card_compl_eq_card_compl [Finite α] (p q : α → Prop) [Fintyp
 
 theorem Fintype.card_quotient_le [Fintype α] (s : Setoid α)
     [DecidableRel ((· ≈ ·) : α → α → Prop)] : Fintype.card (Quotient s) ≤ Fintype.card α :=
-  Fintype.card_le_of_surjective _ (surjective_quotient_mk _)
+  Fintype.card_le_of_surjective _ (surjective_quotient_mk' _)
 #align fintype.card_quotient_le Fintype.card_quotient_le
 
 theorem Fintype.card_quotient_lt [Fintype α] {s : Setoid α} [DecidableRel ((· ≈ ·) : α → α → Prop)]
     {x y : α} (h1 : x ≠ y) (h2 : x ≈ y) : Fintype.card (Quotient s) < Fintype.card α :=
-  Fintype.card_lt_of_surjective_not_injective _ (surjective_quotient_mk _) fun w =>
+  Fintype.card_lt_of_surjective_not_injective _ (surjective_quotient_mk' _) fun w =>
     h1 (w <| Quotient.eq.mpr h2)
 #align fintype.card_quotient_lt Fintype.card_quotient_lt
 
@@ -1179,6 +1203,58 @@ theorem not_surjective_finite_infinite {α β} [Finite α] [Infinite β] (f : α
   fun hf => (Infinite.of_surjective f hf).not_finite ‹_›
 #align not_surjective_finite_infinite not_surjective_finite_infinite
 
+section Ranges
+
+/-- For any `c : List ℕ` whose sum is at most `Fintype.card α`,
+  we can find `o : List (List α)` whose members have no duplicate,
+  whose lengths given by `c`, and which are pairwise disjoint -/
+theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
+    {c : List ℕ} (hc : c.sum ≤ Fintype.card α) :
+    ∃ o : List (List α),
+      o.map length = c ∧ (∀ s ∈ o, s.Nodup) ∧ Pairwise List.Disjoint o := by
+  let klift (n : ℕ) (hn : n < Fintype.card α) : Fin (Fintype.card α) :=
+    (⟨n, hn⟩ : Fin (Fintype.card α))
+  let klift' (l : List ℕ) (hl : ∀ a ∈ l, a < Fintype.card α) :
+    List (Fin (Fintype.card α)) := List.pmap klift l hl
+  have hc'_lt : ∀ l ∈ c.ranges, ∀ n ∈ l, n < Fintype.card α := by
+    intro l hl n hn
+    apply lt_of_lt_of_le _ hc
+    rw [← mem_mem_ranges_iff_lt_sum]
+    exact ⟨l, hl, hn⟩
+  let l := (ranges c).pmap klift' hc'_lt
+  have hl : ∀ (a : List ℕ) (ha : a ∈ c.ranges),
+    (klift' a (hc'_lt a ha)).map Fin.valEmbedding = a := by
+    intro a ha
+    conv_rhs => rw [← List.map_id a]
+    rw [List.map_pmap]
+    simp only [Fin.valEmbedding_apply, Fin.val_mk, List.pmap_eq_map, List.map_id'', List.map_id]
+  use l.map (List.map (Fintype.equivFin α).symm)
+  constructor
+  · -- length
+    rw [← ranges_length c]
+    simp only [map_map, map_pmap, Function.comp_apply, length_map, length_pmap, pmap_eq_map]
+  constructor
+  · -- nodup
+    intro s
+    rw [mem_map]
+    rintro ⟨t, ht, rfl⟩
+    apply Nodup.map (Equiv.injective _)
+    obtain ⟨u, hu, rfl⟩ := mem_pmap.mp ht
+    apply Nodup.of_map
+    rw [hl u hu]
+    exact ranges_nodup hu
+  · -- pairwise disjoint
+    refine Pairwise.map _ (fun s t ↦ disjoint_map (Equiv.injective _)) ?_
+    · -- List.Pairwise List.disjoint l
+      apply Pairwise.pmap (List.ranges_disjoint c)
+      intro u hu v hv huv
+      apply disjoint_pmap
+      · intro a a' ha ha' h
+        simpa only [Fin.mk_eq_mk] using h
+      exact huv
+
+end Ranges
+
 section Trunc
 
 /-- A `Fintype` with positive cardinality constructively contains an element.
@@ -1223,12 +1299,12 @@ private theorem card_univ_pos (α : Type*) [Fintype α] [Nonempty α] :
   Finset.univ_nonempty.card_pos
 
 --Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
--- /-- Extension for the `positivity` tactic: `finset.card s` is positive if `s` is nonempty. -/
+-- /-- Extension for the `positivity` tactic: `Finset.card s` is positive if `s` is nonempty. -/
 -- @[positivity]
 -- unsafe def positivity_finset_card : expr → tactic strictness
 --   | q(Finset.card $(s)) => do
 --     let p
---       ←-- TODO: Partial decision procedure for `finset.nonempty`
+--       ←-- TODO: Partial decision procedure for `Finset.nonempty`
 --             to_expr
 --             ``(Finset.Nonempty $(s)) >>=
 --           find_assumption
@@ -1237,7 +1313,7 @@ private theorem card_univ_pos (α : Type*) [Fintype α] [Nonempty α] :
 --   | e =>
 --     pp e >>=
 --       fail ∘
---       format.bracket "The expression `" "` isn't of the form `finset.card s` or `fintype.card α`"
+--       format.bracket "The expression `" "` isn't of the form `Finset.card s` or `Fintype.card α`"
 -- #align tactic.positivity_finset_card tactic.positivity_finset_card
 
 end Tactic

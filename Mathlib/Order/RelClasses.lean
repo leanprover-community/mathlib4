@@ -3,6 +3,7 @@ Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury G. Kudryashov
 -/
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relation
 import Mathlib.Order.Basic
@@ -127,7 +128,7 @@ protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α 
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsTotal.to_isRefl (r) [IsTotal α r] : IsRefl α r :=
-  ⟨fun a => (or_self_iff _).1 <| total_of r a a⟩
+  ⟨fun a => or_self_iff.1 <| total_of r a a⟩
 
 theorem ne_of_irrefl {r} [IsIrrefl α r] : ∀ {x y : α}, r x y → x ≠ y
   | _, _, h, rfl => irrefl _ h
@@ -270,7 +271,7 @@ instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTot
 /-! ### Well-order -/
 
 
-/-- A well-founded relation. Not to be confused with `isWellOrder`. -/
+/-- A well-founded relation. Not to be confused with `IsWellOrder`. -/
 @[mk_iff] class IsWellFounded (α : Type u) (r : α → α → Prop) : Prop where
   /-- The relation is `WellFounded`, as a proposition. -/
   wf : WellFounded r
@@ -354,6 +355,9 @@ def WellFoundedLT (α : Type*) [LT α] : Prop :=
 def WellFoundedGT (α : Type*) [LT α] : Prop :=
   IsWellFounded α (· > ·)
 #align well_founded_gt WellFoundedGT
+
+lemma wellFounded_lt [LT α] [WellFoundedLT α] : @WellFounded α (· < ·) := IsWellFounded.wf
+lemma wellFounded_gt [LT α] [WellFoundedGT α] : @WellFounded α (· > ·) := IsWellFounded.wf
 
 -- See note [lower instance priority]
 instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedLT α] : WellFoundedGT αᵒᵈ :=
@@ -543,7 +547,7 @@ def Unbounded (r : α → α → Prop) (s : Set α) : Prop :=
   ∀ a, ∃ b ∈ s, ¬r b a
 #align set.unbounded Set.Unbounded
 
-/-- A bounded or final set. Not to be confused with `Metric.bounded`. -/
+/-- A bounded or final set. Not to be confused with `Bornology.IsBounded`. -/
 def Bounded (r : α → α → Prop) (s : Set α) : Prop :=
   ∃ a, ∀ b ∈ s, r b a
 #align set.bounded Set.Bounded

@@ -922,6 +922,13 @@ theorem injective_iff_surjective [FiniteDimensional K V] {f : V →ₗ[K] V} :
         this).injective⟩
 #align linear_map.injective_iff_surjective LinearMap.injective_iff_surjective
 
+lemma injOn_iff_surjOn {p : Submodule K V} [FiniteDimensional K p]
+    {f : V →ₗ[K] V} (h : ∀ x ∈ p, f x ∈ p) :
+    Set.InjOn f p ↔ Set.SurjOn f p p := by
+  rw [Set.injOn_iff_injective, ← Set.MapsTo.restrict_surjective_iff h]
+  change Injective (f.domRestrict p) ↔ Surjective (f.restrict h)
+  simp [disjoint_iff, ← injective_iff_surjective]
+
 theorem ker_eq_bot_iff_range_eq_top [FiniteDimensional K V] {f : V →ₗ[K] V} :
     LinearMap.ker f = ⊥ ↔ LinearMap.range f = ⊤ := by
   rw [range_eq_top, ker_eq_bot, injective_iff_surjective]
@@ -958,6 +965,37 @@ theorem finrank_range_add_finrank_ker [FiniteDimensional K V] (f : V →ₗ[K] V
   rw [← f.quotKerEquivRange.finrank_eq]
   exact Submodule.finrank_quotient_add_finrank _
 #align linear_map.finrank_range_add_finrank_ker LinearMap.finrank_range_add_finrank_ker
+
+theorem comap_eq_sup_ker_of_disjoint {p : Submodule K V} [FiniteDimensional K p] {f : V →ₗ[K] V}
+    (h : ∀ x ∈ p, f x ∈ p) (h' : Disjoint p (ker f)) :
+    p.comap f = p ⊔ ker f := by
+  refine le_antisymm (fun x hx ↦ ?_) (sup_le_iff.mpr ⟨h, ker_le_comap _⟩)
+  obtain ⟨⟨y, hy⟩, hxy⟩ :=
+    surjective_of_injective ((injective_restrict_iff_disjoint h).mpr h') ⟨f x, hx⟩
+  replace hxy : f y = f x := by simpa [Subtype.ext_iff] using hxy
+  exact Submodule.mem_sup.mpr ⟨y, hy, x - y, by simp [hxy], add_sub_cancel'_right y x⟩
+
+theorem ker_comp_eq_of_commute_of_disjoint_ker [FiniteDimensional K V] {f g : V →ₗ[K] V}
+    (h : Commute f g) (h' : Disjoint (ker f) (ker g)) :
+    ker (f ∘ₗ g) = ker f ⊔ ker g := by
+  suffices ∀ x, f x = 0 → f (g x) = 0 by rw [ker_comp, comap_eq_sup_ker_of_disjoint _ h']; simpa
+  intro x hx
+  rw [← comp_apply, ← mul_eq_comp, h.eq, mul_apply, hx, _root_.map_zero]
+
+theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} {f : ι → V →ₗ[K] V}
+    (s : Finset ι) (comm) (h : s.SupIndep fun i ↦ ker (f i)) :
+    ker (s.noncommProd f comm) = ⨆ i ∈ s, ker (f i) := by
+  classical
+  induction' s using Finset.induction_on with i s hi ih; simpa using LinearMap.ker_id
+  replace ih : ker (Finset.noncommProd s f <| Set.Pairwise.mono (s.subset_insert i) comm) =
+      ⨆ x ∈ s, ker (f x) := ih _ (h.subset (s.subset_insert i))
+  rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, mul_eq_comp,
+    ker_comp_eq_of_commute_of_disjoint_ker]
+  · simp_rw [Finset.mem_insert_coe, iSup_insert, Finset.mem_coe, ih]
+  · exact s.noncommProd_commute _ _ _ fun j hj ↦
+      comm (s.mem_insert_self i) (Finset.mem_insert_of_mem hj) (by aesop)
+  · replace h := Finset.supIndep_iff_disjoint_erase.mp h i (s.mem_insert_self i)
+    simpa [ih, hi, Finset.sup_eq_iSup] using h
 
 end DivisionRing
 
@@ -1166,7 +1204,7 @@ lemma exists_smul_eq_of_finrank_eq_one
     apply eq_top_of_finrank_eq
     rw [h]
     exact finrank_span_singleton hx
-  have : y ∈ Submodule.span K {x} := by rw [this]; trivial
+  have : y ∈ Submodule.span K {x} := by rw [this]; exact mem_top
   exact mem_span_singleton.1 this
 
 theorem Set.finrank_mono [FiniteDimensional K V] {s t : Set V} (h : s ⊆ t) :
@@ -1182,11 +1220,7 @@ theorem span_eq_top_of_linearIndependent_of_card_eq_finrank {ι : Type*} [hι : 
     [Fintype ι] {b : ι → V} (lin_ind : LinearIndependent K b)
     (card_eq : Fintype.card ι = finrank K V) : span K (Set.range b) = ⊤ := by
   by_cases fin : FiniteDimensional K V
-  · -- Porting note: fails without this line
-    -- This will presumably be fixed by the changes discussed at
-    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.232894/near/342121059
-    replace fin : FiniteDimensional _ _ := fin
-    by_contra ne_top
+  · by_contra ne_top
     have lt_top : span K (Set.range b) < ⊤ := lt_of_le_of_ne le_top ne_top
     exact ne_of_lt (Submodule.finrank_lt lt_top)
       (_root_.trans (finrank_span_eq_card lin_ind) card_eq)

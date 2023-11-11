@@ -116,8 +116,8 @@ instance (L' : LieSubalgebra R L) [IsNoetherian R L] : IsNoetherian R L' :=
 end
 
 /-- A Lie subalgebra forms a new Lie algebra. -/
-instance lieAlgebra (L' : LieSubalgebra R L) : LieAlgebra R L'
-    where lie_smul := by
+instance lieAlgebra (L' : LieSubalgebra R L) : LieAlgebra R L' where
+  lie_smul := by
     { intros
       apply SetCoe.ext
       apply lie_smul }
@@ -535,7 +535,7 @@ instance addCommMonoid : AddCommMonoid (LieSubalgebra R L)
   add_zero _ := sup_bot_eq
   add_comm _ _ := sup_comm
 
-instance : CanonicallyOrderedAddMonoid (LieSubalgebra R L) :=
+instance : CanonicallyOrderedAddCommMonoid (LieSubalgebra R L) :=
   { LieSubalgebra.addCommMonoid,
     LieSubalgebra.completeLattice with
     add_le_add_left := fun _a _b ↦ sup_le_sup_left

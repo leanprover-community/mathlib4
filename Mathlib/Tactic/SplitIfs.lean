@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, David Renshaw
 -/
 import Lean
-import Mathlib.Init.Logic
 import Mathlib.Tactic.Core
 
 /-!

@@ -63,6 +63,8 @@ structure IsTree : Prop where
 
 variable {G}
 
+@[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := λ _a _w hw ↦ hw.ne_bot rfl
+
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge ⟦(v, w)⟧ := by
   simp_rw [isBridge_iff_adj_and_forall_cycle_not_mem]

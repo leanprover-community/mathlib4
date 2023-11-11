@@ -5,14 +5,16 @@ Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
 import Std.Tactic.Ext
 import Std.Tactic.Lint.Basic
+import Std.Tactic.Relation.Rfl
 import Std.Logic
 import Std.WF
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.Relation.Rfl
 import Mathlib.Tactic.Relation.Symm
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Relation.Trans
+import Mathlib.Util.Imports
+import Mathlib.Tactic.ProjectionNotation
 
 set_option autoImplicit true
 
@@ -150,7 +152,6 @@ theorem false_and_iff : False ∧ p ↔ False := iff_of_eq (false_and _)
 #align false_and false_and_iff
 #align not_and_self not_and_self_iff
 #align and_not_self and_not_self_iff
-theorem and_self_iff : p ∧ p ↔ p := iff_of_eq (and_self _)
 #align and_self and_self_iff
 
 #align or.imp Or.impₓ -- reorder implicits
@@ -185,7 +186,6 @@ theorem false_or_iff : False ∨ p ↔ p := iff_of_eq (false_or _)
 #align false_or false_or_iff
 theorem or_false_iff : p ∨ False ↔ p := iff_of_eq (or_false _)
 #align or_false or_false_iff
-theorem or_self_iff : p ∨ p ↔ p := iff_of_eq (or_self _)
 #align or_self or_self_iff
 
 theorem not_or_of_not : ¬a → ¬b → ¬(a ∨ b) := fun h1 h2 ↦ not_or.2 ⟨h1, h2⟩
@@ -664,3 +664,5 @@ end Binary
 #align subsingleton_iff_forall_eq subsingleton_iff_forall_eq
 #align false_ne_true false_ne_true
 #align ne_comm ne_comm
+
+attribute [pp_dot] Iff.mp Iff.mpr False.elim Eq.symm Eq.trans

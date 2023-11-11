@@ -6,8 +6,8 @@ Authors: Rémi Bottinelli
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.PathCategory
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Hom.Group
-import Mathlib.Algebra.Hom.Equiv.Basic
+import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.ConnectedComponent
 

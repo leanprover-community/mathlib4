@@ -7,7 +7,7 @@ import Mathlib.AlgebraicTopology.DoldKan.EquivalenceAdditive
 import Mathlib.AlgebraicTopology.DoldKan.Compatibility
 import Mathlib.CategoryTheory.Idempotents.SimplicialObject
 
-#align_import algebraic_topology.dold_kan.equivalence_pseudoabelian from "leanprover-community/mathlib"@"63721b2c3eba6c325ecf8ae8cca27155a4f6306f"
+#align_import algebraic_topology.dold_kan.equivalence_pseudoabelian from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 
@@ -53,14 +53,14 @@ open AlgebraicTopology.DoldKan
 `N' : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)` and the inverse
 of the equivalence `ChainComplex C ℕ ≌ Karoubi (ChainComplex C ℕ)`. -/
 @[simps!, nolint unusedArguments]
-def N  [IsIdempotentComplete C] [HasFiniteCoproducts C] : SimplicialObject C ⥤ ChainComplex C ℕ :=
+def N [IsIdempotentComplete C] [HasFiniteCoproducts C] : SimplicialObject C ⥤ ChainComplex C ℕ :=
   N₁ ⋙ (toKaroubiEquivalence _).inverse
 set_option linter.uppercaseLean3 false in
 #align category_theory.idempotents.dold_kan.N CategoryTheory.Idempotents.DoldKan.N
 
 /-- The functor `Γ` for the equivalence is `Γ'`. -/
 @[simps!, nolint unusedArguments]
-def Γ  [IsIdempotentComplete C] [HasFiniteCoproducts C] : ChainComplex C ℕ ⥤ SimplicialObject C :=
+def Γ [IsIdempotentComplete C] [HasFiniteCoproducts C] : ChainComplex C ℕ ⥤ SimplicialObject C :=
   Γ₀
 #align category_theory.idempotents.dold_kan.Γ CategoryTheory.Idempotents.DoldKan.Γ
 

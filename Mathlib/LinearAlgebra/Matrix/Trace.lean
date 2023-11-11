@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.RowCol
 
 #align_import linear_algebra.matrix.trace from "leanprover-community/mathlib"@"32b08ef840dd25ca2e47e035c5da03ce16d2dc3c"
 
@@ -42,6 +43,10 @@ def trace (A : Matrix n n R) : R :=
   ∑ i, diag A i
 #align matrix.trace Matrix.trace
 
+lemma trace_diagonal {o} [Fintype o] [DecidableEq o] (d : o → R) :
+    trace (diagonal d) = ∑ i, d i := by
+  simp only [trace, diag_apply, diagonal_apply_eq]
+
 variable (n R)
 
 @[simp]
@@ -50,6 +55,9 @@ theorem trace_zero : trace (0 : Matrix n n R) = 0 :=
 #align matrix.trace_zero Matrix.trace_zero
 
 variable {n R}
+
+@[simp]
+lemma trace_eq_zero_of_isEmpty [IsEmpty n] (A : Matrix n n R) : trace A = 0 := by simp [trace]
 
 @[simp]
 theorem trace_add (A B : Matrix n n R) : trace (A + B) = trace A + trace B :=
@@ -183,7 +191,6 @@ with `Matrix.det_fin_two` etc.
 -/
 
 
-@[simp]
 theorem trace_fin_zero (A : Matrix (Fin 0) (Fin 0) R) : trace A = 0 :=
   rfl
 #align matrix.trace_fin_zero Matrix.trace_fin_zero

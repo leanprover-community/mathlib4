@@ -48,8 +48,7 @@ namespace SzemerediRegularity
 variable {α : Type*} [Fintype α] {P : Finpartition (univ : Finset α)} (hP : P.IsEquipartition)
   (G : SimpleGraph α) (ε : ℝ) {U : Finset α} (hU : U ∈ P.parts) (V : Finset α)
 
-local notation3 (prettyPrint := false)
-  "m" => (card α / stepBound P.parts.card : ℕ)
+local notation3 "m" => (card α / stepBound P.parts.card : ℕ)
 
 /-!
 ### Definitions
@@ -451,7 +450,10 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
   set s : ℝ := ↑(G.edgeDensity (G.nonuniformWitness ε U V) (G.nonuniformWitness ε V U))
   set t : ℝ := ↑(G.edgeDensity U V)
   have hrs : |r - s| ≤ ε / 5 := abs_density_star_sub_density_le_eps hPε hε₁ hUVne hUV
-  have hst : ε ≤ |s - t| := by exact_mod_cast G.nonuniformWitness_spec hUVne hUV
+  have hst : ε ≤ |s - t| := by
+    -- After leanprover/lean4#2734, we need to do the zeta reduction before `norm_cast`.
+    unfold_let s t
+    exact_mod_cast G.nonuniformWitness_spec hUVne hUV
   have hpr : |p - r| ≤ ε ^ 5 / 49 :=
     average_density_near_total_density hPα hPε hε₁ star_subset_chunk star_subset_chunk
   have hqt : |q - t| ≤ ε ^ 5 / 49 := by
@@ -470,7 +472,6 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
   left; linarith
   right; linarith
 
-set_option maxHeartbeats 350000 in
 /-- Lower bound on the edge densities between non-uniform parts of `SzemerediRegularity.increment`.
 -/
 theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α)
@@ -491,7 +492,11 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ 
       rw [show (16 : ℝ) = ↑4 ^ 2 by norm_num, pow_right_comm, sq ((4 : ℝ) ^ _), ←
         _root_.div_mul_div_comm, mul_assoc]
       have : 0 < ε := by sz_positivity
-      have UVl := mul_le_mul Ul Vl (by positivity) (by positivity)
+      have UVl := mul_le_mul Ul Vl (by positivity) ?_
+      swap
+      · -- This seems faster than `exact div_nonneg (by positivity) (by positivity)` and *much*
+        -- (tens of seconds) faster than `positivity` on its own.
+        apply div_nonneg <;> positivity
       refine' le_trans _ (mul_le_mul_of_nonneg_right UVl _)
       · norm_num
         nlinarith

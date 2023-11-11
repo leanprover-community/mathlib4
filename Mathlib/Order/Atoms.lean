@@ -642,7 +642,7 @@ variable [DecidableEq α] [PartialOrder α] [BoundedOrder α] [IsSimpleOrder α]
 def equivBool {α} [DecidableEq α] [LE α] [BoundedOrder α] [IsSimpleOrder α] : α ≃ Bool
     where
   toFun x := x = ⊤
-  invFun x := cond x ⊤ ⊥
+  invFun x := x.casesOn ⊥ ⊤
   left_inv x := by rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp [bot_ne_top]
   right_inv x := by cases x <;> simp [bot_ne_top]
 #align is_simple_order.equiv_bool IsSimpleOrder.equivBool
@@ -1022,7 +1022,7 @@ theorem isAtom_single [DecidableEq ι] [∀ i, PartialOrder (π i)] [∀ i, Orde
   isAtom_iff.2 ⟨i, by simpa, fun j hji => Function.update_noteq hji _ _⟩
 
 theorem isAtom_iff_eq_single [DecidableEq ι] [∀ i, PartialOrder (π i)]
-      [∀ i, OrderBot (π i)] {f : ∀ i, π i} :
+    [∀ i, OrderBot (π i)] {f : ∀ i, π i} :
     IsAtom f ↔ ∃ i a, IsAtom a ∧ f = Function.update ⊥ i a := by
   constructor
   case mp =>
@@ -1032,7 +1032,7 @@ theorem isAtom_iff_eq_single [DecidableEq ι] [∀ i, PartialOrder (π i)]
     rw [Function.update_noteq hij, hbot _ hij, bot_apply]
   case mpr =>
     rintro ⟨i, a, h, rfl⟩
-    refine isAtom_single h
+    exact isAtom_single h
 
 instance isAtomic [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)] [∀ i, IsAtomic (π i)] :
     IsAtomic (∀ i, π i) where
@@ -1067,7 +1067,7 @@ instance isAtomistic [∀ i, CompleteLattice (π i)] [∀ i, IsAtomistic (π i)]
       rintro _ ⟨⟨_, ⟨j, a, ha, rfl⟩, hle⟩, rfl⟩
       by_cases hij : i = j; case neg => simp [Function.update_noteq hij]
       subst hij; simp only [Function.update_same]
-      refine le_sSup ⟨ha, by simpa using hle i⟩
+      exact le_sSup ⟨ha, by simpa using hle i⟩
 
 instance isCoatomistic [∀ i, CompleteLattice (π i)] [∀ i, IsCoatomistic (π i)] :
     IsCoatomistic (∀ i, π i) :=
