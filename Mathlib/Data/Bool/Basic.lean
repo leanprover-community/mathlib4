@@ -308,7 +308,7 @@ def toNat (b : Bool) : Nat :=
 #align bool.to_nat Bool.toNat
 
 lemma toNat_le_one (b : Bool) : b.toNat ≤ 1 := by
-  cases b <;> simp only
+  cases b <;> decide
 
 /-- convert a `ℕ` to a `Bool`, `0 -> false`, everything else -> `true` -/
 def ofNat (n : Nat) : Bool :=
