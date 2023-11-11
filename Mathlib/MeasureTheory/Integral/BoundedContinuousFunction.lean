@@ -71,7 +71,7 @@ section BochnerIntegral
 
 variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
 variable (μ : Measure X)
-variable {E : Type*} [NormedAddCommGroup E] [TopologicalSpace.SecondCountableTopology E]
+variable {E : Type*} [NormedAddCommGroup E] [SecondCountableTopology E]
 variable [MeasurableSpace E] [BorelSpace E]
 
 lemma lintegral_nnnorm_le (f : X →ᵇ E) :
