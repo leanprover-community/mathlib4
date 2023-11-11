@@ -1096,16 +1096,17 @@ section UniformGroup
 variable [AddCommGroup α] [UniformSpace α]
 
 /-- The **Cauchy criterion** for infinite sums, also known as the **Cauchy convergence test** -/
-theorem summable_iff_cauchySeq_finset [CompleteSpace α] [DecidableEq β] {f : β → α} :
-    Summable f ↔ CauchySeq fun s : Finset β ↦ ∑ b in s, f b :=
-  cauchy_map_iff_exists_tendsto.symm
+theorem summable_iff_cauchySeq_finset [CompleteSpace α] {f : β → α} :
+    Summable f ↔ CauchySeq fun s : Finset β ↦ ∑ b in s, f b := by
+  classical exact cauchy_map_iff_exists_tendsto.symm
 #align summable_iff_cauchy_seq_finset summable_iff_cauchySeq_finset
 
 variable [UniformAddGroup α] {f g : β → α} {a a₁ a₂ : α}
 
-theorem cauchySeq_finset_iff_vanishing [DecidableEq β] :
+theorem cauchySeq_finset_iff_vanishing :
     (CauchySeq fun s : Finset β ↦ ∑ b in s, f b) ↔
       ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∑ b in t, f b) ∈ e := by
+  classical
   simp_rw [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
     uniformity_eq_comap_nhds_zero α, tendsto_comap_iff, (· ∘ ·), tendsto_atTop']
   constructor
@@ -1126,7 +1127,7 @@ theorem cauchySeq_finset_iff_vanishing [DecidableEq β] :
     exact hde _ (h _ Finset.sdiff_disjoint) _ (h _ Finset.sdiff_disjoint)
 #align cauchy_seq_finset_iff_vanishing cauchySeq_finset_iff_vanishing
 
-theorem cauchySeq_finset_iff_tsum_vanishing [DecidableEq β] :
+theorem cauchySeq_finset_iff_tsum_vanishing :
     (CauchySeq fun s : Finset β ↦ ∑ b in s, f b) ↔
       ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t : Set β, Disjoint t s → (∑' b : t, f b) ∈ e := by
   simp_rw [cauchySeq_finset_iff_vanishing, Set.disjoint_left, disjoint_left]
@@ -1135,7 +1136,8 @@ theorem cauchySeq_finset_iff_tsum_vanishing [DecidableEq β] :
     obtain ⟨s, hs⟩ := vanish o ho
     refine ⟨s, fun t hts ↦ oe ?_⟩
     by_cases ht : Summable fun a : t ↦ f a
-    · refine o_closed.mem_of_tendsto ht.hasSum (eventually_of_forall fun t' ↦ ?_)
+    · classical
+      refine o_closed.mem_of_tendsto ht.hasSum (eventually_of_forall fun t' ↦ ?_)
       rw [← sum_subtype_map_embedding fun _ _ ↦ by rfl]
       apply hs
       simp_rw [Finset.mem_map]
@@ -1162,13 +1164,11 @@ variable [CompleteSpace α]
 
 theorem summable_iff_vanishing :
     Summable f ↔ ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∑ b in t, f b) ∈ e := by
-  classical
   rw [summable_iff_cauchySeq_finset, cauchySeq_finset_iff_vanishing]
 #align summable_iff_vanishing summable_iff_vanishing
 
 theorem summable_iff_tsum_vanishing : Summable f ↔
     ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t : Set β, Disjoint t s → (∑' b : t, f b) ∈ e := by
-  classical
   rw [summable_iff_cauchySeq_finset, cauchySeq_finset_iff_tsum_vanishing]
 
 theorem summable_iff_nat_tsum_vanishing {f : ℕ → α} : Summable f ↔
