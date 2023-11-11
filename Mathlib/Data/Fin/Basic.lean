@@ -777,15 +777,15 @@ def castLEEmb (h : n ≤ m) : Fin n ↪o Fin m :=
 #align fin.cast_le_mk Fin.castLE_mk
 #align fin.cast_le_zero Fin.castLE_zero
 
-@[simp] lemma castLE_castSucc {n m} (i : Fin n) (h : (n+1) ≤ m) :
+@[simp] lemma castLE_castSucc {n m} (i : Fin n) (h : n + 1 ≤ m) :
     i.castSucc.castLE h = i.castLE (Nat.le_of_succ_le h) :=
   rfl
 
-@[simp] lemma castLE_comp_castSucc {n m} (h : (n+1) ≤ m) :
-    (Fin.castLE h ∘ Fin.castSucc) = Fin.castLE (Nat.le_of_succ_le h) :=
+@[simp] lemma castLE_comp_castSucc {n m} (h : n + 1 ≤ m) :
+    Fin.castLE h ∘ Fin.castSucc = Fin.castLE (Nat.le_of_succ_le h) :=
   rfl
 
-@[simp] lemma castLE_rfl (n : ℕ) : Fin.castLE (le_rfl (a:=n)) = id :=
+@[simp] lemma castLE_rfl (n : ℕ) : Fin.castLE (le_refl n) = id :=
   rfl
 
 @[simp]
