@@ -34,9 +34,6 @@ local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 open Finset Real Filter Asymptotics BigOperators
 open scoped Topology
 
-@[gcongr] lemma Nat.floor_le_floor {α : Type*} [LinearOrderedSemiring α] [FloorSemiring α] :
-  ∀ x y : α, x ≤ y → ⌊x⌋₊ ≤ ⌊y⌋₊ := Nat.floor_mono
-
 namespace AkraBazziRecurrence
 
 /-- The growth condition that the function `g` must satisfy for the Akra-Bazzi theorem to apply.
@@ -204,24 +201,71 @@ lemma _root_.induction_Ico_add {R : Type*} [LinearOrderedAddCommGroup R] [Archim
 --               _ < _ := by gcongr; exact Nat.lt_floor_add_one _
 --  termination_by induction_Ico_add x₀ r hr base step x hx => Nat.floor ((x-x₀)/r)
 
+-- Move to Mathlib.Analysis.SpecialFunctions.Log.Base
+@[simp]
+lemma _root_.Real.logb_self_eq_one {b : ℝ} (hb : 1 < b) : logb b b = 1 :=
+  div_self (fun H => (ne_of_lt (log_pos hb)).symm H)
+
 lemma _root_.Real.induction_Ico_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx₀ : 0 < x₀)
     (base : ∀ x ∈ Set.Ico x₀ (r * x₀), P x)
-    (step : ∀ n : ℤ, n ≥ 1 → (∀ z ∈ Set.Ico x₀ (r ^ n * x₀), P z) →
+    (step : ∀ n : ℕ, n ≥ 1 → (∀ z ∈ Set.Ico x₀ (r ^ n * x₀), P z) →
       (∀ z ∈ Set.Ico (r ^ n * x₀) (r ^ (n+1) * x₀), P z)) :
     ∀ x ≥ x₀, P x :=
   fun x hx =>
+    have h₁ : r ≠ 1 := (ne_of_lt hr).symm
+    have h₂ : 0 < r := zero_lt_one.trans hr
+    have h₃ : x₀ ≠ 0 := (ne_of_lt hx₀).symm
+    have h₄ : 0 < x := by linarith
     if hx' : x < r * x₀ then
       base x ⟨hx, hx'⟩
     else by
       push_neg at hx'
-      refine step ⌊logb r (x / x₀)⌋ ?ge_one ?main x ?memIco
+      refine step ⌊logb r (x / x₀)⌋₊ ?ge_one ?main x ?memIco
       case ge_one =>
-        calc 1 = ⌊logb r (r * x₀ / x₀)⌋ := by sorry
-             _ ≤ ⌊logb r (x / x₀)⌋ := by sorry
+        calc 1 = ⌊logb r (r * x₀ / x₀)⌋₊ := by
+                simp [mul_div_cancel _ (ne_of_lt hx₀).symm, hr]
+             _ ≤ ⌊logb r (x / x₀)⌋₊ := by
+                gcongr
+                refine (logb_le_logb hr ?_ (div_pos (by linarith) hx₀)).mpr (by gcongr)
+                rw [mul_div_cancel _ (ne_of_lt hx₀).symm]
+                exact zero_lt_one.trans hr
       case main =>
-        sorry
+        intro z ⟨z_lb, z_ub⟩
+        -- Needed by the termination checker
+        have z_pos : 0 < z := by linarith
+        have h_nonneg : 0 ≤ logb r (z / x₀) := logb_nonneg hr ((one_le_div hx₀).mpr z_lb)
+        have hlogb : logb r (r ^ ⌊logb r (x / x₀)⌋₊ * x₀ / x₀) =  ⌊logb r (x / x₀)⌋₊ := by
+          rw [←rpow_nat_cast, mul_div_cancel _ (ne_of_lt hx₀).symm, logb_rpow h₂ h₁]
+        have _ : ⌊logb r (z / x₀)⌋₊ < ⌊logb r (x / x₀)⌋₊ := by
+          rw [Nat.floor_lt h_nonneg]
+          calc logb r (z / x₀) < logb r (r ^ ⌊logb r (x / x₀)⌋₊ * x₀ / x₀) := by
+                    refine (logb_lt_logb_iff hr (div_pos z_pos hx₀) (by positivity)).mpr ?_
+                    gcongr
+               _ = ⌊logb r (r ^ ⌊logb r (x / x₀)⌋₊ * x₀ / x₀)⌋₊ := by
+                    nth_rewrite 1 [hlogb]
+                    norm_cast
+                    rw [hlogb]
+                    simp
+               _ = ⌊logb r (x / x₀)⌋₊ := by simp [hlogb]
+        exact induction_Ico_mul x₀ r hr hx₀ base step z z_lb
       case memIco =>
-        sorry
+        have h₅ : x = r ^ logb r (x / x₀) * x₀ := by
+          rw [rpow_logb h₂ h₁ (by positivity), div_mul_cancel _ h₃]
+        refine ⟨?lb, ?ub⟩
+        case lb =>
+          calc _ ≤ r ^ logb r (x / x₀) * x₀ := by
+                  rw [←rpow_nat_cast]
+                  gcongr
+                  · exact le_of_lt hr
+                  · exact Nat.floor_le (logb_nonneg hr (by rwa [one_le_div hx₀]))
+               _ = x := by rw [←h₅]
+        case ub =>
+          calc _ = r ^ logb r (x / x₀) * x₀ := by rw [←h₅]
+               _ < r ^ (⌊logb r (x / x₀)⌋₊ + 1) * x₀ := by
+                  rw [←rpow_nat_cast]
+                  gcongr
+                  simp [rpow_lt_rpow_left_iff hr, Nat.lt_floor_add_one]
+  termination_by induction_Ico_mul x₀ r hr hx₀ base step x hx => ⌊logb r (x / x₀)⌋₊
 
 open Real in
 lemma _root_.Real.induction_Ico_mul' {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx₀ : 0 < x₀)
