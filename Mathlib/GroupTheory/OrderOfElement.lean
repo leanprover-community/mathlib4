@@ -238,8 +238,8 @@ theorem orderOf_eq_one_iff : orderOf x = 1 ↔ x = 1 := by
 @[to_additive (attr := simp) mod_addOrderOf_nsmul]
 lemma pow_mod_orderOf (x : G) (n : ℕ) : x ^ (n % orderOf x) = x ^ n :=
   calc
-    x ^ (n % orderOf x) = x ^ (n % orderOf x + orderOf x * (n / orderOf x))
-      := by simp [pow_add, pow_mul, pow_orderOf_eq_one]
+    x ^ (n % orderOf x) = x ^ (n % orderOf x + orderOf x * (n / orderOf x)) := by
+        simp [pow_add, pow_mul, pow_orderOf_eq_one]
     _ = x ^ n := by rw [Nat.mod_add_div]
 #align pow_eq_mod_order_of pow_mod_orderOf
 #align nsmul_eq_mod_add_order_of mod_addOrderOf_nsmul
