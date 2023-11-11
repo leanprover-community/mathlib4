@@ -38,20 +38,20 @@ section BinomialSemiring
 factorials are divisible by the corresponding factorial. -/
 class BinomialSemiring (R: Type u) extends Semiring R where
   /-- Multiplication by positive integers is injective -/
-  inj_smul_pos (n : ℕ) (r s : R) (h: n ≠ 0) : n * r = n * s → r = s
+  inj_smul_pos (n : ℕ) (r s : R) (h: n ≠ 0) : n • r = n • s → r = s
   /-- The multichoose function witnesses the divisibility of ascFactorial r n by n! -/
   multichoose : R → ℕ → R
   /-- ascFactorial r n is divisible by n! (witnessed by multichoose) -/
   factorial_mul_multichoose : ∀ (r : R) (n : ℕ),
-    n.factorial * multichoose r n = Polynomial.eval r (ascPochhammer R n)
+    n.factorial • multichoose r n = Polynomial.eval r (ascPochhammer R n)
 
 namespace Ring
 
 theorem inj_smul_pos [BinomialSemiring R] (n : ℕ) (r s : R) (h: n ≠ 0) :
-    n * r = n * s → r = s := BinomialSemiring.inj_smul_pos n r s h
+    n • r = n • s → r = s := BinomialSemiring.inj_smul_pos n r s h
 
 theorem eq_of_mul_eq_mul_factorial [BinomialSemiring R] {r s : R} (n : ℕ)
-    (h : n.factorial * r = n.factorial * s) : r = s :=
+    (h : n.factorial • r = n.factorial • s) : r = s :=
   inj_smul_pos n.factorial r s (Nat.factorial_ne_zero n) h
 
 /-- This is a generalization of the combinatorial multichoose function, given by choosing with
@@ -60,7 +60,7 @@ def multichoose [BinomialSemiring R] (r : R) (n : ℕ) : R :=
   BinomialSemiring.multichoose r n
 
 theorem factorial_mul_multichoose_eq_ascPochhammer [BinomialSemiring R] (r : R) (n : ℕ) :
-    n.factorial * multichoose r n = Polynomial.eval r (ascPochhammer R n) :=
+    n.factorial • multichoose r n = Polynomial.eval r (ascPochhammer R n) :=
   BinomialSemiring.factorial_mul_multichoose r n
 
 end Ring
