@@ -87,7 +87,7 @@ variable [Group G] {N : Subgroup G} [Group H]
 /-- Subgroups of torsion groups are torsion groups. -/
 @[to_additive "Subgroups of additive torsion groups are additive torsion groups."]
 theorem IsTorsion.subgroup (tG : IsTorsion G) (H : Subgroup G) : IsTorsion H := fun h =>
-  (isOfFinOrder_iff_coe H.toSubmonoid h).mpr <| tG h
+  Submonoid.isOfFinOrder_coe.1 <| tG h
 #align is_torsion.subgroup IsTorsion.subgroup
 #align is_torsion.add_subgroup IsTorsion.addSubgroup
 
@@ -162,8 +162,8 @@ namespace AddMonoid
 /-- A module whose scalars are additively torsion is additively torsion. -/
 theorem IsTorsion.module_of_torsion [Semiring R] [Module R M] (tR : IsTorsion R) : IsTorsion M :=
   fun f =>
-  (isOfFinAddOrder_iff_nsmul_eq_zero _).mpr <| by
-    obtain ⟨n, npos, hn⟩ := (isOfFinAddOrder_iff_nsmul_eq_zero _).mp (tR 1)
+  isOfFinAddOrder_iff_nsmul_eq_zero.mpr <| by
+    obtain ⟨n, npos, hn⟩ := (tR 1).exists_nsmul_eq_zero
     exact ⟨n, npos, by simp only [nsmul_eq_smul_cast R _ f, ← nsmul_one, hn, zero_smul]⟩
 #align add_monoid.is_torsion.module_of_torsion AddMonoid.IsTorsion.module_of_torsion
 
@@ -404,9 +404,7 @@ theorem IsTorsionFree.not_torsion [hN : Nontrivial G] : IsTorsionFree G → ¬Is
 /-- Subgroups of torsion-free groups are torsion-free. -/
 @[to_additive "Subgroups of additive torsion-free groups are additively torsion-free."]
 theorem IsTorsionFree.subgroup (tG : IsTorsionFree G) (H : Subgroup G) : IsTorsionFree H :=
-  fun h hne =>
-  (isOfFinOrder_iff_coe H.toSubmonoid h).not.mpr <|
-    tG h <| by norm_cast
+  fun h hne ↦ Submonoid.isOfFinOrder_coe.not.1 <| tG h <| by norm_cast
 #align is_torsion_free.subgroup IsTorsionFree.subgroup
 #align is_torsion_free.add_subgroup IsTorsionFree.addSubgroup
 
