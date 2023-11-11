@@ -1414,27 +1414,30 @@ lemma Basis.mem_center_iff {A}
   · intro h
     rw [center, mem_setOf_eq]
     constructor
-    · intro y
+    case comm =>
+      intro y
       rw [← b.total_repr y, Finsupp.total_apply, Finsupp.sum, Finset.sum_mul, Finset.mul_sum]
       simp_rw [mul_smul_comm, smul_mul_assoc, (h.1 _).eq]
-    · intro c d
+    case left_assoc =>
+      intro c d
       rw [← b.total_repr c, ← b.total_repr d, Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum,
         Finsupp.sum, Finset.sum_mul, Finset.mul_sum, Finset.mul_sum, Finset.mul_sum]
       simp_rw [smul_mul_assoc, Finset.mul_sum, Finset.sum_mul, mul_smul_comm, Finset.mul_sum,
         Finset.smul_sum, smul_mul_assoc, mul_smul_comm, (h.2 _ _).1,
         (@SMulCommClass.smul_comm R R A)]
       rw [Finset.sum_comm]
-    · intro c d
+    case mid_assoc =>
+      intro c d
       rw [← b.total_repr c, ← b.total_repr d, Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum,
         Finsupp.sum, Finset.sum_mul, Finset.mul_sum, Finset.mul_sum, Finset.mul_sum]
       simp_rw [smul_mul_assoc, Finset.sum_mul, mul_smul_comm, smul_mul_assoc, (h.2 _ _).2.1]
-    · intro c d
+    case right_assoc =>
+      intro c d
       rw [← b.total_repr c, ← b.total_repr d, Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum,
         Finsupp.sum, Finset.sum_mul]
       simp_rw [smul_mul_assoc, Finset.mul_sum, Finset.sum_mul, mul_smul_comm, Finset.mul_sum,
         Finset.smul_sum, smul_mul_assoc, mul_smul_comm, Finset.sum_mul, smul_mul_assoc,
         (h.2 _ _).2.2]
-
 
 section RestrictScalars
 
