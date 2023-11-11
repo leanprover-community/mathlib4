@@ -1103,7 +1103,7 @@ theorem card_support_cycleOf_pos_iff : 0 < card (cycleOf f x).support ↔ f x �
 
 theorem pow_mod_orderOf_cycleOf_apply (f : Perm α) (n : ℕ) (x : α) :
     (f ^ (n % orderOf (cycleOf f x))) x = (f ^ n) x := by
-  rw [← cycleOf_pow_apply_self f, ← cycleOf_pow_apply_self f, ←pow_mod_orderOf]
+  rw [← cycleOf_pow_apply_self f, ← cycleOf_pow_apply_self f, pow_mod_orderOf]
 #align equiv.perm.pow_apply_eq_pow_mod_order_of_cycle_of_apply Equiv.Perm.pow_mod_orderOf_cycleOf_apply
 
 theorem cycleOf_mul_of_apply_right_eq_self (h : Commute f g) (x : α) (hx : g x = x) :
