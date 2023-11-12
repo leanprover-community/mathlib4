@@ -83,7 +83,7 @@ private partial def getNewType (rule : Expr) (rev : Bool) (oldType : Expr) : Met
   else
     getNeedleReplacement ruleType
   trace[GRW] "Got needle = {needle} replacement = {replacement}"
-  let abst ← kabstract oldType needle
+  let abst ← withReducible $ kabstract oldType needle
   if !abst.hasLooseBVars then
     throwError "Could not find pattern {needle} in {oldType}"
   let newType := abst.instantiate1 replacement
@@ -108,7 +108,8 @@ private partial def dischargeSideGoal (mvar : MVarId) : MetaM Unit := do
     Mathlib.Meta.Positivity.positivity mvar
     return
   catch _ =>
-  return ⟨⟩
+
+  throwError "Could not discharge side goal"
 
 private partial def dischargeMainGoal (rule : Expr) (mvar : MVarId) : MetaM Unit := do
   trace[GRW] "Discharging main goal {mvar}"
@@ -196,7 +197,7 @@ partial def runGrw (expr rule : Expr) (rev isTarget : Bool) :
             trace[GRW] "mvar already assigned to {← instantiateMVars arg} : {type}"
             continue
           trace[GRW] "Looking for value of type {type}"
-          useRule weakRule mvar
+          withReducible $ useRule weakRule mvar
 
         return ← instantiateMVars <| mkAppN lemExpr metas
       catch ex => do

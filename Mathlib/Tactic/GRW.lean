@@ -47,8 +47,8 @@ example (h₁ : a + e ≤ b + e)
 
 If applied to a hypothesis or target of type `p` with rule of type `x ~ y` (where `~` is some
 relation) then the resulting type will be `p[x/y]` or the tactic will fail. This tactic will fail
-if side goals are created that it can not fill itself. These two facts make it safe to use
-in a nonterminal position.
+if side goals are created that it can not fill itself, which it does using `positivity` or
+`assumption`. These two facts make it safe to use in a nonterminal position.
 -/
 elab tok:"grw" rules:rwRuleSeq loc:(location)? : tactic =>
   withMainContext do
