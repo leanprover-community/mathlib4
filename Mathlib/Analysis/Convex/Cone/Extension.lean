@@ -26,17 +26,6 @@ We prove two extension theorems:
   then `f` can be extended to the whole space to a linear map `g` such that `g x ≤ N x`
   for all `x`
 
-In `Mathlib/Analysis/Convex/Cone/Dual.lean`, we prove the following theorems:
-* `ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem`:
-  This variant of the
-  [hyperplane separation theorem](https://en.wikipedia.org/wiki/Hyperplane_separation_theorem)
-  states that given a nonempty, closed, convex cone `K` in a complete, real inner product space `H`
-  and a point `b` disjoint from it, there is a vector `y` which separates `b` from `K` in the sense
-  that for all points `x` in `K`, `0 ≤ ⟪x, y⟫_ℝ` and `⟪y, b⟫_ℝ < 0`. This is also a geometric
-  interpretation of the
-  [Farkas lemma](https://en.wikipedia.org/wiki/Farkas%27_lemma#Geometric_interpretation).
-* `ConvexCone.inner_dual_cone_of_inner_dual_cone_eq_self`:
-
 -/
 
 open Set LinearMap
