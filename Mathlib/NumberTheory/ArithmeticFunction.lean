@@ -751,10 +751,7 @@ theorem eq_iff_eq_on_prime_powers [CommMonoidWithZero R] (f : ArithmeticFunction
   by_cases hn : n = 0
   · rw [hn, ArithmeticFunction.map_zero, ArithmeticFunction.map_zero]
   rw [multiplicative_factorization f hf hn, multiplicative_factorization g hg hn]
-  refine' Finset.prod_congr rfl _
-  simp only [support_factorization, List.mem_toFinset]
-  intro p hp
-  exact h p _ (Nat.prime_of_mem_factors hp)
+  exact Finset.prod_congr rfl fun p hp ↦ h p _ (Nat.prime_of_mem_primeFactors hp)
 #align nat.arithmetic_function.is_multiplicative.eq_iff_eq_on_prime_powers Nat.ArithmeticFunction.IsMultiplicative.eq_iff_eq_on_prime_powers
 
 theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R}
@@ -770,7 +767,7 @@ theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R
   · intro i; rw [pow_zero, hf.1]
   iterate 4 rw [hf.multiplicative_factorization f (by assumption),
     Finsupp.prod_of_support_subset _ _ _ (fun _ _ => hfi_zero)
-      (s := (x.factorization.support ⊔ y.factorization.support))]
+      (s := (x.primeFactors ⊔ y.primeFactors))]
   · rw [←Finset.prod_mul_distrib, ←Finset.prod_mul_distrib]
     apply Finset.prod_congr rfl
     intro p _
@@ -782,7 +779,7 @@ theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R
   · apply Finset.subset_union_left
   · rw [factorization_gcd hx hy, Finsupp.support_inf, Finset.sup_eq_union]
     apply Finset.inter_subset_union
-  · rw [factorization_lcm hx hy, Finsupp.support_sup, Finset.sup_eq_union]
+  · simp [factorization_lcm hx hy]
 
 end IsMultiplicative
 
