@@ -34,9 +34,9 @@ section ContravariantLE
 variable [Mul α] [Preorder α] [DecidableEq α]
 variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (Function.swap HMul.hMul) LE.le]
 
-
 @[to_additive Icc_add_Icc_subset]
-theorem Icc_mul_Icc_subset' [LocallyFiniteOrder α] (a b c d : α) : Icc a b * Icc c d ⊆ Icc (a * c) (b * d) :=
+theorem Icc_mul_Icc_subset' [LocallyFiniteOrder α] (a b c d : α) :
+    Icc a b * Icc c d ⊆ Icc (a * c) (b * d) :=
   Finset.coe_subset.mp <| by simpa using Set.Icc_mul_Icc_subset' _ _ _ _
 
 @[to_additive Iic_add_Iic_subset]
