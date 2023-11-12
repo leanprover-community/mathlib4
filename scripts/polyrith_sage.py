@@ -19,19 +19,29 @@ def create_query(type: str, n_vars: int, eq_list, goal_type):
     """ Create a query to invoke Sage's `MPolynomial_libsingular.lift`. See
     https://github.com/sagemath/sage/blob/f8df80820dc7321dc9b18c9644c3b8315999670b/src/sage/rings/polynomial/multi_polynomial_libsingular.pyx#L4472-L4518
     for a description of this method. """
-    var_list = ", ".join([f"var{i}" for i in range(n_vars)])
+    var_list = [f"var{i}" for i in range(n_vars)] + ['aux']
     query = f'''
 if {n_vars!r} != 0:
-    P = PolynomialRing({type_str(type)}, 'var', {n_vars!r})
-    [{var_list}] = P.gens()
+    P = PolynomialRing({type_str(type)}, {var_list})
+    [{", ".join(var_list)}] = P.gens()
+    p = P({goal_type})
+    gens = {eq_list} + [1 - p*aux]
+    I = P.ideal(gens)
+    coeffs = P(1).lift(I)
+    power = max(cf.degree(aux) for cf in coeffs)
+    coeffs = [P(cf.subs(aux = 1/p)*p^power) for cf in coeffs[:int(-1)]]
+    print(str(power)+';'+serialize_polynomials(coeffs))
 else:
     # workaround for a Sage shortcoming with `n_vars = 0`,
     # `TypeError: no conversion of this ring to a Singular ring defined`
+    # In this case, there is no need to look for membership in the *radical*;
+    # we just check for membership in the ideal, and return exponent 1 
+    # if coefficients are found.
     P = PolynomialRing({type_str(type)}, 'var', 1)
-p = P({goal_type})
-I = P.ideal({eq_list})
-coeffs = p.lift(I)
-print(serialize_polynomials(coeffs))
+    p = P({goal_type})
+    I = P.ideal({eq_list})
+    coeffs = p.lift(I)
+    print('1;'+serialize_polynomials(coeffs))
 '''
     return query
 
@@ -42,12 +52,17 @@ class EvaluationError(Exception):
         self.message = message
         super().__init__(self.message)
 
+def parse_response(resp: str) -> str:
+    exp, data = resp.split(';', 1)
+    return dict(power=int(exp), coeffs=json.loads(data))
+
+
 def evaluate_in_sage(query: str) -> str:
     data = {'code': query}
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     response = requests.post('https://sagecell.sagemath.org/service', data, headers=headers).json()
     if response['success']:
-        return json.loads(response.get('stdout'))
+        return parse_response(response.get('stdout'))
     elif 'execute_reply' in response and 'ename' in response['execute_reply'] and 'evalue' in response['execute_reply']:
         raise EvaluationError(response['execute_reply']['ename'], response['execute_reply']['evalue'])
     else:
