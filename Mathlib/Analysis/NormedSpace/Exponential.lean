@@ -265,7 +265,7 @@ theorem continuousOn_exp [Algebra ℚ 𝔸] :
 theorem analyticAt_exp_of_mem_ball [Algebra ℚ 𝔸] (x : 𝔸)
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) : AnalyticAt 𝕂 exp x := by
   by_cases h : (expSeries 𝕂 𝔸).radius = 0
-  · rw [h] at hx ; exact (ENNReal.not_lt_zero hx).elim
+  · rw [h] at hx; exact (ENNReal.not_lt_zero hx).elim
   · have h := pos_iff_ne_zero.mpr h
     exact (hasFPowerSeriesOnBall_exp_of_radius_pos h).analyticAt_of_mem hx
 #align analytic_at_exp_of_mem_ball analyticAt_exp_of_mem_ball
@@ -298,18 +298,14 @@ noncomputable def invertibleExpOfMemBall [Algebra ℚ 𝔸] {x : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) : Invertible (exp x)
     where
   invOf := exp (-x)
-  invOf_mul_self :=
-    by
-    have hnx : -x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius :=
-      by
+  invOf_mul_self := by
+    have hnx : -x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius := by
       rw [EMetric.mem_ball, ← neg_zero, edist_neg_neg]
       exact hx
     rw [← exp_add_of_commute_of_mem_ball _ (Commute.neg_left <| Commute.refl x) hnx hx,
       neg_add_self, exp_zero]
-  mul_invOf_self :=
-    by
-    have hnx : -x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius :=
-      by
+  mul_invOf_self := by
+    have hnx : -x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius := by
       rw [EMetric.mem_ball, ← neg_zero, edist_neg_neg]
       exact hx
     rw [← exp_add_of_commute_of_mem_ball _ (Commute.neg_right <| Commute.refl x) hx hnx,
