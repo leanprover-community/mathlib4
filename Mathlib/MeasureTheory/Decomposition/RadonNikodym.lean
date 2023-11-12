@@ -96,6 +96,7 @@ section rnDeriv_withDensity_leftRight
 
 variable {μ ν : Measure α} {f : α → ℝ≥0∞}
 
+/-- Auxiliary lemma for `rnDeriv_withDensity_left`. -/
 lemma rnDeriv_withDensity_withDensity_rnDeriv_left (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
     (hf : AEMeasurable f μ) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
     ((ν.withDensity (μ.rnDeriv ν)).withDensity f).rnDeriv ν =ᵐ[ν] (μ.withDensity f).rnDeriv ν := by
@@ -108,6 +109,7 @@ lemma rnDeriv_withDensity_withDensity_rnDeriv_left (μ ν : Measure α) [SigmaFi
       ((Measure.absolutelyContinuous_of_le (Measure.withDensity_rnDeriv_le _ _)).ae_le hf_ne_top)
   exact (rnDeriv_add_of_mutuallySingular _ _ _ (mutuallySingular_singularPart μ ν).withDensity).symm
 
+/-- Auxiliary lemma for `rnDeriv_withDensity_right`. -/
 lemma rnDeriv_withDensity_withDensity_rnDeriv_right (μ ν : Measure α) [SigmaFinite μ]
     [SigmaFinite ν] (hf : AEMeasurable f ν) (hf_ne_zero : ∀ᵐ x ∂ν, f x ≠ 0)
     (hf_ne_top : ∀ᵐ x ∂ν, f x ≠ ∞) :
