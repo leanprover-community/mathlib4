@@ -82,7 +82,7 @@ post_update pkg do
   spawn a new `lake` since the toolchain may have changed.
   -/
   let exitCode ← IO.Process.spawn {
-    cmd := (← getElan?).map (·.toString) |>.getD "elan"
+    cmd := "elan"
     args := #["run", mathlibToolchain, "lake", "exe", "cache", "get"]
   } >>= (·.wait)
   if exitCode ≠ 0 then
