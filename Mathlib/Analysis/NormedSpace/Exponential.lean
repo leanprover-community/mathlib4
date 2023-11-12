@@ -689,5 +689,13 @@ theorem expSeries_eq_expSeries (n : ℕ) (x : 𝔸) :
   rw [expSeries_apply_eq, expSeries_apply_eq, inv_nat_cast_smul_eq 𝕂 𝕂']
 #align exp_series_eq_exp_series expSeries_eq_expSeries
 
+#noalign exp_eq_exp
+#noalign exp_ℝ_ℂ_eq_exp_ℂ_ℂ
+
+/-- A version of `Complex.ofReal_exp` for `exp` instead of `Complex.exp` -/
+@[simp, norm_cast]
+theorem of_real_exp_ℝ_ℝ (r : ℝ) : ↑(exp r) = exp (r : ℂ) :=
+  map_exp ℝ (algebraMap ℝ ℂ) (continuous_algebraMap _ _) r
+#align of_real_exp_ℝ_ℝ of_real_exp_ℝ_ℝ
+
 end ScalarTower
-#lint
