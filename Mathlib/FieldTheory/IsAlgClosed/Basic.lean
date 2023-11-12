@@ -210,151 +210,14 @@ instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field
 
 namespace IsAlgClosed
 
-namespace lift
-
-/- In this section, the homomorphism from any algebraic extension into an algebraically
-  closed extension is proven to exist. The assumption that M is algebraically closed could probably
-  easily be switched to an assumption that M contains all the roots of polynomials in K -/
-variable {K : Type u} {L : Type v} {M : Type w} [Field K] [Field L] [Algebra K L] [Field M]
+variable (K : Type u) [Field K] (L : Type v) (M : Type w) [Field L] [Algebra K L] [Field M]
   [Algebra K M] [IsAlgClosed M] (hL : Algebra.IsAlgebraic K L)
-
-variable (K L M)
-
-open Subalgebra AlgHom Function
-
-/-- This structure is used to prove the existence of a homomorphism from any algebraic extension
-into an algebraic closure -/
-structure SubfieldWithHom where
-  /-- The corresponding `Subalgebra` -/
-  carrier : Subalgebra K L
-  /-- The embedding into the algebraically closed field -/
-  emb : carrier →ₐ[K] M
-#align lift.subfield_with_hom IsAlgClosed.lift.SubfieldWithHom
-
-variable {K L M hL}
-
-namespace SubfieldWithHom
-
-variable {E₁ E₂ E₃ : SubfieldWithHom K L M}
-
-instance : LE (SubfieldWithHom K L M) where
-  le E₁ E₂ := ∃ h : E₁.carrier ≤ E₂.carrier, ∀ x, E₂.emb (inclusion h x) = E₁.emb x
-
-noncomputable instance : Inhabited (SubfieldWithHom K L M) :=
-  ⟨{  carrier := ⊥
-      emb := (Algebra.ofId K M).comp (Algebra.botEquiv K L).toAlgHom }⟩
-
-theorem le_def : E₁ ≤ E₂ ↔ ∃ h : E₁.carrier ≤ E₂.carrier, ∀ x, E₂.emb (inclusion h x) = E₁.emb x :=
-  Iff.rfl
-#align lift.subfield_with_hom.le_def IsAlgClosed.lift.SubfieldWithHom.le_def
-
-theorem compat (h : E₁ ≤ E₂) : ∀ x, E₂.emb (inclusion h.fst x) = E₁.emb x := by
-  rw [le_def] at h; cases h; assumption
-#align lift.subfield_with_hom.compat IsAlgClosed.lift.SubfieldWithHom.compat
-
-instance : Preorder (SubfieldWithHom K L M) where
-  le := (· ≤ ·)
-  le_refl E := ⟨le_rfl, by simp⟩
-  le_trans E₁ E₂ E₃ h₁₂ h₂₃ := by
-    refine ⟨h₁₂.1.trans h₂₃.1, fun _ ↦ ?_⟩
-    erw [← inclusion_inclusion h₁₂.fst h₂₃.fst, compat h₂₃, compat h₁₂]
-
-open Lattice
-
-theorem maximal_subfieldWithHom_chain_bounded (c : Set (SubfieldWithHom K L M))
-    (hc : IsChain (· ≤ ·) c) : ∃ ub : SubfieldWithHom K L M, ∀ N, N ∈ c → N ≤ ub := by
-  by_cases hcn : c.Nonempty
-  case neg => rw [Set.not_nonempty_iff_eq_empty] at hcn; simp [hcn]
-  case pos =>
-    have : Nonempty c := Set.Nonempty.to_subtype hcn
-    let ub : SubfieldWithHom K L M :=
-      ⟨⨆ i : c, (i : SubfieldWithHom K L M).carrier,
-        @Subalgebra.iSupLift _ _ _ _ _ _ _ _ _ this
-            (fun i : c => (i : SubfieldWithHom K L M).carrier)
-            (fun i j =>
-              let ⟨k, hik, hjk⟩ := directedOn_iff_directed.1 hc.directedOn i j
-              ⟨k, hik.fst, hjk.fst⟩)
-            (fun i => (i : SubfieldWithHom K L M).emb)
-            (by
-              intro i j h
-              ext x
-              cases' hc.total i.prop j.prop with hij hji
-              · simp [← hij.snd x]
-              · erw [AlgHom.comp_apply, ← hji.snd (inclusion h x), inclusion_inclusion,
-                  inclusion_self, AlgHom.id_apply x])
-            _ rfl⟩
-    exact ⟨ub, fun N hN =>
-         ⟨(le_iSup (fun i : c => (i : SubfieldWithHom K L M).carrier) ⟨N, hN⟩ : _), by
-           intro x
-           simp⟩⟩
-#align lift.subfield_with_hom.maximal_subfield_with_hom_chain_bounded IsAlgClosed.lift.SubfieldWithHom.maximal_subfieldWithHom_chain_bounded
-
-variable (K L M)
-
-theorem exists_maximal_subfieldWithHom : ∃ E : SubfieldWithHom K L M, ∀ N, E ≤ N → N ≤ E :=
-  exists_maximal_of_chains_bounded maximal_subfieldWithHom_chain_bounded le_trans
-#align lift.subfield_with_hom.exists_maximal_subfield_with_hom IsAlgClosed.lift.SubfieldWithHom.exists_maximal_subfieldWithHom
-
-/-- The maximal `SubfieldWithHom`. We later prove that this is equal to `⊤`. -/
-noncomputable def maximalSubfieldWithHom : SubfieldWithHom K L M :=
-  Classical.choose (exists_maximal_subfieldWithHom K L M)
-#align lift.subfield_with_hom.maximal_subfield_with_hom IsAlgClosed.lift.SubfieldWithHom.maximalSubfieldWithHom
-
-theorem maximalSubfieldWithHom_is_maximal :
-    ∀ N : SubfieldWithHom K L M,
-      maximalSubfieldWithHom K L M ≤ N → N ≤ maximalSubfieldWithHom K L M :=
-  Classical.choose_spec (exists_maximal_subfieldWithHom K L M)
-#align lift.subfield_with_hom.maximal_subfield_with_hom_is_maximal IsAlgClosed.lift.SubfieldWithHom.maximalSubfieldWithHom_is_maximal
-
--- porting note: this was much faster in lean 3
-set_option synthInstance.maxHeartbeats 200000 in
-theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier = ⊤ := by
-  rw [eq_top_iff]
-  intro x _
-  let N : Subalgebra K L := (maximalSubfieldWithHom K L M).carrier
-  letI : Field N := (Subalgebra.isField_of_algebraic N hL).toField
-  letI : Algebra N M := (maximalSubfieldWithHom K L M).emb.toRingHom.toAlgebra
-  obtain ⟨y, hy⟩ := IsAlgClosed.exists_aeval_eq_zero M (minpoly N x) <|
-    (minpoly.degree_pos
-      (isAlgebraic_iff_isIntegral.1 (Algebra.isAlgebraic_of_larger_base _ hL x))).ne'
-  let O : Subalgebra N L := Algebra.adjoin N {(x : L)}
-  letI : Algebra N O := Subalgebra.algebra O
-  -- Porting note: there are some tricky unfolds going on here:
-  -- (O.restrictScalars K : Type*) is identified with (O : Type*) in a few places
-  let larger_emb : O →ₐ[N] M := Algebra.adjoin.liftSingleton N x y hy
-  let larger_emb' : O →ₐ[K] M := AlgHom.restrictScalars K (S := N) (A := O) (B := M) larger_emb
-  have hNO : N ≤ O.restrictScalars K := by
-    intro z hz
-    show algebraMap N L ⟨z, hz⟩ ∈ O
-    exact O.algebraMap_mem _
-  let O' : SubfieldWithHom K L M :=
-    ⟨O.restrictScalars K, larger_emb'⟩
-  have hO' : maximalSubfieldWithHom K L M ≤ O' := by
-    refine' ⟨hNO, _⟩
-    intro z
-    -- Porting note: have to help Lean unfold even more here
-    show Algebra.adjoin.liftSingleton N x y hy (@algebraMap N O _ _ (Subalgebra.algebra O) z) =
-        algebraMap N M z
-    exact AlgHom.commutes _ _
-  refine' (maximalSubfieldWithHom_is_maximal K L M O' hO').fst _
-  show x ∈ Algebra.adjoin N {(x : L)}
-  exact Algebra.subset_adjoin (Set.mem_singleton x)
-#align lift.subfield_with_hom.maximal_subfield_with_hom_eq_top IsAlgClosed.lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top
-
-end SubfieldWithHom
-
-end lift
-
-variable {K : Type u} [Field K] {L : Type v} {M : Type w} [Field L] [Algebra K L] [Field M]
-  [Algebra K M] [IsAlgClosed M] (hL : Algebra.IsAlgebraic K L)
-
-variable (K L M)
 
 /-- Less general version of `lift`. -/
 private noncomputable irreducible_def lift_aux : L →ₐ[K] M :=
-  (lift.SubfieldWithHom.maximalSubfieldWithHom K L M).emb.comp <|
-    (lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top (K := K) (L := L) (M := M) (hL := hL)).symm
-      ▸ Algebra.toTop
+  Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
+    (fun x _ ↦ ⟨isAlgebraic_iff_isIntegral.1 (hL x), splits_codomain (minpoly K x)⟩)
+    (IntermediateField.adjoin_univ K L)
 
 variable {R : Type u} [CommRing R]
 
@@ -425,19 +288,11 @@ variable [Algebra R L] [NoZeroSMulDivisors R L] [IsAlgClosure R L]
 /-- A (random) isomorphism between two algebraic closures of `R`. -/
 noncomputable def equiv : L ≃ₐ[R] M :=
   -- Porting note: added to replace local instance above
+  haveI : IsAlgClosed L := IsAlgClosure.alg_closed R
   haveI : IsAlgClosed M := IsAlgClosure.alg_closed R
-  let f : L →ₐ[R] M := IsAlgClosed.lift IsAlgClosure.algebraic
-  AlgEquiv.ofBijective f
-    ⟨RingHom.injective f.toRingHom, by
-      letI : Algebra L M := RingHom.toAlgebra f
-      letI : IsScalarTower R L M := IsScalarTower.of_algebraMap_eq <| by
-        simp only [RingHom.algebraMap_toAlgebra, RingHom.coe_coe, AlgHom.commutes, forall_const]
-      letI : IsAlgClosed L := IsAlgClosure.alg_closed R
-      show Function.Surjective (algebraMap L M)
-      exact
-        IsAlgClosed.algebraMap_surjective_of_isAlgebraic
-          (Algebra.isAlgebraic_of_larger_base_of_injective
-            (NoZeroSMulDivisors.algebraMap_injective R _) IsAlgClosure.algebraic)⟩
+  AlgEquiv.ofBijective _ (IsAlgClosure.algebraic.algHom_bijective₂
+    (IsAlgClosed.lift IsAlgClosure.algebraic : L →ₐ[R] M)
+    (IsAlgClosed.lift IsAlgClosure.algebraic : M →ₐ[R] L)).1
 #align is_alg_closure.equiv IsAlgClosure.equiv
 
 end

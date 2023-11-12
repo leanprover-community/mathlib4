@@ -277,6 +277,13 @@ theorem atTop_basis_Ioi [Nonempty α] [SemilatticeSup α] [NoMaxOrder α] :
     (exists_gt a).imp fun _b hb => ⟨ha, Ici_subset_Ioi.2 hb⟩
 #align filter.at_top_basis_Ioi Filter.atTop_basis_Ioi
 
+lemma atTop_basis_Ioi' [SemilatticeSup α] [NoMaxOrder α] (a : α) : atTop.HasBasis (a < ·) Ioi :=
+  have : Nonempty α := ⟨a⟩
+  atTop_basis_Ioi.to_hasBasis (fun b _ ↦
+      let ⟨c, hc⟩ := exists_gt (a ⊔ b)
+      ⟨c, le_sup_left.trans_lt hc, Ioi_subset_Ioi <| le_sup_right.trans hc.le⟩) fun b _ ↦
+    ⟨b, trivial, Subset.rfl⟩
+
 theorem atTop_countable_basis [Nonempty α] [SemilatticeSup α] [Countable α] :
     HasCountableBasis (atTop : Filter α) (fun _ => True) Ici :=
   { atTop_basis with countable := to_countable _ }
@@ -884,12 +891,10 @@ theorem map_neg_atTop : map (Neg.neg : β → β) atTop = atBot :=
   (OrderIso.neg β).map_atTop
 #align filter.map_neg_at_top Filter.map_neg_atTop
 
-@[simp]
 theorem comap_neg_atBot : comap (Neg.neg : β → β) atBot = atTop :=
   (OrderIso.neg β).comap_atTop
 #align filter.comap_neg_at_bot Filter.comap_neg_atBot
 
-@[simp]
 theorem comap_neg_atTop : comap (Neg.neg : β → β) atTop = atBot :=
   (OrderIso.neg β).comap_atBot
 #align filter.comap_neg_at_top Filter.comap_neg_atTop
@@ -1063,7 +1068,7 @@ theorem tendsto_mul_const_atTop_of_pos (hr : 0 < r) :
   simpa only [mul_comm] using tendsto_const_mul_atTop_of_pos hr
 #align filter.tendsto_mul_const_at_top_of_pos Filter.tendsto_mul_const_atTop_of_pos
 
-/-- If `r` is a positive constant, then `x ↦ f x * r` tends to infinity along a filter if and only
+/-- If `r` is a positive constant, then `x ↦ f x / r` tends to infinity along a filter if and only
 if `f` tends to infinity along the same filter. -/
 lemma tendsto_div_const_atTop_of_pos (hr : 0 < r) :
     Tendsto (λ x ↦ f x / r) l atTop ↔ Tendsto f l atTop := by
