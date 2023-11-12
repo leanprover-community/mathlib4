@@ -2,11 +2,15 @@ import Mathlib.CategoryTheory.Sites.Over
 
 namespace CategoryTheory
 
-open Category
+open Category Limits
+
+lemma Over.exists_eq_mk {C : Type*} [Category C] {X : C} (Y : Over X) :
+    ∃ (Z : C) (f : Z ⟶ X), Y = Over.mk f :=
+  ⟨_, Y.hom, rfl⟩
 
 variable {C : Type*} [Category C] {J : GrothendieckTopology C} {A : Type*} [Category A]
 
-/-section
+section
 
 variable {I : Type*} {X : C} (Y : I → C) (f : ∀ i, Y i ⟶ X)
 
@@ -22,9 +26,42 @@ lemma Sieve.mem_ofArrows_iff {W : C} (g : W ⟶ X) :
   · rintro ⟨i, a, rfl⟩
     exact ⟨_, a, f i, ⟨i⟩, rfl⟩
 
-end-/
+end
+
+section
+
+variable {I : Type*} (Y : I → C)
+
+def Sieve.ofObjects (X : C) : Sieve X where
+  arrows Z _ := ∃ (i : I), Nonempty (Z ⟶ Y i)
+  downward_closed := by
+    rintro Z₁ Z₂ p ⟨i, ⟨f⟩⟩ g
+    exact ⟨i, ⟨g ≫ f⟩⟩
+
+end
+
+namespace GrothendieckTopology
+
+def ObjectsCoverTop {I : Type*} (Y : I → C) : Prop :=
+  ∀ (X : C), Sieve.ofObjects Y X ∈ J X
+
+end GrothendieckTopology
+
 
 namespace Presheaf
+
+section
+
+variable (F : Cᵒᵖ ⥤ Type*) {I : Type*} (Y : I → C)
+
+abbrev FamilyOfElementsOnObjects := ∀ (i : I), F.obj (Opposite.op (Y i))
+
+def FamilyOfElementsOnObjects.IsCompatible
+    (x : FamilyOfElementsOnObjects F Y) : Prop :=
+  ∀ (Z : C) (i j : I) (f : Z ⟶ Y i) (g : Z ⟶ Y j),
+    F.map f.op (x i) = F.map g.op (x j)
+
+end
 
 /-lemma IsSheaf.ext_of_arrows {F : Cᵒᵖ ⥤ A} (hF : IsSheaf J F) {I : Type*} {X : C}
     (Y : I → C) (f : ∀ i, Y i ⟶ X)
@@ -36,8 +73,6 @@ namespace Presheaf
   rintro ⟨W, g, T, p, q, ⟨i⟩, rfl⟩
   dsimp
   simp only [Functor.map_comp, reassoc_of% (h i)]-/
-
-section
 
 variable (F G : Cᵒᵖ ⥤ A)
 
@@ -158,7 +193,30 @@ lemma internalHom_isSheaf (hG : IsSheaf J G) : IsSheaf J (internalHom F G) := by
     congr 1
     exact (hy₁ _ (v ≫ u) hv).trans (hy₂ _ (v ≫ u) hv).symm
 
-end
+def internalHomSectionsEquiv : (internalHom F G).sections ≃ (F ⟶ G) where
+  toFun s :=
+    { app := fun X => (s.1 X).app ⟨Over.mk (𝟙 _)⟩
+      naturality := by
+        rintro ⟨X₁⟩ ⟨X₂⟩ ⟨f : X₂ ⟶ X₁⟩
+        dsimp
+        erw [← s.2 f.op]
+        dsimp [internalHom]
+        refine' Eq.trans _ ((s.1 ⟨X₁⟩).naturality (Over.homMk f : Over.mk f ⟶ Over.mk (𝟙 X₁)).op)
+        dsimp [Over.map, Comma.mapRight]
+        congr 4
+        simp }
+  invFun f := ⟨fun X => whiskerLeft _ f, by rintro ⟨X₁⟩ ⟨X₂⟩ ⟨g : X₂ ⟶ X₁⟩; rfl⟩
+  left_inv s := by
+    ext ⟨X⟩
+    dsimp
+    ext ⟨Y⟩
+    obtain ⟨Y, f, rfl⟩ := Y.exists_eq_mk
+    dsimp
+    rw [← s.2 f.op]
+    dsimp [internalHom, Over.map, Comma.mapRight]
+    congr 3
+    simp
+  right_inv f := rfl
 
 end Presheaf
 
@@ -167,6 +225,60 @@ namespace Sheaf
 def internalHom (F G : Sheaf J A) : Sheaf J (Type _) where
   val := Presheaf.internalHom F.1 G.1
   cond := Presheaf.internalHom_isSheaf F.1 G.1 G.2
+
+end Sheaf
+
+namespace Presheaf
+
+namespace FamilyOfElementsOnObjects
+
+variable {F : Cᵒᵖ ⥤ Type _} {I : Type*} {Y : I → C}
+    (x : FamilyOfElementsOnObjects F Y)
+
+noncomputable def familyOfElements (X : C) :
+    Presieve.FamilyOfElements F (Sieve.ofObjects Y X).arrows :=
+  fun _ _ hf => F.map hf.choose_spec.some.op (x _)
+
+namespace IsCompatible
+
+variable {x} (hx : x.IsCompatible)
+
+lemma familyOfElements_apply {X Z : C} (f : Z ⟶ X) (i : I) (φ : Z ⟶ Y i) :
+    familyOfElements x X f ⟨i, ⟨φ⟩⟩ = F.map φ.op (x i) := by
+  apply hx
+
+lemma familyOfElements_isCompatible (X : C) :
+    (familyOfElements x X).Compatible := by
+  intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ ⟨i₁, ⟨φ₁⟩⟩ ⟨i₂, ⟨φ₂⟩⟩ _
+  simpa [hx.familyOfElements_apply f₁ i₁ φ₁,
+    hx.familyOfElements_apply f₂ i₂ φ₂] using hx Z i₁ i₂ (g₁ ≫ φ₁) (g₂ ≫ φ₂)
+
+variable (hY : J.ObjectsCoverTop Y) (hF : IsSheaf J F)
+
+/-def exists_unique_section :
+    ∃! (s : F.sections), ∀ (i : I), s.1 (Opposite.op (Y i)) = x i := by
+  have H := (isSheaf_iff_isSheaf_of_type _ _).1 hF
+  let s := fun (X : C) => (H _ (hY X)).amalgamate _
+    (hx.familyOfElements_isCompatible X)
+  refine' ⟨⟨fun X => s X.unop, _⟩ , _, _⟩
+  · sorry
+  · sorry
+  · sorry-/
+
+end IsCompatible
+
+end FamilyOfElementsOnObjects
+
+end Presheaf
+
+namespace Sheaf
+
+variable {F G : Sheaf J A} (φ : F ⟶ G) {I : Type*} (Y : I → C)
+
+/-lemma isIso_of_isIso_pullback (hY : J.ObjectsCoverTop Y)
+    (hφ : ∀ (i : I), IsIso ((J.overPullback A (Y i)).map φ)) :
+    IsIso φ := by
+  sorry-/
 
 end Sheaf
 
