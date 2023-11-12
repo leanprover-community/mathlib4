@@ -413,7 +413,7 @@ instance Subsingleton.measurableSingletonClass {α} [MeasurableSpace α] [Subsin
     MeasurableSingletonClass α := by
   refine' ⟨fun i => _⟩
   convert MeasurableSet.univ
-  simp [Set.eq_univ_iff_forall]
+  simp [Set.eq_univ_iff_forall, eq_iff_true_of_subsingleton]
 #noalign empty.measurable_singleton_class
 #noalign punit.measurable_singleton_class
 
