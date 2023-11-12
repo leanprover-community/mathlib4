@@ -456,9 +456,10 @@ theorem floor_add_one (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
   rw [←cast_one, floor_add_nat ha 1]
 #align nat.floor_add_one Nat.floor_add_one
 
--- See note [no_index around OfNat.ofNat]
+-- TODO: If we make this `@[simp]`, remember to add `no_index`.
+-- See note [no_index around OfNat.ofNat].
 theorem floor_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
-    ⌊a + (no_index (OfNat.ofNat n))⌋₊ = ⌊a⌋₊ + OfNat.ofNat n :=
+    ⌊a + OfNat.ofNat n⌋₊ = ⌊a⌋₊ + OfNat.ofNat n :=
   floor_add_nat ha n
 
 @[simp]
@@ -498,9 +499,10 @@ theorem ceil_add_one (ha : 0 ≤ a) : ⌈a + 1⌉₊ = ⌈a⌉₊ + 1 := by
   rw [cast_one.symm, ceil_add_nat ha 1]
 #align nat.ceil_add_one Nat.ceil_add_one
 
--- See note [no_index around OfNat.ofNat]
+-- TODO: If we make this `@[simp]`, remember to add `no_index`.
+-- See note [no_index around OfNat.ofNat].
 theorem ceil_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
-    ⌈a + (no_index (OfNat.ofNat n))⌉₊ = ⌈a⌉₊ + OfNat.ofNat n :=
+    ⌈a + OfNat.ofNat n⌉₊ = ⌈a⌉₊ + OfNat.ofNat n :=
   ceil_add_nat ha n
 
 theorem ceil_lt_add_one (ha : 0 ≤ a) : (⌈a⌉₊ : α) < a + 1 :=
@@ -546,9 +548,10 @@ theorem floor_div_nat (a : α) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n := by
   · exact cast_pos.2 hn
 #align nat.floor_div_nat Nat.floor_div_nat
 
--- See note [no_index around OfNat.ofNat]
+-- TODO: If we make this `@[simp]`, remember to add `no_index`.
+-- See note [no_index around OfNat.ofNat].
 theorem floor_div_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
-    ⌊a / (no_index (OfNat.ofNat n))⌋₊ = ⌊a⌋₊ / OfNat.ofNat n :=
+    ⌊a / OfNat.ofNat n⌋₊ = ⌊a⌋₊ / OfNat.ofNat n :=
   floor_div_nat a n
 
 /-- Natural division is the floor of field division. -/
