@@ -87,7 +87,8 @@ noncomputable def exp [Algebra ℚ 𝔸] (x : 𝔸) : 𝔸 :=
 
 variable {𝕂}
 
-theorem expSeries_apply_eq (x : 𝔸) (n : ℕ) : (expSeries 𝕂 𝔸 n fun _ => x) = (n !⁻¹ : 𝕂) • x ^ n := by
+theorem expSeries_apply_eq (x : 𝔸) (n : ℕ) :
+    (expSeries 𝕂 𝔸 n fun _ => x) = (n !⁻¹ : 𝕂) • x ^ n := by
   simp [expSeries]
 #align exp_series_apply_eq expSeries_apply_eq
 
@@ -590,8 +591,8 @@ theorem Pi.exp_def {ι : Type*} {𝔸 : ι → Type*} [Fintype ι] [∀ i, Norme
 #align pi.exp_def Pi.exp_def
 
 theorem Function.update_exp {ι : Type*} {𝔸 : ι → Type*} [Fintype ι] [DecidableEq ι]
-    [∀ i, NormedRing (𝔸 i)] [∀ i, Algebra ℚ (𝔸 i)] [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i)
-    (j : ι) (xj : 𝔸 j) :
+    [∀ i, NormedRing (𝔸 i)] [∀ i, Algebra ℚ (𝔸 i)] [∀ i, NormedAlgebra 𝕂 (𝔸 i)]
+    [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) (j : ι) (xj : 𝔸 j) :
     Function.update (exp x) j (exp xj) = exp (Function.update x j xj) := by
   ext i
   simp_rw [Pi.exp_def 𝕂]
