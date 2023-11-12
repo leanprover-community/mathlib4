@@ -149,10 +149,17 @@ theorem isAlgebraic_algHom_of_isAlgebraic {B} [Ring B] [Algebra R B] (f : A →�
   ⟨p, hp, by rw [aeval_algHom, f.comp_apply, ha, map_zero]⟩
 #align is_algebraic_alg_hom_of_is_algebraic isAlgebraic_algHom_of_isAlgebraic
 
+theorem AlgHom.isAlgebraic_of_injective {B} [Ring B] [Algebra R B] (f : A →ₐ[R] B)
+    (hf : Function.Injective f) (h : Algebra.IsAlgebraic R B) : Algebra.IsAlgebraic R A :=
+  fun b ↦ by
+    obtain ⟨p, hp, pfb⟩ := h (f b)
+    rw [aeval_algHom, f.comp_apply, (injective_iff_map_eq_zero' _).mp hf] at pfb
+    exact ⟨p, hp, pfb⟩
+
 /-- Transfer `Algebra.IsAlgebraic` across an `AlgEquiv`. -/
 theorem AlgEquiv.isAlgebraic {B} [Ring B] [Algebra R B] (e : A ≃ₐ[R] B)
-    (h : Algebra.IsAlgebraic R A) : Algebra.IsAlgebraic R B := fun b => by
-  convert← isAlgebraic_algHom_of_isAlgebraic e.toAlgHom (h _); refine e.apply_symm_apply ?_
+    (h : Algebra.IsAlgebraic R A) : Algebra.IsAlgebraic R B :=
+  e.symm.toAlgHom.isAlgebraic_of_injective e.symm.injective h
 #align alg_equiv.is_algebraic AlgEquiv.isAlgebraic
 
 theorem AlgEquiv.isAlgebraic_iff {B} [Ring B] [Algebra R B] (e : A ≃ₐ[R] B) :
