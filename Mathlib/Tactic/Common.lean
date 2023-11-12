@@ -11,7 +11,6 @@ Authors: Scott Morrison
 -- We include some commented out imports here, with an explanation of their theory requirements,
 -- to save some time for anyone wondering why they are not here.
 
-
 -- First import Aesop and Qq
 import Aesop
 import Qq
