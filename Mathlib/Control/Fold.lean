@@ -318,7 +318,7 @@ theorem foldr.ofFreeMonoid_comp_of (f : β → α → α) :
 theorem foldlm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : α → β → m α) :
     foldlM.ofFreeMonoid f ∘ FreeMonoid.of = foldlM.mk ∘ flip f := by
   ext1 x
-  simp [Function.comp_def, foldlM.ofFreeMonoid, foldlM.mk, Function.flip_def]
+  simp [Function.comp_def, foldlM.ofFreeMonoid, foldlM.mk, flip]
   rfl
 #align traversable.mfoldl.of_free_monoid_comp_of Traversable.foldlm.ofFreeMonoid_comp_of
 
@@ -326,7 +326,7 @@ theorem foldlm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : α → β
 theorem foldrm.ofFreeMonoid_comp_of {m} [Monad m] [LawfulMonad m] (f : β → α → m α) :
     foldrM.ofFreeMonoid f ∘ FreeMonoid.of = foldrM.mk ∘ f := by
   ext
-  simp [Function.comp_def, foldrM.ofFreeMonoid, foldrM.mk, Function.flip_def]
+  simp [Function.comp_def, foldrM.ofFreeMonoid, foldrM.mk, flip]
 #align traversable.mfoldr.of_free_monoid_comp_of Traversable.foldrm.ofFreeMonoid_comp_of
 
 theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMonoid.of xs) :=
@@ -372,13 +372,13 @@ theorem toList_map (f : α → β) (xs : t α) : toList (f <$> xs) = f <$> toLis
 @[simp]
 theorem foldl_map (g : β → γ) (f : α → γ → α) (a : α) (l : t β) :
     foldl f a (g <$> l) = foldl (fun x y => f x (g y)) a l := by
-  simp only [foldl, foldMap_map, Function.comp_def, Function.flip_def]
+  simp only [foldl, foldMap_map, Function.comp_def, flip]
 #align traversable.foldl_map Traversable.foldl_map
 
 @[simp]
 theorem foldr_map (g : β → γ) (f : γ → α → α) (a : α) (l : t β) :
     foldr f a (g <$> l) = foldr (f ∘ g) a l := by
-  simp only [foldr, foldMap_map, Function.comp_def, Function.flip_def]
+  simp only [foldr, foldMap_map, Function.comp_def, flip]
 #align traversable.foldr_map Traversable.foldr_map
 
 @[simp]
@@ -421,13 +421,13 @@ theorem foldrm_toList (f : α → β → m β) (x : β) (xs : t α) :
 @[simp]
 theorem foldlm_map (g : β → γ) (f : α → γ → m α) (a : α) (l : t β) :
     foldlm f a (g <$> l) = foldlm (fun x y => f x (g y)) a l := by
-  simp only [foldlm, foldMap_map, Function.comp_def, Function.flip_def]
+  simp only [foldlm, foldMap_map, Function.comp_def, flip]
 #align traversable.mfoldl_map Traversable.foldlm_map
 
 @[simp]
 theorem foldrm_map (g : β → γ) (f : γ → α → m α) (a : α) (l : t β) :
     foldrm f a (g <$> l) = foldrm (f ∘ g) a l := by
-  simp only [foldrm, foldMap_map, Function.comp_def, Function.flip_def]
+  simp only [foldrm, foldMap_map, Function.comp_def, flip]
 #align traversable.mfoldr_map Traversable.foldrm_map
 
 end Equalities
