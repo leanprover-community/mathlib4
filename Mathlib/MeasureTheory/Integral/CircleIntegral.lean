@@ -142,8 +142,8 @@ theorem circleMap_ne_mem_ball {c : ℂ} {R : ℝ} {w : ℂ} (hw : w ∈ ball c R
 theorem range_circleMap (c : ℂ) (R : ℝ) : range (circleMap c R) = sphere c |R| :=
   calc
     range (circleMap c R) = c +ᵥ R • range fun θ : ℝ => exp (θ * I) := by
-      simp only [← image_vadd, ← image_smul, ← range_comp, vadd_eq_add, circleMap, Function.comp_def,
-        real_smul]
+      simp only [← image_vadd, ← image_smul, ← range_comp, vadd_eq_add, circleMap,
+        Function.comp_def, real_smul]
     _ = sphere c |R| := by
       rw [Complex.range_exp_mul_I, smul_sphere R 0 zero_le_one]
       simp

@@ -126,7 +126,8 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
       rw [← integral_sub (Hi _ Hu) (Hi _ Hl), ← Box.volume_face_mul i, mul_smul, ← Box.volume_apply,
         ← BoxAdditiveMap.toSMul_apply, ← integral_const, ← BoxAdditiveMap.volume,
         ← integral_sub (integrable_const _) ((Hi _ Hu).sub (Hi _ Hl))]
-      simp only [Function.comp_def, Pi.sub_def, ← f'.map_smul, ← Pi.single_smul', smul_eq_mul, mul_one]
+      simp only [Function.comp_def, Pi.sub_def, ← f'.map_smul, ← Pi.single_smul', smul_eq_mul,
+        mul_one]
     _ ≤ (volume (I.face i : Set (Fin n → ℝ))).toReal * (2 * ε * c * (I.upper i - I.lower i)) := by
       -- The hard part of the estimate was done above, here we just replace `diam I.Icc`
       -- with `c * (I.upper i - I.lower i)`

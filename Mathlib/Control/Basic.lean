@@ -151,7 +151,8 @@ theorem joinM_map_joinM {α : Type u} (a : m (m (m α))) : joinM (joinM <$> a) =
 
 @[simp]
 theorem joinM_map_pure {α : Type u} (a : m α) : joinM (pure <$> a) = a := by
-  simp only [joinM, Function.comp_def, id.def, map_bind, ← bind_pure_comp, bind_assoc, pure_bind, bind_pure]
+  simp only [joinM, Function.comp_def, id.def, map_bind, ← bind_pure_comp, bind_assoc, pure_bind,
+    bind_pure]
 #align mjoin_map_pure joinM_map_pure
 
 @[simp]

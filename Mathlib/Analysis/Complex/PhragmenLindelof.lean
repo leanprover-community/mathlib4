@@ -198,8 +198,8 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
     suffices H : Tendsto (fun R => δ + B * (expR ((d - c) * R))⁻¹) atTop (𝓝 (δ + B * 0))
     · rw [mul_zero, add_zero] at H
       refine' Tendsto.atBot_add _ tendsto_const_nhds
-      simpa only [id, Function.comp_def, add_mul, mul_assoc, ← div_eq_inv_mul, ← Real.exp_sub, ← sub_mul,
-        sub_sub_cancel]
+      simpa only [id, Function.comp_def, add_mul, mul_assoc, ← div_eq_inv_mul, ← Real.exp_sub,
+        ← sub_mul, sub_sub_cancel]
         using H.neg_mul_atTop δ₀ <| Real.tendsto_exp_atTop.comp <|
           tendsto_const_nhds.mul_atTop hd₀ tendsto_id
     refine' tendsto_const_nhds.add (tendsto_const_nhds.mul _)

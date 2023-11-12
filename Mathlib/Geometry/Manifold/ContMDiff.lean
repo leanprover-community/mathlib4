@@ -946,7 +946,8 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
   · filter_upwards [A]
     rintro x' ⟨-, hfx'⟩
     simp only [*, Function.comp_def, writtenInExtChartAt, e'.left_inv]
-  · simp only [writtenInExtChartAt, Function.comp_def, mem_extChartAt_source, e.left_inv, e'.left_inv]
+  · simp only [writtenInExtChartAt, Function.comp_def, mem_extChartAt_source, e.left_inv,
+      e'.left_inv]
 #align cont_mdiff_within_at.comp ContMDiffWithinAt.comp
 
 /-- See note [comp_of_eq lemmas] -/
