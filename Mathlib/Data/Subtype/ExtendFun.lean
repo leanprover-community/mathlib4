@@ -14,6 +14,7 @@ namespace Subtype
 
 variable {α β : Type*} {p : α → Prop} [DecidablePred p]
 
+/-- Extend a function on a subtype of `α` to a function on `α`. -/
 abbrev extendFun (f : Subtype p → β) (g : (a : α) → ¬p a → β) : α → β :=
   Set.piecewiseMem {x | p x} (f ⟨·, ·⟩) g
 
