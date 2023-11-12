@@ -1,122 +1,201 @@
 /-
-Copyright (c) 2023 David Spivak, Shaowei Lin. All rights reserved.
+Copyright (c) 2023 David Spivak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Spivak, Shaowei Lin
 -/
-
+import Init.Prelude
 import Mathlib.CategoryTheory.Category.Basic
 
--- need to use `Type u` or `Type v` instead of `Type`
-universe u v
+/-!
+# Polynomial Functors
+
+Defines the category of polynomial functors, as a type class parametrised by the type of objects.
+
+## Notations
+
+For polynomial functos, we use the same notation as that for categories.
+* `𝟙 p` for the identity lens from `p` to itself (type as `\b1`)
+* `p ⟶ q` for the space of lenses from `p` to `q` (type as `\-->`)
+* `p ≫ q` for composition in the diagrammatic order (type as `\gg`)
+
+We introduce some new notations in the `Poly` scope
+* `A y^B` for monomials
+
+Users may like to add `f ⊚ g` for composition in the classical order, using
+```lean
+local notation:80 f " ⊚ " g => composemap g f    -- type as \oo
+```
+
+Users preferring `;` to `≫` for composition in the diagrammatic order may add
+```lean
+local infixr:80 " ; " => composemap
+```
+-/
+
+library_note "Poly universes"
+/--
+The category `Poly.{u, v}` of polynomial functors and lenses
+between them contains polynomial functors
+whose positions live in `Type u` and
+whose directions have codomains in `Type v`.
+
+These polynomial functors can be applied to types
+in any `Type w` independent of `Type u` and `Type v`.
+-/
+
+universe u v w
 
 namespace CategoryTheory
 
+namespace Poly
+
+/-!
+## Category of polynommial functors
+-/
+
+/-- Poly as a type where the objects are pairs (pos, dir). -/
 structure Poly where
-  pos : Type
-  dir : pos -> Type
+  pos : Type u
+  dir : pos -> Type v
 
-def monomial (P D : Type) : Poly :=
-  {
-    pos := P
-    dir := λ _ ↦ D
-  }
-
-notation:50 A:50 " y^" B:50 => monomial A B
-
-def const (P : Type) : Poly := P y^Empty  -- monomial P Empty
-def linear (P : Type) : Poly := P y^Unit
-def poly1 : Poly := const Unit
-def poly0 : Poly := const Empty
-def y : Poly := linear Unit
-
-def representable (D : Type) : Poly := monomial Unit D
-notation:50 "y^" B:50 => representable B
-
-def bang1 {T : Type} : T -> Unit := λ _ ↦ Unit.unit
-def ident {T : Type} : T -> T := λ t ↦ t
-
-def applyFun : Poly -> Type -> Type:=
-  λ p T ↦ (P : p.pos) × ((p.dir P) -> T)
-
-------------- Maps ------------
-
-def polymap (p q: Poly) : Type :=
+/-- The type of lenses/maps from one polynomial functor to another. -/
+def polymap (p q : Poly.{u, v}) : Type max u v :=
   Σ (onPos : p.pos -> q.pos),
   (P : p.pos) -> q.dir (onPos P) -> p.dir P
 
-notation:50 p "⇒" q => polymap p q
+/-- The identity lens/map from a polynomial functor to itself. -/
+def polyid (p : Poly) : polymap p p :=
+  Sigma.mk (id) (λ _ ↦ id)
 
-def polymap2 (p q : Poly) : Type :=
-  (P : p.pos) -> Σ (Q : q.pos), q.dir Q -> p.dir P
+/-- Composition of lenses/maps. -/
+def composemap {p q r : Poly} (f : polymap p q) (g : polymap q r) :
+    (polymap p r) :=
+  let onPos :=
+    g.fst ∘ f.fst
+  let onDir (P : p.pos) (rd : r.dir (onPos P)) :=
+    f.snd P (g.snd (f.fst P) rd)
+  Sigma.mk onPos onDir
 
-def cast12 {p q : Poly}: polymap p q -> polymap2 p q :=
-  λ f P ↦
-  (Sigma.mk (f.fst P) (f.snd P))
+/-- Poly as a type with some categorical structure. -/
+instance Poly.categoryStruct : CategoryStruct Poly where
+  Hom  := polymap
+  id   := polyid
+  comp := composemap
 
-def cast21 {p q : Poly}: polymap2 p q -> polymap p q :=
-  λ f ↦
-  (Sigma.mk (λ P ↦ (f P).fst) (λ P ↦ (f P).snd))
-
-def constantMap {T T' : Type} :
-  (T -> T') -> (const T) ⇒ (const T') :=
-  λ f ↦ (Sigma.mk f λ _ ↦ Empty.rec )
-
-def linearMap {T T' : Type} : (T -> T') ->  (linear T) ⇒ (linear T') :=
-  λ f ↦ (Sigma.mk f λ _ _ ↦ Unit.unit)
-
-def representableMap {T T' : Type} : (T -> T') -> polymap (representable T') (representable T) :=
-  λ f ↦ (Sigma.mk bang1 λ _ ↦ f)
-
-def polyid {p : Poly} : p ⇒ p :=
-  (Sigma.mk (ident) λ _ ↦ ident)
-
-def bang0poly {p : Poly} : poly0 ⇒ p  :=
-  (Sigma.mk Empty.rec Empty.rec)
-
-def bang1poly {P : Poly} : P ⇒ poly1 := (Sigma.mk bang1 λ _ ↦ Empty.rec)
-
-def composemap {p q r : Poly} : (p ⇒ q) -> (q ⇒ r) -> (p ⇒ r) :=
-  λ f g ↦
-  let onPos : p.pos -> r.pos := g.fst ∘ f.fst
-  let onDir : (P : p.pos) -> (r.dir $ onPos P) -> (p.dir P) := λ P rd ↦ (f.snd P $ g.snd (f.fst P) rd)
-  (Sigma.mk onPos onDir)
-
-notation:50 f:50 ";" g:50  => composemap f g
-
-theorem assoc {p q r s : Poly} :
-  (f : p ⇒ q) -> (g : q ⇒ r) -> (h : r ⇒ s) ->
-  (f ; (g ; h)) = ((f ; g) ; h) := by
-  intros
-  rfl
-
-theorem unitl {p q : Poly} : (f : p ⇒ q) -> f = (f ; polyid) := by
-  intros
-  rfl
-
-theorem unitr {p q : Poly} : (f : p ⇒ q) -> f = (polyid ; f) := by
-  intros
-  rfl
-
-def toTransformation {p q : Poly} : (f : p ⇒ q) -> (T : Type) ->
-  (applyFun p T) -> (applyFun q T) :=
-  λ f _ Pt ↦
-  let P := Pt.fst
-  let Q := Pt.snd
-  (Sigma.mk (f.fst P) (Q ∘ f.snd P))
-
--------- Poly category ----------
-
-instance PolyCat.categoryStruct :
-    CategoryStruct Poly where
-  Hom p q := p ⇒ q
-  id _ := polyid
-  comp f g := f ; g
-
-instance PolyCat.category : Category Poly where
+/-- Poly as a category. -/
+instance Poly.category : Category Poly where
   id_comp := by intros; rfl
   comp_id := by intros; rfl
   assoc   := by intros; rfl
 
+/-- Applying a polynomial functor to a type. -/
+def applyFun (p : Poly.{u, v}) (T : Type w) : Type max u v w :=
+  Σ (P : p.pos), (p.dir P) -> T
+
+-- replaced by Poly.category.assoc --
+-- theorem assoc {p q r s : Poly} :
+--   (f : p ⇒ q) -> (g : q ⇒ r) -> (h : r ⇒ s) ->
+--   (f ; (g ; h)) = ((f ; g) ; h) := by
+--   intros
+--   rfl
+
+-- replaced by Poly.category.comp_id --
+-- theorem unitl {p q : Poly} : (f : p ⇒ q) -> f = (f ; polyid) := by
+--   intros
+--   rfl
+
+-- replaced by Poly.category.id_comp --
+-- theorem unitr {p q : Poly} : (f : p ⇒ q) -> f = (polyid ; f) := by
+--   intros
+--   rfl
+
+/-!
+## Special functions
+-/
+
+/-- Notation for unique map from empty type. -/
+scoped notation "!𝟬" => PEmpty.rec  -- type as !\sb0
+
+/-- Unique map to unit type. -/
+def bang1 {T : Type u} : T -> PUnit.{v+1} :=
+  λ _ ↦ PUnit.unit
+
+/-- Notation for unique map to unit type. -/
+scoped notation "!𝟭" => bang1  -- type as !\sb1
+
+/-!
+## Special polynommial functors
+-/
+
+/-- A monomial functor. -/
+def monomial (P : Type u) (D: Type v) : Poly.{u, v} where
+  pos := P
+  dir := (λ _ ↦ D)
+
+/-- Notation for a monomial functor. -/
+scoped notation:50 A:50 " y^" B:50 => monomial A B
+
+/-- A representable functor. -/
+def representable (D : Type v) : Poly.{u, v} := PUnit.{u+1} y^D
+
+/-- Notation for a representable functor. -/
+scoped notation:50 "y^" B:50 => representable B
+
+/-- A constant polynomial functor. -/
+def const (P : Type u) : Poly.{u, v} := P y^(PEmpty.{v+1})
+
+/-- A linear polynomial functor. -/
+def linear (P : Type u) : Poly.{u, v} := P y^(PUnit.{v+1})
+
+/-- The initial object in Poly. -/
+def poly0 : Poly.{u, v} := const PEmpty.{u+1}
+
+/-- Notation for the initial object. -/
+scoped notation "𝟬" => poly0  -- type as \sb0
+
+/-- The terminal object in Poly. -/
+def poly1 : Poly.{u, v} := const PUnit.{u+1}
+
+/-- Notation for the terminal object. -/
+scoped notation "𝟭" => poly1  -- type as \sb1
+
+/-- The identity functor in Poly. -/
+def y : Poly.{u, v} := linear PUnit.{u+1}
+
+/-!
+## Special lenses/maps
+-/
+
+def constantMap {T T' : Type u} (f : T -> T') : (const T) ⟶ (const T') :=
+  Sigma.mk f (λ _ ↦ !𝟬)
+
+def linearMap {T T' : Type u} (f : T -> T') : (linear T) ⟶ (linear T') :=
+  Sigma.mk f (λ _ ↦ !𝟭)
+
+def representableMap {T T' : Type u} (f : T -> T') : y^T' ⟶ y^T :=
+  Sigma.mk !𝟭 (λ _ ↦ f)
+
+def bang0poly {p : Poly.{u, v}} : 𝟬 ⟶ p :=
+  Sigma.mk !𝟬 !𝟬
+
+def bang1poly {P : Poly.{u, v}} : P ⟶ 𝟭 :=
+  Sigma.mk !𝟭 (λ _ ↦ !𝟬)
+
+def polymap2 (p q : Poly.{u, v}) : Type max u v :=
+  (P : p.pos) -> Σ (Q : q.pos), q.dir Q -> p.dir P
+
+def cast12 {p q : Poly.{u, v}} (f : p ⟶ q) : polymap2 p q :=
+  λ P ↦ (Sigma.mk (f.fst P) (f.snd P))
+
+def cast21 {p q : Poly.{u, v}} (f : polymap2 p q) : p ⟶ q :=
+  Sigma.mk (λ P ↦ (f P).fst) (λ P ↦ (f P).snd)
+
+def toTransformation {p q : Poly.{u, v}} (f : p ⟶ q) (T : Type) :
+    (applyFun p T) -> (applyFun q T) :=
+  λ pT ↦
+  let P := pT.fst
+  let Q := pT.snd
+  Sigma.mk (f.fst P) (Q ∘ f.snd P)
 
 
 -------- Substitution product ----------
@@ -131,12 +210,18 @@ def subst : Poly -> Poly -> Poly :=
     (d : p.dir P) × (q.dir (Q d))
   }
 
-notation:60 p "◁" q => subst p q
+notation:80 p "◁" q => subst p q
 
-def unitSubstRight {p : Poly} : (p ◁ y) ⇒ p :=
+
+def unitSubstRight {p : Poly} : (p ◁ y) ⟶ p :=
   sorry
 
 structure Comonad where
   carrier : Poly
-  counit  : carrier ⇒ y
-  comult  : carrier ⇒ carrier ◁ carrier
+  counit  : carrier ⟶ y
+  comult  : carrier ⟶ (carrier ◁ carrier)
+
+
+end Poly
+
+end CategoryTheory
