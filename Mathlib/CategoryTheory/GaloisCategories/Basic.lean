@@ -6,7 +6,10 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.RepresentationTheory.Action
 import Mathlib.CategoryTheory.FintypeCat
+import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.GaloisCategories.Generalities
+import Mathlib.Data.Finite.Card
 
 universe u v w v₁ u₁ u₂
 
@@ -72,7 +75,7 @@ instance : PreservesColimitsOfShape (Discrete PEmpty.{1}) F :=
   FibreFunctor.preservesFiniteCoproducts.preserves PEmpty
 instance : ReflectsIsomorphisms F :=
   FibreFunctor.reflectsIsos
-noncomputable instance : ReflectsColimitsOfShape (Discrete PEmpty.{1}) F :=
+noncomputable instance reflectsEmptyColimits : ReflectsColimitsOfShape (Discrete PEmpty.{1}) F :=
   reflectsColimitsOfShapeOfReflectsIsomorphisms
 
 noncomputable instance preservesFiniteLimits : PreservesFiniteLimits F :=
@@ -80,6 +83,13 @@ noncomputable instance preservesFiniteLimits : PreservesFiniteLimits F :=
 
 def preservesInitialObject (O : C) : IsInitial O → IsInitial (F.obj O) :=
   IsInitial.isInitialObj F O
+
+noncomputable def reflectsInitialObject (O : C) : IsInitial (F.obj O) → IsInitial O :=
+  IsInitial.isInitialOfObj F O  
+
+lemma initialIffFibreEmpty (X : C) : Nonempty (IsInitial X) ↔ IsEmpty (F.obj X) := by
+  rw [IsInitial.isInitialIffObj F X]
+  exact FintypeCat.initialIffEmpty (F.obj X)
 
 instance preservesMonomorphisms : PreservesMonomorphisms F :=
   preservesMonomorphisms_of_preservesLimitsOfShape F
@@ -96,7 +106,10 @@ lemma monoFromPullbackIso {X Y : C} (f : X ⟶ Y) [HasPullback f f]
     rw [←h2]
     simp only [limit.lift_π, PullbackCone.mk_π_app]
 
-instance : PreservesLimitsOfShape WalkingCospan (forget FintypeCat) := by exact?
+private noncomputable instance : PreservesLimitsOfShape (WalkingCospan) (forget FintypeCat) := by
+  have h : forget FintypeCat = FintypeCat.incl := rfl
+  rw [h]
+  infer_instance
 
 lemma monomorphismIffInducesInjective {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective (F.map f) := by
@@ -116,6 +129,54 @@ lemma monomorphismIffInducesInjective {X Y : C} (f : X ⟶ Y) :
   have : Mono f := monoFromPullbackIso f
   assumption
 
+lemma isIso_of_mono_of_eqCardFibre {X Y : C} (f : X ⟶ Y) [Mono f] :
+    Nat.card (F.obj X) = Nat.card (F.obj Y) → IsIso f := by
+  intro h
+  have : Function.Injective (F.map f) := (monomorphismIffInducesInjective f).mp inferInstance
+  have : Function.Bijective (F.map f) := by
+    apply (Fintype.bijective_iff_injective_and_card (F.map f)).mpr
+    constructor
+    exact (monomorphismIffInducesInjective f).mp inferInstance
+    simp only [←Nat.card_eq_fintype_card]
+    exact h
+  have : IsIso (F.map f) := (FintypeCat.isIso_iff_bijective (F.map f)).mpr this
+  exact isIso_of_reflects_iso f F
+
+lemma ltCardFibre_of_mono_of_notIso {X Y : C} (f : X ⟶ Y) [Mono f] :
+    ¬ IsIso f → Nat.card (F.obj X) < Nat.card (F.obj Y) := by
+  intro h
+  have : Nat.card (F.obj X) ≤ Nat.card (F.obj Y) :=
+    Finite.card_le_of_injective
+      (F.map f)
+      ((monomorphismIffInducesInjective f).mp inferInstance)
+  by_contra h2
+  simp only [gt_iff_lt, not_lt] at h2
+  apply h
+  have : Nat.card (F.obj X) = Nat.card (F.obj Y) := Nat.le_antisymm this h2
+  exact isIso_of_mono_of_eqCardFibre f this
+
+lemma cardFibre_eq_sum_of_coprod (X Y : C)
+    : Nat.card (F.obj (X ⨿ Y)) = Nat.card (F.obj X) + Nat.card (F.obj Y) := by
+  have hh2 : F.obj (X ⨿ Y) ≅ (F.obj X) ⨿ (F.obj Y) := by
+    symm
+    exact PreservesColimitPair.iso F X Y
+  have hh3 : F.obj (X ⨿ Y) ≃ F.obj X ⊕ F.obj Y := by
+    apply Iso.toEquiv
+    trans
+    show FintypeCat.incl.obj (F.obj (X ⨿ Y)) ≅ FintypeCat.incl.obj (F.obj X ⨿ F.obj Y)
+    exact Functor.mapIso FintypeCat.incl hh2
+    trans
+    show FintypeCat.incl.obj (F.obj X ⨿ F.obj Y) ≅
+      FintypeCat.incl.obj (F.obj X) ⨿ FintypeCat.incl.obj (F.obj Y)
+    exact (PreservesColimitPair.iso FintypeCat.incl (F.obj X) (F.obj Y)).symm
+    exact Types.binaryCoproductIso (FintypeCat.incl.obj (F.obj X)) (FintypeCat.incl.obj (F.obj Y))
+  rw [←Nat.card_sum]
+  exact Nat.card_eq_of_bijective hh3.toFun (Equiv.bijective hh3)
+
+lemma cardFibre_eq_of_iso { X Y : C } (i : X ≅ Y) : Nat.card (F.obj X) = Nat.card (F.obj Y) := by
+  have e : F.obj X ≃ F.obj Y := Iso.toEquiv (mapIso (F ⋙ FintypeCat.incl) i)
+  exact Nat.card_eq_of_bijective e (Equiv.bijective e)
+
 def evaluation (A X : C) (a : F.obj A) (f : A ⟶ X) : F.obj X := F.map f a
 
 /- The evaluation map is injective for connected objects. -/
@@ -126,18 +187,32 @@ lemma evaluationInjectiveOfConnected (A X : C) [ConnectedObject A] (a : F.obj A)
   have : IsIso (equalizer.ι f g) := by
     apply ConnectedObject.noTrivialComponent E (equalizer.ι f g)
     intro hEinitial
-    have hFEinitial : IsInitial (F.obj E) := preservesInitialObject E hEinitial
+    have hFEinitial : IsInitial ((F ⋙ FintypeCat.incl).obj E) :=
+      IsInitial.isInitialObj (F ⋙ FintypeCat.incl) E hEinitial
     have h2 : F.obj E ≃ { x : F.obj A // F.map f x = F.map g x } := by
       apply Iso.toEquiv
       trans
-      exact PreservesEqualizer.iso F f g
+      exact PreservesEqualizer.iso (F ⋙ FintypeCat.incl) f g
       exact Types.equalizerIso (F.map f) (F.map g)
-    have h3 : F.obj E ≃ PEmpty := (IsInitial.uniqueUpToIso hFEinitial (FintypeCat.isInitialPunit)).toEquiv
+    have h3 : F.obj E ≃ PEmpty := (IsInitial.uniqueUpToIso hFEinitial (Types.isInitialPunit)).toEquiv
     apply not_nonempty_pempty
     apply (Equiv.nonempty_congr h3).mp
     apply (Equiv.nonempty_congr h2).mpr
     use a
   exact eq_of_epi_equalizer
+
+/- The fibre functor is faithful. -/
+lemma fibreFunctorFaithful : Faithful F where
+  map_injective {X Y} := by
+    intro f g h 
+    have : IsIso (equalizerComparison f g F) :=
+      instIsIsoObjToQuiverToCategoryStructToQuiverToCategoryStructToPrefunctorEqualizerEqualizerMapEqualizerComparison F f g
+    have : IsIso (equalizer.ι (F.map f) (F.map g)) := equalizer.ι_of_eq h
+    have : IsIso (F.map (equalizer.ι f g)) := by
+      rw [←equalizerComparison_comp_π f g F]
+      exact IsIso.comp_isIso
+    have : IsIso (equalizer.ι f g) := isIso_of_reflects_iso _ F
+    exact eq_of_epi_equalizer
 
 end Def
 
