@@ -520,8 +520,8 @@ lemma arg_mul_eq_add_arg_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
   rw [← arg_coe_angle_toReal_eq_arg, arg_mul_coe_angle hx₀ hy₀, ← Real.Angle.coe_add,
       Real.Angle.toReal_coe_eq_self_iff_mem_Ioc]
 
-lemma arg_mul {x y : ℂ} (hx₀ : x ≠ 0) (hx₁ : -Real.pi / 2 < x.arg) (hx₂ : x.arg ≤ Real.pi / 2)
-    (hy₀ : y ≠ 0) (hy₁ : -Real.pi / 2 < y.arg) (hy₂ : y.arg ≤ Real.pi / 2) :
+lemma arg_mul {x y : ℂ} (hx₀ : x ≠ 0) (hx₁ : -π / 2 < x.arg) (hx₂ : x.arg ≤ π / 2)
+    (hy₀ : y ≠ 0) (hy₁ : -π / 2 < y.arg) (hy₂ : y.arg ≤ π / 2) :
     (x * y).arg = x.arg + y.arg :=
   (arg_mul_eq_add_arg_iff hx₀ hy₀).mpr (by rw [Set.mem_Ioc]; constructor <;> linarith)
 
