@@ -41,6 +41,49 @@ theorem withDensity_apply (f : α → ℝ≥0∞) {s : Set α} (hs : MeasurableS
   Measure.ofMeasurable_apply s hs
 #align measure_theory.with_density_apply MeasureTheory.withDensity_apply
 
+theorem foo (f : α → ℝ≥0∞) (s : Set α) :
+    ∫⁻ a in s, f a ∂μ ≤ μ.withDensity f s := by
+  let t := toMeasurable (μ.withDensity f) s
+  calc
+  ∫⁻ a in s, f a ∂μ ≤ ∫⁻ a in t, f a ∂μ :=
+    lintegral_mono_set (subset_toMeasurable (withDensity μ f) s)
+  _ = μ.withDensity f t :=
+    (withDensity_apply f (measurableSet_toMeasurable (withDensity μ f) s)).symm
+  _ = μ.withDensity f s := measure_toMeasurable s
+
+#check restrict_toMeasurable_of_cover
+
+#check exists_measurable_le_lintegral_eq
+
+
+theorem bar2 (f : α → ℝ≥0∞) (hf : Measurable f) (s : Set α) :
+    μ.withDensity f s ≤ ∫⁻ a in s, f a ∂μ := by
+  rcases eq_top_or_lt_top (∫⁻ a in s, f a ∂μ) with h'f|h'f
+  · rw [h'f]; exact le_top
+  let t := toMeasurable μ s
+  calc
+  μ.withDensity f s ≤ μ.withDensity f t := measure_mono (subset_toMeasurable μ s)
+  _ = ∫⁻ a in t, f a ∂μ := withDensity_apply f (measurableSet_toMeasurable μ s)
+  _ = ∫⁻ a in s, f a ∂μ := by
+    congr 1
+    exact restrict_toMeasurable_of_sigmaFinite s
+
+
+theorem bar (f : α → ℝ≥0∞) (s : Set α) :
+    μ.withDensity f s ≤ ∫⁻ a in s, f a ∂μ := by
+  have H : SigmaFinite μ := sorry
+  let t := toMeasurable μ s
+  calc
+  μ.withDensity f s ≤ μ.withDensity f t := measure_mono (subset_toMeasurable μ s)
+  _ = ∫⁻ a in t, f a ∂μ := withDensity_apply f (measurableSet_toMeasurable μ s)
+  _ = ∫⁻ a in s, f a ∂μ := by
+    congr 1
+    exact restrict_toMeasurable_of_sigmaFinite s
+#exit
+
+
+
+
 @[simp]
 lemma withDensity_zero_left (f : α → ℝ≥0∞) : (0 : Measure α).withDensity f = 0 := by
   ext s hs
