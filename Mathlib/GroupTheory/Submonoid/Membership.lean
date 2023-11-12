@@ -197,11 +197,11 @@ namespace Submonoid
 @[to_additive]
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Submonoid M} (hS : Directed (· ≤ ·) S)
     {x : M} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
-  refine' ⟨_, fun ⟨i, hi⟩ => (SetLike.le_def.1 <| le_iSup S i) hi⟩
+  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   suffices x ∈ closure (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
     simpa only [closure_iUnion, closure_eq (S _)] using this
-  refine' fun hx => closure_induction hx (fun _ => mem_iUnion.1) _ _
-  · exact hι.elim fun i => ⟨i, (S i).one_mem⟩
+  refine fun hx ↦ closure_induction hx (fun _ ↦ mem_iUnion.1) ?_ ?_
+  · exact hι.elim fun i ↦ ⟨i, (S i).one_mem⟩
   · rintro x y ⟨i, hi⟩ ⟨j, hj⟩
     rcases hS i j with ⟨k, hki, hkj⟩
     exact ⟨k, (S k).mul_mem (hki hi) (hkj hj)⟩
@@ -210,8 +210,8 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Submonoid M} (
 
 @[to_additive]
 theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Submonoid M} (hS : Directed (· ≤ ·) S) :
-    ((⨆ i, S i : Submonoid M) : Set M) = ⋃ i, ↑(S i) :=
-  Set.ext fun x => by simp [mem_iSup_of_directed hS]
+    ((⨆ i, S i : Submonoid M) : Set M) = ⋃ i, S i :=
+  Set.ext fun x ↦ by simp [mem_iSup_of_directed hS]
 #align submonoid.coe_supr_of_directed Submonoid.coe_iSup_of_directed
 #align add_submonoid.coe_supr_of_directed AddSubmonoid.coe_iSup_of_directed
 
@@ -341,6 +341,39 @@ theorem mem_closure_singleton_self {y : M} : y ∈ closure ({y} : Set M) :=
 theorem closure_singleton_one : closure ({1} : Set M) = ⊥ := by
   simp [eq_bot_iff_forall, mem_closure_singleton]
 #align submonoid.closure_singleton_one Submonoid.closure_singleton_one
+
+section Submonoid
+variable {S : Submonoid M} [Fintype S]
+open Fintype
+
+/- curly brackets `{}` are used here instead of instance brackets `[]` because
+  the instance in a goal is often not the same as the one inferred by type class inference.  -/
+@[to_additive]
+theorem card_bot {_ : Fintype (⊥ : Submonoid M)} : card (⊥ : Submonoid M) = 1 :=
+  card_eq_one_iff.2
+    ⟨⟨(1 : M), Set.mem_singleton 1⟩, fun ⟨_y, hy⟩ => Subtype.eq <| mem_bot.1 hy⟩
+
+@[to_additive]
+theorem eq_bot_of_card_le (h : card S ≤ 1) : S = ⊥ :=
+  let _ := card_le_one_iff_subsingleton.mp h
+  eq_bot_of_subsingleton S
+
+@[to_additive]
+theorem eq_bot_of_card_eq (h : card S = 1) : S = ⊥ :=
+  S.eq_bot_of_card_le (le_of_eq h)
+
+@[to_additive card_le_one_iff_eq_bot]
+theorem card_le_one_iff_eq_bot : card S ≤ 1 ↔ S = ⊥ :=
+  ⟨fun h =>
+    (eq_bot_iff_forall _).2 fun x hx => by
+      simpa [Subtype.ext_iff] using card_le_one_iff.1 h ⟨x, hx⟩ 1,
+    fun h => by simp [h]⟩
+
+@[to_additive]
+lemma eq_bot_iff_card : S = ⊥ ↔ card S = 1 :=
+  ⟨by rintro rfl;  exact card_bot, eq_bot_of_card_eq⟩
+
+end Submonoid
 
 @[to_additive]
 theorem _root_.FreeMonoid.mrange_lift {α} (f : α → M) :

@@ -104,7 +104,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   rcases hc.2.eq_or_lt with (rfl | hlt); · exact hcs.2
   contrapose! hf
   intro U hU
-  rcases(mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
+  rcases (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
       (mem_nhdsWithin_of_mem_nhds hU) with
     ⟨y, hxy, hyU⟩
   refine' mem_of_superset _ hyU; clear! U
@@ -174,7 +174,7 @@ theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCom
   by_contra H
   rw [not_nonempty_iff_eq_empty] at H
   rcases hs.elim_directed_family_closed (fun x : s => Iic ↑x) (fun x => isClosed_Iic) H
-      (directed_of_inf fun _ _ h => Iic_subset_Iic.mpr h) with ⟨x, hx⟩
+      (Monotone.directed_ge fun _ _ h => Iic_subset_Iic.mpr h) with ⟨x, hx⟩
   exact not_nonempty_iff_eq_empty.mpr hx ⟨x, x.2, le_rfl⟩
 #align is_compact.exists_is_least IsCompact.exists_isLeast
 
@@ -381,10 +381,10 @@ end ConditionallyCompleteLinearOrder
 ### Min and max elements of a compact set
 -/
 
-section OrderClosedTopology
+section InfSup
 
-variable {α β γ : Type*} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α]
-  [TopologicalSpace β] [TopologicalSpace γ]
+variable {α β : Type*} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α]
+  [TopologicalSpace β]
 
 theorem IsCompact.sInf_mem [ClosedIicTopology α] {s : Set α} (hs : IsCompact s)
     (ne_s : s.Nonempty) : sInf s ∈ s :=
@@ -442,6 +442,12 @@ theorem IsCompact.exists_sSup_image_eq [ClosedIciTopology α] {s : Set β} (hs :
   IsCompact.exists_sInf_image_eq (α := αᵒᵈ) hs ne_s
 #align is_compact.exists_Sup_image_eq IsCompact.exists_sSup_image_eq
 
+end InfSup
+
+section ExistsExtr
+
+variable {α β : Type*} [LinearOrder α] [TopologicalSpace α] [TopologicalSpace β]
+
 theorem IsCompact.exists_isMinOn_mem_subset [ClosedIicTopology α] {f : β → α} {s t : Set β}
     {z : β} (ht : IsCompact t) (hf : ContinuousOn f t) (hz : z ∈ t)
     (hfz : ∀ z' ∈ t \ s, f z < f z') : ∃ x ∈ s, IsMinOn f t x :=
@@ -477,7 +483,7 @@ theorem IsCompact.exists_isLocalMax_mem_open [ClosedIciTopology α] {f : β → 
   let ⟨x, hxs, h⟩ := ht.exists_isMaxOn_mem_subset hf hz hfz
   ⟨x, hxs, h.isLocalMax <| mem_nhds_iff.2 ⟨s, hst, hs, hxs⟩⟩
 
-end OrderClosedTopology
+end ExistsExtr
 
 variable {α β γ : Type*} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α]
   [OrderTopology α] [TopologicalSpace β] [TopologicalSpace γ]

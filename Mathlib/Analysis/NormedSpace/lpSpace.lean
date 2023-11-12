@@ -14,7 +14,7 @@ import Mathlib.Topology.Algebra.Order.LiminfLimsup
 # ℓp space
 
 This file describes properties of elements `f` of a pi-type `∀ i, E i` with finite "norm",
-defined for `p:ℝ≥0∞` as the size of the support of `f` if `p=0`, `(∑' a, ‖f a‖^p) ^ (1/p)` for
+defined for `p : ℝ≥0∞` as the size of the support of `f` if `p=0`, `(∑' a, ‖f a‖^p) ^ (1/p)` for
 `0 < p < ∞` and `⨆ a, ‖f a‖` for `p=∞`.
 
 The Prop-valued `Memℓp f p` states that a function `f : ∀ i, E i` has finite norm according
@@ -670,7 +670,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     refine' hcf.right _
     have := hfc.left
     simp_rw [mem_upperBounds, Set.mem_range,
-      forall_exists_index, forall_apply_eq_imp_iff'] at this ⊢
+      forall_exists_index, forall_apply_eq_imp_iff] at this ⊢
     intro a
     exact (norm_smul_le _ _).trans (this a)
   · letI inst : NNNorm (lp E p) := ⟨fun f => ⟨‖f‖, norm_nonneg' _⟩⟩

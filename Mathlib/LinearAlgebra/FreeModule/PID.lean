@@ -33,7 +33,7 @@ In this section, `M` is a free and finitely generated `R`-module, and
   `P N` follows from `P N'` for all `N'` that are of lower rank, then `P` holds
    on all submodules
 
- - `submodule.exists_basis_of_pid`: if `R` is a PID, then `N : Submodule R M` is
+ - `Submodule.exists_basis_of_pid`: if `R` is a PID, then `N : Submodule R M` is
    free and finitely generated. This is the first part of the structure theorem
    for modules.
 

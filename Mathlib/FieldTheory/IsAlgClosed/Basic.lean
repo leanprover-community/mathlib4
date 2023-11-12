@@ -306,19 +306,7 @@ theorem maximalSubfieldWithHom_is_maximal :
   Classical.choose_spec (exists_maximal_subfieldWithHom K L M)
 #align lift.subfield_with_hom.maximal_subfield_with_hom_is_maximal IsAlgClosed.lift.SubfieldWithHom.maximalSubfieldWithHom_is_maximal
 
--- Porting note: split out this definition from `maximalSubfieldWithHom_eq_top`
-/-- Produce an algebra homomorphism `Adjoin R {x} →ₐ[R] T` sending `x` to
-a root of `x`'s minimal polynomial in `T`. -/
-noncomputable def _root_.Algebra.adjoin.liftSingleton (R : Type*) [Field R] {S T : Type*}
-  [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
-  (x : S) (y : T) (h : aeval y (minpoly R x) = 0) :
-  Algebra.adjoin R {x} →ₐ[R] T :=
-AlgHom.comp
-  (AdjoinRoot.liftHom _ y h)
-  (AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly R x).toAlgHom
-
 -- porting note: this was much faster in lean 3
-set_option maxHeartbeats 300000 in
 set_option synthInstance.maxHeartbeats 200000 in
 theorem maximalSubfieldWithHom_eq_top : (maximalSubfieldWithHom K L M).carrier = ⊤ := by
   rw [eq_top_iff]
@@ -364,9 +352,9 @@ variable (K L M)
 
 /-- Less general version of `lift`. -/
 private noncomputable irreducible_def lift_aux : L →ₐ[K] M :=
-  (lift.SubfieldWithHom.maximalSubfieldWithHom K L M).emb.comp <|
-    (lift.SubfieldWithHom.maximalSubfieldWithHom_eq_top (K := K) (L := L) (M := M) (hL := hL)).symm
-      ▸ Algebra.toTop
+  Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
+    (fun x _ ↦ ⟨isAlgebraic_iff_isIntegral.1 (hL x), splits_codomain (minpoly K x)⟩)
+    (IntermediateField.adjoin_univ K L)
 
 variable {R : Type u} [CommRing R]
 
@@ -437,19 +425,11 @@ variable [Algebra R L] [NoZeroSMulDivisors R L] [IsAlgClosure R L]
 /-- A (random) isomorphism between two algebraic closures of `R`. -/
 noncomputable def equiv : L ≃ₐ[R] M :=
   -- Porting note: added to replace local instance above
+  haveI : IsAlgClosed L := IsAlgClosure.alg_closed R
   haveI : IsAlgClosed M := IsAlgClosure.alg_closed R
-  let f : L →ₐ[R] M := IsAlgClosed.lift IsAlgClosure.algebraic
-  AlgEquiv.ofBijective f
-    ⟨RingHom.injective f.toRingHom, by
-      letI : Algebra L M := RingHom.toAlgebra f
-      letI : IsScalarTower R L M := IsScalarTower.of_algebraMap_eq <| by
-        simp only [RingHom.algebraMap_toAlgebra, RingHom.coe_coe, AlgHom.commutes, forall_const]
-      letI : IsAlgClosed L := IsAlgClosure.alg_closed R
-      show Function.Surjective (algebraMap L M)
-      exact
-        IsAlgClosed.algebraMap_surjective_of_isAlgebraic
-          (Algebra.isAlgebraic_of_larger_base_of_injective
-            (NoZeroSMulDivisors.algebraMap_injective R _) IsAlgClosure.algebraic)⟩
+  AlgEquiv.ofBijective _ (IsAlgClosure.algebraic.algHom_bijective₂
+    (IsAlgClosed.lift IsAlgClosure.algebraic : L →ₐ[R] M)
+    (IsAlgClosed.lift IsAlgClosure.algebraic : M →ₐ[R] L)).1
 #align is_alg_closure.equiv IsAlgClosure.equiv
 
 end
@@ -560,22 +540,11 @@ end IsAlgClosure
   the roots in `A` of the minimal polynomial of `x` over `F`. -/
 theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly {F K} (A) [Field F] [Field K] [Field A]
     [IsAlgClosed A] [Algebra F K] (hK : Algebra.IsAlgebraic F K) [Algebra F A] (x : K) :
-    (Set.range fun ψ : K →ₐ[F] A => ψ x) = (minpoly F x).rootSet A := by
+    (Set.range fun ψ : K →ₐ[F] A ↦ ψ x) = (minpoly F x).rootSet A := by
   have hFK := Algebra.isAlgebraic_iff_isIntegral.1 hK
   ext a
   rw [mem_rootSet_of_ne (minpoly.ne_zero (hFK x))]
-  refine' ⟨_, fun ha => _⟩
-  · rintro ⟨ψ, rfl⟩; rw [aeval_algHom_apply ψ x, minpoly.aeval, map_zero]
-  let Fx := AdjoinRoot (minpoly F x)
-  have hx : aeval x (minpoly F x) = 0 := minpoly.aeval F x
-  letI : Algebra Fx A := (AdjoinRoot.lift (algebraMap F A) a ha).toAlgebra
-  letI : Algebra Fx K := (AdjoinRoot.lift (algebraMap F K) x hx).toAlgebra
-  haveI : IsScalarTower F Fx A := IsScalarTower.of_ring_hom (AdjoinRoot.liftHom _ a ha)
-  haveI : IsScalarTower F Fx K := IsScalarTower.of_ring_hom (AdjoinRoot.liftHom _ x hx)
-  haveI : Fact (Irreducible <| minpoly F x) := ⟨minpoly.irreducible <| hFK x⟩
-  let ψ₀ : K →ₐ[Fx] A := IsAlgClosed.lift (Algebra.isAlgebraic_of_larger_base Fx hK)
-  exact
-    ⟨ψ₀.restrictScalars F,
-      (congr_arg ψ₀ (AdjoinRoot.lift_root hx).symm).trans <|
-        (ψ₀.commutes _).trans <| AdjoinRoot.lift_root ha⟩
+  refine ⟨fun ⟨ψ, hψ⟩ ↦ ?_, fun ha ↦ IntermediateField.exists_algHom_of_splits_of_aeval
+    (fun x ↦ ⟨hFK x, IsAlgClosed.splits_codomain _⟩) ha⟩
+  rw [← hψ, aeval_algHom_apply ψ x, minpoly.aeval, map_zero]
 #align algebra.is_algebraic.range_eval_eq_root_set_minpoly Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly

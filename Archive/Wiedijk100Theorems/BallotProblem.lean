@@ -238,7 +238,7 @@ theorem first_vote_pos :
       have hint :
         countedSequence (p + 1) (q + 1) ∩ List.cons 1 '' countedSequence p (q + 1) =
           List.cons 1 '' countedSequence p (q + 1) := by
-        rw [inter_eq_right_iff_subset, counted_succ_succ]
+        rw [inter_eq_right, counted_succ_succ]
         exact subset_union_left _ _
       rw [(condCount_eq_zero_iff <| (countedSequence_finite _ _).image _).2 this, condCount,
         cond_apply _ list_int_measurableSet, hint, count_injective_image List.cons_injective,
@@ -252,7 +252,7 @@ theorem first_vote_pos :
     · simp
 #align ballot.first_vote_pos Ballot.first_vote_pos
 
-theorem headI_mem_of_nonempty {α : Type _} [Inhabited α] : ∀ {l : List α} (_ : l ≠ []), l.headI ∈ l
+theorem headI_mem_of_nonempty {α : Type*} [Inhabited α] : ∀ {l : List α} (_ : l ≠ []), l.headI ∈ l
   | [], h => (h rfl).elim
   | x::l, _ => List.mem_cons_self x l
 #align ballot.head_mem_of_nonempty Ballot.headI_mem_of_nonempty

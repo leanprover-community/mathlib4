@@ -15,7 +15,7 @@ functors `G : C₁ ⥤ C₂` and `F : C₂ ⥤ C₁` induce functors
 have localization functors `L₁ : C₁ ⥤ D₁` and `L₂ : C₂ ⥤ D₂` with respect
 to morphism properties `W₁` and `W₂` respectively, and 2-commutative diagrams
 `[CatCommSq G L₁ L₂ G']` and `[CatCommSq F L₂ L₁ F']`, then we have an
-induced adjunction `adj.localization L₁ W₁ L₂ W₂ G' F' : G' ⊣ F'`.
+induced adjunction `Adjunction.localization L₁ W₁ L₂ W₂ G' F' : G' ⊣ F'`.
 
 -/
 

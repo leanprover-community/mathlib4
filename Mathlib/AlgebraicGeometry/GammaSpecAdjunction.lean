@@ -101,6 +101,9 @@ def toΓSpecBase : X.toTopCat ⟶ Spec.topObj (Γ.obj (op X)) where
   continuous_toFun := X.toΓSpec_continuous
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_base AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase_apply
+
 variable (r : Γ.obj (op X))
 
 /-- The preimage in `X` of a basic open in `Spec Γ(X)` (as an open set). -/
@@ -166,7 +169,7 @@ theorem toΓSpecCApp_spec : toOpen _ (basicOpen r) ≫ X.toΓSpecCApp r = X.toTo
 @[simps app]
 def toΓSpecCBasicOpens :
     (inducedFunctor basicOpen).op ⋙ (structureSheaf (Γ.obj (op X))).1 ⟶
-      (inducedFunctor basicOpen).op ⋙ ((TopCat.Sheaf.pushforward X.toΓSpecBase).obj X.𝒪).1 where
+      (inducedFunctor basicOpen).op ⋙ ((TopCat.Sheaf.pushforward _ X.toΓSpecBase).obj X.𝒪).1 where
   app r := X.toΓSpecCApp r.unop
   naturality r s f := by
     apply (StructureSheaf.to_basicOpen_epi (Γ.obj (op X)) r.unop).1
@@ -191,12 +194,11 @@ def toΓSpecSheafedSpace : X.toSheafedSpace ⟶ Spec.toSheafedSpace.obj (op (Γ.
 theorem toΓSpecSheafedSpace_app_eq :
     X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) = X.toΓSpecCApp r := by
   have := TopCat.Sheaf.extend_hom_app (Spec.toSheafedSpace.obj (op (Γ.obj (op X)))).presheaf
-    ((TopCat.Sheaf.pushforward X.toΓSpecBase).obj X.𝒪)
+    ((TopCat.Sheaf.pushforward _ X.toΓSpecBase).obj X.𝒪)
     isBasis_basic_opens X.toΓSpecCBasicOpens r
   dsimp at this
   rw [←this]
   dsimp
-  congr
 
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace_app_eq AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace_app_eq
 
@@ -299,9 +301,17 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
       --Porting Note: Had to add the next four lines
       rw [comp_apply, comp_apply]
       dsimp [toΓSpecBase]
-      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]
+      -- The next six lines were `rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]` before
+      -- leanprover/lean4#2644
+      have : (ContinuousMap.mk (toΓSpecFun Y) (toΓSpec_continuous _)) (f.val.base x)
+        = toΓSpecFun Y (f.val.base x) := by erw [ContinuousMap.coe_mk]; rfl
+      erw [this]
+      have : (ContinuousMap.mk (toΓSpecFun X) (toΓSpec_continuous _)) x
+        = toΓSpecFun X x := by erw [ContinuousMap.coe_mk]
+      erw [this]
       dsimp [toΓSpecFun]
-      rw [← LocalRing.comap_closedPoint (PresheafedSpace.stalkMap f.val x), ←
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [← LocalRing.comap_closedPoint (PresheafedSpace.stalkMap f.val x), ←
         PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply]
       congr 2
       exact (PresheafedSpace.stalkMap_germ f.1 ⊤ ⟨x, trivial⟩).symm

@@ -336,8 +336,8 @@ theorem monomial_single_add : monomial (Finsupp.single n e + s) a = X n ^ e * mo
 #align mv_polynomial.monomial_single_add MvPolynomial.monomial_single_add
 
 theorem C_mul_X_pow_eq_monomial {s : σ} {a : R} {n : ℕ} :
-    C a * X s ^ n = monomial (Finsupp.single s n) a :=
-  by rw [← zero_add (Finsupp.single s n), monomial_add_single, C_apply]
+    C a * X s ^ n = monomial (Finsupp.single s n) a := by
+  rw [← zero_add (Finsupp.single s n), monomial_add_single, C_apply]
 #align mv_polynomial.C_mul_X_pow_eq_monomial MvPolynomial.C_mul_X_pow_eq_monomial
 
 theorem C_mul_X_eq_monomial {s : σ} {a : R} : C a * X s = monomial (Finsupp.single s 1) a := by
@@ -707,8 +707,8 @@ theorem coeff_C_mul (m) (a : R) (p : MvPolynomial σ R) : coeff m (C a * p) = a 
 #align mv_polynomial.coeff_C_mul MvPolynomial.coeff_C_mul
 
 theorem coeff_mul [DecidableEq σ] (p q : MvPolynomial σ R) (n : σ →₀ ℕ) :
-    coeff n (p * q) = ∑ x in antidiagonal n, coeff x.1 p * coeff x.2 q :=
-  AddMonoidAlgebra.mul_apply_antidiagonal p q _ _ mem_antidiagonal
+    coeff n (p * q) = ∑ x in Finset.antidiagonal n, coeff x.1 p * coeff x.2 q :=
+  AddMonoidAlgebra.mul_apply_antidiagonal p q _ _ Finset.mem_antidiagonal
 #align mv_polynomial.coeff_mul MvPolynomial.coeff_mul
 
 @[simp]

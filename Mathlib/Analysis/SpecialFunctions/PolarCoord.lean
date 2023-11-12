@@ -3,8 +3,8 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 import Mathlib.MeasureTheory.Function.Jacobian
+import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 
 #align_import analysis.special_functions.polar_coord from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
 
@@ -19,10 +19,9 @@ It satisfies the following change of variables formula (see `integral_comp_polar
 
 -/
 
-
-noncomputable section
-
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
+
+noncomputable section Real
 
 open Real Set MeasureTheory
 
@@ -71,13 +70,11 @@ def polarCoord : LocalHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
   left_inv' := by
     rintro ⟨x, y⟩ _
     have A : sqrt (x ^ 2 + y ^ 2) = Complex.abs (x + y * Complex.I) := by
-      simp [Complex.abs_def, Complex.normSq, pow_two, MonoidWithZeroHom.coe_mk, Complex.add_re,
-        Complex.ofReal_re, Complex.mul_re, Complex.I_re, mul_zero, Complex.ofReal_im,
-        Complex.I_im, sub_self, add_zero, Complex.add_im, Complex.mul_im, mul_one, zero_add]
+      rw [Complex.abs_apply, Complex.normSq_add_mul_I]
     have Z := Complex.abs_mul_cos_add_sin_mul_I (x + y * Complex.I)
     simp only [← Complex.ofReal_cos, ← Complex.ofReal_sin, mul_add, ← Complex.ofReal_mul, ←
       mul_assoc] at Z
-    simpa [A, -Complex.ofReal_cos, -Complex.ofReal_sin] using Complex.ext_iff.1 Z
+    simp [A]
   open_target := isOpen_Ioi.prod isOpen_Ioo
   open_source :=
     (isOpen_lt continuous_const continuous_fst).union
@@ -128,7 +125,7 @@ theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
 #align polar_coord_source_ae_eq_univ polarCoord_source_ae_eq_univ
 
 theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [CompleteSpace E] (f : ℝ × ℝ → E) :
+    (f : ℝ × ℝ → E) :
     (∫ p in polarCoord.target, p.1 • f (polarCoord.symm p)) = ∫ p, f p := by
   set B : ℝ × ℝ → ℝ × ℝ →L[ℝ] ℝ × ℝ := fun p =>
     LinearMap.toContinuousLinearMap (Matrix.toLin (Basis.finTwoProd ℝ) (Basis.finTwoProd ℝ)
@@ -154,3 +151,44 @@ theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Normed
       rw [B_det, abs_of_pos]
       exact hx.1
 #align integral_comp_polar_coord_symm integral_comp_polarCoord_symm
+
+end Real
+
+noncomputable section Complex
+
+namespace Complex
+
+open scoped Real
+
+/-- The polar coordinates local homeomorphism in `ℂ`, mapping `r (cos θ + I * sin θ)` to `(r, θ)`.
+It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
+protected noncomputable def polarCoord : LocalHomeomorph ℂ (ℝ × ℝ) :=
+  equivRealProdClm.toHomeomorph.toLocalHomeomorph.trans polarCoord
+
+protected theorem polarCoord_apply (a : ℂ) :
+    Complex.polarCoord a = (Complex.abs a, Complex.arg a) := by
+  simp_rw [Complex.abs_def, Complex.normSq_apply, ← pow_two]
+  rfl
+
+protected theorem polarCoord_source :
+    Complex.polarCoord.source = {a | 0 < a.re} ∪ {a | a.im ≠ 0} := by simp [Complex.polarCoord]
+
+protected theorem polarCoord_target :
+    Complex.polarCoord.target = Set.Ioi (0 : ℝ) ×ˢ Set.Ioo (-π) π := by simp [Complex.polarCoord]
+
+@[simp]
+protected theorem polarCoord_symm_apply (p : ℝ × ℝ) :
+    Complex.polarCoord.symm p = p.1 * (Real.cos p.2 + Real.sin p.2 * Complex.I) := by
+  simp [Complex.polarCoord, equivRealProdClm_symm_apply, mul_add, mul_assoc]
+
+theorem polardCoord_symm_abs (p : ℝ × ℝ) :
+    Complex.abs (Complex.polarCoord.symm p) = |p.1| := by simp
+
+protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] (f : ℂ → E) :
+    (∫ p in polarCoord.target, p.1 • f (Complex.polarCoord.symm p)) = ∫ p, f p := by
+  rw [← (Complex.volume_preserving_equiv_real_prod.symm).integral_comp
+    measurableEquivRealProd.symm.measurableEmbedding, ← integral_comp_polarCoord_symm]
+  rfl
+
+end Complex

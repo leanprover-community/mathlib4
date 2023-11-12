@@ -21,7 +21,7 @@ compact open set is compact open.
 
 ## TODO
 
-Once we have `SpectralSpace`, `IsSpectralMap` should move to `topology.spectral.basic`.
+Once we have `SpectralSpace`, `IsSpectralMap` should move to `Mathlib.Topology.Spectral.Basic`.
 -/
 
 
@@ -116,7 +116,7 @@ instance : SpectralMapClass (SpectralMap α β) α β
   map_spectral f := f.spectral'
 
 -- Porting note: These CoeFun instances are not desirable in Lean 4.
---/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
+--/-- Helper instance for when there's too many metavariables to apply `FunLike.hasCoeToFun`
 --directly. -/
 --instance : CoeFun (SpectralMap α β) fun _ => α → β :=
 --  FunLike.hasCoeToFun

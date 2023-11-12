@@ -247,6 +247,17 @@ theorem coe_add [∀ i, AddZeroClass (β i)] (g₁ g₂ : Π₀ i, β i) : ⇑(g
 instance addZeroClass [∀ i, AddZeroClass (β i)] : AddZeroClass (Π₀ i, β i) :=
   FunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
+instance instIsLeftCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsLeftCancelAdd (β i)] :
+    IsLeftCancelAdd (Π₀ i, β i) where
+  add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| FunLike.congr_fun h x
+
+instance instIsRightCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsRightCancelAdd (β i)] :
+    IsRightCancelAdd (Π₀ i, β i) where
+  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| FunLike.congr_fun h x
+
+instance instIsCancelAdd [∀ i, AddZeroClass (β i)] [∀ i, IsCancelAdd (β i)] :
+    IsCancelAdd (Π₀ i, β i) where
+
 /-- Note the general `SMul` instance doesn't apply as `ℕ` is not distributive
 unless `β i`'s addition is commutative. -/
 instance hasNatScalar [∀ i, AddMonoid (β i)] : SMul ℕ (Π₀ i, β i) :=
@@ -284,7 +295,7 @@ instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, �
 
 @[simp]
 theorem coe_finset_sum {α} [∀ i, AddCommMonoid (β i)] (s : Finset α) (g : α → Π₀ i, β i) :
-    ⇑(∑ a in s, g a) = ∑ a in s, ⇑g a :=
+    ⇑(∑ a in s, g a) = ∑ a in s, ⇑(g a) :=
   (coeFnAddMonoidHom : _ →+ ∀ i, β i).map_sum g s
 #align dfinsupp.coe_finset_sum DFinsupp.coe_finset_sum
 
@@ -1245,7 +1256,8 @@ theorem erase_def (i : ι) (f : Π₀ i, β i) : f.erase i = mk (f.support.erase
 theorem support_erase (i : ι) (f : Π₀ i, β i) : (f.erase i).support = f.support.erase i := by
   ext j
   by_cases h1 : j = i
-  simp [h1]
+  simp only [h1, mem_support_toFun, erase_apply, ite_true, ne_eq, not_true, not_not,
+    Finset.mem_erase, false_and]
   by_cases h2 : f j ≠ 0 <;> simp at h2 <;> simp [h1, h2]
 #align dfinsupp.support_erase DFinsupp.support_erase
 
@@ -2260,7 +2272,7 @@ variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 
 @[to_additive]
 theorem coe_dfinsupp_prod [Monoid R] [CommMonoid S] (f : Π₀ i, β i) (g : ∀ i, β i → R →* S) :
-    ⇑(f.prod g) = f.prod fun a b => ⇑g a b :=
+    ⇑(f.prod g) = f.prod fun a b => ⇑(g a b) :=
   coe_finset_prod _ _
 #align monoid_hom.coe_dfinsupp_prod MonoidHom.coe_dfinsupp_prod
 #align add_monoid_hom.coe_dfinsupp_sum AddMonoidHom.coe_dfinsupp_sum

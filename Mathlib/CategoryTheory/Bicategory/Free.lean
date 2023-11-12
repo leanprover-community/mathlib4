@@ -60,7 +60,7 @@ instance quiver : Quiver.{max u v + 1} (FreeBicategory B) where
   Hom := fun a b : B => Hom a b
 
 instance categoryStruct : CategoryStruct.{max u v} (FreeBicategory B) where
-  id  := fun a : B => Hom.id a
+  id   := fun a : B => Hom.id a
   comp := @fun _ _ _ => Hom.comp
 
 /-- Representatives of 2-morphisms in the free bicategory. -/
