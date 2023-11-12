@@ -1720,6 +1720,13 @@ theorem rankFeasible_iff_subset_subset_monotoneClosure :
       (G.basis_mem_feasible (G.base_bases_eq ▸ hb)) (G.basis_mem_feasible hx)
       (basis_card_le_of_subset_bases hx (G.base_bases_eq ▸ hb) (subset_univ _))
       le_rfl (basis_card_le_of_subset_bases hx (G.base_bases_eq ▸ hb) (subset_univ _))
+    rw [system_feasible_set_mem_mem] at ha₁
+    have h₀ : ∀ u ∈ a \ x, u ∉ s := by
+      intro u hu₁ hu₂
+      rw [mem_sdiff] at hu₁
+      let ⟨hu₁, hu₃⟩ := hu₁
+      apply hu₃; clear hu₃
+      sorry
     have h₁ : a ∩ s = x := by
       sorry
     have h₂ : a \ x ⊆ b \ s := by
