@@ -263,6 +263,7 @@ open scoped Classical
 
 variable {G : Type} [Group G] [Fintype G]
 
+/-- A non-cyclic group of order 4 is isomorphic to the dihedral group of order 4. -/
 noncomputable def mulEquivOfCardEqFourAndNotIsCyclic (h1 : Fintype.card G = 4) (h2 : ¬IsCyclic G) :
     G ≃* DihedralGroup 2 :=
   have h3 (x : G) : x * x = 1 := by
