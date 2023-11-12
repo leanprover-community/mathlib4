@@ -219,7 +219,7 @@ theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
   rw [mem_iUnion]; use i'; refine' ⟨_, fun j => hi' j.succ⟩
   have : i ≠ i' := by rintro rfl; apply not_le_of_lt (hi' 0).2; rw [hp0]; rfl
   have := h.1 this
-  rw [onFun, comp, comp, toSet_disjoint, exists_fin_succ] at this
+  rw [onFun, comp_apply, comp_apply, toSet_disjoint, exists_fin_succ] at this
   rcases this with (h0 | ⟨j, hj⟩)
   rw [hp0]; symm; apply eq_of_Ico_disjoint h0 (by simp [hw]) _
   convert hi' 0; rw [hp0]; rfl
