@@ -5,6 +5,7 @@ Authors: Shing Tak Lam
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Exponent
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 #align_import group_theory.specific_groups.dihedral from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -256,5 +257,50 @@ lemma card_conjClasses_odd (hn : Odd n) :
   rw [←Nat.mul_div_mul_left _ 2 hn.pos, ← card_commute_odd hn, mul_comm,
     card_comm_eq_card_conjClasses_mul_card, nat_card, Nat.mul_div_left _ (mul_pos two_pos hn.pos)]
 
+section SmallOrder
+
+open scoped Classical
+
+variable {G : Type} [Group G] [Fintype G]
+
+noncomputable def mulEquivOfCardEqFourAndNotIsCyclic (h1 : Fintype.card G = 4) (h2 : ¬IsCyclic G) :
+    G ≃* DihedralGroup 2 :=
+  have h3 (x : G) : x * x = 1 := by
+    rw [← pow_two x, ← orderOf_dvd_iff_pow_eq_one]
+    have h_dvd_four : orderOf x ∣ 4 := h1 ▸ orderOf_dvd_card_univ (x := x)
+    have : orderOf x ≠ 4 := fun h => h2 <| isCyclic_of_orderOf_eq_card x (h1 ▸ h)
+    generalize orderOf x = n at *
+    rw [← pow_one 2, Nat.dvd_prime_pow Nat.prime_two]
+    rw [show 4 = 2 ^ 2 by norm_num1, Nat.dvd_prime_pow Nat.prime_two] at h_dvd_four
+    obtain ⟨k, hk, rfl⟩ := h_dvd_four
+    use k
+    revert k
+    decide
+  have h4 (x : DihedralGroup 2) : x * x = 1 := by
+    have := DihedralGroup.exponent ▸ Monoid.pow_exponent_eq_one x
+    rwa [lcm_same, normalize_apply, normUnit_eq_one, Units.val_one, mul_one, pow_two x] at this
+  let equiv := (Fintype.equivOfCardEq h1 : G ≃ DihedralGroup 2).setValue 1 1
+  { equiv with
+    map_mul' := fun x y => by
+      by_cases hx1 : x = 1; simp [hx1]
+      by_cases hy1: y = 1; simp [hy1]
+      by_cases hyx : y = x; simp [hyx, h3, h4]
+      set z := x * y
+      have : equiv x ≠ equiv 1 := fun h => hx1 <| equiv.injective h
+      have : equiv y ≠ equiv 1 := fun h => hy1<| equiv.injective h
+      have : equiv y ≠ equiv x := fun h => hyx <| equiv.injective h
+      have : equiv z ≠ equiv 1 :=
+        fun h => hyx <| (mul_right_inj x).mp <| (h3 x).symm ▸ equiv.injective h
+      have : equiv z ≠ equiv x := fun h => hy1 <| mul_right_eq_self.mp <| equiv.injective h
+      have : equiv z ≠ equiv y := fun h => hx1 <| mul_left_eq_self.mp <| equiv.injective h
+      rw [Equiv.toFun_as_coe]
+      generalize equiv x = fx at *
+      generalize equiv y = fy at *
+      generalize equiv z = fz at *
+      revert fz fy fx
+      simp (config := { decide := true })
+  }
+
+end SmallOrder
 
 end DihedralGroup
