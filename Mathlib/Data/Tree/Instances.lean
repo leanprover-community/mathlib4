@@ -118,27 +118,25 @@ end Tree
 
 namespace Tree'
 
--- universe u v w
+variable (o : Tree.VisitOrder) {N : Type _} {L : Type _}
+  {N' : Type _} {L' : Type _} {N'' : Type _} {L'' : Type _}
 
-variable (o : Tree.VisitOrder) {L : Type _} {N : Type _}
-  {L' : Type _} {N' : Type _} {L'' : Type _} {N'' : Type _}
-
-instance [Inhabited L] : Inhabited (Tree' L N) := ⟨leaf default⟩
+instance [Inhabited L] : Inhabited (Tree' N L) := ⟨leaf default⟩
 
 @[simp]
-theorem default_def [Inhabited L] : (default : Tree' L N) = leaf default := rfl
+theorem default_def [Inhabited L] : (default : Tree' N L) = leaf default := rfl
 
 instance : Bifunctor Tree' where
   bimap := Tree'.bimap
 
-@[simp] theorem id_bimap : ∀ (t : Tree' L N), bimap id id t = t
+@[simp] theorem id_bimap : ∀ (t : Tree' N L), bimap id id t = t
   | leaf _ => rfl
   | branch y l r => congr_arg₂ (branch y) (id_bimap l) (id_bimap r)
 
-@[simp] theorem bimap_bimap (f₁ : L → L') (f₂ : L' → L'') (g₁ : N → N') (g₂ : N' → N'')
-  : ∀ (t : Tree' L N), bimap f₂ g₂ (bimap f₁ g₁ t) = bimap (f₂ ∘ f₁) (g₂ ∘ g₁) t
+@[simp] theorem bimap_bimap (f₁ : N → N') (f₂ : N' → N'') (g₁ : L → L') (g₂ : L' → L'')
+  : ∀ (t : Tree' N L), bimap f₂ g₂ (bimap f₁ g₁ t) = bimap (f₂ ∘ f₁) (g₂ ∘ g₁) t
   | leaf _ => rfl
-  | branch y l r => congr_arg₂ (branch (g₂ (g₁ y))) (bimap_bimap f₁ f₂ g₁ g₂ l)
+  | branch y l r => congr_arg₂ (branch (f₂ (f₁ y))) (bimap_bimap f₁ f₂ g₁ g₂ l)
                                                     (bimap_bimap f₁ f₂ g₁ g₂ r)
 
 instance : LawfulBifunctor Tree' where
@@ -146,13 +144,13 @@ instance : LawfulBifunctor Tree' where
   bimap_bimap := bimap_bimap
 
 @[simp]
-theorem bimap_def {t : Tree' L N} (f : L → L') (g : N → N')
+theorem bimap_def {t : Tree' N L} (f : N → N') (g : L → L')
   : bimap f g t = t.bimap f g := rfl
 
 def depthFirstBitraversable : Bitraversable Tree' := ⟨depthFirst o⟩
 
 @[simp]
-theorem id_bitraverse (t : Tree' L N) : depthFirst o (m := Id) pure pure t = t := by
+theorem id_bitraverse (t : Tree' N L) : depthFirst o (m := Id) pure pure t = t := by
   dsimp only [depthFirst]
   induction' t with _ y l r ihₗ ihᵣ; exact rfl
   dsimp [depthFirst.go]
@@ -165,8 +163,8 @@ open Functor (Comp map)
 theorem comp_bitraverse.{u, v, w}
   {F : Type (max v u) → Type (max v u)} {G : Type (max v u) → Type w}
   [Applicative F] [Applicative G] [LawfulApplicative F] [LawfulApplicative G]
-  {L N L' N' L'' N''}
-  (f₂ : L' → F L'') (f₁ : N' → F N'') (g₂ : L → G L') (g₁ : N → G N') (t : Tree' L N)
+  {N L N' L' N'' L''}
+  (f₂ : N' → F N'') (f₁ : L' → F L'') (g₂ : N → G N') (g₁ : L → G L') (t : Tree' N L)
   : @depthFirst.{u, v, w} o (Comp G F) _ _ _ _ _ (Comp.mk ∘ map f₂ ∘ g₂) (Comp.mk ∘ map f₁ ∘ g₁) t
     = Comp.mk (@Functor.map G _ _ _ (depthFirst o f₂ f₁) (depthFirst o g₂ g₁ t)) := by
   dsimp only [depthFirst]
@@ -184,7 +182,7 @@ theorem comp_bitraverse.{u, v, w}
             <;> exact rfl
 
 @[simp]
-theorem bitraverse_eq_bimap_id (f : L → L') (g : N → N') (t : Tree' L N)
+theorem bitraverse_eq_bimap_id (f : N → N') (g : L → L') (t : Tree' N L)
   : depthFirst o (m := Id) (pure ∘ f) (pure ∘ g) t = pure (bimap f g t) := by
   dsimp only [depthFirst]
   induction' t with x y l r ihₗ ihᵣ; exact rfl
@@ -198,7 +196,7 @@ def depthFirstLawfulTraversable.{u}
   refine ⟨Tree'.id_bitraverse.{u, u} o, Tree'.comp_bitraverse o,
           Tree'.bitraverse_eq_bimap_id o, ?_⟩
 
-  intros F G _ _ _ _ η L N L' N' f g t
+  intros F G _ _ _ _ η N L N' L' f g t
   dsimp only [depthFirstBitraversable, depthFirst]
   induction' t with x y l r ihₗ ihᵣ <;> dsimp only [depthFirst.go]
   . apply ApplicativeTransformation.preserves_map.{u, u, u}

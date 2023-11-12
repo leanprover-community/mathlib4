@@ -249,34 +249,34 @@ end Tree
 
 /-- A binary tree with values of one type stored in non-leaf nodes
 and values of another in the leaves. -/
-inductive Tree'.{u, v} (L : Type u) (N : Type v) : Type (max u v)
-  | leaf : L → Tree' L N
-  | branch : N → Tree' L N → Tree' L N → Tree' L N
+inductive Tree'.{u, v} (N : Type u) (L : Type v) : Type (max u v)
+  | leaf : L → Tree' N L
+  | branch : N → Tree' N L → Tree' N L → Tree' N L
   deriving DecidableEq, Repr
 
 namespace Tree'
 
-universe u₁ v₁ u₂ v₂ w
+def bimap.{u₁, v₁, u₂, v₂} {N : Type u₁} {N' : Type u₂} {L : Type v₁} {L' : Type v₂}
+  (f : N → N') (g : L → L') : Tree' N L → Tree' N' L'
+  | leaf x => leaf (g x)
+  | branch y l r => branch (f y) (bimap f g l) (bimap f g r)
 
-def bimap {L : Type u₁} {L' : Type u₂} {N : Type v₁} {N' : Type v₂}
-  (f : L → L') (g : N → N') : Tree' L N → Tree' L' N'
-  | leaf x => leaf (f x)
-  | branch y l r => branch (g y) (bimap f g l) (bimap f g r)
+def mapLeaves.{u₁, v₁, v₂} {N : Type u₁} {L : Type v₁} {L' : Type v₂} (g : L → L') :=
+  bimap (id : N → N) g
 
-def mapLeaves {L : Type u₁} {L' : Type u₂} {N : Type v₁} (f : L → L') :=
-  bimap f (id : N → N)
+def mapNodes.{u₁, v₁, u₂} {N : Type u₁} {N' : Type u₂} {L : Type v₁} (f : N → N') :=
+  bimap f (id : L → L)
 
-def mapNodes {L : Type u₁} {N : Type v₁} {N' : Type v₂} (g : N → N') :=
-  bimap (id : L → L) g
+universe u v w
 
 section traversals
 
 open Tree (VisitOrder)
 
 @[inline]
-def depthFirst.branch_step (o : VisitOrder) {m : Type (max v₁ u₁) → Type w} [Applicative m]
-  {L' N' : Type (max v₁ u₁)}
-  : (Unit → m N') → (Unit → (m (Tree' L' N'))) → (Unit → (m (Tree' L' N'))) → m (Tree' L' N') :=
+def depthFirst.branch_step (o : VisitOrder) {m : Type (max u v) → Type w} [Applicative m]
+  {N' L' : Type (max u v)}
+  : (Unit → m N') → (Unit → (m (Tree' N' L'))) → (Unit → (m (Tree' N' L'))) → m (Tree' N' L') :=
   match o with
   | VisitOrder.Node1st =>
     fun b l r => Seq.seq (Seq.seq (branch <$> b ()) l) r
@@ -286,17 +286,17 @@ def depthFirst.branch_step (o : VisitOrder) {m : Type (max v₁ u₁) → Type w
     fun b l r => Seq.seq (Seq.seq ((fun l' r' b' => branch b' l' r') <$> l ()) r) b
 
 def depthFirst (o : VisitOrder) :=
-  let helper := @depthFirst.branch_step.{u₁, v₁, w} o
-  let rec go {m : Type (max v₁ u₁) → Type w} [Applicative m]
-             {L : Type u₁} {L' : Type (max v₁ u₁)} {N : Type v₁} {N' : Type (max v₁ u₁)}
-             (f : L → m L') (g : N → m N') : Tree' L N → m (Tree' L' N')
-    | leaf x => leaf <$> f x
-    | branch y l r => inline (@helper m _ L' N' (fun _ => g y) (fun _ => go f g l) (fun _ => go f g r))
+  let helper := @depthFirst.branch_step.{u, v, w} o
+  let rec go {m : Type (max u v) → Type w} [Applicative m]
+             {N : Type u} {N' : Type (max u v)} {L : Type v} {L' : Type (max u v)}
+             (f : N → m N') (g : L → m L') : Tree' N L → m (Tree' N' L')
+    | leaf x => leaf <$> g x
+    | branch y l r => inline (@helper m _ N' L' (fun _ => f y) (fun _ => go f g l) (fun _ => go f g r))
   @go
 
-variable {m : Type (max v₁ u₁) → Type w} [Applicative m]
-         {L : Type u₁} {L' : Type (max v₁ u₁)} {N : Type v₁} {N' : Type (max v₁ u₁)}
-         (f : L → m L') (g : N → m N')
+variable {m : Type (max u v) → Type w} [Applicative m]
+         {N : Type u} {N' : Type (max u v)} {L : Type v} {L' : Type (max u v)}
+         (f : N → m N') (g : L → m L')
 
 def traversePreorder (t) := inline (depthFirst VisitOrder.Node1st f g t)
 
@@ -306,41 +306,41 @@ def traversePostorder (t) := inline (depthFirst VisitOrder.Node3rd f g t)
 
 @[simp]
 lemma traversePreorder_leaf
-  : ∀ x, traversePreorder f g (leaf x) = @leaf L' N' <$> f x := fun _ => rfl
+  : ∀ x, traversePreorder f g (leaf x) = @leaf N' L' <$> g x := fun _ => rfl
 
 @[simp]
-lemma traversePreorder_branch : ∀ (a : N) (l r : Tree' L N),
+lemma traversePreorder_branch : ∀ (a : N) (l r : Tree' N L),
     traversePreorder f g (branch a l r)
-    = @branch L' N' <$> g a <*> traversePreorder f g l <*> traversePreorder f g r :=
+    = @branch N' L' <$> f a <*> traversePreorder f g l <*> traversePreorder f g r :=
   fun _ _ _ => rfl
 
 @[simp]
 lemma traverseInorder_leaf
-  : ∀ x, traverseInorder f g (leaf x) = @leaf L' N' <$> f x := fun _ => rfl
+  : ∀ x, traverseInorder f g (leaf x) = @leaf N' L' <$> g x := fun _ => rfl
 
 @[simp]
-lemma traverseInorder_branch : ∀ (y : N) (l r : Tree' L N),
+lemma traverseInorder_branch : ∀ (y : N) (l r : Tree' N L),
     traverseInorder f g (branch y l r)
-    = (fun l' y' r' => @branch L' N' y' l' r')
-      <$> traverseInorder f g l <*> g y <*> traverseInorder f g r :=
+    = (fun l' y' r' => @branch N' L' y' l' r')
+      <$> traverseInorder f g l <*> f y <*> traverseInorder f g r :=
   fun _ _ _ => rfl
 
 @[simp]
 lemma traversePostorder_leaf
-  : ∀ x, traversePostorder f g (leaf x) = @leaf L' N' <$> f x := fun _ => rfl
+  : ∀ x, traversePostorder f g (leaf x) = @leaf N' L' <$> g x := fun _ => rfl
 
 @[simp]
-lemma traversePostorder_branch : ∀ (y : N) (l r : Tree' L N),
+lemma traversePostorder_branch : ∀ (y : N) (l r : Tree' N L),
     traversePostorder f g (branch y l r)
-    = (fun l' r' y' => @branch L' N' y' l' r')
-      <$> traversePostorder f g l <*> traversePostorder f g r <*> g y :=
+    = (fun l' r' y' => @branch N' L' y' l' r')
+      <$> traversePostorder f g l <*> traversePostorder f g r <*> f y :=
   fun _ _ _ => rfl
 
 end traversals
 
-variable {L : Type u₁} {N : Type v₁}
+variable {N : Type v} {L : Type u}
 
-def eraseLeafData : Tree' L N → Tree N
+def eraseLeafData : Tree' N L → Tree N
   | leaf _ => Tree.nil
   | branch y l r => Tree.node y (eraseLeafData l) (eraseLeafData r)
 
@@ -348,19 +348,19 @@ open Std
 
 -- possibly(?) more efficient version of get_leaves using difference lists
 private
-def getLeaves' : Tree' L N → List L :=
+def getLeaves' :=
   DList.toList ∘
-    let rec go : Tree' L N → DList L
+    let rec go : Tree' N L → DList L
       | leaf x => DList.singleton x
       | branch _ l r => go l ++ go r
     go
 
 @[implemented_by getLeaves']
-def getLeaves : Tree' L N → List L
+def getLeaves : Tree' N L → List L
   | leaf x => [x]
   | branch _ l r => getLeaves l ++ getLeaves r
 
-lemma getLeaves'_correct : @getLeaves' L N = @getLeaves L N := by
+lemma getLeaves'_correct : @getLeaves' N L = @getLeaves N L := by
   dsimp [getLeaves']
   funext t
   induction t
@@ -370,34 +370,34 @@ lemma getLeaves'_correct : @getLeaves' L N = @getLeaves L N := by
     apply congr_arg₂ <;> assumption
 
 @[simp]
-def numNodes : Tree' L N → ℕ
+def numNodes : Tree' N L → ℕ
   | leaf _ => 0
   | branch _ l r => l.numNodes + r.numNodes + 1
 
 @[simp]
-def numLeaves : Tree' L N → ℕ
+def numLeaves : Tree' N L → ℕ
   | leaf _ => 1
   | branch _ l r => l.numLeaves + r.numLeaves
 
 @[simp]
-def height : Tree' L N → ℕ
+def height : Tree' N L → ℕ
   | leaf _ => 0
   | branch _ l r => max l.height r.height + 1
 
-theorem numLeaves_eq_numNodes_succ (x : Tree' L N) : x.numLeaves = x.numNodes + 1 := by
+theorem numLeaves_eq_numNodes_succ (x : Tree' N L) : x.numLeaves = x.numNodes + 1 := by
   induction x <;> simp [*, Nat.add_comm, Nat.add_assoc, Nat.add_left_comm]
 
-theorem getLeaves_length_eq_eraseLeafData_numLeaves (t : Tree' L N)
+theorem getLeaves_length_eq_eraseLeafData_numLeaves (t : Tree' N L)
   : t.getLeaves.length = t.eraseLeafData.numLeaves := by
   induction t
   . exact rfl
   . refine Eq.trans (List.length_append _ _) (congr_arg₂ _ ?_ ?_)  <;> assumption
 
-theorem numLeaves_pos (x : Tree' L N) : 0 < x.numLeaves := by
+theorem numLeaves_pos (x : Tree' N L) : 0 < x.numLeaves := by
   rw [numLeaves_eq_numNodes_succ]
   exact x.numNodes.zero_lt_succ
 
-theorem height_le_numNodes : ∀ x : Tree' L N, x.height ≤ x.numNodes
+theorem height_le_numNodes : ∀ x : Tree' N L, x.height ≤ x.numNodes
   | leaf _ => le_rfl
   | branch _ l r =>
     Nat.succ_le_succ
