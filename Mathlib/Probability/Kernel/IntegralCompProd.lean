@@ -247,7 +247,7 @@ theorem integral_compProd :
       ∫ z, f z ∂(κ ⊗ₖ η) a = ∫ x, ∫ y, f (x, y) ∂η (a, x) ∂κ a := by
   apply Integrable.induction
   · intro c s hs h2s
-    simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp_def,
+    simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp,
       integral_indicator (measurable_prod_mk_left hs), MeasureTheory.set_integral_const,
       integral_smul_const]
     congr 1

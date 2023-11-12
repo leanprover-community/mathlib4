@@ -207,8 +207,7 @@ end LocallyFinite
 
 @[simp]
 theorem Equiv.locallyFinite_comp_iff (e : ι' ≃ ι) : LocallyFinite (f ∘ e) ↔ LocallyFinite f :=
-  ⟨fun h => by
-    simpa only [Function.comp_def, e.apply_symm_apply] using h.comp_injective e.symm.injective,
+  ⟨fun h => by simpa only [(· ∘ ·), e.apply_symm_apply] using h.comp_injective e.symm.injective,
     fun h => h.comp_injective e.injective⟩
 #align equiv.locally_finite_comp_iff Equiv.locallyFinite_comp_iff
 

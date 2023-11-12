@@ -377,7 +377,7 @@ theorem Inducing.continuousMul {M N F : Type*} [Mul M] [Mul N] [MulHomClass F M 
     [TopologicalSpace M] [TopologicalSpace N] [ContinuousMul N] (f : F) (hf : Inducing f) :
     ContinuousMul M :=
   ⟨hf.continuous_iff.2 <| by
-      simpa only [Function.comp_def, map_mul f] using hf.continuous.fst'.mul hf.continuous.snd'⟩
+      simpa only [(· ∘ ·), map_mul f] using hf.continuous.fst'.mul hf.continuous.snd'⟩
 #align inducing.has_continuous_mul Inducing.continuousMul
 #align inducing.has_continuous_add Inducing.continuousAdd
 

@@ -276,7 +276,7 @@ theorem exists_fin_rename (p : MvPolynomial σ R) :
   let e := Fintype.equivFin { x // x ∈ s }
   refine' ⟨n, (↑) ∘ e.symm, Subtype.val_injective.comp e.symm.injective, rename e q, _⟩
   rw [← rename_rename, rename_rename e]
-  simp only [Function.comp_def, Equiv.symm_apply_apply, rename_rename]
+  simp only [Function.comp, Equiv.symm_apply_apply, rename_rename]
 #align mv_polynomial.exists_fin_rename MvPolynomial.exists_fin_rename
 
 end Rename

@@ -104,8 +104,7 @@ instance (priority := 10) Bitraversable.isLawfulTraversable [LawfulBitraversable
   constructor <;> intros <;>
     simp [traverse, comp_tsnd, functor_norm, -ApplicativeTransformation.app_eq_coe]
   · simp [tsnd_eq_snd_id]; rfl
-  · simp [tsnd, binaturality, Function.comp_def, functor_norm,
-      -ApplicativeTransformation.app_eq_coe]
+  · simp [tsnd, binaturality, Function.comp, functor_norm, -ApplicativeTransformation.app_eq_coe]
 #align bitraversable.is_lawful_traversable Bitraversable.isLawfulTraversable
 
 end

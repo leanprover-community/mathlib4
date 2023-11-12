@@ -284,7 +284,7 @@ theorem tendsto_compactOpen_iff_forall {ι : Type*} {l : Filter ι} (F : ι → 
     Filter.Tendsto F l (𝓝 f) ↔
     ∀ (s) (hs : IsCompact s), Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 (f.restrict s)) := by
     rw [compactOpen_eq_sInf_induced]
-    simp [nhds_iInf, nhds_induced, Filter.tendsto_comap_iff, Function.comp_def]
+    simp [nhds_iInf, nhds_induced, Filter.tendsto_comap_iff, Function.comp]
 #align continuous_map.tendsto_compact_open_iff_forall ContinuousMap.tendsto_compactOpen_iff_forall
 
 /-- A family `F` of functions in `C(α, β)` converges in the compact-open topology, if and only if

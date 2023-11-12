@@ -105,7 +105,7 @@ variable {ι R M₁ M₂ : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMono
 theorem continuousSMul_induced : @ContinuousSMul R M₁ _ u (t.induced f) := by
   let _ : TopologicalSpace M₁ := t.induced f
   refine' ⟨continuous_induced_rng.2 _⟩
-  simp_rw [Function.comp_def, f.map_smul]
+  simp_rw [Function.comp, f.map_smul]
   exact continuous_fst.smul (continuous_induced_dom.comp continuous_snd)
 #align has_continuous_smul_induced continuousSMul_induced
 
