@@ -30,7 +30,7 @@ Sec. 4.5][HubbardWest-ode], where `norm_le_gronwallBound_of_norm_deriv_right_le`
 -/
 
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type _} [NormedAddCommGroup F]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
   [NormedSpace ℝ F]
 
 open Metric Set Asymptotics Filter Real
@@ -60,7 +60,7 @@ theorem hasDerivAt_gronwallBound (δ K ε x : ℝ) :
     HasDerivAt (gronwallBound δ K ε) (K * gronwallBound δ K ε x + ε) x := by
   by_cases hK : K = 0
   · subst K
-    simp only [gronwallBound_K0, MulZeroClass.zero_mul, zero_add]
+    simp only [gronwallBound_K0, zero_mul, zero_add]
     convert ((hasDerivAt_id x).const_mul ε).const_add δ
     rw [mul_one]
   · simp only [gronwallBound_of_K_ne_0 hK]
@@ -78,19 +78,19 @@ theorem hasDerivAt_gronwallBound_shift (δ K ε x a : ℝ) :
 
 theorem gronwallBound_x0 (δ K ε : ℝ) : gronwallBound δ K ε 0 = δ := by
   by_cases hK : K = 0
-  · simp only [gronwallBound, if_pos hK, MulZeroClass.mul_zero, add_zero]
-  · simp only [gronwallBound, if_neg hK, MulZeroClass.mul_zero, exp_zero, sub_self, mul_one,
+  · simp only [gronwallBound, if_pos hK, mul_zero, add_zero]
+  · simp only [gronwallBound, if_neg hK, mul_zero, exp_zero, sub_self, mul_one,
       add_zero]
 #align gronwall_bound_x0 gronwallBound_x0
 
 theorem gronwallBound_ε0 (δ K x : ℝ) : gronwallBound δ K 0 x = δ * exp (K * x) := by
   by_cases hK : K = 0
-  · simp only [gronwallBound_K0, hK, MulZeroClass.zero_mul, exp_zero, add_zero, mul_one]
-  · simp only [gronwallBound_of_K_ne_0 hK, zero_div, MulZeroClass.zero_mul, add_zero]
+  · simp only [gronwallBound_K0, hK, zero_mul, exp_zero, add_zero, mul_one]
+  · simp only [gronwallBound_of_K_ne_0 hK, zero_div, zero_mul, add_zero]
 #align gronwall_bound_ε0 gronwallBound_ε0
 
 theorem gronwallBound_ε0_δ0 (K x : ℝ) : gronwallBound 0 K 0 x = 0 := by
-  simp only [gronwallBound_ε0, MulZeroClass.zero_mul]
+  simp only [gronwallBound_ε0, zero_mul]
 #align gronwall_bound_ε0_δ0 gronwallBound_ε0_δ0
 
 theorem gronwallBound_continuous_ε (δ K x : ℝ) : Continuous fun ε => gronwallBound δ K ε x := by
@@ -165,7 +165,7 @@ theorem dist_le_of_approx_trajectories_ODE_of_mem_set {v : ℝ → E → E} {s :
   apply norm_le_gronwallBound_of_norm_deriv_right_le (hf.sub hg) h_deriv ha
   intro t ht
   have := dist_triangle4_right (f' t) (g' t) (v t (f t)) (v t (g t))
-  rw [dist_eq_norm] at this 
+  rw [dist_eq_norm] at this
   refine' this.trans ((add_le_add (add_le_add (f_bound t ht) (g_bound t ht))
     (hv t (f t) (hfs t ht) (g t) (hgs t ht))).trans _)
   rw [dist_eq_norm, add_comm]
@@ -208,7 +208,7 @@ theorem dist_le_of_trajectories_ODE_of_mem_set {v : ℝ → E → E} {s : ℝ �
   intro t ht
   have :=
     dist_le_of_approx_trajectories_ODE_of_mem_set hv hf hf' f_bound hfs hg hg' g_bound hgs ha t ht
-  rwa [zero_add, gronwallBound_ε0] at this 
+  rwa [zero_add, gronwallBound_ε0] at this
 set_option linter.uppercaseLean3 false in
 #align dist_le_of_trajectories_ODE_of_mem_set dist_le_of_trajectories_ODE_of_mem_set
 
@@ -238,7 +238,7 @@ theorem ODE_solution_unique_of_mem_set {v : ℝ → E → E} {s : ℝ → Set E}
     (hg : ContinuousOn g (Icc a b)) (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t)
     (hgs : ∀ t ∈ Ico a b, g t ∈ s t) (ha : f a = g a) : ∀ t ∈ Icc a b, f t = g t := fun t ht ↦ by
   have := dist_le_of_trajectories_ODE_of_mem_set hv hf hf' hfs hg hg' hgs (dist_le_zero.2 ha) t ht
-  rwa [MulZeroClass.zero_mul, dist_le_zero] at this 
+  rwa [zero_mul, dist_le_zero] at this
 set_option linter.uppercaseLean3 false in
 #align ODE_solution_unique_of_mem_set ODE_solution_unique_of_mem_set
 

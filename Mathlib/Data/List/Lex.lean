@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Order.RelClasses
+import Mathlib.Data.List.Basic
 
 #align_import data.list.lex from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
 
@@ -60,6 +61,15 @@ theorem cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
 theorem not_nil_right (r : α → α → Prop) (l : List α) : ¬Lex r l [] :=
   fun.
 #align list.lex.not_nil_right List.Lex.not_nil_right
+
+theorem nil_left_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r [] l ∨ l = [] :=
+  match l with
+  | [] => Or.inr rfl
+  | (_ :: _) => Or.inl nil
+
+@[simp]
+theorem singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [b] ↔ r a b :=
+  ⟨fun | rel h => h, List.Lex.rel⟩
 
 instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTrichotomous α r] :
     IsOrderConnected (List α) (Lex r) where
@@ -201,5 +211,28 @@ theorem lt_iff_lex_lt [LinearOrder α] (l l' : List α) : lt l l' ↔ Lex (· < 
     | @nil a as => apply lt.nil
     | @cons a as bs _ ih => apply lt.tail <;> simp [ih]
     | @rel a as b bs h => apply lt.head; assumption
+
+theorem head_le_of_lt [LinearOrder α] {a a' : α} {l l' : List α} (h : (a' :: l') < (a :: l)) :
+    a' ≤ a := by
+  by_contra hh
+  simp only [not_le] at hh
+  exact List.Lex.isAsymm.aux _ _ _ (List.Lex.rel hh) h
+
+theorem head!_le_of_lt [LinearOrder α] [Inhabited α] (l l' : List α) (h : l' < l) (hl' : l' ≠ []) :
+    l'.head! ≤ l.head! := by
+  replace h : List.Lex (· < ·) l' l := h
+  by_cases hl : l = []
+  · simp [hl] at h
+  · rw [← List.cons_head!_tail hl', ← List.cons_head!_tail hl] at h
+    exact head_le_of_lt h
+
+theorem cons_le_cons [LinearOrder α] (a : α) {l l' : List α} (h : l' ≤ l) :
+    a :: l' ≤ a :: l := by
+  rw [le_iff_lt_or_eq] at h ⊢
+  refine h.imp ?_ (congr_arg _)
+  intro h
+  have haa := lt_irrefl a
+  exact (List.lt_iff_lex_lt _ _).mp
+    (List.lt.tail haa haa ((List.lt_iff_lex_lt _ _).mpr h))
 
 end List

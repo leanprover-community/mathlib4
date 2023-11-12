@@ -180,15 +180,16 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
       (IsChain.directedOn <|
         chain_linearPMap_of_chain_extensionOf
           hchain) with
-    le :=
-      le_trans hnonempty.some.le <|
+    le := by
+      refine' le_trans hnonempty.some.le <|
         (LinearPMap.le_sSup _ <|
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
+      -- porting note: this subgoal didn't exist before the reenableeta branch
+      -- follow-up note: the subgoal was moved from after `refine'` in `is_extension` to here
+      -- after the behavior of `refine'` changed.
+      exact (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain)
     is_extension := fun m => by
       refine' Eq.trans (hnonempty.some.is_extension m) _
-      · -- porting note: this subgoal didn't exist before the reenableeta branch
-        intros c hchain _
-        exact (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain)
       symm
       generalize_proofs _ h1
       exact
@@ -419,7 +420,6 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
         congr }
   is_extension m := by
     dsimp
-    simp only [LinearPMap.mk_apply, LinearMap.coe_mk]
     rw [(extensionOfMax i f).is_extension,
       ExtensionOfMaxAdjoin.extensionToFun_wd i f h _ ⟨i m, _⟩ 0 _, map_zero, add_zero]
     simp

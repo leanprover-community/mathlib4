@@ -159,11 +159,33 @@ instance : MonoidalCategory (F C) where
     Quotient.map₂ Hom.tensor <| by
       intro _ _ h _ _ h'
       exact HomEquiv.tensor h h'
+  whiskerLeft := fun X _ _ f =>
+    Quotient.map (fun f' => Hom.tensor (Hom.id X) f')
+      (fun _ _ h => HomEquiv.tensor (HomEquiv.refl (Hom.id X)) h) f
+  whiskerRight := fun f Y =>
+    Quotient.map (fun f' => Hom.tensor f' (Hom.id Y))
+      (fun _ _ h => HomEquiv.tensor h (HomEquiv.refl (Hom.id Y))) f
+  tensorHom_def := by
+    rintro W X Y Z ⟨f⟩ ⟨g⟩
+    apply Quotient.sound
+    calc Hom.tensor f g
+      _ ≈ Hom.tensor (Hom.comp f (Hom.id X)) (Hom.comp (Hom.id Y) g) := by
+        apply HomEquiv.tensor (HomEquiv.comp_id f).symm (HomEquiv.id_comp g).symm
+      _ ≈ Hom.comp (Hom.tensor f (Hom.id Y)) (Hom.tensor (Hom.id X) g) := by
+        apply HomEquiv.tensor_comp
+  whiskerLeft_id := by
+    rintro X Y
+    apply Quotient.sound
+    apply HomEquiv.tensor_id
+  id_whiskerRight := by
+    intro X Y
+    apply Quotient.sound
+    apply HomEquiv.tensor_id
   tensor_id X Y := Quotient.sound tensor_id
   tensor_comp := @fun X₁ Y₁ Z₁ X₂ Y₂ Z₂ => by
     rintro ⟨f₁⟩ ⟨f₂⟩ ⟨g₁⟩ ⟨g₂⟩
     exact Quotient.sound (tensor_comp _ _ _ _)
-  tensorUnit' := FreeMonoidalCategory.Unit
+  tensorUnit := FreeMonoidalCategory.Unit
   associator X Y Z :=
     ⟨⟦Hom.α_hom X Y Z⟧, ⟦Hom.α_inv X Y Z⟧, Quotient.sound α_hom_inv, Quotient.sound α_inv_hom⟩
   associator_naturality := @fun X₁ X₂ X₃ Y₁ Y₂ Y₃ => by

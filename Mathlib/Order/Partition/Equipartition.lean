@@ -24,7 +24,7 @@ open Finset Fintype
 
 namespace Finpartition
 
-variable {α : Type _} [DecidableEq α] {s t : Finset α} (P : Finpartition s)
+variable {α : Type*} [DecidableEq α] {s t : Finset α} (P : Finpartition s)
 
 /-- An equipartition is a partition whose parts are all the same size, up to a difference of `1`. -/
 def IsEquipartition : Prop :=
@@ -39,6 +39,10 @@ theorem isEquipartition_iff_card_parts_eq_average :
 #align finpartition.is_equipartition_iff_card_parts_eq_average Finpartition.isEquipartition_iff_card_parts_eq_average
 
 variable {P}
+
+lemma not_isEquipartition :
+    ¬P.IsEquipartition ↔ ∃ a ∈ P.parts, ∃ b ∈ P.parts, Finset.card b + 1 < Finset.card a :=
+  Set.not_equitableOn
 
 theorem Set.Subsingleton.isEquipartition (h : (P.parts : Set (Finset α)).Subsingleton) :
     P.IsEquipartition :=

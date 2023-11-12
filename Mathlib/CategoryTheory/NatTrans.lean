@@ -2,7 +2,6 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
-Ported by: Scott Morrison
 -/
 import Mathlib.Tactic.CategoryTheory.Reassoc
 
@@ -66,6 +65,8 @@ theorem congr_app {F G : C ⥤ D} {α β : NatTrans F G} (h : α = β) (X : C) :
 #align category_theory.congr_app CategoryTheory.congr_app
 
 namespace NatTrans
+
+attribute [pp_dot] NatTrans.app
 
 /-- `NatTrans.id F` is the identity natural transformation on a functor `F`. -/
 protected def id (F : C ⥤ D) : NatTrans F F where app X := 𝟙 (F.obj X)

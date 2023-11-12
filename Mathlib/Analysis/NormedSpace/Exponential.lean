@@ -65,7 +65,7 @@ open scoped Nat Topology BigOperators ENNReal
 
 section TopologicalAlgebra
 
-variable (𝕂 𝔸 : Type _) [Field 𝕂] [Ring 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [TopologicalRing 𝔸]
+variable (𝕂 𝔸 : Type*) [Field 𝕂] [Ring 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [TopologicalRing 𝔸]
 
 /-- `expSeries 𝕂 𝔸` is the `FormalMultilinearSeries` whose `n`-th term is the map
 `(xᵢ) : 𝔸ⁿ ↦ (1/n! : 𝕂) • ∏ xᵢ`. Its sum is the exponential map `exp : 𝔸 → 𝔸`. -/
@@ -79,7 +79,7 @@ variable {𝔸}
 It is defined as the sum of the `FormalMultilinearSeries` `expSeries 𝕂 𝔸`.
 
 Note that when `𝔸 = Matrix n n 𝕂`, this is the **Matrix Exponential**; see
-[`Analysis.NormedSpace.MatrixExponential`](../MatrixExponential) for lemmas specific to that
+[`Analysis.NormedSpace.MatrixExponential`](./MatrixExponential) for lemmas specific to that
 case. -/
 noncomputable def exp [Algebra ℚ 𝔸] (x : 𝔸) : 𝔸 :=
   (expSeries ℚ 𝔸).sum x
@@ -170,7 +170,7 @@ end TopologicalAlgebra
 
 section TopologicalDivisionAlgebra
 
-variable {𝕂 𝔸 : Type _} [Field 𝕂] [DivisionRing 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [Field 𝕂] [DivisionRing 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸]
   [TopologicalRing 𝔸]
 
 theorem expSeries_apply_eq_div (x : 𝔸) (n : ℕ) : (expSeries 𝕂 𝔸 n fun _ => x) = x ^ n / n ! := by
@@ -197,7 +197,7 @@ section Normed
 
 section AnyFieldAnyAlgebra
 
-variable {𝕂 𝔸 𝔹 : Type _} [NontriviallyNormedField 𝕂]
+variable {𝕂 𝔸 𝔹 : Type*} [NontriviallyNormedField 𝕂]
 
 variable [NormedRing 𝔸] [NormedRing 𝔹] [NormedAlgebra 𝕂 𝔸]
 
@@ -286,8 +286,8 @@ theorem exp_add_of_commute_of_mem_ball [Algebra ℚ 𝔸] {x y : 𝔸} (hxy : Co
     ext
     rw [hxy.add_pow' _, Finset.smul_sum]
   refine' tsum_congr fun n => Finset.sum_congr rfl fun kl hkl => _
-  rw [nsmul_eq_smul_cast ℚ, smul_smul, smul_mul_smul, ← Finset.Nat.mem_antidiagonal.mp hkl,
-    Nat.cast_add_choose, Finset.Nat.mem_antidiagonal.mp hkl]
+  rw [nsmul_eq_smul_cast ℚ, smul_smul, smul_mul_smul, ← Finset.mem_antidiagonal.mp hkl,
+    Nat.cast_add_choose, Finset.mem_antidiagonal.mp hkl]
   congr 1
   have : (n ! : ℚ) ≠ 0 := Nat.cast_ne_zero.mpr n.factorial_ne_zero
   field_simp [this]
@@ -319,7 +319,8 @@ theorem isUnit_exp_of_mem_ball [Algebra ℚ 𝔸] {x : 𝔸}
 
 theorem invOf_exp_of_mem_ball [Algebra ℚ 𝔸] {x : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) [Invertible (exp x)] :
-    ⅟ (exp x) = exp (-x) := by letI := invertibleExpOfMemBall _ hx; convert (rfl : ⅟ (exp x) = _)
+    ⅟ (exp x) = exp (-x) := by
+  letI := invertibleExpOfMemBall _ hx; convert (rfl : ⅟ (exp x) = _)
 #align inv_of_exp_of_mem_ball invOf_exp_of_mem_ball
 
 /-- Any continuous ring homomorphism commutes with `exp`. -/
@@ -329,7 +330,7 @@ theorem map_exp_of_mem_ball [Algebra ℚ 𝔸] [Algebra ℚ 𝔹] {F} [RingHomCl
   rw [exp_eq_tsum, exp_eq_tsum]
   refine' ((expSeries_summable_of_mem_ball' _ hx).hasSum.map f hf).tsum_eq.symm.trans _
   dsimp only [Function.comp]
-  simp_rw [one_div, map_inv_nat_cast_smul f ℚ ℚ, map_pow]
+  simp_rw [map_inv_nat_cast_smul f ℚ ℚ, map_pow]
 #align map_exp_of_mem_ball map_exp_of_mem_ball
 
 end CompleteAlgebra
@@ -344,7 +345,7 @@ end AnyFieldAnyAlgebra
 
 section AnyFieldDivisionAlgebra
 
-variable {𝕂 𝔸 : Type _} [NontriviallyNormedField 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
 
 variable (𝕂)
 
@@ -377,7 +378,7 @@ end AnyFieldDivisionAlgebra
 
 section AnyFieldCommAlgebra
 
-variable {𝕂 𝔸 : Type _} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸]
   [CompleteSpace 𝔸]
 
 variable (𝕂)
@@ -396,7 +397,7 @@ section IsROrC
 
 section AnyAlgebra
 
-variable (𝕂 𝔸 𝔹 : Type _) [IsROrC 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable (𝕂 𝔸 𝔹 : Type*) [IsROrC 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
 
 variable [NormedRing 𝔹]
 
@@ -571,30 +572,24 @@ theorem Prod.snd_exp [NormedAlgebra 𝕂 𝔹] [CompleteSpace 𝔹] (x : 𝔸 ×
 #align prod.snd_exp Prod.snd_exp
 
 -- @[simp]
-theorem Pi.exp_apply {ι : Type _} {𝔸 : ι → Type _} [Fintype ι] [∀ i, NormedRing (𝔸 i)]
+theorem Pi.exp_apply {ι : Type*} {𝔸 : ι → Type*} [Fintype ι] [∀ i, NormedRing (𝔸 i)]
     [∀ i, Algebra ℚ (𝔸 i)] [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i)
     (i : ι) :
-    haveI : Algebra ℚ (∀ i, 𝔸 i) := Pi.algebra _ _
-    exp x i = exp (x i) := by
-  -- Lean struggles to infer this instance due to it wanting `[Π i, SeminormedRing (𝔸 i)]`
-  letI : NormedAlgebra 𝕂 (∀ i, 𝔸 i) := Pi.normedAlgebra _
-  letI : Algebra ℚ (∀ i, 𝔸 i) := Pi.algebra _ _
-  exact map_exp 𝕂 (Pi.evalRingHom 𝔸 i) (continuous_apply _) x
+    exp x i = exp (x i) :=
+  -- porting note: Lean can now handle Π-types in type class inference!
+  map_exp 𝕂 (Pi.evalRingHom 𝔸 i) (continuous_apply _) x
 #align pi.exp_apply Pi.exp_apply
 
-theorem Pi.exp_def {ι : Type _} {𝔸 : ι → Type _} [Fintype ι] [∀ i, NormedRing (𝔸 i)]
-    [∀ i, Algebra ℚ (𝔸 i)] [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) :
-    haveI : Algebra ℚ (∀ i, 𝔸 i) := Pi.algebra _ _
+theorem Pi.exp_def {ι : Type*} {𝔸 : ι → Type*} [Fintype ι] [∀ i, NormedRing (𝔸 i)]
+    [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, Algebra ℚ (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) :
     exp x = fun i => exp (x i) :=
   funext <| Pi.exp_apply 𝕂 x
 #align pi.exp_def Pi.exp_def
 
-theorem Function.update_exp {ι : Type _} {𝔸 : ι → Type _} [Fintype ι] [DecidableEq ι]
-    [∀ i, NormedRing (𝔸 i)] [∀ i, Algebra ℚ (𝔸 i)] [∀ i, NormedAlgebra 𝕂 (𝔸 i)]
-    [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) (j : ι) (xj : 𝔸 j) :
-    haveI : Algebra ℚ (∀ i, 𝔸 i) := Pi.algebra _ _
+theorem Function.update_exp {ι : Type*} {𝔸 : ι → Type*} [Fintype ι] [DecidableEq ι]
+    [∀ i, NormedRing (𝔸 i)] [∀ i, Algebra ℚ (𝔸 i)] [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i)
+    (j : ι) (xj : 𝔸 j) :
     Function.update (exp x) j (exp xj) = exp (Function.update x j xj) := by
-  letI : Algebra ℚ (∀ i, 𝔸 i) := Pi.algebra _ _
   ext i
   simp_rw [Pi.exp_def 𝕂]
   exact (Function.apply_update (fun i => exp) x j xj i).symm
@@ -611,7 +606,7 @@ end AnyAlgebra
 
 section DivisionAlgebra
 
-variable {𝕂 𝔸 : Type _} [IsROrC 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [IsROrC 𝕂] [NormedDivisionRing 𝔸] [NormedAlgebra 𝕂 𝔸]
 
 variable (𝕂)
 
@@ -679,7 +674,7 @@ end Normed
 
 section ScalarTower
 
-variable (𝕂 𝕂' 𝔸 : Type _) [Field 𝕂] [Field 𝕂'] [Ring 𝔸] [Algebra 𝕂 𝔸] [Algebra 𝕂' 𝔸]
+variable (𝕂 𝕂' 𝔸 : Type*) [Field 𝕂] [Field 𝕂'] [Ring 𝔸] [Algebra 𝕂 𝔸] [Algebra 𝕂' 𝔸]
   [TopologicalSpace 𝔸] [TopologicalRing 𝔸]
 
 /-- If a normed ring `𝔸` is a normed algebra over two fields, then they define the same

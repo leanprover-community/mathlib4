@@ -57,7 +57,7 @@ def InducedCategory (_F : C → D) : Type u₁ :=
 
 variable {D}
 
-instance InducedCategory.hasCoeToSort {α : Sort _} [CoeSort D α] :
+instance InducedCategory.hasCoeToSort {α : Sort*} [CoeSort D α] :
     CoeSort (InducedCategory D F) α :=
   ⟨fun c => F c⟩
 #align category_theory.induced_category.has_coe_to_sort CategoryTheory.InducedCategory.hasCoeToSort
@@ -112,6 +112,13 @@ structure FullSubcategory where
 instance FullSubcategory.category : Category.{v} (FullSubcategory Z) :=
   InducedCategory.category FullSubcategory.obj
 #align category_theory.full_subcategory.category CategoryTheory.FullSubcategory.category
+
+-- these lemmas are not particularly well-typed, so would probably be dangerous as simp lemmas
+
+lemma FullSubcategory.id_def (X : FullSubcategory Z) : 𝟙 X = 𝟙 X.obj := rfl
+
+lemma FullSubcategory.comp_def {X Y Z : FullSubcategory Z} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    f ≫ g = (f ≫ g : X.obj ⟶ Z.obj) := rfl
 
 /-- The forgetful functor from a full subcategory into the original category
 ("forgetting" the condition).
@@ -175,13 +182,16 @@ def FullSubcategory.lift (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) : C ⥤ FullSub
 #align category_theory.full_subcategory.lift_obj_obj CategoryTheory.FullSubcategory.lift_obj_obj
 #align category_theory.full_subcategory.lift_map CategoryTheory.FullSubcategory.lift_map
 
+@[simp]
+theorem FullSubcategory.lift_comp_inclusion_eq (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :
+    FullSubcategory.lift P F hF ⋙ fullSubcategoryInclusion P = F :=
+  rfl
+
 /-- Composing the lift of a functor through a full subcategory with the inclusion yields the
-    original functor. Unfortunately, this is not true by definition, so we only get a natural
-    isomorphism, but it is pointwise definitionally true, see
-    `fullSubcategoryInclusion_obj_lift_obj` and `fullSubcategoryInclusion_map_lift_map`. -/
+    original functor. This is actually true definitionally. -/
 def FullSubcategory.lift_comp_inclusion (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :
     FullSubcategory.lift P F hF ⋙ fullSubcategoryInclusion P ≅ F :=
-  NatIso.ofComponents fun X => Iso.refl _
+  Iso.refl _
 #align category_theory.full_subcategory.lift_comp_inclusion CategoryTheory.FullSubcategory.lift_comp_inclusion
 
 @[simp]
@@ -190,6 +200,7 @@ theorem fullSubcategoryInclusion_obj_lift_obj (F : C ⥤ D) (hF : ∀ X, P (F.ob
   rfl
 #align category_theory.full_subcategory.inclusion_obj_lift_obj CategoryTheory.fullSubcategoryInclusion_obj_lift_obj
 
+@[simp]
 theorem fullSubcategoryInclusion_map_lift_map (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) {X Y : C}
     (f : X ⟶ Y) :
     (fullSubcategoryInclusion P).map ((FullSubcategory.lift P F hF).map f) = F.map f :=

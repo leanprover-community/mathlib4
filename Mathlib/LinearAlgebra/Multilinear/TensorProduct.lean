@@ -12,6 +12,7 @@ import Mathlib.LinearAlgebra.TensorProduct
 # Constructions relating multilinear maps and tensor products.
 -/
 
+suppress_compilation
 
 namespace MultilinearMap
 
@@ -19,15 +20,15 @@ section DomCoprod
 
 open TensorProduct
 
-variable {R ι₁ ι₂ ι₃ ι₄ : Type _}
+variable {R ι₁ ι₂ ι₃ ι₄ : Type*}
 
 variable [CommSemiring R]
 
-variable {N₁ : Type _} [AddCommMonoid N₁] [Module R N₁]
+variable {N₁ : Type*} [AddCommMonoid N₁] [Module R N₁]
 
-variable {N₂ : Type _} [AddCommMonoid N₂] [Module R N₂]
+variable {N₂ : Type*} [AddCommMonoid N₂] [Module R N₂]
 
-variable {N : Type _} [AddCommMonoid N] [Module R N]
+variable {N : Type*} [AddCommMonoid N] [Module R N]
 
 /-- Given two multilinear maps `(ι₁ → N) → N₁` and `(ι₂ → N) → N₂`, this produces the map
 `(ι₁ ⊕ ι₂ → N) → N₁ ⊗ N₂` by taking the coproduct of the domain and the tensor product

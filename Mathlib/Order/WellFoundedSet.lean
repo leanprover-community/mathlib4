@@ -47,7 +47,7 @@ Prove that `s` is partial well ordered iff it has no infinite descending chain o
 -/
 
 
-variable {ι α β γ : Type _} {π : ι → Type _}
+variable {ι α β γ : Type*} {π : ι → Type*}
 
 namespace Set
 
@@ -508,7 +508,7 @@ theorem isWf_insert {a} : IsWf (insert a s) ↔ IsWf s := by
   simp only [← singleton_union, isWf_union, isWf_singleton, true_and_iff]
 #align set.is_wf_insert Set.isWf_insert
 
-theorem IsWf.insert (h : IsWf s) (a : α) : IsWf (insert a s) :=
+protected theorem IsWf.insert (h : IsWf s) (a : α) : IsWf (insert a s) :=
   isWf_insert.2 h
 #align set.is_wf.insert Set.IsWf.insert
 
@@ -537,7 +537,8 @@ theorem wellFoundedOn_insert : WellFoundedOn (insert a s) r ↔ WellFoundedOn s 
   simp only [← singleton_union, wellFoundedOn_union, wellFoundedOn_singleton, true_and_iff]
 #align set.well_founded_on_insert Set.wellFoundedOn_insert
 
-theorem WellFoundedOn.insert (h : WellFoundedOn s r) (a : α) : WellFoundedOn (insert a s) r :=
+protected theorem WellFoundedOn.insert (h : WellFoundedOn s r) (a : α) :
+    WellFoundedOn (insert a s) r :=
   wellFoundedOn_insert.2 h
 #align set.well_founded_on.insert Set.WellFoundedOn.insert
 
@@ -781,8 +782,7 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsRefl
   have hnil : ∀ n, f n ≠ List.nil := fun n con =>
     hf1.2 n n.succ n.lt_succ_self (con.symm ▸ List.SublistForall₂.nil)
   have : ∀ n, (f n).headI ∈ s
-  · simp only [Set.range_subset_iff, Function.comp_apply]
-    exact fun n => hf1.1 n _ (List.head!_mem_self (hnil n))
+  · exact fun n => hf1.1 n _ (List.head!_mem_self (hnil n))
   obtain ⟨g, hg⟩ := h.exists_monotone_subseq (fun n => (f n).headI) this
   have hf' :=
     hf2 (g 0) (fun n => if n < g 0 then f n else List.tail (f (g (n - g 0))))
@@ -822,7 +822,7 @@ This includes the classical case of Dickson's lemma that `ℕ ^ n` is a well par
 Some generalizations would be possible based on this proof, to include cases where the target is
 partially well ordered, and also to consider the case of `Set.PartiallyWellOrderedOn` instead of
 `Set.IsPwo`. -/
-theorem Pi.isPwo {α : ι → Type _} [∀ i, LinearOrder (α i)] [∀ i, IsWellOrder (α i) (· < ·)]
+theorem Pi.isPwo {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellOrder (α i) (· < ·)]
     [Finite ι] (s : Set (∀ i, α i)) : s.IsPwo := by
   cases nonempty_fintype ι
   suffices ∀ (s : Finset ι) (f : ℕ → ∀ s, α s),
@@ -844,8 +844,8 @@ theorem Pi.isPwo {α : ι → Type _} [∀ i, LinearOrder (α i)] [∀ i, IsWell
 section ProdLex
 variable {rα : α → α → Prop} {rβ : β → β → Prop} {f : γ → α} {g : γ → β} {s : Set γ}
 
-/-- Stronger version of `prod.lex_wf`. Instead of requiring `rβ on g` to be well-founded, we only
-require it to be well-founded on fibers of `f`.-/
+/-- Stronger version of `WellFounded.prod_lex`. Instead of requiring `rβ on g` to be well-founded,
+we only require it to be well-founded on fibers of `f`.-/
 theorem WellFounded.prod_lex_of_wellFoundedOn_fiber (hα : WellFounded (rα on f))
     (hβ : ∀ a, (f ⁻¹' {a}).WellFoundedOn (rβ on g)) :
     WellFounded (Prod.Lex rα rβ on fun c => (f c, g c)) := by
@@ -873,7 +873,7 @@ section SigmaLex
 
 variable {rι : ι → ι → Prop} {rπ : ∀ i, π i → π i → Prop} {f : γ → ι} {g : ∀ i, γ → π i} {s : Set γ}
 
-/-- Stronger version of `psigma.lex_wf`. Instead of requiring `rπ on g` to be well-founded, we only
+/-- Stronger version of `PSigma.lex_wf`. Instead of requiring `rπ on g` to be well-founded, we only
 require it to be well-founded on fibers of `f`.-/
 theorem WellFounded.sigma_lex_of_wellFoundedOn_fiber (hι : WellFounded (rι on f))
     (hπ : ∀ i, (f ⁻¹' {i}).WellFoundedOn (rπ i on g i)) :

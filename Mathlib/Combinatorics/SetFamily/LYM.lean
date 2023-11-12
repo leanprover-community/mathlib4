@@ -49,7 +49,7 @@ open Finset Nat
 
 open BigOperators FinsetFamily
 
-variable {𝕜 α : Type _} [LinearOrderedField 𝕜]
+variable {𝕜 α : Type*} [LinearOrderedField 𝕜]
 
 namespace Finset
 
@@ -63,7 +63,7 @@ variable [DecidableEq α] [Fintype α]
 (the finsets of card `r`) than `∂𝒜` takes up of `α^(r - 1)`. -/
 theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     𝒜.card * r ≤ (∂ 𝒜).card * (Fintype.card α - r + 1) := by
-  let i : DecidableRel ((. ⊆ .) : Finset α → Finset α → Prop) := fun _ _ => Classical.dec _
+  let i : DecidableRel ((· ⊆ ·) : Finset α → Finset α → Prop) := fun _ _ => Classical.dec _
   refine' card_mul_le_card_mul' (· ⊆ ·) (fun s hs => _) (fun s hs => _)
   · rw [← h𝒜 hs, ← card_image_of_injOn s.erase_injOn]
     refine' card_le_of_subset _
@@ -123,13 +123,13 @@ variable [DecidableEq α] (k : ℕ) (𝒜 : Finset (Finset α))
 
 /-- `falling k 𝒜` is all the finsets of cardinality `k` which are a subset of something in `𝒜`. -/
 def falling : Finset (Finset α) :=
-  𝒜.sup <| powersetLen k
+  𝒜.sup <| powersetCard k
 #align finset.falling Finset.falling
 
 variable {𝒜 k} {s : Finset α}
 
 theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ s.card = k := by
-  simp_rw [falling, mem_sup, mem_powersetLen]
+  simp_rw [falling, mem_sup, mem_powersetCard]
   aesop
 #align finset.mem_falling Finset.mem_falling
 

@@ -6,6 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Order.Atoms
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.RelIso.Set
+import Mathlib.Order.SupClosed
 import Mathlib.Order.SupIndep
 import Mathlib.Order.Zorn
 import Mathlib.Data.Finset.Order
@@ -52,7 +53,9 @@ This is demonstrated by means of the following four lemmas:
 complete lattice, well-founded, compact
 -/
 
-variable {ι : Sort _} {α : Type _} [CompleteLattice α] {f : ι → α}
+open Set
+
+variable {ι : Sort*} {α : Type*} [CompleteLattice α] {f : ι → α}
 
 namespace CompleteLattice
 
@@ -61,7 +64,7 @@ variable (α)
 /-- A compactness property for a complete lattice is that any `sup`-closed non-empty subset
 contains its `sSup`. -/
 def IsSupClosedCompact : Prop :=
-  ∀ (s : Set α) (_ : s.Nonempty), (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a ⊔ b ∈ s) → sSup s ∈ s
+  ∀ (s : Set α) (_ : s.Nonempty), SupClosed s → sSup s ∈ s
 #align complete_lattice.is_sup_closed_compact CompleteLattice.IsSupClosedCompact
 
 /-- A compactness property for a complete lattice is that any subset has a finite subset with the
@@ -73,7 +76,7 @@ def IsSupFiniteCompact : Prop :=
 /-- An element `k` of a complete lattice is said to be compact if any set with `sSup`
 above `k` has a finite subset with `sSup` above `k`.  Such an element is also called
 "finite" or "S-compact". -/
-def IsCompactElement {α : Type _} [CompleteLattice α] (k : α) :=
+def IsCompactElement {α : Type*} [CompleteLattice α] (k : α) :=
   ∀ s : Set α, k ≤ sSup s → ∃ t : Finset α, ↑t ⊆ s ∧ k ≤ t.sup id
 #align complete_lattice.is_compact_element CompleteLattice.IsCompactElement
 
@@ -147,7 +150,7 @@ theorem isCompactElement_iff_le_of_directed_sSup_le (k : α) :
       exact ⟨htS, by rwa [← htsup]⟩
 #align complete_lattice.is_compact_element_iff_le_of_directed_Sup_le CompleteLattice.isCompactElement_iff_le_of_directed_sSup_le
 
-theorem IsCompactElement.exists_finset_of_le_iSup {k : α} (hk : IsCompactElement k) {ι : Type _}
+theorem IsCompactElement.exists_finset_of_le_iSup {k : α} (hk : IsCompactElement k) {ι : Type*}
     (f : ι → α) (h : k ≤ ⨆ i, f i) : ∃ s : Finset ι, k ≤ ⨆ i ∈ s, f i := by
   classical
     let g : Finset ι → α := fun s => ⨆ i ∈ s, f i
@@ -169,7 +172,7 @@ theorem IsCompactElement.exists_finset_of_le_iSup {k : α} (hk : IsCompactElemen
 
 /-- A compact element `k` has the property that any directed set lying strictly below `k` has
 its `sSup` strictly below `k`. -/
-theorem IsCompactElement.directed_sSup_lt_of_lt {α : Type _} [CompleteLattice α] {k : α}
+theorem IsCompactElement.directed_sSup_lt_of_lt {α : Type*} [CompleteLattice α] {k : α}
     (hk : IsCompactElement k) {s : Set α} (hemp : s.Nonempty) (hdir : DirectedOn (· ≤ ·) s)
     (hbelow : ∀ x ∈ s, x < k) : sSup s < k := by
   rw [isCompactElement_iff_le_of_directed_sSup_le] at hk
@@ -181,7 +184,7 @@ theorem IsCompactElement.directed_sSup_lt_of_lt {α : Type _} [CompleteLattice �
   exact hxk.ne (hxk.le.antisymm hkx)
 #align complete_lattice.is_compact_element.directed_Sup_lt_of_lt CompleteLattice.IsCompactElement.directed_sSup_lt_of_lt
 
-theorem finset_sup_compact_of_compact {α β : Type _} [CompleteLattice α] {f : β → α} (s : Finset β)
+theorem finset_sup_compact_of_compact {α β : Type*} [CompleteLattice α] {f : β → α} (s : Finset β)
     (h : ∀ x ∈ s, IsCompactElement (f x)) : IsCompactElement (s.sup f) := by
   classical
     rw [isCompactElement_iff_le_of_directed_sSup_le]
@@ -219,7 +222,7 @@ theorem IsSupFiniteCompact.isSupClosedCompact (h : IsSupFiniteCompact α) :
     rw [ht₂]
     simp [eq_singleton_bot_of_sSup_eq_bot_of_nonempty ht₂ hne]
   · rw [ht₂]
-    exact t.sup_closed_of_sup_closed h ht₁ hsc
+    exact hsc.finsetSup_mem h ht₁
 #align complete_lattice.is_Sup_finite_compact.is_sup_closed_compact CompleteLattice.IsSupFiniteCompact.isSupClosedCompact
 
 theorem IsSupClosedCompact.wellFounded (h : IsSupClosedCompact α) :
@@ -287,13 +290,13 @@ theorem isSupClosedCompact_iff_wellFounded :
   (wellFounded_characterisations α).out 2 0
 #align complete_lattice.is_sup_closed_compact_iff_well_founded CompleteLattice.isSupClosedCompact_iff_wellFounded
 
-alias wellFounded_iff_isSupFiniteCompact ↔ _ IsSupFiniteCompact.wellFounded
+alias ⟨_, IsSupFiniteCompact.wellFounded⟩ := wellFounded_iff_isSupFiniteCompact
 #align complete_lattice.is_Sup_finite_compact.well_founded CompleteLattice.IsSupFiniteCompact.wellFounded
 
-alias isSupFiniteCompact_iff_isSupClosedCompact ↔ _ IsSupClosedCompact.isSupFiniteCompact
+alias ⟨_, IsSupClosedCompact.isSupFiniteCompact⟩ := isSupFiniteCompact_iff_isSupClosedCompact
 #align complete_lattice.is_sup_closed_compact.is_Sup_finite_compact CompleteLattice.IsSupClosedCompact.isSupFiniteCompact
 
-alias isSupClosedCompact_iff_wellFounded ↔ _ _root_.WellFounded.isSupClosedCompact
+alias ⟨_, _root_.WellFounded.isSupClosedCompact⟩ := isSupClosedCompact_iff_wellFounded
 #align well_founded.is_sup_closed_compact WellFounded.isSupClosedCompact
 
 variable {α}
@@ -316,7 +319,7 @@ theorem WellFounded.finite_of_setIndependent (h : WellFounded ((· > ·) : α �
     exact le_sSup _ _ hx₀
 #align complete_lattice.well_founded.finite_of_set_independent CompleteLattice.WellFounded.finite_of_setIndependent
 
-theorem WellFounded.finite_of_independent (hwf : WellFounded ((· > ·) : α → α → Prop)) {ι : Type _}
+theorem WellFounded.finite_of_independent (hwf : WellFounded ((· > ·) : α → α → Prop)) {ι : Type*}
     {t : ι → α} (ht : Independent t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Finite ι :=
   haveI := (WellFounded.finite_of_setIndependent hwf ht.setIndependent_range).to_subtype
   Finite.of_injective_finite_range (ht.injective h_ne_bot)
@@ -326,7 +329,7 @@ end CompleteLattice
 
 /-- A complete lattice is said to be compactly generated if any
 element is the `sSup` of compact elements. -/
-class IsCompactlyGenerated (α : Type _) [CompleteLattice α] : Prop where
+class IsCompactlyGenerated (α : Type*) [CompleteLattice α] : Prop where
   /-- In a compactly generated complete lattice,
     every element is the `sSup` of some set of compact elements. -/
   exists_sSup_eq : ∀ x : α, ∃ s : Set α, (∀ x ∈ s, CompleteLattice.IsCompactElement x) ∧ sSup s = x
@@ -437,7 +440,29 @@ theorem CompleteLattice.setIndependent_iff_finite {s : Set α} :
         exact ⟨ha, Set.Subset.trans ht (Set.diff_subset _ _)⟩⟩
 #align complete_lattice.set_independent_iff_finite CompleteLattice.setIndependent_iff_finite
 
-theorem CompleteLattice.setIndependent_iUnion_of_directed {η : Type _} {s : η → Set α}
+lemma CompleteLattice.independent_iff_supIndep_of_injOn {ι : Type*} {f : ι → α}
+    (hf : InjOn f {i | f i ≠ ⊥}) :
+    CompleteLattice.Independent f ↔ ∀ (s : Finset ι), s.SupIndep f := by
+  refine ⟨fun h ↦ h.supIndep', fun h ↦ CompleteLattice.independent_def'.mpr fun i ↦ ?_⟩
+  simp_rw [disjoint_iff, inf_sSup_eq_iSup_inf_sup_finset, iSup_eq_bot, ← disjoint_iff]
+  intro s hs
+  classical
+  rw [← Finset.sup_erase_bot]
+  set t := s.erase ⊥
+  replace hf : InjOn f (f ⁻¹' t) := fun i hi j _ hij ↦ by refine hf ?_ ?_ hij <;> aesop
+  have : (Finset.erase (insert i (t.preimage _ hf)) i).image f = t := by
+    ext a
+    simp only [Finset.mem_preimage, Finset.mem_erase, ne_eq, Finset.mem_insert, true_or, not_true,
+      Finset.erase_insert_eq_erase, not_and, Finset.mem_image]
+    refine ⟨by aesop, fun ⟨ha, has⟩ ↦ ?_⟩
+    obtain ⟨j, hj, rfl⟩ := hs has
+    exact ⟨j, ⟨hj, ha, has⟩, rfl⟩
+  rw [← this, Finset.sup_image]
+  specialize h (insert i (t.preimage _ hf))
+  rw [Finset.supIndep_iff_disjoint_erase] at h
+  exact h i (Finset.mem_insert_self i _)
+
+theorem CompleteLattice.setIndependent_iUnion_of_directed {η : Type*} {s : η → Set α}
     (hs : Directed (· ⊆ ·) s) (h : ∀ i, CompleteLattice.SetIndependent (s i)) :
     CompleteLattice.SetIndependent (⋃ i, s i) := by
   by_cases hη : Nonempty η
@@ -546,12 +571,13 @@ Now we will prove that a compactly generated modular atomistic lattice is a comp
 Most explicitly, every element is the complement of a supremum of indepedendent atoms.
 -/
 
-/-- In an atomic lattice, every element `b` has a complement of the form `Sup s`, where each element
-of `s` is an atom. See also `complementedLattice_of_sSup_atoms_eq_top`. -/
+/-- In an atomic lattice, every element `b` has a complement of the form `sSup s`, where each
+element of `s` is an atom. See also `complementedLattice_of_sSup_atoms_eq_top`. -/
 theorem exists_setIndependent_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a } = ⊤) (b : α) :
     ∃ s : Set α, CompleteLattice.SetIndependent s ∧
     IsCompl b (sSup s) ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a := by
-  -- porting note: `obtain` chokes on the placeholder.
+  -- porting note(https://github.com/leanprover-community/mathlib4/issues/5732):
+  -- `obtain` chokes on the placeholder.
   have := zorn_subset
     {s : Set α | CompleteLattice.SetIndependent s ∧ Disjoint b (sSup s) ∧ ∀ a ∈ s, IsAtom a}
     fun c hc1 hc2 =>

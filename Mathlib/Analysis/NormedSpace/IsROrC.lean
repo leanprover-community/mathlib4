@@ -31,7 +31,7 @@ This file exists mainly to avoid importing `IsROrC` in the main normed space the
 
 open Metric
 
-variable {𝕜 : Type _} [IsROrC 𝕜] {E : Type _} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [IsROrC 𝕜] {E : Type*} [NormedAddCommGroup E]
 
 theorem IsROrC.norm_coe_norm {z : E} : ‖(‖z‖ : 𝕜)‖ = ‖z‖ := by simp
 #align is_R_or_C.norm_coe_norm IsROrC.norm_coe_norm
@@ -56,7 +56,7 @@ theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f :
     (h : ∀ z ∈ sphere (0 : E) r, ‖f z‖ ≤ c) (z : E) : ‖f z‖ ≤ c / r * ‖z‖ := by
   by_cases z_zero : z = 0
   · rw [z_zero]
-    simp only [LinearMap.map_zero, norm_zero, MulZeroClass.mul_zero]
+    simp only [LinearMap.map_zero, norm_zero, mul_zero]
     exact le_rfl
   set z₁ := ((r : 𝕜) * (‖z‖ : 𝕜)⁻¹) • z with hz₁
   have norm_f_z₁ : ‖f z₁‖ ≤ c := by

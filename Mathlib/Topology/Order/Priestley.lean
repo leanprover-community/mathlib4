@@ -33,11 +33,11 @@ We do not include compactness in the definition, so a Priestley space is to be d
 
 open Set
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- A Priestley space is an ordered topological space such that any two distinct points can be
 separated by a clopen upper set. Compactness is often assumed, but we do not include it here. -/
-class PriestleySpace (α : Type _) [Preorder α] [TopologicalSpace α] where
+class PriestleySpace (α : Type*) [Preorder α] [TopologicalSpace α] : Prop where
   priestley {x y : α} : ¬x ≤ y → ∃ U : Set α, IsClopen U ∧ IsUpperSet U ∧ x ∈ U ∧ y ∉ U
 #align priestley_space PriestleySpace
 

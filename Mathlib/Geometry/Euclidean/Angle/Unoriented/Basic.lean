@@ -36,7 +36,7 @@ open RealInnerProductSpace
 
 namespace InnerProductGeometry
 
-variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] {x y : V}
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] {x y : V}
 
 /-- The undirected angle between two vectors. If either vector is 0,
 this is π/2. See `Orientation.oangle` for the corresponding oriented angle
@@ -60,7 +60,7 @@ theorem angle_smul_smul {c : ℝ} (hc : c ≠ 0) (x y : V) : angle (c • x) (c 
 #align inner_product_geometry.angle_smul_smul InnerProductGeometry.angle_smul_smul
 
 @[simp]
-theorem _root_.LinearIsometry.angle_map {E F : Type _} [NormedAddCommGroup E] [NormedAddCommGroup F]
+theorem _root_.LinearIsometry.angle_map {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
     [InnerProductSpace ℝ E] [InnerProductSpace ℝ F] (f : E →ₗᵢ[ℝ] F) (u v : E) :
     angle (f u) (f v) = angle u v := by
   rw [angle, angle, f.inner_map_map, f.norm_map, f.norm_map]
@@ -192,13 +192,13 @@ theorem sin_angle_mul_norm_mul_norm (x y : V) :
     Real.sqrt_mul_self (mul_nonneg (norm_nonneg x) (norm_nonneg y)),
     real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm]
   by_cases h : ‖x‖ * ‖y‖ = 0
-  · rw [show ‖x‖ * ‖x‖ * (‖y‖ * ‖y‖) = ‖x‖ * ‖y‖ * (‖x‖ * ‖y‖) by ring, h, MulZeroClass.mul_zero,
-      MulZeroClass.mul_zero, zero_sub]
+  · rw [show ‖x‖ * ‖x‖ * (‖y‖ * ‖y‖) = ‖x‖ * ‖y‖ * (‖x‖ * ‖y‖) by ring, h, mul_zero,
+      mul_zero, zero_sub]
     cases' eq_zero_or_eq_zero_of_mul_eq_zero h with hx hy
     · rw [norm_eq_zero] at hx
-      rw [hx, inner_zero_left, MulZeroClass.zero_mul, neg_zero]
+      rw [hx, inner_zero_left, zero_mul, neg_zero]
     · rw [norm_eq_zero] at hy
-      rw [hy, inner_zero_right, MulZeroClass.zero_mul, neg_zero]
+      rw [hy, inner_zero_right, zero_mul, neg_zero]
   · field_simp [h]
     ring_nf
 #align inner_product_geometry.sin_angle_mul_norm_mul_norm InnerProductGeometry.sin_angle_mul_norm_mul_norm

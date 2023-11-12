@@ -305,9 +305,16 @@ theorem nat_lt_one_iff (m : ℕ) : padicNorm p m < 1 ↔ p ∣ m := by
   rw [← Int.coe_nat_dvd, ← int_lt_one_iff, Int.cast_ofNat]
 #align padic_norm.nat_lt_one_iff padicNorm.nat_lt_one_iff
 
+/-- If a rational is not a p-adic integer, it is not an integer. -/
+theorem not_int_of_not_padic_int (p : ℕ) {a : ℚ} [hp : Fact (Nat.Prime p)]
+    (H : 1 < padicNorm p a) : ¬ a.isInt := by
+  contrapose! H
+  rw [Rat.eq_num_of_isInt H]
+  apply padicNorm.of_int
+
 open BigOperators
 
-theorem sum_lt {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α} :
+theorem sum_lt {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     s.Nonempty → (∀ i ∈ s, padicNorm p (F i) < t) → padicNorm p (∑ i in s, F i) < t := by
   classical
     refine' s.induction_on (by rintro ⟨-, ⟨⟩⟩) _
@@ -321,7 +328,7 @@ theorem sum_lt {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     · simp_all
 #align padic_norm.sum_lt padicNorm.sum_lt
 
-theorem sum_le {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α} :
+theorem sum_le {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     s.Nonempty → (∀ i ∈ s, padicNorm p (F i) ≤ t) → padicNorm p (∑ i in s, F i) ≤ t := by
   classical
     refine' s.induction_on (by rintro ⟨-, ⟨⟩⟩) _
@@ -335,14 +342,14 @@ theorem sum_le {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α} :
     · simp_all
 #align padic_norm.sum_le padicNorm.sum_le
 
-theorem sum_lt' {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α}
+theorem sum_lt' {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α}
     (hF : ∀ i ∈ s, padicNorm p (F i) < t) (ht : 0 < t) : padicNorm p (∑ i in s, F i) < t := by
   obtain rfl | hs := Finset.eq_empty_or_nonempty s
   · simp [ht]
   · exact sum_lt hs hF
 #align padic_norm.sum_lt' padicNorm.sum_lt'
 
-theorem sum_le' {α : Type _} {F : α → ℚ} {t : ℚ} {s : Finset α}
+theorem sum_le' {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α}
     (hF : ∀ i ∈ s, padicNorm p (F i) ≤ t) (ht : 0 ≤ t) : padicNorm p (∑ i in s, F i) ≤ t := by
   obtain rfl | hs := Finset.eq_empty_or_nonempty s
   · simp [ht]

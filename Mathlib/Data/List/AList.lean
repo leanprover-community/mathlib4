@@ -180,6 +180,15 @@ theorem perm_lookup {a : α} {s₁ s₂ : AList β} (p : s₁.entries ~ s₂.ent
 instance (a : α) (s : AList β) : Decidable (a ∈ s) :=
   decidable_of_iff _ lookup_isSome
 
+theorem keys_subset_keys_of_entries_subset_entries
+    {s₁ s₂ : AList β} (h : s₁.entries ⊆ s₂.entries) : s₁.keys ⊆ s₂.keys := by
+  intro k hk
+  letI : DecidableEq α := Classical.decEq α
+  have := h (mem_lookup_iff.1 (Option.get_mem (lookup_isSome.2 hk)))
+  rw [← mem_lookup_iff, Option.mem_def] at this
+  rw [← mem_keys, ← lookup_isSome, this]
+  exact Option.isSome_some
+
 /-! ### replace -/
 
 
@@ -349,7 +358,7 @@ theorem mk_cons_eq_insert (c : Sigma β) (l : List (Sigma β)) (h : (c :: l).Nod
 
 /-- Recursion on an `AList`, using `insert`. Use as `induction l using AList.insertRec`. -/
 @[elab_as_elim]
-def insertRec {C : AList β → Sort _} (H0 : C ∅)
+def insertRec {C : AList β → Sort*} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) :
     ∀ l : AList β, C l
   | ⟨[], _⟩ => H0
@@ -363,14 +372,14 @@ def insertRec {C : AList β → Sort _} (H0 : C ∅)
 example (l : AList β) : True := by induction l using AList.insertRec <;> trivial
 
 @[simp]
-theorem insertRec_empty {C : AList β → Sort _} (H0 : C ∅)
+theorem insertRec_empty {C : AList β → Sort*} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) :
     @insertRec α β _ C H0 IH ∅ = H0 := by
   change @insertRec α β _ C H0 IH ⟨[], _⟩ = H0
   rw [insertRec]
 #align alist.insert_rec_empty AList.insertRec_empty
 
-theorem insertRec_insert {C : AList β → Sort _} (H0 : C ∅)
+theorem insertRec_insert {C : AList β → Sort*} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) {c : Sigma β}
     {l : AList β} (h : c.1 ∉ l) :
     @insertRec α β _ C H0 IH (l.insert c.1 c.2) = IH c.1 c.2 l h (@insertRec α β _ C H0 IH l) := by
@@ -384,7 +393,7 @@ theorem insertRec_insert {C : AList β → Sort _} (H0 : C ∅)
   apply cast_heq
 #align alist.insert_rec_insert AList.insertRec_insert
 
-theorem insertRec_insert_mk {C : AList β → Sort _} (H0 : C ∅)
+theorem insertRec_insert_mk {C : AList β → Sort*} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) {a : α} (b : β a)
     {l : AList β} (h : a ∉ l) :
     @insertRec α β _ C H0 IH (l.insert a b) = IH a b l h (@insertRec α β _ C H0 IH l) :=

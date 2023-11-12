@@ -31,7 +31,7 @@ open nonZeroDivisors
 
 section Localization
 
-variable {R : Type _} (Rₛ : Type _) [CommRing R] [CommRing Rₛ] [Algebra R Rₛ]
+variable {R : Type*} (Rₛ : Type*) [CommRing R] [CommRing Rₛ] [Algebra R Rₛ]
 
 variable (S : Submonoid R) [hT : IsLocalization S Rₛ]
 
@@ -39,9 +39,9 @@ variable (S : Submonoid R) [hT : IsLocalization S Rₛ]
 
 section AddCommMonoid
 
-variable {M : Type _} [AddCommMonoid M] [Module R M] [Module Rₛ M] [IsScalarTower R Rₛ M]
+variable {M : Type*} [AddCommMonoid M] [Module R M] [Module Rₛ M] [IsScalarTower R Rₛ M]
 
-theorem LinearIndependent.localization {ι : Type _} {b : ι → M} (hli : LinearIndependent R b) :
+theorem LinearIndependent.localization {ι : Type*} {b : ι → M} (hli : LinearIndependent R b) :
     LinearIndependent Rₛ b := by
   rw [linearIndependent_iff'] at hli ⊢
   intro s g hg i hi
@@ -58,9 +58,9 @@ end AddCommMonoid
 
 section LocalizationLocalization
 
-variable {A : Type _} [CommRing A] [Algebra R A]
+variable {A : Type*} [CommRing A] [Algebra R A]
 
-variable (Aₛ : Type _) [CommRing Aₛ] [Algebra A Aₛ]
+variable (Aₛ : Type*) [CommRing Aₛ] [Algebra A Aₛ]
 
 variable [Algebra Rₛ Aₛ] [Algebra R Aₛ] [IsScalarTower R Rₛ Aₛ] [IsScalarTower R A Aₛ]
 
@@ -70,7 +70,7 @@ variable [hA : IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ]
 
 open Submodule
 
-theorem LinearIndependent.localization_localization {ι : Type _} {v : ι → A}
+theorem LinearIndependent.localization_localization {ι : Type*} {v : ι → A}
     (hv : LinearIndependent R v) : LinearIndependent Rₛ (algebraMap A Aₛ ∘ v) := by
   rw [linearIndependent_iff'] at hv ⊢
   intro s g hg i hi
@@ -109,19 +109,19 @@ theorem SpanEqTop.localization_localization {v : Set A} (hv : span R v = ⊤) :
 
 A suitable instance for `[Algebra A Aₛ]` is `localizationAlgebra`.
 -/
-noncomputable def Basis.localizationLocalization {ι : Type _} (b : Basis ι R A) : Basis ι Rₛ Aₛ :=
+noncomputable def Basis.localizationLocalization {ι : Type*} (b : Basis ι R A) : Basis ι Rₛ Aₛ :=
   Basis.mk (b.linearIndependent.localization_localization _ S _)
     (by rw [Set.range_comp, SpanEqTop.localization_localization Rₛ S Aₛ b.span_eq])
 #align basis.localization_localization Basis.localizationLocalization
 
 @[simp]
-theorem Basis.localizationLocalization_apply {ι : Type _} (b : Basis ι R A) (i) :
+theorem Basis.localizationLocalization_apply {ι : Type*} (b : Basis ι R A) (i) :
     b.localizationLocalization Rₛ S Aₛ i = algebraMap A Aₛ (b i) :=
   Basis.mk_apply _ _ _
 #align basis.localization_localization_apply Basis.localizationLocalization_apply
 
 @[simp]
-theorem Basis.localizationLocalization_repr_algebraMap {ι : Type _} (b : Basis ι R A) (x i) :
+theorem Basis.localizationLocalization_repr_algebraMap {ι : Type*} (b : Basis ι R A) (x i) :
     (b.localizationLocalization Rₛ S Aₛ).repr (algebraMap A Aₛ x) i =
       algebraMap R Rₛ (b.repr x i) :=
   calc
@@ -140,20 +140,62 @@ theorem Basis.localizationLocalization_repr_algebraMap {ι : Type _} (b : Basis 
     _ = algebraMap R Rₛ (b.repr x i) := by simp [Algebra.smul_def]
 #align basis.localization_localization_repr_algebra_map Basis.localizationLocalization_repr_algebraMap
 
+theorem Basis.localizationLocalization_span {ι : Type*} (b : Basis ι R A) :
+    Submodule.span R (Set.range (b.localizationLocalization Rₛ S Aₛ)) =
+      LinearMap.range (IsScalarTower.toAlgHom R A Aₛ) :=
+  calc span R (Set.range ↑(localizationLocalization Rₛ S Aₛ b))
+    _ = span R (↑(IsScalarTower.toAlgHom R A Aₛ) '' Set.range ↑b) := by congr; ext; simp
+    _ = map (IsScalarTower.toAlgHom R A Aₛ) (span R (Set.range b)) := by rw [Submodule.map_span]
+    _ = LinearMap.range (IsScalarTower.toAlgHom R A Aₛ) := by rw [b.span_eq, Submodule.map_top]
+
 end LocalizationLocalization
 
 end Localization
 
 section FractionRing
 
-variable (R K : Type _) [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
+variable (R K : Type*) [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
 
-variable {V : Type _} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
+variable {V : Type*} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
 
-theorem LinearIndependent.iff_fractionRing {ι : Type _} {b : ι → V} :
+theorem LinearIndependent.iff_fractionRing {ι : Type*} {b : ι → V} :
     LinearIndependent R b ↔ LinearIndependent K b :=
   ⟨LinearIndependent.localization K R⁰,
     LinearIndependent.restrict_scalars (smul_left_injective R one_ne_zero)⟩
 #align linear_independent.iff_fraction_ring LinearIndependent.iff_fractionRing
 
 end FractionRing
+
+section
+
+variable {R : Type*} [CommRing R] (S : Submonoid R)
+variable (A : Type*) [CommRing A] [Algebra R A] [IsLocalization S A]
+variable {M N : Type*}
+  [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
+  [AddCommMonoid N] [Module R N] [Module A N] [IsScalarTower R A N]
+
+open IsLocalization
+
+/-- An `R`-linear map between two `S⁻¹R`-modules is actually `S⁻¹R`-linear. -/
+def LinearMap.extendScalarsOfIsLocalization (f : M →ₗ[R] N) : M →ₗ[A] N where
+  toFun := f
+  map_add' := f.map_add
+  map_smul' := by
+    intro r m
+    simp only [RingHom.id_apply]
+    rcases mk'_surjective S r with ⟨r, s, rfl⟩
+    calc f (mk' A r s • m)
+        = ((s : R) • mk' A 1 s) • f (mk' A r s • m) := by simp
+      _ = (mk' A 1 s) • (s : R) • f (mk' A r s • m) := by rw [smul_comm, smul_assoc]
+      _ = (mk' A 1 s) • f ((s : R) • mk' A r s • m) := by simp
+      _ = (mk' A 1 s) • f (r • m) := by rw [← smul_assoc, smul_mk'_self, algebraMap_smul]
+      _ = (mk' A 1 s) • r • f m := by simp
+      _ = mk' A r s • f m := by rw [smul_comm, ← smul_assoc, smul_mk'_one]
+
+@[simp] lemma LinearMap.restrictScalars_extendScalarsOfIsLocalization (f : M →ₗ[R] N) :
+    (f.extendScalarsOfIsLocalization S A).restrictScalars R = f := rfl
+
+@[simp] lemma LinearMap.extendScalarsOfIsLocalization_apply (f : M →ₗ[A] N) :
+    f.extendScalarsOfIsLocalization S A = f := rfl
+
+end

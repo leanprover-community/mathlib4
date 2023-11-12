@@ -18,9 +18,9 @@ import Mathlib.RingTheory.Derivation.Basic
 
 namespace Derivation
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
-variable {A : Type _} [CommRing A] [Algebra R A]
+variable {A : Type*} [CommRing A] [Algebra R A]
 
 variable (D : Derivation R A A) {D1 D2 : Derivation R A A} (a : A)
 
@@ -52,7 +52,7 @@ instance : LieRing (Derivation R A A) where
   lie_self d := by ext a; simp only [commutator_apply, add_apply, map_add]; ring_nf; simp
   leibniz_lie d e f := by ext a; simp only [commutator_apply, add_apply, sub_apply, map_sub]; ring
 
-instance instLieAlgebra: LieAlgebra R (Derivation R A A) :=
+instance instLieAlgebra : LieAlgebra R (Derivation R A A) :=
   { Derivation.instModule with
     lie_smul := fun r d e => by
       ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply] }

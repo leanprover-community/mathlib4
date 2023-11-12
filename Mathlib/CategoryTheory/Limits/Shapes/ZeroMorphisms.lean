@@ -337,7 +337,7 @@ end HasZeroMorphisms
 
 open ZeroObject
 
-instance {B : Type _} [Category B] : HasZeroObject (B ⥤ C) :=
+instance {B : Type*} [Category B] : HasZeroObject (B ⥤ C) :=
   (((CategoryTheory.Functor.const B).obj (0 : C)).isZero fun _ => isZero_zero _).hasZeroObject
 
 end HasZeroObject

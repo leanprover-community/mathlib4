@@ -54,7 +54,7 @@ theorem imo2011_q3 (f : ℝ → ℝ) (hf : ∀ x y, f (x + y) ≤ y * f x + f (f
   · suffices 0 ≤ f 0 from le_antisymm (h_f_nonpos 0) this
     have hno : f (-1) = 0 := h_fx_zero_of_neg (-1) neg_one_lt_zero
     have hp := hxt (-1) (-1)
-    rw [hno] at hp 
+    rw [hno] at hp
     linarith
 #align imo2011_q3 imo2011_q3
 

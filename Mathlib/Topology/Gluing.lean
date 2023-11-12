@@ -50,8 +50,6 @@ provided.
 * `TopCat.GlueData.ι_openEmbedding`: Each of the `ι i`s are open embeddings.
 
 -/
-set_option autoImplicit false
-
 
 noncomputable section
 
@@ -170,15 +168,16 @@ theorem eqvGen_of_π_eq
         𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap)
       x y := by
   delta GlueData.π Multicoequalizer.sigmaπ at h
-  simp_rw [comp_app] at h
   -- Porting note: inlined `inferInstance` instead of leaving as a side goal.
   replace h := (TopCat.mono_iff_injective (Multicoequalizer.isoCoequalizer 𝖣.diagram).inv).mp
     inferInstance h
   let diagram := parallelPair 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap ⋙ forget _
   have : colimit.ι diagram one x = colimit.ι diagram one y := by
     dsimp only [coequalizer.π, ContinuousMap.toFun_eq_coe] at h
-    rw [← ι_preservesColimitsIso_hom, forget_map_eq_coe, types_comp_apply, h]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [← ι_preservesColimitsIso_hom, forget_map_eq_coe, types_comp_apply, h]
     simp
+    rfl
   have :
     (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ =
       (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ :=
@@ -222,7 +221,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
       Cofan.mk_ι_app]
     rw [←comp_apply, colimit.ι_desc, ←comp_apply, colimit.ι_desc]
     erw [sigmaIsoSigma_hom_ι_apply, sigmaIsoSigma_hom_ι_apply]
-    exact Or.inr ⟨y, by dsimp [GlueData.diagram]; simp only [true_and]; rfl⟩
+    exact Or.inr ⟨y, ⟨rfl, rfl⟩⟩
   · rintro (⟨⟨⟩⟩ | ⟨z, e₁, e₂⟩)
     rfl
     dsimp only at *
@@ -234,7 +233,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem ι_injective (i : D.J) : Function.Injective (𝖣.ι i) := by
   intro x y h
-  rcases(D.ι_eq_iff_rel _ _ _ _).mp h with (⟨⟨⟩⟩ | ⟨_, e₁, e₂⟩)
+  rcases (D.ι_eq_iff_rel _ _ _ _).mp h with (⟨⟨⟩⟩ | ⟨_, e₁, e₂⟩)
   · rfl
   · dsimp only at *
     -- porting note: there were `cases e₁` and `cases e₂`, instead of the `rw`
@@ -356,8 +355,12 @@ structure MkCore where
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core TopCat.GlueData.MkCore
 
-theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i) x) = x :=
-Subtype.eq <| by convert h.t_id j ▸ (h.cocycle j i j x <| h.V_id j ▸ ⟨⟩) using 1
+theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i) x) = x := by
+  have := h.cocycle j i j x ?_
+  rw [h.t_id] at this
+  convert Subtype.eq this
+  rw [h.V_id]
+  trivial
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t_inv TopCat.GlueData.MkCore.t_inv
 
@@ -409,8 +412,19 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     simp only [Iso.inv_hom_id_assoc, Category.assoc, Category.id_comp]
     rw [← Iso.eq_inv_comp, Iso.inv_hom_id]
     ext1 ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
-    rw [comp_app, ContinuousMap.coe_mk, comp_app, id_app, ContinuousMap.coe_mk, Subtype.mk_eq_mk,
-      Prod.mk.inj_iff, Subtype.mk_eq_mk, Subtype.ext_iff, and_self_iff]
+    -- The next 9 tactics (up to `convert ...` were a single `rw` before leanprover/lean4#2644
+    -- rw [comp_app, ContinuousMap.coe_mk, comp_app, id_app, ContinuousMap.coe_mk, Subtype.mk_eq_mk,
+    --   Prod.mk.inj_iff, Subtype.mk_eq_mk, Subtype.ext_iff, and_self_iff]
+    rw [comp_app] --, comp_app, id_app]
+    -- erw [ContinuousMap.coe_mk]
+    conv_lhs => erw [ContinuousMap.coe_mk]
+    erw [id_app]
+    rw [ContinuousMap.coe_mk]
+    erw [Subtype.mk_eq_mk]
+    rw [Prod.mk.inj_iff]
+    erw [Subtype.mk_eq_mk]
+    rw [Subtype.ext_iff]
+    rw [and_self_iff]
     convert congr_arg Subtype.val (h.t_inv k i ⟨x, hx'⟩) using 3
     refine Subtype.ext ?_
     exact h.cocycle i j k ⟨x, hx⟩ hx'

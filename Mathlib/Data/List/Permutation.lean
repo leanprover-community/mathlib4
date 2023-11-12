@@ -47,7 +47,7 @@ Show that `l.Nodup → l.permutations.Nodup`. See `Data.Fintype.List`.
 
 open Nat
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace List
 
@@ -135,18 +135,19 @@ theorem map_map_permutations'Aux (f : α → β) (t : α) (ts : List α) :
 theorem permutations'Aux_eq_permutationsAux2 (t : α) (ts : List α) :
     permutations'Aux t ts = (permutationsAux2 t [] [ts ++ [t]] ts id).2 := by
   induction' ts with a ts ih; · rfl
-  simp [permutations'Aux, permutationsAux2_snd_cons, ih]
+  simp only [permutations'Aux, ih, cons_append, permutationsAux2_snd_cons, append_nil, id_eq,
+    cons.injEq, true_and]
   simp (config := { singlePass := true }) only [← permutationsAux2_append]
   simp [map_permutationsAux2]
 #align list.permutations'_aux_eq_permutations_aux2 List.permutations'Aux_eq_permutationsAux2
 
 theorem mem_permutationsAux2 {t : α} {ts : List α} {ys : List α} {l l' : List α} :
-    l' ∈ (permutationsAux2 t ts [] ys (l ++ .)).2 ↔
+    l' ∈ (permutationsAux2 t ts [] ys (l ++ ·)).2 ↔
       ∃ l₁ l₂, l₂ ≠ [] ∧ ys = l₁ ++ l₂ ∧ l' = l ++ l₁ ++ t :: l₂ ++ ts := by
   induction' ys with y ys ih generalizing l
   · simp (config := { contextual := true })
   rw [permutationsAux2_snd_cons,
-    show (fun x : List α => l ++ y :: x) = (l ++ [y] ++ .) by funext _; simp, mem_cons, ih]
+    show (fun x : List α => l ++ y :: x) = (l ++ [y] ++ ·) by funext _; simp, mem_cons, ih]
   constructor
   · rintro (rfl | ⟨l₁, l₂, l0, rfl, rfl⟩)
     · exact ⟨[], y :: ys, by simp⟩
@@ -161,7 +162,7 @@ theorem mem_permutationsAux2 {t : α} {ts : List α} {ys : List α} {l l' : List
 theorem mem_permutationsAux2' {t : α} {ts : List α} {ys : List α} {l : List α} :
     l ∈ (permutationsAux2 t ts [] ys id).2 ↔
       ∃ l₁ l₂, l₂ ≠ [] ∧ ys = l₁ ++ l₂ ∧ l = l₁ ++ t :: l₂ ++ ts :=
-  by rw [show @id (List α) = ([] ++ .) by funext _; rfl]; apply mem_permutationsAux2
+  by rw [show @id (List α) = ([] ++ ·) by funext _; rfl]; apply mem_permutationsAux2
 #align list.mem_permutations_aux2' List.mem_permutationsAux2'
 
 theorem length_permutationsAux2 (t : α) (ts : List α) (ys : List α) (f : List α → β) :

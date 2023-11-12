@@ -1,11 +1,13 @@
 /-
 Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
+Authors: Mario Carneiro, Kyle Miller
 -/
 import Lean
 import Std
-import Mathlib.Tactic.Cases
+import Mathlib.Tactic.PPWithUniv
+
+set_option autoImplicit true
 
 namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
@@ -30,6 +32,18 @@ syntax (name := lemma) declModifiers
     let stx := stx.modifyArg 0 (mkAtomFrom · "theorem" (canonical := true))
     stx.setKind ``Parser.Command.theorem
   pure <| stx.setKind ``Parser.Command.declaration
+
+/-- The syntax `variable (X Y ... Z : Sort*)` creates a new distinct implicit universe variable
+for each variable in the sequence. -/
+elab "Sort*" : term => do
+  let u ← Lean.Meta.mkFreshLevelMVar
+  Elab.Term.levelMVarToParam (.sort u)
+
+/-- The syntax `variable (X Y ... Z : Type*)` creates a new distinct implicit universe variable
+`> 0` for each variable in the sequence. -/
+elab "Type*" : term => do
+  let u ← Lean.Meta.mkFreshLevelMVar
+  Elab.Term.levelMVarToParam (.sort (.succ u))
 
 /-- Given two arrays of `FVarId`s, one from an old local context and the other from a new local
 context, pushes `FVarAliasInfo`s into the info tree for corresponding pairs of `FVarId`s.
@@ -120,7 +134,7 @@ changes their types to be `h : n + 1 + 1 = 2` and `h' : n + 2 + 1 = 4`.
 Change is like `refine` in that every placeholder needs to be solved for by unification,
 but you can use named placeholders and `?_` where you want `change` to create new goals.
 
-The the tactic `show e` is interchangeable with `change e`, where the pattern `e` is applied to
+The tactic `show e` is interchangeable with `change e`, where the pattern `e` is applied to
 the main goal. -/
 elab_rules : tactic
   | `(tactic| change $newType:term $[$loc:location]?) => do
@@ -258,3 +272,5 @@ elab (name := clearValue) "clear_value" hs:(ppSpace colGt term:max)+ : tactic =>
     withMainContext do
       let mvarId ← (← getMainGoal).clearValue fvarId
       replaceMainGoal [mvarId]
+
+attribute [pp_with_univ] ULift PUnit PEmpty

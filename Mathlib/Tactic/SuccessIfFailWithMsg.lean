@@ -15,6 +15,8 @@ It's mostly useful in tests, where we want to make sure that tactics fail in cer
 circumstances.
 -/
 
+set_option autoImplicit true
+
 open Lean Elab Meta Tactic Syntax
 
 namespace Mathlib.Tactic

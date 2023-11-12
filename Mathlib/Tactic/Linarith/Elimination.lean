@@ -2,7 +2,6 @@
 Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
 import Mathlib.Tactic.Linarith.Datatypes
 
@@ -107,7 +106,7 @@ structure PComp : Type where
   /-- The set of original assumptions which have been used in constructing this comparison. -/
   history : RBSet ℕ Ord.compare
   /-- The variables which have been *effectively eliminated*,
-  i.e. the by running the elimination algorithm on that variable. -/
+  i.e. by running the elimination algorithm on that variable. -/
   effective : RBSet ℕ Ord.compare
   /-- The variables which have been *implicitly eliminated*.
   These are variables that appear in the historical set,

@@ -28,7 +28,7 @@ adjacent, chain, duplicates, remove, list, stutter, destutter
 -/
 
 
-variable {α : Type _} (l : List α) (R : α → α → Prop) [DecidableRel R] {a b : α}
+variable {α : Type*} (l : List α) (R : α → α → Prop) [DecidableRel R] {a b : α}
 
 namespace List
 

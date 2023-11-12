@@ -30,7 +30,7 @@ variable {R : Type u} {M : Type v} [CommRing R] [Nontrivial R]
 
 variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] (f : M →ₗ[R] M)
 
-open Classical Matrix Polynomial
+open Matrix Polynomial
 
 noncomputable section
 
@@ -102,7 +102,7 @@ theorem minpoly_coeff_zero_of_injective (hf : Function.Injective f) :
   have hdegP : P.degree < (minpoly R f).degree := by
     rw [hP, mul_comm]
     refine' degree_lt_degree_mul_X fun h => _
-    rw [h, MulZeroClass.mul_zero] at hP
+    rw [h, mul_zero] at hP
     exact minpoly.ne_zero (isIntegral f) hP
   have hPmonic : P.Monic := by
     suffices (minpoly R f).Monic by

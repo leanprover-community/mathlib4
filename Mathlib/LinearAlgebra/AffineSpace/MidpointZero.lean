@@ -21,34 +21,34 @@ midpoint
 
 open AffineMap AffineEquiv
 
-theorem lineMap_inv_two {R : Type _} {V P : Type _} [DivisionRing R] [CharZero R] [AddCommGroup V]
+theorem lineMap_inv_two {R : Type*} {V P : Type*} [DivisionRing R] [CharZero R] [AddCommGroup V]
     [Module R V] [AddTorsor V P] (a b : P) : lineMap a b (2⁻¹ : R) = midpoint R a b :=
   rfl
 #align line_map_inv_two lineMap_inv_two
 
-theorem lineMap_one_half {R : Type _} {V P : Type _} [DivisionRing R] [CharZero R] [AddCommGroup V]
+theorem lineMap_one_half {R : Type*} {V P : Type*} [DivisionRing R] [CharZero R] [AddCommGroup V]
     [Module R V] [AddTorsor V P] (a b : P) : lineMap a b (1 / 2 : R) = midpoint R a b := by
   rw [one_div, lineMap_inv_two]
 #align line_map_one_half lineMap_one_half
 
-theorem homothety_invOf_two {R : Type _} {V P : Type _} [CommRing R] [Invertible (2 : R)]
+theorem homothety_invOf_two {R : Type*} {V P : Type*} [CommRing R] [Invertible (2 : R)]
     [AddCommGroup V] [Module R V] [AddTorsor V P] (a b : P) :
     homothety a (⅟ 2 : R) b = midpoint R a b :=
   rfl
 #align homothety_inv_of_two homothety_invOf_two
 
-theorem homothety_inv_two {k : Type _} {V P : Type _} [Field k] [CharZero k] [AddCommGroup V]
+theorem homothety_inv_two {k : Type*} {V P : Type*} [Field k] [CharZero k] [AddCommGroup V]
     [Module k V] [AddTorsor V P] (a b : P) : homothety a (2⁻¹ : k) b = midpoint k a b :=
   rfl
 #align homothety_inv_two homothety_inv_two
 
-theorem homothety_one_half {k : Type _} {V P : Type _} [Field k] [CharZero k] [AddCommGroup V]
+theorem homothety_one_half {k : Type*} {V P : Type*} [Field k] [CharZero k] [AddCommGroup V]
     [Module k V] [AddTorsor V P] (a b : P) : homothety a (1 / 2 : k) b = midpoint k a b := by
   rw [one_div, homothety_inv_two]
 #align homothety_one_half homothety_one_half
 
 @[simp]
-theorem pi_midpoint_apply {k ι : Type _} {V : ∀ _ : ι, Type _} {P : ∀ _ : ι, Type _} [Field k]
+theorem pi_midpoint_apply {k ι : Type*} {V : ∀ _ : ι, Type*} {P : ∀ _ : ι, Type*} [Field k]
     [Invertible (2 : k)] [∀ i, AddCommGroup (V i)] [∀ i, Module k (V i)]
     [∀ i, AddTorsor (V i) (P i)] (f g : ∀ i, P i) (i : ι) :
     midpoint k f g i = midpoint k (f i) (g i) :=

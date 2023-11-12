@@ -38,7 +38,7 @@ algebra-homomorphisms.)
 
 open Function Set
 
-variable (𝕜 : Type _) {V V₁ V₂ V₃ V₄ : Type _} {P₁ : Type _} (P P₂ : Type _) {P₃ P₄ : Type _}
+variable (𝕜 : Type*) {V V₁ V₂ V₃ V₄ : Type*} {P₁ : Type*} (P P₂ : Type*) {P₃ P₄ : Type*}
   [NormedField 𝕜] [SeminormedAddCommGroup V] [SeminormedAddCommGroup V₁] [SeminormedAddCommGroup V₂]
   [SeminormedAddCommGroup V₃] [SeminormedAddCommGroup V₄] [NormedSpace 𝕜 V] [NormedSpace 𝕜 V₁]
   [NormedSpace 𝕜 V₂] [NormedSpace 𝕜 V₃] [NormedSpace 𝕜 V₄] [PseudoMetricSpace P] [MetricSpace P₁]
@@ -143,14 +143,12 @@ theorem dist_map (x y : P) : dist (f x) (f y) = dist x y := by
   rw [dist_eq_norm_vsub V₂, dist_eq_norm_vsub V, ← map_vsub, f.linearIsometry.norm_map]
 #align affine_isometry.dist_map AffineIsometry.dist_map
 
--- Porting note: added `(dist_map)` to simp
 @[simp]
-theorem nndist_map (x y : P) : nndist (f x) (f y) = nndist x y := by simp [nndist_dist, (dist_map)]
+theorem nndist_map (x y : P) : nndist (f x) (f y) = nndist x y := by simp [nndist_dist]
 #align affine_isometry.nndist_map AffineIsometry.nndist_map
 
--- Porting note: added `(dist_map)` to simp
 @[simp]
-theorem edist_map (x y : P) : edist (f x) (f y) = edist x y := by simp [edist_dist, (dist_map)]
+theorem edist_map (x y : P) : edist (f x) (f y) = edist x y := by simp [edist_dist]
 #align affine_isometry.edist_map AffineIsometry.edist_map
 
 protected theorem isometry : Isometry f :=
@@ -200,7 +198,7 @@ theorem diam_range : Metric.diam (range f) = Metric.diam (univ : Set P) :=
 #align affine_isometry.diam_range AffineIsometry.diam_range
 
 @[simp]
-theorem comp_continuous_iff {α : Type _} [TopologicalSpace α] {g : α → P} :
+theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] {g : α → P} :
     Continuous (f ∘ g) ↔ Continuous g :=
   f.isometry.comp_continuous_iff
 #align affine_isometry.comp_continuous_iff AffineIsometry.comp_continuous_iff
@@ -671,7 +669,7 @@ theorem diam_image (s : Set P) : Metric.diam (e '' s) = Metric.diam s :=
   e.isometry.diam_image s
 #align affine_isometry_equiv.diam_image AffineIsometryEquiv.diam_image
 
-variable {α : Type _} [TopologicalSpace α]
+variable {α : Type*} [TopologicalSpace α]
 
 @[simp]
 theorem comp_continuousOn_iff {f : α → P} {s : Set α} : ContinuousOn (e ∘ f) s ↔ ContinuousOn f s :=

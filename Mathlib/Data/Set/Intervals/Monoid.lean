@@ -3,11 +3,10 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Patrick Massot
 -/
-import Mathlib.Data.Set.Intervals.Basic
-import Mathlib.Data.Set.Function
-import Mathlib.Algebra.Order.Monoid.Cancel.Defs
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Intervals.Basic
 
 #align_import data.set.intervals.monoid from "leanprover-community/mathlib"@"aba57d4d3dae35460225919dcd82fe91355162f9"
 
@@ -23,7 +22,7 @@ The lemmas in this file state that addition maps intervals bijectively. The type
 
 namespace Set
 
-variable {M : Type _} [OrderedCancelAddCommMonoid M] [ExistsAddOfLE M] (a b c d : M)
+variable {M : Type*} [OrderedCancelAddCommMonoid M] [ExistsAddOfLE M] (a b c d : M)
 
 theorem Ici_add_bij : BijOn (· + d) (Ici a) (Ici (a + d)) := by
   refine'

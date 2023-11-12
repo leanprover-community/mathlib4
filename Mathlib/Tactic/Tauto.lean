@@ -5,13 +5,12 @@ Authors: Simon Hudon, David Renshaw
 -/
 
 import Lean
-import Mathlib.Init.Logic
-import Mathlib.Init.Propext
-import Mathlib.Logic.Basic
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Classical
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.SolveByElim
+import Mathlib.Lean.Elab.Tactic.Basic
+import Mathlib.Logic.Basic
 import Qq
 
 /-!
@@ -34,7 +33,7 @@ def distribNotOnceAt (hypFVar : Expr) (g : MVarId) : MetaM AssertAfterResult := 
   match e with
   | ~q(¬ ($a : Prop) = $b) => do
     let h' : Q(¬$a = $b) := h.toExpr
-    replace q(mt Iff.to_eq $h')
+    replace q(mt propext $h')
   | ~q(($a : Prop) = $b) => do
     let h' : Q($a = $b) := h.toExpr
     replace q(Eq.to_iff $h')
@@ -190,14 +189,13 @@ def finishingConstructorMatcher (e : Q(Prop)) : MetaM Bool :=
   | _ => pure false
 
 /-- Implementation of the `tauto` tactic. -/
-def tautology : TacticM Unit := focus do
+def tautology : TacticM Unit := focusAndDoneWithScope "tauto" do
   evalTactic (← `(tactic| classical!))
   tautoCore
   allGoals (iterateUntilFailure
     (evalTactic (← `(tactic| rfl)) <|>
      evalTactic (← `(tactic| solve_by_elim)) <|>
      liftMetaTactic (constructorMatching · finishingConstructorMatcher)))
-  done
 
 /--
 `tauto` breaks down assumptions of the form `_ ∧ _`, `_ ∨ _`, `_ ↔ _` and `∃ _, _`

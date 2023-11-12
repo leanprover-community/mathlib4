@@ -17,7 +17,7 @@ Note that analogous lemmas for `Module`s like `Finset.sum_smul` appear in other 
 -/
 
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open BigOperators
 

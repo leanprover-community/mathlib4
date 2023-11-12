@@ -30,7 +30,7 @@ We also prove some trivial properties of these maps.
 -/
 
 
-variable {α β : Type _} [LinearOrder α]
+variable {α β : Type*} [LinearOrder α]
 
 open Function
 
@@ -163,7 +163,7 @@ theorem range_projIic : range (projIic a) = univ := projIic_surjective.range_eq
 
 @[simp]
 theorem range_projIcc : range (projIcc a b h) = univ :=
-  Function.Surjective.range_eq (projIcc_surjective h)
+  (projIcc_surjective h).range_eq
 #align set.range_proj_Icc Set.range_projIcc
 
 theorem monotone_projIci : Monotone (projIci a) := fun _ _ => max_le_max le_rfl
@@ -211,9 +211,9 @@ theorem IicExtend_apply (f : Iic b → β) (x : α) : IicExtend f x = f ⟨min b
   rfl
 #align set.Iic_extend_apply Set.IicExtend_apply
 
-theorem iccExtend_apply (h : a ≤ b) (f : Icc a b → β) (x : α) :
+theorem IccExtend_apply (h : a ≤ b) (f : Icc a b → β) (x : α) :
     IccExtend h f x = f ⟨max a (min b x), le_max_left _ _, max_le h (min_le_left _ _)⟩ := rfl
-#align set.Icc_extend_apply Set.iccExtend_apply
+#align set.Icc_extend_apply Set.IccExtend_apply
 
 @[simp]
 theorem range_IciExtend (f : Ici a → β) : range (IciExtend f) = range f := by

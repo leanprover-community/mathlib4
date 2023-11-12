@@ -45,6 +45,10 @@ theorem Submodule.finrank_map_subtype_eq (p : Submodule R M) (q : Submodule R p)
   (Submodule.equivSubtypeMap p q).symm.finrank_eq
 #align finite_dimensional.submodule.finrank_map_subtype_eq FiniteDimensional.Submodule.finrank_map_subtype_eq
 
+@[simp]
+theorem finrank_ulift : finrank R (ULift M) = finrank R M := by
+  simp_rw [finrank, rank_ulift, toNat_lift]
+
 end Ring
 
 section RingFinite
@@ -83,10 +87,7 @@ variable [AddCommGroup N] [Module R N] [Module.Free R N] [Module.Finite R N]
 
 /-- The finrank of a free module `M` over `R` is the cardinality of `ChooseBasisIndex R M`. -/
 theorem finrank_eq_card_chooseBasisIndex :
-    finrank R M =
-      @card (ChooseBasisIndex R M)
-        (@ChooseBasisIndex.fintype R M _ _ _ _ (nontrivial_of_invariantBasisNumber R) _) := by
-  letI := nontrivial_of_invariantBasisNumber R
+    finrank R M = card (ChooseBasisIndex R M) := by
   simp [finrank, rank_eq_card_chooseBasisIndex]
 #align finite_dimensional.finrank_eq_card_choose_basis_index FiniteDimensional.finrank_eq_card_chooseBasisIndex
 
@@ -129,7 +130,7 @@ theorem finrank_pi_fintype {ι : Type v} [Fintype ι] {M : ι → Type w} [∀ i
 
 /-- If `m` and `n` are `Fintype`, the finrank of `m × n` matrices is
   `(Fintype.card m) * (Fintype.card n)`. -/
-theorem finrank_matrix (m n : Type _) [Fintype m] [Fintype n] :
+theorem finrank_matrix (m n : Type*) [Fintype m] [Fintype n] :
     finrank R (Matrix m n R) = card m * card n := by simp [finrank]
 #align finite_dimensional.finrank_matrix FiniteDimensional.finrank_matrix
 

@@ -44,7 +44,7 @@ open ENNReal MeasureTheory MeasureTheory.Measure Metric Set Filter TopologicalSp
 
 open scoped Topology BigOperators ENNReal Convex
 
-variable {α E F : Type _} {m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {α E F : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [CompleteSpace E] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {μ ν : Measure α}
   {s t : Set α}
 
@@ -100,7 +100,7 @@ theorem laverage_eq_lintegral [IsProbabilityMeasure μ] (f : α → ℝ≥0∞) 
 theorem measure_mul_laverage [IsFiniteMeasure μ] (f : α → ℝ≥0∞) :
     μ univ * ⨍⁻ x, f x ∂μ = ∫⁻ x, f x ∂μ := by
   cases' eq_or_ne μ 0 with hμ hμ
-  · rw [hμ, lintegral_zero_measure, laverage_zero_measure, MulZeroClass.mul_zero]
+  · rw [hμ, lintegral_zero_measure, laverage_zero_measure, mul_zero]
   · rw [laverage_eq, ENNReal.mul_div_cancel' (measure_univ_ne_zero.2 hμ) (measure_ne_top _ _)]
 #align measure_theory.measure_mul_laverage MeasureTheory.measure_mul_laverage
 
@@ -197,11 +197,9 @@ theorem laverage_mem_openSegment_compl_self [IsFiniteMeasure μ] (hs : NullMeasu
 #align measure_theory.laverage_mem_open_segment_compl_self MeasureTheory.laverage_mem_openSegment_compl_self
 
 @[simp]
-theorem laverage_const (μ : Measure α) [IsFiniteMeasure μ] [h : μ.ae.NeBot] (c : ℝ≥0∞) :
+theorem laverage_const (μ : Measure α) [IsFiniteMeasure μ] [h : NeZero μ] (c : ℝ≥0∞) :
     ⨍⁻ _x, c ∂μ = c := by
-  simp only [laverage_eq, lintegral_const, Measure.restrict_apply, MeasurableSet.univ, univ_inter,
-    div_eq_mul_inv, mul_assoc, ENNReal.mul_inv_cancel, mul_one, measure_ne_top μ univ, Ne.def,
-    measure_univ_ne_zero, ae_neBot.1 h, not_false_iff]
+  simp only [laverage, lintegral_const, measure_univ, mul_one]
 #align measure_theory.laverage_const MeasureTheory.laverage_const
 
 theorem setLaverage_const (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) (c : ℝ≥0∞) : ⨍⁻ _x in s, c ∂μ = c := by
@@ -209,7 +207,7 @@ theorem setLaverage_const (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) (c : ℝ≥0�
     univ_inter, div_eq_mul_inv, mul_assoc, ENNReal.mul_inv_cancel hs₀ hs, mul_one]
 #align measure_theory.set_laverage_const MeasureTheory.setLaverage_const
 
-theorem laverage_one [IsFiniteMeasure μ] [μ.ae.NeBot] : ⨍⁻ _x, (1 : ℝ≥0∞) ∂μ = 1 :=
+theorem laverage_one [IsFiniteMeasure μ] [NeZero μ] : ⨍⁻ _x, (1 : ℝ≥0∞) ∂μ = 1 :=
   laverage_const _ _
 #align measure_theory.laverage_one MeasureTheory.laverage_one
 
@@ -387,19 +385,14 @@ theorem average_mem_openSegment_compl_self [IsFiniteMeasure μ] {f : α → E} {
 #align measure_theory.average_mem_open_segment_compl_self MeasureTheory.average_mem_openSegment_compl_self
 
 @[simp]
-theorem average_const (μ : Measure α) [IsFiniteMeasure μ] [h : μ.ae.NeBot] (c : E) :
+theorem average_const (μ : Measure α) [IsFiniteMeasure μ] [h : NeZero μ] (c : E) :
     ⨍ _x, c ∂μ = c := by
-  simp only [average_eq, integral_const, Measure.restrict_apply, MeasurableSet.univ, one_smul,
-    univ_inter, smul_smul, ← ENNReal.toReal_inv, ← ENNReal.toReal_mul, ENNReal.inv_mul_cancel,
-    measure_ne_top μ univ, Ne.def, measure_univ_eq_zero, ae_neBot.1 h, not_false_iff,
-    ENNReal.one_toReal]
+  rw [average, integral_const, measure_univ, ENNReal.one_toReal, one_smul]
 #align measure_theory.average_const MeasureTheory.average_const
 
 theorem setAverage_const {s : Set α} (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) (c : E) :
-    ⨍ _ in s, c ∂μ = c := by
-  simp only [setAverage_eq, integral_const, Measure.restrict_apply, MeasurableSet.univ, univ_inter,
-    smul_smul, ← ENNReal.toReal_inv, ← ENNReal.toReal_mul, ENNReal.inv_mul_cancel hs₀ hs,
-    ENNReal.one_toReal, one_smul]
+    ⨍ _ in s, c ∂μ = c :=
+  have := NeZero.mk hs₀; have := Fact.mk hs.lt_top; average_const _ _
 #align measure_theory.set_average_const MeasureTheory.setAverage_const
 
 -- porting note: was `@[simp]` but `simp` can prove it
@@ -610,10 +603,10 @@ theorem exists_not_mem_null_integral_le (hf : Integrable f μ) (hN : μ N = 0) :
 end ProbabilityMeasure
 end FirstMomentReal
 
-section FirstMomentEnnreal
+section FirstMomentENNReal
 variable {N : Set α} {f : α → ℝ≥0∞}
 
-/-- **First moment method**. A measurable function is smaller than its mean on a set of ositive
+/-- **First moment method**. A measurable function is smaller than its mean on a set of positive
 measure. -/
 theorem measure_le_setLaverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞)
     (hf : AEMeasurable f (μ.restrict s)) : 0 < μ {x ∈ s | f x ≤ ⨍⁻ a in s, f a ∂μ} := by
@@ -633,7 +626,7 @@ theorem measure_le_setLaverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞)
     exact measure_eq_top_of_lintegral_ne_top hf h
 #align measure_theory.measure_le_set_laverage_pos MeasureTheory.measure_le_setLaverage_pos
 
-/-- **First moment method**. A measurable function is greater than its mean on a set of ositive
+/-- **First moment method**. A measurable function is greater than its mean on a set of positive
 measure. -/
 theorem measure_setLaverage_le_pos (hμ : μ s ≠ 0) (hs : NullMeasurableSet s μ)
     (hint : ∫⁻ a in s, f a ∂μ ≠ ∞) : 0 < μ {x ∈ s | ⨍⁻ a in s, f a ∂μ ≤ f x} := by
@@ -656,21 +649,21 @@ theorem measure_setLaverage_le_pos (hμ : μ s ≠ 0) (hs : NullMeasurableSet s 
     exact measure_eq_top_of_lintegral_ne_top hg.aemeasurable hint
 #align measure_theory.measure_set_laverage_le_pos MeasureTheory.measure_setLaverage_le_pos
 
-/-- **First moment method**. The minimum of a measurable function is smaller than its ean. -/
+/-- **First moment method**. The minimum of a measurable function is smaller than its mean. -/
 theorem exists_le_setLaverage (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞) (hf : AEMeasurable f (μ.restrict s)) :
     ∃ x ∈ s, f x ≤ ⨍⁻ a in s, f a ∂μ :=
   let ⟨x, hx, h⟩ := nonempty_of_measure_ne_zero (measure_le_setLaverage_pos hμ hμ₁ hf).ne'
   ⟨x, hx, h⟩
 #align measure_theory.exists_le_set_laverage MeasureTheory.exists_le_setLaverage
 
-/-- **First moment method**. The maximum of a measurable function is greater than its ean. -/
+/-- **First moment method**. The maximum of a measurable function is greater than its mean. -/
 theorem exists_setLaverage_le (hμ : μ s ≠ 0) (hs : NullMeasurableSet s μ)
     (hint : ∫⁻ a in s, f a ∂μ ≠ ∞) : ∃ x ∈ s, ⨍⁻ a in s, f a ∂μ ≤ f x :=
   let ⟨x, hx, h⟩ := nonempty_of_measure_ne_zero (measure_setLaverage_le_pos hμ hs hint).ne'
   ⟨x, hx, h⟩
 #align measure_theory.exists_set_laverage_le MeasureTheory.exists_setLaverage_le
 
-/-- **First moment method**. A measurable function is greater than its mean on a set of ositive
+/-- **First moment method**. A measurable function is greater than its mean on a set of positive
 measure. -/
 theorem measure_laverage_le_pos (hμ : μ ≠ 0) (hint : ∫⁻ a, f a ∂μ ≠ ∞) :
     0 < μ {x | ⨍⁻ a, f a ∂μ ≤ f x} := by
@@ -678,13 +671,13 @@ theorem measure_laverage_le_pos (hμ : μ ≠ 0) (hint : ∫⁻ a, f a ∂μ ≠
     @measure_setLaverage_le_pos _ _ _ _ f (measure_univ_ne_zero.2 hμ) nullMeasurableSet_univ
 #align measure_theory.measure_laverage_le_pos MeasureTheory.measure_laverage_le_pos
 
-/-- **First moment method**. The maximum of a measurable function is greater than its ean. -/
+/-- **First moment method**. The maximum of a measurable function is greater than its mean. -/
 theorem exists_laverage_le (hμ : μ ≠ 0) (hint : ∫⁻ a, f a ∂μ ≠ ∞) : ∃ x, ⨍⁻ a, f a ∂μ ≤ f x :=
   let ⟨x, hx⟩ := nonempty_of_measure_ne_zero (measure_laverage_le_pos hμ hint).ne'
   ⟨x, hx⟩
 #align measure_theory.exists_laverage_le MeasureTheory.exists_laverage_le
 
-/-- **First moment method**. The maximum of a measurable function is greater than its ean, while
+/-- **First moment method**. The maximum of a measurable function is greater than its mean, while
 avoiding a null set. -/
 theorem exists_not_mem_null_laverage_le (hμ : μ ≠ 0) (hint : ∫⁻ a : α, f a ∂μ ≠ ∞) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ ⨍⁻ a, f a ∂μ ≤ f x := by
@@ -697,7 +690,7 @@ theorem exists_not_mem_null_laverage_le (hμ : μ ≠ 0) (hint : ∫⁻ a : α, 
 section FiniteMeasure
 variable [IsFiniteMeasure μ]
 
-/-- **First moment method**. A measurable function is smaller than its mean on a set of ositive
+/-- **First moment method**. A measurable function is smaller than its mean on a set of positive
 measure. -/
 theorem measure_le_laverage_pos (hμ : μ ≠ 0) (hf : AEMeasurable f μ) :
     0 < μ {x | f x ≤ ⨍⁻ a, f a ∂μ} := by
@@ -705,13 +698,13 @@ theorem measure_le_laverage_pos (hμ : μ ≠ 0) (hf : AEMeasurable f μ) :
     measure_le_setLaverage_pos (measure_univ_ne_zero.2 hμ) (measure_ne_top _ _) hf.restrict
 #align measure_theory.measure_le_laverage_pos MeasureTheory.measure_le_laverage_pos
 
-/-- **First moment method**. The minimum of a measurable function is smaller than its ean. -/
+/-- **First moment method**. The minimum of a measurable function is smaller than its mean. -/
 theorem exists_le_laverage (hμ : μ ≠ 0) (hf : AEMeasurable f μ) : ∃ x, f x ≤ ⨍⁻ a, f a ∂μ :=
   let ⟨x, hx⟩ := nonempty_of_measure_ne_zero (measure_le_laverage_pos hμ hf).ne'
   ⟨x, hx⟩
 #align measure_theory.exists_le_laverage MeasureTheory.exists_le_laverage
 
-/-- **First moment method**. The minimum of a measurable function is smaller than its ean, while
+/-- **First moment method**. The minimum of a measurable function is smaller than its mean, while
 avoiding a null set. -/
 theorem exists_not_mem_null_le_laverage (hμ : μ ≠ 0) (hf : AEMeasurable f μ) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ f x ≤ ⨍⁻ a, f a ∂μ := by
@@ -741,18 +734,18 @@ theorem measure_lintegral_le_pos (hint : ∫⁻ a, f a ∂μ ≠ ∞) : 0 < μ {
     measure_laverage_le_pos (IsProbabilityMeasure.ne_zero μ) hint
 #align measure_theory.measure_lintegral_le_pos MeasureTheory.measure_lintegral_le_pos
 
-/-- **First moment method**. The minimum of a measurable function is smaller than its ntegral. -/
+/-- **First moment method**. The minimum of a measurable function is smaller than its integral. -/
 theorem exists_le_lintegral (hf : AEMeasurable f μ) : ∃ x, f x ≤ ∫⁻ a, f a ∂μ := by
   simpa only [laverage_eq_lintegral] using exists_le_laverage (IsProbabilityMeasure.ne_zero μ) hf
 #align measure_theory.exists_le_lintegral MeasureTheory.exists_le_lintegral
 
-/-- **First moment method**. The maximum of a measurable function is greater than its ntegral. -/
+/-- **First moment method**. The maximum of a measurable function is greater than its integral. -/
 theorem exists_lintegral_le (hint : ∫⁻ a, f a ∂μ ≠ ∞) : ∃ x, ∫⁻ a, f a ∂μ ≤ f x := by
   simpa only [laverage_eq_lintegral] using
     exists_laverage_le (IsProbabilityMeasure.ne_zero μ) hint
 #align measure_theory.exists_lintegral_le MeasureTheory.exists_lintegral_le
 
-/-- **First moment method**. The minimum of a measurable function is smaller than its ntegral,
+/-- **First moment method**. The minimum of a measurable function is smaller than its integral,
 while avoiding a null set. -/
 theorem exists_not_mem_null_le_lintegral (hf : AEMeasurable f μ) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ f x ≤ ∫⁻ a, f a ∂μ := by
@@ -760,7 +753,7 @@ theorem exists_not_mem_null_le_lintegral (hf : AEMeasurable f μ) (hN : μ N = 0
     exists_not_mem_null_le_laverage (IsProbabilityMeasure.ne_zero μ) hf hN
 #align measure_theory.exists_not_mem_null_le_lintegral MeasureTheory.exists_not_mem_null_le_lintegral
 
-/-- **First moment method**. The maximum of a measurable function is greater than its ntegral,
+/-- **First moment method**. The maximum of a measurable function is greater than its integral,
 while avoiding a null set. -/
 theorem exists_not_mem_null_lintegral_le (hint : ∫⁻ a, f a ∂μ ≠ ∞) (hN : μ N = 0) :
     ∃ x, x ∉ N ∧ ∫⁻ a, f a ∂μ ≤ f x := by
@@ -769,5 +762,65 @@ theorem exists_not_mem_null_lintegral_le (hint : ∫⁻ a, f a ∂μ ≠ ∞) (h
 #align measure_theory.exists_not_mem_null_lintegral_le MeasureTheory.exists_not_mem_null_lintegral_le
 
 end ProbabilityMeasure
-end FirstMomentEnnreal
+end FirstMomentENNReal
+
+/-- If the average of a function `f` along a sequence of sets `aₙ` converges to `c` (more precisely,
+we require that `⨍ y in a i, ‖f y - c‖ ∂μ` tends to `0`), then the integral of `gₙ • f` also tends
+to `c` if `gₙ` is supported in `aₙ`, has integral converging to one and supremum at most `K / μ aₙ`.
+-/
+theorem tendsto_integral_smul_of_tendsto_average_norm_sub
+    {ι : Type*} {a : ι → Set α} {l : Filter ι} {f : α → E} {c : E} {g : ι → α → ℝ} (K : ℝ)
+    (hf : Tendsto (fun i ↦ ⨍ y in a i, ‖f y - c‖ ∂μ) l (𝓝 0))
+    (f_int : ∀ᶠ i in l, IntegrableOn f (a i) μ)
+    (hg : Tendsto (fun i ↦ ∫ y, g i y ∂μ) l (𝓝 1))
+    (g_supp : ∀ᶠ i in l, Function.support (g i) ⊆ a i)
+    (g_bound : ∀ᶠ i in l, ∀ x, |g i x| ≤ K / (μ (a i)).toReal) :
+    Tendsto (fun i ↦ ∫ y, g i y • f y ∂μ) l (𝓝 c) := by
+  have g_int : ∀ᶠ i in l, Integrable (g i) μ := by
+    filter_upwards [(tendsto_order.1 hg).1 _ zero_lt_one] with i hi
+    contrapose hi
+    simp only [integral_undef hi, lt_self_iff_false, not_false_eq_true]
+  have I : ∀ᶠ i in l, ∫ y, g i y • (f y - c) ∂μ + (∫ y, g i y ∂μ) • c = ∫ y, g i y • f y ∂μ := by
+    filter_upwards [f_int, g_int, g_supp, g_bound] with i hif hig hisupp hibound
+    rw [← integral_smul_const, ← integral_add]
+    · simp only [smul_sub, sub_add_cancel]
+    · simp_rw [smul_sub]
+      apply Integrable.sub _ (hig.smul_const _)
+      have A : Function.support (fun y ↦ g i y • f y) ⊆ a i := by
+        apply Subset.trans _ hisupp
+        exact Function.support_smul_subset_left _ _
+      rw [← integrableOn_iff_integrable_of_support_subset A]
+      apply Integrable.smul_of_top_right hif
+      exact memℒp_top_of_bound hig.aestronglyMeasurable.restrict
+        (K / (μ (a i)).toReal) (eventually_of_forall hibound)
+    · exact hig.smul_const _
+  have L0 : Tendsto (fun i ↦ ∫ y, g i y • (f y - c) ∂μ) l (𝓝 0) := by
+    have := hf.const_mul K
+    simp only [mul_zero] at this
+    refine' squeeze_zero_norm' _ this
+    filter_upwards [g_supp, g_bound, f_int, (tendsto_order.1 hg).1 _ zero_lt_one]
+      with i hi h'i h''i hi_int
+    have mu_ai : μ (a i) < ∞ := by
+      rw [lt_top_iff_ne_top]
+      intro h
+      simp only [h, ENNReal.top_toReal, _root_.div_zero, abs_nonpos_iff] at h'i
+      have : ∫ (y : α), g i y ∂μ = ∫ (y : α), 0 ∂μ := by congr; ext y; exact h'i y
+      simp [this] at hi_int
+    apply (norm_integral_le_integral_norm _).trans
+    simp_rw [average_eq, smul_eq_mul, ← integral_mul_left, norm_smul, ← mul_assoc, ← div_eq_mul_inv]
+    have : ∀ x, x ∉ a i → ‖g i x‖ * ‖(f x - c)‖ = 0 := by
+      intro x hx
+      have : g i x = 0 := by rw [← Function.nmem_support]; exact fun h ↦ hx (hi h)
+      simp [this]
+    rw [← set_integral_eq_integral_of_forall_compl_eq_zero this (μ := μ)]
+    refine' integral_mono_of_nonneg (eventually_of_forall (fun x ↦ by positivity)) _
+      (eventually_of_forall (fun x ↦ _))
+    · apply (Integrable.sub h''i _).norm.const_mul
+      change IntegrableOn (fun _ ↦ c) (a i) μ
+      simp [integrableOn_const, mu_ai]
+    · dsimp; gcongr; simpa using h'i x
+  have := L0.add (hg.smul_const c)
+  simp only [one_smul, zero_add] at this
+  exact Tendsto.congr' I this
+
 end MeasureTheory

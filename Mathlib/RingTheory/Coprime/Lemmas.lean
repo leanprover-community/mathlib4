@@ -39,13 +39,24 @@ theorem Int.isCoprime_iff_gcd_eq_one {m n : ℤ} : IsCoprime m n ↔ Int.gcd m n
     intro h
     exact ⟨_, _, h⟩
 
-theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.coprime m n := by
+theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.Coprime m n := by
   rw [Int.isCoprime_iff_gcd_eq_one, Int.coe_nat_gcd]
 #align nat.is_coprime_iff_coprime Nat.isCoprime_iff_coprime
 
-alias Nat.isCoprime_iff_coprime ↔ IsCoprime.nat_coprime Nat.coprime.isCoprime
+alias ⟨IsCoprime.nat_coprime, Nat.Coprime.isCoprime⟩ := Nat.isCoprime_iff_coprime
 #align is_coprime.nat_coprime IsCoprime.nat_coprime
-#align nat.coprime.is_coprime Nat.coprime.isCoprime
+#align nat.coprime.is_coprime Nat.Coprime.isCoprime
+
+theorem Nat.Coprime.cast {R : Type*} [CommRing R] {a b : ℕ} (h : Nat.Coprime a b) :
+    IsCoprime (a : R) (b : R) := by
+  rw [← isCoprime_iff_coprime] at h
+  rw [← Int.cast_ofNat a, ← Int.cast_ofNat b]
+  exact IsCoprime.intCast h
+
+theorem ne_zero_or_ne_zero_of_nat_coprime {A : Type u} [CommRing A] [Nontrivial A] {a b : ℕ}
+    (h : Nat.Coprime a b) : (a : A) ≠ 0 ∨ (b : A) ≠ 0 :=
+  IsCoprime.ne_zero_or_ne_zero (R := A) <| by
+    simpa only [map_natCast] using IsCoprime.map (Nat.Coprime.isCoprime h) (Int.castRingHom A)
 
 theorem IsCoprime.prod_left : (∀ i ∈ t, IsCoprime (s i) x) → IsCoprime (∏ i in t, s i) x :=
   Finset.induction_on t (fun _ ↦ isCoprime_one_left) fun b t hbt ih H ↦ by
@@ -153,9 +164,8 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
     use fun i ↦ if i = a then u else v * μ i
     have hμ' : (∑ i in t, v * ((μ i * ∏ j in t \ {i}, s j) * s a)) = v * s a := by
       rw [← mul_sum, ← sum_mul, hμ, one_mul]
-    rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat]
-    dsimp
-    rw [if_pos rfl, ← huv, ← hμ', sum_congr rfl]
+    rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat, if_pos rfl,
+      ← huv, ← hμ', sum_congr rfl]
     intro x hx
     rw [mul_assoc, if_neg fun ha : x = a ↦ hat (ha.casesOn hx)]
     rw [mul_assoc]

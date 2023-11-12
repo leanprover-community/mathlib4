@@ -28,7 +28,7 @@ Jordan algebras arising this way are said to be special.
 
 A real Jordan algebra `A` can be introduced by
 ```lean
-variables {A : Type _} [NonUnitalNonAssocRing A] [Module ℝ A] [SMulCommClass ℝ A A]
+variables {A : Type*} [NonUnitalNonAssocRing A] [Module ℝ A] [SMulCommClass ℝ A A]
   [IsScalarTower ℝ A A] [IsCommJordan A]
 ```
 
@@ -74,10 +74,10 @@ Non-commutative Jordan algebras have connections to the Vidav-Palmer theorem
 -/
 
 
-variable (A : Type _)
+variable (A : Type*)
 
 /-- A (non-commutative) Jordan multiplication. -/
-class IsJordan [Mul A] where
+class IsJordan [Mul A] : Prop where
   lmul_comm_rmul : ∀ a b : A, a * b * a = a * (b * a)
   lmul_lmul_comm_lmul : ∀ a b : A, a * a * (a * b) = a * (a * a * b)
   lmul_lmul_comm_rmul : ∀ a b : A, a * a * (b * a) = a * a * b * a
@@ -86,7 +86,7 @@ class IsJordan [Mul A] where
 #align is_jordan IsJordan
 
 /-- A commutative Jordan multipication -/
-class IsCommJordan [Mul A] where
+class IsCommJordan [Mul A] : Prop where
   mul_comm : ∀ a b : A, a * b = b * a
   lmul_comm_rmul_rmul : ∀ a b : A, a * b * (a * a) = a * (b * (a * a))
 #align is_comm_jordan IsCommJordan
@@ -194,7 +194,7 @@ private theorem aux0 {a b c : A} : ⁅L (a + b + c), L ((a + b + c) * (a + b + c
   simp only [lie_add, add_lie, commute_lmul_lmul_sq, zero_add, add_zero]
   abel
 
-set_option maxHeartbeats 250000 in
+set_option maxHeartbeats 300000 in
 private theorem aux1 {a b c : A} :
     ⁅L a + L b + L c, L (a * a) + L (b * b) + L (c * c) +
     2 • L (a * b) + 2 • L (c * a) + 2 • L (b * c)⁆

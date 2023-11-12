@@ -22,7 +22,7 @@ import Mathlib.Data.List.AList
 
 namespace Finsupp
 
-variable {α M : Type _} [Zero M]
+variable {α M : Type*} [Zero M]
 
 /-- Produce an association list for the finsupp over its support using choice. -/
 @[simps]
@@ -53,7 +53,7 @@ end Finsupp
 
 namespace AList
 
-variable {α M : Type _} [Zero M]
+variable {α M : Type*} [Zero M]
 
 open List
 
@@ -76,17 +76,15 @@ noncomputable def lookupFinsupp (l : AList fun _x : α => M) : α →₀ M
 @[simp]
 theorem lookupFinsupp_apply [DecidableEq α] (l : AList fun _x : α => M) (a : α) :
     l.lookupFinsupp a = (l.lookup a).getD 0 := by
-    -- porting note: was `convert rfl`
-    simp only [lookupFinsupp, ne_eq, Finsupp.coe_mk]; congr
+    convert rfl; congr
 #align alist.lookup_finsupp_apply AList.lookupFinsupp_apply
 
 @[simp]
 theorem lookupFinsupp_support [DecidableEq α] [DecidableEq M] (l : AList fun _x : α => M) :
     l.lookupFinsupp.support = (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset := by
-    -- porting note: was `convert rfl`
-     simp only [lookupFinsupp, ne_eq, Finsupp.coe_mk]; congr
-     · apply Subsingleton.elim
-     · funext; congr
+  convert rfl; congr
+  · apply Subsingleton.elim
+  · funext; congr
 #align alist.lookup_finsupp_support AList.lookupFinsupp_support
 
 theorem lookupFinsupp_eq_iff_of_ne_zero [DecidableEq α] {l : AList fun _x : α => M} {a : α} {x : M}

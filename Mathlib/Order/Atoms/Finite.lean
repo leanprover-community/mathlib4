@@ -20,7 +20,7 @@ This module contains some results on atoms and simple lattices in the finite con
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace IsSimpleOrder
 
