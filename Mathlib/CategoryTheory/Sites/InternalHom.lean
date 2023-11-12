@@ -226,6 +226,14 @@ def internalHom (F G : Sheaf J A) : Sheaf J (Type _) where
   val := Presheaf.internalHom F.1 G.1
   cond := Presheaf.internalHom_isSheaf F.1 G.1 G.2
 
+def internalHomSectionsEquiv (F G : Sheaf J A) :
+    (internalHom F G).1.sections ≃ (F ⟶ G) :=
+  (Presheaf.internalHomSectionsEquiv F.1 G.1).trans
+    { toFun := fun f => (sheafToPresheaf J A).preimage f
+      invFun := fun f => (sheafToPresheaf J A).map f
+      left_inv := fun _ => rfl
+      right_inv := fun _ => rfl }
+
 end Sheaf
 
 namespace Presheaf
@@ -255,15 +263,40 @@ lemma familyOfElements_isCompatible (X : C) :
 
 variable (hY : J.ObjectsCoverTop Y) (hF : IsSheaf J F)
 
-/-def exists_unique_section :
+lemma exists_unique_section :
     ∃! (s : F.sections), ∀ (i : I), s.1 (Opposite.op (Y i)) = x i := by
   have H := (isSheaf_iff_isSheaf_of_type _ _).1 hF
-  let s := fun (X : C) => (H _ (hY X)).amalgamate _
-    (hx.familyOfElements_isCompatible X)
-  refine' ⟨⟨fun X => s X.unop, _⟩ , _, _⟩
-  · sorry
-  · sorry
-  · sorry-/
+  apply exists_unique_of_exists_of_unique
+  · let s := fun (X : C) => (H _ (hY X)).amalgamate _
+      (hx.familyOfElements_isCompatible X)
+    have hs : ∀ {X : C} (i : I) (f : X ⟶ Y i), s X = F.map f.op (x i) := fun {X} i f => by
+      have h := Presieve.IsSheafFor.valid_glue (H _ (hY X))
+          (hx.familyOfElements_isCompatible _) (𝟙 _) ⟨i, ⟨f⟩⟩
+      dsimp at h
+      rw [F.map_id] at h
+      exact h.trans (hx.familyOfElements_apply _ _ _)
+    have hs' : ∀ {W X : C} (a : W ⟶ X) (i : I) (_ : W ⟶ Y i), F.map a.op (s X) = s W := by
+      intro W X a i b
+      rw [hs i b]
+      exact (Presieve.IsSheafFor.valid_glue (H _ (hY X))
+        (hx.familyOfElements_isCompatible _) a ⟨i, ⟨b⟩⟩).trans (familyOfElements_apply hx _ _ _)
+    refine' ⟨⟨fun X => s X.unop, _⟩, fun i => (hs i (𝟙 (Y i))).trans (by simp)⟩
+    rintro ⟨Y₁⟩ ⟨Y₂⟩ ⟨f : Y₂ ⟶ Y₁⟩
+    change F.map f.op (s Y₁) = s Y₂
+    apply (Presieve.isSeparated_of_isSheaf J F H _ (hY Y₂)).ext
+    rintro Z φ ⟨i, ⟨g⟩⟩
+    rw [hs' φ i g, ← hs' (φ ≫ f) i g, op_comp, F.map_comp]
+    rfl
+  · intro y₁ y₂ h₁ h₂
+    ext ⟨X⟩
+    apply (Presieve.isSeparated_of_isSheaf J F H _ (hY X)).ext
+    rintro W a ⟨i, ⟨b⟩⟩
+    erw [y₁.2 a.op, y₂.2 a.op, ← y₁.2 b.op, ← y₂.2 b.op, h₁ i, h₂ i]
+
+noncomputable def section_ : F.sections := (hx.exists_unique_section hY hF).choose
+
+lemma section_apply (i : I) : (hx.section_ hY hF).1 (Opposite.op (Y i)) = x i :=
+  (hx.exists_unique_section hY hF).choose_spec.1 i
 
 end IsCompatible
 
@@ -278,7 +311,17 @@ variable {F G : Sheaf J A} (φ : F ⟶ G) {I : Type*} (Y : I → C)
 /-lemma isIso_of_isIso_pullback (hY : J.ObjectsCoverTop Y)
     (hφ : ∀ (i : I), IsIso ((J.overPullback A (Y i)).map φ)) :
     IsIso φ := by
-  sorry-/
+  let e : ∀ (i : I), ((J.overPullback A (Y i)).obj F) ≅
+    ((J.overPullback A (Y i)).obj G) := fun i =>
+      asIso ((J.overPullback A (Y i)).map φ)
+  let f : Presheaf.FamilyOfElementsOnObjects (internalHom G F).1 Y :=
+    fun i => (sheafToPresheaf (J.over (Y i)) A).map (e i).inv
+  have hf : f.IsCompatible := sorry
+  let α := (internalHomSectionsEquiv G F).1
+    (hf.section_ hY (Presheaf.internalHom_isSheaf G.1 F.1 F.2))
+  refine' ⟨α, _, _⟩
+  · sorry
+  · sorry-/
 
 end Sheaf
 
