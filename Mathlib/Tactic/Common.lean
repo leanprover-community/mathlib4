@@ -124,7 +124,7 @@ set_option linter.unreachableTactic false
 register_hint split
 register_hint intro
 register_hint decide
-register_hint simp_all
+register_hint simp_all?
 register_hint exact?
 -- Waiting on https://github.com/leanprover-community/aesop/issues/85
 -- register_hint aesop
