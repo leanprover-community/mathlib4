@@ -99,6 +99,12 @@ theorem haveLebesgueDecomposition_spec (μ ν : Measure α) [h : HaveLebesgueDec
   exact Classical.choose_spec h.lebesgue_decomposition
 #align measure_theory.measure.have_lebesgue_decomposition_spec MeasureTheory.Measure.haveLebesgueDecomposition_spec
 
+instance instHaveLebesgueDecomposition_zero_left : HaveLebesgueDecomposition 0 ν where
+  lebesgue_decomposition := ⟨⟨0, 0⟩, measurable_zero, MutuallySingular.zero_left, by simp⟩
+
+instance instHaveLebesgueDecomposition_zero_right : HaveLebesgueDecomposition μ 0 where
+  lebesgue_decomposition := ⟨⟨μ, 0⟩, measurable_zero, MutuallySingular.zero_right, by simp⟩
+
 theorem haveLebesgueDecomposition_add (μ ν : Measure α) [HaveLebesgueDecomposition μ ν] :
     μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν) :=
   (haveLebesgueDecomposition_spec μ ν).2.2
@@ -150,6 +156,10 @@ theorem mutuallySingular_singularPart (μ ν : Measure α) : μ.singularPart ν 
     exact MutuallySingular.zero_left
 #align measure_theory.measure.mutually_singular_singular_part MeasureTheory.Measure.mutuallySingular_singularPart
 
+instance instHaveLebesgueDecomposition_singularPart [HaveLebesgueDecomposition μ ν] :
+    HaveLebesgueDecomposition (μ.singularPart ν) ν :=
+  ⟨⟨μ.singularPart ν, 0⟩, measurable_zero, mutuallySingular_singularPart μ ν, by simp⟩
+
 theorem singularPart_le (μ ν : Measure α) : μ.singularPart ν ≤ μ := by
   by_cases hl : HaveLebesgueDecomposition μ ν
   · cases' (haveLebesgueDecomposition_spec μ ν).2 with _ h
@@ -167,6 +177,20 @@ theorem withDensity_rnDeriv_le (μ ν : Measure α) : ν.withDensity (μ.rnDeriv
   · rw [rnDeriv, dif_neg hl, withDensity_zero]
     exact Measure.zero_le μ
 #align measure_theory.measure.with_density_rn_deriv_le MeasureTheory.Measure.withDensity_rnDeriv_le
+
+lemma _root_.AEMeasurable.singularPart {β : Type*} {_ : MeasurableSpace β} {f : α → β}
+    (hf : AEMeasurable f μ) (ν : Measure α) :
+    AEMeasurable f (μ.singularPart ν) :=
+  AEMeasurable.mono_measure hf (Measure.singularPart_le _ _)
+
+lemma _root_.AEMeasurable.withDensity_rnDeriv {β : Type*} {_ : MeasurableSpace β} {f : α → β}
+    (hf : AEMeasurable f μ) (ν : Measure α) :
+    AEMeasurable f (ν.withDensity (μ.rnDeriv ν)) :=
+  AEMeasurable.mono_measure hf (Measure.withDensity_rnDeriv_le _ _)
+
+lemma MutuallySingular.singularPart (h : μ ⟂ₘ ν) (ν' : Measure α) :
+    μ.singularPart ν' ⟂ₘ ν :=
+  h.mono (singularPart_le μ ν') le_rfl
 
 lemma absolutelyContinuous_withDensity_rnDeriv {μ ν : Measure α} [HaveLebesgueDecomposition ν μ]
     (hμν : μ ≪ ν) :
@@ -205,12 +229,21 @@ lemma rnDeriv_eq_zero (μ ν : Measure α) [μ.HaveLebesgueDecomposition ν] :
   rw [← withDensity_rnDeriv_eq_zero,
     withDensity_eq_zero_iff (measurable_rnDeriv _ _).aemeasurable]
 
+lemma rnDeriv_zero (ν : Measure α) : (0 : Measure α).rnDeriv ν =ᵐ[ν] 0 := by
+  rw [rnDeriv_eq_zero]
+  exact MutuallySingular.zero_left
+
 lemma MutuallySingular.rnDeriv_ae_eq_zero {μ ν : Measure α} (hμν : μ ⟂ₘ ν) :
     μ.rnDeriv ν =ᵐ[ν] 0 := by
   by_cases h : μ.HaveLebesgueDecomposition ν
   · rw [rnDeriv_eq_zero]
     exact hμν
   · rw [rnDeriv_of_not_haveLebesgueDecomposition h]
+
+lemma rnDeriv_singularPart (μ ν : Measure α) [μ.HaveLebesgueDecomposition ν] :
+    (μ.singularPart ν).rnDeriv ν =ᵐ[ν] 0 := by
+  rw [rnDeriv_eq_zero]
+  exact mutuallySingular_singularPart μ ν
 
 instance singularPart.instIsFiniteMeasure [IsFiniteMeasure μ] :
     IsFiniteMeasure (μ.singularPart ν) :=
@@ -471,11 +504,11 @@ theorem rnDeriv_withDensity (ν : Measure α) [SigmaFinite ν] {f : α → ℝ�
 
 /-- The Radon-Nikodym derivative of the restriction of a measure to a measurable set is the
 indicator function of this set. -/
-theorem rnDeriv_restrict (ν : Measure α) [SigmaFinite ν] {s : Set α} (hs : MeasurableSet s) :
+theorem rnDeriv_restrict_self (ν : Measure α) [SigmaFinite ν] {s : Set α} (hs : MeasurableSet s) :
     (ν.restrict s).rnDeriv ν =ᵐ[ν] s.indicator 1 := by
   rw [← withDensity_indicator_one hs]
   exact rnDeriv_withDensity _ (measurable_one.indicator hs)
-#align measure_theory.measure.rn_deriv_restrict MeasureTheory.Measure.rnDeriv_restrict
+#align measure_theory.measure.rn_deriv_restrict MeasureTheory.Measure.rnDeriv_restrict_self
 
 /-- Radon-Nikodym derivative of the scalar multiple of a measure.
 See also `rnDeriv_smul_left'`, which requires sigma-finite `ν` and `μ`. -/
@@ -1028,6 +1061,12 @@ lemma rnDeriv_add' (ν₁ ν₂ μ : Measure α) [SigmaFinite ν₁] [SigmaFinit
       ← ν₂.haveLebesgueDecomposition_add μ, ← add_assoc, ← ν₁.haveLebesgueDecomposition_add μ]
   · exact (measurable_rnDeriv _ _).aemeasurable
   · exact ((measurable_rnDeriv _ _).add (measurable_rnDeriv _ _)).aemeasurable
+
+lemma rnDeriv_add_of_mutuallySingular (ν₁ ν₂ μ : Measure α)
+    [SigmaFinite ν₁] [SigmaFinite ν₂] [SigmaFinite μ] (h : ν₂ ⟂ₘ μ) :
+    (ν₁ + ν₂).rnDeriv μ =ᵐ[μ] ν₁.rnDeriv μ := by
+  filter_upwards [rnDeriv_add' ν₁ ν₂ μ, (rnDeriv_eq_zero ν₂ μ).mpr h] with x hx_add hx_zero
+  simp [hx_add, hx_zero]
 
 end rnDeriv
 
