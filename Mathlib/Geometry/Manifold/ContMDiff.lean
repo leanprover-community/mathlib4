@@ -1214,7 +1214,7 @@ variable {c : M'}
 theorem contMDiff_const : ContMDiff I I' n fun _ : M => c := by
   intro x
   refine' ⟨continuousWithinAt_const, _⟩
-  simp only [ContDiffWithinAtProp, (· ∘ ·)]
+  simp only [ContDiffWithinAtProp, Function.comp_def]
   exact contDiffWithinAt_const
 #align cont_mdiff_const contMDiff_const
 
@@ -1758,7 +1758,7 @@ theorem contMDiffWithinAt_pi_space :
   -- Porting note: `simp` fails to apply it on the LHS
   rw [contMDiffWithinAt_iff]
   simp only [contMDiffWithinAt_iff, continuousWithinAt_pi, contDiffWithinAt_pi, forall_and,
-    writtenInExtChartAt, extChartAt_model_space_eq_id, (· ∘ ·), LocalEquiv.refl_coe, id]
+    writtenInExtChartAt, extChartAt_model_space_eq_id, Function.comp_def, LocalEquiv.refl_coe, id]
 #align cont_mdiff_within_at_pi_space contMDiffWithinAt_pi_space
 
 theorem contMDiffOn_pi_space :

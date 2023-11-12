@@ -356,7 +356,7 @@ theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs
         simp only [Prod.toSigma, List.mem_map, heq_iff_eq, Prod.exists] at h₃
         rcases h₃ with ⟨a, b, h₃, h₄, h₅⟩
         apply (List.mem_zip h₃).2
-        simp only [List.NodupKeys, List.keys, comp, Prod.fst_toSigma, List.map_map]
+        simp only [List.NodupKeys, List.keys, comp_def, Prod.fst_toSigma, List.map_map]
         rwa [List.map_fst_zip _ _ (le_of_eq h₆)]
 #align slim_check.injective_function.apply_id_mem_iff SlimCheck.InjectiveFunction.applyId_mem_iff
 
@@ -457,9 +457,9 @@ protected def shrink {α : Type} [DecidableEq α] :
     have h₄ : ys'.length ≤ xs'.length := le_of_eq (List.Perm.length_eq h₀.symm)
     pure
       ⟨(List.zip xs' ys').map Prod.toSigma,
-        by simp only [comp, List.map_fst_zip, List.map_snd_zip, *, Prod.fst_toSigma,
+        by simp only [comp_def, List.map_fst_zip, List.map_snd_zip, *, Prod.fst_toSigma,
           Prod.snd_toSigma, List.map_map],
-        by simp only [comp, List.map_snd_zip, *, Prod.snd_toSigma, List.map_map]⟩
+        by simp only [comp_def, List.map_snd_zip, *, Prod.snd_toSigma, List.map_map]⟩
 #align slim_check.injective_function.shrink SlimCheck.InjectiveFunction.shrink
 
 /-- Create an injective function from one list and a permutation of that list. -/
@@ -468,9 +468,9 @@ protected def mk (xs ys : List α) (h : xs ~ ys) (h' : ys.Nodup) : InjectiveFunc
   have h₁ : ys.length ≤ xs.length := le_of_eq h.length_eq.symm
   InjectiveFunction.mapToSelf (List.toFinmap' (xs.zip ys))
     (by
-      simp only [List.toFinmap', comp, List.map_fst_zip, List.map_snd_zip, *, Prod.fst_toSigma,
+      simp only [List.toFinmap', comp_def, List.map_fst_zip, List.map_snd_zip, *, Prod.fst_toSigma,
         Prod.snd_toSigma, List.map_map])
-    (by simp only [List.toFinmap', comp, List.map_snd_zip, *, Prod.snd_toSigma, List.map_map])
+    (by simp only [List.toFinmap', comp_def, List.map_snd_zip, *, Prod.snd_toSigma, List.map_map])
 #align slim_check.injective_function.mk SlimCheck.InjectiveFunction.mk
 
 protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Injective (apply f) := by

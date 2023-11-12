@@ -419,7 +419,7 @@ theorem biproduct.map_lift_mapBiprod (g : ∀ j, W ⟶ f j) :
     haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
     F.map (biproduct.lift g) ≫ (F.mapBiproduct f).hom = biproduct.lift fun j => F.map (g j) := by
   ext j
-  dsimp only [Function.comp]
+  dsimp only [Function.comp_def]
   haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
   simp only [mapBiproduct_hom, Category.assoc, biproduct.lift_π, ← F.map_comp]
 #align category_theory.limits.biproduct.map_lift_map_biprod CategoryTheory.Limits.biproduct.map_lift_mapBiprod

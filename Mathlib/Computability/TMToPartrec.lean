@@ -270,7 +270,7 @@ theorem exists_code.comp {m n} {f : Vector ℕ n →. ℕ} {g : Fin n → Vector
   · obtain ⟨cf, hf⟩ := hf
     exact
       ⟨cf.comp cg, fun v => by
-        simp [hg, hf, map_bind, seq_bind_eq, Function.comp]
+        simp [hg, hf, map_bind, seq_bind_eq, Function.comp_def]
         rfl⟩
   clear hf f; induction' n with n IH
   · exact ⟨nil, fun v => by simp [Vector.mOfFn, Bind.bind]; rfl⟩

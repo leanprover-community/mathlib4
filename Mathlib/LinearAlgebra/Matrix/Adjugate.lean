@@ -175,7 +175,7 @@ theorem cramer_submatrix_equiv (A : Matrix m m α) (e : n ≃ m) (b : n → α) 
     cramer (A.submatrix e e) b = cramer A (b ∘ e.symm) ∘ e := by
   ext i
   simp_rw [Function.comp_apply, cramer_apply, updateColumn_submatrix_equiv,
-    det_submatrix_equiv_self e, Function.comp]
+    det_submatrix_equiv_self e, Function.comp_def]
 #align matrix.cramer_submatrix_equiv Matrix.cramer_submatrix_equiv
 
 theorem cramer_reindex (e : m ≃ n) (A : Matrix m m α) (b : n → α) :

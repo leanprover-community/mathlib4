@@ -104,7 +104,7 @@ theorem semiconj_of_isLUB [PartialOrder α] [Group G] (f₁ f₂ : G →* α ≃
   refine' fun y => (H _).unique _
   have := (f₁ g).leftOrdContinuous (H y)
   rw [← range_comp, ← (Equiv.mulRight g).surjective.range_comp _] at this
-  simpa [(· ∘ ·)] using this
+  simpa [Function.comp_def] using this
 #align function.semiconj_of_is_lub Function.semiconj_of_isLUB
 
 /-- Consider two actions `f₁ f₂ : G → α → α` of a group on a complete lattice by order

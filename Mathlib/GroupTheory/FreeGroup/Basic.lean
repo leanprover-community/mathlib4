@@ -558,8 +558,8 @@ theorem invRev_length : (invRev L₁).length = L₁.length := by simp [invRev]
 #align free_add_group.neg_rev_length FreeAddGroup.negRev_length
 
 @[to_additive (attr := simp)]
-theorem invRev_invRev : invRev (invRev L₁) = L₁ :=
-  by simp [invRev, List.map_reverse, (· ∘ ·)]
+theorem invRev_invRev : invRev (invRev L₁) = L₁ := by
+  simp [invRev, List.map_reverse, Function.comp_def]
 #align free_group.inv_rev_inv_rev FreeGroup.invRev_invRev
 #align free_add_group.neg_rev_neg_rev FreeAddGroup.negRev_negRev
 
@@ -813,7 +813,7 @@ theorem map.id' (x : FreeGroup α) : map (fun z => z) x = x :=
 @[to_additive]
 theorem map.comp {γ : Type w} (f : α → β) (g : β → γ) (x) :
     map g (map f x) = map (g ∘ f) x := by
-  rcases x with ⟨L⟩; simp [(· ∘ ·)]
+  rcases x with ⟨L⟩; simp [Function.comp_def]
 #align free_group.map.comp FreeGroup.map.comp
 #align free_add_group.map.comp FreeAddGroup.map.comp
 
