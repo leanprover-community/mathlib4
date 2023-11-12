@@ -24,7 +24,7 @@ subtypes `selfAdjoint A` and `unitary A`.
 section Star
 
 variable {A : Type _} [NormedRing A] [NormedAlgebra ℂ A] [StarRing A] [ContinuousStar A]
-  [CompleteSpace A] [StarModule ℂ A]
+  [CompleteSpace A] [Algebra ℚ A] [StarModule ℂ A]
 
 open Complex
 
@@ -32,8 +32,8 @@ open Complex
 over ℂ. -/
 @[simps]
 noncomputable def selfAdjoint.expUnitary (a : selfAdjoint A) : unitary A :=
-  ⟨exp ℂ ((I • a.val) : A),
-      exp_mem_unitary_of_mem_skewAdjoint _ (a.prop.smul_mem_skewAdjoint conj_I)⟩
+  ⟨exp ((I • a.val) : A),
+      exp_mem_unitary_of_mem_skewAdjoint ℂ (a.prop.smul_mem_skewAdjoint conj_I)⟩
 #align self_adjoint.exp_unitary selfAdjoint.expUnitary
 
 open selfAdjoint
@@ -44,7 +44,7 @@ theorem Commute.expUnitary_add {a b : selfAdjoint A} (h : Commute (a : A) (b : A
   have hcomm : Commute (I • (a : A)) (I • (b : A)) := by
     unfold Commute SemiconjBy
     simp only [h.eq, Algebra.smul_mul_assoc, Algebra.mul_smul_comm]
-  simpa only [expUnitary_coe, AddSubgroup.coe_add, smul_add] using exp_add_of_commute hcomm
+  simpa only [expUnitary_coe, AddSubgroup.coe_add, smul_add] using exp_add_of_commute ℂ hcomm
 #align commute.exp_unitary_add Commute.expUnitary_add
 
 theorem Commute.expUnitary {a b : selfAdjoint A} (h : Commute (a : A) (b : A)) :
