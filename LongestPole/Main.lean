@@ -101,25 +101,25 @@ def speedCenterRunResponse (run : String) : IO SpeedCenterRunResponse := do
     | .error e => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{j}"
 
 /-- Look up recent speed center runs, return as HashMap of commit shas to speed center ids. -/
-def speedCenterRuns : IO (HashMap String String) := do
+def speedCenterRuns : IO (List (String × String)) := do
   let r ← speedCenterRecentRunsJson
   match Json.parse r with
   | .error e => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{r}"
   | .ok j => match fromJson? j with
-    | .ok (v : SpeedCenterRuns) => do
-      let mut m := ∅
-      for run in v.runs do
-        m := m.insert run.run.source.source.hash run.run.id
-      return m
+    | .ok (v : SpeedCenterRuns) => return v.runs.map fun m => (m.run.source.source.hash, m.run.id)
     | .error e => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{j}"
 
 def runForThisCommit : IO String := do
-  let hash ← runCmd "git" #["rev-parse", "HEAD"]
-  let map ← speedCenterRuns
-  match map.find? hash.trim with
+  let hash := (← runCmd "git" #["rev-parse", "HEAD"]).trim
+  let runs ← speedCenterRuns
+  match runs.find? (·.1 = hash) with
   | none =>
-    throw <| IO.userError s!"Could not find speed center run for commit {hash}:\n{map.toList}"
-  | some r => return r
+    let table := "\n".intercalate <| runs.take 10 |>.map fun r => r.1 ++ " " ++ r.2
+    IO.eprintln s!"Could not find speed center run for commit {hash}."
+    IO.eprintln "Try one of these commits?"
+    IO.eprintln table
+    IO.Process.exit 1
+  | some (_, r) => return r
 
 def speedCenterInstructions (run : String) : IO (NameMap Float) :=
   return (← speedCenterRunResponse run).instructions
