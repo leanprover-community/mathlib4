@@ -23,7 +23,7 @@ open scoped Pointwise
 
 Note that the subset operations below only cover the cases with the largest possible intervals on
 the LHS: to conclude that `Ioo a b * Ioo c d ⊆ Ioo (a * c) (c * d)`, you can use monotonicity of `*`
-and `Set.Ico_mul_Ioc_subset`.
+and `Finset.Ico_mul_Ioc_subset`.
 
 TODO: repeat these lemmas for the generality of `mul_le_mul` (which assumes nonnegativity), which
 the unprimed names have been reserved for
