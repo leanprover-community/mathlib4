@@ -124,7 +124,7 @@ def Foldl.ofFreeMonoid (f : β → α → β) : FreeMonoid α →* Monoid.Foldl 
   map_one' := rfl
   map_mul' := by
     intros
-    simp only [FreeMonoid.toList_mul, Function.flip_def, unop_op,
+    simp only [FreeMonoid.toList_mul, flip, unop_op,
       List.foldl_append, op_inj]; rfl
 #align monoid.foldl.of_free_monoid Monoid.Foldl.ofFreeMonoid
 
@@ -340,7 +340,7 @@ theorem toList_spec (xs : t α) : toList xs = FreeMonoid.toList (foldMap FreeMon
       _ = FreeMonoid.toList (List.foldr cons [] (foldMap FreeMonoid.of xs).reverse).reverse :=
           by simp only [List.foldr_eta]
       _ = (unop (Foldl.ofFreeMonoid (flip cons) (foldMap FreeMonoid.of xs)) []).reverse :=
-          by simp [Function.flip_def, List.foldr_reverse, Foldl.ofFreeMonoid, unop_op]
+          by simp [flip, List.foldr_reverse, Foldl.ofFreeMonoid, unop_op]
       _ = toList xs :=
           by rw [foldMap_hom_free (Foldl.ofFreeMonoid (flip <| @cons α))]
              simp only [toList, foldl, List.reverse_inj, Foldl.get, foldl.ofFreeMonoid_comp_of,
