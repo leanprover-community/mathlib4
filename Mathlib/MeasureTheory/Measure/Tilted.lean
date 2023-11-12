@@ -49,120 +49,6 @@ lemma integral_exp_pos {μ : Measure α} {f : α → ℝ} [hμ : NeZero μ]
   simp only [Function.mem_support, ne_eq, Set.mem_univ, iff_true]
   exact (exp_pos _).ne'
 
-section withDensity
-
-lemma todo_left (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
-    {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
-    ((ν.withDensity (μ.rnDeriv ν)).withDensity f).rnDeriv ν =ᵐ[ν] (μ.withDensity f).rnDeriv ν := by
-  let μ' := ν.withDensity (μ.rnDeriv ν)
-  change (μ'.withDensity f).rnDeriv ν =ᵐ[ν] (μ.withDensity f).rnDeriv ν
-  rw [μ.haveLebesgueDecomposition_add ν, withDensity_add_measure]
-  have : SigmaFinite ((μ.singularPart ν).withDensity f) := by
-    refine SigmaFinite.withDensity_of_ne_top ?_ ?_
-    · exact hf.singularPart ν
-    · exact (Measure.absolutelyContinuous_of_le (Measure.singularPart_le _ _)).ae_le hf_ne_top
-  have : SigmaFinite (μ'.withDensity f) := by
-    refine SigmaFinite.withDensity_of_ne_top ?_ ?_
-    · exact hf.withDensity_rnDeriv ν
-    · refine (Measure.absolutelyContinuous_of_le ?_).ae_le hf_ne_top
-      exact Measure.withDensity_rnDeriv_le _ _
-  have h := Measure.rnDeriv_add' ((μ.singularPart ν).withDensity f) (μ'.withDensity f) ν
-  refine (h.trans ?_).symm
-  suffices ((μ.singularPart ν).withDensity f).rnDeriv ν =ᵐ[ν] 0 by
-    filter_upwards [this] with x hx using by simp [hx]
-  rw [Measure.rnDeriv_eq_zero]
-  exact (Measure.mutuallySingular_singularPart μ ν).withDensity
-
-lemma todo_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] {f : α → ℝ≥0∞}
-    (hf : AEMeasurable f ν) (hf_ne_zero : ∀ᵐ x ∂ν, f x ≠ 0) (hf_ne_top : ∀ᵐ x ∂ν, f x ≠ ∞) :
-    (ν.withDensity (μ.rnDeriv ν)).rnDeriv (ν.withDensity f) =ᵐ[ν] μ.rnDeriv (ν.withDensity f) := by
-  conv_rhs => rw [μ.haveLebesgueDecomposition_add ν]
-  have hν_ac : ν ≪ ν.withDensity f := withDensity_absolutelyContinuous' hf hf_ne_zero hf_ne_top
-  have : SigmaFinite (ν.withDensity f) :=
-    SigmaFinite.withDensity_of_ne_top hf hf_ne_top
-  have h_add : (μ.singularPart ν + ν.withDensity (μ.rnDeriv ν)).rnDeriv (ν.withDensity f)
-      =ᵐ[ν] (μ.singularPart ν).rnDeriv (ν.withDensity f) + _ :=
-    hν_ac.ae_le (Measure.rnDeriv_add' (μ.singularPart ν) (ν.withDensity (μ.rnDeriv ν))
-      (ν.withDensity f))
-  refine (h_add.trans ?_).symm
-  suffices (μ.singularPart ν).rnDeriv (ν.withDensity f) =ᵐ[ν] 0 by
-    filter_upwards [this] with x hx
-    rw [Pi.add_apply, hx, Pi.zero_apply, zero_add]
-  refine hν_ac.ae_le ?_
-  refine Measure.MutuallySingular.rnDeriv_ae_eq_zero ?_
-  exact Measure.MutuallySingular.mono_ac (μ.mutuallySingular_singularPart ν)
-    Measure.AbsolutelyContinuous.rfl (withDensity_absolutelyContinuous _ _)
-
-lemma rnDeriv_withDensity_left_of_absolutelyContinuous {ν : Measure α} [SigmaFinite μ]
-    [SigmaFinite ν] (hμν : μ ≪ ν) {f : α → ℝ≥0∞} (hf : AEMeasurable f ν) :
-    (μ.withDensity f).rnDeriv ν =ᵐ[ν] fun x ↦ f x * μ.rnDeriv ν x := by
-  refine (Measure.eq_rnDeriv₀ ?_ Measure.MutuallySingular.zero_left ?_).symm
-  · exact hf.mul (Measure.measurable_rnDeriv _ _).aemeasurable
-  · ext1 s hs
-    rw [zero_add, withDensity_apply _ hs, withDensity_apply _ hs]
-    conv_lhs => rw [← Measure.withDensity_rnDeriv_eq _ _ hμν]
-    rw [set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable₀ _ _ _ hs]
-    · congr with x
-      rw [mul_comm]
-      simp only [Pi.mul_apply]
-    · refine ae_restrict_of_ae ?_
-      exact Measure.rnDeriv_lt_top _ _
-    · exact (Measure.measurable_rnDeriv _ _).aemeasurable
-
-lemma rnDeriv_withDensity_left {μ ν : Measure α} [SigmaFinite μ] [SigmaFinite ν]
-    {f : α → ℝ≥0∞} (hfμ : AEMeasurable f μ) (hfν : AEMeasurable f ν)
-    (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
-    (μ.withDensity f).rnDeriv ν =ᵐ[ν] fun x ↦ f x * μ.rnDeriv ν x := by
-  let μ' := ν.withDensity (μ.rnDeriv ν)
-  have hμ'ν : μ' ≪ ν := withDensity_absolutelyContinuous _ _
-  have h := rnDeriv_withDensity_left_of_absolutelyContinuous hμ'ν hfν
-  have h1 : μ'.rnDeriv ν =ᵐ[ν] μ.rnDeriv ν :=
-    Measure.rnDeriv_withDensity _ (Measure.measurable_rnDeriv _ _)
-  have h2 : (μ'.withDensity f).rnDeriv ν =ᵐ[ν] (μ.withDensity f).rnDeriv ν := by
-    exact todo_left μ ν hfμ hf_ne_top
-  filter_upwards [h, h1, h2] with x hx hx1 hx2
-  rw [← hx2, hx, hx1]
-
-lemma rnDeriv_withDensity_right_of_absolutelyContinuous {ν : Measure α} [SigmaFinite μ]
-    [SigmaFinite ν] (hμν : μ ≪ ν) {f : α → ℝ≥0∞} (hf : AEMeasurable f ν)
-    (hf_ne_zero : ∀ᵐ x ∂ν, f x ≠ 0) (hf_ne_top : ∀ᵐ x ∂ν, f x ≠ ∞) :
-    μ.rnDeriv (ν.withDensity f) =ᵐ[ν] fun x ↦ (f x)⁻¹ * μ.rnDeriv ν x := by
-  have : SigmaFinite (ν.withDensity f) := SigmaFinite.withDensity_of_ne_top hf hf_ne_top
-  refine (withDensity_absolutelyContinuous' hf hf_ne_zero hf_ne_top).ae_le ?_
-  refine (Measure.eq_rnDeriv₀ (ν := ν.withDensity f) ?_ Measure.MutuallySingular.zero_left ?_).symm
-  · refine AEMeasurable.mul ?_ (Measure.measurable_rnDeriv _ _).aemeasurable
-    exact AEMeasurable.mono_ac hf.inv (withDensity_absolutelyContinuous _ _)
-  · ext1 s hs
-    conv_lhs => rw [← Measure.withDensity_rnDeriv_eq _ _ hμν]
-    rw [zero_add, withDensity_apply _ hs, withDensity_apply _ hs]
-    rw [set_lintegral_withDensity_eq_set_lintegral_mul_non_measurable₀ _ _ _ hs]
-    · simp only [Pi.mul_apply]
-      have : (fun a ↦ f a * ((f a)⁻¹ * μ.rnDeriv ν a)) =ᵐ[ν] μ.rnDeriv ν := by
-        filter_upwards [hf_ne_zero, hf_ne_top] with x hx1 hx2
-        simp [← mul_assoc, ENNReal.mul_inv_cancel, hx1, hx2]
-      rw [lintegral_congr_ae (ae_restrict_of_ae this)]
-    · refine ae_restrict_of_ae ?_
-      filter_upwards [hf_ne_top] with x hx using hx.lt_top
-    · exact hf.restrict
-
-lemma rnDeriv_withDensity_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
-    {f : α → ℝ≥0∞} (hf : AEMeasurable f ν) (hf_ne_zero : ∀ᵐ x ∂ν, f x ≠ 0)
-    (hf_ne_top : ∀ᵐ x ∂ν, f x ≠ ∞) :
-    μ.rnDeriv (ν.withDensity f) =ᵐ[ν] fun x ↦ (f x)⁻¹ * μ.rnDeriv ν x := by
-  let μ' := ν.withDensity (μ.rnDeriv ν)
-  have h₁ : μ'.rnDeriv (ν.withDensity f) =ᵐ[ν] μ.rnDeriv (ν.withDensity f) :=
-    todo_right μ ν hf hf_ne_zero hf_ne_top
-  have h₂ : μ.rnDeriv ν =ᵐ[ν] μ'.rnDeriv ν :=
-    (Measure.rnDeriv_withDensity _ (Measure.measurable_rnDeriv _ _)).symm
-  have : SigmaFinite μ' := SigmaFinite.withDensity_of_ne_top
-    (Measure.measurable_rnDeriv _ _).aemeasurable (Measure.rnDeriv_ne_top _ _)
-  have hμ' := rnDeriv_withDensity_right_of_absolutelyContinuous
-    (withDensity_absolutelyContinuous ν (μ.rnDeriv ν)) hf hf_ne_zero hf_ne_top
-  filter_upwards [h₁, h₂, hμ'] with x hx₁ hx₂ hx_eq
-  rw [← hx₁, hx₂, hx_eq]
-
-end withDensity
-
 section logIntegralExp
 
 /-- The quantity `log (∫ x, exp (f x) ∂μ)`. -/
@@ -370,7 +256,7 @@ lemma rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν
     (hf : AEMeasurable f ν) :
     μ.rnDeriv (ν.tilted f)
       =ᵐ[ν] fun x ↦ ENNReal.ofReal (exp (- f x + logIntegralExp ν f)) * μ.rnDeriv ν x := by
-  refine (rnDeriv_withDensity_right μ ν ?_ ?_ ?_).trans ?_
+  refine (Measure.rnDeriv_withDensity_right μ ν ?_ ?_ ?_).trans ?_
   · exact measurable_exp.ennreal_ofReal.comp_aemeasurable (hf.sub aemeasurable_const)
   · refine ae_of_all _ ?_
     simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
@@ -397,7 +283,7 @@ lemma rnDeriv_tilted_left {ν : Measure α} [SigmaFinite μ] [SigmaFinite ν]
     (μ.tilted f).rnDeriv ν
       =ᵐ[ν] fun x ↦ ENNReal.ofReal (exp (f x - logIntegralExp μ f)) * μ.rnDeriv ν x := by
   let g := fun x ↦ ENNReal.ofReal (exp (f x - logIntegralExp μ f))
-  refine rnDeriv_withDensity_left (μ := μ) (ν := ν) (f := g) ?_ ?_ ?_
+  refine Measure.rnDeriv_withDensity_left (μ := μ) (ν := ν) (f := g) ?_ ?_ ?_
   · exact measurable_exp.ennreal_ofReal.comp_aemeasurable (hfμ.sub aemeasurable_const)
   · exact measurable_exp.ennreal_ofReal.comp_aemeasurable (hfν.sub aemeasurable_const)
   · exact ae_of_all _ (fun x ↦ by simp)
