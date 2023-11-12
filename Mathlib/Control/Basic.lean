@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Init.Control.Combinators
-import Mathlib.Logic.Function.Basic
+import Mathlib.Init.Function
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Attr.Core
 import Std.Data.List.Basic

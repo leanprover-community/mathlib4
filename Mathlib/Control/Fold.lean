@@ -123,9 +123,7 @@ def Foldl.ofFreeMonoid (f : β → α → β) : FreeMonoid α →* Monoid.Foldl 
   toFun xs := op <| flip (List.foldl f) (FreeMonoid.toList xs)
   map_one' := rfl
   map_mul' := by
-    intros
-    simp only [FreeMonoid.toList_mul, flip, unop_op,
-      List.foldl_append, op_inj]; rfl
+    intros; simp only [FreeMonoid.toList_mul, flip, unop_op, List.foldl_append, op_inj]; rfl
 #align monoid.foldl.of_free_monoid Monoid.Foldl.ofFreeMonoid
 
 @[reducible]
