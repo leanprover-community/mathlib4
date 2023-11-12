@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sebastian Zimmer
+-/
 import Mathlib.Tactic.Core
 import Lean.LabelAttribute
 import Mathlib.Tactic.GCongr
