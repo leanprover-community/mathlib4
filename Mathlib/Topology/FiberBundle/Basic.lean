@@ -537,7 +537,7 @@ theorem localTrivAsLocalEquiv_trans (i j : ι) :
   · rintro ⟨x, v⟩ hx
     simp only [trivChange, localTrivAsLocalEquiv, LocalEquiv.symm, true_and_iff,
       Prod.mk.inj_iff, prod_mk_mem_set_prod_eq, LocalEquiv.trans_source, mem_inter_iff,
-      and_true_iff, mem_preimage, proj, mem_univ, eq_self_iff_true, (· ∘ ·),
+      and_true_iff, mem_preimage, proj, mem_univ, eq_self_iff_true, Function.comp_def,
       LocalEquiv.coe_trans, TotalSpace.proj] at hx ⊢
     simp only [Z.coordChange_comp, hx, mem_inter_iff, and_self_iff, mem_baseSet_at]
 #align fiber_bundle_core.local_triv_as_local_equiv_trans FiberBundleCore.localTrivAsLocalEquiv_trans
@@ -626,7 +626,7 @@ theorem continuous_const_section (v : F)
   refine ((Z.localTrivAt x).toLocalHomeomorph.continuousAt_iff_continuousAt_comp_left ?_).2 ?_
   · exact A
   · apply continuousAt_id.prod
-    simp only [(· ∘ ·), mfld_simps, localTrivAt_snd]
+    simp only [Function.comp_def, mfld_simps, localTrivAt_snd]
     have : ContinuousOn (fun _ : B => v) (Z.baseSet (Z.indexAt x)) := continuousOn_const
     refine (this.congr fun y hy ↦ ?_).continuousAt A
     exact h _ _ _ ⟨mem_baseSet_at _ _, hy⟩

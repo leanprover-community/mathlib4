@@ -940,13 +940,13 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
     (inter_mem _ self_mem_nhdsWithin)).congr_of_eventuallyEq _ _
   · filter_upwards [A]
     rintro x' ⟨ht, hfx'⟩
-    simp only [*, mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,
+    simp only [*, mem_preimage, writtenInExtChartAt, Function.comp_def, mem_inter_iff, e'.left_inv,
       true_and_iff]
     exact mem_range_self _
   · filter_upwards [A]
     rintro x' ⟨-, hfx'⟩
-    simp only [*, (· ∘ ·), writtenInExtChartAt, e'.left_inv]
-  · simp only [writtenInExtChartAt, (· ∘ ·), mem_extChartAt_source, e.left_inv, e'.left_inv]
+    simp only [*, Function.comp_def, writtenInExtChartAt, e'.left_inv]
+  · simp only [writtenInExtChartAt, Function.comp_def, mem_extChartAt_source, e.left_inv, e'.left_inv]
 #align cont_mdiff_within_at.comp ContMDiffWithinAt.comp
 
 /-- See note [comp_of_eq lemmas] -/

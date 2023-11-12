@@ -130,7 +130,7 @@ theorem map_hom {α β γ} [AddCommGroup β] [AddCommGroup γ] (a : FreeAbelianG
   apply lift.unique
   intro a
   show g ((lift f) (of a)) = g (f a)
-  simp only [(· ∘ ·), lift.of]
+  simp only [Function.comp_def, lift.of]
 #align free_abelian_group.lift.map_hom FreeAbelianGroup.lift.map_hom
 
 end lift

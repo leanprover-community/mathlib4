@@ -894,7 +894,7 @@ theorem Filter.EventuallyEq.iterated_fderiv_within' (h : f₁ =ᶠ[𝓝[s] x] f)
   · have : fderivWithin 𝕜 _ t =ᶠ[𝓝[s] x] fderivWithin 𝕜 _ t := ihn.fderiv_within' ht
     apply this.mono
     intro y hy
-    simp only [iteratedFDerivWithin_succ_eq_comp_left, hy, (· ∘ ·)]
+    simp only [iteratedFDerivWithin_succ_eq_comp_left, hy, Function.comp_def]
 #align filter.eventually_eq.iterated_fderiv_within' Filter.EventuallyEq.iterated_fderiv_within'
 
 protected theorem Filter.EventuallyEq.iteratedFDerivWithin (h : f₁ =ᶠ[𝓝[s] x] f) (n : ℕ) :
@@ -931,7 +931,7 @@ theorem iteratedFDerivWithin_eventually_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}�
   induction' n with n ihn generalizing x
   · rfl
   · refine' (eventually_nhds_nhdsWithin.2 h).mono fun y hy => _
-    simp only [iteratedFDerivWithin_succ_eq_comp_left, (· ∘ ·)]
+    simp only [iteratedFDerivWithin_succ_eq_comp_left, Function.comp_def]
     rw [(ihn hy).fderivWithin_eq_nhds, fderivWithin_congr_set' _ hy]
 #align iterated_fderiv_within_eventually_congr_set' iteratedFDerivWithin_eventually_congr_set'
 

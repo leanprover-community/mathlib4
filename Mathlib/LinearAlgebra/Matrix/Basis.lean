@@ -272,7 +272,7 @@ theorem Basis.toMatrix_reindex (b : Basis ι R M) (v : ι' → M) (e : ι ≃ ι
 theorem Basis.toMatrix_map (b : Basis ι R M) (f : M ≃ₗ[R] N) (v : ι → N) :
     (b.map f).toMatrix v = b.toMatrix (f.symm ∘ v) := by
   ext
-  simp only [Basis.toMatrix_apply, Basis.map, LinearEquiv.trans_apply, (· ∘ ·)]
+  simp only [Basis.toMatrix_apply, Basis.map, LinearEquiv.trans_apply, Function.comp_def]
 #align basis.to_matrix_map Basis.toMatrix_map
 
 end MulLinearMapToMatrix

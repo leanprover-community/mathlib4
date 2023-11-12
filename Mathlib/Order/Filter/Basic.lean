@@ -2164,7 +2164,7 @@ theorem map_const [NeBot f] {c : β} : (f.map fun _ => c) = pure c := by
 #align filter.map_const Filter.map_const
 
 theorem comap_comap {m : γ → β} {n : β → α} : comap m (comap n f) = comap (n ∘ m) f :=
-  Filter.coext fun s => by simp only [compl_mem_comap, image_image, (· ∘ ·)]
+  Filter.coext fun s => by simp only [compl_mem_comap, image_image, Function.comp_def]
 #align filter.comap_comap Filter.comap_comap
 
 section comm
@@ -3084,7 +3084,7 @@ theorem tendsto_comap_iff {f : α → β} {g : β → γ} {a : Filter α} {c : F
 theorem tendsto_comap'_iff {m : α → β} {f : Filter α} {g : Filter β} {i : γ → α} (h : range i ∈ f) :
     Tendsto (m ∘ i) (comap i f) g ↔ Tendsto m f g := by
   rw [Tendsto, ← map_compose]
-  simp only [(· ∘ ·), map_comap_of_mem h, Tendsto]
+  simp only [Function.comp_def, map_comap_of_mem h, Tendsto]
 #align filter.tendsto_comap'_iff Filter.tendsto_comap'_iff
 
 theorem Tendsto.of_tendsto_comp {f : α → β} {g : β → γ} {a : Filter α} {b : Filter β} {c : Filter γ}

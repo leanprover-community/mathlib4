@@ -1159,7 +1159,7 @@ theorem continuousWithinAt_iff_continuousWithinAt_comp_right {f : β → γ} {s 
     (h : x ∈ e.target) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt (f ∘ e) (e ⁻¹' s) (e.symm x) := by
   simp_rw [ContinuousWithinAt, ← @tendsto_map'_iff _ _ _ _ e,
-    e.map_nhdsWithin_preimage_eq (e.map_target h), (· ∘ ·), e.right_inv h]
+    e.map_nhdsWithin_preimage_eq (e.map_target h), Function.comp_def, e.right_inv h]
 #align local_homeomorph.continuous_within_at_iff_continuous_within_at_comp_right LocalHomeomorph.continuousWithinAt_iff_continuousWithinAt_comp_right
 
 /-- Continuity at a point can be read under right composition with a local homeomorphism, if the

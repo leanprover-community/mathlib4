@@ -826,7 +826,7 @@ protected def ωSup (c : Chain (α →𝒄 β)) : α →𝒄 β :=
     apply eq_of_forall_ge_iff; intro z
     simp only [ωSup_le_iff, (c _).continuous, Chain.map_coe, OrderHom.apply_coe, toMono_coe,
       OrderHom.omegaCompletePartialOrder_ωSup_coe, forall_forall_merge, OrderHomClass.coe_coe,
-      forall_forall_merge', (· ∘ ·), Function.eval]
+      forall_forall_merge', Function.comp_def, Function.eval]
 #align omega_complete_partial_order.continuous_hom.ωSup OmegaCompletePartialOrder.ContinuousHom.ωSup
 #align omega_complete_partial_order.continuous_hom.ωSup_apply OmegaCompletePartialOrder.ContinuousHom.ωSup_apply
 

@@ -98,7 +98,7 @@ theorem frequently_lt_rpow_neg (h : LiouvilleWith p x) (hlt : q < p) :
     ∃ᶠ n : ℕ in atTop, ∃ m : ℤ, x ≠ m / n ∧ |x - m / n| < n ^ (-q) := by
   rcases h.exists_pos with ⟨C, _hC₀, hC⟩
   have : ∀ᶠ n : ℕ in atTop, C < n ^ (p - q) := by
-    simpa only [(· ∘ ·), neg_sub, one_div] using
+    simpa only [Function.comp_def, neg_sub, one_div] using
       ((tendsto_rpow_atTop (sub_pos.2 hlt)).comp tendsto_nat_cast_atTop_atTop).eventually
         (eventually_gt_atTop C)
   refine (this.and_frequently hC).mono ?_

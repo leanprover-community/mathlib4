@@ -162,7 +162,7 @@ theorem FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto
   by_cases hx : x ∈ s;
   · exact subset_seqClosure hx
   · obtain ⟨u, hux, hus⟩ : ∃ u : ℕ → X, Tendsto u atTop (𝓝 x) ∧ ∃ᶠ x in atTop, u x ∈ s
-    · simpa only [ContinuousAt, hx, tendsto_nhds_true, (· ∘ ·), ← not_frequently, exists_prop,
+    · simpa only [ContinuousAt, hx, tendsto_nhds_true, Function.comp_def, ← not_frequently, exists_prop,
         ← mem_closure_iff_frequently, hcx, imp_false, not_forall, not_not] using h (· ∉ s) x
     rcases extraction_of_frequently_atTop hus with ⟨φ, φ_mono, hφ⟩
     exact ⟨u ∘ φ, hφ, hux.comp φ_mono.tendsto_atTop⟩

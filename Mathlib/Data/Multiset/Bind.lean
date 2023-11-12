@@ -352,7 +352,7 @@ theorem mem_sigma {s t} : ∀ {p : Σa, σ a}, p ∈ @Multiset.sigma α σ s t �
 
 @[simp]
 theorem card_sigma : card (s.sigma t) = sum (map (fun a => card (t a)) s) := by
-  simp [Multiset.sigma, (· ∘ ·)]
+  simp [Multiset.sigma, Function.comp_def]
 #align multiset.card_sigma Multiset.card_sigma
 
 end Sigma

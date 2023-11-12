@@ -203,12 +203,12 @@ variable [PseudoEMetricSpace α] {f g : α → ℝ} {Kf Kg : ℝ≥0}
 
 protected theorem max (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
     LipschitzWith (max Kf Kg) fun x => max (f x) (g x) := by
-  simpa only [(· ∘ ·), one_mul] using lipschitzWith_max.comp (hf.prod hg)
+  simpa only [Function.comp_def, one_mul] using lipschitzWith_max.comp (hf.prod hg)
 #align lipschitz_with.max LipschitzWith.max
 
 protected theorem min (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
     LipschitzWith (max Kf Kg) fun x => min (f x) (g x) := by
-  simpa only [(· ∘ ·), one_mul] using lipschitzWith_min.comp (hf.prod hg)
+  simpa only [Function.comp_def, one_mul] using lipschitzWith_min.comp (hf.prod hg)
 #align lipschitz_with.min LipschitzWith.min
 
 theorem max_const (hf : LipschitzWith Kf f) (a : ℝ) : LipschitzWith Kf fun x => max (f x) a := by

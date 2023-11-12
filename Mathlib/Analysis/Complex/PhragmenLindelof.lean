@@ -184,7 +184,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
     refine' ((eventually_gt_atTop _).and _).exists
     rcases hO.exists_pos with ⟨A, hA₀, hA⟩
     simp only [isBigOWith_iff, eventually_inf_principal, eventually_comap, mem_Ioo, ← abs_lt,
-      mem_preimage, (· ∘ ·), Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)] at hA
+      mem_preimage, Function.comp_def, Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)] at hA
     suffices :
         Tendsto (fun R => expR (δ * expR (d * R) + B * expR (c * R) + Real.log A)) atTop (𝓝 0)
     · filter_upwards [this.eventually (ge_mem_nhds hC₀), hA] with R hR Hle w hre him
@@ -198,7 +198,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
     suffices H : Tendsto (fun R => δ + B * (expR ((d - c) * R))⁻¹) atTop (𝓝 (δ + B * 0))
     · rw [mul_zero, add_zero] at H
       refine' Tendsto.atBot_add _ tendsto_const_nhds
-      simpa only [id, (· ∘ ·), add_mul, mul_assoc, ← div_eq_inv_mul, ← Real.exp_sub, ← sub_mul,
+      simpa only [id, Function.comp_def, add_mul, mul_assoc, ← div_eq_inv_mul, ← Real.exp_sub, ← sub_mul,
         sub_sub_cancel]
         using H.neg_mul_atTop δ₀ <| Real.tendsto_exp_atTop.comp <|
           tendsto_const_nhds.mul_atTop hd₀ tendsto_id

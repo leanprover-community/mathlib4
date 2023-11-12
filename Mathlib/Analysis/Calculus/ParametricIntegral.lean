@@ -213,13 +213,13 @@ theorem hasDerivAt_integral_of_dominated_loc_of_lip {F : 𝕜 → α → E} {F' 
     hF'_int key
   replace hF'_int : Integrable F' μ
   · rw [← integrable_norm_iff hm] at hF'_int
-    simpa only [(· ∘ ·), integrable_norm_iff, hF'_meas, one_mul, norm_one,
+    simpa only [Function.comp_def, integrable_norm_iff, hF'_meas, one_mul, norm_one,
       ContinuousLinearMap.comp_apply, ContinuousLinearMap.coe_restrict_scalarsL',
       ContinuousLinearMap.norm_restrictScalars, ContinuousLinearMap.norm_smulRightL_apply] using
       hF'_int
   refine' ⟨hF'_int, _⟩
   simp_rw [hasDerivAt_iff_hasFDerivAt] at h_diff ⊢
-  simpa only [(· ∘ ·), ContinuousLinearMap.integral_comp_comm _ hF'_int] using key
+  simpa only [Function.comp_def, ContinuousLinearMap.integral_comp_comm _ hF'_int] using key
 #align has_deriv_at_integral_of_dominated_loc_of_lip hasDerivAt_integral_of_dominated_loc_of_lip
 
 /-- Derivative under integral of `x ↦ ∫ F x a` at a given point `x₀ : ℝ`, assuming

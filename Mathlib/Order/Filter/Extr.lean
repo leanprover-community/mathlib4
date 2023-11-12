@@ -425,7 +425,7 @@ theorem IsExtrOn.on_preimage (g : δ → α) {b : δ} (hf : IsExtrOn f s (g b)) 
 
 theorem IsMinOn.comp_mapsTo {t : Set δ} {g : δ → α} {b : δ} (hf : IsMinOn f s a) (hg : MapsTo g t s)
     (ha : g b = a) : IsMinOn (f ∘ g) t b := fun y hy => by
-  simpa only [ha, (· ∘ ·)] using hf (hg hy)
+  simpa only [ha, Function.comp_def] using hf (hg hy)
 #align is_min_on.comp_maps_to IsMinOn.comp_mapsTo
 
 theorem IsMaxOn.comp_mapsTo {t : Set δ} {g : δ → α} {b : δ} (hf : IsMaxOn f s a) (hg : MapsTo g t s)

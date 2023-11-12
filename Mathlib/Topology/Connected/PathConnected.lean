@@ -492,7 +492,7 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
     Continuous ↿fun t => (γ₁ t).trans (γ₂ t) := by
   have h₁' := Path.continuous_uncurry_extend_of_continuous_family γ₁ h₁
   have h₂' := Path.continuous_uncurry_extend_of_continuous_family γ₂ h₂
-  simp only [HasUncurry.uncurry, CoeFun.coe, Path.trans, (· ∘ ·)]
+  simp only [HasUncurry.uncurry, CoeFun.coe, Path.trans, Function.comp_def]
   refine' Continuous.if_le _ _ (continuous_subtype_val.comp continuous_snd) continuous_const _
   · change
       Continuous ((fun p : ι × ℝ => (γ₁ p.1).extend p.2) ∘ Prod.map id (fun x => 2 * x : I → ℝ))

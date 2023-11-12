@@ -105,7 +105,7 @@ theorem eventuallyEq_of_mem_source (hx : x ∈ (chartAt H c).source) :
 
 theorem one_of_dist_le (hs : x ∈ (chartAt H c).source)
     (hd : dist (extChartAt I c x) (extChartAt I c c) ≤ f.rIn) : f x = 1 := by
-  simp only [f.eqOn_source hs, (· ∘ ·), f.one_of_mem_closedBall hd]
+  simp only [f.eqOn_source hs, Function.comp_def, f.one_of_mem_closedBall hd]
 #align smooth_bump_function.one_of_dist_le SmoothBumpFunction.one_of_dist_le
 
 theorem support_eq_inter_preimage :

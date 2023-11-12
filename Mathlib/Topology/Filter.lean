@@ -68,13 +68,13 @@ theorem isTopologicalBasis_Iic_principal :
 
 theorem isOpen_iff {s : Set (Filter α)} : IsOpen s ↔ ∃ T : Set (Set α), s = ⋃ t ∈ T, Iic (𝓟 t) :=
   isTopologicalBasis_Iic_principal.open_iff_eq_sUnion.trans <| by
-    simp only [exists_subset_range_and_iff, sUnion_image, (· ∘ ·)]
+    simp only [exists_subset_range_and_iff, sUnion_image, Function.comp_def]
 #align filter.is_open_iff Filter.isOpen_iff
 
 theorem nhds_eq (l : Filter α) : 𝓝 l = l.lift' (Iic ∘ 𝓟) :=
   nhds_generateFrom.trans <| by
     simp only [mem_setOf_eq, @and_comm (l ∈ _), iInf_and, iInf_range, Filter.lift', Filter.lift,
-      (· ∘ ·), mem_Iic, le_principal_iff]
+      Function.comp_def, mem_Iic, le_principal_iff]
 #align filter.nhds_eq Filter.nhds_eq
 
 theorem nhds_eq' (l : Filter α) : 𝓝 l = l.lift' fun s => { l' | s ∈ l' } := by

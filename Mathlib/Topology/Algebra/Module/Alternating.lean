@@ -337,8 +337,8 @@ def _root_.ContinuousLinearEquiv.compContinuousAlternatingMap (e : N ≃L[R] N')
     M [Λ^ι]→L[R] N ≃ M [Λ^ι]→L[R] N' where
   toFun := (e : N →L[R] N').compContinuousAlternatingMap
   invFun := (e.symm : N' →L[R] N).compContinuousAlternatingMap
-  left_inv f := by ext; simp [(· ∘ ·)]
-  right_inv f := by ext; simp [(· ∘ ·)]
+  left_inv f := by ext; simp [Function.comp_def]
+  right_inv f := by ext; simp [Function.comp_def]
 
 @[simp]
 theorem _root_.ContinuousLinearEquiv.compContinuousAlternatingMap_coe

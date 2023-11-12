@@ -116,7 +116,7 @@ theorem spectral_theorem :
     simp_rw [mulVec_single, mul_one, OrthonormalBasis.coe_toBasis_repr_apply,
       OrthonormalBasis.repr_reindex]
     rfl
-  · simp only [diagonal_mul, (· ∘ ·), eigenvalues]
+  · simp only [diagonal_mul, Function.comp_def, eigenvalues]
     rw [eigenvectorBasis, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis_repr_apply,
       OrthonormalBasis.repr_reindex, eigenvalues₀, PiLp.basisFun_apply, WithLp.equiv_symm_single]
 #align matrix.is_hermitian.spectral_theorem Matrix.IsHermitian.spectral_theorem

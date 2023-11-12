@@ -204,7 +204,7 @@ theorem mulSupport_iInf [ConditionallyCompleteLattice M] [Nonempty ι] (f : ι �
 
 @[to_additive]
 theorem mulSupport_comp_subset {g : M → N} (hg : g 1 = 1) (f : α → M) :
-    mulSupport (g ∘ f) ⊆ mulSupport f := fun x => mt fun h => by simp only [(· ∘ ·), *]
+    mulSupport (g ∘ f) ⊆ mulSupport f := fun x => mt fun h => by simp only [Function.comp_def, *]
 #align function.mul_support_comp_subset Function.mulSupport_comp_subset
 #align function.support_comp_subset Function.support_comp_subset
 

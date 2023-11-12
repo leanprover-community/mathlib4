@@ -219,7 +219,7 @@ protected theorem Embedding.comp {g : β → γ} {f : α → β} (hg : Embedding
 theorem embedding_of_embedding_compose {f : α → β} {g : β → γ} (hf : Continuous f)
     (hg : Continuous g) (hgf : Embedding (g ∘ f)) : Embedding f :=
   { induced := (inducing_of_inducing_compose hf hg hgf.toInducing).induced
-    inj := fun a₁ a₂ h => hgf.inj <| by simp [h, (· ∘ ·)] }
+    inj := fun a₁ a₂ h => hgf.inj <| by simp [h, Function.comp_def] }
 #align embedding_of_embedding_compose embedding_of_embedding_compose
 
 protected theorem Function.LeftInverse.embedding {f : α → β} {g : β → α} (h : LeftInverse f g)

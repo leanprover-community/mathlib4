@@ -407,7 +407,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
       rw [← SimpleFunc.lintegral_eq_lintegral]
       refine' lintegral_mono fun a => _
       simp only [map_apply] at h_meas
-      simp only [coe_map, restrict_apply _ (h_meas _), (· ∘ ·)]
+      simp only [coe_map, restrict_apply _ (h_meas _), Function.comp_def]
       exact indicator_apply_le id
 #align measure_theory.lintegral_supr MeasureTheory.lintegral_iSup
 

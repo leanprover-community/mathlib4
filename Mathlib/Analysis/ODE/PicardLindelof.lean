@@ -365,8 +365,8 @@ theorem exists_solution :
       HasDerivWithinAt f (v t (f t)) (Icc v.tMin v.tMax) t := by
   rcases v.exists_fixed with ⟨f, hf⟩
   refine' ⟨f ∘ v.proj, _, fun t ht => _⟩
-  · simp only [(· ∘ ·), proj_coe, f.map_t₀]
-  · simp only [(· ∘ ·), v.proj_of_mem ht]
+  · simp only [Function.comp_def, proj_coe, f.map_t₀]
+  · simp only [Function.comp_def, v.proj_of_mem ht]
     lift t to Icc v.tMin v.tMax using ht
     simpa only [hf, v.proj_coe] using f.hasDerivWithinAt_next t
 #align picard_lindelof.exists_solution PicardLindelof.exists_solution

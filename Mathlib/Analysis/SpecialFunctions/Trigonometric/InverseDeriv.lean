@@ -95,7 +95,7 @@ theorem differentiableWithinAt_arcsin_Iic {x : ℝ} :
   refine' ⟨fun h => _, fun h => (hasDerivWithinAt_arcsin_Iic h).differentiableWithinAt⟩
   rw [← neg_neg x, ← image_neg_Ici] at h
   have := (h.comp (-x) differentiableWithinAt_id.neg (mapsTo_image _ _)).neg
-  simpa [(· ∘ ·), differentiableWithinAt_arcsin_Ici] using this
+  simpa [Function.comp_def, differentiableWithinAt_arcsin_Ici] using this
 #align real.differentiable_within_at_arcsin_Iic Real.differentiableWithinAt_arcsin_Iic
 
 theorem differentiableAt_arcsin {x : ℝ} : DifferentiableAt ℝ arcsin x ↔ x ≠ -1 ∧ x ≠ 1 :=

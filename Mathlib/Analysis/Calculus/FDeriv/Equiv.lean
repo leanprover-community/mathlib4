@@ -376,7 +376,7 @@ theorem HasStrictFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜]
   · refine (hf.isBigO_sub_rev.comp_tendsto hg).congr' (eventually_of_forall fun _ => rfl)
       (hfg.mono ?_)
     rintro p ⟨hp1, hp2⟩
-    simp only [(· ∘ ·), hp1, hp2]
+    simp only [Function.comp_def, hp1, hp2]
 #align has_strict_fderiv_at.of_local_left_inverse HasStrictFDerivAt.of_local_left_inverse
 
 /-- If `f (g y) = y` for `y` in some neighborhood of `a`, `g` is continuous at `a`, and `f` has an
@@ -401,7 +401,7 @@ theorem HasFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜] F} {g
   · refine' ((hf.isBigO_sub_rev f'.antilipschitz).comp_tendsto hg).congr'
       (eventually_of_forall fun _ => rfl) (hfg.mono _)
     rintro p hp
-    simp only [(· ∘ ·), hp, hfg.self_of_nhds]
+    simp only [Function.comp_def, hp, hfg.self_of_nhds]
 #align has_fderiv_at.of_local_left_inverse HasFDerivAt.of_local_left_inverse
 
 /-- If `f` is a local homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has an

@@ -281,7 +281,7 @@ protected theorem subtype (p : α → Prop) : DenseEmbedding (subtypeEmb p e) :=
       dense_iff_closure_eq.2 <| by
         ext ⟨x, hx⟩
         rw [image_eq_range] at hx
-        simpa [closure_subtype, ← range_comp, (· ∘ ·)]
+        simpa [closure_subtype, ← range_comp, Function.comp_def]
     inj := (de.inj.comp Subtype.coe_injective).codRestrict _
     induced :=
       (induced_iff_nhds_eq _).2 fun ⟨x, hx⟩ => by

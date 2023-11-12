@@ -240,7 +240,7 @@ equal to the Fréchet derivative of `l` applied to the derivative of `f`. -/
 theorem HasFDerivWithinAt.comp_hasDerivWithinAt {t : Set F} (hl : HasFDerivWithinAt l l' t (f x))
     (hf : HasDerivWithinAt f f' s x) (hst : MapsTo f s t) :
     HasDerivWithinAt (l ∘ f) (l' f') s x := by
-  simpa only [one_apply, one_smul, smulRight_apply, coe_comp', (· ∘ ·)] using
+  simpa only [one_apply, one_smul, smulRight_apply, coe_comp', Function.comp_def] using
     (hl.comp x hf.hasFDerivWithinAt hst).hasDerivWithinAt
 #align has_fderiv_within_at.comp_has_deriv_within_at HasFDerivWithinAt.comp_hasDerivWithinAt
 
@@ -258,7 +258,7 @@ theorem HasFDerivAt.comp_hasDerivAt (hl : HasFDerivAt l l' (f x)) (hf : HasDeriv
 
 theorem HasStrictFDerivAt.comp_hasStrictDerivAt (hl : HasStrictFDerivAt l l' (f x))
     (hf : HasStrictDerivAt f f' x) : HasStrictDerivAt (l ∘ f) (l' f') x := by
-  simpa only [one_apply, one_smul, smulRight_apply, coe_comp', (· ∘ ·)] using
+  simpa only [one_apply, one_smul, smulRight_apply, coe_comp', Function.comp_def] using
     (hl.comp x hf.hasStrictFDerivAt).hasStrictDerivAt
 #align has_strict_fderiv_at.comp_has_strict_deriv_at HasStrictFDerivAt.comp_hasStrictDerivAt
 

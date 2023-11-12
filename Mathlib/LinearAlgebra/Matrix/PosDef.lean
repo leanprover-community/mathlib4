@@ -71,7 +71,7 @@ theorem PosSemidef.submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m ≃ n
   refine' ⟨hM.1.submatrix e, fun x => _⟩
   have : (M.submatrix (⇑e) e).mulVec x = (M.mulVec fun i : n => x (e.symm i)) ∘ e := by
     ext i
-    dsimp only [(· ∘ ·), mulVec, dotProduct]
+    dsimp only [Function.comp_def, mulVec, dotProduct]
     rw [Finset.sum_bij' (fun i _ => e i) _ _ fun i _ => e.symm i] <;>
       simp only [eq_self_iff_true, imp_true_iff, Equiv.symm_apply_apply, Finset.mem_univ,
         submatrix_apply, Equiv.apply_symm_apply]

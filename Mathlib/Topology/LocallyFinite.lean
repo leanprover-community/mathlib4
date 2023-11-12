@@ -215,7 +215,7 @@ theorem Equiv.locallyFinite_comp_iff (e : ι' ≃ ι) : LocallyFinite (f ∘ e) 
 theorem locallyFinite_sum {f : Sum ι ι' → Set X} :
     LocallyFinite f ↔ LocallyFinite (f ∘ Sum.inl) ∧ LocallyFinite (f ∘ Sum.inr) := by
   simp only [locallyFinite_iff_smallSets, ← forall_and, ← finite_preimage_inl_and_inr,
-    preimage_setOf_eq, (· ∘ ·), eventually_and]
+    preimage_setOf_eq, Function.comp_def, eventually_and]
 #align locally_finite_sum locallyFinite_sum
 
 theorem LocallyFinite.sum_elim {g : ι' → Set X} (hf : LocallyFinite f) (hg : LocallyFinite g) :

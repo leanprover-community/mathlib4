@@ -297,7 +297,7 @@ theorem eventually_swap_iff {p : α × β → Prop} :
 
 theorem prod_assoc (f : Filter α) (g : Filter β) (h : Filter γ) :
     map (Equiv.prodAssoc α β γ) ((f ×ˢ g) ×ˢ h) = f ×ˢ (g ×ˢ h) := by
-  simp_rw [← comap_equiv_symm, SProd.sprod, Filter.prod, comap_inf, comap_comap, inf_assoc, (· ∘ ·),
+  simp_rw [← comap_equiv_symm, SProd.sprod, Filter.prod, comap_inf, comap_comap, inf_assoc, Function.comp_def,
     Equiv.prodAssoc_symm_apply]
 #align filter.prod_assoc Filter.prod_assoc
 

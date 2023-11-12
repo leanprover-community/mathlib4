@@ -1102,7 +1102,7 @@ theorem tendsto_extend_comp_iff {l : Filter α} {g : α → M} (hg : ∀ᶠ z in
   have := (f.continuousAt_extend_symm I hy).tendsto.comp h
   rw [extend_left_inv _ _ hy] at this
   filter_upwards [hg, mem_map.1 (this hu)] with z hz hzu
-  simpa only [(· ∘ ·), extend_left_inv _ _ hz, mem_preimage] using hzu
+  simpa only [Function.comp_def, extend_left_inv _ _ hz, mem_preimage] using hzu
 
 -- there is no definition `writtenInExtend` but we already use some made-up names in this file
 theorem continuousWithinAt_writtenInExtend_iff {f' : LocalHomeomorph M' H'} {g : M → M'}

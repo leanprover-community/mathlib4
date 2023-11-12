@@ -80,18 +80,18 @@ variable {f : ℝ → ℝ} {s : Set ℝ} {f' x : ℝ}
 
 theorem HasDerivWithinAt.sqrt (hf : HasDerivWithinAt f f' s x) (hx : f x ≠ 0) :
     HasDerivWithinAt (fun y => sqrt (f y)) (f' / (2 * sqrt (f x))) s x := by
-  simpa only [(· ∘ ·), div_eq_inv_mul, mul_one] using
+  simpa only [Function.comp_def, div_eq_inv_mul, mul_one] using
     (hasDerivAt_sqrt hx).comp_hasDerivWithinAt x hf
 #align has_deriv_within_at.sqrt HasDerivWithinAt.sqrt
 
 theorem HasDerivAt.sqrt (hf : HasDerivAt f f' x) (hx : f x ≠ 0) :
     HasDerivAt (fun y => sqrt (f y)) (f' / (2 * sqrt (f x))) x := by
-  simpa only [(· ∘ ·), div_eq_inv_mul, mul_one] using (hasDerivAt_sqrt hx).comp x hf
+  simpa only [Function.comp_def, div_eq_inv_mul, mul_one] using (hasDerivAt_sqrt hx).comp x hf
 #align has_deriv_at.sqrt HasDerivAt.sqrt
 
 theorem HasStrictDerivAt.sqrt (hf : HasStrictDerivAt f f' x) (hx : f x ≠ 0) :
     HasStrictDerivAt (fun t => sqrt (f t)) (f' / (2 * sqrt (f x))) x := by
-  simpa only [(· ∘ ·), div_eq_inv_mul, mul_one] using (hasStrictDerivAt_sqrt hx).comp x hf
+  simpa only [Function.comp_def, div_eq_inv_mul, mul_one] using (hasStrictDerivAt_sqrt hx).comp x hf
 #align has_strict_deriv_at.sqrt HasStrictDerivAt.sqrt
 
 theorem derivWithin_sqrt (hf : DifferentiableWithinAt ℝ f s x) (hx : f x ≠ 0)

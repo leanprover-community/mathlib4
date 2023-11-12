@@ -377,7 +377,7 @@ theorem UniformContinuousOn.tendstoUniformlyOn [UniformSpace α] [UniformSpace �
   simp only [nhdsWithin, SProd.sprod, Filter.prod, comap_inf, inf_assoc, comap_principal,
     inf_principal]
   refine hF.comp (Tendsto.inf ?_ <| tendsto_principal_principal.2 <| fun x hx => ⟨⟨hU, hx.2⟩, hx⟩)
-  simp only [uniformity_prod_eq_comap_prod, tendsto_comap_iff, (· ∘ ·),
+  simp only [uniformity_prod_eq_comap_prod, tendsto_comap_iff, Function.comp_def,
     nhds_eq_comap_uniformity, comap_comap]
   exact tendsto_comap.prod_mk (tendsto_diag_uniformity _ _)
 
