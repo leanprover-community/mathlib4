@@ -101,6 +101,10 @@ theorem map_natCast' {A} [AddMonoidWithOne A] [AddMonoidHomClass F A B] (f : F) 
     rw [Nat.cast_add, map_add, Nat.cast_add, map_natCast' f h n, Nat.cast_one, h, Nat.cast_one]
 #align map_nat_cast' map_natCast'
 
+theorem map_ofNat' {A} [AddMonoidWithOne A] [AddMonoidHomClass F A B] (f : F) (h : f 1 = 1) (n : ℕ)
+    [n.AtLeastTwo] : f (OfNat.ofNat n) = OfNat.ofNat n :=
+  map_natCast' f h n
+
 end AddMonoidHomClass
 
 section MonoidWithZeroHomClass

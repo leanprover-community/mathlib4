@@ -457,9 +457,8 @@ instance : NatCast (A 0) :=
   ⟨GSemiring.natCast⟩
 
 
--- TODO: These could be replaced by `map_natCast'` and `map_ofNat'` if they were
--- marked `@[simp low]`
--- and we added an `AddMonoidWithOne` instance added for `A 0`.
+-- TODO: These could be replaced by the general lemmas for `AddMonoidHomClass` (`map_natCast'` and
+-- `map_ofNat'`) if those were marked `@[simp low]`.
 @[simp]
 theorem of_natCast (n : ℕ) : of A 0 n = n :=
   rfl
