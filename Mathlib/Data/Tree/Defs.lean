@@ -10,6 +10,7 @@ import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Util.CompileInductive
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Data.DList.Defs
+import Mathlib.Data.FinEnum
 
 #align_import data.tree from "leanprover-community/mathlib"@"ed989ff568099019c6533a4d94b27d852a5710d8"
 
@@ -37,8 +38,6 @@ inductive Tree.{u} (α : Type u) : Type u
 #align tree Tree
 
 namespace Tree
-
-inductive BranchPos | left | middle |right
 
 universe u
 
@@ -92,12 +91,88 @@ def map {β} (f : α → β) : Tree α → Tree β
   | node a l r => node (f a) (map f l) (map f r)
 #align tree.map Tree.map
 
-/-- Map each element of a Tree to an action and evaluate these actions in
-preorder traversal, then collect the results.
-A tree can branch in three ways . -/
-def traverse {m : Type _ → Type _} [Applicative m] {α β} (f : α → m β) : Tree α → m (Tree β)
-  | nil => pure nil
-  | node a l r => node <$> f a <*> traverse f l <*> traverse f r
+inductive VisitOrder | Node1st | Node2nd | Node3rd
+  deriving DecidableEq, Repr, Ord
+
+namespace VisitOrder
+
+instance : FinEnum VisitOrder :=
+  FinEnum.ofNodupList [Node1st, Node2nd, Node3rd]
+                      (fun o => by cases o <;> simp only []) (by simp only [])
+
+end VisitOrder
+
+section traversals
+
+-- really what's going on here is that for any `σ ∈ S_n` and applicative `m` there is an operation
+-- liftA σ : {α₁ … αₙ β : Type} → (f : α₁ → … → αₙ → β) → (x₁ : m α₁) → ⋯ (xₙ : m αₙ) → m β
+-- liftA σ f x₁ … xₙ = (f ∘ σ) <$> x₁ <*> x₂ <*> … <*> xₙ
+-- which sequences the input actions in the order determined by σ and then applies the function
+-- + some stuff about thunking or macros or such
+@[inline]
+def depthFirst.branch_step (o : VisitOrder) {m} [Applicative m] {β}
+  : (Unit → (m β)) → (Unit → (m (Tree β))) → (Unit → (m (Tree β))) → m (Tree β) :=
+  match o with
+  | VisitOrder.Node1st =>
+    fun b l r => Seq.seq (Seq.seq (node <$> b ()) l) r
+  | VisitOrder.Node2nd =>
+    fun b l r => Seq.seq (Seq.seq ((fun l' b' r' => node b' l' r') <$> l ()) b) r
+  | VisitOrder.Node3rd =>
+    fun b l r => Seq.seq (Seq.seq ((fun l' r' b' => node b' l' r') <$> l ()) r) b
+
+-- recursively traverses the tree, visitng the left subtree before the right subtree
+-- the parameter `o` determines whether the node is visited before, between, or after the subtrees
+-- to traverse the right subtree before the left subtree use `SeqOpposite m`
+def depthFirst (o : VisitOrder) :=
+  let helper := @depthFirst.branch_step o
+  let rec go {m} [Applicative m] {α β} (f : α → m β) : Tree α → m (Tree β)
+    | nil => pure nil
+    | node a l r => helper (fun _ => f a) (fun _ => go f l) (fun _ => go f r)
+  @go
+
+def traversePreorder {m} [Applicative m] {α β} (f : α → m β) (t : Tree α)
+  := inline (depthFirst VisitOrder.Node1st f t)
+
+def traverseInorder {m} [Applicative m] {α β} (f : α → m β) (t : Tree α)
+  := inline (depthFirst VisitOrder.Node2nd f t)
+
+def traversePostorder {m} [Applicative m] {α β} (f : α → m β) (t : Tree α)
+  := inline (depthFirst VisitOrder.Node3rd f t)
+
+@[simp]
+lemma traversePreorder_nil {m} [Applicative m] {α β} (f : α → m β)
+  : traversePreorder f nil = pure nil := rfl
+
+@[simp]
+lemma traversePreorder_node {m} [Applicative m] {α β} (f : α → m β) : ∀ (a l r),
+    traversePreorder f (node a l r)
+    = node <$> f a <*> traversePreorder f l <*> traversePreorder f r :=
+  fun _ _ _ => rfl
+
+@[simp]
+lemma traverseInorder_nil {m} [Applicative m] {α β} (f : α → m β)
+  : traverseInorder f nil = pure nil := rfl
+
+@[simp]
+lemma traverseInorder_node {m} [Applicative m] {α β} (f : α → m β) : ∀ (a l r),
+    traverseInorder f (node a l r)
+    = (fun l' b' r' => node b' l' r') <$> traverseInorder f l <*> f a <*> traverseInorder f r :=
+  fun _ _ _ => rfl
+
+@[simp]
+lemma traversePostorder_nil {m} [Applicative m] {α β} (f : α → m β)
+  : traversePostorder f nil = pure nil := rfl
+
+@[simp]
+lemma traversePostorder_node {m} [Applicative m] {α β} (f : α → m β) : ∀ (a l r),
+    traversePostorder f (node a l r)
+    = (fun l' r' b' => node b' l' r') <$> traversePostorder f l <*> traversePostorder f r <*> f a :=
+  fun _ _ _ => rfl
+
+-- not sure how to implement breadth first search efficiently
+-- but it should also give a Traversable instance?
+
+end traversals
 
 /-- The number of internal nodes (i.e. not including leaves) of a binary tree -/
 @[simp]
@@ -194,19 +269,74 @@ def mapLeaves {L : Type u₁} {L' : Type u₂} {N : Type v₁} (f : L → L') :=
 def mapNodes {L : Type u₁} {N : Type v₁} {N' : Type v₂} (g : N → N') :=
   bimap (id : L → L) g
 
-def bitraverse' {m : Type (max v₁ u₁) → Type w} [Applicative m]
-  {L : Type u₁} {L' : Type (max v₁ u₁)} {N : Type v₁} {N' : Type (max v₁ u₁)}
-  (f : L → m L') (g : N → m N') : Tree' L N → m (Tree' L' N')
-  | leaf x => leaf <$> f x
-  | branch y l r => branch <$> g y <*> bitraverse' f g l <*> bitraverse' f g r
+section traversals
 
--- left-to-right preorder traversal
--- right-to-left postorder traversl is recovered by reversing the order on m
-def bitraverse {m : Type (max v₁ u₁) → Type w} [Applicative m]
-  {L : Type u₁} {L' : Type (max v₁ u₁)} {N : Type v₁} {N' : Type (max v₁ u₁)}
-  (f : L → m L') (g : N → m N') : Tree' L N → m (Tree' L' N')
-  | leaf x => leaf <$> f x
-  | branch y l r => branch <$> g y <*> bitraverse f g l <*> bitraverse f g r
+open Tree (VisitOrder)
+
+@[inline]
+def depthFirst.branch_step (o : VisitOrder) {m : Type (max v₁ u₁) → Type w} [Applicative m]
+  {L' N' : Type (max v₁ u₁)}
+  : (Unit → m N') → (Unit → (m (Tree' L' N'))) → (Unit → (m (Tree' L' N'))) → m (Tree' L' N') :=
+  match o with
+  | VisitOrder.Node1st =>
+    fun b l r => Seq.seq (Seq.seq (branch <$> b ()) l) r
+  | VisitOrder.Node2nd =>
+    fun b l r => Seq.seq (Seq.seq ((fun l' b' r' => branch b' l' r') <$> l ()) b) r
+  | VisitOrder.Node3rd =>
+    fun b l r => Seq.seq (Seq.seq ((fun l' r' b' => branch b' l' r') <$> l ()) r) b
+
+def depthFirst (o : VisitOrder) :=
+  let helper := @depthFirst.branch_step.{u₁, v₁, w} o
+  let rec go {m : Type (max v₁ u₁) → Type w} [Applicative m]
+             {L : Type u₁} {L' : Type (max v₁ u₁)} {N : Type v₁} {N' : Type (max v₁ u₁)}
+             (f : L → m L') (g : N → m N') : Tree' L N → m (Tree' L' N')
+    | leaf x => leaf <$> f x
+    | branch y l r => inline (@helper m _ L' N' (fun _ => g y) (fun _ => go f g l) (fun _ => go f g r))
+  @go
+
+variable {m : Type (max v₁ u₁) → Type w} [Applicative m]
+         {L : Type u₁} {L' : Type (max v₁ u₁)} {N : Type v₁} {N' : Type (max v₁ u₁)}
+         (f : L → m L') (g : N → m N')
+
+def traversePreorder (t) := inline (depthFirst VisitOrder.Node1st f g t)
+
+def traverseInorder (t) := inline (depthFirst VisitOrder.Node2nd f g t)
+
+def traversePostorder (t) := inline (depthFirst VisitOrder.Node3rd f g t)
+
+@[simp]
+lemma traversePreorder_leaf
+  : ∀ x, traversePreorder f g (leaf x) = @leaf L' N' <$> f x := fun _ => rfl
+
+@[simp]
+lemma traversePreorder_branch : ∀ (a : N) (l r : Tree' L N),
+    traversePreorder f g (branch a l r)
+    = @branch L' N' <$> g a <*> traversePreorder f g l <*> traversePreorder f g r :=
+  fun _ _ _ => rfl
+
+@[simp]
+lemma traverseInorder_leaf
+  : ∀ x, traverseInorder f g (leaf x) = @leaf L' N' <$> f x := fun _ => rfl
+
+@[simp]
+lemma traverseInorder_branch : ∀ (y : N) (l r : Tree' L N),
+    traverseInorder f g (branch y l r)
+    = (fun l' y' r' => @branch L' N' y' l' r')
+      <$> traverseInorder f g l <*> g y <*> traverseInorder f g r :=
+  fun _ _ _ => rfl
+
+@[simp]
+lemma traversePostorder_leaf
+  : ∀ x, traversePostorder f g (leaf x) = @leaf L' N' <$> f x := fun _ => rfl
+
+@[simp]
+lemma traversePostorder_branch : ∀ (y : N) (l r : Tree' L N),
+    traversePostorder f g (branch y l r)
+    = (fun l' r' y' => @branch L' N' y' l' r')
+      <$> traversePostorder f g l <*> traversePostorder f g r <*> g y :=
+  fun _ _ _ => rfl
+
+end traversals
 
 variable {L : Type u₁} {N : Type v₁}
 
@@ -257,8 +387,11 @@ def height : Tree' L N → ℕ
 theorem numLeaves_eq_numNodes_succ (x : Tree' L N) : x.numLeaves = x.numNodes + 1 := by
   induction x <;> simp [*, Nat.add_comm, Nat.add_assoc, Nat.add_left_comm]
 
--- theorem getLeaves_length_eq_eraseLeafData_numLeaves (x : Tree' L N)
---   : x.getLeaves.length = x.eraseLeafData.numNodes := sorry
+theorem getLeaves_length_eq_eraseLeafData_numLeaves (t : Tree' L N)
+  : t.getLeaves.length = t.eraseLeafData.numLeaves := by
+  induction t
+  . exact rfl
+  . refine Eq.trans (List.length_append _ _) (congr_arg₂ _ ?_ ?_)  <;> assumption
 
 theorem numLeaves_pos (x : Tree' L N) : 0 < x.numLeaves := by
   rw [numLeaves_eq_numNodes_succ]
