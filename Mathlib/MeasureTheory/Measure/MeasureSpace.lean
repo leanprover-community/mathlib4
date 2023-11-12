@@ -4399,7 +4399,7 @@ irreducible_def MeasureTheory.Measure.finiteSpanningSetsInOpen' [TopologicalSpac
       ⟨{  set := fun _ => ∅
           set_mem := fun _ => by simp
           finite := fun _ => by simp
-          spanning := by simp }⟩
+          spanning := by simp [eq_iff_true_of_subsingleton] }⟩
   inhabit α
   let S : Set (Set α) := { s | IsOpen s ∧ μ s < ∞ }
   obtain ⟨T, T_count, TS, hT⟩ : ∃ T : Set (Set α), T.Countable ∧ T ⊆ S ∧ ⋃₀ T = ⋃₀ S :=

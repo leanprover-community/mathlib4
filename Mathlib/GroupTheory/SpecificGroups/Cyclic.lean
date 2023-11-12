@@ -375,7 +375,8 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
   have hc0 : 0 < c := Fintype.card_pos_iff.2 ⟨1⟩
   apply card_orderOf_eq_totient_aux₁ hn hd
   by_contra h0
-  simp only [not_lt, _root_.le_zero_iff, card_eq_zero] at h0
+  -- Must qualify `Finset.card_eq_zero` because of leanprover/lean4#2849
+  simp only [not_lt, _root_.le_zero_iff, Finset.card_eq_zero] at h0
   apply lt_irrefl c
   calc
     c = ∑ m in c.divisors, (univ.filter fun a : α => orderOf a = m).card := by
