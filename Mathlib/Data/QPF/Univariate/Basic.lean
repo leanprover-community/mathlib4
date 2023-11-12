@@ -557,7 +557,7 @@ def comp : QPF (Functor.Comp F₂ F₁) where
     apply abs_map
     congr
     rw [PFunctor.map_eq]
-    dsimp [Function.comp]
+    dsimp [Function.comp_def]
     congr
     ext x
     rw [← abs_map]

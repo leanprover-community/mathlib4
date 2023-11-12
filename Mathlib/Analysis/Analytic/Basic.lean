@@ -1220,7 +1220,7 @@ theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ�
     Summable fun s : Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l } =>
       ‖p (s.1 + s.2.1)‖₊ * r ^ s.2.1 * r' ^ s.1 := by
   rw [← changeOriginIndexEquiv.symm.summable_iff]
-  dsimp only [(· ∘ ·), changeOriginIndexEquiv_symm_apply_fst,
+  dsimp only [Function.comp_def, changeOriginIndexEquiv_symm_apply_fst,
     changeOriginIndexEquiv_symm_apply_snd_fst]
   have : ∀ n : ℕ,
       HasSum (fun s : Finset (Fin n) => ‖p (n - s.card + s.card)‖₊ * r ^ s.card * r' ^ (n - s.card))

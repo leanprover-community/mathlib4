@@ -132,7 +132,7 @@ theorem tendsto_normSq_coprime_pair :
       normSq ∘ f ∘ fun p : Fin 2 → ℤ => ((↑) : ℤ → ℝ) ∘ p := by
     ext1
     rw [f_def]
-    dsimp only [Function.comp]
+    dsimp only [Function.comp_def]
     rw [ofReal_int_cast, ofReal_int_cast]
   rw [this]
   have hf : LinearMap.ker f = ⊥ := by
