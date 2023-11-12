@@ -4,14 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 
-/-
-This file imports all tactics which do not have significant theory imports,
-and hence can be imported very low in the theory import hierarchy,
-thereby making tactics widely available without needing specific imports.
+-- This file imports all tactics which do not have significant theory imports,
+-- and hence can be imported very low in the theory import hierarchy,
+-- thereby making tactics widely available without needing specific imports.
 
-We include some commented out imports here, with an explanation of their theory requirements,
-to save some time for anyone wondering why they are not here.
--/
+-- We include some commented out imports here, with an explanation of their theory requirements,
+-- to save some time for anyone wondering why they are not here.
+
 
 -- First import Aesop and Qq
 import Aesop
