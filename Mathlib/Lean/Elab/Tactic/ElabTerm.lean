@@ -48,6 +48,7 @@ def withCollectingNewGoalsFrom' (k : TacticM Expr) (tagSuffix : Option Name := n
       withAssignableSyntheticOpaque go
   | _ => go
 where
+  /-- The core of `withCollectingNewGoalsFrom'`. -/
   go := do
     let mvarCounterSaved := (← getMCtx).mvarCounter
     let val ← k

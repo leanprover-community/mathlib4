@@ -178,6 +178,8 @@ Note also that mvar names are not distinguished by superscripts as inaccessible 
 `?m.1` and `?m.2` are delaborated to `?m✝`.
 -/
 
+/-- If false, do not use numeric suffixes to distinguish anonymous metavariables. E.g., `?m.1234`
+will instead be rendered as `?m✝`. -/
 register_option pp.anonymousMVarSuffixes : Bool := {
   defValue := true
   group    := "pp"
@@ -190,6 +192,7 @@ def getPPAnonymousMVarSuffixes (o : Options) : Bool := o.get pp.anonymousMVarSuf
 
 namespace Lean.Level
 
+/-- Exactly like `PP.toResult`, but uses `?u✝` in the `mvar` case. -/
 private def PP.toResultNoSuffix : Level → Result
   | .zero       => Result.num 0
   | .succ l     => Result.succ (toResult l)
@@ -198,6 +201,7 @@ private def PP.toResultNoSuffix : Level → Result
   | .param n    => Result.leaf n
   | .mvar _     => Result.leaf (Name.mkSimple "?u✝")
 
+/-- Exactly like `Level.quote`, but uses `?u✝` for level mvars. -/
 private def quoteNoSuffix (u : Level) (prec : Nat := 0) : Syntax.Level :=
   (PP.toResultNoSuffix u).quote prec
 
@@ -207,6 +211,10 @@ namespace Lean.PrettyPrinter.Delaborator
 
 open SubExpr
 
+/-- Delaborate `Sort`s/`Type`s without using numeric suffixes to distinguish between level mvars.
+E.g., `?u.1234` will instead be rendered as `?u✝`.
+
+Requires `set_option pp.anonymousMVarSuffxies false`. -/
 @[delab sort]
 def delabSortNoLevelSuffix : Delab := whenNotPPOption getPPAnonymousMVarSuffixes do
   let Expr.sort l ← getExpr | unreachable!
@@ -217,6 +225,10 @@ def delabSortNoLevelSuffix : Delab := whenNotPPOption getPPAnonymousMVarSuffixes
     | some l' => `(Type $(Level.quoteNoSuffix l' max_prec))
     | none    => `(Sort $(Level.quoteNoSuffix l max_prec))
 
+/-- Delaborate metavariables without using numeric suffixes to distinguish between anonymous mvars.
+E.g., `?m.1234` will instead be rendered as `?m✝`.
+
+Requires `set_option pp.anonymousMVarSuffxies false`. -/
 @[delab mvar]
 def delabMVarNoSuffix : Delab := whenNotPPOption getPPAnonymousMVarSuffixes do
   let Expr.mvar mvarId ← getExpr | unreachable!
