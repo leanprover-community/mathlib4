@@ -7,26 +7,37 @@ import Mathlib.Tactic.GRW.Core
 import Mathlib.Init.Order.Defs
 import Mathlib.Data.Set.Basic
 
+/-! # Lemmas for the `grw` tactic
+
+The `grw` tactic starts by trying all lemmas with the `@[grw]` annotation. The first (explicit)
+argument should be related to the result type of the lemma via the rewrite. The other arguments
+will be automatically solved using the `gcongr` tactic.
+
+The `@[grw_weaken]` annotation is used to automically replace rules of the form `a < b`
+with `a ≤ b`.
+
+-/
+
 open Mathlib.Tactic.GRW
 
 @[grw]
-theorem rewrite_le {α : Type} [Preorder α] {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ a) (h₃ : b ≤ d)
-    : c ≤ d := le_trans h₂ (le_trans h₁ h₃)
+lemma rewrite_le {α : Type} [Preorder α] {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ a) (h₃ : b ≤ d) :
+    c ≤ d := le_trans h₂ (le_trans h₁ h₃)
 
 @[grw]
-theorem rewrite_lt {α : Type} [Preorder α] {a b c d : α} (h₁ : a < b) (h₂ : c ≤ a) (h₃ : b ≤ d)
-    : c < d := lt_of_le_of_lt h₂ (lt_of_lt_of_le h₁ h₃)
+lemma rewrite_lt {α : Type} [Preorder α] {a b c d : α} (h₁ : a < b) (h₂ : c ≤ a) (h₃ : b ≤ d) :
+    c < d := lt_of_le_of_lt h₂ (lt_of_lt_of_le h₁ h₃)
 
 @[grw]
-theorem rewrite_mem {α : Type} {a : α} {X Y: Set α} (h₁ : a ∈ X) (h₂ : X ⊆ Y) : a ∈ Y := h₂ h₁
+lemma rewrite_mem {α : Type} {a : α} {X Y: Set α} (h₁ : a ∈ X) (h₂ : X ⊆ Y) : a ∈ Y := h₂ h₁
 
 @[grw]
-theorem rewrite_sub {α : Type} {X Y Z W: Set α} (h₁ : X ⊆ Y) (h₂ : Z ⊆ X) (h₃ : Y ⊆ W)
-    : (Z ⊆ W) := fun _ hx ↦ h₃ (h₁ (h₂ hx))
+lemma rewrite_sub {α : Type} {X Y Z W: Set α} (h₁ : X ⊆ Y) (h₂ : Z ⊆ X) (h₃ : Y ⊆ W) :
+    (Z ⊆ W) := fun _ hx ↦ h₃ (h₁ (h₂ hx))
 
 @[grw]
-theorem rewrite_ssub {α : Type} {X Y Z W: Set α} (h₁ : X ⊂ Y) (h₂ : Z ⊆ X) (h₃ : Y ⊆ W)
-    : (Z ⊂ W) := lt_of_le_of_lt h₂ (lt_of_lt_of_le h₁ h₃)
+lemma rewrite_ssub {α : Type} {X Y Z W: Set α} (h₁ : X ⊂ Y) (h₂ : Z ⊆ X) (h₃ : Y ⊆ W) :
+    (Z ⊂ W) := lt_of_le_of_lt h₂ (lt_of_lt_of_le h₁ h₃)
 
 @[grw_weaken]
-theorem weaken_lt {α : Type} [Preorder α] {a b : α} (h₁ : a < b) : a ≤ b := le_of_lt h₁
+lemma weaken_lt {α : Type} [Preorder α] {a b : α} (h₁ : a < b) : a ≤ b := le_of_lt h₁
