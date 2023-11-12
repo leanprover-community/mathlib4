@@ -203,7 +203,7 @@ theorem rnDeriv_restrict (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
     split_ifs <;> simp [ENNReal.zero_ne_top]
   · simp [Set.indicator_apply]
 
-lemma rnDeriv_eq_zero_of_mutuallySingular [SigmaFinite μ] [SigmaFinite ν] {ν' : Measure α}
+lemma rnDeriv_eq_zero_of_mutuallySingular [SigmaFinite μ] {ν' : Measure α}
     [SigmaFinite ν'] (h : μ ⟂ₘ ν) (hνν' : ν ≪ ν') :
     μ.rnDeriv ν' =ᵐ[ν] 0 := by
   let t := h.nullSet
