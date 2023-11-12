@@ -16,10 +16,6 @@ private axiom α : Type
 
 variable (a b c d e : α)
 
-set_option trace.GRW true
-set_option trace.Meta.gcongr true
-set_option pp.rawOnError true
-
 section inequalities
 
 example (h₁ : a ≤ b) (h₂ : b ≤ c) : a + 5 ≤ c + 6 := by
