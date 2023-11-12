@@ -56,8 +56,6 @@ linear algebra, vector space, module
 
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Function
 
 open BigOperators Pointwise

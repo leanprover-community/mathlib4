@@ -28,8 +28,6 @@ that is solvable by radicals has a solvable Galois group.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open scoped Classical Polynomial IntermediateField
 
 open Polynomial IntermediateField

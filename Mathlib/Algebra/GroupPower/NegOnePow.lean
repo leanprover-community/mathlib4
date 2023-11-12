@@ -19,9 +19,9 @@ namespace Int
 
 /-- The map `ℤ → ℤ` which sends `n` to `(-1 : ℤˣ) ^ n`. -/
 @[pp_dot]
-def negOnePow (n : ℤ) : ℤ := (-1 : ℤˣ) ^ n
+def negOnePow (n : ℤ) : ℤ := ↑((-1 : ℤˣ) ^ n)
 
-lemma negOnePow_def (n : ℤ) : n.negOnePow = (-1 : ℤˣ) ^ n := rfl
+lemma negOnePow_def (n : ℤ) : n.negOnePow = ↑((-1 : ℤˣ) ^ n) := rfl
 
 lemma negOnePow_add (n₁ n₂ : ℤ) :
     (n₁ + n₂).negOnePow =  n₁.negOnePow * n₂.negOnePow := by
