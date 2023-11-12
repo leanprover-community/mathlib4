@@ -22,12 +22,13 @@ namespace Mathlib.Tactic
 
 open Lean Meta Elab Parser Tactic Mathlib.Tactic.GRW
 
+-- TODO these should probably be public with a nicer API?
 private partial def grwHypothesis (hyp : Expr) (rule : Expr) (rev : Bool) :
     MetaM (Expr × Expr) := do
   let ⟨newType, newHyp, _⟩ ← runGrw hyp rule rev false
   return ⟨newType, newHyp⟩
 
-partial def _root_.Lean.MVarId.grw (goal : MVarId) (rule : Expr) (rev : Bool := false) :
+private partial def _root_.Lean.MVarId.grw (goal : MVarId) (rule : Expr) (rev : Bool := false) :
     MetaM MVarId := do
   let ⟨_, prf, mvar⟩ ← runGrw (Expr.mvar goal) rule rev true
   goal.assign prf
@@ -43,6 +44,11 @@ example (h₁ : a + e ≤ b + e)
   grw [h₂, h₃] at h₁
   exact h₁
 ```
+
+If applied to a hypothesis or target of type `p` with rule of type `x ~ y` (where `~` is some
+relation) then the resulting type will be `p[x/y]` or the tactic will fail. This tactic will fail
+if side goals are created that it can not fill itself. These two facts make it safe to use
+in a nonterminal position.
 -/
 elab tok:"grw" rules:rwRuleSeq loc:(location)? : tactic =>
   withMainContext do
