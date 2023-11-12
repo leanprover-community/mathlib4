@@ -92,7 +92,7 @@ lemma rnDeriv_pos' [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     (Measure.rnDeriv_withDensity μ (Measure.measurable_rnDeriv ν μ))] with x hx hx2
   rwa [← hx2]
 
-section move
+section rnDeriv_withDensity_leftRight
 
 variable {μ ν : Measure α} {f : α → ℝ≥0∞}
 
@@ -187,7 +187,7 @@ lemma rnDeriv_withDensity_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFini
   filter_upwards [h₁, h₂, hμ'] with x hx₁ hx₂ hx_eq
   rw [← hx₁, hx₂, hx_eq]
 
-end move
+end rnDeriv_withDensity_leftRight
 
 theorem rnDeriv_restrict (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
     {s : Set α} (hs : MeasurableSet s) :
