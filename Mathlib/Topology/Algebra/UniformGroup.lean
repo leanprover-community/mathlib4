@@ -169,7 +169,7 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
       𝓤 α =
           ((𝓤 α).map fun x : α × α => (x.1 * a⁻¹, x.2 * a⁻¹)).map fun x : α × α =>
             (x.1 * a, x.2 * a) :=
-        by simp [Filter.map_map, Function.comp_def]
+        by simp [Filter.map_map, (· ∘ ·)]
       _ ≤ (𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a) :=
         Filter.map_mono (uniformContinuous_id.mul uniformContinuous_const)
       )
@@ -245,7 +245,7 @@ theorem uniformGroup_comap {γ : Type*} [Group γ] {u : UniformSpace γ} [Unifor
     [MonoidHomClass F β γ] (f : F) : @UniformGroup β (u.comap f) _ :=
   letI : UniformSpace β := u.comap f
   ⟨uniformContinuous_comap' <| by
-    simp_rw [Function.comp_def, map_div]
+    simp_rw [Function.comp, map_div]
     exact uniformContinuous_div.comp (uniformContinuous_comap.prod_map uniformContinuous_comap)⟩
 #align uniform_group_comap uniformGroup_comap
 #align uniform_add_group_comap uniformAddGroup_comap
@@ -315,7 +315,7 @@ theorem uniformity_eq_comap_inv_mul_nhds_one :
     𝓤 α = comap (fun x : α × α => x.1⁻¹ * x.2) (𝓝 (1 : α)) := by
   rw [← comap_uniformity_mulOpposite, uniformity_eq_comap_nhds_one, ← op_one, ← comap_unop_nhds,
     comap_comap, comap_comap]
-  simp [Function.comp_def]
+  simp [(· ∘ ·)]
 #align uniformity_eq_comap_inv_mul_nhds_one uniformity_eq_comap_inv_mul_nhds_one
 #align uniformity_eq_comap_neg_add_nhds_zero uniformity_eq_comap_neg_add_nhds_zero
 
@@ -564,8 +564,7 @@ def TopologicalGroup.toUniformSpace : UniformSpace G where
     rintro ⟨x, y⟩ ⟨z, hz₁, hz₂⟩
     simpa using V_mul _ hz₂ _ hz₁
   isOpen_uniformity S := by
-    simp only [isOpen_iff_mem_nhds, ← mem_comap_prod_mk, comap_comap, Function.comp_def,
-      nhds_translation_div]
+    simp only [isOpen_iff_mem_nhds, ← mem_comap_prod_mk, comap_comap, (· ∘ ·), nhds_translation_div]
 #align topological_group.to_uniform_space TopologicalGroup.toUniformSpace
 #align topological_add_group.to_uniform_space TopologicalAddGroup.toUniformSpace
 
@@ -686,7 +685,7 @@ theorem comm_topologicalGroup_is_uniform : UniformGroup G := by
   constructor
   rw [UniformContinuous, uniformity_prod_eq_prod, tendsto_map'_iff, uniformity_eq_comap_nhds_one' G,
     tendsto_comap_iff, prod_comap_comap_eq]
-  simp only [Function.comp_def, div_eq_mul_inv, mul_inv_rev, inv_inv, mul_comm, mul_left_comm] at *
+  simp only [Function.comp, div_eq_mul_inv, mul_inv_rev, inv_inv, mul_comm, mul_left_comm] at *
   simp only [inv_one, mul_one, ← mul_assoc] at this
   simp_rw [←mul_assoc, mul_comm]
   assumption

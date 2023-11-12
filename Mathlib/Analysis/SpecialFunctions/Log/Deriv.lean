@@ -213,7 +213,7 @@ theorem tendsto_mul_log_one_plus_div_atTop (t : ℝ) :
       (((hasDerivAt_id (0 : ℝ)).const_mul t).const_add 1).log (by simp)
   have h₂ : Tendsto (fun x : ℝ => x⁻¹) atTop (𝓝[≠] 0) :=
     tendsto_inv_atTop_zero'.mono_right (nhdsWithin_mono _ fun x hx => (Set.mem_Ioi.mp hx).ne')
-  simpa only [Function.comp_def, inv_inv] using h₁.comp h₂
+  simpa only [(· ∘ ·), inv_inv] using h₁.comp h₂
 #align real.tendsto_mul_log_one_plus_div_at_top Real.tendsto_mul_log_one_plus_div_atTop
 
 open scoped BigOperators

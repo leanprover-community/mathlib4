@@ -482,7 +482,7 @@ nonrec def posPart (f : α →₁ₛ[μ] ℝ) : α →₁ₛ[μ] ℝ :=
     simp only [Subtype.coe_mk, Lp.coe_posPart, ← hsf, AEEqFun.posPart_mk,
       SimpleFunc.coe_map, mk_eq_mk]
     -- Porting note: added
-    simp [SimpleFunc.posPart, Function.comp_def, EventuallyEq.rfl] ⟩
+    simp [SimpleFunc.posPart, Function.comp, EventuallyEq.rfl] ⟩
 #align measure_theory.L1.simple_func.pos_part MeasureTheory.L1.SimpleFunc.posPart
 
 /-- Negative part of a simple function in L1 space. -/

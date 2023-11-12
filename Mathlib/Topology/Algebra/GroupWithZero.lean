@@ -316,7 +316,7 @@ theorem HasContinuousInv₀.of_nhds_one (h : Tendsto Inv.inv (𝓝 (1 : G₀)) (
     have hx' := inv_ne_zero hx
     rw [ContinuousAt, ← map_mul_left_nhds_one₀ hx, ← nhds_translation_mul_inv₀ hx',
       tendsto_map'_iff, tendsto_comap_iff]
-    simpa only [Function.comp_def, mul_inv_rev, mul_inv_cancel_right₀ hx']
+    simpa only [(· ∘ ·), mul_inv_rev, mul_inv_cancel_right₀ hx']
 
 end map_comap
 

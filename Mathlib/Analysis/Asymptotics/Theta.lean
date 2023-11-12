@@ -220,8 +220,7 @@ theorem IsTheta.tendsto_zero_iff (h : f'' =Θ[l] g'') : Tendsto f'' l (𝓝 0) �
 
 theorem IsTheta.tendsto_norm_atTop_iff (h : f' =Θ[l] g') :
     Tendsto (norm ∘ f') l atTop ↔ Tendsto (norm ∘ g') l atTop := by
-  simp only [Function.comp_def, ← isLittleO_const_left_of_ne (one_ne_zero' ℝ),
-    h.isLittleO_congr_right]
+  simp only [Function.comp, ← isLittleO_const_left_of_ne (one_ne_zero' ℝ), h.isLittleO_congr_right]
 #align asymptotics.is_Theta.tendsto_norm_at_top_iff Asymptotics.IsTheta.tendsto_norm_atTop_iff
 
 theorem IsTheta.isBoundedUnder_le_iff (h : f' =Θ[l] g') :

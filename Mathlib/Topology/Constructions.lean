@@ -799,20 +799,19 @@ theorem DenseRange.prod_map {ι : Type*} {κ : Type*} {f : ι → β} {g : κ �
 
 theorem Inducing.prod_map {f : α → β} {g : γ → δ} (hf : Inducing f) (hg : Inducing g) :
     Inducing (Prod.map f g) :=
-  inducing_iff_nhds.2 fun (a, b) => by
-    simp (config := { unfoldPartialApp := true }) only [Prod.map]
-    simp_rw [nhds_prod_eq, hf.nhds_eq_comap, hg.nhds_eq_comap, prod_comap_comap_eq]
+  inducing_iff_nhds.2 fun (a, b) => by simp_rw [Prod.map_def, nhds_prod_eq, hf.nhds_eq_comap,
+    hg.nhds_eq_comap, prod_comap_comap_eq]
 #align inducing.prod_mk Inducing.prod_map
 
 @[simp]
 theorem inducing_const_prod {a : α} {f : β → γ} : (Inducing fun x => (a, f x)) ↔ Inducing f := by
-  simp_rw [inducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose, Function.comp_def,
+  simp_rw [inducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose, Function.comp,
     induced_const, top_inf_eq]
 #align inducing_const_prod inducing_const_prod
 
 @[simp]
 theorem inducing_prod_const {b : β} {f : α → γ} : (Inducing fun x => (f x, b)) ↔ Inducing f := by
-  simp_rw [inducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose, Function.comp_def,
+  simp_rw [inducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose, Function.comp,
     induced_const, inf_top_eq]
 #align inducing_prod_const inducing_prod_const
 
@@ -968,7 +967,7 @@ theorem Continuous.sum_map {f : α → β} {g : γ → δ} (hf : Continuous f) (
 
 theorem isOpenMap_sum {f : Sum α β → γ} :
     IsOpenMap f ↔ (IsOpenMap fun a => f (inl a)) ∧ IsOpenMap fun b => f (inr b) := by
-  simp only [isOpenMap_iff_nhds_le, Sum.forall, nhds_inl, nhds_inr, Filter.map_map, comp_def]
+  simp only [isOpenMap_iff_nhds_le, Sum.forall, nhds_inl, nhds_inr, Filter.map_map, comp]
 #align is_open_map_sum isOpenMap_sum
 
 @[simp]
@@ -1205,7 +1204,7 @@ variable {ι : Type*} {π : ι → Type*} {κ : Type*} [TopologicalSpace α]
   [T : ∀ i, TopologicalSpace (π i)] {f : α → ∀ i : ι, π i}
 
 theorem continuous_pi_iff : Continuous f ↔ ∀ i, Continuous fun a => f a i := by
-  simp only [continuous_iInf_rng, continuous_induced_rng, comp_def]
+  simp only [continuous_iInf_rng, continuous_induced_rng, comp]
 #align continuous_pi_iff continuous_pi_iff
 
 @[continuity]
@@ -1267,7 +1266,7 @@ theorem Pi.continuous_postcomp [TopologicalSpace β] {g : α → β} (hg : Conti
 lemma Pi.induced_precomp' {ι' : Type*} (φ : ι' → ι) :
     induced (fun (f : (∀ i, π i)) (j : ι') ↦ f (φ j)) Pi.topologicalSpace =
     ⨅ i', induced (eval (φ i')) (T (φ i')) := by
-  simp [Pi.topologicalSpace, induced_iInf, induced_compose, comp_def]
+  simp [Pi.topologicalSpace, induced_iInf, induced_compose, comp]
 
 lemma Pi.induced_precomp [TopologicalSpace β] {ι' : Type*} (φ : ι' → ι) :
     induced (· ∘ φ) Pi.topologicalSpace =
@@ -1608,7 +1607,7 @@ theorem inducing_sigma {f : Sigma σ → α} :
 @[simp 1100]
 theorem continuous_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} :
     Continuous (Sigma.map f₁ f₂) ↔ ∀ i, Continuous (f₂ i) :=
-  continuous_sigma_iff.trans <| by simp only [Sigma.map, embedding_sigmaMk.continuous_iff, comp_def]
+  continuous_sigma_iff.trans <| by simp only [Sigma.map, embedding_sigmaMk.continuous_iff, comp]
 #align continuous_sigma_map continuous_sigma_map
 
 @[continuity]
@@ -1618,7 +1617,7 @@ theorem Continuous.sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁
 #align continuous.sigma_map Continuous.sigma_map
 
 theorem isOpenMap_sigma {f : Sigma σ → α} : IsOpenMap f ↔ ∀ i, IsOpenMap fun a => f ⟨i, a⟩ := by
-  simp only [isOpenMap_iff_nhds_le, Sigma.forall, Sigma.nhds_eq, map_map, comp_def]
+  simp only [isOpenMap_iff_nhds_le, Sigma.forall, Sigma.nhds_eq, map_map, comp]
 #align is_open_map_sigma isOpenMap_sigma
 
 theorem isOpenMap_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} :

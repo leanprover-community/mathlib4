@@ -612,7 +612,7 @@ alias Measurable.subtype_val := Measurable.subtype_coe
 @[measurability]
 theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable f) {h : ∀ x, p (f x)} :
     Measurable fun x => (⟨f x, h x⟩ : Subtype p) := fun t ⟨s, hs⟩ =>
-  hs.2 ▸ by simp only [← preimage_comp, comp_def, Subtype.coe_mk, hf hs.1]
+  hs.2 ▸ by simp only [← preimage_comp, (· ∘ ·), Subtype.coe_mk, hf hs.1]
 #align measurable.subtype_mk Measurable.subtype_mk
 
 @[measurability]
@@ -890,7 +890,7 @@ variable [∀ a, MeasurableSpace (π a)] [MeasurableSpace γ]
 
 theorem measurable_pi_iff {g : α → ∀ a, π a} : Measurable g ↔ ∀ a, Measurable fun x => g x a := by
   simp_rw [measurable_iff_comap_le, MeasurableSpace.pi, MeasurableSpace.comap_iSup,
-    MeasurableSpace.comap_comp, comp_def, iSup_le_iff]
+    MeasurableSpace.comap_comp, Function.comp, iSup_le_iff]
 #align measurable_pi_iff measurable_pi_iff
 
 @[aesop safe 100 apply (rule_sets [Measurable])]

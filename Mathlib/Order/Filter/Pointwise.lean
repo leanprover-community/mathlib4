@@ -1316,7 +1316,7 @@ protected def mulAction [Monoid α] [MulAction α β] : MulAction (Filter α) (F
 @[to_additive "An additive action of an additive monoid on a type `β` gives an additive action on
  `Filter β`."]
 protected def mulActionFilter [Monoid α] [MulAction α β] : MulAction α (Filter β) where
-  mul_smul a b f := by simp only [← map_smul, map_map, Function.comp_def, ← mul_smul]
+  mul_smul a b f := by simp only [← map_smul, map_map, Function.comp, ← mul_smul]
   one_smul f := by simp only [← map_smul, one_smul, map_id']
 #align filter.mul_action_filter Filter.mulActionFilter
 #align filter.add_action_filter Filter.addActionFilter

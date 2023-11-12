@@ -104,7 +104,7 @@ theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) 
   · rfl
   · -- cases' h with _ _ _ _ _ h₀ h₁
     cases h
-    simp only [truncate, Function.comp_def, true_and_iff, eq_self_iff_true, heq_iff_eq]
+    simp only [truncate, Function.comp, true_and_iff, eq_self_iff_true, heq_iff_eq]
     -- porting note: used to be `ext y`
     rename_i n_ih a f y h₁
     suffices (fun x => truncate (y x)) = f
