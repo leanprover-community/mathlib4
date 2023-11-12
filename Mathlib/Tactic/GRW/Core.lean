@@ -7,6 +7,13 @@ import Mathlib.Tactic.Core
 import Lean.LabelAttribute
 import Mathlib.Tactic.GCongr
 
+/-!
+# GRW Tactic
+
+This module defines the core of the `grw` tactic.
+
+-/
+
 open Lean Meta
 
 namespace Mathlib.Tactic.GRW
@@ -114,8 +121,8 @@ private def weaken (rule : Expr) : MetaM Expr := do
 
   return rule
 
-partial def runGrw (expr rule : Expr) (rev isTarget : Bool)
-    : MetaM (Expr × Expr × MVarId) := do
+partial def runGrw (expr rule : Expr) (rev isTarget : Bool) :
+    MetaM (Expr × Expr × MVarId) := do
   let oldType ← instantiateMVars (← inferType expr)
   let ⟨ruleArgs, _, _⟩ ← forallMetaTelescope (← inferType rule)
   let metaRule := mkAppN rule ruleArgs

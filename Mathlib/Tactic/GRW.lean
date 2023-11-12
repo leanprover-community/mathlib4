@@ -11,20 +11,39 @@ import Lean.Meta.Tactic
 import Mathlib.Tactic.GRW.Core
 import Mathlib.Tactic.GRW.Lemmas
 
+/-!
+# `grw` tactic
+
+A generalization of the `rw` tactic to work with relations other than equality.
+
+-/
+
 namespace Mathlib.Tactic
 
 open Lean Meta Elab Parser Tactic Mathlib.Tactic.GRW
 
-private partial def grwHypothesis (hyp : Expr) (rule : Expr) (rev : Bool) : MetaM (Expr × Expr) := do
+private partial def grwHypothesis (hyp : Expr) (rule : Expr) (rev : Bool) :
+    MetaM (Expr × Expr) := do
   let ⟨newType, newHyp, _⟩ ← runGrw hyp rule rev false
   return ⟨newType, newHyp⟩
 
-partial def _root_.Lean.MVarId.grw (goal : MVarId) (rule : Expr) (rev : Bool := false)
-    : MetaM MVarId := do
+partial def _root_.Lean.MVarId.grw (goal : MVarId) (rule : Expr) (rev : Bool := false) :
+    MetaM MVarId := do
   let ⟨_, prf, mvar⟩ ← runGrw (Expr.mvar goal) rule rev true
   goal.assign prf
   return mvar
 
+/--
+`grw` is a generalization of the `rw` tactic that takes other relations than equality.  For example,
+```lean
+example (h₁ : a + e ≤ b + e)
+    (h₂ : b < c)
+    (h₃ : c ≤ d) :
+    a + e ≤ d + e := by
+  grw [h₂, h₃] at h₁
+  exact h₁
+```
+-/
 elab tok:"grw" rules:rwRuleSeq loc:(location)? : tactic =>
   withMainContext do
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
@@ -43,8 +62,8 @@ elab tok:"grw" rules:rwRuleSeq loc:(location)? : tactic =>
           throwError "Lost track of fvar"
         let rulePrf ← elabTerm syn none
         let ⟨newType, newHyp⟩ ← grwHypothesis (Expr.fvar fvar) rulePrf rev
-
-        let ⟨newFvar, newGoal, _⟩ ← (← getMainGoal).assertAfter fvar (← fvar.getUserName) newType newHyp
+        let name ← fvar.getUserName
+        let ⟨newFvar, newGoal, _⟩ ← (← getMainGoal).assertAfter fvar name newType newHyp
         replaceMainGoal [← newGoal.clear fvar]
         mvar.assign (Expr.fvar newFvar)
     )
