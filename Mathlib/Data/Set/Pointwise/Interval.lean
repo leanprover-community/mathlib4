@@ -37,23 +37,20 @@ and `Set.Ico_mul_Ioc_subset`.
 section ContravariantMulLE
 
 variable [Mul α] [Preorder α]
-variable [CovariantClass α α HMul.hMul LE.le] [CovariantClass α α (Function.swap HMul.hMul) LE.le]
+variable [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (Function.swap HMul.hMul) LE.le]
 
 @[to_additive]
-theorem Icc_mul_Icc_subset (a b c d : α) :
-    Set.Icc a b * Set.Icc c d ⊆ Set.Icc (a * c) (b * d) := by
+theorem Icc_mul_Icc_subset (a b c d : α) : Icc a b * Icc c d ⊆ Icc (a * c) (b * d) := by
   rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_le_mul' hya hzc, mul_le_mul' hyb hzd⟩
 
 @[to_additive]
-theorem Ici_mul_Ici_subset (a b : α) :
-    Set.Ici a * Set.Ici b ⊆ Set.Ici (a * b) := by
+theorem Ici_mul_Ici_subset (a b : α) : Ici a * Ici b ⊆ Ici (a * b) := by
   rintro x ⟨y, z, hya, hzb, rfl⟩
   exact mul_le_mul' hya hzb
 
 @[to_additive]
-theorem Iic_mul_Iic_subset (a b : α) :
-    Set.Iic a * Set.Iic b ⊆ Set.Iic (a * b) := by
+theorem Iic_mul_Iic_subset (a b : α) : Iic a * Iic b ⊆ Iic (a * b) := by
   rintro x ⟨y, z, hya, hzb, rfl⟩
   exact mul_le_mul' hya hzb
 
@@ -62,52 +59,52 @@ end ContravariantMulLE
 section ContravariantLT
 
 variable [Mul α] [PartialOrder α]
-variable [CovariantClass α α HMul.hMul LT.lt] [CovariantClass α α (Function.swap HMul.hMul) LT.lt]
+variable [CovariantClass α α (· * ·) (· < ·)] [CovariantClass α α (Function.swap HMul.hMul) LT.lt]
 
 @[to_additive]
-theorem Icc_mul_Ico_subset (a b c d : α) : Set.Icc a b * Set.Ico c d ⊆ Set.Ico (a * c) (b * d) := by
+theorem Icc_mul_Ico_subset (a b c d : α) : Icc a b * Ico c d ⊆ Ico (a * c) (b * d) := by
   haveI := covariantClass_le_of_lt
   rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_le_mul' hya hzc, mul_lt_mul_of_le_of_lt hyb hzd⟩
 
 @[to_additive]
-theorem Iic_mul_Iio_subset (a b : α) : Set.Iic a * Set.Iio b ⊆ Set.Iio (a * b) := by
+theorem Iic_mul_Iio_subset (a b : α) : Iic a * Iio b ⊆ Iio (a * b) := by
   haveI := covariantClass_le_of_lt
   rintro x ⟨y, z, hya, hzb, rfl⟩
   exact mul_lt_mul_of_le_of_lt hya hzb
 
 @[to_additive]
-theorem Ico_mul_Icc_subset (a b c d : α) : Set.Ico a b * Set.Icc c d ⊆ Set.Ico (a * c) (b * d) := by
+theorem Ico_mul_Icc_subset (a b c d : α) : Ico a b * Icc c d ⊆ Ico (a * c) (b * d) := by
   haveI := covariantClass_le_of_lt
   rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_le_mul' hya hzc, mul_lt_mul_of_lt_of_le hyb hzd⟩
 
 @[to_additive]
-theorem Iio_mul_Iic_subset (a b : α) : Set.Iio a * Set.Iic b ⊆ Set.Iio (a * b) := by
+theorem Iio_mul_Iic_subset (a b : α) : Iio a * Iic b ⊆ Iio (a * b) := by
   haveI := covariantClass_le_of_lt
   rintro x ⟨y, z, hya, hzb, rfl⟩
   exact mul_lt_mul_of_lt_of_le hya hzb
 
 @[to_additive]
-theorem Ioc_mul_Ico_subset (a b c d : α) : Set.Ioc a b * Set.Ico c d ⊆ Set.Ioo (a * c) (b * d) := by
+theorem Ioc_mul_Ico_subset (a b c d : α) : Ioc a b * Ico c d ⊆ Ioo (a * c) (b * d) := by
   haveI := covariantClass_le_of_lt
   rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_lt_mul_of_lt_of_le hya hzc, mul_lt_mul_of_le_of_lt hyb hzd⟩
 
 @[to_additive]
-theorem Ioi_mul_Ici_subset (a b : α) : Set.Ioi a * Set.Ici b ⊆ Set.Ioi (a * b) := by
+theorem Ioi_mul_Ici_subset (a b : α) : Ioi a * Ici b ⊆ Ioi (a * b) := by
   haveI := covariantClass_le_of_lt
   rintro x ⟨y, z, hya, hzb, rfl⟩
   exact mul_lt_mul_of_lt_of_le hya hzb
 
 @[to_additive]
-theorem Ico_mul_Ioc_subset (a b c d : α) : Set.Ico a b * Set.Ioc c d ⊆ Set.Ioo (a * c) (b * d) := by
+theorem Ico_mul_Ioc_subset (a b c d : α) : Ico a b * Ioc c d ⊆ Ioo (a * c) (b * d) := by
   haveI := covariantClass_le_of_lt
   rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_lt_mul_of_le_of_lt hya hzc, mul_lt_mul_of_lt_of_le hyb hzd⟩
 
 @[to_additive]
-theorem Ici_mul_Ioi_subset (a b : α) : Set.Ici a * Set.Ioi b ⊆ Set.Ioi (a * b) := by
+theorem Ici_mul_Ioi_subset (a b : α) : Ici a * Ioi b ⊆ Ioi (a * b) := by
   haveI := covariantClass_le_of_lt
   rintro x ⟨y, z, hya, hzb, rfl⟩
   exact mul_lt_mul_of_le_of_lt hya hzb
