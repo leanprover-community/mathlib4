@@ -509,17 +509,18 @@ def cliqueFinset (n : ℕ) : Finset (Finset α) :=
   univ.filter <| G.IsNClique n
 #align simple_graph.clique_finset SimpleGraph.cliqueFinset
 
-@[simp, norm_cast]
-theorem coe_cliqueFinset (n : ℕ) : (G.cliqueFinset n : Set (Finset α)) = G.cliqueSet n := by
-  ext; simp [cliqueFinset]
-#align simple_graph.coe_clique_finset SimpleGraph.coe_cliqueFinset
-
-variable {G}
-
+variable {G} in
 @[simp]
 theorem mem_cliqueFinset_iff : s ∈ G.cliqueFinset n ↔ G.IsNClique n s :=
   mem_filter.trans <| and_iff_right <| mem_univ _
 #align simple_graph.mem_clique_finset_iff SimpleGraph.mem_cliqueFinset_iff
+
+@[simp, norm_cast]
+theorem coe_cliqueFinset (n : ℕ) : (G.cliqueFinset n : Set (Finset α)) = G.cliqueSet n :=
+  Set.ext fun _ ↦ mem_cliqueFinset_iff
+#align simple_graph.coe_clique_finset SimpleGraph.coe_cliqueFinset
+
+variable {G}
 
 @[simp]
 theorem cliqueFinset_eq_empty_iff : G.cliqueFinset n = ∅ ↔ G.CliqueFree n := by
