@@ -31,7 +31,7 @@ infinite series, absolute convergence, normed group
 -/
 
 
-open Classical BigOperators Topology NNReal
+open BigOperators Topology NNReal
 
 open Finset Filter Metric
 
@@ -55,6 +55,7 @@ theorem cauchySeq_finset_of_norm_bounded_eventually {f : ι → E} {g : ι → �
     (h : ∀ᶠ i in cofinite, ‖f i‖ ≤ g i) : CauchySeq fun s => ∑ i in s, f i := by
   refine' cauchySeq_finset_iff_vanishing_norm.2 fun ε hε => _
   rcases summable_iff_vanishing_norm.1 hg ε hε with ⟨s, hs⟩
+  classical
   refine' ⟨s ∪ h.toFinset, fun t ht => _⟩
   have : ∀ i ∈ t, ‖f i‖ ≤ g i := by
     intro i hi
@@ -116,8 +117,8 @@ theorem summable_of_norm_bounded [CompleteSpace E] {f : ι → E} (g : ι → �
 #align summable_of_norm_bounded summable_of_norm_bounded
 
 theorem HasSum.norm_le_of_bounded {f : ι → E} {g : ι → ℝ} {a : E} {b : ℝ} (hf : HasSum f a)
-    (hg : HasSum g b) (h : ∀ i, ‖f i‖ ≤ g i) : ‖a‖ ≤ b :=
-  le_of_tendsto_of_tendsto' hf.norm hg fun _s => norm_sum_le_of_le _ fun i _hi => h i
+    (hg : HasSum g b) (h : ∀ i, ‖f i‖ ≤ g i) : ‖a‖ ≤ b := by
+  classical exact le_of_tendsto_of_tendsto' hf.norm hg fun _s ↦ norm_sum_le_of_le _ fun i _hi ↦ h i
 #align has_sum.norm_le_of_bounded HasSum.norm_le_of_bounded
 
 /-- Quantitative result associated to the direct comparison test for series:  If `∑' i, g i` is
@@ -128,7 +129,7 @@ theorem tsum_of_norm_bounded {f : ι → E} {g : ι → ℝ} {a : ℝ} (hg : Has
   by_cases hf : Summable f
   · exact hf.hasSum.norm_le_of_bounded hg h
   · rw [tsum_eq_zero_of_not_summable hf, norm_zero]
-    exact ge_of_tendsto' hg fun s => sum_nonneg fun i _hi => (norm_nonneg _).trans (h i)
+    classical exact ge_of_tendsto' hg fun s => sum_nonneg fun i _hi => (norm_nonneg _).trans (h i)
 #align tsum_of_norm_bounded tsum_of_norm_bounded
 
 /-- If `∑' i, ‖f i‖` is summable, then `‖∑' i, f i‖ ≤ (∑' i, ‖f i‖)`. Note that we do not assume
