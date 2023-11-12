@@ -54,6 +54,7 @@ import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.Have
 import Mathlib.Tactic.HelpCmd
 import Mathlib.Tactic.HigherOrder
+import Mathlib.Tactic.Hint
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
@@ -114,3 +115,18 @@ import Mathlib.Util.AssertExists
 import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.Imports
 import Mathlib.Util.WhatsNew
+
+section
+
+-- FIXME without this, we get a warning on each `register_hint`.
+set_option linter.unreachableTactic false
+
+register_hint split
+register_hint intro
+register_hint decide
+register_hint simp_all
+register_hint exact?
+-- Waiting on https://github.com/leanprover-community/aesop/issues/85
+-- register_hint aesop
+
+end
