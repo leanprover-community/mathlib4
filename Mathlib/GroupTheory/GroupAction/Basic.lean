@@ -212,37 +212,39 @@ variable (M)
 
 /-- The pointwise stabilizer of a set `β` of points as a submonoid of `M`. -/
 @[to_additive "The pointwise stabilizer of a set `β` of points as an additive submonoid of `M`."]
-def pointwiseStabilizer (β : Set α) : Submonoid M :=
+def pointwiseStabilizerSubmonoid (β : Set α) : Submonoid M :=
   ⨅ a ∈ β, stabilizerSubmonoid M a
 
 variable {M}
 
 @[to_additive (attr := simp)]
-lemma mem_pointwiseStabilizer_iff {β : Set α} {m : M} :
-    m ∈ pointwiseStabilizer M β ↔ ∀ {a}, a ∈ β → m • a = a := by
-  simp [pointwiseStabilizer, Submonoid.mem_iInf, mem_stabilizerSubmonoid_iff]
+lemma mem_pointwiseStabilizerSubmonoid_iff {β : Set α} {m : M} :
+    m ∈ pointwiseStabilizerSubmonoid M β ↔ ∀ {a}, a ∈ β → m • a = a := by
+  simp [pointwiseStabilizerSubmonoid, Submonoid.mem_iInf]
 
 @[to_additive (attr := simp)]
-lemma empty_set_pointwiseStabilizer_is_top : pointwiseStabilizer M (∅ : Set α) = ⊤ := by
+lemma empty_set_pointwiseStabilizerSubmonoid_is_top :
+    pointwiseStabilizerSubmonoid M (∅ : Set α) = ⊤ := by
   ext
-  rw [mem_pointwiseStabilizer_iff]
+  rw [mem_pointwiseStabilizerSubmonoid_iff]
   tauto
 
 @[to_additive (attr := simp)]
-lemma singleton_pointwiseStabilizer_is_stabilizer {a : α} :
-    pointwiseStabilizer M {a} = stabilizerSubmonoid M a := by
+lemma singleton_pointwiseStabilizerSubmonoid_is_stabilizer {a : α} :
+    pointwiseStabilizerSubmonoid M {a} = stabilizerSubmonoid M a := by
   ext
   simp
 
 @[to_additive]
-lemma pointwiseStabilizer_fixedPoints (β : Set α) : β ⊆ fixedPoints (pointwiseStabilizer M β) α :=
-  fun _ ha ⟨_, hm⟩ => mem_pointwiseStabilizer_iff.mp hm ha
+lemma pointwiseStabilizerSubmonoid_fixedPoints (β : Set α) :
+    β ⊆ fixedPoints (pointwiseStabilizerSubmonoid M β) α :=
+  fun _ ha ⟨_, hm⟩ => mem_pointwiseStabilizerSubmonoid_iff.mp hm ha
 
 variable (M)
 
 /-- The setwise stabilizer of a set `β` of points as a submonoid of `M`. -/
 @[to_additive "The setwise stabilizer of a set `β` of points as an additive submonoid of `M`."]
-def setwiseStabilizer (β : Set α) : Submonoid M where
+def setwiseStabilizerSubmonoid (β : Set α) : Submonoid M where
   carrier := { m | ∀ a ∈ β, m • a ∈ β }
   one_mem' a ha := (one_smul M a).symm ▸ ha
   mul_mem' {m₁ _} hm₁ hm₂ a ha := (smul_smul m₁ _ a) ▸ (hm₁ _ (hm₂ _ ha))
@@ -250,40 +252,42 @@ def setwiseStabilizer (β : Set α) : Submonoid M where
 variable {M}
 
 @[to_additive (attr := simp)]
-lemma mem_setwiseStabilizer_iff {β : Set α} {m : M} :
-    m ∈ setwiseStabilizer M β ↔ ∀ a ∈ β, m • a ∈ β :=
+lemma mem_setwiseStabilizerSubmonoid_iff {β : Set α} {m : M} :
+    m ∈ setwiseStabilizerSubmonoid M β ↔ ∀ a ∈ β, m • a ∈ β :=
   Iff.rfl
 
 @[to_additive (attr := simp)]
-lemma empty_set_setwiseStabilizer_is_top : setwiseStabilizer M (∅ : Set α) = ⊤ := by
+lemma empty_set_setwiseStabilizerSubmonoid_is_top :
+    setwiseStabilizerSubmonoid M (∅ : Set α) = ⊤ := by
   ext
-  rw [mem_setwiseStabilizer_iff]
+  rw [mem_setwiseStabilizerSubmonoid_iff]
   tauto
 
 @[to_additive (attr := simp)]
-lemma singleton_setwiseStabilizer_is_top {a : α} :
-    setwiseStabilizer M {a} = stabilizerSubmonoid M a := by
+lemma singleton_setwiseStabilizerSubmonoid_is_top {a : α} :
+    setwiseStabilizerSubmonoid M {a} = stabilizerSubmonoid M a := by
   ext
   simp
 
 @[to_additive (attr := simp)]
-lemma top_setwiseStabilizer_is_top : setwiseStabilizer M (Set.univ : Set α) = ⊤ := by
+lemma top_setwiseStabilizerSubmonoid_is_top :
+    setwiseStabilizerSubmonoid M (Set.univ : Set α) = ⊤ := by
   ext
   simp
 
 @[to_additive]
-lemma pointwiseStabilizer_le_setwiseStabilizer {β : Set α} :
-    pointwiseStabilizer M β ≤ setwiseStabilizer M β := by
+lemma pointwiseStabilizerSubmonoid_le_setwiseStabilizerSubmonoid {β : Set α} :
+    pointwiseStabilizerSubmonoid M β ≤ setwiseStabilizerSubmonoid M β := by
   intro _
-  rw [mem_pointwiseStabilizer_iff, mem_setwiseStabilizer_iff]
+  rw [mem_pointwiseStabilizerSubmonoid_iff, mem_setwiseStabilizerSubmonoid_iff]
   intro hm _ ha
   exact (hm ha).symm ▸ ha
 
 @[to_additive]
-lemma pointwiseStabilizer_le_of_superset {β₁ β₂ : Set α} (h : β₁ ⊆ β₂):
-    pointwiseStabilizer M β₂ ≤ pointwiseStabilizer M β₁ := by
-  intro
-  rw [mem_pointwiseStabilizer_iff, mem_pointwiseStabilizer_iff]
+lemma pointwiseStabilizerSubmonoid_le_of_superset {β₁ β₂ : Set α} (h : β₁ ⊆ β₂):
+    pointwiseStabilizerSubmonoid M β₂ ≤ pointwiseStabilizerSubmonoid M β₁ := by
+  intro _
+  rw [mem_pointwiseStabilizerSubmonoid_iff, mem_pointwiseStabilizerSubmonoid_iff]
   intro hm _ ha
   exact hm (h ha)
 
