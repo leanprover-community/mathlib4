@@ -116,7 +116,7 @@ theorem riemannZeta_zero : riemannZeta 0 = -1 / 2 := by
 theorem summable_exp_neg_pi_mul_nat_sq {t : ℝ} (ht : 0 < t) :
     Summable fun n : ℕ => rexp (-π * t * ((n : ℝ) + 1) ^ 2) := by
   have : 0 < (↑t * I).im := by rwa [ofReal_mul_im, I_im, mul_one]
-  convert (hasSum_nat_jacobiTheta this).summable.of_norm using 1
+  convert (hasSum_nat_jacobiTheta this).summable.norm using 1
   ext1 n
   rw [Complex.norm_eq_abs, Complex.abs_exp]
   rw [show ↑π * I * ((n : ℂ) + 1) ^ 2 * (↑t * I) = ((π * t * ((n : ℝ) + 1) ^ 2) : ℝ) * I ^ 2 by
