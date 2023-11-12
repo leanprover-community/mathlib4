@@ -19,7 +19,7 @@ definitions.
 
 variable {α : Type*} {β : Type*} {γ : Type*} {ι : Type*}
 
-open Filter Metric
+open Filter Metric Bornology
 
 open Topology BigOperators NNReal ENNReal uniformity Pointwise
 
@@ -615,6 +615,25 @@ theorem Filter.tendsto_mul_right_cobounded {a : α} (ha : a ≠ 0) :
   simpa only [tendsto_comap_iff, (· ∘ ·), norm_mul] using
     tendsto_comap.atTop_mul (norm_pos_iff.2 ha) tendsto_const_nhds
 #align filter.tendsto_mul_right_cobounded Filter.tendsto_mul_right_cobounded
+
+@[simp]
+lemma Filter.inv_cobounded₀ : (cobounded α)⁻¹ = 𝓝[≠] 0 := by
+  rw [← comap_norm_atTop, ← Filter.comap_inv, ← comap_norm_nhdsWithin_Ioi_zero,
+    ← inv_atTop₀, ← Filter.comap_inv]
+  simp only [comap_comap, (· ∘ ·), norm_inv]
+
+@[simp]
+lemma Filter.inv_nhdsWithin_ne_zero : (𝓝[≠] (0 : α))⁻¹ = cobounded α := by
+  rw [← inv_cobounded₀, inv_inv]
+
+lemma Filter.tendsto_inv₀_cobounded' : Tendsto Inv.inv (cobounded α) (𝓝[≠] 0) :=
+  inv_cobounded₀.le
+
+theorem Filter.tendsto_inv₀_cobounded : Tendsto Inv.inv (cobounded α) (𝓝 0) :=
+  tendsto_inv₀_cobounded'.mono_right inf_le_left
+
+lemma Filter.tendsto_inv₀_nhdsWithin_ne_zero : Tendsto Inv.inv (𝓝[≠] 0) (cobounded α) :=
+  inv_nhdsWithin_ne_zero.le
 
 -- see Note [lower instance priority]
 instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContinuousInv₀ α := by

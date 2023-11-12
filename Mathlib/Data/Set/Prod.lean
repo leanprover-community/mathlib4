@@ -833,6 +833,9 @@ theorem Disjoint.set_pi (hi : i ∈ s) (ht : Disjoint (t₁ i) (t₂ i)) : Disjo
   disjoint_left.2 fun _ h₁ h₂ => disjoint_left.1 ht (h₁ _ hi) (h₂ _ hi)
 #align set.disjoint.set_pi Set.Disjoint.set_pi
 
+theorem uniqueElim_preimage [Unique ι] (t : ∀ i, Set (α i)) :
+    uniqueElim ⁻¹' pi univ t = t (default : ι) := by ext; simp [Unique.forall_iff]
+
 section Nonempty
 
 variable [∀ i, Nonempty (α i)]
