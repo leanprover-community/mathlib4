@@ -27,6 +27,57 @@ variable {α : Type*}
 
 namespace Set
 
+/-! ### Binary pointwise operations
+
+Note that the subset operations below only cover the cases with the largest possible intervals on
+the LHS: to conclude that `Ioo a b * Ioo c d ⊆ Ioo (a * c) (c * d)`, you can use monotonicity of `*`
+and `Set.Ico_mul_Ioc_subset`.
+-/
+
+section ContravariantMulLE
+
+variable [Mul α] [Preorder α]
+variable [CovariantClass α α HMul.hMul LE.le] [CovariantClass α α (Function.swap HMul.hMul) LE.le]
+
+@[to_additive]
+theorem Icc_mul_Icc_subset (a b c d : α) :
+    Set.Icc a b * Set.Icc c d ⊆ Set.Icc (a * c) (b * d) := by
+  rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
+  exact ⟨mul_le_mul' hya hzc, mul_le_mul' hyb hzd⟩
+
+end ContravariantMulLE
+
+section ContravariantLT
+
+variable [Mul α] [PartialOrder α]
+variable [CovariantClass α α HMul.hMul LT.lt] [CovariantClass α α (Function.swap HMul.hMul) LT.lt]
+
+@[to_additive]
+theorem Icc_mul_Ico_subset (a b c d : α) : Set.Icc a b * Set.Ico c d ⊆ Set.Ico (a * c) (b * d) := by
+  letI := covariantClass_le_of_lt
+  rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
+  exact ⟨mul_le_mul' hya hzc, mul_lt_mul_of_le_of_lt hyb hzd⟩
+
+@[to_additive]
+theorem Ico_mul_Icc_subset (a b c d : α) : Set.Ico a b * Set.Icc c d ⊆ Set.Ico (a * c) (b * d) := by
+  letI := covariantClass_le_of_lt
+  rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
+  exact ⟨mul_le_mul' hya hzc, mul_lt_mul_of_lt_of_le hyb hzd⟩
+
+@[to_additive]
+theorem Ioc_mul_Ico_subset (a b c d : α) : Set.Ioc a b * Set.Ico c d ⊆ Set.Ioo (a * c) (b * d) := by
+  letI := covariantClass_le_of_lt
+  rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
+  exact ⟨mul_lt_mul_of_lt_of_le hya hzc, mul_lt_mul_of_le_of_lt hyb hzd⟩
+
+@[to_additive]
+theorem Ico_mul_Ioc_subset (a b c d : α) : Set.Ico a b * Set.Ioc c d ⊆ Set.Ioo (a * c) (b * d) := by
+  letI := covariantClass_le_of_lt
+  rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
+  exact ⟨mul_lt_mul_of_le_of_lt hya hzc, mul_lt_mul_of_lt_of_le hyb hzd⟩
+
+end ContravariantLT
+
 section OrderedAddCommGroup
 
 variable [OrderedAddCommGroup α] (a b c : α)
