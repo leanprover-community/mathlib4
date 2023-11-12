@@ -116,6 +116,10 @@ import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.Imports
 import Mathlib.Util.WhatsNew
 
+/-!
+# Register tactics with `hint`.
+-/
+
 section
 
 -- FIXME without this, we get a warning on each `register_hint`.
