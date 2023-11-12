@@ -398,15 +398,13 @@ theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type*}
 theorem IsInternal.collectedBasis_repr_of_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) {x : M} {i : ι} {a : α i} (hx : x ∈ A i) :
     (h.collectedBasis v).repr x ⟨i, a⟩ = (v i).repr ⟨x, hx⟩ a := by
-  simp only [collectedBasis, LinearEquiv.trans_apply]
-  erw [DFinsupp.mapRange.linearEquiv_apply] -- TODO FIXME
+  change (sigmaFinsuppLequivDFinsupp R).symm (DFinsupp.mapRange _ (fun i ↦ map_zero _) _) _ = _
   simp [h.ofBijective_coeLinearMap_of_mem hx]
 
 theorem IsInternal.collectedBasis_repr_of_mem_ne (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) {x : M} {i j : ι} (hij : i ≠ j) {a : α j} (hx : x ∈ A i) :
     (h.collectedBasis v).repr x ⟨j, a⟩ = 0 := by
-  simp only [collectedBasis, LinearEquiv.trans_apply]
-  erw [DFinsupp.mapRange.linearEquiv_apply] -- TODO FIXME
+  change (sigmaFinsuppLequivDFinsupp R).symm (DFinsupp.mapRange _ (fun i ↦ map_zero _) _) _ = _
   simp [h.ofBijective_coeLinearMap_of_mem_ne hij hx]
 
 /-- When indexed by only two distinct elements, `DirectSum.IsInternal` implies
