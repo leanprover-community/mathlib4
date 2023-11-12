@@ -65,16 +65,16 @@ private partial def assignAndValidate (mvar : MVarId) (expr: Expr) : MetaM Unit 
     throwError "Could not assign {expr} to {mvar}"
 
 -- TODO make this extensible
-private partial def dischargeSideGoal (rule : Expr) (mvar : MVarId) : MetaM Unit := do
+private partial def dischargeSideGoal (mvar : MVarId) : MetaM Unit := do
   trace[GRW] "Discharging side goal {mvar}"
   try do
     mvar.assumption
     return
-  catch ex =>
+  catch _ =>
   try do
     Mathlib.Meta.Positivity.positivity mvar
     return
-  catch ex =>
+  catch _ =>
   return ⟨⟩
 
 private partial def dischargeMainGoal (rule : Expr) (mvar : MVarId) : MetaM Unit := do
@@ -83,12 +83,12 @@ private partial def dischargeMainGoal (rule : Expr) (mvar : MVarId) : MetaM Unit
     commitIfNoEx mvar.applyRfl
     trace[GRW] "used reflexivity"
     return
-  catch ex =>
+  catch _ =>
   try do
     commitIfNoEx <| assignAndValidate mvar rule
     trace[GRW] "used rule {rule}"
     return
-  catch ex =>
+  catch _ =>
 
   throwError "Could not discharge main goal"
 
@@ -96,7 +96,7 @@ private partial def useRule (rule : Expr) (mvar : MVarId) : MetaM Unit := do
   let ⟨progress, names, subgoals⟩ ← mvar.gcongr
     none
     []
-    (side_goal_discharger := dischargeSideGoal rule)
+    (side_goal_discharger := dischargeSideGoal)
     (main_goal_discharger := dischargeMainGoal rule)
 
   trace[GRW] "Got results {progress} {names} {subgoals}"
@@ -116,7 +116,7 @@ private def weaken (rule : Expr) : MetaM Expr := do
       let result ← mkAppM lem #[rule]
       trace[GRW] "weakened to {← inferType result}"
       return result
-    catch ex =>
+    catch _ =>
       s.restore
 
   return rule
@@ -140,7 +140,7 @@ partial def runGrw (expr rule : Expr) (rev isTarget : Bool) :
       try do
         let lemExpr ← mkConstWithFreshMVarLevels lem
         let lemType ← inferType lemExpr
-        let ⟨metas, binders, body⟩ ← forallMetaTelescopeReducing lemType
+        let ⟨metas, binders, _⟩ ← forallMetaTelescopeReducing lemType
         let mvarToAssign := if isTarget then expr.mvarId! else result.mvarId!
         assignAndValidate mvarToAssign (mkAppN lemExpr metas)
 

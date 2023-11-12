@@ -73,4 +73,4 @@ elab tok:"grw" rules:rwRuleSeq loc:(location)? : tactic =>
       let newGoal ← (← getMainGoal).grw rulePrf rev
       replaceMainGoal [newGoal]
     )
-    (failed := fun ex ↦ throwError "grw failed")
+    (failed := fun _ ↦ throwError "grw failed")
