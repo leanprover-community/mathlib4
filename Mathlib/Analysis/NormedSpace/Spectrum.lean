@@ -490,11 +490,11 @@ section ExpMapping
 
 local notation "↑ₐ" => algebraMap 𝕜 A
 
-/-- For `𝕜 = ℝ` or `𝕜 = ℂ`, `exp 𝕜` maps the spectrum of `a` into the spectrum of `exp 𝕜 a`. -/
-theorem exp_mem_exp [IsROrC 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] (a : A) {z : 𝕜}
-    (hz : z ∈ spectrum 𝕜 a) : exp 𝕜 z ∈ spectrum 𝕜 (exp 𝕜 a) := by
-  have hexpmul : exp 𝕜 a = exp 𝕜 (a - ↑ₐ z) * ↑ₐ (exp 𝕜 z) := by
-    rw [algebraMap_exp_comm z, ← exp_add_of_commute (Algebra.commutes z (a - ↑ₐ z)).symm,
+/-- For `𝕜 = ℝ` or `𝕜 = ℂ`, `exp` maps the spectrum of `a` into the spectrum of `exp a`. -/
+theorem exp_mem_exp [IsROrC 𝕜] [NormedRing A] [Algebra ℚ A] [NormedAlgebra 𝕜 A] [CompleteSpace A] (a : A) {z : 𝕜}
+    (hz : z ∈ spectrum 𝕜 a) : exp z ∈ spectrum 𝕜 (exp a) := by
+  have hexpmul : exp a = exp (a - ↑ₐ z) * ↑ₐ (exp z) := by
+    rw [algebraMap_exp_comm z, ← exp_add_of_commute 𝕜 (Algebra.commutes z (a - ↑ₐ z)).symm,
       sub_add_cancel]
   let b := ∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ n
   have hb : Summable fun n : ℕ => ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ n := by
@@ -507,13 +507,15 @@ theorem exp_mem_exp [IsROrC 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [Complet
     simpa only [mul_smul_comm, pow_succ] using hb.tsum_mul_left (a - ↑ₐ z)
   have h₁ : (∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ (n + 1)) = b * (a - ↑ₐ z) := by
     simpa only [pow_succ', Algebra.smul_mul_assoc] using hb.tsum_mul_right (a - ↑ₐ z)
-  have h₃ : exp 𝕜 (a - ↑ₐ z) = 1 + (a - ↑ₐ z) * b := by
+  have h₃ : exp (a - ↑ₐ z) = 1 + (a - ↑ₐ z) * b := by
     rw [exp_eq_tsum]
     convert tsum_eq_zero_add (expSeries_summable' (𝕂 := 𝕜) (a - ↑ₐ z))
     simp only [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, one_smul]
-    exact h₀.symm
-  rw [spectrum.mem_iff, IsUnit.sub_iff, ← one_mul (↑ₐ (exp 𝕜 z)), hexpmul, ← _root_.sub_mul,
-    Commute.isUnit_mul_iff (Algebra.commutes (exp 𝕜 z) (exp 𝕜 (a - ↑ₐ z) - 1)).symm,
+    convert h₀.symm
+    ext a
+    exact inv_nat_cast_smul_eq ℚ 𝕜 _ a
+  rw [spectrum.mem_iff, IsUnit.sub_iff, ← one_mul (↑ₐ (exp z)), hexpmul, ← _root_.sub_mul,
+    Commute.isUnit_mul_iff (Algebra.commutes (exp z) (exp (a - ↑ₐ z) - 1)).symm,
     sub_eq_iff_eq_add'.mpr h₃, Commute.isUnit_mul_iff (h₀ ▸ h₁ : (a - ↑ₐ z) * b = b * (a - ↑ₐ z))]
   exact not_and_of_not_left _ (not_and_of_not_left _ ((not_iff_not.mpr IsUnit.sub_iff).mp hz))
 #align spectrum.exp_mem_exp spectrum.exp_mem_exp

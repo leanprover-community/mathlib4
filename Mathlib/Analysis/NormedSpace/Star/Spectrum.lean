@@ -89,9 +89,10 @@ theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
 /-- Any element of the spectrum of a selfadjoint is real. -/
 theorem IsSelfAdjoint.mem_spectrum_eq_re [StarModule ℂ A] {a : A} (ha : IsSelfAdjoint a) {z : ℂ}
     (hz : z ∈ spectrum ℂ a) : z = z.re := by
+  letI : Algebra ℚ A := RestrictScalars.algebra ℚ ℂ A
   have hu := exp_mem_unitary_of_mem_skewAdjoint ℂ (ha.smul_mem_skewAdjoint conj_I)
   let Iu := Units.mk0 I I_ne_zero
-  have : _root_.exp ℂ (I • z) ∈ spectrum ℂ (_root_.exp ℂ (I • a)) := by
+  have : _root_.exp (I • z) ∈ spectrum ℂ (_root_.exp (I • a)) := by
     simpa only [Units.smul_def, Units.val_mk0] using
       spectrum.exp_mem_exp (Iu • a) (smul_mem_smul_iff.mpr hz)
   exact Complex.ext (ofReal_re _) <| by

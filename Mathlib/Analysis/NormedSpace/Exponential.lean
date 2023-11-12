@@ -91,6 +91,7 @@ theorem expSeries_apply_eq (x : 𝔸) (n : ℕ) : (expSeries 𝕂 𝔸 n fun _ =
   simp [expSeries]
 #align exp_series_apply_eq expSeries_apply_eq
 
+variable (𝕂) in
 theorem expSeries_apply_eq' (x : 𝔸) :
     (fun n => expSeries 𝕂 𝔸 n fun _ => x) = fun n => (n !⁻¹ : 𝕂) • x ^ n :=
   funext (expSeries_apply_eq x)
@@ -104,9 +105,11 @@ theorem expSeries_sum_eq_rat [Algebra ℚ 𝔸] : (expSeries 𝕂 𝔸).sum = (e
   ext; simp_rw [expSeries_sum_eq, inv_nat_cast_smul_eq 𝕂 ℚ]
 #align exp_series_sum_eq_rat expSeries_sum_eq_rat
 
-theorem expSeries_eq_expSeries_rat [Algebra ℚ 𝔸] (n : ℕ) (x : 𝔸) :
-    (expSeries 𝕂 𝔸 n fun _ => x) = expSeries ℚ 𝔸 n fun _ => x := by
-  rw [expSeries_apply_eq, expSeries_apply_eq, inv_nat_cast_smul_eq 𝕂 ℚ]
+variable (𝕂) in
+theorem expSeries_eq_expSeries_rat [Algebra ℚ 𝔸] (n : ℕ) :
+    ⇑(expSeries 𝕂 𝔸 n) = expSeries ℚ 𝔸 n:= by
+  ext c
+  simp [expSeries, inv_nat_cast_smul_eq 𝕂 ℚ]
 #align exp_series_eq_exp_series_rat expSeries_eq_expSeries_rat
 
 theorem exp_eq_tsum [Algebra ℚ 𝔸] : exp = fun x : 𝔸 => ∑' n : ℕ, (n !⁻¹ : ℚ) • x ^ n :=
