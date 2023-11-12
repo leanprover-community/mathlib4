@@ -6,6 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 import Mathlib.Init.Logic
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Eqns
 
 #align_import init.function from "leanprover-community/lean"@"03a6a6015c0b12dce7b36b4a1f7205a92dfaa592"
 
