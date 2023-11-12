@@ -755,7 +755,7 @@ theorem eq_singleton_iff_nonempty_unique_mem {s : Finset α} {a : α} :
 #align finset.eq_singleton_iff_nonempty_unique_mem Finset.eq_singleton_iff_nonempty_unique_mem
 
 theorem nonempty_iff_eq_singleton_default [Unique α] {s : Finset α} : s.Nonempty ↔ s = {default} :=
-  by simp [eq_singleton_iff_nonempty_unique_mem]
+  by simp [eq_singleton_iff_nonempty_unique_mem, eq_iff_true_of_subsingleton]
 #align finset.nonempty_iff_eq_singleton_default Finset.nonempty_iff_eq_singleton_default
 
 alias ⟨Nonempty.eq_singleton_default, _⟩ := nonempty_iff_eq_singleton_default
