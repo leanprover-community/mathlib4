@@ -57,6 +57,11 @@ theorem logb_one : logb b 1 = 0 := by simp [logb]
 lemma logb_self_eq_one (hb : 1 < b) : logb b b = 1 :=
   div_self (fun H => (ne_of_lt (log_pos hb)).symm H)
 
+lemma logb_self_eq_one' (hb₀ : 0 < b) (hb₁ : b ≠ 1) : logb b b = 1 := by
+  refine div_self ?_
+  rw [log_ne_zero]
+  exact ⟨ne_of_gt hb₀, hb₁, by linarith⟩
+
 @[simp]
 theorem logb_abs (x : ℝ) : logb b |x| = logb b x := by rw [logb, logb, log_abs]
 #align real.logb_abs Real.logb_abs
@@ -183,8 +188,8 @@ theorem logb_le_logb (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ x �
 #align real.logb_le_logb Real.logb_le_logb
 
 @[gcongr]
-theorem logb_le_logb_of_le (h : 0 < x) (h₁ : 0 < y) (hxy : x ≤ y) : logb b x ≤ logb b y :=
-  (logb_le_logb hb h h₁).mpr hxy
+theorem logb_le_logb_of_le (h : 0 < x) (hxy : x ≤ y) : logb b x ≤ logb b y :=
+  (logb_le_logb hb h (by linarith)).mpr hxy
 
 @[gcongr]
 theorem logb_lt_logb (hx : 0 < x) (hxy : x < y) : logb b x < logb b y := by
