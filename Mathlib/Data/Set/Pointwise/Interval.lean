@@ -68,22 +68,10 @@ theorem Icc_mul_Ico_subset (a b c d : α) : Icc a b * Ico c d ⊆ Ico (a * c) (b
   exact ⟨mul_le_mul' hya hzc, mul_lt_mul_of_le_of_lt hyb hzd⟩
 
 @[to_additive]
-theorem Iic_mul_Iio_subset (a b : α) : Iic a * Iio b ⊆ Iio (a * b) := by
-  haveI := covariantClass_le_of_lt
-  rintro x ⟨y, z, hya, hzb, rfl⟩
-  exact mul_lt_mul_of_le_of_lt hya hzb
-
-@[to_additive]
 theorem Ico_mul_Icc_subset (a b c d : α) : Ico a b * Icc c d ⊆ Ico (a * c) (b * d) := by
   haveI := covariantClass_le_of_lt
   rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_le_mul' hya hzc, mul_lt_mul_of_lt_of_le hyb hzd⟩
-
-@[to_additive]
-theorem Iio_mul_Iic_subset (a b : α) : Iio a * Iic b ⊆ Iio (a * b) := by
-  haveI := covariantClass_le_of_lt
-  rintro x ⟨y, z, hya, hzb, rfl⟩
-  exact mul_lt_mul_of_lt_of_le hya hzb
 
 @[to_additive]
 theorem Ioc_mul_Ico_subset (a b c d : α) : Ioc a b * Ico c d ⊆ Ioo (a * c) (b * d) := by
@@ -92,16 +80,28 @@ theorem Ioc_mul_Ico_subset (a b c d : α) : Ioc a b * Ico c d ⊆ Ioo (a * c) (b
   exact ⟨mul_lt_mul_of_lt_of_le hya hzc, mul_lt_mul_of_le_of_lt hyb hzd⟩
 
 @[to_additive]
-theorem Ioi_mul_Ici_subset (a b : α) : Ioi a * Ici b ⊆ Ioi (a * b) := by
+theorem Ico_mul_Ioc_subset (a b c d : α) : Ico a b * Ioc c d ⊆ Ioo (a * c) (b * d) := by
+  haveI := covariantClass_le_of_lt
+  rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
+  exact ⟨mul_lt_mul_of_le_of_lt hya hzc, mul_lt_mul_of_lt_of_le hyb hzd⟩
+
+@[to_additive]
+theorem Iic_mul_Iio_subset (a b : α) : Iic a * Iio b ⊆ Iio (a * b) := by
+  haveI := covariantClass_le_of_lt
+  rintro x ⟨y, z, hya, hzb, rfl⟩
+  exact mul_lt_mul_of_le_of_lt hya hzb
+
+@[to_additive]
+theorem Iio_mul_Iic_subset (a b : α) : Iio a * Iic b ⊆ Iio (a * b) := by
   haveI := covariantClass_le_of_lt
   rintro x ⟨y, z, hya, hzb, rfl⟩
   exact mul_lt_mul_of_lt_of_le hya hzb
 
 @[to_additive]
-theorem Ico_mul_Ioc_subset (a b c d : α) : Ico a b * Ioc c d ⊆ Ioo (a * c) (b * d) := by
+theorem Ioi_mul_Ici_subset (a b : α) : Ioi a * Ici b ⊆ Ioi (a * b) := by
   haveI := covariantClass_le_of_lt
-  rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
-  exact ⟨mul_lt_mul_of_le_of_lt hya hzc, mul_lt_mul_of_lt_of_le hyb hzd⟩
+  rintro x ⟨y, z, hya, hzb, rfl⟩
+  exact mul_lt_mul_of_lt_of_le hya hzb
 
 @[to_additive]
 theorem Ici_mul_Ioi_subset (a b : α) : Ici a * Ioi b ⊆ Ioi (a * b) := by
