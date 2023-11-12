@@ -159,11 +159,6 @@ theorem restrict_dirac [MeasurableSingletonClass α] [Decidable (a ∈ s)] :
   · rw [restrict_eq_zero, dirac_apply, indicator_of_not_mem has]
 #align measure_theory.restrict_dirac MeasureTheory.restrict_dirac
 
-theorem unique_eq_smul_dirac [Unique α] (μ : Measure α) :
-    μ = μ univ • dirac default := by
-  ext1 s hs
-  induction s using Subsingleton.set_cases <;> simp
-
 lemma mutuallySingular_dirac [MeasurableSingletonClass α] (x : α) (μ : Measure α) [NoAtoms μ] :
     Measure.dirac x ⟂ₘ μ :=
   ⟨{x}ᶜ, (MeasurableSet.singleton x).compl, by simp, by simp⟩
