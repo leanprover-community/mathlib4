@@ -14,7 +14,7 @@ import Mathlib.Topology.Algebra.Order.LiminfLimsup
 # ℓp space
 
 This file describes properties of elements `f` of a pi-type `∀ i, E i` with finite "norm",
-defined for `p:ℝ≥0∞` as the size of the support of `f` if `p=0`, `(∑' a, ‖f a‖^p) ^ (1/p)` for
+defined for `p : ℝ≥0∞` as the size of the support of `f` if `p=0`, `(∑' a, ‖f a‖^p) ^ (1/p)` for
 `0 < p < ∞` and `⨆ a, ‖f a‖` for `p=∞`.
 
 The Prop-valued `Memℓp f p` states that a function `f : ∀ i, E i` has finite norm according

@@ -476,8 +476,7 @@ theorem isSplittingField_X_pow_sub_one : IsSplittingField K L (X ^ (n : ℕ) - 1
         and_iff_right_iff_imp, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_one]
       exact fun _ => X_pow_sub_C_ne_zero n.pos (1 : L) }
 set_option linter.uppercaseLean3 false in
-#align is_cyclotomic_extension.splitting_field_X_pow_sub_one
-       IsCyclotomicExtension.isSplittingField_X_pow_sub_one
+#align is_cyclotomic_extension.splitting_field_X_pow_sub_one IsCyclotomicExtension.isSplittingField_X_pow_sub_one
 
 /-- Any two `n`-th cyclotomic extensions are isomorphic. -/
 def algEquiv (L' : Type*) [Field L'] [Algebra K L'] [IsCyclotomicExtension {n} K L'] :

@@ -38,7 +38,7 @@ lemma ab_zero_apply (x : S.X₁) : S.g (S.f x) = 0 := by
   erw [← comp_apply, S.zero]
   rfl
 
-/-- The canonical additive morphism for `S.X₁ →+ AddMonoidHom.ker S.g` induced by `S.f`. -/
+/-- The canonical additive morphism `S.X₁ →+ AddMonoidHom.ker S.g` induced by `S.f`. -/
 @[simps!]
 def abToCycles : S.X₁ →+ AddMonoidHom.ker S.g :=
     AddMonoidHom.mk' (fun x => ⟨S.f x, S.ab_zero_apply x⟩) (by aesop)

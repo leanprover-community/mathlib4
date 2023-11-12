@@ -355,7 +355,7 @@ theorem isCauSeq_abs_exp (z : ℂ) :
   series_ratio_test n (abs z / n) (div_nonneg (abs.nonneg _) (le_of_lt hn0))
     (by rwa [div_lt_iff hn0, one_mul]) fun m hm => by
       rw [abs_abs, abs_abs, Nat.factorial_succ, pow_succ, mul_comm m.succ, Nat.cast_mul, ← div_div,
-        mul_div_assoc, mul_div_right_comm, map_mul, map_div₀, abs_cast_nat]
+        mul_div_assoc, mul_div_right_comm, map_mul, map_div₀, abs_natCast]
       gcongr
       exact le_trans hm (Nat.le_succ _)
 #align complex.is_cau_abs_exp Complex.isCauSeq_abs_exp
@@ -1642,7 +1642,7 @@ theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
     _ ≤ ∑ m in filter (fun k => n ≤ k) (range j), abs (x ^ n * (x ^ (m - n) / m.factorial)) :=
       (abv_sum_le_sum_abv (abv := Complex.abs) _ _)
     _ ≤ ∑ m in filter (fun k => n ≤ k) (range j), abs x ^ n * (1 / m.factorial) := by
-      simp_rw [map_mul, map_pow, map_div₀, abs_cast_nat]
+      simp_rw [map_mul, map_pow, map_div₀, abs_natCast]
       gcongr
       · rw [abv_pow abs]
         exact pow_le_one _ (abs.nonneg _) hx
@@ -1669,7 +1669,7 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
         ∑ i : ℕ in range k, abs (x ^ (n + i) / ((n + i).factorial : ℂ)) :=
       abv_sum_le_sum_abv _ _
     _ ≤ ∑ i : ℕ in range k, abs x ^ (n + i) / (n + i).factorial := by
-      simp [Complex.abs_cast_nat, map_div₀, abv_pow abs]
+      simp [Complex.abs_natCast, map_div₀, abv_pow abs]
     _ ≤ ∑ i : ℕ in range k, abs x ^ (n + i) / ((n.factorial : ℝ) * (n.succ : ℝ) ^ i) := ?_
     _ = ∑ i : ℕ in range k, abs x ^ n / n.factorial * (abs x ^ i / (n.succ : ℝ) ^ i) := ?_
     _ ≤ abs x ^ n / ↑n.factorial * 2 := ?_
