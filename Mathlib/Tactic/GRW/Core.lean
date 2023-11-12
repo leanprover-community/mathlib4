@@ -20,7 +20,30 @@ namespace Mathlib.Tactic.GRW
 
 initialize registerTraceClass `GRW
 
+
 open Std.Tactic.LabelAttr in
+/--
+Lemmas marked `@[grw]` are used by the `grw` tactic to use a relation to rewrite an expression.
+
+The lemma is used to rewrite its first explicit argument into the result type. The other arguments
+are then filled in using the `gcongr` tactic.
+
+For example, this lemma shows `grw` how to convert `a < b` into `c < d`.
+
+```lean
+@[grw]
+lemma rewrite_lt {α : Type} [Preorder α] {a b c d : α} (h₁ : a < b) (h₂ : c ≤ a) (h₃ : b ≤ d) :
+    c < d := lt_of_le_of_lt h₂ (lt_of_lt_of_le h₁ h₃)
+```
+
+These lemmas can do more than just use transitivity. This lemma shows `grw` to to rewrite `a ∈ X`
+into `a ∈ Y`.
+
+```lean
+@[grw]
+lemma rewrite_mem {α : Type} {a : α} {X Y: Set α} (h₁ : a ∈ X) (h₂ : X ⊆ Y) : a ∈ Y := h₂ h₁
+```
+-/
 initialize ext : LabelExtension ← (
   let descr := "A lemma describing how to convert the first argument into the target type, possibly
 introducing side goals. These side goals will be solved with `gcongr`"
@@ -28,6 +51,17 @@ introducing side goals. These side goals will be solved with `gcongr`"
   registerLabelAttr grw descr grw)
 
 open Std.Tactic.LabelAttr in
+/--
+Lemmas marked `@[grw_weaken]` are used to 'weaken' rules in the `grw` tactic, for example by
+converting `a < b` into `a ≤ b`. The lemma should take a single explicit argument.
+
+The `grw` tactic currently tries all weakening lemmas and stops when one works. There is no
+backtracking or recursion.
+
+The weakening process does not affect the type of the resulting target/hypothesis, so it is safe
+to convert `b > a` into `a ≤ b`, for example.
+
+-/
 initialize extWeaken : LabelExtension ← (
   let descr := "A lemma that goes from a strict relation to a non strict one."
   let grw_weaken := `grw_weaken
@@ -121,6 +155,9 @@ private def weaken (rule : Expr) : MetaM Expr := do
 
   return rule
 
+/--
+Use the relation `rule` to rewrite `expr`
+-/
 partial def runGrw (expr rule : Expr) (rev isTarget : Bool) :
     MetaM (Expr × Expr × MVarId) := do
   let oldType ← instantiateMVars (← inferType expr)
