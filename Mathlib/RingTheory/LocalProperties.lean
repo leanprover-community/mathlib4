@@ -212,6 +212,20 @@ theorem RingHom.PropertyIsLocal.ofLocalizationSpan (hP : RingHom.PropertyIsLocal
   exact (IsLocalization.map_comp _).symm
 #align ring_hom.property_is_local.of_localization_span RingHom.PropertyIsLocal.ofLocalizationSpan
 
+lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
+    (hP : RingHom.OfLocalizationSpanTarget P) (hP' : RingHom.RespectsIso P)
+    {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (s : Set S) (hs : Ideal.span s = ⊤)
+    (hT : ∀ r : s, ∃ (T : Type u) (_ : CommRing T) (_ : Algebra S T)
+      (_ : IsLocalization.Away (r : S) T), P ((algebraMap S T).comp f)) : P f := by
+  apply hP _ s hs
+  intros r
+  obtain ⟨T, _, _, _, hT⟩ := hT r
+  convert hP'.1 _
+    (Localization.algEquiv (R := S) (Submonoid.powers (r : S)) T).symm.toRingEquiv hT
+  rw [← RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe,
+    AlgEquiv.toRingEquiv_toRingHom, Localization.coe_algEquiv_symm, IsLocalization.map_comp,
+    RingHom.comp_id]
+
 end RingHom
 
 end Properties
