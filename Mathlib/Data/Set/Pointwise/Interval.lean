@@ -47,13 +47,13 @@ theorem Icc_mul_Icc_subset' (a b c d : α) : Icc a b * Icc c d ⊆ Icc (a * c) (
   rintro x ⟨y, z, ⟨hya, hyb⟩, ⟨hzc, hzd⟩, rfl⟩
   exact ⟨mul_le_mul' hya hzc, mul_le_mul' hyb hzd⟩
 
-@[to_additive Ici_add_Ici_subset]
-theorem Ici_mul_Ici_subset' (a b : α) : Ici a * Ici b ⊆ Ici (a * b) := by
+@[to_additive Iic_add_Iic_subset]
+theorem Iic_mul_Iic_subset' (a b : α) : Iic a * Iic b ⊆ Iic (a * b) := by
   rintro x ⟨y, z, hya, hzb, rfl⟩
   exact mul_le_mul' hya hzb
 
-@[to_additive Iic_add_Iic_subset]
-theorem Iic_mul_Iic_subset' (a b : α) : Iic a * Iic b ⊆ Iic (a * b) := by
+@[to_additive Ici_add_Ici_subset]
+theorem Ici_mul_Ici_subset' (a b : α) : Ici a * Ici b ⊆ Ici (a * b) := by
   rintro x ⟨y, z, hya, hzb, rfl⟩
   exact mul_le_mul' hya hzb
 
