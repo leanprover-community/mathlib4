@@ -100,9 +100,17 @@ lean_lib Counterexamples where
 lean_lib ImportGraph where
   roots := #[`ImportGraph]
 
+lean_lib LongestPole where
+  roots := #[`LongestPole]
+
 /-- `lake exe graph` constructs import graphs in `.dot` or graphical formats. -/
 lean_exe graph where
   root := `ImportGraph.Main
+  supportInterpreter := true
+
+/-- `lake exe pole` computes the longest pole in compilation. -/
+lean_exe pole where
+  root := `LongestPole.Main
   supportInterpreter := true
 
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
