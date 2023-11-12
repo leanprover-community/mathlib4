@@ -27,6 +27,15 @@ expectation of a real function, but we take a different approach (see the file
 * `MeasureTheory.SignedMeasure.absolutelyContinuous_iff_withDensityᵥ_rnDeriv_eq` :
   the Radon-Nikodym theorem for signed measures
 
+The file also contains properties of `rnDeriv` that use the Radon-Nikodym theorem, notably
+* `MeasureTheory.Measure.rnDeriv_withDensity_left`: the Radon-Nikodym derivative of
+  `μ.withDensity f` with respect to `ν` is `f * μ.rnDeriv ν`.
+* `MeasureTheory.Measure.rnDeriv_withDensity_right`: the Radon-Nikodym derivative of
+  `μ` with respect to `ν.withDensity f` is `f⁻¹ * μ.rnDeriv ν`.
+* `MeasureTheory.Measure.inv_rnDeriv`: `(μ.rnDeriv ν)⁻¹ =ᵐ[μ] ν.rnDeriv μ`.
+* `MeasureTheory.Measure.set_lintegral_rnDeriv`: `∫⁻ x in s, μ.rnDeriv ν x ∂ν = μ s` if `μ ≪ ν`.
+  There is also a version of this result for the Bochner integral.
+
 ## Tags
 
 Radon-Nikodym theorem
