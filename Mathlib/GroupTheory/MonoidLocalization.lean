@@ -22,6 +22,7 @@ monoid homomorphism `f : M →* N` satisfying 3 properties:
 1. For all `y ∈ S`, `f y` is a unit;
 2. For all `z : N`, there exists `(x, y) : M × S` such that `z * f y = f x`;
 3. For all `x, y : M`, `f x = f y` iff there exists `c ∈ S` such that `x * c = y * c`.
+   (The "if" direction is a consequence of 1.)
 
 Given such a localization map `f : M →* N`, we can define the surjection
 `Submonoid.LocalizationMap.mk'` sending `(x, y) : M × S` to `f x * (f y)⁻¹`, and
