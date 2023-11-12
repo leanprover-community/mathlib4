@@ -822,7 +822,8 @@ def castIso (eq : n = m) : Fin n ≃o Fin m where
 #align fin.cast Fin.castIso
 
 @[simp]
-theorem symm_castIso (h : n = m) : (castIso h).symm = castIso h.symm := by simp
+theorem symm_castIso (h : n = m) : (castIso h).symm = castIso h.symm := by
+  simp [eq_iff_true_of_subsingleton]
 #align fin.symm_cast Fin.symm_castIso
 
 #align fin.coe_cast Fin.coe_castₓ
@@ -1817,7 +1818,7 @@ section Mul
 
 protected theorem mul_one' [NeZero n] (k : Fin n) : k * 1 = k := by
   cases' n with n
-  · simp
+  · simp [eq_iff_true_of_subsingleton]
   cases n
   · simp [fin_one_eq_zero]
   simp [eq_iff_veq, mul_def, mod_eq_of_lt (is_lt k)]
