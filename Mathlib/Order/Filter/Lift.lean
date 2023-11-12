@@ -370,7 +370,8 @@ theorem lift_lift'_same_eq_lift' {g : Set α → Set α → Set β} (hg₁ : ∀
 
 theorem lift'_inf_principal_eq {h : Set α → Set β} {s : Set β} :
     f.lift' h ⊓ 𝓟 s = f.lift' fun t => h t ∩ s := by
-  simp only [Filter.lift', Filter.lift, Function.comp_def, ← inf_principal, iInf_subtype', ← iInf_inf]
+  simp only [Filter.lift', Filter.lift, Function.comp_def, ← inf_principal, iInf_subtype',
+    ← iInf_inf]
 #align filter.lift'_inf_principal_eq Filter.lift'_inf_principal_eq
 
 theorem lift'_neBot_iff (hh : Monotone h) : NeBot (f.lift' h) ↔ ∀ s ∈ f, (h s).Nonempty :=
