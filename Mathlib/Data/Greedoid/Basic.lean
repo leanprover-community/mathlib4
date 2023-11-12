@@ -328,7 +328,7 @@ decreasing_by
     (card_lt_card ((ssubset_iff_of_subset hs'₂).mpr ⟨x, hx₁, hx₃⟩))
     (by simp [hx₃])
 
-theorem bases_nonempty :
+theorem bases_nonempty (s : Finset α) :
     Nonempty (G.bases s) := by
   simp only [nonempty_subtype]
   have ⟨b, _⟩ :=
@@ -337,7 +337,7 @@ theorem bases_nonempty :
 
 theorem base_nonempty :
     Nonempty G.base :=
-  G.base_bases_eq ▸ bases_nonempty
+  G.base_bases_eq ▸ bases_nonempty _
 
 theorem basis_card_eq
   {b₁ : Finset α} (hb₁ : b₁ ∈ G.bases s)
@@ -484,7 +484,7 @@ theorem exists_subset_basis_of_subset_bases
     ∃ b₂ ∈ G.bases s₂, b₁ ⊆ b₂ := by
   by_cases h : b₁ ∈ G.bases s₂
   · exists b₁
-  · have ⟨b, hb⟩ : Nonempty (G.bases s₂) := bases_nonempty
+  · have ⟨b, hb⟩ := G.bases_nonempty s₂
     have h₃: b₁.card < b.card := by
       have h₃ := subset_trans (basis_subset h₁) h₂
       by_contra' h'
@@ -556,7 +556,7 @@ theorem rank_of_empty : G.rank ∅ = 0 := by
   simp only [rank_eq_basis_card (mem_bases_self_iff.mp G.containsEmpty), card_empty]
 
 theorem rank_of_singleton_le_one {a : α} : G.rank {a} ≤ 1 := by
-  have ⟨_, h⟩ : Nonempty (G.bases {a}) := G.bases_nonempty
+  have ⟨_, h⟩ := G.bases_nonempty {a}
   rw [rank_eq_basis_card h]
   apply (bases_of_singleton h).elim <;> intro h <;> simp only [h, card_empty, card_singleton]
 
@@ -565,7 +565,7 @@ theorem rank_of_singleton_of_feasible {a : α} (ha : {a} ∈ G) : G.rank {a} = 1
   apply (le_iff_lt_or_eq.mp (rank_of_singleton_le_one : G.rank {a} ≤ 1)).elim _ (fun h => h)
   intro h
   exfalso
-  have ⟨_, h'⟩ : Nonempty (G.bases {a}) := G.bases_nonempty
+  have ⟨_, h'⟩ := G.bases_nonempty {a}
   rw [rank_eq_basis_card h'] at h
   simp only [lt_one_iff, card_eq_zero] at h
   simp only [h, bases_empty_iff] at h'
@@ -581,7 +581,7 @@ theorem rank_of_singleton_of_infeasible {a : α} (ha : {a} ∉ G) : G.rank {a} =
   intro h
   simp only [h, one_ne_zero]
   apply ha
-  have ⟨_, h'⟩ : Nonempty (G.bases {a}) := G.bases_nonempty
+  have ⟨_, h'⟩ := G.bases_nonempty {a}
   rw [rank_eq_basis_card h'] at h
   exact basis_mem_feasible (eq_of_subset_of_card_le (basis_subset h') (by simp [h]) ▸ h')
 
@@ -615,7 +615,7 @@ theorem rank_of_infeasible (hs : s ∉ G) : G.rank s < s.card := by
   apply lt_of_le_of_ne (rank_le_card _)
   intro h
   apply hs
-  have ⟨_, hb⟩ : Nonempty (G.bases s) := G.bases_nonempty
+  have ⟨_, hb⟩ := G.bases_nonempty s
   exact mem_bases_self_iff.mpr (bases_of_card_eq hb (rank_eq_basis_card hb ▸ h) ▸ hb)
 
 theorem card_le_rank (h : s.card ≤ G.rank s) : s ∈ G := by
@@ -626,7 +626,7 @@ theorem card_le_rank (h : s.card ≤ G.rank s) : s ∈ G := by
 
 theorem card_feasible_subset_le_rank (hs : s ∈ G) {t : Finset α} (ht : s ⊆ t) :
     s.card ≤ G.rank t := by
-  have ⟨b, hb⟩ : Nonempty (G.bases t) := G.bases_nonempty
+  have ⟨b, hb⟩ := G.bases_nonempty t
   exact rank_eq_basis_card hb ▸ basis_max_card_of_feasible hb hs ht
 
 @[simp]
@@ -641,7 +641,7 @@ theorem bases_subset_of_rank_eq_of_subset
   simp only [basis_mem_feasible hb, subset_trans (basis_subset hb) h₁, true_and]
   intro a ha₁ ha₂
   by_contra' h'
-  have ⟨b', hb'⟩ : Nonempty (G.bases t):= bases_nonempty
+  have ⟨b', hb'⟩ := G.bases_nonempty t
   have h₃ := basis_max_card_of_feasible hb' ha₂ (by
     intro x hx
     rw [mem_insert] at hx
@@ -662,7 +662,7 @@ theorem rank_eq_of_subset_of_subset {s t u : Finset α}
 theorem rank_eq_of_bases_nonempty_subset_bases
   (hst : G.bases s ⊆ G.bases t) :
     G.rank s = G.rank t := by
-  have ⟨b, hs⟩ : Nonempty (G.bases s) := bases_nonempty
+  have ⟨b, hs⟩ := G.bases_nonempty s
   have ht := hst hs
   simp only [rank_eq_basis_card hs, rank_eq_basis_card ht]
 
@@ -675,10 +675,10 @@ theorem local_submodularity
   have h := le_iff_lt_or_eq.mp h
   by_contra' h'
   simp only [mem_insert, h'.symm, or_false] at h; clear h'
-  have ⟨b₁, hb₁₁⟩ : Nonempty (G.bases s) := G.bases_nonempty
+  have ⟨b₁, hb₁₁⟩ := G.bases_nonempty s
   have hb₁₂ := rank_eq_basis_card hb₁₁
   have hb₁₃ := basis_mem_feasible hb₁₁
-  have ⟨b₂, hb₂₁⟩ : Nonempty (G.bases (insert x (insert y s))) := G.bases_nonempty
+  have ⟨b₂, hb₂₁⟩ := G.bases_nonempty (insert x (insert y s))
   have hb₂₂ := rank_eq_basis_card hb₂₁
   have hb₂₃ := basis_mem_feasible hb₂₁
   rw [hb₁₂, hb₂₂] at h
@@ -716,10 +716,10 @@ theorem stronger_local_submodularity_left
   (h₂ : G.rank t = G.rank (s ∩ t)) :
     G.rank (s ∪ t) = G.rank s := by
   by_contra' h'
-  have ⟨_, hb₁₁⟩ : Nonempty (G.bases (s ∪ t)) := G.bases_nonempty
-  have ⟨_, hb₂₁⟩ : Nonempty (G.bases s) := G.bases_nonempty
+  have ⟨_, hb₁₁⟩ := G.bases_nonempty (s ∪ t)
+  have ⟨_, hb₂₁⟩ := G.bases_nonempty s
   have hb₂₂ := rank_eq_basis_card hb₂₁
-  have ⟨b₃, hb₃₁⟩ : Nonempty (G.bases (s ∩ t)) := G.bases_nonempty
+  have ⟨b₃, hb₃₁⟩ := G.bases_nonempty (s ∩ t)
   have hb₃₂ := rank_eq_basis_card hb₃₁
   have h' := lt_of_le_of_ne (G.rank_le_of_subset (subset_union_left s t)) h'.symm
   rw [rank_eq_basis_card hb₁₁] at h'
@@ -757,7 +757,7 @@ theorem ssubset_of_feasible_rank (hs : s ∈ G) (h : t ⊂ s) : G.rank t < G.ran
   intro h'
   exfalso
   have h₁ := bases_of_feasible_eq_singleton hs
-  have ⟨_, hb₁⟩ : Nonempty (G.bases s) := G.bases_nonempty
+  have ⟨_, hb₁⟩ := G.bases_nonempty s
   have hb₂ := rank_eq_basis_card hb₁
   rw [h₁, Finset.mem_singleton] at hb₁
   rw [hb₂, hb₁] at h'
@@ -927,7 +927,7 @@ theorem feasible_iff_elem_notin_closure_minus_elem :
     rw [lt_iff_not_ge] at this
     exact this h₃
   · by_contra' h'
-    have ⟨b, hb₁⟩ : Nonempty (G.bases s) := G.bases_nonempty
+    have ⟨b, hb₁⟩ := G.bases_nonempty s
     have ⟨y, hy₁, hy₂⟩ : ∃ y ∈ s, y ∉ b := by
       by_contra' h'
       rw [subset_antisymm (basis_subset hb₁) h', ← mem_bases_self_iff] at hb₁
@@ -1539,7 +1539,7 @@ theorem rankFeasible_TFAE :
   {
     intro h₁ b h₂ t _
     apply Nat.le_antisymm
-    · have ⟨b₀, hb₀⟩ : Nonempty (G.bases (s ∪ t)) := G.bases_nonempty
+    · have ⟨b₀, hb₀⟩ := G.bases_nonempty (s ∪ t)
       have h₄ : b.card ≤ b₀.card := G.basis_card_le_of_subset_bases h₂ hb₀ (subset_union_left _ _)
       have ⟨b', hb'₁, hb'₂, hb'₃, hb'₄⟩ := exchangeProperty_exists_superset_of_card_le
         G.exchangeProperty (G.basis_mem_feasible hb₀) (G.basis_mem_feasible h₂) h₄ le_rfl h₄
@@ -1588,7 +1588,7 @@ theorem rankFeasible_TFAE :
   tfae_have 3 → 2
   {
     intro h₃ t ht
-    let ⟨b, hb⟩ : Nonempty (G.bases s) := G.bases_nonempty
+    let ⟨_, hb⟩ := G.bases_nonempty s
     rw [h₃ hb ht, G.rank_eq_basis_card hb]
     exact le_trans (rank_le_card _) (card_union_le _ _)
   }
@@ -1600,7 +1600,7 @@ theorem rankFeasible_TFAE :
     apply h'.elim <;> intro h'
     · simp only [basisRank, max'_lt_iff, mem_image, system_feasible_set_mem_mem, and_imp,
         forall_exists_index, forall_apply_eq_imp_iff₂] at h'
-      have ⟨b, hb⟩ : Nonempty (G.bases s) := G.bases_nonempty
+      have ⟨b, hb⟩ := G.bases_nonempty s
       have h' := inter_eq_right.mpr (G.basis_subset hb)
         ▸ G.rank_eq_basis_card hb
         ▸ h' b (G.basis_mem_feasible hb)
@@ -1623,9 +1623,9 @@ theorem rankFeasible_TFAE :
 
 theorem basisRank_union_add_rank_inter_le_basisRank_add_basisRank (s t : Finset α) :
     G.basisRank (s ∪ t) + G.rank (s ∩ t) ≤ G.basisRank s + G.basisRank t := by
-  let ⟨b₁, hb₁⟩ : Nonempty (G.bases (s ∩ t)) := G.bases_nonempty
+  let ⟨b₁, hb₁⟩ := G.bases_nonempty (s ∩ t)
   let ⟨u, hu₁, hu₂⟩ := G.exists_feasible_satisfying_basisRank (s ∪ t)
-  let ⟨b₀, hb₀⟩ : Nonempty (G.bases (s ∪ t ∪ u)) := G.bases_nonempty
+  let ⟨b₀, hb₀⟩ := G.bases_nonempty (s ∪ t ∪ u)
   have h₀ := G.basis_card_le_of_subset_bases hb₁ hb₀ (fun _ h => by
     simp only [union_assoc, mem_inter, mem_union] at *; exact Or.inl h.1)
   let ⟨b₂, hb₂, hb₃, hb₄, hb₅⟩ := exchangeProperty_exists_superset_of_card_le G.exchangeProperty
@@ -1681,7 +1681,7 @@ theorem rankFeasible_iff_subset_subset_monotoneClosure :
     rw [subset_monoconeClosureOperator_iff]
     intro y hy
     by_contra' h'
-    let ⟨b, hb⟩ : Nonempty (G.bases y) := G.bases_nonempty
+    let ⟨b, hb⟩ := G.bases_nonempty y
     have h₁ : x.card ≤ b.card :=
       G.basis_card_le_of_subset_bases (mem_bases_self_iff.mp (G.basis_mem_feasible hx)) hb hy
     have ⟨c, hc₁, hc₂, hc₃, hc₄⟩ := exchangeProperty_exists_superset_of_card_le G.exchangeProperty
@@ -1714,8 +1714,8 @@ theorem rankFeasible_iff_subset_subset_monotoneClosure :
     exact (lt_self_iff_false _).mp
       (lt_of_le_of_lt (h ▸ feasibleSet_inter_card_le_basisRank _
         (insert_feasible_of_not_mem_closure_feasible hc₁ h₃)) h₄)
-  · let ⟨x, hx⟩ : Nonempty (G.bases s) := G.bases_nonempty
-    let ⟨b, hb⟩ : Nonempty G.base := G.base_nonempty
+  · let ⟨x, hx⟩ := G.bases_nonempty s
+    let ⟨b, hb⟩ := G.base_nonempty
     have ⟨a, ha₁, ha₂, ha₃, ha₄⟩ := exchangeProperty_exists_superset_of_card_le G.exchangeProperty
       (G.basis_mem_feasible (G.base_bases_eq ▸ hb)) (G.basis_mem_feasible hx)
       (basis_card_le_of_subset_bases hx (G.base_bases_eq ▸ hb) (subset_univ _))
