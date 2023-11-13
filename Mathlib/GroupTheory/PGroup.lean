@@ -354,7 +354,7 @@ theorem disjoint_of_ne (p₁ p₂ : ℕ) [hp₁ : Fact p₁.Prime] [hp₂ : Fact
   intro x hx₁ hx₂
   obtain ⟨n₁, hn₁⟩ := iff_orderOf.mp hH₁ ⟨x, hx₁⟩
   obtain ⟨n₂, hn₂⟩ := iff_orderOf.mp hH₂ ⟨x, hx₂⟩
-  rw [← orderOf_subgroup, Subgroup.coe_mk] at hn₁ hn₂
+  rw [← orderOf_coe, Subgroup.coe_mk] at hn₁ hn₂
   have : p₁ ^ n₁ = p₂ ^ n₂ := by rw [← hn₁, ← hn₂]
   rcases n₁.eq_zero_or_pos with (rfl | hn₁)
   · simpa using hn₁

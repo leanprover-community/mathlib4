@@ -80,7 +80,7 @@ theorem isAddFundamentalDomain_of_ae_ball (I : Set <| AddCircle T) (u x : AddCir
     exact fun g => quasiMeasurePreserving_add_left (G := AddCircle T) volume g
   · -- `volume univ ≤ ∑' (g : G), volume (g +ᵥ I)`
     replace hI := hI.trans closedBall_ae_eq_ball.symm
-    haveI : Fintype G := @Fintype.ofFinite _ hu.finite_zmultiples
+    haveI : Fintype G := @Fintype.ofFinite _ hu.finite_zmultiples.to_subtype
     have hG_card : (Finset.univ : Finset G).card = n := by
       show _ = addOrderOf u
       rw [←Nat.card_zmultiples, Nat.card_eq_fintype_card]; rfl

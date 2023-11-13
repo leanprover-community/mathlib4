@@ -205,15 +205,15 @@ variable {α : Type*} [Group α] (a : α)
 theorem Nat.card_zpowers : Nat.card (zpowers a) = orderOf a := by
   have := Nat.card_congr (MulAction.orbitZpowersEquiv a (1 : α))
   rwa [Nat.card_zmod, orbit_subgroup_one_eq_self] at this
-#align order_eq_card_zpowers' Nat.card_zpowers
-#align add_order_eq_card_zmultiples' Nat.card_zmultiples
+#align order_eq_card_zpowers' Nat.card_zpowersₓ
+#align add_order_eq_card_zmultiples' Nat.card_zmultiplesₓ
 
 variable {a}
 
 @[to_additive (attr := simp) finite_zmultiples]
 lemma finite_zpowers : (zpowers a : Set α).Finite ↔ IsOfFinOrder a := by
   simp only [← orderOf_pos_iff, ← Nat.card_zpowers, Nat.card_pos_iff, ← SetLike.coe_sort_coe,
-    nonempty_coe_sort, Nat.card_pos_iff, Set.finite_coe_iff, Subgroup.nonempty, true_and]
+    nonempty_coe_sort, Nat.card_pos_iff, Set.finite_coe_iff, Subgroup.coe_nonempty, true_and]
 
 @[to_additive (attr := simp) infinite_zmultiples]
 lemma infinite_zpowers : (zpowers a : Set α).Infinite ↔ ¬IsOfFinOrder a := finite_zpowers.not
@@ -222,10 +222,5 @@ lemma infinite_zpowers : (zpowers a : Set α).Infinite ↔ ¬IsOfFinOrder a := f
 protected alias ⟨_, IsOfFinOrder.finite_zpowers⟩ := finite_zpowers
 #align is_of_fin_order.finite_zpowers IsOfFinOrder.finite_zpowers
 #align is_of_fin_add_order.finite_zmultiples IsOfFinAddOrder.finite_zmultiples
-
-/-- The cardinality of a subgroup is greater than the order of any of its elements. -/
-@[to_additive "The cardinality of a subgroup is greater than the order of any of its elements."]
-lemma Subgroup.orderOf_le_card (s : Subgroup α) (hs : (s : Set α).Finite) (ha : a ∈ s) :
-    orderOf a ≤ Nat.card s := by rw [← Nat.card_zpowers]; exact Nat.card_mono hs $ zpowers_le.2 ha
 
 end Group

@@ -574,7 +574,7 @@ theorem IsCyclic.exponent_eq_card [Group α] [IsCyclic α] [Fintype α] :
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
   apply Nat.dvd_antisymm
   · rw [← lcm_order_eq_exponent, Finset.lcm_dvd_iff]
-    exact fun b _ => orderOf_dvd_card_univ
+    exact fun b _ => orderOf_dvd_card
   rw [← orderOf_eq_card_of_forall_mem_zpowers hg]
   exact order_dvd_exponent _
 #align is_cyclic.exponent_eq_card IsCyclic.exponent_eq_card
