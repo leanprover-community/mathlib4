@@ -75,10 +75,9 @@ This can be used to show that ring multiplication `Rˣ × Rˣ → Rˣ` and inver
 smooth. -/
 lemma ContMDiff.of_comp_units_val
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  {n : WithTop ℕ}
-  {f : M → Rˣ} (hf : ContMDiff I 𝓘(𝕜, R) n ((val : Rˣ → R) ∘ f)) :
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+    {n : WithTop ℕ} {f : M → Rˣ} (hf : ContMDiff I 𝓘(𝕜, R) n ((val : Rˣ → R) ∘ f)) :
   ContMDiff I 𝓘(𝕜, R) n f :=
 ContMDiff.of_comp_openEmbedding Units.openEmbedding_val hf
 

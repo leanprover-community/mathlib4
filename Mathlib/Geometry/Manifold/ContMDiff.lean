@@ -2092,9 +2092,9 @@ space `H'`. Then the smoothness of `e' ∘ f : M → H'` implies the smoothness 
 This is useful, for example, when `e' ∘ f = g ∘ e` for smooth maps `e : M → X` and `g : X → H'`. -/
 lemma ContMDiff.of_comp_openEmbedding
     {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  {M' : Type*} [TopologicalSpace M'] [Nonempty M']
-  {e' : M' → H'} (h : OpenEmbedding e') {n : WithTop ℕ}
-  {f : M → M'} (hf : ContMDiff I I' n (e' ∘ f)) :
+    {M' : Type*} [TopologicalSpace M'] [Nonempty M']
+    {e' : M' → H'} (h : OpenEmbedding e') {n : WithTop ℕ}
+    {f : M → M'} (hf : ContMDiff I I' n (e' ∘ f)) :
   @ContMDiff _ _ _ _ _ _ _ I _ _ _ _ _ _ _ _ I' _ _ h.singletonChartedSpace n f := by
 have : f = (OpenEmbedding.toLocalHomeomorph e' h).symm ∘ e' ∘ f
 · ext
