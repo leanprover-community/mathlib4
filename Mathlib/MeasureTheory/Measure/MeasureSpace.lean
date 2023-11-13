@@ -1453,10 +1453,16 @@ section MeasureSpace
 
 variable {s : Set α} [MeasureSpace α] {p : α → Prop}
 
-instance Subtype.measureSpace : MeasureSpace (Subtype p) :=
-  { Subtype.instMeasurableSpace with
-    volume := Measure.comap Subtype.val volume }
+/-- In a measure space, one can restrict the measure to a subtype to get a new measure space.
+
+Not registered as an instance, as there are other natural choices such as the normalized restriction
+for a probability measure, or the subspace measure when restricting to a vector subspace. Enable
+locally if needed with `attribute [local instance] Measure.Subtype.measureSpace`. -/
+def Subtype.measureSpace : MeasureSpace (Subtype p) where
+  volume := Measure.comap Subtype.val volume
 #align measure_theory.measure.subtype.measure_space MeasureTheory.Measure.Subtype.measureSpace
+
+attribute [local instance] Subtype.measureSpace
 
 theorem Subtype.volume_def : (volume : Measure s) = volume.comap Subtype.val :=
   rfl
@@ -4214,12 +4220,12 @@ variable [MeasureSpace α] {s t : Set α}
 
 /-!
 ### Volume on `s : Set α`
+
+Note the instance is provided earlier as `Subtype.measureSpace`.
 -/
+attribute [local instance] Subtype.measureSpace
 
-
-instance SetCoe.measureSpace (s : Set α) : MeasureSpace s :=
-  ⟨comap ((↑) : s → α) volume⟩
-#align set_coe.measure_space SetCoe.measureSpace
+#align set_coe.measure_space MeasureTheory.Measure.Subtype.measureSpace
 
 theorem volume_set_coe_def (s : Set α) : (volume : Measure s) = comap ((↑) : s → α) volume :=
   rfl
