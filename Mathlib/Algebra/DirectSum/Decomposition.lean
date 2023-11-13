@@ -252,8 +252,8 @@ variable (ℳ : ι → Submodule R M)
 /-- A convenience method to construct a decomposition from an `LinearMap`, such that the proofs
 of left and right inverse can be constructed via `ext`. -/
 abbrev Decomposition.ofLinearMap (decompose : M →ₗ[R] ⨁ i, ℳ i)
-    (h_left_inv : (DirectSum.coeLinearMap ℳ) ∘ₗ decompose = .id)
-    (h_right_inv : decompose ∘ₗ (DirectSum.coeLinearMap ℳ) = .id) : Decomposition ℳ where
+    (h_left_inv : DirectSum.coeLinearMap ℳ ∘ₗ decompose = .id)
+    (h_right_inv : decompose ∘ₗ DirectSum.coeLinearMap ℳ = .id) : Decomposition ℳ where
   decompose' := decompose
   left_inv := FunLike.congr_fun h_left_inv
   right_inv := FunLike.congr_fun h_right_inv
