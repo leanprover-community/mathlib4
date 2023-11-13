@@ -70,12 +70,17 @@ elab tok:"grw" rules:rwRuleSeq loc:(location)? : tactic =>
         let ⟨newType, newHyp, subgoals⟩ ← grwHypothesis (Expr.fvar fvar) rulePrf rev
         let name ← fvar.getUserName
         let ⟨newFvar, newGoal, _⟩ ← (← getMainGoal).assertAfter fvar name newType newHyp
-        replaceMainGoal $ [← newGoal.clear fvar].append (subgoals.toList)
+        replaceMainGoal (subgoals.push (← newGoal.clear fvar)).toList
         mvar.assign (Expr.fvar newFvar)
     )
     (atTarget := withRWRulesSeq tok rules fun rev syn ↦ withMainContext do
       let rulePrf ← elabTerm syn none
       let ⟨newGoal, subgoals⟩ ← (← getMainGoal).grw rulePrf rev
-      replaceMainGoal $ [newGoal].append subgoals.toList
+      try
+        withReducible newGoal.applyRfl
+        trace[GRW] "Solve main goal with `rfl`"
+        replaceMainGoal subgoals.toList
+      catch _ =>
+        replaceMainGoal (subgoals.push newGoal).toList
     )
     (failed := fun _ ↦ throwError "grw failed")
