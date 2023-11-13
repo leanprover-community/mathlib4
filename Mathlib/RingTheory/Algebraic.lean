@@ -252,13 +252,13 @@ theorem Algebra.IsAlgebraic.of_larger_base (A_alg : IsAlgebraic K A) : IsAlgebra
 variable (K)
 
 theorem isAlgebraic_of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e :=
-  isAlgebraic_iff_isIntegral.mpr (isIntegral_of_finite K e)
+  isAlgebraic_iff_isIntegral.mpr (.of_finite e)
 
 variable (A)
 
 /-- A field extension is algebraic if it is finite. -/
 theorem Algebra.isAlgebraic_of_finite [FiniteDimensional K A] : IsAlgebraic K A :=
-  Algebra.isAlgebraic_iff_isIntegral.mpr (isIntegral_of_finite K A)
+  Algebra.isAlgebraic_iff_isIntegral.mpr .of_finite
 #align algebra.is_algebraic_of_finite Algebra.isAlgebraic_of_finite
 
 end Field
@@ -267,7 +267,7 @@ end Ring
 
 section CommRing
 
-variable [Field K] [Field L] [CommRing A]
+variable [Field K] [Field L] [Ring A]
 
 variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
 
@@ -275,8 +275,8 @@ variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
 then A is algebraic over K. -/
 protected theorem Algebra.IsAlgebraic.trans (L_alg : IsAlgebraic K L) (A_alg : IsAlgebraic L A) :
     IsAlgebraic K A := by
-  simp only [IsAlgebraic, isAlgebraic_iff_isIntegral] at L_alg A_alg ⊢
-  exact isIntegral_trans L_alg A_alg
+  rw [Algebra.isAlgebraic_iff_isIntegral] at L_alg A_alg ⊢
+  exact L_alg.trans A_alg
 #align algebra.is_algebraic_trans Algebra.IsAlgebraic.trans
 
 end CommRing
@@ -324,12 +324,8 @@ noncomputable def algEquivEquivAlgHom (ha : Algebra.IsAlgebraic K L) :
     (L ≃ₐ[K] L) ≃* (L →ₐ[K] L) where
   toFun ϕ := ϕ.toAlgHom
   invFun ϕ := AlgEquiv.ofBijective ϕ (ha.algHom_bijective ϕ)
-  left_inv _ := by
-    ext
-    rfl
-  right_inv _ := by
-    ext
-    rfl
+  left_inv _ := by ext; rfl
+  right_inv _ := by ext; rfl
   map_mul' _ _ := rfl
 #align algebra.is_algebraic.alg_equiv_equiv_alg_hom Algebra.IsAlgebraic.algEquivEquivAlgHom
 
