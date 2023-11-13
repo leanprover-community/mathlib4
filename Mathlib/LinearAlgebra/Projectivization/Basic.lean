@@ -45,8 +45,8 @@ The notation `ℙ K V` is preferred. -/
 def Projectivization := Quotient (projectivizationSetoid K V)
 #align projectivization Projectivization
 
-scoped[LinearAlgebra.Projectivization]
-notation "ℙ" => Projectivization
+/-- We define notations `ℙ K V` for the projectivization of the `K`-vector space `V`. -/
+scoped[LinearAlgebra.Projectivization] notation "ℙ" => Projectivization
 
 namespace Projectivization
 
