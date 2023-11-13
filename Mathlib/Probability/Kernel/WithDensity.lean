@@ -72,7 +72,7 @@ protected theorem withDensity_apply' (κ : kernel α β) [IsSFiniteKernel κ]
   rw [kernel.withDensity_apply κ hf, withDensity_apply _ hs]
 #align probability_theory.kernel.with_density_apply' ProbabilityTheory.kernel.withDensity_apply'
 
-protected theorem withDensity_apply'' (κ : kernel α β) [IsFiniteKernel κ]
+theorem withDensity_apply_of_isFiniteKernel (κ : kernel α β) [IsFiniteKernel κ]
     (hf : Measurable (Function.uncurry f)) (a : α) (s : Set β) :
     withDensity κ f a s = ∫⁻ b in s, f a b ∂κ a := by
   rw [kernel.withDensity_apply κ hf, withDensity_apply' _ s]
@@ -146,7 +146,7 @@ theorem isFiniteKernel_withDensity_of_bounded (κ : kernel α β) [IsFiniteKerne
   by_cases hf : Measurable (Function.uncurry f)
   · exact ⟨⟨B * IsFiniteKernel.bound κ, ENNReal.mul_lt_top hB_top (IsFiniteKernel.bound_ne_top κ),
       fun a => by
-        rw [kernel.withDensity_apply'' κ hf a Set.univ]
+        rw [withDensity_apply_of_isFiniteKernel κ hf a Set.univ]
         calc
           ∫⁻ b in Set.univ, f a b ∂κ a ≤ ∫⁻ _ in Set.univ, B ∂κ a := lintegral_mono (hf_B a)
           _ = B * κ a Set.univ := by
