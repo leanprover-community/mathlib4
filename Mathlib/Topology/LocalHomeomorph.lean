@@ -1346,7 +1346,7 @@ lemma toLocalHomeomorph_left_inv {x : α} :
 #align open_embedding.to_local_homeomorph_left_inv OpenEmbedding.toLocalHomeomorph_left_inv
 
 lemma toLocalHomeomorph_right_inv {x : β} (hx : x ∈ Set.range f) :
-  f ((h.toLocalHomeomorph f).symm x) = x := by
+    f ((h.toLocalHomeomorph f).symm x) = x := by
   rw [←congr_fun (h.toLocalHomeomorph_apply f), LocalHomeomorph.right_inv]
   rwa [toLocalHomeomorph_target]
 #align open_embedding.to_local_homeomorph_right_inv OpenEmbedding.toLocalHomeomorph_right_inv
