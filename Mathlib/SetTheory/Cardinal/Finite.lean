@@ -46,6 +46,9 @@ lemma card_eq_zero_of_isEmpty [IsEmpty α] : Nat.card α = 0 := by simp [Nat.car
 @[simp] lemma card_eq_zero_of_infinite [Infinite α] : Nat.card α = 0 := mk_toNat_of_infinite
 #align nat.card_eq_zero_of_infinite Nat.card_eq_zero_of_infinite
 
+lemma _root_.Set.Infinite.card_eq_zero {s : Set α} (hs : s.Infinite) : Nat.card s = 0 :=
+  @card_eq_zero_of_infinite _ hs.to_subtype
+
 lemma card_eq_zero : Nat.card α = 0 ↔ IsEmpty α ∨ Infinite α := by
   simp [Nat.card, mk_eq_zero_iff, aleph0_le_mk_iff]
 
@@ -80,6 +83,9 @@ theorem card_eq_of_bijective (f : α → β) (hf : Function.Bijective f) : Nat.c
 theorem card_eq_of_equiv_fin {α : Type*} {n : ℕ} (f : α ≃ Fin n) : Nat.card α = n := by
   simpa only [card_eq_fintype_card, Fintype.card_fin] using card_congr f
 #align nat.card_eq_of_equiv_fin Nat.card_eq_of_equiv_fin
+
+lemma card_mono {s t : Set α} (ht : t.Finite) (h : s ⊆ t) : Nat.card s ≤ Nat.card t :=
+  toNat_le_of_le_of_lt_aleph0 ht.lt_aleph0 <| mk_le_mk_of_subset h
 
 /-- If the cardinality is positive, that means it is a finite type, so there is
 an equivalence between `α` and `Fin (Nat.card α)`. See also `Finite.equivFin`. -/
@@ -180,17 +186,11 @@ theorem card_congr {α : Type*} {β : Type*} (f : α ≃ β) : PartENat.card α 
   Cardinal.toPartENat_congr f
 #align part_enat.card_congr PartENat.card_congr
 
-theorem card_uLift (α : Type*) : card (ULift α) = card α :=
-  card_congr Equiv.ulift
-#align part_enat.card_ulift PartENat.card_uLift
+@[simp] lemma card_ulift (α : Type*) : card (ULift α) = card α := card_congr Equiv.ulift
+#align part_enat.card_ulift PartENat.card_ulift
 
-@[simp]
-theorem card_pLift (α : Type*) : card (PLift α) = card α :=
-  card_congr Equiv.plift
-#align part_enat.card_plift PartENat.card_pLift
-
-lemma card_mono {s t : Set α} (ht : t.Finite) (h : s ⊆ t) : Nat.card s ≤ Nat.card t :=
-  toNat_le_of_le_of_lt_aleph0 ht.lt_aleph0 <| mk_le_mk_of_subset h
+@[simp] lemma card_plift (α : Type*) : card (PLift α) = card α := card_congr Equiv.plift
+#align part_enat.card_plift PartENat.card_plift
 
 theorem card_image_of_injOn {α : Type u} {β : Type v} {f : α → β} {s : Set α} (h : Set.InjOn f s) :
     card (f '' s) = card s :=

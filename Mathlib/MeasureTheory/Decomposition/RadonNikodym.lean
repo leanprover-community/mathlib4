@@ -317,14 +317,8 @@ lemma inv_rnDeriv' [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
   filter_upwards [inv_rnDeriv hμν] with x hx; simp only [Pi.inv_apply, ← hx, inv_inv]
 
 lemma set_lintegral_rnDeriv_le (s : Set α) :
-    ∫⁻ x in s, μ.rnDeriv ν x ∂ν ≤ μ s := by
-  let t := toMeasurable μ s
-  calc ∫⁻ x in s, μ.rnDeriv ν x ∂ν
-    ≤ ∫⁻ x in t, μ.rnDeriv ν x ∂ν := lintegral_mono_set (subset_toMeasurable μ s)
-  _ ≤ μ t := by
-        rw [← withDensity_apply _ (measurableSet_toMeasurable μ s)]
-        exact withDensity_rnDeriv_le _ _ _ (measurableSet_toMeasurable μ s)
-  _ = μ s := by rw [← measure_toMeasurable s]
+    ∫⁻ x in s, μ.rnDeriv ν x ∂ν ≤ μ s :=
+  (withDensity_apply_le _ _).trans (Measure.le_iff'.1 (withDensity_rnDeriv_le μ ν) s)
 
 lemma set_lintegral_rnDeriv [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) {s : Set α}
     (hs : MeasurableSet s) :
