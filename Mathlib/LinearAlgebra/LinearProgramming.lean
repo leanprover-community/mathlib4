@@ -50,32 +50,16 @@ def LinearProgram.MinAt (lp : LinearProgram K P) (x : P) : Prop :=
 lemma LinearProgram.feasibles_mkOfEqs
     (equalities inequalities : List (P →ᵃ[K] K)) (objective : P →ᵃ[K] K) :
     (mkOfEqs equalities inequalities objective).feasibles =
-    { x : P | (∀ a ∈ equalities, a x = 0) ∧ (∀ a ∈ inequalities, 0 ≤ a x) } := by
+      {x : P | (∀ a ∈ inequalities, 0 ≤ a x) ∧ (∀ a ∈ equalities, a x = 0)} := by
   ext x
-  rw [mem_feasibles, LinearProgram.mkOfEqs]
-  simp only [List.mem_append, List.mem_map]
-  constructor
-  · intro hyp
-    simp only [Function.Involutive.exists_mem_and_apply_eq_iff, neg_involutive] at hyp
-    constructor
-    · intro constr_eq mem_equalities
-      refine le_antisymm ?neg (hyp (by simp [mem_equalities]))
-      rw [← Left.nonneg_neg_iff, ← Pi.neg_apply, ← AffineMap.coe_neg]
-      apply hyp
-      simp [mem_equalities]
-    · intro constr_le mem_inequalities
-      exact hyp (by simp [mem_inequalities])
-  · intro hyp
-    intro constraint constraint_mem
-    cases constraint_mem with
-    | inl normal =>
-      cases normal with
-      | inl mem_les => exact hyp.2 constraint mem_les
-      | inr mem_eqs => exact Eq.ge (hyp.1 constraint mem_eqs)
-    | inr negated =>
-      rcases negated with ⟨orig, orig_mem, neg_orig⟩
-      rw [← neg_orig]
-      simp [hyp.1 orig orig_mem]
+  simp only [mem_feasibles, LinearProgram.mkOfEqs, Set.mem_setOf]
+  have : (∀ a ∈ equalities, a x = 0) ↔ (∀ a, a ∈ equalities ∨ -a ∈ equalities → 0 ≤ a x) := by
+    simp_rw [le_antisymm_iff, ←neg_nonneg, and_comm, or_imp, imp_and, forall_and]
+    refine and_congr_right' ?_
+    rw [Iff.comm, neg_involutive.surjective.forall]
+    simp_rw [neg_neg, AffineMap.coe_neg, Pi.neg_apply]
+  simp_rw [List.mem_append, List.mem_map_of_involutive neg_involutive, or_assoc,
+    @or_imp (_ ∈ inequalities), forall_and, this]
 
 /-- Adding more constraints cannot enlarge the set of feasible solutions. -/
 lemma LinearProgram.feasibles_superset_of_constraints_subset {lp₁ lp₂ : LinearProgram K P}
