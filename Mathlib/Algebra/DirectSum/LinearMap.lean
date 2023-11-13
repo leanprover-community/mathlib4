@@ -21,15 +21,16 @@ variable {ι R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace LinearMap
 
-/-- If a linear map `f : M → M₂` respects direct sum decompositions of `M` and `M₂`, then it has a
+/-- If a linear map `f : M₁ → M₂` respects direct sum decompositions of `M` and `M₂`, then it has a
 block diagonal matrix with respect to bases compatible with the direct sum decompositions. -/
-lemma toMatrix_directSum_collectedBasis_eq_blockDiagonal' [Fintype ι]
-    {M₂ : Type*} [AddCommGroup M₂] [Module R M₂] {N₂ : ι → Submodule R M₂} (h₂ : IsInternal N₂)
-    {κ κ₂ : ι → Type*} [∀ i, Fintype (κ i)] [∀ i, Fintype (κ₂ i)] [∀ i, DecidableEq (κ i)]
-    (b : (i : ι) → Basis (κ i) R (N i)) (b₂ : (i : ι) → Basis (κ₂ i) R (N₂ i))
-    {f : M →ₗ[R] M₂} (hf : ∀ i, MapsTo f (N i) (N₂ i)) :
-    toMatrix (h.collectedBasis b) (h₂.collectedBasis b₂) f =
-    Matrix.blockDiagonal' fun i ↦ toMatrix (b i) (b₂ i) (f.restrict (hf i)) := by
+lemma toMatrix_directSum_collectedBasis_eq_blockDiagonal' {R M₁ M₂ : Type*} [CommSemiring R]
+    [AddCommMonoid M₁] [Module R M₁] {N₁ : ι → Submodule R M₁} (h₁ : IsInternal N₁)
+    [AddCommMonoid M₂] [Module R M₂] {N₂ : ι → Submodule R M₂} (h₂ : IsInternal N₂)
+    {κ₁ κ₂ : ι → Type*} [∀ i, Fintype (κ₁ i)] [∀ i, Fintype (κ₂ i)] [∀ i, DecidableEq (κ₁ i)]
+    [Fintype ι] (b₁ : (i : ι) → Basis (κ₁ i) R (N₁ i)) (b₂ : (i : ι) → Basis (κ₂ i) R (N₂ i))
+    {f : M₁ →ₗ[R] M₂} (hf : ∀ i, MapsTo f (N₁ i) (N₂ i)) :
+    toMatrix (h₁.collectedBasis b₁) (h₂.collectedBasis b₂) f =
+    Matrix.blockDiagonal' fun i ↦ toMatrix (b₁ i) (b₂ i) (f.restrict (hf i)) := by
   ext ⟨i, _⟩ ⟨j, _⟩
   simp only [toMatrix_apply, Matrix.blockDiagonal'_apply]
   rcases eq_or_ne i j with rfl | hij
