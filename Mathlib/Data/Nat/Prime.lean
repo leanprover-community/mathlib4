@@ -51,11 +51,11 @@ theorem irreducible_iff_nat_prime (a : ℕ) : Irreducible a ↔ Nat.Prime a :=
   Iff.rfl
 #align irreducible_iff_nat_prime Nat.irreducible_iff_nat_prime
 
-theorem not_prime_zero : ¬Prime 0
+@[aesop safe destruct] theorem not_prime_zero : ¬Prime 0
   | h => h.ne_zero rfl
 #align nat.not_prime_zero Nat.not_prime_zero
 
-theorem not_prime_one : ¬Prime 1
+@[aesop safe destruct] theorem not_prime_one : ¬Prime 1
   | h => h.ne_one rfl
 #align nat.not_prime_one Nat.not_prime_one
 

@@ -1453,10 +1453,16 @@ section MeasureSpace
 
 variable {s : Set α} [MeasureSpace α] {p : α → Prop}
 
-instance Subtype.measureSpace : MeasureSpace (Subtype p) :=
-  { Subtype.instMeasurableSpace with
-    volume := Measure.comap Subtype.val volume }
+/-- In a measure space, one can restrict the measure to a subtype to get a new measure space.
+
+Not registered as an instance, as there are other natural choices such as the normalized restriction
+for a probability measure, or the subspace measure when restricting to a vector subspace. Enable
+locally if needed with `attribute [local instance] Measure.Subtype.measureSpace`. -/
+def Subtype.measureSpace : MeasureSpace (Subtype p) where
+  volume := Measure.comap Subtype.val volume
 #align measure_theory.measure.subtype.measure_space MeasureTheory.Measure.Subtype.measureSpace
+
+attribute [local instance] Subtype.measureSpace
 
 theorem Subtype.volume_def : (volume : Measure s) = volume.comap Subtype.val :=
   rfl
@@ -2155,6 +2161,8 @@ instance instIsRefl [MeasurableSpace α] : IsRefl (Measure α) (· ≪ ·) :=
   ⟨fun _ => AbsolutelyContinuous.rfl⟩
 #align measure_theory.measure.absolutely_continuous.is_refl MeasureTheory.Measure.AbsolutelyContinuous.instIsRefl
 
+protected lemma zero (μ : Measure α) : 0 ≪ μ := fun s _ ↦ by simp
+
 @[trans]
 protected theorem trans (h1 : μ₁ ≪ μ₂) (h2 : μ₂ ≪ μ₃) : μ₁ ≪ μ₃ := fun _s hs => h1 <| h2 hs
 #align measure_theory.measure.absolutely_continuous.trans MeasureTheory.Measure.AbsolutelyContinuous.trans
@@ -2168,6 +2176,21 @@ protected theorem smul [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower
     (h : μ ≪ ν) (c : R) : c • μ ≪ ν := fun s hνs => by
   simp only [h hνs, smul_eq_mul, smul_apply, smul_zero]
 #align measure_theory.measure.absolutely_continuous.smul MeasureTheory.Measure.AbsolutelyContinuous.smul
+
+protected lemma add (h1 : μ₁ ≪ ν) (h2 : μ₂ ≪ ν') : μ₁ + μ₂ ≪ ν + ν' := by
+  intro s hs
+  simp only [add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
+  exact ⟨h1 hs.1, h2 hs.2⟩
+
+lemma add_right (h1 : μ ≪ ν) (ν' : Measure α) : μ ≪ ν + ν' := by
+  intro s hs
+  simp only [add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
+  exact h1 hs.1
+
+lemma restrict (h : μ ≪ ν) (s : Set α) : μ.restrict s ≪ ν.restrict s := by
+  refine Measure.AbsolutelyContinuous.mk (fun t ht htν ↦ ?_)
+  rw [restrict_apply ht] at htν ⊢
+  exact h htν
 
 end AbsolutelyContinuous
 
@@ -4197,12 +4220,12 @@ variable [MeasureSpace α] {s t : Set α}
 
 /-!
 ### Volume on `s : Set α`
+
+Note the instance is provided earlier as `Subtype.measureSpace`.
 -/
+attribute [local instance] Subtype.measureSpace
 
-
-instance SetCoe.measureSpace (s : Set α) : MeasureSpace s :=
-  ⟨comap ((↑) : s → α) volume⟩
-#align set_coe.measure_space SetCoe.measureSpace
+#align set_coe.measure_space MeasureTheory.Measure.Subtype.measureSpace
 
 theorem volume_set_coe_def (s : Set α) : (volume : Measure s) = comap ((↑) : s → α) volume :=
   rfl
