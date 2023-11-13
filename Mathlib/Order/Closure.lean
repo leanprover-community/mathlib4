@@ -65,9 +65,11 @@ structure ClosureOperator [Preorder α] extends α →o α where
 
 namespace ClosureOperator
 
-instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where
+instance [Preorder α] : NDFunLike (ClosureOperator α) α α where
   coe c := c.1
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr; exact FunLike.ext' h
+
+instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where
   map_rel f _ _ h := f.mono h
 
 initialize_simps_projections ClosureOperator (toFun → apply)

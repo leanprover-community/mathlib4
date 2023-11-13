@@ -99,8 +99,7 @@ section
 /-- `SupHomClass F α β` states that `F` is a type of `⊔`-preserving morphisms.
 
 You should extend this class when you extend `SupHom`. -/
-class SupHomClass (F : Type*) (α β : outParam <| Type*) [Sup α] [Sup β] extends
-  FunLike F α fun _ => β where
+class SupHomClass (F α β : Type*) [Sup α] [Sup β] [NDFunLike F α β] : Prop where
   /-- A `SupHomClass` morphism preserves suprema. -/
   map_sup (f : F) (a b : α) : f (a ⊔ b) = f a ⊔ f b
 #align sup_hom_class SupHomClass
@@ -108,8 +107,7 @@ class SupHomClass (F : Type*) (α β : outParam <| Type*) [Sup α] [Sup β] exte
 /-- `InfHomClass F α β` states that `F` is a type of `⊓`-preserving morphisms.
 
 You should extend this class when you extend `InfHom`. -/
-class InfHomClass (F : Type*) (α β : outParam <| Type*) [Inf α] [Inf β] extends
-  FunLike F α fun _ => β where
+class InfHomClass (F α β : Type*) [Inf α] [Inf β] [NDFunLike F α β] : Prop where
   /-- An `InfHomClass` morphism preserves infima. -/
   map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
 #align inf_hom_class InfHomClass
@@ -117,8 +115,8 @@ class InfHomClass (F : Type*) (α β : outParam <| Type*) [Inf α] [Inf β] exte
 /-- `SupBotHomClass F α β` states that `F` is a type of finitary supremum-preserving morphisms.
 
 You should extend this class when you extend `SupBotHom`. -/
-class SupBotHomClass (F : Type*) (α β : outParam <| Type*) [Sup α] [Sup β] [Bot α]
-  [Bot β] extends SupHomClass F α β where
+class SupBotHomClass (F α β : Type*) [Sup α] [Sup β] [Bot α] [Bot β] [NDFunLike F α β]
+  extends SupHomClass F α β : Prop where
   /-- A `SupBotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
 #align sup_bot_hom_class SupBotHomClass
@@ -126,8 +124,8 @@ class SupBotHomClass (F : Type*) (α β : outParam <| Type*) [Sup α] [Sup β] [
 /-- `InfTopHomClass F α β` states that `F` is a type of finitary infimum-preserving morphisms.
 
 You should extend this class when you extend `SupBotHom`. -/
-class InfTopHomClass (F : Type*) (α β : outParam <| Type*) [Inf α] [Inf β] [Top α]
-  [Top β] extends InfHomClass F α β where
+class InfTopHomClass (F α β : Type*) [Inf α] [Inf β] [Top α] [Top β] [NDFunLike F α β]
+  extends InfHomClass F α β : Prop where
   /-- An `InfTopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
 #align inf_top_hom_class InfTopHomClass
@@ -135,8 +133,8 @@ class InfTopHomClass (F : Type*) (α β : outParam <| Type*) [Inf α] [Inf β] [
 /-- `LatticeHomClass F α β` states that `F` is a type of lattice morphisms.
 
 You should extend this class when you extend `LatticeHom`. -/
-class LatticeHomClass (F : Type*) (α β : outParam <| Type*) [Lattice α] [Lattice β] extends
-  SupHomClass F α β where
+class LatticeHomClass (F α β : Type*) [Lattice α] [Lattice β] [NDFunLike F α β]
+  extends SupHomClass F α β : Prop where
   /-- A `LatticeHomClass` morphism preserves infima. -/
   map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
 #align lattice_hom_class LatticeHomClass
@@ -144,8 +142,8 @@ class LatticeHomClass (F : Type*) (α β : outParam <| Type*) [Lattice α] [Latt
 /-- `BoundedLatticeHomClass F α β` states that `F` is a type of bounded lattice morphisms.
 
 You should extend this class when you extend `BoundedLatticeHom`. -/
-class BoundedLatticeHomClass (F : Type*) (α β : outParam <| Type*) [Lattice α] [Lattice β]
-  [BoundedOrder α] [BoundedOrder β] extends LatticeHomClass F α β where
+class BoundedLatticeHomClass (F α β : Type*) [Lattice α] [Lattice β] [BoundedOrder α]
+  [BoundedOrder β] [NDFunLike F α β] extends LatticeHomClass F α β : Prop where
   /-- A `BoundedLatticeHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
   /-- A `BoundedLatticeHomClass` morphism preserves the bottom element. -/
@@ -159,6 +157,10 @@ export SupHomClass (map_sup)
 export InfHomClass (map_inf)
 
 attribute [simp] map_top map_bot map_sup map_inf
+
+section Hom
+
+variable [NDFunLike F α β]
 
 -- porting note: changes to the typeclass inference system mean that we need to
 -- make a lot of changes here, adding `outParams`, changing `[]`s into `{}` and
@@ -216,6 +218,12 @@ instance (priority := 100) BoundedLatticeHomClass.toBoundedOrderHomClass [Lattic
 { show OrderHomClass F α β from inferInstance, ‹BoundedLatticeHomClass F α β› with }
 #align bounded_lattice_hom_class.to_bounded_order_hom_class BoundedLatticeHomClass.toBoundedOrderHomClass
 
+end Hom
+
+section Equiv
+
+variable [EquivLike F α β]
+
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toSupHomClass [SemilatticeSup α] [SemilatticeSup β]
     [OrderIsoClass F α β] : SupHomClass F α β :=
@@ -258,10 +266,13 @@ instance (priority := 100) OrderIsoClass.toBoundedLatticeHomClass [Lattice α] [
   { OrderIsoClass.toLatticeHomClass, OrderIsoClass.toBoundedOrderHomClass with }
 #align order_iso_class.to_bounded_lattice_hom_class OrderIsoClass.toBoundedLatticeHomClass
 
+end Equiv
+
 section BoundedLattice
 
-variable [Lattice α] [BoundedOrder α] [Lattice β] [BoundedOrder β] [BoundedLatticeHomClass F α β]
-  (f : F) {a b : α}
+variable [Lattice α] [BoundedOrder α] [Lattice β] [BoundedOrder β]
+variable [NDFunLike F α β] [BoundedLatticeHomClass F α β]
+variable (f : F) {a b : α}
 
 theorem Disjoint.map (h : Disjoint a b) : Disjoint (f a) (f b) := by
   rw [disjoint_iff, ← map_inf, h.eq_bot, map_bot]
@@ -279,7 +290,8 @@ end BoundedLattice
 
 section BooleanAlgebra
 
-variable [BooleanAlgebra α] [BooleanAlgebra β] [BoundedLatticeHomClass F α β] (f : F)
+variable [BooleanAlgebra α] [BooleanAlgebra β] [NDFunLike F α β] [BoundedLatticeHomClass F α β]
+variable (f : F)
 
 /-- Special case of `map_compl` for boolean algebras. -/
 theorem map_compl' (a : α) : f aᶜ = (f a)ᶜ :=
@@ -297,6 +309,8 @@ theorem map_symmDiff' (a b : α) : f (a ∆ b) = f a ∆ f b := by
 #align map_symm_diff' map_symmDiff'
 
 end BooleanAlgebra
+
+variable [NDFunLike F α β]
 
 instance [Sup α] [Sup β] [SupHomClass F α β] : CoeTC F (SupHom α β) :=
   ⟨fun f => ⟨f, map_sup f⟩⟩
@@ -334,16 +348,12 @@ section Sup
 
 variable [Sup β] [Sup γ] [Sup δ]
 
-instance : SupHomClass (SupHom α β) α β where
+instance : NDFunLike (SupHom α β) α β where
   coe := SupHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
-  map_sup := SupHom.map_sup'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
-directly. -/
--- porting note: replaced `CoeFun` with `FunLike` so that we use `FunLike.coe` instead of `toFun`
-instance : FunLike (SupHom α β) α fun _ => β :=
-  SupHomClass.toFunLike
+instance : SupHomClass (SupHom α β) α β where
+  map_sup := SupHom.map_sup'
 
 @[simp] lemma toFun_eq_coe (f : SupHom α β) : f.toFun = f := rfl
 #align sup_hom.to_fun_eq_coe SupHom.toFun_eq_coe
@@ -522,15 +532,12 @@ section Inf
 
 variable [Inf β] [Inf γ] [Inf δ]
 
-instance : InfHomClass (InfHom α β) α β where
+instance : NDFunLike (InfHom α β) α β where
   coe := InfHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
-  map_inf := InfHom.map_inf'
 
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
-directly. -/
-instance : FunLike (InfHom α β) α fun _ => β :=
-  InfHomClass.toFunLike
+instance : InfHomClass (InfHom α β) α β where
+  map_inf := InfHom.map_inf'
 
 @[simp] lemma toFun_eq_coe (f : InfHom α β) : f.toFun = (f : α → β) := rfl
 #align inf_hom.to_fun_eq_coe InfHom.toFun_eq_coe
@@ -714,19 +721,18 @@ def toBotHom (f : SupBotHom α β) : BotHom α β :=
   { f with }
 #align sup_bot_hom.to_bot_hom SupBotHom.toBotHom
 
-instance : SupBotHomClass (SupBotHom α β) α β
+instance : NDFunLike (SupBotHom α β) α β
     where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
+
+instance : SupBotHomClass (SupBotHom α β) α β
+    where
   map_sup f := f.map_sup'
   map_bot f := f.map_bot'
-
--- porting note: replaced `CoeFun` instance with `FunLike` instance
-instance : FunLike (SupBotHom α β) α fun _ => β :=
-  SupHomClass.toFunLike
 
 lemma toFun_eq_coe (f : SupBotHom α β) : f.toFun = f := rfl
 #align sup_bot_hom.to_fun_eq_coe SupBotHom.toFun_eq_coe
@@ -869,20 +875,16 @@ def toTopHom (f : InfTopHom α β) : TopHom α β :=
   { f with }
 #align inf_top_hom.to_top_hom InfTopHom.toTopHom
 
-instance : InfTopHomClass (InfTopHom α β) α β
-    where
+instance : NDFunLike (InfTopHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by
     obtain ⟨⟨_, _⟩, _⟩ := f
     obtain ⟨⟨_, _⟩, _⟩ := g
     congr
+
+instance : InfTopHomClass (InfTopHom α β) α β where
   map_inf f := f.map_inf'
   map_top f := f.map_top'
-
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
-directly. -/
-instance : FunLike (InfTopHom α β) α fun _ => β :=
-  InfHomClass.toFunLike
 
 theorem toFun_eq_coe (f : InfTopHom α β) : f.toFun = f := rfl
 #align inf_top_hom.to_fun_eq_coe InfTopHom.toFun_eq_coe
@@ -1021,17 +1023,13 @@ def toInfHom (f : LatticeHom α β) : InfHom α β :=
   { f with }
 #align lattice_hom.to_inf_hom LatticeHom.toInfHom
 
-instance : LatticeHomClass (LatticeHom α β) α β
-    where
+instance : NDFunLike (LatticeHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := g; congr
+
+instance : LatticeHomClass (LatticeHom α β) α β where
   map_sup f := f.map_sup'
   map_inf f := f.map_inf'
-
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
-directly. -/
-instance : FunLike (LatticeHom α β) α fun _ => β :=
-  SupHomClass.toFunLike
 
 lemma toFun_eq_coe (f : LatticeHom α β) : f.toFun = f := rfl
 #align lattice_hom.to_fun_eq_coe LatticeHom.toFun_eq_coe
@@ -1154,7 +1152,7 @@ end LatticeHom
 
 namespace OrderHomClass
 
-variable (α β) [LinearOrder α] [Lattice β] [OrderHomClass F α β]
+variable (α β) [LinearOrder α] [Lattice β] [NDFunLike F α β] [OrderHomClass F α β]
 
 /-- An order homomorphism from a linear order is a lattice homomorphism. -/
 -- porting note: made it an `instance` because we're no longer afraid of loops
@@ -1209,10 +1207,12 @@ def toBoundedOrderHom (f : BoundedLatticeHom α β) : BoundedOrderHom α β :=
   { f, (f.toLatticeHom : α →o β) with }
 #align bounded_lattice_hom.to_bounded_order_hom BoundedLatticeHom.toBoundedOrderHom
 
-instance instBoundedLatticeHomClass : BoundedLatticeHomClass (BoundedLatticeHom α β) α β
+instance instFunLike : NDFunLike (BoundedLatticeHom α β) α β
     where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
+
+instance instBoundedLatticeHomClass : BoundedLatticeHomClass (BoundedLatticeHom α β) α β where
   map_sup f := f.map_sup'
   map_inf f := f.map_inf'
   map_top f := f.map_top'

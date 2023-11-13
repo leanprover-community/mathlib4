@@ -1289,7 +1289,7 @@ end GroupWithZero
 
 section Mul
 
-variable [Mul α] [Mul β] [MulHomClass F α β] (m : F) {s t : Set α}
+variable [Mul α] [Mul β] [NDFunLike F α β] [MulHomClass F α β] (m : F) {s t : Set α}
 
 @[to_additive]
 theorem image_mul : m '' (s * t) = m '' s * m '' t :=
@@ -1308,7 +1308,7 @@ end Mul
 
 section Group
 
-variable [Group α] [DivisionMonoid β] [MonoidHomClass F α β] (m : F) {s t : Set α}
+variable [Group α] [DivisionMonoid β] [NDFunLike F α β] [MonoidHomClass F α β] (m : F) {s t : Set α}
 
 @[to_additive]
 theorem image_div : m '' (s / t) = m '' s / m '' t :=

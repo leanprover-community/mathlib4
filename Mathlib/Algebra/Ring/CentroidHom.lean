@@ -59,7 +59,7 @@ attribute [nolint docBlame] CentroidHom.toAddMonoidHom
 /-- `CentroidHomClass F α` states that `F` is a type of centroid homomorphisms.
 
 You should extend this class when you extend `CentroidHom`. -/
-class CentroidHomClass (F : Type*) (α : outParam <| Type*) [NonUnitalNonAssocSemiring α] extends
+class CentroidHomClass (F α : Type*) [NonUnitalNonAssocSemiring α] [NDFunLike F α α] extends
   AddMonoidHomClass F α α where
   /-- Commutativity of centroid homomorphims with left multiplication. -/
   map_mul_left (f : F) (a b : α) : f (a * b) = a * f b
@@ -70,7 +70,8 @@ class CentroidHomClass (F : Type*) (α : outParam <| Type*) [NonUnitalNonAssocSe
 
 export CentroidHomClass (map_mul_left map_mul_right)
 
-instance [NonUnitalNonAssocSemiring α] [CentroidHomClass F α] : CoeTC F (CentroidHom α) :=
+instance [NonUnitalNonAssocSemiring α] [NDFunLike F α α] [CentroidHomClass F α] :
+    CoeTC F (CentroidHom α) :=
   ⟨fun f ↦
     { (f : α →+ α) with
       toFun := f
@@ -86,13 +87,15 @@ section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α]
 
-instance : CentroidHomClass (CentroidHom α) α where
+instance : NDFunLike (CentroidHom α) α α where
   coe f := f.toFun
   coe_injective' f g h := by
     cases f
     cases g
     congr with x
     exact congrFun h x
+
+instance : CentroidHomClass (CentroidHom α) α where
   map_zero f := f.map_zero'
   map_add f := f.map_add'
   map_mul_left f := f.map_mul_left'
