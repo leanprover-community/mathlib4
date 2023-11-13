@@ -1228,6 +1228,7 @@ import Mathlib.CategoryTheory.Sites.InducedTopology
 import Mathlib.CategoryTheory.Sites.IsSheafFor
 import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.CategoryTheory.Sites.Limits
+import Mathlib.CategoryTheory.Sites.Over
 import Mathlib.CategoryTheory.Sites.Plus
 import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.CategoryTheory.Sites.Pushforward
@@ -1836,6 +1837,7 @@ import Mathlib.Data.Rbtree.Init
 import Mathlib.Data.Rbtree.Insert
 import Mathlib.Data.Rbtree.Main
 import Mathlib.Data.Rbtree.MinMax
+import Mathlib.Data.Real.Archimedean
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Cardinality
 import Mathlib.Data.Real.CauSeq
@@ -3547,6 +3549,7 @@ import Mathlib.Topology.NoetherianSpace
 import Mathlib.Topology.OmegaCompletePartialOrder
 import Mathlib.Topology.Order
 import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.Bounded
 import Mathlib.Topology.Order.Category.AlexDisc
 import Mathlib.Topology.Order.Category.FrameAdjunction
 import Mathlib.Topology.Order.Hom.Basic
