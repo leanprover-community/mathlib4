@@ -278,12 +278,20 @@ theorem extMsb {w : ℕ} {x y : BitVec w} (h : ∀ (i : Fin w), x.getMsb i = y.g
 Show how `getLsb` distributes over bitwise operations
 -/
 
+private lemma mod_and_two_pow_of_lt (x y w : ℕ) (h : y < 2 ^ w) :
+    x % (2 ^ w) &&& y = x &&& y := by
+  sorry
+
+private lemma mod_and_two_pow_fin_val (x w : ℕ) (i : Fin w) :
+    x % (2 ^ w) &&& (2 ^ ↑i) = x &&& (2 ^ ↑i) :=
+  mod_and_two_pow_of_lt x (2 ^ ↑i) w (by apply pow_lt_pow <;> simp)
+
 lemma getLsb_bitwise (f) (x y : BitVec w) (i : Fin w) :
     getLsb ⟨bitwise f x.1.val y.1.val % 2^w, Nat.mod_lt _ (Nat.pow_two_pos w)⟩ i
     = f (x.getLsb i) (y.getLsb i) := by
   rcases x with ⟨⟨x, hx⟩⟩
   rcases y with ⟨⟨y, hy⟩⟩
-  simp [getLsb]
+  simp [getLsb, mod_and_two_pow_fin_val]
   sorry
 
 @[simp] lemma getLsb_and (x y : BitVec w) (i : Fin w) :
