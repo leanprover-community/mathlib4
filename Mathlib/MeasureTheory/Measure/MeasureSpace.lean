@@ -992,7 +992,7 @@ theorem sInf_caratheodory (s : Set α) (hs : MeasurableSet s) :
     MeasurableSet[(sInf (toOuterMeasure '' m)).caratheodory] s := by
   rw [OuterMeasure.sInf_eq_boundedBy_sInfGen]
   refine' OuterMeasure.boundedBy_caratheodory fun t => _
-  simp only [OuterMeasure.sInfGen, le_iInf_iff, ball_image_iff,
+  simp only [OuterMeasure.sInfGen, le_iInf_iff, ball_image_iff, coe_toOuterMeasure,
     measure_eq_iInf t]
   intro μ hμ u htu _hu
   have hm : ∀ {s t}, s ⊆ t → OuterMeasure.sInfGen (toOuterMeasure '' m) s ≤ μ t := by
