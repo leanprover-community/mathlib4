@@ -37,22 +37,22 @@ lemma compl_setOf_le (y : ℝ) : {x : ℝ | y ≤ x}ᶜ = {x | x < y} := by
 
   /-- A Lebesgue Integral from -∞ to y can be expressed
     as the sum of one from -∞ to 0 and 0 to x -/
-lemma lintegral_split_bounded {y z : ℝ}(f : ℝ → ENNReal) (hzy : z ≤ y) :
-    ∫⁻ (x : ℝ) in Iic y, f x = (∫⁻ (x : ℝ) in Iio z, f x) + ∫⁻ (x : ℝ) in Icc z y, f x := by
-  rw [(Iio_union_Icc_eq_Iic hzy).symm, lintegral_union measurableSet_Icc]
+lemma lintegral_split_bounded {y z : ℝ} (f : ℝ → ENNReal) (hzy : z ≤ y) :
+    ∫⁻ x in Iic y, f x = (∫⁻ x in Iio z, f x) + ∫⁻ x in Icc z y, f x := by
+  rw [←Iio_union_Icc_eq_Iic hzy, lintegral_union measurableSet_Icc]
   rw [Set.disjoint_iff]
   rintro x ⟨h1 : (x < _), h2, _ ⟩
   linarith
 
-lemma lintegral_split (f : ℝ → ENNReal) (c : ℝ) : ∫⁻ (x : ℝ), f x =
-    (∫⁻ (x : ℝ) in {x | x ≥ c}, f x) + ∫⁻ (x : ℝ) in {x | x < c}, f x := by
+lemma lintegral_split (f : ℝ → ENNReal) (c : ℝ) : ∫⁻ x, f x =
+    (∫⁻ x in {x | x ≥ c}, f x) + ∫⁻ x in {x | x < c}, f x := by
   have union : univ = {x: ℝ | x ≥ c} ∪ {x : ℝ | x < c} := by
     ext x
     simp [le_or_lt]
   have : IsOpen {x : ℝ | x < c} := by exact isOpen_gt' c
   calc
-  ∫⁻ (x : ℝ), f x = ∫⁻ (x : ℝ) in univ, f x ∂ volume := (set_lintegral_univ f).symm
-  _ = ∫⁻ (x : ℝ) in {x | x ≥ c} ∪ {x | x < c} , f x ∂ volume := by rw [← union]
+  ∫⁻ x, f x = ∫⁻ x in univ, f x ∂ volume := (set_lintegral_univ f).symm
+  _ = ∫⁻ x in {x | x ≥ c} ∪ {x | x < c} , f x ∂ volume := by rw [← union]
   _ = _ := by
     apply lintegral_union this.measurableSet
     rw [Set.disjoint_iff]; rintro x ⟨hxge : x ≥ _, hxlt : x < _⟩; linarith
@@ -132,7 +132,7 @@ lemma if_eval_pos {r : ℝ} : ∀ᵐ x : ℝ ∂ volume , x < 0 →
   simp [hx]
 
 lemma if_eval_neg {r : ℝ} : ∀ᵐ x : ℝ ∂ volume, (x ∈ {x|x ≥ 0} →
-    ENNReal.ofReal (ite ((x : ℝ) ≥ 0) (r * rexp (-(r * x))) 0) =
+    ENNReal.ofReal (ite (x ≥ 0) (r * rexp (-(r * x))) 0) =
     ENNReal.ofReal (r * rexp (-(r * x)))) := by
   apply ae_of_all
   intro x hx; split_ifs with h; simp only [ge_iff_le] at h
@@ -150,13 +150,13 @@ lemma antiDeriv_tendsto_zero {r : ℝ} (hr : 0 < r) :
 open Measure
 
 lemma lintegral_exponentialPdfReal_eq_one (r : ℝ) (hr : 0 < r) :
-    ∫⁻ (x : ℝ), exponentialPdf r x = 1 := by
+    ∫⁻ x, exponentialPdf r x = 1 := by
   rw [lintegral_split (exponentialPdf r) 0, ←ENNReal.toReal_eq_one_iff]
-  have leftSide : ∫⁻ (x : ℝ) in {x | x < 0}, exponentialPdf r x = 0 := by
+  have leftSide : ∫⁻ x in {x | x < 0}, exponentialPdf r x = 0 := by
     simp only [exponentialPdf_eq]
     rw [set_lintegral_congr_fun (isOpen_gt' 0).measurableSet if_eval_pos, lintegral_zero]
-  have rightSide : ∫⁻ (x : ℝ) in {x | x ≥ 0}, exponentialPdf r x
-      = ∫⁻ (x : ℝ) in {x | x ≥ 0}, ENNReal.ofReal (r * rexp (-(r * x))) := by
+  have rightSide : ∫⁻ x in {x | x ≥ 0}, exponentialPdf r x
+      = ∫⁻ x in {x | x ≥ 0}, ENNReal.ofReal (r * rexp (-(r * x))) := by
     simp only [exponentialPdf_eq]
     exact set_lintegral_congr_fun isClosed_Ici.measurableSet if_eval_neg
   rw [leftSide]; simp only [ge_iff_le, add_zero]
