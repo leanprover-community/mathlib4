@@ -87,6 +87,8 @@ instance instCoeFun : FunLike (OuterMeasure α) (Set α) (fun _ => ℝ≥0∞) w
 theorem measureOf_eq_coe (m : OuterMeasure α) : m.measureOf = m := rfl
 #align measure_theory.outer_measure.measure_of_eq_coe MeasureTheory.OuterMeasure.measureOf_eq_coe
 
+@[simp] theorem coe_mk (f : Set α → ℝ≥0∞) (h₁ h₂ h₃) : ⇑(OuterMeasure.mk f h₁ h₂ h₃) = f := rfl
+
 @[simp]
 theorem empty' (m : OuterMeasure α) : m ∅ = 0 :=
   m.empty

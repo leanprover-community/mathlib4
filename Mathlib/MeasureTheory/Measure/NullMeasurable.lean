@@ -482,14 +482,16 @@ namespace Measure
 /-- Given a measure we can complete it to a (complete) measure on all null measurable sets. -/
 def completion {_ : MeasurableSpace α} (μ : Measure α) :
     @MeasureTheory.Measure (NullMeasurableSpace α μ) _ where
-  toOuterMeasure := μ.toOuterMeasure
+  toOuterMeasure :=
+    -- needed to avoid issue with `CoeFun` and type synonyms
+    { μ.toOuterMeasure with measureOf := μ }
   m_iUnion s hs hd := measure_iUnion₀ (hd.mono fun i j h => h.aedisjoint) hs
   trimmed := by
     refine' le_antisymm (fun s => _)
       (@OuterMeasure.le_trim (NullMeasurableSpace α μ) _ _)
-    rw [@OuterMeasure.trim_eq_iInf (NullMeasurableSpace α μ) _];
-    have : ∀ s, μ.toOuterMeasure s = μ s := by simp only [forall_const]
-    rw [this, measure_eq_iInf]
+    rw [@OuterMeasure.trim_eq_iInf (NullMeasurableSpace α μ) _]
+    dsimp only [OuterMeasure.coe_mk]
+    rw [measure_eq_iInf]
     apply iInf₂_mono
     exact fun t _ht => iInf_mono' fun h => ⟨MeasurableSet.nullMeasurableSet h, le_rfl⟩
 #align measure_theory.measure.completion MeasureTheory.Measure.completion

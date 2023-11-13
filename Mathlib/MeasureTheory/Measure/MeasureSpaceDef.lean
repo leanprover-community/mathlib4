@@ -100,7 +100,7 @@ But we can extend this to _all_ sets, but using the outer measure. This gives us
 subadditivity for all sets.
 -/
 instance instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α) (fun _ => ℝ≥0∞) where
-  coe m := m.toOuterMeasure
+  coe m := @FunLike.coe _ _ _ _ m.toOuterMeasure
   coe_injective' _m₁ _m₂ h := toOuterMeasure_injective <| FunLike.coe_injective h
 #align measure_theory.measure.has_coe_to_fun MeasureTheory.Measure.instFunLikeₓ
 
@@ -146,9 +146,12 @@ theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
 
 end Measure
 
-#noalign measure_theory.coe_to_outer_measure
+@[simp]
+theorem coe_toOuterMeasure (μ : Measure α) : ⇑μ.toOuterMeasure = μ := rfl
+#align measure_theory.coe_to_outer_measure MeasureTheory.coe_toOuterMeasure
 
-#noalign measure_theory.to_outer_measure_apply
+theorem toOuterMeasure_apply (μ : Measure α)(s : Set α) : μ.toOuterMeasure s = μ s := rfl
+#align measure_theory.to_outer_measure_apply MeasureTheory.toOuterMeasure_apply
 
 theorem measure_eq_trim (s : Set α) : μ s = μ.toOuterMeasure.trim s := by rw [μ.trimmed]; rfl
 #align measure_theory.measure_eq_trim MeasureTheory.measure_eq_trim
