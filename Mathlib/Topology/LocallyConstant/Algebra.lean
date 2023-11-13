@@ -380,7 +380,7 @@ def comapRingHom [Semiring Z] (f : X → Y) (hf : Continuous f) :
 /-- `LocallyConstant.comap` as an `AlgHom` -/
 @[simps!]
 noncomputable
-def comapₐ (R: Type*) [CommSemiring R] [Semiring Z] [Algebra R Z]
+def comapₐ (R : Type*) [CommSemiring R] [Semiring Z] [Algebra R Z]
     (f : X → Y) (hf : Continuous f) : LocallyConstant Y Z →ₐ[R] LocallyConstant X Z where
   toRingHom := comapRingHom f hf
   commutes' r := by ext x; simp [hf]
@@ -401,7 +401,7 @@ def congrLeftMulEquiv [Mul Z] (e : X ≃ₜ Y) :
 /-- `LocallyConstant.congrLeft` as a linear equivalence. -/
 @[simps!]
 noncomputable
-def congrLeftₗ (R: Type*) [Semiring R] [AddCommMonoid Z] [Module R Z] (e : X ≃ₜ Y) :
+def congrLeftₗ (R : Type*) [Semiring R] [AddCommMonoid Z] [Module R Z] (e : X ≃ₜ Y) :
     LocallyConstant X Z ≃ₗ[R] LocallyConstant Y Z where
   toLinearMap := comapₗ R _ e.symm.continuous
   __ := congrLeft e
@@ -418,7 +418,7 @@ def congrLeftRingEquiv [Semiring Z] (e : X ≃ₜ Y) :
 /-- `LocallyConstant.congrLeft` as an `AlgEquiv`. -/
 @[simps!]
 noncomputable
-def congrLeftₐ (R: Type*) [CommSemiring R] [Semiring Z] [Algebra R Z] (e : X ≃ₜ Y) :
+def congrLeftₐ (R : Type*) [CommSemiring R] [Semiring Z] [Algebra R Z] (e : X ≃ₜ Y) :
     LocallyConstant X Z ≃ₐ[R] LocallyConstant Y Z where
   toEquiv := congrLeft e
   __ := comapₐ R _ e.symm.continuous

@@ -136,6 +136,9 @@ theorem tendsto_toReal {a : ℝ≥0∞} (ha : a ≠ ⊤) : Tendsto ENNReal.toRea
   NNReal.tendsto_coe.2 <| tendsto_toNNReal ha
 #align ennreal.tendsto_to_real ENNReal.tendsto_toReal
 
+lemma continuousOn_toReal : ContinuousOn ENNReal.toReal { a | a ≠ ∞ } :=
+  NNReal.continuous_coe.comp_continuousOn continuousOn_toNNReal
+
 /-- The set of finite `ℝ≥0∞` numbers is homeomorphic to `ℝ≥0`. -/
 def neTopHomeomorphNNReal : { a | a ≠ ∞ } ≃ₜ ℝ≥0 where
   toEquiv := neTopEquivNNReal
@@ -349,7 +352,7 @@ protected theorem tendsto_mul (ha : a ≠ 0 ∨ b ≠ ⊤) (hb : b ≠ 0 ∨ a �
     | top =>
       simp only [ne_eq, or_false] at ha
       simpa [(· ∘ ·), mul_comm, mul_top ha]
-        using (ht a ha).comp (continuous_swap.tendsto (some a, ⊤))
+        using (ht a ha).comp (continuous_swap.tendsto (ofNNReal a, ⊤))
     | coe b =>
       simp only [nhds_coe_coe, ← coe_mul, tendsto_coe, tendsto_map'_iff, (· ∘ ·), tendsto_mul]
 #align ennreal.tendsto_mul ENNReal.tendsto_mul
@@ -1603,9 +1606,47 @@ theorem edist_le_tsum_of_edist_le_of_tendsto₀ {f : ℕ → α} (d : ℕ → �
 
 end
 
+namespace ENNReal
+
+section truncateToReal
+
+/-- With truncation level `t`, the truncated cast `ℝ≥0∞ → ℝ` is given by `x ↦ (min t x).toReal`.
+Unlike `ENNReal.toReal`, this cast is continuous and monotone when `t ≠ ∞`. -/
+noncomputable def truncateToReal (t x : ℝ≥0∞) : ℝ := (min t x).toReal
+
+lemma truncateToReal_eq_toReal {t x : ℝ≥0∞} (t_ne_top : t ≠ ∞) (x_le : x ≤ t) :
+    truncateToReal t x = x.toReal := by
+  have x_lt_top : x < ∞ := lt_of_le_of_lt x_le t_ne_top.lt_top
+  have obs : min t x ≠ ∞ := by
+    simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+  exact (ENNReal.toReal_eq_toReal obs x_lt_top.ne).mpr (min_eq_right x_le)
+
+lemma truncateToReal_le {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) {x : ℝ≥0∞} :
+    truncateToReal t x ≤ t.toReal := by
+  rw [truncateToReal]
+  apply (toReal_le_toReal _ t_ne_top).mpr (min_le_left t x)
+  simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+
+lemma truncateToReal_nonneg {t x : ℝ≥0∞} : 0 ≤ truncateToReal t x := toReal_nonneg
+
+/-- The truncated cast `ENNReal.truncateToReal t : ℝ≥0∞ → ℝ` is monotone when `t ≠ ∞`. -/
+lemma monotone_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) : Monotone (truncateToReal t) := by
+  intro x y x_le_y
+  have obs_x : min t x ≠ ∞ := by
+    simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+  have obs_y : min t y ≠ ∞ := by
+    simp_all only [ne_eq, ge_iff_le, min_eq_top, false_and, not_false_eq_true]
+  exact (ENNReal.toReal_le_toReal obs_x obs_y).mpr (min_le_min_left t x_le_y)
+
+/-- The truncated cast `ENNReal.truncateToReal t : ℝ≥0∞ → ℝ` is continuous when `t ≠ ∞`. -/
+lemma continuous_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) : Continuous (truncateToReal t) := by
+  apply continuousOn_toReal.comp_continuous (continuous_min.comp (Continuous.Prod.mk t))
+  simp [t_ne_top]
+
+end truncateToReal
+
 section LimsupLiminf
 
-namespace ENNReal
 set_option autoImplicit true
 
 lemma limsup_sub_const (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
@@ -1630,6 +1671,43 @@ lemma liminf_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞)
   (Antitone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm
 
-end ENNReal -- namespace
+/-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
+lemma liminf_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
+    {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
+    F.liminf (fun i ↦ (xs i).toReal) = (F.liminf xs).toReal := by
+  have liminf_le : F.liminf xs ≤ b := by
+    apply liminf_le_of_le ⟨0, by simp⟩
+    intro y h
+    obtain ⟨i, hi⟩ := (Eventually.and h le_b).exists
+    exact hi.1.trans hi.2
+  have aux : ∀ᶠ i in F, (xs i).toReal = ENNReal.truncateToReal b (xs i) := by
+    filter_upwards [le_b] with i i_le_b
+    simp only [truncateToReal_eq_toReal b_ne_top i_le_b, implies_true]
+  have aux' : (F.liminf xs).toReal = ENNReal.truncateToReal b (F.liminf xs) := by
+    rw [truncateToReal_eq_toReal b_ne_top liminf_le]
+  simp_rw [liminf_congr aux, aux']
+  have key := Monotone.map_liminf_of_continuousAt (F := F) (monotone_truncateToReal b_ne_top) xs
+          (continuous_truncateToReal b_ne_top).continuousAt
+          ⟨b, by simpa only [eventually_map] using le_b⟩ ⟨0, eventually_of_forall (by simp)⟩
+  rw [key]
+  rfl
+
+/-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
+lemma limsup_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)
+    {xs : ι → ℝ≥0∞} (le_b : ∀ᶠ i in F, xs i ≤ b) :
+    F.limsup (fun i ↦ (xs i).toReal) = (F.limsup xs).toReal := by
+  have aux : ∀ᶠ i in F, (xs i).toReal = ENNReal.truncateToReal b (xs i) := by
+    filter_upwards [le_b] with i i_le_b
+    simp only [truncateToReal_eq_toReal b_ne_top i_le_b, implies_true]
+  have aux' : (F.limsup xs).toReal = ENNReal.truncateToReal b (F.limsup xs) := by
+    rw [truncateToReal_eq_toReal b_ne_top (limsup_le_of_le ⟨0, by simp⟩ le_b)]
+  simp_rw [limsup_congr aux, aux']
+  have key := Monotone.map_limsup_of_continuousAt (F := F) (monotone_truncateToReal b_ne_top) xs
+          (continuous_truncateToReal b_ne_top).continuousAt
+          ⟨b, by simpa only [eventually_map] using le_b⟩ ⟨0, eventually_of_forall (by simp)⟩
+  rw [key]
+  rfl
 
 end LimsupLiminf
+
+end ENNReal -- namespace

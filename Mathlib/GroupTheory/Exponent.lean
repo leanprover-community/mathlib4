@@ -80,6 +80,21 @@ noncomputable def exponent :=
 
 variable {G}
 
+@[simp]
+theorem _root_.AddMonoid.exponent_additive :
+    AddMonoid.exponent (Additive G) = exponent G := rfl
+
+@[simp]
+theorem exponent_multiplicative {G : Type*} [AddMonoid G] :
+    exponent (Multiplicative G) = AddMonoid.exponent G := rfl
+
+open MulOpposite in
+@[to_additive (attr := simp)]
+theorem _root_.MulOpposite.exponent : exponent (MulOpposite G) = exponent G := by
+  simp only [Monoid.exponent, ExponentExists]
+  congr!
+  all_goals exact ⟨(op_injective <| · <| op ·), (unop_injective <| . <| unop .)⟩
+
 @[to_additive]
 theorem exponentExists_iff_ne_zero : ExponentExists G ↔ exponent G ≠ 0 := by
   rw [exponent]
@@ -150,10 +165,10 @@ theorem exponent_min (m : ℕ) (hpos : 0 < m) (hm : m < exponent G) : ∃ g : G,
 theorem exp_eq_one_of_subsingleton [Subsingleton G] : exponent G = 1 := by
   apply le_antisymm
   · apply exponent_min' _ Nat.one_pos
-    simp
+    simp [eq_iff_true_of_subsingleton]
   · apply Nat.succ_le_of_lt
     apply exponent_pos_of_exists 1 Nat.one_pos
-    simp
+    simp [eq_iff_true_of_subsingleton]
 #align monoid.exp_eq_one_of_subsingleton Monoid.exp_eq_one_of_subsingleton
 #align add_monoid.exp_eq_zero_of_subsingleton AddMonoid.exp_eq_zero_of_subsingleton
 
@@ -209,7 +224,7 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
     exact fun hd =>
       hp.one_lt.not_le
         ((mul_le_iff_le_one_left he).mp <|
-          Nat.le_of_dvd he <| Nat.mul_dvd_of_dvd_div (Nat.dvd_of_mem_factorization h) hd)
+          Nat.le_of_dvd he <| Nat.mul_dvd_of_dvd_div (Nat.dvd_of_mem_primeFactors h) hd)
   obtain ⟨k, hk : exponent G = p ^ _ * k⟩ := Nat.ord_proj_dvd _ _
   obtain ⟨t, ht⟩ := Nat.exists_eq_succ_of_ne_zero (Finsupp.mem_support_iff.mp h)
   refine' ⟨g ^ k, _⟩
@@ -432,8 +447,8 @@ theorem Monoid.exponent_pi {ι : Type*} [Fintype ι] {M : ι → Type*} [∀ i, 
 
 /-- The exponent of product of two monoids is the `lcm` of the exponents of the
 individuaul monoids. -/
-@[to_additive "The exponent of product of two additive monoids is the `lcm` of the exponents of the
-individuaul additive monoids."]
+@[to_additive AddMonoid.exponent_prod "The exponent of product of two additive monoids is the `lcm`
+of the exponents of the individuaul additive monoids."]
 theorem Monoid.exponent_prod {M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] :
     exponent (M₁ × M₂) = lcm (exponent M₁) (exponent M₂) := by
   refine dvd_antisymm ?_ (lcm_dvd ?_ ?_)
