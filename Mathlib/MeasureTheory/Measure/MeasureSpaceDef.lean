@@ -649,8 +649,9 @@ theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) :
 
 @[simp]
 theorem measure_toMeasurable (s : Set α) : μ (toMeasurable μ s) = μ s := by
-  rw [toMeasurable_def];
-  split_ifs with hs; split_ifs with h's
+  rw [toMeasurable_def]
+  beta_reduce -- split_ifs fails without this!
+  split_ifs with hs h's
   · exact measure_congr hs.choose_spec.2.2
   · simpa only [inter_univ] using h's.choose_spec.2.2 univ MeasurableSet.univ
   · exact (exists_measurable_superset μ s).choose_spec.2.2
