@@ -48,7 +48,7 @@ end AddHom
 
 section AddHomClass
 
-variable {F : Type*} [NonAssocSemiring α] [NonAssocSemiring β] [AddHomClass F α β]
+variable {F : Type*} [NonAssocSemiring α] [NonAssocSemiring β] [NDFunLike F α β] [AddHomClass F α β]
 
 set_option linter.deprecated false in
 /-- Additive homomorphisms preserve `bit0`. -/

@@ -108,7 +108,7 @@ infixl:25 " ≃o " => OrderIso
 section
 
 /-- `OrderHomClass F α b` asserts that `F` is a type of `≤`-preserving morphisms. -/
-abbrev OrderHomClass (F : Type*) (α β : outParam (Type*)) [LE α] [LE β] :=
+abbrev OrderHomClass (F α β : Type*) [LE α] [LE β] [NDFunLike F α β] :=
   RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
 #align order_hom_class OrderHomClass
 
@@ -141,13 +141,13 @@ instance [LE α] [LE β] [OrderIsoClass F α β] : CoeTC F (α ≃o β) :=
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toOrderHomClass [LE α] [LE β]
     [OrderIsoClass F α β] : OrderHomClass F α β :=
-  { EquivLike.toEmbeddingLike with
+  { EquivLike.toEmbeddingLike (E := F) with
     map_rel := fun f _ _ => (map_le_map_iff f).2 }
 #align order_iso_class.to_order_hom_class OrderIsoClass.toOrderHomClass
 
 namespace OrderHomClass
 
-variable [Preorder α] [Preorder β] [OrderHomClass F α β]
+variable [Preorder α] [Preorder β] [NDFunLike F α β] [OrderHomClass F α β]
 
 protected theorem monotone (f : F) : Monotone f := fun _ _ => map_rel f
 #align order_hom_class.monotone OrderHomClass.monotone
@@ -215,15 +215,20 @@ namespace OrderHom
 
 variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
 
-instance : OrderHomClass (α →o β) α β where
+instance : NDFunLike (α →o β) α β where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
+
+instance : OrderHomClass (α →o β) α β where
   map_rel f _ _ h := f.monotone' h
 
+/-
+-- Should be superceded by the direct NDFunLike instance
 /-- Helper instance for when there's too many metavariables to apply the coercion via `FunLike`
 directly. -/
 instance : CoeFun (α →o β) fun _ => α → β :=
   ⟨FunLike.coe⟩
+-/
 
 @[simp] theorem coe_mk (f : α → β) (hf : Monotone f) : ⇑(mk f hf) = f := rfl
 #align order_hom.coe_fun_mk OrderHom.coe_mk
@@ -255,7 +260,7 @@ theorem ext (f g : α →o β) (h : (f : α → β) = g) : f = g :=
 
 @[simp] theorem coe_eq (f : α →o β) : OrderHomClass.toOrderHom f = f := rfl
 
-@[simp] theorem _root_.OrderHomClass.coe_coe {F} [OrderHomClass F α β] (f : F) :
+@[simp] theorem _root_.OrderHomClass.coe_coe {F} [NDFunLike F α β] [OrderHomClass F α β] (f : F) :
     ⇑(f : α →o β) = f :=
   rfl
 
@@ -1087,7 +1092,8 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
 
 /-- To show that `f : α →o β` and `g : β →o α` make up an order isomorphism it is enough to show
     that `g` is the inverse of `f`-/
-def ofHomInv {F G : Type*} [OrderHomClass F α β] [OrderHomClass G β α] (f : F) (g : G)
+def ofHomInv {F G : Type*} [NDFunLike F α β] [OrderHomClass F α β] [NDFunLike G β α]
+    [OrderHomClass G β α] (f : F) (g : G)
     (h₁ : (f : α →o β).comp (g : β →o α) = OrderHom.id)
     (h₂ : (g : β →o α).comp (f : α →o β) = OrderHom.id) :
     α ≃o β where

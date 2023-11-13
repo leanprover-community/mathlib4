@@ -32,10 +32,12 @@ structure Embedding (α : Sort*) (β : Sort*) where
 /-- An embedding, a.k.a. a bundled injective function. -/
 infixr:25 " ↪ " => Embedding
 
-instance {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
+instance {α : Sort u} {β : Sort v} : NDFunLike (α ↪ β) α β where
   coe := Embedding.toFun
-  injective' := Embedding.inj'
   coe_injective' f g h := by { cases f; cases g; congr }
+
+instance {α : Sort u} {β : Sort v} : EmbeddingLike (α ↪ β) α β where
+  injective' := Embedding.inj'
 
 initialize_simps_projections Embedding (toFun → apply)
 
