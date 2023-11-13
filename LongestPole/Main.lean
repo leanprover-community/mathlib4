@@ -185,6 +185,7 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
       n := slowest.find? n.get!
     let widest := table.map (·.1.toString.length) |>.toList.maximum?.getD 0
     IO.println s!"{"file".rightPad widest} | instructions | parallelism"
+    IO.println s!"{"".rightPad widest '-'} | ------------ | -----------"
     for (name, inst, speedup) in table do
       IO.println s!"{name.toString.rightPad widest} | {(toString inst).rightPad 12} | x{speedup}"
   return 0
