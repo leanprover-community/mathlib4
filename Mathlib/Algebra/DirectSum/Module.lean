@@ -322,20 +322,6 @@ theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i
   toAddMonoid_of (β := fun i => A i) (fun i ↦ ((A i).subtype : A i →+ M)) i x
 #align direct_sum.coe_linear_map_of DirectSum.coeLinearMap_of
 
-theorem IsInternal.ofBijective_coeLinearMap_of_mem (h : IsInternal A)
-    {i : ι} {x : M} (hx : x ∈ A i) :
-    (LinearEquiv.ofBijective (coeLinearMap A) h).symm x i = ⟨x, hx⟩ := by
-  have this : _ = x := coeLinearMap_of A i ⟨x, hx⟩
-  conv_lhs => rw [← this]
-  rw [LinearEquiv.ofBijective_symm_apply_apply, of_eq_same]
-
-theorem IsInternal.ofBijective_coeLinearMap_of_mem_ne (h : IsInternal A)
-    {i j : ι} (hij : i ≠ j) {x : M} (hx : x ∈ A i) :
-    (LinearEquiv.ofBijective (coeLinearMap A) h).symm x j = 0 := by
-  have this : _ = x := coeLinearMap_of A i ⟨x, hx⟩
-  conv_lhs => rw [← this]
-  rw [LinearEquiv.ofBijective_symm_apply_apply, of_eq_of_ne _ i j _ hij]
-
 variable {A}
 
 /-- If a direct sum of submodules is internal then the submodules span the module. -/
@@ -386,22 +372,6 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
 theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) (a : Σi, α i) : h.collectedBasis v a ∈ A a.1 := by simp
 #align direct_sum.is_internal.collected_basis_mem DirectSum.IsInternal.collectedBasis_mem
-
-theorem IsInternal.collectedBasis_repr_of_mem (h : IsInternal A) {α : ι → Type*}
-    (v : ∀ i, Basis (α i) R (A i)) {x : M} {i : ι} {a : α i} (hx : x ∈ A i) :
-    (h.collectedBasis v).repr x ⟨i, a⟩ = (v i).repr ⟨x, hx⟩ a := by
-  simp only [collectedBasis, LinearEquiv.trans_apply, sigmaFinsuppLequivDFinsupp_symm_apply,
-    sigmaFinsuppEquivDFinsupp_symm_apply]
-  erw [DFinsupp.mapRange.linearEquiv_apply] -- Grr
-  simp [ofBijective_coeLinearMap_of_mem A h hx]
-
-theorem IsInternal.collectedBasis_repr_of_mem_ne (h : IsInternal A) {α : ι → Type*}
-    (v : ∀ i, Basis (α i) R (A i)) {x : M} {i j : ι} (hij : i ≠ j) {a : α j} (hx : x ∈ A i) :
-    (h.collectedBasis v).repr x ⟨j, a⟩ = 0 := by
-  simp only [collectedBasis, LinearEquiv.trans_apply, sigmaFinsuppLequivDFinsupp_symm_apply,
-    sigmaFinsuppEquivDFinsupp_symm_apply]
-  erw [DFinsupp.mapRange.linearEquiv_apply] -- Grr
-  simp [ofBijective_coeLinearMap_of_mem_ne A h hij hx]
 
 /-- When indexed by only two distinct elements, `DirectSum.IsInternal` implies
 the two submodules are complementary. Over a `Ring R`, this is true as an iff, as

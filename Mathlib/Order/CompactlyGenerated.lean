@@ -319,11 +319,6 @@ theorem WellFounded.finite_of_setIndependent (h : WellFounded ((· > ·) : α �
     exact le_sSup _ _ hx₀
 #align complete_lattice.well_founded.finite_of_set_independent CompleteLattice.WellFounded.finite_of_setIndependent
 
-theorem WellFounded.finite_ne_bot_of_independent (hwf : WellFounded ((· > ·) : α → α → Prop))
-    {ι : Type*} {t : ι → α} (ht : Independent t) : Set.Finite {i | t i ≠ ⊥} := by
-  refine Finite.of_finite_image (Finite.subset ?_ (image_subset_range t _)) ht.injOn
-  exact WellFounded.finite_of_setIndependent hwf ht.setIndependent_range
-
 theorem WellFounded.finite_of_independent (hwf : WellFounded ((· > ·) : α → α → Prop)) {ι : Type*}
     {t : ι → α} (ht : Independent t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Finite ι :=
   haveI := (WellFounded.finite_of_setIndependent hwf ht.setIndependent_range).to_subtype

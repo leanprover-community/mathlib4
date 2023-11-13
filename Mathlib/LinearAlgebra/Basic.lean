@@ -1715,11 +1715,6 @@ theorem ofBijective_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ�
   rfl
 #align linear_equiv.of_bijective_apply LinearEquiv.ofBijective_apply
 
-@[simp]
-theorem ofBijective_symm_apply_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {h} (x : M) :
-    (ofBijective f h).symm (f x) = x := by
-  simp [LinearEquiv.symm_apply_eq]
-
 end
 
 end AddCommMonoid
