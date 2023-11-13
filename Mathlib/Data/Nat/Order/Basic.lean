@@ -84,8 +84,6 @@ theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
   Nat.add_one_le_iff.trans pos_iff_ne_zero
 #align nat.one_le_iff_ne_zero Nat.one_le_iff_ne_zero
 
-theorem _root_.NeZero.one_le [NeZero n] : 1 ≤ n := one_le_iff_ne_zero.mpr (NeZero.ne n)
-
 theorem one_lt_iff_ne_zero_and_ne_one : ∀ {n : ℕ}, 1 < n ↔ n ≠ 0 ∧ n ≠ 1
   | 0 => by decide
   | 1 => by decide

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.NeZero
 import Mathlib.Tactic.SplitIfs
 
 #align_import data.nat.cast.defs from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
@@ -54,8 +53,9 @@ variable {n : ℕ} [n.AtLeastTwo]
 
 lemma one_lt : 1 < n := prop
 lemma ne_one : n ≠ 1 := Nat.ne_of_gt one_lt
-
-instance instNeZero : NeZero n := ⟨Nat.ne_of_gt (Nat.le_of_lt one_lt)⟩
+lemma one_le : 1 ≤ n := Nat.le_of_lt one_lt
+lemma pos : 0 < n := one_le
+lemma ne_zero : n ≠ 0 := Nat.ne_of_gt pos
 
 end Nat.AtLeastTwo
 
