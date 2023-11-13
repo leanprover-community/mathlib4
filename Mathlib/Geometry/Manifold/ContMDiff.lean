@@ -2073,7 +2073,8 @@ constructor
 · intros z hz -- show the function is actually the identity on the range of I ∘ e
   apply ContDiffOn.congr contDiffOn_id
   intros z hz -- factorise into the chart (=e) and the model (=id)
-  rw [@extChartAt_coe _ _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace, extChartAt_coe_symm, chartAt_self_eq]
+  rw [@extChartAt_coe _ _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace,
+    extChartAt_coe_symm, chartAt_self_eq]
   simp_rw [Function.comp_apply]
   rw [LocalHomeomorph.refl_symm, LocalHomeomorph.refl_apply, id.def,
     LocalHomeomorph.singletonChartedSpace_chartAt_eq, LocalHomeomorph.right_inv]
