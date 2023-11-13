@@ -21,6 +21,7 @@ ring homomorphism `f : R →+* S` satisfying 3 properties:
 1. For all `y ∈ M`, `f y` is a unit;
 2. For all `z : S`, there exists `(x, y) : R × M` such that `z * f y = f x`;
 3. For all `x, y : R`, `f x = f y` iff there exists `c ∈ M` such that `x * c = y * c`.
+   (The "if" direction is a consequence of 1.)
 
 In the following, let `R, P` be commutative rings, `S, Q` be `R`- and `P`-algebras
 and `M, T` be submonoids of `R` and `P` respectively, e.g.:
@@ -100,9 +101,10 @@ class IsLocalization : Prop where
   --Porting note: add ' to fields, and made new versions of these with either `S` or `M` explicit.
   /-- Everything in the image of `algebraMap` is a unit -/
   map_units' : ∀ y : M, IsUnit (algebraMap R S y)
-  /-- the `algebraMap` is surjective -/
+  /-- The `algebraMap` is surjective -/
   surj' : ∀ z : S, ∃ x : R × M, z * algebraMap R S x.2 = algebraMap R S x.1
-  /-- The kernel of `algebraMap` is the annihilator of `M` -/
+  /-- The kernel of `algebraMap` is contained in the annihilator of `M`; 
+      it is then equal to the annihilator by `map_units'` -/
   exists_of_eq : ∀ {x y}, algebraMap R S x = algebraMap R S y → ∃ c : M, ↑c * x = ↑c * y
 #align is_localization IsLocalization
 
