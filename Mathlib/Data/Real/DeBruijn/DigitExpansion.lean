@@ -166,7 +166,8 @@ theorem difcar_pred_eq_zero [Fact (0 < b)] {z : Z} (h : g z < f z) : difcar f g 
   · exact absurd hfgx h.not_lt
   exact ⟨z, hz, pred_lt _, h⟩
 
-theorem difcar_pred_eq_difcar [Fact (0 < b)] {z : Z} (h : f z = g z) : difcar f g (pred z) = difcar f g z :=
+theorem difcar_pred_eq_difcar [Fact (0 < b)] {z : Z} (h : f z = g z) :
+    difcar f g (pred z) = difcar f g z :=
   by
   cases' difcar_eq_zero_or_one f g z with hz hz
   · rw [hz]
@@ -191,9 +192,6 @@ theorem difcar_zero_right [Fact (0 < b)] (f : FormalSeries Z b) (z : Z) : difcar
 @[simp]
 theorem difcar_self [Fact (0 < b)] (f : FormalSeries Z b) (z : Z) : difcar f f z = 0 := by
   simp [difcar_eq_zero_iff]
-
-def subAux (x : Z) : Fin (b + 1) :=
-  f x - g x - difcar f g x
 
 theorem pred_min {Z : Type*} [LinearOrder Z] [PredOrder Z] (x y : Z) :
     pred (min x y) = min (pred x) (pred y) := by
@@ -752,6 +750,32 @@ theorem Positive.exists_least_pos (hf : f.Positive) : ∃ x, 0 < f x ∧ ∀ y <
     refine' Or.resolve_right (le_total _ _) fun H => hne _
     rw [hx _ H]
 
+theorem Negative.exists_least_cap (hf : f.Negative) : ∃ x, f x ≠ b ∧ ∀ y < x, f y = b := by
+  obtain ⟨x, hx⟩ : ∃ x, ∀ y ≤ x, f y = b :=
+    by
+    obtain ⟨_, x, hx⟩ := hf
+    exact ⟨pred x, fun y hy => hx _ (hy.trans_lt (pred_lt _))⟩
+  obtain ⟨z, hz, hz'⟩ := f.exists_bounded x
+  revert hz'
+  refine' Succ.rec' _ _ hz.le
+  · intro hxb
+    refine' ⟨x, hxb.ne, _⟩
+    intro y hy
+    exact hx y hy.le
+  intro w _ IH hw
+  by_cases H : ∃ u, x ≤ u ∧ u ≤ w ∧ f u < b
+  · obtain ⟨u, hu, hu', hu''⟩ := H
+    exact IH u hu hu' hu''
+  · push_neg at H
+    refine' ⟨succ w, hw.ne, _⟩
+    intro y hy
+    rw [lt_succ_iff] at hy
+    cases' le_total y x with hxy hxy
+    · exact hx _ hxy
+    · specialize H y hxy hy
+      refine' le_antisymm ((Fin.le_last _).trans _) H
+      simpa using Fin.cast_nat_eq_last b
+
 theorem Positive.not_negative (h : f.Positive) : ¬f.Negative := fun H => by
   suffices (b : Fin (b + 1)) = 0 by simp [Fin.ext_iff, ne_of_gt hb.out] at this
   obtain ⟨x, hx⟩ := h.right
@@ -1095,6 +1119,10 @@ instance FormalSeries.real.PartialOrder : PartialOrder (FormalSeries.real Z b)
       rw [← neg_sub] at hgf
       exact absurd hgf hfg.neg_negative.not_positive
 
+protected theorem FormalSeries.real.le_def {f g : FormalSeries.real Z b} :
+    f ≤ g ↔ f = g ∨ (g - f : FormalSeries Z b).Positive :=
+  Iff.rfl
+
 -- 7.2(i)
 noncomputable instance : LinearOrder (FormalSeries.real Z b) :=
   { FormalSeries.real.PartialOrder _
@@ -1313,6 +1341,33 @@ theorem cutoff_apply_lt {Z : Type*} [LT Z] {b : ℕ} [Fact (0 < b)]
 variable {Z : Type*} [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z] [NoMinOrder Z]
     [IsSuccArchimedean Z] {b : ℕ} [hb : Fact (0 < b)]
 
+@[simp] lemma cutoff_zero (z : Z) : cutoff z (0 : FormalSeries Z b) = 0 := by
+  ext y
+  cases' le_or_lt y z with h h
+  · rw [cutoff_apply_le _ _ _ h]
+  · rw [cutoff_apply_lt _ _ _ h, zero_apply]
+
+lemma Negative.negative_cutoff {f : FormalSeries Z b} (hf : f.Negative) (z : Z) :
+    (f.cutoff z).Negative := by
+  obtain ⟨hne, x, hx⟩ := hf
+  refine' ⟨λ H => _, min x z, λ y hy => _⟩
+  · replace H : f.cutoff z (min z (pred x)) = 0
+    rw [H, zero_apply]
+    cases' b with b
+    · exact absurd rfl (ne_of_lt hb.out)
+    · refine' (Fin.last_pos : 0 < Fin.last (Nat.succ b)).ne _
+      rw [←Fin.cast_val_eq_self (Fin.last _), Fin.val_last, ←hx (min z (pred x)), ←H,
+          cutoff_apply_le] <;>
+      simp
+  · rw [lt_min_iff] at hy
+    rw [cutoff_apply_le _ _ _ hy.right.le, hx _ hy.left]
+
+lemma difcar_cutoff_cutoff_of_le (f g : FormalSeries Z b) (z x : Z) (hx : z ≤ x) :
+    difcar (f.cutoff z) (g.cutoff z) x = 0 := by
+  rw [difcar_eq_zero_iff]
+  intros y hy hy'
+  simp [cutoff_apply_lt _ _ _ (hx.trans_lt hy)] at hy'
+
 def real.cutoff (z : Z) (f : real Z b) : real Z b :=
   ⟨FormalSeries.cutoff z (f : FormalSeries Z b), by
     rcases f with ⟨f, hf | hf | rfl⟩ <;> rw [Subtype.coe_mk]
@@ -1327,21 +1382,128 @@ def real.cutoff (z : Z) (f : real Z b) : real Z b :=
       · refine' Or.inl ⟨fun H => xpos.ne _, x, fun y hy => _⟩
         · rw [← cutoff_apply_le _ _ _ h, H, zero_apply]
         · rw [cutoff_apply_le _ _ _ (hy.le.trans h), hx _ hy]
-    · obtain ⟨hne, x, hx⟩ := hf
-      refine' Or.inr (Or.inl ⟨fun H => _, min x z, fun y hy => _⟩)
-      · replace H : f.cutoff z (min z (pred x)) = 0
-        · rw [H, zero_apply]
-        cases' b with b
-        · exact absurd rfl (ne_of_lt hb.out)
-        · refine' (Fin.last_pos : 0 < Fin.last (Nat.succ b)).ne _
-          rw [← Fin.cast_val_eq_self (Fin.last _), Fin.val_last, ← hx (min z (pred x)), ← H,
-              cutoff_apply_le] <;>
-            simp
-      · rw [lt_min_iff] at hy
-        rw [cutoff_apply_le _ _ _ hy.right.le, hx _ hy.left]
+    · exact Or.inr (Or.inl (hf.negative_cutoff _))
     · refine' Or.inr (Or.inr _)
       ext x : 1
       cases' lt_or_le z x with h h <;> simp [cutoff_apply_le, cutoff_apply_lt, h]⟩
+
+@[simp]
+lemma real.cutoff_zero (z : Z) : cutoff z (0 : real Z b) = 0 :=
+  Subtype.ext (FormalSeries.cutoff_zero z)
+
+@[simp]
+lemma real.val_cutoff (z : Z) (f : real Z b) :
+    (real.cutoff z f : FormalSeries Z b) = FormalSeries.cutoff z f := by
+  rfl
+
+lemma real.cutoff_mono (z : Z) {f g : real Z b} (hfg : f ≤ g) :
+    real.cutoff z f ≤ real.cutoff z g := by
+  rcases hfg.eq_or_lt with rfl|hfg'
+  · exact le_rfl
+  rw [real.lt_def] at hfg'
+  refine' or_iff_not_imp_left.mpr _
+  intro H
+  have hne : g ≠ f := by intro H; refine' hfg'.left _; rw [H, sub_self]
+  rw [real.lt_def]
+  obtain ⟨f, hf | hf | hf⟩ := f <;>
+  obtain ⟨g, hg | hg | hg⟩ := g <;>
+  simp only at hfg'
+  · refine' ⟨by simpa [Subtype.ext_iff, sub_eq_zero] using Ne.symm H, _⟩
+    simp only [val_cutoff]
+    obtain ⟨a, ha, ha'⟩ := hfg'.exists_least_pos
+    obtain ⟨m, hm'⟩ := hf.right
+    obtain ⟨n, hn'⟩ := hg.right
+    simp_rw [FormalSeries.sub_def] at ha ha' ⊢
+    refine' ⟨min (min m n) (min z a), _⟩
+    simp only [ge_iff_le, le_pred_iff, pred_lt_iff, min_lt_iff, le_min_iff, lt_min_iff, and_imp]
+    intros y hym hyn hyz hya
+    rw [cutoff_apply_le _ _ _ hyz.le, cutoff_apply_le _ _ _ hyz.le,
+        hm' _ hym, hn' _ hyn]
+    specialize ha' y hya
+    rw [hm' _ hym, hn' _ hyn] at ha'
+    simp only [sub_self, zero_sub, neg_eq_zero, difcar_eq_zero_iff, gt_iff_lt] at ha' ⊢
+    intro w hyw hw
+    have hwz : w ≤ z
+    · contrapose! hw
+      simp [cutoff_apply_lt _ _ _ hw]
+    rw [cutoff_apply_le _ _ _ hwz, cutoff_apply_le _ _ _ hwz] at hw
+    obtain ⟨u, hu, hu', hu''⟩ := ha' w hyw hw
+    refine' ⟨u, hu, hu', _⟩
+    rw [cutoff_apply_le _ _ _ (hu.le.trans hwz), cutoff_apply_le _ _ _ (hu.le.trans hwz)]
+    exact hu''
+  · exact absurd (hg.sub_positive hf) hfg'.not_negative
+  · simp only [hg, zero_sub, gt_iff_lt] at hfg' H ⊢
+    exact absurd hf.neg_negative hfg'.not_negative
+  · simp only [val_cutoff] at hfg' H ⊢
+    refine' ⟨by simpa [Subtype.ext_iff, sub_eq_zero] using Ne.symm H, _⟩
+    obtain ⟨a, ha'⟩ := hfg'.right
+    obtain ⟨m, hm'⟩ := hf.right
+    obtain ⟨n, hn'⟩ := hg.right
+    refine' ⟨min (min (pred m) (pred n)) (min z a), _⟩
+    simp only [ge_iff_le, le_pred_iff, pred_lt_iff, min_lt_iff, le_min_iff, lt_min_iff, and_imp]
+    intros y hym hyn hyz hya
+    simp_rw [FormalSeries.sub_def] at ha' ⊢
+    rw [cutoff_apply_le _ _ _ hyz.le, cutoff_apply_le _ _ _ hyz.le,
+        hm' _ (hym.trans_le (pred_le _)), hn' _ (hyn.trans_le (pred_le _))]
+    specialize ha' y hya
+    rw [hm' _ (hym.trans_le (pred_le _)), hn' _ (hyn.trans_le (pred_le _))] at ha'
+    simp only [zero_sub, Fin.neg_coe_eq_one, sub_eq_zero, eq_comm (a := (1 : Fin (b + 1))),
+      difcar_eq_one_iff, gt_iff_lt] at ha' ⊢
+    obtain ⟨u, hu, -, -⟩ := ha'
+    refine' ⟨min (min (pred n) (pred m)) (min z u), _, _, _⟩
+    · simp [hym, hyn, hya, hyz, hu]
+    · rw [cutoff_apply_le _ _ _, cutoff_apply_le _ _ _, hn', hm']
+      · simp [Fin.lt_iff_val_lt_val, hb.out]
+      · simp
+      · simp
+      · simp
+      · simp
+    · intro w hw _
+      simp only [ge_iff_le, le_pred_iff, pred_lt_iff, le_min_iff, min_le_iff, min_lt_iff,
+          lt_min_iff] at hw
+      rw [cutoff_apply_le _ _ _ hw.right.left.le, cutoff_apply_le _ _ _ hw.right.left.le,
+          hn' _ (hw.left.left.trans_le (pred_le _))]
+      simp
+  · simp only [val_cutoff]
+    refine' ⟨by simpa [Subtype.ext_iff, sub_eq_zero] using Ne.symm H, _⟩
+    obtain ⟨a, ha'⟩ := hfg'.right
+    obtain ⟨m, hm'⟩ := hf.right
+    obtain ⟨n, hn'⟩ := hg.right
+    refine' ⟨min (min (pred m) (pred n)) (min z a), _⟩
+    simp only [ge_iff_le, le_pred_iff, pred_lt_iff, min_lt_iff, le_min_iff, lt_min_iff, and_imp]
+    intros y hym hyn hyz hya
+    simp_rw [FormalSeries.sub_def] at ha' ⊢
+    rw [cutoff_apply_le _ _ _ hyz.le, cutoff_apply_le _ _ _ hyz.le,
+        hm' _ (hym.trans_le (pred_le _)), hn' _ (hyn.trans_le (pred_le _))]
+    specialize ha' y hya
+    rw [hm' _ (hym.trans_le (pred_le _)), hn' _ (hyn.trans_le (pred_le _))] at ha'
+    simp only [sub_self, zero_sub, neg_eq_zero, difcar_eq_zero_iff, gt_iff_lt] at ha' ⊢
+    intro w hyw hw
+    have hwz : w ≤ z
+    · contrapose! hw
+      simp [cutoff_apply_lt _ _ _ hw]
+    rw [cutoff_apply_le _ _ _ hwz, cutoff_apply_le _ _ _ hwz] at hw
+    obtain ⟨u, hu, hu', hu''⟩ := ha' w hyw hw
+    refine' ⟨u, hu, hu', _⟩
+    rw [cutoff_apply_le _ _ _ (hu.le.trans hwz), cutoff_apply_le _ _ _ (hu.le.trans hwz)]
+    exact hu''
+  · simp only [zero_sub, val_cutoff, cutoff_zero, hg]
+    simpa using (hf.negative_cutoff z).neg_positive
+  · subst hf
+    simp only [sub_zero, Subtype.ext_iff, val_cutoff, cutoff_zero] at hfg' H ⊢
+    obtain ⟨hne, x, hx⟩ := hg
+    refine' ⟨by simpa [Subtype.ext_iff, sub_eq_zero] using Ne.symm H, x, _⟩
+    intro y
+    simp only [FormalSeries.cutoff_zero, sub_zero]
+    intro hy
+    cases' lt_or_le z y with hzy hzy
+    · rw [cutoff_apply_lt _ _ _ hzy]
+    · rw [cutoff_apply_le _ _ _ hzy]
+      exact hx _ hy
+  · refine' absurd _ hfg'.not_negative
+    simp [hf, hg]
+  · simp [hf, hg] at hne
+
 
 theorem real.exists_isLeast_image_cutoff (S : Set (real Z b))
     (hn : S.Nonempty) (h : BddBelow S) (z : Z) : ∃ x, IsLeast (real.cutoff z '' S) x := by
