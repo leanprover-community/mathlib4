@@ -746,6 +746,21 @@ theorem equivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : β i) :
   simp only [← single_eq_pi_single, equivFunOnFintype_symm_coe]
 #align dfinsupp.equiv_fun_on_fintype_symm_single DFinsupp.equivFunOnFintype_symm_single
 
+section SingleAndZipWith
+
+variable [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)]
+@[simp]
+theorem zipWith_single_single (f : ∀ i, β₁ i → β₂ i → β i) (hf : ∀ i, f i 0 0 = 0)
+    {i} (b₁ : β₁ i) (b₂ : β₂ i) :
+      zipWith f hf (single i b₁) (single i b₂) = single i (f i b₁ b₂) := by
+  ext j
+  rw [zipWith_apply]
+  obtain rfl | hij := Decidable.eq_or_ne i j
+  · rw [single_eq_same, single_eq_same, single_eq_same]
+  · rw [single_eq_of_ne hij, single_eq_of_ne hij, single_eq_of_ne hij, hf]
+
+end SingleAndZipWith
+
 /-- Redefine `f i` to be `0`. -/
 def erase (i : ι) (x : Π₀ i, β i) : Π₀ i, β i :=
   ⟨fun j ↦ if j = i then 0 else x.1 j,
@@ -885,11 +900,7 @@ variable [∀ i, AddZeroClass (β i)]
 
 @[simp]
 theorem single_add (i : ι) (b₁ b₂ : β i) : single i (b₁ + b₂) = single i b₁ + single i b₂ :=
-  ext fun i' => by
-    by_cases h : i = i'
-    · subst h
-      simp only [add_apply, single_eq_same]
-    · simp only [add_apply, single_eq_of_ne h, zero_add]
+  (zipWith_single_single (fun _ => (· + ·)) _ b₁ b₂).symm
 #align dfinsupp.single_add DFinsupp.single_add
 
 @[simp]

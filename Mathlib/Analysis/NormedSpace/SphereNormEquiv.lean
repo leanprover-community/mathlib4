@@ -21,7 +21,7 @@ open Set Metric
 /-- The natural homeomorphism between nonzero elements of a normed space `E`
 and `Metric.sphere (0 : E) 1 × Set.Ioi (0 : ℝ)`.
 
-The forward map sends `⟨x, hx⟩` to `⟨‖x‖⁻¹ • x, _⟩`,
+The forward map sends `⟨x, hx⟩` to `⟨‖x‖⁻¹ • x, ‖x‖⟩`,
 the inverse map sends `(x, r)` to `r • x`.
 
 One may think about it as generalization of polar coordinates to any normed space. -/

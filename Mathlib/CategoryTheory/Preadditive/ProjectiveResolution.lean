@@ -39,13 +39,11 @@ we can construct a functor `projectiveResolutions C : C ⥤ HomotopyCategory C`.
 
 noncomputable section
 
-open CategoryTheory
-
-open CategoryTheory.Limits
-
 universe v u
 
 namespace CategoryTheory
+
+open Limits
 
 variable {C : Type u} [Category.{v} C]
 
@@ -131,7 +129,12 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.complex_d_succ_comp CategoryTheory.ProjectiveResolution.complex_d_succ_comp
 
 instance {Z : C} (P : ProjectiveResolution Z) (n : ℕ) : CategoryTheory.Epi (P.π.f n) := by
-  cases n <;> dsimp <;> infer_instance
+  cases n
+  · dsimp
+    infer_instance
+  · constructor
+    intros
+    apply (HomologicalComplex.isZero_single_obj_X _ _ _ _ (Nat.succ_ne_zero _)).eq_of_src
 
 /-- A projective object admits a trivial projective resolution: itself in degree 0. -/
 def self (Z : C) [CategoryTheory.Projective Z] : ProjectiveResolution Z where
@@ -139,10 +142,9 @@ def self (Z : C) [CategoryTheory.Projective Z] : ProjectiveResolution Z where
   π := 𝟙 ((ChainComplex.single₀ C).obj Z)
   projective n := by
     cases n
-    · dsimp
-      infer_instance
-    · dsimp
-      infer_instance
+    · simpa
+    · exact ((HomologicalComplex.isZero_single_obj_X (ComplexShape.down ℕ) 0 Z) _
+        (Nat.succ_ne_zero _)).projective
   exact₀ := by
     dsimp
     exact exact_zero_mono _
@@ -206,6 +208,12 @@ theorem lift_commutes {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
   ext; simp [lift, liftZero]
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.lift_commutes CategoryTheory.ProjectiveResolution.lift_commutes
+
+@[reassoc (attr := simp)]
+theorem lift_commutes_zero {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
+    (Q : ProjectiveResolution Z) :
+    (lift f P Q).f 0 ≫ Q.π.f 0 = P.π.f 0 ≫ f :=
+  (HomologicalComplex.congr_hom (lift_commutes f P Q) 0).trans (by simp)
 
 -- Now that we've checked this property of the lift,
 -- we can seal away the actual definition.
