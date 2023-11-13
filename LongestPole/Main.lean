@@ -149,6 +149,12 @@ def slowestParents (cumulative : NameMap Float) (graph : NameMap (Array Name)) :
           r := n'
       return m.insert n r
 
+def totalInstructions (instructions : NameMap Float) (graph : NameMap (Array Name)) :
+    NameMap Float :=
+  let transitive := graph.transitiveClosure
+  transitive.filterMap fun n s => some <| s.fold (init := (instructions.find? n).getD 0)
+    fun t n' => t + ((instructions.find? n').getD 0)
+
 open IO.FS IO.Process Name in
 /-- Implementation of the longest pole command line program. -/
 def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
@@ -160,10 +166,17 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
     let graph := env.importGraph
     let instructions ← speedCenterInstructions (← runForThisCommit)
     let cumulative := cumulativeInstructions instructions graph
+    let total := totalInstructions instructions graph
     let slowest := slowestParents cumulative graph
     let mut n := some to
     while n != none do
-      IO.println s!"{n.get!} {(cumulative.find! n.get!)/10^9 |>.toUInt64}"
+      let c := cumulative.find! n.get!
+      let t := total.find! n.get!
+      let r := (t / c).toString
+      let r := match r.split (· = '.') with
+      | [a, b] => a ++ "." ++ b.take 2
+      | _ => r
+      IO.println s!"{n.get!} {c/10^9 |>.toUInt64} {r}"
       n := slowest.find? n.get!
     return graph
   return 0
@@ -173,7 +186,9 @@ def pole : Cmd := `[Cli|
   pole VIA longestPoleCLI; ["0.0.1"]
   "Calculate the longest pole for building Mathlib (or downstream projects)." ++
   "Use as `lake exe pole` or `lake exe pole --to MyProject.MyFile`." ++
-  "Reports cumulative instructions (in billions) assuming infinite parallelism."
+  "Print a sequence of imports starting at the target." ++
+  "For each file, prints the cumulative instructions (in billions) assuming infinite parallelism," ++
+  "as well as a the speed-up factor over sequential processing."
 
   FLAGS:
     to : ModuleName;      "Calculate the longest pole to the specified module."
