@@ -66,7 +66,8 @@ theorem toSphere_apply_univ' : μ.toSphere univ = dim E * μ (ball 0 1 \ {0}) :=
 variable [μ.IsAddHaarMeasure]
 
 @[simp]
-theorem toSphere_apply_univ [Nontrivial E] : μ.toSphere univ = dim E * μ (ball 0 1) := by
+theorem toSphere_apply_univ : μ.toSphere univ = dim E * μ (ball 0 1) := by
+  nontriviality E
   rw [toSphere_apply_univ', measure_diff_null (measure_singleton _)]
 
 instance : IsFiniteMeasure μ.toSphere where
@@ -108,9 +109,7 @@ where `dim E = FiniteDimensional.finrank ℝ E` is the dimension of `E`. -/
 theorem measurePreserving_homeomorphUnitSphereProd :
     MeasurePreserving (homeomorphUnitSphereProd E) (μ.comap (↑))
       (μ.toSphere.prod (volumeIoiPow (dim E - 1))) := by
-  cases subsingleton_or_nontrivial E
-  · have : IsEmpty (sphere (0 : E) 1) := sphere_isEmpty_of_subsingleton one_ne_zero
-    exact .of_isEmpty ..
+  nontriviality E
   refine ⟨(homeomorphUnitSphereProd E).measurable, .symm ?_⟩
   refine prod_eq_generateFrom generateFrom_measurableSet
     ((borel_eq_generateFrom_Iio _).symm.trans BorelSpace.measurable_eq.symm)
