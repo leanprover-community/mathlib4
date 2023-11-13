@@ -168,18 +168,18 @@ theorem Infinite.orderOf_eq_zero_of_forall_mem_zpowers [Infinite α] {g : α}
   classical
     rw [orderOf_eq_zero_iff']
     refine' fun n hn hgn => _
-    have ho := orderOf_pos' ((isOfFinOrder_iff_pow_eq_one g).mpr ⟨n, hn, hgn⟩)
+    have ho := isOfFinOrder_iff_pow_eq_one.mpr ⟨n, hn, hgn⟩
     obtain ⟨x, hx⟩ :=
       Infinite.exists_not_mem_finset
         (Finset.image (fun x => g ^ x) <| Finset.range <| orderOf g)
     apply hx
-    rw [← mem_powers_iff_mem_range_order_of' (x := g) (y := x) ho, Submonoid.mem_powers_iff]
+    rw [←ho.mem_powers_iff_mem_range_orderOf, Submonoid.mem_powers_iff]
     obtain ⟨k, hk⟩ := h x
     dsimp at hk
     obtain ⟨k, rfl | rfl⟩ := k.eq_nat_or_neg
     · exact ⟨k, by exact_mod_cast hk⟩
-    rw [zpow_eq_mod_orderOf] at hk
-    have : 0 ≤ (-k % orderOf g : ℤ) := Int.emod_nonneg (-k) (by exact_mod_cast ho.ne')
+    rw [←zpow_mod_orderOf] at hk
+    have : 0 ≤ (-k % orderOf g : ℤ) := Int.emod_nonneg (-k) (by exact_mod_cast ho.orderOf_pos.ne')
     refine' ⟨(-k % orderOf g : ℤ).toNat, _⟩
     rwa [← zpow_ofNat, Int.toNat_of_nonneg this]
 #align infinite.order_of_eq_zero_of_forall_mem_zpowers Infinite.orderOf_eq_zero_of_forall_mem_zpowers
@@ -375,7 +375,8 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
   have hc0 : 0 < c := Fintype.card_pos_iff.2 ⟨1⟩
   apply card_orderOf_eq_totient_aux₁ hn hd
   by_contra h0
-  simp only [not_lt, _root_.le_zero_iff, card_eq_zero] at h0
+  -- Must qualify `Finset.card_eq_zero` because of leanprover/lean4#2849
+  simp only [not_lt, _root_.le_zero_iff, Finset.card_eq_zero] at h0
   apply lt_irrefl c
   calc
     c = ∑ m in c.divisors, (univ.filter fun a : α => orderOf a = m).card := by
@@ -604,6 +605,10 @@ theorem IsCyclic.exponent_eq_zero_of_infinite [Group α] [IsCyclic α] [Infinite
 
 instance ZMod.instIsAddCyclic (n : ℕ) : IsAddCyclic (ZMod n) where
   exists_generator := ⟨1, fun n ↦ ⟨n, by simp⟩⟩
+
+instance ZMod.instIsSimpleAddGroup {p : ℕ} [Fact p.Prime] : IsSimpleAddGroup (ZMod p) :=
+  AddCommGroup.is_simple_iff_isAddCyclic_and_prime_card.2
+    ⟨by infer_instance, by simpa using (Fact.out : p.Prime)⟩
 
 @[simp]
 protected theorem ZMod.exponent (n : ℕ) : AddMonoid.exponent (ZMod n) = n := by

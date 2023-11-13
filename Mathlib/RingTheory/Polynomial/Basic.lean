@@ -851,8 +851,8 @@ end Prime
 
 namespace Polynomial
 
-instance (priority := 100) {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R] : WfDvdMonoid R[X]
-    where
+instance (priority := 100) wfDvdMonoid {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R] :
+    WfDvdMonoid R[X] where
   wellFounded_dvdNotUnit := by
     classical
       refine'
@@ -1128,7 +1128,7 @@ instance {R : Type u} [CommSemiring R] [NoZeroDivisors R] {σ : Type v} :
     apply this.imp <;> intro that <;> simpa using congr_arg (rename Subtype.val) that⟩
 
 /-- The multivariate polynomial ring over an integral domain is an integral domain. -/
-instance {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
+instance isDomain {R : Type u} {σ : Type v} [CommRing R] [IsDomain R] :
     IsDomain (MvPolynomial σ R) := by
   apply @NoZeroDivisors.to_isDomain (MvPolynomial σ R) _ ?_ _
   apply AddMonoidAlgebra.nontrivial
@@ -1221,6 +1221,22 @@ instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid
   exact ufm_of_gcd_of_wfDvdMonoid
 #align polynomial.unique_factorization_monoid Polynomial.uniqueFactorizationMonoid
 
+/-- If `D` is a unique factorization domain, `f` is a non-zero polynomial in `D[X]`, then `f` has
+only finitely many monic factors.
+(Note that its factors up to unit may be more than monic factors.)
+See also `UniqueFactorizationMonoid.fintypeSubtypeDvd`. -/
+noncomputable def fintypeSubtypeMonicDvd (f : D[X]) (hf : f ≠ 0) :
+    Fintype { g : D[X] // g.Monic ∧ g ∣ f } := by
+  set G := { g : D[X] // g.Monic ∧ g ∣ f }
+  let y : Associates D[X] := Associates.mk f
+  have hy : y ≠ 0 := Associates.mk_ne_zero.mpr hf
+  let H := { x : Associates D[X] // x ∣ y }
+  let hfin : Fintype H := UniqueFactorizationMonoid.fintypeSubtypeDvd y hy
+  let i : G → H := fun x ↦ ⟨Associates.mk x.1, Associates.mk_dvd_mk.2 x.2.2⟩
+  refine Fintype.ofInjective i fun x y heq ↦ ?_
+  rw [Subtype.mk.injEq] at heq ⊢
+  exact eq_of_monic_of_associated x.2.1 y.2.1 (Associates.mk_eq_mk_iff_associated.mp heq)
+
 end Polynomial
 
 namespace MvPolynomial
@@ -1248,7 +1264,8 @@ private theorem uniqueFactorizationMonoid_of_fintype [Fintype σ] :
       · apply @Polynomial.uniqueFactorizationMonoid (MvPolynomial (Fin d) D) _ _ ?_
         assumption
 
-instance (priority := 100) : UniqueFactorizationMonoid (MvPolynomial σ D) := by
+instance (priority := 100) uniqueFactorizationMonoid :
+    UniqueFactorizationMonoid (MvPolynomial σ D) := by
   rw [iff_exists_prime_factors]
   intro a ha; obtain ⟨s, a', rfl⟩ := exists_finset_rename a
   obtain ⟨w, h, u, hw⟩ :=
