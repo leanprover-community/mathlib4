@@ -101,6 +101,7 @@ theorem AddMonoid.End.zero_apply [AddCommMonoid M] (m : M) : (0 : AddMonoid.End 
 theorem AddMonoid.End.one_apply [AddCommMonoid M] (m : M) : (1 : AddMonoid.End M) m = m :=
   rfl
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem AddMonoid.End.ofNat_apply [AddCommMonoid M] (n : ℕ) [n.AtLeastTwo] (m : M) :
     (no_index (OfNat.ofNat n : AddMonoid.End M)) m = n • m :=
