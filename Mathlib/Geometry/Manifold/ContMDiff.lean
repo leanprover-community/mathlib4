@@ -2034,7 +2034,7 @@ nonrec theorem Smooth.smul {f : M → 𝕜} {g : M → V} (hf : Smooth I 𝓘(�
 
 variable (I)
 lemma contMDiff_openEmbedding
-  {M : Type*} [TopologicalSpace M] [Nonempty M]
+    {M : Type*} [TopologicalSpace M] [Nonempty M]
   {e : M → H} (h : OpenEmbedding e) {n : WithTop ℕ} :
   @ContMDiff _ _ _ _ _ _ _ I _ _ h.singletonChartedSpace _ _ _ _ _ I _ _ _ n e := by
 haveI := h.singleton_smoothManifoldWithCorners I
