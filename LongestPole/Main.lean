@@ -181,12 +181,12 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
       let r := match r.split (· = '.') with
       | [a, b] => a ++ "." ++ b.take 2
       | _ => r
-      table := table.push (n.get!, c/10^9 |>.toUInt64, r)
+      table := table.push (n.get!, c/10^6 |>.toUInt64, r)
       n := slowest.find? n.get!
     let widest := table.map (·.1.toString.length) |>.toList.maximum?.getD 0
-    IO.println s!"{"file".rightPad widest} | instructions (*10^9) | parallelism"
+    IO.println s!"{"file".rightPad widest} | instructions | parallelism"
     for (name, inst, speedup) in table do
-      IO.println s!"{name.toString.rightPad widest} | {(toString inst).rightPad 20} | x{speedup}"
+      IO.println s!"{name.toString.rightPad widest} | {(toString inst).rightPad 12} | x{speedup}"
   return 0
 
 /-- Setting up command line options and help text for `lake exe pole`. -/
