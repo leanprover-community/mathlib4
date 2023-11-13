@@ -25,11 +25,13 @@ space (e.g. `((ι ⊕ ι') → ℝ) ≃ (ι → ℝ) × (ι' → ℝ)`).
   $$
   \vec{x}\mapsto \int\!\!\cdots\!\!\int f(\vec{x})dx_{i_1}\cdots dx_{i_k}.
   $$
+  Note that the notation `∫⋯∫⁻_s, f ∂μ` is not a binder, and returns a function.
 
 ## Main Results
 
 * `lmarginal_union` is the analogue of Tonelli's theorem for iterated integrals. It states that
-  for measurable functions
+  for measurable functions `f` and disjoint finsets `s` and `t` we have
+  `∫⋯∫⁻_s ∪ t, f ∂μ = ∫⋯∫⁻_s, ∫⋯∫⁻_t, f ∂μ ∂μ`.
 
 ## Implementation notes
 
