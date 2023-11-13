@@ -699,25 +699,44 @@ theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top {ι : Type*} [Measu
     ((fun _ _ h ↦ Disjoint.aedisjoint (As_disj h))) Union_As_finite
 #align measure_theory.measure.countable_meas_pos_of_disjoint_of_meas_Union_ne_top MeasureTheory.Measure.countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top
 
+
+protected theorem mono_measure (h : AEDisjoint μ s t) {ν : Measure α} (h' : ν ≤ μ) :
+    AEDisjoint ν s t := by
+  have A : ν (s ∩ t) ≤ μ (s ∩ t) := Measure.le_iff'.1 h' _
+  exact le_antisymm (A.trans h.le) (zero_le _)
+
 /-- In an S-finite space, among disjoint null-measurable sets, only countably many can have positive
 measure. -/
 theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} [MeasurableSpace α] {μ : Measure α}
-    [SFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
+    [h : SFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
     (As_disj : Pairwise (AEDisjoint μ on As)) :
     Set.Countable { i : ι | 0 < μ (As i) } := by
-  have obs : { i : ι | 0 < μ (As i) } ⊆ ⋃ n, { i : ι | 0 < μ (As i ∩ spanningSets μ n) } := by
-    intro i i_in_nonzeroes
+  rcases h.out' with ⟨m, hm, rfl⟩
+  have obs : { i : ι | 0 < sum m (As i) } ⊆ ⋃ n, { i : ι | 0 < m n (As i) } := by
+    intro i hi
     by_contra con
     simp only [mem_iUnion, mem_setOf_eq, not_exists, not_lt, nonpos_iff_eq_zero] at *
-    simp [(forall_measure_inter_spanningSets_eq_zero _).mp con] at i_in_nonzeroes
+    rw [sum_apply₀] at hi
+    · sorry --simp [(forall_measure_inter_spanningSets_eq_zero _).mp con] at i_in_nonzeroes
+    · exact As_mble i
   apply Countable.mono obs
-  refine' countable_iUnion fun n => countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ μ _ _ _
+  refine countable_iUnion fun n ↦ ?_
+  apply countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀
+  · exact fun i ↦ (As_mble i).mono (le_sum m n)
+  · intro i j hij
+    have Z := As_disj hij
+    apply Z.mono_measure
+
+
+
+#exit
   · exact fun i ↦ NullMeasurableSet.inter (As_mble i)
       (measurable_spanningSets μ n).nullMeasurableSet
   · exact fun i j i_ne_j ↦ (As_disj i_ne_j).mono
       (inter_subset_left (As i) (spanningSets μ n)) (inter_subset_left (As j) (spanningSets μ n))
-  · refine' (lt_of_le_of_lt (measure_mono _) (measure_spanningSets_lt_top μ n)).ne
-    exact iUnion_subset fun i => inter_subset_right _ _
+  · sorry
+
+#exit
 
 /-- In a σ-finite space, among disjoint measurable sets, only countably many can have positive
 measure. -/
