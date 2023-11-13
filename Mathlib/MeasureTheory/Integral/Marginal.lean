@@ -21,7 +21,7 @@ space (e.g. `((ι ⊕ ι') → ℝ) ≃ (ι → ℝ) × (ι' → ℝ)`).
 * If `f : α → ℝ≥0∞` then `lmarginal μ s f` or `∫⋯∫⁻_s, f ∂μ` is the function that integrates `f`
   over all variables in `s`. It returns a function that still takes the same variables as `f`,
   but is constant in the variables in `s`. Mathematically, if `s = {i₁, ..., iₖ}`,
-  then `marginal μ s f` is the expression
+  then `lmarginal μ s f` is the expression
   $$
   \vec{x}\mapsto \int\!\!\cdots\!\!\int f(\vec{x})dx_{i_1}\cdots dx_{i_k}.
   $$
