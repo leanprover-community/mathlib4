@@ -31,17 +31,6 @@ Let `f` be a continuous multilinear map in finitely many variables.
 * `norm_image_sub_le f m₁ m₂` gives a control of the difference `f m₁ - f m₂` in terms of
   `‖f‖` and `‖m₁ - m₂‖`.
 
-We also register isomorphisms corresponding to currying or uncurrying variables, transforming a
-continuous multilinear function `f` in `n+1` variables into a continuous linear function taking
-values in continuous multilinear functions in `n` variables, and also into a continuous multilinear
-function in `n` variables taking values in continuous linear functions. These operations are called
-`f.curryLeft` and `f.curryRight` respectively (with inverses `f.uncurryLeft` and
-`f.uncurryRight`). They induce continuous linear equivalences between spaces of
-continuous multilinear functions in `n+1` variables and spaces of continuous linear functions into
-continuous multilinear functions in `n` variables (resp. continuous multilinear functions in `n`
-variables taking values in continuous linear functions), called respectively
-`continuousMultilinearCurryLeftEquiv` and `continuousMultilinearCurryRightEquiv`.
-
 ## Implementation notes
 
 We mostly follow the API (and the proofs) of `OperatorNorm.lean`, with the additional complexity
