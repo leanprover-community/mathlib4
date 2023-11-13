@@ -90,7 +90,7 @@ theorem cast_pos {α} [OrderedSemiring α] [Nontrivial α] {n : ℕ} : (0 : α) 
 -- See note [no_index around OfNat.ofNat]
 @[simp low]
 theorem ofNat_pos' {n : ℕ} [n.AtLeastTwo] : 0 < (no_index (OfNat.ofNat n : α)) :=
-  cast_pos'.mpr Nat.AtLeastTwo.pos
+  cast_pos'.mpr (NeZero.pos n)
 
 /-- Specialisation of `Nat.ofNat_pos'`, which seems to be easier for Lean to use. -/
 -- See note [no_index around OfNat.ofNat]
@@ -190,7 +190,7 @@ theorem one_lt_ofNat : 1 < (no_index (OfNat.ofNat n : α)) :=
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem one_le_ofNat : 1 ≤ (no_index (OfNat.ofNat n : α)) :=
-  one_le_cast.mpr AtLeastTwo.one_le
+  one_le_cast.mpr NeZero.one_le
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
