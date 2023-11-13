@@ -873,6 +873,17 @@ theorem nhds_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology s]
   simpa using (𝓝 x).basis_sets.exists_inter_eq_singleton_of_mem_discrete hx
 #align nhds_inter_eq_singleton_of_mem_discrete nhds_inter_eq_singleton_of_mem_discrete
 
+/-- Let `x` be a point in a discrete subset `s` of a topological space, then there exists an open
+set that only meets `s` at `x`.  -/
+theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
+    (hx : x ∈ s) : ∃ U : Set X, IsOpen U ∧ U ∩ s = {x} := by
+  obtain ⟨U, hU_nhds, hU_inter⟩ := nhds_inter_eq_singleton_of_mem_discrete hx
+  obtain ⟨t, ht_sub, ht_open, ht_x⟩ := mem_nhds_iff.mp hU_nhds
+  refine ⟨t, ht_open, Set.Subset.antisymm ?_ ?_⟩
+  · exact hU_inter ▸ Set.inter_subset_inter_left s ht_sub
+  · rw [Set.subset_inter_iff, Set.singleton_subset_iff, Set.singleton_subset_iff]
+    exact ⟨ht_x, hx⟩
+
 /-- For point `x` in a discrete subset `s` of a topological space, there is a set `U`
 such that
 1. `U` is a punctured neighborhood of `x` (ie. `U ∪ {x}` is a neighbourhood of `x`),

@@ -683,7 +683,8 @@ theorem crossing_pos_eq (hab : a < b) :
     rw [LatticeOrderedGroup.pos_nonpos_iff, sub_nonpos]
   induction' n with k ih
   · refine' ⟨rfl, _⟩
-    simp only [lowerCrossingTime_zero, hitting, Set.mem_Icc, Set.mem_Iic, Nat.zero_eq]
+    simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting,
+      Set.mem_Icc, Set.mem_Iic, Nat.zero_eq]
     ext ω
     split_ifs with h₁ h₂ h₂
     · simp_rw [hf']

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.IndicatorFunction
+import Mathlib.Data.Finset.Update
 import Mathlib.Data.Prod.TProd
 import Mathlib.GroupTheory.Coset
 import Mathlib.Logic.Equiv.Fin
@@ -611,7 +612,7 @@ alias Measurable.subtype_val := Measurable.subtype_coe
 @[measurability]
 theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable f) {h : ∀ x, p (f x)} :
     Measurable fun x => (⟨f x, h x⟩ : Subtype p) := fun t ⟨s, hs⟩ =>
-  hs.2 ▸ by simp only [← preimage_comp, (· ∘ ·), Subtype.coe_mk, hf hs.1]
+  hs.2 ▸ by simp only [← preimage_comp, comp_def, Subtype.coe_mk, hf hs.1]
 #align measurable.subtype_mk Measurable.subtype_mk
 
 @[measurability]
@@ -889,7 +890,7 @@ variable [∀ a, MeasurableSpace (π a)] [MeasurableSpace γ]
 
 theorem measurable_pi_iff {g : α → ∀ a, π a} : Measurable g ↔ ∀ a, Measurable fun x => g x a := by
   simp_rw [measurable_iff_comap_le, MeasurableSpace.pi, MeasurableSpace.comap_iSup,
-    MeasurableSpace.comap_comp, Function.comp, iSup_le_iff]
+    MeasurableSpace.comap_comp, comp_def, iSup_le_iff]
 #align measurable_pi_iff measurable_pi_iff
 
 @[aesop safe 100 apply (rule_sets [Measurable])]
@@ -920,6 +921,16 @@ theorem measurable_update'  {a : δ} [DecidableEq δ] :
     dsimp
     exact measurable_snd
   · exact measurable_pi_iff.1 measurable_fst _
+
+theorem measurable_uniqueElim [Unique δ] [∀ i, MeasurableSpace (π i)] :
+    Measurable (uniqueElim : π (default : δ) → ∀ i, π i) := by
+  simp_rw [measurable_pi_iff, Unique.forall_iff, uniqueElim_default]; exact measurable_id
+
+theorem measurable_updateFinset [DecidableEq δ] {s : Finset δ} {x : ∀ i, π i} :
+    Measurable (updateFinset x s) := by
+  simp (config := { unfoldPartialApp := true }) only [updateFinset, measurable_pi_iff]
+  intro i
+  by_cases h : i ∈ s <;> simp [h, measurable_pi_apply]
 
 /-- The function `update f a : π a → Π a, π a` is always measurable.
   This doesn't require `f` to be measurable.
@@ -1630,12 +1641,18 @@ def piMeasurableEquivTProd [DecidableEq δ'] {l : List δ'} (hnd : l.Nodup) (h :
   measurable_invFun := measurable_tProd_elim' h
 #align measurable_equiv.pi_measurable_equiv_tprod MeasurableEquiv.piMeasurableEquivTProd
 
+variable (π) in
+/-- The measurable equivalence `(∀ i, π i) ≃ᵐ π ⋆` when the domain of `π` only contains `⋆` -/
+@[simps! (config := .asFn)]
+def piUnique [Unique δ'] : (∀ i, π i) ≃ᵐ π default where
+  toEquiv := Equiv.piUnique π
+  measurable_toFun := measurable_pi_apply _
+  measurable_invFun := measurable_uniqueElim
+
 /-- If `α` has a unique term, then the type of function `α → β` is measurably equivalent to `β`. -/
 @[simps! (config := .asFn)]
-def funUnique (α β : Type*) [Unique α] [MeasurableSpace β] : (α → β) ≃ᵐ β where
-  toEquiv := Equiv.funUnique α β
-  measurable_toFun := measurable_pi_apply _
-  measurable_invFun := measurable_pi_iff.2 fun _ => measurable_id
+def funUnique (α β : Type*) [Unique α] [MeasurableSpace β] : (α → β) ≃ᵐ β :=
+  MeasurableEquiv.piUnique _
 #align measurable_equiv.fun_unique MeasurableEquiv.funUnique
 
 /-- The space `Π i : Fin 2, α i` is measurably equivalent to `α 0 × α 1`. -/
@@ -1694,6 +1711,14 @@ theorem coe_sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace
 
 theorem coe_sumPiEquivProdPi_symm (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
     ⇑(MeasurableEquiv.sumPiEquivProdPi α).symm = (Equiv.sumPiEquivProdPi α).symm := by rfl
+
+/-- The measurable equivalence `(∀ i : s, π i) × (∀ i : t, π i) ≃ᵐ (∀ i : s ∪ t, π i)`
+  for disjoint finsets `s` and `t`. `Equiv.piFinsetUnion` as a measurable equivalence. -/
+def piFinsetUnion [DecidableEq δ'] {s t : Finset δ'} (h : Disjoint s t) :
+    ((∀ i : s, π i) × ∀ i : t, π i) ≃ᵐ ∀ i : (s ∪ t : Finset δ'), π i :=
+  letI e := Finset.union s t h
+  MeasurableEquiv.sumPiEquivProdPi (fun b ↦ π (e b)) |>.symm.trans <|
+    .piCongrLeft (fun i : ↥(s ∪ t) ↦ π i) e
 
 /-- If `s` is a measurable set in a measurable space, that space is equivalent
 to the sum of `s` and `sᶜ`.-/

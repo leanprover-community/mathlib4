@@ -78,7 +78,7 @@ theorem nhds_eq (l : Filter α) : 𝓝 l = l.lift' (Iic ∘ 𝓟) :=
 #align filter.nhds_eq Filter.nhds_eq
 
 theorem nhds_eq' (l : Filter α) : 𝓝 l = l.lift' fun s => { l' | s ∈ l' } := by
-  simpa only [(· ∘ ·), Iic_principal] using nhds_eq l
+  simpa only [Function.comp_def, Iic_principal] using nhds_eq l
 #align filter.nhds_eq' Filter.nhds_eq'
 
 protected theorem tendsto_nhds {la : Filter α} {lb : Filter β} {f : α → Filter β} :
@@ -117,7 +117,7 @@ theorem mem_nhds_iff' {l : Filter α} {S : Set (Filter α)} :
 
 @[simp]
 theorem nhds_bot : 𝓝 (⊥ : Filter α) = pure ⊥ := by
-  simp [nhds_eq, (· ∘ ·), lift'_bot monotone_principal.Iic]
+  simp [nhds_eq, Function.comp_def, lift'_bot monotone_principal.Iic]
 #align filter.nhds_bot Filter.nhds_bot
 
 @[simp]
@@ -150,8 +150,8 @@ theorem monotone_nhds : Monotone (𝓝 : Filter α → Filter (Filter α)) :=
 #align filter.monotone_nhds Filter.monotone_nhds
 
 theorem sInter_nhds (l : Filter α) : ⋂₀ { s | s ∈ 𝓝 l } = Iic l := by
-  simp_rw [nhds_eq, (· ∘ ·), sInter_lift'_sets monotone_principal.Iic, Iic, le_principal_iff,
-    ← setOf_forall, ← Filter.le_def]
+  simp_rw [nhds_eq, Function.comp_def, sInter_lift'_sets monotone_principal.Iic, Iic,
+    le_principal_iff, ← setOf_forall, ← Filter.le_def]
 #align filter.Inter_nhds Filter.sInter_nhds
 
 @[simp]

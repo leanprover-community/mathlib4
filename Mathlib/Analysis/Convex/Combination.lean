@@ -517,7 +517,7 @@ theorem Set.Finite.convexHull_eq_image {s : Set E} (hs : s.Finite) : convexHull 
   -- Porting note: Original proof didn't need to specify `hs.fintype`
   rw [← @convexHull_basis_eq_stdSimplex _ _ _ hs.fintype, ← LinearMap.convexHull_image,
     ← Set.range_comp]
-  simp_rw [Function.comp]
+  simp_rw [Function.comp_def]
   apply congr_arg
   convert Subtype.range_coe.symm
   -- Porting note: Original proof didn't need to specify `hs.fintype` and `(1 : R)`
