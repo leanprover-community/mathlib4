@@ -1454,8 +1454,8 @@ section MeasureSpace
 variable {s : Set α} [MeasureSpace α] {p : α → Prop}
 
 /-- In a measure space, one can restrict the measure to a subtype to get a new measure space. -/
-def Subtype.measureSpace : MeasureSpace (Subtype p) :=
-  { volume := Measure.comap Subtype.val volume }
+def Subtype.measureSpace : MeasureSpace (Subtype p) where
+  volume := Measure.comap Subtype.val volume
 #align measure_theory.measure.subtype.measure_space MeasureTheory.Measure.Subtype.measureSpace
 
 attribute [local instance] Subtype.measureSpace
@@ -4216,6 +4216,8 @@ variable [MeasureSpace α] {s t : Set α}
 
 /-!
 ### Volume on `s : Set α`
+
+Note the instance is provided earlier as `Subtype.measureSpace`.
 -/
 attribute [local instance] Subtype.measureSpace
 
