@@ -11,7 +11,7 @@ import Mathlib.Data.Finset.Basic
 This file defines `Function.updateFinset`, the operation that updates a function on a
 (finite) set of values.
 
-This is a very specific function used for `MeasureTheory.marginal`, and possibly not that useful
+This is a very specific function used for `MeasureTheory.lmarginal`, and possibly not that useful
 for other purposes.
 -/
 variable {ι : Sort _} {π : ι → Sort _} {x : ∀ i, π i} [DecidableEq ι]

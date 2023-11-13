@@ -99,7 +99,7 @@ operation on a function `f` which is constant along the co-ordinates in `sᶜ` i
 to type-theoretic nonsense) the same thing as the universe-grid-lines operation on the associated
 function on the "lower-dimensional" space `Π i : s, A i`. -/
 def T (p : ℝ) (f : (∀ i, A i) → ℝ≥0∞) (s : Finset ι) : (∀ i, A i) → ℝ≥0∞ :=
-  ∫⋯∫_s, f ^ (1 - (s.card - 1 : ℝ) * p) * ∏ i in s, (∫⋯∫_{i}, f ∂μ) ^ p ∂μ
+  ∫⋯∫⁻_s, f ^ (1 - (s.card - 1 : ℝ) * p) * ∏ i in s, (∫⋯∫⁻_{i}, f ∂μ) ^ p ∂μ
 
 variable {p : ℝ}
 
@@ -107,7 +107,7 @@ variable {p : ℝ}
     T μ p f univ x
     = ∫⁻ (x : ∀ i, A i), (f x ^ (1 - (#ι - 1 : ℝ) * p)
       * ∏ i : ι, (∫⁻ t : A i, f (update x i t) ∂(μ i)) ^ p) ∂(.pi μ) := by
-  simp [T, marginal_univ, marginal_singleton, card_univ]
+  simp [T, lmarginal_univ, lmarginal_singleton, card_univ]
 
 @[simp] lemma T_empty (f : (∀ i, A i) → ℝ≥0∞) (x : ∀ i, A i) :
     T μ p f ∅ x = f x ^ (1 + p) := by
@@ -119,56 +119,56 @@ set_option maxHeartbeats 500000 in
 The grid-lines operation `GridLines.T` on a nonnegative function on a finitary product type is
 less than or equal to the grid-lines operation of its partial integral in one co-ordinate
 (the latter intuitively considered as a function on a space "one dimension down"). -/
-theorem T_insert_le_T_marginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι) (hp : (s.card : ℝ) * p ≤ 1)
+theorem T_insert_le_T_lmarginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι) (hp : (s.card : ℝ) * p ≤ 1)
     (i : ι) (hi : i ∉ s) {f : (∀ i, A i) → ℝ≥0∞} (hf : Measurable f) :
-    T μ p f (insert i s) ≤ T μ p (∫⋯∫_{i}, f ∂μ) s := by
+    T μ p f (insert i s) ≤ T μ p (∫⋯∫⁻_{i}, f ∂μ) s := by
   calc T μ p f (insert i s)
-      = ∫⋯∫_insert i s,
-            f ^ (1 - (s.card : ℝ) * p) * ∏ j in (insert i s), (∫⋯∫_{j}, f ∂μ) ^ p ∂μ := by
+      = ∫⋯∫⁻_insert i s,
+            f ^ (1 - (s.card : ℝ) * p) * ∏ j in (insert i s), (∫⋯∫⁻_{j}, f ∂μ) ^ p ∂μ := by
           simp_rw [T, card_insert_of_not_mem hi]
           congr!
           push_cast
           ring
-    _ = ∫⋯∫_s, (fun x ↦ ∫⁻ (t : A i),
+    _ = ∫⋯∫⁻_s, (fun x ↦ ∫⁻ (t : A i),
             (f (update x i t) ^ (1 - (s.card : ℝ) * p)
-            * ∏ j in (insert i s), (∫⋯∫_{j}, f ∂μ) (update x i t) ^ p)  ∂ (μ i)) ∂μ := by
-          rw [marginal_insert' _ _ hi]
+            * ∏ j in (insert i s), (∫⋯∫⁻_{j}, f ∂μ) (update x i t) ^ p)  ∂ (μ i)) ∂μ := by
+          rw [lmarginal_insert' _ _ hi]
           · congr! with x t
             simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
           · change Measurable (fun x ↦ _)
             simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
             refine (hf.pow_const _).mul <| Finset.measurable_prod _ ?_
-            exact fun _ _ ↦ hf.marginal μ |>.pow_const _
-    _ ≤ T μ p (∫⋯∫_{i}, f ∂μ) s := marginal_mono (fun x ↦ ?_)
+            exact fun _ _ ↦ hf.lmarginal μ |>.pow_const _
+    _ ≤ T μ p (∫⋯∫⁻_{i}, f ∂μ) s := lmarginal_mono (fun x ↦ ?_)
   simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
-  have hF₁ : ∀ {j : ι}, Measurable fun t ↦ (∫⋯∫_{j}, f ∂μ) (update x i t) :=
-    fun {_} ↦ hf.marginal μ |>.comp <| measurable_update _
+  have hF₁ : ∀ {j : ι}, Measurable fun t ↦ (∫⋯∫⁻_{j}, f ∂μ) (update x i t) :=
+    fun {_} ↦ hf.lmarginal μ |>.comp <| measurable_update _
   have hF₀ : Measurable fun t ↦ f (update x i t) := hf.comp <| measurable_update _
   let k : ℝ := s.card
   have hk' : 0 ≤ 1 - k * p := by linarith only [hp]
   let X := update x i
   calc ∫⁻ t, f (X t) ^ (1 - k * p)
-          * ∏ j in (insert i s), (∫⋯∫_{j}, f ∂μ) (X t) ^ p ∂ (μ i)
-      = ∫⁻ t, (∫⋯∫_{i}, f ∂μ) (X t) ^ p * (f (X t) ^ (1 - k * p)
-          * ∏ j in s, ((∫⋯∫_{j}, f ∂μ) (X t) ^ p)) ∂(μ i) := by
-              -- rewrite integrand so that `(∫⋯∫_insert i s, f ∂μ) ^ p` comes first
+          * ∏ j in (insert i s), (∫⋯∫⁻_{j}, f ∂μ) (X t) ^ p ∂ (μ i)
+      = ∫⁻ t, (∫⋯∫⁻_{i}, f ∂μ) (X t) ^ p * (f (X t) ^ (1 - k * p)
+          * ∏ j in s, ((∫⋯∫⁻_{j}, f ∂μ) (X t) ^ p)) ∂(μ i) := by
+              -- rewrite integrand so that `(∫⋯∫⁻_insert i s, f ∂μ) ^ p` comes first
               clear_value X
               congr! 2 with t
               simp_rw [prod_insert hi]
               ring_nf
-    _ = (∫⋯∫_{i}, f ∂μ) x ^ p *
-          ∫⁻ t, f (X t) ^ (1 - k * p) * ∏ j in s, ((∫⋯∫_{j}, f ∂μ) (X t)) ^ p ∂(μ i) := by
+    _ = (∫⋯∫⁻_{i}, f ∂μ) x ^ p *
+          ∫⁻ t, f (X t) ^ (1 - k * p) * ∏ j in s, ((∫⋯∫⁻_{j}, f ∂μ) (X t)) ^ p ∂(μ i) := by
               -- pull out this constant factor
-              have : ∀ t, (∫⋯∫_{i}, f ∂μ) (X t) = (∫⋯∫_{i}, f ∂μ) x
+              have : ∀ t, (∫⋯∫⁻_{i}, f ∂μ) (X t) = (∫⋯∫⁻_{i}, f ∂μ) x
               · intro t
-                rw [marginal_update_of_mem]
+                rw [lmarginal_update_of_mem]
                 exact Iff.mpr Finset.mem_singleton rfl
               simp_rw [this]
               rw [lintegral_const_mul]
               exact (hF₀.pow_const _).mul <| Finset.measurable_prod _ fun _ _ ↦ hF₁.pow_const _
-    _ ≤ (∫⋯∫_{i}, f ∂μ) x ^ p *
+    _ ≤ (∫⋯∫⁻_{i}, f ∂μ) x ^ p *
           ((∫⁻ t, f (X t) ∂μ i) ^ (1 - k * p)
-          * ∏ j in s, (∫⁻ t, (∫⋯∫_{j}, f ∂μ) (X t) ∂μ i) ^ p) := by
+          * ∏ j in s, (∫⁻ t, (∫⋯∫⁻_{j}, f ∂μ) (X t) ∂μ i) ^ p) := by
               -- apply Hölder's inequality
               gcongr
               apply ENNReal.lintegral_mul_prod_norm_pow_le
@@ -179,31 +179,31 @@ theorem T_insert_le_T_marginal_singleton (hp₀ : 0 ≤ p) (s : Finset ι) (hp :
                 ring
               · exact hk'
               · exact fun _ _ ↦ hp₀
-    _ = (∫⋯∫_{i}, f ∂μ) x ^ p *
-          ((∫⋯∫_{i}, f ∂μ) x ^ (1 - k * p) * ∏ j in s, (∫⋯∫_{i, j}, f ∂μ) x ^ p) := by
+    _ = (∫⋯∫⁻_{i}, f ∂μ) x ^ p *
+          ((∫⋯∫⁻_{i}, f ∂μ) x ^ (1 - k * p) * ∏ j in s, (∫⋯∫⁻_{i, j}, f ∂μ) x ^ p) := by
               -- absorb the newly-created integrals into `∫⋯∫`
               dsimp only
               congr! 2
-              · rw [marginal_singleton]
+              · rw [lmarginal_singleton]
               refine prod_congr rfl fun j hj => ?_
               have hi' : i ∉ ({j} : Finset ι)
               · simp only [Finset.mem_singleton, Finset.mem_insert, Finset.mem_compl] at hj ⊢
                 exact fun h ↦ hi (h ▸ hj)
-              rw [marginal_insert _ hf hi']
-    _ = (∫⋯∫_{i}, f ∂μ) x ^ (p + (1 - k * p)) *  ∏ j in s, (∫⋯∫_{i, j}, f ∂μ) x ^ p := by
-              -- combine two `(∫⋯∫_insert i s, f ∂μ) x` terms
+              rw [lmarginal_insert _ hf hi']
+    _ = (∫⋯∫⁻_{i}, f ∂μ) x ^ (p + (1 - k * p)) *  ∏ j in s, (∫⋯∫⁻_{i, j}, f ∂μ) x ^ p := by
+              -- combine two `(∫⋯∫⁻_insert i s, f ∂μ) x` terms
               rw [ENNReal.rpow_add_of_nonneg]
               · ring
               · exact hp₀
               · exact hk'
-    _ ≤ (∫⋯∫_{i}, f ∂μ) x ^ (1 - (s.card - 1 : ℝ) * p) *
-          ∏ j in s, (∫⋯∫_{j}, (∫⋯∫_{i}, f ∂μ) ∂μ) x ^ p := by
+    _ ≤ (∫⋯∫⁻_{i}, f ∂μ) x ^ (1 - (s.card - 1 : ℝ) * p) *
+          ∏ j in s, (∫⋯∫⁻_{j}, (∫⋯∫⁻_{i}, f ∂μ) ∂μ) x ^ p := by
               -- identify the result with the RHS integrand
               congr! 2 with j hj
               · push_cast
                 ring_nf
               · congr! 1
-                rw [← marginal_union μ f hf]
+                rw [← lmarginal_union μ f hf]
                 · congr
                   rw [Finset.union_comm]
                   rfl
@@ -216,16 +216,16 @@ type indexed by `ι`, and a set `s` in `ι`, consider partially integrating over
 `sᶜ` and performing the "grid-lines operation" (see `GridLines.T`) to the resulting function in the
 variables `s`.  This theorem states that this operation decreases as the number of grid-lines taken
 increases. -/
-theorem T_marginal_antitone (hp₀ : 0 ≤ p) (hp : (#ι - 1 : ℝ) * p ≤ 1)
+theorem T_lmarginal_antitone (hp₀ : 0 ≤ p) (hp : (#ι - 1 : ℝ) * p ≤ 1)
     {f : (∀ i, A i) → ℝ≥0∞} (hf : Measurable f) :
-    Antitone (fun s ↦ T μ p (∫⋯∫_sᶜ, f ∂μ) s) := by
+    Antitone (fun s ↦ T μ p (∫⋯∫⁻_sᶜ, f ∂μ) s) := by
   -- Reformulate (by induction): a function is decreasing on `Finset ι` if it decreases under the
   -- insertion of any element to any set.
   rw [Finset.antitone_iff_forall_insert_le]
   intro s i hi
   -- apply the lemma designed to encapsulate the inductive step
-  convert T_insert_le_T_marginal_singleton μ hp₀ s ?_ i hi (hf.marginal μ) using 2
-  · rw [← marginal_union μ f hf]
+  convert T_insert_le_T_lmarginal_singleton μ hp₀ s ?_ i hi (hf.lmarginal μ) using 2
+  · rw [← lmarginal_union μ f hf]
     · rw [← insert_compl_insert hi]
       rfl
     rw [Finset.disjoint_singleton_left, not_mem_compl]
@@ -264,7 +264,7 @@ theorem lintegral_mul_prod_lintegral_pow_le {p : ℝ} (hp₀ : 0 ≤ p)
   · simp_rw [lintegral_of_isEmpty]; refine' zero_le _
   inhabit ∀ i, A i
   have H : (∅ : Finset ι) ≤ Finset.univ := Finset.empty_subset _
-  simpa [marginal_univ] using GridLines.T_marginal_antitone μ hp₀ hp hf H default
+  simpa [lmarginal_univ] using GridLines.T_lmarginal_antitone μ hp₀ hp hf H default
 
 /-- Special case of the grid-lines lemma `lintegral_mul_prod_lintegral_pow_le`, taking the extremal
 exponent `p = (#ι - 1)⁻¹`. -/

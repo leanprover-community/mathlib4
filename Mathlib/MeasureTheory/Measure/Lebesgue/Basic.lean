@@ -8,7 +8,7 @@ import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Transvection
 import Mathlib.MeasureTheory.Group.LIntegral
-import Mathlib.MeasureTheory.Integral.Marginal
+import Mathlib.MeasureTheory.Integral.lmarginal
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
@@ -396,9 +396,9 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
   have h2s : MeasurableSet (univ.pi s) := .pi countable_univ fun i _ ↦ hs i
   simp_rw [← pi_pi, ← lintegral_indicator_one h2s]
   rw [lintegral_map (measurable_one.indicator h2s) ht, volume_pi]
-  refine lintegral_eq_of_marginal_eq {t.i} ((measurable_one.indicator h2s).comp ht)
+  refine lintegral_eq_of_lmarginal_eq {t.i} ((measurable_one.indicator h2s).comp ht)
     (measurable_one.indicator h2s) ?_
-  simp_rw [marginal_singleton]
+  simp_rw [lmarginal_singleton]
   ext x
   cases t with | mk t_i t_j t_hij t_c =>
   simp [transvection, mulVec_stdBasisMatrix]

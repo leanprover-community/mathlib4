@@ -3,7 +3,7 @@ Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Integral.Marginal
+import Mathlib.MeasureTheory.Integral.lmarginal
 import Mathlib.Analysis.SpecialFunctions.Gaussian
 
 /-!
@@ -332,9 +332,9 @@ theorem measurable_A (R : ℝ) (s : Finset ι) : Measurable (A R s) := by
   exact Finset.measurable_sum _ (fun i _ ↦ Measurable.pow_const (measurable_pi_apply _) _)
 
 theorem sphere_aux_le_sphere_aux_insert {R : ℝ} (s : Finset ι) {i : ι} (hi : i ∉ s) :
-    (∫⋯∫_sᶜ, A R s) = ∫⋯∫_(insert i s)ᶜ, A R (insert i s) := by
+    (∫⋯∫⁻_sᶜ, A R s) = ∫⋯∫⁻_(insert i s)ᶜ, A R (insert i s) := by
   have hi' : i ∉ (insert i s)ᶜ := not_mem_compl.mpr <| mem_insert_self i s
-  simp_rw [← insert_compl_insert hi, marginal_insert' _ (measurable_A ..) hi']
+  simp_rw [← insert_compl_insert hi, lmarginal_insert' _ (measurable_A ..) hi']
   congr! 2 with _ x
   calc ∫⁻ t, B s.card * I s.card (R ^ 2 - ∑ j in sᶜ, update x i t j ^ 2)
       = ∫⁻ (t : ℝ), B s.card * I s.card ((R ^ 2 - ∑ j in (insert i s)ᶜ, x j ^ 2) - t ^ 2) := by
@@ -353,8 +353,8 @@ theorem sphere_aux_le_sphere_aux_insert {R : ℝ} (s : Finset ι) {i : ι} (hi :
             exact measurable_const.sub <| measurable_id.pow_const _
 
 theorem sphere_aux_emptyset_eq_sphere_aux_univ (R : ℝ) :
-    (∫⋯∫_∅ᶜ, A R ∅) = ∫⋯∫_(univ : Finset ι)ᶜ, A R univ := by
-  refine Finset.constant_of_eq_insert (fun s : Finset ι ↦ ∫⋯∫_sᶜ, A R s) ?_ ∅ univ
+    (∫⋯∫⁻_∅ᶜ, A R ∅) = ∫⋯∫⁻_(univ : Finset ι)ᶜ, A R univ := by
+  refine Finset.constant_of_eq_insert (fun s : Finset ι ↦ ∫⋯∫⁻_sᶜ, A R s) ?_ ∅ univ
   apply sphere_aux_le_sphere_aux_insert
 
 /-- The volume of a Euclidean ball of radius `R` in the space `ι → ℝ`, equipped with the product
@@ -369,5 +369,5 @@ theorem volume_ball (R : ℝ≥0) :
             exact Finset.measurable_sum _ (fun i _ ↦ Measurable.pow_const (measurable_pi_apply _) _)
     _ = ∫⁻ x : ι → ℝ, I 0 (R ^ 2 - ∑ i : ι, x i ^ 2) := by simp [apply_ite, Set.indicator_apply]
     _ = B (Fintype.card ι) * R ^ Fintype.card ι := by
-          simpa [A, marginal_univ, marginal_empty, Finset.card_univ, -I_zero] using
+          simpa [A, lmarginal_univ, lmarginal_empty, Finset.card_univ, -I_zero] using
             congr_fun (sphere_aux_emptyset_eq_sphere_aux_univ R) (0 : ι → ℝ)
