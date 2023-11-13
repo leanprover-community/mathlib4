@@ -164,6 +164,26 @@ theorem ofNat_lt :
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
+theorem ofNat_le_cast : (no_index (OfNat.ofNat m : α)) ≤ n ↔ (OfNat.ofNat m : ℕ) ≤ n :=
+  cast_le
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_lt_cast : (no_index (OfNat.ofNat m : α)) < n ↔ (OfNat.ofNat m : ℕ) < n :=
+  cast_lt
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem cast_le_ofNat : (m : α) ≤ (no_index (OfNat.ofNat n)) ↔ m ≤ OfNat.ofNat n :=
+  cast_le
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem cast_lt_ofNat : (m : α) < (no_index (OfNat.ofNat n)) ↔ m < OfNat.ofNat n :=
+  cast_lt
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
 theorem one_lt_ofNat : 1 < (no_index (OfNat.ofNat n : α)) :=
   one_lt_cast.mpr AtLeastTwo.one_lt
 
