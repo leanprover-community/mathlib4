@@ -34,9 +34,6 @@ def runCurl (args : Array String) (throwFailure := true) : IO String := do
 def speedCenterRunJson (hash : String) : IO String :=
   runCurl #["http://speed.lean-fro.org/mathlib4/api/run/e7b27246-a3e6-496a-b552-ff4b45c7236e?hash=" ++ hash]
 
--- def speedCenterRecentRunsJson : IO String :=
---   runCurl #["http://speed.lean-fro.org/mathlib4/api/recent/runs?n=1000"]
-
 structure SpeedCenterSource_1 where
   repo_id : String
   hash : String
@@ -45,19 +42,6 @@ deriving ToJson, FromJson
 structure SpeedCenterSource_2 where
   source : SpeedCenterSource_1
 deriving ToJson, FromJson
-
--- structure SpeedCenterRun_1 where
---   id : String
---   source : SpeedCenterSource_2
--- deriving ToJson, FromJson
-
--- structure SpeedCenterRun_2 where
---   run : SpeedCenterRun_1
--- deriving ToJson, FromJson
-
--- structure SpeedCenterRuns where
---   runs : List SpeedCenterRun_2
--- deriving ToJson, FromJson
 
 structure SpeedCenterDimension where
   benchmark : String
@@ -84,6 +68,12 @@ structure SpeedCenterRunResponse where
   run : SpeedCenterRun_3
 deriving ToJson, FromJson
 
+structure SpeedCenterMessage where
+  repo_id : String
+  message : String
+  commit_hash : String
+deriving ToJson, FromJson
+
 def SpeedCenterRunResponse.instructions (response : SpeedCenterRunResponse) :
     NameMap Float := Id.run do
   let mut r : NameMap Float := ∅
@@ -99,30 +89,14 @@ def speedCenterRunResponse (run : String) : IO SpeedCenterRunResponse := do
   | .error e => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{r}"
   | .ok j => match fromJson? j with
     | .ok v => pure v
-    | .error e => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{j}"
-
--- /-- Look up recent speed center runs, return as HashMap of commit shas to speed center ids. -/
--- def speedCenterRuns : IO (List (String × String)) := do
---   let r ← speedCenterRecentRunsJson
---   match Json.parse r with
---   | .error e => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{r}"
---   | .ok j => match fromJson? j with
---     | .ok (v : SpeedCenterRuns) => return v.runs.map fun m => (m.run.source.source.hash, m.run.id)
-    -- | .error e => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{j}"
+    | .error e => match fromJson? j with
+      | .ok (v : SpeedCenterMessage) =>
+        IO.eprintln s!"http://speed.lean-fro.org says: {v.message}"
+        IO.eprintln s!"Try moving to an older commit?"
+        IO.Process.exit 1
+      | .error _ => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{j}"
 
 def sha : IO String := return (← runCmd "git" #["rev-parse", "HEAD"]).trim
-
--- def runForThisCommit : IO String := do
---   let hash := (← runCmd "git" #["rev-parse", "HEAD"]).trim
---   let runs ← speedCenterRuns
---   match runs.find? (·.1 = hash) with
---   | none =>
---     let table := "\n".intercalate <| runs.take 10 |>.map fun r => r.1.take 8
---     IO.eprintln s!"Could not find speed center run for commit {hash}."
---     IO.eprintln "`git checkout` one of these commits, and try again?"
---     IO.eprintln table
---     IO.Process.exit 1
---   | some (_, r) => return r
 
 def speedCenterInstructions (run : String) : IO (NameMap Float) :=
   return (← speedCenterRunResponse run).instructions
