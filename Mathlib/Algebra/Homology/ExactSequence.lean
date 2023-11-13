@@ -159,7 +159,7 @@ lemma exact_iff_of_iso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂) :
 
 lemma exact₀ (S : ComposableArrows C 0) : S.Exact where
   toIsComplex := S.isComplex₀
-  exact i hi := by simp at hi
+  exact i hi := by simp [autoParam] at hi
 
 lemma exact₁ (S : ComposableArrows C 1) : S.Exact where
   toIsComplex := S.isComplex₁
