@@ -207,7 +207,7 @@ end CommGroupWithZero
 
 section MonoidWithZero
 
-variable [GroupWithZero G₀] [Nontrivial M₀] [MonoidWithZero M₀'] [NDFunLike F G₀ M₀] 
+variable [GroupWithZero G₀] [Nontrivial M₀] [MonoidWithZero M₀'] [NDFunLike F G₀ M₀]
   [MonoidWithZeroHomClass F G₀ M₀] [NDFunLike F' G₀ M₀'] [MonoidWithZeroHomClass F' G₀ M₀']
   (f : F) {a : G₀}
 
