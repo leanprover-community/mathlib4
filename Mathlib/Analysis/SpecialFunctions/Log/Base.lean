@@ -55,7 +55,7 @@ theorem logb_one : logb b 1 = 0 := by simp [logb]
 
 @[simp]
 lemma logb_self_eq_one (hb : 1 < b) : logb b b = 1 :=
-  div_self (fun H => (ne_of_lt (log_pos hb)).symm H)
+   div_self (log_pos hb).ne'
 
 lemma logb_self_eq_one' : logb b b = 1 ↔ b ≠ 0 ∧ b ≠ 1 ∧ b ≠ -1 :=
   Iff.trans ⟨fun h h' => by simp [logb, h'] at h, div_self⟩ log_ne_zero
