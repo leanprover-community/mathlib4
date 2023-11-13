@@ -52,11 +52,10 @@ lemma LinearProgram.feasibles_mkOfEqs
     (mkOfEqs equalities inequalities objective).feasibles =
     { x : P | (∀ a ∈ equalities, a x = 0) ∧ (∀ a ∈ inequalities, 0 ≤ a x) } := by
   ext x
+  rw [mem_feasibles]
   constructor
   · intro hyp
-    rw [Set.mem_setOf_eq]
-    simp only [LinearProgram.feasibles, LinearProgram.mkOfEqs,
-      List.append_assoc, List.mem_append, List.mem_map, Set.mem_setOf_eq,
+    simp only [LinearProgram.mkOfEqs, List.append_assoc, List.mem_append, List.mem_map,
       Function.Involutive.exists_mem_and_apply_eq_iff, neg_involutive] at hyp
     constructor
     · intro constr_eq mem_equalities
@@ -67,8 +66,7 @@ lemma LinearProgram.feasibles_mkOfEqs
     · intro constr_le mem_inequalities
       exact hyp (by simp [mem_inequalities])
   · intro hyp
-    simp only [mem_feasibles] at hyp
-    simp only [LinearProgram.feasibles, LinearProgram.mkOfEqs]
+    rw [LinearProgram.mkOfEqs]
     intro constraint constraint_mem
     rw [List.mem_append, List.mem_append] at constraint_mem
     cases constraint_mem with
@@ -87,13 +85,13 @@ lemma LinearProgram.feasibles_superset_of_constraints_subset {lp₁ lp₂ : Line
     (constrss : lp₁.constraints ⊆ lp₂.constraints) :
     lp₂.feasibles ⊆ lp₁.feasibles := by
   intro x hx
-  simp only [LinearProgram.feasibles, Set.mem_setOf_eq] at hx ⊢
+  rw [mem_feasibles] at hx ⊢
   intro a ha
   apply hx
   exact constrss ha
 
 /-- Adding more constraints cannot decrease the minimum. -/
-lemma minLinearProgram_le_of_constraints_subset {lp₁ lp₂ : LinearProgram K P} {x₁ x₂ : P}
+lemma LinearProgram.min_le_of_constraints_subset {lp₁ lp₂ : LinearProgram K P} {x₁ x₂ : P}
     (constrss : lp₁.constraints ⊆ lp₂.constraints)
     (hobj : lp₁.objective = lp₂.objective) (opt₁ : lp₁.MinAt x₁) (opt₂ : lp₂.MinAt x₂) :
     lp₁.objective x₁ ≤ lp₂.objective x₂ := by
@@ -101,4 +99,4 @@ lemma minLinearProgram_le_of_constraints_subset {lp₁ lp₂ : LinearProgram K P
   apply IsLeast.mono opt₂ opt₁
   rw [hobj]
   apply Set.image_subset
-  exact feasiblesLinearProgram_superset_of_constraints_subset constrss
+  exact feasibles_superset_of_constraints_subset constrss
