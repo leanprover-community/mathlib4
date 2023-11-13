@@ -215,9 +215,11 @@ theorem hasSum_single {f : β → α} (b : β) (hf : ∀ (b') (_ : b' ≠ b), f 
   hasSum_sum_of_ne_finset_zero <| by simpa [hf]
 #align has_sum_single hasSum_single
 
-lemma hasSum_singleton (m : β) (f : β → α) : HasSum (({m} : Set β).restrict f) (f m) := by
-  convert_to HasSum (fun x : ({m} : Set β) ↦ f x) (f (⟨m, rfl⟩ : ({m} : Set β)))
-  exact hasSum_single (α := α) _ <| fun m' h ↦ False.elim <| h <| Subtype.ext m'.2
+@[simp] lemma hasSum_unique [Unique β] (f : β → α) : HasSum f (f default) :=
+  hasSum_single default (fun _ hb ↦ False.elim <| hb <| Unique.uniq ..)
+
+@[simp] lemma hasSum_singleton (m : β) (f : β → α) : HasSum (({m} : Set β).restrict f) (f m) :=
+  hasSum_unique (Set.restrict {m} f)
 
 theorem hasSum_ite_eq (b : β) [DecidablePred (· = b)] (a : α) :
     HasSum (fun b' => if b' = b then a else 0) a := by
