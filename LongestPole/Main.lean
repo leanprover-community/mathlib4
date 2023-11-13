@@ -115,9 +115,9 @@ def runForThisCommit : IO String := do
   let runs ← speedCenterRuns
   match runs.find? (·.1 = hash) with
   | none =>
-    let table := "\n".intercalate <| runs.take 10 |>.map fun r => r.1 ++ " " ++ r.2
+    let table := "\n".intercalate <| runs.take 10 |>.map fun r => r.1.take 8
     IO.eprintln s!"Could not find speed center run for commit {hash}."
-    IO.eprintln "Try one of these commits?"
+    IO.eprintln "`git checkout` one of these commits, and try again?"
     IO.eprintln table
     IO.Process.exit 1
   | some (_, r) => return r
@@ -193,10 +193,10 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
 /-- Setting up command line options and help text for `lake exe pole`. -/
 def pole : Cmd := `[Cli|
   pole VIA longestPoleCLI; ["0.0.1"]
-  "Calculate the longest pole for building Mathlib (or downstream projects)." ++
-  "Use as `lake exe pole` or `lake exe pole --to MyProject.MyFile`." ++
-  "Print a sequence of imports starting at the target." ++
-  "For each file, prints the cumulative instructions (in billions) assuming infinite parallelism," ++
+  "Calculate the longest pole for building Mathlib (or downstream projects).\n" ++
+  "Use as `lake exe pole` or `lake exe pole --to MyProject.MyFile`.\n\n" ++
+  "Prints a sequence of imports starting at the target.\n" ++
+  "For each file, prints the cumulative instructions (in billions) assuming infinite parallelism,\n" ++
   "as well as a the speed-up factor over sequential processing."
 
   FLAGS:
