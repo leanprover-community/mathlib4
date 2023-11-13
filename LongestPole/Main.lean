@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Util.Imports
+import Mathlib.Data.String.Defs
 import Std.Lean.Util.Path
 import Cli
 
@@ -155,6 +156,9 @@ def totalInstructions (instructions : NameMap Float) (graph : NameMap (Array Nam
   transitive.filterMap fun n s => some <| s.fold (init := (instructions.find? n).getD 0)
     fun t n' => t + ((instructions.find? n').getD 0)
 
+def String.rightPad (s : String) (n : Nat) (c : Char := ' ') : String :=
+  s ++ String.replicate (n - s.length) c
+
 open IO.FS IO.Process Name in
 /-- Implementation of the longest pole command line program. -/
 def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
@@ -168,6 +172,7 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
     let cumulative := cumulativeInstructions instructions graph
     let total := totalInstructions instructions graph
     let slowest := slowestParents cumulative graph
+    let mut table := #[]
     let mut n := some to
     while n != none do
       let c := cumulative.find! n.get!
@@ -176,9 +181,12 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
       let r := match r.split (· = '.') with
       | [a, b] => a ++ "." ++ b.take 2
       | _ => r
-      IO.println s!"{n.get!} {c/10^9 |>.toUInt64} {r}"
+      table := table.push (n.get!, c/10^9 |>.toUInt64, r)
       n := slowest.find? n.get!
-    return graph
+    let widest := table.map (·.1.toString.length) |>.toList.maximum?.getD 0
+    IO.println s!"{"file".rightPad widest} | instructions (*10^9) | parallelism"
+    for (name, inst, speedup) in table do
+      IO.println s!"{name.toString.rightPad widest} | {(toString inst).rightPad 20} | x{speedup}"
   return 0
 
 /-- Setting up command line options and help text for `lake exe pole`. -/
