@@ -11,6 +11,7 @@ import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.ZMod.Defs
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 /-!
 # Basic Theorems About Bitvectors
@@ -159,5 +160,117 @@ instance : CommRing (BitVec w) where
   one_mul         := by intro ⟨_⟩; simp [one_eq_ofFin_one]
   mul_one         := by intro ⟨_⟩; simp [one_eq_ofFin_one]
   add_left_neg    := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
+
+/-!
+## Ext
+-/
+
+-- TODO: this results supersedes `Bool.beq_eq_decide_eq` and should go in its own PR
+theorem Bool.beq_eq_decide_eq' {α : Type*} (a b : α) [BEq α] [LawfulBEq α] [DecidableEq α] :
+    (a == b) = decide (a = b) := by
+  cases h : a == b
+  · simp [ne_of_beq_false h]
+  · simp [eq_of_beq h]
+
+namespace Nat
+open Nat
+
+lemma two_pow_succ_eq_bit_false (x : Nat) :
+    2^(x+1) = bit false (2^x) := by
+  rw [Nat.pow_succ, Nat.mul_two]; rfl
+
+lemma bit_and_two_pow_succ (x₀ : Bool) (x n : Nat) :
+    bit x₀ x &&& 2^(n + 1) = bit false (x &&& 2^n) := by
+  show bitwise .. = bit _ (bitwise ..)
+  rw [two_pow_succ_eq_bit_false, bitwise_bit, Bool.and_false]
+
+@[simp]
+lemma bit_and_one (x₀ : Bool) (x : Nat) :
+    bit x₀ x &&& 1 = x₀.toNat := by
+  show bitwise _ _ (bit true 0) = _
+  rw [bitwise_bit, Bool.and_true]
+  simp only [ne_eq, bitwise_zero_right, ite_false]
+  cases x₀ <;> rfl
+
+set_option linter.deprecated false in
+@[simp] lemma bit0_bne_zero (x : Nat) : (bit0 x != 0) = (x != 0) := by
+  cases x <;> rfl
+
+set_option linter.deprecated false in
+lemma lt_pow_of_bit_lt_pow_succ {w x : Nat} {x₀ : Bool} :
+    bit x₀ x < 2 ^ (w + 1) → x < 2 ^ w := by
+  have h0 : bit0 x < 2 ^ w * 2 → x < 2 ^ w := by
+    simp [bit0, ←mul_two]
+  cases x₀
+  · exact h0
+  · rw [bit_true]
+    intro h
+    apply h0
+    apply Nat.lt_trans (Nat.bit0_lt_bit1 le_rfl) h
+
+-- theorem and_one_eq_mod_two (x : Nat) :
+--     x &&& 1 = x % 2 := by
+--   cases' x using Nat.binaryRec with b x
+--   · rfl
+--   · rw [bit_and_one, bit_val, add_mod, mul_mod_right, zero_add, mod_mod]
+--     cases b <;> rfl
+
+end Nat
+
+@[ext]
+theorem ext {x y : BitVec w} (h : ∀ (i : Fin w), x.getLsb i = y.getLsb i) : x = y := by
+  rcases x with ⟨⟨x, hx⟩⟩
+  rcases y with ⟨⟨y, hy⟩⟩
+  simp only [getLsb, toNat_ofFin, Nat.shiftLeft_eq, one_mul] at h
+  simp only [ofFin.injEq, Fin.mk.injEq]
+  induction' x using Nat.binaryRec with x₀ x ih generalizing y w
+  · simp only [zero_land, bne_self_eq_false, eq_comm (a:=false)] at h
+    simp only [bne, Bool.not_eq_false', beq_iff_eq] at h
+    clear hx
+    induction' y using Nat.binaryRec with y₀ y ih generalizing w
+    · rfl
+    · cases' w with w
+      · cases y₀ <;> simp [bit_val] at hy
+        rw [hy]
+        rfl
+      · obtain ⟨⟩ : y₀ = false := by
+          have h0 := h 0
+          change bitwise _ _ (bit true 0) = _ at h0
+          rw [Nat.bitwise_bit] at h0
+          cases y₀
+          · rfl
+          · simp [bit_val] at h0
+        rw [←ih (Nat.lt_pow_of_bit_lt_pow_succ hy)]
+        · rfl
+        · intro i
+          specialize h i.succ
+          simp only [Fin.val_succ, Nat.bit_and_two_pow_succ, bit_eq_zero, and_true] at h
+          exact h
+  · cases' w with w
+    · rw [Nat.lt_one_iff.mp hx, Nat.lt_one_iff.mp hy]
+    · rw [←bit_decomp y] at hy h ⊢
+      congr
+      · specialize h 0
+        simp only [Fin.val_zero, _root_.pow_zero, Nat.bit_and_one, Bool.toNat_bne_zero] at h
+        exact h
+      · apply ih (w:=w) (Nat.lt_pow_of_bit_lt_pow_succ hx) _ (Nat.lt_pow_of_bit_lt_pow_succ hy)
+        intro i
+        specialize h (Fin.succ i)
+        simp [Nat.bit_and_two_pow_succ] at h
+        exact h
+
+theorem extMsb {w : ℕ} {x y : BitVec w} (h : ∀ (i : Fin w), x.getMsb i = y.getMsb i) : x = y := by
+  apply ext
+  intro i
+  simp only [getMsb, Fin.is_lt, decide_True, ge_iff_le, tsub_le_iff_right, Bool.true_and] at h
+  specialize h i.rev
+  have h_lt : 1 ≤ w - ↑i :=
+    Nat.le_of_lt_succ <| Nat.succ_lt_succ <| Nat.zero_lt_sub_of_lt i.isLt
+  conv at h => {
+    simp only [ge_iff_le, Fin.val_rev, tsub_le_iff_right]
+    rw [←Nat.sub_add_eq w 1, Nat.add_comm 1, Nat.sub_add_eq w i.val 1, Nat.sub_add_cancel h_lt,
+      Nat.sub_sub_self (Nat.le_of_lt i.isLt)]
+  }
+  exact h
 
 end Std.BitVec
