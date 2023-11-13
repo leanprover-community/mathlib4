@@ -1453,10 +1453,12 @@ section MeasureSpace
 
 variable {s : Set α} [MeasureSpace α] {p : α → Prop}
 
-instance Subtype.measureSpace : MeasureSpace (Subtype p) :=
+def Subtype.measureSpace : MeasureSpace (Subtype p) :=
   { Subtype.instMeasurableSpace with
     volume := Measure.comap Subtype.val volume }
 #align measure_theory.measure.subtype.measure_space MeasureTheory.Measure.Subtype.measureSpace
+
+attribute [local instance] Subtype.measureSpace
 
 theorem Subtype.volume_def : (volume : Measure s) = volume.comap Subtype.val :=
   rfl
