@@ -1337,6 +1337,20 @@ theorem continuousAt_iff {f : α → β} {g : β → γ} (hf : OpenEmbedding f) 
   hf.tendsto_nhds_iff'
 #align open_embedding.continuous_at_iff OpenEmbedding.continuousAt_iff
 
+variable [Nonempty α]
+
+lemma toLocalHomeomorph_left_inv {x : α} :
+  (h.toLocalHomeomorph f).symm (f x) = x := by
+  rw [←congr_fun (h.toLocalHomeomorph_apply f), LocalHomeomorph.left_inv]
+  exact Set.mem_univ _
+#align open_embedding.to_local_homeomorph_left_inv OpenEmbedding.toLocalHomeomorph_left_inv
+
+lemma toLocalHomeomorph_right_inv {x : β} (hx : x ∈ Set.range f) :
+  f ((h.toLocalHomeomorph f).symm x) = x := by
+  rw [←congr_fun (h.toLocalHomeomorph_apply f), LocalHomeomorph.right_inv]
+  rwa [toLocalHomeomorph_target]
+#align open_embedding.to_local_homeomorph_right_inv OpenEmbedding.toLocalHomeomorph_right_inv
+
 end OpenEmbedding
 
 namespace TopologicalSpace.Opens
