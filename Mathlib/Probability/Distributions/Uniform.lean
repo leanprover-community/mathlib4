@@ -120,6 +120,7 @@ lemma lintegral_uniformPdf_eq_one (a b : ℝ) (hab : a ≠ b) :
 end UniformPdf
 
 open MeasureTheory
+
 /-- Measure defined by the uniform Distribution -/
 noncomputable
 def uniformMeasure (a b : ℝ) : Measure ℝ :=
@@ -141,7 +142,7 @@ noncomputable
 def uniformCdfReal (a b : ℝ) : StieltjesFunction :=
   ProbabilityTheory.cdf (uniformMeasure a b)
 
-/- The uniform CDF equals the integration of the PDF-/
+/-- The uniform CDF equals the integration of the PDF-/
 lemma uniformCdf_eq_Lintegral {a b : ℝ} (hab : a ≠ b) :
     ((uniformCdfReal a b)) = fun x ↦ ENNReal.toReal (∫⁻ x in (Iic x), (uniformPdf a b x)) := by
   unfold uniformCdfReal uniformPdf
@@ -158,7 +159,6 @@ lemma uniformCdf_eq_dirac {a b : ℝ} (hab : a = b) :
   simp only [uniformMeasure, if_pos hab, measurableSet_Iic, dirac_apply',
     mem_Iic, not_le, indicator]
   rw [ENNReal.toReal_eq_toReal_iff]; left; rfl
-
 
 lemma uniformCdf_eq_zero {a b : ℝ} (x : ℝ) (hx: x < a ⊓ b) : ((uniformCdfReal a b) x) = 0 := by
   by_cases hab : a = b
