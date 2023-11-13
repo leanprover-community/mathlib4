@@ -57,10 +57,8 @@ theorem logb_one : logb b 1 = 0 := by simp [logb]
 lemma logb_self_eq_one (hb : 1 < b) : logb b b = 1 :=
   div_self (fun H => (ne_of_lt (log_pos hb)).symm H)
 
-lemma logb_self_eq_one' (hb₀ : 0 < b) (hb₁ : b ≠ 1) : logb b b = 1 := by
-  refine div_self ?_
-  rw [log_ne_zero]
-  exact ⟨ne_of_gt hb₀, hb₁, by linarith⟩
+lemma logb_self_eq_one' : logb b b = 1 ↔ b ≠ 0 ∧ b ≠ 1 ∧ b ≠ -1 :=
+  Iff.trans ⟨fun h h' => by simp [logb, h'] at h, div_self⟩ log_ne_zero
 
 @[simp]
 theorem logb_abs (x : ℝ) : logb b |x| = logb b x := by rw [logb, logb, log_abs]
