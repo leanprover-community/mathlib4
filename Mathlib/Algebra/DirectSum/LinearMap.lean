@@ -21,7 +21,7 @@ variable {ι R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace LinearMap
 
-/-- If a linear map `f : M₁ → M₂` respects direct sum decompositions of `M` and `M₂`, then it has a
+/-- If a linear map `f : M₁ → M₂` respects direct sum decompositions of `M₁` and `M₂`, then it has a
 block diagonal matrix with respect to bases compatible with the direct sum decompositions. -/
 lemma toMatrix_directSum_collectedBasis_eq_blockDiagonal' {R M₁ M₂ : Type*} [CommSemiring R]
     [AddCommMonoid M₁] [Module R M₁] {N₁ : ι → Submodule R M₁} (h₁ : IsInternal N₁)
