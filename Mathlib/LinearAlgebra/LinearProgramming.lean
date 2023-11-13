@@ -67,7 +67,7 @@ lemma LinearProgram.feasibles_mkOfEqs
     · intro constr_le mem_inequalities
       exact hyp (by simp [mem_inequalities])
   · intro hyp
-    simp only [Set.mem_setOf_eq, LinearProgram.feasibles] at hyp
+    simp only [mem_feasibles] at hyp
     simp only [LinearProgram.feasibles, LinearProgram.mkOfEqs]
     intro constraint constraint_mem
     rw [List.mem_append, List.mem_append] at constraint_mem
