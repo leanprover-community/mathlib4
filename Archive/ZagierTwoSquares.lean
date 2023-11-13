@@ -149,7 +149,7 @@ theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (comple
   · -- more
     obtain ⟨_, _, _⟩ := mem; simp_all
   · -- middle (the one fixed point falls under this case)
-    simp [zagierSet, Set.mem_setOf_eq] at h
+    simp only [zagierSet, Set.mem_setOf_eq] at h
     replace mem := mem.1
     rw [tsub_eq_iff_eq_add_of_le more, ← two_mul] at mem
     replace mem := (mul_left_cancel₀ two_ne_zero mem).symm
