@@ -77,7 +77,7 @@ lemma exponentialPdf_eq (r x : ℝ):
     exponentialPdf r x = ENNReal.ofReal (if 0 ≤ x then r*exp (-(r*x)) else 0) := rfl
 
 lemma antiDeriv_expDeriv_pos' {r x : ℝ} (hr : 0 < r) :
-    HasDerivAt (fun a ↦ -1/r * (exp (-(r * a)))) (exp (-(r * x))) x := by
+    HasDerivAt (fun a ↦ -1/r * exp (-(r * a))) (exp (-(r * x))) x := by
   convert (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1/r)) using 1 <;> field_simp
 
 /-- the Lebesgue-Integral of the exponential PDF over nonpositive Reals equals 0-/
@@ -140,7 +140,7 @@ lemma if_eval_neg {r : ℝ} : ∀ᵐ x : ℝ ∂ volume, (x ∈ {x|x ≥ 0} →
   · contrapose h; simp only [ge_iff_le, not_le, not_lt]; exact hx
 
 lemma antiDeriv_tendsto_zero {r : ℝ} (hr : 0 < r) :
-    Tendsto (fun x ↦ -1/r * (exp (-(r * x)))) atTop (𝓝 0) := by
+    Tendsto (fun x ↦ -1/r * exp (-(r * x))) atTop (𝓝 0) := by
   rw [← mul_zero (-1/r)]
   apply Tendsto.mul
   exact tendsto_const_nhds
@@ -226,7 +226,7 @@ lemma expCdf_eq_lintegral (r : ℝ) [Fact (0 < r)] : exponentialCdfReal r =
 open Topology
 
 lemma antiDeriv_expDeriv_pos {r x : ℝ} :
-    HasDerivAt (fun a ↦ -1* (exp (-(r * a)))) (r * exp (-(r * x))) x := by
+    HasDerivAt (fun a ↦ -1* exp (-(r * a))) (r * exp (-(r * x))) x := by
   convert (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1)) using 1
   · simp only [id_eq, neg_mul]
   simp only [id_eq, neg_mul, mul_one, mul_neg, one_mul, neg_neg, mul_comm]
