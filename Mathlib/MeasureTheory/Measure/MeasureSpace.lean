@@ -662,10 +662,7 @@ theorem toMeasure_toOuterMeasure (m : OuterMeasure α) (h : ms ≤ m.caratheodor
   rfl
 #align measure_theory.to_measure_to_outer_measure MeasureTheory.toMeasure_toOuterMeasure
 
--- Porting note: A coercion is directly elaborated in Lean4, so the LHS is simplified by
--- `toMeasure_toOuterMeasure` even if this theorem has high priority.
--- Instead of this theorem, we give `simp` attr to `OuterMeasure.trim_eq`.
--- @[simp]
+@[simp]
 theorem toMeasure_apply (m : OuterMeasure α) (h : ms ≤ m.caratheodory) {s : Set α}
     (hs : MeasurableSet s) : m.toMeasure h s = m s :=
   m.trim_eq hs
@@ -807,16 +804,7 @@ instance instSMul [MeasurableSpace α] : SMul R (Measure α) :=
     { toOuterMeasure := c • μ.toOuterMeasure
       m_iUnion := fun s hs hd => by
         rw [← smul_one_smul ℝ≥0∞ c (_ : OuterMeasure α)]
-        conv_lhs =>
-          change OuterMeasure.measureOf
-            ((c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) • μ.toOuterMeasure) (⋃ i, s i)
-          change (c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) *
-            OuterMeasure.measureOf μ.toOuterMeasure (⋃ i, s i)
-        conv_rhs =>
-          change ∑' i, OuterMeasure.measureOf
-            ((c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) • μ.toOuterMeasure) (s i)
-          change ∑' i, (c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) *
-            OuterMeasure.measureOf (μ.toOuterMeasure) (s i)
+        change (c • (1 : ℝ≥0∞) : ℝ≥0∞) * μ (⋃ i, s i) = ∑' i, (c • (1 : ℝ≥0∞) : ℝ≥0∞) * μ (s i)
         simp_rw [measure_iUnion hd hs, ENNReal.tsum_mul_left]
       trimmed := by rw [OuterMeasure.trim_smul, μ.trimmed] }⟩
 #align measure_theory.measure.has_smul MeasureTheory.Measure.instSMul
