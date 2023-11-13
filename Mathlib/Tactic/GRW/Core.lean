@@ -93,7 +93,7 @@ private partial def getNewType (rule : Expr) (rev : Bool) (oldType : Expr) : Met
 
 
 private partial def assignAndValidate (mvar : MVarId) (expr: Expr) : MetaM Unit := do
-  if ←isDefEq expr (Expr.mvar mvar) then
+  if ←isDefEq (Expr.mvar mvar) expr then
     return ⟨⟩
   else
     throwError "Could not assign {expr} to {mvar}"
@@ -127,20 +127,18 @@ private partial def dischargeMainGoal (rule : Expr) (mvar : MVarId) : MetaM Unit
 
   throwError "Could not discharge main goal"
 
-private partial def useRule (rule : Expr) (mvar : MVarId) : MetaM Unit := do
+private partial def useRule (rule : Expr) (mvar : MVarId) : MetaM (Array MVarId) := do
   let ⟨progress, names, subgoals⟩ ← mvar.gcongr
     none
     []
     (side_goal_discharger := dischargeSideGoal)
     (main_goal_discharger := dischargeMainGoal rule)
 
-  trace[GRW] "Got results {progress} {names} {subgoals}"
-
+  let subgoals := subgoals
   if !progress then
     throwError "gcongr could not make progress on {mvar}"
-  if !subgoals.isEmpty then
-    throwError "gcongr left subgoals {subgoals}"
   trace[GRW] "Got proof {← instantiateMVars (Expr.mvar mvar)}"
+  return subgoals
 
 private def weaken (rule : Expr) : MetaM Expr := do
   let lemmas ← labelled `grw_weaken
@@ -160,7 +158,7 @@ private def weaken (rule : Expr) : MetaM Expr := do
 Use the relation `rule` to rewrite `expr`
 -/
 partial def runGrw (expr rule : Expr) (rev isTarget : Bool) :
-    MetaM (Expr × Expr × MVarId) := do
+    MetaM (Expr × Expr × MVarId × Array MVarId) := do
   let oldType ← instantiateMVars (← inferType expr)
   let ⟨ruleArgs, _, _⟩ ← forallMetaTelescope (← inferType rule)
   let metaRule := mkAppN rule ruleArgs
@@ -170,12 +168,11 @@ partial def runGrw (expr rule : Expr) (rev isTarget : Bool) :
 
   let result ← mkFreshExprMVar newType
 
-  let prf ← withNewMCtxDepth do
-    -- todo surely this can be faster
-    for lem in lemmas do
-      trace[GRW] "trying lemma {lem}"
+  -- TODO surely this can be faster
+  for lem in lemmas do
+    let lemResult : Option (Expr × Array MVarId) ← withTraceNode `GRW (λ _ ↦ return m!"trying lemma {lem}") do
       let s ← saveState
-      try do
+      let (lemResult : Option (Expr × Array Expr)) ← try
         let lemExpr ← mkConstWithFreshMVarLevels lem
         let lemType ← inferType lemExpr
         let ⟨metas, binders, _⟩ ← forallMetaTelescopeReducing lemType
@@ -190,21 +187,28 @@ partial def runGrw (expr rule : Expr) (rev isTarget : Bool) :
           throwError "Lemma {lem} did not have a default argument"
 
         trace[GRW] "Lemma {lem} matches, trying to fill args"
+        pure $ some ⟨lemExpr, metas⟩
+      catch ex => do
+        trace[GRW] "error in lemma {ex.toMessageData}"
+        s.restore
+        pure none
 
-        for arg in metas do
+      if let some ⟨lemExpr, metas⟩ := lemResult then
+        let subgoals ← metas.concatMapM fun arg => do
           let mvar := arg.mvarId!
           let type ← instantiateMVars (← inferType arg)
           if ← mvar.isAssigned then
             trace[GRW] "mvar already assigned to {← instantiateMVars arg} : {type}"
-            continue
-          trace[GRW] "Looking for value of type {type}"
-          withReducible $ useRule weakRule mvar
+            pure #[]
+          else
+            withTraceNode `GRW (λ _ ↦ return m!"Looking for value of type {type}") do
+              withReducible $ useRule weakRule mvar
+        trace[GRW] "Got subgoals {subgoals}"
+        return some ⟨(← instantiateMVars <| mkAppN lemExpr metas), subgoals⟩
+      else
+        return none
 
-        return ← instantiateMVars <| mkAppN lemExpr metas
-      catch ex => do
-        trace[GRW] "error in lemma {ex.toMessageData}"
-        s.restore
-    throwError "No grw lemmas worked"
-  trace[GRW] "Got proof {prf}"
-
-  return ⟨newType, prf, result.mvarId!⟩
+    if let some ⟨prf, subgoals⟩ := lemResult then
+      trace[GRW] "Got proof {prf}"
+      return ⟨newType, prf, result.mvarId!, subgoals⟩
+  throwError "No grw lemmas worked"
