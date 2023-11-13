@@ -83,11 +83,22 @@ theorem idCoverLifting : CoverLifting J J (𝟭 _) :=
 
 variable {J K}
 
+lemma CoverLifting.of_iso {G : C ⥤ D} (hG : CoverLifting J K G) {G' : C ⥤ D} (e : G ≅ G') :
+    CoverLifting J K G' where
+  cover_lift {U S} hS := by
+    simpa only [Sieve.functorPullback_eq_of_iso e S]
+      using hG.cover_lift (K.pullback_stable (e.hom.app U) hS)
+
 /-- The composition of two cover-lifting functors are cover-lifting -/
 theorem compCoverLifting {F : C ⥤ D} (hu : CoverLifting J K F) {G : D ⥤ E}
     (hv : CoverLifting K L G) : CoverLifting J L (F ⋙ G) :=
   ⟨fun h => hu.cover_lift (hv.cover_lift h)⟩
 #align category_theory.comp_cover_lifting CategoryTheory.compCoverLifting
+
+/-- The composition of two cover-lifting functors are cover-lifting -/
+theorem compCoverLifting' {F : C ⥤ D} (hu : CoverLifting J K F) {G : D ⥤ E}
+    (hv : CoverLifting K L G) {H : C ⥤ E} (e : F ⋙ G ≅ H) : CoverLifting J L H :=
+  (compCoverLifting hu hv).of_iso e
 
 end CoverLifting
 

@@ -65,6 +65,12 @@ structure CoverPreserving (G : C ⥤ D) : Prop where
   cover_preserve : ∀ {U : C} {S : Sieve U} (_ : S ∈ J U), S.functorPushforward G ∈ K (G.obj U)
 #align category_theory.cover_preserving CategoryTheory.CoverPreserving
 
+lemma CoverPreserving.of_iso {G : C ⥤ D} (hG : CoverPreserving J K G) {G' : C ⥤ D} (e : G ≅ G') :
+    CoverPreserving J K G' where
+  cover_preserve {U S} hS := by
+    simpa only [Sieve.functorPushforward_eq_of_iso e]
+      using K.pullback_stable (e.inv.app U) (hG.cover_preserve hS)
+
 /-- The identity functor on a site is cover-preserving. -/
 theorem idCoverPreserving : CoverPreserving J J (𝟭 _) :=
   ⟨fun hS => by simpa using hS⟩
@@ -77,6 +83,10 @@ theorem CoverPreserving.comp {F} (hF : CoverPreserving J K F) {G} (hG : CoverPre
     rw [Sieve.functorPushforward_comp]
     exact hG.cover_preserve (hF.cover_preserve hS)⟩
 #align category_theory.cover_preserving.comp CategoryTheory.CoverPreserving.comp
+
+theorem CoverPreserving.comp' {F} (hF : CoverPreserving J K F) {G} (hG : CoverPreserving K L G)
+    {H : C ⥤ A} (e : F ⋙ G ≅ H) : CoverPreserving J L H :=
+  (hF.comp hG).of_iso e
 
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is called compatible preserving if for each
 compatible family of elements at `C` and valued in `G.op ⋙ ℱ`, and each commuting diagram
