@@ -8,7 +8,7 @@ import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Transvection
 import Mathlib.MeasureTheory.Group.LIntegral
-import Mathlib.MeasureTheory.Integral.lmarginal
+import Mathlib.MeasureTheory.Integral.Marginal
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
