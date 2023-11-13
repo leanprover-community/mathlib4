@@ -61,7 +61,9 @@ to `+∞` on nonempty sets. Let `s = {x₀}` and `f` the indicator of `sᶜ`. Th
   `∫⁻ a in s, g a ∂μ = 0`. Taking the supremum over `g` gives the claim.
 * `μ.withDensity f s = +∞`. Indeed, this is the infimum of `μ.withDensity f t` over measurable sets
   `t` containing `s`. As `s` is not measurable, such a set `t` contains a point `x ≠ x₀`. Then
-  `μ.withDensity f t ≥ μ.withDensity f {x} = ∫⁻ a in {x}, f a ∂μ = μ {x} = +∞`. -/
+  `μ.withDensity f t ≥ μ.withDensity f {x} = ∫⁻ a in {x}, f a ∂μ = μ {x} = +∞`.
+One checks that `μ.withDensity f = μ`, while `μ.restrict s` gives zero mass to sets not
+containing `x₀`, and infinite mass to those that contain it. -/
 
 theorem withDensity_apply' [SigmaFinite μ] (f : α → ℝ≥0∞) (s : Set α) :
     μ.withDensity f s = ∫⁻ a in s, f a ∂μ := by
