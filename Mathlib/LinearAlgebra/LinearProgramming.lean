@@ -83,7 +83,7 @@ lemma LinearProgram.feasibles_mkOfEqs
       simp [hyp.1 orig orig_mem]
 
 /-- Adding more constraints cannot enlarge the set of feasible solutions. -/
-lemma feasiblesLinearProgram_superset_of_constraints_subset {lp₁ lp₂ : LinearProgram K P}
+lemma LinearProgram.feasibles_superset_of_constraints_subset {lp₁ lp₂ : LinearProgram K P}
     (constrss : lp₁.constraints ⊆ lp₂.constraints) :
     lp₂.feasibles ⊆ lp₁.feasibles := by
   intro x hx
