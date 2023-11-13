@@ -47,7 +47,6 @@ is no well-behaved measure on the domain of `f`.
 
 open scoped Classical ENNReal
 open Set Function Equiv Finset
-set_option autoImplicit true
 
 noncomputable section
 
@@ -239,11 +238,13 @@ end LMarginal
 
 -- not yet PR'd results below this!!
 
+
+
 section
 
 /-! Compute some measures using marginal. -/
 
-variable {α : Fin (n+1) → Type*} [∀ i, MeasurableSpace (α i)] (μ : ∀ i, Measure (α i))
+variable {n : ℕ} {α : Fin (n+1) → Type*} [∀ i, MeasurableSpace (α i)] (μ : ∀ i, Measure (α i))
 variable [∀ i, SigmaFinite (μ i)]
 
 open Fin
@@ -334,7 +335,8 @@ section MeasureSpace
 
 /-! Compute some measures using marginal. -/
 
-variable {α : Fin (n+1) → Type*} [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume (α := α i))]
+variable {n : ℕ} {α : Fin (n+1) → Type*}
+variable [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume (α := α i))]
 
 open Fin
 
