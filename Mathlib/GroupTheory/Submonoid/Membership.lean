@@ -318,8 +318,7 @@ theorem closure_range_of : closure (Set.range <| @of α) = ⊤ :=
 end FreeMonoid
 
 namespace Submonoid
-
-variable [Monoid M]
+variable [Monoid M] {a : M}
 
 open MonoidHom
 
@@ -470,6 +469,15 @@ theorem coe_powers (x : M) : ↑(powers x) = Set.range fun n : ℕ => x ^ n :=
 theorem mem_powers_iff (x z : M) : x ∈ powers z ↔ ∃ n : ℕ, z ^ n = x :=
   Iff.rfl
 #align submonoid.mem_powers_iff Submonoid.mem_powers_iff
+
+noncomputable instance decidableMemPowers : DecidablePred (· ∈ Submonoid.powers a) :=
+  Classical.decPred _
+#align decidable_powers Submonoid.decidableMemPowers
+
+-- Porting note: TODO the following instance should follow from a more general principle
+-- See also mathlib4#2417
+noncomputable instance fintypePowers [Fintype M] : Fintype (powers a) :=
+  inferInstanceAs $ Fintype {y // y ∈ powers a}
 
 theorem powers_eq_closure (n : M) : powers n = closure {n} := by
   ext
@@ -675,6 +683,11 @@ attribute [to_additive (attr := norm_cast) coe_multiples] Submonoid.coe_powers
 
 attribute [to_additive mem_multiples_iff] Submonoid.mem_powers_iff
 #align add_submonoid.mem_multiples_iff AddSubmonoid.mem_multiples_iff
+
+attribute [to_additive AddSubmonoid.decidableMemMultiples] Submonoid.decidableMemPowers
+#align decidable_multiples AddSubmonoid.decidableMemMultiples
+
+attribute [to_additive AddSubmonoid.fintypeMultiples] Submonoid.fintypePowers
 
 attribute [to_additive multiples_eq_closure] Submonoid.powers_eq_closure
 #align add_submonoid.multiples_eq_closure AddSubmonoid.multiples_eq_closure
