@@ -942,18 +942,18 @@ end Finite
 
 variable [Fintype G] {x : G} {n : ℕ}
 
-/-- See also `Nat.card_zpowers'`. -/
-@[to_additive addOrderOf_eq_card_zmultiples "See also `Nat.card_zmultiples'`."]
-theorem orderOf_eq_card_zpowers : orderOf x = Fintype.card (zpowers x) :=
-  (Fintype.card_fin (orderOf x)).symm.trans $
-    Fintype.card_eq.2 ⟨finEquivZpowers x $ isOfFinOrder_of_finite _⟩
-#align order_eq_card_zpowers orderOf_eq_card_zpowers
-#align add_order_eq_card_zmultiples addOrderOf_eq_card_zmultiples
+/-- See also `Nat.card_addSubgroupZpowers`. -/
+@[to_additive Fintype.card_zmultiples "See also `Nat.card_subgroup`."]
+theorem Fintype.card_zpowers : Fintype.card (zpowers x) = orderOf x :=
+  (Fintype.card_eq.2 ⟨finEquivZpowers x $ isOfFinOrder_of_finite _⟩).symm.trans $
+    Fintype.card_fin (orderOf x)
+#align order_eq_card_zpowers Fintype.card_zpowers
+#align add_order_eq_card_zmultiples Fintype.card_zmultiples
 
 @[to_additive card_zmultiples_le]
 theorem card_zpowers_le (a : G) {k : ℕ} (k_pos : k ≠ 0)
     (ha : a ^ k = 1) : Fintype.card (Subgroup.zpowers a) ≤ k := by
-  rw [← orderOf_eq_card_zpowers]
+  rw [Fintype.card_zpowers]
   apply orderOf_le_of_pow_eq_one k_pos.bot_lt ha
 
 open QuotientGroup
@@ -978,7 +978,7 @@ theorem orderOf_dvd_card_univ : orderOf x ∣ Fintype.card G := by
 
     have eq₂ : orderOf x = @Fintype.card _ ft_s :=
       calc
-        orderOf x = _ := orderOf_eq_card_zpowers
+        orderOf x = _ := Fintype.card_zpowers.symm
         _ = _ := congr_arg (@Fintype.card _) <| Subsingleton.elim _ _
 
     exact Dvd.intro (@Fintype.card (G ⧸ Subgroup.zpowers x) ft_cosets) (by rw [eq₁, eq₂, mul_comm])
