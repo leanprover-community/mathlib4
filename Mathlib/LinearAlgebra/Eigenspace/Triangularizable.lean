@@ -15,6 +15,8 @@ This file contains basic results relevant to the triangularizability of linear e
 
 ## Main definitions / results
 
+ * `Module.End.exists_eigenvalue`: in finite dimensions, over an algebraically closed field, every
+   linear endomorphism has an eigenvalue.
  * `Module.End.iSup_generalizedEigenspace_eq_top`: in finite dimensions, over an algebraically
    closed field, the generalized eigenspaces of any linear endomorphism span the whole space.
  * `Module.End.iSup_generalizedEigenspace_restrict_eq_top`: in finite dimensions, if the
@@ -44,8 +46,8 @@ variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
 namespace Module.End
 
 -- This is Lemma 5.21 of [axler2015], although we are no longer following that proof.
-/-- Every linear operator on a vector space over an algebraically closed field has
-    an eigenvalue. -/
+/-- In finite dimensions, over an algebraically closed field, every linear endomorphism has an
+eigenvalue. -/
 theorem exists_eigenvalue [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f : End K V) :
     ∃ c : K, f.HasEigenvalue c := by
   simp_rw [hasEigenvalue_iff_mem_spectrum]
@@ -56,7 +58,9 @@ noncomputable instance [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f
     Inhabited f.Eigenvalues :=
   ⟨⟨f.exists_eigenvalue.choose, f.exists_eigenvalue.choose_spec⟩⟩
 
-/-- The generalized eigenvectors span the entire vector space (Lemma 8.21 of [axler2015]). -/
+-- Lemma 8.21 of [axler2015]
+/-- In finite dimensions, over an algebraically closed field, the generalized eigenspaces of any
+linear endomorphism span the whole space. -/
 theorem iSup_generalizedEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
     ⨆ (μ : K) (k : ℕ), f.generalizedEigenspace μ k = ⊤ := by
   -- We prove the claim by strong induction on the dimension of the vector space.
@@ -192,6 +196,8 @@ theorem eq_iSup_inf_generalizedEigenspace [FiniteDimensional K V]
 
 end Submodule
 
+/-- In finite dimensions, if the generalized eigenspaces of a linear endomorphism span the whole
+space then the same is true of its restriction to any invariant submodule. -/
 theorem Module.End.iSup_generalizedEigenspace_restrict_eq_top
     {p : Submodule K V} {f : Module.End K V} [FiniteDimensional K V]
     (h : ∀ x ∈ p, f x ∈ p) (h' : ⨆ μ, ⨆ k, f.generalizedEigenspace μ k = ⊤) :
