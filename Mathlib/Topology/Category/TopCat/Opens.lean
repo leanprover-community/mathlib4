@@ -133,7 +133,7 @@ def inclusion {X : TopCat.{u}} (U : Opens X) : (toTopCat X).obj U ⟶ X where
 
 @[simp]
 theorem coe_inclusion {X : TopCat} {U : Opens X} :
-    (inclusion U : U → X) = Subtype.val := rfl
+    (inclusion U : U → X) = (Subtype.val : U → X) := rfl
 
 theorem openEmbedding {X : TopCat.{u}} (U : Opens X) : OpenEmbedding (inclusion U) :=
   IsOpen.openEmbedding_subtype_val U.2

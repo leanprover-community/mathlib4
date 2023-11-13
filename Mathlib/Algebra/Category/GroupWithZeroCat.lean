@@ -73,8 +73,9 @@ instance groupWithZeroConcreteCategory : ConcreteCategory GroupWithZeroCat where
     map := fun f => f.toFun }
   forget_faithful := ⟨fun h => FunLike.coe_injective h⟩
 
--- porting note: added
-@[simp] lemma forget_map (f : X ⟶ Y) : (forget GroupWithZeroCat).map f = f := rfl
+-- -- porting note: added
+-- @[simp] lemma forget_map (f : X ⟶ Y) : (forget GroupWithZeroCat).map f = f := rfl
+
 instance hasForgetToBipointed : HasForget₂ GroupWithZeroCat Bipointed where
   forget₂ :=
       { obj := fun X => ⟨X, 0, 1⟩
