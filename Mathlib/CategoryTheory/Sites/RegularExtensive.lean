@@ -216,7 +216,7 @@ def EqualizerFirstObjIso (F : Cᵒᵖ ⥤ Type (max u v)) {B X : C} (π : X ⟶ 
       | mk => rfl
     inv_hom_id := by aesop }
 
-instance {B X : C} (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π] :
+instance {B X : C} (π : X ⟶ B) [HasPullback π π] :
     (Presieve.singleton π).hasPullbacks where
   has_pullbacks hf _ hg := by
     cases hf
