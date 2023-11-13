@@ -668,12 +668,6 @@ theorem normSq_nonneg (z : ℂ) : 0 ≤ normSq z :=
   add_nonneg (mul_self_nonneg _) (mul_self_nonneg _)
 #align complex.norm_sq_nonneg Complex.normSq_nonneg
 
--- @[simp]
--- theorem range_normSq : range normSq = Ici 0 :=
---   Subset.antisymm (range_subset_iff.2 normSq_nonneg) fun x hx =>
---     ⟨Real.sqrt x, by rw [normSq_ofReal, Real.mul_self_sqrt hx]⟩
--- #align complex.range_norm_sq Complex.range_normSq
-
 theorem normSq_eq_zero {z : ℂ} : normSq z = 0 ↔ z = 0 :=
   ⟨fun h =>
     ext (eq_zero_of_mul_self_add_mul_self_eq_zero h)
