@@ -66,12 +66,6 @@ instance : Subsingleton (Decomposition ℳ) :=
     congr
     exact Function.LeftInverse.eq_rightInverse xr yl⟩
 
-variable [Decomposition ℳ]
-
-protected theorem Decomposition.isInternal : DirectSum.IsInternal ℳ :=
-  ⟨Decomposition.right_inv.injective, Decomposition.left_inv.surjective⟩
-#align direct_sum.decomposition.is_internal DirectSum.Decomposition.isInternal
-
 /-- A convenience method to construct a decomposition from an `AddMonoidHom`, such that the proofs
 of left and right inverse can be constructed via `ext`. -/
 abbrev Decomposition.ofAddHom (decompose : M →+ ⨁ i, ℳ i)
@@ -81,12 +75,18 @@ abbrev Decomposition.ofAddHom (decompose : M →+ ⨁ i, ℳ i)
   left_inv := FunLike.congr_fun h_left_inv
   right_inv := FunLike.congr_fun h_right_inv
 
-/-- Noncomputably conjure a decomposition instance from an `IsInternal` proof. -/
+/-- Noncomputably conjure a decomposition instance from a `DirectSum.IsInternal` proof. -/
 noncomputable def IsInternal.chooseDecomposition (h : IsInternal ℳ) :
     DirectSum.Decomposition ℳ where
   decompose' := (Equiv.ofBijective _ h).symm
   left_inv := (Equiv.ofBijective _ h).right_inv
   right_inv := (Equiv.ofBijective _ h).left_inv
+
+variable [Decomposition ℳ]
+
+protected theorem Decomposition.isInternal : DirectSum.IsInternal ℳ :=
+  ⟨Decomposition.right_inv.injective, Decomposition.left_inv.surjective⟩
+#align direct_sum.decomposition.is_internal DirectSum.Decomposition.isInternal
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 to a direct sum of components. This is the canonical spelling of the `decompose'` field. -/
@@ -249,8 +249,6 @@ variable [DecidableEq ι] [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable (ℳ : ι → Submodule R M)
 
-variable [Decomposition ℳ]
-
 /-- A convenience method to construct a decomposition from an `LinearMap`, such that the proofs
 of left and right inverse can be constructed via `ext`. -/
 abbrev Decomposition.ofLinearMap (decompose : M →ₗ[R] ⨁ i, ℳ i)
@@ -259,6 +257,8 @@ abbrev Decomposition.ofLinearMap (decompose : M →ₗ[R] ⨁ i, ℳ i)
   decompose' := decompose
   left_inv := FunLike.congr_fun h_left_inv
   right_inv := FunLike.congr_fun h_right_inv
+
+variable [Decomposition ℳ]
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 a module to a direct sum of components. -/
