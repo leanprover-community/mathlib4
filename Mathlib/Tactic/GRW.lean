@@ -24,15 +24,15 @@ open Lean Meta Elab Parser Tactic Mathlib.Tactic.GRW
 
 -- TODO these should probably be public with a nicer API?
 private partial def grwHypothesis (hyp : Expr) (rule : Expr) (rev : Bool) :
-    MetaM (Expr × Expr) := do
-  let ⟨newType, newHyp, _⟩ ← runGrw hyp rule rev false
-  return ⟨newType, newHyp⟩
+    MetaM (Expr × Expr × Array MVarId) := do
+  let ⟨newType, newHyp, _, subgoals⟩ ← runGrw hyp rule rev false
+  return ⟨newType, newHyp, subgoals⟩
 
 private partial def _root_.Lean.MVarId.grw (goal : MVarId) (rule : Expr) (rev : Bool := false) :
-    MetaM MVarId := do
-  let ⟨_, prf, mvar⟩ ← runGrw (Expr.mvar goal) rule rev true
+    MetaM (MVarId × Array MVarId) := do
+  let ⟨_, prf, mvar, subgoals⟩ ← runGrw (Expr.mvar goal) rule rev true
   goal.assign prf
-  return mvar
+  return ⟨mvar, subgoals⟩
 
 /--
 `grw` is a generalization of the `rw` tactic that takes other relations than equality.  For example,
@@ -67,15 +67,15 @@ elab tok:"grw" rules:rwRuleSeq loc:(location)? : tactic =>
         else
           throwError "Lost track of fvar"
         let rulePrf ← elabTerm syn none
-        let ⟨newType, newHyp⟩ ← grwHypothesis (Expr.fvar fvar) rulePrf rev
+        let ⟨newType, newHyp, subgoals⟩ ← grwHypothesis (Expr.fvar fvar) rulePrf rev
         let name ← fvar.getUserName
         let ⟨newFvar, newGoal, _⟩ ← (← getMainGoal).assertAfter fvar name newType newHyp
-        replaceMainGoal [← newGoal.clear fvar]
+        replaceMainGoal $ [← newGoal.clear fvar].append (subgoals.toList)
         mvar.assign (Expr.fvar newFvar)
     )
     (atTarget := withRWRulesSeq tok rules fun rev syn ↦ withMainContext do
       let rulePrf ← elabTerm syn none
-      let newGoal ← (← getMainGoal).grw rulePrf rev
-      replaceMainGoal [newGoal]
+      let ⟨newGoal, subgoals⟩ ← (← getMainGoal).grw rulePrf rev
+      replaceMainGoal $ [newGoal].append subgoals.toList
     )
     (failed := fun _ ↦ throwError "grw failed")
