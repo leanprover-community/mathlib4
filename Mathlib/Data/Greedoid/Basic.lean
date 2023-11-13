@@ -1424,6 +1424,9 @@ theorem rank_le_basisRank : G.rank s ≤ G.basisRank s := by
   rw [← inter_eq_right] at h₂
   simp only [h₂, h₁]
 
+theorem basisRank_le_rank_iff : G.basisRank s ≤ G.rank s ↔ G.rankFeasible s :=
+  ⟨fun h => le_antisymm h rank_le_basisRank, fun h => h ▸ le_rfl⟩
+
 theorem mem_rankFeasibleFamily_iff :
     s ∈ G.rankFeasibleFamily ↔ G.rankFeasible s := by
   simp only [rankFeasibleFamily, mem_univ, Finset.mem_filter, true_and]
@@ -1728,8 +1731,33 @@ theorem rankFeasible_iff_subset_subset_monotoneClosure :
       apply hu₃; clear hu₃
       sorry
     have h₁ : a ∩ s = x := by
-      sorry
+      ext; rw [mem_inter]; constructor <;> intro h₁
+      · simp only [mem_sdiff, and_imp] at h₀
+        by_contra h'
+        exact h₀ _ h₁.1 h' h₁.2
+      · exact ⟨ha₂ h₁, basis_subset hx h₁⟩
     have h₂ : a \ x ⊆ b \ s := by
+      have : a \ x = a \ s := by
+        ext; simp only [mem_sdiff, and_congr_right_iff]
+        intro ha₁
+        constructor <;> intro ha₂
+        · simp only [mem_sdiff, and_imp] at h₀; exact h₀ _ ha₁ ha₂
+        · exact fun h => ha₂ (basis_subset hx h)
+      rw [this]
+      have : b \ s = (b ∪ x) \ s := by
+        ext; simp only [mem_sdiff, mem_union, and_congr_left_iff]
+        intro h₂
+        constructor <;> intro h₃
+        · exact Or.inl h₃
+        · apply h₃.elim id
+          intro h₃
+          rw [← h₁, mem_inter] at h₃
+          tauto
+      exact this ▸ sdiff_subset_sdiff ha₃ subset_rfl
+    rw [← basisRank_le_rank_iff]
+    have h₃ : (b ∩ s).card ≤ (a ∩ s).card := by
+      sorry
+    have h₄ : (a ∩ s).card = x.card := by
       sorry
     sorry
 
