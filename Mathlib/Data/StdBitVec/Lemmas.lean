@@ -273,4 +273,30 @@ theorem extMsb {w : ℕ} {x y : BitVec w} (h : ∀ (i : Fin w), x.getMsb i = y.g
   }
   exact h
 
+/-!
+### Distributivity of getLsb
+Show how `getLsb` distributes over bitwise operations
+-/
+
+lemma getLsb_bitwise (f) (x y : BitVec w) (i : Fin w) :
+    getLsb ⟨bitwise f x.1.val y.1.val % 2^w, Nat.mod_lt _ (Nat.pow_two_pos w)⟩ i
+    = f (x.getLsb i) (y.getLsb i) := by
+  rcases x with ⟨⟨x, hx⟩⟩
+  rcases y with ⟨⟨y, hy⟩⟩
+  simp [getLsb]
+  sorry
+
+@[simp] lemma getLsb_and (x y : BitVec w) (i : Fin w) :
+    (x &&& y).getLsb i = (x.getLsb i && y.getLsb i) := by
+  simp only [HAnd.hAnd, AndOp.and, BitVec.and, Fin.land, land, getLsb_bitwise]
+
+@[simp] lemma getLsb_or (x y : BitVec w) (i : Fin w) :
+    (x ||| y).getLsb i = (x.getLsb i || y.getLsb i) := by
+  simp only [HOr.hOr, OrOp.or, BitVec.or, Fin.lor, lor, getLsb_bitwise]
+
+@[simp] lemma getLsb_xor (x y : BitVec w) (i : Fin w) :
+    (x ^^^ y).getLsb i = xor (x.getLsb i) (y.getLsb i) := by
+  simp only [HXor.hXor, Xor.xor, BitVec.xor, Fin.xor, Nat.xor, getLsb_bitwise]
+
+
 end Std.BitVec
