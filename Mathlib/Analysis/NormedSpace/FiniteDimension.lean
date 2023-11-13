@@ -685,7 +685,7 @@ lemma Asymptotics.IsBigO.comp_summable {ι E F : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
     [NormedAddCommGroup F] [CompleteSpace F]
     {f : E → F} (hf : f =O[𝓝 0] id) {g : ι → E} (hg : Summable g) : Summable (f ∘ g) :=
-  summable_of_isBigO' hg <| hf.comp_tendsto hg.tendsto_cofinite_zero
+  .of_norm <| hf.comp_summable_norm hg.norm
 
 theorem summable_of_isBigO_nat' {E F : Type*} [NormedAddCommGroup E] [CompleteSpace E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {f : ℕ → E} {g : ℕ → F}
