@@ -6,6 +6,7 @@ Authors: Adam Topaz
 
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+import Mathlib.Tactic.ApplyFun
 
 /-!
 
@@ -479,6 +480,71 @@ instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [Ha
   ⟨⟨EffectiveEpiFamily_descStruct X π⟩⟩
 
 /--
+This is an auxiliary lemma used twice in the definition of  `EffectiveEpiFamilyOfEffectiveEpiDesc`.
+It is the `h` hypothesis of `EffectiveEpi.desc` and `EffectiveEpi.fac`. 
+-/
+theorem effectiveEpiFamilyOfEffectiveEpiDesc_aux {B : C} {α : Type*} {X : α → C}
+    {π : (a : α) → X a ⟶ B} [HasCoproduct X]
+    [∀ {Z : C} (g : Z ⟶ ∐ X) (a : α), HasPullback g (Sigma.ι X a)]
+    [∀ {Z : C} (g : Z ⟶ ∐ X), HasCoproduct fun a ↦ pullback g (Sigma.ι X a)]
+    [∀ {Z : C} (g : Z ⟶ ∐ X), Epi (Sigma.desc fun a ↦ pullback.fst (f := g) (g := (Sigma.ι X a)))]
+    {W : C} {e : (a : α) → X a ⟶ W} (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
+      g₁ ≫ π a₁ = g₂ ≫ π a₂ → g₁ ≫ e a₁ = g₂ ≫ e a₂) {Z : C}
+    {g₁ g₂ : Z ⟶ ∐ fun b ↦ X b} (hg : g₁ ≫ Sigma.desc π = g₂ ≫ Sigma.desc π) :
+    g₁ ≫ Sigma.desc e = g₂ ≫ Sigma.desc e := by
+  apply_fun fun f ↦ (Sigma.desc fun a ↦ pullback.fst (f := g₁) (g := (Sigma.ι X a))) ≫ f using
+    (fun a b ↦ (cancel_epi _).mp)
+  ext a
+  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app]
+  rw [← Category.assoc, pullback.condition]
+  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+  apply_fun fun f ↦ (Sigma.desc fun a ↦ pullback.fst (f := pullback.fst ≫ g₂)
+    (g := (Sigma.ι X a))) ≫ f using (fun a b ↦ (cancel_epi _).mp)
+  ext b
+  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app]
+  have : ∀ (D : C) (f : ∐ X ⟶ D), pullback.fst (f := pullback.fst ≫ g₂) (g := (Sigma.ι X b)) ≫
+      pullback.fst (f := g₁) (g := (Sigma.ι X a)) ≫ g₂ ≫ f = (pullback.fst ≫ (pullback.fst (f := g₁)
+      (g := (Sigma.ι X a)) ≫ g₂)) ≫ f := by intros; simp
+  rw [this, pullback.condition]
+  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+  rw [← Category.assoc]
+  apply h
+  apply_fun fun f ↦ (Sigma.desc fun a ↦ pullback.fst (f := g₁) (g := (Sigma.ι X a))) ≫ f at hg
+  apply_fun fun f ↦ (Sigma.ι (fun a ↦ pullback _ _) a) ≫ f at hg
+  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app] at hg
+  rw [← Category.assoc, pullback.condition] at hg
+  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app] at hg
+  apply_fun fun f ↦ (Sigma.desc fun a ↦ pullback.fst (f := pullback.fst ≫ g₂) (g := (Sigma.ι X a)))
+    ≫ f at hg
+  apply_fun fun f ↦ (Sigma.ι (fun a ↦ pullback _ _) b) ≫ f at hg
+  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app] at hg
+  rw [this, pullback.condition] at hg
+  simpa using hg
+
+noncomputable
+def EffectiveEpiFamilyOfEffectiveEpiDesc {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
+    [HasCoproduct X] [EffectiveEpi (Sigma.desc π)]
+    [∀ {Z : C} (g : Z ⟶ ∐ X) (a : α), HasPullback g (Sigma.ι X a)]
+    [∀ {Z : C} (g : Z ⟶ ∐ X), HasCoproduct (fun a ↦ pullback g (Sigma.ι X a))]
+    [∀ {Z : C} (g : Z ⟶ ∐ X),
+      Epi (Sigma.desc (fun a ↦ pullback.fst (f := g) (g := (Sigma.ι X a))))] :
+    EffectiveEpiFamilyStruct X π where
+  desc e h := EffectiveEpi.desc (Sigma.desc π) (Sigma.desc e) fun _ _ hg ↦
+    effectiveEpiFamilyOfEffectiveEpiDesc_aux h hg
+  fac e h a := by
+    rw [(by simp : π a = Sigma.ι X a ≫ Sigma.desc π), (by simp : e a = Sigma.ι X a ≫ Sigma.desc e),
+      Category.assoc, EffectiveEpi.fac (Sigma.desc π) (Sigma.desc e) (fun g₁ g₂ hg ↦
+      effectiveEpiFamilyOfEffectiveEpiDesc_aux h hg)]
+  uniq _ _ _ hm := by
+    apply EffectiveEpi.uniq (Sigma.desc π)
+    ext
+    simpa using hm _
+
+instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [HasCoproduct X]
+    [EffectiveEpiFamily X π] : EffectiveEpi (Sigma.desc π) :=
+  ⟨⟨EffectiveEpiFamily_descStruct X π⟩⟩
+
+/--
 An `EffectiveEpiFamily` consisting of a single `EffectiveEpi`
 -/
 noncomputable
@@ -541,12 +607,36 @@ instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [Ha
   ⟨⟨EffectiveEpiFamilyStruct_of_isIso_desc X π⟩⟩
 
 /-- The identity is an effective epi. -/
-def EffectiveEpiStructId {X : C} : EffectiveEpiStruct (𝟙 X) where
-  desc e _ := e
-  fac _ _ := by simp only [Category.id_comp]
-  uniq _ _ _ h := by simp only [Category.id_comp] at h; exact h
+noncomputable
+def EffectiveEpiStructOfIsIso {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpiStruct f where
+  desc e _ := inv f ≫ e
+  fac _ _ := by simp
+  uniq _ _ _ h := by simpa using h
 
-instance {X : C} : EffectiveEpi (𝟙 X) := ⟨⟨EffectiveEpiStructId⟩⟩
+instance {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpi f := ⟨⟨EffectiveEpiStructOfIsIso f⟩⟩
+
+noncomputable
+def EffectiveEpiStruct_of_comp {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) (i : X ⟶ Y) (hi : i ≫ g = 𝟙 _)
+    [EffectiveEpi f] : EffectiveEpiStruct (g ≫ f) where
+  desc e w := EffectiveEpi.desc f (i ≫ e) fun g₁ g₂ _ ↦ (by
+    simp only [← Category.assoc]
+    apply w (g₁ ≫ i) (g₂ ≫ i)
+    simpa [← Category.assoc, hi])
+  fac e w := by
+    simp only [Category.assoc, EffectiveEpi.fac]
+    rw [← Category.id_comp e, ← Category.assoc, ← Category.assoc]
+    apply w
+    simp only [Category.comp_id, Category.id_comp, ← Category.assoc]
+    aesop
+  uniq _ _ _ hm := by
+    apply EffectiveEpi.uniq f
+    rw [← hm, ← Category.assoc, ← Category.assoc, hi, Category.id_comp]
+
+noncomputable
+def EffectiveEpiStruct_of_comp_splitEpi {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) [IsSplitEpi g]
+    [EffectiveEpi f] : EffectiveEpiStruct (g ≫ f) :=
+  EffectiveEpiStruct_of_comp f g (IsSplitEpi.exists_splitEpi (f := g)).some.section_
+    (IsSplitEpi.exists_splitEpi (f := g)).some.id
 
 end instances
 
