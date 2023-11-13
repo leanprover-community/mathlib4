@@ -234,8 +234,7 @@ theorem measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p) :
   -- Since we have two different topologies, it is necessary to specify the topology of E
   let ν : Measure F := @Measure.map E F _ mE φ μ
   have : IsAddHaarMeasure ν :=
-    @ContinuousLinearEquiv.isAddHaarMeasure_map E F ℝ ℝ _ _ _ _ _ _ tE _ _ _ _ _ _ _ _ mE _ _ _
-      φ μ _
+    @ContinuousLinearEquiv.isAddHaarMeasure_map E F ℝ ℝ _ _ _ _ _ _ tE _ _ _ _ _ _ _ mE _ _ _ φ μ _
   convert (measure_unitBall_eq_integral_div_gamma ν hp) using 1
   · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_ball]
     · congr!
@@ -280,8 +279,7 @@ theorem measure_le_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p) :
   -- Since we have two different topologies, it is necessary to specify the topology of E
   let ν : Measure F := @Measure.map E F _ mE φ μ
   have : IsAddHaarMeasure ν :=
-    @ContinuousLinearEquiv.isAddHaarMeasure_map E F ℝ ℝ _ _ _ _ _ _ tE _ _ _ _ _ _ _ _ mE _ _ _
-      φ μ _
+    @ContinuousLinearEquiv.isAddHaarMeasure_map E F ℝ ℝ _ _ _ _ _ _ tE _ _ _ _ _ _ _ mE _ _ _ φ μ _
   convert (measure_unitBall_eq_integral_div_gamma ν hp) using 1
   · rw [← addHaar_closedBall_eq_addHaar_ball,
       @Measure.map_apply E F mE _ μ φ _ _ measurableSet_closedBall]
