@@ -31,22 +31,21 @@ open scoped ENNReal NNReal Real
 open MeasureTheory Real Set Filter Topology
 
 @[simp]
-lemma compl_setOf_le (y : ℝ) : {x : ℝ | y ≤ x}ᶜ =  {x | x < y} := by
+lemma compl_setOf_le (y : ℝ) : {x : ℝ | y ≤ x}ᶜ = {x | x < y} := by
   ext x
-  constructor <;>
-  simp only [ge_iff_le, mem_compl_iff, mem_setOf_eq, not_le, imp_self]
+  constructor <;> simp only [ge_iff_le, mem_compl_iff, mem_setOf_eq, not_le, imp_self]
 
   /-- A Lebesgue Integral from -∞ to y can be expressed
     as the sum of one from -∞ to 0 and 0 to x -/
-lemma lintegral_split_bounded {y z : ℝ}(f : ℝ → ENNReal) ( hzy : z ≤ y) :
-    ∫⁻ (x : ℝ) in Iic y, f x  =  (∫⁻ (x : ℝ) in Iio z, f x) +  ∫⁻ (x : ℝ) in Icc z y, f x := by
-  rw [(Iio_union_Icc_eq_Iic  hzy).symm, lintegral_union measurableSet_Icc]
+lemma lintegral_split_bounded {y z : ℝ}(f : ℝ → ENNReal) (hzy : z ≤ y) :
+    ∫⁻ (x : ℝ) in Iic y, f x = (∫⁻ (x : ℝ) in Iio z, f x) + ∫⁻ (x : ℝ) in Icc z y, f x := by
+  rw [(Iio_union_Icc_eq_Iic hzy).symm, lintegral_union measurableSet_Icc]
   rw [Set.disjoint_iff]
   rintro x ⟨h1 : (x < _), h2, _ ⟩
   linarith
 
-lemma lintegral_split (f : ℝ → ENNReal) (c : ℝ) : ∫⁻ (x : ℝ), f x  =
-    (∫⁻ (x : ℝ) in {x | x ≥ c}, f x) +  ∫⁻ (x : ℝ) in {x | x < c}, f x := by
+lemma lintegral_split (f : ℝ → ENNReal) (c : ℝ) : ∫⁻ (x : ℝ), f x =
+    (∫⁻ (x : ℝ) in {x | x ≥ c}, f x) + ∫⁻ (x : ℝ) in {x | x < c}, f x := by
   have union : univ = {x: ℝ | x ≥ c} ∪ {x : ℝ | x < c} := by
     ext x
     simp [le_or_lt]
@@ -98,7 +97,7 @@ lemma measurable_exponentialPdfReal (r : ℝ) :
   unfold exponentialPdfReal
   refine Measurable.ite ?hp ((measurable_id'.const_mul r).neg.exp.const_mul r) ?hg
   · refine MeasurableSet.of_compl ?hp.h
-    apply  IsOpen.measurableSet; rw [compl_setOf_le]; exact isOpen_gt' 0
+    apply IsOpen.measurableSet; rw [compl_setOf_le]; exact isOpen_gt' 0
   · exact measurable_const
 
 /-- The exponential Pdf is strongly measurable -/
@@ -125,15 +124,15 @@ lemma exp_neg_integrableOn_Ioc {b x : ℝ} (hb : 0 < b) :
   simp only [neg_mul_eq_neg_mul]
   exact (exp_neg_integrableOn_Ioi _ hb).mono_set Ioc_subset_Ioi_self
 
-lemma if_eval_pos {r : ℝ} : ∀ᵐ  x : ℝ ∂ volume , x < 0 →
+lemma if_eval_pos {r : ℝ} : ∀ᵐ x : ℝ ∂ volume , x < 0 →
     ENNReal.ofReal (if x ≥ 0 then r * rexp (-(r * x)) else 0) = 0 := by
   apply ae_of_all
   intro x hx
   replace hx : ¬ 0 ≤ x := by exact not_le.mpr hx
   simp [hx]
 
-lemma if_eval_neg {r : ℝ} : ∀ᵐ  x : ℝ ∂ volume, (x ∈ {x|x ≥ 0} →
-    ENNReal.ofReal (ite ((x : ℝ) ≥  0) (r * rexp (-(r * x))) 0 ) =
+lemma if_eval_neg {r : ℝ} : ∀ᵐ x : ℝ ∂ volume, (x ∈ {x|x ≥ 0} →
+    ENNReal.ofReal (ite ((x : ℝ) ≥ 0) (r * rexp (-(r * x))) 0) =
     ENNReal.ofReal (r * rexp (-(r * x)))) := by
   apply ae_of_all
   intro x hx; split_ifs with h; simp only [ge_iff_le] at h
@@ -233,8 +232,8 @@ lemma antiDeriv_expDeriv_pos {r x : ℝ} :
   simp only [id_eq, neg_mul, mul_one, mul_neg, one_mul, neg_neg, mul_comm]
 
 lemma lint_eq_antiDeriv (r : ℝ) (hr : 0 < r) : ∀ x : ℝ,
-    (∫⁻ y in (Iic x),  (exponentialPdf r y) =
-    ENNReal.ofReal ( ite (0 ≤ x) (1 - exp (-(r * x))) 0)) := by
+    (∫⁻ y in (Iic x), (exponentialPdf r y) =
+    ENNReal.ofReal (ite (0 ≤ x) (1 - exp (-(r * x))) 0)) := by
   intro x'
   split_ifs with h
   case neg =>
@@ -248,7 +247,7 @@ lemma lint_eq_antiDeriv (r : ℝ) (hr : 0 < r) : ∀ x : ℝ,
     rw [lintegral_split_bounded _ h, lintegral_nonpos (le_refl 0), ENNReal.ofReal_zero, zero_add]
     simp only [exponentialPdf_eq]
     rw[set_lintegral_congr_fun measurableSet_Icc (ae_of_all _
-        (by intro a ⟨(hle : _ ≤ a),  _⟩; rw [if_pos hle]))]
+        (by intro a ⟨(hle : _ ≤ a), _⟩; rw [if_pos hle]))]
     rw [←ENNReal.toReal_eq_toReal _ ENNReal.ofReal_ne_top, ←integral_eq_lintegral_of_nonneg_ae
         (eventually_of_forall fun _ ↦ le_of_lt (mul_pos hr (exp_pos _)))]
     have : (∫ a in uIoc 0 x', r * rexp (-(r * a))) = (∫ a in (0)..x', r * rexp (-(r * a))) := by
