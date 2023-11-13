@@ -143,18 +143,23 @@ theorem cast_le_one : (n : α) ≤ 1 ↔ n ≤ 1 := by rw [← cast_one, cast_le
 
 variable [m.AtLeastTwo] [n.AtLeastTwo]
 
+
+-- TODO: These lemmas need to be `@[simp]` for confluence in the presence of `cast_lt`, `cast_le`,
+-- and `Nat.cast_ofNat`, but their LHSs match literally every inequality, so they're too expensive.
+-- If lean4#2867 is fixed in a performant way, these can be made `@[simp]`.
+
 -- See note [no_index around OfNat.ofNat]
-@[simp]
+-- @[simp]
 theorem ofNat_le :
     (no_index (OfNat.ofNat m : α)) ≤ (no_index (OfNat.ofNat n)) ↔
-      (OfNat.ofNat m : ℕ) ≤ (OfNat.ofNat n) :=
+      (OfNat.ofNat m : ℕ) ≤ OfNat.ofNat n :=
   cast_le
 
 -- See note [no_index around OfNat.ofNat]
-@[simp]
+-- @[simp]
 theorem ofNat_lt :
     (no_index (OfNat.ofNat m : α)) < (no_index (OfNat.ofNat n)) ↔
-      (OfNat.ofNat m : ℕ) < (OfNat.ofNat n) :=
+      (OfNat.ofNat m : ℕ) < OfNat.ofNat n :=
   cast_lt
 
 -- See note [no_index around OfNat.ofNat]
