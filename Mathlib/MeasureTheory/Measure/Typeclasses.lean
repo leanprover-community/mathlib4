@@ -477,6 +477,9 @@ end Measure
 
 open Measure
 
+class SFinite {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
+  out' : ∃ m : ℕ → Measure α, (∀ n, IsFiniteMeasure (m n)) ∧ μ = Measure.sum m
+
 /-- A measure `μ` is called σ-finite if there is a countable collection of sets
  `{ A i | i ∈ ℕ }` such that `μ (A i) < ∞` and `⋃ i, A i = s`. -/
 class SigmaFinite {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
@@ -575,6 +578,23 @@ theorem eventually_mem_spanningSets (μ : Measure α) [SigmaFinite μ] (x : α) 
     ∀ᶠ n in atTop, x ∈ spanningSets μ n :=
   eventually_atTop.2 ⟨spanningSetsIndex μ x, fun _ => mem_spanningSets_of_index_le μ x⟩
 #align measure_theory.eventually_mem_spanning_sets MeasureTheory.eventually_mem_spanningSets
+
+theorem eq_sum_restrict (μ : Measure α) [SigmaFinite μ] :
+    μ = sum (fun n ↦ μ.restrict (disjointed (spanningSets μ) n)) := by
+  ext s hs
+  simp_rw [sum_apply _ hs, Measure.restrict_apply hs]
+  rw [← measure_iUnion, ← inter_iUnion, iUnion_disjointed, iUnion_spanningSets, inter_univ]
+  · intro i j hij
+    apply (Disjoint.inter_left' _ _).inter_right'
+    exact disjoint_disjointed _ hij
+  · intro i
+    exact hs.inter (MeasurableSet.disjointed (measurable_spanningSets μ) _)
+
+instance (priority := 100) [SigmaFinite μ] : SFinite μ := by
+  have : ∀ n, Fact (μ (disjointed (spanningSets μ) n) < ∞) :=
+    fun n ↦ ⟨(measure_mono (disjointed_subset _ _)).trans_lt (measure_spanningSets_lt_top μ n)⟩
+  exact ⟨⟨fun n ↦ μ.restrict (disjointed (spanningSets μ) n), fun n ↦ by infer_instance,
+    eq_sum_restrict μ⟩⟩
 
 namespace Measure
 
@@ -679,10 +699,10 @@ theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top {ι : Type*} [Measu
     ((fun _ _ h ↦ Disjoint.aedisjoint (As_disj h))) Union_As_finite
 #align measure_theory.measure.countable_meas_pos_of_disjoint_of_meas_Union_ne_top MeasureTheory.Measure.countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top
 
-/-- In a σ-finite space, among disjoint null-measurable sets, only countably many can have positive
+/-- In an S-finite space, among disjoint null-measurable sets, only countably many can have positive
 measure. -/
 theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} [MeasurableSpace α] {μ : Measure α}
-    [SigmaFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
+    [SFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
     (As_disj : Pairwise (AEDisjoint μ on As)) :
     Set.Countable { i : ι | 0 < μ (As i) } := by
   have obs : { i : ι | 0 < μ (As i) } ⊆ ⋃ n, { i : ι | 0 < μ (As i ∩ spanningSets μ n) } := by
@@ -702,14 +722,14 @@ theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} [MeasurableSpace �
 /-- In a σ-finite space, among disjoint measurable sets, only countably many can have positive
 measure. -/
 theorem countable_meas_pos_of_disjoint_iUnion {ι : Type*} [MeasurableSpace α] {μ : Measure α}
-    [SigmaFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
+    [SFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
     (As_disj : Pairwise (Disjoint on As)) : Set.Countable { i : ι | 0 < μ (As i) } :=
   countable_meas_pos_of_disjoint_iUnion₀ (fun i ↦ (As_mble i).nullMeasurableSet)
     ((fun _ _ h ↦ Disjoint.aedisjoint (As_disj h)))
 #align measure_theory.measure.countable_meas_pos_of_disjoint_Union MeasureTheory.Measure.countable_meas_pos_of_disjoint_iUnion
 
 theorem countable_meas_level_set_pos₀ {α β : Type*} [MeasurableSpace α] {μ : Measure α}
-    [SigmaFinite μ] [MeasurableSpace β] [MeasurableSingletonClass β] {g : α → β}
+    [SFinite μ] [MeasurableSpace β] [MeasurableSingletonClass β] {g : α → β}
     (g_mble : NullMeasurable g μ) : Set.Countable { t : β | 0 < μ { a : α | g a = t } } := by
   have level_sets_disjoint : Pairwise (Disjoint on fun t : β => { a : α | g a = t }) :=
     fun s t hst => Disjoint.preimage g (disjoint_singleton.mpr hst)
@@ -718,10 +738,42 @@ theorem countable_meas_level_set_pos₀ {α β : Type*} [MeasurableSpace α] {μ
     ((fun _ _ h ↦ Disjoint.aedisjoint (level_sets_disjoint h)))
 
 theorem countable_meas_level_set_pos {α β : Type*} [MeasurableSpace α] {μ : Measure α}
-    [SigmaFinite μ] [MeasurableSpace β] [MeasurableSingletonClass β] {g : α → β}
+    [SFinite μ] [MeasurableSpace β] [MeasurableSingletonClass β] {g : α → β}
     (g_mble : Measurable g) : Set.Countable { t : β | 0 < μ { a : α | g a = t } } :=
   countable_meas_level_set_pos₀ g_mble.nullMeasurable
 #align measure_theory.measure.countable_meas_level_set_pos MeasureTheory.Measure.countable_meas_level_set_pos
+
+/-- If a measure `μ` is the sum of a countable family `mₙ`, and a set `t` has finite measure for
+each `mₙ`, then its measurable superset `toMeasurable μ t` (which has the same measure as `t`)
+satisfies, for any measurable set `s`, the equality `μ (toMeasurable μ t ∩ s) = μ (t ∩ s)`. -/
+theorem measure_toMeasurable_inter_of_sum {s : Set α} (hs : MeasurableSet s) {t : Set α}
+    {m : ℕ → Measure α} (hv : ∀ n, m n t ≠ ∞) (hμ : μ = sum m) :
+    μ (toMeasurable μ t ∩ s) = μ (t ∩ s) := by
+  -- we show that there is a measurable superset of `t` satisfying the conclusion for any
+  -- measurable set `s`. It is built on each member of a spanning family using `toMeasurable`
+  -- (which is well behaved for finite measure sets thanks to `measure_toMeasurable_inter`), and
+  -- the desired property passes to the union.
+  have A : ∃ t', t' ⊇ t ∧ MeasurableSet t' ∧ ∀ u, MeasurableSet u → μ (t' ∩ u) = μ (t ∩ u) := by
+    let w n := toMeasurable (m n) t
+    have T : t ⊆ ⋂ n, w n := subset_iInter (fun i ↦ subset_toMeasurable (m i) t)
+    have M : MeasurableSet (⋂ n, w n) :=
+      MeasurableSet.iInter (fun i ↦ measurableSet_toMeasurable (m i) t)
+    refine ⟨⋂ n, w n, T, M, fun u hu ↦ ?_⟩
+    refine le_antisymm ?_ (measure_mono (inter_subset_inter_left _ T))
+    rw [hμ, sum_apply _ (M.inter hu)]
+    apply le_trans _ (le_sum_apply _ _)
+    apply ENNReal.tsum_le_tsum (fun i ↦ ?_)
+    calc
+    m i ((⋂ n, w n) ∩ u) ≤ m i (w i ∩ u) :=
+      measure_mono (inter_subset_inter_left _ (iInter_subset _ _))
+    _ = m i (t ∩ u) := measure_toMeasurable_inter hu (hv i)
+  -- thanks to the definition of `toMeasurable`, the previous property will also be shared
+  -- by `toMeasurable μ t`, which is enough to conclude the proof.
+  rw [toMeasurable]
+  split_ifs with ht
+  · apply measure_congr
+    exact ae_eq_set_inter ht.choose_spec.2.2 (ae_eq_refl _)
+  · exact A.choose_spec.2.2 s hs
 
 /-- If a set `t` is covered by a countable family of finite measure sets, then its measurable
 superset `toMeasurable μ t` (which has the same measure as `t`) satisfies,
@@ -798,27 +850,21 @@ theorem restrict_toMeasurable_of_cover {s : Set α} {v : ℕ → Set α} (hv : s
 
 /-- The measurable superset `toMeasurable μ t` of `t` (which has the same measure as `t`)
 satisfies, for any measurable set `s`, the equality `μ (toMeasurable μ t ∩ s) = μ (t ∩ s)`.
-This only holds when `μ` is σ-finite. For a version without this assumption (but requiring
+This only holds when `μ` is S-finite. For a version without this assumption (but requiring
 that `t` has finite measure), see `measure_toMeasurable_inter`. -/
-theorem measure_toMeasurable_inter_of_sigmaFinite [SigmaFinite μ] {s : Set α} (hs : MeasurableSet s)
+theorem measure_toMeasurable_inter_of_sfinite [h : SFinite μ] {s : Set α} (hs : MeasurableSet s)
     (t : Set α) : μ (toMeasurable μ t ∩ s) = μ (t ∩ s) := by
-  have : t ⊆ ⋃ n, spanningSets μ n := by
-    rw [iUnion_spanningSets]
-    exact subset_univ _
-  refine measure_toMeasurable_inter_of_cover hs this fun n => ne_of_lt ?_
-  calc
-    μ (t ∩ spanningSets μ n) ≤ μ (spanningSets μ n) := measure_mono (inter_subset_right _ _)
-    _ < ∞ := measure_spanningSets_lt_top μ n
-
-#align measure_theory.measure.measure_to_measurable_inter_of_sigma_finite MeasureTheory.Measure.measure_toMeasurable_inter_of_sigmaFinite
+  rcases h.out' with ⟨m, hm, h'm⟩
+  apply measure_toMeasurable_inter_of_sum hs (fun n ↦ measure_ne_top (m n) t) h'm
+#align measure_theory.measure.measure_to_measurable_inter_of_sigma_finite MeasureTheory.Measure.measure_toMeasurable_inter_of_sfinite
 
 @[simp]
-theorem restrict_toMeasurable_of_sigmaFinite [SigmaFinite μ] (s : Set α) :
+theorem restrict_toMeasurable_of_sfinite [SFinite μ] (s : Set α) :
     μ.restrict (toMeasurable μ s) = μ.restrict s :=
   ext fun t ht => by
-    rw [restrict_apply ht, inter_comm t, measure_toMeasurable_inter_of_sigmaFinite ht,
+    rw [restrict_apply ht, inter_comm t, measure_toMeasurable_inter_of_sfinite ht,
       restrict_apply ht, inter_comm t]
-#align measure_theory.measure.restrict_to_measurable_of_sigma_finite MeasureTheory.Measure.restrict_toMeasurable_of_sigmaFinite
+#align measure_theory.measure.restrict_to_measurable_of_sigma_finite MeasureTheory.Measure.restrict_toMeasurable_of_sfinite
 
 namespace FiniteSpanningSetsIn
 
