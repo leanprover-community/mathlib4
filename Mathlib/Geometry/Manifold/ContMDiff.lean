@@ -2061,7 +2061,7 @@ rw [LocalHomeomorph.refl_apply, id.def, LocalHomeomorph.singletonChartedSpace_ch
 
 variable {I}
 lemma contMDiffOn_openEmbedding_symm
-  {M : Type*} [TopologicalSpace M] [Nonempty M]
+    {M : Type*} [TopologicalSpace M] [Nonempty M]
   {e : M → H} (h : OpenEmbedding e) {n : WithTop ℕ} :
   @ContMDiffOn _ _ _ _ _ _ _ I _ _ _ _ _ _ _ _ I _ _ h.singletonChartedSpace
     n (OpenEmbedding.toLocalHomeomorph e h).symm (Set.range e) := by
