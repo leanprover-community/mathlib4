@@ -61,12 +61,13 @@ It is assumed to represent a left action in some sense.
 The notation `a • b` is augmented with a macro (below) to have it elaborate as a left action.
 Only the `b` argument participates in the elaboration algorithm: the algorithm uses the type of `b`
 when calculating the type of the surrounding arithmetic expression
-and it tries to insert coercions into `b` so that in the end `a • b` has type `β`.
-See the docstring on the macro for more details.
+and it tries to insert coercions into `b` to get some `b'`
+such that `a • b'` has the same type as `b'`.
+See the module documentation near the macro for more details.
 -/
 class HSMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   /-- `a • b` computes the product of `a` and `b`.
-  The meaning of this notation is type-dependent. -/
+  The meaning of this notation is type-dependent, but it is intended to be used for left actions. -/
   hSMul : α → β → γ
 
 attribute [notation_class  smul Simps.copySecond] HSMul
@@ -93,10 +94,10 @@ infixl:65 " +ᵥ " => HVAdd.hVAdd
 infixl:65 " -ᵥ " => VSub.vsub
 infixr:73 " • " => HSMul.hSMul
 
-/--
-Macro to make `x • y` notation participate in the expression tree elaborator,
+/-!
+We have a macro to make `x • y` notation participate in the expression tree elaborator,
 like other arithmetic expressions such as `+`, `*`, `/`, `^`, `=`, inequalities, etc.
-This is using the `leftact%` elaborator introduced in
+The macro is using the `leftact%` elaborator introduced in
 [this RFC](https://github.com/leanprover/lean4/issues/2854).
 
 As a concrete example of the effect of this macro, consider
@@ -124,6 +125,8 @@ Note(kmill): If we were to remove `HSMul` and switch to using `SMul` directly,
 then the expression tree elaborator would not be able to insert coercions within the right operand;
 they would likely appear as `↑(x • y)` rather than `x • ↑y`, unlike other arithmetic operations.
 -/
+
+@[inherit_doc HSMul.hSMul]
 macro_rules | `($x • $y) => `(leftact% HSMul.hSMul $x $y)
 
 attribute [to_additive existing] Mul Div HMul instHMul HDiv instHDiv HSMul
