@@ -66,9 +66,20 @@ example {n : ℕ} (bound : n ≤ 5) : n ≤ 10 := by
   grw [h'] at bound
   assumption
 
+example (h₁ : a ≤ b) : a * 5 ≤ b * 5 := by grw [h₁]
+
+example (h₁ : a ≤ b) (h₂ : c ≥ 0) : a * c ≤ b * c := by grw [h₁]
+
+example (h₁ : a ≤ b) : a * c ≤ b * c := by
+  grw [h₁]
+  guard_target =ₛ 0 ≤ c
+  exact test_sorry
+
+
 end inequalities
 
 section subsets
+set_option trace.GRW true
 
 variable (X Y Z W: Set α)
 

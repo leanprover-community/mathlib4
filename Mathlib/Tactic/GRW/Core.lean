@@ -91,13 +91,6 @@ private partial def getNewType (rule : Expr) (rev : Bool) (oldType : Expr) : Met
   trace[GRW] "old type {oldType} new type {newType}"
   return newType
 
-
-private partial def assignAndValidate (mvar : MVarId) (expr: Expr) : MetaM Unit := do
-  if ←isDefEq (Expr.mvar mvar) expr then
-    return ⟨⟩
-  else
-    throwError "Could not assign {expr} to {mvar}"
-
 -- TODO make this extensible
 private partial def dischargeSideGoal (mvar : MVarId) : MetaM Unit := do
   trace[GRW] "Discharging side goal {mvar}"
@@ -120,7 +113,7 @@ private partial def dischargeMainGoal (rule : Expr) (mvar : MVarId) : MetaM Unit
     return
   catch _ =>
   try do
-    commitIfNoEx <| assignAndValidate mvar rule
+    commitIfNoEx <| mvar.assignIfDefeq rule
     trace[GRW] "used rule {rule}"
     return
   catch _ =>
@@ -177,12 +170,13 @@ partial def runGrw (expr rule : Expr) (rev isTarget : Bool) :
         let lemType ← inferType lemExpr
         let ⟨metas, binders, _⟩ ← forallMetaTelescopeReducing lemType
         let mvarToAssign := if isTarget then expr.mvarId! else result.mvarId!
-        assignAndValidate mvarToAssign (mkAppN lemExpr metas)
+        trace[GRW] "unifying types {← inferType (Expr.mvar mvarToAssign)} with {← inferType (mkAppN lemExpr metas)}"
+        withReducible $ mvarToAssign.assignIfDefeq (mkAppN lemExpr metas)
 
         let firstDefaultArg := binders.findIdx? (λ x ↦ x == .default)
         if let some firstDefaultArg := firstDefaultArg then do
           let valueToAssign := if isTarget then result else expr
-          assignAndValidate metas[firstDefaultArg]!.mvarId! valueToAssign
+          withReducible $ metas[firstDefaultArg]!.mvarId!.assignIfDefeq valueToAssign
         else
           throwError "Lemma {lem} did not have a default argument"
 
@@ -202,7 +196,7 @@ partial def runGrw (expr rule : Expr) (rev isTarget : Bool) :
             pure #[]
           else
             withTraceNode `GRW (λ _ ↦ return m!"Looking for value of type {type}") do
-              withReducible $ useRule weakRule mvar
+              withReducibleAndInstances $ useRule weakRule mvar
         trace[GRW] "Got subgoals {subgoals}"
         return some ⟨(← instantiateMVars <| mkAppN lemExpr metas), subgoals⟩
       else
