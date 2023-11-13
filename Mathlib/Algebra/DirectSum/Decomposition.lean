@@ -48,7 +48,10 @@ submonoids `ℳ i` of that `M`, such that the "recomposition" is canonical. This
 works for additive groups and modules.
 
 This is a version of `DirectSum.IsInternal` which comes with a constructive inverse to the
-canonical "recomposition" rather than just a proof that the "recomposition" is bijective. -/
+canonical "recomposition" rather than just a proof that the "recomposition" is bijective.
+
+Often it is easier to construct a term of this type via `Decomposition.ofAddHom` or
+`Decomposition.ofLinearMap`. -/
 class Decomposition where
   decompose' : M → ⨁ i, ℳ i
   left_inv : Function.LeftInverse (DirectSum.coeAddMonoidHom ℳ) decompose'
@@ -68,6 +71,22 @@ variable [Decomposition ℳ]
 protected theorem Decomposition.isInternal : DirectSum.IsInternal ℳ :=
   ⟨Decomposition.right_inv.injective, Decomposition.left_inv.surjective⟩
 #align direct_sum.decomposition.is_internal DirectSum.Decomposition.isInternal
+
+/-- A convenience method to construct a decomposition from an `AddMonoidHom`, such that the proofs
+of left and right inverse can be constructed via `ext`. -/
+abbrev Decomposition.ofAddHom (decompose : M →+ ⨁ i, ℳ i)
+    (h_left_inv : (DirectSum.coeAddMonoidHom ℳ).comp decompose = .id _)
+    (h_right_inv : decompose.comp (DirectSum.coeAddMonoidHom ℳ) = .id _) : Decomposition ℳ where
+  decompose' := decompose
+  left_inv := FunLike.congr_fun h_left_inv
+  right_inv := FunLike.congr_fun h_right_inv
+
+/-- Noncomputably conjure a decomposition instance from an `IsInternal` proof. -/
+noncomputable def IsInternal.chooseDecomposition (h : IsInternal ℳ) :
+    DirectSum.Decomposition ℳ where
+  decompose' := (Equiv.ofBijective _ h).symm
+  left_inv := (Equiv.ofBijective _ h).right_inv
+  right_inv := (Equiv.ofBijective _ h).left_inv
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 to a direct sum of components. This is the canonical spelling of the `decompose'` field. -/
@@ -231,6 +250,15 @@ variable [DecidableEq ι] [Semiring R] [AddCommMonoid M] [Module R M]
 variable (ℳ : ι → Submodule R M)
 
 variable [Decomposition ℳ]
+
+/-- A convenience method to construct a decomposition from an `LinearMap`, such that the proofs
+of left and right inverse can be constructed via `ext`. -/
+abbrev Decomposition.ofLinearMap (decompose : M →ₗ[R] ⨁ i, ℳ i)
+    (h_left_inv : (DirectSum.coeLinearMap ℳ) ∘ₗ decompose = .id)
+    (h_right_inv : decompose ∘ₗ (DirectSum.coeLinearMap ℳ) = .id) : Decomposition ℳ where
+  decompose' := decompose
+  left_inv := FunLike.congr_fun h_left_inv
+  right_inv := FunLike.congr_fun h_right_inv
 
 /-- If `M` is graded by `ι` with degree `i` component `ℳ i`, then it is isomorphic as
 a module to a direct sum of components. -/
