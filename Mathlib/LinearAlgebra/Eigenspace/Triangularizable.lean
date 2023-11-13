@@ -3,7 +3,7 @@ Copyright (c) 2020 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
 #align_import linear_algebra.eigenspace.is_alg_closed from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
@@ -11,21 +11,28 @@ import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 /-!
 # Triangularizable linear endomorphisms
 
-An endomorphism `f` of a module `M` is said to be triangularizable if the generalized eigenspaces of
-`f` span `M`. This file contains basic results about triangularizability.
+This file contains basic results relevant to the triangularizability of linear endomorphisms.
 
 ## Main definitions / results
 
- * `Module.End.IsTriangularizable`: the definition of triangularizability.
- * `Module.End.isTriangularizable_of_isAlgClosed`: every endomorphism of a finite-dimensional vector
-   space over an algebraically-closed field is triangularizable.
- * `Module.End.IsTriangularizable.isTriangularizable_restrict`: the restriction of a
-   triangularizable endomorphism to an invariant submodule is triangularizable.
+ * `Module.End.exists_eigenvalue`: in finite dimensions, over an algebraically closed field, every
+   linear endomorphism has an eigenvalue.
+ * `Module.End.iSup_generalizedEigenspace_eq_top`: in finite dimensions, over an algebraically
+   closed field, the generalized eigenspaces of any linear endomorphism span the whole space.
+ * `Module.End.iSup_generalizedEigenspace_restrict_eq_top`: in finite dimensions, if the
+   generalized eigenspaces of a linear endomorphism span the whole space then the same is true of
+   its restriction to any invariant submodule.
 
 ## References
 
 * [Sheldon Axler, *Linear Algebra Done Right*][axler2015]
 * https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors
+
+## TODO
+
+Define triangularizable endomorphisms (e.g., as existence of a maximal chain of invariant subspaces)
+and prove that in finite dimensions over a field, this is equivalent to the property that the
+generalized eigenspaces span the whole space.
 
 ## Tags
 
@@ -38,27 +45,9 @@ variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
 namespace Module.End
 
-section CommRing
-
-variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-
-/-- An endomorphism of a module is said to be triangularizable if its generalized eigenspaces span
-the entire module.
-
-All endomorphisms of a finite-dimensional vector space over an algebraically-closed field are
-triangularizable, see `Module.End.isTriangularizable_of_isAlgClosed`. -/
-def IsTriangularizable (f : End R M) : Prop :=
-  ⨆ μ, ⨆ k, f.generalizedEigenspace μ k = ⊤
-
-lemma IsTriangularizable.iSup_eq {f : End R M} (hf : f.IsTriangularizable) :
-    ⨆ μ, ⨆ k, f.generalizedEigenspace μ k = ⊤ :=
-  hf
-
-end CommRing
-
 -- This is Lemma 5.21 of [axler2015], although we are no longer following that proof.
-/-- Every linear operator on a vector space over an algebraically closed field has
-    an eigenvalue. -/
+/-- In finite dimensions, over an algebraically closed field, every linear endomorphism has an
+eigenvalue. -/
 theorem exists_eigenvalue [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f : End K V) :
     ∃ c : K, f.HasEigenvalue c := by
   simp_rw [hasEigenvalue_iff_mem_spectrum]
@@ -69,10 +58,11 @@ noncomputable instance [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f
     Inhabited f.Eigenvalues :=
   ⟨⟨f.exists_eigenvalue.choose, f.exists_eigenvalue.choose_spec⟩⟩
 
-/-- The generalized eigenvectors span the entire vector space (Lemma 8.21 of [axler2015]). -/
-theorem isTriangularizable_of_isAlgClosed [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
-    f.IsTriangularizable := by
-  rw [IsTriangularizable]
+-- Lemma 8.21 of [axler2015]
+/-- In finite dimensions, over an algebraically closed field, the generalized eigenspaces of any
+linear endomorphism span the whole space. -/
+theorem iSup_generalizedEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
+    ⨆ (μ : K) (k : ℕ), f.generalizedEigenspace μ k = ⊤ := by
   -- We prove the claim by strong induction on the dimension of the vector space.
   induction' h_dim : finrank K V using Nat.strong_induction_on with n ih generalizing V
   cases' n with n
@@ -131,7 +121,7 @@ theorem isTriangularizable_of_isAlgClosed [IsAlgClosed K] [FiniteDimensional K V
     show ⨆ (μ : K) (k : ℕ), f.generalizedEigenspace μ k = ⊤
     · rw [← top_le_iff, ← Submodule.eq_top_of_disjoint ER ES h_dim_add h_disjoint]
       apply sup_le hER hES
-#align module.End.supr_generalized_eigenspace_eq_top Module.End.isTriangularizable_of_isAlgClosed
+#align module.End.supr_generalized_eigenspace_eq_top Module.End.iSup_generalizedEigenspace_eq_top
 
 end Module.End
 
@@ -200,16 +190,18 @@ theorem inf_iSup_generalizedEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p,
   rwa [← hg₃ hy₁ hm₂ hy₂]
 
 theorem eq_iSup_inf_generalizedEigenspace [FiniteDimensional K V]
-    (h : ∀ x ∈ p, f x ∈ p) (h' : f.IsTriangularizable) :
+    (h : ∀ x ∈ p, f x ∈ p) (h' : ⨆ μ, ⨆ k, f.generalizedEigenspace μ k = ⊤) :
     p = ⨆ μ, ⨆ k, p ⊓ f.generalizedEigenspace μ k := by
-  rw [← inf_iSup_generalizedEigenspace h, h'.iSup_eq, inf_top_eq]
+  rw [← inf_iSup_generalizedEigenspace h, h', inf_top_eq]
 
 end Submodule
 
-theorem Module.End.IsTriangularizable.isTriangularizable_restrict
+/-- In finite dimensions, if the generalized eigenspaces of a linear endomorphism span the whole
+space then the same is true of its restriction to any invariant submodule. -/
+theorem Module.End.iSup_generalizedEigenspace_restrict_eq_top
     {p : Submodule K V} {f : Module.End K V} [FiniteDimensional K V]
-    (h : ∀ x ∈ p, f x ∈ p) (h' : f.IsTriangularizable) :
-    Module.End.IsTriangularizable (LinearMap.restrict f h) := by
+    (h : ∀ x ∈ p, f x ∈ p) (h' : ⨆ μ, ⨆ k, f.generalizedEigenspace μ k = ⊤) :
+    ⨆ μ, ⨆ k, Module.End.generalizedEigenspace (LinearMap.restrict f h) μ k = ⊤ := by
   have := congr_arg (Submodule.comap p.subtype) (Submodule.eq_iSup_inf_generalizedEigenspace h h')
   have h_inj : Function.Injective p.subtype := Subtype.coe_injective
   simp_rw [Submodule.inf_generalizedEigenspace f p h, Submodule.comap_subtype_self,
