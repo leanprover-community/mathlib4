@@ -23,7 +23,7 @@ This file defines the multinomial coefficient and several small lemma's for mani
 
 ## Main results
 
-- `Finest.sum_pow`: The expansion of `(s.sum x) ^ n` using multinomial coefficients
+- `Finset.sum_pow`: The expansion of `(s.sum x) ^ n` using multinomial coefficients
 
 -/
 
