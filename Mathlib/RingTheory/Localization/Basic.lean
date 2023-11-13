@@ -103,7 +103,7 @@ class IsLocalization : Prop where
   map_units' : ∀ y : M, IsUnit (algebraMap R S y)
   /-- The `algebraMap` is surjective -/
   surj' : ∀ z : S, ∃ x : R × M, z * algebraMap R S x.2 = algebraMap R S x.1
-  /-- The kernel of `algebraMap` is contained in the annihilator of `M`; 
+  /-- The kernel of `algebraMap` is contained in the annihilator of `M`;
       it is then equal to the annihilator by `map_units'` -/
   exists_of_eq : ∀ {x y}, algebraMap R S x = algebraMap R S y → ∃ c : M, ↑c * x = ↑c * y
 #align is_localization IsLocalization
