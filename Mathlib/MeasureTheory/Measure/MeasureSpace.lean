@@ -1453,7 +1453,11 @@ section MeasureSpace
 
 variable {s : Set α} [MeasureSpace α] {p : α → Prop}
 
-/-- In a measure space, one can restrict the measure to a subtype to get a new measure space. -/
+/-- In a measure space, one can restrict the measure to a subtype to get a new measure space.
+
+Not registered as an instance, as there are other natural choices such as the normalized restriction
+for a probability measure, or the subspace measure when restricting to a vector subspace. Enable
+locally if needed with `attribute [local instance] Measure.Subtype.measureSpace`. -/
 def Subtype.measureSpace : MeasureSpace (Subtype p) where
   volume := Measure.comap Subtype.val volume
 #align measure_theory.measure.subtype.measure_space MeasureTheory.Measure.Subtype.measureSpace
