@@ -51,7 +51,6 @@ is no well-behaved measure on the domain of `f`.
 
 open scoped Classical ENNReal
 open Set Function Equiv Finset
-set_option autoImplicit true
 
 noncomputable section
 
