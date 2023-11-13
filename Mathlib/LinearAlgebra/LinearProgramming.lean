@@ -52,11 +52,11 @@ lemma LinearProgram.feasibles_mkOfEqs
     (mkOfEqs equalities inequalities objective).feasibles =
     { x : P | (∀ a ∈ equalities, a x = 0) ∧ (∀ a ∈ inequalities, 0 ≤ a x) } := by
   ext x
-  rw [mem_feasibles]
+  rw [mem_feasibles, LinearProgram.mkOfEqs]
+  simp only [List.mem_append, List.mem_map]
   constructor
   · intro hyp
-    simp only [LinearProgram.mkOfEqs, List.append_assoc, List.mem_append, List.mem_map,
-      Function.Involutive.exists_mem_and_apply_eq_iff, neg_involutive] at hyp
+    simp only [Function.Involutive.exists_mem_and_apply_eq_iff, neg_involutive] at hyp
     constructor
     · intro constr_eq mem_equalities
       refine le_antisymm ?neg (hyp (by simp [mem_equalities]))
@@ -66,16 +66,13 @@ lemma LinearProgram.feasibles_mkOfEqs
     · intro constr_le mem_inequalities
       exact hyp (by simp [mem_inequalities])
   · intro hyp
-    rw [LinearProgram.mkOfEqs]
     intro constraint constraint_mem
-    rw [List.mem_append, List.mem_append] at constraint_mem
     cases constraint_mem with
     | inl normal =>
       cases normal with
       | inl mem_les => exact hyp.2 constraint mem_les
       | inr mem_eqs => exact Eq.ge (hyp.1 constraint mem_eqs)
     | inr negated =>
-      rw [List.mem_map] at negated
       rcases negated with ⟨orig, orig_mem, neg_orig⟩
       rw [← neg_orig]
       simp [hyp.1 orig orig_mem]
