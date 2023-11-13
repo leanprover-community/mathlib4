@@ -8,11 +8,11 @@ import Mathlib.MeasureTheory.Measure.MeasureSpace
 /-!
 # Restricting a measure to a subset or a subtype
 
-Given a measure `μ` on a Type `α` and a set `s`, we define a measure `μ.restrict s` as the
-restriction of `μ` to `s` (still as a measure on `α`).
+Given a measure `μ` on a type `α` and a subset `s` of `α`, we define a measure `μ.restrict s` as
+the restriction of `μ` to `s` (still as a measure on `α`).
 
 We investigate how this notion interacts with usual operations on measures (sum, pushforward,
-pullback), and on sets (unions, Unions).
+pullback), and on sets (inclusion, union, Union).
 
 We also study the relationship between the restriction of a measure to a subtype (given by the
 pullback under `Subtype.val`) and the restriction to a set as above.
