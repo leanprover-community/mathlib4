@@ -78,13 +78,14 @@ section Basic
 
 variable {α β R R' : Type*} {ms : Set (OuterMeasure α)} {m : OuterMeasure α}
 
-instance instCoeFun : CoeFun (OuterMeasure α) (fun _ => Set α → ℝ≥0∞) where
+instance instCoeFun : FunLike (OuterMeasure α) (Set α) (fun _ => ℝ≥0∞) where
   coe m := m.measureOf
+  coe_injective' m₁ m₂ h := by cases m₁; cases m₂; congr
 #align measure_theory.outer_measure.has_coe_to_fun MeasureTheory.OuterMeasure.instCoeFun
 
-attribute [coe] measureOf
-
-#noalign measure_theory.outer_measure.measureOf_eq_coe
+@[simp]
+theorem measureOf_eq_coe (m : OuterMeasure α) : m.measureOf = m := rfl
+#align measure_theory.outer_measure.measure_of_eq_coe MeasureTheory.OuterMeasure.measureOf_eq_coe
 
 @[simp]
 theorem empty' (m : OuterMeasure α) : m ∅ = 0 :=
@@ -228,12 +229,12 @@ theorem union_null (m : OuterMeasure α) {s₁ s₂ : Set α} (h₁ : m s₁ = 0
 #align measure_theory.outer_measure.union_null MeasureTheory.OuterMeasure.union_null
 
 theorem coe_fn_injective : Injective fun (μ : OuterMeasure α) (s : Set α) => μ s :=
-  fun μ₁ μ₂ h => by cases μ₁; cases μ₂; congr
+  FunLike.coe_injective
 #align measure_theory.outer_measure.coe_fn_injective MeasureTheory.OuterMeasure.coe_fn_injective
 
 @[ext]
 theorem ext {μ₁ μ₂ : OuterMeasure α} (h : ∀ s, μ₁ s = μ₂ s) : μ₁ = μ₂ :=
-  coe_fn_injective <| funext h
+  FunLike.ext _ _ h
 #align measure_theory.outer_measure.ext MeasureTheory.OuterMeasure.ext
 
 /-- A version of `MeasureTheory.OuterMeasure.ext` that assumes `μ₁ s = μ₂ s` on all *nonempty*

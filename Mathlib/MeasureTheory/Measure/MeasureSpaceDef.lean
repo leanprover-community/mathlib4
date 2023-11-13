@@ -78,17 +78,7 @@ structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α wher
   trimmed : toOuterMeasure.trim = toOuterMeasure
 #align measure_theory.measure MeasureTheory.Measure
 
-/-- Measure projections for a measure space.
-
-For measurable sets this returns the measure assigned by the `measureOf` field in `Measure`.
-But we can extend this to _all_ sets, but using the outer measure. This gives us monotonicity and
-subadditivity for all sets.
--/
-instance Measure.instCoeFun [MeasurableSpace α] : CoeFun (Measure α) fun _ => Set α → ℝ≥0∞ :=
-  ⟨fun m => m.toOuterMeasure⟩
-#align measure_theory.measure.has_coe_to_fun MeasureTheory.Measure.instCoeFun
-
-attribute [coe] Measure.toOuterMeasure
+-- attribute [coe] Measure.toOuterMeasure
 
 section
 
@@ -98,6 +88,21 @@ namespace Measure
 
 /-! ### General facts about measures -/
 
+theorem toOuterMeasure_injective : Injective (toOuterMeasure : Measure α → OuterMeasure α) :=
+  fun ⟨m₁, u₁, h₁⟩ ⟨m₂, _u₂, _h₂⟩ _h => by
+  congr
+#align measure_theory.measure.to_outer_measure_injective MeasureTheory.Measure.toOuterMeasure_injective
+
+/-- Measure projections for a measure space.
+
+For measurable sets this returns the measure assigned by the `measureOf` field in `Measure`.
+But we can extend this to _all_ sets, but using the outer measure. This gives us monotonicity and
+subadditivity for all sets.
+-/
+instance instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α) (fun _ => ℝ≥0∞) where
+  coe m := m.toOuterMeasure
+  coe_injective' _m₁ _m₂ h := toOuterMeasure_injective <| FunLike.coe_injective h
+#align measure_theory.measure.has_coe_to_fun MeasureTheory.Measure.instFunLikeₓ
 
 /-- Obtain a measure by giving a countably additive function that sends `∅` to `0`. -/
 def ofMeasurable (m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞) (m0 : m ∅ MeasurableSet.empty = 0)
@@ -126,11 +131,6 @@ theorem ofMeasurable_apply {m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞}
   inducedOuterMeasure_eq m0 mU hs
 #align measure_theory.measure.of_measurable_apply MeasureTheory.Measure.ofMeasurable_apply
 
-theorem toOuterMeasure_injective : Injective (toOuterMeasure : Measure α → OuterMeasure α) :=
-  fun ⟨m₁, u₁, h₁⟩ ⟨m₂, _u₂, _h₂⟩ _h => by
-  congr
-#align measure_theory.measure.to_outer_measure_injective MeasureTheory.Measure.toOuterMeasure_injective
-
 @[ext]
 theorem ext (h : ∀ s, MeasurableSet s → μ₁ s = μ₂ s) : μ₁ = μ₂ :=
   toOuterMeasure_injective <| by
@@ -150,11 +150,11 @@ end Measure
 
 #noalign measure_theory.to_outer_measure_apply
 
-theorem measure_eq_trim (s : Set α) : μ s = μ.toOuterMeasure.trim s := by rw [μ.trimmed]
+theorem measure_eq_trim (s : Set α) : μ s = μ.toOuterMeasure.trim s := by rw [μ.trimmed]; rfl
 #align measure_theory.measure_eq_trim MeasureTheory.measure_eq_trim
 
 theorem measure_eq_iInf (s : Set α) : μ s = ⨅ (t) (_ : s ⊆ t) (_ : MeasurableSet t), μ t := by
-  rw [measure_eq_trim, OuterMeasure.trim_eq_iInf]
+  rw [measure_eq_trim, OuterMeasure.trim_eq_iInf]; rfl
 #align measure_theory.measure_eq_infi MeasureTheory.measure_eq_iInf
 
 /-- A variant of `measure_eq_iInf` which has a single `iInf`. This is useful when applying a
@@ -181,7 +181,7 @@ theorem measure_eq_extend (hs : MeasurableSet s) :
     exact hs
 #align measure_theory.measure_eq_extend MeasureTheory.measure_eq_extend
 
--- @[simp] -- Porting note: simp can prove this
+@[simp]
 theorem measure_empty : μ ∅ = 0 :=
   μ.empty
 #align measure_theory.measure_empty MeasureTheory.measure_empty
@@ -228,8 +228,9 @@ theorem exists_measurable_superset₂ (μ ν : Measure α) (s : Set α) :
     exists_measurable_superset_forall_eq (fun b => cond b μ ν) s
 #align measure_theory.exists_measurable_superset₂ MeasureTheory.exists_measurable_superset₂
 
-theorem exists_measurable_superset_of_null (h : μ s = 0) : ∃ t, s ⊆ t ∧ MeasurableSet t ∧ μ t = 0 :=
-  h ▸ exists_measurable_superset μ s
+theorem exists_measurable_superset_of_null (h : μ s = 0) :
+    ∃ t, s ⊆ t ∧ MeasurableSet t ∧ μ t = 0 := by
+  simpa only [h] using exists_measurable_superset μ s
 #align measure_theory.exists_measurable_superset_of_null MeasureTheory.exists_measurable_superset_of_null
 
 theorem exists_measurable_superset_iff_measure_eq_zero :
@@ -271,7 +272,7 @@ theorem measure_iUnion_null [Countable β] {s : β → Set α} : (∀ i, μ (s i
   μ.toOuterMeasure.iUnion_null
 #align measure_theory.measure_Union_null MeasureTheory.measure_iUnion_null
 
--- @[simp] -- Porting note: simp can prove this
+@[simp]
 theorem measure_iUnion_null_iff [Countable ι] {s : ι → Set α} :
     μ (⋃ i, s i) = 0 ↔ ∀ i, μ (s i) = 0 :=
   μ.toOuterMeasure.iUnion_null_iff
@@ -280,7 +281,7 @@ theorem measure_iUnion_null_iff [Countable ι] {s : ι → Set α} :
 /-- A version of `measure_iUnion_null_iff` for unions indexed by Props
 TODO: in the long run it would be better to combine this with `measure_iUnion_null_iff` by
 generalising to `Sort`. -/
--- @[simp] -- Porting note: simp can prove this
+@[simp]
 theorem measure_iUnion_null_iff' {ι : Prop} {s : ι → Set α} : μ (⋃ i, s i) = 0 ↔ ∀ i, μ (s i) = 0 :=
   μ.toOuterMeasure.iUnion_null_iff'
 #align measure_theory.measure_Union_null_iff' MeasureTheory.measure_iUnion_null_iff'
@@ -648,7 +649,8 @@ theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) :
 
 @[simp]
 theorem measure_toMeasurable (s : Set α) : μ (toMeasurable μ s) = μ s := by
-  rw [toMeasurable_def]; split_ifs with hs h's
+  rw [toMeasurable_def];
+  split_ifs with hs; split_ifs with h's
   · exact measure_congr hs.choose_spec.2.2
   · simpa only [inter_univ] using h's.choose_spec.2.2 univ MeasurableSet.univ
   · exact (exists_measurable_superset μ s).choose_spec.2.2

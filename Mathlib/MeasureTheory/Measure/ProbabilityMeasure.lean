@@ -123,8 +123,10 @@ def toMeasure : ProbabilityMeasure Ω → Measure Ω := Subtype.val
 instance : Coe (ProbabilityMeasure Ω) (MeasureTheory.Measure Ω) where
   coe := toMeasure
 
-instance : CoeFun (ProbabilityMeasure Ω) fun _ => Set Ω → ℝ≥0 :=
+instance foo : CoeFun (ProbabilityMeasure Ω) fun _ => Set Ω → ℝ≥0 :=
   ⟨fun μ s => ((μ : Measure Ω) s).toNNReal⟩
+
+#print foo
 
 instance (μ : ProbabilityMeasure Ω) : IsProbabilityMeasure (μ : Measure Ω) :=
   μ.prop
