@@ -2379,9 +2379,9 @@ import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.PiTensorProduct
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Projection
-import Mathlib.LinearAlgebra.ProjectiveSpace.Basic
-import Mathlib.LinearAlgebra.ProjectiveSpace.Independence
-import Mathlib.LinearAlgebra.ProjectiveSpace.Subspace
+import Mathlib.LinearAlgebra.Projectivization.Basic
+import Mathlib.LinearAlgebra.Projectivization.Independence
+import Mathlib.LinearAlgebra.Projectivization.Subspace
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 import Mathlib.LinearAlgebra.QuadraticForm.Complex
 import Mathlib.LinearAlgebra.QuadraticForm.Dual
