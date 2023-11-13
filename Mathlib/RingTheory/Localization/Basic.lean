@@ -20,8 +20,8 @@ isomorphism; that is, a commutative ring `S` is the localization of `R` at `M` i
 ring homomorphism `f : R →+* S` satisfying 3 properties:
 1. For all `y ∈ M`, `f y` is a unit;
 2. For all `z : S`, there exists `(x, y) : R × M` such that `z * f y = f x`;
-3. For all `x, y : R`, `f x = f y` iff there exists `c ∈ M` such that `x * c = y * c`.
-   (The "if" direction is a consequence of 1.)
+3. For all `x, y : R` such that `f x = f y`, there exists `c ∈ M` such that `x * c = y * c`.
+   (The converse is a consequence of 1.)
 
 In the following, let `R, P` be commutative rings, `S, Q` be `R`- and `P`-algebras
 and `M, T` be submonoids of `R` and `P` respectively, e.g.:
