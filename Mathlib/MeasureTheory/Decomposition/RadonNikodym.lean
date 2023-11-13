@@ -325,6 +325,11 @@ lemma set_lintegral_rnDeriv [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν
     ∫⁻ x in s, μ.rnDeriv ν x ∂ν = μ s := by
   rw [← withDensity_apply _ hs, Measure.withDensity_rnDeriv_eq _ _ hμν]
 
+lemma set_lintegral_rnDeriv' [HaveLebesgueDecomposition μ ν] [SigmaFinite ν]
+    (hμν : μ ≪ ν) (s : Set α) :
+    ∫⁻ x in s, μ.rnDeriv ν x ∂ν = μ s := by
+  rw [← withDensity_apply' _ s, Measure.withDensity_rnDeriv_eq _ _ hμν]
+
 lemma lintegral_rnDeriv [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) :
     ∫⁻ x, μ.rnDeriv ν x ∂ν = μ Set.univ := by
   rw [← set_lintegral_univ, set_lintegral_rnDeriv hμν MeasurableSet.univ]
@@ -339,6 +344,13 @@ lemma set_integral_toReal_rnDeriv_eq_withDensity [SigmaFinite μ]
     ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (ν.withDensity (μ.rnDeriv ν) s).toReal := by
   rw [integral_toReal (Measure.measurable_rnDeriv _ _).aemeasurable]
   · rw [ENNReal.toReal_eq_toReal_iff, ← withDensity_apply _ hs]
+    simp
+  · exact ae_restrict_of_ae (Measure.rnDeriv_lt_top _ _)
+
+lemma set_integral_toReal_rnDeriv_eq_withDensity' [SigmaFinite μ] [SigmaFinite ν] (s : Set α) :
+    ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (ν.withDensity (μ.rnDeriv ν) s).toReal := by
+  rw [integral_toReal (Measure.measurable_rnDeriv _ _).aemeasurable]
+  · rw [ENNReal.toReal_eq_toReal_iff, ← withDensity_apply' _ s]
     simp
   · exact ae_restrict_of_ae (Measure.rnDeriv_lt_top _ _)
 
@@ -363,6 +375,10 @@ lemma set_integral_toReal_rnDeriv [SigmaFinite μ] [HaveLebesgueDecomposition μ
     ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (μ s).toReal := by
   rw [set_integral_toReal_rnDeriv_eq_withDensity hs, Measure.withDensity_rnDeriv_eq _ _ hμν]
 #align measure_theory.measure.with_density_rn_deriv_to_real_eq MeasureTheory.Measure.set_integral_toReal_rnDeriv
+
+lemma set_integral_toReal_rnDeriv' [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) (s : Set α) :
+    ∫ x in s, (μ.rnDeriv ν x).toReal ∂ν = (μ s).toReal := by
+  rw [set_integral_toReal_rnDeriv_eq_withDensity' s, Measure.withDensity_rnDeriv_eq _ _ hμν]
 
 lemma integral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     ∫ x, (μ.rnDeriv ν x).toReal ∂ν = (μ Set.univ).toReal := by
