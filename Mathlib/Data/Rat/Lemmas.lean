@@ -292,7 +292,7 @@ theorem inv_coe_nat_num (a : ℕ) : (a : ℚ)⁻¹.num = Int.sign a :=
 
 @[simp]
 theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℚ))⁻¹.num = 1 :=
-  inv_coe_nat_num_of_pos Nat.AtLeastTwo.pos
+  inv_coe_nat_num_of_pos (NeZero.pos a)
 
 @[simp]
 theorem inv_coe_int_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by
@@ -309,7 +309,7 @@ theorem inv_coe_nat_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a 
 @[simp]
 theorem inv_ofNat_den (a : ℕ) [a.AtLeastTwo] :
     (no_index (OfNat.ofNat a : ℚ))⁻¹.den = OfNat.ofNat a :=
-  inv_coe_nat_den_of_pos Nat.AtLeastTwo.pos
+  inv_coe_nat_den_of_pos (NeZero.pos a)
 
 protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, p (a / b) :=
   ⟨fun h _ _ => h _,
