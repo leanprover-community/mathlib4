@@ -45,6 +45,34 @@ namespace GrothendieckTopology
 def ObjectsCoverTop {I : Type*} (Y : I → C) : Prop :=
   ∀ (X : C), Sieve.ofObjects Y X ∈ J X
 
+lemma sieve_ofArrows_sub_sieve_ofObjects {X : C}
+    {I : Type*} (Y : I → C) (f : ∀ i, Y i ⟶ X) :
+    Sieve.ofArrows Y f ≤ Sieve.ofObjects Y X := by
+  rintro W _ ⟨T, b, c, hc, rfl⟩
+  obtain ⟨i⟩ := hc
+  exact ⟨i, ⟨b⟩⟩
+
+lemma sieve_ofArrows_eq_sieve_ofObjects {X : C} (hX : IsTerminal X)
+    {I : Type*} (Y : I → C) (f : ∀ i, Y i ⟶ X) :
+    Sieve.ofArrows Y f = Sieve.ofObjects Y X := by
+  apply le_antisymm
+  · exact sieve_ofArrows_sub_sieve_ofObjects Y f
+  · rintro W a ⟨i, ⟨b⟩⟩
+    rw [Sieve.mem_ofArrows_iff]
+    exact ⟨i, b, hX.hom_ext _ _⟩
+
+lemma objectsCoverTop_iff_of_isTerminal {X : C} (hX : IsTerminal X)
+    {I : Type*} (Y : I → C) (f : ∀ i, Y i ⟶ X) :
+    Sieve.ofArrows Y f ∈ J X ↔ J.ObjectsCoverTop Y := by
+  simp only [sieve_ofArrows_eq_sieve_ofObjects hX]
+  constructor
+  · intro h W
+    apply J.superset_covering _ (J.pullback_stable (hX.from W) h)
+    rintro T a ⟨i, ⟨b⟩⟩
+    exact ⟨i, ⟨b⟩⟩
+  · intro hY
+    exact hY X
+
 end GrothendieckTopology
 
 
@@ -263,6 +291,14 @@ lemma familyOfElements_isCompatible (X : C) :
 
 variable (hY : J.ObjectsCoverTop Y) (hF : IsSheaf J F)
 
+lemma _root_.CategoryTheory.GrothendieckTopology.ObjectsCoverTop.ext {f g : F.sections}
+    (h : ∀ i, f.1 (Opposite.op (Y i)) = g.1 (Opposite.op (Y i))) : f = g := by
+  ext ⟨X⟩
+  apply (Presieve.isSeparated_of_isSheaf J F
+    ((isSheaf_iff_isSheaf_of_type _ _).1 hF) _ (hY X)).ext
+  rintro W a ⟨i, ⟨b⟩⟩
+  erw [f.2 a.op, ← f.2 b.op, h, g.2 b.op, g.2 a.op]
+
 lemma exists_unique_section :
     ∃! (s : F.sections), ∀ (i : I), s.1 (Opposite.op (Y i)) = x i := by
   have H := (isSheaf_iff_isSheaf_of_type _ _).1 hF
@@ -288,10 +324,9 @@ lemma exists_unique_section :
     rw [hs' φ i g, ← hs' (φ ≫ f) i g, op_comp, F.map_comp]
     rfl
   · intro y₁ y₂ h₁ h₂
-    ext ⟨X⟩
-    apply (Presieve.isSeparated_of_isSheaf J F H _ (hY X)).ext
-    rintro W a ⟨i, ⟨b⟩⟩
-    erw [y₁.2 a.op, y₂.2 a.op, ← y₁.2 b.op, ← y₂.2 b.op, h₁ i, h₂ i]
+    apply hY.ext hF
+    intro i
+    rw [h₁, h₂]
 
 noncomputable def section_ : F.sections := (hx.exists_unique_section hY hF).choose
 
@@ -316,7 +351,8 @@ variable {F G : Sheaf J A} (φ : F ⟶ G) {I : Type*} (Y : I → C)
       asIso ((J.overPullback A (Y i)).map φ)
   let f : Presheaf.FamilyOfElementsOnObjects (internalHom G F).1 Y :=
     fun i => (sheafToPresheaf (J.over (Y i)) A).map (e i).inv
-  have hf : f.IsCompatible := sorry
+  have hf : f.IsCompatible := fun Z i j a b => by
+    sorry
   let α := (internalHomSectionsEquiv G F).1
     (hf.section_ hY (Presheaf.internalHom_isSheaf G.1 F.1 F.2))
   refine' ⟨α, _, _⟩
