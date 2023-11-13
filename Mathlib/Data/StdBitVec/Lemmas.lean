@@ -9,6 +9,7 @@ import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Fin.Basic
+import Mathlib.Data.ZMod.Defs
 import Mathlib.Tactic.Linarith
 
 /-!
