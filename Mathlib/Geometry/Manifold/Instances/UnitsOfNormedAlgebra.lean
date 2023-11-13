@@ -74,7 +74,7 @@ smoothness of `val ∘ f`, where `val : Rˣ → R` is the embedding, implies the
 This can be used to show that ring multiplication `Rˣ × Rˣ → Rˣ` and inverse `Rˣ → Rˣ` are
 smooth. -/
 lemma ContMDiff.of_comp_units_val
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {n : WithTop ℕ}
