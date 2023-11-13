@@ -8,6 +8,14 @@ import Mathlib.MeasureTheory.Measure.MeasureSpace
 /-!
 # Restricting a measure to a subset or a subtype
 
+Given a measure `μ` on a Type `α` and a set `s`, we define a measure `μ.restrict s` as the
+restriction of `μ` to `s` (still as a measure on `α`).
+
+We investigate how this notion interacts with usual operations on measures (sum, pushforward,
+pullback), and on sets (unions, Unions).
+
+We also study the relationship between the restriction of a measure to a subtype (given by the
+pullback under `Subtype.val`) and the restriction to a set as above.
 -/
 
 open scoped ENNReal NNReal Topology BigOperators
@@ -380,10 +388,10 @@ theorem restrict_union_congr :
 
 #align measure_theory.measure.restrict_union_congr MeasureTheory.Measure.restrict_union_congr
 
-open Classical in
 theorem restrict_finset_biUnion_congr {s : Finset ι} {t : ι → Set α} :
     μ.restrict (⋃ i ∈ s, t i) = ν.restrict (⋃ i ∈ s, t i) ↔
       ∀ i ∈ s, μ.restrict (t i) = ν.restrict (t i) := by
+  classical
   induction' s using Finset.induction_on with i s _ hs; · simp
   simp only [forall_eq_or_imp, iUnion_iUnion_eq_or_left, Finset.mem_insert]
   rw [restrict_union_congr, ← hs]
@@ -832,10 +840,15 @@ section MeasureSpace
 
 variable {u : Set δ} [MeasureSpace δ] {p : δ → Prop}
 
-noncomputable instance Subtype.measureSpace : MeasureSpace (Subtype p) :=
-  { Subtype.instMeasurableSpace with
-    volume := Measure.comap Subtype.val volume }
+/-- In a measure space, one can restrict the measure to a subtype to get a new measure space.
+Not registered as an instance, as there are other natural choices such as the normalized restriction
+for a probability measure, or the subspace measure when restricting to a vector subspace. Enable
+locally if needed with `attribute [local instance] Measure.Subtype.measureSpace`. -/
+noncomputable def Subtype.measureSpace : MeasureSpace (Subtype p) where
+  volume := Measure.comap Subtype.val volume
 #align measure_theory.measure.subtype.measure_space MeasureTheory.Measure.Subtype.measureSpace
+
+attribute [local instance] Subtype.measureSpace
 
 theorem Subtype.volume_def : (volume : Measure u) = volume.comap Subtype.val :=
   rfl
@@ -945,11 +958,12 @@ variable [MeasureSpace α] {s t : Set α}
 
 /-!
 ### Volume on `s : Set α`
--/
 
-noncomputable instance SetCoe.measureSpace (s : Set α) : MeasureSpace s :=
-  ⟨comap ((↑) : s → α) volume⟩
-#align set_coe.measure_space SetCoe.measureSpace
+Note the instance is provided earlier as `Subtype.measureSpace`.
+-/
+attribute [local instance] Subtype.measureSpace
+
+#align set_coe.measure_space MeasureTheory.Measure.Subtype.measureSpace
 
 theorem volume_set_coe_def (s : Set α) : (volume : Measure s) = comap ((↑) : s → α) volume :=
   rfl
