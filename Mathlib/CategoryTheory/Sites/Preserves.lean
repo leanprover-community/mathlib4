@@ -144,18 +144,6 @@ theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x 
   congr
   simp [Iso.eq_inv_comp, ← Category.assoc, ← op_comp, eq_comm, ← Iso.eq_comp_inv]
 
-/--
-A version of `isSheafFor_of_preservesProduct` for "the" coproduct instead of a general coproduct
-cone.
--/
-theorem isSheafFor_of_preservesProduct' {Z : C} (π : (i : α) → X i ⟶ Z) [HasCoproduct X]
-    [IsIso (Sigma.desc π)] [PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F]
-    [(ofArrows X π).hasPullbacks] : (ofArrows X π).IsSheafFor F :=
-  have : (ofArrows X (Cofan.mk Z π).inj).hasPullbacks :=
-    (inferInstance : (ofArrows X π).hasPullbacks)
-  have : IsIso (Sigma.desc (Cofan.mk Z π).inj) := (inferInstance : IsIso (Sigma.desc π))
-  isSheafFor_of_preservesProduct F (Cofan.mk Z π) (Cofan.mk Z π).isColimitOfIsIsoSigmaDesc
-
 theorem isSheafFor_iff_preservesProduct : (ofArrows X c.inj).IsSheafFor F ↔
     Nonempty (PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F) := by
   refine ⟨fun hF' ↦ ⟨preservesProductOfIsSheafFor _ hF hI c hc hd hF'⟩, fun hF' ↦ ?_⟩
