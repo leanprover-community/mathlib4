@@ -3488,7 +3488,7 @@ theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
 lemma map_filter' {f : α → β} (hf : Injective f) (l : List α)
     [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
     (l.filter p).map f = (l.map f).filter fun b => ∃ a, p a ∧ f a = b := by
-  simp [comp_def, map_filter, hf.eq_iff]
+  simp [(· ∘ ·), map_filter, hf.eq_iff]
 #align list.map_filter' List.map_filter'
 
 lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α] :
@@ -3496,7 +3496,7 @@ lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α
       (l.filter fun x => ∃ h, p ⟨x, h⟩).attach.map (Subtype.map id fun x => mem_of_mem_filter) := by
   classical
   refine' map_injective_iff.2 Subtype.coe_injective _
-  simp [comp_def, map_filter' _ Subtype.coe_injective]
+  simp [(· ∘ ·), map_filter' _ Subtype.coe_injective]
 #align list.filter_attach' List.filter_attach'
 
 -- porting note: `Lean.Internal.coeM` forces us to type-ascript `{x // x ∈ l}`
@@ -3504,7 +3504,7 @@ lemma filter_attach (l : List α) (p : α → Bool) :
     (l.attach.filter fun x => p x : List {x // x ∈ l}) =
       (l.filter p).attach.map (Subtype.map id fun x => mem_of_mem_filter) :=
   map_injective_iff.2 Subtype.coe_injective <| by
-    simp_rw [map_map, comp_def, Subtype.map, id.def, ←Function.comp_apply (g := Subtype.val),
+    simp_rw [map_map, (· ∘ ·), Subtype.map, id.def, ←Function.comp_apply (g := Subtype.val),
       ←map_filter, attach_map_val]
 #align list.filter_attach List.filter_attach
 

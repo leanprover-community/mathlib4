@@ -190,7 +190,7 @@ theorem filter_map {p : β → Prop} [DecidablePred p] :
 lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finset α)
     [DecidablePred (∃ a, p a ∧ f a = ·)] :
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
-  simp [comp_def, filter_map, f.injective.eq_iff]
+  simp [(· ∘ ·), filter_map, f.injective.eq_iff]
 #align finset.map_filter' Finset.map_filter'
 
 lemma filter_attach' [DecidableEq α] (s : Finset α) (p : s → Prop) [DecidablePred p] :
@@ -450,8 +450,7 @@ theorem image_image [DecidableEq γ] {g : β → γ} : (s.image f).image g = s.i
 
 theorem image_comm {β'} [DecidableEq β'] [DecidableEq γ] {f : β → γ} {g : α → β} {f' : α → β'}
     {g' : β' → γ} (h_comm : ∀ a, f (g a) = g' (f' a)) :
-    (s.image g).image f = (s.image f').image g' := by
-  simp_rw [image_image, comp, h_comm]
+    (s.image g).image f = (s.image f').image g' := by simp_rw [image_image, comp, h_comm]
 #align finset.image_comm Finset.image_comm
 
 theorem _root_.Function.Semiconj.finset_image [DecidableEq α] {f : α → β} {ga : α → α} {gb : β → β}

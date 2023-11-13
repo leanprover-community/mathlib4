@@ -130,7 +130,7 @@ variable [CommMonoid α]
 theorem multiplicativeEnergy_comm (s t : Finset α) :
     multiplicativeEnergy s t = multiplicativeEnergy t s := by
   rw [multiplicativeEnergy, ← Finset.card_map (Equiv.prodComm _ _).toEmbedding, map_filter]
-  simp [-Finset.card_map, eq_comm, multiplicativeEnergy, mul_comm, map_eq_image, Function.comp_def]
+  simp [-Finset.card_map, eq_comm, multiplicativeEnergy, mul_comm, map_eq_image, Function.comp]
 #align finset.multiplicative_energy_comm Finset.multiplicativeEnergy_comm
 #align finset.additive_energy_comm Finset.additiveEnergy_comm
 
