@@ -46,8 +46,6 @@ variable (I) in
 /--
 If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on any
 object, then `F` takes that object to the terminal object.
-If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on any
-object, then `F` takes that object to the terminal object.
 -/
 noncomputable
 def isTerminal_of_isSheafFor_empty_presieve : IsTerminal (F.obj (op I)) := by
