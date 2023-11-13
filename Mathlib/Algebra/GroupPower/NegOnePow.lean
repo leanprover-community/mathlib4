@@ -26,7 +26,7 @@ lemma negOnePow_def (n : ℤ) : n.negOnePow = (-1 : ℤˣ) ^ n := rfl
 
 lemma negOnePow_add (n₁ n₂ : ℤ) :
     (n₁ + n₂).negOnePow =  n₁.negOnePow * n₂.negOnePow :=
-  uzpow_add _ _ _
+  zpow_add _ _ _
 
 @[simp]
 lemma negOnePow_zero : negOnePow 0 = 1 := rfl
