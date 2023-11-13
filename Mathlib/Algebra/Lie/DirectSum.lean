@@ -126,6 +126,11 @@ theorem bracket_apply (x y : ⨁ i, L i) (i : ι) : ⁅x, y⁆ i = ⁅x i, y i�
   zipWith_apply _ _ x y i
 #align direct_sum.bracket_apply DirectSum.bracket_apply
 
+theorem lie_of_same [DecidableEq ι] {i : ι} (x y : L i) :
+    ⁅of L i x, of L i y⁆ = of L i ⁅x, y⁆ :=
+  DFinsupp.zipWith_single_single _ _ _ _
+#align direct_sum.lie_of_of_eq DirectSum.lie_of_same
+
 theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : i ≠ j) (x : L i) (y : L j) :
     ⁅of L i x, of L j y⁆ = 0 := by
   refine DFinsupp.ext fun k => ?_
@@ -134,11 +139,6 @@ theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : i ≠ j) (x : L i) (y : 
   · rw [of_eq_of_ne _ _ _ _ hij.symm, lie_zero, zero_apply]
   · rw [of_eq_of_ne _ _ _ _ hik, zero_lie, zero_apply]
 #align direct_sum.lie_of_of_ne DirectSum.lie_of_of_ne
-
-theorem lie_of_same [DecidableEq ι] {i : ι} (x y : L i) :
-    ⁅of L i x, of L i y⁆ = of L i ⁅x, y⁆ :=
-  DFinsupp.single_zipWith_single _ _ _ _
-#align direct_sum.lie_of_of_eq DirectSum.lie_of_same
 
 @[simp]
 theorem lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :
