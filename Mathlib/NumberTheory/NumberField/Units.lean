@@ -166,7 +166,7 @@ theorem rootsOfUnity_eq_torsion [NumberField K] :
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
     exact ⟨↑(torsionOrder K), (torsionOrder K).prop, h⟩
-  · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ ⟨ζ, h⟩ _)
+  · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ _ ⟨ζ, h⟩)
 
 end torsion
 
