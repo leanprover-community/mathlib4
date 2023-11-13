@@ -750,7 +750,7 @@ section SingleAndZipWith
 
 variable [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)]
 @[simp]
-theorem single_zipWith_single_same (f : ∀ i, β₁ i → β₂ i → β i) (hf : ∀ i, f i 0 0 = 0)
+theorem single_zipWith_single (f : ∀ i, β₁ i → β₂ i → β i) (hf : ∀ i, f i 0 0 = 0)
     {i} (b₁ : β₁ i) (b₂ : β₂ i) :
       zipWith f hf (single i b₁) (single i b₂) = single i (f i b₁ b₂) := by
   ext j
@@ -900,7 +900,7 @@ variable [∀ i, AddZeroClass (β i)]
 
 @[simp]
 theorem single_add (i : ι) (b₁ b₂ : β i) : single i (b₁ + b₂) = single i b₁ + single i b₂ :=
-  (single_zipWith_single_same (fun _ => (· + ·)) _ b₁ b₂).symm
+  (single_zipWith_single (fun _ => (· + ·)) _ b₁ b₂).symm
 #align dfinsupp.single_add DFinsupp.single_add
 
 @[simp]
