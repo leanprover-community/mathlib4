@@ -25,10 +25,6 @@ comment them out for now.
 
 ### Structural
 * `Std.BitVec.zeroExtendLE`: Zero extend a bitvector to a statically known larger size
-* `Std.BitVec.ofBool`: Turn a Boolean into a bitvector of length 1
-* `Std.BitVec.nil`: The empty bitvector
-* `Std.BitVec.concat`: Append a new MSB to a bitvector
-* `Std.BitVec.cons`: Prepend a new LSB to a bitvector
 
 ### Comparisons
 * `Std.BitVec.sgt`: Signed greater-than comparison of bitvectors
@@ -97,24 +93,6 @@ namespace Std.BitVec
 -/
 def zeroExtendLE {w v : ℕ} (h : w ≤ v) (x : BitVec w) : BitVec v :=
   ⟨x.toFin.castLE <| pow_le_pow (by decide) h⟩
-
-/-- Turn a `Bool` into a bitvector of length `1` -/
-def ofBool : Bool → BitVec 1
-  | true  => 1
-  | false => 0
-
-/-- The empty bitvector -/
-def nil : BitVec 0 :=
-  BitVec.zero 0
-
-/-- Append a single bit to the end of a bitvector, using big endian order (see `append`).
-    That is, the new bit is the least significant bit. -/
-def concat {n} (msbs : BitVec n) (lsb : Bool) : BitVec (n+1) := msbs ++ (ofBool lsb)
-
-/-- Prepend a single bit to the front of a bitvector, using big endian order (see `append`).
-    That is, the new bit is the most significant bit. -/
-def cons {n} (msb : Bool) (lsbs : BitVec n) : BitVec (n+1) :=
-  ((ofBool msb) ++ lsbs).cast (Nat.add_comm ..)
 
 /-!
 ## Comparisons
