@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.CategoryTheory.Abelian.Homology
 
 #align_import algebra.homology.quasi_iso from "leanprover-community/mathlib"@"956af7c76589f444f2e1313911bad16366ea476d"
@@ -20,9 +20,7 @@ Define the derived category as the localization at quasi-isomorphisms? (TODO @jo
 -/
 
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe v u
 
@@ -133,8 +131,7 @@ theorem to_single₀_epi_at_zero [hf : QuasiIso' f] : Epi (f.f 0) := by
 
 theorem to_single₀_exact_d_f_at_zero [hf : QuasiIso' f] : Exact (X.d 1 0) (f.f 0) := by
   rw [Preadditive.exact_iff_homology'_zero]
-  have h : X.d 1 0 ≫ f.f 0 = 0 := by
-    simp only [← f.2 1 0 rfl, ChainComplex.single₀_obj_X_d, comp_zero]
+  have h : X.d 1 0 ≫ f.f 0 = 0 := by simp only [← f.comm 1 0, single_obj_d, comp_zero]
   refine' ⟨h, Nonempty.intro (homology'IsoKernelDesc _ _ _ ≪≫ _)⟩
   suffices IsIso (cokernel.desc _ _ h) by apply kernel.ofMono
   rw [← toSingle₀CokernelAtZeroIso_hom_eq]
@@ -186,8 +183,7 @@ theorem from_single₀_mono_at_zero [hf : QuasiIso' f] : Mono (f.f 0) := by
 
 theorem from_single₀_exact_f_d_at_zero [hf : QuasiIso' f] : Exact (f.f 0) (X.d 0 1) := by
   rw [Preadditive.exact_iff_homology'_zero]
-  have h : f.f 0 ≫ X.d 0 1 = 0 := by
-    simp only [HomologicalComplex.Hom.comm, CochainComplex.single₀_obj_X_d, zero_comp]
+  have h : f.f 0 ≫ X.d 0 1 = 0 := by simp
   refine' ⟨h, Nonempty.intro (homology'IsoCokernelLift _ _ _ ≪≫ _)⟩
   suffices IsIso (kernel.lift (X.d 0 1) (f.f 0) h) by apply cokernel.ofEpi
   rw [← fromSingle₀KernelAtZeroIso_inv_eq f]
