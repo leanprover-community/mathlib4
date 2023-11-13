@@ -25,6 +25,8 @@ space (e.g. `((ι ⊕ ι') → ℝ) ≃ (ι → ℝ) × (ι' → ℝ)`).
   $$
   \vec{x}\mapsto \int\!\!\cdots\!\!\int f(\vec{x})dx_{i_1}\cdots dx_{i_k}.
   $$
+  If `f` is the distribution of a random variable, this is the marginal distribution of all
+  variables not in `s`.
   Note that the notation `∫⋯∫⁻_s, f ∂μ` is not a binder, and returns a function.
 
 ## Main Results
