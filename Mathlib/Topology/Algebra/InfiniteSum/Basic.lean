@@ -652,7 +652,7 @@ sum over `f a` with `a ∈ s ∖ t`. -/
 lemma tsum_setElem_eq_tsum_setElem_diff [T2Space α] {f : β → α} (s t : Set β)
     (hf₀ : ∀ b ∈ t, f b = 0) :
     ∑' a : s, f a = ∑' a : (s \ t : Set β), f a :=
-  tsum_eq_tsum_of_hasSum_iff_hasSum fun {a} ↦ Iff.symm <| 
+  tsum_eq_tsum_of_hasSum_iff_hasSum fun {a} ↦ Iff.symm <|
     (Set.inclusion_injective <| s.diff_subset t).hasSum_iff
       (f := fun b : s ↦ f b) fun b hb ↦ hf₀ b <| by simpa using hb
 
