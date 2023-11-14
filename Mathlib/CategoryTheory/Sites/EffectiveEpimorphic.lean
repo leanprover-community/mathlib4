@@ -540,9 +540,13 @@ def EffectiveEpiFamilyOfEffectiveEpiDesc {B : C} {α : Type*} (X : α → C) (π
     ext
     simpa using hm _
 
-instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [HasCoproduct X]
-    [EffectiveEpiFamily X π] : EffectiveEpi (Sigma.desc π) :=
-  ⟨⟨EffectiveEpiFamily_descStruct X π⟩⟩
+instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
+    [HasCoproduct X] [EffectiveEpi (Sigma.desc π)]
+    [∀ {Z : C} (g : Z ⟶ ∐ X) (a : α), HasPullback g (Sigma.ι X a)]
+    [∀ {Z : C} (g : Z ⟶ ∐ X), HasCoproduct (fun a ↦ pullback g (Sigma.ι X a))]
+    [∀ {Z : C} (g : Z ⟶ ∐ X), Epi (Sigma.desc (fun a ↦ pullback.fst (f := g)
+      (g := (Sigma.ι X a))))] : EffectiveEpiFamily X π :=
+  ⟨⟨EffectiveEpiFamilyOfEffectiveEpiDesc X π⟩⟩
 
 /--
 An `EffectiveEpiFamily` consisting of a single `EffectiveEpi`

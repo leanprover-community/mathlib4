@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.CategoryTheory.Sites.Coherent
 import Mathlib.CategoryTheory.Extensive
 import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
-import Mathlib.Tactic.ApplyFun
 /-!
 
 # The Regular and Extensive Coverages
@@ -25,16 +24,14 @@ those are preserved by pullbacks. The covering sieves of this coverage are gener
 consisting finitely many arrows that together induce an isomorphism from the coproduct to the
 target.
 
+We provide an instance `Precoherent C` given `Preregular C` and `FinitaryPreExtensive C`.
 In `extensive_union_regular_generates_coherent`, we prove that the union of these two coverages
-generates the coherent topology on `C` if `C` is precoherent, extensive and regular.
+generates the coherent topology on `C` if `C` is `FinitaryPreExtensive` and `Preregular`.
 
 In `isSheafFor_regular_of_hasPullbacks` we prove that a presheaf satisfying an "equaliser condition"
 satisfies the sheaf condition for a presieve consisting of a single effective epimorphism. In
 `isSheafFor_regular_of_projective`, we prove that every presheaf satisfies the sheaf condition for
 such presieves with projective target.
-
-TODO: figure out under what conditions `Preregular` and `Extensive` are implied by `Precoherent` and
-vice versa.
 
 -/
 
@@ -67,6 +64,16 @@ class Preregular : Prop where
   -/
   exists_fac : ∀ {X Y Z : C} (f : X ⟶ Y) (g : Z ⟶ Y) [EffectiveEpi g],
     (∃ (W : C) (h : W ⟶ X) (_ : EffectiveEpi h) (i : W ⟶ Z), i ≫ g = h ≫ f)
+
+instance [Precoherent C] [HasFiniteCoproducts C] : Preregular C where
+  exists_fac {X Y Z} f g _ := by
+    have hp := Precoherent.pullback f PUnit (fun () ↦ Z) (fun () ↦ g)
+    simp only [exists_const] at hp
+    rw [← effectiveEpi_iff_effectiveEpiFamily g] at hp
+    obtain ⟨β, _, X₂, π₂, h, ι, hι⟩ := hp inferInstance
+    refine ⟨∐ X₂, Sigma.desc π₂, inferInstance, Sigma.desc ι, ?_⟩
+    ext b
+    simpa using hι b
 
 /--
 The regular coverage on a regular category `C`.
@@ -106,9 +113,39 @@ def extensiveCoverage [FinitaryPreExtensive C] : Coverage C where
       rw [hS]
       exact Presieve.ofArrows.mk a
 
+instance [FinitaryPreExtensive C] [Preregular C] : Precoherent C where
+  pullback {B₁ B₂} f α _ X₁ π₁ h := by
+    refine ⟨α, inferInstance, ?_⟩
+    obtain ⟨Y, g, _, g', hg⟩ := Preregular.exists_fac f (Sigma.desc π₁)
+    have hh : IsIso (Sigma.desc (fun a ↦ Sigma.ι X₁ a)) := by
+      suffices Sigma.desc (fun a ↦ Sigma.ι X₁ a) = 𝟙 _ by rw [this]; infer_instance
+      ext; simp
+    let X₂ := fun a ↦ pullback g' (Sigma.ι X₁ a)
+    have hi : IsIso (Sigma.desc (fun a ↦ Sigma.ι X₂ a)) := by
+      suffices Sigma.desc (fun a ↦ Sigma.ι X₂ a) = 𝟙 _ by rw [this]; infer_instance
+      ext; simp
+    let π₂ := fun a ↦ pullback.fst (f := g') (g := Sigma.ι X₁ a) ≫ g
+    let π' := fun a ↦ pullback.fst (f := g') (g := Sigma.ι X₁ a)
+    have _ : IsIso (Sigma.desc π') := FinitaryPreExtensive.sigma_desc_iso (fun a ↦ Sigma.ι X₁ a) g' hh
+    refine ⟨X₂, π₂, ⟨⟨@EffectiveEpiFamilyOfEffectiveEpiDesc _ _ _ _ X₂ π₂ _ ?_ ?_ ?_ ?_⟩⟩, ?_⟩
+    · have : (Sigma.desc π' ≫ g) = Sigma.desc π₂ := by ext; simp
+      rw [← this]
+      exact ⟨⟨EffectiveEpiStruct_of_comp_splitEpi g (Sigma.desc π')⟩⟩
+    · intro Z g a
+      exact FinitaryPreExtensive.hasPullbacks_of_inclusions g a (hi := hi)
+    · intro Z g
+      infer_instance
+    · intro Z g
+      have := FinitaryPreExtensive.sigma_desc_iso (fun a ↦ Sigma.ι X₂ a) g hi
+      infer_instance
+    · refine ⟨id, fun b ↦ pullback.snd, ?_⟩
+      intro b
+      simp only [id_eq, Category.assoc, ← hg]
+      rw [← Category.assoc, pullback.condition]
+      simp
 
 /-- The union of the extensive and regular coverages generates the coherent topology on `C`. -/
-lemma extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive C] [Precoherent C] :
+lemma extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive C] :
     ((extensiveCoverage C) ⊔ (regularCoverage C)).toGrothendieck =
     (coherentTopology C) := by
   ext B S
