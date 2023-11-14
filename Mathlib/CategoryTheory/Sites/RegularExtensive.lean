@@ -43,6 +43,8 @@ disjoint.
 TODO: figure out under what conditions `Preregular` and `Extensive` are implied by `Precoherent` and
 vice versa.
 
+TODO: refactor the section `RegularSheaves` to use the new `Arrows` sheaf API.
+
 -/
 
 universe v u w
@@ -402,6 +404,10 @@ instance {α : Type} [Fintype α] {Z : α → C} {F : C ⥤ Type w}
 
 open Presieve Opposite
 
+/--
+A finite product preserving presheaf is a sheaf for the extensive topology on a category which is
+`FinitaryPreExtensive`.
+-/
 theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [S.extensive]
     (F : Cᵒᵖ ⥤ Type max u v) [PreservesFiniteProducts F] : S.IsSheafFor F  := by
   obtain ⟨_, _, Z, π, hS, _⟩ := extensive.arrows_sigma_desc_iso (R := S)
@@ -418,26 +424,24 @@ instance {α : Type} [Fintype α] (Z : α → C) : (ofArrows Z (fun i ↦ Sigma.
     ext
     simp
 
+/--
+A presheaf on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite products.
+-/
 theorem isSheaf_iff_preservesFiniteProducts [FinitaryExtensive C] (F : Cᵒᵖ ⥤ Type max u v) :
     Presieve.IsSheaf (extensiveCoverage C).toGrothendieck F ↔
     Nonempty (PreservesFiniteProducts F) := by
-  refine ⟨fun hF ↦ ?_, fun hF ↦ ?_⟩
-  · constructor
-    constructor
-    intro α _
-    constructor
-    intro K
-    rw [Presieve.isSheaf_coverage] at hF
+  refine ⟨fun hF ↦ ⟨⟨fun α _ ↦ ⟨fun {K} ↦ ?_⟩⟩⟩, fun hF ↦ ?_⟩
+  · rw [Presieve.isSheaf_coverage] at hF
     let Z : α → C := fun i ↦ unop (K.obj ⟨i⟩)
     have : (Presieve.ofArrows Z (Cofan.mk (∐ Z) (Sigma.ι Z)).inj).hasPullbacks :=
       (inferInstance : (Presieve.ofArrows Z (Sigma.ι Z)).hasPullbacks)
     have : ∀ (i : α), Mono (Cofan.inj (Cofan.mk (∐ Z) (Sigma.ι Z)) i) :=
       (inferInstance : ∀ (i : α), Mono (Sigma.ι Z i))
+    let i : K ≅ Discrete.functor (fun i ↦ op (Z i)) := Discrete.natIsoFunctor
     let _ : PreservesLimit (Discrete.functor (fun i ↦ op (Z i))) F :=
         Presieve.preservesProductOfIsSheafFor F ?_ initialIsInitial _ (coproductIsCoproduct Z)
         (FinitaryExtensive.isPullback_initial_to_sigma_ι Z)
         (hF (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)) ?_)
-    let i : K ≅ Discrete.functor (fun i ↦ op (Z i)) := Discrete.natIsoFunctor
     · exact preservesLimitOfIsoDiagram F i.symm
     · apply hF
       refine ⟨Empty, inferInstance, Empty.elim, IsEmpty.elim inferInstance, rfl, ⟨default,?_, ?_⟩⟩
