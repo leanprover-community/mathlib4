@@ -601,8 +601,7 @@ variable {φ}
 theorem Reduced.exists_normalWord_prod_eq (d : Transversal φ) {w : Word G} (hw : Reduced φ w) :
     ∃ w' : NormalWord d, w'.prod = ofCoprodI w.prod ∧
       w'.toList.map Sigma.fst = w.toList.map Sigma.fst := by
-  letI := Classical.decEq ι
-  letI := fun i => Classical.decEq (G i)
+  classical
   induction w using Word.consRecOn with
   | h_empty => exact ⟨empty, by simp, rfl⟩
   | h_cons i g w hIdx hg1 ih =>
@@ -617,11 +616,11 @@ theorem Reduced.exists_normalWord_prod_eq (d : Transversal φ) {w : Word G} (hw 
 if `w` is reduced (i.e none its letters are in the image of the base monoid), and nonempty, then
 `w` itself is not in the image of the base group. -/
 theorem Reduced.eq_empty_of_mem_range (hφ : ∀ i, Injective (φ i))
-    {w : Word G} (hw : Reduced φ w) :
-    ofCoprodI w.prod ∈ (base φ).range → w = .empty := by
+    {w : Word G} (hw : Reduced φ w)
+    (h : ofCoprodI w.prod ∈ (base φ).range) : w = .empty := by
   rcases transversal_nonempty φ hφ with ⟨d⟩
   rcases hw.exists_normalWord_prod_eq d with ⟨w', hw'prod, hw'map⟩
-  rintro ⟨h, heq⟩
+  rcases h with ⟨h, heq⟩
   have : (NormalWord.prod (d := d) ⟨.empty, h, by simp⟩) = base φ h := by
     simp [NormalWord.prod]
   rw [← hw'prod, ← this] at heq
