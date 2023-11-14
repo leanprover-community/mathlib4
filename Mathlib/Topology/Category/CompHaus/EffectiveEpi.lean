@@ -3,10 +3,8 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-
 import Mathlib.CategoryTheory.Sites.RegularExtensive
 import Mathlib.Topology.Category.CompHaus.Limits
-
 /-!
 
 # Effective epimorphic families in `CompHaus`
@@ -27,7 +25,7 @@ As a consequence, we also show that `CompHaus` is precoherent and preregular.
 
 -/
 
-set_option autoImplicit true
+universe u
 
 open CategoryTheory Limits
 
