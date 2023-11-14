@@ -6,6 +6,7 @@ Authors: Matthias Uschold
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Data.Real.ENNReal
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
+import Mathlib.MeasureTheory.Group.Arithmetic
 
 
 /-!
@@ -58,8 +59,7 @@ instance : CoeFun (Mean α) (λ _ => {S // MeasurableSet (α := α) S} → NNRea
   coe := Mean.measureOf
 
 
-variable (G : Type u) [Monoid G] [MulAction G α]
-  [MulActionMeasurable : Fact (∀ (g : G), Measurable (λ (x : α) => g • x))]
+variable (G : Type u) [Monoid G] [MulAction G α] [MeasurableSMul₂ G α]
 
 instance MeanSMul : SMul G (Mean α) where
   smul g μ := {
