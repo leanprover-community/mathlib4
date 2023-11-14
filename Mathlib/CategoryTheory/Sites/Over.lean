@@ -136,7 +136,7 @@ instance (X : C) : (Over.forget X).IsCoverLifting (J.over X) J where
   cover_lift hS := J.overEquiv_symm_mem_over _ _ hS
 
 instance (X : C) : (Over.forget X).IsContinuous (J.over X) J :=
-  isContinuous_of_coverPreserving
+  Functor.isContinuous_of_coverPreserving
     (over_forget_compatiblePreserving J X)
     (over_forget_coverPreserving J X)
 
