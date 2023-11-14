@@ -172,8 +172,8 @@ def pole : Cmd := `[Cli|
   "Calculate the longest pole for building Mathlib (or downstream projects).\n" ++
   "Use as `lake exe pole` or `lake exe pole --to MyProject.MyFile`.\n\n" ++
   "Prints a sequence of imports starting at the target.\n" ++
-  "For each file, prints the cumulative instructions (in billions) assuming infinite parallelism,\n" ++
-  "as well as a the speed-up factor over sequential processing."
+  "For each file, prints the cumulative instructions (in billions)\n" ++
+  "assuming infinite parallelism, and the speed-up factor over sequential processing."
 
   FLAGS:
     to : ModuleName;      "Calculate the longest pole to the specified module."
