@@ -183,7 +183,7 @@ section integral
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-lemma set_integral_tilted  (hf : AEMeasurable f μ) (g : α → E) {s : Set α} (hs : MeasurableSet s) :
+lemma set_integral_tilted (hf : AEMeasurable f μ) (g : α → E) {s : Set α} (hs : MeasurableSet s) :
     ∫ x in s, g x ∂(μ.tilted f) = ∫ x in s, exp (f x - log (∫ x, exp (f x) ∂μ)) • (g x) ∂μ := by
   rw [tilted_eq_withDensity_nnreal, set_integral_withDensity_eq_set_integral_smul₀ _ _ hs]
   · congr
