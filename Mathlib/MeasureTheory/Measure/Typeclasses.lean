@@ -672,7 +672,7 @@ theorem _root_.Set.Infinite.meas_eq_top [MeasurableSingletonClass α]
 
 /-- If the union of a.e.-disjoint null-measurable sets has finite measure, then there are only
 countably many members of the union whose measure is positive. -/
-theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ {ι : Type*} [MeasurableSpace α]
+theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ {ι : Type*} {_ : MeasurableSpace α}
     (μ : Measure α) {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
     (As_disj : Pairwise (AEDisjoint μ on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
     Set.Countable { i : ι | 0 < μ (As i) } := by
@@ -692,7 +692,7 @@ theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀ {ι : Type*} [Me
 
 /-- If the union of disjoint measurable sets has finite measure, then there are only
 countably many members of the union whose measure is positive. -/
-theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top {ι : Type*} [MeasurableSpace α]
+theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top {ι : Type*} {_ : MeasurableSpace α}
     (μ : Measure α) {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
     (As_disj : Pairwise (Disjoint on As)) (Union_As_finite : μ (⋃ i, As i) ≠ ∞) :
     Set.Countable { i : ι | 0 < μ (As i) } :=
@@ -702,7 +702,7 @@ theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top {ι : Type*} [Measu
 
 /-- In an S-finite space, among disjoint null-measurable sets, only countably many can have positive
 measure. -/
-theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} [MeasurableSpace α] {μ : Measure α}
+theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} { _ : MeasurableSpace α} {μ : Measure α}
     [h : SFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
     (As_disj : Pairwise (AEDisjoint μ on As)) :
     Set.Countable { i : ι | 0 < μ (As i) } := by
@@ -719,19 +719,19 @@ theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} [MeasurableSpace �
   refine countable_iUnion fun n ↦ ?_
   apply countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀
   · exact fun i ↦ (As_mble i).mono (le_sum m n)
-  · exact fun i j hij ↦ AEDisjoint.mono_measure (As_disj hij) (le_sum m n)
+  · exact fun i j hij ↦ AEDisjoint.of_le (As_disj hij) (le_sum m n)
   · exact measure_ne_top (m n) (⋃ i, As i)
 
 /-- In an S-finite space, among disjoint measurable sets, only countably many can have positive
 measure. -/
-theorem countable_meas_pos_of_disjoint_iUnion {ι : Type*} [MeasurableSpace α] {μ : Measure α}
+theorem countable_meas_pos_of_disjoint_iUnion {ι : Type*} {_ : MeasurableSpace α} {μ : Measure α}
     [SFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
     (As_disj : Pairwise (Disjoint on As)) : Set.Countable { i : ι | 0 < μ (As i) } :=
   countable_meas_pos_of_disjoint_iUnion₀ (fun i ↦ (As_mble i).nullMeasurableSet)
     ((fun _ _ h ↦ Disjoint.aedisjoint (As_disj h)))
 #align measure_theory.measure.countable_meas_pos_of_disjoint_Union MeasureTheory.Measure.countable_meas_pos_of_disjoint_iUnion
 
-theorem countable_meas_level_set_pos₀ {α β : Type*} [MeasurableSpace α] {μ : Measure α}
+theorem countable_meas_level_set_pos₀ {α β : Type*} {_ : MeasurableSpace α} {μ : Measure α}
     [SFinite μ] [MeasurableSpace β] [MeasurableSingletonClass β] {g : α → β}
     (g_mble : NullMeasurable g μ) : Set.Countable { t : β | 0 < μ { a : α | g a = t } } := by
   have level_sets_disjoint : Pairwise (Disjoint on fun t : β => { a : α | g a = t }) :=
@@ -740,7 +740,7 @@ theorem countable_meas_level_set_pos₀ {α β : Type*} [MeasurableSpace α] {μ
     (fun b => g_mble (‹MeasurableSingletonClass β›.measurableSet_singleton b))
     ((fun _ _ h ↦ Disjoint.aedisjoint (level_sets_disjoint h)))
 
-theorem countable_meas_level_set_pos {α β : Type*} [MeasurableSpace α] {μ : Measure α}
+theorem countable_meas_level_set_pos {α β : Type*} {_ : MeasurableSpace α} {μ : Measure α}
     [SFinite μ] [MeasurableSpace β] [MeasurableSingletonClass β] {g : α → β}
     (g_mble : Measurable g) : Set.Countable { t : β | 0 < μ { a : α | g a = t } } :=
   countable_meas_level_set_pos₀ g_mble.nullMeasurable
