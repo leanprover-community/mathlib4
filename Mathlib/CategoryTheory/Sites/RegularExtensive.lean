@@ -139,12 +139,10 @@ instance [FinitaryPreExtensive C] [Preregular C] : Precoherent C where
     let π' := fun a ↦ pullback.fst (f := g') (g := Sigma.ι X₁ a)
     have _ := FinitaryPreExtensive.sigma_desc_iso (fun a ↦ Sigma.ι X₁ a) g' hh
     refine ⟨X₂, π₂, ?_, ?_⟩
-    · rw [← effectiveEpi_desc_iff_effectiveEpiFamily]
-      have : (Sigma.desc π' ≫ g) = Sigma.desc π₂ := by ext; simp
-      rw [← this]
+    · have : (Sigma.desc π' ≫ g) = Sigma.desc π₂ := by ext; simp
+      rw [← effectiveEpi_desc_iff_effectiveEpiFamily, ← this]
       infer_instance
-    · refine ⟨id, fun b ↦ pullback.snd, ?_⟩
-      intro b
+    · refine ⟨id, fun b ↦ pullback.snd, fun b ↦ ?_⟩
       simp only [id_eq, Category.assoc, ← hg]
       rw [← Category.assoc, pullback.condition]
       simp
