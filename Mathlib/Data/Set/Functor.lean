@@ -106,14 +106,16 @@ theorem image_coe_eq_restrict_image {f : α → δ} : f '' γ = β.restrict f ''
 
 end with_instance
 
-/-! ### Coercion applying functoriality in limited cases
+/-! ### Coercion applying functoriality for `Subtype.val`
 
-The `Monad` instance gives a coercion using the internal function `Lean.Internal.coeM`.  -/
+The `Monad` instance gives a coercion using the internal function `Lean.Internal.coeM`.
+In practice this is only used for applying the `Set` functor to `Subtype.val`.
+We define this coercion here.  -/
 
 /-- Coercion using `(Subtype.val '' ·)` -/
 instance : CoeHead (Set s) (Set α) := ⟨fun t => (Subtype.val '' t)⟩
 
-/-- The coercion from when `Set.monad` is an instance is equal to the coercion defined here. -/
+/-- The coercion from `Set.monad` as an instance is equal to the coercion defined above. -/
 theorem coe_eq_image_val (t : Set s) :
     @Lean.Internal.coeM Set s α _ Set.monad t = (t : Set α) := by
   change ⋃ (x ∈ t), {x.1} = _
