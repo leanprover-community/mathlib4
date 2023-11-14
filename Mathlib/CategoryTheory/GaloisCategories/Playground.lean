@@ -11,7 +11,8 @@ namespace Galois
 variable {C : Type u} [Category.{v, u} C] (F : C ⥤ FintypeCat.{w}) [PreGaloisCategory C]
   [FibreFunctor F]
 
-example (X : C) : ∃ (ι : Type) (f : ι → C) (t : ColimitCocone (Discrete.functor f)),
+theorem hasDecompConnectedComponents (X : C) : ∃ (ι : Type) (f : ι → C)
+    (t : ColimitCocone (Discrete.functor f)),
     (∀ i, ConnectedObject (f i)) ∧ Finite ι ∧ X = t.cocone.pt := by
   revert X
   have hp : ∀ (n : ℕ) (X : C), n = Nat.card (F.obj X) →
@@ -109,152 +110,11 @@ example (X : C) : ∃ (ι : Type) (f : ι → C) (t : ColimitCocone (Discrete.fu
   intro X
   exact hp (Nat.card (F.obj X)) X rfl
 
-noncomputable def blub2 (X : C) :
-    (ι : Type) × (ι → C) := by
-  revert X
-  let hp : ∀ (n : ℕ) (X : C), n = Nat.card (F.obj X) → (ι : Type) × (ι → C)
-  intro n
-  induction' n using Nat.strongRecOn with n hi
-  intro X hn
-  by_cases ConnectedObject X
-  let ι : Type := PUnit
-  let f : ι → C := fun _ ↦ X
-  exact ⟨ι, f⟩
-  by_cases (IsInitial X → False)
-  swap
-  simp only [not_forall] at h
-  let ι : Type := PEmpty
-  let f : ι → C := fun _ ↦ X
-  exact ⟨ι, f⟩
-  have : ¬ (∀ (Y : C) (i : Y ⟶ X) [Mono i], (IsInitial Y → False) → IsIso i) := by
-    by_contra a
-    have : ConnectedObject X := ⟨h, a⟩
-    contradiction
-  simp at this
-  choose Y hnotinitial v hvmono hvnoiso using this
-  have hn0 : Nat.card (F.obj Y) ≠ 0 := by
-    intro hzero
-    have h : Nonempty (IsInitial Y) := by
-      rw [(initialIffFibreEmpty Y : Nonempty (IsInitial Y) ↔ IsEmpty (F.obj Y))]
-      exact Finite.card_eq_zero_iff.mp hzero
-    exact Nonempty.elim h hnotinitial
-  choose Z u x using PreGaloisCategory.monoInducesIsoOnDirectSummand v
-  let c := Classical.choice x
-  let t : ColimitCocone (pair Y Z) := { cocone := BinaryCofan.mk v u, isColimit := c }
-  have hn1 : Nat.card (F.obj Y) < n := by
-    rw [hn]
-    exact ltCardFibre_of_mono_of_notIso v hvnoiso
-  have i : X ≅ Y ⨿ Z := (colimit.isoColimitCocone t).symm
-  have hnn : Nat.card (F.obj X) = Nat.card (F.obj Y) + Nat.card (F.obj Z) := by
-    rw [cardFibre_eq_of_iso i]
-    exact cardFibre_eq_sum_of_coprod Y Z
-  have hn2 : Nat.card (F.obj Z) < n := by
-    rw [hn, hnn]
-    simp only [lt_add_iff_pos_left]
-    have : Nat.card (F.obj Y) ≠ 0 := hn0
-    exact Nat.pos_of_ne_zero hn0
-  let ⟨ι₁, f₁⟩ := hi (Nat.card (F.obj Y)) hn1 Y rfl
-  obtain ⟨ι₂, f₂⟩ := hi (Nat.card (F.obj Z)) hn2 Z rfl
-  let ι := Sum ι₁ ι₂
-  let f : ι → C := Sum.elim f₁ f₂
-  exact ⟨ι, f⟩
-  intro X
-  exact hp (Nat.card (F.obj X)) X rfl
-
-noncomputable def components.index (X : C) : Type
-  := (blub2 F X).1
-
-noncomputable def components.map (X : C) : components.index F X → C
-  := (blub2 F X).2
-
-noncomputable instance (X : C) : Finite (components.index F X) := by
-  admit
-
-example (X : C) (i : components.index F X) : ConnectedObject (components.map F X i) := by
-  admit
-
-noncomputable def components.iso (X : C) : X ≅ ∐ components.map F X := by
-  admit
-
-noncomputable def components.isoObj (X : C) :
-    F.obj X ≅ ∐ fun j ↦ F.obj (components.map F X j) := by
-  admit
-
-def blub (X : C) : (ι : Type) × (f : ι → C) × (ColimitCocone (Discrete.functor f)) := by
-  revert X
-  let : ∀ (n : ℕ) (X : C), n = Nat.card (F.obj X) → (ι : Type) × (f : ι → C) × (ColimitCocone (Discrete.functor f))
-  intro n
-  induction' n using Nat.strongRecOn with n hi
-  intro X hn
-  by_cases ConnectedObject X
-  let ι : Type := PUnit
-  let f : ι → C := fun _ ↦ X
-  let t : ColimitCocone (Discrete.functor f) := colimitCoconeOfUnique f
-  exact ⟨ι, f, t⟩
-  by_cases (IsInitial X → False)
-  swap
-  simp only [not_forall] at h
-  choose hin _ using h
-  let ι : Type := PEmpty
-  let f : ι → C := fun _ ↦ X
-  let t : ColimitCocone (Discrete.functor f) := getColimitCocone (Discrete.functor f)
-  exact ⟨ι, f, t⟩
-  have : ¬ (∀ (Y : C) (i : Y ⟶ X) [Mono i], (IsInitial Y → False) → IsIso i) := sorry
-  simp at this
-  choose Y hnotinitial v hvmono hvnoiso using this
-  have : Function.Injective (F.map v) := (monomorphismIffInducesInjective v).mp hvmono
-  have : Nat.card (F.obj Y) ≠ 0 := sorry
-  choose Z u x using PreGaloisCategory.monoInducesIsoOnDirectSummand v
-  have hn1 : Nat.card (F.obj Y) < n := sorry
-  have hn2 : Nat.card (F.obj Z) < n := sorry
-  let ⟨ι₁, f₁, t₁⟩ := hi (Nat.card (F.obj Y)) hn1 Y rfl
-  obtain ⟨ι₂, f₂, t₂⟩ := hi (Nat.card (F.obj Z)) hn2 Z rfl
-  let ι := Sum ι₁ ι₂
-  let f : ι → C := Sum.elim f₁ f₂
-  let c : Cocone (Discrete.functor f) := {
-    pt := X
-    ι := by
-      apply Discrete.natTrans
-      rintro ⟨i⟩
-      cases i with
-      | inl j =>
-          let bla := t₁.cocone.ι.app ⟨j⟩
-          simp at bla
-          exact t₁.cocone.ι.app ⟨j⟩
-      | inr j => exact t₁.cocone.ι.app ⟨j⟩
-  }
-  --let t : ColimitCocone (Discrete.functor f) where
-  --  cocone := c
-  --  isColimit := sorry
-  admit
-  admit
-
-example (X : C) [ConnectedObject X] : ∃ (ι : Type) (D : Discrete ι ⥤ C) (t : Cocone D) (_ : IsColimit t),
-    Finite ι ∧ (∀ i, ConnectedObject (D.obj i)) ∧ t.pt = X := by
-  use PUnit
-  use fromPUnit X
-  use {
-    pt := X
-    ι := { app := fun _ ↦ 𝟙 X }
-  }
-  use { desc := fun s ↦ s.ι.app ⟨PUnit.unit⟩ }
-  simp only [const_obj_obj, forall_const, and_true]
-  constructor
-  exact Finite.of_fintype PUnit.{1}
-  assumption
-
-def bla1 (X : C) : Type := by
-  revert X
-  let : ∀ (n : ℕ) (X : C), n = Nat.card (F.obj X) → Type
-  intro n
-  induction' n using Nat.strongRecOn with n hi
-  intro X hn
-  by_cases ConnectedObject X
-  exact PUnit
-
-def bla2 (X : C) : bla1 X → C := sorry
-
-instance (X : C) : Finite (bla1 X) := sorry
+example (X : C) (x : F.obj X) : ∃ (Y : C) (i : Y ⟶ X) (y : F.obj Y),
+    F.map i y = x ∧ ConnectedObject Y ∧ Mono i := by
+  obtain ⟨ι, f, t, hc, hf, he⟩ := hasDecompConnectedComponents F X
+  have : X ≅ ∐ f := sorry
+  have : F.obj X ≅ ∐ fun j ↦ F.obj (f j) := sorry
 
 --example (X : C) : ∃ (ι : Type) (_ : Finite ι) (f : ι → C) (_ : X ≅ ∐ f), ∀ i, ConnectedObject (f i) := by
 --  revert X
