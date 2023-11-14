@@ -38,8 +38,8 @@ lemma lintegral_split_bounded {y z : ℝ} (f : ℝ → ENNReal) (hzy : z ≤ y) 
   rintro x ⟨h1 : x < _, h2, _⟩
   linarith
 
-lemma lintegral_split (f : ℝ → ENNReal) (c : ℝ) : ∫⁻ x, f x =
-    (∫⁻ x in {x | x ≥ c}, f x) + ∫⁻ x in {x | x < c}, f x := by
+lemma lintegral_split (f : ℝ → ENNReal) (c : ℝ) :
+    ∫⁻ x, f x = (∫⁻ x in {x | x ≥ c}, f x) + ∫⁻ x in {x | x < c}, f x := by
   have union : univ = {x: ℝ | x ≥ c} ∪ {x : ℝ | x < c} := by
     ext x
     simp [le_or_lt]
@@ -134,9 +134,9 @@ lemma antiDeriv_tendsto_zero {r : ℝ} (hr : 0 < r) :
     Tendsto (fun x ↦ -1/r * exp (-(r * x))) atTop (𝓝 0) := by
   rw [← mul_zero (-1/r)]
   apply Tendsto.mul
-  exact tendsto_const_nhds
-  apply tendsto_exp_neg_atTop_nhds_0.comp
-  exact (tendsto_const_mul_atTop_of_pos hr).2 tendsto_id
+  · exact tendsto_const_nhds
+  · apply tendsto_exp_neg_atTop_nhds_0.comp
+    exact (tendsto_const_mul_atTop_of_pos hr).2 tendsto_id
 
 open Measure
 
