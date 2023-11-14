@@ -252,13 +252,13 @@ theorem Algebra.IsAlgebraic.of_larger_base (A_alg : IsAlgebraic K A) : IsAlgebra
 variable (K)
 
 theorem isAlgebraic_of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e :=
-  isAlgebraic_iff_isIntegral.mpr (.of_finite e)
+  isAlgebraic_iff_isIntegral.mpr (.of_finite K e)
 
 variable (A)
 
 /-- A field extension is algebraic if it is finite. -/
 theorem Algebra.isAlgebraic_of_finite [FiniteDimensional K A] : IsAlgebraic K A :=
-  Algebra.isAlgebraic_iff_isIntegral.mpr .of_finite
+  Algebra.isAlgebraic_iff_isIntegral.mpr <| .of_finite K
 #align algebra.is_algebraic_of_finite Algebra.isAlgebraic_of_finite
 
 end Field
