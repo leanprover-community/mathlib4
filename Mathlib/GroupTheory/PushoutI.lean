@@ -451,7 +451,7 @@ theorem base_smul_eq_smul (h : H) (w : NormalWord d) :
     base φ h • w = h • w := by
   rw [base_smul_def, base_smul_def']
 
-/-- Induction principle for `NormalWord`, that corrresponds closely to inducting on
+/-- Induction principle for `NormalWord`, that corresponds closely to inducting on
 the underlying list. -/
 @[elab_as_elim]
 noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d)
