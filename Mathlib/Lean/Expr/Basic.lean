@@ -194,6 +194,7 @@ def bvarIdx? : Expr → Option Nat
 def getAppFnArgs (e : Expr) : Name × Array Expr :=
   withApp e λ e a => (e.constName, a)
 
+/-- Invariant: `i : ℕ` should be less than the size of `as : Array Expr`. -/
 private def getAppAppsAux : Expr → Array Expr → Nat → Array Expr
   | .app f a, as, i => getAppAppsAux f (as.set! i (.app f a)) (i-1)
   | _,       as, _ => as
@@ -485,7 +486,7 @@ def reduceProjStruct? (e : Expr) : MetaM (Option Expr) :=
         else
           throwError
             (m!"ill-formed expression, {sc} is the {pinfo.i}-th projection function" ++
-              m!" but {sarg} has not enough arguments")
+              m!" but {sarg} does not have enough arguments")
     else
       return none
 
@@ -513,35 +514,35 @@ Fails if the rewrite produces any subgoals.
 def rewriteType (e eq : Expr) : MetaM Expr := do
   mkEqMP (← (← inferType e).rewrite eq) e
 
-/-- Given `(hNotEx : Not (@Exists.{lvl} A p))`,
-    return a `forall x, Not (p x)` and a proof for it.
-
-    This function handles nested existentials. -/
-partial def toForallNotAux (lvl : Level) (A p hNotEx : Expr) : MetaM (Expr × Expr) := do
-  let xn ← mkFreshUserName `x
-  withLocalDeclD xn A fun x => do
-    let px := p.beta #[x]
-    let notPx := mkNot px
-    let hAllNotPx := mkApp3 (.const ``forall_not_of_not_exists [lvl]) A p hNotEx
-    if let .app (.app (.const ``Exists [lvl']) A') p' := px then
-      let hNotPxN ← mkFreshUserName `h
-      withLocalDeclD hNotPxN notPx fun hNotPx => do
-        let (qx, hQx) ← toForallNotAux lvl' A' p' hNotPx
-        let allQx ← mkForallFVars #[x] qx
-        let hNotPxImpQx ← mkLambdaFVars #[hNotPx] hQx
-        let hAllQx ← mkLambdaFVars #[x] (.app hNotPxImpQx (.app hAllNotPx x))
-        return (allQx, hAllQx)
-    else
-      let allNotPx ← mkForallFVars #[x] notPx
-      return (allNotPx, hAllNotPx)
-
 /-- Given `(hNotEx : Not ex)` where `ex` is of the form `Exists x, p x`,
     return a `forall x, Not (p x)` and a proof for it.
 
     This function handles nested existentials. -/
-def toForallNot (ex hNotEx : Expr) : MetaM (Expr × Expr) := do
+partial def forallNot_of_notExists (ex hNotEx : Expr) : MetaM (Expr × Expr) := do
   let .app (.app (.const ``Exists [lvl]) A) p := ex | failure
-  toForallNotAux lvl A p hNotEx
+  go lvl A p hNotEx
+where
+  /-- Given `(hNotEx : Not (@Exists.{lvl} A p))`,
+      return a `forall x, Not (p x)` and a proof for it.
+
+      This function handles nested existentials. -/
+  go (lvl : Level) (A p hNotEx : Expr) : MetaM (Expr × Expr) := do
+    let xn ← mkFreshUserName `x
+    withLocalDeclD xn A fun x => do
+      let px := p.beta #[x]
+      let notPx := mkNot px
+      let hAllNotPx := mkApp3 (.const ``forall_not_of_not_exists [lvl]) A p hNotEx
+      if let .app (.app (.const ``Exists [lvl']) A') p' := px then
+        let hNotPxN ← mkFreshUserName `h
+        withLocalDeclD hNotPxN notPx fun hNotPx => do
+          let (qx, hQx) ← go lvl' A' p' hNotPx
+          let allQx ← mkForallFVars #[x] qx
+          let hNotPxImpQx ← mkLambdaFVars #[hNotPx] hQx
+          let hAllQx ← mkLambdaFVars #[x] (.app hNotPxImpQx (.app hAllNotPx x))
+          return (allQx, hAllQx)
+      else
+        let allNotPx ← mkForallFVars #[x] notPx
+        return (allNotPx, hAllNotPx)
 
 end Expr
 
