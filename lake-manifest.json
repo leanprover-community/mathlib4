@@ -18,14 +18,6 @@
     "inputRev?": "master",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/leanprover-community/aesop",
-    "subDir?": null,
-    "rev": "cb87803274405db79ec578fc07c4730c093efb90",
-    "opts": {},
-    "name": "aesop",
-    "inputRev?": "master",
-    "inherited": false}},
-  {"git":
    {"url": "https://github.com/leanprover/lean4-cli",
     "subDir?": null,
     "rev": "a751d21d4b68c999accb6fc5d960538af26ad5ec",
@@ -40,5 +32,13 @@
     "opts": {},
     "name": "proofwidgets",
     "inputRev?": "v0.0.22",
+    "inherited": false}},
+  {"git":
+   {"url": "https://github.com/leanprover-community/aesop",
+    "subDir?": null,
+    "rev": "bf5ab42a58e71de7ebad399ce3f90d29aae7fca9",
+    "opts": {},
+    "name": "aesop",
+    "inputRev?": "master",
     "inherited": false}}],
  "name": "mathlib"}
