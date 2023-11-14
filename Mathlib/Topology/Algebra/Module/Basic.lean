@@ -105,7 +105,7 @@ variable {ι R M₁ M₂ : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMono
 theorem continuousSMul_induced : @ContinuousSMul R M₁ _ u (t.induced f) := by
   let _ : TopologicalSpace M₁ := t.induced f
   refine' ⟨continuous_induced_rng.2 _⟩
-  simp_rw [Function.comp_def, f.map_smul]
+  simp_rw [Function.comp, f.map_smul]
   exact continuous_fst.smul (continuous_induced_dom.comp continuous_snd)
 #align has_continuous_smul_induced continuousSMul_induced
 
@@ -605,13 +605,13 @@ theorem smul_apply (c : S₂) (f : M₁ →SL[σ₁₂] M₂) (x : M₁) : (c �
 
 @[simp, norm_cast]
 theorem coe_smul (c : S₂) (f : M₁ →SL[σ₁₂] M₂) :
-    (c • f : M₁ →ₛₗ[σ₁₂] M₂) = c • (f : M₁ →ₛₗ[σ₁₂] M₂) :=
+    ↑(c • f) = c • (f : M₁ →ₛₗ[σ₁₂] M₂) :=
   rfl
 #align continuous_linear_map.coe_smul ContinuousLinearMap.coe_smul
 
 @[simp, norm_cast]
 theorem coe_smul' (c : S₂) (f : M₁ →SL[σ₁₂] M₂) :
-    (c • f : M₁ → M₂) = c • (f : M₁ → M₂) :=
+    ↑(c • f) = c • (f : M₁ → M₂) :=
   rfl
 #align continuous_linear_map.coe_smul' ContinuousLinearMap.coe_smul'
 

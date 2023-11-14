@@ -34,8 +34,6 @@ related theorems in `Mathlib/Analysis/ODE/Gronwall.lean`.
 differential equation
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Filter Function Set Metric TopologicalSpace intervalIntegral MeasureTheory
 open MeasureTheory.MeasureSpace (volume)
 open scoped Filter Topology NNReal ENNReal Nat Interval
@@ -281,7 +279,7 @@ theorem next_apply (t : Icc v.tMin v.tMax) : f.next t = v.x₀ + ∫ τ : ℝ in
 theorem hasDerivWithinAt_next (t : Icc v.tMin v.tMax) :
     HasDerivWithinAt (f.next ∘ v.proj) (v t (f t)) (Icc v.tMin v.tMax) t := by
   haveI : Fact ((t : ℝ) ∈ Icc v.tMin v.tMax) := ⟨t.2⟩
-  simp only [Function.comp_def, next_apply]
+  simp only [(· ∘ ·), next_apply]
   refine' HasDerivWithinAt.const_add _ _
   have : HasDerivWithinAt (∫ τ in v.t₀..·, f.vComp τ) (f.vComp t) (Icc v.tMin v.tMax) t :=
     integral_hasDerivWithinAt_right (f.intervalIntegrable_vComp _ _)

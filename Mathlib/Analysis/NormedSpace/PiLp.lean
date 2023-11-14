@@ -64,8 +64,6 @@ We also set up the theory for `PseudoEMetricSpace` and `PseudoMetricSpace`.
 
 set_option linter.uppercaseLean3 false
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Real Set Filter IsROrC Bornology BigOperators Uniformity Topology NNReal ENNReal
 
 noncomputable section
@@ -574,7 +572,7 @@ theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
 #align pi_Lp.norm_eq_of_nat PiLp.norm_eq_of_nat
 
 theorem norm_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
-    ‖x‖ = sqrt (∑ i : ι, ‖x i‖ ^ 2) := by
+    ‖x‖ = Real.sqrt (∑ i : ι, ‖x i‖ ^ 2) := by
   rw [norm_eq_of_nat 2 (by norm_cast) _] -- Porting note: was `convert`
   rw [Real.sqrt_eq_rpow]
   norm_cast
@@ -920,7 +918,7 @@ nonrec theorem basis_toMatrix_basisFun_mul (b : Basis ι 𝕜 (PiLp p fun _ : ι
       Matrix.of fun i j => b.repr ((WithLp.equiv _ _).symm (Aᵀ j)) i := by
   have := basis_toMatrix_basisFun_mul (b.map (WithLp.linearEquiv _ 𝕜 _)) A
   simp_rw [← PiLp.basisFun_map p, Basis.map_repr, LinearEquiv.trans_apply,
-    WithLp.linearEquiv_symm_apply, Basis.toMatrix_map, Function.comp_def, Basis.map_apply,
+    WithLp.linearEquiv_symm_apply, Basis.toMatrix_map, Function.comp, Basis.map_apply,
     LinearEquiv.symm_apply_apply] at this
   exact this
 #align pi_Lp.basis_to_matrix_basis_fun_mul PiLp.basis_toMatrix_basisFun_mul

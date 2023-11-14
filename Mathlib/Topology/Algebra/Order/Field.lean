@@ -78,8 +78,7 @@ tends to a negative constant `C` then `f * g` tends to `Filter.atBot`. -/
 theorem Filter.Tendsto.atTop_mul_neg {C : 𝕜} (hC : C < 0) (hf : Tendsto f l atTop)
     (hg : Tendsto g l (𝓝 C)) : Tendsto (fun x => f x * g x) l atBot := by
   have := hf.atTop_mul (neg_pos.2 hC) hg.neg
-  simpa only [Function.comp_def, neg_mul_eq_mul_neg, neg_neg] using
-    tendsto_neg_atTop_atBot.comp this
+  simpa only [(· ∘ ·), neg_mul_eq_mul_neg, neg_neg] using tendsto_neg_atTop_atBot.comp this
 #align filter.tendsto.at_top_mul_neg Filter.Tendsto.atTop_mul_neg
 
 /-- In a linearly ordered field with the order topology, if `f` tends to a negative constant `C` and
@@ -94,7 +93,7 @@ tends to a positive constant `C` then `f * g` tends to `Filter.atBot`. -/
 theorem Filter.Tendsto.atBot_mul {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l atBot)
     (hg : Tendsto g l (𝓝 C)) : Tendsto (fun x => f x * g x) l atBot := by
   have := (tendsto_neg_atBot_atTop.comp hf).atTop_mul hC hg
-  simpa [Function.comp_def] using tendsto_neg_atTop_atBot.comp this
+  simpa [(· ∘ ·)] using tendsto_neg_atTop_atBot.comp this
 #align filter.tendsto.at_bot_mul Filter.Tendsto.atBot_mul
 
 /-- In a linearly ordered field with the order topology, if `f` tends to `Filter.atBot` and `g`
@@ -102,7 +101,7 @@ tends to a negative constant `C` then `f * g` tends to `Filter.atTop`. -/
 theorem Filter.Tendsto.atBot_mul_neg {C : 𝕜} (hC : C < 0) (hf : Tendsto f l atBot)
     (hg : Tendsto g l (𝓝 C)) : Tendsto (fun x => f x * g x) l atTop := by
   have := (tendsto_neg_atBot_atTop.comp hf).atTop_mul_neg hC hg
-  simpa [Function.comp_def] using tendsto_neg_atBot_atTop.comp this
+  simpa [(· ∘ ·)] using tendsto_neg_atBot_atTop.comp this
 #align filter.tendsto.at_bot_mul_neg Filter.Tendsto.atBot_mul_neg
 
 /-- In a linearly ordered field with the order topology, if `f` tends to a positive constant `C` and

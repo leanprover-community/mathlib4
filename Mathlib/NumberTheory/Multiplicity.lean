@@ -109,7 +109,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
     _ =
         mk (span {s})
             (∑ x : ℕ in Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
-          mk (span {s}) (∑ x : ℕ in Finset.range p, a ^ (p - 1)) := by
+          mk (span {s}) (∑ _x : ℕ in Finset.range p, a ^ (p - 1)) := by
       rw [add_right_inj]
       have : ∀ (x : ℕ), (hx : x ∈ range p) → a ^ (x + (p - 1 - x)) = a ^ (p - 1) := by
         intro x hx

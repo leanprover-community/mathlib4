@@ -3,10 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Mul
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 
 #align_import analysis.calculus.cont_diff_def from "leanprover-community/mathlib"@"3a69562db5a458db8322b190ec8d9a8bbd8a5b14"
@@ -588,7 +585,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt {n : ℕ} :
         change ((p' y 0) (init (@cons 0 (fun _ => E) z 0))) (@cons 0 (fun _ => E) z 0 (last 0)) =
           ((p' y 0) 0) z
         congr
-        norm_num
+        norm_num [eq_iff_true_of_subsingleton]
       · convert (Hp'.mono (inter_subset_left v u)).congr fun x hx => Hp'.zero_eq x hx.1 using 1
         · ext x y
           change p' x 0 (init (@snoc 0 (fun _ : Fin 1 => E) 0 y)) y = p' x 0 0 y

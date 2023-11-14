@@ -292,8 +292,7 @@ theorem lift'_cong (hh : ∀ s ∈ f, h₁ s = h₂ s) : f.lift' h₁ = f.lift' 
 theorem map_lift'_eq {m : β → γ} (hh : Monotone h) : map m (f.lift' h) = f.lift' (image m ∘ h) :=
   calc
     map m (f.lift' h) = f.lift (map m ∘ 𝓟 ∘ h) := map_lift_eq <| monotone_principal.comp hh
-    _ = f.lift' (image m ∘ h) := by
-      simp only [comp_def, Filter.lift', map_principal]
+    _ = f.lift' (image m ∘ h) := by simp only [comp, Filter.lift', map_principal]
 #align filter.map_lift'_eq Filter.map_lift'_eq
 
 theorem lift'_map_le {g : Set β → Set γ} {m : α → β} : (map m f).lift' g ≤ f.lift' (g ∘ image m) :=
@@ -306,7 +305,7 @@ theorem map_lift'_eq2 {g : Set β → Set γ} {m : α → β} (hg : Monotone g) 
 #align filter.map_lift'_eq2 Filter.map_lift'_eq2
 
 theorem comap_lift'_eq {m : γ → β} : comap m (f.lift' h) = f.lift' (preimage m ∘ h) := by
-  simp only [Filter.lift', comap_lift_eq, comp_def, comap_principal]
+  simp only [Filter.lift', comap_lift_eq, (· ∘ ·), comap_principal]
 #align filter.comap_lift'_eq Filter.comap_lift'_eq
 
 theorem comap_lift'_eq2 {m : β → α} {g : Set β → Set γ} (hg : Monotone g) :

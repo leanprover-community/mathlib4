@@ -34,8 +34,6 @@ open scoped ENNReal NNReal Real
 
 open MeasureTheory
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace ProbabilityTheory
 
 section GaussianPdf

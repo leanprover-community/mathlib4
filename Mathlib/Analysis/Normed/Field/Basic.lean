@@ -604,7 +604,7 @@ theorem nndist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
 infinity. TODO: use `Bornology.cobounded` instead of `Filter.comap Norm.norm Filter.atTop`. -/
 theorem Filter.tendsto_mul_left_cobounded {a : α} (ha : a ≠ 0) :
     Tendsto ((· * ·) a) (comap norm atTop) (comap norm atTop) := by
-  simpa only [tendsto_comap_iff, Function.comp_def, norm_mul] using
+  simpa only [tendsto_comap_iff, (· ∘ ·), norm_mul] using
     tendsto_const_nhds.mul_atTop (norm_pos_iff.2 ha) tendsto_comap
 #align filter.tendsto_mul_left_cobounded Filter.tendsto_mul_left_cobounded
 
@@ -612,7 +612,7 @@ theorem Filter.tendsto_mul_left_cobounded {a : α} (ha : a ≠ 0) :
 infinity. TODO: use `Bornology.cobounded` instead of `Filter.comap Norm.norm Filter.atTop`. -/
 theorem Filter.tendsto_mul_right_cobounded {a : α} (ha : a ≠ 0) :
     Tendsto (fun x => x * a) (comap norm atTop) (comap norm atTop) := by
-  simpa only [tendsto_comap_iff, Function.comp_def, norm_mul] using
+  simpa only [tendsto_comap_iff, (· ∘ ·), norm_mul] using
     tendsto_comap.atTop_mul (norm_pos_iff.2 ha) tendsto_const_nhds
 #align filter.tendsto_mul_right_cobounded Filter.tendsto_mul_right_cobounded
 
@@ -810,6 +810,19 @@ theorem denseRange_nnnorm : DenseRange (nnnorm : α → ℝ≥0) :=
 end Densely
 
 end NormedField
+
+/-- A normed field is nontrivially normed
+provided that the norm of some nonzero element is not one. -/
+def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
+    (h : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1) : NontriviallyNormedField 𝕜 where
+  toNormedField := h'
+  non_trivial := by
+    rcases h with ⟨x, hx, hx1⟩
+    rcases hx1.lt_or_lt with hlt | hlt
+    · use x⁻¹
+      rw [norm_inv]
+      exact one_lt_inv (norm_pos_iff.2 hx) hlt
+    · exact ⟨x, hlt⟩
 
 instance Real.normedCommRing : NormedCommRing ℝ :=
   { Real.normedAddCommGroup, Real.commRing with norm_mul := fun x y => (abs_mul x y).le }

@@ -259,6 +259,7 @@ import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 import Mathlib.Algebra.Homology.ShortExact.Abelian
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.Algebra.Homology.Single
+import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Algebra.Invertible.Defs
@@ -565,8 +566,11 @@ import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
 import Mathlib.Analysis.Calculus.BumpFunction.Normed
 import Mathlib.Analysis.Calculus.Conformal.InnerProduct
 import Mathlib.Analysis.Calculus.Conformal.NormedSpace
-import Mathlib.Analysis.Calculus.ContDiff
-import Mathlib.Analysis.Calculus.ContDiffDef
+import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Calculus.ContDiff.Bounds
+import Mathlib.Analysis.Calculus.ContDiff.Defs
+import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
+import Mathlib.Analysis.Calculus.ContDiff.IsROrC
 import Mathlib.Analysis.Calculus.Darboux
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.AffineMap
@@ -799,6 +803,7 @@ import Mathlib.Analysis.NormedSpace.QuaternionExponential
 import Mathlib.Analysis.NormedSpace.Ray
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.NormedSpace.Spectrum
+import Mathlib.Analysis.NormedSpace.SphereNormEquiv
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.Star.ContinuousFunctionalCalculus
 import Mathlib.Analysis.NormedSpace.Star.Exponential
@@ -992,6 +997,7 @@ import Mathlib.CategoryTheory.Functor.Trifunctor
 import Mathlib.CategoryTheory.Generator
 import Mathlib.CategoryTheory.GlueData
 import Mathlib.CategoryTheory.GradedObject
+import Mathlib.CategoryTheory.GradedObject.Bifunctor
 import Mathlib.CategoryTheory.Grothendieck
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
@@ -1223,7 +1229,9 @@ import Mathlib.CategoryTheory.Sites.InducedTopology
 import Mathlib.CategoryTheory.Sites.IsSheafFor
 import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.CategoryTheory.Sites.Limits
+import Mathlib.CategoryTheory.Sites.Over
 import Mathlib.CategoryTheory.Sites.Plus
+import Mathlib.CategoryTheory.Sites.Preserves
 import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.CategoryTheory.Sites.Pushforward
 import Mathlib.CategoryTheory.Sites.RegularExtensive
@@ -1300,6 +1308,7 @@ import Mathlib.Combinatorics.SetFamily.Intersecting
 import Mathlib.Combinatorics.SetFamily.Kleitman
 import Mathlib.Combinatorics.SetFamily.LYM
 import Mathlib.Combinatorics.SetFamily.Shadow
+import Mathlib.Combinatorics.SetFamily.Shatter
 import Mathlib.Combinatorics.SimpleGraph.Acyclic
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.Combinatorics.SimpleGraph.Basic
@@ -1395,7 +1404,9 @@ import Mathlib.Data.Buffer.Parser.Numeral
 import Mathlib.Data.Bundle
 import Mathlib.Data.ByteArray
 import Mathlib.Data.Char
+import Mathlib.Data.Complex.Abs
 import Mathlib.Data.Complex.Basic
+import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Complex.Determinant
 import Mathlib.Data.Complex.Exponential
@@ -1828,6 +1839,7 @@ import Mathlib.Data.Rbtree.Init
 import Mathlib.Data.Rbtree.Insert
 import Mathlib.Data.Rbtree.Main
 import Mathlib.Data.Rbtree.MinMax
+import Mathlib.Data.Real.Archimedean
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Cardinality
 import Mathlib.Data.Real.CauSeq
@@ -2456,6 +2468,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+import Mathlib.MeasureTheory.Constructions.HaarToSphere
 import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Constructions.Polish
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
@@ -2579,9 +2592,11 @@ import Mathlib.MeasureTheory.Measure.OuterMeasure
 import Mathlib.MeasureTheory.Measure.Portmanteau
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Measure.Regular
+import Mathlib.MeasureTheory.Measure.Restrict
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Sub
 import Mathlib.MeasureTheory.Measure.Trim
+import Mathlib.MeasureTheory.Measure.Typeclasses
 import Mathlib.MeasureTheory.Measure.VectorMeasure
 import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.MeasureTheory.Measure.WithDensityVectorMeasure
@@ -2684,6 +2699,7 @@ import Mathlib.NumberTheory.Primorial
 import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.NumberTheory.RamificationInertia
 import Mathlib.NumberTheory.Rayleigh
+import Mathlib.NumberTheory.SmoothNumbers
 import Mathlib.NumberTheory.SumFourSquares
 import Mathlib.NumberTheory.SumTwoSquares
 import Mathlib.NumberTheory.VonMangoldt
@@ -3210,8 +3226,6 @@ import Mathlib.Tactic.MoveAdd
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Nontriviality.Core
-import Mathlib.Tactic.NormCast
-import Mathlib.Tactic.NormCast.Tactic
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NormNum.BigOperators
@@ -3537,6 +3551,7 @@ import Mathlib.Topology.NoetherianSpace
 import Mathlib.Topology.OmegaCompletePartialOrder
 import Mathlib.Topology.Order
 import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.Bounded
 import Mathlib.Topology.Order.Category.AlexDisc
 import Mathlib.Topology.Order.Category.FrameAdjunction
 import Mathlib.Topology.Order.Hom.Basic

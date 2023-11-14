@@ -872,13 +872,13 @@ theorem tendsto_left_nhds_uniformity {a : α} : Tendsto (fun a' => (a, a')) (�
 theorem lift_nhds_left {x : α} {g : Set α → Filter β} (hg : Monotone g) :
     (𝓝 x).lift g = (𝓤 α).lift fun s : Set (α × α) => g (ball x s) := by
   rw [nhds_eq_comap_uniformity, comap_lift_eq2 hg]
-  simp_rw [ball, Function.comp_def]
+  simp_rw [ball, Function.comp]
 #align lift_nhds_left lift_nhds_left
 
 theorem lift_nhds_right {x : α} {g : Set α → Filter β} (hg : Monotone g) :
     (𝓝 x).lift g = (𝓤 α).lift fun s : Set (α × α) => g { y | (y, x) ∈ s } := by
   rw [nhds_eq_comap_uniformity', comap_lift_eq2 hg]
-  simp_rw [Function.comp_def, preimage]
+  simp_rw [Function.comp, preimage]
 #align lift_nhds_right lift_nhds_right
 
 theorem nhds_nhds_eq_uniformity_uniformity_prod {a b : α} :
@@ -1255,7 +1255,7 @@ def UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace α :
     { uniformity := 𝓤[u].comap fun p : α × α => (f p.1, f p.2)
       refl := le_trans (by simp) (comap_mono u.refl)
       symm := by
-        simp only [tendsto_comap_iff, Prod.swap, Function.comp_def]
+        simp only [tendsto_comap_iff, Prod.swap, (· ∘ ·)]
         exact tendsto_swap_uniformity.comp tendsto_comap
       comp := le_trans
         (by
@@ -1264,7 +1264,7 @@ def UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace α :
           exact monotone_id.compRel monotone_id)
         (comap_mono u.comp) }
     (u.toTopologicalSpace.induced f) fun x => by
-      simp only [nhds_induced, nhds_eq_comap_uniformity, comap_comap, Function.comp_def]
+      simp only [nhds_induced, nhds_eq_comap_uniformity, comap_comap, Function.comp]
 #align uniform_space.comap UniformSpace.comap
 
 theorem uniformity_comap {_ : UniformSpace β} (f : α → β) :

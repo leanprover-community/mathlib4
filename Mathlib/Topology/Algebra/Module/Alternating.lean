@@ -328,8 +328,8 @@ def _root_.ContinuousLinearEquiv.continuousAlternatingMapComp (e : M ≃L[R] M')
     M [Λ^ι]→L[R] N ≃ M' [Λ^ι]→L[R] N where
   toFun f := f.compContinuousLinearMap ↑e.symm
   invFun f := f.compContinuousLinearMap ↑e
-  left_inv f := by ext; simp [Function.comp_def]
-  right_inv f := by ext; simp [Function.comp_def]
+  left_inv f := by ext; simp [(· ∘ ·)]
+  right_inv f := by ext; simp [(· ∘ ·)]
 
 /-- A continuous linear equivalence of codomains defines an equivalence between continuous
 alternating maps. -/
@@ -605,12 +605,12 @@ def alternatization : ContinuousMultilinearMap R (fun _ : ι => M) N →+ M [Λ^
 
 theorem alternatization_apply_apply (v : ι → M) :
     alternatization f v = ∑ σ : Equiv.Perm ι, Equiv.Perm.sign σ • f (v ∘ σ) := by
-  simp [alternatization, Function.comp_def]
+  simp [alternatization, (· ∘ ·)]
 
 @[simp]
 theorem alternatization_apply_toAlternatingMap :
     (alternatization f).toAlternatingMap = MultilinearMap.alternatization f.1 := by
   ext v
-  simp [alternatization_apply_apply, MultilinearMap.alternatization_apply, Function.comp_def]
+  simp [alternatization_apply_apply, MultilinearMap.alternatization_apply, (· ∘ ·)]
 
 end ContinuousMultilinearMap

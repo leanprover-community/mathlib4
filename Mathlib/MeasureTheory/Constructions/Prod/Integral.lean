@@ -461,7 +461,7 @@ theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
   revert f
   apply Integrable.induction
   · intro c s hs h2s
-    simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp_def,
+    simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp,
       integral_indicator (measurable_prod_mk_left hs), set_integral_const, integral_smul_const,
       integral_toReal (measurable_measure_prod_mk_left hs).aemeasurable
         (ae_measure_lt_top hs h2s.ne)]

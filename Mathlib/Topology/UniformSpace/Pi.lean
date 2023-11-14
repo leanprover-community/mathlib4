@@ -45,7 +45,7 @@ variable {α}
 theorem uniformContinuous_pi {β : Type*} [UniformSpace β] {f : β → ∀ i, α i} :
     UniformContinuous f ↔ ∀ i, UniformContinuous fun x => f x i := by
   -- porting note: required `Function.comp` to close
-  simp only [UniformContinuous, Pi.uniformity, tendsto_iInf, tendsto_comap_iff, Function.comp_def]
+  simp only [UniformContinuous, Pi.uniformity, tendsto_iInf, tendsto_comap_iff, Function.comp]
 #align uniform_continuous_pi uniformContinuous_pi
 
 variable (α)
@@ -74,7 +74,7 @@ theorem Pi.uniformContinuous_postcomp {α : Type*} [UniformSpace α] {g : α →
 lemma Pi.uniformSpace_comap_precomp' (φ : ι' → ι) :
     UniformSpace.comap (fun g i' ↦ g (φ i')) (Pi.uniformSpace (fun i' ↦ α (φ i'))) =
     ⨅ i', UniformSpace.comap (eval (φ i')) (U (φ i')) := by
-  simp [Pi.uniformSpace_eq, UniformSpace.comap_iInf, ← UniformSpace.comap_comap, comp_def]
+  simp [Pi.uniformSpace_eq, UniformSpace.comap_iInf, ← UniformSpace.comap_comap, comp]
 
 lemma Pi.uniformSpace_comap_precomp (φ : ι' → ι) :
     UniformSpace.comap (· ∘ φ) (Pi.uniformSpace (fun _ ↦ β)) =

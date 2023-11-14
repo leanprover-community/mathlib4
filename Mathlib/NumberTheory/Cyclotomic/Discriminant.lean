@@ -23,8 +23,6 @@ We compute the discriminant of a `p ^ n`-th cyclotomic extension.
 
 universe u v
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Algebra Polynomial Nat IsPrimitiveRoot PowerBasis
 
 open scoped Polynomial Cyclotomic
@@ -92,7 +90,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
       obtain ⟨a, ha⟩ := (hp.out.even_sub_one hp2).two_dvd
       rw [ha, mul_left_comm, mul_assoc, Nat.mul_div_cancel_left _ two_pos,
         Nat.mul_div_cancel_left _ two_pos, mul_right_comm, pow_mul, (hpo.pow.mul _).neg_one_pow,
-        pow_mul, hpo.pow.neg_one_pow]; · norm_cast
+        pow_mul, hpo.pow.neg_one_pow]
       refine' Nat.Even.sub_odd _ (even_two_mul _) odd_one
       rw [mul_left_comm, ← ha]
       exact one_le_mul (one_le_pow _ _ hp.1.pos) (succ_le_iff.2 <| tsub_pos_of_lt hp.1.one_lt)
@@ -203,7 +201,7 @@ theorem discr_odd_prime [IsCyclotomicExtension {p} K L] [hp : Fact (p : ℕ).Pri
   have : IsCyclotomicExtension {p ^ (0 + 1)} K L := by
     rw [zero_add, pow_one]
     infer_instance
-  have hζ' : IsPrimitiveRoot ζ ↑(p ^ (0 + 1)) := by simpa using hζ
+  have hζ' : IsPrimitiveRoot ζ (p ^ (0 + 1) :) := by simpa using hζ
   convert discr_prime_pow_ne_two hζ' (by simpa [hirr]) (by simp [hodd]) using 2
   · rw [zero_add, pow_one, totient_prime hp.out]
   · rw [_root_.pow_zero, one_mul, zero_add, mul_one, Nat.sub_sub]

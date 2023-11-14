@@ -83,7 +83,7 @@ theorem map_expand (f : R →+* S) (p : ℕ) (φ : MvPolynomial σ R) :
 @[simp]
 theorem rename_expand (f : σ → τ) (p : ℕ) (φ : MvPolynomial σ R) :
     rename f (expand p φ) = expand p (rename f φ) := by
-  simp [expand, bind₁_rename, rename_bind₁, Function.comp_def]
+  simp [expand, bind₁_rename, rename_bind₁, Function.comp]
 #align mv_polynomial.rename_expand MvPolynomial.rename_expand
 
 @[simp]

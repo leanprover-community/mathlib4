@@ -493,7 +493,7 @@ local infixr:80 " ^' " => @HPow.hPow Cardinal Cardinal Cardinal _
 -- -- mathport name: cardinal.pow.nat
 local infixr:80 " ^ℕ " => @HPow.hPow Cardinal ℕ Cardinal instHPow
 
-theorem power_def (α β) : #α ^ #β = #(β → α) :=
+theorem power_def (α β : Type u) : #α ^ #β = #(β → α) :=
   rfl
 #align cardinal.power_def Cardinal.power_def
 
@@ -508,12 +508,12 @@ theorem lift_power (a b : Cardinal.{u}) : lift.{v} (a ^ b) = lift.{v} a ^ lift.{
 #align cardinal.lift_power Cardinal.lift_power
 
 @[simp]
-theorem power_zero {a : Cardinal} : a ^ 0 = 1 :=
+theorem power_zero {a : Cardinal} : a ^ (0 : Cardinal) = 1 :=
   inductionOn a fun _ => mk_eq_one _
 #align cardinal.power_zero Cardinal.power_zero
 
 @[simp]
-theorem power_one {a : Cardinal.{u}} : a ^ 1 = a :=
+theorem power_one {a : Cardinal.{u}} : a ^ (1 : Cardinal) = a :=
   inductionOn a fun α => mk_congr (Equiv.funUnique (ULift.{u} (Fin 1)) α)
 #align cardinal.power_one Cardinal.power_one
 
@@ -538,9 +538,9 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   mul_comm := mul_comm'
   left_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodSumDistrib α β γ
   right_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumProdDistrib α β γ
-  npow n c := c ^ n
+  npow n c := c ^ (n : Cardinal)
   npow_zero := @power_zero
-  npow_succ n c := show c ^ (n + 1 : ℕ) = c * (c ^ n)
+  npow_succ n c := show c ^ (↑(n + 1) : Cardinal) = c * c ^ (↑n : Cardinal)
     by rw [Cardinal.cast_succ, power_add, power_one, mul_comm']
   natCast := (fun n => lift.{u} #(Fin n) : ℕ → Cardinal.{u})
   natCast_zero := rfl
@@ -563,7 +563,7 @@ theorem power_bit1 (a b : Cardinal) : a ^ bit1 b = a ^ b * a ^ b * a := by
 end deprecated
 
 @[simp]
-theorem one_power {a : Cardinal} : 1 ^ a = 1 :=
+theorem one_power {a : Cardinal} : (1 : Cardinal) ^ a = 1 :=
   inductionOn a fun _ => mk_eq_one _
 #align cardinal.one_power Cardinal.one_power
 
@@ -578,7 +578,7 @@ theorem mk_Prop : #Prop = 2 := by simp
 #align cardinal.mk_Prop Cardinal.mk_Prop
 
 @[simp]
-theorem zero_power {a : Cardinal} : a ≠ 0 → 0 ^ a = 0 :=
+theorem zero_power {a : Cardinal} : a ≠ 0 → (0 : Cardinal) ^ a = 0 :=
   inductionOn a fun _ heq =>
     mk_eq_zero_iff.2 <|
       isEmpty_pi.2 <|
@@ -1193,7 +1193,7 @@ theorem lift_sSup {s : Set Cardinal} (hs : BddAbove s) :
 theorem lift_iSup {ι : Type v} {f : ι → Cardinal.{w}} (hf : BddAbove (range f)) :
     lift.{u} (iSup f) = ⨆ i, lift.{u} (f i) := by
   rw [iSup, iSup, lift_sSup hf, ← range_comp]
-  simp [Function.comp_def]
+  simp [Function.comp]
 #align cardinal.lift_supr Cardinal.lift_iSup
 
 /-- To prove that the lift of a supremum is bounded by some cardinal `t`,
@@ -1347,7 +1347,7 @@ theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
 -- Porting note: was `simp`. LHS is not normal form.
 -- @[simp, norm_cast]
 @[norm_cast]
-theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = m ^ n := by
+theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) := by
   induction n <;> simp [pow_succ', power_add, *, Pow.pow]
 #align cardinal.nat_cast_pow Cardinal.natCast_pow
 
@@ -1615,6 +1615,9 @@ theorem infinite_iff {α : Type u} : Infinite α ↔ ℵ₀ ≤ #α := by
   rw [← not_lt, lt_aleph0_iff_finite, not_finite_iff_infinite]
 #align cardinal.infinite_iff Cardinal.infinite_iff
 
+lemma aleph0_le_mk_iff : ℵ₀ ≤ #α ↔ Infinite α := infinite_iff.symm
+lemma mk_lt_aleph0_iff : #α < ℵ₀ ↔ Finite α := by simp [← not_le, aleph0_le_mk_iff]
+
 @[simp]
 theorem aleph0_le_mk (α : Type u) [Infinite α] : ℵ₀ ≤ #α :=
   infinite_iff.1 ‹_›
@@ -1692,6 +1695,8 @@ theorem ofNat_add_aleph0 {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n)
 theorem aleph0_add_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ + no_index (OfNat.ofNat n) = ℵ₀ :=
   aleph0_add_nat n
 
+variable {c : Cardinal}
+
 /-- This function sends finite cardinals to the corresponding natural, and infinite cardinals
   to 0. -/
 def toNat : ZeroHom Cardinal ℕ where
@@ -1702,6 +1707,15 @@ def toNat : ZeroHom Cardinal ℕ where
     rw [dif_pos h, ← Cardinal.natCast_inj, ← Classical.choose_spec (lt_aleph0.1 h),
       Nat.cast_zero]
 #align cardinal.to_nat Cardinal.toNat
+
+@[simp]
+lemma toNat_eq_zero : toNat c = 0 ↔ c = 0 ∨ ℵ₀ ≤ c := by
+  simp only [toNat, ZeroHom.coe_mk, dite_eq_right_iff, or_iff_not_imp_right, not_le]
+  refine' forall_congr' fun h => _
+  rw [←@Nat.cast_eq_zero Cardinal, ← Classical.choose_spec (p := fun n : ℕ ↦ c = n)]
+
+lemma toNat_ne_zero : toNat c ≠ 0 ↔ c ≠ 0 ∧ c < ℵ₀ := by simp [not_or]
+@[simp] lemma toNat_pos : 0 < toNat c ↔ c ≠ 0 ∧ c < ℵ₀ := pos_iff_ne_zero.trans toNat_ne_zero
 
 theorem toNat_apply_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) :
     toNat c = Classical.choose (lt_aleph0.1 h) :=
@@ -2408,14 +2422,14 @@ theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z 
 
 /-- The function `a ^< b`, defined as the supremum of `a ^ c` for `c < b`. -/
 def powerlt (a b : Cardinal.{u}) : Cardinal.{u} :=
-  ⨆ c : Iio b, a^c
+  ⨆ c : Iio b, a ^ (c : Cardinal)
 #align cardinal.powerlt Cardinal.powerlt
 
 @[inherit_doc]
 infixl:80 " ^< " => powerlt
 
-theorem le_powerlt {b c : Cardinal.{u}} (a) (h : c < b) : a ^ c ≤ a ^< b := by
-  refine le_ciSup (f := fun y : Iio b => a ^ y) ?_ ⟨c, h⟩
+theorem le_powerlt {b c : Cardinal.{u}} (a) (h : c < b) : (a^c) ≤ a ^< b := by
+  refine le_ciSup (f := fun y : Iio b => a ^ (y : Cardinal)) ?_ ⟨c, h⟩
   rw [← image_eq_range]
   exact bddAbove_image.{u, u} _ bddAbove_Iio
 #align cardinal.le_powerlt Cardinal.le_powerlt

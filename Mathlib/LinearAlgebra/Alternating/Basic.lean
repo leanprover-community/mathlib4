@@ -255,8 +255,7 @@ theorem smul_apply (c : S) (m : ι → M) : (c • f) m = c • f m :=
 #align alternating_map.smul_apply AlternatingMap.smul_apply
 
 @[norm_cast]
-theorem coe_smul (c : S) : (c • f : MultilinearMap R (fun _ : ι => M) N) =
-    c • (f : MultilinearMap R (fun _ : ι => M) N) :=
+theorem coe_smul (c : S) : ↑(c • f) = c • (f : MultilinearMap R (fun _ : ι => M) N) :=
   rfl
 #align alternating_map.coe_smul AlternatingMap.coe_smul
 
@@ -770,10 +769,10 @@ def domDomCongrEquiv (σ : ι ≃ ι') : AlternatingMap R M N ι ≃+ Alternatin
   invFun := domDomCongr σ.symm
   left_inv f := by
     ext
-    simp [Function.comp_def]
+    simp [Function.comp]
   right_inv m := by
     ext
-    simp [Function.comp_def]
+    simp [Function.comp]
   map_add' := domDomCongr_add σ
 #align alternating_map.dom_dom_congr_equiv AlternatingMap.domDomCongrEquiv
 #align alternating_map.dom_dom_congr_equiv_apply AlternatingMap.domDomCongrEquiv_apply
@@ -788,8 +787,8 @@ variable (S : Type*) [Semiring S] [Module S N] [SMulCommClass R S N]
 def domDomLcongr (σ : ι ≃ ι') : AlternatingMap R M N ι ≃ₗ[S] AlternatingMap R M N ι' where
   toFun := domDomCongr σ
   invFun := domDomCongr σ.symm
-  left_inv f := by ext; simp [Function.comp_def]
-  right_inv m := by ext; simp [Function.comp_def]
+  left_inv f := by ext; simp [Function.comp]
+  right_inv m := by ext; simp [Function.comp]
   map_add' := domDomCongr_add σ
   map_smul' := domDomCongr_smul σ
 #align alternating_map.dom_dom_lcongr AlternatingMap.domDomLcongr

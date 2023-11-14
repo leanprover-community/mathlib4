@@ -174,8 +174,8 @@ theorem tendsto_nhds_bot_iff_real {α : Type*} {m : α → EReal} {f : Filter α
 
 theorem continuousAt_add_coe_coe (a b : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, b) := by
-  simp only [ContinuousAt, nhds_coe_coe, ← coe_add, tendsto_map'_iff, Function.comp_def,
-    tendsto_coe, tendsto_add]
+  simp only [ContinuousAt, nhds_coe_coe, ← coe_add, tendsto_map'_iff, (· ∘ ·), tendsto_coe,
+    tendsto_add]
 #align ereal.continuous_at_add_coe_coe EReal.continuousAt_add_coe_coe
 
 theorem continuousAt_add_top_coe (a : ℝ) :
@@ -188,7 +188,7 @@ theorem continuousAt_add_top_coe (a : ℝ) :
 
 theorem continuousAt_add_coe_top (a : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, ⊤) := by
-  simpa only [add_comm, Function.comp_def, ContinuousAt, Prod.swap]
+  simpa only [add_comm, (· ∘ ·), ContinuousAt, Prod.swap]
     using Tendsto.comp (continuousAt_add_top_coe a) (continuous_swap.tendsto ((a : EReal), ⊤))
 #align ereal.continuous_at_add_coe_top EReal.continuousAt_add_coe_top
 
@@ -209,7 +209,7 @@ theorem continuousAt_add_bot_coe (a : ℝ) :
 
 theorem continuousAt_add_coe_bot (a : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, ⊥) := by
-  simpa only [add_comm, Function.comp_def, ContinuousAt, Prod.swap]
+  simpa only [add_comm, (· ∘ ·), ContinuousAt, Prod.swap]
     using Tendsto.comp (continuousAt_add_bot_coe a) (continuous_swap.tendsto ((a : EReal), ⊥))
 #align ereal.continuous_at_add_coe_bot EReal.continuousAt_add_coe_bot
 

@@ -91,11 +91,6 @@ open SlashInvariantForm
 
 variable {F : Type*} {Γ : outParam <| Subgroup SL(2, ℤ)} {k : outParam ℤ}
 
-instance (priority := 100) SlashInvariantFormClass.coeToFun [SlashInvariantFormClass F Γ k] :
-    CoeFun F fun _ => ℍ → ℂ :=
-  FunLike.hasCoeToFun
-#align slash_invariant_form.slash_invariant_form_class.coe_to_fun SlashInvariantForm.SlashInvariantFormClass.coeToFun
-
 -- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
 theorem slash_action_eqn [SlashInvariantFormClass F Γ k] (f : F) (γ : Γ) : ↑f ∣[k] γ = ⇑f :=
   SlashInvariantFormClass.slash_action_eq f γ

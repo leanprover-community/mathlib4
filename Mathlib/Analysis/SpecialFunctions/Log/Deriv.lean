@@ -213,7 +213,7 @@ theorem tendsto_mul_log_one_plus_div_atTop (t : ℝ) :
       (((hasDerivAt_id (0 : ℝ)).const_mul t).const_add 1).log (by simp)
   have h₂ : Tendsto (fun x : ℝ => x⁻¹) atTop (𝓝[≠] 0) :=
     tendsto_inv_atTop_zero'.mono_right (nhdsWithin_mono _ fun x hx => (Set.mem_Ioi.mp hx).ne')
-  simpa only [Function.comp_def, inv_inv] using h₁.comp h₂
+  simpa only [(· ∘ ·), inv_inv] using h₁.comp h₂
 #align real.tendsto_mul_log_one_plus_div_at_top Real.tendsto_mul_log_one_plus_div_atTop
 
 open scoped BigOperators
@@ -279,7 +279,7 @@ theorem hasSum_pow_div_log_of_abs_lt_1 {x : ℝ} (h : |x| < 1) :
     refine' (tendsto_const_nhds.mul _).div_const _
     exact tendsto_pow_atTop_nhds_0_of_lt_1 (abs_nonneg _) h
   show Summable fun n : ℕ => x ^ (n + 1) / (n + 1)
-  · refine' summable_of_norm_bounded _ (summable_geometric_of_lt_1 (abs_nonneg _) h) fun i => _
+  · refine' .of_norm_bounded _ (summable_geometric_of_lt_1 (abs_nonneg _) h) fun i => _
     calc
       ‖x ^ (i + 1) / (i + 1)‖ = |x| ^ (i + 1) / (i + 1) := by
         have : (0 : ℝ) ≤ i + 1 := le_of_lt (Nat.cast_add_one_pos i)

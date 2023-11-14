@@ -1149,7 +1149,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
     -- but we need to massage it to take care of the dependent setting.
     rintro ⟨c, d⟩
     have : map List.sum (ofFn fun i : Fin (Composition.length c) => (d i).blocks) = c.blocks := by
-      simp [map_ofFn, Function.comp_def, Composition.blocks_sum, Composition.ofFn_blocksFun]
+      simp [map_ofFn, (· ∘ ·), Composition.blocks_sum, Composition.ofFn_blocksFun]
     rw [sigma_pi_composition_eq_iff]
     dsimp
     congr! 1

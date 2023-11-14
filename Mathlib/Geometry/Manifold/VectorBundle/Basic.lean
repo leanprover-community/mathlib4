@@ -184,9 +184,9 @@ theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x�
   simp (config := { singlePass := true }) only [contMDiffWithinAt_iff_target]
   rw [and_and_and_comm, ← FiberBundle.continuousWithinAt_totalSpace, and_congr_right_iff]
   intro hf
-  simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp_def,
-    LocalEquiv.trans_apply, LocalEquiv.prod_coe, LocalEquiv.refl_coe, extChartAt_self_apply,
-    modelWithCornersSelf_coe, id_def]
+  simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp, LocalEquiv.trans_apply,
+    LocalEquiv.prod_coe, LocalEquiv.refl_coe, extChartAt_self_apply, modelWithCornersSelf_coe,
+    id_def]
   refine (contMDiffWithinAt_prod_iff _).trans (and_congr ?_ Iff.rfl)
   have h1 : (fun x => (f x).proj) ⁻¹' (trivializationAt F E (f x₀).proj).baseSet ∈ 𝓝[s] x₀ :=
     ((FiberBundle.continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s))

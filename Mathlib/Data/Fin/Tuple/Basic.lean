@@ -243,7 +243,7 @@ theorem comp_cons {α : Type*} {β : Type*} (g : α → β) (y : α) (q : Fin n 
     rfl
   · let j' := pred j h
     have : j'.succ = j := succ_pred j h
-    rw [← this, cons_succ, comp, comp, cons_succ]
+    rw [← this, cons_succ, comp_apply, comp_apply, cons_succ]
 #align fin.comp_cons Fin.comp_cons
 
 theorem comp_tail {α : Type*} {β : Type*} (g : α → β) (q : Fin n.succ → α) :
@@ -374,8 +374,9 @@ theorem cons_eq_append {α : Type*} (x : α) (xs : Fin n → α) :
     Fin.append (xs ∘ Fin.cast h) ys = Fin.append xs ys ∘ (Fin.cast <| by rw[h]) := by
   subst h
   funext i
-  simp only [Fin.append, Fin.addCases, comp, Fin.cast, Fin.coe_castLT, Fin.subNat_mk, Fin.natAdd_mk,
-    ge_iff_le, eq_rec_constant, Fin.eta, Eq.ndrec, id_eq, eq_mpr_eq_cast, cast_eq]
+  simp (config := {unfoldPartialApp := true}) only [Fin.append, Fin.addCases, comp_def, Fin.cast,
+    Fin.coe_castLT, Fin.subNat_mk, Fin.natAdd_mk, ge_iff_le, eq_rec_constant, Fin.eta, Eq.ndrec,
+    id_eq, eq_mpr_eq_cast, cast_eq]
 
 @[simp] lemma append_cast_right {n m} {α : Type*} (xs : Fin n → α) (ys : Fin m → α) (m' : ℕ)
     (h : m' = m) :

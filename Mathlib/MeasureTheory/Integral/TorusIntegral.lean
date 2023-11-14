@@ -71,7 +71,6 @@ local macro:arg t:term:max noWs "ⁿ⁺¹" : term => `(Fin (n + 1) → $t)
 local macro:arg t:term:max noWs "ⁿ" : term => `(Fin n → $t)
 local macro:arg t:term:max noWs "⁰" : term => `(Fin 0 → $t)
 local macro:arg t:term:max noWs "¹" : term => `(Fin 1 → $t)
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-!
 ### `torusMap`, a parametrization of a torus
@@ -248,7 +247,7 @@ theorem torusIntegral_succAbove {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : �
       deriv_circleMap, i.prod_univ_succAbove _, smul_smul, torusMap, circleMap_zero]
     refine' set_integral_congr measurableSet_Icc fun Θ _ => _
     simp only [MeasurableEquiv.piFinSuccAboveEquiv_symm_apply, i.insertNth_apply_same,
-      i.insertNth_apply_succAbove, Function.comp_def]
+      i.insertNth_apply_succAbove, (· ∘ ·)]
     congr 2
     simp only [funext_iff, i.forall_iff_succAbove, circleMap, Fin.insertNth_apply_same,
       eq_self_iff_true, Fin.insertNth_apply_succAbove, imp_true_iff, and_self_iff]

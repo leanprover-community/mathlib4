@@ -144,7 +144,7 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
       ext c
       congr
       ext k
-      simp [h, Function.comp_def]
+      simp [h, Function.comp]
     simp [FormalMultilinearSeries.comp, show n + 2 ≠ 1 by norm_num, A, Finset.sum_union B,
       applyComposition_ones, C, D, -Set.toFinset_setOf]
 #align formal_multilinear_series.left_inv_comp FormalMultilinearSeries.leftInv_comp

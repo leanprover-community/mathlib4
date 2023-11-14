@@ -1016,7 +1016,7 @@ theorem eq_of_linearIndependent_of_span_subtype [Nontrivial R] {s t : Set M}
     ⟨fun x => ⟨x.1, h x.2⟩, fun a b hab => Subtype.coe_injective (Subtype.mk.inj hab)⟩
   have h_surj : Surjective f := by
     apply surjective_of_linearIndependent_of_span hs f _
-    convert hst <;> simp [comp_def]
+    convert hst <;> simp [comp]
   show s = t
   · apply Subset.antisymm _ h
     intro x hx
@@ -1270,7 +1270,7 @@ theorem linearIndependent_insert' {ι} {s : Set ι} {a : ι} {f : ι → V} (has
     linearIndependent_option]
   -- Porting note: `simp [(· ∘ ·), range_comp f]` → `simp [(· ∘ ·)]; erw [range_comp f ..]; simp`
   -- https://github.com/leanprover-community/mathlib4/issues/5164
-  simp only [Function.comp_def]
+  simp only [(· ∘ ·)]
   erw [range_comp f ((↑) : s → ι)]
   simp
 #align linear_independent_insert' linearIndependent_insert'

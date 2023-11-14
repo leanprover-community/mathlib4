@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Kenny Lau, Scott Morrison
+Authors: Mario Carneiro, Kenny Lau, Scott Morrison, Alex Keizer
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Perm
@@ -31,8 +31,13 @@ theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map
   apply map_injective_iff.mpr Fin.val_injective
   rw [map_cons, map_coe_finRange, range_succ_eq_map, Fin.val_zero, ← map_coe_finRange, map_map,
     map_map]
-  simp only [Function.comp_def, Fin.val_succ]
+  simp only [Function.comp, Fin.val_succ]
 #align list.fin_range_succ_eq_map List.finRange_succ_eq_map
+
+theorem finRange_succ (n : ℕ) :
+    finRange n.succ = (finRange n |>.map Fin.castSucc |>.concat (.last _)) := by
+  apply map_injective_iff.mpr Fin.val_injective
+  simp [range_succ, Function.comp_def]
 
 -- Porting note : `map_nth_le` moved to `List.finRange_map_get` in Data.List.Range
 
