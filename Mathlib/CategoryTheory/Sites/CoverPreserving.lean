@@ -221,7 +221,7 @@ then `F` is a continuous functor.
 
 This result is basically <https://stacks.math.columbia.edu/tag/00WW>.
 -/
-lemma isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{w} K F)
+lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{w} K F)
     (hF₂ : CoverPreserving J K F) : Functor.IsContinuous.{w} F J K where
   op_comp_isSheafOfTypes G X S hS x hx := by
     apply exists_unique_of_exists_of_unique
