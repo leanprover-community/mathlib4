@@ -120,7 +120,8 @@ lemma prod_primesBelow_geometric_eq_tsum_smoothNumbers {f : ℕ →* F} (hsum : 
 /-- The following statement says that summing over `N`-smooth numbers
 for large enough `N` gets us arbitrarily close to the sum over all natural numbers
 (assuming `f` is norm-summable and `f 0 = 0`; the latter since `0` is not smooth). -/
-lemma norm_tsum_smoothNumbers_sub_tsum_lt (hsum : Summable f) (hf₀ : f 0 = 0) {ε : ℝ} (εpos : 0 < ε) :
+lemma norm_tsum_smoothNumbers_sub_tsum_lt (hsum : Summable f) (hf₀ : f 0 = 0)
+    {ε : ℝ} (εpos : 0 < ε) :
     ∃ N₀ : ℕ, ∀ N ≥ N₀, ‖(∑' m : ℕ, f m) - (∑' m : N.smoothNumbers, f m)‖ < ε := by
   obtain ⟨N₀, hN₀⟩ :=
     summable_iff_nat_tsum_vanishing.mp hsum (Metric.ball 0 ε) <| Metric.ball_mem_nhds 0 εpos
