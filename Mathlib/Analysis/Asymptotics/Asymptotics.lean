@@ -2218,7 +2218,7 @@ open Asymptotics
 theorem summable_of_isBigO {ι E} [NormedAddCommGroup E] [CompleteSpace E] {f : ι → E} {g : ι → ℝ}
     (hg : Summable g) (h : f =O[cofinite] g) : Summable f :=
   let ⟨C, hC⟩ := h.isBigOWith
-  summable_of_norm_bounded_eventually (fun x => C * ‖g x‖) (hg.abs.mul_left _) hC.bound
+  .of_norm_bounded_eventually (fun x => C * ‖g x‖) (hg.abs.mul_left _) hC.bound
 set_option linter.uppercaseLean3 false in
 #align summable_of_is_O summable_of_isBigO
 
