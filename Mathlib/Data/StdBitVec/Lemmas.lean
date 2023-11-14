@@ -226,6 +226,22 @@ theorem bit_mod_two_pow_succ (b x w) :
       ]
     }
 
+theorem two_pow_succ_sub_one_eq_bit (w : Nat) : 2 ^ succ w - 1 = bit true (2^w - 1) := by
+  induction' w with w ih
+  · rfl
+  · simp only [Nat.pow_succ, Nat.mul_two, Nat.add_sub_assoc (one_le_two_pow _), ih, bit_val,
+      Nat.two_mul, Bool.cond_true]
+    conv_rhs => {
+      rw [←add_assoc]
+      change 2 ^ w + (2 ^ w - 1) + 2 ^ w + ((2 ^ w - 1) + 1)
+      rw [
+        Nat.sub_add_cancel (one_le_two_pow _),
+        add_assoc, ←two_mul (2 ^ w),
+        Nat.self_add_sub_one, Nat.sub_one_add_self
+      ]
+    }
+    ring_nf
+
 end Nat
 
 @[ext]
@@ -345,12 +361,32 @@ lemma getLsb_bitwise (f) (x y : BitVec w) (i : Fin w) (hf : f false false = fals
   simp only [HXor.hXor, Xor.xor, BitVec.xor, Fin.xor, Nat.xor, getLsb_bitwise]
 
 @[simp] lemma getLsb_negOne (i : Fin w) : getLsb (-1 : BitVec w) i = true := by
-  -- apply BitVec.toFin_inj
   simp only [getLsb, ofNat_eq_ofNat, Nat.shiftLeft_eq, one_mul, bne_iff_ne, ne_eq]
   simp [getLsb, Neg.neg, BitVec.neg, BitVec.toNat, HSub.hSub, Sub.sub, Fin.sub]
-  stop
-  rcases w with _|_|⟨w⟩
-  · simp
+  rcases i with ⟨i, hi⟩
+  simp only
+  induction' w with w ih generalizing i
+  · contradiction
+  · simp only [
+      Nat.mod_eq_of_lt (one_lt_two_pow' _),
+      Nat.mod_eq_of_lt (Nat.sub_lt_self (by decide) (one_le_two_pow _))
+    ]
+    simp [Nat.two_pow_succ_sub_one_eq_bit, -bit_true]
+    cases' i with i
+    · simp only [ge_iff_le, Nat.two_pow_succ_sub_one_eq_bit, Fin.val_zero, _root_.pow_zero,
+        Nat.bit_and_one, Bool.toNat_true, one_ne_zero, not_false_eq_true]
+    · specialize ih i (lt_of_succ_lt_succ hi)
+      cases' w with w
+      · contradiction
+      · rw [
+          Nat.mod_eq_of_lt (a := 1) (one_lt_two_pow' w),
+          Nat.mod_eq_of_lt (Nat.sub_lt (Nat.pow_two_pos _) (Nat.one_pos)),
+          Nat.pow_succ, Nat.mul_two
+        ] at ih
+        simp only [Nat.pow_succ, Nat.mul_two, ge_iff_le]
+        show _ &&& bit false (2^i) ≠ 0
+        simp only [ge_iff_le, land_bit, Bool.and_false, ne_eq, bit_eq_zero, and_true]
+        exact ih
 
 
 end Std.BitVec
