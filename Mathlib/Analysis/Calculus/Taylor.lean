@@ -118,7 +118,7 @@ theorem taylor_within_apply (f : ℝ → E) (n : ℕ) (s : Set ℝ) (x₀ x : �
   induction' n with k hk
   · simp
   rw [taylorWithinEval_succ, Finset.sum_range_succ, hk]
-  simp
+  simp [Nat.factorial]
 #align taylor_within_apply taylor_within_apply
 
 /-- If `f` is `n` times continuous differentiable on a set `s`, then the Taylor polynomial
@@ -188,10 +188,9 @@ theorem hasDerivWithinAt_taylorWithinEval {f : ℝ → E} {x y : ℝ} {n : ℕ} 
     exact hf'.hasDerivWithinAt.mono h
   simp_rw [Nat.add_succ, taylorWithinEval_succ]
   simp only [add_zero, Nat.factorial_succ, Nat.cast_mul, Nat.cast_add, Nat.cast_one]
-  have hdiff : DifferentiableOn ℝ (iteratedDerivWithin k f s) s' := by
-    have coe_lt_succ : (k : WithTop ℕ) < k.succ := Nat.cast_lt.2 k.lt_succ_self
-    refine' DifferentiableOn.mono _ h
-    exact hf.differentiableOn_iteratedDerivWithin coe_lt_succ hs_unique
+  have coe_lt_succ : (k : WithTop ℕ) < k.succ := Nat.cast_lt.2 k.lt_succ_self
+  have hdiff : DifferentiableOn ℝ (iteratedDerivWithin k f s) s' :=
+    (hf.differentiableOn_iteratedDerivWithin coe_lt_succ hs_unique).mono h
   specialize hk hf.of_succ ((hdiff y hy).mono_of_mem hs')
   convert hk.add (hasDerivWithinAt_taylor_coeff_within hs'_unique
     (nhdsWithin_mono _ h self_mem_nhdsWithin) hf') using 1
@@ -276,7 +275,7 @@ theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ
     refine' pow_ne_zero _ _
     rw [mem_Ioo] at hy
     rw [sub_ne_zero]
-    exact hy.2.ne.symm
+    exact hy.2.ne'
   have hg' : ∀ y : ℝ, y ∈ Ioo x₀ x → -(↑n + 1) * (x - y) ^ n ≠ 0 := fun y hy =>
     mul_ne_zero (neg_ne_zero.mpr (Nat.cast_add_one_ne_zero n)) (xy_ne y hy)
   -- We apply the general theorem with g(t) = (x - t)^(n+1)
@@ -285,7 +284,7 @@ theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ
   use y, hy
   simp only [sub_self, zero_pow', Ne.def, Nat.succ_ne_zero, not_false_iff, zero_sub, mul_neg] at h
   rw [h, neg_div, ← div_neg, neg_mul, neg_neg]
-  field_simp [xy_ne y hy]; ring
+  field_simp [xy_ne y hy, Nat.factorial];  ring
 #align taylor_mean_remainder_lagrange taylor_mean_remainder_lagrange
 
 /-- **Taylor's theorem** with the Cauchy form of the remainder.
@@ -333,13 +332,12 @@ theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (h
         (n ! : ℝ)⁻¹ * |x - a| ^ n * C := by
     rintro y ⟨hay, hyx⟩
     rw [norm_smul, Real.norm_eq_abs]
-    -- Estimate the iterated derivative by `C`
-    refine' mul_le_mul _ (hC y ⟨hay, hyx.le.trans hx.2⟩) (by positivity) (by positivity)
-    -- The rest is a trivial calculation
-    rw [abs_mul, abs_pow, abs_inv, Nat.abs_cast]
-    -- Porting note: was `mono* with 0 ≤ (n ! : ℝ)⁻¹; any_goals positivity; linarith [hx.1, hyx]`
     gcongr
-    rw [abs_of_nonneg, abs_of_nonneg] <;> linarith
+    · rw [abs_mul, abs_pow, abs_inv, Nat.abs_cast]
+      gcongr
+      rw [abs_of_nonneg, abs_of_nonneg] <;> linarith
+    -- Estimate the iterated derivative by `C`
+    · exact hC y ⟨hay, hyx.le.trans hx.2⟩
   -- Apply the mean value theorem for vector valued functions:
   have A : ∀ t ∈ Icc a x, HasDerivWithinAt (fun y => taylorWithinEval f n (Icc a b) y x)
       (((↑n !)⁻¹ * (x - t) ^ n) • iteratedDerivWithin (n + 1) f (Icc a b) t) (Icc a x) t := by

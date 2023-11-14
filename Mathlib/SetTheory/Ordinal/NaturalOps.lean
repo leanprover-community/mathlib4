@@ -58,9 +58,9 @@ def NatOrdinal : Type _ :=
   Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
 #align nat_ordinal NatOrdinal
 
-instance NatOrdinal.linearOrder: LinearOrder NatOrdinal := {Ordinal.linearOrder with}
+instance NatOrdinal.linearOrder : LinearOrder NatOrdinal := {Ordinal.linearOrder with}
 
-instance NatOrdinal.succOrder: SuccOrder NatOrdinal := {Ordinal.succOrder with}
+instance NatOrdinal.succOrder : SuccOrder NatOrdinal := {Ordinal.succOrder with}
 
 /-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]
@@ -86,7 +86,7 @@ theorem toOrdinal_symm_eq : NatOrdinal.toOrdinal.symm = Ordinal.toNatOrdinal :=
 -- porting note: used to use dot notation, but doesn't work in Lean 4 with `OrderIso`
 @[simp]
 theorem toOrdinal_toNatOrdinal (a : NatOrdinal) :
-  Ordinal.toNatOrdinal (NatOrdinal.toOrdinal a) = a := rfl
+    Ordinal.toNatOrdinal (NatOrdinal.toOrdinal a) = a := rfl
 #align nat_ordinal.to_ordinal_to_nat_ordinal NatOrdinal.toOrdinal_toNatOrdinal
 
 theorem lt_wf : @WellFounded NatOrdinal (· < ·) :=

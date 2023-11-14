@@ -59,8 +59,8 @@ theorem pure_id'_seq (x : F α) : (pure fun x => x) <*> x = x :=
 @[functor_norm]
 theorem seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
     x <*> f <$> y = (· ∘ f) <$> x <*> y := by
-  simp [← pure_seq]
-  simp [seq_assoc, ← comp_map, (· ∘ ·)]
+  simp only [← pure_seq]
+  simp only [seq_assoc, Function.comp, seq_pure, ← comp_map]
   simp [pure_seq]
 #align seq_map_assoc seq_map_assoc
 
@@ -140,7 +140,7 @@ section
 variable {m : Type u → Type u} [Monad m] [LawfulMonad m]
 
 theorem joinM_map_map {α β : Type u} (f : α → β) (a : m (m α)) :
-  joinM (Functor.map f <$> a) = f <$> joinM a := by
+    joinM (Functor.map f <$> a) = f <$> joinM a := by
   simp only [joinM, (· ∘ ·), id.def, ← bind_pure_comp, bind_assoc, map_bind, pure_bind]
 #align mjoin_map_map joinM_map_map
 

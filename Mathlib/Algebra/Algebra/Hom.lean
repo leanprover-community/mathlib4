@@ -114,7 +114,7 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
 #align alg_hom.alg_hom_class AlgHom.algHomClass
 
 /-- See Note [custom simps projection] -/
-def Simps.apply {R α β : Type _} [CommSemiring R]
+def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
     [Semiring α] [Semiring β] [Algebra R α] [Algebra R β] (f : α →ₐ[R] β) : α → β := f
 
 initialize_simps_projections AlgHom (toFun → apply)
@@ -560,6 +560,14 @@ variable {R}
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
   rfl
 #align algebra.of_id_apply Algebra.ofId_apply
+
+/-- This is a special case of a more general instance that we define in a later file. -/
+instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
+  ⟨fun f g => AlgHom.ext fun _ => (f.commutes _).trans (g.commutes _).symm⟩
+
+/-- This ext lemma closes trivial subgoals create when chaining heterobasic ext lemmas. -/
+@[ext high]
+theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
 
 end Algebra
 

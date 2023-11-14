@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.Algebra.Hom.NonUnitalAlg
-import Mathlib.Algebra.Star.StarAlgHom
+import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Star.Module
+import Mathlib.Algebra.Star.StarAlgHom
+import Mathlib.LinearAlgebra.Prod
 
 #align_import algebra.algebra.unitization from "leanprover-community/mathlib"@"8f66240cab125b938b327d3850169d490cfbcdd8"
 
@@ -16,7 +16,7 @@ import Mathlib.Algebra.Star.Module
 
 Given a non-unital `R`-algebra `A` (given via the type classes
 `[NonUnitalRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]`) we construct
-the minimal unital `R`-algebra containing `A` as an ideal. This object `algebra.unitization R A` is
+the minimal unital `R`-algebra containing `A` as an ideal. This object `Unitization R A` is
 a type synonym for `R × A` on which we place a different multiplicative structure, namely,
 `(r₁, a₁) * (r₂, a₂) = (r₁ * r₂, r₁ • a₂ + r₂ • a₁ + a₁ * a₂)` where the multiplicative identity
 is `(1, 0)`.
