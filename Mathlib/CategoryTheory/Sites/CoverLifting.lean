@@ -24,17 +24,17 @@ but they are actually equivalent via `CategoryTheory.GrothendieckTopology.supers
 
 ## Main definitions
 
-* `CategoryTheory.CoverLifting`: a functor between sites is cover-lifting if it
+* `CategoryTheory.Functor.CoverLifting`: a functor between sites is cover-lifting if it
   pulls back covering sieves to covering sieves
-* `CategoryTheory.Functor.pushforwardCocontinuous`: A cover-lifting functor `G : (C, J) ⥤ (D, K)`
-  induces a functor `Sheaf J A ⥤ Sheaf K A`.
+* `CategoryTheory.Functor.sheafPushforwardCocontinuous`: A cover-lifting functor
+  `G : (C, J) ⥤ (D, K)` induces a functor `Sheaf J A ⥤ Sheaf K A`.
 
 ## Main results
 * `CategoryTheory.ran_isSheaf_of_coverLifting`: If `G : C ⥤ D` is cover lifting, then
   `Ran G.op` (`ₚu`) as a functor `(Cᵒᵖ ⥤ A) ⥤ (Dᵒᵖ ⥤ A)` of presheaves maps sheaves to sheaves.
 * `CategoryTheory.Sites.pullbackCopullbackAdjunction`: If `G : (C, J) ⥤ (D, K)` is cover-lifting
   and continuous, then `G.sheafPushforwardContinuous A J K` and
-  `G.pushforwardCocontinuous A J K` are adjoint.
+  `G.sheafPushforwardCocontinuous A J K` are adjoint.
 
 ## References
 
