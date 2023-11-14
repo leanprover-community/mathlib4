@@ -79,7 +79,7 @@ theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
   rw [hμ.eq_orderOf]
   -- Porting note: was `{occs := occurrences.pos [2]}`
   conv_rhs => rw [← hμ.val_toRootsOfUnity_coe]
-  rw [orderOf_units, orderOf_coe]
+  rw [orderOf_units, Subgroup.orderOf_coe]
 #align is_primitive_root.aut_to_pow_injective IsPrimitiveRoot.autToPow_injective
 
 end IsPrimitiveRoot
