@@ -731,7 +731,7 @@ theorem characteristic_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (
   intro Φ
   show (Φ • P).toSubgroup = P.toSubgroup
   congr
-  simp
+  simp [eq_iff_true_of_subsingleton]
 #align sylow.characteristic_of_normal Sylow.characteristic_of_normal
 
 end Pointwise
