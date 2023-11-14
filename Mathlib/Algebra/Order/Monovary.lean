@@ -403,7 +403,7 @@ lemma monovaryOn_iff_mul_rearrangement :
 /-- Two functions antivary iff the rearrangement inequality holds. -/
 lemma antivaryOn_iff_mul_rearrangement :
     AntivaryOn f g s ↔
-      ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → f i • g i + f j • g j ≤ f i • g j + f j • g i := by
+      ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → f i * g i + f j * g j ≤ f i * g j + f j * g i := by
   simp only [smul_eq_mul, antivaryOn_iff_smul_rearrangement]
 
 /-- Two functions monovary iff the rearrangement inequality holds. -/
@@ -413,7 +413,7 @@ lemma monovary_iff_mul_rearrangement :
 
 /-- Two functions antivary iff the rearrangement inequality holds. -/
 lemma antivary_iff_mul_rearrangement :
-    Antivary f g ↔ ∀ i j, f i • g i + f j • g j ≤ f i • g j + f j • g i := by
+    Antivary f g ↔ ∀ i j, f i * g i + f j * g j ≤ f i * g j + f j * g i := by
   simp only [smul_eq_mul, antivary_iff_smul_rearrangement]
 
 alias ⟨MonovaryOn.sub_mul_sub_nonneg, _⟩ := monovaryOn_iff_forall_mul_nonneg
