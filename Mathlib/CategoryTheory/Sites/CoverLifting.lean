@@ -87,8 +87,9 @@ instance isCoverLifting_id : Functor.IsCoverLifting (𝟭 C) J J :=
   ⟨fun h => by simpa using h⟩
 #align category_theory.id_cover_lifting CategoryTheory.isCoverLifting_id
 
-/-- The composition of two cover-lifting functors are cover-lifting -/
-theorem compCoverLifting [G.IsCoverLifting J K] [G'.IsCoverLifting K L] : (G ⋙ G').IsCoverLifting J L where
+/-- The composition of two cover-lifting functors is cover-lifting -/
+theorem compCoverLifting [G.IsCoverLifting J K] [G'.IsCoverLifting K L] :
+    (G ⋙ G').IsCoverLifting J L where
   cover_lift h := G.cover_lift J K (G'.cover_lift K L h)
 #align category_theory.comp_cover_lifting CategoryTheory.compCoverLifting
 
