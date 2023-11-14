@@ -454,8 +454,9 @@ Given an `EffectiveEpiFamily X π` such that the coproduct of `X` exists, `Sigma
 `EffectiveEpi`.
 -/
 noncomputable
-def EffectiveEpiFamily_descStruct {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
-    [HasCoproduct X] [EffectiveEpiFamily X π] : EffectiveEpiStruct (Sigma.desc π) where
+def effectiveEpiStructDescOfEffectiveEpiFamily {B : C} {α : Type*} (X : α → C)
+    (π : (a : α) → (X a ⟶ B)) [HasCoproduct X] [EffectiveEpiFamily X π] :
+    EffectiveEpiStruct (Sigma.desc π) where
   desc e h := EffectiveEpiFamily.desc X π (fun a ↦ Sigma.ι X a ≫ e) (fun a₁ a₂ g₁ g₂ hg ↦ by
     simp only [← Category.assoc]
     apply h (g₁ ≫ Sigma.ι X a₁) (g₂ ≫ Sigma.ι X a₂)
@@ -477,7 +478,7 @@ def EffectiveEpiFamily_descStruct {B : C} {α : Type*} (X : α → C) (π : (a :
 
 instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [HasCoproduct X]
     [EffectiveEpiFamily X π] : EffectiveEpi (Sigma.desc π) :=
-  ⟨⟨EffectiveEpiFamily_descStruct X π⟩⟩
+  ⟨⟨effectiveEpiStructDescOfEffectiveEpiFamily X π⟩⟩
 
 /--
 This is an auxiliary lemma used twice in the definition of  `EffectiveEpiFamilyOfEffectiveEpiDesc`.
@@ -521,8 +522,13 @@ theorem effectiveEpiFamilyOfEffectiveEpiDesc_aux {B : C} {α : Type*} {X : α �
   rw [this, pullback.condition] at hg
   simpa using hg
 
+/--
+If a coproduct interacts well enough with pullbacks, then a family whose domains are the terms of
+the coproduct is effective epimorphic whenever `Sigma.desc` induces an effective epimorphism from
+the coproduct itself.
+-/
 noncomputable
-def EffectiveEpiFamilyOfEffectiveEpiDesc {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
+def effectiveEpiFamilyOfEffectiveEpiDesc {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [HasCoproduct X] [EffectiveEpi (Sigma.desc π)]
     [∀ {Z : C} (g : Z ⟶ ∐ X) (a : α), HasPullback g (Sigma.ι X a)]
     [∀ {Z : C} (g : Z ⟶ ∐ X), HasCoproduct (fun a ↦ pullback g (Sigma.ι X a))]
@@ -546,26 +552,26 @@ instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [∀ {Z : C} (g : Z ⟶ ∐ X), HasCoproduct (fun a ↦ pullback g (Sigma.ι X a))]
     [∀ {Z : C} (g : Z ⟶ ∐ X), Epi (Sigma.desc (fun a ↦ pullback.fst (f := g)
       (g := (Sigma.ι X a))))] : EffectiveEpiFamily X π :=
-  ⟨⟨EffectiveEpiFamilyOfEffectiveEpiDesc X π⟩⟩
+  ⟨⟨effectiveEpiFamilyOfEffectiveEpiDesc X π⟩⟩
 
 /--
 An `EffectiveEpiFamily` consisting of a single `EffectiveEpi`
 -/
 noncomputable
-def EffectiveEpi_familyStruct {B X : C} (f : X ⟶ B) [EffectiveEpi f] :
+def effectiveEpiFamilyStructSingletonOfEffectiveEpi {B X : C} (f : X ⟶ B) [EffectiveEpi f] :
     EffectiveEpiFamilyStruct (fun () ↦ X) (fun () ↦ f) where
   desc e h := EffectiveEpi.desc f (e ()) (fun g₁ g₂ hg ↦ h () () g₁ g₂ hg)
   fac e h := fun _ ↦ EffectiveEpi.fac f (e ()) (fun g₁ g₂ hg ↦ h () () g₁ g₂ hg)
   uniq e h m hm := by apply EffectiveEpi.uniq f (e ()) (h () ()); exact hm ()
 
 instance {B X : C} (f : X ⟶ B) [EffectiveEpi f] : EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
-  ⟨⟨EffectiveEpi_familyStruct f⟩⟩
+  ⟨⟨effectiveEpiFamilyStructSingletonOfEffectiveEpi f⟩⟩
 
 /--
 A single element `EffectiveEpiFamily` constists of an `EffectiveEpi`
 -/
 noncomputable
-def EffectiveEpiStruct_ofFamily {B X : C} (f : X ⟶ B)
+def effectiveEpiStructOfEffectiveEpiFamilySingleton {B X : C} (f : X ⟶ B)
     [EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f)] :
     EffectiveEpiStruct f where
   desc e h := EffectiveEpiFamily.desc
@@ -577,9 +583,9 @@ def EffectiveEpiStruct_ofFamily {B X : C} (f : X ⟶ B)
 
 instance {B X : C} (f : X ⟶ B) [EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f)] :
     EffectiveEpi f :=
-  ⟨⟨EffectiveEpiStruct_ofFamily f⟩⟩
+  ⟨⟨effectiveEpiStructOfEffectiveEpiFamilySingleton f⟩⟩
 
-lemma effectiveEpi_iff_effectiveEpiFamily {B X : C} (f : X ⟶ B) :
+theorem effectiveEpi_iff_effectiveEpiFamily {B X : C} (f : X ⟶ B) :
     EffectiveEpi f ↔ EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
@@ -588,7 +594,7 @@ A family of morphisms with the same target inducing an isomorphism from the copr
 is an `EffectiveEpiFamily`.
 -/
 noncomputable
-def EffectiveEpiFamilyStruct_of_isIso_desc {B : C} {α : Type*} (X : α → C)
+def effectiveEpiFamilyStructOfIsIsoDesc {B : C} {α : Type*} (X : α → C)
     (π : (a : α) → (X a ⟶ B)) [HasCoproduct X] [IsIso (Sigma.desc π)] :
     EffectiveEpiFamilyStruct X π where
   desc e _ := (asIso (Sigma.desc π)).inv ≫ (Sigma.desc e)
@@ -608,20 +614,25 @@ def EffectiveEpiFamilyStruct_of_isIso_desc {B : C} {α : Type*} (X : α → C)
 
 instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [HasCoproduct X]
     [IsIso (Sigma.desc π)] : EffectiveEpiFamily X π :=
-  ⟨⟨EffectiveEpiFamilyStruct_of_isIso_desc X π⟩⟩
+  ⟨⟨effectiveEpiFamilyStructOfIsIsoDesc X π⟩⟩
 
 /-- The identity is an effective epi. -/
 noncomputable
-def EffectiveEpiStructOfIsIso {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpiStruct f where
+def effectiveEpiStructOfIsIso {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpiStruct f where
   desc e _ := inv f ≫ e
   fac _ _ := by simp
   uniq _ _ _ h := by simpa using h
 
-instance {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpi f := ⟨⟨EffectiveEpiStructOfIsIso f⟩⟩
+instance {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpi f := ⟨⟨effectiveEpiStructOfIsIso f⟩⟩
 
+/--
+A split epi followed by an effective epi is an effective epi. This version takes an explicit section
+to the split epi, and is mainly used to define `effectiveEpiStructCompOfEffectiveEpiSplitEpi`,
+which takes a `SplitEpi` instance instead.
+-/
 noncomputable
-def EffectiveEpiStruct_of_comp {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) (i : X ⟶ Y) (hi : i ≫ g = 𝟙 _)
-    [EffectiveEpi f] : EffectiveEpiStruct (g ≫ f) where
+def effectiveEpiStructCompOfEffectiveEpiSplitEpi' {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) (i : X ⟶ Y)
+    (hi : i ≫ g = 𝟙 _) [EffectiveEpi f] : EffectiveEpiStruct (g ≫ f) where
   desc e w := EffectiveEpi.desc f (i ≫ e) fun g₁ g₂ _ ↦ (by
     simp only [← Category.assoc]
     apply w (g₁ ≫ i) (g₂ ≫ i)
@@ -636,11 +647,15 @@ def EffectiveEpiStruct_of_comp {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) (i : X �
     apply EffectiveEpi.uniq f
     rw [← hm, ← Category.assoc, ← Category.assoc, hi, Category.id_comp]
 
+/-- A split epi followed by an effective epi is an effective epi. -/
 noncomputable
-def EffectiveEpiStruct_of_comp_splitEpi {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) [IsSplitEpi g]
+def effectiveEpiStructCompOfEffectiveEpiSplitEpi {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) [IsSplitEpi g]
     [EffectiveEpi f] : EffectiveEpiStruct (g ≫ f) :=
-  EffectiveEpiStruct_of_comp f g (IsSplitEpi.exists_splitEpi (f := g)).some.section_
+  effectiveEpiStructCompOfEffectiveEpiSplitEpi' f g (IsSplitEpi.exists_splitEpi (f := g)).some.section_
     (IsSplitEpi.exists_splitEpi (f := g)).some.id
+
+instance {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) [IsSplitEpi g] [EffectiveEpi f] :
+    EffectiveEpi (g ≫ f) := ⟨⟨effectiveEpiStructCompOfEffectiveEpiSplitEpi f g⟩⟩
 
 end instances
 
