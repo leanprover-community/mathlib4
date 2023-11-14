@@ -48,7 +48,7 @@ example (f g : α → α) (h : ∀ x : α, f x ≤ g x) (h₂ : g a + g b ≤ 5)
   guard_target =ₛ g a + f b ≤ 5
   grw [h]
   guard_target =ₛ g a + g b ≤ 5
-  exact h₂
+  grw [h₂]
 
 example (f g : α → α) (h : ∀ x : α, f x < g x) : f a ≤ g b := by
   grw [h, ← h b]
@@ -62,8 +62,6 @@ example (h₁ : a ≥ b) (h₂ : 0 ≤ c) : a * c ≥ 100 - a := by
 
 example {n : ℕ} (bound : n ≤ 5) : n ≤ 10 := by
   have h' := (show 5 ≤ 10 by norm_num)
-  have test : false
-  swap
   grw [h'] at bound
   assumption
 
