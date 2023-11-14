@@ -9,15 +9,18 @@ import Mathlib.MeasureTheory.Constructions.HaarToSphere
 /-!
 # Volume of balls
 
-We give a formula `measure_unitBall_eq_integral_div_gamma` for computing the volume of the unit ball
-in a normed finite dimensional `ℝ`-vector space `E` equipped with an Haar measure. We also provide a
-theorem `measure_lt_one_eq_integral_div_gamma` to compute the volume of the set
-`{x : E | g x ≤ 1}` for a function `g` defining a norm on `E`. From this result, we compute the
-volume of the unit balls for the norms `L_p` for `1 ≤ p` in any dimension over the reals
-`volume_sum_rpow_lt_one` and the complex `Complex.volume_sum_rpow_lt_one`.
+Let `E` be a finite dimensional normed `ℝ`-vector space equipped with an Haar measure `μ`. Then, we
+prove that
+`μ (Metric.ball 0 1) = (∫ (x : E), Real.exp (- ‖x‖ ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)`
+for any real number `p` with `0 < p`, see `MeasureTheorymeasure_unitBall_eq_integral_div_gamma`. We
+also prove the corresponding result to compute `μ {x : E | g x < 1}` where `g : E → ℝ` is a function
+defining a norm on `E`, see `MeasureTheory.measure_lt_one_eq_integral_div_gamma`.
+
+Using these formula, we compute the volume of the unit balls for the norms `L_p` for `1 ≤ p` in any
+dimension over the reals `volume_sum_rpow_lt_one` and the complex `Complex.volume_sum_rpow_lt_one`.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- See issue lean4#2220
 
 section integrals
 
@@ -143,17 +146,12 @@ section move_me
 
 open BigOperators Fintype MeasureTheory MeasureTheory.Measure
 
-@[simp]
-theorem _root_.MeasureTheory.Measure.pi_empty {ι : Type*} {α : ι → Type*} [IsEmpty ι]
-    [∀ i, MeasurableSpace (α i)] (μ : (i : ι) → Measure (α i)) [∀ (i : ι), SigmaFinite (μ i)] :
-    Measure.pi μ (Set.univ) = 1 := by rw [Measure.pi_univ, Fintype.prod_empty]
-
 theorem MeasureTheory.integral_finset_prod_eq_pow' {E : Type*} {n : ℕ} (f : E → ℝ) [MeasureSpace E]
     [SigmaFinite (volume : Measure E)] : ∫ x : (Fin n) → E, ∏ i, f (x i) = (∫ x, f x) ^ n := by
   induction n with
   | zero =>
       simp only [Nat.zero_eq, volume_pi, Finset.univ_eq_empty, Finset.prod_empty, integral_const,
-        pi_empty, ENNReal.one_toReal, smul_eq_mul, mul_one, pow_zero]
+        pi_empty_univ, ENNReal.one_toReal, smul_eq_mul, mul_one, pow_zero]
   | succ n n_ih =>
       calc
         _ = ∫ x : E × (Fin n → E), (f x.1) * ∏ i : Fin n, f (x.2 i) := by
