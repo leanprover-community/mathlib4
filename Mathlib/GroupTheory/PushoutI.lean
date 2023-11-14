@@ -504,7 +504,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
           (h3 _ _ (List.mem_cons_self _ _))]
 
 /-- Take the product of a normal word as an element of the `PushoutI`. We show that this is
-injective -/
+bijective, in `NormalWord.equiv`. -/
 def prod (w : NormalWord d) : PushoutI φ :=
   base φ w.head * ofCoprodI (w.toWord).prod
 
