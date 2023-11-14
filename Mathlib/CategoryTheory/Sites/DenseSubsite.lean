@@ -534,6 +534,8 @@ instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.a
       IsIso.of_iso ((@asIso _ _ _ _ _ (Ran.reflective A G.op)).app Y.val)
     apply ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
 
+variable (A)
+
 /-- Given a functor between small sites that is cover-dense, cover-preserving, and cover-lifting,
 it induces an equivalence of category of sheaves valued in a complete category.
 -/
@@ -557,7 +559,7 @@ variable
 noncomputable
 abbrev sheafEquivOfCoverPreservingCoverLiftingSheafificationCompatibility :
     (whiskeringLeft _ _ A).obj G.op ⋙ presheafToSheaf _ _ ≅
-      presheafToSheaf _ _ ⋙ (sheafEquivOfCoverPreservingCoverLifting G J K).inverse := by
+      presheafToSheaf _ _ ⋙ (sheafEquivOfCoverPreservingCoverLifting G J K A).inverse := by
   apply Functor.pushforwardContinuousSheafificationCompatibility
 
 end CategoryTheory.Functor.IsCoverDense
