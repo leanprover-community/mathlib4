@@ -51,7 +51,7 @@ theorem Squarefree.factorization_le_one {n : ℕ} (p : ℕ) (hn : Squarefree n) 
   · have := hn p
     simp only [multiplicity_eq_factorization hp hn', Nat.isUnit_iff, hp.ne_one, or_false_iff]
       at this
-    exact_mod_cast this
+    exact mod_cast this
   · rw [factorization_eq_zero_of_non_prime _ hp]
     exact zero_le_one
 #align nat.squarefree.factorization_le_one Nat.Squarefree.factorization_le_one

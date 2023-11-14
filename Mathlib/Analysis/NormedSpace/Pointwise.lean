@@ -268,7 +268,7 @@ theorem infEdist_thickening (hδ : 0 < δ) (s : Set E) (x : E) :
     refine' sub_pos_of_lt _
     have := hs.trans_lt ((infEdist_le_edist_of_mem hz).trans_lt h)
     rw [ofReal_eq_coe_nnreal hδ.le, some_eq_coe] at this
-    exact_mod_cast this
+    exact mod_cast this
   rw [some_eq_coe, edist_lt_coe, ← dist_lt_coe, ← add_sub_cancel'_right δ ↑r] at h
   obtain ⟨y, hxy, hyz⟩ := exists_dist_lt_lt hr hδ h
   refine' (ENNReal.add_lt_add_right ofReal_ne_top <|

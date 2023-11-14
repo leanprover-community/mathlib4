@@ -226,7 +226,7 @@ def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
       norm_num
       rw [RootableBy.root_cancel]
       rw [Int.ofNat_eq_coe] at hn
-      exact_mod_cast hn
+      exact mod_cast hn
     · change (RootableBy.root a _)⁻¹ ^ _ = a
       norm_num
       rw [RootableBy.root_cancel]
@@ -242,7 +242,7 @@ def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ where
   root_zero a := RootableBy.root_zero a
   root_cancel {n} a hn := by
     -- Porting note: replaced `norm_num`
-    simpa only [zpow_coe_nat] using RootableBy.root_cancel a (show (n : ℤ) ≠ 0 by exact_mod_cast hn)
+    simpa only [zpow_coe_nat] using RootableBy.root_cancel a (show (n : ℤ) ≠ 0 from mod_cast hn)
 #align group.rootable_by_nat_of_rootable_by_int Group.rootableByNatOfRootableByInt
 #align add_group.divisible_by_nat_of_divisible_by_int AddGroup.divisibleByNatOfDivisibleByInt
 

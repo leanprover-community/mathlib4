@@ -118,7 +118,7 @@ theorem derivative_succ_aux (n ν : ℕ) :
   · simp only [← mul_assoc]
     refine' congr (congr_arg (· * ·) (congr (congr_arg (· * ·) _) rfl)) rfl
     -- Now it's just about binomial coefficients
-    exact_mod_cast congr_arg (fun m : ℕ => (m : R[X])) (Nat.succ_mul_choose_eq n ν).symm
+    exact mod_cast congr_arg (fun m : ℕ => (m : R[X])) (Nat.succ_mul_choose_eq n ν).symm
   · rw [← tsub_add_eq_tsub_tsub, ← mul_assoc, ← mul_assoc]; congr 1
     rw [mul_comm, ← mul_assoc, ← mul_assoc]; congr 1
     norm_cast

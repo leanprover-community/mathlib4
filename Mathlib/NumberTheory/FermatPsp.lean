@@ -102,14 +102,14 @@ theorem coprime_of_probablePrime {n b : ℕ} (h : ProbablePrime n b) (h₁ : 1 �
 theorem probablePrime_iff_modEq (n : ℕ) {b : ℕ} (h : 1 ≤ b) :
     ProbablePrime n b ↔ b ^ (n - 1) ≡ 1 [MOD n] := by
   have : 1 ≤ b ^ (n - 1) := one_le_pow_of_one_le h (n - 1)
-  -- For exact_mod_cast
+  -- For exact mod_cast
   rw [Nat.ModEq.comm]
   constructor
   · intro h₁
     apply Nat.modEq_of_dvd
-    exact_mod_cast h₁
+    exact mod_cast h₁
   · intro h₁
-    exact_mod_cast Nat.ModEq.dvd h₁
+    exact mod_cast Nat.ModEq.dvd h₁
 #align fermat_psp.probable_prime_iff_modeq Nat.probablePrime_iff_modEq
 
 /-- If `n` is a Fermat pseudoprime to base `b`, then `n` is coprime with `b`, assuming that `b` is
@@ -247,8 +247,8 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
     have : p.Coprime b := Or.resolve_right (Nat.coprime_or_dvd_of_prime p_prime b) this
     have : IsCoprime (b : ℤ) ↑p := this.symm.isCoprime
     have : ↑b ^ (p - 1) ≡ 1 [ZMOD ↑p] := Int.ModEq.pow_card_sub_one_eq_one p_prime this
-    have : ↑p ∣ ↑b ^ (p - 1) - ↑1 := by exact_mod_cast Int.ModEq.dvd (Int.ModEq.symm this)
-    exact_mod_cast this
+    have : ↑p ∣ ↑b ^ (p - 1) - ↑1 := mod_cast Int.ModEq.dvd (Int.ModEq.symm this)
+    exact mod_cast this
   -- Because `p - 1` is even, there is a `c` such that `2 * c = p - 1`. `nat_sub_dvd_pow_sub_pow`
   -- implies that `b ^ c - 1 ∣ (b ^ c) ^ 2 - 1`, and `(b ^ c) ^ 2 = b ^ (p - 1)`.
   have ha₄ : b ^ 2 - 1 ∣ b ^ (p - 1) - 1 := by

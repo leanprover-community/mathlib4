@@ -204,7 +204,7 @@ theorem coeff_bdd_of_roots_le {B : ℝ} {d : ℕ} (f : F →+* K) {p : F[X]} (h1
     refine' _root_.trans _
       (one_le_mul_of_one_le_of_one_le (one_le_pow_of_one_le (le_max_right B 1) d) _)
     · split_ifs <;> norm_num
-    · exact_mod_cast Nat.succ_le_iff.mpr (Nat.choose_pos (d.div_le_self 2))
+    · exact mod_cast Nat.succ_le_iff.mpr (Nat.choose_pos (d.div_le_self 2))
 #align polynomial.coeff_bdd_of_roots_le Polynomial.coeff_bdd_of_roots_le
 
 end Roots

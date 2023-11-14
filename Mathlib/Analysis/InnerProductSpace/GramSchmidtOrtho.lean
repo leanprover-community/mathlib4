@@ -319,7 +319,7 @@ theorem span_gramSchmidtNormed (f : ι → E) (s : Set ι) :
   by_cases h : gramSchmidt 𝕜 f i = 0
   · simp [h]
   · refine' mem_span_singleton.2 ⟨‖gramSchmidt 𝕜 f i‖, smul_inv_smul₀ _ _⟩
-    exact_mod_cast norm_ne_zero_iff.2 h
+    exact mod_cast norm_ne_zero_iff.2 h
 #align span_gram_schmidt_normed span_gramSchmidtNormed
 
 theorem span_gramSchmidtNormed_range (f : ι → E) :
