@@ -1599,6 +1599,15 @@ theorem AbsolutelyContinuous.ae_eq (h : μ ≪ ν) {f g : α → δ} (h' : f =�
   h.ae_le h'
 #align measure_theory.measure.absolutely_continuous.ae_eq MeasureTheory.Measure.AbsolutelyContinuous.ae_eq
 
+protected theorem _root_.MeasureTheory.AEDisjoint.of_absolutelyContinuous
+    (h : AEDisjoint μ s t) {ν : Measure α} (h' : ν ≪ μ) :
+    AEDisjoint ν s t := h' h
+
+protected theorem _root_.MeasureTheory.AEDisjoint.of_le
+    (h : AEDisjoint μ s t) {ν : Measure α} (h' : ν ≤ μ) :
+    AEDisjoint ν s t :=
+  h.of_absolutelyContinuous (Measure.absolutelyContinuous_of_le h')
+
 /-! ### Quasi measure preserving maps (a.k.a. non-singular maps) -/
 
 
