@@ -301,17 +301,6 @@ theorem sub_smul (r s : R) (y : M) : (r - s) • y = r • y - s • y := by
   simp [add_smul, sub_eq_add_neg]
 #align sub_smul sub_smul
 
-instance : SMulCommClass ℤˣ R M where
-  smul_comm r s m := by
-    obtain rfl | rfl := Int.units_eq_one_or r <;> simp
-
-instance : IsScalarTower ℤˣ R M where
-  smul_assoc r s m := by
-    obtain rfl | rfl := Int.units_eq_one_or r <;> simp
-
-lemma Int.smul_units_smul (r : R) (s : ℤˣ) (m : M) : r • (s • m) = (s • r) • m := by
-  rw [smul_assoc, smul_comm]
-
 end Module
 
 variable (R)
@@ -559,6 +548,16 @@ instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCo
     [Module R M] : IsScalarTower ℤ R M where
   smul_assoc n x y := ((smulAddHom R M).flip y).map_zsmul x n
 #align add_comm_group.int_is_scalar_tower AddCommGroup.intIsScalarTower
+
+instance {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
+    [Module R M] : SMulCommClass ℤˣ R M := inferInstance
+
+instance {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
+    [Module R M] : IsScalarTower ℤˣ R M := inferInstance
+
+lemma Int.smul_units_smul {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
+    [Module R M] (r : R) (s : ℤˣ) (m : M) : r • (s • m) = (s • r) • m := by
+  rw [smul_assoc, smul_comm]
 
 instance IsScalarTower.rat {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
     [Module ℚ R] [Module ℚ M] : IsScalarTower ℚ R M where
