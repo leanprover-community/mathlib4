@@ -207,6 +207,11 @@ faithfully on `Pair d i` and that `Pair d i` is isomorphic to `NormalWord d`. He
 `Transversal`. A `Pair d i` is a word in the coproduct, `Coprod G`, the `tail`, and an element
 of the group `G i`, the `head`. The first letter of the `tail` must not be an element of `G i`.
 Note that the `head` may be `1` Every letter in the `tail` must be in the transversal given by `d`.
+
+We then show that the equivalence between `NormalWord` and `PushoutI`, between the set of normal
+words and the elements of the amalgamated product. The key to this is the theorem `prod_smul_empty`,
+which says that going from `NormalWord` to `PushoutI` and back is the identity. This is proven
+by induction on the word using `consRecOn`.
 -/
 
 variable (φ)
