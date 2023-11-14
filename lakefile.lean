@@ -75,7 +75,7 @@ post_update pkg do
   https://github.com/leanprover/lean4/issues/2752
   -/
   let wsToolchainFile := rootPkg.dir / "lean-toolchain"
-  let mathlibToolchain := (← IO.FS.readFile <| pkg.dir / "lean-toolchain").trim
+  let mathlibToolchain := ← IO.FS.readFile <| pkg.dir / "lean-toolchain"
   IO.FS.writeFile wsToolchainFile mathlibToolchain
   /-
   Instead of building and running cache via the Lake API,
@@ -83,7 +83,7 @@ post_update pkg do
   -/
   let exitCode ← IO.Process.spawn {
     cmd := "elan"
-    args := #["run", mathlibToolchain, "lake", "exe", "cache", "get"]
+    args := #["run", mathlibToolchain.trim, "lake", "exe", "cache", "get"]
   } >>= (·.wait)
   if exitCode ≠ 0 then
     logError s!"{pkg.name}: failed to fetch cache"
