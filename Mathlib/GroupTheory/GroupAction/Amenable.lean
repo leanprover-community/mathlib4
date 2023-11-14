@@ -73,6 +73,8 @@ instance MeanSMul : SMul G (Mean α) where
       intro X Y hX hY disjXY
       simp only [Set.preimage_union]
       apply μ.fin_add ((λ (x:α) => g•x)⁻¹' X) ((λ (x:α) => g•x)⁻¹' Y) _ _ _
+      apply measurable_const_smul; exact hX
+      apply measurable_const_smul; exact hY
       apply Disjoint.preimage
       exact disjXY
   }
