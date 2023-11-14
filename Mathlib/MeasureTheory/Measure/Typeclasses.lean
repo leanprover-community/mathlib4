@@ -478,6 +478,7 @@ end Measure
 
 open Measure
 
+/-- A measure is called s-finite if it is a countable sum of finite measures. -/
 class SFinite {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
   out' : ∃ m : ℕ → Measure α, (∀ n, IsFiniteMeasure (m n)) ∧ μ = Measure.sum m
 
@@ -700,7 +701,7 @@ theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top {ι : Type*} {_ : M
     ((fun _ _ h ↦ Disjoint.aedisjoint (As_disj h))) Union_As_finite
 #align measure_theory.measure.countable_meas_pos_of_disjoint_of_meas_Union_ne_top MeasureTheory.Measure.countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top
 
-/-- In an S-finite space, among disjoint null-measurable sets, only countably many can have positive
+/-- In an s-finite space, among disjoint null-measurable sets, only countably many can have positive
 measure. -/
 theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} { _ : MeasurableSpace α} {μ : Measure α}
     [h : SFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
@@ -722,7 +723,7 @@ theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} { _ : MeasurableSp
   · exact fun i j hij ↦ AEDisjoint.of_le (As_disj hij) (le_sum m n)
   · exact measure_ne_top (m n) (⋃ i, As i)
 
-/-- In an S-finite space, among disjoint measurable sets, only countably many can have positive
+/-- In an s-finite space, among disjoint measurable sets, only countably many can have positive
 measure. -/
 theorem countable_meas_pos_of_disjoint_iUnion {ι : Type*} {_ : MeasurableSpace α} {μ : Measure α}
     [SFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
@@ -853,7 +854,7 @@ theorem restrict_toMeasurable_of_cover {s : Set α} {v : ℕ → Set α} (hv : s
 
 /-- The measurable superset `toMeasurable μ t` of `t` (which has the same measure as `t`)
 satisfies, for any measurable set `s`, the equality `μ (toMeasurable μ t ∩ s) = μ (t ∩ s)`.
-This only holds when `μ` is S-finite. For a version without this assumption (but requiring
+This only holds when `μ` is s-finite. For a version without this assumption (but requiring
 that `t` has finite measure), see `measure_toMeasurable_inter`. -/
 theorem measure_toMeasurable_inter_of_sfinite [h : SFinite μ] {s : Set α} (hs : MeasurableSet s)
     (t : Set α) : μ (toMeasurable μ t ∩ s) = μ (t ∩ s) := by

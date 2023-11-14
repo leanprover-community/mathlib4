@@ -721,7 +721,7 @@ theorem measure_inter_eq_of_measure_eq {s t u : Set α} (hs : MeasurableSet s) (
 /-- The measurable superset `toMeasurable μ t` of `t` (which has the same measure as `t`)
 satisfies, for any measurable set `s`, the equality `μ (toMeasurable μ t ∩ s) = μ (u ∩ s)`.
 Here, we require that the measure of `t` is finite. The conclusion holds without this assumption
-when the measure is S-finite (in particular σ-finite),
+when the measure is s-finite (for example when it is σ-finite),
 see `measure_toMeasurable_inter_of_sfinite`. -/
 theorem measure_toMeasurable_inter {s t : Set α} (hs : MeasurableSet s) (ht : μ t ≠ ∞) :
     μ (toMeasurable μ t ∩ s) = μ (t ∩ s) :=
