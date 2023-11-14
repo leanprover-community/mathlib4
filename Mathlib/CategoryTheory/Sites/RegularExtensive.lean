@@ -126,7 +126,7 @@ instance [FinitaryPreExtensive C] [Preregular C] : Precoherent C where
       ext; simp
     let π₂ := fun a ↦ pullback.fst (f := g') (g := Sigma.ι X₁ a) ≫ g
     let π' := fun a ↦ pullback.fst (f := g') (g := Sigma.ι X₁ a)
-    have _ : IsIso (Sigma.desc π') := FinitaryPreExtensive.sigma_desc_iso (fun a ↦ Sigma.ι X₁ a) g' hh
+    have _ := FinitaryPreExtensive.sigma_desc_iso (fun a ↦ Sigma.ι X₁ a) g' hh
     refine ⟨X₂, π₂, ⟨⟨@effectiveEpiFamilyOfEffectiveEpiDesc _ _ _ _ X₂ π₂ _ ?_ ?_ ?_ ?_⟩⟩, ?_⟩
     · have : (Sigma.desc π' ≫ g) = Sigma.desc π₂ := by ext; simp
       rw [← this]

@@ -651,7 +651,8 @@ def effectiveEpiStructCompOfEffectiveEpiSplitEpi' {B X Y : C} (f : X ⟶ B) (g :
 noncomputable
 def effectiveEpiStructCompOfEffectiveEpiSplitEpi {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) [IsSplitEpi g]
     [EffectiveEpi f] : EffectiveEpiStruct (g ≫ f) :=
-  effectiveEpiStructCompOfEffectiveEpiSplitEpi' f g (IsSplitEpi.exists_splitEpi (f := g)).some.section_
+  effectiveEpiStructCompOfEffectiveEpiSplitEpi' f g
+    (IsSplitEpi.exists_splitEpi (f := g)).some.section_
     (IsSplitEpi.exists_splitEpi (f := g)).some.id
 
 instance {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) [IsSplitEpi g] [EffectiveEpi f] :
