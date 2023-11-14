@@ -244,10 +244,8 @@ section FieldDivisionRing
 
 variable (R A : Type*) [Field R] [DivisionRing A] [Algebra R A]
 
--- porting note: todo: drop implicit args
 @[norm_cast]
-theorem coe_ratCast (q : ℚ) : ↑(q : R) = (q : A) :=
-  @map_ratCast (R →+* A) R A _ _ _ (algebraMap R A) q
+theorem coe_ratCast (q : ℚ) : ↑(q : R) = (q : A) := map_ratCast (algebraMap R A) q
 #align algebra_map.coe_rat_cast algebraMap.coe_ratCast
 
 end FieldDivisionRing
@@ -362,6 +360,12 @@ theorem algebraMap_eq_smul_one' : ⇑(algebraMap R A) = fun r => r • (1 : A) :
 theorem commutes (r : R) (x : A) : algebraMap R A r * x = x * algebraMap R A r :=
   Algebra.commutes' r x
 #align algebra.commutes Algebra.commutes
+
+lemma commute_algebraMap_left (r : R) (x : A) : Commute (algebraMap R A r) x :=
+  Algebra.commutes r x
+
+lemma commute_algebraMap_right (r : R) (x : A) : Commute x (algebraMap R A r) :=
+  (Algebra.commutes r x).symm
 
 /-- `mul_left_comm` for `Algebra`s when one element is from the base ring. -/
 theorem left_comm (x : A) (r : R) (y : A) :

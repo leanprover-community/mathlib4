@@ -281,8 +281,7 @@ instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
     simp only [Algebra.algebraMap_eq_smul_one, smul_eq_mul]
     rw [smul_assoc, ←smul_one_mul]
 
-instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
-    [Algebra R A] [Algebra S A] [SMulCommClass R S A] :
+instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A] [Algebra R A] [Algebra S A] :
     SMulCommClass R S (FreeAlgebra A X) where
   smul_comm r s x := smul_comm (algebraMap R A r) (algebraMap S A s) x
 
