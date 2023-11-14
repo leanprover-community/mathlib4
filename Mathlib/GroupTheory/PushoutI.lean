@@ -199,7 +199,7 @@ variable (φ)
 canonical element of each coset. We also need all the maps in the diagram to be injective  -/
 structure Transversal : Type _ where
   /-- All maps in the diagram are injective -/
-  ( injective : ∀i, Injective (φ i) )
+  ( injective : ∀ i, Injective (φ i) )
   /-- The underlying set, containing exactly one element of each coset of the base group -/
   ( set : ∀ i, Set (G i) )
   /-- The chosen element of the base group itself is the identity -/
