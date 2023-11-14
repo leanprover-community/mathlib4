@@ -747,10 +747,13 @@ theorem coe_zero {_m : MeasurableSpace α} : ⇑(0 : Measure α) = 0 :=
   rfl
 #align measure_theory.measure.coe_zero MeasureTheory.Measure.coe_zero
 
+@[nontriviality]
+lemma apply_eq_zero_of_isEmpty [IsEmpty α] {_ : MeasurableSpace α} (μ : Measure α) (s : Set α) :
+    μ s = 0 := by
+  rw [eq_empty_of_isEmpty s, measure_empty]
+
 instance instSubsingleton [IsEmpty α] {m : MeasurableSpace α} : Subsingleton (Measure α) :=
-  ⟨fun μ ν => by
-    ext1 s _
-    rw [eq_empty_of_isEmpty s]; simp only [measure_empty]⟩
+  ⟨fun μ ν => by ext1 s _; rw [apply_eq_zero_of_isEmpty, apply_eq_zero_of_isEmpty]⟩
 #align measure_theory.measure.subsingleton MeasureTheory.Measure.instSubsingleton
 
 theorem eq_zero_of_isEmpty [IsEmpty α] {_m : MeasurableSpace α} (μ : Measure α) : μ = 0 :=
