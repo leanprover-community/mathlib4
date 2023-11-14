@@ -400,6 +400,9 @@ instance fintypeBiUnion' [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] 
   Fintype.ofFinset (s.toFinset.biUnion fun x => (t x).toFinset) <| by simp
 #align set.fintype_bUnion' Set.fintypeBiUnion'
 
+section monad
+attribute [local instance] Set.monad
+
 /-- If `s : Set α` is a set with `Fintype` instance and `f : α → Set β` is a function such that
 each `f a`, `a ∈ s`, has a `Fintype` structure, then `s >>= f` has a `Fintype` structure. -/
 def fintypeBind {α β} [DecidableEq β] (s : Set α) [Fintype s] (f : α → Set β)
@@ -411,6 +414,8 @@ instance fintypeBind' {α β} [DecidableEq β] (s : Set α) [Fintype s] (f : α 
     [∀ a, Fintype (f a)] : Fintype (s >>= f) :=
   Set.fintypeBiUnion' s f
 #align set.fintype_bind' Set.fintypeBind'
+
+end monad
 
 instance fintypeEmpty : Fintype (∅ : Set α) :=
   Fintype.ofFinset ∅ <| by simp
@@ -828,10 +833,15 @@ theorem Finite.iUnion {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Fini
     contradiction
 #align set.finite.Union Set.Finite.iUnion
 
+section monad
+attribute [local instance] Set.monad
+
 theorem Finite.bind {α β} {s : Set α} {f : α → Set β} (h : s.Finite) (hf : ∀ a ∈ s, (f a).Finite) :
     (s >>= f).Finite :=
   h.biUnion hf
 #align set.finite.bind Set.Finite.bind
+
+end monad
 
 @[simp]
 theorem finite_empty : (∅ : Set α).Finite :=
