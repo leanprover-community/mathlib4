@@ -78,10 +78,7 @@ private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type*} [Field K] {μ : K} 
     rw [isRoot_of_unity_iff hnpos _]
     exact ⟨n, n.mem_divisors_self hnpos.ne', hμ⟩
   by_contra hnμ
-  have ho : 0 < orderOf μ := by
-    apply orderOf_pos'
-    rw [isOfFinOrder_iff_pow_eq_one]
-    exact ⟨n, hnpos, hμn⟩
+  have ho : 0 < orderOf μ := (isOfFinOrder_iff_pow_eq_one.2 $ ⟨n, hnpos, hμn⟩).orderOf_pos
   have := pow_orderOf_eq_one μ
   rw [isRoot_of_unity_iff ho] at this
   obtain ⟨i, hio, hiμ⟩ := this

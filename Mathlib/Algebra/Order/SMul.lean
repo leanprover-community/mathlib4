@@ -337,7 +337,7 @@ theorem bddAbove_smul_iff_of_pos (hc : 0 < c) : BddAbove (c • s) ↔ BddAbove 
 
 end LinearOrderedSemifield
 
-namespace Tactic
+namespace Mathlib.Meta.Positivity
 
 section OrderedSMul
 
@@ -364,54 +364,31 @@ private theorem smul_ne_zero_of_ne_zero_of_pos [Preorder M] (ha : a ≠ 0) (hb :
 
 end NoZeroSMulDivisors
 
--- Porting note: Tactic code not ported yet
--- open Positivity
+open Lean.Meta Qq
 
--- -- failed to format: unknown constant 'term.pseudo.antiquot'
--- /--
---       Extension for the `Positivity` tactic: scalar multiplication is
---       nonnegative/positive/nonzero if both sides are. -/
---     @[ positivity ]
---     unsafe
---   def
---     positivity_smul
---     : expr → tactic strictness
---     |
---         e @ q( $ ( a ) • $ ( b ) )
---         =>
---         do
---           let strictness_a ← core a
---             let strictness_b ← core b
---             match
---               strictness_a , strictness_b
---               with
---               | positive pa , positive pb => positive <$> mk_app ` ` smul_pos [ pa , pb ]
---                 |
---                   positive pa , nonnegative pb
---                   =>
---                   nonnegative <$> mk_app ` ` smul_nonneg_of_pos_of_nonneg [ pa , pb ]
---                 |
---                   nonnegative pa , positive pb
---                   =>
---                   nonnegative <$> mk_app ` ` smul_nonneg_of_nonneg_of_pos [ pa , pb ]
---                 |
---                   nonnegative pa , nonnegative pb
---                   =>
---                   nonnegative <$> mk_app ` ` smul_nonneg [ pa , pb ]
---                 |
---                   positive pa , nonzero pb
---                   =>
---                   nonzero <$> to_expr ` `( smul_ne_zero_of_pos_of_ne_zero $ ( pa ) $ ( pb ) )
---                 |
---                   nonzero pa , positive pb
---                   =>
---                   nonzero <$> to_expr ` `( smul_ne_zero_of_ne_zero_of_pos $ ( pa ) $ ( pb ) )
---                 |
---                   nonzero pa , nonzero pb
---                   =>
---                   nonzero <$> to_expr ` `( smul_ne_zero $ ( pa ) $ ( pb ) )
---                 | sa @ _ , sb @ _ => positivity_fail e a b sa sb
---       | e => pp e >>= fail ∘ format.bracket "The expression `" "` isn't of the form `a • b`"
--- #align tactic.positivity_smul Tactic.positivity_smul
-
-end Tactic
+/-- Positivity extension for HSMul, i.e. (_ • _).  -/
+@[positivity HSMul.hSMul _ _]
+def evalHSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
+  let .app (.app (.app (.app (.app (.app
+        (.const ``HSMul.hSMul [u1, _, _]) (M : Q(Type u1))) _) _) _)
+          (a : Q($M))) (b : Q($α)) ← whnfR e | throwError "failed to match hSMul"
+  let zM : Q(Zero $M) ← synthInstanceQ (q(Zero $M))
+  let pM : Q(PartialOrder $M) ← synthInstanceQ (q(PartialOrder $M))
+  -- Using `q()` here would be impractical, as we would have to manually `synthInstanceQ` all the
+  -- required typeclasses. Ideally we could tell `q()` to do this automatically.
+  match ← core zM pM a, ← core zα pα b with
+  | .positive pa, .positive pb =>
+      pure (.positive (← mkAppM ``smul_pos #[pa, pb]))
+  | .positive pa, .nonnegative pb =>
+      pure (.nonnegative (← mkAppM ``smul_nonneg_of_pos_of_nonneg #[pa, pb]))
+  | .nonnegative pa, .positive pb =>
+      pure (.nonnegative (← mkAppM ``smul_nonneg_of_nonneg_of_pos #[pa, pb]))
+  | .nonnegative pa, .nonnegative pb =>
+      pure (.nonnegative (← mkAppM ``smul_nonneg #[pa, pb]))
+  | .positive pa, .nonzero pb =>
+      pure (.nonzero (← mkAppM ``smul_ne_zero_of_pos_of_ne_zero #[pa, pb]))
+  | .nonzero pa, .positive pb =>
+      pure (.nonzero (← mkAppM ``smul_ne_zero_of_ne_zero_of_pos #[pa, pb]))
+  | .nonzero pa, .nonzero pb =>
+      pure (.nonzero (← mkAppM ``smul_ne_zero #[pa, pb]))
+  | _, _ => pure .none
