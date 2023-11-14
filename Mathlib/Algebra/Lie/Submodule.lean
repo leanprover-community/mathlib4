@@ -536,6 +536,16 @@ theorem iSup_induction' {ι} (N : ι → LieSubmodule R L M) {C : (x : M) → (x
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     refine' ⟨_, hadd _ _ _ _ Cx Cy⟩
 
+theorem disjoint_iff_coe_toSubmodule :
+    Disjoint N N' ↔ Disjoint (N : Submodule R M) (N' : Submodule R M) := by
+  rw [disjoint_iff, disjoint_iff, ← coe_toSubmodule_eq_iff, inf_coe_toSubmodule, bot_coeSubmodule,
+    ← disjoint_iff]
+
+theorem codisjoint_iff_coe_toSubmodule :
+    Codisjoint N N' ↔ Codisjoint (N : Submodule R M) (N' : Submodule R M) := by
+  rw [codisjoint_iff, codisjoint_iff, ← coe_toSubmodule_eq_iff, sup_coe_toSubmodule,
+    top_coeSubmodule, ← codisjoint_iff]
+
 instance : AddCommMonoid (LieSubmodule R L M) where
   add := (· ⊔ ·)
   add_assoc _ _ _ := sup_assoc
@@ -642,6 +652,8 @@ theorem incl_apply (m : N) : N.incl m = m :=
 theorem incl_eq_val : (N.incl : N → M) = Subtype.val :=
   rfl
 #align lie_submodule.incl_eq_val LieSubmodule.incl_eq_val
+
+theorem injective_incl : Function.Injective N.incl := Subtype.coe_injective
 
 variable {N N'} (h : N ≤ N')
 
