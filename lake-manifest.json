@@ -36,9 +36,9 @@
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "8644e469d3032dadff345a2c96820bc4f4bdea93",
+    "rev": "870810643364834bcdc93d791faa6f6de481dfa6",
     "opts": {},
     "name": "std",
-    "inputRev?": "upstream_norm_cast",
+    "inputRev?": "main",
     "inherited": false}}],
  "name": "mathlib"}
