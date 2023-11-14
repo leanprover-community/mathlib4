@@ -853,7 +853,7 @@ theorem isIntegral_trans (A_int : Algebra.IsIntegral R A) (x : B) (hx : IsIntegr
 /-- If A is an R-algebra all of whose elements are integral over R,
 and B is an A-algebra all of whose elements are integral over A,
 then all elements of B are integral over R.-/
-nonrec theorem Algebra.IsIntegral.trans
+theorem Algebra.IsIntegral.trans
     (hA : Algebra.IsIntegral R A) (hB : Algebra.IsIntegral A B) : Algebra.IsIntegral R B :=
   fun x ↦ isIntegral_trans hA x (hB x)
 #align algebra.is_integral_trans Algebra.IsIntegral.trans
