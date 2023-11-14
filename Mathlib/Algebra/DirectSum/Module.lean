@@ -453,6 +453,12 @@ theorem isInternal_submodule_iff_isCompl (A : ι → Submodule R M) {i j : ι} (
   exact ⟨fun ⟨hd, ht⟩ ↦ ⟨hd, codisjoint_iff.mpr ht⟩, fun ⟨hd, ht⟩ ↦ ⟨hd, ht.eq_top⟩⟩
 #align direct_sum.is_internal_submodule_iff_is_compl DirectSum.isInternal_submodule_iff_isCompl
 
+@[simp]
+theorem isInternal_ne_bot_iff {A : ι → Submodule R M} :
+    IsInternal (fun i : {i // A i ≠ ⊥} ↦ A i) ↔ IsInternal A := by
+  simp only [isInternal_submodule_iff_independent_and_iSup_eq_top]
+  exact Iff.and CompleteLattice.independent_ne_bot_iff_independent <| by simp
+
 /-! Now copy the lemmas for subgroup and submonoids. -/
 
 

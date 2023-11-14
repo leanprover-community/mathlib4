@@ -50,15 +50,9 @@ lemma trace_eq_sum_trace_restrict [Fintype ι]
 lemma trace_eq_sum_trace_restrict' (hN : {i | N i ≠ ⊥}.Finite)
     {f : M →ₗ[R] M} (hf : ∀ i, MapsTo f (N i) (N i)) :
     trace R M f = ∑ i in hN.toFinset, trace R (N i) (f.restrict (hf i)) := by
-  set s : Finset ι := hN.toFinset
-  have h_ind : CompleteLattice.Independent (fun i : s ↦ N i) :=
-    h.submodule_independent.comp Subtype.val_injective
-  have h_sup : ⨆ i, N i = ⊤ := h.submodule_iSup_eq_top
-  replace h_sup : ⨆ (i : s), N i = ⊤ := by
-    suffices ⨆ i, ⨆ (_ : N i = ⊥), N i = ⊥ by
-      rw [iSup_split _ (fun i ↦ N i = ⊥), this, bot_sup_eq] at h_sup; simpa [iSup_subtype]
-    simp [iSup_eq_bot]
-  replace h := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top h_ind h_sup
-  rw [← Finset.sum_coe_sort, trace_eq_sum_trace_restrict h (fun i ↦ hf i)]
+  let _ : Fintype {i // N i ≠ ⊥} := hN.fintype
+  let _ : Fintype {i | N i ≠ ⊥} := hN.fintype
+  rw [← Finset.sum_coe_sort, trace_eq_sum_trace_restrict (isInternal_ne_bot_iff.mpr h) _]
+  exact Fintype.sum_equiv hN.subtype_equiv_subtype_toFinset _ _ (fun i ↦ rfl)
 
 end LinearMap
