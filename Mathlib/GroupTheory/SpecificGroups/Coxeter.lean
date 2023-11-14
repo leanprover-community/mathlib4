@@ -107,7 +107,7 @@ namespace CoxeterSystem
 
 variable {W : Type*} [Group W]
 
-/-- A group registered to Coxeter system is a Coxeter Group. -/
+/-- A group registered in a Coxeter system is a Coxeter Group. -/
 lemma isCoxeterGroup [M.IsCoxeter] (cs : CoxeterSystem M W) : IsCoxeterGroup M W where
   nonempty_system := Nonempty.intro cs
 
