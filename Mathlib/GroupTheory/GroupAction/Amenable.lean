@@ -44,7 +44,7 @@ and more information on amenable actions.
 -/
 
 universe u v
-variable (α : Type v) [MeasurableSpace α]
+variable (G : Type u) (α : Type v) [MeasurableSpace α]
 
 /--A mean is a function from the power set of α to ENNReal that
 assigns the value 1 to the full set α, and
@@ -63,7 +63,7 @@ instance : CoeFun (Mean α) (λ _ => Set α → NNReal) where
   coe := Mean.measureOf
 
 
-variable (G : Type u) [Monoid G] [MulAction G α] [MeasurableSpace G] [MeasurableSMul G α]
+variable [Monoid G] [MulAction G α] [MeasurableSpace G] [MeasurableSMul G α]
 
 instance MeanSMul : SMul G (Mean α) where
   smul g μ := {
@@ -88,12 +88,12 @@ structure InvariantMean extends Mean α where
 
 /-- A monoid action is amenable if there exists an invariant mean for it-/
 class Amenable where
-  invmean_nonempty := Nonempty (InvariantMean α G)
+  invmean_nonempty := Nonempty (InvariantMean G α)
 
 
 /-- For amenable actions, we can pick an invariant mean
  Todo: This does not yet work
-noncomputable def invMean [Amenable α G] :
-    InvariantMean α G :=
+noncomputable def invMean [Amenable G α] :
+    InvariantMean G α :=
   Classical.choice (Amenable.invmean_nonempty G α)
 -/
