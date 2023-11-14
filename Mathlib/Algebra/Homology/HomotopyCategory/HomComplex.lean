@@ -438,7 +438,7 @@ def δ_hom : Cochain F G n →ₗ[R] Cochain F G m where
     · ext p q hpq
       dsimp
       simp only [δ_v n m h _ p q hpq _ _ rfl rfl, Cochain.smul_v, Linear.comp_smul,
-        Linear.smul_comp, smul_add, add_right_inj, Int.smul_units_smul, smul_assoc]
+        Linear.smul_comp, smul_add, add_right_inj, smul_comm m.negOnePow r]
     · simp only [δ_shape _ _ h, smul_zero]
 
 variable {F G R}
