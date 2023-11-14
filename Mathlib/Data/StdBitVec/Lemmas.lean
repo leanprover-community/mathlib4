@@ -217,6 +217,10 @@ lemma lt_pow_of_bit_lt_pow_succ {w x : Nat} {x₀ : Bool} :
 --   · rw [bit_and_one, bit_val, add_mod, mul_mod_right, zero_add, mod_mod]
 --     cases b <;> rfl
 
+theorem bit_mod_two_pow_succ (b x w) :
+    bit b x % 2 ^ (w + 1) = bit b (x % 2 ^ w) := by
+  sorry
+
 end Nat
 
 @[ext]
@@ -280,9 +284,18 @@ theorem extMsb {w : ℕ} {x y : BitVec w} (h : ∀ (i : Fin w), x.getMsb i = y.g
 Show how `getLsb` distributes over bitwise operations
 -/
 
+attribute [simp] Nat.mod_one -- TODO: upstream this simp attr
+
 private lemma mod_and_two_pow_of_lt (x y w : ℕ) (h : y < 2 ^ w) :
     x % (2 ^ w) &&& y = x &&& y := by
-  sorry
+  induction' x using Nat.binaryRec with x₀ x ih generalizing w y
+  · rfl
+  · cases' w with w
+    · simp [Nat.mod_one, Nat.lt_one_iff.mp h]
+    · cases y using Nat.binaryRec
+      · simp
+      · specialize ih _ _ (Nat.lt_pow_of_bit_lt_pow_succ h)
+        simp [Nat.bit_mod_two_pow_succ, land_bit, ih]
 
 private lemma mod_and_two_pow_fin_val (x w : ℕ) (i : Fin w) :
     x % (2 ^ w) &&& (2 ^ ↑i) = x &&& (2 ^ ↑i) :=
