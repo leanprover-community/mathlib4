@@ -155,6 +155,85 @@ lemma exact_iff_of_iso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂) :
     S₁.Exact ↔ S₂.Exact :=
   ⟨exact_of_iso e, exact_of_iso e.symm⟩
 
+lemma exact₀ (S : ComposableArrows C 0) : S.Exact where
+  toIsComplex := S.isComplex₀
+  exact i hi := by simp at hi
+
+lemma exact₁ (S : ComposableArrows C 1) : S.Exact where
+  toIsComplex := S.isComplex₁
+  exact i hi := by exfalso; linarith
+
+lemma isComplex₂_iff (S : ComposableArrows C 2) :
+    S.IsComplex ↔ S.map' 0 1 ≫ S.map' 1 2 = 0 := by
+  constructor
+  · intro h
+    exact h.zero 0 (by linarith)
+  · intro h
+    refine' IsComplex.mk (fun i hi => _)
+    obtain rfl : i = 0 := by linarith
+    exact h
+
+lemma isComplex₂_mk (S : ComposableArrows C 2) (w : S.map' 0 1 ≫ S.map' 1 2 = 0) :
+    S.IsComplex :=
+  S.isComplex₂_iff.2 w
+
+lemma _root_.CategoryTheory.ShortComplex.isComplex_toComposableArrows (S : ShortComplex C) :
+    S.toComposableArrows.IsComplex :=
+  isComplex₂_mk _ (by simp)
+
+lemma exact₂_iff (S : ComposableArrows C 2) (hS : S.IsComplex) :
+    S.Exact ↔ (S.sc' hS 0 1 2).Exact := by
+  constructor
+  · intro h
+    exact h.exact 0 (by linarith)
+  · intro h
+    refine' Exact.mk hS (fun i hi => _)
+    obtain rfl : i = 0 := by linarith
+    exact h
+
+lemma exact₂_mk (S : ComposableArrows C 2) (w : S.map' 0 1 ≫ S.map' 1 2 = 0)
+    (h : (ShortComplex.mk _ _ w).Exact) : S.Exact :=
+  (S.exact₂_iff (S.isComplex₂_mk w)).2 h
+
+lemma _root_.CategoryTheory.ShortComplex.Exact.exact_toComposableArrows
+    {S : ShortComplex C} (hS : S.Exact) :
+    S.toComposableArrows.Exact :=
+  exact₂_mk _ _ hS
+
+lemma _root_.CategoryTheory.ShortComplex.exact_iff_exact_toComposableArrows
+    (S : ShortComplex C) :
+    S.Exact ↔ S.toComposableArrows.Exact :=
+  (S.toComposableArrows.exact₂_iff S.isComplex_toComposableArrows).symm
+
+lemma exact_iff_δ₀ (S : ComposableArrows C (n + 2)) :
+    S.Exact ↔ (mk₂ (S.map' 0 1) (S.map' 1 2)).Exact ∧ S.δ₀.Exact := by
+  constructor
+  · intro h
+    constructor
+    · rw [exact₂_iff]; swap
+      · rw [isComplex₂_iff]
+        exact h.toIsComplex.zero 0
+      exact h.exact 0 (by linarith)
+    · exact Exact.mk (IsComplex.mk (fun i hi => h.toIsComplex.zero (i + 1)))
+        (fun i hi => h.exact (i + 1))
+  · rintro ⟨h, h₀⟩
+    refine' Exact.mk (IsComplex.mk (fun i hi => _)) (fun i hi => _)
+    · obtain _ | i := i
+      · exact h.toIsComplex.zero 0
+      · exact h₀.toIsComplex.zero i
+    · obtain _ | i := i
+      · exact h.exact 0
+      · exact h₀.exact i
+
+/-- If `S : ComposableArrows C (n + 2)` is such that the first two arrows form
+an exact sequence and that the tail `S.δ₀` is exact, then `S` is also exact.
+See `ShortComplex.SnakeInput.snake_lemma` in `Algebra.Homology.ShortComplex.SnakeLemma`
+for a use of this lemma. -/
+lemma exact_of_δ₀ {S : ComposableArrows C (n + 2)}
+    (h : (mk₂ (S.map' 0 1) (S.map' 1 2)).Exact) (h₀ : S.δ₀.Exact) : S.Exact := by
+  rw [exact_iff_δ₀]
+  constructor <;> assumption
+
 end ComposableArrows
 
 end CategoryTheory
