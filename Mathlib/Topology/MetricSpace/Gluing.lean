@@ -378,7 +378,7 @@ protected theorem dist_triangle (x y z : Σi, E i) : dist x z ≤ dist x y + dis
       calc
         dist x (Nonempty.some ⟨x⟩) + 1 + dist (Nonempty.some ⟨z⟩) z ≤
             dist x y + dist y (Nonempty.some ⟨y⟩) + 1 + dist (Nonempty.some ⟨z⟩) z := by
-        apply_rules [add_le_add, le_rfl, dist_triangle]
+          apply_rules [add_le_add, le_rfl, dist_triangle]
         _ = _ := by abel
     · rcases eq_or_ne j k with (rfl | hjk)
       · simp only [Sigma.dist_ne hij, Sigma.dist_same]
