@@ -59,3 +59,12 @@ protected lemma ContinuousOn.partialSups_apply (hf : ∀ k ≤ n, ContinuousOn (
 protected lemma ContinuousOn.partialSups (hf : ∀ k ≤ n, ContinuousOn (f k) s) :
     ContinuousOn (partialSups f n) s := fun x hx ↦
   ContinuousWithinAt.partialSups fun k hk ↦ hf k hk x hx
+
+protected lemma Continuous.partialSups_apply (hf : ∀ k ≤ n, Continuous (f k)) :
+    Continuous (fun a ↦ partialSups (f · a) n) :=
+  continuous_iff_continuousAt.2 fun _ ↦ ContinuousAt.partialSups_apply fun k hk ↦
+    (hf k hk).continuousAt
+
+protected lemma Continuous.partialSups (hf : ∀ k ≤ n, Continuous (f k)) :
+    Continuous (partialSups f n) :=
+  continuous_iff_continuousAt.2 fun _ ↦ ContinuousAt.partialSups fun k hk ↦ (hf k hk).continuousAt

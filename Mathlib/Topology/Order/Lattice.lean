@@ -26,7 +26,6 @@ topological, lattice
 
 set_option autoImplicit true
 
-
 open Filter
 
 open Topology
@@ -212,6 +211,8 @@ lemma ContinuousOn.sup (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun a ↦ f a ⊔ g a) s :=
   hf.sup' hg
 
+lemma Continuous.sup' (hf : Continuous f) (hg : Continuous g) : Continuous (f ⊔ g) := hf.sup hg
+
 end Sup
 
 section Inf
@@ -241,6 +242,8 @@ lemma ContinuousOn.inf' (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
 lemma ContinuousOn.inf (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun a ↦ f a ⊓ g a) s :=
   hf.inf' hg
+
+lemma Continuous.inf' (hf : Continuous f) (hg : Continuous g) : Continuous (f ⊓ g) := hf.inf hg
 
 end Inf
 
@@ -274,6 +277,15 @@ lemma ContinuousOn.finset_sup' (hne : s.Nonempty) (hs : ∀ i ∈ s, ContinuousO
     ContinuousOn (s.sup' hne f) t := fun x hx ↦
   ContinuousWithinAt.finset_sup' hne fun i hi ↦ hs i hi x hx
 
+lemma Continuous.finset_sup'_apply (hne : s.Nonempty) (hs : ∀ i ∈ s, Continuous (f i)) :
+    Continuous (fun a ↦ s.sup' hne (f · a)) :=
+  continuous_iff_continuousAt.2 fun _ ↦ ContinuousAt.finset_sup'_apply _ fun i hi ↦
+    (hs i hi).continuousAt
+
+lemma Continuous.finset_sup' (hne : s.Nonempty) (hs : ∀ i ∈ s, Continuous (f i)) :
+    Continuous (s.sup' hne f) :=
+  continuous_iff_continuousAt.2 fun _ ↦ ContinuousAt.finset_sup' _ fun i hi ↦ (hs i hi).continuousAt
+
 end FinsetSup'
 
 section FinsetSup
@@ -305,6 +317,14 @@ lemma ContinuousOn.finset_sup_apply (hs : ∀ i ∈ s, ContinuousOn (f i) t) :
 lemma ContinuousOn.finset_sup (hs : ∀ i ∈ s, ContinuousOn (f i) t) :
     ContinuousOn (s.sup f) t := fun x hx ↦
   ContinuousWithinAt.finset_sup fun i hi ↦ hs i hi x hx
+
+lemma Continuous.finset_sup_apply (hs : ∀ i ∈ s, Continuous (f i)) :
+    Continuous (fun a ↦ s.sup (f · a)) :=
+  continuous_iff_continuousAt.2 fun _ ↦ ContinuousAt.finset_sup_apply fun i hi ↦
+    (hs i hi).continuousAt
+
+lemma Continuous.finset_sup (hs : ∀ i ∈ s, Continuous (f i)) : Continuous (s.sup f) :=
+  continuous_iff_continuousAt.2 fun _ ↦ ContinuousAt.finset_sup fun i hi ↦ (hs i hi).continuousAt
 
 end FinsetSup
 
@@ -338,6 +358,15 @@ lemma ContinuousOn.finset_inf' (hne : s.Nonempty) (hs : ∀ i ∈ s, ContinuousO
     ContinuousOn (s.inf' hne f) t := fun x hx ↦
   ContinuousWithinAt.finset_inf' hne fun i hi ↦ hs i hi x hx
 
+lemma Continuous.finset_inf'_apply (hne : s.Nonempty) (hs : ∀ i ∈ s, Continuous (f i)) :
+    Continuous (fun a ↦ s.inf' hne (f · a)) :=
+  continuous_iff_continuousAt.2 fun _ ↦ ContinuousAt.finset_inf'_apply _ fun i hi ↦
+    (hs i hi).continuousAt
+
+lemma Continuous.finset_inf' (hne : s.Nonempty) (hs : ∀ i ∈ s, Continuous (f i)) :
+    Continuous (s.inf' hne f) :=
+  continuous_iff_continuousAt.2 fun _ ↦ ContinuousAt.finset_inf' _ fun i hi ↦ (hs i hi).continuousAt
+
 end FinsetInf'
 
 section FinsetInf
@@ -369,5 +398,13 @@ lemma ContinuousOn.finset_inf_apply (hs : ∀ i ∈ s, ContinuousOn (f i) t) :
 lemma ContinuousOn.finset_inf (hs : ∀ i ∈ s, ContinuousOn (f i) t) :
     ContinuousOn (s.inf f) t := fun x hx ↦
   ContinuousWithinAt.finset_inf fun i hi ↦ hs i hi x hx
+
+lemma Continuous.finset_inf_apply (hs : ∀ i ∈ s, Continuous (f i)) :
+    Continuous (fun a ↦ s.inf (f · a)) :=
+  continuous_iff_continuousAt.2 fun _ ↦ ContinuousAt.finset_inf_apply fun i hi ↦
+    (hs i hi).continuousAt
+
+lemma Continuous.finset_inf (hs : ∀ i ∈ s, Continuous (f i)) : Continuous (s.inf f) :=
+  continuous_iff_continuousAt.2 fun _ ↦ ContinuousAt.finset_inf fun i hi ↦ (hs i hi).continuousAt
 
 end FinsetInf
