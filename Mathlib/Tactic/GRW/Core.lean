@@ -121,7 +121,7 @@ private partial def dischargeMainGoal (rule : Expr) (mvar : MVarId) : MetaM Unit
   throwError "Could not discharge main goal"
 
 private partial def useRule (rule : Expr) (mvar : MVarId) : MetaM (Array MVarId) := do
-  let ⟨progress, names, subgoals⟩ ← mvar.gcongr
+  let ⟨progress, _, subgoals⟩ ← mvar.gcongr
     none
     []
     (side_goal_discharger := dischargeSideGoal)
@@ -163,14 +163,14 @@ partial def runGrw (expr rule : Expr) (rev isTarget : Bool) :
 
   -- TODO surely this can be faster
   for lem in lemmas do
-    let lemResult : Option (Expr × Array MVarId) ← withTraceNode `GRW (λ _ ↦ return m!"trying lemma {lem}") do
+    let lemResult : Option (Expr × Array MVarId)
+        ← withTraceNode `GRW (λ _ ↦ return m!"trying lemma {lem}") do
       let s ← saveState
       let (lemResult : Option (Expr × Array Expr)) ← try
         let lemExpr ← mkConstWithFreshMVarLevels lem
         let lemType ← inferType lemExpr
         let ⟨metas, binders, _⟩ ← forallMetaTelescopeReducing lemType
         let mvarToAssign := if isTarget then expr.mvarId! else result.mvarId!
-        trace[GRW] "unifying types {← inferType (Expr.mvar mvarToAssign)} with {← inferType (mkAppN lemExpr metas)}"
         withReducible $ mvarToAssign.assignIfDefeq (mkAppN lemExpr metas)
 
         let firstDefaultArg := binders.findIdx? (λ x ↦ x == .default)

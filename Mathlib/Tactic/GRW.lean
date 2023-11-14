@@ -80,7 +80,7 @@ if side goals are created that it can not fill itself, which it does using `posi
 elab tok:"grw" rules:rwRuleSeq loc:(location)? : tactic => do
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
     (atLocal := λ fvar => withMainContext do
-      let ⟨_, newGoal, subgoals, fvar⟩ ← (withRWRulesSeqState tok rules fun rev syn ↦ do
+      let ⟨_, newGoal, subgoals, _⟩ ← (withRWRulesSeqState tok rules fun rev syn ↦ do
         let ⟨goal, subgoals, fvar⟩ ← get
         goal.withContext do
           let rulePrf ← elabTerm syn none
