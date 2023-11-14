@@ -35,11 +35,11 @@ open System (FilePath)
 
 /-- Target directory for build files -/
 def LIBDIR : FilePath :=
-  "build" / "lib"
+  ".lake" / "build" / "lib"
 
 /-- Target directory for IR files -/
 def IRDIR : FilePath :=
-  "build" / "ir"
+  ".lake" / "build" / "ir"
 
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
