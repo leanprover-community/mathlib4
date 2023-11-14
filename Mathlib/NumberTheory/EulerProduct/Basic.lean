@@ -40,7 +40,7 @@ lemma Summable.norm_lt_one {f : ℕ →* F} (hsum : Summable f) {p : ℕ} (hp : 
 
 open scoped Topology
 
-open BigOperators
+open Nat BigOperators
 
 -- We work with series indexed by the natural numbers
 -- and with terms in a complete normed field `F`.
@@ -57,7 +57,6 @@ lemma Nat.map_prime_pow_mul {p : ℕ} (hp : p.Prime) (e : ℕ) {m : p.smoothNumb
 
 namespace EulerProduct
 
-open Nat in
 /-- We relate a finite product over primes to an infinite sum over smooth numbers. -/
 lemma summable_and_hasSum_smoothNumbers_prod_primesBelow_tsum
     (hsum : ∀ {p : ℕ}, p.Prime → Summable (fun n : ℕ ↦ ‖f (p ^ n)‖)) (N : ℕ) :
@@ -65,7 +64,7 @@ lemma summable_and_hasSum_smoothNumbers_prod_primesBelow_tsum
       HasSum (fun m : N.smoothNumbers ↦ f m) (∏ p in N.primesBelow, ∑' (n : ℕ), f (p ^ n)) := by
   induction' N with N ih
   · rw [smoothNumbers_zero, primesBelow_zero, Finset.prod_empty]
-    exact ⟨Set.Finite.summable (Set.finite_singleton 1) (‖f ·‖), hf₁ ▸ hasSum_singleton 1 f⟩
+    exact ⟨(Set.finite_singleton 1).summable (‖f ·‖), hf₁ ▸ hasSum_singleton 1 f⟩
   · rw [primesBelow_succ]
     split_ifs with hN
     · constructor
@@ -83,7 +82,6 @@ lemma summable_and_hasSum_smoothNumbers_prod_primesBelow_tsum
         convert summable_mul_of_summable_norm (hsum hN) ih.1
     · rwa [smoothNumbers_succ hN]
 
-open Nat in
 /-- Given a (completely) multiplicative function `f : ℕ → F`, where `F` is a normed field,
 such that `‖f p‖ < 1` for all primes `p`, we can express the sum of `f n` over all `N`-smooth
 positive integers `n` as a product of `(1 - f p)⁻¹` over the primes `p < N`. At the same time,
@@ -131,7 +129,7 @@ lemma norm_tsum_smoothNumbers_sub_tsum_lt (hsum : Summable f) (hf₀ : f 0 = 0)
   simp_rw [← tsum_subtype_add_tsum_subtype_compl hsum N.smoothNumbers,
     add_sub_cancel', tsum_eq_tsum_diff_singleton (N.smoothNumbers)ᶜ hf₀]
 
-open Filter Nat in
+open Filter in
 /-- The *Euler Product* for multiplicative (on coprime arguments) functions.
 If `f : ℕ → F`, where `F` is a complete normed field, `f 0 = 0`,
 `f 1 = 1`, `f` is multiplicative on coprime arguments,
@@ -147,11 +145,9 @@ theorem euler_product (hf₀ : f 0 = 0) :
   obtain ⟨N₀, hN₀⟩ := norm_tsum_smoothNumbers_sub_tsum_lt hsum.of_norm hf₀ εpos
   use N₀
   convert hN₀ using 3 with m
-  rw [dist_eq_norm, norm_sub_rev]
-  congr 2
-  exact prod_primesBelow_tsum_eq_tsum_smoothNumbers hf₁ hmul hsum m
+  rw [dist_eq_norm, norm_sub_rev, prod_primesBelow_tsum_eq_tsum_smoothNumbers hf₁ hmul hsum m]
 
-open Filter Nat in
+open Filter in
 /-- The *Euler Product* for completely multiplicative functions.
 If `f : ℕ →*₀ F`, where `F` is a complete normed field
 and `‖f ·‖` is summable, then `∏' p : {p : ℕ | p.Prime}, (1 - f p)⁻¹ = ∑' n, f n`.
