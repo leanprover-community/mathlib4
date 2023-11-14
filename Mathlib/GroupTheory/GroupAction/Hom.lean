@@ -238,17 +238,17 @@ Coercion is already handled by all the HomClass constructions I believe -/
 --   ⟨toMulActionHom⟩
 -- #align distrib_mul_action_hom.has_coe' DistribMulActionHom.coe'
 
--- porting note: removed has_coe_to_fun instance, coercions handled differently now
-
 #noalign distrib_mul_action_hom.has_coe
 #noalign distrib_mul_action_hom.has_coe'
 #noalign distrib_mul_action_hom.has_coe_to_fun
 
-instance : DistribMulActionHomClass (A →+[M] B) M A B where
+instance : NDFunLike (A →+[M] B) A B where
   coe m := m.toFun
   coe_injective' f g h := by
     rcases f with ⟨tF, _, _⟩; rcases g with ⟨tG, _, _⟩
     cases tF; cases tG; congr
+
+instance : DistribMulActionHomClass (A →+[M] B) M A B where
   map_smul m := m.map_smul'
   map_zero := DistribMulActionHom.map_zero'
   map_add := DistribMulActionHom.map_add'

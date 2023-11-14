@@ -153,7 +153,7 @@ homomorphisms.
 You should also extend this typeclass when you extend `AddMonoidHom`.
 -/
 class AddMonoidHomClass (F M N : Type*) [AddZeroClass M] [AddZeroClass N] [NDFunLike F M N]
-  extends AddHomClass F M N, ZeroHomClass F M N
+  extends AddHomClass F M N, ZeroHomClass F M N : Prop
 #align add_monoid_hom_class AddMonoidHomClass
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
@@ -361,7 +361,7 @@ infixr:25 " →* " => MonoidHom
 You should also extend this typeclass when you extend `MonoidHom`. -/
 @[to_additive]
 class MonoidHomClass (F M N : Type*) [MulOneClass M] [MulOneClass N] [NDFunLike F M N]
-  extends MulHomClass F M N, OneHomClass F M N
+  extends MulHomClass F M N, OneHomClass F M N : Prop
 #align monoid_hom_class MonoidHomClass
 
 @[to_additive]
@@ -506,7 +506,7 @@ You should also extend this typeclass when you extend `MonoidWithZeroHom`.
 -/
 class MonoidWithZeroHomClass (F M N : Type*) [MulZeroOneClass M] [MulZeroOneClass N]
   [NDFunLike F M N]
-  extends MonoidHomClass F M N, ZeroHomClass F M N
+  extends MonoidHomClass F M N, ZeroHomClass F M N : Prop
 #align monoid_with_zero_hom_class MonoidWithZeroHomClass
 
 instance MonoidWithZeroHom.funLike : NDFunLike (M →*₀ N) M N where

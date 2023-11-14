@@ -369,7 +369,7 @@ This extends from both `MonoidHomClass` and `MonoidWithZeroHomClass` in
 order to put the fields in a sensible order, even though
 `MonoidWithZeroHomClass` already extends `MonoidHomClass`. -/
 class RingHomClass (F α β : Type*) [NonAssocSemiring α] [NonAssocSemiring β] [NDFunLike F α β]
-  extends MonoidHomClass F α β, AddMonoidHomClass F α β, MonoidWithZeroHomClass F α β
+  extends MonoidHomClass F α β, AddMonoidHomClass F α β, MonoidWithZeroHomClass F α β : Prop
 #align ring_hom_class RingHomClass
 
 variable [NDFunLike F α β]
