@@ -119,7 +119,6 @@ lemma exponentialPdf_eval_pos {r : ℝ} : ∀ᵐ x : ℝ ∂ volume , x < 0 →
   simp only [exponentialPdf_eq]
   exact ae_of_all _ (fun x hx ↦ by simp [not_le.mpr hx])
 
-
 lemma exponentialPdf_eval_neg {r : ℝ} : ∀ᵐ x : ℝ ∂ volume, (x ∈ {x | 0 ≤ x} →
     exponentialPdf r x =
     ENNReal.ofReal (r * rexp (-(r * x)))) := by
