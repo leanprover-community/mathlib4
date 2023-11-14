@@ -29,7 +29,7 @@ attribute [local simp] normalized hasNestedIf hasConstantIf hasRedundantIf disjo
 /-!
 Adding these lemmas to the simp set allows Lean to handle the termination proof automatically.
 -/
-attribute [local simp] Nat.lt_add_one_iff le_add_of_le_right
+attribute [local simp] Nat.lt_add_one_iff le_add_of_le_right max_add_add_right max_mul_mul_left
 
 /-!
 Some further simp lemmas for handling if-then-else statements.
@@ -100,7 +100,6 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
     | some b =>
       have i' := normalize l (.ite (lit b) t e); ⟨i'.1, ◾⟩
   termination_by normalize e => e.normSize
-  decreasing_by { decreasing_with simp (config := { arith := true }) [Zero.zero]; done }
 
 /-
 We recall the statement of the if-normalization problem.
