@@ -215,6 +215,12 @@ theorem coverPreserving_opens_map : CoverPreserving (Opens.grothendieckTopology 
   obtain ⟨V, i, hi, hxV⟩ := hS (f x) hx
   exact ⟨_, (Opens.map f).map i, ⟨_, _, 𝟙 _, hi, Subsingleton.elim _ _⟩, hxV⟩
 
+instance : (Opens.map f).IsContinuous (Opens.grothendieckTopology Y)
+    (Opens.grothendieckTopology X) := by
+  apply Functor.isContinuous_of_coverPreserving
+  · exact compatiblePreserving_opens_map f
+  · exact coverPreserving_opens_map f
+
 end OpenEmbedding
 
 namespace TopCat.Sheaf

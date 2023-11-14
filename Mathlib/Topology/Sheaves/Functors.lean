@@ -51,8 +51,7 @@ open Presheaf
 /-- The pushforward of a sheaf (by a continuous map) is a sheaf.
 -/
 theorem pushforward_sheaf_of_sheaf {F : X.Presheaf C} (h : F.IsSheaf) : (f _* F).IsSheaf :=
-  pullback_isSheaf_of_coverPreserving (compatiblePreserving_opens_map f)
-    (coverPreserving_opens_map f) ⟨F, h⟩
+  (Opens.map f).op_comp_isSheaf _ _ ⟨_, h⟩
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.pushforward_sheaf_of_sheaf TopCat.Sheaf.pushforward_sheaf_of_sheaf
 
@@ -61,7 +60,7 @@ variable (C)
 /-- The pushforward functor.
 -/
 def pushforward (f : X ⟶ Y) : X.Sheaf C ⥤ Y.Sheaf C :=
-  Sites.pullback _ (compatiblePreserving_opens_map f) (coverPreserving_opens_map f)
+  (Opens.map f).sheafPushforwardContinuous _ _ _
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.pushforward TopCat.Sheaf.pushforward
 
@@ -91,7 +90,7 @@ variable [ReflectsIsomorphisms (CategoryTheory.forget A)]
 The pushforward functor.
 -/
 def pullback (f : X ⟶ Y) : Y.Sheaf A ⥤ X.Sheaf A :=
-Sites.pushforward A _ _ (Opens.map f)
+  (Opens.map f).sheafPullback _ _ _
 
 lemma pullback_eq (f : X ⟶ Y) :
     pullback A f = forget A Y ⋙ Presheaf.pullback A f ⋙ presheafToSheaf _ _ := rfl
@@ -106,7 +105,7 @@ def pullbackIso (f : X ⟶ Y) :
 /-- The adjunction between pullback and pushforward for sheaves on topological spaces. -/
 def pullbackPushforwardAdjunction (f : X ⟶ Y) :
     pullback A f ⊣ pushforward A f :=
-Sites.pullbackPushforwardAdjunction _ _ _ _ _
+  (Opens.map f).sheafAdjunctionContinuous _ _ _
 
 instance : IsLeftAdjoint (pullback A f) := ⟨_, pullbackPushforwardAdjunction A f⟩
 instance : IsRightAdjoint (pushforward A f) := ⟨_, pullbackPushforwardAdjunction A f⟩
