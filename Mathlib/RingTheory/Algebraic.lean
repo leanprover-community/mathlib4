@@ -251,15 +251,15 @@ theorem Algebra.IsAlgebraic.of_larger_base (A_alg : IsAlgebraic K A) : IsAlgebra
 
 variable (K)
 
-theorem isAlgebraic_of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e :=
+theorem IsAlgebraic.of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e :=
   isAlgebraic_iff_isIntegral.mpr (.of_finite K e)
 
 variable (A)
 
 /-- A field extension is algebraic if it is finite. -/
-theorem Algebra.isAlgebraic_of_finite [FiniteDimensional K A] : IsAlgebraic K A :=
+theorem Algebra.IsAlgebraic.of_finite [FiniteDimensional K A] : IsAlgebraic K A :=
   Algebra.isAlgebraic_iff_isIntegral.mpr <| .of_finite K
-#align algebra.is_algebraic_of_finite Algebra.isAlgebraic_of_finite
+#align algebra.is_algebraic_of_finite Algebra.IsAlgebraic.of_finite
 
 end Field
 
@@ -340,7 +340,7 @@ variable [Field K] [Field L]
 variable [Algebra K L]
 
 theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function.Bijective ϕ :=
-  (Algebra.isAlgebraic_of_finite K L).algHom_bijective ϕ
+  (Algebra.IsAlgebraic.of_finite K L).algHom_bijective ϕ
 #align alg_hom.bijective AlgHom.bijective
 
 variable (K L)
@@ -349,7 +349,7 @@ variable (K L)
 @[reducible]
 noncomputable def algEquivEquivAlgHom [FiniteDimensional K L] :
     (L ≃ₐ[K] L) ≃* (L →ₐ[K] L) :=
-  (Algebra.isAlgebraic_of_finite K L).algEquivEquivAlgHom K L
+  (Algebra.IsAlgebraic.of_finite K L).algEquivEquivAlgHom K L
 #align alg_equiv_equiv_alg_hom algEquivEquivAlgHom
 
 end Field

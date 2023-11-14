@@ -527,7 +527,7 @@ instance isSeparable_self (F : Type*) [Field F] : IsSeparable F F :=
 /-- A finite field extension in characteristic 0 is separable. -/
 instance (priority := 100) IsSeparable.of_finite (F K : Type*) [Field F] [Field K] [Algebra F K]
     [FiniteDimensional F K] [CharZero F] : IsSeparable F K :=
-  have : ∀ x : K, IsIntegral F x := fun _x ↦ IsIntegral.of_finite _
+  have : ∀ x : K, IsIntegral F x := fun _x ↦ IsIntegral.of_finite F _
   ⟨this, fun x => (minpoly.irreducible (this x)).separable⟩
 #align is_separable.of_finite IsSeparable.of_finite
 
