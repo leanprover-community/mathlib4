@@ -199,7 +199,8 @@ theorem coverDense.inducedTopology_Sieve_iff_EffectiveEpiFamily (X : Stonean) (S
     rfl
 
 lemma coherentTopology_is_induced :
-    coherentTopology Stonean.{u} = Stonean.toProfinite.inducedTopologyOfIsCoverDense (coherentTopology _) := by
+    coherentTopology Stonean.{u} =
+      Stonean.toProfinite.inducedTopologyOfIsCoverDense (coherentTopology _) := by
   ext X S
   rw [← coverDense.inducedTopology_Sieve_iff_EffectiveEpiFamily X,
     ← coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily S]
