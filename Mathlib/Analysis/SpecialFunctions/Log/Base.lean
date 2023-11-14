@@ -442,6 +442,8 @@ end Real
 
 section Induction
 
+example {a : ℝ} {b : ℕ} : a ^ b = a ^ (b : ℝ) := by exact?
+
 /-- Induction principle for intervals of real numbers: if a proposition `P` is true
 on `[x₀, r * x₀)` and if `P` for `[x₀, r^n * x₀)` implies `P` for `[r^n * x₀, r^(n+1) * x₀)`,
 then `P` is true for all `x ≥ x₀`. -/
@@ -454,14 +456,14 @@ lemma Real.induction_Ico_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx�
   · intro x hx
     have hx' : 0 < x / x₀ := div_pos (hx₀.trans_le hx) hx₀
     refine this ⌊logb r (x / x₀)⌋₊ x ?_
-    rw [mem_Ico, ←div_lt_iff hx₀, ←logb_lt_iff_lt_rpow hr hx']
+    rw [mem_Ico, ←div_lt_iff hx₀, ← rpow_nat_cast, ←logb_lt_iff_lt_rpow hr hx', Nat.cast_add,
+      Nat.cast_one]
     exact ⟨hx, Nat.lt_floor_add_one _⟩
   intro n
   induction n
   case zero => simpa using base
   case succ n ih =>
     specialize step (n + 1) (by simp)
-    simp only [Nat.cast_add_one] at step ⊢
     exact fun x hx => (Ico_subset_Ico_union_Ico hx).elim (ih x) (step ih _)
 
 end Induction
