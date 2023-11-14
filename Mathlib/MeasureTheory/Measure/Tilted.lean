@@ -109,8 +109,7 @@ lemma tilted_const' (μ : Measure α) [IsFiniteMeasure μ] (c : ℝ) :
     · exact (exp_pos _).ne'
 
 lemma tilted_const (μ : Measure α) [IsProbabilityMeasure μ] (c : ℝ) :
-    μ.tilted (fun _ ↦ c) = μ := by
-  simp
+    μ.tilted (fun _ ↦ c) = μ := by simp
 
 @[simp]
 lemma tilted_zero' (μ : Measure α) [IsFiniteMeasure μ] : μ.tilted 0 = (μ Set.univ)⁻¹ • μ := by
