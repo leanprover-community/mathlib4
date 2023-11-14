@@ -1212,7 +1212,7 @@ theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ �
   whose carrier contains `s`. -/
 theorem Lifts.exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
     (h2 : (minpoly F s).Splits (algebraMap F K)) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
-  have I1 : IsIntegral x.carrier s := isIntegral_of_isScalarTower h1
+  have I1 : IsIntegral x.carrier s := h1.tower_top
   have I2 := (minpoly.degree_pos I1).ne'
   have key : (minpoly x.carrier s).Splits x.emb.toRingHom :=
     splits_of_splits_of_dvd _ (map_ne_zero (minpoly.ne_zero h1))
