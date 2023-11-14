@@ -16,7 +16,7 @@ If this can't be done, returns the original `MVarId`.
 
 namespace Mathlib.Tactic
 
-open Lean Meta Elab Tactic
+open Lean Meta Elab Tactic Std.Tactic
 
 /--
 This tactic applies to a goal whose target has the form `x ~ x`, where `~` is a reflexive
@@ -35,7 +35,7 @@ def _root_.Lean.Expr.isReflRel (e : Expr) : MetaM (Option (Name × Expr × Expr)
   if let some (_, lhs, _, rhs) := e.heq? then
     return (``HEq, lhs, rhs)
   if let .app (.app rel lhs) rhs := e then
-    unless (← (Std.Tactic.reflExt.getState (← getEnv)).getMatch rel).isEmpty do
+    unless (← (reflExt.getState (← getEnv)).getMatch rel reflExt.config).isEmpty do
       match rel.getAppFn.constName? with
       | some n => return some (n, lhs, rhs)
       | none => return none
