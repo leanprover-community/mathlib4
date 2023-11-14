@@ -604,7 +604,7 @@ theorem nndist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
 infinity. TODO: use `Bornology.cobounded` instead of `Filter.comap Norm.norm Filter.atTop`. -/
 theorem Filter.tendsto_mul_left_cobounded {a : α} (ha : a ≠ 0) :
     Tendsto ((· * ·) a) (comap norm atTop) (comap norm atTop) := by
-  simpa only [tendsto_comap_iff, Function.comp_def, norm_mul] using
+  simpa only [tendsto_comap_iff, (· ∘ ·), norm_mul] using
     tendsto_const_nhds.mul_atTop (norm_pos_iff.2 ha) tendsto_comap
 #align filter.tendsto_mul_left_cobounded Filter.tendsto_mul_left_cobounded
 
@@ -612,7 +612,7 @@ theorem Filter.tendsto_mul_left_cobounded {a : α} (ha : a ≠ 0) :
 infinity. TODO: use `Bornology.cobounded` instead of `Filter.comap Norm.norm Filter.atTop`. -/
 theorem Filter.tendsto_mul_right_cobounded {a : α} (ha : a ≠ 0) :
     Tendsto (fun x => x * a) (comap norm atTop) (comap norm atTop) := by
-  simpa only [tendsto_comap_iff, Function.comp_def, norm_mul] using
+  simpa only [tendsto_comap_iff, (· ∘ ·), norm_mul] using
     tendsto_comap.atTop_mul (norm_pos_iff.2 ha) tendsto_const_nhds
 #align filter.tendsto_mul_right_cobounded Filter.tendsto_mul_right_cobounded
 
@@ -620,7 +620,7 @@ theorem Filter.tendsto_mul_right_cobounded {a : α} (ha : a ≠ 0) :
 lemma Filter.inv_cobounded₀ : (cobounded α)⁻¹ = 𝓝[≠] 0 := by
   rw [← comap_norm_atTop, ← Filter.comap_inv, ← comap_norm_nhdsWithin_Ioi_zero,
     ← inv_atTop₀, ← Filter.comap_inv]
-  simp only [comap_comap, Function.comp_def, norm_inv]
+  simp only [comap_comap, (· ∘ ·), norm_inv]
 
 @[simp]
 lemma Filter.inv_nhdsWithin_ne_zero : (𝓝[≠] (0 : α))⁻¹ = cobounded α := by

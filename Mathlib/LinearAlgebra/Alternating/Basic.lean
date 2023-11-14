@@ -769,10 +769,10 @@ def domDomCongrEquiv (σ : ι ≃ ι') : AlternatingMap R M N ι ≃+ Alternatin
   invFun := domDomCongr σ.symm
   left_inv f := by
     ext
-    simp [Function.comp_def]
+    simp [Function.comp]
   right_inv m := by
     ext
-    simp [Function.comp_def]
+    simp [Function.comp]
   map_add' := domDomCongr_add σ
 #align alternating_map.dom_dom_congr_equiv AlternatingMap.domDomCongrEquiv
 #align alternating_map.dom_dom_congr_equiv_apply AlternatingMap.domDomCongrEquiv_apply
@@ -787,8 +787,8 @@ variable (S : Type*) [Semiring S] [Module S N] [SMulCommClass R S N]
 def domDomLcongr (σ : ι ≃ ι') : AlternatingMap R M N ι ≃ₗ[S] AlternatingMap R M N ι' where
   toFun := domDomCongr σ
   invFun := domDomCongr σ.symm
-  left_inv f := by ext; simp [Function.comp_def]
-  right_inv m := by ext; simp [Function.comp_def]
+  left_inv f := by ext; simp [Function.comp]
+  right_inv m := by ext; simp [Function.comp]
   map_add' := domDomCongr_add σ
   map_smul' := domDomCongr_smul σ
 #align alternating_map.dom_dom_lcongr AlternatingMap.domDomLcongr

@@ -141,7 +141,7 @@ theorem map_toReal_nhds (a : ℝₗ) : map toReal (𝓝 a) = 𝓝[≥] toReal a 
 #align counterexample.sorgenfrey_line.map_to_real_nhds Counterexample.SorgenfreyLine.map_toReal_nhds
 
 theorem nhds_eq_map (a : ℝₗ) : 𝓝 a = map toReal.symm (𝓝[≥] (toReal a)) := by
-  simp_rw [← map_toReal_nhds, map_map, Function.comp_def, toReal.symm_apply_apply, map_id']
+  simp_rw [← map_toReal_nhds, map_map, (· ∘ ·), toReal.symm_apply_apply, map_id']
 #align counterexample.sorgenfrey_line.nhds_eq_map Counterexample.SorgenfreyLine.nhds_eq_map
 
 theorem nhds_eq_comap (a : ℝₗ) : 𝓝 a = comap toReal (𝓝[≥] (toReal a)) := by

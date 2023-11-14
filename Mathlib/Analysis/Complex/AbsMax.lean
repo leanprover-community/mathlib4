@@ -146,7 +146,7 @@ theorem norm_max_aux₂ {f : ℂ → F} {z w : ℂ} (hd : DiffContOnCl ℂ f (ba
   set e : F →L[ℂ] F̂ := UniformSpace.Completion.toComplL
   have he : ∀ x, ‖e x‖ = ‖x‖ := UniformSpace.Completion.norm_coe
   replace hz : IsMaxOn (norm ∘ e ∘ f) (closedBall z (dist w z)) z
-  · simpa only [IsMaxOn, Function.comp_def, he] using hz
+  · simpa only [IsMaxOn, (· ∘ ·), he] using hz
   simpa only [he, (· ∘ ·)]
     using norm_max_aux₁ (e.differentiable.comp_diffContOnCl hd) hz
 #align complex.norm_max_aux₂ Complex.norm_max_aux₂

@@ -55,7 +55,7 @@ theorem aeval_algebraMap_apply (x : σ → A) (p : MvPolynomial σ R) :
   rw [aeval_def, aeval_def, ← coe_eval₂Hom, ← coe_eval₂Hom, map_eval₂Hom, ←
     IsScalarTower.algebraMap_eq]
   -- Porting note: added
-  simp only [Function.comp_def]
+  simp only [Function.comp]
 #align mv_polynomial.aeval_algebra_map_apply MvPolynomial.aeval_algebraMap_apply
 
 theorem aeval_algebraMap_eq_zero_iff [NoZeroSMulDivisors A B] [Nontrivial B] (x : σ → A)

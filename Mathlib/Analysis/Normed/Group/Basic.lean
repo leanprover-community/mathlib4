@@ -473,7 +473,7 @@ theorem dist_div_eq_dist_mul_right (a b c : E) : dist a (b / c) = dist (a * c) b
 `Bornology.cobounded` instead of `Filter.comap Norm.norm Filter.atTop`."]
 theorem Filter.tendsto_inv_cobounded :
     Tendsto (Inv.inv : E → E) (comap norm atTop) (comap norm atTop) := by
-  simpa only [norm_inv', tendsto_comap_iff, Function.comp_def] using tendsto_comap
+  simpa only [norm_inv', tendsto_comap_iff, (· ∘ ·)] using tendsto_comap
 #align filter.tendsto_inv_cobounded Filter.tendsto_inv_cobounded
 #align filter.tendsto_neg_cobounded Filter.tendsto_neg_cobounded
 

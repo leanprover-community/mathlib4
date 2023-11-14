@@ -43,7 +43,7 @@ instance groupWithZero [GroupWithZero β] : GroupWithZero β* :=
       (φ.em fun y => f y = 0).elim (fun H => (hf <| coe_eq.2 H).elim) fun H =>
         H.mono fun x => mul_inv_cancel
     inv_zero := coe_eq.2 <| by
-       simp only [Function.comp_def, inv_zero]
+       simp only [Function.comp, inv_zero]
        exact EventuallyEq.refl _ fun _ => 0 }
 
 instance divisionSemiring [DivisionSemiring β] : DivisionSemiring β* where

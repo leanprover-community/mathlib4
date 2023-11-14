@@ -1710,7 +1710,7 @@ protected theorem Filter.Tendsto.dist {f g : β → α} {x : Filter β} {a b : �
 
 theorem nhds_comap_dist (a : α) : ((𝓝 (0 : ℝ)).comap (dist · a)) = 𝓝 a := by
   simp only [@nhds_eq_comap_uniformity α, Metric.uniformity_eq_comap_nhds_zero, comap_comap,
-    Function.comp_def, dist_comm]
+    (· ∘ ·), dist_comm]
 #align nhds_comap_dist nhds_comap_dist
 
 theorem tendsto_iff_dist_tendsto_zero {f : β → α} {x : Filter β} {a : α} :

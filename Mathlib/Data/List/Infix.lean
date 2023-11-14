@@ -377,8 +377,8 @@ theorem tails_cons (a : α) (l : List α) : tails (a :: l) = (a :: l) :: l.tails
 @[simp]
 theorem inits_append : ∀ s t : List α, inits (s ++ t) = s.inits ++ t.inits.tail.map fun l => s ++ l
   | [], [] => by simp
-  | [], a :: t => by simp [Function.comp_def]
-  | a :: s, t => by simp [inits_append s t, Function.comp_def]
+  | [], a :: t => by simp[· ∘ ·]
+  | a :: s, t => by simp [inits_append s t, · ∘ ·]
 #align list.inits_append List.inits_append
 
 @[simp]

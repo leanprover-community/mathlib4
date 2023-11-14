@@ -56,7 +56,7 @@ def traverse : Multiset α' → F (Multiset β') := by
       congr
       funext a b l
       simpa [flip] using Perm.swap a b l
-    simp [Function.comp_def, this, functor_norm, Coe.coe]
+    simp [(· ∘ ·), this, functor_norm, Coe.coe]
   case trans => simp [*]
 #align multiset.traverse Multiset.traverse
 
@@ -111,7 +111,7 @@ theorem comp_traverse {G H : Type _ → Type _} [Applicative G] [Applicative H] 
   intro
   simp only [traverse, quot_mk_to_coe, lift_coe, Coe.coe, Function.comp_apply, Functor.map_map,
     functor_norm]
-  simp only [Function.comp_def, lift_coe]
+  simp only [Function.comp, lift_coe]
 #align multiset.comp_traverse Multiset.comp_traverse
 
 theorem map_traverse {G : Type* → Type _} [Applicative G] [CommApplicative G] {α β γ : Type _}

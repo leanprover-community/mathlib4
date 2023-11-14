@@ -241,7 +241,7 @@ theorem Function.Bijective.cauchySeq_comp_iff {f : ℕ → ℕ} (hf : Bijective 
     CauchySeq (u ∘ f) ↔ CauchySeq u := by
   refine' ⟨fun H => _, fun H => H.comp_injective hf.injective⟩
   lift f to ℕ ≃ ℕ using hf
-  simpa only [Function.comp_def, f.apply_symm_apply] using H.comp_injective f.symm.injective
+  simpa only [(· ∘ ·), f.apply_symm_apply] using H.comp_injective f.symm.injective
 #align function.bijective.cauchy_seq_comp_iff Function.Bijective.cauchySeq_comp_iff
 
 theorem CauchySeq.subseq_subseq_mem {V : ℕ → Set (α × α)} (hV : ∀ n, V n ∈ 𝓤 α) {u : ℕ → α}

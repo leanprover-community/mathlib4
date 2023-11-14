@@ -61,7 +61,7 @@ theorem pure_id'_seq (x : F α) : (pure fun x => x) <*> x = x :=
 theorem seq_map_assoc (x : F (α → β)) (f : γ → α) (y : F γ) :
     x <*> f <$> y = (· ∘ f) <$> x <*> y := by
   simp only [← pure_seq]
-  simp only [seq_assoc, Function.comp_def, seq_pure, ← comp_map]
+  simp only [seq_assoc, Function.comp, seq_pure, ← comp_map]
   simp [pure_seq]
 #align seq_map_assoc seq_map_assoc
 
@@ -258,5 +258,5 @@ theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative
       simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map]; rfl
     _ = (fun b a => f a b) <$> b <*> a := by
       rw [@CommApplicative.commutative_prod m h]
-      simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, Function.comp_def]
+      simp [seq_map_assoc, map_seq, seq_assoc, seq_pure, map_map, (· ∘ ·)]
 #align is_comm_applicative.commutative_map CommApplicative.commutative_map

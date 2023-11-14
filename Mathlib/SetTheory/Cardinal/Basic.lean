@@ -1193,7 +1193,7 @@ theorem lift_sSup {s : Set Cardinal} (hs : BddAbove s) :
 theorem lift_iSup {ι : Type v} {f : ι → Cardinal.{w}} (hf : BddAbove (range f)) :
     lift.{u} (iSup f) = ⨆ i, lift.{u} (f i) := by
   rw [iSup, iSup, lift_sSup hf, ← range_comp]
-  simp [Function.comp_def]
+  simp [Function.comp]
 #align cardinal.lift_supr Cardinal.lift_iSup
 
 /-- To prove that the lift of a supremum is bounded by some cardinal `t`,
