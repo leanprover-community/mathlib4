@@ -833,7 +833,7 @@ theorem isIntegral_trans (A_int : Algebra.IsIntegral R A) (x : B) (hx : IsIntegr
   let S := adjoin R (p.frange : Set A)
   have : Module.Finite R S := ⟨(Subalgebra.toSubmodule S).fg_top.mpr <|
     fg_adjoin_of_finite p.frange.finite_toSet fun a _ ↦ A_int a⟩
-  let p' : S[X] := p.toSubring S.toSubring fun a ha ↦ subset_adjoin ha
+  let p' : S[X] := p.toSubring S.toSubring subset_adjoin
   have hSx : IsIntegral S x := ⟨p', (p.monic_toSubring _ _).mpr pmonic, by
     rw [IsScalarTower.algebraMap_eq S A B, ← eval₂_map]
     convert hp; apply p.map_toSubring S.toSubring⟩

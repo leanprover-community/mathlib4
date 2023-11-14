@@ -1007,17 +1007,9 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     rintro ⟨n, -, rfl⟩
     rw [coeff_map]
     apply Subtype.mem
-  have g_lifts : g ∈ lifts (algebraMap K' E) := by
-    refine g.lifts_iff_coeff_lifts.mpr fun n ↦ ?_
-    erw [Subtype.range_val]
-    by_cases hn : n ∈ g.support
-    · exact subset_adjoin F _ (mem_frange_iff.mpr ⟨n, hn, rfl⟩)
-    · exact not_mem_support_iff.mp hn ▸ zero_mem K'
-  obtain ⟨p, hp⟩ := g.lifts_and_natDegree_eq_and_monic
-    g_lifts ((minpoly.monic <| .of_finite K α).map _)
-  have dvd_p : minpoly K' α ∣ p
+  have dvd_g : minpoly K' α ∣ g.toSubring K'.toSubring (subset_adjoin F _)
   · apply minpoly.dvd
-    rw [aeval_def, eval₂_eq_eval_map, hp.1, ← eval₂_eq_eval_map, ← aeval_def]
+    erw [aeval_def, eval₂_eq_eval_map, g.map_toSubring K'.toSubring, eval_map, ← aeval_def]
     exact minpoly.aeval K α
   have finrank_eq : ∀ K : IntermediateField F E, finrank K E = natDegree (minpoly K α)
   · intro K
@@ -1026,8 +1018,9 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     exact this
   refine eq_of_le_of_finrank_le' hsub ?_
   simp_rw [finrank_eq]
-  convert natDegree_le_of_dvd dvd_p hp.2.2.ne_zero using 1
-  rw [hp.2.1, natDegree_map]
+  convert natDegree_le_of_dvd dvd_g
+    ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
+  rw [natDegree_toSubring, natDegree_map]
 
 theorem _root_.minpoly.natDegree_le (x : L) [FiniteDimensional K L] :
     (minpoly K x).natDegree ≤ finrank K L :=
