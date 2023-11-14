@@ -8,6 +8,7 @@ import Std.Linter.UnreachableTactic
 import Mathlib.Data.Nondet.Basic
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Mathport.Rename
+import Mathlib.Lean.System.IO
 
 #align_import tactic.hint from "leanprover-community/mathlib"@"8f6fd1b69096c6a587f745d354306c0d46396915"
 
@@ -104,19 +105,20 @@ If one tactic succeeds and closes the goal, we don't look at subsequent tactics.
 -- TODO With widget support, could we run the tactics in parallel
 --      and do live updates of the widget as results come in?
 def hint (stx : Syntax) : TacticM Unit := do
-  let tacs := Nondet.ofList (← getHints)
-  let results := tacs.filterMapM fun t : TSyntax `tactic => do
+  let tacs := (← getHints)
+  let results := tacs.map fun t : TSyntax `tactic => do
     if let some msgs ← observing? (withMessageLog (withoutInfoTrees (evalTactic t))) then
-      return some (← getGoals, ← suggestion t msgs)
+      return some (← getGoals, ← suggestion t msgs, ← saveState)
     else
       return none
-  let results ← (results.toMLList.takeUpToFirst fun r => r.1.1.isEmpty).asArray
-  let results := results.qsort (·.1.1.length < ·.1.1.length)
-  addSuggestions stx (results.map (·.1.2))
-  match results.find? (·.1.1.isEmpty) with
+  let results := TacticM.runGreedily results |>.filterMap id
+  let results ← (results.takeUpToFirst fun r => r.1.isEmpty).asArray
+  let results := results.qsort (·.1.length < ·.1.length)
+  addSuggestions stx (results.map (·.2.1))
+  match results.find? (·.1.isEmpty) with
   | some r =>
     -- We don't restore the entire state, as that would delete the suggestion messages.
-    setMCtx r.2.term.meta.meta.mctx
+    setMCtx r.2.2.term.meta.meta.mctx
   | none => admitGoal (← getMainGoal)
 
 /--

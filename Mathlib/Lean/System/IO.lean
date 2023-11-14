@@ -3,7 +3,10 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Data.List.Indexes
+-- import Mathlib.Data.List.Indexes
+import Mathlib.Tactic.Cases
+import Std.Data.MLList.Basic
+
 
 /-!
 # Functions for manipulating a list of tasks
@@ -19,6 +22,12 @@ set_option autoImplicit true
 local macro "nonempty_list" : tactic =>
   `(tactic| exact Nat.zero_lt_succ _)
 
+@[simp]
+theorem List.length_mapIdx' {α β} (l : List α) (f : Nat → α → β) : (l.mapIdx f).length = l.length := by
+  induction' l with hd tl IH generalizing f
+  · rfl
+  · sorry
+
 /--
 Given a non-empty list of tasks, wait for the first to complete.
 Return the value and the list of remaining tasks.
@@ -27,7 +36,7 @@ def IO.waitAny' (tasks : List (Task α)) (h : 0 < tasks.length := by nonempty_li
     BaseIO (α × List (Task α)) := do
   let (i, a) ← IO.waitAny
     (tasks.mapIdx fun i t => t.map (prio := .max) fun a => (i, a))
-    ((tasks.length_mapIdx _).symm ▸ h)
+    ((tasks.length_mapIdx' _).symm ▸ h)
   return (a, tasks.eraseIdx i)
 
 /--
