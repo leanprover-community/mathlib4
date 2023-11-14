@@ -491,7 +491,8 @@ def sFiniteSeq (μ : Measure α) [h : SFinite μ] : ℕ → Measure α := h.1.ch
 instance isFiniteMeasure_sFiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure (sFiniteSeq μ n) :=
   h.1.choose_spec.1 n
 
-lemma sum_sFiniteSeq [h : SFinite μ] : sum (sFiniteSeq μ) = μ := h.1.choose_spec.2.symm
+lemma sum_sFiniteSeq (μ : Measure α) [h : SFinite μ] : sum (sFiniteSeq μ) = μ :=
+  h.1.choose_spec.2.symm
 
 end SFinite
 /-- A measure `μ` is called σ-finite if there is a countable collection of sets
@@ -603,7 +604,7 @@ instance (priority := 100) [SigmaFinite μ] : SFinite μ := by
   have : ∀ n, Fact (μ (disjointed (spanningSets μ) n) < ∞) :=
     fun n ↦ ⟨(measure_mono (disjointed_subset _ _)).trans_lt (measure_spanningSets_lt_top μ n)⟩
   exact ⟨⟨fun n ↦ μ.restrict (disjointed (spanningSets μ) n), fun n ↦ by infer_instance,
-    eq_sum_restrict μ⟩⟩
+    (sum_restrict_disjointed_spanningSets μ).symm⟩⟩
 
 namespace Measure
 
@@ -711,11 +712,12 @@ theorem countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top {ι : Type*} {_ : M
 /-- In an s-finite space, among disjoint null-measurable sets, only countably many can have positive
 measure. -/
 theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} { _ : MeasurableSpace α} {μ : Measure α}
-    [h : SFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
+    [SFinite μ] {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
     (As_disj : Pairwise (AEDisjoint μ on As)) :
     Set.Countable { i : ι | 0 < μ (As i) } := by
-  rcases h.out' with ⟨m, hm, rfl⟩
-  have obs : { i : ι | 0 < sum m (As i) } ⊆ ⋃ n, { i : ι | 0 < m n (As i) } := by
+  rw [← sum_sFiniteSeq μ] at As_disj As_mble ⊢
+  have obs : { i : ι | 0 < sum (sFiniteSeq μ) (As i) }
+      ⊆ ⋃ n, { i : ι | 0 < sFiniteSeq μ n (As i) } := by
     intro i hi
     by_contra con
     simp only [mem_iUnion, mem_setOf_eq, not_exists, not_lt, nonpos_iff_eq_zero] at *
@@ -726,9 +728,9 @@ theorem countable_meas_pos_of_disjoint_iUnion₀ {ι : Type*} { _ : MeasurableSp
   apply Countable.mono obs
   refine countable_iUnion fun n ↦ ?_
   apply countable_meas_pos_of_disjoint_of_meas_iUnion_ne_top₀
-  · exact fun i ↦ (As_mble i).mono (le_sum m n)
-  · exact fun i j hij ↦ AEDisjoint.of_le (As_disj hij) (le_sum m n)
-  · exact measure_ne_top (m n) (⋃ i, As i)
+  · exact fun i ↦ (As_mble i).mono (le_sum _ _)
+  · exact fun i j hij ↦ AEDisjoint.of_le (As_disj hij) (le_sum _ _)
+  · exact measure_ne_top _ (⋃ i, As i)
 
 /-- In an s-finite space, among disjoint measurable sets, only countably many can have positive
 measure. -/
@@ -863,19 +865,18 @@ theorem restrict_toMeasurable_of_cover {s : Set α} {v : ℕ → Set α} (hv : s
 satisfies, for any measurable set `s`, the equality `μ (toMeasurable μ t ∩ s) = μ (t ∩ s)`.
 This only holds when `μ` is s-finite -- for example for σ-finite measures. For a version without
 this assumption (but requiring that `t` has finite measure), see `measure_toMeasurable_inter`. -/
-theorem measure_toMeasurable_inter_of_sfinite [h : SFinite μ] {s : Set α} (hs : MeasurableSet s)
-    (t : Set α) : μ (toMeasurable μ t ∩ s) = μ (t ∩ s) := by
-  rcases h.out' with ⟨m, hm, h'm⟩
-  apply measure_toMeasurable_inter_of_sum hs (fun n ↦ measure_ne_top (m n) t) h'm
-#align measure_theory.measure.measure_to_measurable_inter_of_sigma_finite MeasureTheory.Measure.measure_toMeasurable_inter_of_sfinite
+theorem measure_toMeasurable_inter_of_sFinite [SFinite μ] {s : Set α} (hs : MeasurableSet s)
+    (t : Set α) : μ (toMeasurable μ t ∩ s) = μ (t ∩ s) :=
+  measure_toMeasurable_inter_of_sum hs (fun _ ↦ measure_ne_top _ t) (sum_sFiniteSeq μ).symm
+#align measure_theory.measure.measure_to_measurable_inter_of_sigma_finite MeasureTheory.Measure.measure_toMeasurable_inter_of_sFinite
 
 @[simp]
-theorem restrict_toMeasurable_of_sfinite [SFinite μ] (s : Set α) :
+theorem restrict_toMeasurable_of_sFinite [SFinite μ] (s : Set α) :
     μ.restrict (toMeasurable μ s) = μ.restrict s :=
   ext fun t ht => by
-    rw [restrict_apply ht, inter_comm t, measure_toMeasurable_inter_of_sfinite ht,
+    rw [restrict_apply ht, inter_comm t, measure_toMeasurable_inter_of_sFinite ht,
       restrict_apply ht, inter_comm t]
-#align measure_theory.measure.restrict_to_measurable_of_sigma_finite MeasureTheory.Measure.restrict_toMeasurable_of_sfinite
+#align measure_theory.measure.restrict_to_measurable_of_sigma_finite MeasureTheory.Measure.restrict_toMeasurable_of_sFinite
 
 namespace FiniteSpanningSetsIn
 

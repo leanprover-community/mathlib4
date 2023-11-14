@@ -72,7 +72,7 @@ theorem withDensity_apply' [SFinite μ] (f : α → ℝ≥0∞) (s : Set α) :
   calc
   μ.withDensity f s ≤ μ.withDensity f t := measure_mono (subset_toMeasurable μ s)
   _ = ∫⁻ a in t, f a ∂μ := withDensity_apply f (measurableSet_toMeasurable μ s)
-  _ = ∫⁻ a in s, f a ∂μ := by congr 1; exact restrict_toMeasurable_of_sfinite s
+  _ = ∫⁻ a in s, f a ∂μ := by congr 1; exact restrict_toMeasurable_of_sFinite s
 
 @[simp]
 lemma withDensity_zero_left (f : α → ℝ≥0∞) : (0 : Measure α).withDensity f = 0 := by
