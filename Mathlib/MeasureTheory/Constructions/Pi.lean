@@ -424,6 +424,11 @@ theorem pi_of_empty {α : Type*} [IsEmpty α] {β : α → Type*} {m : ∀ a, Me
   exact isEmptyElim (α := α)
 #align measure_theory.measure.pi_of_empty MeasureTheory.Measure.pi_of_empty
 
+@[simp]
+theorem pi_empty_univ {α : Type*} {β : α → Type*} [IsEmpty α] {m : ∀ α, MeasurableSpace (β α)}
+    (μ : ∀ a : α, Measure (β a)) : Measure.pi μ (Set.univ) = 1 := by
+    rw [pi_of_empty, measure_univ]
+
 theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
     Measure.pi μ (eval i ⁻¹' s) = 0 := by
   -- WLOG, `s` is measurable
