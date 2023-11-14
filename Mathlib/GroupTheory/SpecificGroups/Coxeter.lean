@@ -32,7 +32,7 @@ And the six exceptional systems:
 * `Matrix.CoxeterGroup` : The group presentation corresponding to a Coxeter matrix.
 * `CoxeterSystem` : A structure recording the isomorphism between a group `W` and the group
   presentation corresponding to a Coxeter matrix, i.e. `Matrix.CoxeterGroup B M`.
-* `IsCoxeterGroup` : A group is a Coxeter group if it is registered in a Coxeter System.
+* `IsCoxeterGroup` : A group is a Coxeter group if it is registered in a Coxeter system.
 
 ## References
 
@@ -64,12 +64,13 @@ namespace CoxeterGroup
 namespace Relations
 
 /-- The relation terms corresponding to a Coxeter matrix. -/
-def ofMatrix : B × B → FreeGroup B :=
+@[nolint unusedArguments]
+def ofMatrix [M.IsCoxeter] : B × B → FreeGroup B :=
   Function.uncurry fun i j =>
     (FreeGroup.of i * FreeGroup.of j) ^ M i j
 
 /-- The relations corresponding to a Coxeter matrix. -/
-def toSet : Set (FreeGroup B) :=
+def toSet [M.IsCoxeter] : Set (FreeGroup B) :=
   Set.range <| ofMatrix M
 
 end Relations
@@ -79,24 +80,41 @@ end CoxeterGroup
 /-- The group presentation corresponding to a Coxeter matrix.
 
 Note that it is defined for any matrix of natural numbers. Its value for non-Coxeter
-matrices should be regarded as junk. `IsCoxeterGroup` checks that the matrix `IsCoxeter`. -/
-abbrev Matrix.CoxeterGroup := PresentedGroup <| CoxeterGroup.Relations.toSet M
+matrices should be regarded as junk. `CoxeterSystem` requires `IsCoxeter M`. -/
+abbrev Matrix.CoxeterGroup [M.IsCoxeter] := PresentedGroup <| CoxeterGroup.Relations.toSet M
 
-/-- A Coxeter System `CoxeterSystem W` is a structure recording the isomorphism between
+/-- A Coxeter system `CoxeterSystem W` is a structure recording the isomorphism between
 a group `W` and the group presentation corresponding to a Coxeter matrix. Equivalently, this can
 be seen as a list of generators of `W` parameterized by the underlying type of `M`, which
 satisfy the relations of the Coxeter matrix `M`. -/
-structure CoxeterSystem (W : Type*) [Group W] where
-  /-- `CoxeterSystem.ofRepr` constructs a Coxeter system given an equivalence with the group
+structure CoxeterSystem [M.IsCoxeter] (W : Type*) [Group W]  where
+  /-- `CoxeterSystem.ofMulEquiv` constructs a Coxeter system given an equivalence with the group
   presentation corresponding to a Coxeter matrix `M`. -/
-  ofRepr ::
-    /-- `repr` is the isomorphism between the group `W` and the group presentation
+  ofMulEquiv ::
+    /-- `mulEquiv` is the isomorphism between the group `W` and the group presentation
     corresponding to a Coxeter matrix `M`. -/
-    repr : Matrix.CoxeterGroup M ≃* W
+    mulEquiv : Matrix.CoxeterGroup M ≃* W
 
-/-- A group is a Coxeter group if it is registered in a Coxeter System. -/
-class IsCoxeterGroup (W : Type*) [Group W] : Prop where
-  nonempty_system : ∃ (M : Matrix B B ℕ), M.IsCoxeter ∧ Nonempty (CoxeterSystem M W)
+/-- Coxeter system of type `M` on the group `M.CoxeterGroup`. -/
+def Matrix.coxeterSystemCoxeterGroup [M.IsCoxeter] : CoxeterSystem M M.CoxeterGroup :=
+  CoxeterSystem.ofMulEquiv (MulEquiv.refl (CoxeterGroup M))
+
+/-- A group is a Coxeter group if it is registered in a Coxeter system. -/
+class IsCoxeterGroup [M.IsCoxeter] (W : Type*) [Group W] : Prop where
+  nonempty_system : Nonempty (CoxeterSystem M W)
+
+namespace CoxeterSystem
+
+variable {W : Type*} [Group W]
+
+/-- A group registered to Coxeter system is a Coxeter Group. -/
+lemma isCoxeterGroup [M.IsCoxeter] (cs : CoxeterSystem M W) : IsCoxeterGroup M W where
+  nonempty_system := Nonempty.intro cs
+
+instance [M.IsCoxeter] : IsCoxeterGroup M M.CoxeterGroup :=
+  isCoxeterGroup M (Matrix.coxeterSystemCoxeterGroup M)
+
+end CoxeterSystem
 
 namespace CoxeterMatrix
 
@@ -111,12 +129,12 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-abbrev Aₙ : Matrix (Fin n) (Fin n) ℕ :=
+abbrev Aₙ [NeZero n] : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j : Fin n =>
     if i == j then 1
       else (if i == n - 1 ∨ j == n - 1 then 2 else 3)
 
-instance AₙIsCoxeter : IsCoxeter (Aₙ n) where
+instance AₙIsCoxeter [NeZero n] : IsCoxeter (Aₙ n) where
 
 /-- The Coxeter matrix of family Bₙ.
 
