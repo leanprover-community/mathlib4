@@ -32,7 +32,8 @@ open CategoryTheory Limits
 namespace CompHaus
 
 noncomputable
-def struct {B X : CompHaus.{u}} (π : X ⟶ B) (hπ : Function.Surjective π) : EffectiveEpiStruct π where
+def struct {B X : CompHaus.{u}} (π : X ⟶ B) (hπ : Function.Surjective π) :
+    EffectiveEpiStruct π where
   desc e h := by
     refine QuotientMap.lift (QuotientMap.of_surjective_continuous hπ π.continuous) e fun a b hab ↦
       FunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
