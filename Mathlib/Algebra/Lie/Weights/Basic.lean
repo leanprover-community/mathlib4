@@ -579,6 +579,7 @@ any `x : L` is triangularizable. -/
 class IsTriangularizable : Prop :=
   iSup_eq_top : ∀ x, ⨆ φ, ⨆ k, (toEndomorphism R L M x).generalizedEigenspace φ k = ⊤
 
+@[simp]
 lemma iSup_weightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
     ⨆ (φ : R), weightSpaceOf M φ x = ⊤ := by
   rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.iSup_coe_toSubmodule,
@@ -605,12 +606,12 @@ lemma iSup_weightSpace_eq_top [IsTriangularizable K L M] :
     ⨆ χ : L → K, weightSpace M χ = ⊤ := by
   clear! R -- cf https://github.com/leanprover/lean4/issues/2452
   induction' h_dim : finrank K M using Nat.strong_induction_on with n ih generalizing M
-  rcases forall_or_exists_not (fun (x : L) ↦ ∃ (φ : K), weightSpaceOf M φ x = ⊤) with h' | h'
+  obtain h' | ⟨y : L, hy : ¬ ∃ φ, weightSpaceOf M φ y = ⊤⟩ :=
+    forall_or_exists_not (fun (x : L) ↦ ∃ (φ : K), weightSpaceOf M φ x = ⊤)
   · choose χ hχ using h'
     replace hχ : weightSpace M χ = ⊤ := by simpa only [weightSpace, hχ] using iInf_top
     exact eq_top_iff.mpr <| hχ ▸ le_iSup (weightSpace M) χ
-  · obtain ⟨y : L, hy : ¬ ∃ φ, weightSpaceOf M φ y = ⊤⟩ := h'
-    replace hy : ∀ φ, finrank K (weightSpaceOf M φ y) < n := fun φ ↦ by
+  · replace hy : ∀ φ, finrank K (weightSpaceOf M φ y) < n := fun φ ↦ by
       simp_rw [not_exists, ← lt_top_iff_ne_top] at hy; exact h_dim ▸ Submodule.finrank_lt (hy φ)
     replace ih : ∀ φ, ⨆ χ : L → K, weightSpace (weightSpaceOf M φ y) χ = ⊤ :=
       fun φ ↦ ih _ (hy φ) (weightSpaceOf M φ y) rfl
