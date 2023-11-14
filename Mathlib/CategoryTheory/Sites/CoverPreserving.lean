@@ -27,7 +27,7 @@ precomposition with this functor preserves sheaves.
 pushes covering sieves to covering sieves
 * `CategoryTheory.CompatiblePreserving`: a functor between sites is compatible-preserving
 if it pushes compatible families of elements to compatible families.
-* `CategoryTheory.Functor.pushforwardContinuous`: the induced functor
+* `CategoryTheory.Functor.sheafPushforwardContinuous`: the induced functor
 `Sheaf K A ⥤ Sheaf J A` for a continuous functor `G : (C, J) ⥤ (D, K)`. In case this is
 part of a morphism of sites, this would be understood as the pushforward functor
 even though it goes in the opposite direction as the functor `G`.
@@ -243,7 +243,7 @@ variable (F J K A)
 /-- The induced functor `Sheaf K A ⥤ Sheaf J A` given by `G.op ⋙ _`
 if `G` is a continuous functor.
 -/
-def Functor.pushforwardContinuous [Functor.IsContinuous.{v₃} F J K] :
+def Functor.sheafPushforwardContinuous [Functor.IsContinuous.{v₃} F J K] :
     Sheaf K A ⥤ Sheaf J A where
   obj ℱ := ⟨F.op ⋙ ℱ.val, F.op_comp_isSheaf J K ℱ⟩
   map f := ⟨((whiskeringLeft _ _ _).obj F.op).map f.val⟩
@@ -253,6 +253,6 @@ def Functor.pushforwardContinuous [Functor.IsContinuous.{v₃} F J K] :
   map_comp f g := by
     ext1
     apply ((whiskeringLeft _ _ _).obj F.op).map_comp
-#align category_theory.sites.pullback CategoryTheory.Functor.pushforwardContinuous
+#align category_theory.sites.pullback CategoryTheory.Functor.sheafPushforwardContinuous
 
 end CategoryTheory
