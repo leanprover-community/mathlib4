@@ -154,11 +154,7 @@ lemma lintegral_exponentialPdfReal_eq_one (r : ℝ) (hr : 0 < r) :
     exact set_lintegral_congr_fun isClosed_Ici.measurableSet if_eval_neg
   simp only [leftSide, add_zero]
   rw [rightSide, ENNReal.toReal_eq_one_iff, ←ENNReal.toReal_eq_one_iff]
-  have hf : 0 ≤ᵐ[(restrictₗ {x : ℝ | x ≥ 0}) ℙ] (fun x ↦ r * (rexp (-(r * x)))) := by
-    apply ae_of_all
-    intro a
-    positivity
-  rw [← restrictₗ_apply, ← integral_eq_lintegral_of_nonneg_ae hf]
+  rw [← integral_eq_lintegral_of_nonneg_ae (ae_of_all _ (fun _ ↦ by positivity))]
   · simp only [ge_iff_le, restrictₗ_apply]
     have IntegrOn : IntegrableOn (fun x ↦ rexp (-(r * x))) (Ioi 0) := by
       simp only [← neg_mul, exp_neg_integrableOn_Ioi 0 hr]
