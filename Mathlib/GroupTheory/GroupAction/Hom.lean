@@ -75,8 +75,8 @@ notation:25 (name := «MulActionHomLocal≺») X " →[" M:25 "] " Y:0 => MulAct
 scalar multiplication by `M`.
 
 You should extend this class when you extend `MulActionHom`. -/
-class SMulHomClass (F : Type*) (M X Y : outParam <| Type*) [SMul M X] [SMul M Y] extends
-  FunLike F X fun _ => Y where
+class SMulHomClass (F : Type*) (M : outParam <| Type*) (X Y : Type*) [SMul M X] [SMul M Y]
+    [NDFunLike F X Y] where
   /-- The proposition that the function preserves the action. -/
   map_smul : ∀ (f : F) (c : M) (x : X), f (c • x) = c • f x
 #align smul_hom_class SMulHomClass
@@ -91,9 +91,11 @@ attribute [simp] map_smul
 -- porting note: removed has_coe_to_fun instance, coercions handled differently now
 #noalign mul_action_hom.has_coe_to_fun
 
-instance : SMulHomClass (X →[M'] Y) M' X Y where
+instance : NDFunLike (X →[M'] Y) X Y where
   coe := MulActionHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
+
+instance : SMulHomClass (X →[M'] Y) M' X Y where
   map_smul := MulActionHom.map_smul'
 
 initialize_simps_projections MulActionHom (toFun → apply)
@@ -107,14 +109,15 @@ see also Algebra.Hom.Group -/
 /-- Turn an element of a type `F` satisfying `SMulHomClass F M X Y` into an actual
 `MulActionHom`. This is declared as the default coercion from `F` to `MulActionHom M X Y`. -/
 @[coe]
-def _root_.SMulHomClass.toMulActionHom [SMul M X] [SMul M Y] [SMulHomClass F M X Y] (f : F) :
+def _root_.SMulHomClass.toMulActionHom [SMul M X] [SMul M Y] [NDFunLike F X Y]
+    [SMulHomClass F M X Y] (f : F) :
     X →[M] Y where
-   toFun := FunLike.coe f
-   map_smul' := map_smul f
+  toFun := FunLike.coe f
+  map_smul' := map_smul f
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
   `SMulHomClass.toMulActionHom`. -/
-instance [SMul M X] [SMul M Y] [SMulHomClass F M X Y] : CoeTC F (X →[M] Y) :=
+instance [SMul M X] [SMul M Y] [NDFunLike F X Y] [SMulHomClass F M X Y] : CoeTC F (X →[M] Y) :=
   ⟨SMulHomClass.toMulActionHom⟩
 
 protected theorem map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m • f x :=
@@ -218,9 +221,10 @@ notation:25 (name := «DistribMulActionHomLocal≺»)
 the additive monoid structure and scalar multiplication by `M`.
 
 You should extend this class when you extend `DistribMulActionHom`. -/
-class DistribMulActionHomClass (F : Type*) (M A B : outParam <| Type*) [Monoid M] [AddMonoid A]
-  [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B] extends SMulHomClass F M A B,
-  AddMonoidHomClass F A B
+class DistribMulActionHomClass (F : Type*) (M : outParam <| Type*) (A B : Type*)
+  [Monoid M] [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B]
+  [NDFunLike F A B]
+  extends SMulHomClass F M A B, AddMonoidHomClass F A B
 #align distrib_mul_action_hom_class DistribMulActionHomClass
 
 /- porting note: Removed a @[nolint dangerousInstance] for
@@ -261,13 +265,14 @@ see also Algebra.Hom.Group -/
 /-- Turn an element of a type `F` satisfying `SMulHomClass F M X Y` into an actual
 `MulActionHom`. This is declared as the default coercion from `F` to `MulActionHom M X Y`. -/
 @[coe]
-def _root_.DistribMulActionHomClass.toDistribMulActionHom [DistribMulActionHomClass F M A B]
+def _root_.DistribMulActionHomClass.toDistribMulActionHom [NDFunLike F A B]
+    [DistribMulActionHomClass F M A B]
     (f : F) : A →+[M] B :=
   { (f : A →+ B), (f : A →[M] B) with }
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
   `SMulHomClass.toMulActionHom`. -/
-instance [DistribMulActionHomClass F M A B] : CoeTC F (A →+[M] B) :=
+instance [NDFunLike F A B] [DistribMulActionHomClass F M A B] : CoeTC F (A →+[M] B) :=
   ⟨DistribMulActionHomClass.toDistribMulActionHom⟩
 
 @[simp]
@@ -448,9 +453,10 @@ notation:25 (name := «MulSemiringActionHomLocal≺»)
 the ring structure and scalar multiplication by `M`.
 
 You should extend this class when you extend `MulSemiringActionHom`. -/
-class MulSemiringActionHomClass (F : Type*) (M R S : outParam <| Type*) [Monoid M] [Semiring R]
-  [Semiring S] [DistribMulAction M R] [DistribMulAction M S] extends
-  DistribMulActionHomClass F M R S, RingHomClass F R S
+class MulSemiringActionHomClass (F : Type*) (M : outParam <| Type*) (R S : Type*)
+  [Monoid M] [Semiring R] [Semiring S] [DistribMulAction M R] [DistribMulAction M S]
+  [NDFunLike F R S]
+  extends DistribMulActionHomClass F M R S, RingHomClass F R S
 #align mul_semiring_action_hom_class MulSemiringActionHomClass
 
 /- porting note: Removed a @[nolint dangerousInstance] for MulSemiringActionHomClass.toRingHomClass
@@ -476,11 +482,13 @@ Coercion is already handled by all the HomClass constructions I believe -/
 #noalign mul_semiring_action_hom.has_coe'
 #noalign mul_semiring_action_hom.has_coe_to_fun
 
-instance : MulSemiringActionHomClass (R →+*[M] S) M R S where
+instance : NDFunLike (R →+*[M] S) R S where
   coe m := m.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨tF, _, _⟩, _, _⟩; rcases g with ⟨⟨tG, _, _⟩, _, _⟩
     cases tF; cases tG; congr
+
+instance : MulSemiringActionHomClass (R →+*[M] S) M R S where
   map_smul m := m.map_smul'
   map_zero m := m.map_zero'
   map_add m := m.map_add'
@@ -497,13 +505,14 @@ see also Algebra.Hom.Group -/
 `MulSemiringActionHom`. This is declared as the default coercion from `F` to
 `MulSemiringActionHom M X Y`. -/
 @[coe]
-def _root_.MulSemiringActionHomClass.toMulSemiringActionHom [MulSemiringActionHomClass F M R S]
+def _root_.MulSemiringActionHomClass.toMulSemiringActionHom [NDFunLike F R S]
+    [MulSemiringActionHomClass F M R S]
     (f : F) : R →+*[M] S :=
  { (f : R →+* S), (f : R →+[M] S) with }
 
 /-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via
   `MulSemiringActionHomClass.toMulSemiringActionHom`. -/
-instance [MulSemiringActionHomClass F M R S] : CoeTC F (R →+*[M] S) :=
+instance [NDFunLike F R S] [MulSemiringActionHomClass F M R S] : CoeTC F (R →+*[M] S) :=
   ⟨MulSemiringActionHomClass.toMulSemiringActionHom⟩
 
 @[norm_cast]

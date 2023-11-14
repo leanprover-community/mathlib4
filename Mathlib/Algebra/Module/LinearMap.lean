@@ -116,8 +116,8 @@ A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ :
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearMapClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Semiring S]
-  (σ : outParam (R →+* S)) (M M₂ : outParam (Type*)) [AddCommMonoid M] [AddCommMonoid M₂]
-  [Module R M] [Module S M₂] extends AddHomClass F M M₂ where
+  (σ : outParam (R →+* S)) (M M₂ : Type*) [AddCommMonoid M] [AddCommMonoid M₂]
+  [Module R M] [Module S M₂] [NDFunLike F M M₂] extends AddHomClass F M M₂ where
   /-- A semilinear map preserves scalar multiplication up to some ring homomorphism `σ`.
   See also `_root_.map_smul` for the case where `σ` is the identity. -/
   map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
@@ -137,8 +137,9 @@ attribute [simp] map_smulₛₗ
 
 This is an abbreviation for `SemilinearMapClass F (RingHom.id R) M M₂`.
 -/
-abbrev LinearMapClass (F : Type*) (R M M₂ : outParam (Type*)) [Semiring R] [AddCommMonoid M]
-    [AddCommMonoid M₂] [Module R M] [Module R M₂] :=
+abbrev LinearMapClass (F : Type*) (R : outParam (Type*)) (M M₂ : Type*)
+    [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R M₂]
+    [NDFunLike F M M₂] :=
   SemilinearMapClass F (RingHom.id R) M M₂
 #align linear_map_class LinearMapClass
 
@@ -151,7 +152,7 @@ variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
 -- Porting note: the `dangerousInstance` linter has become smarter about `outParam`s
-instance (priority := 100) addMonoidHomClass [SemilinearMapClass F σ M M₃] :
+instance (priority := 100) addMonoidHomClass [NDFunLike F M M₃] [SemilinearMapClass F σ M M₃] :
     AddMonoidHomClass F M M₃ :=
   { SemilinearMapClass.toAddHomClass with
     map_zero := fun f ↦
@@ -159,12 +160,12 @@ instance (priority := 100) addMonoidHomClass [SemilinearMapClass F σ M M₃] :
         rw [← zero_smul R (0 : M), map_smulₛₗ]
         simp }
 
-instance (priority := 100) distribMulActionHomClass [LinearMapClass F R M M₂] :
+instance (priority := 100) distribMulActionHomClass [NDFunLike F M M₂] [LinearMapClass F R M M₂] :
     DistribMulActionHomClass F R M M₂ :=
   { SemilinearMapClass.addMonoidHomClass F with
     map_smul := fun f c x ↦ by rw [map_smulₛₗ, RingHom.id_apply] }
 
-variable {F} (f : F) [i : SemilinearMapClass F σ M M₃]
+variable {F} (f : F) [NDFunLike F M M₃] [i : SemilinearMapClass F σ M M₃]
 
 theorem map_smul_inv {σ' : S →+* R} [RingHomInvPair σ σ'] (c : S) (x : M) :
     c • f x = f (σ' c • x) := by simp
