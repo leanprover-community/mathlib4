@@ -197,9 +197,9 @@ theorem sUnion_classes (r : Setoid α) : ⋃₀ r.classes = Set.univ :=
   Set.eq_univ_of_forall fun x => Set.mem_sUnion.2 ⟨{ y | r.Rel y x }, ⟨x, rfl⟩, Setoid.refl _⟩
 #align setoid.sUnion_classes Setoid.sUnion_classes
 
-/-- The equivalence between the type of equivalence classes of an equivalence relation and its
-quotient. -/
-noncomputable def classesEquivQuotient (r : Setoid α) : Quotient r ≃ Setoid.classes r := by
+/-- The equivalence between the quotient by an equivalence relation and its
+type of equivalence classes. -/
+noncomputable def quotientEquivClasses (r : Setoid α) : Quotient r ≃ Setoid.classes r := by
   let f (a : α) : Setoid.classes r := ⟨{ x | Setoid.r x a }, Setoid.mem_classes r a⟩
   have f_respects_relation (a b : α) (a_rel_b : Setoid.r a b) : f a = f b := by
     rw [Subtype.mk.injEq]
@@ -220,8 +220,8 @@ noncomputable def classesEquivQuotient (r : Setoid α) : Quotient r ≃ Setoid.c
     exact ⟨a, Subtype.ext hc.symm⟩
 
 @[simp]
-lemma classesEquivQuotient_mk_eq (r : Setoid α) (a : α) :
-    (classesEquivQuotient r (Quotient.mk r a) : Set α) = { x | r.Rel x a } :=
+lemma quotientEquivClasses_mk_eq (r : Setoid α) (a : α) :
+    (quotientEquivClasses r (Quotient.mk r a) : Set α) = { x | r.Rel x a } :=
   (@Subtype.ext_iff_val _ _ _ ⟨{ x | r.Rel x a }, Setoid.mem_classes r a⟩).mp rfl
 
 section Partition
