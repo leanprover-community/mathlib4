@@ -59,7 +59,7 @@ theorem separable_one : (1 : R[X]).Separable :=
 
 @[nontriviality]
 theorem separable_of_subsingleton [Subsingleton R] (f : R[X]) : f.Separable := by
-  simp [Separable, IsCoprime]
+  simp [Separable, IsCoprime, eq_iff_true_of_subsingleton]
 #align polynomial.separable_of_subsingleton Polynomial.separable_of_subsingleton
 
 theorem separable_X_add_C (a : R) : (X + C a).Separable := by

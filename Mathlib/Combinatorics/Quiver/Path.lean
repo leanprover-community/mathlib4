@@ -188,7 +188,7 @@ theorem toList_injective (a : V) : ∀ b, Injective (toList : Path a b → List 
   | _, @cons _ _ _ c _ p f, @cons _ _ _ t _ C D, h => by
     simp only [toList, List.cons.injEq] at h
     obtain ⟨rfl, hAC⟩ := h
-    simp [toList_injective _ _ hAC]
+    simp [toList_injective _ _ hAC, eq_iff_true_of_subsingleton]
 #align quiver.path.to_list_injective Quiver.Path.toList_injective
 
 @[simp]
