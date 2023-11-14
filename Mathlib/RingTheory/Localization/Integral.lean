@@ -234,9 +234,7 @@ theorem isIntegral_localization (H : Algebra.IsIntegral R S) :
   obtain ⟨⟨s, ⟨u, hu⟩⟩, hx⟩ := surj (Algebra.algebraMapSubmonoid S M) x
   obtain ⟨v, hv⟩ := hu
   obtain ⟨v', hv'⟩ := isUnit_iff_exists_inv'.1 (map_units Rₘ ⟨v, hv.1⟩)
-  refine'
-    @isIntegral_of_isIntegral_mul_unit Rₘ _ _ _ (localizationAlgebra M S) x (algebraMap S Sₘ u) v' _
-      _
+  refine @IsIntegral.of_mul_unit Rₘ _ _ _ (localizationAlgebra M S) x (algebraMap S Sₘ u) v' ?_ ?_
   · replace hv' := congr_arg (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) hv'
     rw [RingHom.map_mul, RingHom.map_one, ← RingHom.comp_apply _ (algebraMap R Rₘ)] at hv'
     -- Porting note: added argument
@@ -396,12 +394,11 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Alge
     obtain ⟨a : S, b, ha, rfl⟩ := @div_surjective S _ _ _ _ _ _ x
     obtain ⟨f, hf₁, hf₂⟩ := h b
     rw [div_eq_mul_inv]
-    refine' isIntegral_mul _ _
+    refine IsIntegral.mul ?_ ?_
     · rw [← isAlgebraic_iff_isIntegral]
-      refine'
-        _root_.isAlgebraic_of_larger_base_of_injective
-          (NoZeroSMulDivisors.algebraMap_injective R (FractionRing R)) _
-      exact isAlgebraic_algebraMap_of_isAlgebraic (h a)
+      refine .of_larger_base_of_injective
+        (NoZeroSMulDivisors.algebraMap_injective R (FractionRing R)) ?_
+      exact .algebraMap (h a)
     · rw [← isAlgebraic_iff_isIntegral]
       use (f.map (algebraMap R (FractionRing R))).reverse
       constructor
