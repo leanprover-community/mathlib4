@@ -299,18 +299,6 @@ lemma inv_rnDeriv_aux [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) (hν
     (by filter_upwards [hνμ.ae_le (rnDeriv_pos hμν)] with x hx using hx.ne')
     (rnDeriv_ne_top _ _)]
 
-lemma rnDeriv_mul_rnDeriv {μ ν κ : Measure α} [SigmaFinite κ]
-    [μ.HaveLebesgueDecomposition κ] [ν.HaveLebesgueDecomposition κ] [μ.HaveLebesgueDecomposition ν]
-    (hμν : μ ≪ ν) (hνκ : ν ≪ κ) :
-    μ.rnDeriv ν * ν.rnDeriv κ =ᵐ[κ] μ.rnDeriv κ := by
-  rw [← withDensity_eq_iff_of_sigmaFinite]
-  · rw [mul_comm,
-      withDensity_mul _ (Measure.measurable_rnDeriv _ _) (Measure.measurable_rnDeriv _ _),
-      Measure.withDensity_rnDeriv_eq _ _ (hμν.trans hνκ), Measure.withDensity_rnDeriv_eq _ _ hνκ,
-      Measure.withDensity_rnDeriv_eq _ _ hμν]
-  · exact ((Measure.measurable_rnDeriv _ _).mul (Measure.measurable_rnDeriv _ _)).aemeasurable
-  · exact (Measure.measurable_rnDeriv _ _).aemeasurable
-
 lemma inv_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     (μ.rnDeriv ν)⁻¹ =ᵐ[μ] ν.rnDeriv μ := by
   suffices (μ.rnDeriv ν)⁻¹ =ᵐ[μ] (μ.rnDeriv (μ.withDensity (ν.rnDeriv μ)))⁻¹
@@ -327,6 +315,8 @@ lemma inv_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
 lemma inv_rnDeriv' [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     (ν.rnDeriv μ)⁻¹ =ᵐ[μ] μ.rnDeriv ν := by
   filter_upwards [inv_rnDeriv hμν] with x hx; simp only [Pi.inv_apply, ← hx, inv_inv]
+
+section integral
 
 lemma set_lintegral_rnDeriv_le (s : Set α) :
     ∫⁻ x in s, μ.rnDeriv ν x ∂ν ≤ μ s := by
@@ -385,6 +375,20 @@ lemma set_integral_toReal_rnDeriv [SigmaFinite μ] [HaveLebesgueDecomposition μ
 lemma integral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     ∫ x, (μ.rnDeriv ν x).toReal ∂ν = (μ Set.univ).toReal := by
   rw [← integral_univ, set_integral_toReal_rnDeriv hμν MeasurableSet.univ]
+
+end integral
+
+lemma rnDeriv_mul_rnDeriv {μ ν κ : Measure α} [SigmaFinite κ]
+    [μ.HaveLebesgueDecomposition κ] [ν.HaveLebesgueDecomposition κ] [μ.HaveLebesgueDecomposition ν]
+    (hμν : μ ≪ ν) (hνκ : ν ≪ κ) :
+    μ.rnDeriv ν * ν.rnDeriv κ =ᵐ[κ] μ.rnDeriv κ := by
+  rw [← withDensity_eq_iff_of_sigmaFinite]
+  · rw [mul_comm,
+      withDensity_mul _ (Measure.measurable_rnDeriv _ _) (Measure.measurable_rnDeriv _ _),
+      Measure.withDensity_rnDeriv_eq _ _ (hμν.trans hνκ), Measure.withDensity_rnDeriv_eq _ _ hνκ,
+      Measure.withDensity_rnDeriv_eq _ _ hμν]
+  · exact ((Measure.measurable_rnDeriv _ _).mul (Measure.measurable_rnDeriv _ _)).aemeasurable
+  · exact (Measure.measurable_rnDeriv _ _).aemeasurable
 
 end Measure
 
