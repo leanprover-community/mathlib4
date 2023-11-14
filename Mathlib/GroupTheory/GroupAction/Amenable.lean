@@ -31,6 +31,11 @@ setting, this would be a too strong assumption, we only want to demand
 finite additivity. Typically, the resulting measures will not be
 σ-additive.
 
+## Todo
+
+* `MeasurableSMul' should be replaced by `MeasurableConstSMul'
+  once the latter is defined
+
 ## References
 
 See [bartholdi2017amenability] for definitions
@@ -46,24 +51,23 @@ assigns the value 1 to the full set α, and
 is finitely additive under disjoint unions -/
 structure Mean where
   /-- function giving the measure of a measurable subset-/
-  measureOf : {S // MeasurableSet (α := α) S} → NNReal
+  measureOf : Set α  → NNReal
   /-- Set.univ has measure 1  -/
-  measureOf_univ : measureOf ⟨Set.univ, MeasurableSet.univ⟩ = 1
+  measureOf_univ : measureOf Set.univ = 1
   /-- measureOf is finitely additive -/
   fin_add (X Y : Set α) (hX : MeasurableSet X) (hY : MeasurableSet Y) :
-    Disjoint X Y → measureOf (⟨X ∪ Y, MeasurableSet.union hX hY⟩) =
-    measureOf ⟨X, hX⟩ + measureOf ⟨Y, hY⟩
+    Disjoint X Y → measureOf (X ∪ Y) = measureOf X + measureOf Y
 
 @[coe]
-instance : CoeFun (Mean α) (λ _ => {S // MeasurableSet (α := α) S} → NNReal) where
+instance : CoeFun (Mean α) (λ _ => Set α → NNReal) where
   coe := Mean.measureOf
 
 
-variable (G : Type u) [Monoid G] [MulAction G α] [MeasurableSMul₂ G α]
+variable (G : Type u) [Monoid G] [MulAction G α] [MeasurableSpace G] [MeasurableSMul G α]
 
 instance MeanSMul : SMul G (Mean α) where
   smul g μ := {
-    measureOf := λ S => μ ⟨(λ (x : α) => g • x)⁻¹' S, (MulActionMeasurable.out g S.property)⟩
+    measureOf := λ S => μ ((λ (x : α) => g • x)⁻¹' S)
     measureOf_univ := by simp only [Set.preimage_univ, μ.measureOf_univ]
     fin_add := by
       intro X Y hX hY disjXY
