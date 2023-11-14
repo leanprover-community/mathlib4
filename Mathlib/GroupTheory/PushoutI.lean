@@ -193,6 +193,22 @@ instance : Group (PushoutI φ) :=
 
 namespace NormalWord
 
+/-
+In this section we show that there is a normal form for words in the amalgamated product. To have a
+normal form, we need to pick canonical choice of element of each right coset of the base group. The
+choice of element in the base group itself is `1`. Given a choice of element of each right coset,
+given by the type `Transversal φ` we can find a normal form. The normal form for an element is an
+element of the base group, multiplied by a word in the coproduct, where each letter in the word is
+the canonical choice of element of its coset. We then show that all groups in the diagram act
+faithfully on the normal form. This implies that the maps into the coproduct are injective.
+
+We demonstrate the action is faithful using the equivalence `equivPair`. We show that `G i` acts
+faithfully on `Pair d i` and that `Pair d i` is isomorphic to `NormalWord d`. Here, `d` is a
+`Transversal`. A `Pair d i` is a word in the coproduct, `Coprod G`, the `tail`, and an element
+of the group `G i`, the `head`. The first letter of the `tail` must not be an element of `G i`.
+Note that the `head` may be `1` Every letter in the `tail` must be in the transversal given by `d`.
+-/
+
 variable (φ)
 
 /-- The data we need to pick a normal form for words in the pushout. We need to pick a
@@ -229,7 +245,11 @@ structure _root_.Monoid.PushoutI.NormalWord (d : Transversal φ) extends CoprodI
   /-- All letter in the word are in the transversal. -/
   normalized : ∀ i g, ⟨i, g⟩ ∈ toList → g ∈ d.set i
 
-/-- Similar to `Monoid.CoprodI.Pair` except every letter must be in the transversal
+/--
+A `Pair d i` is a word in the coproduct, `Coprod G`, the `tail`, and an element of the group `G i`,
+the `head`. The first letter of the `tail` must not be an element of `G i`.
+Note that the `head` may be `1` Every letter in the `tail` must be in the transversal given by `d`.
+Similar to `Monoid.CoprodI.Pair` except every letter must be in the transversal
 (not including the head letter). -/
 structure Pair (d : Transversal φ) (i : ι) extends CoprodI.Word.Pair G i where
   /-- All letters in the word are in the transversal. -/
@@ -237,7 +257,7 @@ structure Pair (d : Transversal φ) (i : ι) extends CoprodI.Word.Pair G i where
 
 variable {d : Transversal φ}
 
-/-- The empty Normalised word, representing the identity element of the group. -/
+/-- The empty normalized word, representing the identity element of the group. -/
 @[simps!]
 def empty : NormalWord d := ⟨CoprodI.Word.empty, 1, fun i g => by simp [CoprodI.Word.empty]⟩
 
