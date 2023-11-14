@@ -122,6 +122,12 @@ theorem even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by
 theorem even_add_one : Even (n + 1) ↔ ¬Even n := by simp [even_add]
 #align nat.even_add_one Nat.even_add_one
 
+theorem succ_mod_two_eq_zero_iff {m : ℕ} : (m + 1) % 2 = 0 ↔ m % 2 = 1 := by
+  simp [← Nat.even_iff, ← Nat.not_even_iff, parity_simps]
+
+theorem succ_mod_two_eq_one_iff {m : ℕ} : (m + 1) % 2 = 1 ↔ m % 2 = 0 := by
+  simp [← Nat.even_iff, ← Nat.not_even_iff, parity_simps]
+
 set_option linter.deprecated false in
 @[simp]
 theorem not_even_bit1 (n : ℕ) : ¬Even (bit1 n) := by simp [bit1, parity_simps]
@@ -235,12 +241,6 @@ theorem div_two_mul_two_add_one_of_odd (h : Odd n) : n / 2 * 2 + 1 = n := by
 theorem one_add_div_two_mul_two_of_odd (h : Odd n) : 1 + n / 2 * 2 = n := by
   rw [← odd_iff.mp h, mod_add_div']
 #align nat.one_add_div_two_mul_two_of_odd Nat.one_add_div_two_mul_two_of_odd
-
-theorem succ_mod_two_eq_zero_iff {m : ℕ} : (m + 1) % 2 = 0 ↔ m % 2 = 1 := by
-  simp [← Nat.even_iff, ← Nat.not_even_iff, parity_simps]
-
-theorem succ_mod_two_eq_one_iff {m : ℕ} : (m + 1) % 2 = 1 ↔ m % 2 = 0 := by
-  simp [← Nat.even_iff, ← Nat.not_even_iff, parity_simps]
 
 set_option linter.deprecated false in
 section
