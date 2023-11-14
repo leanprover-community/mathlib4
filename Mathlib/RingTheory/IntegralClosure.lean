@@ -79,47 +79,13 @@ theorem isIntegral_algebraMap {x : R} : IsIntegral R (algebraMap R A x) :=
   (algebraMap R A).isIntegralElem_map
 #align is_integral_algebra_map isIntegral_algebraMap
 
--- move down and golf
-theorem isIntegral_of_noetherian (H : IsNoetherian R A) (x : A) : IsIntegral R x := by
-  let leval : R[X] →ₗ[R] A := (aeval x).toLinearMap
-  let D : ℕ → Submodule R A := fun n => (degreeLE R n).map leval
-  let M := WellFounded.min (isNoetherian_iff_wellFounded.1 H) (Set.range D) ⟨_, ⟨0, rfl⟩⟩
-  have HM : M ∈ Set.range D := WellFounded.min_mem _ _ _
-  cases' HM with N HN
-  have HM : ¬M < D (N + 1) :=
-    WellFounded.not_lt_min (isNoetherian_iff_wellFounded.1 H) (Set.range D) _ ⟨N + 1, rfl⟩
-  rw [← HN] at HM
-  have HN2 : D (N + 1) ≤ D N :=
-    _root_.by_contradiction fun H =>
-      HM (lt_of_le_not_le (map_mono (degreeLE_mono (WithBot.coe_le_coe.2 (Nat.le_succ N)))) H)
-  have HN3 : leval (X ^ (N + 1)) ∈ D N := HN2 (mem_map_of_mem (mem_degreeLE.2 (degree_X_pow_le _)))
-  rcases HN3 with ⟨p, hdp, hpe⟩
-  refine' ⟨X ^ (N + 1) - p, monic_X_pow_sub (mem_degreeLE.1 hdp), _⟩
-  show leval (X ^ (N + 1) - p) = 0
-  rw [LinearMap.map_sub, hpe, sub_self]
-#align is_integral_of_noetherian isIntegral_of_noetherian
-
--- golf?
-theorem isIntegral_of_submodule_noetherian (S : Subalgebra R A)
-    (H : IsNoetherian R (Subalgebra.toSubmodule S)) (x : A) (hx : x ∈ S) : IsIntegral R x := by
-  suffices IsIntegral R (show S from ⟨x, hx⟩) by
-    rcases this with ⟨p, hpm, hpx⟩
-    replace hpx := congr_arg S.val hpx
-    refine' ⟨p, hpm, Eq.trans _ hpx⟩
-    simp only [aeval_def, eval₂, sum_def]
-    rw [S.val.map_sum]
-    refine' Finset.sum_congr rfl fun n _hn => _
-    rw [S.val.map_mul, S.val.map_pow, S.val.commutes, S.val_apply, Subtype.coe_mk]
-  refine' isIntegral_of_noetherian H ⟨x, hx⟩
-#align is_integral_of_submodule_noetherian isIntegral_of_submodule_noetherian
-
 end Ring
 
 section
 
 variable {R A B S : Type*}
 
-variable [CommRing R] [CommRing A] [CommRing B] [CommRing S]
+variable [CommRing R] [CommRing A] [Ring B] [CommRing S]
 
 variable [Algebra R A] [Algebra R B] (f : R →+* S)
 
@@ -155,8 +121,6 @@ theorem isIntegral_algEquiv {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algeb
     (f : A ≃ₐ[R] B) {x : A} : IsIntegral R (f x) ↔ IsIntegral R x :=
   ⟨fun h ↦ by simpa using h.map f.symm, IsIntegral.map f⟩
 #align is_integral_alg_equiv isIntegral_algEquiv
-
-variable {B : Type*} [Ring B] [Algebra R B]
 
 /-- If `R → A → B` is an algebra tower,
 then if the entire tower is an integral extension so is `A → B`. -/
@@ -256,8 +220,8 @@ theorem Module.End.isIntegral {M : Type*} [AddCommGroup M] [Module R M] [Module.
 #align module.End.is_integral Module.End.isIntegral
 
 variable (R)
-theorem IsIntegral.of_finite [h : Module.Finite R B] (x : B) : IsIntegral R x :=
-  (isIntegral_algHom_iff _ Algebra.lmul_injective).mp (Module.End.isIntegral <| Algebra.lmul R B x)
+theorem IsIntegral.of_finite [Module.Finite R B] (x : B) : IsIntegral R x :=
+  (isIntegral_algHom_iff (Algebra.lmul R B) Algebra.lmul_injective).mp (Module.End.isIntegral _)
 
 variable (B)
 theorem Algebra.IsIntegral.of_finite [Module.Finite R B] : Algebra.IsIntegral R B :=
@@ -269,12 +233,20 @@ variable {R B}
 /-- If `S` is a sub-`R`-algebra of `A` and `S` is finitely-generated as an `R`-module,
   then all elements of `S` are integral over `R`. -/
 theorem IsIntegral.of_mem_of_fg {A} [Ring A] [Algebra R A] (S : Subalgebra R A)
-    (HS : S.toSubmodule.FG) (x : A) (hx : x ∈ S) :
-    IsIntegral R x := by
-  sorry
+    (HS : S.toSubmodule.FG) (x : A) (hx : x ∈ S) : IsIntegral R x :=
+  have : Module.Finite R S := ⟨(fg_top _).mpr HS⟩
+  (isIntegral_algHom_iff S.val Subtype.val_injective).mpr (IsIntegral.of_finite R (⟨x, hx⟩ : S))
 #align is_integral_of_mem_of_fg IsIntegral.of_mem_of_fg
 
--- golf a bit?
+theorem isIntegral_of_noetherian (_ : IsNoetherian R B) (x : B) : IsIntegral R x :=
+  .of_finite R x
+#align is_integral_of_noetherian isIntegral_of_noetherian
+
+theorem isIntegral_of_submodule_noetherian (S : Subalgebra R B)
+    (H : IsNoetherian R (Subalgebra.toSubmodule S)) (x : B) (hx : x ∈ S) : IsIntegral R x :=
+  .of_mem_of_fg _ ((fg_top _).mp <| H.noetherian _) _ hx
+#align is_integral_of_submodule_noetherian isIntegral_of_submodule_noetherian
+
 /-- Suppose `A` is an `R`-algebra, `M` is an `A`-module such that `a • m ≠ 0` for all non-zero `a`
 and `m`. If `x : A` fixes a nontrivial f.g. `R`-submodule `N` of `M`, then `x` is `R`-integral. -/
 theorem isIntegral_of_smul_mem_submodule {M : Type*} [AddCommGroup M] [Module R M] [Module A M]
@@ -328,13 +300,25 @@ theorem RingHom.Finite.to_isIntegral (h : f.Finite) : f.IsIntegral :=
 alias RingHom.IsIntegral.of_finite := RingHom.Finite.to_isIntegral
 #align ring_hom.is_integral.of_finite RingHom.IsIntegral.of_finite
 
-theorem RingHom.IsIntegral.to_finite (h : f.IsIntegral) (h' : f.FiniteType) : f.Finite := by
+/-- The [Kurosh problem](https://en.wikipedia.org/wiki/Kurosh_problem) asks to show that
+  this is still true when `A` is not necessarily commutative and `R` is a field, but it has
+  been solved in the negative. See https://arxiv.org/pdf/1706.02383.pdf for criteria for a
+  finitely generated algebraic (= integral) algebra over a field to be finite dimensional. -/
+theorem Algebra.IsIntegral.finite (h : Algebra.IsIntegral R A) [h' : Algebra.FiniteType R A] :
+    Module.Finite R A :=
+  have ⟨s, hs⟩ := h'
+  ⟨by apply hs ▸ fg_adjoin_of_finite s.finite_toSet fun x _ ↦ h x⟩
+#align algebra.is_integral.finite Algebra.IsIntegral.finite
+
+/-- finite = integral + finite type -/
+theorem Algebra.finite_iff_isIntegral_and_finiteType :
+    Module.Finite R A ↔ Algebra.IsIntegral R A ∧ Algebra.FiniteType R A :=
+  ⟨fun _ ↦ ⟨.of_finite R, inferInstance⟩, fun ⟨h, _⟩ ↦ h.finite⟩
+#align algebra.finite_iff_is_integral_and_finite_type Algebra.finite_iff_isIntegral_and_finiteType
+
+theorem RingHom.IsIntegral.to_finite (h : f.IsIntegral) (h' : f.FiniteType) : f.Finite :=
   letI := f.toAlgebra
-  obtain ⟨s, hs⟩ := h'
-  constructor
-  change (⊤ : Subalgebra R S).toSubmodule.FG
-  rw [← hs]
-  exact fg_adjoin_of_finite (Set.toFinite _) fun x _ => h x
+  Algebra.IsIntegral.finite h (h' := h')
 #align ring_hom.is_integral.to_finite RingHom.IsIntegral.to_finite
 
 alias RingHom.Finite.of_isIntegral_of_finiteType := RingHom.IsIntegral.to_finite
@@ -342,35 +326,8 @@ alias RingHom.Finite.of_isIntegral_of_finiteType := RingHom.IsIntegral.to_finite
 
 /-- finite = integral + finite type -/
 theorem RingHom.finite_iff_isIntegral_and_finiteType : f.Finite ↔ f.IsIntegral ∧ f.FiniteType :=
-  ⟨fun h => ⟨h.to_isIntegral, h.to_finiteType⟩, fun ⟨h, h'⟩ => h.to_finite h'⟩
+  ⟨fun h ↦ ⟨h.to_isIntegral, h.to_finiteType⟩, fun ⟨h, h'⟩ ↦ h.to_finite h'⟩
 #align ring_hom.finite_iff_is_integral_and_finite_type RingHom.finite_iff_isIntegral_and_finiteType
-
--- golf .. synchronize with RingHom.IsIntegral.to_finite
-/-- The [Kurosh problem](https://en.wikipedia.org/wiki/Kurosh_problem) asks to show that
-  this is still true when `A` is not necessarily commutative and `R` is a field, but it has
-  been solved in the negative. See https://arxiv.org/pdf/1706.02383.pdf for criteria for a
-  finitely generated algebraic (= integral) algebra over a field to be finite dimensional. -/
-theorem Algebra.IsIntegral.finite (h : Algebra.IsIntegral R A) [h' : Algebra.FiniteType R A] :
-    Module.Finite R A := by
-  have :=
-    RingHom.IsIntegral.to_finite h
-      (by
-        rw [RingHom.FiniteType]
-        convert h'
-        -- Porting note: was `ext`
-        refine IsScalarTower.Algebra.ext (algebraMap R A).toAlgebra _ fun r x => ?_
-        exact (Algebra.smul_def _ _).symm)
-  rw [RingHom.Finite] at this
-  convert this
-  ext
-  exact Algebra.smul_def _ _
-#align algebra.is_integral.finite Algebra.IsIntegral.finite
-
-/-- finite = integral + finite type -/
-theorem Algebra.finite_iff_isIntegral_and_finiteType :
-    Module.Finite R A ↔ Algebra.IsIntegral R A ∧ Algebra.FiniteType R A :=
-  ⟨fun _ ↦ ⟨Algebra.IsIntegral.of_finite R, inferInstance⟩, fun ⟨h, _⟩ ↦ h.finite⟩
-#align algebra.finite_iff_is_integral_and_finite_type Algebra.finite_iff_isIntegral_and_finiteType
 
 variable (f)
 
@@ -598,18 +555,11 @@ theorem IsIntegral.pow_iff {x : A} {n : ℕ} (hn : 0 < n) : IsIntegral R (x ^ n)
 
 open TensorProduct
 
--- write as x • (1 ⊗ₜ[R] y) and golf
 theorem IsIntegral.tmul (x : A) {y : B} (h : IsIntegral R y) : IsIntegral A (x ⊗ₜ[R] y) := by
-  --have := IsIntegral.map_of_comp_eq _ _ Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap
-  obtain ⟨p, hp, hp'⟩ := h
-  refine ⟨(p.map (algebraMap R A)).scaleRoots x, (monic_scaleRoots_iff _).mpr (hp.map _), ?_⟩
-  rw [← aeval_def]
-  convert scaleRoots_aeval_eq_zero (R := A) (A := A ⊗[R] B) _
-  on_goal 2 => exact 1 ⊗ₜ y
-  · rw [Algebra.TensorProduct.algebraMap_apply, Algebra.id.map_eq_self,
-        Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
-  · erw [aeval_def, eval₂_map, Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap, ←eval₂_map,
-         ←Algebra.TensorProduct.includeRight_apply, eval₂_hom, eval_map, hp', _root_.map_zero]
+  rw [← mul_one x, ← smul_eq_mul, ← smul_tmul']
+  exact smul _ (h.map_of_comp_eq (algebraMap R A)
+    (Algebra.TensorProduct.includeRight (R := R) (A := A) (B := B)).toRingHom
+    Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap)
 #align is_integral.tmul IsIntegral.tmul
 
 section
@@ -814,7 +764,6 @@ theorem mk'_algebraMap [Algebra R A] [IsScalarTower R A B] (x : R)
 
 section lift
 
--- porting note: `R` and `A` were redundant binder updates
 variable (B) {S : Type*} [CommRing S] [Algebra R S]
 -- split from above, since otherwise it does not synthesize `Semiring S`
 variable [Algebra S B] [IsScalarTower R S B]
