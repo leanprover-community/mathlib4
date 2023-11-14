@@ -76,8 +76,6 @@ theorem effectiveEpi_tfae
 lemma effectiveEpi_iff_surjective {X Y : CompHaus} (f : X ⟶ Y) :
     EffectiveEpi f ↔ Function.Surjective f := (effectiveEpi_tfae f).out 0 2
 
-  -- exact effectiveEpi_iff_epi (fun _ _ ↦ (effectiveEpiFamily_tfae _ _).out 0 1) f
-
 instance : Preregular CompHaus where
   exists_fac := by
     intro X Y Z f π hπ
@@ -87,7 +85,7 @@ instance : Preregular CompHaus where
     obtain ⟨z,hz⟩ := hπ (f y)
     exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
 
-instance precoherent : Precoherent CompHaus.{u} := inferInstance
+instance : Precoherent CompHaus.{u} := inferInstance
 
 -- TODO: prove this for `Type*`
 open List in
@@ -99,8 +97,20 @@ theorem effectiveEpiFamily_tfae
     , Epi (Sigma.desc π)
     , ∀ b : B, ∃ (a : α) (x : X a), π a x = b
     ] := by
+  tfae_have 2 → 1
+  · intro
+    rwa [← effectiveEpi_desc_iff_effectiveEpiFamily,
+      effectiveEpi_iff_surjective, ← epi_iff_surjective]
   tfae_have 1 → 2
   · intro; infer_instance
+  tfae_have 3 → 2
+  · intro e
+    rw [epi_iff_surjective]
+    intro b
+    obtain ⟨t, x, h⟩ := e b
+    refine ⟨Sigma.ι X t x, ?_⟩
+    change (Sigma.ι X t ≫ Sigma.desc π) x = _
+    simpa using h
   tfae_have 2 → 3
   · intro e; rw [epi_iff_surjective] at e
     let i : ∐ X ≅ finiteCoproduct X :=
@@ -120,8 +130,6 @@ theorem effectiveEpiFamily_tfae
     simp only [Discrete.functor_obj, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
       colimit.comp_coconePointUniqueUpToIso_hom_assoc]
     ext; rfl
-  tfae_have 3 → 1
-  · sorry
   tfae_finish
 
 theorem effectiveEpiFamily_of_jointly_surjective
@@ -129,8 +137,6 @@ theorem effectiveEpiFamily_of_jointly_surjective
     (X : α → CompHaus.{u}) (π : (a : α) → (X a ⟶ B))
     (surj : ∀ b : B, ∃ (a : α) (x : X a), π a x = b) :
     EffectiveEpiFamily X π :=
-  ⟨⟨sorry⟩⟩
-
-
+  ((effectiveEpiFamily_tfae X π).out 2 0).mp surj
 
 end CompHaus
