@@ -93,7 +93,7 @@ section
 
 open ZeroObject
 
-instance zero_projective [HasZeroObject C] [HasZeroMorphisms C] : Projective (0 : C) :=
+instance zero_projective [HasZeroObject C] : Projective (0 : C) :=
   (isZero_zero C).projective
 #align category_theory.projective.zero_projective CategoryTheory.Projective.zero_projective
 

@@ -273,7 +273,7 @@ end LieModule
 
 namespace LieSubmodule
 
-open LieModule
+open LieModule Set
 
 variable {N : LieSubmodule R L M} {x : L}
 
@@ -295,6 +295,11 @@ theorem toEndomorphism_restrict_eq_toEndomorphism (h := N.toEndomorphism_comp_su
     (toEndomorphism R L M x).restrict h = toEndomorphism R L N x := by
   ext; simp [LinearMap.restrict_apply]
 #align lie_submodule.to_endomorphism_restrict_eq_to_endomorphism LieSubmodule.toEndomorphism_restrict_eq_toEndomorphism
+
+lemma mapsTo_pow_toEndomorphism_sub_algebraMap {φ : R} {k : ℕ} {x : L} :
+    MapsTo ((toEndomorphism R L M x - algebraMap R (Module.End R M) φ) ^ k) N N := by
+  rw [LinearMap.coe_pow]
+  exact MapsTo.iterate (fun m hm ↦ N.sub_mem (N.lie_mem hm) (N.smul_mem _ hm)) k
 
 end LieSubmodule
 

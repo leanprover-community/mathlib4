@@ -156,7 +156,7 @@ theorem mutuallySingular_singularPart (μ ν : Measure α) : μ.singularPart ν 
     exact MutuallySingular.zero_left
 #align measure_theory.measure.mutually_singular_singular_part MeasureTheory.Measure.mutuallySingular_singularPart
 
-instance instHaveLebesgueDecomposition_singularPart [HaveLebesgueDecomposition μ ν] :
+instance instHaveLebesgueDecomposition_singularPart :
     HaveLebesgueDecomposition (μ.singularPart ν) ν :=
   ⟨⟨μ.singularPart ν, 0⟩, measurable_zero, mutuallySingular_singularPart μ ν, by simp⟩
 
@@ -240,8 +240,7 @@ lemma MutuallySingular.rnDeriv_ae_eq_zero {μ ν : Measure α} (hμν : μ ⟂�
     exact hμν
   · rw [rnDeriv_of_not_haveLebesgueDecomposition h]
 
-lemma rnDeriv_singularPart (μ ν : Measure α) [μ.HaveLebesgueDecomposition ν] :
-    (μ.singularPart ν).rnDeriv ν =ᵐ[ν] 0 := by
+lemma rnDeriv_singularPart (μ ν : Measure α) : (μ.singularPart ν).rnDeriv ν =ᵐ[ν] 0 := by
   rw [rnDeriv_eq_zero]
   exact mutuallySingular_singularPart μ ν
 

@@ -97,7 +97,7 @@ instance instAlgebra : Algebra R (CliffordAlgebra Q) := instAlgebra' _
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M] (Q : QuadraticForm A M)
-    [IsScalarTower R A M] [IsScalarTower S A M] [SMulCommClass R S A] :
+    [IsScalarTower R A M] [IsScalarTower S A M] :
     SMulCommClass R S (CliffordAlgebra Q) :=
   RingQuot.instSMulCommClass _
 

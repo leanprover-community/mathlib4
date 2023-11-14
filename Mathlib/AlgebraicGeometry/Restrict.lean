@@ -46,6 +46,39 @@ notation3:60 X:60 " ∣_ᵤ " U:61 => Scheme.restrict X (U : Opens X).openEmbedd
 /-- The restriction of a scheme to an open subset. -/
 abbrev Scheme.ιOpens {X : Scheme} (U : Opens X.carrier) : X ∣_ᵤ U ⟶ X := X.ofRestrict _
 
+lemma Scheme.ofRestrict_val_c_app_self {X : Scheme} (U : Opens X) :
+    (X.ofRestrict U.openEmbedding).1.c.app (op U) = X.presheaf.map (eqToHom (by simp)).op := rfl
+
+lemma Scheme.eq_restrict_presheaf_map_eqToHom {X : Scheme} (U : Opens X) {V W : Opens U}
+    (e : U.openEmbedding.isOpenMap.functor.obj V = U.openEmbedding.isOpenMap.functor.obj W) :
+  X.presheaf.map (eqToHom e).op =
+    (X ∣_ᵤ U).presheaf.map (eqToHom <| U.openEmbedding.functor_obj_injective e).op := rfl
+
+instance ΓRestrictAlgebra {X : Scheme} {Y : TopCat} {f : Y ⟶ X} (hf : OpenEmbedding f) :
+    Algebra (Scheme.Γ.obj (op X)) (Scheme.Γ.obj (op <| X.restrict hf)) :=
+  (Scheme.Γ.map (X.ofRestrict hf).op).toAlgebra
+#align algebraic_geometry.Γ_restrict_algebra AlgebraicGeometry.ΓRestrictAlgebra
+
+lemma Scheme.map_basicOpen' (X : Scheme) (U : Opens X) (r : Scheme.Γ.obj (op <| X ∣_ᵤ U)) :
+    U.openEmbedding.isOpenMap.functor.obj ((X ∣_ᵤ U).basicOpen r) = X.basicOpen
+    (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r) := by
+  refine' (Scheme.image_basicOpen (X.ofRestrict U.openEmbedding) r).trans _
+  erw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.openEmbedding_obj_top).op]
+  rw [← comp_apply, ← CategoryTheory.Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
+    op_id, CategoryTheory.Functor.map_id]
+  congr
+  exact PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ _ _
+
+lemma Scheme.map_basicOpen (X : Scheme) (U : Opens X) (r : Scheme.Γ.obj (op <| X ∣_ᵤ U)) :
+    U.openEmbedding.isOpenMap.functor.obj ((X ∣_ᵤ U).basicOpen r) = X.basicOpen r := by
+  rw [Scheme.map_basicOpen', Scheme.basicOpen_res_eq]
+
+lemma Scheme.map_basicOpen_map (X : Scheme) (U : Opens X) (r : X.presheaf.obj (op U)) :
+    U.openEmbedding.isOpenMap.functor.obj ((X ∣_ᵤ U).basicOpen <|
+    X.presheaf.map (eqToHom U.openEmbedding_obj_top).op r) = X.basicOpen r := by
+  rw [Scheme.map_basicOpen', Scheme.basicOpen_res_eq, Scheme.basicOpen_res_eq]
+
+
 -- Porting note : `simps` can't synthesize `obj_left, obj_hom, mapLeft`
 /-- The functor taking open subsets of `X` to open subschemes of `X`. -/
 -- @[simps obj_left obj_hom mapLeft]
@@ -101,7 +134,7 @@ theorem Scheme.restrictFunctor_map_base {U V : Opens X} (i : U ⟶ V) :
 #align algebraic_geometry.Scheme.restrict_functor_map_base AlgebraicGeometry.Scheme.restrictFunctor_map_base
 
 theorem Scheme.restrictFunctor_map_app_aux {U V : Opens X} (i : U ⟶ V) (W : Opens V) :
-    U.openEmbedding.isOpenMap.functor.obj ((Opens.map (X.restrictFunctor.map i).1.val.base).obj W) ≤
+    U.openEmbedding.isOpenMap.functor.obj ((X.restrictFunctor.map i).1 ⁻¹ᵁ W) ≤
       V.openEmbedding.isOpenMap.functor.obj W := by
   simp only [← SetLike.coe_subset_coe, IsOpenMap.functor_obj_coe, Set.image_subset_iff,
     Scheme.restrictFunctor_map_base, Opens.map_coe, Opens.inclusion_apply]
@@ -279,11 +312,9 @@ theorem morphismRestrict_val_base {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) :
   funext fun x => Subtype.ext (morphismRestrict_base_coe f U x)
 #align algebraic_geometry.morphism_restrict_val_base AlgebraicGeometry.morphismRestrict_val_base
 
-theorem image_morphismRestrict_preimage {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y)
-    (V : Opens U) :
-    ((Opens.map f.val.base).obj U).openEmbedding.isOpenMap.functor.obj
-        ((Opens.map (f ∣_ U).val.base).obj V) =
-      (Opens.map f.val.base).obj (U.openEmbedding.isOpenMap.functor.obj V) := by
+theorem image_morphismRestrict_preimage {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (V : Opens U) :
+    (f ⁻¹ᵁ U).openEmbedding.isOpenMap.functor.obj ((f ∣_ U) ⁻¹ᵁ V) =
+      f ⁻¹ᵁ (U.openEmbedding.isOpenMap.functor.obj V) := by
   ext1
   ext x
   constructor
@@ -326,8 +357,7 @@ theorem morphismRestrict_c_app {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (V : O
 theorem Γ_map_morphismRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) :
     Scheme.Γ.map (f ∣_ U).op =
       Y.presheaf.map (eqToHom <| U.openEmbedding_obj_top.symm).op ≫
-        f.1.c.app (op U) ≫
-          X.presheaf.map (eqToHom <| ((Opens.map f.val.base).obj U).openEmbedding_obj_top).op := by
+        f.1.c.app (op U) ≫ X.presheaf.map (eqToHom <| (f ⁻¹ᵁ U).openEmbedding_obj_top).op := by
   rw [Scheme.Γ_map_op, morphismRestrict_c_app f U ⊤, f.val.c.naturality_assoc]
   erw [← X.presheaf.map_comp]
   congr
@@ -384,7 +414,7 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y)
     (r : Y.presheaf.obj (op U)) :
     Arrow.mk
         (f ∣_ U ∣_
-          (Y.restrict _).basicOpen (Y.presheaf.map (eqToHom U.openEmbedding_obj_top).op r)) ≅
+          (Y ∣_ᵤ U).basicOpen (Y.presheaf.map (eqToHom U.openEmbedding_obj_top).op r)) ≅
       Arrow.mk (f ∣_ Y.basicOpen r) := by
   refine' morphismRestrictRestrict _ _ _ ≪≫ morphismRestrictEq _ _
   have e := Scheme.preimage_basicOpen (Y.ofRestrict U.openEmbedding) r
