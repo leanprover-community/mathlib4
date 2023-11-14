@@ -86,13 +86,11 @@ structure InvariantMean extends Mean α where
   invariance : ∀ (g : G), g • toMean = toMean
 
 
-/-- For amenable actions, we can pick an invariant mean
- Todo: This does not yet work
-noncomputable def invMean [Amenable G α] :
-    InvariantMean G α :=
-  Classical.choice (Amenable.invmean_nonempty G α)
--
-
--- A monoid action is amenable if there exists an invariant mean for it-/
+/-- A monoid action is amenable if there exists an invariant mean for it-/
 class Amenable where
   invmean_nonempty := Nonempty (InvariantMean G α)
+
+/-- For amenable actions, we can pick an invariant mean-/
+noncomputable def invMean [Amenable G α] :
+    InvariantMean G α :=
+  by sorry
