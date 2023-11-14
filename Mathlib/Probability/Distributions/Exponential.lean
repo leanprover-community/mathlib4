@@ -30,11 +30,6 @@ open scoped ENNReal NNReal Real
 
 open MeasureTheory Real Set Filter Topology
 
-@[simp]
-lemma compl_setOf_le (y : ℝ) : {x : ℝ | y ≤ x}ᶜ = {x | x < y} := by
-  ext x
-  constructor <;> simp only [ge_iff_le, mem_compl_iff, mem_setOf_eq, not_le, imp_self]
-
   /-- A Lebesgue Integral from -∞ to y can be expressed
     as the sum of one from -∞ to 0 and 0 to x -/
 lemma lintegral_split_bounded {y z : ℝ} (f : ℝ → ENNReal) (hzy : z ≤ y) :
@@ -94,10 +89,8 @@ lemma lintegral_nonpos {x r : ℝ} (hx : x ≤ 0) :
 /-- The exponential pdf is measurable. -/
 lemma measurable_exponentialPdfReal (r : ℝ) :
     Measurable (E r) := by
-  unfold exponentialPdfReal
   refine Measurable.ite ?hp ((measurable_id'.const_mul r).neg.exp.const_mul r) ?hg
-  · refine MeasurableSet.of_compl ?hp.h
-    apply IsOpen.measurableSet; rw [compl_setOf_le]; exact isOpen_gt' 0
+  · exact measurableSet_Ici
   · exact measurable_const
 
 /-- The exponential Pdf is strongly measurable -/
