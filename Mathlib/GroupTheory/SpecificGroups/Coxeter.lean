@@ -31,7 +31,7 @@ And the six exceptional systems:
   equal to one and off-diagonal entries distinct from one.
 * `Matrix.CoxeterGroup` : The group presentation corresponding to a Coxeter matrix.
 * `CoxeterSystem` : A structure recording the isomorphism between a group `W` and the group
-  presentation corresponding to a Coxeter matrix, i.e. `Matrix.CoxeterGroup B M`.
+  presentation corresponding to a Coxeter matrix, i.e. `Matrix.CoxeterGroup M`.
 * `IsCoxeterGroup` : A group is a Coxeter group if it is registered in a Coxeter system.
 
 ## References
@@ -63,13 +63,13 @@ namespace CoxeterGroup
 
 namespace Relations
 
-/-- The relation terms corresponding to a Coxeter matrix. -/
+/-- The relations corresponding to a Coxeter matrix. -/
 @[nolint unusedArguments]
 def ofMatrix [M.IsCoxeter] : B × B → FreeGroup B :=
   Function.uncurry fun i j =>
     (FreeGroup.of i * FreeGroup.of j) ^ M i j
 
-/-- The relations corresponding to a Coxeter matrix. -/
+/-- The set of relations corresponding to a Coxeter matrix. -/
 def toSet [M.IsCoxeter] : Set (FreeGroup B) :=
   Set.range <| ofMatrix M
 
@@ -77,10 +77,7 @@ end Relations
 
 end CoxeterGroup
 
-/-- The group presentation corresponding to a Coxeter matrix.
-
-Note that it is defined for any matrix of natural numbers. Its value for non-Coxeter
-matrices should be regarded as junk. `CoxeterSystem` requires `IsCoxeter M`. -/
+/-- The group presentation corresponding to a Coxeter matrix. -/
 abbrev Matrix.CoxeterGroup [M.IsCoxeter] := PresentedGroup <| CoxeterGroup.Relations.toSet M
 
 /-- A Coxeter system `CoxeterSystem W` is a structure recording the isomorphism between
