@@ -114,21 +114,17 @@ lemma exp_neg_integrableOn_Ioc {b x : ℝ} (hb : 0 < b) :
   simp only [neg_mul_eq_neg_mul]
   exact (exp_neg_integrableOn_Ioi _ hb).mono_set Ioc_subset_Ioi_self
 
-lemma if_eval_pos {r : ℝ} : ∀ᵐ x : ℝ ∂ volume , x < 0 →
-    ENNReal.ofReal (if 0 ≤ x then r * rexp (-(r * x)) else 0) = 0 := by
-  apply ae_of_all
-  intro x hx
-  replace hx : ¬ 0 ≤ x := by exact not_le.mpr hx
-  simp [hx]
+lemma exponentialPdf_eval_pos {r : ℝ} : ∀ᵐ x : ℝ ∂ volume , x < 0 →
+    exponentialPdf r x = 0 := by
+  simp only [exponentialPdf_eq]
+  exact ae_of_all _ (fun x hx ↦ by simp [not_le.mpr hx])
 
-lemma if_eval_neg {r : ℝ} : ∀ᵐ x : ℝ ∂ volume, (x ∈ {x | 0 ≤ x} →
-    ENNReal.ofReal (if 0 ≤ x then r * rexp (-(r * x)) else 0) =
+
+lemma exponentialPdf_eval_neg {r : ℝ} : ∀ᵐ x : ℝ ∂ volume, (x ∈ {x | 0 ≤ x} →
+    exponentialPdf r x =
     ENNReal.ofReal (r * rexp (-(r * x)))) := by
-  apply ae_of_all
-  intro x hx
-  split_ifs with h
-  · rfl
-  · contrapose! h; assumption
+  simp only [exponentialPdf_eq]
+  exact ae_of_all _ (fun x (hx : 0 ≤ x) ↦ by rw [if_pos hx])
 
 lemma antiDeriv_tendsto_zero {r : ℝ} (hr : 0 < r) :
     Tendsto (fun x ↦ -1/r * exp (-(r * x))) atTop (𝓝 0) := by
@@ -144,12 +140,10 @@ lemma lintegral_exponentialPdfReal_eq_one (r : ℝ) (hr : 0 < r) :
     ∫⁻ x, exponentialPdf r x = 1 := by
   rw [lintegral_split (exponentialPdf r) 0, ← ENNReal.toReal_eq_one_iff]
   have leftSide : ∫⁻ x in {x | x < 0}, exponentialPdf r x = 0 := by
-    simp only [exponentialPdf_eq]
-    rw [set_lintegral_congr_fun (isOpen_gt' 0).measurableSet if_eval_pos, lintegral_zero]
+    rw [set_lintegral_congr_fun (isOpen_gt' 0).measurableSet exponentialPdf_eval_pos, lintegral_zero]
   have rightSide : ∫⁻ x in {x | x ≥ 0}, exponentialPdf r x
       = ∫⁻ x in {x | x ≥ 0}, ENNReal.ofReal (r * rexp (-(r * x))) := by
-    simp only [exponentialPdf_eq]
-    exact set_lintegral_congr_fun isClosed_Ici.measurableSet if_eval_neg
+    exact set_lintegral_congr_fun isClosed_Ici.measurableSet exponentialPdf_eval_neg
   simp only [leftSide, add_zero]
   rw [rightSide, ENNReal.toReal_eq_one_iff, ←ENNReal.toReal_eq_one_iff]
   rw [← integral_eq_lintegral_of_nonneg_ae (ae_of_all _ (fun _ ↦ by positivity))]
