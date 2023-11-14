@@ -116,28 +116,18 @@ def extensiveCoverage [FinitaryPreExtensive C] : Coverage C where
 theorem effectiveEpi_desc_iff_effectiveEpiFamily [FinitaryPreExtensive C] {α : Type} [Fintype α]
     {B : C} (X : α → C) (π : (a : α) → X a ⟶ B) :
     EffectiveEpi (Sigma.desc π) ↔ EffectiveEpiFamily X π := by
-  have hi : IsIso (Sigma.desc (fun a ↦ Sigma.ι X a)) := by
-    suffices Sigma.desc (fun a ↦ Sigma.ι X a) = 𝟙 _ by rw [this]; infer_instance
-    ext; simp
-  refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
-  refine ⟨⟨@effectiveEpiFamilyOfEffectiveEpiDesc _ _ _ _ X π _ h ?_ _ ?_⟩⟩
-  · intro Z g a
-    exact FinitaryPreExtensive.hasPullbacks_of_inclusions g a (hi := hi)
-  · intro Z g
-    have := FinitaryPreExtensive.sigma_desc_iso (fun a ↦ Sigma.ι X a) g hi
-    infer_instance
+  exact ⟨fun h ↦ ⟨⟨@effectiveEpiFamilyOfEffectiveEpiDesc _ _ _ _ X π _ h _ _ (fun g ↦
+    (FinitaryPreExtensive.sigma_desc_iso (fun a ↦ Sigma.ι X a) g inferInstance).epi_of_iso)⟩⟩,
+    fun _ ↦ inferInstance⟩
 
 instance [FinitaryPreExtensive C] [Preregular C] : Precoherent C where
   pullback {B₁ B₂} f α _ X₁ π₁ h := by
     refine ⟨α, inferInstance, ?_⟩
     obtain ⟨Y, g, _, g', hg⟩ := Preregular.exists_fac f (Sigma.desc π₁)
-    have hh : IsIso (Sigma.desc (fun a ↦ Sigma.ι X₁ a)) := by
-      suffices Sigma.desc (fun a ↦ Sigma.ι X₁ a) = 𝟙 _ by rw [this]; infer_instance
-      ext; simp
     let X₂ := fun a ↦ pullback g' (Sigma.ι X₁ a)
     let π₂ := fun a ↦ pullback.fst (f := g') (g := Sigma.ι X₁ a) ≫ g
     let π' := fun a ↦ pullback.fst (f := g') (g := Sigma.ι X₁ a)
-    have _ := FinitaryPreExtensive.sigma_desc_iso (fun a ↦ Sigma.ι X₁ a) g' hh
+    have _ := FinitaryPreExtensive.sigma_desc_iso (fun a ↦ Sigma.ι X₁ a) g' inferInstance
     refine ⟨X₂, π₂, ?_, ?_⟩
     · have : (Sigma.desc π' ≫ g) = Sigma.desc π₂ := by ext; simp
       rw [← effectiveEpi_desc_iff_effectiveEpiFamily, ← this]
