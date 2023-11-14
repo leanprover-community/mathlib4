@@ -478,10 +478,22 @@ end Measure
 
 open Measure
 
+section SFinite
+
 /-- A measure is called s-finite if it is a countable sum of finite measures. -/
-class SFinite {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
+class SFinite (μ : Measure α) : Prop where
   out' : ∃ m : ℕ → Measure α, (∀ n, IsFiniteMeasure (m n)) ∧ μ = Measure.sum m
 
+/-- A sequence of finite measures such that `μ = sum (sFiniteSeq μ)` (see `sum_sFiniteSeq`). -/
+noncomputable
+def sFiniteSeq (μ : Measure α) [h : SFinite μ] : ℕ → Measure α := h.1.choose
+
+instance isFiniteMeasure_sFiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure (sFiniteSeq μ n) :=
+  h.1.choose_spec.1 n
+
+lemma sum_sFiniteSeq [h : SFinite μ] : sum (sFiniteSeq μ) = μ := h.1.choose_spec.2.symm
+
+end SFinite
 /-- A measure `μ` is called σ-finite if there is a countable collection of sets
  `{ A i | i ∈ ℕ }` such that `μ (A i) < ∞` and `⋃ i, A i = s`. -/
 class SigmaFinite {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
@@ -581,16 +593,11 @@ theorem eventually_mem_spanningSets (μ : Measure α) [SigmaFinite μ] (x : α) 
   eventually_atTop.2 ⟨spanningSetsIndex μ x, fun _ => mem_spanningSets_of_index_le μ x⟩
 #align measure_theory.eventually_mem_spanning_sets MeasureTheory.eventually_mem_spanningSets
 
-theorem eq_sum_restrict (μ : Measure α) [SigmaFinite μ] :
-    μ = sum (fun n ↦ μ.restrict (disjointed (spanningSets μ) n)) := by
-  ext s hs
-  simp_rw [sum_apply _ hs, Measure.restrict_apply hs]
-  rw [← measure_iUnion, ← inter_iUnion, iUnion_disjointed, iUnion_spanningSets, inter_univ]
-  · intro i j hij
-    apply (Disjoint.inter_left' _ _).inter_right'
-    exact disjoint_disjointed _ hij
-  · intro i
-    exact hs.inter (MeasurableSet.disjointed (measurable_spanningSets μ) _)
+theorem sum_restrict_disjointed_spanningSets (μ : Measure α) [SigmaFinite μ] :
+    sum (fun n ↦ μ.restrict (disjointed (spanningSets μ) n)) = μ := by
+  rw [← restrict_iUnion (disjoint_disjointed _)
+      (MeasurableSet.disjointed (measurable_spanningSets _)),
+    iUnion_disjointed, iUnion_spanningSets, restrict_univ]
 
 instance (priority := 100) [SigmaFinite μ] : SFinite μ := by
   have : ∀ n, Fact (μ (disjointed (spanningSets μ) n) < ∞) :=
