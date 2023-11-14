@@ -67,7 +67,7 @@ noncomputable
 def exponentialPdf (r x : ℝ) : ℝ≥0∞ :=
   ENNReal.ofReal (E r x)
 
-lemma exponentialPdf_eq (r x : ℝ):
+lemma exponentialPdf_eq (r x : ℝ) :
     exponentialPdf r x = ENNReal.ofReal (if 0 ≤ x then r*exp (-(r*x)) else 0) := rfl
 
 lemma antiDeriv_expDeriv_pos' {r x : ℝ} (hr : 0 < r) :
@@ -127,9 +127,10 @@ lemma if_eval_neg {r : ℝ} : ∀ᵐ x : ℝ ∂ volume, (x ∈ {x|x ≥ 0} →
     ENNReal.ofReal (if (x ≥ 0) then (r * rexp (-(r * x))) else 0) =
     ENNReal.ofReal (r * rexp (-(r * x)))) := by
   apply ae_of_all
-  intro x hx; split_ifs with h; simp only [ge_iff_le] at h
+  intro x hx
+  split_ifs with h
   · rfl
-  · contrapose h; simp only [ge_iff_le, not_le, not_lt]; exact hx
+  · contrapose! h; assumption
 
 lemma antiDeriv_tendsto_zero {r : ℝ} (hr : 0 < r) :
     Tendsto (fun x ↦ -1/r * exp (-(r * x))) atTop (𝓝 0) := by
@@ -151,7 +152,7 @@ lemma lintegral_exponentialPdfReal_eq_one (r : ℝ) (hr : 0 < r) :
       = ∫⁻ x in {x | x ≥ 0}, ENNReal.ofReal (r * rexp (-(r * x))) := by
     simp only [exponentialPdf_eq]
     exact set_lintegral_congr_fun isClosed_Ici.measurableSet if_eval_neg
-  rw [leftSide]; simp only [ge_iff_le, add_zero]
+  simp only [leftSide, add_zero]
   rw [rightSide, ENNReal.toReal_eq_one_iff, ←ENNReal.toReal_eq_one_iff]
   have hf : 0 ≤ᵐ[(restrictₗ {x : ℝ | x ≥ 0}) ℙ] (fun x ↦ r * (rexp (-(r * x)))) := by
     apply ae_of_all
@@ -186,7 +187,7 @@ def expMeasure (r : ℝ) : Measure ℝ :=
 
 instance instIsProbabilityMeasureExponential (r : ℝ) [Fact (0 < r)] :
     IsProbabilityMeasure (expMeasure r) where
-  measure_univ := by unfold expMeasure; simp [lintegral_exponentialPdf_eq_one r Fact.out]
+  measure_univ := by simp [expMeasure, lintegral_exponentialPdf_eq_one r Fact.out]
 
 section ExponentialCdf
 
@@ -198,10 +199,8 @@ def exponentialCdfReal (r : ℝ) : StieltjesFunction :=
 lemma expCdf_eq_integral (r : ℝ) [Fact (0 < r)] : exponentialCdfReal r
     = fun x ↦ ∫ x in Iic x, E r x := by
   ext x
-  unfold exponentialCdfReal
-  rw [cdf_eq_toReal]
-  unfold expMeasure
-  simp only [measurableSet_Iic, withDensity_apply]
+  rw [exponentialCdfReal,cdf_eq_toReal]
+  simp only [expMeasure, measurableSet_Iic, withDensity_apply]
   rw [integral_eq_lintegral_of_nonneg_ae]; exact rfl
   · apply ae_of_all; intro a; simp [Pi.zero_apply, exponentialPdfReal_nonneg Fact.out a]
   · exact (Measurable.aestronglyMeasurable (measurable_exponentialPdfReal r)).restrict
@@ -209,11 +208,9 @@ lemma expCdf_eq_integral (r : ℝ) [Fact (0 < r)] : exponentialCdfReal r
 lemma expCdf_eq_lintegral (r : ℝ) [Fact (0 < r)] : exponentialCdfReal r =
     fun x ↦ ENNReal.toReal (∫⁻ x in Iic x, exponentialPdf r x) := by
   ext x
-  unfold exponentialPdf exponentialCdfReal
-  rw [cdf_eq_toReal]
-  unfold expMeasure
-  simp only [measurableSet_Iic, withDensity_apply]
-  exact rfl
+  simp only [exponentialPdf, exponentialCdfReal, cdf_eq_toReal]
+  simp only [expMeasure, measurableSet_Iic, withDensity_apply]
+  rfl
 
 open Topology
 
