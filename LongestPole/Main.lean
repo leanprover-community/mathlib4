@@ -32,6 +32,7 @@ def runCurl (args : Array String) (throwFailure := true) : IO String := do
   runCmd "curl" args throwFailure
 
 def speedCenterRunJson (hash : String) : IO String :=
+  -- e7b27246-a3e6-496a-b552-ff4b45c7236e is the `repo_id` for the `mathlib4` repository.
   runCurl #["http://speed.lean-fro.org/mathlib4/api/run/e7b27246-a3e6-496a-b552-ff4b45c7236e?hash=" ++ hash]
 
 structure SpeedCenterSource_1 where
