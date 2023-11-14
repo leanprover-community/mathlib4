@@ -584,6 +584,10 @@ end NormalWord
 
 open NormalWord
 
+/-- All maps into the `PushoutI`, or amalgamated product of groups are injective,
+provided all maps in the diagram are injective.
+
+See also `base_injective` -/
 theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
     Function.Injective (of (φ := φ) i) := by
   rcases transversal_nonempty φ hφ with ⟨d⟩
@@ -652,6 +656,8 @@ theorem Reduced.eq_empty_of_mem_range (hφ : ∀ i, Injective (φ i))
 
 end Reduced
 
+/-- The intersection of the images of the maps from any two distinct groups in the diagram
+into the amalgamated product is the image of the map from the base group in the diagram. -/
 theorem inf_of_range_eq_base_range (hφ : ∀ i, Injective (φ i)) {i j : ι} (hij : i ≠ j) :
     (of i).range ⊓ (of j).range = (base φ).range :=
   le_antisymm
