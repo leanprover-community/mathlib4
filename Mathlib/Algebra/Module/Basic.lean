@@ -549,16 +549,6 @@ instance AddCommGroup.intIsScalarTower {R : Type u} {M : Type v} [Ring R] [AddCo
   smul_assoc n x y := ((smulAddHom R M).flip y).map_zsmul x n
 #align add_comm_group.int_is_scalar_tower AddCommGroup.intIsScalarTower
 
-instance {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
-    [Module R M] : SMulCommClass ℤˣ R M := inferInstance
-
-instance {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
-    [Module R M] : IsScalarTower ℤˣ R M := inferInstance
-
-lemma Int.smul_units_smul {R : Type u} {M : Type v} [Ring R] [AddCommGroup M]
-    [Module R M] (r : R) (s : ℤˣ) (m : M) : r • (s • m) = (s • r) • m := by
-  rw [smul_assoc, smul_comm]
-
 instance IsScalarTower.rat {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
     [Module ℚ R] [Module ℚ M] : IsScalarTower ℚ R M where
   smul_assoc r x y := map_rat_smul ((smulAddHom R M).flip y) r x
