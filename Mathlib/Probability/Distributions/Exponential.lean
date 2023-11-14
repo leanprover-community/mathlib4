@@ -58,7 +58,7 @@ section ExponentialPdf
 /-- Define the PDF of the exponential distribution depending on its rate-/
 noncomputable
 def exponentialPdfReal (r x : ℝ) : ℝ :=
-  if 0 ≤ x then r*exp (-(r*x)) else 0
+  if 0 ≤ x then r * exp (-(r * x)) else 0
 
 /-- The PDF of the exponential Distribution on the extended real Numbers-/
 noncomputable
@@ -66,7 +66,7 @@ def exponentialPdf (r x : ℝ) : ℝ≥0∞ :=
   ENNReal.ofReal (exponentialPdfReal r x)
 
 lemma exponentialPdf_eq (r x : ℝ) :
-    exponentialPdf r x = ENNReal.ofReal (if 0 ≤ x then r*exp (-(r*x)) else 0) := rfl
+    exponentialPdf r x = ENNReal.ofReal (if 0 ≤ x then r * exp (-(r * x)) else 0) := rfl
 
 lemma antiDeriv_expDeriv_pos' {r x : ℝ} (hr : 0 < r) :
     HasDerivAt (fun a ↦ -1/r * exp (-(r * a))) (exp (-(r * x))) x := by
@@ -115,14 +115,14 @@ lemma exp_neg_integrableOn_Ioc {b x : ℝ} (hb : 0 < b) :
   exact (exp_neg_integrableOn_Ioi _ hb).mono_set Ioc_subset_Ioi_self
 
 lemma if_eval_pos {r : ℝ} : ∀ᵐ x : ℝ ∂ volume , x < 0 →
-    ENNReal.ofReal (if x ≥ 0 then r * rexp (-(r * x)) else 0) = 0 := by
+    ENNReal.ofReal (if 0 ≤ x then r * rexp (-(r * x)) else 0) = 0 := by
   apply ae_of_all
   intro x hx
   replace hx : ¬ 0 ≤ x := by exact not_le.mpr hx
   simp [hx]
 
-lemma if_eval_neg {r : ℝ} : ∀ᵐ x : ℝ ∂ volume, (x ∈ {x|x ≥ 0} →
-    ENNReal.ofReal (if (x ≥ 0) then (r * rexp (-(r * x))) else 0) =
+lemma if_eval_neg {r : ℝ} : ∀ᵐ x : ℝ ∂ volume, (x ∈ {x | 0 ≤ x} →
+    ENNReal.ofReal (if 0 ≤ x then r * rexp (-(r * x)) else 0) =
     ENNReal.ofReal (r * rexp (-(r * x)))) := by
   apply ae_of_all
   intro x hx
@@ -207,7 +207,7 @@ lemma expCdf_eq_lintegral (r : ℝ) [Fact (0 < r)] : exponentialCdfReal r =
 open Topology
 
 lemma antiDeriv_expDeriv_pos {r x : ℝ} :
-    HasDerivAt (fun a ↦ -1* exp (-(r * a))) (r * exp (-(r * x))) x := by
+    HasDerivAt (fun a ↦ -1 * exp (-(r * a))) (r * exp (-(r * x))) x := by
   convert (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1)) using 1
   · simp only [id_eq, neg_mul]
   simp only [id_eq, neg_mul, mul_one, mul_neg, one_mul, neg_neg, mul_comm]
@@ -235,7 +235,7 @@ lemma lint_eq_antiDeriv (r : ℝ) (hr : 0 < r) : ∀ x : ℝ,
       rw [intervalIntegral.intervalIntegral_eq_integral_uIoc, smul_eq_mul, if_pos h, one_mul]
     rw [integral_Icc_eq_integral_Ioc, ← uIoc_of_le h, this]
     rw [intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le h
-      (f := fun a ↦ -1* rexp (-(r * a))) _ _]
+      (f := fun a ↦ -1 * rexp (-(r * a))) _ _]
     rw [ENNReal.toReal_ofReal_eq_iff.2 (by norm_num; positivity)]
     · norm_num; ring
     · simp only [intervalIntegrable_iff, uIoc_of_le h]
