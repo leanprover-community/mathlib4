@@ -14,14 +14,12 @@ This module defines the core of the `grw` tactic.
 
 -/
 
-open Lean Meta Std.Tactic.LabelAttr
+open Lean Meta Std.Tactic.LabelAttr Elab Tactic
 
 namespace Mathlib.Tactic.GRW
 
 initialize registerTraceClass `GRW
 
-
-open Std.Tactic.LabelAttr in
 /--
 Lemmas marked `@[grw]` are used by the `grw` tactic to use a relation to rewrite an expression.
 
@@ -50,7 +48,6 @@ introducing side goals. These side goals will be solved with `gcongr`"
   let grw := `grw
   registerLabelAttr grw descr grw)
 
-open Std.Tactic.LabelAttr in
 /--
 Lemmas marked `@[grw_weaken]` are used to 'weaken' rules in the `grw` tactic, for example by
 converting `a < b` into `a ≤ b`. The lemma should take a single explicit argument.
@@ -92,18 +89,10 @@ private partial def getNewType (rule : Expr) (rev : Bool) (oldType : Expr) : Met
   return newType
 
 -- TODO make this extensible
-private partial def dischargeSideGoal (mvar : MVarId) : MetaM Unit := do
-  trace[GRW] "Discharging side goal {mvar}"
-  try do
-    mvar.assumption
-    return
-  catch _ =>
-  try do
-    Mathlib.Meta.Positivity.positivity mvar
-    return
-  catch _ =>
-
-  throwError "Could not discharge side goal"
+private partial def dischargeSideGoal (mvar : MVarId) : MetaM Unit := Term.TermElabM.run' do
+  trace[GRW] "Attempting to discharge side goal {mvar}"
+  let [] ← Tactic.run mvar <| evalTactic (Unhygienic.run `(tactic| gcongr_discharger))
+    | failure
 
 private partial def dischargeMainGoal (rule : Expr) (mvar : MVarId) : MetaM Unit := do
   trace[GRW] "Discharging main goal {mvar}"

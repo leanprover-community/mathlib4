@@ -77,7 +77,6 @@ example (h₁ : a ≤ b) : a * c ≤ b * c := by
   guard_target =ₛ 0 ≤ c
   exact test_sorry
 
-
 end inequalities
 
 section subsets
