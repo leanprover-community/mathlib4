@@ -582,7 +582,7 @@ lemma independent_weightSpace [NoZeroSMulDivisors R M] :
 /-- A Lie module `M` of a Lie algebra `L` is triangularizable if the endomorhpism of `M` defined by
 any `x : L` is triangularizable. -/
 class IsTriangularizable : Prop :=
-  iSup_eq_top : ∀ x, (toEndomorphism R L M x).IsTriangularizable
+  iSup_eq_top : ∀ x, ⨆ φ, ⨆ k, (toEndomorphism R L M x).generalizedEigenspace φ k = ⊤
 
 lemma iSup_weightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
     ⨆ (φ : R), weightSpaceOf M φ x = ⊤ := by
@@ -599,13 +599,13 @@ variable [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [LieAlgebra.I
   [FiniteDimensional K M]
 
 instance instIsTriangularizableOfIsAlgClosed [IsAlgClosed K] : IsTriangularizable K L M :=
-  ⟨fun _x ↦ Module.End.isTriangularizable_of_isAlgClosed _⟩
+  ⟨fun _x ↦ Module.End.iSup_generalizedEigenspace_eq_top _⟩
 
 instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizable K L N := by
   constructor
   intro y
   rw [← N.toEndomorphism_restrict_eq_toEndomorphism y]
-  exact Module.End.IsTriangularizable.isTriangularizable_restrict _
+  exact Module.End.iSup_generalizedEigenspace_restrict_eq_top _
     (IsTriangularizable.iSup_eq_top y)
 
 lemma iSup_weightSpace_eq_top [IsTriangularizable K L M] :
