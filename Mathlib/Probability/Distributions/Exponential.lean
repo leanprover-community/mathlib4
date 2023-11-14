@@ -30,8 +30,7 @@ open scoped ENNReal NNReal Real
 
 open MeasureTheory Real Set Filter Topology
 
-  /-- A Lebesgue Integral from -∞ to y can be expressed
-    as the sum of one from -∞ to 0 and 0 to x -/
+  /-- A Lebesgue Integral from -∞ to y can be expressed as the sum of one from -∞ to 0 and 0 to x -/
 lemma lintegral_split_bounded {y z : ℝ} (f : ℝ → ENNReal) (hzy : z ≤ y) :
     ∫⁻ x in Iic y, f x = (∫⁻ x in Iio z, f x) + ∫⁻ x in Icc z y, f x := by
   rw [← Iio_union_Icc_eq_Iic hzy, lintegral_union measurableSet_Icc]
@@ -77,7 +76,7 @@ lemma antiDeriv_expDeriv_pos' {r x : ℝ} (hr : 0 < r) :
 
 /-- the Lebesgue-Integral of the exponential PDF over nonpositive Reals equals 0-/
 lemma lintegral_nonpos {x r : ℝ} (hx : x ≤ 0) :
-    ∫⁻ y in Iio x, exponentialPdf r y = ENNReal.ofReal 0 := by
+    ∫⁻ y in Iio x, exponentialPdf r y = 0 := by
   rw [set_lintegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
   · refine ae_of_all _ ?_
@@ -237,7 +236,7 @@ lemma lint_eq_antiDeriv (r : ℝ) (hr : 0 < r) : ∀ x : ℝ,
     rw [if_neg, ENNReal.ofReal_eq_zero]
     linarith
   case pos =>
-    rw [lintegral_split_bounded _ h, lintegral_nonpos (le_refl 0), ENNReal.ofReal_zero, zero_add]
+    rw [lintegral_split_bounded _ h, lintegral_nonpos (le_refl 0), zero_add]
     simp only [exponentialPdf_eq]
     rw[set_lintegral_congr_fun measurableSet_Icc (ae_of_all _
         (by intro a ⟨(hle : _ ≤ a), _⟩; rw [if_pos hle]))]
