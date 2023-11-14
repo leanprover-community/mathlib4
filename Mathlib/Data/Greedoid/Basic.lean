@@ -1724,25 +1724,20 @@ theorem rankFeasible_iff_subset_subset_monotoneClosure :
       (basis_card_le_of_subset_bases hx (G.base_bases_eq ▸ hb) (subset_univ _))
       le_rfl (basis_card_le_of_subset_bases hx (G.base_bases_eq ▸ hb) (subset_univ _))
     rw [system_feasible_set_mem_mem] at ha₁
-    have h₀ : ∀ u ∈ a \ x, u ∉ s := by
-      intro u hu₁ hu₂
-      rw [mem_sdiff] at hu₁
-      let ⟨hu₁, hu₃⟩ := hu₁
-      apply hu₃; clear hu₃
+    have h₀ : ∀ u ∈ a, u ∉ x → u ∉ s := by
+      intro u hu₁ hu₂ hu₃
+      have hu₄ := h hx hu₃
       sorry
     have h₁ : a ∩ s = x := by
       ext; rw [mem_inter]; constructor <;> intro h₁
-      · simp only [mem_sdiff, and_imp] at h₀
-        by_contra h'
+      · by_contra h'
         exact h₀ _ h₁.1 h' h₁.2
       · exact ⟨ha₂ h₁, basis_subset hx h₁⟩
     have h₂ : a \ x ⊆ b \ s := by
       have : a \ x = a \ s := by
         ext; simp only [mem_sdiff, and_congr_right_iff]
         intro ha₁
-        constructor <;> intro ha₂
-        · simp only [mem_sdiff, and_imp] at h₀; exact h₀ _ ha₁ ha₂
-        · exact fun h => ha₂ (basis_subset hx h)
+        exact ⟨(fun h => h₀ _ ha₁ h), (fun h h' => h (basis_subset hx h'))⟩
       rw [this]
       have : b \ s = (b ∪ x) \ s := by
         ext; simp only [mem_sdiff, mem_union, and_congr_left_iff]
