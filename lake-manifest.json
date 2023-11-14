@@ -4,7 +4,7 @@
  [{"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "7d4ddd0261b082f7efdad32e526806188639762b",
+    "rev": "366988e04ba52ad1ca87ea6f3dd238cd40b88a80",
     "opts": {},
     "name": "std",
     "inputRev?": "nightly-testing",
@@ -36,9 +36,9 @@
   {"git":
    {"url": "https://github.com/leanprover-community/ProofWidgets4",
     "subDir?": null,
-    "rev": "f1a5c7808b001305ba07d8626f45ee054282f589",
+    "rev": "c3b9f0d4ebedc43635d3f7e764e277b1010844b7",
     "opts": {},
     "name": "proofwidgets",
-    "inputRev?": "v0.0.21",
+    "inputRev?": "v0.0.22",
     "inherited": false}}],
  "name": "mathlib"}
