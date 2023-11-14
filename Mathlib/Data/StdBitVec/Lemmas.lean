@@ -210,16 +210,21 @@ lemma lt_pow_of_bit_lt_pow_succ {w x : Nat} {x₀ : Bool} :
     apply h0
     apply Nat.lt_trans (Nat.bit0_lt_bit1 le_rfl) h
 
--- theorem and_one_eq_mod_two (x : Nat) :
---     x &&& 1 = x % 2 := by
---   cases' x using Nat.binaryRec with b x
---   · rfl
---   · rw [bit_and_one, bit_val, add_mod, mul_mod_right, zero_add, mod_mod]
---     cases b <;> rfl
-
 theorem bit_mod_two_pow_succ (b x w) :
     bit b x % 2 ^ (w + 1) = bit b (x % 2 ^ w) := by
-  sorry
+  simp [bit_val, Nat.pow_succ, mul_comm 2]
+  cases b <;> simp [mul_mod_mul_right]
+  · have h1 : 1 = 1 % (2 ^ w * 2) :=
+      (mod_eq_of_lt <| one_lt_mul (one_le_two_pow w) (by decide)).symm
+    conv_rhs => {
+      rw [←mul_mod_mul_right, h1, ←add_mod_of_add_mod_lt <| by
+        rw [mul_mod_mul_right, mul_two, mul_two, add_assoc, add_comm]
+        have : x % 2 ^ w < 2 ^ w :=
+          mod_lt x (Nat.pow_two_pos w)
+        apply add_lt_add_of_le_of_lt _ this
+        · rw [←mul_two, ←h1]; exact this
+      ]
+    }
 
 end Nat
 
@@ -343,6 +348,7 @@ lemma getLsb_bitwise (f) (x y : BitVec w) (i : Fin w) (hf : f false false = fals
   -- apply BitVec.toFin_inj
   simp only [getLsb, ofNat_eq_ofNat, Nat.shiftLeft_eq, one_mul, bne_iff_ne, ne_eq]
   simp [getLsb, Neg.neg, BitVec.neg, BitVec.toNat, HSub.hSub, Sub.sub, Fin.sub]
+  stop
   rcases w with _|_|⟨w⟩
   · simp
 
