@@ -128,8 +128,12 @@ theorem disjoint_atTop_atBot [PartialOrder α] [Nontrivial α] : Disjoint (atTop
   disjoint_atBot_atTop.symm
 #align filter.disjoint_at_top_at_bot Filter.disjoint_atTop_atBot
 
+theorem hasAntitoneBasis_atTop [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] :
+    (@atTop α _).HasAntitoneBasis Ici :=
+  .iInf_principal fun _ _ ↦ Ici_subset_Ici.2
+
 theorem atTop_basis [Nonempty α] [SemilatticeSup α] : (@atTop α _).HasBasis (fun _ => True) Ici :=
-  hasBasis_iInf_principal (directed_of_sup fun _ _ => Ici_subset_Ici.2)
+  hasAntitoneBasis_atTop.1
 #align filter.at_top_basis Filter.atTop_basis
 
 theorem atTop_eq_generate_Ici [SemilatticeSup α] : atTop = generate (range (Ici (α := α))) := by
@@ -272,6 +276,13 @@ theorem atTop_basis_Ioi [Nonempty α] [SemilatticeSup α] [NoMaxOrder α] :
   atTop_basis.to_hasBasis (fun a ha => ⟨a, ha, Ioi_subset_Ici_self⟩) fun a ha =>
     (exists_gt a).imp fun _b hb => ⟨ha, Ici_subset_Ioi.2 hb⟩
 #align filter.at_top_basis_Ioi Filter.atTop_basis_Ioi
+
+lemma atTop_basis_Ioi' [SemilatticeSup α] [NoMaxOrder α] (a : α) : atTop.HasBasis (a < ·) Ioi :=
+  have : Nonempty α := ⟨a⟩
+  atTop_basis_Ioi.to_hasBasis (fun b _ ↦
+      let ⟨c, hc⟩ := exists_gt (a ⊔ b)
+      ⟨c, le_sup_left.trans_lt hc, Ioi_subset_Ioi <| le_sup_right.trans hc.le⟩) fun b _ ↦
+    ⟨b, trivial, Subset.rfl⟩
 
 theorem atTop_countable_basis [Nonempty α] [SemilatticeSup α] [Countable α] :
     HasCountableBasis (atTop : Filter α) (fun _ => True) Ici :=
@@ -880,12 +891,10 @@ theorem map_neg_atTop : map (Neg.neg : β → β) atTop = atBot :=
   (OrderIso.neg β).map_atTop
 #align filter.map_neg_at_top Filter.map_neg_atTop
 
-@[simp]
 theorem comap_neg_atBot : comap (Neg.neg : β → β) atBot = atTop :=
   (OrderIso.neg β).comap_atTop
 #align filter.comap_neg_at_bot Filter.comap_neg_atBot
 
-@[simp]
 theorem comap_neg_atTop : comap (Neg.neg : β → β) atTop = atBot :=
   (OrderIso.neg β).comap_atBot
 #align filter.comap_neg_at_top Filter.comap_neg_atTop
@@ -1059,7 +1068,7 @@ theorem tendsto_mul_const_atTop_of_pos (hr : 0 < r) :
   simpa only [mul_comm] using tendsto_const_mul_atTop_of_pos hr
 #align filter.tendsto_mul_const_at_top_of_pos Filter.tendsto_mul_const_atTop_of_pos
 
-/-- If `r` is a positive constant, then `x ↦ f x * r` tends to infinity along a filter if and only
+/-- If `r` is a positive constant, then `x ↦ f x / r` tends to infinity along a filter if and only
 if `f` tends to infinity along the same filter. -/
 lemma tendsto_div_const_atTop_of_pos (hr : 0 < r) :
     Tendsto (λ x ↦ f x / r) l atTop ↔ Tendsto f l atTop := by
@@ -1582,10 +1591,9 @@ theorem map_atBot_eq_of_gc [SemilatticeInf α] [SemilatticeInf β] {f : α → �
 theorem map_val_atTop_of_Ici_subset [SemilatticeSup α] {a : α} {s : Set α} (h : Ici a ⊆ s) :
     map ((↑) : s → α) atTop = atTop := by
   haveI : Nonempty s := ⟨⟨a, h le_rfl⟩⟩
-  have : Directed (· ≥ ·) fun x : s => 𝓟 (Ici x) := by
-    intro x y
+  have : Directed (· ≥ ·) fun x : s => 𝓟 (Ici x) := fun x y ↦ by
     use ⟨x ⊔ y ⊔ a, h le_sup_right⟩
-    simp only [ge_iff_le, principal_mono, Ici_subset_Ici, ← Subtype.coe_le_coe, Subtype.coe_mk]
+    simp only [principal_mono, Ici_subset_Ici, ← Subtype.coe_le_coe, Subtype.coe_mk]
     exact ⟨le_sup_left.trans le_sup_left, le_sup_right.trans le_sup_left⟩
   simp only [le_antisymm_iff, atTop, le_iInf_iff, le_principal_iff, mem_map, mem_setOf_eq,
     map_iInf_eq this, map_principal]
