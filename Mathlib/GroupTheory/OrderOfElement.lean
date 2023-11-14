@@ -1002,8 +1002,17 @@ theorem orderOf_dvd_natCard {G : Type*} [Group G] (x : G) : orderOf x ∣ Nat.ca
 #align add_order_of_dvd_nat_card addOrderOf_dvd_natCard
 
 @[to_additive]
-nonrec lemma Subgroup.orderOf_dvd_natCard {G : Type*} [Group G] {a : G} (s : Subgroup G)
-    (ha : a ∈ s) : orderOf a ∣ Nat.card s := by simpa using orderOf_dvd_natCard (⟨a, ha⟩ : s)
+nonrec lemma Subgroup.orderOf_dvd_natCard (s : Subgroup G) (hx : x ∈ s) :
+  orderOf x ∣ Nat.card s := by simpa using orderOf_dvd_natCard (⟨x, hx⟩ : s)
+
+lemma Subgroup.orderOf_le_card (s : Subgroup G) (hs : (s : Set G).Finite) (hx : x ∈ s) :
+    orderOf x ≤ Nat.card s :=
+  le_of_dvd (Nat.card_pos_iff.2 $ ⟨s.coe_nonempty.to_subtype, hs.to_subtype⟩) $
+    s.orderOf_dvd_natCard hx
+
+lemma Submonoid.orderOf_le_card (s : Submonoid G) (hs : (s : Set G).Finite) (hx : x ∈ s) :
+    orderOf x ≤ Nat.card s := by
+  rw [← Nat.card_submonoidPowers]; exact Nat.card_mono hs $ powers_le.2 hx
 
 @[to_additive (attr := simp) card_nsmul_eq_zero']
 theorem pow_card_eq_one' {G : Type*} [Group G] {x : G} : x ^ Nat.card G = 1 :=
