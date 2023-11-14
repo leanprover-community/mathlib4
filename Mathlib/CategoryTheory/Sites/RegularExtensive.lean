@@ -400,22 +400,23 @@ instance {α : Type} [Fintype α] {Z : α → C} {F : C ⥤ Type w}
     [PreservesFiniteProducts F] : PreservesLimit (Discrete.functor fun a => (Z a)) F :=
   (PreservesFiniteProducts.preserves α).preservesLimit
 
-theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [S.extensive]
-    (F : Cᵒᵖ ⥤ Type max u v) [PreservesFiniteProducts F] :
-    Presieve.IsSheafFor F S := by
-  obtain ⟨_, _, _, π, hS, _⟩ := Presieve.extensive.arrows_sigma_desc_iso (R := S)
-  subst hS
-  exact Presieve.isSheafFor_of_preservesProduct' F π
+open Presieve Opposite
 
-instance {α : Type} [Fintype α] (Z : α → C) :
-    (Presieve.ofArrows Z (fun i ↦ Sigma.ι Z i)).extensive where
+theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [S.extensive]
+    (F : Cᵒᵖ ⥤ Type max u v) [PreservesFiniteProducts F] : S.IsSheafFor F  := by
+  obtain ⟨_, _, Z, π, hS, _⟩ := extensive.arrows_sigma_desc_iso (R := S)
+  subst hS
+  have : (ofArrows Z (Cofan.mk X π).inj).hasPullbacks :=
+    (inferInstance : (ofArrows Z π).hasPullbacks)
+  have : IsIso (Sigma.desc (Cofan.mk X π).inj) := (inferInstance : IsIso (Sigma.desc π))
+  exact isSheafFor_of_preservesProduct _ _ (Cofan.isColimitOfIsIsoSigmaDesc (Cofan.mk X π))
+
+instance {α : Type} [Fintype α] (Z : α → C) : (ofArrows Z (fun i ↦ Sigma.ι Z i)).extensive where
   arrows_sigma_desc_iso := by
     refine ⟨α, inferInstance, Z, (fun i ↦ Sigma.ι Z i), rfl, ?_⟩
     convert IsIso.id _
     ext
     simp
-
-open Opposite
 
 theorem isSheaf_iff_preservesFiniteProducts [FinitaryExtensive C] (F : Cᵒᵖ ⥤ Type max u v) :
     Presieve.IsSheaf (extensiveCoverage C).toGrothendieck F ↔
@@ -428,14 +429,10 @@ theorem isSheaf_iff_preservesFiniteProducts [FinitaryExtensive C] (F : Cᵒᵖ �
     intro K
     rw [Presieve.isSheaf_coverage] at hF
     let Z : α → C := fun i ↦ unop (K.obj ⟨i⟩)
-    haveI : (Presieve.ofArrows Z (Cofan.mk (∐ Z) (Sigma.ι Z)).inj).hasPullbacks := by
-      change (Presieve.ofArrows Z (Sigma.ι Z)).hasPullbacks
-      infer_instance
-      -- This is annoying
-    haveI : ∀ (i : α), Mono (Cofan.inj (Cofan.mk (∐ Z) (Sigma.ι Z)) i) := by
-      change ∀ (i : α), Mono (Sigma.ι Z i)
-      infer_instance
-      -- This is annoying
+    have : (Presieve.ofArrows Z (Cofan.mk (∐ Z) (Sigma.ι Z)).inj).hasPullbacks :=
+      (inferInstance : (Presieve.ofArrows Z (Sigma.ι Z)).hasPullbacks)
+    have : ∀ (i : α), Mono (Cofan.inj (Cofan.mk (∐ Z) (Sigma.ι Z)) i) :=
+      (inferInstance : ∀ (i : α), Mono (Sigma.ι Z i))
     let _ : PreservesLimit (Discrete.functor (fun i ↦ op (Z i))) F :=
         Presieve.preservesProductOfIsSheafFor F ?_ initialIsInitial _ (coproductIsCoproduct Z)
         (FinitaryExtensive.isPullback_initial_to_sigma_ι Z)
