@@ -309,7 +309,7 @@ theorem finite_of_singleton [IsDomain B] [h : IsCyclotomicExtension {n} A B] :
     Module.Finite A B := by
   classical
   rw [Module.finite_def, ← top_toSubmodule, ← ((iff_adjoin_eq_top _ _ _).1 h).2]
-  refine' FG_adjoin_of_finite _ fun b hb => _
+  refine' fg_adjoin_of_finite _ fun b hb => _
   · simp only [mem_singleton_iff, exists_eq_left]
     have : {b : B | b ^ (n : ℕ) = 1} = (nthRoots n (1 : B)).toFinset :=
       Set.ext fun x => ⟨fun h => by simpa using h, fun h => by simpa using h⟩
