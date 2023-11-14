@@ -493,33 +493,29 @@ theorem effectiveEpiFamilyOfEffectiveEpiDesc_aux {B : C} {α : Type*} {X : α �
       g₁ ≫ π a₁ = g₂ ≫ π a₂ → g₁ ≫ e a₁ = g₂ ≫ e a₂) {Z : C}
     {g₁ g₂ : Z ⟶ ∐ fun b ↦ X b} (hg : g₁ ≫ Sigma.desc π = g₂ ≫ Sigma.desc π) :
     g₁ ≫ Sigma.desc e = g₂ ≫ Sigma.desc e := by
-  apply_fun fun f ↦ (Sigma.desc fun a ↦ pullback.fst (f := g₁) (g := (Sigma.ι X a))) ≫ f using
+  apply_fun ((Sigma.desc fun a ↦ pullback.fst (f := g₁) (g := (Sigma.ι X a))) ≫ ·) using
     (fun a b ↦ (cancel_epi _).mp)
   ext a
   simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app]
   rw [← Category.assoc, pullback.condition]
   simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
-  apply_fun fun f ↦ (Sigma.desc fun a ↦ pullback.fst (f := pullback.fst ≫ g₂)
-    (g := (Sigma.ι X a))) ≫ f using (fun a b ↦ (cancel_epi _).mp)
+  apply_fun ((Sigma.desc fun a ↦ pullback.fst (f := pullback.fst ≫ g₂)
+    (g := (Sigma.ι X a))) ≫ ·) using (fun a b ↦ (cancel_epi _).mp)
   ext b
   simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app]
-  have : ∀ (D : C) (f : ∐ X ⟶ D), pullback.fst (f := pullback.fst ≫ g₂) (g := (Sigma.ι X b)) ≫
-      pullback.fst (f := g₁) (g := (Sigma.ι X a)) ≫ g₂ ≫ f = (pullback.fst ≫ (pullback.fst (f := g₁)
-      (g := (Sigma.ι X a)) ≫ g₂)) ≫ f := by intros; simp
-  rw [this, pullback.condition]
+  simp only [← Category.assoc]
+  rw [(Category.assoc _ _ g₂), pullback.condition]
   simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
   rw [← Category.assoc]
   apply h
-  apply_fun fun f ↦ (Sigma.desc fun a ↦ pullback.fst (f := g₁) (g := (Sigma.ι X a))) ≫ f at hg
-  apply_fun fun f ↦ (Sigma.ι (fun a ↦ pullback _ _) a) ≫ f at hg
-  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app] at hg
+  apply_fun (pullback.fst (f := g₁) (g := (Sigma.ι X a)) ≫ ·) at hg
   rw [← Category.assoc, pullback.condition] at hg
   simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app] at hg
-  apply_fun fun f ↦ (Sigma.desc fun a ↦ pullback.fst (f := pullback.fst ≫ g₂) (g := (Sigma.ι X a)))
-    ≫ f at hg
-  apply_fun fun f ↦ (Sigma.ι (fun a ↦ pullback _ _) b) ≫ f at hg
+  apply_fun ((Sigma.ι (fun a ↦ pullback _ _) b) ≫ (Sigma.desc fun a ↦ pullback.fst
+    (f := pullback.fst ≫ g₂) (g := (Sigma.ι X a))) ≫ ·) at hg
   simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app] at hg
-  rw [this, pullback.condition] at hg
+  simp only [← Category.assoc] at hg
+  rw [(Category.assoc _ _ g₂), pullback.condition] at hg
   simpa using hg
 
 /--
