@@ -60,12 +60,10 @@ noncomputable
 def exponentialPdfReal (r x : ℝ) : ℝ :=
   if 0 ≤ x then r*exp (-(r*x)) else 0
 
-local notation "E" => exponentialPdfReal
-
 /-- The PDF of the exponential Distribution on the extended real Numbers-/
 noncomputable
 def exponentialPdf (r x : ℝ) : ℝ≥0∞ :=
-  ENNReal.ofReal (E r x)
+  ENNReal.ofReal (exponentialPdfReal r x)
 
 lemma exponentialPdf_eq (r x : ℝ) :
     exponentialPdf r x = ENNReal.ofReal (if 0 ≤ x then r*exp (-(r*x)) else 0) := rfl
@@ -87,25 +85,25 @@ lemma lintegral_nonpos {x r : ℝ} (hx : x ≤ 0) :
 
 /-- The exponential pdf is measurable. -/
 lemma measurable_exponentialPdfReal (r : ℝ) :
-    Measurable (E r) := by
+    Measurable (exponentialPdfReal r) := by
   refine Measurable.ite ?hp ((measurable_id'.const_mul r).neg.exp.const_mul r) ?hg
   · exact measurableSet_Ici
   · exact measurable_const
 
 /-- The exponential Pdf is strongly measurable -/
 lemma stronglyMeasurable_exponentialPdfReal (r : ℝ) :
-    StronglyMeasurable (E r) :=
+    StronglyMeasurable (exponentialPdfReal r) :=
   (measurable_exponentialPdfReal r).stronglyMeasurable
 
 /-- the exponential Pdf is positive for all positive reals-/
 lemma exponentialPdfReal_pos {x r : ℝ} {hr : 0 < r} (hx : 0 < x) :
-    0 < E r x := by
+    0 < exponentialPdfReal r x := by
   simp only [exponentialPdfReal, if_pos hx.le]
   positivity
 
 /-- The exponential Pdf is nonnegative-/
 lemma exponentialPdfReal_nonneg {r : ℝ} (hr : 0 < r) :
-    ∀ x : ℝ, 0 ≤ E r x := by
+    ∀ x : ℝ, 0 ≤ exponentialPdfReal r x := by
   unfold exponentialPdfReal
   intro x
   split_ifs <;> positivity
@@ -172,8 +170,6 @@ lemma lintegral_exponentialPdf_eq_one (r : ℝ) (hr : 0 < r) :
 
 end ExponentialPdf
 
-local notation "E" => exponentialPdfReal
-
 open MeasureTheory
 
 /-- Measure defined by the exponential Distribution -/
@@ -193,7 +189,7 @@ def exponentialCdfReal (r : ℝ) : StieltjesFunction :=
     cdf (expMeasure r)
 
 lemma expCdf_eq_integral (r : ℝ) [Fact (0 < r)] : exponentialCdfReal r
-    = fun x ↦ ∫ x in Iic x, E r x := by
+    = fun x ↦ ∫ x in Iic x, exponentialPdfReal r x := by
   ext x
   rw [exponentialCdfReal,cdf_eq_toReal]
   simp only [expMeasure, measurableSet_Iic, withDensity_apply]
