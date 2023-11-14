@@ -207,18 +207,6 @@ def getAppApps (e : Expr) : Array Expr :=
   let nargs := e.getAppNumArgs
   getAppAppsAux e (mkArray nargs dummy) (nargs-1)
 
-private def getAppAppsAux : Expr → Array Expr → Nat → Array Expr
-  | .app f a, as, i => getAppAppsAux f (as.set! i (.app f a)) (i-1)
-  | _,       as, _ => as
-
-/-- Given `f a b c`, return `#[f a, f a b, f a b c]`.
-    Remark: this procedure is very similar to `getAppArgs`. -/
-@[inline]
-def getAppApps (e : Expr) : Array Expr :=
-  let dummy := mkSort levelZero
-  let nargs := e.getAppNumArgs
-  getAppAppsAux e (mkArray nargs dummy) (nargs-1)
-
 /-- Turn an expression that is a natural number literal into a natural number. -/
 def natLit! : Expr → Nat
   | lit (Literal.natVal v) => v

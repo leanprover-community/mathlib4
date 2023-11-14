@@ -1,8 +1,6 @@
 import Mathlib.Tactic.CC
-import Mathlib.Tactic.RunCmd
 import Mathlib.Data.Vector
 import Mathlib.Data.Set.Basic
-import Mathlib.Algebra.Ring.Defs
 
 section cc1
 

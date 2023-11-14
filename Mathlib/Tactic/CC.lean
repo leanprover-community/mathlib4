@@ -5,8 +5,8 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Init.CCLemmas
 import Mathlib.Data.Option.Defs
-import Mathlib.Init.Propext
 import Mathlib.Lean.Meta.Basic
+import Mathlib.Tactic.Relation.Rfl
 
 #align_import init.meta.smt.congruence_closure from "leanprover-community/lean"@"9eae65f7144bcc692858b9dadf2e48181f4270b9"
 
@@ -99,7 +99,7 @@ def liftFromEq (R : Name) (H : Expr) : MetaM Expr := do
   let minor ← do
     let mt ← mkRel R a a
     let m ← mkFreshExprSyntheticOpaqueMVar mt
-    m.mvarId!.rfl
+    m.mvarId!.applyRfl
     instantiateMVars m
   mkEqRec motive minor H
 
@@ -1029,7 +1029,8 @@ partial def mkSymmCongrProof (e₁ e₂ : Expr) (heqProofs : Bool) : CCM (Option
     let e₁IffNewE₁ ←
       withLocalDeclD `h₁ e₁ fun h₁ =>
       withLocalDeclD `h₂ newE₁ fun h₂ => do
-        mkAppM ``Iff.intro #[← mkLambdaFVars #[h₁] (← h₁.symm), ← mkLambdaFVars #[h₂] (← h₂.symm)]
+        mkAppM ``Iff.intro
+          #[← mkLambdaFVars #[h₁] (← h₁.applySymm), ← mkLambdaFVars #[h₂] (← h₂.applySymm)]
     let mut e₁EqNewE₁ := mkApp3 (.const ``propext []) e₁ newE₁ e₁IffNewE₁
     let newE₁EqE₂ ← mkCongrProofCore newE₁ e₂ heqProofs
     if heqProofs then
@@ -2304,7 +2305,7 @@ def propagateEqDown (e : Expr) : CCM Unit := do
 def propagateExistsDown (e : Expr) : CCM Unit := do
   if ← isEqFalse e then
     let hNotE ← mkAppM ``not_of_eq_false #[← getEqFalseProof e]
-    let (all, hAll) ← e.toForallNot hNotE
+    let (all, hAll) ← e.forallNot_of_notExists hNotE
     internalizeCore all none (← getGenerationOf e)
     pushEq all (.const ``True []) (← mkEqTrue hAll)
 
