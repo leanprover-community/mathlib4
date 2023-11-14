@@ -36,10 +36,10 @@
   {"git":
    {"url": "https://github.com/leanprover-community/ProofWidgets4",
     "subDir?": null,
-    "rev": "a27f24a6e4b7e89da02970d59e016eb5af48c367",
+    "rev": "c3b9f0d4ebedc43635d3f7e764e277b1010844b7",
     "opts": {},
     "name": "proofwidgets",
-    "inputRev?": "v0.0.22-pre",
+    "inputRev?": "v0.0.22",
     "inherited": false}}],
  "name": "mathlib",
  "lakeDir": ".lake"}

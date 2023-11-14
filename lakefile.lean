@@ -50,7 +50,7 @@ require std from git "https://github.com/leanprover/std4" @ "nightly-testing-202
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 require aesop from git "https://github.com/leanprover-community/aesop" @ "nightly-testing"
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "nightly"
-require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.22-pre"
+require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.22"
 
 lean_lib Cache where
   moreLeanArgs := moreLeanArgs
