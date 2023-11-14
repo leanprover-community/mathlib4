@@ -2648,6 +2648,7 @@ import Mathlib.NumberTheory.Dioph
 import Mathlib.NumberTheory.DiophantineApproximation
 import Mathlib.NumberTheory.DirichletCharacter.Basic
 import Mathlib.NumberTheory.Divisors
+import Mathlib.NumberTheory.EulerProduct.Basic
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.FLT.Four
 import Mathlib.NumberTheory.FermatPsp
