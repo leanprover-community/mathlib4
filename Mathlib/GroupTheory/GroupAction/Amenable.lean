@@ -77,7 +77,7 @@ instance MeanSMul : SMul G (Mean α) where
 under translation with the monoid action-/
 structure InvariantMean extends Mean α where
   /-- invariance of the mean -/
-  invariance: ∀ (g: G), g • toMean = toMean
+  invariance : ∀ (g : G), g • toMean = toMean
 
 
 /-- A monoid action is amenable if there exists an invariant mean for it-/
