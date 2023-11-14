@@ -417,6 +417,16 @@ instance {X Y : Type*}
     [SigmaFinite (volume : Measure Y)] : IsFiniteMeasureOnCompacts (volume : Measure (X × Y)) :=
   prod.instIsFiniteMeasureOnCompacts _ _
 
+instance prod.instNoAtoms_fst [NoAtoms μ] :
+    NoAtoms (Measure.prod μ ν) := by
+  refine NoAtoms.mk (fun x => ?_)
+  rw [← Set.singleton_prod_singleton, Measure.prod_prod, measure_singleton, zero_mul]
+
+instance prod.instNoAtoms_snd [NoAtoms ν] :
+    NoAtoms (Measure.prod μ ν) := by
+  refine NoAtoms.mk (fun x => ?_)
+  rw [← Set.singleton_prod_singleton, Measure.prod_prod, measure_singleton (μ := ν), mul_zero]
+
 theorem ae_measure_lt_top {s : Set (α × β)} (hs : MeasurableSet s) (h2s : (μ.prod ν) s ≠ ∞) :
     ∀ᵐ x ∂μ, ν (Prod.mk x ⁻¹' s) < ∞ := by
   rw [prod_apply hs] at h2s

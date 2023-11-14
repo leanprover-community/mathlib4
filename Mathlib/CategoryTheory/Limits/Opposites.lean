@@ -401,132 +401,149 @@ theorem hasFiniteProducts_of_opposite [HasFiniteCoproducts Cᵒᵖ] : HasFiniteP
 
 section OppositeCoproducts
 
-variable {α : Type*} (Z : α → C) [HasCoproduct Z]
+variable {α : Type*} {Z : α → C} [HasCoproduct Z]
 
 instance : HasLimit (Discrete.functor Z).op := hasLimit_op_of_hasColimit (Discrete.functor Z)
 
-instance : HasLimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor fun i ↦ Z i).op) :=
+instance : HasLimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op) :=
   hasLimitEquivalenceComp (Discrete.opposite α).symm
 
-instance : HasProduct (fun z ↦ op (Z z)) := hasLimitOfIso
+instance : HasProduct (op <| Z ·) := hasLimitOfIso
   ((Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl)) :
-    (Discrete.opposite α).inverse ⋙ (Discrete.functor fun i ↦ Z i).op ≅
-    Discrete.functor (fun z ↦ op (Z z)))
+    (Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op ≅
+    Discrete.functor (op <| Z ·))
 
-/-- The isomorphism from the opposite of the coproduct to the product. -/
-noncomputable
-def opCoproductIsoProduct : op (∐ Z) ≅ ∏ (fun z => op (Z z)) :=
-  IsLimit.conePointUniqueUpToIso (isLimitCoconeOp _ (coproductIsCoproduct fun b ↦ Z b))
-    (limit.isLimit _) ≪≫ (IsLimit.conePointsIsoOfEquivalence
-    (productIsProduct (fun z ↦ op (Z z))) (limit.isLimit _) (Discrete.opposite α).symm
-    (Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl))).symm
+/-- A `Cofan` gives a `Fan` in the opposite category.  -/
+@[simp]
+def Cofan.op (c : Cofan Z) : Fan (op <| Z ·) := Fan.mk _ (fun a ↦ (c.inj a).op)
 
-lemma opCoproductIsoProduct_inv_comp_ι' {c : Cofan Z} (hc : IsColimit c) (b : α) :
-    (opCoproductIsoProduct Z).inv ≫
-    ((coproductIsCoproduct Z).coconePointUniqueUpToIso hc).op.inv ≫ (c.inj b).op =
-    Pi.π (fun a => op (Z a)) b := by
-  simp only [Cofan.mk_pt, Iso.op_inv, opCoproductIsoProduct, Iso.trans_inv, ← op_comp]
-  erw [(by rfl : c.inj b = c.ι.app ⟨b⟩), IsColimit.comp_coconePointUniqueUpToIso_inv
-    (coproductIsCoproduct Z) hc ⟨b⟩, Category.assoc, IsLimit.conePointUniqueUpToIso_inv_comp
-    (isLimitCoconeOp _ (coproductIsCoproduct Z)) (limit.isLimit _) (op ⟨b⟩)]
-  simp only [limit.cone_x, Fan.mk_pt, Equivalence.symm_functor, Discrete.natIsoFunctor, comp_obj,
-    op_obj, Iso.symm_inv, IsLimit.conePointsIsoOfEquivalence_hom, Equivalence.symm_inverse,
-    Cones.equivalenceOfReindexing_functor, Iso.trans_hom, Iso.symm_hom, isoWhiskerLeft_inv,
-    Iso.trans_inv, whiskerLeft_comp, Cones.whiskering_obj, limit.isLimit_lift, limit.cone_π,
-    limit.lift_π, Cones.postcompose_obj_pt, Cone.whisker_pt, Cones.postcompose_obj_π,
-    Cone.whisker_π, Category.assoc, NatTrans.comp_app, const_obj_obj, unop_op, Discrete.functor_obj,
-    whiskerLeft_app, Fan.mk_π_app, Discrete.opposite_functor_obj_as, Discrete.natIso_inv_app,
-    Iso.refl_inv, Equivalence.invFunIdAssoc_hom_app, id_obj, op_map, Discrete.functor_map_id, op_id]
-  simp only [Discrete.functor, Function.comp_apply, id_eq, Discrete.opposite, Equivalence.mk,
-    id_obj, comp_obj, leftOp_obj, unop_op, op_obj, Category.comp_id]
+/-- If a `Cofan` is colimit, then its opposite is limit. -/
+def Cofan.IsColimit.op {c : Cofan Z} (hc : IsColimit c) : IsLimit c.op := by
+  let e : Discrete.functor (Opposite.op <| Z ·) ≅ (Discrete.opposite α).inverse ⋙
+    (Discrete.functor Z).op := Discrete.natIso (fun _ ↦ Iso.refl _)
+  refine IsLimit.ofIsoLimit ((IsLimit.postcomposeInvEquiv e _).2
+    (IsLimit.whiskerEquivalence hc.op (Discrete.opposite α).symm))
+    (Cones.ext (Iso.refl _) (fun ⟨a⟩ ↦ ?_))
+  dsimp
+  erw [Category.id_comp, Category.comp_id]
+  rfl
 
-lemma opCoproductIsoProduct_inv_comp_ι (b : α) :
-    (opCoproductIsoProduct Z).inv ≫ (Sigma.ι (fun a => Z a) b).op =
-    Pi.π (fun a => op (Z a)) b := by
-  rw [← opCoproductIsoProduct_inv_comp_ι' Z (coproductIsCoproduct Z)]
-  congr
-  simp only [unop_op, Cofan.mk_pt, cofan_mk_inj, Quiver.Hom.unop_op, Iso.op_inv]
-  suffices ((coproductIsCoproduct Z).coconePointUniqueUpToIso (coproductIsCoproduct Z)).inv =
-        𝟙 _ by rw [this]; simp
-  simp [IsColimit.coconePointUniqueUpToIso]
+/--
+The canonical isomorphism from the opposite of an abstract coproduct to the corresponding product
+in the opposite category.
+-/
+def opCoproductIsoProduct' {c : Cofan Z} {f : Fan (op <| Z ·)}
+    (hc : IsColimit c) (hf : IsLimit f) : op c.pt ≅ f.pt :=
+  IsLimit.conePointUniqueUpToIso (Cofan.IsColimit.op hc) hf
 
-lemma desc_op_comp_opCoproductIsoProduct_hom' {c : Cofan Z} (hc : IsColimit c)
-    {X : C} (π : (a : α) → Z a ⟶ X) : (Cofan.IsColimit.desc hc π).op ≫
-      ((coproductIsCoproduct Z).coconePointUniqueUpToIso hc).op.hom ≫
-        (opCoproductIsoProduct Z).hom = Pi.lift (fun a => Quiver.Hom.op (π a)) := by
-  rw [← Category.assoc, ← Iso.eq_comp_inv (opCoproductIsoProduct Z)]
-  apply Quiver.Hom.unop_inj
-  refine' Sigma.hom_ext (f := Z) _ _ (fun a => _)
-  rw [← Quiver.Hom.unop_op (Sigma.ι Z a), ← unop_comp, ← unop_comp, Category.assoc, Category.assoc,
-    opCoproductIsoProduct_inv_comp_ι]
-  simp only [unop_op, Cofan.mk_pt, Iso.op_hom, unop_comp, Quiver.Hom.unop_op, Category.assoc,
-    limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
-  erw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc]
-  simp only [Discrete.functor_obj, Cofan.IsColimit.desc, IsColimit.fac, Cofan.mk_pt, Cofan.mk_ι_app]
+variable (Z) in
+/--
+The canonical isomorphism from the opposite of the coproduct to the product in the opposite
+category.
+-/
+def opCoproductIsoProduct :
+    op (∐ Z) ≅ ∏ (op <| Z ·) :=
+  opCoproductIsoProduct' (coproductIsCoproduct Z) (productIsProduct (op <| Z ·))
 
-lemma desc_op_comp_opCoproductIsoProduct_hom {X : C} (π : (a : α) → Z a ⟶ X) :
-    (Sigma.desc π).op ≫ (opCoproductIsoProduct Z).hom = Pi.lift (fun a => Quiver.Hom.op (π a)) := by
-  rw [← desc_op_comp_opCoproductIsoProduct_hom' Z (coproductIsCoproduct _) π]
-  congr
-  · simp [Cofan.IsColimit.desc, coproductIsCoproduct]
-  · suffices ((coproductIsCoproduct Z).coconePointUniqueUpToIso (coproductIsCoproduct Z)).op.hom =
-        𝟙 _ by rw [this]; simp
-    simp [IsColimit.coconePointUniqueUpToIso]
+theorem opCoproductIsoProduct'_inv_comp_inj {c : Cofan Z} {f : Fan (op <| Z ·)}
+    (hc : IsColimit c) (hf : IsLimit f) (b : α) :
+    (opCoproductIsoProduct' hc hf).inv ≫ (c.inj b).op = f.proj b :=
+  IsLimit.conePointUniqueUpToIso_inv_comp (Cofan.IsColimit.op hc) hf ⟨b⟩
+
+variable (Z) in
+theorem opCoproductIsoProduct_inv_comp_ι (b : α) :
+    (opCoproductIsoProduct Z).inv ≫ (Sigma.ι Z b).op = Pi.π (op <| Z ·) b :=
+  opCoproductIsoProduct'_inv_comp_inj _ _ b
+
+theorem desc_op_comp_opCoproductIsoProduct'_hom {c : Cofan Z} {f : Fan (op <| Z ·)}
+    (hc : IsColimit c) (hf : IsLimit f) (c' : Cofan Z) :
+    (hc.desc c').op ≫ (opCoproductIsoProduct' hc hf).hom = hf.lift c'.op := by
+  refine (Iso.eq_comp_inv _).mp (Quiver.Hom.unop_inj (hc.hom_ext (fun ⟨j⟩ ↦ Quiver.Hom.op_inj ?_)))
+  simp only [unop_op, Discrete.functor_obj, const_obj_obj, Quiver.Hom.unop_op, IsColimit.fac,
+    Cofan.op, unop_comp, op_comp, op_unop, Quiver.Hom.op_unop, Category.assoc]
+  erw [opCoproductIsoProduct'_inv_comp_inj, IsLimit.fac]
+  rfl
+
+theorem desc_op_comp_opCoproductIsoProduct_hom {X : C} (π : (a : α) → Z a ⟶ X) :
+    (Sigma.desc π).op ≫ (opCoproductIsoProduct Z).hom = Pi.lift (fun a ↦ (π a).op) := by
+  convert desc_op_comp_opCoproductIsoProduct'_hom (coproductIsCoproduct Z)
+    (productIsProduct (op <| Z ·)) (Cofan.mk _ π)
+  · ext; simp [Sigma.desc, colimit.desc, coproductIsCoproduct]
+  · ext; simp [Pi.lift, limit.lift, productIsProduct]
 
 end OppositeCoproducts
 
 section OppositeProducts
 
-variable {α : Type*} (Z : α → C) [HasProduct Z]
+variable {α : Type*} {Z : α → C} [HasProduct Z]
 
 instance : HasColimit (Discrete.functor Z).op := hasColimit_op_of_hasLimit (Discrete.functor Z)
 
-instance : HasColimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor fun i ↦ Z i).op) :=
+instance : HasColimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op) :=
   hasColimit_equivalence_comp (Discrete.opposite α).symm
 
-instance : HasCoproduct (fun z ↦ op (Z z)) := hasColimitOfIso
+instance : HasCoproduct (op <| Z ·) := hasColimitOfIso
   ((Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl)) :
-    (Discrete.opposite α).inverse ⋙ (Discrete.functor fun i ↦ Z i).op ≅
-    Discrete.functor (fun z ↦ op (Z z))).symm
+    (Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op ≅
+    Discrete.functor (op <| Z ·)).symm
 
-/-- The isomorphism from the opposite of the product to the coproduct. -/
+/-- A `Fan` gives a `Cofan` in the opposite category. -/
 @[simp]
-noncomputable
-def opProductIsoCoproduct : op (∏ Z) ≅ ∐  (fun z => op (Z z)) :=
-  IsColimit.coconePointUniqueUpToIso (isColimitConeOp _ (productIsProduct fun b ↦ Z b))
-    (colimit.isColimit _) ≪≫ (IsColimit.coconePointsIsoOfEquivalence
-    (coproductIsCoproduct (fun z ↦ op (Z z))) (colimit.isColimit _) (Discrete.opposite α).symm
-    (Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl))).symm
+def Fan.op (f : Fan Z) : Cofan (op <| Z ·) := Cofan.mk _ (fun a ↦ (f.proj a).op)
 
-lemma π_comp_opProductIsoCoproduct (b : α) : (Pi.π Z b).op ≫ (opProductIsoCoproduct Z).hom =
-    Sigma.ι (fun a => op (Z a)) b := by
-  dsimp only [opProductIsoCoproduct]
-  simp only [Iso.trans_hom]
-  have := IsColimit.comp_coconePointUniqueUpToIso_hom
-    (isColimitConeOp _ (productIsProduct Z)) (colimit.isColimit _) (op ⟨b⟩)
-  dsimp at this
-  rw [← Category.assoc, this]
-  simp only [colimit.cocone_x, Cofan.mk_pt, Equivalence.symm_functor, Discrete.natIsoFunctor,
-    comp_obj, op_obj, Iso.symm_hom, IsColimit.coconePointsIsoOfEquivalence_inv,
-    Equivalence.symm_inverse, Cocones.equivalenceOfReindexing_functor_obj, Iso.trans_inv,
-    Iso.symm_inv, isoWhiskerLeft_hom, Iso.trans_hom, whiskerLeft_comp, colimit.isColimit_desc,
-    colimit.ι_desc, Cocones.precompose_obj_pt, Cocone.whisker_pt, Cocones.precompose_obj_ι,
-    Cocone.whisker_ι, Category.assoc, NatTrans.comp_app, unop_op, Discrete.functor_obj,
-    const_obj_obj, Equivalence.invFunIdAssoc_inv_app, id_obj, op_map, Discrete.functor_map_id,
-    op_id, whiskerLeft_app, Discrete.natIso_hom_app, Iso.refl_hom, Cofan.mk_ι_app,
-    Discrete.opposite_functor_obj_as, Category.id_comp]
-  simp only [Discrete.functor, Function.comp_apply, id_eq, Discrete.opposite, Equivalence.mk,
-    id_obj, comp_obj, leftOp_obj, unop_op, Category.id_comp]
+/-- If a `Fan` is limit, then its opposite is colimit. -/
+def Fan.IsLimit.op {f : Fan Z} (hf : IsLimit f) : IsColimit f.op := by
+  let e : Discrete.functor (Opposite.op <| Z ·) ≅ (Discrete.opposite α).inverse ⋙
+    (Discrete.functor Z).op := Discrete.natIso (fun _ ↦ Iso.refl _)
+  refine IsColimit.ofIsoColimit ((IsColimit.precomposeHomEquiv e _).2
+    (IsColimit.whiskerEquivalence hf.op (Discrete.opposite α).symm))
+    (Cocones.ext (Iso.refl _) (fun ⟨a⟩ ↦ ?_))
+  dsimp
+  erw [Category.id_comp, Category.comp_id]
+  rfl
 
-lemma opProductIsoCoproduct_inv_comp_π_op {X : C} (π : (a : α) → X ⟶ Z a) :
-    (opProductIsoCoproduct Z).inv ≫ (Pi.lift π).op = Sigma.desc (fun a => Quiver.Hom.op (π a)) := by
-  rw [Iso.inv_comp_eq (opProductIsoCoproduct Z)]
-  congr
-  refine' Pi.hom_ext (f := Z) _ _ (fun a => _)
-  rw [Category.assoc, limit.lift_π, ← Quiver.Hom.unop_op (Pi.π Z a), ← unop_comp,
-    π_comp_opProductIsoCoproduct, ← unop_comp]
-  simp only [Fan.mk_pt, Fan.mk_π_app, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
-    Quiver.Hom.unop_op]
+/--
+The canonical isomorphism from the opposite of an abstract product to the corresponding coproduct
+in the opposite category.
+-/
+def opProductIsoCoproduct' {f : Fan Z} {c : Cofan (op <| Z ·)}
+    (hf : IsLimit f) (hc : IsColimit c) : op f.pt ≅ c.pt :=
+  IsColimit.coconePointUniqueUpToIso (Fan.IsLimit.op hf) hc
+
+variable (Z) in
+/--
+The canonical isomorphism from the opposite of the product to the coproduct in the opposite
+category.
+-/
+def opProductIsoCoproduct :
+    op (∏ Z) ≅ ∐ (op <| Z ·) :=
+  opProductIsoCoproduct' (productIsProduct Z) (coproductIsCoproduct (op <| Z ·))
+
+theorem proj_comp_opProductIsoCoproduct'_hom {f : Fan Z} {c : Cofan (op <| Z ·)}
+    (hf : IsLimit f) (hc : IsColimit c) (b : α) :
+    (f.proj b).op ≫ (opProductIsoCoproduct' hf hc).hom = c.inj b :=
+  IsColimit.comp_coconePointUniqueUpToIso_hom (Fan.IsLimit.op hf) hc ⟨b⟩
+
+variable (Z) in
+theorem proj_comp_opProductIsoCoproduct_hom (b : α) :
+    (Pi.π Z b).op ≫ (opProductIsoCoproduct Z).hom = Sigma.ι (op <| Z ·) b :=
+  proj_comp_opProductIsoCoproduct'_hom _ _ b
+
+theorem opProductIsoCoproduct'_inv_comp_lift {f : Fan Z} {c : Cofan (op <| Z ·)}
+    (hf : IsLimit f) (hc : IsColimit c) (f' : Fan Z) :
+    (opProductIsoCoproduct' hf hc).inv ≫ (hf.lift f').op = hc.desc f'.op := by
+  refine (Iso.inv_comp_eq _).mpr (Quiver.Hom.unop_inj (hf.hom_ext (fun ⟨j⟩ ↦ Quiver.Hom.op_inj ?_)))
+  simp only [Discrete.functor_obj, unop_op, Quiver.Hom.unop_op, IsLimit.fac, Fan.op, unop_comp,
+    Category.assoc, op_comp, op_unop, Quiver.Hom.op_unop]
+  erw [← Category.assoc, proj_comp_opProductIsoCoproduct'_hom, IsColimit.fac]
+  rfl
+
+theorem opProductIsoCoproduct_inv_comp_lift {X : C} (π : (a : α) → X ⟶ Z a) :
+    (opProductIsoCoproduct Z).inv ≫ (Pi.lift π).op  = Sigma.desc (fun a ↦ (π a).op) := by
+  convert opProductIsoCoproduct'_inv_comp_lift (productIsProduct Z)
+    (coproductIsCoproduct (op <| Z ·)) (Fan.mk _ π)
+  · ext; simp [Pi.lift, limit.lift, productIsProduct]
+  · ext; simp [Sigma.desc, colimit.desc, coproductIsCoproduct]
 
 end OppositeProducts
 
