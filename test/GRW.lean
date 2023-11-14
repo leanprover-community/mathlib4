@@ -63,8 +63,12 @@ example (h₁ : a ≥ b) (h₂ : 0 ≤ c) : a * c ≥ 100 - a := by
 
 example {n : ℕ} (bound : n ≤ 5) : n ≤ 10 := by
   have h' := (show 5 ≤ 10 by norm_num)
+  have test : false
+  swap
   grw [h'] at bound
   assumption
+
+example (h₁ : a ≤ b) : a + 5 ≤ b + 6 := by grw [h₁, show (5 : α) ≤ 6 by norm_num]
 
 example (h₁ : a ≤ b) : a * 5 ≤ b * 5 := by grw [h₁]
 
@@ -79,7 +83,6 @@ example (h₁ : a ≤ b) : a * c ≤ b * c := by
 end inequalities
 
 section subsets
-set_option trace.GRW true
 
 variable (X Y Z W: Set α)
 

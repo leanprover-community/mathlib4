@@ -52,15 +52,14 @@ private partial def withRWRulesSeqState {State : Type} (token : Syntax) (rwRules
     -- show rule state up to (incl.) next `,`
     let newState ← withTacticInfoContext (mkNullNode #[rule, sep]) do
       -- show errors on rule
-      withRef rule do
+      let s ← withRef rule do
         let symm := !rule[0].isNone
         let term := rule[1]
         -- let processId (id : Syntax) : TacticM Unit := do
         let ⟨_, newState⟩ ← (x symm term).run state
         return newState
+      return s
     set newState
-
-
 
 /--
 `grw` is a generalization of the `rw` tactic that takes other relations than equality.  For example,
@@ -81,34 +80,35 @@ if side goals are created that it can not fill itself, which it does using `posi
 elab tok:"grw" rules:rwRuleSeq loc:(location)? : tactic => do
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
     (atLocal := λ fvar => withMainContext do
-      let _ ← (withRWRulesSeqState tok rules fun rev syn ↦ do
-        let fvar ← get
-        let rulePrf ← elabTerm syn none
-        let ⟨newType, newHyp, subgoals⟩ ← grwHypothesis (Expr.fvar fvar) rulePrf rev
-        let name ← fvar.getUserName
-        let ⟨newFvar, newGoal, _⟩ ← (← getMainGoal).assertAfter fvar name newType newHyp
-        replaceMainGoal (subgoals.push (← newGoal.clear fvar)).toList
-        set newFvar
-      ).run fvar
+      let ⟨_, newGoal, subgoals, fvar⟩ ← (withRWRulesSeqState tok rules fun rev syn ↦ do
+        let ⟨goal, subgoals, fvar⟩ ← get
+        goal.withContext do
+          let rulePrf ← elabTerm syn none
+          let ⟨newType, newHyp, newSubgoals⟩ ← goal.withContext
+              $ grwHypothesis (Expr.fvar fvar) rulePrf rev
+          let name ← fvar.getUserName
+          let ⟨newFvar, goal', _⟩ ← goal.assertAfter fvar name newType newHyp
+          let newGoal ← goal'.clear fvar
+          set (⟨newGoal, subgoals ++ newSubgoals, newFvar⟩ : MVarId × Array MVarId × FVarId)
+      ).run (⟨← getMainGoal, #[], fvar⟩ : MVarId × Array MVarId × FVarId)
+      let newGoals := subgoals ++ #[newGoal] ++ (← getGoals)
+      setGoals newGoals.toList
+      pruneSolvedGoals
     )
     (atTarget := withMainContext do
       let ⟨_, newGoal, subgoals⟩ ← (withRWRulesSeqState tok rules fun rev syn ↦ do
         let ⟨currentTarget, subgoals⟩ ← get
-        trace[GRW] "Processing step {currentTarget} {subgoals}"
         let ⟨newGoal, newSubgoals⟩ ← currentTarget.withContext do
           let rulePrf ← elabTerm syn none
           currentTarget.grw rulePrf rev
-        trace[GRW] "Finished step {newGoal} {subgoals.append newSubgoals}"
         set (⟨newGoal, subgoals.append newSubgoals⟩ : MVarId × Array MVarId)
       ).run (⟨← getMainGoal, #[]⟩ : MVarId × Array MVarId)
-      -- try
-      --   trace[GRW] "Trying to solve main goal with rfl"
-      --   newGoal.withContext $ withReducible newGoal.applyRfl
-      --   trace[GRW] "Solve main goal with `rfl`"
-      --   replaceMainGoal subgoals.toList
-      -- catch _ =>
-      trace[GRW] "Could not solve main goal with rfl"
-      trace[GRW] "Replacing main goals with {subgoals.push newGoal} {← newGoal.isAssigned}"
-      replaceMainGoal (subgoals.push newGoal).toList
+      try newGoal.withContext $ withReducible newGoal.applyRfl
+      catch _ => pure ⟨⟩
+      -- We can't use replaceMainGoal, since withTacticInfoContext prunes the solves goals so there
+      -- might not be any left
+      let newGoals := subgoals.toList ++ [newGoal] ++ (← getGoals)
+      setGoals newGoals
+      pruneSolvedGoals
     )
     (failed := fun _ ↦ throwError "grw failed")
