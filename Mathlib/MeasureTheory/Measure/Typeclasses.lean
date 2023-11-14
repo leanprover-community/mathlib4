@@ -754,9 +754,9 @@ theorem measure_toMeasurable_inter_of_sum {s : Set α} (hs : MeasurableSet s) {t
     {m : ℕ → Measure α} (hv : ∀ n, m n t ≠ ∞) (hμ : μ = sum m) :
     μ (toMeasurable μ t ∩ s) = μ (t ∩ s) := by
   -- we show that there is a measurable superset of `t` satisfying the conclusion for any
-  -- measurable set `s`. It is built on each member of a spanning family using `toMeasurable`
+  -- measurable set `s`. It is built for each measure `mₙ` using `toMeasurable`
   -- (which is well behaved for finite measure sets thanks to `measure_toMeasurable_inter`), and
-  -- the desired property passes to the union.
+  -- then taking the intersection over `n`.
   have A : ∃ t', t' ⊇ t ∧ MeasurableSet t' ∧ ∀ u, MeasurableSet u → μ (t' ∩ u) = μ (t ∩ u) := by
     let w n := toMeasurable (m n) t
     have T : t ⊆ ⋂ n, w n := subset_iInter (fun i ↦ subset_toMeasurable (m i) t)
@@ -854,8 +854,8 @@ theorem restrict_toMeasurable_of_cover {s : Set α} {v : ℕ → Set α} (hv : s
 
 /-- The measurable superset `toMeasurable μ t` of `t` (which has the same measure as `t`)
 satisfies, for any measurable set `s`, the equality `μ (toMeasurable μ t ∩ s) = μ (t ∩ s)`.
-This only holds when `μ` is s-finite. For a version without this assumption (but requiring
-that `t` has finite measure), see `measure_toMeasurable_inter`. -/
+This only holds when `μ` is s-finite -- for example for σ-finite measures. For a version without
+this assumption (but requiring that `t` has finite measure), see `measure_toMeasurable_inter`. -/
 theorem measure_toMeasurable_inter_of_sfinite [h : SFinite μ] {s : Set α} (hs : MeasurableSet s)
     (t : Set α) : μ (toMeasurable μ t ∩ s) = μ (t ∩ s) := by
   rcases h.out' with ⟨m, hm, h'm⟩
