@@ -25,7 +25,7 @@ only finite additivity instead of σ-additivity.
 ## Implementation Notes
 
 `Mean` was not implemented using MeasureTheory.ProbabilityMeasure
-because meausures are σ-additive (i.e. countably additive). In this
+because measures are σ-additive (i.e. countably additive). In this
 setting, this would be a too strong assumption, we only want to demand
 finite additivity. Typically, the resulting measures will not be
 σ-additive.
