@@ -93,8 +93,10 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearEquivClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Semiring S]
   (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-  (M M₂ : outParam (Type*)) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
-  AddEquivClass F M M₂ where
+  (M M₂ : outParam (Type*)) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
+  -- TODO: we should continue the refactor and turn this `extends EquivLike` into a
+  -- parameter `[EquivLike F M M₂]`. But that makes it too hard for `simp` to apply `map_smulₛₗ`...
+  extends EquivLike F M M₂, AddEquivClass F M M₂ where
   /-- Applying a semilinear equivalence `f` over `σ` to `r • x` equals `σ r • f x`. -/
   map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
 #align semilinear_equiv_class SemilinearEquivClass
@@ -171,11 +173,13 @@ theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (↑e₁ : M →ₛ
   toLinearMap_injective.eq_iff
 #align linear_equiv.to_linear_map_inj LinearEquiv.toLinearMap_inj
 
-instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
+instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
   inv := LinearEquiv.invFun
   coe_injective' _ _ h _ := toLinearMap_injective (FunLike.coe_injective h)
   left_inv := LinearEquiv.left_inv
   right_inv := LinearEquiv.right_inv
+
+instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
   map_add := (·.map_add') --map_add' Porting note: TODO why did I need to change this?
   map_smulₛₗ := (·.map_smul') --map_smul' Porting note: TODO why did I need to change this?
 
