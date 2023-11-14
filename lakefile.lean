@@ -75,14 +75,14 @@ post_update pkg do
   https://github.com/leanprover/lean4/issues/2752
   -/
   let wsToolchainFile := rootPkg.dir / "lean-toolchain"
-  let mathlibToolchain ← IO.FS.readFile <| pkg.dir / "lean-toolchain"
+  let mathlibToolchain := (← IO.FS.readFile <| pkg.dir / "lean-toolchain").trim
   IO.FS.writeFile wsToolchainFile mathlibToolchain
   /-
   Instead of building and running cache via the Lake API,
   spawn a new `lake` since the toolchain may have changed.
   -/
   let exitCode ← IO.Process.spawn {
-    cmd := (← getElan?).map (·.toString) |>.getD "elan"
+    cmd := "elan"
     args := #["run", mathlibToolchain, "lake", "exe", "cache", "get"]
   } >>= (·.wait)
   if exitCode ≠ 0 then
