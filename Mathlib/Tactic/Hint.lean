@@ -4,8 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Std.Tactic.TryThis
+import Std.Linter.UnreachableTactic
 import Mathlib.Data.Nondet.Basic
 import Mathlib.Tactic.FailIfNoProgress
+import Mathlib.Mathport.Rename
+
+#align_import tactic.hint from "leanprover-community/mathlib"@"8f6fd1b69096c6a587f745d354306c0d46396915"
 
 /-!
 # The `hint` tactic.
@@ -21,6 +25,8 @@ It would be nice to run the tactics in parallel.
 open Lean Elab Tactic
 
 open Std.Tactic.TryThis
+
+namespace Mathlib.Tactic.Hint
 
 /-- An environment extension for registering hint tactics. -/
 initialize hintExtension : SimplePersistentEnvExtension (TSyntax `tactic) (List (TSyntax `tactic)) ←
@@ -40,8 +46,13 @@ open Lean.Elab.Command in
 /--
 Register a tactic for use with the `hint` tactic, e.g. `register_hint simp_all`.
 -/
-elab "register_hint" tac:tactic : command => liftTermElabM do
+elab (name := registerHintStx) "register_hint" tac:tactic : command => liftTermElabM do
+  -- remove comments
+  let tac : TSyntax `tactic := ⟨tac.raw.copyHeadTailInfoFrom .missing⟩
   addHint tac
+
+initialize
+  Std.Linter.UnreachableTactic.ignoreTacticKindsRef.modify fun s => s.insert ``registerHintStx
 
 /--
 Construct a suggestion for a tactic.
@@ -117,3 +128,5 @@ syntax (name := hintStx) "hint" : tactic
 @[inherit_doc hintStx]
 elab_rules : tactic
   | `(tactic| hint%$tk) => hint tk
+
+end Mathlib.Tactic.Hint

@@ -118,10 +118,7 @@ import Mathlib.Util.WhatsNew
 # Register tactics with `hint`.
 -/
 
-section
-
--- FIXME without this, we get a warning on each `register_hint`.
-set_option linter.unreachableTactic false
+section Hint
 
 register_hint split
 register_hint intro
@@ -131,4 +128,4 @@ register_hint exact?
 -- Waiting on https://github.com/leanprover-community/aesop/issues/85
 -- register_hint aesop
 
-end
+end Hint

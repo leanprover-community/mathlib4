@@ -11,5 +11,4 @@ import Mathlib.Tactic.Hint
 We register `linarith` with the `hint` tactic.
 -/
 
-set_option linter.unreachableTactic false in
 register_hint linarith
