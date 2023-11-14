@@ -70,8 +70,10 @@ def lmarginal (μ : ∀ i, Measure (π i)) (s : Finset δ) (f : (∀ i, π i) �
   ∫⁻ y : ∀ i : s, π i, f (updateFinset x s y) ∂Measure.pi fun i : s => μ i
 
 -- Note: this notation is not a binder. This is more convenient since it returns a function.
+@[inherit_doc]
 notation "∫⋯∫⁻_" s ", " f " ∂" μ:70 => lmarginal μ s f
 
+@[inherit_doc]
 notation "∫⋯∫⁻_" s ", " f => lmarginal (fun _ ↦ volume) s f
 
 variable (μ)
