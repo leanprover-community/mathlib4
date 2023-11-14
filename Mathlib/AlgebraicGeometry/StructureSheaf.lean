@@ -626,7 +626,7 @@ def toBasicOpen (f : R) :
 @[simp]
 theorem toBasicOpen_mk' (s f : R) (g : Submonoid.powers s) :
     toBasicOpen R s (IsLocalization.mk' (Localization.Away s) f g) =
-      const R f g (PrimeSpectrum.basicOpen s) fun x hx => Submonoid.powers_subset hx g.2 :=
+      const R f g (PrimeSpectrum.basicOpen s) fun x hx => Submonoid.powers_le.2 hx g.2 :=
   (IsLocalization.lift_mk'_spec _ _ _ _).2 <| by
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [toOpen_eq_const, toOpen_eq_const]; rw [const_mul_cancel']
