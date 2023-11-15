@@ -6,7 +6,7 @@ Authors: Chris Hughes
 
 import Mathlib.GroupTheory.HNNExtension
 import Mathlib.GroupTheory.SemidirectProduct
-import Mathlib.GroupTheory.FreeGroup
+import Mathlib.GroupTheory.FreeGroup.Basic
 
 namespace OneRelator
 
