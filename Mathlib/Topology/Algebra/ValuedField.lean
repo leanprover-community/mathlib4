@@ -259,7 +259,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
     have vz₀_ne : (v z₀ : Γ₀) ≠ 0 := by rwa [Valuation.ne_zero_iff]
     refine' ⟨v z₀, _⟩
     rw [WithZeroTopology.tendsto_of_ne_zero vz₀_ne, eventually_comap]
-    filter_upwards [nhds_right]with x x_in a ha
+    filter_upwards [nhds_right] with x x_in a ha
     rcases x_in with ⟨y, y_in, rfl⟩
     have : (v (a * z₀⁻¹) : Γ₀) = 1 := by
       apply hV

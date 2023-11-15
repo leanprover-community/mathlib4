@@ -370,61 +370,70 @@ open MeasureTheory
 
 section borel
 
-variable [OpensMeasurableSpace X] [IsLocallyFiniteMeasure μ]
+variable [OpensMeasurableSpace X]
 
 variable {K : Set X} {a b : X}
 
 /-- A continuous function `f` is locally integrable with respect to any locally finite measure. -/
-theorem Continuous.locallyIntegrable [SecondCountableTopologyEither X E] (hf : Continuous f) :
-    LocallyIntegrable f μ :=
+theorem Continuous.locallyIntegrable [IsLocallyFiniteMeasure μ] [SecondCountableTopologyEither X E]
+    (hf : Continuous f) : LocallyIntegrable f μ :=
   hf.integrableAt_nhds
 #align continuous.locally_integrable Continuous.locallyIntegrable
 
 /-- A function `f` continuous on a set `K` is locally integrable on this set with respect
 to any locally finite measure. -/
-theorem ContinuousOn.locallyIntegrableOn [SecondCountableTopologyEither X E] (hf : ContinuousOn f K)
+theorem ContinuousOn.locallyIntegrableOn [IsLocallyFiniteMeasure μ]
+    [SecondCountableTopologyEither X E] (hf : ContinuousOn f K)
     (hK : MeasurableSet K) : LocallyIntegrableOn f K μ := fun _x hx =>
   hf.integrableAt_nhdsWithin hK hx
 #align continuous_on.locally_integrable_on ContinuousOn.locallyIntegrableOn
 
-variable [MetrizableSpace X]
+variable [IsFiniteMeasureOnCompacts μ]
 
 /-- A function `f` continuous on a compact set `K` is integrable on this set with respect to any
 locally finite measure. -/
-theorem ContinuousOn.integrableOn_compact (hK : IsCompact K) (hf : ContinuousOn f K) :
+theorem ContinuousOn.integrableOn_compact'
+    (hK : IsCompact K) (h'K : MeasurableSet K) (hf : ContinuousOn f K) :
     IntegrableOn f K μ := by
-  letI := metrizableSpaceMetric X
-  refine' LocallyIntegrableOn.integrableOn_isCompact (fun x hx => _) hK
-  exact hf.integrableAt_nhdsWithin_of_isSeparable hK.measurableSet hK.isSeparable hx
+  refine ⟨ContinuousOn.aestronglyMeasurable_of_isCompact hf hK h'K, ?_⟩
+  have : Fact (μ K < ∞) := ⟨hK.measure_lt_top⟩
+  obtain ⟨C, hC⟩ : ∃ C, ∀ x ∈ f '' K, ‖x‖ ≤ C :=
+    IsBounded.exists_norm_le (hK.image_of_continuousOn hf).isBounded
+  apply hasFiniteIntegral_of_bounded (C := C)
+  filter_upwards [ae_restrict_mem h'K] with x hx using hC _ (mem_image_of_mem f hx)
+
+theorem ContinuousOn.integrableOn_compact [T2Space X]
+    (hK : IsCompact K) (hf : ContinuousOn f K) : IntegrableOn f K μ :=
+  hf.integrableOn_compact' hK hK.measurableSet
 #align continuous_on.integrable_on_compact ContinuousOn.integrableOn_compact
 
-theorem ContinuousOn.integrableOn_Icc [Preorder X] [CompactIccSpace X]
+theorem ContinuousOn.integrableOn_Icc [Preorder X] [CompactIccSpace X] [T2Space X]
     (hf : ContinuousOn f (Icc a b)) : IntegrableOn f (Icc a b) μ :=
   hf.integrableOn_compact isCompact_Icc
 #align continuous_on.integrable_on_Icc ContinuousOn.integrableOn_Icc
 
-theorem Continuous.integrableOn_Icc [Preorder X] [CompactIccSpace X] (hf : Continuous f) :
-    IntegrableOn f (Icc a b) μ :=
+theorem Continuous.integrableOn_Icc [Preorder X] [CompactIccSpace X] [T2Space X]
+    (hf : Continuous f) : IntegrableOn f (Icc a b) μ :=
   hf.continuousOn.integrableOn_Icc
 #align continuous.integrable_on_Icc Continuous.integrableOn_Icc
 
-theorem Continuous.integrableOn_Ioc [Preorder X] [CompactIccSpace X] (hf : Continuous f) :
-    IntegrableOn f (Ioc a b) μ :=
+theorem Continuous.integrableOn_Ioc [Preorder X] [CompactIccSpace X] [T2Space X]
+    (hf : Continuous f) : IntegrableOn f (Ioc a b) μ :=
   hf.integrableOn_Icc.mono_set Ioc_subset_Icc_self
 #align continuous.integrable_on_Ioc Continuous.integrableOn_Ioc
 
-theorem ContinuousOn.integrableOn_uIcc [LinearOrder X] [CompactIccSpace X]
+theorem ContinuousOn.integrableOn_uIcc [LinearOrder X] [CompactIccSpace X] [T2Space X]
     (hf : ContinuousOn f [[a, b]]) : IntegrableOn f [[a, b]] μ :=
   hf.integrableOn_Icc
 #align continuous_on.integrable_on_uIcc ContinuousOn.integrableOn_uIcc
 
-theorem Continuous.integrableOn_uIcc [LinearOrder X] [CompactIccSpace X] (hf : Continuous f) :
-    IntegrableOn f [[a, b]] μ :=
+theorem Continuous.integrableOn_uIcc [LinearOrder X] [CompactIccSpace X] [T2Space X]
+    (hf : Continuous f) : IntegrableOn f [[a, b]] μ :=
   hf.integrableOn_Icc
 #align continuous.integrable_on_uIcc Continuous.integrableOn_uIcc
 
-theorem Continuous.integrableOn_uIoc [LinearOrder X] [CompactIccSpace X] (hf : Continuous f) :
-    IntegrableOn f (Ι a b) μ :=
+theorem Continuous.integrableOn_uIoc [LinearOrder X] [CompactIccSpace X] [T2Space X]
+    (hf : Continuous f) : IntegrableOn f (Ι a b) μ :=
   hf.integrableOn_Ioc
 #align continuous.integrable_on_uIoc Continuous.integrableOn_uIoc
 
@@ -432,7 +441,7 @@ theorem Continuous.integrableOn_uIoc [LinearOrder X] [CompactIccSpace X] (hf : C
 theorem Continuous.integrable_of_hasCompactSupport (hf : Continuous f) (hcf : HasCompactSupport f) :
     Integrable f μ :=
   (integrableOn_iff_integrable_of_support_subset (subset_tsupport f)).mp <|
-    hf.continuousOn.integrableOn_compact hcf
+    hf.continuousOn.integrableOn_compact' hcf (isClosed_tsupport _).measurableSet
 #align continuous.integrable_of_has_compact_support Continuous.integrable_of_hasCompactSupport
 
 end borel
@@ -515,7 +524,7 @@ theorem IntegrableOn.mul_continuousOn_of_subset (hg : IntegrableOn g A μ) (hg' 
   rcases IsCompact.exists_bound_of_continuousOn hK hg' with ⟨C, hC⟩
   rw [IntegrableOn, ← memℒp_one_iff_integrable] at hg ⊢
   have : ∀ᵐ x ∂μ.restrict A, ‖g x * g' x‖ ≤ C * ‖g x‖ := by
-    filter_upwards [ae_restrict_mem hA]with x hx
+    filter_upwards [ae_restrict_mem hA] with x hx
     refine' (norm_mul_le _ _).trans _
     rw [mul_comm]
     apply mul_le_mul_of_nonneg_right (hC x (hAK hx)) (norm_nonneg _)
@@ -534,7 +543,7 @@ theorem IntegrableOn.continuousOn_mul_of_subset (hg : ContinuousOn g K) (hg' : I
   rcases IsCompact.exists_bound_of_continuousOn hK hg with ⟨C, hC⟩
   rw [IntegrableOn, ← memℒp_one_iff_integrable] at hg' ⊢
   have : ∀ᵐ x ∂μ.restrict A, ‖g x * g' x‖ ≤ C * ‖g' x‖ := by
-    filter_upwards [ae_restrict_mem hA]with x hx
+    filter_upwards [ae_restrict_mem hA] with x hx
     refine' (norm_mul_le _ _).trans _
     apply mul_le_mul_of_nonneg_right (hC x (hAK hx)) (norm_nonneg _)
   exact

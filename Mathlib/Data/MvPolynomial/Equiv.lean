@@ -214,9 +214,7 @@ and the ground ring. -/
 @[simps!]
 def isEmptyAlgEquiv [he : IsEmpty σ] : MvPolynomial σ R ≃ₐ[R] R :=
   AlgEquiv.ofAlgHom (aeval (IsEmpty.elim he)) (Algebra.ofId _ _)
-    (by
-      ext
-      simp [Algebra.ofId_apply, algebraMap_eq])
+    (by ext)
     (by
       ext i m
       exact IsEmpty.elim' he i)
@@ -270,7 +268,7 @@ def sumAlgEquiv : MvPolynomial (Sum S₁ S₂) R ≃ₐ[R] MvPolynomial S₁ (Mv
       intro r
       have A : algebraMap R (MvPolynomial S₁ (MvPolynomial S₂ R)) r = (C (C r) : _) := rfl
       have B : algebraMap R (MvPolynomial (Sum S₁ S₂) R) r = C r := rfl
-      simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe_apply,
+      simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe,
         Equiv.coe_fn_mk, B, sumToIter_C, A] }
 #align mv_polynomial.sum_alg_equiv MvPolynomial.sumAlgEquiv
 

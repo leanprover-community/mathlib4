@@ -136,6 +136,15 @@ theorem trivial_def {V : Type u} [AddCommGroup V] [Module k V] (g : G) (v : V) :
 set_option linter.uppercaseLean3 false in
 #align Rep.trivial_def Rep.trivial_def
 
+/-- A predicate for representations that fix every element. -/
+abbrev IsTrivial (A : Rep k G) := A.ρ.IsTrivial
+
+instance {V : Type u} [AddCommGroup V] [Module k V] :
+    IsTrivial (Rep.trivial k G V) where
+
+instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
+    IsTrivial (Rep.of ρ) where
+
 -- Porting note: the two following instances were found automatically in mathlib3
 noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.instPreservesLimitsForget.{u} _ _
@@ -459,8 +468,6 @@ theorem ihom_ev_app_hom (A B : Rep k G) :
 set_option linter.uppercaseLean3 false in
 #align Rep.ihom_ev_app_hom Rep.ihom_ev_app_hom
 
-/- Porting note: needs extra heartbeats. -/
-set_option maxHeartbeats 240000 in
 @[simp] theorem ihom_coev_app_hom (A B : Rep k G) :
     Action.Hom.hom ((ihom.coev A).app B) = (TensorProduct.mk k _ _).flip :=
   LinearMap.ext fun _ => LinearMap.ext fun _ => rfl

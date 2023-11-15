@@ -1,9 +1,9 @@
 /-
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
+Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Wen Yang
 -/
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Transvection
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.Tactic.FinCases
 
@@ -119,6 +119,30 @@ theorem blockTriangular_blockDiagonal [DecidableEq α] (d : α → Matrix m m R)
   rw [blockDiagonal'_eq_blockDiagonal, blockTriangular_blockDiagonal']
   exact h
 #align matrix.block_triangular_block_diagonal Matrix.blockTriangular_blockDiagonal
+
+variable [DecidableEq m]
+
+theorem blockTriangular_one : BlockTriangular (1 : Matrix m m R) b :=
+  blockTriangular_diagonal _
+
+theorem blockTriangular_stdBasisMatrix {i j : m} (hij : b i ≤ b j) (c : R) :
+    BlockTriangular (stdBasisMatrix i j c) b := by
+  intro r s hrs
+  apply StdBasisMatrix.apply_of_ne
+  rintro ⟨rfl, rfl⟩
+  exact (hij.trans_lt hrs).false
+
+theorem blockTriangular_stdBasisMatrix' {i j : m} (hij : b j ≤ b i) (c : R) :
+    BlockTriangular (stdBasisMatrix i j c) (toDual ∘ b) :=
+  blockTriangular_stdBasisMatrix (by exact toDual_le_toDual.mpr hij) _
+
+theorem blockTriangular_transvection {i j : m} (hij : b i ≤ b j) (c : R) :
+    BlockTriangular (transvection i j c) b :=
+  blockTriangular_one.add (blockTriangular_stdBasisMatrix hij c)
+
+theorem blockTriangular_transvection' {i j : m} (hij : b j ≤ b i) (c : R) :
+    BlockTriangular (transvection i j c) (OrderDual.toDual ∘ b) :=
+  blockTriangular_one.add (blockTriangular_stdBasisMatrix' hij c)
 
 end Preorder
 
@@ -244,6 +268,22 @@ theorem det_of_lowerTriangular [LinearOrder m] (M : Matrix m m R) (h : M.BlockTr
   rw [← det_transpose]
   exact det_of_upperTriangular h.transpose
 #align matrix.det_of_lower_triangular Matrix.det_of_lowerTriangular
+
+open Polynomial
+
+theorem matrixOfPolynomials_blockTriangular {n : ℕ} (p : Fin n → R[X])
+    (h_deg : ∀ i, (p i).natDegree ≤ i) :
+    Matrix.BlockTriangular (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) id :=
+  fun _ j h => by
+    exact coeff_eq_zero_of_natDegree_lt <| Nat.lt_of_le_of_lt (h_deg j) h
+
+theorem det_matrixOfPolynomials {n : ℕ} (p : Fin n → R[X])
+    (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
+    (Matrix.of (fun (i j : Fin n) => (p j).coeff i)).det = 1 := by
+  rw [Matrix.det_of_upperTriangular (Matrix.matrixOfPolynomials_blockTriangular p (fun i ↦
+      Nat.le_of_eq (h_deg i)))]
+  convert prod_const_one with x _
+  rw [Matrix.of_apply, ← h_deg, coeff_natDegree, (h_monic x).leadingCoeff]
 
 /-! ### Invertible -/
 

@@ -37,12 +37,12 @@ theorem levenshtein_cons_cons :
 ```
 -/
 
-variable {α β δ : Type _} [AddZeroClass δ] [Min δ]
+variable {α β δ : Type*} [AddZeroClass δ] [Min δ]
 
 namespace Levenshtein
 
 /-- A cost structure for Levenshtein edit distance. -/
-structure Cost (α β : Type _) (δ : Type _) where
+structure Cost (α β δ : Type*) where
   /-- Cost to delete an element from a list. -/
   delete : α → δ
   /-- Cost in insert an element into a list. -/
@@ -58,6 +58,28 @@ def defaultCost [DecidableEq α] : Cost α α ℕ where
   substitute a b := if a = b then 0 else 1
 
 instance [DecidableEq α] : Inhabited (Cost α α ℕ) := ⟨defaultCost⟩
+
+/--
+Cost structure given by a function.
+Delete and insert cost the same, and substitution costs the greater value.
+-/
+@[simps]
+def weightCost (f : α → ℕ) : Cost α α ℕ where
+  delete a := f a
+  insert b := f b
+  substitute a b := max (f a) (f b)
+
+/--
+Cost structure for strings, where cost is the length of the token.
+-/
+@[simps!]
+def stringLengthCost : Cost String String ℕ := weightCost String.length
+
+/--
+Cost structure for strings, where cost is the log base 2 length of the token.
+-/
+@[simps!]
+def stringLogLengthCost : Cost String String ℕ := weightCost fun s => Nat.log2 (s.length + 1)
 
 variable (C : Cost α β δ)
 
@@ -111,7 +133,7 @@ theorem impl_length (d : {r : List δ // 0 < r.length}) (w : d.1.length = xs.len
     | ⟨d₁ :: d₂ :: ds, _⟩, w =>
       dsimp
       congr 1
-      refine ih ⟨d₂ :: ds, (by simp)⟩ (by simpa using w)
+      exact ih ⟨d₂ :: ds, (by simp)⟩ (by simpa using w)
 
 end Levenshtein
 

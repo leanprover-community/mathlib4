@@ -470,7 +470,7 @@ protected theorem completeSpace : CompleteSpace (∀ n, E n) := by
   intro u hu
   refine' ⟨fun n => u n n, tendsto_pi_nhds.2 fun i => _⟩
   refine' tendsto_const_nhds.congr' _
-  filter_upwards [Filter.Ici_mem_atTop i]with n hn
+  filter_upwards [Filter.Ici_mem_atTop i] with n hn
   exact apply_eq_of_dist_lt (hu i i n le_rfl hn) le_rfl
 #align pi_nat.complete_space PiNat.completeSpace
 
@@ -832,7 +832,7 @@ theorem dist_eq_tsum (x y : ∀ i, F i) :
 
 theorem dist_summable (x y : ∀ i, F i) :
     Summable fun i : ι => min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := by
-  refine summable_of_nonneg_of_le (fun i => ?_) (fun i => min_le_left _ _)
+  refine .of_nonneg_of_le (fun i => ?_) (fun i => min_le_left _ _)
     summable_geometric_two_encode
   exact le_min (pow_nonneg (by norm_num) _) dist_nonneg
 #align pi_countable.dist_summable PiCountable.dist_summable
