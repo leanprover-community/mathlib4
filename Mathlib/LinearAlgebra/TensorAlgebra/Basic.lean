@@ -81,7 +81,7 @@ example : (algebraNat : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
-    [IsScalarTower R A M] [IsScalarTower S A M] [SMulCommClass R S A] :
+    [IsScalarTower R A M] [IsScalarTower S A M] :
     SMulCommClass R S (TensorAlgebra A M) :=
   RingQuot.instSMulCommClass _
 
@@ -206,7 +206,9 @@ theorem induction {C : TensorAlgebra R M → Prop}
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (TensorAlgebra R M) = s.val.comp (lift R of) := by
     ext
-    simp
+    simp only [AlgHom.toLinearMap_id, LinearMap.id_comp, AlgHom.comp_toLinearMap,
+      LinearMap.coe_comp, Function.comp_apply, AlgHom.toLinearMap_apply, lift_ι_apply,
+      Subalgebra.coe_val]
     erw [LinearMap.codRestrict_apply]
   -- finding a proof is finding an element of the subalgebra
   rw [← AlgHom.id_apply (R := R) a, of_id]

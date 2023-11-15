@@ -30,7 +30,7 @@ noncomputable section
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
-open scoped Classical Polynomial
+open scoped Classical Polynomial IntermediateField
 
 open Polynomial IntermediateField
 
@@ -117,7 +117,6 @@ theorem gal_X_pow_sub_one_isSolvable (n : ℕ) : IsSolvable (X ^ n - 1 : F[X]).G
 set_option linter.uppercaseLean3 false in
 #align gal_X_pow_sub_one_is_solvable gal_X_pow_sub_one_isSolvable
 
-set_option maxHeartbeats 250000 in
 theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
     (h : (X ^ n - 1 : F[X]).Splits (RingHom.id F)) : IsSolvable (X ^ n - C a).Gal := by
   by_cases ha : a = 0
@@ -157,7 +156,6 @@ theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
 set_option linter.uppercaseLean3 false in
 #align gal_X_pow_sub_C_is_solvable_aux gal_X_pow_sub_C_isSolvable_aux
 
-set_option maxHeartbeats 250000 in
 theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [Field E]
     (i : F →+* E) (n : ℕ) {a : F} (ha : a ≠ 0) (h : (X ^ n - C a).Splits i) :
     (X ^ n - 1 : F[X]).Splits i := by
@@ -309,7 +307,6 @@ def P (α : solvableByRad F E) : Prop :=
 set_option linter.uppercaseLean3 false in
 #align solvable_by_rad.P solvableByRad.P
 
-set_option maxHeartbeats 400000 in
 /-- An auxiliary induction lemma, which is generalized by `solvableByRad.isSolvable`. -/
 theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (α ^ n)) : P α := by
   let p := minpoly F (α ^ n)
@@ -344,13 +341,14 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
   have hpq := Polynomial.splits_of_splits_mul _
     (mul_ne_zero (minpoly.ne_zero (isIntegral α)) (minpoly.ne_zero (isIntegral β)))
     (SplittingField.splits (p * q))
-  let f : ↥F⟮α, β⟯ →ₐ[F] (p * q).SplittingField := Classical.choice <| algHom_mk_adjoin_splits (by
-    intro x hx
-    cases' hx with hx hx
-    rw [hx]
-    exact ⟨isIntegral α, hpq.1⟩
-    cases hx
-    exact ⟨isIntegral β, hpq.2⟩)
+  let f : ↥F⟮α, β⟯ →ₐ[F] (p * q).SplittingField :=
+    Classical.choice <| nonempty_algHom_adjoin_of_splits <| by
+      intro x hx
+      cases' hx with hx hx
+      rw [hx]
+      exact ⟨isIntegral α, hpq.1⟩
+      cases hx
+      exact ⟨isIntegral β, hpq.2⟩
   have key : minpoly F γ = minpoly F (f ⟨γ, hγ⟩) := by
     refine' minpoly.eq_of_irreducible_of_monic
       (minpoly.irreducible (isIntegral γ)) _ (minpoly.monic (isIntegral γ))
@@ -363,7 +361,9 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
     simp only [map_zero, _root_.map_eq_zero]
     -- Porting note: end of the proof was `exact minpoly.aeval F γ`.
     apply Subtype.val_injective
-    simp [Polynomial.aeval_subalgebra_coe (minpoly F γ)]
+    -- This used to be `simp`, but we need `erw` and `simp` after leanprover/lean4#2644
+    erw [Polynomial.aeval_subalgebra_coe (minpoly F γ)]
+    simp
   rw [P, key]
   refine' gal_isSolvable_of_splits ⟨Normal.splits _ (f ⟨γ, hγ⟩)⟩ (gal_mul_isSolvable hα hβ)
   apply SplittingField.instNormal

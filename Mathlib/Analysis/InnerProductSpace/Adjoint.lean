@@ -245,25 +245,12 @@ instance : CstarRing (E →L[𝕜] E) :=
           simp_rw [mul_assoc, Real.sqrt_mul (norm_nonneg _) (‖x‖ * ‖x‖),
             Real.sqrt_mul_self (norm_nonneg x)] ⟩
 
-section Real
-
-variable {E' : Type*} {F' : Type*}
-
-variable [NormedAddCommGroup E'] [NormedAddCommGroup F']
-
-variable [InnerProductSpace ℝ E'] [InnerProductSpace ℝ F']
-
-variable [CompleteSpace E'] [CompleteSpace F']
-
--- Todo: Generalize this to `IsROrC`.
-theorem isAdjointPair_inner (A : E' →L[ℝ] F') :
-    LinearMap.IsAdjointPair (sesqFormOfInner : E' →ₗ[ℝ] E' →ₗ[ℝ] ℝ)
-      (sesqFormOfInner : F' →ₗ[ℝ] F' →ₗ[ℝ] ℝ) A (A†) := by
+theorem isAdjointPair_inner (A : E →L[𝕜] F) :
+    LinearMap.IsAdjointPair (sesqFormOfInner : E →ₗ[𝕜] E →ₗ⋆[𝕜] 𝕜)
+      (sesqFormOfInner : F →ₗ[𝕜] F →ₗ⋆[𝕜] 𝕜) A (A†) := by
   intro x y
   simp only [sesqFormOfInner_apply_apply, adjoint_inner_left, coe_coe]
 #align continuous_linear_map.is_adjoint_pair_inner ContinuousLinearMap.isAdjointPair_inner
-
-end Real
 
 end ContinuousLinearMap
 
@@ -490,25 +477,12 @@ theorem isSymmetric_iff_isSelfAdjoint (A : E →ₗ[𝕜] E) : IsSymmetric A ↔
   exact eq_comm
 #align linear_map.is_symmetric_iff_is_self_adjoint LinearMap.isSymmetric_iff_isSelfAdjoint
 
-section Real
-
-variable {E' : Type*} {F' : Type*}
-
-variable [NormedAddCommGroup E'] [NormedAddCommGroup F']
-
-variable [InnerProductSpace ℝ E'] [InnerProductSpace ℝ F']
-
-variable [FiniteDimensional ℝ E'] [FiniteDimensional ℝ F']
-
--- Todo: Generalize this to `IsROrC`.
-theorem isAdjointPair_inner (A : E' →ₗ[ℝ] F') :
-    IsAdjointPair (sesqFormOfInner : E' →ₗ[ℝ] E' →ₗ[ℝ] ℝ) (sesqFormOfInner : F' →ₗ[ℝ] F' →ₗ[ℝ] ℝ) A
+theorem isAdjointPair_inner (A : E →ₗ[𝕜] F) :
+    IsAdjointPair (sesqFormOfInner : E →ₗ[𝕜] E →ₗ⋆[𝕜] 𝕜) (sesqFormOfInner : F →ₗ[𝕜] F →ₗ⋆[𝕜] 𝕜) A
       (LinearMap.adjoint A) := by
   intro x y
   simp only [sesqFormOfInner_apply_apply, adjoint_inner_left]
 #align linear_map.is_adjoint_pair_inner LinearMap.isAdjointPair_inner
-
-end Real
 
 /-- The Gram operator T†T is symmetric. -/
 theorem isSymmetric_adjoint_mul_self (T : E →ₗ[𝕜] E) : IsSymmetric (LinearMap.adjoint T * T) := by

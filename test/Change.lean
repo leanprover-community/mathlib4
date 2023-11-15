@@ -1,55 +1,44 @@
 import Mathlib.Tactic.Change
 import Std.Tactic.GuardExpr
 
+private axiom test_sorry : ∀ {α}, α
 set_option pp.unicode.fun true
 
 set_option autoImplicit true
 
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example : n + 2 = m := by
   change n + 1 + 1 = _
   guard_target =ₛ n + 1 + 1 = m
-  sorry
+  exact test_sorry
 
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example (h : n + 2 = m) : False := by
   change _ + 1 = _ at h
   guard_hyp h :ₛ n + 1 + 1 = m
-  sorry
+  exact test_sorry
 
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example : n + 2 = m := by
   fail_if_success change true
   fail_if_success change _ + 3 = _
   fail_if_success change _ * _ = _
   change (_ : Nat) + _ = _
-  sorry
+  exact test_sorry
 
 -- `change ... at ...` allows placeholders to mean different things at different hypotheses
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example (h : n + 3 = m) (h' : n + 2 = m) : False := by
   change _ + 1 = _ at h h'
   guard_hyp h :ₛ n + 2 + 1 = m
   guard_hyp h' :ₛ n + 1 + 1 = m
-  sorry
+  exact test_sorry
 
 -- `change ... at ...` preserves dependencies
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
 example (p : n + 2 = m → Type) (h : n + 2 = m) (x : p h) : false := by
   change _ + 1 = _ at h
   guard_hyp x :ₛ p h
-  sorry
+  exact test_sorry
 
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
-example : Nat := by
+noncomputable example : Nat := by
   fail_if_success change Type 1
-  sorry
+  exact test_sorry
 
 def foo (a b c : Nat) := if a < b then c else 0
 

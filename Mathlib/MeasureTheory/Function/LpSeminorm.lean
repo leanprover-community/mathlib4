@@ -176,6 +176,7 @@ theorem snorm'_exponent_zero {f : α → F} : snorm' f 0 μ = 1 := by
 theorem snorm_exponent_zero {f : α → F} : snorm f 0 μ = 0 := by simp [snorm]
 #align measure_theory.snorm_exponent_zero MeasureTheory.snorm_exponent_zero
 
+@[simp]
 theorem memℒp_zero_iff_aestronglyMeasurable {f : α → E} : Memℒp f 0 μ ↔ AEStronglyMeasurable f μ :=
   by simp [Memℒp, snorm_exponent_zero]
 #align measure_theory.mem_ℒp_zero_iff_ae_strongly_measurable MeasureTheory.memℒp_zero_iff_aestronglyMeasurable
@@ -908,6 +909,20 @@ theorem meas_snormEssSup_lt {f : α → F} : μ { y | snormEssSup f μ < ‖f y�
   meas_essSup_lt
 #align measure_theory.meas_snorm_ess_sup_lt MeasureTheory.meas_snormEssSup_lt
 
+lemma snormEssSup_piecewise {s : Set α} (f g : α → E) [DecidablePred (· ∈ s)]
+    (hs : MeasurableSet s) :
+    snormEssSup (Set.piecewise s f g) μ
+      = max (snormEssSup f (μ.restrict s)) (snormEssSup g (μ.restrict sᶜ)) := by
+  simp only [snormEssSup, ← essSup_piecewise hs]
+  congr with x
+  by_cases hx : x ∈ s <;> simp [hx]
+
+lemma snorm_top_piecewise {s : Set α} (f g : α → E) [DecidablePred (· ∈ s)]
+    (hs : MeasurableSet s) :
+    snorm (Set.piecewise s f g) ∞ μ
+      = max (snorm f ∞ (μ.restrict s)) (snorm g ∞ (μ.restrict sᶜ)) :=
+  snormEssSup_piecewise f g hs
+
 section MapMeasure
 
 variable {β : Type*} {mβ : MeasurableSpace β} {f : α → β} {g : β → E}
@@ -1383,7 +1398,7 @@ theorem snorm_le_snorm_top_mul_snorm (p : ℝ≥0∞) (f : α → E) {g : α →
       · rw [one_div_nonneg]
         exact ENNReal.toReal_nonneg
       refine' lintegral_mono_ae _
-      filter_upwards [@ENNReal.ae_le_essSup _ _ μ fun x => (‖f x‖₊ : ℝ≥0∞)]with x hx
+      filter_upwards [@ENNReal.ae_le_essSup _ _ μ fun x => (‖f x‖₊ : ℝ≥0∞)] with x hx
       exact mul_le_mul_right' (ENNReal.rpow_le_rpow hx ENNReal.toReal_nonneg) _
     _ = essSup (fun x => (‖f x‖₊ : ℝ≥0∞)) μ *
         (∫⁻ x, (‖g x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
@@ -1665,7 +1680,7 @@ theorem ae_bdd_liminf_atTop_of_snorm_bdd {p : ℝ≥0∞} (hp : p ≠ 0) {f : �
       ae_lt_of_essSup_lt
         (lt_of_le_of_lt (hbdd n) <| ENNReal.lt_add_right ENNReal.coe_ne_top one_ne_zero)
     rw [← ae_all_iff] at this
-    filter_upwards [this]with x hx using lt_of_le_of_lt
+    filter_upwards [this] with x hx using lt_of_le_of_lt
         (liminf_le_of_frequently_le' <| frequently_of_forall fun n => (hx n).le)
         (ENNReal.add_lt_top.2 ⟨ENNReal.coe_lt_top, ENNReal.one_lt_top⟩)
   filter_upwards [ae_bdd_liminf_atTop_rpow_of_snorm_bdd hfmeas hbdd] with x hx

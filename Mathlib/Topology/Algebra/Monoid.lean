@@ -26,7 +26,7 @@ open Classical Set Filter TopologicalSpace
 
 open Classical Topology BigOperators Pointwise
 
-variable {ι α X M N : Type*} [TopologicalSpace X]
+variable {ι α M N X : Type*} [TopologicalSpace X]
 
 @[to_additive (attr := continuity)]
 theorem continuous_one [TopologicalSpace M] [One M] : Continuous (1 : X → M) :=
@@ -436,7 +436,7 @@ def Submonoid.topologicalClosure (s : Submonoid M) : Submonoid M where
 -- Porting note: new lemma
 @[to_additive]
 theorem Submonoid.coe_topologicalClosure (s : Submonoid M) :
-  (s.topologicalClosure : Set M) = _root_.closure (s : Set M) := rfl
+    (s.topologicalClosure : Set M) = _root_.closure (s : Set M) := rfl
 
 @[to_additive]
 theorem Submonoid.le_topologicalClosure (s : Submonoid M) : s ≤ s.topologicalClosure :=
@@ -570,10 +570,19 @@ instance AddMonoid.continuousConstSMul_nat {A} [AddMonoid A] [TopologicalSpace A
 
 instance AddMonoid.continuousSMul_nat {A} [AddMonoid A] [TopologicalSpace A]
     [ContinuousAdd A] : ContinuousSMul ℕ A :=
-  ⟨continuous_uncurry_of_discreteTopology continuous_nsmul⟩
+  ⟨continuous_prod_of_discrete_left.mpr continuous_nsmul⟩
 #align add_monoid.has_continuous_smul_nat AddMonoid.continuousSMul_nat
 
-@[to_additive (attr := continuity)]
+-- We register `Continuous.pow` as a `continuity` lemma with low penalty (so
+-- `continuity` will try it before other `continuity` lemmas). This is a
+-- workaround for goals of the form `Continuous fun x => x ^ 2`, where
+-- `continuity` applies `Continuous.mul` since the goal is defeq to
+-- `Continuous fun x => x * x`.
+--
+-- To properly fix this, we should make sure that `continuity` applies its
+-- lemmas with reducible transparency, preventing the unfolding of `^`. But this
+-- is quite an invasive change.
+@[to_additive (attr := aesop safe -100 (rule_sets [Continuous]))]
 theorem Continuous.pow {f : X → M} (h : Continuous f) (n : ℕ) : Continuous fun b => f b ^ n :=
   (continuous_pow n).comp h
 #align continuous.pow Continuous.pow

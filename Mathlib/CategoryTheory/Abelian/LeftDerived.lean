@@ -69,7 +69,7 @@ theorem exact_of_map_projectiveResolution (P : ProjectiveResolution X)
 def leftDerivedZeroToSelfApp [EnoughProjectives C] {X : C} (P : ProjectiveResolution X) :
     (F.leftDerived 0).obj X ⟶ F.obj X :=
   (leftDerivedObjIso F 0 P).hom ≫
-    homology.desc' _ _ _ (kernel.ι _ ≫ F.map (P.π.f 0))
+    homology'.desc' _ _ _ (kernel.ι _ ≫ F.map (P.π.f 0))
       (by
         rw [kernel.lift_ι_assoc,
           HomologicalComplex.dTo_eq _ (by simp : (ComplexShape.down ℕ).Rel 1 0),
@@ -85,7 +85,7 @@ def leftDerivedZeroToSelfAppInv [EnoughProjectives C] [PreservesFiniteColimits F
   have := isIso_cokernel_desc_of_exact_of_epi _ _ (exact_of_map_projectiveResolution F P)
   refine'
     (asIso (cokernel.desc _ _ (exact_of_map_projectiveResolution F P).w)).inv ≫
-      _ ≫ (homologyIsoCokernelLift _ _ _).inv ≫ (leftDerivedObjIso F 0 P).inv
+      _ ≫ (homology'IsoCokernelLift _ _ _).inv ≫ (leftDerivedObjIso F 0 P).inv
   refine' cokernel.map _ _ (𝟙 _) (kernel.lift _ (𝟙 _) (by simp)) _
   ext
   -- Porting note: this used to just be `simp`
@@ -103,11 +103,11 @@ theorem leftDerivedZeroToSelfApp_comp_inv [EnoughProjectives C] [PreservesFinite
   convert Category.comp_id (leftDerivedObjIso F 0 P).hom
   rw [← Category.assoc, ← Category.assoc, Iso.comp_inv_eq]
   -- Porting note: broken ext
-  apply homology.hom_from_ext
+  apply homology'.hom_from_ext
   simp only [← Category.assoc]
-  erw [homology.π'_desc', Category.assoc, Category.assoc, ←
+  erw [homology'.π'_desc', Category.assoc, Category.assoc, ←
     Category.assoc (F.map _), Abelian.cokernel.desc.inv _ _ (exact_of_map_projectiveResolution F P),
-    cokernel.π_desc, homology.π', Category.comp_id, Category.assoc (cokernel.π _), Iso.inv_hom_id,
+    cokernel.π_desc, homology'.π', Category.comp_id, Category.assoc (cokernel.π _), Iso.inv_hom_id,
     Category.comp_id, ← Category.assoc]
   -- Porting note: restructured proof to avoid `convert`
   conv_rhs => rw [← Category.id_comp (cokernel.π _)]
@@ -141,8 +141,8 @@ theorem leftDerivedZeroToSelfAppInv_comp [EnoughProjectives C] [PreservesFiniteC
   -- Porting note: working around 'motive is not type correct'
   simp only [Category.comp_id]
   ext
-  simp only [cokernel.π_desc_assoc, Category.assoc, cokernel.π_desc, homology.desc']
-  rw [← Category.assoc, ← Category.assoc (homologyIsoCokernelLift _ _ _).inv, Iso.inv_hom_id]
+  simp only [cokernel.π_desc_assoc, Category.assoc, cokernel.π_desc, homology'.desc']
+  rw [← Category.assoc, ← Category.assoc (homology'IsoCokernelLift _ _ _).inv, Iso.inv_hom_id]
   simp only [Category.assoc, cokernel.π_desc, kernel.lift_ι_assoc, Category.id_comp]
 #align category_theory.abelian.functor.left_derived_zero_to_self_app_inv_comp CategoryTheory.Abelian.Functor.leftDerivedZeroToSelfAppInv_comp
 
@@ -166,14 +166,13 @@ theorem leftDerived_zero_to_self_natural [EnoughProjectives C] {X : C} {Y : C} (
   rw [Functor.leftDerived_map_eq F 0 f (ProjectiveResolution.lift f P Q) (by simp), Category.assoc,
     Category.assoc, ← Category.assoc _ (F.leftDerivedObjIso 0 Q).hom, Iso.inv_hom_id,
     Category.id_comp, Category.assoc, whisker_eq]
-  dsimp only [homologyFunctor_map]
+  dsimp only [homology'Functor_map]
   -- Porting note: broken ext
-  apply homology.hom_from_ext
+  apply homology'.hom_from_ext
   simp only [HomologicalComplex.Hom.sqTo_right, mapHomologicalComplex_map_f,
-    homology.π'_map_assoc, homology.π'_desc', kernel.lift_ι_assoc, Category.assoc,
-    homology.π'_desc'_assoc, ← map_comp,
-    show (ProjectiveResolution.lift f P Q).f 0 ≫ _ = _ ≫ f from
-      HomologicalComplex.congr_hom (ProjectiveResolution.lift_commutes f P Q) 0]
+    homology'.π'_map_assoc, homology'.π'_desc', kernel.lift_ι_assoc, Category.assoc,
+    homology'.π'_desc'_assoc, ← map_comp,
+    ProjectiveResolution.lift_commutes_zero f P Q]
 #align category_theory.abelian.functor.left_derived_zero_to_self_natural CategoryTheory.Abelian.Functor.leftDerived_zero_to_self_natural
 
 /-- Given `PreservesFiniteColimits F`, the natural isomorphism `(F.leftDerived 0) ≅ F`. -/
