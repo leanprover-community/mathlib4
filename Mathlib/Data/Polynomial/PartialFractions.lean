@@ -47,8 +47,6 @@ variable (R : Type) [CommRing R] [IsDomain R]
 
 open Polynomial
 
-open Polynomial
-
 variable (K : Type) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
 
 section TwoDenominators
@@ -71,10 +69,10 @@ theorem div_eq_quo_add_rem_div_add_rem_div (f : R[X]) {g₁ g₂ : R[X]} (hg₁ 
       degree_modByMonic_lt _ hg₂, _⟩
   have hg₁' : (↑g₁ : K) ≠ 0 := by
     norm_cast
-    exact hg₁.ne_zero_of_ne zero_ne_one
+    exact hg₁.ne_zero
   have hg₂' : (↑g₂ : K) ≠ 0 := by
     norm_cast
-    exact hg₂.ne_zero_of_ne zero_ne_one
+    exact hg₂.ne_zero
   have hfc := modByMonic_add_div (f * c) hg₂
   have hfd := modByMonic_add_div (f * d) hg₁
   field_simp
@@ -86,7 +84,7 @@ end TwoDenominators
 
 section NDenominators
 
-open BigOperators Classical
+open BigOperators
 
 --Porting note: added for scoped `Algebra.cast` instance
 open algebraMap
@@ -100,6 +98,7 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
     ∃ (q : R[X]) (r : ι → R[X]),
       (∀ i ∈ s, (r i).degree < (g i).degree) ∧
         ((↑f : K) / ∏ i in s, ↑(g i)) = ↑q + ∑ i in s, (r i : K) / (g i : K) := by
+  classical
   induction' s using Finset.induction_on with a b hab Hind f generalizing f
   · refine' ⟨f, fun _ : ι => (0 : R[X]), fun i => _, by simp⟩
     rintro ⟨⟩

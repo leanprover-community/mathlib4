@@ -281,27 +281,38 @@ theorem Algebra.isAlgebraic_trans (L_alg : IsAlgebraic K L) (A_alg : IsAlgebraic
 
 end CommRing
 
-section Field
+section NoZeroSMulDivisors
 
-variable [Field K] [Field L]
+variable [CommRing K] [Field L]
 
-variable [Algebra K L]
+variable [Algebra K L] [NoZeroSMulDivisors K L]
 
 theorem Algebra.IsAlgebraic.algHom_bijective (ha : Algebra.IsAlgebraic K L) (f : L →ₐ[K] L) :
     Function.Bijective f := by
-  refine' ⟨f.toRingHom.injective, fun b => _⟩
+  refine' ⟨f.injective, fun b ↦ _⟩
   obtain ⟨p, hp, he⟩ := ha b
-  let f' : p.rootSet L → p.rootSet L := (rootSet_maps_to' (fun x => x) f).restrict f _ _
-  have : Function.Surjective f' :=
-    Finite.injective_iff_surjective.1 fun _ _ h =>
-      Subtype.eq <| f.toRingHom.injective <| Subtype.ext_iff.1 h
+  let f' : p.rootSet L → p.rootSet L := (rootSet_maps_to' (fun x ↦ x) f).restrict f _ _
+  have : f'.Surjective := Finite.injective_iff_surjective.1
+    fun _ _ h ↦ Subtype.eq <| f.injective <| Subtype.ext_iff.1 h
   obtain ⟨a, ha⟩ := this ⟨b, mem_rootSet.2 ⟨hp, he⟩⟩
   exact ⟨a, Subtype.ext_iff.1 ha⟩
 #align algebra.is_algebraic.alg_hom_bijective Algebra.IsAlgebraic.algHom_bijective
 
-theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function.Bijective ϕ :=
-  (Algebra.isAlgebraic_of_finite K L).algHom_bijective ϕ
-#align alg_hom.bijective AlgHom.bijective
+theorem Algebra.IsAlgebraic.algHom_bijective₂ [Field R] [Algebra K R]
+    (ha : Algebra.IsAlgebraic K L) (f : L →ₐ[K] R) (g : R →ₐ[K] L) :
+    Function.Bijective f ∧ Function.Bijective g :=
+  (g.injective.bijective₂_of_surjective f.injective (ha.algHom_bijective <| g.comp f).2).symm
+
+theorem Algebra.IsAlgebraic.bijective_of_isScalarTower (ha : Algebra.IsAlgebraic K L)
+    [Field R] [Algebra K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
+    Function.Bijective f :=
+  (ha.algHom_bijective₂ (IsScalarTower.toAlgHom K L R) f).2
+
+theorem Algebra.IsAlgebraic.bijective_of_isScalarTower' [Field R] [Algebra K R]
+    [NoZeroSMulDivisors K R]
+    (ha : Algebra.IsAlgebraic K R) [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
+    Function.Bijective f :=
+  (ha.algHom_bijective₂ f (IsScalarTower.toAlgHom K L R)).1
 
 variable (K L)
 
@@ -319,6 +330,20 @@ noncomputable def Algebra.IsAlgebraic.algEquivEquivAlgHom (ha : Algebra.IsAlgebr
     rfl
   map_mul' _ _ := rfl
 #align algebra.is_algebraic.alg_equiv_equiv_alg_hom Algebra.IsAlgebraic.algEquivEquivAlgHom
+
+end NoZeroSMulDivisors
+
+section Field
+
+variable [Field K] [Field L]
+
+variable [Algebra K L]
+
+theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function.Bijective ϕ :=
+  (Algebra.isAlgebraic_of_finite K L).algHom_bijective ϕ
+#align alg_hom.bijective AlgHom.bijective
+
+variable (K L)
 
 /-- Bijection between algebra equivalences and algebra homomorphisms -/
 @[reducible]

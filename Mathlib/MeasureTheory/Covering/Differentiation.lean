@@ -740,7 +740,7 @@ theorem ae_tendsto_measure_inter_div_of_measurableSet {s : Set α} (hs : Measura
     ∀ᵐ x ∂μ, Tendsto (fun a => μ (s ∩ a) / μ a) (v.filterAt x) (𝓝 (s.indicator 1 x)) := by
   haveI : IsLocallyFiniteMeasure (μ.restrict s) :=
     isLocallyFiniteMeasure_of_le restrict_le_self
-  filter_upwards [ae_tendsto_rnDeriv v (μ.restrict s), rnDeriv_restrict μ hs]
+  filter_upwards [ae_tendsto_rnDeriv v (μ.restrict s), rnDeriv_restrict_self μ hs]
   intro x hx h'x
   simpa only [h'x, restrict_apply' hs, inter_comm] using hx
 #align vitali_family.ae_tendsto_measure_inter_div_of_measurable_set VitaliFamily.ae_tendsto_measure_inter_div_of_measurableSet
@@ -767,7 +767,7 @@ theorem ae_tendsto_measure_inter_div (s : Set α) :
   apply hx.congr' _
   filter_upwards [v.eventually_filterAt_measurableSet x] with _ ha
   congr 1
-  exact measure_toMeasurable_inter_of_sigmaFinite ha _
+  exact measure_toMeasurable_inter_of_sFinite ha _
 #align vitali_family.ae_tendsto_measure_inter_div VitaliFamily.ae_tendsto_measure_inter_div
 
 /-! ### Lebesgue differentiation theorem -/

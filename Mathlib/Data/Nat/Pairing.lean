@@ -75,7 +75,7 @@ theorem unpair_pair (a b : ℕ) : unpair (pair a b) = (a, b) := by
 #align nat.unpair_mkpair Nat.unpair_pair
 
 /-- An equivalence between `ℕ × ℕ` and `ℕ`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def pairEquiv : ℕ × ℕ ≃ ℕ :=
   ⟨uncurry pair, unpair, fun ⟨a, b⟩ => unpair_pair a b, pair_unpair⟩
 #align nat.mkpair_equiv Nat.pairEquiv
@@ -93,7 +93,7 @@ theorem pair_eq_pair {a b c d : ℕ} : pair a b = pair c d ↔ a = c ∧ b = d :
 
 theorem unpair_lt {n : ℕ} (n1 : 1 ≤ n) : (unpair n).1 < n := by
   let s := sqrt n
-  simp [unpair]
+  simp only [unpair, ge_iff_le, tsub_le_iff_right, gt_iff_lt]
   by_cases h : n - s * s < s <;> simp [h]
   · exact lt_of_lt_of_le h (sqrt_le_self _)
   · simp at h
@@ -132,7 +132,7 @@ theorem pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair
     exact mul_self_le_mul_self h₂
     exact Nat.lt_add_right _ _ _ h
   · simp at h₁
-    simp [not_lt_of_gt (lt_of_le_of_lt h₁ h)]
+    simp only [not_lt_of_gt (lt_of_le_of_lt h₁ h), ite_false]
     apply add_lt_add
     exact mul_self_lt_mul_self h
     apply add_lt_add_right; assumption

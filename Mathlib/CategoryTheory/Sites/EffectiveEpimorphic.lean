@@ -58,7 +58,7 @@ def Sieve.generateSingleton {X Y : C} (f : Y ⟶ X) : Sieve X where
   arrows Z := { g | ∃ (e : Z ⟶ Y), e ≫ f = g }
   downward_closed := by
     rintro W Z g ⟨e,rfl⟩ q
-    refine ⟨q ≫ e, by simp⟩
+    exact ⟨q ≫ e, by simp⟩
 
 lemma Sieve.generateSingleton_eq {X Y : C} (f : Y ⟶ X) :
     Sieve.generate (Presieve.singleton f) = Sieve.generateSingleton f := by
@@ -226,7 +226,7 @@ def Sieve.generateFamily {B : C} {α : Type*} (X : α → C) (π : (a : α) → 
   arrows Y := { f | ∃ (a : α) (g : Y ⟶ X a), g ≫ π a = f }
   downward_closed := by
     rintro Y₁ Y₂ g₁ ⟨a,q,rfl⟩ e
-    refine ⟨a, e ≫ q, by simp⟩
+    exact ⟨a, e ≫ q, by simp⟩
 
 lemma Sieve.generateFamily_eq {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) :
     Sieve.generate (Presieve.ofArrows X π) = Sieve.generateFamily X π := by
@@ -235,7 +235,7 @@ lemma Sieve.generateFamily_eq {B : C} {α : Type*} (X : α → C) (π : (a : α)
   · rintro ⟨W, g, f, ⟨a⟩, rfl⟩
     exact ⟨a, g, rfl⟩
   · rintro ⟨a, g, rfl⟩
-    refine ⟨_, g, π a, ⟨a⟩, rfl⟩
+    exact ⟨_, g, π a, ⟨a⟩, rfl⟩
 
 /--
 This structure encodes the data required for a family of morphisms to be effective epimorphic.
@@ -540,6 +540,31 @@ instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [Ha
     [IsIso (Sigma.desc π)] : EffectiveEpiFamily X π :=
   ⟨⟨EffectiveEpiFamilyStruct_of_isIso_desc X π⟩⟩
 
+/-- The identity is an effective epi. -/
+def EffectiveEpiStructId {X : C} : EffectiveEpiStruct (𝟙 X) where
+  desc e _ := e
+  fac _ _ := by simp only [Category.id_comp]
+  uniq _ _ _ h := by simp only [Category.id_comp] at h; exact h
+
+instance {X : C} : EffectiveEpi (𝟙 X) := ⟨⟨EffectiveEpiStructId⟩⟩
+
 end instances
+
+section Epi
+
+variable [HasFiniteCoproducts C] (h : ∀ {α : Type} [Fintype α] {B : C}
+    (X : α → C) (π : (a : α) → (X a ⟶ B)), EffectiveEpiFamily X π ↔ Epi (Sigma.desc π ))
+
+lemma effectiveEpi_iff_epi {X Y : C} (f : X ⟶ Y) : EffectiveEpi f ↔ Epi f := by
+  rw [effectiveEpi_iff_effectiveEpiFamily, h]
+  have w : f = (Limits.Sigma.ι (fun () ↦ X) ()) ≫ (Limits.Sigma.desc (fun () ↦ f))
+  · simp only [Limits.colimit.ι_desc, Limits.Cofan.mk_pt, Limits.Cofan.mk_ι_app]
+  refine ⟨?_, fun _ ↦ epi_of_epi_fac w.symm⟩
+  intro
+  rw [w]
+  have : Epi (Limits.Sigma.ι (fun () ↦ X) ()) := ⟨fun _ _ h ↦ by ext; exact h⟩
+  exact epi_comp _ _
+
+end Epi
 
 end CategoryTheory

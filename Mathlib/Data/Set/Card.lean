@@ -63,7 +63,7 @@ namespace Set
 variable {s t : Set α}
 
 /-- The cardinality of a set as a term in `ℕ∞` -/
-noncomputable def encard (s : Set α) := PartENat.withTopEquiv (PartENat.card s)
+noncomputable def encard (s : Set α) : ℕ∞ := PartENat.withTopEquiv (PartENat.card s)
 
 @[simp] theorem encard_univ_coe (s : Set α) : encard (univ : Set s) = encard s := by
   rw [encard, encard, PartENat.card_congr (Equiv.Set.univ ↑s)]
@@ -119,7 +119,7 @@ theorem encard_insert_of_not_mem (has : a ∉ s) : (insert a s).encard = s.encar
   rw [←union_singleton, encard_union_eq (by simpa), encard_singleton]
 
 theorem Finite.encard_lt_top (h : s.Finite) : s.encard < ⊤ := by
-  refine' h.induction_on (by simpa using WithTop.zero_lt_top) _
+  refine' h.induction_on (by simp) _
   rintro a t hat _ ht'
   rw [encard_insert_of_not_mem hat]
   exact lt_tsub_iff_right.1 ht'
@@ -468,8 +468,7 @@ macro_rules
 
 
 /-- The cardinality of `s : Set α` . Has the junk value `0` if `s` is infinite -/
-noncomputable def ncard (s : Set α) :=
-  ENat.toNat s.encard
+noncomputable def ncard (s : Set α) : ℕ := ENat.toNat s.encard
 #align set.ncard Set.ncard
 
 theorem ncard_def (s : Set α) : s.ncard = ENat.toNat s.encard := rfl
@@ -986,8 +985,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s 
       (hu.subset (subset_union_right _ _))] at hst
   obtain ⟨r', hnr', hr'⟩ := Finset.exists_subset_or_subset_of_two_mul_lt_card hst
   exact ⟨r', by simpa, by simpa using hr'⟩
-#align set.exists_subset_or_subset_of_two_mul_lt_ncard
-  Set.exists_subset_or_subset_of_two_mul_lt_ncard
+#align set.exists_subset_or_subset_of_two_mul_lt_ncard Set.exists_subset_or_subset_of_two_mul_lt_ncard
 
 /-! ### Explicit description of a set from its cardinality -/
 
@@ -1035,7 +1033,7 @@ theorem ncard_le_one_iff_eq (hs : s.Finite := by toFinite_tac) :
   rintro (rfl | ⟨a, rfl⟩)
   · exact (not_mem_empty _ hx).elim
   simp_rw [mem_singleton_iff] at hx ⊢; subst hx
-  simp only [forall_eq_apply_imp_iff', imp_self, implies_true]
+  simp only [forall_eq_apply_imp_iff, imp_self, implies_true]
 #align set.ncard_le_one_iff_eq Set.ncard_le_one_iff_eq
 
 theorem ncard_le_one_iff_subset_singleton [Nonempty α]

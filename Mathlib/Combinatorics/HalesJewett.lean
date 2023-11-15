@@ -343,7 +343,7 @@ theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset
   obtain ⟨ι, _inst, hι⟩ := Line.exists_mono_in_high_dimension S κ
   specialize hι fun v => C <| ∑ i, v i
   obtain ⟨l, c, hl⟩ := hι
-  set s : Finset ι := Finset.univ.filter (fun i => l.idxFun i = none ) with hs
+  set s : Finset ι := Finset.univ.filter (fun i => l.idxFun i = none) with hs
   refine'
     ⟨s.card, Finset.card_pos.mpr ⟨l.proper.choose, _⟩, ∑ i in sᶜ, ((l.idxFun i).map _).getD 0,
       c, _⟩
