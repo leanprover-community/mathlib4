@@ -1267,7 +1267,7 @@ theorem im_sq : a.im ^ 2 = -normSq a.im := by
   simp_rw [sq, ← star_mul_self, im_star, neg_mul, neg_neg]
 #align quaternion.im_sq Quaternion.im_sq
 
-theorem coe_normSq_add : (normSq (a + b) : ℍ[R]) = normSq a + a * star b + b * star a + normSq b :=
+theorem coe_normSq_add : normSq (a + b) = normSq a + a * star b + b * star a + normSq b :=
   by simp only [star_add, ← self_mul_star, mul_add, add_mul, add_assoc, add_left_comm]
 #align quaternion.coe_norm_sq_add Quaternion.coe_normSq_add
 

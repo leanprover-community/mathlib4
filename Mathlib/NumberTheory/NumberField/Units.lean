@@ -199,7 +199,7 @@ variable (K)
 
 /-- The logarithmic embedding of the units (seen as an `Additive` group). -/
 def logEmbedding : Additive ((𝓞 K)ˣ) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
-{ toFun := fun x w => mult w.val * Real.log (w.val (Additive.toMul x))
+{ toFun := fun x w => mult w.val * Real.log (w.val ↑(Additive.toMul x))
   map_zero' := by simp; rfl
   map_add' := fun _ _ => by simp [Real.log_mul, mul_add]; rfl }
 
@@ -555,7 +555,8 @@ def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsio
 /-- A fundamental system of units of `K`. The units of `fundSystem` are arbitrary lifts of the
 units in `basisModTorsion`. -/
 def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
-  fun i => Quotient.out' (Additive.toMul (basisModTorsion K i))
+  -- `:)` prevents the `⧸` decaying to a quotient by `leftRel` when we unfold this later
+  fun i => Quotient.out' (Additive.toMul (basisModTorsion K i) :)
 
 /-- The exponents that appear in the unique decomposition of a unit as the product of
 a root of unity and powers of the units of the fundamental system `fundSystem` (see
@@ -580,7 +581,7 @@ theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! (ζ : torsion K) (e : F
   have h_tors : ζ ∈ torsion K := by
     rw [← QuotientGroup.eq_one_iff, QuotientGroup.mk_mul, QuotientGroup.mk_inv, ← ofMul_eq_zero,
       ofMul_mul, ofMul_inv, QuotientGroup.mk_prod, ofMul_prod]
-    simp_rw [QuotientGroup.mk_zpow, ofMul_zpow, fundSystem, QuotientGroup.out_eq', ofMul_toMul]
+    simp_rw [QuotientGroup.mk_zpow, ofMul_zpow, fundSystem, QuotientGroup.out_eq']
     rw [add_eq_zero_iff_eq_neg, neg_neg]
     exact ((basisModTorsion K).sum_repr (Additive.ofMul ↑x)).symm
   refine ⟨⟨ζ, h_tors⟩, ?_, ?_⟩
