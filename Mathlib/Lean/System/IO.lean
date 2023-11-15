@@ -3,10 +3,8 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
--- import Mathlib.Data.List.Indexes
-import Mathlib.Tactic.Cases
+import Std.Data.List.Lemmas
 import Std.Data.MLList.Basic
-
 
 /-!
 # Functions for manipulating a list of tasks
@@ -22,12 +20,6 @@ set_option autoImplicit true
 local macro "nonempty_list" : tactic =>
   `(tactic| exact Nat.zero_lt_succ _)
 
-@[simp]
-theorem List.length_mapIdx' {α β} (l : List α) (f : Nat → α → β) : (l.mapIdx f).length = l.length := by
-  induction' l with hd tl IH generalizing f
-  · rfl
-  · sorry
-
 /--
 Given a non-empty list of tasks, wait for the first to complete.
 Return the value and the list of remaining tasks.
@@ -35,8 +27,10 @@ Return the value and the list of remaining tasks.
 def IO.waitAny' (tasks : List (Task α)) (h : 0 < tasks.length := by nonempty_list) :
     BaseIO (α × List (Task α)) := do
   let (i, a) ← IO.waitAny
-    (tasks.mapIdx fun i t => t.map (prio := .max) fun a => (i, a))
-    ((tasks.length_mapIdx' _).symm ▸ h)
+    -- It would be more efficient to use `mapIdx` rather than `.enum.map` here
+    -- but the lemma `List.mapIdx_length` is currently interred in `Mathlib.Data.List.Indexes`
+    (tasks.enum.map fun (i, t) => t.map (prio := .max) fun a => (i, a))
+    ((tasks.enum.length_map _).symm ▸ tasks.enum_length ▸ h)
   return (a, tasks.eraseIdx i)
 
 /--
@@ -77,7 +71,7 @@ end MLList
 namespace Lean.Core.CoreM
 
 /--
-Given a monadic value in `CoreM`, create a task that runs it in the current state,
+Given a monadic value in `CoreM`, creates a task that runs it in the current state,
 returning a monadic value with the cached result (and subsequent state as it was after running).
 -/
 def asTask (t : CoreM α) : CoreM (Task (CoreM α)) := do
@@ -87,8 +81,8 @@ def asTask (t : CoreM α) : CoreM (Task (CoreM α)) := do
   | .error e => throwError m!"{e}"
 
 /--
-Give a list of monadic values in `CoreM`, run them all as tasks,
-and return the monadic lazy list which returns the values in the order they complete.
+Given a list of monadic values in `CoreM`, runs them all as tasks,
+and returns the monadic lazy list which returns the values in the order they complete.
 -/
 def runGreedily (tasks : List (CoreM α)) : MLList CoreM α :=
   .squash fun _ => return MLList.ofTaskList (← tasks.mapM asTask) |>.liftM.mapM id
@@ -98,7 +92,7 @@ end Lean.Core.CoreM
 namespace Lean.Meta.MetaM
 
 /--
-Given a monadic value in `MetaM`, create a task that runs it in the current state,
+Given a monadic value in `MetaM`, creates a task that runs it in the current state,
 returning a monadic value with the cached result (and subsequent state as it was after running).
 -/
 def asTask (t : MetaM α) : MetaM (Task (MetaM α)) := do
@@ -106,7 +100,7 @@ def asTask (t : MetaM α) : MetaM (Task (MetaM α)) := do
   return task.map fun c : CoreM (α × Meta.State) => do let (a, s) ← c; set s; pure a
 
 /--
-Give a list of monadic values in `MetaM`, run them all as tasks,
+Given a list of monadic values in `MetaM`, runs them all as tasks,
 and return the monadic lazy list which returns the values in the order they complete.
 -/
 def runGreedily (tasks : List (MetaM α)) : MLList MetaM α :=
@@ -117,7 +111,7 @@ end Lean.Meta.MetaM
 namespace Lean.Elab.Term.TermElabM
 
 /--
-Given a monadic value in `TermElabM`, create a task that runs it in the current state,
+Given a monadic value in `TermElabM`, creates a task that runs it in the current state,
 returning a monadic value with the cached result (and subsequent state as it was after running).
 -/
 def asTask (t : TermElabM α) : TermElabM (Task (TermElabM α)) := do
@@ -125,8 +119,8 @@ def asTask (t : TermElabM α) : TermElabM (Task (TermElabM α)) := do
   return task.map fun c : MetaM (α × Term.State) => do let (a, s) ← c; set s; pure a
 
 /--
-Give a list of monadic values in `TermElabM`, run them all as tasks,
-and return the monadic lazy list which returns the values in the order they complete.
+Given a list of monadic values in `TermElabM`, runs them all as tasks,
+and returns the monadic lazy list which returns the values in the order they complete.
 -/
 def runGreedily (tasks : List (TermElabM α)) : MLList TermElabM α :=
   .squash fun _ => return MLList.ofTaskList (← tasks.mapM asTask) |>.liftM.mapM id
@@ -136,7 +130,7 @@ end Lean.Elab.Term.TermElabM
 namespace Lean.Elab.Tactic.TacticM
 
 /--
-Given a monadic value in `TacticM`, create a task that runs it in the current state,
+Given a monadic value in `TacticM`, creates a task that runs it in the current state,
 returning a monadic value with the cached result (and subsequent state as it was after running).
 -/
 def asTask (t : TacticM α) : TacticM (Task (TacticM α)) := do
@@ -144,8 +138,8 @@ def asTask (t : TacticM α) : TacticM (Task (TacticM α)) := do
   return task.map fun c : TermElabM (α × Tactic.State) => do let (a, s) ← c; set s; pure a
 
 /--
-Give a list of monadic values in `TermElabM`, run them all as tasks,
-and return the monadic lazy list which returns the values in the order they complete.
+Given a list of monadic values in `TermElabM`, runs them all as tasks,
+and returns the monadic lazy list which returns the values in the order they complete.
 -/
 def runGreedily (tasks : List (TacticM α)) : MLList TacticM α :=
   .squash fun _ => return MLList.ofTaskList (← tasks.mapM asTask) |>.liftM.mapM id

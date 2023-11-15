@@ -2,17 +2,9 @@
  "packagesDir": "lake-packages",
  "packages":
  [{"git":
-   {"url": "https://github.com/leanprover/std4",
-    "subDir?": null,
-    "rev": "870810643364834bcdc93d791faa6f6de481dfa6",
-    "opts": {},
-    "name": "std",
-    "inputRev?": "main",
-    "inherited": false}},
-  {"git":
    {"url": "https://github.com/leanprover-community/quote4",
     "subDir?": null,
-    "rev": "511eb96eca98a7474683b8ae55193a7e7c51bc39",
+    "rev": "d3a1d25f3eba0d93a58d5d3d027ffa78ece07755",
     "opts": {},
     "name": "Qq",
     "inputRev?": "master",
@@ -40,5 +32,13 @@
     "opts": {},
     "name": "proofwidgets",
     "inputRev?": "v0.0.22",
+    "inherited": false}},
+  {"git":
+   {"url": "https://github.com/leanprover/std4",
+    "subDir?": null,
+    "rev": "31297eec02f5953a4750cec5169e2305b73043f3",
+    "opts": {},
+    "name": "std",
+    "inputRev?": "enum_lemma",
     "inherited": false}}],
  "name": "mathlib"}
