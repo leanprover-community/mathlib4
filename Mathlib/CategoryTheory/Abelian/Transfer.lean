@@ -230,7 +230,7 @@ injectives of `ℬ`. Then `A ⟶ R(J)` is an injective presentation of `A`
 def toUnder {A : 𝒜} (a : InjectivePresentation <| L.obj A) :
     A ⟶ R.obj a.J := adj.homEquiv _ _ <| a.f
 
-lemma mono_toUnder [Abelian 𝒜] [Abelian ℬ] [PreservesFiniteLimits L] [Faithful L]
+lemma mono_toUnder [Abelian 𝒜] [PreservesFiniteLimits L] [Faithful L]
     {A : 𝒜} (a : InjectivePresentation <| L.obj A) : Mono (toUnder adj a) := by
   have eq1 : L.map (toUnder adj a) ≫ (adj.counit.app _) = a.f := by simp [toUnder]
   have : Mono (L.map (toUnder adj a) ≫ (adj.counit.app _)) := eq1 ▸ a.mono
