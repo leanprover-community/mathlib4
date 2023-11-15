@@ -12,10 +12,10 @@
   {"git":
    {"url": "https://github.com/leanprover-community/quote4",
     "subDir?": null,
-    "rev": "511eb96eca98a7474683b8ae55193a7e7c51bc39",
+    "rev": "47fa0eea010506a941223da47bd85ad2dd654192",
     "opts": {},
     "name": "Qq",
-    "inputRev?": "master",
+    "inputRev?": "eric-wieser/fix-sigma",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/leanprover-community/aesop",
