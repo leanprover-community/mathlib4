@@ -117,7 +117,7 @@ theorem ofDirectSum_toDirectSum (x : TensorAlgebra R M) :
   AlgHom.congr_fun ofDirectSum_comp_toDirectSum x
 #align tensor_algebra.of_direct_sum_to_direct_sum TensorAlgebra.ofDirectSum_toDirectSum
 
--- @[simp] -- removed in #7905
+@[simp, nolint simpNF] -- see std4#365 for the simpNF issue
 theorem mk_reindex_cast {n m : ℕ} (h : n = m) (x : (⨂[R]^n) M) :
     GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
     (PiTensorProduct.reindex R M (Equiv.cast <| congr_arg Fin h) x) =
