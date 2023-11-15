@@ -427,6 +427,32 @@ theorem _root_.Complex.volume_sum_rpow_lt {r p : ℝ} (hp : 1 ≤ p) (hr : 0 < r
 
 end Lp_norm
 
+section InnerProductSpace
+
+open MeasureTheory ENNReal Real
+
+theorem InnerProductSpace.volume_ball {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+    [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E] [Nontrivial E] (x : E) {r : ℝ}
+    (hr : 0 ≤ r) :
+    volume (Metric.ball x r) =
+      .ofReal ((r * Real.sqrt π ) ^ finrank ℝ E / Real.Gamma (finrank ℝ E / 2 + 1)) := by
+  suffices volume (Metric.ball (0 : E) 1) =
+      .ofReal (Real.sqrt π ^ finrank ℝ E / Real.Gamma (finrank ℝ E / 2 + 1)) by
+    rw [Measure.addHaar_ball _ _ hr, this, ← ofReal_mul (by positivity), ← mul_div_assoc, mul_pow]
+  rw [← ((stdOrthonormalBasis ℝ E).volume_preserving_repr_symm).measure_preimage measurableSet_ball,
+    ← ((EuclideanSpace.volume_preserving_measurableEquiv _).symm).measure_preimage]
+  · have := volume_sum_rpow_lt_one (Fin (finrank ℝ E)) one_le_two
+    simp_rw [Fintype.card_fin] at this
+    convert this using 4
+    · simp [EuclideanSpace.ball_zero_eq]
+      rfl
+    · rw [Real.Gamma_add_one (by norm_num), Real.Gamma_one_half_eq, ← mul_assoc, mul_div_cancel' _
+        two_ne_zero, one_mul]
+  · exact ((stdOrthonormalBasis ℝ E).measurableEquiv.symm.measurableSet_preimage).mpr
+      measurableSet_ball
+
+end InnerProductSpace
+
 section Euclidean_space
 
 @[simp]
