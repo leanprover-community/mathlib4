@@ -80,6 +80,19 @@ theorem OrthonormalBasis.addHaar_eq_volume {ι F : Type*} [Fintype ι] [NormedAd
   rw [Basis.addHaar_eq_iff]
   exact b.volume_parallelepiped
 
+/-- An orthonormal basis of a finite-dimensional inner product space defines a measurable
+equivalence between the space and the Euclidean space of the same dimension. -/
+noncomputable def OrthonormalBasis.measurableEquiv (b : OrthonormalBasis ι ℝ F) :
+    F ≃ᵐ EuclideanSpace ℝ ι := b.repr.toHomeomorph.toMeasurableEquiv
+
+/-- The measurable equivalence defined by an orthonormal basis is volume preserving. -/
+theorem OrthonormalBasis.volume_preserving_measurableEquiv (b : OrthonormalBasis ι ℝ F) :
+    MeasurePreserving b.measurableEquiv volume volume := by
+  convert (b.measurableEquiv.symm.measurable.measurePreserving _).symm
+  rw [← (EuclideanSpace.basisFun ι ℝ).addHaar_eq_volume]
+  erw [MeasurableEquiv.coe_toEquiv_symm, Basis.map_addHaar _ b.repr.symm.toContinuousLinearEquiv]
+  exact b.addHaar_eq_volume.symm
+
 section PiLp
 
 variable (ι : Type*) [Fintype ι]
