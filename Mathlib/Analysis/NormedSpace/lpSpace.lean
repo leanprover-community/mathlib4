@@ -14,7 +14,7 @@ import Mathlib.Topology.Algebra.Order.LiminfLimsup
 # ℓp space
 
 This file describes properties of elements `f` of a pi-type `∀ i, E i` with finite "norm",
-defined for `p:ℝ≥0∞` as the size of the support of `f` if `p=0`, `(∑' a, ‖f a‖^p) ^ (1/p)` for
+defined for `p : ℝ≥0∞` as the size of the support of `f` if `p=0`, `(∑' a, ‖f a‖^p) ^ (1/p)` for
 `0 < p < ∞` and `⨆ a, ‖f a‖` for `p=∞`.
 
 The Prop-valued `Memℓp f p` states that a function `f : ∀ i, E i` has finite norm according
@@ -203,7 +203,7 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
       Real.rpow_le_rpow this (hA ⟨i, rfl⟩) (inv_nonneg.mpr hq.le)
   · apply memℓp_gen
     have hf' := hfq.summable hq
-    refine' summable_of_norm_bounded_eventually _ hf' (@Set.Finite.subset _ { i | 1 ≤ ‖f i‖ } _ _ _)
+    refine' .of_norm_bounded_eventually _ hf' (@Set.Finite.subset _ { i | 1 ≤ ‖f i‖ } _ _ _)
     · have H : { x : α | 1 ≤ ‖f x‖ ^ q.toReal }.Finite := by
         simpa using eventually_lt_of_tendsto_lt (by norm_num) hf'.tendsto_cofinite_zero
       exact H.subset fun i hi => Real.one_le_rpow hi hq.le
@@ -231,9 +231,8 @@ theorem add {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
     exact le_trans (norm_add_le _ _) (add_le_add (hA ⟨i, rfl⟩) (hB ⟨i, rfl⟩))
   apply memℓp_gen
   let C : ℝ := if p.toReal < 1 then 1 else (2 : ℝ) ^ (p.toReal - 1)
-  refine'
-    summable_of_nonneg_of_le _ (fun i => _) (((hf.summable hp).add (hg.summable hp)).mul_left C)
-  · exact fun b => Real.rpow_nonneg_of_nonneg (norm_nonneg (f b + g b)) p.toReal
+  refine' .of_nonneg_of_le _ (fun i => _) (((hf.summable hp).add (hg.summable hp)).mul_left C)
+  · intro; positivity
   · refine' (Real.rpow_le_rpow (norm_nonneg _) (norm_add_le _ _) hp.le).trans _
     dsimp only
     split_ifs with h
@@ -462,7 +461,7 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
     have : (¬f i = 0) = False := congr_fun this i
     tauto
   · cases' isEmpty_or_nonempty α with _i _i
-    · simp
+    · simp [eq_iff_true_of_subsingleton]
     have H : IsLUB (Set.range fun i => ‖f i‖) 0 := by simpa [h] using lp.isLUB_norm f
     ext i
     have : ‖f i‖ = 0 := le_antisymm (H.1 ⟨i, rfl⟩) (norm_nonneg _)
@@ -670,7 +669,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     refine' hcf.right _
     have := hfc.left
     simp_rw [mem_upperBounds, Set.mem_range,
-      forall_exists_index, forall_apply_eq_imp_iff'] at this ⊢
+      forall_exists_index, forall_apply_eq_imp_iff] at this ⊢
     intro a
     exact (norm_smul_le _ _).trans (this a)
   · letI inst : NNNorm (lp E p) := ⟨fun f => ⟨‖f‖, norm_nonneg' _⟩⟩
@@ -1174,7 +1173,7 @@ theorem norm_le_of_tendsto {C : ℝ} {F : ι → lp E p} (hCF : ∀ᶠ k in l, �
 #align lp.norm_le_of_tendsto lp.norm_le_of_tendsto
 
 /-- If `f` is the pointwise limit of a bounded sequence in `lp E p`, then `f` is in `lp E p`. -/
-theorem memℓp_of_tendsto {F : ι → lp E p} (hF : Metric.Bounded (Set.range F)) {f : ∀ a, E a}
+theorem memℓp_of_tendsto {F : ι → lp E p} (hF : Bornology.IsBounded (Set.range F)) {f : ∀ a, E a}
     (hf : Tendsto (id fun i => F i : ι → ∀ a, E a) l (𝓝 f)) : Memℓp f p := by
   obtain ⟨C, _, hCF'⟩ := hF.exists_pos_norm_le
   have hCF : ∀ k, ‖F k‖ ≤ C := fun k => hCF' _ ⟨k, rfl⟩
@@ -1212,7 +1211,7 @@ instance completeSpace : CompleteSpace (lp E p) :=
     obtain ⟨f, hf⟩ := cauchySeq_tendsto_of_complete
       ((uniformContinuous_coe (p := p)).comp_cauchySeq hF)
     -- Since the Cauchy sequence is bounded, its pointwise limit `f` is in `lp E p`.
-    have hf' : Memℓp f p := memℓp_of_tendsto hF.bounded_range hf
+    have hf' : Memℓp f p := memℓp_of_tendsto hF.isBounded_range hf
     -- And therefore `f` is its limit in the `lp E p` topology as well as pointwise.
     exact ⟨⟨f, hf'⟩, tendsto_lp_of_tendsto_pi hF hf⟩)
 

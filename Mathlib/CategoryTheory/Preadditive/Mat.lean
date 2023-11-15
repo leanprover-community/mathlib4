@@ -187,8 +187,8 @@ and so the internal indexing of a biproduct may have nothing to do with the exte
 even though the construction we give uses a sigma type.
 See however `isoBiproductEmbedding`.
 -/
-instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C)
-    where out n :=
+instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
+  out n :=
     { has_biproduct := fun f =>
         hasBiproduct_of_total
           { pt := ⟨Σ j, (f j).ι, fun p => (f p.1).X p.2⟩
@@ -252,7 +252,7 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C)
                 simp
               · rw [dif_neg h, dif_neg (Ne.symm h)]
             · rw [dif_neg h, dif_neg]
-              tauto ) }
+              tauto) }
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.has_finite_biproducts CategoryTheory.Mat_.hasFiniteBiproducts
 
@@ -313,8 +313,8 @@ set_option linter.uppercaseLean3 false in
 
 namespace Embedding
 
-instance : Faithful (embedding C)
-    where map_injective h := congr_fun (congr_fun h PUnit.unit) PUnit.unit
+instance : Faithful (embedding C) where
+  map_injective h := congr_fun (congr_fun h PUnit.unit) PUnit.unit
 
 instance : Full (embedding C) where preimage f := f PUnit.unit PUnit.unit
 
@@ -646,8 +646,8 @@ instance : Faithful (equivalenceSingleObjInverse R) where
 instance : Full (equivalenceSingleObjInverse R) where
   preimage f i j := MulOpposite.op (f i j)
 
-instance : EssSurj (equivalenceSingleObjInverse R)
-    where mem_essImage X :=
+instance : EssSurj (equivalenceSingleObjInverse R) where
+  mem_essImage X :=
     ⟨{  ι := X
         X := fun _ => PUnit.unit }, ⟨eqToIso (by dsimp; cases X; congr)⟩⟩
 

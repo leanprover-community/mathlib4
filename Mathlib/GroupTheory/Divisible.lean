@@ -6,6 +6,7 @@ Authors: Jujian Zhang
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.ULift
 
 #align_import group_theory.divisible from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
@@ -160,6 +161,16 @@ instance Prod.rootableBy : RootableBy (B × B') β where
 #align prod.divisible_by Prod.divisibleBy
 
 end Prod
+
+section ULift
+
+@[to_additive]
+instance ULift.instRootableBy [RootableBy A α] : RootableBy (ULift A) α where
+  root x a := ULift.up <| RootableBy.root x.down a
+  root_zero x := ULift.ext _ _ <| RootableBy.root_zero x.down
+  root_cancel _ h := ULift.ext _ _ <| RootableBy.root_cancel _ h
+
+end ULift
 
 end Monoid
 

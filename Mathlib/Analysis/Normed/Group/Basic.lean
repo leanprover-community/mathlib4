@@ -5,7 +5,6 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Seminorm
 import Mathlib.Order.LiminfLimsup
-import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Instances.Rat
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.MetricSpace.IsometricSMul
@@ -46,7 +45,7 @@ normed group
 
 variable {𝓕 𝕜 α ι κ E F G : Type*}
 
-open Filter Function Metric
+open Filter Function Metric Bornology
 
 open BigOperators ENNReal Filter NNReal Uniformity Pointwise Topology
 
@@ -409,9 +408,22 @@ theorem Isometry.norm_map_of_map_one {f : E → F} (hi : Isometry f) (h₁ : f 1
 #align isometry.norm_map_of_map_one Isometry.norm_map_of_map_one
 #align isometry.norm_map_of_map_zero Isometry.norm_map_of_map_zero
 
+@[to_additive (attr := simp) comap_norm_atTop]
+theorem comap_norm_atTop' : comap norm atTop = cobounded E := by
+  simpa only [dist_one_right] using comap_dist_right_atTop (1 : E)
+
+@[to_additive (attr := simp) tendsto_norm_atTop_iff_cobounded]
+theorem tendsto_norm_atTop_iff_cobounded' {f : α → E} {l : Filter α} :
+    Tendsto (‖f ·‖) l atTop ↔ Tendsto f l (cobounded E) := by
+  rw [← comap_norm_atTop', tendsto_comap_iff]; rfl
+
+@[to_additive tendsto_norm_cobounded_atTop]
+theorem tendsto_norm_cobounded_atTop' : Tendsto norm (cobounded E) atTop :=
+  tendsto_norm_atTop_iff_cobounded'.2 tendsto_id
+
 @[to_additive tendsto_norm_cocompact_atTop]
-theorem tendsto_norm_cocompact_atTop' [ProperSpace E] : Tendsto norm (cocompact E) atTop := by
-  simpa only [dist_one_right] using tendsto_dist_right_cocompact_atTop (1 : E)
+theorem tendsto_norm_cocompact_atTop' [ProperSpace E] : Tendsto norm (cocompact E) atTop :=
+  cobounded_eq_cocompact (α := E) ▸ tendsto_norm_cobounded_atTop'
 #align tendsto_norm_cocompact_at_top' tendsto_norm_cocompact_atTop'
 #align tendsto_norm_cocompact_at_top tendsto_norm_cocompact_atTop
 
@@ -672,26 +684,26 @@ theorem norm_div_sub_norm_div_le_norm_div (u v w : E) : ‖u / w‖ - ‖v / w�
 #align norm_div_sub_norm_div_le_norm_div norm_div_sub_norm_div_le_norm_div
 #align norm_sub_sub_norm_sub_le_norm_sub norm_sub_sub_norm_sub_le_norm_sub
 
-@[to_additive bounded_iff_forall_norm_le]
-theorem bounded_iff_forall_norm_le' : Bounded s ↔ ∃ C, ∀ x ∈ s, ‖x‖ ≤ C := by
-  simpa only [Set.subset_def, mem_closedBall_one_iff] using bounded_iff_subset_ball (1 : E)
-#align bounded_iff_forall_norm_le' bounded_iff_forall_norm_le'
-#align bounded_iff_forall_norm_le bounded_iff_forall_norm_le
+@[to_additive isBounded_iff_forall_norm_le]
+theorem isBounded_iff_forall_norm_le' : Bornology.IsBounded s ↔ ∃ C, ∀ x ∈ s, ‖x‖ ≤ C := by
+  simpa only [Set.subset_def, mem_closedBall_one_iff] using isBounded_iff_subset_closedBall (1 : E)
+#align bounded_iff_forall_norm_le' isBounded_iff_forall_norm_le'
+#align bounded_iff_forall_norm_le isBounded_iff_forall_norm_le
 
-alias ⟨Metric.Bounded.exists_norm_le', _⟩ := bounded_iff_forall_norm_le'
-#align metric.bounded.exists_norm_le' Metric.Bounded.exists_norm_le'
+alias ⟨Bornology.IsBounded.exists_norm_le', _⟩ := isBounded_iff_forall_norm_le'
+#align metric.bounded.exists_norm_le' Bornology.IsBounded.exists_norm_le'
 
-alias ⟨Metric.Bounded.exists_norm_le, _⟩ := bounded_iff_forall_norm_le
-#align metric.bounded.exists_norm_le Metric.Bounded.exists_norm_le
+alias ⟨Bornology.IsBounded.exists_norm_le, _⟩ := isBounded_iff_forall_norm_le
+#align metric.bounded.exists_norm_le Bornology.IsBounded.exists_norm_le
 
-attribute [to_additive existing Metric.Bounded.exists_norm_le] Metric.Bounded.exists_norm_le'
+attribute [to_additive existing exists_norm_le] Bornology.IsBounded.exists_norm_le'
 
-@[to_additive Metric.Bounded.exists_pos_norm_le]
-theorem Metric.Bounded.exists_pos_norm_le' (hs : Metric.Bounded s) : ∃ R > 0, ∀ x ∈ s, ‖x‖ ≤ R :=
+@[to_additive exists_pos_norm_le]
+theorem Bornology.IsBounded.exists_pos_norm_le' (hs : IsBounded s) : ∃ R > 0, ∀ x ∈ s, ‖x‖ ≤ R :=
   let ⟨R₀, hR₀⟩ := hs.exists_norm_le'
   ⟨max R₀ 1, by positivity, fun x hx => (hR₀ x hx).trans <| le_max_left _ _⟩
-#align metric.bounded.exists_pos_norm_le' Metric.Bounded.exists_pos_norm_le'
-#align metric.bounded.exists_pos_norm_le Metric.Bounded.exists_pos_norm_le
+#align metric.bounded.exists_pos_norm_le' Bornology.IsBounded.exists_pos_norm_le'
+#align metric.bounded.exists_pos_norm_le Bornology.IsBounded.exists_pos_norm_le
 
 @[to_additive (attr := simp 1001) mem_sphere_iff_norm]
 -- porting note: increase priority so the left-hand side doesn't reduce
@@ -856,7 +868,7 @@ theorem MonoidHomClass.uniformContinuous_of_bound [MonoidHomClass 𝓕 E F] (f :
 @[to_additive IsCompact.exists_bound_of_continuousOn]
 theorem IsCompact.exists_bound_of_continuousOn' [TopologicalSpace α] {s : Set α} (hs : IsCompact s)
     {f : α → E} (hf : ContinuousOn f s) : ∃ C, ∀ x ∈ s, ‖f x‖ ≤ C :=
-  (bounded_iff_forall_norm_le'.1 (hs.image_of_continuousOn hf).bounded).imp fun _C hC _x hx =>
+  (isBounded_iff_forall_norm_le'.1 (hs.image_of_continuousOn hf).isBounded).imp fun _C hC _x hx =>
     hC _ <| Set.mem_image_of_mem _ hx
 #align is_compact.exists_bound_of_continuous_on' IsCompact.exists_bound_of_continuousOn'
 #align is_compact.exists_bound_of_continuous_on IsCompact.exists_bound_of_continuousOn
@@ -864,7 +876,7 @@ theorem IsCompact.exists_bound_of_continuousOn' [TopologicalSpace α] {s : Set �
 @[to_additive]
 theorem HasCompactMulSupport.exists_bound_of_continuous [TopologicalSpace α]
     {f : α → E} (hf : HasCompactMulSupport f) (h'f : Continuous f) : ∃ C, ∀ x, ‖f x‖ ≤ C := by
-  simpa using (hf.isCompact_range h'f).bounded.exists_norm_le'
+  simpa using (hf.isCompact_range h'f).isBounded.exists_norm_le'
 
 @[to_additive]
 theorem MonoidHomClass.isometry_iff_norm [MonoidHomClass 𝓕 E F] (f : 𝓕) :
@@ -1091,7 +1103,7 @@ is phrased absolutely. -/
 @[to_additive "Special case of the sandwich theorem: if the norm of `f` is eventually bounded by a
 real function `a` which tends to `0`, then `f` tends to `1`. In this pair of lemmas
 (`squeeze_zero_norm'` and `squeeze_zero_norm`), following a convention of similar lemmas in
-`Topology.MetricSpace.Basic` and `Topology.Algebra.Order`, the `'` version is phrased using
+`Topology.MetricSpace.PseudoMetric` and `Topology.Algebra.Order`, the `'` version is phrased using
 \"eventually\" and the non-`'` version is phrased absolutely."]
 theorem squeeze_one_norm' {f : α → E} {a : α → ℝ} {t₀ : Filter α} (h : ∀ᶠ n in t₀, ‖f n‖ ≤ a n)
     (h' : Tendsto a t₀ (𝓝 0)) : Tendsto f t₀ (𝓝 1) :=
@@ -1193,7 +1205,7 @@ theorem Filter.Tendsto.op_one_isBoundedUnder_le' {f : α → E} {g : α → F} {
   rw [NormedCommGroup.tendsto_nhds_one] at hf ⊢
   intro ε ε₀
   rcases exists_pos_mul_lt ε₀ (A * C) with ⟨δ, δ₀, hδ⟩
-  filter_upwards [hf δ δ₀, hC]with i hf hg
+  filter_upwards [hf δ δ₀, hC] with i hf hg
   refine' (h_op _ _).trans_lt _
   cases' le_total A 0 with hA hA
   · exact (mul_nonpos_of_nonpos_of_nonneg (mul_nonpos_of_nonpos_of_nonneg hA <| norm_nonneg' _) <|
@@ -1990,9 +2002,9 @@ theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n
   suffices ∀ n ≥ N, d n = d N by exact (tendsto_atTop_of_eventually_const this).cauchySeq.mul hv
   intro n hn
   dsimp
-  rw [eventually_constant_prod _ hn]
+  rw [eventually_constant_prod _ (add_le_add_right hn 1)]
   intro m hm
-  simp [huv m hm]
+  simp [huv m (le_of_lt hm)]
 #align cauchy_seq_prod_of_eventually_eq cauchySeq_prod_of_eventually_eq
 #align cauchy_seq_sum_of_eventually_eq cauchySeq_sum_of_eventually_eq
 
@@ -2089,6 +2101,10 @@ theorem coe_normGroupNorm : ⇑(normGroupNorm E) = norm :=
   rfl
 #align coe_norm_group_norm coe_normGroupNorm
 
+@[to_additive comap_norm_nhdsWithin_Ioi_zero]
+lemma comap_norm_nhdsWithin_Ioi_zero' : comap norm (𝓝[>] 0) = 𝓝[≠] (1 : E) := by
+  simp [nhdsWithin, comap_norm_nhds_one, Set.preimage, Set.compl_def]
+
 end NormedGroup
 
 section NormedAddGroup
@@ -2096,7 +2112,6 @@ section NormedAddGroup
 variable [NormedAddGroup E] [TopologicalSpace α] {f : α → E}
 
 /-! Some relations with `HasCompactSupport` -/
-
 
 theorem hasCompactSupport_norm_iff : (HasCompactSupport fun x => ‖f x‖) ↔ HasCompactSupport f :=
   hasCompactSupport_comp_left norm_eq_zero
@@ -2120,7 +2135,7 @@ variable [NormedAddGroup α] {f : α → E}
 theorem HasCompactMulSupport.exists_pos_le_norm [One E] (hf : HasCompactMulSupport f) :
     ∃ R : ℝ, 0 < R ∧ ∀ x : α, R ≤ ‖x‖ → f x = 1 := by
   obtain ⟨K, ⟨hK1, hK2⟩⟩ := exists_compact_iff_hasCompactMulSupport.mpr hf
-  obtain ⟨S, hS, hS'⟩ := hK1.bounded.exists_pos_norm_le
+  obtain ⟨S, hS, hS'⟩ := hK1.isBounded.exists_pos_norm_le
   refine' ⟨S + 1, by positivity, fun x hx => hK2 x ((mt <| hS' x) _)⟩
   -- porting note: `ENNReal.add_lt_add` should be `protected`?
   -- [context: we used `_root_.add_lt_add` in a previous version of this proof]
@@ -2642,7 +2657,7 @@ but that case would likely never be used.
 instance seminormedAddGroup [SeminormedAddGroup E] : SeminormedAddGroup Eᵐᵒᵖ where
   norm x := ‖x.unop‖
   dist_eq _ _ := dist_eq_norm _ _
-  toPseudoMetricSpace := MulOpposite.instPseudoMetricSpaceMulOpposite
+  toPseudoMetricSpace := MulOpposite.instPseudoMetricSpace
 
 theorem norm_op [SeminormedAddGroup E] (a : E) : ‖MulOpposite.op a‖ = ‖a‖ :=
   rfl

@@ -37,6 +37,9 @@ class Injective (J : C) : Prop where
 
 attribute [inherit_doc Injective] Injective.factors
 
+lemma Limits.IsZero.injective {X : C} (h : IsZero X) : Injective X where
+  factors _ _ _ := ⟨h.from_ _, h.eq_of_tgt _ _⟩
+
 section
 
 /-- An injective presentation of an object `X` consists of a monomorphism `f : X ⟶ J`
@@ -85,8 +88,8 @@ section
 
 open ZeroObject
 
-instance zero_injective [HasZeroObject C] [HasZeroMorphisms C] : Injective (0 : C) where
-  factors g f := ⟨0, by ext⟩
+instance zero_injective [HasZeroObject C] : Injective (0 : C) :=
+  (isZero_zero C).injective
 #align category_theory.injective.zero_injective CategoryTheory.Injective.zero_injective
 
 end
@@ -248,7 +251,7 @@ def syzygies : C :=
 instance : Injective <| syzygies f := injective_under (cokernel f)
 
 /-- When `C` has enough injective,
-`injective.d f : Y ⟶ syzygies f` is the composition
+`Injective.d f : Y ⟶ syzygies f` is the composition
 `cokernel.π f ≫ ι (cokernel f)`.
 
 (When `C` is abelian, we have `exact f (injective.d f)`.)
@@ -348,6 +351,9 @@ end Adjunction
 namespace Equivalence
 
 variable {D : Type*} [Category D] (F : C ≌ D)
+
+theorem map_injective_iff (P : C) : Injective (F.functor.obj P) ↔ Injective P :=
+  ⟨F.symm.toAdjunction.injective_of_map_injective P, F.symm.toAdjunction.map_injective P⟩
 
 /-- Given an equivalence of categories `F`, an injective presentation of `F(X)` induces an
 injective presentation of `X.` -/

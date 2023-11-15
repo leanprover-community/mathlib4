@@ -5,6 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.LinearAlgebra.Basis
 
 #align_import algebra.direct_sum.module from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
@@ -337,8 +338,8 @@ theorem IsInternal.submodule_independent (h : IsInternal A) : CompleteLattice.In
 /-- Given an internal direct sum decomposition of a module `M`, and a basis for each of the
 components of the direct sum, the disjoint union of these bases is a basis for `M`. -/
 noncomputable def IsInternal.collectedBasis (h : IsInternal A) {α : ι → Type*}
-    (v : ∀ i, Basis (α i) R (A i)) : Basis (Σi, α i) R M
-    where repr :=
+    (v : ∀ i, Basis (α i) R (A i)) : Basis (Σi, α i) R M where
+  repr :=
     ((LinearEquiv.ofBijective (DirectSum.coeLinearMap A) h).symm ≪≫ₗ
         DFinsupp.mapRange.linearEquiv fun i ↦ (v i).repr) ≪≫ₗ
       (sigmaFinsuppLequivDFinsupp R).symm

@@ -297,8 +297,8 @@ theorem integrallyClosed : IsIntegrallyClosed A := by
   -- It suffices to show that for integral `x`,
   -- `A[x]` (which is a fractional ideal) is in fact equal to `A`.
   refine ⟨fun {x hx} => ?_⟩
-  rw [← Set.mem_range, ← Algebra.mem_bot, ← Subalgebra.mem_toSubmodule, Algebra.toSubmodule_bot, ←
-    coe_spanSingleton A⁰ (1 : FractionRing A), spanSingleton_one, ←
+  rw [← Set.mem_range, ← Algebra.mem_bot, ← Subalgebra.mem_toSubmodule, Algebra.toSubmodule_bot,
+    Submodule.one_eq_span, ←coe_spanSingleton A⁰ (1 : FractionRing A), spanSingleton_one, ←
     FractionalIdeal.adjoinIntegral_eq_one_of_isUnit x hx (h.isUnit _)]
   · exact mem_adjoinIntegral_self A⁰ x hx
   · exact fun h => one_ne_zero (eq_zero_iff.mp h 1 (Algebra.adjoin A {x}).one_mem)
@@ -366,9 +366,9 @@ theorem exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDomain A] (hNF :
   -- Let `Z` be a minimal set of prime ideals such that their product is contained in `J`.
   obtain ⟨Z₀, hZ₀⟩ := PrimeSpectrum.exists_primeSpectrum_prod_le_and_ne_bot_of_domain hNF hI0
   obtain ⟨Z, ⟨hZI, hprodZ⟩, h_eraseZ⟩ :=
-    Multiset.wellFounded_lt.has_min
-      (fun Z => (Z.map PrimeSpectrum.asIdeal).prod ≤ I ∧ (Z.map PrimeSpectrum.asIdeal).prod ≠ ⊥)
-      ⟨Z₀, hZ₀⟩
+    wellFounded_lt.has_min
+      {Z | (Z.map PrimeSpectrum.asIdeal).prod ≤ I ∧ (Z.map PrimeSpectrum.asIdeal).prod ≠ ⊥}
+      ⟨Z₀, hZ₀.1, hZ₀.2⟩
   have hZM : Multiset.prod (Z.map PrimeSpectrum.asIdeal) ≤ M := le_trans hZI hIM
   have hZ0 : Z ≠ 0 := by rintro rfl; simp [hM.ne_top] at hZM
   obtain ⟨_, hPZ', hPM⟩ := (hM.isPrime.multiset_prod_le (mt Multiset.map_eq_zero.mp hZ0)).mp hZM
@@ -663,7 +663,7 @@ theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
 instance : WfDvdMonoid (Ideal A) where
   wellFounded_dvdNotUnit := by
     have : WellFounded ((· > ·) : Ideal A → Ideal A → Prop) :=
-      isNoetherian_iff_wellFounded.mp (isNoetherianRing_iff.mp IsDedekindDomain.toIsNoetherian)
+      isNoetherian_iff_wellFounded.mp (isNoetherianRing_iff.mp IsDedekindRing.toIsNoetherian)
     convert this
     ext
     rw [Ideal.dvdNotUnit_iff_lt]
@@ -871,9 +871,12 @@ theorem gcd_eq_sup (I J : Ideal A) : gcd I J = I ⊔ J := rfl
 theorem lcm_eq_inf (I J : Ideal A) : lcm I J = I ⊓ J := rfl
 #align ideal.lcm_eq_inf Ideal.lcm_eq_inf
 
-theorem inf_eq_mul_of_coprime {I J : Ideal A} (coprime : I ⊔ J = ⊤) : I ⊓ J = I * J := by
-  rw [← associated_iff_eq.mp (gcd_mul_lcm I J), lcm_eq_inf I J, gcd_eq_sup, coprime, top_mul]
+theorem inf_eq_mul_of_coprime {I J : Ideal A} (coprime : IsCoprime I J) : I ⊓ J = I * J := by
+  rw [← associated_iff_eq.mp (gcd_mul_lcm I J), lcm_eq_inf I J, gcd_eq_sup, coprime.sup_eq, top_mul]
 #align ideal.inf_eq_mul_of_coprime Ideal.inf_eq_mul_of_coprime
+
+theorem isCoprime_iff_gcd {I J : Ideal A} : IsCoprime I J ↔ gcd I J = 1 := by
+  rw [Ideal.isCoprime_iff_codisjoint, codisjoint_iff, one_eq_top, gcd_eq_sup]
 
 end Ideal
 
@@ -1153,7 +1156,10 @@ def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
         idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors f.symm hI
           j.prop⟩
   left_inv := fun ⟨j, hj⟩ => by simp
-  right_inv := fun ⟨j, hj⟩ => by simp
+  right_inv := fun ⟨j, hj⟩ => by
+    simp
+    -- This used to be the end of the proof before leanprover/lean4#2644
+    erw [OrderIso.apply_symm_apply]
 #align normalized_factors_equiv_of_quot_equiv normalizedFactorsEquivOfQuotEquiv
 
 @[simp]
@@ -1192,7 +1198,8 @@ theorem Ring.DimensionLeOne.prime_le_prime_iff_eq [Ring.DimensionLEOne R] {P Q :
 #align ring.dimension_le_one.prime_le_prime_iff_eq Ring.DimensionLeOne.prime_le_prime_iff_eq
 
 theorem Ideal.coprime_of_no_prime_ge {I J : Ideal R} (h : ∀ P, I ≤ P → J ≤ P → ¬IsPrime P) :
-    I ⊔ J = ⊤ := by
+    IsCoprime I J := by
+  rw [isCoprime_iff_sup_eq]
   by_contra hIJ
   obtain ⟨P, hP, hIJ⟩ := Ideal.exists_le_maximal _ hIJ
   exact h P (le_trans le_sup_left hIJ) (le_trans le_sup_right hIJ) hP.isPrime
@@ -1340,10 +1347,10 @@ theorem IsDedekindDomain.quotientEquivPiFactors_mk {I : Ideal R} (hI : I ≠ ⊥
 #align is_dedekind_domain.quotient_equiv_pi_factors_mk IsDedekindDomain.quotientEquivPiFactors_mk
 
 /-- **Chinese remainder theorem**, specialized to two ideals. -/
-noncomputable def Ideal.quotientMulEquivQuotientProd (I J : Ideal R) (coprime : I ⊔ J = ⊤) :
+noncomputable def Ideal.quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
     R ⧸ I * J ≃+* (R ⧸ I) × R ⧸ J :=
-  RingEquiv.trans (Ideal.quotEquivOfEq (inf_eq_mul_of_coprime coprime).symm)
-    (Ideal.quotientInfEquivQuotientProd I J coprime)
+  Ideal.quotEquivOfEq (inf_eq_mul_of_coprime coprime).symm |>.trans <|
+    Ideal.quotientInfEquivQuotientProd I J coprime
 #align ideal.quotient_mul_equiv_quotient_prod Ideal.quotientMulEquivQuotientProd
 
 /-- **Chinese remainder theorem** for a Dedekind domain: if the ideal `I` factors as

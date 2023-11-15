@@ -94,7 +94,7 @@ variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemirin
 
 variable [Algebra R S] {P : Type*} [CommSemiring P]
 
-/-- The typeclass `IsLocalization (M : Submodule R) S` where `S` is an `R`-algebra
+/-- The typeclass `IsLocalization (M : Submonoid R) S` where `S` is an `R`-algebra
 expresses that `S` is isomorphic to the localization of `R` at `M`. -/
 class IsLocalization : Prop where
   --Porting note: add ' to fields, and made new versions of these with either `S` or `M` explicit.
@@ -424,7 +424,7 @@ theorem mk'_mul_mk'_eq_one' (x : R) (y : M) (h : x ∈ M) : mk' S x y * mk' S (y
   mk'_mul_mk'_eq_one ⟨x, h⟩ _
 #align is_localization.mk'_mul_mk'_eq_one' IsLocalization.mk'_mul_mk'_eq_one'
 
-theorem smul_mk' (x y : R) (m : M) : x • mk' S y m = mk' S (x * y) m  := by
+theorem smul_mk' (x y : R) (m : M) : x • mk' S y m = mk' S (x * y) m := by
   nth_rw 2 [← one_mul m]
   rw [mk'_mul, mk'_one, Algebra.smul_def]
 
@@ -1085,6 +1085,14 @@ theorem algEquiv_mk (x y) : algEquiv M S (mk x y) = mk' S x y := by rw [mk_eq_mk
 theorem algEquiv_symm_mk (x : R) (y : M) : (algEquiv M S).symm (mk' S x y) = mk x y := by
   rw [mk_eq_mk', algEquiv_symm_mk']
 #align localization.alg_equiv_symm_mk Localization.algEquiv_symm_mk
+
+lemma coe_algEquiv :
+    (Localization.algEquiv M S : Localization M →+* S) =
+    IsLocalization.map (M := M) (T := M) _ (RingHom.id R) le_rfl := rfl
+
+lemma coe_algEquiv_symm :
+    ((Localization.algEquiv M S).symm : S →+* Localization M) =
+    IsLocalization.map (M := M) (T := M) _ (RingHom.id R) le_rfl := rfl
 
 end Localization
 

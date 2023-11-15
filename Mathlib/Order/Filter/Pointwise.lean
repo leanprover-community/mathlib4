@@ -148,8 +148,8 @@ theorem one_prod_one [One β] : (1 : Filter α) ×ˢ (1 : Filter β) = 1 :=
 
 /-- `pure` as a `OneHom`. -/
 @[to_additive "`pure` as a `ZeroHom`."]
-def pureOneHom : OneHom α (Filter α) :=
-  ⟨pure, pure_one⟩
+def pureOneHom : OneHom α (Filter α) where
+  toFun := pure; map_one' := pure_one
 #align filter.pure_one_hom Filter.pureOneHom
 #align filter.pure_zero_hom Filter.pureZeroHom
 
@@ -234,6 +234,10 @@ section InvolutiveInv
 
 variable [InvolutiveInv α] {f g : Filter α} {s : Set α}
 
+@[to_additive (attr := simp)]
+protected lemma comap_inv : comap Inv.inv f = f⁻¹ :=
+  .symm <| map_eq_comap_of_inverse (inv_comp_inv _) (inv_comp_inv _)
+
 @[to_additive]
 theorem inv_mem_inv (hs : s ∈ f) : s⁻¹ ∈ f⁻¹ := by rwa [mem_inv, inv_preimage, inv_inv]
 #align filter.inv_mem_inv Filter.inv_mem_inv
@@ -268,8 +272,11 @@ theorem inv_le_self : f⁻¹ ≤ f ↔ f⁻¹ = f :=
 
 end InvolutiveInv
 
-/-! ### Filter addition/multiplication -/
+@[to_additive (attr := simp)]
+lemma inv_atTop {G : Type*} [OrderedCommGroup G] : (atTop : Filter G)⁻¹ = atBot :=
+  (OrderIso.inv G).map_atTop
 
+/-! ### Filter addition/multiplication -/
 
 section Mul
 
@@ -390,8 +397,8 @@ protected theorem map_mul [MulHomClass F α β] (m : F) : (f₁ * f₂).map m = 
 
 /-- `pure` operation as a `MulHom`. -/
 @[to_additive "The singleton operation as an `AddHom`."]
-def pureMulHom : α →ₙ* Filter α :=
-  ⟨pure, fun _ _ => pure_mul_pure.symm⟩
+def pureMulHom : α →ₙ* Filter α where
+  toFun := pure; map_mul' _ _ := pure_mul_pure.symm
 #align filter.pure_mul_hom Filter.pureMulHom
 #align filter.pure_add_hom Filter.pureAddHom
 

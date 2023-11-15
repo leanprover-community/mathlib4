@@ -157,9 +157,8 @@ theorem repr_self_apply (j) [Decidable (i = j)] : b.repr (b i) j = if i = j then
 theorem repr_symm_apply (v) : b.repr.symm v = Finsupp.total ι M R b v :=
   calc
     b.repr.symm v = b.repr.symm (v.sum Finsupp.single) := by simp
-    _ = ∑ i in v.support, b.repr.symm (Finsupp.single i (v i)) :=
-      by rw [Finsupp.sum, LinearEquiv.map_sum]
-    _ = Finsupp.total ι M R b v := by simp [repr_symm_single, Finsupp.total_apply, Finsupp.sum]
+    _ = v.sum fun i vi => b.repr.symm (Finsupp.single i vi) := map_finsupp_sum ..
+    _ = Finsupp.total ι M R b v := by simp only [repr_symm_single, Finsupp.total_apply]
 #align basis.repr_symm_apply Basis.repr_symm_apply
 
 @[simp]
@@ -276,14 +275,14 @@ variable {M₁ : Type*} [AddCommMonoid M₁] [Module R₁ M₁]
 theorem ext {f₁ f₂ : M →ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
   rw [← b.total_repr x, Finsupp.total_apply, Finsupp.sum]
-  simp only [LinearMap.map_sum, LinearMap.map_smulₛₗ, h]
+  simp only [map_sum, LinearMap.map_smulₛₗ, h]
 #align basis.ext Basis.ext
 
 /-- Two linear equivs are equal if they are equal on basis vectors. -/
 theorem ext' {f₁ f₂ : M ≃ₛₗ[σ] M₁} (h : ∀ i, f₁ (b i) = f₂ (b i)) : f₁ = f₂ := by
   ext x
   rw [← b.total_repr x, Finsupp.total_apply, Finsupp.sum]
-  simp only [LinearEquiv.map_sum, LinearEquiv.map_smulₛₗ, h]
+  simp only [map_sum, LinearEquiv.map_smulₛₗ, h]
 #align basis.ext' Basis.ext'
 
 /-- Two elements are equal iff their coordinates are equal. -/
@@ -355,6 +354,9 @@ protected def map : Basis ι R M' :=
 theorem map_apply (i) : b.map f i = f (b i) :=
   rfl
 #align basis.map_apply Basis.map_apply
+
+theorem coe_map : (b.map f : ι → M') = f ∘ b :=
+  rfl
 
 end Map
 
@@ -470,7 +472,7 @@ theorem reindexRange_self (i : ι) (h := Set.mem_range_self i) : b.reindexRange 
       Subtype.coe_mk]
   · letI : Subsingleton R := not_nontrivial_iff_subsingleton.mp htr
     letI := Module.subsingleton R M
-    simp [reindexRange]
+    simp [reindexRange, eq_iff_true_of_subsingleton]
 #align basis.reindex_range_self Basis.reindexRange_self
 
 theorem reindexRange_repr_self (i : ι) :
@@ -646,7 +648,7 @@ theorem constr_self (f : M →ₗ[R] M') : (constr (M' := M') b S fun i => f (b 
   b.constr_eq S fun _ => rfl
 #align basis.constr_self Basis.constr_self
 
-theorem constr_range [Nonempty ι] {f : ι → M'} :
+theorem constr_range {f : ι → M'} :
     LinearMap.range (constr (M' := M') b S f) = span R (range f) := by
   rw [b.constr_def S f, LinearMap.range_comp, LinearMap.range_comp, LinearEquiv.range, ←
     Finsupp.supported_univ, Finsupp.lmapDomain_supported, ← Set.image_univ, ←
@@ -1062,7 +1064,7 @@ theorem equiv'_symm_apply (f : M → M') (g : M' → M) (hf hg hgf hfg) (i : ι'
 theorem sum_repr_mul_repr {ι'} [Fintype ι'] (b' : Basis ι' R M) (x : M) (i : ι) :
     (∑ j : ι', b.repr (b' j) i * b'.repr x j) = b.repr x i := by
   conv_rhs => rw [← b'.sum_repr x]
-  simp_rw [LinearEquiv.map_sum, LinearEquiv.map_smul, Finset.sum_apply']
+  simp_rw [map_sum, map_smul, Finset.sum_apply']
   refine' Finset.sum_congr rfl fun j _ => _
   rw [Finsupp.smul_apply, smul_eq_mul, mul_comm]
 #align basis.sum_repr_mul_repr Basis.sum_repr_mul_repr
@@ -1390,6 +1392,52 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
 #align submodule.induction_on_rank_aux Submodule.inductionOnRankAux
 
 end Induction
+
+/-- An element of a non-unital-non-associative algebra is in the center exactly when it commutes
+with the basis elements. -/
+lemma Basis.mem_center_iff {A}
+    [Semiring R] [NonUnitalNonAssocSemiring A]
+    [Module R A] [SMulCommClass R A A] [SMulCommClass R R A] [IsScalarTower R A A]
+    (b : Basis ι R A) {z : A} :
+    z ∈ Set.center A ↔
+      (∀ i, Commute (b i) z) ∧ ∀ i j,
+        z * (b i * b j) = (z * b i) * b j
+          ∧ (b i * z) * b j = b i * (z * b j)
+          ∧ (b i * b j) * z = b i * (b j * z) := by
+  constructor
+  · intro h;
+    constructor
+    · intro i
+      apply (h.1 (b i)).symm
+    · intros
+      exact ⟨h.2 _ _, ⟨h.3 _ _, h.4 _ _⟩⟩
+  · intro h
+    rw [center, mem_setOf_eq]
+    constructor
+    case comm =>
+      intro y
+      rw [← b.total_repr y, Finsupp.total_apply, Finsupp.sum, Finset.sum_mul, Finset.mul_sum]
+      simp_rw [mul_smul_comm, smul_mul_assoc, (h.1 _).eq]
+    case left_assoc =>
+      intro c d
+      rw [← b.total_repr c, ← b.total_repr d, Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum,
+        Finsupp.sum, Finset.sum_mul, Finset.mul_sum, Finset.mul_sum, Finset.mul_sum]
+      simp_rw [smul_mul_assoc, Finset.mul_sum, Finset.sum_mul, mul_smul_comm, Finset.mul_sum,
+        Finset.smul_sum, smul_mul_assoc, mul_smul_comm, (h.2 _ _).1,
+        (@SMulCommClass.smul_comm R R A)]
+      rw [Finset.sum_comm]
+    case mid_assoc =>
+      intro c d
+      rw [← b.total_repr c, ← b.total_repr d, Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum,
+        Finsupp.sum, Finset.sum_mul, Finset.mul_sum, Finset.mul_sum, Finset.mul_sum]
+      simp_rw [smul_mul_assoc, Finset.sum_mul, mul_smul_comm, smul_mul_assoc, (h.2 _ _).2.1]
+    case right_assoc =>
+      intro c d
+      rw [← b.total_repr c, ← b.total_repr d, Finsupp.total_apply, Finsupp.total_apply, Finsupp.sum,
+        Finsupp.sum, Finset.sum_mul]
+      simp_rw [smul_mul_assoc, Finset.mul_sum, Finset.sum_mul, mul_smul_comm, Finset.mul_sum,
+        Finset.smul_sum, smul_mul_assoc, mul_smul_comm, Finset.sum_mul, smul_mul_assoc,
+        (h.2 _ _).2.2]
 
 section RestrictScalars
 

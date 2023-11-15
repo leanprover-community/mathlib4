@@ -82,16 +82,16 @@ def main (args : List String) : IO Unit := do
     getFiles (← hashMemo.filterByFilePaths (toPaths args)) true true goodCurl true
   | "get-" :: args =>
     getFiles (← hashMemo.filterByFilePaths (toPaths args)) false false goodCurl false
-  | ["pack"] => discard $ packCache hashMap false
-  | ["pack!"] => discard $ packCache hashMap true
+  | ["pack"] => discard $ packCache hashMap false (← getGitCommitHash)
+  | ["pack!"] => discard $ packCache hashMap true (← getGitCommitHash)
   | ["unpack"] => unpackCache hashMap false
   | ["unpack!"] => unpackCache hashMap true
   | ["clean"] =>
     cleanCache $ hashMap.fold (fun acc _ hash => acc.insert $ CACHEDIR / hash.asLTar) .empty
   | ["clean!"] => cleanCache
   -- We allow arguments for `put` and `put!` so they can be added to the `roots`.
-  | "put" :: _ => putFiles (← packCache hashMap false) false (← getToken)
-  | "put!" :: _ => putFiles (← packCache hashMap false) true (← getToken)
+  | "put" :: _ => putFiles (← packCache hashMap false (← getGitCommitHash)) false (← getToken)
+  | "put!" :: _ => putFiles (← packCache hashMap false (← getGitCommitHash)) true (← getToken)
   | ["commit"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMap false (← getToken)

@@ -15,6 +15,9 @@ In this file, we show that the following are all equivalent:
 - The induced map `∐ X ⟶ B` is epimorphic.
 - The family `π` is jointly surjective.
 
+As a consequence, we show (see `effectiveEpi_iff_surjective`) that all epimorphisms in `Stonean` 
+are effective, and that `Stonean` is preregular.
+
 ## Main results
 - `Stonean.effectiveEpiFamily_tfae`: characterise being an effective epimorphic family.
 - `Stonean.instPrecoherent`: `Stonean` is precoherent.
@@ -65,8 +68,8 @@ which is an epi in `CompHaus` covering `Z` where `βZ` lies in the image of `Sto
 -/
 lemma lift_desc_condition {W : Stonean} {e : (a : α) → X a ⟶ W}
     (h : ∀ {Z : Stonean} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
-      g₁ ≫ π a₁ = g₂ ≫ π a₂ → g₁ ≫ e a₁ = g₂ ≫ e a₂)
-    : ∀ {Z : CompHaus} (a₁ a₂ : α) (g₁ : Z ⟶ F.obj (X a₁)) (g₂ : Z ⟶ F.obj (X a₂)),
+      g₁ ≫ π a₁ = g₂ ≫ π a₂ → g₁ ≫ e a₁ = g₂ ≫ e a₂) :
+    ∀ {Z : CompHaus} (a₁ a₂ : α) (g₁ : Z ⟶ F.obj (X a₁)) (g₂ : Z ⟶ F.obj (X a₂)),
         g₁ ≫ (π a₁) = g₂ ≫ (π a₂) → g₁ ≫ e a₁ = g₂ ≫ e a₂ := by
   intro Z a₁ a₂ g₁ g₂ hg
   -- The Stone-Cech-compactification `βZ` of `Z : CompHaus` is in `Stonean`
@@ -164,6 +167,16 @@ theorem effectiveEpiFamily_tfae {α : Type} [Fintype α] {B : Stonean}
   tfae_have 3 → 1
   · apply effectiveEpiFamily_of_jointly_surjective
   tfae_finish
+
+lemma effectiveEpi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
+    EffectiveEpi f ↔ Function.Surjective f := by
+  rw [← epi_iff_surjective]
+  exact effectiveEpi_iff_epi (fun _ _ ↦ (effectiveEpiFamily_tfae _ _).out 0 1) f
+
+instance : Preregular Stonean where
+  exists_fac := by
+    intro X Y Z f π hπ
+    exact ⟨X, 𝟙 X, inferInstance, Projective.factors f π⟩
 
 end JointlySurjective
 

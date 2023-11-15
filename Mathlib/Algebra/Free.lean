@@ -3,12 +3,12 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Hom.Group
-import Mathlib.Algebra.Hom.Equiv.Basic
+import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
-import Mathlib.Logic.Equiv.Defs
 import Mathlib.Data.List.Basic
+import Mathlib.Logic.Equiv.Defs
 
 #align_import algebra.free from "leanprover-community/mathlib"@"6d0adfa76594f304b4650d098273d4366edeb61b"
 
@@ -373,7 +373,7 @@ instance : Semigroup (AssocQuotient α) where
 
 /-- Embedding from magma to its free semigroup. -/
 @[to_additive "Embedding from additive magma to its free additive semigroup."]
-def of : α →ₙ* AssocQuotient α := ⟨Quot.mk _, fun _x _y ↦ rfl⟩
+def of : α →ₙ* AssocQuotient α where toFun := Quot.mk _; map_mul' _x _y := rfl
 #align magma.assoc_quotient.of Magma.AssocQuotient.of
 
 @[to_additive]

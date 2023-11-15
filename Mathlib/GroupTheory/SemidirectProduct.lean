@@ -3,9 +3,9 @@ Copyright (c) 2020 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Hom.Aut
-import Mathlib.Logic.Function.Basic
+import Mathlib.Algebra.Group.Aut
 import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Logic.Function.Basic
 
 #align_import group_theory.semidirect_product from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -66,8 +66,7 @@ variable {φ : G →* MulAut N}
 instance : Mul (SemidirectProduct N G φ) where
   mul a b := ⟨a.1 * φ a.2 b.1, a.2 * b.2⟩
 
-lemma mul_def (a b : SemidirectProduct N G φ) :
-  a * b = ⟨a.1 * φ a.2 b.1, a.2 * b.2⟩ := rfl
+lemma mul_def (a b : SemidirectProduct N G φ) : a * b = ⟨a.1 * φ a.2 b.1, a.2 * b.2⟩ := rfl
 
 @[simp]
 theorem mul_left (a b : N ⋊[φ] G) : (a * b).left = a.left * φ a.right b.left := rfl

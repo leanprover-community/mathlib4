@@ -187,16 +187,14 @@ theorem summable_bernoulli_fourier {k : ℕ} (hk : 2 ≤ k) :
       ∀ n : ℤ, -(k ! : ℂ) / (2 * π * I * n) ^ k = -k ! / (2 * π * I) ^ k * (1 / (n : ℂ) ^ k) := by
     intro n; rw [mul_one_div, div_div, ← mul_pow]
   simp_rw [this]
-  apply Summable.mul_left
-  rw [← summable_norm_iff]
+  refine Summable.mul_left _ <| .of_norm ?_
   have : (fun x : ℤ => ‖1 / (x : ℂ) ^ k‖) = fun x : ℤ => |1 / (x : ℝ) ^ k| := by
     ext1 x
     rw [norm_eq_abs, ← Complex.abs_ofReal]
     congr 1
     norm_cast
   simp_rw [this]
-  rw [summable_abs_iff]
-  exact Real.summable_one_div_int_pow.mpr (one_lt_two.trans_le hk)
+  rwa [summable_abs_iff, Real.summable_one_div_int_pow]
 #align summable_bernoulli_fourier summable_bernoulli_fourier
 
 theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k) {x : ℝ}
@@ -362,13 +360,13 @@ section Examples
 theorem hasSum_zeta_two : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 2) (π ^ 2 / 6) := by
   convert hasSum_zeta_nat one_ne_zero using 1; rw [mul_one]
   rw [bernoulli_eq_bernoulli'_of_ne_one (by decide : 2 ≠ 1), bernoulli'_two]
-  norm_num; field_simp; ring
+  norm_num [Nat.factorial]; field_simp; ring
 #align has_sum_zeta_two hasSum_zeta_two
 
 theorem hasSum_zeta_four : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (π ^ 4 / 90) := by
   convert hasSum_zeta_nat two_ne_zero using 1; norm_num
   rw [bernoulli_eq_bernoulli'_of_ne_one, bernoulli'_four]
-  norm_num; field_simp; ring; decide
+  norm_num [Nat.factorial]; field_simp; ring; decide
 #align has_sum_zeta_four hasSum_zeta_four
 
 theorem Polynomial.bernoulli_three_eval_one_quarter :
@@ -398,7 +396,7 @@ theorem hasSum_L_function_mod_four_eval_three :
   · have : (1 / 4 : ℝ) = (algebraMap ℚ ℝ) (1 / 4 : ℚ) := by norm_num
     rw [this, mul_pow, Polynomial.eval_map, Polynomial.eval₂_at_apply, (by decide : 2 * 1 + 1 = 3),
       Polynomial.bernoulli_three_eval_one_quarter]
-    norm_num; field_simp; ring
+    norm_num [Nat.factorial]; field_simp; ring
   · rw [mem_Icc]; constructor; linarith; linarith
 set_option linter.uppercaseLean3 false in
 #align has_sum_L_function_mod_four_eval_three hasSum_L_function_mod_four_eval_three

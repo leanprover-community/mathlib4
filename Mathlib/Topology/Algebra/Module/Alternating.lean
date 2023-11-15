@@ -3,7 +3,8 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth, Sébastien Gouëzel
 -/
-import Mathlib.LinearAlgebra.Alternating
+import Mathlib.LinearAlgebra.Alternating.Basic
+import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.Topology.Algebra.Module.Multilinear
 
 /-!
@@ -592,7 +593,7 @@ variable {R M N ι : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [Topolog
   [DecidableEq ι] (f g : ContinuousMultilinearMap R (fun _ : ι => M) N)
 
 /-- Alternatization of a continuous multilinear map. -/
-@[simps (config := { isSimp := false }) apply_toContinuousMultilinearMap]
+@[simps (config := .lemmasOnly) apply_toContinuousMultilinearMap]
 def alternatization : ContinuousMultilinearMap R (fun _ : ι => M) N →+ M [Λ^ι]→L[R] N where
   toFun f :=
     { toContinuousMultilinearMap := ∑ σ : Equiv.Perm ι, Equiv.Perm.sign σ • f.domDomCongr σ

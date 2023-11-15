@@ -22,34 +22,6 @@ namespace Lean.MVarId
 def synthInstance (g : MVarId) : MetaM Unit := do
   g.assign (← Lean.Meta.synthInstance (← g.getType))
 
-/--
-Replace hypothesis `hyp` in goal `g` with `proof : typeNew`.
-The new hypothesis is given the same user name as the original,
-it attempts to avoid reordering hypotheses, and the original is cleared if possible.
--/
--- adapted from Lean.Meta.replaceLocalDeclCore
-def replace (g : MVarId) (hyp : FVarId) (proof : Expr) (typeNew : Option Expr := none) :
-    MetaM AssertAfterResult :=
-  g.withContext do
-    let typeNew ← typeNew.getDM (inferType proof)
-    let ldecl ← hyp.getDecl
-    -- `typeNew` may contain variables that occur after `hyp`.
-    -- Thus, we use the auxiliary function `findMaxFVar` to ensure `typeNew` is well-formed
-    -- at the position we are inserting it.
-    let (_, ldecl') ← findMaxFVar typeNew |>.run ldecl
-    let result ← g.assertAfter ldecl'.fvarId ldecl.userName typeNew proof
-    (return { result with mvarId := ← result.mvarId.clear hyp }) <|> pure result
-where
-  /-- Finds the `LocalDecl` for the FVar in `e` with the highest index. -/
-  findMaxFVar (e : Expr) : StateRefT LocalDecl MetaM Unit :=
-    e.forEach' fun e ↦ do
-      if e.isFVar then
-        let ldecl' ← e.fvarId!.getDecl
-        modify fun ldecl ↦ if ldecl'.index > ldecl.index then ldecl' else ldecl
-        return false
-      else
-        return e.hasFVar
-
 /-- Add the hypothesis `h : t`, given `v : t`, and return the new `FVarId`. -/
 def note (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
     MetaM (FVarId × MVarId) := do
@@ -123,6 +95,70 @@ def independent? (L : List MVarId) (g : MVarId) : MetaM Bool := do
     let mvars ← Meta.getMVars (← g'.getType)
     pure <| !(mvars.contains g)
 
+/--
+Try to convert an `Iff` into an `Eq` by applying `iff_of_eq`.
+If successful, returns the new goal, and otherwise returns the original `MVarId`.
+
+This may be regarded as being a special case of `Lean.MVarId.liftReflToEq`, specifically for `Iff`.
+-/
+def iffOfEq (mvarId : MVarId) : MetaM MVarId := do
+  let res ← observing? do
+    let [mvarId] ← mvarId.apply (mkConst ``iff_of_eq []) | failure
+    return mvarId
+  return res.getD mvarId
+
+/--
+Try to convert an `Eq` into an `Iff` by applying `propext`.
+If successful, then returns then new goal, otherwise returns the original `MVarId`.
+-/
+def propext (mvarId : MVarId) : MetaM MVarId := do
+  let res ← observing? do
+    -- Avoid applying `propext` if the target is not an equality of `Prop`s.
+    -- We don't want a unification specializing `Sort*` to `Prop`.
+    let tgt ← withReducible mvarId.getType'
+    let some (ty, _, _) := tgt.eq? | failure
+    guard ty.isProp
+    let [mvarId] ← mvarId.apply (mkConst ``propext []) | failure
+    return mvarId
+  return res.getD mvarId
+
+/--
+Try to close the goal with using `proof_irrel_heq`. Returns whether or not it succeeds.
+
+We need to be somewhat careful not to assign metavariables while doing this, otherwise we might
+specialize `Sort _` to `Prop`.
+-/
+def proofIrrelHeq (mvarId : MVarId) : MetaM Bool :=
+  mvarId.withContext do
+    let res ← observing? do
+      mvarId.checkNotAssigned `proofIrrelHeq
+      let tgt ← withReducible mvarId.getType'
+      let some (_, lhs, _, rhs) := tgt.heq? | failure
+      -- Note: `mkAppM` uses `withNewMCtxDepth`, which prevents `Sort _` from specializing to `Prop`
+      let pf ← mkAppM ``proof_irrel_heq #[lhs, rhs]
+      mvarId.assign pf
+      return true
+    return res.getD false
+
+/--
+Try to close the goal using `Subsingleton.elim`. Returns whether or not it succeeds.
+
+We are careful to apply `Subsingleton.elim` in a way that does not assign any metavariables.
+This is to prevent the `Subsingleton Prop` instance from being used as justification to specialize
+`Sort _` to `Prop`.
+-/
+def subsingletonElim (mvarId : MVarId) : MetaM Bool :=
+  mvarId.withContext do
+    let res ← observing? do
+      mvarId.checkNotAssigned `subsingletonElim
+      let tgt ← withReducible mvarId.getType'
+      let some (_, lhs, rhs) := tgt.eq? | failure
+      -- Note: `mkAppM` uses `withNewMCtxDepth`, which prevents `Sort _` from specializing to `Prop`
+      let pf ← mkAppM ``Subsingleton.elim #[lhs, rhs]
+      mvarId.assign pf
+      return true
+    return res.getD false
+
 end Lean.MVarId
 
 namespace Lean.Meta
@@ -171,10 +207,6 @@ namespace Lean.Elab.Tactic
 -- but that is taken in core by a function that lifts a `tac : MVarId → MetaM (Option MVarId)`.
 def liftMetaTactic' (tac : MVarId → MetaM MVarId) : TacticM Unit :=
   liftMetaTactic fun g => do pure [← tac g]
-
-/-- Analogue of `liftMetaTactic` for tactics that do not return any goals. -/
-def liftMetaFinishingTactic (tac : MVarId → MetaM Unit) : TacticM Unit :=
-  liftMetaTactic fun g => do tac g; pure []
 
 @[inline] private def TacticM.runCore (x : TacticM α) (ctx : Context) (s : State) :
     TermElabM (α × State) :=

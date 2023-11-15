@@ -42,10 +42,10 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
   | some fr => some <| fr.as! ModuleName
   | none => none
   searchPathRef.set compile_time_search_path%
-  let dotFile ← unsafe withImportModules [{module := to}] {} (trustLevel := 1024) fun env => do
+  let dotFile ← unsafe withImportModules #[{module := to}] {} (trustLevel := 1024) fun env => do
     let mut graph := env.importGraph
     if let .some f := from? then
-      graph := graph.dependenciesOf (NameSet.empty.insert f)
+      graph := graph.downstreamOf (NameSet.empty.insert f)
     if ¬(args.hasFlag "include-deps") then
       let p := getModule to
       graph := graph.filterMap (fun n i =>
@@ -54,19 +54,9 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
       let filterMeta : Name → Bool := fun n => (
         isPrefixOf `Mathlib.Tactic n ∨
         isPrefixOf `Mathlib.Lean n ∨
+        isPrefixOf `Mathlib.Mathport n ∨
         isPrefixOf `Mathlib.Util n)
-      -- create a list of all files imported by any of the filtered files
-      -- and remove all imports starting with `Mathlib` to avoid loops
-      let mut tacticImports := graph.toList.bind
-        (fun ⟨n, i⟩ => if filterMeta n then i.toList else [])
-        |>.eraseDup |>.filter (not <| isPrefixOf `Mathlib ·) |>.toArray
-      -- iterate over the graph, removing all filtered nodes and
-      -- replace any filtered import with `«Mathlib.Tactics»`
-      graph := graph.filterMap (fun n i => if filterMeta n then none else some <|
-        (i.map (fun name => if filterMeta name then `«Mathlib.Tactics» else name)
-          |>.toList.eraseDup.toArray))
-      -- add the new node `«Mathlib.Tactics»`
-      graph := graph.insert `«Mathlib.Tactics» tacticImports
+      graph := graph.filterGraph filterMeta (replacement := `«Mathlib.Tactics»)
     if args.hasFlag "reduce" then
       graph := graph.transitiveReduction
     return asDotGraph graph
@@ -77,19 +67,26 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
      match fp.extension with
      | none
      | "dot" => writeFile fp dotFile
-     | some ext => _ ← runCmdWithInput "dot" #["-T" ++ ext, "-o", o] dotFile
+     | some ext => try
+        _ ← runCmdWithInput "dot" #["-T" ++ ext, "-o", o] dotFile
+      catch ex =>
+        IO.eprintln s!"Error occurred while writing out {fp}."
+        IO.eprintln s!"Make sure you have `graphviz` installed and the file is writable."
+        throw ex
   return 0
 
 /-- Setting up command line options and help text for `lake exe graph`. -/
 def graph : Cmd := `[Cli|
   graph VIA importGraphCLI; ["0.0.1"]
-  "Generate representations of a Lean import graph."
+  "Generate representations of a Lean import graph." ++
+  "By default generates the import graph up to `Mathlib`." ++
+  "If you are working in a downstream project, use `lake exe graph --to MyProject`."
 
   FLAGS:
     reduce;               "Remove transitively redundant edges."
     to : ModuleName;      "Only show the upstream imports of the specified module."
     "from" : ModuleName;  "Only show the downstream dependencies of the specified module."
-    "exclude-meta";       "Exclude any files starting with `Mathlib.[Tactic|Lean|Util]`."
+    "exclude-meta";       "Exclude any files starting with `Mathlib.[Tactic|Lean|Util|Mathport]`."
     "include-deps";       "Include used files from other projects (e.g. lake packages)"
 
   ARGS:

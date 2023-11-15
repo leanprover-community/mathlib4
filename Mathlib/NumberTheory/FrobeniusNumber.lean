@@ -53,7 +53,7 @@ variable {m n : ℕ}
 
 /-- The **Chicken McNugget theorem** stating that the Frobenius number
   of positive numbers `m` and `n` is `m * n - m - n`. -/
-theorem frobeniusNumber_pair (cop : coprime m n) (hm : 1 < m) (hn : 1 < n) :
+theorem frobeniusNumber_pair (cop : Coprime m n) (hm : 1 < m) (hn : 1 < n) :
     FrobeniusNumber (m * n - m - n) {m, n} := by
   simp_rw [FrobeniusNumber, AddSubmonoid.mem_closure_pair]
   have hmn : m + n ≤ m * n := add_le_mul hm hn

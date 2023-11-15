@@ -64,16 +64,21 @@ theorem eq_zero (hx : ¬IsIntegral A x) : minpoly A x = 0 :=
   dif_neg hx
 #align minpoly.eq_zero minpoly.eq_zero
 
-theorem minpoly_algHom (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
+theorem algHom_eq (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
     minpoly A (f x) = minpoly A x := by
   refine' dif_ctx_congr (isIntegral_algHom_iff _ hf) (fun _ => _) fun _ => rfl
   simp_rw [← Polynomial.aeval_def, aeval_algHom, AlgHom.comp_apply, _root_.map_eq_zero_iff f hf]
-#align minpoly.minpoly_alg_hom minpoly.minpoly_algHom
+#align minpoly.minpoly_alg_hom minpoly.algHom_eq
+
+theorem algebraMap_eq {B} [CommRing B] [Algebra A B] [Algebra B B'] [IsScalarTower A B B']
+    (h : Function.Injective (algebraMap B B')) (x : B) :
+    minpoly A (algebraMap B B' x) = minpoly A x :=
+  algHom_eq (IsScalarTower.toAlgHom A B B') h x
 
 @[simp]
-theorem minpoly_algEquiv (f : B ≃ₐ[A] B') (x : B) : minpoly A (f x) = minpoly A x :=
-  minpoly_algHom (f : B →ₐ[A] B') f.injective x
-#align minpoly.minpoly_alg_equiv minpoly.minpoly_algEquiv
+theorem algEquiv_eq (f : B ≃ₐ[A] B') (x : B) : minpoly A (f x) = minpoly A x :=
+  algHom_eq (f : B →ₐ[A] B') f.injective x
+#align minpoly.minpoly_alg_equiv minpoly.algEquiv_eq
 
 variable (A x)
 
@@ -164,7 +169,8 @@ theorem subsingleton [Subsingleton B] : minpoly A x = 1 := by
   have := minpoly.min A x monic_one (Subsingleton.elim _ _)
   rw [degree_one] at this
   cases' le_or_lt (minpoly A x).degree 0 with h h
-  · rwa [(monic ⟨1, monic_one, by simp⟩ : (minpoly A x).Monic).degree_le_zero_iff_eq_one] at h
+  · rwa [(monic ⟨1, monic_one, by simp [eq_iff_true_of_subsingleton]⟩ :
+           (minpoly A x).Monic).degree_le_zero_iff_eq_one] at h
   · exact (this.not_lt h).elim
 #align minpoly.subsingleton minpoly.subsingleton
 

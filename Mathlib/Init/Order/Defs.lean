@@ -399,8 +399,8 @@ instance isStrictWeakOrder_of_linearOrder : IsStrictWeakOrder α (· < ·) :=
 #align is_strict_weak_order_of_linear_order isStrictWeakOrder_of_linearOrder
 
 -- TODO(Leo): decide whether we should keep this instance or not
-instance isStrictTotalOrder_of_linearOrder : IsStrictTotalOrder α (· < ·)
-    where trichotomous := lt_trichotomy
+instance isStrictTotalOrder_of_linearOrder : IsStrictTotalOrder α (· < ·) where
+  trichotomous := lt_trichotomy
 #align is_strict_total_order_of_linear_order isStrictTotalOrder_of_linearOrder
 
 /-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order. -/

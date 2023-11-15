@@ -204,10 +204,12 @@ instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, �
   default := isEmptyElim
   uniq _ := funext isEmptyElim
 
-theorem eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (f default) := by
-  ext x
-  rw [Subsingleton.elim x default]
-  rfl
+theorem eq_const_of_subsingleton [Subsingleton α] (f : α → β) (a : α) :
+    f = Function.const α (f a) :=
+  funext fun x ↦ Subsingleton.elim x a ▸ rfl
+
+theorem eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (f default) :=
+  eq_const_of_subsingleton ..
 #align eq_const_of_unique eq_const_of_unique
 
 theorem heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) :
@@ -250,8 +252,26 @@ def Surjective.uniqueOfSurjectiveConst (α : Type*) {β : Type*} (b : β)
 
 end Function
 
+section Pi
+
+variable {ι : Sort*} {α : ι → Sort*}
+/-- Given one value over a unique, we get a dependent function. -/
+def uniqueElim [Unique ι] (x : α (default : ι)) (i : ι) : α i := by
+  rw [Unique.eq_default i]
+  exact x
+
+@[simp]
+theorem uniqueElim_default {_ : Unique ι} (x : α (default : ι)) : uniqueElim x (default : ι) = x :=
+  rfl
+
+@[simp]
+theorem uniqueElim_const {_ : Unique ι} (x : β) (i : ι) : uniqueElim (α := fun _ ↦ β) x i = x :=
+  rfl
+
+end Pi
+
 -- TODO: Mario turned this off as a simp lemma in Std, wanting to profile it.
-attribute [simp] eq_iff_true_of_subsingleton in
+attribute [local simp] eq_iff_true_of_subsingleton in
 theorem Unique.bijective {A B} [Unique A] [Unique B] {f : A → B} : Function.Bijective f := by
   rw [Function.bijective_iff_has_inverse]
   refine' ⟨default, _, _⟩ <;> intro x <;> simp

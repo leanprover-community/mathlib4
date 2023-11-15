@@ -50,6 +50,9 @@ open ComplexConjugate
 
 variable {R : Type*} {S : Type*}
 
+-- Test that the `SMul ℚ ℂ` instance is correct.
+example : (Complex.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
+
 instance [SMul R ℝ] [SMul S ℝ] [SMulCommClass R S ℝ] : SMulCommClass R S ℂ where
   smul_comm r s x := by ext <;> simp [smul_re, smul_im, smul_comm]
 
@@ -188,8 +191,8 @@ theorem Complex.coe_smul {E : Type*} [AddCommGroup E] [Module ℂ E] (x : ℝ) (
 /-- The scalar action of `ℝ` on a `ℂ`-module `E` induced by `Module.complexToReal` commutes with
 another scalar action of `M` on `E` whenever the action of `ℂ` commutes with the action of `M`. -/
 instance (priority := 900) SMulCommClass.complexToReal {M E : Type*} [AddCommGroup E] [Module ℂ E]
-    [SMul M E] [SMulCommClass ℂ M E] : SMulCommClass ℝ M E
-    where smul_comm r _ _ := (smul_comm (r : ℂ) _ _ : _)
+    [SMul M E] [SMulCommClass ℂ M E] : SMulCommClass ℝ M E where
+  smul_comm r _ _ := (smul_comm (r : ℂ) _ _ : _)
 #align smul_comm_class.complex_to_real SMulCommClass.complexToReal
 
 instance (priority := 100) FiniteDimensional.complexToReal (E : Type*) [AddCommGroup E]
@@ -289,6 +292,9 @@ def equivRealProdAddHom : ℂ ≃+ ℝ × ℝ :=
   { equivRealProd with map_add' := by simp }
 #align complex.equiv_real_prod_add_hom Complex.equivRealProdAddHom
 
+theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
+    Complex.equivRealProdAddHom.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
+
 /-- The natural `LinearEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
 def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
@@ -297,6 +303,8 @@ def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
     map_smul' := fun r c => by simp [equivRealProdAddHom, (Prod.smul_def), smul_eq_mul] }
 #align complex.equiv_real_prod_lm Complex.equivRealProdLm
 
+theorem equivRealProdLm_symm_apply (p : ℝ × ℝ) :
+    Complex.equivRealProdLm.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
 section lift
 
 variable {A : Type*} [Ring A] [Algebra ℝ A]
@@ -458,12 +466,12 @@ set_option linter.uppercaseLean3 false in
 #align imaginary_part_I_smul imaginaryPart_I_smul
 
 theorem realPart_smul (z : ℂ) (a : A) : ℜ (z • a) = z.re • ℜ a - z.im • ℑ a := by
-  have := by congrm(ℜ ($((re_add_im z).symm) • a))
+  have := by congrm (ℜ ($((re_add_im z).symm) • a))
   simpa [-re_add_im, add_smul, ← smul_smul, sub_eq_add_neg]
 #align real_part_smul realPart_smul
 
 theorem imaginaryPart_smul (z : ℂ) (a : A) : ℑ (z • a) = z.re • ℑ a + z.im • ℜ a := by
-  have := by congrm(ℑ ($((re_add_im z).symm) • a))
+  have := by congrm (ℑ ($((re_add_im z).symm) • a))
   simpa [-re_add_im, add_smul, ← smul_smul]
 #align imaginary_part_smul imaginaryPart_smul
 
@@ -479,7 +487,7 @@ lemma IsSelfAdjoint.coe_realPart {x : A} (hx : IsSelfAdjoint x) :
     (ℜ x : A) = x :=
   hx.coe_selfAdjointPart_apply ℝ
 
-lemma IsSelfAdjoint.imaginaryPart {x : A} (hx : IsSelfAdjoint x) :
+nonrec lemma IsSelfAdjoint.imaginaryPart {x : A} (hx : IsSelfAdjoint x) :
     ℑ x = 0 := by
   rw [imaginaryPart, LinearMap.comp_apply, hx.skewAdjointPart_apply _, map_zero]
 
@@ -548,7 +556,7 @@ lemma imaginaryPart_ofReal (r : ℝ) : ℑ (r : ℂ) = 0 := by
   ext1; simp [imaginaryPart_apply_coe, conj_ofReal]
 
 lemma Complex.coe_realPart (z : ℂ) : (ℜ z : ℂ) = z.re := calc
-  (ℜ z : ℂ) = _    := by congrm(ℜ $((re_add_im z).symm))
+  (ℜ z : ℂ) = _    := by congrm (ℜ $((re_add_im z).symm))
   _          = z.re := by
     rw [map_add, AddSubmonoid.coe_add, mul_comm, ←smul_eq_mul, realPart_I_smul]
     simp [conj_ofReal, ←two_mul]

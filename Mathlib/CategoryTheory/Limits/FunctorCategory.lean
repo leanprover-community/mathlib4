@@ -319,8 +319,9 @@ theorem colimit_obj_ext {H : J ⥤ K ⥤ C} [HasColimitsOfShape J C] {k : K} {W 
   simpa using w j
 #align category_theory.limits.colimit_obj_ext CategoryTheory.Limits.colimit_obj_ext
 
-instance evaluationPreservesLimits [HasLimits C] (k : K) : PreservesLimits ((evaluation K C).obj k)
-    where preservesLimitsOfShape {J} 𝒥 := by skip; infer_instance
+instance evaluationPreservesLimits [HasLimits C] (k : K) :
+    PreservesLimits ((evaluation K C).obj k) where
+  preservesLimitsOfShape {J} 𝒥 := by skip; infer_instance
 #align category_theory.limits.evaluation_preserves_limits CategoryTheory.Limits.evaluationPreservesLimits
 
 /-- `F : D ⥤ K ⥤ C` preserves the limit of some `G : J ⥤ D` if it does for each `k : K`. -/

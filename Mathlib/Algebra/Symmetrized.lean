@@ -293,7 +293,6 @@ instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring
   { SymAlg.addCommMonoid with
     one := 1
     mul := (· * ·)
-    zero := 0
     zero_mul := fun _ => by
       rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero,
         mul_zero, sym_zero]
