@@ -59,10 +59,6 @@ namespace ContMDiffSection
 
 variable {I} {I'} {n} {F} {V}
 
-/- Lean will try to synthesize non-dependent `FunLike` instances first by default. Use this command
-for better performance because we will use lots of dependent `FunLike` instances. -/
-attribute [local instance high] FunLike.hasCoeToFun
-
 instance : FunLike Cₛ^n⟮I; F, V⟯ M V where
   coe := ContMDiffSection.toFun
   coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr
