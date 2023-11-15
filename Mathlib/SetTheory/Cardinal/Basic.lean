@@ -65,7 +65,7 @@ We define cardinal numbers as a quotient of types under the equivalence relation
 * There is an instance `Pow Cardinal`, but this will only fire if Lean already knows that both
   the base and the exponent live in the same universe. As a workaround, you can add
   ```
-    local infixr:0 "^'" => @Pow.pow Cardinal Cardinal Cardinal.instPowCardinal
+    local infixr:80 " ^' " => @HPow.hPow Cardinal Cardinal Cardinal _
   ```
   to a file. This notation will work even if Lean doesn't know yet that the base and the exponent
   live in the same universe (but no exponents in other types can be used).
@@ -345,7 +345,7 @@ theorem lift_le {a b : Cardinal.{v}} : lift.{u, v} a ≤ lift.{u, v} b ↔ a ≤
 
 -- Porting note: changed `simps` to `simps!` because the linter told to do so.
 /-- `Cardinal.lift` as an `OrderEmbedding`. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def liftOrderEmbedding : Cardinal.{v} ↪o Cardinal.{max v u} :=
   OrderEmbedding.ofMapLEIff lift.{u, v} fun _ _ => lift_le
 #align cardinal.lift_order_embedding Cardinal.liftOrderEmbedding
@@ -489,7 +489,7 @@ instance instPowCardinal : Pow Cardinal.{u} Cardinal.{u} :=
 -- with `HPow`, but somebody should figure out
 -- if this is still relevant in Lean4.
 -- mathport name: cardinal.pow
-local infixr:0 "^'" => @HPow.hPow Cardinal Cardinal Cardinal.instPowCardinal
+local infixr:80 " ^' " => @HPow.hPow Cardinal Cardinal Cardinal _
 -- -- mathport name: cardinal.pow.nat
 local infixr:80 " ^ℕ " => @HPow.hPow Cardinal ℕ Cardinal instHPow
 
@@ -502,22 +502,22 @@ theorem mk_arrow (α : Type u) (β : Type v) : #(α → β) = (lift.{u} #β^lift
 #align cardinal.mk_arrow Cardinal.mk_arrow
 
 @[simp]
-theorem lift_power (a b : Cardinal.{u}) : lift.{v} (a ^ b) = ((lift.{v} a) ^ (lift.{v} b)) :=
+theorem lift_power (a b : Cardinal.{u}) : lift.{v} (a ^ b) = lift.{v} a ^ lift.{v} b :=
   inductionOn₂ a b fun _ _ =>
     mk_congr <| Equiv.ulift.trans (Equiv.ulift.arrowCongr Equiv.ulift).symm
 #align cardinal.lift_power Cardinal.lift_power
 
 @[simp]
-theorem power_zero {a : Cardinal} : (a ^ 0) = 1 :=
+theorem power_zero {a : Cardinal} : a ^ 0 = 1 :=
   inductionOn a fun _ => mk_eq_one _
 #align cardinal.power_zero Cardinal.power_zero
 
 @[simp]
-theorem power_one {a : Cardinal.{u}} : (a ^ 1) = a :=
+theorem power_one {a : Cardinal.{u}} : a ^ 1 = a :=
   inductionOn a fun α => mk_congr (Equiv.funUnique (ULift.{u} (Fin 1)) α)
 #align cardinal.power_one Cardinal.power_one
 
-theorem power_add {a b c : Cardinal} : (a ^ (b + c)) = (a ^ b) * (a ^ c) :=
+theorem power_add {a b c : Cardinal} : a ^ (b + c) = a ^ b * a ^ c :=
   inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumArrowEquivProdArrow β γ α
 #align cardinal.power_add Cardinal.power_add
 
@@ -538,9 +538,9 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   mul_comm := mul_comm'
   left_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodSumDistrib α β γ
   right_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumProdDistrib α β γ
-  npow n c := c^n
+  npow n c := c ^ n
   npow_zero := @power_zero
-  npow_succ n c := show (c ^ (n + 1 : ℕ)) = c * (c ^ n)
+  npow_succ n c := show c ^ (n + 1 : ℕ) = c * (c ^ n)
     by rw [Cardinal.cast_succ, power_add, power_one, mul_comm']
   natCast := (fun n => lift.{u} #(Fin n) : ℕ → Cardinal.{u})
   natCast_zero := rfl
@@ -551,19 +551,19 @@ section deprecated
 set_option linter.deprecated false
 
 @[deprecated]
-theorem power_bit0 (a b : Cardinal) : (a ^ bit0 b) = (a ^ b) * (a ^ b) :=
+theorem power_bit0 (a b : Cardinal) : a ^ bit0 b = a ^ b * a ^ b :=
   power_add
 #align cardinal.power_bit0 Cardinal.power_bit0
 
 @[deprecated]
-theorem power_bit1 (a b : Cardinal) : (a ^ bit1 b) = (a ^ b) * (a ^ b) * a := by
+theorem power_bit1 (a b : Cardinal) : a ^ bit1 b = a ^ b * a ^ b * a := by
   rw [bit1, ← power_bit0, power_add, power_one]
 #align cardinal.power_bit1 Cardinal.power_bit1
 
 end deprecated
 
 @[simp]
-theorem one_power {a : Cardinal} : (1 ^ a) = 1 :=
+theorem one_power {a : Cardinal} : 1 ^ a = 1 :=
   inductionOn a fun _ => mk_eq_one _
 #align cardinal.one_power Cardinal.one_power
 
@@ -578,7 +578,7 @@ theorem mk_Prop : #Prop = 2 := by simp
 #align cardinal.mk_Prop Cardinal.mk_Prop
 
 @[simp]
-theorem zero_power {a : Cardinal} : a ≠ 0 → (0 ^ a) = 0 :=
+theorem zero_power {a : Cardinal} : a ≠ 0 → 0 ^ a = 0 :=
   inductionOn a fun _ heq =>
     mk_eq_zero_iff.2 <|
       isEmpty_pi.2 <|
@@ -586,23 +586,23 @@ theorem zero_power {a : Cardinal} : a ≠ 0 → (0 ^ a) = 0 :=
         ⟨a, inferInstance⟩
 #align cardinal.zero_power Cardinal.zero_power
 
-theorem power_ne_zero {a : Cardinal} (b) : a ≠ 0 → (a ^ b) ≠ 0 :=
+theorem power_ne_zero {a : Cardinal} (b : Cardinal) : a ≠ 0 → a ^ b ≠ 0 :=
   inductionOn₂ a b fun _ _ h =>
     let ⟨a⟩ := mk_ne_zero_iff.1 h
     mk_ne_zero_iff.2 ⟨fun _ => a⟩
 #align cardinal.power_ne_zero Cardinal.power_ne_zero
 
-theorem mul_power {a b c : Cardinal} : ((a * b) ^ c) = (a ^ c) * (b ^ c) :=
+theorem mul_power {a b c : Cardinal} : (a * b) ^ c = a ^ c * b ^ c :=
   inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.arrowProdEquivProdArrow α β γ
 #align cardinal.mul_power Cardinal.mul_power
 
-theorem power_mul {a b c : Cardinal} : (a ^ (b * c)) = ((a ^ b) ^ c) := by
+theorem power_mul {a b c : Cardinal} : a ^ (b * c) = (a ^ b) ^ c := by
   rw [mul_comm b c]
   exact inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.curry γ β α
 #align cardinal.power_mul Cardinal.power_mul
 
 @[simp]
-theorem pow_cast_right (a : Cardinal.{u}) (n : ℕ) : (a^(↑n : Cardinal.{u})) = a ^ℕ n :=
+theorem pow_cast_right (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ℕ n :=
   rfl
 #align cardinal.pow_cast_right Cardinal.pow_cast_right
 
@@ -642,16 +642,17 @@ theorem lift_two : lift.{u, v} 2 = 2 := by simp [←one_add_one_eq_two]
 #align cardinal.lift_two Cardinal.lift_two
 
 @[simp]
-theorem mk_set {α : Type u} : #(Set α) = (2 ^ #α) := by simp [←one_add_one_eq_two, Set, mk_arrow]
+theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by simp [←one_add_one_eq_two, Set, mk_arrow]
 #align cardinal.mk_set Cardinal.mk_set
 
 /-- A variant of `Cardinal.mk_set` expressed in terms of a `Set` instead of a `Type`. -/
 @[simp]
-theorem mk_powerset {α : Type u} (s : Set α) : #(↥(𝒫 s)) = (2 ^ #(↥s)) :=
+theorem mk_powerset {α : Type u} (s : Set α) : #(↥(𝒫 s)) = 2 ^ #(↥s) :=
   (mk_congr (Equiv.Set.powerset s)).trans mk_set
 #align cardinal.mk_powerset Cardinal.mk_powerset
 
-theorem lift_two_power (a) : lift.{v} (2 ^ a) = (2 ^ lift.{v} a) := by simp [←one_add_one_eq_two]
+theorem lift_two_power (a : Cardinal) : lift.{v} (2 ^ a) = 2 ^ lift.{v} a := by
+  simp [←one_add_one_eq_two]
 #align cardinal.lift_two_power Cardinal.lift_two_power
 
 section OrderProperties
@@ -714,20 +715,20 @@ instance : CommMonoidWithZero Cardinal.{u} :=
 instance : CommMonoid Cardinal.{u} :=
   { Cardinal.canonicallyOrderedCommSemiring with }
 
-theorem zero_power_le (c : Cardinal.{u}) : ((0 : Cardinal.{u})^c) ≤ 1 := by
+theorem zero_power_le (c : Cardinal.{u}) : (0 : Cardinal.{u}) ^ c ≤ 1 := by
   by_cases h : c = 0
   · rw [h, power_zero]
   · rw [zero_power h]
     apply zero_le
 #align cardinal.zero_power_le Cardinal.zero_power_le
 
-theorem power_le_power_left : ∀ {a b c : Cardinal}, a ≠ 0 → b ≤ c → (a^b) ≤ (a^c) := by
+theorem power_le_power_left : ∀ {a b c : Cardinal}, a ≠ 0 → b ≤ c → a ^ b ≤ a ^ c := by
   rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ hα ⟨e⟩
   let ⟨a⟩ := mk_ne_zero_iff.1 hα
   exact ⟨@Function.Embedding.arrowCongrLeft _ _ _ ⟨a⟩ e⟩
 #align cardinal.power_le_power_left Cardinal.power_le_power_left
 
-theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ (a^b) := by
+theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · exact zero_le _
   · convert power_le_power_left ha hb
@@ -735,7 +736,7 @@ theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ (a^b)
 #align cardinal.self_le_power Cardinal.self_le_power
 
 /-- **Cantor's theorem** -/
-theorem cantor (a : Cardinal.{u}) : a < (2^a) := by
+theorem cantor (a : Cardinal.{u}) : a < 2 ^ a := by
   induction' a using Cardinal.inductionOn with α
   rw [← mk_set]
   refine' ⟨⟨⟨singleton, fun a b => singleton_eq_singleton_iff.1⟩⟩, _⟩
@@ -752,17 +753,17 @@ theorem one_lt_iff_nontrivial {α : Type u} : 1 < #α ↔ Nontrivial α := by
   rw [← not_le, le_one_iff_subsingleton, ← not_nontrivial_iff_subsingleton, Classical.not_not]
 #align cardinal.one_lt_iff_nontrivial Cardinal.one_lt_iff_nontrivial
 
-theorem power_le_max_power_one {a b c : Cardinal} (h : b ≤ c) : (a^b) ≤ max (a^c) 1 := by
+theorem power_le_max_power_one {a b c : Cardinal} (h : b ≤ c) : a ^ b ≤ max (a ^ c) 1 := by
   by_cases ha : a = 0
   · simp [ha, zero_power_le]
   · exact (power_le_power_left ha h).trans (le_max_left _ _)
 #align cardinal.power_le_max_power_one Cardinal.power_le_max_power_one
 
-theorem power_le_power_right {a b c : Cardinal} : a ≤ b → (a^c) ≤ (b^c) :=
+theorem power_le_power_right {a b c : Cardinal} : a ≤ b → a ^ c ≤ b ^ c :=
   inductionOn₃ a b c fun _ _ _ ⟨e⟩ => ⟨Embedding.arrowCongrRight e⟩
 #align cardinal.power_le_power_right Cardinal.power_le_power_right
 
-theorem power_pos {a : Cardinal} (b) (ha : 0 < a) : 0 < (a^b) :=
+theorem power_pos {a : Cardinal} (b : Cardinal) (ha : 0 < a) : 0 < a ^ b :=
   (power_ne_zero _ ha.ne').bot_lt
 #align cardinal.power_pos Cardinal.power_pos
 
@@ -1051,12 +1052,12 @@ theorem mk_pi {ι : Type u} (α : ι → Type v) : #(∀ i, α i) = prod fun i =
 
 @[simp]
 theorem prod_const (ι : Type u) (a : Cardinal.{v}) :
-    (prod fun _ : ι => a) = (lift.{u} a^lift.{v} #ι) :=
+    (prod fun _ : ι => a) = lift.{u} a ^ lift.{v} #ι :=
   inductionOn a fun _ =>
     mk_congr <| Equiv.piCongr Equiv.ulift.symm fun _ => outMkEquiv.trans Equiv.ulift.symm
 #align cardinal.prod_const Cardinal.prod_const
 
-theorem prod_const' (ι : Type u) (a : Cardinal.{u}) : (prod fun _ : ι => a) = (a^#ι) :=
+theorem prod_const' (ι : Type u) (a : Cardinal.{u}) : (prod fun _ : ι => a) = a ^ #ι :=
   inductionOn a fun _ => (mk_pi _).symm
 #align cardinal.prod_const' Cardinal.prod_const'
 
@@ -1346,7 +1347,7 @@ theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
 -- Porting note: was `simp`. LHS is not normal form.
 -- @[simp, norm_cast]
 @[norm_cast]
-theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (m^n) := by
+theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = m ^ n := by
   induction n <;> simp [pow_succ', power_add, *, Pow.pow]
 #align cardinal.nat_cast_pow Cardinal.natCast_pow
 
@@ -1398,7 +1399,7 @@ theorem card_le_of {α : Type u} {n : ℕ} (H : ∀ s : Finset α, s.card ≤ n)
   exact n.lt_succ_self
 #align cardinal.card_le_of Cardinal.card_le_of
 
-theorem cantor' (a) {b : Cardinal} (hb : 1 < b) : a < (b^a) := by
+theorem cantor' (a) {b : Cardinal} (hb : 1 < b) : a < b ^ a := by
   rw [← succ_le_iff, (by norm_cast : succ (1 : Cardinal) = 2)] at hb
   exact (cantor a).trans_le (power_le_power_right hb)
 #align cardinal.cantor' Cardinal.cantor'
@@ -1598,7 +1599,7 @@ theorem mul_lt_aleph0_iff_of_ne_zero {a b : Cardinal} (ha : a ≠ 0) (hb : b ≠
     a * b < ℵ₀ ↔ a < ℵ₀ ∧ b < ℵ₀ := by simp [mul_lt_aleph0_iff, ha, hb]
 #align cardinal.mul_lt_aleph_0_iff_of_ne_zero Cardinal.mul_lt_aleph0_iff_of_ne_zero
 
-theorem power_lt_aleph0 {a b : Cardinal} (ha : a < ℵ₀) (hb : b < ℵ₀) : (a^b) < ℵ₀ :=
+theorem power_lt_aleph0 {a b : Cardinal} (ha : a < ℵ₀) (hb : b < ℵ₀) : a ^ b < ℵ₀ :=
   match a, b, lt_aleph0.1 ha, lt_aleph0.1 hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by rw [← natCast_pow]; apply nat_lt_aleph0
 #align cardinal.power_lt_aleph_0 Cardinal.power_lt_aleph0
@@ -1613,6 +1614,9 @@ theorem eq_one_iff_unique {α : Type*} : #α = 1 ↔ Subsingleton α ∧ Nonempt
 theorem infinite_iff {α : Type u} : Infinite α ↔ ℵ₀ ≤ #α := by
   rw [← not_lt, lt_aleph0_iff_finite, not_finite_iff_infinite]
 #align cardinal.infinite_iff Cardinal.infinite_iff
+
+lemma aleph0_le_mk_iff : ℵ₀ ≤ #α ↔ Infinite α := infinite_iff.symm
+lemma mk_lt_aleph0_iff : #α < ℵ₀ ↔ Finite α := by simp [← not_le, aleph0_le_mk_iff]
 
 @[simp]
 theorem aleph0_le_mk (α : Type u) [Infinite α] : ℵ₀ ≤ #α :=
@@ -1656,6 +1660,16 @@ theorem nat_mul_aleph0 {n : ℕ} (hn : n ≠ 0) : ↑n * ℵ₀ = ℵ₀ :=
 theorem aleph0_mul_nat {n : ℕ} (hn : n ≠ 0) : ℵ₀ * n = ℵ₀ := by rw [mul_comm, nat_mul_aleph0 hn]
 #align cardinal.aleph_0_mul_nat Cardinal.aleph0_mul_nat
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_mul_aleph0 {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) * ℵ₀ = ℵ₀ :=
+  nat_mul_aleph0 (OfNat.ofNat_ne_zero n)
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem aleph0_mul_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ * no_index (OfNat.ofNat n) = ℵ₀ :=
+  aleph0_mul_nat (OfNat.ofNat_ne_zero n)
+
 @[simp]
 theorem add_le_aleph0 {c₁ c₂ : Cardinal} : c₁ + c₂ ≤ ℵ₀ ↔ c₁ ≤ ℵ₀ ∧ c₂ ≤ ℵ₀ :=
   ⟨fun h => ⟨le_self_add.trans h, le_add_self.trans h⟩, fun h =>
@@ -1671,6 +1685,18 @@ theorem aleph0_add_nat (n : ℕ) : ℵ₀ + n = ℵ₀ :=
 theorem nat_add_aleph0 (n : ℕ) : ↑n + ℵ₀ = ℵ₀ := by rw [add_comm, aleph0_add_nat]
 #align cardinal.nat_add_aleph_0 Cardinal.nat_add_aleph0
 
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_add_aleph0 {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) + ℵ₀ = ℵ₀ :=
+  nat_add_aleph0 n
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem aleph0_add_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ + no_index (OfNat.ofNat n) = ℵ₀ :=
+  aleph0_add_nat n
+
+variable {c : Cardinal}
+
 /-- This function sends finite cardinals to the corresponding natural, and infinite cardinals
   to 0. -/
 def toNat : ZeroHom Cardinal ℕ where
@@ -1681,6 +1707,15 @@ def toNat : ZeroHom Cardinal ℕ where
     rw [dif_pos h, ← Cardinal.natCast_inj, ← Classical.choose_spec (lt_aleph0.1 h),
       Nat.cast_zero]
 #align cardinal.to_nat Cardinal.toNat
+
+@[simp]
+lemma toNat_eq_zero : toNat c = 0 ↔ c = 0 ∨ ℵ₀ ≤ c := by
+  simp only [toNat, ZeroHom.coe_mk, dite_eq_right_iff, or_iff_not_imp_right, not_le]
+  refine' forall_congr' fun h => _
+  rw [←@Nat.cast_eq_zero Cardinal, ← Classical.choose_spec (p := fun n : ℕ ↦ c = n)]
+
+lemma toNat_ne_zero : toNat c ≠ 0 ↔ c ≠ 0 ∧ c < ℵ₀ := by simp [not_or]
+@[simp] lemma toNat_pos : 0 < toNat c ↔ c ≠ 0 ∧ c < ℵ₀ := pos_iff_ne_zero.trans toNat_ne_zero
 
 theorem toNat_apply_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) :
     toNat c = Classical.choose (lt_aleph0.1 h) :=
@@ -2393,13 +2428,13 @@ def powerlt (a b : Cardinal.{u}) : Cardinal.{u} :=
 @[inherit_doc]
 infixl:80 " ^< " => powerlt
 
-theorem le_powerlt {b c : Cardinal.{u}} (a) (h : c < b) : (a^c) ≤ a ^< b := by
-  refine le_ciSup (f := fun y : Iio b => a^y) ?_ ⟨c, h⟩
+theorem le_powerlt {b c : Cardinal.{u}} (a) (h : c < b) : a ^ c ≤ a ^< b := by
+  refine le_ciSup (f := fun y : Iio b => a ^ y) ?_ ⟨c, h⟩
   rw [← image_eq_range]
   exact bddAbove_image.{u, u} _ bddAbove_Iio
 #align cardinal.le_powerlt Cardinal.le_powerlt
 
-theorem powerlt_le {a b c : Cardinal.{u}} : a ^< b ≤ c ↔ ∀ x < b, (a^x) ≤ c := by
+theorem powerlt_le {a b c : Cardinal.{u}} : a ^< b ≤ c ↔ ∀ x < b, a ^ x ≤ c := by
   rw [powerlt, ciSup_le_iff']
   · simp
   · rw [← image_eq_range]
@@ -2413,7 +2448,7 @@ theorem powerlt_le_powerlt_left {a b c : Cardinal} (h : b ≤ c) : a ^< b ≤ a 
 theorem powerlt_mono_left (a) : Monotone fun c => a ^< c := fun _ _ => powerlt_le_powerlt_left
 #align cardinal.powerlt_mono_left Cardinal.powerlt_mono_left
 
-theorem powerlt_succ {a b : Cardinal} (h : a ≠ 0) : a ^< succ b = (a^b) :=
+theorem powerlt_succ {a b : Cardinal} (h : a ≠ 0) : a ^< succ b = a ^ b :=
   (powerlt_le.2 fun _ h' => power_le_power_left h <| le_of_lt_succ h').antisymm <|
     le_powerlt a (lt_succ b)
 #align cardinal.powerlt_succ Cardinal.powerlt_succ

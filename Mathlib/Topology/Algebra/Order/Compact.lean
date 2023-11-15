@@ -104,7 +104,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   rcases hc.2.eq_or_lt with (rfl | hlt); · exact hcs.2
   contrapose! hf
   intro U hU
-  rcases(mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
+  rcases (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
       (mem_nhdsWithin_of_mem_nhds hU) with
     ⟨y, hxy, hyU⟩
   refine' mem_of_superset _ hyU; clear! U
@@ -174,7 +174,7 @@ theorem IsCompact.exists_isLeast [ClosedIicTopology α] {s : Set α} (hs : IsCom
   by_contra H
   rw [not_nonempty_iff_eq_empty] at H
   rcases hs.elim_directed_family_closed (fun x : s => Iic ↑x) (fun x => isClosed_Iic) H
-      (directed_of_inf fun _ _ h => Iic_subset_Iic.mpr h) with ⟨x, hx⟩
+      (Monotone.directed_ge fun _ _ h => Iic_subset_Iic.mpr h) with ⟨x, hx⟩
   exact not_nonempty_iff_eq_empty.mpr hx ⟨x, x.2, le_rfl⟩
 #align is_compact.exists_is_least IsCompact.exists_isLeast
 

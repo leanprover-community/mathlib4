@@ -599,7 +599,7 @@ protected theorem Associated.prime [CommMonoidWithZero α] {p q : α} (h : p ~�
     let ⟨u, hu⟩ := h
     ⟨fun ⟨v, hv⟩ => hp.not_unit ⟨v * u⁻¹, by simp [hv, hu.symm]⟩,
       hu ▸ by
-        simp [Units.mul_right_dvd]
+        simp only [IsUnit.mul_iff, Units.isUnit, and_true, IsUnit.mul_right_dvd]
         intro a b
         exact hp.dvd_or_dvd⟩⟩
 #align associated.prime Associated.prime
@@ -817,7 +817,7 @@ instance [Monoid α] [Subsingleton α] :
     apply Quotient.recOnSubsingleton₂
     intro a b
     congr
-    simp
+    simp [eq_iff_true_of_subsingleton]
 
 theorem mk_injective [Monoid α] [Unique (Units α)] : Function.Injective (@Associates.mk α _) :=
   fun _ _ h => associated_iff_eq.mp (Associates.mk_eq_mk_iff_associated.mp h)
@@ -832,8 +832,7 @@ instance instMul : Mul (Associates α) :=
     (Quotient.liftOn₂ a' b' fun a b => ⟦a * b⟧) fun a₁ a₂ b₁ b₂ ⟨c₁, h₁⟩ ⟨c₂, h₂⟩ =>
       Quotient.sound <| ⟨c₁ * c₂, by
         rw [← h₁, ← h₂]
-        simp [h₁.symm, h₂.symm, mul_assoc, mul_comm, mul_left_comm]
-        ⟩⟩
+        simp only [Units.val_mul, mul_left_comm, mul_comm]⟩⟩
 
 theorem mk_mul_mk {x y : α} : Associates.mk x * Associates.mk y = Associates.mk (x * y) :=
   rfl
@@ -899,7 +898,9 @@ instance uniqueUnits : Unique (Associates α)ˣ where
   uniq := Associates.units_eq_one
 #align associates.unique_units Associates.uniqueUnits
 
-theorem coe_unit_eq_one (u : (Associates α)ˣ) : (u : Associates α) = 1 := by simp
+@[simp]
+theorem coe_unit_eq_one (u : (Associates α)ˣ) : (u : Associates α) = 1 := by
+  simp [eq_iff_true_of_subsingleton]
 #align associates.coe_unit_eq_one Associates.coe_unit_eq_one
 
 theorem isUnit_iff_eq_one (a : Associates α) : IsUnit a ↔ a = 1 :=
@@ -1213,7 +1214,7 @@ theorem DvdNotUnit.not_associated [CancelCommMonoidWithZero α] {p q : α} (h : 
     ¬Associated p q := by
   rintro ⟨a, rfl⟩
   obtain ⟨hp, x, hx, hx'⟩ := h
-  rcases(mul_right_inj' hp).mp hx' with rfl
+  rcases (mul_right_inj' hp).mp hx' with rfl
   exact hx a.isUnit
 #align dvd_not_unit.not_associated DvdNotUnit.not_associated
 

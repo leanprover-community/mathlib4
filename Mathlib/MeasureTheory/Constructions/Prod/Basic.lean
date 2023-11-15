@@ -417,6 +417,16 @@ instance {X Y : Type*}
     [SigmaFinite (volume : Measure Y)] : IsFiniteMeasureOnCompacts (volume : Measure (X × Y)) :=
   prod.instIsFiniteMeasureOnCompacts _ _
 
+instance prod.instNoAtoms_fst [NoAtoms μ] :
+    NoAtoms (Measure.prod μ ν) := by
+  refine NoAtoms.mk (fun x => ?_)
+  rw [← Set.singleton_prod_singleton, Measure.prod_prod, measure_singleton, zero_mul]
+
+instance prod.instNoAtoms_snd [NoAtoms ν] :
+    NoAtoms (Measure.prod μ ν) := by
+  refine NoAtoms.mk (fun x => ?_)
+  rw [← Set.singleton_prod_singleton, Measure.prod_prod, measure_singleton (μ := ν), mul_zero]
+
 theorem ae_measure_lt_top {s : Set (α × β)} (hs : MeasurableSet s) (h2s : (μ.prod ν) s ≠ ∞) :
     ∀ᵐ x ∂μ, ν (Prod.mk x ⁻¹' s) < ∞ := by
   rw [prod_apply hs] at h2s
@@ -853,7 +863,7 @@ theorem lintegral_prod (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.pr
   have A : ∫⁻ z, f z ∂μ.prod ν = ∫⁻ z, hf.mk f z ∂μ.prod ν := lintegral_congr_ae hf.ae_eq_mk
   have B : (∫⁻ x, ∫⁻ y, f (x, y) ∂ν ∂μ) = ∫⁻ x, ∫⁻ y, hf.mk f (x, y) ∂ν ∂μ := by
     apply lintegral_congr_ae
-    filter_upwards [ae_ae_of_ae_prod hf.ae_eq_mk]with _ ha using lintegral_congr_ae ha
+    filter_upwards [ae_ae_of_ae_prod hf.ae_eq_mk] with _ ha using lintegral_congr_ae ha
   rw [A, B, lintegral_prod_of_measurable _ hf.measurable_mk]
 #align measure_theory.lintegral_prod MeasureTheory.lintegral_prod
 

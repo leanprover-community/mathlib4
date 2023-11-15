@@ -135,6 +135,8 @@ structure SimpleGraph (V : Type u) where
 #align simple_graph SimpleGraph
 -- porting note: changed `obviously` to `aesop` in the `structure`
 
+initialize_simps_projections SimpleGraph (Adj → adj)
+
 /-- Constructor for simple graphs using a symmetric irreflexive boolean function. -/
 @[simps]
 def SimpleGraph.mk' {V : Type u} :
@@ -145,7 +147,7 @@ def SimpleGraph.mk' {V : Type u} :
     simp only [mk.injEq, Subtype.mk.injEq]
     intro h
     funext v w
-    simpa [Bool.coe_bool_iff] using congr_fun₂ h v w
+    simpa [Bool.coe_iff_coe] using congr_fun₂ h v w
 
 /-- We can enumerate simple graphs by enumerating all functions `V → V → Bool`
 and filtering on whether they are symmetric and irreflexive. -/
@@ -1239,6 +1241,43 @@ theorem DeleteFar.mono (h : G.DeleteFar p r₂) (hr : r₁ ≤ r₂) : G.DeleteF
 
 end DeleteFar
 
+/-! ## Vertex replacement -/
+
+
+section ReplaceVertex
+
+variable [DecidableEq V] (s t : V)
+
+/-- The graph formed by forgetting `t`'s neighbours and instead giving it those of `s`. The `s-t`
+edge is removed if present. -/
+abbrev replaceVertex : SimpleGraph V where
+  Adj v w := if v = t then if w = t then False else G.Adj s w
+                      else if w = t then G.Adj v s else G.Adj v w
+  symm v w := by dsimp only; split_ifs <;> simp [adj_comm]
+
+/-- There is never an `s-t` edge in `G.replaceVertex s t`. -/
+theorem not_adj_replaceVertex_same : ¬(G.replaceVertex s t).Adj s t := by simp
+
+@[simp]
+theorem replaceVertex_self : G.replaceVertex s s = G := by
+  ext; dsimp only; split_ifs <;> simp_all [adj_comm]
+
+/-- Except possibly for `t`, the neighbours of `s` in `G.replaceVertex s t` are its neighbours in
+`G`. -/
+lemma adj_replaceVertex_iff_of_ne_left {w : V} (hw : w ≠ t) :
+    (G.replaceVertex s t).Adj s w ↔ G.Adj s w := by simp [hw]
+
+/-- Except possibly for itself, the neighbours of `t` in `G.replaceVertex s t` are the neighbours of
+`s` in `G`. -/
+lemma adj_replaceVertex_iff_of_ne_right {w : V} (hw : w ≠ t) :
+    (G.replaceVertex s t).Adj t w ↔ G.Adj s w := by simp [hw]
+
+/-- Adjacency in `G.replaceVertex s t` which does not involve `t` is the same as that of `G`. -/
+lemma adj_replaceVertex_iff_of_ne {v w : V} (hv : v ≠ t) (hw : w ≠ t) :
+    (G.replaceVertex s t).Adj v w ↔ G.Adj v w := by simp [hv, hw]
+
+end ReplaceVertex
+
 /-! ## Map and comap -/
 
 
@@ -1991,12 +2030,16 @@ def mapEdgeSet : G.edgeSet ≃ G'.edgeSet
   invFun := Hom.mapEdgeSet f.symm
   left_inv := by
     rintro ⟨e, h⟩
-    simp [Hom.mapEdgeSet, Sym2.map_map, RelEmbedding.toRelHom]
+    simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Embedding.toFun_eq_coe,
+      RelEmbedding.coe_toEmbedding, RelIso.coe_toRelEmbedding, Sym2.map_map, comp_apply,
+      Subtype.mk.injEq]
     convert congr_fun Sym2.map_id e
     exact RelIso.symm_apply_apply _ _
   right_inv := by
     rintro ⟨e, h⟩
-    simp [Hom.mapEdgeSet, Sym2.map_map, RelEmbedding.toRelHom]
+    simp only [Hom.mapEdgeSet, RelEmbedding.toRelHom, Embedding.toFun_eq_coe,
+      RelEmbedding.coe_toEmbedding, RelIso.coe_toRelEmbedding, Sym2.map_map, comp_apply,
+      Subtype.mk.injEq]
     convert congr_fun Sym2.map_id e
     exact RelIso.apply_symm_apply _ _
 #align simple_graph.iso.map_edge_set SimpleGraph.Iso.mapEdgeSet
@@ -2085,7 +2128,7 @@ end Maps
 @[simps!]
 def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
   toEquiv := Equiv.Set.univ V
-  map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_Adj, Embedding.coe_subtype,
+  map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_adj, Embedding.coe_subtype,
                                 Subtype.forall, Set.mem_univ, forall_true_left, implies_true]
 
 end SimpleGraph

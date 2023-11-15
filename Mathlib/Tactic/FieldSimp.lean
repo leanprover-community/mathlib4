@@ -148,7 +148,7 @@ syntax (name := fieldSimp) "field_simp" (config)? (discharger)? (&" only")?
   (simpArgs)? (location)? : tactic
 
 elab_rules : tactic
-| `(tactic| field_simp $[$cfg:config]? $[$dis:discharger]? $[only%$only?]?
+| `(tactic| field_simp $[$cfg:config]? $[(discharger := $dis)]? $[only%$only?]?
     $[$sa:simpArgs]? $[$loc:location]?) => withMainContext do
   let cfg ← elabSimpConfig (cfg.getD ⟨.missing⟩) .simp
   let loc := expandOptLocation (mkOptionalNode loc)
@@ -156,8 +156,8 @@ elab_rules : tactic
   let dis ← match dis with
   | none => pure discharge
   | some d => do
-     let ⟨_,d⟩ ← tacticToDischarge d
-     pure d
+    let ⟨_, d⟩ ← tacticToDischarge d
+    pure d
 
   let thms0 ← if only?.isSome then
     simpOnlyBuiltins.foldlM (·.addConst ·) ({} : SimpTheorems)

@@ -2018,6 +2018,9 @@ theorem basisSpanSingleton_apply (b : Basis ι R S) {x : S} (hx : x ≠ 0) (i : 
   simp only [basisSpanSingleton, Basis.map_apply, LinearEquiv.trans_apply,
     Submodule.restrictScalarsEquiv_apply, LinearEquiv.ofInjective_apply, LinearEquiv.coe_ofEq_apply,
     LinearEquiv.restrictScalars_apply, Algebra.coe_lmul_eq_mul, LinearMap.mul_apply']
+  -- This used to be the end of the proof before leanprover/lean4#2644
+  erw [LinearEquiv.coe_ofEq_apply, LinearEquiv.ofInjective_apply, Algebra.coe_lmul_eq_mul,
+    LinearMap.mul_apply']
 #align ideal.basis_span_singleton_apply Ideal.basisSpanSingleton_apply
 
 @[simp]
@@ -2031,6 +2034,21 @@ theorem constr_basisSpanSingleton {N : Type*} [Semiring N] [Module N S] [SMulCom
 end Basis
 
 end Ideal
+
+section span_range
+variable {α R : Type*} [Semiring R]
+
+theorem Finsupp.mem_ideal_span_range_iff_exists_finsupp {x : R} {v : α → R} :
+    x ∈ Ideal.span (Set.range v) ↔ ∃ c : α →₀ R, (c.sum fun i a => a * v i) = x :=
+  Finsupp.mem_span_range_iff_exists_finsupp
+
+/-- An element `x` lies in the span of `v` iff it can be written as sum `∑ cᵢ • vᵢ = x`.
+-/
+theorem mem_ideal_span_range_iff_exists_fun [Fintype α] {x : R} {v : α → R} :
+    x ∈ Ideal.span (Set.range v) ↔ ∃ c : α → R, ∑ i, c i * v i = x :=
+  mem_span_range_iff_exists_fun _
+
+end span_range
 
 theorem Associates.mk_ne_zero' {R : Type*} [CommSemiring R] {r : R} :
     Associates.mk (Ideal.span {r} : Ideal R) ≠ 0 ↔ r ≠ 0 := by
@@ -2373,3 +2391,15 @@ theorem eq_liftOfRightInverse (hf : Function.RightInverse f_inv f) (g : A →+* 
 #align ring_hom.eq_lift_of_right_inverse RingHom.eq_liftOfRightInverse
 
 end RingHom
+
+namespace AlgHom
+
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
+    [Algebra R A] [Algebra R B] (f : A →ₐ[R] B)
+
+lemma coe_ker : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
+
+lemma coe_ideal_map (I : Ideal A) :
+    Ideal.map f I = Ideal.map (f : A →+* B) I := rfl
+
+end AlgHom

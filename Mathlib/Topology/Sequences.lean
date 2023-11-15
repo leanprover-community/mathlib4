@@ -3,7 +3,7 @@ Copyright (c) 2018 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.Bounded
 
 #align_import topology.sequences from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -47,7 +47,7 @@ filters and the topology.
   its closure;
 * `tendsto_nhds_iff_seq_tendsto`, `FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto`: a topological
   space is a Fréchet-Urysohn space if and only if sequential convergence implies convergence;
-* `TopologicalSpace.FirstCountableTopology.frechetUrysohnSpace`: every topological space with
+* `FirstCountableTopology.frechetUrysohnSpace`: every topological space with
   first countable topology is a Fréchet-Urysohn space;
 * `FrechetUrysohnSpace.to_sequentialSpace`: every Fréchet-Urysohn space is a sequential space;
 * `IsSeqCompact.isCompact`: a sequentially compact set in a uniform space with countably
@@ -170,10 +170,10 @@ theorem FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto
 
 -- see Note [lower instance priority]
 /-- Every first-countable space is a Fréchet-Urysohn space. -/
-instance (priority := 100) TopologicalSpace.FirstCountableTopology.frechetUrysohnSpace
+instance (priority := 100) FirstCountableTopology.frechetUrysohnSpace
     [FirstCountableTopology X] : FrechetUrysohnSpace X :=
   FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto fun _ _ => tendsto_iff_seq_tendsto.2
-#align topological_space.first_countable_topology.frechet_urysohn_space TopologicalSpace.FirstCountableTopology.frechetUrysohnSpace
+#align topological_space.first_countable_topology.frechet_urysohn_space FirstCountableTopology.frechetUrysohnSpace
 
 /-- A topological space is said to be a *sequential space* if any sequentially closed set in this
 space is closed. This condition is weaker than being a Fréchet-Urysohn space. -/
@@ -242,7 +242,7 @@ end TopologicalSpace
 
 section SeqCompact
 
-open TopologicalSpace TopologicalSpace.FirstCountableTopology
+open TopologicalSpace FirstCountableTopology
 
 variable [TopologicalSpace X]
 
@@ -280,7 +280,7 @@ section FirstCountableTopology
 
 variable [FirstCountableTopology X]
 
-open TopologicalSpace.FirstCountableTopology
+open FirstCountableTopology
 
 protected theorem IsCompact.isSeqCompact {s : Set X} (hs : IsCompact s) : IsSeqCompact s :=
   fun _x x_in =>

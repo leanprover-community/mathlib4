@@ -78,7 +78,7 @@ def invertibleOfDetInvertible [Invertible A.det] : Invertible A where
 
 theorem invOf_eq [Invertible A.det] [Invertible A] : ⅟ A = ⅟ A.det • A.adjugate := by
   letI := invertibleOfDetInvertible A
-  convert(rfl : ⅟ A = _)
+  convert (rfl : ⅟ A = _)
 #align matrix.inv_of_eq Matrix.invOf_eq
 
 /-- `A.det` is invertible if `A` has a left inverse. -/
@@ -102,7 +102,7 @@ def detInvertibleOfInvertible [Invertible A] : Invertible A.det :=
 
 theorem det_invOf [Invertible A] [Invertible A.det] : (⅟ A).det = ⅟ A.det := by
   letI := detInvertibleOfInvertible A
-  convert(rfl : _ = ⅟ A.det)
+  convert (rfl : _ = ⅟ A.det)
 #align matrix.det_inv_of Matrix.det_invOf
 
 /-- Together `Matrix.detInvertibleOfInvertible` and `Matrix.invertibleOfDetInvertible` form an
@@ -465,7 +465,7 @@ variable (A)
 @[simp]
 theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
   cases' subsingleton_or_nontrivial α with ht ht
-  · simp
+  · simp [eq_iff_true_of_subsingleton]
   cases' (Fintype.card n).zero_le.eq_or_lt with hc hc
   · rw [eq_comm, Fintype.card_eq_zero_iff] at hc
     haveI := hc
@@ -504,7 +504,7 @@ theorem invOf_diagonal_eq {α} [Semiring α] (v : n → α) [Invertible v] [Inve
     ⅟ (diagonal v) = diagonal (⅟ v) := by
   letI := diagonalInvertible v
   -- Porting note: no longer need `haveI := Invertible.subsingleton (diagonal v)`
-  convert(rfl : ⅟ (diagonal v) = _)
+  convert (rfl : ⅟ (diagonal v) = _)
 #align matrix.inv_of_diagonal_eq Matrix.invOf_diagonal_eq
 
 /-- `v` is invertible if `diagonal v` is -/
@@ -630,7 +630,7 @@ theorem invOf_submatrix_equiv_eq (A : Matrix m m α) (e₁ e₂ : n ≃ m) [Inve
     [Invertible (A.submatrix e₁ e₂)] : ⅟ (A.submatrix e₁ e₂) = (⅟ A).submatrix e₂ e₁ := by
   letI := submatrixEquivInvertible A e₁ e₂
   -- Porting note: no longer need `haveI := Invertible.subsingleton (A.submatrix e₁ e₂)`
-  convert(rfl : ⅟ (A.submatrix e₁ e₂) = _)
+  convert (rfl : ⅟ (A.submatrix e₁ e₂) = _)
 #align matrix.inv_of_submatrix_equiv_eq Matrix.invOf_submatrix_equiv_eq
 
 /-- Together `Matrix.submatrixEquivInvertible` and

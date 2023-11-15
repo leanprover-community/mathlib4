@@ -299,7 +299,7 @@ variable (M₁) {M₂}
 
 /-- The constant map is multilinear when `ι` is empty. -/
 -- Porting note: Removed [simps] & added simpNF-approved version of the generated lemma manually.
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
   toFun := Function.const _ m
   map_add' _ := isEmptyElim
