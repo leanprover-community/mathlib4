@@ -10,8 +10,6 @@ import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Mathport.Rename
 import Mathlib.Lean.System.IO
 
-#align_import tactic.hint from "leanprover-community/mathlib"@"8f6fd1b69096c6a587f745d354306c0d46396915"
-
 /-!
 # The `hint` tactic.
 
