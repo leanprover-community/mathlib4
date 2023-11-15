@@ -15,7 +15,7 @@
     "rev": "47fa0eea010506a941223da47bd85ad2dd654192",
     "opts": {},
     "name": "Qq",
-    "inputRev?": "eric-wieser/fix-sigma",
+    "inputRev?": "master",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/leanprover-community/aesop",
