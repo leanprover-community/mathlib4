@@ -350,6 +350,9 @@ def IsArtinianRing (R) [Ring R] :=
 theorem isArtinianRing_iff {R} [Ring R] : IsArtinianRing R ↔ IsArtinian R R := Iff.rfl
 #align is_artinian_ring_iff isArtinianRing_iff
 
+instance DivisionRing.instIsArtinianRing {K : Type*} [DivisionRing K] : IsArtinianRing K :=
+  ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
+
 theorem Ring.isArtinian_of_zero_eq_one {R} [Ring R] (h01 : (0 : R) = 1) : IsArtinianRing R :=
   have := subsingleton_of_zero_eq_one h01
   inferInstance
@@ -392,9 +395,9 @@ theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M
     simp
 #align is_artinian_of_fg_of_artinian isArtinian_of_fg_of_artinian
 
-theorem isArtinian_of_fg_of_artinian' {R M} [Ring R] [AddCommGroup M] [Module R M]
-    [IsArtinianRing R] (h : (⊤ : Submodule R M).FG) : IsArtinian R M :=
-  have : IsArtinian R (⊤ : Submodule R M) := isArtinian_of_fg_of_artinian _ h
+instance isArtinian_of_fg_of_artinian' {R M} [Ring R] [AddCommGroup M] [Module R M]
+    [IsArtinianRing R] [Module.Finite R M] : IsArtinian R M :=
+  have : IsArtinian R (⊤ : Submodule R M) := isArtinian_of_fg_of_artinian _ Module.Finite.out
   isArtinian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
 #align is_artinian_of_fg_of_artinian' isArtinian_of_fg_of_artinian'
 

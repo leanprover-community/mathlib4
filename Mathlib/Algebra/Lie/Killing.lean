@@ -3,6 +3,7 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.Semisimple
 import Mathlib.Algebra.Lie.Weights.Cartan
@@ -35,19 +36,28 @@ We define the trace / Killing form in this file and prove some basic properties.
    a Lie algebra is non-singular, it remains non-singular when restricted to a Cartan subalgebra.
  * `LieAlgebra.IsKilling.isSemisimple`: if a Lie algebra has non-singular Killing form then it is
    semisimple.
+ * `LieAlgebra.IsKilling.isLieAbelian_of_IsCartanSubalgebra`: if the Killing form of a Lie algebra
+   is non-singular, then its Cartan subalgebras are Abelian.
 
 ## TODO
 
  * Prove that in characteristic zero, a semisimple Lie algebra has non-singular Killing form.
 -/
 
-variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+-- TODO Where should this go?
+instance {K M : Type*} [DivisionRing K] [AddCommGroup M] [Module K M] [FiniteDimensional K M] :
+    IsNoetherian K M :=
+  IsNoetherian.iff_fg.mpr inferInstance
+
+variable (K R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
   [Module.Free R M] [Module.Finite R M]
+  [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M]
 
 local notation "φ" => LieModule.toEndomorphism R L M
 
 open LinearMap (trace)
+open Set BigOperators
 
 namespace LieModule
 
@@ -161,6 +171,50 @@ lemma eq_zero_of_mem_weightSpace_mem_posFitting [LieAlgebra.IsNilpotent R L]
   obtain ⟨k, hk⟩ := hm₀ x
   obtain ⟨m, rfl⟩ := (mem_posFittingCompOf R x m₁).mp hm₁ k
   simp [hB, hk]
+
+section finite_dimensional
+
+variable [LieAlgebra.IsNilpotent K L] [FiniteDimensional K M] [IsTriangularizable K L M]
+
+lemma traceForm_eq_sum_weightSpace :
+    traceForm K L M =
+    ∑ χ in (finite_weightSpace_ne_bot K L M).toFinset, traceForm K L (weightSpace M χ) := by
+  ext x y
+  have hxy : ∀ χ : L → K, MapsTo ((toEndomorphism K L M x).comp (toEndomorphism K L M y))
+      (weightSpace M χ) (weightSpace M χ) :=
+    fun χ m hm ↦ LieSubmodule.lie_mem _ <| LieSubmodule.lie_mem _ hm
+  have hfin : {χ : L → K | (weightSpace M χ : Submodule K M) ≠ ⊥}.Finite := by
+    convert finite_weightSpace_ne_bot K L M
+    exact LieSubmodule.coeSubmodule_eq_bot_iff (weightSpace M _)
+  classical
+  have hds := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
+    (LieSubmodule.independent_iff_coe_toSubmodule.mp <| independent_weightSpace K L M)
+    (LieSubmodule.iSup_eq_top_iff_coe_toSubmodule.mp <| iSup_weightSpace_eq_top K L M)
+  simp only [LinearMap.coeFn_sum, Finset.sum_apply, traceForm_apply_apply,
+    LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
+  exact Finset.sum_congr (by simp) (fun χ _ ↦ rfl)
+
+lemma lowerCentralSeriesLast_le_ker_traceForm :
+    lowerCentralSeriesLast K L L ≤ LinearMap.ker (traceForm K L M) := by
+  rintro z (hz : z ∈ lowerCentralSeriesLast K L L)
+  suffices ∀ χ : L → K, traceForm K L (weightSpace M χ) z = 0 by
+    simp [traceForm_eq_sum_weightSpace K L M, this]
+  intro χ
+  ext x
+  simp only [LinearMap.zero_apply]
+  have hz' : z ∈ LieAlgebra.center K L := lowerCentralSeriesLast_le_max_triv K L L hz
+  sorry
+
+lemma isLieAbelian_of_ker_traceForm_eq_bot (h : LinearMap.ker (traceForm K L M) = ⊥) :
+    IsLieAbelian L := by
+  have : ¬ Nontrivial (lowerCentralSeriesLast K L L) := by
+    rw [not_nontrivial_iff_subsingleton, Submodule.subsingleton_iff_eq_bot, ← le_bot_iff, ← h]
+    exact lowerCentralSeriesLast_le_ker_traceForm K L M
+  nontriviality L
+  have contra := nontrivial_lowerCentralSeriesLast K L L
+  contradiction
+
+end finite_dimensional
 
 end LieModule
 
@@ -315,6 +369,12 @@ instance isSemisimple [IsDomain R] [IsPrincipalIdealRing R] : IsSemisimple R L :
   exact I.le_killingCompl_top_of_isLieAbelian
 
 -- TODO: formalize a positive-characteristic counterexample to the above instance
+
+lemma isLieAbelian_of_IsCartanSubalgebra [IsKilling K L] [FiniteDimensional K L]
+    (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [LieModule.IsTriangularizable K H L] :
+    IsLieAbelian H :=
+  LieModule.isLieAbelian_of_ker_traceForm_eq_bot K H L <|
+    ker_restrictBilinear_of_isCartanSubalgebra_eq_bot K L H
 
 end IsKilling
 

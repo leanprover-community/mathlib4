@@ -574,6 +574,11 @@ lemma independent_weightSpace [NoZeroSMulDivisors R M] :
     rintro - ⟨u, hu, rfl⟩
     exact LieSubmodule.mapsTo_pow_toEndomorphism_sub_algebraMap _ hu
 
+lemma finite_weightSpace_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] :
+    {χ : L → R | weightSpace M χ ≠ ⊥}.Finite :=
+  CompleteLattice.WellFounded.finite_ne_bot_of_independent
+    (LieSubmodule.wellFounded_of_noetherian R L M) (independent_weightSpace R L M)
+
 /-- A Lie module `M` of a Lie algebra `L` is triangularizable if the endomorhpism of `M` defined by
 any `x : L` is triangularizable. -/
 class IsTriangularizable : Prop :=

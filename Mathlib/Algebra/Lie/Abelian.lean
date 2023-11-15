@@ -45,6 +45,10 @@ theorem trivial_lie_zero (L : Type v) (M : Type w) [Bracket L M] [Zero M] [LieMo
   LieModule.IsTrivial.trivial x m
 #align trivial_lie_zero trivial_lie_zero
 
+instance LieModule.instIsTrivialOfSubsingleton {L M : Type*}
+    [LieRing L] [AddCommGroup M] [LieRingModule L M] [Subsingleton L] : LieModule.IsTrivial L M :=
+  ⟨fun x m ↦ by rw [Subsingleton.eq_zero x, zero_lie]⟩
+
 /-- A Lie algebra is Abelian iff it is trivial as a Lie module over itself. -/
 abbrev IsLieAbelian (L : Type v) [Bracket L L] [Zero L] : Prop :=
   LieModule.IsTrivial L L
@@ -86,11 +90,6 @@ theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
   have h₂ : IsLieAbelian A ↔ ∀ a b : A, ⁅a, b⁆ = 0 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
   simp only [h₁, h₂, LieRing.of_associative_ring_bracket, sub_eq_zero]
 #align commutative_ring_iff_abelian_lie_ring commutative_ring_iff_abelian_lie_ring
-
-theorem LieAlgebra.isLieAbelian_bot (R : Type u) (L : Type v) [CommRing R] [LieRing L]
-    [LieAlgebra R L] : IsLieAbelian (⊥ : LieIdeal R L) :=
-  ⟨fun ⟨x, hx⟩ _ => by simp [eq_iff_true_of_subsingleton]⟩
-#align lie_algebra.is_lie_abelian_bot LieAlgebra.isLieAbelian_bot
 
 section Center
 
