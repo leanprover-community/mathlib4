@@ -22,7 +22,7 @@ This file declares the notations:
 - `R⁰[M]` for the submonoid of non-zero smul-divisors of `R` with respect to `M`, in the locale
   `nonZeroSMulDivisors`
 
-Use the statement `open nonZeroDivisors nonZeroSMulDivisors` to access this notation in your own
+Use the statement `open scoped nonZeroDivisors nonZeroSMulDivisors` to access this notation in your own
 code.
 
 -/
