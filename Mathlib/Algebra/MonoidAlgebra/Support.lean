@@ -79,21 +79,21 @@ theorem support_mul [Mul G] [DecidableEq G] (a b : MonoidAlgebra k G) :
       Subset.trans support_sum <| biUnion_mono fun _a₂ _ => support_single_subset
 #align monoid_algebra.support_mul MonoidAlgebra.support_mul
 
-theorem support_mul_single [RightCancelSemigroup G] (f : MonoidAlgebra k G) (r : k)
+theorem support_mul_single [Mul G] [IsRightCancelMul G] (f : MonoidAlgebra k G) (r : k)
     (hr : ∀ y, y * r = 0 ↔ y = 0) (x : G) :
     (f * single x r).support = f.support.map (mulRightEmbedding x) := by
   classical
     ext
-    simp only [support_mul_single_eq_image f hr (isRightRegular_of_rightCancelSemigroup x),
+    simp only [support_mul_single_eq_image f hr (IsRightRegular.all x),
       mem_image, mem_map, mulRightEmbedding_apply]
 #align monoid_algebra.support_mul_single MonoidAlgebra.support_mul_single
 
-theorem support_single_mul [LeftCancelSemigroup G] (f : MonoidAlgebra k G) (r : k)
+theorem support_single_mul [Mul G] [IsLeftCancelMul G] (f : MonoidAlgebra k G) (r : k)
     (hr : ∀ y, r * y = 0 ↔ y = 0) (x : G) :
     (single x r * f : MonoidAlgebra k G).support = f.support.map (mulLeftEmbedding x) := by
   classical
     ext
-    simp only [support_single_mul_eq_image f hr (isLeftRegular_of_leftCancelSemigroup x), mem_image,
+    simp only [support_single_mul_eq_image f hr (IsLeftRegular.all x), mem_image,
       mem_map, mulLeftEmbedding_apply]
 #align monoid_algebra.support_single_mul MonoidAlgebra.support_single_mul
 

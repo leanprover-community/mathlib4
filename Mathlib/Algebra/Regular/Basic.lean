@@ -343,35 +343,26 @@ theorem IsUnit.isRegular (ua : IsUnit a) : IsRegular a := by
 
 end Monoid
 
-/-- Elements of a left cancel semigroup are left regular. -/
-@[to_additive "Elements of an add left cancel semigroup are add-left-regular."]
-theorem isLeftRegular_of_leftCancelSemigroup [LeftCancelSemigroup R]
-    (g : R) : IsLeftRegular g :=
+/-- If all multiplications cancel on the left then every element is left-regular. -/
+@[to_additive "If all additions cancel on the left then every element is add-left-regular."]
+theorem IsLeftRegular.all [Mul R] [IsLeftCancelMul R] (g : R) : IsLeftRegular g :=
   mul_right_injective g
-#align is_left_regular_of_left_cancel_semigroup isLeftRegular_of_leftCancelSemigroup
-#align is_add_left_regular_of_left_cancel_add_semigroup isAddLeftRegular_of_addLeftCancelSemigroup
+#align is_left_regular_of_left_cancel_semigroup IsLeftRegular.all
+#align is_add_left_regular_of_left_cancel_add_semigroup IsAddLeftRegular.all
 
-/-- Elements of a right cancel semigroup are right regular. -/
-@[to_additive "Elements of an add right cancel semigroup are add-right-regular"]
-theorem isRightRegular_of_rightCancelSemigroup [RightCancelSemigroup R]
-    (g : R) : IsRightRegular g :=
+/-- If all multiplications cancel on the right then every element is right-regular. -/
+@[to_additive "If all additions cancel on the right then every element is add-right-regular."]
+theorem IsRightRegular.all [Mul R] [IsRightCancelMul R] (g : R) : IsRightRegular g :=
   mul_left_injective g
-#align is_right_regular_of_right_cancel_semigroup isRightRegular_of_rightCancelSemigroup
-#align is_add_right_regular_of_right_cancel_add_semigroup   isAddRightRegular_of_addRightCancelSemigroup
+#align is_right_regular_of_right_cancel_semigroup IsRightRegular.all
+#align is_add_right_regular_of_right_cancel_add_semigroup IsLeftRegular.all
 
-section CancelMonoid
-
-variable [CancelMonoid R]
-
-/-- Elements of a cancel monoid are regular.  Cancel semigroups do not appear to exist. -/
-@[to_additive "Elements of an add cancel monoid are regular.
-Add cancel semigroups do not appear to exist."]
-theorem isRegular_of_cancelMonoid (g : R) : IsRegular g :=
+/-- If all multiplications cancel then every element is regular. -/
+@[to_additive "If all additions cancel then every element is add-regular."]
+theorem IsRegular.all [Mul R] [IsCancelMul R] (g : R) : IsRegular g :=
   ⟨mul_right_injective g, mul_left_injective g⟩
-#align is_regular_of_cancel_monoid isRegular_of_cancelMonoid
-#align is_add_regular_of_cancel_add_monoid isAddRegular_of_addCancelMonoid
-
-end CancelMonoid
+#align is_regular_of_cancel_monoid IsRegular.all
+#align is_add_regular_of_cancel_add_monoid IsAddRegular.all
 
 section CancelMonoidWithZero
 
