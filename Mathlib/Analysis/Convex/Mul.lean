@@ -35,13 +35,12 @@ lemma ConvexOn.smul' (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) (hf₀ : 
   refine (smul_le_smul (hf.2 hx hy ha hb hab) (hg.2 hx hy ha hb hab) (hg₀ $ hf.1 hx hy ha hb hab) $
     add_nonneg (smul_nonneg ha $ hf₀ hx) $ smul_nonneg hb $ hf₀ hy).trans ?_
   calc
-      _ = (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g y + f y • g x)
-        := ?_
-    _ ≤ (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g x + f y • g y)
-        := add_le_add_left (smul_le_smul_of_nonneg (hfg.smul_add_smul_le_smul_add_smul hx hy) $
+      _ = (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g y + f y • g x) := ?_
+    _ ≤ (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g x + f y • g y) :=
+        add_le_add_left (smul_le_smul_of_nonneg (hfg.smul_add_smul_le_smul_add_smul hx hy) $
             mul_nonneg ha hb) _
-    _ = (a * (a + b)) • (f x • g x) + (b * (a + b)) • (f y • g y)
-        := by simp only [mul_add, add_smul, smul_add, mul_comm _ a]; abel
+    _ = (a * (a + b)) • (f x • g x) + (b * (a + b)) • (f y • g y) := by
+        simp only [mul_add, add_smul, smul_add, mul_comm _ a]; abel
     _ = _ := by simp_rw [hab, mul_one]
   simp only [mul_add, add_smul, smul_add]
   rw [←smul_smul_smul_comm a, ←smul_smul_smul_comm b, ←smul_smul_smul_comm a b,
@@ -55,12 +54,11 @@ lemma ConcaveOn.smul' (hf : ConcaveOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g) (hf₀
   refine (smul_le_smul (hf.2 hx hy ha hb hab) (hg.2 hx hy ha hb hab) (add_nonneg
     (smul_nonneg ha $ hg₀ hx) $ smul_nonneg hb $ hg₀ hy) $ hf₀ $ hf.1 hx hy ha hb hab).trans' ?_
   calc a • f x • g x + b • f y • g y
-        = (a * (a + b)) • (f x • g x) + (b * (a + b)) • (f y • g y)
-        := by simp_rw [hab, mul_one]
-    _ = (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g x + f y • g y)
-        := by simp only [mul_add, add_smul, smul_add, mul_comm _ a]; abel
-    _ ≤ (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g y + f y • g x)
-        := add_le_add_left (smul_le_smul_of_nonneg (hfg.smul_add_smul_le_smul_add_smul hx hy) $
+        = (a * (a + b)) • (f x • g x) + (b * (a + b)) • (f y • g y) := by simp_rw [hab, mul_one]
+    _ = (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g x + f y • g y) := by
+        simp only [mul_add, add_smul, smul_add, mul_comm _ a]; abel
+    _ ≤ (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g y + f y • g x) :=
+        add_le_add_left (smul_le_smul_of_nonneg (hfg.smul_add_smul_le_smul_add_smul hx hy) $
             mul_nonneg ha hb) _
     _ = _ := ?_
   simp only [mul_add, add_smul, smul_add]
