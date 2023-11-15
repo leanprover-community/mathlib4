@@ -18,7 +18,7 @@ topology, in preparation of connecting the sheaf condition on sites to the vario
 on spaces.
 
 We also specialize results about sheaves on sites to sheaves on spaces; we show that the inclusion
-functor from a topological basis to `TopologicalSpace.Opens` is cover dDense`, that open maps
+functor from a topological basis to `TopologicalSpace.Opens` is cover dense, that open maps
 induce cover preserving functors, and that open embeddings induce continuous functors.
 
 -/
