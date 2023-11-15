@@ -142,40 +142,30 @@ variable {g : 𝕜 → 𝕜} {g' u : 𝕜} {L' : Filter 𝕜}
 
 theorem HasGradientAtFilter.hasDerivAtFilter (h : HasGradientAtFilter g g' u L') :
     HasDerivAtFilter g (starRingEnd 𝕜 g') u L' := by
-  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜)
-      (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g' := by
-    ext; rw [InnerProductSpace.toDual_apply]
-    simp only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, smul_eq_mul,
-      one_mul, IsROrC.inner_apply, mul_one]
-  rw [HasDerivAtFilter, this]; exact h
+  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g'
+  · ext; simp
+  rwa [HasDerivAtFilter, this]
 
 theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
     HasGradientAtFilter g (starRingEnd 𝕜 g') u L' := by
-  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜)
-      g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g') := by
-    ext; rw [InnerProductSpace.toDual_apply]
-    simp only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, smul_eq_mul,
-      one_mul, IsROrC.inner_apply, RingHomCompTriple.comp_apply, RingHom.id_apply, mul_one]
-  rw [HasGradientAtFilter, ← this]; exact h
+  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g')
+  · ext; simp
+  rwa [HasGradientAtFilter, ← this]
 
 theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) :
     HasDerivAt g (starRingEnd 𝕜 g') u := by
-  have : (toDual 𝕜 𝕜) g' 1 = ((starRingEnd 𝕜) g') := by simp
-  rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt, this] at h
-  exact h
+  rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt] at h
+  simpa using h
 
 theorem HasDerivAt.hasGradientAt (h : HasDerivAt g g' u) :
     HasGradientAt g (starRingEnd 𝕜 g') u := by
-  have : g' = ((toDual 𝕜 𝕜) ((starRingEnd 𝕜) g')) 1 := by simp
-  rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt, ← this]
-  exact h
+  rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt]
+  simpa
 
 theorem gradient_eq_deriv : ∇ g u = starRingEnd 𝕜 (deriv g u) := by
-  by_cases h: DifferentiableAt 𝕜 g u
-  · rw [h.hasGradientAt.hasDerivAt.deriv]
-    exact Eq.symm (IsROrC.conj_conj (∇ g u))
-  · rw [gradient_eq_zero_of_not_differentiableAt h, deriv_zero_of_not_differentiableAt h]
-    exact Eq.symm (RingHom.map_zero (starRingEnd 𝕜))
+  by_cases h : DifferentiableAt 𝕜 g u
+  · rw [h.hasGradientAt.hasDerivAt.deriv, IsROrC.conj_conj]
+  · rw [gradient_eq_zero_of_not_differentiableAt h, deriv_zero_of_not_differentiableAt h, map_zero]
 
 end OneDimension
 
