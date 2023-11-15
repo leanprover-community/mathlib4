@@ -93,6 +93,12 @@ theorem OrthonormalBasis.volume_preserving_measurableEquiv (b : OrthonormalBasis
   erw [MeasurableEquiv.coe_toEquiv_symm, Basis.map_addHaar _ b.repr.symm.toContinuousLinearEquiv]
   exact b.addHaar_eq_volume.symm
 
+theorem OrthonormalBasis.volume_preserving_repr (b : OrthonormalBasis ι ℝ F) :
+    MeasurePreserving b.repr volume volume := b.volume_preserving_measurableEquiv
+
+theorem OrthonormalBasis.volume_preserving_repr_symm (b : OrthonormalBasis ι ℝ F) :
+    MeasurePreserving b.repr.symm volume volume := b.volume_preserving_measurableEquiv.symm
+
 section PiLp
 
 variable (ι : Type*) [Fintype ι]
