@@ -188,11 +188,10 @@ theorem measure_unitBall_eq_integral_div_gamma {E : Type*} {p : ℝ}
     μ (Metric.ball 0 1) =
       .ofReal ((∫ (x : E), Real.exp (- ‖x‖ ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
   obtain hE | hE := subsingleton_or_nontrivial E
-  · rw [Set.subset_eq_zero_of_subsingleton (Metric.nonempty_ball.mpr zero_lt_one), ← integral_univ,
-      Set.subset_eq_zero_of_subsingleton Set.univ_nonempty, integral_singleton,
-      finrank_zero_of_subsingleton, Nat.cast_zero, zero_div, zero_add, Real.Gamma_one, div_one,
-      norm_zero, Real.zero_rpow (ne_of_gt hp), neg_zero, Real.exp_zero, smul_eq_mul, mul_one,
-      ofReal_toReal (measure_ne_top μ {0})]
+  · rw [(Metric.nonempty_ball.mpr zero_lt_one).eq_zero, ← integral_univ, Set.univ_nonempty.eq_zero,
+      integral_singleton, finrank_zero_of_subsingleton, Nat.cast_zero, zero_div, zero_add,
+      Real.Gamma_one, div_one, norm_zero, Real.zero_rpow (ne_of_gt hp), neg_zero, Real.exp_zero,
+      smul_eq_mul, mul_one, ofReal_toReal (measure_ne_top μ {0})]
   · have : (0:ℝ) < finrank ℝ E := Nat.cast_pos.mpr finrank_pos
     have : ((∫ y in Set.Ioi (0:ℝ), y ^ (finrank ℝ E - 1) • Real.exp (-y ^ p)) /
         Real.Gamma ((finrank ℝ E) / p + 1)) * (finrank ℝ E) = 1 := by
@@ -252,49 +251,54 @@ theorem measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p) :
     -- The map `ψ` is measure preserving by construction
     have : @MeasurePreserving E F mE _ ψ μ ν :=
       @Measurable.measurePreserving E F mE _ ψ (@MeasurableEquiv.measurable E F mE _ ψ) _
-    erw [← this.integral_comp (@MeasurableEquiv.measurableEmbedding E F mE _ ψ)]
+    erw [← this.integral_comp']
     rfl
 
-theorem measure_le_one_eq_lt_one [Nontrivial E] :
+theorem measure_le_one_eq_lt_one :
     μ {x : E | g x ≤ 1} = μ {x : E | g x < 1} := by
-  -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
-  letI F : Type _ := E
-  letI : NormedAddCommGroup F :=
-  { norm := g
-    dist := fun x y => g (x - y)
-    dist_self := by simp only [_root_.sub_self, h1, forall_const]
-    dist_comm := fun _ _ => by dsimp [dist]; rw [← h2, neg_sub]
-    dist_triangle := fun x y z => by convert h3 (x - y) (y - z) using 1; abel_nf
-    edist := fun x y => .ofReal (g (x - y))
-    edist_dist := fun _ _ => rfl
-    eq_of_dist_eq_zero := by convert fun _ _ h => eq_of_sub_eq_zero (h4 h) }
-  letI : NormedSpace ℝ F :=
-  { norm_smul_le := fun _ _ =>  h5 _ _ }
-  -- We put the new topology on F
-  letI : TopologicalSpace F := UniformSpace.toTopologicalSpace
-  letI : MeasurableSpace F := borel F
-  have : BorelSpace F := { measurable_eq := rfl }
-  -- The map between `E` and `F` as a continuous linear equivalence
-  let φ := @LinearEquiv.toContinuousLinearEquiv ℝ _ E _ _ tE _ _ F _ _ _ _ _ _ _ _ _
-    (LinearEquiv.refl ℝ E : E ≃ₗ[ℝ] F)
-  -- The measure `ν` is the measure on `F` defined by `μ`
-  -- Since we have two different topologies, it is necessary to specify the topology of E
-  let ν : Measure F := @Measure.map E F _ mE φ μ
-  have : IsAddHaarMeasure ν :=
-    @ContinuousLinearEquiv.isAddHaarMeasure_map E F ℝ ℝ _ _ _ _ _ _ tE _ _ _ _ _ _ _ mE _ _ _ φ μ _
-  convert addHaar_closedBall_eq_addHaar_ball ν 0 1 using 1
-  · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_closedBall]
-    · congr!
-      simp_rw [Metric.closedBall, dist_zero_right]
-      rfl
-    · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
-      exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
-  · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_ball]
-    · congr!
-      simp_rw [Metric.ball, dist_zero_right]
-      rfl
-    · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
-      exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
+  obtain hE | hE := subsingleton_or_nontrivial E
+  · have : Set.Nonempty {x | g x ≤ 1} := ⟨0, by simp [h1]⟩
+    rw [this.eq_zero]
+    have : Set.Nonempty {x | g x < 1} := ⟨0, by simp [h1]⟩
+    rw [this.eq_zero]
+  · -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
+    letI F : Type _ := E
+    letI : NormedAddCommGroup F :=
+    { norm := g
+      dist := fun x y => g (x - y)
+      dist_self := by simp only [_root_.sub_self, h1, forall_const]
+      dist_comm := fun _ _ => by dsimp [dist]; rw [← h2, neg_sub]
+      dist_triangle := fun x y z => by convert h3 (x - y) (y - z) using 1; abel_nf
+      edist := fun x y => .ofReal (g (x - y))
+      edist_dist := fun _ _ => rfl
+      eq_of_dist_eq_zero := by convert fun _ _ h => eq_of_sub_eq_zero (h4 h) }
+    letI : NormedSpace ℝ F :=
+    { norm_smul_le := fun _ _ =>  h5 _ _ }
+    -- We put the new topology on F
+    letI : TopologicalSpace F := UniformSpace.toTopologicalSpace
+    letI : MeasurableSpace F := borel F
+    have : BorelSpace F := { measurable_eq := rfl }
+    -- The map between `E` and `F` as a continuous linear equivalence
+    let φ := @LinearEquiv.toContinuousLinearEquiv ℝ _ E _ _ tE _ _ F _ _ _ _ _ _ _ _ _
+      (LinearEquiv.refl ℝ E : E ≃ₗ[ℝ] F)
+    -- The measure `ν` is the measure on `F` defined by `μ`
+    -- Since we have two different topologies, it is necessary to specify the topology of E
+    let ν : Measure F := @Measure.map E F _ mE φ μ
+    have : IsAddHaarMeasure ν := @ContinuousLinearEquiv.isAddHaarMeasure_map E F ℝ ℝ _ _ _ _ _ _ tE
+      _ _ _ _ _ _ _ mE _ _ _ φ μ _
+    convert addHaar_closedBall_eq_addHaar_ball ν 0 1 using 1
+    · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_closedBall]
+      · congr!
+        simp_rw [Metric.closedBall, dist_zero_right]
+        rfl
+      · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
+        exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
+    · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_ball]
+      · congr!
+        simp_rw [Metric.ball, dist_zero_right]
+        rfl
+      · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
+        exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
 
 end main_result
 
