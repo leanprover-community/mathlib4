@@ -1564,7 +1564,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
     filter_upwards [hhh] with a ha
     exact ENNReal.coe_tsum (NNReal.summable_coe.mp ha)
   · filter_upwards [hhh] with x hx
-    exact (summable_of_summable_norm hx).hasSum
+    exact hx.of_norm.hasSum
 #align measure_theory.integral_tsum MeasureTheory.integral_tsum
 
 @[simp]
@@ -1583,6 +1583,11 @@ theorem integral_smul_measure (f : α → G) (c : ℝ≥0∞) :
   rw [← setToFun_congr_smul_measure c hc hdfma hdfma_smul f]
   exact setToFun_congr_left' _ _ (fun s _ _ => weightedSMul_smul_measure μ c) f
 #align measure_theory.integral_smul_measure MeasureTheory.integral_smul_measure
+
+@[simp]
+theorem integral_smul_nnreal_measure (f : α → G) (c : ℝ≥0) :
+    ∫ x, f x ∂(c • μ) = c • ∫ x, f x ∂μ :=
+  integral_smul_measure f (c : ℝ≥0∞)
 
 theorem integral_map_of_stronglyMeasurable {β} [MeasurableSpace β] {φ : α → β} (hφ : Measurable φ)
     {f : β → G} (hfm : StronglyMeasurable f) : ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ := by
@@ -1651,6 +1656,7 @@ theorem integral_subtype_comap {α} [MeasurableSpace α] {μ : Measure α} {s : 
   rw [← map_comap_subtype_coe hs]
   exact ((MeasurableEmbedding.subtype_coe hs).integral_map _).symm
 
+attribute [local instance] Measure.Subtype.measureSpace in
 theorem integral_subtype {α} [MeasureSpace α] {s : Set α} (hs : MeasurableSet s) (f : α → G) :
     ∫ x : s, f x = ∫ x in s, f x := integral_subtype_comap hs f
 #align measure_theory.set_integral_eq_subtype MeasureTheory.integral_subtype

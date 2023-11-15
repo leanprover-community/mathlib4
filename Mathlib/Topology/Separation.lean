@@ -873,6 +873,17 @@ theorem nhds_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology s]
   simpa using (𝓝 x).basis_sets.exists_inter_eq_singleton_of_mem_discrete hx
 #align nhds_inter_eq_singleton_of_mem_discrete nhds_inter_eq_singleton_of_mem_discrete
 
+/-- Let `x` be a point in a discrete subset `s` of a topological space, then there exists an open
+set that only meets `s` at `x`.  -/
+theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
+    (hx : x ∈ s) : ∃ U : Set X, IsOpen U ∧ U ∩ s = {x} := by
+  obtain ⟨U, hU_nhds, hU_inter⟩ := nhds_inter_eq_singleton_of_mem_discrete hx
+  obtain ⟨t, ht_sub, ht_open, ht_x⟩ := mem_nhds_iff.mp hU_nhds
+  refine ⟨t, ht_open, Set.Subset.antisymm ?_ ?_⟩
+  · exact hU_inter ▸ Set.inter_subset_inter_left s ht_sub
+  · rw [Set.subset_inter_iff, Set.singleton_subset_iff, Set.singleton_subset_iff]
+    exact ⟨ht_x, hx⟩
+
 /-- For point `x` in a discrete subset `s` of a topological space, there is a set `U`
 such that
 1. `U` is a punctured neighborhood of `x` (ie. `U ∪ {x}` is a neighbourhood of `x`),
@@ -1731,8 +1742,8 @@ section ClosableCompactSubsetOpenSpace
 
 /-- A class of topological spaces in which, given a compact set included inside an open set, then
 the closure of the compact set is also included in the open set.
-Satisfied notably for T2 spaces and regular spaces, and useful
-when discussing classes of regular measures. -/
+Satisfied notably for T2 spaces and regular spaces, and useful when discussing classes of
+regular measures. Equivalent to regularity among locally compact spaces. -/
 class ClosableCompactSubsetOpenSpace (X : Type*) [TopologicalSpace X] : Prop :=
   closure_subset_of_isOpen : ∀ (K U : Set X), IsCompact K → IsOpen U → K ⊆ U → closure K ⊆ U
 
@@ -1741,12 +1752,12 @@ theorem IsCompact.closure_subset_of_isOpen [ClosableCompactSubsetOpenSpace X]
     closure s ⊆ u :=
   ClosableCompactSubsetOpenSpace.closure_subset_of_isOpen s u hs hu h
 
-instance [T2Space X] : ClosableCompactSubsetOpenSpace X :=
+instance (priority := 150) [T2Space X] : ClosableCompactSubsetOpenSpace X :=
   ⟨fun K _U K_comp _U_open KU ↦ by rwa [K_comp.isClosed.closure_eq]⟩
 
 /-- In a (possibly non-Hausdorff) regular space, if a compact set `s` is contained in an
 open set `u`, then its closure is also contained in `u`. -/
-instance [RegularSpace X] : ClosableCompactSubsetOpenSpace X := by
+instance (priority := 150) [RegularSpace X] : ClosableCompactSubsetOpenSpace X := by
   refine ⟨fun s u hs hu h ↦ ?_⟩
   obtain ⟨F, sF, F_closed, Fu⟩ : ∃ F, s ⊆ F ∧ IsClosed F ∧ F ⊆ u := by
     apply hs.induction_on (p := fun t ↦ ∃ F, t ⊆ F ∧ IsClosed F ∧ F ⊆ u)
@@ -1778,6 +1789,16 @@ theorem exists_compact_closed_between [LocallyCompactSpace X] [ClosableCompactSu
   · exact KM.trans (interior_mono subset_closure)
   · apply M_comp.closure_subset_of_isOpen hU
     exact ML.trans (interior_subset.trans LU)
+
+/-- A locally compact space with the `ClosableCompactSubsetOpenSpace` is `Regular`. -/
+instance (priority := 80) [LocallyCompactSpace X] [ClosableCompactSubsetOpenSpace X] :
+    RegularSpace X := by
+  apply RegularSpace.ofExistsMemNhdsIsClosedSubset (fun x s hx ↦ ?_)
+  rcases _root_.mem_nhds_iff.1 hx with ⟨u, us, u_open, xu⟩
+  rcases exists_compact_closed_between (isCompact_singleton (a := x)) u_open (by simpa using xu)
+    with ⟨t, -, t_closed, xt, tu⟩
+  have : interior t ∈ 𝓝 x := isOpen_interior.mem_nhds (by simpa using xt)
+  exact ⟨t, interior_mem_nhds.mp this, t_closed, tu.trans us⟩
 
 protected theorem IsCompact.closure [WeaklyLocallyCompactSpace X] [ClosableCompactSubsetOpenSpace X]
     {K : Set X} (hK : IsCompact K) : IsCompact (closure K) := by
