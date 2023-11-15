@@ -16,7 +16,6 @@ import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.ContDiffDef
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.AffineMap
 import Mathlib.Analysis.Calculus.Series
@@ -43,6 +42,8 @@ import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 import Mathlib.Geometry.Euclidean.Inversion.Calculus
 import Mathlib.NumberTheory.ZetaFunction
 
+import Mathlib.Util.Time
+
 
 /-!
 
@@ -66,7 +67,9 @@ section basic
 -- @[continuity]
 -- theorem continuous_ofReal : Continuous ((↑) : ℝ → ℂ)
 
-attribute [local aesop unsafe 90% apply (rule_sets [Differentiable])]
+-- apply penalty because these can match things like `sin x = exp... + exp...`, whereas we want to
+-- match `sin` directly.
+attribute [local aesop safe 2 apply (rule_sets [Differentiable])]
     Differentiable.sum  -- Mathlib.Analysis.Calculus.FDeriv.Add
     Differentiable.sub  -- Mathlib.Analysis.Calculus.FDeriv.Add
     Differentiable.add  -- Mathlib.Analysis.Calculus.FDeriv.Add
@@ -142,7 +145,7 @@ attribute [local differentiability]
 
 
 
-set_option trace.aesop true
+-- set_option trace.aesop true
 
 section RealExamplesAndTests
 open Real
@@ -159,19 +162,18 @@ example : Differentiable ℝ (fun (x : ℝ) ↦ exp x) := by
 example : Differentiable ℝ (fun (x : ℝ) ↦ exp x + sin x) := by
     differentiability
 
-example : Differentiable ℝ (fun x ↦ x * 999 *  cosh x + 3) := by
+#time example : Differentiable ℝ (fun x ↦ x * 999 * cosh x + 3) := by
     differentiability
 
--- problem: the tactic splits trig functions into complex exponentials
--- and then fails...
-example : Differentiable ℝ (fun x ↦ ( sin (sin x))) := by
+-- this takes longer than the seemlingly more complicated example above?!
+#time example : Differentiable ℝ (fun x ↦ ( sin (sin x))) := by
     differentiability
 
 
-example : Differentiable ℝ (fun (x : ℝ) ↦
-(sin x * exp x + 3) * 999 * (cosh (cos x)))
-:= by
-    differentiability
+-- example : Differentiable ℝ (fun (x : ℝ) ↦
+-- (sin x * exp x + 3) * 999 * (cosh (cos x)))
+-- := by
+--     differentiability
 
 -- section ComplexExamplesAndTests
 -- open Complex
@@ -245,3 +247,120 @@ example : Differentiable ℝ (fun (x : ℝ) ↦
 -- --   DifferentiableAt (λ x ↦ f x x) x₀ := by
 -- --   fail_if_success { exact hf.comp (continuousAt_id.prod continuousAt_id) }
 -- --   exact hf.comp_of_eq (continuousAt_id.prod continuousAt_id) rfl
+
+-- =================================================================================================
+-- ============================= TRY USING `solve_by_elim` =========================================
+-- =================================================================================================
+
+
+
+
+
+
+-- TODO note uncommenting all of them makes the following lemma fail!
+attribute [differentiabilitySBE]
+    differentiable_id
+    differentiable_id'
+    differentiable_const
+    IsBoundedLinearMap.differentiable
+    ContinuousLinearMap.differentiable
+    Differentiable.iterate
+    Differentiable.comp
+    differentiable_fst
+    differentiable_snd
+    Differentiable.fst
+    Differentiable.snd
+    Differentiable.prod
+    IsBoundedBilinearMap.differentiable
+    Differentiable.const_mul
+    Differentiable.mul_const
+    Differentiable.pow
+    Differentiable.inverse
+    Differentiable.mul
+    Differentiable.inv'
+    Differentiable.smul_const
+    Differentiable.smul
+    Differentiable.clm_apply
+    Differentiable.clm_comp
+    Differentiable.neg
+    Differentiable.const_sub
+    Differentiable.sub_const
+    Differentiable.add_const
+    Differentiable.const_add
+    -- Differentiable.sum
+    -- Differentiable.sub
+    -- Differentiable.add
+    -- Differentiable.const_smul
+    -- Differentiable.div_const
+    -- Differentiable.restrictScalars
+    -- Differentiable.inv
+    -- Differentiable.div
+    -- ContinuousLinearEquiv.differentiable
+    -- LinearIsometryEquiv.differentiable
+    -- ContDiff.differentiable
+    -- ContDiff.differentiable_iteratedFDeriv
+    -- HasFTaylorSeriesUpTo.differentiable
+    -- differentiable_neg
+    -- AffineMap.differentiable
+    -- differentiable_tsum
+    -- differentiable_pow
+    -- Differentiable.sqrt
+    -- Differentiable.norm_sq
+    -- Differentiable.norm
+    -- Differentiable.dist
+    -- differentiable_inner
+    -- Differentiable.inner
+    -- Polynomial.differentiable
+    -- Polynomial.differentiable_aeval
+    -- ContDiff.differentiable_iteratedDeriv
+    -- Conformal.differentiable
+    -- Real.differentiable_exp
+    -- Complex.differentiable_exp
+    -- Differentiable.exp
+    -- Differentiable.cexp
+    -- expNegInvGlue.differentiable_polynomial_eval_inv_mul
+    -- Differentiable.star
+    -- Differentiable.zpow
+    -- Differentiable.clog
+    -- Differentiable.log
+    -- Complex.differentiable_cos
+    -- Complex.differentiable_cosh
+    -- Complex.differentiable_sin
+    -- Complex.differentiable_sinh
+    -- Real.differentiable_cos
+    -- Real.differentiable_cosh
+    -- Real.differentiable_sin
+    -- Real.differentiable_sinh
+    Differentiable.ccos
+    Differentiable.ccosh
+    Differentiable.cos
+    Differentiable.cosh
+    Differentiable.csin
+    Differentiable.csinh
+    Differentiable.sin-----------------------------------todo
+    Differentiable.sinh
+    Real.differentiable_rpow_const
+    Differentiable.rpow_const
+    Differentiable.rpow
+    Real.differentiable_arctan
+    Differentiable.arctan
+    differentiable_circleMap
+    MDifferentiable.differentiable
+    Real.differentiable_arsinh
+    Differentiable.arsinh
+    SchwartzMap.differentiable
+    Complex.differentiable_one_div_Gamma
+    Differentiable.inversion
+    differentiable_completed_zeta₀
+    differentiable_mellin_zetaKernel₂
+
+set_option maxHeartbeats 10000000 in
+#time example : Differentiable ℝ (fun x ↦ ( sin (sin x))) := by
+    solve_by_elim (config:={maxDepth:=10}) using differentiabilitySBE
+
+
+-- this is way faster but need to spell out lemmas
+#time example : Differentiable ℝ (fun x ↦ ( sin (sin x))) := by
+    solve_by_elim (config:={maxDepth:=10}) [
+        Differentiable.sin, differentiable_id, differentiable_id'
+        ]

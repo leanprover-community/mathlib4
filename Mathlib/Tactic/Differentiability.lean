@@ -15,9 +15,8 @@ The approach is copied from how the tactic `continuity` is implemented.
 
 attribute [aesop (rule_sets [Differentiable]) unfold norm] Function.comp
 
--- Issue: Large natural powers lead to timeouts.
--- This is due to copied over (from `continuity`) settings of tactic.
--- I'm not sure why those options are used.
+-- copied over (from `continuity`) but it was decided that this should not be used
+-- neither here, nor for `continuity`.
 -- attribute [aesop (rule_sets [Differentiable]) unfold norm] npowRec
 
 /--
@@ -43,3 +42,7 @@ macro "differentiability?" : tactic =>
 -- Todo: implement `differentiability!` and `differentiability!?` and add configuration, original
 -- syntax was (same for the missing `differentiability` variants):
 -- syntax (name := differentiability) "differentiability" (config)? : tactic
+
+
+-- attribute to use with `solve_by_elim`. TODO delete either aesop tactic or this?
+register_label_attr differentiabilitySBE
