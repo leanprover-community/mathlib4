@@ -122,16 +122,16 @@ theorem support_mul [DecidableEq G] [Add G] (a b : k[G]) :
   @MonoidAlgebra.support_mul k (Multiplicative G) _ _ _ _ _
 #align add_monoid_algebra.support_mul AddMonoidAlgebra.support_mul
 
-theorem support_mul_single [AddRightCancelSemigroup G] (f : k[G]) (r : k)
+theorem support_mul_single [Add G] [IsRightCancelAdd G] (f : k[G]) (r : k)
     (hr : ∀ y, y * r = 0 ↔ y = 0) (x : G) :
     (f * single x r : k[G]).support = f.support.map (addRightEmbedding x) :=
-  @MonoidAlgebra.support_mul_single k (Multiplicative G) _ _ _ _ hr _
+  @MonoidAlgebra.support_mul_single k (Multiplicative G) _ _ _ _ _ hr _
 #align add_monoid_algebra.support_mul_single AddMonoidAlgebra.support_mul_single
 
-theorem support_single_mul [AddLeftCancelSemigroup G] (f : k[G]) (r : k)
+theorem support_single_mul [Add G] [IsLeftCancelAdd G] (f : k[G]) (r : k)
     (hr : ∀ y, r * y = 0 ↔ y = 0) (x : G) :
     (single x r * f : k[G]).support = f.support.map (addLeftEmbedding x) :=
-  @MonoidAlgebra.support_single_mul k (Multiplicative G) _ _ _ _ hr _
+  @MonoidAlgebra.support_single_mul k (Multiplicative G) _ _ _ _ _ hr _
 #align add_monoid_algebra.support_single_mul AddMonoidAlgebra.support_single_mul
 
 section Span
