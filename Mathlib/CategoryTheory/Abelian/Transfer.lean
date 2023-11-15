@@ -34,15 +34,8 @@ Someone may like to formalize that lemma, and restate this theorem in terms of `
 (That lemma has a nice string diagrammatic proof that holds in any bicategory.)
 
 ## enough-injectives
-If `C, D` are abelian categories with adjoint functors `L ⊣ R` where `L` is a faithful exact
+If `C, D` are categories with adjoint functors `L ⊣ R` where `L` is a faithful exact
 functor from `C` to `D`, then `D` having enough injectives implies that `C` has enough injectives.
-
-### Notes
-
-In `EnoughInjectives.of_equivalence`, if we require `C` and `D` to have morphisms at the same
-universe level, then it suffices to assume only `abelian C`, since `abelian D` would be implied by
-`abelian_of_adjunction`. Maybe "transferring abelian-ness" should have a more relaxed universe
-level?
 
 -/
 
@@ -230,7 +223,7 @@ injectives of `ℬ`. Then `A ⟶ R(J)` is an injective presentation of `A`
 def toUnder {A : 𝒜} (a : InjectivePresentation <| L.obj A) :
     A ⟶ R.obj a.J := adj.homEquiv _ _ <| a.f
 
-lemma mono_toUnder [Abelian 𝒜] [PreservesFiniteLimits L] [Faithful L]
+lemma mono_toUnder [PreservesFiniteLimits L] [Faithful L]
     {A : 𝒜} (a : InjectivePresentation <| L.obj A) : Mono (toUnder adj a) := by
   have eq1 : L.map (toUnder adj a) ≫ (adj.counit.app _) = a.f := by simp [toUnder]
   have : Mono (L.map (toUnder adj a) ≫ (adj.counit.app _)) := eq1 ▸ a.mono
@@ -244,7 +237,7 @@ open transfer_enough_injectives in
 [Lemma 3.8](https://ncatlab.org/nlab/show/injective+object#preservation_of_injective_objects)
 -/
 lemma EnoughInjectives.of_adjunction {C : Type u₁} {D : Type u₂}
-    [Category.{v₁} C] [Category.{v₂} D] [Abelian C] [Abelian D]
+    [Category.{v₁} C] [Category.{v₂} D]
     {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) [Faithful L] [PreservesFiniteLimits L]
     [EnoughInjectives D] : EnoughInjectives C where
   presentation _ :=
@@ -253,7 +246,7 @@ lemma EnoughInjectives.of_adjunction {C : Type u₁} {D : Type u₂}
 
 /-- An equivalence of categories transfers enough injectives. -/
 lemma EnoughInjectives.of_equivalence {C : Type u₁} {D : Type u₂}
-    [Category.{v₁} C] [Category.{v₂} D] [Abelian C] [Abelian D]
+    [Category.{v₁} C] [Category.{v₂} D]
     (e : C ⥤ D) [IsEquivalence e] [EnoughInjectives D] : EnoughInjectives C :=
 EnoughInjectives.of_adjunction (adj := e.asEquivalence.toAdjunction)
 
