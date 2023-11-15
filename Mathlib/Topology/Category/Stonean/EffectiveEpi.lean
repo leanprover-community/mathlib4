@@ -43,27 +43,20 @@ The theorem `Stonean.effectiveEpi_tfae` should be used instead.
 -/
 noncomputable
 def struct {B X : Stonean.{u}} (π : X ⟶ B) (hπ : Function.Surjective π) : EffectiveEpiStruct π where
-  desc e h := by
-    refine QuotientMap.lift (QuotientMap.of_surjective_continuous hπ π.continuous) e fun a b hab ↦
-      FunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
-      (by ext; exact hab)) a
-  fac e h := by
+  desc e h := (QuotientMap.of_surjective_continuous hπ π.continuous).lift e fun a b hab ↦
+    FunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
+    (by ext; exact hab)) a
+  fac e h := ((QuotientMap.of_surjective_continuous hπ π.continuous).lift_comp e
+    fun a b hab ↦ FunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
+    (by ext; exact hab)) a)
+  uniq e h g hm := by
+    suffices g = (QuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv ⟨e,
+      fun a b hab ↦ FunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
+      (by ext; exact hab)) a⟩ by assumption
+    rw [← Equiv.symm_apply_eq (QuotientMap.of_surjective_continuous hπ π.continuous).liftEquiv]
     ext
-    have := QuotientMap.lift_comp (QuotientMap.of_surjective_continuous hπ π.continuous) e
-      fun a b hab ↦ FunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
-      (by ext; exact hab)) a
-    exact FunLike.congr_fun this _
-  uniq {W} e h g hm := by
-    have hg : g = (QuotientMap.liftEquiv (QuotientMap.of_surjective_continuous hπ π.continuous)) ⟨e,
-      fun a b hab ↦ FunLike.congr_fun (h ⟨fun _ ↦ a, continuous_const⟩ ⟨fun _ ↦ b, continuous_const⟩
-      (by ext; exact hab)) a⟩
-    · rw [← Equiv.symm_apply_eq
-        (QuotientMap.liftEquiv (QuotientMap.of_surjective_continuous hπ π.continuous))]
-      ext
-      simp only [QuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply]
-      rw [← hm]
-      rfl
-    · exact hg
+    simp only [QuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
+    rfl
 
 open List in
 theorem effectiveEpi_tfae
