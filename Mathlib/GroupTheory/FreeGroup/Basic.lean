@@ -732,8 +732,8 @@ theorem lift_of {x} : lift f (of x) = f x :=
 theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
     g x = FreeGroup.lift f x :=
   FunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ FreeGroup.of = f)) x
-#align free_group.lift.unique FreeGroup.lift_unique
-#align free_add_group.lift.unique FreeAddGroup.lift_unique
+#align free_group.lift.unique FreeGroup.lift.unique
+#align free_add_group.lift.unique FreeAddGroup.lift.unique
 
 /-- Two homomorphisms out of a free group are equal if they are equal on generators.
 
@@ -811,8 +811,8 @@ theorem map_id' (x : FreeGroup α) : map (fun z => z) x = x :=
 theorem map.comp {γ : Type w} (f : α → β) (g : β → γ) (x) :
     map g (map f x) = map (g ∘ f) x := by
   rcases x with ⟨L⟩; simp [(· ∘ ·)]
-#align free_group.map.comp FreeGroup.map_map
-#align free_add_group.map.comp FreeAddGroup.map_map
+#align free_group.map.comp FreeGroup.map.comp
+#align free_add_group.map.comp FreeAddGroup.map.comp
 
 @[to_additive (attr := simp)]
 theorem map_of {x} : map f (of x) = of (f x) :=
@@ -832,12 +832,12 @@ theorem map.unique (g : FreeGroup α →* FreeGroup β)
         simp [g.map_mul, g.map_inv, hg, ih])
       (show g (FreeGroup.of x * FreeGroup.mk t) =
           FreeGroup.map f (FreeGroup.of x * FreeGroup.mk t) by simp [g.map_mul, hg, ih])
-#align free_group.map.unique FreeGroup.map_unique
-#align free_add_group.map.unique FreeAddGroup.map_unique
+#align free_group.map.unique FreeGroup.map.unique
+#align free_add_group.map.unique FreeAddGroup.map.unique
 
 @[to_additive]
 theorem map_eq_lift : map f x = lift (of ∘ f) x :=
-  Eq.symm <| map_unique _ fun x => by simp
+  Eq.symm <| map.unique _ fun x => by simp
 #align free_group.map_eq_lift FreeGroup.map_eq_lift
 #align free_add_group.map_eq_lift FreeAddGroup.map_eq_lift
 
@@ -861,8 +861,8 @@ as `Equiv.of_freeGroupEquiv`
 def freeGroupCongr {α β} (e : α ≃ β) : FreeGroup α ≃* FreeGroup β where
   toFun := map e
   invFun := map e.symm
-  left_inv x := by simp [Function.comp, map_map]
-  right_inv x := by simp [Function.comp, map_map]
+  left_inv x := by simp [Function.comp, map.comp]
+  right_inv x := by simp [Function.comp, map.comp]
   map_mul' := MonoidHom.map_mul _
 #align free_group.free_group_congr FreeGroup.freeGroupCongr
 #align free_add_group.free_add_group_congr FreeAddGroup.freeAddGroupCongr
@@ -884,7 +884,7 @@ theorem freeGroupCongr_symm {α β} (e : α ≃ β) : (freeGroupCongr e).symm = 
 @[to_additive]
 theorem freeGroupCongr_trans {α β γ} (e : α ≃ β) (f : β ≃ γ) :
     (freeGroupCongr e).trans (freeGroupCongr f) = freeGroupCongr (e.trans f) :=
-  MulEquiv.ext <| map_map _ _
+  MulEquiv.ext <| map.comp _ _
 #align free_group.free_group_congr_trans FreeGroup.freeGroupCongr_trans
 #align free_add_group.free_add_group_congr_trans FreeAddGroup.freeAddGroupCongr_trans
 
@@ -941,7 +941,7 @@ theorem prod_of {x : α} : prod (of x) = x :=
 
 @[to_additive]
 theorem prod.unique (g : FreeGroup α →* α) (hg : ∀ x, g (FreeGroup.of x) = x) {x} : g x = prod x :=
-  lift_unique g hg
+  lift.unique g hg
 #align free_group.prod.unique FreeGroup.prod.unique
 #align free_add_group.sum.unique FreeAddGroup.sum.unique
 
@@ -949,7 +949,7 @@ end Prod
 
 @[to_additive]
 theorem lift_eq_prod_map {β : Type v} [Group β] {f : α → β} {x} : lift f x = prod (map f x) := by
-  rw [← lift_unique (prod.comp (map f))]
+  rw [← lift.unique (prod.comp (map f))]
   · rfl
   · simp
 #align free_group.lift_eq_prod_map FreeGroup.lift_eq_prod_map
