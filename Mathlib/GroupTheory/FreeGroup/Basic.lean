@@ -776,6 +776,20 @@ theorem lift.range_eq_closure : (lift f).range = Subgroup.closure (Set.range f) 
 
 end lift
 
+section proj
+
+variable [DecidableEq α]
+
+def proj (a : α) : FreeGroup α →* Multiplicative ℤ :=
+  lift (Pi.mulSingle a (Multiplicative.ofAdd 1))
+
+@[simp]
+theorem proj_apply (a b : α) : proj a (of b) =
+    (Pi.mulSingle a (Multiplicative.ofAdd 1) : α → Multiplicative ℤ) b := by
+  simp [proj]
+
+end proj
+
 section Map
 
 variable {β : Type v} (f : α → β) {x y : FreeGroup α}
