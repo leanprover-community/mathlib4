@@ -12,10 +12,41 @@ import Mathlib.Order.Filter.AtTopBot
 /-!
 # Convergence of intervals
 
+## Motivation
+
+If a function tends to infinity somewhere, then its derivative is not integrable around this place.
+One should be careful about this statement: "somewhere" could mean a point, but also convergence
+from the left or from the right, or it could also be infinity, and "around this place" will refer
+to these directed neighborhoods. Therefore, the above theorem has many variants. Instead of stating
+all these variants, one can look for the common abstraction and have a single version. One has to
+be careful: if one considers convergence along a sequence, then the function may tend to infinity
+but have a derivative which is small along the sequence (with big jumps inbetween), so in the end
+the derivative may be integrable on a neighborhood of the sequence. What really matters for such
+calculus issues in terms of derivatives is that whole intervals are included in the sets we
+consider.
+
+The right common abstraction is provided in this file, as the `TendstoIxxClass` typeclass.
+It takes as parameters a class of bounded intervals and two real filters `l₁` and `l₂`.
+An instance `TendstoIxxClass Icc l₁ l₂` registers that, if `aₙ` and `bₙ` are converging towards
+the filter `l₁`, then the intervals `Icc aₙ bₙ` are eventually contained in any given set
+belonging to `l₂`. For instance, for `l₁ = 𝓝[>] x` and `l₂ = 𝓝[≥] x`, the strict and large right
+neighborhoods of `x` respectively, then given any large right neighborhood `s ∈ 𝓝[≥] x` and any two
+sequences `xₙ` and `yₙ` converging strictly to the right of `x`,
+then the interval `[xₙ, yₙ]` is eventually contained in `s`. Therefore, the instance
+`TendstoIxxClass Icc (𝓝[>] x) (𝓝[≥] x)` holds. Note that one could have taken as
+well `l₂ = 𝓝[>] x`, but that `l₁ = 𝓝[≥] x` and `l₂ = 𝓝[>] x` wouldn't work.
+
+With this formalism, the above theorem would read: if `TendstoIxxClass Icc l l` and `f` tends
+to infinity along `l`, then its derivative is not integrable on any element of `l`.
+Beyond this simple example, this typeclass plays a prominent role in generic formulations of
+the fundamental theorem of calculus.
+
+## Main definition
+
 If both `a` and `b` tend to some filter `l₁`, sometimes this implies that `Ixx a b` tends to
 `l₂.smallSets`, i.e., for any `s ∈ l₂` eventually `Ixx a b` becomes a subset of `s`. Here and below
-`Ixx` is one of `Set.Icc`, `Set.Ico`, `Set.Ioc`, and `Set.Ioo`. We define `Filter.TendstoIxxClass
-Ixx l₁ l₂` to be a typeclass representing this property.
+`Ixx` is one of `Set.Icc`, `Set.Ico`, `Set.Ioc`, and `Set.Ioo`.
+We define `Filter.TendstoIxxClass Ixx l₁ l₂` to be a typeclass representing this property.
 
 The instances provide the best `l₂` for a given `l₁`. In many cases `l₁ = l₂` but sometimes we can
 drop an endpoint from an interval: e.g., we prove

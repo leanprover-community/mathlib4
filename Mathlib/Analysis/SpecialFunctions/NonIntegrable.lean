@@ -43,17 +43,17 @@ open scoped MeasureTheory Topology Interval NNReal ENNReal
 
 open MeasureTheory TopologicalSpace Set Filter Asymptotics intervalIntegral
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [SecondCountableTopology E]
-  [CompleteSpace E] [NormedAddCommGroup F]
-
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
 
 /-- If `f` is eventually differentiable along a nontrivial filter `l : Filter ℝ` that is generated
 by convex sets, the norm of `f` tends to infinity along `l`, and `f' = O(g)` along `l`, where `f'`
-is the derivative of `f`, then `g` is not integrable on any set `k` belonging to `l`. -/
-theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter {f : ℝ → E} {g : ℝ → F}
+is the derivative of `f`, then `g` is not integrable on any set `k` belonging to `l`.
+Auxiliary version assuming that `E` is complete. -/
+theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter_aux
+    [CompleteSpace E] {f : ℝ → E} {g : ℝ → F}
     {k : Set ℝ} (l : Filter ℝ) [NeBot l] [TendstoIxxClass Icc l l]
     (hl : k ∈ l) (hd : ∀ᶠ x in l, DifferentiableAt ℝ f x) (hf : Tendsto (fun x => ‖f x‖) l atTop)
-    (hfg : deriv f =O[l] g) : ¬IntegrableOn g k volume := by
+    (hfg : deriv f =O[l] g) : ¬IntegrableOn g k := by
   intro hgi
   obtain ⟨C, hC₀, s, hsl, hsub, hfd, hg⟩ :
     ∃ (C : ℝ) (_ : 0 ≤ C), ∃ s ∈ l, (∀ x ∈ s, ∀ y ∈ s, [[x, y]] ⊆ k) ∧
@@ -86,14 +86,39 @@ theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter {f : ℝ �
   refine' hlt.not_le (sub_le_iff_le_add'.1 _)
   calc
     ‖f d‖ - ‖f c‖ ≤ ‖f d - f c‖ := norm_sub_norm_le _ _
-    _ = ‖∫ x in c..d, deriv f x‖ := (congr_arg _ (integral_deriv_eq_sub hfd hfi).symm)
-    _ = ‖∫ x in Ι c d, deriv f x‖ := (norm_integral_eq_norm_integral_Ioc _)
-    _ ≤ ∫ x in Ι c d, ‖deriv f x‖ := (norm_integral_le_integral_norm _)
+    _ = ‖∫ x in c..d, deriv f x‖ := congr_arg _ (integral_deriv_eq_sub hfd hfi).symm
+    _ = ‖∫ x in Ι c d, deriv f x‖ := norm_integral_eq_norm_integral_Ioc _
+    _ ≤ ∫ x in Ι c d, ‖deriv f x‖ := norm_integral_le_integral_norm _
     _ ≤ ∫ x in Ι c d, C * ‖g x‖ :=
       set_integral_mono_on hfi.norm.def (hgi.mono_set hsub') measurableSet_uIoc hg
     _ ≤ ∫ x in k, C * ‖g x‖ := by
       apply set_integral_mono_set hgi
         (ae_of_all _ fun x => mul_nonneg hC₀ (norm_nonneg _)) hsub'.eventuallyLE
+
+theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter
+    {f : ℝ → E} {g : ℝ → F}
+    {k : Set ℝ} (l : Filter ℝ) [NeBot l] [TendstoIxxClass Icc l l]
+    (hl : k ∈ l) (hd : ∀ᶠ x in l, DifferentiableAt ℝ f x) (hf : Tendsto (fun x => ‖f x‖) l atTop)
+    (hfg : deriv f =O[l] g) : ¬IntegrableOn g k := by
+  let a : E →ₗᵢ[ℝ] UniformSpace.Completion E := UniformSpace.Completion.toComplₗᵢ
+  let f' := a ∘ f
+  have h'd : ∀ᶠ x in l, DifferentiableAt ℝ f' x := by
+    filter_upwards [hd] with x hx using a.toContinuousLinearMap.differentiableAt.comp x hx
+  have h'f : Tendsto (fun x => ‖f' x‖) l atTop := hf.congr (fun x ↦ by simp)
+  have h'fg : deriv f' =O[l] g := by
+    apply IsBigO.trans _ hfg
+    rw [← isBigO_norm_norm]
+    suffices (fun x ↦ ‖deriv f' x‖) =ᶠ[l] (fun x ↦ ‖deriv f x‖) by exact this.isBigO
+    filter_upwards [hd] with x hx
+    have : deriv f' x = a (deriv f x) := by
+      rw [fderiv.comp_deriv x _ hx]
+      · have : fderiv ℝ a (f x) = a.toContinuousLinearMap := a.toContinuousLinearMap.fderiv
+        simp only [this]
+        rfl
+      · exact a.toContinuousLinearMap.differentiableAt
+    simp only [this]
+    simp
+  exact not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter_aux l hl h'd h'f h'fg
 
 /-- If `f` is eventually differentiable along a nontrivial filter `l : Filter ℝ` that is generated
 by convex sets, the norm of `f` tends to infinity along `l`, and `f' = O(g)` along `l`, where `f'`
@@ -187,14 +212,13 @@ theorem intervalIntegrable_inv_iff {a b : ℝ} :
   simp only [← intervalIntegrable_sub_inv_iff, sub_zero]
 #align interval_integrable_inv_iff intervalIntegrable_inv_iff
 
+/-- The function `fun x ↦ x⁻¹` is not integrable on any interval `[a, +∞)`. -/
 theorem not_IntegrableOn_Ici_inv {a : ℝ} :
     ¬ IntegrableOn (fun x => x⁻¹) (Ici a) := by
   have A : ∀ᶠ x in atTop, HasDerivAt (fun x => Real.log x) x⁻¹ x := by
-    filter_upwards [Ioi_mem_atTop 0] with x hx
-    simpa using (hasDerivAt_id x).log (ne_of_gt hx)
-  have B : Tendsto (fun x => ‖Real.log x‖) atTop atTop := by
-    sorry
-  apply not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter atTop (Ici_mem_atTop a)
+    filter_upwards [Ioi_mem_atTop 0] with x hx using Real.hasDerivAt_log (ne_of_gt hx)
+  have B : Tendsto (fun x => ‖Real.log x‖) atTop atTop :=
+    tendsto_norm_atTop_atTop.comp Real.tendsto_log_atTop
+  exact not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter atTop (Ici_mem_atTop a)
     (A.mono (fun x hx ↦ hx.differentiableAt)) B
-  apply Filter.EventuallyEq.isBigO
-  filter_upwards [A] with x hx using hx.deriv.symm
+    (Filter.EventuallyEq.isBigO (A.mono (fun x hx ↦ hx.deriv)))
