@@ -139,7 +139,8 @@ lemma lintegral_exponentialPdfReal_eq_one (r : ℝ) (hr : 0 < r) :
     ∫⁻ x, exponentialPdf r x = 1 := by
   rw [lintegral_split (exponentialPdf r) 0, ← ENNReal.toReal_eq_one_iff]
   have leftSide : ∫⁻ x in {x | x < 0}, exponentialPdf r x = 0 := by
-    rw [set_lintegral_congr_fun (isOpen_gt' 0).measurableSet exponentialPdf_eval_pos, lintegral_zero]
+    rw [set_lintegral_congr_fun (isOpen_gt' 0).measurableSet
+      exponentialPdf_eval_pos, lintegral_zero]
   have rightSide : ∫⁻ x in {x | x ≥ 0}, exponentialPdf r x
       = ∫⁻ x in {x | x ≥ 0}, ENNReal.ofReal (r * rexp (-(r * x))) := by
     exact set_lintegral_congr_fun isClosed_Ici.measurableSet exponentialPdf_eval_neg
