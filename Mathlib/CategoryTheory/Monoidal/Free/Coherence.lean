@@ -308,7 +308,7 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
         congr 2
         erw [← reassoc_of% h₂]
         rw [← h₃, ← Category.assoc, ← id_tensor_comp_tensor_id, h₄]
-        rfl )
+        rfl)
 #align category_theory.free_monoidal_category.normalize_iso CategoryTheory.FreeMonoidalCategory.normalizeIso
 
 /-- The isomorphism between an object and its normal form is natural. -/

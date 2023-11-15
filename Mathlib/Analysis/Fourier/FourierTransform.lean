@@ -161,7 +161,7 @@ theorem fourierIntegral_add (he : Continuous e) (hL : Continuous fun p : V × W 
 #align vector_fourier.fourier_integral_add VectorFourier.fourierIntegral_add
 
 /-- The Fourier integral of an `L^1` function is a continuous function. -/
-theorem fourierIntegral_continuous [TopologicalSpace.FirstCountableTopology W] (he : Continuous e)
+theorem fourierIntegral_continuous [FirstCountableTopology W] (he : Continuous e)
     (hL : Continuous fun p : V × W => L p.1 p.2) {f : V → E} (hf : Integrable f μ) :
     Continuous (fourierIntegral e μ L f) := by
   apply continuous_of_dominated

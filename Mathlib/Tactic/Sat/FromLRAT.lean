@@ -133,7 +133,7 @@ so in the context `h₁` where we suppose that `¬l` is falsified,
 the clause itself is falsified so we can prove `False`.
 We continue the proof in `h₂`, with the assumption that `l` is falsified. -/
 theorem Valuation.by_cases {v : Valuation} {l}
-  (h₁ : v.neg l.negate → False) (h₂ : v.neg l → False) : False :=
+    (h₁ : v.neg l.negate → False) (h₂ : v.neg l → False) : False :=
 match l with
 | Literal.pos _ => h₂ h₁
 | Literal.neg _ => h₁ h₂
@@ -154,7 +154,7 @@ def Valuation.mk : List Prop → Valuation
 /-- The fundamental relationship between `mk` and `implies`:
 `(mk ps).implies p ps 0` is equivalent to `p`. -/
 theorem Valuation.mk_implies {as ps} (as₁) : as = List.reverseAux as₁ ps →
-  (Valuation.mk as).implies p ps as₁.length → p := by
+    (Valuation.mk as).implies p ps as₁.length → p := by
   induction ps generalizing as₁ with
   | nil => exact fun _ ↦ id
   | cons a as ih =>
@@ -173,7 +173,7 @@ structure Fmla.reify (v : Valuation) (f : Fmla) (p : Prop) : Prop where
 Equivalently, there exists a valuation `v` which agrees with `ps`,
 and every such valuation yields `¬⟦f⟧_v` because `f` is unsatisfiable. -/
 theorem Fmla.refute {ps} (f : Fmla) (hf : f.proof [])
-  (hv : ∀ v, Valuation.implies v (Fmla.reify v f p) ps 0) : p :=
+    (hv : ∀ v, Valuation.implies v (Fmla.reify v f p) ps 0) : p :=
   (Valuation.mk_implies [] rfl (hv _)).1 (hf _)
 
 /-- Negation turns AND into OR, so `¬⟦f₁ ∧ f₂⟧_v ≡ ¬⟦f₁⟧_v ∨ ¬⟦f₂⟧_v`. -/

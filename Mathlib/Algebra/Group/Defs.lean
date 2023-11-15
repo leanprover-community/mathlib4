@@ -67,7 +67,7 @@ attribute [notation_class nsmul Simps.nsmulArgs]  HSMul
 attribute [notation_class zsmul Simps.zsmulArgs]  HSMul
 
 /-- Type class for the `+ᵥ` notation. -/
-class VAdd (G : Type*) (P : Type _) where
+class VAdd (G : Type u) (P : Type v) where
   vadd : G → P → P
 #align has_vadd VAdd
 
@@ -78,7 +78,7 @@ class VSub (G : outParam (Type*)) (P : Type*) where
 
 /-- Typeclass for types with a scalar multiplication operation, denoted `•` (`\bu`) -/
 @[to_additive (attr := ext)]
-class SMul (M : Type*) (α : Type _) where
+class SMul (M : Type u) (α : Type v) where
   smul : M → α → α
 #align has_smul SMul
 
@@ -338,7 +338,7 @@ lemma CommSemigroup.IsLeftCancelMul.toIsRightCancelMul (G : Type u) [CommSemigro
 `AddCommSemigroup G` that satisfies `IsLeftCancelAdd G` also satisfies
 `IsCancelAdd G`."]
 lemma CommSemigroup.IsLeftCancelMul.toIsCancelMul (G : Type u) [CommSemigroup G]
-  [IsLeftCancelMul G] : IsCancelMul G :=
+    [IsLeftCancelMul G] : IsCancelMul G :=
   { CommSemigroup.IsLeftCancelMul.toIsRightCancelMul G with }
 #align comm_semigroup.is_left_cancel_mul.to_is_cancel_mul CommSemigroup.IsLeftCancelMul.toIsCancelMul
 #align add_comm_semigroup.is_left_cancel_add.to_is_cancel_add AddCommSemigroup.IsLeftCancelAdd.toIsCancelAdd

@@ -255,9 +255,8 @@ theorem tsum_geometric_inv_two : (∑' n : ℕ, (2 : ℝ)⁻¹ ^ n) = 2 :=
 theorem tsum_geometric_inv_two_ge (n : ℕ) :
     (∑' i, ite (n ≤ i) ((2 : ℝ)⁻¹ ^ i) 0) = 2 * 2⁻¹ ^ n := by
   have A : Summable fun i : ℕ => ite (n ≤ i) ((2⁻¹ : ℝ) ^ i) 0 := by
-    apply summable_of_nonneg_of_le _ _ summable_geometric_two <;>
-      · intro i
-        by_cases hi : n ≤ i <;> simp [hi]; apply pow_nonneg; exact zero_le_two
+    simpa only [← piecewise_eq_indicator, one_div]
+      using summable_geometric_two.indicator {i | n ≤ i}
   have B : ((Finset.range n).sum fun i : ℕ => ite (n ≤ i) ((2⁻¹ : ℝ) ^ i) 0) = 0 :=
     Finset.sum_eq_zero fun i hi =>
       ite_eq_right_iff.2 fun h => (lt_irrefl _ ((Finset.mem_range.1 hi).trans_le h)).elim
@@ -269,7 +268,7 @@ theorem hasSum_geometric_two' (a : ℝ) : HasSum (fun n : ℕ => a / 2 / 2 ^ n) 
   convert HasSum.mul_left (a / 2)
       (hasSum_geometric_of_lt_1 (le_of_lt one_half_pos) one_half_lt_one) using 1
   · funext n
-    simp
+    simp only [one_div, inv_pow]
     rfl
   · norm_num
 #align has_sum_geometric_two' hasSum_geometric_two'
@@ -459,9 +458,7 @@ end LeGeometric
 /-- A series whose terms are bounded by the terms of a converging geometric series converges. -/
 theorem summable_one_div_pow_of_le {m : ℝ} {f : ℕ → ℕ} (hm : 1 < m) (fi : ∀ i, i ≤ f i) :
     Summable fun i => 1 / m ^ f i := by
-  refine'
-    summable_of_nonneg_of_le (fun a => one_div_nonneg.mpr (pow_nonneg (zero_le_one.trans hm.le) _))
-      (fun a => _)
+  refine .of_nonneg_of_le (fun a => by positivity) (fun a => ?_)
       (summable_geometric_of_lt_1 (one_div_nonneg.mpr (zero_le_one.trans hm.le))
         ((one_div_lt (zero_lt_one.trans hm) zero_lt_one).mpr (one_div_one.le.trans_lt hm)))
   rw [div_pow, one_pow]
@@ -639,7 +636,6 @@ theorem tendsto_nat_ceil_div_atTop : Tendsto (fun x => (⌈x⌉₊ : R) / x) atT
 #align tendsto_nat_ceil_div_at_top tendsto_nat_ceil_div_atTop
 
 lemma Nat.tendsto_div_const_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (λ x ↦ x / n) atTop atTop := by
-  simp_rw [←@Nat.floor_div_eq_div ℚ]
-  exact tendsto_nat_floor_atTop.comp (tendsto_nat_cast_atTop_atTop.atTop_div_const $ by positivity)
+  rw [Tendsto, map_div_atTop_eq_nat n hn.bot_lt]
 
 end

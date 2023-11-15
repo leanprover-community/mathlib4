@@ -542,7 +542,8 @@ def update (f : α →₀ M) (a : α) (b : M) : α →₀ M where
     Function.update f a b
   mem_support_toFun i := by
     classical
-    simp [Function.update, Ne.def]
+    rw [Function.update]
+    simp only [eq_rec_constant, dite_eq_ite, ne_eq]
     split_ifs with hb ha ha <;>
       try simp only [*, not_false_iff, iff_true, not_true, iff_false]
     · rw [Finset.mem_erase]
@@ -954,6 +955,15 @@ theorem support_zipWith [D : DecidableEq α] {f : M → N → P} {hf : f 0 0 = 0
   rw [Subsingleton.elim D] <;> exact support_onFinset_subset
 #align finsupp.support_zip_with Finsupp.support_zipWith
 
+@[simp]
+theorem zipWith_single_single (f : M → N → P) (hf : f 0 0 = 0) (a : α) (m : M) (n : N) :
+    zipWith f hf (single a m) (single a n) = single a (f m n) := by
+  ext a'
+  rw [zipWith_apply]
+  obtain rfl | ha' := eq_or_ne a a'
+  · rw [single_eq_same, single_eq_same, single_eq_same]
+  · rw [single_eq_of_ne ha', single_eq_of_ne ha', single_eq_of_ne ha', hf]
+
 end ZipWith
 
 /-! ### Additive monoid structure on `α →₀ M` -/
@@ -995,15 +1005,20 @@ theorem support_add_eq [DecidableEq α] {g₁ g₂ : α →₀ M} (h : Disjoint 
 
 @[simp]
 theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
-  ext fun a' => by
-    by_cases h : a = a'
-    · rw [h, add_apply, single_eq_same, single_eq_same, single_eq_same]
-    · rw [add_apply, single_eq_of_ne h, single_eq_of_ne h, single_eq_of_ne h, zero_add]
+  (zipWith_single_single _ _ _ _ _).symm
 #align finsupp.single_add Finsupp.single_add
 
 instance addZeroClass : AddZeroClass (α →₀ M) :=
   FunLike.coe_injective.addZeroClass _ coe_zero coe_add
 #align finsupp.add_zero_class Finsupp.addZeroClass
+
+instance instIsLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd (α →₀ M) where
+  add_left_cancel _ _ _ h := ext fun x => add_left_cancel <| FunLike.congr_fun h x
+
+instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (α →₀ M) where
+  add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| FunLike.congr_fun h x
+
+instance instIsCancelAdd [IsCancelAdd M] : IsCancelAdd (α →₀ M) where
 
 /-- `Finsupp.single` as an `AddMonoidHom`.
 
@@ -1213,7 +1228,9 @@ instance addMonoid : AddMonoid (α →₀ M) :=
 end AddMonoid
 
 instance addCommMonoid [AddCommMonoid M] : AddCommMonoid (α →₀ M) :=
-  FunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
+  --TODO: add reference to library note in PR #7432
+  { FunLike.coe_injective.addCommMonoid (↑) coe_zero coe_add (fun _ _ => rfl) with
+    toAddMonoid := Finsupp.addMonoid }
 #align finsupp.add_comm_monoid Finsupp.addCommMonoid
 
 instance neg [NegZeroClass G] : Neg (α →₀ G) :=
@@ -1271,12 +1288,17 @@ instance hasIntScalar [AddGroup G] : SMul ℤ (α →₀ G) :=
 #align finsupp.has_int_scalar Finsupp.hasIntScalar
 
 instance addGroup [AddGroup G] : AddGroup (α →₀ G) :=
-  FunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
+  --TODO: add reference to library note in PR #7432
+  { FunLike.coe_injective.addGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+      fun _ _ => rfl with
+    toAddMonoid := Finsupp.addMonoid }
 #align finsupp.add_group Finsupp.addGroup
 
 instance addCommGroup [AddCommGroup G] : AddCommGroup (α →₀ G) :=
-  FunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
-    rfl
+  --TODO: add reference to library note in PR #7432
+  { FunLike.coe_injective.addCommGroup (↑) coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl)
+      fun _ _ => rfl with
+    toAddGroup := Finsupp.addGroup }
 #align finsupp.add_comm_group Finsupp.addCommGroup
 
 theorem single_add_single_eq_single_add_single [AddCommMonoid M] {k l m n : α} {u v : M}

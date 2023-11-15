@@ -11,7 +11,7 @@ import Mathlib.LinearAlgebra.Matrix.Trace
 /-!
 # Matrices with a single non-zero element.
 
-This file provides `matrix.stdBasisMatrix`. The matrix `matrix.stdBasisMatrix i j c` has `c`
+This file provides `Matrix.stdBasisMatrix`. The matrix `Matrix.stdBasisMatrix i j c` has `c`
 at position `(i, j)`, and zeroes elsewhere.
 -/
 
