@@ -1521,33 +1521,31 @@ theorem eq_empty_of_ssubset_singleton {s : Set α} {x : α} (hs : s ⊂ {x}) : s
   ssubset_singleton_iff.1 hs
 #align set.eq_empty_of_ssubset_singleton Set.eq_empty_of_ssubset_singleton
 
-theorem Nonempty.eq_singleton_of_unique [Unique α] {s : Set α} (h : s.Nonempty) :
-    s = {default} := h.subset_singleton_iff.mp (fun x _ => by simp [Unique.uniq _ x])
+theorem eq_of_nonempty_of_subsingleton {α} [Subsingleton α] (s t : Set α) [Nonempty s]
+    [Nonempty t] : s = t :=
+  nonempty_of_nonempty_subtype.eq_univ.trans nonempty_of_nonempty_subtype.eq_univ.symm
 
-theorem Nonempty.eq_singleton_zero_of_unique[Zero α] [Unique α] {s : Set α} (h : s.Nonempty) :
-    s = {0} := by convert h.eq_singleton_of_unique
+theorem eq_of_nonempty_of_subsingleton' {α} [Subsingleton α] {s : Set α} (t : Set α)
+    (hs : s.Nonempty) [Nonempty t] : s = t :=
+  have := hs.to_subtype; eq_of_nonempty_of_subsingleton s t
 
-theorem Nonempty.eq_singleton_one_of_unique [One α] [Unique α] {s : Set α} (h : s.Nonempty) :
-    s = {1} := by convert h.eq_singleton_of_unique
+theorem Nonempty.eq_of_unique [Unique α] {s : Set α} (h : s.Nonempty) :
+    s = {default} := eq_of_nonempty_of_subsingleton' {default} h
 
-noncomputable def uniqueOfNonempty [Subsingleton α] {s : Set α} (h : s.Nonempty) :
-    Unique α := uniqueOfSubsingleton h.choose
+theorem Nonempty.eq_zero_of_unique [Zero α] [Unique α] {s : Set α} (h : s.Nonempty) :
+    s = {0} := eq_of_nonempty_of_subsingleton' {0} h
 
-theorem Nonempty.eq_singleton_of_subsingleton [Subsingleton α] {s : Set α}
-    (h : s.Nonempty) :
-    letI := uniqueOfNonempty h
-    s = {default} := by
-  letI := uniqueOfNonempty h
-  exact h.eq_singleton_of_unique
+theorem Nonempty.eq_one_of_unique [One α] [Unique α] {s : Set α} (h : s.Nonempty) :
+    s = {1} := eq_of_nonempty_of_subsingleton' {1} h
 
 theorem Nonempty.eq_of_subsingleton [Subsingleton α] {s : Set α} (h : s.Nonempty) (a : α) :
-    s = {a} := by rw [h.eq_singleton_of_subsingleton, Unique.uniq _ a]
+    s = {a} := eq_of_nonempty_of_subsingleton' {a} h
 
 theorem Nonempty.eq_zero [Subsingleton α] [Zero α] {s : Set α} (h : s.Nonempty) :
-    s = {0} := h.eq_of_subsingleton 0
+    s = {0} := eq_of_nonempty_of_subsingleton' {0} h
 
-theorem Nonempty.subset_eq_one [Subsingleton α] [One α] {s : Set α} (h : s.Nonempty) :
-    s = {1} := h.eq_of_subsingleton 1
+theorem Nonempty.eq_one [Subsingleton α] [One α] {s : Set α} (h : s.Nonempty) :
+    s = {1} := eq_of_nonempty_of_subsingleton' {1} h
 
 /-! ### Disjointness -/
 
