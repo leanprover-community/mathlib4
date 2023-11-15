@@ -575,9 +575,10 @@ open RegularEpi in
 /-- The data of an `EffectiveEpi` structure on a `RegularEpi`. -/
 noncomputable def effectiveEpiStructOfRegularEpi {B X : C} (f : X ⟶ B) [RegularEpi f] :
     EffectiveEpiStruct f where
-  desc e h := (Cofork.IsColimit.existsUnique isColimit e (h _ _ w)).choose
-  fac e h := (Cofork.IsColimit.existsUnique isColimit e (h _ _ w)).choose_spec.1
-  uniq e h _ hg := (Cofork.IsColimit.existsUnique isColimit e (h _ _ w)).choose_spec.2 _ hg
+  desc _ h := Cofork.IsColimit.desc isColimit _ (h _ _ w)
+  fac _ _ := Cofork.IsColimit.π_desc' isColimit _ _
+  uniq _ _ _ hg := Cofork.IsColimit.hom_ext isColimit (hg.trans
+    (Cofork.IsColimit.π_desc' _ _ _).symm)
 
 instance {B X : C} (f : X ⟶ B) [RegularEpi f] : EffectiveEpi f :=
   ⟨⟨effectiveEpiStructOfRegularEpi f⟩⟩
