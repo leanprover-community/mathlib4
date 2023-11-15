@@ -94,7 +94,7 @@ theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
   have := Imo2019Q4.upper_bound hk h
   interval_cases n
   -- n = 1
-  · norm_num at h; simp [le_antisymm h hk]
+  · norm_num at h; simp [le_antisymm h (succ_le_of_lt hk)]
   -- n = 2
   · right; congr; norm_num [prod_range_succ] at h; norm_cast at h; rwa [← factorial_inj']
     norm_num
