@@ -22,7 +22,7 @@ then `C` is also abelian.
 
 See <https://stacks.math.columbia.edu/tag/03A3>
 
-### Notes
+## Notes
 The hypotheses, following the statement from the Stacks project,
 may appear surprising: we don't ask that the counit of the adjunction is an isomorphism,
 but just that we have some potentially unrelated isomorphism `i : F ⋙ G ≅ 𝟭 C`.
@@ -32,10 +32,6 @@ must be an isomorphism, and thus that `C` is a reflective subcategory of `D`.
 
 Someone may like to formalize that lemma, and restate this theorem in terms of `Reflective`.
 (That lemma has a nice string diagrammatic proof that holds in any bicategory.)
-
-## enough-injectives
-If `C, D` are categories with adjoint functors `L ⊣ R` where `L` is a faithful exact
-functor from `C` to `D`, then `D` having enough injectives implies that `C` has enough injectives.
 
 -/
 
@@ -204,50 +200,5 @@ def abelianOfEquivalence {C : Type u₁} [Category.{v} C] [Preadditive C] [HasFi
     [IsEquivalence F] : Abelian C :=
   abelianOfAdjunction F F.inv F.asEquivalence.unitIso.symm F.asEquivalence.symm.toAdjunction
 #align category_theory.abelian_of_equivalence CategoryTheory.abelianOfEquivalence
-
-namespace transfer_enough_injectives
-
-variable {𝒜 : Type u₁} {ℬ : Type u₂} [Category.{v₁} 𝒜] [Category.{v₂} ℬ]
-variable {L : 𝒜 ⥤ ℬ} {R : ℬ ⥤ 𝒜} (adj : L ⊣ R)
-
-/--
-Give a pair of functors
-```
-  --- L -->
-𝒜          ℬ,
-  <-- R ---
-```
-for `A : 𝒜`, pick an injective presentation `L A ⟶ J` which always exists by enough
-injectives of `ℬ`. Then `A ⟶ R(J)` is an injective presentation of `A`
--/
-def toUnder {A : 𝒜} (a : InjectivePresentation <| L.obj A) :
-    A ⟶ R.obj a.J := adj.homEquiv _ _ <| a.f
-
-lemma mono_toUnder [PreservesFiniteLimits L] [Faithful L]
-    {A : 𝒜} (a : InjectivePresentation <| L.obj A) : Mono (toUnder adj a) := by
-  have eq1 : L.map (toUnder adj a) ≫ (adj.counit.app _) = a.f := by simp [toUnder]
-  have : Mono (L.map (toUnder adj a) ≫ (adj.counit.app _)) := eq1 ▸ a.mono
-  have : Mono (L.map (toUnder adj a)) := mono_of_mono _ (adj.counit.app a.J)
-  aesop_cat
-
-end transfer_enough_injectives
-
-open transfer_enough_injectives in
-/--
-[Lemma 3.8](https://ncatlab.org/nlab/show/injective+object#preservation_of_injective_objects)
--/
-lemma EnoughInjectives.of_adjunction {C : Type u₁} {D : Type u₂}
-    [Category.{v₁} C] [Category.{v₂} D]
-    {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) [Faithful L] [PreservesFiniteLimits L]
-    [EnoughInjectives D] : EnoughInjectives C where
-  presentation _ :=
-    ⟨⟨R.obj (EnoughInjectives.presentation _).some.J, Injective.injective_of_adjoint adj _,
-      toUnder _ _, mono_toUnder adj _⟩⟩
-
-/-- An equivalence of categories transfers enough injectives. -/
-lemma EnoughInjectives.of_equivalence {C : Type u₁} {D : Type u₂}
-    [Category.{v₁} C] [Category.{v₂} D]
-    (e : C ⥤ D) [IsEquivalence e] [EnoughInjectives D] : EnoughInjectives C :=
-EnoughInjectives.of_adjunction (adj := e.asEquivalence.toAdjunction)
 
 end CategoryTheory
