@@ -184,25 +184,31 @@ noncomputable section main_result
 
 theorem measure_unitBall_eq_integral_div_gamma {E : Type*} {p : ℝ}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
-    [BorelSpace E] [Nontrivial E] (μ : Measure E) [IsAddHaarMeasure μ] (hp : 0 < p) :
+    [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] (hp : 0 < p) :
     μ (Metric.ball 0 1) =
       .ofReal ((∫ (x : E), Real.exp (- ‖x‖ ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
-  have : (0:ℝ) < finrank ℝ E := Nat.cast_pos.mpr finrank_pos
-  have : ((∫ y in Set.Ioi (0:ℝ), y ^ (finrank ℝ E - 1) • Real.exp (-y ^ p)) /
-      Real.Gamma ((finrank ℝ E) / p + 1)) * (finrank ℝ E) = 1 := by
-    simp_rw [← Real.rpow_nat_cast _ (finrank ℝ E - 1), smul_eq_mul, Nat.cast_sub finrank_pos,
-      Nat.cast_one]
-    rw [integral_rpow_mul_exp_neg_rpow hp (by linarith), sub_add_cancel,
-      Real.Gamma_add_one (ne_of_gt (by positivity))]
-    field_simp; ring
-  rw [integral_fun_norm_addHaar μ (fun x => Real.exp (- x ^ p)), nsmul_eq_mul, smul_eq_mul,
-    mul_div_assoc, mul_div_assoc, mul_comm, mul_assoc, this, mul_one, ofReal_toReal]
-  exact ne_of_lt measure_ball_lt_top
+  obtain hE | hE := subsingleton_or_nontrivial E
+  · rw [Set.subset_eq_zero_of_subsingleton (Metric.nonempty_ball.mpr zero_lt_one), ← integral_univ,
+      Set.subset_eq_zero_of_subsingleton Set.univ_nonempty, integral_singleton,
+      finrank_zero_of_subsingleton, Nat.cast_zero, zero_div, zero_add, Real.Gamma_one, div_one,
+      norm_zero, Real.zero_rpow (ne_of_gt hp), neg_zero, Real.exp_zero, smul_eq_mul, mul_one,
+      ofReal_toReal (measure_ne_top μ {0})]
+  · have : (0:ℝ) < finrank ℝ E := Nat.cast_pos.mpr finrank_pos
+    have : ((∫ y in Set.Ioi (0:ℝ), y ^ (finrank ℝ E - 1) • Real.exp (-y ^ p)) /
+        Real.Gamma ((finrank ℝ E) / p + 1)) * (finrank ℝ E) = 1 := by
+      simp_rw [← Real.rpow_nat_cast _ (finrank ℝ E - 1), smul_eq_mul, Nat.cast_sub finrank_pos,
+        Nat.cast_one]
+      rw [integral_rpow_mul_exp_neg_rpow hp (by linarith), sub_add_cancel,
+        Real.Gamma_add_one (ne_of_gt (by positivity))]
+      field_simp; ring
+    rw [integral_fun_norm_addHaar μ (fun x => Real.exp (- x ^ p)), nsmul_eq_mul, smul_eq_mul,
+      mul_div_assoc, mul_div_assoc, mul_comm, mul_assoc, this, mul_one, ofReal_toReal]
+    exact ne_of_lt measure_ball_lt_top
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E] [FiniteDimensional ℝ E] [mE : MeasurableSpace E]
-  [tE : TopologicalSpace E] [TopologicalAddGroup E] [BorelSpace E] [T2Space E] [Nontrivial E]
-  [ContinuousSMul ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {g : E → ℝ} (h1 : g 0 = 0)
-  (h2 : ∀ x, g (- x) = g x) (h3 : ∀ x y, g (x + y) ≤ g x + g y) (h4 : ∀ {x}, g x = 0 → x = 0)
+  [tE : TopologicalSpace E] [TopologicalAddGroup E] [BorelSpace E] [T2Space E] [ContinuousSMul ℝ E]
+  (μ : Measure E) [IsAddHaarMeasure μ] {g : E → ℝ} (h1 : g 0 = 0) (h2 : ∀ x, g (- x) = g x)
+  (h3 : ∀ x y, g (x + y) ≤ g x + g y) (h4 : ∀ {x}, g x = 0 → x = 0)
   (h5 :  ∀ r x, g (r • x) ≤ |r| * (g x))
 
 theorem measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p) :
@@ -249,10 +255,8 @@ theorem measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p) :
     erw [← this.integral_comp (@MeasurableEquiv.measurableEmbedding E F mE _ ψ)]
     rfl
 
--- TODO. I don't know how to prove that without duplicating most of the previous proof...
-theorem measure_le_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p) :
-    μ {x : E | g x ≤ 1} =
-      .ofReal ((∫ (x : E), Real.exp (- (g x) ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
+theorem measure_le_one_eq_lt_one [Nontrivial E] :
+    μ {x : E | g x ≤ 1} = μ {x : E | g x < 1} := by
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
   letI F : Type _ := E
   letI : NormedAddCommGroup F :=
@@ -278,22 +282,19 @@ theorem measure_le_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p) :
   let ν : Measure F := @Measure.map E F _ mE φ μ
   have : IsAddHaarMeasure ν :=
     @ContinuousLinearEquiv.isAddHaarMeasure_map E F ℝ ℝ _ _ _ _ _ _ tE _ _ _ _ _ _ _ mE _ _ _ φ μ _
-  convert (measure_unitBall_eq_integral_div_gamma ν hp) using 1
-  · rw [← addHaar_closedBall_eq_addHaar_ball,
-      @Measure.map_apply E F mE _ μ φ _ _ measurableSet_closedBall]
+  convert addHaar_closedBall_eq_addHaar_ball ν 0 1 using 1
+  · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_closedBall]
     · congr!
       simp_rw [Metric.closedBall, dist_zero_right]
       rfl
     · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
       exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
-  · -- The map between `E` and `F` as a measurable equivalence
-    let ψ := @Homeomorph.toMeasurableEquiv E F tE mE _ _ _ _
-      (@ContinuousLinearEquiv.toHomeomorph ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ)
-    -- The map `ψ` is measure preserving by construction
-    have : @MeasurePreserving E F mE _ ψ μ ν :=
-      @Measurable.measurePreserving E F mE _ ψ (@MeasurableEquiv.measurable E F mE _ ψ) _
-    erw [← this.integral_comp (@MeasurableEquiv.measurableEmbedding E F mE _ ψ)]
-    rfl
+  · rw [@Measure.map_apply E F mE _ μ φ _ _ measurableSet_ball]
+    · congr!
+      simp_rw [Metric.ball, dist_zero_right]
+      rfl
+    · refine @Continuous.measurable E F tE mE _ _ _ _ φ ?_
+      exact @ContinuousLinearEquiv.continuous ℝ ℝ _ _ _ _ _ _ E tE _ F _ _ _ _ φ
 
 end main_result
 
@@ -319,7 +320,7 @@ theorem Complex.volume_ball (a : ℂ) (r : ℝ) :
 @[simp]
 theorem Complex.volume_closedBall (a : ℂ) (r : ℝ) :
     volume (Metric.closedBall a r) = NNReal.pi * .ofReal r ^ 2 := by
-  rw [MeasureTheory.Measure.addHaar_closedBall_eq_addHaar_ball, Complex.volume_ball]
+  rw [addHaar_closedBall_eq_addHaar_ball, Complex.volume_ball]
 
 end Complex
 
@@ -327,7 +328,7 @@ section Lp_norm
 
 open BigOperators Real Fintype
 
-variable (ι : Type*) [Fintype ι] [Nontrivial ι] {p : ℝ} (hp : 1 ≤ p)
+variable (ι : Type*) [Fintype ι] {p : ℝ} (hp : 1 ≤ p)
 
 theorem volume_sum_rpow_lt_one :
     volume {x : ι → ℝ | ∑ i, |x i| ^ p < 1} =
