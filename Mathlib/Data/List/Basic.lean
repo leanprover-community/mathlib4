@@ -3752,14 +3752,8 @@ end Diff
 
 /-! ### enum -/
 
-theorem length_enumFrom : ∀ (n) (l : List α), length (enumFrom n l) = length l
-  | _, [] => rfl
-  | _, _ :: _ => congr_arg Nat.succ (length_enumFrom _ _)
-#align list.length_enum_from List.length_enumFrom
-
-theorem length_enum : ∀ l : List α, length (enum l) = length l :=
-  length_enumFrom _
-#align list.length_enum List.length_enum
+#align list.length_enum_from List.enumFrom_length
+#align list.length_enum List.enum_length
 
 @[simp]
 theorem enumFrom_get? :
