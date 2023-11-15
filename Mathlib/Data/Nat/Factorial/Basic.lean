@@ -135,6 +135,11 @@ theorem factorial_inj (hn : 1 < n) : n ! = m ! ↔ n = m := by
   cases lt_irrefl _ hnm
 #align nat.factorial_inj Nat.factorial_inj
 
+theorem factorial_inj' (h : 1 < n ∨ 1 < m) : n ! = m ! ↔ n = m := by
+  obtain hn|hm := h
+  · exact factorial_inj hn
+  · rw [eq_comm, factorial_inj hm, eq_comm]
+
 theorem self_le_factorial : ∀ n : ℕ, n ≤ n !
   | 0 => zero_le_one
   | k + 1 => le_mul_of_one_le_right k.zero_lt_succ.le (Nat.one_le_of_lt <| Nat.factorial_pos _)
