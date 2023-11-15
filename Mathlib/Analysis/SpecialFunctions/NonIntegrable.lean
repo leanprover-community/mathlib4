@@ -49,40 +49,40 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [SecondCountab
 
 /-- If `f` is eventually differentiable along a nontrivial filter `l : Filter ℝ` that is generated
 by convex sets, the norm of `f` tends to infinity along `l`, and `f' = O(g)` along `l`, where `f'`
-is the derivative of `f`, then `g` is not integrable on any interval `a..b` such that
-`[a, b] ∈ l`. -/
-theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter {f : ℝ → E} {g : ℝ → F}
-    {a : ℝ} (l : Filter ℝ) [NeBot l] [TendstoIxxClass Icc l l] (hl : Ici a ∈ l)
-    (hd : ∀ᶠ x in l, DifferentiableAt ℝ f x) (hf : Tendsto (fun x => ‖f x‖) l atTop)
-    (hfg : deriv f =O[l] g) : ¬IntegrableOn g (Ici a) volume := by
+is the derivative of `f`, then `g` is not integrable on any set `k` belonging to `l`. -/
+theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter {f : ℝ → E} {g : ℝ → F}
+    {k : Set ℝ} (l : Filter ℝ) [NeBot l] [TendstoIxxClass Icc l l]
+    (hl : k ∈ l) (hd : ∀ᶠ x in l, DifferentiableAt ℝ f x) (hf : Tendsto (fun x => ‖f x‖) l atTop)
+    (hfg : deriv f =O[l] g) : ¬IntegrableOn g k volume := by
   intro hgi
   obtain ⟨C, hC₀, s, hsl, hsub, hfd, hg⟩ :
-    ∃ (C : ℝ) (_ : 0 ≤ C), ∃ s ∈ l, (∀ x ∈ s, ∀ y ∈ s, Icc x y ⊆ Ici a) ∧
+    ∃ (C : ℝ) (_ : 0 ≤ C), ∃ s ∈ l, (∀ x ∈ s, ∀ y ∈ s, [[x, y]] ⊆ k) ∧
       (∀ x ∈ s, ∀ y ∈ s, ∀ z ∈ [[x, y]], DifferentiableAt ℝ f z) ∧
         ∀ x ∈ s, ∀ y ∈ s, ∀ z ∈ [[x, y]], ‖deriv f z‖ ≤ C * ‖g z‖ := by
     rcases hfg.exists_nonneg with ⟨C, C₀, hC⟩
     have h : ∀ᶠ x : ℝ × ℝ in l.prod l,
-        ∀ y ∈ Ici a, (DifferentiableAt ℝ f y ∧ ‖deriv f y‖ ≤ C * ‖g y‖) ∧ y ∈ Ici a :=
+        ∀ y ∈ [[x.1, x.2]], (DifferentiableAt ℝ f y ∧ ‖deriv f y‖ ≤ C * ‖g y‖) ∧ y ∈ k :=
       (tendsto_fst.uIcc tendsto_snd).eventually ((hd.and hC.bound).and hl).smallSets
     rcases mem_prod_self_iff.1 h with ⟨s, hsl, hs⟩
     simp only [prod_subset_iff, mem_setOf_eq] at hs
     exact ⟨C, C₀, s, hsl, fun x hx y hy z hz => (hs x hx y hy z hz).2, fun x hx y hy z hz =>
       (hs x hx y hy z hz).1.1, fun x hx y hy z hz => (hs x hx y hy z hz).1.2⟩
-  replace hgi : IntervalIntegrable (fun x => C * ‖g x‖) volume a b
-  · convert hgi.norm.smul C using 1
-  obtain ⟨c, hc, d, hd, hlt⟩ : ∃ c ∈ s, ∃ d ∈ s, (‖f c‖ + ∫ y in Ι a b, C * ‖g y‖) < ‖f d‖ := by
+  replace hgi : IntegrableOn (fun x ↦ C * ‖g x‖) k := by exact hgi.norm.smul C
+  obtain ⟨c, hc, d, hd, hlt⟩ : ∃ c ∈ s, ∃ d ∈ s, (‖f c‖ + ∫ y in k, C * ‖g y‖) < ‖f d‖ := by
     rcases Filter.nonempty_of_mem hsl with ⟨c, hc⟩
-    have : ∀ᶠ x in l, (‖f c‖ + ∫ y in Ι a b, C * ‖g y‖) < ‖f x‖ :=
+    have : ∀ᶠ x in l, (‖f c‖ + ∫ y in k, C * ‖g y‖) < ‖f x‖ :=
       hf.eventually (eventually_gt_atTop _)
     exact ⟨c, hc, (this.and hsl).exists.imp fun d hd => ⟨hd.2, hd.1⟩⟩
   specialize hsub c hc d hd; specialize hfd c hc d hd
-  replace hg : ∀ x ∈ Ι c d, ‖deriv f x‖ ≤ C * ‖g x‖;
-  exact fun z hz => hg c hc d hd z ⟨hz.1.le, hz.2⟩
+  replace hg : ∀ x ∈ Ι c d, ‖deriv f x‖ ≤ C * ‖g x‖ :=
+    fun z hz => hg c hc d hd z ⟨hz.1.le, hz.2⟩
   have hg_ae : ∀ᵐ x ∂volume.restrict (Ι c d), ‖deriv f x‖ ≤ C * ‖g x‖ :=
     (ae_restrict_mem measurableSet_uIoc).mono hg
-  have hsub' : Ι c d ⊆ Ι a b := uIoc_subset_uIoc_of_uIcc_subset_uIcc hsub
-  have hfi : IntervalIntegrable (deriv f) volume c d :=
-    (hgi.mono_set hsub).mono_fun' (aestronglyMeasurable_deriv _ _) hg_ae
+  have hsub' : Ι c d ⊆ k := Subset.trans Ioc_subset_Icc_self hsub
+  have hfi : IntervalIntegrable (deriv f) volume c d := by
+    rw [intervalIntegrable_iff]
+    have : IntegrableOn (fun x ↦ C * ‖g x‖) (Ι c d) := IntegrableOn.mono hgi hsub' le_rfl
+    exact Integrable.mono' this (aestronglyMeasurable_deriv _ _) hg_ae
   refine' hlt.not_le (sub_le_iff_le_add'.1 _)
   calc
     ‖f d‖ - ‖f c‖ ≤ ‖f d - f c‖ := norm_sub_norm_le _ _
@@ -90,13 +90,10 @@ theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter {f :
     _ = ‖∫ x in Ι c d, deriv f x‖ := (norm_integral_eq_norm_integral_Ioc _)
     _ ≤ ∫ x in Ι c d, ‖deriv f x‖ := (norm_integral_le_integral_norm _)
     _ ≤ ∫ x in Ι c d, C * ‖g x‖ :=
-      (set_integral_mono_on hfi.norm.def (hgi.def.mono_set hsub') measurableSet_uIoc hg)
-    _ ≤ ∫ x in Ι a b, C * ‖g x‖ :=
-      set_integral_mono_set hgi.def (ae_of_all _ fun x => mul_nonneg hC₀ (norm_nonneg _))
-        hsub'.eventuallyLE
-
-#exit
-
+      set_integral_mono_on hfi.norm.def (hgi.mono_set hsub') measurableSet_uIoc hg
+    _ ≤ ∫ x in k, C * ‖g x‖ := by
+      apply set_integral_mono_set hgi
+        (ae_of_all _ fun x => mul_nonneg hC₀ (norm_nonneg _)) hsub'.eventuallyLE
 
 /-- If `f` is eventually differentiable along a nontrivial filter `l : Filter ℝ` that is generated
 by convex sets, the norm of `f` tends to infinity along `l`, and `f' = O(g)` along `l`, where `f'`
@@ -106,45 +103,8 @@ theorem not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter {f :
     {a b : ℝ} (l : Filter ℝ) [NeBot l] [TendstoIxxClass Icc l l] (hl : [[a, b]] ∈ l)
     (hd : ∀ᶠ x in l, DifferentiableAt ℝ f x) (hf : Tendsto (fun x => ‖f x‖) l atTop)
     (hfg : deriv f =O[l] g) : ¬IntervalIntegrable g volume a b := by
-  intro hgi
-  obtain ⟨C, hC₀, s, hsl, hsub, hfd, hg⟩ :
-    ∃ (C : ℝ) (_ : 0 ≤ C), ∃ s ∈ l, (∀ x ∈ s, ∀ y ∈ s, [[x, y]] ⊆ [[a, b]]) ∧
-      (∀ x ∈ s, ∀ y ∈ s, ∀ z ∈ [[x, y]], DifferentiableAt ℝ f z) ∧
-        ∀ x ∈ s, ∀ y ∈ s, ∀ z ∈ [[x, y]], ‖deriv f z‖ ≤ C * ‖g z‖ := by
-    rcases hfg.exists_nonneg with ⟨C, C₀, hC⟩
-    have h : ∀ᶠ x : ℝ × ℝ in l.prod l,
-        ∀ y ∈ [[x.1, x.2]], (DifferentiableAt ℝ f y ∧ ‖deriv f y‖ ≤ C * ‖g y‖) ∧ y ∈ [[a, b]] :=
-      (tendsto_fst.uIcc tendsto_snd).eventually ((hd.and hC.bound).and hl).smallSets
-    rcases mem_prod_self_iff.1 h with ⟨s, hsl, hs⟩
-    simp only [prod_subset_iff, mem_setOf_eq] at hs
-    exact ⟨C, C₀, s, hsl, fun x hx y hy z hz => (hs x hx y hy z hz).2, fun x hx y hy z hz =>
-      (hs x hx y hy z hz).1.1, fun x hx y hy z hz => (hs x hx y hy z hz).1.2⟩
-  replace hgi : IntervalIntegrable (fun x => C * ‖g x‖) volume a b
-  · convert hgi.norm.smul C using 1
-  obtain ⟨c, hc, d, hd, hlt⟩ : ∃ c ∈ s, ∃ d ∈ s, (‖f c‖ + ∫ y in Ι a b, C * ‖g y‖) < ‖f d‖ := by
-    rcases Filter.nonempty_of_mem hsl with ⟨c, hc⟩
-    have : ∀ᶠ x in l, (‖f c‖ + ∫ y in Ι a b, C * ‖g y‖) < ‖f x‖ :=
-      hf.eventually (eventually_gt_atTop _)
-    exact ⟨c, hc, (this.and hsl).exists.imp fun d hd => ⟨hd.2, hd.1⟩⟩
-  specialize hsub c hc d hd; specialize hfd c hc d hd
-  replace hg : ∀ x ∈ Ι c d, ‖deriv f x‖ ≤ C * ‖g x‖;
-  exact fun z hz => hg c hc d hd z ⟨hz.1.le, hz.2⟩
-  have hg_ae : ∀ᵐ x ∂volume.restrict (Ι c d), ‖deriv f x‖ ≤ C * ‖g x‖ :=
-    (ae_restrict_mem measurableSet_uIoc).mono hg
-  have hsub' : Ι c d ⊆ Ι a b := uIoc_subset_uIoc_of_uIcc_subset_uIcc hsub
-  have hfi : IntervalIntegrable (deriv f) volume c d :=
-    (hgi.mono_set hsub).mono_fun' (aestronglyMeasurable_deriv _ _) hg_ae
-  refine' hlt.not_le (sub_le_iff_le_add'.1 _)
-  calc
-    ‖f d‖ - ‖f c‖ ≤ ‖f d - f c‖ := norm_sub_norm_le _ _
-    _ = ‖∫ x in c..d, deriv f x‖ := (congr_arg _ (integral_deriv_eq_sub hfd hfi).symm)
-    _ = ‖∫ x in Ι c d, deriv f x‖ := (norm_integral_eq_norm_integral_Ioc _)
-    _ ≤ ∫ x in Ι c d, ‖deriv f x‖ := (norm_integral_le_integral_norm _)
-    _ ≤ ∫ x in Ι c d, C * ‖g x‖ :=
-      (set_integral_mono_on hfi.norm.def (hgi.def.mono_set hsub') measurableSet_uIoc hg)
-    _ ≤ ∫ x in Ι a b, C * ‖g x‖ :=
-      set_integral_mono_set hgi.def (ae_of_all _ fun x => mul_nonneg hC₀ (norm_nonneg _))
-        hsub'.eventuallyLE
+  rw [intervalIntegrable_iff']
+  exact not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter _ hl hd hf hfg
 set_option linter.uppercaseLean3 false in
 #align not_interval_integrable_of_tendsto_norm_at_top_of_deriv_is_O_filter not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_filter
 
@@ -226,3 +186,15 @@ theorem intervalIntegrable_inv_iff {a b : ℝ} :
     IntervalIntegrable (fun x => x⁻¹) volume a b ↔ a = b ∨ (0 : ℝ) ∉ [[a, b]] := by
   simp only [← intervalIntegrable_sub_inv_iff, sub_zero]
 #align interval_integrable_inv_iff intervalIntegrable_inv_iff
+
+theorem not_IntegrableOn_Ici_inv {a : ℝ} :
+    ¬ IntegrableOn (fun x => x⁻¹) (Ici a) := by
+  have A : ∀ᶠ x in atTop, HasDerivAt (fun x => Real.log x) x⁻¹ x := by
+    filter_upwards [Ioi_mem_atTop 0] with x hx
+    simpa using (hasDerivAt_id x).log (ne_of_gt hx)
+  have B : Tendsto (fun x => ‖Real.log x‖) atTop atTop := by
+    sorry
+  apply not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter atTop (Ici_mem_atTop a)
+    (A.mono (fun x hx ↦ hx.differentiableAt)) B
+  apply Filter.EventuallyEq.isBigO
+  filter_upwards [A] with x hx using hx.deriv.symm

@@ -603,6 +603,9 @@ theorem isBigO_refl (f : α → E) (l : Filter α) : f =O[l] f :=
   (isBigOWith_refl f l).isBigO
 #align asymptotics.is_O_refl Asymptotics.isBigO_refl
 
+theorem _root_.Filter.EventuallyEq.isBigO {f₁ f₂ : α → E} (hf : f₁ =ᶠ[l] f₂) : f₁ =O[l] f₂ :=
+  hf.trans_isBigO (isBigO_refl _ _)
+
 theorem IsBigOWith.trans_le (hfg : IsBigOWith c l f g) (hgk : ∀ x, ‖g x‖ ≤ ‖k x‖) (hc : 0 ≤ c) :
     IsBigOWith c l f k :=
   (hfg.trans (isBigOWith_of_le l hgk) hc).congr_const <| mul_one c
