@@ -36,9 +36,9 @@
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "31297eec02f5953a4750cec5169e2305b73043f3",
+    "rev": "c14f6a65b2c08caa38e1ab5db83451460d6cde3e",
     "opts": {},
     "name": "std",
-    "inputRev?": "enum_lemma",
+    "inputRev?": "main",
     "inherited": false}}],
  "name": "mathlib"}

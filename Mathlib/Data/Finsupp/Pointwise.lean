@@ -108,7 +108,7 @@ instance pointwiseScalar [Semiring β] : SMul (α → β) (α →₀ β) where
 #align finsupp.pointwise_scalar Finsupp.pointwiseScalar
 
 @[simp]
-theorem coe_pointwise_smul [Semiring β] (f : α → β) (g : α →₀ β) : FunLike.coe (f • g) = f • g :=
+theorem coe_pointwise_smul [Semiring β] (f : α → β) (g : α →₀ β) : ⇑(f • g) = f • ⇑g :=
   rfl
 #align finsupp.coe_pointwise_smul Finsupp.coe_pointwise_smul
 
