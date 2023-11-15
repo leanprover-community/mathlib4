@@ -71,36 +71,6 @@ variable {V : Type*} {V₂ : Type*}
 
 /-! ### Properties of linear maps -/
 
-
-namespace LinearMap
-
-section AddCommMonoid
-
-variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring R₄]
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
-variable [AddCommMonoid M₃] [AddCommMonoid M₄]
-variable [Module R M] [Module R M₁] [Module R₂ M₂] [Module R₃ M₃] [Module R₄ M₄]
-variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₃₄ : R₃ →+* R₄}
-variable {σ₁₃ : R →+* R₃} {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R →+* R₄}
-variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄]
-variable [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
-variable (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] M₃)
-
-/-- A linear map `f` applied to `x : ι → R` can be computed using the image under `f` of elements
-of the canonical basis. -/
-theorem pi_apply_eq_sum_univ [Fintype ι] [DecidableEq ι] (f : (ι → R) →ₗ[R] M) (x : ι → R) :
-    f x = ∑ i, x i • f fun j => if i = j then 1 else 0 := by
-  conv_lhs => rw [pi_eq_sum_univ x, map_sum]
-  refine Finset.sum_congr rfl (fun _ _ => ?_)
-  rw [map_smul]
-#align linear_map.pi_apply_eq_sum_univ LinearMap.pi_apply_eq_sum_univ
-
-end AddCommMonoid
-
-
-
-end LinearMap
-
 /--
 The `R`-linear equivalence between additive morphisms `A →+ B` and `ℕ`-linear morphisms `A →ₗ[ℕ] B`.
 -/
