@@ -73,7 +73,7 @@ theorem integrableOn_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < 
     integrableOn_Ioi_deriv_of_nonneg' hd (fun t ht => rpow_nonneg_of_nonneg (hc.trans ht).le a) ht
 #align integrable_on_Ioi_rpow_of_lt integrableOn_Ioi_rpow_of_lt
 
-lemma integrableOn_Ioi_rpow_iff {s t : ℝ} (ht : 0 < t) :
+theorem integrableOn_Ioi_rpow_iff {s t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x ↦ x ^ s) (Ioi t) ↔ s < -1 := by
   refine ⟨fun h ↦ ?_, fun h ↦ integrableOn_Ioi_rpow_of_lt h ht⟩
   contrapose! h
@@ -87,7 +87,18 @@ lemma integrableOn_Ioi_rpow_iff {s t : ℝ} (ht : 0 < t) :
     simp only [norm_inv, Real.norm_eq_abs, abs_of_nonneg (zero_le_one.trans x_one)]
     rw [← Real.rpow_neg_one x]
     exact Real.rpow_le_rpow_of_exponent_le x_one h
-  apply not_IntegrableOn_Ioi_inv this
+  exact not_IntegrableOn_Ioi_inv this
+
+/-- The power function with any exponent is not integrable on `(0, +∞)`. -/
+theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) (Ioi (0 : ℝ)) := by
+  intro h
+  rcases le_or_lt s (-1) with hs|hs
+  · have : IntegrableOn (fun x ↦ x ^ s) (Ioo (0 : ℝ) 1) := h.mono Ioo_subset_Ioi_self le_rfl
+    rw [integrableOn_Ioo_rpow_iff zero_lt_one] at this
+    exact hs.not_lt this
+  · have : IntegrableOn (fun x ↦ x ^ s) (Ioi 1) := h.mono (Ioi_subset_Ioi zero_le_one) le_rfl
+    rw [integrableOn_Ioi_rpow_iff zero_lt_one] at this
+    exact hs.not_lt this
 
 theorem integral_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
     ∫ t : ℝ in Ioi c, t ^ a = -c ^ (a + 1) / (a + 1) := by
