@@ -86,7 +86,7 @@ end AlgEquivClass
 
 namespace AlgEquiv
 
-universe uR  uA₁ uA₂ uA₃ uA₁' uA₂' uA₃'
+universe uR uA₁ uA₂ uA₃ uA₁' uA₂' uA₃'
 variable {R : Type uR}
 variable {A₁ : Type uA₁} {A₂ : Type uA₂} {A₃ : Type uA₃}
 variable {A₁' : Type uA₁'} {A₂' : Type uA₂'} {A₃' : Type uA₃'}
@@ -197,6 +197,10 @@ theorem toEquiv_eq_coe : e.toEquiv = e :=
 theorem toRingEquiv_eq_coe : e.toRingEquiv = e :=
   rfl
 #align alg_equiv.to_ring_equiv_eq_coe AlgEquiv.toRingEquiv_eq_coe
+
+@[simp, norm_cast]
+lemma toRingEquiv_toRingHom : ((e : A₁ ≃+* A₂) : A₁ →+* A₂) = e :=
+  rfl
 
 @[simp, norm_cast]
 theorem coe_ringEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e :=

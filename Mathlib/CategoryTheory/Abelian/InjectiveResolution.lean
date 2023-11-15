@@ -103,6 +103,12 @@ theorem desc_commutes {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
   simp [desc, descFOne, descFZero]
 #align category_theory.InjectiveResolution.desc_commutes CategoryTheory.InjectiveResolution.desc_commutes
 
+@[reassoc (attr := simp)]
+lemma desc_commutes_zero {Y Z : C} (f : Z ⟶ Y)
+    (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
+    J.ι.f 0 ≫ (desc f I J).f 0 = f ≫ I.ι.f 0 :=
+  (HomologicalComplex.congr_hom (desc_commutes f I J) 0).trans (by simp)
+
 -- Now that we've checked this property of the descent, we can seal away the actual definition.
 /-- An auxiliary definition for `descHomotopyZero`. -/
 def descHomotopyZeroZero {Y Z : C} {I : InjectiveResolution Y} {J : InjectiveResolution Z}
@@ -329,7 +335,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 /-- If `X` is a cochain complex of injective objects and we have a quasi-isomorphism
 `f : Y[0] ⟶ X`, then `X` is an injective resolution of `Y`. -/
 def HomologicalComplex.Hom.fromSingle₀InjectiveResolution (X : CochainComplex C ℕ) (Y : C)
-    (f : (CochainComplex.single₀ C).obj Y ⟶ X) [QuasiIso f] (H : ∀ n, Injective (X.X n)) :
+    (f : (CochainComplex.single₀ C).obj Y ⟶ X) [QuasiIso' f] (H : ∀ n, Injective (X.X n)) :
     InjectiveResolution Y where
   cocomplex := X
   ι := f

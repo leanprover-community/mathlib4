@@ -51,11 +51,11 @@ theorem irreducible_iff_nat_prime (a : ℕ) : Irreducible a ↔ Nat.Prime a :=
   Iff.rfl
 #align irreducible_iff_nat_prime Nat.irreducible_iff_nat_prime
 
-theorem not_prime_zero : ¬Prime 0
+@[aesop safe destruct] theorem not_prime_zero : ¬Prime 0
   | h => h.ne_zero rfl
 #align nat.not_prime_zero Nat.not_prime_zero
 
-theorem not_prime_one : ¬Prime 1
+@[aesop safe destruct] theorem not_prime_one : ¬Prime 1
   | h => h.ne_one rfl
 #align nat.not_prime_one Nat.not_prime_one
 
@@ -671,7 +671,7 @@ theorem coprime_or_dvd_of_prime {p} (pp : Prime p) (i : ℕ) : Coprime p i ∨ p
 #align nat.coprime_or_dvd_of_prime Nat.coprime_or_dvd_of_prime
 
 theorem coprime_of_lt_prime {n p} (n_pos : 0 < n) (hlt : n < p) (pp : Prime p) : Coprime p n :=
-  (coprime_or_dvd_of_prime pp n).resolve_right fun h => lt_le_antisymm hlt (le_of_dvd n_pos h)
+  (coprime_or_dvd_of_prime pp n).resolve_right fun h => Nat.lt_le_asymm hlt (le_of_dvd n_pos h)
 #align nat.coprime_of_lt_prime Nat.coprime_of_lt_prime
 
 theorem eq_or_coprime_of_le_prime {n p} (n_pos : 0 < n) (hle : n ≤ p) (pp : Prime p) :

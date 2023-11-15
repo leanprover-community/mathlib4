@@ -118,6 +118,7 @@ theorem nontrivial_of_finrank_eq_succ {n : ℕ} (hn : finrank K V = n.succ) : No
 #align finite_dimensional.nontrivial_of_finrank_eq_succ FiniteDimensional.nontrivial_of_finrank_eq_succ
 
 /-- A (finite dimensional) space that is a subsingleton has zero `finrank`. -/
+@[nontriviality]
 theorem finrank_zero_of_subsingleton [h : Subsingleton V] : finrank K V = 0 := by
   by_contra h0
   obtain ⟨x, y, hxy⟩ := nontrivial_of_finrank_pos (Nat.pos_of_ne_zero h0)
@@ -497,14 +498,11 @@ theorem coe_basisOfTopLeSpanOfCardEqFinrank {ι : Type*} [Fintype ι] (b : ι �
 /-- A finset of `finrank K V` vectors forms a basis if they span the whole space. -/
 @[simps! repr_apply]
 noncomputable def finsetBasisOfTopLeSpanOfCardEqFinrank {s : Finset V}
-    (le_span : ⊤ ≤ span K (s : Set V)) (card_eq : s.card = finrank K V) : Basis (s : Set V) K V :=
+    (le_span : ⊤ ≤ span K (s : Set V)) (card_eq : s.card = finrank K V) : Basis {x // x ∈ s} K V :=
   basisOfTopLeSpanOfCardEqFinrank ((↑) : ↥(s : Set V) → V)
     ((@Subtype.range_coe_subtype _ fun x => x ∈ s).symm ▸ le_span)
     (_root_.trans (Fintype.card_coe _) card_eq)
 #align finset_basis_of_top_le_span_of_card_eq_finrank finsetBasisOfTopLeSpanOfCardEqFinrank
-
--- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] finsetBasisOfTopLeSpanOfCardEqFinrank_repr_apply
 
 /-- A set of `finrank K V` vectors forms a basis if they span the whole space. -/
 @[simps! repr_apply]
@@ -594,11 +592,10 @@ variable [StrongRankCondition F] [NoZeroSMulDivisors F E] [Nontrivial E]
 
 @[simp]
 theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
-  ((Subalgebra.toSubmoduleEquiv (⊥ : Subalgebra F E)).symm.trans <|
-          LinearEquiv.ofEq _ _ Algebra.toSubmodule_bot).rank_eq.trans <| by
+  (Subalgebra.toSubmoduleEquiv (⊥ : Subalgebra F E)).symm.rank_eq.trans <| by
+    rw [Algebra.toSubmodule_bot, one_eq_span, rank_span_set, mk_singleton _]
     letI := Module.nontrivial F E
-    rw [rank_span_set]
-    exacts [mk_singleton _, linearIndependent_singleton one_ne_zero]
+    exact linearIndependent_singleton one_ne_zero
 #align subalgebra.rank_bot Subalgebra.rank_bot
 
 @[simp]

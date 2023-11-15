@@ -468,9 +468,7 @@ theorem sumArrowLequivProdArrow_symm_apply_inr {α β} (f : α → M) (g : β �
 #align linear_equiv.sum_arrow_lequiv_prod_arrow_symm_apply_inr LinearEquiv.sumArrowLequivProdArrow_symm_apply_inr
 
 /-- If `ι` has a unique element, then `ι → M` is linearly equivalent to `M`. -/
-@[simps (config :=
-      { simpRhs := true
-        fullyApplied := false }) symm_apply]
+@[simps (config := { simpRhs := true, fullyApplied := false }) symm_apply]
 def funUnique (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
     (ι → M) ≃ₗ[R] M :=
   { Equiv.funUnique ι M with
@@ -487,9 +485,7 @@ theorem funUnique_apply (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid
 variable (R M)
 
 /-- Linear equivalence between dependent functions `(i : Fin 2) → M i` and `M 0 × M 1`. -/
-@[simps (config :=
-      { simpRhs := true
-        fullyApplied := false }) symm_apply]
+@[simps (config := { simpRhs := true, fullyApplied := false }) symm_apply]
 def piFinTwo (M : Fin 2 → Type v)
     [(i : Fin 2) → AddCommMonoid (M i)] [(i : Fin 2) → Module R (M i)] :
     ((i : Fin 2) → M i) ≃ₗ[R] M 0 × M 1 :=
