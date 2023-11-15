@@ -35,7 +35,6 @@ protected def GradedAlgebra.ι :
     (ι R).codRestrict _ fun m => by simpa only [pow_one] using LinearMap.mem_range_self _ m
 #align exterior_algebra.graded_algebra.ι ExteriorAlgebra.GradedAlgebra.ι
 
--- porting note: replaced coercion to sort with an explicit subtype notation
 theorem GradedAlgebra.ι_apply (m : M) :
     GradedAlgebra.ι R M m =
       DirectSum.of (fun i : ℕ => LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i) 1
