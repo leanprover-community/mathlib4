@@ -167,9 +167,8 @@ theorem eqToHom_left (X Y : Comma L R) (H : X = Y) :
 #align category_theory.comma.eq_to_hom_left CategoryTheory.Comma.eqToHom_left
 
 @[simp]
-theorem eqToHom_right (X Y : Comma L R) (H : X = Y) : CommaMorphism.right (eqToHom H) = eqToHom (by
-    cases H
-    rfl) := by
+theorem eqToHom_right (X Y : Comma L R) (H : X = Y) :
+    CommaMorphism.right (eqToHom H) = eqToHom (by cases H; rfl) := by
   cases H
   rfl
 #align category_theory.comma.eq_to_hom_right CategoryTheory.Comma.eqToHom_right

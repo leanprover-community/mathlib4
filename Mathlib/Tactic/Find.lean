@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich
 -/
 import Lean
-import Mathlib.Tactic.Cache
+import Std.Util.Cache
 
 /-!
 # The `#find` command and tactic.
@@ -25,6 +25,7 @@ open Lean
 open Lean.Meta
 open Lean.Elab
 open Lean.Elab
+open Std.Tactic
 
 namespace Mathlib.Tactic.Find
 
