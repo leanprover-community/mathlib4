@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Frédéric Dupuis
 -/
 import Mathlib.Analysis.Convex.Hull
-import Mathlib.Data.Real.Basic
+import Mathlib.Data.Real.Archimedean
 import Mathlib.LinearAlgebra.LinearPMap
 
 #align_import analysis.convex.cone.basic from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
@@ -114,6 +114,7 @@ theorem ext {S T : ConvexCone 𝕜 E} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :
   SetLike.ext h
 #align convex_cone.ext ConvexCone.ext
 
+@[aesop safe apply (rule_sets [SetLike])]
 theorem smul_mem {c : 𝕜} {x : E} (hc : 0 < c) (hx : x ∈ S) : c • x ∈ S :=
   S.smul_mem' hc hx
 #align convex_cone.smul_mem ConvexCone.smul_mem

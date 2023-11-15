@@ -109,6 +109,7 @@ axiom f_eq (n) : f n = z
 -- It be lovely if `rw?` could produce two *different* rewrites by `f_eq` here!
 #guard_msgs(drop info) in
 lemma test : f n = f m := by
+  fail_if_success rw? [-f_eq] -- Check that we can forbid lemmas.
   rw?
   rw [f_eq]
 
@@ -134,6 +135,16 @@ info: Try this: rw [h p]
 #guard_msgs in
 example {P : Prop} (p : P) (h : P → 1 = 2) : 2 = 1 := by
   rw?
+
+-- Use `solve_by_elim` to discharge side conditions.
+/--
+info: Try this: rw [h (f p)]
+-- "no goals"
+-/
+#guard_msgs in
+example {P Q : Prop} (p : P) (f : P → Q) (h : Q → 1 = 2) : 2 = 1 := by
+  rw?
+
 
 -- Rewrite in reverse, discharging side conditions from local hypotheses.
 /--

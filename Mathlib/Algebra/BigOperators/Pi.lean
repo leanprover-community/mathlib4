@@ -68,6 +68,13 @@ theorem prod_mk_prod {α β γ : Type*} [CommMonoid α] [CommMonoid β] (s : Fin
 #align prod_mk_prod prod_mk_prod
 #align prod_mk_sum prod_mk_sum
 
+/-- decomposing `x : ι → R` as a sum along the canonical basis -/
+theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [Semiring R]
+    (x : ι → R) : x = ∑ i, (x i) • fun j => if i = j then (1 : R) else 0 := by
+  ext
+  simp
+#align pi_eq_sum_univ pi_eq_sum_univ
+
 section MulSingle
 
 variable {I : Type*} [DecidableEq I] {Z : I → Type*}

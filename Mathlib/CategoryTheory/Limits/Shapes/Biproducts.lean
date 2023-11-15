@@ -1101,6 +1101,7 @@ section
 
 variable {C} [Unique J] (f : J → C)
 
+attribute [local simp] eq_iff_true_of_subsingleton in
 /-- The limit bicone for the biproduct over an index type with exactly one term. -/
 @[simps]
 def limitBiconeOfUnique : LimitBicone f where
@@ -2029,7 +2030,7 @@ theorem biprod.symmetry (P Q : C) : (biprod.braiding P Q).hom ≫ (biprod.braidi
 
 /-- The associator isomorphism which associates a binary biproduct. -/
 @[simps]
-def biprod.associator (P Q R : C) : (P ⊞ Q) ⊞ R ≅ P ⊞ (Q ⊞ R)  where
+def biprod.associator (P Q R : C) : (P ⊞ Q) ⊞ R ≅ P ⊞ (Q ⊞ R) where
   hom := biprod.lift (biprod.fst ≫ biprod.fst) (biprod.lift (biprod.fst ≫ biprod.snd) biprod.snd)
   inv := biprod.lift (biprod.lift biprod.fst (biprod.snd ≫ biprod.fst)) (biprod.snd ≫ biprod.snd)
 
