@@ -1,5 +1,7 @@
 # macOS leaves these files everywhere:
 .DS_Store
+# Created by `lake exe cache get` in unusual configurations
+/.cache
 # Prior to https://github.com/leanprover/lean4/pull/2749 lake stored files in these locations.
 # We'll leave them in the `.gitignore` for a while for users switching between toolchains.
 /build/
