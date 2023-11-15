@@ -41,15 +41,16 @@ lemma lintegral_split_bounded {y z : ℝ} (f : ℝ → ENNReal) (hzy : z ≤ y) 
 lemma lintegral_split (f : ℝ → ENNReal) (c : ℝ) :
     ∫⁻ x, f x = (∫⁻ x in {x | x ≥ c}, f x) + ∫⁻ x in {x | x < c}, f x := by
   have union : univ = {x: ℝ | x ≥ c} ∪ {x : ℝ | x < c} := by
-    ext x
-    simp [le_or_lt]
+    ext x; simp [le_or_lt]
   have : IsOpen {x : ℝ | x < c} := by exact isOpen_gt' c
   calc
   ∫⁻ x, f x = ∫⁻ x in univ, f x ∂ volume := (set_lintegral_univ f).symm
   _ = ∫⁻ x in {x | x ≥ c} ∪ {x | x < c} , f x ∂ volume := by rw [← union]
   _ = _ := by
     apply lintegral_union this.measurableSet
-    rw [Set.disjoint_iff]; rintro x ⟨hxge : x ≥ _, hxlt : x < _⟩; linarith
+    rw [Set.disjoint_iff]
+    rintro x ⟨hxge : x ≥ _, hxlt : x < _⟩
+    linarith
 
 namespace ProbabilityTheory
 
@@ -77,11 +78,10 @@ lemma lintegral_nonpos {x r : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, exponentialPdf r y = 0 := by
   rw [set_lintegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
-  · refine ae_of_all _ ?_
+  · apply ae_of_all
     intro a (ha : a < x)
     simp only [exponentialPdf_eq, ge_iff_le, ENNReal.ofReal_eq_zero]
-    rw [if_neg]
-    linarith
+    rw [if_neg (by linarith)]
 
 /-- The exponential pdf is measurable. -/
 lemma measurable_exponentialPdfReal (r : ℝ) :
