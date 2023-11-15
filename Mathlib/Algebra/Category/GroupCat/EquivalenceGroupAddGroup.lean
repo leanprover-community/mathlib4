@@ -91,6 +91,8 @@ attribute [nolint simpNF] groupAddGroupEquivalence_unitIso_hom_app_apply
   groupAddGroupEquivalence_counitIso_inv_app_apply
   groupAddGroupEquivalence_unitIso_inv_app_apply
   groupAddGroupEquivalence_counitIso_hom_app_apply
+  groupAddGroupEquivalence_functor_map_apply
+  groupAddGroupEquivalence_inverse_map_apply
 
 /-- The equivalence of categories between `CommGroup` and `AddCommGroup`.
 -/
@@ -106,3 +108,5 @@ attribute [nolint simpNF] commGroupAddCommGroupEquivalence_counitIso_hom_app_app
   commGroupAddCommGroupEquivalence_unitIso_inv_app_apply
   commGroupAddCommGroupEquivalence_unitIso_hom_app_apply
   commGroupAddCommGroupEquivalence_counitIso_inv_app_apply
+  commGroupAddCommGroupEquivalence_inverse_map_apply
+  commGroupAddCommGroupEquivalence_functor_map_apply

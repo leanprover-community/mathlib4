@@ -223,7 +223,7 @@ section
 variable [Mul X] [Mul Y]
 
 /-- Build an isomorphism in the category `MagmaCat` from a `MulEquiv` between `Mul`s. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps?)
       "Build an isomorphism in the category `AddMagmaCat` from an `AddEquiv` between `Add`s."]
 def MulEquiv.toMagmaCatIso (e : X ≃* Y) : MagmaCat.of X ≅ MagmaCat.of Y where
   hom := e.toMulHom
@@ -234,6 +234,14 @@ def MulEquiv.toMagmaCatIso (e : X ≃* Y) : MagmaCat.of X ≅ MagmaCat.of Y wher
 
 #align mul_equiv.to_Magma_iso MulEquiv.toMagmaCatIso
 #align add_equiv.to_AddMagma_iso AddEquiv.toAddMagmaCatIso
+
+#lint
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF]
+  AddEquiv.toAddMagmaCatIso_inv_apply
+  MulEquiv.toMagmaCatIso_inv_apply
+  AddEquiv.toAddMagmaCatIso_hom_apply
+  MulEquiv.toMagmaCatIso_hom_apply
 
 end
 
