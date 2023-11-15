@@ -43,7 +43,7 @@ tend to the measure of `A`. -/
 lemma tendsto_measure_of_tendsto_indicator [NeBot L] {μ : Measure α}
     (As_mble : ∀ i, MeasurableSet (As i)) {B : Set α} (B_mble : MeasurableSet B)
     (B_finmeas : μ B ≠ ∞) (As_le_B : ∀ᶠ i in L, As i ⊆ B)
-    (h_lim : ∀ x, ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A)) :
+    (h_lim : ∀ x, ∀ᶠ i in L, x ∈ As i ↔ x ∈ A) :
     Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
   apply tendsto_measure_of_ae_tendsto_indicator L ?_ As_mble B_mble B_finmeas As_le_B
         (ae_of_all μ h_lim)
@@ -53,7 +53,7 @@ lemma tendsto_measure_of_tendsto_indicator [NeBot L] {μ : Measure α}
 the indicator of a set `A`, then the measures `μ Aᵢ` tend to the measure `μ A`. -/
 lemma tendsto_measure_of_tendsto_indicator_of_isFiniteMeasure [NeBot L]
     (μ : Measure α) [IsFiniteMeasure μ] (As_mble : ∀ i, MeasurableSet (As i))
-    (h_lim : ∀ x, ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A)) :
+    (h_lim : ∀ x, ∀ᶠ i in L, x ∈ As i ↔ x ∈ A) :
     Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
   apply tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure L ?_ As_mble (ae_of_all μ h_lim)
   exact measurableSet_of_tendsto_indicator L As_mble h_lim

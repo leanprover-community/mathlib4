@@ -182,7 +182,7 @@ variable {ι : Type*} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set 
 /-- If the indicator functions of measurable sets `Aᵢ` converge to the indicator function of
 a set `A` along a nontrivial countably generated filter, then `A` is also measurable. -/
 lemma measurableSet_of_tendsto_indicator [NeBot L] (As_mble : ∀ i, MeasurableSet (As i))
-    (h_lim : ∀ x, ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A)) :
+    (h_lim : ∀ x, ∀ᶠ i in L, x ∈ As i ↔ x ∈ A) :
     MeasurableSet A := by
   simp_rw [← measurable_indicator_const_iff (1 : ℝ≥0∞)] at As_mble ⊢
   exact measurable_of_tendsto_ennreal' L As_mble
@@ -192,7 +192,7 @@ lemma measurableSet_of_tendsto_indicator [NeBot L] (As_mble : ∀ i, MeasurableS
 of a set `A` along a nontrivial countably generated filter, then `A` is also a.e.-measurable. -/
 lemma nullMeasurableSet_of_tendsto_indicator [NeBot L] {μ : Measure α}
     (As_mble : ∀ i, NullMeasurableSet (As i) μ)
-    (h_lim : ∀ᵐ x ∂μ, ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A)) :
+    (h_lim : ∀ᵐ x ∂μ, ∀ᶠ i in L, x ∈ As i ↔ x ∈ A) :
     NullMeasurableSet A μ := by
   simp_rw [← aemeasurable_indicator_const_iff (1 : ℝ≥0∞)] at As_mble ⊢
   exact aemeasurable_of_tendsto_metrizable_ae L As_mble

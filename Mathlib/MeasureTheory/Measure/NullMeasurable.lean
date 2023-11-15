@@ -527,7 +527,7 @@ lemma ae_tendsto_indicator_const_iff_ae_eventually' {μ : Measure α}
     (B_nhd : B ∈ 𝓝 b) (nin_B : 0 ∉ B) (O_nhd : O ∈ 𝓝 0) (nin_O : b ∉ O) :
     (∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b) x) L
         (𝓝 (A.indicator (fun (_ : α) ↦ b) x)))
-      ↔ ∀ᵐ x ∂μ, ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A) := by
+      ↔ ∀ᵐ x ∂μ, ∀ᶠ i in L, x ∈ As i ↔ x ∈ A := by
   constructor <;> intro h
   · filter_upwards [h] with x hx
     by_cases hxA : x ∈ A
@@ -553,7 +553,7 @@ lemma ae_tendsto_indicator_const_iff_ae_eventually' {μ : Measure α}
     [TopologicalSpace β] [T1Space β] (b : β) [NeZero b] :
     (∀ᵐ x ∂μ, Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b) x) L
         (𝓝 (A.indicator (fun (_ : α) ↦ b) x)))
-      ↔ ∀ᵐ x ∂μ, ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A) := by
+      ↔ ∀ᵐ x ∂μ, ∀ᶠ i in L, x ∈ As i ↔ x ∈ A := by
   apply ae_tendsto_indicator_const_iff_ae_eventually' _ b (B := {0}ᶜ) (O := {b}ᶜ)
   · simp only [compl_singleton_mem_nhds_iff, ne_eq, NeZero.ne]
   · exact (Set.not_mem_compl_iff).mpr rfl
