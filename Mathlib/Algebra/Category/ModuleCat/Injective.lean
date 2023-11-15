@@ -8,7 +8,6 @@ import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.Algebra.Category.GroupCat.Abelian
 import Mathlib.Algebra.Category.GroupCat.Injective
 import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
-import Mathlib.CategoryTheory.Abelian.Transfer
 
 /-!
 # Category of $R$-modules has enough injectives
