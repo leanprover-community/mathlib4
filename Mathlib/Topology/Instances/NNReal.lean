@@ -20,7 +20,7 @@ Instances for the following typeclasses are defined:
 
 * `TopologicalSpace ℝ≥0`
 * `TopologicalSemiring ℝ≥0`
-* `TopologicalSpace.SecondCountableTopology ℝ≥0`
+* `SecondCountableTopology ℝ≥0`
 * `OrderTopology ℝ≥0`
 * `ContinuousSub ℝ≥0`
 * `HasContinuousInv₀ ℝ≥0` (continuity of `x⁻¹` away from `0`)
@@ -89,7 +89,7 @@ theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
 #align nnreal.continuous_coe NNReal.continuous_coe
 
 /-- Embedding of `ℝ≥0` to `ℝ` as a bundled continuous map. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def _root_.ContinuousMap.coeNNRealReal : C(ℝ≥0, ℝ) :=
   ⟨(↑), continuous_coe⟩
 #align continuous_map.coe_nnreal_real ContinuousMap.coeNNRealReal

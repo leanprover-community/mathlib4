@@ -356,11 +356,9 @@ theorem Or.imp3 (had : a → d) (hbe : b → e) (hcf : c → f) : a ∨ b ∨ c 
 
 #align or_imp_distrib or_imp
 
-theorem or_iff_not_imp_left : a ∨ b ↔ ¬a → b := Decidable.or_iff_not_imp_left
-#align or_iff_not_imp_left or_iff_not_imp_left
-
-theorem or_iff_not_imp_right : a ∨ b ↔ ¬b → a := Decidable.or_iff_not_imp_right
-#align or_iff_not_imp_right or_iff_not_imp_right
+export Classical (or_iff_not_imp_left or_iff_not_imp_right)
+#align or_iff_not_imp_left Classical.or_iff_not_imp_left
+#align or_iff_not_imp_right Classical.or_iff_not_imp_right
 
 theorem not_or_of_imp : (a → b) → ¬a ∨ b := Decidable.not_or_of_imp
 #align not_or_of_imp not_or_of_imp
@@ -887,8 +885,6 @@ theorem exists_unique_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∃! h
   @exists_unique_const (q h) p ⟨h⟩ _
 #align exists_unique_prop_of_true exists_unique_prop_of_true
 
-theorem forall_prop_of_false {p : Prop} {q : p → Prop} (hn : ¬p) : (∀ h' : p, q h') ↔ True :=
-  iff_true_intro fun h ↦ hn.elim h
 #align forall_prop_of_false forall_prop_of_false
 
 theorem exists_prop_of_false {p : Prop} {q : p → Prop} : ¬p → ¬∃ h' : p, q h' :=
@@ -1147,18 +1143,9 @@ theorem dite_eq_iff' : dite P A B = c ↔ (∀ h, A h = c) ∧ ∀ h, B h = c :=
 theorem ite_eq_iff' : ite P a b = c ↔ (P → a = c) ∧ (¬P → b = c) := dite_eq_iff'
 #align ite_eq_iff' ite_eq_iff'
 
-@[simp] theorem dite_eq_left_iff : dite P (fun _ ↦ a) B = a ↔ ∀ h, B h = a := by
-  by_cases P <;> simp [*, forall_prop_of_true, forall_prop_of_false]
 #align dite_eq_left_iff dite_eq_left_iff
-
-@[simp] theorem dite_eq_right_iff : (dite P A fun _ ↦ b) = b ↔ ∀ h, A h = b := by
-  by_cases P <;> simp [*, forall_prop_of_true, forall_prop_of_false]
 #align dite_eq_right_iff dite_eq_right_iff
-
-@[simp] theorem ite_eq_left_iff : ite P a b = a ↔ ¬P → b = a := dite_eq_left_iff
 #align ite_eq_left_iff ite_eq_left_iff
-
-@[simp] theorem ite_eq_right_iff : ite P a b = b ↔ P → a = b := dite_eq_right_iff
 #align ite_eq_right_iff ite_eq_right_iff
 
 theorem dite_ne_left_iff : dite P (fun _ ↦ a) B ≠ a ↔ ∃ h, a ≠ B h := by

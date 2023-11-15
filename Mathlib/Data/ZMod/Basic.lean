@@ -803,12 +803,12 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
         · intro x; rfl
         · rintro ⟨x, y⟩
           fin_cases y
-          simp [castHom, Prod.ext_iff]
+          simp [castHom, Prod.ext_iff, eq_iff_true_of_subsingleton]
       · constructor
         · intro x; rfl
         · rintro ⟨x, y⟩
           fin_cases x
-          simp [castHom, Prod.ext_iff]
+          simp [castHom, Prod.ext_iff, eq_iff_true_of_subsingleton]
     else by
       haveI : NeZero (m * n) := ⟨hmn0⟩
       haveI : NeZero m := ⟨left_ne_zero_of_mul hmn0⟩
