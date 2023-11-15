@@ -243,7 +243,8 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
   obtain ⟨q, hq⟩ : ∃ q, F q = (n, z, p) := hF _
   -- then `x` belongs to `t q`.
   apply mem_iUnion.2 ⟨q, _⟩
-  simp (config := { zeta := false }) only [hq, subset_closure hnz, hp, mem_inter_iff, and_true, hnz]
+  simp (config := { zeta := false }) only [K, hq, mem_inter_iff, hp, and_true]
+  exact subset_closure hnz
 #align exists_closed_cover_approximates_linear_on_of_has_fderiv_within_at exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt
 
 variable [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ]
@@ -1262,5 +1263,73 @@ theorem integral_target_eq_integral_abs_det_fderiv_smul {f : LocalHomeomorph E E
   intro x hx
   exact (hf' x hx).hasFDerivWithinAt
 #align measure_theory.integral_target_eq_integral_abs_det_fderiv_smul MeasureTheory.integral_target_eq_integral_abs_det_fderiv_smul
+
+section withDensity
+
+lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_det_fderiv_mul
+    (hs : MeasurableSet s) (hf : MeasurableEmbedding f)
+    {g : E → ℝ} (hg : ∀ᵐ x ∂μ, x ∈ f '' s → 0 ≤ g x) (hg_int : IntegrableOn g (f '' s) μ)
+    (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) :
+    (μ.withDensity (fun x ↦ ENNReal.ofReal (g x))).comap f s
+      = ENNReal.ofReal (∫ x in s, |(f' x).det| * g (f x) ∂μ) := by
+  rw [Measure.comap_apply f hf.injective (fun t ht ↦ hf.measurableSet_image' ht) _ hs,
+    withDensity_apply _ (hf.measurableSet_image' hs),
+    ← ofReal_integral_eq_lintegral_ofReal hg_int
+      ((ae_restrict_iff' (hf.measurableSet_image' hs)).mpr hg),
+    integral_image_eq_integral_abs_det_fderiv_smul μ hs hf' (hf.injective.injOn _)]
+  simp_rw [smul_eq_mul]
+
+lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_det_fderiv_mul
+    (hs : MeasurableSet s) (f : E ≃ᵐ E)
+    {g : E → ℝ} (hg : ∀ᵐ x ∂μ, x ∈ f '' s → 0 ≤ g x) (hg_int : IntegrableOn g (f '' s) μ)
+    (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) :
+    (μ.withDensity (fun x ↦ ENNReal.ofReal (g x))).map f.symm s
+      = ENNReal.ofReal (∫ x in s, |(f' x).det| * g (f x) ∂μ) := by
+  rw [MeasurableEquiv.map_symm,
+    MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_det_fderiv_mul μ hs
+      f.measurableEmbedding hg hg_int hf']
+
+lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_deriv_mul
+    {f : ℝ → ℝ} (hf : MeasurableEmbedding f) {s : Set ℝ} (hs : MeasurableSet s)
+    {g : ℝ → ℝ} (hg : ∀ᵐ x, x ∈ f '' s → 0 ≤ g x) (hg_int : IntegrableOn g (f '' s))
+    {f' : ℝ → ℝ} (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) :
+    (volume.withDensity (fun x ↦ ENNReal.ofReal (g x))).comap f s
+      = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
+  rw [hf.withDensity_ofReal_comap_apply_eq_integral_abs_det_fderiv_mul volume hs
+    hg hg_int hf']
+  simp only [det_one_smulRight]
+
+lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_deriv_mul
+    (f : ℝ ≃ᵐ ℝ) {s : Set ℝ} (hs : MeasurableSet s)
+    {g : ℝ → ℝ} (hg : ∀ᵐ x, x ∈ f '' s → 0 ≤ g x) (hg_int : IntegrableOn g (f '' s))
+    {f' : ℝ → ℝ} (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) :
+    (volume.withDensity (fun x ↦ ENNReal.ofReal (g x))).map f.symm s
+      = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
+  rw [MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_det_fderiv_mul volume hs
+      f hg hg_int hf']
+  simp only [det_one_smulRight]
+
+lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_deriv_mul'
+    {f : ℝ → ℝ} (hf : MeasurableEmbedding f) {s : Set ℝ} (hs : MeasurableSet s)
+    {f' : ℝ → ℝ} (hf' : ∀ x, HasDerivAt f (f' x) x)
+    {g : ℝ → ℝ} (hg : 0 ≤ᵐ[volume] g) (hg_int : Integrable g) :
+    (volume.withDensity (fun x ↦ ENNReal.ofReal (g x))).comap f s
+      = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) :=
+  hf.withDensity_ofReal_comap_apply_eq_integral_abs_deriv_mul hs
+    (by filter_upwards [hg] with x hx using fun _ ↦ hx) hg_int.integrableOn
+    (fun x _ => (hf' x).hasDerivWithinAt)
+
+lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_deriv_mul'
+    (f : ℝ ≃ᵐ ℝ) {s : Set ℝ} (hs : MeasurableSet s)
+    {f' : ℝ → ℝ} (hf' : ∀ x, HasDerivAt f (f' x) x)
+    {g : ℝ → ℝ} (hg : 0 ≤ᵐ[volume] g) (hg_int : Integrable g) :
+    (volume.withDensity (fun x ↦ ENNReal.ofReal (g x))).map f.symm s
+      = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
+  rw [MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_det_fderiv_mul volume hs
+      f (by filter_upwards [hg] with x hx using fun _ ↦ hx) hg_int.integrableOn
+      (fun x _ => (hf' x).hasDerivWithinAt)]
+  simp only [det_one_smulRight]
+
+end withDensity
 
 end MeasureTheory

@@ -477,7 +477,7 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ≠ b ^^^ c) :
       rfl
     ) h fun j hj => by
       -- Porting note: this was originally `simp [hi' _ hj]`
-      rw [Nat.testBit_xor, hi' _ hj, Bool.bne_eq_xor, Bool.xor_false_right, eq_self_iff_true]
+      rw [Nat.testBit_xor, hi' _ hj, Bool.bne_eq_xor, Bool.xor_false, eq_self_iff_true]
       trivial
 #align nat.lxor_trichotomy Nat.xor_trichotomy
 

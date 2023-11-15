@@ -52,7 +52,6 @@ import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
-import Mathlib.Tactic.LeftRight
 import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Linarith
@@ -62,7 +61,6 @@ import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.ModCases
 import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.Nontriviality
-import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.PermuteGoals
