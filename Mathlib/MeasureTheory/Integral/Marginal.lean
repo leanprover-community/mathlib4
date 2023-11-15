@@ -19,8 +19,8 @@ space (e.g. `((ι ⊕ ι') → ℝ) ≃ (ι → ℝ) × (ι' → ℝ)`).
 
 ## Main Definitions
 
-* Assume that `∀ i, π i` is a product of measurable spaces with measures `μ i` on `π i` and suppose
-  that `f : (∀ i, π i) → ℝ≥0∞` is a function.
+* Assume that `∀ i : ι, π i` is a product of measurable spaces with measures `μ i` on `π i`,
+  `f : (∀ i, π i) → ℝ≥0∞` is a function and `s : Finset ι`.
   Then `lmarginal μ s f` or `∫⋯∫⁻_s, f ∂μ` is the function that integrates `f`
   over all variables in `s`. It returns a function that still takes the same variables as `f`,
   but is constant in the variables in `s`. Mathematically, if `s = {i₁, ..., iₖ}`,
