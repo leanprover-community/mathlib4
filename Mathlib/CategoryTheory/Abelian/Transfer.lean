@@ -241,21 +241,10 @@ def toUnder {A : 𝒜} (a : InjectivePresentation <| L.obj A) :
 
 lemma mono_toUnder [Abelian 𝒜] [Abelian ℬ] [PreservesFiniteLimits L] [Faithful L]
     {A : 𝒜} (a : InjectivePresentation <| L.obj A) : Mono (toUnder adj a) := by
-  have eq1 : L.map (toUnder adj a) ≫ (adj.counit.app _) = a.f
-  ·  simp [toUnder]
-  have m1 : Mono (L.map (toUnder adj a) ≫ (adj.counit.app _))
-  · rw [eq1]
-    exact a.mono
-  have m2 : Mono (L.map (toUnder adj a))
-  · exact mono_of_mono _ (adj.counit.app a.J)
-  have eq2 : L.map (kernel.ι (toUnder adj a)) =
-    (PreservesKernel.iso L (toUnder adj a)).hom ≫ kernel.ι (L.map (toUnder adj a))
-  · simp
-  have eq3 : kernel.ι (toUnder adj a) = 0
-  · refine L.zero_of_map_zero _ ?_
-    rw [Abelian.mono_iff_kernel_ι_eq_zero] at m2
-    rw [eq2, m2, comp_zero]
-  rw [Abelian.mono_iff_kernel_ι_eq_zero, eq3]
+  have eq1 : L.map (toUnder adj a) ≫ (adj.counit.app _) = a.f := by simp [toUnder]
+  have : Mono (L.map (toUnder adj a) ≫ (adj.counit.app _)) := eq1 ▸ a.mono
+  have : Mono (L.map (toUnder adj a)) := mono_of_mono _ (adj.counit.app a.J)
+  aesop_cat
 
 end transfer_enough_injectives
 
