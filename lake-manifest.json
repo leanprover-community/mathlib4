@@ -12,7 +12,7 @@
   {"git":
    {"url": "https://github.com/leanprover-community/quote4",
     "subDir?": null,
-    "rev": "511eb96eca98a7474683b8ae55193a7e7c51bc39",
+    "rev": "d3a1d25f3eba0d93a58d5d3d027ffa78ece07755",
     "opts": {},
     "name": "Qq",
     "inputRev?": "master",
