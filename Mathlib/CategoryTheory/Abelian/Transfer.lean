@@ -215,7 +215,8 @@ def abelianOfEquivalence {C : Type u₁} [Category.{v} C] [Preadditive C] [HasFi
 namespace transfer_enough_injectives
 
 variable {𝒜 : Type u₁} {ℬ : Type u₂} [Category.{v₁} 𝒜] [Category.{v₂} ℬ]
-variable (L : 𝒜 ⥤ ℬ) (R : ℬ ⥤ 𝒜)
+variable {L : 𝒜 ⥤ ℬ} {R : ℬ ⥤ 𝒜} (adj : L ⊣ R)
+
 /--
 Give a pair of functors
 ```
@@ -224,20 +225,10 @@ Give a pair of functors
   <-- R ---
 ```
 for `A : 𝒜`, pick an injective presentation `L A ⟶ J` which always exists by enough
-injectives of `ℬ`. we pullback `J` across `R`.
--/
-def under {A : 𝒜} (a : InjectivePresentation <| L.obj A) :=
-  R.obj <| a.J
-
-variable {L R}
-variable (adj : L ⊣ R)
-
-/--
-Let `L(A) ⟶ J` be an injective presentation of `L(A)`, then `A ⟶ R(J)` is an injective
-presentation of `A`
+injectives of `ℬ`. Then `A ⟶ R(J)` is an injective presentation of `A`
 -/
 def toUnder {A : 𝒜} (a : InjectivePresentation <| L.obj A) :
-    A ⟶ under L R a := adj.homEquiv _ _ <| a.f
+    A ⟶ R.obj a.J := adj.homEquiv _ _ <| a.f
 
 lemma mono_toUnder [Abelian 𝒜] [Abelian ℬ] [PreservesFiniteLimits L] [Faithful L]
     {A : 𝒜} (a : InjectivePresentation <| L.obj A) : Mono (toUnder adj a) := by
@@ -257,8 +248,8 @@ lemma EnoughInjectives.of_adjunction {C : Type u₁} {D : Type u₂}
     {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) [Faithful L] [PreservesFiniteLimits L]
     [EnoughInjectives D] : EnoughInjectives C where
   presentation _ :=
-    ⟨⟨under _ _ (EnoughInjectives.presentation _).some, Injective.injective_of_adjoint adj _,
-        adj.homEquiv _ _ _, mono_toUnder adj _⟩⟩
+    ⟨⟨R.obj (EnoughInjectives.presentation _).some.J, Injective.injective_of_adjoint adj _,
+      toUnder _ _, mono_toUnder adj _⟩⟩
 
 /-- An equivalence of categories transfers enough injectives. -/
 lemma EnoughInjectives.of_equivalence {C : Type u₁} {D : Type u₂}
