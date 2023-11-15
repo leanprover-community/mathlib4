@@ -2135,6 +2135,7 @@ import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.GroupTheory.Nilpotent
 import Mathlib.GroupTheory.NoncommPiCoprod
+import Mathlib.GroupTheory.Order.Min
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.Perm.Basic
@@ -2386,9 +2387,9 @@ import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.PiTensorProduct
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Projection
-import Mathlib.LinearAlgebra.ProjectiveSpace.Basic
-import Mathlib.LinearAlgebra.ProjectiveSpace.Independence
-import Mathlib.LinearAlgebra.ProjectiveSpace.Subspace
+import Mathlib.LinearAlgebra.Projectivization.Basic
+import Mathlib.LinearAlgebra.Projectivization.Independence
+import Mathlib.LinearAlgebra.Projectivization.Subspace
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 import Mathlib.LinearAlgebra.QuadraticForm.Complex
 import Mathlib.LinearAlgebra.QuadraticForm.Dual
