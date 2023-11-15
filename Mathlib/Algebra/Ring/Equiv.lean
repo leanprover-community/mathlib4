@@ -456,7 +456,7 @@ theorem map_ne_zero_iff : f x ≠ 0 ↔ x ≠ 0 :=
   AddEquivClass.map_ne_zero_iff f
 #align ring_equiv.map_ne_zero_iff RingEquiv.map_ne_zero_iff
 
-variable [EquivLike F R S]
+variable [NDFunLike F R S]
 
 /-- Produce a ring isomorphism from a bijective ring homomorphism. -/
 noncomputable def ofBijective [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bijective f) :
