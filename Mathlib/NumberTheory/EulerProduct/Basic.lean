@@ -151,7 +151,7 @@ section CompletelyMultiplicative
 /-!
 ### Euler Products for completely multiplicative functions
 
-We now assume that `f` is completely multiplicative and has valued in a complete normed field `F`.
+We now assume that `f` is completely multiplicative and has values in a complete normed field `F`.
 Then we can use the formula for geometric series to simplify the statement. This leads to
 `EulerProduct.eulerProduct_completely_multiplicative`.
 -/
