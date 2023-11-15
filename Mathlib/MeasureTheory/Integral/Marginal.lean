@@ -31,7 +31,8 @@ space (e.g. `((ι ⊕ ι') → ℝ) ≃ (ι → ℝ) × (ι' → ℝ)`).
   where $\vec{x}[\vec{y}]$ is the vector $\vec{x}$ with $x_{i_j}$ replaced by $y_{i_j}$ for all
   $1 \le j \le k$.
   If `f` is the distribution of a random variable, this is the marginal distribution of all
-  variables not in `s`.
+  variables not in `s` (but not the most general notion, since we only consider product measures
+  here).
   Note that the notation `∫⋯∫⁻_s, f ∂μ` is not a binder, and returns a function.
 
 ## Main Results
@@ -69,7 +70,8 @@ variable {s t : Finset δ} {f g : (∀ i, π i) → ℝ≥0∞} {x y : ∀ i, π
 
 /-- Integrate `f(x₁,…,xₙ)` over all variables `xᵢ` where `i ∈ s`. Return a function in the
   remaining variables (it will be constant in the `xᵢ` for `i ∈ s`).
-  This is the marginal distribution of all variables not in `s`. -/
+  This is the marginal distribution of all variables not in `s` when the considered measure
+  is the product measure. -/
 def lmarginal (μ : ∀ i, Measure (π i)) (s : Finset δ) (f : (∀ i, π i) → ℝ≥0∞)
     (x : ∀ i, π i) : ℝ≥0∞ :=
   ∫⁻ y : ∀ i : s, π i, f (updateFinset x s y) ∂Measure.pi fun i : s => μ i
