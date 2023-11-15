@@ -35,6 +35,10 @@ open CategoryTheory Limits
 
 namespace Profinite
 
+/--
+Implementation: If `π` is a surjective morhpism in `Profinite`, then it is an effective epi.
+The theorem `Profinite.effectiveEpi_tfae` should be used instead.
+-/
 noncomputable
 def struct {B X : Profinite.{u}} (π : X ⟶ B) (hπ : Function.Surjective π) :
     EffectiveEpiStruct π where
@@ -69,7 +73,7 @@ theorem effectiveEpi_tfae
     , Function.Surjective π
     ] := by
   tfae_have 1 → 2
-  · intro; exact epiOfEffectiveEpi _
+  · intro; infer_instance
   tfae_have 2 ↔ 3
   · exact epi_iff_surjective π
   tfae_have 3 → 1
@@ -105,7 +109,7 @@ theorem effectiveEpiFamily_tfae
     rwa [← effectiveEpi_desc_iff_effectiveEpiFamily,
       effectiveEpi_iff_surjective, ← epi_iff_surjective]
   tfae_have 1 → 2
-  · intro; exact epiCoproductDescOfEffectiveEpiFamily _ _
+  · intro; infer_instance
   tfae_have 3 → 2
   · intro e
     rw [epi_iff_surjective]

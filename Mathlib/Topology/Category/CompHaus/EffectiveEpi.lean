@@ -31,6 +31,10 @@ open CategoryTheory Limits
 
 namespace CompHaus
 
+/--
+Implementation: If `π` is a surjective morhpism in `CompHaus`, then it is an effective epi.
+The theorem `CompHaus.effectiveEpi_tfae` should be used instead.
+-/
 noncomputable
 def struct {B X : CompHaus.{u}} (π : X ⟶ B) (hπ : Function.Surjective π) :
     EffectiveEpiStruct π where

@@ -33,8 +33,6 @@ See [nlab: *Effective Epimorphism*](https://ncatlab.org/nlab/show/effective+epim
 
 -/
 
-set_option autoImplicit true
-
 namespace CategoryTheory
 
 open Limits
@@ -302,12 +300,12 @@ attribute [nolint simpNF]
   EffectiveEpiFamily.fac_assoc
 
 /-- The effective epi family structure on the identity -/
-def effectiveEpiFamilyStructId : EffectiveEpiFamilyStruct (α : Unit → C) (fun _ => 𝟙 (α ())) where
+def effectiveEpiFamilyStructId {α : Unit → C} : EffectiveEpiFamilyStruct α (fun _ => 𝟙 (α ())) where
   desc := fun e _ => e ()
   fac := by aesop_cat
   uniq := by aesop_cat
 
-instance : EffectiveEpiFamily (fun _ => X : Unit → C) (fun _ => 𝟙 X) :=
+instance {X : C} : EffectiveEpiFamily (fun _ => X : Unit → C) (fun _ => 𝟙 X) :=
   ⟨⟨effectiveEpiFamilyStructId⟩⟩
 
 example {B W : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
@@ -541,14 +539,6 @@ def effectiveEpiFamilyOfEffectiveEpiDesc {B : C} {α : Type*} (X : α → C) (π
     apply EffectiveEpi.uniq (Sigma.desc π)
     ext
     simpa using hm _
-
-instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
-    [HasCoproduct X] [EffectiveEpi (Sigma.desc π)]
-    [∀ {Z : C} (g : Z ⟶ ∐ X) (a : α), HasPullback g (Sigma.ι X a)]
-    [∀ {Z : C} (g : Z ⟶ ∐ X), HasCoproduct (fun a ↦ pullback g (Sigma.ι X a))]
-    [∀ {Z : C} (g : Z ⟶ ∐ X), Epi (Sigma.desc (fun a ↦ pullback.fst (f := g)
-      (g := (Sigma.ι X a))))] : EffectiveEpiFamily X π :=
-  ⟨⟨effectiveEpiFamilyOfEffectiveEpiDesc X π⟩⟩
 
 /--
 An `EffectiveEpiFamily` consisting of a single `EffectiveEpi`
