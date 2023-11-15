@@ -1,60 +1,176 @@
 import Mathlib.AlgebraicTopology.SimplicialSet
-import Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
-open CategoryTheory CategoryTheory.Limits Simplicial SimplicialObject
+open CategoryTheory Limits Simplicial SimplexCategory
 
 variable (X Y X' Y': SSet) (m n : ℕ) (f : X ⟶ Y)
 
-example : Δ[m] _[n] =
-  (yoneda.obj ([m] : SimplexCategory)).obj (Opposite.op [n]) := rfl
+namespace CategoryTheory
 
-def auxfoomap (m : ℕ) : Fin (m + 1) →o Fin (1) where
-  toFun := fun _ => 0
-  monotone' := fun _ _ => by intro ; rfl
+def isTerminalHom {C : Type _} [Category C] (X Y : C) (hY : IsTerminal Y) :
+    IsTerminal (X ⟶ Y) :=
+  letI : ∀ (W : Type _), Unique (W ⟶ (X ⟶ Y)) := fun W =>
+    { default := fun _ => hY.from _
+      uniq := fun a => by ext ; apply hY.hom_ext }
+  IsTerminal.ofUnique _
 
-def foomap : X ⟶ Δ[0] where
-  app := by
-    intro n _
-    exact SimplexCategory.Hom.mk (auxfoomap ((Opposite.unop n).len))
+def Functor.isTerminalOfObjIsTerminal {C D : Type _} [Category C] [Category D]
+    (F : C ⥤ D) (hF : ∀ X : C, IsTerminal (F.obj X)) :
+    IsTerminal F :=
+  letI : ∀ (G : C ⥤ D), Unique (G ⟶ F) := fun _ => {
+    default := {
+      app := fun _ => (hF _).from _
+      naturality := fun _ _ _ => (hF _).hom_ext _ _ }
+    uniq := fun _ => NatTrans.ext _ _ <| funext fun _ => (hF _).hom_ext _ _ }
+  IsTerminal.ofUnique _
 
-def footerm : IsTerminal Δ[0] := by
-  apply Limits.IsTerminal.ofUniqueHom foomap
-  intro X f
-  ext n X_n
-  dsimp [foomap, auxfoomap]
-  sorry
+end CategoryTheory
 
-/- morphisms Δ[0] ⟶ Δ[1] are in bijection with morphisms [0] ⟶ [1] in the
-    simplex category -/
-example : (Δ[0] ⟶ Δ[1]) ≃ Δ[1] _[0] := yonedaEquiv
+namespace SimplexCategory
 
-def d₀ : Δ[0] ⟶ Δ[1] := yonedaEquiv.invFun (SimplexCategory.δ (0 : Fin 2))
+def isTerminalZero : IsTerminal ([0] : SimplexCategory) :=
+  letI : ∀ t : SimplexCategory, Unique (t ⟶ [0]) := fun t => {
+    default := SimplexCategory.Hom.mk <| OrderHom.const _ 0
+    uniq := fun m => SimplexCategory.Hom.ext _ _ <| OrderHom.ext _ _ <|
+      funext fun _ => Fin.ext <| by simp }
+  IsTerminal.ofUnique _
 
-def d₁ : Δ[0] ⟶ Δ[1] := yonedaEquiv.invFun (SimplexCategory.δ (1 : Fin 2))
+end SimplexCategory
 
-noncomputable section
+namespace SSet
+
+universe u
+
+class IsKan (X : SSet) : Prop where
+  cond : ∀ n i (f : Λ[n,i] ⟶ X), ∃ (g : Δ[n] ⟶ X), f = hornInclusion _ _ ≫ g
+
+def d0 : Δ[0] ⟶ Δ[1] := SSet.standardSimplex.map (δ 1)
+def d1 : Δ[0] ⟶ Δ[1] := SSet.standardSimplex.map (δ 0)
+
+def ptIsTerminal : IsTerminal Δ[0] := Functor.isTerminalOfObjIsTerminal _ <|
+  fun t => show IsTerminal (t.unop ⟶ [0]) from isTerminalHom _ _ isTerminalZero
+
+def binaryFan (X : SSet.{0}) : BinaryFan Δ[0] X :=
+  BinaryFan.mk (ptIsTerminal.from X) (𝟙 X)
+
+def isLimitBinaryFan (X : SSet.{0}) : IsLimit (binaryFan X) where
+  lift := fun (S : BinaryFan _ _) => S.snd
+  fac := fun (S : BinaryFan _ _) => by
+    rintro ⟨(_|_)⟩
+    · apply ptIsTerminal.hom_ext
+    · dsimp [binaryFan] ; simp
+  uniq := fun (S : BinaryFan _ _) m hm => by
+    specialize hm ⟨WalkingPair.right⟩
+    simpa [binaryFan] using hm
+
+noncomputable
+def leftUnitor (X : SSet.{0}) : Δ[0] ⨯ X ≅ X :=
+  (limit.isLimit _).conePointUniqueUpToIso (isLimitBinaryFan X)
+
+structure Path {X : SSet.{0}} (a b : Δ[0] ⟶ X) where
+  p : Δ[1] ⟶ X
+  hp0 : d0 ≫ p = a
+  hp1 : d1 ≫ p = b
+
+def Path.rfl {X : SSet.{0}} (a : Δ[0] ⟶ X) : Path a a where
+  p := ptIsTerminal.from _ ≫ a
+  hp0 := by slice_lhs 1 2 => simp
+  hp1 := by slice_lhs 1 2 => simp
+
+def Path.trans {X : SSet.{0}} {a b c : Δ[0] ⟶ X} [IsKan X] :
+  Path a b → Path b c → Path a c := sorry
+
+def Path.symm {X : SSet.{0}} {a b : Δ[0] ⟶ X} [IsKan X] :
+  Path a b → Path b a := sorry
+
+noncomputable
+def ProdObjIso (X Y : SSet) (n) : (X ⨯ Y).obj n ≅ (X.obj n × Y.obj n) :=
+  show ((evaluation _ _).obj n).obj (X ⨯ Y) ≅ _ from
+  preservesLimitIso _ _ ≪≫ Limits.HasLimit.isoOfNatIso
+    (Limits.pairComp X Y ((evaluation SimplexCategoryᵒᵖ Type).obj n))
+    ≪≫ (Types.binaryProductIso _ _)
 
 /-
-scrap work
+example (X Y : SSet) (n) : (ProdObjIso X Y n).hom ≫ Limits.prod.fst = (Limits.prod.fst (X := X) (Y := Y)).app n := by
+  dsimp [ProdObjIso]
+  aesop
 -/
-def foob (t) : (X ⨯ Δ[0]).obj t ≅ (X.obj t ⨯ Δ[0].obj t) :=
-  show ((evaluation _ _).obj t).obj (X ⨯ Δ[0]) ≅ _ from
-  preservesLimitIso _ _ ≪≫ HasLimit.isoOfNatIso
-    (pairComp X Δ[0] ((evaluation SimplexCategoryᵒᵖ Type).obj t))
 
-def proj_iso : (X ⨯ Δ[0]) ≅ X :=
-  prod.mapIso (eqToIso (Eq.refl _))
-    (IsTerminal.uniqueUpToIso terminalIsTerminal footerm).symm ≪≫
-    (prod.rightUnitor _)
+def Prod (X Y : SSet) : SSet where
+  obj n := X.obj n × Y.obj n
+  map := by
+    rintro m n f a
+    exact ⟨X.map f a.1, Y.map f a.2⟩
 
-structure SimpHom (f₀ f₁ : X ⟶ Y) where
-  /- the homotopy -/
-  h : X ⨯ Δ[1] ⟶ Y
-  /- h(x, 0) = f₀ x -/
-  map_zero : prod.map (𝟙 X) d₀ ≫ h = (proj_iso _).hom ≫ f₀
-  /- h(x, 1) = f₁ x -/
-  map_one : prod.map (𝟙 X) d₁ ≫ h = Limits.prod.fst ≫ f₁
+noncomputable
+def ProdIso (X Y : SSet) : X ⨯ Y ≅ Prod X Y where
+  hom := {
+    app := fun _ => (ProdObjIso _ _ _).hom
+    naturality := by
+      intro m n f
+      ext a
+      simp
+      dsimp [Prod, ProdObjIso]
+      sorry
+  }
+  inv := {
+    app := fun _ => (ProdObjIso _ _ _).inv
+    naturality := by
+      sorry
+  }
+  hom_inv_id := sorry
+  inv_hom_id := sorry
 
+noncomputable
+def IHom (X Y : SSet) : SSet where
+  obj n := X ⨯ (standardSimplex.obj n.unop) ⟶ Y
+  map := by
+    rintro m n f F
+    refine {
+      app := fun k => (prod.map (𝟙 X) (standardSimplex.map f.unop)).app k ≫ F.app k
+    }
+  map_id := by
+    intro n
+    ext a m h
+    simp only [unop_id, smallCategory_id, Hom.id, types_comp_apply, types_id_apply]
+    suffices : (prod.map (𝟙 X) (standardSimplex.map (Hom.mk OrderHom.id))).app m h = h
+    rw [this]
+    suffices : (prod.map (𝟙 X) (standardSimplex.map (Hom.mk OrderHom.id))).app m = id
+    rw [this]
+    rfl
+
+    aesop_cat
+
+  map_comp := sorry
+
+/-
+def IHom (X Y : SSet) : SSet where
+  obj n := Prod X (standardSimplex.obj n.unop) ⟶ Y
+  map := by
+    rintro m n f F
+    refine {
+      app := by
+        rintro k ⟨a, b⟩
+        apply F.app k
+        refine ⟨a, ?_⟩
+        exact ((standardSimplex.map f.unop).app k) b
+      naturality := _
+    }
+  map_id := sorry
+  map_comp := sorry
+-/
+
+/-
+TODO: Define this in terms of paths.
+structure homotopy {X Y : SSet.{0}} (f g : X ⟶ Y) where
+  F : Δ[1] ⨯ X ⟶ Y
+  F0 : (leftUnitor X).inv ≫ (prod.map d0 (𝟙 X)) ≫ F = f
+  F1 : (leftUnitor X).inv ≫ (prod.map d1 (𝟙 X)) ≫ F = g
+-/
+
+--class HomotopyInvariant {X : SSet.{0}} (motive : ⦃a b : pt ⟶ X⦄ → Path a b → Sort u) where
+--  ind : (rfl : (x : pt ⟶ X) → motive (Path.rfl x)) → ⦃x y : pt ⟶ X⦄ → (p : Path x y) → motive p
+--  ind_rfl : (rfl : (x : pt ⟶ X) → motive (Path.rfl x)) → ind rfl (Path.rfl x) = rfl x
 
 end section
