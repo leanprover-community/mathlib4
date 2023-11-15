@@ -125,10 +125,6 @@ injective coercion to functions from `α` to `β`.
 
 This typeclass is used in the definition of the homomorphism typeclasses,
 such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
-
-Lean will try to synthesize non-dependent `FunLike` instances first by default. Use the command
-`attribute [local instance high] FunLike.hasCoeToFun` for better performance when you are using lots
-of dependent `FunLike` instances.
 -/
 @[notation_class * toFun Simps.findCoercionArgs]
 class FunLike (F : Sort*) (α : outParam (Sort*)) (β : outParam <| α → Sort*) where
@@ -151,7 +147,8 @@ namespace FunLike
 
 variable {F α β} [i : FunLike F α β]
 
-instance (priority := 100) hasCoeToFun : CoeFun F fun _ ↦ ∀ a : α, β a where coe := FunLike.coe
+instance (priority := 100) hasCoeToFun : CoeFun F (fun _ ↦ ∀ a : α, β a) where
+  coe := @FunLike.coe _ _ β _ -- need to make explicit to beta reduce for non-dependent functions
 
 #eval Lean.Elab.Command.liftTermElabM do
   Std.Tactic.Coe.registerCoercion ``FunLike.coe
@@ -214,10 +211,6 @@ section NonDependent
 variable {F α β : Sort*} [i : FunLike F α fun _ ↦ β]
 
 namespace FunLike
-
-/-- A version of `FunLike.hasCoeToFun` for non-dependent functions, which gives a performance boost,
-and avoids unwanted missing beta-reduction. -/
-instance (priority := 110) hasCoeToFunNonDependent : CoeFun F fun _ ↦ α → β where coe := FunLike.coe
 
 protected theorem congr {f g : F} {x y : α} (h₁ : f = g) (h₂ : x = y) : f x = g y :=
   congr (congr_arg _ h₁) h₂
