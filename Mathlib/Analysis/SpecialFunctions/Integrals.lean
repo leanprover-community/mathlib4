@@ -96,22 +96,24 @@ theorem intervalIntegrable_rpow' {r : ℝ} (h : -1 < r) :
       rpow_def_of_pos hx.1, rpow_def_of_neg (by linarith [hx.1] : -x < 0)]
 #align interval_integral.interval_integrable_rpow' intervalIntegral.intervalIntegrable_rpow'
 
-lemma foo2 {s t : ℝ} (ht : 0 < t) : IntegrableOn (fun x ↦ x ^ s) (Ioo (0 : ℝ) t) ↔ -1 < s := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · contrapose! h
-    intro H
-    have H' : IntegrableOn (fun x ↦ x ^ s) (Ioo 0 (min 1 t)) := sorry
-    have : IntegrableOn (fun x ↦ x⁻¹) (Ioo 0 (min 1 t)) := by
-      apply H'.mono' measurable_inv.aestronglyMeasurable
-      filter_upwards [ae_restrict_mem measurableSet_Ioo] with x hx
-      simp only [norm_inv, Real.norm_eq_abs, abs_of_nonneg (le_of_lt hx.1)]
-      rwa [← Real.rpow_neg_one x, Real.rpow_le_rpow_left_iff_of_base_lt_one hx.1]
-      exact lt_of_lt_of_le hx.2 (min_le_left _ _)
-    have : IntervalIntegrable (fun x ↦ x⁻¹) volume 0 (min 1 t) := sorry
-    have I : 0 < min 1 t := lt_min zero_lt_one ht
-    simp [intervalIntegrable_inv_iff, I.ne] at this
-  · have Z := intervalIntegrable_rpow' h (a := 0) (b := t)
-    rw [intervalIntegrable_iff_integrable_Ioo_of_le ht.le] at Z
+lemma integrableOn_rpow_Ioo_iff {s t : ℝ} (ht : 0 < t) :
+    IntegrableOn (fun x ↦ x ^ s) (Ioo (0 : ℝ) t) ↔ -1 < s := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simpa [intervalIntegrable_iff_integrable_Ioo_of_le ht.le]
+    using intervalIntegrable_rpow' h (a := 0) (b := t)⟩
+  contrapose! h
+  intro H
+  have I : 0 < min 1 t := lt_min zero_lt_one ht
+  have H' : IntegrableOn (fun x ↦ x ^ s) (Ioo 0 (min 1 t)) :=
+    H.mono (Set.Ioo_subset_Ioo le_rfl (min_le_right _ _)) le_rfl
+  have : IntegrableOn (fun x ↦ x⁻¹) (Ioo 0 (min 1 t)) := by
+    apply H'.mono' measurable_inv.aestronglyMeasurable
+    filter_upwards [ae_restrict_mem measurableSet_Ioo] with x hx
+    simp only [norm_inv, Real.norm_eq_abs, abs_of_nonneg (le_of_lt hx.1)]
+    rwa [← Real.rpow_neg_one x, Real.rpow_le_rpow_left_iff_of_base_lt_one hx.1]
+    exact lt_of_lt_of_le hx.2 (min_le_left _ _)
+  have : IntervalIntegrable (fun x ↦ x⁻¹) volume 0 (min 1 t) := by
+    rwa [intervalIntegrable_iff_integrable_Ioo_of_le I.le]
+  simp [intervalIntegrable_inv_iff, I.ne] at this
 
 
 
