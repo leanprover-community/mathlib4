@@ -23,17 +23,6 @@ namespace Mathlib.Tactic
 
 open Lean Meta Elab Parser Tactic Mathlib.Tactic.GRW
 
--- TODO these should probably be public with a nicer API?
-private partial def grwHypothesis (hyp : Expr) (rule : Expr) (rev : Bool) :
-    MetaM (Expr × Expr × Array MVarId) := do
-  let ⟨newType, newHyp, _, subgoals⟩ ← runGrw hyp rule rev false
-  return ⟨newType, newHyp, subgoals⟩
-
-private partial def _root_.Lean.MVarId.grw (goal : MVarId) (rule : Expr) (rev : Bool := false) :
-    MetaM (MVarId × Array MVarId) := do
-  let ⟨_, _, mvar, subgoals⟩ ← runGrw (Expr.mvar goal) rule rev true
-  return ⟨mvar, subgoals⟩
-
 /-- A version of `withRWRulesSeq` (in core) that doesn't attempt to find equation lemmas, and
 allows the caller to maintain state via StateT. -/
 private partial def withRWRulesSeqState {State : Type} (token : Syntax) (rwRulesSeqStx : Syntax)
@@ -84,7 +73,7 @@ elab tok:"grw" rules:rwRuleSeq loc:(location)? : tactic => do
         goal.withContext do
           let rulePrf ← elabTerm syn none
           let ⟨newType, newHyp, newSubgoals⟩ ← goal.withContext
-              $ grwHypothesis (Expr.fvar fvar) rulePrf rev
+              $ grwHyp (Expr.fvar fvar) rulePrf rev
           let name ← fvar.getUserName
           let ⟨newFvar, goal', _⟩ ← goal.assertAfter fvar name newType newHyp
           let newGoal ← goal'.clear fvar
@@ -99,7 +88,7 @@ elab tok:"grw" rules:rwRuleSeq loc:(location)? : tactic => do
     (atTarget := withMainContext do
       let ⟨_, newGoal, subgoals⟩ ← (withRWRulesSeqState tok rules fun rev syn ↦ do
         let ⟨currentTarget, subgoals⟩ ← get
-        let ⟨newGoal, newSubgoals⟩ ← currentTarget.withContext do
+        let ⟨_, newGoal, newSubgoals⟩ ← currentTarget.withContext do
           let rulePrf ← elabTerm syn none
           currentTarget.grw rulePrf rev
         set (⟨newGoal, subgoals.append newSubgoals⟩ : MVarId × Array MVarId)
