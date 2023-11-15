@@ -32,16 +32,5 @@ instance : EnoughInjectives (ModuleCat.{max v u} R) :=
     (L := forget₂ (ModuleCat.{max v u} R) AddCommGroupCat.{max v u})
     (R := (forget₂ (ModuleCat.{max v u} ℤ) AddCommGroupCat.{max v u}).asEquivalence.inverse ⋙
       ModuleCat.coextendScalars (algebraMap ℤ R)) <|
-    let iso : ModuleCat.restrictScalars.{max v u} (algebraMap ℤ R) ⋙
-      (forget₂ (ModuleCat.{max v u} ℤ) AddCommGroupCat.{max v u}).asEquivalence.functor ≅
-      forget₂ (ModuleCat.{max v u} R) AddCommGroupCat.{max v u} :=
-    { hom :=
-      { app := fun _ => 𝟙 _
-        naturality := by aesop_cat }
-      inv :=
-      { app := fun _ => 𝟙 _
-        naturality := by aesop_cat }
-      hom_inv_id := by aesop_cat
-      inv_hom_id := by aesop_cat }
     (((ModuleCat.restrictCoextendScalarsAdj.{max v u} (algebraMap ℤ R))).comp <|
-      (forget₂ (ModuleCat ℤ) AddCommGroupCat).asEquivalence.toAdjunction).ofNatIsoLeft iso
+      (forget₂ (ModuleCat ℤ) AddCommGroupCat).asEquivalence.toAdjunction).ofNatIsoLeft <| Iso.refl _
