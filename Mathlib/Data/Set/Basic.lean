@@ -1533,7 +1533,7 @@ theorem Nonempty.eq_singleton_one_of_unique [One α] [Unique α] {s : Set α} (h
 noncomputable def uniqueOfNonempty [Subsingleton α] {s : Set α} (h : s.Nonempty) :
     Unique α := uniqueOfSubsingleton h.choose
 
-theorem Nonempty.eq_singleton_of_nonempty_of_subsingleton [Subsingleton α] {s : Set α}
+theorem Nonempty.eq_singleton_of_subsingleton [Subsingleton α] {s : Set α}
     (h : s.Nonempty) :
     letI := uniqueOfNonempty h
     s = {default} := by
@@ -1541,7 +1541,7 @@ theorem Nonempty.eq_singleton_of_nonempty_of_subsingleton [Subsingleton α] {s :
   exact h.eq_singleton_of_unique
 
 theorem Nonempty.eq_of_subsingleton [Subsingleton α] {s : Set α} (h : s.Nonempty) (a : α) :
-    s = {a} := by rw [h.eq_singleton_of_nonempty_of_subsingleton, Unique.uniq _ a]
+    s = {a} := by rw [h.eq_singleton_of_subsingleton, Unique.uniq _ a]
 
 theorem Nonempty.eq_zero [Subsingleton α] [Zero α] {s : Set α} (h : s.Nonempty) :
     s = {0} := h.eq_of_subsingleton 0
