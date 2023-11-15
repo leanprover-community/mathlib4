@@ -177,7 +177,7 @@ theorem IsOpenMap.coverPreserving (hf : IsOpenMap f) :
 #align is_open_map.cover_preserving IsOpenMap.coverPreserving
 
 
-lemma OpenEmbedding.isContinuous (h : OpenEmbedding f) :
+lemma OpenEmbedding.functor_isContinuous (h : OpenEmbedding f) :
     h.isOpenMap.functor.IsContinuous (Opens.grothendieckTopology X)
       (Opens.grothendieckTopology Y) := by
   apply Functor.isContinuous_of_coverPreserving
@@ -186,7 +186,7 @@ lemma OpenEmbedding.isContinuous (h : OpenEmbedding f) :
 
 theorem TopCat.Presheaf.isSheaf_of_openEmbedding (h : OpenEmbedding f) (hF : F.IsSheaf) :
     IsSheaf (h.isOpenMap.functor.op ⋙ F) := by
-  have := h.isContinuous
+  have := h.functor_isContinuous
   exact Functor.op_comp_isSheaf _ _ _ ⟨_, hF⟩
 #align Top.presheaf.is_sheaf_of_open_embedding TopCat.Presheaf.isSheaf_of_openEmbedding
 
