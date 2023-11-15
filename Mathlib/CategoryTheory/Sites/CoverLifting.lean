@@ -80,7 +80,7 @@ class Functor.IsCoverLifting : Prop where
 
 lemma Functor.cover_lift [G.IsCoverLifting J K] {U : C} {S : Sieve (G.obj U)}
     (hS : S ∈ K (G.obj U)) : S.functorPullback G ∈ J U :=
-  @IsCoverLifting.cover_lift _ _ _ _ G J K _ _ S hS
+  IsCoverLifting.cover_lift hS
 
 /-- The identity functor on a site is cover-lifting. -/
 instance isCoverLifting_id : Functor.IsCoverLifting (𝟭 C) J J :=
@@ -88,10 +88,10 @@ instance isCoverLifting_id : Functor.IsCoverLifting (𝟭 C) J J :=
 #align category_theory.id_cover_lifting CategoryTheory.isCoverLifting_id
 
 /-- The composition of two cover-lifting functors is cover-lifting -/
-theorem compCoverLifting [G.IsCoverLifting J K] [G'.IsCoverLifting K L] :
+theorem isCoverLifting_comp [G.IsCoverLifting J K] [G'.IsCoverLifting K L] :
     (G ⋙ G').IsCoverLifting J L where
   cover_lift h := G.cover_lift J K (G'.cover_lift K L h)
-#align category_theory.comp_cover_lifting CategoryTheory.compCoverLifting
+#align category_theory.comp_cover_lifting CategoryTheory.isCoverLifting_comp
 
 end CoverLifting
 
