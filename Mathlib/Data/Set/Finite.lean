@@ -191,11 +191,8 @@ theorem coeSort_toFinset : ↥hs.toFinset = ↥s := by
 
 /-- The identity map, bundled as an equivalence between the subtypes of `s : Set α` and of
 `h.toFinset : Finset α`, where `h` is a proof of finiteness of `s`. -/
-@[simps] def subtype_equiv_subtype_toFinset : {x // x ∈ s} ≃ {x // x ∈ hs.toFinset} :=
-  { toFun := fun ⟨i, hi⟩ ↦ ⟨i, (Finite.mem_toFinset hs).mpr hi⟩
-    invFun := fun ⟨i, hi⟩ ↦ ⟨i, (Finite.mem_toFinset hs).mp hi⟩
-    left_inv := fun _ ↦ rfl
-    right_inv := fun _ ↦ rfl }
+@[simps] def subtypeEquivToFinset : {x // x ∈ s} ≃ {x // x ∈ hs.toFinset} :=
+  (Equiv.refl α).subtypeEquiv <| fun _ ↦ hs.mem_toFinset.symm
 
 variable {hs}
 
