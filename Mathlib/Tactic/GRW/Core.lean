@@ -138,6 +138,24 @@ private def weaken (rule : Expr) : MetaM Expr := do
 
 /--
 Use the relation `rule` to rewrite `expr`
+
+Parameters
+* `expr` The value whose type should be rewritten, has type `p`. If `isTarget` is true then this
+should be an mvar
+* `rule` An expression of type `x ~ y` where `~` is some relation
+* `rev` if true, we will produce a value of type p[y/x], otherwise p[x/y]
+* `isTarget` whether we are operating on a target rather than a hypothesis. If we are operating on
+a target then we will create a new mvar of type `newType` and use this to build a proof that we
+use to fill the mvar in `expr`. Otherwise we use `expr` to build a value of type `newType`
+
+Produces four values
+* `newType` Either `p[y/x]` or `p[x/y]` depending on `rev`
+* `prf` if `isTarget` this is a proof of `p` using the new mvar, otherwise this is a proof of type
+`newType`
+* `mvar` an mvar of type `newType`. This will already have been filled in if `isTarget = false`
+* `subgoals` a list of side goals created by `gcongr`. This does not include goals successfully
+filled by `gcongr_discharger`
+
 -/
 partial def runGrw (expr rule : Expr) (rev isTarget : Bool) :
     MetaM (Expr × Expr × MVarId × Array MVarId) := do

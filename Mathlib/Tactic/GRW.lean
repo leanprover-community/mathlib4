@@ -31,8 +31,7 @@ private partial def grwHypothesis (hyp : Expr) (rule : Expr) (rev : Bool) :
 
 private partial def _root_.Lean.MVarId.grw (goal : MVarId) (rule : Expr) (rev : Bool := false) :
     MetaM (MVarId × Array MVarId) := do
-  let ⟨_, prf, mvar, subgoals⟩ ← runGrw (Expr.mvar goal) rule rev true
-  goal.assign prf
+  let ⟨_, _, mvar, subgoals⟩ ← runGrw (Expr.mvar goal) rule rev true
   return ⟨mvar, subgoals⟩
 
 /-- A version of `withRWRulesSeq` (in core) that doesn't attempt to find equation lemmas, and
@@ -55,7 +54,6 @@ private partial def withRWRulesSeqState {State : Type} (token : Syntax) (rwRules
       let s ← withRef rule do
         let symm := !rule[0].isNone
         let term := rule[1]
-        -- let processId (id : Syntax) : TacticM Unit := do
         let ⟨_, newState⟩ ← (x symm term).run state
         return newState
       return s
@@ -73,9 +71,10 @@ example (h₁ : a + e ≤ b + e)
 ```
 
 If applied to a hypothesis or target of type `p` with rule of type `x ~ y` (where `~` is some
-relation) then the resulting type will be `p[x/y]` or the tactic will fail. This tactic will fail
-if side goals are created that it can not fill itself, which it does using `positivity` or
-`assumption`. These two facts make it safe to use in a nonterminal position.
+relation) then the resulting type will be `p[x/y]`.
+
+If applied to the target then the tactic will attempt to close the goal with `rfl` after doing the
+rewriting.
 -/
 elab tok:"grw" rules:rwRuleSeq loc:(location)? : tactic => do
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
@@ -91,6 +90,8 @@ elab tok:"grw" rules:rwRuleSeq loc:(location)? : tactic => do
           let newGoal ← goal'.clear fvar
           set (⟨newGoal, subgoals ++ newSubgoals, newFvar⟩ : MVarId × Array MVarId × FVarId)
       ).run (⟨← getMainGoal, #[], fvar⟩ : MVarId × Array MVarId × FVarId)
+      -- We can't use replaceMainGoal, since withTacticInfoContext prunes the solved goals so the
+      -- main goal will have already been removed
       let newGoals := subgoals ++ #[newGoal] ++ (← getGoals)
       setGoals newGoals.toList
       pruneSolvedGoals
@@ -105,8 +106,8 @@ elab tok:"grw" rules:rwRuleSeq loc:(location)? : tactic => do
       ).run (⟨← getMainGoal, #[]⟩ : MVarId × Array MVarId)
       try newGoal.withContext $ withReducible newGoal.applyRfl
       catch _ => pure ⟨⟩
-      -- We can't use replaceMainGoal, since withTacticInfoContext prunes the solves goals so there
-      -- might not be any left
+      -- We can't use replaceMainGoal, since withTacticInfoContext prunes the solved goals so the
+      -- main goal will have already been removed
       let newGoals := subgoals.toList ++ [newGoal] ++ (← getGoals)
       setGoals newGoals
       pruneSolvedGoals
