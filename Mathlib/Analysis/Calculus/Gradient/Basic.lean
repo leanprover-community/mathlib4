@@ -71,22 +71,22 @@ local notation "∇" => gradient
 
 variable {s : Set F} {L : Filter F}
 
-theorem HasGradientWithinAt_iff_HasFDerivWithinAt {s : Set F} :
+theorem hasGradientWithinAt_iff_hasFDerivWithinAt {s : Set F} :
     HasGradientWithinAt f f' s x ↔ HasFDerivWithinAt f (toDual 𝕜 F f') s x := Iff.rfl
 
-theorem HasGradientAt_iff_HasFDerivAt :
+theorem hasGradientAt_iff_hasFDerivAt :
     HasGradientAt f f' x ↔ HasFDerivAt f (toDual 𝕜 F f') x := Iff.rfl
 
 theorem HasGradientAt.hasFDerivAt {frechet : F →L[𝕜] 𝕜}
     (h : HasGradientAt f ((toDual 𝕜 F).symm frechet) x) :
     HasFDerivAt f frechet x := by
   rw [← (toDual 𝕜 F).apply_symm_apply frechet]
-  exact HasGradientAt_iff_HasFDerivAt.mp h
+  exact hasGradientAt_iff_hasFDerivAt.mp h
 
 theorem HasFDerivAt.hasGradientAt {frechet : F →L[𝕜] 𝕜} (h : HasFDerivAt f frechet x) :
     HasGradientAt f ((toDual 𝕜 F).symm frechet) x := by
   rw [← (toDual 𝕜 F).apply_symm_apply frechet] at h
-  exact HasGradientAt_iff_HasFDerivAt.mpr h
+  exact hasGradientAt_iff_hasFDerivAt.mpr h
 
 theorem gradient_eq_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : ∇ f x = 0 := by
   have : (toDual 𝕜 F).symm 0 = 0 := by simp only [map_zero]
@@ -102,29 +102,29 @@ variable {gradf gradg : F}
 theorem HasGradientAt.unique (hf : HasGradientAt f gradf x) (hg : HasGradientAt f gradg x) :
     gradf = gradg :=
   (toDual 𝕜 F).injective
-    ((HasGradientAt_iff_HasFDerivAt.mp hf).unique (HasGradientAt_iff_HasFDerivAt.mp hg))
+    ((hasGradientAt_iff_hasFDerivAt.mp hf).unique (hasGradientAt_iff_hasFDerivAt.mp hg))
 
 end GradientUniqueness
 
-theorem HasGradientWithinAt_iff_HasFDerivWithinAt' {s : Set F} {frechet : F →L[𝕜] 𝕜} :
+theorem hasGradientWithinAt_iff_hasFDerivWithinAt' {s : Set F} {frechet : F →L[𝕜] 𝕜} :
     HasGradientWithinAt f ((toDual 𝕜 F).symm frechet) s x ↔ HasFDerivWithinAt f frechet s x := by
   conv_rhs => rw [← (toDual 𝕜 F).apply_symm_apply frechet]
 
 theorem DifferentiableAt.hasGradientAt (h : DifferentiableAt 𝕜 f x) :
     HasGradientAt f (∇ f x) x := by
-  rw [HasGradientAt_iff_HasFDerivAt, gradient, (toDual 𝕜 F).apply_symm_apply (fderiv 𝕜 f x)]
+  rw [hasGradientAt_iff_hasFDerivAt, gradient, (toDual 𝕜 F).apply_symm_apply (fderiv 𝕜 f x)]
   exact h.hasFDerivAt
 
 theorem HasGradientAt.differentiableAt (h : HasGradientAt f f' x) :
     DifferentiableAt 𝕜 f x := by
-  use ((toDual 𝕜 F) f'); apply HasGradientAt_iff_HasFDerivAt.mp h
+  use ((toDual 𝕜 F) f'); apply hasGradientAt_iff_hasFDerivAt.mp h
 
 theorem HasGradientWithinAt.differentiableWithinAt (h : HasGradientWithinAt f f' s x) :
     DifferentiableWithinAt 𝕜 f s x := HasFDerivWithinAt.differentiableWithinAt h
 
 @[simp]
 theorem hasGradientWithinAt_univ : HasGradientWithinAt f f' univ x ↔ HasGradientAt f f' x := by
-  rw [HasGradientWithinAt_iff_HasFDerivWithinAt, HasGradientAt_iff_HasFDerivAt]
+  rw [hasGradientWithinAt_iff_hasFDerivWithinAt, hasGradientAt_iff_hasFDerivAt]
   rw [hasFDerivWithinAt_univ]
 
 theorem DifferentiableOn.hasGradientAt (h : DifferentiableOn 𝕜 f s) (hs : s ∈ 𝓝 x) :
@@ -154,12 +154,12 @@ theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
 
 theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) :
     HasDerivAt g (starRingEnd 𝕜 g') u := by
-  rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt] at h
+  rw [hasGradientAt_iff_hasFDerivAt, hasFDerivAt_iff_hasDerivAt] at h
   simpa using h
 
 theorem HasDerivAt.hasGradientAt (h : HasDerivAt g g' u) :
     HasGradientAt g (starRingEnd 𝕜 g') u := by
-  rw [HasGradientAt_iff_HasFDerivAt, hasFDerivAt_iff_hasDerivAt]
+  rw [hasGradientAt_iff_hasFDerivAt, hasFDerivAt_iff_hasDerivAt]
   simpa
 
 theorem gradient_eq_deriv : ∇ g u = starRingEnd 𝕜 (deriv g u) := by
