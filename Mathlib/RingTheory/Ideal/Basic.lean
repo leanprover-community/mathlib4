@@ -644,34 +644,27 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
 #align ideal.span_pow_eq_top Ideal.span_pow_eq_top
 
 lemma isPrime_of_maximally_disjoint (I : Ideal α)
-    (S : Submonoid α) (disjoint : (I : Set α) ⊓ S = ∅)
+    (S : Submonoid α) (disjoint : Disjoint (I : Set α) S)
     (maximally_disjoint : ∀ (J : Ideal α), I < J → (J : Set α) ⊓ S ≠ ∅) :
     I.IsPrime where
   ne_top' := by
     rintro rfl
-    simp only [Submodule.top_coe, ge_iff_le, le_eq_subset, subset_univ, inf_of_le_right] at disjoint
-    exact (mem_empty_iff_false _).mp <| disjoint ▸ SetLike.mem_coe.mpr S.one_mem
+    have : 1 ∈ (S : Set α) := S.one_mem
+    aesop
   mem_or_mem' {x y} hxy := by
-    let Jx := I ⊔ Ideal.span {x}
-    let Jy := I ⊔ Ideal.span {y}
-    by_contra rid
-    push_neg at rid
-    have hx := (maximally_disjoint Jx) ⟨le_sup_left (α := Ideal α), fun r ↦ rid.1 <| r <|
-      le_sup_right (α := Ideal α) <| Submodule.mem_span_singleton_self _⟩
-    have hy := (maximally_disjoint Jy) ⟨le_sup_left (α := Ideal α), fun r ↦ rid.2 <| r <|
-      le_sup_right (α := Ideal α) <| Submodule.mem_span_singleton_self _⟩
-    rw [← Set.nonempty_iff_ne_empty, Set.nonempty_def] at hx hy
-    simp_rw [SetLike.mem_coe, inf_eq_inter, mem_inter_iff, SetLike.mem_coe, Submodule.mem_sup,
-      Ideal.mem_span_singleton] at hx hy
-    obtain ⟨s₁, ⟨i₁, hi₁, ⟨_, ⟨r₁, rfl⟩, hr₁'⟩⟩, hs₁⟩ := hx
-    obtain ⟨s₂, ⟨i₂, hi₂, ⟨_, ⟨r₂, rfl⟩, hr₂'⟩⟩, hs₂⟩ := hy
-    rw [eq_empty_iff_forall_not_mem] at disjoint
-    refine disjoint (s₁ * s₂) ⟨hr₁' ▸ hr₂' ▸ ?_, S.mul_mem hs₁ hs₂⟩
-    ring_nf
-    refine I.add_mem (I.add_mem (I.add_mem (I.mul_mem_left _ hi₂) (I.mul_mem_right _ <|
-      I.mul_mem_right _ hi₁)) <| I.mul_mem_left _ hi₂) <| ?_
-    rw [show x * r₁ * y * r₂ = (x * y) * (r₁ * r₂) by ring]
-    exact I.mul_mem_right _ hxy
+    by_contra' rid
+    have hx := maximally_disjoint (I ⊔ span {x}) (Submodule.lt_sup_iff_not_mem.mpr rid.1)
+    have hy := maximally_disjoint (I ⊔ span {y}) (Submodule.lt_sup_iff_not_mem.mpr rid.2)
+    simp only [Set.not_disjoint_iff, mem_inter_iff, SetLike.mem_coe, Submodule.mem_sup,
+      mem_span_singleton] at hx hy
+    obtain ⟨s₁, ⟨i₁, hi₁, ⟨_, ⟨r₁, rfl⟩, hr₁⟩⟩, hs₁⟩ := hx
+    obtain ⟨s₂, ⟨i₂, hi₂, ⟨_, ⟨r₂, rfl⟩, hr₂⟩⟩, hs₂⟩ := hy
+    refine disjoint.ne_of_mem
+      (I.add_mem (I.mul_mem_left (i₁ + x * r₁) hi₂) <| I.add_mem (I.mul_mem_right (y * r₂) hi₁) <|
+        I.mul_mem_right (r₁ * r₂) hxy)
+      (S.mul_mem hs₁ hs₂) ?_
+    rw [← hr₁, ← hr₂]
+    ring
 
 end Ideal
 
