@@ -18,13 +18,18 @@ and Fubini's theorem, without using measurable equivalences by changing the repr
 space (e.g. `((ι ⊕ ι') → ℝ) ≃ (ι → ℝ) × (ι' → ℝ)`).
 
 ## Main Definitions
-* If `f : α → ℝ≥0∞` then `lmarginal μ s f` or `∫⋯∫⁻_s, f ∂μ` is the function that integrates `f`
+
+* Assume that `∀ i, π i` is a product of measurable spaces with measures `μ i` on `π i` and suppose
+  that `f : (∀ i, π i) → ℝ≥0∞` is a function.
+  Then `lmarginal μ s f` or `∫⋯∫⁻_s, f ∂μ` is the function that integrates `f`
   over all variables in `s`. It returns a function that still takes the same variables as `f`,
   but is constant in the variables in `s`. Mathematically, if `s = {i₁, ..., iₖ}`,
   then `lmarginal μ s f` is the expression
   $$
-  \vec{x}\mapsto \int\!\!\cdots\!\!\int f(\vec{x})dx_{i_1}\cdots dx_{i_k}.
+  \vec{x}\mapsto \int\!\!\cdots\!\!\int f(\vec{x}[\vec{y}])dy_{i_1}\cdots dy_{i_k}.
   $$
+  where $\vec{x}[\vec{y}]$ is the vector $\vec{x}$ with $x_{i_j}$ replaced by $y_{i_j}$ for all
+  $1 \le j \le k$.
   If `f` is the distribution of a random variable, this is the marginal distribution of all
   variables not in `s`.
   Note that the notation `∫⋯∫⁻_s, f ∂μ` is not a binder, and returns a function.
