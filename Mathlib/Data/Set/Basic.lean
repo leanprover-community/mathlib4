@@ -1521,6 +1521,34 @@ theorem eq_empty_of_ssubset_singleton {s : Set α} {x : α} (hs : s ⊂ {x}) : s
   ssubset_singleton_iff.1 hs
 #align set.eq_empty_of_ssubset_singleton Set.eq_empty_of_ssubset_singleton
 
+theorem Nonempty.eq_singleton_of_unique [Unique α] {s : Set α} (h : s.Nonempty) :
+    s = {default} := h.subset_singleton_iff.mp (fun x _ => by simp [Unique.uniq _ x])
+
+theorem Nonempty.eq_singleton_zero_of_unique[Zero α] [Unique α] {s : Set α} (h : s.Nonempty) :
+    s = {0} := by convert h.eq_singleton_of_unique
+
+theorem Nonempty.eq_singleton_one_of_unique [One α] [Unique α] {s : Set α} (h : s.Nonempty) :
+    s = {1} := by convert h.eq_singleton_of_unique
+
+noncomputable def uniqueOfNonempty [Subsingleton α] {s : Set α} (h : s.Nonempty) :
+    Unique α := uniqueOfSubsingleton h.choose
+
+theorem Nonempty.eq_singleton_of_nonempty_of_subsingleton [Subsingleton α] {s : Set α}
+    (h : s.Nonempty) :
+    letI := uniqueOfNonempty h
+    s = {default} := by
+  letI := uniqueOfNonempty h
+  exact h.eq_singleton_of_unique
+
+theorem Nonempty.eq_of_subsingleton [Subsingleton α] {s : Set α} (h : s.Nonempty) (a : α) :
+    s = {a} := by rw [h.eq_singleton_of_nonempty_of_subsingleton, Unique.uniq _ a]
+
+theorem Nonempty.eq_zero [Subsingleton α] [Zero α] {s : Set α} (h : s.Nonempty) :
+    s = {0} := h.eq_of_subsingleton 0
+
+theorem Nonempty.subset_eq_one [Subsingleton α] [One α] {s : Set α} (h : s.Nonempty) :
+    s = {1} := h.eq_of_subsingleton 1
+
 /-! ### Disjointness -/
 
 
