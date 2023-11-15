@@ -25,10 +25,11 @@ namespace Monoid
 section Monoid
 variable (α) [Monoid α]
 
-/-- The minimum order of a non-identity element. Also the minimum size of a nontrivial subgroup.
-Returns `∞` if the monoid is torsion-free. -/
+/-- The minimum order of a non-identity element. Also the minimum size of a nontrivial subgroup, see
+`Monoid.le_minOrder_iff_forall_subgroup`. Returns `∞` if the monoid is torsion-free. -/
 @[to_additive "The minimum order of a non-identity element. Also the minimum size of a nontrivial
-subgroup. Returns `∞` if the monoid is torsion-free."]
+subgroup, see `AddMonoid.le_minOrder_iff_forall_addSubgroup`. Returns `∞` if the monoid is
+torsion-free."]
 noncomputable def minOrder : ℕ∞ := ⨅ (a : α) (_ha : a ≠ 1) (_ha' : IsOfFinOrder a), orderOf a
 
 variable {α} {a : α}
@@ -51,7 +52,7 @@ end Monoid
 variable [Group α] {s : Subgroup α} {n : ℕ}
 
 @[to_additive]
-lemma le_minOrder' {n : ℕ∞} :
+lemma le_minOrder_iff_forall_subgroup {n : ℕ∞} :
     n ≤ minOrder α ↔ ∀ ⦃s : Subgroup α⦄, s ≠ ⊥ → (s : Set α).Finite → n ≤ Nat.card s := by
   rw [le_minOrder]
   refine ⟨fun h s hs hs' ↦ ?_, fun h a ha ha' ↦ ?_⟩
@@ -63,7 +64,7 @@ lemma le_minOrder' {n : ℕ∞} :
 
 @[to_additive]
 lemma minOrder_le_natCard (hs : s ≠ ⊥) (hs' : (s : Set α).Finite) : minOrder α ≤ Nat.card s :=
-  le_minOrder'.1 le_rfl hs hs'
+  le_minOrder_iff_forall_subgroup.1 le_rfl hs hs'
 
 end Monoid
 
@@ -85,7 +86,7 @@ protected lemma minOrder {n : ℕ} (hn : n ≠ 0) (hn₁ : n ≠ 1) : minOrder (
       not_dvd_of_pos_of_lt (Nat.div_pos (minFac_le hn.bot_lt) n.minFac_pos)
         (div_lt_self hn.bot_lt (minFac_prime hn₁).one_lt)
   refine ((minOrder_le_natCard (zmultiples_eq_bot.not.2 this) $ toFinite _).trans ?_).antisymm $
-    le_minOrder'.2 fun s hs _ ↦ ?_
+    le_minOrder_iff_forall_addSubgroup.2 fun s hs _ ↦ ?_
   · rw [card_eq_fintype_card, Fintype.card_zmultiples, ZMod.addOrderOf_coe _ hn,
       gcd_eq_right (div_dvd_of_dvd n.minFac_dvd), Nat.div_div_self n.minFac_dvd hn]
   · rw [card_eq_fintype_card]
