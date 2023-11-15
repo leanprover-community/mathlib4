@@ -163,9 +163,8 @@ theorem isIntegral_iff_isIntegral_closure_finite {r : B} :
   exact hsr.of_subring _
 #align is_integral_iff_is_integral_closure_finite isIntegral_iff_isIntegral_closure_finite
 
---#check Algebra.adjoin_singleton_eq_range_aeval
 theorem IsIntegral.fg_adjoin_singleton {x : B} (hx : IsIntegral R x) :
-    (Algebra.adjoin R ({x} : Set B)).toSubmodule.FG := by
+    (Algebra.adjoin R {x}).toSubmodule.FG := by
   rcases hx with ⟨f, hfm, hfx⟩
   exists Finset.image ((· ^ ·) x) (Finset.range (natDegree f + 1))
   apply le_antisymm
@@ -175,7 +174,7 @@ theorem IsIntegral.fg_adjoin_singleton {x : B} (hx : IsIntegral R x) :
     rcases Finset.mem_image.1 hs with ⟨k, hk, rfl⟩
     clear hk
     exact (Algebra.adjoin R {x}).pow_mem (Algebra.subset_adjoin (Set.mem_singleton _)) k
-  intro r hr; change r ∈ Algebra.adjoin R ({x} : Set B) at hr
+  intro r hr; change r ∈ Algebra.adjoin R {x} at hr
   rw [Algebra.adjoin_singleton_eq_range_aeval] at hr
   rcases (aeval x).mem_range.mp hr with ⟨p, rfl⟩
   rw [← modByMonic_add_div p hfm]
