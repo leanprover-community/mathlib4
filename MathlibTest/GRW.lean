@@ -43,7 +43,7 @@ example (h₁ : a + e ≤ b + e) (h₂ : b < c) (h₃ : c ≤ d) : a + e ≤ d +
   guard_hyp h₁ :ₛ a + e ≤ d + e
   exact h₁
 
-example (f g : α → α) (h : ∀ x : α, f x ≤ g x) (h₂ : g a + g b ≤ 5): f a + f b ≤ 5 := by
+example (f g : α → α) (h : ∀ x : α, f x ≤ g x) (h₂ : g a + g b ≤ 5) : f a + f b ≤ 5 := by
   grw [h]
   guard_target =ₛ g a + f b ≤ 5
   grw [h]
@@ -80,7 +80,7 @@ end inequalities
 
 section subsets
 
-variable (X Y Z W: Set α)
+variable (X Y Z W : Set α)
 
 example (h₁ : X ⊆ Y) (h₂ : Y ⊆ Z) (h₃ : a ∈ X) : true := by
   grw [h₁] at h₃
@@ -94,7 +94,7 @@ example (h₁ : Y ⊇ W) : X ⊂ (Y ∪ Z) := by
   guard_target =ₛ X ⊂ (W ∪ Z)
   exact test_sorry
 
-example (h₁ : W ⊂ Y) (h₂ : X ⊂ (W ∪ Z)): X ⊂ (Y ∪ Z) := by
+example (h₁ : W ⊂ Y) (h₂ : X ⊂ (W ∪ Z)) : X ⊂ (Y ∪ Z) := by
   grw [← h₁]
   guard_target =ₛ X ⊂ (W ∪ Z)
   exact h₂

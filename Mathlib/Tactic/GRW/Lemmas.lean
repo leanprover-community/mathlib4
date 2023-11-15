@@ -16,7 +16,7 @@ with `a ≤ b`.
 
 -/
 
-open Mathlib.Tactic.GRW
+namespace Mathlib.Tactic.GRW
 
 @[grw]
 lemma rewrite_le {α : Type} [Preorder α] {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ a) (h₃ : b ≤ d) :
