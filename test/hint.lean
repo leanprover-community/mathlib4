@@ -4,14 +4,14 @@ import Mathlib.Data.Nat.Prime
 
 /--
 info: Try these:
-• linarith
+• simp_all only
 -/
 #guard_msgs in
 example (h : 1 < 0) : False := by hint
 
 /--
 info: Try these:
-• exact f p
+• simp_all only [forall_true_left, p]
 -/
 #guard_msgs in
 example {P Q : Prop} (p : P) (f : P → Q) : Q := by hint
@@ -25,21 +25,23 @@ example {P Q R: Prop} (x : P ∧ Q ∧ R ∧ R) : Q ∧ P ∧ R := by hint
 
 /--
 info: Try these:
-• linarith
+• exact lt_asymm h
+• intro
+• simp_all only [not_lt]
 -/
 #guard_msgs in
 example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
 
 /--
 info: Try these:
-• exact rfl
+• decide
 -/
 #guard_msgs in
 example : 37^2 - 35^2 = 72 * 2 := by hint
 
 /--
 info: Try these:
-• simp_all only
+• decide
 -/
 #guard_msgs in
 example : Nat.Prime 37 := by hint
