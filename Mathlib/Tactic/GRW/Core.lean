@@ -126,38 +126,15 @@ private def weaken (rule : Expr) : MetaM Expr := do
   let lemmas ← labelled `grw_weaken
 
   for lem in lemmas do
-    let s ← saveState
     try do
-      let result ← mkAppM lem #[rule]
+      let result ← commitIfNoEx $ mkAppM lem #[rule]
       trace[GRW] "weakened to {← inferType result}"
       return result
-    catch _ =>
-      s.restore
+    catch _ => pure ⟨⟩
 
   return rule
 
-/--
-Use the relation `rule` to rewrite `expr`
-
-Parameters
-* `expr` The value whose type should be rewritten, has type `p`. If `isTarget` is true then this
-should be an mvar
-* `rule` An expression of type `x ~ y` where `~` is some relation
-* `rev` if true, we will produce a value of type p[y/x], otherwise p[x/y]
-* `isTarget` whether we are operating on a target rather than a hypothesis. If we are operating on
-a target then we will create a new mvar of type `newType` and use this to build a proof that we
-use to fill the mvar in `expr`. Otherwise we use `expr` to build a value of type `newType`
-
-Produces four values
-* `newType` Either `p[y/x]` or `p[x/y]` depending on `rev`
-* `prf` if `isTarget` this is a proof of `p` using the new mvar, otherwise this is a proof of type
-`newType`
-* `mvar` an mvar of type `newType`. This will already have been filled in if `isTarget = false`
-* `subgoals` a list of side goals created by `gcongr`. This does not include goals successfully
-filled by `gcongr_discharger`
-
--/
-partial def runGrw (expr rule : Expr) (rev isTarget : Bool) :
+private partial def runGrw (expr rule : Expr) (rev isTarget : Bool) :
     MetaM (Expr × Expr × MVarId × Array MVarId) := do
   let oldType ← instantiateMVars (← inferType expr)
   let ⟨ruleArgs, _, _⟩ ← forallMetaTelescope (← inferType rule)
@@ -172,8 +149,7 @@ partial def runGrw (expr rule : Expr) (rev isTarget : Bool) :
   for lem in lemmas do
     let lemResult : Option (Expr × Array MVarId)
         ← withTraceNode `GRW (λ _ ↦ return m!"trying lemma {lem}") do
-      let s ← saveState
-      let (lemResult : Option (Expr × Array Expr)) ← try
+      let (lemResult : Option (Expr × Array Expr)) ← try commitIfNoEx do
         let lemExpr ← mkConstWithFreshMVarLevels lem
         let lemType ← inferType lemExpr
         let ⟨metas, binders, _⟩ ← forallMetaTelescopeReducing lemType
@@ -191,7 +167,6 @@ partial def runGrw (expr rule : Expr) (rev isTarget : Bool) :
         pure $ some ⟨lemExpr, metas⟩
       catch ex => do
         trace[GRW] "error in lemma {ex.toMessageData}"
-        s.restore
         pure none
 
       if let some ⟨lemExpr, metas⟩ := lemResult then
@@ -213,3 +188,46 @@ partial def runGrw (expr rule : Expr) (rev isTarget : Bool) :
       trace[GRW] "Got proof {prf}"
       return ⟨newType, prf, result.mvarId!, subgoals⟩
   throwError "No grw lemmas worked"
+
+/--
+Use the relation `rule` to convert an expression of type `p` into an expression of type `p[x/y]` by
+using a relation `x ~ y`
+
+Parameters
+* `hyp` The hypothesis whose type should be rewritten
+* `rule` An expression of type `x ~ y` where `~` is some relation
+* `rev` if true, we will produce a value of type p[y/x], otherwise p[x/y]
+
+Produces three values
+* `newType` Either `p[y/x]` or `p[x/y]` depending on `rev`
+* `newHyp` A new expression of type `newType`
+* `subgoals` a list of side goals created by `gcongr`. This does not include goals successfully
+filled by `gcongr_discharger`
+
+-/
+partial def grwHyp (hyp : Expr) (rule : Expr) (rev : Bool) :
+    MetaM (Expr × Expr × Array MVarId) := do
+  let ⟨newType, newHyp, _, subgoals⟩ ← runGrw hyp rule rev false
+  return ⟨newType, newHyp, subgoals⟩
+
+
+/--
+Use the relation `rule : x ~ y` to rewrite the type of an mvar. Assigns the mvar and returns a new
+mvar of type either `p[x/y]` or `p[y/x]` depending on the value of the `rev` parameter
+
+Parameters
+* `goal` The mvar that should be filled in
+* `rule` An expression of type `x ~ y` where `~` is some relation
+* `rev` if true, we will produce a value of type p[y/x], otherwise p[x/y]
+
+Produces three values
+* `newType` The type of the new goal
+* `newGoal` The new unfilled mvar of type `newType`
+* `subgoals` list of side goals created by `gcongr`. This does not include `newGoal` or the goals
+successfully filled by `gcongr_discharger`
+
+-/
+partial def _root_.Lean.MVarId.grw (goal : MVarId) (rule : Expr) (rev : Bool := false) :
+    MetaM (Expr ×MVarId × Array MVarId) := do
+  let ⟨newType, _, newGoal, subgoals⟩ ← runGrw (Expr.mvar goal) rule rev true
+  return ⟨newType, newGoal, subgoals⟩
