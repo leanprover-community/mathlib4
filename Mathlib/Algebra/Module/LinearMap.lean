@@ -1338,3 +1338,115 @@ theorem End.intCast_def (z : ℤ) [AddCommGroup N₁] [Module R N₁] :
 #align module.End.int_cast_def Module.End.intCast_def
 
 end Module
+
+namespace LinearMap
+
+section AddCommMonoid
+
+section SMulRight
+
+variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₁] [Module R M] [Module R M₁]
+variable [Semiring S] [Module R S] [Module S M] [IsScalarTower R S M]
+
+/-- When `f` is an `R`-linear map taking values in `S`, then `fun ↦ b, f b • x` is an `R`-linear
+map. -/
+def smulRight (f : M₁ →ₗ[R] S) (x : M) : M₁ →ₗ[R] M where
+  toFun b := f b • x
+  map_add' x y := by dsimp only; rw [f.map_add, add_smul]
+  map_smul' b y := by dsimp; rw [map_smul, smul_assoc]
+#align linear_map.smul_right LinearMap.smulRight
+
+@[simp]
+theorem coe_smulRight (f : M₁ →ₗ[R] S) (x : M) : (smulRight f x : M₁ → M) = fun c => f c • x :=
+  rfl
+#align linear_map.coe_smul_right LinearMap.coe_smulRight
+
+theorem smulRight_apply (f : M₁ →ₗ[R] S) (x : M) (c : M₁) : smulRight f x c = f c • x :=
+  rfl
+#align linear_map.smul_right_apply LinearMap.smulRight_apply
+
+end SMulRight
+
+end AddCommMonoid
+
+section Module
+
+variable [Semiring R] [Semiring S] [AddCommMonoid M] [AddCommMonoid M₂]
+variable [Module R M] [Module R M₂] [Module S M₂] [SMulCommClass R S M₂]
+
+variable (S)
+
+/-- Applying a linear map at `v : M`, seen as `S`-linear map from `M →ₗ[R] M₂` to `M₂`.
+
+ See `LinearMap.applyₗ` for a version where `S = R`. -/
+@[simps]
+def applyₗ' : M →+ (M →ₗ[R] M₂) →ₗ[S] M₂ where
+  toFun v :=
+    { toFun := fun f => f v
+      map_add' := fun f g => f.add_apply g v
+      map_smul' := fun x f => f.smul_apply x v }
+  map_zero' := LinearMap.ext fun f => f.map_zero
+  map_add' _ _ := LinearMap.ext fun f => f.map_add _ _
+#align linear_map.applyₗ' LinearMap.applyₗ'
+
+end Module
+
+section CommSemiring
+
+variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Module R M] [Module R M₂] [Module R M₃]
+variable (f g : M →ₗ[R] M₂)
+
+/-- Composition by `f : M₂ → M₃` is a linear map from the space of linear maps `M → M₂`
+to the space of linear maps `M₂ → M₃`. -/
+def compRight (f : M₂ →ₗ[R] M₃) : (M →ₗ[R] M₂) →ₗ[R] M →ₗ[R] M₃ where
+  toFun := f.comp
+  map_add' _ _ := LinearMap.ext fun _ => map_add f _ _
+  map_smul' _ _ := LinearMap.ext fun _ => map_smul f _ _
+#align linear_map.comp_right LinearMap.compRight
+
+@[simp]
+theorem compRight_apply (f : M₂ →ₗ[R] M₃) (g : M →ₗ[R] M₂) : compRight f g = f.comp g :=
+  rfl
+#align linear_map.comp_right_apply LinearMap.compRight_apply
+
+/-- Applying a linear map at `v : M`, seen as a linear map from `M →ₗ[R] M₂` to `M₂`.
+See also `LinearMap.applyₗ'` for a version that works with two different semirings.
+
+This is the `LinearMap` version of `toAddMonoidHom.eval`. -/
+@[simps]
+def applyₗ : M →ₗ[R] (M →ₗ[R] M₂) →ₗ[R] M₂ :=
+  { applyₗ' R with
+    toFun := fun v => { applyₗ' R v with toFun := fun f => f v }
+    map_smul' := fun _ _ => LinearMap.ext fun f => map_smul f _ _ }
+#align linear_map.applyₗ LinearMap.applyₗ
+
+/--
+The family of linear maps `M₂ → M` parameterised by `f ∈ M₂ → R`, `x ∈ M`, is linear in `f`, `x`.
+-/
+def smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M where
+  toFun f :=
+    { toFun := LinearMap.smulRight f
+      map_add' := fun m m' => by
+        ext
+        apply smul_add
+      map_smul' := fun c m => by
+        ext
+        apply smul_comm }
+  map_add' f f' := by
+    ext
+    apply add_smul
+  map_smul' c f := by
+    ext
+    apply mul_smul
+#align linear_map.smul_rightₗ LinearMap.smulRightₗ
+
+@[simp]
+theorem smulRightₗ_apply (f : M₂ →ₗ[R] R) (x : M) (c : M₂) :
+    (smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M) f x c = f c • x :=
+  rfl
+#align linear_map.smul_rightₗ_apply LinearMap.smulRightₗ_apply
+
+end CommSemiring
+
+end LinearMap
