@@ -214,9 +214,8 @@ def abelianOfEquivalence {C : Type u₁} [Category.{v} C] [Preadditive C] [HasFi
 
 namespace transfer_enough_injectives
 
-variable {𝒜: Type u₁} {ℬ : Type u₂} [Category.{v₁} 𝒜] [Category.{v₂} ℬ]
+variable {𝒜 : Type u₁} {ℬ : Type u₂} [Category.{v₁} 𝒜] [Category.{v₂} ℬ]
 variable (L : 𝒜 ⥤ ℬ) (R : ℬ ⥤ 𝒜)
-
 /--
 Give a pair of functors
 ```
@@ -227,92 +226,12 @@ Give a pair of functors
 for `A : 𝒜`, pick an injective presentation `L A ⟶ J` which always exists by enough
 injectives of `ℬ`. we pullback `J` across `R`.
 -/
-def adjointObjectOfInjectivePresentation {A : 𝒜}
-    (a : InjectivePresentation <| L.obj A) :=
+def under {A : 𝒜} (a : InjectivePresentation <| L.obj A) :=
   R.obj <| a.J
 
 variable {L R}
 variable (adj : L ⊣ R)
 
-/-
-If `g : X → R(J)` and `f : X → Y` is mono in `𝓐`, then there is an morphism `L(Y) → J`
-See the diagram below:
-```
-𝓐                             𝓑
-A ---> R(J)                 L(A) -----> J <--------
-      /                                /          |
-     /                                /           |
-    /  g                           by adjunction  |
-   /                                /             |
-  /                                /         by injectivity
-X                              L(X)               |
-|                               |L.map f          |
-v                               v                 |
-Y                              L(Y) ---------------
-```
--/
-
-/--
-Let `L(A) ⟶ J` be an injective presentation.
-If `g : X → R(J)` and `f : X → Y` is mono in `𝓐`, then there is an morphism `L(Y) → J`:
-* Since `L` preserves finite limits, `L(f)` is mono
-* If `L ⊣ R`, then `g` gives a `L(X) ⟶ J`
-* we then factor `X ⟶ R(J)` into `L(f)` and `L(Y) ⟶ J`
--/
-def toInjectiveObject [PreservesFiniteLimits L] {A X Y : 𝒜} (a : InjectivePresentation <| L.obj A)
-    (g : X ⟶ adjointObjectOfInjectivePresentation L R a) (f : X ⟶ Y) [Mono f] :
-    L.obj Y ⟶ a.J :=
-  let i1 := a.injective.factors
-  (i1 ((adj.homEquiv X <| a.J).symm g) (L.map f)).choose
-
-lemma toInjectiveObject_spec [PreservesFiniteLimits L] {A X Y : 𝒜}
-    (a : InjectivePresentation <| L.obj A)
-    (g : X ⟶ adjointObjectOfInjectivePresentation L R a) (f : X ⟶ Y) [Mono f] :
-    L.map f ≫ toInjectiveObject adj a g f =
-    (adj.homEquiv X <| a.J).symm g :=
-  let i1 := a.injective.factors
-  (i1 ((adj.homEquiv X <| a.J).symm g) (L.map f)).choose_spec
-
-/--
-Let `L(A) ⟶ J` be an injective presentation.
-If `g : X → R(J)` and `f : X → Y` is mono in `𝓐`, then there is an morphism `L(Y) → J` as in
-`toInjectiveUnder`, then we obtain a map `Y ⟶ R(J)` via adjunction
--/
-def adjointToInjective [PreservesFiniteLimits L] {A X Y : 𝒜}
-    (a : InjectivePresentation <| L.obj A)
-    (g : X ⟶ adjointObjectOfInjectivePresentation L R a) (f : X ⟶ Y) [Mono f] :
-    Y ⟶ adjointObjectOfInjectivePresentation L R a :=
-  adj.homEquiv _ _ <| toInjectiveObject adj a g f
-
-lemma adjointToInjective_spec [PreservesFiniteLimits L] {A X Y : 𝒜}
-    (a : InjectivePresentation <| L.obj A)
-    (g : X ⟶ adjointObjectOfInjectivePresentation L R a) (f : X ⟶ Y) [Mono f] :
-    f ≫ adjointToInjective adj a g f = g := by
-  have := toInjectiveObject_spec adj a g f
-  rw [← adj.homEquiv_apply_eq] at this
-  rw [← this]
-  simp only [adjointToInjective, toInjectiveObject, Adjunction.homEquiv_counit, Functor.id_obj,
-    Adjunction.homEquiv_unit, Functor.comp_obj, Functor.map_comp, Adjunction.unit_naturality_assoc,
-    Category.assoc, Adjunction.counit_naturality, Adjunction.left_triangle_components_assoc]
-  generalize_proofs h1 h2
-  congr 4
-  ext
-  rw [h1.choose_spec]
-
-lemma injective_adjointObjectOfInjectivePresentation_of_adj [PreservesFiniteLimits L] {A : 𝒜}
-    (a : InjectivePresentation <| L.obj A) :
-    Injective (adjointObjectOfInjectivePresentation L R a) where
-  factors _ _ _ := ⟨_, adjointToInjective_spec adj a _ _⟩
-
-variable (L R)
-/--
-Let `L(A) ⟶ J` be an injective presentation of `L(A)`, then `A ⟶ R(J)` is an injective
-presentation of `A`
--/
-def under {A : 𝒜} (a : InjectivePresentation <| L.obj A) : 𝒜 :=
-  adjointObjectOfInjectivePresentation L R a
-
-variable {L R}
 /--
 Let `L(A) ⟶ J` be an injective presentation of `L(A)`, then `A ⟶ R(J)` is an injective
 presentation of `A`
@@ -349,8 +268,8 @@ lemma EnoughInjectives.of_adjunction {C : Type u₁} {D : Type u₂}
     {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) [Faithful L] [PreservesFiniteLimits L]
     [EnoughInjectives D] : EnoughInjectives C where
   presentation _ :=
-    ⟨⟨_, injective_adjointObjectOfInjectivePresentation_of_adj adj
-      (EnoughInjectives.presentation _).some, _, mono_toUnder adj _⟩⟩
+    ⟨⟨under _ _ (EnoughInjectives.presentation _).some, Injective.injective_of_adjoint adj _,
+        adj.homEquiv _ _ _, mono_toUnder adj _⟩⟩
 
 /-- An equivalence of categories transfers enough injectives. -/
 lemma EnoughInjectives.of_equivalence {C : Type u₁} {D : Type u₂}
