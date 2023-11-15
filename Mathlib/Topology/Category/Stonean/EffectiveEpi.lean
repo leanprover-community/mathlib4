@@ -9,22 +9,25 @@ import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 /-!
 # Effective epimorphic families in `Stonean`
 
-Let `π a : X a ⟶ B` be a family of morphisms in `Stonean` indexed by a finite type `α`.
-In this file, we show that the following are all equivalent:
-- The family `π` is effective epimorphic.
-- The induced map `∐ X ⟶ B` is epimorphic.
-- The family `π` is jointly surjective.
+This file proves that `Stonean` is `Preregular`. Together with the fact that it is
+`FinitaryPreExtensive`, this implies that `Stonean` is `Precoherent`.
 
-As a consequence, we show (see `effectiveEpi_iff_surjective`) that all epimorphisms in `Stonean` 
-are effective, and that `Stonean` is preregular.
+To do this, we need to characterise effective epimorphisms in `Stonean`. As a consequence, we also
+get a characterisation of finite effective epimorphic families.
 
 ## Main results
-- `Stonean.effectiveEpiFamily_tfae`: characterise being an effective epimorphic family.
-- `Stonean.instPrecoherent`: `Stonean` is precoherent.
 
-## Implementation notes
-The entire section `EffectiveEpiFamily` comprises exclusively a technical construction for
-the main proof and does not contain any statements that would be useful in other contexts.
+* `Stonean.effectiveEpi_tfae`: For a morphism in `Stonean`, the conditions surjective,
+  epimorphic, and effective epimorphic are all equivalent.
+
+* `Stonean.effectiveEpiFamily_tfae`: For a finite family of morphisms in `Stonean` with fixed
+  target in `Stonean`, the conditions jointly surjective, jointly epimorphic and effective
+  epimorphic are all equivalent.
+
+As a consequence, we obtain instances that `Stonean` is precoherent and preregular.
+
+- TODO: Write API for reflecting effective epimorphisms and deduce the contents of this file by
+  abstract nonsense from the corresponding results for `CompHaus`.
 
 -/
 
@@ -78,16 +81,11 @@ theorem effectiveEpi_tfae
   · exact fun hπ ↦ ⟨⟨struct π hπ⟩⟩
   tfae_finish
 
-lemma effectiveEpi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
-    EffectiveEpi f ↔ Function.Surjective f := (effectiveEpi_tfae f).out 0 2
-
 instance : Preregular Stonean where
   exists_fac := by
     intro X Y Z f π hπ
     have := epiOfEffectiveEpi π
     exact ⟨X, 𝟙 X, inferInstance, Projective.factors f π⟩
-
-instance : Precoherent Stonean.{u} := inferInstance
 
 -- TODO: prove this for `Type*`
 open List in
@@ -101,8 +99,7 @@ theorem effectiveEpiFamily_tfae
     ] := by
   tfae_have 2 → 1
   · intro
-    rwa [← effectiveEpi_desc_iff_effectiveEpiFamily,
-      effectiveEpi_iff_surjective, ← epi_iff_surjective]
+    simpa [← effectiveEpi_desc_iff_effectiveEpiFamily, (effectiveEpi_tfae (Sigma.desc π)).out 0 1]
   tfae_have 1 → 2
   · intro; infer_instance
   tfae_have 3 → 2

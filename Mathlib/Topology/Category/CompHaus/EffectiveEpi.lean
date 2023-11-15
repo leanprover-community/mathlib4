@@ -7,18 +7,26 @@ import Mathlib.CategoryTheory.Sites.RegularExtensive
 import Mathlib.Topology.Category.CompHaus.Limits
 /-!
 
-# Effective epimorphic families in `CompHaus`
+# Effective epimorhpisms and finite effective epimorphic families in `CompHaus`
 
-Let `π a : X a ⟶ B` be a family of morphisms in `CompHaus` indexed by a finite type `α`.
-In this file, we show that the following are all equivalent:
-- The family `π` is effective epimorphic.
-- The induced map `∐ X ⟶ B` is epimorphic.
-- The family `π` is jointly surjective.
-This is the main result of this file, which can be found in `CompHaus.effectiveEpiFamily_tfae`
+This file proves that `CompHaus` is `Preregular`. Together with the fact that it is
+`FinitaryPreExtensive`, this implies that `CompHaus` is `Precoherent`.
 
-As a consequence, we also show that `CompHaus` is precoherent and preregular.
+To do this, we need to characterise effective epimorphisms in `CompHaus`. As a consequence, we also
+get a characterisation of finite effective epimorphic families.
 
-# Projects
+## Main results
+
+* `CompHaus.effectiveEpi_tfae`: For a morphism in `CompHaus`, the conditions surjective, epimorphic,
+  and effective epimorphic are all equivalent.
+
+* `CompHaus.effectiveEpiFamily_tfae`: For a finite family of morphisms in `CompHaus` with fixed
+  target in `CompHaus`, the conditions jointly surjective, jointly epimorphic and effective
+  epimorphic are all equivalent.
+
+As a consequence, we obtain instances that `CompHaus` is precoherent and preregular.
+
+## Projects
 
 - Define regular categories, and show that `CompHaus` is regular.
 - Define coherent categories, and show that `CompHaus` is actually coherent.
@@ -76,19 +84,15 @@ theorem effectiveEpi_tfae
   · exact fun hπ ↦ ⟨⟨struct π hπ⟩⟩
   tfae_finish
 
-lemma effectiveEpi_iff_surjective {X Y : CompHaus} (f : X ⟶ Y) :
-    EffectiveEpi f ↔ Function.Surjective f := (effectiveEpi_tfae f).out 0 2
-
 instance : Preregular CompHaus where
   exists_fac := by
     intro X Y Z f π hπ
     refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩
-    rw [CompHaus.effectiveEpi_iff_surjective] at hπ ⊢
+    have := fun X Y (f : X ⟶ Y) ↦ (effectiveEpi_tfae f).out 0 2
+    rw [this] at hπ ⊢
     intro y
     obtain ⟨z,hz⟩ := hπ (f y)
     exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
-
-instance : Precoherent CompHaus.{u} := inferInstance
 
 -- TODO: prove this for `Type*`
 open List in
@@ -102,8 +106,7 @@ theorem effectiveEpiFamily_tfae
     ] := by
   tfae_have 2 → 1
   · intro
-    rwa [← effectiveEpi_desc_iff_effectiveEpiFamily,
-      effectiveEpi_iff_surjective, ← epi_iff_surjective]
+    simpa [← effectiveEpi_desc_iff_effectiveEpiFamily, (effectiveEpi_tfae (Sigma.desc π)).out 0 1]
   tfae_have 1 → 2
   · intro; infer_instance
   tfae_have 3 → 2

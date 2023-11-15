@@ -7,26 +7,28 @@ import Mathlib.CategoryTheory.Sites.RegularExtensive
 import Mathlib.Topology.Category.Profinite.Limits
 
 /-!
-# Effective epimorphic families in `Profinite`
+# Effective epimorhpisms and finite effective epimorphic families in `Profinite`
 
-Let `π a : X a ⟶ B` be a family of morphisms in `Profinite` indexed by a finite type `α`.
-In this file, we show that the following are all equivalent:
-- The family `π` is effective epimorphic.
-- The induced map `∐ X ⟶ B` is epimorphic.
-- The family `π` is jointly surjective.
+This file proves that `Profinite` is `Preregular`. Together with the fact that it is
+`FinitaryPreExtensive`, this implies that `Profinite` is `Precoherent`.
 
-As a consequence, we show (see `effectiveEpi_iff_surjective`) that all epimorphisms in `Profinite` 
-are effective, and that `Profinite` is preregular.
+To do this, we need to characterise effective epimorphisms in `Profinite`. As a consequence, we also
+get a characterisation of finite effective epimorphic families.
 
 ## Main results
 
-- `Profinite.effectiveEpiFamily_tfae`: characterise being an effective epimorphic family.
-- `Profinite.instPrecoherent`: `Profinite` is precoherent.
+* `Profinite.effectiveEpi_tfae`: For a morphism in `Profinite`, the conditions surjective,
+  epimorphic, and effective epimorphic are all equivalent.
 
-## Implementation notes
+* `Profinite.effectiveEpiFamily_tfae`: For a finite family of morphisms in `Profinite` with fixed
+  target in `Profinite`, the conditions jointly surjective, jointly epimorphic and effective
+  epimorphic are all equivalent.
 
-The entire section `EffectiveEpiFamily` comprises exclusively a technical construction for
-the main proof and does not contain any statements that would be useful in other contexts.
+As a consequence, we obtain instances that `Profinite` is precoherent and preregular.
+
+- TODO: Write API for reflecting effective epimorphisms and deduce the contents of this file by
+  abstract nonsense from the corresponding results for `CompHaus`.
+
 -/
 
 universe u
@@ -80,19 +82,15 @@ theorem effectiveEpi_tfae
   · exact fun hπ ↦ ⟨⟨struct π hπ⟩⟩
   tfae_finish
 
-lemma effectiveEpi_iff_surjective {X Y : Profinite} (f : X ⟶ Y) :
-    EffectiveEpi f ↔ Function.Surjective f := (effectiveEpi_tfae f).out 0 2
-
 instance : Preregular Profinite where
   exists_fac := by
     intro X Y Z f π hπ
     refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩
-    rw [Profinite.effectiveEpi_iff_surjective] at hπ ⊢
+    have := fun X Y (f : X ⟶ Y) ↦ (effectiveEpi_tfae f).out 0 2
+    rw [this] at hπ ⊢
     intro y
     obtain ⟨z,hz⟩ := hπ (f y)
     exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
-
-instance : Precoherent Profinite.{u} := inferInstance
 
 -- TODO: prove this for `Type*`
 open List in
@@ -106,8 +104,7 @@ theorem effectiveEpiFamily_tfae
     ] := by
   tfae_have 2 → 1
   · intro
-    rwa [← effectiveEpi_desc_iff_effectiveEpiFamily,
-      effectiveEpi_iff_surjective, ← epi_iff_surjective]
+    simpa [← effectiveEpi_desc_iff_effectiveEpiFamily, (effectiveEpi_tfae (Sigma.desc π)).out 0 1]
   tfae_have 1 → 2
   · intro; infer_instance
   tfae_have 3 → 2

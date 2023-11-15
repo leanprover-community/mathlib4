@@ -31,6 +31,11 @@ See [nlab: *Effective Epimorphism*](https://ncatlab.org/nlab/show/effective+epim
 - [nlab: *Effective Epimorphism*](https://ncatlab.org/nlab/show/effective+epimorphism) and
 - [Stacks 00WP](https://stacks.math.columbia.edu/tag/00WP) for the standard definitions.
 
+## TODO
+- Prove simpler characterisations of effective epis under the existence of certain pullbacks and/or
+  coequalisers.
+- Find sufficient conditions on functors to preserve/reflect effective epis.
+
 -/
 
 namespace CategoryTheory
@@ -645,22 +650,5 @@ instance {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) [IsSplitEpi g] [EffectiveEpi f]
     EffectiveEpi (g ≫ f) := ⟨⟨effectiveEpiStructCompOfEffectiveEpiSplitEpi f g⟩⟩
 
 end instances
-
-section Epi
-
-variable [HasFiniteCoproducts C] (h : ∀ {α : Type} [Fintype α] {B : C}
-    (X : α → C) (π : (a : α) → (X a ⟶ B)), EffectiveEpiFamily X π ↔ Epi (Sigma.desc π ))
-
-lemma effectiveEpi_iff_epi {X Y : C} (f : X ⟶ Y) : EffectiveEpi f ↔ Epi f := by
-  rw [effectiveEpi_iff_effectiveEpiFamily, h]
-  have w : f = (Limits.Sigma.ι (fun () ↦ X) ()) ≫ (Limits.Sigma.desc (fun () ↦ f))
-  · simp only [Limits.colimit.ι_desc, Limits.Cofan.mk_pt, Limits.Cofan.mk_ι_app]
-  refine ⟨?_, fun _ ↦ epi_of_epi_fac w.symm⟩
-  intro
-  rw [w]
-  have : Epi (Limits.Sigma.ι (fun () ↦ X) ()) := ⟨fun _ _ h ↦ by ext; exact h⟩
-  exact epi_comp _ _
-
-end Epi
 
 end CategoryTheory
