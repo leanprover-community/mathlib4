@@ -592,16 +592,15 @@ end Order
 
 /-! ## Center of a ring -/
 
-section
+section Center
+variable {R : Type u}
 
-variable {R : Type u} [NonUnitalRing R]
-
-variable (R)
+section NonUnitalNonAssocRing
+variable (R) [NonUnitalNonAssocRing R]
 
 /-- The center of a ring `R` is the set of elements that commute with everything in `R` -/
 def center : NonUnitalSubring R :=
   { NonUnitalSubsemiring.center R with
-    carrier := Set.center R
     neg_mem' := Set.neg_mem_center }
 
 theorem coe_center : ↑(center R) = Set.center R :=
@@ -612,10 +611,23 @@ theorem center_toNonUnitalSubsemiring :
     (center R).toNonUnitalSubsemiring = NonUnitalSubsemiring.center R :=
   rfl
 
-variable {R}
+/-- The center is commutative and associative. -/
+instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) :=
+  { NonUnitalSubsemiring.center.instNonUnitalCommSemiring R,
+    inferInstanceAs <| NonUnitalNonAssocRing (center R) with }
 
-theorem mem_center_iff {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
-  Iff.rfl
+end NonUnitalNonAssocRing
+
+section NonUnitalRing
+variable [NonUnitalRing R]
+
+-- no instance diamond, unlike the unital version
+example :
+    (center.instNonUnitalCommRing _).toNonUnitalRing =
+      NonUnitalSubringClass.toNonUnitalRing (center R) :=
+  rfl
+
+theorem mem_center_iff {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g := Subsemigroup.mem_center_iff
 
 instance decidableMemCenter [DecidableEq R] [Fintype R] : DecidablePred (· ∈ center R) := fun _ =>
   decidable_of_iff' _ mem_center_iff
@@ -624,12 +636,9 @@ instance decidableMemCenter [DecidableEq R] [Fintype R] : DecidablePred (· ∈ 
 theorem center_eq_top (R) [NonUnitalCommRing R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 
-/-- The center is commutative. -/
-instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) :=
-  { NonUnitalSubsemiring.center.instNonUnitalCommSemiring,
-    (center R).toNonUnitalRing with }
+end NonUnitalRing
 
-end
+end Center
 
 /-! ## `NonUnitalSubring` closure of a subset -/
 
