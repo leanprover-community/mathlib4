@@ -331,8 +331,8 @@ instance mulAction : MulAction S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M 
 
 instance distribMulAction : DistribMulAction S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M :=
   { CoextendScalars.mulAction f _ with
-    smul_add := fun s g h => LinearMap.ext fun t : S => by simp
-    smul_zero := fun s => LinearMap.ext fun t : S => by simp }
+    smul_add := fun s g h => LinearMap.ext fun _ : S => by simp
+    smul_zero := fun s => LinearMap.ext fun _ : S => by simp }
 #align category_theory.Module.coextend_scalars.distrib_mul_action ModuleCat.CoextendScalars.distribMulAction
 
 /-- `S` acts on Hom(S, M) by `s • g = x ↦ g (x • s)`, this action defines an `S`-module structure on
@@ -584,8 +584,7 @@ def HomEquiv.toRestrictScalars {X Y} (g : (extendScalars f).obj X ⟶ Y) :
     letI : Module R S := Module.compHom S f
     letI : Module R Y := Module.compHom Y f
     dsimp
-    rw [RestrictScalars.smul_def, ← LinearMap.map_smul]
-    erw [tmul_smul]
+    erw [RestrictScalars.smul_def, ← LinearMap.map_smul, tmul_smul]
     congr
 #align category_theory.Module.extend_restrict_scalars_adj.hom_equiv.to_restrict_scalars ModuleCat.ExtendRestrictScalarsAdj.HomEquiv.toRestrictScalars
 
@@ -656,6 +655,7 @@ def homEquiv {X Y} :
       change S at x
       dsimp
       erw [← LinearMap.map_smul, ExtendScalars.smul_tmul, mul_one x]
+      rfl
     · rw [map_add, map_add, ih1, ih2]
   right_inv g := by
     letI m1 : Module R S := Module.compHom S f; letI m2 : Module R Y := Module.compHom Y f

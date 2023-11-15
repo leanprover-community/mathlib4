@@ -170,7 +170,7 @@ theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
     use (pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, h⟩
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩ <;>
-    rw [←comp_apply, prod.comp_lift, ←comp_apply, limit.lift_π] <;>
+    rw [←comp_apply, ←comp_apply, limit.lift_π] <;>
     -- This used to be `simp` before leanprover/lean4#2644
     aesop_cat
 #align Top.range_pullback_to_prod TopCat.range_pullback_to_prod

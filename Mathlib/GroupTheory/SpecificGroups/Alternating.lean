@@ -348,7 +348,6 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
       have con := mem_alternatingGroup.1 gA
       contrapose! con
       rw [sign_of_cycleType, cycleType_of_card_le_mem_cycleType_add_two (by decide) ng]
-      dsimp only
       decide
     · -- If `n = 5`, then `g` is itself a 5-cycle, conjugate to `finRotate 5`.
       refine' (isConj_iff_cycleType_eq.2 _).normalClosure_eq_top_of normalClosure_finRotate_five
