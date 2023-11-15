@@ -7,7 +7,7 @@
     "rev": "366988e04ba52ad1ca87ea6f3dd238cd40b88a80",
     "opts": {},
     "name": "std",
-    "inputRev?": "nightly-testing",
+    "inputRev?": "nightly-testing-2023-11-05",
     "inherited": false}},
   {"git":
    {"url": "https://github.com/leanprover-community/quote4",
@@ -36,10 +36,17 @@
   {"git":
    {"url": "https://github.com/leanprover-community/ProofWidgets4",
     "subDir?": null,
+<<<<<<< HEAD
     "rev": "c3b9f0d4ebedc43635d3f7e764e277b1010844b7",
     "opts": {},
     "name": "proofwidgets",
     "inputRev?": "v0.0.22",
+=======
+    "rev": "a27f24a6e4b7e89da02970d59e016eb5af48c367",
+    "opts": {},
+    "name": "proofwidgets",
+    "inputRev?": "v0.0.22-pre",
+>>>>>>> lean-pr-testing-2749
     "inherited": false}}],
  "name": "mathlib",
  "lakeDir": ".lake"}
