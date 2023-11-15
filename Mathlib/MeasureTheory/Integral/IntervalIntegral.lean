@@ -101,6 +101,14 @@ theorem intervalIntegrable_iff_integrable_Icc_of_le {f : ℝ → E} {a b : ℝ} 
   rw [intervalIntegrable_iff_integrable_Ioc_of_le hab, integrableOn_Icc_iff_integrableOn_Ioc]
 #align interval_integrable_iff_integrable_Icc_of_le intervalIntegrable_iff_integrable_Icc_of_le
 
+theorem intervalIntegrable_iff_integrable_Ico_of_le [NoAtoms μ] (hab : a ≤ b) :
+    IntervalIntegrable f μ a b ↔ IntegrableOn f (Ico a b) μ := by
+  rw [intervalIntegrable_iff_integrable_Icc_of_le hab, integrableOn_Icc_iff_integrableOn_Ico]
+
+theorem intervalIntegrable_iff_integrable_Ioo_of_le [NoAtoms μ] (hab : a ≤ b) :
+    IntervalIntegrable f μ a b ↔ IntegrableOn f (Ioo a b) μ := by
+  rw [intervalIntegrable_iff_integrable_Icc_of_le hab, integrableOn_Icc_iff_integrableOn_Ioo]
+
 /-- If a function is integrable with respect to a given measure `μ` then it is interval integrable
   with respect to `μ` on `uIcc a b`. -/
 theorem MeasureTheory.Integrable.intervalIntegrable (hf : Integrable f μ) :

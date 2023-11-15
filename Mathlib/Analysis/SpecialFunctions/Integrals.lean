@@ -110,7 +110,8 @@ lemma foo2 {s t : ℝ} (ht : 0 < t) : IntegrableOn (fun x ↦ x ^ s) (Ioo (0 : �
     have : IntervalIntegrable (fun x ↦ x⁻¹) volume 0 (min 1 t) := sorry
     have I : 0 < min 1 t := lt_min zero_lt_one ht
     simp [intervalIntegrable_inv_iff, I.ne] at this
-  · have Z := interval_integrable_rpow'
+  · have Z := intervalIntegrable_rpow' h (a := 0) (b := t)
+    rw [intervalIntegrable_iff_integrable_Ioo_of_le ht.le] at Z
 
 
 
