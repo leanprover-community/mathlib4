@@ -555,7 +555,8 @@ def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsio
 /-- A fundamental system of units of `K`. The units of `fundSystem` are arbitrary lifts of the
 units in `basisModTorsion`. -/
 def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
-  fun i => Quotient.out' (Additive.toMul (basisModTorsion K i))
+  -- `:)` prevents the `⧸` decaying to a quotient by `leftRel` when we unfold this later
+  fun i => Quotient.out' (Additive.toMul (basisModTorsion K i) :)
 
 /-- The exponents that appear in the unique decomposition of a unit as the product of
 a root of unity and powers of the units of the fundamental system `fundSystem` (see
@@ -570,7 +571,7 @@ theorem fun_eq_repr {x ζ : (𝓞 K)ˣ} {f : Fin (rank K) → ℤ} (hζ : ζ ∈
                       rw [h, QuotientGroup.mk_mul, (QuotientGroup.eq_one_iff _).mpr hζ, one_mul,
                         QuotientGroup.mk_prod, ofMul_prod]; rfl
                     _ = ∑ i, (f i) • (basisModTorsion K i) := by
-                      simp_rw [fundSystem, QuotientGroup.out_eq']; rfl
+                      simp_rw [fundSystem, QuotientGroup.out_eq', ofMul_toMul]
 
 /-- **Dirichlet Unit Theorem**. Any unit `x` of `𝓞 K` can be written uniquely as the product of
 a root of unity and powers of the units of the fundamental system `fundSystem`. -/
