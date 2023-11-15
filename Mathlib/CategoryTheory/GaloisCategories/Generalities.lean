@@ -282,26 +282,27 @@ lemma FintypeCat.isIso_iff_bijective { X Y : FintypeCat.{u} } (f : X ⟶ Y) :
     (CategoryTheory.isIso_iff_bijective _).mpr h
   exact CategoryTheory.isIso_of_reflects_iso f FintypeCat.incl
 
-example (ι : Type u) (f : ι → Type u) (t : Cofan f) (h : IsColimit t) (i : ι) :
-    Function.Injective (Cofan.inj t i) := by
+lemma Types.mono_of_cofanInj {ι : Type u} {f : ι → Type u} (t : Cofan f) (h : IsColimit t)
+    (i : ι) : Mono (Cofan.inj t i) := by
+  simp only [mono_iff_injective]
+  show Function.Injective (t.ι.app ⟨i⟩)
+  erw [←colimit.isoColimitCocone_ι_hom ⟨t, h⟩]
+  apply Function.Injective.comp
+  exact injective_of_mono _
+  show Function.Injective (Sigma.ι f i)
+  let blo : f i ⟶ Sigma f := Sigma.mk i
   let φ : ∐ f ≅ Σ j, f j := Types.coproductIso f
-  have : Function.Injective (@Sigma.mk ι f i) := sigma_mk_injective
-  let blo : f i ⟶ Sigma f := @Sigma.mk ι f i
   have h1 : Sigma.ι f i = blo ≫ inv φ.hom := by
     simp only [IsIso.eq_comp_inv φ.hom, Types.coproductIso_ι_comp_hom]
-  let e : ∐ f ≅ t.pt := colimit.isoColimitCocone ⟨t, h⟩
-  have h2 : Cofan.inj t i = Sigma.ι f i ≫ e.hom := by
-    show t.ι.app ⟨i⟩ = Sigma.ι f i ≫ e.hom
-    simp only [Discrete.functor_obj, const_obj_obj, colimit.isoColimitCocone_ι_hom]
-  rw [h2]
-  apply Function.Injective.comp
-  exact injective_of_mono e.hom
   rw [h1]
   apply Function.Injective.comp
   exact injective_of_mono (inv φ.hom)
-  assumption
+  exact sigma_mk_injective
 
-lemma Types.jointlySurjective_inclusionsCoproduct (ι : Type*) (F : Discrete ι ⥤ Type u)
-    (t : ColimitCocone F) (x : t.cocone.pt) : ∃ (i : ι) (y : F.obj ⟨i⟩),
-    t.cocone.ι.app ⟨i⟩ y = x :=
-  sorry
+lemma FintypeCat.mono_of_cofanInj {ι : Type u} [Fintype ι] {f : ι → FintypeCat.{u}} (t : Cofan f)
+    (h : IsColimit t) (i : ι) : Mono (Cofan.inj t i) := by
+  apply mono_of_mono_map FintypeCat.incl
+  let s : Cofan (fun j => FintypeCat.incl.obj <| f j) := FintypeCat.incl.mapCocone t
+  show Mono (Cofan.inj s i)
+  let h : IsColimit s := isColimitOfPreserves FintypeCat.incl h
+  exact Types.mono_of_cofanInj s h i
