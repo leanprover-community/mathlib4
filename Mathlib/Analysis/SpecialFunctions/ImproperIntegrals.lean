@@ -73,6 +73,22 @@ theorem integrableOn_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < 
     integrableOn_Ioi_deriv_of_nonneg' hd (fun t ht => rpow_nonneg_of_nonneg (hc.trans ht).le a) ht
 #align integrable_on_Ioi_rpow_of_lt integrableOn_Ioi_rpow_of_lt
 
+lemma integrableOn_Ioi_rpow_iff {s t : ℝ} (ht : 0 < t) :
+    IntegrableOn (fun x ↦ x ^ s) (Ioi t) ↔ s < -1 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ integrableOn_Ioi_rpow_of_lt h ht⟩
+  contrapose! h
+  intro H
+  have H' : IntegrableOn (fun x ↦ x ^ s) (Ioi (max 1 t)) :=
+    H.mono (Set.Ioi_subset_Ioi (le_max_right _ _)) le_rfl
+  have : IntegrableOn (fun x ↦ x⁻¹) (Ioi (max 1 t)) := by
+    apply H'.mono' measurable_inv.aestronglyMeasurable
+    filter_upwards [ae_restrict_mem measurableSet_Ioi] with x hx
+    have x_one : 1 ≤ x := ((le_max_left _ _).trans_lt (mem_Ioi.1 hx)).le
+    simp only [norm_inv, Real.norm_eq_abs, abs_of_nonneg (zero_le_one.trans x_one)]
+    rw [← Real.rpow_neg_one x]
+    exact Real.rpow_le_rpow_of_exponent_le x_one h
+  apply not_IntegrableOn_Ioi_inv this
+
 theorem integral_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
     ∫ t : ℝ in Ioi c, t ^ a = -c ^ (a + 1) / (a + 1) := by
   have hd : ∀ (x : ℝ) (_ : x ∈ Ici c), HasDerivAt (fun t => t ^ (a + 1) / (a + 1)) (x ^ a) x := by

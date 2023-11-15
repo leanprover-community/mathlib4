@@ -222,3 +222,8 @@ theorem not_IntegrableOn_Ici_inv {a : ℝ} :
   exact not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter atTop (Ici_mem_atTop a)
     (A.mono (fun x hx ↦ hx.differentiableAt)) B
     (Filter.EventuallyEq.isBigO (A.mono (fun x hx ↦ hx.deriv)))
+
+/-- The function `fun x ↦ x⁻¹` is not integrable on any interval `[a, +∞)`. -/
+theorem not_IntegrableOn_Ioi_inv {a : ℝ} :
+    ¬ IntegrableOn (fun x => x⁻¹) (Ioi a) := by
+  simpa only [IntegrableOn, restrict_Ioi_eq_restrict_Ici] using not_IntegrableOn_Ici_inv

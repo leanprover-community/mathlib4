@@ -96,7 +96,7 @@ theorem intervalIntegrable_rpow' {r : ℝ} (h : -1 < r) :
       rpow_def_of_pos hx.1, rpow_def_of_neg (by linarith [hx.1] : -x < 0)]
 #align interval_integral.interval_integrable_rpow' intervalIntegral.intervalIntegrable_rpow'
 
-lemma integrableOn_rpow_Ioo_iff {s t : ℝ} (ht : 0 < t) :
+lemma integrableOn_Ioo_rpow_iff {s t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x ↦ x ^ s) (Ioo (0 : ℝ) t) ↔ -1 < s := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simpa [intervalIntegrable_iff_integrable_Ioo_of_le ht.le]
     using intervalIntegrable_rpow' h (a := 0) (b := t)⟩
@@ -114,18 +114,6 @@ lemma integrableOn_rpow_Ioo_iff {s t : ℝ} (ht : 0 < t) :
   have : IntervalIntegrable (fun x ↦ x⁻¹) volume 0 (min 1 t) := by
     rwa [intervalIntegrable_iff_integrable_Ioo_of_le I.le]
   simp [intervalIntegrable_inv_iff, I.ne] at this
-
-
-
-
-
-#exit
-
-
-lemma foo1 {s t : ℝ} (ht : 0 < t) : IntegrableOn (fun x ↦ x ^ s) (Ioi t) ↔ s < -1 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-
-
 
 /-- See `intervalIntegrable_cpow'` for a version with a weaker hypothesis on `r`, but assuming the
 measure is volume. -/
