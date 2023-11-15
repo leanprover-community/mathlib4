@@ -250,7 +250,7 @@ variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V
 
 /-- The circumsphere of a simplex. -/
 def circumsphere {n : ℕ} (s : Simplex ℝ P n) : Sphere P :=
-  s.Independent.existsUnique_dist_eq.choose
+  s.independent.existsUnique_dist_eq.choose
 #align affine.simplex.circumsphere Affine.Simplex.circumsphere
 
 /-- The property satisfied by the circumsphere. -/
@@ -260,7 +260,7 @@ theorem circumsphere_unique_dist_eq {n : ℕ} (s : Simplex ℝ P n) :
       ∀ cs : Sphere P,
         cs.center ∈ affineSpan ℝ (Set.range s.points) ∧ Set.range s.points ⊆ cs →
           cs = s.circumsphere :=
-  s.Independent.existsUnique_dist_eq.choose_spec
+  s.independent.existsUnique_dist_eq.choose_spec
 #align affine.simplex.circumsphere_unique_dist_eq Affine.Simplex.circumsphere_unique_dist_eq
 
 /-- The circumcenter of a simplex. -/
@@ -357,7 +357,7 @@ theorem circumradius_pos {n : ℕ} (s : Simplex ℝ P (n + 1)) : 0 < s.circumrad
   intro h
   have hr := s.dist_circumcenter_eq_circumradius
   simp_rw [← h, dist_eq_zero] at hr
-  have h01 := s.Independent.injective.ne (by simp : (0 : Fin (n + 2)) ≠ 1)
+  have h01 := s.independent.injective.ne (by simp : (0 : Fin (n + 2)) ≠ 1)
   simp [hr] at h01
 #align affine.simplex.circumradius_pos Affine.Simplex.circumradius_pos
 
@@ -761,7 +761,7 @@ theorem exists_circumradius_eq_of_cospherical_subset {s : AffineSubspace ℝ P} 
   intro sx hsxps
   have hsx : affineSpan ℝ (Set.range sx.points) = s := by
     refine'
-      sx.Independent.affineSpan_eq_of_le_of_card_eq_finrank_add_one
+      sx.independent.affineSpan_eq_of_le_of_card_eq_finrank_add_one
         (spanPoints_subset_coe_of_subset_coe (hsxps.trans h)) _
     simp [hd]
   have hc : c ∈ affineSpan ℝ (Set.range sx.points) := hsx.symm ▸ hc
@@ -813,7 +813,7 @@ theorem exists_circumcenter_eq_of_cospherical_subset {s : AffineSubspace ℝ P} 
   intro sx hsxps
   have hsx : affineSpan ℝ (Set.range sx.points) = s := by
     refine'
-      sx.Independent.affineSpan_eq_of_le_of_card_eq_finrank_add_one
+      sx.independent.affineSpan_eq_of_le_of_card_eq_finrank_add_one
         (spanPoints_subset_coe_of_subset_coe (hsxps.trans h)) _
     simp [hd]
   have hc : c ∈ affineSpan ℝ (Set.range sx.points) := hsx.symm ▸ hc
