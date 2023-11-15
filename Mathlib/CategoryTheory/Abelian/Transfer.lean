@@ -3,17 +3,15 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.Abelian.Injective
 
 #align_import category_theory.abelian.transfer from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
-# Transferring properties across a functor
+# Transferring "abelian-ness" across a functor
 
-## abelian-ness
 If `C` is an additive category, `D` is an abelian category,
 we have `F : C ⥤ D` `G : D ⥤ C` (both preserving zero morphisms),
 `G` is left exact (that is, preserves finite limits),
@@ -32,7 +30,6 @@ must be an isomorphism, and thus that `C` is a reflective subcategory of `D`.
 
 Someone may like to formalize that lemma, and restate this theorem in terms of `Reflective`.
 (That lemma has a nice string diagrammatic proof that holds in any bicategory.)
-
 -/
 
 
@@ -42,7 +39,7 @@ namespace CategoryTheory
 
 open Limits
 
-universe v v₁ v₂ u₁ u₂
+universe v u₁ u₂
 
 namespace AbelianOfAdjunction
 
