@@ -74,16 +74,16 @@ lemma antivaryOn_inv_right : AntivaryOn f g⁻¹ s ↔ MonovaryOn f g s := by
 @[to_additive] alias ⟨Antivary.of_inv, Antivary.inv⟩ := antivary_inv
 
 @[to_additive] lemma MonovaryOn.mul_left (h₁ : MonovaryOn f₁ g s) (h₂ : MonovaryOn f₂ g s) :
-    MonovaryOn (f₁ * f₂) g s := fun _i hi _j hj hij ↦ mul_le_mul' (h₁ hi hj hij) $ h₂ hi hj hij
+    MonovaryOn (f₁ * f₂) g s := fun _i hi _j hj hij ↦ mul_le_mul' (h₁ hi hj hij) (h₂ hi hj hij)
 
 @[to_additive] lemma AntivaryOn.mul_left (h₁ : AntivaryOn f₁ g s) (h₂ : AntivaryOn f₂ g s) :
-    AntivaryOn (f₁ * f₂) g s := fun _i hi _j hj hij ↦ mul_le_mul' (h₁ hi hj hij) $ h₂ hi hj hij
+    AntivaryOn (f₁ * f₂) g s := fun _i hi _j hj hij ↦ mul_le_mul' (h₁ hi hj hij) (h₂ hi hj hij)
 
 @[to_additive] lemma MonovaryOn.div_left (h₁ : MonovaryOn f₁ g s) (h₂ : AntivaryOn f₂ g s) :
-    MonovaryOn (f₁ / f₂) g s := fun _i hi _j hj hij ↦ div_le_div'' (h₁ hi hj hij) $ h₂ hi hj hij
+    MonovaryOn (f₁ / f₂) g s := fun _i hi _j hj hij ↦ div_le_div'' (h₁ hi hj hij) (h₂ hi hj hij)
 
 @[to_additive] lemma AntivaryOn.div_left (h₁ : AntivaryOn f₁ g s) (h₂ : MonovaryOn f₂ g s) :
-    AntivaryOn (f₁ / f₂) g s := fun _i hi _j hj hij ↦ div_le_div'' (h₁ hi hj hij) $ h₂ hi hj hij
+    AntivaryOn (f₁ / f₂) g s := fun _i hi _j hj hij ↦ div_le_div'' (h₁ hi hj hij) (h₂ hi hj hij)
 
 @[to_additive] lemma MonovaryOn.pow_left (hfg : MonovaryOn f g s) (n : ℕ) :
     MonovaryOn (f ^ n) g s := fun _i hi _j hj hij ↦ pow_le_pow_of_le_left' (hfg hi hj hij) _
@@ -93,19 +93,19 @@ lemma antivaryOn_inv_right : AntivaryOn f g⁻¹ s ↔ MonovaryOn f g s := by
 
 @[to_additive]
 lemma Monovary.mul_left (h₁ : Monovary f₁ g) (h₂ : Monovary f₂ g) : Monovary (f₁ * f₂) g :=
-  fun _i _j hij ↦ mul_le_mul' (h₁ hij) $ h₂ hij
+  fun _i _j hij ↦ mul_le_mul' (h₁ hij) (h₂ hij)
 
 @[to_additive]
 lemma Antivary.mul_left (h₁ : Antivary f₁ g) (h₂ : Antivary f₂ g) : Antivary (f₁ * f₂) g :=
-  fun _i _j hij ↦ mul_le_mul' (h₁ hij) $ h₂ hij
+  fun _i _j hij ↦ mul_le_mul' (h₁ hij) (h₂ hij)
 
 @[to_additive]
 lemma Monovary.div_left (h₁ : Monovary f₁ g) (h₂ : Antivary f₂ g) : Monovary (f₁ / f₂) g :=
-  fun _i _j hij ↦ div_le_div'' (h₁ hij) $ h₂ hij
+  fun _i _j hij ↦ div_le_div'' (h₁ hij) (h₂ hij)
 
 @[to_additive]
 lemma Antivary.div_left (h₁ : Antivary f₁ g) (h₂ : Monovary f₂ g) : Antivary (f₁ / f₂) g :=
-  fun _i _j hij ↦ div_le_div'' (h₁ hij) $ h₂ hij
+  fun _i _j hij ↦ div_le_div'' (h₁ hij) (h₂ hij)
 
 @[to_additive] lemma Monovary.pow_left (hfg : Monovary f g) (n : ℕ) : Monovary (f ^ n) g :=
   fun _i _j hij ↦ pow_le_pow_of_le_left' (hfg hij) _
