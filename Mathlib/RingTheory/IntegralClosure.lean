@@ -136,8 +136,8 @@ theorem map_isIntegral_int {B C F : Type*} [Ring B] [Ring C] {b : B} [RingHomCla
   hb.map (f : B →+* C).toIntAlgHom
 #align map_is_integral_int map_isIntegral_int
 
-theorem IsIntegral.of_subring {x : B} (T : Subring R)
-    (hx : IsIntegral T x) : IsIntegral R x := hx.tower_top
+theorem IsIntegral.of_subring {x : B} (T : Subring R) (hx : IsIntegral T x) : IsIntegral R x :=
+  hx.tower_top
 #align is_integral_of_subring IsIntegral.of_subring
 
 protected theorem IsIntegral.algebraMap [Algebra A B] [IsScalarTower R A B] {x : A}
