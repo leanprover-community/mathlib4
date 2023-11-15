@@ -41,8 +41,8 @@ section
 /-- `ContinuousMapClass F α β` states that `F` is a type of continuous maps.
 
 You should extend this class when you extend `ContinuousMap`. -/
-class ContinuousMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
-  [TopologicalSpace β] extends FunLike F α fun _ => β where
+class ContinuousMapClass (F α β : Type*) [TopologicalSpace α] [TopologicalSpace β]
+    [NDFunLike F α β] : Prop where
   /-- Continuity -/
   map_continuous (f : F) : Continuous f
 #align continuous_map_class ContinuousMapClass
@@ -55,7 +55,8 @@ attribute [continuity] map_continuous
 
 section ContinuousMapClass
 
-variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [ContinuousMapClass F α β]
+variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [NDFunLike F α β]
+variable [ContinuousMapClass F α β]
 
 theorem map_continuousAt (f : F) (a : α) : ContinuousAt f a :=
   (map_continuous f).continuousAt
@@ -80,16 +81,12 @@ namespace ContinuousMap
 variable {α β γ δ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
   [TopologicalSpace δ]
 
-instance toContinuousMapClass : ContinuousMapClass C(α, β) α β where
+instance funLike : NDFunLike C(α, β) α β where
   coe := ContinuousMap.toFun
   coe_injective' f g h := by cases f; cases g; congr
-  map_continuous := ContinuousMap.continuous_toFun
 
-/- Porting note: Probably not needed anymore
-/-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
-directly. -/
-instance : CoeFun C(α, β) fun _ => α → β :=
-  FunLike.hasCoeToFun-/
+instance toContinuousMapClass : ContinuousMapClass C(α, β) α β where
+  map_continuous := ContinuousMap.continuous_toFun
 
 @[simp]
 theorem toFun_eq_coe {f : C(α, β)} : f.toFun = (f : α → β) :=
@@ -105,7 +102,8 @@ def Simps.apply (f : C(α, β)) : α → β := f
 initialize_simps_projections ContinuousMap (toFun → apply)
 
 @[simp] -- Porting note: removed `norm_cast` attribute
-protected theorem coe_coe {F : Type*} [ContinuousMapClass F α β] (f : F) : ⇑(f : C(α, β)) = f :=
+protected theorem coe_coe {F : Type*} [NDFunLike F α β] [ContinuousMapClass F α β] (f : F) :
+    ⇑(f : C(α, β)) = f :=
   rfl
 #align continuous_map.coe_coe ContinuousMap.coe_coe
 
