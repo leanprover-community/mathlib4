@@ -352,6 +352,7 @@ theorem diagonalHomEquiv_apply (f : Rep.ofMulAction k G (Fin (n + 1) → G) ⟶ 
 set_option linter.uppercaseLean3 false in
 #align Rep.diagonal_hom_equiv_apply Rep.diagonalHomEquiv_apply
 
+set_option maxHeartbeats 400000 in
 /-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
 the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that the
 inverse map sends a function `f : Gⁿ → A` to the representation morphism sending
@@ -374,16 +375,11 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
     Category.comp_id, Action.comp_hom, MonoidalClosed.linearHomEquivComm_symm_hom]
   -- Porting note: This is a sure sign that coercions for morphisms in `ModuleCat`
   -- are still not set up properly.
-/- Note: The next four lines was
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [ModuleCat.coe_comp]
-  simp only [ModuleCat.coe_comp, Function.comp_apply] -/
-  change (TensorProduct.uncurry k (of (Representation.ofMulAction k G G)) (of 1) A
-    (leftRegularHom ((ihom (of 1)).obj A) (Finsupp.llift A k k (Fin n → G) f)).hom
-    (((Representation.ofMulAction k G G).repOfTprodIso 1).hom.hom
-      ((diagonalSucc k G n).hom.hom (fun₀ | x => (1 : k))))) = _
+  simp only [ModuleCat.coe_comp, Function.comp_apply]
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [diagonalSucc_hom_single x (1 : k)]
+  erw [diagonalSucc_hom_single]
   erw [TensorProduct.uncurry_apply, Finsupp.lift_apply, Finsupp.sum_single_index]
   simp only [one_smul]
   erw [Representation.linHom_apply]
