@@ -111,14 +111,10 @@ private noncomputable instance : PreservesLimitsOfShape (WalkingCospan) (forget 
   rw [h]
   infer_instance
 
-lemma monomorphismIffInducesInjective {X Y : C} (f : X ⟶ Y) :
-    Mono f ↔ Function.Injective (F.map f) := by
-  constructor
-  intro hfmono
-  exact ConcreteCategory.injective_of_mono_of_preservesPullback (F.map f)
-  intro hfinj
-  have : Mono (F.map f) := ConcreteCategory.mono_of_injective (F.map f) hfinj
-  have h2 : IsIso (pullback.fst : pullback (F.map f) (F.map f) ⟶ F.obj X) := fst_iso_of_mono_eq (F.map f)
+instance : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
+  intro X Y f _
+  have : IsIso (pullback.fst : pullback (F.map f) (F.map f) ⟶ F.obj X) :=
+    fst_iso_of_mono_eq (F.map f)
   let ϕ : F.obj (pullback f f) ≅ pullback (F.map f) (F.map f) := PreservesPullback.iso F f f
 
   have : ϕ.hom ≫ pullback.fst = F.map pullback.fst := PreservesPullback.iso_hom_fst F f f
@@ -126,8 +122,15 @@ lemma monomorphismIffInducesInjective {X Y : C} (f : X ⟶ Y) :
     rw [←this]
     exact IsIso.comp_isIso
   have : IsIso (pullback.fst : pullback f f ⟶ X) := isIso_of_reflects_iso pullback.fst F
-  have : Mono f := monoFromPullbackIso f
-  assumption
+  exact monoFromPullbackIso f
+
+lemma monomorphismIffInducesInjective {X Y : C} (f : X ⟶ Y) :
+    Mono f ↔ Function.Injective (F.map f) := by
+  constructor
+  intro hfmono
+  exact ConcreteCategory.injective_of_mono_of_preservesPullback (F.map f)
+  intro hfinj
+  exact mono_of_mono_map F (ConcreteCategory.mono_of_injective (F.map f) hfinj)
 
 lemma isIso_of_mono_of_eqCardFibre {X Y : C} (f : X ⟶ Y) [Mono f] :
     Nat.card (F.obj X) = Nat.card (F.obj Y) → IsIso f := by

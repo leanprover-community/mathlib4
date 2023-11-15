@@ -4,6 +4,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.MonoCoprod
 
 universe u v w v₁ u₁ u₂ w₂
 
@@ -280,3 +281,27 @@ lemma FintypeCat.isIso_iff_bijective { X Y : FintypeCat.{u} } (f : X ⟶ Y) :
   have : IsIso (FintypeCat.incl.map f) :=
     (CategoryTheory.isIso_iff_bijective _).mpr h
   exact CategoryTheory.isIso_of_reflects_iso f FintypeCat.incl
+
+example (ι : Type u) (f : ι → Type u) (t : Cofan f) (h : IsColimit t) (i : ι) :
+    Function.Injective (Cofan.inj t i) := by
+  let φ : ∐ f ≅ Σ j, f j := Types.coproductIso f
+  have : Function.Injective (@Sigma.mk ι f i) := sigma_mk_injective
+  let blo : f i ⟶ Sigma f := @Sigma.mk ι f i
+  have h1 : Sigma.ι f i = blo ≫ inv φ.hom := by
+    simp only [IsIso.eq_comp_inv φ.hom, Types.coproductIso_ι_comp_hom]
+  let e : ∐ f ≅ t.pt := colimit.isoColimitCocone ⟨t, h⟩
+  have h2 : Cofan.inj t i = Sigma.ι f i ≫ e.hom := by
+    show t.ι.app ⟨i⟩ = Sigma.ι f i ≫ e.hom
+    simp only [Discrete.functor_obj, const_obj_obj, colimit.isoColimitCocone_ι_hom]
+  rw [h2]
+  apply Function.Injective.comp
+  exact injective_of_mono e.hom
+  rw [h1]
+  apply Function.Injective.comp
+  exact injective_of_mono (inv φ.hom)
+  assumption
+
+lemma Types.jointlySurjective_inclusionsCoproduct (ι : Type*) (F : Discrete ι ⥤ Type u)
+    (t : ColimitCocone F) (x : t.cocone.pt) : ∃ (i : ι) (y : F.obj ⟨i⟩),
+    t.cocone.ι.app ⟨i⟩ y = x :=
+  sorry
