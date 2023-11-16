@@ -49,6 +49,10 @@ instance LieModule.instIsTrivialOfSubsingleton {L M : Type*}
     [LieRing L] [AddCommGroup M] [LieRingModule L M] [Subsingleton L] : LieModule.IsTrivial L M :=
   ⟨fun x m ↦ by rw [Subsingleton.eq_zero x, zero_lie]⟩
 
+instance LieModule.instIsTrivialOfSubsingleton' {L M : Type*}
+    [LieRing L] [AddCommGroup M] [LieRingModule L M] [Subsingleton M] : LieModule.IsTrivial L M :=
+  ⟨fun x m ↦ by simp_rw [Subsingleton.eq_zero m, lie_zero]⟩
+
 /-- A Lie algebra is Abelian iff it is trivial as a Lie module over itself. -/
 abbrev IsLieAbelian (L : Type v) [Bracket L L] [Zero L] : Prop :=
   LieModule.IsTrivial L L

@@ -44,10 +44,65 @@ We define the trace / Killing form in this file and prove some basic properties.
  * Prove that in characteristic zero, a semisimple Lie algebra has non-singular Killing form.
 -/
 
+section move_and_fix
+
+-- Is this the "right" lemma?
+lemma foo {R M : Type*}
+    [CommRing R] [IsReduced R] [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M]
+    {f g : Module.End R M} (μ : R)
+    (h_comm : Commute f g)
+    (hg : IsNilpotent (g - algebraMap R _ μ)) :
+    LinearMap.trace R M (f ∘ₗ g) = μ * LinearMap.trace R M f := by
+  set n := g - algebraMap R _ μ
+  replace h_comm : Commute f n := h_comm.sub_right (Algebra.commute_algebraMap_right μ f)
+  replace hg : LinearMap.trace R M (f ∘ₗ n) = 0 := by
+    rw [← isNilpotent_iff_eq_zero, ← LinearMap.mul_eq_comp]
+    exact LinearMap.isNilpotent_trace_of_isNilpotent (h_comm.isNilpotent_mul_right hg)
+  have hμ : g = algebraMap R _ μ + n := eq_add_of_sub_eq' rfl
+  rw [hμ, LinearMap.comp_add, map_add, hg, add_zero]
+  have : f ∘ₗ algebraMap R _ μ = μ • f := by ext; simp -- Surely should exist?
+  simp [this]
+
+namespace LieModule
+
+variable {R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
+  [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+
+lemma commute_toEndomorphism_of_mem_center_left
+    {x : L} (hx : x ∈ LieAlgebra.center R L) (y : L) :
+    Commute (toEndomorphism R L M x) (toEndomorphism R L M y) := by
+  rw [Commute.symm_iff, commute_iff_lie_eq, ← LieHom.map_lie, hx y, LieHom.map_zero]
+
+lemma trace_toEndomorphism_eq_zero_of_mem_lcs
+    {k : ℕ} {x : L} (hk : 1 ≤ k) (hx : x ∈ lowerCentralSeries R L L k) :
+    LinearMap.trace R _ (toEndomorphism R L M x) = 0 := by
+  replace hx : x ∈ lowerCentralSeries R L L 1 := antitone_lowerCentralSeries _ _ _ hk hx
+  simp only [lowerCentralSeries_succ, lowerCentralSeries_zero, ← LieSubmodule.mem_coeSubmodule,
+    LieSubmodule.lieIdeal_oper_eq_linear_span'] at hx
+  simp only [LieSubmodule.top_coeSubmodule, Submodule.mem_top, true_and] at hx
+  apply Submodule.span_induction (p := fun x ↦ LinearMap.trace R _ (toEndomorphism R L M x) = 0) hx
+  · rintro - ⟨u, v, rfl⟩
+    rw [LieHom.map_lie, Ring.lie_def, map_sub, LinearMap.trace_mul_comm, sub_self]
+  · simp
+  · intro u v hu hv; simp [hu, hv]
+  · intro t u hu; simp [hu]
+
+lemma yawn (h : 1 ≤ nilpotencyLength R L L):
+    lowerCentralSeries R L L (nilpotencyLength R L L - 1) = lowerCentralSeriesLast R L L := by
+  rw [lowerCentralSeriesLast]
+  revert h
+  cases nilpotencyLength R L L
+  · simp
+  · simp
+
+end LieModule
+
 -- TODO Where should this go?
 instance {K M : Type*} [DivisionRing K] [AddCommGroup M] [Module K M] [FiniteDimensional K M] :
     IsNoetherian K M :=
   IsNoetherian.iff_fg.mpr inferInstance
+
+end move_and_fix
 
 variable (K R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
@@ -194,25 +249,35 @@ lemma traceForm_eq_sum_weightSpace :
     LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
   exact Finset.sum_congr (by simp) (fun χ _ ↦ rfl)
 
-lemma lowerCentralSeriesLast_le_ker_traceForm :
+lemma lowerCentralSeriesLast_le_ker_traceForm (hL : ¬ IsLieAbelian L) :
     lowerCentralSeriesLast K L L ≤ LinearMap.ker (traceForm K L M) := by
   rintro z (hz : z ∈ lowerCentralSeriesLast K L L)
+  replace hL : 1 < nilpotencyLength K L L := one_lt_nilpotencyLength_of_not_isTrivial K L L hL
   suffices ∀ χ : L → K, traceForm K L (weightSpace M χ) z = 0 by
     simp [traceForm_eq_sum_weightSpace K L M, this]
   intro χ
+  have hz' : LinearMap.trace K _ (toEndomorphism K L (weightSpace M χ) z) = 0 := by
+    apply trace_toEndomorphism_eq_zero_of_mem_lcs (Nat.le_sub_one_of_lt hL)
+    rwa [yawn (Nat.one_le_of_lt hL)]
   ext x
-  simp only [LinearMap.zero_apply]
-  have hz' : z ∈ LieAlgebra.center K L := lowerCentralSeriesLast_le_max_triv K L L hz
-  sorry
+  rw [LinearMap.zero_apply, traceForm_apply_apply, foo (f := toEndomorphism K L (weightSpace M χ) z)
+    (g := toEndomorphism K L (weightSpace M χ) x) (χ x), hz', mul_zero]
+  · exact commute_toEndomorphism_of_mem_center_left (lowerCentralSeriesLast_le_max_triv K L L hz) x
+  · obtain ⟨k, hk⟩ : _root_.IsNilpotent
+        (toEndomorphism K L (weightSpaceOf M (χ x) x) x - algebraMap K _ (χ x)) := by
+      exact (toEndomorphism K L M x).isNilpotent_restrict_iSup_sub_algebraMap (χ x)
+    use k
+    -- yawn (easy)
+    sorry
 
 lemma isLieAbelian_of_ker_traceForm_eq_bot (h : LinearMap.ker (traceForm K L M) = ⊥) :
     IsLieAbelian L := by
-  have : ¬ Nontrivial (lowerCentralSeriesLast K L L) := by
-    rw [not_nontrivial_iff_subsingleton, Submodule.subsingleton_iff_eq_bot, ← le_bot_iff, ← h]
-    exact lowerCentralSeriesLast_le_ker_traceForm K L M
   nontriviality L
-  have contra := nontrivial_lowerCentralSeriesLast K L L
-  contradiction
+  by_contra contra
+  suffices ¬ Nontrivial (lowerCentralSeriesLast K L L) by
+    exact this (nontrivial_lowerCentralSeriesLast K L L)
+  rw [not_nontrivial_iff_subsingleton, Submodule.subsingleton_iff_eq_bot, ← le_bot_iff, ← h]
+  exact lowerCentralSeriesLast_le_ker_traceForm K L M contra
 
 end finite_dimensional
 

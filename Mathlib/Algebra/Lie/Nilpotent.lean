@@ -325,6 +325,7 @@ noncomputable def nilpotencyLength : ℕ :=
   sInf {k | lowerCentralSeries R L M k = ⊥}
 #align lie_module.nilpotency_length LieModule.nilpotencyLength
 
+@[simp]
 theorem nilpotencyLength_eq_zero_iff [IsNilpotent R L M] :
     nilpotencyLength R L M = 0 ↔ Subsingleton M := by
   let s := {k | lowerCentralSeries R L M k = ⊥}
@@ -349,6 +350,25 @@ theorem nilpotencyLength_eq_succ_iff (k : ℕ) :
     exact eq_bot_iff.mpr (h₁ ▸ antitone_lowerCentralSeries R L M h₁₂)
   exact Nat.sInf_upward_closed_eq_succ_iff hs k
 #align lie_module.nilpotency_length_eq_succ_iff LieModule.nilpotencyLength_eq_succ_iff
+
+@[simp]
+theorem nilpotencyLength_eq_one_iff [IsNilpotent R L M] [Nontrivial M] :
+    nilpotencyLength R L M = 1 ↔ IsTrivial L M := by
+  rw [nilpotencyLength_eq_succ_iff, ← trivial_iff_lower_central_eq_bot]
+  simp
+
+theorem isTrivial_of_nilpotencyLength_le_one [IsNilpotent R L M] (h : nilpotencyLength R L M ≤ 1) :
+    IsTrivial L M := by
+  nontriviality M
+  cases' Nat.le_one_iff_eq_zero_or_eq_one.mp h with h h
+  · rw [nilpotencyLength_eq_zero_iff] at h; infer_instance
+  · rwa [nilpotencyLength_eq_one_iff] at h
+
+theorem one_lt_nilpotencyLength_of_not_isTrivial [IsNilpotent R L M] (h : ¬ IsTrivial L M) :
+    1 < nilpotencyLength R L M := by
+  by_contra contra
+  have := isTrivial_of_nilpotencyLength_le_one R L M (not_lt.mp contra)
+  contradiction
 
 /-- Given a non-trivial nilpotent Lie module `M` with lower central series
 `M = C₀ ≥ C₁ ≥ ⋯ ≥ Cₖ = ⊥`, this is the `k-1`th term in the lower central series (the last
