@@ -239,10 +239,10 @@ variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
 variable (L)
 
 /-- If x is algebraic over K, then x is algebraic over L when L is an extension of K -/
-theorem isAlgebraic_of_larger_base {x : A} (A_alg : IsAlgebraic K x) :
+theorem IsAlgebraic.of_larger_base {x : A} (A_alg : IsAlgebraic K x) :
     IsAlgebraic L x :=
   IsAlgebraic.of_larger_base_of_injective (algebraMap K L).injective A_alg
-#align is_algebraic_of_larger_base isAlgebraic_of_larger_base
+#align is_algebraic_of_larger_base IsAlgebraic.of_larger_base
 
 /-- If A is an algebraic algebra over K, then A is algebraic over L when L is an extension of K -/
 theorem Algebra.isAlgebraic_of_larger_base (A_alg : IsAlgebraic K A) : IsAlgebraic L A :=
@@ -251,8 +251,8 @@ theorem Algebra.isAlgebraic_of_larger_base (A_alg : IsAlgebraic K A) : IsAlgebra
 
 variable (K)
 
-theorem isAlgebraic_of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e :=
-  isAlgebraic_iff_isIntegral.mpr (isIntegral_of_finite K e)
+theorem IsAlgebraic.of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e :=
+  isAlgebraic_iff_isIntegral.mpr (IsIntegral.of_finite K e)
 
 variable (A)
 
