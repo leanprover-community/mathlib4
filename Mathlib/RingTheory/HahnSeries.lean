@@ -1204,7 +1204,7 @@ theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
 
 theorem ofPowerSeries_X_pow (n : ℕ) :
     ofPowerSeries Γ R (PowerSeries.X ^ n) = single (n : Γ) 1 := by
-  simp
+  simp [map_pow (ofPowerSeries Γ R)]
 
 -- Lemmas about converting hahn_series over fintype to and from mv_power_series
 /-- The ring `HahnSeries (σ →₀ ℕ) R` is isomorphic to `MvPowerSeries σ R` for a `Fintype` `σ`.
