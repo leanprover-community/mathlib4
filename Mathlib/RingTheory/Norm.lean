@@ -321,7 +321,7 @@ theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L
 
 theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSeparable K L]
     [FiniteDimensional K L] {x : L} (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
-  have hx' : IsIntegral K x := isIntegral_of_isScalarTower hx
+  have hx' : IsIntegral K x := hx.tower_top
   rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure L)).injective, norm_eq_prod_roots]
   · refine' (IsIntegral.multiset_prod fun y hy => _).pow _
     rw [mem_roots_map (minpoly.ne_zero hx')] at hy

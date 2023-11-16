@@ -96,7 +96,7 @@ theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
     cases' h.out x with hx hhx
     rw [algebraMap_eq F K E] at hhx
     exact
-      ⟨isIntegral_of_isScalarTower hx,
+      ⟨hx.tower_top,
         Polynomial.splits_of_splits_of_dvd (algebraMap K E)
           (Polynomial.map_ne_zero (minpoly.ne_zero hx))
           ((Polynomial.splits_map_iff (algebraMap F K) (algebraMap K E)).mpr hhx)
@@ -320,7 +320,7 @@ noncomputable def AlgHom.liftNormal [h : Normal F E] : E →ₐ[F] E :=
     Nonempty.some <|
       @IntermediateField.nonempty_algHom_of_adjoin_splits _ _ _ _ _ _ _
         ((IsScalarTower.toAlgHom F K₂ E).comp ϕ).toRingHom.toAlgebra _
-        (fun x _ => ⟨isIntegral_of_isScalarTower (h.out x).1,
+        (fun x _ ↦ ⟨(h.out x).1.tower_top,
           splits_of_splits_of_dvd _ (map_ne_zero (minpoly.ne_zero (h.out x).1))
             -- Porting note: had to override typeclass inference below using `(_)`
             (by rw [splits_map_iff, ← @IsScalarTower.algebraMap_eq _ _ _ _ _ _ (_) (_) (_)];

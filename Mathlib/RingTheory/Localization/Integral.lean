@@ -345,7 +345,7 @@ the integral closure `C` of `A` in `L` has fraction field `L`. -/
 theorem isFractionRing_of_finite_extension [Algebra K L] [IsScalarTower A K L]
     [FiniteDimensional K L] : IsFractionRing C L :=
   isFractionRing_of_algebraic A C
-    (IsFractionRing.comap_isAlgebraic_iff.mpr (isAlgebraic_of_finite K L)) fun _ hx =>
+    (IsFractionRing.comap_isAlgebraic_iff.mpr (Algebra.IsAlgebraic.of_finite K L)) fun _ hx =>
     IsFractionRing.to_map_eq_zero_iff.mp
       ((_root_.map_eq_zero <|
           algebraMap K L).mp <| (IsScalarTower.algebraMap_apply _ _ _ _).symm.trans hx)

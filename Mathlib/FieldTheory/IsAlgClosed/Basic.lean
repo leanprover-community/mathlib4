@@ -310,7 +310,7 @@ variable [Algebra K J] [Algebra J L] [IsAlgClosure J L] [Algebra K L] [IsScalarT
 /-- If `J` is an algebraic extension of `K` and `L` is an algebraic closure of `J`, then it is
   also an algebraic closure of `K`. -/
 theorem ofAlgebraic (hKJ : Algebra.IsAlgebraic K J) : IsAlgClosure K L :=
-  ⟨IsAlgClosure.alg_closed J, Algebra.isAlgebraic_trans hKJ IsAlgClosure.algebraic⟩
+  ⟨IsAlgClosure.alg_closed J, hKJ.trans IsAlgClosure.algebraic⟩
 #align is_alg_closure.of_algebraic IsAlgClosure.ofAlgebraic
 
 /-- A (random) isomorphism between an algebraic closure of `R` and an algebraic closure of
@@ -330,7 +330,7 @@ noncomputable def equivOfAlgebraic' [Nontrivial S] [NoZeroSMulDivisors R S]
 /-- A (random) isomorphism between an algebraic closure of `K` and an algebraic closure
   of an algebraic extension of `K` -/
 noncomputable def equivOfAlgebraic (hKJ : Algebra.IsAlgebraic K J) : L ≃ₐ[K] M :=
-  equivOfAlgebraic' K J _ _ (Algebra.isAlgebraic_trans hKJ IsAlgClosure.algebraic)
+  equivOfAlgebraic' K J _ _ (hKJ.trans IsAlgClosure.algebraic)
 #align is_alg_closure.equiv_of_algebraic IsAlgClosure.equivOfAlgebraic
 
 end EquivOfAlgebraic
@@ -351,11 +351,10 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
   haveI : IsScalarTower S R L :=
     IsScalarTower.of_algebraMap_eq (by simp [RingHom.algebraMap_toAlgebra])
   haveI : NoZeroSMulDivisors R S := NoZeroSMulDivisors.of_algebraMap_injective hSR.symm.injective
-  refine'
+  refine
     ⟨equivOfAlgebraic' R S L M
-        (Algebra.isAlgebraic_of_larger_base_of_injective
-          (show Function.Injective (algebraMap S R) from hSR.injective) IsAlgClosure.algebraic),
-      _⟩
+        (IsAlgClosure.algebraic.larger_base_of_injective
+          (show Function.Injective (algebraMap S R) from hSR.injective)), ?_⟩
   ext x
   simp only [RingEquiv.toRingHom_eq_coe, Function.comp_apply, RingHom.coe_comp,
     AlgEquiv.coe_ringEquiv, RingEquiv.coe_toRingHom]

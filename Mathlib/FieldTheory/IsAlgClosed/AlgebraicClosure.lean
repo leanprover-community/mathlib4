@@ -284,7 +284,7 @@ theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
     unfold RingHom.toAlgebra'
     simp only
     rw [toStepOfLE.succ k a a.zero_le]
-    apply @RingHom.isIntegral_trans (Step k 0) (Step k a) (Step k (a + 1)) _ _ _
+    apply @RingHom.IsIntegral.trans (Step k 0) (Step k a) (Step k (a + 1)) _ _ _
         (toStepOfLE k 0 a (a.zero_le : 0 ≤ a)) (toStepSucc k a) _
     · intro z
       have := AdjoinMonic.isIntegral (Step k a) (z : Step k (a + 1))

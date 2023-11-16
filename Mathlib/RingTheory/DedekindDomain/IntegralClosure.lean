@@ -139,7 +139,7 @@ theorem exists_integral_multiples (s : Finset L) :
     rintro x ⟨⟩
   · rintro x s hx ⟨y, hy, hs⟩
     have := exists_integral_multiple
-      ((IsFractionRing.isAlgebraic_iff A K L).mpr (isAlgebraic_of_finite _ _ x))
+      ((IsFractionRing.isAlgebraic_iff A K L).mpr (.of_finite _ x))
       ((injective_iff_map_eq_zero (algebraMap A L)).mp ?_)
     rcases this with ⟨x', y', hy', hx'⟩
     refine' ⟨y * y', mul_ne_zero hy hy', fun x'' hx'' => _⟩

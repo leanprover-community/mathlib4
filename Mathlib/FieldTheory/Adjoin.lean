@@ -624,7 +624,8 @@ theorem sup_toSubalgebra [h1 : FiniteDimensional K E1] [h2 : FiniteDimensional K
       exact (congr_arg (· ∈ S1 ⊔ S2) <| eq_inv_of_mul_eq_one_right <| Subtype.ext_iff.mp h).mp y.2
   exact
     isField_of_isIntegral_of_isField'
-      (isIntegral_sup.mpr ⟨Algebra.isIntegral_of_finite K E1, Algebra.isIntegral_of_finite K E2⟩)
+      (Algebra.isIntegral_sup.mpr
+        ⟨Algebra.IsIntegral.of_finite K E1, Algebra.IsIntegral.of_finite K E2⟩)
       (Field.toIsField K)
 #align intermediate_field.sup_to_subalgebra IntermediateField.sup_toSubalgebra
 
@@ -977,7 +978,7 @@ theorem adjoin.finiteDimensional {x : L} (hx : IsIntegral K x) : FiniteDimension
 #align intermediate_field.adjoin.finite_dimensional IntermediateField.adjoin.finiteDimensional
 
 theorem isAlgebraic_adjoin_simple {x : L} (hx : IsIntegral K x) : Algebra.IsAlgebraic K K⟮x⟯ :=
-  have := adjoin.finiteDimensional hx; Algebra.isAlgebraic_of_finite K K⟮x⟯
+  have := adjoin.finiteDimensional hx; Algebra.IsAlgebraic.of_finite K K⟮x⟯
 
 theorem adjoin.finrank {x : L} (hx : IsIntegral K x) :
     FiniteDimensional.finrank K K⟮x⟯ = (minpoly K x).natDegree := by
@@ -1016,7 +1017,7 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     g_lifts ((minpoly.monic <| IsIntegral.of_finite K α).map _)
   have dvd_p : minpoly K' α ∣ p
   · apply minpoly.dvd
-    rw [aeval_def, eval₂_eq_eval_map, hp.1, ← eval₂_eq_eval_map, ← aeval_def]
+    erw [aeval_def, eval₂_eq_eval_map, g.map_toSubring K'.toSubring, eval_map, ← aeval_def]
     exact minpoly.aeval K α
   have finrank_eq : ∀ K : IntermediateField F E, finrank K E = natDegree (minpoly K α)
   · intro K
@@ -1025,8 +1026,9 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     exact this
   refine eq_of_le_of_finrank_le' hsub ?_
   simp_rw [finrank_eq]
-  convert natDegree_le_of_dvd dvd_p hp.2.2.ne_zero using 1
-  rw [hp.2.1, natDegree_map]
+  convert natDegree_le_of_dvd dvd_g
+    ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
+  rw [natDegree_toSubring, natDegree_map]
 
 theorem _root_.minpoly.natDegree_le (x : L) [FiniteDimensional K L] :
     (minpoly K x).natDegree ≤ finrank K L :=
@@ -1048,7 +1050,7 @@ theorem isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
   rw [isAlgebraic_iff, Subtype.coe_mk, ← Subtype.coe_mk (p := (· ∈ _)) x hx, ← isAlgebraic_iff]
   haveI : ∀ i : Σ i, t i, FiniteDimensional K K⟮(i.2 : L)⟯ := fun ⟨i, x⟩ ↦
     adjoin.finiteDimensional (isIntegral_iff.1 (isAlgebraic_iff_isIntegral.1 (h i x)))
-  apply Algebra.isAlgebraic_of_finite
+  apply Algebra.IsAlgebraic.of_finite
 #align intermediate_field.is_algebraic_supr IntermediateField.isAlgebraic_iSup
 
 theorem isAlgebraic_adjoin {S : Set L} (hS : ∀ x ∈ S, IsIntegral K x) :
@@ -1211,7 +1213,7 @@ theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ �
   whose carrier contains `s`. -/
 theorem Lifts.exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
     (h2 : (minpoly F s).Splits (algebraMap F K)) : ∃ y, x ≤ y ∧ s ∈ y.carrier :=
-  have I1 : IsIntegral x.carrier s := isIntegral_of_isScalarTower h1
+  have I1 : IsIntegral x.carrier s := h1.tower_top
   have I2 := (minpoly.degree_pos I1).ne'
   have key : (minpoly x.carrier s).Splits x.emb.toRingHom :=
     splits_of_splits_of_dvd _ (map_ne_zero (minpoly.ne_zero h1))

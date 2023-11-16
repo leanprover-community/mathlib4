@@ -141,7 +141,7 @@ protected theorem IsAlgebraic.algebraMap {a : S} :
   ⟨f, hf₁, by rw [aeval_algebraMap_apply, hf₂, map_zero]⟩
 #align is_algebraic_algebra_map_of_is_algebraic IsAlgebraic.algebraMap
 
-/-- This is slightly more general than `isAlgebraic_algebraMap_of_isAlgebraic` in that it
+/-- This is slightly more general than `IsAlgebraic.algebraMap` in that it
   allows noncommutative intermediate rings `A`. -/
 protected theorem IsAlgebraic.algHom {B} [Ring B] [Algebra R B] (f : A →ₐ[R] B) {a : A}
     (h : IsAlgebraic R a) : IsAlgebraic R (f a) :=
@@ -201,7 +201,7 @@ end Field
 
 section
 
-variable {K : Type*} {L : Type*} {R : Type*} {S : Type*} {A : Type*}
+variable {K L R S A : Type*}
 
 section Ring
 
@@ -245,9 +245,9 @@ theorem IsAlgebraic.of_larger_base {x : A} (A_alg : IsAlgebraic K x) :
 #align is_algebraic_of_larger_base IsAlgebraic.of_larger_base
 
 /-- If A is an algebraic algebra over K, then A is algebraic over L when L is an extension of K -/
-theorem Algebra.isAlgebraic_of_larger_base (A_alg : IsAlgebraic K A) : IsAlgebraic L A :=
-  isAlgebraic_of_larger_base_of_injective (algebraMap K L).injective A_alg
-#align algebra.is_algebraic_of_larger_base Algebra.isAlgebraic_of_larger_base
+theorem Algebra.IsAlgebraic.larger_base (A_alg : IsAlgebraic K A) : IsAlgebraic L A :=
+  A_alg.larger_base_of_injective (algebraMap K L).injective
+#align algebra.is_algebraic_of_larger_base Algebra.IsAlgebraic.larger_base
 
 variable (K)
 
@@ -257,9 +257,9 @@ theorem IsAlgebraic.of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e 
 variable (A)
 
 /-- A field extension is algebraic if it is finite. -/
-theorem Algebra.isAlgebraic_of_finite [FiniteDimensional K A] : IsAlgebraic K A :=
-  Algebra.isAlgebraic_iff_isIntegral.mpr (isIntegral_of_finite K A)
-#align algebra.is_algebraic_of_finite Algebra.isAlgebraic_of_finite
+theorem Algebra.IsAlgebraic.of_finite [FiniteDimensional K A] : IsAlgebraic K A :=
+  Algebra.isAlgebraic_iff_isIntegral.mpr <| .of_finite K
+#align algebra.is_algebraic_of_finite Algebra.IsAlgebraic.of_finite
 
 end Field
 
@@ -267,27 +267,29 @@ end Ring
 
 section CommRing
 
-variable [Field K] [Field L] [CommRing A]
+variable [Field K] [Field L] [Ring A]
 
 variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
 
 /-- If L is an algebraic field extension of K and A is an algebraic algebra over L,
 then A is algebraic over K. -/
-theorem Algebra.isAlgebraic_trans (L_alg : IsAlgebraic K L) (A_alg : IsAlgebraic L A) :
+protected theorem Algebra.IsAlgebraic.trans (L_alg : IsAlgebraic K L) (A_alg : IsAlgebraic L A) :
     IsAlgebraic K A := by
-  simp only [IsAlgebraic, isAlgebraic_iff_isIntegral] at L_alg A_alg ⊢
-  exact isIntegral_trans L_alg A_alg
-#align algebra.is_algebraic_trans Algebra.isAlgebraic_trans
+  rw [Algebra.isAlgebraic_iff_isIntegral] at L_alg A_alg ⊢
+  exact L_alg.trans A_alg
+#align algebra.is_algebraic_trans Algebra.IsAlgebraic.trans
 
 end CommRing
 
 section NoZeroSMulDivisors
 
+namespace Algebra.IsAlgebraic
+
 variable [CommRing K] [Field L]
 
 variable [Algebra K L] [NoZeroSMulDivisors K L]
 
-theorem Algebra.IsAlgebraic.algHom_bijective (ha : Algebra.IsAlgebraic K L) (f : L →ₐ[K] L) :
+theorem algHom_bijective (ha : Algebra.IsAlgebraic K L) (f : L →ₐ[K] L) :
     Function.Bijective f := by
   refine' ⟨f.injective, fun b ↦ _⟩
   obtain ⟨p, hp, he⟩ := ha b
@@ -298,17 +300,17 @@ theorem Algebra.IsAlgebraic.algHom_bijective (ha : Algebra.IsAlgebraic K L) (f :
   exact ⟨a, Subtype.ext_iff.1 ha⟩
 #align algebra.is_algebraic.alg_hom_bijective Algebra.IsAlgebraic.algHom_bijective
 
-theorem Algebra.IsAlgebraic.algHom_bijective₂ [Field R] [Algebra K R]
+theorem algHom_bijective₂ [Field R] [Algebra K R]
     (ha : Algebra.IsAlgebraic K L) (f : L →ₐ[K] R) (g : R →ₐ[K] L) :
     Function.Bijective f ∧ Function.Bijective g :=
   (g.injective.bijective₂_of_surjective f.injective (ha.algHom_bijective <| g.comp f).2).symm
 
-theorem Algebra.IsAlgebraic.bijective_of_isScalarTower (ha : Algebra.IsAlgebraic K L)
+theorem bijective_of_isScalarTower (ha : Algebra.IsAlgebraic K L)
     [Field R] [Algebra K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
     Function.Bijective f :=
   (ha.algHom_bijective₂ (IsScalarTower.toAlgHom K L R) f).2
 
-theorem Algebra.IsAlgebraic.bijective_of_isScalarTower' [Field R] [Algebra K R]
+theorem bijective_of_isScalarTower' [Field R] [Algebra K R]
     [NoZeroSMulDivisors K R]
     (ha : Algebra.IsAlgebraic K R) [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
     Function.Bijective f :=
@@ -318,18 +320,16 @@ variable (K L)
 
 /-- Bijection between algebra equivalences and algebra homomorphisms -/
 @[simps]
-noncomputable def Algebra.IsAlgebraic.algEquivEquivAlgHom (ha : Algebra.IsAlgebraic K L) :
+noncomputable def algEquivEquivAlgHom (ha : Algebra.IsAlgebraic K L) :
     (L ≃ₐ[K] L) ≃* (L →ₐ[K] L) where
   toFun ϕ := ϕ.toAlgHom
   invFun ϕ := AlgEquiv.ofBijective ϕ (ha.algHom_bijective ϕ)
-  left_inv _ := by
-    ext
-    rfl
-  right_inv _ := by
-    ext
-    rfl
+  left_inv _ := by ext; rfl
+  right_inv _ := by ext; rfl
   map_mul' _ _ := rfl
 #align algebra.is_algebraic.alg_equiv_equiv_alg_hom Algebra.IsAlgebraic.algEquivEquivAlgHom
+
+end Algebra.IsAlgebraic
 
 end NoZeroSMulDivisors
 
@@ -340,7 +340,7 @@ variable [Field K] [Field L]
 variable [Algebra K L]
 
 theorem AlgHom.bijective [FiniteDimensional K L] (ϕ : L →ₐ[K] L) : Function.Bijective ϕ :=
-  (Algebra.isAlgebraic_of_finite K L).algHom_bijective ϕ
+  (Algebra.IsAlgebraic.of_finite K L).algHom_bijective ϕ
 #align alg_hom.bijective AlgHom.bijective
 
 variable (K L)
@@ -349,7 +349,7 @@ variable (K L)
 @[reducible]
 noncomputable def algEquivEquivAlgHom [FiniteDimensional K L] :
     (L ≃ₐ[K] L) ≃* (L →ₐ[K] L) :=
-  (Algebra.isAlgebraic_of_finite K L).algEquivEquivAlgHom K L
+  (Algebra.IsAlgebraic.of_finite K L).algEquivEquivAlgHom K L
 #align alg_equiv_equiv_alg_hom algEquivEquivAlgHom
 
 end Field
