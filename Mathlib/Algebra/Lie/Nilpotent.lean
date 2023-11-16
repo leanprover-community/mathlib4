@@ -352,7 +352,7 @@ theorem nilpotencyLength_eq_succ_iff (k : ℕ) :
 #align lie_module.nilpotency_length_eq_succ_iff LieModule.nilpotencyLength_eq_succ_iff
 
 @[simp]
-theorem nilpotencyLength_eq_one_iff [IsNilpotent R L M] [Nontrivial M] :
+theorem nilpotencyLength_eq_one_iff [Nontrivial M] :
     nilpotencyLength R L M = 1 ↔ IsTrivial L M := by
   rw [nilpotencyLength_eq_succ_iff, ← trivial_iff_lower_central_eq_bot]
   simp
