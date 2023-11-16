@@ -86,7 +86,7 @@ end
 
 section zero_ne_one
 
-variable (R : Type u) {S : Type*} {A : Type v} [CommRing R]
+variable {R : Type u} {S : Type*} {A : Type v} [CommRing R]
 
 variable [CommRing S] [Ring A] [Algebra R A] [Algebra R S] [Algebra S A]
 
@@ -99,8 +99,6 @@ theorem IsIntegral.isAlgebraic [Nontrivial R] {x : A} : IsIntegral R x → IsAlg
 
 theorem Algebra.IsIntegral.isAlgebraic [Nontrivial R] (h : Algebra.IsIntegral R A) :
     Algebra.IsAlgebraic R A := fun a ↦ (h a).isAlgebraic
-
-variable {R}
 
 theorem isAlgebraic_zero [Nontrivial R] : IsAlgebraic R (0 : A) :=
   ⟨_, X_ne_zero, aeval_X 0⟩
@@ -189,7 +187,7 @@ variable {K : Type u} {A : Type v} [Field K] [Ring A] [Algebra K A]
 
 /-- An element of an algebra over a field is algebraic if and only if it is integral.-/
 theorem isAlgebraic_iff_isIntegral {x : A} : IsAlgebraic K x ↔ IsIntegral K x := by
-  refine' ⟨_, IsIntegral.isAlgebraic K⟩
+  refine' ⟨_, IsIntegral.isAlgebraic⟩
   rintro ⟨p, hp, hpx⟩
   refine' ⟨_, monic_mul_leadingCoeff_inv hp, _⟩
   rw [← aeval_def, AlgHom.map_mul, hpx, zero_mul]

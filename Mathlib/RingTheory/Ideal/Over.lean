@@ -269,7 +269,7 @@ theorem comap_ne_bot_of_algebraic_mem [IsDomain S] {x : S} (x_ne_zero : x ≠ 0)
 
 theorem comap_ne_bot_of_integral_mem [Nontrivial R] [IsDomain S] {x : S} (x_ne_zero : x ≠ 0)
     (x_mem : x ∈ I) (hx : IsIntegral R x) : I.comap (algebraMap R S) ≠ ⊥ :=
-  comap_ne_bot_of_algebraic_mem x_ne_zero x_mem (hx.isAlgebraic R)
+  comap_ne_bot_of_algebraic_mem x_ne_zero x_mem hx.isAlgebraic
 #align ideal.comap_ne_bot_of_integral_mem Ideal.comap_ne_bot_of_integral_mem
 
 theorem eq_bot_of_comap_eq_bot [Nontrivial R] [IsDomain S] (hRS : Algebra.IsIntegral R S)

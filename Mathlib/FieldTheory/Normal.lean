@@ -55,7 +55,7 @@ theorem Normal.splits (_ : Normal F K) (x : K) : Splits (algebraMap F K) (minpol
 
 theorem normal_iff : Normal F K ↔ ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
   ⟨fun h x => ⟨h.isIntegral x, h.splits x⟩, fun h =>
-    ⟨fun x => (h x).1.isAlgebraic F, fun x => (h x).2⟩⟩
+    ⟨fun x => (h x).1.isAlgebraic, fun x => (h x).2⟩⟩
 #align normal_iff normal_iff
 
 theorem Normal.out : Normal F K → ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
