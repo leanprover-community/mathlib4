@@ -5,7 +5,6 @@ Authors: Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
-import Mathlib.Topology.IndicatorConstPointwise
 
 /-!
 # Results about indicator functions, their integrals, and measures

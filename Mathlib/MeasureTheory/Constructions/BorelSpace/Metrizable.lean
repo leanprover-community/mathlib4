@@ -195,7 +195,7 @@ lemma nullMeasurableSet_of_tendsto_indicator [NeBot L] {μ : Measure α}
     (h_lim : ∀ᵐ x ∂μ, ∀ᶠ i in L, x ∈ As i ↔ x ∈ A) :
     NullMeasurableSet A μ := by
   simp_rw [← aemeasurable_indicator_const_iff (1 : ℝ≥0∞)] at As_mble ⊢
-  exact aemeasurable_of_tendsto_metrizable_ae L As_mble
-    ((ae_tendsto_indicator_const_iff_ae_eventually L (1 : ℝ≥0∞)).mpr h_lim)
+  apply aemeasurable_of_tendsto_metrizable_ae L As_mble
+  simpa [tendsto_indicator_const_apply_iff_forall_eventually] using h_lim
 
 end TendstoIndicator
