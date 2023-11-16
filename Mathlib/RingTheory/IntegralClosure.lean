@@ -191,7 +191,7 @@ theorem IsIntegral.of_subring {x : A} (T : Subring R) (hx : IsIntegral T x) : Is
   isIntegral_of_isScalarTower hx
 #align is_integral_of_subring IsIntegral.of_subring
 
-theorem IsIntegral.algebraMap [Algebra A B] [IsScalarTower R A B] {x : A} (h : IsIntegral R x) :
+protected theorem IsIntegral.algebraMap [Algebra A B] [IsScalarTower R A B] {x : A} (h : IsIntegral R x) :
     IsIntegral R (algebraMap A B x) := by
   rcases h with ⟨f, hf, hx⟩
   use f, hf
