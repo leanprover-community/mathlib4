@@ -313,6 +313,113 @@ protected lemma add {f g : ℝ → ℝ} (hf : GrowsPolynomially f) (hg : GrowsPo
                           · exact (hf u hu).2
                           · exact (hg u hu).2
 
+protected lemma add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomially f) (hfg : g =o[atTop] f) :
+    GrowsPolynomially fun x => f x + g x := by
+  intro b hb
+  have hb_lb := hb.1
+  have hb_ub := hb.2
+  rw [isLittleO_iff] at hfg
+  rcases eventually_atTop_nonneg_or_nonpos hf with hf'|hf'
+  case inl =>
+    have hf := hf b hb
+    obtain ⟨c₁, hc₁_mem : 0 < c₁, c₂, hc₂_mem : 0 < c₂, hf⟩ := hf
+    specialize hfg (c := 1/2) (by norm_num)
+    refine ⟨c₁ / 3, by rw [Set.mem_Ioi]; positivity, 3*c₂, by rw [Set.mem_Ioi]; positivity, ?_⟩
+    filter_upwards [hf,
+                    (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hfg,
+                    (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hf',
+                    eventually_ge_atTop 0] with x hf₁ hfg' hf₂ hx_nonneg
+    have hbx : b * x ≤ x := by nth_rewrite 2 [←one_mul x]; gcongr
+    have hfg₂ : ‖g x‖ ≤ 1/2 * f x := by
+      calc ‖g x‖ ≤ 1/2 * ‖f x‖ := hfg' x hbx
+           _ = 1/2 * f x := by congr; exact norm_of_nonneg (hf₂ _ hbx)
+    have hx_ub : f x + g x ≤ 3/2 * f x := by
+      calc _ ≤ f x + ‖g x‖ := by gcongr; exact le_norm_self (g x)
+           _ ≤ f x + 1/2 * f x := by gcongr
+           _ = 3/2 * f x := by ring
+    have hx_lb : 1/2 * f x ≤ f x + g x := by
+      calc f x + g x ≥ f x - ‖g x‖ := by
+                rw [sub_eq_add_neg, norm_eq_abs]; gcongr; exact neg_abs_le_self (g x)
+           _ ≥ f x - 1/2 * f x := by gcongr
+           _ = 1/2 * f x := by ring
+    intro u ⟨hu_lb, hu_ub⟩
+    have hfu_nonneg : 0 ≤ f u := hf₂ _ hu_lb
+    have hfg₃ : ‖g u‖ ≤ 1/2 * f u := by
+      calc ‖g u‖ ≤ 1/2 * ‖f u‖ := hfg' _ hu_lb
+           _ = 1/2 * f u := by congr; simp only [norm_eq_abs, abs_eq_self, hfu_nonneg]
+    refine ⟨?lb, ?ub⟩
+    case lb =>
+      calc f u + g u ≥ f u - ‖g u‖ := by
+                  rw [sub_eq_add_neg, norm_eq_abs]; gcongr; exact neg_abs_le_self _
+           _ ≥ f u - 1/2 * f u := by gcongr
+           _ = 1/2 * f u := by ring
+           _ ≥ 1/2 * (c₁ * f x) := by gcongr; exact (hf₁ u ⟨hu_lb, hu_ub⟩).1
+           _ = c₁/3 * (3/2 * f x) := by ring
+           _ ≥ c₁/3 * (f x + g x) := by gcongr
+    case ub =>
+      calc _ ≤ f u + ‖g u‖ := by gcongr; exact le_norm_self (g u)
+           _ ≤ f u + 1/2 * f u := by gcongr
+           _ = 3/2 * f u := by ring
+           _ ≤ 3/2 * (c₂ * f x) := by gcongr; exact (hf₁ u ⟨hu_lb, hu_ub⟩).2
+           _ = 3*c₂ * (1/2 * f x) := by ring
+           _ ≤ 3*c₂ * (f x + g x) := by gcongr
+  case inr =>
+    have hf := hf b hb
+    obtain ⟨c₁, hc₁_mem : 0 < c₁, c₂, hc₂_mem : 0 < c₂, hf⟩ := hf
+    specialize hfg (c := 1/2) (by norm_num)
+    refine ⟨3*c₁, by rw [Set.mem_Ioi]; positivity, c₂/3, by rw [Set.mem_Ioi]; positivity, ?_⟩
+    filter_upwards [hf,
+                    (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hfg,
+                    (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hf',
+                    eventually_ge_atTop 0] with x hf₁ hfg' hf₂ hx_nonneg
+    have hbx : b * x ≤ x := by nth_rewrite 2 [←one_mul x]; gcongr
+    have hfg₂ : ‖g x‖ ≤ -1/2 * f x := by
+      calc ‖g x‖ ≤ 1/2 * ‖f x‖ := hfg' x hbx
+           _ = 1/2 * (-f x) := by congr; exact norm_of_nonpos (hf₂ x hbx)
+           _ = _ := by ring
+    have hx_ub : f x + g x ≤ 1/2 * f x := by
+      calc _ ≤ f x + ‖g x‖ := by gcongr; exact le_norm_self (g x)
+           _ ≤ f x + (-1/2 * f x) := by gcongr
+           _ = 1/2 * f x := by ring
+    have hx_lb : 3/2 * f x ≤ f x + g x := by
+      calc f x + g x ≥ f x - ‖g x‖ := by
+                rw [sub_eq_add_neg, norm_eq_abs]; gcongr; exact neg_abs_le_self (g x)
+           _ ≥ f x + 1/2 * f x := by
+                  rw [sub_eq_add_neg]
+                  gcongr
+                  refine le_of_neg_le_neg ?bc.a
+                  rwa [neg_neg, ←neg_mul, ←neg_div]
+           _ = 3/2 * f x := by ring
+    intro u ⟨hu_lb, hu_ub⟩
+    have hfu_nonpos : f u ≤ 0:= hf₂ _ hu_lb
+    have hfg₃ : ‖g u‖ ≤ -1/2 * f u := by
+      calc ‖g u‖ ≤ 1/2 * ‖f u‖ := hfg' _ hu_lb
+           _ = 1/2 * (-f u) := by congr; exact norm_of_nonpos hfu_nonpos
+           _ = -1/2 * f u := by ring
+    refine ⟨?lb, ?ub⟩
+    case lb =>
+      calc f u + g u ≥ f u - ‖g u‖ := by
+                  rw [sub_eq_add_neg, norm_eq_abs]; gcongr; exact neg_abs_le_self _
+           _ ≥ f u + 1/2 * f u := by
+                  rw [sub_eq_add_neg]
+                  gcongr
+                  refine le_of_neg_le_neg ?_
+                  rwa [neg_neg, ←neg_mul, ←neg_div]
+           _ = 3/2 * f u := by ring
+           _ ≥ 3/2 * (c₁ * f x) := by gcongr; exact (hf₁ u ⟨hu_lb, hu_ub⟩).1
+           _ = 3*c₁ * (1/2 * f x) := by ring
+           _ ≥ 3*c₁ * (f x + g x) := by gcongr
+    case ub =>
+      calc _ ≤ f u + ‖g u‖ := by gcongr; exact le_norm_self (g u)
+           _ ≤ f u - 1/2 * f u := by
+                rw [sub_eq_add_neg]
+                gcongr
+                rwa [←neg_mul, ←neg_div]
+           _ = 1/2 * f u := by ring
+           _ ≤ 1/2 * (c₂ * f x) := by gcongr; exact (hf₁ u ⟨hu_lb, hu_ub⟩).2
+           _ = c₂/3 * (3/2 * f x) := by ring
+           _ ≤ c₂/3 * (f x + g x) := by gcongr
+
 protected lemma inv {f : ℝ → ℝ} (hf : GrowsPolynomially f) (hf' : ∀ᶠ x in atTop, f x ≠ 0) :
     GrowsPolynomially fun x => (f x)⁻¹ := by
   suffices : GrowsPolynomially fun x => |(f x)⁻¹|
@@ -478,10 +585,54 @@ lemma of_isTheta {f g : ℝ → ℝ} (hg : GrowsPolynomially g) (hf : f =Θ[atTo
                 rw [←Real.norm_of_nonneg (hf_pos x hbx)]
                 exact h_lb x hbx
 
-lemma of_isEquivalent {f g : ℝ → ℝ}
-    (hg : GrowsPolynomially g) (hf : f ~[atTop] g) (hf' : ∀ᶠ x in atTop, 0 ≤ f x) :
-    GrowsPolynomially f :=
-  of_isTheta hg hf.isTheta hf'
+--lemma of_isEquivalent {f g : ℝ → ℝ}
+--    (hg : GrowsPolynomially g) (hf : f ~[atTop] g) (hf' : ∀ᶠ x in atTop, 0 ≤ f x) :
+--    GrowsPolynomially f :=
+--  of_isTheta hg hf.isTheta hf'
+
+lemma of_isEquivalent {f g : ℝ → ℝ} (hg : GrowsPolynomially g) (hf : f ~[atTop] g) :
+    GrowsPolynomially f := by
+  intro b hb
+  have hg := hg b hb
+  obtain ⟨c₃, hc₃_mem, c₄, _, hg⟩ := hg
+  have c₃_pos : 0 < c₃ := hc₃_mem
+  refine ⟨c₃ / 2, ?_, ?_⟩
+  · sorry
+  refine ⟨2 * c₄, ?_, ?_⟩
+  · sorry
+  filter_upwards [hg, eventually_ge_atTop 0] with x hg hx_pos
+  intro u hu
+  have h_lb : (f - g) u ≤ (f - g) x := by sorry
+  have h_ub : (f - g) u ≤ c₄ * (f - g) u := by sorry
+  have h_decomp : f = g + (f - g) := by ext; simp
+  rw [h_decomp]
+  have hbx : b * x ≤ x := calc
+    b * x ≤ 1 * x := by gcongr; exact le_of_lt hb.2
+        _ = x := by ring
+  have fx_nonneg : 0 ≤ f x := hf' x hbx
+  have gx_nonneg : 0 ≤ g x := hg' x hbx
+  refine ⟨?lb, ?ub⟩
+  case lb => calc
+    min c₁ c₃ * (f x + g x) = min c₁ c₃ * f x + min c₁ c₃ * g x := by simp only [mul_add]
+      _ ≤ c₁ * f x + c₃ * g x := by
+              gcongr
+              · exact min_le_left _ _
+              · exact min_le_right _ _
+      _ ≤ f u + g u := by
+              gcongr
+              · exact (hf u hu).1
+              · exact (hg u hu).1
+  case ub => calc
+    max c₂ c₄ * (f x + g x) = max c₂ c₄ * f x + max c₂ c₄ * g x := by simp only [mul_add]
+      _ ≥ c₂ * f x + c₄ * g x := by gcongr
+                                    · exact le_max_left _ _
+                                    · exact le_max_right _ _
+      _ ≥ f u + g u := by gcongr
+                          · exact (hf u hu).2
+                          · exact (hg u hu).2
+
+  sorry
+
 
 lemma of_isEquivalent_const {f : ℝ → ℝ} {c : ℝ} (hc : 0 < c) (hf : f ~[atTop] fun _ => c) :
     GrowsPolynomially f :=
