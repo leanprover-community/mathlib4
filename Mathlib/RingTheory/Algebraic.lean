@@ -97,6 +97,9 @@ theorem IsIntegral.isAlgebraic [Nontrivial R] {x : A} : IsIntegral R x → IsAlg
   fun ⟨p, hp, hpx⟩ => ⟨p, hp.ne_zero, hpx⟩
 #align is_integral.is_algebraic IsIntegral.isAlgebraic
 
+theorem Algebra.IsIntegral.isAlgebraic [Nontrivial R] (h : Algebra.IsIntegral R A) :
+    Algebra.IsAlgebraic R A := fun a ↦ (h a).isAlgebraic
+
 variable {R}
 
 theorem isAlgebraic_zero [Nontrivial R] : IsAlgebraic R (0 : A) :=
@@ -194,8 +197,11 @@ theorem isAlgebraic_iff_isIntegral {x : A} : IsAlgebraic K x ↔ IsIntegral K x 
 
 protected theorem Algebra.isAlgebraic_iff_isIntegral :
     Algebra.IsAlgebraic K A ↔ Algebra.IsIntegral K A :=
-  ⟨fun h x => isAlgebraic_iff_isIntegral.mp (h x), fun h x => isAlgebraic_iff_isIntegral.mpr (h x)⟩
+  forall_congr' fun _ ↦ isAlgebraic_iff_isIntegral
 #align algebra.is_algebraic_iff_is_integral Algebra.isAlgebraic_iff_isIntegral
+
+alias ⟨IsAlgebraic.isIntegral, _⟩ := isAlgebraic_iff_isIntegral
+alias ⟨Algebra.IsAlgebraic.isIntegral, _⟩ := Algebra.isAlgebraic_iff_isIntegral
 
 end Field
 
@@ -252,13 +258,13 @@ theorem Algebra.IsAlgebraic.larger_base (A_alg : IsAlgebraic K A) : IsAlgebraic 
 variable (K)
 
 theorem IsAlgebraic.of_finite (e : A) [FiniteDimensional K A] : IsAlgebraic K e :=
-  isAlgebraic_iff_isIntegral.mpr (.of_finite K e)
+  (IsIntegral.of_finite K e).isAlgebraic
 
 variable (A)
 
 /-- A field extension is algebraic if it is finite. -/
 theorem Algebra.IsAlgebraic.of_finite [FiniteDimensional K A] : IsAlgebraic K A :=
-  Algebra.isAlgebraic_iff_isIntegral.mpr <| .of_finite K
+  (IsIntegral.of_finite K A).isAlgebraic
 #align algebra.is_algebraic_of_finite Algebra.IsAlgebraic.of_finite
 
 end Field

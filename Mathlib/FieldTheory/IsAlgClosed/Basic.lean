@@ -179,7 +179,7 @@ theorem algebraMap_surjective_of_isIntegral' {k K : Type*} [Field k] [CommRing K
 theorem algebraMap_surjective_of_isAlgebraic {k K : Type*} [Field k] [Ring K] [IsDomain K]
     [IsAlgClosed k] [Algebra k K] (hf : Algebra.IsAlgebraic k K) :
     Function.Surjective (algebraMap k K) :=
-  algebraMap_surjective_of_isIntegral (Algebra.isAlgebraic_iff_isIntegral.mp hf)
+  algebraMap_surjective_of_isIntegral hf.isIntegral
 #align is_alg_closed.algebra_map_surjective_of_is_algebraic IsAlgClosed.algebraMap_surjective_of_isAlgebraic
 
 end IsAlgClosed
@@ -204,8 +204,8 @@ instance (priority := 100) IsAlgClosure.normal (R K : Type*) [Field R] [Field K]
 
 instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field K] [Algebra R K]
     [IsAlgClosure R K] [CharZero R] : IsSeparable R K :=
-  ⟨fun _ => isAlgebraic_iff_isIntegral.mp (IsAlgClosure.algebraic _), fun _ =>
-    (minpoly.irreducible (isAlgebraic_iff_isIntegral.mp (IsAlgClosure.algebraic _))).separable⟩
+  ⟨fun _ => (IsAlgClosure.algebraic _).isIntegral, fun _ =>
+    (minpoly.irreducible (IsAlgClosure.algebraic _).isIntegral).separable⟩
 #align is_alg_closure.separable IsAlgClosure.separable
 
 namespace IsAlgClosed
@@ -216,7 +216,7 @@ variable (K : Type u) [Field K] (L : Type v) (M : Type w) [Field L] [Algebra K L
 /-- Less general version of `lift`. -/
 private noncomputable irreducible_def lift_aux : L →ₐ[K] M :=
   Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
-    (fun x _ ↦ ⟨isAlgebraic_iff_isIntegral.1 (hL x), splits_codomain (minpoly K x)⟩)
+    (fun x _ ↦ ⟨(hL x).isIntegral, splits_codomain (minpoly K x)⟩)
     (IntermediateField.adjoin_univ K L)
 
 variable {R : Type u} [CommRing R]
@@ -403,10 +403,9 @@ end IsAlgClosure
 theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly {F K} (A) [Field F] [Field K] [Field A]
     [IsAlgClosed A] [Algebra F K] (hK : Algebra.IsAlgebraic F K) [Algebra F A] (x : K) :
     (Set.range fun ψ : K →ₐ[F] A ↦ ψ x) = (minpoly F x).rootSet A := by
-  have hFK := Algebra.isAlgebraic_iff_isIntegral.1 hK
   ext a
-  rw [mem_rootSet_of_ne (minpoly.ne_zero (hFK x))]
+  rw [mem_rootSet_of_ne (minpoly.ne_zero (hK.isIntegral x))]
   refine ⟨fun ⟨ψ, hψ⟩ ↦ ?_, fun ha ↦ IntermediateField.exists_algHom_of_splits_of_aeval
-    (fun x ↦ ⟨hFK x, IsAlgClosed.splits_codomain _⟩) ha⟩
+    (fun x ↦ ⟨hK.isIntegral x, IsAlgClosed.splits_codomain _⟩) ha⟩
   rw [← hψ, aeval_algHom_apply ψ x, minpoly.aeval, map_zero]
 #align algebra.is_algebraic.range_eval_eq_root_set_minpoly Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly

@@ -774,7 +774,7 @@ theorem exists_finset_of_mem_supr'' {ι : Type*} {f : ι → IntermediateField F
     (subset_adjoin F (rootSet (minpoly F x1) E) _)
   · rw [IntermediateField.minpoly_eq, Subtype.coe_mk]
   · rw [mem_rootSet_of_ne, minpoly.aeval]
-    exact minpoly.ne_zero (isIntegral_iff.mp (isAlgebraic_iff_isIntegral.mp (h i ⟨x1, hx1⟩)))
+    exact minpoly.ne_zero (isIntegral_iff.mp (h i ⟨x1, hx1⟩).isIntegral)
 #align intermediate_field.exists_finset_of_mem_supr'' IntermediateField.exists_finset_of_mem_supr''
 
 end AdjoinSimple
@@ -1041,7 +1041,7 @@ theorem isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
   obtain ⟨s, hx⟩ := exists_finset_of_mem_supr' hx
   rw [isAlgebraic_iff, Subtype.coe_mk, ← Subtype.coe_mk (p := (· ∈ _)) x hx, ← isAlgebraic_iff]
   haveI : ∀ i : Σ i, t i, FiniteDimensional K K⟮(i.2 : L)⟯ := fun ⟨i, x⟩ ↦
-    adjoin.finiteDimensional (isIntegral_iff.1 (isAlgebraic_iff_isIntegral.1 (h i x)))
+    adjoin.finiteDimensional (isIntegral_iff.1 (h i x).isIntegral)
   apply Algebra.IsAlgebraic.of_finite
 #align intermediate_field.is_algebraic_supr IntermediateField.isAlgebraic_iSup
 

@@ -46,7 +46,7 @@ theorem Normal.isAlgebraic (_ : Normal F K) (x : K) : IsAlgebraic F x :=
 #align normal.is_algebraic Normal.isAlgebraic
 
 theorem Normal.isIntegral (h : Normal F K) (x : K) : IsIntegral F x :=
-  isAlgebraic_iff_isIntegral.mp (h.isAlgebraic' x)
+  (h.isAlgebraic' x).isIntegral
 #align normal.is_integral Normal.isIntegral
 
 theorem Normal.splits (_ : Normal F K) (x : K) : Splits (algebraMap F K) (minpoly F x) :=

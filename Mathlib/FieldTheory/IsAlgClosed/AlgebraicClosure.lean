@@ -381,7 +381,7 @@ def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosureAux k :=
 #noalign algebraic_closure.of_step_hom
 
 theorem isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosureAux k) := fun z =>
-  isAlgebraic_iff_isIntegral.2 <|
+  IsIntegral.isAlgebraic <|
     let ⟨n, x, hx⟩ := exists_ofStep k z
     hx ▸ (Step.isIntegral k n x).map (ofStepHom k n)
 

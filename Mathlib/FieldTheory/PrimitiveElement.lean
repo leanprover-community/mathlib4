@@ -284,8 +284,8 @@ theorem isAlgebraic_of_finite_intermediateField
 theorem finiteDimensional_of_finite_intermediateField
     [Finite (IntermediateField F E)] : FiniteDimensional F E := by
   let IF := { K : IntermediateField F E // ∃ x, K = F⟮x⟯ }
-  haveI : ∀ K : IF, FiniteDimensional F K.1 := fun ⟨_, x, rfl⟩ ↦ adjoin.finiteDimensional <|
-    isAlgebraic_iff_isIntegral.1 (isAlgebraic_of_finite_intermediateField F E x)
+  haveI : ∀ K : IF, FiniteDimensional F K.1 := fun ⟨_, x, rfl⟩ ↦ adjoin.finiteDimensional
+    (isAlgebraic_of_finite_intermediateField F E x).isIntegral
   have hfin := finiteDimensional_iSup_of_finite (t := fun K : IF ↦ K.1)
   have htop : ⨆ K : IF, K.1 = ⊤ := le_top.antisymm fun x _ ↦
     le_iSup (fun K : IF ↦ K.1) ⟨F⟮x⟯, x, rfl⟩ <| mem_adjoin_simple_self F x
@@ -306,7 +306,7 @@ theorem exists_primitive_element_of_finite_intermediateField
 theorem finiteDimensional_of_exists_primitive_element (halg : Algebra.IsAlgebraic F E)
     (h : ∃ α : E, F⟮α⟯ = ⊤) : FiniteDimensional F E := by
   obtain ⟨α, hprim⟩ := h
-  have hfin := adjoin.finiteDimensional <| isAlgebraic_iff_isIntegral.1 (halg α)
+  have hfin := adjoin.finiteDimensional (halg α).isIntegral
   rw [hprim] at hfin
   exact topEquiv.toLinearEquiv.finiteDimensional
 
