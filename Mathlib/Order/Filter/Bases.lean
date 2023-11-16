@@ -356,6 +356,11 @@ theorem HasBasis.to_hasBasis (hl : l.HasBasis p s) (h : ∀ i, p i → ∃ i', p
     hl.mem_iff.2 ⟨i, hi, hss'⟩
 #align filter.has_basis.to_has_basis Filter.HasBasis.to_hasBasis
 
+protected lemma HasBasis.congr (hl : l.HasBasis p s) {p' s'} (hp : ∀ i, p i ↔ p' i)
+    (hs : ∀ i, p i → s i = s' i) : l.HasBasis p' s' :=
+  ⟨fun t ↦ by simp only [hl.mem_iff, ← hp]; exact exists_congr fun i ↦
+    and_congr_right fun hi ↦ hs i hi ▸ Iff.rfl⟩
+
 theorem HasBasis.to_subset (hl : l.HasBasis p s) {t : ι → Set α} (h : ∀ i, p i → t i ⊆ s i)
     (ht : ∀ i, p i → t i ∈ l) : l.HasBasis p t :=
   hl.to_hasBasis' (fun i hi => ⟨i, hi, h i hi⟩) ht
@@ -943,6 +948,10 @@ theorem HasBasis.prod_self (hl : la.HasBasis pa sa) :
 theorem mem_prod_self_iff {s} : s ∈ la ×ˢ la ↔ ∃ t ∈ la, t ×ˢ t ⊆ s :=
   la.basis_sets.prod_self.mem_iff
 #align filter.mem_prod_self_iff Filter.mem_prod_self_iff
+
+lemma eventually_prod_self_iff {r : α → α → Prop} :
+    (∀ᶠ x in la ×ˢ la, r x.1 x.2) ↔ ∃ t ∈ la, ∀ x ∈ t, ∀ y ∈ t, r x y :=
+  mem_prod_self_iff.trans <| by simp only [prod_subset_iff, mem_setOf_eq]
 
 theorem HasAntitoneBasis.prod {ι : Type*} [LinearOrder ι] {f : Filter α} {g : Filter β}
     {s : ι → Set α} {t : ι → Set β} (hf : HasAntitoneBasis f s) (hg : HasAntitoneBasis g t) :

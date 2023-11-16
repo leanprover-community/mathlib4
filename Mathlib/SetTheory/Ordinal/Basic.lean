@@ -167,7 +167,8 @@ instance isWellOrder_out_lt (o : Ordinal) : IsWellOrder o.out.α (· < ·) :=
 
 namespace Ordinal
 
--- ### Basic properties of the order type
+/-! ### Basic properties of the order type -/
+
 /-- The order type of a well order is an ordinal. -/
 def type (r : α → α → Prop) [wo : IsWellOrder α r] : Ordinal :=
   ⟦⟨α, r, wo⟩⟧
@@ -301,10 +302,10 @@ theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α 
   (RelIso.preimage f r).ordinal_type_eq
 #align ordinal.type_preimage Ordinal.type_preimage
 
-@[simp]
+@[simp, nolint simpNF] -- `simpNF` incorrectly complains the LHS doesn't simplify.
 theorem type_preimage_aux {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
     @type _ (fun x y => r (f x) (f y)) (inferInstanceAs (IsWellOrder β (↑f ⁻¹'o r))) = type r := by
-    convert (RelIso.preimage f r).ordinal_type_eq
+  convert (RelIso.preimage f r).ordinal_type_eq
 
 @[elab_as_elim]
 theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
@@ -1009,7 +1010,8 @@ theorem sInf_empty : sInf (∅ : Set Ordinal) = 0 :=
   dif_neg Set.not_nonempty_empty
 #align ordinal.Inf_empty Ordinal.sInf_empty
 
--- ### Successor order properties
+/-! ### Successor order properties -/
+
 private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
   ⟨lt_of_lt_of_le
       (inductionOn a fun α r _ =>

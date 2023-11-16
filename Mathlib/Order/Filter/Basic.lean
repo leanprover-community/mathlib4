@@ -380,8 +380,8 @@ theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
 #align filter.mem_generate_iff Filter.mem_generate_iff
 
 @[simp] lemma generate_singleton (s : Set α) : generate {s} = 𝓟 s :=
-le_antisymm (λ _t ht ↦ mem_of_superset (mem_generate_of_mem $ mem_singleton _) ht) $
-  le_generate_iff.2 $ singleton_subset_iff.2 Subset.rfl
+  le_antisymm (λ _t ht ↦ mem_of_superset (mem_generate_of_mem $ mem_singleton _) ht) <|
+    le_generate_iff.2 $ singleton_subset_iff.2 Subset.rfl
 
 /-- `mk_of_closure s hs` constructs a filter on `α` whose elements set is exactly
 `s : Set (Set α)`, provided one gives the assumption `hs : (generate s).sets = s`. -/
@@ -2605,6 +2605,10 @@ theorem map_inf' {f g : Filter α} {m : α → β} {t : Set α} (htf : t ∈ f) 
   replace h : Injective (m ∘ ((↑) : t → α)) := h.injective
   simp only [map_map, ← map_inf Subtype.coe_injective, map_inf h]
 #align filter.map_inf' Filter.map_inf'
+
+lemma disjoint_of_map {α β : Type*} {F G : Filter α} {f : α → β}
+    (h : Disjoint (map f F) (map f G)) : Disjoint F G :=
+    disjoint_iff.mpr <| map_eq_bot_iff.mp <| le_bot_iff.mp <| trans map_inf_le (disjoint_iff.mp h)
 
 theorem disjoint_map {m : α → β} (hm : Injective m) {f₁ f₂ : Filter α} :
     Disjoint (map m f₁) (map m f₂) ↔ Disjoint f₁ f₂ := by

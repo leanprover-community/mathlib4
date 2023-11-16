@@ -482,13 +482,18 @@ theorem sup_lt_of_lt_sdiff_right (h : x < z \ y) (hyz : y ≤ z) : x ⊔ y < z :
   exact (sdiff_le_sdiff_of_sup_le_sup_right h').trans sdiff_le
 #align sup_lt_of_lt_sdiff_right sup_lt_of_lt_sdiff_right
 
+instance Prod.instGeneralizedBooleanAlgebra [GeneralizedBooleanAlgebra β] :
+    GeneralizedBooleanAlgebra (α × β) where
+  sup_inf_sdiff _ _ := Prod.ext (sup_inf_sdiff _ _) (sup_inf_sdiff _ _)
+  inf_inf_sdiff _ _ := Prod.ext (inf_inf_sdiff _ _) (inf_inf_sdiff _ _)
+
 -- Porting note:
 -- Once `pi_instance` has been ported, this is just `by pi_instance`.
-instance Pi.generalizedBooleanAlgebra {α : Type u} {β : Type v} [GeneralizedBooleanAlgebra β] :
-    GeneralizedBooleanAlgebra (α → β) where
+instance Pi.instGeneralizedBooleanAlgebra {ι : Type*} {α : ι → Type*}
+    [∀ i, GeneralizedBooleanAlgebra (α i)] : GeneralizedBooleanAlgebra (∀ i, α i) where
   sup_inf_sdiff := fun f g => funext fun a => sup_inf_sdiff (f a) (g a)
   inf_inf_sdiff := fun f g => funext fun a => inf_inf_sdiff (f a) (g a)
-#align pi.generalized_boolean_algebra Pi.generalizedBooleanAlgebra
+#align pi.generalized_boolean_algebra Pi.instGeneralizedBooleanAlgebra
 
 end GeneralizedBooleanAlgebra
 
@@ -785,20 +790,13 @@ instance Pi.booleanAlgebra {ι : Type u} {α : ι → Type v} [∀ i, BooleanAlg
     top_le_sup_compl := fun _ _ => BooleanAlgebra.top_le_sup_compl _ }
 #align pi.boolean_algebra Pi.booleanAlgebra
 
-instance : BooleanAlgebra Bool :=
-  { Bool.linearOrder, Bool.boundedOrder with
-    sup := or,
-    le_sup_left := Bool.left_le_or,
-    le_sup_right := Bool.right_le_or,
-    sup_le := fun _ _ _ => Bool.or_le,
-    inf := and,
-    inf_le_left := Bool.and_le_left,
-    inf_le_right := Bool.and_le_right,
-    le_inf := fun _ _ _ => Bool.le_and,
-    le_sup_inf := by decide,
-    compl := not,
-    inf_compl_le_bot := fun a => a.and_not_self.le,
-    top_le_sup_compl := fun a => a.or_not_self.ge }
+instance Bool.instBooleanAlgebra : BooleanAlgebra Bool where
+  __ := Bool.linearOrder
+  __ := Bool.boundedOrder
+  __ := Bool.instDistribLattice
+  compl := not
+  inf_compl_le_bot a := a.and_not_self.le
+  top_le_sup_compl a := a.or_not_self.ge
 
 @[simp]
 theorem Bool.sup_eq_bor : (· ⊔ ·) = or :=
