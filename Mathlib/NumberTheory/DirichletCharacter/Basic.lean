@@ -25,7 +25,7 @@ Main definitions:
 
 ## TODO
 
-- reduction, even, odd
+- even, odd
 - add
   `lemma unitsMap_surjective {n m : ℕ} (h : n ∣ m) (hm : m ≠ 0) : Function.Surjective (unitsMap h)`
   and then
@@ -182,6 +182,16 @@ lemma conductor_eq_zero_iff_level_eq_zero : conductor χ = 0 ↔ n = 0 := by
   rintro rfl
   exact Nat.sInf_eq_zero.mpr <| Or.inl <| level_mem_conductorSet χ
 
+lemma mem_conductorSet_eq_conductor {d : ℕ} (hd : d ∈ conductorSet χ) :
+  χ.conductor ≤ (Classical.choose hd.2 ).conductor := by
+  apply Nat.sInf_le
+  rw [mem_conductorSet_iff]
+  refine' ⟨dvd_trans (conductor_dvd_level _) hd.1,
+      (factorsThrough_conductor (Classical.choose hd.2)).2.choose, _⟩
+  rw [changeLevel_trans _ (conductor_dvd_level _) (FactorsThrough.dvd _ hd),
+      ← (factorsThrough_conductor (Classical.choose hd.2)).2.choose_spec]
+  apply FactorsThrough.eq_changeLevel χ hd
+
 variable (χ)
 
 /-- A character is primitive if its level is equal to its conductor. -/
@@ -198,5 +208,23 @@ lemma isPritive_one_level_zero : isPrimitive (1 : DirichletCharacter R 0) :=
 lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n := by
   rw [(isPrimitive_def _).mp isPrimitive_one_level_one]
   apply one_dvd _
+
+namespace DirichletCharacter
+/-- The primitive character associated to a Dirichlet character. -/
+noncomputable def reduction : DirichletCharacter R χ.conductor :=
+  Classical.choose (factorsThrough_conductor χ).choose_spec
+
+lemma reduction_isPrimitive : isPrimitive (reduction χ) := by
+  by_cases χ.conductor = 0
+  · rw [isPrimitive_def]
+    conv_rhs => rw [h]
+    rw [conductor_eq_zero_iff_level_eq_zero, h]
+  · refine' le_antisymm (Nat.le_of_dvd (Nat.pos_of_ne_zero h) (conductor_dvd_level _)) <|
+        mem_conductorSet_eq_conductor <| conductor_mem_conductorSet χ
+
+lemma reduction_one (hn : n ≠ 0) : reduction (1 : DirichletCharacter R n) = 1 := by
+  rw [eq_one_iff_conductor_eq_one <| (@conductor_one R _ _ hn) ▸ Nat.one_ne_zero,
+      (isPrimitive_def _).1 <| reduction_isPrimitive (1 : DirichletCharacter R n),
+      conductor_one hn]
 
 end DirichletCharacter
