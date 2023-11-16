@@ -66,7 +66,7 @@ private partial def grwAtLocal (fvar : FVarId) (tok : Syntax) (rules : TSyntax `
   setGoals newGoals.toList
   pruneSolvedGoals
 
-partial def grwAtTarget (tok : Syntax) (rules : TSyntax ``rwRuleSeq) : TacticM Unit := do
+private partial def grwAtTarget (tok : Syntax) (rules : TSyntax ``rwRuleSeq) : TacticM Unit := do
   let ⟨_, newGoal, subgoals⟩ ← (withRWRulesSeqState tok rules fun rev syn ↦ do
     let ⟨currentTarget, subgoals⟩ ← get
     let ⟨_, newGoal, newSubgoals⟩ ← currentTarget.withContext do
