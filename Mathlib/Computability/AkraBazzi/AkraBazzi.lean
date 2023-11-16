@@ -1376,11 +1376,8 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
                                           exact h_smoothing_pos' m hm_mem.1
               have H₃ : 0 < asympBound g a b m := by
                 refine R.asympBound_pos m ?_
-                calc 0 < ⌊b' * n₀⌋₊
-                          := by exact h_b_floor
-                     _ ≤ m
-                          := by rw [Finset.mem_Ico] at hm_mem
-                                exact hm_mem.1
+                calc 0 < ⌊b' * n₀⌋₊ := by exact h_b_floor
+                     _ ≤ m := by rw [Finset.mem_Ico] at hm_mem; exact hm_mem.1
               positivity
          _ = base_min := by rw [base_min_def, hm]
   refine ⟨C, hC_pos, fun n hn => ?_⟩
