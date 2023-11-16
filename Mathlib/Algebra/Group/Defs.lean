@@ -608,9 +608,6 @@ class Monoid (M : Type u) extends MulOneClass M, Semigroup M where
   protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = x * npow n x := by intros; rfl
 #align monoid Monoid
 
-attribute [instance 150] MulOneClass.toMul
-attribute [instance 50] Semigroup.toMul
-
 #align monoid.npow_zero' Monoid.npow_zero
 #align monoid.npow_succ' Monoid.npow_succ
 
