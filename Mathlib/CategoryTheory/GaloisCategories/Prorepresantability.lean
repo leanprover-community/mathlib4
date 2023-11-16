@@ -11,13 +11,15 @@ lemma colimMapIdentity {J C : Type*} [Category C] [Category J] (F : J ⥤ C) [Ha
 
 namespace Galois
 
-variable {C : Type u} [Category.{u, u} C] {F : C ⥤ FintypeCat.{u}} [PreGaloisCategory C] [FibreFunctor F]
+variable {C : Type u} [Category.{u, u} C]
 
 def ConnectedObjects := { A : C | ConnectedObject A }
 
+variable (F : C ⥤ FintypeCat.{u}) [PreGaloisCategory C] [FibreFunctor F]
+
 def Idx : Type (max u u) := (A : @ConnectedObjects C _) × F.obj (A : C)
 
-instance : Category (@Idx C _ F) where
+instance : Category (Idx F) where
   Hom := by
     intro ⟨A, a⟩ ⟨B, b⟩
     exact { f : (A : C) ⟶ B // F.map f a = b }
@@ -65,7 +67,7 @@ def bli (X : C) : Cocone (@diag C _ F X) where
       simp only [map_comp, FintypeCat.comp_apply, hf]
   }
 
-def diagTrans {X Y : C} (f : X ⟶ Y) : @diag C _ F X ⟶ @diag C _ F Y where
+def diagTrans {X Y : C} (f : X ⟶ Y) : diag F X ⟶ diag F Y where
   app := by
     intro ⟨A, a⟩
     intro g
@@ -77,16 +79,17 @@ def diagTrans {X Y : C} (f : X ⟶ Y) : @diag C _ F X ⟶ @diag C _ F Y where
     simp only [Category.assoc]
 
 noncomputable def blabla : C ⥤ Type u where
-  obj X := colimit (@diag C _ F X)
+  obj X := colimit (diag F X)
   map {X Y} f := by
-    show colimit (@diag C _ F X) → colimit (@diag C _ F Y)
-    exact colim.map (diagTrans f)
+    show colimit (diag F X) → colimit (diag F Y)
+    exact colim.map (diagTrans F f)
   map_id := by
     intro X
     simp
-    have h1 : diagTrans (𝟙 X) = 𝟙 (@diag C _ F X) := sorry
+    have h1 : diagTrans F (𝟙 X) = 𝟙 (diag F X) := by
+      admit
     rw [h1]
-    exact colimMapIdentity (diag X)
+    exact colimMapIdentity (diag F X)
 
-noncomputable def bla (X : C) : colimit (@diag C _ F X) ⟶ (FintypeCat.incl.obj <| F.obj X) :=
-  colimit.desc (@diag C _ F X) (bli X)
+noncomputable def bla (X : C) : colimit (diag F X) ⟶ (FintypeCat.incl.obj <| F.obj X) :=
+  colimit.desc (diag F X) (bli F X)
