@@ -87,7 +87,7 @@ variable [PreservesFilteredColimits (CategoryTheory.forget A)]
 variable [ReflectsIsomorphisms (CategoryTheory.forget A)]
 
 /--
-The pushforward functor.
+The pullback functor.
 -/
 def pullback (f : X ⟶ Y) : Y.Sheaf A ⥤ X.Sheaf A :=
   (Opens.map f).sheafPullback _ _ _
