@@ -226,7 +226,7 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] : Cone (spanFunct
 
 /-- `spanCone` is a limit cone. -/
 noncomputable
-def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] [DecidableEq I] :
+def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] :
     CategoryTheory.Limits.IsLimit (spanCone hC) := by
   refine (IsLimit.postcomposeHomEquiv (NatIso.ofComponents
     (fun s ↦ (Profinite.isoOfBijective _ (iso_map_bijective C (· ∈ unop s)))) ?_) (spanCone hC))
@@ -1558,7 +1558,7 @@ theorem Products.max_eq_eval (l : Products I) (hl : l.val ≠ [])
     (∀ i, i ∈ l.Tail.val → (x.val i = true)) = (∀ i, i ∈ l.Tail.val → (SwapTrue o x.val i = true))
   · apply forall_congr; intro i; apply forall_congr; intro hi; rw [hi' i hi]
   simp only [H]
-  split_ifs with h₁ h₂ h₃ <;> dsimp [e]
+  split_ifs with h₁ h₂ h₃ <;> try (dsimp [e])
   · rw [if_pos (swapTrue_eq_true _ _), if_neg]
     · rfl
     · simp [mem_C'_eq_false C ho x x.prop, Bool.coe_false]

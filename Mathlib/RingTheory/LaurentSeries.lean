@@ -135,7 +135,7 @@ instance of_powerSeries_localization [CommRing R] :
       rfl
     · simp only [single_mul_single, mul_one, add_left_neg]
       rfl
-    · simp
+    · dsimp; rw [ofPowerSeries_X_pow]
   surj' z := by
     by_cases h : 0 ≤ z.order
     · refine' ⟨⟨PowerSeries.X ^ Int.natAbs z.order * powerSeriesPart z, 1⟩, _⟩
