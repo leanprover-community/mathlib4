@@ -1603,6 +1603,30 @@ end AffineSubspace
 
 namespace AffineMap
 
+
+section ofLe
+variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁] [Nonempty S₂]
+
+attribute [local instance] AffineSubspace.toAddTorsor
+
+/-- Affine map from a smaller to a larger subspace of the same space.
+
+This is the affine version of `Submodule.ofLe`. -/
+@[simps linear]
+def ofLe (h : S₁ ≤ S₂) : S₁ →ᵃ[k] S₂ where
+  toFun := Set.inclusion h
+  linear := Submodule.ofLe <| AffineSubspace.direction_le h
+  map_vadd' _ _ := rfl
+
+@[simp]
+theorem coe_ofLe_apply (h : S₁ ≤ S₂) (x : S₁) : (ofLe h x : P₁) = x :=
+  rfl
+
+@[simp]
+theorem ofLe_rfl : ofLe (le_refl S₁) = AffineMap.id k S₁ := rfl
+
+end ofLe
+
 @[simp]
 theorem map_top_of_surjective (hf : Function.Surjective f) : AffineSubspace.map f ⊤ = ⊤ := by
   rw [← AffineSubspace.ext_iff]
@@ -1618,14 +1642,15 @@ end AffineMap
 
 namespace AffineEquiv
 
-attribute [local instance] AffineSubspace.toAddTorsor
-
 section ofEq
 variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
+
+attribute [local instance] AffineSubspace.toAddTorsor
 
 /-- Affine equivalence between two equal affine subspace.
 
 This is the affine version of `LinearEquiv.ofEq`. -/
+@[simps linear]
 def ofEq (h : S₁ = S₂) : S₁ ≃ᵃ[k] S₂ where
   toEquiv := Equiv.Set.ofEq <| congr_arg _ h
   linear := .ofEq _ _ <| congr_arg _ h
