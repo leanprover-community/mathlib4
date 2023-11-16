@@ -213,19 +213,19 @@ variable [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
 
 /-- If x is algebraic over R, then x is algebraic over S when S is an extension of R,
   and the map from `R` to `S` is injective. -/
-theorem isAlgebraic_of_larger_base_of_injective
+theorem IsAlgebraic.of_larger_base_of_injective
     (hinj : Function.Injective (algebraMap R S)) {x : A}
     (A_alg : IsAlgebraic R x) : IsAlgebraic S x :=
   let ⟨p, hp₁, hp₂⟩ := A_alg
   ⟨p.map (algebraMap _ _), by
     rwa [Ne.def, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
-#align is_algebraic_of_larger_base_of_injective isAlgebraic_of_larger_base_of_injective
+#align is_algebraic_of_larger_base_of_injective IsAlgebraic.of_larger_base_of_injective
 
 /-- If A is an algebraic algebra over R, then A is algebraic over S when S is an extension of R,
   and the map from `R` to `S` is injective. -/
 theorem Algebra.isAlgebraic_of_larger_base_of_injective (hinj : Function.Injective (algebraMap R S))
     (A_alg : IsAlgebraic R A) : IsAlgebraic S A := fun x =>
-  _root_.isAlgebraic_of_larger_base_of_injective hinj (A_alg x)
+  IsAlgebraic.of_larger_base_of_injective hinj (A_alg x)
 #align algebra.is_algebraic_of_larger_base_of_injective Algebra.isAlgebraic_of_larger_base_of_injective
 
 end CommRing
@@ -241,7 +241,7 @@ variable (L)
 /-- If x is algebraic over K, then x is algebraic over L when L is an extension of K -/
 theorem isAlgebraic_of_larger_base {x : A} (A_alg : IsAlgebraic K x) :
     IsAlgebraic L x :=
-  isAlgebraic_of_larger_base_of_injective (algebraMap K L).injective A_alg
+  IsAlgebraic.of_larger_base_of_injective (algebraMap K L).injective A_alg
 #align is_algebraic_of_larger_base isAlgebraic_of_larger_base
 
 /-- If A is an algebraic algebra over K, then A is algebraic over L when L is an extension of K -/

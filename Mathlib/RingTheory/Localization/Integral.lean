@@ -397,7 +397,7 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Alge
     refine' isIntegral_mul _ _
     · rw [← isAlgebraic_iff_isIntegral]
       refine'
-        _root_.isAlgebraic_of_larger_base_of_injective
+        IsAlgebraic.of_larger_base_of_injective
           (NoZeroSMulDivisors.algebraMap_injective R (FractionRing R)) _
       exact IsAlgebraic.algebraMap (h a)
     · rw [← isAlgebraic_iff_isIntegral]
