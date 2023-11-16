@@ -320,6 +320,28 @@ theorem orthogonalProjection_linear {s : AffineSubspace ℝ P} [Nonempty s]
   rfl
 #align euclidean_geometry.orthogonal_projection_linear EuclideanGeometry.orthogonalProjection_linear
 
+instance : HasOrthogonalProjection (⊤ : AffineSubspace ℝ P).direction := by
+  rw [direction_top]
+  infer_instance
+
+example : P ≃ᵃ[ℝ] (⊤ : AffineSubspace ℝ P) := by apply?
+def AffineEquiv.ofTop (S : AffineSubspace ℝ P) (hS : S = ⊤) :
+    haveI : Nonempty S := hS ▸ inferInstance
+    S ≃ᵃ[ℝ] P :=
+  haveI : Nonempty S := hS ▸ inferInstance
+  { toFun := (↑)
+    invFun := fun p => ⟨p, hS ▸ trivial⟩
+    left_inv := _
+    right_inv := _
+    linear := LinearEquiv.ofTop _ <| by rw [hS, direction_top]
+    map_vadd' := _ }
+
+@[simp]
+theorem orthogonalProjection_top :
+  orthogonalProjection (⊤ : AffineSubspace ℝ P) = (by apply?) := sorry
+
+
+#exit
 /-- The intersection of the subspace and the orthogonal subspace
 through the given point is the `orthogonalProjection` of that point
 onto the subspace. -/
