@@ -104,7 +104,7 @@ class CanonicallyOrderedAddCommMonoid (α : Type*) extends OrderedAddCommMonoid 
   protected le_self_add : ∀ a b : α, a ≤ a + b
 #align canonically_ordered_add_monoid CanonicallyOrderedAddCommMonoid
 
-attribute [instance 150] CanonicallyOrderedAddCommMonoid.toOrderedAddCommMonoid
+attribute [instance 100] CanonicallyOrderedAddCommMonoid.toOrderedAddCommMonoid
 attribute [instance 50] CanonicallyOrderedAddCommMonoid.toOrderBot
 
 /-- A canonically ordered monoid is an ordered commutative monoid
@@ -124,7 +124,7 @@ class CanonicallyOrderedCommMonoid (α : Type*) extends OrderedCommMonoid α, Or
   protected le_self_mul : ∀ a b : α, a ≤ a * b
 #align canonically_ordered_monoid CanonicallyOrderedCommMonoid
 
-attribute [instance 150] CanonicallyOrderedCommMonoid.toOrderedCommMonoid
+attribute [instance 100] CanonicallyOrderedCommMonoid.toOrderedCommMonoid
 attribute [instance 50] CanonicallyOrderedCommMonoid.toOrderBot
 
 -- see Note [lower instance priority]
@@ -325,7 +325,7 @@ class CanonicallyLinearOrderedAddCommMonoid (α : Type*)
   extends CanonicallyOrderedAddCommMonoid α, LinearOrderedAddCommMonoid α
 #align canonically_linear_ordered_add_monoid CanonicallyLinearOrderedAddCommMonoid
 
-attribute [instance 150] CanonicallyLinearOrderedAddCommMonoid.toCanonicallyOrderedAddCommMonoid
+attribute [instance 100] CanonicallyLinearOrderedAddCommMonoid.toCanonicallyOrderedAddCommMonoid
 attribute [instance 100] CanonicallyLinearOrderedAddCommMonoid.toLinearOrderedAddCommMonoid
 attribute [instance 0] CanonicallyLinearOrderedAddCommMonoid.toMin
 attribute [instance 0] CanonicallyLinearOrderedAddCommMonoid.toMax
@@ -338,7 +338,7 @@ class CanonicallyLinearOrderedCommMonoid (α : Type*)
   extends CanonicallyOrderedCommMonoid α, LinearOrderedCommMonoid α
 #align canonically_linear_ordered_monoid CanonicallyLinearOrderedCommMonoid
 
-attribute [instance 150] CanonicallyLinearOrderedCommMonoid.toCanonicallyOrderedCommMonoid
+attribute [instance 100] CanonicallyLinearOrderedCommMonoid.toCanonicallyOrderedCommMonoid
 attribute [instance 100] CanonicallyLinearOrderedCommMonoid.toLinearOrderedCommMonoid
 attribute [instance 0] CanonicallyLinearOrderedCommMonoid.toMin
 attribute [instance 0] CanonicallyLinearOrderedCommMonoid.toMax

@@ -22,7 +22,7 @@ class CanonicallyLinearOrderedSemifield (α : Type*) extends LinearOrderedSemifi
     CanonicallyOrderedCommSemiring α
 #align canonically_linear_ordered_semifield CanonicallyLinearOrderedSemifield
 
-attribute [instance 150] CanonicallyLinearOrderedSemifield.toLinearOrderedSemifield
+attribute [instance 100] CanonicallyLinearOrderedSemifield.toLinearOrderedSemifield
 attribute [instance 100] CanonicallyLinearOrderedSemifield.toCanonicallyOrderedCommSemiring
 attribute [instance 0] CanonicallyLinearOrderedSemifield.toOrderBot
 
