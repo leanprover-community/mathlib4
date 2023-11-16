@@ -16,7 +16,6 @@ left adjoint, called the free condensed abelian group on a condensed set.
 TODO (Dagur):
 * Add the "discrete-underlying" adjunction (the discrete functor from sets to condensed sets is
   left adjoint to the evalation functor at a point).
-
 * Add free condensed modules over more general rings.
 -/
 

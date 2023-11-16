@@ -65,7 +65,7 @@ instance : PreservesLimits uliftFunctor.{v, u} where
   preservesLimitsOfShape {J} := {
     preservesLimit := fun {K} => {
       preserves := fun {c} hc => by
-        suffices Nonempty (IsLimit (uliftFunctor.{v, u}.mapCone c)) by exact this.some
+        apply Nonempty.some
         rw [Types.isLimit_iff ((uliftFunctor.{v, u}).mapCone c)]
         intro s hs
         obtain ⟨x, hx₁, hx₂⟩ := (Types.isLimit_iff c).mp ⟨hc⟩ _ ((sectionsEquiv' K).symm ⟨s, hs⟩).2

@@ -871,26 +871,12 @@ variable {ι : Type*}
 theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
     (dir : Directed (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
   let K : NonUnitalSubalgebra R A :=
-    { carrier := ⋃ i, S i
-      zero_mem' :=
-        let i := @Nonempty.some ι inferInstance
-        Set.mem_iUnion.2 ⟨i, zero_mem (S i)⟩
-      mul_mem' := @fun _x _y hx hy =>
+    { __ := NonUnitalSubsemiring.copy _ _ (NonUnitalSubsemiring.coe_iSup_of_directed dir).symm
+      smul_mem' := fun r _x hx ↦
         let ⟨i, hi⟩ := Set.mem_iUnion.1 hx
-        let ⟨j, hj⟩ := Set.mem_iUnion.1 hy
-        let ⟨k, hik, hjk⟩ := dir i j
-        Set.mem_iUnion.2 ⟨k, mul_mem (hik hi) (hjk hj)⟩
-      add_mem' := @fun _x _y hx hy =>
-        let ⟨i, hi⟩ := Set.mem_iUnion.1 hx
-        let ⟨j, hj⟩ := Set.mem_iUnion.1 hy
-        let ⟨k, hik, hjk⟩ := dir i j
-        Set.mem_iUnion.2 ⟨k, add_mem (hik hi) (hjk hj)⟩
-      smul_mem' := fun r _x hx =>
-        let ⟨i, hi⟩ := Set.mem_iUnion.1 hx
-        Set.mem_iUnion.2 ⟨i, SMulMemClass.smul_mem r hi⟩ }
-  have : iSup S = K :=
-    le_antisymm (iSup_le fun i => Set.subset_iUnion (fun i => (S i : Set A)) i) <|
-      SetLike.coe_subset_coe.1 (Set.iUnion_subset fun _i => SetLike.coe_subset_coe.2 (le_iSup _ _))
+        Set.mem_iUnion.2 ⟨i, (S i).smul_mem' r hi⟩ }
+  have : iSup S = K := le_antisymm
+    (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set A)) i) (Set.iUnion_subset fun _ ↦ le_iSup S _)
   this.symm ▸ rfl
 
 /-- Define an algebra homomorphism on a directed supremum of non-unital subalgebras by defining
@@ -964,15 +950,21 @@ end NonAssoc
 
 section Center
 
-theorem _root_.Set.smul_mem_center {R A : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A]
-    [Module R A] [IsScalarTower R A A] [SMulCommClass R A A](r : R) {a : A}
-    (ha : a ∈ Set.center A) :
-    r • a ∈ Set.center A := by
-  simp [Set.mem_center_iff, mul_smul_comm, smul_mul_assoc, (Set.mem_center_iff A).mp ha]
+section NonUnitalNonAssocSemiring
+variable {R A : Type*}
+variable [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+variable [IsScalarTower R A A] [SMulCommClass R A A]
 
-variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
-  [SMulCommClass R A A]
+theorem _root_.Set.smul_mem_center (r : R) {a : A} (ha : a ∈ Set.center A) :
+    r • a ∈ Set.center A where
+  comm b := by rw [mul_smul_comm, smul_mul_assoc, ha.comm]
+  left_assoc b c := by rw [smul_mul_assoc, smul_mul_assoc, smul_mul_assoc, ha.left_assoc]
+  mid_assoc b c := by
+    rw [mul_smul_comm, smul_mul_assoc, smul_mul_assoc, mul_smul_comm, ha.mid_assoc]
+  right_assoc b c := by
+    rw [mul_smul_comm, mul_smul_comm, mul_smul_comm, ha.right_assoc]
 
+variable (R A) in
 /-- The center of a non-unital algebra is the set of elements which commute with every element.
 They form a non-unital subalgebra. -/
 def center : NonUnitalSubalgebra R A :=
@@ -980,6 +972,14 @@ def center : NonUnitalSubalgebra R A :=
 
 theorem coe_center : (center R A : Set A) = Set.center A :=
   rfl
+
+/-- The center of a non-unital algebra is a commutative and associative -/
+instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) :=
+  NonUnitalSubsemiring.center.instNonUnitalCommSemiring _
+
+instance center.instNonUnitalCommRing {A : Type*} [NonUnitalNonAssocRing A] [Module R A]
+    [IsScalarTower R A A] [SMulCommClass R A A] : NonUnitalCommRing (center R A) :=
+  NonUnitalSubring.center.instNonUnitalCommRing _
 
 @[simp]
 theorem center_toNonUnitalSubsemiring :
@@ -991,6 +991,17 @@ theorem center_toNonUnitalSubsemiring :
     (center R A).toNonUnitalSubring = NonUnitalSubring.center A :=
   rfl
 
+end NonUnitalNonAssocSemiring
+
+variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
+  [SMulCommClass R A A]
+
+-- no instance diamond, as the `npow` field isn't present in the non-unital case.
+example :
+    center.instNonUnitalCommSemiring.toNonUnitalSemiring =
+      NonUnitalSubsemiringClass.toNonUnitalSemiring (center R A) :=
+  rfl
+
 @[simp]
 theorem center_eq_top (A : Type*) [NonUnitalCommSemiring A] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] : center R A = ⊤ :=
@@ -998,15 +1009,8 @@ theorem center_eq_top (A : Type*) [NonUnitalCommSemiring A] [Module R A] [IsScal
 
 variable {R A}
 
-instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) :=
-  NonUnitalSubsemiring.center.instNonUnitalCommSemiring
-
-instance center.instNonUnitalCommRing {A : Type*} [NonUnitalRing A] [Module R A]
-    [IsScalarTower R A A] [SMulCommClass R A A] : NonUnitalCommRing (center R A) :=
-  NonUnitalSubring.center.instNonUnitalCommRing
-
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
-  Iff.rfl
+  Subsemigroup.mem_center_iff
 
 end Center
 

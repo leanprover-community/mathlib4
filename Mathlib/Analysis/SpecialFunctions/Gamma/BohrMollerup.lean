@@ -397,8 +397,7 @@ end BohrMollerup
 -- (section)
 section StrictMono
 
-theorem Gamma_two : Gamma 2 = 1 := by
-  simpa [one_add_one_eq_two, Nat.factorial] using Gamma_nat_eq_factorial 1
+theorem Gamma_two : Gamma 2 = 1 := by simp [Nat.factorial_one]
 #align real.Gamma_two Real.Gamma_two
 
 theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by

@@ -8,7 +8,7 @@ import Mathlib.Data.List.Permutation
 import Mathlib.Data.List.Range
 import Mathlib.Data.Nat.Factorial.Basic
 
-#align_import data.list.perm from "leanprover-community/mathlib"@"47adfab39a11a072db552f47594bf8ed2cf8a722"
+#align_import data.list.perm from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-!
 # List Permutations
@@ -38,6 +38,9 @@ inductive Perm : List α → List α → Prop
   | swap (x y : α) (l : List α) : Perm (y :: x :: l) (x :: y :: l)
   | trans {l₁ l₂ l₃ : List α} : Perm l₁ l₂ → Perm l₂ l₃ → Perm l₁ l₃
 #align list.perm List.Perm
+
+instance {α : Type*} : Trans (@List.Perm α) (@List.Perm α) List.Perm where
+  trans := @List.Perm.trans α
 
 open Perm (swap)
 
@@ -475,7 +478,7 @@ theorem Subperm.countP_le (p : α → Bool) {l₁ l₂ : List α} :
 #align list.subperm.countp_le List.Subperm.countP_le
 
 theorem Perm.countP_congr (s : l₁ ~ l₂) {p p' : α → Bool}
-    (hp : ∀ x ∈ l₁, p x = p' x) : l₁.countP p = l₂.countP p' := by
+    (hp : ∀ x ∈ l₁, p x ↔ p' x) : l₁.countP p = l₂.countP p' := by
   rw [← s.countP_eq p']
   clear s
   induction' l₁ with y s hs
@@ -489,6 +492,12 @@ theorem countP_eq_countP_filter_add (l : List α) (p q : α → Bool) :
   rw [← countP_append]
   exact Perm.countP_eq _ (filter_append_perm _ _).symm
 #align list.countp_eq_countp_filter_add List.countP_eq_countP_filter_add
+
+lemma count_eq_count_filter_add [DecidableEq α] (P : α → Prop) [DecidablePred P]
+    (l : List α) (a : α) :
+    count a l = count a (l.filter P) + count a (l.filter (¬ P ·)) := by
+  convert countP_eq_countP_filter_add l _ P
+  simp only [decide_eq_true_eq]
 
 theorem Perm.count_eq [DecidableEq α] {l₁ l₂ : List α} (p : l₁ ~ l₂) (a) :
     count a l₁ = count a l₂ :=

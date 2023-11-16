@@ -41,10 +41,9 @@ definitional eta reduction for structures (Lean 3 does not).
 multiplicative opposite, additive opposite
 -/
 
-set_option autoImplicit true
-
-
 universe u v
+
+variable {α : Type*}
 
 open Function
 
@@ -126,7 +125,7 @@ protected def rec' {F : ∀ _ : αᵐᵒᵖ, Sort v} (h : ∀ X, F (op X)) : ∀
 #align add_opposite.rec AddOpposite.rec'
 
 /-- The canonical bijection between `α` and `αᵐᵒᵖ`. -/
-@[to_additive (attr := simps (config := { fullyApplied := false }) apply symm_apply)
+@[to_additive (attr := simps (config := .asFn) apply symm_apply)
   "The canonical bijection between `α` and `αᵃᵒᵖ`."]
 def opEquiv : α ≃ αᵐᵒᵖ :=
   ⟨op, unop, unop_op, op_unop⟩

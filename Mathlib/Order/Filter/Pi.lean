@@ -212,8 +212,8 @@ theorem mem_coprodᵢ_iff {s : Set (∀ i, α i)} :
 #align filter.mem_Coprod_iff Filter.mem_coprodᵢ_iff
 
 theorem compl_mem_coprodᵢ {s : Set (∀ i, α i)} :
-    sᶜ ∈ Filter.coprodᵢ f ↔ ∀ i, (eval i '' s)ᶜ ∈ f i :=
-  by simp only [Filter.coprodᵢ, mem_iSup, compl_mem_comap]
+    sᶜ ∈ Filter.coprodᵢ f ↔ ∀ i, (eval i '' s)ᶜ ∈ f i := by
+  simp only [Filter.coprodᵢ, mem_iSup, compl_mem_comap]
 #align filter.compl_mem_Coprod Filter.compl_mem_coprodᵢ
 
 theorem coprodᵢ_neBot_iff' :

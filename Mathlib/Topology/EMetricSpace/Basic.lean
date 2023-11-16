@@ -3,6 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
+import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Real.ENNReal
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.UniformConvergence
@@ -852,9 +853,9 @@ open TopologicalSpace
 
 variable (α)
 
-/-- A sigma compact pseudo emetric space has second countable topology. This is not an instance
-to avoid a loop with `sigmaCompactSpace_of_locally_compact_second_countable`.  -/
-theorem secondCountable_of_sigmaCompact [SigmaCompactSpace α] : SecondCountableTopology α := by
+/-- A sigma compact pseudo emetric space has second countable topology. -/
+instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace α] :
+    SecondCountableTopology α := by
   suffices SeparableSpace α by exact UniformSpace.secondCountable_of_separable α
   choose T _ hTc hsubT using fun n =>
     subset_countable_closure_of_compact (isCompact_compactCovering α n)

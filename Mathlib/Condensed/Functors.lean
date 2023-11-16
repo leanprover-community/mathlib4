@@ -45,21 +45,18 @@ end Universes
 
 section Topology
 
-/-- The yoneda presheaf as a `Type u`-valued sheaf. -/
-def CompHaus.toCondensed_aux (S : CompHaus.{u}) : Condensed.{u} (Type u) where
-  val := yoneda.obj S
-  cond := by
-    rw [isSheaf_iff_isSheaf_of_type]
-    exact coherentTopology.isSheaf_yoneda_obj S
-
 /-- `CompHaus.toCondensed_aux` yields a functor. -/
-def compHausToCondensed_aux : CompHaus.{u} ⥤ Condensed.{u} (Type u) where
-  obj S := S.toCondensed_aux
+def compHausToCondensed' : CompHaus.{u} ⥤ Condensed.{u} (Type u) where
+  obj S := {
+    val := yoneda.obj S
+    cond := by
+      rw [isSheaf_iff_isSheaf_of_type]
+      exact coherentTopology.isSheaf_yoneda_obj S }
   map f := ⟨yoneda.map f⟩
 
 /-- The yoneda presheaf as an actual condensed set. -/
 def compHausToCondensed : CompHaus.{u} ⥤ CondensedSet.{u} :=
-  compHausToCondensed_aux ⋙ Condensed.ulift
+  compHausToCondensed' ⋙ Condensed.ulift
 
 /-- Dot notation for the value of `compHausToCondensed`. -/
 abbrev CompHaus.toCondensed (S : CompHaus.{u}) : CondensedSet.{u} := compHausToCondensed.obj S

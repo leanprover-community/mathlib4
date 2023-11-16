@@ -794,7 +794,7 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
   let to_fun : ZMod (m * n) → ZMod m × ZMod n :=
     ZMod.castHom (show m.lcm n ∣ m * n by simp [Nat.lcm_dvd_iff]) (ZMod m × ZMod n)
   let inv_fun : ZMod m × ZMod n → ZMod (m * n) := fun x =>
-    if m * n = 0 then if m = 1 then RingHom.snd _ _ x else RingHom.fst _ _ x
+    if m * n = 0 then if m = 1 then RingHom.snd _ (ZMod n) x else RingHom.fst (ZMod m) _ x
     else Nat.chineseRemainder h x.1.val x.2.val
   have inv : Function.LeftInverse inv_fun to_fun ∧ Function.RightInverse inv_fun to_fun :=
     if hmn0 : m * n = 0 then by
@@ -803,12 +803,12 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
         · intro x; rfl
         · rintro ⟨x, y⟩
           fin_cases y
-          simp [castHom, Prod.ext_iff]
+          simp [castHom, Prod.ext_iff, eq_iff_true_of_subsingleton]
       · constructor
         · intro x; rfl
         · rintro ⟨x, y⟩
           fin_cases x
-          simp [castHom, Prod.ext_iff]
+          simp [castHom, Prod.ext_iff, eq_iff_true_of_subsingleton]
     else by
       haveI : NeZero (m * n) := ⟨hmn0⟩
       haveI : NeZero m := ⟨left_ne_zero_of_mul hmn0⟩
