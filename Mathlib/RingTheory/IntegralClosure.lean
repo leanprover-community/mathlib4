@@ -1098,10 +1098,10 @@ theorem RingHom.isIntegral_quotient_of_isIntegral {I : Ideal S} (hf : f.IsIntegr
   simpa only [hom_eval₂, eval₂_map] using congr_arg (Ideal.Quotient.mk I) hpx
 #align ring_hom.is_integral_quotient_of_is_integral RingHom.isIntegral_quotient_of_isIntegral
 
-theorem isIntegral_quotient_of_isIntegral {I : Ideal A} (hRA : Algebra.IsIntegral R A) :
+theorem Algebra.IsIntegral.quotient {I : Ideal A} (hRA : Algebra.IsIntegral R A) :
     Algebra.IsIntegral (R ⧸ I.comap (algebraMap R A)) (A ⧸ I) :=
   (algebraMap R A).isIntegral_quotient_of_isIntegral hRA
-#align is_integral_quotient_of_is_integral isIntegral_quotient_of_isIntegral
+#align is_integral_quotient_of_is_integral Algebra.IsIntegral.quotient
 
 theorem isIntegral_quotientMap_iff {I : Ideal S} :
     (Ideal.quotientMap I f le_rfl).IsIntegral ↔
