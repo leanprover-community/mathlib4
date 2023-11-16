@@ -645,7 +645,7 @@ theorem riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
 `Λ₀(1 - s) = Λ₀ s`. -/
 theorem riemannCompletedZeta₀_one_sub (s : ℂ) :
     riemannCompletedZeta₀ (1 - s) = riemannCompletedZeta₀ s := by
-  have := mellin_comp_rpow zetaKernel₂ (s / 2 - 1 / 2) neg_one_lt_zero.ne
+  have := mellin_comp_rpow zetaKernel₂ (s / 2 - 1 / 2) (-1)
   simp_rw [rpow_neg_one, ← one_div, abs_neg, abs_one, div_one, one_smul, ofReal_neg, ofReal_one,
     div_neg, div_one, neg_sub] at this
   conv_lhs => rw [riemannCompletedZeta₀, sub_div, ← this]
