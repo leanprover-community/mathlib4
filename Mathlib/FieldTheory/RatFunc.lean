@@ -982,10 +982,9 @@ instance : IsFractionRing K[X] (RatFunc K) where
   map_units' y := by
     rw [← ofFractionRing_algebraMap]
     exact (toFractionRingRingEquiv K).symm.toRingHom.isUnit_map (IsLocalization.map_units _ y)
-  eq_iff_exists' {x y} := by
+  exists_of_eq {x y} := by
     rw [← ofFractionRing_algebraMap, ← ofFractionRing_algebraMap]
-    exact (toFractionRingRingEquiv K).symm.injective.eq_iff.trans
-      (IsLocalization.eq_iff_exists _ _)
+    exact fun h ↦ IsLocalization.exists_of_eq ((toFractionRingRingEquiv K).symm.injective h)
   surj' := by
     rintro ⟨z⟩
     convert IsLocalization.surj K[X]⁰ z
