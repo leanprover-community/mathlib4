@@ -408,7 +408,7 @@ theorem linearMap_ext {N} [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [AddC
 
 variable (R M)
 
-/-- The canonical `S`-linear inclusion `M → TrivSqZeroExt R M`. -/
+/-- The canonical `R`-linear inclusion `M → TrivSqZeroExt R M`. -/
 @[simps apply]
 def inrHom [Semiring R] [AddCommMonoid M] [Module R M] : M →ₗ[R] tsze R M :=
   { LinearMap.inr R R M with toFun := inr }
