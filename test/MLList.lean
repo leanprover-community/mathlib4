@@ -6,6 +6,8 @@ Authors: Scott Morrison
 import Std.Data.MLList.Basic
 import Mathlib.Control.Basic
 import Mathlib.Tactic.RunCmd
+import Std.Tactic.GuardMsgs
+import Mathlib.Data.MLList.Meta
 
 @[reducible] def S (α : Type) := StateT (List Nat) Option α
 def append (x : Nat) : S Unit :=
@@ -67,3 +69,34 @@ run_cmd Lean.Elab.Command.liftTermElabM do
     guard (n = 5)
     pure n
   guard $ n = 5
+
+/-!
+Tests for `runGreedily`, which converts a `List (MetaM α)` into a `MLList MetaM α`,
+streaming results as they become available.
+-/
+
+def fib : Nat → Nat
+| 0
+| 1 => 1
+| (n+2) => fib (n+1) + fib n
+
+open Lean.Meta.MetaM
+
+/--
+info: 0
+-/
+#guard_msgs in
+#eval show MetaM _ from do
+  -- We put an `IO.sleep 0` in the long calculation to prevent Lean from optimizing away the `do`.
+  let t : List (MetaM Nat) := [do IO.sleep 0; pure (fib 30), do IO.sleep 5; pure 0]
+  let r := runGreedily t
+  r.head
+
+/--
+info: 13
+-/
+#guard_msgs in
+#eval show MetaM _ from do
+  let t : List (MetaM Nat) := [do IO.sleep 0; pure (fib 6), do IO.sleep 5; pure 0]
+  let r := runGreedily t
+  r.head
