@@ -2005,13 +2005,13 @@ namespace Fintype
 
 open Finset
 
-/-- `Fintype.prod_bijective` is a variant of `Finset.prod_bij` that accepts `Function.bijective`.
+/-- `Fintype.prod_bijective` is a variant of `Finset.prod_bij` that accepts `Function.Bijective`.
 
-See `Function.bijective.prod_comp` for a version without `h`. -/
+See `Function.Bijective.prod_comp` for a version without `h`. -/
 @[to_additive "`Fintype.sum_bijective` is a variant of `Finset.sum_bij` that accepts
-`Function.bijective`.
+`Function.Bijective`.
 
-See `Function.bijective.sum_comp` for a version without `h`. "]
+See `Function.Bijective.sum_comp` for a version without `h`. "]
 theorem prod_bijective {α β M : Type*} [Fintype α] [Fintype β] [CommMonoid M] (e : α → β)
     (he : Function.Bijective e) (f : α → M) (g : β → M) (h : ∀ x, f x = g (e x)) :
     ∏ x : α, f x = ∏ x : β, g x :=
