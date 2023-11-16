@@ -48,6 +48,41 @@ private partial def withRWRulesSeqState {State : Type} (token : Syntax) (rwRules
       return s
     set newState
 
+private partial def grwAtLocal (fvar : FVarId) (tok : Syntax) (rules : TSyntax ``rwRuleSeq) :
+    TacticM Unit := do
+  let ⟨_, newGoal, subgoals, _⟩ ← (withRWRulesSeqState tok rules fun rev syn ↦ do
+    let ⟨goal, subgoals, fvar⟩ ← get
+    goal.withContext do
+      let rulePrf ← elabTerm syn none
+      let ⟨newType, newHyp, newSubgoals⟩ ← goal.withContext
+          $ grwHyp (Expr.fvar fvar) rulePrf rev
+      let name ← fvar.getUserName
+      let ⟨newFvar, goal', _⟩ ← goal.assertAfter fvar name newType newHyp
+      let newGoal ← goal'.clear fvar
+      set (⟨newGoal, subgoals ++ newSubgoals, newFvar⟩ : MVarId × Array MVarId × FVarId)
+  ).run (⟨← getMainGoal, #[], fvar⟩ : MVarId × Array MVarId × FVarId)
+  -- We can't use replaceMainGoal, since withTacticInfoContext prunes the solved goals so the
+  -- main goal will have already been removed
+  let newGoals := subgoals ++ #[newGoal] ++ (← getGoals)
+  setGoals newGoals.toList
+  pruneSolvedGoals
+
+partial def grwAtTarget (tok : Syntax) (rules : TSyntax ``rwRuleSeq) : TacticM Unit := do
+  let ⟨_, newGoal, subgoals⟩ ← (withRWRulesSeqState tok rules fun rev syn ↦ do
+    let ⟨currentTarget, subgoals⟩ ← get
+    let ⟨_, newGoal, newSubgoals⟩ ← currentTarget.withContext do
+      let rulePrf ← elabTerm syn none
+      currentTarget.grw rulePrf rev
+    set (⟨newGoal, subgoals.append newSubgoals⟩ : MVarId × Array MVarId)
+  ).run (⟨← getMainGoal, #[]⟩ : MVarId × Array MVarId)
+  try newGoal.withContext $ withReducible newGoal.applyRfl
+  catch _ => pure ⟨⟩
+  -- We can't use replaceMainGoal, since withTacticInfoContext prunes the solved goals so the
+  -- main goal will have already been removed
+  let newGoals := subgoals.toList ++ [newGoal] ++ (← getGoals)
+  setGoals newGoals
+  pruneSolvedGoals
+
 /--
 `grw` is a generalization of the `rw` tactic that takes other relations than equality.  For example,
 ```lean
@@ -67,38 +102,6 @@ rewriting.
 -/
 elab tok:"grw" rules:rwRuleSeq loc:(location)? : tactic => do
   withLocation (expandOptLocation (Lean.mkOptionalNode loc))
-    (atLocal := λ fvar => withMainContext do
-      let ⟨_, newGoal, subgoals, _⟩ ← (withRWRulesSeqState tok rules fun rev syn ↦ do
-        let ⟨goal, subgoals, fvar⟩ ← get
-        goal.withContext do
-          let rulePrf ← elabTerm syn none
-          let ⟨newType, newHyp, newSubgoals⟩ ← goal.withContext
-              $ grwHyp (Expr.fvar fvar) rulePrf rev
-          let name ← fvar.getUserName
-          let ⟨newFvar, goal', _⟩ ← goal.assertAfter fvar name newType newHyp
-          let newGoal ← goal'.clear fvar
-          set (⟨newGoal, subgoals ++ newSubgoals, newFvar⟩ : MVarId × Array MVarId × FVarId)
-      ).run (⟨← getMainGoal, #[], fvar⟩ : MVarId × Array MVarId × FVarId)
-      -- We can't use replaceMainGoal, since withTacticInfoContext prunes the solved goals so the
-      -- main goal will have already been removed
-      let newGoals := subgoals ++ #[newGoal] ++ (← getGoals)
-      setGoals newGoals.toList
-      pruneSolvedGoals
-    )
-    (atTarget := withMainContext do
-      let ⟨_, newGoal, subgoals⟩ ← (withRWRulesSeqState tok rules fun rev syn ↦ do
-        let ⟨currentTarget, subgoals⟩ ← get
-        let ⟨_, newGoal, newSubgoals⟩ ← currentTarget.withContext do
-          let rulePrf ← elabTerm syn none
-          currentTarget.grw rulePrf rev
-        set (⟨newGoal, subgoals.append newSubgoals⟩ : MVarId × Array MVarId)
-      ).run (⟨← getMainGoal, #[]⟩ : MVarId × Array MVarId)
-      try newGoal.withContext $ withReducible newGoal.applyRfl
-      catch _ => pure ⟨⟩
-      -- We can't use replaceMainGoal, since withTacticInfoContext prunes the solved goals so the
-      -- main goal will have already been removed
-      let newGoals := subgoals.toList ++ [newGoal] ++ (← getGoals)
-      setGoals newGoals
-      pruneSolvedGoals
-    )
+    (atLocal := λ fvar => withMainContext $ grwAtLocal fvar tok rules)
+    (atTarget := withMainContext $ grwAtTarget tok rules)
     (failed := fun _ ↦ throwError "grw failed")
