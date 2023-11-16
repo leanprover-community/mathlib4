@@ -238,27 +238,27 @@ def Invertible.mul [Monoid α] {a b : α} (_ : Invertible a) (_ : Invertible b) 
   invertibleMul _ _
 #align invertible.mul Invertible.mul
 
-theorem mul_right_inj_of_invertible [Monoid α] {a b : α} (c : α) [Invertible c] :
-    a * c = b * c ↔ a = b :=
+section
+variable [Monoid α] {a b c : α} [Invertible c]
+
+variable (c) in
+theorem mul_right_inj_of_invertible : a * c = b * c ↔ a = b :=
   ⟨fun h => by simpa using congr_arg (· * ⅟c) h, congr_arg (· * _)⟩
 
-theorem mul_left_inj_of_invertible [Monoid α] {a b : α} (c : α) [Invertible c] :
-    c * a = c * b ↔ a = b :=
+variable (c) in
+theorem mul_left_inj_of_invertible : c * a = c * b ↔ a = b :=
   ⟨fun h => by simpa using congr_arg (⅟c * ·) h, congr_arg (_ * ·)⟩
 
-theorem invOf_mul_eq_iff_eq_mul_left [Monoid α] {a b c : α} [Invertible (c : α)] :
-    ⅟c * a = b ↔ a = c * b := by
+theorem invOf_mul_eq_iff_eq_mul_left : ⅟c * a = b ↔ a = c * b := by
   rw [← mul_left_inj_of_invertible (c := c), mul_invOf_self_assoc]
 
-theorem mul_left_eq_iff_eq_invOf_mul [Monoid α] {a b c : α} [Invertible (c : α)] :
-    c * a = b ↔ a = ⅟c * b := by
+theorem mul_left_eq_iff_eq_invOf_mul : c * a = b ↔ a = ⅟c * b := by
   rw [← mul_left_inj_of_invertible (c := ⅟c), invOf_mul_self_assoc]
 
-
-theorem mul_invOf_eq_iff_eq_mul_right [Monoid α] {a b c : α} [Invertible (c : α)] :
-    a * ⅟c = b ↔ a = b * c := by
+theorem mul_invOf_eq_iff_eq_mul_right : a * ⅟c = b ↔ a = b * c := by
   rw [← mul_right_inj_of_invertible (c := c), mul_invOf_mul_self_cancel]
 
-theorem mul_right_eq_iff_eq_mul_invOf [Monoid α] {a b c : α} [Invertible (c : α)] :
-    a * c = b ↔ a = b * ⅟c := by
+theorem mul_right_eq_iff_eq_mul_invOf : a * c = b ↔ a = b * ⅟c := by
   rw [← mul_right_inj_of_invertible (c := ⅟c), mul_mul_invOf_self_cancel]
+
+end
