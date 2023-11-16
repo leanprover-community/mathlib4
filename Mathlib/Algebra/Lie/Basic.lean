@@ -633,6 +633,9 @@ theorem symm_symm (e : L₁ ≃ₗ⁅R⁆ L₂) : e.symm.symm = e := by
   rfl
 #align lie_equiv.symm_symm LieEquiv.symm_symm
 
+theorem symm_bijective : Function.Bijective (LieHom.symm : L₁ ≃ₗ⁅R⁆ L₂ → L₂ ≃ₗ⁅R⁆ L₁) :=
+  Equiv.bijective ⟨LieHom.symm, LieHom.symm, symm_symm, symm_symm⟩
+
 @[simp]
 theorem apply_symm_apply (e : L₁ ≃ₗ⁅R⁆ L₂) : ∀ x, e (e.symm x) = x :=
   e.toLinearEquiv.apply_symm_apply

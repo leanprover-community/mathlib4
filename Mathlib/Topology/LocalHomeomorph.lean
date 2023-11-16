@@ -356,6 +356,9 @@ theorem symm_target : e.symm.target = e.source :=
 @[simp, mfld_simps] theorem symm_symm : e.symm.symm = e := rfl
 #align local_homeomorph.symm_symm LocalHomeomorph.symm_symm
 
+theorem symm_bijective : Function.Bijective (LocalHomeomorph.symm : LocalHomeomorph α β → LocalHomeomorph β α) :=
+  Equiv.bijective ⟨LocalHomeomorph.symm, LocalHomeomorph.symm, symm_symm, symm_symm⟩
+
 /-- A local homeomorphism is continuous at any point of its source -/
 protected theorem continuousAt {x : α} (h : x ∈ e.source) : ContinuousAt e x :=
   (e.continuousOn x h).continuousAt (e.open_source.mem_nhds h)
