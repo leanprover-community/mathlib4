@@ -136,7 +136,7 @@ theorem isAlgebraic_of_mem_rootSet {R : Type u} {A : Type v} [Field R] [Field A]
 
 open IsScalarTower
 
-theorem IsAlgebraic.algebraMap {a : S} :
+protected theorem IsAlgebraic.algebraMap {a : S} :
     IsAlgebraic R a → IsAlgebraic R (algebraMap S A a) := fun ⟨f, hf₁, hf₂⟩ =>
   ⟨f, hf₁, by rw [aeval_algebraMap_apply, hf₂, map_zero]⟩
 #align is_algebraic_algebra_map_of_is_algebraic IsAlgebraic.algebraMap
