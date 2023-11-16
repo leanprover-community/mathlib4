@@ -475,7 +475,7 @@ open Fintype Real MeasureTheory MeasureTheory.Measure ENNReal
 
 @[simp]
 theorem Euclidean_space.volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
-  volume (Metric.ball x r) = (.ofReal r) ^ card ι *
+    volume (Metric.ball x r) = (.ofReal r) ^ card ι *
       .ofReal (Real.sqrt π  ^ card ι / Gamma (card ι / 2 + 1)) := by
   obtain hr | hr := le_total r 0
   · rw [Metric.ball_eq_empty.mpr hr, measure_empty, ← zero_eq_ofReal.mpr hr, zero_pow card_pos,
