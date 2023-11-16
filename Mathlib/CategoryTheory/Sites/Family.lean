@@ -1,4 +1,13 @@
+/-
+Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
 import Mathlib.CategoryTheory.Sites.Sieves
+/-!
+
+# Families of morphisms with fixed target
+-/
 
 namespace CategoryTheory
 
@@ -15,6 +24,11 @@ namespace Family
 end Family
 
 namespace Presieve
+
+def toFamily (S : Presieve X) : Family X where
+  I := ΣY, { f : Y ⟶ X // S f }
+  domains := fun i ↦ i.fst
+  arrows := fun i ↦ i.snd.val
 
 def domains (S : Presieve X) := fun (i : ΣY, { f : Y ⟶ X // S f }) ↦ i.fst
 
