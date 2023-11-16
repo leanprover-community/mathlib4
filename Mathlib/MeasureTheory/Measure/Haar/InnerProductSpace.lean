@@ -94,10 +94,10 @@ theorem OrthonormalBasis.measurePreserving_measurableEquiv (b : OrthonormalBasis
   exact b.addHaar_eq_volume.symm
 
 theorem OrthonormalBasis.measurePreserving_repr (b : OrthonormalBasis ι ℝ F) :
-    MeasurePreserving b.repr volume volume := b.volume_preserving_measurableEquiv
+    MeasurePreserving b.repr volume volume := b.measurePreserving_measurableEquiv
 
 theorem OrthonormalBasis.measurePreserving_repr_symm (b : OrthonormalBasis ι ℝ F) :
-    MeasurePreserving b.repr.symm volume volume := b.volume_preserving_measurableEquiv.symm
+    MeasurePreserving b.repr.symm volume volume := b.measurePreserving_measurableEquiv.symm
 
 section PiLp
 
