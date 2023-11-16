@@ -125,7 +125,8 @@ noncomputable def auxEquiv : (𝒜 ⊗'[R] ℬ) ≃ₗ[R] (⨁ i, 𝒜 i) ⊗[R]
   rw [←of_one, Algebra.TensorProduct.one_def, auxEquiv_tmul 𝒜 ℬ, DirectSum.decompose_one,
     DirectSum.decompose_one, Algebra.TensorProduct.one_def]
 
-@[simp] theorem auxEquiv_symm_one : (auxEquiv R 𝒜 ℬ).symm 1 = 1 :=
+@[simp, nolint simpNF]  -- simpNF linter crashes
+theorem auxEquiv_symm_one : (auxEquiv R 𝒜 ℬ).symm 1 = 1 :=
   (LinearEquiv.symm_apply_eq _).mpr (auxEquiv_one _ _).symm
 
 /-- Auxiliary construction used to build the `Mul` instance and get distributivity of `+` and
@@ -178,7 +179,6 @@ theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a�
   dsimp only [mul_def, mulHom_apply, of_symm_of]
   dsimp [auxEquiv, tmul]
   erw [decompose_coe, decompose_coe]
-  dsimp
   simp_rw [←lof_eq_of R]
   rw [tmul_of_gradedMul_of_tmul]
   simp_rw [lof_eq_of R]
@@ -345,7 +345,7 @@ lemma algHom_ext ⦃f g : (𝒜 ⊗'[R] ℬ) →ₐ[R] C⦄
     (hb : f.comp (includeRight 𝒜 ℬ) = g.comp (includeRight 𝒜 ℬ)) : f = g :=
   (liftEquiv 𝒜 ℬ).symm.injective <| Subtype.ext <| Prod.ext ha hb
 
-/-- The non-trivial symmetric braiding, sending $a \otimes b)$ to
+/-- The non-trivial symmetric braiding, sending $a \otimes b$ to
 $(-1)^{\deg a' \deg b} (b \otimes a)$. -/
 def comm : (𝒜 ⊗'[R] ℬ) ≃ₐ[R] (ℬ ⊗'[R] 𝒜) :=
   AlgEquiv.ofLinearEquiv
