@@ -143,7 +143,7 @@ protected theorem IsAlgebraic.algebraMap {a : S} :
 
 /-- This is slightly more general than `isAlgebraic_algebraMap_of_isAlgebraic` in that it
   allows noncommutative intermediate rings `A`. -/
-theorem IsAlgebraic.algHom {B} [Ring B] [Algebra R B] (f : A →ₐ[R] B) {a : A}
+protected theorem IsAlgebraic.algHom {B} [Ring B] [Algebra R B] (f : A →ₐ[R] B) {a : A}
     (h : IsAlgebraic R a) : IsAlgebraic R (f a) :=
   let ⟨p, hp, ha⟩ := h
   ⟨p, hp, by rw [aeval_algHom, f.comp_apply, ha, map_zero]⟩
