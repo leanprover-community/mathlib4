@@ -38,9 +38,20 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 variable {X Y Z : C} (f : Y ⟶ X)
 
 /-- A set of arrows all with codomain `X`. -/
+structure Family (X : C) where
+  I : Type*
+  domains : I → C
+  arrows : (i : I) → domains i ⟶ X
+
+instance : CompleteLattice (Family X) := by sorry
+
+namespace Family
+
+end Family
+
+/-- A set of arrows all with codomain `X`. -/
 def Presieve (X : C) :=
   ∀ ⦃Y⦄, Set (Y ⟶ X)-- deriving CompleteLattice
-#align category_theory.presieve CategoryTheory.Presieve
 
 instance : CompleteLattice (Presieve X) := by
   dsimp [Presieve]
@@ -173,6 +184,18 @@ theorem ofArrows_surj {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) {Z : C}
     g = eqToHom h.symm ≫ f i := by
   cases' hg with i
   exact ⟨i, rfl, by simp only [eqToHom_refl, id_comp]⟩
+
+def domains (S : Presieve X) := fun (i : ΣY, { f : Y ⟶ X // S f }) ↦ i.fst
+
+def arrows (S : Presieve X) := fun (i : ΣY, { f : Y ⟶ X // S f }) ↦ i.snd.val
+
+theorem arrowsPresentation (S : Presieve X) : S =
+    ofArrows S.domains S.arrows := by
+  funext Y f
+  refine eq_iff_iff.mpr ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · exact ofArrows.mk (⟨Y, f, h⟩ : ΣY, { f : Y ⟶ X // S f })
+  · cases h with
+    | mk i => exact i.snd.prop
 
 /-- Given a presieve on `F(X)`, we can define a presieve on `X` by taking the preimage via `F`. -/
 def functorPullback (R : Presieve (F.obj X)) : Presieve X := fun _ f => R (F.map f)
