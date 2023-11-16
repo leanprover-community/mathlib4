@@ -89,7 +89,7 @@ theorem integrableOn_Ioi_rpow_iff {s t : ℝ} (ht : 0 < t) :
     exact Real.rpow_le_rpow_of_exponent_le x_one h
   exact not_IntegrableOn_Ioi_inv this
 
-/-- The power function with any exponent is not integrable on `(0, +∞)`. -/
+/-- The real power function with any exponent is not integrable on `(0, +∞)`. -/
 theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) (Ioi (0 : ℝ)) := by
   intro h
   rcases le_or_lt s (-1) with hs|hs
@@ -99,6 +99,9 @@ theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) 
   · have : IntegrableOn (fun x ↦ x ^ s) (Ioi 1) := h.mono (Ioi_subset_Ioi zero_le_one) le_rfl
     rw [integrableOn_Ioi_rpow_iff zero_lt_one] at this
     exact hs.not_lt this
+
+theorem setIntegral_Ioi_zero_rpow (s : ℝ) : ∫ x in Ioi (0 : ℝ), x ^ s = 0 :=
+  MeasureTheory.integral_undef (not_integrableOn_Ioi_rpow s)
 
 theorem integral_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
     ∫ t : ℝ in Ioi c, t ^ a = -c ^ (a + 1) / (a + 1) := by
@@ -123,6 +126,33 @@ theorem integrableOn_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0
     exact
       (Complex.continuousAt_ofReal_cpow_const _ _ (Or.inr (hc.trans ht).ne')).continuousWithinAt
 #align integrable_on_Ioi_cpow_of_lt integrableOn_Ioi_cpow_of_lt
+
+theorem integrableOn_Ioi_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
+    IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioi t) ↔ s.re < -1 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ integrableOn_Ioi_cpow_of_lt h ht⟩
+  have B : IntegrableOn (fun a ↦ a ^ s.re) (Ioi t) := by
+    apply (integrableOn_congr_fun _ measurableSet_Ioi).1 h.norm
+    intro a ha
+    have : 0 < a := ht.trans ha
+    simp [Complex.abs_cpow_eq_rpow_re_of_pos this]
+  rwa [integrableOn_Ioi_rpow_iff ht] at B
+
+/-- The complex power function with any exponent is not integrable on `(0, +∞)`. -/
+theorem not_integrableOn_Ioi_cpow (s : ℂ) :
+    ¬ IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioi (0 : ℝ)) := by
+  intro h
+  rcases le_or_lt s.re (-1) with hs|hs
+  · have : IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioo (0 : ℝ) 1) :=
+      h.mono Ioo_subset_Ioi_self le_rfl
+    rw [integrableOn_Ioo_cpow_iff zero_lt_one] at this
+    exact hs.not_lt this
+  · have : IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioi 1) :=
+      h.mono (Ioi_subset_Ioi zero_le_one) le_rfl
+    rw [integrableOn_Ioi_cpow_iff zero_lt_one] at this
+    exact hs.not_lt this
+
+theorem setIntegral_Ioi_zero_cpow (s : ℂ) : ∫ x in Ioi (0 : ℝ), (x : ℂ) ^ s = 0 :=
+  MeasureTheory.integral_undef (not_integrableOn_Ioi_cpow s)
 
 theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
     (∫ t : ℝ in Ioi c, (t : ℂ) ^ a) = -(c : ℂ) ^ (a + 1) / (a + 1) := by

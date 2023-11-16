@@ -123,29 +123,13 @@ theorem mellin_div_const (f : ℝ → ℂ) (s a : ℂ) : mellin (fun t => f t / 
   simp_rw [mellin, smul_eq_mul, ← mul_div_assoc, integral_div]
 #align mellin_div_const mellin_div_const
 
-open scoped ENNReal
-
-#exit
-
-lemma foo3 (s : ℂ) : ∫ (x : ℝ) in Ioi 0, ↑x ^ s = 0 := by
-  apply integral_undef (fun h ↦ ?_)
-  have B : IntegrableOn (fun a ↦ a ^ s.re) (Ioi (0 : ℝ)) := by
-    apply (integrableOn_congr_fun _ measurableSet_Ioi).1 h.norm
-    intro a ha
-    simp [abs_cpow_eq_rpow_re_of_pos ha]
-  have : s.re < -1 :=
-    (foo1 zero_lt_one).1 (B.mono (Ioi_subset_Ioi zero_le_one) le_rfl)
-  have : -1 < s.re :=
-    (foo2 zero_lt_one).1 (B.mono Ioo_subset_Ioi_self le_rfl)
-  linarith
-
 theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
     mellin (fun t => f (t ^ a)) s = |a|⁻¹ • mellin f (s / a) := by
   /- This is true for `a = 0` as all sides are undefined but turn out to vanish thanks to our
   convention. The interesting case is `a ≠ 0` -/
   rcases eq_or_ne a 0 with rfl|ha
   · by_cases hE : CompleteSpace E
-    · simp [integral_smul_const, mellin, foo3]
+    · simp [integral_smul_const, mellin, setIntegral_Ioi_zero_cpow]
     · simp [integral, mellin, hE]
   · simp_rw [mellin]
     conv_rhs => rw [← integral_comp_rpow_Ioi _ ha, ← integral_smul]
