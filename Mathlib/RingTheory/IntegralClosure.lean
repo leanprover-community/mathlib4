@@ -244,7 +244,7 @@ theorem FG_adjoin_singleton_of_integral (x : A) (hx : IsIntegral R x) :
   exact lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 hk)
 #align fg_adjoin_singleton_of_integral FG_adjoin_singleton_of_integral
 
-theorem FG_adjoin_of_finite {s : Set A} (hfs : s.Finite) (his : ∀ x ∈ s, IsIntegral R x) :
+theorem fg_adjoin_of_finite {s : Set A} (hfs : s.Finite) (his : ∀ x ∈ s, IsIntegral R x) :
     (Algebra.adjoin R s).toSubmodule.FG :=
   Set.Finite.induction_on hfs
     (fun _ =>
@@ -257,11 +257,11 @@ theorem FG_adjoin_of_finite {s : Set A} (hfs : s.Finite) (his : ∀ x ∈ s, IsI
         FG.mul (ih fun i hi => his i <| Set.mem_insert_of_mem a hi)
           (FG_adjoin_singleton_of_integral _ <| his a <| Set.mem_insert a s))
     his
-#align fg_adjoin_of_finite FG_adjoin_of_finite
+#align fg_adjoin_of_finite fg_adjoin_of_finite
 
 theorem isNoetherian_adjoin_finset [IsNoetherianRing R] (s : Finset A)
     (hs : ∀ x ∈ s, IsIntegral R x) : IsNoetherian R (Algebra.adjoin R (↑s : Set A)) :=
-  isNoetherian_of_fg_of_noetherian _ (FG_adjoin_of_finite s.finite_toSet hs)
+  isNoetherian_of_fg_of_noetherian _ (fg_adjoin_of_finite s.finite_toSet hs)
 #align is_noetherian_adjoin_finset isNoetherian_adjoin_finset
 
 /-- If `S` is a sub-`R`-algebra of `A` and `S` is finitely-generated as an `R`-module,
@@ -431,7 +431,7 @@ theorem RingHom.IsIntegral.to_finite (h : f.IsIntegral) (h' : f.FiniteType) : f.
   constructor
   change (⊤ : Subalgebra R S).toSubmodule.FG
   rw [← hs]
-  exact FG_adjoin_of_finite (Set.toFinite _) fun x _ => h x
+  exact fg_adjoin_of_finite (Set.toFinite _) fun x _ => h x
 #align ring_hom.is_integral.to_finite RingHom.IsIntegral.to_finite
 
 alias RingHom.Finite.of_isIntegral_of_finiteType := RingHom.IsIntegral.to_finite
@@ -1012,7 +1012,7 @@ theorem isIntegral_trans (A_int : Algebra.IsIntegral R A) (x : B) (hx : IsIntegr
   rcases hx with ⟨p, pmonic, hp⟩
   let S : Set B := ↑(p.map <| algebraMap A B).frange
   refine' isIntegral_of_mem_of_FG (adjoin R (S ∪ {x})) _ _ (subset_adjoin <| Or.inr rfl)
-  refine' fg_trans (FG_adjoin_of_finite (Finset.finite_toSet _) fun x hx => _) _
+  refine' fg_trans (fg_adjoin_of_finite (Finset.finite_toSet _) fun x hx => _) _
   · rw [Finset.mem_coe, frange, Finset.mem_image] at hx
     rcases hx with ⟨i, _, rfl⟩
     rw [coeff_map]
