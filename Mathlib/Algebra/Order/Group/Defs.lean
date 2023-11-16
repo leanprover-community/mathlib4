@@ -1117,17 +1117,19 @@ attribute [to_additive existing] LinearOrderedCommGroup.toLinearOrderedCommMonoi
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
-class LinearOrderedAddCommGroupWithTop (α : Type u) extends LinearOrderedAddCommMonoidWithTop α,
-  SubNegMonoid α, Nontrivial α where
+class LinearOrderedAddCommGroupWithTop (α : Type u) extends SubNegMonoid α,
+    LinearOrderedAddCommMonoidWithTop α, Nontrivial α where
   protected neg_top : -(⊤ : α) = ⊤
   protected add_neg_cancel : ∀ a : α, a ≠ ⊤ → a + -a = 0
 #align linear_ordered_add_comm_group_with_top LinearOrderedAddCommGroupWithTop
 
-attribute [instance 100] LinearOrderedAddCommGroupWithTop.toLinearOrderedAddCommMonoidWithTop
 attribute [instance 50] LinearOrderedAddCommGroupWithTop.toSubNegMonoid
+attribute [instance 100] LinearOrderedAddCommGroupWithTop.toLinearOrderedAddCommMonoidWithTop
 attribute [instance 50] LinearOrderedAddCommGroupWithTop.toNontrivial
-attribute [instance 0] LinearOrderedAddCommGroupWithTop.toNeg
-attribute [instance 0] LinearOrderedAddCommGroupWithTop.toSub
+attribute [instance 0] LinearOrderedAddCommGroupWithTop.toMin
+attribute [instance 0] LinearOrderedAddCommGroupWithTop.toMax
+attribute [instance 0] LinearOrderedAddCommGroupWithTop.toOrd
+attribute [instance 0] LinearOrderedAddCommGroupWithTop.toOrderTop
 
 section LinearOrderedCommGroup
 
