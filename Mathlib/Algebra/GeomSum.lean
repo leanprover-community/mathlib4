@@ -143,8 +143,7 @@ theorem geom_sum₂_self {α : Type*} [CommRing α] (x : α) (n : ℕ) :
     ∑ i in range n, x ^ i * x ^ (n - 1 - i) = n * x ^ (n - 1) :=
   calc
     ∑ i in Finset.range n, x ^ i * x ^ (n - 1 - i) =
-        ∑ i in Finset.range n, x ^ (i + (n - 1 - i)) :=
-      by simp_rw [← pow_add]
+        ∑ i in Finset.range n, x ^ (i + (n - 1 - i)) := by simp_rw [← pow_add]
     _ = ∑ i in Finset.range n, x ^ (n - 1) :=
       Finset.sum_congr rfl fun i hi =>
         congr_arg _ <| add_tsub_cancel_of_le <| Nat.le_sub_one_of_lt <| Finset.mem_range.1 hi
@@ -418,8 +417,8 @@ theorem Nat.pred_mul_geom_sum_le (a b n : ℕ) :
     ((b - 1) * ∑ i in range n.succ, a / b ^ i) ≤ a * b - a / b ^ n :=
   calc
     ((b - 1) * ∑ i in range n.succ, a / b ^ i) =
-        (∑ i in range n, a / b ^ (i + 1) * b) + a * b - ((∑ i in range n, a / b ^ i) + a / b ^ n) :=
-      by rw [tsub_mul, mul_comm, sum_mul, one_mul, sum_range_succ', sum_range_succ, pow_zero,
+    (∑ i in range n, a / b ^ (i + 1) * b) + a * b - ((∑ i in range n, a / b ^ i) + a / b ^ n) := by
+      rw [tsub_mul, mul_comm, sum_mul, one_mul, sum_range_succ', sum_range_succ, pow_zero,
         Nat.div_one]
     _ ≤ (∑ i in range n, a / b ^ i) + a * b - ((∑ i in range n, a / b ^ i) + a / b ^ n) := by
       refine' tsub_le_tsub_right (add_le_add_right (sum_le_sum fun i _ => _) _) _
