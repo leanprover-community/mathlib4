@@ -13,6 +13,8 @@ import Mathlib.Order.BoundedOrder
 
 This file provides the definitions of ordered monoids.
 
+We make every instance from ordered algebraic classes to pure algebraic classes and order classes
+lower priority for better performance.
 -/
 
 
