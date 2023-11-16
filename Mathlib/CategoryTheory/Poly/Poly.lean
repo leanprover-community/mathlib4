@@ -5,6 +5,7 @@ Authors: David Spivak, Shaowei Lin
 -/
 import Init.Prelude
 import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.CategoryTheory.Monoidal.Category
 
 /-!
 # Polynomial Functors
@@ -43,11 +44,15 @@ These polynomial functors can be applied to types
 in any `Type w` independent of `Type u` and `Type v`.
 -/
 
-universe u v w
+universe u v u' v' w
 
 namespace CategoryTheory
 
 namespace Poly
+
+
+
+
 
 /-!
 ## Category of polynommial functors
@@ -59,22 +64,20 @@ structure Poly where
   dir : pos -> Type v
 
 /-- The type of lenses/maps from one polynomial functor to another. -/
-def polymap (p q : Poly.{u, v}) : Type max u v :=
-  Σ (onPos : p.pos -> q.pos),
-  (P : p.pos) -> q.dir (onPos P) -> p.dir P
+structure polymap (p q : Poly.{u, v}) : Type max u v where
+  onPos : p.pos -> q.pos
+  onDir : (x : p.pos) -> q.dir (onPos x) -> p.dir x
 
 /-- The identity lens/map from a polynomial functor to itself. -/
-def polyid (p : Poly) : polymap p p :=
-  Sigma.mk (id) (λ _ ↦ id)
+def polyid (p : Poly) : polymap p p where
+  onPos := id
+  onDir := λ _ ↦ id
 
 /-- Composition of lenses/maps. -/
 def composemap {p q r : Poly} (f : polymap p q) (g : polymap q r) :
-    (polymap p r) :=
-  let onPos :=
-    g.fst ∘ f.fst
-  let onDir (P : p.pos) (rd : r.dir (onPos P)) :=
-    f.snd P (g.snd (f.fst P) rd)
-  Sigma.mk onPos onDir
+    polymap p r where
+  onPos := g.onPos ∘ f.onPos
+  onDir := λ px rd ↦ f.onDir px (g.onDir (f.onPos px) rd)
 
 /-- Poly as a type with some categorical structure. -/
 instance Poly.categoryStruct : CategoryStruct Poly where
@@ -88,40 +91,19 @@ instance Poly.category : Category Poly where
   comp_id := by intros; rfl
   assoc   := by intros; rfl
 
-/-- Applying a polynomial functor to a type. -/
-def applyFun (p : Poly.{u, v}) (T : Type w) : Type max u v w :=
-  Σ (P : p.pos), (p.dir P) -> T
+/-- Applying a polynomial functor to get a type. -/
+def applyFun (p : Poly.{u, v}) (T : Type w) :
+    Type max u v w :=
+  Σ (x : p.pos), (p.dir x) -> T
 
--- replaced by Poly.category.assoc --
--- theorem assoc {p q r s : Poly} :
---   (f : p ⇒ q) -> (g : q ⇒ r) -> (h : r ⇒ s) ->
---   (f ; (g ; h)) = ((f ; g) ; h) := by
---   intros
---   rfl
+/-- Applying a lens/map to get a function. -/
+def applyMap {p q : Poly.{u, v}} (f : p ⟶ q) (T : Type) :
+    (applyFun p T) -> (applyFun q T) :=
+  λ x ↦ Sigma.mk (f.onPos x.fst) (x.snd ∘ (f.onDir x.fst))
 
--- replaced by Poly.category.comp_id --
--- theorem unitl {p q : Poly} : (f : p ⇒ q) -> f = (f ; polyid) := by
---   intros
---   rfl
 
--- replaced by Poly.category.id_comp --
--- theorem unitr {p q : Poly} : (f : p ⇒ q) -> f = (polyid ; f) := by
---   intros
---   rfl
 
-/-!
-## Special functions
--/
 
-/-- Notation for unique map from empty type. -/
-scoped notation "!𝟬" => PEmpty.rec  -- type as !\sb0
-
-/-- Unique map to unit type. -/
-def bang1 {T : Type u} : T -> PUnit.{v+1} :=
-  λ _ ↦ PUnit.unit
-
-/-- Notation for unique map to unit type. -/
-scoped notation "!𝟭" => bang1  -- type as !\sb1
 
 /-!
 ## Special polynommial functors
@@ -133,93 +115,234 @@ def monomial (P : Type u) (D: Type v) : Poly.{u, v} where
   dir := (λ _ ↦ D)
 
 /-- Notation for a monomial functor. -/
-scoped notation:50 A:50 " y^" B:50 => monomial A B
+scoped notation:80 A:80 " y^" B:80 => monomial A B
 
 /-- A representable functor. -/
 def representable (D : Type v) : Poly.{u, v} := PUnit.{u+1} y^D
 
 /-- Notation for a representable functor. -/
-scoped notation:50 "y^" B:50 => representable B
+scoped notation:80 "y^" B:80 => representable B
 
 /-- A constant polynomial functor. -/
 def const (P : Type u) : Poly.{u, v} := P y^(PEmpty.{v+1})
 
+/-- Notation for a constant polynomial functor. -/
+scoped notation:80 A:80 " y^0" => const A
+
 /-- A linear polynomial functor. -/
 def linear (P : Type u) : Poly.{u, v} := P y^(PUnit.{v+1})
+
+/-- Notation for a linear polynomial functor. -/
+scoped notation:80 A:80 " y^1" => linear A
+
+/-- The identity functor in Poly. -/
+def y : Poly.{u, v} := linear PUnit.{u+1}
+
+/-- Additional notation for a linear polynomial functor. -/
+scoped notation "y^1" => y
 
 /-- The initial object in Poly. -/
 def poly0 : Poly.{u, v} := const PEmpty.{u+1}
 
 /-- Notation for the initial object. -/
-scoped notation "𝟬" => poly0  -- type as \sb0
+scoped notation "𝟬" => poly0  -- type as `\sb0`
+
+/-- Notation for unique map from empty type. -/
+scoped notation "!𝟬" => PEmpty.rec  -- type as `!\sb0`
 
 /-- The terminal object in Poly. -/
 def poly1 : Poly.{u, v} := const PUnit.{u+1}
 
 /-- Notation for the terminal object. -/
-scoped notation "𝟭" => poly1  -- type as \sb1
+scoped notation "𝟭" => poly1  -- type as `\sb1`
 
-/-- The identity functor in Poly. -/
-def y : Poly.{u, v} := linear PUnit.{u+1}
+/-- Notation for unique map to unit type. -/
+scoped notation "!𝟭" => Function.const _ PUnit.unit  -- type as `!\sb1`
+
+
+
+
 
 /-!
 ## Special lenses/maps
 -/
 
-def constantMap {T T' : Type u} (f : T -> T') : (const T) ⟶ (const T') :=
-  Sigma.mk f (λ _ ↦ !𝟬)
+/-- A lens/map between constant polynomial functors. -/
+def constantMap {T T' : Type u} (f : T -> T') : T y^0 ⟶ T' y^0 where
+  onPos := f
+  onDir := (λ _ ↦ !𝟬)
 
-def linearMap {T T' : Type u} (f : T -> T') : (linear T) ⟶ (linear T') :=
-  Sigma.mk f (λ _ ↦ !𝟭)
+/-- A lens/map between linear polynomial functors. -/
+def linearMap {T T' : Type u} (f : T -> T') : T y^1 ⟶ T' y^1 where
+  onPos := f
+  onDir := (λ _ ↦ !𝟭)
 
-def representableMap {T T' : Type u} (f : T -> T') : y^T' ⟶ y^T :=
-  Sigma.mk !𝟭 (λ _ ↦ f)
+/-- A lens/map between representable functors. -/
+def representableMap {T T' : Type u} (f : T -> T') : y^T' ⟶ y^T where
+  onPos := !𝟭
+  onDir := (λ _ ↦ f)
 
-def bang0poly {p : Poly.{u, v}} : 𝟬 ⟶ p :=
-  Sigma.mk !𝟬 !𝟬
+/-- The unique lens/map from the initial object in Poly. -/
+def bang0poly {p : Poly.{u, v}} : 𝟬 ⟶ p where
+  onPos := !𝟬
+  onDir := !𝟬
 
-def bang1poly {P : Poly.{u, v}} : P ⟶ 𝟭 :=
-  Sigma.mk !𝟭 (λ _ ↦ !𝟬)
+/-- The unique lens/map to the terminal object in Poly. -/
+def bang1poly {P : Poly.{u, v}} : P ⟶ 𝟭 where
+  onPos := !𝟭
+  onDir := (λ _ ↦ !𝟬)
 
+/-- A second representation for the type of lenses/maps. -/
 def polymap2 (p q : Poly.{u, v}) : Type max u v :=
-  (P : p.pos) -> Σ (Q : q.pos), q.dir Q -> p.dir P
+  (px : p.pos) -> Σ (qx : q.pos), q.dir qx -> p.dir px
 
+/-- Casting from the default representation for the type
+    of lenses/maps to the second representation. -/
 def cast12 {p q : Poly.{u, v}} (f : p ⟶ q) : polymap2 p q :=
-  λ P ↦ (Sigma.mk (f.fst P) (f.snd P))
+  λ px ↦ (Sigma.mk (f.onPos px) (f.onDir px))
 
-def cast21 {p q : Poly.{u, v}} (f : polymap2 p q) : p ⟶ q :=
-  Sigma.mk (λ P ↦ (f P).fst) (λ P ↦ (f P).snd)
-
-def toTransformation {p q : Poly.{u, v}} (f : p ⟶ q) (T : Type) :
-    (applyFun p T) -> (applyFun q T) :=
-  λ pT ↦
-  let P := pT.fst
-  let Q := pT.snd
-  Sigma.mk (f.fst P) (Q ∘ f.snd P)
+/-- Casting from the second representation for the type
+    of lenses/maps to the default representation. -/
+def cast21 {p q : Poly.{u, v}} (f : polymap2 p q) : p ⟶ q where
+  onPos := (λ px ↦ (f px).fst)
+  onDir := (λ px ↦ (f px).snd)
 
 
--------- Substitution product ----------
-
-def subst : Poly -> Poly -> Poly :=
-  λ p q ↦
-  {
-    pos := applyFun p q.pos
-    dir := λ x ↦
-      let P := x.fst
-      let Q := x.snd
-    (d : p.dir P) × (q.dir (Q d))
-  }
-
-notation:80 p "◁" q => subst p q
 
 
-def unitSubstRight {p : Poly} : (p ◁ y) ⟶ p :=
-  sorry
 
-structure Comonad where
-  carrier : Poly
-  counit  : carrier ⟶ y
-  comult  : carrier ⟶ (carrier ◁ carrier)
+/-!
+## Substitution product
+-/
+
+/--
+Substitution product of polynomial functors.
+Require polynomial functors from Poly.{u, u}
+for the product to remain in Poly.{u, u}.
+-/
+def subst (p q : Poly.{u, u}) : Poly.{u, u} where
+  pos := applyFun p q.pos
+  dir := λ x ↦ Σ (d : p.dir x.fst), (q.dir (x.snd d))
+
+/-- Notation for substitution product of polynomial functors. -/
+scoped infixr:80 "◁" => subst -- type as `\lhd`
+
+def subst.whiskerLeft (p q q': Poly) (f : q ⟶ q') :
+    (p ◁ q) ⟶ (p ◁ q') where
+  onPos := λ x ↦ Sigma.mk x.fst (f.onPos ∘ x.snd)
+  onDir := λ x d ↦ Sigma.mk d.fst (f.onDir (x.snd d.fst) d.snd)
+
+def subst.whiskerRight (f : p ⟶ p') (q : Poly) :
+    (p ◁ q) ⟶ (p' ◁ q) where
+  onPos := applyMap f q.pos
+  onDir := λ x d ↦ Sigma.mk (f.onDir x.fst d.fst) d.snd
+
+def subst.leftUnitor.hom (p : Poly) : (y ◁ p) ⟶ p where
+  onPos := λ x ↦ x.snd x.fst
+  onDir := λ _ d ↦ Sigma.mk PUnit.unit d
+
+def subst.leftUnitor.inv (p : Poly) : p ⟶ (y ◁ p) where
+  onPos := λ x ↦ Sigma.mk PUnit.unit (λ _ ↦ x)
+  onDir := λ _ d ↦ d.snd
+
+def subst.leftUnitor (p : Poly) : (y ◁ p) ≅ p where
+  hom := subst.leftUnitor.hom p
+  inv := subst.leftUnitor.inv p
+
+def subst.rightUnitor.hom (p : Poly) : (p ◁ y) ⟶ p where
+  onPos := λ x ↦ x.fst
+  onDir := λ _ d ↦ Sigma.mk d PUnit.unit
+
+def subst.rightUnitor.inv (p : Poly) : p ⟶ (p ◁ y) where
+  onPos := λ x ↦ Sigma.mk x (λ _ ↦ PUnit.unit)
+  onDir := λ _ d ↦ d.fst
+
+def subst.rightUnitor (p : Poly) : (p ◁ y) ≅ p where
+  hom := subst.rightUnitor.hom p
+  inv := subst.rightUnitor.inv p
+
+def subst.associator.hom (p q r : Poly) :
+    (p ◁ q) ◁ r ⟶ p ◁ (q ◁ r) := by
+  constructor
+  case onPos =>
+    intro pq_r
+    let pq_r1 := pq_r.fst
+    let pq_r2 := pq_r.snd
+    let pq_r11 := pq_r1.fst
+    let pq_r12 := pq_r1.snd
+    constructor
+    case fst =>
+      exact pq_r11
+    case snd =>
+      intro pd
+      constructor
+      case fst =>
+        exact pq_r12 pd
+      case snd =>
+        intro qd
+        exact pq_r2 (Sigma.mk pd qd)
+  case onDir =>
+    intro _ p_qr
+    let p_qr1  := p_qr.fst
+    let p_qr2  := p_qr.snd
+    let p_qr21 := p_qr2.fst
+    let p_qr22 := p_qr2.snd
+    exact Sigma.mk (Sigma.mk p_qr1 p_qr21) p_qr22
+
+def subst.associator.inv (p q r : Poly) :
+    p ◁ (q ◁ r) ⟶ (p ◁ q) ◁ r := by
+  constructor
+  case onPos =>
+    intro p_qr
+    let p_qr1 := p_qr.fst
+    let p_qr2 := p_qr.snd
+    constructor
+    case fst =>
+      constructor
+      case fst =>
+        exact p_qr1
+      case snd =>
+        intros pd
+        exact (p_qr2 pd).fst
+    case snd =>
+      intro pqd
+      exact (p_qr2 pqd.fst).snd pqd.snd
+  case onDir =>
+    intro p_qr1 pq_rd
+    let pq_rd1 := pq_rd.fst
+    let pq_rd2 := pq_rd.snd
+    constructor
+    case fst =>
+      exact pq_rd1.fst
+    case snd =>
+      constructor
+      case fst =>
+        exact pq_rd1.snd
+      case snd =>
+        exact pq_rd2
+
+def subst.associator (p q r : Poly) : (p ◁ q) ◁ r ≅ p ◁ (q ◁ r) where
+  hom := subst.associator.hom p q r
+  inv := subst.associator.inv p q r
+
+instance Poly.subst.monoidalStruct : MonoidalCategoryStruct Poly where
+  tensorObj    := subst
+  whiskerLeft  := subst.whiskerLeft
+  whiskerRight := subst.whiskerRight
+  tensorUnit   := y
+  leftUnitor   := subst.leftUnitor
+  rightUnitor  := subst.rightUnitor
+  associator   := subst.associator
+
+
+-- instance functorCategoryMonoidal : MonoidalCategory (C ⥤ D) where
+--   tensorHom_def := by intros; ext; simp [tensorHom_def]
+--   pentagon F G H K := by ext X; dsimp; rw [pentagon]
+
+-- structure Comonad where
+--   carrier : Poly
+--   counit  : carrier ⟶ y
+--   comult  : carrier ⟶ (carrier ◁ carrier)
 
 
 end Poly
