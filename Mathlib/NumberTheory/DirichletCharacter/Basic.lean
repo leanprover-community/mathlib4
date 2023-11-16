@@ -209,12 +209,11 @@ lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n
   rw [(isPrimitive_def _).mp isPrimitive_one_level_one]
   apply one_dvd _
 
-namespace DirichletCharacter
 /-- The primitive character associated to a Dirichlet character. -/
 noncomputable def reduction : DirichletCharacter R χ.conductor :=
   Classical.choose (factorsThrough_conductor χ).choose_spec
 
-lemma reduction_isPrimitive : isPrimitive (reduction χ) := by
+lemma reduction_isPrimitive : isPrimitive (χ.reduction) := by
   by_cases χ.conductor = 0
   · rw [isPrimitive_def]
     conv_rhs => rw [h]
@@ -222,9 +221,9 @@ lemma reduction_isPrimitive : isPrimitive (reduction χ) := by
   · refine' le_antisymm (Nat.le_of_dvd (Nat.pos_of_ne_zero h) (conductor_dvd_level _)) <|
         mem_conductorSet_eq_conductor <| conductor_mem_conductorSet χ
 
-lemma reduction_one (hn : n ≠ 0) : reduction (1 : DirichletCharacter R n) = 1 := by
+lemma reduction_one (hn : n ≠ 0) : (1 : DirichletCharacter R n).reduction = 1 := by
   rw [eq_one_iff_conductor_eq_one <| (@conductor_one R _ _ hn) ▸ Nat.one_ne_zero,
-      (isPrimitive_def _).1 <| reduction_isPrimitive (1 : DirichletCharacter R n),
+      (isPrimitive_def _).1 (1 : DirichletCharacter R n).reduction_isPrimitive,
       conductor_one hn]
 
 end DirichletCharacter
