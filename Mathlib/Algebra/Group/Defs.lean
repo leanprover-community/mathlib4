@@ -591,8 +591,8 @@ class AddMonoid (M : Type u) extends AddZeroClass M, AddSemigroup M where
   protected nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = x + nsmul n x := by intros; rfl
 #align add_monoid AddMonoid
 
-attribute [instance 50] AddSemigroup.toAdd
 attribute [instance 150] AddZeroClass.toAdd
+attribute [instance 50] AddSemigroup.toAdd
 
 #align add_monoid.nsmul_zero' AddMonoid.nsmul_zero
 #align add_monoid.nsmul_succ' AddMonoid.nsmul_succ
@@ -607,6 +607,9 @@ class Monoid (M : Type u) extends MulOneClass M, Semigroup M where
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
   protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = x * npow n x := by intros; rfl
 #align monoid Monoid
+
+attribute [instance 150] MulOneClass.toMul
+attribute [instance 50] Semigroup.toMul
 
 #align monoid.npow_zero' Monoid.npow_zero
 #align monoid.npow_succ' Monoid.npow_succ

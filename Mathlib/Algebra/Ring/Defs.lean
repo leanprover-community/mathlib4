@@ -52,6 +52,9 @@ class Distrib (R : Type*) extends Mul R, Add R where
   protected right_distrib : ∀ a b c : R, (a + b) * c = a * c + b * c
 #align distrib Distrib
 
+attribute [instance 50] Distrib.toMul
+attribute [instance 50] Distrib.toAdd
+
 /-- A typeclass stating that multiplication is left distributive over addition. -/
 class LeftDistribClass (R : Type*) [Mul R] [Add R] : Prop where
   /-- Multiplication is left distributive over addition -/

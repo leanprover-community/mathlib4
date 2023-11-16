@@ -38,6 +38,8 @@ class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
   mul_zero : ∀ a : M₀, a * 0 = 0
 #align mul_zero_class MulZeroClass
 
+attribute [instance 50] MulZeroClass.toMul
+
 /-- A mixin for left cancellative multiplication by nonzero elements. -/
 class IsLeftCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
   /-- Multiplication by a nonzero element is left cancellative. -/
