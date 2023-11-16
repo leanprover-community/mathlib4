@@ -114,7 +114,7 @@ theorem Normal.of_algEquiv [h : Normal F E] (f : E ≃ₐ[F] E') : Normal F E' :
   rw [normal_iff] at h ⊢
   intro x; specialize h (f.symm x)
   rw [← f.apply_symm_apply x, minpoly.algEquiv_eq, ← f.toAlgHom.comp_algebraMap]
-  exact ⟨map_isIntegral f h.1, splits_comp_of_splits _ _ h.2⟩
+  exact ⟨IsIntegral.map f h.1, splits_comp_of_splits _ _ h.2⟩
 #align normal.of_alg_equiv Normal.of_algEquiv
 
 theorem AlgEquiv.transfer_normal (f : E ≃ₐ[F] E') : Normal F E ↔ Normal F E' :=
@@ -131,7 +131,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
       (AlgEquiv.ofBijective (Algebra.ofId F E) (Algebra.bijective_algebraMap_iff.2 this.symm))
   refine normal_iff.mpr fun x ↦ ?_
   haveI : FiniteDimensional F E := IsSplittingField.finiteDimensional E p
-  have hx := isIntegral_of_finite F x
+  have hx := IsIntegral.of_finite F x
   let L := (p * minpoly F x).SplittingField
   have hL := splits_of_splits_mul' _ ?_ (SplittingField.splits (p * minpoly F x))
   · let j : E →ₐ[F] L := IsSplittingField.lift E p hL.1
@@ -218,7 +218,7 @@ def AlgHom.restrictNormalAux [h : Normal F E] :
           (minpoly.dvd E _ (by simp [aeval_algHom_apply]))
       simp only [AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom]
       suffices IsIntegral F _ by exact isIntegral_of_isScalarTower this
-      exact map_isIntegral ϕ (map_isIntegral (toAlgHom F E K₁) (h.isIntegral z))⟩
+      exact IsIntegral.map ϕ (IsIntegral.map (toAlgHom F E K₁) (h.isIntegral z))⟩
   map_zero' := Subtype.ext ϕ.map_zero
   map_one' := Subtype.ext ϕ.map_one
   map_add' x y := Subtype.ext (ϕ.map_add x y)
