@@ -8,7 +8,7 @@ import Std.Linter.UnreachableTactic
 import Mathlib.Data.Nondet.Basic
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Mathport.Rename
-import Mathlib.Lean.System.IO
+import Mathlib.Data.MLList.Meta
 
 /-!
 # The `hint` tactic.
@@ -17,8 +17,6 @@ The `hint` tactic tries the kitchen sink:
 it runs every tactic registered via the `register_hint tac` command
 on the current goal, and reports which ones succeed.
 
-## Future work
-It would be nice to run the tactics in parallel.
 -/
 
 open Lean Elab Tactic

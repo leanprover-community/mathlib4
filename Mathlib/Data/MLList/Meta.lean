@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Data.MLList.IO
+import Mathlib.Data.List.Defs
 
 /-!
 # Parallelization in Lean's tactic monads.

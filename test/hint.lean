@@ -11,6 +11,16 @@ example (h : 1 < 0) : False := by hint
 
 /--
 info: Try these:
+• linarith
+• simp_all only [gt_iff_lt, ge_iff_le]
+• aesop
+-/
+#guard_msgs in
+example {x y z : Rat} (_ : x + y > z) (_ : x < z / 2) (_ : y < z / 4) (_ : z ≥ 0) : False := by
+  hint
+
+/--
+info: Try these:
 • simp_all only [forall_true_left, p]
 -/
 #guard_msgs in
