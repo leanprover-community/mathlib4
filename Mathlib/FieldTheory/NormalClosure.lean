@@ -192,8 +192,10 @@ variable {F K L}
 
 open Cardinal in
 /-- An extension `L/F` in which every minimal polynomial of `K/F` splits is maximal with respect
-  to `F`-embeddings of `K`, in the sense that `K →ₐ[F] L` achieves maximal cardinality. -/
-theorem Algebra.IsAlgebraic.algHomEmbeddingOfSplits (alg : IsAlgebraic F K)
+  to `F`-embeddings of `K`, in the sense that `K →ₐ[F] L` achieves maximal cardinality.
+  We construct an explicit injective function from an arbitrary `K →ₐ[F] L'` into `K →ₐ[F] L`,
+  using an embedding of `normalClosure F K L'` into `L`. -/
+noncomputable def Algebra.IsAlgebraic.algHomEmbeddingOfSplits (alg : IsAlgebraic F K)
     (h : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) (L' : Type*) [Field L'] [Algebra F L'] :
     (K →ₐ[F] L') ↪ (K →ₐ[F] L) :=
   let φ : ↑(⨆ x : K, IntermediateField.adjoin F ((minpoly F x).rootSet L')) →ₐ[F] L :=
