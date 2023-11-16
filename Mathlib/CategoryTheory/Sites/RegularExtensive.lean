@@ -186,10 +186,8 @@ The map to the explicit equalizer used in the sheaf condition.
 -/
 def MapToEqualizer (P : Cᵒᵖ ⥤ Type (max u v)) {W X B : C} (f : X ⟶ B)
     (g₁ g₂ : W ⟶ X) (w : g₁ ≫ f = g₂ ≫ f) :
-    P.obj (op B) → { x : P.obj (op X) | P.map g₁.op x = P.map g₂.op x } :=
-  fun t ↦ ⟨P.map f.op t, by
-    change (P.map _ ≫ P.map _) _ = (P.map _ ≫ P.map _) _;
-    simp_rw [← P.map_comp, ← op_comp, w] ⟩
+    P.obj (op B) → { x : P.obj (op X) | P.map g₁.op x = P.map g₂.op x } := fun t ↦
+  ⟨P.map f.op t, by simp only [Set.mem_setOf_eq, ← FunctorToTypes.map_comp_apply, ← op_comp, w]⟩
 
 /--
 The sheaf condition with respect to regular presieves, given the existence of the relavant pullback.
@@ -215,7 +213,7 @@ lemma EqualizerCondition.isSheafFor {B : C} {S : Presieve B} [S.regular] [S.hasP
   · simpa [MapToEqualizer] using ht
   · simpa [MapToEqualizer] using h ()
 
-lemma IsSheafForRegular.equalizerCondition {F : Cᵒᵖ ⥤ Type (max u v)}
+lemma equalizerCondition_of_regular {F : Cᵒᵖ ⥤ Type (max u v)}
     (hSF : ∀ {B : C} (S : Presieve B) [S.regular] [S.hasPullbacks], S.IsSheafFor F) :
     EqualizerCondition F := by
   intro X B π _ _
@@ -234,34 +232,19 @@ lemma IsSheafForRegular.equalizerCondition {F : Cᵒᵖ ⥤ Type (max u v)}
 lemma isSheafFor_regular_of_projective {X : C} (S : Presieve X) [S.regular] [Projective X]
     (F : Cᵒᵖ ⥤ Type (max u v)) : S.IsSheafFor F := by
   obtain ⟨Y, f, rfl, hf⟩ := Presieve.regular.single_epi (R := S)
-  let g := Projective.factorThru (𝟙 _) f
-  have hfg : g ≫ f = 𝟙 _ := by
-    simp only [Projective.factorThru_comp]
-  intro y hy
-  refine' ⟨F.map g.op <| y f <| Presieve.ofArrows.mk (), fun Z h hZ => _, fun z hz => _⟩
-  · cases' hZ with u
-    have := hy (f₁ := f) (f₂ := f) (𝟙 Y) (f ≫ g) (Presieve.ofArrows.mk ())
-        (Presieve.ofArrows.mk ()) ?_
-    · rw [op_id, F.map_id, types_id_apply] at this
-      rw [← types_comp_apply (F.map g.op) (F.map f.op), ← F.map_comp, ← op_comp]
-      exact this.symm
-    · rw [Category.id_comp, Category.assoc, hfg, Category.comp_id]
-  · have := congr_arg (F.map g.op) <| hz f (Presieve.ofArrows.mk ())
-    rwa [← types_comp_apply (F.map f.op) (F.map g.op), ← F.map_comp, ← op_comp, hfg, op_id,
-      F.map_id, types_id_apply] at this
+  rw [isSheafFor_arrows_iff]
+  refine fun x hx ↦ ⟨F.map (Projective.factorThru (𝟙 _) f).op <| x (), fun _ ↦ ?_, fun y h ↦ ?_⟩
+  · simpa using (hx () () Y (𝟙 Y) (f ≫ (Projective.factorThru (𝟙 _) f)) (by simp)).symm
+  · simp only [← h (), ← FunctorToTypes.map_comp_apply, ← op_comp, Projective.factorThru_comp,
+      op_id, FunctorToTypes.map_id_apply]
 
 lemma isSheaf_iff_equalizerCondition (F : Cᵒᵖ ⥤ Type (max u v)) [Preregular C] [HasPullbacks C] :
     Presieve.IsSheaf (regularCoverage C).toGrothendieck F ↔ EqualizerCondition F := by
   rw [Presieve.isSheaf_coverage]
-  refine ⟨?_, ?_⟩
-  · intro h
-    apply IsSheafForRegular.equalizerCondition
-    intro B S _ _
-    apply h S
-    obtain ⟨Y, f, rfl, _⟩ := Presieve.regular.single_epi (R := S)
-    use Y, f
-  · intro h X S ⟨Y, f, hh⟩
-    haveI : S.regular := ⟨Y, f, hh⟩
+  refine ⟨fun h ↦ equalizerCondition_of_regular fun S _ _ ↦ h S ?_, fun h X S ⟨Y, f, hh⟩ ↦ ?_⟩
+  · obtain ⟨Y, f, rfl, _⟩ := Presieve.regular.single_epi (R := S)
+    exact ⟨Y, f, rfl, inferInstance⟩
+  · have : S.regular := ⟨Y, f, hh⟩
     exact h.isSheafFor
 
 lemma isSheaf_of_projective (F : Cᵒᵖ ⥤ Type (max u v)) [Preregular C] [∀ (X : C), Projective X] :
