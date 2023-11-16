@@ -101,14 +101,20 @@ and right absorbing. -/
 class SemigroupWithZero (S₀ : Type u) extends Semigroup S₀, MulZeroClass S₀
 #align semigroup_with_zero SemigroupWithZero
 
+attribute [instance 0] SemigroupWithZero.toZero
+
 /-- A typeclass for non-associative monoids with zero elements. -/
 class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M₀
 #align mul_zero_one_class MulZeroOneClass
+
+attribute [instance 0] MulZeroOneClass.toZero
 
 /-- A type `M₀` is a “monoid with zero” if it is a monoid with zero element, and `0` is left
 and right absorbing. -/
 class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, SemigroupWithZero M₀
 #align monoid_with_zero MonoidWithZero
+
+attribute [instance 0] MonoidWithZero.toZero
 
 /-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left
 and right absorbing, and left/right multiplication by a non-zero element is injective. -/
@@ -187,6 +193,10 @@ class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G�
   /-- Every nonzero element of a group with zero is invertible. -/
   mul_inv_cancel (a : G₀) : a ≠ 0 → a * a⁻¹ = 1
 #align group_with_zero GroupWithZero
+
+attribute [instance 0] GroupWithZero.toInv
+attribute [instance 0] GroupWithZero.toDiv
+attribute [instance 0] GroupWithZero.toNontrivial
 
 export GroupWithZero (inv_zero)
 attribute [simp] inv_zero
