@@ -506,6 +506,7 @@ open MeasureTheory MeasureTheory.Measure ENNReal Real FiniteDimensional
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E] [Nontrivial E]
 
+@[simp]
 theorem InnerProductSpace.volume_ball (x : E) (r : ℝ) :
     volume (Metric.ball x r) = (.ofReal r) ^ finrank ℝ E *
       .ofReal (sqrt π ^ finrank ℝ E / Gamma (finrank ℝ E / 2 + 1)) := by
@@ -517,6 +518,7 @@ theorem InnerProductSpace.volume_ball (x : E) (r : ℝ) :
   convert this
   simp only [LinearIsometryEquiv.preimage_ball, LinearIsometryEquiv.symm_symm, _root_.map_zero]
 
+@[simp]
 theorem InnerProductSpace.volume_closedBall (x : E) (r : ℝ) :
     volume (Metric.closedBall x r) = (.ofReal r) ^ finrank ℝ E *
       .ofReal (sqrt π  ^ finrank ℝ E / Gamma (finrank ℝ E / 2 + 1)) := by
