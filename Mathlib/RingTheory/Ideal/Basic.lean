@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
+import Mathlib.Tactic.FinCases
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.LinearAlgebra.Finsupp
 
