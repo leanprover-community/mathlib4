@@ -143,16 +143,16 @@ theorem IsAlgebraic.algebraMap {a : S} :
 
 /-- This is slightly more general than `isAlgebraic_algebraMap_of_isAlgebraic` in that it
   allows noncommutative intermediate rings `A`. -/
-theorem isAlgebraic_algHom_of_isAlgebraic {B} [Ring B] [Algebra R B] (f : A →ₐ[R] B) {a : A}
+theorem IsAlgebraic.algHom {B} [Ring B] [Algebra R B] (f : A →ₐ[R] B) {a : A}
     (h : IsAlgebraic R a) : IsAlgebraic R (f a) :=
   let ⟨p, hp, ha⟩ := h
   ⟨p, hp, by rw [aeval_algHom, f.comp_apply, ha, map_zero]⟩
-#align is_algebraic_alg_hom_of_is_algebraic isAlgebraic_algHom_of_isAlgebraic
+#align is_algebraic_alg_hom_of_is_algebraic IsAlgebraic.algHom
 
 /-- Transfer `Algebra.IsAlgebraic` across an `AlgEquiv`. -/
 theorem AlgEquiv.isAlgebraic {B} [Ring B] [Algebra R B] (e : A ≃ₐ[R] B)
     (h : Algebra.IsAlgebraic R A) : Algebra.IsAlgebraic R B := fun b => by
-  convert← isAlgebraic_algHom_of_isAlgebraic e.toAlgHom (h _); refine e.apply_symm_apply ?_
+  convert← IsAlgebraic.algHom e.toAlgHom (h _); refine e.apply_symm_apply ?_
 #align alg_equiv.is_algebraic AlgEquiv.isAlgebraic
 
 theorem AlgEquiv.isAlgebraic_iff {B} [Ring B] [Algebra R B] (e : A ≃ₐ[R] B) :
