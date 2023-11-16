@@ -63,6 +63,30 @@ lemma iff_eventuallyEq {f g : ℝ → ℝ} (h : f =ᶠ[atTop] g) :
 
 variable {f : ℝ → ℝ}
 
+lemma eventually_atTop_le {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
+    ∃ c ∈ Set.Ioi 0, ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (b * x) x, f u ≤ c * f x := by
+  obtain ⟨c₁, _, c₂, hc₂, h⟩ := hf b hb
+  refine ⟨c₂, hc₂, ?_⟩
+  filter_upwards [h]
+  exact fun _ H u hu => (H u hu).2
+
+lemma eventually_atTop_le_nat {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
+    ∃ c ∈ Set.Ioi 0, ∀ᶠ (n:ℕ) in atTop, ∀ u ∈ Set.Icc (b * n) n, f u ≤ c * f n := by
+  obtain ⟨c, hc_mem, hc⟩ := hf.eventually_atTop_le hb
+  exact ⟨c, hc_mem, hc.nat_cast_atTop⟩
+
+lemma eventually_atTop_ge {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
+    ∃ c ∈ Set.Ioi 0, ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (b * x) x, c * f x ≤ f u := by
+  obtain ⟨c₁, hc₁, c₂, _, h⟩ := hf b hb
+  refine ⟨c₁, hc₁, ?_⟩
+  filter_upwards [h]
+  exact fun _ H u hu => (H u hu).1
+
+lemma eventually_atTop_ge_nat {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
+    ∃ c ∈ Set.Ioi 0, ∀ᶠ (n:ℕ) in atTop, ∀ u ∈ Set.Icc (b * n) n, c * f n ≤ f u := by
+  obtain ⟨c, hc_mem, hc⟩ := hf.eventually_atTop_ge hb
+  exact ⟨c, hc_mem, hc.nat_cast_atTop⟩
+
 lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
     (∀ᶠ x in atTop, 0 ≤ f x) ∨ (∀ᶠ x in atTop, f x ≤ 0) := by
   obtain ⟨c₁, _, c₂, _, h⟩ := hf (1/2) (by norm_num)
@@ -177,30 +201,6 @@ protected lemma norm (hf : GrowsPolynomially f) : GrowsPolynomially (fun x => �
   simp only [norm_eq_abs]
   exact hf.abs
 
-lemma eventually_atTop_le {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
-    ∃ c ∈ Set.Ioi 0, ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (b * x) x, f u ≤ c * f x := by
-  obtain ⟨c₁, _, c₂, hc₂, h⟩ := hf b hb
-  refine ⟨c₂, hc₂, ?_⟩
-  filter_upwards [h]
-  exact fun _ H u hu => (H u hu).2
-
-lemma eventually_atTop_le_nat {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
-    ∃ c ∈ Set.Ioi 0, ∀ᶠ (n:ℕ) in atTop, ∀ u ∈ Set.Icc (b * n) n, f u ≤ c * f n := by
-  obtain ⟨c, hc_mem, hc⟩ := hf.eventually_atTop_le hb
-  exact ⟨c, hc_mem, hc.nat_cast_atTop⟩
-
-lemma eventually_atTop_ge {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
-    ∃ c ∈ Set.Ioi 0, ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (b * x) x, c * f x ≤ f u := by
-  obtain ⟨c₁, hc₁, c₂, _, h⟩ := hf b hb
-  refine ⟨c₁, hc₁, ?_⟩
-  filter_upwards [h]
-  exact fun _ H u hu => (H u hu).1
-
-lemma eventually_atTop_ge_nat {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
-    ∃ c ∈ Set.Ioi 0, ∀ᶠ (n:ℕ) in atTop, ∀ u ∈ Set.Icc (b * n) n, c * f n ≤ f u := by
-  obtain ⟨c, hc_mem, hc⟩ := hf.eventually_atTop_ge hb
-  exact ⟨c, hc_mem, hc.nat_cast_atTop⟩
-
 protected lemma const {c : ℝ} : GrowsPolynomially (fun _ => c) := by
   intro b _
   refine ⟨1, by norm_num, ?_⟩
@@ -313,14 +313,14 @@ protected lemma add {f g : ℝ → ℝ} (hf : GrowsPolynomially f) (hg : GrowsPo
                           · exact (hf u hu).2
                           · exact (hg u hu).2
 
-protected lemma add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomially f) (hfg : g =o[atTop] f) :
+lemma add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomially f) (hfg : g =o[atTop] f) :
     GrowsPolynomially fun x => f x + g x := by
   intro b hb
   have hb_lb := hb.1
   have hb_ub := hb.2
   rw [isLittleO_iff] at hfg
   rcases eventually_atTop_nonneg_or_nonpos hf with hf'|hf'
-  case inl =>
+  case inl =>  -- f is eventually nonneg
     have hf := hf b hb
     obtain ⟨c₁, hc₁_mem : 0 < c₁, c₂, hc₂_mem : 0 < c₂, hf⟩ := hf
     specialize hfg (c := 1/2) (by norm_num)
@@ -363,7 +363,7 @@ protected lemma add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomially f) (hf
            _ ≤ 3/2 * (c₂ * f x) := by gcongr; exact (hf₁ u ⟨hu_lb, hu_ub⟩).2
            _ = 3*c₂ * (1/2 * f x) := by ring
            _ ≤ 3*c₂ * (f x + g x) := by gcongr
-  case inr =>
+  case inr => -- f is eventually nonpos
     have hf := hf b hb
     obtain ⟨c₁, hc₁_mem : 0 < c₁, c₂, hc₂_mem : 0 < c₂, hf⟩ := hf
     specialize hfg (c := 1/2) (by norm_num)
@@ -585,58 +585,15 @@ lemma of_isTheta {f g : ℝ → ℝ} (hg : GrowsPolynomially g) (hf : f =Θ[atTo
                 rw [←Real.norm_of_nonneg (hf_pos x hbx)]
                 exact h_lb x hbx
 
---lemma of_isEquivalent {f g : ℝ → ℝ}
---    (hg : GrowsPolynomially g) (hf : f ~[atTop] g) (hf' : ∀ᶠ x in atTop, 0 ≤ f x) :
---    GrowsPolynomially f :=
---  of_isTheta hg hf.isTheta hf'
-
 lemma of_isEquivalent {f g : ℝ → ℝ} (hg : GrowsPolynomially g) (hf : f ~[atTop] g) :
     GrowsPolynomially f := by
-  intro b hb
-  have hg := hg b hb
-  obtain ⟨c₃, hc₃_mem, c₄, _, hg⟩ := hg
-  have c₃_pos : 0 < c₃ := hc₃_mem
-  refine ⟨c₃ / 2, ?_, ?_⟩
-  · sorry
-  refine ⟨2 * c₄, ?_, ?_⟩
-  · sorry
-  filter_upwards [hg, eventually_ge_atTop 0] with x hg hx_pos
-  intro u hu
-  have h_lb : (f - g) u ≤ (f - g) x := by sorry
-  have h_ub : (f - g) u ≤ c₄ * (f - g) u := by sorry
-  have h_decomp : f = g + (f - g) := by ext; simp
-  rw [h_decomp]
-  have hbx : b * x ≤ x := calc
-    b * x ≤ 1 * x := by gcongr; exact le_of_lt hb.2
-        _ = x := by ring
-  have fx_nonneg : 0 ≤ f x := hf' x hbx
-  have gx_nonneg : 0 ≤ g x := hg' x hbx
-  refine ⟨?lb, ?ub⟩
-  case lb => calc
-    min c₁ c₃ * (f x + g x) = min c₁ c₃ * f x + min c₁ c₃ * g x := by simp only [mul_add]
-      _ ≤ c₁ * f x + c₃ * g x := by
-              gcongr
-              · exact min_le_left _ _
-              · exact min_le_right _ _
-      _ ≤ f u + g u := by
-              gcongr
-              · exact (hf u hu).1
-              · exact (hg u hu).1
-  case ub => calc
-    max c₂ c₄ * (f x + g x) = max c₂ c₄ * f x + max c₂ c₄ * g x := by simp only [mul_add]
-      _ ≥ c₂ * f x + c₄ * g x := by gcongr
-                                    · exact le_max_left _ _
-                                    · exact le_max_right _ _
-      _ ≥ f u + g u := by gcongr
-                          · exact (hf u hu).2
-                          · exact (hg u hu).2
+  have : f = g + (f - g) := by ext; simp
+  rw [this]
+  exact add_isLittleO hg hf
 
-  sorry
-
-
-lemma of_isEquivalent_const {f : ℝ → ℝ} {c : ℝ} (hc : 0 < c) (hf : f ~[atTop] fun _ => c) :
+lemma of_isEquivalent_const {f : ℝ → ℝ} {c : ℝ} (hf : f ~[atTop] fun _ => c) :
     GrowsPolynomially f :=
-  of_isEquivalent GrowsPolynomially.const hf (hf.tendsto_const.eventually (eventually_ge_nhds hc))
+  of_isEquivalent GrowsPolynomially.const hf
 
 end GrowsPolynomially
 end AkraBazziRecurrence
