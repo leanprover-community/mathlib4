@@ -12,7 +12,7 @@ import Mathlib.NumberTheory.DirichletCharacter.Basic
 
 We consider Dirichtlet characters `χ` with values in a normed field `F`.
 
-We show that `‖χ a‖ = 1` if `a` is a unit and `‖a‖ ≤ 1` in general.
+We show that `‖χ a‖ = 1` if `a` is a unit and `‖χ a‖ ≤ 1` in general.
 -/
 
 -- TODO: change to `{F : Type*}` when this is done in `DirichletCharacter.Basic`
