@@ -104,7 +104,7 @@ variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 That is, `f x' = f x + (x' - x) • f' + o(x' - x)` where `x'` converges along the filter `L`.
 -/
-def HasDerivAtFilter (f : 𝕜 → F) (f' : F) (x : 𝕜) (L : Filter 𝕜) :=
+def HasDerivAtFilter (f : 𝕜 → F) (f' : F) (x : 𝕜) (L : Filter 𝕜) : F :=
   HasFDerivAtFilter f (smulRight (1 : 𝕜 →L[𝕜] 𝕜) f') x L
 #align has_deriv_at_filter HasDerivAtFilter
 
@@ -112,7 +112,7 @@ def HasDerivAtFilter (f : 𝕜 → F) (f' : F) (x : 𝕜) (L : Filter 𝕜) :=
 
 That is, `f x' = f x + (x' - x) • f' + o(x' - x)` where `x'` converges to `x` inside `s`.
 -/
-def HasDerivWithinAt (f : 𝕜 → F) (f' : F) (s : Set 𝕜) (x : 𝕜) :=
+def HasDerivWithinAt (f : 𝕜 → F) (f' : F) (s : Set 𝕜) (x : 𝕜) : F :=
   HasDerivAtFilter f f' x (𝓝[s] x)
 #align has_deriv_within_at HasDerivWithinAt
 
@@ -120,14 +120,14 @@ def HasDerivWithinAt (f : 𝕜 → F) (f' : F) (s : Set 𝕜) (x : 𝕜) :=
 
 That is, `f x' = f x + (x' - x) • f' + o(x' - x)` where `x'` converges to `x`.
 -/
-def HasDerivAt (f : 𝕜 → F) (f' : F) (x : 𝕜) :=
+def HasDerivAt (f : 𝕜 → F) (f' : F) (x : 𝕜) : F :=
   HasDerivAtFilter f f' x (𝓝 x)
 #align has_deriv_at HasDerivAt
 
 /-- `f` has the derivative `f'` at the point `x` in the sense of strict differentiability.
 
 That is, `f y - f z = (y - z) • f' + o(y - z)` as `y, z → x`. -/
-def HasStrictDerivAt (f : 𝕜 → F) (f' : F) (x : 𝕜) :=
+def HasStrictDerivAt (f : 𝕜 → F) (f' : F) (x : 𝕜) : F :=
   HasStrictFDerivAt f (smulRight (1 : 𝕜 →L[𝕜] 𝕜) f') x
 #align has_strict_deriv_at HasStrictDerivAt
 
@@ -136,7 +136,7 @@ def HasStrictDerivAt (f : 𝕜 → F) (f' : F) (x : 𝕜) :=
 If the derivative exists (i.e., `∃ f', HasDerivWithinAt f f' s x`), then
 `f x' = f x + (x' - x) • derivWithin f s x + o(x' - x)` where `x'` converges to `x` inside `s`.
 -/
-def derivWithin (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) :=
+def derivWithin (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) : F :=
   fderivWithin 𝕜 f s x 1
 #align deriv_within derivWithin
 
@@ -145,7 +145,7 @@ def derivWithin (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) :=
 If the derivative exists (i.e., `∃ f', HasDerivAt f f' x`), then
 `f x' = f x + (x' - x) • deriv f x + o(x' - x)` where `x'` converges to `x`.
 -/
-def deriv (f : 𝕜 → F) (x : 𝕜) :=
+def deriv (f : 𝕜 → F) (x : 𝕜) : F :=
   fderiv 𝕜 f x 1
 #align deriv deriv
 

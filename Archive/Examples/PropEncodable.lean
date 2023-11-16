@@ -49,7 +49,7 @@ The next three functions make it easier to construct functions from a small
 
 namespace PropForm
 
-private def Constructors (α : Type*) :=
+private def Constructors (α : Type*) : Type _ :=
   α ⊕ (Unit ⊕ (Unit ⊕ Unit))
 
 local notation "cvar " a => Sum.inl a

@@ -58,7 +58,7 @@ namespace Theorems100
   intentionally because `dist` in `ℝ × ℝ` is defined as the uniform norm, making the `Metric.ball`
   in `ℝ × ℝ` a square, not a disc.
   See the module docstring for an explanation of why we don't define the disc in Euclidean space. -/
-def disc (r : ℝ) :=
+def disc (r : ℝ) : Set (ℝ × ℝ) :=
   {p : ℝ × ℝ | p.1 ^ 2 + p.2 ^ 2 < r ^ 2}
 #align theorems_100.disc Theorems100.disc
 

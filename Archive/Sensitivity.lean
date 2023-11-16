@@ -61,7 +61,7 @@ Notations:
 
 
 /-- The hypercube in dimension `n`. -/
-def Q (n : ℕ) :=
+def Q (n : ℕ) : Type :=
   Fin n → Bool
 #align sensitivity.Q Sensitivity.Q
 
