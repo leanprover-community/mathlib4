@@ -310,11 +310,11 @@ end Isos
 noncomputable
 def createsPullbacksOfOpenEmbedding :
     CreatesLimit (cospan f i) (Stonean.toCompHaus ⋙ compHausToTop) :=
-createsLimitOfFullyFaithfulOfIso (Stonean.pullback f hi) (by
-  refine (@TopCat.isoOfHomeo (TopCat.of _) (TopCat.of _)
-    (TopCat.pullbackHomeoPreimage f f.2 i hi.toEmbedding)).symm ≪≫ ?_
-  refine ?_ ≪≫ Limits.lim.mapIso (diagramIsoCospan _).symm
-  exact (TopCat.pullbackConeIsLimit f i).conePointUniqueUpToIso (limit.isLimit _))
+  createsLimitOfFullyFaithfulOfIso (Stonean.pullback f hi) (by
+    refine (@TopCat.isoOfHomeo (TopCat.of _) (TopCat.of _)
+      (TopCat.pullbackHomeoPreimage f f.2 i hi.toEmbedding)).symm ≪≫ ?_
+    refine ?_ ≪≫ Limits.lim.mapIso (diagramIsoCospan _).symm
+    exact (TopCat.pullbackConeIsLimit f i).conePointUniqueUpToIso (limit.isLimit _))
 
 instance : HasPullbacksOfInclusions Stonean where
   hasPullbackInl f := by
