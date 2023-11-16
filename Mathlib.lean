@@ -315,6 +315,7 @@ import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Module.Submodule.LinearMap
 import Mathlib.Algebra.Module.Submodule.Map
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Module.Torsion
@@ -378,6 +379,7 @@ import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Monoid.WithZero.Basic
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
+import Mathlib.Algebra.Order.Monovary
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Algebra.Order.Nonneg.Module
@@ -1071,6 +1073,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
@@ -1364,6 +1367,7 @@ import Mathlib.Condensed.Abelian
 import Mathlib.Condensed.Basic
 import Mathlib.Condensed.Discrete
 import Mathlib.Condensed.Equivalence
+import Mathlib.Condensed.Functors
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.Bifunctor
@@ -2134,6 +2138,7 @@ import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.GroupTheory.Nilpotent
 import Mathlib.GroupTheory.NoncommPiCoprod
+import Mathlib.GroupTheory.Order.Min
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.Perm.Basic
@@ -2386,9 +2391,9 @@ import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.PiTensorProduct
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Projection
-import Mathlib.LinearAlgebra.ProjectiveSpace.Basic
-import Mathlib.LinearAlgebra.ProjectiveSpace.Independence
-import Mathlib.LinearAlgebra.ProjectiveSpace.Subspace
+import Mathlib.LinearAlgebra.Projectivization.Basic
+import Mathlib.LinearAlgebra.Projectivization.Independence
+import Mathlib.LinearAlgebra.Projectivization.Subspace
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 import Mathlib.LinearAlgebra.QuadraticForm.Complex
 import Mathlib.LinearAlgebra.QuadraticForm.Dual

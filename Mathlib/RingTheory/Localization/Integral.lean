@@ -83,14 +83,12 @@ theorem integerNormalization_spec (p : S[X]) :
   use Classical.choose (exist_integer_multiples_of_finset M (p.support.image p.coeff))
   intro i
   rw [integerNormalization_coeff, coeffIntegerNormalization]
-  split_ifs with hi -- Porting note: didn't remove the ifs
-  · rw [dif_pos hi]
-    exact
+  split_ifs with hi
+  · exact
       Classical.choose_spec
         (Classical.choose_spec (exist_integer_multiples_of_finset M (p.support.image p.coeff))
           (p.coeff i) (Finset.mem_image.mpr ⟨i, hi, rfl⟩))
-  · rw [dif_neg hi]
-    rw [RingHom.map_zero, not_mem_support_iff.mp hi, smul_zero]
+  · rw [RingHom.map_zero, not_mem_support_iff.mp hi, smul_zero]
     -- Porting note: was `convert (smul_zero _).symm, ...`
 #align is_localization.integer_normalization_spec IsLocalization.integerNormalization_spec
 

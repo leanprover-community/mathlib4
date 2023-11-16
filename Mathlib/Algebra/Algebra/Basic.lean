@@ -3,14 +3,8 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Data.Rat.Order
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Module.ULift
-import Mathlib.Algebra.NeZero
-import Mathlib.Algebra.PUnitInstances
-import Mathlib.Algebra.Ring.Aut
-import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.Module.ULift
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.RingTheory.Subring.Basic
 
