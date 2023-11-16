@@ -3,7 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Monoid.Cancel.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Order.Hom.Basic
 
@@ -1018,6 +1018,13 @@ theorem div_lt_div'' (hab : a < b) (hcd : c < d) : a / d < b / c := by
 
 end Preorder
 
+section LinearOrder
+variable [LinearOrder α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b c d : α}
+
+@[to_additive] lemma lt_or_lt_of_div_lt_div : a / d < b / c → a < b ∨ c < d := by
+  contrapose!; exact fun h ↦ div_le_div'' h.1 h.2
+
+end LinearOrder
 end CommGroup
 
 section LinearOrder

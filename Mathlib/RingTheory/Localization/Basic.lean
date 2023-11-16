@@ -459,7 +459,7 @@ theorem mk'_add (x₁ x₂ : R) (y₁ y₂ : M) :
       (by
         rw [mul_comm (_ + _), mul_add, mul_mk'_eq_mk'_of_mul, mk'_add_eq_iff_add_mul_eq_mul,
           mul_comm (_ * _), ← mul_assoc, add_comm, ← map_mul, mul_mk'_eq_mk'_of_mul,
-          add_comm _ (mk' _ _ _), mk'_add_eq_iff_add_mul_eq_mul]
+          mk'_add_eq_iff_add_mul_eq_mul]
         simp only [map_add, Submonoid.coe_mul, map_mul]
         ring)
 #align is_localization.mk'_add IsLocalization.mk'_add
@@ -1086,6 +1086,14 @@ theorem algEquiv_symm_mk (x : R) (y : M) : (algEquiv M S).symm (mk' S x y) = mk 
   rw [mk_eq_mk', algEquiv_symm_mk']
 #align localization.alg_equiv_symm_mk Localization.algEquiv_symm_mk
 
+lemma coe_algEquiv :
+    (Localization.algEquiv M S : Localization M →+* S) =
+    IsLocalization.map (M := M) (T := M) _ (RingHom.id R) le_rfl := rfl
+
+lemma coe_algEquiv_symm :
+    ((Localization.algEquiv M S).symm : S →+* Localization M) =
+    IsLocalization.map (M := M) (T := M) _ (RingHom.id R) le_rfl := rfl
+
 end Localization
 
 end CommSemiring
@@ -1331,7 +1339,7 @@ theorem IsLocalization.map_units_map_submonoid (y : M) : IsUnit (algebraMap R S�
   exact IsLocalization.map_units Sₘ ⟨algebraMap R S y, Algebra.mem_algebraMapSubmonoid_of_mem y⟩
 #align is_localization.map_units_map_submonoid IsLocalization.map_units_map_submonoid
 
-@[simp]
+-- can't be simp, as `S` only appears on the RHS
 theorem IsLocalization.algebraMap_mk' (x : R) (y : M) :
     algebraMap Rₘ Sₘ (IsLocalization.mk' Rₘ x y) =
       IsLocalization.mk' Sₘ (algebraMap R S x)

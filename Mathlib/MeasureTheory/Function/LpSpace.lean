@@ -730,7 +730,7 @@ lemma Memℒp.piecewise [DecidablePred (· ∈ s)]
   · simp only [hp_zero, memℒp_zero_iff_aestronglyMeasurable]
     exact AEStronglyMeasurable.piecewise hs hf.1 hg.1
   refine ⟨AEStronglyMeasurable.piecewise hs hf.1 hg.1, ?_⟩
-  rcases eq_or_ne p ∞ with rfl |  hp_top
+  rcases eq_or_ne p ∞ with rfl | hp_top
   · rw [snorm_top_piecewise f g hs]
     exact max_lt hf.2 hg.2
   rw [snorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top hp_zero hp_top, ← lintegral_add_compl _ hs,
@@ -1579,10 +1579,7 @@ theorem ae_tendsto_of_cauchy_snorm' [CompleteSpace E] {f : ℕ → α → E} {p 
       lintegral_rpow_tsum_coe_nnnorm_sub_le_tsum hf hp1 h2
     have h4 : ∀ᵐ x ∂μ, (∑' i, ‖f (i + 1) x - f i x‖₊ : ℝ≥0∞) < ∞ :=
       tsum_nnnorm_sub_ae_lt_top hf hp1 hB h3
-    exact
-      h4.mono fun x hx =>
-        summable_of_summable_nnnorm
-          (ENNReal.tsum_coe_ne_top_iff_summable.mp (lt_top_iff_ne_top.mp hx))
+    exact h4.mono fun x hx => .of_nnnorm <| ENNReal.tsum_coe_ne_top_iff_summable.mp hx.ne
   have h :
     ∀ᵐ x ∂μ, ∃ l : E,
       atTop.Tendsto (fun n => ∑ i in Finset.range n, (f (i + 1) x - f i x)) (𝓝 l) := by

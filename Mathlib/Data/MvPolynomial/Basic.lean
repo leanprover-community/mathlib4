@@ -1702,7 +1702,7 @@ theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
     · subst h
       rw [MvPolynomial.not_mem_support_iff.1 ha, map_zero]
       exact zero_mem _
-    · rwa [if_neg h, zero_add] at this
+    · rwa [zero_add] at this
 #align mv_polynomial.eval₂_mem MvPolynomial.eval₂_mem
 
 theorem eval_mem {p : MvPolynomial σ S} {s : subS} (hs : ∀ i ∈ p.support, p.coeff i ∈ s) {v : σ → S}

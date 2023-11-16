@@ -80,7 +80,7 @@ theorem cyclotomic_expand_eq_cyclotomic {p n : ℕ} (hp : Nat.Prime p) (hdiv : p
   · simp
   haveI := NeZero.of_pos hzero
   suffices expand ℤ p (cyclotomic n ℤ) = cyclotomic (n * p) ℤ by
-    rw [← map_cyclotomic_int, ← map_expand, this, map_cyclotomic_int, map_cyclotomic]
+    rw [← map_cyclotomic_int, ← map_expand, this, map_cyclotomic_int]
   refine' eq_of_monic_of_dvd_of_natDegree_le (cyclotomic.monic _ _)
     ((cyclotomic.monic n ℤ).expand hp.pos) _ _
   · have hpos := Nat.mul_pos hzero hp.pos

@@ -280,7 +280,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
   rw [← Multiset.eq_replicate_card] at h2
   rw [← sum_cycleType, h2, Multiset.sum_replicate, smul_eq_mul] at h
   have h : Multiset.card g.cycleType ≤ 3 :=
-    le_of_mul_le_mul_right (le_trans h (by simp only [card_fin]; ring_nf)) (by simp)
+    le_of_mul_le_mul_right (le_trans h (by simp only [card_fin])) (by simp)
   rw [mem_alternatingGroup, sign_of_cycleType, h2] at ha
   norm_num at ha
   rw [pow_add, pow_mul, Int.units_pow_two, one_mul, Units.ext_iff, Units.val_one,
@@ -347,7 +347,6 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
       have con := mem_alternatingGroup.1 gA
       contrapose! con
       rw [sign_of_cycleType, cycleType_of_card_le_mem_cycleType_add_two (by decide) ng]
-      dsimp only
       decide
     · -- If `n = 5`, then `g` is itself a 5-cycle, conjugate to `finRotate 5`.
       refine' (isConj_iff_cycleType_eq.2 _).normalClosure_eq_top_of normalClosure_finRotate_five
