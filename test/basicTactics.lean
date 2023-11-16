@@ -4,6 +4,7 @@ example : ∀ a b : Nat, a = b → b = a := by
   introv h
   exact h.symm
 
+#check Nat
 example (n : Nat) : n = n := by
   induction n
   exacts [rfl, rfl]
