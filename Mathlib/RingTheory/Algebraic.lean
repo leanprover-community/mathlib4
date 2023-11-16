@@ -166,16 +166,16 @@ theorem isAlgebraic_algebraMap_iff {a : S} (h : Function.Injective (algebraMap S
     IsAlgebraic.algebraMap⟩
 #align is_algebraic_algebra_map_iff isAlgebraic_algebraMap_iff
 
-theorem isAlgebraic_of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r ^ n)) :
+theorem IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r ^ n)) :
     IsAlgebraic R r := by
   obtain ⟨p, p_nonzero, hp⟩ := ht
   refine ⟨Polynomial.expand _ n p, ?_, ?_⟩
   · rwa [Polynomial.expand_ne_zero hn]
   · rwa [Polynomial.expand_aeval n p r]
-#align is_algebraic_of_pow isAlgebraic_of_pow
+#align is_algebraic_of_pow IsAlgebraic.of_pow
 
 theorem Transcendental.pow {r : A} (ht : Transcendental R r) {n : ℕ} (hn : 0 < n) :
-    Transcendental R (r ^ n) := fun ht' => ht <| isAlgebraic_of_pow hn ht'
+    Transcendental R (r ^ n) := fun ht' => ht <| IsAlgebraic.of_pow hn ht'
 #align transcendental.pow Transcendental.pow
 
 end zero_ne_one
