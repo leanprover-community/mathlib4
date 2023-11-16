@@ -254,7 +254,7 @@ def regular_check(lines, path):
         if copy_done and line == "\n":
             continue
         words = line.split()
-        if words[0] != "import" and words[0] != "/-!" and words[0] != "#align_import":
+        if words[0] != "import" and words[0] != "--" and words[0] != "/-!" and words[0] != "#align_import":
             errors += [(ERR_MOD, line_nr, path)]
             break
         if words[0] == "/-!":
