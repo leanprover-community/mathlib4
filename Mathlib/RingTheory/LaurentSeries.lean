@@ -199,12 +199,12 @@ theorem coe_add : ((f + g : PowerSeries R) : LaurentSeries R) = f + g :=
   (ofPowerSeries ℤ R).map_add _ _
 #align power_series.coe_add PowerSeries.coe_add
 
-@[norm_cast] -- Note: simp can prove this
+@[simp, norm_cast]
 theorem coe_sub : ((f' - g' : PowerSeries R') : LaurentSeries R') = f' - g' :=
   (ofPowerSeries ℤ R').map_sub _ _
 #align power_series.coe_sub PowerSeries.coe_sub
 
-@[norm_cast] -- Note: simp can prove this
+@[simp, norm_cast]
 theorem coe_neg : ((-f' : PowerSeries R') : LaurentSeries R') = -f' :=
   (ofPowerSeries ℤ R').map_neg _
 #align power_series.coe_neg PowerSeries.coe_neg
@@ -249,7 +249,7 @@ theorem coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : PowerSeries 
 #noalign power_series.coe_bit0
 #noalign power_series.coe_bit1
 
-@[norm_cast] -- Note: simp can prove this
+@[simp, norm_cast]
 theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : LaurentSeries R) = (ofPowerSeries ℤ R f) ^ n :=
   (ofPowerSeries ℤ R).map_pow _ _
 #align power_series.coe_pow PowerSeries.coe_pow

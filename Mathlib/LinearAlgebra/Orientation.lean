@@ -381,8 +381,11 @@ theorem eq_or_eq_neg (x₁ x₂ : Orientation R M ι) (h : Fintype.card ι = fin
     x₁ = x₂ ∨ x₁ = -x₂ := by
   have e := (finBasis R M).reindex (Fintype.equivFinOfCardEq h).symm
   letI := Classical.decEq ι
+  -- Porting note: this needs to be made explicit for the simp below
+  have orientation_neg_neg :
+    ∀ f : Basis ι R M, - -Basis.orientation f = Basis.orientation f := by simp
   rcases e.orientation_eq_or_eq_neg x₁ with (h₁ | h₁) <;>
-    rcases e.orientation_eq_or_eq_neg x₂ with (h₂ | h₂) <;> simp [h₁, h₂]
+    rcases e.orientation_eq_or_eq_neg x₂ with (h₂ | h₂) <;> simp [h₁, h₂, orientation_neg_neg]
 #align orientation.eq_or_eq_neg Orientation.eq_or_eq_neg
 
 /-- If the index type has cardinality equal to the finite dimension, an orientation equals the
