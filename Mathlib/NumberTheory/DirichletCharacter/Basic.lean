@@ -183,7 +183,7 @@ lemma conductor_eq_zero_iff_level_eq_zero : conductor χ = 0 ↔ n = 0 := by
   exact Nat.sInf_eq_zero.mpr <| Or.inl <| level_mem_conductorSet χ
 
 lemma mem_conductorSet_eq_conductor {d : ℕ} (hd : d ∈ conductorSet χ) :
-  χ.conductor ≤ (Classical.choose hd.2 ).conductor := by
+    χ.conductor ≤ (Classical.choose hd.2 ).conductor := by
   apply Nat.sInf_le
   rw [mem_conductorSet_iff]
   refine' ⟨dvd_trans (conductor_dvd_level _) hd.1,
