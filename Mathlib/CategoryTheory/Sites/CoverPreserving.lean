@@ -41,7 +41,7 @@ i.e. `G.op ⋙ -` as a functor `(Dᵒᵖ ⥤ A) ⥤ (Cᵒᵖ ⥤ A)` of presheav
 ## References
 
 * [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.3.
-* https://stacks.math.columbia.edu/tag/00WW
+* https://stacks.math.columbia.edu/tag/00WU
 
 -/
 
