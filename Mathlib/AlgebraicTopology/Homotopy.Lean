@@ -85,7 +85,7 @@ def Path.symm {X : SSet.{0}} {a b : Δ[0] ⟶ X} [IsKan X] :
   Path a b → Path b a := sorry
 
 noncomputable
-def ProdObjIso (X Y : SSet) (n) : (X ⨯ Y).obj n ≅ (X.obj n × Y.obj n) :=
+def ProdObjIso {X Y : SSet} (n) : (X ⨯ Y).obj n ≅ (X.obj n × Y.obj n) :=
   show ((evaluation _ _).obj n).obj (X ⨯ Y) ≅ _ from
   preservesLimitIso _ _ ≪≫ Limits.HasLimit.isoOfNatIso
     (Limits.pairComp X Y ((evaluation SimplexCategoryᵒᵖ Type).obj n))
@@ -100,28 +100,73 @@ example (X Y : SSet) (n) : (ProdObjIso X Y n).hom ≫ Limits.prod.fst = (Limits.
 def Prod (X Y : SSet) : SSet where
   obj n := X.obj n × Y.obj n
   map := by
-    rintro m n f a
-    exact ⟨X.map f a.1, Y.map f a.2⟩
+    rintro _ _ f ⟨a, b⟩
+    exact ⟨X.map f a, Y.map f b⟩
 
+@[simp]
+def proj1 {X Y : SSet} : (Prod X Y) ⟶ X where
+  app n := fun a => a.1
+
+@[simp]
+def proj2 {X Y : SSet} : (Prod X Y) ⟶ Y where
+  app n := fun a => a.2
+
+@[simps! pt]
+def binProdCone (X Y : SSet.{0}) : BinaryFan X Y :=
+  BinaryFan.mk (proj1) (proj2)
+
+@[simp]
+theorem binProdCone_fst (X Y : SSet) : (binProdCone X Y).fst = proj1 :=
+  rfl
+
+@[simp]
+theorem binProdCone_snd (X Y : SSet) : (binProdCone X Y).snd = proj2 :=
+  rfl
+
+open CategoryTheory.Limits.WalkingPair
+
+def binProdLim (X Y : SSet) : IsLimit (binProdCone X Y) where
+  lift (s : BinaryFan X Y) := {
+    app := fun n x => ((s.fst).app n x, (s.snd).app n x)
+    naturality := by
+      intro j k g
+      ext a
+      simp only [Functor.const_obj_obj, pair_obj_left, pair_obj_right, types_comp_apply]
+      congr
+      exact FunctorToTypes.naturality s.pt X (BinaryFan.fst s) g a
+      exact FunctorToTypes.naturality s.pt Y (BinaryFan.snd s) g a
+  }
+  fac _ j := Discrete.recOn j fun j => WalkingPair.casesOn j rfl rfl
+  uniq s t w := sorry
+
+def binProdLimCone (X Y : SSet) : Limits.LimitCone (pair X Y) :=
+  ⟨_, binProdLim X Y⟩
+
+noncomputable def binProdIso (X Y : SSet) : X ⨯ Y ≅ Prod X Y :=
+  limit.isoLimitCone (binProdLimCone X Y)
+
+/-
 noncomputable
 def ProdIso (X Y : SSet) : X ⨯ Y ≅ Prod X Y where
   hom := {
-    app := fun _ => (ProdObjIso _ _ _).hom
+    app := fun _ => (ProdObjIso _).hom
     naturality := by
       intro m n f
-      ext a
-      simp
-      dsimp [Prod, ProdObjIso]
+      dsimp [Prod]
+      have := (ProdObjIso _).inv ≫ (X ⨯ Y).map f ≫ (ProdObjIso _).hom
+      aesop_cat
       sorry
   }
   inv := {
-    app := fun _ => (ProdObjIso _ _ _).inv
+    app := fun _ => (ProdObjIso _).inv
     naturality := by
       sorry
   }
   hom_inv_id := sorry
   inv_hom_id := sorry
+-/
 
+/-
 noncomputable
 def IHom (X Y : SSet) : SSet where
   obj n := X ⨯ (standardSimplex.obj n.unop) ⟶ Y
@@ -143,8 +188,8 @@ def IHom (X Y : SSet) : SSet where
     aesop_cat
 
   map_comp := sorry
+-/
 
-/-
 def IHom (X Y : SSet) : SSet where
   obj n := Prod X (standardSimplex.obj n.unop) ⟶ Y
   map := by
@@ -153,13 +198,14 @@ def IHom (X Y : SSet) : SSet where
       app := by
         rintro k ⟨a, b⟩
         apply F.app k
-        refine ⟨a, ?_⟩
-        exact ((standardSimplex.map f.unop).app k) b
-      naturality := _
+        exact ⟨a, ((standardSimplex.map f.unop).app k) b⟩
+      naturality := by
+        rintro j k g
+        dsimp
+        sorry
     }
   map_id := sorry
   map_comp := sorry
--/
 
 /-
 TODO: Define this in terms of paths.
@@ -172,5 +218,3 @@ structure homotopy {X Y : SSet.{0}} (f g : X ⟶ Y) where
 --class HomotopyInvariant {X : SSet.{0}} (motive : ⦃a b : pt ⟶ X⦄ → Path a b → Sort u) where
 --  ind : (rfl : (x : pt ⟶ X) → motive (Path.rfl x)) → ⦃x y : pt ⟶ X⦄ → (p : Path x y) → motive p
 --  ind_rfl : (rfl : (x : pt ⟶ X) → motive (Path.rfl x)) → ind rfl (Path.rfl x) = rfl x
-
-end section
