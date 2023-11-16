@@ -167,27 +167,34 @@ protected theorem infinite_or_finite (s : Set α) : s.Infinite ∨ s.Finite :=
 
 namespace Finite
 
-variable {s t : Set α} {a : α} {hs : s.Finite} {ht : t.Finite}
+variable {s t : Set α} {a : α} (hs : s.Finite) {ht : t.Finite}
 
 @[simp]
-protected theorem mem_toFinset (h : s.Finite) : a ∈ h.toFinset ↔ a ∈ s :=
-  @mem_toFinset _ _ h.fintype _
+protected theorem mem_toFinset : a ∈ hs.toFinset ↔ a ∈ s :=
+  @mem_toFinset _ _ hs.fintype _
 #align set.finite.mem_to_finset Set.Finite.mem_toFinset
 
 @[simp]
-protected theorem coe_toFinset (h : s.Finite) : (h.toFinset : Set α) = s :=
-  @coe_toFinset _ _ h.fintype
+protected theorem coe_toFinset : (hs.toFinset : Set α) = s :=
+  @coe_toFinset _ _ hs.fintype
 #align set.finite.coe_to_finset Set.Finite.coe_toFinset
 
 @[simp]
-protected theorem toFinset_nonempty (h : s.Finite) : h.toFinset.Nonempty ↔ s.Nonempty := by
+protected theorem toFinset_nonempty : hs.toFinset.Nonempty ↔ s.Nonempty := by
   rw [← Finset.coe_nonempty, Finite.coe_toFinset]
 #align set.finite.to_finset_nonempty Set.Finite.toFinset_nonempty
 
 /-- Note that this is an equality of types not holding definitionally. Use wisely. -/
-theorem coeSort_toFinset (h : s.Finite) : ↥h.toFinset = ↥s := by
-  rw [← Finset.coe_sort_coe _, h.coe_toFinset]
+theorem coeSort_toFinset : ↥hs.toFinset = ↥s := by
+  rw [← Finset.coe_sort_coe _, hs.coe_toFinset]
 #align set.finite.coe_sort_to_finset Set.Finite.coeSort_toFinset
+
+/-- The identity map, bundled as an equivalence between the subtypes of `s : Set α` and of
+`h.toFinset : Finset α`, where `h` is a proof of finiteness of `s`. -/
+@[simps!] def subtypeEquivToFinset : {x // x ∈ s} ≃ {x // x ∈ hs.toFinset} :=
+  (Equiv.refl α).subtypeEquiv <| fun _ ↦ hs.mem_toFinset.symm
+
+variable {hs}
 
 @[simp]
 protected theorem toFinset_inj : hs.toFinset = ht.toFinset ↔ s = t :=
