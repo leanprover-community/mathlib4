@@ -382,16 +382,19 @@ theorem DirectedOn.inf_sSup_eq (h : DirectedOn (· ≤ ·) s) : a ⊓ sSup s = �
 #align directed_on.inf_Sup_eq DirectedOn.inf_sSup_eq
 
 /-- This property is sometimes referred to as `α` being upper continuous. -/
-protected theorem DirectedOn.sSup_inf_eq (h : DirectedOn (· ≤ ·) s) : sSup s ⊓ a = ⨆ b ∈ s, b ⊓ a :=
-  by simp_rw [@inf_comm _ _ _ a, h.inf_sSup_eq]
+protected theorem DirectedOn.sSup_inf_eq (h : DirectedOn (· ≤ ·) s) :
+    sSup s ⊓ a = ⨆ b ∈ s, b ⊓ a := by
+  simp_rw [@inf_comm _ _ _ a, h.inf_sSup_eq]
 #align directed_on.Sup_inf_eq DirectedOn.sSup_inf_eq
 
-protected theorem Directed.inf_iSup_eq (h : Directed (· ≤ ·) f) : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i :=
-  by rw [iSup, h.directedOn_range.inf_sSup_eq, iSup_range]
+protected theorem Directed.inf_iSup_eq (h : Directed (· ≤ ·) f) :
+    (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i := by
+  rw [iSup, h.directedOn_range.inf_sSup_eq, iSup_range]
 #align directed.inf_supr_eq Directed.inf_iSup_eq
 
-protected theorem Directed.iSup_inf_eq (h : Directed (· ≤ ·) f) : (⨆ i, f i) ⊓ a = ⨆ i, f i ⊓ a :=
-  by rw [iSup, h.directedOn_range.sSup_inf_eq, iSup_range]
+protected theorem Directed.iSup_inf_eq (h : Directed (· ≤ ·) f) :
+    (⨆ i, f i) ⊓ a = ⨆ i, f i ⊓ a := by
+  rw [iSup, h.directedOn_range.sSup_inf_eq, iSup_range]
 #align directed.supr_inf_eq Directed.iSup_inf_eq
 
 protected theorem DirectedOn.disjoint_sSup_right (h : DirectedOn (· ≤ ·) s) :

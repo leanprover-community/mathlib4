@@ -168,8 +168,7 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
     (calc
       𝓤 α =
           ((𝓤 α).map fun x : α × α => (x.1 * a⁻¹, x.2 * a⁻¹)).map fun x : α × α =>
-            (x.1 * a, x.2 * a) :=
-        by simp [Filter.map_map, (· ∘ ·)]
+            (x.1 * a, x.2 * a) := by simp [Filter.map_map, (· ∘ ·)]
       _ ≤ (𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a) :=
         Filter.map_mono (uniformContinuous_id.mul uniformContinuous_const)
       )
@@ -820,9 +819,8 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (
   rcases extend_Z_bilin_aux df cont_flip W_nhd y₀ x₁ with ⟨V₂, V₂_nhd, HV⟩
   exists U₁ ∩ U₂, inter_mem U₁_nhd U₂_nhd, V₁ ∩ V₂, inter_mem V₁_nhd V₂_nhd
   rintro x ⟨xU₁, xU₂⟩ x' ⟨x'U₁, x'U₂⟩ y ⟨yV₁, yV₂⟩ y' ⟨y'V₁, y'V₂⟩
-  have key_formula :
-    φ x' y' - φ x y = φ (x' - x) y₁ + φ (x' - x) (y' - y₁) + φ x₁ (y' - y) + φ (x - x₁) (y' - y) :=
-    by simp; abel
+  have key_formula : φ x' y' - φ x y
+    = φ (x' - x) y₁ + φ (x' - x) (y' - y₁) + φ x₁ (y' - y) + φ (x - x₁) (y' - y) := by simp; abel
   rw [key_formula]
   have h₁ := HU x xU₂ x' x'U₂
   have h₂ := H x xU₁ x' x'U₁ y₁ y₁_in y' y'V₁

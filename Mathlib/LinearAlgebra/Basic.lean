@@ -326,8 +326,9 @@ theorem ker_le_comap {p : Submodule R₂ M₂} (f : M →ₛₗ[τ₁₂] M₂) 
     ker f ≤ p.comap f :=
   fun x hx ↦ by simp [mem_ker.mp hx]
 
-theorem disjoint_ker {f : F} {p : Submodule R M} : Disjoint p (ker f) ↔ ∀ x ∈ p, f x = 0 → x = 0 :=
-  by simp [disjoint_def]
+theorem disjoint_ker {f : F} {p : Submodule R M} :
+    Disjoint p (ker f) ↔ ∀ x ∈ p, f x = 0 → x = 0 := by
+  simp [disjoint_def]
 #align linear_map.disjoint_ker LinearMap.disjoint_ker
 
 theorem ker_eq_bot' {f : F} : ker f = ⊥ ↔ ∀ m, f m = 0 → m = 0 := by
