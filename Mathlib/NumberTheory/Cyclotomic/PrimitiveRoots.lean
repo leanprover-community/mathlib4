@@ -137,7 +137,7 @@ theorem powerBasis_gen_mem_adjoin_zeta_sub_one :
 @[simps!]
 noncomputable def subOnePowerBasis : PowerBasis K L :=
   (hζ.powerBasis K).ofGenMemAdjoin
-    (isIntegral_sub (IsCyclotomicExtension.integral {n} K L ζ) isIntegral_one)
+    (IsIntegral.sub (IsCyclotomicExtension.integral {n} K L ζ) isIntegral_one)
     (hζ.powerBasis_gen_mem_adjoin_zeta_sub_one _)
 #align is_primitive_root.sub_one_power_basis IsPrimitiveRoot.subOnePowerBasis
 
@@ -296,7 +296,7 @@ theorem sub_one_norm_isPrimePow (hn : IsPrimePow (n : ℕ)) [IsCyclotomicExtensi
   obtain ⟨k, hk⟩ : ∃ k, (n : ℕ).factorization (n : ℕ).minFac = k + 1 :=
     exists_eq_succ_of_ne_zero
       (((n : ℕ).factorization.mem_support_toFun (n : ℕ).minFac).1 <|
-        factor_iff_mem_factorization.2 <|
+        mem_primeFactors_iff_mem_factors.2 <|
           (mem_factors (IsPrimePow.ne_zero hn)).2 ⟨hprime.out, minFac_dvd _⟩)
   simp [hk, sub_one_norm_eq_eval_cyclotomic hζ this hirr]
 #align is_primitive_root.sub_one_norm_is_prime_pow IsPrimitiveRoot.sub_one_norm_isPrimePow

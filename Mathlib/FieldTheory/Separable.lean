@@ -59,7 +59,7 @@ theorem separable_one : (1 : R[X]).Separable :=
 
 @[nontriviality]
 theorem separable_of_subsingleton [Subsingleton R] (f : R[X]) : f.Separable := by
-  simp [Separable, IsCoprime]
+  simp [Separable, IsCoprime, eq_iff_true_of_subsingleton]
 #align polynomial.separable_of_subsingleton Polynomial.separable_of_subsingleton
 
 theorem separable_X_add_C (a : R) : (X + C a).Separable := by
@@ -544,7 +544,7 @@ theorem isSeparable_tower_top_of_isSeparable [IsSeparable F E] : IsSeparable K E
 theorem isSeparable_tower_bot_of_isSeparable [h : IsSeparable F E] : IsSeparable F K :=
   isSeparable_iff.2 fun x => by
     refine'
-      (isSeparable_iff.1 h (algebraMap K E x)).imp isIntegral_tower_bot_of_isIntegral_field
+      (isSeparable_iff.1 h (algebraMap K E x)).imp IsIntegral.tower_bot_of_field
         fun hs => _
     obtain ⟨q, hq⟩ :=
       minpoly.dvd F x

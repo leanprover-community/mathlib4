@@ -3,14 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.LinearAlgebra.Basic
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Data.List.FinRange
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Sort
-import Mathlib.Tactic.Abel
+import Mathlib.Data.List.FinRange
 
 #align_import linear_algebra.multilinear.basic from "leanprover-community/mathlib"@"78fdf68dcd2fdb3fe64c0dd6f88926a49418a6ea"
 
@@ -299,7 +296,7 @@ variable (M₁) {M₂}
 
 /-- The constant map is multilinear when `ι` is empty. -/
 -- Porting note: Removed [simps] & added simpNF-approved version of the generated lemma manually.
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
   toFun := Function.const _ m
   map_add' _ := isEmptyElim
