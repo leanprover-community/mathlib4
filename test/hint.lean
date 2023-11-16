@@ -19,11 +19,12 @@ info: Try these:
 example {x y z : Rat} (_ : x + y > z) (_ : x < z / 2) (_ : y < z / 4) (_ : z ≥ 0) : False := by
   hint
 
-/--
+-- This message is non-deterministic due to parallelism.
+/-
 info: Try these:
 • simp_all only [forall_true_left, p]
 -/
-#guard_msgs in
+#guard_msgs (drop info) in
 example {P Q : Prop} (p : P) (f : P → Q) : Q := by hint
 
 /--
@@ -33,13 +34,14 @@ info: Try these:
 #guard_msgs in
 example {P Q R: Prop} (x : P ∧ Q ∧ R ∧ R) : Q ∧ P ∧ R := by hint
 
-/--
+-- This message is non-deterministic due to parallelism.
+/-
 info: Try these:
 • exact lt_asymm h
 • intro
 • simp_all only [not_lt]
 -/
-#guard_msgs in
+#guard_msgs (drop info) in
 example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
 
 /--
