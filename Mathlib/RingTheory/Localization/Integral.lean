@@ -83,14 +83,12 @@ theorem integerNormalization_spec (p : S[X]) :
   use Classical.choose (exist_integer_multiples_of_finset M (p.support.image p.coeff))
   intro i
   rw [integerNormalization_coeff, coeffIntegerNormalization]
-  split_ifs with hi -- Porting note: didn't remove the ifs
-  · rw [dif_pos hi]
-    exact
+  split_ifs with hi
+  · exact
       Classical.choose_spec
         (Classical.choose_spec (exist_integer_multiples_of_finset M (p.support.image p.coeff))
           (p.coeff i) (Finset.mem_image.mpr ⟨i, hi, rfl⟩))
-  · rw [dif_neg hi]
-    rw [RingHom.map_zero, not_mem_support_iff.mp hi, smul_zero]
+  · rw [RingHom.map_zero, not_mem_support_iff.mp hi, smul_zero]
     -- Porting note: was `convert (smul_zero _).symm, ...`
 #align is_localization.integer_normalization_spec IsLocalization.integerNormalization_spec
 
@@ -333,9 +331,7 @@ theorem isFractionRing_of_algebraic (alg : IsAlgebraic A L)
         by
           simp only
           rw [algebraMap_mk', ← IsScalarTower.algebraMap_apply A C L, hxy]⟩
-    eq_iff_exists' := fun {x y} =>
-      ⟨fun h => ⟨1, by simpa using algebraMap_injective C A L h⟩, fun ⟨c, hc⟩ =>
-        congr_arg (algebraMap _ L) (mul_left_cancel₀ (mem_nonZeroDivisors_iff_ne_zero.mp c.2) hc)⟩ }
+    exists_of_eq := fun {x y} h => ⟨1, by simpa using algebraMap_injective C A L h⟩ }
 #align is_integral_closure.is_fraction_ring_of_algebraic IsIntegralClosure.isFractionRing_of_algebraic
 
 variable (K L)

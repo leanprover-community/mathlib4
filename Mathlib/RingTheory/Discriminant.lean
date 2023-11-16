@@ -290,7 +290,7 @@ variable {R : Type z} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R 
 theorem discr_isIntegral {b : ι → L} (h : ∀ i, IsIntegral R (b i)) : IsIntegral R (discr K b) := by
   classical
   rw [discr_def]
-  exact IsIntegral.det fun i j => isIntegral_trace ((h i).mul (h j))
+  exact IsIntegral.det fun i j ↦ isIntegral_trace ((h i).mul (h j))
 #align algebra.discr_is_integral Algebra.discr_isIntegral
 
 /-- If `b` and `b'` are `ℚ`-bases of a number field `K` such that

@@ -302,9 +302,7 @@ theorem trace_eq_sum_roots [FiniteDimensional K L] {x : L}
     algebraMap K F (Algebra.trace K L x) =
       finrank K⟮x⟯ L • ((minpoly K x).aroots F).sum := by
   rw [trace_eq_trace_adjoin K x, Algebra.smul_def, RingHom.map_mul, ← Algebra.smul_def,
-    IntermediateField.AdjoinSimple.trace_gen_eq_sum_roots _ hF]
--- Porting note: last `simp` was `IsScalarTower.algebraMap_smul` inside the `rw`.
-  simp only [eq_natCast, map_natCast, nsmul_eq_mul]
+    IntermediateField.AdjoinSimple.trace_gen_eq_sum_roots _ hF, IsScalarTower.algebraMap_smul]
 #align trace_eq_sum_roots trace_eq_sum_roots
 
 end EqSumRoots
