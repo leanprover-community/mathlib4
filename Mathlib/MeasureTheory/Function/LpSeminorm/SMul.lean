@@ -1,37 +1,61 @@
+import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
+
+open scoped NNReal ENNReal
+
+namespace MeasureTheory
+
+variable {α E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
+
 section Monotonicity
 
-theorem snorm'_le_nnreal_smul_snorm'_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
-    (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) {p : ℝ} (hp : 0 < p) : snorm' f p μ ≤ c • snorm' g p μ := by
-  simp_rw [snorm']
-  rw [← ENNReal.rpow_le_rpow_iff hp, ENNReal.smul_def, smul_eq_mul,
-    ENNReal.mul_rpow_of_nonneg _ _ hp.le]
-  simp_rw [← ENNReal.rpow_mul, one_div, inv_mul_cancel hp.ne.symm, ENNReal.rpow_one,
-    ENNReal.coe_rpow_of_nonneg _ hp.le, ← lintegral_const_mul' _ _ ENNReal.coe_ne_top, ←
-    ENNReal.coe_mul]
-  apply lintegral_mono_ae
-  simp_rw [ENNReal.coe_le_coe, ← NNReal.mul_rpow, NNReal.rpow_le_rpow_iff hp]
-  exact h
-#align measure_theory.snorm'_le_nnreal_smul_snorm'_of_ae_le_mul MeasureTheory.snorm'_le_nnreal_smul_snorm'_of_ae_le_mul
+variable {_ : MeasurableSpace α} {μ : Measure α} {f : α → E} {g : α → F} {p : ℝ≥0∞}
 
-theorem snormEssSup_le_nnreal_smul_snormEssSup_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
-    (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : snormEssSup f μ ≤ c • snormEssSup g μ :=
-  calc
-    essSup (fun x => (‖f x‖₊ : ℝ≥0∞)) μ ≤ essSup (fun x => (↑(c * ‖g x‖₊) : ℝ≥0∞)) μ :=
-      essSup_mono_ae <| h.mono fun x hx => ENNReal.coe_le_coe.mpr hx
-    _ = essSup (fun x => (c * ‖g x‖₊ : ℝ≥0∞)) μ := by simp_rw [ENNReal.coe_mul]
-    _ = c • essSup (fun x => (‖g x‖₊ : ℝ≥0∞)) μ := ENNReal.essSup_const_mul
-#align measure_theory.snorm_ess_sup_le_nnreal_smul_snorm_ess_sup_of_ae_le_mul MeasureTheory.snormEssSup_le_nnreal_smul_snormEssSup_of_ae_le_mul
+theorem snorm_le_of_nnnorm_ae_le_mul_nnnorm_of_one_le {c : ℝ≥0} (h : (‖f ·‖₊) ≤ᵐ[μ] (c * ‖g ·‖₊))
+    (hp : 1 ≤ p) : snorm f p μ ≤ c • snorm g p μ := by
+  induction p using ENNReal.recTopCoe with
+  | top =>
+    simp only [snorm_exponent_top, ENNReal.smul_def, smul_eq_mul, ← ENNReal.essSup_const_mul]
+    refine essSup_mono_ae <| h.mono fun x hx ↦ ?_
+    simpa only [ENNReal.coe_mul] using ENNReal.coe_le_coe.2 hx
+  | coe p =>
+    norm_cast at hp
+    simp only [snorm_coe_of_one_le _ hp]
+    calc
+      (∫⁻ x, (‖f x‖₊ : ℝ≥0∞) ^ (p : ℝ) ∂μ) ^ (1 / p : ℝ) ≤
+          (∫⁻ x, (c * ‖g x‖₊ : ℝ≥0∞) ^ (p : ℝ) ∂μ) ^ (1 / p : ℝ) := by
+        gcongr (?_ : ℝ≥0∞) ^ _
+        refine lintegral_mono_ae <| h.mono fun x hx ↦ ?_
+        gcongr
+        assumption_mod_cast
+      _ = c • (∫⁻ x, (‖g x‖₊ : ℝ≥0∞) ^ (p : ℝ) ∂μ) ^ (1 / p : ℝ) := by
+        have hcp : (c : ℝ≥0∞) ^ (p : ℝ) ≠ ∞ := ENNReal.rpow_ne_top_of_nonneg p.2 ENNReal.coe_ne_top
+        have hp' : (0 : ℝ) ≤ 1 / p := by positivity
+        simp only [ENNReal.mul_rpow_of_nonneg, hp', p.coe_nonneg, lintegral_const_mul' _ _ hcp]
+        rw [← ENNReal.rpow_mul, mul_one_div_cancel, ENNReal.rpow_one, ENNReal.smul_def, smul_eq_mul]
+        exact (NNReal.coe_pos.2 <| one_pos.trans_le hp).ne'
+#align measure_theory.snorm'_le_nnreal_smul_snorm'_of_ae_le_mul MeasureTheory.snorm_le_of_nnnorm_ae_le_mul_nnnorm_of_one_le
+#align measure_theory.snorm_ess_sup_le_nnreal_smul_snorm_ess_sup_of_ae_le_mul MeasureTheory.snorm_le_of_nnnorm_ae_le_mul_nnnorm_of_one_le
+#align measure_theory.snorm_le_nnreal_smul_snorm_of_ae_le_mul MeasureTheory.snorm_le_of_nnnorm_ae_le_mul_nnnorm_of_one_le
 
-theorem snorm_le_nnreal_smul_snorm_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
-    (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) (p : ℝ≥0∞) : snorm f p μ ≤ c • snorm g p μ := by
-  by_cases h0 : p = 0
-  · simp [h0]
-  by_cases h_top : p = ∞
-  · rw [h_top]
-    exact snormEssSup_le_nnreal_smul_snormEssSup_of_ae_le_mul h
-  simp_rw [snorm_eq_snorm' h0 h_top]
-  exact snorm'_le_nnreal_smul_snorm'_of_ae_le_mul h (ENNReal.toReal_pos h0 h_top)
-#align measure_theory.snorm_le_nnreal_smul_snorm_of_ae_le_mul MeasureTheory.snorm_le_nnreal_smul_snorm_of_ae_le_mul
+lemma snorm_le_of_nnnorm_ae_le_mul_nnnorm_of_le_one {c : ℝ≥0} (h : (‖f ·‖₊) ≤ᵐ[μ] (c * ‖g ·‖₊))
+    (hp : p ≤ 1) : snorm f p μ ≤ c ^ p.toReal • snorm g p μ := by
+  rcases eq_or_ne p 0 with rfl | hp0
+  · suffices f.support ≤ᵐ[μ] g.support by simpa using measure_mono_ae this
+    refine h.mono fun x hx ↦ mt fun hg ↦ ?_
+    simpa [hg] using hx
+  · simp only [snorm_of_ne_zero_le_one _ hp0 hp]
+    calc
+      ∫⁻ x, (‖f x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ ≤ ∫⁻ x, (c * ‖g x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ :=
+        lintegral_mono_ae <| h.mono fun x hx ↦ by gcongr; assumption_mod_cast
+      _ = c ^ p.toReal • ∫⁻ x, (‖g x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ := by
+        have hcp : (c : ℝ≥0∞) ^ p.toReal ≠ ∞ :=
+          ENNReal.rpow_ne_top_of_nonneg p.toReal_nonneg ENNReal.coe_ne_top
+        simp only [ENNReal.mul_rpow_of_nonneg _ _ p.toReal_nonneg, lintegral_const_mul']
+        
+    
+    
 
 -- TODO: add the whole family of lemmas?
 private theorem le_mul_iff_eq_zero_of_nonneg_of_neg_of_nonneg {α} [LinearOrderedSemiring α]
