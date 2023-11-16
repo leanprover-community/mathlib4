@@ -1529,18 +1529,6 @@ theorem eq_of_nonempty_of_subsingleton' {α} [Subsingleton α] {s : Set α} (t :
     (hs : s.Nonempty) [Nonempty t] : s = t :=
   have := hs.to_subtype; eq_of_nonempty_of_subsingleton s t
 
-theorem Nonempty.eq_of_unique [Unique α] {s : Set α} (h : s.Nonempty) :
-    s = {default} := eq_of_nonempty_of_subsingleton' {default} h
-
-theorem Nonempty.eq_zero_of_unique [Zero α] [Unique α] {s : Set α} (h : s.Nonempty) :
-    s = {0} := eq_of_nonempty_of_subsingleton' {0} h
-
-theorem Nonempty.eq_one_of_unique [One α] [Unique α] {s : Set α} (h : s.Nonempty) :
-    s = {1} := eq_of_nonempty_of_subsingleton' {1} h
-
-theorem Nonempty.eq_of_subsingleton [Subsingleton α] {s : Set α} (h : s.Nonempty) (a : α) :
-    s = {a} := eq_of_nonempty_of_subsingleton' {a} h
-
 theorem Nonempty.eq_zero [Subsingleton α] [Zero α] {s : Set α} (h : s.Nonempty) :
     s = {0} := eq_of_nonempty_of_subsingleton' {0} h
 
