@@ -353,7 +353,7 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
   haveI : NoZeroSMulDivisors R S := NoZeroSMulDivisors.of_algebraMap_injective hSR.symm.injective
   refine
     ⟨equivOfAlgebraic' R S L M
-        (IsAlgClosure.algebraic.of_larger_base_of_injective
+        (IsAlgClosure.algebraic.larger_base_of_injective
           (show Function.Injective (algebraMap S R) from hSR.injective)), ?_⟩
   ext x
   simp only [RingEquiv.toRingHom_eq_coe, Function.comp_apply, RingHom.coe_comp,
