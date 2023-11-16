@@ -36,8 +36,7 @@ theorem locallyConnectedSpace_iff_open_connected_basis :
     LocallyConnectedSpace α ↔
       ∀ x, (𝓝 x).HasBasis (fun s : Set α => IsOpen s ∧ x ∈ s ∧ IsConnected s) id :=
   ⟨@LocallyConnectedSpace.open_connected_basis _ _, LocallyConnectedSpace.mk⟩
-#align locally_connected_space_iff_open_connected_basis
-  locallyConnectedSpace_iff_open_connected_basis
+#align locally_connected_space_iff_open_connected_basis locallyConnectedSpace_iff_open_connected_basis
 
 theorem locallyConnectedSpace_iff_open_connected_subsets :
     LocallyConnectedSpace α ↔

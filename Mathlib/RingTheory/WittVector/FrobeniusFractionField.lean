@@ -272,7 +272,7 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
 #align witt_vector.exists_frobenius_solution_fraction_ring_aux WittVector.exists_frobenius_solution_fractionRing_aux
 
 theorem exists_frobenius_solution_fractionRing {a : FractionRing (𝕎 k)} (ha : a ≠ 0) :
-    ∃ (b : FractionRing (𝕎 k)) (hb : b ≠ 0) (m : ℤ),
+    ∃ (b : FractionRing (𝕎 k)) (_ : b ≠ 0) (m : ℤ),
       φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by
   revert ha
   refine' Localization.induction_on a _
