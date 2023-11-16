@@ -248,8 +248,9 @@ theorem nhds_ne_subtype_neBot_iff {S : Set α} {x : S} :
   rw [neBot_iff, neBot_iff, not_iff_not, nhds_ne_subtype_eq_bot_iff]
 #align nhds_ne_subtype_ne_bot_iff nhds_ne_subtype_neBot_iff
 
-theorem discreteTopology_subtype_iff {S : Set α} : DiscreteTopology S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ :=
-  by simp_rw [discreteTopology_iff_nhds_ne, SetCoe.forall', nhds_ne_subtype_eq_bot_iff]
+theorem discreteTopology_subtype_iff {S : Set α} :
+    DiscreteTopology S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ := by
+  simp_rw [discreteTopology_iff_nhds_ne, SetCoe.forall', nhds_ne_subtype_eq_bot_iff]
 #align discrete_topology_subtype_iff discreteTopology_subtype_iff
 
 end Topα
@@ -533,8 +534,8 @@ theorem mem_nhds_prod_iff {a : α} {b : β} {s : Set (α × β)} :
 #align mem_nhds_prod_iff mem_nhds_prod_iff
 
 theorem mem_nhdsWithin_prod_iff {a : α} {b : β} {s : Set (α × β)} {ta : Set α} {tb : Set β} :
-    s ∈ 𝓝[ta ×ˢ tb] (a, b) ↔ ∃ u ∈ 𝓝[ta] a, ∃ v ∈ 𝓝[tb] b, u ×ˢ v ⊆ s :=
-  by rw [nhdsWithin_prod_eq, mem_prod_iff]
+    s ∈ 𝓝[ta ×ˢ tb] (a, b) ↔ ∃ u ∈ 𝓝[ta] a, ∃ v ∈ 𝓝[tb] b, u ×ˢ v ⊆ s := by
+  rw [nhdsWithin_prod_eq, mem_prod_iff]
 
 -- porting note: moved up
 theorem Filter.HasBasis.prod_nhds {ιa ιb : Type*} {pa : ιa → Prop} {pb : ιb → Prop}
@@ -762,13 +763,15 @@ theorem frontier_prod_eq (s : Set α) (t : Set β) :
 #align frontier_prod_eq frontier_prod_eq
 
 @[simp]
-theorem frontier_prod_univ_eq (s : Set α) : frontier (s ×ˢ (univ : Set β)) = frontier s ×ˢ univ :=
-  by simp [frontier_prod_eq]
+theorem frontier_prod_univ_eq (s : Set α) :
+    frontier (s ×ˢ (univ : Set β)) = frontier s ×ˢ univ := by
+  simp [frontier_prod_eq]
 #align frontier_prod_univ_eq frontier_prod_univ_eq
 
 @[simp]
-theorem frontier_univ_prod_eq (s : Set β) : frontier ((univ : Set α) ×ˢ s) = univ ×ˢ frontier s :=
-  by simp [frontier_prod_eq]
+theorem frontier_univ_prod_eq (s : Set β) :
+    frontier ((univ : Set α) ×ˢ s) = univ ×ˢ frontier s := by
+  simp [frontier_prod_eq]
 #align frontier_univ_prod_eq frontier_univ_prod_eq
 
 theorem map_mem_closure₂ {f : α → β → γ} {a : α} {b : β} {s : Set α} {t : Set β} {u : Set γ}
@@ -1439,8 +1442,8 @@ theorem pi_eq_generateFrom :
       generateFrom
         { g | ∃ (s : ∀ a, Set (π a)) (i : Finset ι), (∀ a ∈ i, IsOpen (s a)) ∧ g = pi (↑i) s } :=
   calc Pi.topologicalSpace
-  _ = @Pi.topologicalSpace ι π fun a => generateFrom { s | IsOpen s } :=
-    by simp only [generateFrom_setOf_isOpen]
+  _ = @Pi.topologicalSpace ι π fun a => generateFrom { s | IsOpen s } := by
+    simp only [generateFrom_setOf_isOpen]
   _ = _ := pi_generateFrom_eq
 #align pi_eq_generate_from pi_eq_generateFrom
 

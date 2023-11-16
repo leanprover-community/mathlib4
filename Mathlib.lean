@@ -128,6 +128,7 @@ import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Algebra.DirectSum.Finsupp
 import Mathlib.Algebra.DirectSum.Internal
+import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.DirectSum.Ring
 import Mathlib.Algebra.Divisibility.Basic
@@ -608,6 +609,7 @@ import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 import Mathlib.Analysis.Calculus.FDeriv.Star
 import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
+import Mathlib.Analysis.Calculus.Gradient.Basic
 import Mathlib.Analysis.Calculus.Implicit
 import Mathlib.Analysis.Calculus.Inverse
 import Mathlib.Analysis.Calculus.IteratedDeriv
@@ -1365,6 +1367,7 @@ import Mathlib.Computability.TMComputable
 import Mathlib.Computability.TMToPartrec
 import Mathlib.Computability.TuringMachine
 import Mathlib.Condensed.Abelian
+import Mathlib.Condensed.Adjunctions
 import Mathlib.Condensed.Basic
 import Mathlib.Condensed.Discrete
 import Mathlib.Condensed.Equivalence

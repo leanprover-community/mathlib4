@@ -67,7 +67,7 @@ theorem Polynomial.lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] 
     rw [coe_insert, Set.insert_eq, Set.union_comm, Algebra.adjoin_union_eq_adjoin_adjoin]
     set Ks := Algebra.adjoin F (s : Set K)
     haveI : FiniteDimensional F Ks := ((Submodule.fg_iff_finiteDimensional _).1
-      (FG_adjoin_of_finite s.finite_toSet H3)).of_subalgebra_toSubmodule
+      (fg_adjoin_of_finite s.finite_toSet H3)).of_subalgebra_toSubmodule
     letI := fieldOfFiniteDimensional F Ks
     letI := (f : Ks →+* L).toAlgebra
     have H5 : IsIntegral Ks a := isIntegral_of_isScalarTower H1
