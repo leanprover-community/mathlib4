@@ -480,6 +480,12 @@ theorem Nat.ModEq.pow_totient {x n : ℕ} (h : Nat.Coprime x n) : x ^ φ n ≡ 1
     coe_unitOfCoprime, Units.val_pow_eq_pow_val]
 #align nat.modeq.pow_totient Nat.ModEq.pow_totient
 
+/-- For each `n ≥ 0`, the unit group of `ZMod n` has finite exponent. -/
+lemma ZMod.exists_pos_unit_pow_eq_one (n : ℕ) : ∃ m : ℕ, 0 < m ∧ ∀ a : (ZMod n)ˣ, a ^ m = 1 :=
+  match n with
+  | 0     => ⟨2, zero_lt_two, Int.units_sq⟩
+  | n + 1 => ⟨n.succ.totient, Nat.totient_pos n.succ_pos, ZMod.pow_totient⟩
+
 section
 
 variable {V : Type*} [Fintype K] [DivisionRing K] [AddCommGroup V] [Module K V]
