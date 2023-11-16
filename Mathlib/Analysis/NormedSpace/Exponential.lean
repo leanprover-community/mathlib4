@@ -167,7 +167,8 @@ theorem _root_.IsSelfAdjoint.exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 
   (star_exp x).trans <| h.symm ▸ rfl
 #align is_self_adjoint.exp IsSelfAdjoint.exp
 
-theorem _root_.Commute.exp_right [T2Space 𝔸] {x y : 𝔸} (h : Commute x y) : Commute x (exp 𝕂 y) := by
+theorem _root_.Commute.exp_right [T2Space 𝔸] {x y : 𝔸} (h : Commute x y) :
+    Commute x (exp 𝕂 y) := by
   rw [exp_eq_tsum]
   exact Commute.tsum_right x fun n => (h.pow_right n).smul_right _
 #align commute.exp_right Commute.exp_right

@@ -20,6 +20,7 @@ In this file we express trigonometric functions in terms of their series expansi
 * `Real.hasSum_sin`, `Real.sin_eq_tsum`: `Real.sin` as the sum of an infinite series.
 -/
 
+open NormedSpace
 
 open scoped Nat
 
