@@ -3,7 +3,7 @@ Copyright (c) 2021 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.AlgebraicGeometry.Scheme
+import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Reflective
 
@@ -304,10 +304,10 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
       -- The next six lines were `rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]` before
       -- leanprover/lean4#2644
       have : (ContinuousMap.mk (toΓSpecFun Y) (toΓSpec_continuous _)) (f.val.base x)
-        = toΓSpecFun Y (f.val.base x) := by erw [ContinuousMap.coe_mk]; rfl
+        = toΓSpecFun Y (f.val.base x) := by rw [ContinuousMap.coe_mk]
       erw [this]
       have : (ContinuousMap.mk (toΓSpecFun X) (toΓSpec_continuous _)) x
-        = toΓSpecFun X x := by erw [ContinuousMap.coe_mk]
+        = toΓSpecFun X x := by rw [ContinuousMap.coe_mk]
       erw [this]
       dsimp [toΓSpecFun]
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -454,6 +454,21 @@ theorem adjunction_unit_app_app_top (X : Scheme) :
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app_app_top AlgebraicGeometry.ΓSpec.adjunction_unit_app_app_top
 
 end ΓSpec
+
+@[reassoc]
+theorem SpecΓIdentity_naturality {R S : CommRingCat} (f : R ⟶ S) :
+    (Scheme.Spec.map f.op).1.c.app (op ⊤) ≫ SpecΓIdentity.hom.app _ =
+      SpecΓIdentity.hom.app _ ≫ f := SpecΓIdentity.hom.naturality f
+
+theorem SpecΓIdentity_hom_app_presheaf_obj {X : Scheme} (U : Opens X) :
+    SpecΓIdentity.hom.app (X.presheaf.obj (op U)) =
+      Scheme.Γ.map (Scheme.Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op).op).op ≫
+      (ΓSpec.adjunction.unit.app (X ∣_ᵤ U)).val.c.app (op ⊤) ≫
+      X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op := by
+  rw [ΓSpec.adjunction_unit_app_app_top]
+  dsimp [-SpecΓIdentity_hom_app]
+  rw [SpecΓIdentity_naturality_assoc, ← Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
+    op_id, CategoryTheory.Functor.map_id, Category.comp_id]
 
 /-! Immediate consequences of the adjunction. -/
 

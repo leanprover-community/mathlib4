@@ -104,7 +104,7 @@ def extensiveCoverage [FinitaryPreExtensive C] : Coverage C where
       rcases hg with ⟨a⟩
       refine ⟨Z a, pullback.snd, π a, ?_, by rw [CategoryTheory.Limits.pullback.condition]⟩
       rw [hS]
-      refine Presieve.ofArrows.mk a
+      exact Presieve.ofArrows.mk a
 
 
 /-- The union of the extensive and regular coverages generates the coherent topology on `C`. -/
@@ -216,7 +216,7 @@ def EqualizerFirstObjIso (F : Cᵒᵖ ⥤ Type (max u v)) {B X : C} (π : X ⟶ 
       | mk => rfl
     inv_hom_id := by aesop }
 
-instance {B X : C} (π : X ⟶ B) [EffectiveEpi π] [HasPullback π π] :
+instance {B X : C} (π : X ⟶ B) [HasPullback π π] :
     (Presieve.singleton π).hasPullbacks where
   has_pullbacks hf _ hg := by
     cases hf
@@ -228,8 +228,7 @@ The `SecondObj` in the sheaf condition diagram is isomorphic to `F` applied to
 with itself
 -/
 noncomputable
-def EqualizerSecondObjIso (F : Cᵒᵖ ⥤ Type (max u v)) {B X : C} (π : X ⟶ B) [EffectiveEpi π]
-    [HasPullback π π] :
+def EqualizerSecondObjIso (F : Cᵒᵖ ⥤ Type (max u v)) {B X : C} (π : X ⟶ B) [HasPullback π π] :
     Equalizer.Presieve.SecondObj F (Presieve.singleton π) ≅ F.obj (op (Limits.pullback π π)) :=
   Types.productIso.{max u v, max u v} _ ≪≫
   { hom := fun e ↦ e (⟨X, ⟨π, Presieve.singleton_self π⟩⟩, ⟨X, ⟨π, Presieve.singleton_self π⟩⟩)
