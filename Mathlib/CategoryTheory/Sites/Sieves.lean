@@ -40,6 +40,7 @@ variable {X Y Z : C} (f : Y ⟶ X)
 /-- A set of arrows all with codomain `X`. -/
 def Presieve (X : C) :=
   ∀ ⦃Y⦄, Set (Y ⟶ X)-- deriving CompleteLattice
+#align category_theory.presieve CategoryTheory.Presieve
 
 instance : CompleteLattice (Presieve X) := by
   dsimp [Presieve]
