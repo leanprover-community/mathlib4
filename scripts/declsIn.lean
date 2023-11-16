@@ -6,7 +6,11 @@ import Mathlib.Lean.CoreM
 open Lean
 
 /-- Given an array of modules, this function returns the sorted list of all non-blacklisted
-declarations provided by those modules. -/
+declarations provided by those modules.
+
+The script `decl-name-changes.sh` wraps this and uses `git` to detect which files have changed.
+Then it computes the `diff` between the arrays returned by this function.  In general, users should
+prefer that instead of using this script directly. -/
 def getDeclsInPackagesNoBlacklist (pkgs : Array Name) : CoreM (Array Name) := do
   let arr_decls ← pkgs.mapM fun pkg => do
     (← Std.Tactic.Lint.getDeclsInPackage pkg).filterM (Functor.map (! ·) ∘ Lean.Name.isBlackListed)
