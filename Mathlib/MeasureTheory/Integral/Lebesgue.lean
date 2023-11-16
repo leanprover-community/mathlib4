@@ -1839,7 +1839,7 @@ lemma tendsto_measure_of_ae_tendsto_indicator {μ : Measure α} (A_mble : Measur
     exact eventually_of_forall (fun x ↦ indicator_le_indicator_of_subset hi (by simp) x)
   · rwa [← lintegral_indicator_one B_mble] at B_finmeas
   · simpa only [show (OfNat.ofNat 1 : α → ℝ≥0∞) = (fun _ ↦ 1) by rfl,
-                tendsto_indicator_const_apply_iff_forall_eventually] using h_lim
+                tendsto_indicator_const_apply_iff_eventually] using h_lim
 
 /-- If `μ` is a finite measure and the indicators of measurable sets `Aᵢ` tend pointwise
 almost everywhere to the indicator of a measurable set `A`, then the measures `μ Aᵢ` tend to

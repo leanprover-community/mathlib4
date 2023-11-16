@@ -50,7 +50,7 @@ lemma tendsto_ite {β : Type*} {p : ι → Prop} [DecidablePred p] {q : Prop} [D
       simp only [principal_singleton, le_pure_iff, mem_map, Set.mem_singleton_iff,
         Set.preimage_const_of_mem, univ_mem]
 
-lemma tendsto_indicator_const_apply_iff_forall_eventually' (b : β)
+lemma tendsto_indicator_const_apply_iff_eventually' (b : β)
     (nhd_b : {0}ᶜ ∈ 𝓝 b) (nhd_o : {b}ᶜ ∈ 𝓝 0) (x : α) :
     Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b) x) L (𝓝 (A.indicator (fun (_ : α) ↦ b) x))
       ↔ ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A) := by
@@ -70,13 +70,13 @@ lemma tendsto_indicator_const_iff_forall_eventually'
       ↔ ∀ x, ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A) := by
   simp_rw [tendsto_pi_nhds]
   apply forall_congr'
-  exact tendsto_indicator_const_apply_iff_forall_eventually' L b nhd_b nhd_o
+  exact tendsto_indicator_const_apply_iff_eventually' L b nhd_b nhd_o
 
-@[simp] lemma tendsto_indicator_const_apply_iff_forall_eventually [T1Space β] (b : β) [NeZero b]
+@[simp] lemma tendsto_indicator_const_apply_iff_eventually [T1Space β] (b : β) [NeZero b]
     (x : α) :
     Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b) x) L (𝓝 (A.indicator (fun (_ : α) ↦ b) x))
       ↔ ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A) := by
-  apply tendsto_indicator_const_apply_iff_forall_eventually' _ b
+  apply tendsto_indicator_const_apply_iff_eventually' _ b
   · simp only [compl_singleton_mem_nhds_iff, ne_eq, NeZero.ne]
   · simp only [compl_singleton_mem_nhds_iff, ne_eq, (NeZero.ne b).symm]
 
