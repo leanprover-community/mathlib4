@@ -852,7 +852,7 @@ theorem isIntegral_trans (A_int : Algebra.IsIntegral R A) (x : B) (hx : IsIntegr
 /-- If A is an R-algebra all of whose elements are integral over R,
 and B is an A-algebra all of whose elements are integral over A,
 then all elements of B are integral over R.-/
-theorem Algebra.IsIntegral.trans
+protected theorem Algebra.IsIntegral.trans
     (hA : Algebra.IsIntegral R A) (hB : Algebra.IsIntegral A B) : Algebra.IsIntegral R B :=
   fun x ↦ isIntegral_trans hA x (hB x)
 #align algebra.is_integral_trans Algebra.IsIntegral.trans
@@ -864,12 +864,12 @@ theorem RingHom.IsIntegral.trans (hf : f.IsIntegral) (hg : g.IsIntegral) : (g.co
 #align ring_hom.is_integral_trans RingHom.IsIntegral.trans
 
 theorem RingHom.isIntegral_of_surjective (hf : Function.Surjective f) : f.IsIntegral :=
-  fun x ↦ (hf x).recOn fun _y hy ↦ (hy ▸ f.isIntegralElem_map)
+  fun x ↦ (hf x).recOn fun _y hy ↦ hy ▸ f.isIntegralElem_map
 #align ring_hom.is_integral_of_surjective RingHom.isIntegral_of_surjective
 
 theorem Algebra.isIntegral_of_surjective (h : Function.Surjective (algebraMap R A)) :
     Algebra.IsIntegral R A :=
-  (algebraMap R A).isIntegral_of_surjective  h
+  (algebraMap R A).isIntegral_of_surjective h
 #align is_integral_of_surjective Algebra.isIntegral_of_surjective
 
 /-- If `R → A → B` is an algebra tower with `A → B` injective,
