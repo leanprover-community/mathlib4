@@ -27,7 +27,7 @@ such that `∀ a b, l a ≤ b ↔ a ≤ u b`.
 ## Implementation details
 
 Galois insertions can be used to lift order structures from one type to another.
-For example if `α` is a complete lattice, and `l : α → β` and `u : β → α` form a Galois insertion,
+For example, if `α` is a complete lattice, and `l : α → β` and `u : β → α` form a Galois insertion,
 then `β` is also a complete lattice. `l` is the lower adjoint and `u` is the upper adjoint.
 
 An example of a Galois insertion is in group theory. If `G` is a group, then there is a Galois
