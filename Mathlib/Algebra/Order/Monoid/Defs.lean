@@ -26,8 +26,8 @@ class OrderedAddCommMonoid (α : Type*) extends AddCommMonoid α, PartialOrder �
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c, c + a ≤ c + b
 #align ordered_add_comm_monoid OrderedAddCommMonoid
 
-attribute [instance 200] OrderedAddCommMonoid.toAddCommMonoid
-attribute [instance 150] OrderedAddCommMonoid.toPartialOrder
+attribute [instance 50] OrderedAddCommMonoid.toAddCommMonoid
+attribute [instance 50] OrderedAddCommMonoid.toPartialOrder
 
 /-- An ordered commutative monoid is a commutative monoid with a partial order such that
 multiplication is monotone. -/
@@ -36,8 +36,8 @@ class OrderedCommMonoid (α : Type*) extends CommMonoid α, PartialOrder α wher
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c, c * a ≤ c * b
 #align ordered_comm_monoid OrderedCommMonoid
 
-attribute [instance 200] OrderedCommMonoid.toCommMonoid
-attribute [instance 150] OrderedCommMonoid.toPartialOrder
+attribute [instance 50] OrderedCommMonoid.toCommMonoid
+attribute [instance 50] OrderedCommMonoid.toPartialOrder
 
 section OrderedCommMonoid
 variable [OrderedCommMonoid α]
