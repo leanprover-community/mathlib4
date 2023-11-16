@@ -833,7 +833,7 @@ attribute [local instance] toAddTorsor
 /-- The top affine subspace is linearly equivalent to the affine space.
 
 This is the affine version of `Submodule.topEquiv`. -/
-@[simps!]
+@[simps! linear apply symm_apply_coe]
 def topEquiv : (⊤ : AffineSubspace k P) ≃ᵃ[k] P where
   toEquiv := Equiv.Set.univ P
   linear := .ofEq _ _ (direction_top _ _ _) ≪≫ₗ Submodule.topEquiv
