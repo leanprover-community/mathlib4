@@ -38,6 +38,8 @@ variable (𝕜 : Type*) {R M : Type*}
 
 local notation "tsze" => TrivSqZeroExt
 
+open NormedSpace -- For `exp`.
+
 namespace TrivSqZeroExt
 
 section Topology
