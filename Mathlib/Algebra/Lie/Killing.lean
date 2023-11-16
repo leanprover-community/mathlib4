@@ -95,6 +95,14 @@ lemma yawn (h : 1 ≤ nilpotencyLength R L L):
   · simp
   · simp
 
+-- Can we set things up better to avoid needing this very specific lemma?
+lemma _root_.LieSubmodule.restrict_foo (N : LieSubmodule R L M) (μ : R) (x : L)
+    (h : Set.MapsTo (toEndomorphism R L M x - algebraMap R (Module.End R M) μ) N N :=
+      fun _ hm ↦ N.sub_mem (N.lie_mem hm) (N.smul_mem μ hm)) :
+    toEndomorphism R L N x - algebraMap R (Module.End R N) μ =
+    (toEndomorphism R L M x - algebraMap R (Module.End R M) μ).restrict h := by
+  rfl
+
 end LieModule
 
 -- TODO Where should this go?
@@ -267,8 +275,12 @@ lemma lowerCentralSeriesLast_le_ker_traceForm (hL : ¬ IsLieAbelian L) :
         (toEndomorphism K L (weightSpaceOf M (χ x) x) x - algebraMap K _ (χ x)) := by
       exact (toEndomorphism K L M x).isNilpotent_restrict_iSup_sub_algebraMap (χ x)
     use k
-    -- yawn (easy)
-    sorry
+    ext ⟨m, hm⟩
+    replace hk := Subtype.ext_iff.mp <|
+      LinearMap.congr_fun hk ⟨m, weightSpace_le_weightSpaceOf M x χ hm⟩
+    rw [LieSubmodule.restrict_foo, LinearMap.pow_restrict _, LinearMap.restrict_coe_apply,
+      LinearMap.zero_apply, ZeroMemClass.coe_zero, Subtype.coe_mk] at hk ⊢
+    assumption
 
 lemma isLieAbelian_of_ker_traceForm_eq_bot (h : LinearMap.ker (traceForm K L M) = ⊥) :
     IsLieAbelian L := by
