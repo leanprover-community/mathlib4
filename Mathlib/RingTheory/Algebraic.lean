@@ -136,10 +136,10 @@ theorem isAlgebraic_of_mem_rootSet {R : Type u} {A : Type v} [Field R] [Field A]
 
 open IsScalarTower
 
-theorem isAlgebraic_algebraMap_of_isAlgebraic {a : S} :
+theorem IsAlgebraic.algebraMap {a : S} :
     IsAlgebraic R a → IsAlgebraic R (algebraMap S A a) := fun ⟨f, hf₁, hf₂⟩ =>
   ⟨f, hf₁, by rw [aeval_algebraMap_apply, hf₂, map_zero]⟩
-#align is_algebraic_algebra_map_of_is_algebraic isAlgebraic_algebraMap_of_isAlgebraic
+#align is_algebraic_algebra_map_of_is_algebraic IsAlgebraic.algebraMap
 
 /-- This is slightly more general than `isAlgebraic_algebraMap_of_isAlgebraic` in that it
   allows noncommutative intermediate rings `A`. -/
@@ -163,7 +163,7 @@ theorem AlgEquiv.isAlgebraic_iff {B} [Ring B] [Algebra R B] (e : A ≃ₐ[R] B) 
 theorem isAlgebraic_algebraMap_iff {a : S} (h : Function.Injective (algebraMap S A)) :
     IsAlgebraic R (algebraMap S A a) ↔ IsAlgebraic R a :=
   ⟨fun ⟨p, hp0, hp⟩ => ⟨p, hp0, h (by rwa [map_zero, ← aeval_algebraMap_apply])⟩,
-    isAlgebraic_algebraMap_of_isAlgebraic⟩
+    IsAlgebraic.algebraMap⟩
 #align is_algebraic_algebra_map_iff isAlgebraic_algebraMap_iff
 
 theorem isAlgebraic_of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r ^ n)) :

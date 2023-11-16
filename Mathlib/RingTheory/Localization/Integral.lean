@@ -399,7 +399,7 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Alge
       refine'
         _root_.isAlgebraic_of_larger_base_of_injective
           (NoZeroSMulDivisors.algebraMap_injective R (FractionRing R)) _
-      exact isAlgebraic_algebraMap_of_isAlgebraic (h a)
+      exact IsAlgebraic.algebraMap (h a)
     · rw [← isAlgebraic_iff_isIntegral]
       use (f.map (algebraMap R (FractionRing R))).reverse
       constructor
