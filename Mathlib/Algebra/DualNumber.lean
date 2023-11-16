@@ -113,9 +113,9 @@ nonrec theorem algHom_ext' ⦃f g : A[ε] →ₐ[R] B⦄
 /-- For two `R`-algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
 @[ext 1200]
 nonrec theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f = g := by
-  ext <;> dsimp
-  · exact (f.commutes _).trans (g.commutes _).symm
-  · simp only [one_smul, hε]
+  ext
+  dsimp
+  simp only [one_smul, hε]
 #align dual_number.alg_hom_ext DualNumber.algHom_ext
 
 /-- A universal property of the dual numbers, providing a unique `A[ε] →ₐ[R] B` for every map
