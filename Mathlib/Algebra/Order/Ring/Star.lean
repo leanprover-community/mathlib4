@@ -63,9 +63,9 @@ See note [reducible non-instances]. -/
 @[reducible]
 def toOrderedCommSemiring (R : Type*) [CommSemiring R] [PartialOrder R]
     [StarOrderedRing R] : OrderedCommSemiring R where
-  __ := ‹CommSemiring R›
-  __ := toOrderedAddCommMonoid
+  add_le_add_left _ _ := add_le_add_left
   zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
+  mul_comm := mul_comm
   mul_le_mul_of_nonneg_left _ _ _ := mul_le_mul_of_nonneg_left
   mul_le_mul_of_nonneg_right a b c := by simpa only [mul_comm _ c] using mul_le_mul_of_nonneg_left
 
@@ -78,7 +78,7 @@ See note [reducible non-instances]. -/
 @[reducible]
 def toOrderedCommRing (R : Type*) [CommRing R] [PartialOrder R]
     [StarOrderedRing R] : OrderedCommRing R where
-  __ := ‹CommRing R›
-  __ := toOrderedAddCommGroup
+  add_le_add_left _ _ := add_le_add_left
   zero_le_one := by simpa using star_mul_self_nonneg (1 : R)
+  mul_comm := mul_comm
   mul_nonneg _ _ := let _ := toOrderedCommSemiring R; mul_nonneg
