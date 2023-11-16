@@ -91,15 +91,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
   rw [Algebra.norm_apply, ← LinearMap.det_toMatrix bS]
   simp only [Algebra.norm_apply, AlgHom.map_sum, AlgHom.map_smul, map_sum,
     map_smul, Algebra.toMatrix_lmul_eq, normBound, smul_mul_assoc, ← mul_pow]
-  --Porting note: rest of proof was
-  -- convert Matrix.det_sum_smul_le Finset.univ _ hy using 3
-  -- · rw [Finset.card_univ, smul_mul_assoc, mul_comm]
-  -- · intro i j k
-  --   apply Finset.le_max'
-  --   exact finset.mem_image.mpr ⟨⟨i, j, k⟩, Finset.mem_univ _, rfl⟩
-  rw [← LinearMap.det_toMatrix bS]
-  convert Matrix.det_sum_smul_le (n := ι) Finset.univ _ hy using 3
-  · simp; rfl
+  convert Matrix.det_sum_smul_le Finset.univ _ hy using 3
   · rw [Finset.card_univ, smul_mul_assoc, mul_comm]
   · intro i j k
     apply Finset.le_max'

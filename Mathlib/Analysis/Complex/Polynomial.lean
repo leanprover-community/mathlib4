@@ -27,14 +27,17 @@ namespace Complex
 /-- **Fundamental theorem of algebra**: every non constant complex polynomial
   has a root -/
 theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z := by
-  contrapose! hf
-  have : IsBounded (Set.range (eval · f)⁻¹)
-  · obtain ⟨z₀, h₀⟩ := f.exists_forall_norm_le
-    simp only [Pi.inv_apply, isBounded_iff_forall_norm_le, Set.forall_range_iff, norm_inv]
-    exact ⟨‖eval z₀ f‖⁻¹, fun z => inv_le_inv_of_le (norm_pos_iff.2 <| hf z₀) (h₀ z)⟩
-  obtain ⟨c, hc⟩ := (f.differentiable.inv hf).exists_const_forall_eq_of_bounded this
-  · obtain rfl : f = C c⁻¹ := Polynomial.funext fun z => by rw [eval_C, ← hc z, inv_inv]
-    exact degree_C_le
+  by_contra' hf'
+  /- Since `f` has no roots, `f⁻¹` is differentiable. And since `f` is a polynomial, it tends to
+  infinity at infinity, thus `f⁻¹` tends to zero at infinity. By Liouville's theorem, `f⁻¹ = 0`. -/
+  have (z : ℂ) : (f.eval z)⁻¹ = 0 :=
+    (f.differentiable.inv hf').apply_eq_of_tendsto_cocompact z <|
+      Metric.cobounded_eq_cocompact (α := ℂ) ▸ (Filter.tendsto_inv₀_cobounded.comp <| by
+        simpa only [tendsto_norm_atTop_iff_cobounded]
+          using f.tendsto_norm_atTop hf tendsto_norm_cobounded_atTop)
+  -- Thus `f = 0`, contradicting the fact that `0 < degree f`.
+  obtain rfl : f = C 0 := Polynomial.funext fun z ↦ inv_injective <| by simp [this]
+  simp at hf
 #align complex.exists_root Complex.exists_root
 
 instance isAlgClosed : IsAlgClosed ℂ :=

@@ -16,7 +16,8 @@ as well as the bijection between said projectivization and the collection of all
 dimensional subspaces of the vector space.
 
 ## Notation
-`ℙ K V` is notation for `Projectivization K V`, the projectivization of a `K`-vector space `V`.
+`ℙ K V` is localized notation for `Projectivization K V`, the projectivization of a `K`-vector
+space `V`.
 
 ## Constructing terms of `ℙ K V`.
 We have three ways to construct terms of `ℙ K V`:
@@ -32,7 +33,6 @@ We have three ways to construct terms of `ℙ K V`:
 
 -/
 
-
 variable (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- The setoid whose quotient is the projectivization of `V`. -/
@@ -45,9 +45,12 @@ The notation `ℙ K V` is preferred. -/
 def Projectivization := Quotient (projectivizationSetoid K V)
 #align projectivization Projectivization
 
-notation "ℙ" => Projectivization
+/-- We define notations `ℙ K V` for the projectivization of the `K`-vector space `V`. -/
+scoped[LinearAlgebra.Projectivization] notation "ℙ" => Projectivization
 
 namespace Projectivization
+
+open scoped LinearAlgebra.Projectivization
 
 variable {V}
 
