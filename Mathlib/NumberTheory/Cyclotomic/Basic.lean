@@ -708,9 +708,7 @@ instance [IsDomain A] [NeZero ((n : ℕ) : A)] :
       rw [RingHom.map_mul, mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), mul_assoc, ←
         mul_assoc z, hb, ← mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, ha]
       simp only [map_mul]
-  eq_iff_exists' := @fun x y =>
-    ⟨fun h => ⟨1, by rw [adjoin_algebra_injective n A K h]⟩, fun ⟨c, hc⟩ => by
-      rw [mul_left_cancel₀ (nonZeroDivisors.ne_zero c.prop) hc]⟩
+  exists_of_eq {x y} h := ⟨1, by rw [adjoin_algebra_injective n A K h]⟩
 
 theorem eq_adjoin_primitive_root {μ : CyclotomicField n K} (h : IsPrimitiveRoot μ n) :
     CyclotomicRing n A K = adjoin A ({μ} : Set (CyclotomicField n K)) := by
