@@ -132,7 +132,7 @@ lemma over_forget_compatiblePreserving (X : C) :
     let g₂' : W' ⟶ Y₂ := Over.homMk f₂ (by simpa using h.symm =≫ Z.hom)
     exact hx g₁' g₂' hg₁ hg₂ (by ext; exact h)
 
-instance (X : C) : (Over.forget X).IsCoverLifting (J.over X) J where
+instance (X : C) : (Over.forget X).IsCocontinuous (J.over X) J where
   cover_lift hS := J.overEquiv_symm_mem_over _ _ hS
 
 instance (X : C) : (Over.forget X).IsContinuous (J.over X) J :=

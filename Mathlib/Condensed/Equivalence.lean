@@ -118,9 +118,9 @@ lemma coverPreserving :
   apply LocallyCoverDense.inducedTopology_coverPreserving
 
 instance coverLifting :
-    Stonean.toCompHaus.IsCoverLifting (coherentTopology _) (coherentTopology _) := by
+    Stonean.toCompHaus.IsCocontinuous (coherentTopology _) (coherentTopology _) := by
   rw [coherentTopology_is_induced]
-  apply LocallyCoverDense.inducedTopology_coverLifting
+  apply LocallyCoverDense.inducedTopology_isCocontinuous
 
 instance : Stonean.toCompHaus.IsContinuous (coherentTopology _) (coherentTopology _) :=
   Functor.IsCoverDense.isContinuous _ _ _ coverPreserving
@@ -210,10 +210,10 @@ lemma coverPreserving :
   rw [coherentTopology_is_induced]
   apply LocallyCoverDense.inducedTopology_coverPreserving
 
-instance coverLifting :
-    Stonean.toProfinite.IsCoverLifting (coherentTopology _) (coherentTopology _) := by
+instance isCocontinuous :
+    Stonean.toProfinite.IsCocontinuous (coherentTopology _) (coherentTopology _) := by
   rw [coherentTopology_is_induced]
-  apply LocallyCoverDense.inducedTopology_coverLifting
+  apply LocallyCoverDense.inducedTopology_isCocontinuous
 
 instance : Stonean.toProfinite.IsContinuous (coherentTopology _) (coherentTopology _) :=
   Functor.IsCoverDense.isContinuous _ _ _ coverPreserving

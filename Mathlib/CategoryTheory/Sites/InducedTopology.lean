@@ -98,9 +98,9 @@ def inducedTopology : GrothendieckTopology C where
 #align category_theory.locally_cover_dense.induced_topology CategoryTheory.LocallyCoverDense.inducedTopology
 
 /-- `G` is cover-lifting wrt the induced topology. -/
-theorem inducedTopology_coverLifting : G.IsCoverLifting Hld.inducedTopology K :=
+theorem inducedTopology_isCocontinuous : G.IsCocontinuous Hld.inducedTopology K :=
   ⟨@fun _ S hS => Hld ⟨S, hS⟩⟩
-#align category_theory.locally_cover_dense.induced_topology_cover_lifting CategoryTheory.LocallyCoverDense.inducedTopology_coverLifting
+#align category_theory.locally_cover_dense.induced_topology_cover_lifting CategoryTheory.LocallyCoverDense.inducedTopology_isCocontinuous
 
 /-- `G` is cover-preserving wrt the induced topology. -/
 theorem inducedTopology_coverPreserving : CoverPreserving Hld.inducedTopology K G :=
@@ -159,8 +159,8 @@ instance [Full G] [Faithful G] [G.IsCoverDense K]  :
   exact (G.locallyCoverDense_of_isCoverDense K).inducedTopology_coverPreserving
 
 instance [Full G] [Faithful G] [G.IsCoverDense K]  :
-    Functor.IsCoverLifting G (G.inducedTopologyOfIsCoverDense K) K :=
-  (G.locallyCoverDense_of_isCoverDense K).inducedTopology_coverLifting
+    Functor.IsCocontinuous G (G.inducedTopologyOfIsCoverDense K) K :=
+  (G.locallyCoverDense_of_isCoverDense K).inducedTopology_isCocontinuous
 
 /-- Cover-dense functors induces an equivalence of categories of sheaves.
 

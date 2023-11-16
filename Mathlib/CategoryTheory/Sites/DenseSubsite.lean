@@ -526,7 +526,7 @@ variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 
 variable {A : Type w} [Category.{max u v} A] [Limits.HasLimits A]
 
-variable [G.IsCoverDense K] [G.IsContinuous J K] [G.IsCoverLifting J K]
+variable [G.IsCoverDense K] [G.IsContinuous J K] [G.IsCocontinuous J K]
 
 instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.app Y) := by
     let α := G.sheafAdjunctionCocontinuous A J K
