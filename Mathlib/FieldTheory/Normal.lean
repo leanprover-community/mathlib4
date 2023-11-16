@@ -65,7 +65,7 @@ theorem Normal.out : Normal F K → ∀ x : K, IsIntegral F x ∧ Splits (algebr
 variable (F K)
 
 instance normal_self : Normal F F :=
-  ⟨fun _ => isIntegral_algebraMap.isAlgebraic F, fun x =>
+  ⟨fun _ => isIntegral_algebraMap.isAlgebraic, fun x =>
     (minpoly.eq_X_sub_C' x).symm ▸ splits_X_sub_C _⟩
 #align normal_self normal_self
 
