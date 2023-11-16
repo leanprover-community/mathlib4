@@ -11,6 +11,22 @@ import Mathlib.Topology.Separation
 
 In this file, we prove the equivalence of three different ways to phrase that the indicator
 functions of sets converge pointwise.
+
+## Main results
+
+For `A` a set, `(Asᵢ)` an indexed collection of sets, under mild conditions, the following are
+equivalent:
+
+ (a) the indicator functions of `Asᵢ` tend to the indicator function of `A` pointwise;
+
+ (b) for every `x`, we eventually have that `x ∈ Asᵢ` holds iff `x ∈ A` holds;
+
+ (c) `Tendsto As _ <| Filter.pi (pure <| · ∈ A)`.
+
+The results stating these in the case when the indicators take values in a Fréchet space are:
+ * `tendsto_indicator_const_iff_forall_eventually` is the equivalence (a) ↔ (b);
+ * `tendsto_indicator_const_iff_tendsto_pi_pure` is the equivalence (a) ↔ (c).
+
 -/
 
 
@@ -72,6 +88,8 @@ lemma tendsto_indicator_const_iff_forall_eventually'
   apply forall_congr'
   exact tendsto_indicator_const_apply_iff_eventually' L b nhd_b nhd_o
 
+/-- The indicator functions of `Asᵢ` evaluated at `x` tend to the indicator function of `A`
+evaluated at `x` if and only if we eventually have the equivalence `x ∈ Asᵢ ↔ x ∈ A`. -/
 @[simp] lemma tendsto_indicator_const_apply_iff_eventually [T1Space β] (b : β) [NeZero b]
     (x : α) :
     Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b) x) L (𝓝 (A.indicator (fun (_ : α) ↦ b) x))
@@ -80,6 +98,8 @@ lemma tendsto_indicator_const_iff_forall_eventually'
   · simp only [compl_singleton_mem_nhds_iff, ne_eq, NeZero.ne]
   · simp only [compl_singleton_mem_nhds_iff, ne_eq, (NeZero.ne b).symm]
 
+/-- The indicator functions of `Asᵢ` tend to the indicator function of `A` pointwise if and only if
+for every `x`, we eventually have the equivalence `x ∈ Asᵢ ↔ x ∈ A`. -/
 @[simp] lemma tendsto_indicator_const_iff_forall_eventually [T1Space β] (b : β) [NeZero b] :
     Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b)) L (𝓝 (A.indicator (fun (_ : α) ↦ b)))
       ↔ ∀ x, ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A) := by
