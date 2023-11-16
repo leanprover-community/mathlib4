@@ -13,25 +13,33 @@ namespace CategoryTheory
 
 variable {C : Type*} [Category C] {X : C}
 
-/-- A set of arrows all with codomain `X`. -/
+/-- A family of arrows all with codomain `X`. -/
 structure Family (X : C) where
+  /-- The indexing set. -/
   I : Type*
+  /-- The domains of the arrows. -/
   domains : I → C
+  /-- The arrows. -/
   arrows : (i : I) → domains i ⟶ X
 
 namespace Family
+
+-- TODO: def IsSheafFor
 
 end Family
 
 namespace Presieve
 
+/-- -/
 def toFamily (S : Presieve X) : Family X where
   I := ΣY, { f : Y ⟶ X // S f }
   domains := fun i ↦ i.fst
   arrows := fun i ↦ i.snd.val
 
+/-- -/
 def domains (S : Presieve X) := fun (i : ΣY, { f : Y ⟶ X // S f }) ↦ i.fst
 
+/-- -/
 def arrows (S : Presieve X) := fun (i : ΣY, { f : Y ⟶ X // S f }) ↦ i.snd.val
 
 theorem arrowsPresentation (S : Presieve X) : S =
