@@ -3,7 +3,6 @@ Copyright (c) 2020 Yury Kudryashov All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Moritz Doll
 -/
-import Mathlib.LinearAlgebra.Basic
 import Mathlib.LinearAlgebra.Prod
 
 #align_import linear_algebra.linear_pmap from "leanprover-community/mathlib"@"8b981918a93bc45a8600de608cde7944a80d92b9"
@@ -789,7 +788,7 @@ theorem graph_map_fst_eq_domain (f : E →ₗ.[R] F) :
   · rcases h with ⟨x, hx, _⟩
     exact hx
   · use f ⟨x, h⟩
-    simp only [h, exists_prop]
+    simp only [h, exists_const]
 
 theorem graph_map_snd_eq_range (f : E →ₗ.[R] F) :
     f.graph.map (LinearMap.snd R E F) = LinearMap.range f.toFun := by ext; simp

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.OrderSynonym
-import Mathlib.Algebra.Order.Monoid.Cancel.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
 
 #align_import algebra.order.monoid.order_dual from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
 
@@ -88,7 +88,7 @@ instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ :
 
 @[to_additive OrderDual.OrderedCancelAddCommMonoid.to_contravariantClass]
 instance OrderedCancelCommMonoid.to_contravariantClass [OrderedCancelCommMonoid α] :
-    ContravariantClass αᵒᵈ αᵒᵈ Mul.mul LE.le where
+    ContravariantClass αᵒᵈ αᵒᵈ HMul.hMul LE.le where
     -- Porting note: We need to specify the implicit arguments here because of
     -- https://github.com/leanprover/lean4/issues/1892
     -- We should be able to remove this after nightly-2022-11-30 arrives.

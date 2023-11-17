@@ -613,14 +613,10 @@ theorem isLocalization : IsLocalization (Submonoid.closure ({X} : Set R[X])) R[T
       refine' ⟨(f, ⟨_, this⟩), _⟩
       simp only [algebraMap_eq_toLaurent, Polynomial.toLaurent_X_pow, mul_T_assoc,
         add_left_neg, T_zero, mul_one]
-    eq_iff_exists' := fun {f g} => by
+    exists_of_eq := fun {f g} => by
       rw [algebraMap_eq_toLaurent, algebraMap_eq_toLaurent, Polynomial.toLaurent_inj]
-      refine' ⟨_, _⟩
-      · rintro rfl
-        exact ⟨1, rfl⟩
-      · rintro ⟨⟨h, hX⟩, h⟩
-        rcases Submonoid.mem_closure_singleton.mp hX with ⟨n, rfl⟩
-        exact (isRegular_X_pow n).left h }
+      rintro rfl
+      exact ⟨1, rfl⟩ }
 #align laurent_polynomial.is_localization LaurentPolynomial.isLocalization
 
 end CommSemiring

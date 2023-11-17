@@ -45,7 +45,7 @@ variable (F : Type v) [Field F] [MulSemiringAction M F] [MulSemiringAction G F] 
 
 /-- The subfield of F fixed by the field endomorphism `m`. -/
 def FixedBy.subfield : Subfield F where
-  carrier := fixedBy M F m
+  carrier := fixedBy F m
   zero_mem' := smul_zero m
   add_mem' hx hy := (smul_add m _ _).trans <| congr_arg₂ _ hx hy
   neg_mem' hx := (smul_neg m _).trans <| congr_arg _ hx
@@ -163,7 +163,6 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
       ∑ x in s, (fun y => l y • MulAction.toFun G F y) x g'
   rw [← smul_sum, ← sum_apply _ _ fun y => l y • toFun G F y, ←
     sum_apply _ _ fun y => l y • toFun G F y]
-  dsimp only
   rw [hla, toFun_apply, toFun_apply, smul_smul, mul_inv_cancel_left]
 #align fixed_points.linear_independent_smul_of_linear_independent FixedPoints.linearIndependent_smul_of_linearIndependent
 

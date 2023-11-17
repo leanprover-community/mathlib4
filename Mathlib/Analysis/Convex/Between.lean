@@ -152,6 +152,9 @@ def Sbtw (x y z : P) : Prop :=
 
 variable {R}
 
+lemma mem_segment_iff_wbtw {x y z : V} : y ∈ segment R x z ↔ Wbtw R x y z := by
+  rw [Wbtw, affineSegment_eq_segment]
+
 theorem Wbtw.map {x y z : P} (h : Wbtw R x y z) (f : P →ᵃ[R] P') : Wbtw R (f x) (f y) (f z) := by
   rw [Wbtw, ← affineSegment_image]
   exact Set.mem_image_of_mem _ h
@@ -535,7 +538,6 @@ theorem Sbtw.affineCombination_of_mem_affineSpan_pair [NoZeroDivisors R] [NoZero
   rw [hr i his, sbtw_mul_sub_add_iff] at hs
   change ∀ i ∈ s, w i = (r • (w₂ - w₁) + w₁) i at hr
   rw [s.affineCombination_congr hr fun _ _ => rfl]
-  dsimp only
   rw [← s.weightedVSub_vadd_affineCombination, s.weightedVSub_const_smul,
     ← s.affineCombination_vsub, ← lineMap_apply, sbtw_lineMap_iff, and_iff_left hs.2,
     ← @vsub_ne_zero V, s.affineCombination_vsub]
@@ -608,7 +610,8 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by
     clear h₁ h₂ h₁' h₂'
     -- Porting note: Originally `decide!`
-    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;> simp at h₁₂ h₁₃ h₂₃ ⊢
+    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃
+      <;> simp (config := {decide := true}) at h₁₂ h₁₃ h₂₃ ⊢
   have hp : p ∈ affineSpan R (Set.range t.points) := by
     have hle : line[R, t.points i₁, p₁] ≤ affineSpan R (Set.range t.points) := by
       refine' affineSpan_pair_le_of_mem_of_mem (mem_affineSpan R (Set.mem_range_self _)) _
