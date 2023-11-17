@@ -346,11 +346,11 @@ def mapInjectivePresentation (adj : F ⊣ G) [F.PreservesMonomorphisms] (X : D)
     haveI : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjointPreservesLimits; infer_instance
 #align category_theory.adjunction.map_injective_presentation CategoryTheory.Adjunction.mapInjectivePresentation
 
-/-- Given an adjunction `F ⊣ G` such that `F` preserves finite limits and is faithful,
+/-- Given an adjunction `F ⊣ G` such that `F` preserves monomorphisms and is faithful,
   then any injective presentation of `F(X)` can be pulled back to an injective presentation of `X`.
   This is similar to `mapInjectivePresentation`. -/
 def injectivePresentationOfMapInjectivePresentation (adj : F ⊣ G)
-    [PreservesFiniteLimits F] [Faithful F] (X : C)
+    [F.PreservesMonomorphisms] [Faithful F] (X : C)
     (I : InjectivePresentation <| F.obj X) :
     InjectivePresentation X where
   J := G.obj I.J
