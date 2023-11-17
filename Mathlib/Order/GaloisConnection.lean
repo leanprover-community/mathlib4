@@ -27,7 +27,7 @@ such that `∀ a b, l a ≤ b ↔ a ≤ u b`.
 ## Implementation details
 
 Galois insertions can be used to lift order structures from one type to another.
-For example if `α` is a complete lattice, and `l : α → β`, and `u : β → α` form a Galois insertion,
+For example, if `α` is a complete lattice, and `l : α → β` and `u : β → α` form a Galois insertion,
 then `β` is also a complete lattice. `l` is the lower adjoint and `u` is the upper adjoint.
 
 An example of a Galois insertion is in group theory. If `G` is a group, then there is a Galois
@@ -56,8 +56,8 @@ variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {κ : ι → So
   {b b₁ b₂ : β}
 
 /-- A Galois connection is a pair of functions `l` and `u` satisfying
-  `l a ≤ b ↔ a ≤ u b`. They are special cases of adjoint functors in category theory,
-    but do not depend on the category theory library in mathlib. -/
+`l a ≤ b ↔ a ≤ u b`. They are special cases of adjoint functors in category theory,
+but do not depend on the category theory library in mathlib. -/
 def GaloisConnection [Preorder α] [Preorder β] (l : α → β) (u : β → α) :=
   ∀ a b, l a ≤ b ↔ a ≤ u b
 #align galois_connection GaloisConnection

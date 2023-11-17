@@ -197,7 +197,7 @@ theorem finprod_one : (∏ᶠ _ : α, (1 : M)) = 1 := by
 theorem finprod_of_isEmpty [IsEmpty α] (f : α → M) : ∏ᶠ i, f i = 1 := by
   rw [← finprod_one]
   congr
-  simp
+  simp [eq_iff_true_of_subsingleton]
 #align finprod_of_is_empty finprod_of_isEmpty
 #align finsum_of_is_empty finsum_of_isEmpty
 

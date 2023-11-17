@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Data.Complex.Basic
+import Mathlib.Data.Complex.Abs
+import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Nat.Choose.Sum
 
 #align_import data.complex.exponential from "leanprover-community/mathlib"@"a8b2226cfb0a79f5986492053fc49b1a0c6aeffb"
@@ -568,7 +569,7 @@ theorem exp_conj : exp (conj x) = conj (exp x) := by
   dsimp [exp]
   rw [← lim_conj]
   refine' congr_arg CauSeq.lim (CauSeq.ext fun _ => _)
-  dsimp [exp', Function.comp, isCauSeq_conj, cauSeqConj]
+  dsimp [exp', Function.comp_def, isCauSeq_conj, cauSeqConj]
   rw [(starRingEnd _).map_sum]
   refine' sum_congr rfl fun n _ => _
   rw [map_div₀, map_pow, ← ofReal_nat_cast, conj_ofReal]

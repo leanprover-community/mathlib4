@@ -2058,7 +2058,8 @@ theorem Monotone.piecewise_eventually_eq_iUnion {β : α → Type*} [Preorder ι
   · refine (eventually_ge_atTop i).mono fun j hij ↦ ?_
     simp only [Set.piecewise_eq_of_mem, hs hij hi, subset_iUnion _ _ hi]
   · refine eventually_of_forall fun i ↦ ?_
-    simp only [Set.piecewise_eq_of_not_mem, not_exists.1 ha i, mt mem_iUnion.1 ha]
+    simp only [Set.piecewise_eq_of_not_mem, not_exists.1 ha i, mt mem_iUnion.1 ha,
+      not_false_eq_true, exists_false]
 
 theorem Antitone.piecewise_eventually_eq_iInter {β : α → Type*} [Preorder ι] {s : ι → Set α}
     [∀ i, DecidablePred (· ∈ s i)] [DecidablePred (· ∈ ⋂ i, s i)]

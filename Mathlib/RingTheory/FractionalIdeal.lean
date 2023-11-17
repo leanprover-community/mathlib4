@@ -916,7 +916,7 @@ theorem canonicalEquiv_symm : (canonicalEquiv S P P').symm = canonicalEquiv S P'
 #align fractional_ideal.canonical_equiv_symm FractionalIdeal.canonicalEquiv_symm
 
 theorem canonicalEquiv_flip (I) : canonicalEquiv S P P' (canonicalEquiv S P' P I) = I := by
-  rw [← canonicalEquiv_symm, RingEquiv.apply_symm_apply]
+  rw [← canonicalEquiv_symm]; erw [RingEquiv.apply_symm_apply]
 #align fractional_ideal.canonical_equiv_flip FractionalIdeal.canonicalEquiv_flip
 
 @[simp]
@@ -1598,7 +1598,7 @@ variable (x : P) (hx : IsIntegral R x)
 /-- `A[x]` is a fractional ideal for every integral `x`. -/
 theorem isFractional_adjoin_integral :
     IsFractional S (Subalgebra.toSubmodule (Algebra.adjoin R ({x} : Set P))) :=
-  isFractional_of_fg (FG_adjoin_singleton_of_integral x hx)
+  isFractional_of_fg hx.fg_adjoin_singleton
 #align fractional_ideal.is_fractional_adjoin_integral FractionalIdeal.isFractional_adjoin_integral
 
 /-- `FractionalIdeal.adjoinIntegral (S : Submonoid R) x hx` is `R[x]` as a fractional ideal,

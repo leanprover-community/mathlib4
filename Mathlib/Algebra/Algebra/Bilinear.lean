@@ -195,6 +195,9 @@ theorem _root_.Algebra.coe_lmul_eq_mul : ⇑(Algebra.lmul R A) = mul R A :=
   rfl
 #align algebra.coe_lmul_eq_mul Algebra.coe_lmul_eq_mul
 
+theorem _root_.Algebra.lmul_injective : Function.Injective (Algebra.lmul R A) :=
+  fun a₁ a₂ h ↦ by simpa using FunLike.congr_fun h 1
+
 @[simp]
 theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
   constructor <;> intro h

@@ -70,7 +70,7 @@ theorem IsIntegralClosure.isLocalization [IsSeparable K L] [NoZeroSMulDivisors A
   haveI : IsDomain C :=
     (IsIntegralClosure.equiv A C L (integralClosure A L)).toMulEquiv.isDomain (integralClosure A L)
   haveI : NoZeroSMulDivisors A C := IsIntegralClosure.noZeroSMulDivisors A L
-  refine' ⟨_, fun z => _, fun {x y} => ⟨fun h => ⟨1, _⟩, _⟩⟩
+  refine' ⟨_, fun z => _, fun {x y} h => ⟨1, _⟩⟩
   · rintro ⟨_, x, hx, rfl⟩
     rw [isUnit_iff_ne_zero, map_ne_zero_iff _ (IsIntegralClosure.algebraMap_injective C A L),
       Subtype.coe_mk, map_ne_zero_iff _ (NoZeroSMulDivisors.algebraMap_injective A C)]
@@ -82,10 +82,6 @@ theorem IsIntegralClosure.isLocalization [IsSeparable K L] [NoZeroSMulDivisors A
     rw [Subtype.coe_mk, ← IsScalarTower.algebraMap_apply, hx, mul_comm, Submonoid.smul_def,
       smul_def]
   · simp only [IsIntegralClosure.algebraMap_injective C A L h]
-  · rintro ⟨⟨_, m, hm, rfl⟩, h⟩
-    refine' congr_arg (algebraMap C L) ((mul_right_inj' _).mp h)
-    rw [Subtype.coe_mk, map_ne_zero_iff _ (NoZeroSMulDivisors.algebraMap_injective A C)]
-    exact mem_nonZeroDivisors_iff_ne_zero.mp hm
 #align is_integral_closure.is_localization IsIntegralClosure.isLocalization
 
 variable [FiniteDimensional K L]
@@ -115,7 +111,7 @@ theorem IsIntegralClosure.range_le_span_dualBasis [IsSeparable K L] {ι : Type*}
     rw [← IsScalarTower.algebraMap_smul K (Classical.choose (hc' i)) (db i)]
   refine' ⟨fun i => db.repr (algebraMap C L x) i, fun i => _, (db.sum_repr _).symm⟩
   simp_rw [BilinForm.dualBasis_repr_apply]
-  exact isIntegral_trace (isIntegral_mul hx (hb_int i))
+  exact isIntegral_trace (hx.mul (hb_int i))
 #align is_integral_closure.range_le_span_dual_basis IsIntegralClosure.range_le_span_dualBasis
 
 theorem integralClosure_le_span_dualBasis [IsSeparable K L] {ι : Type*} [Fintype ι] [DecidableEq ι]
@@ -139,15 +135,15 @@ theorem exists_integral_multiples (s : Finset L) :
     rintro x ⟨⟩
   · rintro x s hx ⟨y, hy, hs⟩
     have := exists_integral_multiple
-      ((IsFractionRing.isAlgebraic_iff A K L).mpr (isAlgebraic_of_finite _ _ x))
+      ((IsFractionRing.isAlgebraic_iff A K L).mpr (.of_finite _ x))
       ((injective_iff_map_eq_zero (algebraMap A L)).mp ?_)
     rcases this with ⟨x', y', hy', hx'⟩
     refine' ⟨y * y', mul_ne_zero hy hy', fun x'' hx'' => _⟩
     rcases Finset.mem_insert.mp hx'' with (rfl | hx'')
     · rw [mul_smul, Algebra.smul_def, Algebra.smul_def, mul_comm _ x'', hx']
-      exact isIntegral_mul isIntegral_algebraMap x'.2
+      exact isIntegral_algebraMap.mul x'.2
     · rw [mul_comm, mul_smul, Algebra.smul_def]
-      exact isIntegral_mul isIntegral_algebraMap (hs _ hx'')
+      exact isIntegral_algebraMap.mul (hs _ hx'')
     · rw [IsScalarTower.algebraMap_eq A K L]
       apply (algebraMap K L).injective.comp
       exact IsFractionRing.injective _ _
