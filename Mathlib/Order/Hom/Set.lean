@@ -162,7 +162,7 @@ section Set
 
 variable {s t : Set α}
 
-/-- Equivalent types have order-isomorphic types of subsets --/
+/-- Equivalent types have order-isomorphic types of subsets. --/
 def Equiv.setOrderIso (e : α ≃ β) : Set α ≃o Set β where
   toEquiv := Equiv.Set.congr e
   map_rel_iff' := by simp
@@ -184,7 +184,7 @@ def Equiv.setOrderIso (e : α ≃ β) : Set α ≃o Set β where
     e.setOrderIso.symm s ⊆ e.setOrderIso.symm t ↔ s ⊆ t :=
   e.setOrderIso.symm.map_rel_iff
 
-/-- An injection from `α` to `β` gives one from `Set α` to `Set β`  -/
+/-- An injection from `α` to `β` gives one from `Set α` to `Set β`.  -/
 def Function.Embedding.setEmbedding (f : α ↪ β) : Set α ↪ Set β where
   toFun := Set.image f
   inj' := Set.image_injective.2 f.injective
@@ -192,7 +192,7 @@ def Function.Embedding.setEmbedding (f : α ↪ β) : Set α ↪ Set β where
 @[simp] theorem Function.Embedding.setEmbedding_apply (f : α ↪ β) (s : Set α) :
     f.setEmbedding s = f '' s := rfl
 
-/-- An injection from `α` to `β` gives an order embedding from `Set α` to `Set β`  -/
+/-- An injection from `α` to `β` gives an order embedding from `Set α` to `Set β`.  -/
 def Function.Embedding.setOrderEmbedding (f : α ↪ β) : Set α ↪o Set β where
   toEmbedding := f.setEmbedding
   map_rel_iff' := fun {_} {_} ↦ Set.image_subset_image_iff f.injective
@@ -202,6 +202,21 @@ def Function.Embedding.setOrderEmbedding (f : α ↪ β) : Set α ↪o Set β wh
 
 @[simp] theorem Function.Embedding.setOrderEmbedding_toEmbedding (f : α ↪ β) :
     f.setOrderEmbedding.toEmbedding = f.setEmbedding := rfl
+
+/-- Given `s : Set α`, the natural order-embedding from `Set s` to `Set α`. -/
+def Set.subtypeOrderEmbedding (s : Set α) : Set s ↪o Set α :=
+  (Function.Embedding.subtype _).setOrderEmbedding
+
+theorem Set.subtypeOrderEmbedding_apply (s : Set α) (t : Set s) :
+    (s.subtypeOrderEmbedding t : Set α) = (fun (x : s) ↦ (x : α)) '' t := rfl
+
+@[simp] theorem Set.mem_subtypeOrderEmbedding_iff (s : Set α) {x : α} {r : Set s} :
+    x ∈ (s.subtypeOrderEmbedding r : Set α) ↔ ∃ (hx : x ∈ s), ⟨x,hx⟩ ∈ r := by
+  simp [Set.subtypeOrderEmbedding]
+
+@[simp] theorem Set.subtypeOrderEmbedding_subset_iff (s : Set α) {r r' : Set s} :
+    (s.subtypeOrderEmbedding r : Set α) ⊆ s.subtypeOrderEmbedding r' ↔ r ⊆ r' :=
+  s.subtypeOrderEmbedding.map_rel_iff'
 
 /-- Given `s : Set α`, the type `Set s` is order-isomorphic to the type of subsets of `s`. -/
 def Set.subtypeOrderIso (s : Set α) : Set s ≃o {t : Set α // t ⊆ s} where
