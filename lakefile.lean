@@ -79,6 +79,7 @@ lean_exe checkYaml where
 
 /-- `lake exe graph` constructs import graphs in `.dot` or graphical formats. -/
 lean_exe graph where
+  root := `ImportGraph.Main
   supportInterpreter := true
 
 /-!
