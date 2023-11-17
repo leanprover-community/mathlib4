@@ -268,7 +268,7 @@ noncomputable def mulEquivOfCardEqFourAndNotIsCyclic (h1 : Fintype.card G = 4) (
     G ≃* DihedralGroup 2 :=
   have h3 (x : G) : x * x = 1 := by
     rw [← pow_two x, ← orderOf_dvd_iff_pow_eq_one]
-    have h_dvd_four : orderOf x ∣ 4 := h1 ▸ orderOf_dvd_card_univ (x := x)
+    have h_dvd_four : orderOf x ∣ 4 := h1 ▸ orderOf_dvd_card (x := x)
     have : orderOf x ≠ 4 := fun h => h2 <| isCyclic_of_orderOf_eq_card x (h1 ▸ h)
     generalize orderOf x = n at *
     rw [← pow_one 2, Nat.dvd_prime_pow Nat.prime_two]
