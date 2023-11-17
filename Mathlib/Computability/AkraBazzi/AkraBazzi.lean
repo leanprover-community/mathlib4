@@ -336,10 +336,10 @@ lemma isEquivalent_one_sub_smoothingFn_one : (fun x => 1 - ε x) ~[atTop] (fun _
   IsEquivalent.sub_isLittleO IsEquivalent.refl isLittleO_smoothingFn_one
 
 lemma growsPolynomially_one_sub_smoothingFn : GrowsPolynomially fun x => 1 - ε x :=
-  GrowsPolynomially.of_isEquivalent_const (by norm_num) isEquivalent_one_sub_smoothingFn_one
+  GrowsPolynomially.of_isEquivalent_const isEquivalent_one_sub_smoothingFn_one
 
 lemma growsPolynomially_one_add_smoothingFn : GrowsPolynomially fun x => 1 + ε x :=
-  GrowsPolynomially.of_isEquivalent_const (by norm_num) isEquivalent_one_add_smoothingFn_one
+  GrowsPolynomially.of_isEquivalent_const isEquivalent_one_add_smoothingFn_one
 
 lemma eventually_one_sub_smoothingFn_gt_const_real (c : ℝ) (hc : c < 1) :
     ∀ᶠ (x:ℝ) in atTop, c < 1 - ε x := by
@@ -942,7 +942,7 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
         have hlog : 0 < log x := Real.log_pos hx_pos
         positivity
       simp only [hp, Real.rpow_zero, one_mul, differentiableAt_const, hx, Real.norm_of_nonneg this]
-    refine GrowsPolynomially.congr_eventuallyEq h₁ ?_
+    refine GrowsPolynomially.congr_of_eventuallyEq h₁ ?_
     refine GrowsPolynomially.div ?_ ?_ ?_ ?_
     · exact GrowsPolynomially.inv GrowsPolynomially.id (eventually_gt_atTop 0)
     · have : (fun x => log x ^ 2) = fun x => log x * log x := by
@@ -975,7 +975,7 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
         positivity
       simp only [neg_div, norm_neg, hp, Real.rpow_zero,
         one_mul, differentiableAt_const, hx, Real.norm_of_nonneg this]
-    refine GrowsPolynomially.congr_eventuallyEq h₁ ?_
+    refine GrowsPolynomially.congr_of_eventuallyEq h₁ ?_
     refine GrowsPolynomially.div ?_ ?_ ?_ ?_
     · exact GrowsPolynomially.inv GrowsPolynomially.id (eventually_gt_atTop 0)
     · have : (fun x => log x ^ 2) = fun x => log x * log x := by

@@ -87,6 +87,74 @@ lemma eventually_atTop_ge_nat {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPoly
   obtain ⟨c, hc_mem, hc⟩ := hf.eventually_atTop_ge hb
   exact ⟨c, hc_mem, hc.nat_cast_atTop⟩
 
+lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃ᶠ x in atTop, f x = 0) :
+    ∀ᶠ x in atTop, f x = 0 := by
+  obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf (1/2) (by norm_num)
+  rw [frequently_atTop] at hf'
+  filter_upwards [eventually_forall_ge_atTop.mpr hf, eventually_gt_atTop 0] with x hx hx_pos
+  obtain ⟨x₀, hx₀_ge, hx₀⟩ := hf' (max x 1)
+  have x₀_pos := calc
+    0 < 1 := by norm_num
+    _ ≤ x₀ := le_of_max_le_right hx₀_ge
+  have hmain : ∀ (m : ℕ) (z : ℝ), x ≤ z →
+      z ∈ Set.Icc ((2:ℝ)^(-(m:ℤ) -1) * x₀) ((2:ℝ)^(-(m:ℤ)) * x₀) → f z = 0 := by
+    intro m
+    induction m
+    case zero =>
+      simp only [Nat.zero_eq, CharP.cast_eq_zero, neg_zero, zero_sub, zpow_zero, one_mul] at *
+      specialize hx x₀ (le_of_max_le_left hx₀_ge)
+      simp only [hx₀, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx
+      refine fun z _ hz => hx _ ?_
+      simp only [zpow_neg, zpow_one] at hz
+      simp only [one_div, hz]
+    case succ k ih =>
+      intro z hxz hz
+      simp only [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one] at *
+      have hx' : x ≤ (2:ℝ)^(-(k:ℤ) - 1) * x₀ := by
+        calc x ≤ z := hxz
+          _ ≤ _ := by simp only [neg_add, ←sub_eq_add_neg] at hz; exact hz.2
+      specialize hx ((2:ℝ)^(-(k:ℤ) - 1) * x₀) hx' z
+      specialize ih ((2:ℝ)^(-(k:ℤ) - 1) * x₀) hx' ?ineq
+      case ineq =>
+        rw [Set.left_mem_Icc]
+        gcongr
+        · norm_num
+        · linarith
+      simp only [ih, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx
+      refine hx ⟨?lb₁, ?ub₁⟩
+      case lb₁ =>
+        rw [one_div, ←zpow_neg_one, ←mul_assoc, ←zpow_add₀ (by norm_num)]
+        have h₁ : (-1 : ℤ)  + (-k - 1) = -k - 2 := by ring
+        have h₂ : -(k + (1:ℤ)) - 1 = -k - 2 := by ring
+        rw [h₁]
+        rw [h₂] at hz
+        exact hz.1
+      case ub₁ =>
+        have := hz.2
+        simp only [neg_add, ←sub_eq_add_neg] at this
+        exact this
+  refine hmain ⌊-logb 2 (x / x₀)⌋₊ x le_rfl ⟨?lb, ?ub⟩
+  case lb =>
+    rw [←le_div_iff x₀_pos]
+    refine (logb_le_logb (b := 2) (by norm_num) (zpow_pos_of_pos (by norm_num) _)
+      (by positivity)).mp ?_
+    rw [←rpow_int_cast, logb_rpow (by norm_num) (by norm_num), ←neg_le_neg_iff]
+    simp only [Int.cast_sub, Int.cast_neg, Int.cast_ofNat, Int.cast_one, neg_sub, sub_neg_eq_add]
+    calc -logb 2 (x/x₀) ≤ ⌈-logb 2 (x/x₀)⌉₊ := Nat.le_ceil (-logb 2 (x / x₀))
+         _ ≤ _ := by rw [add_comm]; exact_mod_cast Nat.ceil_le_floor_add_one _
+  case ub =>
+    rw [←div_le_iff x₀_pos]
+    refine (logb_le_logb (b := 2) (by norm_num) (by positivity)
+      (zpow_pos_of_pos (by norm_num) _)).mp ?_
+    rw [←rpow_int_cast, logb_rpow (by norm_num) (by norm_num), ←neg_le_neg_iff]
+    simp only [Int.cast_neg, Int.cast_ofNat, neg_neg]
+    have : 0 ≤ -logb 2 (x / x₀) := by
+      rw [neg_nonneg]
+      refine logb_nonpos (by norm_num) (by positivity) ?_
+      rw [div_le_one x₀_pos]
+      exact le_of_max_le_left hx₀_ge
+    exact_mod_cast Nat.floor_le this
+
 lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
     (∀ᶠ x in atTop, 0 ≤ f x) ∨ (∀ᶠ x in atTop, f x ≤ 0) := by
   obtain ⟨c₁, _, c₂, _, h⟩ := hf (1/2) (by norm_num)
@@ -169,6 +237,25 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
       filter_upwards [hc] with x hc
       exact le_of_lt <| by simpa only [hc]
 
+lemma eventually_atTop_pos_or_neg_or_zero (hf : GrowsPolynomially f) :
+    (∀ᶠ x in atTop, 0 < f x) ∨ (∀ᶠ x in atTop, f x < 0) ∨ (∀ᶠ x in atTop, f x = 0) := by
+  by_cases h : ∃ᶠ x in atTop, f x = 0
+  case pos => exact Or.inr (Or.inr <| eventually_zero_of_frequently_zero hf h)
+  case neg =>
+    rw [not_frequently] at h
+    push_neg at h
+    rcases eventually_atTop_nonneg_or_nonpos hf with h'|h'
+    case inl =>
+      refine Or.inl ?_
+      simp only [lt_iff_le_and_ne]
+      rw [eventually_and]
+      exact ⟨h', by filter_upwards [h] with x hx; exact hx.symm⟩
+    case inr =>
+      refine Or.inr (Or.inl ?_)
+      simp only [lt_iff_le_and_ne]
+      rw [eventually_and]
+      exact ⟨h', h⟩
+
 protected lemma neg {f : ℝ → ℝ} (hf : GrowsPolynomially f) : GrowsPolynomially (-f) := by
   intro b hb
   obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf b hb
@@ -202,11 +289,8 @@ protected lemma norm (hf : GrowsPolynomially f) : GrowsPolynomially (fun x => �
   exact hf.abs
 
 protected lemma const {c : ℝ} : GrowsPolynomially (fun _ => c) := by
-  intro b _
-  refine ⟨1, by norm_num, ?_⟩
-  refine ⟨1, by norm_num, ?_⟩
+  refine fun _ _ => ⟨1, by norm_num, 1, by norm_num, ?_⟩
   filter_upwards [] with x
-  intro u _
   simp
 
 protected lemma mul {f g : ℝ → ℝ} (hf : GrowsPolynomially f) (hg : GrowsPolynomially g) :
