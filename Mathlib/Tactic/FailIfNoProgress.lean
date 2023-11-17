@@ -47,7 +47,8 @@ def lctxIsDefEq : (l₁ l₂ : List (Option LocalDecl)) → MetaM Bool
   | _, _ => return false
 
 /-- Run `tacs : TacticM Unit` on `goal`, and fail if no progress is made. -/
-def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit) : TacticM (List MVarId) := do
+def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit) : TacticM (List MVarId) :=
+  goal.withContext do
   let l ← run goal tacs
   try
     let [newGoal] := l | failure
