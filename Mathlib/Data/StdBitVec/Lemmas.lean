@@ -453,6 +453,7 @@ theorem and_two_pow_or_and_two_pow_sub_one (x n : ℕ) :
     · simp
     · simp [-bit_false, -bit_true, Nat.two_pow_succ_sub_one_eq_bit, ih]
 
+@[simp]
 theorem cons_msb_truncate : ∀ (xs : BitVec (w+1)), cons xs.msb (xs.truncate w) = xs
   | ⟨⟨xs, h⟩⟩ => by
       simp [
@@ -463,5 +464,15 @@ theorem cons_msb_truncate : ∀ (xs : BitVec (w+1)), cons xs.msb (xs.truncate w)
         getLsb_eq_testBit, toNat_ofFin, ←and_two_pow, and_two_pow_or_and_two_pow_sub_one xs w,
         Nat.add_comm 1 w, land_land_self, ←Nat.mod_two_pow, Nat.mod_eq_of_lt h
       ]
+
+def consRecOn {motive : ∀ {w}, BitVec w → Sort*}
+    (nil  : motive BitVec.nil)
+    (cons : ∀ {w} (x : Bool) (xs : BitVec w), motive xs → motive (cons x xs)) :
+    ∀ {w} (x : BitVec w), motive x
+  | 0,    x => _root_.cast (by rw[eq_nil x]) nil
+  | w+1,  x => _root_.cast (by rw[cons_msb_truncate]) <|
+      cons x.msb (x.truncate w) (consRecOn nil cons <| x.truncate w)
+
+
 
 end Std.BitVec
