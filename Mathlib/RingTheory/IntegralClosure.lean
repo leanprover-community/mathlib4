@@ -121,6 +121,9 @@ theorem isIntegral_algHom_iff {x : A} : IsIntegral R (f x) ↔ IsIntegral R x :=
 theorem Algebra.IsIntegral.of_injective (h : Algebra.IsIntegral R B) : Algebra.IsIntegral R A :=
   fun _ ↦ (isIntegral_algHom_iff f hf).mp (h _)
 
+theorem AlgEquiv.isIntegral_iff (e : A ≃ₐ[R] B) : Algebra.IsIntegral R A ↔ Algebra.IsIntegral R B :=
+  ⟨fun h ↦ h.of_injective e.symm e.symm.injective, fun h ↦ h.of_injective e e.injective⟩
+
 end
 
 @[simp]
@@ -402,7 +405,7 @@ nonrec theorem IsIntegral.mul {x y : A} (hx : IsIntegral R x) (hy : IsIntegral R
 #align is_integral_mul IsIntegral.mul
 
 theorem IsIntegral.smul {R} [CommSemiring R] [CommRing S] [Algebra R B] [Algebra S B] [Algebra R S]
-    [IsScalarTower R S B] {x : B} (r : R)(hx : IsIntegral S x) : IsIntegral S (r • x) :=
+    [IsScalarTower R S B] {x : B} (r : R) (hx : IsIntegral S x) : IsIntegral S (r • x) :=
   .of_mem_of_fg _ hx.fg_adjoin_singleton _ <| by
     rw [← algebraMap_smul S]; apply Subalgebra.smul_mem; exact Algebra.subset_adjoin rfl
 #align is_integral_smul IsIntegral.smul
@@ -412,6 +415,42 @@ theorem IsIntegral.of_pow {x : B} {n : ℕ} (hn : 0 < n) (hx : IsIntegral R <| x
   rcases hx with ⟨p, hmonic, heval⟩
   exact ⟨expand R n p, hmonic.expand hn, by rwa [← aeval_def, expand_aeval]⟩
 #align is_integral_of_pow IsIntegral.of_pow
+
+section inv
+
+open Algebra
+
+/-- A nonzero element in a domain integral over a field is a unit. -/
+theorem IsIntegral.isUnit {R S} [Field R] [Ring S] [IsDomain S] [Algebra R S] {x : S}
+    (int : IsIntegral R x) (h0 : x ≠ 0) : IsUnit x :=
+  have : FiniteDimensional R (adjoin R {x}) := ⟨(Submodule.fg_top _).mpr int.fg_adjoin_singleton⟩
+  (FiniteDimensional.isUnit R (K := adjoin R {x})
+    (x := ⟨x, subset_adjoin rfl⟩) <| mt Subtype.ext_iff.mp h0).map (adjoin R {x}).val
+
+/-- The inverse of a nonzero integral element in a division ring over a field is also integral. -/
+theorem IsIntegral.inv {R S} [Field R] [DivisionRing S] [Algebra R S] {x : S}
+    (int : IsIntegral R x) (h0 : x ≠ 0) : IsIntegral R x⁻¹ :=
+  .of_mem_of_fg _ int.fg_adjoin_singleton _ <| by
+    have : FiniteDimensional R (adjoin R {x}) := ⟨(Submodule.fg_top _).mpr int.fg_adjoin_singleton⟩
+    obtain ⟨y, hy⟩ := FiniteDimensional.isUnit R
+      (K := adjoin R {x}) (x := ⟨x, subset_adjoin rfl⟩) (mt Subtype.ext_iff.mp h0)
+    convert ← y.inv.prop
+    apply mul_left_cancel₀ h0
+    rw [mul_inv_cancel h0]
+    exact congr_arg Subtype.val (hy ▸ y.val_inv)
+
+/-- An commutative domain that is an integral algebra over a field is a field. -/
+theorem isField_of_isIntegral_of_isField' {R S : Type*} [CommRing R] [CommRing S] [IsDomain S]
+    [Algebra R S] (H : Algebra.IsIntegral R S) (hR : IsField R) : IsField S where
+  exists_pair_ne := ⟨0, 1, zero_ne_one⟩
+  mul_comm := mul_comm
+  mul_inv_cancel {x} hx := by
+    letI := hR.toField
+    obtain ⟨y, rfl⟩ := (H x).isUnit hx
+    exact ⟨y.inv, y.val_inv⟩
+#align is_field_of_is_integral_of_is_field' isField_of_isIntegral_of_isField'
+
+end inv
 
 variable (R A)
 
@@ -448,6 +487,10 @@ theorem le_integralClosure_iff_isIntegral {S : Subalgebra R A} :
       show IsIntegral R (algebraMap S A x) ↔ IsIntegral R x from
         isIntegral_algebraMap_iff Subtype.coe_injective)
 #align le_integral_closure_iff_is_integral le_integralClosure_iff_isIntegral
+
+theorem integralClosure_eq_top_iff : integralClosure R A = ⊤ ↔ Algebra.IsIntegral R A := by
+  rw [← top_le_iff, le_integralClosure_iff_isIntegral,
+      (Subalgebra.topEquiv (R := R) (A := A)).isIntegral_iff] -- explicit arguments for speedup
 
 theorem Algebra.isIntegral_sup {S T : Subalgebra R A} :
     Algebra.IsIntegral R (S ⊔ T : Subalgebra R A) ↔
@@ -673,7 +716,7 @@ the integral closure of `R` in `B`,
 i.e. that an element of `B` is integral over `R` iff it is an element of (the image of) `A`.
 -/
 class IsIntegralClosure (A R B : Type*) [CommRing R] [CommSemiring A] [CommRing B] [Algebra R B]
-  [Algebra A B] : Prop where
+    [Algebra A B] : Prop where
   algebraMap_injective' : Function.Injective (algebraMap A B)
   isIntegral_iff : ∀ {x : B}, IsIntegral R x ↔ ∃ y, algebraMap A B y = x
 #align is_integral_closure IsIntegralClosure
@@ -755,6 +798,10 @@ theorem mk'_algebraMap [Algebra R A] [IsScalarTower R A B] (x : R)
   algebraMap_injective A R B <| by rw [algebraMap_mk', ← IsScalarTower.algebraMap_apply]
 #align is_integral_closure.mk'_algebra_map IsIntegralClosure.mk'_algebraMap
 
+/-- The integral closure of a field in a commutative domain is always a field. -/
+theorem isField [Algebra R A] [IsScalarTower R A B] [IsDomain A] (hR : IsField R) :
+    IsField A := isField_of_isIntegral_of_isField' (IsIntegralClosure.isIntegral R B) hR
+
 section lift
 
 variable (B) {S : Type*} [CommRing S] [Algebra R S]
@@ -766,7 +813,7 @@ variable [Algebra R A] [IsScalarTower R A B] (h : Algebra.IsIntegral R S)
 /-- If `B / S / R` is a tower of ring extensions where `S` is integral over `R`,
 then `S` maps (uniquely) into an integral closure `B / A / R`. -/
 noncomputable def lift : S →ₐ[R] A where
-  toFun x := mk' A (algebraMap S B x) (IsIntegral.algebraMap (h x))
+  toFun x := mk' A (algebraMap S B x) (h x).algebraMap
   map_one' := by simp only [RingHom.map_one, mk'_one]
   map_zero' := by simp only [RingHom.map_zero, mk'_zero]
   map_add' x y := by simp_rw [← mk'_add, RingHom.map_add]
@@ -776,7 +823,7 @@ noncomputable def lift : S →ₐ[R] A where
 
 @[simp]
 theorem algebraMap_lift (x : S) : algebraMap A B (lift A B h x) = algebraMap S B x :=
-  algebraMap_mk' A (algebraMap S B x) (IsIntegral.algebraMap (h x))
+  algebraMap_mk' A (algebraMap S B x) (h x).algebraMap
 #align is_integral_closure.algebra_map_lift IsIntegralClosure.algebraMap_lift
 
 end lift
@@ -942,16 +989,6 @@ theorem isField_of_isIntegral_of_isField {R S : Type*} [CommRing R] [CommRing S]
     ← (injective_iff_map_eq_zero' _).mp hRS, ← aeval_algebraMap_apply_eq_algebraMap_eval]
   rwa [← eval₂_reverse_eq_zero_iff] at hp
 #align is_field_of_is_integral_of_is_field isField_of_isIntegral_of_isField
-
-theorem isField_of_isIntegral_of_isField' {R S : Type*} [CommRing R] [CommRing S] [IsDomain S]
-    [Algebra R S] (H : Algebra.IsIntegral R S) (hR : IsField R) : IsField S := by
-  refine ⟨⟨0, 1, zero_ne_one⟩, mul_comm, fun {x} hx ↦ ?_⟩
-  have : Module.Finite R (adjoin R {x}) := ⟨(Submodule.fg_top _).mpr (H x).fg_adjoin_singleton⟩
-  letI := hR.toField
-  obtain ⟨y, hy⟩ := FiniteDimensional.exists_mul_eq_one R
-    (K := adjoin R {x}) (x := ⟨x, subset_adjoin rfl⟩) (mt Subtype.ext_iff.mp hx)
-  exact ⟨y, Subtype.ext_iff.mp hy⟩
-#align is_field_of_is_integral_of_is_field' isField_of_isIntegral_of_isField'
 
 theorem Algebra.IsIntegral.isField_iff_isField {R S : Type*} [CommRing R]
     [CommRing S] [IsDomain S] [Algebra R S] (H : Algebra.IsIntegral R S)
