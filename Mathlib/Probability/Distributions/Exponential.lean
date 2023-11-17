@@ -78,10 +78,8 @@ lemma lintegral_nonpos {x r : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, exponentialPdf r y = 0 := by
   rw [set_lintegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
-  · apply ae_of_all
-    intro a (ha : a < x)
-    simp only [exponentialPdf_eq, ge_iff_le, ENNReal.ofReal_eq_zero]
-    rw [if_neg (by linarith)]
+  · simp only [exponentialPdf_eq, ge_iff_le, ENNReal.ofReal_eq_zero]
+    apply ae_of_all _ fun a (_ : a < _) ↦ by rw [if_neg (by linarith)]
 
 /-- The exponential pdf is measurable. -/
 lemma measurable_exponentialPdfReal (r : ℝ) :
@@ -188,7 +186,7 @@ lemma expCdf_eq_integral (r : ℝ) [Fact (0 < r)] : exponentialCdfReal r
   rw [exponentialCdfReal,cdf_eq_toReal]
   simp only [expMeasure, measurableSet_Iic, withDensity_apply]
   rw [integral_eq_lintegral_of_nonneg_ae]; exact rfl
-  · apply ae_of_all; intro a; simp [Pi.zero_apply, exponentialPdfReal_nonneg Fact.out a]
+  · exact ae_of_all _ fun a ↦ by simp [Pi.zero_apply, exponentialPdfReal_nonneg Fact.out a]
   · exact (Measurable.aestronglyMeasurable (measurable_exponentialPdfReal r)).restrict
 
 lemma expCdf_eq_lintegral (r : ℝ) [Fact (0 < r)] : exponentialCdfReal r =
@@ -214,10 +212,7 @@ lemma lint_eq_antiDeriv (r : ℝ) (hr : 0 < r) : ∀ x : ℝ,
   case neg =>
     simp only [exponentialPdf_eq]
     rw [set_lintegral_congr_fun measurableSet_Iic, lintegral_zero, ENNReal.ofReal_zero]
-    refine ae_of_all _ ?_
-    intro a (ha : a ≤ x')
-    rw [if_neg, ENNReal.ofReal_eq_zero]
-    linarith
+    exact ae_of_all _ fun a (_ : a ≤ _) ↦ by rw [if_neg (by linarith), ENNReal.ofReal_eq_zero]
   case pos =>
     rw [lintegral_split_bounded _ h, lintegral_nonpos (le_refl 0), zero_add]
     simp only [exponentialPdf_eq]
