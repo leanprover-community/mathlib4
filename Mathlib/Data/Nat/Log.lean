@@ -142,7 +142,7 @@ theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
     · simpa only [log_of_left_le_one hb, hm.symm, false_iff_iff, not_and, not_lt] using
         le_trans (pow_le_pow_of_le_one' hb m.le_succ)
     · simpa only [log_zero_right, hm.symm, nonpos_iff_eq_zero, false_iff, not_and, not_lt,
-        add_pos_iff, or_true, pow_eq_zero_iff] using pow_eq_zero
+        add_pos_iff, zero_lt_one, or_true, pow_eq_zero_iff] using pow_eq_zero
 #align nat.log_eq_iff Nat.log_eq_iff
 
 theorem log_eq_of_pow_le_of_lt_pow {b m n : ℕ} (h₁ : b ^ m ≤ n) (h₂ : n < b ^ (m + 1)) :
