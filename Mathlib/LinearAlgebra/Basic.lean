@@ -640,17 +640,17 @@ theorem comap_subtype_self : comap p.subtype p = ⊤ :=
 #align submodule.comap_subtype_self Submodule.comap_subtype_self
 
 @[simp]
-theorem ker_ofLe (p p' : Submodule R M) (h : p ≤ p') : ker (ofLe h) = ⊥ := by
-  rw [ofLe, ker_codRestrict, ker_subtype]
+theorem ker_ofLe (p p' : Submodule R M) (h : p ≤ p') : ker (inclusion h) = ⊥ := by
+  rw [inclusion, ker_codRestrict, ker_subtype]
 #align submodule.ker_of_le Submodule.ker_ofLe
 
-theorem range_ofLe (p q : Submodule R M) (h : p ≤ q) : range (ofLe h) = comap q.subtype p := by
-  rw [← map_top, ofLe, LinearMap.map_codRestrict, map_top, range_subtype]
+theorem range_ofLe (p q : Submodule R M) (h : p ≤ q) : range (inclusion h) = comap q.subtype p := by
+  rw [← map_top, inclusion, LinearMap.map_codRestrict, map_top, range_subtype]
 #align submodule.range_of_le Submodule.range_ofLe
 
 @[simp]
 theorem map_subtype_range_ofLe {p p' : Submodule R M} (h : p ≤ p') :
-    map p'.subtype (range $ ofLe h) = p := by simp [range_ofLe, map_comap_eq, h]
+    map p'.subtype (range $ inclusion h) = p := by simp [range_ofLe, map_comap_eq, h]
 #align submodule.map_subtype_range_of_le Submodule.map_subtype_range_ofLe
 
 theorem disjoint_iff_comap_eq_bot {p q : Submodule R M} : Disjoint p q ↔ comap p.subtype q = ⊥ := by
@@ -751,7 +751,7 @@ theorem mem_submoduleImage_of_le {M' : Type*} [AddCommMonoid M'] [Module R M'] {
 
 theorem submoduleImage_apply_ofLe {M' : Type*} [AddCommGroup M'] [Module R M'] {O : Submodule R M}
     (ϕ : O →ₗ[R] M') (N : Submodule R M) (hNO : N ≤ O) :
-    ϕ.submoduleImage N = range (ϕ.comp (Submodule.ofLe hNO)) := by
+    ϕ.submoduleImage N = range (ϕ.comp (Submodule.inclusion hNO)) := by
   rw [submoduleImage, range_comp, Submodule.range_ofLe]
 #align linear_map.submodule_image_apply_of_le LinearMap.submoduleImage_apply_ofLe
 

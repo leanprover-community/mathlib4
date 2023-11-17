@@ -1324,7 +1324,7 @@ theorem coe_mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O)
     (hNO : N ≤ O) (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0)
     (hsp : ∀ z ∈ O, ∃ c : R, z + c • y ∈ N) :
     (mkFinConsOfLE y yO b hNO hli hsp : Fin (n + 1) → O) =
-      Fin.cons ⟨y, yO⟩ (Submodule.ofLe hNO ∘ b) :=
+      Fin.cons ⟨y, yO⟩ (Submodule.inclusion hNO ∘ b) :=
   coe_mkFinCons _ _ _ _
 #align basis.coe_mk_fin_cons_of_le Basis.coe_mkFinConsOfLE
 
