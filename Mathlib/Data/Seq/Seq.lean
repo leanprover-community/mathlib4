@@ -22,6 +22,8 @@ It is encoded as a function of options such that if `get s n = none`, then
 Note that we already have `Seq` to represent an notation class, hence the awkward naming.
 -/
 
+open Function
+
 universe u v w
 
 namespace LazyList
@@ -33,6 +35,13 @@ variable {α : Type u} {β : Type v} {δ : Type w}
 def dest : (l : LazyList α) → Option (α × LazyList α)
   | nil      => none
   | cons a t => some (a, Thunk.get t)
+
+/-- Corecursor for `LazyList α` as a coinductive type. Iterates `f` to produce new elements
+  of the sequence until `none` is obtained. -/
+unsafe def corec (f : β → Option (α × β)) (b : β) : LazyList α :=
+  match f b with
+  | none        => nil
+  | some (a, b) => cons a ⟨fun _ => corec f b⟩
 
 end LazyList
 
@@ -228,6 +237,7 @@ theorem mem_cons_iff {a b : α} {s : Seq' α} : a ∈ b ::ₑ s ↔ a = b ∨ a 
 
 /-- Destructor for a sequence, resulting in either `none` (for `nil`) or
   `some (a, s)` (for `a ::ₑ s`). -/
+@[inline]
 unsafe def destUnsafe (s : Seq' α) : Option (α × Seq' α) :=
   unsafeCast (dest (unsafeCast s : LazyList α))
 
@@ -401,100 +411,57 @@ theorem not_terminates_iff {s : Seq' α} : ¬s.Terminates ↔ ∀ n, (s.get? n).
   simp only [Terminates, not_terminatedAt_iff, not_exists]
 #align stream.seq.not_terminates_iff Seq'.not_terminates_iff
 
-/-- Corecursor over pairs of `Option` values-/
-def Corec.f (f : β → Option (α × β)) : Option β → Option α × Option β
-  | none => (none, none)
-  | some b =>
-    match f b with
-    | none => (none, none)
-    | some (a, b') => (some a, some b')
 set_option linter.uppercaseLean3 false in
-#align stream.seq.corec.F Seq'.Corec.f
+#noalign stream.seq.corec.F
 
 /-- Corecursor for `Seq' α` as a coinductive type. Iterates `f` to produce new elements
   of the sequence until `none` is obtained. -/
-def corec (f : β → Option (α × β)) (b : β) : Seq' α := by
-  refine' ⟨Stream'.corec' (Corec.f f) (some b), fun {n} h => _⟩
-  rw [Stream'.corec'_eq]
-  change Stream'.corec' (Corec.f f) (Corec.f f (some b)).2 n = none
-  revert h; generalize some b = o; revert o
-  induction' n with n IH <;> intro o
-  · change (Corec.f f o).1 = none → (Corec.f f (Corec.f f o).2).1 = none
-    cases' o with b <;> intro h
-    · rfl
-    dsimp [Corec.f] at h
-    dsimp [Corec.f]
-    revert h; cases' h₁: f b with s <;> intro h
-    · rfl
-    · cases' s with a b'
-      contradiction
-  · rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
-    exact IH (Corec.f f o).2
+unsafe def corecUnsafe (f : β → Option (α × β)) (b : β) : Seq' α :=
+  unsafeCast (corec f b)
+
+@[inherit_doc corecUnsafe, implemented_by corecUnsafe]
+def corec (f : β → Option (α × β)) (b : β) : Seq' α where
+  get? n := Option.map Prod.fst ((fun o => Option.bind o (f ∘ Prod.snd))^[n] (f b))
+  succ_stable n h := by
+    simp at h
+    simp [iterate_succ', h, - iterate_succ]
 #align stream.seq.corec Seq'.corec
 
 @[simp]
-theorem corec_eq (f : β → Option (α × β)) (b : β) :
-    dest (corec f b) = omap (corec f) (f b) := by
-  dsimp [corec, dest]
-  -- porting note: next two lines were `change`...`with`...
-  have h: (Stream'.corec' (Corec.f f) (some b)).get 0 = (Corec.f f (some b)).1 := rfl
-  rw [h]
-  dsimp [Corec.f]
-  induction' h : f b with s; · rfl
-  cases' s with a b'; dsimp [Corec.f]
-  apply congr_arg fun b' => some (a, b')
-  apply Subtype.eq
-  dsimp [corec, tail]
-  rw [Stream'.corec'_eq, Stream'.tail_cons]
-  dsimp [Corec.f]; rw [h]
-#align stream.seq.corec_eq Seq'.corec_eq
+theorem dest_corec (f : β → Option (α × β)) (b : β) :
+    dest (corec f b) = Option.map (Prod.map id (corec f)) (f b) := by
+  rcases hb : f b with (_ | ⟨_, _⟩) <;> simp [corec, dest, head, tail, hb]
+#align stream.seq.corec_eq Seq'.dest_corec
 
 section Bisim
 
 variable (R : Seq' α → Seq' α → Prop)
 
-/-- Bisimilarity relation over `Option` of `Seq1 α`-/
-def BisimO : Option (Seq1 α) → Option (Seq1 α) → Prop
-  | none, none => True
-  | some (a, s), some (a', s') => a = a' ∧ R s s'
-  | _, _ => False
-#align stream.seq.bisim_o Seq'.BisimO
-
-attribute [simp] BisimO
+#noalign stream.seq.bisim_o
 
 /-- a relation is bisimilar if it meets the `BisimO` test-/
 def IsBisimulation :=
-  ∀ ⦃s₁ s₂⦄, R s₁ s₂ → BisimO R (dest s₁) (dest s₂)
+  ∀ ⦃s₁ s₂⦄, R s₁ s₂ → Option.Rel (Prod.RProd Eq R) (dest s₁) (dest s₂)
 #align stream.seq.is_bisimulation Seq'.IsBisimulation
 
 -- If two streams are bisimilar, then they are equal
 theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : R s₁ s₂) : s₁ = s₂ := by
-  apply Subtype.eq
-  apply Stream'.eq_of_bisim fun x y => ∃ s s' : Seq' α, s.1 = x ∧ s'.1 = y ∧ R s s'
-  dsimp [Stream'.IsBisimulation]
-  intro t₁ t₂ e
-  exact
-    match t₁, t₂, e with
-    | _, _, ⟨s, s', rfl, rfl, r⟩ => by
-      suffices head s = head s' ∧ R (tail s) (tail s') from
-        And.imp id (fun r => ⟨tail s, tail s', by cases s; rfl, by cases s'; rfl, r⟩) this
-      have := bisim r
-      induction' s using recOn with x s <;>
-        induction' s' using recOn with x' s'
-      · constructor
-        · rfl
-        · assumption
-      · rw [dest_nil, dest_cons] at this
-        exact False.elim this
-      · rw [dest_nil, dest_cons] at this
-        exact False.elim this
-      · rw [dest_cons, dest_cons] at this
-        rw [head_cons, head_cons, tail_cons, tail_cons]
-        cases' this with h1 h2
-        constructor
-        rw [h1]
-        exact h2
-  exact ⟨s₁, s₂, rfl, rfl, r⟩
+  ext1 n
+  induction n using Nat.recAux generalizing s₁ s₂ with
+  | zero =>
+    specialize bisim r
+    match hs₁ : dest s₁, hs₂ : dest s₂, bisim with
+    | none, none, Option.Rel.none =>
+      simp [dest_eq_nil hs₁, dest_eq_nil hs₂]
+    | some (a₁, s₁'), some (a₂, s₂'), Option.Rel.some (Prod.RProd.intro ha _) =>
+      simp [dest_eq_cons hs₁, dest_eq_cons hs₂, ha]
+  | succ n hn =>
+    specialize bisim r
+    match hs₁ : dest s₁, hs₂ : dest s₂, bisim with
+    | none, none, Option.Rel.none =>
+      simp [dest_eq_nil hs₁, dest_eq_nil hs₂]
+    | some (a₁, s₁'), some (a₂, s₂'), Option.Rel.some (Prod.RProd.intro ha hs') =>
+      simp [dest_eq_cons hs₁, dest_eq_cons hs₂, ha, hn hs']
 #align stream.seq.eq_of_bisim Seq'.eq_of_bisim
 
 end Bisim
@@ -875,7 +842,7 @@ noncomputable def _root_.Equiv.seqEquivListSumStream : Seq' α ≃ List α ⊕ S
 @[simp]
 theorem nil_append (s : Seq' α) : nil ++ s = s := by
   apply coinduction2; intro s
-  dsimp [append_def]; rw [corec_eq]
+  dsimp [append_def]; rw [dest_corec]
   dsimp [append_def]
   induction s using recOn with
   | nil => trivial
@@ -888,7 +855,7 @@ theorem nil_append (s : Seq' α) : nil ++ s = s := by
 @[simp]
 theorem cons_append (a : α) (s t) : a ::ₑ s ++ t = a ::ₑ (s ++ t) :=
   dest_eq_cons <| by
-    dsimp [append_def]; rw [corec_eq]
+    dsimp [append_def]; rw [dest_corec]
     dsimp [append_def]; rw [dest_cons]
 #align stream.seq.cons_append Seq'.cons_append
 

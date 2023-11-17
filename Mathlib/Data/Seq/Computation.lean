@@ -47,7 +47,7 @@ unsafe def dest : (c : ComputationImpl α) → α ⊕ ComputationImpl α
 unsafe def corec (f : β → α ⊕ β) (b : β) : ComputationImpl α :=
   match f b with
   | Sum.inl a => pure a
-  | Sum.inr b => think (Thunk.mk fun _ => corec f b)
+  | Sum.inr b => think ⟨fun _ => corec f b⟩
 
 /-- Corecursor where it is possible to return a fully formed value at any point of the
 computation. -/
@@ -56,7 +56,7 @@ unsafe def corec' (f : β → ComputationImpl α ⊕ α ⊕ β) (b : β) : Compu
   match f b with
   | Sum.inl c => c
   | Sum.inr (Sum.inl a) => pure a
-  | Sum.inr (Sum.inr b) => think (Thunk.mk fun _ => corec' f b)
+  | Sum.inr (Sum.inr b) => think ⟨fun _ => corec' f b⟩
 
 end ComputationImpl
 
@@ -963,7 +963,7 @@ def corec' (f : β → Computation α ⊕ α ⊕ β) (b : β) : Computation α :
 @[simp]
 theorem dest_corec' (f : β → Computation α ⊕ α ⊕ β) (b : β) :
     dest (corec' f b) = Sum.elim dest (Sum.map id (corec' f)) (f b) := by
-  simp [corec']
+  simp (config := { unfoldPartialApp := true }) [corec']
   rcases f b with (c | a | b) <;> simp
   rcases dest c with (a | c') <;> simp; clear c
   refine eq_of_bisim
