@@ -140,9 +140,9 @@ theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
   rw [← hp]
   induction p using MvPolynomial.induction_on generalizing z with
     | h_C => exact isIntegral_algebraMap
-    | h_add _ _ ha hb => exact isIntegral_add (ha _ rfl) (hb _ rfl)
+    | h_add _ _ ha hb => exact IsIntegral.add (ha _ rfl) (hb _ rfl)
     | h_X p f ih =>
-      · refine @isIntegral_mul k _ _ _ _ _ (Ideal.Quotient.mk (maxIdeal k) _) (ih _ rfl) ?_
+      · refine @IsIntegral.mul k _ _ _ _ _ (Ideal.Quotient.mk (maxIdeal k) _) (ih _ rfl) ?_
         refine ⟨f, f.2.1, ?_⟩
         erw [AdjoinMonic.algebraMap, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
         exact le_maxIdeal k (Ideal.subset_span ⟨f, rfl⟩)
@@ -151,7 +151,8 @@ theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
 theorem AdjoinMonic.exists_root {f : k[X]} (hfm : f.Monic) (hfi : Irreducible f) :
     ∃ x : AdjoinMonic k, f.eval₂ (toAdjoinMonic k) x = 0 :=
   ⟨Ideal.Quotient.mk _ <| X (⟨f, hfm, hfi⟩ : MonicIrreducible k), by
-    rw [toAdjoinMonic, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [toAdjoinMonic, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
     exact le_maxIdeal k (Ideal.subset_span <| ⟨_, rfl⟩)⟩
 #align algebraic_closure.adjoin_monic.exists_root AlgebraicClosure.AdjoinMonic.exists_root
 
@@ -325,7 +326,7 @@ def ofStep (n : ℕ) : Step k n →+* AlgebraicClosureAux k :=
 
 theorem ofStep_succ (n : ℕ) : (ofStep k (n + 1)).comp (toStepSucc k n) = ofStep k n := by
   ext x
-  have hx : toStepOfLE' k n (n+1) n.le_succ x = toStepSucc k n x:= Nat.leRecOn_succ' x
+  have hx : toStepOfLE' k n (n+1) n.le_succ x = toStepSucc k n x := Nat.leRecOn_succ' x
   unfold ofStep
   rw [RingHom.comp_apply]
   dsimp [toStepOfLE]
@@ -382,7 +383,7 @@ def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosureAux k :=
 theorem isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosureAux k) := fun z =>
   isAlgebraic_iff_isIntegral.2 <|
     let ⟨n, x, hx⟩ := exists_ofStep k z
-    hx ▸ map_isIntegral (ofStepHom k n) (Step.isIntegral k n x)
+    hx ▸ IsIntegral.map (ofStepHom k n) (Step.isIntegral k n x)
 
 @[local instance] theorem isAlgClosure : IsAlgClosure k (AlgebraicClosureAux k) :=
   ⟨AlgebraicClosureAux.instIsAlgClosed k, isAlgebraic k⟩

@@ -972,7 +972,6 @@ theorem whisker_exchange_bimod {X Y Z : Mon_ C} {M N : Bimod X Y} {P Q : Bimod Y
 set_option linter.uppercaseLean3 false in
 #align Bimod.whisker_exchange_Bimod Bimod.whisker_exchange_bimod
 
-set_option maxHeartbeats 400000 in
 theorem pentagon_bimod {V W X Y Z : Mon_ C} (M : Bimod V W) (N : Bimod W X) (P : Bimod X Y)
     (Q : Bimod Y Z) :
     tensorHom (associatorBimod M N P).hom (𝟙 Q) ≫

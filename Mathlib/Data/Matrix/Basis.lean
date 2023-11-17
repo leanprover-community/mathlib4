@@ -11,7 +11,7 @@ import Mathlib.LinearAlgebra.Matrix.Trace
 /-!
 # Matrices with a single non-zero element.
 
-This file provides `matrix.stdBasisMatrix`. The matrix `matrix.stdBasisMatrix i j c` has `c`
+This file provides `Matrix.stdBasisMatrix`. The matrix `Matrix.stdBasisMatrix i j c` has `c`
 at position `(i, j)`, and zeroes elsewhere.
 -/
 
@@ -65,12 +65,12 @@ theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
   -- Porting note: was `convert`
   refine (Fintype.sum_eq_single i ?_).trans ?_; swap
   · -- Porting note: `simp` seems unwilling to apply `Fintype.sum_apply`
-    simp only [stdBasisMatrix]
+    simp (config := { unfoldPartialApp := true }) only [stdBasisMatrix]
     rw [Fintype.sum_apply, Fintype.sum_apply]
     simp
   · intro j' hj'
     -- Porting note: `simp` seems unwilling to apply `Fintype.sum_apply`
-    simp only [stdBasisMatrix]
+    simp (config := { unfoldPartialApp := true }) only [stdBasisMatrix]
     rw [Fintype.sum_apply, Fintype.sum_apply]
     simp [hj']
 #align matrix.matrix_eq_sum_std_basis Matrix.matrix_eq_sum_std_basis

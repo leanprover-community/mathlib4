@@ -144,7 +144,7 @@ The number of `e < x` for which `e + 1` is a squarefree product of primes smalle
 theorem card_le_two_pow {x k : ℕ} :
     card (Finset.filter (fun e => Squarefree (e + 1)) (M x k)) ≤ 2 ^ k := by
   let M₁ := Finset.filter (fun e => Squarefree (e + 1)) (M x k)
-  let f s := (Finset.prod s fun a => a) - 1
+  let f s := (∏ a in s, a) - 1
   let K := powerset (image Nat.succ (range k))
   -- Take `e` in `M x k`. If `e + 1` is squarefree, then it is the product of a subset of `[1, k]`.
   -- It follows that `e` is one less than such a product.
@@ -240,7 +240,7 @@ theorem Real.tendsto_sum_one_div_prime_atTop :
   have h4 :=
     calc
       (card M' : ℝ) ≤ 2 ^ k * x.sqrt := by exact_mod_cast card_le_two_pow_mul_sqrt
-      _ = 2 ^ k * ↑(2 ^ (k + 1)) := by rw [Nat.sqrt_eq]
+      _ = 2 ^ k * (2 ^ (k + 1) : ℕ) := by rw [Nat.sqrt_eq]
       _ = x / 2 := by field_simp [mul_right_comm, ← pow_succ']
   refine' lt_irrefl (x : ℝ) _
   calc

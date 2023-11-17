@@ -749,7 +749,7 @@ def hasShiftOfFullyFaithful :
         congr 1
         erw [(i n).hom.naturality]
         dsimp
-        simp )
+        simp)
       add_zero_hom_app := fun n X => F.map_injective (by
         have := dcongr_arg (fun a => (i a).hom.app X) (add_zero n)
         simp [this, ← NatTrans.naturality_assoc, eqToHom_map,

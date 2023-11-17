@@ -3,11 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Ideal.QuotientOperations
-import Mathlib.Algebra.Hom.Equiv.TypeTags
+import Mathlib.RingTheory.Int.Basic
 
 #align_import data.zmod.quotient from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
@@ -33,10 +33,7 @@ This file relates `ZMod n` to the quotient group
 zmod, quotient group, quotient ring, ideal quotient
 -/
 
-
-open QuotientAddGroup
-
-open ZMod
+open QuotientAddGroup Set ZMod
 
 variable (n : ℕ) {A R : Type*} [AddGroup A] [Ring R]
 
@@ -66,6 +63,22 @@ def quotientSpanEquivZMod (a : ℤ) : ℤ ⧸ Ideal.span ({a} : Set ℤ) ≃+* Z
 #align int.quotient_span_equiv_zmod Int.quotientSpanEquivZMod
 
 end Int
+
+noncomputable section ChineseRemainder
+open BigOperators Ideal
+
+/-- The **Chinese remainder theorem**, elementary version for `ZMod`. See also
+`Mathlib.Data.ZMod.Basic` for versions involving only two numbers. -/
+def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
+    (coprime : ∀ i j, i ≠ j → Nat.Coprime (a i) (a j)) : ZMod (∏ i, a i) ≃+* ∀ i, ZMod (a i) :=
+  have : ∀ (i j : ι), i ≠ j → IsCoprime (span {(a i : ℤ)}) (span {(a j : ℤ)}) :=
+    fun i j h ↦ (isCoprime_span_singleton_iff _ _).mpr ((coprime i j h).cast (R := ℤ))
+  Int.quotientSpanNatEquivZMod _ |>.symm.trans <|
+  quotEquivOfEq (iInf_span_singleton_natCast (R := ℤ) coprime) |>.symm.trans <|
+  quotientInfRingEquivPiQuotient _ this |>.trans <|
+  RingEquiv.piCongrRight fun i ↦ Int.quotientSpanNatEquivZMod (a i)
+
+end ChineseRemainder
 
 namespace AddAction
 
@@ -187,20 +200,26 @@ open Subgroup
 
 variable {α : Type*} [Group α] (a : α)
 
-/-- See also `orderOf_eq_card_zpowers`. -/
-@[to_additive add_order_eq_card_zmultiples' "See also `add_order_eq_card_zmultiples`."]
-theorem order_eq_card_zpowers' : orderOf a = Nat.card (zpowers a) := by
+/-- See also `Fintype.card_zpowers`. -/
+@[to_additive (attr := simp) Nat.card_zmultiples "See also `Fintype.card_zmultiples`."]
+theorem Nat.card_zpowers : Nat.card (zpowers a) = orderOf a := by
   have := Nat.card_congr (MulAction.orbitZpowersEquiv a (1 : α))
-  rwa [Nat.card_zmod, orbit_subgroup_one_eq_self, eq_comm] at this
-#align order_eq_card_zpowers' order_eq_card_zpowers'
-#align add_order_eq_card_zmultiples' add_order_eq_card_zmultiples'
+  rwa [Nat.card_zmod, orbit_subgroup_one_eq_self] at this
+#align order_eq_card_zpowers' Nat.card_zpowersₓ
+#align add_order_eq_card_zmultiples' Nat.card_zmultiplesₓ
 
 variable {a}
 
+@[to_additive (attr := simp) finite_zmultiples]
+lemma finite_zpowers : (zpowers a : Set α).Finite ↔ IsOfFinOrder a := by
+  simp only [← orderOf_pos_iff, ← Nat.card_zpowers, Nat.card_pos_iff, ← SetLike.coe_sort_coe,
+    nonempty_coe_sort, Nat.card_pos_iff, Set.finite_coe_iff, Subgroup.coe_nonempty, true_and]
+
+@[to_additive (attr := simp) infinite_zmultiples]
+lemma infinite_zpowers : (zpowers a : Set α).Infinite ↔ ¬IsOfFinOrder a := finite_zpowers.not
+
 @[to_additive IsOfFinAddOrder.finite_zmultiples]
-theorem IsOfFinOrder.finite_zpowers (h : IsOfFinOrder a) : Finite <| zpowers a := by
-  rw [← orderOf_pos_iff, order_eq_card_zpowers'] at h
-  exact Nat.finite_of_card_ne_zero h.ne.symm
+protected alias ⟨_, IsOfFinOrder.finite_zpowers⟩ := finite_zpowers
 #align is_of_fin_order.finite_zpowers IsOfFinOrder.finite_zpowers
 #align is_of_fin_add_order.finite_zmultiples IsOfFinAddOrder.finite_zmultiples
 

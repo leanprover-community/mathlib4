@@ -79,7 +79,7 @@ theorem oangle_zero_right (x : V) : o.oangle x 0 = 0 := by simp [oangle]
 /-- If the two vectors passed to `oangle` are the same, the result is 0. -/
 @[simp]
 theorem oangle_self (x : V) : o.oangle x x = 0 := by
-  rw [oangle, kahler_apply_self]; norm_cast
+  rw [oangle, kahler_apply_self, ← ofReal_pow]; norm_cast
   convert QuotientAddGroup.mk_zero (AddSubgroup.zmultiples (2 * π))
   apply arg_ofReal_of_nonneg
   positivity
@@ -1065,7 +1065,6 @@ theorem oangle_sign_smul_add_smul_smul_add_smul (x y : V) (r₁ r₂ r₃ r₄ :
       mul_comm r₃]
 #align orientation.oangle_sign_smul_add_smul_smul_add_smul Orientation.oangle_sign_smul_add_smul_smul_add_smul
 
-set_option maxHeartbeats 350000 in
 /-- A base angle of an isosceles triangle is acute, oriented vector angle form. -/
 theorem abs_oangle_sub_left_toReal_lt_pi_div_two {x y : V} (h : ‖x‖ = ‖y‖) :
     |(o.oangle (y - x) y).toReal| < π / 2 := by

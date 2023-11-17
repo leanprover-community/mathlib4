@@ -260,10 +260,8 @@ theorem cons_cons_iff (p) : Red (p :: L₁) (p :: L₂) ↔ Red L₁ L₂ :=
         generalizing L₁ L₂
       · subst_vars
         cases eq₂
-        cases eq₁
         constructor
       · subst_vars
-        cases eq₂
         cases' p with a b
         rw [Step.cons_left_iff] at h₁₂
         rcases h₁₂ with (⟨L, h₁₂, rfl⟩ | rfl)
@@ -947,7 +945,7 @@ theorem sum_mk : sum (mk L) = List.sum (L.map fun x => cond x.2 x.1 (-x.1)) :=
 
 @[simp]
 theorem sum.of {x : α} : sum (of x) = x :=
-  prod.of
+  @prod.of _ (_) _
 #align free_group.sum.of FreeGroup.sum.of
 
 -- note: there are no bundled homs with different notation in the domain and codomain, so we copy
