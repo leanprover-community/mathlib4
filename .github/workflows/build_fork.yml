@@ -339,7 +339,7 @@ jobs:
           fetch-depth: 1000
       - run: |
           cd old/
-          git checkout $(git merge-base HEAD master)
+          git checkout $(git merge-base HEAD origin/master)
           lake --version
           lean --version
       - uses: actions/checkout@v4
