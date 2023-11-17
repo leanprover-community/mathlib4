@@ -78,8 +78,8 @@ def symm (e : X ≃ᵈ Y) : Y ≃ᵈ X where
 
 @[simp] theorem symm_symm (e : X ≃ᵈ Y) : e.symm.symm = e := rfl
 
-theorem symm_bijective : Function.Bijective (DilationEquiv.symm : X ≃ᵈ Y → Y ≃ᵈ X) :=
-Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+theorem symm_bijective : Function.Bijective (DilationEquiv.symm : (X ≃ᵈ Y) → Y ≃ᵈ X) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp] theorem apply_symm_apply (e : X ≃ᵈ Y) (x : Y) : e (e.symm x) = x := e.right_inv x
 @[simp] theorem symm_apply_apply (e : X ≃ᵈ Y) (x : X) : e.symm (e x) = x := e.left_inv x
