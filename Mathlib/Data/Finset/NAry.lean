@@ -336,7 +336,9 @@ theorem image₂_mk_eq_product [DecidableEq α] [DecidableEq β] (s : Finset α)
 @[simp]
 theorem image₂_curry (f : α × β → γ) (s : Finset α) (t : Finset β) :
     image₂ (curry f) s t = (s ×ˢ t).image f := by
-  classical rw [← image₂_mk_eq_product, image_image₂]; dsimp [curry]
+  classical
+  rw [← image₂_mk_eq_product, image_image₂]
+  dsimp (config := { unfoldPartialApp := true }) [curry]
 #align finset.image₂_curry Finset.image₂_curry
 
 @[simp]

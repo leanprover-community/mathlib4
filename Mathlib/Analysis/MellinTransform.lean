@@ -150,7 +150,7 @@ theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
     rw [Ne.def, cpow_eq_zero_iff, ofReal_eq_zero, not_and_or]
     exact Or.inl ha.ne'
   rw [set_integral_congr measurableSet_Ioi this, integral_smul,
-    integral_comp_mul_left_Ioi (fun u ↦ ↑u ^ (s - 1) • f u) _ ha,
+    integral_comp_mul_left_Ioi (fun u ↦ (u : ℂ) ^ (s - 1) • f u) _ ha,
     mul_zero, ← Complex.coe_smul, ← mul_smul, sub_eq_add_neg,
     cpow_add _ _ (ofReal_ne_zero.mpr ha.ne'), cpow_one, abs_of_pos (inv_pos.mpr ha), ofReal_inv,
     mul_assoc, mul_comm, inv_mul_cancel_right₀ (ofReal_ne_zero.mpr ha.ne')]
@@ -386,7 +386,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [CompleteSpace E] [NormedSpace ℂ E] {
       rwa [sub_re, sub_le_iff_le_add, ← sub_le_iff_le_add'] at hz'
   have h5 : IntegrableOn bound (Ioi 0) := by
     simp_rw [add_mul, mul_assoc]
-    suffices ∀ {j : ℝ} (hj : b < j) (hj' : j < a),
+    suffices ∀ {j : ℝ}, b < j → j < a →
         IntegrableOn (fun t : ℝ => t ^ (j - 1) * (|log t| * ‖f t‖)) (Ioi 0) volume by
       refine' Integrable.add (this _ _) (this _ _)
       all_goals linarith

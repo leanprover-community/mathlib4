@@ -1081,8 +1081,8 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
         rw [some_mem_insertNone]
         simp
     | (a : α), (b : α), ⊤ => by
-        simp only [some, le_eq_subset, mem_map, mem_Icc, le_top, top_le_iff, and_false, iff_false,
-          not_exists, not_and, and_imp, Embedding.some, forall_const]
+        simp only [Embedding.some, mem_map, mem_Icc, and_false, exists_const, some, le_top,
+          top_le_iff]
     | (a : α), (b : α), (x : α) => by
         simp only [some, le_eq_subset, Embedding.some, mem_map, mem_Icc, Embedding.coeFn_mk,
           some_le_some]

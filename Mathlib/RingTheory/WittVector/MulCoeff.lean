@@ -30,8 +30,6 @@ that needs to happen in characteristic 0.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace WittVector
 
 variable (p : ℕ) [hp : Fact p.Prime]
@@ -243,7 +241,8 @@ theorem peval_polyOfInterest' (n : ℕ) (x y : 𝕎 k) :
         x.coeff (n + 1) * y.coeff 0 ^ p ^ (n + 1) := by
   rw [peval_polyOfInterest]
   have : (p : k) = 0 := CharP.cast_eq_zero k p
-  simp only [this, Nat.cast_pow, ne_eq, add_eq_zero, and_false, zero_pow', zero_mul, add_zero]
+  simp only [this, Nat.cast_pow, ne_eq, add_eq_zero, and_false, zero_pow', zero_mul, add_zero,
+    not_false_eq_true]
   have sum_zero_pow_mul_pow_p : ∀ y : 𝕎 k, ∑ x : ℕ in range (n + 1 + 1),
       (0 : k) ^ x * y.coeff x ^ p ^ (n + 1 - x) = y.coeff 0 ^ p ^ (n + 1) := by
     intro y

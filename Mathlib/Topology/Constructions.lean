@@ -802,7 +802,7 @@ theorem DenseRange.prod_map {ι : Type*} {κ : Type*} {f : ι → β} {g : κ �
 
 theorem Inducing.prod_map {f : α → β} {g : γ → δ} (hf : Inducing f) (hg : Inducing g) :
     Inducing (Prod.map f g) :=
-  inducing_iff_nhds.2 fun (a, b) => by simp_rw [Prod.map, nhds_prod_eq, hf.nhds_eq_comap,
+  inducing_iff_nhds.2 fun (a, b) => by simp_rw [Prod.map_def, nhds_prod_eq, hf.nhds_eq_comap,
     hg.nhds_eq_comap, prod_comap_comap_eq]
 #align inducing.prod_mk Inducing.prod_map
 
@@ -1283,7 +1283,8 @@ lemma Pi.continuous_restrict (S : Set ι) :
 lemma Pi.induced_restrict (S : Set ι) :
     induced (S.restrict) Pi.topologicalSpace =
     ⨅ i ∈ S, induced (eval i) (T i) := by
-  simp [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι), Set.restrict]
+  simp (config := { unfoldPartialApp := true }) [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι),
+    Set.restrict]
 
 theorem Filter.Tendsto.update [DecidableEq ι] {l : Filter β} {f : β → ∀ i, π i} {x : ∀ i, π i}
     (hf : Tendsto f l (𝓝 x)) (i : ι) {g : β → π i} {xi : π i} (hg : Tendsto g l (𝓝 xi)) :

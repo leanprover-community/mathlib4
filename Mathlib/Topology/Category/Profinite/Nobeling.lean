@@ -90,7 +90,7 @@ def Proj : (I → Bool) → (I → Bool) :=
 @[simp]
 theorem continuous_proj :
     Continuous (Proj J : (I → Bool) → (I → Bool)) := by
-  dsimp [Proj]
+  dsimp (config := { unfoldPartialApp := true }) [Proj]
   apply continuous_pi
   intro i
   split
@@ -387,7 +387,7 @@ theorem eval_eq (l : Products I) (x : C) :
     push_neg at h
     convert h with i
     dsimp [LocallyConstant.evalMonoidHom, e]
-    simp only [ite_eq_right_iff]
+    simp only [ite_eq_right_iff, one_ne_zero]
 
 theorem evalFacProp {l : Products I} (J : I → Prop)
     (h : ∀ a, a ∈ l.val → J a) [∀ j, Decidable (J j)] :
@@ -883,7 +883,7 @@ theorem isClosed_proj (o : Ordinal) (hC : IsClosed C) : IsClosed (π C (ord I ·
 
 theorem contained_proj (o : Ordinal) : contained (π C (ord I · < o)) o := by
   intro x ⟨_, ⟨_, h⟩⟩ j hj
-  dsimp [Proj] at h
+  dsimp (config := { unfoldPartialApp := true }) [Proj] at h
   simp only [← congr_fun h j, Bool.ite_eq_true_distrib, if_false_right_eq_and] at hj
   exact hj.1
 
@@ -1024,7 +1024,7 @@ def range_equiv_smaller_toFun (o : Ordinal) (x : range (π C (ord I · < o))) : 
 
 theorem range_equiv_smaller_toFun_bijective (o : Ordinal) :
     Function.Bijective (range_equiv_smaller_toFun C o) := by
-  dsimp [range_equiv_smaller_toFun]
+  dsimp (config := { unfoldPartialApp := true }) [range_equiv_smaller_toFun]
   refine ⟨fun a b hab ↦ ?_, fun ⟨a, b, hb⟩ ↦ ?_⟩
   · ext1
     simp only [Subtype.mk.injEq] at hab
@@ -1232,7 +1232,7 @@ def SwapTrue : (I → Bool) → I → Bool :=
 
 theorem continuous_swapTrue  :
     Continuous (SwapTrue o : (I → Bool) → I → Bool) := by
-  dsimp [SwapTrue]
+  dsimp (config := { unfoldPartialApp := true }) [SwapTrue]
   apply continuous_pi
   intro i
   apply Continuous.comp'
@@ -1245,7 +1245,7 @@ theorem swapTrue_mem_C1 (f : π (C1 C ho) (ord I · < o)) :
     SwapTrue o f.val ∈ C1 C ho := by
   obtain ⟨f, g, hg, rfl⟩ := f
   convert hg
-  dsimp [SwapTrue]
+  dsimp (config := { unfoldPartialApp := true }) [SwapTrue]
   ext i
   split_ifs with h
   · rw [ord_term ho] at h
@@ -1797,7 +1797,7 @@ open Classical in
 /-- The map `Nobeling.ι` is a closed embedding. -/
 theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
   apply Continuous.closedEmbedding
-  · dsimp [ι]
+  · dsimp (config := { unfoldPartialApp := true }) [ι]
     refine continuous_pi ?_
     intro C
     rw [← IsLocallyConstant.iff_continuous]
@@ -1816,7 +1816,7 @@ theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
     by_contra hn
     obtain ⟨C, hC, hh⟩ := exists_clopen_of_totally_separated hn
     apply hh.2 ∘ of_decide_eq_true
-    dsimp [ι] at h
+    dsimp (config := { unfoldPartialApp := true }) [ι] at h
     rw [← congr_fun h ⟨C, hC⟩]
     exact decide_eq_true hh.1
 

@@ -853,7 +853,7 @@ theorem neg_one_ne_one {n : ℕ} [Fact (2 < n)] : (-1 : ZMod n) ≠ 1 :=
 #align zmod.neg_one_ne_one ZMod.neg_one_ne_one
 
 theorem neg_eq_self_mod_two (a : ZMod 2) : -a = a := by
-  fin_cases a <;> apply Fin.ext <;> simp [Fin.coe_neg, Int.natMod]
+  fin_cases a <;> apply Fin.ext <;> simp [Fin.coe_neg, Int.natMod]; rfl
 #align zmod.neg_eq_self_mod_two ZMod.neg_eq_self_mod_two
 
 @[simp]

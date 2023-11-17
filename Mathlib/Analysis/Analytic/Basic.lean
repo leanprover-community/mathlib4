@@ -323,7 +323,7 @@ theorem radius_eq_top_iff_summable_norm (p : FormalMultilinearSeries 𝕜 E F) :
 
 /-- If the radius of `p` is positive, then `‖pₙ‖` grows at most geometrically. -/
 theorem le_mul_pow_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F) (h : 0 < p.radius) :
-    ∃ (C r : _) (hC : 0 < C) (hr : 0 < r), ∀ n, ‖p n‖ ≤ C * r ^ n := by
+    ∃ (C r : _) (hC : 0 < C) (_ : 0 < r), ∀ n, ‖p n‖ ≤ C * r ^ n := by
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 h with ⟨r, r0, rlt⟩
   have rpos : 0 < (r : ℝ) := by simp [ENNReal.coe_pos.1 r0]
   rcases norm_le_div_pow_of_pos_of_lt_radius p rpos rlt with ⟨C, Cpos, hCp⟩
@@ -1220,7 +1220,7 @@ theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ�
     Summable fun s : Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l } =>
       ‖p (s.1 + s.2.1)‖₊ * r ^ s.2.1 * r' ^ s.1 := by
   rw [← changeOriginIndexEquiv.symm.summable_iff]
-  dsimp only [(· ∘ ·), changeOriginIndexEquiv_symm_apply_fst,
+  dsimp only [Function.comp_def, changeOriginIndexEquiv_symm_apply_fst,
     changeOriginIndexEquiv_symm_apply_snd_fst]
   have : ∀ n : ℕ,
       HasSum (fun s : Finset (Fin n) => ‖p (n - s.card + s.card)‖₊ * r ^ s.card * r' ^ (n - s.card))
@@ -1342,7 +1342,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
   have : ∀ (m) (hm : n = m), p n (s.piecewise (fun _ => x) fun _ => y) =
       p m ((s.map (Fin.castIso hm).toEquiv.toEmbedding).piecewise (fun _ => x) fun _ => y) := by
     rintro m rfl
-    simp [Finset.piecewise]
+    simp (config := { unfoldPartialApp := true }) [Finset.piecewise]
   apply this
 #align formal_multilinear_series.change_origin_eval FormalMultilinearSeries.changeOrigin_eval
 
