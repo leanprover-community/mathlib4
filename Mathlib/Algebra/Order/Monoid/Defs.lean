@@ -151,6 +151,8 @@ attribute [instance 0] LinearOrderedAddCommMonoid.toOrd
 class LinearOrderedCommMonoid (α : Type*) extends OrderedCommMonoid α, LinearOrder α
 #align linear_ordered_comm_monoid LinearOrderedCommMonoid
 
+attribute [to_additive existing] LinearOrderedCommMonoid.toLinearOrder
+
 attribute [instance 100] LinearOrderedCommMonoid.toOrderedCommMonoid
 attribute [instance 50] LinearOrderedCommMonoid.toLinearOrder
 attribute [instance 0] LinearOrderedCommMonoid.toMin
