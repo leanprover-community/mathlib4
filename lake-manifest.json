@@ -34,11 +34,11 @@
     "inputRev?": "v0.0.22",
     "inherited": false}},
   {"git":
-   {"url": "https://github.com/leanprover/std4",
+   {"url": "https://github.com/semorrison/std4",
     "subDir?": null,
-    "rev": "c14f6a65b2c08caa38e1ab5db83451460d6cde3e",
+    "rev": "c97c8236aba9eb6d8731e9a9a92ff26dfce8924a",
     "opts": {},
     "name": "std",
-    "inputRev?": "main",
+    "inputRev?": "fix_isIndependentOf",
     "inherited": false}}],
  "name": "mathlib"}
