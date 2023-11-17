@@ -332,8 +332,6 @@ instance : PreservesPullbacksOfInclusions Stonean.toCompHaus.{u} where
     exact preservesLimitOfReflectsOfPreserves Stonean.toCompHaus compHausToTop
 
 instance : FinitaryExtensive Stonean.{u} :=
-  have := fullyFaithfulReflectsLimits Stonean.toCompHaus
-  have := fullyFaithfulReflectsColimits Stonean.toCompHaus
   finitaryExtensive_of_preserves_and_reflects Stonean.toCompHaus
 
 end Stonean
