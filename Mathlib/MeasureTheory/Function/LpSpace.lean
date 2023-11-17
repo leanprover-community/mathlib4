@@ -68,8 +68,6 @@ open TopologicalSpace MeasureTheory Filter
 
 open scoped NNReal ENNReal BigOperators Topology MeasureTheory Uniformity
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 variable {α E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
 
@@ -1579,10 +1577,7 @@ theorem ae_tendsto_of_cauchy_snorm' [CompleteSpace E] {f : ℕ → α → E} {p 
       lintegral_rpow_tsum_coe_nnnorm_sub_le_tsum hf hp1 h2
     have h4 : ∀ᵐ x ∂μ, (∑' i, ‖f (i + 1) x - f i x‖₊ : ℝ≥0∞) < ∞ :=
       tsum_nnnorm_sub_ae_lt_top hf hp1 hB h3
-    exact
-      h4.mono fun x hx =>
-        summable_of_summable_nnnorm
-          (ENNReal.tsum_coe_ne_top_iff_summable.mp (lt_top_iff_ne_top.mp hx))
+    exact h4.mono fun x hx => .of_nnnorm <| ENNReal.tsum_coe_ne_top_iff_summable.mp hx.ne
   have h :
     ∀ᵐ x ∂μ, ∃ l : E,
       atTop.Tendsto (fun n => ∑ i in Finset.range n, (f (i + 1) x - f i x)) (𝓝 l) := by

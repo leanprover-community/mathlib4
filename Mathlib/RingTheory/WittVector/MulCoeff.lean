@@ -30,8 +30,6 @@ that needs to happen in characteristic 0.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace WittVector
 
 variable (p : ℕ) [hp : Fact p.Prime]
@@ -153,7 +151,7 @@ theorem mul_polyOfInterest_aux3 (n : ℕ) : wittPolyProd p (n + 1) =
     (p : 𝕄) ^ (n + 1) * X (1, n + 1) * rename (Prod.mk (0 : Fin 2)) (wittPolynomial p ℤ (n + 1)) +
     remainder p n := by
   -- a useful auxiliary fact
-  have mvpz : (p : 𝕄) ^ (n + 1) = MvPolynomial.C ((p : ℤ) ^ (n + 1)) := by simp only; norm_cast
+  have mvpz : (p : 𝕄) ^ (n + 1) = MvPolynomial.C ((p : ℤ) ^ (n + 1)) := by norm_cast
   -- Porting note: the original proof applies `sum_range_succ` through a non-`conv` rewrite,
   -- but this does not work in Lean 4; the whole proof also times out very badly. The proof has been
   -- nearly totally rewritten here and now finishes quite fast.
@@ -211,7 +209,7 @@ theorem polyOfInterest_vars_eq (n : ℕ) : (polyOfInterest p n).vars =
     ((p : 𝕄) ^ (n + 1) * (wittMul p (n + 1) + (p : 𝕄) ^ (n + 1) * X (0, n + 1) * X (1, n + 1) -
       X (0, n + 1) * rename (Prod.mk (1 : Fin 2)) (wittPolynomial p ℤ (n + 1)) -
       X (1, n + 1) * rename (Prod.mk (0 : Fin 2)) (wittPolynomial p ℤ (n + 1)))).vars := by
-  have : (p : 𝕄) ^ (n + 1) = C ((p : ℤ) ^ (n + 1)) := by simp only; norm_cast
+  have : (p : 𝕄) ^ (n + 1) = C ((p : ℤ) ^ (n + 1)) := by norm_cast
   rw [polyOfInterest, this, vars_C_mul]
   apply pow_ne_zero
   exact_mod_cast hp.out.ne_zero
@@ -243,7 +241,8 @@ theorem peval_polyOfInterest' (n : ℕ) (x y : 𝕎 k) :
         x.coeff (n + 1) * y.coeff 0 ^ p ^ (n + 1) := by
   rw [peval_polyOfInterest]
   have : (p : k) = 0 := CharP.cast_eq_zero k p
-  simp only [this, Nat.cast_pow, ne_eq, add_eq_zero, and_false, zero_pow', zero_mul, add_zero]
+  simp only [this, Nat.cast_pow, ne_eq, add_eq_zero, and_false, zero_pow', zero_mul, add_zero,
+    not_false_eq_true]
   have sum_zero_pow_mul_pow_p : ∀ y : 𝕎 k, ∑ x : ℕ in range (n + 1 + 1),
       (0 : k) ^ x * y.coeff x ^ p ^ (n + 1 - x) = y.coeff 0 ^ p ^ (n + 1) := by
     intro y

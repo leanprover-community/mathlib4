@@ -13,8 +13,6 @@ import Mathlib.Algebra.GroupWithZero.NeZero
 We intentionally keep imports minimal here as this file is used by `Mathlib.Tactic.NormNum`.
 -/
 
-set_option autoImplicit true
-
 universe u
 
 variable {α : Type u}

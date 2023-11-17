@@ -119,7 +119,7 @@ theorem Subsingleton.stronglyMeasurable {α β} [MeasurableSpace α] [Topologica
   · exact ⟨fun _ => f_sf, fun x => tendsto_const_nhds⟩
   · have h_univ : f ⁻¹' {x} = Set.univ := by
       ext1 y
-      simp
+      simp [eq_iff_true_of_subsingleton]
     rw [h_univ]
     exact MeasurableSet.univ
 #align measure_theory.subsingleton.strongly_measurable MeasureTheory.Subsingleton.stronglyMeasurable
@@ -987,7 +987,7 @@ theorem finStronglyMeasurable_zero {α β} {m : MeasurableSpace α} {μ : Measur
     [TopologicalSpace β] : FinStronglyMeasurable (0 : α → β) μ :=
   ⟨0, by
     simp only [Pi.zero_apply, SimpleFunc.coe_zero, support_zero', measure_empty,
-      WithTop.zero_lt_top, forall_const],
+      zero_lt_top, forall_const],
     fun _ => tendsto_const_nhds⟩
 #align measure_theory.fin_strongly_measurable_zero MeasureTheory.finStronglyMeasurable_zero
 

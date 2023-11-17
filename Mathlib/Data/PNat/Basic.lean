@@ -20,8 +20,6 @@ It is defined in `Data.PNat.Defs`, but most of the development is deferred to he
 that `Data.PNat.Defs` can have very few imports.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
   LinearOrderedCancelCommMonoid, Add, Mul, Distrib for PNat
 
@@ -272,7 +270,7 @@ theorem coe_bit1 (a : ℕ+) : ((bit1 a : ℕ+) : ℕ) = bit1 (a : ℕ) :=
 end deprecated
 
 @[simp, norm_cast]
-theorem pow_coe (m : ℕ+) (n : ℕ) : (m ^ n : ℕ) = (m : ℕ) ^ n :=
+theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=
   rfl
 #align pnat.pow_coe PNat.pow_coe
 

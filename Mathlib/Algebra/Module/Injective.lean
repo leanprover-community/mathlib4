@@ -415,7 +415,7 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
             ↑(r • ExtensionOfMaxAdjoin.fst i a) + (r • ExtensionOfMaxAdjoin.snd i a) • y := by
           rw [ExtensionOfMaxAdjoin.eqn, smul_add, smul_eq_mul, mul_smul]
           rfl
-        rw [ExtensionOfMaxAdjoin.extensionToFun_wd i f h (r • a) _ _ eq1, LinearMap.map_smul,
+        rw [ExtensionOfMaxAdjoin.extensionToFun_wd i f h (r • a :) _ _ eq1, LinearMap.map_smul,
           LinearPMap.map_smul, ← smul_add]
         congr }
   is_extension m := by

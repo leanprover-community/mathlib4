@@ -1521,6 +1521,20 @@ theorem eq_empty_of_ssubset_singleton {s : Set α} {x : α} (hs : s ⊂ {x}) : s
   ssubset_singleton_iff.1 hs
 #align set.eq_empty_of_ssubset_singleton Set.eq_empty_of_ssubset_singleton
 
+theorem eq_of_nonempty_of_subsingleton {α} [Subsingleton α] (s t : Set α) [Nonempty s]
+    [Nonempty t] : s = t :=
+  nonempty_of_nonempty_subtype.eq_univ.trans nonempty_of_nonempty_subtype.eq_univ.symm
+
+theorem eq_of_nonempty_of_subsingleton' {α} [Subsingleton α] {s : Set α} (t : Set α)
+    (hs : s.Nonempty) [Nonempty t] : s = t :=
+  have := hs.to_subtype; eq_of_nonempty_of_subsingleton s t
+
+theorem Nonempty.eq_zero [Subsingleton α] [Zero α] {s : Set α} (h : s.Nonempty) :
+    s = {0} := eq_of_nonempty_of_subsingleton' {0} h
+
+theorem Nonempty.eq_one [Subsingleton α] [One α] {s : Set α} (h : s.Nonempty) :
+    s = {1} := eq_of_nonempty_of_subsingleton' {1} h
+
 /-! ### Disjointness -/
 
 

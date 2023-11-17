@@ -413,7 +413,7 @@ instance Subsingleton.measurableSingletonClass {α} [MeasurableSpace α] [Subsin
     MeasurableSingletonClass α := by
   refine' ⟨fun i => _⟩
   convert MeasurableSet.univ
-  simp [Set.eq_univ_iff_forall]
+  simp [Set.eq_univ_iff_forall, eq_iff_true_of_subsingleton]
 #noalign empty.measurable_singleton_class
 #noalign punit.measurable_singleton_class
 
@@ -928,7 +928,7 @@ theorem measurable_uniqueElim [Unique δ] [∀ i, MeasurableSpace (π i)] :
 
 theorem measurable_updateFinset [DecidableEq δ] {s : Finset δ} {x : ∀ i, π i} :
     Measurable (updateFinset x s) := by
-  simp_rw [updateFinset, measurable_pi_iff]
+  simp (config := { unfoldPartialApp := true }) only [updateFinset, measurable_pi_iff]
   intro i
   by_cases h : i ∈ s <;> simp [h, measurable_pi_apply]
 
