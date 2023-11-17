@@ -648,7 +648,7 @@ def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
 -- @[simp] -- Porting note: Not in simpnf, added aux lemma below
 theorem type_uLift (r : α → α → Prop) [IsWellOrder α r] :
     type (ULift.down.{v,u} ⁻¹'o r) = lift.{v} (type r) := by
-  simp
+  simp (config := { unfoldPartialApp := true })
   rfl
 #align ordinal.type_ulift Ordinal.type_uLift
 
@@ -921,7 +921,6 @@ instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·
     refine inductionOn b (fun α₂ r₂ _ ↦ ?_)
     rintro c ⟨⟨⟨f, fo⟩, fi⟩⟩
     refine inductionOn c (fun β s _ ↦ ?_)
-    have := (Embedding.refl β).sumMap f
     refine ⟨⟨⟨(Embedding.refl.{u+1} _).sumMap f, ?_⟩, ?_⟩⟩
     · intros a b
       match a, b with

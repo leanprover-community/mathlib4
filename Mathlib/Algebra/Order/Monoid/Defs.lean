@@ -193,6 +193,7 @@ class LinearOrderedAddCommMonoidWithTop (α : Type*) extends LinearOrderedAddCom
   /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is invariant under addition. -/
   protected top_add' : ∀ x : α, ⊤ + x = ⊤
 #align linear_ordered_add_comm_monoid_with_top LinearOrderedAddCommMonoidWithTop
+#align linear_ordered_add_comm_monoid_with_top.to_order_top LinearOrderedAddCommMonoidWithTop.toOrderTop
 
 attribute [instance 100] LinearOrderedAddCommMonoidWithTop.toLinearOrderedAddCommMonoid
 attribute [instance 50] LinearOrderedAddCommMonoidWithTop.toOrderTop

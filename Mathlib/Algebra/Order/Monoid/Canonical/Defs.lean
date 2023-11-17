@@ -103,7 +103,9 @@ class CanonicallyOrderedAddCommMonoid (α : Type*) extends OrderedAddCommMonoid 
   /-- For any `a` and `b`, `a ≤ a + b` -/
   protected le_self_add : ∀ a b : α, a ≤ a + b
 #align canonically_ordered_add_monoid CanonicallyOrderedAddCommMonoid
+#align canonically_ordered_add_monoid.to_order_bot CanonicallyOrderedAddCommMonoid.toOrderBot
 
+-- see Note [lower instance priority]
 attribute [instance 100] CanonicallyOrderedAddCommMonoid.toOrderedAddCommMonoid
 attribute [instance 50] CanonicallyOrderedAddCommMonoid.toOrderBot
 
@@ -122,8 +124,10 @@ class CanonicallyOrderedCommMonoid (α : Type*) extends OrderedCommMonoid α, Or
   protected exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a * c
   /-- For any `a` and `b`, `a ≤ a * b` -/
   protected le_self_mul : ∀ a b : α, a ≤ a * b
-#align canonically_ordered_monoid CanonicallyOrderedCommMonoid
+#align canonically_ordered_monoid CanonicallyOrderedAddCommMonoid
+#align canonically_ordered_monoid.to_order_bot CanonicallyOrderedCommMonoid.toOrderBot
 
+-- see Note [lower instance priority]
 attribute [instance 100] CanonicallyOrderedCommMonoid.toOrderedCommMonoid
 attribute [instance 50] CanonicallyOrderedCommMonoid.toOrderBot
 
