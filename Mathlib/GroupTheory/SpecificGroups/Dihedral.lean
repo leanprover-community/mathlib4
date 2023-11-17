@@ -299,7 +299,8 @@ noncomputable def mulEquivOfCardEqFourAndNotIsCyclic (h1 : Fintype.card G = 4) (
       generalize equiv y = fy at *
       generalize equiv z = fz at *
       revert fz fy fx
-      simp (config := { decide := true })
+      simp only [Equiv.setValue_eq, ne_eq]
+      decide
   }
 
 end SmallOrder
