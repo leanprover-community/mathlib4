@@ -849,10 +849,6 @@ namespace Cardinal
 
 open Ordinal
 
---Porting note: commented out, doesn't seem necessary
--- mathport name: cardinal.pow
---local infixr:0 "^" => @HPow.hPow Cardinal Cardinal Cardinal instHPow
-
 /-- A cardinal is a strong limit if it is not zero and it is
   closed under powersets. Note that `ℵ₀` is a strong limit by this definition. -/
 def IsStrongLimit (c : Cardinal) : Prop :=

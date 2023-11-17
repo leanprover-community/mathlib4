@@ -412,11 +412,10 @@ theorem map_polynomial_aeval (p : ℂ[X]) :
   map_polynomial_aeval_of_nonempty a p (spectrum.nonempty a)
 #align spectrum.map_polynomial_aeval spectrum.map_polynomial_aeval
 
--- Porting note: Replaced `x ^ n` with `HPow.hPow x n`
 /-- A specialization of the spectral mapping theorem for polynomials in a Banach algebra over `ℂ`
 to monic monomials. -/
 protected theorem map_pow (n : ℕ) :
-    spectrum ℂ (a ^ n) = (fun x : ℂ => HPow.hPow x n) '' spectrum ℂ a := by
+    spectrum ℂ (a ^ n) = (· ^ n) '' spectrum ℂ a := by
   simpa only [aeval_X_pow, eval_pow, eval_X] using map_polynomial_aeval a (X ^ n)
 #align spectrum.map_pow spectrum.map_pow
 
