@@ -4,6 +4,7 @@ import Mathlib.Tactic.RunCmd
 import Std.Tactic.GuardMsgs
 
 set_option linter.unusedVariables false
+set_option pp.unicode.fun true
 
 section success
 
