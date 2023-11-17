@@ -279,7 +279,7 @@ theorem AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one [FiniteD
 
 theorem Affine.Simplex.span_eq_top [FiniteDimensional k V] {n : ℕ} (T : Affine.Simplex k V n)
     (hrank : finrank k V = n) : affineSpan k (Set.range T.points) = ⊤ := by
-  rw [AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one T.Independent,
+  rw [AffineIndependent.affineSpan_eq_top_iff_card_eq_finrank_add_one T.independent,
     Fintype.card_fin, hrank]
 #align affine.simplex.span_eq_top Affine.Simplex.span_eq_top
 
