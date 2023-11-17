@@ -37,6 +37,8 @@ variable
   {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] [SmoothManifoldWithCorners I' M']
 
+/-- An interior point of a manifold is a point whose image in the model vector space is in the
+interior of the chart's target. -/
 def ModelWithCorners.IsInteriorPoint (x : M) := extChartAt I x x ∈ interior (extChartAt I x).target
 
 lemma ModelWithCorners.Boundaryless.isOpen_target
