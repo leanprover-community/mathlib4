@@ -2,15 +2,12 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.solvable
-! leanprover-community/mathlib commit a50170a88a47570ed186b809ca754110590f9476
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Abelian
 import Mathlib.Algebra.Lie.IdealOperations
 import Mathlib.Order.Hom.Basic
+
+#align_import algebra.lie.solvable from "leanprover-community/mathlib"@"a50170a88a47570ed186b809ca754110590f9476"
 
 /-!
 # Solvable Lie algebras
@@ -293,6 +290,13 @@ theorem center_le_radical : center R L ≤ radical R L :=
   have h : IsSolvable R (center R L) := inferInstance
   le_sSup h
 #align lie_algebra.center_le_radical LieAlgebra.center_le_radical
+
+instance [IsSolvable R L] : IsSolvable R (⊤ : LieSubalgebra R L) := by
+  rwa [solvable_iff_equiv_solvable LieSubalgebra.topEquiv]
+
+@[simp] lemma radical_eq_top_of_isSolvable [IsSolvable R L] :
+    radical R L = ⊤ := by
+  rw [eq_top_iff]; exact le_sSup <| inferInstanceAs (IsSolvable R (⊤ : LieIdeal R L))
 
 /-- Given a solvable Lie ideal `I` with derived series `I = D₀ ≥ D₁ ≥ ⋯ ≥ Dₖ = ⊥`, this is the
 natural number `k` (the number of inclusions).

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
-
-! This file was ported from Lean 3 source module topology.algebra.order.floor
-! leanprover-community/mathlib commit 84dc0bd6619acaea625086d6f53cb35cdd554219
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Topology.Algebra.Order.Group
+
+#align_import topology.algebra.order.floor from "leanprover-community/mathlib"@"84dc0bd6619acaea625086d6f53cb35cdd554219"
 
 /-!
 # Topological facts about `Int.floor`, `Int.ceil` and `Int.fract`
@@ -31,7 +28,7 @@ This file proves statements about limits and continuity of functions involving `
 
 open Filter Function Int Set Topology
 
-variable {α β γ : Type _} [LinearOrderedRing α] [FloorRing α]
+variable {α β γ : Type*} [LinearOrderedRing α] [FloorRing α]
 
 theorem tendsto_floor_atTop : Tendsto (floor : α → ℤ) atTop atTop :=
   floor_mono.tendsto_atTop_atTop fun b =>

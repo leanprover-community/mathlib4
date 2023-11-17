@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.identities
-! leanprover-community/mathlib commit 0798037604b2d91748f9b43925fb7570a5f3256c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.Frobenius
 import Mathlib.RingTheory.WittVector.Verschiebung
 import Mathlib.RingTheory.WittVector.MulP
+
+#align_import ring_theory.witt_vector.identities from "leanprover-community/mathlib"@"0798037604b2d91748f9b43925fb7570a5f3256c"
 
 /-!
 ## Identities between operations on the ring of Witt vectors
@@ -33,7 +30,7 @@ In this file we derive common identities between the Frobenius and Verschiebung 
 
 namespace WittVector
 
-variable {p : ℕ} {R : Type _} [hp : Fact p.Prime] [CommRing R]
+variable {p : ℕ} {R : Type*} [hp : Fact p.Prime] [CommRing R]
 
 -- type as `\bbW`
 local notation "𝕎" => WittVector p
@@ -43,7 +40,6 @@ noncomputable section
 -- Porting note: `ghost_calc` failure: `simp only []` and the manual instances had to be added.
 /-- The composition of Frobenius and Verschiebung is multiplication by `p`. -/
 theorem frobenius_verschiebung (x : 𝕎 R) : frobenius (verschiebung x) = x * p := by
-  simp only []
   have : IsPoly p fun {R} [CommRing R] x ↦ frobenius (verschiebung x) :=
     IsPoly.comp (hg := frobenius_isPoly p) (hf := verschiebung_isPoly)
   have : IsPoly p fun {R} [CommRing R] x ↦ x * p := mulN_isPoly p p
@@ -109,7 +105,6 @@ variable {p R}
 /-- The “projection formula” for Frobenius and Verschiebung. -/
 theorem verschiebung_mul_frobenius (x y : 𝕎 R) :
     verschiebung (x * frobenius y) = verschiebung x * y := by
-  simp only []
   have : IsPoly₂ p fun {R} [Rcr : CommRing R] x y ↦ verschiebung (x * frobenius y) :=
     IsPoly.comp₂ (hg := verschiebung_isPoly)
       (hf := IsPoly₂.comp (hh := mulIsPoly₂) (hf := idIsPolyI' p) (hg := frobenius_isPoly p))

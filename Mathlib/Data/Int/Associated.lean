@@ -2,15 +2,12 @@
 Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module data.int.associated
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.Data.Int.Units
 import Mathlib.Data.Int.Basic
+
+#align_import data.int.associated from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 /-!
 # Associated elements and the integers
 

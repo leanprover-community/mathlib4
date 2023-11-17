@@ -2,14 +2,11 @@
 Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
-
-! This file was ported from Lean 3 source module analysis.calculus.lhopital
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.Calculus.Deriv.Inv
+
+#align_import analysis.calculus.lhopital from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 # L'Hôpital's rule for 0/0 indeterminate forms
@@ -83,7 +80,6 @@ theorem lhopital_zero_right_on_Ioo (hff' : ∀ x ∈ Ioo a b, HasDerivAt f (f' x
   have cmp : ∀ x ∈ Ioo a b, a < c x ∧ c x < x := fun x hx => (hc x hx).1
   rw [← nhdsWithin_Ioo_eq_nhdsWithin_Ioi hab]
   apply tendsto_nhdsWithin_congr this
-  simp only
   apply hdiv.comp
   refine' tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
     (tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds

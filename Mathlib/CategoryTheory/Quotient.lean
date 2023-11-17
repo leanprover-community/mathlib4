@@ -2,14 +2,11 @@
 Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
-
-! This file was ported from Lean 3 source module category_theory.quotient
-! leanprover-community/mathlib commit 740acc0e6f9adf4423f92a485d0456fc271482da
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.EqToHom
+
+#align_import category_theory.quotient from "leanprover-community/mathlib"@"740acc0e6f9adf4423f92a485d0456fc271482da"
 
 /-!
 # Quotient category
@@ -40,14 +37,12 @@ variable {C : Type _} [Category C] (r : HomRel C)
 from left and right. -/
 class Congruence : Prop where
   /-- `r` is an equivalence on every hom-set. -/
-  isEquiv : ∀ {X Y}, IsEquiv _ (@r X Y)
+  equivalence : ∀ {X Y}, _root_.Equivalence (@r X Y)
   /-- Precomposition with an arrow respects `r`. -/
   compLeft : ∀ {X Y Z} (f : X ⟶ Y) {g g' : Y ⟶ Z}, r g g' → r (f ≫ g) (f ≫ g')
   /-- Postcomposition with an arrow respects `r`. -/
   compRight : ∀ {X Y Z} {f f' : X ⟶ Y} (g : Y ⟶ Z), r f f' → r (f ≫ g) (f' ≫ g)
 #align category_theory.congruence CategoryTheory.Congruence
-
-attribute [instance] Congruence.isEquiv
 
 /-- A type synonym for `C`, thought of as the objects of the quotient category. -/
 @[ext]
@@ -115,16 +110,19 @@ instance category : Category (Quotient r) where
 #align category_theory.quotient.category CategoryTheory.Quotient.category
 
 /-- The functor from a category to its quotient. -/
-@[simps]
 def functor : C ⥤ Quotient r where
   obj a := { as := a }
   map := @fun _ _ f ↦ Quot.mk _ f
 #align category_theory.quotient.functor CategoryTheory.Quotient.functor
 
-noncomputable instance fullFunctor : Full (functor r) where preimage := @fun X Y f ↦ Quot.out f
+noncomputable instance fullFunctor : Full (functor r) where
+  preimage := @fun X Y f ↦ Quot.out f
+  witness f := by
+    dsimp [functor]
+    simp
 
-instance : EssSurj (functor r)
-    where mem_essImage Y :=
+instance : EssSurj (functor r) where
+  mem_essImage Y :=
     ⟨Y.as, ⟨eqToIso (by
             ext
             rfl)⟩⟩
@@ -141,30 +139,31 @@ protected theorem sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
   simpa using Quot.sound (CompClosure.intro (𝟙 a) f₁ f₂ (𝟙 b) h)
 #align category_theory.quotient.sound CategoryTheory.Quotient.sound
 
+lemma compClosure_iff_self [h : Congruence r] {X Y : C} (f g : X ⟶ Y) :
+    CompClosure r f g ↔ r f g := by
+  constructor
+  · intro hfg
+    induction' hfg with m m' hm
+    exact Congruence.compLeft _ (Congruence.compRight _ (by assumption))
+  · exact CompClosure.of _ _ _
+
+@[simp]
+theorem compClosure_eq_self [h : Congruence r] :
+    CompClosure r = r := by
+  ext
+  simp only [compClosure_iff_self]
+
 theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
     (functor r).map f = (functor r).map f' ↔ r f f' := by
-  constructor
-  · erw [Quot.eq]
-    intro h
-    induction' h with m m' hm
-    · cases hm
-      apply Congruence.compLeft
-      apply Congruence.compRight
-      assumption
-    · haveI := (h.isEquiv : IsEquiv _ (@r X Y))
-      -- porting note: had to add this line for `refl` (and name the `Congruence` argument)
-      apply refl
-    · apply symm
-      assumption
-    · apply _root_.trans <;> assumption
-  · apply Quotient.sound
+  dsimp [functor]
+  rw [Equivalence.quot_mk_eq_iff, compClosure_eq_self r]
+  simpa only [compClosure_eq_self r] using h.equivalence
 #align category_theory.quotient.functor_map_eq_iff CategoryTheory.Quotient.functor_map_eq_iff
 
 variable {D : Type _} [Category D] (F : C ⥤ D)
   (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂)
 
 /-- The induced functor on the quotient category. -/
-@[simps]
 def lift : Quotient r ⥤ D where
   obj a := F.obj a.as
   map := @fun a b hf ↦
@@ -183,6 +182,7 @@ theorem lift_spec : functor r ⋙ lift r F H = F := by
   · rintro X
     rfl
   · rintro X Y f
+    dsimp [lift, functor]
     simp
 #align category_theory.quotient.lift_spec CategoryTheory.Quotient.lift_spec
 
@@ -217,9 +217,60 @@ theorem lift.isLift_inv (X : C) : (lift.isLift r F H).inv.app X = 𝟙 (F.obj X)
 theorem lift_map_functor_map {X Y : C} (f : X ⟶ Y) :
     (lift r F H).map ((functor r).map f) = F.map f := by
   rw [← NatIso.naturality_1 (lift.isLift r F H)]
-  dsimp
+  dsimp [lift, functor]
   simp
 #align category_theory.quotient.lift_map_functor_map CategoryTheory.Quotient.lift_map_functor_map
+
+variable {r}
+
+lemma natTrans_ext {F G : Quotient r ⥤ D} (τ₁ τ₂ : F ⟶ G)
+    (h : whiskerLeft (Quotient.functor r) τ₁ = whiskerLeft (Quotient.functor r) τ₂) : τ₁ = τ₂ :=
+  NatTrans.ext _ _ (by ext1 ⟨X⟩; exact NatTrans.congr_app h X)
+
+variable (r)
+
+/-- In order to define a natural transformation `F ⟶ G` with `F G : Quotient r ⥤ D`, it suffices
+to do so after precomposing with `Quotient.functor r`. -/
+def natTransLift {F G : Quotient r ⥤ D} (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G) :
+    F ⟶ G where
+  app := fun ⟨X⟩ => τ.app X
+  naturality := fun ⟨X⟩ ⟨Y⟩ => by
+    rintro ⟨f⟩
+    exact τ.naturality f
+
+@[simp]
+lemma natTransLift_app (F G : Quotient r ⥤ D)
+    (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G) (X : C) :
+  (natTransLift r τ).app ((Quotient.functor r).obj X) = τ.app X := rfl
+
+@[reassoc]
+lemma comp_natTransLift {F G H : Quotient r ⥤ D}
+    (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G)
+    (τ' : Quotient.functor r ⋙ G ⟶ Quotient.functor r ⋙ H) :
+    natTransLift r τ ≫ natTransLift r τ' =  natTransLift r (τ ≫ τ') := by aesop_cat
+
+@[simp]
+lemma natTransLift_id (F : Quotient r ⥤ D) :
+    natTransLift r (𝟙 (Quotient.functor r ⋙ F)) = 𝟙 _ := by aesop_cat
+
+/-- In order to define a natural isomorphism `F ≅ G` with `F G : Quotient r ⥤ D`, it suffices
+to do so after precomposing with `Quotient.functor r`. -/
+@[simps]
+def natIsoLift {F G : Quotient r ⥤ D} (τ : Quotient.functor r ⋙ F ≅ Quotient.functor r ⋙ G) :
+    F ≅ G where
+  hom := natTransLift _ τ.hom
+  inv := natTransLift _ τ.inv
+  hom_inv_id := by rw [comp_natTransLift, τ.hom_inv_id, natTransLift_id]
+  inv_hom_id := by rw [comp_natTransLift, τ.inv_hom_id, natTransLift_id]
+
+variable (D)
+
+instance full_whiskeringLeft_functor :
+    Full ((whiskeringLeft C _ D).obj (functor r)) where
+  preimage := natTransLift r
+
+instance faithful_whiskeringLeft_functor :
+    Faithful ((whiskeringLeft C _ D).obj (functor r)) := ⟨by apply natTrans_ext⟩
 
 end Quotient
 

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson
-
-! This file was ported from Lean 3 source module combinatorics.derangements.basic
-! leanprover-community/mathlib commit 9407b03373c8cd201df99d6bc5514fc2db44054f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.Perm.Option
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.Option
+
+#align_import combinatorics.derangements.basic from "leanprover-community/mathlib"@"9407b03373c8cd201df99d6bc5514fc2db44054f"
 
 /-!
 # Derangements on types
@@ -22,7 +19,7 @@ We also define some equivalences involving various subtypes of `Perm α` and `de
 * `derangementsOptionEquivSigmaAtMostOneFixedPoint`: An equivalence between
   `derangements (Option α)` and the sigma-type `Σ a : α, {f : Perm α // fixed_points f ⊆ a}`.
 * `derangementsRecursionEquiv`: An equivalence between `derangements (Option α)` and the
-  sigma-type `Σ a : α, (derangements (({a}ᶜ : Set α) : Type _) ⊕ derangements α)` which is later
+  sigma-type `Σ a : α, (derangements (({a}ᶜ : Set α) : Type*) ⊕ derangements α)` which is later
   used to inductively count the number of derangements.
 
 In order to prove the above, we also prove some results about the effect of `Equiv.removeNone`
@@ -33,11 +30,11 @@ on derangements: `RemoveNone.fiber_none` and `RemoveNone.fiber_some`.
 open Equiv Function
 
 /-- A permutation is a derangement if it has no fixed points. -/
-def derangements (α : Type _) : Set (Perm α) :=
+def derangements (α : Type*) : Set (Perm α) :=
   { f : Perm α | ∀ x : α, f x ≠ x }
 #align derangements derangements
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 theorem mem_derangements_iff_fixedPoints_eq_empty {f : Perm α} :
     f ∈ derangements α ↔ fixedPoints f = ∅ :=

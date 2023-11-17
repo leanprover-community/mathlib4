@@ -2,17 +2,14 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-
-! This file was ported from Lean 3 source module number_theory.padics.hensel
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.Polynomial.Identities
 import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.MetricSpace.CauSeqFilter
+
+#align_import number_theory.padics.hensel from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Hensel's lemma on ℤ_p
@@ -84,7 +81,7 @@ variable {p : ℕ} [Fact p.Prime] {ncs : CauSeq ℤ_[p] norm} {F : Polynomial �
   (hnorm : Tendsto (fun i => ‖F.eval (ncs i)‖) atTop (𝓝 0))
 
 private theorem tendsto_zero_of_norm_tendsto_zero : Tendsto (fun i => F.eval (ncs i)) atTop (𝓝 0) :=
-  tendsto_iff_norm_tendsto_zero.2 (by simpa using hnorm)
+  tendsto_iff_norm_sub_tendsto_zero.2 (by simpa using hnorm)
 
 theorem limit_zero_of_norm_tendsto_zero : F.eval ncs.lim = 0 :=
   tendsto_nhds_unique (comp_tendsto_lim _) (tendsto_zero_of_norm_tendsto_zero hnorm)
@@ -347,7 +344,7 @@ private theorem newton_seq_dist_to_a :
         newton_seq_dist_to_a (k + 1) (succ_pos _)
 
 private theorem bound' : Tendsto (fun n : ℕ => ‖F.derivative.eval a‖ * T ^ 2 ^ n) atTop (𝓝 0) := by
-  rw [← MulZeroClass.mul_zero ‖F.derivative.eval a‖]
+  rw [← mul_zero ‖F.derivative.eval a‖]
   exact
     tendsto_const_nhds.mul
       (Tendsto.comp (tendsto_pow_atTop_nhds_0_of_lt_1 (norm_nonneg _) (T_lt_one hnorm))
@@ -364,7 +361,7 @@ private theorem bound :
 
 private theorem bound'_sq :
     Tendsto (fun n : ℕ => ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ n) atTop (𝓝 0) := by
-  rw [← MulZeroClass.mul_zero ‖F.derivative.eval a‖, sq]
+  rw [← mul_zero ‖F.derivative.eval a‖, sq]
   simp only [mul_assoc]
   apply Tendsto.mul
   · apply tendsto_const_nhds

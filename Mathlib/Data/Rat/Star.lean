@@ -2,15 +2,13 @@
 Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module data.rat.star
-! leanprover-community/mathlib commit 31c24aa72e7b3e5ed97a8412470e904f82b81004
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Order
 import Mathlib.Data.Rat.Lemmas
+import Mathlib.Data.Rat.Order
 import Mathlib.GroupTheory.Submonoid.Membership
+
+#align_import data.rat.star from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
 /-! # Star order structure on ℚ
 
@@ -49,7 +47,6 @@ instance : StarOrderedRing ℚ :=
     simp only [Function.const_apply, Finset.sum_const, Finset.card_range, nsmul_eq_mul]
     rw [← Int.cast_ofNat, Int.ofNat_mul, Int.coe_natAbs,
       abs_of_nonneg (num_nonneg_iff_zero_le.mpr hx), Int.cast_mul, Int.cast_ofNat]
-    simp only [Int.cast_mul, Int.cast_ofNat]
     rw [← mul_assoc, mul_assoc (x.num : ℚ), mul_one_div_cancel (Nat.cast_ne_zero.mpr x.pos.ne'),
       mul_one, mul_one_div, Rat.num_div_den]
 end Rat

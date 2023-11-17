@@ -2,17 +2,14 @@
 Copyright (c) 2020 Patrick Stevens. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Bolton Bailey
-
-! This file was ported from Lean 3 source module number_theory.bertrand
-! leanprover-community/mathlib commit a16665637b378379689c566204817ae792ac8b39
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Choose.Factorization
 import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.NumberTheory.Primorial
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+
+#align_import number_theory.bertrand from "leanprover-community/mathlib"@"a16665637b378379689c566204817ae792ac8b39"
 
 /-!
 # Bertrand's Postulate
@@ -102,17 +99,15 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
   · have : sqrt (2 * 512) = 32 :=
       (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
     rw [hf, log_nonpos_iff (hf' _ _), this, div_le_one] <;> norm_num1
-    have : (512 : ℝ) = 2 ^ (9 : ℕ)
-    · rw [rpow_nat_cast 2 9]; norm_num1
-    conv_lhs => rw [this]
-    have : (1024 : ℝ) = 2 ^ (10 : ℕ)
-    · rw [rpow_nat_cast 2 10]; norm_num1
-    rw [this, ← rpow_mul, ← rpow_add] <;> norm_num1
-    have : (4 : ℝ) = 2 ^ (2 : ℕ)
-    · rw [rpow_nat_cast 2 2]; norm_num1
-    rw [this, ← rpow_mul] <;> norm_num1
-    apply rpow_le_rpow_of_exponent_le <;> norm_num1
-    apply rpow_pos_of_pos four_pos
+    · conv in 512 => equals 2 ^ 9 => norm_num1
+      conv in 1024 => equals 2 ^ 10 => norm_num1
+      conv in 32 => rw [← Nat.cast_ofNat]
+      rw [rpow_nat_cast, ← pow_mul, ← pow_add]
+      conv in 4 => equals 2 ^ (2 : ℝ) => rw [rpow_two]; norm_num1
+      rw [← rpow_mul, ← rpow_nat_cast]
+      apply rpow_le_rpow_of_exponent_le
+      all_goals norm_num1
+    · apply rpow_pos_of_pos four_pos
  #align bertrand.real_main_inequality Bertrand.real_main_inequality
 
 end Bertrand
@@ -252,7 +247,7 @@ theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
   exact fun h2 => ⟨2, prime_two, h2, Nat.mul_le_mul_left 2 (Nat.pos_of_ne_zero hn0)⟩
 #align nat.exists_prime_lt_and_le_two_mul Nat.exists_prime_lt_and_le_two_mul
 
-alias Nat.exists_prime_lt_and_le_two_mul ← bertrand
+alias bertrand := Nat.exists_prime_lt_and_le_two_mul
 #align nat.bertrand Nat.bertrand
 
 end Nat

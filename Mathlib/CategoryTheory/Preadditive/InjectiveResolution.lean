@@ -2,14 +2,11 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.preadditive.injective_resolution
-! leanprover-community/mathlib commit 14b69e9f3c16630440a2cbd46f1ddad0d561dee7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.Algebra.Homology.Single
+
+#align_import category_theory.preadditive.injective_resolution from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
 # Injective resolutions
@@ -50,7 +47,7 @@ Except in situations where you want to provide a particular injective resolution
 you will not typically need to use this bundled object, and will instead use
 * `injectiveResolution Z`: the `ℕ`-indexed cochain complex
   (equipped with `injective` and `exact` instances)
-* `InjectiveResolution.ι Z`: the cochain map from  `(single C _ 0).obj Z` to
+* `InjectiveResolution.ι Z`: the cochain map from `(single C _ 0).obj Z` to
   `InjectiveResolution Z` (all the components are equipped with `Mono` instances,
   and when the category is `Abelian` we will show `ι` is a quasi-iso).
 -/
@@ -125,9 +122,10 @@ def self (Z : C) [CategoryTheory.Injective Z] : InjectiveResolution Z where
   cocomplex := (CochainComplex.single₀ C).obj Z
   ι := 𝟙 ((CochainComplex.single₀ C).obj Z)
   injective n := by
-    cases n <;>
-      · dsimp
-        infer_instance
+    cases n
+    · simpa
+    · exact ((HomologicalComplex.isZero_single_obj_X (ComplexShape.up ℕ) 0 Z) _
+        (Nat.succ_ne_zero _)).injective
   exact₀ := by
     dsimp
     exact exact_epi_zero _

@@ -2,16 +2,13 @@
 Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module geometry.manifold.complex
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.AbsMax
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Geometry.Manifold.MFDeriv
 import Mathlib.Topology.LocallyConstant.Basic
+
+#align_import geometry.manifold.complex from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-! # Holomorphic functions on complex manifolds
 
@@ -44,13 +41,13 @@ stalks, such as the Weierstrass preparation theorem.
 open scoped Manifold Topology Filter
 open Function Set Filter Complex
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace ℂ F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
 
-variable {H : Type _} [TopologicalSpace H] {I : ModelWithCorners ℂ E H} [I.Boundaryless]
+variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℂ E H} [I.Boundaryless]
 
-variable {M : Type _} [TopologicalSpace M] [CompactSpace M] [ChartedSpace H M]
+variable {M : Type*} [TopologicalSpace M] [CompactSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
 
 /-- **Maximum modulus principle**: if `f : M → F` is complex differentiable in a neighborhood of `c`
@@ -127,8 +124,8 @@ theorem eqOn_of_isPreconnected_of_isMaxOn_norm [StrictConvexSpace ℝ F] {f : M 
 /-- If a function `f : M → F` from a complex manifold to a complex normed space is holomorphic on a
 (pre)connected compact open set, then it is a constant on this set. -/
 theorem apply_eq_of_isPreconnected_isCompact_isOpen {f : M → F} {U : Set M} {a b : M}
-     (hd : MDifferentiableOn I 𝓘(ℂ, F) f U) (hpc : IsPreconnected U) (hc : IsCompact U)
-     (ho : IsOpen U) (ha : a ∈ U) (hb : b ∈ U) : f a = f b := by
+    (hd : MDifferentiableOn I 𝓘(ℂ, F) f U) (hpc : IsPreconnected U) (hc : IsCompact U)
+    (ho : IsOpen U) (ha : a ∈ U) (hb : b ∈ U) : f a = f b := by
   refine ?_
   -- Subtract `f b` to avoid the assumption `[StrictConvexSpace ℝ F]`
   wlog hb₀ : f b = 0 generalizing f

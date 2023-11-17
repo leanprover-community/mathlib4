@@ -2,13 +2,10 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.exact_functor
-! leanprover-community/mathlib commit 9fc53308a90fac244ac715308e1f9c969e6843a4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
+
+#align_import category_theory.limits.exact_functor from "leanprover-community/mathlib"@"9fc53308a90fac244ac715308e1f9c969e6843a4"
 
 /-!
 # Bundled exact functors

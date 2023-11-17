@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module topology.algebra.infinite_sum.order
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Algebra.Order.MonotoneConvergence
+
+#align_import topology.algebra.infinite_sum.order from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Infinite sum in an order
@@ -23,7 +20,7 @@ This file provides lemmas about the interaction of infinite sums and order opera
 open Finset Filter Function BigOperators
 open scoped Classical
 
-variable {ι κ α : Type _}
+variable {ι κ α : Type*}
 
 section Preorder
 
@@ -91,7 +88,7 @@ theorem isLUB_hasSum (h : ∀ i, 0 ≤ f i) (hf : HasSum f a) :
 
 theorem le_hasSum (hf : HasSum f a) (i : ι) (hb : ∀ j, j ≠ i → 0 ≤ f j) : f i ≤ a :=
   calc
-    f i = ∑ i in {i}, f i := Finset.sum_singleton.symm
+    f i = ∑ i in {i}, f i := by rw [sum_singleton]
     _ ≤ a := sum_le_hasSum _ (by simpa) hf
 #align le_has_sum le_hasSum
 
@@ -193,10 +190,10 @@ theorem tsum_pos (hsum : Summable g) (hg : ∀ i, 0 ≤ g i) (i : ι) (hi : 0 < 
 
 end OrderedAddCommGroup
 
-section CanonicallyOrderedAddMonoid
+section CanonicallyOrderedAddCommMonoid
 
-variable [CanonicallyOrderedAddMonoid α] [TopologicalSpace α] [OrderClosedTopology α] {f : ι → α}
-  {a : α}
+variable [CanonicallyOrderedAddCommMonoid α] [TopologicalSpace α] [OrderClosedTopology α]
+  {f : ι → α} {a : α}
 
 theorem le_hasSum' (hf : HasSum f a) (i : ι) : f i ≤ a :=
   le_hasSum hf i fun _ _ => zero_le _
@@ -222,7 +219,7 @@ theorem isLUB_hasSum' (hf : HasSum f a) : IsLUB (Set.range fun s => ∑ i in s, 
   isLUB_of_tendsto_atTop (Finset.sum_mono_set f) hf
 #align is_lub_has_sum' isLUB_hasSum'
 
-end CanonicallyOrderedAddMonoid
+end CanonicallyOrderedAddCommMonoid
 
 section LinearOrder
 
@@ -241,8 +238,9 @@ theorem hasSum_of_isLUB_of_nonneg [LinearOrderedAddCommMonoid α] [TopologicalSp
   tendsto_atTop_isLUB (Finset.sum_mono_set_of_nonneg h) hf
 #align has_sum_of_is_lub_of_nonneg hasSum_of_isLUB_of_nonneg
 
-theorem hasSum_of_isLUB [CanonicallyLinearOrderedAddMonoid α] [TopologicalSpace α] [OrderTopology α]
-    {f : ι → α} (b : α) (hf : IsLUB (Set.range fun s => ∑ i in s, f i) b) : HasSum f b :=
+theorem hasSum_of_isLUB [CanonicallyLinearOrderedAddCommMonoid α] [TopologicalSpace α]
+    [OrderTopology α] {f : ι → α} (b : α) (hf : IsLUB (Set.range fun s => ∑ i in s, f i) b) :
+    HasSum f b :=
   tendsto_atTop_isLUB (Finset.sum_mono_set f) hf
 #align has_sum_of_is_lub hasSum_of_isLUB
 
@@ -258,7 +256,7 @@ theorem summable_abs_iff [LinearOrderedAddCommGroup α] [UniformSpace α] [Unifo
   _ ↔ Summable f := by simp only [summable_neg_iff, summable_subtype_and_compl]
 #align summable_abs_iff summable_abs_iff
 
-alias summable_abs_iff ↔ Summable.of_abs Summable.abs
+alias ⟨Summable.of_abs, Summable.abs⟩ := summable_abs_iff
 #align summable.of_abs Summable.of_abs
 #align summable.abs Summable.abs
 

@@ -2,15 +2,12 @@
 Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Kexing Ying
-
-! This file was ported from Lean 3 source module measure_theory.function.conditional_expectation.real
-! leanprover-community/mathlib commit b2ff9a3d7a15fd5b0f060b135421d6a89a999c2f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
 import Mathlib.MeasureTheory.Function.UniformIntegrable
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
+
+#align_import measure_theory.function.conditional_expectation.real from "leanprover-community/mathlib"@"b2ff9a3d7a15fd5b0f060b135421d6a89a999c2f"
 
 /-!
 
@@ -38,7 +35,7 @@ open scoped NNReal ENNReal Topology BigOperators MeasureTheory
 
 namespace MeasureTheory
 
-variable {α : Type _} {m m0 : MeasurableSpace α} {μ : Measure α}
+variable {α : Type*} {m m0 : MeasurableSpace α} {μ : Measure α}
 
 theorem rnDeriv_ae_eq_condexp {hm : m ≤ m0} [hμm : SigmaFinite (μ.trim hm)] {f : α → ℝ}
     (hf : Integrable f μ) :
@@ -101,7 +98,7 @@ theorem integral_abs_condexp_le (f : α → ℝ) : ∫ x, |(μ[f|m]) x| ∂μ �
   by_cases hfint : Integrable f μ
   swap
   · simp only [condexp_undef hfint, Pi.zero_apply, abs_zero, integral_const, Algebra.id.smul_eq_mul,
-      MulZeroClass.mul_zero]
+      mul_zero]
     exact integral_nonneg fun x => abs_nonneg _
   rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae]
   · rw [ENNReal.toReal_le_toReal] <;> simp_rw [← Real.norm_eq_abs, ofReal_norm_eq_coe_nnnorm]
@@ -126,7 +123,7 @@ theorem set_integral_abs_condexp_le {s : Set α} (hs : MeasurableSet[m] s) (f : 
   by_cases hfint : Integrable f μ
   swap
   · simp only [condexp_undef hfint, Pi.zero_apply, abs_zero, integral_const, Algebra.id.smul_eq_mul,
-      MulZeroClass.mul_zero]
+      mul_zero]
     exact integral_nonneg fun x => abs_nonneg _
   have : ∫ x in s, |(μ[f|m]) x| ∂μ = ∫ x, |(μ[s.indicator f|m]) x| ∂μ := by
     rw [← integral_indicator]
@@ -186,7 +183,7 @@ theorem ae_bdd_condexp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
 
 /-- Given an integrable function `g`, the conditional expectations of `g` with respect to
 a sequence of sub-σ-algebras is uniformly integrable. -/
-theorem Integrable.uniformIntegrable_condexp {ι : Type _} [IsFiniteMeasure μ] {g : α → ℝ}
+theorem Integrable.uniformIntegrable_condexp {ι : Type*} [IsFiniteMeasure μ] {g : α → ℝ}
     (hint : Integrable g μ) {ℱ : ι → MeasurableSpace α} (hℱ : ∀ i, ℱ i ≤ m0) :
     UniformIntegrable (fun i => μ[g|ℱ i]) 1 μ := by
   have hmeas : ∀ n, ∀ C, MeasurableSet {x | C ≤ ‖(μ[g|ℱ n]) x‖₊} := fun n C =>
@@ -238,7 +235,7 @@ theorem condexp_stronglyMeasurable_simpleFunc_mul (hm : m ≤ m0) (f : @SimpleFu
     ext1 x
     by_cases hx : x ∈ s
     · simp only [hx, Pi.mul_apply, Set.indicator_of_mem, Pi.smul_apply, Algebra.id.smul_eq_mul]; rfl
-    · simp only [hx, Pi.mul_apply, Set.indicator_of_not_mem, not_false_iff, MulZeroClass.zero_mul]
+    · simp only [hx, Pi.mul_apply, Set.indicator_of_not_mem, not_false_iff, zero_mul]
   apply @SimpleFunc.induction _ _ m _ (fun f => _)
     (fun c s hs => ?_) (fun g₁ g₂ _ h_eq₁ h_eq₂ => ?_) f
   · -- Porting note: if not classical, `DecidablePred fun x ↦ x ∈ s` cannot be synthesised
@@ -322,9 +319,9 @@ theorem condexp_stronglyMeasurable_mul_of_bound₀ (hm : m ≤ m0) [IsFiniteMeas
 /-- Pull-out property of the conditional expectation. -/
 theorem condexp_stronglyMeasurable_mul {f g : α → ℝ} (hf : StronglyMeasurable[m] f)
     (hfg : Integrable (f * g) μ) (hg : Integrable g μ) : μ[f * g|m] =ᵐ[μ] f * μ[g|m] := by
-  by_cases hm : m ≤ m0; swap; · simp_rw [condexp_of_not_le hm]; rw [MulZeroClass.mul_zero]
+  by_cases hm : m ≤ m0; swap; · simp_rw [condexp_of_not_le hm]; rw [mul_zero]
   by_cases hμm : SigmaFinite (μ.trim hm)
-  swap; · simp_rw [condexp_of_not_sigmaFinite hm hμm]; rw [MulZeroClass.mul_zero]
+  swap; · simp_rw [condexp_of_not_sigmaFinite hm hμm]; rw [mul_zero]
   haveI : SigmaFinite (μ.trim hm) := hμm
   obtain ⟨sets, sets_prop, h_univ⟩ := hf.exists_spanning_measurableSet_norm_le hm μ
   simp_rw [forall_and] at sets_prop

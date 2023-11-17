@@ -2,15 +2,12 @@
 Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
-
-! This file was ported from Lean 3 source module analysis.mellin_transform
-! leanprover-community/mathlib commit 917c3c072e487b3cccdbfeff17e75b40e45f66cb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
+
+#align_import analysis.mellin_transform from "leanprover-community/mathlib"@"917c3c072e487b3cccdbfeff17e75b40e45f66cb"
 
 /-! # The Mellin transform
 
@@ -32,7 +29,7 @@ open MeasureTheory Set Filter Asymptotics TopologicalSpace
 
 namespace Complex
 
--- Porting note: move this to `analysis.special_functions.pow.complex`
+-- Porting note: move this to `Mathlib.Analysis.SpecialFunctions.Pow.Complex`
 theorem cpow_mul_ofReal_nonneg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) (z : ℂ) :
     (x : ℂ) ^ (↑y * z) = (↑(x ^ y) : ℂ) ^ z := by
   rw [cpow_mul, ofReal_cpow hx]
@@ -52,14 +49,14 @@ noncomputable section
 
 section Defs
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-- Predicate on `f` and `s` asserting that the Mellin integral is well-defined. -/
 def MellinConvergent (f : ℝ → E) (s : ℂ) : Prop :=
   IntegrableOn (fun t : ℝ => (t : ℂ) ^ (s - 1) • f t) (Ioi 0)
 #align mellin_convergent MellinConvergent
 
-theorem MellinConvergent.const_smul {f : ℝ → E} {s : ℂ} (hf : MellinConvergent f s) {𝕜 : Type _}
+theorem MellinConvergent.const_smul {f : ℝ → E} {s : ℂ} (hf : MellinConvergent f s) {𝕜 : Type*}
     [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
     MellinConvergent (fun t => c • f t) s := by
   simpa only [MellinConvergent, smul_comm] using hf.smul c
@@ -117,7 +114,7 @@ theorem mellin_cpow_smul (f : ℝ → E) (s a : ℂ) :
   simp_rw [← sub_add_eq_add_sub, cpow_add _ _ (ofReal_ne_zero.2 <| ne_of_gt ht), mul_smul]
 #align mellin_cpow_smul mellin_cpow_smul
 
-theorem mellin_const_smul (f : ℝ → E) (s : ℂ) {𝕜 : Type _} [NontriviallyNormedField 𝕜]
+theorem mellin_const_smul (f : ℝ → E) (s : ℂ) {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
     mellin (fun t => c • f t) s = c • mellin f s := by simp only [mellin, smul_comm, integral_smul]
 #align mellin_const_smul mellin_const_smul
@@ -153,7 +150,7 @@ theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
     rw [Ne.def, cpow_eq_zero_iff, ofReal_eq_zero, not_and_or]
     exact Or.inl ha.ne'
   rw [set_integral_congr measurableSet_Ioi this, integral_smul,
-    integral_comp_mul_left_Ioi (fun u ↦ ↑u ^ (s - 1) • f u) _ ha,
+    integral_comp_mul_left_Ioi (fun u ↦ (u : ℂ) ^ (s - 1) • f u) _ ha,
     mul_zero, ← Complex.coe_smul, ← mul_smul, sub_eq_add_neg,
     cpow_add _ _ (ofReal_ne_zero.mpr ha.ne'), cpow_one, abs_of_pos (inv_pos.mpr ha), ofReal_inv,
     mul_assoc, mul_comm, inv_mul_cancel_right₀ (ofReal_ne_zero.mpr ha.ne')]
@@ -189,7 +186,7 @@ theorem hasMellin_sub {f g : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
 
 end Defs
 
-variable {E : Type _} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddCommGroup E]
 
 section MellinConvergent
 
@@ -389,7 +386,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [CompleteSpace E] [NormedSpace ℂ E] {
       rwa [sub_re, sub_le_iff_le_add, ← sub_le_iff_le_add'] at hz'
   have h5 : IntegrableOn bound (Ioi 0) := by
     simp_rw [add_mul, mul_assoc]
-    suffices ∀ {j : ℝ} (hj : b < j) (hj' : j < a),
+    suffices ∀ {j : ℝ}, b < j → j < a →
         IntegrableOn (fun t : ℝ => t ^ (j - 1) * (|log t| * ‖f t‖)) (Ioi 0) volume by
       refine' Integrable.add (this _ _) (this _ _)
       all_goals linarith

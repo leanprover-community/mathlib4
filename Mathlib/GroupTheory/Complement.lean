@@ -2,13 +2,10 @@
 Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.complement
-! leanprover-community/mathlib commit 6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ZMod.Quotient
+
+#align_import group_theory.complement from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
 
 /-!
 # Complements
@@ -36,7 +33,7 @@ open BigOperators Pointwise
 
 namespace Subgroup
 
-variable {G : Type _} [Group G] (H K : Subgroup G) (S T : Set G)
+variable {G : Type*} [Group G] (H K : Subgroup G) (S T : Set G)
 
 /-- `S` and `T` are complements if `(*) : S × T → G` is a bijection.
   This notion generalizes left transversals, right transversals, and complementary subgroups. -/
@@ -336,6 +333,152 @@ theorem exists_right_transversal (g : G) : ∃ S ∈ rightTransversals (H : Set 
 #align subgroup.exists_right_transversal Subgroup.exists_right_transversal
 #align add_subgroup.exists_right_transversal AddSubgroup.exists_right_transversal
 
+namespace IsComplement
+
+/-- The equivalence `G ≃ S × T`, such that the inverse is  `(*) : S × T → G` -/
+noncomputable def equiv {S T : Set G} (hST : IsComplement S T) : G ≃ S × T :=
+  (Equiv.ofBijective (fun x : S × T => x.1.1 * x.2.1) hST).symm
+
+variable (hST : IsComplement S T) (hHT : IsComplement H T) (hSK : IsComplement S K)
+
+@[simp] theorem equiv_symm_apply (x : S × T) : (hST.equiv.symm x : G) = x.1.1 * x.2.1 := rfl
+
+@[simp]
+theorem equiv_fst_mul_equiv_snd (g : G) : ↑(hST.equiv g).fst * (hST.equiv g).snd = g :=
+  (Equiv.ofBijective (fun x : S × T => x.1.1 * x.2.1) hST).right_inv g
+
+theorem equiv_fst_eq_mul_inv (g : G) : ↑(hST.equiv g).fst = g * ((hST.equiv g).snd : G)⁻¹ :=
+  eq_mul_inv_of_mul_eq (hST.equiv_fst_mul_equiv_snd g)
+
+theorem equiv_snd_eq_inv_mul (g : G) : ↑(hST.equiv g).snd = ((hST.equiv g).fst : G)⁻¹ * g :=
+  eq_inv_mul_of_mul_eq (hST.equiv_fst_mul_equiv_snd g)
+
+theorem equiv_fst_eq_iff_leftCosetEquivalence {g₁ g₂ : G} :
+    (hSK.equiv g₁).fst = (hSK.equiv g₂).fst ↔ LeftCosetEquivalence K g₁ g₂ := by
+  rw [LeftCosetEquivalence, leftCoset_eq_iff]
+  constructor
+  · intro h
+    rw [← hSK.equiv_fst_mul_equiv_snd g₂, ←hSK.equiv_fst_mul_equiv_snd g₁, ← h,
+      mul_inv_rev, ← mul_assoc, inv_mul_cancel_right, ← coe_inv, ← coe_mul]
+    exact Subtype.property _
+  · intro h
+    apply (mem_leftTransversals_iff_existsUnique_inv_mul_mem.1 hSK g₁).unique
+    · -- This used to be `simp [...]` before leanprover/lean4#2644
+      rw [equiv_fst_eq_mul_inv]; simp
+    · rw [SetLike.mem_coe, ← mul_mem_cancel_right h]
+      -- This used to be `simp [...]` before leanprover/lean4#2644
+      rw [equiv_fst_eq_mul_inv]; simp [equiv_fst_eq_mul_inv, ← mul_assoc]
+
+theorem equiv_snd_eq_iff_rightCosetEquivalence {g₁ g₂ : G} :
+    (hHT.equiv g₁).snd = (hHT.equiv g₂).snd ↔ RightCosetEquivalence H g₁ g₂ := by
+  rw [RightCosetEquivalence, rightCoset_eq_iff]
+  constructor
+  · intro h
+    rw [← hHT.equiv_fst_mul_equiv_snd g₂, ←hHT.equiv_fst_mul_equiv_snd g₁, ← h,
+      mul_inv_rev, mul_assoc, mul_inv_cancel_left, ← coe_inv, ← coe_mul]
+    exact Subtype.property _
+  · intro h
+    apply (mem_rightTransversals_iff_existsUnique_mul_inv_mem.1 hHT g₁).unique
+    · -- This used to be `simp [...]` before leanprover/lean4#2644
+      rw [equiv_snd_eq_inv_mul]; simp
+    · rw [SetLike.mem_coe, ← mul_mem_cancel_left h]
+      -- This used to be `simp [...]` before leanprover/lean4#2644
+      rw [equiv_snd_eq_inv_mul, mul_assoc]; simp
+
+theorem leftCosetEquivalence_equiv_fst (g : G) :
+    LeftCosetEquivalence K g ((hSK.equiv g).fst : G) := by
+  -- This used to be `simp [...]` before leanprover/lean4#2644
+  rw [equiv_fst_eq_mul_inv]; simp [LeftCosetEquivalence, leftCoset_eq_iff]
+
+theorem rightCosetEquivalence_equiv_snd (g : G) :
+    RightCosetEquivalence H g ((hHT.equiv g).snd : G) := by
+  -- This used to be `simp [...]` before leanprover/lean4#2644
+  rw [RightCosetEquivalence, rightCoset_eq_iff, equiv_snd_eq_inv_mul]; simp
+
+theorem equiv_fst_eq_self_of_mem_of_one_mem {g : G} (h1 : 1 ∈ T) (hg : g ∈ S) :
+    (hST.equiv g).fst = ⟨g, hg⟩ := by
+  have : hST.equiv.symm (⟨g, hg⟩, ⟨1, h1⟩) = g := by
+    rw [equiv, Equiv.ofBijective]; simp
+  conv_lhs => rw [← this, Equiv.apply_symm_apply]
+
+theorem equiv_snd_eq_self_of_mem_of_one_mem {g : G} (h1 : 1 ∈ S) (hg : g ∈ T) :
+    (hST.equiv g).snd = ⟨g, hg⟩ := by
+  have : hST.equiv.symm (⟨1, h1⟩, ⟨g, hg⟩) = g := by
+    rw [equiv, Equiv.ofBijective]; simp
+  conv_lhs => rw [← this, Equiv.apply_symm_apply]
+
+theorem equiv_snd_eq_one_of_mem_of_one_mem {g : G} (h1 : 1 ∈ T) (hg : g ∈ S) :
+    (hST.equiv g).snd = ⟨1, h1⟩ := by
+  ext
+  rw [equiv_snd_eq_inv_mul, equiv_fst_eq_self_of_mem_of_one_mem _ h1 hg, inv_mul_self]
+
+theorem equiv_fst_eq_one_of_mem_of_one_mem {g : G} (h1 : 1 ∈ S) (hg : g ∈ T) :
+    (hST.equiv g).fst = ⟨1, h1⟩ := by
+  ext
+  rw [equiv_fst_eq_mul_inv, equiv_snd_eq_self_of_mem_of_one_mem _ h1 hg, mul_inv_self]
+
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
+theorem equiv_mul_right (g : G) (k : K) :
+    hSK.equiv (g * k) = ((hSK.equiv g).fst, (hSK.equiv g).snd * k) := by
+  have : (hSK.equiv (g * k)).fst = (hSK.equiv g).fst :=
+    hSK.equiv_fst_eq_iff_leftCosetEquivalence.2
+      (by simp [LeftCosetEquivalence, leftCoset_eq_iff])
+  ext
+  · rw [this]
+  · rw [coe_mul, equiv_snd_eq_inv_mul, this, equiv_snd_eq_inv_mul, mul_assoc]
+
+theorem equiv_mul_right_of_mem {g k : G} (h : k ∈ K) :
+    hSK.equiv (g * k) = ((hSK.equiv g).fst, (hSK.equiv g).snd * ⟨k, h⟩) :=
+  equiv_mul_right _ g ⟨k, h⟩
+
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
+theorem equiv_mul_left (h : H) (g : G) :
+    hHT.equiv (h * g) = (h * (hHT.equiv g).fst, (hHT.equiv g).snd) := by
+  have : (hHT.equiv (h * g)).snd = (hHT.equiv g).snd :=
+    hHT.equiv_snd_eq_iff_rightCosetEquivalence.2
+      (by simp [RightCosetEquivalence, rightCoset_eq_iff])
+  ext
+  · rw [coe_mul, equiv_fst_eq_mul_inv, this, equiv_fst_eq_mul_inv, mul_assoc]
+  · rw [this]
+
+theorem equiv_mul_left_of_mem {h g : G} (hh : h ∈ H) :
+    hHT.equiv (h * g) = (⟨h, hh⟩ * (hHT.equiv g).fst, (hHT.equiv g).snd) :=
+  equiv_mul_left _ ⟨h, hh⟩ g
+
+theorem equiv_one (hs1 : 1 ∈ S) (ht1 : 1 ∈ T) :
+    hST.equiv 1 = (⟨1, hs1⟩, ⟨1, ht1⟩) := by
+  rw [Equiv.apply_eq_iff_eq_symm_apply]; simp [equiv]
+
+theorem equiv_fst_eq_self_iff_mem {g : G} (h1 : 1 ∈ T) :
+    ((hST.equiv g).fst : G) = g ↔ g ∈ S := by
+  constructor
+  · intro h
+    rw [← h]
+    exact Subtype.prop _
+  · intro h
+    rw [hST.equiv_fst_eq_self_of_mem_of_one_mem h1 h]
+
+theorem equiv_snd_eq_self_iff_mem {g : G} (h1 : 1 ∈ S) :
+    ((hST.equiv g).snd : G) = g ↔ g ∈ T := by
+  constructor
+  · intro h
+    rw [← h]
+    exact Subtype.prop _
+  · intro h
+    rw [hST.equiv_snd_eq_self_of_mem_of_one_mem h1 h]
+
+theorem coe_equiv_fst_eq_one_iff_mem {g : G} (h1 : 1 ∈ S) :
+    ((hST.equiv g).fst : G) = 1 ↔ g ∈ T := by
+  rw [equiv_fst_eq_mul_inv, mul_inv_eq_one, eq_comm, equiv_snd_eq_self_iff_mem _ h1]
+
+theorem coe_equiv_snd_eq_one_iff_mem {g : G} (h1 : 1 ∈ T) :
+    ((hST.equiv g).snd : G) = 1 ↔ g ∈ S := by
+  rw [equiv_snd_eq_inv_mul, inv_mul_eq_one, equiv_fst_eq_self_iff_mem _ h1]
+
+end IsComplement
+
 namespace MemLeftTransversals
 
 /-- A left transversal is in bijection with left cosets. -/
@@ -440,7 +583,7 @@ section Action
 
 open Pointwise MulAction MemLeftTransversals
 
-variable {F : Type _} [Group F] [MulAction F G] [QuotientAction F H]
+variable {F : Type*} [Group F] [MulAction F G] [QuotientAction F H]
 
 @[to_additive]
 noncomputable instance : MulAction F (leftTransversals (H : Set G)) where
@@ -546,11 +689,11 @@ theorem isComplement'_iff_card_mul_and_disjoint [Fintype G] [Fintype H] [Fintype
 
 theorem isComplement'_of_coprime [Fintype G] [Fintype H] [Fintype K]
     (h1 : Fintype.card H * Fintype.card K = Fintype.card G)
-    (h2 : Nat.coprime (Fintype.card H) (Fintype.card K)) : IsComplement' H K :=
+    (h2 : Nat.Coprime (Fintype.card H) (Fintype.card K)) : IsComplement' H K :=
   isComplement'_of_card_mul_and_disjoint h1 (disjoint_iff.mpr (inf_eq_bot_of_coprime h2))
 #align subgroup.is_complement'_of_coprime Subgroup.isComplement'_of_coprime
 
-theorem isComplement'_stabilizer {α : Type _} [MulAction G α] (a : α)
+theorem isComplement'_stabilizer {α : Type*} [MulAction G α] (a : α)
     (h1 : ∀ h : H, h • a = a → h = 1) (h2 : ∀ g : G, ∃ h : H, h • g • a = a) :
     IsComplement' H (MulAction.stabilizer G a) := by
   refine' isComplement_iff_existsUnique.mpr fun g => _

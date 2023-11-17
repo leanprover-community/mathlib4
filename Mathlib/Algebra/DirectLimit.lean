@@ -2,16 +2,13 @@
 Copyright (c) 2019 Kenny Lau, Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes
-
-! This file was ported from Lean 3 source module algebra.direct_limit
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Order
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.Ideal.Quotient
+
+#align_import algebra.direct_limit from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Direct limit of modules, abelian groups, rings, and fields.
@@ -131,8 +128,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, f i k hik x + f j k hjk y, by
           rw [LinearMap.map_add, of_f, of_f, ihx, ihy]
-          -- porting note: was `rfl`
-          simp only [Submodule.Quotient.mk''_eq_mk, Quotient.mk_add]⟩
+          rfl ⟩
 #align module.direct_limit.exists_of Module.DirectLimit.exists_of
 
 @[elab_as_elim]
@@ -206,7 +202,7 @@ theorem toModule_totalize_of_le {x : DirectSum ι G} {i j : ι} (hij : i ≤ j)
       f i j hij (DirectSum.toModule R ι (G i) (fun k => totalize G f k i) x) := by
   rw [← @DFinsupp.sum_single ι G _ _ _ x]
   unfold DFinsupp.sum
-  simp only [LinearMap.map_sum]
+  simp only [map_sum]
   refine' Finset.sum_congr rfl fun k hk => _
   rw [DirectSum.single_eq_lof R k (x k), DirectSum.toModule_lof, DirectSum.toModule_lof,
     totalize_of_le (hx k hk), totalize_of_le (le_trans (hx k hk) hij), DirectedSystem.map_map]
@@ -505,7 +501,6 @@ theorem of.zero_exact_aux2 {x : FreeCommRing (Σi, G i)} {s t} (hxs : IsSupporte
     dsimp only
     -- porting note: Lean 3 could get away with far fewer hints for inputs in the line below
     have := DirectedSystem.map_map (fun i j h => f' i j h) (hj p hps) hjk
-    dsimp only at this
     rw [this]
   · rintro x y ihx ihy
     rw [(restriction _).map_add, (FreeCommRing.lift _).map_add, (f' j k hjk).map_add, ihx, ihy,
@@ -533,7 +528,6 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           restriction_of, dif_pos, lift_of, lift_of]
         dsimp only
         have := DirectedSystem.map_map (fun i j h => f' i j h) hij (le_refl j : j ≤ j)
-        dsimp only at this
         rw [this]
         exact sub_self _
         exacts [Or.inr rfl, Or.inl rfl]
@@ -543,8 +537,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
         -- porting note: the Lean3 proof contained `rw [restriction_of]`, but this
         -- lemma does not seem to work here
       · rw [RingHom.map_sub, RingHom.map_sub]
-        erw [lift_of, dif_pos rfl, RingHom.map_one, RingHom.map_one, lift_of,
-          RingHom.map_one, sub_self]
+        erw [lift_of, dif_pos rfl, RingHom.map_one, lift_of, RingHom.map_one, sub_self]
     · refine'
         ⟨i, {⟨i, x + y⟩, ⟨i, x⟩, ⟨i, y⟩}, _,
           isSupported_sub (isSupported_of.2 <| Or.inl rfl)
@@ -596,7 +589,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
   · rintro x y ⟨j, t, hj, hyt, iht⟩
     rw [smul_eq_mul]
     rcases exists_finset_support x with ⟨s, hxs⟩
-    rcases(s.image Sigma.fst).exists_le with ⟨i, hi⟩
+    rcases (s.image Sigma.fst).exists_le with ⟨i, hi⟩
     obtain ⟨k, hik, hjk⟩ := exists_ge_ge i j
     have : ∀ z : Σi, G i, z ∈ ↑s ∪ t → z.1 ≤ k := by
       rintro z (hz | hz)
@@ -608,7 +601,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
     -- porting note: RingHom.map_mul was `(restriction _).map_mul`
     rw [RingHom.map_mul, (FreeCommRing.lift _).map_mul, ←
       of.zero_exact_aux2 G f' hyt hj this hjk (Set.subset_union_right (↑s) t), iht,
-      (f' j k hjk).map_zero, MulZeroClass.mul_zero]
+      (f' j k hjk).map_zero, mul_zero]
 #align ring.direct_limit.of.zero_exact_aux Ring.DirectLimit.of.zero_exact_aux
 
 /-- A component that corresponds to zero in the direct limit is already zero in some
@@ -735,17 +728,14 @@ protected theorem inv_mul_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : inv
   rw [_root_.mul_comm, DirectLimit.mul_inv_cancel G f hp]
 #align field.direct_limit.inv_mul_cancel Field.DirectLimit.inv_mul_cancel
 
--- porting note: this takes some time, had to increase heartbeats
-set_option maxHeartbeats 1000000 in
 /-- Noncomputable field structure on the direct limit of fields.
 See note [reducible non-instances]. -/
 @[reducible]
 protected noncomputable def field [DirectedSystem G fun i j h => f' i j h] :
     Field (Ring.DirectLimit G fun i j h => f' i j h) :=
-  { Ring.DirectLimit.commRing G fun i j h => f' i j h,
-    DirectLimit.nontrivial G fun i j h =>
-      f' i j h with
-    inv := inv G fun i j h => f' i j h
+  -- This used to include the parent CommRing and Nontrivial instances,
+  -- but leaving them implicit avoids a very expensive (2-3 minutes!) eta expansion.
+  { inv := inv G fun i j h => f' i j h
     mul_inv_cancel := fun p => DirectLimit.mul_inv_cancel G fun i j h => f' i j h
     inv_zero := dif_pos rfl }
 #align field.direct_limit.field Field.DirectLimit.field

@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Michael Stoll
-
-! This file was ported from Lean 3 source module number_theory.legendre_symbol.quadratic_reciprocity
-! leanprover-community/mathlib commit 5b2fe80501ff327b9109fb09b7cc8c325cd0d7d9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.LegendreSymbol.Basic
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.GaussSum
+
+#align_import number_theory.legendre_symbol.quadratic_reciprocity from "leanprover-community/mathlib"@"5b2fe80501ff327b9109fb09b7cc8c325cd0d7d9"
 
 /-!
 # Quadratic reciprocity.
@@ -81,7 +78,7 @@ variable (hp : p ≠ 2)
 theorem exists_sq_eq_two_iff : IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7 := by
   rw [FiniteField.isSquare_two_iff, card p]
   have h₁ := Prime.mod_two_eq_one_iff_ne_two.mpr hp
-  rw [← mod_mod_of_dvd p (by norm_num : 2 ∣ 8)] at h₁
+  rw [← mod_mod_of_dvd p (by decide : 2 ∣ 8)] at h₁
   have h₂ := mod_lt p (by norm_num : 0 < 8)
   revert h₂ h₁
   generalize p % 8 = m; clear! p
@@ -92,7 +89,7 @@ theorem exists_sq_eq_two_iff : IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7
 theorem exists_sq_eq_neg_two_iff : IsSquare (-2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 3 := by
   rw [FiniteField.isSquare_neg_two_iff, card p]
   have h₁ := Prime.mod_two_eq_one_iff_ne_two.mpr hp
-  rw [← mod_mod_of_dvd p (by norm_num : 2 ∣ 8)] at h₁
+  rw [← mod_mod_of_dvd p (by decide : 2 ∣ 8)] at h₁
   have h₂ := mod_lt p (by norm_num : 0 < 8)
   revert h₂ h₁
   generalize p % 8 = m; clear! p
@@ -142,7 +139,7 @@ theorem quadratic_reciprocity' (hp : p ≠ 2) (hq : q ≠ 2) :
     legendreSym q p = (-1) ^ (p / 2 * (q / 2)) * legendreSym p q := by
   cases' eq_or_ne p q with h h
   · subst p
-    rw [(eq_zero_iff q q).mpr (by exact_mod_cast nat_cast_self q), MulZeroClass.mul_zero]
+    rw [(eq_zero_iff q q).mpr (by exact_mod_cast nat_cast_self q), mul_zero]
   · have qr := congr_arg (· * legendreSym p q) (quadratic_reciprocity hp hq h)
     have : ((q : ℤ) : ZMod p) ≠ 0 := by exact_mod_cast prime_ne_zero p q h
     simpa only [mul_assoc, ← pow_two, sq_one p this, mul_one] using qr

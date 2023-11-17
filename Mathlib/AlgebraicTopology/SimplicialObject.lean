@@ -2,16 +2,13 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison, Adam Topaz
-
-! This file was ported from Lean 3 source module algebraic_topology.simplicial_object
-! leanprover-community/mathlib commit 5ed51dc37c6b891b79314ee11a50adc2b1df6fd6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.CategoryTheory.Arrow
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Opposites
+
+#align_import algebraic_topology.simplicial_object from "leanprover-community/mathlib"@"5ed51dc37c6b891b79314ee11a50adc2b1df6fd6"
 
 /-!
 # Simplicial objects in a category.
@@ -23,6 +20,8 @@ Use the notation `X _[n]` in the `Simplicial` locale to obtain the `n`-th term o
 (co)simplicial object `X`, where `n` is a natural number.
 
 -/
+
+set_option autoImplicit true
 
 
 open Opposite
@@ -80,7 +79,7 @@ variable {C}
 -- porting note: added to ease automation
 @[ext]
 lemma hom_ext {X Y : SimplicialObject C} (f g : X ⟶ Y)
-  (h : ∀ (n : SimplexCategoryᵒᵖ), f.app n = g.app n) : f = g :=
+    (h : ∀ (n : SimplexCategoryᵒᵖ), f.app n = g.app n) : f = g :=
   NatTrans.ext _ _ (by ext; apply h)
 
 variable (X : SimplicialObject C)
@@ -118,7 +117,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
     X.δ j ≫ X.δ i =
       X.δ (Fin.castSucc i) ≫
-        X.δ (j.pred <| Fin.vne_of_ne fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) := by
+        X.δ (j.pred <| fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) := by
   dsimp [δ]
   simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ' H]
 #align category_theory.simplicial_object.δ_comp_δ' CategoryTheory.SimplicialObject.δ_comp_δ'
@@ -192,7 +191,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
 @[reassoc]
 theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
     X.σ j ≫ X.δ i =
-      X.δ (i.pred <| Fin.vne_of_ne fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) ≫
+      X.δ (i.pred <| fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) ≫
         X.σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) := by
   dsimp [δ, σ]
   simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_σ_of_gt' H]
@@ -224,7 +223,7 @@ variable (C)
 
 /-- Functor composition induces a functor on simplicial objects. -/
 @[simps!]
-def whiskering (D : Type _) [Category D] : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
+def whiskering (D : Type*) [Category D] : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
   whiskeringRight _ _ _
 #align category_theory.simplicial_object.whiskering CategoryTheory.SimplicialObject.whiskering
 
@@ -262,7 +261,7 @@ variable (C)
 
 /-- Functor composition induces a functor on truncated simplicial objects. -/
 @[simps!]
-def whiskering {n} (D : Type _) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
+def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 #align category_theory.simplicial_object.truncated.whiskering CategoryTheory.SimplicialObject.Truncated.whiskering
 
@@ -348,7 +347,7 @@ variable (C)
 
 /-- Functor composition induces a functor on augmented simplicial objects. -/
 @[simp]
-def whiskeringObj (D : Type _) [Category D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
+def whiskeringObj (D : Type*) [Category D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
   obj X :=
     { left := ((whiskering _ _).obj F).obj (drop.obj X)
       right := F.obj (point.obj X)
@@ -450,7 +449,7 @@ variable {C}
 -- porting note: added to ease automation
 @[ext]
 lemma hom_ext {X Y : CosimplicialObject C} (f g : X ⟶ Y)
-  (h : ∀ (n : SimplexCategory), f.app n = g.app n) : f = g :=
+    (h : ∀ (n : SimplexCategory), f.app n = g.app n) : f = g :=
   NatTrans.ext _ _ (by ext; apply h)
 
 variable (X : CosimplicialObject C)
@@ -489,7 +488,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
 @[reassoc]
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
     X.δ i ≫ X.δ j =
-      X.δ (j.pred <| Fin.vne_of_ne fun (hj : j = 0) => by simp only [hj, Fin.not_lt_zero] at H) ≫
+      X.δ (j.pred <| fun (hj : j = 0) => by simp only [hj, Fin.not_lt_zero] at H) ≫
         X.δ (Fin.castSucc i) := by
   dsimp [δ]
   simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ' H]
@@ -566,7 +565,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
 theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
     X.δ i ≫ X.σ j =
       X.σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) ≫
-        X.δ (i.pred <| Fin.vne_of_ne
+        X.δ (i.pred <|
           fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) := by
   dsimp [δ, σ]
   simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_σ_of_gt' H]
@@ -596,7 +595,7 @@ variable (C)
 
 /-- Functor composition induces a functor on cosimplicial objects. -/
 @[simps!]
-def whiskering (D : Type _) [Category D] : (C ⥤ D) ⥤ CosimplicialObject C ⥤ CosimplicialObject D :=
+def whiskering (D : Type*) [Category D] : (C ⥤ D) ⥤ CosimplicialObject C ⥤ CosimplicialObject D :=
   whiskeringRight _ _ _
 #align category_theory.cosimplicial_object.whiskering CategoryTheory.CosimplicialObject.whiskering
 
@@ -634,7 +633,7 @@ variable (C)
 
 /-- Functor composition induces a functor on truncated cosimplicial objects. -/
 @[simps!]
-def whiskering {n} (D : Type _) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
+def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 #align category_theory.cosimplicial_object.truncated.whiskering CategoryTheory.CosimplicialObject.Truncated.whiskering
 
@@ -712,7 +711,7 @@ variable (C)
 
 /-- Functor composition induces a functor on augmented cosimplicial objects. -/
 @[simp]
-def whiskeringObj (D : Type _) [Category D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
+def whiskeringObj (D : Type*) [Category D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
   obj X :=
     { left := F.obj (point.obj X)
       right := ((whiskering _ _).obj F).obj (drop.obj X)

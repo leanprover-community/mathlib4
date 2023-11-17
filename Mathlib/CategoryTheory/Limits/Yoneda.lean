@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.yoneda
-! leanprover-community/mathlib commit e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.Util.AssertExists
+
+#align_import category_theory.limits.yoneda from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 
 /-!
 # Limit properties relating to the (co)yoneda embedding.
@@ -75,27 +72,24 @@ variable {C : Type u} [Category.{v} C]
 
 open Limits
 
-/--n The yoneda embedding `yoneda.obj X : Cᵒᵖ ⥤ Type v` for `X : C` preserves limits. -/
-instance yonedaPreservesLimits (X : C) : PreservesLimits (yoneda.obj X)
-    where preservesLimitsOfShape {J} 𝒥 :=
+/-- The yoneda embedding `yoneda.obj X : Cᵒᵖ ⥤ Type v` for `X : C` preserves limits. -/
+instance yonedaPreservesLimits (X : C) : PreservesLimits (yoneda.obj X) where
+  preservesLimitsOfShape {J} 𝒥 :=
     { preservesLimit := fun {K} =>
         { preserves := fun {c} t =>
             { lift := fun s x =>
-                Quiver.Hom.unop (t.lift ⟨op X, fun j => (s.π.app j x).op, fun j₁ j₂ α => _⟩)
+                Quiver.Hom.unop (t.lift ⟨op X, fun j => (s.π.app j x).op, fun j₁ j₂ α => by
+                  simp [← s.w α]⟩)
               fac := fun s j => funext fun x => Quiver.Hom.op_inj (t.fac _ _)
               uniq := fun s m w =>
                 funext fun x => by
-                  refine' Quiver.Hom.op_inj (t.uniq ⟨op X, _, _⟩ _ fun j => _)
-                  · intro X _ _ _ _ _ s _ _ _ α  -- Porting note: refine' gave a crazy goal
-                    dsimp
-                    simp [← s.w α]
-                  -- See library note [dsimp, simp]
-                  · exact Quiver.Hom.unop_inj (congrFun (w j) x) } } }
+                  refine Quiver.Hom.op_inj (t.uniq ⟨op X, _, _⟩ _ fun j => ?_)
+                  exact Quiver.Hom.unop_inj (congrFun (w j) x) } } }
 #align category_theory.yoneda_preserves_limits CategoryTheory.yonedaPreservesLimits
 
 /-- The coyoneda embedding `coyoneda.obj X : C ⥤ Type v` for `X : Cᵒᵖ` preserves limits. -/
-instance coyonedaPreservesLimits (X : Cᵒᵖ) : PreservesLimits (coyoneda.obj X)
-    where preservesLimitsOfShape {J} 𝒥 :=
+instance coyonedaPreservesLimits (X : Cᵒᵖ) : PreservesLimits (coyoneda.obj X) where
+  preservesLimitsOfShape {J} 𝒥 :=
     { preservesLimit := fun {K} =>
         { preserves := fun {c} t =>
             { lift := fun s x =>

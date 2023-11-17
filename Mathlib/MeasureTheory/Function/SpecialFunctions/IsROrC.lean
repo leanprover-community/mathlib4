@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.function.special_functions.is_R_or_C
-! leanprover-community/mathlib commit 83a66c8775fa14ee5180c85cab98e970956401ad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
 import Mathlib.Data.IsROrC.Lemmas
+
+#align_import measure_theory.function.special_functions.is_R_or_C from "leanprover-community/mathlib"@"83a66c8775fa14ee5180c85cab98e970956401ad"
 
 /-!
 # Measurability of the basic `IsROrC` functions
@@ -23,7 +20,7 @@ open NNReal ENNReal
 
 namespace IsROrC
 
-variable {𝕜 : Type _} [IsROrC 𝕜]
+variable {𝕜 : Type*} [IsROrC 𝕜]
 
 @[measurability]
 theorem measurable_re : Measurable (re : 𝕜 → ℝ) :=
@@ -39,7 +36,7 @@ end IsROrC
 
 section IsROrCComposition
 
-variable {α 𝕜 : Type _} [IsROrC 𝕜] {m : MeasurableSpace α} {f : α → 𝕜} {μ : MeasureTheory.Measure α}
+variable {α 𝕜 : Type*} [IsROrC 𝕜] {m : MeasurableSpace α} {f : α → 𝕜} {μ : MeasureTheory.Measure α}
 
 @[measurability]
 theorem Measurable.re (hf : Measurable f) : Measurable fun x => IsROrC.re (f x) :=
@@ -65,7 +62,7 @@ end IsROrCComposition
 
 section
 
-variable {α 𝕜 : Type _} [IsROrC 𝕜] [MeasurableSpace α] {f : α → 𝕜} {μ : MeasureTheory.Measure α}
+variable {α 𝕜 : Type*} [IsROrC 𝕜] [MeasurableSpace α] {f : α → 𝕜} {μ : MeasureTheory.Measure α}
 
 @[measurability]
 theorem IsROrC.measurable_ofReal : Measurable ((↑) : ℝ → 𝕜) :=

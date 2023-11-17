@@ -2,13 +2,10 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.sites.canonical
-! leanprover-community/mathlib commit 9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
+
+#align_import category_theory.sites.canonical from "leanprover-community/mathlib"@"9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a"
 
 /-!
 # The canonical topology on a category
@@ -137,7 +134,6 @@ theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type v) (R S : Sieve X)
   apply Presieve.isSheafFor_subsieve_aux P this
   apply isSheafFor_bind _ _ _ hR hS
   · intro Y f hf Z g
-    dsimp
     rw [← pullback_comp]
     apply (hS (R.downward_closed hf _)).isSeparatedFor
   · intro Y f hf

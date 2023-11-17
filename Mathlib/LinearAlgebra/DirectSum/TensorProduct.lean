@@ -2,14 +2,11 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.direct_sum.tensor_product
-! leanprover-community/mathlib commit 9b9d125b7be0930f564a68f1d73ace10cf46064d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.Algebra.DirectSum.Module
+
+#align_import linear_algebra.direct_sum.tensor_product from "leanprover-community/mathlib"@"9b9d125b7be0930f564a68f1d73ace10cf46064d"
 /-!
 # Tensor products of direct sums
 
@@ -21,6 +18,8 @@ This file shows that taking `TensorProduct`s commutes with taking `DirectSum`s i
 * `TensorProduct.directSumLeft`
 * `TensorProduct.directSumRight`
 -/
+
+suppress_compilation
 
 universe u v₁ v₂ w₁ w₁' w₂ w₂'
 
@@ -157,6 +156,13 @@ theorem directSum_lof_tmul_lof (i₁ : ι₁) (m₁ : M₁ i₁) (i₂ : ι₂) 
       DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂) (m₁ ⊗ₜ m₂) := by
   simp [TensorProduct.directSum]
 #align tensor_product.direct_sum_lof_tmul_lof TensorProduct.directSum_lof_tmul_lof
+
+@[simp]
+theorem directSum_symm_lof_tmul (i₁ : ι₁) (m₁ : M₁ i₁) (i₂ : ι₂) (m₂ : M₂ i₂) :
+    (TensorProduct.directSum R M₁ M₂).symm
+      (DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂) (m₁ ⊗ₜ m₂)) =
+      (DirectSum.lof R ι₁ M₁ i₁ m₁ ⊗ₜ DirectSum.lof R ι₂ M₂ i₂ m₂) := by
+  rw [LinearEquiv.symm_apply_eq, directSum_lof_tmul_lof]
 
 @[simp]
 theorem directSumLeft_tmul_lof (i : ι₁) (x : M₁ i) (y : M₂') :

@@ -2,14 +2,11 @@
 Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module topology.list
-! leanprover-community/mathlib commit 48085f140e684306f9e7da907cd5932056d1aded
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.Algebra.Monoid
+
+#align_import topology.list from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
 /-!
 # Topology on lists and vectors
@@ -21,7 +18,7 @@ open TopologicalSpace Set Filter
 
 open Topology Filter
 
-variable {α : Type _} {β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 instance : TopologicalSpace (List α) :=
   TopologicalSpace.mkOfNhds (traverse nhds)
@@ -36,11 +33,11 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
         simpa only [functor_norm] using this
       exact Filter.seq_mono (Filter.map_mono <| pure_le_nhds a) ih
   · intro l s hs
-    rcases(mem_traverse_iff _ _).1 hs with ⟨u, hu, hus⟩
+    rcases (mem_traverse_iff _ _).1 hs with ⟨u, hu, hus⟩
     clear as hs
     have : ∃ v : List (Set α), l.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) v ∧ sequence v ⊆ s
     induction hu generalizing s
-    case nil _hs  =>
+    case nil _hs =>
       exists []
       simp only [List.forall₂_nil_left_iff, exists_eq_left]
       exact ⟨trivial, hus⟩
@@ -79,7 +76,7 @@ theorem List.tendsto_cons {a : α} {l : List α} :
   rw [nhds_cons, Tendsto, Filter.map_prod]; exact le_rfl
 #align list.tendsto_cons List.tendsto_cons
 
-theorem Filter.Tendsto.cons {α : Type _} {f : α → β} {g : α → List β} {a : Filter α} {b : β}
+theorem Filter.Tendsto.cons {α : Type*} {f : α → β} {g : α → List β} {a : Filter α} {b : β}
     {l : List β} (hf : Tendsto f a (𝓝 b)) (hg : Tendsto g a (𝓝 l)) :
     Tendsto (fun a => List.cons (f a) (g a)) a (𝓝 (b::l)) :=
   List.tendsto_cons.comp (Tendsto.prod_mk hf hg)
@@ -87,20 +84,20 @@ theorem Filter.Tendsto.cons {α : Type _} {f : α → β} {g : α → List β} {
 
 namespace List
 
-theorem tendsto_cons_iff {β : Type _} {f : List α → β} {b : Filter β} {a : α} {l : List α} :
+theorem tendsto_cons_iff {β : Type*} {f : List α → β} {b : Filter β} {a : α} {l : List α} :
     Tendsto f (𝓝 (a::l)) b ↔ Tendsto (fun p : α × List α => f (p.1::p.2)) (𝓝 a ×ˢ 𝓝 l) b := by
   have : 𝓝 (a::l) = (𝓝 a ×ˢ 𝓝 l).map fun p : α × List α => p.1::p.2 := by
     simp only [nhds_cons, Filter.prod_eq, (Filter.map_def _ _).symm,
       (Filter.seq_eq_filter_seq _ _).symm]
     simp [-Filter.map_def, (· ∘ ·), functor_norm]
-  rw [this, Filter.tendsto_map'_iff]; dsimp; rfl
+  rw [this, Filter.tendsto_map'_iff]; rfl
 #align list.tendsto_cons_iff List.tendsto_cons_iff
 
 theorem continuous_cons : Continuous fun x : α × List α => (x.1::x.2 : List α) :=
   continuous_iff_continuousAt.mpr fun ⟨_x, _y⟩ => continuousAt_fst.cons continuousAt_snd
 #align list.continuous_cons List.continuous_cons
 
-theorem tendsto_nhds {β : Type _} {f : List α → β} {r : List α → Filter β}
+theorem tendsto_nhds {β : Type*} {f : List α → β} {r : List α → Filter β}
     (h_nil : Tendsto f (pure []) (r []))
     (h_cons :
       ∀ l a,
@@ -109,7 +106,7 @@ theorem tendsto_nhds {β : Type _} {f : List α → β} {r : List α → Filter 
     ∀ l, Tendsto f (𝓝 l) (r l)
   | [] => by rwa [nhds_nil]
   | a::l => by
-    rw [tendsto_cons_iff];  exact h_cons l a (@tendsto_nhds _ _ _ h_nil h_cons l)
+    rw [tendsto_cons_iff]; exact h_cons l a (@tendsto_nhds _ _ _ h_nil h_cons l)
 #align list.tendsto_nhds List.tendsto_nhds
 
 theorem continuousAt_length : ∀ l : List α, ContinuousAt List.length l := by
@@ -200,7 +197,7 @@ theorem tendsto_insertNth {n : ℕ} {i : Fin (n + 1)} {a : α} :
       Tendsto (fun p : α × Vector α n => insertNth p.1 i p.2) (𝓝 a ×ˢ 𝓝 l) (𝓝 (insertNth a i l))
   | ⟨l, hl⟩ => by
     rw [insertNth, tendsto_subtype_rng]
-    simp [insertNth_val]
+    simp only [insertNth_val]
     exact List.tendsto_insertNth tendsto_fst (Tendsto.comp continuousAt_subtype_val tendsto_snd : _)
 #align vector.tendsto_insert_nth Vector.tendsto_insertNth
 

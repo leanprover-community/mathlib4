@@ -2,17 +2,14 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.baire
-! leanprover-community/mathlib commit b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Sets.Compacts
 import Mathlib.Order.Filter.CountableInter
+
+#align_import topology.metric_space.baire from "leanprover-community/mathlib"@"b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a"
 
 /-!
 # Baire theorem
@@ -35,7 +32,7 @@ open Classical Topology Filter ENNReal
 
 open Filter Encodable Set TopologicalSpace
 
-variable {α : Type _} {β : Type _} {γ : Type _} {ι : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {ι : Type*}
 
 section BaireTheorem
 
@@ -45,14 +42,14 @@ open EMetric ENNReal
 any countable intersection of open dense subsets is dense.
 Formulated here when the source space is ℕ (and subsumed below by `dense_iInter_of_open` working
 with any encodable source space). -/
-class BaireSpace (α : Type _) [TopologicalSpace α] : Prop where
+class BaireSpace (α : Type*) [TopologicalSpace α] : Prop where
   baire_property : ∀ f : ℕ → Set α, (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Dense (⋂ n, f n)
 #align baire_space BaireSpace
 
 /-- Baire theorems asserts that various topological spaces have the Baire property.
 Two versions of these theorems are given.
-The first states that complete pseudo_emetric spaces are Baire. -/
-instance (priority := 100) baire_category_theorem_emetric_complete [PseudoEMetricSpace α]
+The first states that complete `PseudoEMetricSpace`s are Baire. -/
+instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace [PseudoEMetricSpace α]
     [CompleteSpace α] : BaireSpace α := by
   refine' ⟨fun f ho hd => _⟩
   let B : ℕ → ℝ≥0∞ := fun n => 1 / 2 ^ n
@@ -146,11 +143,11 @@ instance (priority := 100) baire_category_theorem_emetric_complete [PseudoEMetri
     exact this (yball (n + 1))
   show edist y x ≤ ε
   exact le_trans (yball 0) (min_le_left _ _)
-#align baire_category_theorem_emetric_complete baire_category_theorem_emetric_complete
+#align baire_category_theorem_emetric_complete BaireSpace.of_pseudoEMetricSpace_completeSpace
 
 /-- The second theorem states that locally compact spaces are Baire. -/
-instance (priority := 100) baire_category_theorem_locally_compact [TopologicalSpace α] [T2Space α]
-    [LocallyCompactSpace α] : BaireSpace α := by
+instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace
+    [TopologicalSpace α] [T2Space α] [LocallyCompactSpace α] : BaireSpace α := by
   constructor
   intro f ho hd
   /- To prove that an intersection of open dense subsets is dense, prove that its intersection
@@ -185,7 +182,7 @@ instance (priority := 100) baire_category_theorem_locally_compact [TopologicalSp
       (fun n => (hK_decreasing n).trans (inter_subset_right _ _)) (fun n => (K n).nonempty)
       (K 0).isCompact fun n => (K n).isCompact.isClosed
   exact hK_nonempty.mono hK_subset
-#align baire_category_theorem_locally_compact baire_category_theorem_locally_compact
+#align baire_category_theorem_locally_compact BaireSpace.of_t2Space_locallyCompactSpace
 
 variable [TopologicalSpace α] [BaireSpace α]
 

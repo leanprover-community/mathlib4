@@ -2,14 +2,11 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison, Floris van Doorn
-
-! This file was ported from Lean 3 source module category_theory.discrete_category
-! leanprover-community/mathlib commit 369525b73f229ccd76a6ec0e0e0bf2be57599768
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.Data.ULift
+
+#align_import category_theory.discrete_category from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
 /-!
 # Discrete categories
@@ -234,13 +231,13 @@ theorem natIso_app {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discret
 #align category_theory.discrete.nat_iso_app CategoryTheory.Discrete.natIso_app
 
 /-- Every functor `F` from a discrete category is naturally isomorphic (actually, equal) to
-  `discrete.functor (F.obj)`. -/
+  `Discrete.functor (F.obj)`. -/
 @[simp]
 def natIsoFunctor {I : Type u₁} {F : Discrete I ⥤ C} : F ≅ Discrete.functor (F.obj ∘ Discrete.mk) :=
   natIso fun _ => Iso.refl _
 #align category_theory.discrete.nat_iso_functor CategoryTheory.Discrete.natIsoFunctor
 
-/-- Composing `discrete.functor F` with another functor `G` amounts to composing `F` with `G.obj` -/
+/-- Composing `Discrete.functor F` with another functor `G` amounts to composing `F` with `G.obj` -/
 @[simp]
 def compNatIsoDiscrete {I : Type u₁} {D : Type u₃} [Category.{v₃} D] (F : I → C) (G : C ⥤ D) :
     Discrete.functor F ⋙ G ≅ Discrete.functor (G.obj ∘ F) :=

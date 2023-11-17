@@ -3,14 +3,11 @@ Copyright (c) 2021 Johan Commelin.
 All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Damiano Testa, Kevin Buzzard
-
-! This file was ported from Lean 3 source module linear_order_with_pos_mul_pos_eq_zero
-! leanprover-community/mathlib commit 328375597f2c0dd00522d9c2e5a33b6a6128feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
+
+#align_import linear_order_with_pos_mul_pos_eq_zero from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
 /-!
 An example of a `LinearOrderedCommMonoidWithZero` in which the product of two positive

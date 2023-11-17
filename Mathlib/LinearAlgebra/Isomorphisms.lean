@@ -2,13 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
-
-! This file was ported from Lean 3 source module linear_algebra.isomorphisms
-! leanprover-community/mathlib commit 2738d2ca56cbc63be80c3bd48e9ed90ad94e947d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Quotient
+
+#align_import linear_algebra.isomorphisms from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 
 /-!
 # Isomorphism theorems for modules.
@@ -21,7 +18,7 @@ import Mathlib.LinearAlgebra.Quotient
 
 universe u v
 
-variable {R M M₂ M₃ : Type _}
+variable {R M M₂ M₃ : Type*}
 
 variable [Ring R] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
 
@@ -116,7 +113,8 @@ theorem coe_quotientInfToSupQuotient (p p' : Submodule R M) :
   rfl
 #align linear_map.coe_quotient_inf_to_sup_quotient LinearMap.coe_quotientInfToSupQuotient
 
-@[simp]
+-- This lemma was always bad, but the linter only noticed after lean4#2644
+@[simp, nolint simpNF]
 theorem quotientInfEquivSupQuotient_apply_mk (p p' : Submodule R M) (x : p) :
     let map := ofLe (le_sup_left : p ≤ p ⊔ p')
     quotientInfEquivSupQuotient p p' (Submodule.Quotient.mk x) =

@@ -2,13 +2,10 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.kernels
-! leanprover-community/mathlib commit 956af7c76589f444f2e1313911bad16366ea476d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+
+#align_import category_theory.limits.shapes.kernels from "leanprover-community/mathlib"@"956af7c76589f444f2e1313911bad16366ea476d"
 
 /-!
 # Kernels and cokernels
@@ -216,6 +213,35 @@ lemma KernelFork.IsLimit.isIso_ι {X Y : C} {f : X ⟶ Y} (c : KernelFork f)
   exact IsIso.of_isIso_comp_left e.inv c.ι
 
 end
+
+namespace KernelFork
+
+variable {f} {X' Y' : C} {f' : X' ⟶ Y'}
+
+/-- The morphism between points of kernel forks induced by a morphism
+in the category of arrows. -/
+def mapOfIsLimit (kf : KernelFork f) {kf' : KernelFork f'} (hf' : IsLimit kf')
+    (φ : Arrow.mk f ⟶ Arrow.mk f') : kf.pt ⟶ kf'.pt :=
+  hf'.lift (KernelFork.ofι (kf.ι ≫ φ.left) (by simp))
+
+@[reassoc (attr := simp)]
+lemma mapOfIsLimit_ι (kf : KernelFork f) {kf' : KernelFork f'} (hf' : IsLimit kf')
+    (φ : Arrow.mk f ⟶ Arrow.mk f') :
+    kf.mapOfIsLimit hf' φ ≫ kf'.ι = kf.ι ≫ φ.left :=
+  hf'.fac _ _
+
+/-- The isomorphism between points of limit kernel forks induced by an isomorphism
+in the category of arrows. -/
+@[simps]
+def mapIsoOfIsLimit {kf : KernelFork f} {kf' : KernelFork f'}
+    (hf : IsLimit kf) (hf' : IsLimit kf')
+    (φ : Arrow.mk f ≅ Arrow.mk f') : kf.pt ≅ kf'.pt where
+  hom := kf.mapOfIsLimit hf' φ.hom
+  inv := kf'.mapOfIsLimit hf φ.inv
+  hom_inv_id := Fork.IsLimit.hom_ext hf (by simp)
+  inv_hom_id := Fork.IsLimit.hom_ext hf' (by simp)
+
+end KernelFork
 
 section
 
@@ -499,8 +525,8 @@ def kernel.ofCompIso [HasKernel f] {Z : C} (l : X ⟶ Z) (i : Z ≅ Y) (h : l �
   IsKernel.ofCompIso f l i h <| limit.isLimit _
 #align category_theory.limits.kernel.of_comp_iso CategoryTheory.Limits.kernel.ofCompIso
 
-/-- If `s` is any limit kernel cone over `f` and if  `i` is an isomorphism such that
-    `i.hom ≫ s.ι  = l`, then `l` is a kernel of `f`. -/
+/-- If `s` is any limit kernel cone over `f` and if `i` is an isomorphism such that
+    `i.hom ≫ s.ι = l`, then `l` is a kernel of `f`. -/
 def IsKernel.isoKernel {Z : C} (l : Z ⟶ X) {s : KernelFork f} (hs : IsLimit s) (i : Z ≅ s.pt)
     (h : i.hom ≫ Fork.ι s = l) : IsLimit (KernelFork.ofι l <| show l ≫ f = 0 by simp [← h]) :=
   IsLimit.ofIsoLimit hs <|
@@ -645,7 +671,7 @@ def isCokernelOfComp {W : C} (g : W ⟶ X) (h : W ⟶ Y) {c : CokernelCofork h} 
 /-- `Y` identifies to the cokernel of a zero map `X ⟶ Y`. -/
 def CokernelCofork.IsColimit.ofId {X Y : C} (f : X ⟶ Y) (hf : f = 0) :
     IsColimit (CokernelCofork.ofπ (𝟙 Y) (show f ≫ 𝟙 Y = 0 by rw [hf, zero_comp])) :=
-  CokernelCofork.IsColimit.ofπ  _ _ (fun x _ => x) (fun _ _ => Category.id_comp _)
+  CokernelCofork.IsColimit.ofπ _ _ (fun x _ => x) (fun _ _ => Category.id_comp _)
     (fun _ _ _ hb => by simp only [← hb, Category.id_comp])
 
 /-- Any zero object identifies to the cokernel of a given epimorphisms. -/
@@ -666,6 +692,36 @@ lemma CokernelCofork.IsColimit.isIso_π {X Y : C} {f : X ⟶ Y} (c : CokernelCof
   exact IsIso.of_isIso_comp_right c.π e.hom
 
 end
+
+namespace CokernelCofork
+
+variable {f} {X' Y' : C} {f' : X' ⟶ Y'}
+
+/-- The morphism between points of cokernel coforks induced by a morphism
+in the category of arrows. -/
+def mapOfIsColimit {cc : CokernelCofork f} (hf : IsColimit cc) (cc' : CokernelCofork f')
+    (φ : Arrow.mk f ⟶ Arrow.mk f') : cc.pt ⟶ cc'.pt :=
+  hf.desc (CokernelCofork.ofπ (φ.right ≫ cc'.π) (by
+    erw [← Arrow.w_assoc φ, condition, comp_zero]))
+
+@[reassoc (attr := simp)]
+lemma π_mapOfIsColimit {cc : CokernelCofork f} (hf : IsColimit cc) (cc' : CokernelCofork f')
+    (φ : Arrow.mk f ⟶ Arrow.mk f') :
+    cc.π ≫ mapOfIsColimit hf cc' φ = φ.right ≫ cc'.π :=
+  hf.fac _ _
+
+/-- The isomorphism between points of limit cokernel coforks induced by an isomorphism
+in the category of arrows. -/
+@[simps]
+def mapIsoOfIsColimit {cc : CokernelCofork f} {cc' : CokernelCofork f'}
+    (hf : IsColimit cc) (hf' : IsColimit cc')
+    (φ : Arrow.mk f ≅ Arrow.mk f') : cc.pt ≅ cc'.pt where
+  hom := mapOfIsColimit hf cc' φ.hom
+  inv := mapOfIsColimit hf' cc φ.inv
+  hom_inv_id := Cofork.IsColimit.hom_ext hf (by simp)
+  inv_hom_id := Cofork.IsColimit.hom_ext hf' (by simp)
+
+end CokernelCofork
 
 section
 
@@ -711,8 +767,8 @@ theorem cokernel.π_desc {W : C} (k : Y ⟶ W) (h : f ≫ k = 0) :
 
 -- porting note: added to ease the port of `Abelian.Exact`
 @[reassoc (attr := simp)]
-lemma colimit_ι_zero_cokernel_desc {C : Type _} [Category C]
-    [HasZeroMorphisms C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : f ≫ g = 0) [HasCokernel f]:
+lemma colimit_ι_zero_cokernel_desc {C : Type*} [Category C]
+    [HasZeroMorphisms C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : f ≫ g = 0) [HasCokernel f] :
     colimit.ι (parallelPair f 0) WalkingParallelPair.zero ≫ cokernel.desc f g h = 0 := by
   rw [(colimit.w (parallelPair f 0) WalkingParallelPairHom.left).symm]
   aesop_cat

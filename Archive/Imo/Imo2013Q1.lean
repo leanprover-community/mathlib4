@@ -2,17 +2,14 @@
 Copyright (c) 2021 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
-
-! This file was ported from Lean 3 source module imo.imo2013_q1
-! leanprover-community/mathlib commit 308826471968962c6b59c7ff82a22757386603e3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PNat.Basic
 import Mathlib.Data.Nat.Parity
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
+
+#align_import imo.imo2013_q1 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 2013 Q1
@@ -70,12 +67,11 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
     use m
     have hmpk : (m pk : ℚ) = 2 * t + 2 ^ pk.succ := by
       have : m pk = ⟨2 * t + 2 ^ pk.succ, _⟩ := if_neg (irrefl pk); simp [this]
-    have denom_ne_zero : (2 * (t : ℚ) + 2 * 2 ^ pk) ≠ 0 := by positivity
     calc
       ((1 : ℚ) + (2 ^ pk.succ - 1) / (n : ℚ) : ℚ)= 1 + (2 * 2 ^ pk - 1) / (2 * (t + 1) : ℕ) := by
         rw [ht, pow_succ]
       _ = (1 + 1 / (2 * t + 2 * 2 ^ pk)) * (1 + (2 ^ pk - 1) / (↑t + 1)) := by
-        field_simp [t.cast_add_one_ne_zero]
+        field_simp
         ring
       _ = (1 + 1 / (2 * t + 2 ^ pk.succ)) * (1 + (2 ^ pk - 1) / t_succ) := by
         -- porting note: used to work with `norm_cast`
@@ -93,12 +89,11 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
     have hmpk : (m pk : ℚ) = 2 * t + 1 := by
       have : m pk = ⟨2 * t + 1, _⟩ := if_neg (irrefl pk)
       simp [this]
-    have denom_ne_zero : 2 * (t : ℚ) + 1 ≠ 0 := by norm_cast; apply (2 * t).succ_ne_zero
     calc
       ((1 : ℚ) + (2 ^ pk.succ - 1) / ↑n : ℚ) = 1 + (2 * 2 ^ pk - 1) / (2 * t + 1 : ℕ) := by
         rw [ht, pow_succ]
       _ = (1 + 1 / (2 * t + 1)) * (1 + (2 ^ pk - 1) / (t + 1)) := by
-        field_simp [t.cast_add_one_ne_zero]
+        field_simp
         ring
       _ = (1 + 1 / (2 * t + 1)) * (1 + (2 ^ pk - 1) / t_succ) := by norm_cast
       _ = (∏ i in Finset.range pk, (1 + 1 / (m i : ℚ))) * (1 + 1 / ↑(m pk)) := by

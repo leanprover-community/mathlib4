@@ -2,15 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
-Ported by: Winston Yin, Arien Malec
-
-! This file was ported from Lean 3 source module data.set.intervals.basic
-! leanprover-community/mathlib commit 4367b192b58a665b6f18773f73eb492eb4df7990
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.MinMax
 import Mathlib.Data.Set.Prod
+
+#align_import data.set.intervals.basic from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
 /-!
 # Intervals
@@ -36,7 +32,7 @@ open Function
 
 open OrderDual (toDual ofDual)
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Set
 
@@ -771,6 +767,18 @@ theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
     exact Icc_self _
 #align set.Icc_eq_singleton_iff Set.Icc_eq_singleton_iff
 
+lemma subsingleton_Icc_of_ge (hba : b ≤ a) : Set.Subsingleton (Icc a b) :=
+  fun _x ⟨hax, hxb⟩ _y ⟨hay, hyb⟩ ↦ le_antisymm
+    (le_implies_le_of_le_of_le hxb hay hba) (le_implies_le_of_le_of_le hyb hax hba)
+#align set.subsingleton_Icc_of_ge Set.subsingleton_Icc_of_ge
+
+@[simp] lemma subsingleton_Icc_iff {α : Type*} [LinearOrder α] {a b : α} :
+    Set.Subsingleton (Icc a b) ↔ b ≤ a := by
+  refine' ⟨fun h ↦ _, subsingleton_Icc_of_ge⟩
+  contrapose! h
+  simp only [ge_iff_le, gt_iff_lt, not_subsingleton_iff]
+  exact ⟨a, ⟨le_refl _, h.le⟩, b, ⟨h.le, le_refl _⟩, h.ne⟩
+
 @[simp]
 theorem Icc_diff_left : Icc a b \ {a} = Ioc a b :=
   ext fun x => by simp [lt_iff_le_and_ne, eq_comm, and_right_comm]
@@ -862,6 +870,12 @@ theorem Ioo_union_left (hab : a < b) : Ioo a b ∪ {a} = Ico a b := by
 theorem Ioo_union_right (hab : a < b) : Ioo a b ∪ {b} = Ioc a b := by
   simpa only [dual_Ioo, dual_Ico] using Ioo_union_left hab.dual
 #align set.Ioo_union_right Set.Ioo_union_right
+
+theorem Ioo_union_both (h : a ≤ b) : Ioo a b ∪ {a, b} = Icc a b := by
+  have : (Icc a b \ {a, b}) ∪ {a, b} = Icc a b := diff_union_of_subset fun
+    | x, .inl rfl => left_mem_Icc.mpr h
+    | x, .inr rfl => right_mem_Icc.mpr h
+  rw [← this, Icc_diff_both]
 
 theorem Ioc_union_left (hab : a ≤ b) : Ioc a b ∪ {a} = Icc a b := by
   rw [← Icc_diff_left, diff_union_self,
@@ -1154,7 +1168,7 @@ theorem Ioo_subset_Ioo_iff [DenselyOrdered α] (h₁ : a₁ < b₁) :
 theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ :=
   ⟨fun e => by
       simp [Subset.antisymm_iff] at e
-      simp [le_antisymm_iff]
+      simp only [le_antisymm_iff]
       cases' h with h h <;>
       simp [Ico_subset_Ico_iff h] at e <;>
       [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩; rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
@@ -1163,6 +1177,14 @@ theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a
       [ exact ⟨⟨hab.left, h₁⟩, ⟨h₂, hab.right⟩⟩; exact ⟨⟨h₁, hab.left⟩, ⟨hab.right, h₂⟩⟩ ],
     fun ⟨h₁, h₂⟩ => by rw [h₁, h₂]⟩
 #align set.Ico_eq_Ico_iff Set.Ico_eq_Ico_iff
+
+lemma Ici_eq_singleton_iff_isTop {x : α} : (Ici x = {x}) ↔ IsTop x := by
+  refine ⟨fun h y ↦ ?_, fun h ↦ by ext y; simp [(h y).ge_iff_eq]⟩
+  by_contra H
+  push_neg at H
+  have : y ∈ Ici x := H.le
+  rw [h, mem_singleton_iff] at this
+  exact lt_irrefl y (this.le.trans_lt H)
 
 open Classical
 

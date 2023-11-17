@@ -2,13 +2,10 @@
 Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module ring_theory.nakayama
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.JacobsonIdeal
+
+#align_import ring_theory.nakayama from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Nakayama's lemma
@@ -32,7 +29,7 @@ This file contains some alternative statements of Nakayama's Lemma as found in
 
 Note that a version of Statement (1) in
 [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV) can be found in
-`RingTheory.Noetherian` under the name
+`RingTheory.Finiteness` under the name
 `Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul`
 
 ## References
@@ -43,13 +40,13 @@ Nakayama, Jacobson
 -/
 
 
-variable {R M : Type _} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 open Ideal
 
 namespace Submodule
 
-/-- *Nakayama's Lemma** - A slightly more general version of (2) in
+/-- **Nakayama's Lemma** - A slightly more general version of (2) in
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
 See also `eq_bot_of_le_smul_of_le_jacobson_bot` for the special case when `J = ⊥`.  -/
 theorem eq_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N : Submodule R M} (hN : N.FG)
@@ -64,7 +61,7 @@ theorem eq_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N : Submodule R M} (h
   exact Submodule.smul_mem_smul (Submodule.neg_mem _ hs) hn
 #align submodule.eq_smul_of_le_smul_of_le_jacobson Submodule.eq_smul_of_le_smul_of_le_jacobson
 
-/-- *Nakayama's Lemma** - Statement (2) in
+/-- **Nakayama's Lemma** - Statement (2) in
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
 See also `eq_smul_of_le_smul_of_le_jacobson` for a generalisation
 to the `jacobson` of any ideal -/
@@ -73,7 +70,7 @@ theorem eq_bot_of_le_smul_of_le_jacobson_bot (I : Ideal R) (N : Submodule R M) (
   rw [eq_smul_of_le_smul_of_le_jacobson hN hIN hIjac, Submodule.bot_smul]
 #align submodule.eq_bot_of_le_smul_of_le_jacobson_bot Submodule.eq_bot_of_le_smul_of_le_jacobson_bot
 
-/-- *Nakayama's Lemma** - A slightly more general version of (4) in
+/-- **Nakayama's Lemma** - A slightly more general version of (4) in
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
 See also `smul_sup_le_of_le_smul_of_le_jacobson_bot` for the special case when `J = ⊥`.  -/
 theorem smul_sup_eq_smul_sup_of_le_smul_of_le_jacobson {I J : Ideal R} {N N' : Submodule R M}
@@ -92,7 +89,7 @@ theorem smul_sup_eq_smul_sup_of_le_smul_of_le_jacobson {I J : Ideal R} {N N' : S
   rw [this, sup_comm]
 #align submodule.smul_sup_eq_smul_sup_of_le_smul_of_le_jacobson Submodule.smul_sup_eq_smul_sup_of_le_smul_of_le_jacobson
 
-/-- *Nakayama's Lemma** - Statement (4) in
+/-- **Nakayama's Lemma** - Statement (4) in
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
 See also `smul_sup_eq_smul_sup_of_le_smul_of_le_jacobson` for a generalisation
 to the `jacobson` of any ideal -/

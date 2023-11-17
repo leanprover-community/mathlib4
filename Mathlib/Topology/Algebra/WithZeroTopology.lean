@@ -2,15 +2,12 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.algebra.with_zero_topology
-! leanprover-community/mathlib commit 3e0c4d76b6ebe9dfafb67d16f7286d2731ed6064
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Order.Basic
+
+#align_import topology.algebra.with_zero_topology from "leanprover-community/mathlib"@"3e0c4d76b6ebe9dfafb67d16f7286d2731ed6064"
 
 /-!
 # The topology on linearly ordered commutative groups with zero
@@ -39,7 +36,7 @@ open Topology Filter TopologicalSpace Filter Set Function
 
 namespace WithZeroTopology
 
-variable {α Γ₀ : Type _} [LinearOrderedCommGroupWithZero Γ₀] {γ γ₁ γ₂ : Γ₀} {l : Filter α}
+variable {α Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {γ γ₁ γ₂ : Γ₀} {l : Filter α}
   {f : α → Γ₀}
 
 /-- The topology on a linearly ordered commutative group with a zero element adjoined.
@@ -65,7 +62,7 @@ only if there exists a nonzero element `γ₀` such that `Iio γ₀ ⊆ U`. -/
 theorem hasBasis_nhds_zero : (𝓝 (0 : Γ₀)).HasBasis (fun γ : Γ₀ => γ ≠ 0) Iio := by
   rw [nhds_zero]
   refine' hasBasis_biInf_principal _ ⟨1, one_ne_zero⟩
-  exact directedOn_iff_directed.2 (directed_of_inf fun a b hab => Iio_subset_Iio hab)
+  exact directedOn_iff_directed.2 (Monotone.directed_ge fun a b hab => Iio_subset_Iio hab)
 #align with_zero_topology.has_basis_nhds_zero WithZeroTopology.hasBasis_nhds_zero
 
 theorem Iio_mem_nhds_zero (hγ : γ ≠ 0) : Iio γ ∈ 𝓝 (0 : Γ₀) :=

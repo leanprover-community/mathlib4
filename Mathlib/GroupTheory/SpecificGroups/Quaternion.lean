@@ -2,17 +2,14 @@
 Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
-
-! This file was ported from Lean 3 source module group_theory.specific_groups.quaternion
-! leanprover-community/mathlib commit 879155bff5af618b9062cbb2915347dafd749ad6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.IntervalCases
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
+
+#align_import group_theory.specific_groups.quaternion from "leanprover-community/mathlib"@"879155bff5af618b9062cbb2915347dafd749ad6"
 
 /-!
 # Quaternion Groups
@@ -239,7 +236,7 @@ theorem quaternionGroup_one_isCyclic : IsCyclic (QuaternionGroup 1) := by
 theorem orderOf_a_one : orderOf (a 1 : QuaternionGroup n) = 2 * n := by
   cases' eq_zero_or_neZero n with hn hn
   · subst hn
-    simp_rw [MulZeroClass.mul_zero, orderOf_eq_zero_iff']
+    simp_rw [mul_zero, orderOf_eq_zero_iff']
     intro n h
     rw [one_def, a_one_pow]
     apply mt a.inj
@@ -268,7 +265,7 @@ theorem exponent : Monoid.exponent (QuaternionGroup n) = 2 * lcm n 2 := by
   norm_num
   cases' eq_zero_or_neZero n with hn hn
   · subst hn
-    simp only [lcm_zero_left, MulZeroClass.mul_zero]
+    simp only [lcm_zero_left, mul_zero]
     exact Monoid.exponent_eq_zero_of_order_zero orderOf_a_one
   apply Nat.dvd_antisymm
   · apply Monoid.exponent_dvd_of_forall_pow_eq_one

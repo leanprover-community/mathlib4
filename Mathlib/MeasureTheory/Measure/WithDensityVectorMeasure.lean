@@ -2,14 +2,11 @@
 Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module measure_theory.measure.with_density_vector_measure
-! leanprover-community/mathlib commit d1bd9c5df2867c1cb463bc6364446d57bdd9f7f1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.VectorMeasure
 import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+
+#align_import measure_theory.measure.with_density_vector_measure from "leanprover-community/mathlib"@"d1bd9c5df2867c1cb463bc6364446d57bdd9f7f1"
 
 /-!
 
@@ -31,7 +28,7 @@ noncomputable section
 
 open scoped Classical MeasureTheory NNReal ENNReal
 
-variable {α β : Type _} {m : MeasurableSpace α}
+variable {α β : Type*} {m : MeasurableSpace α}
 
 namespace MeasureTheory
 
@@ -39,7 +36,7 @@ open TopologicalSpace
 
 variable {μ ν : Measure α}
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 /-- Given a measure `μ` and an integrable function `f`, `μ.withDensityᵥ f` is
 the vector measure which maps the set `s` to `∫ₛ f ∂μ`. -/
@@ -113,7 +110,7 @@ theorem withDensityᵥ_sub' (hf : Integrable f μ) (hg : Integrable g μ) :
 #align measure_theory.with_densityᵥ_sub' MeasureTheory.withDensityᵥ_sub'
 
 @[simp]
-theorem withDensityᵥ_smul {𝕜 : Type _} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
+theorem withDensityᵥ_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
     [SMulCommClass ℝ 𝕜 E] (f : α → E) (r : 𝕜) : μ.withDensityᵥ (r • f) = r • μ.withDensityᵥ f := by
   by_cases hf : Integrable f μ
   · ext1 i hi
@@ -126,7 +123,7 @@ theorem withDensityᵥ_smul {𝕜 : Type _} [NontriviallyNormedField 𝕜] [Norm
       rwa [integrable_smul_iff hr f]
 #align measure_theory.with_densityᵥ_smul MeasureTheory.withDensityᵥ_smul
 
-theorem withDensityᵥ_smul' {𝕜 : Type _} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
+theorem withDensityᵥ_smul' {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
     [SMulCommClass ℝ 𝕜 E] (f : α → E) (r : 𝕜) :
     (μ.withDensityᵥ fun x => r • f x) = r • μ.withDensityᵥ f :=
   withDensityᵥ_smul f r

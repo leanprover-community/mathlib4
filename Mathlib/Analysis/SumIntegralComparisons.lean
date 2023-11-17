@@ -2,15 +2,12 @@
 Copyright (c) 2022 Kevin H. Wilson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin H. Wilson
-
-! This file was ported from Lean 3 source module analysis.sum_integral_comparisons
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.Data.Set.Function
 import Mathlib.Analysis.SpecialFunctions.Integrals
+
+#align_import analysis.sum_integral_comparisons from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Comparing sums and integrals

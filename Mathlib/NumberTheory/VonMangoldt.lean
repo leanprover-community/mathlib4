@@ -2,15 +2,12 @@
 Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module number_theory.von_mangoldt
-! leanprover-community/mathlib commit c946d6097a6925ad16d7ec55677bbc977f9846de
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
+
+#align_import number_theory.von_mangoldt from "leanprover-community/mathlib"@"c946d6097a6925ad16d7ec55677bbc977f9846de"
 
 /-!
 # The von Mangoldt Function

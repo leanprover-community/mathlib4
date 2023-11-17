@@ -2,11 +2,6 @@
 Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Geißer, Michael Stoll
-
-! This file was ported from Lean 3 source module number_theory.diophantine_approximation
-! leanprover-community/mathlib commit e25a317463bd37d88e33da164465d8c47922b1cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
 import Mathlib.Algebra.ContinuedFractions.Computation.Translations
@@ -15,6 +10,8 @@ import Mathlib.Data.Int.Units
 import Mathlib.Data.Real.Irrational
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.Tactic.Basic
+
+#align_import number_theory.diophantine_approximation from "leanprover-community/mathlib"@"e25a317463bd37d88e33da164465d8c47922b1cd"
 
 /-!
 # Diophantine Approximation
@@ -108,8 +105,8 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     have hm₀ : 0 < m := by
       have hf₀ : f 0 = 0 := by
         -- Porting note: was
-        -- simp only [floor_eq_zero_iff, algebraMap.coe_zero, MulZeroClass.mul_zero, fract_zero,
-        --   MulZeroClass.zero_mul, Set.left_mem_Ico, zero_lt_one]
+        -- simp only [floor_eq_zero_iff, algebraMap.coe_zero, mul_zero, fract_zero,
+        --   zero_mul, Set.left_mem_Ico, zero_lt_one]
         simp only [cast_zero, mul_zero, fract_zero, zero_mul, floor_zero]
       refine' Ne.lt_of_le (fun h => n_pos.ne _) (mem_Icc.mp hm).1
       exact_mod_cast hf₀.symm.trans (h.symm ▸ hf : f 0 = n)
@@ -152,7 +149,9 @@ theorem exists_nat_abs_mul_sub_round_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
 
 /-- *Dirichlet's approximation theorem:*
 For any real number `ξ` and positive natural `n`, there is a fraction `q`
-such that `q.den ≤ n` and `|ξ - q| ≤ 1/((n+1)*q.den)`. -/
+such that `q.den ≤ n` and `|ξ - q| ≤ 1/((n+1)*q.den)`.
+
+See also `AddCircle.exists_norm_nsmul_le`. -/
 theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     ∃ q : ℚ, |ξ - q| ≤ 1 / ((n + 1) * q.den) ∧ q.den ≤ n := by
   obtain ⟨j, k, hk₀, hk₁, h⟩ := exists_int_int_abs_mul_sub_le ξ n_pos
@@ -428,7 +427,7 @@ private theorem aux₁ : 0 < fract ξ := by
   have H : (2 * v - 1 : ℝ) < 1 := by
     refine'
       (mul_lt_iff_lt_one_right hv₀).mp ((inv_lt_inv hv₀ (mul_pos hv₁ hv₂)).mp (lt_of_le_of_lt _ h))
-    have h' : (⌊ξ⌋ : ℝ) - u / v = (⌊ξ⌋ * v - u) / v := by field_simp [hv₀.ne']
+    have h' : (⌊ξ⌋ : ℝ) - u / v = (⌊ξ⌋ * v - u) / v := by field_simp
     rw [h', abs_div, abs_of_pos hv₀, ← one_div, div_le_div_right hv₀]
     norm_cast
     rw [← zero_add (1 : ℤ), add_one_le_iff, abs_pos, sub_ne_zero]
@@ -492,7 +491,7 @@ private theorem aux₃ :
   have H : (2 * u' - 1 : ℝ) ≤ (2 * v - 1) * fract ξ := by
     replace h := (abs_lt.mp h).1
     have : (2 * (v : ℝ) - 1) * (-((v : ℝ) * (2 * v - 1))⁻¹ + u' / v) = 2 * u' - (1 + u') / v := by
-      field_simp [Hv.ne', Hv'.ne']; ring
+      field_simp; ring
     rw [hu'ℝ, add_div, mul_div_cancel _ Hv.ne', ← sub_sub, sub_right_comm, self_sub_floor,
       lt_sub_iff_add_lt, ← mul_lt_mul_left Hv', this] at h
     refine' LE.le.trans _ h.le
@@ -518,12 +517,11 @@ private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋
   refine' ⟨_, fun huv => _, by exact_mod_cast aux₃ hv h⟩
   · rw [sub_eq_add_neg, ← neg_mul, isCoprime_comm, IsCoprime.add_mul_right_left_iff]
     exact h.1
-  · obtain ⟨hv₀, hv₀'⟩ := aux₀ (zero_lt_two.trans_le hv)
+  · obtain hv₀' := (aux₀ (zero_lt_two.trans_le hv)).2
     have Hv : (v * (2 * v - 1) : ℝ)⁻¹ + (v : ℝ)⁻¹ = 2 / (2 * v - 1) := by
-      field_simp [hv₀.ne', hv₀'.ne']
-      ring
+      field_simp; ring
     have Huv : (u / v : ℝ) = ⌊ξ⌋ + (v : ℝ)⁻¹ := by
-      rw [sub_eq_iff_eq_add'.mp huv]; field_simp [hv₀.ne']
+      rw [sub_eq_iff_eq_add'.mp huv]; field_simp
     have h' := (abs_sub_lt_iff.mp h.2.2).1
     rw [Huv, ← sub_sub, sub_lt_iff_lt_add, self_sub_floor, Hv] at h'
     rwa [lt_sub_iff_add_lt', (by ring : (v : ℝ) + -(1 / 2) = (2 * v - 1) / 2),
@@ -542,7 +540,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
   induction v using Nat.strong_induction_on generalizing ξ u with | h v ih => ?_
   rcases lt_trichotomy v 1 with (ht | rfl | ht)
   · replace h := h.2.2
-    simp only [Nat.lt_one_iff.mp ht, Nat.cast_zero, div_zero, tsub_zero, MulZeroClass.zero_mul,
+    simp only [Nat.lt_one_iff.mp ht, Nat.cast_zero, div_zero, tsub_zero, zero_mul,
       cast_zero, inv_zero] at h
     exact False.elim (lt_irrefl _ <| (abs_nonneg ξ).trans_lt h)
   · rw [Nat.cast_one, div_one]
@@ -582,7 +580,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
 #align real.exists_rat_eq_convergent' Real.exists_rat_eq_convergent'
 
 /-- The main result, *Legendre's Theorem* on rational approximation:
-if `ξ` is a real number and  `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
+if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
 This version uses `Real.convergent`. -/
 theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ) ^ 2)) :
@@ -600,7 +598,7 @@ theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ
 #align real.exists_rat_eq_convergent Real.exists_rat_eq_convergent
 
 /-- The main result, *Legendre's Theorem* on rational approximation:
-if `ξ` is a real number and  `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
+if `ξ` is a real number and `q` is a rational number such that `|ξ - q| < 1/(2*q.den^2)`,
 then `q` is a convergent of the continued fraction expansion of `ξ`.
 This is the version using `generalized_contined_fraction.convergents`. -/
 theorem exists_continued_fraction_convergent_eq_rat {q : ℚ}

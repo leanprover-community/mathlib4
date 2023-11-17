@@ -2,16 +2,13 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.opposites
-! leanprover-community/mathlib commit 7a89b1aed52bcacbcc4a8ad515e72c5c07268940
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Nontrivial
+import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Logic.IsEmpty
+
+#align_import algebra.opposites from "leanprover-community/mathlib"@"7a89b1aed52bcacbcc4a8ad515e72c5c07268940"
 
 /-!
 
@@ -44,8 +41,9 @@ definitional eta reduction for structures (Lean 3 does not).
 multiplicative opposite, additive opposite
 -/
 
-
 universe u v
+
+variable {α : Type*}
 
 open Function
 
@@ -127,7 +125,7 @@ protected def rec' {F : ∀ _ : αᵐᵒᵖ, Sort v} (h : ∀ X, F (op X)) : ∀
 #align add_opposite.rec AddOpposite.rec'
 
 /-- The canonical bijection between `α` and `αᵐᵒᵖ`. -/
-@[to_additive (attr := simps (config := { fullyApplied := false }) apply symm_apply)
+@[to_additive (attr := simps (config := .asFn) apply symm_apply)
   "The canonical bijection between `α` and `αᵃᵒᵖ`."]
 def opEquiv : α ≃ αᵐᵒᵖ :=
   ⟨op, unop, unop_op, op_unop⟩
@@ -232,7 +230,7 @@ instance involutiveInv [InvolutiveInv α] : InvolutiveInv αᵐᵒᵖ :=
   { MulOpposite.inv α with inv_inv := fun _ => unop_injective $ inv_inv _ }
 
 @[to_additive]
-instance smul (R : Type _) [SMul R α] : SMul R αᵐᵒᵖ where smul c x := op (c • unop x)
+instance smul (R : Type*) [SMul R α] : SMul R αᵐᵒᵖ where smul c x := op (c • unop x)
 
 section
 
@@ -315,13 +313,13 @@ theorem unop_sub [Sub α] (x y : αᵐᵒᵖ) : unop (x - y) = unop x - unop y :
 #align mul_opposite.unop_sub MulOpposite.unop_sub
 
 @[to_additive (attr := simp)]
-theorem op_smul {R : Type _} [SMul R α] (c : R) (a : α) : op (c • a) = c • op a :=
+theorem op_smul {R : Type*} [SMul R α] (c : R) (a : α) : op (c • a) = c • op a :=
   rfl
 #align mul_opposite.op_smul MulOpposite.op_smul
 #align add_opposite.op_vadd AddOpposite.op_vadd
 
 @[to_additive (attr := simp)]
-theorem unop_smul {R : Type _} [SMul R α] (c : R) (a : αᵐᵒᵖ) : unop (c • a) = c • unop a :=
+theorem unop_smul {R : Type*} [SMul R α] (c : R) (a : αᵐᵒᵖ) : unop (c • a) = c • unop a :=
   rfl
 #align mul_opposite.unop_smul MulOpposite.unop_smul
 #align add_opposite.unop_vadd AddOpposite.unop_vadd

@@ -2,13 +2,10 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
-
-! This file was ported from Lean 3 source module imo.imo2020_q2
-! leanprover-community/mathlib commit 5f25c089cb34db4db112556f23c50d12da81b297
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.MeanInequalities
+
+#align_import imo.imo2020_q2 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
 
 /-!
 # IMO 2020 Q2

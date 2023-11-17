@@ -2,17 +2,14 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.special_functions.gaussian
-! leanprover-community/mathlib commit 7982767093ae38cba236487f9c9dd9cd99f63c16
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
 import Mathlib.Analysis.Convex.Complex
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Fourier.PoissonSummation
+
+#align_import analysis.special_functions.gaussian from "leanprover-community/mathlib"@"7982767093ae38cba236487f9c9dd9cd99f63c16"
 
 /-!
 # Gaussian integral
@@ -40,8 +37,6 @@ for positive real `a`, or complex `a` with positive real part. (See also
 `NumberTheory.ModularForms.JacobiTheta`.)
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
 noncomputable section
 
 open Real Set MeasureTheory Filter Asymptotics
@@ -50,41 +45,83 @@ open scoped Real Topology FourierTransform
 
 open Complex hiding exp continuous_exp abs_of_nonneg sq_abs
 
-notation "cexp" => Complex.exp
-
-notation "rexp" => Real.exp
+theorem exp_neg_mul_rpow_isLittleO_exp_neg {p b : ℝ} (hb : 0 < b) (hp : 1 < p) :
+    (fun x : ℝ => exp (- b * x ^ p)) =o[atTop] fun x : ℝ => exp (-x) := by
+  rw [isLittleO_exp_comp_exp_comp]
+  suffices Tendsto (fun x => x * (b * x ^ (p - 1) + -1)) atTop atTop by
+    refine Tendsto.congr' ?_ this
+    refine eventuallyEq_of_mem (Ioi_mem_atTop (0 : ℝ)) (fun x hx => ?_)
+    rw [rpow_sub_one (ne_of_gt hx)]
+    field_simp [(by exact ne_of_gt hx : x ≠ 0)]
+    ring
+  apply Tendsto.atTop_mul_atTop tendsto_id
+  refine tendsto_atTop_add_const_right atTop (-1 : ℝ) ?_
+  exact Tendsto.const_mul_atTop hb (tendsto_rpow_atTop (by linarith))
 
 theorem exp_neg_mul_sq_isLittleO_exp_neg {b : ℝ} (hb : 0 < b) :
     (fun x : ℝ => exp (-b * x ^ 2)) =o[atTop] fun x : ℝ => exp (-x) := by
-  have A : (fun x : ℝ => -x - -b * x ^ 2) = fun x => x * (b * x + -1) := by ext x; ring
-  rw [isLittleO_exp_comp_exp_comp, A]
-  apply Tendsto.atTop_mul_atTop tendsto_id
-  exact tendsto_atTop_add_const_right atTop (-1 : ℝ) (Tendsto.const_mul_atTop hb tendsto_id)
+  simp_rw [← rpow_two]
+  exact exp_neg_mul_rpow_isLittleO_exp_neg hb one_lt_two
 #align exp_neg_mul_sq_is_o_exp_neg exp_neg_mul_sq_isLittleO_exp_neg
+
+theorem rpow_mul_exp_neg_mul_rpow_isLittleO_exp_neg (s : ℝ) {b p : ℝ} (hp : 1 < p) (hb : 0 < b) :
+    (fun x : ℝ => x ^ s * exp (- b * x ^ p)) =o[atTop] fun x : ℝ => exp (-(1 / 2) * x) := by
+  apply ((isBigO_refl (fun x : ℝ => x ^ s) atTop).mul_isLittleO
+      (exp_neg_mul_rpow_isLittleO_exp_neg hb hp)).trans
+  simpa only [mul_comm] using Real.Gamma_integrand_isLittleO s
 
 theorem rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg {b : ℝ} (hb : 0 < b) (s : ℝ) :
     (fun x : ℝ => x ^ s * exp (-b * x ^ 2)) =o[atTop] fun x : ℝ => exp (-(1 / 2) * x) := by
-  apply ((isBigO_refl (fun x : ℝ => x ^ s) atTop).mul_isLittleO
-      (exp_neg_mul_sq_isLittleO_exp_neg hb)).trans
-  simpa only [mul_comm] using Gamma_integrand_isLittleO s
+  simp_rw [← rpow_two]
+  exact rpow_mul_exp_neg_mul_rpow_isLittleO_exp_neg s one_lt_two hb
 #align rpow_mul_exp_neg_mul_sq_is_o_exp_neg rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg
+
+theorem integrableOn_rpow_mul_exp_neg_rpow {p s : ℝ} (hs : -1 < s) (hp : 1 ≤ p) :
+    IntegrableOn (fun x : ℝ => x ^ s * exp (- x ^ p)) (Ioi 0) := by
+  obtain hp | hp := le_iff_lt_or_eq.mp hp
+  · have h_exp : ∀ x, ContinuousAt (fun x => exp (- x)) x :=
+        fun x => (by exact continuousAt_neg : ContinuousAt (fun x => -x) x).exp
+    rw [← Ioc_union_Ioi_eq_Ioi (zero_le_one : (0 : ℝ) ≤ 1), integrableOn_union]
+    constructor
+    · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
+      refine IntegrableOn.mul_continuousOn ?_ ?_ isCompact_Icc
+      · refine (intervalIntegrable_iff_integrable_Icc_of_le zero_le_one).mp ?_
+        exact intervalIntegral.intervalIntegrable_rpow' hs
+      · intro x _
+        change ContinuousWithinAt ((fun x => exp (- x)) ∘ (fun x => x ^ p)) (Icc 0 1) x
+        refine ContinuousAt.comp_continuousWithinAt (h_exp _) ?_
+        exact continuousWithinAt_id.rpow_const (Or.inr (le_of_lt (lt_trans zero_lt_one hp)))
+    · have h_rpow : ∀ (x r : ℝ), x ∈ Ici 1 → ContinuousWithinAt (fun x => x ^ r) (Ici 1) x := by
+        intro _ _ hx
+        refine continuousWithinAt_id.rpow_const (Or.inl ?_)
+        exact ne_of_gt (lt_of_lt_of_le zero_lt_one hx)
+      refine integrable_of_isBigO_exp_neg (by norm_num : (0:ℝ) < 1 / 2)
+        (ContinuousOn.mul (fun x hx => h_rpow x s hx) (fun x hx => ?_)) (IsLittleO.isBigO ?_)
+      · change ContinuousWithinAt ((fun x => exp (- x)) ∘ (fun x => x ^ p)) (Ici 1) x
+        exact ContinuousAt.comp_continuousWithinAt (h_exp _) (h_rpow x p hx)
+      · convert rpow_mul_exp_neg_mul_rpow_isLittleO_exp_neg s hp (by norm_num : (0:ℝ) < 1) using 3
+        rw [neg_mul, one_mul]
+  · simp_rw [← hp, Real.rpow_one]
+    convert Real.GammaIntegral_convergent (by linarith : 0 < s + 1) using 2
+    rw [add_sub_cancel, mul_comm]
+
+theorem integrableOn_rpow_mul_exp_neg_mul_rpow {p s b : ℝ} (hs : -1 < s) (hp : 1 ≤ p) (hb : 0 < b) :
+    IntegrableOn (fun x : ℝ => x ^ s * exp (- b * x ^ p)) (Ioi 0) := by
+  have hib : 0 < b ^ (-p⁻¹) := rpow_pos_of_pos hb _
+  suffices IntegrableOn (fun x ↦ (b ^ (-p⁻¹)) ^ s * (x ^ s * exp (-x ^ p))) (Ioi 0) by
+    rw [show 0 = b ^ (-p⁻¹) * 0 by rw [mul_zero], ← integrableOn_Ioi_comp_mul_left_iff _ _ hib]
+    refine this.congr_fun (fun _ hx => ?_) measurableSet_Ioi
+    rw [← mul_assoc, mul_rpow, mul_rpow, ← rpow_mul (z := p), neg_mul, neg_mul, inv_mul_cancel,
+      rpow_neg_one, mul_inv_cancel_left₀]
+    all_goals linarith [mem_Ioi.mp hx]
+  refine Integrable.const_mul ?_ _
+  rw [← integrableOn_def]
+  exact integrableOn_rpow_mul_exp_neg_rpow hs hp
 
 theorem integrableOn_rpow_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {s : ℝ} (hs : -1 < s) :
     IntegrableOn (fun x : ℝ => x ^ s * exp (-b * x ^ 2)) (Ioi 0) := by
-  rw [← Ioc_union_Ioi_eq_Ioi (zero_le_one : (0 : ℝ) ≤ 1), integrableOn_union]
-  constructor
-  · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
-    refine' IntegrableOn.mul_continuousOn _ _ isCompact_Icc
-    · refine' (intervalIntegrable_iff_integrable_Icc_of_le zero_le_one).mp _
-      exact intervalIntegral.intervalIntegrable_rpow' hs
-    · exact (continuous_exp.comp (continuous_const.mul (continuous_pow 2))).continuousOn
-  · have B : (0 : ℝ) < 1 / 2 := by norm_num
-    apply integrable_of_isBigO_exp_neg
-      B _ (IsLittleO.isBigO (rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg hb _))
-    intro x hx
-    have N : x ≠ 0 := by refine' (zero_lt_one.trans_le _).ne'; exact hx
-    apply ((continuousAt_rpow_const _ _ (Or.inl N)).mul _).continuousWithinAt
-    exact (continuous_exp.comp (continuous_const.mul (continuous_pow 2))).continuousAt
+  simp_rw [← rpow_two]
+  exact integrableOn_rpow_mul_exp_neg_mul_rpow hs one_le_two hb
 #align integrable_on_rpow_mul_exp_neg_mul_sq integrableOn_rpow_mul_exp_neg_mul_sq
 
 theorem integrable_rpow_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {s : ℝ} (hs : -1 < s) :
@@ -93,7 +130,7 @@ theorem integrable_rpow_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {s : ℝ} (hs 
     integrableOn_Ici_iff_integrableOn_Ioi]
   refine' ⟨_, integrableOn_rpow_mul_exp_neg_mul_sq hb hs⟩
   rw [← (Measure.measurePreserving_neg (volume : Measure ℝ)).integrableOn_comp_preimage
-      (Homeomorph.neg ℝ).toMeasurableEquiv.measurableEmbedding]
+      (Homeomorph.neg ℝ).measurableEmbedding]
   simp only [Function.comp, neg_sq, neg_preimage, preimage_neg_Iio, neg_neg, neg_zero]
   apply Integrable.mono' (integrableOn_rpow_mul_exp_neg_mul_sq hb hs)
   · apply Measurable.aestronglyMeasurable
@@ -176,7 +213,7 @@ theorem integral_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
         (tendsto_pow_atTop two_ne_zero))
   convert integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ => (A ↑x).comp_ofReal)
     (integrable_mul_cexp_neg_mul_sq hb).integrableOn B using 1
-  simp only [MulZeroClass.mul_zero, ofReal_zero, zero_pow', Ne.def, bit0_eq_zero, Nat.one_ne_zero,
+  simp only [mul_zero, ofReal_zero, zero_pow', Ne.def, bit0_eq_zero, Nat.one_ne_zero,
     not_false_iff, Complex.exp_zero, mul_one, sub_neg_eq_add, zero_add]
 #align integral_mul_cexp_neg_mul_sq integral_mul_cexp_neg_mul_sq
 
@@ -260,7 +297,7 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
     refine'
       ContinuousAt.continuousOn fun b hb =>
         (continuousAt_cpow_const (Or.inl _)).comp (continuousAt_const.div continuousAt_id (nv hb))
-    rw [div_re, ofReal_im, ofReal_re, MulZeroClass.zero_mul, zero_div, add_zero]
+    rw [div_re, ofReal_im, ofReal_re, zero_mul, zero_div, add_zero]
     exact div_pos (mul_pos pi_pos hb) (normSq_pos.mpr (nv hb))
   · -- equality at 1
     have : ∀ x : ℝ, cexp (-(1 : ℂ) * (x : ℂ) ^ 2) = exp (-(1 : ℝ) * x ^ 2) := by
@@ -299,8 +336,8 @@ theorem integral_gaussian_complex_Ioi {b : ℂ} (hb : 0 < re b) :
   have : ∀ c : ℝ, ∫ x in (0 : ℝ)..c, cexp (-b * (x : ℂ) ^ 2) =
       ∫ x in -c..0, cexp (-b * (x : ℂ) ^ 2) := by
     intro c
-    have :=
-      @intervalIntegral.integral_comp_sub_left _ _ _ _ 0 c (fun x => cexp (-b * (x : ℂ) ^ 2)) 0
+    have := intervalIntegral.integral_comp_sub_left (a := 0) (b := c)
+      (fun x => cexp (-b * (x : ℂ) ^ 2)) 0
     simpa [zero_sub, neg_sq, neg_zero] using this
   have t1 :=
     intervalIntegral_tendsto_integral_Ioi 0 (integrable_cexp_neg_mul_sq hb).integrableOn tendsto_id
@@ -492,8 +529,8 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
         (by
           refine' Differentiable.differentiableOn (Differentiable.const_mul _ _).cexp
           exact differentiable_pow 2)
-    simpa only [neg_im, ofReal_im, neg_zero, ofReal_zero, MulZeroClass.zero_mul, add_zero, neg_re,
-      ofReal_re, add_re, mul_re, I_re, MulZeroClass.mul_zero, I_im, tsub_zero, add_im, mul_im,
+    simpa only [neg_im, ofReal_im, neg_zero, ofReal_zero, zero_mul, add_zero, neg_re,
+      ofReal_re, add_re, mul_re, I_re, mul_zero, I_im, tsub_zero, add_im, mul_im,
       mul_one, zero_add, Algebra.id.smul_eq_mul, ofReal_neg] using this
   simp_rw [id.def, ← HI₁]
   have : I₁ = fun T : ℝ => I₂ T + verticalIntegral b c T := by
@@ -547,7 +584,7 @@ theorem _root_.fourier_transform_gaussian_pi (hb : 0 < b.re) :
   convert _root_.fourier_transform_gaussian h1 (-2 * π * t) using 1
   · congr 1 with x : 1
     congr 2
-    all_goals push_cast; ring
+    any_goals push_cast; ring
   · conv_lhs => rw [mul_comm]
     congr 2
     · field_simp [ofReal_ne_zero.mpr pi_ne_zero]; ring
@@ -563,7 +600,7 @@ section GaussianPoisson
 /-! ## Poisson summation applied to the Gaussian -/
 
 
-variable {E : Type _} [NormedAddCommGroup E]
+variable {E : Type*} [NormedAddCommGroup E]
 
 theorem tendsto_rpow_abs_mul_exp_neg_mul_sq_cocompact {a : ℝ} (ha : 0 < a) (s : ℝ) :
     Tendsto (fun x : ℝ => |x| ^ s * rexp (-a * x ^ 2)) (cocompact ℝ) (𝓝 0) := by

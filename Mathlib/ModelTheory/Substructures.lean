@@ -2,15 +2,12 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module model_theory.substructures
-! leanprover-community/mathlib commit 0602c59878ff3d5f71dea69c2d32ccf2e93e5398
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Closure
 import Mathlib.ModelTheory.Semantics
 import Mathlib.ModelTheory.Encoding
+
+#align_import model_theory.substructures from "leanprover-community/mathlib"@"0602c59878ff3d5f71dea69c2d32ccf2e93e5398"
 
 /-!
 # First-Order Substructures
@@ -27,7 +24,7 @@ substructure `s` under the homomorphism `f`, as a substructure.
 * `FirstOrder.Language.Substructure.map` is defined so that `s.map f` is the image of the
 substructure `s` under the homomorphism `f`, as a substructure.
 * `FirstOrder.Language.Hom.range` is defined so that `f.range` is the range of the
-the homomorphism `f`, as a substructure.
+homomorphism `f`, as a substructure.
 * `FirstOrder.Language.Hom.domRestrict` and `FirstOrder.Language.Hom.codRestrict` restrict
 the domain and codomain respectively of first-order homomorphisms to substructures.
 * `FirstOrder.Language.Embedding.domRestrict` and `FirstOrder.Language.Embedding.codRestrict`
@@ -46,7 +43,7 @@ namespace FirstOrder
 
 namespace Language
 
-variable {L : Language.{u, v}} {M : Type w} {N P : Type _}
+variable {L : Language.{u, v}} {M : Type w} {N P : Type*}
 
 variable [L.Structure M] [L.Structure N] [L.Structure P]
 
@@ -141,7 +138,7 @@ end Substructure
 
 variable {S : L.Substructure M}
 
-theorem Term.realize_mem {α : Type _} (t : L.Term α) (xs : α → M) (h : ∀ a, xs a ∈ S) :
+theorem Term.realize_mem {α : Type*} (t : L.Term α) (xs : α → M) (h : ∀ a, xs a ∈ S) :
     t.realize xs ∈ S := by
   induction' t with a n f ts ih
   · exact h a
@@ -223,12 +220,12 @@ theorem mem_sInf {S : Set (L.Substructure M)} {x : M} : x ∈ sInf S ↔ ∀ p �
   Set.mem_iInter₂
 #align first_order.language.substructure.mem_Inf FirstOrder.Language.Substructure.mem_sInf
 
-theorem mem_iInf {ι : Sort _} {S : ι → L.Substructure M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i :=
+theorem mem_iInf {ι : Sort*} {S : ι → L.Substructure M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i :=
   by simp only [iInf, mem_sInf, Set.forall_range_iff]
 #align first_order.language.substructure.mem_infi FirstOrder.Language.Substructure.mem_iInf
 
 @[simp, norm_cast]
-theorem coe_iInf {ι : Sort _} {S : ι → L.Substructure M} :
+theorem coe_iInf {ι : Sort*} {S : ι → L.Substructure M} :
     ((⨅ i, S i : L.Substructure M) : Set M) = ⋂ i, (S i : Set M) := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 #align first_order.language.substructure.coe_infi FirstOrder.Language.Substructure.coe_iInf
@@ -514,7 +511,7 @@ theorem map_sup (S T : L.Substructure M) (f : M →[L] N) : (S ⊔ T).map f = S.
   (gc_map_comap f).l_sup
 #align first_order.language.substructure.map_sup FirstOrder.Language.Substructure.map_sup
 
-theorem map_iSup {ι : Sort _} (f : M →[L] N) (s : ι → L.Substructure M) :
+theorem map_iSup {ι : Sort*} (f : M →[L] N) (s : ι → L.Substructure M) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 #align first_order.language.substructure.map_supr FirstOrder.Language.Substructure.map_iSup
@@ -524,7 +521,7 @@ theorem comap_inf (S T : L.Substructure N) (f : M →[L] N) :
   (gc_map_comap f).u_inf
 #align first_order.language.substructure.comap_inf FirstOrder.Language.Substructure.comap_inf
 
-theorem comap_iInf {ι : Sort _} (f : M →[L] N) (s : ι → L.Substructure N) :
+theorem comap_iInf {ι : Sort*} (f : M →[L] N) (s : ι → L.Substructure N) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 #align first_order.language.substructure.comap_infi FirstOrder.Language.Substructure.comap_iInf
@@ -557,7 +554,7 @@ theorem closure_image (f : M →[L] N) : closure L (f '' s) = map f (closure L s
 
 section GaloisCoinsertion
 
-variable {ι : Type _} {f : M →[L] N} (hf : Function.Injective f)
+variable {ι : Type*} {f : M →[L] N} (hf : Function.Injective f)
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
 def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
@@ -606,7 +603,7 @@ end GaloisCoinsertion
 
 section GaloisInsertion
 
-variable {ι : Type _} {f : M →[L] N} (hf : Function.Surjective f)
+variable {ι : Type*} {f : M →[L] N} (hf : Function.Surjective f)
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
 def giMapComap : GaloisInsertion (map f) (comap f) :=

@@ -2,11 +2,6 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.limits.concrete_category
-! leanprover-community/mathlib commit c3019c79074b0619edb4b27553a91b2e82242395
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Types
@@ -15,6 +10,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.Tactic.ApplyFun
+
+#align_import category_theory.limits.concrete_category from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 
 /-!
 # Facts about (co)limits of functors into concrete categories
@@ -133,7 +130,7 @@ def Concrete.multiequalizerEquivAux (I : MulticospanIndex C) :
 #align category_theory.limits.concrete.multiequalizer_equiv_aux CategoryTheory.Limits.Concrete.multiequalizerEquivAux
 
 /-- The equivalence between the noncomputable multiequalizer and
-and the concrete multiequalizer. -/
+the concrete multiequalizer. -/
 noncomputable def Concrete.multiequalizerEquiv (I : MulticospanIndex.{w} C) [HasMultiequalizer I]
     [PreservesLimit I.multicospan (forget C)] :
     (multiequalizer I : C) ≃
@@ -159,7 +156,7 @@ end Limits
 section Colimits
 
 -- We don't mark this as an `@[ext]` lemma as we don't always want to work elementwise.
-theorem cokernel_funext {C : Type _} [Category C] [HasZeroMorphisms C] [ConcreteCategory C]
+theorem cokernel_funext {C : Type*} [Category C] [HasZeroMorphisms C] [ConcreteCategory C]
     {M N K : C} {f : M ⟶ N} [HasCokernel f] {g h : cokernel f ⟶ K}
     (w : ∀ n : N, g (cokernel.π f n) = h (cokernel.π f n)) : g = h := by
   ext x
@@ -183,8 +180,7 @@ theorem Concrete.from_union_surjective_of_isColimit {D : Cocone F} (hD : IsColim
     intro a
     obtain ⟨b, hb⟩ := this (TX.hom a)
     refine' ⟨b, _⟩
-    -- porting note: `apply_fun TX.inv at hb` does not work here
-    replace hb := congr_arg TX.inv hb
+    apply_fun TX.inv at hb
     change (TX.hom ≫ TX.inv) (ff b) = (TX.hom ≫ TX.inv) _ at hb
     simpa only [TX.hom_inv_id] using hb
   have : TX.hom ∘ ff = fun a => G.ι.app a.1 a.2 := by
@@ -216,10 +212,7 @@ theorem Concrete.isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (hD : IsCol
   let hG := Types.colimitCoconeIsColimit.{v, v} (F ⋙ forget C)
   let T : E ≅ G := hE.uniqueUpToIso hG
   let TX : E.pt ≅ G.pt := (Cocones.forget _).mapIso T
-  -- porting note: `apply_fun TX.hom` does not work here
-  apply (show Function.Bijective TX.hom by
-    rw [← isIso_iff_bijective]
-    apply IsIso.of_iso).1
+  apply_fun TX.hom using injective_of_mono TX.hom
   change (E.ι.app i ≫ TX.hom) x = (E.ι.app j ≫ TX.hom) y
   erw [T.hom.w, T.hom.w]
   obtain ⟨k, f, g, h⟩ := h
@@ -248,8 +241,7 @@ theorem Concrete.isColimit_exists_of_rep_eq {D : Cocone F} {i j : J} (hD : IsCol
   let hG := Types.colimitCoconeIsColimit.{v, v} (F ⋙ forget C)
   let T : E ≅ G := hE.uniqueUpToIso hG
   let TX : E.pt ≅ G.pt := (Cocones.forget _).mapIso T
-  -- porting note: `apply_fun TX.hom at h` does not work here
-  replace h := congr_arg TX.hom h
+  apply_fun TX.hom at h
   change (E.ι.app i ≫ TX.hom) x = (E.ι.app j ≫ TX.hom) y at h
   erw [T.hom.w, T.hom.w] at h
   replace h := Quot.exact _ h

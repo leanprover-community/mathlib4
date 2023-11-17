@@ -2,15 +2,12 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.tensor_power
-! leanprover-community/mathlib commit ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.PiTensorProduct
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Algebra.DirectSum.Algebra
+
+#align_import linear_algebra.tensor_power from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
 /-!
 # Tensor power of a semimodule over a commutative semiring
@@ -32,18 +29,19 @@ In this file we use `ₜ1` and `ₜ*` as local notation for the graded multiplic
 tensor powers. Elsewhere, using `1` and `*` on `GradedMonoid` should be preferred.
 -/
 
+suppress_compilation
 
 open scoped TensorProduct
 
 /-- Homogenous tensor powers $M^{\otimes n}$. `⨂[R]^n M` is a shorthand for
 `⨂[R] (i : Fin n), M`. -/
 @[reducible]
-def TensorPower (R : Type _) (n : ℕ) (M : Type _) [CommSemiring R] [AddCommMonoid M]
+def TensorPower (R : Type*) (n : ℕ) (M : Type*) [CommSemiring R] [AddCommMonoid M]
     [Module R M] : Type _ :=
   ⨂[R] _ : Fin n, M
 #align tensor_power TensorPower
 
-variable {R : Type _} {M : Type _} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 scoped[TensorProduct] notation:100 "⨂[" R "]^" n:arg => TensorPower R n
 
@@ -52,7 +50,7 @@ namespace PiTensorProduct
 /-- Two dependent pairs of tensor products are equal if their index is equal and the contents
 are equal after a canonical reindexing. -/
 @[ext]
-theorem gradedMonoid_eq_of_reindex_cast {ιι : Type _} {ι : ιι → Type _} :
+theorem gradedMonoid_eq_of_reindex_cast {ιι : Type*} {ι : ιι → Type*} :
     ∀ {a b : GradedMonoid fun ii => ⨂[R] _ : ι ii, M} (h : a.fst = b.fst),
       reindex R M (Equiv.cast <| congr_arg ι h) a.snd = b.snd → a = b
   | ⟨ai, a⟩, ⟨bi, b⟩ => fun (hi : ai = bi) (h : reindex R M _ a = b) => by
@@ -110,7 +108,7 @@ def cast {i j} (h : i = j) : (⨂[R]^i) M ≃ₗ[R] (⨂[R]^j) M :=
 #align tensor_power.cast TensorPower.cast
 
 theorem cast_tprod {i j} (h : i = j) (a : Fin i → M) :
-    cast R M h (tprod R a) = tprod R (a ∘ Fin.castIso h.symm) :=
+    cast R M h (tprod R a) = tprod R (a ∘ Fin.cast h.symm) :=
   reindex_tprod _ _
 #align tensor_power.cast_tprod TensorPower.cast_tprod
 
@@ -146,7 +144,6 @@ theorem gradedMonoid_eq_of_cast {a b : GradedMonoid fun n => ⨂[R] _ : Fin n, M
   rw [← Fin.castIso_to_equiv, ← h2]
 #align tensor_power.graded_monoid_eq_of_cast TensorPower.gradedMonoid_eq_of_cast
 
--- named to match `Fin.cast_eq_cast`, which is now `Fin.castIso_eq_cast`
 theorem cast_eq_cast {i j} (h : i = j) :
     ⇑(cast R M h) = _root_.cast (congrArg (fun i => (⨂[R]^i) M) h) := by
   subst h
@@ -172,8 +169,7 @@ variable {R}
 theorem one_mul {n} (a : (⨂[R]^n) M) : cast R M (zero_add n) (ₜ1 ₜ* a) = a := by
   rw [gMul_def, gOne_def]
   induction' a using PiTensorProduct.induction_on with r a x y hx hy
-  · dsimp only at a
-    rw [TensorProduct.tmul_smul, LinearEquiv.map_smul, LinearEquiv.map_smul, ← gMul_def,
+  · rw [TensorProduct.tmul_smul, LinearEquiv.map_smul, LinearEquiv.map_smul, ← gMul_def,
       tprod_mul_tprod, cast_tprod]
     congr 2 with i
     rw [Fin.elim0'_append]
@@ -185,8 +181,7 @@ theorem one_mul {n} (a : (⨂[R]^n) M) : cast R M (zero_add n) (ₜ1 ₜ* a) = a
 theorem mul_one {n} (a : (⨂[R]^n) M) : cast R M (add_zero _) (a ₜ* ₜ1) = a := by
   rw [gMul_def, gOne_def]
   induction' a using PiTensorProduct.induction_on with r a x y hx hy
-  · dsimp only at a
-    rw [← TensorProduct.smul_tmul', LinearEquiv.map_smul, LinearEquiv.map_smul, ← gMul_def,
+  · rw [← TensorProduct.smul_tmul', LinearEquiv.map_smul, LinearEquiv.map_smul, ← gMul_def,
       tprod_mul_tprod R a _, cast_tprod]
     congr 2 with i
     rw [Fin.append_elim0']
@@ -216,7 +211,7 @@ theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R
   congr with j
   rw [Fin.append_assoc]
   refine' congr_arg (Fin.append a (Fin.append b c)) (Fin.ext _)
-  rw [Fin.coe_castIso, Fin.coe_castIso]
+  rw [Fin.coe_cast, Fin.coe_cast]
 #align tensor_power.mul_assoc TensorPower.mul_assoc
 
 -- for now we just use the default for the `gnpow` field as it's easier.
@@ -259,7 +254,6 @@ theorem algebraMap₀_mul_algebraMap₀ (r s : R) :
   exact algebraMap₀_mul r (@algebraMap₀ R M _ _ _ s)
 #align tensor_power.algebra_map₀_mul_algebra_map₀ TensorPower.algebraMap₀_mul_algebraMap₀
 
-set_option maxHeartbeats 250000 in
 instance gsemiring : DirectSum.GSemiring fun i => (⨂[R]^i) M :=
   { TensorPower.gmonoid with
     mul_zero := fun a => LinearMap.map_zero _

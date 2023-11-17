@@ -2,14 +2,11 @@
 Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module model_theory.quotients
-! leanprover-community/mathlib commit d78597269638367c3863d40d45108f52207e03cf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Quotient
 import Mathlib.ModelTheory.Semantics
+
+#align_import model_theory.quotients from "leanprover-community/mathlib"@"d78597269638367c3863d40d45108f52207e03cf"
 
 /-!
 # Quotients of First-Order Structures
@@ -28,7 +25,7 @@ namespace FirstOrder
 
 namespace Language
 
-variable (L : Language) {M : Type _}
+variable (L : Language) {M : Type*}
 
 open FirstOrder
 
@@ -73,7 +70,7 @@ theorem relMap_quotient_mk' {n : ℕ} (r : L.Relations n) (x : Fin n → M) :
   rw [Quotient.finChoice_eq, Quotient.lift_mk]
 #align first_order.language.rel_map_quotient_mk FirstOrder.Language.relMap_quotient_mk'
 
-theorem Term.realize_quotient_mk' {β : Type _} (t : L.Term β) (x : β → M) :
+theorem Term.realize_quotient_mk' {β : Type*} (t : L.Term β) (x : β → M) :
     (t.realize fun i => (⟦x i⟧ : Quotient s)) = ⟦@Term.realize _ _ ps.toStructure _ x t⟧ := by
   induction' t with _ _ _ _ ih
   · rfl

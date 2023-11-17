@@ -2,13 +2,10 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.comm_sq
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Arrow
+
+#align_import category_theory.comm_sq from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Commutative squares
@@ -30,7 +27,7 @@ Refactor `LiftStruct` from `Arrow.lean` and lifting properties using `CommSq.lea
 
 namespace CategoryTheory
 
-variable {C : Type _} [Category C]
+variable {C : Type*} [Category C]
 
 /-- The proposition that a square
 ```
@@ -78,7 +75,7 @@ end CommSq
 
 namespace Functor
 
-variable {D : Type _} [Category D]
+variable {D : Type*} [Category D]
 
 variable (F : C ⥤ D) {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
@@ -88,7 +85,7 @@ theorem map_commSq (s : CommSq f g h i) : CommSq (F.map f) (F.map g) (F.map h) (
 
 end Functor
 
-alias Functor.map_commSq ← CommSq.map
+alias CommSq.map := Functor.map_commSq
 #align category_theory.comm_sq.map CategoryTheory.CommSq.map
 
 namespace CommSq

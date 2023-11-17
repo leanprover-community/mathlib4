@@ -2,16 +2,13 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.discrete_valuation_ring.tfae
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Nakayama
+
+#align_import ring_theory.discrete_valuation_ring.tfae from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 
@@ -30,7 +27,7 @@ noetherian local domain `(R, m, k)`:
 -/
 
 
-variable (R : Type _) [CommRing R] (K : Type _) [Field K] [Algebra R K] [IsFractionRing R K]
+variable (R : Type*) [CommRing R] (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
 
 open scoped DiscreteValuation
 
@@ -106,7 +103,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
     · exact sInf_le ⟨hle, inferInstance⟩
     · refine'
         le_sInf fun I hI =>
-          (eq_maximalIdeal <| IsDedekindDomain.dimensionLEOne _ (fun e => ha₂ _) hI.2).ge
+          (eq_maximalIdeal <| hI.2.isMaximal (fun e => ha₂ _)).ge
       rw [← Ideal.span_singleton_eq_bot, eq_bot_iff, ← e]; exact hI.1
   have : ∃ n, maximalIdeal R ^ n ≤ Ideal.span {a} := by
     rw [← this]; apply Ideal.exists_radical_pow_le_of_fg; exact IsNoetherian.noetherian _
@@ -122,7 +119,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
   have hb₄ : b ≠ 0 := by rintro rfl; apply hb₂; exact zero_mem _
   let K := FractionRing R
   let x : K := algebraMap R K b / algebraMap R K a
-  let M := Submodule.map (Algebra.ofId R K).toLinearMap (maximalIdeal R)
+  let M := Submodule.map (Algebra.linearMap R K) (maximalIdeal R)
   have ha₃ : algebraMap R K a ≠ 0 := IsFractionRing.to_map_eq_zero_iff.not.mpr ha₂
   by_cases hx : ∀ y ∈ M, x * y ∈ M
   · have := isIntegral_of_smul_mem_submodule M ?_ ?_ x hx
@@ -134,7 +131,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
       exact (IsFractionRing.to_map_eq_zero_iff (K := K)).not.mpr ha₂
     · apply Submodule.FG.map; exact IsNoetherian.noetherian _
   · have :
-        (M.map (DistribMulAction.toLinearMap R K x)).comap (Algebra.ofId R K).toLinearMap = ⊤ := by
+        (M.map (DistribMulAction.toLinearMap R K x)).comap (Algebra.linearMap R K) = ⊤ := by
       by_contra h; apply hx
       rintro m' ⟨m, hm, rfl : algebraMap R K m = m'⟩
       obtain ⟨k, hk⟩ := hb₃ m hm
@@ -179,9 +176,9 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
     exact ⟨inferInstance, ((DiscreteValuationRing.iff_pid_with_one_nonzero_prime R).mp H).2⟩
   tfae_have 4 → 3
   · rintro ⟨h₁, h₂⟩;
-    exact
-      ⟨inferInstance, fun I hI hI' =>
-        ExistsUnique.unique h₂ ⟨ne_bot, inferInstance⟩ ⟨hI, hI'⟩ ▸ maximalIdeal.isMaximal R, h₁⟩
+    exact { h₁ with
+      maximalOfPrime := fun hI hI' => ExistsUnique.unique h₂ ⟨ne_bot, inferInstance⟩ ⟨hI, hI'⟩ ▸
+        maximalIdeal.isMaximal R, }
   tfae_have 3 → 5
   · intro h; exact maximalIdeal_isPrincipal_of_isDedekindDomain R
   tfae_have 5 → 6
@@ -239,6 +236,12 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
     intro H
     constructor
     intro I J
+    -- `by_cases` should invoke `classical` by itself if it can't find a `Decidable` instance,
+    -- however the `tfae` hypotheses trigger a looping instance search.
+    -- See also:
+    -- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/.60by_cases.60.20trying.20to.20find.20a.20weird.20instance
+    -- As a workaround, add the desired instance ourselves.
+    let _ := Classical.decEq (Ideal R)
     by_cases hI : I = ⊥; · subst hI; left; exact bot_le
     by_cases hJ : J = ⊥; · subst hJ; right; exact bot_le
     obtain ⟨n, rfl⟩ := H I hI

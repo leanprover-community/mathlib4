@@ -2,16 +2,13 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module group_theory.perm.sign
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Int.Order.Units
+
+#align_import group_theory.perm.sign from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Sign of a permutation
@@ -55,7 +52,7 @@ def modSwap [DecidableEq α] (i j : α) : Setoid (Perm α) :=
     · simp [hστ, hτυ]⟩
 #align equiv.perm.mod_swap Equiv.Perm.modSwap
 
-noncomputable instance {α : Type _} [Fintype α] [DecidableEq α] (i j : α) :
+noncomputable instance {α : Type*} [Fintype α] [DecidableEq α] (i j : α) :
     DecidableRel (modSwap i j).r :=
   fun _ _ => Or.decidable
 
@@ -113,7 +110,7 @@ theorem subtypePermOfFintype_one (p : α → Prop) [Fintype { x // p x }]
   rfl
 #align equiv.perm.subtype_perm_of_fintype_one Equiv.Perm.subtypePermOfFintype_one
 
-theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type _} [Finite m] [Finite n] (σ : Perm (Sum m n)) :
+theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ : Perm (Sum m n)) :
     Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl) ↔
       Set.MapsTo σ (Set.range Sum.inr) (Set.range Sum.inr) := by
   cases nonempty_fintype m
@@ -136,7 +133,7 @@ theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type _} [Finite m] [Finite n] (σ 
     exact absurd hy Sum.inr_ne_inl
 #align equiv.perm.perm_maps_to_inl_iff_maps_to_inr Equiv.Perm.perm_mapsTo_inl_iff_mapsTo_inr
 
-theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type _} [Finite m] [Finite n]
+theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finite n]
     {σ : Perm (Sum m n)} (h : Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl)) :
     σ ∈ (sumCongrHom m n).range := by
   cases nonempty_fintype m
@@ -163,7 +160,9 @@ theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type _} [Finite m] [Fini
     cases' x with a b
     · rw [Equiv.sumCongr_apply, Sum.map_inl, permCongr_apply, Equiv.symm_symm,
         apply_ofInjective_symm Sum.inl_injective]
-      rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk, subtypePerm_apply]
+      rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [subtypePerm_apply]
     · rw [Equiv.sumCongr_apply, Sum.map_inr, permCongr_apply, Equiv.symm_symm,
         apply_ofInjective_symm Sum.inr_injective]
       erw [subtypePerm_apply]
@@ -180,7 +179,7 @@ nonrec theorem Disjoint.orderOf {σ τ : Perm α} (hστ : Disjoint σ τ) :
       (orderOf_dvd_of_pow_eq_one ((h (orderOf (σ * τ))).mp (pow_orderOf_eq_one (σ * τ))).2))
 #align equiv.perm.disjoint.order_of Equiv.Perm.Disjoint.orderOf
 
-theorem Disjoint.extendDomain {α : Type _} {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p)
+theorem Disjoint.extendDomain {α : Type*} {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p)
     {σ τ : Perm α} (h : Disjoint σ τ) : Disjoint (σ.extendDomain f) (τ.extendDomain f) := by
   intro b
   by_cases pb : p b
@@ -197,7 +196,7 @@ section Fintype
 
 variable [Fintype α]
 
-theorem support_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.coprime n (orderOf σ)) :
+theorem support_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.Coprime n (orderOf σ)) :
     (σ ^ n).support = σ.support := by
   obtain ⟨m, hm⟩ := exists_pow_eq_self_of_coprime h
   exact
@@ -437,7 +436,6 @@ private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2
       have : 1 < a₁ := lt_of_le_of_ne (Nat.succ_le_of_lt ha₁)
         (Ne.symm (by intro h; apply ha₂; simp [h]))
       have h01 : Equiv.swap (0 : Fin (n + 2)) 1 0 = 1 := by simp
-      -- Porting note: replaced `norm_num` by `rw`
       rw [swap_apply_of_ne_of_ne (ne_of_gt H) ha₂, h01, if_neg this.not_le]
     · have le : 1 ≤ a₂ := Nat.succ_le_of_lt H'
       have lt : 1 < a₁ := le.trans_lt ha₁
@@ -704,7 +702,7 @@ theorem sign_bij [DecidableEq β] [Fintype β] {f : Perm α} {g : Perm β} (i : 
 
 /-- If we apply `prod_extendRight a (σ a)` for all `a : α` in turn,
 we get `prod_congrRight σ`. -/
-theorem prod_prodExtendRight {α : Type _} [DecidableEq α] (σ : α → Perm β) {l : List α}
+theorem prod_prodExtendRight {α : Type*} [DecidableEq α] (σ : α → Perm β) {l : List α}
     (hl : l.Nodup) (mem_l : ∀ a, a ∈ l) :
     (l.map fun a => prodExtendRight a (σ a)).prod = prodCongrRight σ := by
   ext ⟨a, b⟩ : 1

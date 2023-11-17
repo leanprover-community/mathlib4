@@ -2,14 +2,11 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.ring_hom.integral
-! leanprover-community/mathlib commit a7c017d750512a352b623b1824d75da5998457d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.RingHomProperties
 import Mathlib.RingTheory.IntegralClosure
+
+#align_import ring_theory.ring_hom.integral from "leanprover-community/mathlib"@"a7c017d750512a352b623b1824d75da5998457d0"
 
 /-!
 
@@ -41,7 +38,7 @@ theorem isIntegral_stableUnderBaseChange : StableUnderBaseChange fun f => f.IsIn
   refine' TensorProduct.induction_on x _ _ _
   · apply isIntegral_zero
   · intro x y; exact IsIntegral.tmul x (h y)
-  · intro x y hx hy; exact isIntegral_add hx hy
+  · intro x y hx hy; exact IsIntegral.add hx hy
 #align ring_hom.is_integral_stable_under_base_change RingHom.isIntegral_stableUnderBaseChange
 
 end RingHom

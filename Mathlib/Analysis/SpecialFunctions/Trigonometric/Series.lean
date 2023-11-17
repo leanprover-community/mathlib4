@@ -2,13 +2,10 @@
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module analysis.special_functions.trigonometric.series
-! leanprover-community/mathlib commit ccf84e0d918668460a34aa19d02fe2e0e2286da0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Exponential
+
+#align_import analysis.special_functions.trigonometric.series from "leanprover-community/mathlib"@"ccf84e0d918668460a34aa19d02fe2e0e2286da0"
 
 /-!
 # Trigonometric functions as sums of infinite series
@@ -37,7 +34,7 @@ theorem Complex.hasSum_cos' (z : ℂ) :
   have := ((expSeries_div_hasSum_exp ℂ (z * Complex.I)).add
     (expSeries_div_hasSum_exp ℂ (-z * Complex.I))).div_const 2
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
-  dsimp [Function.comp] at this
+  dsimp [Function.comp_def] at this
   simp_rw [← mul_comm 2 _] at this
   refine' this.prod_fiberwise fun k => _
   dsimp only
@@ -55,14 +52,14 @@ theorem Complex.hasSum_sin' (z : ℂ) :
   have := (((expSeries_div_hasSum_exp ℂ (-z * Complex.I)).sub
     (expSeries_div_hasSum_exp ℂ (z * Complex.I))).mul_right Complex.I).div_const 2
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
-  dsimp [Function.comp] at this
+  dsimp [Function.comp_def] at this
   simp_rw [← mul_comm 2 _] at this
   refine' this.prod_fiberwise fun k => _
   dsimp only
   convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
   rw [Fin.sum_univ_two]
   simp_rw [Fin.val_zero, Fin.val_one, add_zero, pow_succ', pow_mul, mul_pow, neg_sq, sub_self,
-    MulZeroClass.zero_mul, zero_div, zero_add, neg_mul, mul_neg, neg_div, ← neg_add', ← two_mul,
+    zero_mul, zero_div, zero_add, neg_mul, mul_neg, neg_div, ← neg_add', ← two_mul,
     neg_mul, neg_div, mul_assoc, mul_div_cancel_left _ (two_ne_zero : (2 : ℂ) ≠ 0), Complex.div_I]
 #align complex.has_sum_sin' Complex.hasSum_sin'
 

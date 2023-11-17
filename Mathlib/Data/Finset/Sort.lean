@@ -2,16 +2,13 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.finset.sort
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.RelIso.Set
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.List.NodupEquivFin
+
+#align_import data.finset.sort from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # Construct a sorted list from a finset.
@@ -22,7 +19,7 @@ namespace Finset
 
 open Multiset Nat
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-! ### sort -/
 
@@ -92,6 +89,9 @@ theorem sort_sorted_lt (s : Finset α) : List.Sorted (· < ·) (sort (· ≤ ·)
   (sort_sorted _ _).lt_of_le (sort_nodup _ _)
 #align finset.sort_sorted_lt Finset.sort_sorted_lt
 
+theorem sort_sorted_gt (s : Finset α) : List.Sorted (· > ·) (sort (· ≥ ·) s) :=
+  (sort_sorted _ _).gt_of_ge (sort_nodup _ _)
+
 theorem sorted_zero_eq_min'_aux (s : Finset α) (h : 0 < (s.sort (· ≤ ·)).length) (H : s.Nonempty) :
     (s.sort (· ≤ ·)).nthLe 0 h = s.min' H := by
   let l := s.sort (· ≤ ·)
@@ -125,7 +125,7 @@ theorem sorted_last_eq_max'_aux (s : Finset α)
   · have : s.max' H ∈ l := (Finset.mem_sort (α := α) (· ≤ ·)).mpr (s.max'_mem H)
     obtain ⟨i, hi⟩ : ∃ i, l.get i = s.max' H := List.mem_iff_get.1 this
     rw [← hi]
-    exact (s.sort_sorted (· ≤ ·)).rel_nthLe_of_le _ _ (Nat.le_pred_of_lt i.prop)
+    exact (s.sort_sorted (· ≤ ·)).rel_nthLe_of_le _ _ (Nat.le_sub_one_of_lt i.prop)
 #align finset.sorted_last_eq_max'_aux Finset.sorted_last_eq_max'_aux
 
 theorem sorted_last_eq_max' {s : Finset α}
@@ -256,7 +256,20 @@ theorem orderEmbOfCardLe_mem (s : Finset α) {k : ℕ} (h : k ≤ s.card) (a) :
 
 end SortLinearOrder
 
-unsafe instance [Repr α] : Repr (Finset α) :=
-  ⟨fun s _ => repr s.1⟩
+unsafe instance [Repr α] : Repr (Finset α) where
+  reprPrec s _ :=
+    -- multiset uses `0` not `∅` for empty sets
+    if s.card = 0 then "∅" else repr s.1
 
 end Finset
+
+namespace Fin
+
+theorem sort_univ (n : ℕ) : Finset.univ.sort (fun x y : Fin n => x ≤ y) = List.finRange n :=
+  List.eq_of_perm_of_sorted
+    (List.perm_of_nodup_nodup_toFinset_eq
+      (Finset.univ.sort_nodup _) (List.nodup_finRange n) (by simp))
+    (Finset.univ.sort_sorted LE.le)
+    (List.pairwise_le_finRange n)
+
+end Fin

@@ -2,16 +2,13 @@
 Copyright (c) 2015 Joe Hendrix. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joe Hendrix, Sebastian Ullrich
-
-! This file was ported from Lean 3 source module data.bitvec.core
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Nat.Pow
 import Init.Data.Format.Basic
 import Mathlib.Init.Data.Nat.Lemmas
+
+#align_import data.bitvec.core from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 /-!
 # Basic operations on bitvectors
 
@@ -50,8 +47,8 @@ protected def one : ∀ n : ℕ, Bitvec n
 #align bitvec.one Bitvec.one
 
 /-- Create a bitvector from another with a provably equal length. -/
-protected def cong {a b : ℕ} (h : a = b) : Bitvec a → Bitvec b
-  | ⟨x, p⟩ => ⟨x, h ▸ p⟩
+protected def cong {a b : ℕ} : a = b → Bitvec a → Bitvec b :=
+  Vector.congr
 #align bitvec.cong Bitvec.cong
 
 /-- `Bitvec` specific version of `Vector.append` -/
@@ -69,33 +66,20 @@ variable {n : ℕ}
 /-- `shl x i` is the bitvector obtained by left-shifting `x` `i` times and padding with `false`.
 If `x.length < i` then this will return the all-`false`s bitvector. -/
 def shl (x : Bitvec n) (i : ℕ) : Bitvec n :=
-  Bitvec.cong (by simp) <| drop i x++ₜreplicate (min n i) false
+  shiftLeftFill x i false
 #align bitvec.shl Bitvec.shl
 
-/-- `fill_shr x i fill` is the bitvector obtained by right-shifting `x` `i` times and then
-padding with `fill : Bool`. If `x.length < i` then this will return the constant `fill`
-bitvector. -/
-def fillShr (x : Bitvec n) (i : ℕ) (fill : Bool) : Bitvec n :=
-  Bitvec.cong
-      (by
-        by_cases h : i ≤ n
-        · have h₁ := Nat.sub_le n i
-          rw [min_eq_right h]
-          rw [min_eq_left h₁, ← add_tsub_assoc_of_le h, Nat.add_comm, add_tsub_cancel_right]
-        · have h₁ := le_of_not_ge h
-          rw [min_eq_left h₁, tsub_eq_zero_iff_le.mpr h₁, zero_min, Nat.add_zero]) <|
-    replicate (min n i) fill++ₜtake (n - i) x
-#align bitvec.fill_shr Bitvec.fillShr
+#noalign bitvec.fill_shr
 
 /-- unsigned shift right -/
 def ushr (x : Bitvec n) (i : ℕ) : Bitvec n :=
-  fillShr x i false
+  shiftRightFill x i false
 #align bitvec.ushr Bitvec.ushr
 
 /-- signed shift right -/
 def sshr : ∀ {m : ℕ}, Bitvec m → ℕ → Bitvec m
   | 0, _, _ => nil
-  | succ _, x, i => head x ::ᵥ fillShr (tail x) i (head x)
+  | succ _, x, i => head x ::ᵥ shiftRightFill (tail x) i (head x)
 #align bitvec.sshr Bitvec.sshr
 
 end Shift

@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison
-
-! This file was ported from Lean 3 source module analysis.convex.caratheodory
-! leanprover-community/mathlib commit e6fab1dc073396d45da082c644642c4f8bff2264
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.LinearAlgebra.AffineSpace.Independent
 import Mathlib.Tactic.FieldSimp
+
+#align_import analysis.convex.caratheodory from "leanprover-community/mathlib"@"e6fab1dc073396d45da082c644642c4f8bff2264"
 
 /-!
 # Carathéodory's convexity theorem
@@ -48,7 +45,7 @@ open BigOperators
 
 universe u
 
-variable {𝕜 : Type _} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 namespace Caratheodory
 
@@ -78,7 +75,7 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
       ∑ e in t.erase i₀, k e = ∑ e in t, k e := by
         conv_rhs => rw [← insert_erase hi₀, sum_insert (not_mem_erase i₀ t), hk, zero_add]
       _ = ∑ e in t, (f e - f i₀ / g i₀ * g e) := rfl
-      _ = 1 := by rw [sum_sub_distrib, fsum, ← mul_sum, gsum, MulZeroClass.mul_zero, sub_zero]
+      _ = 1 := by rw [sum_sub_distrib, fsum, ← mul_sum, gsum, mul_zero, sub_zero]
   refine' ⟨⟨i₀, hi₀⟩, k, _, by convert ksum, _⟩
   · simp only [and_imp, sub_nonneg, mem_erase, Ne.def, Subtype.coe_mk]
     intro e _ het

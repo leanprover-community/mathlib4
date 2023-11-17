@@ -2,13 +2,10 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.truncated
-! leanprover-community/mathlib commit acbe099ced8be9c9754d62860110295cde0d7181
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.InitTail
+
+#align_import ring_theory.witt_vector.truncated from "leanprover-community/mathlib"@"acbe099ced8be9c9754d62860110295cde0d7181"
 
 /-!
 
@@ -44,7 +41,7 @@ open Function (Injective Surjective)
 
 noncomputable section
 
-variable {p : ℕ} [hp : Fact p.Prime] (n : ℕ) (R : Type _)
+variable {p : ℕ} [hp : Fact p.Prime] (n : ℕ) (R : Type*)
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -60,11 +57,11 @@ and under this assumption we construct a ring structure on `TruncatedWittVector 
 equal as types but will have different ring operations.)
 -/
 @[nolint unusedArguments]
-def TruncatedWittVector (_ : ℕ) (n : ℕ) (R : Type _) :=
+def TruncatedWittVector (_ : ℕ) (n : ℕ) (R : Type*) :=
   Fin n → R
 #align truncated_witt_vector TruncatedWittVector
 
-instance (p n : ℕ) (R : Type _) [Inhabited R] : Inhabited (TruncatedWittVector p n R) :=
+instance (p n : ℕ) (R : Type*) [Inhabited R] : Inhabited (TruncatedWittVector p n R) :=
   ⟨fun _ => default⟩
 
 variable {n R}
@@ -418,12 +415,12 @@ theorem coeff_truncate {m : ℕ} (hm : n ≤ m) (i : Fin n) (x : TruncatedWittVe
 
 section Fintype
 
-instance {R : Type _} [Fintype R] : Fintype (TruncatedWittVector p n R) :=
+instance {R : Type*} [Fintype R] : Fintype (TruncatedWittVector p n R) :=
   Pi.fintype
 
 variable (p n R)
 
-theorem card {R : Type _} [Fintype R] :
+theorem card {R : Type*} [Fintype R] :
     Fintype.card (TruncatedWittVector p n R) = Fintype.card R ^ n := by
   simp only [TruncatedWittVector, Fintype.card_fin, Fintype.card_fun]
 #align truncated_witt_vector.card TruncatedWittVector.card
@@ -448,7 +445,7 @@ section lift
 
 variable [CommRing R]
 
-variable {S : Type _} [Semiring S]
+variable {S : Type*} [Semiring S]
 
 variable (f : ∀ k : ℕ, S →+* TruncatedWittVector p k R)
 

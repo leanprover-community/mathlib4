@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.integrability
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.BoxIntegral.Basic
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Regular
+
+#align_import analysis.box_integral.integrability from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # McShane integrability vs Bochner integrability
@@ -115,8 +112,8 @@ theorem HasIntegral.of_aeEq_zero {l : IntegrationParams} {I : Box ι} {f : (ι �
   change μ.restrict I {x | f x ≠ 0} = 0 at hf
   set N : (ι → ℝ) → ℕ := fun x => ⌈‖f x‖⌉₊
   have N0 : ∀ {x}, N x = 0 ↔ f x = 0 := by simp
-  have : ∀ n, ∃ U, N ⁻¹' {n} ⊆ U ∧ IsOpen U ∧ μ.restrict I U < δ n / n := by
-    refine' fun n => (N ⁻¹' {n}).exists_isOpen_lt_of_lt _ _
+  have : ∀ n, ∃ U, N ⁻¹' {n} ⊆ U ∧ IsOpen U ∧ μ.restrict I U < δ n / n := fun n ↦ by
+    refine (N ⁻¹' {n}).exists_isOpen_lt_of_lt _ ?_
     cases' n with n
     · simpa [ENNReal.div_zero (ENNReal.coe_pos.2 (δ0 _)).ne'] using measure_lt_top (μ.restrict I) _
     · refine' (measure_mono_null _ hf).le.trans_lt _
@@ -210,7 +207,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
   refine' BoxIntegral.HasIntegral.congr_ae _ hfg.symm hl
   clear! f
   /- Now consider the sequence of simple functions
-    `simple_func.approx_on g hg.measurable (range g ∪ {0}) 0 (by simp)`
+    `SimpleFunc.approxOn g hg.measurable (range g ∪ {0}) 0 (by simp)`
     approximating `g`. Recall some properties of this sequence. -/
   set f : ℕ → SimpleFunc (ι → ℝ) E :=
     SimpleFunc.approxOn g hg.measurable (range g ∪ {0}) 0 (by simp)

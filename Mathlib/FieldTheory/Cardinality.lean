@@ -2,11 +2,6 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module field_theory.cardinality
-! leanprover-community/mathlib commit 0723536a0522d24fc2f159a096fb3304bef77472
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Field.ULift
 import Mathlib.Data.MvPolynomial.Cardinal
@@ -16,6 +11,8 @@ import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.RingTheory.Localization.Cardinality
 import Mathlib.SetTheory.Cardinal.Divisibility
+
+#align_import field_theory.cardinality from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
 /-!
 # Cardinality of Fields
@@ -65,7 +62,6 @@ theorem Fintype.not_isField_of_card_not_prime_pow {α} [Fintype α] [Ring α] :
   mt fun h => Fintype.nonempty_field_iff.mp ⟨h.toField⟩
 #align fintype.not_is_field_of_card_not_prime_pow Fintype.not_isField_of_card_not_prime_pow
 
-set_option synthInstance.maxHeartbeats 50000 in
 /-- Any infinite type can be endowed a field structure. -/
 theorem Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α) := by
   letI K := FractionRing (MvPolynomial α <| ULift.{u} ℚ)

@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Patrick Massot, Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.integral.interval_integral
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Disjoint
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+
+#align_import measure_theory.integral.interval_integral from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Integral over an interval
@@ -53,13 +50,11 @@ integral
 
 noncomputable section
 
-open TopologicalSpace (SecondCountableTopology)
-
 open MeasureTheory Set Classical Filter Function
 
 open scoped Classical Topology Filter ENNReal BigOperators Interval NNReal
 
-variable {ι 𝕜 E F A : Type _} [NormedAddCommGroup E]
+variable {ι 𝕜 E F A : Type*} [NormedAddCommGroup E]
 
 /-!
 ### Integrability on an interval
@@ -230,10 +225,10 @@ protected theorem aestronglyMeasurable (h : IntervalIntegrable f μ a b) :
   h.1.aestronglyMeasurable
 #align interval_integrable.ae_strongly_measurable IntervalIntegrable.aestronglyMeasurable
 
-protected theorem ae_strongly_measurable' (h : IntervalIntegrable f μ a b) :
+protected theorem aestronglyMeasurable' (h : IntervalIntegrable f μ a b) :
     AEStronglyMeasurable f (μ.restrict (Ioc b a)) :=
   h.2.aestronglyMeasurable
-#align interval_integrable.ae_strongly_measurable' IntervalIntegrable.ae_strongly_measurable'
+#align interval_integrable.ae_strongly_measurable' IntervalIntegrable.aestronglyMeasurable'
 
 end
 
@@ -286,7 +281,7 @@ theorem mul_const {f : ℝ → A} (hf : IntervalIntegrable f μ a b) (c : A) :
 #align interval_integrable.mul_const IntervalIntegrable.mul_const
 
 @[simp]
-theorem div_const {𝕜 : Type _} {f : ℝ → 𝕜} [NormedField 𝕜] (h : IntervalIntegrable f μ a b)
+theorem div_const {𝕜 : Type*} {f : ℝ → 𝕜} [NormedField 𝕜] (h : IntervalIntegrable f μ a b)
     (c : 𝕜) : IntervalIntegrable (fun x => f x / c) μ a b := by
   simpa only [div_eq_mul_inv] using mul_const h c⁻¹
 #align interval_integrable.div_const IntervalIntegrable.div_const
@@ -408,8 +403,8 @@ Suppose that `f : ℝ → E` has a finite limit at `l' ⊓ μ.ae`. Then `f` is i
 `u..v` provided that both `u` and `v` tend to `l`.
 
 Typeclass instances allow Lean to find `l'` based on `l` but not vice versa, so
-`apply tendsto.eventually_interval_integrable_ae` will generate goals `Filter ℝ` and
-`tendsto_Ixx_class Ioc ?m_1 l'`. -/
+`apply Tendsto.eventually_intervalIntegrable_ae` will generate goals `Filter ℝ` and
+`TendstoIxxClass Ioc ?m_1 l'`. -/
 theorem Filter.Tendsto.eventually_intervalIntegrable_ae {f : ℝ → E} {μ : Measure ℝ}
     {l l' : Filter ℝ} (hfm : StronglyMeasurableAtFilter f l' μ) [TendstoIxxClass Ioc l l']
     [IsMeasurablyGenerated l'] (hμ : μ.FiniteAtFilter l') {c : E} (hf : Tendsto f (l' ⊓ μ.ae) (𝓝 c))
@@ -426,8 +421,8 @@ Suppose that `f : ℝ → E` has a finite limit at `l`. Then `f` is interval int
 provided that both `u` and `v` tend to `l`.
 
 Typeclass instances allow Lean to find `l'` based on `l` but not vice versa, so
-`apply tendsto.eventually_interval_integrable_ae` will generate goals `Filter ℝ` and
-`tendsto_Ixx_class Ioc ?m_1 l'`. -/
+`apply Tendsto.eventually_intervalIntegrable` will generate goals `Filter ℝ` and
+`TendstoIxxClass Ioc ?m_1 l'`. -/
 theorem Filter.Tendsto.eventually_intervalIntegrable {f : ℝ → E} {μ : Measure ℝ} {l l' : Filter ℝ}
     (hfm : StronglyMeasurableAtFilter f l' μ) [TendstoIxxClass Ioc l l'] [IsMeasurablyGenerated l']
     (hμ : μ.FiniteAtFilter l') {c : E} (hf : Tendsto f l' (𝓝 c)) {u v : ι → ℝ} {lt : Filter ι}
@@ -602,32 +597,32 @@ theorem integral_sub (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegrable
 #align interval_integral.integral_sub intervalIntegral.integral_sub
 
 @[simp]
-nonrec theorem integral_smul {𝕜 : Type _} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
+nonrec theorem integral_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
     [SMulCommClass ℝ 𝕜 E] (r : 𝕜) (f : ℝ → E) :
     ∫ x in a..b, r • f x ∂μ = r • ∫ x in a..b, f x ∂μ := by
   simp only [intervalIntegral, integral_smul, smul_sub]
 #align interval_integral.integral_smul intervalIntegral.integral_smul
 
 @[simp]
-nonrec theorem integral_smul_const {𝕜 : Type _} [IsROrC 𝕜] [NormedSpace 𝕜 E] (f : ℝ → 𝕜) (c : E) :
+nonrec theorem integral_smul_const {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] (f : ℝ → 𝕜) (c : E) :
     ∫ x in a..b, f x • c ∂μ = (∫ x in a..b, f x ∂μ) • c := by
   simp only [intervalIntegral_eq_integral_uIoc, integral_smul_const, smul_assoc]
 #align interval_integral.integral_smul_const intervalIntegral.integral_smul_const
 
 @[simp]
-theorem integral_const_mul {𝕜 : Type _} [IsROrC 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
+theorem integral_const_mul {𝕜 : Type*} [IsROrC 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
     ∫ x in a..b, r * f x ∂μ = r * ∫ x in a..b, f x ∂μ :=
   integral_smul r f
 #align interval_integral.integral_const_mul intervalIntegral.integral_const_mul
 
 @[simp]
-theorem integral_mul_const {𝕜 : Type _} [IsROrC 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
+theorem integral_mul_const {𝕜 : Type*} [IsROrC 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
     ∫ x in a..b, f x * r ∂μ = (∫ x in a..b, f x ∂μ) * r := by
   simpa only [mul_comm r] using integral_const_mul r f
 #align interval_integral.integral_mul_const intervalIntegral.integral_mul_const
 
 @[simp]
-theorem integral_div {𝕜 : Type _} [IsROrC 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
+theorem integral_div {𝕜 : Type*} [IsROrC 𝕜] (r : 𝕜) (f : ℝ → 𝕜) :
     ∫ x in a..b, f x / r ∂μ = (∫ x in a..b, f x ∂μ) / r := by
   simpa only [div_eq_mul_inv] using integral_mul_const r⁻¹ f
 #align interval_integral.integral_div intervalIntegral.integral_div
@@ -651,7 +646,7 @@ nonrec theorem integral_smul_measure (c : ℝ≥0∞) :
 end Basic
 
 -- porting note: TODO: add `Complex.ofReal` version of `_root_.integral_ofReal`
-nonrec theorem _root_.IsROrC.interval_integral_ofReal {𝕜 : Type _} [IsROrC 𝕜] {a b : ℝ}
+nonrec theorem _root_.IsROrC.interval_integral_ofReal {𝕜 : Type*} [IsROrC 𝕜] {a b : ℝ}
     {μ : Measure ℝ} {f : ℝ → ℝ} : (∫ x in a..b, (f x : 𝕜) ∂μ) = ↑(∫ x in a..b, f x ∂μ) := by
   simp only [intervalIntegral, integral_ofReal, IsROrC.ofReal_sub]
 
@@ -1057,7 +1052,7 @@ theorem hasSum_intervalIntegral_of_summable_norm [Countable ι] {f : ι → C(�
   · exact intervalIntegrable_const
   · refine ae_of_all _ fun x hx => Summable.hasSum ?_
     let x : (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ) := ⟨x, ?_⟩; swap; exact ⟨hx.1.le, hx.2⟩
-    have := summable_of_summable_norm hf_sum
+    have := hf_sum.of_norm
     simpa only [Compacts.coe_mk, ContinuousMap.restrict_apply]
       using ContinuousMap.summable_apply this x
 #align interval_integral.has_sum_interval_integral_of_summable_norm intervalIntegral.hasSum_intervalIntegral_of_summable_norm
@@ -1068,7 +1063,7 @@ theorem tsum_intervalIntegral_eq_of_summable_norm [Countable ι] {f : ι → C(�
   (hasSum_intervalIntegral_of_summable_norm hf_sum).tsum_eq
 #align interval_integral.tsum_interval_integral_eq_of_summable_norm intervalIntegral.tsum_intervalIntegral_eq_of_summable_norm
 
-variable {X : Type _} [TopologicalSpace X] [FirstCountableTopology X]
+variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
 
 /-- Continuity of interval integral with respect to a parameter, at a point within a set.
   Given `F : X → ℝ → E`, assume `F x` is ae-measurable on `[a, b]` for `x` in a
@@ -1198,7 +1193,7 @@ theorem continuousOn_primitive [NoAtoms μ] (h_int : IntegrableOn f (Icc a b) μ
   by_cases h : a ≤ b
   · have : ∀ x ∈ Icc a b, ∫ t in Ioc a x, f t ∂μ = ∫ t in a..x, f t ∂μ := by
       intro x x_in
-      simp_rw [← uIoc_of_le h, integral_of_le x_in.1]
+      simp_rw [integral_of_le x_in.1]
     rw [continuousOn_congr this]
     intro x₀ _
     refine' continuousWithinAt_primitive (measure_singleton x₀) _

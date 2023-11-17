@@ -2,15 +2,12 @@
 Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module model_theory.ultraproducts
-! leanprover-community/mathlib commit f1ae620609496a37534c2ab3640b641d5be8b6f0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.ModelTheory.Quotients
 import Mathlib.Order.Filter.Germ
 import Mathlib.Order.Filter.Ultrafilter
+
+#align_import model_theory.ultraproducts from "leanprover-community/mathlib"@"f1ae620609496a37534c2ab3640b641d5be8b6f0"
 
 /-! # Ultraproducts and Łoś's Theorem
 
@@ -30,7 +27,7 @@ ultraproduct, Los's theorem
 
 universe u v
 
-variable {α : Type _} (M : α → Type _) (u : Ultrafilter α)
+variable {α : Type*} (M : α → Type*) (u : Ultrafilter α)
 
 open FirstOrder Filter
 
@@ -83,7 +80,7 @@ theorem funMap_cast {n : ℕ} (f : L.Functions n) (x : Fin n → ∀ a, M a) :
   apply funMap_quotient_mk'
 #align first_order.language.ultraproduct.fun_map_cast FirstOrder.Language.Ultraproduct.funMap_cast
 
-theorem term_realize_cast {β : Type _} (x : β → ∀ a, M a) (t : L.Term β) :
+theorem term_realize_cast {β : Type*} (x : β → ∀ a, M a) (t : L.Term β) :
     (t.realize fun i => (x i : (u : Filter α).Product M)) =
       (fun a => t.realize fun i => x i a : (u : Filter α).Product M) := by
   convert @Term.realize_quotient_mk' L _ ((u : Filter α).productSetoid M)
@@ -99,7 +96,7 @@ theorem term_realize_cast {β : Type _} (x : β → ∀ a, M a) (t : L.Term β) 
 
 variable [∀ a : α, Nonempty (M a)]
 
-theorem boundedFormula_realize_cast {β : Type _} {n : ℕ} (φ : L.BoundedFormula β n)
+theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormula β n)
     (x : β → ∀ a, M a) (v : Fin n → ∀ a, M a) :
     (φ.Realize (fun i : β => (x i : (u : Filter α).Product M))
         (fun i => (v i : (u : Filter α).Product M))) ↔
@@ -126,7 +123,7 @@ theorem boundedFormula_realize_cast {β : Type _} {n : ℕ} (φ : L.BoundedFormu
       φ.Realize (fun i : β => (x i : (u : Filter α).Product M))
         (Fin.snoc (((↑) : (∀ a, M a) → (u : Filter α).Product M) ∘ v)
           (m : (u : Filter α).Product M)))
-    · exact forall_quotient_iff
+    · exact Quotient.forall
     have h' :
       ∀ (m : ∀ a, M a) (a : α),
         (fun i : Fin (k + 1) => (Fin.snoc v m : _ → ∀ a, M a) i a) =
@@ -150,7 +147,7 @@ theorem boundedFormula_realize_cast {β : Type _} {n : ℕ} (φ : L.BoundedFormu
       exact Filter.mem_of_superset h fun a ha => ha (m a)
 #align first_order.language.ultraproduct.bounded_formula_realize_cast FirstOrder.Language.Ultraproduct.boundedFormula_realize_cast
 
-theorem realize_formula_cast {β : Type _} (φ : L.Formula β) (x : β → ∀ a, M a) :
+theorem realize_formula_cast {β : Type*} (φ : L.Formula β) (x : β → ∀ a, M a) :
     (φ.Realize fun i => (x i : (u : Filter α).Product M)) ↔
       ∀ᶠ a : α in u, φ.Realize fun i => x i a := by
   simp_rw [Formula.Realize, ← boundedFormula_realize_cast φ x, iff_eq_eq]

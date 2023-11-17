@@ -6,6 +6,8 @@ Authors: Arthur Paulino
 import Lean.Data.Json.Parser
 import Cache.Hashing
 
+set_option autoImplicit true
+
 namespace Cache.Requests
 
 /-- Azure blob URL -/
@@ -31,7 +33,7 @@ def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
   -- We sort the list so that the large files in `MathlibExtras` are requested first.
   hashMap.toArray.qsort (fun ⟨p₁, _⟩ ⟨_, _⟩ => p₁.components.head? = "MathlibExtras")
     |>.foldlM (init := "") fun acc ⟨_, hash⟩ => do
-    let fileName := hash.asTarGz
+    let fileName := hash.asLTar
     -- Below we use `String.quote`, which is intended for quoting for use in Lean code
     -- this does not exactly match the requirements for quoting for curl:
     -- ```
@@ -42,25 +44,31 @@ def mkGetConfigContent (hashMap : IO.HashMap) : IO String := do
     -- A backslash preceding any other letter is ignored.
     -- ```
     -- If this becomes an issue we can implement the curl spec.
+
+    -- Note we append a '.part' to the filenames here,
+    -- which `downloadFiles` then removes when the download is successful.
     pure $ acc ++ s!"url = {← mkFileURL fileName none}\n-o {
-      (IO.CACHEDIR / fileName).toString.quote}\n"
+      (IO.CACHEDIR / (fileName ++ ".part")).toString.quote}\n"
 
 /-- Calls `curl` to download a single file from the server to `CACHEDIR` (`.cache`) -/
 def downloadFile (hash : UInt64) : IO Bool := do
-  let fileName := hash.asTarGz
+  let fileName := hash.asLTar
   let url ← mkFileURL fileName none
   let path := IO.CACHEDIR / fileName
+  let partFileName := fileName ++ ".part"
+  let partPath := IO.CACHEDIR / partFileName
   let out ← IO.Process.output
-    { cmd := (← IO.getCurl), args := #[url, "--fail", "--silent", "-o", path.toString] }
+    { cmd := (← IO.getCurl), args := #[url, "--fail", "--silent", "-o", partPath.toString] }
   if out.exitCode = 0 then
+    IO.FS.rename partPath path
     pure true
   else
-    IO.FS.removeFile path
+    IO.FS.removeFile partPath
     pure false
 
 /-- Calls `curl` to download files from the server to `CACHEDIR` (`.cache`) -/
 def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool) : IO Unit := do
-  let hashMap := if forceDownload then hashMap else hashMap.filter (← IO.getLocalCacheSet) false
+  let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   let size := hashMap.size
   if size > 0 then
     IO.mkDir IO.CACHEDIR
@@ -77,7 +85,11 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
         if !line.isEmpty then
           let result ← IO.ofExcept <| Lean.Json.parse line
           match result.getObjValAs? Nat "http_code" with
-          | .ok 200 => success := success + 1
+          | .ok 200 =>
+            if let .ok fn := result.getObjValAs? String "filename_effective" then
+              if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
+                IO.FS.rename fn (fn.dropRight 5)
+            success := success + 1
           | .ok 404 => pure ()
           | _ =>
             failed := failed + 1
@@ -117,12 +129,33 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
       IO.Process.exit 1
   else IO.println "No files to download"
 
+def checkForToolchainMismatch : IO Unit := do
+  let mathlibToolchainFile := IO.mathlibDepPath / "lean-toolchain"
+  let downstreamToolchain ← IO.FS.readFile "lean-toolchain"
+  let mathlibToolchain ← IO.FS.readFile mathlibToolchainFile
+  if !(mathlibToolchain.trim = downstreamToolchain.trim) then
+    IO.println "Dependency Mathlib uses a different lean-toolchain"
+    IO.println s!"  Project uses {downstreamToolchain.trim}"
+    IO.println s!"  Mathlib uses {mathlibToolchain.trim}"
+    IO.println "\nThe cache will not work unless your project's toolchain matches Mathlib's toolchain"
+    IO.println s!"This can be achieved by copying the contents of the file `{mathlibToolchainFile}`
+into the `lean-toolchain` file at the root directory of your project"
+    if !System.Platform.isWindows then
+      IO.println s!"You can use `cp {mathlibToolchainFile} ./lean-toolchain`"
+    else
+      IO.println s!"On powershell you can use `cp {mathlibToolchainFile} ./lean-toolchain`"
+      IO.println s!"On Windows CMD you can use `copy {mathlibToolchainFile} lean-toolchain`"
+    IO.Process.exit 1
+  return ()
+
 /-- Downloads missing files, and unpacks files. -/
-def getFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool) (decompress : Bool) :
+def getFiles (hashMap : IO.HashMap) (forceDownload forceUnpack parallel decompress : Bool) :
     IO Unit := do
+  let isMathlibRoot ← IO.isMathlibRoot
+  if !isMathlibRoot then checkForToolchainMismatch
   downloadFiles hashMap forceDownload parallel
   if decompress then
-    IO.unpackCache hashMap
+    IO.unpackCache hashMap forceUnpack
 
 end Get
 
@@ -156,11 +189,7 @@ section Commit
 def isGitStatusClean : IO Bool :=
   return (← IO.runCmd "git" #["status", "--porcelain"]).isEmpty
 
-def getGitCommitHash : IO String := do
-  let ret := (← IO.runCmd "git" #["log", "-1"]).replace "\n" " "
-  match ret.splitOn " " with
-  | "commit" :: hash :: _ => return hash
-  | _ => throw $ IO.userError "Invalid format for the return of `git log -1`"
+def getGitCommitHash : IO String := return (← IO.runCmd "git" #["rev-parse", "HEAD"]).trimRight
 
 /--
 Sends a commit file to the server, containing the hashes of the respective committed files.

@@ -1,5 +1,7 @@
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
+set_option autoImplicit true
+
 example [TopologicalSpace α] [inst : MeasurableSpace α] [BorelSpace α] : MeasurableSet (∅ : Set α) := by
   guard_target = @MeasurableSet α inst ∅
   borelize α

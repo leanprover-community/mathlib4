@@ -2,16 +2,13 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Module.biproducts
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Pi
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Homology.ShortExact.Abelian
+
+#align_import algebra.category.Module.biproducts from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # The category of `R`-modules has finite biproducts
@@ -80,6 +77,9 @@ noncomputable def biprodIsoProd (M N : ModuleCat.{v} R) :
   IsLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit M N) (binaryProductLimitCone M N).isLimit
 #align Module.biprod_iso_prod ModuleCat.biprodIsoProd
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] ModuleCat.biprodIsoProd_hom_apply
+
 @[simp, elementwise]
 theorem biprodIsoProd_inv_comp_fst (M N : ModuleCat.{v} R) :
     (biprodIsoProd M N).inv ≫ biprod.fst = LinearMap.fst R M N :=
@@ -140,6 +140,9 @@ noncomputable def biproductIsoPi [Fintype J] (f : J → ModuleCat.{v} R) :
     ((⨁ f) : ModuleCat.{v} R) ≅ ModuleCat.of R (∀ j, f j) :=
   IsLimit.conePointUniqueUpToIso (biproduct.isLimit f) (productLimitCone f).isLimit
 #align Module.biproduct_iso_pi ModuleCat.biproductIsoPi
+
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] ModuleCat.biproductIsoPi_hom_apply
 
 @[simp, elementwise]
 theorem biproductIsoPi_inv_comp_π [Fintype J] (f : J → ModuleCat.{v} R) (j : J) :

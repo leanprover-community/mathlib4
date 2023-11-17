@@ -2,14 +2,11 @@
 Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
-
-! This file was ported from Lean 3 source module init.data.int.comp_lemmas
-! leanprover-community/lean commit 4a03bdeb31b3688c31d02d7ff8e0ff2e5d6174db
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Init.Data.Int.Order
+
+#align_import init.data.int.comp_lemmas from "leanprover-community/lean"@"4a03bdeb31b3688c31d02d7ff8e0ff2e5d6174db"
 
 /-!
 # Auxiliary lemmas for proving that two int numerals are different
@@ -125,7 +122,9 @@ theorem natAbs_of_negSucc (n : ℕ) : natAbs (negSucc n) = Nat.succ n :=
 protected theorem natAbs_add_nonneg :
     ∀ {a b : Int}, 0 ≤ a → 0 ≤ b → natAbs (a + b) = natAbs a + natAbs b
   | ofNat n, ofNat m, _, _ => by
-    simp [natAbs_ofNat_core]
+    simp only [ofNat_eq_coe, natAbs_ofNat]
+    simp only [Int.ofNat_add_ofNat]
+    simp only [← ofNat_eq_coe, natAbs_ofNat_core]
   | _, negSucc m, _, h₂ => absurd (negSucc_lt_zero m) (not_lt_of_ge h₂)
   | negSucc n, _, h₁, _ => absurd (negSucc_lt_zero n) (not_lt_of_ge h₁)
 #align int.nat_abs_add_nonneg Int.natAbs_add_nonneg
@@ -133,7 +132,7 @@ protected theorem natAbs_add_nonneg :
 protected theorem natAbs_add_neg :
     ∀ {a b : Int}, a < 0 → b < 0 → natAbs (a + b) = natAbs a + natAbs b
   | negSucc n, negSucc m, _, _ => by
-    simp [natAbs_of_negSucc, Nat.succ_add, Nat.add_succ]
+    simp [negSucc_add_negSucc, natAbs_of_negSucc, Nat.succ_add, Nat.add_succ]
 #align int.nat_abs_add_neg Int.natAbs_add_neg
 
 set_option linter.deprecated false in

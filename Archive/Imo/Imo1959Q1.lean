@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
-
-! This file was ported from Lean 3 source module imo.imo1959_q1
-! leanprover-community/mathlib commit 5f25c089cb34db4db112556f23c50d12da81b297
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Ring
 import Mathlib.Data.Nat.Prime
+
+#align_import imo.imo1959_q1 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
 
 /-!
 # IMO 1959 Q1
@@ -36,6 +33,6 @@ end Imo1959Q1
 
 open Imo1959Q1
 
-theorem imo1959_q1 : ∀ n : ℕ, coprime (21 * n + 4) (14 * n + 3) := fun n =>
+theorem imo1959_q1 : ∀ n : ℕ, Coprime (21 * n + 4) (14 * n + 3) := fun n =>
   coprime_of_dvd' fun k _ h1 h2 => calculation n k h1 h2
 #align imo1959_q1 imo1959_q1

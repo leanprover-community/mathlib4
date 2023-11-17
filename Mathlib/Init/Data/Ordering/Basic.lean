@@ -8,6 +8,8 @@ import Mathlib.Mathport.Rename
 
 /-!  # Helper definitions and instances for `Ordering` -/
 
+set_option autoImplicit true
+
 deriving instance Repr for Ordering
 
 namespace Ordering

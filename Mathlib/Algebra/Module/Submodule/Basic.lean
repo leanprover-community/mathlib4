@@ -2,16 +2,11 @@
 Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.module.submodule.basic
-! leanprover-community/mathlib commit 8130e5155d637db35907c272de9aec9dc851c03a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Module.LinearMap
-import Mathlib.Algebra.Module.Equiv
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.Submonoid.Membership
+
+#align_import algebra.module.submodule.basic from "leanprover-community/mathlib"@"8130e5155d637db35907c272de9aec9dc851c03a"
 
 /-!
 
@@ -181,35 +176,23 @@ end Submodule
 
 namespace SMulMemClass
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type _} [SetLike A M]
+variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type*} [SetLike A M]
   [AddSubmonoidClass A M] [SMulMemClass A R M] (S' : A)
 
 -- Prefer subclasses of `Module` over `SMulMemClass`.
 /-- A submodule of a `Module` is a `Module`.  -/
 instance (priority := 75) toModule : Module R S' :=
-  Subtype.coe_injective.module R (AddSubmonoidClass.Subtype S') (SetLike.val_smul S')
+  Subtype.coe_injective.module R (AddSubmonoidClass.subtype S') (SetLike.val_smul S')
 #align submodule_class.to_module SMulMemClass.toModule
 
 /-- This can't be an instance because Lean wouldn't know how to find `R`, but we can still use
 this to manually derive `Module` on specific types. -/
-def toModule' (S R' R A : Type _) [Semiring R] [NonUnitalNonAssocSemiring A]
+def toModule' (S R' R A : Type*) [Semiring R] [NonUnitalNonAssocSemiring A]
     [Module R A] [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
     [SetLike S A] [AddSubmonoidClass S A] [SMulMemClass S R A] (s : S) :
     Module R' s :=
-  haveI : SMulMemClass S R' A := SMulMemClass.ofIsScalarTower S R' R  A
+  haveI : SMulMemClass S R' A := SMulMemClass.ofIsScalarTower S R' R A
   SMulMemClass.toModule s
-
-/-- The natural `R`-linear map from a submodule of an `R`-module `M` to `M`. -/
-protected def subtype : S' →ₗ[R] M where
-  toFun := Subtype.val
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-#align submodule_class.subtype SMulMemClass.subtype
-
-@[simp]
-protected theorem coeSubtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
-  rfl
-#align submodule_class.coe_subtype SMulMemClass.coeSubtype
 
 end SMulMemClass
 
@@ -287,7 +270,7 @@ instance isScalarTower [SMul S R] [SMul S M] [IsScalarTower S R M] : IsScalarTow
   p.toSubMulAction.isScalarTower
 #align submodule.is_scalar_tower Submodule.isScalarTower
 
-instance isScalarTower' {S' : Type _} [SMul S R] [SMul S M] [SMul S' R] [SMul S' M] [SMul S S']
+instance isScalarTower' {S' : Type*} [SMul S R] [SMul S M] [SMul S' R] [SMul S' M] [SMul S S']
     [IsScalarTower S' R M] [IsScalarTower S S' M] [IsScalarTower S R M] : IsScalarTower S S' p :=
   p.toSubMulAction.isScalarTower'
 #align submodule.is_scalar_tower' Submodule.isScalarTower'
@@ -347,14 +330,11 @@ theorem coe_mem (x : p) : (x : M) ∈ p :=
 variable (p)
 
 instance addCommMonoid : AddCommMonoid p :=
-  { p.toAddSubmonoid.toAddCommMonoid with
-    add := (· + ·)
-    zero := 0 }
+  { p.toAddSubmonoid.toAddCommMonoid with }
 #align submodule.add_comm_monoid Submodule.addCommMonoid
 
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Module S p :=
   { (show MulAction S p from p.toSubMulAction.mulAction') with
-    smul := (· • ·)
     smul_zero := fun a => by ext; simp
     zero_smul := fun a => by ext; simp
     add_smul := fun a b x => by ext; simp [add_smul]
@@ -371,41 +351,18 @@ instance noZeroSMulDivisors [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R p :=
     this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
 #align submodule.no_zero_smul_divisors Submodule.noZeroSMulDivisors
 
-/-- Embedding of a submodule `p` to the ambient space `M`. -/
-protected def subtype : p →ₗ[R] M := by refine' { toFun := Subtype.val.. } <;> simp [coe_smul]
-#align submodule.subtype Submodule.subtype
-
-theorem subtype_apply (x : p) : p.subtype x = x :=
-  rfl
-#align submodule.subtype_apply Submodule.subtype_apply
-
-@[simp]
-theorem coeSubtype : (Submodule.subtype p : p → M) = Subtype.val :=
-  rfl
-#align submodule.coe_subtype Submodule.coeSubtype
-
-theorem injective_subtype : Injective p.subtype :=
-  Subtype.coe_injective
-#align submodule.injective_subtype Submodule.injective_subtype
-
-/-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
--- porting note: removing the `@[simp]` attribute since it's literally `AddSubmonoid.coe_finset_sum`
-theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i in s, x i) = ∑ i in s, (x i : M) :=
-  map_sum p.subtype _ _
-#align submodule.coe_sum Submodule.coe_sum
-
 section AddAction
 
 /-! ### Additive actions by `Submodule`s
-These instances transfer the action by an element `m : M` of a `R`-module `M` written as `m +ᵥ a`
+These instances transfer the action by an element `m : M` of an `R`-module `M` written as `m +ᵥ a`
 onto the action by an element `s : S` of a submodule `S : Submodule R M` such that
 `s +ᵥ a = (s : M) +ᵥ a`.
-These instances work particularly well in conjunction with `add_group.to_add_action`, enabling
+These instances work particularly well in conjunction with `AddGroup.toAddAction`, enabling
 `s +ᵥ m` as an alias for `↑s + m`.
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 instance [VAdd M α] : VAdd p α :=
   p.toAddSubmonoid.vadd
@@ -416,10 +373,6 @@ instance vaddCommClass [VAdd M β] [VAdd α β] [VAddCommClass M α β] : VAddCo
 
 instance [VAdd M α] [FaithfulVAdd M α] : FaithfulVAdd p α :=
   ⟨fun h => Subtype.ext <| eq_of_vadd_eq_vadd h⟩
-
-/-- The action by a submodule is the action by the underlying module. -/
-instance [AddAction M α] : AddAction p α :=
-  AddAction.compHom _ p.subtype.toAddMonoidHom
 
 variable {p}
 
@@ -490,17 +443,6 @@ def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M where
   map_rel_iff' := by simp [SetLike.le_def]
 #align submodule.restrict_scalars_embedding Submodule.restrictScalarsEmbedding
 #align submodule.restrict_scalars_embedding_apply Submodule.restrictScalarsEmbedding_apply
-
-/-- Turning `p : Submodule R M` into an `S`-submodule gives the same module structure
-as turning it into a type and adding a module structure. -/
-@[simps (config := { simpRhs := true })]
-def restrictScalarsEquiv (p : Submodule R M) : p.restrictScalars S ≃ₗ[R] p :=
-  { AddEquiv.refl p with
-    toFun := id
-    invFun := id
-    map_smul' := fun _ _ => rfl }
-#align submodule.restrict_scalars_equiv Submodule.restrictScalarsEquiv
-#align submodule.restrict_scalars_equiv_symm_apply Submodule.restrictScalarsEquiv_symm_apply
 
 end RestrictScalars
 
@@ -595,11 +537,13 @@ theorem sub_mem_iff_right (hx : x ∈ p) : x - y ∈ p ↔ y ∈ p := by
 #align submodule.sub_mem_iff_right Submodule.sub_mem_iff_right
 
 instance addCommGroup : AddCommGroup p :=
-  { p.toAddSubgroup.toAddCommGroup with
-    add := (· + ·)
-    zero := 0
-    neg := Neg.neg }
+  { p.toAddSubgroup.toAddCommGroup with }
 #align submodule.add_comm_group Submodule.addCommGroup
+
+-- See `neg_coe_set`
+theorem neg_coe : -(p : Set M) = p :=
+  Set.ext fun _ => p.neg_mem_iff
+#align submodule.neg_coe Submodule.neg_coe
 
 end AddCommGroup
 

@@ -2,11 +2,13 @@ import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-! # Tests for the `positivity` tactic
 
 This tactic proves goals of the form `0 ≤ a` and `0 < a`.
 -/
+set_option autoImplicit true
 
 open Function Nat NNReal ENNReal
 
@@ -142,12 +144,18 @@ example {a : ℚ} (ha : 0 < a) : 0 < |a| := by positivity
 example {a : ℚ} (ha : a ≠ 0) : 0 < |a| := by positivity
 example (a : ℚ) : 0 ≤ |a| := by positivity
 
--- example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : 0 < b) : 0 < a • b := by positivity
--- example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a • b := by positivity
--- example {a : ℤ} {b : ℚ} (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a • b := by positivity
--- example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : b ≠ 0) : a • b ≠ 0 := by positivity
--- example {a : ℤ} {b : ℚ} (ha : a ≠ 0) (hb : 0 < b) : a • b ≠ 0 := by positivity
--- example {a : ℤ} {b : ℚ} (ha : a ≠ 0) (hb : b ≠ 0) : a • b ≠ 0 := by positivity
+example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : 0 < b) : 0 < a • b := by positivity
+example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a • b := by positivity
+example {a : ℤ} {b : ℚ} (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a • b := by positivity
+example {a : ℤ} {b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a • b := by positivity
+example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : b ≠ 0) : a • b ≠ 0 := by positivity
+example {a : ℤ} {b : ℚ} (ha : a ≠ 0) (hb : 0 < b) : a • b ≠ 0 := by positivity
+example {a : ℤ} {b : ℚ} (ha : a ≠ 0) (hb : b ≠ 0) : a • b ≠ 0 := by positivity
+
+-- Test that the positivity extension for `a • b` can handle universe polymorphism.
+example {R M : Type*} [OrderedSemiring R] [StrictOrderedSemiring M]
+    [SMulWithZero R M] [OrderedSMul R M] {a : R} {b : M} (ha : 0 < a) (hb : 0 < b) :
+    0 < a • b := by positivity
 
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a + a := by positivity
 
@@ -162,8 +170,6 @@ example {a : ℤ} (ha : 3 < a) : 0 < a + a := by positivity
 example {a b : ℚ} (ha : 3 < a) (hb : 4 ≤ b) : 0 < 3 + a * b / 7 + b + 7 + 14 := by positivity
 
 example {a b : ℤ} (ha : 3 < a) (hb : 4 ≤ b) : 0 < 3 + a * b / 7 + b + 7 + 14 := by positivity
-
--- example {a : ℤ} (ha : 0 < a) : 0 < a / a := by positivity
 
 /-! ### Exponentiation -/
 
@@ -182,17 +188,17 @@ example [LinearOrderedSemifield α] (a : α) : 0 < a ^ (0 : ℤ) := by positivit
 
 example {a b : ℝ} (ha : 0 ≤ a) : 0 ≤ a ^ b := by positivity
 example {a b : ℝ} (ha : 0 < a) : 0 < a ^ b := by positivity
-example {a : ℝ≥0} {b : ℝ} (ha : 0 < a) : 0 < a ^ b := by positivity
+example {a : ℝ≥0} {b : ℝ} (ha : 0 < a) : 0 < (a : ℝ) ^ b := by positivity
 -- example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 ≤ b) : 0 < a ^ b := by positivity
 -- example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 < b) : 0 < a ^ b := by positivity
 example {a : ℝ} : 0 < a ^ 0 := by positivity
 
--- example {a : ℝ} (ha : 0 < a) : 0 ≤ ⌊a⌋ := by positivity
--- example {a : ℝ} (ha : 0 ≤ a) : 0 ≤ ⌊a⌋ := by positivity
+example {a : ℝ} (ha : 0 < a) : 0 ≤ ⌊a⌋ := by positivity
+example {a : ℝ} (ha : 0 ≤ a) : 0 ≤ ⌊a⌋ := by positivity
 
--- example {a : ℝ} (ha : 0 < a) : 0 < ⌈a⌉₊ := by positivity
--- example {a : ℝ} (ha : 0 < a) : 0 < ⌈a⌉ := by positivity
--- example {a : ℝ} (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := by positivity
+example {a : ℝ} (ha : 0 < a) : 0 < ⌈a⌉₊ := by positivity
+example {a : ℝ} (ha : 0 < a) : 0 < ⌈a⌉ := by positivity
+example {a : ℝ} (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := by positivity
 
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 2 + a := by positivity
 
@@ -216,6 +222,7 @@ example {a : ℤ} (ha : 1 < a) : 0 < |(3:ℤ) + a| := by positivity
 
 example : 0 < NNReal.sqrt 5 := by positivity
 example : 0 ≤ Real.sqrt (-5) := by positivity
+example (x : ℝ) : 0 ≤ Real.sqrt x := by positivity
 example : 0 < Real.sqrt 5 := by positivity
 
 example {a : ℝ} (_ha : 0 ≤ a) : 0 ≤ Real.sqrt a := by positivity
@@ -246,12 +253,24 @@ example : 0 ≤ max (-3 : ℤ) 5 := by positivity
 
 example (n : ℕ) : 0 < n.succ := by positivity
 example (n : ℕ) : 0 < n ! := by positivity
--- example (n k : ℕ) : 0 < n.asc_factorial k := by positivity
+example (n k : ℕ) : 0 < n.ascFactorial k := by positivity
 
 -- example {α : Type _} (s : Finset α) (hs : s.Nonempty) : 0 < s.card := by positivity
 -- example {α : Type _} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by positivity
 
 example {r : ℝ} : 0 < Real.exp r := by positivity
+
+example {n : ℕ} : 0 ≤ Real.log n := by positivity
+example {n : ℤ} : 0 ≤ Real.log n := by positivity
+example : 0 < Real.log 2 := by positivity
+example : 0 < Real.log 1.01 := by positivity
+example : 0 ≠ Real.log 0.99 := by positivity
+example : 0 < Real.log (-2) := by positivity
+example : 0 < Real.log (-1.01) := by positivity
+example : 0 ≠ Real.log (-0.99) := by positivity
+example : 0 ≤ Real.log 1 := by positivity
+example : 0 ≤ Real.log 0 := by positivity
+example : 0 ≤ Real.log (-1) := by positivity
 
 example {V : Type _} [NormedCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity
 example {V : Type _} [NormedAddCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity
@@ -283,9 +302,9 @@ example {a : ℕ} (ha : 0 < a) : (0 : ℚ) < a := by positivity
 example {a : ℤ} (ha : a ≠ 0) : (a : ℚ) ≠ 0 := by positivity
 example {a : ℤ} (ha : 0 ≤ a) : (0 : ℚ) ≤ a := by positivity
 example {a : ℤ} (ha : 0 < a) : (0 : ℚ) < a := by positivity
--- example {a : ℚ} (ha : a ≠ 0) : (a : ℝ) ≠ 0 := by positivity
--- example {a : ℚ} (ha : 0 ≤ a) : (0 : ℝ) ≤ a := by positivity
--- example {a : ℚ} (ha : 0 < a) : (0 : ℝ) < a := by positivity
+example {a : ℚ} (ha : a ≠ 0) : (a : ℝ) ≠ 0 := by positivity
+example {a : ℚ} (ha : 0 ≤ a) : (0 : ℝ) ≤ a := by positivity
+example {a : ℚ} (ha : 0 < a) : (0 : ℝ) < a := by positivity
 example {r : ℝ≥0} : (0 : ℝ) ≤ r := by positivity
 example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ) < r := by positivity
 -- example {r : ℝ≥0} (hr : 0 < r) : (0 : ℝ≥0∞) < r := by positivity

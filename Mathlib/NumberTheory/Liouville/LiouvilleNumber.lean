@@ -2,13 +2,10 @@
 Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Jujian Zhang
-
-! This file was ported from Lean 3 source module number_theory.liouville.liouville_number
-! leanprover-community/mathlib commit 04e80bb7e8510958cd9aacd32fe2dc147af0b9f1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.Liouville.Basic
+
+#align_import number_theory.liouville.liouville_number from "leanprover-community/mathlib"@"04e80bb7e8510958cd9aacd32fe2dc147af0b9f1"
 
 /-!
 
@@ -86,7 +83,7 @@ protected theorem summable {m : ℝ} (hm : 1 < m) : Summable fun i : ℕ => 1 / 
 
 theorem remainder_summable {m : ℝ} (hm : 1 < m) (k : ℕ) :
     Summable fun i : ℕ => 1 / m ^ (i + (k + 1))! := by
-  convert(summable_nat_add_iff (k + 1)).2 (LiouvilleNumber.summable hm)
+  convert (summable_nat_add_iff (k + 1)).2 (LiouvilleNumber.summable hm)
 #align liouville_number.remainder_summable LiouvilleNumber.remainder_summable
 
 theorem remainder_pos {m : ℝ} (hm : 1 < m) (k : ℕ) : 0 < remainder m k :=
@@ -175,7 +172,7 @@ theorem remainder_lt (n : ℕ) {m : ℝ} (m2 : 2 ≤ m) : remainder m n < 1 / (m
 /-- The sum of the `k` initial terms of the Liouville number to base `m` is a ratio of natural
 numbers where the denominator is `m ^ k!`. -/
 theorem partialSum_eq_rat {m : ℕ} (hm : 0 < m) (k : ℕ) :
-    ∃ p : ℕ, partialSum m k = p / (m ^ k ! : ℝ) := by
+    ∃ p : ℕ, partialSum m k = p / ((m ^ k ! :) : ℝ) := by
   induction' k with k h
   · exact ⟨1, by rw [partialSum, range_one, sum_singleton, Nat.cast_one, Nat.factorial,
       pow_one, pow_one]⟩
@@ -199,7 +196,7 @@ theorem liouville_liouvilleNumber {m : ℕ} (hm : 2 ≤ m) : Liouville (liouvill
   intro n
   -- the first `n` terms sum to `p / m ^ k!`
   rcases partialSum_eq_rat (zero_lt_two.trans_le hm) n with ⟨p, hp⟩
-  refine' ⟨p, m ^ n !, by rw [Nat.cast_pow]; exact one_lt_pow mZ1 n.factorial_ne_zero, _⟩
+  refine' ⟨p, m ^ n !, one_lt_pow mZ1 n.factorial_ne_zero, _⟩
   push_cast
   rw [Nat.cast_pow] at hp
   -- separate out the sum of the first `n` terms and the rest

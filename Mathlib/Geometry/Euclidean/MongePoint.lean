@@ -2,13 +2,10 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module geometry.euclidean.monge_point
-! leanprover-community/mathlib commit 1a4df69ca1a9a0e5e26bfe12e2b92814216016d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Euclidean.Circumcenter
+
+#align_import geometry.euclidean.monge_point from "leanprover-community/mathlib"@"1a4df69ca1a9a0e5e26bfe12e2b92814216016d0"
 
 /-!
 # Monge point and orthocenter
@@ -66,7 +63,7 @@ namespace Simplex
 
 open Finset AffineSubspace EuclideanGeometry PointsWithCircumcenterIndex
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- The Monge point of a simplex (in 2 or more dimensions) is a
@@ -76,8 +73,8 @@ the intersection of the Monge planes, where a Monge plane is the
 simplex that passes through the centroid of an (n-2)-dimensional face
 and is orthogonal to the opposite edge (in 2 dimensions, this is the
 same as an altitude).  The circumcenter O, centroid G and Monge point
-M are collinear in that order on the Euler line, with OG : GM = (n-1)
-: 2.  Here, we use that ratio to define the Monge point (so resulting
+M are collinear in that order on the Euler line, with OG : GM = (n-1): 2.
+Here, we use that ratio to define the Monge point (so resulting
 in a point that equals the centroid in 0 or 1 dimensions), and then
 show in subsequent lemmas that the point so defined lies in the Monge
 planes and is their unique point of intersection. -/
@@ -286,7 +283,7 @@ theorem mongePoint_mem_mongePlane {n : ℕ} (s : Simplex ℝ P (n + 2)) {i₁ i�
   refine' ⟨_, s.mongePoint_mem_affineSpan⟩
   intro v hv
   rcases Submodule.mem_span_singleton.mp hv with ⟨r, rfl⟩
-  rw [inner_smul_right, s.inner_mongePoint_vsub_face_centroid_vsub, MulZeroClass.mul_zero]
+  rw [inner_smul_right, s.inner_mongePoint_vsub_face_centroid_vsub, mul_zero]
 #align affine.simplex.monge_point_mem_monge_plane Affine.Simplex.mongePoint_mem_mongePlane
 
 /-- The direction of a Monge plane. -/
@@ -434,7 +431,7 @@ namespace Triangle
 
 open EuclideanGeometry Finset Simplex AffineSubspace FiniteDimensional
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- The orthocenter of a triangle is the intersection of its
@@ -477,16 +474,18 @@ theorem altitude_eq_mongePlane (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h�
     (h₂₃ : i₂ ≠ i₃) : t.altitude i₁ = t.mongePlane i₂ i₃ := by
   have hs : ({i₂, i₃}ᶜ : Finset (Fin 3)) = {i₁} := by
     -- porting note: was `decide!`
-    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;> simp at h₁₂ h₁₃ h₂₃ ⊢
+    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃
+      <;> simp (config := {decide := true}) at h₁₂ h₁₃ h₂₃ ⊢
   have he : univ.erase i₁ = {i₂, i₃} := by
     -- porting note: was `decide!`
-    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;> simp at h₁₂ h₁₃ h₂₃ ⊢
+    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃
+      <;> simp (config := {decide := true}) at h₁₂ h₁₃ h₂₃ ⊢
   rw [mongePlane_def, altitude_def, direction_affineSpan, hs, he, centroid_singleton, coe_insert,
     coe_singleton, vectorSpan_image_eq_span_vsub_set_left_ne ℝ _ (Set.mem_insert i₂ _)]
   simp [h₂₃, Submodule.span_insert_eq_span]
   -- porting note: this didn't need the `congr` and the `fin_cases`
   congr
-  fin_cases i₂ <;> fin_cases i₃ <;> simp at h₂₃ ⊢
+  fin_cases i₂ <;> fin_cases i₃ <;> simp (config := {decide := true}) at h₂₃ ⊢
 #align affine.triangle.altitude_eq_monge_plane Affine.Triangle.altitude_eq_mongePlane
 
 /-- The orthocenter lies in the altitudes. -/
@@ -543,7 +542,11 @@ theorem dist_orthocenter_reflection_circumcenter (t : Triangle ℝ P) {i₁ i₂
   rw [← sum_sdiff hu, ← sum_sdiff hu, hi₃, sum_singleton, ← sum_sdiff hu, hi₃]
   split_ifs with h
   · exact (h.elim hi₃₁ hi₃₂).elim
-  simp [h]
+  simp only [zero_add, Nat.cast_one, inv_one, sub_zero, one_mul, pointsWithCircumcenter_point,
+    sum_singleton, h, ite_false, dist_self, mul_zero, mem_singleton, true_or, ite_true, sub_self,
+    zero_mul, implies_true, sum_insert_of_eq_zero_if_not_mem, or_true, add_zero, div_one,
+    sub_neg_eq_add, pointsWithCircumcenter_eq_circumcenter, dist_circumcenter_eq_circumradius,
+    sum_const_zero, dist_circumcenter_eq_circumradius', mul_one, neg_add_rev, half_add_self]
   norm_num
 #align affine.triangle.dist_orthocenter_reflection_circumcenter Affine.Triangle.dist_orthocenter_reflection_circumcenter
 
@@ -588,7 +591,8 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
     · have hu : (Finset.univ : Finset (Fin 3)) = {j₁, j₂, j₃} := by
         clear h₁ h₂ h₃
         -- porting note: was `decide!`
-        fin_cases j₁ <;> fin_cases j₂ <;> fin_cases j₃ <;> simp at hj₁₂ hj₁₃ hj₂₃ ⊢
+        fin_cases j₁ <;> fin_cases j₂ <;> fin_cases j₃
+          <;> simp (config := {decide := true}) at hj₁₂ hj₁₃ hj₂₃ ⊢
       rw [← Set.image_univ, ← Finset.coe_univ, hu, Finset.coe_insert, Finset.coe_insert,
         Finset.coe_singleton, Set.image_insert_eq, Set.image_insert_eq, Set.image_singleton, h₁, h₂,
         h₃, Set.insert_subset_iff, Set.insert_subset_iff, Set.singleton_subset_iff]
@@ -603,7 +607,8 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
   have hu : Finset.univ.erase j₂ = {j₁, j₃} := by
     clear h₁ h₂ h₃
     -- porting note: was `decide!`
-    fin_cases j₁ <;> fin_cases j₂ <;> fin_cases j₃ <;> simp at hj₁₂ hj₁₃ hj₂₃ ⊢
+    fin_cases j₁ <;> fin_cases j₂ <;> fin_cases j₃
+      <;> simp (config := {decide := true}) at hj₁₂ hj₁₃ hj₂₃ ⊢
   rw [hu, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_singleton, h₁, h₃]
   have hle : (t₁.altitude i₃).directionᗮ ≤ line[ℝ, t₁.orthocenter, t₁.points i₃].directionᗮ :=
     Submodule.orthogonal_le (direction_le (affineSpan_orthocenter_point_le_altitude _ _))
@@ -611,7 +616,8 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
   have hui : Finset.univ.erase i₃ = {i₁, i₂} := by
     clear hle h₂ h₃
     -- porting note: was `decide!`
-    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;> simp at hi₁₂ hi₁₃ hi₂₃ ⊢
+    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃
+      <;> simp (config := {decide := true}) at hi₁₂ hi₁₃ hi₂₃ ⊢
   rw [hui, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_singleton]
   refine' vsub_mem_vectorSpan ℝ (Set.mem_insert _ _) (Set.mem_insert_of_mem _ (Set.mem_singleton _))
 #align affine.triangle.altitude_replace_orthocenter_eq_affine_span Affine.Triangle.altitude_replace_orthocenter_eq_affineSpan
@@ -639,7 +645,7 @@ namespace EuclideanGeometry
 
 open Affine AffineSubspace FiniteDimensional
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- Four points form an orthocentric system if they consist of the
@@ -782,7 +788,7 @@ theorem OrthocentricSystem.eq_insert_orthocenter {s : Set P} (ho : OrthocentricS
         ∃ j₁ : Fin 3, j₁ ≠ j₂ ∧ j₁ ≠ j₃ ∧ ∀ j : Fin 3, j = j₁ ∨ j = j₂ ∨ j = j₃ := by
       clear h₂ h₃
       -- porting note: was `decide!`
-      fin_cases j₂ <;> fin_cases j₃ <;> simp at hj₂₃ ⊢
+      fin_cases j₂ <;> fin_cases j₃ <;> simp (config := {decide := true}) at hj₂₃ ⊢
     suffices h : t₀.points j₁ = t.orthocenter
     · have hui : (Set.univ : Set (Fin 3)) = {i₁, i₂, i₃} := by ext x; simpa using h₁₂₃ x
       have huj : (Set.univ : Set (Fin 3)) = {j₁, j₂, j₃} := by ext x; simpa using hj₁₂₃ x

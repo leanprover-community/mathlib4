@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fintype.option
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Option
+
+#align_import data.fintype.option from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # fintype instances for option
@@ -22,25 +19,25 @@ open Nat
 
 universe u v
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open Finset Function
 
-instance {α : Type _} [Fintype α] : Fintype (Option α) :=
+instance {α : Type*} [Fintype α] : Fintype (Option α) :=
   ⟨Finset.insertNone univ, fun a => by simp⟩
 
-theorem univ_option (α : Type _) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
+theorem univ_option (α : Type*) [Fintype α] : (univ : Finset (Option α)) = insertNone univ :=
   rfl
 #align univ_option univ_option
 
 @[simp]
-theorem Fintype.card_option {α : Type _} [Fintype α] :
+theorem Fintype.card_option {α : Type*} [Fintype α] :
     Fintype.card (Option α) = Fintype.card α + 1 :=
   (Finset.card_cons (by simp)).trans <| congr_arg₂ _ (card_map _) rfl
 #align fintype.card_option Fintype.card_option
 
 /-- If `Option α` is a `Fintype` then so is `α` -/
-def fintypeOfOption {α : Type _} [Fintype (Option α)] : Fintype α :=
+def fintypeOfOption {α : Type*} [Fintype (Option α)] : Fintype α :=
   ⟨Finset.eraseNone (Fintype.elems (α := Option α)), fun x =>
     mem_eraseNone.mpr (Fintype.complete (some x))⟩
 #align fintype_of_option fintypeOfOption

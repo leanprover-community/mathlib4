@@ -2,13 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.zorn
-! leanprover-community/mathlib commit 46a64b5b4268c594af770c44d9e502afc6a515cb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Chain
+
+#align_import order.zorn from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
 
 /-!
 # Zorn's lemmas
@@ -68,7 +65,7 @@ Fleuriot, Tobias Nipkow, Christian Sternagel.
 
 open Classical Set
 
-variable {α β : Type _} {r : α → α → Prop} {c : Set α}
+variable {α β : Type*} {r : α → α → Prop} {c : Set α}
 
 /-- Local notation for the relation being considered. -/
 local infixl:50 " ≺ " => r
@@ -146,10 +143,11 @@ theorem zorn_nonempty_preorder₀ (s : Set α)
 #align zorn_nonempty_preorder₀ zorn_nonempty_preorder₀
 
 theorem zorn_nonempty_Ici₀ (a : α)
-    (ih : ∀ (c) (_ : c ⊆ Ici a), IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub, a ≤ ub ∧ ∀ z ∈ c, z ≤ ub)
-    (x : α) (hax : a ≤ x) : ∃ m, x ≤ m ∧ ∀ z, m ≤ z → z ≤ m :=
-  let ⟨m, _, hxm, hm⟩ := zorn_nonempty_preorder₀ (Ici a) (by simpa using ih) x hax
-  ⟨m, hxm, fun z hmz => hm _ (hax.trans <| hxm.trans hmz) hmz⟩
+    (ih : ∀ (c) (_ : c ⊆ Ici a), IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub, ∀ z ∈ c, z ≤ ub)
+    (x : α) (hax : a ≤ x) : ∃ m, x ≤ m ∧ ∀ z, m ≤ z → z ≤ m := by
+  let ⟨m, _, hxm, hm⟩ := zorn_nonempty_preorder₀ (Ici a) (fun c hca hc y hy ↦ ?_) x hax
+  · exact ⟨m, hxm, fun z hmz => hm _ (hax.trans <| hxm.trans hmz) hmz⟩
+  · have ⟨ub, hub⟩ := ih c hca hc y hy; exact ⟨ub, (hca hy).trans (hub y hy), hub⟩
 #align zorn_nonempty_Ici₀ zorn_nonempty_Ici₀
 
 end Preorder

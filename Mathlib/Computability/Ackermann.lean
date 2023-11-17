@@ -2,14 +2,12 @@
 Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module computability.ackermann
-! leanprover-community/mathlib commit 9b2660e1b25419042c8da10bf411aa3c67f14383
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Computability.Primrec
+import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
+
+#align_import computability.ackermann from "leanprover-community/mathlib"@"9b2660e1b25419042c8da10bf411aa3c67f14383"
 
 /-!
 # Ackermann function
@@ -103,7 +101,7 @@ theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
         Nat.mul_sub_left_distrib, ← Nat.sub_add_comm, two_mul 3, Nat.add_sub_add_right]
     have H : 2 * 3 ≤ 2 * 2 ^ 3 := by norm_num
     apply H.trans
-    simp [pow_le_pow]
+    simp [pow_le_pow (show 1 ≤ 2 by norm_num)]
 #align ack_three ack_three
 
 theorem ack_pos : ∀ m n, 0 < ack m n

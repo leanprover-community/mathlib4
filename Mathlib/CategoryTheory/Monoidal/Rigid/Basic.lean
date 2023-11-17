@@ -2,15 +2,12 @@
 Copyright (c) 2021 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
-
-! This file was ported from Lean 3 source module category_theory.monoidal.rigid.basic
-! leanprover-community/mathlib commit 3d7987cda72abc473c7cdbbb075170e9ac620042
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.Tactic.ApplyFun
+
+#align_import category_theory.monoidal.rigid.basic from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
 /-!
 # Rigid (autonomous) monoidal categories
@@ -128,7 +125,7 @@ class HasRightDual (X : C) where
   [exact : ExactPairing X rightDual]
 #align category_theory.has_right_dual CategoryTheory.HasRightDual
 
-/-- A class of objects with have a left dual. -/
+/-- A class of objects which have a left dual. -/
 class HasLeftDual (Y : C) where
   leftDual : C
   [exact : ExactPairing leftDual Y]
@@ -313,8 +310,7 @@ def tensorLeftHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (Y' ⊗ X ⟶ Z) ≃
     have c :
       (α_ Y' (Y ⊗ Y') X).hom ≫
           (𝟙 Y' ⊗ (α_ Y Y' X).hom) ≫ (α_ Y' Y (Y' ⊗ X)).inv ≫ (α_ (Y' ⊗ Y) Y' X).inv =
-        (α_ _ _ _).inv ⊗ 𝟙 _
-    pure_coherence
+        (α_ _ _ _).inv ⊗ 𝟙 _ := by pure_coherence
     slice_lhs 4 7 => rw [c]
     slice_lhs 3 5 => rw [← comp_tensor_id, ← comp_tensor_id, coevaluation_evaluation]
     simp only [leftUnitor_conjugation]
@@ -328,8 +324,7 @@ def tensorLeftHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (Y' ⊗ X ⟶ Z) ≃
     have c :
       (α_ (Y ⊗ Y') Y Z).hom ≫
           (α_ Y Y' (Y ⊗ Z)).hom ≫ (𝟙 Y ⊗ (α_ Y' Y Z).inv) ≫ (α_ Y (Y' ⊗ Y) Z).inv =
-        (α_ _ _ _).hom ⊗ 𝟙 Z
-    pure_coherence
+        (α_ _ _ _).hom ⊗ 𝟙 Z := by pure_coherence
     slice_lhs 5 8 => rw [c]
     slice_lhs 4 6 => rw [← comp_tensor_id, ← comp_tensor_id, evaluation_coevaluation]
     simp only [leftUnitor_conjugation]
@@ -352,8 +347,7 @@ def tensorRightHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (X ⊗ Y ⟶ Z) ≃
     have c :
       (α_ X (Y ⊗ Y') Y).inv ≫
           ((α_ X Y Y').inv ⊗ 𝟙 Y) ≫ (α_ (X ⊗ Y) Y' Y).hom ≫ (α_ X Y (Y' ⊗ Y)).hom =
-        𝟙 _ ⊗ (α_ _ _ _).hom
-    pure_coherence
+        𝟙 _ ⊗ (α_ _ _ _).hom := by pure_coherence
     slice_lhs 4 7 => rw [c]
     slice_lhs 3 5 => rw [← id_tensor_comp, ← id_tensor_comp, evaluation_coevaluation]
     simp only [rightUnitor_conjugation]
@@ -367,8 +361,7 @@ def tensorRightHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (X ⊗ Y ⟶ Z) ≃
     have c :
       (α_ Z Y' (Y ⊗ Y')).inv ≫
           (α_ (Z ⊗ Y') Y Y').inv ≫ ((α_ Z Y' Y).hom ⊗ 𝟙 Y') ≫ (α_ Z (Y' ⊗ Y) Y').hom =
-        𝟙 _ ⊗ (α_ _ _ _).inv
-    pure_coherence
+        𝟙 _ ⊗ (α_ _ _ _).inv := by pure_coherence
     slice_lhs 5 8 => rw [c]
     slice_lhs 4 6 => rw [← id_tensor_comp, ← id_tensor_comp, coevaluation_evaluation]
     simp only [rightUnitor_conjugation]
@@ -436,8 +429,8 @@ structure shouldn't come from `has_left_dual` (e.g. in the category `FinVect k`,
 convenient to define the internal hom as `Y →ₗ[k] X` rather than `ᘁY ⊗ X` even though these are
 naturally isomorphic).
 -/
-def closedOfHasLeftDual (Y : C) [HasLeftDual Y] : Closed Y
-    where isAdj := ⟨_, tensorLeftAdjunction (ᘁY) Y⟩
+def closedOfHasLeftDual (Y : C) [HasLeftDual Y] : Closed Y where
+  isAdj := ⟨_, tensorLeftAdjunction (ᘁY) Y⟩
 #align category_theory.closed_of_has_left_dual CategoryTheory.closedOfHasLeftDual
 
 /-- `tensorLeftHomEquiv` commutes with tensoring on the right -/

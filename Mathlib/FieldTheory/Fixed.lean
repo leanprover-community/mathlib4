@@ -2,17 +2,14 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module field_theory.fixed
-! leanprover-community/mathlib commit 039a089d2a4b93c761b234f3e5f5aeb752bac60f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupRingAction.Invariant
 import Mathlib.Algebra.Polynomial.GroupRingAction
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.Tower
+
+#align_import field_theory.fixed from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 
 /-!
 # Fixed field under a group action.
@@ -48,7 +45,7 @@ variable (F : Type v) [Field F] [MulSemiringAction M F] [MulSemiringAction G F] 
 
 /-- The subfield of F fixed by the field endomorphism `m`. -/
 def FixedBy.subfield : Subfield F where
-  carrier := fixedBy M F m
+  carrier := fixedBy F m
   zero_mem' := smul_zero m
   add_mem' hx hy := (smul_add m _ _).trans <| congr_arg₂ _ hx hy
   neg_mem' hx := (smul_neg m _).trans <| congr_arg _ hx
@@ -166,7 +163,6 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
       ∑ x in s, (fun y => l y • MulAction.toFun G F y) x g'
   rw [← smul_sum, ← sum_apply _ _ fun y => l y • toFun G F y, ←
     sum_apply _ _ fun y => l y • toFun G F y]
-  dsimp only
   rw [hla, toFun_apply, toFun_apply, smul_smul, mul_inv_cancel_left]
 #align fixed_points.linear_independent_smul_of_linear_independent FixedPoints.linearIndependent_smul_of_linearIndependent
 

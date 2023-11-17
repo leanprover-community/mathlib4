@@ -2,14 +2,11 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.functor.fully_faithful
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.Logic.Equiv.Defs
+
+#align_import category_theory.functor.fully_faithful from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Full and faithful functors
@@ -195,7 +192,7 @@ end
 
 section
 
-variable {E : Type _} [Category E] {F G : C ⥤ D} (H : D ⥤ E) [Full H] [Faithful H]
+variable {E : Type*} [Category E] {F G : C ⥤ D} (H : D ⥤ E) [Full H] [Faithful H]
 
 /-- We can construct a natural transformation between functors by constructing a
 natural transformation between those functors composed with a fully faithful functor. -/
@@ -311,7 +308,7 @@ theorem Faithful.of_comp_iso {H : C ⥤ E} [Faithful H] (h : F ⋙ G ≅ H) : Fa
   @Faithful.of_comp _ _ _ _ _ _ F G (Faithful.of_iso h.symm)
 #align category_theory.faithful.of_comp_iso CategoryTheory.Faithful.of_comp_iso
 
-alias Faithful.of_comp_iso ← _root_.CategoryTheory.Iso.faithful_of_comp
+alias _root_.CategoryTheory.Iso.faithful_of_comp := Faithful.of_comp_iso
 #align category_theory.iso.faithful_of_comp CategoryTheory.Iso.faithful_of_comp
 
 -- We could prove this from `Faithful.of_comp_iso` using `eq_to_iso`,
@@ -320,7 +317,7 @@ theorem Faithful.of_comp_eq {H : C ⥤ E} [ℋ : Faithful H] (h : F ⋙ G = H) :
   @Faithful.of_comp _ _ _ _ _ _ F G (h.symm ▸ ℋ)
 #align category_theory.faithful.of_comp_eq CategoryTheory.Faithful.of_comp_eq
 
-alias Faithful.of_comp_eq ← _root_.Eq.faithful_of_comp
+alias _root_.Eq.faithful_of_comp := Faithful.of_comp_eq
 #align eq.faithful_of_comp Eq.faithful_of_comp
 
 variable (F G)

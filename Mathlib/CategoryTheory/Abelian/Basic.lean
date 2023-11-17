@@ -2,17 +2,14 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Johan Commelin, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.abelian.basic
-! leanprover-community/mathlib commit a5ff45a1c92c278b03b52459a620cfd9c49ebc80
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Abelian.NonPreadditive
+
+#align_import category_theory.abelian.basic from "leanprover-community/mathlib"@"a5ff45a1c92c278b03b52459a620cfd9c49ebc80"
 
 /-!
 # Abelian categories
@@ -642,7 +639,7 @@ instance epi_pullback_of_epi_f [Epi f] : Epi (pullback.snd : pullback f g ⟶ Y)
     have : d = 0 := (cancel_epi f).1 (by simpa)
     -- ...or, in other words, e = 0.
     calc
-      e = biprod.inr ≫ biprod.desc (0 : X ⟶  R) e := by rw [biprod.inr_desc]
+      e = biprod.inr ≫ biprod.desc (0 : X ⟶ R) e := by rw [biprod.inr_desc]
       _ = biprod.inr ≫ biprod.desc f (-g) ≫ d := by rw [← hd]
       _ = biprod.inr ≫ biprod.desc f (-g) ≫ 0 := by rw [this]
       _ = (biprod.inr ≫ biprod.desc f (-g)) ≫ 0 := by rw [← Category.assoc]
@@ -676,7 +673,7 @@ instance epi_pullback_of_epi_g [Epi g] : Epi (pullback.fst : pullback f g ⟶ X)
     have : d = 0 := (cancel_epi (-g)).1 (by simpa)
     -- ...or, in other words, e = 0.
     calc
-      e = biprod.inl ≫ biprod.desc e (0 : Y ⟶  R) := by rw [biprod.inl_desc]
+      e = biprod.inl ≫ biprod.desc e (0 : Y ⟶ R) := by rw [biprod.inl_desc]
       _ = biprod.inl ≫ biprod.desc f (-g) ≫ d := by rw [← hd]
       _ = biprod.inl ≫ biprod.desc f (-g) ≫ 0 := by rw [this]
       _ = (biprod.inl ≫ biprod.desc f (-g)) ≫ 0 := by rw [← Category.assoc]
@@ -727,7 +724,7 @@ instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr : Z ⟶ pushout f g
       _ = 0 := biprod.lift_fst _ _
     have : d = 0 := (cancel_mono f).1 (by simpa)
     calc
-      e = biprod.lift (0 : R ⟶  Y) e ≫ biprod.snd := by rw [biprod.lift_snd]
+      e = biprod.lift (0 : R ⟶ Y) e ≫ biprod.snd := by rw [biprod.lift_snd]
       _ = (d ≫ biprod.lift f (-g)) ≫ biprod.snd := by rw [← hd]
       _ = (0 ≫ biprod.lift f (-g)) ≫ biprod.snd := by rw [this]
       _ = 0 ≫ biprod.lift f (-g) ≫ biprod.snd := by rw [Category.assoc]
@@ -747,11 +744,11 @@ instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl : Y ⟶ pushout f g
     have : d ≫ (-g) = 0;
     calc
       d ≫ (-g) = d ≫ biprod.lift f (-g) ≫ biprod.snd := by rw [biprod.lift_snd]
-      _ = biprod.lift e (0 : R ⟶  Z) ≫ biprod.snd := by rw [← Category.assoc, hd]
+      _ = biprod.lift e (0 : R ⟶ Z) ≫ biprod.snd := by rw [← Category.assoc, hd]
       _ = 0 := biprod.lift_snd _ _
     have : d = 0 := (cancel_mono (-g)).1 (by simpa)
     calc
-      e = biprod.lift e (0 : R ⟶  Z) ≫ biprod.fst := by rw [biprod.lift_fst]
+      e = biprod.lift e (0 : R ⟶ Z) ≫ biprod.fst := by rw [biprod.lift_fst]
       _ = (d ≫ biprod.lift f (-g)) ≫ biprod.fst := by rw [← hd]
       _ = (0 ≫ biprod.lift f (-g)) ≫ biprod.fst := by rw [this]
       _ = 0 ≫ biprod.lift f (-g) ≫ biprod.fst := by rw [Category.assoc]

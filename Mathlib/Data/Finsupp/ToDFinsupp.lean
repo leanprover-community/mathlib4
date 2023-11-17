@@ -2,15 +2,12 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module data.finsupp.to_dfinsupp
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Data.Finsupp.Basic
+
+#align_import data.finsupp.to_dfinsupp from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
 /-!
 # Conversion between `Finsupp` and homogenous `DFinsupp`
@@ -63,7 +60,7 @@ these arguments are also present on the `noncomputable` equivs.
 -/
 
 
-variable {ι : Type _} {R : Type _} {M : Type _}
+variable {ι : Type*} {R : Type*} {M : Type*}
 
 /-! ### Basic definitions and lemmas -/
 
@@ -223,7 +220,7 @@ end Lemmas
 section Equivs
 
 /-- `Finsupp.toDFinsupp` and `DFinsupp.toFinsupp` together form an equiv. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def finsuppEquivDFinsupp [DecidableEq ι] [Zero M] [∀ m : M, Decidable (m ≠ 0)] :
     (ι →₀ M) ≃ Π₀ _ : ι, M where
   toFun := Finsupp.toDFinsupp
@@ -234,7 +231,7 @@ def finsuppEquivDFinsupp [DecidableEq ι] [Zero M] [∀ m : M, Decidable (m ≠ 
 
 /-- The additive version of `finsupp.toFinsupp`. Note that this is `noncomputable` because
 `Finsupp.add` is noncomputable. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def finsuppAddEquivDFinsupp [DecidableEq ι] [AddZeroClass M] [∀ m : M, Decidable (m ≠ 0)] :
     (ι →₀ M) ≃+ Π₀ _ : ι, M :=
   { finsuppEquivDFinsupp with
@@ -248,7 +245,7 @@ variable (R)
 /-- The additive version of `Finsupp.toFinsupp`. Note that this is `noncomputable` because
 `Finsupp.add` is noncomputable. -/
 -- porting note: `simps` generated lemmas that did not pass `simpNF` lints, manually added below
---@[simps? (config := { fullyApplied := false })]
+--@[simps? (config := .asFn)]
 def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] : (ι →₀ M) ≃ₗ[R] Π₀ _ : ι, M :=
   { finsuppEquivDFinsupp with
@@ -258,7 +255,7 @@ def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     map_add' := Finsupp.toDFinsupp_add }
 #align finsupp_lequiv_dfinsupp finsuppLequivDFinsupp
 
--- porting note: `simps` generated as ` ↑(finsuppLequivDFinsupp R).toLinearMap = Finsupp.toDFinsupp`
+-- porting note: `simps` generated as `↑(finsuppLequivDFinsupp R).toLinearMap = Finsupp.toDFinsupp`
 @[simp]
 theorem finsuppLequivDFinsupp_apply_apply [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] :
@@ -277,7 +274,7 @@ noncomputable section Sigma
 /-! ### Stronger versions of `Finsupp.split` -/
 --noncomputable section
 
-variable {η : ι → Type _} {N : Type _} [Semiring R]
+variable {η : ι → Type*} {N : Type*} [Semiring R]
 
 open Finsupp
 

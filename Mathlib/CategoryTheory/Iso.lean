@@ -2,14 +2,10 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.isomorphism
-! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.CategoryTheory.Reassoc
+
+#align_import category_theory.isomorphism from "leanprover-community/mathlib"@"8350c34a64b9bc3fc64335df8006bffcadc7baa6"
 
 /-!
 # Isomorphisms
@@ -93,7 +89,7 @@ theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
   calc
     α.inv = α.inv ≫ β.hom ≫ β.inv   := by rw [Iso.hom_inv_id, Category.comp_id]
     _     = (α.inv ≫ α.hom) ≫ β.inv := by rw [Category.assoc, ← w]
-    _     = β.inv                   := by rw [Iso.inv_hom_id, Category.id_comp]
+    _     = β.inv                    := by rw [Iso.inv_hom_id, Category.id_comp]
 #align category_theory.iso.ext CategoryTheory.Iso.ext
 
 /-- Inverse isomorphism. -/
@@ -162,7 +158,7 @@ def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
 #align category_theory.iso.trans_inv CategoryTheory.Iso.trans_inv
 
 @[simps]
-instance : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) where
+instance instTransIso : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) where
   trans := trans
 
 /-- Notation for composition of isomorphisms. -/

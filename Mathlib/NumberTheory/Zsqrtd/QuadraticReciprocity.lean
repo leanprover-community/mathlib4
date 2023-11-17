@@ -2,14 +2,11 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module number_theory.zsqrtd.quadratic_reciprocity
-! leanprover-community/mathlib commit 5b2fe80501ff327b9109fb09b7cc8c325cd0d7d9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
+
+#align_import number_theory.zsqrtd.quadratic_reciprocity from "leanprover-community/mathlib"@"5b2fe80501ff327b9109fb09b7cc8c325cd0d7d9"
 
 /-!
 # Facts about the gaussian integers relying on quadratic reciprocity.
@@ -25,8 +22,6 @@ A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4`
 open Zsqrtd Complex
 
 open scoped ComplexConjugate
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 local notation "ℤ[i]" => GaussianInt
 
@@ -92,7 +87,7 @@ theorem prime_of_nat_prime_of_mod_four_eq_three (p : ℕ) [hp : Fact p.Prime] (h
   irreducible_iff_prime.1 <|
     by_contradiction fun hpi =>
       let ⟨a, b, hab⟩ := sq_add_sq_of_nat_prime_of_not_irreducible p hpi
-      have : ∀ a b : ZMod 4, a ^ 2 + b ^ 2 ≠ p := by
+      have : ∀ a b : ZMod 4, a ^ 2 + b ^ 2 ≠ ↑p := by
         erw [← ZMod.nat_cast_mod p 4, hp3]; exact by decide
       this a b (hab ▸ by simp)
 #align gaussian_int.prime_of_nat_prime_of_mod_four_eq_three GaussianInt.prime_of_nat_prime_of_mod_four_eq_three

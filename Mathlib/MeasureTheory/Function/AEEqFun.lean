@@ -2,16 +2,13 @@
 Copyright (c) 2019 Johannes Hölzl, Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Zhouhang Zhou
-
-! This file was ported from Lean 3 source module measure_theory.function.ae_eq_fun
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.Order.Filter.Germ
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+
+#align_import measure_theory.function.ae_eq_fun from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 
@@ -72,6 +69,8 @@ function space, almost everywhere equal, `L⁰`, ae_eq_fun
 
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 
@@ -79,7 +78,7 @@ open Classical ENNReal Topology
 
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
 
-variable {α β γ δ : Type _} [MeasurableSpace α] {μ ν : Measure α}
+variable {α β γ δ : Type*} [MeasurableSpace α] {μ ν : Measure α}
 
 namespace MeasureTheory
 
@@ -119,7 +118,7 @@ variable [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
 /-- Construct the equivalence class `[f]` of an almost everywhere measurable function `f`, based
     on the equivalence relation of being almost everywhere equal. -/
-def mk {β : Type _} [TopologicalSpace β] (f : α → β) (hf : AEStronglyMeasurable f μ) : α →ₘ[μ] β :=
+def mk {β : Type*} [TopologicalSpace β] (f : α → β) (hf : AEStronglyMeasurable f μ) : α →ₘ[μ] β :=
   Quotient.mk'' ⟨f, hf⟩
 #align measure_theory.ae_eq_fun.mk MeasureTheory.AEEqFun.mk
 
@@ -191,15 +190,15 @@ theorem induction_on (f : α →ₘ[μ] β) {p : (α →ₘ[μ] β) → Prop} (H
 #align measure_theory.ae_eq_fun.induction_on MeasureTheory.AEEqFun.induction_on
 
 @[elab_as_elim]
-theorem induction_on₂ {α' β' : Type _} [MeasurableSpace α'] [TopologicalSpace β'] {μ' : Measure α'}
+theorem induction_on₂ {α' β' : Type*} [MeasurableSpace α'] [TopologicalSpace β'] {μ' : Measure α'}
     (f : α →ₘ[μ] β) (f' : α' →ₘ[μ'] β') {p : (α →ₘ[μ] β) → (α' →ₘ[μ'] β') → Prop}
     (H : ∀ f hf f' hf', p (mk f hf) (mk f' hf')) : p f f' :=
   induction_on f fun f hf => induction_on f' <| H f hf
 #align measure_theory.ae_eq_fun.induction_on₂ MeasureTheory.AEEqFun.induction_on₂
 
 @[elab_as_elim]
-theorem induction_on₃ {α' β' : Type _} [MeasurableSpace α'] [TopologicalSpace β'] {μ' : Measure α'}
-    {α'' β'' : Type _} [MeasurableSpace α''] [TopologicalSpace β''] {μ'' : Measure α''}
+theorem induction_on₃ {α' β' : Type*} [MeasurableSpace α'] [TopologicalSpace β'] {μ' : Measure α'}
+    {α'' β'' : Type*} [MeasurableSpace α''] [TopologicalSpace β''] {μ'' : Measure α''}
     (f : α →ₘ[μ] β) (f' : α' →ₘ[μ'] β') (f'' : α'' →ₘ[μ''] β'')
     {p : (α →ₘ[μ] β) → (α' →ₘ[μ'] β') → (α'' →ₘ[μ''] β'') → Prop}
     (H : ∀ f hf f' hf' f'' hf'', p (mk f hf) (mk f' hf') (mk f'' hf'')) : p f f' f'' :=
@@ -391,8 +390,8 @@ theorem coeFn_comp₂ (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁
 
 section
 
-variable [MeasurableSpace β] [PseudoMetrizableSpace β] [BorelSpace β] [SecondCountableTopology β]
-  [MeasurableSpace γ] [PseudoMetrizableSpace γ] [BorelSpace γ] [SecondCountableTopology γ]
+variable [MeasurableSpace β] [PseudoMetrizableSpace β] [BorelSpace β]
+  [MeasurableSpace γ] [PseudoMetrizableSpace γ] [BorelSpace γ] [SecondCountableTopologyEither β γ]
   [MeasurableSpace δ] [PseudoMetrizableSpace δ] [OpensMeasurableSpace δ] [SecondCountableTopology δ]
 
 /-- Given a measurable function `g : β → γ → δ`, and almost everywhere equal functions
@@ -469,8 +468,8 @@ theorem comp₂_toGerm (g : β → γ → δ) (hg : Continuous (uncurry g)) (f�
   induction_on₂ f₁ f₂ fun f₁ _ f₂ _ => by simp
 #align measure_theory.ae_eq_fun.comp₂_to_germ MeasureTheory.AEEqFun.comp₂_toGerm
 
-theorem comp₂Measurable_toGerm [PseudoMetrizableSpace β] [SecondCountableTopology β]
-    [MeasurableSpace β] [BorelSpace β] [PseudoMetrizableSpace γ] [SecondCountableTopology γ]
+theorem comp₂Measurable_toGerm [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
+    [PseudoMetrizableSpace γ] [SecondCountableTopologyEither β γ]
     [MeasurableSpace γ] [BorelSpace γ] [PseudoMetrizableSpace δ] [SecondCountableTopology δ]
     [MeasurableSpace δ] [OpensMeasurableSpace δ] (g : β → γ → δ) (hg : Measurable (uncurry g))
     (f₁ : α →ₘ[μ] β) (f₂ : α →ₘ[μ] γ) :
@@ -651,7 +650,7 @@ theorem one_toGerm [One β] : (1 : α →ₘ[μ] β).toGerm = 1 :=
 -- try to override the `nsmul` or `zsmul` fields in future.
 section SMul
 
-variable {𝕜 𝕜' : Type _}
+variable {𝕜 𝕜' : Type*}
 
 variable [SMul 𝕜 γ] [ContinuousConstSMul 𝕜 γ]
 
@@ -867,8 +866,7 @@ instance instAddGroup [AddGroup γ] [TopologicalAddGroup γ] : AddGroup (α →�
 #align measure_theory.ae_eq_fun.add_group MeasureTheory.AEEqFun.instAddGroup
 
 instance instAddCommGroup [AddCommGroup γ] [TopologicalAddGroup γ] : AddCommGroup (α →ₘ[μ] γ) :=
-  toGerm_injective.addCommGroup toGerm zero_toGerm add_toGerm neg_toGerm sub_toGerm
-    (fun _ _ => smul_toGerm _ _) fun _ _ => smul_toGerm _ _
+  { add_comm := add_comm }
 #align measure_theory.ae_eq_fun.add_comm_group MeasureTheory.AEEqFun.instAddCommGroup
 
 @[to_additive existing]
@@ -878,12 +876,12 @@ instance instGroup [Group γ] [TopologicalGroup γ] : Group (α →ₘ[μ] γ) :
 
 @[to_additive existing]
 instance instCommGroup [CommGroup γ] [TopologicalGroup γ] : CommGroup (α →ₘ[μ] γ) :=
-  toGerm_injective.commGroup _ one_toGerm mul_toGerm inv_toGerm div_toGerm pow_toGerm zpow_toGerm
+  { mul_comm := mul_comm }
 #align measure_theory.ae_eq_fun.comm_group MeasureTheory.AEEqFun.instCommGroup
 
 section Module
 
-variable {𝕜 : Type _}
+variable {𝕜 : Type*}
 
 instance instMulAction [Monoid 𝕜] [MulAction 𝕜 γ] [ContinuousConstSMul 𝕜 γ] :
     MulAction 𝕜 (α →ₘ[μ] γ) :=
@@ -1007,7 +1005,7 @@ def toAEEqFunMulHom : C(α, β) →* α →ₘ[μ] β where
 #align continuous_map.to_ae_eq_fun_mul_hom ContinuousMap.toAEEqFunMulHom
 #align continuous_map.to_ae_eq_fun_add_hom ContinuousMap.toAEEqFunAddHom
 
-variable {𝕜 : Type _} [Semiring 𝕜]
+variable {𝕜 : Type*} [Semiring 𝕜]
 
 variable [TopologicalSpace γ] [PseudoMetrizableSpace γ] [AddCommGroup γ] [Module 𝕜 γ]
   [TopologicalAddGroup γ] [ContinuousConstSMul 𝕜 γ] [SecondCountableTopologyEither α γ]

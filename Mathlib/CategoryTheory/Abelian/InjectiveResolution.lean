@@ -2,15 +2,12 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.abelian.injective_resolution
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.CategoryTheory.Preadditive.InjectiveResolution
 import Mathlib.Algebra.Homology.HomotopyCategory
+
+#align_import category_theory.abelian.injective_resolution from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Main result
@@ -105,6 +102,12 @@ theorem desc_commutes {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
   ext
   simp [desc, descFOne, descFZero]
 #align category_theory.InjectiveResolution.desc_commutes CategoryTheory.InjectiveResolution.desc_commutes
+
+@[reassoc (attr := simp)]
+lemma desc_commutes_zero {Y Z : C} (f : Z ⟶ Y)
+    (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
+    J.ι.f 0 ≫ (desc f I J).f 0 = f ≫ I.ι.f 0 :=
+  (HomologicalComplex.congr_hom (desc_commutes f I J) 0).trans (by simp)
 
 -- Now that we've checked this property of the descent, we can seal away the actual definition.
 /-- An auxiliary definition for `descHomotopyZero`. -/
@@ -332,7 +335,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 /-- If `X` is a cochain complex of injective objects and we have a quasi-isomorphism
 `f : Y[0] ⟶ X`, then `X` is an injective resolution of `Y`. -/
 def HomologicalComplex.Hom.fromSingle₀InjectiveResolution (X : CochainComplex C ℕ) (Y : C)
-    (f : (CochainComplex.single₀ C).obj Y ⟶ X) [QuasiIso f] (H : ∀ n, Injective (X.X n)) :
+    (f : (CochainComplex.single₀ C).obj Y ⟶ X) [QuasiIso' f] (H : ∀ n, Injective (X.X n)) :
     InjectiveResolution Y where
   cocomplex := X
   ι := f

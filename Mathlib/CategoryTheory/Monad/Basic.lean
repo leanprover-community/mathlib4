@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta, Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.monad.basic
-! leanprover-community/mathlib commit 9c6816cab5872990d450d2c2e7832176167b1c07
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.Functor.ReflectsIso
+
+#align_import category_theory.monad.basic from "leanprover-community/mathlib"@"9c6816cab5872990d450d2c2e7832176167b1c07"
 
 /-!
 # Monads

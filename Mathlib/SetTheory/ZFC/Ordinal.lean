@@ -2,13 +2,10 @@
 Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module set_theory.zfc.ordinal
-! leanprover-community/mathlib commit 98bbc3526516bca903bff09ea10c4206bf079e6b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.ZFC.Basic
+
+#align_import set_theory.zfc.ordinal from "leanprover-community/mathlib"@"98bbc3526516bca903bff09ea10c4206bf079e6b"
 
 /-!
 # Von Neumann ordinals
@@ -56,7 +53,7 @@ theorem isTransitive_iff_mem_trans : z.IsTransitive ↔ ∀ {x y : ZFSet}, x ∈
   ⟨fun h _ _ hx hy => h.subset_of_mem hy hx, fun H _ hx _ hy => H hy hx⟩
 #align Set.is_transitive_iff_mem_trans ZFSet.isTransitive_iff_mem_trans
 
-alias isTransitive_iff_mem_trans ↔ IsTransitive.mem_trans _
+alias ⟨IsTransitive.mem_trans, _⟩ := isTransitive_iff_mem_trans
 #align Set.is_transitive.mem_trans ZFSet.IsTransitive.mem_trans
 
 protected theorem IsTransitive.inter (hx : x.IsTransitive) (hy : y.IsTransitive) :
@@ -99,14 +96,14 @@ theorem isTransitive_iff_sUnion_subset : x.IsTransitive ↔ (⋃₀ x : ZFSet) �
     exact h.mem_trans hz' hz, fun H y hy z hz => H <| mem_sUnion_of_mem hz hy⟩
 #align Set.is_transitive_iff_sUnion_subset ZFSet.isTransitive_iff_sUnion_subset
 
-alias isTransitive_iff_sUnion_subset ↔ IsTransitive.sUnion_subset _
+alias ⟨IsTransitive.sUnion_subset, _⟩ := isTransitive_iff_sUnion_subset
 #align Set.is_transitive.sUnion_subset ZFSet.IsTransitive.sUnion_subset
 
 theorem isTransitive_iff_subset_powerset : x.IsTransitive ↔ x ⊆ powerset x :=
   ⟨fun h _ hy => mem_powerset.2 <| h.subset_of_mem hy, fun H _ hy _ hz => mem_powerset.1 (H hy) hz⟩
 #align Set.is_transitive_iff_subset_powerset ZFSet.isTransitive_iff_subset_powerset
 
-alias isTransitive_iff_subset_powerset ↔ IsTransitive.subset_powerset _
+alias ⟨IsTransitive.subset_powerset, _⟩ := isTransitive_iff_subset_powerset
 #align Set.is_transitive.subset_powerset ZFSet.IsTransitive.subset_powerset
 
 end ZFSet

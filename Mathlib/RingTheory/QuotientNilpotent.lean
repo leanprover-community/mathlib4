@@ -2,26 +2,23 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module ring_theory.quotient_nilpotent
-! leanprover-community/mathlib commit da420a8c6dd5bdfb85c4ced85c34388f633bc6ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.RingTheory.Ideal.QuotientOperations
+
+#align_import ring_theory.quotient_nilpotent from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
 /-!
 # Nilpotent elements in quotient rings
 -/
 
-theorem Ideal.isRadical_iff_quotient_reduced {R : Type _} [CommRing R] (I : Ideal R) :
+theorem Ideal.isRadical_iff_quotient_reduced {R : Type*} [CommRing R] (I : Ideal R) :
     I.IsRadical ↔ IsReduced (R ⧸ I) := by
   conv_lhs => rw [← @Ideal.mk_ker R _ I]
   exact RingHom.ker_isRadical_iff_reduced_of_surjective (@Ideal.Quotient.mk_surjective R _ I)
 #align ideal.is_radical_iff_quotient_reduced Ideal.isRadical_iff_quotient_reduced
 
-variable {R S : Type _} [CommSemiring R] [CommRing S] [Algebra R S] (I : Ideal S)
+variable {R S : Type*} [CommSemiring R] [CommRing S] [Algebra R S] (I : Ideal S)
 
 
 /-- Let `P` be a property on ideals. If `P` holds for square-zero ideals, and if
@@ -55,7 +52,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
     rw [← Ideal.map_pow, Ideal.map_quotient_self]
 #align ideal.is_nilpotent.induction_on Ideal.IsNilpotent.induction_on
 
-theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type _} [CommRing R] {I : Ideal R}
+theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type*} [CommRing R] {I : Ideal R}
     (hI : IsNilpotent I) {x : R} : IsUnit (Ideal.Quotient.mk I x) ↔ IsUnit x := by
   refine' ⟨_, fun h => h.map <| Ideal.Quotient.mk I⟩
   revert x

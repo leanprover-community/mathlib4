@@ -2,13 +2,10 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.calculus.fderiv.comp
-! leanprover-community/mathlib commit e3fb84046afd187b710170887195d50bada934ee
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Basic
+
+#align_import analysis.calculus.fderiv.comp from "leanprover-community/mathlib"@"e3fb84046afd187b710170887195d50bada934ee"
 
 /-!
 # The derivative of a composition (chain rule)
@@ -29,15 +26,15 @@ noncomputable section
 
 section
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-variable {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-variable {G : Type _} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-variable {G' : Type _} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 variable {f f₀ f₁ g : E → F}
 
@@ -72,8 +69,6 @@ theorem HasFDerivAtFilter.comp {g : F → G} {g' : F →L[𝕜] G} {L' : Filter 
 #align has_fderiv_at_filter.comp HasFDerivAtFilter.comp
 
 /- A readable version of the previous theorem, a general form of the chain rule. -/
-/- porting note: todo: restore the example
-Compile fails because `calc` fails to generate a `Trans` instance
 example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (L.map f))
     (hf : HasFDerivAtFilter f f' x L) : HasFDerivAtFilter (g ∘ f) (g'.comp f') x L := by
   unfold HasFDerivAtFilter at hg
@@ -84,12 +79,10 @@ example {g : F → G} {g' : F →L[𝕜] G} (hg : HasFDerivAtFilter g g' (f x) (
       _ =O[L] fun x' => x' - x := hf.isBigO_sub
   refine' this.triangle _
   calc
-    (fun x' : E => g' (f x' - f x) - g'.comp f' (x' - x)) =ᶠ[L] fun x' =>
-        g' (f x' - f x - f' (x' - x)) :=
-      eventually_of_forall fun x' => by simp
+    (fun x' : E => g' (f x' - f x) - g'.comp f' (x' - x))
+    _ =ᶠ[L] fun x' => g' (f x' - f x - f' (x' - x)) := eventually_of_forall fun x' => by simp
     _ =O[L] fun x' => f x' - f x - f' (x' - x) := (g'.isBigO_comp _ _)
     _ =o[L] fun x' => x' - x := hf
--/
 
 theorem HasFDerivWithinAt.comp {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
     (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivWithinAt f f' s x) (hst : MapsTo f s t) :
@@ -150,8 +143,7 @@ theorem fderivWithin_fderivWithin {g : F → G} {f : E → F} {x : E} {y : F} {s
     (hxs : UniqueDiffWithinAt 𝕜 s x) (hy : f x = y) (v : E) :
     fderivWithin 𝕜 g t y (fderivWithin 𝕜 f s x v) = fderivWithin 𝕜 (g ∘ f) s x v := by
   subst y
-  rw [fderivWithin.comp x hg hf h hxs]
-  rfl
+  rw [fderivWithin.comp x hg hf h hxs, coe_comp', Function.comp_apply]
 #align fderiv_within_fderiv_within fderivWithin_fderivWithin
 
 /-- Ternary version of `fderivWithin.comp`, with equality assumptions of basepoints added, in
@@ -228,9 +220,7 @@ protected theorem HasFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E} (hf : 
     (hx : f x = x) (n : ℕ) : HasFDerivAt f^[n] (f' ^ n) x := by
   refine' HasFDerivAtFilter.iterate hf _ hx n
   -- Porting note: was `convert hf.continuousAt`
-  have := hf.continuousAt
-  unfold ContinuousAt at this
-  convert this
+  convert hf.continuousAt.tendsto
   exact hx.symm
 #align has_fderiv_at.iterate HasFDerivAt.iterate
 

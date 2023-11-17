@@ -2,14 +2,11 @@
 Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module pseudoelement
-! leanprover-community/mathlib commit 328375597f2c0dd00522d9c2e5a33b6a6128feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Abelian.Pseudoelements
 import Mathlib.Algebra.Category.ModuleCat.Biproducts
+
+#align_import pseudoelement from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
 /-!
 # Pseudoelements and pullbacks
@@ -90,13 +87,15 @@ theorem x_not_pseudo_eq : ¬PseudoEqual _ x y := by
     Preadditive.comp_add] at ha
   let π₁ := (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _)
   have ha₁ := congr_arg π₁ ha
-  rw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply] at ha₁
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply] at ha₁
   simp only [BinaryBiproduct.bicone_fst, biprod.lift_fst, CategoryTheory.id_apply,
     biprod.lift_fst_assoc, Category.id_comp, biprod.lift_snd_assoc, Linear.smul_comp,
     Preadditive.add_comp, BinaryBicone.inl_fst, BinaryBicone.inr_fst, smul_zero, add_zero] at ha₁
   let π₂ := (biprod.snd : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _)
   have ha₂ := congr_arg π₂ ha
-  rw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply] at ha₂
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply] at ha₂
   simp only [BinaryBiproduct.bicone_snd, biprod.lift_snd, CategoryTheory.id_apply,
     biprod.lift_fst_assoc, Category.id_comp, biprod.lift_snd_assoc, Linear.smul_comp,
     Preadditive.add_comp, BinaryBicone.inl_snd, BinaryBicone.inr_snd, zero_add, two_smul] at ha₂

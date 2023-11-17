@@ -2,15 +2,12 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module logic.equiv.transfer_instance
-! leanprover-community/mathlib commit ec1c7d810034d4202b0dd239112d1792be9f6fdc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Logic.Equiv.Defs
+
+#align_import logic.equiv.transfer_instance from "leanprover-community/mathlib"@"ec1c7d810034d4202b0dd239112d1792be9f6fdc"
 
 /-!
 # Transfer algebraic structures across `Equiv`s
@@ -44,7 +41,7 @@ section Instances
 variable (e : α ≃ β)
 
 /-- Transfer `One` across an `Equiv` -/
-@[reducible, to_additive "Transfer `Zero` across an `Equiv`"]
+@[to_additive (attr := reducible) "Transfer `Zero` across an `Equiv`"]
 protected def one [One β] : One α :=
   ⟨e.symm 1⟩
 #align equiv.has_one Equiv.one
@@ -59,7 +56,7 @@ theorem one_def [One β] :
 #align equiv.zero_def Equiv.zero_def
 
 /-- Transfer `Mul` across an `Equiv` -/
-@[reducible, to_additive "Transfer `Add` across an `Equiv`"]
+@[to_additive (attr := reducible) "Transfer `Add` across an `Equiv`"]
 protected def mul [Mul β] : Mul α :=
   ⟨fun x y => e.symm (e x * e y)⟩
 #align equiv.has_mul Equiv.mul
@@ -74,7 +71,7 @@ theorem mul_def [Mul β] (x y : α) :
 #align equiv.add_def Equiv.add_def
 
 /-- Transfer `Div` across an `Equiv` -/
-@[reducible, to_additive "Transfer `Sub` across an `Equiv`"]
+@[to_additive (attr := reducible) "Transfer `Sub` across an `Equiv`"]
 protected def div [Div β] : Div α :=
   ⟨fun x y => e.symm (e x / e y)⟩
 #align equiv.has_div Equiv.div
@@ -91,7 +88,7 @@ theorem div_def [Div β] (x y : α) :
 -- Porting note: this should be called `inv`,
 -- but we already have an `Equiv.inv` (which perhaps should move to `Perm.inv`?)
 /-- Transfer `Inv` across an `Equiv` -/
-@[reducible, to_additive "Transfer `Neg` across an `Equiv`"]
+@[to_additive (attr := reducible) "Transfer `Neg` across an `Equiv`"]
 protected def Inv [Inv β] : Inv α :=
   ⟨fun x => e.symm (e x)⁻¹⟩
 #align equiv.has_inv Equiv.Inv
@@ -107,23 +104,23 @@ theorem inv_def [Inv β] (x : α) :
 
 /-- Transfer `SMul` across an `Equiv` -/
 @[reducible]
-protected def smul (R : Type _) [SMul R β] : SMul R α :=
+protected def smul (R : Type*) [SMul R β] : SMul R α :=
   ⟨fun r x => e.symm (r • e x)⟩
 #align equiv.has_smul Equiv.smul
 
-theorem smul_def {R : Type _} [SMul R β] (r : R) (x : α) :
+theorem smul_def {R : Type*} [SMul R β] (r : R) (x : α) :
     letI := e.smul R
     r • x = e.symm (r • e x) :=
   rfl
 #align equiv.smul_def Equiv.smul_def
 
 /-- Transfer `Pow` across an `Equiv` -/
-@[reducible, to_additive existing smul]
-protected def pow (N : Type _) [Pow β N] : Pow α N :=
+@[to_additive (attr := reducible) existing smul]
+protected def pow (N : Type*) [Pow β N] : Pow α N :=
   ⟨fun x n => e.symm (e x ^ n)⟩
 #align equiv.has_pow Equiv.pow
 
-theorem pow_def {N : Type _} [Pow β N] (n : N) (x : α) :
+theorem pow_def {N : Type*} [Pow β N] (n : N) (x : α) :
     letI := e.pow N
     x ^ n = e.symm (e x ^ n) :=
   rfl
@@ -192,7 +189,7 @@ theorem ringEquiv_symm_apply (e : α ≃ β) [Add β] [Mul β] (b : β) : by
 #align equiv.ring_equiv_symm_apply Equiv.ringEquiv_symm_apply
 
 /-- Transfer `Semigroup` across an `Equiv` -/
-@[reducible, to_additive "Transfer `add_semigroup` across an `Equiv`"]
+@[to_additive (attr := reducible) "Transfer `add_semigroup` across an `Equiv`"]
 protected def semigroup [Semigroup β] : Semigroup α := by
   let mul := e.mul
   apply e.injective.semigroup _; intros; exact e.apply_symm_apply _
@@ -208,7 +205,7 @@ protected def semigroupWithZero [SemigroupWithZero β] : SemigroupWithZero α :=
 #align equiv.semigroup_with_zero Equiv.semigroupWithZero
 
 /-- Transfer `CommSemigroup` across an `Equiv` -/
-@[reducible, to_additive "Transfer `add_comm_semigroup` across an `Equiv`"]
+@[to_additive (attr := reducible) "Transfer `AddCommSemigroup` across an `Equiv`"]
 protected def commSemigroup [CommSemigroup β] : CommSemigroup α := by
   let mul := e.mul
   apply e.injective.commSemigroup _; intros; exact e.apply_symm_apply _
@@ -224,7 +221,7 @@ protected def mulZeroClass [MulZeroClass β] : MulZeroClass α := by
 #align equiv.mul_zero_class Equiv.mulZeroClass
 
 /-- Transfer `MulOneClass` across an `Equiv` -/
-@[reducible, to_additive "Transfer `AddZeroClass` across an `Equiv`"]
+@[to_additive (attr := reducible) "Transfer `AddZeroClass` across an `Equiv`"]
 protected def mulOneClass [MulOneClass β] : MulOneClass α := by
   let one := e.one
   let mul := e.mul
@@ -242,7 +239,7 @@ protected def mulZeroOneClass [MulZeroOneClass β] : MulZeroOneClass α := by
 #align equiv.mul_zero_one_class Equiv.mulZeroOneClass
 
 /-- Transfer `Monoid` across an `Equiv` -/
-@[reducible, to_additive "Transfer `AddMonoid` across an `Equiv`"]
+@[to_additive (attr := reducible) "Transfer `AddMonoid` across an `Equiv`"]
 protected def monoid [Monoid β] : Monoid α := by
   let one := e.one
   let mul := e.mul
@@ -252,7 +249,7 @@ protected def monoid [Monoid β] : Monoid α := by
 #align equiv.add_monoid Equiv.addMonoid
 
 /-- Transfer `CommMonoid` across an `Equiv` -/
-@[reducible, to_additive "Transfer `AddCommMonoid` across an `Equiv`"]
+@[to_additive (attr := reducible) "Transfer `AddCommMonoid` across an `Equiv`"]
 protected def commMonoid [CommMonoid β] : CommMonoid α := by
   let one := e.one
   let mul := e.mul
@@ -262,7 +259,7 @@ protected def commMonoid [CommMonoid β] : CommMonoid α := by
 #align equiv.add_comm_monoid Equiv.addCommMonoid
 
 /-- Transfer `Group` across an `Equiv` -/
-@[reducible, to_additive "Transfer `AddGroup` across an `Equiv`"]
+@[to_additive (attr := reducible) "Transfer `AddGroup` across an `Equiv`"]
 protected def group [Group β] : Group α := by
   let one := e.one
   let mul := e.mul
@@ -275,7 +272,7 @@ protected def group [Group β] : Group α := by
 #align equiv.add_group Equiv.addGroup
 
 /-- Transfer `CommGroup` across an `Equiv` -/
-@[reducible, to_additive "Transfer `AddCommGroup` across an `Equiv`"]
+@[to_additive (attr := reducible) "Transfer `AddCommGroup` across an `Equiv`"]
 protected def commGroup [CommGroup β] : CommGroup α := by
   let one := e.one
   let mul := e.mul
@@ -477,7 +474,7 @@ protected def field [Field β] : Field α := by
 
 section R
 
-variable (R : Type _)
+variable (R : Type*)
 
 section
 
@@ -537,7 +534,7 @@ def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] : by
     { Equiv.addEquiv e with
       map_smul' := fun r x => by
         apply e.symm.injective
-        simp
+        simp only [toFun_as_coe, RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
         exact Iff.mpr (apply_eq_iff_eq_symm_apply _) rfl }
 #align equiv.linear_equiv Equiv.linearEquiv
 
@@ -557,10 +554,7 @@ protected def algebra (e : α ≃ β) [Semiring β] :
   · exact ((ringEquiv e).symm : β →+* α).comp (algebraMap R β)
   · intro r x
     simp only [Function.comp_apply, RingHom.coe_comp]
-    have p := ringEquiv_symm_apply e
-    dsimp at p
-    erw [p]
-    clear p
+    erw [ringEquiv_symm_apply e]
     apply (ringEquiv e).injective
     simp only [(ringEquiv e).map_mul]
     simp [Algebra.commutes]

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.adjunction.lifting
-! leanprover-community/mathlib commit 9bc7dfa6e50f902fb0684c9670a680459ebaed68
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 import Mathlib.CategoryTheory.Monad.Adjunction
 import Mathlib.CategoryTheory.Monad.Coequalizer
+
+#align_import category_theory.adjunction.lifting from "leanprover-community/mathlib"@"9bc7dfa6e50f902fb0684c9670a680459ebaed68"
 
 /-!
 # Adjoint lifting
@@ -163,10 +160,12 @@ noncomputable def constructLeftAdjoint [∀ X : B, RegularEpi (adj₁.counit.app
   rw [constructLeftAdjointEquiv_apply, constructLeftAdjointEquiv_apply,
     Equiv.symm_apply_eq, Subtype.ext_iff]
   dsimp
-  rw [Cofork.IsColimit.homIso_natural, Cofork.IsColimit.homIso_natural]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [Cofork.IsColimit.homIso_natural, Cofork.IsColimit.homIso_natural]
   erw [adj₂.homEquiv_naturality_right]
   simp_rw [Functor.comp_map]
-  simp
+  -- This used to be `simp`, but we need `aesop_cat` after leanprover/lean4#2644
+  aesop_cat
 #align category_theory.lift_adjoint.construct_left_adjoint CategoryTheory.LiftAdjoint.constructLeftAdjoint
 
 end LiftAdjoint

@@ -2,13 +2,10 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.pequiv
-! leanprover-community/mathlib commit 7c3269ca3fa4c0c19e4d127cd7151edbdbf99ed4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Basic
+
+#align_import data.pequiv from "leanprover-community/mathlib"@"7c3269ca3fa4c0c19e4d127cd7151edbdbf99ed4"
 
 /-!
 
@@ -93,7 +90,7 @@ theorem ext_iff {f g : α ≃. β} : f = g ↔ ∀ x, f x = g x :=
 
 /-- The identity map as a partial equivalence. -/
 @[refl]
-protected def refl (α : Type _) : α ≃. α where
+protected def refl (α : Type*) : α ≃. α where
   toFun := some
   invFun := some
   inv _ _ := eq_comm
@@ -290,7 +287,7 @@ theorem trans_symm_eq_iff_forall_isSome {f : α ≃. β} :
   rw [self_trans_symm, ofSet_eq_refl, Set.eq_univ_iff_forall]; rfl
 #align pequiv.trans_symm_eq_iff_forall_is_some PEquiv.trans_symm_eq_iff_forall_isSome
 
-instance : Bot (α ≃. β) :=
+instance instBotPEquiv : Bot (α ≃. β) :=
   ⟨{  toFun := fun _ => none
       invFun := fun _ => none
       inv := by simp }⟩
@@ -395,7 +392,7 @@ theorem trans_single_of_eq_none {b : β} (c : γ) {f : δ ≃. β} (h : f.symm b
   ext
   simp only [eq_none_iff_forall_not_mem, Option.mem_def, f.eq_some_iff] at h
   dsimp [PEquiv.trans, single]
-  simp
+  simp only [mem_def, bind_eq_some, iff_false, not_exists, not_and]
   intros
   split_ifs <;> simp_all
 #align pequiv.trans_single_of_eq_none PEquiv.trans_single_of_eq_none
@@ -414,7 +411,7 @@ end Single
 
 section Order
 
-instance : PartialOrder (α ≃. β) where
+instance instPartialOrderPEquiv : PartialOrder (α ≃. β) where
   le f g := ∀ (a : α) (b : β), b ∈ f a → b ∈ g a
   le_refl _ _ _ := id
   le_trans f g h fg gh a b := gh a b ∘ fg a b
@@ -468,7 +465,7 @@ end PEquiv
 
 namespace Equiv
 
-variable {α : Type _} {β : Type _} {γ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*}
 
 /-- Turns an `Equiv` into a `PEquiv` of the whole type. -/
 def toPEquiv (f : α ≃ β) : α ≃. β where

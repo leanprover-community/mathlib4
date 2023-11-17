@@ -71,4 +71,4 @@ example [AddCommGroup α] (x y z : α) : y = x + z - (x - y + z) := by
   abel
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/abel.20bug.3F/near/368707560
-example [AddCommGroup A] (a b s : A) : -b + (s - a) = s - b - a := by abel_nf
+example [AddCommGroup α] (a b s : α) : -b + (s - a) = s - b - a := by abel_nf

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Roberto Alvarez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Roberto Alvarez
-
-! This file was ported from Lean 3 source module topology.homotopy.homotopy_group
-! leanprover-community/mathlib commit 4c3e1721c58ef9087bbc2c8c38b540f70eda2e53
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Algebra.Group.Ext
+
+#align_import topology.homotopy.homotopy_group from "leanprover-community/mathlib"@"4c3e1721c58ef9087bbc2c8c38b540f70eda2e53"
 
 /-!
 # `n`th homotopy group
@@ -56,11 +53,11 @@ scoped[Topology] notation "I^" N => N → I
 namespace Cube
 
 /-- The points in a cube with at least one projection equal to 0 or 1. -/
-def boundary (N : Type _) : Set (I^N) :=
+def boundary (N : Type*) : Set (I^N) :=
   {y | ∃ i, y i = 0 ∨ y i = 1}
 #align cube.boundary Cube.boundary
 
-variable {N : Type _} [DecidableEq N]
+variable {N : Type*} [DecidableEq N]
 
 /-- The forward direction of the homeomorphism
   between the cube $I^N$ and $I × I^{N\setminus\{j\}}$. -/
@@ -85,7 +82,7 @@ theorem insertAt_boundary (i : N) {t₀ : I} {t}
 
 end Cube
 
-variable (N X : Type _) [TopologicalSpace X] (x : X)
+variable (N X : Type*) [TopologicalSpace X] (x : X)
 
 /-- The space of paths with both endpoints equal to a specified point `x : X`. -/
 @[reducible]
@@ -310,9 +307,9 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
   · apply H.apply_zero
   · apply H.apply_one
   intro t y yH
-  constructor <;> ext <;> erw [homotopyTo_apply]
-  apply H.eq_fst; on_goal 2 => apply H.eq_snd
-  all_goals use i; rw [funSplitAt_symm_apply, dif_pos rfl]; exact yH
+  ext; erw [homotopyTo_apply]
+  apply H.eq_fst; use i
+  rw [funSplitAt_symm_apply, dif_pos rfl]; exact yH
 #align gen_loop.homotopic_to GenLoop.homotopicTo
 
 /-- The converse to `GenLoop.homotopyTo`: a homotopy between two loops in the space of
@@ -333,10 +330,8 @@ theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
   · rintro t y ⟨j, jH⟩
     erw [homotopyFrom_apply]
     obtain rfl | h := eq_or_ne j i
-    · constructor
-      · rw [H.eq_fst]; exacts [congr_arg p ((Cube.splitAt j).left_inv _), jH]
-      · rw [H.eq_snd]; exacts [congr_arg q ((Cube.splitAt j).left_inv _), jH]
-    · rw [p.2 _ ⟨j, jH⟩, q.2 _ ⟨j, jH⟩]; constructor <;> · apply boundary; exact ⟨⟨j, h⟩, jH⟩
+    · rw [H.eq_fst]; exacts [congr_arg p ((Cube.splitAt j).left_inv _), jH]
+    · rw [p.2 _ ⟨j, jH⟩]; apply boundary; exact ⟨⟨j, h⟩, jH⟩
     /- porting note: the following is indented two spaces more than it should be due to
       strange behavior of `erw` -/
     all_goals
@@ -395,7 +390,7 @@ end GenLoop
 
 /-- The `n`th homotopy group at `x` defined as the quotient of `Ω^n x` by the
   `GenLoop.Homotopic` relation. -/
-def HomotopyGroup (N X : Type _) [TopologicalSpace X] (x : X) : Type _ :=
+def HomotopyGroup (N X : Type*) [TopologicalSpace X] (x : X) : Type _ :=
   Quotient (GenLoop.Homotopic.setoid N x)
 #align homotopy_group HomotopyGroup
 
@@ -418,7 +413,7 @@ def homotopyGroupEquivFundamentalGroup (i : N) :
 
 /-- Homotopy group of finite index. -/
 @[reducible]
-def HomotopyGroup.Pi (n) (X : Type _) [TopologicalSpace X] (x : X) :=
+def HomotopyGroup.Pi (n) (X : Type*) [TopologicalSpace X] (x : X) :=
   HomotopyGroup (Fin n) _ x
 #align homotopy_group.pi HomotopyGroup.Pi
 
@@ -497,9 +492,8 @@ def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
   · exact (H.apply_zero _).trans (congr_arg a₁ (eq_const_of_unique y).symm)
   · exact (H.apply_one _).trans (congr_arg a₂ (eq_const_of_unique y).symm)
   · rintro t y ⟨i, iH⟩
-    cases Unique.eq_default i; constructor
-    · exact (H.eq_fst _ iH).trans (congr_arg a₁ (eq_const_of_unique y).symm)
-    · exact (H.eq_snd _ iH).trans (congr_arg a₂ (eq_const_of_unique y).symm)
+    cases Unique.eq_default i
+    exact (H.eq_fst _ iH).trans (congr_arg a₁ (eq_const_of_unique y).symm)
 #align homotopy_group_equiv_fundamental_group_of_unique homotopyGroupEquivFundamentalGroupOfUnique
 
 /-- The first homotopy group at `x` is in bijection with the fundamental group. -/
@@ -558,7 +552,7 @@ theorem one_def [Nonempty N] : (1 : HomotopyGroup N X x) = ⟦const⟧ :=
 
 /-- Characterization of multiplication -/
 theorem mul_spec [Nonempty N] {i} {p q : Ω^ N X x} :
-  -- porting note: TODO: introduce `HomotopyGroup.mk` and remove defeq abuse.
+    -- porting note: TODO: introduce `HomotopyGroup.mk` and remove defeq abuse.
     ((· * ·) : _ → _ → HomotopyGroup N X x) ⟦p⟧ ⟦q⟧ = ⟦transAt i q p⟧ := by
   rw [transAt_indep _ q, ← fromLoop_trans_toLoop]; apply Quotient.sound; rfl
 #align homotopy_group.mul_spec HomotopyGroup.mul_spec

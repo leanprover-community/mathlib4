@@ -2,16 +2,13 @@
 Copyright (c) 2021 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, David Loeffler
-
-! This file was ported from Lean 3 source module number_theory.bernoulli_polynomials
-! leanprover-community/mathlib commit ca3d21f7f4fd613c2a3c54ac7871163e1e5ecb3a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Derivative
 import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.NumberTheory.Bernoulli
+
+#align_import number_theory.bernoulli_polynomials from "leanprover-community/mathlib"@"ca3d21f7f4fd613c2a3c54ac7871163e1e5ecb3a"
 
 /-!
 # Bernoulli polynomials
@@ -22,9 +19,9 @@ are an important tool obtained from Bernoulli numbers.
 ## Mathematical overview
 
 The $n$-th Bernoulli polynomial is defined as
-$$ B_n(X) = ∑_{k = 0}^n {n \choose k} (-1)^k  B_k  X^{n - k} $$
+$$ B_n(X) = ∑_{k = 0}^n {n \choose k} (-1)^k B_k X^{n - k} $$
 where $B_k$ is the $k$-th Bernoulli number. The Bernoulli polynomials are generating functions,
-$$ \frac{t  e^{tX} }{ e^t - 1} = ∑_{n = 0}^{\infty} B_n(X)  \frac{t^n}{n!} $$
+$$ \frac{t e^{tX} }{ e^t - 1} = ∑_{n = 0}^{\infty} B_n(X) \frac{t^n}{n!} $$
 
 ## Implementation detail
 
@@ -82,7 +79,7 @@ theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli 
   have : (∑ x : ℕ in range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x)) = 0 := by
     apply sum_eq_zero <| fun x hx => _
     intros x hx
-    have h : x  <  n := (mem_range.1 hx)
+    have h : x < n := (mem_range.1 hx)
     simp [h]
   simp [this]
 #align polynomial.bernoulli_eval_zero Polynomial.bernoulli_eval_zero
@@ -93,8 +90,7 @@ theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
   simp only [← succ_eq_add_one, sum_range_succ, mul_one, cast_one, choose_self,
     (_root_.bernoulli _).mul_comm, sum_bernoulli, one_pow, mul_one, eval_C, eval_monomial, one_mul]
   by_cases h : n = 1
-  · simp [h]
-    norm_num
+  · norm_num [h]
   · simp [h]
     exact bernoulli_eq_bernoulli'_of_ne_one h
 #align polynomial.bernoulli_eval_one Polynomial.bernoulli_eval_one
@@ -105,7 +101,7 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
     Polynomial.derivative (bernoulli (k + 1)) = (k + 1) * bernoulli k := by
   simp_rw [bernoulli, derivative_sum, derivative_monomial, Nat.sub_sub, Nat.add_sub_add_right]
   -- LHS sum has an extra term, but the coefficient is zero:
-  rw [range_add_one, sum_insert not_mem_range_self, tsub_self, cast_zero, MulZeroClass.mul_zero,
+  rw [range_add_one, sum_insert not_mem_range_self, tsub_self, cast_zero, mul_zero,
     map_zero, zero_add, mul_sum]
   -- the rest of the sum is termwise equal:
   refine' sum_congr (by rfl) fun m _ => _
@@ -116,9 +112,9 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
 #align polynomial.derivative_bernoulli_add_one Polynomial.derivative_bernoulli_add_one
 
 theorem derivative_bernoulli (k : ℕ) :
-  Polynomial.derivative (bernoulli k) = k * bernoulli (k - 1) := by
+    Polynomial.derivative (bernoulli k) = k * bernoulli (k - 1) := by
   cases k with
-  | zero => rw [Nat.cast_zero, MulZeroClass.zero_mul, bernoulli_zero, derivative_one]
+  | zero => rw [Nat.cast_zero, zero_mul, bernoulli_zero, derivative_one]
   | succ k => exact_mod_cast derivative_bernoulli_add_one k
 #align polynomial.derivative_bernoulli Polynomial.derivative_bernoulli
 
@@ -221,7 +217,7 @@ theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
 
 open PowerSeries
 
-variable {A : Type _} [CommRing A] [Algebra ℚ A]
+variable {A : Type*} [CommRing A] [Algebra ℚ A]
 
 -- TODO: define exponential generating functions, and use them here
 -- This name should probably be updated afterwards
@@ -240,7 +236,7 @@ theorem bernoulli_generating_function (t : A) :
     Nat.sum_antidiagonal_eq_sum_range_succ_mk, sum_range_succ]
   -- last term is zero so kill with `add_zero`
   simp only [RingHom.map_sub, tsub_self, constantCoeff_one, constantCoeff_exp,
-    coeff_zero_eq_constantCoeff, MulZeroClass.mul_zero, sub_self, add_zero]
+    coeff_zero_eq_constantCoeff, mul_zero, sub_self, add_zero]
   -- Let's multiply both sides by (n+1)! (OK because it's a unit)
   have hnp1 : IsUnit ((n + 1)! : ℚ) := IsUnit.mk0 _ (by exact_mod_cast factorial_ne_zero (n + 1))
   rw [← (hnp1.map (algebraMap ℚ A)).mul_right_inj]

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.independence.zero_one
-! leanprover-community/mathlib commit 2f8347015b12b0864dfaf366ec4909eb70c78740
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Independence.Basic
+
+#align_import probability.independence.zero_one from "leanprover-community/mathlib"@"2f8347015b12b0864dfaf366ec4909eb70c78740"
 
 /-!
 # Kolmogorov's 0-1 law
@@ -30,10 +27,11 @@ open scoped MeasureTheory ENNReal
 
 namespace ProbabilityTheory
 
-variable {Ω ι : Type _} {m m0 : MeasurableSpace Ω} {μ : Measure Ω}
+variable {Ω ι : Type*} {m m0 : MeasurableSpace Ω} {μ : Measure Ω}
 
 theorem measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
     (h_indep : IndepSet t t μ) : μ t = 0 ∨ μ t = 1 ∨ μ t = ∞ := by
+  rw [IndepSet_iff] at h_indep
   specialize h_indep t t (measurableSet_generateFrom (Set.mem_singleton t))
     (measurableSet_generateFrom (Set.mem_singleton t))
   by_cases h0 : μ t = 0
@@ -44,11 +42,11 @@ theorem measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
   exact Or.inr (Or.inl h_indep.symm)
 #align probability_theory.measure_eq_zero_or_one_or_top_of_indep_set_self ProbabilityTheory.measure_eq_zero_or_one_or_top_of_indepSet_self
 
-theorem measure_eq_zero_or_one_of_indepSetCat_self [IsFiniteMeasure μ] {t : Set Ω}
+theorem measure_eq_zero_or_one_of_indepSet_self [IsFiniteMeasure μ] {t : Set Ω}
     (h_indep : IndepSet t t μ) : μ t = 0 ∨ μ t = 1 := by
   have h_0_1_top := measure_eq_zero_or_one_or_top_of_indepSet_self h_indep
   simpa [measure_ne_top μ] using h_0_1_top
-#align probability_theory.measure_eq_zero_or_one_of_indep_set_self ProbabilityTheory.measure_eq_zero_or_one_of_indepSetCat_self
+#align probability_theory.measure_eq_zero_or_one_of_indep_set_self ProbabilityTheory.measure_eq_zero_or_one_of_indepSet_self
 
 variable [IsProbabilityMeasure μ] {s : ι → MeasurableSpace Ω}
 
@@ -61,7 +59,7 @@ theorem indep_biSup_compl (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (t 
 
 section Abstract
 
-variable {α : Type _} {p : Set ι → Prop} {f : Filter ι} {ns : α → Set ι}
+variable {α : Type*} {p : Set ι → Prop} {f : Filter ι} {ns : α → Set ι}
 
 /-! We prove a version of Kolmogorov's 0-1 law for the σ-algebra `limsup s f` where `f` is a filter
 for which we can define the following two functions:
@@ -119,7 +117,7 @@ theorem measure_zero_or_one_of_measurableSet_limsup (h_le : ∀ n, s n ≤ m0) (
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a))
     (hns_univ : ∀ n, ∃ a, n ∈ ns a) {t : Set Ω} (ht_tail : MeasurableSet[limsup s f] t) :
     μ t = 0 ∨ μ t = 1 :=
-  measure_eq_zero_or_one_of_indepSetCat_self
+  measure_eq_zero_or_one_of_indepSet_self
     ((indep_limsup_self h_le h_indep hf hns hnsp hns_univ).indepSet_of_measurableSet ht_tail
       ht_tail)
 #align probability_theory.measure_zero_or_one_of_measurable_set_limsup ProbabilityTheory.measure_zero_or_one_of_measurableSet_limsup
@@ -151,7 +149,7 @@ The tail σ-algebra `limsup s atTop` is the same as `⋂ n, ⋃ i ≥ n, s i`. -
 theorem measure_zero_or_one_of_measurableSet_limsup_atTop (h_le : ∀ n, s n ≤ m0)
     (h_indep : iIndep s μ) {t : Set Ω} (ht_tail : MeasurableSet[limsup s atTop] t) :
     μ t = 0 ∨ μ t = 1 :=
-  measure_eq_zero_or_one_of_indepSetCat_self
+  measure_eq_zero_or_one_of_indepSet_self
     ((indep_limsup_atTop_self h_le h_indep).indepSet_of_measurableSet ht_tail ht_tail)
 #align probability_theory.measure_zero_or_one_of_measurable_set_limsup_at_top ProbabilityTheory.measure_zero_or_one_of_measurableSet_limsup_atTop
 
@@ -172,7 +170,7 @@ theorem indep_limsup_atBot_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s �
     refine' ⟨b, fun c hc hct => _⟩
     suffices : ∀ i ∈ t, c < i; exact lt_irrefl c (this c hct)
     exact fun i hi => hc.trans_lt (hb.trans_le (ha hi))
-  · exact directed_of_inf fun i j hij k hki => hij.trans hki
+  · exact Antitone.directed_le fun _ _ ↦ Set.Ici_subset_Ici.2
   · exact fun n => ⟨n, le_rfl⟩
 #align probability_theory.indep_limsup_at_bot_self ProbabilityTheory.indep_limsup_atBot_self
 
@@ -181,7 +179,7 @@ sub-σ-algebras has probability 0 or 1. -/
 theorem measure_zero_or_one_of_measurableSet_limsup_atBot (h_le : ∀ n, s n ≤ m0)
     (h_indep : iIndep s μ) {t : Set Ω} (ht_tail : MeasurableSet[limsup s atBot] t) :
     μ t = 0 ∨ μ t = 1 :=
-  measure_eq_zero_or_one_of_indepSetCat_self
+  measure_eq_zero_or_one_of_indepSet_self
     ((indep_limsup_atBot_self h_le h_indep).indepSet_of_measurableSet ht_tail ht_tail)
 #align probability_theory.measure_zero_or_one_of_measurable_set_limsup_at_bot ProbabilityTheory.measure_zero_or_one_of_measurableSet_limsup_atBot
 

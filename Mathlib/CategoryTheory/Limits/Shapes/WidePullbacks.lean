@@ -2,14 +2,11 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Jakob von Raumer
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.wide_pullbacks
-! leanprover-community/mathlib commit f187f1074fa1857c94589cc653c786cadc4c35ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Thin
+
+#align_import category_theory.limits.shapes.wide_pullbacks from "leanprover-community/mathlib"@"f187f1074fa1857c94589cc653c786cadc4c35ff"
 
 /-!
 # Wide pullbacks
@@ -28,6 +25,8 @@ Namely, if `C` has wide pullbacks then `C/B` has limits for any object `B` in `C
 Typeclasses `HasWidePullbacks` and `HasFiniteWidePullbacks` assert the existence of wide
 pullbacks and finite wide pullbacks.
 -/
+
+set_option autoImplicit true
 
 
 universe w w' v u
@@ -64,6 +63,8 @@ inductive Hom : WidePullbackShape J → WidePullbackShape J → Type w
   deriving DecidableEq
 #align category_theory.limits.wide_pullback_shape.hom CategoryTheory.Limits.WidePullbackShape.Hom
 
+-- This is relying on an automatically generated instance name, generated in a `deriving` handler.
+-- See https://github.com/leanprover/lean4/issues/2343
 attribute [nolint unusedArguments] instDecidableEqHom
 
 instance struct : CategoryStruct (WidePullbackShape J) where
@@ -87,14 +88,14 @@ aesop rule directing on `WidePushoutOut` and it didn't take for some reason -/
 def evalCasesBash : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePullbackShape _,
-      (_: WidePullbackShape _) ⟶  (_ : WidePullbackShape _) ))
+      (_: WidePullbackShape _) ⟶ (_ : WidePullbackShape _) ))
 
 attribute [local aesop safe tactic (rule_sets [CategoryTheory])] evalCasesBash
 
 instance subsingleton_hom : Quiver.IsThin (WidePullbackShape J) := fun _ _ => by
   constructor
   intro a b
-  casesm* WidePullbackShape _, (_: WidePullbackShape _) ⟶  (_ : WidePullbackShape _)
+  casesm* WidePullbackShape _, (_: WidePullbackShape _) ⟶ (_ : WidePullbackShape _)
   rfl; rfl; rfl
 #align category_theory.limits.wide_pullback_shape.subsingleton_hom CategoryTheory.Limits.WidePullbackShape.subsingleton_hom
 
@@ -152,11 +153,11 @@ def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePullbackShape J ≌ W
   functor := wideCospan none (fun j => some (h j)) fun j => Hom.term (h j)
   inverse := wideCospan none (fun j => some (h.invFun j)) fun j => Hom.term (h.invFun j)
   unitIso :=
-    NatIso.ofComponents (fun j => by aesop_cat_nonterminal; repeat rfl) fun f => by
-      simp only [eq_iff_true_of_subsingleton]
+    NatIso.ofComponents (fun j => by aesop_cat) fun f =>
+      by simp only [eq_iff_true_of_subsingleton]
   counitIso :=
-    NatIso.ofComponents (fun j => by aesop_cat_nonterminal; repeat rfl) fun f => by
-      simp only [eq_iff_true_of_subsingleton]
+    NatIso.ofComponents (fun j => by aesop_cat)
+      fun f => by simp only [eq_iff_true_of_subsingleton]
 #align category_theory.limits.wide_pullback_shape.equivalence_of_equiv CategoryTheory.Limits.WidePullbackShape.equivalenceOfEquiv
 
 /-- Lifting universe and morphism levels preserves wide pullback diagrams. -/
@@ -179,6 +180,8 @@ inductive Hom : WidePushoutShape J → WidePushoutShape J → Type w
   deriving DecidableEq
 #align category_theory.limits.wide_pushout_shape.hom CategoryTheory.Limits.WidePushoutShape.Hom
 
+-- This is relying on an automatically generated instance name, generated in a `deriving` handler.
+-- See https://github.com/leanprover/lean4/issues/2343
 attribute [nolint unusedArguments] instDecidableEqHom
 
 instance struct : CategoryStruct (WidePushoutShape J) where
@@ -201,14 +204,14 @@ open Lean Elab Tactic
 def evalCasesBash' : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePushoutShape _,
-      (_: WidePushoutShape _) ⟶  (_ : WidePushoutShape _) ))
+      (_: WidePushoutShape _) ⟶ (_ : WidePushoutShape _) ))
 
 attribute [local aesop safe tactic (rule_sets [CategoryTheory])] evalCasesBash'
 
 instance subsingleton_hom : Quiver.IsThin (WidePushoutShape J) := fun _ _ => by
   constructor
   intro a b
-  casesm* WidePushoutShape _, (_: WidePushoutShape _) ⟶  (_ : WidePushoutShape _)
+  casesm* WidePushoutShape _, (_: WidePushoutShape _) ⟶ (_ : WidePushoutShape _)
   repeat rfl
 #align category_theory.limits.wide_pushout_shape.subsingleton_hom CategoryTheory.Limits.WidePushoutShape.subsingleton_hom
 
@@ -261,7 +264,7 @@ def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι :
           | none => f
           | some j => ι j
         naturality := fun j j' f => by
-          cases j <;> cases j' <;> cases f <;> refine id _  <;> dsimp <;> simp [w] } }
+          cases j <;> cases j' <;> cases f <;> refine id _ <;> dsimp <;> simp [w] } }
 #align category_theory.limits.wide_pushout_shape.mk_cocone CategoryTheory.Limits.WidePushoutShape.mkCocone
 
 /-- Wide pushout diagrams of equivalent index types are equivalent. -/
@@ -270,10 +273,10 @@ def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ Wi
   functor := wideSpan none (fun j => some (h j)) fun j => Hom.init (h j)
   inverse := wideSpan none (fun j => some (h.invFun j)) fun j => Hom.init (h.invFun j)
   unitIso :=
-    NatIso.ofComponents (fun j => by aesop_cat_nonterminal; repeat rfl) fun f => by
+    NatIso.ofComponents (fun j => by aesop_cat) fun f => by
       simp only [eq_iff_true_of_subsingleton]
   counitIso :=
-    NatIso.ofComponents (fun j => by aesop_cat_nonterminal; repeat rfl) fun f => by
+    NatIso.ofComponents (fun j => by aesop_cat) fun f => by
       simp only [eq_iff_true_of_subsingleton]
 
 /-- Lifting universe and morphism levels preserves wide pushout diagrams. -/

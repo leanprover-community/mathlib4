@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.finset.sum
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Sum
 import Mathlib.Data.Finset.Card
+
+#align_import data.finset.sum from "leanprover-community/mathlib"@"48a058d7e39a80ed56858505719a0b2197900999"
 
 /-!
 # Disjoint sum of finsets
@@ -27,7 +24,7 @@ open Function Multiset Sum
 
 namespace Finset
 
-variable {α β : Type _} (s : Finset α) (t : Finset β)
+variable {α β : Type*} (s : Finset α) (t : Finset β)
 
 /-- Disjoint sum of finsets. -/
 def disjSum : Finset (Sum α β) :=
@@ -81,6 +78,10 @@ theorem inl_mem_disjSum : inl a ∈ s.disjSum t ↔ a ∈ s :=
 theorem inr_mem_disjSum : inr b ∈ s.disjSum t ↔ b ∈ t :=
   Multiset.inr_mem_disjSum
 #align finset.inr_mem_disj_sum Finset.inr_mem_disjSum
+
+@[simp]
+theorem disjSum_eq_empty : s.disjSum t = ∅ ↔ s = ∅ ∧ t = ∅ := by simp [ext_iff]
+#align finset.disj_sum_eq_empty Finset.disjSum_eq_empty
 
 theorem disjSum_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : s₁.disjSum t₁ ⊆ s₂.disjSum t₂ :=
   val_le_iff.1 <| Multiset.disjSum_mono (val_le_iff.2 hs) (val_le_iff.2 ht)

@@ -2,16 +2,13 @@
 Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
-
-! This file was ported from Lean 3 source module analysis.special_functions.gamma.beta
-! leanprover-community/mathlib commit a3209ddf94136d36e5e5c624b10b2a347cc9d090
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convolution
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
 import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
 import Mathlib.Analysis.Analytic.IsolatedZeros
+
+#align_import analysis.special_functions.gamma.beta from "leanprover-community/mathlib"@"a3209ddf94136d36e5e5c624b10b2a347cc9d090"
 
 /-!
 # The Beta function, and further properties of the Gamma function
@@ -43,8 +40,6 @@ refined properties of the Gamma function using these relations.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
 set_option linter.uppercaseLean3 false
 
 open Filter intervalIntegral Set Real MeasureTheory
@@ -57,8 +52,6 @@ section BetaIntegral
 
 
 namespace Complex
-
-notation "cexp" => Complex.exp
 
 /-- The Beta function `Β (u, v)`, defined as `∫ x:ℝ in 0..1, x ^ (u - 1) * (1 - x) ^ (v - 1)`. -/
 noncomputable def betaIntegral (u v : ℂ) : ℂ :=
@@ -193,7 +186,6 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
     ring
   have h_int := ((betaIntegral_convergent hu hv').const_mul u).sub
     ((betaIntegral_convergent hu' hv).const_mul v)
-  dsimp only at h_int
   rw [add_sub_cancel, add_sub_cancel] at h_int
   have int_ev := intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le zero_le_one hc hder h_int
   have hF0 : F 0 = 0 := by
@@ -272,7 +264,7 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
   have : ∀ x : ℝ, x = x / n * n := by intro x; rw [div_mul_cancel]; exact Nat.cast_ne_zero.mpr hn
   conv_rhs => enter [1, x, 2, 1]; rw [this x]
   rw [GammaSeq_eq_betaIntegral_of_re_pos hs]
-  have := @intervalIntegral.integral_comp_div _ _ _ _ 0 n _
+  have := intervalIntegral.integral_comp_div (a := 0) (b := n)
     (fun x => ↑((1 - x) ^ n) * ↑(x * ↑n) ^ (s - 1) : ℝ → ℂ) (Nat.cast_ne_zero.mpr hn)
   dsimp only at this
   rw [betaIntegral, this, real_smul, zero_div, div_self, add_sub_cancel,
@@ -294,13 +286,13 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
 /-- The main techical lemma for `GammaSeq_tendsto_Gamma`, expressing the integral defining the
 Gamma function for `0 < re s` as the limit of a sequence of integrals over finite intervals. -/
 theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
-    Tendsto (fun n : ℕ => ∫ x : ℝ in (0)..n, ↑((1 - x / n) ^ n) * (x : ℂ) ^ (s - 1)) atTop
+    Tendsto (fun n : ℕ => ∫ x : ℝ in (0)..n, ((1 - x / n) ^ n : ℝ) * (x : ℂ) ^ (s - 1)) atTop
       (𝓝 <| Gamma s) := by
   rw [Gamma_eq_integral hs]
   -- We apply dominated convergence to the following function, which we will show is uniformly
   -- bounded above by the Gamma integrand `exp (-x) * x ^ (re s - 1)`.
   let f : ℕ → ℝ → ℂ := fun n =>
-    indicator (Ioc 0 (n : ℝ)) fun x : ℝ => ↑((1 - x / n) ^ n) * (x : ℂ) ^ (s - 1)
+    indicator (Ioc 0 (n : ℝ)) fun x : ℝ => ((1 - x / n) ^ n : ℝ) * (x : ℂ) ^ (s - 1)
   -- integrability of f
   have f_ible : ∀ n : ℕ, Integrable (f n) (volume.restrict (Ioi 0)) := by
     intro n
@@ -328,7 +320,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
       refine' (Tendsto.comp (continuous_ofReal.tendsto _) _).const_mul _
       convert tendsto_one_plus_div_pow_exp (-x) using 1
       ext1 n
-      rw [neg_div, ← sub_eq_add_neg]; norm_cast
+      rw [neg_div, ← sub_eq_add_neg]
   -- let `convert` identify the remaining goals
   convert tendsto_integral_of_dominated_convergence _ (fun n => (f_ible n).1)
     (Real.GammaIntegral_convergent hs) _
@@ -409,7 +401,7 @@ theorem GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
   rw [this, Finset.prod_range_succ', Finset.prod_range_succ, aux, ← Finset.prod_mul_distrib,
     Nat.cast_zero, add_zero, add_comm (1 - z) n, ← add_sub_assoc]
   have : ∀ j : ℕ, (z + ↑(j + 1)) * (↑1 - z + ↑j) =
-      ↑((j + 1) ^ 2) * (↑1 - z ^ 2 / ((j : ℂ) + 1) ^ 2) := by
+      ((j + 1) ^ 2 :) * (↑1 - z ^ 2 / ((j : ℂ) + 1) ^ 2) := by
     intro j
     push_cast
     have : (j : ℂ) + 1 ≠ 0 := by rw [← Nat.cast_succ, Nat.cast_ne_zero]; exact Nat.succ_ne_zero j
@@ -436,7 +428,7 @@ theorem Gamma_mul_Gamma_one_sub (z : ℂ) : Gamma z * Gamma (1 - z) = π / sin (
     cases k
     · rw [Int.ofNat_eq_coe, Int.cast_ofNat, Complex.Gamma_neg_nat_eq_zero, zero_mul]
     · rw [Int.cast_negSucc, neg_neg, Nat.cast_add, Nat.cast_one, add_comm, sub_add_cancel',
-        Complex.Gamma_neg_nat_eq_zero, MulZeroClass.mul_zero]
+        Complex.Gamma_neg_nat_eq_zero, mul_zero]
   refine' tendsto_nhds_unique ((GammaSeq_tendsto_Gamma z).mul (GammaSeq_tendsto_Gamma <| 1 - z)) _
   have : ↑π / sin (↑π * z) = 1 * (π / sin (π * z)) := by rw [one_mul]
   convert Tendsto.congr' ((eventually_ne_atTop 0).mp (eventually_of_forall fun n hn =>
@@ -455,7 +447,7 @@ theorem Gamma_ne_zero {s : ℂ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
   by_cases h_im : s.im = 0
   · have : s = ↑s.re := by
       conv_lhs => rw [← Complex.re_add_im s]
-      rw [h_im, ofReal_zero, MulZeroClass.zero_mul, add_zero]
+      rw [h_im, ofReal_zero, zero_mul, add_zero]
     rw [this, Gamma_ofReal, ofReal_ne_zero]
     refine' Real.Gamma_ne_zero fun n => _
     specialize hs n
@@ -535,7 +527,7 @@ theorem one_div_Gamma_eq_self_mul_one_div_Gamma_add_one (s : ℂ) :
     (Gamma s)⁻¹ = s * (Gamma (s + 1))⁻¹ := by
   rcases ne_or_eq s 0 with (h | rfl)
   · rw [Gamma_add_one s h, mul_inv, mul_inv_cancel_left₀ h]
-  · rw [zero_add, Gamma_zero, inv_zero, MulZeroClass.zero_mul]
+  · rw [zero_add, Gamma_zero, inv_zero, zero_mul]
 #align complex.one_div_Gamma_eq_self_mul_one_div_Gamma_add_one Complex.one_div_Gamma_eq_self_mul_one_div_Gamma_add_one
 
 /-- The reciprocal of the Gamma function is differentiable everywhere (including the points where

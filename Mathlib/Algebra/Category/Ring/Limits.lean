@@ -2,16 +2,13 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Ring.limits
-! leanprover-community/mathlib commit c43486ecf2a5a17479a32ce09e4818924145e90e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.Category.GroupCat.Limits
 import Mathlib.RingTheory.Subring.Basic
+
+#align_import algebra.category.Ring.limits from "leanprover-community/mathlib"@"c43486ecf2a5a17479a32ce09e4818924145e90e"
 
 /-!
 # The category of (commutative) rings has all limits
@@ -102,10 +99,12 @@ set_option linter.uppercaseLean3 false in
 -/
 def limitConeIsLimit (F : J ⥤ SemiRingCatMax.{v, u}) : IsLimit (limitCone F) := by
   refine IsLimit.ofFaithful (forget SemiRingCatMax.{v, u}) (Types.limitConeIsLimit.{v, u} _)
-    (fun s : Cone F => ofHom ⟨⟨⟨_, Subtype.ext <| funext fun j => by exact (s.π.app j).map_one⟩,
-      fun x y => Subtype.ext <| funext fun j => by exact (s.π.app j).map_mul x y⟩,
-      Subtype.ext <| funext fun j => by exact (s.π.app j).map_zero,
-      fun x y => Subtype.ext <| funext fun j => by exact (s.π.app j).map_add x y⟩)
+    (fun s : Cone F => ofHom
+      { toFun := _
+        map_one' := Subtype.ext <| funext fun j => by exact (s.π.app j).map_one
+        map_mul' := fun x y => Subtype.ext <| funext fun j => by exact (s.π.app j).map_mul x y
+        map_zero' := Subtype.ext <| funext fun j => by exact (s.π.app j).map_zero
+        map_add' := fun x y => Subtype.ext <| funext fun j => by exact (s.π.app j).map_add x y })
     fun s => rfl
 set_option linter.uppercaseLean3 false in
 #align SemiRing.has_limits.limit_cone_is_limit SemiRingCat.HasLimits.limitConeIsLimit
@@ -248,10 +247,12 @@ instance (F : J ⥤ CommSemiRingCatMax.{v, u}) :
         refine IsLimit.ofFaithful (forget₂ CommSemiRingCatMax.{v, u} SemiRingCatMax.{v, u})
           (SemiRingCat.HasLimits.limitConeIsLimit.{v, u} _)
           (fun s : Cone F => CommSemiRingCat.ofHom
-            ⟨⟨⟨_, Subtype.ext <| funext fun j => by exact (s.π.app j).map_one⟩,
-            fun x y => Subtype.ext <| funext fun j => by exact (s.π.app j).map_mul x y⟩,
-            Subtype.ext <| funext fun j => by exact (s.π.app j).map_zero,
-            fun x y => Subtype.ext <| funext fun j => by exact (s.π.app j).map_add x y⟩)
+            { toFun := _
+              map_one' := Subtype.ext <| funext fun j => by exact (s.π.app j).map_one
+              map_mul' := fun x y => Subtype.ext <| funext fun j => by exact (s.π.app j).map_mul x y
+              map_zero' := Subtype.ext <| funext fun j => by exact (s.π.app j).map_zero
+              map_add' := fun x y => Subtype.ext <| funext fun j => by exact (s.π.app j).map_add x y
+              })
           fun s => rfl }
 
 /-- A choice of limit cone for a functor into `CommSemiRingCat`.

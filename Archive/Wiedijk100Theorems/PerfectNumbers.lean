@@ -2,16 +2,13 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.perfect_numbers
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.Algebra.GeomSum
 import Mathlib.RingTheory.Multiplicity
+
+#align_import wiedijk_100_theorems.perfect_numbers from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 # Perfect Numbers
@@ -42,8 +39,8 @@ namespace Nat
 open Nat.ArithmeticFunction Finset
 
 theorem sigma_two_pow_eq_mersenne_succ (k : ℕ) : σ 1 (2 ^ k) = mersenne (k + 1) := by
-  simp [sigma_one_apply, mersenne, Nat.prime_two, show 2 = 1 + 1 from rfl,
-    ← geom_sum_mul_add 1 (k + 1)]
+  simp_rw [sigma_one_apply, mersenne, show 2 = 1 + 1 from rfl, ← geom_sum_mul_add 1 (k + 1)]
+  norm_num
 #align theorems_100.nat.sigma_two_pow_eq_mersenne_succ Theorems100.Nat.sigma_two_pow_eq_mersenne_succ
 
 /-- Euclid's theorem that Mersenne primes induce perfect numbers -/
@@ -91,7 +88,7 @@ theorem eq_two_pow_mul_prime_mersenne_of_even_perfect {n : ℕ} (ev : Even n) (p
   rw [Nat.perfect_iff_sum_divisors_eq_two_mul hpos, ← sigma_one_apply,
     isMultiplicative_sigma.map_mul_of_coprime (Nat.prime_two.coprime_pow_of_not_dvd hm).symm,
     sigma_two_pow_eq_mersenne_succ, ← mul_assoc, ← pow_succ] at perf
-  rcases Nat.coprime.dvd_of_dvd_mul_left
+  rcases Nat.Coprime.dvd_of_dvd_mul_left
       (Nat.prime_two.coprime_pow_of_not_dvd (odd_mersenne_succ _)) (Dvd.intro _ perf) with
     ⟨j, rfl⟩
   rw [← mul_assoc, mul_comm _ (mersenne _), mul_assoc] at perf

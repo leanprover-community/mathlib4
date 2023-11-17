@@ -2,16 +2,13 @@
 Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
-
-! This file was ported from Lean 3 source module analysis.mean_inequalities
-! leanprover-community/mathlib commit 8f9fea08977f7e450770933ee6abb20733b47c92
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.Data.Real.ConjugateExponents
+
+#align_import analysis.mean_inequalities from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
 
 /-!
 # Mean value inequalities
@@ -101,8 +98,6 @@ set_option linter.uppercaseLean3 false
 
 noncomputable section
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
 variable {ι : Type u} (s : Finset ι)
 
 section GeomMeanLEArithMean
@@ -138,6 +133,19 @@ theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0
       · rw [exp_log hz]
 #align real.geom_mean_le_arith_mean_weighted Real.geom_mean_le_arith_mean_weighted
 
+/-- AM-GM inequality: the **geometric mean is less than or equal to the arithmetic mean**. --/
+theorem geom_mean_le_arith_mean {ι : Type*} (s : Finset ι) (w : ι → ℝ) (z : ι → ℝ)
+    (hw : ∀ i ∈ s, 0 ≤ w i) (hw' : 0 < ∑ i in s, w i) (hz : ∀ i ∈ s, 0 ≤ z i) :
+    (∏ i in s, z i ^ w i) ^ (∑ i in s, w i)⁻¹  ≤  (∑ i in s, w i * z i) / (∑ i in s, w i) := by
+  convert geom_mean_le_arith_mean_weighted s (fun i => (w i) / ∑ i in s, w i) z ?_ ?_ hz using 2
+  · rw [← finset_prod_rpow _ _ (fun i hi => rpow_nonneg_of_nonneg (hz _ hi) _) _]
+    refine Finset.prod_congr rfl (fun _ ih => ?_)
+    rw [div_eq_mul_inv, rpow_mul (hz _ ih)]
+  · simp_rw [div_eq_mul_inv, mul_assoc, mul_comm, ← mul_assoc, ← Finset.sum_mul, mul_comm]
+  · exact fun _ hi => div_nonneg (hw _ hi) (le_of_lt hw')
+  · simp_rw [div_eq_mul_inv, ← Finset.sum_mul]
+    exact mul_inv_cancel (by linarith)
+
 theorem geom_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i in s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) (hx : ∀ i ∈ s, w i ≠ 0 → z i = x) :
     ∏ i in s, z i ^ w i = x :=
@@ -163,7 +171,7 @@ theorem arith_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ) (hw' : ∑ 
     ∑ i in s, w i * z i = ∑ i in s, w i * x := by
       refine' sum_congr rfl fun i hi => _
       cases' eq_or_ne (w i) 0 with hwi hwi
-      · rw [hwi, MulZeroClass.zero_mul, MulZeroClass.zero_mul]
+      · rw [hwi, zero_mul, zero_mul]
       · rw [hx i hi hwi]
     _ = x := by rw [← sum_mul, hw', one_mul]
 #align real.arith_mean_weighted_of_constant Real.arith_mean_weighted_of_constant
@@ -338,7 +346,7 @@ private theorem inner_le_Lp_mul_Lp_of_norm_le_one (f g : ι → ℝ≥0) {p q : 
 private theorem inner_le_Lp_mul_Lp_of_norm_eq_zero (f g : ι → ℝ≥0) {p q : ℝ}
     (hpq : p.IsConjugateExponent q) (hf : ∑ i in s, f i ^ p = 0) :
     ∑ i in s, f i * g i ≤ (∑ i in s, f i ^ p) ^ (1 / p) * (∑ i in s, g i ^ q) ^ (1 / q) := by
-  simp only [hf, hpq.ne_zero, one_div, sum_eq_zero_iff, zero_rpow, MulZeroClass.zero_mul,
+  simp only [hf, hpq.ne_zero, one_div, sum_eq_zero_iff, zero_rpow, zero_mul,
     inv_eq_zero, Ne.def, not_false_iff, le_zero_iff, mul_eq_zero]
   intro i his
   left
@@ -612,6 +620,8 @@ theorem inner_le_Lp_mul_Lq_tsum_of_nonneg (hpq : p.IsConjugateExponent q) (hf : 
       ∑' i, f i * g i ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) := by
   lift f to ι → ℝ≥0 using hf
   lift g to ι → ℝ≥0 using hg
+  -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
+  beta_reduce at *
   norm_cast at *
   exact NNReal.inner_le_Lp_mul_Lq_tsum hpq hf_sum hg_sum
 #align real.inner_le_Lp_mul_Lq_tsum_of_nonneg Real.inner_le_Lp_mul_Lq_tsum_of_nonneg
@@ -640,6 +650,8 @@ theorem inner_le_Lp_mul_Lq_hasSum_of_nonneg (hpq : p.IsConjugateExponent q) {A B
   lift g to ι → ℝ≥0 using hg
   lift A to ℝ≥0 using hA
   lift B to ℝ≥0 using hB
+  -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
+  beta_reduce at *
   norm_cast at hf_sum hg_sum
   obtain ⟨C, hC, H⟩ := NNReal.inner_le_Lp_mul_Lq_hasSum hpq hf_sum hg_sum
   refine' ⟨C, C.prop, hC, _⟩
@@ -677,6 +689,8 @@ theorem Lp_add_le_tsum_of_nonneg (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : �
         (∑' i, f i ^ p) ^ (1 / p) + (∑' i, g i ^ p) ^ (1 / p) := by
   lift f to ι → ℝ≥0 using hf
   lift g to ι → ℝ≥0 using hg
+  -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
+  beta_reduce at *
   norm_cast0 at *
   exact NNReal.Lp_add_le_tsum hp hf_sum hg_sum
 #align real.Lp_add_le_tsum_of_nonneg Real.Lp_add_le_tsum_of_nonneg
@@ -705,9 +719,13 @@ theorem Lp_add_le_hasSum_of_nonneg (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : 
   lift g to ι → ℝ≥0 using hg
   lift A to ℝ≥0 using hA
   lift B to ℝ≥0 using hB
+  -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
+  beta_reduce at hfA hgB
   norm_cast at hfA hgB
   obtain ⟨C, hC₁, hC₂⟩ := NNReal.Lp_add_le_hasSum hp hfA hgB
   use C
+  -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
+  beta_reduce
   norm_cast
   exact ⟨zero_le _, hC₁, hC₂⟩
 #align real.Lp_add_le_has_sum_of_nonneg Real.Lp_add_le_hasSum_of_nonneg

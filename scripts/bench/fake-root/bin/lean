@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+if [[ "$@" == "--print-prefix" ]]; then echo "$DIR/.."; exit; fi
+if [[ "$@" == "--githash" ]]; then exec lean "$@"; fi
+
+for arg in "$@"; do
+    if [[ "$arg" =~ .*\./\./(.*)\.lean ]]; then
+        mod=${BASH_REMATCH[1]//\//.}
+    fi
+done
+
+perf stat -e instructions -x ';' lean --profile -Dprofiler.threshold=10000 "$@" |& sed -E "s/([0-9]+);;instructions;.*/~$mod| \\1s/"

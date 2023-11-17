@@ -2,14 +2,11 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.abelian
-! leanprover-community/mathlib commit 8983bec7cdf6cb2dd1f21315c8a34ab00d7b2f6d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.IdealOperations
+
+#align_import algebra.lie.abelian from "leanprover-community/mathlib"@"8983bec7cdf6cb2dd1f21315c8a34ab00d7b2f6d"
 
 /-!
 # Trivial Lie modules and Abelian Lie algebras
@@ -92,7 +89,7 @@ theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
 
 theorem LieAlgebra.isLieAbelian_bot (R : Type u) (L : Type v) [CommRing R] [LieRing L]
     [LieAlgebra R L] : IsLieAbelian (⊥ : LieIdeal R L) :=
-  ⟨fun ⟨x, hx⟩ _ => by simp⟩
+  ⟨fun ⟨x, hx⟩ _ => by simp [eq_iff_true_of_subsingleton]⟩
 #align lie_algebra.is_lie_abelian_bot LieAlgebra.isLieAbelian_bot
 
 section Center

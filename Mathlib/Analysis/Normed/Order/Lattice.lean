@@ -2,15 +2,12 @@
 Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
-
-! This file was ported from Lean 3 source module analysis.normed.order.lattice
-! leanprover-community/mathlib commit 5dc275ec639221ca4d5f56938eb966f6ad9bc89f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Algebra.Order.LatticeGroup
+
+#align_import analysis.normed.order.lattice from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 
 /-!
 # Normed lattice ordered groups
@@ -48,11 +45,11 @@ section SolidNorm
 /-- Let `α` be an `AddCommGroup` with a `Lattice` structure. A norm on `α` is *solid* if, for `a`
 and `b` in `α`, with absolute values `|a|` and `|b|` respectively, `|a| ≤ |b|` implies `‖a‖ ≤ ‖b‖`.
 -/
-class HasSolidNorm (α : Type _) [NormedAddCommGroup α] [Lattice α] : Prop where
+class HasSolidNorm (α : Type*) [NormedAddCommGroup α] [Lattice α] : Prop where
   solid : ∀ ⦃x y : α⦄, |x| ≤ |y| → ‖x‖ ≤ ‖y‖
 #align has_solid_norm HasSolidNorm
 
-variable {α : Type _} [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α]
+variable {α : Type*} [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α]
 
 theorem norm_le_norm_of_abs_le_abs {a b : α} (h : |a| ≤ |b|) : ‖a‖ ≤ ‖b‖ :=
   HasSolidNorm.solid h
@@ -76,7 +73,7 @@ respect which `α` forms a lattice. Suppose that `α` is *solid*, that is to say
 `α`, with absolute values `|a|` and `|b|` respectively, `|a| ≤ |b|` implies `‖a‖ ≤ ‖b‖`. Then `α` is
 said to be a normed lattice ordered group.
 -/
-class NormedLatticeAddCommGroup (α : Type _) extends NormedAddCommGroup α, Lattice α, HasSolidNorm α
+class NormedLatticeAddCommGroup (α : Type*) extends NormedAddCommGroup α, Lattice α, HasSolidNorm α
   where
   add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 #align normed_lattice_add_comm_group NormedLatticeAddCommGroup
@@ -87,14 +84,14 @@ instance Real.normedLatticeAddCommGroup : NormedLatticeAddCommGroup ℝ where
 -- see Note [lower instance priority]
 /-- A normed lattice ordered group is an ordered additive commutative group
 -/
-instance (priority := 100) NormedLatticeAddCommGroup.toOrderedAddCommGroup {α : Type _}
+instance (priority := 100) NormedLatticeAddCommGroup.toOrderedAddCommGroup {α : Type*}
     [h : NormedLatticeAddCommGroup α] : OrderedAddCommGroup α :=
   { h with }
 #align normed_lattice_add_comm_group_to_ordered_add_comm_group NormedLatticeAddCommGroup.toOrderedAddCommGroup
 
-variable {α : Type _} [NormedLatticeAddCommGroup α]
+variable {α : Type*} [NormedLatticeAddCommGroup α]
 
-open LatticeOrderedCommGroup HasSolidNorm
+open LatticeOrderedGroup LatticeOrderedCommGroup HasSolidNorm
 
 theorem dual_solid (a b : α) (h : b ⊓ -b ≤ a ⊓ -a) : ‖a‖ ≤ ‖b‖ := by
   apply solid
@@ -160,7 +157,7 @@ theorem norm_sup_le_add (x y : α) : ‖x ⊔ y‖ ≤ ‖x‖ + ‖y‖ := by
 /-- Let `α` be a normed lattice ordered group. Then the infimum is jointly continuous.
 -/
 instance (priority := 100) NormedLatticeAddCommGroup.continuousInf : ContinuousInf α := by
-  refine' ⟨continuous_iff_continuousAt.2 fun q => tendsto_iff_norm_tendsto_zero.2 <| _⟩
+  refine' ⟨continuous_iff_continuousAt.2 fun q => tendsto_iff_norm_sub_tendsto_zero.2 <| _⟩
   have : ∀ p : α × α, ‖p.1 ⊓ p.2 - q.1 ⊓ q.2‖ ≤ ‖p.1 - q.1‖ + ‖p.2 - q.2‖ := fun _ =>
     norm_inf_sub_inf_le_add_norm _ _ _ _
   refine' squeeze_zero (fun e => norm_nonneg _) this _
@@ -170,7 +167,7 @@ instance (priority := 100) NormedLatticeAddCommGroup.continuousInf : ContinuousI
 #align normed_lattice_add_comm_group_has_continuous_inf NormedLatticeAddCommGroup.continuousInf
 
 -- see Note [lower instance priority]
-instance (priority := 100) NormedLatticeAddCommGroup.continuousSup {α : Type _}
+instance (priority := 100) NormedLatticeAddCommGroup.continuousSup {α : Type*}
     [NormedLatticeAddCommGroup α] : ContinuousSup α :=
   OrderDual.continuousSup αᵒᵈ
 #align normed_lattice_add_comm_group_has_continuous_sup NormedLatticeAddCommGroup.continuousSup
@@ -220,7 +217,7 @@ theorem isClosed_nonneg {E} [NormedLatticeAddCommGroup E] : IsClosed { x : E | 0
     exact IsClosed.preimage continuous_neg' isClosed_singleton
   ext1 x
   simp only [Set.mem_preimage, Set.mem_singleton_iff, Set.mem_setOf_eq,
-    @neg_eq_zero_iff E _ _ (OrderedAddCommGroup.to_covariantClass_left_le E)  ]
+    @neg_eq_zero_iff E _ _ (OrderedAddCommGroup.to_covariantClass_left_le E)]
   -- porting note: I'm not sure why Lean couldn't synthesize this instance because it works with
   -- `have : CovariantClass E E (· + ·) (· ≤ ·) := inferInstance`
 #align is_closed_nonneg isClosed_nonneg

@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
-
-! This file was ported from Lean 3 source module analysis.special_functions.complex.arg
-! leanprover-community/mathlib commit 2c1d8ca2812b64f88992a5294ea3dba144755cd1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Angle
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+
+#align_import analysis.special_functions.complex.arg from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 
 /-!
 # The argument of a complex number.
@@ -47,13 +44,13 @@ theorem cos_arg {x : ℂ} (hx : x ≠ 0) : Real.cos (arg x) = x.re / abs x := by
   rw [arg]
   split_ifs with h₁ h₂
   · rw [Real.cos_arcsin]
-    simp [Real.sqrt_sq, (abs.pos hx).le, *, one_sub_div]
+    field_simp [Real.sqrt_sq, (abs.pos hx).le, *]
   · rw [Real.cos_add_pi, Real.cos_arcsin]
-    simp [Real.sqrt_div (sq_nonneg _), Real.sqrt_sq_eq_abs, _root_.abs_of_neg (not_le.1 h₁),
-      *, one_sub_div, neg_div]
+    field_simp [Real.sqrt_div (sq_nonneg _), Real.sqrt_sq_eq_abs,
+      _root_.abs_of_neg (not_le.1 h₁), *]
   · rw [Real.cos_sub_pi, Real.cos_arcsin]
-    simp [Real.sqrt_div (sq_nonneg _), Real.sqrt_sq_eq_abs, _root_.abs_of_neg (not_le.1 h₁),
-      *, one_sub_div, neg_div]
+    field_simp [Real.sqrt_div (sq_nonneg _), Real.sqrt_sq_eq_abs,
+      _root_.abs_of_neg (not_le.1 h₁), *]
 #align complex.cos_arg Complex.cos_arg
 
 @[simp]
@@ -70,6 +67,14 @@ theorem abs_mul_cos_add_sin_mul_I (x : ℂ) : (abs x * (cos (arg x) + sin (arg x
   rw [← exp_mul_I, abs_mul_exp_arg_mul_I]
 set_option linter.uppercaseLean3 false in
 #align complex.abs_mul_cos_add_sin_mul_I Complex.abs_mul_cos_add_sin_mul_I
+
+@[simp]
+lemma abs_mul_cos_arg (x : ℂ) : abs x * Real.cos (arg x) = x.re := by
+  simpa [-abs_mul_cos_add_sin_mul_I] using congr_arg re (abs_mul_cos_add_sin_mul_I x)
+
+@[simp]
+lemma abs_mul_sin_arg (x : ℂ) : abs x * Real.sin (arg x) = x.im := by
+  simpa [-abs_mul_cos_add_sin_mul_I] using congr_arg im (abs_mul_cos_add_sin_mul_I x)
 
 theorem abs_eq_one_iff (z : ℂ) : abs z = 1 ↔ ∃ θ : ℝ, exp (θ * I) = z := by
   refine' ⟨fun hz => ⟨arg z, _⟩, _⟩
@@ -136,7 +141,6 @@ theorem arg_mem_Ioc (z : ℂ) : arg z ∈ Set.Ioc (-π) π := by
   rcases existsUnique_add_zsmul_mem_Ioc Real.two_pi_pos (arg z) (-π) with ⟨N, hN, -⟩
   rw [two_mul, neg_add_cancel_left, ← two_mul, zsmul_eq_mul] at hN
   rw [← abs_mul_cos_add_sin_mul_I z, ← cos_add_int_mul_two_pi _ N, ← sin_add_int_mul_two_pi _ N]
-  simp only [← ofReal_one, ← ofReal_bit0, ← ofReal_mul, ← ofReal_add, ofReal_int_cast]
   have := arg_mul_cos_add_sin_mul_I (abs.pos hz) hN
   push_cast at this
   rwa [this]
@@ -168,7 +172,7 @@ theorem arg_nonneg_iff {z : ℂ} : 0 ≤ arg z ↔ 0 ≤ z.im := by
         contrapose!
         intro h
         exact Real.sin_neg_of_neg_of_neg_pi_lt h (neg_pi_lt_arg _)⟩
-    _ ↔ _ := by rw [sin_arg, le_div_iff (abs.pos h₀), MulZeroClass.zero_mul]
+    _ ↔ _ := by rw [sin_arg, le_div_iff (abs.pos h₀), zero_mul]
 
 #align complex.arg_nonneg_iff Complex.arg_nonneg_iff
 
@@ -178,11 +182,14 @@ theorem arg_neg_iff {z : ℂ} : arg z < 0 ↔ z.im < 0 :=
 #align complex.arg_neg_iff Complex.arg_neg_iff
 
 theorem arg_real_mul (x : ℂ) {r : ℝ} (hr : 0 < r) : arg (r * x) = arg x := by
-  rcases eq_or_ne x 0 with (rfl | hx); · rw [MulZeroClass.mul_zero]
+  rcases eq_or_ne x 0 with (rfl | hx); · rw [mul_zero]
   conv_lhs =>
     rw [← abs_mul_cos_add_sin_mul_I x, ← mul_assoc, ← ofReal_mul,
       arg_mul_cos_add_sin_mul_I (mul_pos hr (abs.pos hx)) x.arg_mem_Ioc]
 #align complex.arg_real_mul Complex.arg_real_mul
+
+theorem arg_mul_real {r : ℝ} (hr : 0 < r) (x : ℂ) : arg (x * r) = arg x :=
+  mul_comm x r ▸ arg_real_mul x hr
 
 theorem arg_eq_arg_iff {x y : ℂ} (hx : x ≠ 0) (hy : y ≠ 0) :
     arg x = arg y ↔ (abs y / abs x : ℂ) * x = y := by
@@ -257,7 +264,7 @@ theorem arg_eq_pi_div_two_iff {z : ℂ} : arg z = π / 2 ↔ z.re = 0 ∧ 0 < z.
     simp [h₀]
   · cases' z with x y
     rintro ⟨rfl : x = 0, hy : 0 < y⟩
-    rw [← arg_I, ← arg_real_mul I hy, ofReal_mul', I_re, I_im, MulZeroClass.mul_zero, mul_one]
+    rw [← arg_I, ← arg_real_mul I hy, ofReal_mul', I_re, I_im, mul_zero, mul_one]
 #align complex.arg_eq_pi_div_two_iff Complex.arg_eq_pi_div_two_iff
 
 theorem arg_eq_neg_pi_div_two_iff {z : ℂ} : arg z = -(π / 2) ↔ z.re = 0 ∧ z.im < 0 := by
@@ -303,8 +310,7 @@ theorem arg_of_im_neg {z : ℂ} (hz : z.im < 0) : arg z = -Real.arccos (z.re / a
 
 theorem arg_conj (x : ℂ) : arg (conj x) = if arg x = π then π else -arg x := by
   simp_rw [arg_eq_pi_iff, arg, neg_im, conj_im, conj_re, abs_conj, neg_div, neg_neg,
-    Real.arcsin_neg, apply_ite Neg.neg, neg_add, neg_sub, neg_neg, ← sub_eq_add_neg, sub_neg_eq_add,
-    add_comm π]
+    Real.arcsin_neg]
   rcases lt_trichotomy x.re 0 with (hr | hr | hr) <;>
     rcases lt_trichotomy x.im 0 with (hi | hi | hi)
   · simp [hr, hr.not_le, hi.le, hi.ne, not_le.2 hi, add_comm]
@@ -354,6 +360,13 @@ theorem neg_pi_div_two_le_arg_iff {z : ℂ} : -(π / 2) ≤ arg z ↔ 0 ≤ re z
       abs_im_lt_abs]
     exacts [hre.ne, abs.pos <| ne_of_apply_ne re hre.ne]
 #align complex.neg_pi_div_two_le_arg_iff Complex.neg_pi_div_two_le_arg_iff
+
+lemma neg_pi_div_two_lt_arg_iff {z : ℂ} : -(π / 2) < arg z ↔ 0 < re z ∨ 0 ≤ im z := by
+  rw [lt_iff_le_and_ne, neg_pi_div_two_le_arg_iff, ne_comm, Ne, arg_eq_neg_pi_div_two_iff]
+  rcases lt_trichotomy z.re 0 with hre | hre | hre
+  · simp [hre.ne, hre.not_le, hre.not_lt]
+  · simp [hre]
+  · simp [hre, hre.le, hre.ne']
 
 @[simp]
 theorem abs_arg_le_pi_div_two_iff {z : ℂ} : |arg z| ≤ π / 2 ↔ 0 ≤ re z := by
@@ -501,6 +514,13 @@ theorem arg_coe_angle_eq_iff {x y : ℂ} : (arg x : Real.Angle) = arg y ↔ arg 
   simp_rw [← Real.Angle.toReal_inj, arg_coe_angle_toReal_eq_arg]
 #align complex.arg_coe_angle_eq_iff Complex.arg_coe_angle_eq_iff
 
+lemma arg_mul_eq_add_arg_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
+    (x * y).arg = x.arg + y.arg ↔ arg x + arg y ∈ Set.Ioc (-π) π := by
+  rw [← arg_coe_angle_toReal_eq_arg, arg_mul_coe_angle hx₀ hy₀, ← Real.Angle.coe_add,
+      Real.Angle.toReal_coe_eq_self_iff_mem_Ioc]
+
+alias ⟨_, arg_mul⟩ := arg_mul_eq_add_arg_iff
+
 section Continuity
 
 variable {x z : ℂ}
@@ -572,8 +592,7 @@ theorem tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re
   · simp [him]
   · lift z to ℝ using him
     simpa using hre.ne
-#align complex.tendsto_arg_nhds_within_im_neg_of_re_neg_of_im_zero
-Complex.tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero
+#align complex.tendsto_arg_nhds_within_im_neg_of_re_neg_of_im_zero Complex.tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero
 
 theorem continuousWithinAt_arg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (him : z.im = 0) :
     ContinuousWithinAt arg { z : ℂ | 0 ≤ z.im } z := by
@@ -597,8 +616,7 @@ theorem tendsto_arg_nhdsWithin_im_nonneg_of_re_neg_of_im_zero {z : ℂ} (hre : z
     (him : z.im = 0) : Tendsto arg (𝓝[{ z : ℂ | 0 ≤ z.im }] z) (𝓝 π) := by
   simpa only [arg_eq_pi_iff.2 ⟨hre, him⟩] using
     (continuousWithinAt_arg_of_re_neg_of_im_zero hre him).tendsto
-#align complex.tendsto_arg_nhds_within_im_nonneg_of_re_neg_of_im_zero
-Complex.tendsto_arg_nhdsWithin_im_nonneg_of_re_neg_of_im_zero
+#align complex.tendsto_arg_nhds_within_im_nonneg_of_re_neg_of_im_zero Complex.tendsto_arg_nhdsWithin_im_nonneg_of_re_neg_of_im_zero
 
 theorem continuousAt_arg_coe_angle (h : x ≠ 0) : ContinuousAt ((↑) ∘ arg : ℂ → Real.Angle) x := by
   by_cases hs : 0 < x.re ∨ x.im ≠ 0

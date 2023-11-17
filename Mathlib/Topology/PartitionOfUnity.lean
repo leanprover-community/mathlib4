@@ -2,23 +2,20 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.partition_of_unity
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Topology.ContinuousFunction.Algebra
-import Mathlib.Topology.Paracompact
+import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.UrysohnsLemma
+
+#align_import topology.partition_of_unity from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Continuous partition of unity
 
-In this file we define `PartitionOfUnity (ι X : Type _) [TopologicalSpace X] (s : Set X := univ)`
+In this file we define `PartitionOfUnity (ι X : Type*) [TopologicalSpace X] (s : Set X := univ)`
 to be a continuous partition of unity on `s` indexed by `ι`. More precisely, `f : PartitionOfUnity
 ι X s` is a collection of continuous functions `f i : C(X, ℝ)`, `i : ι`, such that
 
@@ -31,7 +28,7 @@ In the case `s = univ` the last assumption follows from the previous one but it 
 have this assumption in the case `s ≠ univ`.
 
 We also define a bump function covering,
-`BumpCovering (ι X : Type _) [TopologicalSpace X] (s : Set X := univ)`, to be a collection of
+`BumpCovering (ι X : Type*) [TopologicalSpace X] (s : Set X := univ)`, to be a collection of
 functions `f i : C(X, ℝ)`, `i : ι`, such that
 
 * the supports of `f i` form a locally finite family of sets;
@@ -99,7 +96,7 @@ If `X` is a normal paracompact space, then `PartitionOfUnity.exists_isSubordinat
 that for every open covering `U : Set (Set X)` of `s` there exists a partition of unity that is
 subordinate to `U`.
 -/
-structure PartitionOfUnity (ι X : Type _) [TopologicalSpace X] (s : Set X := univ) where
+structure PartitionOfUnity (ι X : Type*) [TopologicalSpace X] (s : Set X := univ) where
   toFun : ι → C(X, ℝ)
   locallyFinite' : LocallyFinite fun i => support (toFun i)
   nonneg' : 0 ≤ toFun
@@ -122,7 +119,7 @@ If `X` is a normal paracompact space, then `BumpCovering.exists_isSubordinate` g
 every open covering `U : Set (Set X)` of `s` there exists a `BumpCovering` of `s` that is
 subordinate to `U`.
 -/
-structure BumpCovering (ι X : Type _) [TopologicalSpace X] (s : Set X := univ) where
+structure BumpCovering (ι X : Type*) [TopologicalSpace X] (s : Set X := univ) where
   toFun : ι → C(X, ℝ)
   locallyFinite' : LocallyFinite fun i => support (toFun i)
   nonneg' : 0 ≤ toFun
@@ -134,7 +131,7 @@ variable {ι : Type u} {X : Type v} [TopologicalSpace X]
 
 namespace PartitionOfUnity
 
-variable {E : Type _} [AddCommMonoid E] [SMulWithZero ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
+variable {E : Type*} [AddCommMonoid E] [SMulWithZero ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
   {s : Set X} (f : PartitionOfUnity ι X s)
 
 instance : FunLike (PartitionOfUnity ι X s) ι fun _ ↦ C(X, ℝ) where
@@ -380,7 +377,7 @@ def toPOUFun (i : ι) (x : X) : ℝ :=
 #align bump_covering.to_pou_fun BumpCovering.toPOUFun
 
 theorem toPOUFun_zero_of_zero {i : ι} {x : X} (h : f i x = 0) : f.toPOUFun i x = 0 := by
-  rw [toPOUFun, h, MulZeroClass.zero_mul]
+  rw [toPOUFun, h, zero_mul]
 #align bump_covering.to_pou_fun_zero_of_zero BumpCovering.toPOUFun_zero_of_zero
 
 theorem support_toPOUFun_subset (i : ι) : support (f.toPOUFun i) ⊆ support (f i) :=

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.multiset.sum
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Nodup
+
+#align_import data.multiset.sum from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Disjoint sum of multisets
@@ -26,7 +23,7 @@ open Sum
 
 namespace Multiset
 
-variable {α β : Type _} (s : Multiset α) (t : Multiset β)
+variable {α β : Type*} (s : Multiset α) (t : Multiset β)
 
 /-- Disjoint sum of multisets. -/
 def disjSum : Multiset (Sum α β) :=

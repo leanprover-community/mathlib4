@@ -2,15 +2,12 @@
 Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module ring_theory.discriminant
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Trace
 import Mathlib.RingTheory.Norm
-import Mathlib.NumberTheory.NumberField.Basic
+
+#align_import ring_theory.discriminant from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
 /-!
 # Discriminant of a family of vectors
@@ -38,7 +35,7 @@ Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we 
   field `E` corresponding to `j : ι` via a bijection `e : ι ≃ (L →ₐ[K] E)`.
 * `Algebra.discr_powerBasis_eq_prod` : the discriminant of a power basis.
 * `Algebra.discr_isIntegral` : if `K` and `L` are fields and `IsScalarTower R K L`, if
-  `b : ι → L` satisfies ` ∀ i, IsIntegral R (b i)`, then `IsIntegral R (discr K b)`.
+  `b : ι → L` satisfies `∀ i, IsIntegral R (b i)`, then `IsIntegral R (discr K b)`.
 * `Algebra.discr_mul_isIntegral_mem_adjoin` : let `K` be the fraction field of an integrally
   closed domain `R` and let `L` be a finite separable extension of `K`. Let `B : PowerBasis K L`
   be such that `IsIntegral R B.gen`. Then for all, `z : L` we have
@@ -81,7 +78,7 @@ theorem discr_def [Fintype ι] (b : ι → B) : discr A b = (traceMatrix A b).de
 
 #align algebra.discr_def Algebra.discr_def
 
-variable {ι' : Type _} [Fintype ι'] [Fintype ι] [DecidableEq ι']
+variable {ι' : Type*} [Fintype ι'] [Fintype ι] [DecidableEq ι']
 
 section Basic
 
@@ -101,7 +98,7 @@ theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
       intro j;
       simp [mul_comm]
     simp only [mulVec, dotProduct, traceMatrix_apply, Pi.zero_apply, traceForm_apply, fun j =>
-      this j, ← LinearMap.map_sum, ← sum_mul, hg, MulZeroClass.zero_mul, LinearMap.map_zero]
+      this j, ← map_sum, ← sum_mul, hg, zero_mul, LinearMap.map_zero]
   by_contra h
   rw [discr_def] at h
   simp [Matrix.eq_zero_of_mulVec_eq_zero h this] at hi
@@ -233,9 +230,9 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
     refine' equivOfCardEq _
     rw [Fintype.card_fin, AlgHom.card]
     exact (PowerBasis.finrank pb).symm
-  have hnodup : ((minpoly K pb.gen).map (algebraMap K E)).roots.Nodup :=
+  have hnodup : ((minpoly K pb.gen).aroots E).Nodup :=
     nodup_roots (Separable.map (IsSeparable.separable K pb.gen))
-  have hroots : ∀ σ : L →ₐ[K] E, σ pb.gen ∈ ((minpoly K pb.gen).map (algebraMap K E)).roots := by
+  have hroots : ∀ σ : L →ₐ[K] E, σ pb.gen ∈ (minpoly K pb.gen).aroots E := by
     intro σ
     rw [mem_roots, IsRoot.def, eval_map, ← aeval_def, aeval_algHom_apply]
     repeat' simp [minpoly.ne_zero (IsSeparable.isIntegral K pb.gen)]
@@ -254,7 +251,7 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
       ← Finset.prod_mk _ (hnodup.erase _)]
   rw [prod_sigma', prod_sigma']
   refine'
-    prod_bij (fun i _ => ⟨e i.2, e i.1 pb.gen⟩) (fun i hi => _) (fun i _ => by simp )
+    prod_bij (fun i _ => ⟨e i.2, e i.1 pb.gen⟩) (fun i hi => _) (fun i _ => by simp)
       (fun i j hi hj hij => _) fun σ hσ => _
   · simp only [true_and_iff, Finset.mem_mk, mem_univ, mem_sigma]
     rw [Multiset.mem_erase_of_ne fun h => ?_]
@@ -293,7 +290,7 @@ variable {R : Type z} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R 
 theorem discr_isIntegral {b : ι → L} (h : ∀ i, IsIntegral R (b i)) : IsIntegral R (discr K b) := by
   classical
   rw [discr_def]
-  exact IsIntegral.det fun i j => isIntegral_trace (isIntegral_mul (h i) (h j))
+  exact IsIntegral.det fun i j => isIntegral_trace (IsIntegral.mul (h i) (h j))
 #align algebra.discr_is_integral Algebra.discr_isIntegral
 
 /-- If `b` and `b'` are `ℚ`-bases of a number field `K` such that
@@ -333,7 +330,7 @@ theorem discr_eq_discr_of_toMatrix_coeff_isIntegral [NumberField K] {b : Basis �
 separable extension of `K`. Let `B : PowerBasis K L` be such that `IsIntegral R B.gen`.
 Then for all, `z : L` that are integral over `R`, we have
 `(discr K B.basis) • z ∈ adjoin R ({B.gen} : set L)`. -/
-theorem discr_mul_isIntegral_mem_adjoin [IsDomain R] [IsSeparable K L] [IsIntegrallyClosed R]
+theorem discr_mul_isIntegral_mem_adjoin [IsSeparable K L] [IsIntegrallyClosed R]
     [IsFractionRing R K] {B : PowerBasis K L} (hint : IsIntegral R B.gen) {z : L}
     (hz : IsIntegral R z) : discr K B.basis • z ∈ adjoin R ({B.gen} : Set L) := by
   have hinv : IsUnit (traceMatrix K B.basis).det := by
@@ -367,17 +364,32 @@ theorem discr_mul_isIntegral_mem_adjoin [IsDomain R] [IsSeparable K L] [IsIntegr
     exact
       mem_bot.2
         (IsIntegrallyClosed.isIntegral_iff.1 <|
-          isIntegral_trace <| isIntegral_mul hz <| IsIntegral.pow hint _)
+          isIntegral_trace <| IsIntegral.mul hz <| IsIntegral.pow hint _)
   · simp only [updateColumn_apply, hji, PowerBasis.coe_basis]
     exact
       mem_bot.2
         (IsIntegrallyClosed.isIntegral_iff.1 <|
-          isIntegral_trace <| isIntegral_mul (IsIntegral.pow hint _) (IsIntegral.pow hint _))
+          isIntegral_trace <| IsIntegral.mul (IsIntegral.pow hint _) (IsIntegral.pow hint _))
 #align algebra.discr_mul_is_integral_mem_adjoin Algebra.discr_mul_isIntegral_mem_adjoin
 
 end Integral
 
 end Field
+
+section Int
+
+/-- Two (finite) ℤ-bases have the same discriminant. -/
+theorem discr_eq_discr [Fintype ι] (b : Basis ι ℤ A) (b' : Basis ι ℤ A) :
+    Algebra.discr ℤ b = Algebra.discr ℤ b' := by
+  convert Algebra.discr_of_matrix_vecMul b' (b'.toMatrix b)
+  · rw [Basis.toMatrix_map_vecMul]
+  · suffices IsUnit (b'.toMatrix b).det by
+      rw [Int.isUnit_iff, ← sq_eq_one_iff] at this
+      rw [this, one_mul]
+    rw [← LinearMap.toMatrix_id_eq_basis_toMatrix b b']
+    exact LinearEquiv.isUnit_det (LinearEquiv.refl ℤ A) b b'
+
+end Int
 
 end Discr
 

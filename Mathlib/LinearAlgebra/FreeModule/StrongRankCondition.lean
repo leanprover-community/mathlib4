@@ -2,14 +2,11 @@
 Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module linear_algebra.free_module.strong_rank_condition
-! leanprover-community/mathlib commit f37e88f3ec14ee5eab18a9330ace717740e9c92c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Charpoly.Basic
 import Mathlib.LinearAlgebra.InvariantBasisNumber
+
+#align_import linear_algebra.free_module.strong_rank_condition from "leanprover-community/mathlib"@"f37e88f3ec14ee5eab18a9330ace717740e9c92c"
 
 /-!
 
@@ -36,12 +33,10 @@ vector `(0,...,0,1)` gives `a₀`, contradiction.
 -/
 
 
-variable (R : Type _) [CommRing R] [Nontrivial R]
+variable (R : Type*) [CommRing R] [Nontrivial R]
 
 open Polynomial Function Fin LinearMap
 
-set_option maxHeartbeats 250000 in
-set_option synthInstance.maxHeartbeats 25000 in
 /-- Any commutative ring satisfies the `StrongRankCondition`. -/
 instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R := by
   suffices ∀ n, ∀ f : (Fin (n + 1) → R) →ₗ[R] Fin n → R, ¬Injective f by

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.regularity.increment
-! leanprover-community/mathlib commit bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Chunk
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Energy
+
+#align_import combinatorics.simple_graph.regularity.increment from "leanprover-community/mathlib"@"bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d"
 
 /-!
 # Increment partition for Szemerédi Regularity Lemma
@@ -41,15 +38,12 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 open Finset Fintype SimpleGraph SzemerediRegularity
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
 open scoped BigOperators Classical SzemerediRegularity.Positivity
 
-variable {α : Type _} [Fintype α] {P : Finpartition (univ : Finset α)} (hP : P.IsEquipartition)
+variable {α : Type*} [Fintype α] {P : Finpartition (univ : Finset α)} (hP : P.IsEquipartition)
   (G : SimpleGraph α) (ε : ℝ)
 
-local notation3 (prettyPrint := false)
-  "m" => (card α / stepBound P.parts.card : ℕ)
+local notation3 "m" => (card α / stepBound P.parts.card : ℕ)
 
 namespace SzemerediRegularity
 
@@ -120,8 +114,8 @@ theorem offDiag_pairs_le_increment_energy :
   refine' div_le_div_of_le_of_nonneg (α := ℚ) _ (sq_nonneg _)
   rw [← sum_biUnion]
   · exact sum_le_sum_of_subset_of_nonneg distinct_pairs_increment fun i _ _ => sq_nonneg _
-  simp only [Set.PairwiseDisjoint, Function.onFun, disjoint_left, inf_eq_inter, mem_inter,
-    mem_product]
+  simp (config := { unfoldPartialApp := true }) only [Set.PairwiseDisjoint, Function.onFun,
+    disjoint_left, inf_eq_inter, mem_inter, mem_product]
   rintro ⟨⟨s₁, s₂⟩, hs⟩ _ ⟨⟨t₁, t₂⟩, ht⟩ _ hst ⟨u, v⟩ huv₁ huv₂
   rw [mem_offDiag] at hs ht
   obtain ⟨a, ha⟩ := Finpartition.nonempty_of_mem_parts _ huv₁.1

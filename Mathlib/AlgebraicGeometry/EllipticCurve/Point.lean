@@ -2,15 +2,12 @@
 Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
-
-! This file was ported from Lean 3 source module algebraic_geometry.elliptic_curve.point
-! leanprover-community/mathlib commit e2e7f2ac359e7514e4d40061d7c08bb69487ba4e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 import Mathlib.LinearAlgebra.FreeModule.Norm
 import Mathlib.RingTheory.ClassGroup
+
+#align_import algebraic_geometry.elliptic_curve.point from "leanprover-community/mathlib"@"e2e7f2ac359e7514e4d40061d7c08bb69487ba4e"
 
 /-!
 # Nonsingular rational points on Weierstrass curves
@@ -514,8 +511,6 @@ lemma Y_eq_of_Y_ne (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) : y₁ = 
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.Y_eq_of_Y_ne WeierstrassCurve.Y_eq_of_Y_ne
 
--- porting note: increased `maxHeartbeats` for `ring1`
-set_option synthInstance.maxHeartbeats 30000 in
 lemma XYIdeal_eq₂ (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
     XYIdeal W x₂ (C y₂) = XYIdeal W x₂ (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
   -- porting note: removed assumption `h₂` explicitly
@@ -720,8 +715,6 @@ variable {F : Type u} [Field F] {W : WeierstrassCurve F} {x₁ x₂ y₁ y₂ : 
   (h₁ : W.nonsingular x₁ y₁) (h₂ : W.nonsingular x₂ y₂) (h₁' : W.equation x₁ y₁)
   (h₂' : W.equation x₂ y₂)
 
--- porting note: increased `maxHeartbeats` for `ring1`
-set_option maxHeartbeats 800000 in
 lemma XYIdeal_neg_mul : XYIdeal W x₁ (C <| W.negY x₁ y₁) * XYIdeal W x₁ (C y₁) = XIdeal W x₁ := by
   have Y_rw :
     (Y - C (C y₁)) * (Y - C (C (W.negY x₁ y₁))) -
@@ -763,9 +756,6 @@ private lemma XYIdeal'_mul_inv :
   rw [← mul_assoc, ← FractionalIdeal.coeIdeal_mul, mul_comm <| XYIdeal W _ _, XYIdeal_neg_mul h₁,
     XIdeal, FractionalIdeal.coe_ideal_span_singleton_mul_inv W.FunctionField <| XClass_ne_zero W x₁]
 
--- porting note: increased `maxHeartbeats` for `ring1`
-set_option synthInstance.maxHeartbeats 60000 in
-set_option maxHeartbeats 600000 in
 lemma XYIdeal_mul_XYIdeal (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
     XIdeal W (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) * (XYIdeal W x₁ (C y₁) * XYIdeal W x₂ (C y₂)) =
       YIdeal W (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) *
@@ -788,8 +778,8 @@ lemma XYIdeal_mul_XYIdeal (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
   apply congr_arg (_ ∘ _)
   convert top_mul (_ : Ideal W.CoordinateRing)
   simp_rw [XClass, ← @Set.image_singleton _ _ <| CoordinateRing.mk W, ← map_span, ← Ideal.map_sup,
-    eq_top_iff_one, mem_map_iff_of_surjective _ <| AdjoinRoot.mk_surjective W.monic_polynomial,
-    ← span_insert, mem_span_insert', mem_span_singleton']
+    eq_top_iff_one, mem_map_iff_of_surjective _ AdjoinRoot.mk_surjective, ← span_insert,
+    mem_span_insert', mem_span_singleton']
   by_cases hx : x₁ = x₂
   · rcases hx, Y_eq_of_Y_ne h₁' h₂' hx (hxy hx) with ⟨rfl, rfl⟩
     let y := (y₁ - W.negY x₁ y₁) ^ 2

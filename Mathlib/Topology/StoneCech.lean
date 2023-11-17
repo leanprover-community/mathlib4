@@ -2,14 +2,11 @@
 Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
-
-! This file was ported from Lean 3 source module topology.stone_cech
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Bases
 import Mathlib.Topology.DenseEmbedding
+
+#align_import topology.stone_cech from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-! # Stone-Čech compactification
 
@@ -104,6 +101,12 @@ instance : TotallyDisconnectedSpace (Ultrafilter α) := by
   have hZ : IsClopen Z := ⟨ultrafilter_isOpen_basic s, ultrafilter_isClosed_basic s⟩
   exact hB ⟨Z, hZ, hs⟩
 
+@[simp] theorem Ultrafilter.tendsto_pure_self (b : Ultrafilter α) : Tendsto pure b (𝓝 b) := by
+  rw [Tendsto, ← coe_map, ultrafilter_converges_iff]
+  ext s
+  change s ∈ b ↔ {t | s ∈ t} ∈ map pure b
+  simp_rw [mem_map, preimage_setOf_eq, mem_pure, setOf_mem_eq]
+
 theorem ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) ≤ b := by
   rw [TopologicalSpace.nhds_generateFrom]
   simp only [comap_iInf, comap_principal]
@@ -162,7 +165,7 @@ section Extension
   already know it must be unique because `α → Ultrafilter α` is a
   dense embedding and `γ` is Hausdorff. For existence, we will invoke
   `DenseInducing.continuous_extend`. -/
-variable {γ : Type _} [TopologicalSpace γ]
+variable {γ : Type*} [TopologicalSpace γ]
 
 /-- The extension of a function `α → γ` to a function `Ultrafilter α → γ`.
   When `γ` is a compact Hausdorff space it will be continuous. -/
@@ -188,7 +191,6 @@ theorem continuous_ultrafilter_extend (f : α → γ) : Continuous (Ultrafilter.
       isCompact_univ.ultrafilter_le_nhds (b.map f) (by rw [le_principal_iff]; exact univ_mem)
     ⟨c, le_trans (map_mono (ultrafilter_comap_pure_nhds _)) h'⟩
   letI : TopologicalSpace α := ⊥
-  haveI : NormalSpace γ := normalOfCompactT2
   exact denseInducing_pure.continuous_extend h
 #align continuous_ultrafilter_extend continuous_ultrafilter_extend
 

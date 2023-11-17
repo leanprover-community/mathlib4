@@ -2,17 +2,14 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module order.category.omega_complete_partial_order
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
+
+#align_import order.category.omega_complete_partial_order from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Category of types with an omega complete partial order
@@ -54,16 +51,16 @@ instance : BundledHom @ContinuousHom where
 deriving instance LargeCategory for ωCPO
 instance : ConcreteCategory ωCPO := by unfold ωCPO; infer_instance
 
-instance : CoeSort ωCPO (Type _) :=
+instance : CoeSort ωCPO (Type*) :=
   Bundled.coeSort
 
 /-- Construct a bundled ωCPO from the underlying type and typeclass. -/
-def of (α : Type _) [OmegaCompletePartialOrder α] : ωCPO :=
+def of (α : Type*) [OmegaCompletePartialOrder α] : ωCPO :=
   Bundled.of α
 #align ωCPO.of ωCPO.of
 
 @[simp]
-theorem coe_of (α : Type _) [OmegaCompletePartialOrder α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [OmegaCompletePartialOrder α] : ↥(of α) = α :=
   rfl
 #align ωCPO.coe_of ωCPO.coe_of
 
@@ -81,7 +78,7 @@ namespace HasProducts
 
 /-- The pi-type gives a cone for a product. -/
 def product {J : Type v} (f : J → ωCPO.{v}) : Fan f :=
-  Fan.mk (of (∀ j, f j)) fun j => ContinuousHom.ofMono (Pi.evalOrderHom j) fun _ => rfl
+  Fan.mk (of (∀ j, f j)) fun j => .mk (Pi.evalOrderHom j) fun _ => rfl
 #align ωCPO.has_products.product ωCPO.HasProducts.product
 
 /-- The pi-type is a limit cone for the product. -/
@@ -103,7 +100,7 @@ instance (J : Type v) (f : J → ωCPO.{v}) : HasProduct f :=
 
 end HasProducts
 
-instance omegaCompletePartialOrderEqualizer {α β : Type _} [OmegaCompletePartialOrder α]
+instance omegaCompletePartialOrderEqualizer {α β : Type*} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f g : α →𝒄 β) :
     OmegaCompletePartialOrder { a : α // f a = g a } :=
   OmegaCompletePartialOrder.subtype _ fun c hc => by
@@ -116,9 +113,9 @@ instance omegaCompletePartialOrderEqualizer {α β : Type _} [OmegaCompleteParti
 namespace HasEqualizers
 
 /-- The equalizer inclusion function as a `ContinuousHom`. -/
-def equalizerι {α β : Type _} [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
+def equalizerι {α β : Type*} [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
     (f g : α →𝒄 β) : { a : α // f a = g a } →𝒄 α :=
-  ContinuousHom.ofMono (OrderHom.Subtype.val _) fun _ => rfl
+  .mk (OrderHom.Subtype.val _) fun _ => rfl
 #align ωCPO.has_equalizers.equalizer_ι ωCPO.HasEqualizers.equalizerι
 
 /-- A construction of the equalizer fork. -/

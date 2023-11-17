@@ -2,14 +2,10 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
-Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.natural_transformation
-! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.CategoryTheory.Reassoc
+
+#align_import category_theory.natural_transformation from "leanprover-community/mathlib"@"8350c34a64b9bc3fc64335df8006bffcadc7baa6"
 
 /-!
 # Natural transformations
@@ -69,6 +65,8 @@ theorem congr_app {F G : C ⥤ D} {α β : NatTrans F G} (h : α = β) (X : C) :
 #align category_theory.congr_app CategoryTheory.congr_app
 
 namespace NatTrans
+
+attribute [pp_dot] NatTrans.app
 
 /-- `NatTrans.id F` is the identity natural transformation on a functor `F`. -/
 protected def id (F : C ⥤ D) : NatTrans F F where app X := 𝟙 (F.obj X)

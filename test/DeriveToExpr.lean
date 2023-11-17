@@ -1,21 +1,26 @@
 import Mathlib.Tactic.DeriveToExpr
+import Mathlib.Tactic.RunCmd
 
 namespace tests
 open Lean
 
-set_option trace.Elab.Deriving.toExpr true
+-- TODO this file fails without this line due to a bug in the handler?
+set_option autoImplicit true
+--set_option trace.Elab.Deriving.toExpr true
 
 inductive MyMaybe (α : Type u)
   | none | some (x : α)
   deriving ToExpr
 
-#eval Lean.PrettyPrinter.ppExpr <| toExpr (MyMaybe.some 2)
+run_cmd Elab.Command.liftTermElabM do
+  guard <| "MyMaybe.some 2" == s!"{← Lean.PrettyPrinter.ppExpr <| toExpr (MyMaybe.some 2)}"
 
-#eval Meta.check <| toExpr (MyMaybe.some 2)
+run_cmd Elab.Command.liftTermElabM do
+  Meta.check <| toExpr (MyMaybe.some 2)
 
 deriving instance ToExpr for ULift
 
-#eval do
+run_cmd Elab.Command.liftTermElabM do
   let e := toExpr (MyMaybe.none : MyMaybe (ULift.{1,0} Nat))
   let ty := toTypeExpr (MyMaybe (ULift.{1,0} Nat))
   Meta.check e
@@ -23,7 +28,7 @@ deriving instance ToExpr for ULift
   guard <| ← Meta.isDefEq (← Meta.inferType e) ty
   guard <| (← Meta.getLevel ty) == Level.zero.succ.succ
 
-#eval do
+run_cmd Elab.Command.liftTermElabM do
   Meta.check <| toExpr <| (MyMaybe.some (ULift.up 2) : MyMaybe (ULift.{1,0} Nat))
 
 deriving instance ToExpr for List
@@ -32,7 +37,8 @@ inductive Foo
   | l (x : List Foo)
   deriving ToExpr
 
-#eval Meta.check <| toExpr (Foo.l [Foo.l [], Foo.l [Foo.l []]])
+run_cmd Elab.Command.liftTermElabM <|
+  Meta.check <| toExpr (Foo.l [Foo.l [], Foo.l [Foo.l []]])
 
 inductive Bar
   | func (x : Bool → Nat)
@@ -52,11 +58,13 @@ instance {α : Type u} [ToExpr α] [ToLevel.{u+1}] : ToExpr (Bool → α) where
 
 deriving instance ToExpr for Bar
 
-#eval do
-  let f : Bool → Nat | false => 0 | true => 1
-  let e := toExpr <| Bar.func f
-  Meta.check e
-  guard <| ← Meta.isDefEq (← Meta.inferType e) (toTypeExpr Bar)
+example : True := by
+  run_tac do
+    let f : Bool → Nat | false => 0 | true => 1
+    let e := toExpr <| Bar.func f
+    Meta.check e
+    guard <| ← Meta.isDefEq (← Meta.inferType e) (toTypeExpr Bar)
+  trivial
 
 mutual
 inductive A
@@ -67,7 +75,7 @@ inductive B
 deriving ToExpr
 end
 
-#eval do
+run_cmd Elab.Command.liftTermElabM do
   Meta.check <| toExpr A.a
   Meta.check <| toExpr B.b
 
@@ -93,6 +101,7 @@ deriving instance ToExpr for BinderInfo
 deriving instance ToExpr for Literal
 deriving instance ToExpr for Expr
 
-#eval Meta.check <| toExpr <| toExpr [1,2,3]
+run_cmd Elab.Command.liftTermElabM do
+  Meta.check <| toExpr <| toExpr [1,2,3]
 
 end tests

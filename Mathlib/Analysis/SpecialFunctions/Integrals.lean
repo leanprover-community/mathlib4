@@ -2,14 +2,11 @@
 Copyright (c) 2021 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
-
-! This file was ported from Lean 3 source module analysis.special_functions.integrals
-! leanprover-community/mathlib commit 011cafb4a5bc695875d186e245d6b3df03bf6c40
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
+
+#align_import analysis.special_functions.integrals from "leanprover-community/mathlib"@"011cafb4a5bc695875d186e245d6b3df03bf6c40"
 
 /-!
 # Integration of specific interval integrals
@@ -39,8 +36,6 @@ integrate, integration, integrable, integrability
 open Real Nat Set Finset
 
 open scoped Real BigOperators Interval
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 variable {a b : ℝ} (n : ℕ)
 
@@ -360,7 +355,7 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
   apply_fun Complex.re at this; convert this
   · simp_rw [intervalIntegral_eq_integral_uIoc, Complex.real_smul, Complex.ofReal_mul_re]
     · -- Porting note: was `change ... with ...`
-      have : Complex.re = IsROrC.re := by rfl
+      have : Complex.re = IsROrC.re := rfl
       rw [this, ← integral_re]; rfl
       refine' intervalIntegrable_iff.mp _
       cases' h' with h' h'
@@ -455,7 +450,7 @@ theorem integral_one_div_of_neg (ha : a < 0) (hb : b < 0) :
 @[simp]
 theorem integral_exp : ∫ x in a..b, exp x = exp b - exp a := by
   rw [integral_deriv_eq_sub']
-  · norm_num
+  · simp
   · exact fun _ _ => differentiableAt_exp
   · exact continuousOn_exp
 #align integral_exp integral_exp
@@ -564,10 +559,9 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
   have : t + 1 ≠ 0 := by contrapose! ht; rwa [add_eq_zero_iff_eq_neg] at ht
   apply integral_eq_sub_of_hasDerivAt
   · intro x _
-    have f : HasDerivAt (fun y : ℂ => 1 + y ^ 2) (2 * x) x := by
+    have f : HasDerivAt (fun y : ℂ => 1 + y ^ 2) (2 * x : ℂ) x := by
       convert (hasDerivAt_pow 2 (x : ℂ)).const_add 1
-      · norm_cast
-      · simp
+      simp
     have g :
       ∀ {z : ℂ}, 0 < z.re → HasDerivAt (fun z => z ^ (t + 1) / (2 * (t + 1))) (z ^ t / 2) z := by
       intro z hz
@@ -576,7 +570,6 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
       field_simp
       ring
     convert (HasDerivAt.comp (↑x) (g _) f).comp_ofReal using 1
-    · simp
     · field_simp; ring
     · exact_mod_cast add_pos_of_pos_of_nonneg zero_lt_one (sq_nonneg x)
   · apply Continuous.intervalIntegrable
@@ -602,7 +595,6 @@ theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :
   · rw [← intervalIntegral.integral_ofReal]
     congr with x : 1
     rw [ofReal_mul, this x t]
-    norm_cast
   · simp_rw [ofReal_sub, ofReal_div, this a (t + 1), this b (t + 1)]
     push_cast; rfl
   · rw [← ofReal_one, ← ofReal_neg, Ne.def, ofReal_inj]
@@ -682,7 +674,7 @@ theorem integral_sin_pow_even :
 theorem integral_sin_pow_pos : 0 < ∫ x in (0)..π, sin x ^ n := by
   rcases even_or_odd' n with ⟨k, rfl | rfl⟩ <;>
   simp only [integral_sin_pow_even, integral_sin_pow_odd] <;>
-  refine' mul_pos (by norm_num <;> exact pi_pos) (prod_pos fun n _ => div_pos _ _) <;>
+  refine' mul_pos (by norm_num [pi_pos]) (prod_pos fun n _ => div_pos _ _) <;>
   norm_cast <;>
   linarith
 #align integral_sin_pow_pos integral_sin_pow_pos
@@ -758,8 +750,9 @@ theorem integral_sin_pow_mul_cos_pow_odd (m n : ℕ) :
       simp only [_root_.pow_zero, _root_.pow_succ', mul_assoc, pow_mul, one_mul]
       congr! 5
       rw [← sq, ← sq, cos_sq']
-    _ = ∫ u in sin a..sin b, u ^ m * (↑1 - u ^ 2) ^ n :=
-      integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos hc
+    _ = ∫ u in sin a..sin b, u ^ m * (1 - u ^ 2) ^ n := by
+      -- Note(kmill): Didn't need `by exact`, but elaboration order seems to matter here.
+      exact integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos hc
 #align integral_sin_pow_mul_cos_pow_odd integral_sin_pow_mul_cos_pow_odd
 
 /-- The integral of `sin x * cos x`, given in terms of sin².
@@ -846,3 +839,18 @@ theorem integral_sin_sq_mul_cos_sq :
   · exact intervalIntegrable_const
   · exact h2.intervalIntegrable a b
 #align integral_sin_sq_mul_cos_sq integral_sin_sq_mul_cos_sq
+
+/-! ### Integral of misc. functions -/
+
+
+theorem integral_sqrt_one_sub_sq : ∫ x in (-1 : ℝ)..1, sqrt (1 - x ^ 2 : ℝ) = π / 2 :=
+  calc
+    _ = ∫ x in sin (-(π / 2)).. sin (π / 2), sqrt (1 - x ^ 2 : ℝ) := by rw [sin_neg, sin_pi_div_two]
+    _ = ∫ x in (-(π / 2))..(π / 2), sqrt (1 - sin x ^ 2 : ℝ) * cos x :=
+          (integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos
+            (by continuity)).symm
+    _ = ∫ x in (-(π / 2))..(π / 2), cos x ^ 2 := by
+          refine integral_congr_ae (MeasureTheory.ae_of_all _ fun _ h => ?_)
+          rw [uIoc_of_le (neg_le_self (le_of_lt (half_pos Real.pi_pos))), Set.mem_Ioc] at h
+          rw [ ← Real.cos_eq_sqrt_one_sub_sin_sq (le_of_lt h.1) h.2, pow_two]
+    _ = π / 2 := by simp

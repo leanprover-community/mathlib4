@@ -2,15 +2,12 @@
 Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module probability.conditional_expectation
-! leanprover-community/mathlib commit 2f8347015b12b0864dfaf366ec4909eb70c78740
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Notation
 import Mathlib.Probability.Independence.Basic
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+
+#align_import probability.conditional_expectation from "leanprover-community/mathlib"@"2f8347015b12b0864dfaf366ec4909eb70c78740"
 
 /-!
 
@@ -35,7 +32,7 @@ namespace MeasureTheory
 
 open ProbabilityTheory
 
-variable {Ω E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {Ω E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   {m₁ m₂ m : MeasurableSpace Ω} {μ : Measure Ω} {f : Ω → E}
 
 /-- If `m₁, m₂` are independent σ-algebras and `f` is `m₁`-measurable, then `𝔼[f | m₂] = 𝔼[f]`
@@ -52,6 +49,7 @@ theorem condexp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinit
   refine' Memℒp.induction_stronglyMeasurable hle₁ ENNReal.one_ne_top _ _ _ _ hfint _
   · exact ⟨f, hf, EventuallyEq.rfl⟩
   · intro c t hmt _
+    rw [Indep_iff] at hindp
     rw [integral_indicator (hle₁ _ hmt), set_integral_const, smul_smul, ← ENNReal.toReal_mul,
       mul_comm, ← hindp _ _ hmt hms, set_integral_indicator (hle₁ _ hmt), set_integral_const,
       Set.inter_comm]

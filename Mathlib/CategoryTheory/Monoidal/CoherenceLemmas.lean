@@ -2,13 +2,10 @@
 Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta, Jakob von Raumer
-
-! This file was ported from Lean 3 source module category_theory.monoidal.coherence_lemmas
-! leanprover-community/mathlib commit b8b8bf3ea0c625fa1f950034a184e07c67f7bcfe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.CategoryTheory.Coherence
+
+#align_import category_theory.monoidal.coherence_lemmas from "leanprover-community/mathlib"@"b8b8bf3ea0c625fa1f950034a184e07c67f7bcfe"
 
 /-!
 # Lemmas which are consequences of monoidal coherence
@@ -25,7 +22,7 @@ open CategoryTheory Category Iso
 
 namespace CategoryTheory.MonoidalCategory
 
-variable {C : Type _} [Category C] [MonoidalCategory C]
+variable {C : Type*} [Category C] [MonoidalCategory C]
 
 -- See Proposition 2.2.4 of <http://www-math.mit.edu/~etingof/egnobookfinal.pdf>
 @[reassoc]

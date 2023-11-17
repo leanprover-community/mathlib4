@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import pytz
 import datetime
 import github
 import os
@@ -28,6 +29,9 @@ mathlib4_root = './'
 source_module_re = re.compile(r"^! .*source module (.*)$")
 commit_re = re.compile(r"^! (leanprover-community/[a-z]*) commit ([0-9a-f]*)")
 import_re = re.compile(r"^import ([^ ]*)")
+
+align_import_re = re.compile(
+    r'^#align_import ([^ ]*) from "(leanprover-community/[a-z]*)" ?@ ?"([0-9a-f]*)"')
 
 def mk_label(path: Path) -> str:
     rel = path.relative_to(Path(mathlib3_root))
@@ -64,6 +68,12 @@ for path in paths:
 def get_mathlib4_module_commit_info(contents):
     module = repo = commit = None
     for line in contents.split('\n'):
+        m = align_import_re.match(line)
+        if m:
+            module = m.group(1)
+            repo = m.group(2)
+            commit = m.group(3)
+            break
         m = source_module_re.match(line)
         if m:
             module = m.group(1)
@@ -71,8 +81,6 @@ def get_mathlib4_module_commit_info(contents):
         if m:
             repo = m.group(1)
             commit = m.group(2)
-        if import_re.match(line):
-            break
     return module, repo, commit
 
 # contains ported files
@@ -113,7 +121,7 @@ nums = []
 sync_prs = defaultdict(set)
 mathlib4repo = github.Github(github_token).get_repo("leanprover-community/mathlib4")
 for pr in mathlib4repo.get_pulls(state='open'):
-    if pr.created_at < datetime.datetime(2022, 12, 1, 0, 0, 0):
+    if pr.created_at < datetime.datetime(2022, 12, 1, 0, 0, 0, tzinfo=pytz.UTC):
         continue
     if 'no-source-header' in (l.name for l in pr.labels):
         continue
@@ -138,7 +146,7 @@ for num in nums:
         f = subprocess.run(
             ['git', 'cat-file', 'blob', f'port-status-pull/{num}:{l}'],
             capture_output=True)
-        import_, repo, commit = get_mathlib4_module_commit_info(f.stdout.decode())
+        import_, repo, commit = get_mathlib4_module_commit_info(f.stdout.decode(encoding='utf8', errors='replace'))
         prs_of_import.setdefault(import_, []).append({'pr': num, 'repo': repo, 'commit': commit, 'fname': l})
 
 COMMENTS_URL = "https://raw.githubusercontent.com/wiki/leanprover-community/mathlib4/port-comments.md"
