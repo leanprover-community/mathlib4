@@ -87,22 +87,6 @@ lemma trace_toEndomorphism_eq_zero_of_mem_lcs
   · intro u v hu hv; simp [hu, hv]
   · intro t u hu; simp [hu]
 
-lemma yawn (h : 1 ≤ nilpotencyLength R L L):
-    lowerCentralSeries R L L (nilpotencyLength R L L - 1) = lowerCentralSeriesLast R L L := by
-  rw [lowerCentralSeriesLast]
-  revert h
-  cases nilpotencyLength R L L
-  · simp
-  · simp
-
--- Can we set things up better to avoid needing this very specific lemma?
-lemma _root_.LieSubmodule.restrict_foo (N : LieSubmodule R L M) (μ : R) (x : L)
-    (h : Set.MapsTo (toEndomorphism R L M x - algebraMap R (Module.End R M) μ) N N :=
-      fun _ hm ↦ N.sub_mem (N.lie_mem hm) (N.smul_mem μ hm)) :
-    toEndomorphism R L N x - algebraMap R (Module.End R N) μ =
-    (toEndomorphism R L M x - algebraMap R (Module.End R M) μ).restrict h := by
-  rfl
-
 end LieModule
 
 -- TODO Where should this go?
@@ -257,39 +241,46 @@ lemma traceForm_eq_sum_weightSpace :
     LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
   exact Finset.sum_congr (by simp) (fun χ _ ↦ rfl)
 
-lemma lowerCentralSeriesLast_le_ker_traceForm (hL : ¬ IsLieAbelian L) :
-    lowerCentralSeriesLast K L L ≤ LinearMap.ker (traceForm K L M) := by
-  rintro z (hz : z ∈ lowerCentralSeriesLast K L L)
-  replace hL : 1 < nilpotencyLength K L L := one_lt_nilpotencyLength_of_not_isTrivial K L L hL
-  suffices ∀ χ : L → K, traceForm K L (weightSpace M χ) z = 0 by
-    simp [traceForm_eq_sum_weightSpace K L M, this]
-  intro χ
-  have hz' : LinearMap.trace K _ (toEndomorphism K L (weightSpace M χ) z) = 0 := by
-    apply trace_toEndomorphism_eq_zero_of_mem_lcs (Nat.le_sub_one_of_lt hL)
-    rwa [yawn (Nat.one_le_of_lt hL)]
+-- TODO Abstract so that can unify proof with that of `traceForm_eq_sum_weightSpace`.
+lemma traceForm_eq_sum_weightSpaceOf (z : L) :
+    traceForm K L M =
+    ∑ χ in (finite_weightSpaceOf_ne_bot K L M z).toFinset, traceForm K L (weightSpaceOf M χ z) := by
+  ext x y
+  have hxy : ∀ χ : K, MapsTo ((toEndomorphism K L M x).comp (toEndomorphism K L M y))
+      (weightSpaceOf M χ z) (weightSpaceOf M χ z) :=
+    fun χ m hm ↦ LieSubmodule.lie_mem _ <| LieSubmodule.lie_mem _ hm
+  have hfin : {χ : K | (weightSpaceOf M χ z : Submodule K M) ≠ ⊥}.Finite := by
+    convert finite_weightSpaceOf_ne_bot K L M z
+    exact LieSubmodule.coeSubmodule_eq_bot_iff (weightSpaceOf M _ _)
+  classical
+  have hds := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
+    (LieSubmodule.independent_iff_coe_toSubmodule.mp <| independent_weightSpaceOf K L M z)
+    (IsTriangularizable.iSup_eq_top z)
+  simp only [LinearMap.coeFn_sum, Finset.sum_apply, traceForm_apply_apply,
+    LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
+  exact Finset.sum_congr (by simp) (fun χ _ ↦ rfl)
+
+-- In characteristic zero, by Cartan's criterion we can drop the `⊓ LieAlgebra.center K L`
+lemma lowerCentralSeries_one_inf_center_le_ker_traceForm :
+    lowerCentralSeries K L L 1 ⊓ LieAlgebra.center K L ≤ LinearMap.ker (traceForm K L M) := by
+  rintro z ⟨hz : z ∈ lowerCentralSeries K L L 1, hzc : z ∈ LieAlgebra.center K L⟩
   ext x
-  rw [LinearMap.zero_apply, traceForm_apply_apply, foo (f := toEndomorphism K L (weightSpace M χ) z)
-    (g := toEndomorphism K L (weightSpace M χ) x) (χ x), hz', mul_zero]
-  · exact commute_toEndomorphism_of_mem_center_left (lowerCentralSeriesLast_le_max_triv K L L hz) x
-  · obtain ⟨k, hk⟩ : _root_.IsNilpotent
-        (toEndomorphism K L (weightSpaceOf M (χ x) x) x - algebraMap K _ (χ x)) := by
-      exact (toEndomorphism K L M x).isNilpotent_restrict_iSup_sub_algebraMap (χ x)
-    use k
-    ext ⟨m, hm⟩
-    replace hk := Subtype.ext_iff.mp <|
-      LinearMap.congr_fun hk ⟨m, weightSpace_le_weightSpaceOf M x χ hm⟩
-    rw [LieSubmodule.restrict_foo, LinearMap.pow_restrict _, LinearMap.restrict_coe_apply,
-      LinearMap.zero_apply, ZeroMemClass.coe_zero, Subtype.coe_mk] at hk ⊢
-    assumption
+  suffices ∀ χ : K, traceForm K L (weightSpaceOf M χ x) z x = 0 by
+    simp [traceForm_eq_sum_weightSpaceOf K L M x, this]
+  intro χ
+  have hz' : LinearMap.trace K _ (toEndomorphism K L (weightSpaceOf M χ x) z) = 0 := by
+    apply trace_toEndomorphism_eq_zero_of_mem_lcs (le_refl _) hz
+  rw [traceForm_apply_apply, foo (f := toEndomorphism K L (weightSpaceOf M χ x) z)
+    (g := toEndomorphism K L (weightSpaceOf M χ x) x) χ, hz', mul_zero]
+  · exact commute_toEndomorphism_of_mem_center_left hzc x
+  · exact (toEndomorphism K L M x).isNilpotent_restrict_iSup_sub_algebraMap χ
 
 lemma isLieAbelian_of_ker_traceForm_eq_bot (h : LinearMap.ker (traceForm K L M) = ⊥) :
     IsLieAbelian L := by
-  nontriviality L
-  by_contra contra
-  suffices ¬ Nontrivial (lowerCentralSeriesLast K L L) by
-    exact this (nontrivial_lowerCentralSeriesLast K L L)
-  rw [not_nontrivial_iff_subsingleton, Submodule.subsingleton_iff_eq_bot, ← le_bot_iff, ← h]
-  exact lowerCentralSeriesLast_le_ker_traceForm K L M contra
+  simpa only [lowerCentralSeries_inf_maxTrivSubmodule_eq_bot_iff, h,
+    LieIdeal.coe_to_lieSubalgebra_to_submodule,
+    LieSubmodule.coeSubmodule_eq_bot_iff, le_bot_iff] using
+    lowerCentralSeries_one_inf_center_le_ker_traceForm K L M
 
 end finite_dimensional
 

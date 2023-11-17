@@ -401,6 +401,27 @@ theorem nontrivial_lowerCentralSeriesLast [Nontrivial M] [IsNilpotent R L M] :
     exact h.2
 #align lie_module.nontrivial_lower_central_series_last LieModule.nontrivial_lowerCentralSeriesLast
 
+theorem lowerCentralSeriesLast_le_of_not_isTrivial [IsNilpotent R L M] (h : ¬ IsTrivial L M) :
+    lowerCentralSeriesLast R L M ≤ lowerCentralSeries R L M 1 := by
+  replace h := one_lt_nilpotencyLength_of_not_isTrivial R L M h
+  rw [lowerCentralSeriesLast]
+  cases' hk : nilpotencyLength R L M with k <;> rw [hk] at h
+  · contradiction
+  · exact antitone_lowerCentralSeries _ _ _ (Nat.lt_succ.mp h)
+
+lemma lowerCentralSeries_inf_maxTrivSubmodule_eq_bot_iff [IsNilpotent R L M] :
+    lowerCentralSeries R L M 1 ⊓ maxTrivSubmodule R L M = ⊥ ↔ IsTrivial L M := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp⟩
+  nontriviality M
+  by_contra contra
+  have : lowerCentralSeriesLast R L M ≤ lowerCentralSeries R L M 1 ⊓ maxTrivSubmodule R L M :=
+    le_inf_iff.mpr ⟨lowerCentralSeriesLast_le_of_not_isTrivial R L M contra,
+      lowerCentralSeriesLast_le_max_triv R L M⟩
+  suffices ¬ Nontrivial (lowerCentralSeriesLast R L M) by
+    exact this (nontrivial_lowerCentralSeriesLast R L M)
+  rw [h, le_bot_iff] at this
+  exact this ▸ not_nontrivial _
+
 theorem nontrivial_max_triv_of_isNilpotent [Nontrivial M] [IsNilpotent R L M] :
     Nontrivial (maxTrivSubmodule R L M) :=
   Set.nontrivial_mono (lowerCentralSeriesLast_le_max_triv R L M)
