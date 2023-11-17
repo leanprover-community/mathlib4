@@ -181,7 +181,7 @@ theorem rank_map_le (f : M →ₗ[R] M₁) (p : Submodule R M) :
 
 theorem rank_le_of_submodule (s t : Submodule R M) (h : s ≤ t) :
     Module.rank R s ≤ Module.rank R t :=
-  (inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
+  (Submodule.inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
     Subtype.eq <| show x = y from Subtype.ext_iff_val.1 eq
 #align rank_le_of_submodule rank_le_of_submodule
 
