@@ -230,7 +230,7 @@ instance {a : ℝ} : DiscreteTopology (AddSubgroup.zmultiples a) := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · rw [AddSubgroup.zmultiples_zero_eq_bot]
     exact Subsingleton.discreteTopology (α := (⊥ : Submodule ℤ ℝ))
-  rw [discreteTopology_iff_open_singleton_zero, isOpen_induced_iff]
+  rw [discreteTopology_iff_isOpen_singleton_zero, isOpen_induced_iff]
   refine' ⟨ball 0 |a|, isOpen_ball, _⟩
   ext ⟨x, hx⟩
   obtain ⟨k, rfl⟩ := AddSubgroup.mem_zmultiples_iff.mp hx
