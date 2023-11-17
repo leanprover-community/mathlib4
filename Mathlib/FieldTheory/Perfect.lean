@@ -108,7 +108,7 @@ lemma polynomial_expand_eq (f : R[X]) :
 theorem not_irreducible_expand (f : R[X]) : ¬ Irreducible (expand R p f) := by
   have hp : Fact p.Prime := inferInstance
   rw [polynomial_expand_eq]
-  exact fun hf ↦ hf.not_unit $ (of_irreducible_pow hp.out.ne_one hf).pow p
+  exact not_irreducible_pow hp.out.ne_one
 
 instance (S : Type*) [CommSemiring S] [CharP S p] [PerfectRing S p] :
     PerfectRing (R × S) p := by
