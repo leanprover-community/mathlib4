@@ -73,7 +73,7 @@ def addLemma (name : Name) (constInfo : ConstantInfo)
     (lemmas : DiscrTree (Name × DeclMod)) : MetaM (DiscrTree (Name × DeclMod)) := do
   let mut lemmas := lemmas
   for (key, value) in ← processLemma name constInfo do
-    lemmas := lemmas.insertIfSpecific key value discrTreeConfig
+    lemmas := lemmas.insertCore key value discrTreeConfig
   return lemmas
 
 /-- Construct the discrimination tree of all lemmas. -/
