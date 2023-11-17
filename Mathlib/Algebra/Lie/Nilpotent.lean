@@ -364,12 +364,6 @@ theorem isTrivial_of_nilpotencyLength_le_one [IsNilpotent R L M] (h : nilpotency
   · rw [nilpotencyLength_eq_zero_iff] at h; infer_instance
   · rwa [nilpotencyLength_eq_one_iff] at h
 
-theorem one_lt_nilpotencyLength_of_not_isTrivial [IsNilpotent R L M] (h : ¬ IsTrivial L M) :
-    1 < nilpotencyLength R L M := by
-  by_contra contra
-  have := isTrivial_of_nilpotencyLength_le_one R L M (not_lt.mp contra)
-  contradiction
-
 /-- Given a non-trivial nilpotent Lie module `M` with lower central series
 `M = C₀ ≥ C₁ ≥ ⋯ ≥ Cₖ = ⊥`, this is the `k-1`th term in the lower central series (the last
 non-trivial term).
@@ -403,8 +397,11 @@ theorem nontrivial_lowerCentralSeriesLast [Nontrivial M] [IsNilpotent R L M] :
 
 theorem lowerCentralSeriesLast_le_of_not_isTrivial [IsNilpotent R L M] (h : ¬ IsTrivial L M) :
     lowerCentralSeriesLast R L M ≤ lowerCentralSeries R L M 1 := by
-  replace h := one_lt_nilpotencyLength_of_not_isTrivial R L M h
   rw [lowerCentralSeriesLast]
+  replace h : 1 < nilpotencyLength R L M := by
+    by_contra contra
+    have := isTrivial_of_nilpotencyLength_le_one R L M (not_lt.mp contra)
+    contradiction
   cases' hk : nilpotencyLength R L M with k <;> rw [hk] at h
   · contradiction
   · exact antitone_lowerCentralSeries _ _ _ (Nat.lt_succ.mp h)
