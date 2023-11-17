@@ -24,11 +24,11 @@ def weakLeanArgs : Array String :=
 
 package mathlib where
   moreServerArgs := moreServerArgs
-
-@[default_target]
-lean_lib Mathlib where
   moreLeanArgs := moreLeanArgs
   weakLeanArgs := weakLeanArgs
+
+@[default_target]
+lean_lib Mathlib
 
 /-- `lake exe runMathlibLinter` runs the linter on all of Mathlib (or individual files). -/
 -- Due to a change in Lake at v4.1.0-rc1, we need to give this a different name
@@ -53,8 +53,6 @@ require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
 require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.22"
 
 lean_lib Cache where
-  moreLeanArgs := moreLeanArgs
-  weakLeanArgs := weakLeanArgs
   roots := #[`Cache]
 
 /-- `lake exe cache get` retrieves precompiled `.olean` files from a central server. -/
