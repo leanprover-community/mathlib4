@@ -391,8 +391,7 @@ theorem map_injective_iff (P : C) : Injective (F.functor.obj P) ↔ Injective P 
 injective presentation of `X.` -/
 def injectivePresentationOfMapInjectivePresentation (X : C)
     (I : InjectivePresentation (F.functor.obj X)) : InjectivePresentation X :=
-  Adjunction.injectivePresentationOfMapInjectivePresentation (adj := F.toAdjunction) _ I
-
+  F.toAdjunction.injectivePresentationOfMapInjectivePresentation _ I
 #align category_theory.equivalence.injective_presentation_of_map_injective_presentation CategoryTheory.Equivalence.injectivePresentationOfMapInjectivePresentation
 
 theorem enoughInjectives_iff (F : C ≌ D) : EnoughInjectives C ↔ EnoughInjectives D :=
