@@ -533,9 +533,7 @@ theorem coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
     refine' ⟨P, hPmo, (injective_iff_map_eq_zero _).1 (algebraMap (↥S) L).injective _ _⟩
     letI : IsScalarTower R S L := IsScalarTower.of_algebraMap_eq (congr_fun rfl)
     rw [eval₂_eq_eval_map, ← eval₂_at_apply, eval₂_eq_eval_map, Polynomial.map_map, ←
-      --Porting note: very strange that I have to `rw` twice with `eval₂_eq_eval_map`.
-      -- The first `rw` does nothing
-      IsScalarTower.algebraMap_eq, ← eval₂_eq_eval_map, ← eval₂_eq_eval_map]
+      IsScalarTower.algebraMap_eq, ← eval₂_eq_eval_map]
     exact hProot
   · obtain ⟨P, hPmo, hProot⟩ := h
     refine' ⟨P, hPmo, _⟩

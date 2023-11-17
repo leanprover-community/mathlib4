@@ -121,7 +121,7 @@ partial def isNatProp (e : Expr) : Bool :=
 
 
 /-- If `e` is of the form `((n : ℕ) : C)`, `isNatCoe e` returns `⟨n, C⟩`. -/
-def isNatCoe (e: Expr) : Option (Expr × Expr) :=
+def isNatCoe (e : Expr) : Option (Expr × Expr) :=
   match e.getAppFnArgs with
   | (``Nat.cast, #[target, _, n]) => some ⟨n, target⟩
   | _ => none

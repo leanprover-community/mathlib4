@@ -214,10 +214,6 @@ theorem inv_lt_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ < b⁻¹ ↔ b < a 
 
 theorem inv_le_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ ≤ b⁻¹ ↔ b ≤ a :=
   show (Units.mk0 a ha)⁻¹ ≤ (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb ≤ Units.mk0 a ha from
-    have : CovariantClass αˣ αˣ (Function.swap (· * ·)) (· ≤ ·) :=
-      OrderedCommMonoid.to_covariantClass_right αˣ
-    have : CovariantClass αˣ αˣ (· * ·) (· ≤ ·) :=
-      OrderedCommGroup.to_covariantClass_left_le αˣ
     inv_le_inv_iff
 #align inv_le_inv₀ inv_le_inv₀
 

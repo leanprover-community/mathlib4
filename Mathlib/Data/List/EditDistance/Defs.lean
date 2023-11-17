@@ -133,7 +133,7 @@ theorem impl_length (d : {r : List δ // 0 < r.length}) (w : d.1.length = xs.len
     | ⟨d₁ :: d₂ :: ds, _⟩, w =>
       dsimp
       congr 1
-      refine ih ⟨d₂ :: ds, (by simp)⟩ (by simpa using w)
+      exact ih ⟨d₂ :: ds, (by simp)⟩ (by simpa using w)
 
 end Levenshtein
 
@@ -278,7 +278,7 @@ theorem levenshtein_nil_nil : levenshtein C [] [] = 0 := by
 @[simp]
 theorem levenshtein_nil_cons (y) (ys) :
     levenshtein C [] (y :: ys) = C.insert y + levenshtein C [] ys := by
-  dsimp [levenshtein, suffixLevenshtein, impl]
+  dsimp (config := { unfoldPartialApp := true }) [levenshtein, suffixLevenshtein, impl]
   congr
   rw [List.getLast_eq_get]
   congr

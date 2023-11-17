@@ -983,7 +983,7 @@ theorem IsPathConnected.image (hF : IsPathConnected F) {f : X → Y}
     (hf : Continuous f) : IsPathConnected (f '' F) := hF.image' hf.continuousOn
 #align is_path_connected.image IsPathConnected.image
 
-/-- If `f : X → Y` is a `Inducing`, `F(f)` is path-connected iff `F` is. -/
+/-- If `f : X → Y` is a `Inducing`, `f(F)` is path-connected iff `F` is. -/
 nonrec theorem Inducing.isPathConnected_iff {f : X → Y} (hf : Inducing f) :
     IsPathConnected F ↔ IsPathConnected (f '' F) := by
   refine ⟨fun hF ↦ hF.image hf.continuous, fun hF ↦ ?_⟩

@@ -714,8 +714,7 @@ theorem Continuous.mapsTo_connectedComponent [TopologicalSpace β] {f : α → �
 theorem irreducibleComponent_subset_connectedComponent {x : α} :
     irreducibleComponent x ⊆ connectedComponent x :=
   isIrreducible_irreducibleComponent.isConnected.subset_connectedComponent mem_irreducibleComponent
-#align irreducible_component_subset_connected_component
-  irreducibleComponent_subset_connectedComponent
+#align irreducible_component_subset_connected_component irreducibleComponent_subset_connectedComponent
 
 @[mono]
 theorem connectedComponentIn_mono (x : α) {F G : Set α} (h : F ⊆ G) :
@@ -977,7 +976,7 @@ lemma PreconnectedSpace.induction₂ [PreconnectedSpace α] (P : α → α → P
     P x y := by
   refine PreconnectedSpace.induction₂' P (fun z ↦ ?_) h' x y
   filter_upwards [h z] with a ha
-  refine ⟨ha, h'' ha⟩
+  exact ⟨ha, h'' ha⟩
 
 /-- In a preconnected set, given a transitive relation `P`, if `P x y` and `P y x` are true
 for `y` close enough to `x`, then `P x y` holds for all `x, y`. This is a version of the fact
@@ -1112,8 +1111,7 @@ theorem isPreconnected_iff_subset_of_fully_disjoint_closed {s : Set α} (hs : Is
   · rw [← inter_distrib_right]
     exact subset_inter hss Subset.rfl
   · rwa [disjoint_iff_inter_eq_empty, ← inter_inter_distrib_right, inter_comm]
-#align is_preconnected_iff_subset_of_fully_disjoint_closed
-  isPreconnected_iff_subset_of_fully_disjoint_closed
+#align is_preconnected_iff_subset_of_fully_disjoint_closed isPreconnected_iff_subset_of_fully_disjoint_closed
 
 theorem IsClopen.connectedComponent_subset {x} (hs : IsClopen s) (hx : x ∈ s) :
     connectedComponent x ⊆ s :=

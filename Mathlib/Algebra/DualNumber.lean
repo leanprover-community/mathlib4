@@ -11,8 +11,8 @@ import Mathlib.Algebra.TrivSqZeroExt
 # Dual numbers
 
 The dual numbers over `R` are of the form `a + bε`, where `a` and `b` are typically elements of a
-commutative ring `R`, and `ε` is a symbol satisfying `ε^2 = 0`. They are a special case of
-`TrivSqZeroExt R M` with `M = R`.
+commutative ring `R`, and `ε` is a symbol satisfying `ε^2 = 0` that commutes with every other
+element. They are a special case of `TrivSqZeroExt R M` with `M = R`.
 
 ## Notation
 
@@ -103,11 +103,13 @@ theorem inl_mul_eps [Semiring R] (r : R) : inl r * ε = (r • ε : R[ε]) :=
 theorem eps_mul_inl [Semiring R] (r : R) : ε * inl r = (r • ε : R[ε]) :=
   (commute_eps_left _).trans (inl_mul_eps _)
 
-/-- For two algebra morphisms out of `A[ε]` to agree, it suffices for them to agree on the elements
-of `A` and the `A`-multiples of `ε`. -/
-@[ext]
-theorem algHom_ext {A} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    ⦃f g : A[ε] →ₐ[R] B⦄
+
+variable {A : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+
+/-- For two `R`-algebra morphisms out of `A[ε]` to agree, it suffices for them to agree on the
+elements of `A` and the `A`-multiples of `ε`. -/
+@[ext 1100]
+nonrec theorem algHom_ext' ⦃f g : A[ε] →ₐ[R] B⦄
     (hinl : f.comp (inlAlgHom _ _ _) = g.comp (inlAlgHom _ _ _))
     (hinr : f.toLinearMap ∘ₗ (LinearMap.toSpanSingleton A A[ε] ε).restrictScalars R =
         g.toLinearMap ∘ₗ (LinearMap.toSpanSingleton A A[ε] ε).restrictScalars R) :
@@ -116,9 +118,14 @@ theorem algHom_ext {A} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] 
     ext a
     show f (inr a) = g (inr a)
     simpa only [inr_eq_smul_eps] using FunLike.congr_fun hinr a)
-#align dual_number.alg_hom_ext DualNumber.algHom_ext
 
-variable {A : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+/-- For two `R`-algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
+@[ext 1200]
+nonrec theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f = g := by
+  ext
+  dsimp
+  simp only [one_smul, hε]
+#align dual_number.alg_hom_ext DualNumber.algHom_ext
 
 /-- A universal property of the dual numbers, providing a unique `A[ε] →ₐ[R] B` for every map
 `f : A →ₐ[R] B` and a choice of element `e : B` which squares to `0` and commutes with the range of

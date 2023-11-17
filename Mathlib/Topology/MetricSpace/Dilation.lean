@@ -128,7 +128,7 @@ theorem mk_coe (f : α →ᵈ β) (h) : Dilation.mk f h = f :=
 
 /-- Copy of a `Dilation` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 protected def copy (f : α →ᵈ β) (f' : α → β) (h : f' = ⇑f) : α →ᵈ β where
   toFun := f'
   edist_eq' := h.symm ▸ f.edist_eq'

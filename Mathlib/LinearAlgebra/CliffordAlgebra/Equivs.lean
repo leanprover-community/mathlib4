@@ -121,7 +121,7 @@ protected def equiv : CliffordAlgebra (0 : QuadraticForm R Unit) ≃ₐ[R] R :=
   AlgEquiv.ofAlgHom
     (CliffordAlgebra.lift (0 : QuadraticForm R Unit) <|
       ⟨0, fun m : Unit => (zero_mul (0 : R)).trans (algebraMap R _).map_zero.symm⟩)
-    (Algebra.ofId R _) (by ext x; exact AlgHom.commutes _ x)
+    (Algebra.ofId R _) (by ext)
     (by ext : 1; rw [ι_eq_zero, LinearMap.comp_zero, LinearMap.comp_zero])
 #align clifford_algebra_ring.equiv CliffordAlgebraRing.equiv
 
@@ -438,10 +438,8 @@ protected def equiv : CliffordAlgebra (0 : QuadraticForm R R) ≃ₐ[R] R[ε] :=
       fun _ => (Algebra.commutes _ _).symm⟩)
     (by
       ext : 1
-      · simp
-      · ext : 1
-        -- This used to be a single `simp` before leanprover/lean4#2644
-        simp; erw [lift_ι_apply]; simp)
+      -- This used to be a single `simp` before leanprover/lean4#2644
+      simp; erw [lift_ι_apply]; simp)
     -- This used to be a single `simp` before leanprover/lean4#2644
     (by ext : 2; simp; erw [lift_ι_apply]; simp)
 #align clifford_algebra_dual_number.equiv CliffordAlgebraDualNumber.equiv

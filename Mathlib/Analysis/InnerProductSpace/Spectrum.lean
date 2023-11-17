@@ -129,7 +129,7 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot : (⨆ μ, eigenspace T μ)
   -- a self-adjoint operator on a nontrivial inner product space has an eigenvalue
   haveI :=
     hT'.subsingleton_of_no_eigenvalue_finiteDimensional hT.orthogonalComplement_iSup_eigenspaces
-  exact Submodule.eq_bot_of_subsingleton _
+  exact Submodule.eq_bot_of_subsingleton
 #align linear_map.is_symmetric.orthogonal_supr_eigenspaces_eq_bot LinearMap.IsSymmetric.orthogonalComplement_iSup_eigenspaces_eq_bot
 
 theorem orthogonalComplement_iSup_eigenspaces_eq_bot' :
@@ -275,8 +275,6 @@ end IsSymmetric
 end LinearMap
 
 section Nonneg
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 @[simp]
 theorem inner_product_apply_eigenvector {μ : 𝕜} {v : E} {T : E →ₗ[𝕜] E}

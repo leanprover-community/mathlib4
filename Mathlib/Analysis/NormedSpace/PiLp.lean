@@ -19,8 +19,8 @@ is given by
 $$
 d(x, y) = \left(\sum d(x_i, y_i)^p\right)^{1/p}.
 $$,
-whereas for `p = 0` it is the cardinality of the set ${ i | x_i ≠ y_i}$. For `p = ∞` the distance
-is the supremum of the distances.
+whereas for `p = 0` it is the cardinality of the set ${i | d (x_i, y_i) ≠ 0}$. For `p = ∞` the
+distance is the supremum of the distances.
 
 We give instances of this construction for emetric spaces, metric spaces, normed groups and normed
 spaces.
@@ -63,8 +63,6 @@ We also set up the theory for `PseudoEMetricSpace` and `PseudoMetricSpace`.
 -/
 
 set_option linter.uppercaseLean3 false
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 open Real Set Filter IsROrC Bornology BigOperators Uniformity Topology NNReal ENNReal
 
@@ -129,14 +127,14 @@ satisfying a relaxed triangle inequality. The terminology for this varies throug
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
 instance : EDist (PiLp p β) where
   edist f g :=
-    -- Porting note: can we drop the `_hp` entirely?
-    if _hp : p = 0 then { i | f i ≠ g i }.toFinite.toFinset.card
+    if p = 0 then {i | edist (f i) (g i) ≠ 0}.toFinite.toFinset.card
     else
       if p = ∞ then ⨆ i, edist (f i) (g i) else (∑ i, edist (f i) (g i) ^ p.toReal) ^ (1 / p.toReal)
 
 variable {β}
 
-theorem edist_eq_card (f g : PiLp 0 β) : edist f g = { i | f i ≠ g i }.toFinite.toFinset.card :=
+theorem edist_eq_card (f g : PiLp 0 β) :
+    edist f g = {i | edist (f i) (g i) ≠ 0}.toFinite.toFinset.card :=
   if_pos rfl
 #align pi_Lp.edist_eq_card PiLp.edist_eq_card
 
@@ -171,7 +169,7 @@ protected theorem edist_self (f : PiLp p β) : edist f f = 0 := by
 from `pi_Lp.pseudo_emetric_space` so it can be used also for `p < 1`. -/
 protected theorem edist_comm (f g : PiLp p β) : edist f g = edist g f := by
   rcases p.trichotomy with (rfl | rfl | h)
-  · simp only [edist_eq_card, eq_comm, Ne.def]
+  · simp only [edist_eq_card, edist_comm]
   · simp only [edist_eq_iSup, edist_comm]
   · simp only [edist_eq_sum h, edist_comm]
 #align pi_Lp.edist_comm PiLp.edist_comm
@@ -191,13 +189,14 @@ satisfying a relaxed triangle inequality. The terminology for this varies throug
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
 instance : Dist (PiLp p α) where
   dist f g :=
-    if _hp : p = 0 then { i | f i ≠ g i }.toFinite.toFinset.card
+    if p = 0 then {i | dist (f i) (g i) ≠ 0}.toFinite.toFinset.card
     else
       if p = ∞ then ⨆ i, dist (f i) (g i) else (∑ i, dist (f i) (g i) ^ p.toReal) ^ (1 / p.toReal)
 
 variable {α}
 
-theorem dist_eq_card (f g : PiLp 0 α) : dist f g = { i | f i ≠ g i }.toFinite.toFinset.card :=
+theorem dist_eq_card (f g : PiLp 0 α) :
+    dist f g = {i | dist (f i) (g i) ≠ 0}.toFinite.toFinset.card :=
   if_pos rfl
 #align pi_Lp.dist_eq_card PiLp.dist_eq_card
 
@@ -216,7 +215,7 @@ end Dist
 
 section Norm
 
-variable [∀ i, Norm (β i)] [∀ i, Zero (β i)]
+variable [∀ i, Norm (β i)]
 
 /-- Endowing the space `PiLp p β` with the `L^p` norm. We register this instance
 separate from `PiLp.seminormedAddCommGroup` since the latter requires the type class hypothesis
@@ -226,13 +225,13 @@ Registering this separately allows for a future norm-like structure on `PiLp p �
 satisfying a relaxed triangle inequality. These are called *quasi-norms*. -/
 instance hasNorm : Norm (PiLp p β) where
   norm f :=
-    if _hp : p = 0 then { i | f i ≠ 0 }.toFinite.toFinset.card
+    if p = 0 then {i | ‖f i‖ ≠ 0}.toFinite.toFinset.card
     else if p = ∞ then ⨆ i, ‖f i‖ else (∑ i, ‖f i‖ ^ p.toReal) ^ (1 / p.toReal)
 #align pi_Lp.has_norm PiLp.hasNorm
 
 variable {p β}
 
-theorem norm_eq_card (f : PiLp 0 β) : ‖f‖ = { i | f i ≠ 0 }.toFinite.toFinset.card :=
+theorem norm_eq_card (f : PiLp 0 β) : ‖f‖ = {i | ‖f i‖ ≠ 0}.toFinite.toFinset.card :=
   if_pos rfl
 #align pi_Lp.norm_eq_card PiLp.norm_eq_card
 
@@ -573,7 +572,7 @@ theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
 #align pi_Lp.norm_eq_of_nat PiLp.norm_eq_of_nat
 
 theorem norm_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
-    ‖x‖ = sqrt (∑ i : ι, ‖x i‖ ^ 2) := by
+    ‖x‖ = Real.sqrt (∑ i : ι, ‖x i‖ ^ 2) := by
   rw [norm_eq_of_nat 2 (by norm_cast) _] -- Porting note: was `convert`
   rw [Real.sqrt_eq_rpow]
   norm_cast
@@ -868,7 +867,7 @@ theorem norm_equiv_symm_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [O
 variable (𝕜 p)
 
 /-- `WithLp.equiv` as a continuous linear equivalence. -/
-@[simps! (config := { fullyApplied := false }) apply symm_apply]
+@[simps! (config := .asFn) apply symm_apply]
 protected def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where
   toLinearEquiv := WithLp.linearEquiv _ _ _
   continuous_toFun := continuous_equiv _ _
