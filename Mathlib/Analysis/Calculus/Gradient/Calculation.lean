@@ -6,7 +6,7 @@ Authors: Chenyi Li, Ziyu Wang, Yu Penghao, Cao Zhipeng
 import Mathlib.Analysis.Calculus.FDeriv.Mul
 import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Comp
-import Mathlib.Analysis.Calculus.Gradient.Basic
+import Analysis.Basic
 
 /-!
 # Gradient
@@ -296,16 +296,16 @@ lemma equiv_lemma_mul : c x • (toDual 𝕜 F) d' + d x • (toDual 𝕜 F) c'
 theorem HasGradientAt.mul (hc : HasGradientAt c c' x) (hd : HasGradientAt d d' x) :
     HasGradientAt (fun y => c y * d y)
     ((starRingEnd 𝕜) (c x) • d' + (starRingEnd 𝕜) (d x) • c') x := by
-  rw [HasGradientAt_iff_HasFDerivAt, ← equiv_lemma_mul]
-  rw [HasGradientAt_iff_HasFDerivAt] at hc hd
+  rw [hasGradientAt_iff_hasFDerivAt, ← equiv_lemma_mul]
+  rw [hasGradientAt_iff_hasFDerivAt] at hc hd
   exact hc.mul hd
 
 theorem HasGradientWithinAt.mul (hc : HasGradientWithinAt c c' s x)
     (hd : HasGradientWithinAt d d' s x) :
     HasGradientWithinAt (fun y => c y * d y) ((starRingEnd 𝕜) (c x) • d'
       + (starRingEnd 𝕜) (d x) • c') s x := by
-  rw [HasGradientWithinAt_iff_HasFDerivWithinAt, ← equiv_lemma_mul]
-  rw [HasGradientWithinAt_iff_HasFDerivWithinAt] at hc hd
+  rw [hasGradientWithinAt_iff_hasFDerivWithinAt, ← equiv_lemma_mul]
+  rw [hasGradientWithinAt_iff_hasFDerivWithinAt] at hc hd
   exact hc.mul hd
 
 theorem Gradient_mul (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x) :
@@ -339,14 +339,14 @@ lemma equiv_lemma_mul_const : d • (toDual 𝕜 F) c' = (toDual 𝕜 F) ((starR
 
 theorem HasGradientWithinAt.mul_const (hc : HasGradientWithinAt c c' s x) :
     HasGradientWithinAt (fun y => c y * d) ((starRingEnd 𝕜) d • c') s x := by
-  rw [HasGradientWithinAt_iff_HasFDerivWithinAt, ← equiv_lemma_mul_const]
-  rw [HasGradientWithinAt_iff_HasFDerivWithinAt] at hc
+  rw [hasGradientWithinAt_iff_hasFDerivWithinAt, ← equiv_lemma_mul_const]
+  rw [hasGradientWithinAt_iff_hasFDerivWithinAt] at hc
   exact hc.mul_const d
 
 theorem HasGradientAt.mul_const (hc : HasGradientAt c c' x) :
     HasGradientAt (fun y => c y * d) ((starRingEnd 𝕜) d • c') x := by
-  rw [HasGradientAt_iff_HasFDerivAt, ← equiv_lemma_mul_const]
-  rw [HasGradientAt_iff_HasFDerivAt] at hc
+  rw [hasGradientAt_iff_hasFDerivAt, ← equiv_lemma_mul_const]
+  rw [hasGradientAt_iff_hasFDerivAt] at hc
   exact hc.mul_const d
 
 theorem Gradient_mul_const (hc : DifferentiableAt 𝕜 c x) :
@@ -358,14 +358,14 @@ lemma equiv_lemma_const_mul : b • (toDual 𝕜 F) a' = (toDual 𝕜 F) ((starR
 
 theorem HasGradientWithinAt.const_mul (ha : HasGradientWithinAt a a' s x) :
     HasGradientWithinAt (fun y => b * a y) ((starRingEnd 𝕜) b • a') s x := by
-  rw [HasGradientWithinAt_iff_HasFDerivWithinAt, ← equiv_lemma_const_mul]
-  rw [HasGradientWithinAt_iff_HasFDerivWithinAt] at ha
+  rw [hasGradientWithinAt_iff_hasFDerivWithinAt, ← equiv_lemma_const_mul]
+  rw [hasGradientWithinAt_iff_hasFDerivWithinAt] at ha
   exact ha.const_mul b
 
 theorem HasGradientAt.const_mul (ha : HasGradientAt a a' x) :
     HasGradientAt (fun y => b * a y) ((starRingEnd 𝕜) b • a') x := by
-  rw [HasGradientAt_iff_HasFDerivAt, ← equiv_lemma_const_mul]
-  rw [HasGradientAt_iff_HasFDerivAt] at ha
+  rw [hasGradientAt_iff_hasFDerivAt, ← equiv_lemma_const_mul]
+  rw [hasGradientAt_iff_hasFDerivAt] at ha
   exact ha.const_mul b
 
 theorem Gradient_const_mul (ha : DifferentiableAt 𝕜 a x) :
