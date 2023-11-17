@@ -943,24 +943,14 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
         positivity
       simp only [hp, Real.rpow_zero, one_mul, differentiableAt_const, hx, Real.norm_of_nonneg this]
     refine GrowsPolynomially.congr_of_eventuallyEq h₁ ?_
-    refine GrowsPolynomially.div ?_ ?_ ?_ ?_
-    · exact GrowsPolynomially.inv GrowsPolynomially.id (eventually_gt_atTop 0)
-    · have : (fun x => log x ^ 2) = fun x => log x * log x := by
-        ext x
-        rw [Real.rpow_two, pow_two]
-      rw [this]
-      refine GrowsPolynomially.mul GrowsPolynomially.log GrowsPolynomially.log ?_ ?_
-      · filter_upwards [eventually_ge_atTop 1] with x hx; exact Real.log_nonneg hx
-      · filter_upwards [eventually_ge_atTop 1] with x hx; exact Real.log_nonneg hx
-    · filter_upwards [eventually_gt_atTop 0] with _ _; positivity
-    · filter_upwards [eventually_gt_atTop 1] with x hx
-      have : 0 < log x := Real.log_pos hx
-      positivity
+    refine GrowsPolynomially.div (GrowsPolynomially.inv growsPolynomially_id)
+      (GrowsPolynomially.rpow 2 growsPolynomially_log ?_)
+    filter_upwards [eventually_ge_atTop 1] with _ hx
+    exact log_nonneg hx
   case inr =>  -- p ≠ 0
-    refine GrowsPolynomially.of_isTheta (GrowsPolynomially.rpow (p-1))
-      (isTheta_deriv_rpow_p_mul_one_sub_smoothingFn hp)
-        (by aesop (add safe eventually_of_forall)) ?_
-    filter_upwards [eventually_gt_atTop 0] with x hx
+    refine GrowsPolynomially.of_isTheta (growsPolynomially_rpow (p-1))
+      (isTheta_deriv_rpow_p_mul_one_sub_smoothingFn hp) ?_
+    filter_upwards [eventually_gt_atTop 0] with _ _
     positivity
 
 lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
@@ -976,24 +966,14 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
       simp only [neg_div, norm_neg, hp, Real.rpow_zero,
         one_mul, differentiableAt_const, hx, Real.norm_of_nonneg this]
     refine GrowsPolynomially.congr_of_eventuallyEq h₁ ?_
-    refine GrowsPolynomially.div ?_ ?_ ?_ ?_
-    · exact GrowsPolynomially.inv GrowsPolynomially.id (eventually_gt_atTop 0)
-    · have : (fun x => log x ^ 2) = fun x => log x * log x := by
-        ext x
-        rw [Real.rpow_two, pow_two]
-      rw [this]
-      refine GrowsPolynomially.mul GrowsPolynomially.log GrowsPolynomially.log ?_ ?_
-      · filter_upwards [eventually_ge_atTop 1] with x hx; exact Real.log_nonneg hx
-      · filter_upwards [eventually_ge_atTop 1] with x hx; exact Real.log_nonneg hx
-    · filter_upwards [eventually_gt_atTop 0] with _ _; positivity
-    · filter_upwards [eventually_gt_atTop 1] with x hx
-      have : 0 < log x := Real.log_pos hx
-      positivity
+    refine GrowsPolynomially.div (GrowsPolynomially.inv growsPolynomially_id)
+      (GrowsPolynomially.rpow 2 growsPolynomially_log ?_)
+    filter_upwards [eventually_ge_atTop 1] with x hx
+    exact log_nonneg hx
   case inr =>    -- p ≠ 0
-    refine GrowsPolynomially.of_isTheta (GrowsPolynomially.rpow (p-1))
-      (isTheta_deriv_rpow_p_mul_one_add_smoothingFn hp)
-        (by aesop (add safe eventually_of_forall)) ?_
-    filter_upwards [eventually_gt_atTop 0] with x hx
+    refine GrowsPolynomially.of_isTheta ((growsPolynomially_rpow (p-1)))
+      (isTheta_deriv_rpow_p_mul_one_add_smoothingFn hp) ?_
+    filter_upwards [eventually_gt_atTop 0] with _ _
     positivity
 
 lemma rpow_p_mul_one_sub_smoothingFn_le :
