@@ -185,7 +185,7 @@ lemma trace_toEndomorphism_eq_zero_of_mem_lcs
   · simp [hu]
 
 variable [LieAlgebra.IsNilpotent R L] [IsTriangularizable R L M]
-  [NoZeroSMulDivisors R M] [IsDomain R] [IsPrincipalIdealRing R]
+  [IsDomain R] [IsPrincipalIdealRing R]
 
 lemma traceForm_eq_sum_weightSpaceOf (z : L) :
     traceForm R L M =
