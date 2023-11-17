@@ -193,7 +193,6 @@ class GroupWithZero (G₀ : Type u) extends MonoidWithZero G₀, DivInvMonoid G�
 
 attribute [instance 0] GroupWithZero.toInv
 attribute [instance 0] GroupWithZero.toDiv
-attribute [instance 0] GroupWithZero.toNontrivial
 
 export GroupWithZero (inv_zero)
 attribute [simp] inv_zero
