@@ -17,7 +17,7 @@ established. The API is made to emulate that of `Submodule.orthogonal`.
 
 open Affine
 
-variable {𝕜 : Type _} {V : Type _} {P : Type _} [IsROrC 𝕜]
+variable {𝕜 : Type*} {V : Type*} {P : Type*} [IsROrC 𝕜]
 
 variable [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [AffineSpace V P]
 
