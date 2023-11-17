@@ -334,10 +334,8 @@ instance Poly.subst.monoidalStruct : MonoidalCategoryStruct Poly where
   rightUnitor  := subst.rightUnitor
   associator   := subst.associator
 
-
--- instance functorCategoryMonoidal : MonoidalCategory (C ⥤ D) where
---   tensorHom_def := by intros; ext; simp [tensorHom_def]
---   pentagon F G H K := by ext X; dsimp; rw [pentagon]
+/-- All hyptheses proven automatically so none provided. -/
+instance Poly.subst.monoidal : MonoidalCategory Poly where
 
 -- structure Comonad where
 --   carrier : Poly
