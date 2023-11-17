@@ -45,10 +45,10 @@ dirichlet character, multiplicative character
 -/
 
 /-- The type of Dirichlet characters of level `n`. -/
-abbrev DirichletCharacter (R : Type) [CommMonoidWithZero R] (n : ℕ) := MulChar (ZMod n) R
+abbrev DirichletCharacter (R : Type*) [CommMonoidWithZero R] (n : ℕ) := MulChar (ZMod n) R
 
 open MulChar
-variable {R : Type} [CommMonoidWithZero R] {n : ℕ} (χ : DirichletCharacter R n)
+variable {R : Type*} [CommMonoidWithZero R] {n : ℕ} (χ : DirichletCharacter R n)
 
 namespace DirichletCharacter
 lemma toUnitHom_eq_char' {a : ZMod n} (ha : IsUnit a) : χ a = χ.toUnitHom ha.unit := by simp
@@ -64,7 +64,7 @@ lemma periodic {m : ℕ} (hm : n ∣ m) : Function.Periodic χ m := by
 
 /-- A function that modifies the level of a Dirichlet character to some multiple
   of its original level. -/
-noncomputable def changeLevel {R : Type} [CommMonoidWithZero R] {n m : ℕ} (hm : n ∣ m) :
+noncomputable def changeLevel {R : Type*} [CommMonoidWithZero R] {n m : ℕ} (hm : n ∣ m) :
     DirichletCharacter R n →* DirichletCharacter R m :=
   { toFun := fun ψ ↦ MulChar.ofUnitHom (ψ.toUnitHom.comp (ZMod.unitsMap hm)),
     map_one' := by ext; simp,
@@ -182,7 +182,7 @@ lemma conductor_eq_zero_iff_level_eq_zero : conductor χ = 0 ↔ n = 0 := by
   rintro rfl
   exact Nat.sInf_eq_zero.mpr <| Or.inl <| level_mem_conductorSet χ
 
-lemma mem_conductorSet_eq_conductor {d : ℕ} (hd : d ∈ conductorSet χ) :
+lemma conductor_le_conductor_mem_conductorSet {d : ℕ} (hd : d ∈ conductorSet χ) :
     χ.conductor ≤ (Classical.choose hd.2 ).conductor := by
   apply Nat.sInf_le
   rw [mem_conductorSet_iff]
@@ -210,18 +210,18 @@ lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n
   apply one_dvd _
 
 /-- The primitive character associated to a Dirichlet character. -/
-noncomputable def reduction : DirichletCharacter R χ.conductor :=
+noncomputable def primitiveCharacter : DirichletCharacter R χ.conductor :=
   Classical.choose (factorsThrough_conductor χ).choose_spec
 
-lemma reduction_isPrimitive : isPrimitive (χ.reduction) := by
+lemma reduction_isPrimitive : isPrimitive (χ.primitiveCharacter) := by
   by_cases χ.conductor = 0
   · rw [isPrimitive_def]
     conv_rhs => rw [h]
     rw [conductor_eq_zero_iff_level_eq_zero, h]
   · refine' le_antisymm (Nat.le_of_dvd (Nat.pos_of_ne_zero h) (conductor_dvd_level _)) <|
-        mem_conductorSet_eq_conductor <| conductor_mem_conductorSet χ
+        conductor_le_conductor_mem_conductorSet <| conductor_mem_conductorSet χ
 
-lemma reduction_one (hn : n ≠ 0) : (1 : DirichletCharacter R n).reduction = 1 := by
+lemma reduction_one (hn : n ≠ 0) : (1 : DirichletCharacter R n).primitiveCharacter = 1 := by
   rw [eq_one_iff_conductor_eq_one <| (@conductor_one R _ _ hn) ▸ Nat.one_ne_zero,
       (isPrimitive_def _).1 (1 : DirichletCharacter R n).reduction_isPrimitive,
       conductor_one hn]
