@@ -160,7 +160,7 @@ end BooleanAlgebra
 
 section Set
 
-variable {s t r : Set α}
+variable {s t : Set α}
 
 /-- Equivalent types have order-isomorphic types of subsets --/
 def Equiv.setOrderIso (e : α ≃ β) : Set α ≃o Set β where
