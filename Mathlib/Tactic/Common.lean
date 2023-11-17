@@ -4,15 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 
-/-
-This file imports all tactics which do not have significant theory imports,
-and hence can be imported very low in the theory import hierarchy,
-thereby making tactics widely available without needing specific imports.
-
-We include some commented out imports here, with an explanation of their theory requirements,
-to save some time for anyone wondering why they are not here.
--/
-
 -- First import Aesop and Qq
 import Aesop
 import Qq
@@ -54,6 +45,7 @@ import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.Have
 import Mathlib.Tactic.HelpCmd
 import Mathlib.Tactic.HigherOrder
+import Mathlib.Tactic.Hint
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
@@ -61,8 +53,6 @@ import Mathlib.Tactic.LibrarySearch
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Lint
 import Mathlib.Tactic.MkIffOfInductiveProp
--- NormCast imports `Mathlib.Algebra.Group.Defs`
--- import Mathlib.Tactic.NormCast
 -- NormNum imports `Mathlib.Algebra.GroupPower.Lemmas` and `Mathlib.Algebra.Order.Invertible`
 -- import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NthRewrite
@@ -114,3 +104,27 @@ import Mathlib.Util.AssertExists
 import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.Imports
 import Mathlib.Util.WhatsNew
+
+/-!
+This file imports all tactics which do not have significant theory imports,
+and hence can be imported very low in the theory import hierarchy,
+thereby making tactics widely available without needing specific imports.
+
+We include some commented out imports here, with an explanation of their theory requirements,
+to save some time for anyone wondering why they are not here.
+-/
+
+/-!
+# Register tactics with `hint`.
+-/
+
+section Hint
+
+register_hint split
+register_hint intro
+register_hint aesop
+register_hint decide
+register_hint simp_all?
+register_hint exact?
+
+end Hint

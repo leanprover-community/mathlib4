@@ -478,6 +478,9 @@ theorem toSubmonoid_le {p q : Subgroup G} : p.toSubmonoid ≤ q.toSubmonoid ↔ 
 #align subgroup.to_submonoid_le Subgroup.toSubmonoid_le
 #align add_subgroup.to_add_submonoid_le AddSubgroup.toAddSubmonoid_le
 
+@[to_additive (attr := simp)]
+lemma coe_nonempty (s : Subgroup G) : (s : Set G).Nonempty := ⟨1, one_mem _⟩
+
 end Subgroup
 
 /-!
@@ -911,7 +914,7 @@ theorem eq_bot_of_subsingleton [Subsingleton H] : H = ⊥ := by
 #align subgroup.eq_bot_of_subsingleton Subgroup.eq_bot_of_subsingleton
 #align add_subgroup.eq_bot_of_subsingleton AddSubgroup.eq_bot_of_subsingleton
 
-@[to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_eq_univ {H : Subgroup G} : (H : Set G) = Set.univ ↔ H = ⊤ :=
   (SetLike.ext'_iff.trans (by rfl)).symm
 #align subgroup.coe_eq_univ Subgroup.coe_eq_univ
@@ -1274,10 +1277,8 @@ theorem closure_iUnion {ι} (s : ι → Set G) : closure (⋃ i, s i) = ⨆ i, c
 #align subgroup.closure_Union Subgroup.closure_iUnion
 #align add_subgroup.closure_Union AddSubgroup.closure_iUnion
 
-@[to_additive]
-theorem closure_eq_bot_iff (G : Type*) [Group G] (S : Set G) : closure S = ⊥ ↔ S ⊆ {1} := by
-  rw [← le_bot_iff]
-  exact closure_le _
+@[to_additive (attr := simp)]
+theorem closure_eq_bot_iff : closure k = ⊥ ↔ k ⊆ {1} := le_bot_iff.symm.trans $ closure_le _
 #align subgroup.closure_eq_bot_iff Subgroup.closure_eq_bot_iff
 #align add_subgroup.closure_eq_bot_iff AddSubgroup.closure_eq_bot_iff
 
