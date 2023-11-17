@@ -127,7 +127,7 @@ variable (injective : ∀ i, Function.Injective <| g i)
 variable (R ι G)
 
 lemma DirectLimit.lift_inj :
-  Function.Injective $ DirectLimit.lift R ι G f g compatible := by
+    Function.Injective $ DirectLimit.lift R ι G f g compatible := by
   simp_rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff, LinearMap.mem_ker] at injective ⊢
   intros z hz
   induction' z using DirectLimit.induction_on with i gi
