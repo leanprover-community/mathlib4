@@ -1198,8 +1198,8 @@ theorem comp_fst_add_comp_snd [Module R₁ M₂] [Module R₁ M₃] [ContinuousA
 
 theorem coprod_inl_inr [ContinuousAdd M₁] [ContinuousAdd M'₁] :
     (ContinuousLinearMap.inl R₁ M₁ M'₁).coprod (ContinuousLinearMap.inr R₁ M₁ M'₁) =
-      ContinuousLinearMap.id R₁ (M₁ × M'₁) :=
-  by apply coe_injective; apply LinearMap.coprod_inl_inr
+      ContinuousLinearMap.id R₁ (M₁ × M'₁) := by
+  apply coe_injective; apply LinearMap.coprod_inl_inr
 #align continuous_linear_map.coprod_inl_inr ContinuousLinearMap.coprod_inl_inr
 
 section
@@ -1268,8 +1268,8 @@ theorem toSpanSingleton_add [ContinuousAdd M₁] (x y : M₁) :
 
 theorem toSpanSingleton_smul' {α} [Monoid α] [DistribMulAction α M₁] [ContinuousConstSMul α M₁]
     [SMulCommClass R₁ α M₁] (c : α) (x : M₁) :
-    toSpanSingleton R₁ (c • x) = c • toSpanSingleton R₁ x :=
-  by ext1; rw [toSpanSingleton_apply, smul_apply, toSpanSingleton_apply, smul_comm]
+    toSpanSingleton R₁ (c • x) = c • toSpanSingleton R₁ x := by
+  ext1; rw [toSpanSingleton_apply, smul_apply, toSpanSingleton_apply, smul_comm]
 #align continuous_linear_map.to_span_singleton_smul' ContinuousLinearMap.toSpanSingleton_smul'
 
 /-- A special case of `to_span_singleton_smul'` for when `R` is commutative. -/

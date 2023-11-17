@@ -1558,7 +1558,7 @@ theorem Products.max_eq_eval (l : Products I) (hl : l.val ≠ [])
     (∀ i, i ∈ l.Tail.val → (x.val i = true)) = (∀ i, i ∈ l.Tail.val → (SwapTrue o x.val i = true))
   · apply forall_congr; intro i; apply forall_congr; intro hi; rw [hi' i hi]
   simp only [H]
-  split_ifs with h₁ h₂ h₃ <;> dsimp [e]
+  split_ifs with h₁ h₂ h₃ <;> try (dsimp [e])
   · rw [if_pos (swapTrue_eq_true _ _), if_neg]
     · rfl
     · simp [mem_C'_eq_false C ho x x.prop, Bool.coe_false]

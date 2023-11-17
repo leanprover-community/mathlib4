@@ -94,9 +94,9 @@ theorem divX_X_pow : divX (X ^ n : R[X]) = if (n = 0) then 0 else X ^ (n - 1) :=
 /-- `divX` as an additive homomorphism. -/
 noncomputable
 def divX_hom : R[X] →+ R[X] :=
-{ toFun := divX
-  map_zero' := divX_zero
-  map_add' := fun _ _ => divX_add }
+  { toFun := divX
+    map_zero' := divX_zero
+    map_add' := fun _ _ => divX_add }
 
 @[simp] theorem divX_hom_toFun : divX_hom p = divX p := rfl
 
@@ -111,7 +111,7 @@ theorem natDegree_divX_eq_natDegree_tsub_one : p.divX.natDegree = p.natDegree - 
     · exact natDegree_C_mul_X_pow (n - 1) c c0
 
 theorem natDegree_divX_le : p.divX.natDegree ≤ p.natDegree :=
-natDegree_divX_eq_natDegree_tsub_one.trans_le (Nat.pred_le _)
+  natDegree_divX_eq_natDegree_tsub_one.trans_le (Nat.pred_le _)
 
 theorem divX_C_mul_X_pow : divX (C a * X ^ n) = if n = 0 then 0 else C a * X ^ (n - 1) := by
   simp only [divX_C_mul, divX_X_pow, mul_ite, mul_zero]

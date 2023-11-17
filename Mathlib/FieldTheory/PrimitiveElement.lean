@@ -324,7 +324,7 @@ theorem finite_intermediateField_of_exists_primitive_element (halg : Algebra.IsA
   -- If `K` is an intermediate field of `E/F`, let `g` be the minimal polynomial of `α` over `K`
   -- which is a monic factor of `f`
   let g : IntermediateField F E → G := fun K ↦
-    ⟨(minpoly K α).map (algebraMap K E), (minpoly.monic <| isIntegral_of_finite K α).map _, by
+    ⟨(minpoly K α).map (algebraMap K E), (minpoly.monic <| IsIntegral.of_finite K α).map _, by
       convert Polynomial.map_dvd (algebraMap K E) (minpoly.dvd_map_of_isScalarTower F K α)
       rw [Polynomial.map_map]; rfl⟩
   -- The map `K ↦ g` is injective

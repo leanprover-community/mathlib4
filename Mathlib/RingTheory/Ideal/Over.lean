@@ -285,7 +285,7 @@ theorem isMaximal_comap_of_isIntegral_of_isMaximal (hRS : Algebra.IsIntegral R S
   refine' Ideal.Quotient.maximal_of_isField _ _
   haveI : IsPrime (I.comap (algebraMap R S)) := comap_isPrime _ _
   exact
-    isField_of_isIntegral_of_isField (isIntegral_quotient_of_isIntegral hRS)
+    isField_of_isIntegral_of_isField (Algebra.IsIntegral.quotient hRS)
       algebraMap_quotient_injective (by rwa [← Quotient.maximal_ideal_iff_isField_quotient])
 #align ideal.is_maximal_comap_of_is_integral_of_is_maximal Ideal.isMaximal_comap_of_isIntegral_of_isMaximal
 
@@ -387,7 +387,7 @@ theorem exists_ideal_over_prime_of_isIntegral (H : Algebra.IsIntegral R S) (P : 
     ∃ Q ≥ I, IsPrime Q ∧ Q.comap (algebraMap R S) = P := by
   obtain ⟨Q' : Ideal (S ⧸ I), ⟨Q'_prime, hQ'⟩⟩ :=
     @exists_ideal_over_prime_of_isIntegral' (R ⧸ I.comap (algebraMap R S)) _ (S ⧸ I) _
-      Ideal.quotientAlgebra _ (isIntegral_quotient_of_isIntegral H)
+      Ideal.quotientAlgebra _ (Algebra.IsIntegral.quotient H)
       (map (Ideal.Quotient.mk (I.comap (algebraMap R S))) P)
       (map_isPrime_of_surjective Quotient.mk_surjective (by simp [hIP]))
       (le_trans (le_of_eq ((RingHom.injective_iff_ker_eq_bot _).1 algebraMap_quotient_injective))
