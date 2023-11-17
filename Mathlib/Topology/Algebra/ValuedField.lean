@@ -167,11 +167,10 @@ instance (priority := 100) completable : CompletableTopField K :=
       · rw [mem_map]
         apply mem_of_superset (Filter.inter_mem M₀_in M₁_in)
         exact subset_preimage_image _ _
-      · rintro _ ⟨x, ⟨x_in₀, x_in₁⟩, rfl⟩ _ ⟨y, ⟨y_in₀, y_in₁⟩, rfl⟩
+      · rintro _ ⟨x, ⟨x_in₀, x_in₁⟩, rfl⟩ _ ⟨y, ⟨_, y_in₁⟩, rfl⟩
         simp only [mem_setOf_eq]
         specialize H₁ x x_in₁ y y_in₁
         replace x_in₀ := H₀ x x_in₀
-        replace  := H₀ y y_in₀
         clear H₀
         apply Valuation.inversion_estimate
         · have : (v x : Γ₀) ≠ 0 := by
@@ -259,7 +258,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
     have vz₀_ne : (v z₀ : Γ₀) ≠ 0 := by rwa [Valuation.ne_zero_iff]
     refine' ⟨v z₀, _⟩
     rw [WithZeroTopology.tendsto_of_ne_zero vz₀_ne, eventually_comap]
-    filter_upwards [nhds_right]with x x_in a ha
+    filter_upwards [nhds_right] with x x_in a ha
     rcases x_in with ⟨y, y_in, rfl⟩
     have : (v (a * z₀⁻¹) : Γ₀) = 1 := by
       apply hV
@@ -287,7 +286,7 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
     rw [← v.map_zero (R := K), ← Valued.extension_extends (0 : K)]
     rfl
   map_one' := by
-    simp
+    simp only
     rw [← Completion.coe_one, Valued.extension_extends (1 : K)]
     exact Valuation.map_one _
   map_mul' x y := by

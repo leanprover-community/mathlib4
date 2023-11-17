@@ -42,6 +42,10 @@ def Disjoint (a b : α) : Prop :=
   ∀ ⦃x⦄, x ≤ a → x ≤ b → x ≤ ⊥
 #align disjoint Disjoint
 
+@[simp]
+theorem disjoint_of_subsingleton [Subsingleton α] : Disjoint a b :=
+  fun x _ _ ↦ le_of_eq (Subsingleton.elim x ⊥)
+
 theorem disjoint_comm : Disjoint a b ↔ Disjoint b a :=
   forall_congr' fun _ ↦ forall_swap
 #align disjoint.comm disjoint_comm
@@ -469,6 +473,8 @@ variable [PartialOrder α] [BoundedOrder α] {x y z : α}
 protected theorem symm (h : IsCompl x y) : IsCompl y x :=
   ⟨h.1.symm, h.2.symm⟩
 #align is_compl.symm IsCompl.symm
+
+lemma _root_.isCompl_comm : IsCompl x y ↔ IsCompl y x := ⟨IsCompl.symm, IsCompl.symm⟩
 
 theorem dual (h : IsCompl x y) : IsCompl (toDual x) (toDual y) :=
   ⟨h.2, h.1⟩

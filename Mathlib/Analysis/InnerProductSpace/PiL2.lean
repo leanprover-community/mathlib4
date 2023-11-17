@@ -53,8 +53,6 @@ For consequences in infinite dimension (Hilbert bases, etc.), see the file
 
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 set_option linter.uppercaseLean3 false
 
 open Real Set Filter IsROrC Submodule Function BigOperators Uniformity Topology NNReal ENNReal
@@ -139,6 +137,24 @@ theorem EuclideanSpace.edist_eq {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintyp
     (x y : EuclideanSpace 𝕜 n) : edist x y = (∑ i, edist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) :=
   PiLp.edist_eq_of_L2 x y
 #align euclidean_space.edist_eq EuclideanSpace.edist_eq
+
+theorem EuclideanSpace.ball_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 ≤ r) :
+    Metric.ball (0 : EuclideanSpace ℝ n) r = {x | ∑ i, x i ^ 2 < r ^ 2} := by
+  ext x
+  have : (0 : ℝ) ≤ ∑ i, x i ^ 2 := Finset.sum_nonneg fun _ _ => sq_nonneg _
+  simp_rw [mem_setOf, mem_ball_zero_iff, norm_eq, norm_eq_abs, sq_abs, sqrt_lt this hr]
+
+theorem EuclideanSpace.closedBall_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 ≤ r) :
+    Metric.closedBall (0 : EuclideanSpace ℝ n) r = {x | ∑ i, x i ^ 2 ≤ r ^ 2} := by
+  ext
+  simp_rw [mem_setOf, mem_closedBall_zero_iff, norm_eq, norm_eq_abs, sq_abs, sqrt_le_left hr]
+
+theorem EuclideanSpace.sphere_zero_eq {n : Type*} [Fintype n] (r : ℝ) (hr : 0 ≤ r) :
+    Metric.sphere (0 : EuclideanSpace ℝ n) r = {x | ∑ i, x i ^ 2 = r ^ 2} := by
+  ext x
+  have : (0 : ℝ) ≤ ∑ i, x i ^ 2 := Finset.sum_nonneg fun _ _ => sq_nonneg _
+  simp_rw [mem_setOf, mem_sphere_zero_iff_norm, norm_eq, norm_eq_abs, sq_abs,
+    sqrt_eq_iff_sq_eq this hr, eq_comm]
 
 variable [Fintype ι]
 
@@ -422,8 +438,9 @@ protected theorem coe_toBasis_repr (b : OrthonormalBasis ι 𝕜 E) :
 @[simp]
 protected theorem coe_toBasis_repr_apply (b : OrthonormalBasis ι 𝕜 E) (x : E) (i : ι) :
     b.toBasis.repr x i = b.repr x i := by
-  rw [← Basis.equivFun_apply, OrthonormalBasis.coe_toBasis_repr,
-    LinearIsometryEquiv.coe_toLinearEquiv]
+  rw [← Basis.equivFun_apply, OrthonormalBasis.coe_toBasis_repr];
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [LinearIsometryEquiv.coe_toLinearEquiv]
 #align orthonormal_basis.coe_to_basis_repr_apply OrthonormalBasis.coe_toBasis_repr_apply
 
 protected theorem sum_repr (b : OrthonormalBasis ι 𝕜 E) (x : E) : ∑ i, b.repr x i • b i = x := by
@@ -790,9 +807,8 @@ theorem Orthonormal.exists_orthonormalBasis_extension (hv : Orthonormal 𝕜 ((�
   rw [maximal_orthonormal_iff_orthogonalComplement_eq_bot hu₀] at hu₀_max
   have hu₀_finite : u₀.Finite := hu₀.linearIndependent.finite
   let u : Finset E := hu₀_finite.toFinset
-  let fu : ↥u ≃ ↥u₀ := Equiv.cast (congr_arg (↥) hu₀_finite.coe_toFinset)
-  have hfu : ((↑) : u → E) = ((↑) : u₀ → E) ∘ fu := by ext; simp
-  have hu : Orthonormal 𝕜 ((↑) : u → E) := by simpa [hfu] using hu₀.comp _ fu.injective
+  let fu : ↥u ≃ ↥u₀ := hu₀_finite.subtypeEquivToFinset.symm
+  have hu : Orthonormal 𝕜 ((↑) : u → E) := by simpa using hu₀.comp _ fu.injective
   refine' ⟨u, OrthonormalBasis.mkOfOrthogonalEqBot hu _, _, _⟩
   · simpa using hu₀_max
   · simpa using hu₀s

@@ -3,14 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.LinearAlgebra.Basic
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Data.List.FinRange
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Sort
-import Mathlib.Tactic.Abel
+import Mathlib.Data.List.FinRange
 
 #align_import linear_algebra.multilinear.basic from "leanprover-community/mathlib"@"78fdf68dcd2fdb3fe64c0dd6f88926a49418a6ea"
 
@@ -299,7 +296,7 @@ variable (M₁) {M₂}
 
 /-- The constant map is multilinear when `ι` is empty. -/
 -- Porting note: Removed [simps] & added simpNF-approved version of the generated lemma manually.
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
   toFun := Function.const _ m
   map_add' _ := isEmptyElim
@@ -564,7 +561,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
       have : A i₀ = B i₀ ∪ C i₀ := by
         simp only [Function.update_same, Finset.sdiff_union_self_eq_union]
         symm
-        simp only [hj₂, Finset.singleton_subset_iff, Finset.union_eq_left_iff_subset]
+        simp only [hj₂, Finset.singleton_subset_iff, Finset.union_eq_left]
       rw [this]
       refine Finset.sum_union <| Finset.disjoint_right.2 fun j hj => ?_
       have : j = j₂ := by
@@ -1276,7 +1273,7 @@ variable (R M M₂)
 
 /-- The space of multilinear maps on `∀ (i : Fin (n+1)), M i` is canonically isomorphic to
 the space of linear maps from `M 0` to the space of multilinear maps on
-`∀ (i : Fin n), M i.succ `, by separating the first variable. We register this isomorphism as a
+`∀ (i : Fin n), M i.succ`, by separating the first variable. We register this isomorphism as a
 linear isomorphism in `multilinearCurryLeftEquiv R M M₂`.
 
 The direct and inverse maps are given by `f.uncurryLeft` and `f.curryLeft`. Use these

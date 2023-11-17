@@ -190,9 +190,9 @@ theorem lift_obj_arrow {Y : D} (F : Over Y ⥤ Over X)
 are equivalent to monomorphisms over the source of `f`.
 -/
 def slice {A : C} {f : Over A}
-  (h₁ : ∀ (g : MonoOver f),
+    (h₁ : ∀ (g : MonoOver f),
     Mono ((Over.iteratedSliceEquiv f).functor.obj ((forget f).obj g)).hom)
-  (h₂ : ∀ (g : MonoOver f.left),
+    (h₂ : ∀ (g : MonoOver f.left),
     Mono ((Over.iteratedSliceEquiv f).inverse.obj ((forget f.left).obj g)).hom) :
   MonoOver f ≌ MonoOver f.left where
   functor := MonoOver.lift f.iteratedSliceEquiv.functor h₁
@@ -420,7 +420,7 @@ section Exists
 variable [HasImages C]
 
 /-- In the case where `f` is not a monomorphism but `C` has images,
-we can still take the "forward map" under it, which agrees with `mono_over.map f`.
+we can still take the "forward map" under it, which agrees with `MonoOver.map f`.
 -/
 def «exists» (f : X ⟶ Y) : MonoOver X ⥤ MonoOver Y :=
   forget _ ⋙ Over.map f ⋙ image

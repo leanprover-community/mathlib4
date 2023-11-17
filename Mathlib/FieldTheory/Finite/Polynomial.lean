@@ -3,11 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.LinearAlgebra.Basic
-import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Data.MvPolynomial.Expand
 import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.RingTheory.MvPolynomial.Basic
 
 #align_import field_theory.finite.polynomial from "leanprover-community/mathlib"@"5aa3c1de9f3c642eac76e11071c852766f220fd0"
 
@@ -146,9 +144,9 @@ theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).ma
       map_smul]
     simp only [evalₗ_apply]
     trans
-    refine' Finset.sum_eq_single n (fun b _ h => _) _
-    · rw [eval_indicator_apply_eq_zero _ _ h.symm, smul_zero]
-    · exact fun h => (h <| Finset.mem_univ n).elim
+    · refine' Finset.sum_eq_single n (fun b _ h => _) _
+      · rw [eval_indicator_apply_eq_zero _ _ h.symm, smul_zero]
+      · exact fun h => (h <| Finset.mem_univ n).elim
     · rw [eval_indicator_apply_eq_one, smul_eq_mul, mul_one]
 #align mv_polynomial.map_restrict_dom_evalₗ MvPolynomial.map_restrict_dom_evalₗ
 

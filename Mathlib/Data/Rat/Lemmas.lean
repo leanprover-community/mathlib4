@@ -187,7 +187,7 @@ protected theorem inv_neg (q : ℚ) : (-q)⁻¹ = -q⁻¹ := by
 @[simp]
 theorem mul_den_eq_num {q : ℚ} : q * q.den = q.num := by
   suffices (q.num /. ↑q.den) * (↑q.den /. 1) = q.num /. 1 by
-    conv => pattern (occs := 1)q; (rw [← @num_den q])
+    conv => pattern (occs := 1) q; (rw [← @num_den q])
     simp only [coe_int_eq_divInt, coe_nat_eq_divInt, num_den] at this ⊢; assumption
   have : (q.den : ℤ) ≠ 0 := ne_of_gt (by exact_mod_cast q.pos)
   rw [Rat.mul_def' this one_ne_zero, mul_comm (q.den : ℤ) 1, divInt_mul_right this]
@@ -233,6 +233,7 @@ theorem coe_int_div_self (n : ℤ) : ((n / n : ℤ) : ℚ) = n / n := by
   by_cases hn : n = 0
   · subst hn
     simp only [Int.cast_zero, Int.zero_div, zero_div]
+    rfl
   · have : (n : ℚ) ≠ 0 := by rwa [← coe_int_inj] at hn
     simp only [Int.ediv_self hn, Int.cast_one, Ne.def, not_false_iff, div_self this]
 #align rat.coe_int_div_self Rat.coe_int_div_self

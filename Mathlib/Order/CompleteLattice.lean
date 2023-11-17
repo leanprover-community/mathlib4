@@ -109,6 +109,67 @@ notation3 "⨆ "(...)", "r:60:(scoped f => iSup f) => r
 /-- Indexed infimum. -/
 notation3 "⨅ "(...)", "r:60:(scoped f => iInf f) => r
 
+section delaborators
+
+open Lean Lean.PrettyPrinter.Delaborator
+
+/-- Delaborator for indexed supremum. -/
+@[delab app.iSup]
+def iSup_delab : Delab := whenPPOption Lean.getPPNotation do
+  let #[_, _, ι, f] := (← SubExpr.getExpr).getAppArgs | failure
+  unless f.isLambda do failure
+  let prop ← Meta.isProp ι
+  let dep := f.bindingBody!.hasLooseBVar 0
+  let ppTypes ← getPPOption getPPFunBinderTypes
+  let stx ← SubExpr.withAppArg do
+    let dom ← SubExpr.withBindingDomain delab
+    withBindingBodyUnusedName $ fun x => do
+      let x : TSyntax `ident := .mk x
+      let body ← delab
+      if prop && !dep then
+        `(⨆ (_ : $dom), $body)
+      else if prop || ppTypes then
+        `(⨆ ($x:ident : $dom), $body)
+      else
+        `(⨆ $x:ident, $body)
+  -- Cute binders
+  let stx : Term ←
+    match stx with
+    | `(⨆ $x:ident, ⨆ (_ : $y:ident ∈ $s), $body)
+    | `(⨆ ($x:ident : $_), ⨆ (_ : $y:ident ∈ $s), $body) =>
+      if x == y then `(⨆ $x:ident ∈ $s, $body) else pure stx
+    | _ => pure stx
+  return stx
+
+/-- Delaborator for indexed infimum. -/
+@[delab app.iInf]
+def iInf_delab : Delab := whenPPOption Lean.getPPNotation do
+  let #[_, _, ι, f] := (← SubExpr.getExpr).getAppArgs | failure
+  unless f.isLambda do failure
+  let prop ← Meta.isProp ι
+  let dep := f.bindingBody!.hasLooseBVar 0
+  let ppTypes ← getPPOption getPPFunBinderTypes
+  let stx ← SubExpr.withAppArg do
+    let dom ← SubExpr.withBindingDomain delab
+    withBindingBodyUnusedName $ fun x => do
+      let x : TSyntax `ident := .mk x
+      let body ← delab
+      if prop && !dep then
+        `(⨅ (_ : $dom), $body)
+      else if prop || ppTypes then
+        `(⨅ ($x:ident : $dom), $body)
+      else
+        `(⨅ $x:ident, $body)
+  -- Cute binders
+  let stx : Term ←
+    match stx with
+    | `(⨅ $x:ident, ⨅ (_ : $y:ident ∈ $s), $body)
+    | `(⨅ ($x:ident : $_), ⨅ (_ : $y:ident ∈ $s), $body) =>
+      if x == y then `(⨅ $x:ident ∈ $s, $body) else pure stx
+    | _ => pure stx
+  return stx
+end delaborators
+
 instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
   ⟨(sInf : Set α → α)⟩
 
@@ -632,9 +693,13 @@ theorem iSup_congr (h : ∀ i, f i = g i) : ⨆ i, f i = ⨆ i, g i :=
   congr_arg _ <| funext h
 #align supr_congr iSup_congr
 
+theorem biSup_congr {p : ι → Prop} (h : ∀ i, p i → f i = g i) :
+    ⨆ (i) (_ : p i), f i = ⨆ (i) (_ : p i), g i :=
+  iSup_congr <| fun i ↦ iSup_congr (h i)
+
 theorem Function.Surjective.iSup_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     ⨆ x, g (f x) = ⨆ y, g y := by
-  simp [iSup]
+  simp only [iSup._eq_1]
   congr
   exact hf.range_comp g
 #align function.surjective.supr_comp Function.Surjective.iSup_comp
@@ -696,6 +761,10 @@ theorem sInf_eq_iInf' (s : Set α) : sInf s = ⨅ a : s, (a : α) :=
 theorem iInf_congr (h : ∀ i, f i = g i) : ⨅ i, f i = ⨅ i, g i :=
   congr_arg _ <| funext h
 #align infi_congr iInf_congr
+
+theorem biInf_congr {p : ι → Prop} (h : ∀ i, p i → f i = g i) :
+    ⨅ (i) (_ : p i), f i = ⨅ (i) (_ : p i), g i :=
+  biSup_congr (α := αᵒᵈ) h
 
 theorem Function.Surjective.iInf_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     ⨅ x, g (f x) = ⨅ y, g y :=
@@ -974,8 +1043,8 @@ theorem OrderIso.map_iInf [CompleteLattice β] (f : α ≃o β) (x : ι → α) 
 #align order_iso.map_infi OrderIso.map_iInf
 
 theorem OrderIso.map_sSup [CompleteLattice β] (f : α ≃o β) (s : Set α) :
-    f (sSup s) = ⨆ a ∈ s, f a :=
-  by simp only [sSup_eq_iSup, OrderIso.map_iSup]
+    f (sSup s) = ⨆ a ∈ s, f a := by
+  simp only [sSup_eq_iSup, OrderIso.map_iSup]
 #align order_iso.map_Sup OrderIso.map_sSup
 
 theorem OrderIso.map_sInf [CompleteLattice β] (f : α ≃o β) (s : Set α) :
@@ -1288,12 +1357,10 @@ theorem inf_biInf {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i,
 /-! ### `iSup` and `iInf` under `Prop` -/
 
 
-theorem iSup_false {s : False → α} : iSup s = ⊥ :=
-  by simp
+theorem iSup_false {s : False → α} : iSup s = ⊥ := by simp
 #align supr_false iSup_false
 
-theorem iInf_false {s : False → α} : iInf s = ⊤ :=
-  by simp
+theorem iInf_false {s : False → α} : iInf s = ⊤ := by simp
 #align infi_false iInf_false
 
 theorem iSup_true {s : True → α} : iSup s = s trivial :=
@@ -1411,8 +1478,9 @@ theorem iSup_univ {f : β → α} : ⨆ x ∈ (univ : Set β), f x = ⨆ x, f x 
 theorem iInf_univ {f : β → α} : ⨅ x ∈ (univ : Set β), f x = ⨅ x, f x := by simp
 #align infi_univ iInf_univ
 
-theorem iSup_union {f : β → α} {s t : Set β} : ⨆ x ∈ s ∪ t, f x = (⨆ x ∈ s, f x) ⊔ ⨆ x ∈ t, f x :=
-  by simp_rw [mem_union, iSup_or, iSup_sup_eq]
+theorem iSup_union {f : β → α} {s t : Set β} :
+    ⨆ x ∈ s ∪ t, f x = (⨆ x ∈ s, f x) ⊔ ⨆ x ∈ t, f x := by
+  simp_rw [mem_union, iSup_or, iSup_sup_eq]
 #align supr_union iSup_union
 
 theorem iInf_union {f : β → α} {s t : Set β} : ⨅ x ∈ s ∪ t, f x = (⨅ x ∈ s, f x) ⊓ ⨅ x ∈ t, f x :=
@@ -1606,6 +1674,7 @@ theorem iInf_option_elim (a : α) (f : β → α) : ⨅ o : Option β, o.elim a 
 
 /-- When taking the supremum of `f : ι → α`, the elements of `ι` on which `f` gives `⊥` can be
 dropped, without changing the result. -/
+@[simp]
 theorem iSup_ne_bot_subtype (f : ι → α) : ⨆ i : { i // f i ≠ ⊥ }, f i = ⨆ i, f i := by
   by_cases htriv : ∀ i, f i = ⊥
   · simp only [iSup_bot, (funext htriv : f = _)]

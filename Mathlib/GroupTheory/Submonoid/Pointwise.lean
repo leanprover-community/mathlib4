@@ -87,13 +87,13 @@ theorem closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure
 #align add_submonoid.closure_add_le AddSubmonoid.closure_add_le
 
 @[to_additive]
-theorem sup_eq_closure (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) * (K : Set M)) :=
+theorem sup_eq_closure_mul (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) * (K : Set M)) :=
   le_antisymm
     (sup_le (fun h hh => subset_closure ⟨h, 1, hh, K.one_mem, mul_one h⟩) fun k hk =>
       subset_closure ⟨1, k, H.one_mem, hk, one_mul k⟩)
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
-#align submonoid.sup_eq_closure Submonoid.sup_eq_closure
-#align add_submonoid.sup_eq_closure AddSubmonoid.sup_eq_closure
+#align submonoid.sup_eq_closure Submonoid.sup_eq_closure_mul
+#align add_submonoid.sup_eq_closure AddSubmonoid.sup_eq_closure_add
 
 @[to_additive]
 theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [IsScalarTower M N N]
@@ -678,8 +678,9 @@ theorem closure_pow (s : Set R) : ∀ n : ℕ, closure s ^ n = closure (s ^ n)
   | n + 1 => by rw [pow_succ, pow_succ, closure_pow s n, closure_mul_closure]
 #align add_submonoid.closure_pow AddSubmonoid.closure_pow
 
-theorem pow_eq_closure_pow_set (s : AddSubmonoid R) (n : ℕ) : s ^ n = closure ((s : Set R) ^ n) :=
-  by rw [← closure_pow, closure_eq]
+theorem pow_eq_closure_pow_set (s : AddSubmonoid R) (n : ℕ) :
+    s ^ n = closure ((s : Set R) ^ n) := by
+  rw [← closure_pow, closure_eq]
 #align add_submonoid.pow_eq_closure_pow_set AddSubmonoid.pow_eq_closure_pow_set
 
 theorem pow_subset_pow {s : AddSubmonoid R} {n : ℕ} : (↑s : Set R) ^ n ⊆ ↑(s ^ n) :=
