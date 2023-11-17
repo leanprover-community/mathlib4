@@ -56,6 +56,15 @@ unsafe def corec (f : β → α ⊕ β) (b : β) : ComputationImpl α :=
   | Sum.inl a => pure a
   | Sum.inr b => think' (Thunk.mk fun _ => corec f b)
 
+/-- Corecursor where it is possible to return a fully formed value at any point of the
+computation. -/
+@[specialize]
+unsafe def corec' (f : β → ComputationImpl α ⊕ α ⊕ β) (b : β) : ComputationImpl α :=
+  match f b with
+  | Sum.inl c => c
+  | Sum.inr (Sum.inl a) => pure a
+  | Sum.inr (Sum.inr b) => think' (Thunk.mk fun _ => corec' f b)
+
 end ComputationImpl
 
 open ComputationImpl
@@ -254,6 +263,12 @@ def recOn' {C : Computation α → Sort v} (s : Computation α) (pure : ∀ a, C
   | Sum.inl v => cast (congr_arg C (dest_eq_pure H)).symm (pure v)
   | Sum.inr v => cast (congr_arg C (dest_eq_think H)).symm (think v)
 #align computation.rec_on Computation.recOn'
+
+theorem dest_injective : Injective (dest : Computation α → α ⊕ Computation α) := by
+  intro c₁ c₂ hc
+  cases c₂ using recOn' with
+  | pure a => rw [dest_pure] at hc; exact dest_eq_pure hc
+  | think c₂ => rw [dest_think] at hc; exact dest_eq_think hc
 
 @[inherit_doc head, simp]
 def headComputable (c : Computation α) : Option α :=
@@ -897,42 +912,6 @@ def map (f : α → β) (c : Computation α) : Computation β where
     exact ⟨b, succ_stable c hb, rfl⟩
 #align computation.map Computation.map
 
-/-- bind over a `Sum` of `Computation`-/
-def Bind.g : Sum β (Computation β) → Sum β (Sum (Computation α) (Computation β))
-  | Sum.inl b => Sum.inl b
-  | Sum.inr cb' => Sum.inr <| Sum.inr cb'
-set_option linter.uppercaseLean3 false in
-#align computation.bind.G Computation.Bind.g
-
-/-- bind over a function mapping `α` to a `Computation`-/
-def Bind.f (f : α → Computation β) :
-    Sum (Computation α) (Computation β) → Sum β (Sum (Computation α) (Computation β))
-  | Sum.inl ca =>
-    match dest ca with
-    | Sum.inl a => Bind.g <| dest (f a)
-    | Sum.inr ca' => Sum.inr <| Sum.inl ca'
-  | Sum.inr cb => Bind.g <| dest cb
-set_option linter.uppercaseLean3 false in
-#align computation.bind.F Computation.Bind.f
-
-/-- Compose two computations into a monadic `bind` operation. -/
-def bind (c : Computation α) (f : α → Computation β) : Computation β :=
-  corec (Bind.f f) (Sum.inl c)
-#align computation.bind Computation.bind
-
-instance : Bind Computation :=
-  ⟨@bind⟩
-
-@[simp]
-theorem bind_eq_bind {β} (c : Computation α) (f : α → Computation β) : c >>= f = bind c f :=
-  rfl
-#align computation.has_bind_eq_bind Computation.bind_eq_bind
-
-/-- Flatten a computation of computations into a single computation. -/
-def join (c : Computation (Computation α)) : Computation α :=
-  bind c id
-#align computation.join Computation.join
-
 @[simp]
 theorem runFor_map (f : α → β) (c : Computation α) (n : ℕ) :
     runFor (map f c) n = Option.map f (runFor c n) :=
@@ -976,24 +955,68 @@ theorem map_comp (f : α → β) (g : β → γ) (c : Computation α) : map (g �
   ext1 n; simp
 #align computation.map_comp Computation.map_comp
 
+/-- Corecursor where it is possible to return a fully formed value at any point of the
+computation. -/
+@[inline]
+unsafe def corec'Unsafe (f : β → Computation α ⊕ α ⊕ β) (b : β) : Computation α :=
+  unsafeCast (corec' (unsafeCast f) b : ComputationImpl α)
+
+@[inherit_doc corec'Unsafe, implemented_by corec'Unsafe]
+def corec' (f : β → Computation α ⊕ α ⊕ β) (b : β) : Computation α :=
+  corec
+    (Sum.elim (Sum.map id Sum.inl ∘ dest) (Sum.map id Sum.inr) ∘ Sum.elim Sum.inl f)
+    (Sum.inr b)
+
+@[simp]
+theorem dest_corec' (f : β → Computation α ⊕ α ⊕ β) (b : β) :
+    dest (corec' f b) = Sum.elim dest (Sum.map id (corec' f)) (f b) := by
+  simp [corec']
+  rcases f b with (c | a | b) <;> simp
+  rcases dest c with (a | c') <;> simp; clear c
+  refine eq_of_bisim
+    (fun c₁ c₂ =>
+      c₁ = corec
+        (Sum.elim (Sum.map id Sum.inl ∘ dest) (Sum.map id Sum.inr) ∘ Sum.elim Sum.inl f)
+        (Sum.inl c₂))
+    ?_ rfl; clear c'
+  rintro _ c rfl
+  simp; cases hdc : dest c <;> simp
+
+set_option linter.uppercaseLean3 false in
+#noalign computation.bind.G
+
+set_option linter.uppercaseLean3 false in
+#noalign computation.bind.F
+
+/-- Compose two computations into a monadic `bind` operation. -/
+@[inline]
+def bind (c : Computation α) (f : α → Computation β) : Computation β :=
+  corec' (Sum.elim (Sum.inl ∘ f) (Sum.inr ∘ Sum.inr) ∘ dest) c
+#align computation.bind Computation.bind
+
+instance : Bind Computation :=
+  ⟨@bind⟩
+
+@[simp]
+theorem bind_eq_bind {β} (c : Computation α) (f : α → Computation β) : c >>= f = bind c f :=
+  rfl
+#align computation.has_bind_eq_bind Computation.bind_eq_bind
+
+/-- Flatten a computation of computations into a single computation. -/
+def join (c : Computation (Computation α)) : Computation α :=
+  bind c id
+#align computation.join Computation.join
+
 @[simp]
 theorem pure_bind (a) (f : α → Computation β) : bind (pure a) f = f a := by
-  apply
-    eq_of_bisim fun c₁ c₂ => c₁ = bind (pure a) f ∧ c₂ = f a ∨ c₁ = corec (Bind.f f) (Sum.inr c₂)
-  · intro c₁ c₂ h
-    match c₁, c₂, h with
-    | _, _, Or.inl ⟨rfl, rfl⟩ =>
-      simp only [bind, Bind.f, dest_corec, dest_pure]
-      cases' dest (f a) with b cb <;> simp [Bind.g]
-    | _, c, Or.inr rfl =>
-      simp only [Bind.f, dest_corec]
-      cases' dest c with b cb <;> simp [Bind.g]
-  · simp
+  apply dest_injective
+  simp [bind]
 #align computation.ret_bind Computation.pure_bind
 
 @[simp]
-theorem think_bind (c) (f : α → Computation β) : bind (think c) f = think (bind c f) :=
-  dest_eq_think <| by simp [bind, Bind.f]
+theorem think_bind (c) (f : α → Computation β) : bind (think c) f = think (bind c f) := by
+  apply dest_eq_think
+  simp [bind]
 #align computation.think_bind Computation.think_bind
 
 @[simp]
