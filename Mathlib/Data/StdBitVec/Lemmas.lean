@@ -135,40 +135,8 @@ theorem getLsb_eq_testBit {i} {x : BitVec w} : getLsb x i = x.toNat.testBit i :=
   <;> simp [pos_iff_ne_zero.mp (Nat.two_pow_pos i)]
 
 /-!
-## Ring
--/
-
-lemma zero_eq_ofFin_zero : 0#w = ofFin 0 := rfl
-lemma one_eq_ofFin_one   : 1#w = ofFin 1 := rfl
-
-/-! Now we can define an instance of `CommRing (BitVector w)` straightforwardly in terms of the
-    existing instance `CommRing (Fin (2^w))` -/
-instance : CommRing (BitVec w) where
-  add_assoc       := by intro ⟨_⟩ ⟨_⟩ ⟨_⟩; simp [add_assoc]
-  zero_add        := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
-  add_zero        := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
-  sub_eq_add_neg  := by intro ⟨_⟩ ⟨_⟩; simp [sub_eq_add_neg]
-  add_comm        := by intro ⟨_⟩ ⟨_⟩; simp [add_comm]
-  left_distrib    := by intro ⟨_⟩ ⟨_⟩ ⟨_⟩; simp [left_distrib]
-  right_distrib   := by intro ⟨_⟩ ⟨_⟩ ⟨_⟩; simp [right_distrib]
-  zero_mul        := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
-  mul_zero        := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
-  mul_assoc       := by intro ⟨_⟩ ⟨_⟩ ⟨_⟩; simp [mul_assoc]
-  mul_comm        := by intro ⟨_⟩ ⟨_⟩; simp [mul_comm]
-  one_mul         := by intro ⟨_⟩; simp [one_eq_ofFin_one]
-  mul_one         := by intro ⟨_⟩; simp [one_eq_ofFin_one]
-  add_left_neg    := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
-
-/-!
 ## Ext
 -/
-
--- TODO: this results supersedes `Bool.beq_eq_decide_eq` and should go in its own PR
-theorem Bool.beq_eq_decide_eq' {α : Type*} (a b : α) [BEq α] [LawfulBEq α] [DecidableEq α] :
-    (a == b) = decide (a = b) := by
-  cases h : a == b
-  · simp [ne_of_beq_false h]
-  · simp [eq_of_beq h]
 
 namespace Nat
 open Nat
@@ -181,30 +149,6 @@ lemma two_pow_succ_eq_bit_false (x : Nat) :
     bit x₀ x &&& 2^(n + 1) = bit false (x &&& 2^n) := by
   show bitwise .. = bit _ (bitwise ..)
   rw [two_pow_succ_eq_bit_false, bitwise_bit, Bool.and_false]
-
-@[simp]
-lemma bit_and_one (x₀ : Bool) (x : Nat) :
-    bit x₀ x &&& 1 = x₀.toNat := by
-  show bitwise _ _ (bit true 0) = _
-  rw [bitwise_bit, Bool.and_true]
-  simp only [ne_eq, bitwise_zero_right, ite_false]
-  cases x₀ <;> rfl
-
-set_option linter.deprecated false in
-@[simp] lemma bit0_bne_zero (x : Nat) : (bit0 x != 0) = (x != 0) := by
-  cases x <;> rfl
-
-set_option linter.deprecated false in
-lemma lt_pow_of_bit_lt_pow_succ {w x : Nat} {x₀ : Bool} :
-    bit x₀ x < 2 ^ (w + 1) → x < 2 ^ w := by
-  have h0 : bit0 x < 2 ^ w * 2 → x < 2 ^ w := by
-    simp [bit0, ←mul_two]
-  cases x₀
-  · exact h0
-  · rw [bit_true]
-    intro h
-    apply h0
-    apply Nat.lt_trans (Nat.bit0_lt_bit1 le_rfl) h
 
 @[simp] theorem bit_mod_two_pow_succ (b x w) :
     bit b x % 2 ^ (w + 1) = bit b (x % 2 ^ w) := by
@@ -240,154 +184,6 @@ theorem two_pow_succ_sub_one_eq_bit (w : Nat) : 2 ^ succ w - 1 = bit true (2^w -
 
 end Nat
 
-@[ext]
-theorem ext {x y : BitVec w} (h : ∀ (i : Fin w), x.getLsb i = y.getLsb i) : x = y := by
-  rcases x with ⟨⟨x, hx⟩⟩
-  rcases y with ⟨⟨y, hy⟩⟩
-  simp only [getLsb, toNat_ofFin, Nat.shiftLeft_eq, one_mul] at h
-  simp only [ofFin.injEq, Fin.mk.injEq]
-  induction' x using Nat.binaryRec with x₀ x ih generalizing y w
-  · simp only [zero_land, bne_self_eq_false, eq_comm (a:=false)] at h
-    simp only [bne, Bool.not_eq_false', beq_iff_eq] at h
-    clear hx
-    induction' y using Nat.binaryRec with y₀ y ih generalizing w
-    · rfl
-    · cases' w with w
-      · cases y₀ <;> simp [bit_val] at hy
-        rw [hy]
-        rfl
-      · obtain ⟨⟩ : y₀ = false := by
-          have h0 := h 0
-          change bitwise _ _ (bit true 0) = _ at h0
-          rw [Nat.bitwise_bit] at h0
-          cases y₀
-          · rfl
-          · simp [bit_val] at h0
-        rw [←ih (Nat.lt_pow_of_bit_lt_pow_succ hy)]
-        · rfl
-        · intro i
-          specialize h i.succ
-          simp only [Fin.val_succ, Nat.bit_and_two_pow_succ, bit_eq_zero, and_true] at h
-          exact h
-  · cases' w with w
-    · rw [Nat.lt_one_iff.mp hx, Nat.lt_one_iff.mp hy]
-    · rw [←bit_decomp y] at hy h ⊢
-      congr
-      · specialize h 0
-        simp only [Fin.val_zero, _root_.pow_zero, Nat.bit_and_one, Bool.toNat_bne_zero] at h
-        exact h
-      · apply ih (w:=w) (Nat.lt_pow_of_bit_lt_pow_succ hx) _ (Nat.lt_pow_of_bit_lt_pow_succ hy)
-        intro i
-        specialize h (Fin.succ i)
-        simp [Nat.bit_and_two_pow_succ] at h
-        exact h
-
-theorem extMsb {w : ℕ} {x y : BitVec w} (h : ∀ (i : Fin w), x.getMsb i = y.getMsb i) : x = y := by
-  apply ext
-  intro i
-  simp only [getMsb, Fin.is_lt, decide_True, ge_iff_le, tsub_le_iff_right, Bool.true_and] at h
-  specialize h i.rev
-  have h_lt : 1 ≤ w - ↑i :=
-    Nat.le_of_lt_succ <| Nat.succ_lt_succ <| Nat.zero_lt_sub_of_lt i.isLt
-  conv at h => {
-    simp only [ge_iff_le, Fin.val_rev, tsub_le_iff_right]
-    rw [←Nat.sub_add_eq w 1, Nat.add_comm 1, Nat.sub_add_eq w i.val 1, Nat.sub_add_cancel h_lt,
-      Nat.sub_sub_self (Nat.le_of_lt i.isLt)]
-  }
-  exact h
-
-/-!
-### Distributivity of getLsb
-Show how `getLsb` distributes over bitwise operations
--/
-
-attribute [simp] Nat.mod_one -- TODO: upstream this simp attr
-
-private lemma mod_and_two_pow_of_lt (x y w : ℕ) (h : y < 2 ^ w) :
-    x % (2 ^ w) &&& y = x &&& y := by
-  induction' x using Nat.binaryRec with x₀ x ih generalizing w y
-  · rfl
-  · cases' w with w
-    · simp [Nat.mod_one, Nat.lt_one_iff.mp h]
-    · cases y using Nat.binaryRec
-      · simp
-      · specialize ih _ _ (Nat.lt_pow_of_bit_lt_pow_succ h)
-        simp [Nat.bit_mod_two_pow_succ, land_bit, ih]
-
-private lemma mod_and_two_pow_fin_val (x w : ℕ) (i : Fin w) :
-    x % (2 ^ w) &&& (2 ^ i.val) = x &&& (2 ^ i.val) :=
-  mod_and_two_pow_of_lt x (2 ^ i.val) w (by apply pow_lt_pow <;> simp)
-
-lemma getLsb_bitwise (f) (x y : BitVec w) (i : Fin w) (hf : f false false = false) :
-    getLsb ⟨bitwise f x.1.val y.1.val % 2^w, Nat.mod_lt _ (Nat.pow_two_pos w)⟩ i
-    = f (x.getLsb i) (y.getLsb i) := by
-  rcases x with ⟨⟨x, hx⟩⟩
-  rcases y with ⟨⟨y, hy⟩⟩
-  simp only [getLsb, ne_eq, toNat_ofFin, Nat.shiftLeft_eq, one_mul, mod_and_two_pow_fin_val]
-  rcases i with ⟨i, hi⟩
-  simp only [ne_eq]
-  clear hi hx hy
-  have hffb₁ (b) (hf' : f false true = true) : f false b = b      := by cases b <;> simp [hf, hf']
-  have hffb₂ (b) (hf' : f false true ≠ true) : f false b = false  := by cases b <;> simp [hf, hf']
-  have hfbf₁ (b) (hf' : f true false = true) : f b false = b      := by cases b <;> simp [hf, hf']
-  have hfbf₂ (b) (hf' : f true false ≠ true) : f b false = false  := by cases b <;> simp [hf, hf']
-  stop
-  induction' i with i ih generalizing x y
-  · cases' x using Nat.binaryRec with x₀ x
-    <;> cases' y using Nat.binaryRec with y₀ y
-    <;> simp [hf]
-    · split_ifs <;> simp [Nat.bit_and_one, -Nat.bit_false, -Nat.bit_true, *]
-    · split_ifs <;> simp [Nat.bit_and_one, -Nat.bit_false, -Nat.bit_true, *]
-  · cases' x using Nat.binaryRec with x₀ x
-    <;> cases' y using Nat.binaryRec with y₀ y
-    <;> simp [hf]
-    · split_ifs <;> simp [Nat.bit_and_one, -Nat.bit_false, -Nat.bit_true, *]
-    · split_ifs <;> simp [Nat.bit_and_one, -Nat.bit_false, -Nat.bit_true, *]
-    · simp [Nat.bit_and_two_pow_succ, ih]
-
-@[simp] lemma getLsb_and (x y : BitVec w) (i : Fin w) :
-    (x &&& y).getLsb i = (x.getLsb i && y.getLsb i) := by
-  simp only [HAnd.hAnd, AndOp.and, BitVec.and, Fin.land, land, getLsb_bitwise]
-  sorry
-
-@[simp] lemma getLsb_or (x y : BitVec w) (i : Fin w) :
-    (x ||| y).getLsb i = (x.getLsb i || y.getLsb i) := by
-  simp only [HOr.hOr, OrOp.or, BitVec.or, Fin.lor, lor, getLsb_bitwise]
-  sorry
-
-@[simp] lemma getLsb_xor (x y : BitVec w) (i : Fin w) :
-    (x ^^^ y).getLsb i = xor (x.getLsb i) (y.getLsb i) := by
-  simp only [HXor.hXor, Xor.xor, BitVec.xor, Fin.xor, Nat.xor, getLsb_bitwise]
-  sorry
-
-@[simp] lemma getLsb_negOne (i : Fin w) : getLsb (-1 : BitVec w) i = true := by
-  simp only [getLsb, ofNat_eq_ofNat, Nat.shiftLeft_eq, one_mul, bne_iff_ne, ne_eq]
-  simp [getLsb, Neg.neg, BitVec.neg, BitVec.toNat, HSub.hSub, Sub.sub, Fin.sub]
-  rcases i with ⟨i, hi⟩
-  simp only
-  induction' w with w ih generalizing i
-  · contradiction
-  · simp only [
-      Nat.mod_eq_of_lt (one_lt_two_pow' _),
-      Nat.mod_eq_of_lt (Nat.sub_lt_self (by decide) (one_le_two_pow _))
-    ]
-    simp [Nat.two_pow_succ_sub_one_eq_bit, -bit_true]
-    cases' i with i
-    · simp only [ge_iff_le, Nat.two_pow_succ_sub_one_eq_bit, Fin.val_zero, _root_.pow_zero,
-        Nat.bit_and_one, Bool.toNat_true, one_ne_zero, not_false_eq_true]
-    · specialize ih i (lt_of_succ_lt_succ hi)
-      cases' w with w
-      · contradiction
-      · rw [
-          Nat.mod_eq_of_lt (a := 1) (one_lt_two_pow' w),
-          Nat.mod_eq_of_lt (Nat.sub_lt (Nat.pow_two_pos _) (Nat.one_pos)),
-          Nat.pow_succ, Nat.mul_two
-        ] at ih
-        simp only [Nat.pow_succ, Nat.mul_two, ge_iff_le]
-        show _ &&& bit false (2^i) ≠ 0
-        simp only [ge_iff_le, land_bit, Bool.and_false, ne_eq, bit_eq_zero, and_true]
-        exact ih
-
 /-!
 ## Cons
 -/
@@ -395,7 +191,7 @@ lemma getLsb_bitwise (f) (x y : BitVec w) (i : Fin w) (hf : f false false = fals
 theorem Nat.mod_two_pow (x n : Nat) :
     x % (2^n) = x &&& 2^n - 1 := by
   induction' n with n ih generalizing x
-  · simp
+  · simp only [Nat.zero_eq, _root_.pow_zero, mod_one, le_refl, tsub_eq_zero_of_le, land_zero]
   · cases' x using Nat.binaryRec with x₀ x _xih
     · rfl
     · simp [Nat.two_pow_succ_sub_one_eq_bit, -bit_true, ih]
