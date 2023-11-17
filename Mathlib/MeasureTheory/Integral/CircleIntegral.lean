@@ -71,8 +71,6 @@ integral, circle, Cauchy integral
 
 variable {E : Type*} [NormedAddCommGroup E]
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open scoped Real NNReal Interval Pointwise Topology
@@ -142,8 +140,8 @@ theorem circleMap_ne_mem_ball {c : ℂ} {R : ℝ} {w : ℂ} (hw : w ∈ ball c R
 theorem range_circleMap (c : ℂ) (R : ℝ) : range (circleMap c R) = sphere c |R| :=
   calc
     range (circleMap c R) = c +ᵥ R • range fun θ : ℝ => exp (θ * I) := by
-      simp only [← image_vadd, ← image_smul, ← range_comp, vadd_eq_add, circleMap, (· ∘ ·),
-        real_smul]
+      simp (config := { unfoldPartialApp := true }) only [← image_vadd, ← image_smul, ← range_comp,
+        vadd_eq_add, circleMap, Function.comp_def, real_smul]
     _ = sphere c |R| := by
       rw [Complex.range_exp_mul_I, smul_sphere R 0 zero_le_one]
       simp
@@ -274,7 +272,7 @@ theorem circleIntegrable_iff [NormedSpace ℂ E] {f : ℂ → E} {c : ℂ} (R : 
     CircleIntegrable f c R ↔ IntervalIntegrable (fun θ : ℝ =>
       deriv (circleMap c R) θ • f (circleMap c R θ)) volume 0 (2 * π) := by
   by_cases h₀ : R = 0
-  · simp [h₀, const]
+  · simp (config := { unfoldPartialApp := true }) [h₀, const]
   refine' ⟨fun h => h.out, fun h => _⟩
   simp only [CircleIntegrable, intervalIntegrable_iff, deriv_circleMap] at h ⊢
   refine' (h.norm.const_mul |R|⁻¹).mono' _ _
@@ -357,7 +355,7 @@ namespace circleIntegral
 
 @[simp]
 theorem integral_radius_zero (f : ℂ → E) (c : ℂ) : (∮ z in C(c, 0), f z) = 0 := by
-  simp [circleIntegral, const]
+  simp (config := { unfoldPartialApp := true }) [circleIntegral, const]
 #align circle_integral.integral_radius_zero circleIntegral.integral_radius_zero
 
 theorem integral_congr {f g : ℂ → E} {c : ℂ} {R : ℝ} (hR : 0 ≤ R) (h : EqOn f g (sphere c R)) :
@@ -517,7 +515,8 @@ theorem integral_sub_zpow_of_ne {n : ℤ} (hn : n ≠ -1) (c w : ℂ) (R : ℝ) 
 end circleIntegral
 
 /-- The power series that is equal to
-$\sum_{n=0}^{\infty} \oint_{|z-c|=R} \left(\frac{w-c}{z - c}\right)^n \frac{1}{z-c}f(z)\,dz$ at
+$\frac{1}{2πi}\sum_{n=0}^{\infty}
+  \oint_{|z-c|=R} \left(\frac{w-c}{z - c}\right)^n \frac{1}{z-c}f(z)\,dz$ at
 `w - c`. The coefficients of this power series depend only on `f ∘ circleMap c R`, and the power
 series converges to `f w` if `f` is differentiable on the closed ball `Metric.closedBall c R` and
 `w` belongs to the corresponding open ball. For any circle integrable function `f`, this power
@@ -635,10 +634,7 @@ theorem hasFPowerSeriesOn_cauchy_integral {f : ℂ → E} {c : ℂ} {R : ℝ≥0
       (cauchyPowerSeries f c R) c R :=
   { r_le := le_radius_cauchyPowerSeries _ _ _
     r_pos := ENNReal.coe_pos.2 hR
-    hasSum := fun hy => by
-      refine' hasSum_cauchyPowerSeries_integral hf _
-      rw [← norm_eq_abs, ← coe_nnnorm, NNReal.coe_lt_coe, ← ENNReal.coe_lt_coe]
-      exact mem_emetric_ball_zero_iff.1 hy }
+    hasSum := fun hy ↦ hasSum_cauchyPowerSeries_integral hf <| by simpa using hy }
 #align has_fpower_series_on_cauchy_integral hasFPowerSeriesOn_cauchy_integral
 
 namespace circleIntegral

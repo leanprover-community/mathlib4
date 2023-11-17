@@ -27,7 +27,6 @@ cannot have:
 
 set_option autoImplicit true
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 noncomputable section
 
 open scoped Classical Topology
@@ -40,7 +39,7 @@ open scoped Polynomial
 for `x ≤ 0`. It is a basic building block to construct smooth partitions of unity. Its main property
 is that it vanishes for `x ≤ 0`, it is positive for `x > 0`, and the junction between the two
 behaviors is flat enough to retain smoothness. The fact that this function is `C^∞` is proved in
-`expNegInvGlue.contDiff `. -/
+`expNegInvGlue.contDiff`. -/
 def expNegInvGlue (x : ℝ) : ℝ :=
   if x ≤ 0 then 0 else exp (-x⁻¹)
 #align exp_neg_inv_glue expNegInvGlue

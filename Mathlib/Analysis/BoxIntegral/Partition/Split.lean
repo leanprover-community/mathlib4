@@ -89,7 +89,8 @@ theorem splitLower_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.uppe
       (forall_update_iff I.upper fun j y => I.lower j < y).2
         ⟨h.1, fun j _ => I.lower_lt_upper _⟩) :
     I.splitLower i x = (⟨I.lower, update I.upper i x, h'⟩ : Box ι) := by
-  simp only [splitLower, mk'_eq_coe, min_eq_left h.2.le, update]
+  simp (config := { unfoldPartialApp := true }) only [splitLower, mk'_eq_coe, min_eq_left h.2.le,
+    update, and_self]
 #align box_integral.box.split_lower_def BoxIntegral.Box.splitLower_def
 
 /-- Given a box `I` and `x ∈ (I.lower i, I.upper i)`, the hyperplane `{y : ι → ℝ | y i = x}` splits
@@ -130,7 +131,8 @@ theorem splitUpper_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.uppe
       (forall_update_iff I.lower fun j y => y < I.upper j).2
         ⟨h.2, fun j _ => I.lower_lt_upper _⟩) :
     I.splitUpper i x = (⟨update I.lower i x, I.upper, h'⟩ : Box ι) := by
-  simp only [splitUpper, mk'_eq_coe, max_eq_left h.1.le, update]
+  simp (config := { unfoldPartialApp := true }) only [splitUpper, mk'_eq_coe, max_eq_left h.1.le,
+    update, and_self]
 #align box_integral.box.split_upper_def BoxIntegral.Box.splitUpper_def
 
 theorem disjoint_splitLower_splitUpper (I : Box ι) (i : ι) (x : ℝ) :

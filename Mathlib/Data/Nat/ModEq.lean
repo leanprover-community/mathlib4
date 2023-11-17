@@ -458,7 +458,7 @@ theorem add_div {a b c : ℕ} (hc0 : 0 < c) :
     by simpa only [mul_add, add_comm, add_left_comm, add_assoc]
   rw [mod_add_div, mod_add_div, mod_add_div, mul_ite, add_assoc, add_assoc]
   conv_lhs => rw [← add_mod_add_ite]
-  simp
+  simp only [mul_one, mul_zero]
   ac_rfl
 #align nat.add_div Nat.add_div
 
@@ -526,7 +526,7 @@ theorem odd_of_mod_four_eq_three {n : ℕ} : n % 4 = 3 → n % 2 = 1 := by
 theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
   have help : ∀ m : ℕ, m < 4 → m % 2 = 1 → m = 1 ∨ m = 3 := by decide
   ⟨fun hn =>
-    help (n % 4) (mod_lt n (by norm_num)) <| (mod_mod_of_dvd n (by norm_num : 2 ∣ 4)).trans hn,
+    help (n % 4) (mod_lt n (by norm_num)) <| (mod_mod_of_dvd n (by decide : 2 ∣ 4)).trans hn,
     fun h => Or.elim h odd_of_mod_four_eq_one odd_of_mod_four_eq_three⟩
 #align nat.odd_mod_four_iff Nat.odd_mod_four_iff
 

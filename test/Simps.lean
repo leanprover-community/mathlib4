@@ -166,7 +166,7 @@ example {α} (x : α) : rfl2.toFun x = x ∧ rfl2.invFun x = x := by
 
 /- test `fullyApplied` option -/
 
-@[simps (config := {fullyApplied := false})]
+@[simps (config := .asFn)]
 def rfl3 {α} : α ≃ α := ⟨id, λ x => x, λ _ => rfl, λ _ => rfl⟩
 
 end foo

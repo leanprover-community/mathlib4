@@ -99,7 +99,7 @@ macro "map_fun_tac" : tactic => `(tactic| (
   try { cases n <;> simp <;> done } <;>  -- porting note: this line solves `one`
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl <;>
   ext ⟨i, k⟩ <;>
-    fin_cases i <;> rfl ))
+    fin_cases i <;> rfl))
 
 --  and until `pow`.
 -- We do not tag these lemmas as `@[simp]` because they will be bundled in `map` later on.
@@ -166,7 +166,8 @@ elab "ghost_fun_tac" φ:term "," fn:term : tactic => do
   simp only [wittZero, OfNat.ofNat, Zero.zero, wittOne, One.one,
     HAdd.hAdd, Add.add, HSub.hSub, Sub.sub, Neg.neg, HMul.hMul, Mul.mul,HPow.hPow, Pow.pow,
     wittNSMul, wittZSMul, HSMul.hSMul, SMul.smul]
-  simpa [WittVector.ghostFun, aeval_rename, aeval_bind₁, comp, uncurry, peval, eval] using this
+  simpa (config := { unfoldPartialApp := true }) [WittVector.ghostFun, aeval_rename, aeval_bind₁,
+    comp, uncurry, peval, eval] using this
   )))
 
 end Tactic
@@ -236,7 +237,8 @@ private def ghostEquiv' [Invertible (p : R)] : 𝕎 R ≃ (ℕ → R) where
     ext n
     have := bind₁_wittPolynomial_xInTermsOfW p R n
     apply_fun aeval x.coeff at this
-    simpa only [aeval_bind₁, aeval_X, ghostFun, aeval_wittPolynomial]
+    simpa (config := { unfoldPartialApp := true }) only [aeval_bind₁, aeval_X, ghostFun,
+      aeval_wittPolynomial]
   right_inv := by
     intro x
     ext n

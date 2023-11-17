@@ -58,7 +58,7 @@ theorem isUnit_norm_of_isGalois [IsGalois K L] {x : 𝓞 L} : IsUnit (norm K x) 
   replace hx : IsUnit (algebraMap (𝓞 K) (𝓞 L) <| norm K x) := hx.map (algebraMap (𝓞 K) <| 𝓞 L)
   refine' @isUnit_of_mul_isUnit_right (𝓞 L) _
     ⟨(univ \ {AlgEquiv.refl}).prod fun σ : L ≃ₐ[K] L => σ x,
-      prod_mem fun σ _ => map_isIntegral (σ : L →+* L).toIntAlgHom x.2⟩ _ _
+      prod_mem fun σ _ => IsIntegral.map (σ : L →+* L).toIntAlgHom x.2⟩ _ _
   convert hx using 1
   ext
   push_cast
@@ -74,7 +74,7 @@ theorem dvd_norm [IsGalois K L] (x : 𝓞 L) : x ∣ algebraMap (𝓞 K) (𝓞 L
   classical
   have hint : ∏ σ : L ≃ₐ[K] L in univ.erase AlgEquiv.refl, σ x ∈ 𝓞 L :=
     Subalgebra.prod_mem _ fun σ _ =>
-      (mem_ringOfIntegers _ _).2 (map_isIntegral σ (RingOfIntegers.isIntegral_coe x))
+      (mem_ringOfIntegers _ _).2 (IsIntegral.map σ (RingOfIntegers.isIntegral_coe x))
   refine' ⟨⟨_, hint⟩, Subtype.ext _⟩
   rw [coe_algebraMap_norm K x, norm_eq_prod_automorphisms]
   simp [← Finset.mul_prod_erase _ _ (mem_univ AlgEquiv.refl)]

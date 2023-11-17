@@ -78,7 +78,7 @@ variable (hp : p ≠ 2)
 theorem exists_sq_eq_two_iff : IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7 := by
   rw [FiniteField.isSquare_two_iff, card p]
   have h₁ := Prime.mod_two_eq_one_iff_ne_two.mpr hp
-  rw [← mod_mod_of_dvd p (by norm_num : 2 ∣ 8)] at h₁
+  rw [← mod_mod_of_dvd p (by decide : 2 ∣ 8)] at h₁
   have h₂ := mod_lt p (by norm_num : 0 < 8)
   revert h₂ h₁
   generalize p % 8 = m; clear! p
@@ -89,7 +89,7 @@ theorem exists_sq_eq_two_iff : IsSquare (2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 7
 theorem exists_sq_eq_neg_two_iff : IsSquare (-2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 3 := by
   rw [FiniteField.isSquare_neg_two_iff, card p]
   have h₁ := Prime.mod_two_eq_one_iff_ne_two.mpr hp
-  rw [← mod_mod_of_dvd p (by norm_num : 2 ∣ 8)] at h₁
+  rw [← mod_mod_of_dvd p (by decide : 2 ∣ 8)] at h₁
   have h₂ := mod_lt p (by norm_num : 0 < 8)
   revert h₂ h₁
   generalize p % 8 = m; clear! p
