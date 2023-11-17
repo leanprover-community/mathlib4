@@ -99,17 +99,15 @@ example (X Y : SSet) (n) : (ProdObjIso X Y n).hom ≫ Limits.prod.fst = (Limits.
 
 def Prod (X Y : SSet) : SSet where
   obj n := X.obj n × Y.obj n
-  map := by
-    rintro _ _ f ⟨a, b⟩
-    exact ⟨X.map f a, Y.map f b⟩
+  map f a := (X.map f a.1, Y.map f a.2)
 
 @[simp]
 def proj1 {X Y : SSet} : (Prod X Y) ⟶ X where
-  app n := fun a => a.1
+  app _ a := a.1
 
 @[simp]
 def proj2 {X Y : SSet} : (Prod X Y) ⟶ Y where
-  app n := fun a => a.2
+  app _ a := a.2
 
 @[simps! pt]
 def binProdCone (X Y : SSet.{0}) : BinaryFan X Y :=
@@ -123,8 +121,7 @@ theorem binProdCone_fst (X Y : SSet) : (binProdCone X Y).fst = proj1 :=
 theorem binProdCone_snd (X Y : SSet) : (binProdCone X Y).snd = proj2 :=
   rfl
 
-open CategoryTheory.Limits.WalkingPair
-
+@[simps]
 def binProdLim (X Y : SSet) : IsLimit (binProdCone X Y) where
   lift (s : BinaryFan X Y) := {
     app := fun n x => ((s.fst).app n x, (s.snd).app n x)
@@ -137,7 +134,9 @@ def binProdLim (X Y : SSet) : IsLimit (binProdCone X Y) where
       exact FunctorToTypes.naturality s.pt Y (BinaryFan.snd s) g a
   }
   fac _ j := Discrete.recOn j fun j => WalkingPair.casesOn j rfl rfl
-  uniq s t w := sorry
+  uniq s t ht := by
+    simp only [← ht ⟨WalkingPair.right⟩, ← ht ⟨WalkingPair.left⟩]
+    congr
 
 def binProdLimCone (X Y : SSet) : Limits.LimitCone (pair X Y) :=
   ⟨_, binProdLim X Y⟩
@@ -145,70 +144,36 @@ def binProdLimCone (X Y : SSet) : Limits.LimitCone (pair X Y) :=
 noncomputable def binProdIso (X Y : SSet) : X ⨯ Y ≅ Prod X Y :=
   limit.isoLimitCone (binProdLimCone X Y)
 
-/-
-noncomputable
-def ProdIso (X Y : SSet) : X ⨯ Y ≅ Prod X Y where
-  hom := {
-    app := fun _ => (ProdObjIso _).hom
-    naturality := by
-      intro m n f
-      dsimp [Prod]
-      have := (ProdObjIso _).inv ≫ (X ⨯ Y).map f ≫ (ProdObjIso _).hom
-      aesop_cat
-      sorry
-  }
-  inv := {
-    app := fun _ => (ProdObjIso _).inv
-    naturality := by
-      sorry
-  }
-  hom_inv_id := sorry
-  inv_hom_id := sorry
--/
-
-/-
-noncomputable
 def IHom (X Y : SSet) : SSet where
-  obj n := X ⨯ (standardSimplex.obj n.unop) ⟶ Y
+  obj n := Prod (standardSimplex.obj n.unop) X ⟶ Y
   map := by
-    rintro m n f F
+    intro m n f F
     refine {
-      app := fun k => (prod.map (𝟙 X) (standardSimplex.map f.unop)).app k ≫ F.app k
-    }
-  map_id := by
-    intro n
-    ext a m h
-    simp only [unop_id, smallCategory_id, Hom.id, types_comp_apply, types_id_apply]
-    suffices : (prod.map (𝟙 X) (standardSimplex.map (Hom.mk OrderHom.id))).app m h = h
-    rw [this]
-    suffices : (prod.map (𝟙 X) (standardSimplex.map (Hom.mk OrderHom.id))).app m = id
-    rw [this]
-    rfl
-
+    app := fun k a => F.app k (((standardSimplex.map f.unop).app k) a.1, a.2)
+    naturality := fun j k g => by
+      dsimp only [standardSimplex, Prod]
+      sorry
+  }
+  map_id _ := by
+    dsimp only [standardSimplex]
     aesop_cat
 
-  map_comp := sorry
--/
+/- easier way? -/
+noncomputable def HomIsoProd {X Y : SSet} : (X ⟶ Y) ≅ (Prod Δ[0] X ⟶ Y) where
+  hom x := ((leftUnitor X).symm ≪≫ (binProdIso Δ[0] X)).inv ≫ x
+  inv x := ((leftUnitor X).symm ≪≫ (binProdIso Δ[0] X)).hom ≫ x
 
-def IHom (X Y : SSet) : SSet where
-  obj n := Prod X (standardSimplex.obj n.unop) ⟶ Y
-  map := by
-    rintro m n f F
-    refine {
-      app := by
-        rintro k ⟨a, b⟩
-        apply F.app k
-        exact ⟨a, ((standardSimplex.map f.unop).app k) b⟩
-      naturality := by
-        rintro j k g
-        dsimp
-        sorry
-    }
-  map_id := sorry
-  map_comp := sorry
+noncomputable
+def IHomZero {X Y : SSet} : (X ⟶ Y) ≅ (IHom X Y) _[0] :=  HomIsoProd ≪≫ (eqToIso rfl)
+
+def bruh (X Y : SSet) : (Δ[0] ⟶ IHom X Y) ≃ (IHom X Y) _[0] := yonedaEquiv
+
+def homotopy {X Y : SSet.{0}} (f g : X ⟶ Y) :=
+  Path (yonedaEquiv.invFun (IHomZero.hom f)) (yonedaEquiv.invFun (IHomZero.hom g))
 
 /-
 TODO: Define this in terms of paths.
+
 structure homotopy {X Y : SSet.{0}} (f g : X ⟶ Y) where
   F : Δ[1] ⨯ X ⟶ Y
   F0 : (leftUnitor X).inv ≫ (prod.map d0 (𝟙 X)) ≫ F = f
