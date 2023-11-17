@@ -157,6 +157,14 @@ theorem HasCompactMulSupport.intro [T2Space α] {K : Set α} (hK : IsCompact K)
 #align has_compact_support.intro HasCompactSupport.intro
 
 @[to_additive]
+theorem HasCompactMulSupport.intro' {K : Set α} (hK : IsCompact K) (h'K : IsClosed K)
+    (hfK : ∀ x, x ∉ K → f x = 1) : HasCompactMulSupport f := by
+  have : mulTSupport f ⊆ K := by
+    rw [← h'K.closure_eq]
+    apply closure_mono (mulSupport_subset_iff'.2 hfK)
+  exact IsCompact.of_isClosed_subset hK ( isClosed_mulTSupport f) this
+
+@[to_additive]
 theorem HasCompactMulSupport.of_mulSupport_subset_isCompact [T2Space α] {K : Set α}
     (hK : IsCompact K) (h : mulSupport f ⊆ K) : HasCompactMulSupport f :=
   isCompact_closure_of_subset_compact hK h
@@ -180,10 +188,16 @@ theorem hasCompactMulSupport_iff_eventuallyEq :
 #align has_compact_support_iff_eventually_eq hasCompactSupport_iff_eventuallyEq
 
 @[to_additive]
+theorem isCompact_range_of_mulSupport_subset_isCompact [TopologicalSpace β]
+    (hf : Continuous f) {k : Set α} (hk : IsCompact k) (h'f : mulSupport f ⊆ k) :
+    IsCompact (range f) := by
+  cases' range_eq_image_or_of_mulSupport_subset h'f with h2 h2 <;> rw [h2]
+  exacts [hk.image hf, (hk.image hf).insert 1]
+
+@[to_additive]
 theorem HasCompactMulSupport.isCompact_range [TopologicalSpace β] (h : HasCompactMulSupport f)
     (hf : Continuous f) : IsCompact (range f) := by
-  cases' range_eq_image_mulTSupport_or f with h2 h2 <;> rw [h2]
-  exacts [h.image hf, (h.image hf).insert 1]
+  apply isCompact_range_of_mulSupport_subset_isCompact hf h (subset_mulTSupport f)
 #align has_compact_mul_support.is_compact_range HasCompactMulSupport.isCompact_range
 #align has_compact_support.is_compact_range HasCompactSupport.isCompact_range
 
@@ -230,7 +244,7 @@ theorem HasCompactMulSupport.comp₂_left (hf : HasCompactMulSupport f)
     (hf₂ : HasCompactMulSupport f₂) (hm : m 1 1 = 1) :
     HasCompactMulSupport fun x => m (f x) (f₂ x) := by
   rw [hasCompactMulSupport_iff_eventuallyEq] at hf hf₂ ⊢
-  filter_upwards [hf, hf₂]using fun x hx hx₂ => by simp_rw [hx, hx₂, Pi.one_apply, hm]
+  filter_upwards [hf, hf₂] using fun x hx hx₂ => by simp_rw [hx, hx₂, Pi.one_apply, hm]
 #align has_compact_mul_support.comp₂_left HasCompactMulSupport.comp₂_left
 #align has_compact_support.comp₂_left HasCompactSupport.comp₂_left
 

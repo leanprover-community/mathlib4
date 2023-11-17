@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.LinearAlgebra.Prod
 
 #align_import algebra.triv_sq_zero_ext from "leanprover-community/mathlib"@"ce7e9d53d4bbc38065db3b595cd5bd73c323bc1d"
@@ -824,7 +825,7 @@ theorem liftAux_comp_inrHom (f : M →ₗ[R'] A) (hf : ∀ x y, f x * f y = 0) :
   LinearMap.ext <| liftAux_apply_inr f hf
 #align triv_sq_zero_ext.lift_aux_comp_inr_hom TrivSqZeroExt.liftAux_comp_inrHom
 
--- When applied to `inr` itself, `lift_aux` is the identity.
+/-- When applied to `inr` itself, `liftAux` is the identity. -/
 @[simp]
 theorem liftAux_inrHom : liftAux (inrHom R' M) (inr_mul_inr R') = AlgHom.id R' (tsze R' M) :=
   algHom_ext' <| liftAux_comp_inrHom _ _

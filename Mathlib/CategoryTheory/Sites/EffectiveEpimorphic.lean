@@ -21,9 +21,11 @@ The analogous statement for a family of morphisms is in the theorem
 
 We have defined the notion of effective epi for morphisms and families of morphisms in such a
 way that avoids requiring the existence of pullbacks. However, if the relevant pullbacks exist
-then these definitions should be equivalent (project: formalize this!).
+then these definitions are equivalent, see `effectiveEpiStructOfRegularEpi`,
+`regularEpiOfEffectiveEpi`, and `effectiveEpiOfKernelPair`.
 See [nlab: *Effective Epimorphism*](https://ncatlab.org/nlab/show/effective+epimorphism) and
-[Stacks 00WP](https://stacks.math.columbia.edu/tag/00WP) for the standard definitions.
+[Stacks 00WP](https://stacks.math.columbia.edu/tag/00WP) for the standard definitions. Note that
+our notion of `EffectiveEpi` is often called "strict epi" in the literature.
 
 ## References
 - [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.1, Example 2.1.12.
@@ -58,7 +60,7 @@ def Sieve.generateSingleton {X Y : C} (f : Y ⟶ X) : Sieve X where
   arrows Z := { g | ∃ (e : Z ⟶ Y), e ≫ f = g }
   downward_closed := by
     rintro W Z g ⟨e,rfl⟩ q
-    refine ⟨q ≫ e, by simp⟩
+    exact ⟨q ≫ e, by simp⟩
 
 lemma Sieve.generateSingleton_eq {X Y : C} (f : Y ⟶ X) :
     Sieve.generate (Presieve.singleton f) = Sieve.generateSingleton f := by
@@ -106,8 +108,8 @@ def EffectiveEpi.getStruct {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] : EffectiveE
 /-- Descend along an effective epi. -/
 noncomputable
 def EffectiveEpi.desc {X Y W : C} (f : Y ⟶ X) [EffectiveEpi f]
-  (e : Y ⟶ W) (h : ∀ {Z : C} (g₁ g₂ : Z ⟶ Y), g₁ ≫ f = g₂ ≫ f → g₁ ≫ e = g₂ ≫ e) :
-  X ⟶ W := (EffectiveEpi.getStruct f).desc e h
+    (e : Y ⟶ W) (h : ∀ {Z : C} (g₁ g₂ : Z ⟶ Y), g₁ ≫ f = g₂ ≫ f → g₁ ≫ e = g₂ ≫ e) :
+    X ⟶ W := (EffectiveEpi.getStruct f).desc e h
 
 @[reassoc (attr := simp)]
 lemma EffectiveEpi.fac {X Y W : C} (f : Y ⟶ X) [EffectiveEpi f]
@@ -226,7 +228,7 @@ def Sieve.generateFamily {B : C} {α : Type*} (X : α → C) (π : (a : α) → 
   arrows Y := { f | ∃ (a : α) (g : Y ⟶ X a), g ≫ π a = f }
   downward_closed := by
     rintro Y₁ Y₂ g₁ ⟨a,q,rfl⟩ e
-    refine ⟨a, e ≫ q, by simp⟩
+    exact ⟨a, e ≫ q, by simp⟩
 
 lemma Sieve.generateFamily_eq {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) :
     Sieve.generate (Presieve.ofArrows X π) = Sieve.generateFamily X π := by
@@ -235,7 +237,7 @@ lemma Sieve.generateFamily_eq {B : C} {α : Type*} (X : α → C) (π : (a : α)
   · rintro ⟨W, g, f, ⟨a⟩, rfl⟩
     exact ⟨a, g, rfl⟩
   · rintro ⟨a, g, rfl⟩
-    refine ⟨_, g, π a, ⟨a⟩, rfl⟩
+    exact ⟨_, g, π a, ⟨a⟩, rfl⟩
 
 /--
 This structure encodes the data required for a family of morphisms to be effective epimorphic.
@@ -492,6 +494,28 @@ instance {B X : C} (f : X ⟶ B) [EffectiveEpi f] : EffectiveEpiFamily (fun () �
   ⟨⟨EffectiveEpi_familyStruct f⟩⟩
 
 /--
+A single element `EffectiveEpiFamily` constists of an `EffectiveEpi`
+-/
+noncomputable
+def EffectiveEpiStruct_ofFamily {B X : C} (f : X ⟶ B)
+    [EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f)] :
+    EffectiveEpiStruct f where
+  desc e h := EffectiveEpiFamily.desc
+    (fun () ↦ X) (fun () ↦ f) (fun () ↦ e) (fun _ _ g₁ g₂ hg ↦ h g₁ g₂ hg)
+  fac e h := EffectiveEpiFamily.fac
+    (fun () ↦ X) (fun () ↦ f) (fun () ↦ e) (fun _ _ g₁ g₂ hg ↦ h g₁ g₂ hg) ()
+  uniq e h m hm := EffectiveEpiFamily.uniq
+    (fun () ↦ X) (fun () ↦ f) (fun () ↦ e) (fun _ _ g₁ g₂ hg ↦ h g₁ g₂ hg) m (fun _ ↦ hm)
+
+instance {B X : C} (f : X ⟶ B) [EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f)] :
+    EffectiveEpi f :=
+  ⟨⟨EffectiveEpiStruct_ofFamily f⟩⟩
+
+lemma effectiveEpi_iff_effectiveEpiFamily {B X : C} (f : X ⟶ B) :
+    EffectiveEpi f ↔ EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+
+/--
 A family of morphisms with the same target inducing an isomorphism from the coproduct to the target
 is an `EffectiveEpiFamily`.
 -/
@@ -518,6 +542,77 @@ instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [Ha
     [IsIso (Sigma.desc π)] : EffectiveEpiFamily X π :=
   ⟨⟨EffectiveEpiFamilyStruct_of_isIso_desc X π⟩⟩
 
+/-- The identity is an effective epi. -/
+def EffectiveEpiStructId {X : C} : EffectiveEpiStruct (𝟙 X) where
+  desc e _ := e
+  fac _ _ := by simp only [Category.id_comp]
+  uniq _ _ _ h := by simp only [Category.id_comp] at h; exact h
+
+instance {X : C} : EffectiveEpi (𝟙 X) := ⟨⟨EffectiveEpiStructId⟩⟩
+
 end instances
+
+section Epi
+
+variable [HasFiniteCoproducts C] (h : ∀ {α : Type} [Fintype α] {B : C}
+    (X : α → C) (π : (a : α) → (X a ⟶ B)), EffectiveEpiFamily X π ↔ Epi (Sigma.desc π ))
+
+lemma effectiveEpi_iff_epi {X Y : C} (f : X ⟶ Y) : EffectiveEpi f ↔ Epi f := by
+  rw [effectiveEpi_iff_effectiveEpiFamily, h]
+  have w : f = (Limits.Sigma.ι (fun () ↦ X) ()) ≫ (Limits.Sigma.desc (fun () ↦ f))
+  · simp only [Limits.colimit.ι_desc, Limits.Cofan.mk_pt, Limits.Cofan.mk_ι_app]
+  refine ⟨?_, fun _ ↦ epi_of_epi_fac w.symm⟩
+  intro
+  rw [w]
+  have : Epi (Limits.Sigma.ι (fun () ↦ X) ()) := ⟨fun _ _ h ↦ by ext; exact h⟩
+  exact epi_comp _ _
+
+end Epi
+
+section Regular
+
+open RegularEpi in
+/-- The data of an `EffectiveEpi` structure on a `RegularEpi`. -/
+noncomputable def effectiveEpiStructOfRegularEpi {B X : C} (f : X ⟶ B) [RegularEpi f] :
+    EffectiveEpiStruct f where
+  desc _ h := Cofork.IsColimit.desc isColimit _ (h _ _ w)
+  fac _ _ := Cofork.IsColimit.π_desc' isColimit _ _
+  uniq _ _ _ hg := Cofork.IsColimit.hom_ext isColimit (hg.trans
+    (Cofork.IsColimit.π_desc' _ _ _).symm)
+
+instance {B X : C} (f : X ⟶ B) [RegularEpi f] : EffectiveEpi f :=
+  ⟨⟨effectiveEpiStructOfRegularEpi f⟩⟩
+
+/-- A morphism which is a coequalizer for its kernel pair is an effective epi. -/
+theorem effectiveEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
+    (hc : IsColimit (Cofork.ofπ f pullback.condition)) : EffectiveEpi f :=
+  let _ := regularEpiOfKernelPair f hc
+  inferInstance
+
+/-- An effective epi which has a kernel pair is a regular epi. -/
+noncomputable instance regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
+    [EffectiveEpi f] : RegularEpi f where
+  W := pullback f f
+  left := pullback.fst
+  right := pullback.snd
+  w := pullback.condition
+  isColimit := {
+    desc := fun s ↦ EffectiveEpi.desc f (s.ι.app WalkingParallelPair.one) fun g₁ g₂ hg ↦ (by
+      simp only [Cofork.app_one_eq_π]
+      rw [← pullback.lift_snd g₁ g₂ hg, Category.assoc, ← Cofork.app_zero_eq_comp_π_right]
+      simp)
+    fac := by
+      intro s j
+      have := EffectiveEpi.fac f (s.ι.app WalkingParallelPair.one) fun g₁ g₂ hg ↦ (by
+          simp only [Cofork.app_one_eq_π]
+          rw [← pullback.lift_snd g₁ g₂ hg, Category.assoc, ← Cofork.app_zero_eq_comp_π_right]
+          simp)
+      simp only [Functor.const_obj_obj, Cofork.app_one_eq_π] at this
+      cases j with
+      | zero => simp [this]
+      | one => simp [this]
+    uniq := fun _ _ h ↦ EffectiveEpi.uniq f _ _ _ (h WalkingParallelPair.one) }
+
+end Regular
 
 end CategoryTheory

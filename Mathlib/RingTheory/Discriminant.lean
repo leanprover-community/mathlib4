@@ -35,7 +35,7 @@ Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we 
   field `E` corresponding to `j : ι` via a bijection `e : ι ≃ (L →ₐ[K] E)`.
 * `Algebra.discr_powerBasis_eq_prod` : the discriminant of a power basis.
 * `Algebra.discr_isIntegral` : if `K` and `L` are fields and `IsScalarTower R K L`, if
-  `b : ι → L` satisfies ` ∀ i, IsIntegral R (b i)`, then `IsIntegral R (discr K b)`.
+  `b : ι → L` satisfies `∀ i, IsIntegral R (b i)`, then `IsIntegral R (discr K b)`.
 * `Algebra.discr_mul_isIntegral_mem_adjoin` : let `K` be the fraction field of an integrally
   closed domain `R` and let `L` be a finite separable extension of `K`. Let `B : PowerBasis K L`
   be such that `IsIntegral R B.gen`. Then for all, `z : L` we have
@@ -251,7 +251,7 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
       ← Finset.prod_mk _ (hnodup.erase _)]
   rw [prod_sigma', prod_sigma']
   refine'
-    prod_bij (fun i _ => ⟨e i.2, e i.1 pb.gen⟩) (fun i hi => _) (fun i _ => by simp )
+    prod_bij (fun i _ => ⟨e i.2, e i.1 pb.gen⟩) (fun i hi => _) (fun i _ => by simp)
       (fun i j hi hj hij => _) fun σ hσ => _
   · simp only [true_and_iff, Finset.mem_mk, mem_univ, mem_sigma]
     rw [Multiset.mem_erase_of_ne fun h => ?_]
@@ -290,7 +290,7 @@ variable {R : Type z} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R 
 theorem discr_isIntegral {b : ι → L} (h : ∀ i, IsIntegral R (b i)) : IsIntegral R (discr K b) := by
   classical
   rw [discr_def]
-  exact IsIntegral.det fun i j => isIntegral_trace (isIntegral_mul (h i) (h j))
+  exact IsIntegral.det fun i j => isIntegral_trace (IsIntegral.mul (h i) (h j))
 #align algebra.discr_is_integral Algebra.discr_isIntegral
 
 /-- If `b` and `b'` are `ℚ`-bases of a number field `K` such that
@@ -364,12 +364,12 @@ theorem discr_mul_isIntegral_mem_adjoin [IsSeparable K L] [IsIntegrallyClosed R]
     exact
       mem_bot.2
         (IsIntegrallyClosed.isIntegral_iff.1 <|
-          isIntegral_trace <| isIntegral_mul hz <| IsIntegral.pow hint _)
+          isIntegral_trace <| IsIntegral.mul hz <| IsIntegral.pow hint _)
   · simp only [updateColumn_apply, hji, PowerBasis.coe_basis]
     exact
       mem_bot.2
         (IsIntegrallyClosed.isIntegral_iff.1 <|
-          isIntegral_trace <| isIntegral_mul (IsIntegral.pow hint _) (IsIntegral.pow hint _))
+          isIntegral_trace <| IsIntegral.mul (IsIntegral.pow hint _) (IsIntegral.pow hint _))
 #align algebra.discr_mul_is_integral_mem_adjoin Algebra.discr_mul_isIntegral_mem_adjoin
 
 end Integral

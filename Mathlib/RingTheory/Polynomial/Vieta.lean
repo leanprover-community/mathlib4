@@ -47,7 +47,7 @@ theorem prod_X_add_C_eq_sum_esymm (s : Multiset R) :
     intro _ _
     rw [esymm, ← sum_hom', ← sum_map_mul_right, map_congr (Eq.refl _)]
     intro s ht
-    rw [mem_powersetLen] at ht
+    rw [mem_powersetCard] at ht
     dsimp
     rw [prod_hom' s (Polynomial.C : R →+* R[X])]
     simp [ht, map_const, prod_replicate, prod_hom', map_id', card_sub]
@@ -79,7 +79,7 @@ set_option linter.uppercaseLean3 false in
 #align multiset.prod_X_add_C_coeff' Multiset.prod_X_add_C_coeff'
 
 theorem _root_.Finset.prod_X_add_C_coeff {σ} (s : Finset σ) (r : σ → R) {k : ℕ} (h : k ≤ s.card) :
-    (∏ i in s, (X + C (r i))).coeff k = ∑ t in s.powersetLen (s.card - k), ∏ i in t, r i := by
+    (∏ i in s, (X + C (r i))).coeff k = ∑ t in s.powersetCard (s.card - k), ∏ i in t, r i := by
   rw [Finset.prod, prod_X_add_C_coeff' _ r h, Finset.esymm_map_val]
   rfl
 set_option linter.uppercaseLean3 false in
@@ -92,10 +92,10 @@ section Ring
 variable {R : Type*} [CommRing R]
 
 theorem esymm_neg (s : Multiset R) (k : ℕ) : (map Neg.neg s).esymm k = (-1) ^ k * esymm s k := by
-  rw [esymm, esymm, ← Multiset.sum_map_mul_left, Multiset.powersetLen_map, Multiset.map_map,
+  rw [esymm, esymm, ← Multiset.sum_map_mul_left, Multiset.powersetCard_map, Multiset.map_map,
     map_congr (Eq.refl _)]
   intro x hx
-  rw [(mem_powersetLen.mp hx).right.symm, ← prod_replicate, ← Multiset.map_const]
+  rw [(mem_powersetCard.mp hx).right.symm, ← prod_replicate, ← Multiset.map_const]
   nth_rw 3 [← map_id' x]
   rw [← prod_map_mul, map_congr (Eq.refl _)];rfl
   exact fun z _ => neg_one_mul z

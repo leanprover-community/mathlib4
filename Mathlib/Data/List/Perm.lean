@@ -8,7 +8,7 @@ import Mathlib.Data.List.Permutation
 import Mathlib.Data.List.Range
 import Mathlib.Data.Nat.Factorial.Basic
 
-#align_import data.list.perm from "leanprover-community/mathlib"@"47adfab39a11a072db552f47594bf8ed2cf8a722"
+#align_import data.list.perm from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-!
 # List Permutations
@@ -38,6 +38,9 @@ inductive Perm : List α → List α → Prop
   | swap (x y : α) (l : List α) : Perm (y :: x :: l) (x :: y :: l)
   | trans {l₁ l₂ l₃ : List α} : Perm l₁ l₂ → Perm l₂ l₃ → Perm l₁ l₃
 #align list.perm List.Perm
+
+instance {α : Type*} : Trans (@List.Perm α) (@List.Perm α) List.Perm where
+  trans := @List.Perm.trans α
 
 open Perm (swap)
 
@@ -275,9 +278,11 @@ theorem filter_append_perm (p : α → Bool) (l : List α) :
   induction' l with x l ih
   · rfl
   · by_cases h : p x
-    · simp only [h, filter_cons_of_pos, filter_cons_of_neg, not_true, not_false_iff, cons_append]
+    · simp only [h, filter_cons_of_pos, filter_cons_of_neg, not_true, not_false_iff, cons_append,
+        decide_False]
       exact ih.cons x
-    · simp only [h, filter_cons_of_neg, not_false_iff, filter_cons_of_pos]
+    · simp only [h, filter_cons_of_neg, not_false_iff, filter_cons_of_pos, cons_append,
+        not_false_eq_true, decide_True]
       refine' Perm.trans _ (ih.cons x)
       exact perm_append_comm.trans (perm_append_comm.cons _)
 #align list.filter_append_perm List.filter_append_perm
@@ -475,7 +480,7 @@ theorem Subperm.countP_le (p : α → Bool) {l₁ l₂ : List α} :
 #align list.subperm.countp_le List.Subperm.countP_le
 
 theorem Perm.countP_congr (s : l₁ ~ l₂) {p p' : α → Bool}
-    (hp : ∀ x ∈ l₁, p x = p' x) : l₁.countP p = l₂.countP p' := by
+    (hp : ∀ x ∈ l₁, p x ↔ p' x) : l₁.countP p = l₂.countP p' := by
   rw [← s.countP_eq p']
   clear s
   induction' l₁ with y s hs
@@ -489,6 +494,12 @@ theorem countP_eq_countP_filter_add (l : List α) (p q : α → Bool) :
   rw [← countP_append]
   exact Perm.countP_eq _ (filter_append_perm _ _).symm
 #align list.countp_eq_countp_filter_add List.countP_eq_countP_filter_add
+
+lemma count_eq_count_filter_add [DecidableEq α] (P : α → Prop) [DecidablePred P]
+    (l : List α) (a : α) :
+    count a l = count a (l.filter P) + count a (l.filter (¬ P ·)) := by
+  convert countP_eq_countP_filter_add l _ P
+  simp only [decide_eq_true_eq]
 
 theorem Perm.count_eq [DecidableEq α] {l₁ l₂ : List α} (p : l₁ ~ l₂) (a) :
     count a l₁ = count a l₂ :=
@@ -963,7 +974,7 @@ theorem perm_insert_swap (x y : α) (l : List α) :
     List.insert x (List.insert y l) ~ List.insert y (List.insert x l) := by
   by_cases xl : x ∈ l <;> by_cases yl : y ∈ l <;> simp [xl, yl]
   by_cases xy : x = y; · simp [xy]
-  simp [List.insert, xl, yl, xy, Ne.symm xy]
+  simp only [List.insert, Bool.not_eq_true, mem_cons, xy, xl, or_self, ite_false, Ne.symm xy, yl]
   constructor
 #align list.perm_insert_swap List.perm_insert_swap
 
@@ -1129,7 +1140,7 @@ theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
     · simp [lookmap_cons_some _ _ h₁, h₂]
       apply swap
     · simp [lookmap_cons_some _ _ h₁, lookmap_cons_some _ _ h₂]
-      rcases(pairwise_cons.1 H).1 _ (mem_cons.2 (Or.inl rfl)) _ h₂ _ h₁ with ⟨rfl, rfl⟩
+      rcases (pairwise_cons.1 H).1 _ (mem_cons.2 (Or.inl rfl)) _ h₂ _ h₁ with ⟨rfl, rfl⟩
       exact Perm.refl _
   · refine' (IH₁ H).trans (IH₂ ((p₁.pairwise_iff _).1 H))
     exact fun a b h c h₁ d h₂ => (h d h₂ c h₁).imp Eq.symm Eq.symm
@@ -1197,10 +1208,9 @@ theorem perm_of_mem_permutationsAux :
   refine' permutationsAux.rec (by simp) _
   introv IH1 IH2 m
   rw [permutationsAux_cons, permutations, mem_foldr_permutationsAux2] at m
-  rcases m with (m | ⟨l₁, l₂, m, _, e⟩)
+  rcases m with (m | ⟨l₁, l₂, m, _, rfl⟩)
   · exact (IH1 _ m).trans perm_middle
-  · subst e
-    have p : l₁ ++ l₂ ~ is := by
+  · have p : l₁ ++ l₂ ~ is := by
       simp [permutations] at m
       cases' m with e m
       · simp [e]
@@ -1272,7 +1282,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
       (permutations'Aux b l).bind (permutations'Aux a) := by
   induction' l with c l ih
   · simp [swap]
-  simp [permutations'Aux]
+  simp only [permutations'Aux, cons_bind, map_cons, map_map, cons_append]
   apply Perm.swap'
   have :
     ∀ a b,
@@ -1423,7 +1433,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
       nthLe_insertNth_of_lt _ _ _ _ (H.trans (Nat.lt_succ_self _))]
   · rw [nthLe_insertNth_self _ _ _ hk.le, nthLe_insertNth_of_lt _ _ _ _ (Nat.lt_succ_self _) hk,
       hk']
-  · rcases(Nat.succ_le_of_lt H).eq_or_lt with (rfl | H')
+  · rcases (Nat.succ_le_of_lt H).eq_or_lt with (rfl | H')
     · rw [nthLe_insertNth_self _ _ _ (Nat.succ_le_of_lt hk)]
       convert hk' using 1
       exact nthLe_insertNth_add_succ _ _ _ 0 _

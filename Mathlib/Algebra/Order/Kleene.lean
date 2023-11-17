@@ -167,15 +167,15 @@ theorem add_le (ha : a ≤ c) (hb : b ≤ c) : a + b ≤ c :=
 #align add_le add_le
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toCanonicallyOrderedAddMonoid :
-    CanonicallyOrderedAddMonoid α :=
+instance (priority := 100) IdemSemiring.toCanonicallyOrderedAddCommMonoid :
+    CanonicallyOrderedAddCommMonoid α :=
   { ‹IdemSemiring α› with
     add_le_add_left := fun a b hbc c ↦ by
       simp_rw [add_eq_sup]
       exact sup_le_sup_left hbc _
     exists_add_of_le := fun h ↦ ⟨_, h.add_eq_right.symm⟩
     le_self_add := fun a b ↦ add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem] }
-#align idem_semiring.to_canonically_ordered_add_monoid IdemSemiring.toCanonicallyOrderedAddMonoid
+#align idem_semiring.to_canonically_ordered_add_monoid IdemSemiring.toCanonicallyOrderedAddCommMonoid
 
 -- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toCovariantClass_mul_le :

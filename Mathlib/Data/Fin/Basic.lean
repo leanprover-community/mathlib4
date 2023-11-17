@@ -185,7 +185,7 @@ protected theorem heq_fun_iff {α : Sort*} {k l : ℕ} (h : k = l) {f : Fin k �
 If two functions `Fin k → Fin k' → α` and `Fin l → Fin l' → α` are equal on each pair,
 then they coincide (in the heq sense). -/
 protected theorem heq_fun₂_iff {α : Sort*} {k l k' l' : ℕ} (h : k = l) (h' : k' = l')
-  {f : Fin k → Fin k' → α} {g : Fin l → Fin l' → α} :
+    {f : Fin k → Fin k' → α} {g : Fin l → Fin l' → α} :
     HEq f g ↔ ∀ (i : Fin k) (j : Fin k'), f i j = g ⟨(i : ℕ), h ▸ i.2⟩ ⟨(j : ℕ), h' ▸ j.2⟩ := by
   subst h
   subst h'
@@ -506,7 +506,7 @@ theorem val_one'' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % (n + 1) :=
 #align fin.mk_one Fin.mk_one
 
 instance nontrivial {n : ℕ} : Nontrivial (Fin (n + 2)) where
-  exists_pair_ne := ⟨0, 1, (ne_iff_vne 0 1).mpr (by simp only [val_one, val_zero])⟩
+  exists_pair_ne := ⟨0, 1, (ne_iff_vne 0 1).mpr (by simp [val_one, val_zero])⟩
 
 theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
   rcases n with (_ | _ | n) <;>
@@ -777,6 +777,17 @@ def castLEEmb (h : n ≤ m) : Fin n ↪o Fin m :=
 #align fin.cast_le_mk Fin.castLE_mk
 #align fin.cast_le_zero Fin.castLE_zero
 
+@[simp] lemma castLE_castSucc {n m} (i : Fin n) (h : n + 1 ≤ m) :
+    i.castSucc.castLE h = i.castLE (Nat.le_of_succ_le h) :=
+  rfl
+
+@[simp] lemma castLE_comp_castSucc {n m} (h : n + 1 ≤ m) :
+    Fin.castLE h ∘ Fin.castSucc = Fin.castLE (Nat.le_of_succ_le h) :=
+  rfl
+
+@[simp] lemma castLE_rfl (n : ℕ) : Fin.castLE (le_refl n) = id :=
+  rfl
+
 @[simp]
 theorem range_castLE {n k : ℕ} (h : n ≤ k) : Set.range (castLE h) = { i : Fin k | (i : ℕ) < n } :=
   Set.ext fun x => ⟨fun ⟨y, hy⟩ => hy ▸ y.2, fun hx => ⟨⟨x, hx⟩, Fin.ext rfl⟩⟩
@@ -811,7 +822,8 @@ def castIso (eq : n = m) : Fin n ≃o Fin m where
 #align fin.cast Fin.castIso
 
 @[simp]
-theorem symm_castIso (h : n = m) : (castIso h).symm = castIso h.symm := by simp
+theorem symm_castIso (h : n = m) : (castIso h).symm = castIso h.symm := by
+  simp [eq_iff_true_of_subsingleton]
 #align fin.symm_cast Fin.symm_castIso
 
 #align fin.coe_cast Fin.coe_castₓ
@@ -1218,6 +1230,9 @@ protected theorem coe_sub (a b : Fin n) : ((a - b : Fin n) : ℕ) = (a + (n - b)
 theorem coe_fin_one (a : Fin 1) : (a : ℕ) = 0 := by simp [Subsingleton.elim a 0]
 #align fin.coe_fin_one Fin.coe_fin_one
 
+lemma eq_one_of_neq_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 :=
+  fin_two_eq_of_eq_zero_iff (by simpa only [one_eq_zero_iff, succ.injEq, iff_false] using hi)
+
 @[simp]
 theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
   cases n
@@ -1264,7 +1279,8 @@ theorem coe_sub_iff_lt {n : ℕ} {a b : Fin n} : (↑(a - b) : ℕ) = n + a - b 
 @[simp]
 theorem lt_sub_one_iff {n : ℕ} {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
   rcases k with ⟨_ | k, hk⟩
-  simp [lt_iff_val_lt_val]
+  simp only [zero_eq, zero_eta, zero_sub, lt_iff_val_lt_val, val_zero, coe_neg_one, add_pos_iff,
+    _root_.zero_lt_one, or_true]
   have : (k + 1 + (n + 1)) % (n + 2) = k % (n + 2) := by
     rw [add_right_comm, add_assoc, add_mod_right]
   simp [lt_iff_val_lt_val, ext_iff, Fin.coe_sub, succ_eq_add_one, this,
@@ -1423,7 +1439,7 @@ theorem succAbove_castLT {x y : Fin (n + 1)} (h : x < y)
 theorem succAbove_pred {x y : Fin (n + 1)} (h : x < y)
     (hy : y ≠ 0 := (x.zero_le.trans_lt h).ne') : x.succAbove (y.pred hy) = y := by
   rw [succAbove_above, succ_pred]
-  simpa [le_iff_val_le_val] using Nat.le_pred_of_lt h
+  simpa [le_iff_val_le_val] using Nat.le_sub_one_of_lt h
 #align fin.succ_above_pred Fin.succAbove_pred
 
 theorem castLT_succAbove {x : Fin n} {y : Fin (n + 1)} (h : castSucc x < y)
@@ -1657,13 +1673,13 @@ theorem succAbove_predAbove {p : Fin n} {i : Fin (n + 1)} (h : i ≠ castSucc p)
     rw [if_pos]
     rfl
     exact H
-    simp
+    simp only [castSucc_mk, mk_lt_mk, not_lt]
     apply le_of_lt H
   · rw [dif_pos]
     rw [if_neg]
     · simp
     · simp only [pred, Fin.mk_lt_mk, not_lt]
-      exact Nat.le_pred_of_lt (h.symm.lt_of_le H)
+      exact Nat.le_sub_one_of_lt (h.symm.lt_of_le H)
     · exact lt_of_le_of_ne H h.symm
 #align fin.succ_above_pred_above Fin.succAbove_predAbove
 
@@ -1678,7 +1694,7 @@ theorem predAbove_succAbove (p : Fin n) (i : Fin n) :
   dsimp
   split_ifs with h₁ h₂ h₃
   · simp only [← val_fin_lt, not_lt] at h₁ h₂
-    exact (lt_le_antisymm h₁ (le_of_lt h₂)).elim
+    exact (Nat.lt_le_asymm h₁ (le_of_lt h₂)).elim
   · rfl
   · rfl
   · simp only [← val_fin_lt, not_lt] at h₁ h₃
@@ -1780,6 +1796,17 @@ theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
   rfl
 #align fin.coe_of_nat_eq_mod Fin.coe_ofNat_eq_mod
 
+theorem forall_fin_succ' {P : Fin (n + 1) → Prop} :
+    (∀ i, P i) ↔ (∀ i : Fin n, P i.castSucc) ∧ P (.last _) :=
+  ⟨fun H => ⟨fun _ => H _, H _⟩, fun ⟨H0, H1⟩ i => Fin.lastCases H1 H0 i⟩
+
+-- to match `Fin.eq_zero_or_eq_succ`
+theorem eq_castSucc_or_eq_last {n : Nat} (i : Fin (n + 1)) :
+    (∃ j : Fin n, i = j.castSucc) ∨ i = last n := by
+  induction i using reverseInduction with
+  | last => right; rfl
+  | cast n => left; exact ⟨_, rfl⟩
+
 section Mul
 
 /-!
@@ -1791,7 +1818,7 @@ section Mul
 
 protected theorem mul_one' [NeZero n] (k : Fin n) : k * 1 = k := by
   cases' n with n
-  · simp
+  · simp [eq_iff_true_of_subsingleton]
   cases n
   · simp [fin_one_eq_zero]
   simp [eq_iff_veq, mul_def, mod_eq_of_lt (is_lt k)]
