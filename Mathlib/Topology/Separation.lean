@@ -44,9 +44,9 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 
 ### T₀ spaces
 
-* `IsClosed.exists_closed_singleton` Given a closed set `S` in a compact T₀ space,
+* `IsClosed.exists_closed_singleton`: Given a closed set `S` in a compact T₀ space,
   there is some `x ∈ S` such that `{x}` is closed.
-* `exists_open_singleton_of_open_finset` Given an open `Finset` `S` in a T₀ space,
+* `exists_open_singleton_of_open_finite`: Given an open finite set `S` in a T₀ space,
   there is some `x ∈ S` such that `{x}` is open.
 
 ### T₁ spaces
@@ -310,7 +310,7 @@ theorem minimal_nonempty_open_eq_singleton [T0Space X] {s : Set X} (hs : IsOpen 
 #align minimal_nonempty_open_eq_singleton minimal_nonempty_open_eq_singleton
 
 /-- Given an open finite set `S` in a T₀ space, there is some `x ∈ S` such that `{x}` is open. -/
-theorem exists_open_singleton_of_open_finite [T0Space X] {s : Set X} (hfin : s.Finite)
+theorem exists_open_singleton_of_isOpen_finite [T0Space X] {s : Set X} (hfin : s.Finite)
     (hne : s.Nonempty) (ho : IsOpen s) : ∃ x ∈ s, IsOpen ({x} : Set X) := by
   lift s to Finset X using hfin
   induction' s using Finset.strongInductionOn with s ihs
@@ -325,11 +325,11 @@ theorem exists_open_singleton_of_open_finite [T0Space X] {s : Set X} (hfin : s.F
     refine' fun t hts htne hto => of_not_not fun hts' => ht _
     lift t to Finset X using s.finite_toSet.subset hts
     exact ⟨t, ssubset_iff_subset_ne.2 ⟨hts, mt Finset.coe_inj.2 hts'⟩, htne, hto⟩
-#align exists_open_singleton_of_open_finite exists_open_singleton_of_open_finite
+#align exists_open_singleton_of_open_finite exists_open_singleton_of_isOpen_finite
 
 theorem exists_open_singleton_of_finite [T0Space X] [Finite X] [Nonempty X] :
     ∃ x : X, IsOpen ({x} : Set X) :=
-  let ⟨x, _, h⟩ := exists_open_singleton_of_open_finite (Set.toFinite _) univ_nonempty isOpen_univ
+  let ⟨x, _, h⟩ := exists_open_singleton_of_isOpen_finite (Set.toFinite _) univ_nonempty isOpen_univ
   ⟨x, h⟩
 #align exists_open_singleton_of_fintype exists_open_singleton_of_finite
 
