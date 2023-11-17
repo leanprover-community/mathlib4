@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert A. Spencer, Markus Himmel
 -/
 import Mathlib.Algebra.Category.GroupCat.Preadditive
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.LinearAlgebra.Basic
 import Mathlib.CategoryTheory.Conj
+import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 #align_import algebra.category.Module.basic from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
