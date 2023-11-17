@@ -269,7 +269,7 @@ section decIssue
 variable [∀ (M : Type _) [AddCommGroup M] [Module R M], Decidable $ IsFiniteLengthModule R M]
 
 lemma moduleLength_eq_krullDim_Submodules [h : FiniteLengthModule R M] :
-  moduleLength R M = krullDim (Submodule R M) :=
+    moduleLength R M = krullDim (Submodule R M) :=
 le_antisymm (le_iSup_iff.mpr $ λ m hm ↦ moduleLength_eq_coe (h := h) ▸
   hm (h.compositionSeries.OfLE $ λ _ _ h ↦ h.1)) $ iSup_le $ λ i ↦ by
     refine WithBot.coe_le_coe.mpr $ moduleLength_eq_coe (h := h) ▸ WithTop.coe_le_coe.mpr ?_
@@ -365,7 +365,7 @@ noncomputable def nthSubmodule : ℕ →o Submodule R M where
     · assumption
 
 lemma nthSubmodule_eventually_stabilize_of_isNoetherian [IsNoetherian R M] :
-  ∃ (n : ℕ), ∀ (m : ℕ), n ≤ m → nthSubmodule R M n = nthSubmodule R M m :=
+    ∃ (n : ℕ), ∀ (m : ℕ), n ≤ m → nthSubmodule R M n = nthSubmodule R M m :=
 (monotone_stabilizes_iff_noetherian).mpr (inferInstance : IsNoetherian R M) $
   nthSubmodule R M
 

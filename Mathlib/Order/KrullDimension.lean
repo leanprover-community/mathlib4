@@ -85,7 +85,7 @@ lemma eq_of_relIso (f : r ≃r s) : krullDimOfRel r = krullDimOfRel s :=
 
 variable (r)
 lemma eq_top_of_infiniteDimensional [r.InfiniteDimensional] :
-  krullDimOfRel r = ⊤ :=
+    krullDimOfRel r = ⊤ :=
 le_antisymm le_top $ le_iSup_iff.mpr $ fun m hm => match m, hm with
 | ⊥, hm => False.elim $ by
   haveI : Inhabited α := ⟨RelSeries.withLength r 0 0⟩
@@ -99,7 +99,7 @@ le_antisymm le_top $ le_iSup_iff.mpr $ fun m hm => match m, hm with
   assumption
 
 lemma eq_len_of_finiteDimensional [r.FiniteDimensional] :
-  krullDimOfRel r = (RelSeries.longestOf r).length :=
+    krullDimOfRel r = (RelSeries.longestOf r).length :=
 le_antisymm
   (iSup_le $ fun _ => WithBot.coe_le_coe.mpr $ WithTop.coe_le_coe.mpr $
     RelSeries.length_le_length_longestOf _ _) $
@@ -119,10 +119,10 @@ lemma nonneg_of_Nonempty [Nonempty α] : 0 ≤ krullDim α :=
 lemma eq_bot_of_isEmpty [IsEmpty α] : krullDim α = ⊥ := krullDimOfRel.eq_bot_of_isEmpty _
 
 lemma eq_top_of_infiniteDimensionalType [InfiniteDimensionalOrder α] :
-  krullDim α = ⊤ := krullDimOfRel.eq_top_of_infiniteDimensional _
+    krullDim α = ⊤ := krullDimOfRel.eq_top_of_infiniteDimensional _
 
 lemma eq_len_of_finiteDimensionalType [FiniteDimensionalOrder α] :
-  krullDim α = (LTSeries.longestOf α).length := krullDimOfRel.eq_len_of_finiteDimensional _
+    krullDim α = (LTSeries.longestOf α).length := krullDimOfRel.eq_len_of_finiteDimensional _
 
 /-- If `f : α → β` is a strictly monotonic function and `α` is an infinite dimensional type then so
   is `β`. -/
@@ -147,7 +147,7 @@ lemma height_mono {a b : α} (h : a ≤ b) : height α a ≤ height α b :=
   le_of_strictMono (λ x ↦ ⟨x, le_trans x.2 h⟩) $ λ _ _ h ↦ h
 
 lemma le_of_strictComono_and_surj
-  (f : α → β) (hf : StrictComono f) (hf' : Function.Surjective f) :
+    (f : α → β) (hf : StrictComono f) (hf' : Function.Surjective f) :
     krullDim β ≤ krullDim α :=
 iSup_le $ λ p ↦ le_sSup ⟨p.comap _ hf hf', rfl⟩
 

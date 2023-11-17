@@ -97,7 +97,7 @@ def OfLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) : RelSeries s where
   step := fun _ => h _ _ <| x.step _
 
 lemma coe_ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
-  (x.OfLE h : _ → _) = x := rfl
+    (x.OfLE h : _ → _) = x := rfl
 
 /-- Every relation series gives a list -/
 abbrev toList (x : RelSeries r) : List α := List.ofFn x
@@ -273,7 +273,7 @@ is another `r`-series
 -/
 @[simps]
 def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
-  (prev_connect : r (p (Fin.castSucc i)) a) (connect_next : r a (p i.succ)) : RelSeries r where
+    (prev_connect : r (p (Fin.castSucc i)) a) (connect_next : r a (p i.succ)) : RelSeries r where
   length := p.length + 1
   toFun :=  (Fin.castSucc i.succ).insertNth a p
   step := fun m => by
@@ -388,7 +388,7 @@ lemma cons_zero (p : RelSeries r) (a : α) (rel : r a (p 0)) : p.cons a rel 0 = 
   exact Fin.append_left _ _ 0
 
 lemma cons_succ (p : RelSeries r) (a : α) (rel : r a (p 0)) (x) :
-  p.cons a rel x.succ = p x := by
+    p.cons a rel x.succ = p x := by
   rw [cons_toFun]
   convert Fin.append_right _ _ _
   ext
@@ -406,7 +406,7 @@ def snoc (p : RelSeries r) (a : α) (rel : r (p (Fin.last _)) a) : RelSeries r :
 p.append (singleton r a) rel
 
 lemma snoc_last (p : RelSeries r) (a : α) (rel : r (p (Fin.last _)) a) :
-  p.snoc a rel (Fin.last _) = a := by
+    p.snoc a rel (Fin.last _) = a := by
   rw [snoc_toFun]
   exact Fin.append_right _ _ 0
 
@@ -705,7 +705,7 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
     (fun i j h ↦ hf1 (by simpa only [(hf2 _).choose_spec] using p.strictMono h))
 
 lemma exists_len_gt_of_noTopOrder [InfiniteDimensionalOrder α] (n : ℕ) :
-  ∃ (p : LTSeries α), n < p.length :=
-RelSeries.exists_len_gt_of_infiniteDimensional _ n
+    ∃ (p : LTSeries α), n < p.length :=
+  RelSeries.exists_len_gt_of_infiniteDimensional _ n
 
 end LTSeries

@@ -95,7 +95,7 @@ lemma interList_get_le_get_succ (i : Fin s.length) :
   `s`-/
 @[simps! apply]
 def interList_get_succ_to_qf (i : Fin s.length) :
-  s.interList_get_succ N i →ₗ[R] s.qf i :=
+    s.interList_get_succ N i →ₗ[R] s.qf i :=
 (Submodule.mkQ _).comp $ N.subtype.restrict $ λ _ h ↦ by
   rw [interList_get_succ_eq] at h
   exact h.2
@@ -159,7 +159,7 @@ private lemma interList_qf_aux' (i : Fin s.length) :
 
 set_option maxHeartbeats 800000 in
 lemma interList_get_succ_eq_get_of_equiv_punit (i : Fin s.length)
-  (e : s.interList_qf N i ≃ₗ[R] (PUnit : Type)) :
+    (e : s.interList_qf N i ≃ₗ[R] (PUnit : Type)) :
     s.interList_get_succ N i = s.interList_get N i := by
   have uniq_qf : Nonempty (Unique (s.interList_qf N i)) := ⟨Equiv.unique e.toEquiv⟩
   delta interList_qf quot at uniq_qf
@@ -210,8 +210,8 @@ noncomputable def eq_sum_interList_qf_equiv_qf (i : Fin s.length) :
 (s.interList_qf_aux N i).map (λ e ↦ ⟨s.interList_get_succ_eq_get_of_equiv_punit N i e⟩) id
 
 lemma eq_sum_interList_qf_equiv_qf' (i : Fin s.length) :
-  (s.interList_get_succ N i = s.interList_get N i) ∨
-  (Nonempty $ s.interList_qf N i ≃ₗ[R] s.qf i) :=
+    (s.interList_get_succ N i = s.interList_get N i) ∨
+    (Nonempty $ s.interList_qf N i ≃ₗ[R] s.qf i) :=
 match (s.eq_sum_interList_qf_equiv_qf N i) with
 | Sum.inl ⟨h⟩ => Or.inl h
 | Sum.inr h => Or.inr ⟨h⟩
@@ -257,7 +257,7 @@ match (s.eq_sum_interList_qf_equiv_qf N i) with
 | Sum.inr e => e
 
 lemma eq_interList_get_of_head_eq_bot_and_interList_nodup (s0 : s.head = ⊥)
-  (h : (s.interList N).Nodup) (i : Fin $ s.length + 1) :
+    (h : (s.interList N).Nodup) (i : Fin $ s.length + 1) :
   s i = Submodule.map N.subtype ((s.interList N).get $ i.cast (s.interList_length N).symm) := by
   classical
   have inter_chain := List.chain'_covby_of_chain'_wcovby_of_nodup _ (s.interList_chain'_wcovby N) h
@@ -360,7 +360,7 @@ lemma ofInterList_head_eq_bot_of_head_eq_bot (s0 : s.head = ⊥) :
   apply interList_head_eq_bot_of_head_eq_bot (s0 := s0)
 
 lemma ofInterList_last_eq_top_of_last_eq_top (slast : s.last = ⊤) :
-  (s.ofInterList N).last = ⊤ := by
+    (s.ofInterList N).last = ⊤ := by
   classical
   change List.get _ ⟨List.length _ - 1, _⟩ = _
   rw [List.get_length_sub_one, List.dedup_getLast_eq_getLast_of_chain'_wcovby (l_ne_nil :=

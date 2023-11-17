@@ -45,7 +45,7 @@ lemma le_getLast_of_chain'_le
   refine s'.rel_get_of_le (Nat.lt_succ_iff.mp m.2 : (⟨_, _⟩ : Fin _) ≤ ⟨_, _⟩)
 
 lemma dedup_head?_of_chain'_wcovby [DecidableEq α]
-  (l : List α) (l_chain : l.Chain' (. ⩿ .)) : l.dedup.head? = l.head? :=
+    (l : List α) (l_chain : l.Chain' (. ⩿ .)) : l.dedup.head? = l.head? :=
 match l, l_chain with
 | [], _ => by simp
 | x0::l, l_chain => by
@@ -125,7 +125,7 @@ lemma dedup_chain'_covby_of_chain'_wcovby [DecidableEq α]
   simpa only [Fin.mk.injEq, self_eq_add_right] using List.nodup_iff_injective_get.mp l.nodup_dedup h
 
 lemma chain'_covby_of_chain'_wcovby_of_nodup
-  (l : List α) (l_chain : l.Chain' (. ⩿ .)) (l_nodup : l.Nodup) :
+    (l : List α) (l_chain : l.Chain' (. ⩿ .)) (l_nodup : l.Nodup) :
     List.Chain' (. ⋖ .) l := by
   classical
   rw [← List.dedup_eq_self] at l_nodup

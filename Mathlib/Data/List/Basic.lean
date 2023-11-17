@@ -347,7 +347,7 @@ theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
 #align list.map_subset_iff List.map_subset_iff
 
 lemma map_ne_nil_of_ne_nil (l : List α) (h : l ≠ List.nil)
-  (f : α → β) : l.map f ≠ List.nil := by
+    (f : α → β) : l.map f ≠ List.nil := by
   cases l with | nil => ?_ | cons x l => ?_
   · cases h rfl
   · dsimp; exact List.cons_ne_nil _ _
