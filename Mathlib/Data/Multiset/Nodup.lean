@@ -86,9 +86,7 @@ theorem nodup_iff_count_le_one [DecidableEq α] {s : Multiset α} : Nodup s ↔ 
 #align multiset.nodup_iff_count_le_one Multiset.nodup_iff_count_le_one
 
 theorem nodup_iff_count_eq_one [DecidableEq α] : Nodup s ↔ ∀ a ∈ s, count a s = 1 :=
-  Quot.induction_on s fun _l => by
-    simp only [quot_mk_to_coe'', coe_nodup, mem_coe, coe_count]
-    exact List.nodup_iff_count_eq_one
+  Quot.induction_on s fun _l => by simpa using List.nodup_iff_count_eq_one
 
 @[simp]
 theorem count_eq_one_of_mem [DecidableEq α] {a : α} {s : Multiset α} (d : Nodup s) (h : a ∈ s) :
