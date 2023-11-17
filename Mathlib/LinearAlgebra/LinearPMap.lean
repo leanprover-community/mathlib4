@@ -30,8 +30,6 @@ They are also the basis for the theory of unbounded operators.
 
 -/
 
-open Set
-
 universe u v w
 
 /-- A `LinearPMap R E F` or `E →ₗ.[R] F` is a linear map from a submodule of `E` to `F`. -/
@@ -617,7 +615,7 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     apply Classical.indefiniteDescription
     have := (mem_sSup_of_directed (cne.image _) hdir).1 x.2
     -- Porting note: + `← bex_def`
-    rwa [bex_image_iff, ← bex_def, SetCoe.exists'] at this
+    rwa [Set.bex_image_iff, ← bex_def, SetCoe.exists'] at this
   set f : ↥(sSup (domain '' c)) → F := fun x => (P x).val.val ⟨x, (P x).property⟩
   have f_eq : ∀ (p : c) (x : ↥(sSup (domain '' c))) (y : p.1.1) (_hxy : (x : E) = y),
       f x = p.1 y := by
@@ -637,7 +635,7 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     -- Porting note: `simp [..]` to `simp only [..]`, or timeouts.
     simp only [f_eq (P x).1 (c • x) (c • ⟨x, (P x).2⟩) rfl, ← map_smul, RingHom.id_apply]
   · intro p hpc
-    refine' ⟨le_sSup <| mem_image_of_mem domain hpc, fun x y hxy => Eq.symm _⟩
+    refine' ⟨le_sSup <| Set.mem_image_of_mem domain hpc, fun x y hxy => Eq.symm _⟩
     exact f_eq ⟨p, hpc⟩ _ _ hxy.symm
 
 protected noncomputable def sSup (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) : E →ₗ.[R] F :=

@@ -128,7 +128,7 @@ theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : 
       Submodule.Quotient.mk ⟨x, hx⟩ :=
   (LinearEquiv.symm_apply_eq _).2 <| by
     -- Porting note: Was `simp`.
-    rw [quotientInfEquivSupQuotient_apply_mk, ofLe_apply]
+    rw [quotientInfEquivSupQuotient_apply_mk, inclusion_apply]
 #align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_left LinearMap.quotientInfEquivSupQuotient_symm_apply_left
 
 
