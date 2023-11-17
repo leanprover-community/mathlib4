@@ -100,5 +100,4 @@ lean_exe graph where
   supportInterpreter := true
 
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
-lean_lib docs where
-  roots := #[`docs]
+lean_lib docs
