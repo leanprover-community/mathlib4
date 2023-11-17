@@ -315,3 +315,71 @@ jobs:
             As this PR is labelled `auto-merge-after-CI`, we are now sending it to bors:
 
             bors merge
+
+  leaff:
+    if: github.repository != 'leanprover-community/mathlib4'
+    needs: build
+    name: Print diff
+    runs-on: ubuntu-latest
+    steps:
+      - name: cleanup
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+
+      - name: install elan
+        run: |
+          set -o pipefail
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.0.0/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - uses: actions/checkout@v4
+        with:
+          path: "old/"
+          fetch-depth: 2
+      - run: |
+          cd old/
+          git checkout HEAD^
+          lake --version
+          lean --version
+      - uses: actions/checkout@v4
+        with:
+          path: "new/"
+      - run: |
+          cd new/
+          lake --version
+          lean --version
+      - uses: actions/checkout@v4
+        with:
+          path: "leaff/"
+          repository: alexjbest/leaff
+
+      - name: get cache old
+        run: |
+          cd old/
+          lake exe cache clean
+          # We've been seeing many failures at this step recently because of network errors.
+          # As a band-aid, we try twice.
+          # The 'sleep 1' is small pause to let the network recover.
+          lake exe cache get || (sleep 1; lake exe cache get)
+          lake build
+
+      - name: get cache new
+        run: |
+          cd new/
+          lake exe cache clean
+          # We've been seeing many failures at this step recently because of network errors.
+          # As a band-aid, we try twice.
+          # The 'sleep 1' is small pause to let the network recover.
+          lake exe cache get || (sleep 1; lake exe cache get)
+          lake build
+
+      - name: build leaff
+        run: |
+          cd leaff/
+          lake build
+
+      - name: run leaff
+        run: |
+          cd leaff/
+          lake exe leaff Mathlib $(tr ':' ',' <<<"$(eval $(lake --dir ../old/ env) && echo $LEAN_PATH)") $(tr ':' ',' <<<"$(eval $(lake --dir ../new/ env) && echo $LEAN_PATH)")
