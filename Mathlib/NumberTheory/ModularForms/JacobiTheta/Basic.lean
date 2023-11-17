@@ -26,8 +26,6 @@ open Complex Real Asymptotics Filter
 
 open scoped Real BigOperators UpperHalfPlane
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 /-- Jacobi's theta function `∑' (n : ℤ), exp (π * I * n ^ 2 * τ)`. -/
 noncomputable def jacobiTheta (z : ℂ) : ℂ :=
   ∑' n : ℤ, cexp (π * I * (n : ℂ) ^ 2 * z)
@@ -39,13 +37,13 @@ theorem norm_exp_mul_sq_le {z : ℂ} (hz : 0 < z.im) (n : ℤ) :
   have h : y < 1 := exp_lt_one_iff.mpr (mul_neg_of_neg_of_pos (neg_lt_zero.mpr pi_pos) hz)
   refine' (le_of_eq _).trans (_ : y ^ n ^ 2 ≤ _)
   · rw [Complex.norm_eq_abs, Complex.abs_exp]
-    have : (↑π * I * (n : ℂ) ^ 2 * z).re = -π * z.im * (n : ℝ) ^ 2 := by
-      rw [(by push_cast; ring : ↑π * I * (n : ℂ) ^ 2 * z = ↑(π * (n : ℝ) ^ 2) * (z * I)),
+    have : (π * I * n ^ 2 * z : ℂ).re = -π * z.im * (n : ℝ) ^ 2 := by
+      rw [(by push_cast; ring : (π * I * n ^ 2 * z : ℂ) = (π * n ^ 2 : ℝ) * (z * I)),
         ofReal_mul_re, mul_I_re]
       ring
     obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (sq_nonneg n)
     rw [this, exp_mul, ← Int.cast_pow, rpow_int_cast, hm, zpow_ofNat]
-  · have : n ^ 2 = ↑(n.natAbs ^ 2) := by rw [Nat.cast_pow, Int.natAbs_sq]
+  · have : n ^ 2 = (n.natAbs ^ 2 :) := by rw [Nat.cast_pow, Int.natAbs_sq]
     rw [this, zpow_ofNat]
     exact pow_le_pow_of_le_one (exp_pos _).le h.le ((sq n.natAbs).symm ▸ n.natAbs.le_mul_self)
 #align norm_exp_mul_sq_le norm_exp_mul_sq_le
@@ -72,13 +70,13 @@ theorem summable_exp_mul_sq {z : ℂ} (hz : 0 < z.im) :
 
 theorem jacobiTheta_two_add (z : ℂ) : jacobiTheta (2 + z) = jacobiTheta z := by
   refine' tsum_congr fun n => _
-  suffices cexp (↑π * I * (n : ℂ) ^ 2 * 2) = 1 by rw [mul_add, Complex.exp_add, this, one_mul]
-  rw [(by push_cast; ring : ↑π * I * ↑n ^ 2 * 2 = ↑(n ^ 2) * (2 * π * I)), Complex.exp_int_mul,
+  suffices cexp (π * I * n ^ 2 * 2 : ℂ) = 1 by rw [mul_add, Complex.exp_add, this, one_mul]
+  rw [(by push_cast; ring : (π * I * n ^ 2 * 2 : ℂ) = (n ^ 2 :) * (2 * π * I)), Complex.exp_int_mul,
     Complex.exp_two_pi_mul_I, one_zpow]
 #align jacobi_theta_two_add jacobiTheta_two_add
 
-theorem jacobiTheta_T_sq_smul (τ : ℍ) : jacobiTheta ↑(ModularGroup.T ^ 2 • τ) = jacobiTheta τ := by
-  suffices ↑(ModularGroup.T ^ 2 • τ) = (2 : ℂ) + ↑τ by simp_rw [this, jacobiTheta_two_add]
+theorem jacobiTheta_T_sq_smul (τ : ℍ) : jacobiTheta (ModularGroup.T ^ 2 • τ :) = jacobiTheta τ := by
+  suffices (ModularGroup.T ^ 2 • τ :) = (2 : ℂ) + ↑τ by simp_rw [this, jacobiTheta_two_add]
   have : ModularGroup.T ^ (2 : ℕ) = ModularGroup.T ^ (2 : ℤ) := rfl
   simp_rw [this, UpperHalfPlane.modular_T_zpow_smul, UpperHalfPlane.coe_vadd]
   norm_cast

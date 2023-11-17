@@ -29,8 +29,6 @@ open Complex UpperHalfPlane
 
 open scoped UpperHalfPlane
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 local notation "GL(" n ", " R ")" "⁺" => Matrix.GLPos (Fin n) R
 
 local notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (Fin n) R

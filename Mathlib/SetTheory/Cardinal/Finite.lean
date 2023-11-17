@@ -92,7 +92,7 @@ an equivalence between `α` and `Fin (Nat.card α)`. See also `Finite.equivFin`.
 def equivFinOfCardPos {α : Type*} (h : Nat.card α ≠ 0) : α ≃ Fin (Nat.card α) := by
   cases fintypeOrInfinite α
   · simpa only [card_eq_fintype_card] using Fintype.equivFin α
-  · simp only [card_eq_zero_of_infinite, ne_eq] at h
+  · simp only [card_eq_zero_of_infinite, ne_eq, not_true_eq_false] at h
 #align nat.equiv_fin_of_card_pos Nat.equivFinOfCardPos
 
 theorem card_of_subsingleton (a : α) [Subsingleton α] : Nat.card α = 1 := by

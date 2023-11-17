@@ -39,8 +39,6 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 open Finpartition Finset Fintype Rel Nat
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open scoped BigOperators Classical SzemerediRegularity.Positivity
 
 namespace SzemerediRegularity

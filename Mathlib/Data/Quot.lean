@@ -804,7 +804,7 @@ section
 
 variable [s : Setoid α]
 
-protected theorem mk''_eq_mk (x : α) : Quotient.mk'' x = Quotient.mk s x :=
+protected theorem mk''_eq_mk : Quotient.mk'' = Quotient.mk s :=
   rfl
 
 @[simp]

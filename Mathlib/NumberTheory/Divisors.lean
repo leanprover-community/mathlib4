@@ -404,7 +404,8 @@ theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n
       · simp [hdvd, this]
         exact (le_iff_eq_or_lt.mp this).symm
       · by_contra'
-        simp [nonpos_iff_eq_zero.mp this, this] at h
+        simp only [nonpos_iff_eq_zero.mp this, this] at h
+        contradiction
   · exact fun h => Prime.properDivisors h
 #align nat.proper_divisors_eq_singleton_one_iff_prime Nat.properDivisors_eq_singleton_one_iff_prime
 
