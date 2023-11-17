@@ -30,10 +30,6 @@ open Nat
 
 variable {w v : Nat}
 
-@[simp]
-lemma cast_eq (x : BitVec w) : x.cast rfl = x :=
-  rfl
-
 /-!
 ## Conversions
 Theorems about `ofNat`, `toNat`, `ofFin`, `toFin`, `ofBool`, etc.
@@ -181,7 +177,7 @@ lemma two_pow_succ_eq_bit_false (x : Nat) :
     2^(x+1) = bit false (2^x) := by
   rw [Nat.pow_succ, Nat.mul_two]; rfl
 
-lemma bit_and_two_pow_succ (x₀ : Bool) (x n : Nat) :
+@[simp] lemma bit_and_two_pow_succ (x₀ : Bool) (x n : Nat) :
     bit x₀ x &&& 2^(n + 1) = bit false (x &&& 2^n) := by
   show bitwise .. = bit _ (bitwise ..)
   rw [two_pow_succ_eq_bit_false, bitwise_bit, Bool.and_false]
@@ -210,7 +206,7 @@ lemma lt_pow_of_bit_lt_pow_succ {w x : Nat} {x₀ : Bool} :
     apply h0
     apply Nat.lt_trans (Nat.bit0_lt_bit1 le_rfl) h
 
-theorem bit_mod_two_pow_succ (b x w) :
+@[simp] theorem bit_mod_two_pow_succ (b x w) :
     bit b x % 2 ^ (w + 1) = bit b (x % 2 ^ w) := by
   simp [bit_val, Nat.pow_succ, mul_comm 2]
   cases b <;> simp [mul_mod_mul_right]
@@ -319,8 +315,8 @@ private lemma mod_and_two_pow_of_lt (x y w : ℕ) (h : y < 2 ^ w) :
         simp [Nat.bit_mod_two_pow_succ, land_bit, ih]
 
 private lemma mod_and_two_pow_fin_val (x w : ℕ) (i : Fin w) :
-    x % (2 ^ w) &&& (2 ^ ↑i) = x &&& (2 ^ ↑i) :=
-  mod_and_two_pow_of_lt x (2 ^ ↑i) w (by apply pow_lt_pow <;> simp)
+    x % (2 ^ w) &&& (2 ^ i.val) = x &&& (2 ^ i.val) :=
+  mod_and_two_pow_of_lt x (2 ^ i.val) w (by apply pow_lt_pow <;> simp)
 
 lemma getLsb_bitwise (f) (x y : BitVec w) (i : Fin w) (hf : f false false = false) :
     getLsb ⟨bitwise f x.1.val y.1.val % 2^w, Nat.mod_lt _ (Nat.pow_two_pos w)⟩ i
@@ -335,6 +331,7 @@ lemma getLsb_bitwise (f) (x y : BitVec w) (i : Fin w) (hf : f false false = fals
   have hffb₂ (b) (hf' : f false true ≠ true) : f false b = false  := by cases b <;> simp [hf, hf']
   have hfbf₁ (b) (hf' : f true false = true) : f b false = b      := by cases b <;> simp [hf, hf']
   have hfbf₂ (b) (hf' : f true false ≠ true) : f b false = false  := by cases b <;> simp [hf, hf']
+  stop
   induction' i with i ih generalizing x y
   · cases' x using Nat.binaryRec with x₀ x
     <;> cases' y using Nat.binaryRec with y₀ y
@@ -351,14 +348,17 @@ lemma getLsb_bitwise (f) (x y : BitVec w) (i : Fin w) (hf : f false false = fals
 @[simp] lemma getLsb_and (x y : BitVec w) (i : Fin w) :
     (x &&& y).getLsb i = (x.getLsb i && y.getLsb i) := by
   simp only [HAnd.hAnd, AndOp.and, BitVec.and, Fin.land, land, getLsb_bitwise]
+  sorry
 
 @[simp] lemma getLsb_or (x y : BitVec w) (i : Fin w) :
     (x ||| y).getLsb i = (x.getLsb i || y.getLsb i) := by
   simp only [HOr.hOr, OrOp.or, BitVec.or, Fin.lor, lor, getLsb_bitwise]
+  sorry
 
 @[simp] lemma getLsb_xor (x y : BitVec w) (i : Fin w) :
     (x ^^^ y).getLsb i = xor (x.getLsb i) (y.getLsb i) := by
   simp only [HXor.hXor, Xor.xor, BitVec.xor, Fin.xor, Nat.xor, getLsb_bitwise]
+  sorry
 
 @[simp] lemma getLsb_negOne (i : Fin w) : getLsb (-1 : BitVec w) i = true := by
   simp only [getLsb, ofNat_eq_ofNat, Nat.shiftLeft_eq, one_mul, bne_iff_ne, ne_eq]
@@ -388,5 +388,80 @@ lemma getLsb_bitwise (f) (x y : BitVec w) (i : Fin w) (hf : f false false = fals
         simp only [ge_iff_le, land_bit, Bool.and_false, ne_eq, bit_eq_zero, and_true]
         exact ih
 
+/-!
+## Cons
+-/
+
+theorem Nat.mod_two_pow (x n : Nat) :
+    x % (2^n) = x &&& 2^n - 1 := by
+  induction' n with n ih generalizing x
+  · simp
+  · cases' x using Nat.binaryRec with x₀ x _xih
+    · rfl
+    · simp [Nat.two_pow_succ_sub_one_eq_bit, -bit_true, ih]
+
+@[simp] lemma Nat.bit_div_two (b : Bool) (x : Nat) : bit b x / 2 = x := by
+  rw [←div2_val, div2_bit]
+
+@[simp (high)]
+lemma Nat.bit_shiftRight_succ (b : Bool) (x n : ℕ) :
+    bit b x >>> (n + 1) = x >>> n := by
+  simp only [Nat.shiftRight_eq_div_pow, Nat.pow_succ, Nat.mul_comm, ←Nat.div_div_eq_div_mul,
+    bit_div_two]
+
+
+@[simp] lemma toNat_ofBool (b : Bool) : BitVec.toNat (ofBool b) = b.toNat := by
+  cases b <;> rfl
+
+theorem bitwise_self (f : Bool → Bool → Bool) (x : ℕ) (hf : f false false = false) :
+    bitwise f x x = if f true true = true then x else 0 := by
+  split_ifs with hf' <;> (
+    induction' x using Nat.binaryRec with x₀ x ih
+    · simp only [ne_eq, not_true_eq_false, bitwise_zero_right, ite_self]
+    · rw [bitwise_bit (h:=hf), ih]
+      cases x₀ <;> simp [hf, hf']
+  )
+
+theorem bitwise_self_eq_self (f : Bool → Bool → Bool)
+    (hf : f false false = false) (hf' : f true true = true) (x : ℕ) :
+    bitwise f x x = x := by
+  simp [bitwise_self _ _ hf, hf']
+
+theorem bitwise_self_eq_zero (f : Bool → Bool → Bool)
+    (hf : f false false = false) (hf' : f true true = false) (x : ℕ) :
+    bitwise f x x = 0 := by
+  simp [bitwise_self _ _ hf, hf']
+
+@[simp] lemma land_self (x : Nat) : x &&& x = x :=
+  bitwise_self_eq_self _ rfl rfl _
+
+@[simp] lemma lor_self (x : Nat) : x ||| x = x :=
+  bitwise_self_eq_self _ rfl rfl _
+
+@[simp] lemma xor_self (x : Nat) : x ^^^ x = 0 :=
+  bitwise_self_eq_zero _ rfl rfl _
+
+@[simp] lemma land_land_self (x y : Nat) :
+    x &&& y &&& y = x &&& y := by
+  rw [land_assoc, land_self]
+
+theorem and_two_pow_or_and_two_pow_sub_one (x n : ℕ) :
+    x &&& 2^n ||| x &&& 2^n - 1 = x &&& 2^(n+1) - 1 := by
+  induction' x using Nat.binaryRec with x₀ x ih generalizing n
+  · rfl
+  · cases' n with n
+    · simp
+    · simp [-bit_false, -bit_true, Nat.two_pow_succ_sub_one_eq_bit, ih]
+
+theorem cons_msb_truncate : ∀ (xs : BitVec (w+1)), cons xs.msb (xs.truncate w) = xs
+  | ⟨⟨xs, h⟩⟩ => by
+      simp [
+        cons, BitVec.msb, getMsb, truncate, zeroExtend, (· ++ ·), BitVec.append, cast,
+        Fin.cast, BitVec.ofNat, Fin.ofNat', Nat.zero_lt_succ, Nat.succ_sub_one, Nat.mod_two_pow
+      ]
+      rw [
+        getLsb_eq_testBit, toNat_ofFin, ←and_two_pow, and_two_pow_or_and_two_pow_sub_one xs w,
+        Nat.add_comm 1 w, land_land_self, ←Nat.mod_two_pow, Nat.mod_eq_of_lt h
+      ]
 
 end Std.BitVec
