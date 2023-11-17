@@ -413,7 +413,6 @@ protected lemma GrowsPolynomially.add {f g : ℝ → ℝ} (hf : GrowsPolynomiall
 lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomially f)
     (hfg : g =o[atTop] f) : GrowsPolynomially fun x => f x + g x := by
   intro b hb
-  have hb_lb := hb.1
   have hb_ub := hb.2
   rw [isLittleO_iff] at hfg
   rcases hf.eventually_atTop_nonneg_or_nonpos with hf'|hf'
@@ -706,8 +705,8 @@ lemma GrowsPolynomially.of_isTheta {f g : ℝ → ℝ} (hg : GrowsPolynomially g
                 rw [←Real.norm_of_nonneg (hf_pos x hbx)]
                 exact h_lb x hbx
 
-lemma GrowsPolynomially.of_isEquivalent {f g : ℝ → ℝ} (hg : GrowsPolynomially g) (hf : f ~[atTop] g) :
-    GrowsPolynomially f := by
+lemma GrowsPolynomially.of_isEquivalent {f g : ℝ → ℝ} (hg : GrowsPolynomially g)
+    (hf : f ~[atTop] g) : GrowsPolynomially f := by
   have : f = g + (f - g) := by ext; simp
   rw [this]
   exact add_isLittleO hg hf
