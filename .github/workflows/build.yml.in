@@ -246,7 +246,7 @@ jobs:
           lake build
           ./test.sh
           cd ..
-          lake env lean4checker/build/bin/lean4checker
+          lake env lean4checker/.lake/build/bin/lean4checker
 
       - name: Post comments for lean-pr-testing branch
         if: always()
