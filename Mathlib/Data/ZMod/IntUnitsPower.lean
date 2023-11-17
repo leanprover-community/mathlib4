@@ -97,8 +97,6 @@ lemma uzpow_add (s : ℤˣ) (x y : R) : s ^ (x + y) = s ^ x * s ^ y :=
 end CommSemiring
 
 section CommRing
-
-section CommRing
 variable {R : Type*} [CommRing R] [Module R (Additive ℤˣ)]
 
 lemma uzpow_sub (s : ℤˣ) (x y : R) : s ^ (x - y) = s ^ x / s ^ y :=
