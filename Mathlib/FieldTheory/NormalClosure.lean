@@ -128,14 +128,14 @@ variable (F K L)
 instance isNormalClosure_normalClosure [ne : Nonempty (K →ₐ[F] L)] [h : Normal F L] :
     IsNormalClosure F K (normalClosure F K L) := by
   have ⟨φ⟩ := ne
-  apply (φ.isAlgebraic_of_injective φ.injective h.isAlgebraic).isNormalClosure_normalClosure
+  apply (h.isAlgebraic'.of_injective φ φ.injective).isNormalClosure_normalClosure
   simp_rw [← minpoly.algHom_eq _ φ.injective]
   exact fun _ ↦ h.splits _
 
 theorem normalClosure_eq_iSup_adjoin' [ne : Nonempty (K →ₐ[F] L)] [h : Normal F L] :
     normalClosure F K L = ⨆ x : K, adjoin F ((minpoly F x).rootSet L) := by
   have ⟨φ⟩ := ne
-  refine φ.isAlgebraic_of_injective φ.injective h.isAlgebraic
+  refine h.isAlgebraic'.of_injective φ φ.injective
     |>.normalClosure_eq_iSup_adjoin_of_splits fun x ↦ ?_
   rw [← minpoly.algHom_eq _ φ.injective]
   apply h.splits
