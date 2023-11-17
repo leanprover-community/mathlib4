@@ -851,7 +851,8 @@ protected theorem Algebra.IsIntegral.trans
   fun x ↦ isIntegral_trans hA x (hB x)
 #align algebra.is_integral_trans Algebra.IsIntegral.trans
 
-theorem RingHom.IsIntegral.trans (hf : f.IsIntegral) (hg : g.IsIntegral) : (g.comp f).IsIntegral :=
+protected theorem RingHom.IsIntegral.trans
+    (hf : f.IsIntegral) (hg : g.IsIntegral) : (g.comp f).IsIntegral :=
   letI := f.toAlgebra; letI := g.toAlgebra; letI := (g.comp f).toAlgebra
   haveI : IsScalarTower R S T := IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
   Algebra.IsIntegral.trans hf hg
