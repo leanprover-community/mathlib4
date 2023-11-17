@@ -896,7 +896,7 @@ protected def localHomeomorph (e : LocalEquiv M H) (he : e ∈ c.atlas) :
       exact ⟨e, he, ⟨s, s_open, rfl⟩⟩
     continuous_invFun := by
       letI : TopologicalSpace M := c.toTopologicalSpace
-      apply continuousOn_open_of_generateFrom
+      apply continuousOn_isOpen_of_generateFrom
       intro t ht
       simp only [exists_prop, mem_iUnion, mem_singleton_iff] at ht
       rcases ht with ⟨e', e'_atlas, s, s_open, ts⟩

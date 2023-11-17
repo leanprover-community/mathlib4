@@ -1109,12 +1109,12 @@ theorem continuousOn_to_generateFrom_iff {s : Set α} {T : Set (Set β)} {f : α
     exact forall_congr' fun t => forall_swap
 
 -- porting note: dropped an unneeded assumption
-theorem continuousOn_open_of_generateFrom {β : Type*} {s : Set α} {T : Set (Set β)} {f : α → β}
+theorem continuousOn_isOpen_of_generateFrom {β : Type*} {s : Set α} {T : Set (Set β)} {f : α → β}
     (h : ∀ t ∈ T, IsOpen (s ∩ f ⁻¹' t)) :
     @ContinuousOn α β _ (.generateFrom T) f s :=
   continuousOn_to_generateFrom_iff.2 fun _x hx t ht hxt => mem_nhdsWithin.2
     ⟨_, h t ht, ⟨hx, hxt⟩, fun _y hy => hy.1.2⟩
-#align continuous_on_open_of_generate_from continuousOn_open_of_generateFromₓ
+#align continuous_on_open_of_generate_from continuousOn_isOpen_of_generateFromₓ
 
 theorem ContinuousWithinAt.prod {f : α → β} {g : α → γ} {s : Set α} {x : α}
     (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
