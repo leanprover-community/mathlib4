@@ -61,7 +61,8 @@ lean_lib docs
 -/
 
 /-- `lake exe cache get` retrieves precompiled `.olean` files from a central server. -/
-lean_exe cache
+lean_exe cache where
+  root := `Cache.Main
 
 /-- `lake exe runMathlibLinter` runs the linter on all of Mathlib (or individual files). -/
 -- Due to a change in Lake at v4.1.0-rc1, we need to give this a different name
