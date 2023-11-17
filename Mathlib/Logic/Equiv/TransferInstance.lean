@@ -472,6 +472,29 @@ protected def field [Field β] : Field α := by
   apply e.injective.field _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.field Equiv.field
 
+
+
+/-- Transfer `SMulCommClass` across an `Equiv` -/
+@[reducible]
+protected theorem smulCommClass (R S : Type*) [SMul R β] [SMul S β] [SMulCommClass R S β] :
+    letI := e.smul R; letI := e.smul S; SMulCommClass R S α :=
+  letI := e.smul R; letI := e.smul S; ⟨fun r s x => e.injective <| by
+    simpa only [smul_def, e.apply_symm_apply] using smul_comm r s (e x)⟩
+
+/-- Transfer `IsScalarTower` across an `Equiv` -/
+@[reducible]
+protected theorem isScalarTower (R S : Type*) [SMul R S] [SMul R β] [SMul S β] [IsScalarTower R S β] :
+    letI := e.smul R; letI := e.smul S; IsScalarTower R S α :=
+  letI := e.smul R; letI := e.smul S; ⟨fun r s x => e.injective <| by
+    simpa only [smul_def, e.apply_symm_apply] using smul_assoc r s (e x)⟩
+
+/-- Transfer `IsCentralScalar` across an `Equiv` -/
+@[reducible]
+protected theorem isCentralScalar (R : Type*) [SMul R β] [SMul Rᵐᵒᵖ β] [IsCentralScalar R β] :
+    letI := e.smul R; letI := e.smul Rᵐᵒᵖ; IsCentralScalar R α :=
+  letI := e.smul R; letI := e.smul Rᵐᵒᵖ; ⟨fun r x => e.injective <| by
+    simpa only [smul_def, e.apply_symm_apply] using op_smul_eq_smul r (e x)⟩
+
 section R
 
 variable (R : Type*)
@@ -490,11 +513,11 @@ protected def mulAction (e : α ≃ β) [MulAction R β] : MulAction R α :=
 
 /-- Transfer `DistribMulAction` across an `Equiv` -/
 @[reducible]
-protected def distribMulAction (e : α ≃ β) [AddCommMonoid β] :
-    letI := Equiv.addCommMonoid e
+protected def distribMulAction (e : α ≃ β) [AddMonoid β] :
+    letI := Equiv.addMonoid e
     ∀ [DistribMulAction R β], DistribMulAction R α := by
   intros
-  letI := Equiv.addCommMonoid e
+  letI := Equiv.addMonoid e
   exact
     ({ Equiv.mulAction R e with
         smul_zero := by simp [zero_def, smul_def]

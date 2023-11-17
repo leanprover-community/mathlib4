@@ -6,6 +6,7 @@ Authors: Kenny Lau, Eric Wieser
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.Logic.Equiv.TransferInstance
 
 #align_import algebra.triv_sq_zero_ext from "leanprover-community/mathlib"@"ce7e9d53d4bbc38065db3b595cd5bd73c323bc1d"
 
@@ -57,8 +58,11 @@ to be the `R`-algebra `R × M` with multiplication given by
 
 It is a square-zero extension because `M^2 = 0`.
 -/
-def TrivSqZeroExt (R : Type u) (M : Type v) :=
-  R × M
+structure TrivSqZeroExt (R : Type u) (M : Type v) :=
+  /-- The canonical projection `TrivSqZeroExt R M → R`. -/
+  fst : R
+  /-- The canonical projection `TrivSqZeroExt R M → M`. -/
+  snd : M
 #align triv_sq_zero_ext TrivSqZeroExt
 
 -- mathport name: exprtsze
@@ -76,37 +80,28 @@ variable {R : Type u} {M : Type v}
 
 /-- The canonical inclusion `R → TrivSqZeroExt R M`. -/
 def inl [Zero M] (r : R) : tsze R M :=
-  (r, 0)
+  ⟨r, 0⟩
 #align triv_sq_zero_ext.inl TrivSqZeroExt.inl
 
 /-- The canonical inclusion `M → TrivSqZeroExt R M`. -/
 def inr [Zero R] (m : M) : tsze R M :=
-  (0, m)
+  ⟨0, m⟩
 #align triv_sq_zero_ext.inr TrivSqZeroExt.inr
 
-/-- The canonical projection `TrivSqZeroExt R M → R`. -/
-def fst (x : tsze R M) : R :=
-  x.1
 #align triv_sq_zero_ext.fst TrivSqZeroExt.fst
-
-/-- The canonical projection `TrivSqZeroExt R M → M`. -/
-def snd (x : tsze R M) : M :=
-  x.2
 #align triv_sq_zero_ext.snd TrivSqZeroExt.snd
 
-@[simp]
-theorem fst_mk (r : R) (m : M) : fst (r, m) = r :=
+theorem fst_mk (r : R) (m : M) : fst ⟨r, m⟩ = r :=
   rfl
 #align triv_sq_zero_ext.fst_mk TrivSqZeroExt.fst_mk
 
-@[simp]
-theorem snd_mk (r : R) (m : M) : snd (r, m) = m :=
+theorem snd_mk (r : R) (m : M) : snd ⟨r, m⟩ = m :=
   rfl
 #align triv_sq_zero_ext.snd_mk TrivSqZeroExt.snd_mk
 
 @[ext]
-theorem ext {x y : tsze R M} (h1 : x.fst = y.fst) (h2 : x.snd = y.snd) : x = y :=
-  Prod.ext h1 h2
+theorem ext {x y : tsze R M} (h1 : x.fst = y.fst) (h2 : x.snd = y.snd) : x = y := by
+  cases x; cases y; congr
 #align triv_sq_zero_ext.ext TrivSqZeroExt.ext
 
 section
@@ -175,72 +170,86 @@ end Basic
 
 Additive operators and scalar multiplication operate elementwise. -/
 
-
 section Additive
 
 variable {T : Type*} {S : Type*} {R : Type u} {M : Type v}
 
+/-- `TrivSqZeroExt R M` has the same additive structure as a product -/
+@[simps]
+def equivProd : tsze R M ≃ R × M where
+  toFun t := (t.1, t.2)
+  invFun p := ⟨p.1, p.2⟩
+  left_inv _t := rfl
+  right_inv _p := rfl
+
+
 instance inhabited [Inhabited R] [Inhabited M] : Inhabited (tsze R M) :=
-  instInhabitedProd
+  equivProd.inhabited
 
 instance zero [Zero R] [Zero M] : Zero (tsze R M) :=
-  Prod.instZero
+  equivProd.zero
 
 instance add [Add R] [Add M] : Add (tsze R M) :=
-  Prod.instAdd
+  equivProd.add
 
 instance sub [Sub R] [Sub M] : Sub (tsze R M) :=
-  Prod.instSub
+  equivProd.sub
 
 instance neg [Neg R] [Neg M] : Neg (tsze R M) :=
-  Prod.instNeg
+  equivProd.Neg
 
 instance addSemigroup [AddSemigroup R] [AddSemigroup M] : AddSemigroup (tsze R M) :=
-  Prod.instAddSemigroup
+  equivProd.addSemigroup
 
 instance addZeroClass [AddZeroClass R] [AddZeroClass M] : AddZeroClass (tsze R M) :=
-  Prod.instAddZeroClass
+  equivProd.addZeroClass
 
 instance addMonoid [AddMonoid R] [AddMonoid M] : AddMonoid (tsze R M) :=
-  Prod.instAddMonoid
+  equivProd.addMonoid
 
 instance addGroup [AddGroup R] [AddGroup M] : AddGroup (tsze R M) :=
-  Prod.instAddGroup
+  equivProd.addGroup
 
 instance addCommSemigroup [AddCommSemigroup R] [AddCommSemigroup M] : AddCommSemigroup (tsze R M) :=
-  Prod.instAddCommSemigroup
+  equivProd.addCommSemigroup
 
 instance addCommMonoid [AddCommMonoid R] [AddCommMonoid M] : AddCommMonoid (tsze R M) :=
-  Prod.instAddCommMonoid
+  equivProd.addCommMonoid
 
 instance addCommGroup [AddCommGroup R] [AddCommGroup M] : AddCommGroup (tsze R M) :=
-  Prod.instAddCommGroup
+  equivProd.addCommGroup
 
 instance smul [SMul S R] [SMul S M] : SMul S (tsze R M) :=
-  Prod.smul
+  equivProd.smul _
 
 instance isScalarTower [SMul T R] [SMul T M] [SMul S R] [SMul S M] [SMul T S]
     [IsScalarTower T S R] [IsScalarTower T S M] : IsScalarTower T S (tsze R M) :=
-  Prod.isScalarTower
+  equivProd.isScalarTower _ _
 
 instance smulCommClass [SMul T R] [SMul T M] [SMul S R] [SMul S M]
     [SMulCommClass T S R] [SMulCommClass T S M] : SMulCommClass T S (tsze R M) :=
-  Prod.smulCommClass
+  equivProd.smulCommClass _ _
 
 instance isCentralScalar [SMul S R] [SMul S M] [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsCentralScalar S R]
     [IsCentralScalar S M] : IsCentralScalar S (tsze R M) :=
-  Prod.isCentralScalar
+  equivProd.isCentralScalar _
 
 instance mulAction [Monoid S] [MulAction S R] [MulAction S M] : MulAction S (tsze R M) :=
-  Prod.mulAction
+  equivProd.mulAction _
 
 instance distribMulAction [Monoid S] [AddMonoid R] [AddMonoid M]
     [DistribMulAction S R] [DistribMulAction S M] : DistribMulAction S (tsze R M) :=
-  Prod.distribMulAction
+  equivProd.distribMulAction S
 
 instance module [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [Module S M] :
     Module S (tsze R M) :=
-  Prod.instModule
+  equivProd.module S
+
+variable (S R M) in
+/-- `TrivSqZeroExt.equivProd` as a linear equivalence. -/
+@[simps! apply symm_apply]
+def linearEquivProd [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [Module S M] :
+    tsze R M ≃ₗ[S] R × M := equivProd.linearEquiv S
 
 @[simp]
 theorem fst_zero [Zero R] [Zero M] : (0 : tsze R M).fst = 0 :=
@@ -292,14 +301,26 @@ theorem snd_smul [SMul S R] [SMul S M] (s : S) (x : tsze R M) : (s • x).snd = 
   rfl
 #align triv_sq_zero_ext.snd_smul TrivSqZeroExt.snd_smul
 
+variable (R M) in
+/-- `TrivSqZeroExt.fst` as an `AddMonoidHom` -/
+@[simps]
+def fstAddHom [AddZeroClass R] [AddZeroClass M] : tsze R M →+ R where
+  toFun := fst; map_zero' := fst_zero; map_add' := fst_add
+
+variable (R M) in
+/-- `TrivSqZeroExt.snd` as an `AddMonoidHom` -/
+@[simps]
+def sndAddHom [AddZeroClass R] [AddZeroClass M] : tsze R M →+ M where
+  toFun := snd; map_zero' := snd_zero; map_add' := snd_add
+
 theorem fst_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → tsze R M) :
     (∑ i in s, f i).fst = ∑ i in s, (f i).fst :=
-  Prod.fst_sum
+  map_sum (fstAddHom R M) _ _
 #align triv_sq_zero_ext.fst_sum TrivSqZeroExt.fst_sum
 
 theorem snd_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → tsze R M) :
     (∑ i in s, f i).snd = ∑ i in s, (f i).snd :=
-  Prod.snd_sum
+  map_sum (sndAddHom R M) _ _
 #align triv_sq_zero_ext.snd_sum TrivSqZeroExt.snd_sum
 
 section
@@ -334,9 +355,15 @@ theorem inl_smul [Monoid S] [AddMonoid M] [SMul S R] [DistribMulAction S M] (s :
   ext rfl (smul_zero s).symm
 #align triv_sq_zero_ext.inl_smul TrivSqZeroExt.inl_smul
 
+variable (R) in
+/-- `TrivSqZeroExt.inl` as an `AddMonoidHom` -/
+@[simps]
+def inlAddHom [AddZeroClass R] [AddZeroClass M] : R →+ tsze R M where
+  toFun := inl; map_zero' := inl_zero _; map_add' := inl_add _
+
 theorem inl_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → R) :
     (inl (∑ i in s, f i) : tsze R M) = ∑ i in s, inl (f i) :=
-  map_sum (LinearMap.inl ℕ _ _) _ _
+  map_sum (inlAddHom _ _) _ _
 #align triv_sq_zero_ext.inl_sum TrivSqZeroExt.inl_sum
 
 end
@@ -373,9 +400,15 @@ theorem inr_smul [Zero R] [Zero S] [SMulWithZero S R] [SMul S M] (r : S) (m : M)
   ext (smul_zero _).symm rfl
 #align triv_sq_zero_ext.inr_smul TrivSqZeroExt.inr_smul
 
+variable (M) in
+/-- `TrivSqZeroExt.inr` as an `AddMonoidHom` -/
+@[simps]
+def inrAddHom [AddZeroClass R] [AddZeroClass M] : M →+ tsze R M where
+  toFun := inr; map_zero' := inr_zero R; map_add' := inr_add R
+
 theorem inr_sum {ι} [AddCommMonoid R] [AddCommMonoid M] (s : Finset ι) (f : ι → M) :
     (inr (∑ i in s, f i) : tsze R M) = ∑ i in s, inr (f i) :=
-  map_sum (LinearMap.inr ℕ _ _) _ _
+  map_sum (inrAddHom _ _) _ _
 #align triv_sq_zero_ext.inr_sum TrivSqZeroExt.inr_sum
 
 end
@@ -394,26 +427,26 @@ theorem ind {R M} [AddZeroClass R] [AddZeroClass M] {P : TrivSqZeroExt R M → P
   inl_fst_add_inr_snd_eq x ▸ h x.1 x.2
 #align triv_sq_zero_ext.ind TrivSqZeroExt.ind
 
-/-- This cannot be marked `@[ext]` as it ends up being used instead of `LinearMap.prod_ext` when
-working with `R × M`. -/
+@[ext]
 theorem linearMap_ext {N} [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [AddCommMonoid N]
     [Module S R] [Module S M] [Module S N] ⦃f g : tsze R M →ₗ[S] N⦄
     (hl : ∀ r, f (inl r) = g (inl r)) (hr : ∀ m, f (inr m) = g (inr m)) : f = g :=
-  LinearMap.prod_ext (LinearMap.ext hl) (LinearMap.ext hr)
+  (LinearMap.cancel_right (linearEquivProd S R M).symm.surjective).mp <|
+    LinearMap.prod_ext (LinearMap.ext hl) (LinearMap.ext hr)
 #align triv_sq_zero_ext.linear_map_ext TrivSqZeroExt.linearMap_ext
 
 variable (R M)
 
 /-- The canonical `R`-linear inclusion `M → TrivSqZeroExt R M`. -/
 @[simps apply]
-def inrHom [Semiring R] [AddCommMonoid M] [Module R M] : M →ₗ[R] tsze R M :=
-  { LinearMap.inr R R M with toFun := inr }
+def inrHom [Semiring R] [AddCommMonoid M] [Module R M] : M →ₗ[R] tsze R M where
+  toFun := inr; __ := inrAddHom _ _; map_smul' := inr_smul _
 #align triv_sq_zero_ext.inr_hom TrivSqZeroExt.inrHom
 
 /-- The canonical `R`-linear projection `TrivSqZeroExt R M → M`. -/
 @[simps apply]
-def sndHom [Semiring R] [AddCommMonoid M] [Module R M] : tsze R M →ₗ[R] M :=
-  { LinearMap.snd _ _ _ with toFun := snd }
+def sndHom [Semiring R] [AddCommMonoid M] [Module R M] : tsze R M →ₗ[R] M where
+  toFun := snd; __ := sndAddHom _ _; map_smul' := snd_smul
 #align triv_sq_zero_ext.snd_hom TrivSqZeroExt.sndHom
 
 end Additive
@@ -426,10 +459,10 @@ section Mul
 variable {R : Type u} {M : Type v}
 
 instance one [One R] [Zero M] : One (tsze R M) :=
-  ⟨(1, 0)⟩
+  ⟨⟨1, 0⟩⟩
 
 instance mul [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] : Mul (tsze R M) :=
-  ⟨fun x y => (x.1 * y.1, x.1 • y.2 + op y.1 • x.2)⟩
+  ⟨fun x y => ⟨x.1 * y.1, x.1 • y.2 + op y.1 • x.2⟩⟩
 
 @[simp]
 theorem fst_one [One R] [Zero M] : (1 : tsze R M).fst = 1 :=
@@ -806,6 +839,9 @@ def liftAux (f : M →ₗ[R'] A) (hf : ∀ x y, f x * f y = 0) : tsze R' M →�
     (show algebraMap R' A 1 + f (0 : M) = 1 by rw [map_zero, map_one, add_zero])
     (TrivSqZeroExt.ind fun r₁ m₁ =>
       TrivSqZeroExt.ind fun r₂ m₂ => by
+        dsimp
+        -- porting note: these are dsimp lemmas, but there is a simp bug that makes them not apply
+        simp only [(LinearMap.add_apply), (LinearMap.comp_apply)]
         dsimp
         simp only [add_zero, zero_add, add_mul, mul_add, smul_mul_smul, hf, smul_zero,
           op_smul_eq_smul]
