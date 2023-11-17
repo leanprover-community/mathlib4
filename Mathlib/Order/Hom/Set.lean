@@ -190,7 +190,7 @@ def Function.Embedding.setEmbedding (f : α ↪ β) : Set α ↪ Set β where
   inj' := Set.image_injective.2 f.injective
 
 @[simp] theorem Function.Embedding.setEmbedding_apply (f : α ↪ β) (s : Set α) :
-  f.setEmbedding s = f '' s := rfl
+    f.setEmbedding s = f '' s := rfl
 
 /-- An injection from `α` to `β` gives an order embedding from `Set α` to `Set β`  -/
 def Function.Embedding.setOrderEmbedding (f : α ↪ β) : Set α ↪o Set β where
@@ -198,10 +198,10 @@ def Function.Embedding.setOrderEmbedding (f : α ↪ β) : Set α ↪o Set β wh
   map_rel_iff' := fun {_} {_} ↦ Set.image_subset_image_iff f.injective
 
 @[simp] theorem Function.Embedding.setOrderEmbedding_apply (f : α ↪ β) (s : Set α) :
-  f.setOrderEmbedding s = f '' s := rfl
+    f.setOrderEmbedding s = f '' s := rfl
 
 @[simp] theorem Function.Embedding.setOrderEmbedding_toEmbedding (f : α ↪ β) :
-  f.setOrderEmbedding.toEmbedding = f.setEmbedding := rfl
+    f.setOrderEmbedding.toEmbedding = f.setEmbedding := rfl
 
 /-- Given `s : Set α`, the type `Set s` is order-isomorphic to the type of subsets of `s`. -/
 def Set.subtypeOrderIso (s : Set α) : Set s ≃o {t : Set α // t ⊆ s} where
@@ -212,10 +212,10 @@ def Set.subtypeOrderIso (s : Set α) : Set s ≃o {t : Set α // t ⊆ s} where
   map_rel_iff' := by simp [preimage_image_eq _ Subtype.val_injective]
 
 theorem Set.subtypeOrderIso_apply (s : Set α) (t : Set s) :
-  (s.subtypeOrderIso t : Set α) = (fun (x : s) ↦ (x : α)) '' t := rfl
+    (s.subtypeOrderIso t : Set α) = (fun (x : s) ↦ (x : α)) '' t := rfl
 
 theorem Set.subtypeOrderIso_apply_symm {s : Set α} (t : {r : Set α // r ⊆ s}) :
-  s.subtypeOrderIso.symm t = (fun (x : s) ↦ (x : α)) ⁻¹' t := rfl
+    s.subtypeOrderIso.symm t = (fun (x : s) ↦ (x : α)) ⁻¹' t := rfl
 
 @[simp] theorem Set.subtypeOrderIso_subset_iff (s : Set α) {r r' : Set s} :
     (s.subtypeOrderIso r : Set α) ⊆ s.subtypeOrderIso r' ↔ r ⊆ r' :=
