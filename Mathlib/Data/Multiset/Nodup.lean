@@ -144,11 +144,11 @@ theorem Nodup.map {f : α → β} {s : Multiset α} (hf : Injective f) : Nodup s
 
 theorem nodup_map_iff_of_inj_on {f : α → β} (d : ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y) :
     Nodup (map f s) ↔ Nodup s :=
-  ⟨Quot.induction_on s (fun _ ↦ List.Nodup.of_map _), fun h => h.map_on d⟩
+  ⟨Nodup.of_map _, fun h => h.map_on d⟩
 
 theorem nodup_map_iff_of_injective {f : α → β} (d : Function.Injective f) :
     Nodup (map f s) ↔ Nodup s :=
-  ⟨Quot.induction_on s (fun _ ↦ List.Nodup.of_map _), fun h => h.map d⟩
+  ⟨Nodup.of_map _, fun h => h.map d⟩
 
 theorem inj_on_of_nodup_map {f : α → β} {s : Multiset α} :
     Nodup (map f s) → ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y :=
