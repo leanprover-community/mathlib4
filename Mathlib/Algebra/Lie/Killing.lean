@@ -201,8 +201,6 @@ lemma traceForm_eq_sum_weightSpaceOf (z : L) :
   have hds := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
     (LieSubmodule.independent_iff_coe_toSubmodule.mp <| independent_weightSpaceOf R L M z)
     (IsTriangularizable.iSup_eq_top z)
-  have : ∀ (t : R), Module.Free R (weightSpaceOf M t z) :=
-    fun t ↦ Module.free_of_finite_type_torsion_free'
   simp only [LinearMap.coeFn_sum, Finset.sum_apply, traceForm_apply_apply,
     LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
   exact Finset.sum_congr (by simp) (fun χ _ ↦ rfl)
@@ -225,11 +223,12 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm :
   rw [traceForm_apply_apply, LinearMap.trace_comp_eq_mul_of_commute_of_isNilpotent χ h_comm hg, hz,
     mul_zero]
 
+/-- A nilpotent Lie algebra with a representation whose trace form is non-singular is Abelian. -/
 lemma isLieAbelian_of_ker_traceForm_eq_bot (h : LinearMap.ker (traceForm R L M) = ⊥) :
     IsLieAbelian L := by
-  simpa only [lowerCentralSeries_inf_maxTrivSubmodule_eq_bot_iff, h, le_bot_iff,
-    LieIdeal.coe_to_lieSubalgebra_to_submodule, LieSubmodule.coeSubmodule_eq_bot_iff] using
-    lowerCentralSeries_one_inf_center_le_ker_traceForm R L M
+  simpa only [← disjoint_lowerCentralSeries_maxTrivSubmodule_iff R L L, disjoint_iff_inf_le,
+    LieIdeal.coe_to_lieSubalgebra_to_submodule, LieSubmodule.coeSubmodule_eq_bot_iff, h]
+    using lowerCentralSeries_one_inf_center_le_ker_traceForm R L M
 
 end LieModule
 

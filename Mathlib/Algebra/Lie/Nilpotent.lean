@@ -406,8 +406,13 @@ theorem lowerCentralSeriesLast_le_of_not_isTrivial [IsNilpotent R L M] (h : ¬ I
   · contradiction
   · exact antitone_lowerCentralSeries _ _ _ (Nat.lt_succ.mp h)
 
-lemma lowerCentralSeries_inf_maxTrivSubmodule_eq_bot_iff [IsNilpotent R L M] :
-    lowerCentralSeries R L M 1 ⊓ maxTrivSubmodule R L M = ⊥ ↔ IsTrivial L M := by
+/-- For a nilpotent Lie module `M` of a Lie algebra `L`, the first term in the lower central series
+of `M` contains a non-zero element on which `L` acts trivially unless the entire action is trivial.
+
+Taking `M = L`, this provides a useful characterisation of Abelian-ness for nilpotent Lie
+algebras. -/
+lemma disjoint_lowerCentralSeries_maxTrivSubmodule_iff [IsNilpotent R L M] :
+    Disjoint (lowerCentralSeries R L M 1) (maxTrivSubmodule R L M) ↔ IsTrivial L M := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp⟩
   nontriviality M
   by_contra contra
@@ -416,7 +421,7 @@ lemma lowerCentralSeries_inf_maxTrivSubmodule_eq_bot_iff [IsNilpotent R L M] :
       lowerCentralSeriesLast_le_max_triv R L M⟩
   suffices ¬ Nontrivial (lowerCentralSeriesLast R L M) by
     exact this (nontrivial_lowerCentralSeriesLast R L M)
-  rw [h, le_bot_iff] at this
+  rw [h.eq_bot, le_bot_iff] at this
   exact this ▸ not_nontrivial _
 
 theorem nontrivial_max_triv_of_isNilpotent [Nontrivial M] [IsNilpotent R L M] :
