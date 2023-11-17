@@ -633,7 +633,7 @@ theorem symm_symm (e : L₁ ≃ₗ⁅R⁆ L₂) : e.symm.symm = e := by
   rfl
 #align lie_equiv.symm_symm LieEquiv.symm_symm
 
-theorem symm_bijective : Function.Bijective (LieEquiv.symm : L₁ ≃ₗ⁅R⁆ L₂ → L₂ ≃ₗ⁅R⁆ L₁) :=
+theorem symm_bijective : Function.Bijective (LieEquiv.symm : (L₁ ≃ₗ⁅R⁆ L₂) → L₂ ≃ₗ⁅R⁆ L₁) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
