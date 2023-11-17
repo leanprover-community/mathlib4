@@ -19,8 +19,6 @@ It satisfies the following change of variables formula (see `integral_comp_polar
 
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section Real
 
 open Real Set MeasureTheory

@@ -32,8 +32,6 @@ for `x ∈ K`, we have `Π_w ‖x‖_w = |norm(x)|` where the product is over th
 number field, embeddings, places, infinite places
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open scoped Classical
 
 namespace NumberField.Embeddings
@@ -496,7 +494,7 @@ theorem card_complex_embeddings :
     · rwa [Subtype.mk_eq_mk, ← Subtype.ext_iff, ← Subtype.ext_iff] at h
     · refine ⟨⟨⟨φ, not_isReal_of_mk_isComplex (hφ.symm ▸ hw)⟩, ?_⟩, rfl⟩
       rwa [Subtype.ext_iff, mkComplex_coe]
-  · simp_rw [mult, not_isReal_iff_isComplex.mpr hw]
+  · simp_rw [mult, not_isReal_iff_isComplex.mpr hw, ite_false]
 #align number_field.infinite_place.card_complex_embeddings NumberField.InfinitePlace.card_complex_embeddings
 
 theorem card_add_two_mul_card_eq_rank :

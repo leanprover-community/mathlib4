@@ -107,8 +107,8 @@ instance : Category.{v₁} (Mat_ C) where
   Hom := Hom
   id := Hom.id
   comp f g := f.comp g
-  id_comp f := by simp [dite_comp]
-  comp_id f := by simp [comp_dite]
+  id_comp f := by simp (config := { unfoldPartialApp := true }) [dite_comp]
+  comp_id f := by simp (config := { unfoldPartialApp := true }) [comp_dite]
   assoc f g h := by
     apply DMatrix.ext
     intros

@@ -24,8 +24,6 @@ by using `Module R (Additive M)` in its place, especially since this already has
 `R = ℕ` and `R = ℤ`.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 instance : SMul (ZMod 2) (Additive ℤˣ) where
   smul z au := .ofMul <| Additive.toMul au ^ z.val
 

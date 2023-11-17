@@ -109,7 +109,7 @@ instance : Pow { x : R // 0 < x } ℕ :=
 
 @[simp]
 theorem val_pow (x : { x : R // 0 < x }) (n : ℕ) :
-    (x ^ n : R) = (x : R) ^ n :=
+    ↑(x ^ n) = (x : R) ^ n :=
   rfl
 #align positive.coe_pow Positive.val_pow
 

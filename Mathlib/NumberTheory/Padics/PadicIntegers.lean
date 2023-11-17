@@ -357,7 +357,8 @@ theorem norm_int_lt_one_iff_dvd (k : ℤ) : ‖(k : ℤ_[p])‖ < 1 ↔ (p : ℤ
 
 theorem norm_int_le_pow_iff_dvd {k : ℤ} {n : ℕ} :
     ‖(k : ℤ_[p])‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ (p ^ n : ℤ) ∣ k :=
-  suffices ‖(k : ℚ_[p])‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ ↑(p ^ n) ∣ k by simpa [norm_int_cast_eq_padic_norm]
+  suffices ‖(k : ℚ_[p])‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ (p ^ n : ℤ) ∣ k by
+    simpa [norm_int_cast_eq_padic_norm]
   padicNormE.norm_int_le_pow_iff_dvd _ _
 #align padic_int.norm_int_le_pow_iff_dvd PadicInt.norm_int_le_pow_iff_dvd
 

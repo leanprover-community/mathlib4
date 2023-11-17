@@ -326,7 +326,7 @@ total mass. -/
 def normalize : ProbabilityMeasure Ω :=
   if zero : μ.mass = 0 then ⟨Measure.dirac ‹Nonempty Ω›.some, Measure.dirac.isProbabilityMeasure⟩
   else
-    { val := μ.mass⁻¹ • μ
+    { val := ↑(μ.mass⁻¹ • μ)
       property := by
         refine' ⟨_⟩
         -- porting note: paying the price that this isn't `simp` lemma now.
