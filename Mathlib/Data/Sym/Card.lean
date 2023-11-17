@@ -171,7 +171,7 @@ theorem card_image_offDiag (s : Finset α) :
 
 theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card α := by
   convert card_image_diag (univ : Finset α)
-  simp_rw [Quotient.mk', ← Quotient.mk''_eq_mk] -- Porting note: Added `simp_rw`
+  simp_rw [Quotient.mk'_eq_mk, ← Quotient.mk''_eq_mk]
   rw [Fintype.card_of_subtype, ← filter_image_quotient_mk''_isDiag]
   rintro x
   rw [mem_filter, univ_product_univ, mem_image]
@@ -182,7 +182,7 @@ theorem card_subtype_diag [Fintype α] : card { a : Sym2 α // a.IsDiag } = card
 theorem card_subtype_not_diag [Fintype α] :
     card { a : Sym2 α // ¬a.IsDiag } = (card α).choose 2 := by
   convert card_image_offDiag (univ : Finset α)
-  simp_rw [Quotient.mk', ← Quotient.mk''_eq_mk] -- Porting note: Added `simp_rw`
+  simp_rw [Quotient.mk'_eq_mk, ← Quotient.mk''_eq_mk] -- Porting note: Added `simp_rw`
   rw [Fintype.card_of_subtype, ← filter_image_quotient_mk''_not_isDiag]
   rintro x
   rw [mem_filter, univ_product_univ, mem_image]
