@@ -119,7 +119,7 @@ theorem symm_symm (x : I) : σ (σ x) = x :=
 #align unit_interval.symm_symm unitInterval.symm_symm
 
 theorem symm_bijective : Function.Bijective (symm : I → I) :=
-  Equiv.bijective ⟨symm, symm, symm_symm, symm_symm⟩
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
 theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=

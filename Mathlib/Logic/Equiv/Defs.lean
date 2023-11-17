@@ -331,7 +331,7 @@ theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x :
 #align equiv.symm_symm Equiv.symm_symm
 
 theorem symm_bijective : Function.Bijective (Equiv.symm : α ≃ β → β ≃ α) :=
-Equiv.bijective ⟨Equiv.symm, Equiv.symm, symm_symm, symm_symm⟩
+Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp] theorem trans_refl (e : α ≃ β) : e.trans (Equiv.refl β) = e := by cases e; rfl
 #align equiv.trans_refl Equiv.trans_refl

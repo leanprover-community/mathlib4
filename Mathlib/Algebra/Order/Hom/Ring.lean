@@ -506,8 +506,7 @@ theorem symm_trans_self (e : α ≃+*o β) : e.symm.trans e = OrderRingIso.refl 
 #align order_ring_iso.symm_trans_self OrderRingIso.symm_trans_self
 
 theorem symm_bijective : Bijective (OrderRingIso.symm : α ≃+*o β → β ≃+*o α) :=
-  ⟨fun f g h => f.symm_symm.symm.trans <| (congr_arg OrderRingIso.symm h).trans g.symm_symm,
-    fun f => ⟨f.symm, f.symm_symm⟩⟩
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 #align order_ring_iso.symm_bijective OrderRingIso.symm_bijective
 
 end LE

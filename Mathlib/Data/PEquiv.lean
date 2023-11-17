@@ -136,7 +136,7 @@ theorem symm_symm (f : α ≃. β) : f.symm.symm = f := by cases f; rfl
 #align pequiv.symm_symm PEquiv.symm_symm
 
 theorem symm_bijective : Function.Bijective (symm : α ≃. β → β ≃. α) :=
-  Equiv.bijective ⟨PEquiv.symm, PEquiv.symm, symm_symm, symm_symm⟩
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 theorem symm_injective : Function.Injective (@PEquiv.symm α β) :=
   symm_bijective.injective
