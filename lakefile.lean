@@ -55,11 +55,9 @@ require proofwidgets from git "https://github.com/leanprover-community/ProofWidg
 lean_lib Cache where
   moreLeanArgs := moreLeanArgs
   weakLeanArgs := weakLeanArgs
-  roots := #[`Cache]
 
 /-- `lake exe cache get` retrieves precompiled `.olean` files from a central server. -/
-lean_exe cache where
-  root := `Cache.Main
+lean_exe cache
 
 /--
 When a package depending on Mathlib updates its dependencies,
@@ -89,21 +87,16 @@ post_update pkg do
     if exitCode ≠ 0 then
       logError s!"{pkg.name}: failed to fetch cache"
 
-lean_lib MathlibExtras where
-  roots := #[`MathlibExtras]
+lean_lib MathlibExtras
 
-lean_lib Archive where
-  roots := #[`Archive]
+lean_lib Archive
 
-lean_lib Counterexamples where
-  roots := #[`Counterexamples]
+lean_lib Counterexamples
 
-lean_lib ImportGraph where
-  roots := #[`ImportGraph]
+lean_lib ImportGraph
 
 /-- `lake exe graph` constructs import graphs in `.dot` or graphical formats. -/
 lean_exe graph where
-  root := `ImportGraph.Main
   supportInterpreter := true
 
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
