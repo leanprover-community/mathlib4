@@ -282,7 +282,7 @@ protected theorem coe_sub {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing 
 
 @[simp, norm_cast]
 theorem coe_smul [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] (r : R') (x : S) :
-    (r • x : A) = r • (x : A) :=
+    ↑(r • x) = r • (x : A) :=
   rfl
 
 protected theorem coe_eq_zero {x : S} : (x : A) = 0 ↔ x = 0 :=
@@ -1024,7 +1024,7 @@ instance instNonUnitalCommRing {A : Type*} [NonUnitalRing A] [StarRing A] [Modul
   NonUnitalSubalgebra.center.instNonUnitalCommRing
 
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
-  Iff.rfl
+  Subsemigroup.mem_center_iff
 
 end Center
 

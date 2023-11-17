@@ -362,11 +362,10 @@ variable (p)
 
 theorem gcd_mul_addOrderOf_div_eq {n : ℕ} (m : ℕ) (hn : 0 < n) :
     m.gcd n * addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by
-  rw [mul_comm_div, ← nsmul_eq_mul, coe_nsmul, addOrderOf_nsmul'']
+  rw [mul_comm_div, ← nsmul_eq_mul, coe_nsmul, IsOfFinAddOrder.addOrderOf_nsmul]
   · rw [addOrderOf_period_div hn, Nat.gcd_comm, Nat.mul_div_cancel']
     exact n.gcd_dvd_left m
-  · rw [← addOrderOf_pos_iff, addOrderOf_period_div hn]
-    exact hn
+  · rwa [← addOrderOf_pos_iff, addOrderOf_period_div hn]
 #align add_circle.gcd_mul_add_order_of_div_eq AddCircle.gcd_mul_addOrderOf_div_eq
 
 variable {p}
@@ -423,7 +422,7 @@ theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
 
 theorem exists_gcd_eq_one_of_isOfFinAddOrder {u : AddCircle p} (h : IsOfFinAddOrder u) :
     ∃ m : ℕ, m.gcd (addOrderOf u) = 1 ∧ m < addOrderOf u ∧ ↑((m : 𝕜) / addOrderOf u * p) = u :=
-  let ⟨m, hl, hg, he⟩ := (addOrderOf_eq_pos_iff <| addOrderOf_pos' h).1 rfl
+  let ⟨m, hl, hg, he⟩ := (addOrderOf_eq_pos_iff h.addOrderOf_pos).1 rfl
   ⟨m, hg, hl, he⟩
 #align add_circle.exists_gcd_eq_one_of_is_of_fin_add_order AddCircle.exists_gcd_eq_one_of_isOfFinAddOrder
 

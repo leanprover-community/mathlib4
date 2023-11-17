@@ -2,7 +2,7 @@
 Tests for norm_cast
 -/
 
-import Mathlib.Tactic.NormCast
+import Std.Tactic.NormCast
 import Mathlib.Tactic.Ring
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Complex.Basic
@@ -17,8 +17,8 @@ variable (an bn cn dn : ℕ) (az bz cz dz : ℤ)
 variable (aq bq cq dq : ℚ)
 variable (ar br cr dr : ℝ) (ac bc cc dc : ℂ)
 
-example : (an : ℤ) = bn → an = bn := by intro h; exact_mod_cast h
-example : an = bn → (an : ℤ) = bn := by intro h; exact_mod_cast h
+example : (an : ℤ) = bn → an = bn := by intro h; exact mod_cast h
+example : an = bn → (an : ℤ) = bn := by intro h; exact mod_cast h
 example : az = bz ↔ (az : ℚ) = bz := by norm_cast
 
 example : (aq : ℝ) = br ↔ (aq : ℂ) = br := by norm_cast
@@ -69,11 +69,11 @@ example : p 42 := by
   guard_target = p 42
   exact ⟨⟩
 
-example (h : (an : ℝ) = 0) : an = 0 := by exact_mod_cast h
-example (h : (an : ℝ) = 42) : an = 42 := by exact_mod_cast h
-example (h : (an + 42) ≠ 42) : (an : ℝ) + 42 ≠ 42 := by exact_mod_cast h
+example (h : (an : ℝ) = 0) : an = 0 := mod_cast h
+example (h : (an : ℝ) = 42) : an = 42 := mod_cast h
+example (h : (an + 42) ≠ 42) : (an : ℝ) + 42 ≠ 42 := mod_cast h
 
-example (n : ℤ) (h : n + 1 > 0) : ((n + 1 : ℤ) : ℚ) > 0 := by exact_mod_cast h
+example (n : ℤ) (h : n + 1 > 0) : ((n + 1 : ℤ) : ℚ) > 0 := mod_cast h
 
 -- testing the heuristic
 example (h : bn ≤ an) : an - bn = 1 ↔ (an - bn : ℤ) = 1 := by norm_cast
@@ -105,8 +105,7 @@ instance [Mul α] : MulZeroClass (WithZero α) where
 @[norm_cast] lemma mul_coe [Mul α] (a b : α) :
   ((a * b : α) : WithZero α) = (a : WithZero α) * b := rfl
 
-example [Mul α] [One α] (x y : α) (h : (x : WithZero α) * y = 1) : x * y = 1 := by
-  exact_mod_cast h
+example [Mul α] [One α] (x y : α) (h : (x : WithZero α) * y = 1) : x * y = 1 := mod_cast h
 
 end hidden
 
