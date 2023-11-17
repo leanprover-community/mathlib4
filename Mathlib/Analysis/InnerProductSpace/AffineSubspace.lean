@@ -51,8 +51,8 @@ lemma mem_orthogonal' (s : AffineSubspace 𝕜 P) (b c : P) :
   simp_rw [mem_orthogonal, inner_eq_zero_symm]
 
 /-- `orthogonal` reverses the `≤` ordering of two affine subspaces. -/
-lemma orthogonal_le (s t : AffineSubspace 𝕜 P) (b : P) (h : s ≤ t)
-    : t.orthogonal b ≤ s.orthogonal b := by
+lemma orthogonal_le (s t : AffineSubspace 𝕜 P) (b : P) (h : s ≤ t) :
+    t.orthogonal b ≤ s.orthogonal b := by
   rw [orthogonal, orthogonal, le_def']
   intro p hp
   use p -ᵥ b
@@ -77,8 +77,8 @@ lemma orthogonal_orthogonal_monotone {s t : AffineSubspace 𝕜 P} (b₁ b₂ c 
     exact vsub_vadd _ _
 
 /-- `s` is contained in `(s.orthogonal b).orthogonal c` when `c ∈ s`. -/
-lemma le_orthogonal_orthogonal (s : AffineSubspace 𝕜 P) (b c : P) (hc : c ∈ s)
-    : s ≤ (s.orthogonal b).orthogonal c := by
+lemma le_orthogonal_orthogonal (s : AffineSubspace 𝕜 P) (b c : P) (hc : c ∈ s) :
+    s ≤ (s.orthogonal b).orthogonal c := by
   simp [orthogonal, le_def']
   intros p hp
   exact ⟨ p -ᵥ c
@@ -163,7 +163,7 @@ lemma orthogonal_orthogonal (s : AffineSubspace 𝕜 P) [CompleteSpace s.directi
 /-- Two affine subspaces with `direction` being `CompleteSpace`s are parallel iff their orthogonal
 completements through two points are parallel. -/
 lemma orthogonal_parallel_iff_parallel (s t : AffineSubspace 𝕜 P) [hs : Nonempty s]
-  [ht : Nonempty t] [CompleteSpace s.direction] [CompleteSpace t.direction] (b c : P) :
+    [ht : Nonempty t] [CompleteSpace s.direction] [CompleteSpace t.direction] (b c : P) :
     s ∥ t ↔ orthogonal s b ∥ orthogonal t c := by
   apply Iff.intro
   · exact orthogonal_parallel_of_parallel _ _ _ _
@@ -214,7 +214,7 @@ lemma IsOrtho.mono_right {s t₁ t₂ : AffineSubspace 𝕜 P} (ht : t₂ ≤ t�
     s.IsOrtho t₂ := (h.symm.mono_left ht).symm
 
 lemma IsOrtho.mono {s₁ s₂ t₁ t₂ : AffineSubspace 𝕜 P} (hs : s₂ ≤ s₁) (ht : t₂ ≤ t₁)
-  (h : s₁.IsOrtho t₁) : s₂.IsOrtho t₂ := (h.mono_right ht).mono_left hs
+    (h : s₁.IsOrtho t₁) : s₂.IsOrtho t₂ := (h.mono_right ht).mono_left hs
 
 @[simp]
 lemma isOrtho_self {s : AffineSubspace 𝕜 P} : s.IsOrtho s ↔ s.direction = ⊥ :=
@@ -260,8 +260,8 @@ lemma isOrtho_top_left {s : AffineSubspace 𝕜 P} : IsOrtho ⊤ s ↔ s.directi
   rw [IsOrtho_comm]
   exact isOrtho_top_right
 
-lemma IsOrtho.disjoint_direction {s t : AffineSubspace 𝕜 P} (h : s.IsOrtho t)
-    : Disjoint s.direction t.direction := Submodule.IsOrtho.disjoint h
+lemma IsOrtho.disjoint_direction {s t : AffineSubspace 𝕜 P} (h : s.IsOrtho t) :
+    Disjoint s.direction t.direction := Submodule.IsOrtho.disjoint h
 
 lemma IsOrtho.inf_direction {s t : AffineSubspace 𝕜 P} (h : s.IsOrtho t) :
     (s ⊓ t).direction = ⊥ :=
