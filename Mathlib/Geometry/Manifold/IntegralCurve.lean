@@ -41,12 +41,12 @@ variable
 def ModelWithCorners.IsInteriorPoint (x : M) := extChartAt I x x ∈ interior (extChartAt I x).target
 
 lemma ModelWithCorners.Boundaryless.isOpen_target
-  [I.Boundaryless] {x : M} : IsOpen (extChartAt I x).target := by
+    [I.Boundaryless] {x : M} : IsOpen (extChartAt I x).target := by
 rw [extChartAt_target, ModelWithCorners.Boundaryless.range_eq_univ, Set.inter_univ]
 exact (ModelWithCorners.continuous_symm _).isOpen_preimage _ (LocalHomeomorph.open_target _)
 
 lemma ModelWithCorners.Boundaryless.isInteriorPoint
-  [I.Boundaryless] {x : M} : I.IsInteriorPoint x := by
+    [I.Boundaryless] {x : M} : I.IsInteriorPoint x := by
 rw [ModelWithCorners.IsInteriorPoint,
   IsOpen.interior_eq ModelWithCorners.Boundaryless.isOpen_target]
 exact LocalEquiv.map_source _ (mem_extChartAt_source _ _)
@@ -62,8 +62,6 @@ variable
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] [SmoothManifoldWithCorners I' M']
   {v : (x : M) → TangentSpace I x} {x₀ : M}
   (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) x₀) (t₀ : ℝ)
-
-set_option trace.Meta.Tactic.simp.rewrite true
 
 /-- For any continuously differentiable vector field and any chosen non-boundary point `x₀` on the
   manifold, an integral curve `γ : ℝ → M` exists such that `γ t₀ = x₀` and the tangent vector of `γ`
@@ -153,4 +151,5 @@ rw [tangentBundleCore_coordChange_achart, LocalEquiv.right_inv _ hf3', fderivWit
 lemma exists_integralCurve_of_contMDiff_tangent_section_boundaryless [I.Boundaryless] :
   ∃ ε > (0 : ℝ), ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ ∀ (t : ℝ), t ∈ Set.Ioo (t₀ - ε) (t₀ + ε) →
     HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t))) :=
-exists_integralCurve_of_contMDiff_tangent_section hv _ ModelWithCorners.Boundaryless.isInteriorPoint
+  exists_integralCurve_of_contMDiff_tangent_section hv _
+    ModelWithCorners.Boundaryless.isInteriorPoint
