@@ -30,14 +30,6 @@ lean_lib Mathlib where
   moreLeanArgs := moreLeanArgs
   weakLeanArgs := weakLeanArgs
 
-/-- `lake exe runMathlibLinter` runs the linter on all of Mathlib (or individual files). -/
--- Due to a change in Lake at v4.1.0-rc1, we need to give this a different name
--- than the `lean_exe runLinter` inherited from Std, or we always run that.
--- See https://github.com/leanprover/lean4/issues/2548
-lean_exe runMathlibLinter where
-  root := `scripts.runMathlibLinter
-  supportInterpreter := true
-
 /-- `lake exe checkYaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
 lean_exe checkYaml where
   root := `scripts.checkYaml
@@ -46,7 +38,7 @@ lean_exe checkYaml where
 meta if get_config? doc = some "on" then -- do not download and build doc-gen4 by default
 require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 
-require std from git "https://github.com/leanprover/std4" @ "main"
+require std from git "https://github.com/leanprover/std4" @ "runLinter"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 require aesop from git "https://github.com/leanprover-community/aesop" @ "master"
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
