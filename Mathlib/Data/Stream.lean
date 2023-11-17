@@ -448,7 +448,6 @@ end Map
 noncomputable def iterate (f : α → α) (a : α) : Stream' α where
   get n := f^[n] a
 #align stream.iterate Stream'.iterate
-#align lazy_list.iterates Stream'.iterate
 
 section Iterate
 
@@ -592,7 +591,6 @@ theorem mk_eq_mkComputable : @mk.{u} = @mkComputable.{u} := by
 - `tail (iota n) = iota (n + 1)` -/
 def iota : ℕ → Stream' ℕ :=
   iterate Nat.succ
-#align lazy_list.iota Stream'.iota
 
 /-- The stream of natural numbers. -/
 def nats : Stream' ℕ :=
