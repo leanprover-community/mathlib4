@@ -143,12 +143,12 @@ theorem contractRight_mul_ι (a : M) (b : CliffordAlgebra Q) :
 
 theorem contractLeft_algebraMap_mul (r : R) (b : CliffordAlgebra Q) :
     d⌋(algebraMap _ _ r * b) = algebraMap _ _ r * (d⌋b) := by
-  rw [← Algebra.smul_def, map_smul, Algebra.smul_def, Algebra.smul_def]
+  rw [← Algebra.smul_def, map_smul, Algebra.smul_def]
 #align clifford_algebra.contract_left_algebra_map_mul CliffordAlgebra.contractLeft_algebraMap_mul
 
 theorem contractLeft_mul_algebraMap (a : CliffordAlgebra Q) (r : R) :
     d⌋(a * algebraMap _ _ r) = d⌋a * algebraMap _ _ r := by
-  rw [← Algebra.commutes, contractLeft_algebraMap_mul, Algebra.commutes, Algebra.commutes]
+  rw [← Algebra.commutes, contractLeft_algebraMap_mul, Algebra.commutes]
 #align clifford_algebra.contract_left_mul_algebra_map CliffordAlgebra.contractLeft_mul_algebraMap
 
 theorem contractRight_algebraMap_mul (r : R) (b : CliffordAlgebra Q) :

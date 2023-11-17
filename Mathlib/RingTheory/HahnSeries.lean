@@ -1202,7 +1202,7 @@ theorem ofPowerSeries_X_pow {R} [CommSemiring R] (n : ℕ) :
   induction' n with n ih
   · simp
     rfl
-  · rw [pow_succ, pow_succ, ih, ofPowerSeries_X, mul_comm, single_mul_single, one_mul,
+  · rw [pow_succ, ih, ofPowerSeries_X, mul_comm, single_mul_single, one_mul,
       Nat.cast_succ, add_comm]
 #align hahn_series.of_power_series_X_pow HahnSeries.ofPowerSeries_X_pow
 

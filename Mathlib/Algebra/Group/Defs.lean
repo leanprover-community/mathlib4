@@ -40,7 +40,7 @@ actions and register the following instances:
 
 -/
 
-set_option autoImplicit true
+universe u v w
 
 open Function
 
@@ -93,12 +93,10 @@ attribute [to_additive existing (reorder := 1 2, 5 6) hSMul] HPow.hPow
 attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
 
 @[to_additive (attr := default_instance)]
-instance instHSMul [SMul α β] : HSMul α β β where
+instance instHSMul {α β} [SMul α β] : HSMul α β β where
   hSMul := SMul.smul
 
 attribute [to_additive existing (reorder := 1 2)] instHPow
-
-universe u
 
 variable {G : Type*}
 

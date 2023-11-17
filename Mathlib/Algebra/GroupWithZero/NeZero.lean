@@ -17,9 +17,7 @@ which is a part of the algebraic hierarchy used by basic tactics.
 
 universe u
 
-set_option autoImplicit true
-
-variable [MulZeroOneClass M₀] [Nontrivial M₀] {a b : M₀}
+variable {M₀ M₀' : Type*} [MulZeroOneClass M₀] [Nontrivial M₀]
 
 /-- In a nontrivial monoid with zero, zero and one are different. -/
 instance NeZero.one : NeZero (1 : M₀) := ⟨by
@@ -43,7 +41,7 @@ theorem pullback_nonzero [Zero M₀'] [One M₀'] (f : M₀' → M₀) (zero : f
 
 section GroupWithZero
 
-variable [GroupWithZero G₀] {a b c g h x : G₀}
+variable {G₀ : Type*} [GroupWithZero G₀] {a : G₀}
 
 -- Porting note: used `simpa` to prove `False` in lean3
 theorem inv_ne_zero (h : a ≠ 0) : a⁻¹ ≠ 0 := fun a_eq_0 => by
