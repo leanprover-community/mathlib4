@@ -1198,11 +1198,13 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
 theorem Submodule.rank_sup_add_rank_inf_eq (s t : Submodule K V) :
     Module.rank K (s ⊔ t : Submodule K V) + Module.rank K (s ⊓ t : Submodule K V) =
     Module.rank K s + Module.rank K t :=
-  rank_add_rank_split (inclusion le_sup_left) (inclusion le_sup_right) (inclusion inf_le_left) (inclusion inf_le_right)
+  rank_add_rank_split
+    (inclusion le_sup_left) (inclusion le_sup_right)
+    (inclusion inf_le_left) (inclusion inf_le_right)
     (by
       rw [← map_le_map_iff' (ker_subtype <| s ⊔ t), Submodule.map_sup, Submodule.map_top, ←
-        LinearMap.range_comp, ← LinearMap.range_comp, subtype_comp_inclusion, subtype_comp_inclusion,
-        range_subtype, range_subtype, range_subtype])
+        LinearMap.range_comp, ← LinearMap.range_comp, subtype_comp_inclusion,
+        subtype_comp_inclusion, range_subtype, range_subtype, range_subtype])
     (ker_inclusion _ _ _) (by ext ⟨x, hx⟩; rfl)
     (by
       rintro ⟨b₁, hb₁⟩ ⟨b₂, hb₂⟩ eq

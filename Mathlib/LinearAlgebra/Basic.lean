@@ -644,7 +644,8 @@ theorem ker_inclusion (p p' : Submodule R M) (h : p ≤ p') : ker (inclusion h) 
   rw [inclusion, ker_codRestrict, ker_subtype]
 #align submodule.ker_of_le Submodule.ker_inclusion
 
-theorem range_inclusion (p q : Submodule R M) (h : p ≤ q) : range (inclusion h) = comap q.subtype p := by
+theorem range_inclusion (p q : Submodule R M) (h : p ≤ q) :
+    range (inclusion h) = comap q.subtype p := by
   rw [← map_top, inclusion, LinearMap.map_codRestrict, map_top, range_subtype]
 #align submodule.range_of_le Submodule.range_inclusion
 
@@ -749,11 +750,11 @@ theorem mem_submoduleImage_of_le {M' : Type*} [AddCommMonoid M'] [Module R M'] {
     exact ⟨y, hNO yN, yN, h⟩
 #align linear_map.mem_submodule_image_of_le LinearMap.mem_submoduleImage_of_le
 
-theorem submoduleImage_apply_inclusion {M' : Type*} [AddCommGroup M'] [Module R M'] {O : Submodule R M}
-    (ϕ : O →ₗ[R] M') (N : Submodule R M) (hNO : N ≤ O) :
+theorem submoduleImage_apply_of_le {M' : Type*} [AddCommGroup M'] [Module R M']
+    {O : Submodule R M} (ϕ : O →ₗ[R] M') (N : Submodule R M) (hNO : N ≤ O) :
     ϕ.submoduleImage N = range (ϕ.comp (Submodule.inclusion hNO)) := by
   rw [submoduleImage, range_comp, Submodule.range_inclusion]
-#align linear_map.submodule_image_apply_of_le LinearMap.submoduleImage_apply_inclusion
+#align linear_map.submodule_image_apply_of_le LinearMap.submoduleImage_apply_of_le
 
 end Image
 
