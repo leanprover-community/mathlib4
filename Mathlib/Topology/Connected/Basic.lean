@@ -371,7 +371,7 @@ theorem Inducing.isPreconnected_image [TopologicalSpace β] {s : Set α} {f : α
 
 /- TODO: The following lemmas about connection of preimages hold more generally for strict maps
 (the quotient and subspace topologies of the image agree) whose fibers are preconnected. -/
-theorem IsPreconnected.preimage_of_open_map [TopologicalSpace β] {s : Set β} (hs : IsPreconnected s)
+theorem IsPreconnected.preimage_of_isOpenMap [TopologicalSpace β] {s : Set β} (hs : IsPreconnected s)
     {f : α → β} (hinj : Function.Injective f) (hf : IsOpenMap f) (hsf : s ⊆ range f) :
     IsPreconnected (f ⁻¹' s) := fun u v hu hv hsuv hsu hsv => by
   replace hsf : f '' (f ⁻¹' s) = s := image_preimage_eq_of_subset hsf
@@ -381,7 +381,7 @@ theorem IsPreconnected.preimage_of_open_map [TopologicalSpace β] {s : Set β} (
     · simpa only [image_preimage_inter] using hsu.image f
     · simpa only [image_preimage_inter] using hsv.image f
   · exact ⟨a, has, hau, hinj.mem_set_image.1 hav⟩
-#align is_preconnected.preimage_of_open_map IsPreconnected.preimage_of_open_map
+#align is_preconnected.preimage_of_open_map IsPreconnected.preimage_of_isOpenMap
 
 theorem IsPreconnected.preimage_of_closed_map [TopologicalSpace β] {s : Set β}
     (hs : IsPreconnected s) {f : α → β} (hinj : Function.Injective f) (hf : IsClosedMap f)
@@ -396,17 +396,17 @@ theorem IsPreconnected.preimage_of_closed_map [TopologicalSpace β] {s : Set β}
     · exact ⟨a, has, hau, hinj.mem_set_image.1 hav⟩
 #align is_preconnected.preimage_of_closed_map IsPreconnected.preimage_of_closed_map
 
-theorem IsConnected.preimage_of_openMap [TopologicalSpace β] {s : Set β} (hs : IsConnected s)
+theorem IsConnected.preimage_of_isOpenMap [TopologicalSpace β] {s : Set β} (hs : IsConnected s)
     {f : α → β} (hinj : Function.Injective f) (hf : IsOpenMap f) (hsf : s ⊆ range f) :
     IsConnected (f ⁻¹' s) :=
-  ⟨hs.nonempty.preimage' hsf, hs.isPreconnected.preimage_of_open_map hinj hf hsf⟩
-#align is_connected.preimage_of_open_map IsConnected.preimage_of_openMap
+  ⟨hs.nonempty.preimage' hsf, hs.isPreconnected.preimage_of_isOpenMap hinj hf hsf⟩
+#align is_connected.preimage_of_open_map IsConnected.preimage_of_isOpenMap
 
-theorem IsConnected.preimage_of_closedMap [TopologicalSpace β] {s : Set β} (hs : IsConnected s)
+theorem IsConnected.preimage_of_isClosedMap [TopologicalSpace β] {s : Set β} (hs : IsConnected s)
     {f : α → β} (hinj : Function.Injective f) (hf : IsClosedMap f) (hsf : s ⊆ range f) :
     IsConnected (f ⁻¹' s) :=
   ⟨hs.nonempty.preimage' hsf, hs.isPreconnected.preimage_of_closed_map hinj hf hsf⟩
-#align is_connected.preimage_of_closed_map IsConnected.preimage_of_closedMap
+#align is_connected.preimage_of_closed_map IsConnected.preimage_of_isClosedMap
 
 theorem IsPreconnected.subset_or_subset (hu : IsOpen u) (hv : IsOpen v) (huv : Disjoint u v)
     (hsuv : s ⊆ u ∪ v) (hs : IsPreconnected s) : s ⊆ u ∨ s ⊆ v := by
@@ -512,7 +512,7 @@ theorem Sigma.isConnected_iff [∀ i, TopologicalSpace (π i)] {s : Set (Σi, π
   · obtain ⟨⟨i, x⟩, hx⟩ := hs.nonempty
     have : s ⊆ range (Sigma.mk i) :=
       hs.isPreconnected.subset_clopen isClopen_range_sigmaMk ⟨⟨i, x⟩, hx, x, rfl⟩
-    exact ⟨i, Sigma.mk i ⁻¹' s, hs.preimage_of_openMap sigma_mk_injective isOpenMap_sigmaMk this,
+    exact ⟨i, Sigma.mk i ⁻¹' s, hs.preimage_of_isOpenMap sigma_mk_injective isOpenMap_sigmaMk this,
       (Set.image_preimage_eq_of_subset this).symm⟩
   · rintro ⟨i, t, ht, rfl⟩
     exact ht.image _ continuous_sigmaMk.continuousOn
@@ -537,12 +537,12 @@ theorem Sum.isConnected_iff [TopologicalSpace β] {s : Set (Sum α β)} :
     · have h : s ⊆ range Sum.inl :=
         hs.isPreconnected.subset_clopen isClopen_range_inl ⟨.inl x, hx, x, rfl⟩
       refine' Or.inl ⟨Sum.inl ⁻¹' s, _, _⟩
-      · exact hs.preimage_of_openMap Sum.inl_injective isOpenMap_inl h
+      · exact hs.preimage_of_isOpenMap Sum.inl_injective isOpenMap_inl h
       · exact (image_preimage_eq_of_subset h).symm
     · have h : s ⊆ range Sum.inr :=
         hs.isPreconnected.subset_clopen isClopen_range_inr ⟨.inr x, hx, x, rfl⟩
       refine' Or.inr ⟨Sum.inr ⁻¹' s, _, _⟩
-      · exact hs.preimage_of_openMap Sum.inr_injective isOpenMap_inr h
+      · exact hs.preimage_of_isOpenMap Sum.inr_injective isOpenMap_inr h
       · exact (image_preimage_eq_of_subset h).symm
   · rintro (⟨t, ht, rfl⟩ | ⟨t, ht, rfl⟩)
     · exact ht.image _ continuous_inl.continuousOn
