@@ -10,14 +10,19 @@ import Mathlib.Order.Closure
 #align_import field_theory.normal from "leanprover-community/mathlib"@"9fb8964792b4237dac6200193a0d533f1b3f7423"
 /-!
 # Normal closures
-The normal closure `normalClosure F K L` of a field extension `K/F`
-in another field extension `L/F` is the smallest intermediate field of `L/K`
-that contains the image of every `F`-algebra embedding `K →ₐ[F] L`.
 
-If the minimal polynomial of every element of `K` over `F` splits in `L` (in particular if `L/K/F`
-form a tower and `L/F` is normal), then `normalClosure F K L` is a valid normal closure of `K/F`,
-characterized by the predicate `IsNormalClosure F K L`, which says that `L` is generated
-by the roots of the minimal polynomials in addition to the splitting condition.
+## Main definitions
+
+Given field extensions `K/F` and `L/F`, the predicate `IsNormalClosure F K L` says that the
+minimal polynomial of every element of `K` over `F` splits in `L`, and that `L` is generated
+by the roots of such minimal polynomials. These conditions uniquely characterize `L/F` up to
+`F`-algebra isomorphisms (`IsNormalClosure.equiv`).
+
+The explicit construction `normalClosure F K L` of a field extension `K/F` inside another
+field extension `L/F` is the smallest intermediate field of `L/F` that contains the image
+of every `F`-algebra embedding `K →ₐ[F] L`. It satisfies the `IsNormalClosure` predicate
+if `L/F` satisfies the abovementioned splitting condition, in particular if `L/K/F` form
+a tower and `L/F` is normal.
 -/
 
 open BigOperators IntermediateField IsScalarTower Polynomial
