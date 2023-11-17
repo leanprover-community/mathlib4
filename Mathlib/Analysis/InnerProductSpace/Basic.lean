@@ -1167,7 +1167,7 @@ theorem inner_eq_sum_norm_sq_div_four (x y : E) :
 #align inner_eq_sum_norm_sq_div_four inner_eq_sum_norm_sq_div_four
 
 /-- Formula for the distance between the images of two nonzero points under an inversion with center
-zero. See also `euclidean_geometry.dist_inversion_inversion` for inversions around a general
+zero. See also `EuclideanGeometry.dist_inversion_inversion` for inversions around a general
 point. -/
 theorem dist_div_norm_sq_smul {x y : F} (hx : x ≠ 0) (hy : y ≠ 0) (R : ℝ) :
     dist ((R / ‖x‖) ^ 2 • x) ((R / ‖y‖) ^ 2 • y) = R ^ 2 / (‖x‖ * ‖y‖) * dist x y :=
@@ -1822,7 +1822,6 @@ namespace ContinuousLinearMap
 variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 
 -- Note: odd and expensive build behavior is explicitly turned off using `noncomputable`
-set_option synthInstance.maxHeartbeats 40000 in
 /-- Given `f : E →L[𝕜] E'`, construct the continuous sesquilinear form `fun x y ↦ ⟪x, A y⟫`, given
 as a continuous linear map. -/
 noncomputable def toSesqForm : (E →L[𝕜] E') →L[𝕜] E' →L⋆[𝕜] E →L[𝕜] 𝕜 :=

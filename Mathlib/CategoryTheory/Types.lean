@@ -128,7 +128,7 @@ def sections (F : J ⥤ Type w) : Set (∀ j, F.obj j) :=
 -- porting note: added this simp lemma
 @[simp]
 lemma sections_property {F : J ⥤ Type w} (s : (F.sections : Type _))
-  {j j' : J} (f : j ⟶ j') : F.map f (s.val j) = s.val j' :=
+    {j j' : J} (f : j ⟶ j') : F.map f (s.val j) = s.val j' :=
   s.property f
 
 end Functor

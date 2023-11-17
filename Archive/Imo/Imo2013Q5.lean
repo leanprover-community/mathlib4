@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Data.Rat.Defs
-import Mathlib.Data.Real.Basic
+import Mathlib.Data.Real.Archimedean
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.LinearCombination
 
@@ -31,8 +30,6 @@ https://www.imo-official.org/problems/IMO2013SL.pdf
 
 
 open scoped BigOperators
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 namespace Imo2013Q5
 

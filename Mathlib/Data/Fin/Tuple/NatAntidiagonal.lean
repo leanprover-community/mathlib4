@@ -83,7 +83,7 @@ theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
   induction x using Fin.consInduction generalizing n with
   | h0 =>
     cases n
-    · simp
+    · decide
     · simp [eq_comm]
   | h x₀ x ih =>
     simp_rw [Fin.sum_cons]
@@ -264,7 +264,7 @@ section EquivProd
 /-- The disjoint union of antidiagonal tuples `Σ n, antidiagonalTuple k n` is equivalent to the
 `k`-tuple `Fin k → ℕ`. This is such an equivalence, obtained by mapping `(n, x)` to `x`.
 
-This is the tuple version of `Finset.Nat.sigmaAntidiagonalEquivProd`. -/
+This is the tuple version of `Finset.sigmaAntidiagonalEquivProd`. -/
 @[simps]
 def sigmaAntidiagonalTupleEquivTuple (k : ℕ) : (Σ n, antidiagonalTuple k n) ≃ (Fin k → ℕ)
     where

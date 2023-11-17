@@ -30,8 +30,7 @@ def Lean.MVarId.convert (e : Expr) (sym : Bool)
   let v ← mkFreshExprMVar (← mkAppM ``Eq (if sym then #[src, tgt] else #[tgt, src]))
   g.assign (← mkAppM (if sym then ``Eq.mp else ``Eq.mpr) #[v, e])
   let m := v.mvarId!
-  try m.congrN! depth config patterns
-  catch _ => return [m]
+  m.congrN! depth config patterns
 
 namespace Mathlib.Tactic
 

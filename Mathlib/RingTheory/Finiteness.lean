@@ -147,7 +147,7 @@ theorem fg_bot : (⊥ : Submodule R M).FG :=
 
 theorem _root_.Subalgebra.fg_bot_toSubmodule {R A : Type*} [CommSemiring R] [Semiring A]
     [Algebra R A] : (⊥ : Subalgebra R A).toSubmodule.FG :=
-  ⟨{1}, by simp [Algebra.toSubmodule_bot]⟩
+  ⟨{1}, by simp [Algebra.toSubmodule_bot, one_eq_span]⟩
 #align subalgebra.fg_bot_to_submodule Subalgebra.fg_bot_toSubmodule
 
 theorem fg_unit {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (I : (Submodule R A)ˣ) :
@@ -638,8 +638,9 @@ end Finite
 end Module
 
 /-- Porting note: reminding Lean about this instance for Module.Finite.base_change -/
-local instance [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M] [Module R M] :
-  Module A (TensorProduct R A M) :=
+noncomputable local instance
+    [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M] [Module R M] :
+    Module A (TensorProduct R A M) :=
   haveI : SMulCommClass R A A := IsScalarTower.to_smulCommClass
   TensorProduct.leftModule
 

@@ -119,6 +119,9 @@ theorem congr_fun₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : 
   LinearMap.congr_fun (LinearMap.congr_fun h x) y
 #align linear_map.congr_fun₂ LinearMap.congr_fun₂
 
+theorem ext_iff₂ {f g : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} : f = g ↔ ∀ m n, f m n = g m n :=
+  ⟨congr_fun₂, ext₂⟩
+
 section
 
 attribute [local instance] SMulCommClass.symm
@@ -393,6 +396,11 @@ variable {R M}
 @[simp]
 theorem lsmul_apply (r : R) (m : M) : lsmul R M r m = r • m := rfl
 #align linear_map.lsmul_apply LinearMap.lsmul_apply
+
+/-- The restriction of a bilinear form to a submodule. -/
+abbrev _root_.Submodule.restrictBilinear (p : Submodule R M) (f : M →ₗ[R] M →ₗ[R] R) :
+    p →ₗ[R] p →ₗ[R] R :=
+  f.compl₁₂ p.subtype p.subtype
 
 end CommSemiring
 

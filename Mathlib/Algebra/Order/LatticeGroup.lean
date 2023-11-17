@@ -237,7 +237,7 @@ theorem neg_eq_one_iff' {a : α} : a⁻ = 1 ↔ a⁻¹ ≤ 1 :=
 #align lattice_ordered_comm_group.neg_eq_zero_iff' LatticeOrderedGroup.neg_eq_zero_iff'
 
 @[to_additive]
-theorem neg_eq_one_iff [CovariantClass α α Mul.mul LE.le] {a : α} : a⁻ = 1 ↔ 1 ≤ a := by
+theorem neg_eq_one_iff [CovariantClass α α HMul.hMul LE.le] {a : α} : a⁻ = 1 ↔ 1 ≤ a := by
   rw [le_antisymm_iff, neg_le_one_iff, inv_le_one', and_iff_left (one_le_neg _)]
 #align lattice_ordered_comm_group.neg_eq_one_iff LatticeOrderedGroup.neg_eq_one_iff
 #align lattice_ordered_comm_group.neg_eq_zero_iff LatticeOrderedGroup.neg_eq_zero_iff
@@ -276,7 +276,7 @@ theorem mul_inf_eq_mul_inf_mul [CovariantClass α α (· * ·) (· ≤ ·)] (a b
     c * (a ⊓ b) = c * a ⊓ c * b := by
   refine' le_antisymm _ _
   rw [le_inf_iff, mul_le_mul_iff_left, mul_le_mul_iff_left]
-  simp
+  simp only [inf_le_left, inf_le_right, and_self]
   rw [← mul_le_mul_iff_left c⁻¹, ← mul_assoc, inv_mul_self, one_mul, le_inf_iff,
     inv_mul_le_iff_le_mul, inv_mul_le_iff_le_mul]
   simp

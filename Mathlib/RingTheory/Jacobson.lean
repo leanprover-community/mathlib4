@@ -137,14 +137,14 @@ theorem isJacobson_of_isIntegral [Algebra R S] (hRS : Algebra.IsIntegral R S) (h
   · simp [comap_eq_top_iff.1 hP_top]
   · haveI : Nontrivial (R ⧸ comap (algebraMap R S) P) := Quotient.nontrivial hP_top
     rw [jacobson_eq_iff_jacobson_quotient_eq_bot]
-    refine' eq_bot_of_comap_eq_bot (isIntegral_quotient_of_isIntegral hRS) _
+    refine' eq_bot_of_comap_eq_bot (Algebra.IsIntegral.quotient hRS) _
     rw [eq_bot_iff, ← jacobson_eq_iff_jacobson_quotient_eq_bot.1
       ((isJacobson_iff_prime_eq.1 hR) (comap (algebraMap R S) P) (comap_isPrime _ _)),
       comap_jacobson]
     refine' sInf_le_sInf fun J hJ => _
     simp only [true_and_iff, Set.mem_image, bot_le, Set.mem_setOf_eq]
     have : J.IsMaximal := by simpa using hJ
-    exact exists_ideal_over_maximal_of_isIntegral (isIntegral_quotient_of_isIntegral hRS) J
+    exact exists_ideal_over_maximal_of_isIntegral (Algebra.IsIntegral.quotient hRS) J
       (comap_bot_le_of_injective _ algebraMap_quotient_injective)
 #align ideal.is_jacobson_of_is_integral Ideal.isJacobson_of_isIntegral
 
@@ -303,7 +303,6 @@ variable {R S : Type*} [CommRing R] [CommRing S] [IsDomain S]
 
 variable {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
 
-set_option maxHeartbeats 300000 in
 /-- If `I` is a prime ideal of `R[X]` and `pX ∈ I` is a non-constant polynomial,
   then the map `R →+* R[x]/I` descends to an integral map when localizing at `pX.leadingCoeff`.
   In particular `X` is integral because it satisfies `pX`, and constants are trivially integral,
@@ -433,7 +432,6 @@ private theorem isJacobson_polynomial_of_domain (R : Type*) [CommRing R] [IsDoma
     haveI islocSₘ : IsLocalization (Submonoid.map φ (Submonoid.powers x)) Sₘ := by infer_instance
     exact @isIntegral_isLocalization_polynomial_quotient R _ Rₘ Sₘ _ _ P p pP _ _ _ islocSₘ
 
-set_option maxHeartbeats 300000 in
 theorem isJacobson_polynomial_of_isJacobson (hR : IsJacobson R) : IsJacobson R[X] := by
   rw [isJacobson_iff_prime_eq]
   intro I hI

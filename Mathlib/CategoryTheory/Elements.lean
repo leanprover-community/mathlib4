@@ -85,14 +85,14 @@ theorem id_val {F : C ⥤ Type w} {p : F.Elements} : (𝟙 p : p ⟶ p).val = �
 
 end CategoryOfElements
 
-noncomputable instance groupoidOfElements {G : Type u} [Groupoid.{v} G] (F : G ⥤ Type w) :
+instance groupoidOfElements {G : Type u} [Groupoid.{v} G] (F : G ⥤ Type w) :
     Groupoid F.Elements
     where
   inv {p q} f :=
-    ⟨inv f.val,
+    ⟨Groupoid.inv f.val,
       calc
-        F.map (inv f.val) q.2 = F.map (inv f.val) (F.map f.val p.2) := by rw [f.2]
-        _ = (F.map f.val ≫ F.map (inv f.val)) p.2 := rfl
+        F.map (Groupoid.inv f.val) q.2 = F.map (Groupoid.inv f.val) (F.map f.val p.2) := by rw [f.2]
+        _ = (F.map f.val ≫ F.map (Groupoid.inv f.val)) p.2 := rfl
         _ = p.2 := by
           rw [← F.map_comp]
           simp
@@ -246,9 +246,7 @@ theorem to_fromCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
     ext x f
     convert congr_fun (X_hom.naturality f.op).symm (𝟙 X_left)
     simp
-  · intro X Y f
-    ext
-    simp [CostructuredArrow.eqToHom_left]
+  · aesop
 #align category_theory.category_of_elements.to_from_costructured_arrow_eq CategoryTheory.CategoryOfElements.to_fromCostructuredArrow_eq
 
 /-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
@@ -275,9 +273,7 @@ theorem costructuredArrow_yoneda_equivalence_naturality {F₁ F₂ : Cᵒᵖ ⥤
     congr
     ext _ f
     simpa using congr_fun (α.naturality f.op).symm (unop X).snd
-  · intro X Y f
-    ext
-    simp [CostructuredArrow.eqToHom_left]
+  · simp [autoParam]
 #align category_theory.category_of_elements.costructured_arrow_yoneda_equivalence_naturality CategoryTheory.CategoryOfElements.costructuredArrow_yoneda_equivalence_naturality
 
 end CategoryOfElements

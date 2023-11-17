@@ -38,7 +38,7 @@ theorem isIntegral_stableUnderBaseChange : StableUnderBaseChange fun f => f.IsIn
   refine' TensorProduct.induction_on x _ _ _
   · apply isIntegral_zero
   · intro x y; exact IsIntegral.tmul x (h y)
-  · intro x y hx hy; exact isIntegral_add hx hy
+  · intro x y hx hy; exact IsIntegral.add hx hy
 #align ring_hom.is_integral_stable_under_base_change RingHom.isIntegral_stableUnderBaseChange
 
 end RingHom

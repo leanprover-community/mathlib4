@@ -304,7 +304,7 @@ namespace NonemptyInterval
 
 @[to_additive]
 theorem coe_pow_interval [OrderedCommMonoid α] (s : NonemptyInterval α) (n : ℕ) :
-    (s ^ n : Interval α) = (s : Interval α) ^ n :=
+    ↑(s ^ n) = (s : Interval α) ^ n :=
   map_pow (⟨⟨(↑), coe_one_interval⟩, coe_mul_interval⟩ : NonemptyInterval α →* Interval α) _ _
 #align nonempty_interval.coe_pow_interval NonemptyInterval.coe_pow_interval
 #align nonempty_interval.coe_nsmul_interval NonemptyInterval.coe_nsmul_interval

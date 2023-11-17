@@ -348,7 +348,8 @@ theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[≠] 0) atBot := by
 #align real.tendsto_log_nhds_within_zero Real.tendsto_log_nhdsWithin_zero
 
 theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
-  simp only [continuousOn_iff_continuous_restrict, restrict]
+  simp (config := { unfoldPartialApp := true }) only [continuousOn_iff_continuous_restrict,
+    restrict]
   conv in log _ => rw [log_of_ne_zero (show (x : ℝ) ≠ 0 from x.2)]
   exact expOrderIso.symm.continuous.comp (continuous_subtype_val.norm.subtype_mk _)
 #align real.continuous_on_log Real.continuousOn_log
@@ -527,7 +528,7 @@ lemma log_nz_of_isRat : (NormNum.IsRat e n d) → (decide ((0 : ℚ) < n / d))
     exact ne_of_lt <| Real.log_neg h₁' h₂'
 
 lemma log_nz_of_isRat_neg : (NormNum.IsRat e n d) → (decide (n / d < (0 : ℚ)))
-      → (decide ((-1 : ℚ) < n / d)) → (Real.log (e : ℝ) ≠ 0)
+    → (decide ((-1 : ℚ) < n / d)) → (Real.log (e : ℝ) ≠ 0)
   | ⟨inv, eq⟩, h₁, h₂ => by
     rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
     have h₁' : (n : ℝ) / d < 0 := by exact_mod_cast of_decide_eq_true h₁
