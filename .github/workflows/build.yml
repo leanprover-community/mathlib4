@@ -263,6 +263,7 @@ jobs:
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
+          git checkout toolchain/v4.3.0-rc2
           lake build
           ./test.sh
           cd ..
