@@ -43,9 +43,6 @@ These are not declared as instances because there are several natural choices fo
 of a matrix.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
-
 noncomputable section
 
 open scoped BigOperators NNReal Matrix

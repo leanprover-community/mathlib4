@@ -1631,7 +1631,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
             apply Nat.lt_succ_of_le (Nat.le_add_right _ _)
           let ⟨ob, mb, rob⟩ := IH _ this ST' rs5'
           refine' ⟨ob, _, rob⟩
-          · simp [destruct_join]
+          · simp (config := { unfoldPartialApp := true }) [destruct_join]
             apply mem_bind mT
             simp [destruct_append]
             apply mem_bind mt
@@ -1639,7 +1639,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
         | some (a, s'), some (b, t'), ⟨ab, st'⟩, _, rs5, mt => by
           simp at rs5
           refine' ⟨some (b, t' ++ join T'), _, _⟩
-          · simp [destruct_join]
+          · simp (config := { unfoldPartialApp := true }) [destruct_join]
             apply mem_bind mT
             simp [destruct_append]
             apply mem_bind mt
@@ -1711,7 +1711,8 @@ theorem join_map_pure (s : WSeq α) : join (map pure s) ≈ s := by
             (map (fun a => cons a nil) s).join.destruct =
               (map (fun a => cons a nil) s').join.destruct ∧ destruct s = s'.destruct :=
           fun s => ⟨s, rfl, rfl⟩
-        induction' s using WSeq.recOn with a s s <;> simp [pure, this, Option.exists]
+        induction' s using WSeq.recOn with a s s <;>
+          simp (config := { unfoldPartialApp := true }) [pure, this, Option.exists]
   · exact ⟨s, rfl, rfl⟩
 #align stream.wseq.join_map_ret Stream'.WSeq.join_map_pure
 

@@ -68,8 +68,6 @@ open TopologicalSpace MeasureTheory Filter
 
 open scoped NNReal ENNReal BigOperators Topology MeasureTheory Uniformity
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 variable {α E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
   [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
 

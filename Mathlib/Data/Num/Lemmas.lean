@@ -250,7 +250,7 @@ theorem bit1_succ : ∀ n : Num, n.bit1.succ = n.succ.bit0
 #align num.bit1_succ Num.bit1_succ
 
 theorem ofNat'_succ : ∀ {n}, ofNat' (n + 1) = ofNat' n + 1 :=
-  @(Nat.binaryRec (by simp) fun b n ih => by
+  @(Nat.binaryRec (by simp; rfl) fun b n ih => by
     cases b
     · erw [ofNat'_bit true n, ofNat'_bit]
       simp only [← bit1_of_bit1, ← bit0_of_bit0, cond, _root_.bit1]

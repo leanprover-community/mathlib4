@@ -1300,7 +1300,7 @@ theorem count_map_roots_of_injective [IsDomain A] [DecidableEq B] (p : A[X]) {f 
     (p.roots.map f).count b ≤ rootMultiplicity b (p.map f) := by
   by_cases hp0 : p = 0
   · simp only [hp0, roots_zero, Multiset.map_zero, Multiset.count_zero, Polynomial.map_zero,
-      rootMultiplicity_zero]
+      rootMultiplicity_zero, le_refl]
   · exact count_map_roots ((Polynomial.map_ne_zero_iff hf).mpr hp0) b
 #align polynomial.count_map_roots_of_injective Polynomial.count_map_roots_of_injective
 
@@ -1328,7 +1328,7 @@ theorem card_roots_le_map [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B} (
 theorem card_roots_le_map_of_injective [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B}
     (hf : Function.Injective f) : Multiset.card p.roots ≤ Multiset.card (p.map f).roots := by
   by_cases hp0 : p = 0
-  · simp only [hp0, roots_zero, Polynomial.map_zero, Multiset.card_zero]
+  · simp only [hp0, roots_zero, Polynomial.map_zero, Multiset.card_zero]; rfl
   exact card_roots_le_map ((Polynomial.map_ne_zero_iff hf).mpr hp0)
 #align polynomial.card_roots_le_map_of_injective Polynomial.card_roots_le_map_of_injective
 
