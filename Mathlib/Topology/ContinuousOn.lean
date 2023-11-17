@@ -1064,10 +1064,10 @@ theorem continuousOn_open_iff {f : α → β} {s : Set α} (hs : IsOpen s) :
     rw [@inter_comm _ s (f ⁻¹' t), inter_assoc, inter_self]
 #align continuous_on_open_iff continuousOn_open_iff
 
-theorem ContinuousOn.preimage_open_of_open {f : α → β} {s : Set α} {t : Set β}
+theorem ContinuousOn.isOpen_inter_preimage {f : α → β} {s : Set α} {t : Set β}
     (hf : ContinuousOn f s) (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∩ f ⁻¹' t) :=
   (continuousOn_open_iff hs).1 hf t ht
-#align continuous_on.preimage_open_of_open ContinuousOn.preimage_open_of_open
+#align continuous_on.preimage_open_of_open ContinuousOn.isOpen_inter_preimage
 
 theorem ContinuousOn.isOpen_preimage {f : α → β} {s : Set α} {t : Set β} (h : ContinuousOn f s)
     (hs : IsOpen s) (hp : f ⁻¹' t ⊆ s) (ht : IsOpen t) : IsOpen (f ⁻¹' t) := by
@@ -1087,7 +1087,7 @@ theorem ContinuousOn.preimage_interior_subset_interior_preimage {f : α → β} 
   calc
     s ∩ f ⁻¹' interior t ⊆ interior (s ∩ f ⁻¹' t) :=
       interior_maximal (inter_subset_inter (Subset.refl _) (preimage_mono interior_subset))
-        (hf.preimage_open_of_open hs isOpen_interior)
+        (hf.isOpen_inter_preimage hs isOpen_interior)
     _ = s ∩ interior (f ⁻¹' t) := by rw [interior_inter, hs.interior_eq]
 #align continuous_on.preimage_interior_subset_interior_preimage ContinuousOn.preimage_interior_subset_interior_preimage
 

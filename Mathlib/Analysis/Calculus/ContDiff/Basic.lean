@@ -1833,7 +1833,7 @@ theorem LocalHomeomorph.contDiffAt_symm [CompleteSpace E] (f : LocalHomeomorph E
       obtain ⟨t, htu, ht, htf⟩ := mem_nhds_iff.mp (Filter.inter_mem hu h_nhds)
       use f.target ∩ f.symm ⁻¹' t
       refine' ⟨IsOpen.mem_nhds _ _, _⟩
-      · exact f.preimage_open_of_open_symm ht
+      · exact f.isOpen_inter_preimage_symm ht
       · exact mem_inter ha (mem_preimage.mpr htf)
       intro x hx
       obtain ⟨hxu, e, he⟩ := htu hx.2

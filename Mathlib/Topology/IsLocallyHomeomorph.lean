@@ -208,7 +208,7 @@ theorem isTopologicalBasis (hf : IsLocallyHomeomorph f) : IsTopologicalBasis
     refine (openEmbedding_of_comp hf (hs ▸ ⟨embedding_subtype_val, ?_⟩) s.continuous).open_range
     rwa [Subtype.range_val]
   · obtain ⟨f, hxf, rfl⟩ := hf x
-    refine ⟨f.source ∩ U, ⟨f.target ∩ f.symm ⁻¹' U, f.symm.preimage_open_of_open hU,
+    refine ⟨f.source ∩ U, ⟨f.target ∩ f.symm ⁻¹' U, f.symm.isOpen_inter_preimage hU,
       ⟨_, continuousOn_iff_continuous_restrict.mp (f.continuous_invFun.mono fun _ h ↦ h.1)⟩,
       ?_, (Set.range_restrict _ _).trans ?_⟩, ⟨hxf, hx⟩, fun _ h ↦ h.2⟩
     · ext y; exact f.right_inv y.2.1
