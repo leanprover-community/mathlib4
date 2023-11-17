@@ -81,7 +81,8 @@ lemma smoothNumbers_succ {N : ℕ} (hN : ¬ N.Prime) : N.succ.smoothNumbers = N.
          fun hm ↦ ⟨hm.1, fun p hp ↦ (hm.2 p hp).trans <| lt.base N⟩⟩
   exact lt_of_le_of_ne (lt_succ.mp <| hm.2 p hp) fun h ↦ hN <| h ▸ prime_of_mem_factors hp
 
-@[simp] lemma smoothNumbers_one : smoothNumbers 1 = {1} := by simp [smoothNumbers_succ]
+@[simp] lemma smoothNumbers_one : smoothNumbers 1 = {1} := by
+  simp (config := {decide := true}) [smoothNumbers_succ]
 
 @[gcongr] lemma smoothNumbers_mono {N M : ℕ} (hNM : N ≤ M) : N.smoothNumbers ⊆ M.smoothNumbers :=
   fun _ hx ↦ ⟨hx.1, fun p hp => (hx.2 p hp).trans_le hNM⟩

@@ -640,7 +640,8 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
     rfl
   · congr
     · ext x
-      dsimp [HomotopyEquiv.ofIso, Finsupp.LinearEquiv.finsuppUnique]
+      dsimp (config := { unfoldPartialApp := true }) [HomotopyEquiv.ofIso,
+        Finsupp.LinearEquiv.finsuppUnique]
       rw [Finsupp.total_single, one_smul, @Unique.eq_default _ Types.terminalIso.toEquiv.unique x,
         ChainComplex.single₀_map_f_zero, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
         Finsupp.equivFunOnFinite_apply, Finsupp.single_eq_same]
