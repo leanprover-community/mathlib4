@@ -143,7 +143,10 @@ protected theorem traverse_eq_map_id (f : α → β) (x : t' α) :
 protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : t' α) :
     Equiv.traverse eqv (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Equiv.traverse eqv f <$> Equiv.traverse eqv g x) := by
-  simp [Equiv.traverse, comp_traverse, functor_norm]; congr; ext; simp
+  simp (config := { unfoldPartialApp := true }) [Equiv.traverse, comp_traverse, functor_norm]
+  congr
+  ext
+  simp
 #align equiv.comp_traverse Equiv.comp_traverse
 
 protected theorem naturality (f : α → F β) (x : t' α) :

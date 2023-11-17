@@ -145,8 +145,9 @@ noncomputable def genericPoint [QuasiSober α] [IrreducibleSpace α] : α :=
   (IrreducibleSpace.isIrreducible_univ α).genericPoint
 #align generic_point genericPoint
 
-theorem genericPoint_spec [QuasiSober α] [IrreducibleSpace α] : IsGenericPoint (genericPoint α) ⊤ :=
-  by simpa using (IrreducibleSpace.isIrreducible_univ α).genericPoint_spec
+theorem genericPoint_spec [QuasiSober α] [IrreducibleSpace α] :
+    IsGenericPoint (genericPoint α) ⊤ := by
+  simpa using (IrreducibleSpace.isIrreducible_univ α).genericPoint_spec
 #align generic_point_spec genericPoint_spec
 
 @[simp]

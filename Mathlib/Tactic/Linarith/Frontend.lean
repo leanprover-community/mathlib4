@@ -395,14 +395,12 @@ Allow elaboration of `LinarithConfig` arguments to tactics.
 declare_config_elab elabLinarithConfig Linarith.LinarithConfig
 
 elab_rules : tactic
-  | `(tactic| linarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) => withMainContext do
-    liftMetaFinishingTactic <|
-      Linarith.linarith o.isSome
-        (← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTerm ·.raw none)).toList
-        ((← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome)
-
--- TODO restore this when `hint` is ported.
--- add_hint_tactic "linarith"
+  | `(tactic| linarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) =>
+    withMainContext do commitIfNoEx do
+      liftMetaFinishingTactic <|
+        Linarith.linarith o.isSome
+          (← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTerm ·.raw none)).toList
+          ((← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome)
 
 -- TODO restore this when `add_tactic_doc` is ported
 -- add_tactic_doc
@@ -424,9 +422,6 @@ elab_rules : tactic
       Linarith.linarith o.isSome
         (← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTerm ·.raw none)).toList
         (cfg.updateReducibility bang.isSome)
-
--- TODO restore this when `hint` is ported.
--- add_hint_tactic "nlinarith"
 
 -- TODO restore this when `add_tactic_doc` is ported
 -- add_tactic_doc

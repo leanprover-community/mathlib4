@@ -247,7 +247,8 @@ theorem coe_coord_of_subsingleton_eq_one [Subsingleton ι] (i : ι) : (b.coord i
   let s : Finset ι := {i}
   have hi : i ∈ s := by simp
   have hw : s.sum (Function.const ι (1 : k)) = 1 := by simp
-  have hq : q = s.affineCombination k b (Function.const ι (1 : k)) := by simp
+  have hq : q = s.affineCombination k b (Function.const ι (1 : k)) := by
+    simp [eq_iff_true_of_subsingleton]
   rw [Pi.one_apply, hq, b.coord_apply_combination_of_mem hi hw, Function.const_apply]
 #align affine_basis.coe_coord_of_subsingleton_eq_one AffineBasis.coe_coord_of_subsingleton_eq_one
 

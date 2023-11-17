@@ -12,8 +12,6 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
 
 namespace Real
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Filter Set
 
 open scoped Classical BigOperators Topology Real
