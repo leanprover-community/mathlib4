@@ -176,19 +176,21 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
       exact le_trans (by norm_num : (-2:ℝ) ≤ 0) (by positivity)
 
 /-- **Hermite-Minkowski Theorem**. A nontrivial number field has nontrivial discriminant. -/
-theorem discr_gt_one (h : 1 < finrank ℚ K) : 1 < |discr K| := by
-  have h_le : 1 ≤ 3 * π / 4 := by
+theorem discr_gt_one (h : 1 < finrank ℚ K) : 2 < |discr K| := by
+  have h₁ : 1 ≤ 3 * π / 4 := by
     rw [_root_.le_div_iff (by positivity),  ← _root_.div_le_iff' (by positivity), one_mul]
     linarith [Real.pi_gt_three]
+  have h₂ : (9:ℝ) < π ^ 2 := by
+    rw [ ← Real.sqrt_lt (by positivity) (by positivity), show Real.sqrt (9:ℝ) = 3 from
+    (Real.sqrt_eq_iff_sq_eq (by positivity) (by positivity)).mpr (by norm_num)]
+    exact Real.pi_gt_three
   refine Int.cast_lt.mp <| lt_of_lt_of_le ?_ (abs_discr_ge K h)
-  rw [← _root_.div_lt_iff' (by positivity), Int.cast_one, one_div_div]
-  refine lt_of_lt_of_le ?_ (pow_le_pow (n := 2) h_le h)
-  rw [div_pow, _root_.lt_div_iff (by norm_num), mul_pow, div_mul_eq_mul_div, mul_div_assoc,
-    pow_succ', pow_one, mul_self_div_self, ← _root_.div_lt_iff' (by positivity), mul_div_right_comm,
-    show (9:ℝ) / (3:ℝ) ^ 2 = 1 by field_simp; ring, one_mul, ← Real.sqrt_lt (by positivity)
-    (by positivity), show Real.sqrt (4:ℝ) = 2 from (Real.sqrt_eq_iff_sq_eq (by positivity)
-    (by positivity)).mpr (by norm_num)]
-  linarith [Real.pi_gt_three]
+  rw [← _root_.div_lt_iff' (by positivity), Int.int_cast_ofNat]
+  refine lt_of_lt_of_le ?_ (pow_le_pow (n := 2) h₁ h)
+  rw [div_pow, _root_.lt_div_iff (by norm_num), mul_pow]
+  norm_num
+  rw [ ← _root_.div_lt_iff' (by positivity), show (72:ℝ) / 9 = 8 by norm_num]
+  linarith [h₂]
 
 end NumberField
 
