@@ -323,32 +323,32 @@ section AddCommMonoid
 
 variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {p p' : Submodule R M}
 
-/-- If two submodules `p` and `p'` satisfy `p ⊆ p'`, then `inclusion p p'` is the linear map version of
-this inclusion. -/
+/-- If two submodules `p` and `p'` satisfy `p ⊆ p'`, then `inclusion p p'` is the linear map version
+of this inclusion. -/
 def inclusion (h : p ≤ p') : p →ₗ[R] p' :=
   p.subtype.codRestrict p' fun ⟨_, hx⟩ => h hx
 #align submodule.of_le Submodule.inclusion
 
 @[simp]
-theorem coe_ofLe (h : p ≤ p') (x : p) : (inclusion h x : M) = x :=
+theorem coe_inclusion (h : p ≤ p') (x : p) : (inclusion h x : M) = x :=
   rfl
-#align submodule.coe_of_le Submodule.coe_ofLe
+#align submodule.coe_of_le Submodule.coe_inclusion
 
-theorem ofLe_apply (h : p ≤ p') (x : p) : inclusion h x = ⟨x, h x.2⟩ :=
+theorem inclusion_apply (h : p ≤ p') (x : p) : inclusion h x = ⟨x, h x.2⟩ :=
   rfl
 #align submodule.of_le_apply Submodule.inclusion_apply
 
-theorem ofLe_injective (h : p ≤ p') : Function.Injective (inclusion h) := fun _ _ h =>
+theorem inclusion_injective (h : p ≤ p') : Function.Injective (inclusion h) := fun _ _ h =>
   Subtype.val_injective (Subtype.mk.inj h)
 #align submodule.of_le_injective Submodule.inclusion_injective
 
 variable (p p')
 
-theorem subtype_comp_ofLe (p q : Submodule R M) (h : p ≤ q) :
+theorem subtype_comp_inclusion (p q : Submodule R M) (h : p ≤ q) :
     q.subtype.comp (inclusion h) = p.subtype := by
   ext ⟨b, hb⟩
   rfl
-#align submodule.subtype_comp_of_le Submodule.subtype_comp_ofLe
+#align submodule.subtype_comp_of_le Submodule.subtype_comp_inclusion
 
 end AddCommMonoid
 
