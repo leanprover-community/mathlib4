@@ -633,7 +633,7 @@ def reflectsSmallestLimitsOfReflectsLimits (F : C ⥤ D) [ReflectsLimitsOfSize.{
 /-- If the limit of `F` exists and `G` preserves it, then if `G` reflects isomorphisms then it
 reflects the limit of `F`.
 -/ -- Porting note: previous behavior of apply pushed instance holes into hypotheses, this errors
-instance reflectsLimitOfReflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [ReflectsIsomorphisms G]
+def reflectsLimitOfReflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [ReflectsIsomorphisms G]
     [HasLimit F] [PreservesLimit F G] : ReflectsLimit F G where
   reflects {c} t := by
     suffices IsIso (IsLimit.lift (limit.isLimit F) c) from by
@@ -650,7 +650,7 @@ instance reflectsLimitOfReflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [Reflec
 /-- If `C` has limits of shape `J` and `G` preserves them, then if `G` reflects isomorphisms then it
 reflects limits of shape `J`.
 -/
-instance reflectsLimitsOfShapeOfReflectsIsomorphisms {G : C ⥤ D} [ReflectsIsomorphisms G]
+def reflectsLimitsOfShapeOfReflectsIsomorphisms {G : C ⥤ D} [ReflectsIsomorphisms G]
     [HasLimitsOfShape J C] [PreservesLimitsOfShape J G] : ReflectsLimitsOfShape J G where
   reflectsLimit {F} := reflectsLimitOfReflectsIsomorphisms F G
 #align category_theory.limits.reflects_limits_of_shape_of_reflects_isomorphisms CategoryTheory.Limits.reflectsLimitsOfShapeOfReflectsIsomorphisms
@@ -743,7 +743,7 @@ def reflectsSmallestColimitsOfReflectsColimits (F : C ⥤ D) [ReflectsColimitsOf
 /-- If the colimit of `F` exists and `G` preserves it, then if `G` reflects isomorphisms then it
 reflects the colimit of `F`.
 -/ -- Porting note: previous behavior of apply pushed instance holes into hypotheses, this errors
-instance reflectsColimitOfReflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [ReflectsIsomorphisms G]
+def reflectsColimitOfReflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [ReflectsIsomorphisms G]
     [HasColimit F] [PreservesColimit F G] : ReflectsColimit F G where
   reflects {c} t := by
     suffices IsIso (IsColimit.desc (colimit.isColimit F) c) from by
@@ -761,7 +761,7 @@ instance reflectsColimitOfReflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [Refl
 If `C` has colimits of shape `J` and `G` preserves them, then if `G` reflects isomorphisms then it
 reflects colimits of shape `J`.
 -/
-instance reflectsColimitsOfShapeOfReflectsIsomorphisms {G : C ⥤ D} [ReflectsIsomorphisms G]
+def reflectsColimitsOfShapeOfReflectsIsomorphisms {G : C ⥤ D} [ReflectsIsomorphisms G]
     [HasColimitsOfShape J C] [PreservesColimitsOfShape J G] : ReflectsColimitsOfShape J G where
   reflectsColimit {F} := reflectsColimitOfReflectsIsomorphisms F G
 #align category_theory.limits.reflects_colimits_of_shape_of_reflects_isomorphisms CategoryTheory.Limits.reflectsColimitsOfShapeOfReflectsIsomorphisms
