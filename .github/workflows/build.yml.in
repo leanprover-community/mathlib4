@@ -319,11 +319,10 @@ jobs:
         with:
           path: "old/"
           fetch-depth: 1000
-      - env:
-          BASE_BRANCH: ${{ github.base_ref }}
-        run: |
+      - run: |
           cd old/
-          git checkout $(git merge-base --fork-point origin/$BASE_BRANCH)
+          git remote set-branches origin master
+          git checkout $(git merge-base --fork-point origin/master)
           lake --version
           lean --version
       - uses: actions/checkout@v4
