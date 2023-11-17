@@ -39,7 +39,7 @@ example : 37^2 - 35^2 = 72 * 2 := by hint
 
 /--
 info: Try these:
-• simp_all only
+• decide
 -/
 #guard_msgs in
 example : Nat.Prime 37 := by hint

@@ -22,8 +22,6 @@ space in this file.
 inversion, derivative
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Metric Function AffineMap Set AffineSubspace
 open scoped Topology RealInnerProductSpace
 
@@ -90,7 +88,8 @@ theorem hasFDerivAt_inversion (hx : x ≠ c) :
       ((R / dist x c) ^ 2 • (reflection (ℝ ∙ (x - c))ᗮ : F →L[ℝ] F)) x := by
   rcases add_left_surjective c x with ⟨x, rfl⟩
   have : HasFDerivAt (inversion c R) (_ : F →L[ℝ] F) (c + x)
-  · simp_rw [inversion, dist_eq_norm, div_pow, div_eq_mul_inv]
+  · simp (config := { unfoldPartialApp := true }) only [inversion]
+    simp_rw [dist_eq_norm, div_pow, div_eq_mul_inv]
     have A := (hasFDerivAt_id (𝕜 := ℝ) (c + x)).sub_const c
     have B := ((hasDerivAt_inv <| by simpa using hx).comp_hasFDerivAt _ A.norm_sq).const_mul
       (R ^ 2)

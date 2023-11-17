@@ -61,7 +61,7 @@ theorem card : Fintype.card KleinFour = 4 :=
 
 /-- Klein four-group is a group of order 4. -/
 theorem nat_card : Nat.card KleinFour = 4 := by
-  simp only [Nat.card_eq_fintype_card]
+  simp (config := {decide := true}) only [Nat.card_eq_fintype_card]
 
 @[simp] theorem a_sq : a ^ 2 = 1 :=
   rfl
@@ -107,6 +107,6 @@ def mulEquivDihedralGroupTwo : KleinFour ≃* DihedralGroup 2 where
     | sr 1 * r 1 => (1, 1)
   left_inv := by decide
   right_inv := by decide
-  map_mul' := by simp
+  map_mul' := by simp (config := {decide := true})
 
 end KleinFour

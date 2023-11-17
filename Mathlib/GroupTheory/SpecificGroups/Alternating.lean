@@ -262,6 +262,7 @@ theorem normalClosure_swap_mul_swap_five :
       ⟨finRotate 5, finRotate_bit1_mem_alternatingGroup (n := 2)⟩ := by
     rw [Subtype.ext_iff]
     simp only [Fin.val_mk, Subgroup.coe_mul, Subgroup.coe_inv, Fin.val_mk]
+    decide
   rw [eq_top_iff, ← normalClosure_finRotate_five]
   refine' normalClosure_le_normal _
   rw [Set.singleton_subset_iff, SetLike.mem_coe, ← h5]
@@ -280,7 +281,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
   rw [← Multiset.eq_replicate_card] at h2
   rw [← sum_cycleType, h2, Multiset.sum_replicate, smul_eq_mul] at h
   have h : Multiset.card g.cycleType ≤ 3 :=
-    le_of_mul_le_mul_right (le_trans h (by simp only [card_fin])) (by simp)
+    le_of_mul_le_mul_right (le_trans h (by simp only [card_fin]; ring_nf; decide)) (by simp)
   rw [mem_alternatingGroup, sign_of_cycleType, h2] at ha
   norm_num at ha
   rw [pow_add, pow_mul, Int.units_pow_two, one_mul, Units.ext_iff, Units.val_one,
@@ -299,7 +300,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
     · rw [disjoint_iff_disjoint_support, support_swap h04, support_swap h13]
       decide
   · contrapose! ha
-    simp [h_1]
+    decide
 #align alternating_group.is_conj_swap_mul_swap_of_cycle_type_two alternatingGroup.isConj_swap_mul_swap_of_cycleType_two
 
 /-- Shows that $A_5$ is simple by taking an arbitrary non-identity element and showing by casework

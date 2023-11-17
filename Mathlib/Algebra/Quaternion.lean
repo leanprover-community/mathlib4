@@ -1454,7 +1454,7 @@ section QuaternionAlgebra
 variable {R : Type*} (c₁ c₂ : R)
 
 private theorem pow_four [Infinite R] : #R ^ℕ 4 = #R :=
-  power_nat_eq (aleph0_le_mk R) <| by simp
+  power_nat_eq (aleph0_le_mk R) <| by decide
 
 /-- The cardinality of a quaternion algebra, as a type. -/
 theorem mk_quaternionAlgebra : #(ℍ[R,c₁,c₂]) = #R ^ℕ 4 := by

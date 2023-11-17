@@ -37,7 +37,7 @@ protected def GradedAlgebra.ι :
 
 theorem GradedAlgebra.ι_apply (m : M) :
     GradedAlgebra.ι R M m =
-      DirectSum.of (fun i : ℕ => LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i) 1
+      DirectSum.of (fun i : ℕ => ↥(LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i)) 1
         ⟨ι R m, by simpa only [pow_one] using LinearMap.mem_range_self _ m⟩ :=
   rfl
 #align exterior_algebra.graded_algebra.ι_apply ExteriorAlgebra.GradedAlgebra.ι_apply

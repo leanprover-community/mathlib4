@@ -68,8 +68,6 @@ noncomputable section
 ## Definition of the Riemann zeta function and related functions
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 /-- Function whose Mellin transform is `π ^ (-s) * Γ(s) * zeta (2 * s)`, for `1 / 2 < Re s`. -/
 def zetaKernel₁ (t : ℝ) : ℂ :=
   ∑' n : ℕ, rexp (-π * t * ((n : ℝ) + 1) ^ 2)
@@ -493,7 +491,7 @@ theorem integral_cpow_mul_exp_neg_pi_mul_sq {s : ℂ} (hs : 0 < s.re) (n : ℕ) 
   conv_rhs =>
     congr
     rw [← smul_eq_mul, ← mellin_comp_mul_left _ _ pi_pos]
-  have : 1 / ((n : ℂ) + 1) ^ (2 * s) = (((n : ℝ) + 1) ^ (2 : ℝ) : ℂ) ^ (-s) := by
+  have : 1 / ((n : ℂ) + 1) ^ (2 * s) = (((n + 1) ^ (2 : ℝ) : ℝ) : ℂ) ^ (-s) := by
     rw [(by norm_num : (n : ℂ) + 1 = ↑((n : ℝ) + 1)), (by norm_num : 2 * s = ↑(2 : ℝ) * s),
       cpow_mul_ofReal_nonneg, one_div, cpow_neg]
     rw [← Nat.cast_succ]
