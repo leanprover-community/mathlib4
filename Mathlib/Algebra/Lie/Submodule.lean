@@ -324,7 +324,7 @@ theorem exists_lieIdeal_coe_eq_iff :
 #align lie_subalgebra.exists_lie_ideal_coe_eq_iff LieSubalgebra.exists_lieIdeal_coe_eq_iff
 
 theorem exists_nested_lieIdeal_coe_eq_iff {K' : LieSubalgebra R L} (h : K ≤ K') :
-    (∃ I : LieIdeal R K', ↑I = inclusion h) ↔ ∀ x y : L, x ∈ K' → y ∈ K → ⁅x, y⁆ ∈ K := by
+    (∃ I : LieIdeal R K', ↑I = ofLe h) ↔ ∀ x y : L, x ∈ K' → y ∈ K → ⁅x, y⁆ ∈ K := by
   simp only [exists_lieIdeal_coe_eq_iff, coe_bracket, mem_ofLe]
   constructor
   · intro h' x y hx hy; exact h' ⟨x, hx⟩ ⟨y, h hy⟩ hy
