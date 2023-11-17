@@ -695,8 +695,8 @@ theorem tsum_eq_add_tsum_ite' [DecidableEq β] {f : β → α} (b : β) (hf : Su
     _ = ite (b = b) (f b) 0 + ∑' x, update f b 0 x := by
       congr
       exact tsum_eq_single b fun b' hb' => if_neg hb'
-    _ = f b + ∑' x, ite (x = b) 0 (f x) :=
-    by simp only [update, eq_self_iff_true, if_true, eq_rec_constant, dite_eq_ite]
+    _ = f b + ∑' x, ite (x = b) 0 (f x) := by
+      simp only [update, eq_self_iff_true, if_true, eq_rec_constant, dite_eq_ite]
 #align tsum_eq_add_tsum_ite' tsum_eq_add_tsum_ite'
 
 variable [AddCommMonoid δ] [TopologicalSpace δ] [T3Space δ] [ContinuousAdd δ]
@@ -1135,8 +1135,9 @@ theorem cauchySeq_finset_iff_vanishing :
     (CauchySeq fun s : Finset β ↦ ∑ b in s, f b) ↔
       ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∑ b in t, f b) ∈ e := by
   classical
-  simp_rw [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
-    uniformity_eq_comap_nhds_zero α, tendsto_comap_iff, (· ∘ ·), tendsto_atTop']
+  simp only [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
+    uniformity_eq_comap_nhds_zero α, tendsto_comap_iff, (· ∘ ·), atTop_neBot, true_and]
+  rw [tendsto_atTop']
   constructor
   · intro h e he
     obtain ⟨⟨s₁, s₂⟩, h⟩ := h e he

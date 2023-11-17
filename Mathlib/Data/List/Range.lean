@@ -76,14 +76,15 @@ theorem nthLe_range'_1 {n m} (i) (H : i < (range' n m).length) :
 #align list.range_eq_nil List.range_eq_nil
 
 theorem pairwise_lt_range (n : ℕ) : Pairwise (· < ·) (range n) := by
-  simp only [range_eq_range', pairwise_lt_range']
+  simp (config := {decide := true}) only [range_eq_range', pairwise_lt_range']
 #align list.pairwise_lt_range List.pairwise_lt_range
 
 theorem pairwise_le_range (n : ℕ) : Pairwise (· ≤ ·) (range n) :=
   Pairwise.imp (@le_of_lt ℕ _) (pairwise_lt_range _)
 #align list.pairwise_le_range List.pairwise_le_range
 
-theorem nodup_range (n : ℕ) : Nodup (range n) := by simp only [range_eq_range', nodup_range']
+theorem nodup_range (n : ℕ) : Nodup (range n) := by
+  simp (config := {decide := true}) only [range_eq_range', nodup_range']
 #align list.nodup_range List.nodup_range
 #align list.range_sublist List.range_sublist
 #align list.range_subset List.range_subset

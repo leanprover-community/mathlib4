@@ -201,7 +201,7 @@ open Subgroup
 variable {α : Type*} [Group α] (a : α)
 
 /-- See also `Fintype.card_zpowers`. -/
-@[to_additive Nat.card_zmultiples "See also `Fintype.card_zmultiples`."]
+@[to_additive (attr := simp) Nat.card_zmultiples "See also `Fintype.card_zmultiples`."]
 theorem Nat.card_zpowers : Nat.card (zpowers a) = orderOf a := by
   have := Nat.card_congr (MulAction.orbitZpowersEquiv a (1 : α))
   rwa [Nat.card_zmod, orbit_subgroup_one_eq_self] at this

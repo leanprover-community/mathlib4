@@ -32,8 +32,6 @@ stronger assumptions (e.g., `im z` is bounded from below and from above) are not
 open Asymptotics Filter Function
 open scoped Topology
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace Complex
 
 /-- We say that `l : Filter ℂ` is an *exponential comparison filter* if the real part tends to

@@ -65,7 +65,7 @@ theorem exists_primitive_element_of_finite_top [Finite E] : ∃ α : E, F⟮α�
     exact F⟮α.val⟯.zero_mem
   · obtain ⟨n, hn⟩ := Set.mem_range.mp (hα (Units.mk0 x hx))
     simp only at hn
-    rw [show x = α ^ n by norm_cast; rw [hn, Units.val_mk0], Units.val_zpow_eq_zpow_val]
+    rw [show x = α ^ n by norm_cast; rw [hn, Units.val_mk0]]
     exact zpow_mem (mem_adjoin_simple_self F (E := E) ↑α) n
 #align field.exists_primitive_element_of_finite_top Field.exists_primitive_element_of_finite_top
 
@@ -261,7 +261,7 @@ theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
   · simp only [hzero, div_zero, pow_eq_zero_iff hm] at h
     exact h.symm ▸ isAlgebraic_zero
   · rw [eq_div_iff hzero, ← sub_eq_zero] at h
-    replace hzero : s ≠ 0 := by rintro rfl; simp only [map_zero] at hzero
+    replace hzero : s ≠ 0 := by rintro rfl; simp only [map_zero, not_true_eq_false] at hzero
     let f : F[X] := X ^ m * expand F n s - expand F n r
     refine ⟨f, ?_, ?_⟩
     · have : f.coeff (n * s.natDegree + m) ≠ 0 := by
@@ -273,7 +273,7 @@ theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
           coeff_expand hn r, hndvd, ite_false, sub_zero]
         exact leadingCoeff_ne_zero.2 hzero
       intro h
-      simp only [h, coeff_zero, ne_eq] at this
+      simp only [h, coeff_zero, ne_eq, not_true_eq_false] at this
     · simp only [map_sub, map_mul, map_pow, aeval_X, expand_aeval, h]
 
 theorem isAlgebraic_of_finite_intermediateField
@@ -324,7 +324,7 @@ theorem finite_intermediateField_of_exists_primitive_element (halg : Algebra.IsA
   -- If `K` is an intermediate field of `E/F`, let `g` be the minimal polynomial of `α` over `K`
   -- which is a monic factor of `f`
   let g : IntermediateField F E → G := fun K ↦
-    ⟨(minpoly K α).map (algebraMap K E), (minpoly.monic <| isIntegral_of_finite K α).map _, by
+    ⟨(minpoly K α).map (algebraMap K E), (minpoly.monic <| IsIntegral.of_finite K α).map _, by
       convert Polynomial.map_dvd (algebraMap K E) (minpoly.dvd_map_of_isScalarTower F K α)
       rw [Polynomial.map_map]; rfl⟩
   -- The map `K ↦ g` is injective

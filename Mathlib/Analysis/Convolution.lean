@@ -1013,7 +1013,8 @@ theorem convolution_assoc (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z =
     rw [← h3] at this
     convert this.comp_measurable (measurable_sub.prod_mk measurable_snd)
     ext ⟨x, y⟩
-    simp_rw [uncurry, Function.comp_apply, sub_sub_sub_cancel_right]
+    simp (config := { unfoldPartialApp := true }) only [uncurry, Function.comp_apply,
+      sub_sub_sub_cancel_right]
   simp_rw [integrable_prod_iff' h_meas]
   refine' ⟨((quasiMeasurePreserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht =>
     (L₃ (f t)).integrable_comp <| ht.ofNorm L₄ hg hk, _⟩

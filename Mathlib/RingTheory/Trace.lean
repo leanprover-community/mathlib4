@@ -262,7 +262,7 @@ theorem trace_gen_eq_zero {x : L} (hx : ¬IsIntegral K x) :
   rw [trace_eq_zero_of_not_exists_basis, LinearMap.zero_apply]
   contrapose! hx
   obtain ⟨s, ⟨b⟩⟩ := hx
-  refine' isIntegral_of_mem_of_FG K⟮x⟯.toSubalgebra _ x _
+  refine' IsIntegral.of_mem_of_fg K⟮x⟯.toSubalgebra _ x _
   · exact (Submodule.fg_iff_finiteDimensional _).mpr (FiniteDimensional.of_fintype_basis b)
   · exact subset_adjoin K _ (Set.mem_singleton x)
 #align intermediate_field.adjoin_simple.trace_gen_eq_zero IntermediateField.AdjoinSimple.trace_gen_eq_zero
@@ -302,9 +302,7 @@ theorem trace_eq_sum_roots [FiniteDimensional K L] {x : L}
     algebraMap K F (Algebra.trace K L x) =
       finrank K⟮x⟯ L • ((minpoly K x).aroots F).sum := by
   rw [trace_eq_trace_adjoin K x, Algebra.smul_def, RingHom.map_mul, ← Algebra.smul_def,
-    IntermediateField.AdjoinSimple.trace_gen_eq_sum_roots _ hF]
--- Porting note: last `simp` was `IsScalarTower.algebraMap_smul` inside the `rw`.
-  simp only [eq_natCast, map_natCast, nsmul_eq_mul]
+    IntermediateField.AdjoinSimple.trace_gen_eq_sum_roots _ hF, IsScalarTower.algebraMap_smul]
 #align trace_eq_sum_roots trace_eq_sum_roots
 
 end EqSumRoots

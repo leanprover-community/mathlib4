@@ -1005,11 +1005,13 @@ theorem orderOf_dvd_natCard {G : Type*} [Group G] (x : G) : orderOf x ∣ Nat.ca
 nonrec lemma Subgroup.orderOf_dvd_natCard (s : Subgroup G) (hx : x ∈ s) :
   orderOf x ∣ Nat.card s := by simpa using orderOf_dvd_natCard (⟨x, hx⟩ : s)
 
+@[to_additive]
 lemma Subgroup.orderOf_le_card (s : Subgroup G) (hs : (s : Set G).Finite) (hx : x ∈ s) :
     orderOf x ≤ Nat.card s :=
   le_of_dvd (Nat.card_pos_iff.2 $ ⟨s.coe_nonempty.to_subtype, hs.to_subtype⟩) $
     s.orderOf_dvd_natCard hx
 
+@[to_additive]
 lemma Submonoid.orderOf_le_card (s : Submonoid G) (hs : (s : Set G).Finite) (hx : x ∈ s) :
     orderOf x ≤ Nat.card s := by
   rw [← Nat.card_submonoidPowers]; exact Nat.card_mono hs $ powers_le.2 hx
@@ -1173,7 +1175,7 @@ theorem LinearOrderedRing.orderOf_le_two : orderOf x ≤ 2 := by
   cases' ne_or_eq |x| 1 with h h
   · simp [orderOf_abs_ne_one h]
   rcases eq_or_eq_neg_of_abs_eq h with (rfl | rfl)
-  · simp
+  · simp; decide
   apply orderOf_le_of_pow_eq_one <;> norm_num
 #align linear_ordered_ring.order_of_le_two LinearOrderedRing.orderOf_le_two
 

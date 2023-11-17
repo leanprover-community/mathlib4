@@ -13,8 +13,6 @@ import Mathlib.MeasureTheory.Integral.Bochner
 
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open scoped NNReal ENNReal Pointwise BigOperators Topology
@@ -137,7 +135,7 @@ theorem integrable_comp_smul_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace
     (f : E → F) {R : ℝ} (hR : R ≠ 0) : Integrable (fun x => f (R • x)) μ ↔ Integrable f μ := by
   -- reduce to one-way implication
   suffices
-    ∀ {g : E → F} (hg : Integrable g μ) {S : ℝ} (hS : S ≠ 0), Integrable (fun x => g (S • x)) μ by
+    ∀ {g : E → F} (_ : Integrable g μ) {S : ℝ} (_ : S ≠ 0), Integrable (fun x => g (S • x)) μ by
     refine' ⟨fun hf => _, fun hf => this hf hR⟩
     convert this hf (inv_ne_zero hR)
     rw [← mul_smul, mul_inv_cancel hR, one_smul]

@@ -106,8 +106,8 @@ theorem prod_sum {δ : α → Type*} [DecidableEq α] [∀ a, DecidableEq (δ a)
       intro x _ y _ h
       simp only [disjoint_iff_ne, mem_image]
       rintro _ ⟨p₂, _, eq₂⟩ _ ⟨p₃, _, eq₃⟩ eq
-      have : Pi.cons s a x p₂ a (mem_insert_self _ _) = Pi.cons s a y p₃ a (mem_insert_self _ _) :=
-        by rw [eq₂, eq₃, eq]
+      have : Pi.cons s a x p₂ a (mem_insert_self _ _)
+              = Pi.cons s a y p₃ a (mem_insert_self _ _) := by rw [eq₂, eq₃, eq]
       rw [Pi.cons_same, Pi.cons_same] at this
       exact h this
     rw [prod_insert ha, pi_insert ha, ih, sum_mul, sum_biUnion h₁]
@@ -134,8 +134,7 @@ theorem prod_add [DecidableEq α] (f g : α → β) (s : Finset α) :
   classical
   calc
     ∏ a in s, (f a + g a) =
-        ∏ a in s, ∑ p in ({True, False} : Finset Prop), if p then f a else g a :=
-      by simp
+        ∏ a in s, ∑ p in ({True, False} : Finset Prop), if p then f a else g a := by simp
     _ = ∑ p in (s.pi fun _ => {True, False} : Finset (∀ a ∈ s, Prop)),
           ∏ a in s.attach, if p a.1 a.2 then f a.1 else g a.1 :=
       prod_sum
