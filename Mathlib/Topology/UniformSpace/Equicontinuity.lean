@@ -849,16 +849,18 @@ theorem Filter.Tendsto.continuousWithinAt_of_equicontinuousWithinAt {l : Filter 
     {F : ι → X → α} {f : X → α} {S : Set X} {x₀ : X} (h₁ : ∀ x ∈ S, Tendsto (F · x) l (𝓝 (f x)))
     (h₂ : Tendsto (F · x₀) l (𝓝 (f x₀))) (h₃ : EquicontinuousWithinAt F S x₀) :
     ContinuousWithinAt f S x₀ := by
-  have := EquicontinuousWithinAt.closure' (u := id)
-    (tY := .induced (S.restrict ∘ id) Pi.topologicalSpace ⊓ .induced (eval x₀ ∘ id) inferInstance)
+  let Y := id (X → α)
+  let u : Y → X → α := id
+  let tY : TopologicalSpace Y :=
+    .induced (S.restrict ∘ u) Pi.topologicalSpace ⊓ .induced (eval x₀ ∘ u) inferInstance
+  have := EquicontinuousWithinAt.closure' (u := u)
     (equicontinuousWithinAt_iff_range.mp h₃)
     (by convert continuous_inf_dom_left continuous_induced_dom)
     (by convert continuous_inf_dom_right continuous_induced_dom)
   refine this.continuousWithinAt
     ⟨f, @mem_closure_of_tendsto _ _ (_) _ l _ _ _ ?_ <| eventually_of_forall mem_range_self⟩
-  rw [nhds_inf (t₁ := .induced S.restrict Pi.topologicalSpace)
-        (t₂ := .induced (eval x₀) inferInstance)]
-  simpa [nhds_induced, tendsto_inf, tendsto_pi_nhds] using ⟨h₁, h₂⟩
+  simp_rw [nhds_inf]
+  simpa [nhds_inf, nhds_induced, tendsto_inf, tendsto_pi_nhds] using ⟨h₁, h₂⟩
 
 /-- A version of `Equicontinuous.closure` applicable to subsets of types which embed continuously
 into `X → α` with the product topology. It turns out we don't need any condition on the embedding
