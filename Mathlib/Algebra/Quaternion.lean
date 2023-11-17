@@ -1267,8 +1267,8 @@ theorem im_sq : a.im ^ 2 = -normSq a.im := by
   simp_rw [sq, ← star_mul_self, im_star, neg_mul, neg_neg]
 #align quaternion.im_sq Quaternion.im_sq
 
-theorem coe_normSq_add : normSq (a + b) = normSq a + a * star b + b * star a + normSq b :=
-  by simp only [star_add, ← self_mul_star, mul_add, add_mul, add_assoc, add_left_comm]
+theorem coe_normSq_add : normSq (a + b) = normSq a + a * star b + b * star a + normSq b := by
+  simp only [star_add, ← self_mul_star, mul_add, add_mul, add_assoc, add_left_comm]
 #align quaternion.coe_norm_sq_add Quaternion.coe_normSq_add
 
 theorem normSq_smul (r : R) (q : ℍ[R]) : normSq (r • q) = r ^ 2 * normSq q := by
@@ -1454,7 +1454,7 @@ section QuaternionAlgebra
 variable {R : Type*} (c₁ c₂ : R)
 
 private theorem pow_four [Infinite R] : #R ^ℕ 4 = #R :=
-  power_nat_eq (aleph0_le_mk R) <| by simp
+  power_nat_eq (aleph0_le_mk R) <| by decide
 
 /-- The cardinality of a quaternion algebra, as a type. -/
 theorem mk_quaternionAlgebra : #(ℍ[R,c₁,c₂]) = #R ^ℕ 4 := by

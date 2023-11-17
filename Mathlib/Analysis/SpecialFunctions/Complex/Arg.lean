@@ -188,6 +188,9 @@ theorem arg_real_mul (x : ℂ) {r : ℝ} (hr : 0 < r) : arg (r * x) = arg x := b
       arg_mul_cos_add_sin_mul_I (mul_pos hr (abs.pos hx)) x.arg_mem_Ioc]
 #align complex.arg_real_mul Complex.arg_real_mul
 
+theorem arg_mul_real {r : ℝ} (hr : 0 < r) (x : ℂ) : arg (x * r) = arg x :=
+  mul_comm x r ▸ arg_real_mul x hr
+
 theorem arg_eq_arg_iff {x y : ℂ} (hx : x ≠ 0) (hy : y ≠ 0) :
     arg x = arg y ↔ (abs y / abs x : ℂ) * x = y := by
   simp only [ext_abs_arg_iff, map_mul, map_div₀, abs_ofReal, abs_abs,
@@ -510,6 +513,13 @@ theorem arg_coe_angle_eq_iff_eq_toReal {z : ℂ} {θ : Real.Angle} :
 theorem arg_coe_angle_eq_iff {x y : ℂ} : (arg x : Real.Angle) = arg y ↔ arg x = arg y := by
   simp_rw [← Real.Angle.toReal_inj, arg_coe_angle_toReal_eq_arg]
 #align complex.arg_coe_angle_eq_iff Complex.arg_coe_angle_eq_iff
+
+lemma arg_mul_eq_add_arg_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
+    (x * y).arg = x.arg + y.arg ↔ arg x + arg y ∈ Set.Ioc (-π) π := by
+  rw [← arg_coe_angle_toReal_eq_arg, arg_mul_coe_angle hx₀ hy₀, ← Real.Angle.coe_add,
+      Real.Angle.toReal_coe_eq_self_iff_mem_Ioc]
+
+alias ⟨_, arg_mul⟩ := arg_mul_eq_add_arg_iff
 
 section Continuity
 

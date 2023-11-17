@@ -254,7 +254,7 @@ instance : DecidablePred (Squarefree : ℕ → Prop) := fun _ =>
   decidable_of_iff' _ squarefree_iff_minSqFac
 
 theorem squarefree_two : Squarefree 2 := by
-  rw [squarefree_iff_nodup_factors] <;> norm_num
+  rw [squarefree_iff_nodup_factors] <;> decide
 #align nat.squarefree_two Nat.squarefree_two
 
 theorem divisors_filter_squarefree_of_squarefree {n : ℕ} (hn : Squarefree n) :

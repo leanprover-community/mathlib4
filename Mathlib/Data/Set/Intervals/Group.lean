@@ -167,7 +167,8 @@ variable [OrderedCommGroup α] (a b : α)
 @[to_additive]
 theorem pairwise_disjoint_Ioc_mul_zpow :
     Pairwise (Disjoint on fun n : ℤ => Ioc (a * b ^ n) (a * b ^ (n + 1))) := by
-  simp_rw [Function.onFun, Set.disjoint_iff]
+  simp (config := { unfoldPartialApp := true }) only [Function.onFun]
+  simp_rw [Set.disjoint_iff]
   intro m n hmn x hx
   apply hmn
   have hb : 1 < b := by
@@ -183,7 +184,8 @@ theorem pairwise_disjoint_Ioc_mul_zpow :
 @[to_additive]
 theorem pairwise_disjoint_Ico_mul_zpow :
     Pairwise (Disjoint on fun n : ℤ => Ico (a * b ^ n) (a * b ^ (n + 1))) := by
-  simp_rw [Function.onFun, Set.disjoint_iff]
+  simp (config := { unfoldPartialApp := true }) only [Function.onFun]
+  simp_rw [Set.disjoint_iff]
   intro m n hmn x hx
   apply hmn
   have hb : 1 < b := by
