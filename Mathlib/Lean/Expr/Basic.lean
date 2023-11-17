@@ -200,7 +200,8 @@ private def getAppAppsAux : Expr → Array Expr → Nat → Array Expr
   | _,       as, _ => as
 
 /-- Given `f a b c`, return `#[f a, f a b, f a b c]`.
-    Remark: this procedure is very similar to `getAppArgs`. -/
+Each entry in the array is an `Expr.app`,
+and this array has the same length as the one returned by `Lean.Expr.getAppArgs`. -/
 @[inline]
 def getAppApps (e : Expr) : Array Expr :=
   let dummy := mkSort levelZero
@@ -458,25 +459,29 @@ def mkProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
     e := mkAppN (.const projName us) (type.getAppArgs.push e)
   mkDirectProjection e fieldName
 
-/-- If `e` is the projection of the structure constructor, reduce it. -/
-def reduceProjStruct? (e : Expr) : MetaM (Option Expr) :=
-  e.withApp fun cfn args => do
-    let some cname := cfn.constName? | return none
-    let some pinfo ← getProjectionFnInfo? cname | return none
-    if ha : args.size = pinfo.numParams + 1 then
-      let sarg := args[pinfo.numParams]'(ha ▸ pinfo.numParams.lt_succ_self)
-      sarg.withApp fun sc sfds => do
-        unless sc.constName? = some pinfo.ctorName do
-          return none
-        let sidx := pinfo.numParams + pinfo.i
-        if hs : sidx < sfds.size then
-          return some (sfds[sidx]'hs)
-        else
-          throwError
-            (m!"ill-formed expression, {sc} is the {pinfo.i}-th projection function" ++
-              m!" but {sarg} does not have enough arguments")
-    else
+/-- If `e` is a projection of the structure constructor, reduce the projection.
+Otherwise returns `none`. If this function detects that expression is ill-typed, throws an error.
+For example, given `Prod.fst (x, y)`, returns `some x`. -/
+def reduceProjStruct? (e : Expr) : MetaM (Option Expr) := do
+  let .const cname _ := e.getAppFn | return none
+  let some pinfo ← getProjectionFnInfo? cname | return none
+  let args := e.getAppArgs
+  if ha : args.size = pinfo.numParams + 1 then
+    -- The last argument of a projection is the structure.
+    let sarg := args[pinfo.numParams]'(ha ▸ pinfo.numParams.lt_succ_self)
+    -- Check that the structure is a constructor expression.
+    unless sarg.getAppFn.isConstOf pinfo.ctorName do
       return none
+    let sfields := sarg.getAppArgs
+    -- The ith projection extracts the ith field of the constructor
+    let sidx := pinfo.numParams + pinfo.i
+    if hs : sidx < sfields.size then
+      return some (sfields[sidx]'hs)
+    else
+      throwError m!"ill-formed expression, {cname} is the {pinfo.i + 1}-th projection function {
+          ""}but {sarg} does not have enough arguments"
+  else
+    return none
 
 /-- Returns true if `e` contains a name `n` where `p n` is true. -/
 def containsConst (e : Expr) (p : Name → Bool) : Bool :=

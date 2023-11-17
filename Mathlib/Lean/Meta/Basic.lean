@@ -54,13 +54,14 @@ def Lean.Meta.forallMetaTelescopeReducingUntilDefEq
     out := tp
   return (mvs, bis, out)
 
-/-- Determines whether two expressions are definitionally equal to each other without any mvar
-    assignments. -/
+/-- `pureIsDefEq e₁ e₂` is short for `withNewMCtxDepth <| isDefEq e₁ e₂`.
+Determines whether two expressions are definitionally equal to each other
+when metavariables are not assignable. -/
 @[inline]
 def Lean.Meta.pureIsDefEq (e₁ e₂ : Expr) : MetaM Bool :=
   withNewMCtxDepth <| isDefEq e₁ e₂
 
-/-- Similar to `mkAppM n #[lhs, rhs]`, but handles `Eq` and `Iff` more efficiently. -/
+/-- `mkRel n lhs rhs` is `mkAppM n #[lhs, rhs]`, but with optimizations for `Eq` and `Iff`. -/
 def Lean.Meta.mkRel (n : Name) (lhs rhs : Expr) : MetaM Expr :=
   if n == ``Eq then
     mkEq lhs rhs
