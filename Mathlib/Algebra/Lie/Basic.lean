@@ -1112,7 +1112,7 @@ theorem symm_symm (e : M ≃ₗ⁅R,L⁆ N) : e.symm.symm = e := by
 #align lie_module_equiv.symm_symm LieModuleEquiv.symm_symm
 
 theorem symm_bijective :
-Function.Bijective (LieModuleEquiv.symm : (M ≃ₗ⁅R,L⁆ N) → N ≃ₗ⁅R,L⁆ M) :=
+    Function.Bijective (LieModuleEquiv.symm : (M ≃ₗ⁅R,L⁆ N) → N ≃ₗ⁅R,L⁆ M) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 /-- Lie module equivalences are transitive. -/

@@ -232,7 +232,7 @@ theorem symm_symm {f₀ f₁ : C(X, Y)} (F : Homotopy f₀ f₁) : F.symm.symm =
 #align continuous_map.homotopy.symm_symm ContinuousMap.Homotopy.symm_symm
 
 theorem symm_bijective {f₀ f₁ : C(X, Y)} :
-Function.Bijective (Homotopy.symm : Homotopy f₀ f₁ → Homotopy f₁ f₀) :=
+    Function.Bijective (Homotopy.symm : Homotopy f₀ f₁ → Homotopy f₁ f₀) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 /--
@@ -508,7 +508,7 @@ theorem symm_symm {f₀ f₁ : C(X, Y)} (F : HomotopyWith f₀ f₁ P) : F.symm.
 #align continuous_map.homotopy_with.symm_symm ContinuousMap.HomotopyWith.symm_symm
 
 theorem symm_bijective {f₀ f₁ : C(X, Y)} :
-Function.Bijective (HomotopyWith.symm : HomotopyWith f₀ f₁ P → HomotopyWith f₁ f₀ P) :=
+    Function.Bijective (HomotopyWith.symm : HomotopyWith f₀ f₁ P → HomotopyWith f₁ f₀ P) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 /--
@@ -638,7 +638,7 @@ theorem symm_symm (F : HomotopyRel f₀ f₁ S) : F.symm.symm = F :=
 #align continuous_map.homotopy_rel.symm_symm ContinuousMap.HomotopyRel.symm_symm
 
 theorem symm_bijective :
-Function.Bijective (HomotopyRel.symm : HomotopyRel f₀ f₁ S → HomotopyRel f₁ f₀ S) :=
+    Function.Bijective (HomotopyRel.symm : HomotopyRel f₀ f₁ S → HomotopyRel f₁ f₀ S) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 /-- Given `HomotopyRel f₀ f₁ S` and `HomotopyRel f₁ f₂ S`, we can define a `HomotopyRel f₀ f₂ S`

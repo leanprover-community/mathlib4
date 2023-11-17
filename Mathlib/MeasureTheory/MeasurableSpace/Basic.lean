@@ -1374,7 +1374,7 @@ attribute [simps! apply toEquiv] trans refl
 theorem symm_symm (e : α ≃ᵐ β) : e.symm.symm = e := rfl
 
 theorem symm_bijective :
-Function.Bijective (MeasurableEquiv.symm : (α ≃ᵐ β) → β ≃ᵐ α) :=
+    Function.Bijective (MeasurableEquiv.symm : (α ≃ᵐ β) → β ≃ᵐ α) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
