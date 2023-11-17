@@ -1009,8 +1009,8 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
   mkEqRec motive r lhsFnEqRhsFn
 
 partial def mkSymmCongrProof (e₁ e₂ : Expr) (heqProofs : Bool) : CCM (Option Expr) := do
-  let some (R₁, lhs₁, rhs₁) ← e₁.isSymmRel | return none
-  let some (R₂, lhs₂, rhs₂) ← e₂.isSymmRel | return none
+  let some (R₁, lhs₁, rhs₁) ← e₁.relSidesIfSymm? | return none
+  let some (R₂, lhs₂, rhs₂) ← e₂.relSidesIfSymm? | return none
   if R₁ != R₂ then return none
   if !(← isEqv lhs₁ lhs₂) then
     guard (← isEqv lhs₁ rhs₂)
@@ -1067,9 +1067,9 @@ partial def mkProof (lhs rhs : Expr) (H : EntryExpr) (heqProofs : Bool) : CCM Ex
   | .eqTrue =>
     let (flip, some (R, a, b)) ←
       if lhs == .const ``True [] then
-        ((true, ·)) <$> rhs.isReflRel
+        ((true, ·)) <$> rhs.relSidesIfRefl?
       else
-        ((false, ·)) <$> lhs.isReflRel
+        ((false, ·)) <$> lhs.relSidesIfRefl?
       | failure
     let aRb ←
       if R == ``Eq then
@@ -1213,12 +1213,12 @@ def compareSymm (k₁ k₂ : Expr × Name) : CCM Bool := do
   if k₁.2 == ``Eq || k₁.2 == ``Iff then
     compareSymmAux e₁.appFn!.appArg! e₁.appArg! e₂.appFn!.appArg! e₂.appArg!
   else
-    let some (_, lhs₁, rhs₁) ← e₁.isSymmRel | failure
-    let some (_, lhs₂, rhs₂) ← e₂.isSymmRel | failure
+    let some (_, lhs₁, rhs₁) ← e₁.relSidesIfSymm? | failure
+    let some (_, lhs₂, rhs₂) ← e₂.relSidesIfSymm? | failure
     compareSymmAux lhs₁ rhs₁ lhs₂ rhs₂
 
 def checkEqTrue (e : Expr) : CCM Unit := do
-  let some (_, lhs, rhs) ← e.isReflRel | return
+  let some (_, lhs, rhs) ← e.relSidesIfRefl? | return
   if ← isEqv e (.const ``True []) then return -- it is already equivalent to `True`
   let lhsR ← getRoot lhs
   let rhsR ← getRoot rhs
@@ -1249,7 +1249,7 @@ def addCongruenceTable (e : Expr) : CCM Unit := do
       { ccs with congruences := ccs.congruences.insert k [e] }
 
 def addSymmCongruenceTable (e : Expr) : CCM Unit := do
-  let some (rel, lhs, rhs) ← e.isSymmRel | failure
+  let some (rel, lhs, rhs) ← e.relSidesIfSymm? | failure
   let k ← mkSymmCongruencesKey lhs rhs
   let newP := (e, rel)
   if let some ps := (← getState).symmCongruences.find? k then
@@ -1732,7 +1732,7 @@ partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
   else
     mkEntry e false gen
     if (← getState).config.values && isValue e then return -- we treat values as atomic symbols
-  if let some (_, lhs, rhs) ← e.isSymmRel then
+  if let some (_, lhs, rhs) ← e.relSidesIfSymm? then
     internalizeCore lhs (some e) gen
     internalizeCore rhs (some e) gen
     addOccurrence e lhs true
@@ -2090,7 +2090,7 @@ def removeParents (e : Expr) (parentsToPropagate : Array Expr) : CCM (Array Expr
       parentsToPropagate := parentsToPropagate.push p
     if p.isApp then
       if pocc.symmTable then
-        let some (rel, lhs, rhs) ← p.isSymmRel | failure
+        let some (rel, lhs, rhs) ← p.relSidesIfSymm? | failure
         let k' ← mkSymmCongruencesKey lhs rhs
         if let some lst := (← getState).symmCongruences.find? k' then
           let k := (p, rel)
