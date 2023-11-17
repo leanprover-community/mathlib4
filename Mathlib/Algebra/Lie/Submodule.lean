@@ -658,8 +658,9 @@ theorem injective_incl : Function.Injective N.incl := Subtype.coe_injective
 variable {N N'} (h : N ≤ N')
 
 /-- Given two nested Lie submodules `N ⊆ N'`, the inclusion `N ↪ N'` is a morphism of Lie modules.-/
-def inclusion : N →ₗ⁅R,L⁆ N' :=
-  { Submodule.inclusion (show N.toSubmodule ≤ N'.toSubmodule from h) with map_lie' := fun {_ _} ↦ rfl }
+def inclusion : N →ₗ⁅R,L⁆ N' where
+  __ := Submodule.inclusion (show N.toSubmodule ≤ N'.toSubmodule from h)
+  map_lie' := rfl
 #align lie_submodule.hom_of_le LieSubmodule.inclusion
 
 @[simp]
@@ -1232,8 +1233,9 @@ theorem bot_of_map_eq_bot {I : LieIdeal R L} (h₁ : Function.Injective f) (h₂
 #align lie_ideal.bot_of_map_eq_bot LieIdeal.bot_of_map_eq_bot
 
 /-- Given two nested Lie ideals `I₁ ⊆ I₂`, the inclusion `I₁ ↪ I₂` is a morphism of Lie algebras. -/
-def inclusion {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) : I₁ →ₗ⁅R⁆ I₂ :=
-  { Submodule.inclusion (show I₁.toSubmodule ≤ I₂.toSubmodule from h) with map_lie' := fun {_ _} ↦ rfl }
+def inclusion {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) : I₁ →ₗ⁅R⁆ I₂ where
+  __ := Submodule.inclusion (show I₁.toSubmodule ≤ I₂.toSubmodule from h)
+  map_lie' := rfl
 #align lie_ideal.hom_of_le LieIdeal.inclusion
 
 @[simp]
@@ -1241,11 +1243,13 @@ theorem coe_inclusion {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) (x : I₁) 
   rfl
 #align lie_ideal.coe_hom_of_le LieIdeal.coe_inclusion
 
-theorem inclusion_apply {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) (x : I₁) : inclusion h x = ⟨x.1, h x.2⟩ :=
+theorem inclusion_apply {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) (x : I₁) :
+    inclusion h x = ⟨x.1, h x.2⟩ :=
   rfl
 #align lie_ideal.hom_of_le_apply LieIdeal.inclusion_apply
 
-theorem inclusion_injective {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) : Function.Injective (inclusion h) :=
+theorem inclusion_injective {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) :
+    Function.Injective (inclusion h) :=
   fun x y ↦ by
   simp only [inclusion_apply, imp_self, Subtype.mk_eq_mk, SetLike.coe_eq_coe]
 #align lie_ideal.hom_of_le_injective LieIdeal.inclusion_injective
