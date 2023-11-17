@@ -203,7 +203,7 @@ open TopologicalSpace in
 /-- Ranges of continuous local sections of a local homeomorphism form a basis of the source space.-/
 theorem isTopologicalBasis (hf : IsLocallyHomeomorph f) : IsTopologicalBasis
     {U : Set X | ∃ V : Set Y, IsOpen V ∧ ∃ s : C(V,X), f ∘ s = (↑) ∧ Set.range s = U} := by
-  refine isTopologicalBasis_of_open_of_nhds ?_ fun x U hx hU ↦ ?_
+  refine isTopologicalBasis_of_isOpen_of_nhds ?_ fun x U hx hU ↦ ?_
   · rintro _ ⟨U, hU, s, hs, rfl⟩
     refine (openEmbedding_of_comp hf (hs ▸ ⟨embedding_subtype_val, ?_⟩) s.continuous).open_range
     rwa [Subtype.range_val]

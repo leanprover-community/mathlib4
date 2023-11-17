@@ -727,7 +727,7 @@ theorem nhds_le_nhdsSet_iff [T1Space X] {s : Set X} {x : X} : 𝓝 x ≤ 𝓝ˢ 
 /-- Removing a non-isolated point from a dense set, one still obtains a dense set. -/
 theorem Dense.diff_singleton [T1Space X] {s : Set X} (hs : Dense s) (x : X) [NeBot (𝓝[≠] x)] :
     Dense (s \ {x}) :=
-  hs.inter_of_open_right (dense_compl_singleton x) isOpen_compl_singleton
+  hs.inter_of_isOpen_right (dense_compl_singleton x) isOpen_compl_singleton
 #align dense.diff_singleton Dense.diff_singleton
 
 /-- Removing a finset from a dense set in a space without isolated points, one still
@@ -2158,7 +2158,7 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
 #align nhds_basis_clopen nhds_basis_clopen
 
 theorem isTopologicalBasis_clopen : IsTopologicalBasis { s : Set X | IsClopen s } := by
-  apply isTopologicalBasis_of_open_of_nhds fun U (hU : IsClopen U) => hU.1
+  apply isTopologicalBasis_of_isOpen_of_nhds fun U (hU : IsClopen U) => hU.1
   intro x U hxU U_op
   have : U ∈ 𝓝 x := IsOpen.mem_nhds U_op hxU
   rcases (nhds_basis_clopen x).mem_iff.mp this with ⟨V, ⟨hxV, hV⟩, hVU : V ⊆ U⟩
@@ -2182,7 +2182,7 @@ variable {H : Type*} [TopologicalSpace H] [LocallyCompactSpace H] [T2Space H]
 /-- A locally compact Hausdorff totally disconnected space has a basis with clopen elements. -/
 theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
     IsTopologicalBasis { s : Set H | IsClopen s } := by
-  refine isTopologicalBasis_of_open_of_nhds (fun u hu => hu.1) fun x U memU hU => ?_
+  refine isTopologicalBasis_of_isOpen_of_nhds (fun u hu => hu.1) fun x U memU hU => ?_
   obtain ⟨s, comp, xs, sU⟩ := exists_compact_subset hU memU
   let u : Set s := ((↑) : s → H) ⁻¹' interior s
   have u_open_in_s : IsOpen u := isOpen_interior.preimage continuous_subtype_val
