@@ -142,29 +142,43 @@ protected theorem IsAlgebraic.algebraMap {a : S} :
   ⟨f, hf₁, by rw [aeval_algebraMap_apply, hf₂, map_zero]⟩
 #align is_algebraic_algebra_map_of_is_algebraic IsAlgebraic.algebraMap
 
+section
+
+variable {B} [Ring B] [Algebra R B]
+
 /-- This is slightly more general than `IsAlgebraic.algebraMap` in that it
   allows noncommutative intermediate rings `A`. -/
-protected theorem IsAlgebraic.algHom {B} [Ring B] [Algebra R B] (f : A →ₐ[R] B) {a : A}
+protected theorem IsAlgebraic.algHom (f : A →ₐ[R] B) {a : A}
     (h : IsAlgebraic R a) : IsAlgebraic R (f a) :=
   let ⟨p, hp, ha⟩ := h
   ⟨p, hp, by rw [aeval_algHom, f.comp_apply, ha, map_zero]⟩
 #align is_algebraic_alg_hom_of_is_algebraic IsAlgebraic.algHom
 
+theorem isAlgebraic_algHom_iff (f : A →ₐ[R] B) (hf : Function.Injective f)
+    {a : A} : IsAlgebraic R (f a) ↔ IsAlgebraic R a :=
+  ⟨fun ⟨p, hp0, hp⟩ ↦ ⟨p, hp0, hf <| by rwa [map_zero, ← f.comp_apply, ← aeval_algHom]⟩,
+    IsAlgebraic.algHom f⟩
+
+theorem Algebra.IsAlgebraic.of_injective (f : A →ₐ[R] B) (hf : Function.Injective f)
+    (h : Algebra.IsAlgebraic R B) : Algebra.IsAlgebraic R A :=
+  fun _ ↦ (isAlgebraic_algHom_iff f hf).mp (h _)
+
 /-- Transfer `Algebra.IsAlgebraic` across an `AlgEquiv`. -/
-theorem AlgEquiv.isAlgebraic {B} [Ring B] [Algebra R B] (e : A ≃ₐ[R] B)
-    (h : Algebra.IsAlgebraic R A) : Algebra.IsAlgebraic R B := fun b => by
-  convert ← IsAlgebraic.algHom e.toAlgHom (h _); exact e.apply_symm_apply _
+theorem AlgEquiv.isAlgebraic (e : A ≃ₐ[R] B)
+    (h : Algebra.IsAlgebraic R A) : Algebra.IsAlgebraic R B :=
+  h.of_injective e.symm.toAlgHom e.symm.injective
 #align alg_equiv.is_algebraic AlgEquiv.isAlgebraic
 
-theorem AlgEquiv.isAlgebraic_iff {B} [Ring B] [Algebra R B] (e : A ≃ₐ[R] B) :
+theorem AlgEquiv.isAlgebraic_iff (e : A ≃ₐ[R] B) :
     Algebra.IsAlgebraic R A ↔ Algebra.IsAlgebraic R B :=
   ⟨e.isAlgebraic, e.symm.isAlgebraic⟩
 #align alg_equiv.is_algebraic_iff AlgEquiv.isAlgebraic_iff
 
+end
+
 theorem isAlgebraic_algebraMap_iff {a : S} (h : Function.Injective (algebraMap S A)) :
     IsAlgebraic R (algebraMap S A a) ↔ IsAlgebraic R a :=
-  ⟨fun ⟨p, hp0, hp⟩ ↦ ⟨p, hp0, h (by rwa [map_zero, ← aeval_algebraMap_apply])⟩,
-    IsAlgebraic.algebraMap⟩
+  isAlgebraic_algHom_iff (IsScalarTower.toAlgHom R S A) h
 #align is_algebraic_algebra_map_iff isAlgebraic_algebraMap_iff
 
 theorem IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r ^ n)) :
@@ -217,20 +231,20 @@ variable [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
 
 /-- If x is algebraic over R, then x is algebraic over S when S is an extension of R,
   and the map from `R` to `S` is injective. -/
-theorem IsAlgebraic.larger_base_of_injective
+theorem IsAlgebraic.tower_top_of_injective
     (hinj : Function.Injective (algebraMap R S)) {x : A}
     (A_alg : IsAlgebraic R x) : IsAlgebraic S x :=
   let ⟨p, hp₁, hp₂⟩ := A_alg
   ⟨p.map (algebraMap _ _), by
     rwa [Ne.def, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
-#align is_algebraic_of_larger_base_of_injective IsAlgebraic.larger_base_of_injective
+#align is_algebraic_of_larger_base_of_injective IsAlgebraic.tower_top_of_injective
 
 /-- If A is an algebraic algebra over R, then A is algebraic over S when S is an extension of R,
   and the map from `R` to `S` is injective. -/
-theorem Algebra.IsAlgebraic.larger_base_of_injective (hinj : Function.Injective (algebraMap R S))
+theorem Algebra.IsAlgebraic.tower_top_of_injective (hinj : Function.Injective (algebraMap R S))
     (A_alg : IsAlgebraic R A) : IsAlgebraic S A :=
-  fun x ↦ (A_alg x).larger_base_of_injective hinj
-#align algebra.is_algebraic_of_larger_base_of_injective Algebra.IsAlgebraic.larger_base_of_injective
+  fun x ↦ (A_alg x).tower_top_of_injective hinj
+#align algebra.is_algebraic_of_larger_base_of_injective Algebra.IsAlgebraic.tower_top_of_injective
 
 end CommRing
 
@@ -243,15 +257,15 @@ variable [Algebra K L] [Algebra L A] [Algebra K A] [IsScalarTower K L A]
 variable (L)
 
 /-- If x is algebraic over K, then x is algebraic over L when L is an extension of K -/
-theorem IsAlgebraic.larger_base {x : A} (A_alg : IsAlgebraic K x) :
+theorem IsAlgebraic.tower_top {x : A} (A_alg : IsAlgebraic K x) :
     IsAlgebraic L x :=
-  A_alg.larger_base_of_injective (algebraMap K L).injective
-#align is_algebraic_of_larger_base IsAlgebraic.larger_base
+  A_alg.tower_top_of_injective (algebraMap K L).injective
+#align is_algebraic_of_larger_base IsAlgebraic.tower_top
 
 /-- If A is an algebraic algebra over K, then A is algebraic over L when L is an extension of K -/
-theorem Algebra.IsAlgebraic.larger_base (A_alg : IsAlgebraic K A) : IsAlgebraic L A :=
-  A_alg.larger_base_of_injective (algebraMap K L).injective
-#align algebra.is_algebraic_of_larger_base Algebra.IsAlgebraic.larger_base
+theorem Algebra.IsAlgebraic.tower_top (A_alg : IsAlgebraic K A) : IsAlgebraic L A :=
+  A_alg.tower_top_of_injective (algebraMap K L).injective
+#align algebra.is_algebraic_of_larger_base Algebra.IsAlgebraic.tower_top
 
 variable (K)
 
