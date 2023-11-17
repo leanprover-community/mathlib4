@@ -211,10 +211,10 @@ instance le : LE (E →ₗ.[R] F) :=
   ⟨fun f g => f.domain ≤ g.domain ∧ ∀ ⦃x : f.domain⦄ ⦃y : g.domain⦄ (_h : (x : E) = y), f x = g y⟩
 #align linear_pmap.has_le LinearPMap.le
 
-theorem apply_comp_ofLe {T S : E →ₗ.[R] F} (h : T ≤ S) (x : T.domain) :
+theorem apply_comp_inclusion {T S : E →ₗ.[R] F} (h : T ≤ S) (x : T.domain) :
     T x = S (Submodule.inclusion h.1 x) :=
   h.2 rfl
-#align linear_pmap.apply_comp_of_le LinearPMap.apply_comp_ofLe
+#align linear_pmap.apply_comp_of_le LinearPMap.apply_comp_inclusion
 
 theorem exists_of_le {T S : E →ₗ.[R] F} (h : T ≤ S) (x : T.domain) :
     ∃ y : S.domain, (x : E) = y ∧ T x = S y :=

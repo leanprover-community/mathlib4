@@ -830,7 +830,7 @@ theorem Basis.card_le_card_of_submodule (N : Submodule R M) [Fintype ι] (b : Ba
 theorem Basis.card_le_card_of_le {N O : Submodule R M} (hNO : N ≤ O) [Fintype ι] (b : Basis ι R O)
     [Fintype ι'] (b' : Basis ι' R N) : Fintype.card ι' ≤ Fintype.card ι :=
   b.card_le_card_of_linearIndependent
-    (b'.linearIndependent.map' (Submodule.inclusion hNO) (N.ker_ofLe O _))
+    (b'.linearIndependent.map' (Submodule.inclusion hNO) (N.ker_inclusion O _))
 #align basis.card_le_card_of_le Basis.card_le_card_of_le
 
 theorem Basis.mk_eq_rank (v : Basis ι R M) :
@@ -1201,9 +1201,9 @@ theorem Submodule.rank_sup_add_rank_inf_eq (s t : Submodule K V) :
   rank_add_rank_split (inclusion le_sup_left) (inclusion le_sup_right) (inclusion inf_le_left) (inclusion inf_le_right)
     (by
       rw [← map_le_map_iff' (ker_subtype <| s ⊔ t), Submodule.map_sup, Submodule.map_top, ←
-        LinearMap.range_comp, ← LinearMap.range_comp, subtype_comp_ofLe, subtype_comp_ofLe,
+        LinearMap.range_comp, ← LinearMap.range_comp, subtype_comp_inclusion, subtype_comp_inclusion,
         range_subtype, range_subtype, range_subtype])
-    (ker_ofLe _ _ _) (by ext ⟨x, hx⟩; rfl)
+    (ker_inclusion _ _ _) (by ext ⟨x, hx⟩; rfl)
     (by
       rintro ⟨b₁, hb₁⟩ ⟨b₂, hb₂⟩ eq
       obtain rfl : b₁ = b₂ := congr_arg Subtype.val eq

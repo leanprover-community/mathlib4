@@ -284,7 +284,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
   · simp only [Fin.cons_zero, Fin.castLE_zero]
     exact a_smul_y'.symm
   · rw [Fin.castLE_succ]
-    simp only [Fin.cons_succ, Function.comp_apply, coe_ofLe, map_coe, coeSubtype, h i]
+    simp only [Fin.cons_succ, Function.comp_apply, coe_inclusion, map_coe, coeSubtype, h i]
 #align submodule.basis_of_pid_aux Submodule.basis_of_pid_aux
 
 /-- A submodule of a free `R`-module of finite rank is also a free `R`-module of finite rank,
