@@ -34,6 +34,10 @@ local notation "Lim_G_tensor" =>
 /-- lim G -/
 local notation "Lim_G" => (DirectLimit G f)
 
+/--
+the map `limᵢ (G i ⊗ M) → (limᵢ G) ⊗ M` induced by the family of maps `G i ⊗ M → (limᵢ G) ⊗ M`
+given by `gᵢ ⊗ m ↦ [gᵢ] ⊗ m`.
+-/
 noncomputable def directLimitOfTensorProductToTensorProductWithDirectLimit :
   Lim_G_tensor →ₗ[R] Lim_G ⊗[R] M :=
 DirectLimit.lift _ _ _ _ (fun i => TensorProduct.map (DirectLimit.of _ _ _ _ _) LinearMap.id) <|
@@ -56,6 +60,12 @@ lemma directLimitOfTensorProductToTensorProductWithDirectLimit_apply_of_tmul
   rfl
 
 variable (M)
+
+/--
+the map `(limᵢ G) ⊗ M → limᵢ (G i ⊗ M)` from the bilinear map `limᵢ Gᵢ → M → limᵢ (G i ⊗ M)` given
+by the family of maps `Gᵢ → M → limᵢ (G i ⊗ M)` where `gᵢ ↦ m ↦ [gᵢ ⊗ m]`
+
+-/
 noncomputable def tensorProductWithDirectLimitToDirectLimitOfTensorProduct :
   Lim_G ⊗[R] M →ₗ[R] Lim_G_tensor :=
 TensorProduct.lift <| DirectLimit.lift _ _ _ _
@@ -96,6 +106,9 @@ variable (M)
 variable [IsDirected ι (. ≤ .)] [Nonempty ι]
 
 set_option maxHeartbeats 800000 in
+/--
+`limᵢ (G i ⊗ M)` and `(limᵢ G) ⊗ M` are isomorphic as modules
+-/
 @[simps!]
 noncomputable def directLimitCommutesTensorProduct :
     Lim_G_tensor ≃ₗ[R] Lim_G ⊗[R] M :=
