@@ -28,8 +28,6 @@ that is solvable by radicals has a solvable Galois group.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open scoped Classical Polynomial IntermediateField
 
 open Polynomial IntermediateField
@@ -286,9 +284,9 @@ theorem isIntegral (α : solvableByRad F E) : IsIntegral F α := by
   revert α
   apply solvableByRad.induction
   · exact fun _ => isIntegral_algebraMap
-  · exact fun _ _ => isIntegral_add
-  · exact fun _ => isIntegral_neg
-  · exact fun _ _ => isIntegral_mul
+  · exact fun _ _ => IsIntegral.add
+  · exact fun _ => IsIntegral.neg
+  · exact fun _ _ => IsIntegral.mul
   · intro α hα
     exact Subalgebra.inv_mem_of_algebraic (integralClosure F (solvableByRad F E))
       (show IsAlgebraic F ↑(⟨α, hα⟩ : integralClosure F (solvableByRad F E)) from
@@ -341,13 +339,14 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
   have hpq := Polynomial.splits_of_splits_mul _
     (mul_ne_zero (minpoly.ne_zero (isIntegral α)) (minpoly.ne_zero (isIntegral β)))
     (SplittingField.splits (p * q))
-  let f : ↥F⟮α, β⟯ →ₐ[F] (p * q).SplittingField := Classical.choice <| algHom_mk_adjoin_splits (by
-    intro x hx
-    cases' hx with hx hx
-    rw [hx]
-    exact ⟨isIntegral α, hpq.1⟩
-    cases hx
-    exact ⟨isIntegral β, hpq.2⟩)
+  let f : ↥F⟮α, β⟯ →ₐ[F] (p * q).SplittingField :=
+    Classical.choice <| nonempty_algHom_adjoin_of_splits <| by
+      intro x hx
+      cases' hx with hx hx
+      rw [hx]
+      exact ⟨isIntegral α, hpq.1⟩
+      cases hx
+      exact ⟨isIntegral β, hpq.2⟩
   have key : minpoly F γ = minpoly F (f ⟨γ, hγ⟩) := by
     refine' minpoly.eq_of_irreducible_of_monic
       (minpoly.irreducible (isIntegral γ)) _ (minpoly.monic (isIntegral γ))

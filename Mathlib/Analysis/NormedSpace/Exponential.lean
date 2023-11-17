@@ -213,13 +213,13 @@ variable [CompleteSpace 𝔸]
 theorem expSeries_summable_of_mem_ball (x : 𝔸)
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     Summable fun n => expSeries 𝕂 𝔸 n fun _ => x :=
-  summable_of_summable_norm (norm_expSeries_summable_of_mem_ball x hx)
+  (norm_expSeries_summable_of_mem_ball x hx).of_norm
 #align exp_series_summable_of_mem_ball expSeries_summable_of_mem_ball
 
 theorem expSeries_summable_of_mem_ball' (x : 𝔸)
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     Summable fun n => (n !⁻¹ : 𝕂) • x ^ n :=
-  summable_of_summable_norm (norm_expSeries_summable_of_mem_ball' x hx)
+  (norm_expSeries_summable_of_mem_ball' x hx).of_norm
 #align exp_series_summable_of_mem_ball' expSeries_summable_of_mem_ball'
 
 theorem expSeries_hasSum_exp_of_mem_ball (x : 𝔸)
@@ -312,7 +312,7 @@ theorem map_exp_of_mem_ball {F} [RingHomClass F 𝔸 𝔹] (f : F) (hf : Continu
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) : f (exp 𝕂 x) = exp 𝕂 (f x) := by
   rw [exp_eq_tsum, exp_eq_tsum]
   refine' ((expSeries_summable_of_mem_ball' _ hx).hasSum.map f hf).tsum_eq.symm.trans _
-  dsimp only [Function.comp]
+  dsimp only [Function.comp_def]
   simp_rw [map_inv_nat_cast_smul f 𝕂 𝕂, map_pow]
 #align map_exp_of_mem_ball map_exp_of_mem_ball
 
@@ -342,7 +342,7 @@ theorem norm_expSeries_div_summable_of_mem_ball (x : 𝔸)
 
 theorem expSeries_div_summable_of_mem_ball [CompleteSpace 𝔸] (x : 𝔸)
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) : Summable fun n => x ^ n / n ! :=
-  summable_of_summable_norm (norm_expSeries_div_summable_of_mem_ball 𝕂 x hx)
+  (norm_expSeries_div_summable_of_mem_ball 𝕂 x hx).of_norm
 #align exp_series_div_summable_of_mem_ball expSeries_div_summable_of_mem_ball
 
 theorem expSeries_div_hasSum_exp_of_mem_ball [CompleteSpace 𝔸] (x : 𝔸)
@@ -389,7 +389,7 @@ variable [NormedRing 𝔹] [NormedAlgebra 𝕂 𝔹]
 has an infinite radius of convergence. -/
 theorem expSeries_radius_eq_top : (expSeries 𝕂 𝔸).radius = ∞ := by
   refine' (expSeries 𝕂 𝔸).radius_eq_top_of_summable_norm fun r => _
-  refine' summable_of_norm_bounded_eventually _ (Real.summable_pow_div_factorial r) _
+  refine' .of_norm_bounded_eventually _ (Real.summable_pow_div_factorial r) _
   filter_upwards [eventually_cofinite_ne 0] with n hn
   rw [norm_mul, norm_norm (expSeries 𝕂 𝔸 n), expSeries]
   rw [norm_smul (n ! : 𝕂)⁻¹ (ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸)]
@@ -420,11 +420,11 @@ section CompleteAlgebra
 variable [CompleteSpace 𝔸]
 
 theorem expSeries_summable (x : 𝔸) : Summable fun n => expSeries 𝕂 𝔸 n fun _ => x :=
-  summable_of_summable_norm (norm_expSeries_summable x)
+  (norm_expSeries_summable x).of_norm
 #align exp_series_summable expSeries_summable
 
 theorem expSeries_summable' (x : 𝔸) : Summable fun n => (n !⁻¹ : 𝕂) • x ^ n :=
-  summable_of_summable_norm (norm_expSeries_summable' x)
+  (norm_expSeries_summable' x).of_norm
 #align exp_series_summable' expSeries_summable'
 
 theorem expSeries_hasSum_exp (x : 𝔸) : HasSum (fun n => expSeries 𝕂 𝔸 n fun _ => x) (exp 𝕂 x) :=
@@ -589,7 +589,7 @@ theorem norm_expSeries_div_summable (x : 𝔸) : Summable fun n => ‖(x ^ n / n
 variable [CompleteSpace 𝔸]
 
 theorem expSeries_div_summable (x : 𝔸) : Summable fun n => x ^ n / n ! :=
-  summable_of_summable_norm (norm_expSeries_div_summable 𝕂 x)
+  (norm_expSeries_div_summable 𝕂 x).of_norm
 #align exp_series_div_summable expSeries_div_summable
 
 theorem expSeries_div_hasSum_exp (x : 𝔸) : HasSum (fun n => x ^ n / n !) (exp 𝕂 x) :=

@@ -165,7 +165,6 @@ theorem eq_of_le_of_lt_succ {n m : ℕ} (h₁ : n ≤ m) (h₂ : m < n + 1) : m 
 -- Moved to Std
 #align nat.one_add Nat.one_add
 
-@[simp]
 theorem succ_pos' {n : ℕ} : 0 < succ n :=
   succ_pos n
 #align nat.succ_pos' Nat.succ_pos'

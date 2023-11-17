@@ -85,7 +85,7 @@ theorem quadraticCharFun_one : quadraticCharFun F 1 = 1 := by
 theorem quadraticCharFun_eq_one_of_char_two (hF : ringChar F = 2) {a : F} (ha : a ≠ 0) :
     quadraticCharFun F a = 1 := by
   simp only [quadraticCharFun, ha, if_false, ite_eq_left_iff]
-  exact fun h => h (FiniteField.isSquare_of_char_two hF a)
+  exact fun h => (h (FiniteField.isSquare_of_char_two hF a)).elim
 #align quadratic_char_fun_eq_one_of_char_two quadraticCharFun_eq_one_of_char_two
 
 /-- If `ringChar F` is odd, then `quadraticCharFun F a` can be computed in

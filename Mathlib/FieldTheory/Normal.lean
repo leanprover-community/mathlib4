@@ -114,7 +114,7 @@ theorem Normal.of_algEquiv [h : Normal F E] (f : E ≃ₐ[F] E') : Normal F E' :
   rw [normal_iff] at h ⊢
   intro x; specialize h (f.symm x)
   rw [← f.apply_symm_apply x, minpoly.algEquiv_eq, ← f.toAlgHom.comp_algebraMap]
-  exact ⟨map_isIntegral f h.1, splits_comp_of_splits _ _ h.2⟩
+  exact ⟨IsIntegral.map f h.1, splits_comp_of_splits _ _ h.2⟩
 #align normal.of_alg_equiv Normal.of_algEquiv
 
 theorem AlgEquiv.transfer_normal (f : E ≃ₐ[F] E') : Normal F E ↔ Normal F E' :=
@@ -131,7 +131,7 @@ theorem Normal.of_isSplittingField (p : F[X]) [hFEp : IsSplittingField F E p] : 
       (AlgEquiv.ofBijective (Algebra.ofId F E) (Algebra.bijective_algebraMap_iff.2 this.symm))
   refine normal_iff.mpr fun x ↦ ?_
   haveI : FiniteDimensional F E := IsSplittingField.finiteDimensional E p
-  have hx := isIntegral_of_finite F x
+  have hx := IsIntegral.of_finite F x
   let L := (p * minpoly F x).SplittingField
   have hL := splits_of_splits_mul' _ ?_ (SplittingField.splits (p * minpoly F x))
   · let j : E →ₐ[F] L := IsSplittingField.lift E p hL.1
@@ -218,7 +218,7 @@ def AlgHom.restrictNormalAux [h : Normal F E] :
           (minpoly.dvd E _ (by simp [aeval_algHom_apply]))
       simp only [AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom]
       suffices IsIntegral F _ by exact isIntegral_of_isScalarTower this
-      exact map_isIntegral ϕ (map_isIntegral (toAlgHom F E K₁) (h.isIntegral z))⟩
+      exact IsIntegral.map ϕ (IsIntegral.map (toAlgHom F E K₁) (h.isIntegral z))⟩
   map_zero' := Subtype.ext ϕ.map_zero
   map_one' := Subtype.ext ϕ.map_one
   map_add' x y := Subtype.ext (ϕ.map_add x y)
@@ -318,15 +318,15 @@ noncomputable def AlgHom.liftNormal [h : Normal F E] : E →ₐ[F] E :=
   @AlgHom.restrictScalars F K₁ E E _ _ _ _ _ _
       ((IsScalarTower.toAlgHom F K₂ E).comp ϕ).toRingHom.toAlgebra _ _ _ _ <|
     Nonempty.some <|
-      @IntermediateField.algHom_mk_adjoin_splits' _ _ _ _ _ _ _
+      @IntermediateField.nonempty_algHom_of_adjoin_splits _ _ _ _ _ _ _
         ((IsScalarTower.toAlgHom F K₂ E).comp ϕ).toRingHom.toAlgebra _
-        (IntermediateField.adjoin_univ _ _) fun x _ =>
-        ⟨isIntegral_of_isScalarTower (h.out x).1,
+        (fun x _ => ⟨isIntegral_of_isScalarTower (h.out x).1,
           splits_of_splits_of_dvd _ (map_ne_zero (minpoly.ne_zero (h.out x).1))
             -- Porting note: had to override typeclass inference below using `(_)`
             (by rw [splits_map_iff, ← @IsScalarTower.algebraMap_eq _ _ _ _ _ _ (_) (_) (_)];
                 exact (h.out x).2)
-            (minpoly.dvd_map_of_isScalarTower F K₁ x)⟩
+            (minpoly.dvd_map_of_isScalarTower F K₁ x)⟩)
+        (IntermediateField.adjoin_univ _ _)
 #align alg_hom.lift_normal AlgHom.liftNormal
 
 @[simp]
@@ -370,21 +370,12 @@ theorem AlgEquiv.restrictNormalHom_surjective [Normal F K₁] [Normal F E] :
   ⟨χ.liftNormal E, χ.restrict_liftNormal E⟩
 #align alg_equiv.restrict_normal_hom_surjective AlgEquiv.restrictNormalHom_surjective
 
-open AdjoinRoot in
+open IntermediateField in
 theorem Normal.minpoly_eq_iff_mem_orbit [h : Normal F E] {x y : E} :
     minpoly F x = minpoly F y ↔ x ∈ MulAction.orbit (E ≃ₐ[F] E) y := by
   refine ⟨fun he ↦ ?_, fun ⟨f, he⟩ ↦ he ▸ minpoly.algEquiv_eq f y⟩
-  let Fx := AdjoinRoot (minpoly F x)
-  have hx : aeval x (minpoly F x) = 0 := minpoly.aeval F x
-  have hy : aeval y (minpoly F x) = 0 := he ▸ minpoly.aeval F y
-  let Ax : Algebra Fx E := (lift (algebraMap F E) x hx).toAlgebra
-  have Tx : IsScalarTower F Fx E := IsScalarTower.of_ring_hom (liftHom _ x hx)
-  let Ay : Algebra Fx E := (lift (algebraMap F E) y hy).toAlgebra
-  have Ty : IsScalarTower F Fx E := IsScalarTower.of_ring_hom (liftHom _ y hy)
-  haveI : Fact (Irreducible <| minpoly F x) := ⟨minpoly.irreducible <| h.isIntegral x⟩
-  let f : E ≃ₐ[F] E := @AlgEquiv.liftNormal F Fx Fx _ _ _ _ _ AlgEquiv.refl E _ _ Ay Ax Ty Tx _
-  refine ⟨f, (congr_arg f (lift_root hy).symm).trans <| Eq.trans ?_ (lift_root hx)⟩
-  exact @AlgEquiv.liftNormal_commutes F Fx Fx _ _ _ _ _ _ E _ _ Ay Ax Ty Tx _ (root _)
+  obtain ⟨φ, hφ⟩ := exists_algHom_of_splits_of_aeval (normal_iff.mp h) (he ▸ minpoly.aeval F x)
+  exact ⟨AlgEquiv.ofBijective φ (φ.normal_bijective F E E), hφ⟩
 
 variable (F K₁)
 

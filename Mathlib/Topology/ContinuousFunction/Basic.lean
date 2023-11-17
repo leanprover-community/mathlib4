@@ -452,7 +452,8 @@ noncomputable def liftCover : C(α, β) :=
     Set.iUnion_eq_univ_iff.2 fun x ↦ (hS x).imp fun _ ↦ mem_of_mem_nhds
   mk (Set.liftCover S (fun i ↦ φ i) hφ H) <| continuous_of_cover_nhds hS fun i ↦ by
     rw [continuousOn_iff_continuous_restrict]
-    simpa only [Set.restrict, Set.liftCover_coe] using (φ i).continuous
+    simpa (config := { unfoldPartialApp := true }) only [Set.restrict, Set.liftCover_coe] using
+      (φ i).continuous
 #align continuous_map.lift_cover ContinuousMap.liftCover
 
 variable {S φ hφ hS}
@@ -506,6 +507,77 @@ end Gluing
 
 end ContinuousMap
 
+section Lift
+
+variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+    {f : C(X, Y)}
+
+/-- `Setoid.quotientKerEquivOfRightInverse` as a homeomorphism. -/
+@[simps!]
+def Function.RightInverse.homeomorph {f' : C(Y, X)} (hf : Function.RightInverse f' f) :
+    Quotient (Setoid.ker f) ≃ₜ Y where
+  toEquiv := Setoid.quotientKerEquivOfRightInverse _ _ hf
+  continuous_toFun := quotientMap_quot_mk.continuous_iff.mpr f.continuous
+  continuous_invFun := continuous_quotient_mk'.comp f'.continuous
+
+namespace QuotientMap
+
+/--
+The homeomorphism from the quotient of a quotient map to its codomain. This is
+`Setoid.quotientKerEquivOfSurjective` as a homeomorphism.
+-/
+@[simps!]
+noncomputable def homeomorph (hf : QuotientMap f) : Quotient (Setoid.ker f) ≃ₜ Y where
+  toEquiv := Setoid.quotientKerEquivOfSurjective _ hf.surjective
+  continuous_toFun := quotientMap_quot_mk.continuous_iff.mpr hf.continuous
+  continuous_invFun := by
+    rw [hf.continuous_iff]
+    convert continuous_quotient_mk'
+    ext
+    simp only [Equiv.invFun_as_coe, Function.comp_apply,
+      (Setoid.quotientKerEquivOfSurjective f hf.surjective).symm_apply_eq]
+    rfl
+
+variable (hf : QuotientMap f) (g : C(X, Z)) (h : Function.FactorsThrough g f)
+
+/-- Descend a continuous map, which is constant on the fibres, along a quotient map. -/
+@[simps]
+noncomputable def lift : C(Y, Z) where
+  toFun := ((fun i ↦ Quotient.liftOn' i g (fun _ _ (hab : f _ = f _) ↦ h hab)) :
+    Quotient (Setoid.ker f) → Z) ∘ hf.homeomorph.symm
+  continuous_toFun := Continuous.comp (continuous_quot_lift _ g.2) (Homeomorph.continuous _)
+
+/--
+The obvious triangle induced by `QuotientMap.lift` commutes:
+```
+     g
+  X --→ Z
+  |   ↗
+f |  / hf.lift g h
+  v /
+  Y
+```
+-/
+@[simp]
+theorem lift_comp : (hf.lift g h).comp f = g := by
+  ext
+  simpa using h (Function.rightInverse_surjInv _ _)
+
+/-- `QuotientMap.lift` as an equivalence. -/
+@[simps]
+noncomputable def liftEquiv : { g : C(X, Z) // Function.FactorsThrough g f} ≃ C(Y, Z) where
+  toFun g := hf.lift g g.prop
+  invFun g := ⟨g.comp f, fun _ _ h ↦ by simp only [ContinuousMap.comp_apply]; rw [h]⟩
+  left_inv := by intro; simp
+  right_inv := by
+    intro g
+    ext a
+    simpa using congrArg g (Function.rightInverse_surjInv hf.surjective a)
+
+end QuotientMap
+
+end Lift
+
 namespace Homeomorph
 
 variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
@@ -526,7 +598,7 @@ instance : Coe (α ≃ₜ β) C(α, β) :=
 -- Porting note: Syntactic tautology
 /-theorem toContinuousMap_as_coe : f.toContinuousMap = f :=
   rfl
-#align homeomorph.to_continuous_map_as_coe Homeomorph.toContinuousMap_as_coe-/
+-/
 #noalign homeomorph.to_continuous_map_as_coe
 
 @[simp]
@@ -541,14 +613,16 @@ theorem coe_trans : (f.trans g : C(α, γ)) = (g : C(β, γ)).comp f :=
 
 /-- Left inverse to a continuous map from a homeomorphism, mirroring `Equiv.symm_comp_self`. -/
 @[simp]
-theorem symm_comp_toContinuousMap : (f.symm : C(β, α)).comp (f : C(α, β)) = ContinuousMap.id α :=
-  by rw [← coe_trans, self_trans_symm, coe_refl]
+theorem symm_comp_toContinuousMap :
+    (f.symm : C(β, α)).comp (f : C(α, β)) = ContinuousMap.id α := by
+  rw [← coe_trans, self_trans_symm, coe_refl]
 #align homeomorph.symm_comp_to_continuous_map Homeomorph.symm_comp_toContinuousMap
 
 /-- Right inverse to a continuous map from a homeomorphism, mirroring `Equiv.self_comp_symm`. -/
 @[simp]
-theorem toContinuousMap_comp_symm : (f : C(α, β)).comp (f.symm : C(β, α)) = ContinuousMap.id β :=
-  by rw [← coe_trans, symm_trans_self, coe_refl]
+theorem toContinuousMap_comp_symm :
+    (f : C(α, β)).comp (f.symm : C(β, α)) = ContinuousMap.id β := by
+  rw [← coe_trans, symm_trans_self, coe_refl]
 #align homeomorph.to_continuous_map_comp_symm Homeomorph.toContinuousMap_comp_symm
 
 end Homeomorph
