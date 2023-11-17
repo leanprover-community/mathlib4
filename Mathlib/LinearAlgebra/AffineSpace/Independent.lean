@@ -483,8 +483,6 @@ theorem exists_nontrivial_relation_sum_zero_of_not_affine_ind {t : Finset V}
       simp only [Finset.sum_dite_of_true fun _ h => h, Finset.mk_coe, hwt, hw]
     · simpa using hwt
     simpa using hw
-
-
 #align exists_nontrivial_relation_sum_zero_of_not_affine_ind exists_nontrivial_relation_sum_zero_of_not_affine_ind
 
 /-- Viewing a module as an affine space modelled on itself, we can characterise affine independence

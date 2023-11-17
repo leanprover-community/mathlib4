@@ -2862,8 +2862,12 @@ theorem inclusion_lt_inclusion [Preorder α] {s t : Set α} (h : s ⊆ t) {x y :
     inclusion h x < inclusion h y ↔ x < y := Iff.rfl
 
 /-- An alias for `Subtype.val` from sets, which takes `s` as an explicit argument to make it clear
-  what the set in question is. -/
+  what the set in question is.
+
+See also `Set.inclusion`, for when the codomain is also a set.  -/
 abbrev incl (s : Set α) : s → α := Subtype.val
+
+@[simp] theorem incl_apply (s : Set α) (x : s) : Set.incl s x = x := rfl
 
 end Inclusion
 
