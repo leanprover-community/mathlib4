@@ -239,7 +239,7 @@ is another `r`-series
 -/
 @[simps]
 def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
-  (prev_connect : r (p (Fin.castSucc i)) a) (connect_next : r a (p i.succ)) : RelSeries r where
+    (prev_connect : r (p (Fin.castSucc i)) a) (connect_next : r a (p i.succ)) : RelSeries r where
   length := p.length + 1
   toFun :=  (Fin.castSucc i.succ).insertNth a p
   step := fun m => by
