@@ -165,7 +165,7 @@ lemma mul_modMonomial_finsupp_single (i : σ) (x y : MvPolynomial σ R') :
   · rw [coeff_modMonomial_of_le _ H, eq_comm]
     apply Finset.sum_eq_zero
     rintro ⟨a, b⟩ h
-    rw [Finsupp.mem_antidiagonal] at h
+    rw [Finset.HasAntidiagonal.mem_antidiagonal] at h
     by_cases ha : s ≤ a
     · rw [coeff_modMonomial_of_le _ ha, zero_mul]
     · rw [coeff_modMonomial_of_not_le _ ha]
