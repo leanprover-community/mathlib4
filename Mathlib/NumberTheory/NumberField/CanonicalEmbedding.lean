@@ -42,8 +42,6 @@ nonzero algebraic integer `a` in `K` such that `w a < f w` for all infinite plac
 number field, infinite places
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 variable (K : Type*) [Field K]
 
 namespace NumberField.canonicalEmbedding

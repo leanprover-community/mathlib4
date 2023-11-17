@@ -27,7 +27,6 @@ for a general nontrivial normed space.
 open Set Function Metric MeasurableSpace intervalIntegral
 open scoped Pointwise ENNReal NNReal
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 local notation "dim" => FiniteDimensional.finrank ℝ
 
 noncomputable section

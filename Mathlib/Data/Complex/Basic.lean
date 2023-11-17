@@ -16,8 +16,6 @@ of characteristic zero. The result that the complex numbers are algebraically cl
 `FieldTheory.AlgebraicClosure`.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Set Function
 
 /-! ### Definition and basic arithmetic -/
