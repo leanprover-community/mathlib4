@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Winston Yin
 -/
 import Mathlib.Analysis.ODE.PicardLindelof
--- import Mathlib.Geometry.Manifold.ContMDiff
--- import Mathlib.Geometry.Manifold.MFDeriv
-import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
+import Mathlib.Geometry.Manifold.ContMDiff
+import Mathlib.Geometry.Manifold.MFDeriv
 
 /-!
 # Integral curves of vector fields on a manifold
@@ -149,7 +148,7 @@ rw [tangentBundleCore_coordChange_achart, LocalEquiv.right_inv _ hf3', fderivWit
   tangent vector of `γ` at `t` coincides with the vector field at `γ t` for all `t` within an open
   interval around `t₀`. -/
 lemma exists_integralCurve_of_contMDiff_tangent_section_boundaryless [I.Boundaryless] :
-  ∃ ε > (0 : ℝ), ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ ∀ (t : ℝ), t ∈ Set.Ioo (t₀ - ε) (t₀ + ε) →
-    HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t))) :=
+    ∃ ε > (0 : ℝ), ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ ∀ (t : ℝ), t ∈ Set.Ioo (t₀ - ε) (t₀ + ε) →
+      HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t))) :=
   exists_integralCurve_of_contMDiff_tangent_section hv _
     ModelWithCorners.Boundaryless.isInteriorPoint
