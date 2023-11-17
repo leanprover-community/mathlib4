@@ -207,4 +207,54 @@ def depthFirstLawfulTraversable.{u}
                           ApplicativeTransformation.app_eq_coe, ihₗ, ihᵣ]
             <;> exact rfl
 
+instance : Monad (Tree' N) :=
+  { Bifunctor.functor with
+    pure := leaf
+    bind := Tree'.bind }
+
+-- @[simp]
+theorem fmap_def (f : L → L') (t : Tree' N L)
+  : f <$> t = Tree'.mapLeaves f t := rfl
+
+@[simp]
+theorem leaf_bind (x : L) (f : L → Tree' N L') : (leaf x).bind f = f x := rfl
+
+@[simp]
+theorem branch_bind (y : N) (l r : Tree' N L) (f : L → Tree' N L')
+  : (branch y l r).bind f = branch y (l.bind f) (r.bind f) := rfl
+
+@[simp]
+theorem bind_leaf_comp (f : L → L') : ∀ (t : Tree' N L), t.bind (leaf ∘ f) = f <$> t
+  | leaf _ => rfl
+  | branch y l r => congr_arg₂ (branch y) (bind_leaf_comp f l) (bind_leaf_comp f r)
+
+@[simp]
+theorem bind_assoc : ∀ (t : Tree' N L) (f : L → Tree' N L') (g : L' → Tree' N L''),
+    (t.bind f).bind g = t.bind (fun x => (f x).bind g)
+  | leaf _ => fun _ _ => rfl
+  | branch y l r => fun f g => congr_arg₂ (branch y) (bind_assoc l f g) (bind_assoc r f g)
+
+instance : LawfulMonad (Tree' N) :=
+  { Bifunctor.lawfulFunctor with
+    pure_bind := Tree'.leaf_bind
+    bind_pure_comp := bind_leaf_comp
+    bind_map := fun _ _ => rfl
+    bind_assoc := bind_assoc
+    -- doesn't use anything specific to Trees
+    -- but it can't be implemented as a default :/
+    seqLeft_eq := by
+      intros L L' t s
+      dsimp [SeqLeft.seqLeft, Seq.seq]
+      rw [← bind_leaf_comp, bind_assoc]
+      refine congrArg _ $ funext $ fun x => ?_
+      exact Eq.trans (bind_leaf_comp (Function.const _ x) s)
+                     (Eq.symm (leaf_bind _ _))
+    seqRight_eq := by
+      intros L L' t s
+      dsimp [SeqRight.seqRight, Seq.seq]
+      rw [← bind_leaf_comp, bind_assoc]
+      refine congrArg _ $ funext $ fun x => ?_
+      refine Eq.trans (Eq.symm (id_map s)) (Eq.symm (leaf_bind _ _))
+    pure_seq := fun f t => Tree'.leaf_bind f (· <$> t) }
+
 end Tree'

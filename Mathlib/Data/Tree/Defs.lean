@@ -269,6 +269,12 @@ def mapNodes.{u₁, v₁, u₂} {N : Type u₁} {N' : Type u₂} {L : Type v₁}
 
 universe u v w
 
+-- grafts a new tree onto each leaf
+def bind {N : Type u} {L : Type v} {L' : Type w}
+    : Tree' N L → (L → Tree' N L') → Tree' N L'
+  | leaf x, f => f x
+  | branch y l r, f => branch y (bind l f) (bind r f)
+
 section traversals
 
 open Tree (VisitOrder)
@@ -344,6 +350,10 @@ def eraseLeafData : Tree' N L → Tree N
   | leaf _ => Tree.nil
   | branch y l r => Tree.node y (eraseLeafData l) (eraseLeafData r)
 
+def fillLeavesDefault (L : Type u) [Inhabited L] : Tree N → Tree' N L
+  | Tree.nil => Tree'.leaf default
+  | Tree.node a l r => Tree'.branch a (fillLeavesDefault L l) (fillLeavesDefault L r)
+
 open Std
 
 -- possibly(?) more efficient version of get_leaves using difference lists
@@ -403,11 +413,5 @@ theorem height_le_numNodes : ∀ x : Tree' N L, x.height ≤ x.numNodes
     Nat.succ_le_succ
       (max_le (_root_.trans l.height_le_numNodes <| l.numNodes.le_add_right _)
         (_root_.trans r.height_le_numNodes <| r.numNodes.le_add_left _))
-
--- def unit_leaves_equiv_Tree : Tree' Unit N ≃ Tree N where
---   toFun := eraseLeafData
---   invFun := Tree.rec ()
---   left_inv := sorry
---   right_inv := sorry
 
 end Tree'
