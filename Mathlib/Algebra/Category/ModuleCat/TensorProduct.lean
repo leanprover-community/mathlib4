@@ -35,7 +35,7 @@ Let `X` be an `(R,S)`-bimodule, then `(X ⊗[R] .)` is a functor from the catego
 to category of `S`-modules.
 -/
 @[simps!]
-def tensorFunctor : ModuleCat.{v} R ⥤ ModuleCat.{v} S where
+noncomputable def tensorFunctor : ModuleCat.{v} R ⥤ ModuleCat.{v} S where
   obj Y := ModuleCat.of S <| X ⊗[R] Y
   map {Y Y'} l := -- TensorProduct.AlgebraTensorModule.map LinearMap.id l
   let L := TensorProduct.map LinearMap.id l
@@ -82,15 +82,14 @@ def homFunctor : ModuleCat.{v} S ⥤ ModuleCat.{v} R where
     simp only [LinearMap.coe_comp, Function.comp_apply, Eq.ndrec, LinearMap.add_apply, id_eq,
       eq_mpr_eq_cast, cast_eq, AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply,
       LinearMap.bimodule_smul_apply, LinearMap.coe_mk]
-    rw [comp_apply, comp_apply]
     rfl
 
 variable {R S X}
 
-
 /-- uncurry a map from a tensor product to a bilinear map-/
 @[simps]
-def curry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : (tensorFunctor R S X).obj X' ⟶ Y) :
+noncomputable def curry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S}
+    (l : (tensorFunctor R S X).obj X' ⟶ Y) :
     X' ⟶ (homFunctor R S X).obj Y where
   toFun x' :=
     { toFun := (l <| . ⊗ₜ x')
@@ -127,7 +126,7 @@ def uncurry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X �
       · intro x x'
         rw [smul_tmul']
         simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, RingHom.id_apply]
-        rw [tmul, AddCon.lift_mk', tmul, AddCon.lift_mk', FreeAddMonoid.lift_eval_of, map_smul,
+        erw [tmul, AddCon.lift_mk', tmul, AddCon.lift_mk', FreeAddMonoid.lift_eval_of, map_smul,
           FreeAddMonoid.lift_eval_of]
       · rintro _ _ (h : L _ = r • L _) (h' : L _ = r • L _)
         show L _ = r • L _
@@ -140,7 +139,7 @@ lemma uncurry'_apply_tmul {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' �
 variable (R S X)
 /-- The tensoring function is left adjoint to the hom functor. -/
 @[simps!]
-def tensorHomAdjunction : tensorFunctor R S X ⊣ homFunctor R S X :=
+noncomputable def tensorHomAdjunction : tensorFunctor R S X ⊣ homFunctor R S X :=
   Adjunction.mkOfHomEquiv
   { homEquiv := fun X' Y =>
     { toFun := curry'
@@ -148,34 +147,29 @@ def tensorHomAdjunction : tensorFunctor R S X ⊣ homFunctor R S X :=
       left_inv := fun l => LinearMap.ext fun x => x.induction_on (by simp only [map_zero])
         (fun _ _ => by erw [uncurry'_apply_tmul, curry'_apply_apply])
         (fun _ _ h₁ h₂ => by rw [map_add, h₁, h₂, map_add])
-      right_inv := fun l => LinearMap.ext fun x => LinearMap.ext fun z => by
-        rw [curry'_apply_apply, uncurry'_apply_tmul]
-        rfl }
+      right_inv := fun l => LinearMap.ext fun x => LinearMap.ext fun z => rfl }
     homEquiv_naturality_left_symm := fun {X' X''} Y f g => by
       simp only [homFunctor_obj, Equiv.coe_fn_symm_mk]
       refine LinearMap.ext fun x => x.induction_on ?_ ?_ ?_
       · rw [map_zero, map_zero]
       · intro x x'
-        rw [uncurry'_apply_tmul, comp_apply, comp_apply, tensorFunctor_map_apply]
-        erw [uncurry'_apply_tmul]
+        rfl
       · intro _ _ hx hy
         rw [map_add, hx, hy, map_add]
     homEquiv_naturality_right := fun {X' Y Y'} f g => by
       simp only [homFunctor_obj, Equiv.coe_fn_mk]
-      refine LinearMap.ext fun x => LinearMap.ext fun y => ?_
-      rw [curry'_apply_apply, comp_apply, comp_apply, homFunctor_map_apply, LinearMap.comp_apply,
-        curry'_apply_apply] }
+      refine LinearMap.ext fun x => LinearMap.ext fun y => rfl }
 
-instance : IsLeftAdjoint (tensorFunctor R S X) :=
+noncomputable instance : IsLeftAdjoint (tensorFunctor R S X) :=
 ⟨_, tensorHomAdjunction _ _ _⟩
 
-instance : IsRightAdjoint (homFunctor R S X) :=
+noncomputable instance : IsRightAdjoint (homFunctor R S X) :=
 ⟨_, tensorHomAdjunction _ _ _⟩
 
-instance : Limits.PreservesColimits (tensorFunctor R S X) :=
+noncomputable instance : Limits.PreservesColimits (tensorFunctor R S X) :=
 Adjunction.leftAdjointPreservesColimits <| tensorHomAdjunction _ _ _
 
-instance : Limits.PreservesLimits (homFunctor R S X) :=
+noncomputable instance : Limits.PreservesLimits (homFunctor R S X) :=
 Adjunction.rightAdjointPreservesLimits <| tensorHomAdjunction _ _ _
 
 example : Functor.PreservesEpimorphisms (tensorFunctor R S X) :=
@@ -190,7 +184,7 @@ variable {M N : Type v} [AddCommGroup M] [AddCommGroup N]
 variable [Module R' M] [Module R' N]
 
 @[simps!]
-def toAddCommGroup {C : Type v} [AddCommGroup C]
+noncomputable def toAddCommGroup {C : Type v} [AddCommGroup C]
     (b : M →+ (N →+ C)) (hb : ∀ (r : R') (m : M) (n : N), b (r • m) n = b m (r • n)) :
     (M ⊗[R'] N) →+ C :=
   (((ModuleCat.tensorHomAdjunction R' ℤ N).homEquiv
@@ -213,7 +207,7 @@ lemma toAddCommGroup_apply_tmul {C : Type v} [AddCommGroup C]
     ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
   erw [FreeAddMonoid.lift_eval_of]
 
-def toAddCommGroup' {C : Type v} [AddCommGroup C]
+noncomputable def toAddCommGroup' {C : Type v} [AddCommGroup C]
   (b : M × N → C)
   (hN0 : ∀ (n : N), b (0, n) = 0)
   (hM0 : ∀ (m : M), b (m, 0) = 0)

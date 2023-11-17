@@ -9,9 +9,6 @@ import Mathlib.Algebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.Algebra.Module.Projective
-import Mathlib.CategoryTheory.ShortExactSequence
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
-import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Character
 import Mathlib.Algebra.DirectLimitAndTensorProduct
 import Mathlib.Algebra.Module.Injective
@@ -78,14 +75,14 @@ variable (R : Type u) (M : Type u) [CommRing R] [AddCommGroup M] [Module R M]
 
 open TensorProduct
 
-def Flat.preserves_ses : Prop :=
-  (tensorRight <| ModuleCat.of R M).PreservesSESs
+-- def Flat.preserves_ses : Prop :=
+--   (tensorRight <| ModuleCat.of R M).PreservesSESs
 
-def Flat.preserves_exactness : Prop :=
-∀ ⦃N1 N2 N3 : ModuleCat.{u} R⦄ (l12 : N1 ⟶ N2) (l23 : N2 ⟶ N3)
-  (_ : Exact l12 l23),
-  Exact ((tensorRight <| ModuleCat.of R M).map l12)
-    ((tensorRight <| ModuleCat.of R M).map l23)
+-- def Flat.preserves_exactness : Prop :=
+-- ∀ ⦃N1 N2 N3 : ModuleCat.{u} R⦄ (l12 : N1 ⟶ N2) (l23 : N2 ⟶ N3)
+--   (_ : Exact l12 l23),
+--   Exact ((tensorRight <| ModuleCat.of R M).map l12)
+--     ((tensorRight <| ModuleCat.of R M).map l23)
 
 def Flat.injective : Prop :=
 ∀ ⦃N N' : ModuleCat.{u} R⦄ (L : N ⟶ N'),

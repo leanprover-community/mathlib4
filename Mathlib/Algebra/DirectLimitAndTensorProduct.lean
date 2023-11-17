@@ -28,7 +28,7 @@ local notation "Lim_G_tensor" =>
 /-- lim G -/
 local notation "Lim_G" => (DirectLimit G f)
 
-def directLimitOfTensorProductToTensorProductWithDirectLimit :
+noncomputable def directLimitOfTensorProductToTensorProductWithDirectLimit :
   Lim_G_tensor →ₗ[R] Lim_G ⊗[R] M :=
 DirectLimit.lift _ _ _ _ (fun i => TensorProduct.map (DirectLimit.of _ _ _ _ _) LinearMap.id) <|
   fun i j h x => x.induction_on (by simp only [map_zero])
@@ -50,7 +50,7 @@ lemma directLimitOfTensorProductToTensorProductWithDirectLimit_apply_of_tmul
   rfl
 
 variable (M)
-def tensorProductWithDirectLimitToDirectLimitOfTensorProduct :
+noncomputable def tensorProductWithDirectLimitToDirectLimitOfTensorProduct :
   Lim_G ⊗[R] M →ₗ[R] Lim_G_tensor :=
 TensorProduct.lift <| DirectLimit.lift _ _ _ _
   (fun i =>
@@ -90,7 +90,8 @@ variable (M)
 variable [IsDirected ι (. ≤ .)] [Nonempty ι]
 
 set_option maxHeartbeats 800000 in
-@[simps!] def directLimitCommutesTensorProduct :
+@[simps!]
+noncomputable def directLimitCommutesTensorProduct :
     Lim_G_tensor ≃ₗ[R] Lim_G ⊗[R] M :=
   LinearEquiv.ofLinear
     (directLimitOfTensorProductToTensorProductWithDirectLimit f M)
@@ -119,7 +120,7 @@ variable (injective : ∀ i, Function.Injective <| g i)
 
 variable (R ι G)
 
-lemma lift_inj :
+lemma DirectLimit.lift_inj :
   Function.Injective $ DirectLimit.lift R ι G f g compatible := by
   simp_rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff, LinearMap.mem_ker] at injective ⊢
   intros z hz
