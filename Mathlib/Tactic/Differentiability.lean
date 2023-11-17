@@ -44,5 +44,5 @@ macro "differentiability?" : tactic =>
 -- syntax (name := differentiability) "differentiability" (config)? : tactic
 
 
--- attribute to use with `solve_by_elim`. TODO delete either aesop tactic or this?
+/-- attribute to use with `solve_by_elim`. TODO delete either aesop tactic or this? -/
 register_label_attr differentiabilitySBE

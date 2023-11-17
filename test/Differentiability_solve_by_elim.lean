@@ -144,7 +144,9 @@ attribute [differentiabilitySBE]
     ContDiff.differentiable
     ContDiff.differentiable_iteratedFDeriv
 
+section RealExamplesAndTests
 
+open Real
 
 set_option trace.Meta.Tactic.solveByElim true
 
@@ -170,14 +172,17 @@ set_option maxHeartbeats 10000000 in
     -- apply Differentiable.mul_const
     -- apply differentiable_id'
     -- apply differentiable_cosh
--- try automation. Says:    [] ❌ trying to apply: @Differentiable.mul
--- which doesn't make sense, because applying that lemma works above.
+-- try automation.
     -- solve_by_elim (config:={maxDepth:=10}) using differentiabilitySBE
+-- this says:    [] ❌ trying to apply: @Differentiable.mul
+-- which doesn't make sense, because applying that lemma works above.
+
+-- and this does work after all:
     solve_by_elim [Differentiable.add_const,
-    Differentiable.mul,
-    Differentiable.mul_const,
-    differentiable_id',
-    differentiable_cosh]
+        Differentiable.mul,
+        Differentiable.mul_const,
+        differentiable_id',
+        differentiable_cosh]
 
 
 #time example : Differentiable ℝ (fun x ↦ ( sin (sin x))) := by
@@ -190,18 +195,23 @@ set_option maxHeartbeats 10000000 in
         ]
 
 
+-- ISSUE TODO:
+-- apparantly, this solves a subgoal and then doesn't go back to the start of the list of tactics?
+-- concretely, applies `Differentiable.mul` and never tries it again in subgoals
 #time example : Differentiable ℝ (fun (x : ℝ) ↦
 (sin x * exp x + 3) * 999 * (cosh (cos x)))
 := by
     solve_by_elim (config:={maxDepth:=10}) using differentiabilitySBE
 
+
 section ComplexExamplesAndTestsdifferentiabilitySBE
 
 open Complex
 
+-- fails to apply `@Differentiable.mul` but this *should* apply!
 example : Differentiable ℂ (fun (x : ℂ) ↦
 (sin x * exp x + 3) * 999 * (cosh (cos x)))
 := by
-    solve_by_elim (config:={maxDepth:=10}) using differentiabilitySBE
-
-end differentiabilitySBE
+    -- solve_by_elim (config:={maxDepth:=10}) using differentiabilitySBE
+    apply @Differentiable.mul
+    sorry
