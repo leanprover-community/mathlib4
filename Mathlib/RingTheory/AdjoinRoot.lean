@@ -538,7 +538,7 @@ def powerBasis' (hg : g.Monic) : PowerBasis R (AdjoinRoot g) where
 variable [Field K] {f : K[X]}
 
 theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
-  isAlgebraic_iff_isIntegral.mp (isAlgebraic_root hf)
+  (isAlgebraic_root hf).isIntegral
 #align adjoin_root.is_integral_root AdjoinRoot.isIntegral_root
 
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
