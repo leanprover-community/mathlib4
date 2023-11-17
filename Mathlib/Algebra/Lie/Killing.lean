@@ -447,7 +447,7 @@ instance isSemisimple [IsDomain R] [IsPrincipalIdealRing R] : IsSemisimple R L :
 
 -- TODO: formalize a positive-characteristic counterexample to the above instance
 
-lemma isLieAbelian_of_IsCartanSubalgebra [IsKilling K L] [FiniteDimensional K L]
+instance instIsLieAbelian_of_IsCartanSubalgebra [IsKilling K L] [FiniteDimensional K L]
     (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [LieModule.IsTriangularizable K H L] :
     IsLieAbelian H :=
   LieModule.isLieAbelian_of_ker_traceForm_eq_bot K H L <|
