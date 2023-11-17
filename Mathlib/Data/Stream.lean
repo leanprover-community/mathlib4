@@ -31,32 +31,27 @@ universe u v w
 /-- This type is used to represent infinite list in the runtime. -/
 unsafe inductive Stream'Impl (α : Type u)
   /-- Prepend an element to a thunk of an infinite list. -/
-  | cons' (head : α) (tail : Thunk (Stream'Impl α)) : Stream'Impl α
+  | cons (head : α) (tail : Thunk (Stream'Impl α)) : Stream'Impl α
 
 namespace Stream'Impl
 
 variable {α : Type u} {β : Type v} {δ : Type w}
 
-/-- Prepend an element to an infinite list. -/
-@[inline]
-unsafe def cons (head : α) (tail : Stream'Impl α) : Stream'Impl α :=
-  cons' head (Thunk.pure tail)
-
 /-- Head of an infinite list. -/
 @[inline]
 unsafe def head : Stream'Impl α → α
-  | cons' a _ => a
+  | cons a _ => a
 
 /-- Tail of an infinite list. -/
 @[inline]
 unsafe def tail : Stream'Impl α → Stream'Impl α
-  | cons' _ t => Thunk.get t
+  | cons _ t => Thunk.get t
 
 /-- Corecursor for the stream. -/
 @[specialize]
 unsafe def corec' (f : α → β × α) (a : α) : Stream'Impl β :=
   match f a with
-  | (a, b) => cons' a ⟨fun _ => corec' f b⟩
+  | (a, b) => cons a ⟨fun _ => corec' f b⟩
 
 end Stream'Impl
 
@@ -86,7 +81,7 @@ protected theorem ext {s₁ s₂ : Stream' α} (h : ∀ n, get s₁ n = get s₂
 /-- Prepend an element to a stream. -/
 @[inline]
 unsafe def consUnsafe (a : α) (s : Stream' α) : Stream' α :=
-  unsafeCast (cons a (unsafeCast s) : Stream'Impl α)
+  unsafeCast (cons a (Thunk.pure (unsafeCast s)))
 
 @[inherit_doc consUnsafe, implemented_by consUnsafe]
 def cons (a : α) (s : Stream' α) : Stream' α where

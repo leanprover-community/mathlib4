@@ -27,33 +27,27 @@ universe u v w
 unsafe inductive ComputationImpl (α : Type u)
   /-- `pure a` is the computation that immediately terminates with result `a`. -/
   | pure (a : α) : ComputationImpl α
-  /-- `think' t` is the computation that delays for one "tick" and then evaluate the thunk of
+  /-- `think t` is the computation that delays for one "tick" and then evaluate the thunk of
   computation `t`. -/
-  | think' (t : Thunk (ComputationImpl α)) : ComputationImpl α
+  | think (t : Thunk (ComputationImpl α)) : ComputationImpl α
 
 namespace ComputationImpl
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
-/-- `think c` is the computation that delays for one "tick" and then performs
-  computation `c`. -/
-@[inline]
-unsafe def think (c : ComputationImpl α) : ComputationImpl α :=
-  think' (Thunk.pure c)
-
 /-- `dest c` is the destructor for `ComputationImpl α` as a coinductive type.
-  It returns `inl a` if `c = pure a` and `inr c'.get` if `c = think' c'`. -/
+  It returns `inl a` if `c = pure a` and `inr c'.get` if `c = think c'`. -/
 @[inline]
 unsafe def dest : (c : ComputationImpl α) → α ⊕ ComputationImpl α
   | pure a => Sum.inl a
-  | think' t => Sum.inr (Thunk.get t)
+  | think t => Sum.inr (Thunk.get t)
 
 /-- Corecursor for the computation. -/
 @[specialize]
 unsafe def corec (f : β → α ⊕ β) (b : β) : ComputationImpl α :=
   match f b with
   | Sum.inl a => pure a
-  | Sum.inr b => think' (Thunk.mk fun _ => corec f b)
+  | Sum.inr b => think (Thunk.mk fun _ => corec f b)
 
 /-- Corecursor where it is possible to return a fully formed value at any point of the
 computation. -/
@@ -62,7 +56,7 @@ unsafe def corec' (f : β → ComputationImpl α ⊕ α ⊕ β) (b : β) : Compu
   match f b with
   | Sum.inl c => c
   | Sum.inr (Sum.inl a) => pure a
-  | Sum.inr (Sum.inr b) => think' (Thunk.mk fun _ => corec' f b)
+  | Sum.inr (Sum.inr b) => think (Thunk.mk fun _ => corec' f b)
 
 end ComputationImpl
 
@@ -119,7 +113,7 @@ instance : CoeTC α (Computation α) :=
   computation `c`. -/
 @[inline]
 unsafe def thinkUnsafe (c : Computation α) : Computation α :=
-  unsafeCast (think (unsafeCast c) : ComputationImpl α)
+  unsafeCast (think (Thunk.pure (unsafeCast c : ComputationImpl α)))
 
 @[inherit_doc thinkUnsafe, implemented_by thinkUnsafe]
 def think (c : Computation α) : Computation α where
