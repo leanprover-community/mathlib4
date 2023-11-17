@@ -401,13 +401,13 @@ instance isScalarTower_mid' : IsScalarTower K S L :=
   S.isScalarTower_mid
 #align intermediate_field.is_scalar_tower_mid' IntermediateField.isScalarTower_mid'
 
-/-- If `f : L →+* L'` fixes `K`, `S.comap f` is the intermediate field between `K` and `L`
+/-- Given `f : L →ₐ[K] L'`, `S.comap f` is the intermediate field between `K` and `L`
   such that `f x ∈ S ↔ x ∈ S.comap f`. -/
 def comap (f : L →ₐ[K] L') (S : IntermediateField K L') : IntermediateField K L where
   __ := S.toSubalgebra.comap f
   inv_mem' x hx := show f x⁻¹ ∈ S by rw [map_inv₀ f x]; exact S.inv_mem hx
 
-/-- If `f : L →+* L'` fixes `K`, `S.map f` is the intermediate field between `K` and `L'`
+/-- Given `f : L →ₐ[K] L'`, `S.map f` is the intermediate field between `K` and `L'`
 such that `x ∈ S ↔ f x ∈ S.map f`. -/
 def map (f : L →ₐ[K] L') (S : IntermediateField K L) : IntermediateField K L' where
   __ := S.toSubalgebra.map f
