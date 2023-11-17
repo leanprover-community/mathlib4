@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 /-!
 # The homology sequence
@@ -29,6 +30,20 @@ the Liquid Tensor Experiment.
 -/
 
 open CategoryTheory Category Limits
+
+def CategoryTheory.Limits.KernelFork.IsLimit.ofι'
+    {C : Type*} [Category C] [HasZeroMorphisms C] {X Y K : C} {f : X ⟶ Y} (i : K ⟶ X) (w : i ≫ f = 0)
+    (h : ∀ {A : C} (k : A ⟶ X) (_ : k ≫ f = 0), { l : A ⟶ K // l ≫ i = k}) [hi : Mono i] :
+    IsLimit (KernelFork.ofι _ w) :=
+  ofι _ _ (fun {A} k hk => (h k hk).1) (fun {A} k hk => (h k hk).2) (fun {A} k hk m hm => by
+    rw [← cancel_mono i, (h k hk).2, hm])
+
+def CategoryTheory.Limits.CokernelCofork.IsColimit.ofπ'
+    {C : Type*} [Category C] [HasZeroMorphisms C] {X Y Q : C} {f : X ⟶ Y} (p : Y ⟶ Q) (w : f ≫ p = 0)
+    (h : ∀ {A : C} (k : Y ⟶ A) (_ : f ≫ k = 0), { l : Q ⟶ A // p ≫ l = k}) [hp : Epi p] :
+    IsColimit (CokernelCofork.ofπ _ w) :=
+  ofπ _ _ (fun {A} k hk => (h k hk).1) (fun {A} k hk => (h k hk).2) (fun {A} k hk m hm => by
+    rw [← cancel_epi p, (h k hk).2, hm])
 
 namespace HomologicalComplex
 
@@ -89,14 +104,6 @@ variable (C c)
 noncomputable def natTransOpCyclesToCycles [CategoryWithHomology C] :
     opcyclesFunctor C c i ⟶ cyclesFunctor C c j where
   app K := K.opcyclesToCycles i j
-
-instance [Mono φ] (i : ι) : Mono (φ.f i) := by
-  change Mono ((HomologicalComplex.eval C c i).map φ)
-  sorry -- infer_instance (needs limits)
-
-instance [Epi φ] (i : ι) : Epi (φ.f i) := by
-  change Epi ((HomologicalComplex.eval C c i).map φ)
-  sorry -- infer_instance (needs colimits)
 
 instance [Mono (φ.f j)] : Mono (cyclesMap φ j) :=
   mono_of_mono_fac (cyclesMap_i φ j)
@@ -172,24 +179,50 @@ noncomputable def composableArrows₃Functor [CategoryWithHomology C] :
 
 end HomologySequence
 
-lemma opcycles_right_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exact) [Epi S.g]
-    (i : ι) [S.X₁.HasHomology i] [S.X₂.HasHomology i] [S.X₃.HasHomology i] :
-    (ShortComplex.mk (opcyclesMap S.f i) (opcyclesMap S.g i)
-      (by rw [← opcyclesMap_comp, S.zero, opcyclesMap_zero])).Exact := by
-  sorry -- needs colimits in `HomologicalComplex`
-
-lemma cycles_left_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exact) [Mono S.f]
-    (i : ι) [S.X₁.HasHomology i] [S.X₂.HasHomology i] [S.X₃.HasHomology i] :
-    (ShortComplex.mk (cyclesMap S.f i) (cyclesMap S.g i)
-      (by rw [← cyclesMap_comp, S.zero, cyclesMap_zero])).Exact := by
-  sorry -- needs limits in `HomologicalComplex`
-
 end Preadditive
 
 section Abelian
 
 variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
-  {S : ShortComplex (HomologicalComplex C c)}
+
+lemma opcycles_right_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exact) [Epi S.g]
+    [Balanced C]
+    (i : ι) [S.X₁.HasHomology i] [S.X₂.HasHomology i] [S.X₃.HasHomology i] :
+    (ShortComplex.mk (opcyclesMap S.f i) (opcyclesMap S.g i)
+      (by rw [← opcyclesMap_comp, S.zero, opcyclesMap_zero])).Exact := by
+  have : Epi (ShortComplex.map S (eval C c i)).g := by dsimp; infer_instance
+  have hj := (hS.map (HomologicalComplex.eval C c i)).gIsCokernel
+  apply ShortComplex.exact_of_g_is_cokernel
+  refine' CokernelCofork.IsColimit.ofπ' _ _  (fun {A} k hk => by
+    dsimp at k hk ⊢
+    have H := CokernelCofork.IsColimit.desc' hj (S.X₂.pOpcycles i ≫ k) (by
+      dsimp
+      rw [← p_opcyclesMap_assoc, hk, comp_zero])
+    dsimp at H
+    refine' ⟨S.X₃.descOpcycles H.1 _ rfl _, _⟩
+    · rw [← cancel_epi (S.g.f (c.prev i)), comp_zero, Hom.comm_assoc, H.2,
+        d_pOpcycles_assoc, zero_comp]
+    · rw [← cancel_epi (S.X₂.pOpcycles i), opcyclesMap_comp_descOpcycles, p_descOpcycles, H.2])
+
+lemma cycles_left_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exact) [Mono S.f]
+    (i : ι) [S.X₁.HasHomology i] [S.X₂.HasHomology i] [S.X₃.HasHomology i] :
+    (ShortComplex.mk (cyclesMap S.f i) (cyclesMap S.g i)
+      (by rw [← cyclesMap_comp, S.zero, cyclesMap_zero])).Exact := by
+  have : Mono (ShortComplex.map S (eval C c i)).f := by dsimp; infer_instance
+  have hi := (hS.map (HomologicalComplex.eval C c i)).fIsKernel
+  apply ShortComplex.exact_of_f_is_kernel
+  exact KernelFork.IsLimit.ofι' _ _ (fun {A} k hk => by
+    dsimp at k hk ⊢
+    have H := KernelFork.IsLimit.lift' hi (k ≫ S.X₂.iCycles i) (by
+      dsimp
+      rw [assoc, ← cyclesMap_i, reassoc_of% hk, zero_comp])
+    dsimp at H
+    refine' ⟨S.X₁.liftCycles H.1 _ rfl _, _⟩
+    · rw [← cancel_mono (S.f.f _), assoc, zero_comp, ← Hom.comm, reassoc_of% H.2,
+        iCycles_d, comp_zero]
+    · rw [← cancel_mono (S.X₂.iCycles i), liftCycles_comp_cyclesMap, liftCycles_i, H.2])
+
+variable  {S : ShortComplex (HomologicalComplex C c)}
   (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j)
 
 namespace HomologySequence
