@@ -18,20 +18,20 @@ defining a norm on `E`, see `MeasureTheory.measure_lt_one_eq_integral_div_gamma`
 
 Using these formula, we compute the volume of the unit balls in several cases.
 
-* `MeasureTheory.volume_sum_rpow_lt` / `MeasureTheory.volume_sum_rpow_le`: volume of the
-open and closed balls for the norm `L^p` over a real finite dimensional vector space with `1 ≤ p`.
-These are computed as `volume {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) < r}` and
-`volume {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) ≤ r}` since the spaces `PiLp` do not have a
-`MeasureSpace` instance.
+* `MeasureTheory.volume_sum_rpow_lt` / `MeasureTheory.volume_sum_rpow_le`: volume of the open and
+  closed balls for the norm `L^p` over a real finite dimensional vector space with `1 ≤ p`. These
+  are computed as `volume {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) < r}` and
+  `volume {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) ≤ r}` since the spaces `PiLp` do not have a
+  `MeasureSpace` instance.
 
 * `Complex.volume_sum_rpow_lt_one` / `Complex.volume_sum_rpow_lt`: same as above but for complex
-finite dimensional vector space.
+  finite dimensional vector space.
 
 * `Euclidean_space.volume_ball` / `Euclidean_space.volume_closedBall` : volume of open and closed
-balls in a finite dimensional Euclidean space.
+  balls in a finite dimensional Euclidean space.
 
 * `InnerProductSpace.volume_ball` / `InnerProductSpace.volume_closedBall`: volume of open and closed
-balls in a finite dimensional real inner product space.
+  balls in a finite dimensional real inner product space.
 
 * `Complex.volume_ball` / `Complex.volume_closedBall`: volume of open and closed balls in `ℂ`.
 -/
@@ -473,7 +473,6 @@ variable (ι : Type*) [Nonempty ι] [Fintype ι]
 
 open Fintype Real MeasureTheory MeasureTheory.Measure ENNReal
 
-@[simp]
 theorem Euclidean_space.volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
     volume (Metric.ball x r) = (.ofReal r) ^ card ι *
       .ofReal (Real.sqrt π  ^ card ι / Gamma (card ι / 2 + 1)) := by
@@ -491,7 +490,6 @@ theorem Euclidean_space.volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
     · rw [Gamma_add_one (by norm_num), Gamma_one_half_eq, ← mul_assoc, mul_div_cancel' _
         two_ne_zero, one_mul]
 
-@[simp]
 theorem Euclidean_space.volume_closedBall (x : EuclideanSpace ℝ ι) (r : ℝ) :
     volume (Metric.closedBall x r) = (.ofReal r) ^ card ι *
       .ofReal (sqrt π  ^ card ι / Gamma (card ι / 2 + 1)) := by
@@ -506,7 +504,6 @@ open MeasureTheory MeasureTheory.Measure ENNReal Real FiniteDimensional
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E] [Nontrivial E]
 
-@[simp]
 theorem InnerProductSpace.volume_ball (x : E) (r : ℝ) :
     volume (Metric.ball x r) = (.ofReal r) ^ finrank ℝ E *
       .ofReal (sqrt π ^ finrank ℝ E / Gamma (finrank ℝ E / 2 + 1)) := by
@@ -518,7 +515,6 @@ theorem InnerProductSpace.volume_ball (x : E) (r : ℝ) :
   convert this
   simp only [LinearIsometryEquiv.preimage_ball, LinearIsometryEquiv.symm_symm, _root_.map_zero]
 
-@[simp]
 theorem InnerProductSpace.volume_closedBall (x : E) (r : ℝ) :
     volume (Metric.closedBall x r) = (.ofReal r) ^ finrank ℝ E *
       .ofReal (sqrt π  ^ finrank ℝ E / Gamma (finrank ℝ E / 2 + 1)) := by
