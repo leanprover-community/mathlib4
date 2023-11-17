@@ -482,6 +482,15 @@ instance rightAdjointOfComp {E : Type u₃} [Category.{v₃} E] {F : C ⥤ D} {G
 
 end
 
+section mono_epi
+
+instance (adj : F ⊣ G) {X : C} {Y : D} (f : F.obj X ⟶ Y) [Mono f] [Faithful F] :
+    Mono (adj.homEquiv _ _ f) where
+  right_cancellation _ _ h := F.map_injective
+    (by simpa only [← cancel_mono f] using (adj.homEquiv _ _).injective (by simpa using h))
+
+end mono_epi
+
 section ConstructLeft
 
 -- Construction of a left adjoint. In order to construct a left

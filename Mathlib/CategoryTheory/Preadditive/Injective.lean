@@ -356,11 +356,7 @@ def injectivePresentationOfMapInjectivePresentation (adj : F ⊣ G)
   J := G.obj I.J
   injective := Injective.injective_of_adjoint adj _
   f := adj.homEquiv _ _ I.f
-  mono := by
-    have eq1 : F.map (adj.homEquiv _ _ <| I.f) ≫ (adj.counit.app _) = I.f := by simp
-    have : Mono (F.map (adj.homEquiv _ _ <| I.f) ≫ (adj.counit.app _)) := eq1.symm ▸ I.mono
-    have : Mono (F.map (adj.homEquiv _ _ <| I.f)) := mono_of_mono _ (adj.counit.app I.J)
-    simp_all only [Functor.id_obj, Functor.mono_map_iff_mono]
+  mono := (F.mono_map_iff_mono _).1 inferInstance
 
 end Adjunction
 
