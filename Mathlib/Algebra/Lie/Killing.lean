@@ -36,7 +36,7 @@ We define the trace / Killing form in this file and prove some basic properties.
    a Lie algebra is non-singular, it remains non-singular when restricted to a Cartan subalgebra.
  * `LieAlgebra.IsKilling.isSemisimple`: if a Lie algebra has non-singular Killing form then it is
    semisimple.
- * `LieAlgebra.IsKilling.isLieAbelian_of_IsCartanSubalgebra`: if the Killing form of a Lie algebra
+ * `LieAlgebra.IsKilling.isLieAbelian_of_isCartanSubalgebra`: if the Killing form of a Lie algebra
    is non-singular, then its Cartan subalgebras are Abelian.
 
 ## TODO
