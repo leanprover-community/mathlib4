@@ -486,10 +486,10 @@ theorem convexBodyLt_volume :
     volume (convexBodyLt K f) = (convexBodyLtFactor K) * ∏ w, (f w) ^ (mult w) := by
   calc
     _ = (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (2 * (f x.val))) *
-          ∏ x : {w // InfinitePlace.IsComplex w}, pi * ENNReal.ofReal (f x.val) ^ 2 := by
+          ∏ x : {w // InfinitePlace.IsComplex w}, ENNReal.ofReal (f x.val) ^ 2 * pi := by
       simp_rw [volume_eq_prod, prod_prod, volume_pi, pi_pi, Real.volume_ball, Complex.volume_ball]
     _ = (↑2 ^ NrRealPlaces K * (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val))) *
-          (↑pi ^ NrComplexPlaces K * (∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2)) := by
+          ((∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2) * ↑pi ^ NrComplexPlaces K) := by
       simp_rw [ofReal_mul (by norm_num : 0 ≤ (2 : ℝ)), Finset.prod_mul_distrib, Finset.prod_const,
         Finset.card_univ, ofReal_ofNat]
     _ = (convexBodyLtFactor K) * ((∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val)) *
