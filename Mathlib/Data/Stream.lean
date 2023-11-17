@@ -12,30 +12,64 @@ import Mathlib.Data.Nat.SuccPred
 /-!
 # Definition of `Stream'` and functions on streams
 
-A stream `Stream' α` is a lazy infinite list with elements of `α` where all elements after the first
+A stream `Stream' α` is an infinite list with elements of `α` where all elements after the first
 are computed on-demand. (This is logically sound because `Stream' α` is dealed as `ℕ → α` in the
 kernel.) In this file we define `Stream'` and some functions that take and/or return streams.
 Note that we already have `Stream` to represent a similar object, hence the awkward naming.
 
 ## Main definitions
 
-Given a type `α` and a function `f : ℕ → α`:
+Given a type `α`:
 
 * `Stream' α` : the type of streams whose elements have type `α`
 -/
 
-set_option autoImplicit true
-
 open Nat Function Option List
 
-/-- A stream `Stream' α` is an infinite sequence of elements of `α`.
+universe u v w
+
+/-- This type is used to represent infinite list in the runtime. -/
+unsafe inductive Stream'Impl (α : Type u)
+  /-- Prepend an element to a thunk of an infinite list. -/
+  | cons' (head : α) (tail : Thunk (Stream'Impl α)) : Stream'Impl α
+
+namespace Stream'Impl
+
+variable {α : Type u} {β : Type v} {δ : Type w}
+
+/-- Prepend an element to an infinite list. -/
+@[inline]
+unsafe def cons (head : α) (tail : Stream'Impl α) : Stream'Impl α :=
+  cons' head (Thunk.pure tail)
+
+/-- Head of an infinite list. -/
+@[inline]
+unsafe def head : Stream'Impl α → α
+  | cons' a _ => a
+
+/-- Tail of an infinite list. -/
+@[inline]
+unsafe def tail : Stream'Impl α → Stream'Impl α
+  | cons' _ t => Thunk.get t
+
+/-- Corecursor for the stream. -/
+@[specialize]
+unsafe def corec' (f : α → β × α) (a : α) : Stream'Impl β :=
+  match f a with
+  | (a, b) => cons' a ⟨fun _ => corec' f b⟩
+
+end Stream'Impl
+
+open Stream'Impl
+
+/-- A stream `Stream' α` is an infinite list of elements of `α`.
 This type has special support in the runtime. -/
 @[opaque_repr]
 structure Stream' (α : Type u) where
   /-- Convert a `ℕ → α` into a `Stream' α`. Consider using other functions like `corec` before
   use this. -/
   mk ::
-  /-- Get the `n`-th element of a stream, or convert an `Stream' α` into a `ℕ → α`. -/
+  /-- Get the `n`-th element of a stream. -/
   get : ℕ → α
 #align stream Stream'
 #align stream.nth Stream'.get
@@ -43,18 +77,6 @@ structure Stream' (α : Type u) where
 namespace Stream'
 
 variable {α : Type u} {β : Type v} {δ : Type w}
-
-/-- This function will cast a value of type `Stream' α` to type `α × Thunk (Stream' α)`, and is a
-no-op in the compiler. -/
-@[inline]
-unsafe def destCast : Stream' α → α × Thunk (Stream' α) :=
-  unsafeCast
-
-/-- This function will cast a value of type `α × Thunk (Stream' α)` to type `Stream' α`, and is a
-no-op in the compiler. -/
-@[inline]
-unsafe def mkCast : α × Thunk (Stream' α) → Stream' α :=
-  unsafeCast
 
 @[ext]
 protected theorem ext {s₁ s₂ : Stream' α} (h : ∀ n, get s₁ n = get s₂ n) : s₁ = s₂ :=
@@ -64,7 +86,7 @@ protected theorem ext {s₁ s₂ : Stream' α} (h : ∀ n, get s₁ n = get s₂
 /-- Prepend an element to a stream. -/
 @[inline]
 unsafe def consUnsafe (a : α) (s : Stream' α) : Stream' α :=
-  mkCast (a, Thunk.pure s)
+  unsafeCast (cons a (unsafeCast s) : Stream'Impl α)
 
 @[inherit_doc consUnsafe, implemented_by consUnsafe]
 def cons (a : α) (s : Stream' α) : Stream' α where
@@ -87,7 +109,7 @@ theorem get_succ_cons (n : ℕ) (s : Stream' α) (x : α) : get (x ::ₛ s) (n +
 /-- Head of a stream: `Stream'.head (h ::ₛ t) := h`. -/
 @[inline]
 unsafe def headUnsafe (s : Stream' α) : α :=
-  (destCast s).1
+  head (unsafeCast s)
 
 @[inherit_doc headUnsafe, implemented_by headUnsafe]
 def head (s : Stream' α) : α :=
@@ -110,7 +132,7 @@ theorem head_cons (a : α) (s : Stream' α) : head (a ::ₛ s) = a :=
 /-- Tail of a stream: `Stream'.tail (h ::ₛ t) := t`. -/
 @[inline]
 unsafe def tailUnsafe (s : Stream' α) : Stream' α :=
-  Thunk.get (destCast s).2
+  unsafeCast (tail (unsafeCast s) : Stream'Impl α)
 
 @[inherit_doc tailUnsafe, implemented_by tailUnsafe]
 def tail (s : Stream' α) : Stream' α where
@@ -170,6 +192,17 @@ theorem get_eq_getComputable : @get.{u} = @getComputable.{u} := by
   induction n generalizing s with
   | zero => simp
   | succ n hn => simp [← hn]
+
+/-- The implemention of `Stream'.casesOn`. -/
+@[inline]
+protected def casesOnComputable {α : Type u} {motive : Stream' α → Sort*}
+    (s : Stream' α) (mk : (get : ℕ → α) → motive (mk get)) : motive s :=
+  mk (get s)
+
+@[csimp]
+theorem casesOn_eq_casesOnComputable :
+    @Stream'.casesOn.{v, u} = @Stream'.casesOnComputable.{v, u} :=
+  rfl
 
 instance : GetElem (Stream' α) ℕ α (fun _ _ => True) where
   getElem s n _ := get s n
@@ -323,7 +356,7 @@ theorem eq_or_mem_of_mem_cons {a b : α} {s : Stream' α} : a ∈ b ::ₛ s → 
 #align stream.eq_or_mem_of_mem_cons Stream'.eq_or_mem_of_mem_cons
 
 @[simp]
-theorem mem_cons : a ∈ b ::ₛ s ↔ a = b ∨ a ∈ s := by
+theorem mem_cons {a b : α} {s : Stream' α} : a ∈ b ::ₛ s ↔ a = b ∨ a ∈ s := by
   constructor
   · exact eq_or_mem_of_mem_cons
   · rintro (rfl | _)
@@ -494,10 +527,9 @@ theorem corec_head_tail (s : Stream' α) : corec head tail s = s := by
 
 end Corec
 
-@[inherit_doc corec, specialize]
+@[inherit_doc corec, inline]
 unsafe def corec'Unsafe (f : α → β × α) (a : α) : Stream' β :=
-  match f a with
-  | (b, a) => mkCast (b, Thunk.mk fun _ => corec'Unsafe f a)
+  unsafeCast (corec' f a)
 
 @[inherit_doc corec'Unsafe, implemented_by corec'Unsafe]
 def corec' (f : α → β × α) : α → Stream' β :=
@@ -1103,7 +1135,7 @@ theorem take_append' (l : List α) (s : Stream' α) : take (length l) (l ++ s) =
 theorem take_append : ∀ {n : ℕ} {l : List α} (s : Stream' α), n = length l → take n (l ++ s) = l
   | _, l, s, rfl => take_append' l s
 
-theorem take_succ_cons (n : ℕ) (s : Stream' α) :
+theorem take_succ_cons (n : ℕ) (a : α) (s : Stream' α) :
     take (n + 1) (a ::ₛ s) = a :: take n s :=
   rfl
 
@@ -1148,7 +1180,8 @@ theorem get_take (s : Stream' α) {k n} (h : k < length (take n s)) :
 theorem take_const (n : ℕ) (a : α) : take n (const a) = replicate n a := by
   refine List.ext_get ?_ fun m hm₁ hm₂ => ?_ <;> simp
 
-@[simp] theorem dropLast_take (xs : Stream' α) :
+@[simp]
+theorem dropLast_take (n : ℕ) (xs : Stream' α) :
     dropLast (take n xs) = take (n - 1) xs := by
   cases n using Nat.casesAuxOn with
   | zero => simp
