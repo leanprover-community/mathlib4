@@ -420,6 +420,9 @@ initialize_simps_projections IsometryEquiv (toEquiv_toFun → apply, toEquiv_inv
 theorem symm_symm (h : α ≃ᵢ β) : h.symm.symm = h := rfl
 #align isometry_equiv.symm_symm IsometryEquiv.symm_symm
 
+theorem symm_bijective : Bijective (IsometryEquiv.symm : (α ≃ᵢ β) → β ≃ᵢ α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp]
 theorem apply_symm_apply (h : α ≃ᵢ β) (y : β) : h (h.symm y) = y :=
   h.toEquiv.apply_symm_apply y

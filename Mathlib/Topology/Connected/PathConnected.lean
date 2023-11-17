@@ -172,7 +172,7 @@ def symm (γ : Path x y) : Path y x where
 #align path.symm Path.symm
 
 @[simp]
-theorem symm_symm {γ : Path x y} : γ.symm.symm = γ := by
+theorem symm_symm (γ : Path x y) : γ.symm.symm = γ := by
   ext t
   show γ (σ (σ t)) = γ t
   rw [unitInterval.symm_symm]
