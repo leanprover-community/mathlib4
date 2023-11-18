@@ -69,7 +69,7 @@ TensorProduct.lift <| DirectLimit.lift _ _ _ _
       map_smul' := by aesop })
   fun _ _ _ g => FunLike.ext _ _ (of_f (G := (G . ⊗[R] M)) (x := g ⊗ₜ .))
 
-variable {M}
+variable {M} in
 @[simp] lemma tensorProductWithDirectLimitToDirectLimitOfTensorProduct_apply_of_tmul
     {i : ι} (g : G i) (m : M) :
     (tensorProductWithDirectLimitToDirectLimitOfTensorProduct f M <|
@@ -77,8 +77,6 @@ variable {M}
     (of _ _ _ _ i (g ⊗ₜ m) : Lim_G_tensor) := by
   rw [tensorProductWithDirectLimitToDirectLimitOfTensorProduct, lift.tmul, lift_of]
   rfl
-
-variable (M)
 
 variable [IsDirected ι (. ≤ .)] [Nonempty ι]
 
