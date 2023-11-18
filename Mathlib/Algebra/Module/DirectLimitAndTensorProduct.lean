@@ -32,7 +32,7 @@ variable (M : Type w) [AddCommGroup M] [Module R M]
 
 /-- limᵢ (G i ⊗ M) -/
 local notation "Lim_G_tensor" =>
-  (DirectLimit (G · ⊗[R] M) <| fun i j h => LinearMap.rTensor M (f _ _ h))
+  (DirectLimit (G · ⊗[R] M) fun i j h => LinearMap.rTensor M (f _ _ h))
 
 /-- lim G -/
 local notation "Lim_G" => (DirectLimit G f)
@@ -59,13 +59,13 @@ by the family of maps `Gᵢ → M → limᵢ (Gᵢ ⊗ M)` where `gᵢ ↦ m ↦
 
 -/
 noncomputable def tensorProductWithDirectLimitToDirectLimitOfTensorProduct :
-  Lim_G ⊗[R] M →ₗ[R] Lim_G_tensor :=
-TensorProduct.lift <| DirectLimit.lift _ _ _ _
-  (fun i =>
-    { toFun := (of R ι _ (fun i j h => (f _ _ h).rTensor M) i ∘ₗ TensorProduct.mk R _ _ .)
-      map_add' := by aesop
-      map_smul' := by aesop })
-  fun _ _ _ g => FunLike.ext _ _ (of_f (G := (G . ⊗[R] M)) (x := g ⊗ₜ .))
+    Lim_G ⊗[R] M →ₗ[R] Lim_G_tensor :=
+  TensorProduct.lift <| DirectLimit.lift _ _ _ _
+    (fun i =>
+      { toFun := (of R ι _ (fun i j h => (f _ _ h).rTensor M) i ∘ₗ TensorProduct.mk R _ _ ·)
+        map_add' := by aesop
+        map_smul' := by aesop })
+    fun _ _ _ g => FunLike.ext _ _ (of_f (G := (G · ⊗[R] M)) (x := g ⊗ₜ ·))
 
 variable {M} in
 @[simp] lemma tensorProductWithDirectLimitToDirectLimitOfTensorProduct_apply_of_tmul
@@ -76,18 +76,21 @@ variable {M} in
   rw [tensorProductWithDirectLimitToDirectLimitOfTensorProduct, lift.tmul, lift_of]
   rfl
 
-variable [IsDirected ι (. ≤ .)] [Nonempty ι]
+variable [IsDirected ι (. ≤ .)]
 
 /--
 `limᵢ (G i ⊗ M)` and `(limᵢ G) ⊗ M` are isomorphic as modules
 -/
 @[simps!]
 noncomputable def directLimitCommutesTensorProduct :
-    Lim_G_tensor ≃ₗ[R] Lim_G ⊗[R] M :=
-  LinearEquiv.ofLinear
+    Lim_G_tensor ≃ₗ[R] Lim_G ⊗[R] M := by
+  refine LinearEquiv.ofLinear
     (directLimitOfTensorProductToTensorProductWithDirectLimit f M)
-    (tensorProductWithDirectLimitToDirectLimitOfTensorProduct f M)
-    (ext <| FunLike.ext _ _ fun g => FunLike.ext _ _ fun _ => g.induction_on <| by aesop)
-    (FunLike.ext _ _ fun x => x.induction_on fun i g => by refine' g.induction_on _ _ _ <;> aesop)
+    (tensorProductWithDirectLimitToDirectLimitOfTensorProduct f M) ?_ ?_
+    <;> cases isEmpty_or_nonempty ι
+  · ext; apply Subsingleton.elim
+  · exact ext (FunLike.ext _ _ fun g => FunLike.ext _ _ fun _ => g.induction_on <| by aesop)
+  · ext; apply Subsingleton.elim
+  · refine FunLike.ext _ _ fun x => x.induction_on fun i g => g.induction_on ?_ ?_ ?_ <;> aesop
 
 end Module
