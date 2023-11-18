@@ -30,11 +30,11 @@ variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
 variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 variable (M : Type w) [AddCommGroup M] [Module R M]
 
-/-- limᵢ (G i ⊗ M) -/
+/-- limᵢ (Gᵢ ⊗ M) -/
 local notation "Lim_G_tensor" =>
   (DirectLimit (G · ⊗[R] M) fun i j h => LinearMap.rTensor M (f _ _ h))
 
-/-- lim G -/
+/-- limᵢ Gᵢ -/
 local notation "Lim_G" => (DirectLimit G f)
 
 /--
@@ -79,7 +79,7 @@ variable {M} in
 variable [IsDirected ι (· ≤ ·)]
 
 /--
-`limᵢ (G i ⊗ M)` and `(limᵢ G) ⊗ M` are isomorphic as modules
+`limᵢ (Gᵢ ⊗ M)` and `(limᵢ Gᵢ) ⊗ M` are isomorphic as modules
 -/
 @[simps!]
 noncomputable def directLimitCommutesTensorProduct :
