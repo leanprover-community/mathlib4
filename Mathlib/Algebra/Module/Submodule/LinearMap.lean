@@ -280,7 +280,7 @@ theorem pow_apply_mem_of_forall_mem {p : Submodule R M} (n : ℕ) (h : ∀ x ∈
 
 theorem pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p)
     (h' := pow_apply_mem_of_forall_mem n h) :
-    (f'.restrict h) ^ n = (HPow.hPow f' n).restrict h' := by
+    (f'.restrict h) ^ n = (f' ^ n).restrict h' := by
   ext x
   have : Semiconj (↑) (f'.restrict h) f' := fun _ ↦ restrict_coe_apply _ _ _
   simp [coe_pow, this.iterate_right _ _]
