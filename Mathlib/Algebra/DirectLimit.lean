@@ -167,6 +167,19 @@ theorem lift_unique [Nonempty ι] [IsDirected ι (· ≤ ·)] (F : DirectLimit G
   DirectLimit.induction_on x fun i x => by rw [lift_of]; rfl
 #align module.direct_limit.lift_unique Module.DirectLimit.lift_unique
 
+section injective
+
+lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
+    (injective : ∀ i, Function.Injective <| g i) :
+    Function.Injective $ lift R ι G f g Hg := by
+  simp_rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff, LinearMap.mem_ker] at injective ⊢
+  intros z hz
+  induction' z using DirectLimit.induction_on with _ g
+  rw [lift_of] at hz
+  rw [injective _ g hz, _root_.map_zero]
+
+end injective
+
 section Totalize
 
 open Classical

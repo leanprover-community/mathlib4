@@ -7,11 +7,14 @@ Authors: Jujian Zhang
 import Mathlib.Algebra.DirectLimit
 
 /-!
-Tensor product and direct limits communicate with each other.
+# Tensor product and direct limits commute with each other.
+Given a family of `R`-modules `Gᵢ` with a family of compatible `R`-linear maps `fᵢⱼ : Gᵢ → Gⱼ` for
+every `i < j` and another `R`-module `M`, we have `(limᵢ Gᵢ) ⊗ M` and `lim (Gᵢ ⊗ M)` are isomorphic
+as `R`-modules.
 
 -/
 
-open TensorProduct
+open TensorProduct Module.DirectLimit
 
 universe u v w
 
@@ -39,25 +42,17 @@ the map `limᵢ (G i ⊗ M) → (limᵢ G) ⊗ M` induced by the family of maps 
 given by `gᵢ ⊗ m ↦ [gᵢ] ⊗ m`.
 -/
 noncomputable def directLimitOfTensorProductToTensorProductWithDirectLimit :
-  Lim_G_tensor →ₗ[R] Lim_G ⊗[R] M :=
-DirectLimit.lift _ _ _ _ (fun i => TensorProduct.map (DirectLimit.of _ _ _ _ _) LinearMap.id) <|
-  fun i j h x => x.induction_on (by simp only [map_zero])
-    (fun g m => by simp only [map_tmul, LinearMap.id_coe, id_eq, DirectLimit.of_f])
-    (fun x y hx hy => by
-      dsimp only at hx hy ⊢
-      rw [map_add, map_add, hx, hy, map_add])
+    Lim_G_tensor →ₗ[R] Lim_G ⊗[R] M :=
+  lift _ _ _ _ (fun i => map (of _ _ _ _ _) LinearMap.id)
+    fun _ _ _ x => by refine' x.induction_on _ _ _ <;> aesop
 
 variable {M}
-lemma directLimitOfTensorProductToTensorProductWithDirectLimit_apply_of_tmul
+@[simp] lemma directLimitOfTensorProductToTensorProductWithDirectLimit_apply_of_tmul
     {i : ι} (g : G i) (m : M) :
     directLimitOfTensorProductToTensorProductWithDirectLimit f M
-      (DirectLimit.of _ _ _ _ i (g ⊗ₜ m) : Lim_G_tensor) =
-    (DirectLimit.of _ _ _ _ i g : Lim_G) ⊗ₜ m := by
-  dsimp only [directLimitOfTensorProductToTensorProductWithDirectLimit]
-  rw [DirectLimit.lift_of (R := R) (ι := ι) (G := fun i => G i ⊗[R] M)
-        (f := fun i j h => TensorProduct.map (f _ _ h) LinearMap.id) (i := i)
-        (P := Lim_G ⊗[R] M) _ _ (g ⊗ₜ m)]
-  rfl
+      (of _ _ _ _ i (g ⊗ₜ m) : Lim_G_tensor) =
+    (of _ _ _ _ i g : Lim_G) ⊗ₜ m :=
+  lift_of (R := R) (G := fun i => G i ⊗[R] M) _ _ (g ⊗ₜ m)
 
 variable (M)
 
@@ -70,36 +65,20 @@ noncomputable def tensorProductWithDirectLimitToDirectLimitOfTensorProduct :
   Lim_G ⊗[R] M →ₗ[R] Lim_G_tensor :=
 TensorProduct.lift <| DirectLimit.lift _ _ _ _
   (fun i =>
-    { toFun := fun g =>
-      { toFun := fun m => DirectLimit.of R ι (fun i => G i ⊗[R] M)
-          (fun i j h => TensorProduct.map (f _ _ h) LinearMap.id) i (g ⊗ₜ m)
-        map_add' := fun _ _ => by dsimp only; rw [tmul_add, map_add]
-        map_smul' := fun r x => by
-          dsimp only
-          rw [RingHom.id_apply, ← smul_tmul, ← smul_tmul', LinearMap.map_smul] }
-      map_add' := fun _ _ => FunLike.ext _ _ fun _ => by
-        dsimp only
-        simp only [LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply]
-        rw [add_tmul, map_add]
-      map_smul' := fun _ _ => FunLike.ext _ _ fun _ => by
-        dsimp only
-        simp only [LinearMap.coe_mk, AddHom.coe_mk, RingHom.id_apply, LinearMap.smul_apply]
-        rw [← smul_tmul', LinearMap.map_smul] }) fun i j h g => FunLike.ext _ _ fun m =>
-  DirectLimit.of_f (R := R) (ι := ι) (G := fun i => G i ⊗[R] M)
-    (f := fun i j h => TensorProduct.map (f _ _ h) LinearMap.id) (i := i) (j := j) (hij := h)
-    (x := g ⊗ₜ m)
+    { toFun := fun g => of R ι (fun i => G i ⊗[R] M) (fun i j h => map (f _ _ h) LinearMap.id) i ∘ₗ
+        TensorProduct.mk R _ _ g
+      map_add' := by aesop
+      map_smul' := by aesop})
+  fun _ _ _ g => FunLike.ext _ _ fun m => of_f (R := R) (G := fun i => G i ⊗[R] M) (x := g ⊗ₜ m)
 
 variable {M}
-lemma tensorProductWithDirectLimitToDirectLimitOfTensorProduct_apply_of_tmul
+@[simp] lemma tensorProductWithDirectLimitToDirectLimitOfTensorProduct_apply_of_tmul
     {i : ι} (g : G i) (m : M) :
     (tensorProductWithDirectLimitToDirectLimitOfTensorProduct f M <|
-      (DirectLimit.of _ _ _ _ i g : Lim_G) ⊗ₜ m)=
-    (DirectLimit.of _ _ _ _ i (g ⊗ₜ m) : Lim_G_tensor) := by
-  delta tensorProductWithDirectLimitToDirectLimitOfTensorProduct
-  dsimp only
-  simp only [lift.tmul]
-  rw [DirectLimit.lift_of]
-  simp only [LinearMap.coe_mk, AddHom.coe_mk]
+      (of _ _ _ _ i g : Lim_G) ⊗ₜ m) =
+    (of _ _ _ _ i (g ⊗ₜ m) : Lim_G_tensor) := by
+  rw [tensorProductWithDirectLimitToDirectLimitOfTensorProduct, lift.tmul, lift_of]
+  rfl
 
 variable (M)
 
@@ -115,40 +94,9 @@ noncomputable def directLimitCommutesTensorProduct :
   LinearEquiv.ofLinear
     (directLimitOfTensorProductToTensorProductWithDirectLimit f M)
     (tensorProductWithDirectLimitToDirectLimitOfTensorProduct f M)
-    (TensorProduct.ext <| FunLike.ext _ _ fun g => FunLike.ext _ _ fun m => by
-      dsimp only [LinearMap.compr₂_apply, mk_apply, LinearMap.coe_comp, Function.comp_apply,
-        LinearMap.id_coe, id_eq]
-      induction' g using DirectLimit.induction_on with i g
-      rw [tensorProductWithDirectLimitToDirectLimitOfTensorProduct_apply_of_tmul,
-        directLimitOfTensorProductToTensorProductWithDirectLimit_apply_of_tmul])
-    (FunLike.ext _ _ fun x => DirectLimit.induction_on x fun i g => g.induction_on
-      (by simp only [map_zero])
-      (fun g m => by rw [LinearMap.comp_apply,
-        directLimitOfTensorProductToTensorProductWithDirectLimit_apply_of_tmul f g m,
-        tensorProductWithDirectLimitToDirectLimitOfTensorProduct_apply_of_tmul f g m,
-        LinearMap.id_apply])
-      (fun x y hx hy => by rw [map_add, map_add, hx, hy, map_add]))
-
-section injective
-
-universe u₁
-
-variable {P : Type u₁} [AddCommGroup P] [Module R P] (g : ∀ i, G i →ₗ[R] P)
-variable (compatible : ∀ i j hij x, g j (f i j hij x) = g i x)
-variable (injective : ∀ i, Function.Injective <| g i)
-
-variable (R ι G)
-
-lemma DirectLimit.lift_inj :
-    Function.Injective $ DirectLimit.lift R ι G f g compatible := by
-  simp_rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff, LinearMap.mem_ker] at injective ⊢
-  intros z hz
-  induction' z using DirectLimit.induction_on with i gi
-  rw [DirectLimit.lift_of] at hz
-  specialize injective i gi hz
-  rw [injective]
-  simp only [map_zero]
-
-end injective
+    (TensorProduct.ext <| FunLike.ext _ _ fun g => FunLike.ext _ _ fun m =>
+      g.induction_on <| by aesop)
+    (FunLike.ext _ _ fun x => x.induction_on fun i g => by
+      refine' g.induction_on _ _ _ <;> aesop)
 
 end Module
