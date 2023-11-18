@@ -223,7 +223,7 @@ theorem one_le_pow_iff_of_nonneg {a : R} (ha : 0 ≤ a) {n : ℕ} (hn : n ≠ 0)
   exact mt fun h => pow_lt_one ha h hn
 #align one_le_pow_iff_of_nonneg one_le_pow_iff_of_nonneg
 
-lemma pow_eq_one_iff_of_nonneg {R : Type*} [LinearOrderedRing R] {x : R} (hx : 0 ≤ x)
+lemma pow_eq_one_iff_of_nonneg {x : R} (hx : 0 ≤ x)
     {n : ℕ} (hn : n ≠ 0) : x ^ n = 1 ↔ x = 1 :=
   ⟨fun h ↦ le_antisymm ((pow_le_one_iff_of_nonneg hx hn).mp h.le)
             ((one_le_pow_iff_of_nonneg hx hn).mp h.ge),
