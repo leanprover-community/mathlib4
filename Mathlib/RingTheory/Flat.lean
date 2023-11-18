@@ -93,9 +93,9 @@ instance self (R : Type u) [CommRing R] : Flat R R :=
 
 variable (M : Type v) [AddCommGroup M] [Module R M]
 
-/-- An  `R`-module `M` is flat iff for all finitely generated ideals `I` of `R`, the tensor
-product of the inclusion `I → R` and the identity `M → M` is injective.
-See `iff_rTensor_injective'` to extend to all ideals `I`. --/
+/-- An `R`-module `M` is flat iff for all finitely generated ideals `I` of `R`, the
+tensor product of the inclusion `I → R` and the identity `M → M` is injective. See
+`iff_rTensor_injective'` to extend to all ideals `I`. --/
 lemma iff_rTensor_injective :
     Flat R M ↔ (∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (rTensor M I.subtype)) := by
   have aux : ∀ (I : Ideal R), ((TensorProduct.lid R M).comp (rTensor M I.subtype)) =
@@ -113,9 +113,9 @@ lemma iff_rTensor_injective :
     rw [← aux]
     simp [h₁ hI]
 
-/-- An  `R`-module `M` is flat iff for all finitely generated ideals `I` of `R`, the tensor
-product of the inclusion `I → R` and the identity `M → M` is injective.
-See `iff_rTensor_injective` to restrict to finitely generated ideals `I`. --/
+/-- An `R`-module `M` is flat iff for all ideals `I` of `R`, the tensor product of the
+inclusion `I → R` and the identity `M → M` is injective. See `iff_rTensor_injective` to
+restrict to finitely generated ideals `I`. --/
 theorem iff_rTensor_injective' :
     Module.Flat R M ↔ (∀ (I : Ideal R), Function.Injective (LinearMap.rTensor M I.subtype)) := by
   rewrite [Module.Flat.iff_rTensor_injective]
