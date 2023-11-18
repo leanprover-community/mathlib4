@@ -1020,7 +1020,8 @@ instance module  [SMulCommClass R₂ S M₂] : Module S (M →ₛₗ[σ₁₂] M
   add_smul _ _ _ := ext fun _ ↦ add_smul _ _ _
   zero_smul _ := ext fun _ ↦ zero_smul _ _
 
-instance [NoZeroSMulDivisors S M₂]  [SMulCommClass R₂ S M₂] : NoZeroSMulDivisors S (M →ₛₗ[σ₁₂] M₂) :=
+instance [NoZeroSMulDivisors S M₂]  [SMulCommClass R₂ S M₂] :
+    NoZeroSMulDivisors S (M →ₛₗ[σ₁₂] M₂) :=
   coe_injective.noZeroSMulDivisors _ rfl coe_smul
 
 /-- If `M` is an `(R, S)` bimodule and `M₂` an `S`-module, then `M ⟶ M₂` is also
