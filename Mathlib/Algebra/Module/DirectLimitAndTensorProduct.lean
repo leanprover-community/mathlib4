@@ -78,7 +78,6 @@ variable {M} in
 
 variable [IsDirected ι (. ≤ .)] [Nonempty ι]
 
-set_option maxHeartbeats 800000 in
 /--
 `limᵢ (G i ⊗ M)` and `(limᵢ G) ⊗ M` are isomorphic as modules
 -/
