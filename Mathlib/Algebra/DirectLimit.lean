@@ -167,8 +167,6 @@ theorem lift_unique [Nonempty ι] [IsDirected ι (· ≤ ·)] (F : DirectLimit G
   DirectLimit.induction_on x fun i x => by rw [lift_of]; rfl
 #align module.direct_limit.lift_unique Module.DirectLimit.lift_unique
 
-section injective
-
 lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
     (injective : ∀ i, Function.Injective <| g i) :
     Function.Injective $ lift R ι G f g Hg := by
@@ -177,8 +175,6 @@ lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
   induction' z using DirectLimit.induction_on with _ g
   rw [lift_of] at hz
   rw [injective _ g hz, _root_.map_zero]
-
-end injective
 
 section Totalize
 
@@ -359,6 +355,17 @@ theorem lift_unique [Nonempty ι] [IsDirected ι (· ≤ ·)] (F : DirectLimit G
     F x = lift G f P (fun i => F.comp (of G f i).toAddMonoidHom) (fun i j hij x => by simp) x :=
   DirectLimit.induction_on x fun i x => by simp
 #align add_comm_group.direct_limit.lift_unique AddCommGroup.DirectLimit.lift_unique
+
+lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
+    (injective : ∀ i, Function.Injective <| g i) :
+    Function.Injective $ lift G f P g Hg := by
+  simp_rw [← AddMonoidHom.ker_eq_bot_iff, AddSubgroup.eq_bot_iff_forall, AddMonoidHom.mem_ker]
+    at injective
+  simp_rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff, LinearMap.mem_ker]
+  intros z hz
+  induction' z using DirectLimit.induction_on with _ g
+  rw [lift_of] at hz
+  rw [injective _ g hz, _root_.map_zero]
 
 end DirectLimit
 
@@ -688,6 +695,16 @@ theorem lift_unique [Nonempty ι] [IsDirected ι (· ≤ ·)] (F : DirectLimit G
     F x = lift G f P (fun i => F.comp <| of G f i) (fun i j hij x => by simp [of_f]) x :=
   DirectLimit.induction_on x fun i x => by simp [lift_of]
 #align ring.direct_limit.lift_unique Ring.DirectLimit.lift_unique
+
+lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
+    (injective : ∀ i, Function.Injective <| g i) :
+    Function.Injective $ lift G f P g Hg := by
+  simp_rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero]
+    at injective ⊢
+  intros z hz
+  induction' z using DirectLimit.induction_on with _ g
+  rw [lift_of] at hz
+  rw [injective _ g hz, _root_.map_zero]
 
 end DirectLimit
 
