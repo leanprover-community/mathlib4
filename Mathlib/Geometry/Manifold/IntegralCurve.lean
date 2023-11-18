@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Winston Yin
 -/
 import Mathlib.Analysis.ODE.PicardLindelof
-import Mathlib.Geometry.Manifold.ContMDiff
+import Mathlib.Geometry.Manifold.InteriorBoundary
 import Mathlib.Geometry.Manifold.MFDeriv
 
 /-!
@@ -34,10 +34,6 @@ variable
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] [SmoothManifoldWithCorners I' M']
-
-/-- An interior point of a manifold is a point whose image in the model vector space is in the
-interior of the chart's target. -/
-def ModelWithCorners.IsInteriorPoint (x : M) := extChartAt I x x ∈ interior (extChartAt I x).target
 
 lemma ModelWithCorners.Boundaryless.isOpen_target
     [I.Boundaryless] {x : M} : IsOpen (extChartAt I x).target := by
