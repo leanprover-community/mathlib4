@@ -1,10 +1,12 @@
 import Mathlib.AlgebraicTopology.SplitSimplicialObject
+import Mathlib.AlgebraicTopology.CechNerve
 import Mathlib.CategoryTheory.Endomorphism
+import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.GroupTheory.Perm.Basic
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory Category Limits
 
 def NonemptyFintypeCat :=
   CategoryTheory.FullSubcategory (fun (X : FintypeCat.{u}) ↦ Nonempty X)
@@ -85,12 +87,72 @@ def rep (X : SymmetricObject C) (A : NonemptyFintypeCat) :
 
 variable [HasFiniteCoproducts C]
 
-structure Splitting (X : SymmetricObject C) where
+/-structure Splitting (X : SymmetricObject C) where
   s : SimplicialObject.Splitting X.toSimplicialObject
   rep (n : ℕ) : Equiv.Perm (Fin (n + 1)) →* Aut (s.N n)
-  -- more axioms: compatibility with the inclusions and differentials
-  -- `rep n` is an "induced rep from the trivial group"
+  Z : ℕ → C
+  i : ∀ (n : ℕ), Z n ⟶ s.N n
+  hi : ∀ (n : ℕ),
+    IsColimit (Cofan.mk (s.N n) (fun (g : Equiv.Perm (Fin (n + 1))) => i n ≫ (rep n g).hom))
+  d₀ : ∀ (n : ℕ), Z (n + 1) ⟶ Z n
+  hd₀ : ∀ (n : ℕ), d₀ n ≫ i n ≫ s.ι n =
+    i (n + 1) ≫ s.ι (n + 1) ≫ X.toSimplicialObject.δ (0 : Fin (n + 2)) -/
 
+end SymmetricObject
+
+namespace SymmetricObject
+
+variable {C I : Type*} [Category C]
+
+section
+
+variable {S : C} {X : I → C} (f : ∀ i, X i ⟶ S)
+
+abbrev HasCechObjectWidePullbacks :=
+  ∀ (A : NonemptyFintypeCat.{0}) (φ : A → I),
+    HasWidePullback S (fun a => X (φ a)) (fun a => f (φ a))
+
+abbrev HasCechObjectCoproducts [HasCechObjectWidePullbacks f] :=
+  ∀ (A : NonemptyFintypeCat.{0}), HasCoproduct
+    (fun (φ : A → I) => widePullback S (fun a => X (φ a)) (fun a => f (φ a)))
+
+noncomputable def cechObject [HasCechObjectWidePullbacks f]
+    [HasCechObjectCoproducts f] : SymmetricObject C where
+  obj A := ∐ (fun (φ : A.unop → I) => widePullback S (fun a => X (φ a)) (fun a => f (φ a)))
+  map {A₁ A₂} g := Sigma.desc (fun φ => by
+    refine' _ ≫ Sigma.ι _ (φ.comp g.unop)
+    exact WidePullback.lift (WidePullback.base _)
+      (fun a => WidePullback.π _ (g.unop a)) (by simp))
+  map_id A := by
+    ext φ
+    dsimp
+    simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, comp_id]
+    refine' Eq.trans _ (id_comp _)
+    congr 1
+    aesop_cat
+  map_comp {A₁ A₂ A₃} g h := by
+    ext φ
+    dsimp
+    simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, colimit.ι_desc_assoc,
+      Discrete.functor_obj, assoc, Function.comp_apply]
+    simp only [← assoc]
+    congr 1
+    ext <;> dsimp <;> simp
+
+end
+
+section
+
+variable {S : C} {X : Unit → C} (f : ∀ i, X i ⟶ S)
+  [HasCechObjectWidePullbacks f] [HasCechObjectCoproducts f]
+  [∀ (n : ℕ), HasWidePullback (Arrow.mk (f ())).right (fun (_ : Fin (n + 1)) ↦ (Arrow.mk (f ())).left) fun _ ↦ (Arrow.mk (f ())).hom]
+
+/-noncomputable def cechObjectToSimplicialObjectIso :
+    (cechObject f).toSimplicialObject ≅ Arrow.cechNerve (Arrow.mk (f Unit.unit)) :=
+  NatIso.ofComponents (fun n => by
+    sorry) sorry-/
+
+end
 
 end SymmetricObject
 
