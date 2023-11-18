@@ -430,8 +430,8 @@ theorem exists_fg_le_eq_rTensor_subtype_codRestrict {R : Type*} [CommRing R]
   | zero => refine ⟨⊥, fg_bot, zero_le _, 0, rfl⟩
   | tmul i m =>
     refine ⟨R ∙ i.val, ?_, ?_, ⟨i.val, mem_span_singleton_self _⟩ ⊗ₜ[R] m, rfl⟩
-    . exact fg_span_singleton i.val
-    . rewrite [span_le, Set.singleton_subset_iff] ; exact Subtype.mem i
+    · exact fg_span_singleton i.val
+    · rewrite [span_le, Set.singleton_subset_iff]; exact Subtype.mem i
   | add x₁ x₂ ihx₁ ihx₂ =>
     have ⟨J₁, hfg₁, hle₁, y₁, hy₁⟩ := ihx₁
     have ⟨J₂, hfg₂, hle₂, y₂, hy₂⟩ := ihx₂
