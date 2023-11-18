@@ -138,7 +138,7 @@ theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
       ring
 
 theorem abs_discr_ge (h : 1 < finrank ℚ K) :
-    ((4:ℝ) / (9:ℝ)) * (3 * π / 4) ^ finrank ℚ K ≤ |discr K| := by
+    (4 / 9 : ℝ) * (3 * π / 4) ^ finrank ℚ K ≤ |discr K| := by
   -- We use `exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr` to get a nonzero
   -- algebraic integer `x` of small norm and the fact that `1 ≤ |Norm x|` to get a lower bound
   -- on `sqrt |discr K|`.
@@ -153,7 +153,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
   -- The sequence `a n` is a lower bound for `|discr K|`. We prove below by induction an uniform
   -- lower bound for this sequence from which we deduce the result.
   let a : ℕ → ℝ := fun n => (n:ℝ) ^ (n * 2) / ((4 / π) ^ n * (n.factorial:ℝ) ^ 2)
-  suffices ∀ n, 2 ≤ n → ((4:ℝ) / (9:ℝ)) * (3 * π / 4) ^ n ≤ a n by
+  suffices ∀ n, 2 ≤ n → (4 / 9 : ℝ) * (3 * π / 4) ^ n ≤ a n by
     refine le_trans (this (finrank ℚ K) h) ?_
     refine div_le_div_of_le_left (by positivity) (by positivity) ?_
     refine mul_le_mul_of_nonneg_right (pow_le_pow ?_ ?_) (by positivity)
@@ -165,8 +165,8 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
   induction n, hn using Nat.le_induction with
   | base => exact le_of_eq <| by norm_num [Nat.factorial_two]; field_simp; ring
   | succ m _ h_m =>
-      suffices (3:ℝ) ≤ ((1:ℝ) + 1 / m) ^ (2 * m) by
-        convert_to _ ≤ (a m) * ((1:ℝ) + 1 / m) ^ (2 * m) / (4 / π)
+      suffices (3:ℝ) ≤ (1 + 1 / m : ℝ) ^ (2 * m) by
+        convert_to _ ≤ (a m) * (1 + 1 / m : ℝ) ^ (2 * m) / (4 / π)
         · simp_rw [add_mul, one_mul, pow_succ, Nat.factorial_succ]
           field_simp; ring
         · rw [_root_.le_div_iff (by positivity), pow_succ]
