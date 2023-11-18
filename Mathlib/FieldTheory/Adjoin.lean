@@ -389,7 +389,7 @@ theorem adjoin_subset_adjoin_iff {F' : Type*} [Field F'] [Algebra F' E] {S S' : 
 theorem adjoin_adjoin_left (T : Set E) :
     (adjoin (adjoin F S) T).restrictScalars _ = adjoin F (S ∪ T) := by
   rw [SetLike.ext'_iff]
-  change (↑(adjoin (adjoin F S) T) : Set E) = _
+  change (adjoin (adjoin F S) T : Set E) = _
   apply subset_antisymm <;> rw [adjoin_subset_adjoin_iff] <;> constructor
   · rintro _ ⟨⟨x, hx⟩, rfl⟩; exact adjoin.mono _ _ _ (Set.subset_union_left _ _) hx
   · exact subset_adjoin_of_subset_right _ _ (Set.subset_union_right _ _)
@@ -426,7 +426,7 @@ theorem adjoin_map {E' : Type*} [Field E'] [Algebra F E'] (f : E →ₐ[F] E') :
       x ∈ Subfield.closure (Set.range (algebraMap F E') ∪ f '' S)
   rw [RingHom.map_field_closure, Set.image_union, ← Set.range_comp, ← RingHom.coe_comp,
     f.comp_algebraMap]
-  rfl-/
+  rfl
 #align intermediate_field.adjoin_map IntermediateField.adjoin_map
 
 @[simp]
