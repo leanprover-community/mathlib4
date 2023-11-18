@@ -42,16 +42,9 @@ lemma Summable.norm_lt_one {F : Type*} [NormedField F] [CompleteSpace F] {f : �
   simp_rw [← map_pow]
   exact hsum.comp_injective <| Nat.pow_right_injective hp
 
-
 open scoped Topology
 
 open Nat BigOperators
-
-lemma Nat.map_prime_pow_mul {F : Type*} [CommSemiring F] {f : ℕ → F}
-    (hmul : ∀ {m n}, Nat.Coprime m n → f (m * n) = f m * f n) {p : ℕ} (hp : p.Prime) (e : ℕ)
-    {m : p.smoothNumbers} :
-    f (p ^ e * m) = f (p ^ e) * f m :=
-  hmul <| Nat.Coprime.pow_left _ <| hp.smoothNumbers_coprime <| Subtype.mem m
 
 namespace EulerProduct
 
