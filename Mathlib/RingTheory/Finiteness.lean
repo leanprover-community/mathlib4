@@ -425,7 +425,7 @@ theorem exists_fg_le_eq_rTensor_subtype_codRestrict {R : Type*} [CommRing R]
     {M : Type*} [AddCommGroup M] [Module R M] {N : Type*} [AddCommGroup N] [Module R N]
     {I : Submodule R N} (x : I ⊗ M) :
     ∃ (J : Submodule R N) (_ : J.FG) (hle : J ≤ I) (y : J ⊗ M),
-      x = LinearMap.rTensor M (J.subtype.codRestrict I (fun c => hle.subset c.property)) y := by
+      x = rTensor M (J.subtype.codRestrict I (fun c => hle.subset c.property)) y := by
   induction x using TensorProduct.induction_on with
   | zero => refine ⟨⊥, fg_bot, zero_le _, 0, rfl⟩
   | tmul i m =>
