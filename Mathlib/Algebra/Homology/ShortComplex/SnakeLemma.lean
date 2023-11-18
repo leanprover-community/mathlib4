@@ -502,6 +502,14 @@ noncomputable def functorL₂' : SnakeInput C ⥤ ShortComplex C where
       comm₁₂ := (naturality_δ f).symm
       comm₂₃ := f.f₃.comm₁₂ }
 
+/-- The functor which maps `S : SnakeInput C` to the diagram
+`S.L₀.X₁ ⟶ S.L₀.X₂ ⟶ S.L₀.X₃ ⟶ S.L₃.X₁ ⟶ S.L₃.X₂ ⟶ S.L₃.X₃`. -/
+@[simps]
+noncomputable def composableArrowsFunctor : SnakeInput C ⥤ ComposableArrows C 5 where
+  obj S := S.composableArrows
+  map f := ComposableArrows.homMk₅ f.f₀.τ₁ f.f₀.τ₂ f.f₀.τ₃ f.f₃.τ₁ f.f₃.τ₂ f.f₃.τ₃
+    f.f₀.comm₁₂.symm f.f₀.comm₂₃.symm (naturality_δ f) f.f₃.comm₁₂.symm f.f₃.comm₂₃.symm
+
 end SnakeInput
 
 end ShortComplex
