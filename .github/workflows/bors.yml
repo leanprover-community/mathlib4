@@ -381,4 +381,10 @@ jobs:
       - name: run leaff
         run: |
           cd leaff/
-          lake exe leaff Mathlib $(tr ':' ',' <<<"$(eval $(lake --dir ../old/ env) && echo $LEAN_PATH)") $(tr ':' ',' <<<"$(eval $(lake --dir ../new/ env) && echo $LEAN_PATH)")
+          echo "https://github.com/alexjbest/leaff reports" > leaff.diff
+          echo "\`\`\`diff" >> leaff.diff
+          lake exe leaff Mathlib $(tr ':' ',' <<<"$(eval $(lake --dir ../old/ env) && echo $LEAN_PATH)") $(tr ':' ',' <<<"$(eval $(lake --dir ../new/ env) && echo $LEAN_PATH)") >> leaff.diff
+          echo "\`\`\`" >> leaff.diff
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+        path: leaff/leaff.diff
