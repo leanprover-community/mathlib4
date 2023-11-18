@@ -217,10 +217,7 @@ def mkNonstrictIntProof (pf : Expr) : MetaM (Option Expr) := do
 into a proof of `t1 ≤ t2 + 1`. -/
 def strengthenStrictInt : Preprocessor where
   name := "strengthen strict inequalities over int"
-  transform h := do
-    match ← mkNonstrictIntProof h with
-    | some x => return [x]
-    | none => return [h]
+  transform h := return [(← mkNonstrictIntProof h).getD h]
 
 end strengthenStrictInt
 
