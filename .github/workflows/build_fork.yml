@@ -321,6 +321,8 @@ jobs:
     needs: build
     name: Print diff
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: cleanup
         run: |
@@ -391,4 +393,4 @@ jobs:
           echo "\`\`\`" >> leaff.diff
       - uses: marocchino/sticky-pull-request-comment@v2
         with:
-        path: leaff/leaff.diff
+          path: leaff/leaff.diff
