@@ -701,8 +701,8 @@ theorem integral_Ioi_of_hasDerivAt_of_tendsto' (hderiv : ∀ x ∈ Ici a, HasDer
 
 /-- A special case of `integral_Ioi_of_hasDerivAt_of_tendsto` where we assume that `f` is C^1 with
 compact support. -/
-theorem HasCompactSupport.integral_Ioi_deriv_eq (hf : ContDiff ℝ 1 f) (h2f : HasCompactSupport f)
-    (b : ℝ) : ∫ x in Ioi b, deriv f x = - f b := by
+theorem _root_.HasCompactSupport.integral_Ioi_deriv_eq (hf : ContDiff ℝ 1 f)
+    (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Ioi b, deriv f x = - f b := by
   have := fun x (_ : x ∈ Ioi b) ↦ hf.differentiable le_rfl x |>.hasDerivAt
   rw [integral_Ioi_of_hasDerivAt_of_tendsto hf.continuous.continuousWithinAt this, zero_sub]
   refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
@@ -851,8 +851,8 @@ theorem integral_Iic_of_hasDerivAt_of_tendsto'
 
 /-- A special case of `integral_Iic_of_hasDerivAt_of_tendsto` where we assume that `f` is C^1 with
 compact support. -/
-theorem HasCompactSupport.integral_Iic_deriv_eq (hf : ContDiff ℝ 1 f) (h2f : HasCompactSupport f)
-    (b : ℝ) : ∫ x in Iic b, deriv f x = f b := by
+theorem _root_.HasCompactSupport.integral_Iic_deriv_eq (hf : ContDiff ℝ 1 f)
+    (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Iic b, deriv f x = f b := by
   have := fun x (_ : x ∈ Iio b) ↦ hf.differentiable le_rfl x |>.hasDerivAt
   rw [integral_Iic_of_hasDerivAt_of_tendsto hf.continuous.continuousWithinAt this, sub_zero]
   refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
