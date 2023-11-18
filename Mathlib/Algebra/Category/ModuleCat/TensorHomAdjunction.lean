@@ -114,7 +114,7 @@ lemma uncurry'_apply_tmul {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' �
     (x : X) (x' : X') : uncurry' l (x ⊗ₜ x') = l x' x := rfl
 
 variable (R S X)
-/-- The tensoring function is left adjoint to the hom functor. -/
+/-- The tensor functor is left adjoint to the hom functor. -/
 noncomputable def tensorHomAdjunction : tensorFunctor R S X ⊣ homFunctor R S X :=
     Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ =>
