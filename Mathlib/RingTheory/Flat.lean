@@ -97,8 +97,8 @@ variable (M : Type v) [AddCommGroup M] [Module R M]
 tensor product of the inclusion `I → R` and the identity `M → M` is injective. See
 `iff_rTensor_injective'` to extend to all ideals `I`. --/
 lemma iff_rTensor_injective :
-    Flat R M ↔ (∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (rTensor M I.subtype)) := by
-  have aux : ∀ (I : Ideal R), ((TensorProduct.lid R M).comp (rTensor M I.subtype)) =
+    Flat R M ↔ ∀ ⦃I : Ideal R⦄, I.FG → Injective (rTensor M I.subtype) := by
+  have aux : ∀ I : Ideal R, (TensorProduct.lid R M).comp (rTensor M I.subtype) =
     (TensorProduct.lift ((lsmul R M).comp I.subtype))
   · intro I; apply TensorProduct.ext'; intro x y; simp
   constructor
