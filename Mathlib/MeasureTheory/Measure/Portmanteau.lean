@@ -347,7 +347,7 @@ theorem FiniteMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type*} {L : F
   apply ENNReal.le_of_forall_pos_le_add
   intro ε ε_pos _
   let fs := F_closed.apprSeq
-  have key₁ : Tendsto (fun n ↦ lintegral μ fun ω => (fs n ω : ℝ≥0∞)) atTop (𝓝 ((μ : Measure Ω) F)) :=
+  have key₁ : Tendsto (fun n ↦ ∫⁻  ω, (fs n ω : ℝ≥0∞)) ∂μ) atTop (𝓝 ((μ : Measure Ω) F)) :=
     HasOuterApproxClosed.tendsto_lintegral_apprSeq F_closed (μ : Measure Ω)
   have room₁ : (μ : Measure Ω) F < (μ : Measure Ω) F + ε / 2 := by
     apply
