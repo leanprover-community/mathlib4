@@ -157,6 +157,10 @@ variable (R' : Type u) [CommRing R']
 variable {M N : Type v} [AddCommGroup M] [AddCommGroup N]
 variable [Module R' M] [Module R' N]
 
+/--
+Constructing an additive group map from a tensor product by lifting a bi-additive group map that is
+compatible with scalar action.
+-/
 @[simps!]
 noncomputable def toAddCommGroup {C : Type v} [AddCommGroup C]
     (b : M →+ (N →+ C)) (hb : ∀ (r : R') (m : M) (n : N), b (r • m) n = b m (r • n)) :
@@ -181,6 +185,11 @@ lemma toAddCommGroup_apply_tmul {C : Type v} [AddCommGroup C]
     ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
   erw [FreeAddMonoid.lift_eval_of]
 
+
+/--
+Constructing an additive group map `M ⊗[R] N → C` by lifting a function from
+`M × N → C` that are zero-preserving, additive in both arguments and compatible with scalar action.
+-/
 noncomputable def toAddCommGroup' {C : Type v} [AddCommGroup C]
   (b : M × N → C)
   (hN0 : ∀ (n : N), b (0, n) = 0)
