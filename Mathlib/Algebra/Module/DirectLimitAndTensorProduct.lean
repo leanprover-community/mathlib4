@@ -9,7 +9,7 @@ import Mathlib.Algebra.DirectLimit
 /-!
 # Tensor product and direct limits commute with each other.
 Given a family of `R`-modules `Gᵢ` with a family of compatible `R`-linear maps `fᵢⱼ : Gᵢ → Gⱼ` for
-every `i < j` and another `R`-module `M`, we have `(limᵢ Gᵢ) ⊗ M` and `lim (Gᵢ ⊗ M)` are isomorphic
+every `i ≤ j` and another `R`-module `M`, we have `(limᵢ Gᵢ) ⊗ M` and `lim (Gᵢ ⊗ M)` are isomorphic
 as `R`-modules.
 
 -/
