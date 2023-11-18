@@ -76,7 +76,7 @@ variable {M} in
   rw [tensorProductWithDirectLimitToDirectLimitOfTensorProduct, lift.tmul, lift_of]
   rfl
 
-variable [IsDirected ι (. ≤ .)]
+variable [IsDirected ι (· ≤ ·)]
 
 /--
 `limᵢ (G i ⊗ M)` and `(limᵢ G) ⊗ M` are isomorphic as modules
