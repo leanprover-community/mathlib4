@@ -52,7 +52,7 @@ variable {M}
     directLimitOfTensorProductToTensorProductWithDirectLimit f M
       (of _ _ _ _ i (g ⊗ₜ m) : Lim_G_tensor) =
     (of _ _ _ _ i g : Lim_G) ⊗ₜ m :=
-  lift_of (R := R) (G := fun i => G i ⊗[R] M) _ _ (g ⊗ₜ m)
+  lift_of (R := R) (G := (G · ⊗[R] M)) _ _ (g ⊗ₜ m)
 
 variable (M)
 
