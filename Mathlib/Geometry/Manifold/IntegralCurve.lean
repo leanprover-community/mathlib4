@@ -62,6 +62,10 @@ variable
   {v : (x : M) → TangentSpace I x} {x₀ : M}
   (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) x₀) (t₀ : ℝ)
 
+def integralCurveAt (γ : ℝ → M) := γ t₀ = x₀ ∧
+  ∃ ε > (0 : ℝ), ∀ (t : ℝ), t ∈ Set.Ioo (t₀ - ε) (t₀ + ε) →
+    HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t)))
+
 /-- For any continuously differentiable vector field and any chosen non-boundary point `x₀` on the
   manifold, an integral curve `γ : ℝ → M` exists such that `γ t₀ = x₀` and the tangent vector of `γ`
   at `t` coincides with the vector field at `γ t` for all `t` within an open interval around `t₀`.-/
@@ -75,16 +79,15 @@ have hI : Set.range I ∈ nhds (extChartAt I x₀ x₀)
   refine ⟨interior (extChartAt I x₀).target,
     subset_trans interior_subset (extChartAt_target_subset_range ..),
     isOpen_interior, hx⟩
-obtain ⟨ε1, hε1, f, hf1, hf2⟩ :=
+obtain ⟨f, ε1, hε1, hf1, hf2⟩ :=
   exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀ (ContDiffAt.snd (hv.contDiffAt hI))
 rw [←Real.ball_eq_Ioo] at hf2
 -- use continuity of f to extract ε2 so that for t ∈ Real.ball t₀ ε2,
 -- f t ∈ interior (extChartAt I x₀).target
 have hcont := (hf2 t₀ (Real.ball_eq_Ioo .. ▸ Metric.mem_ball_self hε1)).continuousAt
 rw [continuousAt_def, hf1] at hcont
-have hnhds : f ⁻¹' (interior (extChartAt I x₀).target) ∈ nhds t₀
-· apply hcont
-  exact IsOpen.mem_nhds isOpen_interior hx
+have hnhds : f ⁻¹' (interior (extChartAt I x₀).target) ∈ nhds t₀ :=
+  hcont _ (IsOpen.mem_nhds isOpen_interior hx)
 rw [Metric.mem_nhds_iff] at hnhds
 obtain ⟨ε2, hε2, hf3⟩ := hnhds
 simp_rw [Set.subset_def, Set.mem_preimage] at hf3
@@ -97,10 +100,8 @@ rw [←Real.ball_eq_Ioo] at ht
 have ht1 := Set.mem_of_mem_of_subset ht (Metric.ball_subset_ball (min_le_left ..))
 have ht2 := Set.mem_of_mem_of_subset ht (Metric.ball_subset_ball (min_le_right ..))
 have h : HasDerivAt f
-  ((fderivWithin ℝ
-        ((extChartAt I x₀) ∘ (extChartAt I ((extChartAt I x₀).symm (f t))).symm)
-        (Set.range I)
-        (extChartAt I ((extChartAt I x₀).symm (f t)) ((extChartAt I x₀).symm (f t))))
+  ((fderivWithin ℝ ((extChartAt I x₀) ∘ (extChartAt I ((extChartAt I x₀).symm (f t))).symm)
+      (Set.range I) (extChartAt I ((extChartAt I x₀).symm (f t)) ((extChartAt I x₀).symm (f t))))
     (v ((extChartAt I x₀).symm (f t))))
   t := hf2 t ht1
 have hf3' := Set.mem_of_mem_of_subset (hf3 t ht2) interior_subset
