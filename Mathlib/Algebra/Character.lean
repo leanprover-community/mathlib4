@@ -91,9 +91,12 @@ lemma exists_character_apply_ne_zero_of_ne_zero {m : M} (ne_zero : m ≠ 0) :
   have eq1 := FunLike.congr_fun (Injective.comp_factorThru L ι)
     ⟨m, Submodule.mem_span_singleton_self _⟩
   simp only at eq1
-  rw [comp_apply, AddCommGroupCat.ofHom_apply, LinearMap.toAddMonoidHom_coe,
+  erw [comp_apply, AddCommGroupCat.ofHom_apply, LinearMap.toAddMonoidHom_coe,
     LinearMap.toAddMonoidHom_coe, LinearMap.comp_apply, LinearMap.coe_mk, AddHom.coe_mk,
     Submodule.subtype_apply, Subtype.coe_mk] at eq1
+  pick_goal 2
+  · intros x y
+    exact AddMonoidHom.map_add _ _ _
   have eq2 := (ULift.ext_iff _ _).mp eq1
   dsimp only at eq2
   erw [eq2]
@@ -103,7 +106,7 @@ lemma exists_character_apply_ne_zero_of_ne_zero {m : M} (ne_zero : m ≠ 0) :
 open TensorProduct
 
 @[simps!]
-def CharacterModule.uncurry : (N →ₗ[R] CharacterModule M) → CharacterModule (N ⊗[R] M) :=
+noncomputable def CharacterModule.uncurry : (N →ₗ[R] CharacterModule M) → CharacterModule (N ⊗[R] M) :=
 fun f => ⟨⟨ULift.down, by intros; rfl⟩, by intros; rfl⟩ ∘ₗ
       (AddMonoidHom.toIntLinearMap <|
         TensorProduct.toAddCommGroup' R (fun p => ULift.up <| f p.1 p.2)
@@ -114,7 +117,7 @@ fun f => ⟨⟨ULift.down, by intros; rfl⟩, by intros; rfl⟩ ∘ₗ
           (fun r n m => by ext; dsimp; rw [f.map_smul, LinearMap.bimodule_smul_apply]))
 
 @[simps]
-def CharacterModule.curry :
+noncomputable def CharacterModule.curry :
   CharacterModule (N ⊗[R] M) → (N →ₗ[R] CharacterModule M) := fun g =>
   { toFun := fun n =>
     { toFun := fun m => g <| n ⊗ₜ m
@@ -130,7 +133,7 @@ def CharacterModule.curry :
       simp only [LinearMap.coe_mk, AddHom.coe_mk, tmul_smul] }
 
 @[simps]
-def CharacterModule.homEquiv : (N →ₗ[R] CharacterModule M) ≃ CharacterModule (N ⊗[R] M) :=
+noncomputable def CharacterModule.homEquiv : (N →ₗ[R] CharacterModule M) ≃ CharacterModule (N ⊗[R] M) :=
 { toFun := CharacterModule.uncurry R M N
   invFun := CharacterModule.curry R M N
   left_inv := fun _ => LinearMap.ext fun _ => LinearMap.ext fun _ => by
