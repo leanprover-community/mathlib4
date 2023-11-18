@@ -117,17 +117,16 @@ lemma iff_rTensor_injective :
 inclusion `I → R` and the identity `M → M` is injective. See `iff_rTensor_injective` to
 restrict to finitely generated ideals `I`. --/
 theorem iff_rTensor_injective' :
-    Flat R M ↔ (∀ (I : Ideal R), Injective (rTensor M I.subtype)) := by
+    Flat R M ↔ ∀ I : Ideal R, Injective (rTensor M I.subtype) := by
   rewrite [Flat.iff_rTensor_injective]
   refine ⟨fun h I => ?_, fun h I _ => h I⟩
   letI : AddCommGroup (I ⊗[R] M) := inferInstance -- Type class reminder
   rewrite [injective_iff_map_eq_zero]
   intro x hx₀
-  have ⟨J, hfg, hle, y, hy⟩ := exists_fg_le_eq_rTensor_inclusion x
-  apply (fun hy₀ => by rw [hy, hy₀, _root_.map_zero] : y = 0 → x = 0)
-  rewrite [hy, ← comp_apply, ← rTensor_comp] at hx₀
+  obtain ⟨J, hfg, hle, y, rfl⟩ := exists_fg_le_eq_rTensor_inclusion x
+  rewrite [← rTensor_comp_apply] at hx₀
   letI : AddCommGroup (J ⊗[R] M) := inferInstance -- Type class reminder
-  exact (injective_iff_map_eq_zero _).mp (h hfg) y hx₀
+  rw [(injective_iff_map_eq_zero _).mp (h hfg) y hx₀, _root_.map_zero]
 
 variable (N : Type w) [AddCommGroup N] [Module R N]
 
