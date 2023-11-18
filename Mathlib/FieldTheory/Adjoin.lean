@@ -393,9 +393,9 @@ theorem adjoin_adjoin_left (T : Set E) :
   apply subset_antisymm <;> rw [adjoin_subset_adjoin_iff] <;> constructor
   · rintro _ ⟨⟨x, hx⟩, rfl⟩; exact adjoin.mono _ _ _ (Set.subset_union_left _ _) hx
   · exact subset_adjoin_of_subset_right _ _ (Set.subset_union_right _ _)
--- Porting note: orginal proof times out
+  -- Porting note: orginal proof times out
   · exact Set.range_subset_iff.mpr fun f ↦ Subfield.subset_closure (.inl ⟨f, rfl⟩)
--- Porting note: orginal proof times out
+  -- Porting note: orginal proof times out
   · exact Set.union_subset
       (fun x hx ↦ Subfield.subset_closure <| .inl ⟨⟨x, Subfield.subset_closure (.inr hx)⟩, rfl⟩)
       (fun x hx ↦ Subfield.subset_closure <| .inr hx)
@@ -419,14 +419,10 @@ theorem adjoin_adjoin_comm (T : Set E) :
 #align intermediate_field.adjoin_adjoin_comm IntermediateField.adjoin_adjoin_comm
 
 theorem adjoin_map {E' : Type*} [Field E'] [Algebra F E'] (f : E →ₐ[F] E') :
-    (adjoin F S).map f = adjoin F (f '' S) := by
-  ext x
-  show
-    x ∈ (Subfield.closure (Set.range (algebraMap F E) ∪ S)).map (f : E →+* E') ↔
-      x ∈ Subfield.closure (Set.range (algebraMap F E') ∪ f '' S)
-  rw [RingHom.map_field_closure, Set.image_union, ← Set.range_comp, ← RingHom.coe_comp,
-    f.comp_algebraMap]
-  rfl
+    (adjoin F S).map f = adjoin F (f '' S) :=
+  le_antisymm
+    (map_le_iff_le_comap.mpr <| adjoin_le_iff.mpr fun x hx ↦ subset_adjoin _ _ ⟨x, hx, rfl⟩)
+    (adjoin_le_iff.mpr <| Set.monotone_image <| subset_adjoin _ _)
 #align intermediate_field.adjoin_map IntermediateField.adjoin_map
 
 @[simp]
@@ -468,13 +464,17 @@ theorem adjoin_eq_algebra_adjoin (inv_mem : ∀ x ∈ Algebra.adjoin F S, x⁻¹
     (algebra_adjoin_le_adjoin _ _)
 #align intermediate_field.adjoin_eq_algebra_adjoin IntermediateField.adjoin_eq_algebra_adjoin
 
+theorem adjoin_eq_of_isIntegral (h : ∀ x ∈ S, IsIntegral F x) :
+    (adjoin F S).toSubalgebra = Algebra.adjoin F S :=
+  adjoin_eq_algebra_adjoin _ _ (Algebra.IsIntegral.adjoin h).inv_mem
+
 theorem eq_adjoin_of_eq_algebra_adjoin (K : IntermediateField F E)
     (h : K.toSubalgebra = Algebra.adjoin F S) : K = adjoin F S := by
   apply toSubalgebra_injective
   rw [h]
-  refine' (adjoin_eq_algebra_adjoin F _ _).symm
-  intro x
-  convert K.inv_mem (x := x) <;> rw [← h] <;> rfl
+  refine (adjoin_eq_algebra_adjoin F _ fun x ↦ ?_).symm
+  rw [← h]
+  exact K.inv_mem
 #align intermediate_field.eq_adjoin_of_eq_algebra_adjoin IntermediateField.eq_adjoin_of_eq_algebra_adjoin
 
 theorem adjoin_eq_top_of_algebra (hS : Algebra.adjoin F S = ⊤) : adjoin F S = ⊤ :=
@@ -794,7 +794,7 @@ variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E] {α : E} {S :
 
 @[simp]
 theorem adjoin_eq_bot_iff : adjoin F S = ⊥ ↔ S ⊆ (⊥ : IntermediateField F E) := by
-  rw [eq_bot_iff, adjoin_le_iff]; rfl
+  rw [eq_bot_iff, adjoin_le_iff]
 #align intermediate_field.adjoin_eq_bot_iff IntermediateField.adjoin_eq_bot_iff
 
 /- Porting note: this was tagged `simp`. -/
