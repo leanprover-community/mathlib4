@@ -417,6 +417,36 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
       exact ⟨t, ssup⟩
 #align submodule.fg_iff_compact Submodule.fg_iff_compact
 
+open TensorProduct LinearMap in
+/-- Every `x : I ⊗ M` is the image of some `y : J ⊗ M` where `J ≤ I` is finitely generated,
+under the tensor product of the inclusion `J.subtype.codRestrict I ‹_› : J → I`
+and the identity `M → M`. -/
+theorem exists_fg_le_eq_rTensor_subtype_codRestrict {R : Type*} [CommRing R]
+    {M : Type*} [AddCommGroup M] [Module R M] {N : Type*} [AddCommGroup N] [Module R N]
+    {I : Submodule R N} (x : I ⊗ M) :
+    ∃ (J : Submodule R N) (_ : J.FG) (hle : J ≤ I) (y : J ⊗ M),
+      x = LinearMap.rTensor M (J.subtype.codRestrict I (fun c => hle.subset c.property)) y := by
+  induction x using TensorProduct.induction_on with
+  | zero => refine ⟨⊥, fg_bot, zero_le _, 0, rfl⟩
+  | tmul i m =>
+    refine ⟨R ∙ i.val, ?_, ?_, ⟨i.val, mem_span_singleton_self _⟩ ⊗ₜ[R] m, rfl⟩
+    . exact fg_span_singleton i.val
+    . rewrite [span_le, Set.singleton_subset_iff] ; exact Subtype.mem i
+  | add x₁ x₂ ihx₁ ihx₂ =>
+    have ⟨J₁, hfg₁, hle₁, y₁, hy₁⟩ := ihx₁
+    have ⟨J₂, hfg₂, hle₂, y₂, hy₂⟩ := ihx₂
+    have h₁ (c : J₁) := (le_sup_left : J₁ ≤ J₁ ⊔ J₂).subset c.property
+    have h₂ (c : J₂) := (le_sup_right : J₂ ≤ J₁ ⊔ J₂).subset c.property
+    let z₁ :=
+      rTensor M (J₁.subtype.codRestrict (J₁ ⊔ J₂) h₁) y₁ +
+      rTensor M (J₂.subtype.codRestrict (J₁ ⊔ J₂) h₂) y₂
+    refine ⟨J₁ ⊔ J₂, FG.sup hfg₁ hfg₂, sup_le hle₁ hle₂, z₁, ?_⟩
+    rewrite [map_add,
+      ← comp_apply, ← rTensor_comp, comp_codRestrict,
+      ← comp_apply, ← rTensor_comp, comp_codRestrict]
+    simp_rw [subtype_comp_codRestrict]
+    rw [hy₁, hy₂]
+
 end Submodule
 
 namespace Submodule

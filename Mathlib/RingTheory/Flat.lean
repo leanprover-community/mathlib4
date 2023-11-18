@@ -93,6 +93,9 @@ instance self (R : Type u) [CommRing R] : Flat R R :=
 
 variable (M : Type v) [AddCommGroup M] [Module R M]
 
+/-- An  `R`-module `M` is flat iff for all finitely generated ideals `I` of `R`, the tensor
+product of the inclusion `I → R` and the identity `M → M` is injective.
+See `iff_rTensor_injective'` to extend to all ideals `I`. --/
 lemma iff_rTensor_injective :
     Flat R M ↔ (∀ ⦃I : Ideal R⦄ (_ : I.FG), Injective (rTensor M I.subtype)) := by
   have aux : ∀ (I : Ideal R), ((TensorProduct.lid R M).comp (rTensor M I.subtype)) =
@@ -109,6 +112,22 @@ lemma iff_rTensor_injective :
     intro I hI
     rw [← aux]
     simp [h₁ hI]
+
+/-- An  `R`-module `M` is flat iff for all finitely generated ideals `I` of `R`, the tensor
+product of the inclusion `I → R` and the identity `M → M` is injective.
+See `iff_rTensor_injective` to restrict to finitely generated ideals `I`. --/
+theorem iff_rTensor_injective' :
+    Module.Flat R M ↔ (∀ (I : Ideal R), Function.Injective (LinearMap.rTensor M I.subtype)) := by
+  rewrite [Module.Flat.iff_rTensor_injective]
+  refine ⟨fun h I => ?_, fun h I _ => h I⟩
+  letI : AddCommGroup (I ⊗[R] M) := inferInstance -- typeclass reminder
+  rewrite [injective_iff_map_eq_zero]
+  intro x hx₀
+  have ⟨J, hfg, hle, y, hy⟩ := exists_fg_le_eq_rTensor_subtype_codRestrict x
+  apply (fun hy₀ => by rw [hy, hy₀, _root_.map_zero] : y = 0 → x = 0)
+  rewrite [hy, ← comp_apply, ← rTensor_comp, subtype_comp_codRestrict] at hx₀
+  letI : AddCommGroup (J ⊗[R] M) := inferInstance -- typeclass reminder
+  exact (injective_iff_map_eq_zero _).mp (h hfg) y hx₀
 
 variable (N : Type w) [AddCommGroup N] [Module R N]
 
