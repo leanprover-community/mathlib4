@@ -433,14 +433,6 @@ theorem not_not_mem : ¬a ∉ s ↔ a ∈ s :=
 
 /-! ### Non-empty sets -/
 
-
-/-- The property `s.Nonempty` expresses the fact that the set `s` is not empty. It should be used
-in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks
-to the dot notation. -/
-protected def Nonempty (s : Set α) : Prop :=
-  ∃ x, x ∈ s
-#align set.nonempty Set.Nonempty
-
 -- Porting note: we seem to need parentheses at `(↥s)`,
 -- even if we increase the right precedence of `↥` in `Mathlib.Tactic.Coe`.
 -- Porting note: removed `simp` as it is competing with `nonempty_subtype`.
@@ -771,7 +763,7 @@ theorem mem_union (x : α) (a b : Set α) : x ∈ a ∪ b ↔ x ∈ a ∨ x ∈ 
 
 @[simp]
 theorem union_self (a : Set α) : a ∪ a = a :=
-  ext fun _ => or_self_iff _
+  ext fun _ => or_self_iff
 #align set.union_self Set.union_self
 
 @[simp]
@@ -925,7 +917,7 @@ theorem mem_of_mem_inter_right {x : α} {a b : Set α} (h : x ∈ a ∩ b) : x �
 
 @[simp]
 theorem inter_self (a : Set α) : a ∩ a = a :=
-  ext fun _ => and_self_iff _
+  ext fun _ => and_self_iff
 #align set.inter_self Set.inter_self
 
 @[simp]
@@ -1528,6 +1520,20 @@ theorem ssubset_singleton_iff {s : Set α} {x : α} : s ⊂ {x} ↔ s = ∅ := b
 theorem eq_empty_of_ssubset_singleton {s : Set α} {x : α} (hs : s ⊂ {x}) : s = ∅ :=
   ssubset_singleton_iff.1 hs
 #align set.eq_empty_of_ssubset_singleton Set.eq_empty_of_ssubset_singleton
+
+theorem eq_of_nonempty_of_subsingleton {α} [Subsingleton α] (s t : Set α) [Nonempty s]
+    [Nonempty t] : s = t :=
+  nonempty_of_nonempty_subtype.eq_univ.trans nonempty_of_nonempty_subtype.eq_univ.symm
+
+theorem eq_of_nonempty_of_subsingleton' {α} [Subsingleton α] {s : Set α} (t : Set α)
+    (hs : s.Nonempty) [Nonempty t] : s = t :=
+  have := hs.to_subtype; eq_of_nonempty_of_subsingleton s t
+
+theorem Nonempty.eq_zero [Subsingleton α] [Zero α] {s : Set α} (h : s.Nonempty) :
+    s = {0} := eq_of_nonempty_of_subsingleton' {0} h
+
+theorem Nonempty.eq_one [Subsingleton α] [One α] {s : Set α} (h : s.Nonempty) :
+    s = {1} := eq_of_nonempty_of_subsingleton' {1} h
 
 /-! ### Disjointness -/
 

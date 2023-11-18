@@ -3,12 +3,13 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.RepresentationTheory.Basic
-import Mathlib.RepresentationTheory.Action
 import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
-import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+import Mathlib.CategoryTheory.Elementwise
+import Mathlib.RepresentationTheory.Action
+import Mathlib.RepresentationTheory.Basic
 
 #align_import representation_theory.Rep from "leanprover-community/mathlib"@"cec81510e48e579bde6acd8568c06a87af045b63"
 
@@ -135,6 +136,15 @@ theorem trivial_def {V : Type u} [AddCommGroup V] [Module k V] (g : G) (v : V) :
   rfl
 set_option linter.uppercaseLean3 false in
 #align Rep.trivial_def Rep.trivial_def
+
+/-- A predicate for representations that fix every element. -/
+abbrev IsTrivial (A : Rep k G) := A.ρ.IsTrivial
+
+instance {V : Type u} [AddCommGroup V] [Module k V] :
+    IsTrivial (Rep.trivial k G V) where
+
+instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
+    IsTrivial (Rep.of ρ) where
 
 -- Porting note: the two following instances were found automatically in mathlib3
 noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=

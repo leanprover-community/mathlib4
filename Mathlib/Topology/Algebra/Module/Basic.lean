@@ -605,13 +605,13 @@ theorem smul_apply (c : S₂) (f : M₁ →SL[σ₁₂] M₂) (x : M₁) : (c �
 
 @[simp, norm_cast]
 theorem coe_smul (c : S₂) (f : M₁ →SL[σ₁₂] M₂) :
-    (c • f : M₁ →ₛₗ[σ₁₂] M₂) = c • (f : M₁ →ₛₗ[σ₁₂] M₂) :=
+    ↑(c • f) = c • (f : M₁ →ₛₗ[σ₁₂] M₂) :=
   rfl
 #align continuous_linear_map.coe_smul ContinuousLinearMap.coe_smul
 
 @[simp, norm_cast]
 theorem coe_smul' (c : S₂) (f : M₁ →SL[σ₁₂] M₂) :
-    (c • f : M₁ → M₂) = c • (f : M₁ → M₂) :=
+    ↑(c • f) = c • (f : M₁ → M₂) :=
   rfl
 #align continuous_linear_map.coe_smul' ContinuousLinearMap.coe_smul'
 
@@ -883,11 +883,14 @@ instance monoidWithZero : MonoidWithZero (M₁ →L[R₁] M₁) where
 theorem coe_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
-instance semiring [ContinuousAdd M₁] : Semiring (M₁ →L[R₁] M₁) :=
-  { ContinuousLinearMap.monoidWithZero,
-    ContinuousLinearMap.addCommMonoid with
-    left_distrib := fun f g h => ext fun x => map_add f (g x) (h x)
-    right_distrib := fun _ _ _ => ext fun _ => LinearMap.add_apply _ _ _ }
+instance semiring [ContinuousAdd M₁] : Semiring (M₁ →L[R₁] M₁) where
+  __ := ContinuousLinearMap.monoidWithZero
+  __ := ContinuousLinearMap.addCommMonoid
+  left_distrib f g h := ext fun x => map_add f (g x) (h x)
+  right_distrib _ _ _ := ext fun _ => LinearMap.add_apply _ _ _
+  natCast n := n • (1 : M₁ →L[R₁] M₁)
+  natCast_zero := zero_smul ℕ (1 : M₁ →L[R₁] M₁)
+  natCast_succ n := (AddMonoid.nsmul_succ n (1 : M₁ →L[R₁] M₁)).trans (add_comm _ _)
 #align continuous_linear_map.semiring ContinuousLinearMap.semiring
 
 /-- `ContinuousLinearMap.toLinearMap` as a `RingHom`.-/
@@ -900,6 +903,15 @@ def toLinearMapRingHom [ContinuousAdd M₁] : (M₁ →L[R₁] M₁) →+* M₁ 
   map_mul' _ _ := rfl
 #align continuous_linear_map.to_linear_map_ring_hom ContinuousLinearMap.toLinearMapRingHom
 #align continuous_linear_map.to_linear_map_ring_hom_apply ContinuousLinearMap.toLinearMapRingHom_apply
+
+@[simp]
+theorem natCast_apply [ContinuousAdd M₁] (n : ℕ) (m : M₁) : (↑n : M₁ →L[R₁] M₁) m = n • m :=
+  rfl
+
+@[simp]
+theorem ofNat_apply [ContinuousAdd M₁] (n : ℕ) [n.AtLeastTwo] (m : M₁) :
+    ((no_index (OfNat.ofNat n) : M₁ →L[R₁] M₁)) m = OfNat.ofNat n • m :=
+  rfl
 
 section ApplyAction
 
@@ -1186,8 +1198,8 @@ theorem comp_fst_add_comp_snd [Module R₁ M₂] [Module R₁ M₃] [ContinuousA
 
 theorem coprod_inl_inr [ContinuousAdd M₁] [ContinuousAdd M'₁] :
     (ContinuousLinearMap.inl R₁ M₁ M'₁).coprod (ContinuousLinearMap.inr R₁ M₁ M'₁) =
-      ContinuousLinearMap.id R₁ (M₁ × M'₁) :=
-  by apply coe_injective; apply LinearMap.coprod_inl_inr
+      ContinuousLinearMap.id R₁ (M₁ × M'₁) := by
+  apply coe_injective; apply LinearMap.coprod_inl_inr
 #align continuous_linear_map.coprod_inl_inr ContinuousLinearMap.coprod_inl_inr
 
 section
@@ -1256,8 +1268,8 @@ theorem toSpanSingleton_add [ContinuousAdd M₁] (x y : M₁) :
 
 theorem toSpanSingleton_smul' {α} [Monoid α] [DistribMulAction α M₁] [ContinuousConstSMul α M₁]
     [SMulCommClass R₁ α M₁] (c : α) (x : M₁) :
-    toSpanSingleton R₁ (c • x) = c • toSpanSingleton R₁ x :=
-  by ext1; rw [toSpanSingleton_apply, smul_apply, toSpanSingleton_apply, smul_comm]
+    toSpanSingleton R₁ (c • x) = c • toSpanSingleton R₁ x := by
+  ext1; rw [toSpanSingleton_apply, smul_apply, toSpanSingleton_apply, smul_comm]
 #align continuous_linear_map.to_span_singleton_smul' ContinuousLinearMap.toSpanSingleton_smul'
 
 /-- A special case of `to_span_singleton_smul'` for when `R` is commutative. -/
@@ -1494,10 +1506,17 @@ theorem sub_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [TopologicalAddG
   simp
 #align continuous_linear_map.sub_comp ContinuousLinearMap.sub_comp
 
-instance ring [TopologicalAddGroup M] : Ring (M →L[R] M) :=
-  { ContinuousLinearMap.semiring,
-    ContinuousLinearMap.addCommGroup with }
+instance ring [TopologicalAddGroup M] : Ring (M →L[R] M) where
+  __ := ContinuousLinearMap.semiring
+  __ := ContinuousLinearMap.addCommGroup
+  intCast z := z • (1 : M →L[R] M)
+  intCast_ofNat := ofNat_zsmul _
+  intCast_negSucc := negSucc_zsmul _
 #align continuous_linear_map.ring ContinuousLinearMap.ring
+
+@[simp]
+theorem intCast_apply [TopologicalAddGroup M] (z : ℤ) (m : M) : (↑z : M →L[R] M) m = z • m :=
+  rfl
 
 theorem smulRight_one_pow [TopologicalSpace R] [TopologicalRing R] (c : R) (n : ℕ) :
     smulRight (1 : R →L[R] R) c ^ n = smulRight (1 : R →L[R] R) (c ^ n) := by
@@ -1726,6 +1745,8 @@ variable [TopologicalAddGroup M₂] [ContinuousConstSMul R M₂]
 instance algebra : Algebra R (M₂ →L[R] M₂) :=
   Algebra.ofModule smul_comp fun _ _ _ => comp_smul _ _ _
 #align continuous_linear_map.algebra ContinuousLinearMap.algebra
+
+@[simp] theorem algebraMap_apply (r : R) (m : M₂) : algebraMap R (M₂ →L[R] M₂) r m = r • m := rfl
 
 end CommRing
 
@@ -2535,7 +2556,7 @@ variable (R M)
 
 /-- Continuous linear equivalence between dependent functions `(i : Fin 2) → M i` and `M 0 × M 1`.
 -/
-@[simps! (config := { fullyApplied := false }) apply symm_apply]
+@[simps! (config := .asFn) apply symm_apply]
 def piFinTwo (M : Fin 2 → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
     [∀ i, TopologicalSpace (M i)] : ((i : _) → M i) ≃L[R] M 0 × M 1 :=
   { Homeomorph.piFinTwo M with toLinearEquiv := LinearEquiv.piFinTwo R M }
@@ -2544,7 +2565,7 @@ def piFinTwo (M : Fin 2 → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R
 #align continuous_linear_equiv.pi_fin_two_symm_apply ContinuousLinearEquiv.piFinTwo_symm_apply
 
 /-- Continuous linear equivalence between vectors in `M² = Fin 2 → M` and `M × M`. -/
-@[simps! (config := { fullyApplied := false }) apply symm_apply]
+@[simps! (config := .asFn) apply symm_apply]
 def finTwoArrow : (Fin 2 → M) ≃L[R] M × M :=
   { piFinTwo R fun _ => M with toLinearEquiv := LinearEquiv.finTwoArrow R M }
 #align continuous_linear_equiv.fin_two_arrow ContinuousLinearEquiv.finTwoArrow

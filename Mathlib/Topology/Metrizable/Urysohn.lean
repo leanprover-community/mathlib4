@@ -109,7 +109,8 @@ theorem exists_inducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, Inducing f := by
 /-- *Urysohn's metrization theorem* (Tychonoff's version):
 a regular topological space with second countable topology `X` is metrizable,
 i.e., there exists a pseudometric space structure that generates the same topology. -/
-lemma PseudoMetrizableSpace.of_regularSpace_secondCountableTopology : PseudoMetrizableSpace X :=
+instance (priority := 90) PseudoMetrizableSpace.of_regularSpace_secondCountableTopology :
+    PseudoMetrizableSpace X :=
   let ⟨_, hf⟩ := exists_inducing_l_infty X
   hf.pseudoMetrizableSpace
 
@@ -124,8 +125,7 @@ theorem exists_embedding_l_infty : ∃ f : X → ℕ →ᵇ ℝ, Embedding f :=
 /-- *Urysohn's metrization theorem* (Tychonoff's version): a T₃ topological space with second
 countable topology `X` is metrizable, i.e., there exists a metric space structure that generates the
 same topology. -/
-theorem metrizableSpace_of_t3_second_countable : MetrizableSpace X :=
+instance (priority := 90) metrizableSpace_of_t3_second_countable : MetrizableSpace X :=
   let ⟨_, hf⟩ := exists_embedding_l_infty X
   hf.metrizableSpace
 #align topological_space.metrizable_space_of_t3_second_countable TopologicalSpace.metrizableSpace_of_t3_second_countable
-

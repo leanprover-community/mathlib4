@@ -174,7 +174,7 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
     · subst j; simp
     · simp [h₂]
   intro a ha; rw [DirectSum.ext_iff R]; intro i
-  have f := LinearMap.congr_arg (f:= (π i)) ha
+  have f := LinearMap.congr_arg (f := (π i)) ha
   erw [LinearMap.congr_fun (h₁ i) a] at f
   rw [(map_zero (π i) : (π i) 0 = (0 : M i))] at f
   have h₂ := (F i)

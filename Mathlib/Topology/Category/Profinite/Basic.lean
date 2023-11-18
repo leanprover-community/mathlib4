@@ -411,7 +411,7 @@ theorem mono_iff_injective {X Y : Profinite.{u}} (f : X ⟶ Y) : Mono f ↔ Func
     erw [← CompHaus.mono_iff_injective]
     assumption
   · rw [← CategoryTheory.mono_iff_injective]
-    apply (forget Profinite).mono_of_mono_map
+    exact (forget Profinite).mono_of_mono_map (f := f)
 #align Profinite.mono_iff_injective Profinite.mono_iff_injective
 
 end Profinite

@@ -7,7 +7,7 @@ import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Set.Sups
 
-#align_import data.finset.sups from "leanprover-community/mathlib"@"20715f4ac6819ef2453d9e5106ecd086a5dc2a5e"
+#align_import data.finset.sups from "leanprover-community/mathlib"@"8818fdefc78642a7e6afcd20be5c184f3c7d9699"
 
 /-!
 # Set family operations
@@ -36,6 +36,9 @@ We define the following notation in locale `FinsetFamily`:
 
 [B. Bollobás, *Combinatorics*][bollobas1986]
 -/
+
+#align finset.decidable_pred_mem_upper_closure instDecidablePredMemUpperClosure
+#align finset.decidable_pred_mem_lower_closure instDecidablePredMemLowerClosure
 
 open Function
 
@@ -186,6 +189,8 @@ lemma subset_sups_self : s ⊆ s ⊻ s := fun _a ha ↦ mem_sups.2 ⟨_, ha, _, 
 lemma sups_subset_self : s ⊻ s ⊆ s ↔ SupClosed (s : Set α) := sups_subset_iff
 @[simp] lemma sups_eq_self : s ⊻ s = s ↔ SupClosed (s : Set α) := by simp [←coe_inj]
 
+@[simp] lemma univ_sups_univ [Fintype α] : (univ : Finset α) ⊻ univ = univ := by simp
+
 lemma filter_sups_le [@DecidableRel α (· ≤ ·)] (s t : Finset α) (a : α) :
     (s ⊻ t).filter (· ≤ a) = s.filter (· ≤ a) ⊻ t.filter (· ≤ a) := by
   simp only [←coe_inj, coe_filter, coe_sups, ←mem_coe, Set.sep_sups_le]
@@ -222,6 +227,8 @@ theorem sups_right_comm : s ⊻ t ⊻ u = s ⊻ u ⊻ t :=
 theorem sups_sups_sups_comm : s ⊻ t ⊻ (u ⊻ v) = s ⊻ u ⊻ (t ⊻ v) :=
   image₂_image₂_image₂_comm sup_sup_sup_comm
 #align finset.sups_sups_sups_comm Finset.sups_sups_sups_comm
+
+#align finset.filter_sups_le Finset.filter_sups_le
 
 end Sups
 
@@ -366,6 +373,8 @@ lemma subset_infs_self : s ⊆ s ⊼ s := fun _a ha ↦ mem_infs.2 ⟨_, ha, _, 
 lemma infs_self_subset : s ⊼ s ⊆ s ↔ InfClosed (s : Set α) := infs_subset_iff
 @[simp] lemma infs_self : s ⊼ s = s ↔ InfClosed (s : Set α) := by simp [←coe_inj]
 
+@[simp] lemma univ_infs_univ [Fintype α] : (univ : Finset α) ⊼ univ = univ := by simp
+
 lemma filter_infs_le [@DecidableRel α (· ≤ ·)] (s t : Finset α) (a : α) :
     (s ⊼ t).filter (a ≤ ·) = s.filter (a ≤ ·) ⊼ t.filter (a ≤ ·) := by
   simp only [←coe_inj, coe_filter, coe_infs, ←mem_coe, Set.sep_infs_le]
@@ -403,25 +412,11 @@ theorem infs_infs_infs_comm : s ⊼ t ⊼ (u ⊼ v) = s ⊼ u ⊼ (t ⊼ v) :=
   image₂_image₂_image₂_comm inf_inf_inf_comm
 #align finset.infs_infs_infs_comm Finset.infs_infs_infs_comm
 
+#align finset.filter_infs_ge Finset.filter_infs_le
+
 end Infs
 
 open FinsetFamily
-
-@[simp] lemma powerset_union (s t : Finset α) : (s ∪ t).powerset = s.powerset ⊻ t.powerset := by
-  ext u
-  simp only [mem_sups, mem_powerset, le_eq_subset, sup_eq_union]
-  refine ⟨fun h ↦ ⟨_, inter_subset_left _ u, _, inter_subset_left _ u, ?_⟩, ?_⟩
-  · rwa [←inter_distrib_right, inter_eq_right]
-  · rintro ⟨v, hv, w, hw, rfl⟩
-    exact union_subset_union hv hw
-
-@[simp] lemma powerset_inter (s t : Finset α) : (s ∩ t).powerset = s.powerset ⊼ t.powerset := by
-  ext u
-  simp only [mem_infs, mem_powerset, le_eq_subset, inf_eq_inter]
-  refine ⟨fun h ↦ ⟨_, inter_subset_left _ u, _, inter_subset_left _ u, ?_⟩, ?_⟩
-  · rwa [←inter_inter_distrib_right, inter_eq_right]
-  · rintro ⟨v, hv, w, hw, rfl⟩
-    exact inter_subset_inter hv hw
 
 section DistribLattice
 
@@ -444,6 +439,36 @@ theorem infs_sups_subset_right : (t ⊻ u) ⊼ s ⊆ t ⊼ s ⊻ u ⊼ s :=
 #align finset.infs_sups_subset_right Finset.infs_sups_subset_right
 
 end DistribLattice
+
+section Finset
+variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α} {a : α}
+
+@[simp] lemma powerset_union (s t : Finset α) : (s ∪ t).powerset = s.powerset ⊻ t.powerset := by
+  ext u
+  simp only [mem_sups, mem_powerset, le_eq_subset, sup_eq_union]
+  refine ⟨fun h ↦ ⟨_, inter_subset_left _ u, _, inter_subset_left _ u, ?_⟩, ?_⟩
+  · rwa [←inter_distrib_right, inter_eq_right]
+  · rintro ⟨v, hv, w, hw, rfl⟩
+    exact union_subset_union hv hw
+
+@[simp] lemma powerset_inter (s t : Finset α) : (s ∩ t).powerset = s.powerset ⊼ t.powerset := by
+  ext u
+  simp only [mem_infs, mem_powerset, le_eq_subset, inf_eq_inter]
+  refine ⟨fun h ↦ ⟨_, inter_subset_left _ u, _, inter_subset_left _ u, ?_⟩, ?_⟩
+  · rwa [←inter_inter_distrib_right, inter_eq_right]
+  · rintro ⟨v, hv, w, hw, rfl⟩
+    exact inter_subset_inter hv hw
+
+@[simp] lemma powerset_sups_powerset_self (s : Finset α) :
+    s.powerset ⊻ s.powerset = s.powerset := by simp [←powerset_union]
+
+@[simp] lemma powerset_infs_powerset_self (s : Finset α) :
+    s.powerset ⊼ s.powerset = s.powerset := by simp [←powerset_inter]
+
+lemma union_mem_sups : s ∈ 𝒜 → t ∈ ℬ → s ∪ t ∈ 𝒜 ⊻ ℬ := sup_mem_sups
+lemma inter_mem_infs : s ∈ 𝒜 → t ∈ ℬ → s ∩ t ∈ 𝒜 ⊼ ℬ := inf_mem_infs
+
+end Finset
 
 section DisjSups
 
