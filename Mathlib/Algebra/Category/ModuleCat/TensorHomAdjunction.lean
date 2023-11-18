@@ -74,10 +74,7 @@ def homFunctor : ModuleCat.{v} S ⥤ ModuleCat.{v} R where
   obj Z := ModuleCat.of R <| X →ₗ[S] Z
   map {_ _} l :=
   { toFun := (l ∘ₗ .)
-    map_add' := fun _ _ => LinearMap.ext fun _ => by
-      dsimp
-      rw [LinearMap.add_apply, map_add, LinearMap.add_apply, LinearMap.coe_comp,
-        LinearMap.coe_comp, Function.comp_apply, Function.comp_apply]
+    map_add' := fun _ _ => LinearMap.ext fun _ => l.map_add _ _
     map_smul' := fun r L => LinearMap.ext fun x => rfl }
   map_id Z := LinearMap.ext fun (L : _ →ₗ[S] Z) => by aesop
   map_comp {Z _ _} _ _ := LinearMap.ext fun (L : X →ₗ[S] Z) => LinearMap.ext fun x => by aesop
@@ -102,20 +99,15 @@ def uncurry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X �
     (X ⊗[R] X') →ₗ[S] Y :=
   let L : (X ⊗[R] X') →+ Y := (addConGen _).lift (FreeAddMonoid.lift fun p => l p.2 p.1) <|
     AddCon.addConGen_le fun p q H => show _ = _ from match p, q, H with
-    | _, _, Eqv.of_zero_left x => by aesop
+    | _, _, Eqv.of_zero_left _ => by aesop
     | _, _, Eqv.of_zero_right _ => by aesop
     | _, _, Eqv.of_add_left _ _ _ => by aesop
     | _, _, Eqv.of_add_right _ _ _ => by aesop
     | _, _, Eqv.of_smul _ _ _ => by aesop
-    | _, _, Eqv.add_comm p q => by simp [map_add, add_comm]
+    | _, _, Eqv.add_comm _ _ => by simp [map_add, add_comm]
   { L with
-    map_smul' := fun r z => by
-      refine z.induction_on (by aesop) ?_ (by aesop)
-      intro x x'
-      dsimp
-      rw [smul_tmul', tmul, tmul]
-      erw [AddCon.lift_mk', AddCon.lift_mk']
-      rw [FreeAddMonoid.lift_eval_of, map_smul, FreeAddMonoid.lift_eval_of] }
+    map_smul' := fun _ z => z.induction_on
+      (by aesop) (fun _ _ => LinearMap.map_smul _ _ _) (by aesop) }
 
 @[simp high]
 lemma uncurry'_apply_tmul {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X →ₗ[S] Y))
@@ -163,27 +155,19 @@ compatible with scalar action.
 -/
 @[simps!]
 noncomputable def toAddCommGroup {C : Type v} [AddCommGroup C]
-    (b : M →+ (N →+ C)) (hb : ∀ (r : R') (m : M) (n : N), b (r • m) n = b m (r • n)) :
+    (b : M →+ (N →+ C)) (compatible_smul : ∀ (r : R') (m : M) (n : N), b (r • m) n = b m (r • n)) :
     (M ⊗[R'] N) →+ C :=
   (((ModuleCat.tensorHomAdjunction R' ℤ N).homEquiv
     (ModuleCat.of R' M) (ModuleCat.of ℤ C)).symm
       { toFun := fun m => (b m).toIntLinearMap
         map_add' := fun _ _ => by dsimp; rw [b.map_add]; rfl
-        map_smul' := fun x y => LinearMap.ext fun z => by
-          simp only [ModuleCat.homFunctor_obj, RingHom.id_apply]
-          change b (x • y) z = (b y) (x • z)
-          rw [hb] }).toAddMonoidHom.comp (TensorProduct.comm R' M N).toLinearMap.toAddMonoidHom
+        map_smul' := fun _ _ => LinearMap.ext fun _ => compatible_smul _ _ _ }).toAddMonoidHom.comp
+    (TensorProduct.comm R' M N).toLinearMap.toAddMonoidHom
 
 lemma toAddCommGroup_apply_tmul {C : Type v} [AddCommGroup C]
-    (b : M →+ (N →+ C)) (hb : ∀ (r : R') (m : M) (n : N), b (r • m) n = b m (r • n))
+    (b : M →+ (N →+ C)) (compatible_smul : ∀ (r : R') (m : M) (n : N), b (r • m) n = b m (r • n))
     (m : M) (n : N) :
-    toAddCommGroup R' b hb (m ⊗ₜ n) = b m n := by
-  simp only [tmul._eq_1, AddCon.coe_mk', toAddCommGroup_apply]
-  rw [LinearMap.toAddMonoidHom_coe]
-  erw [Adjunction.mkOfHomEquiv_homEquiv]
-  simp only [ModuleCat.homFunctor_obj, Equiv.coe_fn_symm_mk, ModuleCat.uncurry'_apply,
-    ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
-  erw [FreeAddMonoid.lift_eval_of]
+    toAddCommGroup R' b compatible_smul (m ⊗ₜ n) = b m n := rfl
 
 
 /--
@@ -192,29 +176,29 @@ Constructing an additive group map `M ⊗[R] N → C` by lifting a function from
 -/
 noncomputable def toAddCommGroup' {C : Type v} [AddCommGroup C]
   (b : M × N → C)
-  (hN0 : ∀ (n : N), b (0, n) = 0)
-  (hM0 : ∀ (m : M), b (m, 0) = 0)
-  (hMadd : ∀ (n : N) (m m' : M), b (m + m', n) = b (m, n) + b (m', n))
-  (hNadd : ∀ (m : M) (n n' : N), b (m, n + n') = b (m, n) + b (m, n'))
-  (hb : ∀ (r : R') (m : M) (n : N), b ((r • m), n) = b (m, (r • n))) :
+  (map_zero_left : ∀ (n : N), b (0, n) = 0)
+  (map_zero_right : ∀ (m : M), b (m, 0) = 0)
+  (map_add_left : ∀ (n : N) (m m' : M), b (m + m', n) = b (m, n) + b (m', n))
+  (map_add_right : ∀ (m : M) (n n' : N), b (m, n + n') = b (m, n) + b (m, n'))
+  (compatible_smul : ∀ (r : R') (m : M) (n : N), b ((r • m), n) = b (m, (r • n))) :
   (M ⊗[R'] N) →+ C :=
 toAddCommGroup R'
   { toFun := fun m =>
     { toFun := fun n => b (m, n)
-      map_zero' := hM0 _
-      map_add' := hNadd _ }
-    map_zero' := AddMonoidHom.ext fun _ => hN0 _
-    map_add' := fun _ _ => AddMonoidHom.ext fun _ => hMadd _ _ _ } hb
+      map_zero' := map_zero_right _
+      map_add' := map_add_right _ }
+    map_zero' := AddMonoidHom.ext fun _ => map_zero_left _
+    map_add' := fun _ _ => AddMonoidHom.ext fun _ => map_add_left _ _ _ } compatible_smul
 
 lemma toAddCommGroup'_apply_tmul {C : Type v} [AddCommGroup C]
     (b : M × N → C)
-    (hN0 : ∀ (n : N), b (0, n) = 0)
-    (hM0 : ∀ (m : M), b (m, 0) = 0)
-    (hMadd : ∀ (n : N) (m m' : M), b (m + m', n) = b (m, n) + b (m', n))
-    (hNadd : ∀ (m : M) (n n' : N), b (m, n + n') = b (m, n) + b (m, n'))
-    (hb : ∀ (r : R') (m : M) (n : N), b ((r • m), n) = b (m, (r • n)))
+    (map_zero_left : ∀ (n : N), b (0, n) = 0)
+    (map_zero_right : ∀ (m : M), b (m, 0) = 0)
+    (map_add_left : ∀ (n : N) (m m' : M), b (m + m', n) = b (m, n) + b (m', n))
+    (map_add_right : ∀ (m : M) (n n' : N), b (m, n + n') = b (m, n) + b (m, n'))
+    (compatible_smul : ∀ (r : R') (m : M) (n : N), b ((r • m), n) = b (m, (r • n)))
     (m : M) (n : N) :
-    toAddCommGroup' R' b hN0 hM0 hMadd hNadd hb (m ⊗ₜ n) = b (m, n) :=
-  toAddCommGroup_apply_tmul R' _ _ m n
+    toAddCommGroup' R' b map_zero_left map_zero_right map_add_left map_add_right compatible_smul
+      (m ⊗ₜ n) = b (m, n) := rfl
 
 end TensorProduct
