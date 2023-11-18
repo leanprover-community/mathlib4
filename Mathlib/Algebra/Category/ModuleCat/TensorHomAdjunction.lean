@@ -98,13 +98,13 @@ noncomputable def curry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S}
 def uncurry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X →ₗ[S] Y)) :
     (X ⊗[R] X') →ₗ[S] Y :=
   let L : (X ⊗[R] X') →+ Y := (addConGen _).lift (FreeAddMonoid.lift fun p => l p.2 p.1) <|
-    AddCon.addConGen_le fun p q H => show _ = _ from match p, q, H with
-    | _, _, Eqv.of_zero_left _ => by aesop
-    | _, _, Eqv.of_zero_right _ => by aesop
-    | _, _, Eqv.of_add_left _ _ _ => by aesop
+    AddCon.addConGen_le fun
+    | _, _, Eqv.of_zero_left _     => by aesop
+    | _, _, Eqv.of_zero_right _    => by aesop
+    | _, _, Eqv.of_add_left _ _ _  => by aesop
     | _, _, Eqv.of_add_right _ _ _ => by aesop
-    | _, _, Eqv.of_smul _ _ _ => by aesop
-    | _, _, Eqv.add_comm _ _ => by simp [map_add, add_comm]
+    | _, _, Eqv.of_smul _ _ _      => by aesop
+    | _, _, Eqv.add_comm _ _       => by simp [map_add, add_comm]
   { L with
     map_smul' := fun _ z => z.induction_on
       (by aesop) (fun _ _ => LinearMap.map_smul _ _ _) (by aesop) }
@@ -117,14 +117,14 @@ variable (R S X)
 /-- The tensoring function is left adjoint to the hom functor. -/
 noncomputable def tensorHomAdjunction : tensorFunctor R S X ⊣ homFunctor R S X :=
     Adjunction.mkOfHomEquiv
-    { homEquiv := fun X' Y =>
+    { homEquiv := fun _ _ =>
       { toFun := curry'
         invFun := uncurry'
-        left_inv := fun l => LinearMap.ext fun x => x.induction_on (by aesop) (by aesop) (by aesop)
-        right_inv := fun l => LinearMap.ext fun x => LinearMap.ext fun z => rfl }
-      homEquiv_naturality_left_symm := fun {X' X''} Y f g => by
-        refine LinearMap.ext fun x => x.induction_on ?_ ?_ ?_ <;> aesop
-      homEquiv_naturality_right := fun {X' Y Y'} f g => by aesop }
+        left_inv := fun _ => LinearMap.ext fun x => x.induction_on (by aesop) (by aesop) (by aesop)
+        right_inv := fun _ => LinearMap.ext fun _ => LinearMap.ext fun _ => rfl }
+      homEquiv_naturality_left_symm := fun {_ _} _ _ _ => by
+        refine' LinearMap.ext fun x => x.induction_on _ _ _ <;> aesop
+      homEquiv_naturality_right := by aesop }
 
 noncomputable instance : IsLeftAdjoint (tensorFunctor R S X) :=
 ⟨_, tensorHomAdjunction _ _ _⟩
@@ -149,6 +149,7 @@ variable (R' : Type u) [CommRing R']
 variable {M N : Type v} [AddCommGroup M] [AddCommGroup N]
 variable [Module R' M] [Module R' N]
 
+open ModuleCat
 /--
 Constructing an additive group map from a tensor product by lifting a bi-additive group map that is
 compatible with scalar action.
@@ -157,8 +158,7 @@ compatible with scalar action.
 noncomputable def toAddCommGroup {C : Type v} [AddCommGroup C]
     (b : M →+ (N →+ C)) (compatible_smul : ∀ (r : R') (m : M) (n : N), b (r • m) n = b m (r • n)) :
     (M ⊗[R'] N) →+ C :=
-  (((ModuleCat.tensorHomAdjunction R' ℤ N).homEquiv
-    (ModuleCat.of R' M) (ModuleCat.of ℤ C)).symm
+  (((tensorHomAdjunction R' ℤ N).homEquiv (of R' M) (of ℤ C)).symm
       { toFun := fun m => (b m).toIntLinearMap
         map_add' := fun _ _ => by dsimp; rw [b.map_add]; rfl
         map_smul' := fun _ _ => LinearMap.ext fun _ => compatible_smul _ _ _ }).toAddMonoidHom.comp
@@ -168,7 +168,6 @@ lemma toAddCommGroup_apply_tmul {C : Type v} [AddCommGroup C]
     (b : M →+ (N →+ C)) (compatible_smul : ∀ (r : R') (m : M) (n : N), b (r • m) n = b m (r • n))
     (m : M) (n : N) :
     toAddCommGroup R' b compatible_smul (m ⊗ₜ n) = b m n := rfl
-
 
 /--
 Constructing an additive group map `M ⊗[R] N → C` by lifting a function from
@@ -183,10 +182,7 @@ noncomputable def toAddCommGroup' {C : Type v} [AddCommGroup C]
   (compatible_smul : ∀ (r : R') (m : M) (n : N), b ((r • m), n) = b (m, (r • n))) :
   (M ⊗[R'] N) →+ C :=
 toAddCommGroup R'
-  { toFun := fun m =>
-    { toFun := fun n => b (m, n)
-      map_zero' := map_zero_right _
-      map_add' := map_add_right _ }
+  { toFun := fun m => ⟨⟨fun n => b (m, n), map_zero_right _⟩, map_add_right _⟩
     map_zero' := AddMonoidHom.ext fun _ => map_zero_left _
     map_add' := fun _ _ => AddMonoidHom.ext fun _ => map_add_left _ _ _ } compatible_smul
 
