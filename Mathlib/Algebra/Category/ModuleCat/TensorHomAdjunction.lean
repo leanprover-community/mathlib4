@@ -119,7 +119,7 @@ def uncurry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X �
 
 @[simp high]
 lemma uncurry'_apply_tmul {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X →ₗ[S] Y))
-  (x : X) (x' : X') : uncurry' l (x ⊗ₜ x') = l x' x := rfl
+    (x : X) (x' : X') : uncurry' l (x ⊗ₜ x') = l x' x := rfl
 
 variable (R S X)
 /-- The tensoring function is left adjoint to the hom functor. -/
