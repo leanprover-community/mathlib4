@@ -62,16 +62,15 @@ variable
   {v : (x : M) → TangentSpace I x} {x₀ : M}
   (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) x₀) (t₀ : ℝ)
 
-def integralCurveAt (γ : ℝ → M) := γ t₀ = x₀ ∧
-  ∃ ε > (0 : ℝ), ∀ (t : ℝ), t ∈ Set.Ioo (t₀ - ε) (t₀ + ε) →
+def HasIntegralCurveAt (v : (x : M) → TangentSpace I x) (γ : ℝ → M) (x₀ : M) (t₀ : ℝ) :=
+  γ t₀ = x₀ ∧ ∃ ε > (0 : ℝ), ∀ (t : ℝ), t ∈ Set.Ioo (t₀ - ε) (t₀ + ε) →
     HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t)))
 
 /-- For any continuously differentiable vector field and any chosen non-boundary point `x₀` on the
   manifold, an integral curve `γ : ℝ → M` exists such that `γ t₀ = x₀` and the tangent vector of `γ`
   at `t` coincides with the vector field at `γ t` for all `t` within an open interval around `t₀`.-/
 theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoint x₀) :
-    ∃ ε > (0 : ℝ), ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ ∀ (t : ℝ), t ∈ Set.Ioo (t₀ - ε) (t₀ + ε) →
-    HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t))) := by
+    ∃ (γ : ℝ → M), HasIntegralCurveAt v γ x₀ t₀ := by
 rw [contMDiffAt_iff] at hv
 obtain ⟨_, hv⟩ := hv
 have hI : Set.range I ∈ nhds (extChartAt I x₀ x₀)
@@ -79,7 +78,7 @@ have hI : Set.range I ∈ nhds (extChartAt I x₀ x₀)
   refine ⟨interior (extChartAt I x₀).target,
     subset_trans interior_subset (extChartAt_target_subset_range ..),
     isOpen_interior, hx⟩
-obtain ⟨f, ε1, hε1, hf1, hf2⟩ :=
+obtain ⟨f, hf1, ε1, hε1, hf2⟩ :=
   exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀ (ContDiffAt.snd (hv.contDiffAt hI))
 rw [←Real.ball_eq_Ioo] at hf2
 -- use continuity of f to extract ε2 so that for t ∈ Real.ball t₀ ε2,
@@ -92,7 +91,7 @@ rw [Metric.mem_nhds_iff] at hnhds
 obtain ⟨ε2, hε2, hf3⟩ := hnhds
 simp_rw [Set.subset_def, Set.mem_preimage] at hf3
 -- prove the theorem
-refine' ⟨min ε1 ε2, lt_min hε1 hε2, (extChartAt I x₀).symm ∘ f, _, _⟩
+refine' ⟨(extChartAt I x₀).symm ∘ f, _, min ε1 ε2, lt_min hε1 hε2, _⟩
 · apply Eq.symm
   rw [Function.comp_apply, hf1, LocalEquiv.left_inv _ (mem_extChartAt_source ..)]
 intros t ht
@@ -149,7 +148,6 @@ rw [tangentBundleCore_coordChange_achart, LocalEquiv.right_inv _ hf3', fderivWit
   tangent vector of `γ` at `t` coincides with the vector field at `γ t` for all `t` within an open
   interval around `t₀`. -/
 lemma exists_integralCurve_of_contMDiff_tangent_section_boundaryless [I.Boundaryless] :
-    ∃ ε > (0 : ℝ), ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ ∀ (t : ℝ), t ∈ Set.Ioo (t₀ - ε) (t₀ + ε) →
-      HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t))) :=
+    ∃ (γ : ℝ → M), HasIntegralCurveAt v γ x₀ t₀ :=
   exists_integralCurve_of_contMDiff_tangent_section hv _
     ModelWithCorners.Boundaryless.isInteriorPoint
