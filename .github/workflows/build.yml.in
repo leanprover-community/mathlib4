@@ -323,7 +323,7 @@ jobs:
           cd old/
           git remote set-branches origin master
           git fetch origin
-          git checkout $(git merge-base --fork-point origin/master HEAD)
+          git checkout $(git merge-base origin/master HEAD)
           git status
           lake --version
           lean --version
