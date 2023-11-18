@@ -415,8 +415,6 @@ instance zero : Zero (DirectLimit G f) := by
 instance : Inhabited (DirectLimit G f) :=
   ⟨0⟩
 
-instance [IsEmpty ι] : Unique (DirectLimit G f) := by unfold DirectLimit; infer_instance
-
 /-- The canonical map from a component to the direct limit. -/
 nonrec def of (i) : G i →+* DirectLimit G f :=
   RingHom.mk'
