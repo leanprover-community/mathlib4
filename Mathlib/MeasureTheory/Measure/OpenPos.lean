@@ -261,7 +261,7 @@ In general, neither of meagre and measure zero implies the other.
 Cantor sets are nowhere dense. (Taking a countable union of fat Cantor sets whose
 measure approaches 1 yields a meagre set of measure 1.)
 - The set of Liouville numbers is a Lebesgue measure zero subset of ℝ,
-but is dense (in particular, not meagre).
+but is not meagre.
 
 However, with respect to a measure which is positive on non-empty open sets, **closed** measure
 zero sets are nowhere dense and σ-compact measure zero sets in a Hausdorff space are meagre.
@@ -284,6 +284,6 @@ lemma isMeagre_of_isSigmaCompact_null [T2Space X] (h₁s : IsSigmaCompact s) (h�
     have : μ (K n) = 0 := measure_mono_null (hcover ▸ subset_iUnion K n) h₂s
     exact isNowhereDense_of_isClosed_null (hcompact n).isClosed this
   rw [meagre_iff_countable_union_nowhereDense]
-  exact ⟨range K, fun t ⟨n, hn⟩ ↦ (by rw [← hn]; exact h n), countable_range K, hcover.symm.subset⟩
+  exact ⟨range K, fun t ⟨n, hn⟩ ↦ hn ▸ h n, countable_range K, hcover.symm.subset⟩
 
 end MeasureZero
