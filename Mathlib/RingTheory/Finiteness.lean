@@ -420,11 +420,10 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
 open TensorProduct LinearMap in
 /-- Every `x : I ⊗ M` is the image of some `y : J ⊗ M` where `J ≤ I` is finitely generated,
 under the tensor product of `J.inclusion ‹J ≤ I› : J → I` and the identity `M → M`. -/
-theorem exists_fg_le_eq_rTensor_inclusion {R : Type*} [CommRing R]
-    {M : Type*} [AddCommGroup M] [Module R M] {N : Type*} [AddCommGroup N] [Module R N]
-    {I : Submodule R N} (x : I ⊗ M) :
-    ∃ (J : Submodule R N) (_ : J.FG) (hle : J ≤ I) (y : J ⊗ M),
-      x = rTensor M (J.inclusion hle) y := by
+theorem exists_fg_le_eq_rTensor_inclusion {R M N : Type*} [CommRing R] [AddCommGroup M]
+    [AddCommGroup N] [Module R M] [Module R N] {I : Submodule R N} (x : I ⊗ M) :
+      ∃ (J : Submodule R N) (_ : J.FG) (hle : J ≤ I) (y : J ⊗ M),
+        x = rTensor M (J.inclusion hle) y := by
   induction x using TensorProduct.induction_on with
   | zero => refine ⟨⊥, fg_bot, zero_le _, 0, rfl⟩
   | tmul i m =>
@@ -434,10 +433,9 @@ theorem exists_fg_le_eq_rTensor_inclusion {R : Type*} [CommRing R]
   | add x₁ x₂ ihx₁ ihx₂ =>
     have ⟨J₁, hfg₁, hle₁, y₁, hy₁⟩ := ihx₁
     have ⟨J₂, hfg₂, hle₂, y₂, hy₂⟩ := ihx₂
-    let z₁ :=
+    refine ⟨J₁ ⊔ J₂, FG.sup hfg₁ hfg₂, sup_le hle₁ hle₂,
       rTensor M (J₁.inclusion (le_sup_left : J₁ ≤ J₁ ⊔ J₂)) y₁ +
-      rTensor M (J₂.inclusion (le_sup_right : J₂ ≤ J₁ ⊔ J₂)) y₂
-    refine ⟨J₁ ⊔ J₂, FG.sup hfg₁ hfg₂, sup_le hle₁ hle₂, z₁, ?_⟩
+        rTensor M (J₂.inclusion (le_sup_right : J₂ ≤ J₁ ⊔ J₂)) y₂, ?_⟩
     rewrite [map_add, ← comp_apply, ← rTensor_comp, ← comp_apply, ← rTensor_comp, hy₁, hy₂]
     rfl
 
