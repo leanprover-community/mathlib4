@@ -464,10 +464,6 @@ theorem adjoin_eq_algebra_adjoin (inv_mem : ∀ x ∈ Algebra.adjoin F S, x⁻¹
     (algebra_adjoin_le_adjoin _ _)
 #align intermediate_field.adjoin_eq_algebra_adjoin IntermediateField.adjoin_eq_algebra_adjoin
 
-theorem adjoin_eq_of_isIntegral (h : ∀ x ∈ S, IsIntegral F x) :
-    (adjoin F S).toSubalgebra = Algebra.adjoin F S :=
-  adjoin_eq_algebra_adjoin _ _ (Algebra.IsIntegral.adjoin h).inv_mem
-
 theorem eq_adjoin_of_eq_algebra_adjoin (K : IntermediateField F E)
     (h : K.toSubalgebra = Algebra.adjoin F S) : K = adjoin F S := by
   apply toSubalgebra_injective
@@ -567,12 +563,8 @@ theorem adjoin_simple_comm (β : E) : F⟮α⟯⟮β⟯.restrictScalars F = F⟮
 variable {F} {α}
 
 theorem adjoin_algebraic_toSubalgebra {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic F x) :
-    (IntermediateField.adjoin F S).toSubalgebra = Algebra.adjoin F S := by
-  simp only [isAlgebraic_iff_isIntegral] at hS
-  have : Algebra.IsIntegral F (Algebra.adjoin F S) := by
-    rwa [← le_integralClosure_iff_isIntegral, Algebra.adjoin_le_iff]
-  have := isField_of_isIntegral_of_isField' this (Field.toIsField F)
-  rw [← ((Algebra.adjoin F S).toIntermediateField' this).eq_adjoin_of_eq_algebra_adjoin F S] <;> rfl
+    (IntermediateField.adjoin F S).toSubalgebra = Algebra.adjoin F S :=
+  adjoin_eq_algebra_adjoin _ _ (Algebra.IsIntegral.adjoin fun x hx ↦ (hS x hx).isIntegral).inv_mem
 #align intermediate_field.adjoin_algebraic_to_subalgebra IntermediateField.adjoin_algebraic_toSubalgebra
 
 theorem adjoin_simple_toSubalgebra_of_integral (hα : IsIntegral F α) :
