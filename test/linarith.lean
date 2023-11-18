@@ -544,4 +544,3 @@ example (k : ℤ) (h : k < 1) (h₁ : -1 < k) : k = 0 := by
   -- linarith preprocessor to fail.
   change _ at h₁
   linarith
-
