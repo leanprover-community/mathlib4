@@ -336,6 +336,7 @@ jobs:
       - run: |
           cd old/
           git remote set-branches origin master
+          git fetch origin
           git checkout $(git merge-base --fork-point origin/master)
           lake --version
           lean --version
