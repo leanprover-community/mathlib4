@@ -18,6 +18,22 @@ Consider the tensor functor `(X ⊗[R] .)` from the category of `R`-module to th
 Hom_S(X⊗[R]Y, Z) ≃ Hom_R(Y, Hom_S(X, Z))
 ```
 
+## Implementation notes
+
+1. Order of arguments
+```
+Hom_S(Y⊗[R]X, Z) ≃ Hom_R(Y, Hom_S(X, Z))
+```
+is perhaps more natural to work with because all the argument have the same order.
+But currently mathlib4 does not know `Y⊗[R] X` is an `S`-module as well.
+
+2. Why not use the [`Tower` file](Mathlib/LinearAlgebra/TensorProduct/Tower.lean`)
+
+In our setting `X` is an `(R, S)` bimodule and `Y` an `R`-module and `Z` an `S`-module
+so to use the `Tower` file, we need `S` to be an `R`-algebra which is a luxury we do not have.
+But note that in `Tower` file, `curry` and `uncurry` are both tri-linear maps. So `Tower` file
+allows interplay of 3 rings which is not allowed in this file.
+
 -/
 
 universe u u' v
@@ -108,15 +124,15 @@ lemma uncurry'_apply_tmul {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' �
 variable (R S X)
 /-- The tensoring function is left adjoint to the hom functor. -/
 noncomputable def tensorHomAdjunction : tensorFunctor R S X ⊣ homFunctor R S X :=
-  Adjunction.mkOfHomEquiv
-  { homEquiv := fun X' Y =>
-    { toFun := curry'
-      invFun := uncurry'
-      left_inv := fun l => LinearMap.ext fun x => x.induction_on (by aesop) (by aesop) (by aesop)
-      right_inv := fun l => LinearMap.ext fun x => LinearMap.ext fun z => rfl }
-    homEquiv_naturality_left_symm := fun {X' X''} Y f g => by
-      refine LinearMap.ext fun x => x.induction_on ?_ ?_ ?_ <;> aesop
-    homEquiv_naturality_right := fun {X' Y Y'} f g => by aesop }
+    Adjunction.mkOfHomEquiv
+    { homEquiv := fun X' Y =>
+      { toFun := curry'
+        invFun := uncurry'
+        left_inv := fun l => LinearMap.ext fun x => x.induction_on (by aesop) (by aesop) (by aesop)
+        right_inv := fun l => LinearMap.ext fun x => LinearMap.ext fun z => rfl }
+      homEquiv_naturality_left_symm := fun {X' X''} Y f g => by
+        refine LinearMap.ext fun x => x.induction_on ?_ ?_ ?_ <;> aesop
+      homEquiv_naturality_right := fun {X' Y Y'} f g => by aesop }
 
 noncomputable instance : IsLeftAdjoint (tensorFunctor R S X) :=
 ⟨_, tensorHomAdjunction _ _ _⟩
