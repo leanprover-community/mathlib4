@@ -46,14 +46,12 @@ noncomputable def directLimitOfTensorProductToTensorProductWithDirectLimit :
   lift _ _ _ _ (fun _ => (of _ _ _ _ _).rTensor M)
     fun _ _ _ x => by refine' x.induction_on _ _ _ <;> aesop
 
-variable {M}
+variable {M} in
 @[simp] lemma directLimitOfTensorProductToTensorProductWithDirectLimit_apply_of_tmul
     {i : ι} (g : G i) (m : M) :
     directLimitOfTensorProductToTensorProductWithDirectLimit f M (of _ _ _ _ i (g ⊗ₜ m)) =
     (of _ _ _ _ i g : Lim_G) ⊗ₜ m :=
   lift_of (G := (G · ⊗[R] M)) _ _ (g ⊗ₜ m)
-
-variable (M)
 
 /--
 the map `(limᵢ G) ⊗ M → limᵢ (G i ⊗ M)` from the bilinear map `limᵢ Gᵢ → M → limᵢ (G i ⊗ M)` given
