@@ -123,10 +123,8 @@ theorem mem_toSubfield (s : IntermediateField K L) (x : L) : x ∈ s.toSubfield 
 definitional equalities. -/
 protected def copy (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) : IntermediateField K L
     where
-  toSubalgebra := S.toSubalgebra.copy s (hs : s = S.toSubalgebra.carrier)
-  inv_mem' :=
-    have hs' : (S.toSubalgebra.copy s hs).carrier = S.toSubalgebra.carrier := hs
-    hs'.symm ▸ S.inv_mem'
+  toSubalgebra := S.toSubalgebra.copy s hs
+  inv_mem' := hs.symm ▸ S.inv_mem'
 #align intermediate_field.copy IntermediateField.copy
 
 @[simp]
@@ -296,6 +294,23 @@ theorem toIntermediateField_toSubalgebra (S : IntermediateField K L) :
   rfl
 #align to_intermediate_field_to_subalgebra toIntermediateField_toSubalgebra
 
+/-- Turn an algebraic subalgebra into an intermediate field, `Subalgebra.IsAlgebraic` version. -/
+def Subalgebra.IsAlgebraic.toIntermediateField {S : Subalgebra K L} (hS : S.IsAlgebraic) :
+    IntermediateField K L where
+  toSubalgebra := S
+  inv_mem' x hx := Algebra.adjoin_le_iff.mpr
+    (Set.singleton_subset_iff.mpr hx) (hS x hx).isIntegral.inv_mem_adjoin
+
+/-- Turn an algebraic subalgebra into an intermediate field, `Algebra.IsAlgebraic` version. -/
+abbrev Algebra.IsAlgebraic.toIntermediateField {S : Subalgebra K L} (hS : Algebra.IsAlgebraic K S) :
+    IntermediateField K L := (S.isAlgebraic_iff.mpr hS).toIntermediateField
+
+/-- The algebraic closure of a field `K` in an extension `L`. Definitionally, this is exactly
+  `integralClosure K L` as an intermediate field. We choose the name `algClosure` to
+  distinguish the intermediate field from the subalgebra, and from `AlgebraicClosure`. -/
+def IntermediateField.algClosure : IntermediateField K L :=
+  ((le_integralClosure_iff_isIntegral (R := K) (A := L)).mp le_rfl).isAlgebraic.toIntermediateField
+
 /-- Turn a subalgebra satisfying `IsField` into an intermediate_field -/
 def Subalgebra.toIntermediateField' (S : Subalgebra K L) (hS : IsField S) : IntermediateField K L :=
   S.toIntermediateField fun x hx => by
@@ -354,18 +369,17 @@ theorem coe_prod {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L
 
 /-! `IntermediateField`s inherit structure from their `Subalgebra` coercions. -/
 
-
 instance module' {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] : Module R S :=
-  S.toSubalgebra.module'
+  inferInstance
 #align intermediate_field.module' IntermediateField.module'
 
 instance module : Module K S :=
-  inferInstanceAs (Module K S.toSubsemiring)
+  inferInstance
 #align intermediate_field.module IntermediateField.module
 
 instance isScalarTower {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] :
     IsScalarTower R K S :=
-  inferInstanceAs (IsScalarTower R K S.toSubsemiring)
+  inferInstance
 #align intermediate_field.is_scalar_tower IntermediateField.isScalarTower
 
 @[simp]
@@ -376,29 +390,29 @@ theorem coe_smul {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] 
 
 instance algebra' {K'} [CommSemiring K'] [SMul K' K] [Algebra K' L] [IsScalarTower K' K L] :
     Algebra K' S :=
-  S.toSubalgebra.algebra'
+  inferInstance
 #align intermediate_field.algebra' IntermediateField.algebra'
 
 instance algebra : Algebra K S :=
-  inferInstanceAs (Algebra K S.toSubsemiring)
+  inferInstance
 #align intermediate_field.algebra IntermediateField.algebra
 
 instance toAlgebra {R : Type*} [Semiring R] [Algebra L R] : Algebra S R :=
-  S.toSubalgebra.toAlgebra
+  inferInstance
 #align intermediate_field.to_algebra IntermediateField.toAlgebra
 
 instance isScalarTower_bot {R : Type*} [Semiring R] [Algebra L R] : IsScalarTower S L R :=
-  IsScalarTower.subalgebra _ _ _ S.toSubalgebra
+  inferInstance
 #align intermediate_field.is_scalar_tower_bot IntermediateField.isScalarTower_bot
 
 instance isScalarTower_mid {R : Type*} [Semiring R] [Algebra L R] [Algebra K R]
     [IsScalarTower K L R] : IsScalarTower K S R :=
-  IsScalarTower.subalgebra' _ _ _ S.toSubalgebra
+  inferInstance
 #align intermediate_field.is_scalar_tower_mid IntermediateField.isScalarTower_mid
 
 /-- Specialize `is_scalar_tower_mid` to the common case where the top field is `L` -/
 instance isScalarTower_mid' : IsScalarTower K S L :=
-  S.isScalarTower_mid
+  inferInstance
 #align intermediate_field.is_scalar_tower_mid' IntermediateField.isScalarTower_mid'
 
 /-- If `f : L →+* L'` fixes `K`, `S.map f` is the intermediate field between `L'` and `K`
@@ -518,26 +532,13 @@ instance AlgHom.inhabited : Inhabited (S →ₐ[K] L) :=
 #align intermediate_field.alg_hom.inhabited IntermediateField.AlgHom.inhabited
 
 theorem aeval_coe {R : Type*} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
-    (x : S) (P : R[X]) : aeval (x : L) P = aeval x P := by
-  refine' Polynomial.induction_on' P (fun f g hf hg => _) fun n r => _
-  · rw [aeval_add, aeval_add, AddMemClass.coe_add, hf, hg]
-  · simp only [MulMemClass.coe_mul, aeval_monomial, SubmonoidClass.coe_pow, mul_eq_mul_right_iff]
-    left
-    rfl
+    (x : S) (P : R[X]) : aeval (x : L) P = aeval x P :=
+  aeval_algHom_apply (S.val.restrictScalars R) x P
 #align intermediate_field.aeval_coe IntermediateField.aeval_coe
 
 theorem coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
-    [IsScalarTower R K L] {x : S} : IsIntegral R (x : L) ↔ IsIntegral R x := by
-  refine' ⟨fun h => _, fun h => _⟩
-  · obtain ⟨P, hPmo, hProot⟩ := h
-    refine' ⟨P, hPmo, (injective_iff_map_eq_zero _).1 (algebraMap (↥S) L).injective _ _⟩
-    letI : IsScalarTower R S L := IsScalarTower.of_algebraMap_eq (congr_fun rfl)
-    rw [eval₂_eq_eval_map, ← eval₂_at_apply, eval₂_eq_eval_map, Polynomial.map_map, ←
-      IsScalarTower.algebraMap_eq, ← eval₂_eq_eval_map]
-    exact hProot
-  · obtain ⟨P, hPmo, hProot⟩ := h
-    refine' ⟨P, hPmo, _⟩
-    rw [← aeval_def, aeval_coe, aeval_def, hProot, ZeroMemClass.coe_zero]
+    [IsScalarTower R K L] {x : S} : IsIntegral R (x : L) ↔ IsIntegral R x :=
+  isIntegral_algHom_iff (S.val.restrictScalars R) Subtype.val_injective
 #align intermediate_field.coe_is_integral_iff IntermediateField.coe_isIntegral_iff
 
 /-- The map `E → F` when `E` is an intermediate field contained in the intermediate field `F`.
@@ -724,8 +725,8 @@ theorem isAlgebraic_iff {x : S} : IsAlgebraic K x ↔ IsAlgebraic K (x : L) :=
   (isAlgebraic_algebraMap_iff (algebraMap S L).injective).symm
 #align intermediate_field.is_algebraic_iff IntermediateField.isAlgebraic_iff
 
-theorem isIntegral_iff {x : S} : IsIntegral K x ↔ IsIntegral K (x : L) := by
-  rw [← isAlgebraic_iff_isIntegral, isAlgebraic_iff, isAlgebraic_iff_isIntegral]
+theorem isIntegral_iff {x : S} : IsIntegral K x ↔ IsIntegral K (x : L) :=
+  (isIntegral_algHom_iff S.val S.val.injective).symm
 #align intermediate_field.is_integral_iff IntermediateField.isIntegral_iff
 
 theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) :=

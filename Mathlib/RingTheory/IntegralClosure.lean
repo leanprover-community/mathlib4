@@ -427,17 +427,19 @@ theorem IsIntegral.isUnit {R S} [Field R] [Ring S] [IsDomain S] [Algebra R S] {x
   (FiniteDimensional.isUnit R (K := adjoin R {x})
     (x := ⟨x, subset_adjoin rfl⟩) <| mt Subtype.ext_iff.mp h0).map (adjoin R {x}).val
 
+theorem IsIntegral.inv_mem_adjoin {R S} [Field R] [DivisionRing S] [Algebra R S] {x : S}
+    (int : IsIntegral R x) : x⁻¹ ∈ adjoin R {x} := by
+  obtain rfl | h0 := eq_or_ne x 0
+  · rw [inv_zero]; exact Subalgebra.zero_mem _
+  have : FiniteDimensional R (adjoin R {x}) := ⟨(Submodule.fg_top _).mpr int.fg_adjoin_singleton⟩
+  obtain ⟨⟨y, hy⟩, h1⟩ := FiniteDimensional.exists_mul_eq_one R
+    (K := adjoin R {x}) (x := ⟨x, subset_adjoin rfl⟩) (mt Subtype.ext_iff.mp h0)
+  rwa [← mul_left_cancel₀ h0 ((Subtype.ext_iff.mp h1).trans (mul_inv_cancel h0).symm)]
+
 /-- The inverse of a nonzero integral element in a division ring over a field is also integral. -/
 theorem IsIntegral.inv {R S} [Field R] [DivisionRing S] [Algebra R S] {x : S}
-    (int : IsIntegral R x) (h0 : x ≠ 0) : IsIntegral R x⁻¹ :=
-  .of_mem_of_fg _ int.fg_adjoin_singleton _ <| by
-    have : FiniteDimensional R (adjoin R {x}) := ⟨(Submodule.fg_top _).mpr int.fg_adjoin_singleton⟩
-    obtain ⟨y, hy⟩ := FiniteDimensional.isUnit R
-      (K := adjoin R {x}) (x := ⟨x, subset_adjoin rfl⟩) (mt Subtype.ext_iff.mp h0)
-    convert ← y.inv.prop
-    apply mul_left_cancel₀ h0
-    rw [mul_inv_cancel h0]
-    exact congr_arg Subtype.val (hy ▸ y.val_inv)
+    (int : IsIntegral R x) : IsIntegral R x⁻¹ :=
+  .of_mem_of_fg _ int.fg_adjoin_singleton _ int.inv_mem_adjoin
 
 /-- An commutative domain that is an integral algebra over a field is a field. -/
 theorem isField_of_isIntegral_of_isField' {R S : Type*} [CommRing R] [CommRing S] [IsDomain S]
