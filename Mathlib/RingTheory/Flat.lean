@@ -123,9 +123,9 @@ theorem iff_rTensor_injective' :
   letI : AddCommGroup (I ⊗[R] M) := inferInstance -- Type class reminder
   rewrite [injective_iff_map_eq_zero]
   intro x hx₀
-  have ⟨J, hfg, hle, y, hy⟩ := exists_fg_le_eq_rTensor_subtype_codRestrict x
+  have ⟨J, hfg, hle, y, hy⟩ := exists_fg_le_eq_rTensor_inclusion x
   apply (fun hy₀ => by rw [hy, hy₀, _root_.map_zero] : y = 0 → x = 0)
-  rewrite [hy, ← comp_apply, ← rTensor_comp, subtype_comp_codRestrict] at hx₀
+  rewrite [hy, ← comp_apply, ← rTensor_comp] at hx₀
   letI : AddCommGroup (J ⊗[R] M) := inferInstance -- Type class reminder
   exact (injective_iff_map_eq_zero _).mp (h hfg) y hx₀
 
