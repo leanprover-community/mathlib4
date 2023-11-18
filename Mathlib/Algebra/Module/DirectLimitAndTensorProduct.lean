@@ -32,7 +32,7 @@ variable (M : Type w) [AddCommGroup M] [Module R M]
 
 /-- limᵢ (G i ⊗ M) -/
 local notation "Lim_G_tensor" =>
-  (DirectLimit (fun i => G i ⊗[R] M) <| fun i j h => TensorProduct.map (f _ _ h) LinearMap.id)
+  (DirectLimit (G · ⊗[R] M) <| fun i j h => TensorProduct.map (f _ _ h) LinearMap.id)
 
 /-- lim G -/
 local notation "Lim_G" => (DirectLimit G f)
