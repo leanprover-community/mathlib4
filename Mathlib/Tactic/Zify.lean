@@ -101,11 +101,11 @@ def zifyProof (simpArgs : Option (Syntax.TSepArray `Lean.Parser.Tactic.simpStar 
 -- Doing so in this file would require adding imports.
 
 
--- `Nat.cast_sub` is already tagged as `norm_cast` but it does allow to use assumption like
+-- `Nat.cast_sub` is already tagged as `norm_cast` but it does allow to use assumptions like
 -- `m < n` or more generally `m + k ≤ n`. We add two lemmas to increase the probability that
--- `zify` will push through `ℕ` subtractio.
+-- `zify` will push through `ℕ` subtraction.
 
-variable  {R : Type*} [AddGroupWithOne R]
+variable {R : Type*} [AddGroupWithOne R]
 
 @[norm_cast] theorem Nat.cast_sub_of_add_le {m n k} (h : m + k ≤ n) :
     ((n - m : ℕ) : R) = n - m := Nat.cast_sub (m.le_add_right k |>.trans h)
