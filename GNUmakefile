@@ -10,13 +10,13 @@ build:
 test: $(addsuffix .run, $(TESTS))
 
 test/%.run: build
-	lake env lean test/$* > output.log
-	@if [ -s output.log ]; then \
+	lake env lean test/$* > test/$*.log
+	@if [ -s test/$*.log ]; then \
 		echo "Error: Test output is not empty"; \
-		cat output.log; \
+		cat test/$*.log; \
 		exit 1; \
 	fi
-	@rm -f output.log
+	@rm -f test/$*.log
 
 
 lint: build
