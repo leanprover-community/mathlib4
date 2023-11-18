@@ -5,6 +5,7 @@ Authors: Kalle Kytölä
 -/
 import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 
 #align_import measure_theory.measure.finite_measure from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -315,6 +316,15 @@ theorem restrict_nonzero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict 
 
 variable [TopologicalSpace Ω]
 
+/-- Two finite Borel measures are equal if the integrals of all bounded continuous functions with
+respect to both agree. -/
+theorem ext_of_forall_lintegral_eq {Ω : Type*} [HasOuterApproxClosed Ω] [BorelSpace Ω]
+    {μ ν : FiniteMeasure Ω} (h : ∀ (f : Ω →ᵇ ℝ≥0), ∫⁻ x, f x ∂μ = ∫⁻ x, f x ∂ν) :
+    μ = ν := by
+  apply Subtype.ext
+  change (μ : Measure Ω) = (ν : Measure Ω)
+  exact ext_of_forall_lintegral_eq_of_IsFiniteMeasure h
+
 /-- The pairing of a finite (Borel) measure `μ` with a nonnegative bounded continuous
 function is obtained by (Lebesgue) integrating the (test) function against the measure.
 This is `MeasureTheory.FiniteMeasure.testAgainstNN`. -/
@@ -538,6 +548,17 @@ theorem tendsto_iff_forall_lintegral_tendsto {γ : Type*} {F : Filter γ} {μs :
   simp_rw [toWeakDualBCNN_apply _ _, ← testAgainstNN_coe_eq, ENNReal.tendsto_coe,
     ENNReal.toNNReal_coe]
 #align measure_theory.finite_measure.tendsto_iff_forall_lintegral_tendsto MeasureTheory.FiniteMeasure.tendsto_iff_forall_lintegral_tendsto
+
+/-- Weak limits of finite Borel measures are unique. -/
+theorem tendsto_nhds_unique' {Ω ι : Type*} {L : Filter ι} [NeBot L]
+    [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterApproxClosed Ω]
+    [BorelSpace Ω] {μs : ι → FiniteMeasure Ω} {μ₁ μ₂ : FiniteMeasure Ω}
+    (h₁ : L.Tendsto μs (𝓝 μ₁)) (h₂ : L.Tendsto μs (𝓝 μ₂)) :
+    μ₁ = μ₂ := by
+  apply FiniteMeasure.ext_of_forall_lintegral_eq
+  rw [tendsto_iff_forall_lintegral_tendsto] at h₁ h₂
+  intro f
+  exact tendsto_nhds_unique (h₁ f) (h₂ f)
 
 end FiniteMeasure
 
