@@ -662,7 +662,8 @@ theorem isOpen_inter_preimage_symm {s : Set α} (hs : IsOpen s) : IsOpen (e.targ
 #align local_homeomorph.preimage_open_of_open_symm LocalHomeomorph.isOpen_inter_preimage_symm
 
 /-- The image of an open set in the source is open. -/
-theorem image_isOpen_of_isOpen {s : Set α} (hs : IsOpen s) (h : s ⊆ e.source) : IsOpen (e '' s) := by
+theorem image_isOpen_of_isOpen {s : Set α} (hs : IsOpen s) (h : s ⊆ e.source) :
+    IsOpen (e '' s) := by
   have : e '' s = e.target ∩ e.symm ⁻¹' s := e.toLocalEquiv.image_eq_target_inter_inv_preimage h
   rw [this]
   exact e.continuousOn_symm.isOpen_inter_preimage e.open_target hs
@@ -1285,7 +1286,8 @@ theorem openEmbedding_restrict : OpenEmbedding (e.source.restrict e) := by
   refine openEmbedding_of_continuous_injective_open (e.continuousOn.comp_continuous
     continuous_subtype_val Subtype.prop) e.injOn.injective fun V hV ↦ ?_
   rw [Set.restrict_eq, Set.image_comp]
-  exact e.image_isOpen_of_isOpen (e.open_source.isOpenMap_subtype_val V hV) fun _ ⟨x, _, h⟩ ↦ h ▸ x.2
+  exact e.image_isOpen_of_isOpen (e.open_source.isOpenMap_subtype_val V hV)
+    fun _ ⟨x, _, h⟩ ↦ h ▸ x.2
 
 /-- A local homeomorphism whose source is all of `α` defines an open embedding of `α` into `β`.  The
 converse is also true; see `OpenEmbedding.toLocalHomeomorph`. -/

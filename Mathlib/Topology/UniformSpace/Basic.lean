@@ -1778,8 +1778,8 @@ theorem union_mem_uniformity_sum {a : Set (α × α)} (ha : a ∈ 𝓤 α) {b : 
 /- To prove that the topology defined by the uniform structure on the disjoint union coincides with
 the disjoint union topology, we need two lemmas saying that open sets can be characterized by
 the uniform structure -/
-theorem uniformity_sum_of_isOpen_aux {s : Set (Sum α β)} (hs : IsOpen s) {x : Sum α β} (xs : x ∈ s) :
-    { p : (α ⊕ β) × (α ⊕ β) | p.1 = x → p.2 ∈ s } ∈
+theorem uniformity_sum_of_isOpen_aux {s : Set (Sum α β)} (hs : IsOpen s) {x : Sum α β}
+    (xs : x ∈ s) : { p : (α ⊕ β) × (α ⊕ β) | p.1 = x → p.2 ∈ s } ∈
     (@UniformSpace.Core.sum α β _ _).uniformity := by
   cases x
   · refine' mem_of_superset

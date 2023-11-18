@@ -187,8 +187,8 @@ instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace
 variable [TopologicalSpace α] [BaireSpace α]
 
 /-- Definition of a Baire space. -/
-theorem dense_iInter_of_isOpen_nat {f : ℕ → Set α} (ho : ∀ n, IsOpen (f n)) (hd : ∀ n, Dense (f n)) :
-    Dense (⋂ n, f n) :=
+theorem dense_iInter_of_isOpen_nat {f : ℕ → Set α} (ho : ∀ n, IsOpen (f n))
+    (hd : ∀ n, Dense (f n)) : Dense (⋂ n, f n) :=
   BaireSpace.baire_property f ho hd
 #align dense_Inter_of_open_nat dense_iInter_of_isOpen_nat
 

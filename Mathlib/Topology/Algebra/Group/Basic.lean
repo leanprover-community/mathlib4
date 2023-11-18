@@ -145,7 +145,8 @@ theorem IsClosed.rightCoset {U : Set G} (h : IsClosed U) (x : G) : IsClosed (rig
 #align is_closed.right_add_coset IsClosed.right_addCoset
 
 @[to_additive]
-theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) : DiscreteTopology G := by
+theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :
+    DiscreteTopology G := by
   rw [← singletons_open_iff_discrete]
   intro g
   suffices {g} = (fun x : G => g⁻¹ * x) ⁻¹' {1} by
