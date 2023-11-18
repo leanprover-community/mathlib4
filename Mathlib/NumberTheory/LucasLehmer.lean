@@ -282,10 +282,12 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.nat_coe_snd LucasLehmer.X.nat_coe_snd
 
+-- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofNat_fst (n : ℕ) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n) : X q).fst = OfNat.ofNat n :=
   rfl
 
+-- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofNat_snd (n : ℕ) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n) : X q).snd = 0 :=
   rfl

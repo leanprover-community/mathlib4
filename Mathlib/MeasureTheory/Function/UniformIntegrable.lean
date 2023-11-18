@@ -451,12 +451,12 @@ theorem unifIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞
     (hf : ∀ i, Memℒp (f i) p μ) : UnifIntegrable f p μ := by
   obtain ⟨n, hn⟩ := Finite.exists_equiv_fin ι
   intro ε hε
-  set g : Fin n → α → β := f ∘ hn.some.symm with hgeq
+  let g : Fin n → α → β := f ∘ hn.some.symm
   have hg : ∀ i, Memℒp (g i) p μ := fun _ => hf _
   obtain ⟨δ, hδpos, hδ⟩ := unifIntegrable_fin μ hp_one hp_top hg hε
   refine' ⟨δ, hδpos, fun i s hs hμs => _⟩
   specialize hδ (hn.some i) s hs hμs
-  simp_rw [hgeq, Function.comp_apply, Equiv.symm_apply_apply] at hδ
+  simp_rw [Function.comp_apply, Equiv.symm_apply_apply] at hδ
   assumption
 #align measure_theory.unif_integrable_finite MeasureTheory.unifIntegrable_finite
 
@@ -950,11 +950,9 @@ theorem uniformIntegrable_average
     refine' le_trans _ (_ : ↑(↑n : ℝ≥0)⁻¹ * (n • C : ℝ≥0∞) ≤ C)
     · refine' (ENNReal.mul_le_mul_left hn ENNReal.coe_ne_top).2 _
       conv_rhs => rw [← Finset.card_range n]
-      -- Porting note: Originally `exact Finset.sum_le_card_nsmul _ _ _ fun i hi => hC i`
-      convert Finset.sum_le_card_nsmul _ _ _ fun i _ => hC i
-      rw [ENNReal.coe_smul]
+      exact Finset.sum_le_card_nsmul _ _ _ fun i _ => hC i
     · simp only [ENNReal.coe_eq_zero, inv_eq_zero, Nat.cast_eq_zero] at hn
-      rw [ENNReal.coe_smul, nsmul_eq_mul, ← mul_assoc, ENNReal.coe_inv, ENNReal.coe_nat,
+      rw [nsmul_eq_mul, ← mul_assoc, ENNReal.coe_inv, ENNReal.coe_nat,
         ENNReal.inv_mul_cancel _ (ENNReal.nat_ne_top _), one_mul]
       all_goals simpa only [Ne.def, Nat.cast_eq_zero]
 

@@ -308,6 +308,9 @@ instance isFiniteKernel_seq (κ : kernel α β) [h : IsSFiniteKernel κ] (n : �
   h.tsum_finite.choose_spec.1 n
 #align probability_theory.kernel.is_finite_kernel_seq ProbabilityTheory.kernel.isFiniteKernel_seq
 
+instance IsSFiniteKernel.sFinite [IsSFiniteKernel κ] (a : α) : SFinite (κ a) :=
+  ⟨⟨fun n ↦ seq κ n a, inferInstance, (measure_sum_seq κ a).symm⟩⟩
+
 instance IsSFiniteKernel.add (κ η : kernel α β) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     IsSFiniteKernel (κ + η) := by
   refine' ⟨⟨fun n => seq κ n + seq η n, fun n => inferInstance, _⟩⟩

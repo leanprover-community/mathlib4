@@ -89,7 +89,7 @@ theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
 
 theorem LieAlgebra.isLieAbelian_bot (R : Type u) (L : Type v) [CommRing R] [LieRing L]
     [LieAlgebra R L] : IsLieAbelian (⊥ : LieIdeal R L) :=
-  ⟨fun ⟨x, hx⟩ _ => by simp⟩
+  ⟨fun ⟨x, hx⟩ _ => by simp [eq_iff_true_of_subsingleton]⟩
 #align lie_algebra.is_lie_abelian_bot LieAlgebra.isLieAbelian_bot
 
 section Center
