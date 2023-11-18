@@ -179,7 +179,7 @@ theorem sym2_eq_sym_two : xs.sym2.map (Sym2.equivSym α) = xs.sym 2 := by
 theorem sym_map {β : Type*} (f : α → β) (n : ℕ) (xs : List α) :
     (xs.map f).sym n = (xs.sym n).map (Sym.map f) :=
   match n, xs with
-  | 0, _ => by simp [List.sym]
+  | 0, _ => by simp only [List.sym]; rfl
   | n + 1, [] => by simp [List.sym]
   | n + 1, x :: xs => by
     rw [map_cons, List.sym, ← map_cons, sym_map f n (x :: xs), sym_map f (n + 1) xs]
@@ -245,7 +245,7 @@ protected theorem Nodup.sym (n : ℕ) {xs : List α} (h : xs.Nodup) : (xs.sym n)
       rw [mem_map] at hz
       obtain ⟨z, _hz, rfl⟩ := hz
       have := first_mem_of_cons_mem_sym hz'
-      simp only [nodup_cons, this, false_and] at h
+      simp only [nodup_cons, this, not_true_eq_false, false_and] at h
   termination_by _ n xs _ => n + xs.length
 
 theorem length_sym {n : ℕ} {xs : List α} :
