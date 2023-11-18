@@ -10,7 +10,7 @@ import Mathlib.NumberTheory.DirichletCharacter.Basic
 /-!
 # Bounds for values of Dirichlet characters
 
-We consider Dirichtlet characters `χ` with values in a normed field `F`.
+We consider Dirichlet characters `χ` with values in a normed field `F`.
 
 We show that `‖χ a‖ = 1` if `a` is a unit and `‖χ a‖ ≤ 1` in general.
 -/
