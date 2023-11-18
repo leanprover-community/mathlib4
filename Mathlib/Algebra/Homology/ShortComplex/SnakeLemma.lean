@@ -430,26 +430,32 @@ variable (f : S₁ ⟶ S₂) (g : S₂ ⟶ S₃)
 
 end
 
+/-- The functor which sends `S : SnakeInput C` to its zeroth line `S.L₀`. -/
 @[simps]
 def functorL₉ : SnakeInput C ⥤ ShortComplex C where
   obj S := S.L₀
   map f := f.f₀
 
+/-- The functor which sends `S : SnakeInput C` to its zeroth line `S.L₁`. -/
 @[simps]
 def functorL₁ : SnakeInput C ⥤ ShortComplex C where
   obj S := S.L₁
   map f := f.f₁
 
+/-- The functor which sends `S : SnakeInput C` to its second line `S.L₂`. -/
 @[simps]
 def functorL₂ : SnakeInput C ⥤ ShortComplex C where
   obj S := S.L₂
   map f := f.f₂
 
+/-- The functor which sends `S : SnakeInput C` to its third line `S.L₃`. -/
 @[simps]
 def functorL₃ : SnakeInput C ⥤ ShortComplex C where
   obj S := S.L₃
   map f := f.f₃
 
+/-- The functor which sends `S : SnakeInput C` to the auxiliary object `S.P`,
+which is `pullback S.L₁.g S.v₀₁.τ₃`. -/
 @[simps]
 noncomputable def functorP : SnakeInput C ⥤ C where
   obj S := S.P
@@ -471,6 +477,30 @@ lemma naturality_φ₁ (f : S₁ ⟶ S₂) : S₁.φ₁ ≫ f.f₂.τ₁ = funct
 lemma naturality_δ (f : S₁ ⟶ S₂) : S₁.δ ≫ f.f₃.τ₁ = f.f₀.τ₃ ≫ S₂.δ := by
   rw [← cancel_epi (pullback.snd : S₁.P ⟶ _), S₁.snd_δ_assoc, ← comp_τ₁, ← f.comm₂₃,
     comp_τ₁, naturality_φ₁_assoc, ← S₂.snd_δ, functorP_map, pullback.lift_snd_assoc, assoc]
+
+/-- The functor which sends `S : SnakeInput C` to `S.L₁'` which is
+`S.L₀.X₂ ⟶ S.L₀.X₃ ⟶ S.L₃.X₁`. -/
+@[simps]
+noncomputable def functorL₁' : SnakeInput C ⥤ ShortComplex C where
+  obj S := S.L₁'
+  map f :=
+    { τ₁ := f.f₀.τ₂
+      τ₂ := f.f₀.τ₃
+      τ₃ := f.f₃.τ₁
+      comm₁₂ := f.f₀.comm₂₃
+      comm₂₃ := (naturality_δ f).symm }
+
+/-- The functor which sends `S : SnakeInput C` to `S.L₂'` which is
+`S.L₀.X₃ ⟶ S.L₃.X₁ ⟶ S.L₃.X₂`. -/
+@[simps]
+noncomputable def functorL₂' : SnakeInput C ⥤ ShortComplex C where
+  obj S := S.L₂'
+  map f :=
+    { τ₁ := f.f₀.τ₃
+      τ₂ := f.f₃.τ₁
+      τ₃ := f.f₃.τ₂
+      comm₁₂ := (naturality_δ f).symm
+      comm₂₃ := f.f₃.comm₁₂ }
 
 end SnakeInput
 
