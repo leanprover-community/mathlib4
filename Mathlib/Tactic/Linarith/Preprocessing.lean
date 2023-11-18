@@ -196,9 +196,8 @@ section strengthenStrictInt
 If `pf` is a proof of a strict inequality `(a : ℤ) < b`,
 `mkNonstrictIntProof pf` returns a proof of `a + 1 ≤ b`,
 and similarly if `pf` proves a negated weak inequality.
-Otherwise, returns `pf` unchanged.
 -/
-def mkNonstrictIntProof (pf : Expr) : MetaM Expr := do
+def mkNonstrictIntProof (pf : Expr) : MetaM (Option Expr) := do
   match (← instantiateMVars (← inferType pf)).getAppFnArgs with
   | (``LT.lt, #[.const ``Int [], _, a, b]) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
@@ -211,14 +210,17 @@ def mkNonstrictIntProof (pf : Expr) : MetaM Expr := do
     | (``GE.ge, #[.const ``Int [], _, a, b]) =>
       return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]])
         (← mkAppM ``lt_of_not_ge #[pf])
-    | _ => return pf
-  | _ => return pf
+    | _ => return none
+  | _ => return none
 
 /-- `strengthenStrictInt h` turns a proof `h` of a strict integer inequality `t1 < t2`
 into a proof of `t1 ≤ t2 + 1`. -/
 def strengthenStrictInt : Preprocessor where
   name := "strengthen strict inequalities over int"
-  transform h := return [← mkNonstrictIntProof h]
+  transform h := do
+    match ← mkNonstrictIntProof h with
+    | some x => return [x]
+    | none => return [h]
 
 end strengthenStrictInt
 
