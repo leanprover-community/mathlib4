@@ -38,7 +38,7 @@ local notation "Lim_G_tensor" =>
 local notation "Lim_G" => (DirectLimit G f)
 
 /--
-the map `limᵢ (G i ⊗ M) → (limᵢ G i) ⊗ M` induced by the family of maps `G i ⊗ M → (limᵢ G i) ⊗ M`
+the map `limᵢ (Gᵢ ⊗ M) → (limᵢ Gᵢ) ⊗ M` induced by the family of maps `Gᵢ ⊗ M → (limᵢ Gᵢ) ⊗ M`
 given by `gᵢ ⊗ m ↦ [gᵢ] ⊗ m`.
 -/
 noncomputable def directLimitOfTensorProductToTensorProductWithDirectLimit :
