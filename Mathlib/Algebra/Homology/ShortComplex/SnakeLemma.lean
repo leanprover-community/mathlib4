@@ -27,12 +27,13 @@ and cokernels of the vertical maps. In other words, we may introduce short compl
 `L₀` and `L₃` that are respectively the kernel and the cokernel of `v₁₂`. All these
 data constitute a `SnakeInput C`.
 
-Given such a `S : SnakeInput C`, we shall define a connecting homomorphism
+Given such a `S : SnakeInput C`, we define a connecting homomorphism
 `S.δ : L₀.X₃ ⟶ L₃.X₁` and show that it is part of an exact sequence
-`L₀.X₁ ⟶ L₀.X₂ ⟶ L₀.X₃ ⟶ L₃.X₁ ⟶ L₃.X₂ ⟶ L₃.X₃`. This is stated as lemmas
-`L₀_exact`, `L₁'_exact`, `L₂'_exact` and `L₃_exact`. This sequence can even
-be extended with an extra `0` on the left (see `mono_L₀_f`)
-if `L₁.X₁ ⟶ L₁.X₂` is a mono (i.e. `L₁` is short exact),
+`L₀.X₁ ⟶ L₀.X₂ ⟶ L₀.X₃ ⟶ L₃.X₁ ⟶ L₃.X₂ ⟶ L₃.X₃`. Each of the four exactness
+statement is first stated separately as lemmas `L₀_exact`, `L₁'_exact`,
+`L₂'_exact` and `L₃_exact` and the full 6-term exact sequence is stated
+as `snake_lemma`. This sequence can even be extended with an extra `0`
+on the left (see `mono_L₀_f`) if `L₁.X₁ ⟶ L₁.X₂` is a mono (i.e. `L₁` is short exact),
 and similarly an extra `0` can be added on the right (`epi_L₃_g`)
 if `L₂.X₂ ⟶ L₂.X₃` is an epi (i.e. `L₂` is short exact).
 
@@ -467,20 +468,17 @@ lemma naturality_φ₁ (f : S₁ ⟶ S₂) : S₁.φ₁ ≫ f.f₂.τ₁ = funct
   simp only [← cancel_mono S₂.L₂.f, assoc, φ₁_L₂_f, ← naturality_φ₂, f.f₂.comm₁₂, φ₁_L₂_f_assoc]
 
 @[reassoc]
-lemma naturality_δ (f : S₁ ⟶ S₂) : f.f₀.τ₃ ≫ S₂.δ = S₁.δ ≫ f.f₃.τ₁ := by
+lemma naturality_δ (f : S₁ ⟶ S₂) : S₁.δ ≫ f.f₃.τ₁ = f.f₀.τ₃ ≫ S₂.δ := by
   rw [← cancel_epi (pullback.snd : S₁.P ⟶ _), S₁.snd_δ_assoc, ← comp_τ₁, ← f.comm₂₃,
     comp_τ₁, naturality_φ₁_assoc, ← S₂.snd_δ, functorP_map, pullback.lift_snd_assoc, assoc]
 
 /-- The functor which maps `S : SnakeInput C` to the diagram
 `S.L₀.X₁ ⟶ S.L₀.X₂ ⟶ S.L₀.X₃ ⟶ S.L₃.X₁ ⟶ S.L₃.X₂ ⟶ S.L₃.X₃`. -/
-noncomputable abbrev composableArrowsFunctor : SnakeInput C ⥤ ComposableArrows C 5 where
+@[simps]
+noncomputable def composableArrowsFunctor : SnakeInput C ⥤ ComposableArrows C 5 where
   obj S := S.composableArrows
-  map {S₁ S₂} f:= by
-    refine' ComposableArrows.homMkSucc _ sorry sorry
-    sorry
-  map_id := sorry
-  map_comp := sorry
-
+  map f := ComposableArrows.homMk₅ f.f₀.τ₁ f.f₀.τ₂ f.f₀.τ₃ f.f₃.τ₁ f.f₃.τ₂ f.f₃.τ₃
+    f.f₀.comm₁₂.symm f.f₀.comm₂₃.symm (naturality_δ f) f.f₃.comm₁₂.symm f.f₃.comm₂₃.symm
 
 end SnakeInput
 
