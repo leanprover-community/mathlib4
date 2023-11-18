@@ -196,15 +196,15 @@ section strengthenStrictInt
 `isStrictIntComparison tp` is true iff `tp` is a strict inequality between integers
 or the negation of a weak inequality between integers.
 -/
-def isStrictIntComparison (e : Expr) : Bool :=
-  match e.getAppFnArgs with
-  | (``LT.lt, #[.const ``Int [], _, _, _]) => true
-  | (``GT.gt, #[.const ``Int [], _, _, _]) => true
+def isStrictIntComparison (e : Expr) : MetaM Bool := do
+  match (← instantiateMVars e).getAppFnArgs with
+  | (``LT.lt, #[.const ``Int [], _, _, _]) => return true
+  | (``GT.gt, #[.const ``Int [], _, _, _]) => return true
   | (``Not, #[e]) => match e.getAppFnArgs with
-    | (``LE.le, #[.const ``Int [], _, _, _]) => true
-    | (``GE.ge, #[.const ``Int [], _, _, _]) => true
-    | _ => false
-  | _ => false
+    | (``LE.le, #[.const ``Int [], _, _, _]) => return true
+    | (``GE.ge, #[.const ``Int [], _, _, _]) => return true
+    | _ => return false
+  | _ => return false
 
 /--
 If `pf` is a proof of a strict inequality `(a : ℤ) < b`,
@@ -212,7 +212,7 @@ If `pf` is a proof of a strict inequality `(a : ℤ) < b`,
 and similarly if `pf` proves a negated weak inequality.
 -/
 def mkNonstrictIntProof (pf : Expr) : MetaM Expr := do
-  match (← whnfR (← inferType pf)).getAppFnArgs with
+  match (← instantiateMVars (← inferType pf)).getAppFnArgs with
   | (``LT.lt, #[_, _, a, b]) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
   | (``GT.gt, #[_, _, a, b]) =>
@@ -233,7 +233,7 @@ into a proof of `t1 ≤ t2 + 1`. -/
 def strengthenStrictInt : Preprocessor where
   name := "strengthen strict inequalities over int"
   transform h := do
-    if isStrictIntComparison (← whnfR (← inferType h)) then
+    if ← isStrictIntComparison (← inferType h) then
       return [← mkNonstrictIntProof h]
     else
       return [h]
