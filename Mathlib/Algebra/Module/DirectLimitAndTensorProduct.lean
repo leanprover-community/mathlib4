@@ -49,8 +49,7 @@ noncomputable def directLimitOfTensorProductToTensorProductWithDirectLimit :
 variable {M}
 @[simp] lemma directLimitOfTensorProductToTensorProductWithDirectLimit_apply_of_tmul
     {i : ι} (g : G i) (m : M) :
-    directLimitOfTensorProductToTensorProductWithDirectLimit f M
-      (of _ _ _ _ i (g ⊗ₜ m) : Lim_G_tensor) =
+    directLimitOfTensorProductToTensorProductWithDirectLimit f M (of _ _ _ _ i (g ⊗ₜ m)) =
     (of _ _ _ _ i g : Lim_G) ⊗ₜ m :=
   lift_of (G := (G · ⊗[R] M)) _ _ (g ⊗ₜ m)
 
@@ -93,9 +92,7 @@ noncomputable def directLimitCommutesTensorProduct :
   LinearEquiv.ofLinear
     (directLimitOfTensorProductToTensorProductWithDirectLimit f M)
     (tensorProductWithDirectLimitToDirectLimitOfTensorProduct f M)
-    (TensorProduct.ext <| FunLike.ext _ _ fun g => FunLike.ext _ _ fun m =>
-      g.induction_on <| by aesop)
-    (FunLike.ext _ _ fun x => x.induction_on fun i g => by
-      refine' g.induction_on _ _ _ <;> aesop)
+    (ext <| FunLike.ext _ _ fun g => FunLike.ext _ _ fun _ => g.induction_on <| by aesop)
+    (FunLike.ext _ _ fun x => x.induction_on fun i g => by refine' g.induction_on _ _ _ <;> aesop)
 
 end Module
