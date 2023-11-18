@@ -105,7 +105,6 @@ instance inhabited : Inhabited (DirectLimit G f) :=
 
 instance unique [IsEmpty ι] : Unique (DirectLimit G f) := by
   change Unique (Quotient _); infer_instance
-  --unfold DirectLimit; infer_instance
 
 variable (R ι)
 

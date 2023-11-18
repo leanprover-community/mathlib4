@@ -72,9 +72,6 @@ instance FreeCommRing.instInhabited : Inhabited (FreeCommRing α) := by
   delta FreeCommRing; infer_instance
 #align free_comm_ring.inhabited FreeCommRing.instInhabited
 
-instance FreeCommRing.instUnique [IsEmpty α] : Unique (FreeCommRing α) := by
-  delta FreeCommRing; infer_instance
-
 namespace FreeCommRing
 
 variable {α}
