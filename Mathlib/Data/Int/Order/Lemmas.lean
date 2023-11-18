@@ -6,6 +6,7 @@ Authors: Jeremy Avigad
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Order.Ring.Lemmas
 
 #align_import data.int.order.lemmas from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 
@@ -15,7 +16,6 @@ The distinction between this file and `Data.Int.Order.Basic` is not particularly
 They are separated by now to minimize the porting requirements for tactics during the transition to
 mathlib4. After `data.rat.order` has been ported, please feel free to reorganize these two files.
 -/
-
 
 open Nat
 
@@ -63,5 +63,47 @@ theorem eq_zero_of_abs_lt_dvd {m x : ℤ} (h1 : m ∣ x) (h2 : |x| < m) : x = 0 
   rw [← abs_lt_one_iff, ← mul_lt_iff_lt_one_right (abs_pos.mpr hm), ← abs_mul]
   exact lt_of_lt_of_le h2 (le_abs_self m)
 #align int.eq_zero_of_abs_lt_dvd Int.eq_zero_of_abs_lt_dvd
+
+/-! ### Div -/
+
+theorem div_le_iff_of_dvd_of_pos {x y z : ℤ} (h1 :0 < y) (h2 : y ∣  x): x / y ≤ z ↔ x ≤  y * z := by
+  rcases h2 with ⟨a,ha⟩
+  simp only [ha,ne_eq, Int.ne_of_gt,gt_iff_lt, h1, _root_.mul_le_mul_left, ne_eq, not_false_eq_true,
+      Int.mul_ediv_cancel_left]
+
+theorem div_lt_iff_of_dvd_of_pos {x y z : ℤ}(h1 :0 < y) (h2 : y ∣  x): x / y < z ↔ x <  y * z := by
+  rcases h2 with ⟨a,ha⟩
+  simp only [ha,ne_eq, _root_.ne_of_gt,gt_iff_lt, h1, mul_lt_mul_left, ne_eq, not_false_eq_true,
+      Int.mul_ediv_cancel_left]
+
+theorem le_div_iff_of_dvd_of_pos {x y z : ℤ} (h1 :0 < z) (h2 : z ∣ y): x ≤ y / z ↔ z * x ≤  y := by
+  rcases h2 with ⟨a,ha⟩
+  simp only [ha,ne_eq,_root_.ne_of_gt,gt_iff_lt,h1,_root_.mul_le_mul_left,ne_eq,not_false_eq_true,
+      Int.mul_ediv_cancel_left]
+
+theorem lt_div_iff_of_dvd_of_pos {x y z : ℤ} (h1 :0 < z) (h2 : z ∣ y): x < y / z ↔ z * x <  y := by
+  rcases h2 with ⟨a,ha⟩
+  simp only [ha,ne_eq, _root_.ne_of_gt,gt_iff_lt, h1, mul_lt_mul_left, ne_eq, not_false_eq_true,
+      Int.mul_ediv_cancel_left]
+
+lemma div_le_div_iff_of_dvd_of_pos {x y z t : ℤ} (h1 : 0 < y) (h2 : 0 < t) (h3 : y ∣ x)
+    (h4 : t ∣ z) : x / y ≤  z / t ↔ t * x ≤ z * y := by
+  cases' h3 with a ha
+  cases' h4 with b hb
+  rw [ha,hb]
+  rw [mul_ediv_cancel_left,mul_ediv_cancel_left,mul_assoc,mul_comm b y]
+  · simp only [gt_iff_lt, h2, _root_.mul_le_mul_left, h1]
+  · exact Int.ne_of_gt h2
+  · exact Int.ne_of_gt h1
+
+lemma div_lt_div_iff_of_dvd_of_pos {x y z t : ℤ} (h1 : 0 < y) (h2 : 0 < t) (h3 : y ∣ x)
+    (h4 : t ∣ z) : x / y <  z / t ↔ t * x < z * y := by
+  cases' h3 with a ha
+  cases' h4 with b hb
+  rw [ha,hb]
+  rw [mul_ediv_cancel_left,mul_ediv_cancel_left,mul_assoc,mul_comm b y]
+  · simp only [gt_iff_lt, h2, _root_.mul_lt_mul_left, h1]
+  · exact Int.ne_of_gt h2
+  · exact Int.ne_of_gt h1
 
 end Int

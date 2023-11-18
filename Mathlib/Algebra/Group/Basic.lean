@@ -1013,6 +1013,14 @@ theorem div_eq_div_iff_div_eq_div : a / b = c / d ↔ a / c = b / d := by
 #align div_eq_div_iff_div_eq_div div_eq_div_iff_div_eq_div
 #align sub_eq_sub_iff_sub_eq_sub sub_eq_sub_iff_sub_eq_sub
 
+@[to_additive]
+theorem mul_add_mul_cancel  : (a * b) / (c * a) = b / c := by
+  rw [mul_comm,mul_div_mul_right_eq_div]
+
+@[to_additive]
+lemma mul_div_mul_cancel' : (b * a) / (a * c) = b / c := by
+  rw [mul_comm,mul_div_mul_left_eq_div]
+
 end CommGroup
 
 section multiplicative

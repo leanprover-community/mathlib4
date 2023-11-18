@@ -707,6 +707,48 @@ protected theorem div_left_inj {a b d : ℕ} (hda : d ∣ a) (hdb : d ∣ b) : a
   rw [← Nat.mul_div_cancel' hda, ← Nat.mul_div_cancel' hdb, h]
 #align nat.div_left_inj Nat.div_left_inj
 
+lemma div_add_of_dvd (h1 : 0 < n) (h2 : n ∣ m) : m / n + k = (m + n * k) / n := by
+  cases' h2 with x hx
+  simp only [hx,←mul_add,Nat.mul_div_right,h1]
+
+lemma div_sub_of_dvd (h1 : 0 < n) (h2 : n ∣ m) : m / n - k = (m - n * k) / n := by
+  cases' h2 with x hx
+  simp only [hx,←Nat.mul_sub_left_distrib,Nat.mul_div_right,h1]
+
+lemma add_div_of_dvd (h1 : 0 < k) (h2 : k ∣ n) : m + (n / k) = (k * m + n) / k := by
+  cases' h2 with x hx
+  simp only [hx,←mul_add,Nat.mul_div_right,h1]
+
+lemma sub_div_of_dvd (h1 : 0 < k) (h2 : k ∣ n) : m - n / k = (k * m - n) / k := by
+  cases' h2 with x hx
+  simp only [hx,←Nat.mul_sub_left_distrib,Nat.mul_div_right,h1]
+
+lemma div_add_div_of_dvd {l : ℕ} (hn : 0 < n) (hd : 0 < l) (h1 : n ∣ m) (h2 : l ∣ k) :
+    m / n + k / l = (m * l + n * k) / (n * l) := by
+  cases' h1 with n hn
+  cases' h2 with m hm
+  rw [hn,hm,mul_assoc,mul_comm n l,← mul_assoc,←mul_assoc,← mul_add]
+  repeat rw [Nat.mul_div_right]
+  apply Nat.mul_pos
+  repeat assumption
+
+lemma div_sub_div_of_dvd {l : ℕ}  (hn : 0 < n) (hd : 0 < l) (h1 : n ∣ m) (h2 : l ∣ k ) :
+    m / n - k / l = (m * l - n * k) / (n * l) := by
+  cases' h1 with n hn
+  cases' h2 with m hm
+  simp only [hn,hm]
+  rw [mul_assoc,mul_comm n l,← mul_assoc,←mul_assoc,←Nat.mul_sub_left_distrib]
+  repeat rw [Nat.mul_div_right]
+  apply Nat.mul_pos
+  repeat assumption
+
+lemma div_mul_assoc (h : k ∣ n) : (n / k) * m = (n * m) / k := by
+  rw [mul_comm,←Nat.mul_div_assoc,mul_comm]
+  exact h
+
+lemma eq_div_iff_mul_eq_left (h1 : 0 < k) (h2 : k ∣ n) : m = n / k ↔ n = m * k:= by
+  rw [eq_comm, Nat.div_eq_iff_eq_mul_left h1 h2]
+
 /-! ### `mod`, `dvd` -/
 
 

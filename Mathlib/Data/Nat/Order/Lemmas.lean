@@ -85,6 +85,17 @@ protected theorem div_eq_zero_iff {a b : ℕ} (hb : 0 < b) : a / b = 0 ↔ a < b
 
 #align nat.div_eq_zero Nat.div_eq_of_lt
 
+theorem div_le_iff_le_mul_of_dvd (h1 : 0 < n) (h2 : n ∣ m) : m / n ≤  k ↔ m ≤ k * n := by
+  cases' h2 with x hx
+  simp only [hx]
+  rw [Nat.mul_div_right,mul_comm]
+  exact Iff.symm (_root_.mul_le_mul_right h1)
+  exact h1
+theorem lt_div_iff_mul_lt_of_dvd (h1 : 0 < k) (h2 : k ∣ n) : m < n / k ↔ m * k < n := by
+  simp only [lt_iff_not_ge,ge_iff_le]
+  rw [Nat.div_le_iff_le_mul_of_dvd]
+  repeat assumption
+
 /-! ### `mod`, `dvd` -/
 
 
