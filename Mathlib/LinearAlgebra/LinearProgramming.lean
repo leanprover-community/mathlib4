@@ -19,36 +19,36 @@ Minimizing a linear function on a region defined by linear inequalities.
 -/
 
 /-- Linear program in the form of inequalities with general variables. -/
-structure LinearProgram (K : Type*) {V : Type*} (P : Type*)
-    [LinearOrderedField K] [AddCommGroup V] [Module K V] [AddTorsor V P] where
+structure LinearProgram (R : Type*) {V : Type*} (P : Type*)
+    [LinearOrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P] where
   /-- Inequality constraints (given in the form "aᵀx - b ≥ 0") -/
-  constraints : List (P →ᵃ[K] K)
+  constraints : List (P →ᵃ[R] R)
   /-- The objective function (affine map) -/
-  objective : P →ᵃ[K] K
+  objective : P →ᵃ[R] R
 
-variable {K V P : Type*} [LinearOrderedField K] [AddCommGroup V] [Module K V] [AddTorsor V P]
+variable {R V P : Type*} [LinearOrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
 
 /-- Constructs a linear program given a list of equalities, a list of inequalities,
     and an objective function. -/
 def LinearProgram.mkOfEqs
-    (equalities inequalities : List (P →ᵃ[K] K)) (objective : P →ᵃ[K] K) :
-    LinearProgram K P :=
+    (equalities inequalities : List (P →ᵃ[R] R)) (objective : P →ᵃ[R] R) :
+    LinearProgram R P :=
   { constraints := inequalities ++ equalities ++ equalities.map Neg.neg, objective }
 
 /-- The set of all admissible solutions to given linear program. -/
-def LinearProgram.feasibles (lp : LinearProgram K P) : Set P :=
+def LinearProgram.feasibles (lp : LinearProgram R P) : Set P :=
   {x | ∀ ⦃a⦄, a ∈ lp.constraints → 0 ≤ a x}
 
-@[simp] lemma LinearProgram.mem_feasibles {lp : LinearProgram K P} {x : P} :
+@[simp] lemma LinearProgram.mem_feasibles {lp : LinearProgram R P} {x : P} :
     x ∈ lp.feasibles ↔ ∀ ⦃a⦄, a ∈ lp.constraints → 0 ≤ a x :=
   Iff.rfl
 
 /-- Given linear program is minimized at given point. -/
-def LinearProgram.MinAt (lp : LinearProgram K P) (x : P) : Prop :=
+def LinearProgram.MinAt (lp : LinearProgram R P) (x : P) : Prop :=
   IsLeast (lp.objective '' lp.feasibles) (lp.objective x)
 
 lemma LinearProgram.feasibles_mkOfEqs
-    (equalities inequalities : List (P →ᵃ[K] K)) (objective : P →ᵃ[K] K) :
+    (equalities inequalities : List (P →ᵃ[R] R)) (objective : P →ᵃ[R] R) :
     (mkOfEqs equalities inequalities objective).feasibles =
       {x : P | (∀ a ∈ inequalities, 0 ≤ a x) ∧ (∀ a ∈ equalities, a x = 0)} := by
   ext x
@@ -62,7 +62,7 @@ lemma LinearProgram.feasibles_mkOfEqs
     @or_imp (_ ∈ inequalities), forall_and, this]
 
 /-- Adding more constraints cannot enlarge the set of feasible solutions. -/
-lemma LinearProgram.feasibles_superset_of_constraints_subset {lp₁ lp₂ : LinearProgram K P}
+lemma LinearProgram.feasibles_superset_of_constraints_subset {lp₁ lp₂ : LinearProgram R P}
     (constrss : lp₁.constraints ⊆ lp₂.constraints) :
     lp₂.feasibles ⊆ lp₁.feasibles := by
   intro x hx
@@ -72,7 +72,7 @@ lemma LinearProgram.feasibles_superset_of_constraints_subset {lp₁ lp₂ : Line
   exact constrss ha
 
 /-- Adding more constraints cannot decrease the minimum. -/
-lemma LinearProgram.min_le_of_constraints_subset {lp₁ lp₂ : LinearProgram K P} {x₁ x₂ : P}
+lemma LinearProgram.min_le_of_constraints_subset {lp₁ lp₂ : LinearProgram R P} {x₁ x₂ : P}
     (constrss : lp₁.constraints ⊆ lp₂.constraints)
     (hobj : lp₁.objective = lp₂.objective) (opt₁ : lp₁.MinAt x₁) (opt₂ : lp₂.MinAt x₂) :
     lp₁.objective x₁ ≤ lp₂.objective x₂ := by
