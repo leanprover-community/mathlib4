@@ -425,18 +425,17 @@ theorem exists_fg_le_eq_rTensor_inclusion {R M N : Type*} [CommRing R] [AddCommG
       ∃ (J : Submodule R N) (_ : J.FG) (hle : J ≤ I) (y : J ⊗ M),
         x = rTensor M (J.inclusion hle) y := by
   induction x using TensorProduct.induction_on with
-  | zero => refine ⟨⊥, fg_bot, zero_le _, 0, rfl⟩
-  | tmul i m =>
-    refine ⟨R ∙ i.val, ?_, ?_, ⟨i.val, mem_span_singleton_self _⟩ ⊗ₜ[R] m, rfl⟩
-    · exact fg_span_singleton i.val
-    · rewrite [span_le, Set.singleton_subset_iff]; exact Subtype.mem i
+  | zero => exact ⟨⊥, fg_bot, zero_le _, 0, rfl⟩
+  | tmul i m => exact ⟨R ∙ i.val, fg_span_singleton i.val,
+      (span_singleton_le_iff_mem _ _).mpr i.property,
+      ⟨i.val, mem_span_singleton_self _⟩ ⊗ₜ[R] m, rfl⟩
   | add x₁ x₂ ihx₁ ihx₂ =>
-    have ⟨J₁, hfg₁, hle₁, y₁, hy₁⟩ := ihx₁
-    have ⟨J₂, hfg₂, hle₂, y₂, hy₂⟩ := ihx₂
-    refine ⟨J₁ ⊔ J₂, FG.sup hfg₁ hfg₂, sup_le hle₁ hle₂,
+    obtain ⟨J₁, hfg₁, hle₁, y₁, rfl⟩ := ihx₁
+    obtain ⟨J₂, hfg₂, hle₂, y₂, rfl⟩ := ihx₂
+    refine ⟨J₁ ⊔ J₂, hfg₁.sup hfg₂, sup_le hle₁ hle₂,
       rTensor M (J₁.inclusion (le_sup_left : J₁ ≤ J₁ ⊔ J₂)) y₁ +
         rTensor M (J₂.inclusion (le_sup_right : J₂ ≤ J₁ ⊔ J₂)) y₂, ?_⟩
-    rewrite [map_add, ← comp_apply, ← rTensor_comp, ← comp_apply, ← rTensor_comp, hy₁, hy₂]
+    rewrite [map_add, ← rTensor_comp_apply, ← rTensor_comp_apply]
     rfl
 
 end Submodule
