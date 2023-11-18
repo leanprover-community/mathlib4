@@ -103,6 +103,10 @@ instance module : Module R (DirectLimit G f) :=
 instance inhabited : Inhabited (DirectLimit G f) :=
   ⟨0⟩
 
+instance unique [IsEmpty ι] : Unique (DirectLimit G f) := by
+  change Unique (Quotient _); infer_instance
+  --unfold DirectLimit; infer_instance
+
 variable (R ι)
 
 /-- The canonical map from a component to the direct limit. -/
@@ -167,9 +171,11 @@ theorem lift_unique [Nonempty ι] [IsDirected ι (· ≤ ·)] (F : DirectLimit G
   DirectLimit.induction_on x fun i x => by rw [lift_of]; rfl
 #align module.direct_limit.lift_unique Module.DirectLimit.lift_unique
 
-lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
+lemma lift_injective [IsDirected ι (· ≤ ·)]
     (injective : ∀ i, Function.Injective <| g i) :
-    Function.Injective $ lift R ι G f g Hg := by
+    Function.Injective (lift R ι G f g Hg) := by
+  cases isEmpty_or_nonempty ι
+  · apply Function.injective_of_subsingleton
   simp_rw [injective_iff_map_eq_zero] at injective ⊢
   intros z hz
   induction' z using DirectLimit.induction_on with _ g
@@ -303,6 +309,8 @@ instance : AddCommGroup (DirectLimit G f) :=
 instance : Inhabited (DirectLimit G f) :=
   ⟨0⟩
 
+instance [IsEmpty ι] : Unique (DirectLimit G f) := Module.DirectLimit.unique _ _
+
 /-- The canonical map from a component to the direct limit. -/
 def of (i) : G i →ₗ[ℤ] DirectLimit G f :=
   Module.DirectLimit.of ℤ ι G (fun i j hij => (f i j hij).toIntLinearMap) i
@@ -356,9 +364,11 @@ theorem lift_unique [Nonempty ι] [IsDirected ι (· ≤ ·)] (F : DirectLimit G
   DirectLimit.induction_on x fun i x => by simp
 #align add_comm_group.direct_limit.lift_unique AddCommGroup.DirectLimit.lift_unique
 
-lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
+lemma lift_injective [IsDirected ι (· ≤ ·)]
     (injective : ∀ i, Function.Injective <| g i) :
-    Function.Injective $ lift G f P g Hg := by
+    Function.Injective (lift G f P g Hg) := by
+  cases isEmpty_or_nonempty ι
+  · apply Function.injective_of_subsingleton
   simp_rw [injective_iff_map_eq_zero] at injective ⊢
   intros z hz
   induction' z using DirectLimit.induction_on with _ g
@@ -405,6 +415,8 @@ instance zero : Zero (DirectLimit G f) := by
 
 instance : Inhabited (DirectLimit G f) :=
   ⟨0⟩
+
+instance [IsEmpty ι] : Unique (DirectLimit G f) := by unfold DirectLimit; infer_instance
 
 /-- The canonical map from a component to the direct limit. -/
 nonrec def of (i) : G i →+* DirectLimit G f :=
@@ -696,7 +708,7 @@ theorem lift_unique [Nonempty ι] [IsDirected ι (· ≤ ·)] (F : DirectLimit G
 
 lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
     (injective : ∀ i, Function.Injective <| g i) :
-    Function.Injective $ lift G f P g Hg := by
+    Function.Injective (lift G f P g Hg) := by
   simp_rw [injective_iff_map_eq_zero] at injective ⊢
   intros z hz
   induction' z using DirectLimit.induction_on with _ g
