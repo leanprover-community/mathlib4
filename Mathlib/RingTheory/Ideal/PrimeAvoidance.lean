@@ -48,7 +48,7 @@ lemma not_subset_union_prime_ideals_of_not_subset_prime_ideal
               norm_num
             exact lt_of_lt_of_le (Nat.pred_lt ineqj') (Nat.lt_succ.mp j.2)
           · simp only [Fin.coe_pred, ge_iff_le, Fin.succ_pred, SetLike.mem_coe]
-            rw [if_neg (not_lt.mpr <| Nat.le_pred_of_lt ineqj)]
+            erw [if_neg (not_lt.mpr <| Nat.le_pred_of_lt ineqj)]
             convert SetLike.mem_coe.mp hj using 2
             exact Fin.ext <| Nat.succ_pred_eq_of_pos <| lt_of_le_of_lt (by norm_num) <|
               Fin.val_fin_lt.mpr ineqj
@@ -141,7 +141,6 @@ lemma not_subset_union_prime_ideals_of_not_subset_prime_ideal
 variable [DecidablePred fun I : Ideal R => I.IsPrime]
 
 -- Prime avoidance lemma in stack project
--- a skeleton
 theorem Ideal.subset_of_subset_union_with_at_most_two_non_primes
     (J : Ideal R)
     (ℐ : Finset (Ideal R))
