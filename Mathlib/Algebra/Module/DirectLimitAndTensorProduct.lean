@@ -68,7 +68,7 @@ TensorProduct.lift <| DirectLimit.lift _ _ _ _
     { toFun := fun g => of R ι (fun i => G i ⊗[R] M) (fun i j h => map (f _ _ h) LinearMap.id) i ∘ₗ
         TensorProduct.mk R _ _ g
       map_add' := by aesop
-      map_smul' := by aesop})
+      map_smul' := by aesop })
   fun _ _ _ g => FunLike.ext _ _ fun m => of_f (R := R) (G := fun i => G i ⊗[R] M) (x := g ⊗ₜ m)
 
 variable {M}
