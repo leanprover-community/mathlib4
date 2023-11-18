@@ -170,7 +170,7 @@ theorem lift_unique [Nonempty ι] [IsDirected ι (· ≤ ·)] (F : DirectLimit G
 lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
     (injective : ∀ i, Function.Injective <| g i) :
     Function.Injective $ lift R ι G f g Hg := by
-  simp_rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff, LinearMap.mem_ker] at injective ⊢
+  simp_rw [injective_iff_map_eq_zero] at injective ⊢
   intros z hz
   induction' z using DirectLimit.induction_on with _ g
   rw [lift_of] at hz
@@ -359,9 +359,7 @@ theorem lift_unique [Nonempty ι] [IsDirected ι (· ≤ ·)] (F : DirectLimit G
 lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
     (injective : ∀ i, Function.Injective <| g i) :
     Function.Injective $ lift G f P g Hg := by
-  simp_rw [← AddMonoidHom.ker_eq_bot_iff, AddSubgroup.eq_bot_iff_forall, AddMonoidHom.mem_ker]
-    at injective
-  simp_rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff, LinearMap.mem_ker]
+  simp_rw [injective_iff_map_eq_zero] at injective ⊢
   intros z hz
   induction' z using DirectLimit.induction_on with _ g
   rw [lift_of] at hz
@@ -699,8 +697,7 @@ theorem lift_unique [Nonempty ι] [IsDirected ι (· ≤ ·)] (F : DirectLimit G
 lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
     (injective : ∀ i, Function.Injective <| g i) :
     Function.Injective $ lift G f P g Hg := by
-  simp_rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero]
-    at injective ⊢
+  simp_rw [injective_iff_map_eq_zero] at injective ⊢
   intros z hz
   induction' z using DirectLimit.induction_on with _ g
   rw [lift_of] at hz
