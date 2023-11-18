@@ -361,6 +361,127 @@ lemma snake_lemma : S.composableArrows.Exact :=
     (exact_of_δ₀ S.L₂'_exact.exact_toComposableArrows
     S.L₃_exact.exact_toComposableArrows))
 
+variable (S₁ S₂ S₃ : SnakeInput C)
+
+/-- A morphism of snake inputs involve four morphisms of short complexes
+which make the obvious diagram commute. -/
+@[ext]
+structure Hom :=
+  /-- a morphism between the zeroth lines -/
+  f₀ : S₁.L₀ ⟶ S₂.L₀
+  /-- a morphism between the first lines -/
+  f₁ : S₁.L₁ ⟶ S₂.L₁
+  /-- a morphism between the second lines -/
+  f₂ : S₁.L₂ ⟶ S₂.L₂
+  /-- a morphism between the third lines -/
+  f₃ : S₁.L₃ ⟶ S₂.L₃
+  comm₀₁ : f₀ ≫ S₂.v₀₁ = S₁.v₀₁ ≫ f₁ := by aesop_cat
+  comm₁₂ : f₁ ≫ S₂.v₁₂ = S₁.v₁₂ ≫ f₂ := by aesop_cat
+  comm₂₃ : f₂ ≫ S₂.v₂₃ = S₁.v₂₃ ≫ f₃ := by aesop_cat
+
+namespace Hom
+
+attribute [reassoc] comm₀₁ comm₁₂ comm₂₃
+
+/-- The identity morphism of a snake input. -/
+@[simps]
+def id : Hom S S where
+  f₀ := 𝟙 _
+  f₁ := 𝟙 _
+  f₂ := 𝟙 _
+  f₃ := 𝟙 _
+
+variable {S₁ S₂ S₃}
+
+/-- The composition of morphisms of snake inputs. -/
+@[simps]
+def comp (f : Hom S₁ S₂) (g : Hom S₂ S₃) : Hom S₁ S₃ where
+  f₀ := f.f₀ ≫ g.f₀
+  f₁ := f.f₁ ≫ g.f₁
+  f₂ := f.f₂ ≫ g.f₂
+  f₃ := f.f₃ ≫ g.f₃
+  comm₀₁ := by simp only [assoc, comm₀₁, comm₀₁_assoc]
+  comm₁₂ := by simp only [assoc, comm₁₂, comm₁₂_assoc]
+  comm₂₃ := by simp only [assoc, comm₂₃, comm₂₃_assoc]
+
+end Hom
+
+instance : Category (SnakeInput C) where
+  Hom := Hom
+  id := Hom.id
+  comp := Hom.comp
+
+variable {S₁ S₂ S₃}
+
+@[simp] lemma id_f₀ : Hom.f₀ (𝟙 S) = 𝟙 _ := rfl
+@[simp] lemma id_f₁ : Hom.f₁ (𝟙 S) = 𝟙 _ := rfl
+@[simp] lemma id_f₂ : Hom.f₂ (𝟙 S) = 𝟙 _ := rfl
+@[simp] lemma id_f₃ : Hom.f₃ (𝟙 S) = 𝟙 _ := rfl
+
+section
+
+variable (f : S₁ ⟶ S₂) (g : S₂ ⟶ S₃)
+
+@[simp, reassoc] lemma comp_f₀ : (f ≫ g).f₀ = f.f₀ ≫ g.f₀ := rfl
+@[simp, reassoc] lemma comp_f₁ : (f ≫ g).f₁ = f.f₁ ≫ g.f₁ := rfl
+@[simp, reassoc] lemma comp_f₂ : (f ≫ g).f₂ = f.f₂ ≫ g.f₂ := rfl
+@[simp, reassoc] lemma comp_f₃ : (f ≫ g).f₃ = f.f₃ ≫ g.f₃ := rfl
+
+end
+
+@[simps]
+def functorL₉ : SnakeInput C ⥤ ShortComplex C where
+  obj S := S.L₀
+  map f := f.f₀
+
+@[simps]
+def functorL₁ : SnakeInput C ⥤ ShortComplex C where
+  obj S := S.L₁
+  map f := f.f₁
+
+@[simps]
+def functorL₂ : SnakeInput C ⥤ ShortComplex C where
+  obj S := S.L₂
+  map f := f.f₂
+
+@[simps]
+def functorL₃ : SnakeInput C ⥤ ShortComplex C where
+  obj S := S.L₃
+  map f := f.f₃
+
+@[simps]
+noncomputable def functorP : SnakeInput C ⥤ C where
+  obj S := S.P
+  map f := pullback.map _ _ _ _ f.f₁.τ₂ f.f₀.τ₃ f.f₁.τ₃ f.f₁.comm₂₃.symm
+      (congr_arg ShortComplex.Hom.τ₃ f.comm₀₁.symm)
+  map_id _ := by dsimp [P]; aesop_cat
+  map_comp _ _ := by dsimp [P]; aesop_cat
+
+@[reassoc]
+lemma naturality_φ₂ (f : S₁ ⟶ S₂) : S₁.φ₂ ≫ f.f₂.τ₂ = functorP.map f ≫ S₂.φ₂ := by
+  dsimp [φ₂]
+  simp only [assoc, pullback.lift_fst_assoc, ← comp_τ₂, f.comm₁₂]
+
+@[reassoc]
+lemma naturality_φ₁ (f : S₁ ⟶ S₂) : S₁.φ₁ ≫ f.f₂.τ₁ = functorP.map f ≫ S₂.φ₁ := by
+  simp only [← cancel_mono S₂.L₂.f, assoc, φ₁_L₂_f, ← naturality_φ₂, f.f₂.comm₁₂, φ₁_L₂_f_assoc]
+
+@[reassoc]
+lemma naturality_δ (f : S₁ ⟶ S₂) : f.f₀.τ₃ ≫ S₂.δ = S₁.δ ≫ f.f₃.τ₁ := by
+  rw [← cancel_epi (pullback.snd : S₁.P ⟶ _), S₁.snd_δ_assoc, ← comp_τ₁, ← f.comm₂₃,
+    comp_τ₁, naturality_φ₁_assoc, ← S₂.snd_δ, functorP_map, pullback.lift_snd_assoc, assoc]
+
+/-- The functor which maps `S : SnakeInput C` to the diagram
+`S.L₀.X₁ ⟶ S.L₀.X₂ ⟶ S.L₀.X₃ ⟶ S.L₃.X₁ ⟶ S.L₃.X₂ ⟶ S.L₃.X₃`. -/
+noncomputable abbrev composableArrowsFunctor : SnakeInput C ⥤ ComposableArrows C 5 where
+  obj S := S.composableArrows
+  map {S₁ S₂} f:= by
+    refine' ComposableArrows.homMkSucc _ sorry sorry
+    sorry
+  map_id := sorry
+  map_comp := sorry
+
+
 end SnakeInput
 
 end ShortComplex
