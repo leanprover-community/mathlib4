@@ -54,8 +54,8 @@ variable {M} in
   lift_of (G := (G · ⊗[R] M)) _ _ (g ⊗ₜ m)
 
 /--
-the map `(limᵢ G) ⊗ M → limᵢ (G i ⊗ M)` from the bilinear map `limᵢ Gᵢ → M → limᵢ (G i ⊗ M)` given
-by the family of maps `Gᵢ → M → limᵢ (G i ⊗ M)` where `gᵢ ↦ m ↦ [gᵢ ⊗ m]`
+the map `(limᵢ Gᵢ) ⊗ M → limᵢ (Gᵢ ⊗ M)` from the bilinear map `limᵢ Gᵢ → M → limᵢ (Gᵢ ⊗ M)` given
+by the family of maps `Gᵢ → M → limᵢ (Gᵢ ⊗ M)` where `gᵢ ↦ m ↦ [gᵢ ⊗ m]`
 
 -/
 noncomputable def tensorProductWithDirectLimitToDirectLimitOfTensorProduct :
