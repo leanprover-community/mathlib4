@@ -309,14 +309,17 @@ theorem ArzelaAscoli.compactSpace_of_closed_inducing_ptwise [TopologicalSpace ι
     rintro K ⟨x, rfl⟩
     rw [equicontinuous_iff_continuous]
     exact continuous_of_discreteTopology
-  exact ArzelaAscoli.compactSpace_of_closed_inducing 𝔖_compact 𝔖_covers F_ind F_cl F_eqcont F_pointwiseCompact
+  exact ArzelaAscoli.compactSpace_of_closed_inducing
+    𝔖_compact 𝔖_covers F_ind F_cl F_eqcont F_pointwiseCompact
 
-theorem ArzelaAscoli.ofEquicontinuous {X Y : Type*} [TopologicalSpace X] [UniformSpace Y] [CompactSpace Y]
-    (S : Set C(X, Y)) (hS1 : IsClosed (ContinuousMap.toFun '' S))
+theorem ArzelaAscoli.ofEquicontinuous {X Y : Type*} [TopologicalSpace X] [UniformSpace Y]
+    [CompactSpace Y] (S : Set C(X, Y)) (hS1 : IsClosed (ContinuousMap.toFun '' S))
     (hS2 : Equicontinuous ((↑) : S → X → Y)) :
     IsCompact S := by
-  refine' isCompact_iff_compactSpace.mpr (ArzelaAscoli.compactSpace_of_closed_inducing_ptwise _
-      (image_eq_range ContinuousMap.toFun S ▸ hS1) (fun x ↦ ⟨Set.univ, isCompact_univ, fun _ ↦ trivial⟩))
+  refine' isCompact_iff_compactSpace.mpr
+    (ArzelaAscoli.compactSpace_of_closed_inducing_ptwise _
+      (image_eq_range ContinuousMap.toFun S ▸ hS1)
+      (fun x ↦ ⟨Set.univ, isCompact_univ, fun _ ↦ trivial⟩))
   change Inducing (ContinuousMap.toFun ∘ Subtype.val : S → X → Y)
 
   -- At this point, we need to know that S → X → Y is inducing
