@@ -89,6 +89,7 @@ theorem _root_.IsOpen.ae_eq_empty_iff_eq (hU : IsOpen U) :
     U =ᵐ[μ] (∅ : Set X) ↔ U = ∅ := by
   rw [ae_eq_empty, hU.measure_zero_iff_eq_empty]
 
+/-- An open null set w.r.t. an `IsOpenPosMeasure` is empty. -/
 theorem _root_.IsOpen.eq_empty_of_measure_zero (hU : IsOpen U) (h₀ : μ U = 0) : U = ∅ :=
   (hU.measure_eq_zero_iff μ).mp h₀
 #align is_open.eq_empty_of_measure_zero IsOpen.eq_empty_of_measure_zero
@@ -108,6 +109,7 @@ theorem _root_.IsClosed.measure_eq_one_iff_eq_univ [OpensMeasurableSpace X] [IsP
     μ F = 1 ↔ F = univ := by
   rw [← measure_univ (μ := μ), hF.measure_eq_univ_iff_eq]
 
+/-- A null set has empty interior. -/
 theorem interior_eq_empty_of_null (hs : μ s = 0) : interior s = ∅ :=
   isOpen_interior.eq_empty_of_measure_zero <| measure_mono_null interior_subset hs
 #align measure_theory.measure.interior_eq_empty_of_null MeasureTheory.Measure.interior_eq_empty_of_null
@@ -268,17 +270,10 @@ zero sets are nowhere dense and σ-compact measure zero sets in a Hausdorff spac
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X] {s : Set X}
   {μ : Measure X} [IsOpenPosMeasure μ]
 
-lemma eq_empty_of_isOpen_null (hs : IsOpen s) (hs' : μ s = 0) : s = ∅ :=
-  (IsOpen.measure_eq_zero_iff μ hs).mp hs'
-
-/-- A measure zero subset has empty interior. -/
-lemma empty_interior_of_null (hs : μ s = 0) : interior s = ∅ :=
-  eq_empty_of_isOpen_null isOpen_interior (measure_mono_null interior_subset hs)
-
 /-- A *closed* measure zero subset is nowhere dense.
 (Closedness is required: there are generalised Cantor sets of positive Lebesgue measure.) -/
 lemma isNowhereDense_of_isClosed_null (h₁s : IsClosed s) (h₂s : μ s = 0) :
-    IsNowhereDense s := h₁s.isNowhereDense_iff.mpr (empty_interior_of_null h₂s)
+    IsNowhereDense s := h₁s.isNowhereDense_iff.mpr (interior_eq_empty_of_null h₂s)
 
 /-- A σ-compact measure zero subset is meagre. -/
 lemma isMeagre_of_isSigmaCompact_null [T2Space X] (h₁s : IsSigmaCompact s) (h₂s : μ s = 0) :
