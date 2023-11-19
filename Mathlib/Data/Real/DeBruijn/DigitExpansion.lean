@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Int.ConditionallyCompleteOrder
 import Mathlib.Data.Int.SuccPred
 import Mathlib.Data.ZMod.Basic
@@ -1338,6 +1339,13 @@ theorem cutoff_apply_lt {Z : Type*} [LT Z] {b : ℕ} [Fact (0 < b)]
     (f : FormalSeries Z b) (z x : Z) (h : z < x) : f.cutoff z x = 0 :=
   if_pos h
 
+theorem cutoff_cutoff_of_le {Z : Type*} [LinearOrder Z] {b : ℕ} [Fact (0 < b)]
+    (f : FormalSeries Z b) {z x : Z} (h : x ≤ z) : cutoff x (cutoff z f) = cutoff x f := by
+  ext y
+  cases' le_or_lt y x with hyx hyx
+  · rw [cutoff_apply_le _ _ _ hyx, cutoff_apply_le _ _ _ hyx, cutoff_apply_le _ _ _ (hyx.trans h)]
+  · rw [cutoff_apply_lt _ _ _ hyx, cutoff_apply_lt _ _ _ hyx]
+
 variable {Z : Type*} [LinearOrder Z] [SuccOrder Z] [NoMaxOrder Z] [PredOrder Z] [NoMinOrder Z]
     [IsSuccArchimedean Z] {b : ℕ} [hb : Fact (0 < b)]
 
@@ -1361,6 +1369,21 @@ lemma Negative.negative_cutoff {f : FormalSeries Z b} (hf : f.Negative) (z : Z) 
       simp
   · rw [lt_min_iff] at hy
     rw [cutoff_apply_le _ _ _ hy.right.le, hx _ hy.left]
+
+lemma negative_cutoff_iff {f : FormalSeries Z b} {z : Z} :
+    (f.cutoff z).Negative ↔ f.Negative := by
+  refine' ⟨_, fun h => Negative.negative_cutoff h z⟩
+  rintro ⟨hne, x, hx⟩
+  refine' ⟨_, x, _⟩
+  · contrapose! hne
+    simp [hne]
+  intro y hy
+  rw [←cutoff_apply_le _ z]
+  · exact hx y hy
+  contrapose! hx
+  refine' ⟨y, hy, _⟩
+  rw [cutoff_apply_lt _ _ _ hx]
+  simp [Fin.ext_iff, hb.out.ne]
 
 lemma difcar_cutoff_cutoff_of_le (f g : FormalSeries Z b) (z x : Z) (hx : z ≤ x) :
     difcar (f.cutoff z) (g.cutoff z) x = 0 := by
@@ -1399,7 +1422,7 @@ lemma real.val_cutoff (z : Z) (f : real Z b) :
 lemma real.cutoff_mono (z : Z) {f g : real Z b} (hfg : f ≤ g) :
     real.cutoff z f ≤ real.cutoff z g := by
   rcases hfg.eq_or_lt with rfl|hfg'
-  · exact le_rfl
+  · simp
   rw [real.lt_def] at hfg'
   refine' or_iff_not_imp_left.mpr _
   intro H
@@ -1504,10 +1527,286 @@ lemma real.cutoff_mono (z : Z) {f g : real Z b} (hfg : f ≤ g) :
     simp [hf, hg]
   · simp [hf, hg] at hne
 
+lemma real.cutoff_monotone (z : Z) : Monotone (cutoff (b := b) z) :=
+  fun _ _ => cutoff_mono z
 
-theorem real.exists_isLeast_image_cutoff (S : Set (real Z b))
-    (hn : S.Nonempty) (h : BddBelow S) (z : Z) : ∃ x, IsLeast (real.cutoff z '' S) x := by
-  sorry
+lemma real.cutoff_mono_left {z z' : Z} (f : real Z b) (h : z ≤ z') :
+    cutoff z f ≤ cutoff z' f := by
+  rcases h.eq_or_lt with rfl|h
+  · simp
+  by_cases hf : cutoff z f = 0
+  · rw [hf]
+    rcases f.prop with hf'|hf'|hf'
+    · rw [positive_iff] at hf'
+      simpa using cutoff_mono z' hf'.le
+    · obtain ⟨-, x, hx'⟩ := hf'
+      simp only [Subtype.ext_iff, val_cutoff, ZeroMemClass.coe_zero] at hf
+      suffices : FormalSeries.cutoff (b := b) z f (pred (min z x)) = 0
+      · rw [cutoff_apply_le, hx'] at this
+        · simp [Fin.ext_iff, hb.out.ne'] at this
+        · simp [pred_min]
+        · simp [pred_min, pred_le]
+      simp [hf]
+    · simp only [ZeroMemClass.coe_eq_zero] at hf'
+      simp [hf']
+  have hle : ∀ y, (FormalSeries.cutoff z f.val) y ≤ (FormalSeries.cutoff z' f.val) y
+  · intro y
+    cases' le_or_lt y z with hyz hyz
+    · rw [cutoff_apply_le _ _ _ hyz, cutoff_apply_le _ _ _ (hyz.trans h.le)]
+    · simp [cutoff_apply_lt _ _ _ hyz]
+  by_cases hw : ∃ w ≤ z', z < w ∧ 0 < (f : FormalSeries Z b) w
+  · obtain ⟨w, hwz', hzw, hw⟩ := hw
+    refine' le_of_lt ⟨_, pred z, _⟩
+    · contrapose! hw
+      simp only [val_cutoff] at hw
+      have : difcar (FormalSeries.cutoff z' f) (FormalSeries.cutoff (b := b) z f) w = 0
+      · rw [difcar_eq_zero_iff]
+        intro u
+        simp [(hle u).not_lt]
+      rw [←zero_apply w, ←hw, FormalSeries.sub_def, cutoff_apply_lt _ _ _ hzw,
+          cutoff_apply_le _ _ _ hwz', sub_zero, this]
+      simp
+    · intros y hy
+      simp only [val_cutoff]
+      rw [FormalSeries.sub_def, cutoff_apply_le _ _ _ (hy.le.trans (pred_le _)),
+          cutoff_apply_le _ _ _ ((hy.le.trans (pred_le _)).trans h.le), sub_self,
+          zero_sub, neg_eq_zero, difcar_eq_zero_iff]
+      intro u
+      simp [(hle u).not_lt]
+  · push_neg at hw
+    simp only [Fin.le_zero_iff] at hw
+    refine' le_of_eq _
+    ext y
+    simp only [val_cutoff]
+    cases' le_or_lt y z with hyz hyz
+    · rw [cutoff_apply_le _ _ _ hyz, cutoff_apply_le _ _ _ (hyz.trans h.le)]
+    rw [cutoff_apply_lt _ _ _ hyz]
+    cases' le_or_lt y z' with hyz' hyz'
+    · rw [cutoff_apply_le _ _ _ hyz', hw _ hyz' hyz]
+    · rw [cutoff_apply_lt _ _ _ hyz']
+
+theorem real.exists_exists_isLeast_image_cutoff [Nonempty Z] -- e.g. the case where S = {0}
+    (S : Set (real Z b)) (hn : S.Nonempty) (h : BddBelow S) :
+    ∃ z x, IsLeast (real.cutoff z '' S) x := by
+  obtain ⟨g, h⟩ := h
+  obtain ⟨f, hf⟩ := id hn
+  rcases g.prop with (hg|hg|hg)
+  · have hgf := h hf
+    have hf' : FormalSeries.Positive (f : FormalSeries Z b)
+    · rw [positive_iff] at hg ⊢
+      exact hg.trans_le hgf
+    obtain ⟨-, v, hv'⟩ := hf'
+    obtain ⟨-, u, hu'⟩ := hg
+    have : cutoff (pred (min u v)) f = cutoff (pred (min u v)) g
+    · ext y
+      simp only [ge_iff_le, val_cutoff]
+      cases' le_or_lt y (pred (min u v)) with hy hy
+      · rw [cutoff_apply_le _ _ _ hy, cutoff_apply_le _ _ _ hy,
+            hv' _ (hy.trans_lt _), hu' _ (hy.trans_lt _)]
+        · simp
+        · simp
+      · rw [cutoff_apply_lt _ _ _ hy, cutoff_apply_lt _ _ _ hy]
+    refine' ⟨pred (min u v), cutoff (pred (min u v)) f, ⟨f, hf, rfl⟩, _⟩
+    rw [this]
+    exact (cutoff_monotone _).mem_lowerBounds_image h
+  · by_cases hS : ∃ f ∈ S, FormalSeries.Negative (f : FormalSeries Z b)
+    · obtain ⟨f, hf, hf'⟩ := hS
+      obtain ⟨-, v, hv'⟩ := hf'
+      obtain ⟨-, u, hu'⟩ := hg
+      have : cutoff (pred (min u v)) f = cutoff (pred (min u v)) g
+      · ext y
+        simp only [ge_iff_le, val_cutoff]
+        cases' le_or_lt y (pred (min u v)) with hy hy
+        · rw [cutoff_apply_le _ _ _ hy, cutoff_apply_le _ _ _ hy,
+              hv' _ (hy.trans_lt _), hu' _ (hy.trans_lt _)]
+          · simp
+          · simp
+        · rw [cutoff_apply_lt _ _ _ hy, cutoff_apply_lt _ _ _ hy]
+      refine' ⟨pred (min u v), cutoff (pred (min u v)) f, ⟨f, hf, rfl⟩, _⟩
+      rw [this]
+      exact (cutoff_monotone _).mem_lowerBounds_image h
+    · replace hS : ∀ f ∈ S, (f : FormalSeries Z b).Positive ∨ f = 0
+      · rintro ⟨f, hf'|hf'|hf'⟩ hf
+        · simp [hf']
+        · simpa using hS ⟨⟨_, _⟩, hf, hf'⟩
+        · simp [hf']
+      have h0 : 0 ∈ lowerBounds S
+      · intro f hf
+        rw [real.le_def]
+        rcases (hS f hf) with (hf|rfl) <;> simp [hf]
+      specialize hS f hf
+      rcases hS with (hf|rfl)
+      · obtain ⟨-, v, hv'⟩ := hf
+        refine' ⟨pred v, cutoff (pred v) f, ⟨f, hf, rfl⟩, _⟩
+        have h0' : cutoff (pred v) f = 0
+        · ext y
+          simp only [val_cutoff, ZeroMemClass.coe_zero, zero_apply]
+          cases' le_or_lt y (pred v) with hy hy
+          · rw [cutoff_apply_le _ _ _ hy, hv' _ (hy.trans_lt _)]
+            simp
+          · rw [cutoff_apply_lt _ _ _ hy,]
+        rw [h0']
+        rw [←cutoff_zero (pred v)]
+        exact (cutoff_monotone _).mem_lowerBounds_image h0
+      · obtain ⟨-, x, -⟩ := hg
+        refine' ⟨x, cutoff x 0, ⟨0, hf, rfl⟩, _⟩
+        exact (cutoff_monotone _).mem_lowerBounds_image h0
+  · simp only [ZeroMemClass.coe_eq_zero] at hg
+    subst g
+    have : ∀ f ∈ S, (f : FormalSeries Z b).Positive ∨ f = 0
+    · intro f hf
+      rcases f.prop with hf'|hf'|hf'
+      · simp [hf']
+      · rw [negative_iff] at hf'
+        exact absurd hf' (h hf).not_lt
+      · simp only [ZeroMemClass.coe_eq_zero] at hf'
+        simp [hf']
+    rcases this f hf with hf'|rfl
+    · obtain ⟨-, v, hv'⟩ := hf'
+      refine' ⟨pred v, cutoff (pred v) f, ⟨f, hf, rfl⟩, _⟩
+      have h0' : cutoff (pred v) f = 0
+      · ext y
+        simp only [val_cutoff, ZeroMemClass.coe_zero, zero_apply]
+        cases' le_or_lt y (pred v) with hy hy
+        · rw [cutoff_apply_le _ _ _ hy, hv' _ (hy.trans_lt _)]
+          simp
+        · rw [cutoff_apply_lt _ _ _ hy,]
+      rw [h0']
+      rw [←cutoff_zero (pred v)]
+      exact (cutoff_monotone _).mem_lowerBounds_image h
+    · inhabit Z
+      refine' ⟨default, cutoff default 0, ⟨0, hf, rfl⟩, _⟩
+      exact (cutoff_monotone _).mem_lowerBounds_image h
+
+theorem real.exists_isLeast_image_cutoff
+    (S : Set (real Z b)) (hn : S.Nonempty) (h : BddBelow S) (z : Z) :
+    ∃ x, IsLeast (real.cutoff z '' S) x := by
+  have : Nonempty Z := ⟨z⟩
+  obtain ⟨w, f, hf⟩ := exists_exists_isLeast_image_cutoff S hn h
+  cases' le_total z w with hw hw
+  · refine' ⟨cutoff z f, _⟩
+    have : cutoff z '' (cutoff w '' S) = cutoff z '' S
+    · ext g
+      simp only [Set.mem_image]
+      refine' ⟨_, _⟩
+      · rintro ⟨n, ⟨m, hm, rfl⟩, rfl⟩
+        exact ⟨m, hm, Subtype.ext (cutoff_cutoff_of_le _ hw).symm⟩
+      · rintro ⟨n, hn, rfl⟩
+        exact ⟨_, ⟨n, hn, rfl⟩, Subtype.ext (cutoff_cutoff_of_le _ hw)⟩
+    rw [←this]
+    exact ⟨⟨f, hf.left, rfl⟩, (cutoff_monotone  _).mem_lowerBounds_image hf.right⟩
+  · revert hf
+    refine' Succ.rec' _ _ hw
+    · intro h
+      exact ⟨_, h⟩
+    intro u hwu IH hf
+    obtain ⟨g, hg⟩ := IH _ hwu le_rfl hf
+    set ix := sInf $ (fun g => (g : FormalSeries Z b) (succ u)) ''
+      ({g' | g' ∈ S ∧ cutoff u g' = g} : Set (real Z b)) with hixs
+    refine' ⟨⟨⟨fun y => if y ≤ u then (cutoff u g : FormalSeries Z b) y else
+      if succ u < y then 0 else ix, _⟩, _⟩, _, _⟩
+    · rintro ⟨w, hw⟩
+      specialize hw (succ (max w (succ u)))
+      simp [(le_succ u).not_lt, Fin.ext_iff, hb.out.ne] at hw
+    · rcases (cutoff u g).prop with hg|hg|hg
+      · obtain ⟨hne, x, hx⟩ := hg
+        refine' Or.inl ⟨_, min x u, _⟩
+        · contrapose! hne
+          ext y
+          simp only [val_cutoff]
+          cases' le_or_lt y u with hyw hyw
+          · rw [←hne]
+            simp [hyw, cutoff_apply_le _ _ _ hyw]
+          · rw [cutoff_apply_lt _ _ _ hyw, zero_apply]
+        · intro y hy
+          simp only [ge_iff_le, lt_min_iff] at hy
+          simp only [val_cutoff, mk_apply]
+          cases' le_or_lt y u with hu hu
+          · rw [if_pos hu]
+            exact hx _ hy.left
+          · have : u < u := hu.trans hy.right
+            simp at this
+      · obtain ⟨hne, x, hx⟩ := hg
+        refine' Or.inr (Or.inl ⟨_, min x u, _⟩)
+        · contrapose! hne
+          ext y
+          simp only [val_cutoff]
+          cases' le_or_lt y u with hyw hyw
+          · rw [←hne]
+            simp [hyw, cutoff_apply_le _ _ _ hyw]
+          · rw [cutoff_apply_lt _ _ _ hyw, zero_apply]
+        · intro y hy
+          simp only [ge_iff_le, lt_min_iff] at hy
+          simp only [val_cutoff, mk_apply]
+          cases' le_or_lt y u with hu hu
+          · rw [if_pos hu]
+            exact hx _ hy.left
+          · have : u < u := hu.trans hy.right
+            simp at this
+      · simp only [val_cutoff] at hg
+        cases' eq_or_ne ix 0 with hi hi
+        · refine' Or.inr (Or.inr _)
+          ext y : 1
+          simp [hg, ←hixs, ←hi]
+        · refine' Or.inl ⟨_, u, _⟩
+          · contrapose! hi
+            simp only [val_cutoff, hg, zero_apply, ← hixs] at hi
+            rw [←zero_apply (succ u), ←hi]
+            simp
+          · intro y hy
+            simp [hy.le, hg]
+    · obtain ⟨g', hg'⟩ : ∃ g', g' ∈ S ∧ cutoff u g' = g ∧ ∀ gx ∈ S, cutoff u gx = g →
+        (g' : FormalSeries Z b) (succ u) ≤ (gx : FormalSeries Z b) (succ u)
+      · _
+      refine' ⟨g', hg'.left, _⟩
+      ext y : 2
+      simp only [val_cutoff, mk_apply]
+      split_ifs with hu hu'
+      · rw [←hg'.right.left, cutoff_apply_le _ _ _ (hu.trans (le_succ _)),
+            cutoff_apply_le _ _ _ hu, val_cutoff, cutoff_apply_le _ _ _ hu]
+      · rw [cutoff_apply_lt _ _ _ hu']
+      · simp only [not_le, not_lt] at hu hu'
+        rw [cutoff_apply_le _ _ _ hu']
+        have : y = succ u := le_antisymm hu' (succ_le_of_lt hu)
+        subst y
+        refine' le_antisymm (le_sInf _) (sInf_le _)
+        · simp only [Set.mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+          rintro gx ⟨S', hgx⟩
+          -- annoying Set monad juggle
+          simp only [Set.mem_setOf_eq, Set.pure_def, Set.mem_range] at hgx
+          rcases hgx with ⟨⟨hgx, rfl⟩, hmem⟩
+          simp only [Set.mem_iUnion, Set.mem_singleton_iff, exists_prop] at hmem
+          rcases hmem with ⟨hmem, hgx', rfl⟩
+          exact hg'.right.right _ hmem.left hmem.right
+        · simp only [Set.mem_image]
+          refine' ⟨g', ⟨_, hg'.left, hg'.right.left⟩, rfl⟩
+    · _
+
+  -- by_contra H
+  -- push_neg at H
+  -- have : z < w
+  -- · contrapose! H
+
+-- lemma FormalSeries.real.le_of_forall_le {f g : FormalSeries.real Z b}
+--     (h : ∀ y, (f : FormalSeries Z b) y ≤ (g : FormalSeries Z b) y) : f ≤ g := by
+--   rw [real.le_def, or_iff_not_imp_left]
+--   intro hne
+--   refine' ⟨_, _⟩
+--   · contrapose! hne
+--     rw [sub_eq_zero] at hne
+--     simpa using hne.symm
+--   · obtain ⟨x, hx⟩ : ∃ x, (f : FormalSeries Z b) x < (g : FormalSeries Z b) x
+--     · contrapose! hne
+--       ext
+--       exact le_antisymm (h _) (hne _)
+--     refine' ⟨x, _⟩
+--     intro y hy
+--     rw [FormalSeries.sub_def]
+
+#exit
+
+
+
 
 end FormalSeries
 end S10
