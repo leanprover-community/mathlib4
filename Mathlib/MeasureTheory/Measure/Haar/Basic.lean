@@ -165,6 +165,8 @@ variable [TopologicalGroup G]
 ### Lemmas about `index`
 -/
 
+/-! TODO: at this point we give up on the more general case with `MulAction G α`/`AddAction G α`,
+as we are missing half of the ???/`AddTorsor G α` pair. -/
 variable {G}
 
 /-- If `K` is compact and `V` has nonempty interior, then the index `(K : V)` is well-defined,
