@@ -10,10 +10,10 @@ import Mathlib.LinearAlgebra.Finsupp
 
 /-!
 # Tensor-Hom adjunction
-Consider two commutative rings `R` and `S` and `X` and `(R, S)`-bimodule.
+Consider two commutative rings `R` and `S` and `X` an `(R, S)`-bimodule.
 Consider the tensor functor `(X ⊗[R] .)` from the category of `R`-module to the category of
 `S`-module and the hom functor `X →ₗ[S] .` from the category of `S`-module to the category of
-`R`-module, they form an adjunction. In particular we have that
+`R`-module. They form an adjunction. In particular we have that
 ```
 Hom_S(X⊗[R]Y, Z) ≃ Hom_R(Y, Hom_S(X, Z))
 ```
@@ -47,8 +47,8 @@ variable [AddCommGroup X] [Module R X] [Module S X] [SMulCommClass R S X]
 namespace ModuleCat
 
 /--
-Let `X` be an `(R,S)`-bimodule, then `(X ⊗[R] .)` is a functor from the category of `R`-modules
-to category of `S`-modules.
+Let `X` be an `(R,S)`-bimodule. Then `(X ⊗[R] .)` is a functor from the category of `R`-modules
+to the category of `S`-modules.
 -/
 @[simps!]
 noncomputable def tensorFunctor : ModuleCat.{v} R ⥤ ModuleCat.{v} S where
@@ -66,8 +66,8 @@ noncomputable def tensorFunctor : ModuleCat.{v} R ⥤ ModuleCat.{v} S where
 open Bimodule
 
 /--
-Let `X` be an `(R,S)`-bimodule, then `(X →ₗ[S] .)` is a functor from the category of `S`-modules
-to category of `R`-modules.
+Let `X` be an `(R,S)`-bimodule. Then `(X →ₗ[S] .)` is a functor from the category of `S`-modules
+to the category of `R`-modules.
 -/
 @[simps]
 def homFunctor : ModuleCat.{v} S ⥤ ModuleCat.{v} R where
@@ -171,7 +171,7 @@ lemma toAddCommGroup_apply_tmul {C : Type v} [AddCommGroup C]
 
 /--
 Constructing an additive group map `M ⊗[R] N → C` by lifting a function from
-`M × N → C` that are zero-preserving, additive in both arguments and compatible with scalar action.
+`M × N → C` that is zero-preserving, additive in both arguments and compatible with scalar action.
 -/
 noncomputable def toAddCommGroup' {C : Type v} [AddCommGroup C]
   (b : M × N → C)
