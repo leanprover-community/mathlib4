@@ -44,11 +44,20 @@ variable (R : Type u) (S : Type u') (X : Type v)
 variable [CommRing R] [Ring S]
 variable [AddCommGroup X] [Module R X] [Module Sᵐᵒᵖ X] [SMulCommClass R Sᵐᵒᵖ X]
 
-open Bimodule
-
-private instance bimodule' {Y : Type v''} [AddCommGroup Y] [Module Sᵐᵒᵖ Y] :
-    Module R (X →ₗ[Sᵐᵒᵖ] Y) :=
-  Module.compHom _ ((RingHom.id R).toOpposite fun _ _ => mul_comm _ _)
+local instance hom_bimodule {Y : Type v''} [AddCommGroup Y] [Module Sᵐᵒᵖ Y] :
+    Module R (X →ₗ[Sᵐᵒᵖ] Y) where
+  smul r l :=
+  { toFun := fun x => l (r • x)
+    map_add' := fun x y => by dsimp; rw [smul_add, map_add]
+    map_smul' := fun s x => by dsimp; rw [smul_comm, map_smul] }
+  one_smul l := LinearMap.ext fun x => show l _ = _ by rw [one_smul]
+  mul_smul r₁ r₂ l := LinearMap.ext fun x => show l _ = l _ by rw [mul_comm, mul_smul]
+  smul_zero r := rfl
+  smul_add r l₁ l₂ := LinearMap.ext fun x => show (l₁ + _) _ = _ by
+    rw [LinearMap.add_apply, LinearMap.add_apply]; rfl
+  add_smul r₁ r₂ l := LinearMap.ext fun x => show l _ = l _ + l _ by
+    rw [add_smul, map_add]
+  zero_smul l := LinearMap.ext fun x => show l _ = 0 by rw [zero_smul, map_zero]
 
 variable {R S X}
 /--
@@ -187,7 +196,7 @@ variable (R' : Type u) [CommRing R']
 variable {M : Type v} {N : Type v'} [AddCommGroup M] [AddCommGroup N]
 variable [Module R' M] [Module R' N]
 
-open Bimodule ModuleCat
+open ModuleCat
 
 /--
 Constructing an additive group map from a tensor product by lifting a bi-additive group map that is
