@@ -22,7 +22,8 @@ This is essentially the same argument as in
 https://en.wikipedia.org/wiki/Haar_measure#A_construction_using_compact_subsets.
 
 We construct the Haar measure first on compact sets. For this we define `(K : U)` as the (smallest)
-number of left-translates of `U` that are needed to cover `K` (`index` in the formalization).
+number of left-translates (by `G`-actions) of `U` that are needed to cover `K`
+(`index G` in the formalization).
 Then we define a function `h` on compact sets as `lim_U (K : U) / (K₀ : U)`,
 where `U` becomes a smaller and smaller open neighborhood of `1`, and `K₀` is a fixed compact set
 with nonempty interior. This function is `chaar` in the formalization, and we define the limit
@@ -75,7 +76,7 @@ namespace Measure
 
 section Group
 
-variable {G : Type*} [Group G]
+variable {G α : Type*} [Group G] [MulAction G α]
 
 /-! We put the internal functions in the construction of the Haar measure in a namespace,
   so that the chosen names don't clash with other declarations.
@@ -89,23 +90,25 @@ namespace haar
 --               `noncomputable` to generate an additive definition.
 --               Please refer to leanprover/lean4#2077.
 
+variable (G)
+
 /-- The index or Haar covering number or ratio of `K` w.r.t. `V`, denoted `(K : V)`:
   it is the smallest number of (left) translates of `V` that is necessary to cover `K`.
   It is defined to be 0 if no finite number of translates cover `K`. -/
 @[to_additive addIndex "additive version of `MeasureTheory.Measure.haar.index`"]
-noncomputable def index (K V : Set G) : ℕ :=
-  sInf <| Finset.card '' { t : Finset G | K ⊆ ⋃ g ∈ t, (fun h => g * h) ⁻¹' V }
+noncomputable def index (K V : Set α) : ℕ :=
+  sInf <| Finset.card '' { t : Finset G | K ⊆ ⋃ g ∈ t, (fun h => g • h) ⁻¹' V }
 #align measure_theory.measure.haar.index MeasureTheory.Measure.haar.index
 #align measure_theory.measure.haar.add_index MeasureTheory.Measure.haar.addIndex
 
 @[to_additive addIndex_empty]
-theorem index_empty {V : Set G} : index ∅ V = 0 := by
+theorem index_empty {V : Set α} : index G ∅ V = 0 := by
   simp only [index, Nat.sInf_eq_zero]; left; use ∅
   simp only [Finset.card_empty, empty_subset, mem_setOf_eq, eq_self_iff_true, and_self_iff]
 #align measure_theory.measure.haar.index_empty MeasureTheory.Measure.haar.index_empty
 #align measure_theory.measure.haar.add_index_empty MeasureTheory.Measure.haar.addIndex_empty
 
-variable [TopologicalSpace G]
+variable [TopologicalSpace G] [TopologicalSpace α]
 
 /-- `prehaar K₀ U K` is a weighted version of the index, defined as `(K : U)/(K₀ : U)`.
   In the applications `K₀` is compact with non-empty interior, `U` is open containing `1`,
@@ -113,46 +116,46 @@ variable [TopologicalSpace G]
   The argument `K` is a (bundled) compact set, so that we can consider `prehaar K₀ U` as an
   element of `haarProduct` (below). -/
 @[to_additive "additive version of `MeasureTheory.Measure.haar.prehaar`"]
-noncomputable def prehaar (K₀ U : Set G) (K : Compacts G) : ℝ :=
-  (index (K : Set G) U : ℝ) / index K₀ U
+noncomputable def prehaar (K₀ U : Set α) (K : Compacts α) : ℝ :=
+  (index G (K : Set α) U : ℝ) / index G K₀ U
 #align measure_theory.measure.haar.prehaar MeasureTheory.Measure.haar.prehaar
 #align measure_theory.measure.haar.add_prehaar MeasureTheory.Measure.haar.addPrehaar
 
 @[to_additive]
-theorem prehaar_empty (K₀ : PositiveCompacts G) {U : Set G} : prehaar (K₀ : Set G) U ⊥ = 0 := by
+theorem prehaar_empty (K₀ : PositiveCompacts α) {U : Set α} : prehaar G (K₀ : Set α) U ⊥ = 0 := by
   rw [prehaar, Compacts.coe_bot, index_empty, Nat.cast_zero, zero_div]
 #align measure_theory.measure.haar.prehaar_empty MeasureTheory.Measure.haar.prehaar_empty
 #align measure_theory.measure.haar.add_prehaar_empty MeasureTheory.Measure.haar.addPrehaar_empty
 
 @[to_additive]
-theorem prehaar_nonneg (K₀ : PositiveCompacts G) {U : Set G} (K : Compacts G) :
-    0 ≤ prehaar (K₀ : Set G) U K := by apply div_nonneg <;> norm_cast <;> apply zero_le
+theorem prehaar_nonneg (K₀ : PositiveCompacts α) {U : Set α} (K : Compacts α) :
+    0 ≤ prehaar G (K₀ : Set α) U K := by apply div_nonneg <;> norm_cast <;> apply zero_le
 #align measure_theory.measure.haar.prehaar_nonneg MeasureTheory.Measure.haar.prehaar_nonneg
 #align measure_theory.measure.haar.add_prehaar_nonneg MeasureTheory.Measure.haar.addPrehaar_nonneg
 
 /-- `haarProduct K₀` is the product of intervals `[0, (K : K₀)]`, for all compact sets `K`.
   For all `U`, we can show that `prehaar K₀ U ∈ haarProduct K₀`. -/
 @[to_additive "additive version of `MeasureTheory.Measure.haar.haarProduct`"]
-def haarProduct (K₀ : Set G) : Set (Compacts G → ℝ) :=
-  pi univ fun K => Icc 0 <| index (K : Set G) K₀
+def haarProduct (K₀ : Set α) : Set (Compacts α → ℝ) :=
+  pi univ fun K => Icc 0 <| index G (K : Set α) K₀
 #align measure_theory.measure.haar.haar_product MeasureTheory.Measure.haar.haarProduct
 #align measure_theory.measure.haar.add_haar_product MeasureTheory.Measure.haar.addHaarProduct
 
 @[to_additive (attr := simp)]
-theorem mem_prehaar_empty {K₀ : Set G} {f : Compacts G → ℝ} :
-    f ∈ haarProduct K₀ ↔ ∀ K : Compacts G, f K ∈ Icc (0 : ℝ) (index (K : Set G) K₀) := by
+theorem mem_prehaar_empty {K₀ : Set α} {f : Compacts α → ℝ} :
+    f ∈ haarProduct G K₀ ↔ ∀ K : Compacts α, f K ∈ Icc (0 : ℝ) (index G (K : Set α) K₀) := by
   simp only [haarProduct, Set.pi, forall_prop_of_true, mem_univ, mem_setOf_eq]
 #align measure_theory.measure.haar.mem_prehaar_empty MeasureTheory.Measure.haar.mem_prehaar_empty
 #align measure_theory.measure.haar.mem_add_prehaar_empty MeasureTheory.Measure.haar.mem_addPrehaar_empty
 
-/-- The closure of the collection of elements of the form `prehaar K₀ U`,
-  for `U` open neighbourhoods of `1`, contained in `V`. The closure is taken in the space
-  `compacts G → ℝ`, with the topology of pointwise convergence.
+/-- The closure of the collection of elements of the form `prehaar G K₀ U`,
+  for `U` open neighbourhoods of `a`, contained in `V`. The closure is taken in the space
+  `compacts α → ℝ`, with the topology of pointwise convergence.
   We show that the intersection of all these sets is nonempty, and the Haar measure
   on compact sets is defined to be an element in the closure of this intersection. -/
 @[to_additive "additive version of `MeasureTheory.Measure.haar.clPrehaar`"]
-def clPrehaar (K₀ : Set G) (V : OpenNhdsOf (1 : G)) : Set (Compacts G → ℝ) :=
-  closure <| prehaar K₀ '' { U : Set G | U ⊆ V.1 ∧ IsOpen U ∧ (1 : G) ∈ U }
+def clPrehaar (K₀ : Set α) (a : α) (V : OpenNhdsOf (a : α)) : Set (Compacts α → ℝ) :=
+  closure <| prehaar G K₀ '' { U : Set α | U ⊆ V.1 ∧ IsOpen U ∧ (a : α) ∈ U }
 #align measure_theory.measure.haar.cl_prehaar MeasureTheory.Measure.haar.clPrehaar
 #align measure_theory.measure.haar.cl_add_prehaar MeasureTheory.Measure.haar.clAddPrehaar
 
@@ -162,6 +165,9 @@ variable [TopologicalGroup G]
 ### Lemmas about `index`
 -/
 
+/-! TODO: at this point we give up on the more general case with `MulAction G α`/`AddAction G α`,
+as we are missing half of the ???/`AddTorsor G α` pair. -/
+variable {G}
 
 /-- If `K` is compact and `V` has nonempty interior, then the index `(K : V)` is well-defined,
   there is a finite set `t` satisfying the desired properties. -/
@@ -176,7 +182,7 @@ theorem index_defined {K V : Set G} (hK : IsCompact K) (hV : (interior V).Nonemp
 
 @[to_additive addIndex_elim]
 theorem index_elim {K V : Set G} (hK : IsCompact K) (hV : (interior V).Nonempty) :
-    ∃ t : Finset G, (K ⊆ ⋃ g ∈ t, (fun h => g * h) ⁻¹' V) ∧ Finset.card t = index K V := by
+    ∃ t : Finset G, (K ⊆ ⋃ g ∈ t, (fun h => g * h) ⁻¹' V) ∧ Finset.card t = index G K V := by
   have := Nat.sInf_mem (index_defined hK hV); rwa [mem_image] at this
 #align measure_theory.measure.haar.index_elim MeasureTheory.Measure.haar.index_elim
 #align measure_theory.measure.haar.add_index_elim MeasureTheory.Measure.haar.addIndex_elim
@@ -184,7 +190,7 @@ theorem index_elim {K V : Set G} (hK : IsCompact K) (hV : (interior V).Nonempty)
 @[to_additive le_addIndex_mul]
 theorem le_index_mul (K₀ : PositiveCompacts G) (K : Compacts G) {V : Set G}
     (hV : (interior V).Nonempty) :
-    index (K : Set G) V ≤ index (K : Set G) K₀ * index (K₀ : Set G) V := by
+    index G (K : Set G) V ≤ index G (K : Set G) K₀ * index G (K₀ : Set G) V := by
   obtain ⟨s, h1s, h2s⟩ := index_elim K.isCompact K₀.interior_nonempty
   obtain ⟨t, h1t, h2t⟩ := index_elim K₀.isCompact hV
   rw [← h2s, ← h2t, mul_comm]
@@ -199,7 +205,7 @@ theorem le_index_mul (K₀ : PositiveCompacts G) (K : Compacts G) {V : Set G}
 
 @[to_additive addIndex_pos]
 theorem index_pos (K : PositiveCompacts G) {V : Set G} (hV : (interior V).Nonempty) :
-    0 < index (K : Set G) V := by
+    0 < index G (K : Set G) V := by
   unfold index; rw [Nat.sInf_def, Nat.find_pos, mem_image]
   · rintro ⟨t, h1t, h2t⟩; rw [Finset.card_eq_zero] at h2t; subst h2t
     obtain ⟨g, hg⟩ := K.interior_nonempty
@@ -212,7 +218,7 @@ theorem index_pos (K : PositiveCompacts G) {V : Set G} (hV : (interior V).Nonemp
 
 @[to_additive addIndex_mono]
 theorem index_mono {K K' V : Set G} (hK' : IsCompact K') (h : K ⊆ K') (hV : (interior V).Nonempty) :
-    index K V ≤ index K' V := by
+    index G K V ≤ index G K' V := by
   rcases index_elim hK' hV with ⟨s, h1s, h2s⟩
   apply Nat.sInf_le; rw [mem_image]; refine' ⟨s, Subset.trans h h1s, h2s⟩
 #align measure_theory.measure.haar.index_mono MeasureTheory.Measure.haar.index_mono
@@ -220,7 +226,7 @@ theorem index_mono {K K' V : Set G} (hK' : IsCompact K') (h : K ⊆ K') (hV : (i
 
 @[to_additive addIndex_union_le]
 theorem index_union_le (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).Nonempty) :
-    index (K₁.1 ∪ K₂.1) V ≤ index K₁.1 V + index K₂.1 V := by
+    index G (K₁.1 ∪ K₂.1) V ≤ index G K₁.1 V + index G K₂.1 V := by
   rcases index_elim K₁.2 hV with ⟨s, h1s, h2s⟩
   rcases index_elim K₂.2 hV with ⟨t, h1t, h2t⟩
   rw [← h2s, ← h2t]
@@ -235,13 +241,13 @@ theorem index_union_le (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
 @[to_additive addIndex_union_eq]
 theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).Nonempty)
     (h : Disjoint (K₁.1 * V⁻¹) (K₂.1 * V⁻¹)) :
-    index (K₁.1 ∪ K₂.1) V = index K₁.1 V + index K₂.1 V := by
+    index G (K₁.1 ∪ K₂.1) V = index G K₁.1 V + index G K₂.1 V := by
   apply le_antisymm (index_union_le K₁ K₂ hV)
   rcases index_elim (K₁.2.union K₂.2) hV with ⟨s, h1s, h2s⟩; rw [← h2s]
   have :
     ∀ K : Set G,
       (K ⊆ ⋃ g ∈ s, (fun h => g * h) ⁻¹' V) →
-        index K V ≤ (s.filter fun g => ((fun h : G => g * h) ⁻¹' V ∩ K).Nonempty).card := by
+        index G K V ≤ (s.filter fun g => ((fun h : G => g * h) ⁻¹' V ∩ K).Nonempty).card := by
     intro K hK; apply Nat.sInf_le; refine' ⟨_, _, rfl⟩; rw [mem_setOf_eq]
     intro g hg; rcases hK hg with ⟨_, ⟨g₀, rfl⟩, _, ⟨h1g₀, rfl⟩, h2g₀⟩
     simp only [mem_preimage] at h2g₀
@@ -269,7 +275,7 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
 
 @[to_additive add_left_addIndex_le]
 theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (interior V).Nonempty)
-    (g : G) : index ((fun h => g * h) '' K) V ≤ index K V := by
+    (g : G) : index G ((fun h => g * h) '' K) V ≤ index G K V := by
   rcases index_elim hK hV with ⟨s, h1s, h2s⟩; rw [← h2s]
   apply Nat.sInf_le; rw [mem_image]
   refine' ⟨s.map (Equiv.mulRight g⁻¹).toEmbedding, _, Finset.card_map _⟩
@@ -278,13 +284,13 @@ theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (inte
     simp only [mem_preimage] at hg₁;
     simp only [exists_prop, mem_iUnion, Finset.mem_map, Equiv.coe_mulRight,
       exists_exists_and_eq_and, mem_preimage, Equiv.toEmbedding_apply]
-    refine' ⟨_, hg₂, _⟩; simp only [mul_assoc, hg₁, inv_mul_cancel_left]
+    refine' ⟨_, hg₂, _⟩; simp only [mul_assoc, hg₁, inv_mul_cancel_left, smul_eq_mul]
 #align measure_theory.measure.haar.mul_left_index_le MeasureTheory.Measure.haar.mul_left_index_le
 #align measure_theory.measure.haar.add_left_add_index_le MeasureTheory.Measure.haar.add_left_addIndex_le
 
 @[to_additive is_left_invariant_addIndex]
 theorem is_left_invariant_index {K : Set G} (hK : IsCompact K) (g : G) {V : Set G}
-    (hV : (interior V).Nonempty) : index ((fun h => g * h) '' K) V = index K V := by
+    (hV : (interior V).Nonempty) : index G ((fun h => g * h) '' K) V = index G K V := by
   refine' le_antisymm (mul_left_index_le hK hV g) _
   convert mul_left_index_le (hK.image <| continuous_mul_left g) hV g⁻¹
   rw [image_image]; symm; convert image_id' _ with h; apply inv_mul_cancel_left
@@ -298,7 +304,7 @@ theorem is_left_invariant_index {K : Set G} (hK : IsCompact K) (g : G) {V : Set 
 
 @[to_additive add_prehaar_le_addIndex]
 theorem prehaar_le_index (K₀ : PositiveCompacts G) {U : Set G} (K : Compacts G)
-    (hU : (interior U).Nonempty) : prehaar (K₀ : Set G) U K ≤ index (K : Set G) K₀ := by
+    (hU : (interior U).Nonempty) : prehaar G (K₀ : Set G) U K ≤ index G (K : Set G) K₀ := by
   unfold prehaar; rw [div_le_iff] <;> norm_cast
   · apply le_index_mul K₀ K hU
   · exact index_pos K₀ hU
@@ -307,7 +313,7 @@ theorem prehaar_le_index (K₀ : PositiveCompacts G) {U : Set G} (K : Compacts G
 
 @[to_additive]
 theorem prehaar_pos (K₀ : PositiveCompacts G) {U : Set G} (hU : (interior U).Nonempty) {K : Set G}
-    (h1K : IsCompact K) (h2K : (interior K).Nonempty) : 0 < prehaar (K₀ : Set G) U ⟨K, h1K⟩ := by
+    (h1K : IsCompact K) (h2K : (interior K).Nonempty) : 0 < prehaar G (K₀ : Set G) U ⟨K, h1K⟩ := by
   apply div_pos <;> norm_cast; apply index_pos ⟨⟨K, h1K⟩, h2K⟩ hU; exact index_pos K₀ hU
 #align measure_theory.measure.haar.prehaar_pos MeasureTheory.Measure.haar.prehaar_pos
 #align measure_theory.measure.haar.add_prehaar_pos MeasureTheory.Measure.haar.addPrehaar_pos
@@ -315,7 +321,7 @@ theorem prehaar_pos (K₀ : PositiveCompacts G) {U : Set G} (hU : (interior U).N
 @[to_additive]
 theorem prehaar_mono {K₀ : PositiveCompacts G} {U : Set G} (hU : (interior U).Nonempty)
     {K₁ K₂ : Compacts G} (h : (K₁ : Set G) ⊆ K₂.1) :
-    prehaar (K₀ : Set G) U K₁ ≤ prehaar (K₀ : Set G) U K₂ := by
+    prehaar G (K₀ : Set G) U K₁ ≤ prehaar G (K₀ : Set G) U K₂ := by
   simp only [prehaar]; rw [div_le_div_right]; exact_mod_cast index_mono K₂.2 h hU
   exact_mod_cast index_pos K₀ hU
 #align measure_theory.measure.haar.prehaar_mono MeasureTheory.Measure.haar.prehaar_mono
@@ -323,7 +329,7 @@ theorem prehaar_mono {K₀ : PositiveCompacts G} {U : Set G} (hU : (interior U).
 
 @[to_additive]
 theorem prehaar_self {K₀ : PositiveCompacts G} {U : Set G} (hU : (interior U).Nonempty) :
-    prehaar (K₀ : Set G) U K₀.toCompacts = 1 :=
+    prehaar G (K₀ : Set G) U K₀.toCompacts = 1 :=
   div_self <| ne_of_gt <| by exact_mod_cast index_pos K₀ hU
 #align measure_theory.measure.haar.prehaar_self MeasureTheory.Measure.haar.prehaar_self
 #align measure_theory.measure.haar.add_prehaar_self MeasureTheory.Measure.haar.addPrehaar_self
@@ -331,7 +337,7 @@ theorem prehaar_self {K₀ : PositiveCompacts G} {U : Set G} (hU : (interior U).
 @[to_additive]
 theorem prehaar_sup_le {K₀ : PositiveCompacts G} {U : Set G} (K₁ K₂ : Compacts G)
     (hU : (interior U).Nonempty) :
-    prehaar (K₀ : Set G) U (K₁ ⊔ K₂) ≤ prehaar (K₀ : Set G) U K₁ + prehaar (K₀ : Set G) U K₂ := by
+    prehaar G (K₀ : Set G) U (K₁ ⊔ K₂) ≤ prehaar G (K₀ : Set G) U K₁ + prehaar G (K₀ : Set G) U K₂ := by
   simp only [prehaar]; rw [div_add_div_same, div_le_div_right]
   exact_mod_cast index_union_le K₁ K₂ hU; exact_mod_cast index_pos K₀ hU
 #align measure_theory.measure.haar.prehaar_sup_le MeasureTheory.Measure.haar.prehaar_sup_le
@@ -340,10 +346,10 @@ theorem prehaar_sup_le {K₀ : PositiveCompacts G} {U : Set G} (K₁ K₂ : Comp
 @[to_additive]
 theorem prehaar_sup_eq {K₀ : PositiveCompacts G} {U : Set G} {K₁ K₂ : Compacts G}
     (hU : (interior U).Nonempty) (h : Disjoint (K₁.1 * U⁻¹) (K₂.1 * U⁻¹)) :
-    prehaar (K₀ : Set G) U (K₁ ⊔ K₂) = prehaar (K₀ : Set G) U K₁ + prehaar (K₀ : Set G) U K₂ := by
+    prehaar G (K₀ : Set G) U (K₁ ⊔ K₂) = prehaar G (K₀ : Set G) U K₁ + prehaar G (K₀ : Set G) U K₂ := by
   simp only [prehaar]; rw [div_add_div_same]
   -- Porting note: Here was `congr`, but `to_additive` failed to generate a theorem.
-  refine congr_arg (fun x : ℝ => x / index K₀ U) ?_
+  refine congr_arg (fun x : ℝ => x / index G K₀ U) ?_
   exact_mod_cast index_union_eq K₁ K₂ hU h
 #align measure_theory.measure.haar.prehaar_sup_eq MeasureTheory.Measure.haar.prehaar_sup_eq
 #align measure_theory.measure.haar.add_prehaar_sup_eq MeasureTheory.Measure.haar.addPrehaar_sup_eq
@@ -351,7 +357,7 @@ theorem prehaar_sup_eq {K₀ : PositiveCompacts G} {U : Set G} {K₁ K₂ : Comp
 @[to_additive]
 theorem is_left_invariant_prehaar {K₀ : PositiveCompacts G} {U : Set G} (hU : (interior U).Nonempty)
     (g : G) (K : Compacts G) :
-    prehaar (K₀ : Set G) U (K.map _ <| continuous_mul_left g) = prehaar (K₀ : Set G) U K := by
+    prehaar G (K₀ : Set G) U (K.map _ <| continuous_mul_left g) = prehaar G (K₀ : Set G) U K := by
   simp only [prehaar, Compacts.coe_map, is_left_invariant_index K.isCompact _ hU]
 #align measure_theory.measure.haar.is_left_invariant_prehaar MeasureTheory.Measure.haar.is_left_invariant_prehaar
 #align measure_theory.measure.haar.is_left_invariant_add_prehaar MeasureTheory.Measure.haar.is_left_invariant_addPrehaar
@@ -362,21 +368,21 @@ theorem is_left_invariant_prehaar {K₀ : PositiveCompacts G} {U : Set G} (hU : 
 
 @[to_additive]
 theorem prehaar_mem_haarProduct (K₀ : PositiveCompacts G) {U : Set G} (hU : (interior U).Nonempty) :
-    prehaar (K₀ : Set G) U ∈ haarProduct (K₀ : Set G) := by
-    rintro ⟨K, hK⟩ _; rw [mem_Icc]; exact ⟨prehaar_nonneg K₀ _, prehaar_le_index K₀ _ hU⟩
+    prehaar G (K₀ : Set G) U ∈ haarProduct G (K₀ : Set G) := by
+    rintro ⟨K, hK⟩ _; rw [mem_Icc]; exact ⟨prehaar_nonneg G K₀ _, prehaar_le_index K₀ _ hU⟩
 #align measure_theory.measure.haar.prehaar_mem_haar_product MeasureTheory.Measure.haar.prehaar_mem_haarProduct
 #align measure_theory.measure.haar.add_prehaar_mem_add_haar_product MeasureTheory.Measure.haar.addPrehaar_mem_addHaarProduct
 
 @[to_additive]
 theorem nonempty_iInter_clPrehaar (K₀ : PositiveCompacts G) :
-    (haarProduct (K₀ : Set G) ∩ ⋂ V : OpenNhdsOf (1 : G), clPrehaar K₀ V).Nonempty := by
-  have : IsCompact (haarProduct (K₀ : Set G)) := by
+    (haarProduct G (K₀ : Set G) ∩ ⋂ V : OpenNhdsOf (1 : G), clPrehaar G K₀ 1 V).Nonempty := by
+  have : IsCompact (haarProduct G (K₀ : Set G)) := by
     apply isCompact_univ_pi; intro K; apply isCompact_Icc
-  refine' this.inter_iInter_nonempty (clPrehaar K₀) (fun s => isClosed_closure) fun t => _
+  refine' this.inter_iInter_nonempty (clPrehaar G K₀ 1) (fun s => isClosed_closure) fun t => _
   let V₀ := ⋂ V ∈ t, (V : OpenNhdsOf (1 : G)).carrier
   have h1V₀ : IsOpen V₀ := isOpen_biInter_finset $ by rintro ⟨⟨V, hV₁⟩, hV₂⟩ _; exact hV₁
   have h2V₀ : (1 : G) ∈ V₀ := by simp only [mem_iInter]; rintro ⟨⟨V, hV₁⟩, hV₂⟩ _; exact hV₂
-  refine' ⟨prehaar K₀ V₀, _⟩
+  refine' ⟨prehaar G K₀ V₀, _⟩
   constructor
   · apply prehaar_mem_haarProduct K₀; use 1; rwa [h1V₀.interior_eq]
   · simp only [mem_iInter]; rintro ⟨V, hV⟩ h2V; apply subset_closure
@@ -407,14 +413,14 @@ noncomputable def chaar (K₀ : PositiveCompacts G) (K : Compacts G) : ℝ :=
 #align measure_theory.measure.haar.add_chaar MeasureTheory.Measure.haar.addCHaar
 
 @[to_additive addCHaar_mem_addHaarProduct]
-theorem chaar_mem_haarProduct (K₀ : PositiveCompacts G) : chaar K₀ ∈ haarProduct (K₀ : Set G) :=
+theorem chaar_mem_haarProduct (K₀ : PositiveCompacts G) : chaar K₀ ∈ haarProduct G (K₀ : Set G) :=
   (Classical.choose_spec (nonempty_iInter_clPrehaar K₀)).1
 #align measure_theory.measure.haar.chaar_mem_haar_product MeasureTheory.Measure.haar.chaar_mem_haarProduct
 #align measure_theory.measure.haar.add_chaar_mem_add_haar_product MeasureTheory.Measure.haar.addCHaar_mem_addHaarProduct
 
 @[to_additive addCHaar_mem_clAddPrehaar]
 theorem chaar_mem_clPrehaar (K₀ : PositiveCompacts G) (V : OpenNhdsOf (1 : G)) :
-    chaar K₀ ∈ clPrehaar (K₀ : Set G) V := by
+    chaar K₀ ∈ clPrehaar G (K₀ : Set G) 1 V := by
   have := (Classical.choose_spec (nonempty_iInter_clPrehaar K₀)).2; rw [mem_iInter] at this
   exact this V
 #align measure_theory.measure.haar.chaar_mem_cl_prehaar MeasureTheory.Measure.haar.chaar_mem_clPrehaar
