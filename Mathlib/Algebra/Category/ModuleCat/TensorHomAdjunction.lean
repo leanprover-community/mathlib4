@@ -44,6 +44,18 @@ variable (R : Type u) (S : Type u') (X : Type v)
 variable [CommRing R] [Ring S]
 variable [AddCommGroup X] [Module R X] [Module Sᵐᵒᵖ X] [SMulCommClass R Sᵐᵒᵖ X]
 
+/--
+Let `R` be a commutative ring and `S` a ring.
+Give `(R, S)`-bimodule `X`, a left `R`-module `X` and a right `S`-module `Y`, then the the set of
+`S`-linear maps from `X` to `Y` has a (left) `R`-module structure given by:
+```
+l : X →ₗ[Sᵐᵒᵖ] Y
+r : R
+x : X
+-------------
+(r • l) x = l (r • x)
+```
+-/
 local instance hom_bimodule {Y : Type v''} [AddCommGroup Y] [Module Sᵐᵒᵖ Y] :
     Module R (X →ₗ[Sᵐᵒᵖ] Y) where
   smul r l :=
