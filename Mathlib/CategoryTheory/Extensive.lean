@@ -85,7 +85,7 @@ class FinitaryPreExtensive (C : Type u) [Category.{v} C] : Prop where
   universal' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsUniversalColimit c
 
 attribute [instance] FinitaryPreExtensive.hasFiniteCoproducts
-attribute [instance] FinitaryPreExtensive.HasPullbacksOfInclusions
+attribute [instance] FinitaryPreExtensive.hasPullbacksOfInclusions
 
 /-- A category is (finitary) extensive if it has finite coproducts,
 and binary coproducts are van Kampen. -/
@@ -97,7 +97,7 @@ class FinitaryExtensive (C : Type u) [Category.{v} C] : Prop where
 #align category_theory.finitary_extensive CategoryTheory.FinitaryExtensive
 
 attribute [instance] FinitaryExtensive.hasFiniteCoproducts
-attribute [instance] FinitaryExtensive.HasPullbacksOfInclusions
+attribute [instance] FinitaryExtensive.hasPullbacksOfInclusions
 
 theorem FinitaryExtensive.vanKampen [FinitaryExtensive C] {F : Discrete WalkingPair ⥤ C}
     (c : Cocone F) (hc : IsColimit c) : IsVanKampenColimit c := by
