@@ -9,8 +9,8 @@ import Mathlib.CategoryTheory.Preadditive.LeftExact
 /-!
 # Exact functors
 
-In this file, it is shown that functors which preserves homology also
-preserves finite limits and finite colimits.
+In this file, it is shown that additive functors which preserves homology
+also preserves finite limits and finite colimits.
 
 TODO: provive alternate characterizations of left/right exact functors
 in terms of preservation of exactness.
@@ -26,6 +26,7 @@ namespace Functor
 variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
   (F : C ⥤ D) [F.Additive] [F.PreservesHomology] [HasZeroObject C]
 
+/-- An additive functor which preserves homology preserves finite limits. -/
 noncomputable def preservesFiniteLimitsOfPreservesHomology
     [HasFiniteProducts C] [HasKernels C] : PreservesFiniteLimits F := by
   have := fun {X Y : C} (f : X ⟶ Y) => PreservesHomology.preservesKernel F f
@@ -35,6 +36,7 @@ noncomputable def preservesFiniteLimitsOfPreservesHomology
     ⟨F.obj 0, by rw [IsZero.iff_id_eq_zero, ← F.map_id, id_zero, F.map_zero]⟩
   exact preservesFiniteLimitsOfPreservesKernels F
 
+/-- An additive which preserves homology preserves finite colimits. -/
 noncomputable def preservesFiniteColimitsOfPreservesHomology
     [HasFiniteCoproducts C] [HasCokernels C] : PreservesFiniteColimits F := by
   have := fun {X Y : C} (f : X ⟶ Y) => PreservesHomology.preservesCokernel F f
