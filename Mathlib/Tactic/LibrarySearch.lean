@@ -240,16 +240,17 @@ def librarySearch (goal : MVarId) (required : List Expr)
       setMCtx ctx
       return none)
 
-/-- Close the goal using `library_search`, or fail. -/
+/-- Close the goal using `exact?`, or fail. -/
 def librarySearchSolve (goal : MVarId) (required : List Expr := []) (solveByElimDepth := 6) :
     MetaM Unit := do
   (do
     _ ← solveByElim [goal] required (exfalso := true) (depth := solveByElimDepth)
     return ()) <|>
   (do
-    let (ctx, _) ← librarySearchCore goal required solveByElimDepth
+    let (_, ctx) ← librarySearchCore goal required solveByElimDepth
+      |>.mapM (fun x => do pure (x, ← getMCtx))
       -- Find something that closes the goal, or fail.
-      |>.first (·.2.isEmpty)
+      |>.first (·.1.isEmpty)
     setMCtx ctx
     return ())
 

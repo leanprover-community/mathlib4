@@ -23,7 +23,7 @@ Whenever the cursor is at a `_` or `sorry`, try running the given tactic,
 reporting a successful result via a code action.
 -/
 def runTacticInHole (name : String) (tac : MVarId → MetaM Unit) : HoleCodeAction :=
-  fun params _ ctx info => do
+  fun _ _ ctx info => do
     let some ty := info.expectedType? | return #[]
     let result ← info.runMetaM ctx do
       let g ← mkFreshExprMVar ty
@@ -40,7 +40,7 @@ def runTacticInHole (name : String) (tac : MVarId → MetaM Unit) : HoleCodeActi
       eager
       lazy? := some <| pure
         { eager with
-          edit? := some <| .ofTextEdit params.textDocument.uri {
+          edit? := some <| .ofTextEdit doc.versionedIdentifier {
             range := doc.meta.text.utf8RangeToLspRange ⟨holePos, info.stx.getTailPos?.get!⟩
             newText := toString result
           } }
