@@ -107,8 +107,10 @@ def hint (stx : Syntax) : TacticM Unit := do
       return some (← getGoals, ← suggestion t msgs, ← saveState)
     else
       return none
-  let results := TacticM.runGreedily results |>.filterMap id
+  let (cancel, results) ← TacticM.runGreedily results
+  let results := results.filterMap id
   let results ← (results.takeUpToFirst fun r => r.1.isEmpty).asArray
+  cancel -- Cancel any remaining tasks, in case one closed the goal early.
   let results := results.qsort (·.1.length < ·.1.length)
   addSuggestions stx (results.map (·.2.1))
   match results.find? (·.1.isEmpty) with
