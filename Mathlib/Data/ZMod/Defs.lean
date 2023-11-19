@@ -5,6 +5,7 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.ModEq
+import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fintype.Lattice
 
 #align_import data.zmod.defs from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
