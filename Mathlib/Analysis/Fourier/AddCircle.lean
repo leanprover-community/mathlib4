@@ -63,8 +63,6 @@ converges to `f` in the uniform-convergence topology of `C(AddCircle T, ℂ)`.
 
 noncomputable section
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open scoped ENNReal ComplexConjugate Real
 
 open TopologicalSpace ContinuousMap MeasureTheory MeasureTheory.Measure Algebra Submodule Set
@@ -148,12 +146,12 @@ section Monomials
 /-- The family of exponential monomials `fun x => exp (2 π i n x / T)`, parametrized by `n : ℤ` and
 considered as bundled continuous maps from `ℝ / ℤ • T` to `ℂ`. -/
 def fourier (n : ℤ) : C(AddCircle T, ℂ) where
-  toFun x := toCircle (n • x)
+  toFun x := toCircle (n • x :)
   continuous_toFun := continuous_induced_dom.comp <| continuous_toCircle.comp <| continuous_zsmul _
 #align fourier fourier
 
 @[simp]
-theorem fourier_apply {n : ℤ} {x : AddCircle T} : fourier n x = toCircle (n • x) :=
+theorem fourier_apply {n : ℤ} {x : AddCircle T} : fourier n x = toCircle (n • x :) :=
   rfl
 #align fourier_apply fourier_apply
 
@@ -169,7 +167,7 @@ theorem fourier_coe_apply {n : ℤ} {x : ℝ} :
 
 @[simp]
 theorem fourier_coe_apply' {n : ℤ} {x : ℝ} :
-    toCircle (n • (x : AddCircle T)) = Complex.exp (2 * π * Complex.I * n * x / T) := by
+    toCircle (n • (x : AddCircle T) :) = Complex.exp (2 * π * Complex.I * n * x / T) := by
   rw [← fourier_apply]; exact fourier_coe_apply
 
 -- @[simp] -- Porting note: simp normal form is `fourier_zero'`
@@ -214,7 +212,7 @@ theorem fourier_add {m n : ℤ} {x : AddCircle T} : fourier (m+n) x = fourier m 
 
 @[simp]
 theorem fourier_add' {m n : ℤ} {x : AddCircle T} :
-    toCircle ((m + n) • x) = fourier m x * fourier n x := by
+    toCircle ((m + n) • x :) = fourier m x * fourier n x := by
   rw [← fourier_apply]; exact fourier_add
 
 theorem fourier_norm [Fact (0 < T)] (n : ℤ) : ‖@fourier T n‖ = 1 := by
@@ -367,7 +365,7 @@ theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : 
 #align fourier_coeff_eq_interval_integral fourierCoeff_eq_intervalIntegral
 
 theorem fourierCoeff.const_smul (f : AddCircle T → E) (c : ℂ) (n : ℤ) :
-    fourierCoeff (c • f) n = c • fourierCoeff f n := by
+    fourierCoeff (c • f :) n = c • fourierCoeff f n := by
   simp_rw [fourierCoeff, Pi.smul_apply, ← smul_assoc, smul_eq_mul, mul_comm, ← smul_eq_mul,
     smul_assoc, integral_smul]
 #align fourier_coeff.const_smul fourierCoeff.const_smul
