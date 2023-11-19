@@ -32,24 +32,24 @@ This file contains basics about the separable degree of a field extension.
 
 ## Main results
 
-- `embEquivOfEquiv`, `sepDegree_eq_of_equiv`, `finSepDegree_eq_of_equiv`: a random isomorphism
-  between `Emb F E` and `Emb F E'` when `E` and `E'` are isomorphic as `F`-algebras.
+- `embEquivOfEquiv`, `sepDegree_eq_of_equiv`, `finSepDegree_eq_of_equiv`: a random bijection
+  between `Emb F E` and `Emb F K` when `E` and `K` are isomorphic as `F`-algebras.
   In particular, they have the same cardinality (so `sepDegree` and `finSepDegree` are equal).
 
 - `embEquivOfAdjoinSplits`, `sepDegree_eq_of_adjoin_splits`, `finSepDegree_eq_of_adjoin_splits`:
-  a random isomorphism between `Emb F E` and `E →ₐ[F] K` if `E = F(S)` such that every element
+  a random bijection between `Emb F E` and `E →ₐ[F] K` if `E = F(S)` such that every element
   `s` of `S` is integral (= algebraic) over `F` and whose minimal polynomial splits in `K`.
   In particular, they have the same cardinality.
 
 - `embEquivOfIsAlgClosed`, `sepDegree_eq_of_isAlgClosed`, `finSepDegree_eq_of_isAlgClosed`:
-  a random isomorphism between `Emb F E` and `E →ₐ[F] K` when `E / F`
+  a random bijection between `Emb F E` and `E →ₐ[F] K` when `E / F`
   is algebraic and `K / F` is algebraically closed.
   In particular, they have the same cardinality.
 
 - `embMulEmbOfIsAlgebraic`, `lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`,
   `sepDegree_mul_sepDegree_of_isAlgebraic`, `finSepDegree_mul_finSepDegree_of_isAlgebraic`:
   if `K / E / F` is a field extension tower, such that `K / E` is algebraic,
-  then there is a non-canonical isomorphism `(Emb F E) × (Emb E K) ≃ (Emb F K)`.
+  then there is a non-canonical bijection `(Emb F E) × (Emb E K) ≃ (Emb F K)`.
   In particular, the separable degree satisfies the tower law: $[E:F]_s [K:E]_s = [K:F]_s$
   (see `lift_rank_mul_lift_rank`).
 
@@ -91,11 +91,11 @@ open FiniteDimensional Polynomial IntermediateField
 
 noncomputable section
 
-universe u v v' w
+universe u v w
 
-variable (F : Type u) (E : Type v) [Field F] [Field E]
+variable (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E]
 
-variable [Algebra F E]
+variable (K : Type w) [Field K] [Algebra F K]
 
 namespace Field
 
@@ -112,52 +112,45 @@ def sepDegree := Cardinal.mk (Emb F E)
 /-- The separable degree of `E / F` as a natural number. -/
 def finSepDegree : ℕ := Cardinal.toNat (sepDegree F E)
 
-lemma emb_nonempty : Nonempty (Emb F E) :=
-  Nonempty.intro <| IsScalarTower.toAlgHom F E (AlgebraicClosure E)
+instance instNonemptyEmb : Nonempty (Emb F E) := ⟨IsScalarTower.toAlgHom F E _⟩
 
-lemma sepDegree_nezero : NeZero (sepDegree F E) :=
-  NeZero.mk <| haveI := emb_nonempty F E; Cardinal.mk_ne_zero _
+instance instNeZeroSepDegree : NeZero (sepDegree F E) := ⟨Cardinal.mk_ne_zero _⟩
 
-lemma finSepDegree_nezero_of_finiteDimensional [FiniteDimensional F E] :
-    NeZero (finSepDegree F E) := NeZero.mk <| by
-  haveI : Fintype (Emb F E) := minpoly.AlgHom.fintype _ _ _
-  haveI := emb_nonempty F E
-  simp only [finSepDegree, sepDegree, Cardinal.mk_toNat_eq_card]
-  exact Fintype.card_ne_zero
+instance instNeZeroFinSepDegree [FiniteDimensional F E] : NeZero (finSepDegree F E) :=
+  ⟨Nat.card_ne_zero.2 ⟨inferInstance, Fintype.finite <| minpoly.AlgHom.fintype _ _ _⟩⟩
 
-/-- A random isomorphism between `Emb F E` and `Emb F E'` when `E` and `E'` are isomorphic
+/-- A random bijection between `Emb F E` and `Emb F K` when `E` and `K` are isomorphic
 as `F`-algebras. -/
-def embEquivOfEquiv (E' : Type v') [Field E'] [Algebra F E'] (i : E ≃ₐ[F] E') :
-    Emb F E ≃ Emb F E' := AlgEquiv.arrowCongr i <| AlgEquiv.symm <| by
-  letI : Algebra E E' := i.toAlgHom.toRingHom.toAlgebra
+def embEquivOfEquiv (i : E ≃ₐ[F] K) :
+    Emb F E ≃ Emb F K := AlgEquiv.arrowCongr i <| AlgEquiv.symm <| by
+  letI : Algebra E K := i.toAlgHom.toRingHom.toAlgebra
   apply AlgEquiv.restrictScalars (R := F) (S := E)
-  apply IsAlgClosure.equivOfAlgebraic E E' (AlgebraicClosure E') (AlgebraicClosure E)
+  apply IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K) (AlgebraicClosure E)
   intro x
-  have h := isAlgebraic_algebraMap (R := E) (A := E') (i.symm.toAlgHom x)
-  rw [show ∀ y : E, (algebraMap E E') y = i.toAlgHom y from fun y ↦ rfl] at h
+  have h := isAlgebraic_algebraMap (R := E) (A := K) (i.symm.toAlgHom x)
+  rw [show ∀ y : E, (algebraMap E K) y = i.toAlgHom y from fun y ↦ rfl] at h
   simpa only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe, AlgEquiv.apply_symm_apply] using h
 
-/-- If `E` and `E'` are isomorphic as `F`-algebras, then they have the same separable degree
+/-- If `E` and `K` are isomorphic as `F`-algebras, then they have the same separable degree
 over `F`. -/
-theorem sepDegree_eq_of_equiv (E' : Type v') [Field E'] [Algebra F E'] (i : E ≃ₐ[F] E') :
-    Cardinal.lift.{v'} (sepDegree F E) = Cardinal.lift.{v} (sepDegree F E') := by
-  have := (Equiv.ulift.{v'} (α := Emb F E)).trans
-    (embEquivOfEquiv F E E' i) |>.trans
-      (Equiv.ulift.{v} (α := Emb F E')).symm |>.cardinal_eq
+theorem sepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
+    Cardinal.lift.{w} (sepDegree F E) = Cardinal.lift.{v} (sepDegree F K) := by
+  have := (Equiv.ulift.{w} (α := Emb F E)).trans
+    (embEquivOfEquiv F E K i) |>.trans
+      (Equiv.ulift.{v} (α := Emb F K)).symm |>.cardinal_eq
   simpa only [Cardinal.mk_uLift] using this
 
-/-- If `E` and `E'` are isomorphic as `F`-algebras, then they have the same `finSepDegree`
+/-- If `E` and `K` are isomorphic as `F`-algebras, then they have the same `finSepDegree`
 over `F`. -/
-theorem finSepDegree_eq_of_equiv (E' : Type v') [Field E'] [Algebra F E'] (i : E ≃ₐ[F] E') :
-    finSepDegree F E = finSepDegree F E' := by
+theorem finSepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
+    finSepDegree F E = finSepDegree F K := by
   simpa only [Cardinal.toNat_lift] using congr_arg Cardinal.toNat
-    (sepDegree_eq_of_equiv F E E' i)
+    (sepDegree_eq_of_equiv F E K i)
 
 @[simp]
 theorem sepDegree_self : sepDegree F F = 1 :=
-  le_antisymm
-    (show sepDegree F F ≤ 1 from Cardinal.le_one_iff_subsingleton.2 AlgHom.subsingleton)
-      (Cardinal.one_le_iff_ne_zero.2 (sepDegree_nezero F F).out)
+  le_antisymm (Cardinal.le_one_iff_subsingleton.2 AlgHom.subsingleton)
+    (Cardinal.one_le_iff_ne_zero.2 (instNeZeroSepDegree F F).out)
 
 @[simp]
 theorem finSepDegree_self : finSepDegree F F = 1 := by
@@ -165,7 +158,7 @@ theorem finSepDegree_self : finSepDegree F F = 1 := by
 
 @[simp]
 theorem sepDegree_bot : sepDegree F (⊥ : IntermediateField F E) = 1 := by
-  have := sepDegree_eq_of_equiv _ _ _ (IntermediateField.botEquiv F E)
+  have := sepDegree_eq_of_equiv _ _ _ (botEquiv F E)
   rwa [sepDegree_self, Cardinal.lift_one, ← Cardinal.lift_one.{u, v}, Cardinal.lift_inj] at this
 
 @[simp]
@@ -174,68 +167,57 @@ theorem finSepDegree_bot : finSepDegree F (⊥ : IntermediateField F E) = 1 := b
 
 @[simp]
 theorem sepDegree_top : sepDegree F (⊤ : IntermediateField F E) = sepDegree F E := by
-  simpa only [Cardinal.lift_id] using sepDegree_eq_of_equiv F _ E IntermediateField.topEquiv
+  simpa only [Cardinal.lift_id] using sepDegree_eq_of_equiv F _ E topEquiv
 
 @[simp]
 theorem finSepDegree_top : finSepDegree F (⊤ : IntermediateField F E) = finSepDegree F E := by
   simp only [finSepDegree, sepDegree_top]
 
-theorem sepDegree_bot' (K : Type w) [Field K] [Algebra F K] [Algebra E K]
-    [IsScalarTower F E K] : Cardinal.lift.{v} (sepDegree F (⊥ : IntermediateField E K)) =
-      Cardinal.lift.{w} (sepDegree F E) := by
-  exact sepDegree_eq_of_equiv _ _ _ ((IntermediateField.botEquiv E K).restrictScalars F)
+section
+
+variable [Algebra E K] [IsScalarTower F E K]
+
+theorem sepDegree_bot' : Cardinal.lift.{v} (sepDegree F (⊥ : IntermediateField E K)) =
+    Cardinal.lift.{w} (sepDegree F E) :=
+  sepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
 
 @[simp]
-theorem sepDegree_bot'' (K : Type v) [Field K] [Algebra F K] [Algebra E K]
-    [IsScalarTower F E K] : sepDegree F (⊥ : IntermediateField E K) = sepDegree F E := by
+theorem sepDegree_bot'' (K : Type v) [Field K] [Algebra F K] [Algebra E K] [IsScalarTower F E K] :
+    sepDegree F (⊥ : IntermediateField E K) = sepDegree F E := by
   simpa only [Cardinal.lift_id] using sepDegree_bot' F E K
 
 @[simp]
-theorem finSepDegree_bot' (K : Type w) [Field K] [Algebra F K] [Algebra E K]
-    [IsScalarTower F E K] : finSepDegree F (⊥ : IntermediateField E K) = finSepDegree F E := by
+theorem finSepDegree_bot' : finSepDegree F (⊥ : IntermediateField E K) = finSepDegree F E := by
   simpa only [Cardinal.toNat_lift] using congr_arg Cardinal.toNat (sepDegree_bot' F E K)
 
 @[simp]
-theorem sepDegree_top' (K : Type w) [Field K] [Algebra F K] [Algebra E K]
-    [IsScalarTower F E K] : sepDegree F (⊤ : IntermediateField E K) = sepDegree F K := by
+theorem sepDegree_top' : sepDegree F (⊤ : IntermediateField E K) = sepDegree F K := by
   simpa only [Cardinal.lift_id] using sepDegree_eq_of_equiv _ _ _
-    ((IntermediateField.topEquiv (F := E) (E := K)).restrictScalars F)
+    ((topEquiv (F := E) (E := K)).restrictScalars F)
 
 @[simp]
-theorem finSepDegree_top' (K : Type w) [Field K] [Algebra F K] [Algebra E K]
-    [IsScalarTower F E K] : finSepDegree F (⊤ : IntermediateField E K) = finSepDegree F K := by
+theorem finSepDegree_top' : finSepDegree F (⊤ : IntermediateField E K) = finSepDegree F K := by
   simp only [finSepDegree, sepDegree_top']
 
-/-- The standard isomorphism between `E →ₐ[F] K` and `E →ₐ[F] (normalClosure F E K)`. -/
-def algHomEquivNormalClosure (K : Type w) [Field K] [Algebra F K] :
-    (E →ₐ[F] K) ≃ (E →ₐ[F] (normalClosure F E K)) :=
-  ⟨fun f ↦ (IntermediateField.inclusion f.fieldRange_le_normalClosure) |>.comp
-    (AlgEquiv.ofInjectiveField f).toAlgHom, normalClosure F E K |>.val.comp,
-      fun _ ↦ rfl, fun _ ↦ rfl⟩
+end
 
-/-- A random isomorphism between `Emb F E` and `E →ₐ[F] K` if `E = F(S)` such that every element
+/-- A random bijection between `Emb F E` and `E →ₐ[F] K` if `E = F(S)` such that every element
 `s` of `S` is integral (= algebraic) over `F` and whose minimal polynomial splits in `K`.
-Combined with `emb_nonempty`, it can be viewed as a stronger version of
+Combined with `instNonemptyEmb`, it can be viewed as a stronger version of
 `IntermediateField.nonempty_algHom_of_adjoin_splits`. -/
-def embEquivOfAdjoinSplits (K : Type w) [Field K] [Algebra F K] {S : Set E}
-    (hS : adjoin F S = ⊤)
+def embEquivOfAdjoinSplits {S : Set E} (hS : adjoin F S = ⊤)
     (hK : ∀ s ∈ S, IsIntegral F s ∧ Polynomial.Splits (algebraMap F K) (minpoly F s)) :
     Emb F E ≃ (E →ₐ[F] K) :=
   have halg := (topEquiv (F := F) (E := E)).isAlgebraic
     (hS ▸ isAlgebraic_adjoin (S := S) <| fun x hx ↦ (hK x hx).1)
-  haveI := halg.isNormalClosure_normalClosure (L := AlgebraicClosure E) <| fun _ ↦
-    IsAlgClosed.splits_codomain _
-  haveI := halg.isNormalClosure_normalClosure (L := K) <| fun _ ↦
-    splits_of_mem_adjoin F (S := S) hK (hS ▸ mem_top)
-  algHomEquivNormalClosure F E (AlgebraicClosure E) |>.trans
-    (AlgEquiv.arrowCongr (@AlgEquiv.refl F E _ _ _) <| IsNormalClosure.equiv (K := E)) |>.trans
-      (algHomEquivNormalClosure F E K).symm
+  Classical.choice <| Function.Embedding.antisymm
+    (halg.algHomEmbeddingOfSplits (fun _ ↦ splits_of_mem_adjoin F (S := S) hK (hS ▸ mem_top)) _)
+    (halg.algHomEmbeddingOfSplits (fun _ ↦ IsAlgClosed.splits_codomain _) _)
 
 /-- The separable degree of `E / F` is equal to the cardinality of `E →ₐ[F] K`
 if `E = F(S)` such that every element
 `s` of `S` is integral (= algebraic) over `F` and whose minimal polynomial splits in `K`. -/
-theorem sepDegree_eq_of_adjoin_splits (K : Type w) [Field K] [Algebra F K] {S : Set E}
-    (hS : adjoin F S = ⊤)
+theorem sepDegree_eq_of_adjoin_splits {S : Set E} (hS : adjoin F S = ⊤)
     (hK : ∀ s ∈ S, IsIntegral F s ∧ Polynomial.Splits (algebraMap F K) (minpoly F s)) :
     Cardinal.lift.{w} (sepDegree F E) = Cardinal.mk (E →ₐ[F] K) := by
   simpa only [Cardinal.mk_uLift] using (Equiv.ulift.{w} (α := Emb F E)).trans
@@ -244,47 +226,41 @@ theorem sepDegree_eq_of_adjoin_splits (K : Type w) [Field K] [Algebra F K] {S : 
 /-- The `finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K`
 if `E = F(S)` such that every element
 `s` of `S` is integral (= algebraic) over `F` and whose minimal polynomial splits in `K`. -/
-theorem finSepDegree_eq_of_adjoin_splits (K : Type w) [Field K] [Algebra F K] {S : Set E}
-    (hS : adjoin F S = ⊤)
+theorem finSepDegree_eq_of_adjoin_splits {S : Set E} (hS : adjoin F S = ⊤)
     (hK : ∀ s ∈ S, IsIntegral F s ∧ Polynomial.Splits (algebraMap F K) (minpoly F s)) :
     finSepDegree F E = Cardinal.toNat (Cardinal.mk (E →ₐ[F] K)) := by
   simpa only [Cardinal.toNat_lift] using congr_arg Cardinal.toNat
     (sepDegree_eq_of_adjoin_splits F E K hS hK)
 
-/-- A random isomorphism between `Emb F E` and `E →ₐ[F] K` when `E / F` is algebraic
+/-- A random bijection between `Emb F E` and `E →ₐ[F] K` when `E / F` is algebraic
 and `K / F` is algebraically closed. -/
-def embEquivOfIsAlgClosed (halg : Algebra.IsAlgebraic F E)
-    (K : Type w) [Field K] [Algebra F K] [IsAlgClosed K] :
+def embEquivOfIsAlgClosed (halg : Algebra.IsAlgebraic F E) [IsAlgClosed K] :
     Emb F E ≃ (E →ₐ[F] K) :=
   embEquivOfAdjoinSplits F E K (adjoin_univ F E) <| fun s _ ↦
     ⟨isAlgebraic_iff_isIntegral.1 (halg s), IsAlgClosed.splits_codomain _⟩
 
 /-- The separable degree of `E / F` is equal to the cardinality of `E →ₐ[F] K` when `E / F`
 is algebraic and `K / F` is algebraically closed. -/
-theorem sepDegree_eq_of_isAlgClosed (halg : Algebra.IsAlgebraic F E)
-    (K : Type w) [Field K] [Algebra F K] [IsAlgClosed K] :
+theorem sepDegree_eq_of_isAlgClosed (halg : Algebra.IsAlgebraic F E) [IsAlgClosed K] :
     Cardinal.lift.{w} (sepDegree F E) = Cardinal.mk (E →ₐ[F] K) := by
   simpa only [Cardinal.mk_uLift] using (Equiv.ulift.{w} (α := Emb F E)).trans
-    (embEquivOfIsAlgClosed F E halg K) |>.cardinal_eq
+    (embEquivOfIsAlgClosed F E K halg) |>.cardinal_eq
 
 /-- The `finSepDegree F E` is equal to the cardinality of `E →ₐ[F] K` as a natural number,
 when `E / F` is algebraic and `K / F` is algebraically closed. -/
-theorem finSepDegree_eq_of_isAlgClosed (halg : Algebra.IsAlgebraic F E)
-    (K : Type w) [Field K] [Algebra F K] [IsAlgClosed K] :
+theorem finSepDegree_eq_of_isAlgClosed (halg : Algebra.IsAlgebraic F E) [IsAlgClosed K] :
     finSepDegree F E = Cardinal.toNat (Cardinal.mk (E →ₐ[F] K)) := by
   simpa only [Cardinal.toNat_lift] using congr_arg Cardinal.toNat
-    (sepDegree_eq_of_isAlgClosed F E halg K)
+    (sepDegree_eq_of_isAlgClosed F E K halg)
 
 /-- If `K / E / F` is a field extension tower, such that `K / E` is algebraic,
-then there is a non-canonical isomorphism
+then there is a non-canonical bijection
 `(Emb F E) × (Emb E K) ≃ (Emb F K)`. A corollary of `algHomEquivSigma`. -/
-def embMulEmbOfIsAlgebraic
-    (K : Type w) [Field K] [Algebra F K] [Algebra E K]
-    [IsScalarTower F E K] (halg : Algebra.IsAlgebraic E K) :
+def embMulEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] (halg : Algebra.IsAlgebraic E K) :
     (Emb F E) × (Emb E K) ≃ (Emb F K) :=
   let e : ∀ f : E →ₐ[F] (AlgebraicClosure K), (@AlgHom E K (AlgebraicClosure K) _ _ _ _
       f.toRingHom.toAlgebra) ≃ (Emb E K) := fun f ↦
-    (@embEquivOfIsAlgClosed E K _ _ _ halg (AlgebraicClosure K) _ f.toRingHom.toAlgebra _).symm
+    (@embEquivOfIsAlgClosed E K _ _ _ (AlgebraicClosure K) _ f.toRingHom.toAlgebra halg).symm
   (algHomEquivSigma (A := F) (B := E) (C := K) (D := AlgebraicClosure K) |>.trans
     (Equiv.sigmaEquivProdOfEquiv e) |>.trans <| Equiv.prodCongrLeft <|
       fun _ : Emb E K ↦ AlgEquiv.arrowCongr (@AlgEquiv.refl F E _ _ _) <|
@@ -294,8 +270,7 @@ def embMulEmbOfIsAlgebraic
 /-- If `K / E / F` is a field extension tower, such that `K / E` is algebraic, then
 $[E:F]_s [K:E]_s = [K:F]_s$. See also `lift_rank_mul_lift_rank`. -/
 theorem lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic
-    (K : Type w) [Field K] [Algebra F K] [Algebra E K]
-    [IsScalarTower F E K] (halg : Algebra.IsAlgebraic E K) :
+    [Algebra E K] [IsScalarTower F E K] (halg : Algebra.IsAlgebraic E K) :
     Cardinal.lift.{w} (sepDegree F E) * Cardinal.lift.{v} (sepDegree E K) =
       Cardinal.lift.{v} (sepDegree F K) := by
   have := (embMulEmbOfIsAlgebraic F E K halg).trans
@@ -314,8 +289,7 @@ theorem sepDegree_mul_sepDegree_of_isAlgebraic
 /-- The `finSepDegree` version of `lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`.
 See also `FiniteDimensional.finrank_mul_finrank'`. -/
 theorem finSepDegree_mul_finSepDegree_of_isAlgebraic
-    (K : Type w) [Field K] [Algebra F K] [Algebra E K]
-    [IsScalarTower F E K] (halg : Algebra.IsAlgebraic E K) :
+    [Algebra E K] [IsScalarTower F E K] (halg : Algebra.IsAlgebraic E K) :
     finSepDegree F E * finSepDegree E K = finSepDegree F K := by
   simpa only [Cardinal.toNat_mul, Cardinal.toNat_lift] using congr_arg Cardinal.toNat
     (lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic F E K halg)
