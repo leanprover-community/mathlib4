@@ -955,7 +955,7 @@ theorem power_nat_le {c : Cardinal.{u}} {n : ℕ} (h : ℵ₀ ≤ c) : c ^ n ≤
 #align cardinal.power_nat_le Cardinal.power_nat_le
 
 theorem power_nat_eq {c : Cardinal.{u}} {n : ℕ} (h1 : ℵ₀ ≤ c) (h2 : 1 ≤ n) : c ^ n = c :=
-  pow_eq h1 (by exact_mod_cast h2) (nat_lt_aleph0 n)
+  pow_eq h1 (mod_cast h2) (nat_lt_aleph0 n)
 #align cardinal.power_nat_eq Cardinal.power_nat_eq
 
 theorem power_nat_le_max {c : Cardinal.{u}} {n : ℕ} : c ^ (n : Cardinal.{u}) ≤ max c ℵ₀ := by
