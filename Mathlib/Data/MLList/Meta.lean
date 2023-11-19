@@ -21,6 +21,12 @@ Recommended usage is to take a prefix of the list
 and then call the cancellation hook to request cancellation of later unwanted tasks.
 
 (Similarly also for `CoreM`, `TermElabM`, and `TacticM`.)
+
+## Implementation notes:
+Calling `IO.cancel` on `t.map f` does not cancel `t`,
+so we have to be careful throughout this file
+to construct cancellation hooks connected to the underlying task,
+rather than the various maps of it that we construct to pass state.
 -/
 
 set_option autoImplicit true
@@ -40,12 +46,6 @@ It may continue returning values, or fail.
 Recommended usage is to take a prefix of the list
 (e.g. with `MLList.takeUpToFirst` followed by `MLList.force`, or `MLList.takeAsList`)
 and then call the cancellation hook to request cancellation of later unwanted tasks.
-
-## Implementation notes:
-Calling `IO.cancel` on `t.map f` does not cancel `t`,
-so we have to be careful throughout this file
-to construct cancellation hooks connected to the underlying task,
-rather than the various maps of it that we construct to pass state.
 -/
 def runGreedily (tasks : List (IO α)) : IO (BaseIO Unit × MLList IO α) := do
   let t ← show BaseIO _ from (tasks.map IO.asTask).traverse id
@@ -53,6 +53,9 @@ def runGreedily (tasks : List (IO α)) : IO (BaseIO Unit × MLList IO α) := do
   | .ok a => pure a
   | .error e => throw (IO.userError s!"{e}"))
 
+/--
+Variant of `IO.runGreedily` without a cancellation hook.
+-/
 def runGreedily' (tasks : List (IO α)) : MLList IO α :=
   .squash fun _ => (·.2) <$> runGreedily tasks
 
