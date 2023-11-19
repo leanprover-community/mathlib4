@@ -22,7 +22,8 @@ This is essentially the same argument as in
 https://en.wikipedia.org/wiki/Haar_measure#A_construction_using_compact_subsets.
 
 We construct the Haar measure first on compact sets. For this we define `(K : U)` as the (smallest)
-number of left-translates of `U` that are needed to cover `K` (`index` in the formalization).
+number of left-translates (by `G`-actions) of `U` that are needed to cover `K`
+(`index G` in the formalization).
 Then we define a function `h` on compact sets as `lim_U (K : U) / (K₀ : U)`,
 where `U` becomes a smaller and smaller open neighborhood of `1`, and `K₀` is a fixed compact set
 with nonempty interior. This function is `chaar` in the formalization, and we define the limit
