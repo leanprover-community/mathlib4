@@ -353,6 +353,18 @@ instance (priority := 910) Semiring.toOppositeModule [Semiring R] : Module Rᵐ�
     add_smul := fun _ _ _ => mul_add _ _ _ }
 #align semiring.to_opposite_module Semiring.toOppositeModule
 
+/-- for commutative rings, right modules and left modules are the same -/
+def Module.fromOppositeModule [CommSemiring R] [AddCommMonoid M] [Module Rᵐᵒᵖ M] :
+    Module R M :=
+  Module.compHom M ((RingHom.id R).toOpposite fun _ _ => mul_comm _ _)
+
+scoped[Bimodule] attribute [instance] Module.fromOppositeModule
+
+open Bimodule in
+lemma Module.fromOppositeModule_smul_def [CommSemiring R] [AddCommMonoid M] [Module Rᵐᵒᵖ M]
+    (r : R) (m : M) :
+  r • m = (MulOpposite.op r) • m := rfl
+
 /-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`. -/
 def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
