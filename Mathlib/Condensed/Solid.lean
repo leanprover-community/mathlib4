@@ -39,5 +39,5 @@ def profiniteSolidification : profiniteFree ⟶ profiniteSolid :=
   (Ran.equiv FintypeCat.toProfinite finFree profiniteFree).symm (NatTrans.id _)
 
 /-- The predicate on condensed abelian groups describing the property of being solid. -/
-def CondensedAb.isSolid (A : CondensedAb.{u}) : Prop :=
+def CondensedAb.IsSolid (A : CondensedAb.{u}) : Prop :=
   ∀ X : Profinite.{u}, IsIso ((yoneda.obj A).map (profiniteSolidification.app X).op)
