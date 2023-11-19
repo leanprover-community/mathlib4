@@ -1599,11 +1599,6 @@ theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s)
         subset_affineSpan k _ (mem_image_of_mem f hp)⟩
 #align affine_subspace.map_span AffineSubspace.map_span
 
-end AffineSubspace
-
-namespace AffineMap
-
-
 section inclusion
 variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁] [Nonempty S₂]
 
@@ -1626,6 +1621,10 @@ theorem coe_inclusion_apply (h : S₁ ≤ S₂) (x : S₁) : (inclusion h x : P�
 theorem inclusion_rfl : inclusion (le_refl S₁) = AffineMap.id k S₁ := rfl
 
 end inclusion
+
+end AffineSubspace
+
+namespace AffineMap
 
 @[simp]
 theorem map_top_of_surjective (hf : Function.Surjective f) : AffineSubspace.map f ⊤ = ⊤ := by
