@@ -6,6 +6,7 @@ Authors: Floris van Doorn
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Intervals.Disjoint
+import Mathlib.Data.Set.Intervals.Group
 
 #align_import wiedijk_100_theorems.cubing_a_cube from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
