@@ -66,7 +66,6 @@ info: Try these:
 #guard_msgs in
 example {P : Nat → Prop} (h : { x // P x }) : ∃ x, P x ∧ 0 ≤ x := by hint
 
-
 /-!
 We now register a hint tactic that simulates a long running tactic,
 in order to test that the `hint` tactic cancels long running tactics if another tactic successfully
