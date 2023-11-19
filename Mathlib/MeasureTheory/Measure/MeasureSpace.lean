@@ -721,7 +721,8 @@ theorem measure_inter_eq_of_measure_eq {s t u : Set α} (hs : MeasurableSet s) (
 /-- The measurable superset `toMeasurable μ t` of `t` (which has the same measure as `t`)
 satisfies, for any measurable set `s`, the equality `μ (toMeasurable μ t ∩ s) = μ (u ∩ s)`.
 Here, we require that the measure of `t` is finite. The conclusion holds without this assumption
-when the measure is sigma_finite, see `measure_toMeasurable_inter_of_sigmaFinite`. -/
+when the measure is s-finite (for example when it is σ-finite),
+see `measure_toMeasurable_inter_of_sFinite`. -/
 theorem measure_toMeasurable_inter {s t : Set α} (hs : MeasurableSet s) (ht : μ t ≠ ∞) :
     μ (toMeasurable μ t ∩ s) = μ (t ∩ s) :=
   (measure_inter_eq_of_measure_eq hs (measure_toMeasurable t).symm (subset_toMeasurable μ t)
@@ -1406,6 +1407,15 @@ theorem sum_apply (f : ι → Measure α) {s : Set α} (hs : MeasurableSet s) : 
   toMeasure_apply _ _ hs
 #align measure_theory.measure.sum_apply MeasureTheory.Measure.sum_apply
 
+theorem sum_apply₀ (f : ι → Measure α) {s : Set α} (hs : NullMeasurableSet s (sum f)) :
+    sum f s = ∑' i, f i s := by
+  apply le_antisymm ?_ (le_sum_apply _ _)
+  rcases hs.exists_measurable_subset_ae_eq  with ⟨t, ts, t_meas, ht⟩
+  calc
+  sum f s = sum f t := measure_congr ht.symm
+  _ = ∑' i, f i t := sum_apply _ t_meas
+  _ ≤ ∑' i, f i s := ENNReal.tsum_le_tsum (fun i ↦ measure_mono ts)
+
 theorem le_sum (μ : ι → Measure α) (i : ι) : μ i ≤ sum μ := fun s hs => by
   simpa only [sum_apply μ hs] using ENNReal.le_tsum i
 #align measure_theory.measure.le_sum MeasureTheory.Measure.le_sum
@@ -1592,6 +1602,15 @@ alias ae_mono' := AbsolutelyContinuous.ae_le
 theorem AbsolutelyContinuous.ae_eq (h : μ ≪ ν) {f g : α → δ} (h' : f =ᵐ[ν] g) : f =ᵐ[μ] g :=
   h.ae_le h'
 #align measure_theory.measure.absolutely_continuous.ae_eq MeasureTheory.Measure.AbsolutelyContinuous.ae_eq
+
+protected theorem _root_.MeasureTheory.AEDisjoint.of_absolutelyContinuous
+    (h : AEDisjoint μ s t) {ν : Measure α} (h' : ν ≪ μ) :
+    AEDisjoint ν s t := h' h
+
+protected theorem _root_.MeasureTheory.AEDisjoint.of_le
+    (h : AEDisjoint μ s t) {ν : Measure α} (h' : ν ≤ μ) :
+    AEDisjoint ν s t :=
+  h.of_absolutelyContinuous (Measure.absolutelyContinuous_of_le h')
 
 /-! ### Quasi measure preserving maps (a.k.a. non-singular maps) -/
 
