@@ -93,4 +93,32 @@ noncomputable def directLimitCommutesTensorProduct :
   · ext; apply Subsingleton.elim
   · refine FunLike.ext _ _ fun x => x.induction_on fun i g => g.induction_on ?_ ?_ ?_ <;> aesop
 
+/--
+`limᵢ (M ⊗ Gᵢ)` and `M ⊗ (limᵢ Gᵢ)` are isomorphic as modules
+-/
+noncomputable def directLimitCommutesTensorProduct' :
+  (DirectLimit (M ⊗[R] G ·) fun i j h => LinearMap.lTensor M (f _ _ h)) ≃ₗ[R]
+  M ⊗[R] Lim_G :=
+  LinearEquiv.ofLinear
+    (lift _ _ _ _ (fun i => of R ι _ _ i ∘ₗ (TensorProduct.comm R M (G i)).toLinearMap)
+      fun i j h x => x.induction_on (by aesop) (fun m g =>
+        show of R ι (G · ⊗[R] M) _ j ((f i j h).rTensor M (g ⊗ₜ m)) = _ from of_f) (by aesop))
+    (lift _ _ _ _ (fun i => of R ι _ _ i ∘ₗ (TensorProduct.comm R M (G i)).symm.toLinearMap)
+      fun i j h x => x.induction_on (by aesop) (fun m g =>
+        show of R ι (M ⊗[R] G ·) _ j ((f i j h).lTensor M (g ⊗ₜ m)) = _ from of_f) (by aesop))
+    ((isEmpty_or_nonempty ι).elim (fun _ => by ext; apply Subsingleton.elim)
+      (fun inst_ => FunLike.ext _ _ fun x => x.induction_on fun i g => by
+        refine g.induction_on ?_ (fun g m => ?_) ?_
+        · aesop
+        · simp [lift_of]
+        · aesop))
+    ((isEmpty_or_nonempty ι).elim (fun _ => by ext; apply Subsingleton.elim)
+      (fun inst_ => FunLike.ext _ _ fun x => x.induction_on fun i g => by
+        refine g.induction_on ?_ (fun g m => ?_) ?_
+        · aesop
+        · simp [lift_of]
+        · aesop)) ≪≫ₗ
+  directLimitCommutesTensorProduct f M ≪≫ₗ TensorProduct.comm _ _ _
+
+
 end Module
