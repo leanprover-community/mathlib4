@@ -92,25 +92,37 @@ def withoutInfoTrees (t : TacticM Unit) : TacticM Unit := do
   modifyInfoState fun s => { s with trees }
 
 /--
+Run all tactics registered using `register_hint`,
+returning a list of triples consisting of
+* a `Suggestion` (for "Try this"),
+* the `List MVarId` of remaining goals, and
+* the `Tactic.SavedState` after running the tactic.
+
+If one tactic succeeds and closes the goal, we cancel subsequent tactics.
+-/
+def hintCore : TacticM (Array (Suggestion × List MVarId × SavedState)) := do
+  let tacs := (← getHints)
+  let tasks := tacs.map fun t : TSyntax `tactic => do
+    if let some msgs ← observing? (withMessageLog (withoutInfoTrees (evalTactic t))) then
+      return some (← suggestion t msgs, ← getGoals, ← saveState)
+    else
+      return none
+  let (cancel, results) ← TacticM.runGreedily tasks
+  let results := results.filterMap id
+  let results ← (results.takeUpToFirst fun r => r.2.1.isEmpty).asArray
+  cancel -- Cancel any remaining tasks, in case one closed the goal early.
+  return results.qsort (·.2.1.length < ·.2.1.length)
+
+/--
 Run all tactics registered using `register_hint`.
 Print a "Try these:" suggestion for each of the successful tactics.
 
-If one tactic succeeds and closes the goal, we don't look at subsequent tactics.
+If one tactic succeeds and closes the goal, we cancel subsequent tactics.
 -/
 def hint (stx : Syntax) : TacticM Unit := do
-  let tacs := (← getHints)
-  let results := tacs.map fun t : TSyntax `tactic => do
-    if let some msgs ← observing? (withMessageLog (withoutInfoTrees (evalTactic t))) then
-      return some (← getGoals, ← suggestion t msgs, ← saveState)
-    else
-      return none
-  let (cancel, results) ← TacticM.runGreedily results
-  let results := results.filterMap id
-  let results ← (results.takeUpToFirst fun r => r.1.isEmpty).asArray
-  cancel -- Cancel any remaining tasks, in case one closed the goal early.
-  let results := results.qsort (·.1.length < ·.1.length)
-  addSuggestions stx (results.map (·.2.1))
-  match results.find? (·.1.isEmpty) with
+  let results ← hintCore
+  addSuggestions stx (results.map (·.1))
+  match results.find? (·.2.1.isEmpty) with
   | some r =>
     -- We don't restore the entire state, as that would delete the suggestion messages.
     setMCtx r.2.2.term.meta.meta.mctx
