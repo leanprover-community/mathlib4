@@ -66,7 +66,7 @@ structure Partition (n : ℕ) where
 namespace Partition
 
 -- TODO: This should be automatically derived, see lean4#2914
-instance decidableEqParitition {n : ℕ} : DecidableEq (Partition n) :=
+instance decidableEqPartition {n : ℕ} : DecidableEq (Partition n) :=
   fun _ _ => decidable_of_iff' _ <| Partition.ext_iff _ _
 
 /-- A composition induces a partition (just convert the list to a multiset). -/
