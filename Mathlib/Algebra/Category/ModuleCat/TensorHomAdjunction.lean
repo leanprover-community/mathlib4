@@ -99,18 +99,13 @@ noncomputable def curry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S}
   map_smul' := fun r _ => LinearMap.ext fun _ => show l _ = l (r • _ ⊗ₜ _) by
     rw [← smul_tmul, smul_tmul']
 
+attribute [aesop safe] add_comm in
 /-- curry a bilinear map into a map from tensor product -/
 @[simps]
 def uncurry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X →ₗ[S] Y)) :
     (X ⊗[R] X') →ₗ[S] Y :=
   let L : (X ⊗[R] X') →+ Y := (addConGen _).lift (FreeAddMonoid.lift fun p => l p.2 p.1) <|
-    AddCon.addConGen_le fun
-    | _, _, Eqv.of_zero_left _     => by aesop
-    | _, _, Eqv.of_zero_right _    => by aesop
-    | _, _, Eqv.of_add_left _ _ _  => by aesop
-    | _, _, Eqv.of_add_right _ _ _ => by aesop
-    | _, _, Eqv.of_smul r x x'     => by aesop
-    | _, _, Eqv.add_comm _ _       => by simp [map_add, add_comm]
+    AddCon.addConGen_le <| by rintro _ _ (_|_|_|_|_|_) <;> aesop
   { L with
     map_smul' := fun _ z => z.induction_on
       (by aesop) (fun _ _ => LinearMap.map_smul _ _ _) (by aesop) }
