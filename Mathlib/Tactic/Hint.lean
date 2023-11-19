@@ -97,9 +97,6 @@ Print a "Try these:" suggestion for each of the successful tactics.
 
 If one tactic succeeds and closes the goal, we don't look at subsequent tactics.
 -/
--- TODO We could run the tactics in parallel.
--- TODO With widget support, could we run the tactics in parallel
---      and do live updates of the widget as results come in?
 def hint (stx : Syntax) : TacticM Unit := do
   let tacs := (← getHints)
   let results := tacs.map fun t : TSyntax `tactic => do
