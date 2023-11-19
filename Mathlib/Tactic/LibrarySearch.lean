@@ -240,6 +240,20 @@ def librarySearch (goal : MVarId) (required : List Expr)
       setMCtx ctx
       return none)
 
+/-- Close the goal using `exact?`, or fail. -/
+def librarySearchSolve (goal : MVarId) (required : List Expr := []) (solveByElimDepth := 6) :
+    MetaM Unit := do
+  (do
+    _ ← solveByElim [goal] required (exfalso := true) (depth := solveByElimDepth)
+    return ()) <|>
+  (do
+    let (_, ctx) ← librarySearchCore goal required solveByElimDepth
+      |>.mapM (fun x => do pure (x, ← getMCtx))
+      -- Find something that closes the goal, or fail.
+      |>.first (·.1.isEmpty)
+    setMCtx ctx
+    return ())
+
 open Lean.Parser.Tactic
 
 -- TODO: implement the additional options for `library_search` from Lean 3,

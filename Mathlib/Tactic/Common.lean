@@ -101,6 +101,7 @@ import Mathlib.Tactic.Use
 import Mathlib.Tactic.Variable
 import Mathlib.Tactic.WLOG
 import Mathlib.Util.AssertExists
+import Mathlib.Util.CodeAction.RunTactic
 import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.Imports
 import Mathlib.Util.WhatsNew

@@ -182,6 +182,12 @@ def firstM [Alternative m] (L : Nondet m α) (f : α → m (Option β)) : m β :
   L.filterMapM f |>.head
 
 /--
+Find the first alternative in a nondeterministic value where the predicate is satisfied.
+-/
+def first [Alternative m] (L : Nondet m α) (p : α → Bool) : m α :=
+  L.firstM fun a => return if p a then some a else none
+
+/--
 Convert a non-deterministic value into a lazy list, by discarding the backtrackable state.
 -/
 def toMLList' (L : Nondet m α) : MLList m α := L.toMLList.map (·.1)
