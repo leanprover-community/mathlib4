@@ -65,10 +65,10 @@ noncomputable def tensorFunctor : ModuleCat.{v} R ⥤ ModuleCat.{v} S where
 
 open Bimodule
 
-instance bimodule' (Z : ModuleCat.{v} S) : Module R (X →ₗ[S] Z) :=
+private instance bimodule' (Z : ModuleCat.{v} S) : Module R (X →ₗ[S] Z) :=
   Module.fromOppositeModule
 
-@[simp] lemma bimodule'_smul_apply  (Z : ModuleCat.{v} S) (r : R) (l : X →ₗ[S] Z) (x : X) :
+@[simp] private lemma bimodule'_smul_apply  (Z : ModuleCat.{v} S) (r : R) (l : X →ₗ[S] Z) (x : X) :
   (r • l) x = l (r • x) := rfl
 
 /--
