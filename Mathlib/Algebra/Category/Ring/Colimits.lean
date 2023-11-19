@@ -191,26 +191,26 @@ theorem quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
 @[simp]
 theorem quot_neg (x : Prequotient F) :
     -- Porting note : Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type
-    -- annotation so use `Neg.neg (α := ColimitType F)` to tell Lean negation happens inside
-    -- `ColimitType F`.
-    (Quot.mk Setoid.r (neg x) : ColimitType F) =
-    Neg.neg (α := ColimitType F) (Quot.mk Setoid.r x) :=
+    -- annotation unless we use `by exact` to change the elaboration order.
+    (by exact Quot.mk Setoid.r (neg x) : ColimitType F) = -(by exact Quot.mk Setoid.r x) :=
   rfl
 #align CommRing.colimits.quot_neg CommRingCat.Colimits.quot_neg
 
 -- Porting note : Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
--- so use `Add.add (α := ColimitType F)` to tell Lean addition happens inside `ColimitType F`.
+-- unless we use `by exact` to change the elaboration order.
 @[simp]
 theorem quot_add (x y) :
-    Quot.mk Setoid.r (add x y) = Add.add (α := ColimitType F) (Quot.mk _ x) (Quot.mk _ y) :=
+    (by exact Quot.mk Setoid.r (add x y) : ColimitType F) =
+      (by exact Quot.mk _ x) + (by exact Quot.mk _ y) :=
   rfl
 #align CommRing.colimits.quot_add CommRingCat.Colimits.quot_add
 
 -- Porting note : Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
--- so use `Mul.mul (α := ColimitType F)` to tell Lean multiplication happens inside `ColimitType F`.
+-- unless we use `by exact` to change the elaboration order.
 @[simp]
 theorem quot_mul (x y) :
-    Quot.mk Setoid.r (mul x y) = Mul.mul (α := ColimitType F) (Quot.mk _ x) (Quot.mk _ y) :=
+    (by exact Quot.mk Setoid.r (mul x y) : ColimitType F) =
+      (by exact Quot.mk _ x) * (by exact Quot.mk _ y) :=
   rfl
 #align CommRing.colimits.quot_mul CommRingCat.Colimits.quot_mul
 
@@ -309,7 +309,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   map_zero' := rfl
   map_add' x y := by
     refine Quot.induction_on₂ x y fun a b => ?_
-    dsimp [descFun, (· + ·)]
+    dsimp [descFun]
     rw [←quot_add]
     rfl
   map_mul' x y := by exact Quot.induction_on₂ x y fun a b => rfl

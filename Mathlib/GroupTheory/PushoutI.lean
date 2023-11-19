@@ -669,7 +669,7 @@ theorem inf_of_range_eq_base_range (hφ : ∀ i, Injective (φ i)) {i j : ι} (h
     (by
       intro x ⟨⟨g₁, hg₁⟩, ⟨g₂, hg₂⟩⟩
       by_contra hx
-      have hx1 : x ≠ 1 := by rintro rfl; simp_all only [map_one, one_mem]
+      have hx1 : x ≠ 1 := by rintro rfl; simp_all only [ne_eq, one_mem, not_true_eq_false]
       have hg₁1 : g₁ ≠ 1 :=
         ne_of_apply_ne (of (φ := φ) i) (by simp_all)
       have hg₂1 : g₂ ≠ 1 :=

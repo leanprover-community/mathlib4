@@ -328,7 +328,7 @@ theorem getD_default_eq_iget [Inhabited α] (o : Option α) :
 @[simp]
 theorem guard_eq_some' {p : Prop} [Decidable p] (u) : _root_.guard p = some u ↔ p := by
   cases u
-  by_cases h : p <;> simp [_root_.guard, h]
+  by_cases h : p <;> simp [_root_.guard, h]; rfl
 #align option.guard_eq_some' Option.guard_eq_some'
 
 theorem liftOrGet_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f a b = b) :

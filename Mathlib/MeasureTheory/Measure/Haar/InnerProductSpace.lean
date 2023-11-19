@@ -20,8 +20,6 @@ measure `1` to the parallelepiped spanned by any orthonormal basis, and that it 
 the canonical `volume` from the `MeasureSpace` instance.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open FiniteDimensional MeasureTheory MeasureTheory.Measure Set
 
 variable {ι F : Type*}
@@ -134,15 +132,14 @@ theorem volume_ball (x : EuclideanSpace ℝ (Fin 2)) (r : ℝ) :
         exact lt_of_add_lt_of_nonneg_left h (sq_nonneg _)
       _ = volume (regionBetween (fun x => - Real.sqrt (1 - x ^ 2)) (fun x => Real.sqrt (1 - x ^ 2))
           (Set.Ioc (-1) 1)) := by
-        simp_rw [regionBetween, Set.mem_Ioo, Set.mem_Ioc, ← Real.sq_lt, lt_tsub_iff_left,
-          Nat.cast_one]
+        simp_rw [regionBetween, Set.mem_Ioo, Set.mem_Ioc, ← Real.sq_lt, lt_tsub_iff_left]
       _ = ENNReal.ofReal ((2 : ℝ) * ∫ (a : ℝ) in Set.Ioc (-1) 1, Real.sqrt (1 - a ^ 2)) := by
         rw [volume_eq_prod, volume_regionBetween_eq_integral (Continuous.integrableOn_Ioc
           (by continuity)) (Continuous.integrableOn_Ioc (by continuity)) measurableSet_Ioc
           (fun _ _ => neg_le_self (Real.sqrt_nonneg _))]
         simp_rw [Pi.sub_apply, sub_neg_eq_add, ← two_mul, integral_mul_left]
       _ = NNReal.pi := by
-        rw [← intervalIntegral.integral_of_le (by norm_num : (-1 : ℝ) ≤ 1), Nat.cast_one,
+        rw [← intervalIntegral.integral_of_le (by norm_num : (-1 : ℝ) ≤ 1),
           integral_sqrt_one_sub_sq, two_mul, add_halves, ← NNReal.coe_real_pi,
           ofReal_coe_nnreal]
 

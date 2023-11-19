@@ -117,8 +117,8 @@ theorem compl_beattySeq {r s : ℝ} (hrs : r.IsConjugateExponent s) :
   ext j
   by_cases h₁ : j ∈ {beattySeq r k | k} <;> by_cases h₂ : j ∈ {beattySeq' s k | k}
   · exact (Set.not_disjoint_iff.2 ⟨j, h₁, h₂⟩ (Beatty.no_collision hrs)).elim
-  · simp only [Set.mem_compl_iff, h₁, h₂]
-  · simp only [Set.mem_compl_iff, h₁, h₂]
+  · simp only [Set.mem_compl_iff, h₁, h₂, not_true_eq_false]
+  · simp only [Set.mem_compl_iff, h₁, h₂, not_false_eq_true]
   · have ⟨k, h₁₁, h₁₂⟩ := (Beatty.hit_or_miss hrs.pos).resolve_left h₁
     have ⟨m, h₂₁, h₂₂⟩ := (Beatty.hit_or_miss' hrs.symm.pos).resolve_left h₂
     exact (Beatty.no_anticollision hrs ⟨j, k, m, h₁₁, h₁₂, h₂₁, h₂₂⟩).elim

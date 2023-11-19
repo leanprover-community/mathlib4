@@ -357,6 +357,7 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
     · cases hm rfl
     rename ℕ => m
     simp only [digits_one, List.getLast_replicate_succ m 1]
+    exact Nat.one_ne_zero
   revert hm
   apply Nat.strongInductionOn m
   intro n IH hn
@@ -569,7 +570,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
   · simp [ofDigits_one]
   · simp [lt_one_iff.mp h]
     cases L
-    · simp
+    · rfl
     · simp [ofDigits]
 
 theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits (n : ℕ) :
@@ -592,7 +593,7 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits (n : ℕ) :
 theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1 0 := by
   induction' n using Nat.binaryRecFromOne with b n h ih
   · simp
-  · simp
+  · rfl
   rw [bits_append_bit _ _ fun hn => absurd hn h]
   cases b
   · rw [digits_def' one_lt_two]
@@ -689,7 +690,7 @@ theorem ofDigits_neg_one :
 
 theorem modEq_eleven_digits_sum (n : ℕ) :
     n ≡ ((digits 10 n).map fun n : ℕ => (n : ℤ)).alternatingSum [ZMOD 11] := by
-  have t := zmodeq_ofDigits_digits 11 10 (-1 : ℤ) (by unfold Int.ModEq; norm_num) n
+  have t := zmodeq_ofDigits_digits 11 10 (-1 : ℤ) (by unfold Int.ModEq; rfl) n
   rwa [ofDigits_neg_one] at t
 #align nat.modeq_eleven_digits_sum Nat.modEq_eleven_digits_sum
 

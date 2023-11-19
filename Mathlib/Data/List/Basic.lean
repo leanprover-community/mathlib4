@@ -1752,7 +1752,9 @@ theorem map_join (f : α → β) (L : List (List α)) : map f (join L) = join (m
 
 theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) = map f l := by
   unfold List.bind
-  induction l <;> simp [map, join, List.ret, cons_append, nil_append, *] at *
+  induction l <;>
+    simp (config := { unfoldPartialApp := true })
+      [map, join, List.ret, cons_append, nil_append, *] at *
   assumption
 #align list.bind_ret_eq_map List.bind_ret_eq_map
 
@@ -2576,7 +2578,7 @@ theorem nthLe_succ_scanl {i : ℕ} {h : i + 1 < (scanl f b l).length} :
   induction i generalizing b l with
   | zero =>
     cases l
-    · simp only [length, zero_add, scanl_nil] at h
+    · simp only [length, zero_eq, lt_self_iff_false] at h
     · simp [scanl_cons, singleton_append, nthLe_zero_scanl, nthLe_cons]
   | succ i hi =>
     cases l
@@ -3334,7 +3336,7 @@ theorem reduceOption_map {l : List (Option α)} {f : α → β} :
     reduceOption (map (Option.map f) l) = map f (reduceOption l) := by
   induction' l with hd tl hl
   · simp only [reduceOption_nil, map_nil]
-  ·cases hd <;>
+  · cases hd <;>
       simpa [true_and_iff, Option.map_some', map, eq_self_iff_true,
         reduceOption_cons_of_some] using hl
 #align list.reduce_option_map List.reduceOption_map
@@ -3346,7 +3348,7 @@ theorem reduceOption_append (l l' : List (Option α)) :
 
 theorem reduceOption_length_le (l : List (Option α)) : l.reduceOption.length ≤ l.length := by
   induction' l with hd tl hl
-  · simp only [reduceOption_nil, length]
+  · simp [reduceOption_nil, length]
   · cases hd
     · exact Nat.le_succ_of_le hl
     · simpa only [length, add_le_add_iff_right, reduceOption_cons_of_some] using hl
