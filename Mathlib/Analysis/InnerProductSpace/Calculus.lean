@@ -26,8 +26,6 @@ and from the equivalence of norms in finite dimensions.
 The last part of the file should be generalized to `PiLp`.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open IsROrC Real Filter
@@ -402,7 +400,7 @@ open Metric hiding mem_nhds_iff
 variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 theorem LocalHomeomorph.contDiff_univUnitBall : ContDiff ℝ n (univUnitBall : E → E) := by
-  suffices ContDiff ℝ n fun x : E => ((1 : ℝ) + ‖x‖ ^ 2).sqrt⁻¹ from this.smul contDiff_id
+  suffices ContDiff ℝ n fun x : E => (1 + ‖x‖ ^ 2 : ℝ).sqrt⁻¹ from this.smul contDiff_id
   have h : ∀ x : E, (0 : ℝ) < (1 : ℝ) + ‖x‖ ^ 2 := fun x => by positivity
   refine' ContDiff.inv _ fun x => Real.sqrt_ne_zero'.mpr (h x)
   exact (contDiff_const.add <| contDiff_norm_sq ℝ).sqrt fun x => (h x).ne'
@@ -410,7 +408,7 @@ theorem LocalHomeomorph.contDiff_univUnitBall : ContDiff ℝ n (univUnitBall : E
 theorem LocalHomeomorph.contDiffOn_univUnitBall_symm :
     ContDiffOn ℝ n univUnitBall.symm (ball (0 : E) 1) := fun y hy ↦ by
   apply ContDiffAt.contDiffWithinAt
-  suffices ContDiffAt ℝ n (fun y : E => ((1 : ℝ) - ‖y‖ ^ 2).sqrt⁻¹) y from this.smul contDiffAt_id
+  suffices ContDiffAt ℝ n (fun y : E => (1 - ‖y‖ ^ 2 : ℝ).sqrt⁻¹) y from this.smul contDiffAt_id
   have h : (0 : ℝ) < (1 : ℝ) - ‖(y : E)‖ ^ 2 := by
     rwa [mem_ball_zero_iff, ← _root_.abs_one, ← abs_norm, ← sq_lt_sq, one_pow, ← sub_pos] at hy
   refine' ContDiffAt.inv _ (Real.sqrt_ne_zero'.mpr h)

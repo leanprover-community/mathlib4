@@ -238,7 +238,8 @@ protected lemma Finset.four_functions_theorem (u : Finset α)
     (collapse_modular hu h₁ h₂ h₃ h₄ h 𝒜 ℬ) Subset.rfl Subset.rfl
   have : 𝒜 ⊼ ℬ ⊆ powerset (insert a u) := by simpa using infs_subset h𝒜 hℬ
   have : 𝒜 ⊻ ℬ ⊆ powerset (insert a u) := by simpa using sups_subset h𝒜 hℬ
-  simpa only [powerset_sups_powerset_self, powerset_infs_powerset_self, sum_collapse, *] using ih
+  simpa only [powerset_sups_powerset_self, powerset_infs_powerset_self, sum_collapse,
+    not_false_eq_true, *] using ih
 
 variable (f₁ f₂ f₃ f₄) [Fintype α]
 

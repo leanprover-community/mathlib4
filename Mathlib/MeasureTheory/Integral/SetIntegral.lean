@@ -1291,10 +1291,10 @@ theorem integral_smul_const {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [C
   by_cases hf : Integrable f μ
   · exact ((1 : 𝕜 →L[𝕜] 𝕜).smulRight c).integral_comp_comm hf
   · by_cases hc : c = 0
-    · simp only [hc, integral_zero, smul_zero]
+    · simp [hc, integral_zero, smul_zero]
     rw [integral_undef hf, integral_undef, zero_smul]
     rw [integrable_smul_const hc]
-    simp_rw [hf]
+    simp_rw [hf, not_false_eq_true]
 #align integral_smul_const integral_smul_const
 
 theorem integral_withDensity_eq_integral_smul {f : α → ℝ≥0} (f_meas : Measurable f) (g : α → E) :

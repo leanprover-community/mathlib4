@@ -190,7 +190,7 @@ theorem map_frobeniusPoly (n : ℕ) :
     have aux : ∀ k : ℕ, (p : ℚ)^ k ≠ 0 := by
       intro; apply pow_ne_zero; exact_mod_cast hp.1.ne_zero
     simpa [aux, -one_div, field_simps] using this.symm
-  rw [mul_comm _ (p : ℚ), mul_assoc, Nat.cast_pow, mul_assoc, ← pow_add,
+  rw [mul_comm _ (p : ℚ), mul_assoc, mul_assoc, ← pow_add,
     map_frobeniusPoly.key₂ p hi.le hj, Nat.cast_mul, Nat.cast_pow]
   ring
 #align witt_vector.map_frobenius_poly WittVector.map_frobeniusPoly
