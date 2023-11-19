@@ -390,7 +390,6 @@ def toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction s 
     ext
     apply add_vadd
   vsub a b := ⟨(a : P) -ᵥ (b : P), (vsub_left_mem_direction_iff_mem a.2 _).mpr b.2⟩
-  Nonempty := by infer_instance
   vsub_vadd' a b := by
     ext
     apply AddTorsor.vsub_vadd'

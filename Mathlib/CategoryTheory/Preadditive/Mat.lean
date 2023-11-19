@@ -66,7 +66,7 @@ variable (C : Type u₁) [Category.{v₁} C] [Preadditive C]
 -/
 structure Mat_ where
   ι : Type
-  [F : Fintype ι]
+  [fintype : Fintype ι]
   X : ι → C
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_ CategoryTheory.Mat_

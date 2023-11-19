@@ -1118,9 +1118,9 @@ theorem IsPathConnected.exists_path_through_family' {n : ℕ}
 joined by a continuous path. -/
 class PathConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- A path-connected space must be nonempty. -/
-  Nonempty : Nonempty X
+  nonempty : Nonempty X
   /-- Any two points in a path-connected space must be joined by a continuous path. -/
-  Joined : ∀ x y : X, Joined x y
+  joined : ∀ x y : X, Joined x y
 #align path_connected_space PathConnectedSpace
 
 theorem pathConnectedSpace_iff_zerothHomotopy :
@@ -1196,8 +1196,7 @@ instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
 /-- This is a special case of `NormedSpace.instPathConnectedSpace` (and
 `TopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
 instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
-  Nonempty := inferInstance
-  Joined := fun x y ↦ ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by continuity⟩, by simp, by simp⟩⟩
+  joined x y := ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by continuity⟩, by simp, by simp⟩⟩
 
 theorem pathConnectedSpace_iff_eq : PathConnectedSpace X ↔ ∃ x : X, pathComponent x = univ := by
   simp [pathConnectedSpace_iff_univ, isPathConnected_iff_eq]

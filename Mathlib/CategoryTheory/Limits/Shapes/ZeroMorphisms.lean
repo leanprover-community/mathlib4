@@ -50,7 +50,7 @@ variable (D : Type u') [Category.{v'} D]
 and compositions of zero morphisms with anything give the zero morphism. -/
 class HasZeroMorphisms where
   /-- Every morphism space has zero -/
-  [Zero : ∀ X Y : C, Zero (X ⟶ Y)]
+  [zero : ∀ X Y : C, Zero (X ⟶ Y)]
   /-- `f` composed with `0` is `0` -/
   comp_zero : ∀ {X Y : C} (f : X ⟶ Y) (Z : C), f ≫ (0 : Y ⟶ Z) = (0 : X ⟶ Z) := by aesop_cat
   /-- `0` composed with `f` is `0` -/

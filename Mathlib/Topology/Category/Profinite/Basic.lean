@@ -50,7 +50,7 @@ structure Profinite where
   /-- The underlying compact Hausdorff space of a profinite space. -/
   toCompHaus : CompHaus
   /-- A profinite space is totally disconnected. -/
-  [IsTotallyDisconnected : TotallyDisconnectedSpace toCompHaus]
+  [isTotallyDisconnected : TotallyDisconnectedSpace toCompHaus]
 #align Profinite Profinite
 
 namespace Profinite
