@@ -42,7 +42,7 @@ open TensorProduct CategoryTheory
 
 variable (R : Type u) (S : Type u') (X : Type v)
 variable [CommRing R] [Ring S]
-variable [AddCommGroup X] [Module R X] [Module S X] [SMulCommClass R S X]
+variable [AddCommGroup X] [Module R X] [Module Sᵐᵒᵖ X] [SMulCommClass R Sᵐᵒᵖ X]
 
 namespace ModuleCat
 
@@ -51,8 +51,8 @@ Let `X` be an `(R,S)`-bimodule. Then `(X ⊗[R] .)` is a functor from the catego
 to the category of `S`-modules.
 -/
 @[simps!]
-noncomputable def tensorFunctor : ModuleCat.{v} R ⥤ ModuleCat.{v} S where
-  obj Y := ModuleCat.of S <| X ⊗[R] Y
+noncomputable def tensorFunctor : ModuleCat.{v} R ⥤ ModuleCat.{v} Sᵐᵒᵖ where
+  obj Y := ModuleCat.of Sᵐᵒᵖ <| X ⊗[R] Y
   map {Y Y'} l :=
   { __ := l.lTensor _
     map_smul' := fun s x => x.induction_on (by aesop) (by aesop)
@@ -65,7 +65,7 @@ noncomputable def tensorFunctor : ModuleCat.{v} R ⥤ ModuleCat.{v} S where
 
 open Bimodule
 
-private instance bimodule' (Z : ModuleCat.{v} S) : Module R (X →ₗ[S] Z) :=
+private instance bimodule' (Z : ModuleCat.{v} Sᵐᵒᵖ) : Module R (X →ₗ[Sᵐᵒᵖ] Z) :=
   Module.fromOppositeModule
 
 /--
@@ -73,19 +73,19 @@ Let `X` be an `(R,S)`-bimodule. Then `(X →ₗ[S] .)` is a functor from the cat
 to the category of `R`-modules.
 -/
 @[simps]
-def homFunctor : ModuleCat.{v} S ⥤ ModuleCat.{v} R where
-  obj Z := ModuleCat.of R <| X →ₗ[S] Z
+def homFunctor : ModuleCat.{v} Sᵐᵒᵖ ⥤ ModuleCat.{v} R where
+  obj Z := ModuleCat.of R <| X →ₗ[Sᵐᵒᵖ] Z
   map {_ _} l :=
   { toFun := (l ∘ₗ .)
     map_add' := fun _ _ => LinearMap.ext fun _ => l.map_add _ _
     map_smul' := fun r L => LinearMap.ext fun x => rfl }
-  map_id Z := LinearMap.ext fun (L : _ →ₗ[S] Z) => by aesop
-  map_comp {Z _ _} _ _ := LinearMap.ext fun (L : X →ₗ[S] Z) => LinearMap.ext fun x => by aesop
+  map_id Z := LinearMap.ext fun (L : _ →ₗ[Sᵐᵒᵖ] Z) => by aesop
+  map_comp {Z _ _} _ _ := LinearMap.ext fun (L : X →ₗ[Sᵐᵒᵖ] Z) => LinearMap.ext fun x => by aesop
 
 variable {R S X}
 
 /-- uncurry a map from a tensor product to a bilinear map-/
-noncomputable def curry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S}
+noncomputable def curry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} Sᵐᵒᵖ}
     (l : (tensorFunctor R S X).obj X' ⟶ Y) :
     X' ⟶ (homFunctor R S X).obj Y where
   toFun x' :=
@@ -97,11 +97,10 @@ noncomputable def curry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S}
     rw [← smul_tmul, smul_tmul']
 
 attribute [aesop unsafe] add_comm in
-
 /-- curry a bilinear map into a map from tensor product -/
 @[simps]
-def uncurry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X →ₗ[S] Y)) :
-    (X ⊗[R] X') →ₗ[S] Y :=
+def uncurry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} Sᵐᵒᵖ} (l : X' →ₗ[R] (X →ₗ[Sᵐᵒᵖ] Y)) :
+    (X ⊗[R] X') →ₗ[Sᵐᵒᵖ] Y :=
   let L : (X ⊗[R] X') →+ Y := (addConGen _).lift (FreeAddMonoid.lift fun p => l p.2 p.1) <|
     AddCon.addConGen_le <| by
       rintro _ _ (_|_|_|_|_|_) <;> refine' (AddCon.ker_rel _).2 _ <;> try aesop
@@ -112,7 +111,8 @@ def uncurry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X �
       (by aesop) (fun _ _ => LinearMap.map_smul _ _ _) (by aesop) }
 
 @[simp high]
-lemma uncurry'_apply_tmul {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X →ₗ[S] Y))
+lemma uncurry'_apply_tmul {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} Sᵐᵒᵖ}
+    (l : X' →ₗ[R] (X →ₗ[Sᵐᵒᵖ] Y))
     (x : X) (x' : X') : uncurry' l (x ⊗ₜ x') = l x' x := rfl
 
 variable (R S X)
@@ -151,6 +151,17 @@ variable (R' : Type u) [CommRing R']
 variable {M N : Type v} [AddCommGroup M] [AddCommGroup N]
 variable [Module R' M] [Module R' N]
 
+instance int_mop_module : Module R'ᵐᵒᵖ N :=
+    Module.compHom N ((RingHom.id R').fromOpposite fun _ _ => mul_comm _ _)
+
+instance int_mop_bimod {N' : Type v} [AddCommGroup N'] [Module R' N'] :
+    SMulCommClass R' ℤᵐᵒᵖ N' where
+  smul_comm r' z n := show r' • z.unop • n = z.unop • r' • n from smul_comm _ _ _
+
+def _root_.LinearMap.toMulOpposite (l : M →ₗ[R'] N) : M →ₗ[R'ᵐᵒᵖ] N where
+  __ := l
+  map_smul' r m := l.map_smul r.unop m
+
 open ModuleCat
 /--
 Constructing an additive group map from a tensor product by lifting a bi-additive group map that is
@@ -160,8 +171,8 @@ compatible with scalar action.
 noncomputable def toAddCommGroup {C : Type v} [AddCommGroup C]
     (b : M →+ (N →+ C)) (compatible_smul : ∀ (r : R') (m : M) (n : N), b (r • m) n = b m (r • n)) :
     (M ⊗[R'] N) →+ C :=
-  (((tensorHomAdjunction R' ℤ N).homEquiv (of R' M) (of ℤ C)).symm
-      { toFun := fun m => (b m).toIntLinearMap
+  (((tensorHomAdjunction R' ℤ N).homEquiv (of R' M) (of ℤᵐᵒᵖ C)).symm
+      { toFun := fun m => (b m).toIntLinearMap.toMulOpposite
         map_add' := fun _ _ => by dsimp; rw [b.map_add]; rfl
         map_smul' := fun _ _ => LinearMap.ext fun _ => compatible_smul _ _ _ }).toAddMonoidHom.comp
     (TensorProduct.comm R' M N).toLinearMap.toAddMonoidHom
