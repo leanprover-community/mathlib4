@@ -68,9 +68,6 @@ open Bimodule
 private instance bimodule' (Z : ModuleCat.{v} S) : Module R (X →ₗ[S] Z) :=
   Module.fromOppositeModule
 
-@[simp] private lemma bimodule'_smul_apply  (Z : ModuleCat.{v} S) (r : R) (l : X →ₗ[S] Z) (x : X) :
-  (r • l) x = l (r • x) := rfl
-
 /--
 Let `X` be an `(R,S)`-bimodule. Then `(X →ₗ[S] .)` is a functor from the category of `S`-modules
 to the category of `R`-modules.
@@ -99,13 +96,17 @@ noncomputable def curry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S}
   map_smul' := fun r _ => LinearMap.ext fun _ => show l _ = l (r • _ ⊗ₜ _) by
     rw [← smul_tmul, smul_tmul']
 
-attribute [aesop safe] add_comm in
+attribute [aesop unsafe] add_comm in
+
 /-- curry a bilinear map into a map from tensor product -/
 @[simps]
 def uncurry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X →ₗ[S] Y)) :
     (X ⊗[R] X') →ₗ[S] Y :=
   let L : (X ⊗[R] X') →+ Y := (addConGen _).lift (FreeAddMonoid.lift fun p => l p.2 p.1) <|
-    AddCon.addConGen_le <| by rintro _ _ (_|_|_|_|_|_) <;> aesop
+    AddCon.addConGen_le <| by
+      rintro _ _ (_|_|_|_|_|_) <;> refine' (AddCon.ker_rel _).2 _ <;> try aesop
+      simpa only [FreeAddMonoid.lift_eval_of, l.map_smul] using
+        Eq.symm <| LinearMap.bimodule_smul_apply (MulOpposite.op _) (l _) _
   { L with
     map_smul' := fun _ z => z.induction_on
       (by aesop) (fun _ _ => LinearMap.map_smul _ _ _) (by aesop) }
