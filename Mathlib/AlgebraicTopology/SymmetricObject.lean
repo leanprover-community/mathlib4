@@ -112,32 +112,127 @@ abbrev HasCechObjectWidePullbacks :=
   ∀ (A : NonemptyFintypeCat.{0}) (φ : A → I),
     HasWidePullback S (fun a => X (φ a)) (fun a => f (φ a))
 
-abbrev HasCechObjectCoproducts [HasCechObjectWidePullbacks f] :=
+variable [HasCechObjectWidePullbacks f]
+
+abbrev HasCechObjectCoproducts :=
   ∀ (A : NonemptyFintypeCat.{0}), HasCoproduct
     (fun (φ : A → I) => widePullback S (fun a => X (φ a)) (fun a => f (φ a)))
 
-noncomputable def cechObject [HasCechObjectWidePullbacks f]
-    [HasCechObjectCoproducts f] : SymmetricObject C where
-  obj A := ∐ (fun (φ : A.unop → I) => widePullback S (fun a => X (φ a)) (fun a => f (φ a)))
-  map {A₁ A₂} g := Sigma.desc (fun φ => by
-    refine' _ ≫ Sigma.ι _ (φ.comp g.unop)
-    exact WidePullback.lift (WidePullback.base _)
-      (fun a => WidePullback.π _ (g.unop a)) (by simp))
+noncomputable def cechObjectSummand {A : NonemptyFintypeCat.{0}} (φ : A → I) :=
+  widePullback S (fun b => X (φ b)) (fun b => f (φ b))
+
+noncomputable def cechObjectSummandBase {A : NonemptyFintypeCat.{0}} (φ : A → I) :
+    cechObjectSummand f φ ⟶ S :=
+  WidePullback.base _
+
+noncomputable def cechObjectSummandπ {A : NonemptyFintypeCat.{0}}
+    (φ : A → I) (a : A) (i : I) (h : φ a = i) :
+    cechObjectSummand f φ ⟶ X i := WidePullback.π _ a ≫ eqToHom (by subst h; rfl)
+
+@[reassoc (attr := simp)]
+lemma cechObjectSummandπ_f {A : NonemptyFintypeCat.{0}}
+    (φ : A → I) (a : A) (i : I) (h : φ a = i) :
+    cechObjectSummandπ f φ a i h ≫ f i = cechObjectSummandBase f φ := by
+  subst h
+  dsimp [cechObjectSummandπ, cechObjectSummandBase]
+  simp only [comp_id, WidePullback.π_arrow]
+
+noncomputable def cechObjectSummandMap {A B : NonemptyFintypeCat.{0}}
+    (g : A ⟶ B) (φ : B → I) (ψ : A → I) (h : φ.comp g = ψ) :
+    cechObjectSummand f φ ⟶ cechObjectSummand f ψ :=
+  WidePullback.lift (cechObjectSummandBase _ _)
+    (fun a => cechObjectSummandπ f φ (g a) (ψ a) (by subst h; rfl)) (by simp)
+
+@[reassoc]
+lemma cechObjectMap_π {A B : NonemptyFintypeCat.{0}}
+    (g : A ⟶ B) (φ : B → I) (ψ : A → I) (h : φ.comp g = ψ) (a : A) (i : I)
+    (h' : ψ a = i) (b : B) (h'' : g a = b) :
+    (cechObjectSummandMap f g φ ψ h) ≫ cechObjectSummandπ f ψ a i h' =
+      cechObjectSummandπ f φ b i (by rw [← h'', ← h', ← h]; rfl) := by
+  subst h h' h''
+  dsimp [cechObjectSummandMap, cechObjectSummandπ]
+  simp
+
+@[ext]
+lemma cechObjectSummand_ext {A : NonemptyFintypeCat.{0}} {φ : A → I} {Z : C}
+    {α β : Z ⟶ cechObjectSummand f φ}
+    (h : ∀ (a : A) (i : I) (h : φ a = i),
+      α ≫ cechObjectSummandπ f φ a i h = β ≫ cechObjectSummandπ f φ a i h) : α = β := by
+  apply WidePullback.hom_ext
+  · intro a
+    simpa [cechObjectSummandπ] using h a _ rfl
+  · have a : A := Nonempty.some A.2
+    change α ≫ cechObjectSummandBase f φ = β ≫ cechObjectSummandBase f φ
+    simp only [← cechObjectSummandπ_f f φ a _ rfl, reassoc_of% (h a _ rfl)]
+
+@[simp]
+lemma cechObjectSummandMap_id {A : NonemptyFintypeCat.{0}} (φ : A → I) :
+    cechObjectSummandMap f (𝟙 A) φ φ rfl = 𝟙 _ := by
+  ext a i h
+  rw [id_comp, cechObjectMap_π f (𝟙 A) φ φ rfl a i h a rfl]
+
+lemma cechObjectSummandMap_comp {A₁ A₂ A₃ : NonemptyFintypeCat.{0}}
+    (g₁ : A₁ → A₂) (g₂ : A₂ → A₃) (g₁₂ : A₁ → A₃) (h : g₁₂ = g₂.comp g₁)
+    (φ₃ : A₃ → I) (φ₂ : A₂ → I) (φ₁ : A₁ → I) (h' : φ₃.comp g₂ = φ₂)
+    (h'' : φ₂.comp g₁ = φ₁) :
+    cechObjectSummandMap f g₁₂ φ₃ φ₁ (by subst h' h'' h; rfl) =
+      cechObjectSummandMap f g₂ φ₃ φ₂ h' ≫ cechObjectSummandMap f g₁ φ₂ φ₁ h'' := by
+  subst h
+  ext a _ rfl
+  rw [assoc, cechObjectMap_π f g₁ φ₂ φ₁ h'' a _ rfl _ rfl,
+    cechObjectMap_π f g₂ φ₃ φ₂ h' (g₁ a) (φ₁ a) (by rw [← h'']; rfl) _ rfl,
+    cechObjectMap_π f (g₂.comp g₁) φ₃ φ₁ (by rw [← h'', ← h']; rfl) a _ rfl (g₂ (g₁ a)) rfl]
+
+variable [HasCechObjectCoproducts f]
+
+instance {A : NonemptyFintypeCat.{0}}  :
+    HasCoproduct (fun (φ : A → I) => cechObjectSummand f φ) := by
+  dsimp [cechObjectSummand]
+  infer_instance
+
+noncomputable def cechObjectObj (A : NonemptyFintypeCat.{0}) : C :=
+  ∐ (fun (φ : A → I) => cechObjectSummand f φ)
+
+noncomputable def ιCechObjectObj {A : NonemptyFintypeCat.{0}} (φ : A → I) :
+    cechObjectSummand f φ ⟶ cechObjectObj f A :=
+  Sigma.ι _ φ
+
+noncomputable def cechObjectMap {A B : NonemptyFintypeCat.{0}} (g : A ⟶ B) :
+    cechObjectObj f B ⟶ cechObjectObj f A :=
+  Sigma.desc (fun φ => cechObjectSummandMap f g φ _ rfl ≫ ιCechObjectObj f _)
+
+@[reassoc]
+lemma ι_cechObjectMap {A B : NonemptyFintypeCat.{0}} (g : A ⟶ B) (φ : B → I) (ψ : A → I)
+    (h : φ.comp g = ψ) :
+    ιCechObjectObj f φ ≫ cechObjectMap f g =
+      cechObjectSummandMap f g φ ψ h ≫ ιCechObjectObj f ψ := by
+  subst h
+  dsimp only [ιCechObjectObj, cechObjectMap]
+  simp
+
+@[ext]
+lemma cechObjectObj_ext {A : NonemptyFintypeCat.{0}} {Z : C}
+    {α β : cechObjectObj f A ⟶ Z}
+    (h : ∀ (φ : A → I), ιCechObjectObj f φ ≫ α = ιCechObjectObj f φ ≫ β) :
+    α = β :=
+  Sigma.hom_ext _ _ (fun _ => h _)
+
+@[simps!]
+noncomputable def cechObject  : SymmetricObject C where
+  obj A := cechObjectObj f A.unop
+  map {A₁ A₂} g := cechObjectMap f g.unop
   map_id A := by
     ext φ
     dsimp
-    simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, comp_id]
-    refine' Eq.trans _ (id_comp _)
-    congr 1
-    aesop_cat
-  map_comp {A₁ A₂ A₃} g h := by
-    ext φ
-    dsimp
-    simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, colimit.ι_desc_assoc,
-      Discrete.functor_obj, assoc, Function.comp_apply]
-    simp only [← assoc]
-    congr 1
-    ext <;> dsimp <;> simp
+    rw [comp_id, ι_cechObjectMap f (𝟙 A.unop) φ φ rfl, cechObjectSummandMap_id, id_comp]
+  map_comp := by
+    rintro ⟨A₁⟩ ⟨A₂⟩ ⟨A₃⟩ ⟨f₁ : A₂ ⟶ A₁⟩ ⟨f₂ : A₃ ⟶ A₂⟩
+    ext (φ : A₁ → I)
+    change ιCechObjectObj f φ ≫ cechObjectMap f (f₂ ≫ f₁) =
+      ιCechObjectObj f φ ≫ cechObjectMap f f₁ ≫ cechObjectMap f f₂
+    rw [ι_cechObjectMap f (f₂ ≫ f₁) φ ((φ.comp f₁).comp f₂) rfl,
+      cechObjectSummandMap_comp f f₂ f₁ (f₂ ≫ f₁) rfl φ _ _ rfl rfl, assoc,
+      ι_cechObjectMap_assoc f f₁ φ _ rfl, ι_cechObjectMap f f₂ (φ.comp f₁) _ rfl]
 
 end
 
@@ -148,64 +243,13 @@ variable {S : C} {X : Unit → C} (f : ∀ i, X i ⟶ S)
   [H : ∀ (n : ℕ), HasWidePullback (Arrow.mk (f ())).right
     (fun (_ : Fin (n + 1)) ↦ (Arrow.mk (f ())).left) fun _ ↦ (Arrow.mk (f ())).hom]
 
-noncomputable def cechObjectToSimplicialObjectIsoApp (Δ : SimplexCategory) :
+/-noncomputable def cechObjectToSimplicialObjectIsoApp (Δ : SimplexCategory) :
     (cechObject f).toSimplicialObject.obj (Opposite.op Δ) ≅
       (Arrow.cechNerve (Arrow.mk (f Unit.unit))).obj (Opposite.op Δ) where
-  hom := Sigma.desc (fun φ => WidePullback.lift (WidePullback.base _)
-    (fun a => WidePullback.π _ a) (WidePullback.π_arrow (fun a => f (φ a))))
-  inv := (by exact WidePullback.lift (WidePullback.base _) (WidePullback.π _)
-              (@WidePullback.π_arrow _ _ _ _ _ _ (H Δ.len))) ≫ Sigma.ι _ (fun _ => Unit.unit)
-  hom_inv_id := by
-    dsimp [cechObject, toSimplicialObject, toSimplicialObjectFunctor]
-    ext φ
-    simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app, comp_id]
-    refine' Eq.trans _ (id_comp _)
-    rw [← assoc]
-    congr 1
-    ext a
-    · dsimp
-      simp only [assoc, limit.lift_π, WidePullbackShape.mkCone_pt,
-        WidePullbackShape.mkCone_π_app, id_comp]
-      apply @WidePullback.lift_π _ _ _ _ _ _ (H Δ.len)
-    · dsimp
-      simp only [assoc, limit.lift_π, WidePullbackShape.mkCone_pt,
-        WidePullbackShape.mkCone_π_app, id_comp]
-      apply @WidePullback.lift_base _ _ _ _ _ _ (H Δ.len)
-  inv_hom_id := by
-    apply WidePullback.hom_ext
-    · intro x
-      dsimp
-      simp only [assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, id_comp]
-      erw [@WidePullback.lift_π _ _ _ _ _ _ (H Δ.len), @WidePullback.lift_π _ _ _ _ _ _ (H Δ.len)]
-      rfl
-    · dsimp
-      simp only [assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, id_comp]
-      erw [@WidePullback.lift_base _ _ _ _ _ _ (H Δ.len),
-        @WidePullback.lift_base _ _ _ _ _ _ (H Δ.len)]
 
 noncomputable def cechObjectToSimplicialObjectIso :
     (cechObject f).toSimplicialObject ≅ Arrow.cechNerve (Arrow.mk (f Unit.unit)) :=
-  NatIso.ofComponents (fun Δ => cechObjectToSimplicialObjectIsoApp f Δ.unop) (by
-    rintro ⟨Δ₁⟩ ⟨Δ₂⟩ ⟨g : Δ₂ ⟶ Δ₁⟩
-    dsimp [cechObjectToSimplicialObjectIsoApp, toSimplicialObject, toSimplicialObjectFunctor,
-      cechObject]
-    ext φ
-    dsimp
-    simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app, assoc,
-      colimit.ι_desc, Function.comp_apply, SimplexCategory.toNonemptyFintypeCat_map]
-    apply @WidePullback.hom_ext _ _ _ _ _ _ (H Δ₂.len)
-    · intro a
-      dsimp
-      simp only [assoc]
-      erw [@WidePullback.lift_π _ _ _ _ _ _ (H Δ₂.len),
-        @WidePullback.lift_π _ _ _ _ _ _ (H Δ₂.len),
-        @WidePullback.lift_π _ _ _ _ _ _ (H Δ₁.len)]
-      rfl
-    · dsimp
-      simp only [assoc]
-      erw [@WidePullback.lift_base _ _ _ _ _ _ (H Δ₂.len),
-        @WidePullback.lift_base _ _ _ _ _ _ (H Δ₂.len),
-        @WidePullback.lift_base _ _ _ _ _ _ (H Δ₁.len)])
+  NatIso.ofComponents (fun Δ => cechObjectToSimplicialObjectIsoApp f Δ.unop) (sorry)-/
 
 end
 
