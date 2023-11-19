@@ -1028,8 +1028,8 @@ open MulOpposite in
 /-- If `M` is an `(R, S)` bimodule and `M₂` an `S`-module, then `M ⟶ M₂` is also
   a bimodule-/
 protected def bimodule
-    [Module R M] [Module S M] [SMulCommClass R S M] [Module S M₂] :
-    Module Rᵐᵒᵖ (M →ₗ[S] M₂) where
+    [Module R M] [Module Sᵐᵒᵖ M] [SMulCommClass R Sᵐᵒᵖ M] [Module Sᵐᵒᵖ M₂] :
+    Module Rᵐᵒᵖ (M →ₗ[Sᵐᵒᵖ] M₂) where
   smul r l :=
   { toFun := fun x => l (r.unop • x)
     map_add' := fun x y => by dsimp; rw [smul_add, map_add]
@@ -1042,12 +1042,13 @@ protected def bimodule
   add_smul r₁ r₂ l := LinearMap.ext fun x => show l _ = l _ + l _ by
     rw [unop_add, add_smul, map_add]
   zero_smul l := LinearMap.ext fun x => show l _ = 0 by rw [unop_zero, zero_smul, map_zero]
+
 scoped[Bimodule] attribute [instance] LinearMap.bimodule
 
 open Bimodule in
 protected lemma bimodule_smul_apply
-    [Module R M] [Module S M] [SMulCommClass R S M] [Module S M₂]
-    (r : Rᵐᵒᵖ) (l : M →ₗ[S] M₂) (m : M) :
+    [Module R M] [Module Sᵐᵒᵖ M] [SMulCommClass R Sᵐᵒᵖ M] [Module Sᵐᵒᵖ M₂]
+    (r : Rᵐᵒᵖ) (l : M →ₗ[Sᵐᵒᵖ] M₂) (m : M) :
     (r • l) m = l (r.unop • m) := rfl
 
 end Module
