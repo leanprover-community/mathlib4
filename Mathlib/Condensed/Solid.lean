@@ -27,7 +27,7 @@ abbrev Condensed.finFree : FintypeCat.{u} ⥤ CondensedAb.{u} :=
   FintypeCat.toProfinite ⋙ profiniteToCondensed ⋙ freeAb.{u}
 
 /-- The free condensed abelian group on a profinite space. -/
-abbrev Condensed.profiniteFree : Profinite.{u} ⥤ Condensed.{u} Ab.{u+1} :=
+abbrev Condensed.profiniteFree : Profinite.{u} ⥤ CondensedAb.{u} :=
   profiniteToCondensed ⋙ freeAb.{u}
 
 /-- The functor sending a profinite space `S` to the condensed abelian group `ℤ[S]^\solid`. -/
