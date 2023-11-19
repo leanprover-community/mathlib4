@@ -111,39 +111,34 @@ lemma univ_eq_interior_union_boundary : (SmoothManifoldWithCorners.interior I M)
 lemma interior_isOpen : IsOpen (SmoothManifoldWithCorners.interior I M) := by
   apply isOpen_iff_forall_mem_open.mpr
   intro x hx
-  -- Consider the preferred chart at `x`.
+  -- Consider the preferred chart at `x`. Its extended chart has open interior.
   let e := chartAt H x
-  -- Its extended chart has open interior (should be easy).
   let U := interior (e.extend I).target
-  have hU : IsOpen U := isOpen_interior
   -- For all `y ∈ e.source`, `y` is an interior point iff its image lies in `U`.
-  -- FIXME: extract this into a separate lemma?
-  have : ∀ y, y ∈ e.source → (I.isInteriorPoint y ↔ (e.extend I) y ∈ U) :=
-    fun y hy ↦ isInteriorPoint_iff (chart_mem_atlas H x) hy
+  -- FIXME: should this be a separate lemma?
   use (e.extend I).source ∩ (e.extend I) ⁻¹' U
   refine ⟨?_, ?_, ?_⟩
   · intro y hy
     rw [e.extend_source] at hy
-    apply (this y (mem_of_mem_inter_left hy)).mpr
-    have : y ∈ (LocalHomeomorph.extend e I) ⁻¹' U := mem_of_mem_inter_right hy
-    exact this
-  · exact (e.continuousOn_extend I).preimage_open_of_open (e.isOpen_extend_source I) hU
+    apply (isInteriorPoint_iff (chart_mem_atlas H x) (mem_of_mem_inter_left hy)).mpr
+    exact mem_of_mem_inter_right (a := e.source) hy
+  · exact (e.continuousOn_extend I).preimage_open_of_open (e.isOpen_extend_source I) isOpen_interior
   · have : x ∈ (e.extend I).source := by
       rw [e.extend_source]
       exact mem_chart_source H x
     exact mem_inter this hx
 
 /-- The boundary of any extended chart has empty interior. -/
--- NB: this is *false* for any set instead of (e.extend I).target:
--- for instance, $ℚ ⊆ ℝ$ has frontiert ℝ (ℚ is dense in ℝ and ℚ has empty interior).
+-- NB: this is *false* for any set instead of `(e.extend I).target`:
+-- for instance, $ℚ ⊆ ℝ$ has frontier ℝ (ℚ is dense in ℝ and ℚ has empty interior).
 -- xxx: do I need that e is in the atlas? I think not; not double-checked.
--- xxx: is this lemma fully true, or do I need a stronger definition of boundary?
+-- xxx: is this lemma true with mathlib's current definitions?
 lemma __root__.LocalHomeomorph.extend_interior_boundary_eq_empty {e : LocalHomeomorph M H} :
     interior (frontier (e.extend I).target) = ∅ := sorry
 
 /-- The boundary of a smooth manifold has empty interior. -/
 lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary I M) = ∅ := by
-  -- use isBoundaryPoint_iff and the previous lemma; similar to `interior_isOpen`
+  -- use `isBoundaryPoint_iff` and the previous lemma; similar to `interior_isOpen`
   sorry
 
 -- interior I M is a smooth manifold (use TopologicalSpace.Opens.instSmoothManifoldWithCornersSubtypeMemOpensInstMembershipInstSetLikeOpensInstTopologicalSpaceSubtypeInstChartedSpace)
