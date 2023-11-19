@@ -75,10 +75,10 @@ Tests for `runGreedily`, which converts a `List (MetaM α)` into a `MLList MetaM
 streaming results as they become available.
 -/
 
-def fib : Nat → Nat
-| 0
-| 1 => 1
-| (n+2) => fib (n+1) + fib n
+def busy_wait (millis : Nat) : IO Unit := do
+  let start ← IO.monoMsNow
+  while !(← IO.checkCanceled) && (← IO.monoMsNow) < start + millis do pure ()
+  if (← IO.checkCanceled) then throw <| IO.userError "cancelled"
 
 open Lean.Meta.MetaM
 
@@ -88,15 +88,41 @@ info: 0
 #guard_msgs in
 #eval show MetaM _ from do
   -- We put an `IO.sleep 0` in the long calculation to prevent Lean from optimizing away the `do`.
-  let t : List (MetaM Nat) := [do IO.sleep 0; pure (fib 30), do IO.sleep 5; pure 0]
-  let r := runGreedily t
+  let t : List (MetaM Nat) := [do busy_wait 1000; pure 1000, do busy_wait 0; pure 0]
+  let r := runGreedily' t
   r.head
 
 /--
-info: 13
+info: 1
 -/
 #guard_msgs in
 #eval show MetaM _ from do
-  let t : List (MetaM Nat) := [do IO.sleep 0; pure (fib 6), do IO.sleep 5; pure 0]
-  let r := runGreedily t
+  let t : List (MetaM Nat) := [do busy_wait 0; pure 1, do busy_wait 5; pure 0]
+  let r := runGreedily' t
   r.head
+
+/--
+info: Without cancellation:
+Result: 0
+Results after waiting: [10, 0]
+With cancellation:
+Result: 0
+Results after waiting: [0]
+-/
+#guard_msgs in
+#eval show MetaM _ from do
+  let ref : IO.Ref (List Nat) ← IO.mkRef []
+  let store : Nat → IO Nat := fun n => do ref.modify fun l => n :: l; pure n
+  let t : List (MetaM Nat) := [do busy_wait 10; store 10, do busy_wait 0; store 0]
+  let r := runGreedily' t
+  IO.println "Without cancellation:"
+  IO.println s!"Result: {← r.head}"
+  IO.sleep 20
+  IO.println s!"Results after waiting: {← ref.get}"
+  IO.println "With cancellation:"
+  ref.set []
+  let (c, r) ← runGreedily t
+  IO.println s!"Result: {← r.head}"
+  _ ← c
+  IO.sleep 20
+  IO.println s!"Results after waiting: {← ref.get}"
