@@ -229,6 +229,7 @@ noncomputable def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
   invFun f := HomologicalComplex.mkHomFromSingle f (fun i hi => by simp at hi)
   left_inv := by aesop_cat
   right_inv := by aesop_cat
+#align chain_complex.from_single₀_equiv ChainComplex.fromSingle₀Equiv
 
 @[simp]
 lemma fromSingle₀Equiv_symm_apply_f_zero

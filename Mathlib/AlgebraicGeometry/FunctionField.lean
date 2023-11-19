@@ -145,14 +145,11 @@ theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : 
           ((genericPoint_spec X.carrier).mem_open_set_iff U.isOpen).mpr (by simpa using h)⟩ =
       genericPoint (Scheme.Spec.obj <| op <| X.presheaf.obj <| op U).carrier := by
   haveI : IsAffine _ := hU
-  have e : U.openEmbedding.isOpenMap.functor.obj ⊤ = U := by
-    ext1; exact Set.image_univ.trans Subtype.range_coe
   delta IsAffineOpen.primeIdealOf
-  erw [← Scheme.comp_val_base_apply]
   convert
     genericPoint_eq_of_isOpenImmersion
       ((X.restrict U.openEmbedding).isoSpec.hom ≫
-        Scheme.Spec.map (X.presheaf.map (eqToHom e).op).op)
+        Scheme.Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op).op)
   -- Porting note: this was `ext1`
   apply Subtype.ext
   exact (genericPoint_eq_of_isOpenImmersion (X.ofRestrict U.openEmbedding)).symm

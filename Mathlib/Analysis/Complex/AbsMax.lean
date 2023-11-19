@@ -424,4 +424,3 @@ theorem eqOn_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : IsBounded U) (hf
 #align complex.eq_on_of_eq_on_frontier Complex.eqOn_of_eqOn_frontier
 
 end Complex
-

@@ -3,6 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.Algebra.Homology.ExactSequence
 import Mathlib.Algebra.Homology.ShortComplex.Limits
 import Mathlib.CategoryTheory.Abelian.Refinements
 
@@ -345,6 +346,20 @@ noncomputable def L₂'OpIso : S.L₂'.op ≅ S.op.L₁' :=
 lemma L₂'_exact : S.L₂'.Exact := by
   rw [← exact_op_iff, exact_iff_of_iso S.L₂'OpIso]
   exact S.op.L₁'_exact
+
+/-- The diagram `S.L₀.X₁ ⟶ S.L₀.X₂ ⟶ S.L₀.X₃ ⟶ S.L₃.X₁ ⟶ S.L₃.X₂ ⟶ S.L₃.X₃` for any
+`S : SnakeInput C`. -/
+noncomputable abbrev composableArrows : ComposableArrows C 5 :=
+  ComposableArrows.mk₅ S.L₀.f S.L₀.g S.δ S.L₃.f S.L₃.g
+
+open ComposableArrows in
+/-- The diagram `S.L₀.X₁ ⟶ S.L₀.X₂ ⟶ S.L₀.X₃ ⟶ S.L₃.X₁ ⟶ S.L₃.X₂ ⟶ S.L₃.X₃` is exact
+for any `S : SnakeInput C`. -/
+lemma snake_lemma : S.composableArrows.Exact :=
+  exact_of_δ₀ S.L₀_exact.exact_toComposableArrows
+    (exact_of_δ₀ S.L₁'_exact.exact_toComposableArrows
+    (exact_of_δ₀ S.L₂'_exact.exact_toComposableArrows
+    S.L₃_exact.exact_toComposableArrows))
 
 end SnakeInput
 

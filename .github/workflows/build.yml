@@ -263,10 +263,11 @@ jobs:
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
+          git checkout toolchain/v4.3.0-rc2
           lake build
           ./test.sh
           cd ..
-          lake env lean4checker/build/bin/lean4checker
+          lake env lean4checker/.lake/build/bin/lean4checker
 
       - name: Post comments for lean-pr-testing branch
         if: always()
@@ -277,6 +278,7 @@ jobs:
           LINT_OUTCOME: ${{ steps.lint.outcome }}
           TEST_OUTCOME: ${{ steps.test.outcome }}
           BUILD_OUTCOME: ${{ steps.build.outcome }}
+          CHECK_OUTCOME: ${{ steps.lean4checker.outcome }}
         run: |
           scripts/lean-pr-testing-comments.sh
 

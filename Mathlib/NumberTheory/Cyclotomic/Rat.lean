@@ -31,8 +31,6 @@ open scoped Cyclotomic NumberField Nat
 
 variable {p : ℕ+} {k : ℕ} {K : Type u} [Field K] [CharZero K] {ζ : K} [hp : Fact (p : ℕ).Prime]
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace IsCyclotomicExtension.Rat
 
 /-- The discriminant of the power basis given by `ζ - 1`. -/
@@ -82,7 +80,7 @@ theorem isIntegralClosure_adjoin_singleton_of_prime_pow [hcycl : IsCyclotomicExt
         (le_integralClosure_iff_isIntegral.1
           (adjoin_le_integralClosure (hζ.isIntegral (p ^ k).pos)) _)
   let B := hζ.subOnePowerBasis ℚ
-  have hint : IsIntegral ℤ B.gen := isIntegral_sub (hζ.isIntegral (p ^ k).pos) isIntegral_one
+  have hint : IsIntegral ℤ B.gen := (hζ.isIntegral (p ^ k).pos).sub isIntegral_one
 -- Porting note: the following `haveI` was not needed because the locale `cyclotomic` set it
 -- as instances.
   letI := IsCyclotomicExtension.finiteDimensional {p ^ k} ℚ K
@@ -92,7 +90,7 @@ theorem isIntegralClosure_adjoin_singleton_of_prime_pow [hcycl : IsCyclotomicExt
   replace H := Subalgebra.smul_mem _ H u.inv
 -- Porting note: the proof is slightly different because of coercions.
   rw [← smul_assoc, ← smul_mul_assoc, Units.inv_eq_val_inv, zsmul_eq_mul, ← Int.cast_mul,
-    Units.inv_mul, Int.cast_one, one_mul, PNat.pow_coe, Nat.cast_pow, smul_def, map_pow] at H
+    Units.inv_mul, Int.cast_one, one_mul, smul_def, map_pow] at H
   cases k
   · haveI : IsCyclotomicExtension {1} ℚ K := by simpa using hcycl
     have : x ∈ (⊥ : Subalgebra ℚ K) := by
@@ -303,7 +301,7 @@ theorem zeta_sub_one_prime_of_two_pow [IsCyclotomicExtension {(2 : ℕ+) ^ (k + 
     Prime (hζ.toInteger - 1) := by
   letI := IsCyclotomicExtension.numberField {(2 : ℕ+) ^ (k + 1)} ℚ K
   refine Ideal.prime_of_irreducible_absNorm_span (fun h ↦ ?_) ?_
-  · apply hζ.pow_ne_one_of_pos_of_lt zero_lt_one (one_lt_pow (by norm_num) (by simp))
+  · apply hζ.pow_ne_one_of_pos_of_lt zero_lt_one (one_lt_pow (by decide) (by simp))
     rw [← Subalgebra.coe_eq_zero] at h
     simpa [sub_eq_zero] using h
   rw [Nat.irreducible_iff_prime, Ideal.absNorm_span_singleton, ← Nat.prime_iff,

@@ -150,8 +150,8 @@ theorem upperCentralSeries_zero : upperCentralSeries G 0 = ⊥ := rfl
 @[simp]
 theorem upperCentralSeries_one : upperCentralSeries G 1 = center G := by
   ext
-  simp only [upperCentralSeries, upperCentralSeriesAux, upperCentralSeriesStep, center, Set.center,
-    mem_mk, mem_bot, Set.mem_setOf_eq]
+  simp only [upperCentralSeries, upperCentralSeriesAux, upperCentralSeriesStep,
+    Subgroup.mem_center_iff, mem_mk, mem_bot, Set.mem_setOf_eq]
   exact forall_congr' fun y => by rw [mul_inv_eq_one, mul_inv_eq_iff_eq_mul, eq_comm]
 #align upper_central_series_one upperCentralSeries_one
 

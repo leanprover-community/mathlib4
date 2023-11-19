@@ -19,8 +19,6 @@ See also `Mathlib/Data/Real/Pi/Leibniz.lean` and `Mathlib/Data/Real/Pi/Wallis.le
 formulas for `π`.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 -- Porting note: needed to add a lot of type ascriptions for lean to interpret numbers as reals.
 
 open scoped Real
