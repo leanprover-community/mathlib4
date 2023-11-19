@@ -39,8 +39,6 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 open Finpartition Finset Fintype Rel Nat
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open scoped BigOperators Classical SzemerediRegularity.Positivity
 
 namespace SzemerediRegularity
@@ -450,7 +448,10 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
   set s : ℝ := ↑(G.edgeDensity (G.nonuniformWitness ε U V) (G.nonuniformWitness ε V U))
   set t : ℝ := ↑(G.edgeDensity U V)
   have hrs : |r - s| ≤ ε / 5 := abs_density_star_sub_density_le_eps hPε hε₁ hUVne hUV
-  have hst : ε ≤ |s - t| := by exact_mod_cast G.nonuniformWitness_spec hUVne hUV
+  have hst : ε ≤ |s - t| := by
+    -- After leanprover/lean4#2734, we need to do the zeta reduction before `norm_cast`.
+    unfold_let s t
+    exact_mod_cast G.nonuniformWitness_spec hUVne hUV
   have hpr : |p - r| ≤ ε ^ 5 / 49 :=
     average_density_near_total_density hPα hPε hε₁ star_subset_chunk star_subset_chunk
   have hqt : |q - t| ≤ ε ^ 5 / 49 := by

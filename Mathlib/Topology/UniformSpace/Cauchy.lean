@@ -193,16 +193,16 @@ theorem Cauchy.comap' [UniformSpace β] {f : Filter β} {m : α → β} (hf : Ca
 /-- Cauchy sequences. Usually defined on ℕ, but often it is also useful to say that a function
 defined on ℝ is Cauchy at +∞ to deduce convergence. Therefore, we define it in a type class that
 is general enough to cover both ℕ and ℝ, which are the main motivating examples. -/
-def CauchySeq [SemilatticeSup β] (u : β → α) :=
+def CauchySeq [Preorder β] (u : β → α) :=
   Cauchy (atTop.map u)
 #align cauchy_seq CauchySeq
 
-theorem CauchySeq.tendsto_uniformity [SemilatticeSup β] {u : β → α} (h : CauchySeq u) :
+theorem CauchySeq.tendsto_uniformity [Preorder β] {u : β → α} (h : CauchySeq u) :
     Tendsto (Prod.map u u) atTop (𝓤 α) := by
   simpa only [Tendsto, prod_map_map_eq', prod_atTop_atTop_eq] using h.right
 #align cauchy_seq.tendsto_uniformity CauchySeq.tendsto_uniformity
 
-theorem CauchySeq.nonempty [SemilatticeSup β] {u : β → α} (hu : CauchySeq u) : Nonempty β :=
+theorem CauchySeq.nonempty [Preorder β] {u : β → α} (hu : CauchySeq u) : Nonempty β :=
   @nonempty_of_neBot _ _ <| (map_neBot_iff _).1 hu.1
 #align cauchy_seq.nonempty CauchySeq.nonempty
 
@@ -227,9 +227,9 @@ theorem cauchySeq_iff_tendsto [Nonempty β] [SemilatticeSup β] {u : β → α} 
   cauchy_map_iff'.trans <| by simp only [prod_atTop_atTop_eq, Prod.map_def]
 #align cauchy_seq_iff_tendsto cauchySeq_iff_tendsto
 
-theorem CauchySeq.comp_tendsto {γ} [SemilatticeSup β] [SemilatticeSup γ] [Nonempty γ] {f : β → α}
+theorem CauchySeq.comp_tendsto {γ} [Preorder β] [SemilatticeSup γ] [Nonempty γ] {f : β → α}
     (hf : CauchySeq f) {g : γ → β} (hg : Tendsto g atTop atTop) : CauchySeq (f ∘ g) :=
-  cauchySeq_iff_tendsto.2 <| hf.tendsto_uniformity.comp (hg.prod_atTop hg)
+  ⟨inferInstance, le_trans (prod_le_prod.mpr ⟨Tendsto.comp le_rfl hg, Tendsto.comp le_rfl hg⟩) hf.2⟩
 #align cauchy_seq.comp_tendsto CauchySeq.comp_tendsto
 
 theorem CauchySeq.comp_injective [SemilatticeSup β] [NoMaxOrder β] [Nonempty β] {u : ℕ → α}
@@ -262,14 +262,14 @@ theorem cauchySeq_iff {u : ℕ → α} :
   simp only [cauchySeq_iff', Filter.eventually_atTop_prod_self', mem_preimage, Prod_map]
 #align cauchy_seq_iff cauchySeq_iff
 
-theorem CauchySeq.prod_map {γ δ} [UniformSpace β] [SemilatticeSup γ] [SemilatticeSup δ] {u : γ → α}
+theorem CauchySeq.prod_map {γ δ} [UniformSpace β] [Preorder γ] [Preorder δ] {u : γ → α}
     {v : δ → β} (hu : CauchySeq u) (hv : CauchySeq v) : CauchySeq (Prod.map u v) := by
   simpa only [CauchySeq, prod_map_map_eq', prod_atTop_atTop_eq] using hu.prod hv
 #align cauchy_seq.prod_map CauchySeq.prod_map
 
-theorem CauchySeq.prod {γ} [UniformSpace β] [SemilatticeSup γ] {u : γ → α} {v : γ → β}
+theorem CauchySeq.prod {γ} [UniformSpace β] [Preorder γ] {u : γ → α} {v : γ → β}
     (hu : CauchySeq u) (hv : CauchySeq v) : CauchySeq fun x => (u x, v x) :=
-  haveI := hu.nonempty
+  haveI := hu.1.of_map
   (Cauchy.prod hu hv).mono (Tendsto.prod_mk le_rfl le_rfl)
 #align cauchy_seq.prod CauchySeq.prod
 
@@ -278,7 +278,7 @@ theorem CauchySeq.eventually_eventually [SemilatticeSup β] {u : β → α} (hu 
   eventually_atTop_curry <| hu.tendsto_uniformity hV
 #align cauchy_seq.eventually_eventually CauchySeq.eventually_eventually
 
-theorem UniformContinuous.comp_cauchySeq {γ} [UniformSpace β] [SemilatticeSup γ] {f : α → β}
+theorem UniformContinuous.comp_cauchySeq {γ} [UniformSpace β] [Preorder γ] {f : α → β}
     (hf : UniformContinuous f) {u : γ → α} (hu : CauchySeq u) : CauchySeq (f ∘ u) :=
   hu.map hf
 #align uniform_continuous.comp_cauchy_seq UniformContinuous.comp_cauchySeq
@@ -304,7 +304,7 @@ theorem Filter.Tendsto.subseq_mem_entourage {V : ℕ → Set (α × α)} (hV : �
 #align filter.tendsto.subseq_mem_entourage Filter.Tendsto.subseq_mem_entourage
 
 /-- If a Cauchy sequence has a convergent subsequence, then it converges. -/
-theorem tendsto_nhds_of_cauchySeq_of_subseq [SemilatticeSup β] {u : β → α} (hu : CauchySeq u)
+theorem tendsto_nhds_of_cauchySeq_of_subseq [Preorder β] {u : β → α} (hu : CauchySeq u)
     {ι : Type*} {f : ι → β} {p : Filter ι} [NeBot p] (hf : Tendsto f p atTop) {a : α}
     (ha : Tendsto (u ∘ f) p (𝓝 a)) : Tendsto u atTop (𝓝 a) :=
   le_nhds_of_cauchy_adhp hu (mapClusterPt_of_comp hf ha)
@@ -465,13 +465,13 @@ theorem cauchy_map_iff_exists_tendsto [CompleteSpace α] {l : Filter β} {f : β
 #align cauchy_map_iff_exists_tendsto cauchy_map_iff_exists_tendsto
 
 /-- A Cauchy sequence in a complete space converges -/
-theorem cauchySeq_tendsto_of_complete [SemilatticeSup β] [CompleteSpace α] {u : β → α}
+theorem cauchySeq_tendsto_of_complete [Preorder β] [CompleteSpace α] {u : β → α}
     (H : CauchySeq u) : ∃ x, Tendsto u atTop (𝓝 x) :=
   CompleteSpace.complete H
 #align cauchy_seq_tendsto_of_complete cauchySeq_tendsto_of_complete
 
 /-- If `K` is a complete subset, then any cauchy sequence in `K` converges to a point in `K` -/
-theorem cauchySeq_tendsto_of_isComplete [SemilatticeSup β] {K : Set α} (h₁ : IsComplete K)
+theorem cauchySeq_tendsto_of_isComplete [Preorder β] {K : Set α} (h₁ : IsComplete K)
     {u : β → α} (h₂ : ∀ n, u n ∈ K) (h₃ : CauchySeq u) : ∃ v ∈ K, Tendsto u atTop (𝓝 v) :=
   h₁ _ h₃ <| le_principal_iff.2 <| mem_map_iff_exists_image.2
     ⟨univ, univ_mem, by rwa [image_univ, range_subset_iff]⟩
@@ -483,7 +483,7 @@ theorem Cauchy.le_nhds_lim [CompleteSpace α] [Nonempty α] {f : Filter α} (hf 
 set_option linter.uppercaseLean3 false in
 #align cauchy.le_nhds_Lim Cauchy.le_nhds_lim
 
-theorem CauchySeq.tendsto_limUnder [SemilatticeSup β] [CompleteSpace α] [Nonempty α] {u : β → α}
+theorem CauchySeq.tendsto_limUnder [Preorder β] [CompleteSpace α] [Nonempty α] {u : β → α}
     (h : CauchySeq u) : Tendsto u atTop (𝓝 <| limUnder atTop u) :=
   h.le_nhds_lim
 #align cauchy_seq.tendsto_lim CauchySeq.tendsto_limUnder

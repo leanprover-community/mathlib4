@@ -22,9 +22,9 @@ All those (except `insert`) are defined in `Mathlib.Data.List.Defs`.
 
 ## Notation
 
-`l₁ <+: l₂`: `l₁` is a prefix of `l₂`.
-`l₁ <:+ l₂`: `l₁` is a suffix of `l₂`.
-`l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
+* `l₁ <+: l₂`: `l₁` is a prefix of `l₂`.
+* `l₁ <:+ l₂`: `l₁` is a suffix of `l₂`.
+* `l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
 -/
 
 open Nat
@@ -259,7 +259,7 @@ theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
       | zero =>
         refine' iff_of_false _ (zero_lt_succ _).not_le
         rw [take_zero, take_nil]
-        simp only [take]
+        simp only [take, not_false_eq_true]
       | succ n =>
         simp only [length] at hm
         have specializedIH := @IH n ls (Nat.lt_of_succ_lt_succ hm)

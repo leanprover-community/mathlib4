@@ -480,6 +480,7 @@ def abelNFTarget (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) : TacticM Unit :
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
   else
+    if r.expr == tgt then throwError "abel_nf made no progress"
     replaceMainGoal [← applySimpResultToTarget goal tgt r]
 
 /-- Use `abel_nf` to rewrite hypothesis `h`. -/
@@ -488,6 +489,7 @@ def abelNFLocalDecl (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (fvarId : FVa
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal
   let myres ← abelNFCore s cfg tgt
+  if myres.expr == tgt then throwError "abel_nf made no progress"
   match ← applySimpResultToLocalDecl goal fvarId myres false with
   | none => replaceMainGoal []
   | some (_, newGoal) => replaceMainGoal [newGoal]
@@ -513,7 +515,7 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic 
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   withLocation loc (abelNFLocalDecl s cfg) (abelNFTarget s cfg)
-    fun _ ↦ throwError "abel_nf failed"
+    fun _ ↦ throwError "abel_nf made no progress"
 
 @[inherit_doc abelNF] macro "abel_nf!" cfg:(config)? loc:(location)? : tactic =>
   `(tactic| abel_nf ! $(cfg)? $(loc)?)

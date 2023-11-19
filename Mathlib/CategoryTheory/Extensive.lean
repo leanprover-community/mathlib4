@@ -77,7 +77,7 @@ class PreservesPullbacksOfInclusions {C : Type*} [Category C] {D : Type*} [Categ
 attribute [instance] PreservesPullbacksOfInclusions.preservesPullbackInl
 
 /-- A category is (finitary) pre-extensive if it has finite coproducts,
-and binary coproducts are van Kampen. -/
+and binary coproducts are universal. -/
 class FinitaryPreExtensive (C : Type u) [Category.{v} C] : Prop where
   [hasFiniteCoproducts : HasFiniteCoproducts C]
   [HasPullbacksOfInclusions : HasPullbacksOfInclusions C]

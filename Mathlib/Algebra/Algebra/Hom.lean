@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.BigOperators.Finsupp
 
 #align_import algebra.algebra.hom from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 
@@ -560,6 +561,14 @@ variable {R}
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
   rfl
 #align algebra.of_id_apply Algebra.ofId_apply
+
+/-- This is a special case of a more general instance that we define in a later file. -/
+instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
+  ⟨fun f g => AlgHom.ext fun _ => (f.commutes _).trans (g.commutes _).symm⟩
+
+/-- This ext lemma closes trivial subgoals create when chaining heterobasic ext lemmas. -/
+@[ext high]
+theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
 
 end Algebra
 
