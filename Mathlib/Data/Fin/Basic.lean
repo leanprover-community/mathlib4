@@ -541,6 +541,9 @@ instance [NeZero n] : OfNat (Fin n) a where
 instance inhabited (n : ℕ) [NeZero n] : Inhabited (Fin n) :=
   ⟨0⟩
 
+instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
+  ⟨⟨0, by rw [Nat.add_comm]; exact Nat.zero_lt_succ _⟩⟩
+
 @[simp]
 theorem default_eq_zero (n : ℕ) [NeZero n] : (default : Fin n) = 0 :=
   rfl
