@@ -146,7 +146,7 @@ theorem zmod_congr_of_sub_mem_span_aux (n : ℕ) (x : ℤ_[p]) (a b : ℤ)
   rw [← dvd_neg, neg_sub] at ha
   have := dvd_add ha hb
   rwa [sub_eq_add_neg, sub_eq_add_neg, add_assoc, neg_add_cancel_left, ← sub_eq_add_neg, ←
-    Int.cast_sub, pow_p_dvd_int_iff, Nat.cast_pow] at this
+    Int.cast_sub, pow_p_dvd_int_iff] at this
 #align padic_int.zmod_congr_of_sub_mem_span_aux PadicInt.zmod_congr_of_sub_mem_span_aux
 
 theorem zmod_congr_of_sub_mem_span (n : ℕ) (x : ℤ_[p]) (a b : ℕ)
@@ -488,7 +488,9 @@ def nthHom (r : R) : ℕ → ℤ := fun n => (f n r : ZMod (p ^ n)).val
 #align padic_int.nth_hom PadicInt.nthHom
 
 @[simp]
-theorem nthHom_zero : nthHom f 0 = 0 := by simp [nthHom]; rfl
+theorem nthHom_zero : nthHom f 0 = 0 := by
+  simp (config := { unfoldPartialApp := true }) [nthHom]
+  rfl
 #align padic_int.nth_hom_zero PadicInt.nthHom_zero
 
 variable {f}
@@ -671,7 +673,7 @@ theorem ext_of_toZModPow {x y : ℤ_[p]} : (∀ n, toZModPow n x = toZModPow n y
   constructor
   · intro h
     rw [← lift_self x, ← lift_self y]
-    simp [lift, limNthHom, nthHom, h]
+    simp (config := { unfoldPartialApp := true }) [lift, limNthHom, nthHom, h]
   · rintro rfl _
     rfl
 #align padic_int.ext_of_to_zmod_pow PadicInt.ext_of_toZModPow

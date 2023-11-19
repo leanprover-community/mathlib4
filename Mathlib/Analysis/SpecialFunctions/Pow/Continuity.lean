@@ -21,8 +21,6 @@ open Classical Real Topology NNReal ENNReal Filter BigOperators ComplexConjugate
 
 open Filter Finset Set
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 section CpowLimits
 
 /-!

@@ -880,7 +880,7 @@ theorem hausdorffMeasure_image (hf : Isometry f) (hd : 0 ≤ d ∨ Surjective f)
   simp only [hausdorffMeasure, ← OuterMeasure.coe_mkMetric, ← OuterMeasure.comap_apply]
   -- porting note: this proof was slightly nicer before the port
   simp only [mkMetric_toOuterMeasure]
-  have : 0 ≤ d → Monotone fun r ↦ @HPow.hPow ℝ≥0∞ ℝ ℝ≥0∞ instHPow r d := by
+  have : 0 ≤ d → Monotone fun r : ℝ≥0∞ ↦ r ^ d := by
     exact fun hd x y hxy => ENNReal.rpow_le_rpow hxy hd
   have := OuterMeasure.isometry_comap_mkMetric (fun (r : ℝ≥0∞) => r ^ d) hf (hd.imp_left this)
   congr

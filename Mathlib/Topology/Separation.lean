@@ -585,8 +585,8 @@ theorem continuousWithinAt_update_of_ne [T1Space X] [DecidableEq X] [Topological
 
 theorem continuousAt_update_of_ne [T1Space X] [DecidableEq X] [TopologicalSpace Y]
     {f : X → Y} {x x' : X} {y : Y} (hne : x' ≠ x) :
-    ContinuousAt (Function.update f x y) x' ↔ ContinuousAt f x' :=
-  by simp only [← continuousWithinAt_univ, continuousWithinAt_update_of_ne hne]
+    ContinuousAt (Function.update f x y) x' ↔ ContinuousAt f x' := by
+  simp only [← continuousWithinAt_univ, continuousWithinAt_update_of_ne hne]
 #align continuous_at_update_of_ne continuousAt_update_of_ne
 
 theorem continuousOn_update_iff [T1Space X] [DecidableEq X] [TopologicalSpace Y] {f : X → Y}

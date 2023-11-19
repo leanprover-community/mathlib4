@@ -393,7 +393,7 @@ theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.ra
   replace hf := nat_card_dvd_of_surjective f hf
   rw [Nat.card_pi] at hf
   refine' hf.trans (Finset.prod_dvd_prod_of_dvd _ _ fun g _ => _)
-  rw [← order_eq_card_zpowers']
+  rw [Nat.card_zpowers]
   exact Monoid.order_dvd_exponent (g : G)
 #align card_dvd_exponent_pow_rank card_dvd_exponent_pow_rank
 #align card_dvd_exponent_nsmul_rank card_dvd_exponent_nsmul_rank
