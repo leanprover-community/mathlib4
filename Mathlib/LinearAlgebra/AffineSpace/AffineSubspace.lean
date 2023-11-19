@@ -1604,28 +1604,28 @@ end AffineSubspace
 namespace AffineMap
 
 
-section ofLe
+section inclusion
 variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁] [Nonempty S₂]
 
 attribute [local instance] AffineSubspace.toAddTorsor
 
 /-- Affine map from a smaller to a larger subspace of the same space.
 
-This is the affine version of `Submodule.ofLe`. -/
+This is the affine version of `Submodule.inclusion`. -/
 @[simps linear]
-def ofLe (h : S₁ ≤ S₂) : S₁ →ᵃ[k] S₂ where
+def inclusion (h : S₁ ≤ S₂) : S₁ →ᵃ[k] S₂ where
   toFun := Set.inclusion h
-  linear := Submodule.ofLe <| AffineSubspace.direction_le h
+  linear := Submodule.inclusion <| AffineSubspace.direction_le h
   map_vadd' _ _ := rfl
 
 @[simp]
-theorem coe_ofLe_apply (h : S₁ ≤ S₂) (x : S₁) : (ofLe h x : P₁) = x :=
+theorem coe_inclusion_apply (h : S₁ ≤ S₂) (x : S₁) : (inclusion h x : P₁) = x :=
   rfl
 
 @[simp]
-theorem ofLe_rfl : ofLe (le_refl S₁) = AffineMap.id k S₁ := rfl
+theorem inclusion_rfl : inclusion (le_refl S₁) = AffineMap.id k S₁ := rfl
 
-end ofLe
+end inclusion
 
 @[simp]
 theorem map_top_of_surjective (hf : Function.Surjective f) : AffineSubspace.map f ⊤ = ⊤ := by
