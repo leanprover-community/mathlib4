@@ -1014,14 +1014,13 @@ end SMul
 
 section Module
 
-variable [Semiring S] [Module S M₂]
+variable [Semiring S] [Module S M₂] [SMulCommClass R₂ S M₂]
 
-instance module  [SMulCommClass R₂ S M₂] : Module S (M →ₛₗ[σ₁₂] M₂) where
+instance module : Module S (M →ₛₗ[σ₁₂] M₂) where
   add_smul _ _ _ := ext fun _ ↦ add_smul _ _ _
   zero_smul _ := ext fun _ ↦ zero_smul _ _
 
-instance [NoZeroSMulDivisors S M₂]  [SMulCommClass R₂ S M₂] :
-    NoZeroSMulDivisors S (M →ₛₗ[σ₁₂] M₂) :=
+instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (M →ₛₗ[σ₁₂] M₂) :=
   coe_injective.noZeroSMulDivisors _ rfl coe_smul
 
 end Module
