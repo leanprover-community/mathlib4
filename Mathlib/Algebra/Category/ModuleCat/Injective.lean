@@ -26,10 +26,8 @@ open CategoryTheory
 universe u v
 variable (R : Type u) [Ring R]
 
+instance : EnoughInjectives (ModuleCat.{v} ℤ) :=
+  EnoughInjectives.of_equivalence (forget₂ (ModuleCat ℤ) AddCommGroupCat)
+
 instance : EnoughInjectives (ModuleCat.{max v u} R) :=
-  EnoughInjectives.of_adjunction
-    (L := forget₂ (ModuleCat.{max v u} R) AddCommGroupCat.{max v u})
-    (R := (forget₂ (ModuleCat.{max v u} ℤ) AddCommGroupCat.{max v u}).asEquivalence.inverse ⋙
-      ModuleCat.coextendScalars (algebraMap ℤ R)) <|
-    (((ModuleCat.restrictCoextendScalarsAdj.{max v u} (algebraMap ℤ R))).comp <|
-      (forget₂ (ModuleCat ℤ) AddCommGroupCat).asEquivalence.toAdjunction).ofNatIsoLeft <| Iso.refl _
+  EnoughInjectives.of_adjunction (ModuleCat.restrictCoextendScalarsAdj.{max v u} (algebraMap ℤ R))

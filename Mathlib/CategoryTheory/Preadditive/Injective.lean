@@ -350,13 +350,12 @@ def mapInjectivePresentation (adj : F ⊣ G) [F.PreservesMonomorphisms] (X : D)
   then any injective presentation of `F(X)` can be pulled back to an injective presentation of `X`.
   This is similar to `mapInjectivePresentation`. -/
 def injectivePresentationOfMapInjectivePresentation (adj : F ⊣ G)
-    [F.PreservesMonomorphisms] [Faithful F] (X : C)
+    [F.PreservesMonomorphisms] [F.ReflectsMonomorphisms] (X : C)
     (I : InjectivePresentation <| F.obj X) :
     InjectivePresentation X where
   J := G.obj I.J
   injective := Injective.injective_of_adjoint adj _
   f := adj.homEquiv _ _ I.f
-  mono := (F.mono_map_iff_mono _).1 inferInstance
 
 end Adjunction
 
@@ -365,7 +364,7 @@ end Adjunction
 -/
 lemma EnoughInjectives.of_adjunction {C : Type u₁} {D : Type u₂}
     [Category.{v₁} C] [Category.{v₂} D]
-    {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) [Faithful L] [PreservesFiniteLimits L]
+    {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) [L.PreservesMonomorphisms] [L.ReflectsMonomorphisms]
     [EnoughInjectives D] : EnoughInjectives C where
   presentation _ :=
     ⟨adj.injectivePresentationOfMapInjectivePresentation _ (EnoughInjectives.presentation _).some⟩
