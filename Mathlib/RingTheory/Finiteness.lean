@@ -418,7 +418,7 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
 #align submodule.fg_iff_compact Submodule.fg_iff_compact
 
 open TensorProduct LinearMap in
-/-- Every `x : I ⊗ M` is the image of some `y : J ⊗ M` where `J ≤ I` is finitely generated,
+/-- Every `x : I ⊗ M` is the image of some `y : J ⊗ M`, where `J ≤ I` is finitely generated,
 under the tensor product of `J.inclusion ‹J ≤ I› : J → I` and the identity `M → M`. -/
 theorem exists_fg_le_eq_rTensor_inclusion {R M N : Type*} [CommRing R] [AddCommGroup M]
     [AddCommGroup N] [Module R M] [Module R N] {I : Submodule R N} (x : I ⊗ M) :
