@@ -27,7 +27,7 @@ example : Nat := by exact?
 
 namespace Mathlib.Tactic.LibrarySearch
 
-open Lean Meta Std.Tactic.TryThis
+open Lean Meta Std.Tactic TryThis
 
 initialize registerTraceClass `Tactic.librarySearch
 initialize registerTraceClass `Tactic.librarySearch.lemmas
@@ -94,7 +94,7 @@ def cachePath : IO FilePath :=
   try
     return (← findOLean `MathlibExtras.LibrarySearch).withExtension "extra"
   catch _ =>
-    return "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
+    return ".lake" / "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
 
 /--
 Retrieve the current current of lemmas.

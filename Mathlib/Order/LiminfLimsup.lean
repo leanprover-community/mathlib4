@@ -624,8 +624,9 @@ theorem liminf_le_liminf_of_le {α β} [ConditionallyCompleteLattice β] {f g : 
   limsInf_le_limsInf_of_le (map_mono h) hf hg
 #align filter.liminf_le_liminf_of_le Filter.liminf_le_liminf_of_le
 
-theorem limsSup_principal {s : Set α} (h : BddAbove s) (hs : s.Nonempty) : limsSup (𝓟 s) = sSup s :=
-  by simp only [limsSup, eventually_principal]; exact csInf_upper_bounds_eq_csSup h hs
+theorem limsSup_principal {s : Set α} (h : BddAbove s) (hs : s.Nonempty) :
+    limsSup (𝓟 s) = sSup s := by
+  simp only [limsSup, eventually_principal]; exact csInf_upper_bounds_eq_csSup h hs
 set_option linter.uppercaseLean3 false in
 #align filter.Limsup_principal Filter.limsSup_principal
 
