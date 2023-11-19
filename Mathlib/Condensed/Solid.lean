@@ -12,7 +12,7 @@ import Mathlib.Condensed.Limits
 
 # Solid abelian groups
 
-This file contains the definitioin of a solid abelian group: `CondensedAb.isSolid`. Solid abelian
+This file contains the definition of a solid abelian group: `CondensedAb.isSolid`. Solid abelian
 groups were introduced in [scholze2019condensed], Definition 5.1.
 -/
 
