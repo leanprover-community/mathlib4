@@ -11,25 +11,25 @@ import Mathlib.LinearAlgebra.Finsupp
 /-!
 # Tensor-Hom adjunction
 Consider two commutative rings `R` and `S` and `X` an `(R, S)`-bimodule.
-Consider the tensor functor `(X ⊗[R] .)` from the category of `R`-module to the category of
-`S`-module and the hom functor `X →ₗ[S] .` from the category of `S`-module to the category of
-`R`-module. They form an adjunction. In particular we have that
+Consider the tensor functor `(X ⊗[R] .)` from the category of left `R`-module to the category of
+right `S`-module and the hom functor `X →ₗ[Sᵐᵒᵖ] .` from the category of right `S`-module to the
+category of left `R`-module. They form an adjunction. In particular we have that
 ```
-Hom_S(X⊗[R]Y, Z) ≃ Hom_R(Y, Hom_S(X, Z))
+Hom_Sᵐᵒᵖ(X⊗[R]Y, Z) ≃ Hom_R(Y, Hom_Sᵐᵒᵖ(X, Z))
 ```
 
 ## Implementation notes
 
 1. Order of arguments
 ```
-Hom_S(Y⊗[R]X, Z) ≃ Hom_R(Y, Hom_S(X, Z))
+Hom_Sᵐᵒᵖ(Y⊗[R]X, Z) ≃ Hom_R(Y, Hom_Sᵐᵒᵖ(X, Z))
 ```
 is perhaps more natural to work with because all the argument have the same order.
-But currently mathlib4 does not know `Y⊗[R] X` is an `S`-module as well.
+But currently mathlib4 does not know `Y⊗[R] X` is an right `S`-module as well.
 
 2. Why not use the [`Tower` file](Mathlib/LinearAlgebra/TensorProduct/Tower.lean`)
 
-In our setting `X` is an `(R, S)` bimodule and `Y` an `R`-module and `Z` an `S`-module
+In our setting `X` is an `(R, S)`-bimodule and `Y` an `R`-module and `Z` an `S`-module
 so to use the `Tower` file, we need `S` to be an `R`-algebra which is a luxury we do not have.
 But note that in `Tower` file, `curry` and `uncurry` are both tri-linear maps. So `Tower` file
 allows interplay of 3 rings which is not allowed in this file.
@@ -151,13 +151,7 @@ variable (R' : Type u) [CommRing R']
 variable {M N : Type v} [AddCommGroup M] [AddCommGroup N]
 variable [Module R' M] [Module R' N]
 
-instance int_mop_module : Module R'ᵐᵒᵖ N :=
-    Module.compHom N ((RingHom.id R').fromOpposite fun _ _ => mul_comm _ _)
-
-instance int_mop_bimod {N' : Type v} [AddCommGroup N'] [Module R' N'] :
-    SMulCommClass R' ℤᵐᵒᵖ N' where
-  smul_comm r' z n := show r' • z.unop • n = z.unop • r' • n from smul_comm _ _ _
-
+open Bimodule in
 def _root_.LinearMap.toMulOpposite (l : M →ₗ[R'] N) : M →ₗ[R'ᵐᵒᵖ] N where
   __ := l
   map_smul' r m := l.map_smul r.unop m
