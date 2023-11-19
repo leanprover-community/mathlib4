@@ -542,7 +542,8 @@ instance inhabited (n : ℕ) [NeZero n] : Inhabited (Fin n) :=
   ⟨0⟩
 
 instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
-  ⟨letI : NeZero (1 + n) := (by rw [Nat.add_comm]; infer_instance); 0⟩
+  letI : NeZero (1 + n) := by rw [Nat.add_comm]; infer_instance
+  inferInstance
 
 @[simp]
 theorem default_eq_zero (n : ℕ) [NeZero n] : (default : Fin n) = 0 :=
