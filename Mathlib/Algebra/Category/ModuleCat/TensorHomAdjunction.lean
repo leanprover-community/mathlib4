@@ -151,12 +151,8 @@ variable (R' : Type u) [CommRing R']
 variable {M N : Type v} [AddCommGroup M] [AddCommGroup N]
 variable [Module R' M] [Module R' N]
 
-open Bimodule in
-def _root_.LinearMap.toMulOpposite (l : M →ₗ[R'] N) : M →ₗ[R'ᵐᵒᵖ] N where
-  __ := l
-  map_smul' r m := l.map_smul r.unop m
+open Bimodule ModuleCat
 
-open ModuleCat
 /--
 Constructing an additive group map from a tensor product by lifting a bi-additive group map that is
 compatible with scalar action.
@@ -166,7 +162,9 @@ noncomputable def toAddCommGroup {C : Type v} [AddCommGroup C]
     (b : M →+ (N →+ C)) (compatible_smul : ∀ (r : R') (m : M) (n : N), b (r • m) n = b m (r • n)) :
     (M ⊗[R'] N) →+ C :=
   (((tensorHomAdjunction R' ℤ N).homEquiv (of R' M) (of ℤᵐᵒᵖ C)).symm
-      { toFun := fun m => (b m).toIntLinearMap.toMulOpposite
+      { toFun := fun m =>
+        { __ := (b m).toIntLinearMap
+          map_smul' := fun _ _ => (b m).toIntLinearMap.map_smul _ _ }
         map_add' := fun _ _ => by dsimp; rw [b.map_add]; rfl
         map_smul' := fun _ _ => LinearMap.ext fun _ => compatible_smul _ _ _ }).toAddMonoidHom.comp
     (TensorProduct.comm R' M N).toLinearMap.toAddMonoidHom
