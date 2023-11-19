@@ -708,7 +708,7 @@ protected theorem div_left_inj {a b d : ℕ} (hda : d ∣ a) (hdb : d ∣ b) : a
 #align nat.div_left_inj Nat.div_left_inj
 
 theorem div_mul_div_comm {l : ℕ} (hmn : n ∣ m) (hkl : l ∣ k) :
-    m / n * (k / l) = m * k / (n * l) := by
+    (m / n) * (k / l) = (m * k) / (n * l) := by
   obtain ⟨x, rfl⟩ := hmn
   obtain ⟨y, rfl⟩ := hkl
   rcases n.eq_zero_or_pos with rfl | hn
