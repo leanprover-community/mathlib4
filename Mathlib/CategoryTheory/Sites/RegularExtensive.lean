@@ -238,21 +238,18 @@ lemma isSheafFor_regular_of_projective {X : C} (S : Presieve X) [S.regular] [Pro
   · simp only [← h (), ← FunctorToTypes.map_comp_apply, ← op_comp, Projective.factorThru_comp,
       op_id, FunctorToTypes.map_id_apply]
 
-lemma isSheaf_iff_equalizerCondition (F : Cᵒᵖ ⥤ Type (max u v)) [Preregular C] [HasPullbacks C] :
+lemma EqualizerCondition.isSheaf_iff (F : Cᵒᵖ ⥤ Type (max u v))
+    [∀ ⦃X Y : C⦄ (π : X ⟶ Y) [EffectiveEpi π], HasPullback π π] [Preregular C] :
     Presieve.IsSheaf (regularCoverage C).toGrothendieck F ↔ EqualizerCondition F := by
   rw [Presieve.isSheaf_coverage]
-  refine ⟨fun h ↦ equalizerCondition_of_regular fun S _ _ ↦ h S ?_, fun h X S ⟨Y, f, hh⟩ ↦ ?_⟩
-  · obtain ⟨Y, f, rfl, _⟩ := Presieve.regular.single_epi (R := S)
-    exact ⟨Y, f, rfl, inferInstance⟩
-  · have : S.regular := ⟨Y, f, hh⟩
-    exact h.isSheafFor
+  refine ⟨fun h ↦ equalizerCondition_of_regular fun S ⟨Y, f, hh⟩ _ ↦ h S ⟨Y, f, hh⟩, ?_⟩
+  rintro h X S ⟨Y, f, rfl, hf⟩
+  exact @isSheafFor _ _ _ _ ⟨Y, f, rfl, hf⟩ ⟨fun g _ h ↦ by cases g; cases h; infer_instance⟩ _ h
 
 lemma isSheaf_of_projective (F : Cᵒᵖ ⥤ Type (max u v)) [Preregular C] [∀ (X : C), Projective X] :
-    Presieve.IsSheaf (regularCoverage C).toGrothendieck F := by
-  rw [Presieve.isSheaf_coverage]
-  intro X S ⟨Y, f, hh⟩
-  haveI : S.regular := ⟨Y, f, hh⟩
-  exact isSheafFor_regular_of_projective _ _
+    IsSheaf (regularCoverage C).toGrothendieck F :=
+  (isSheaf_coverage _ _).mpr fun S ⟨_, h⟩ ↦ have : S.regular := ⟨_, h⟩
+    isSheafFor_regular_of_projective _ _
 
 end RegularSheaves
 
