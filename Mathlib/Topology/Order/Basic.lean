@@ -954,7 +954,7 @@ theorem tendsto_order_unbounded {f : β → α} {a : α} {x : Filter β} (hu : �
 
 end Preorder
 
-instance tendstoIxxNhdsWithin {α : Type*} [Preorder α] [TopologicalSpace α] (a : α) {s t : Set α}
+instance tendstoIxxNhdsWithin {α : Type*} [TopologicalSpace α] (a : α) {s t : Set α}
     {Ixx} [TendstoIxxClass Ixx (𝓝 a) (𝓝 a)] [TendstoIxxClass Ixx (𝓟 s) (𝓟 t)] :
     TendstoIxxClass Ixx (𝓝[s] a) (𝓝[t] a) :=
   Filter.tendstoIxxClass_inf

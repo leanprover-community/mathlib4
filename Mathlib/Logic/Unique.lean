@@ -271,7 +271,7 @@ theorem uniqueElim_const {_ : Unique ι} (x : β) (i : ι) : uniqueElim (α := f
 end Pi
 
 -- TODO: Mario turned this off as a simp lemma in Std, wanting to profile it.
-attribute [simp] eq_iff_true_of_subsingleton in
+attribute [local simp] eq_iff_true_of_subsingleton in
 theorem Unique.bijective {A B} [Unique A] [Unique B] {f : A → B} : Function.Bijective f := by
   rw [Function.bijective_iff_has_inverse]
   refine' ⟨default, _, _⟩ <;> intro x <;> simp
