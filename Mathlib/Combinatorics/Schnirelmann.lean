@@ -37,7 +37,7 @@ which reduces the proof obligations later that would arise with `Nat.card`.
 
 ## References
 
-Ruzsa, Imre. (2009). Sumsets and structure. Combinatorial Number Theory and Additive Group Theory.
+* [Ruzsa, Imre, *Sumsets and structure*][ruzsa2009]
 -/
 
 open Finset
