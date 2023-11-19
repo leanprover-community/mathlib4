@@ -107,20 +107,9 @@ lemma univ_eq_interior_union_boundary : (SmoothManifoldWithCorners.interior I M)
   · exact fun x _ ↦ trivial
   · exact fun x _ ↦ isInteriorPoint_or_isBoundaryPoint x
 
--- this should be in mathlib; cannot find it now!
-lemma aux {s : Set M} : IsOpen s ↔ ∀ x, x ∈ s → ∃ t : Set M, x ∈ t ∧ t ⊆ s ∧ IsOpen t := by
-  constructor
-  · intro h x hx
-    rcases mem_nhds_iff.mp (h.mem_nhds hx) with ⟨t, hts, htopen, hxt⟩
-    use t
-  · sorry -- exercise for now
-
-lemma aux' {s : Set M} (h : ∀ x, x ∈ s → ∃ t : Set M, x ∈ t ∧ t ⊆ s ∧ IsOpen t) : IsOpen s :=
-  aux.mpr h
-
 /-- Ihe interior of a smooth manifold is an open subset. -/
 lemma interior_isOpen : IsOpen (SmoothManifoldWithCorners.interior I M) := by
-  apply aux'
+  apply isOpen_iff_forall_mem_open.mpr
   intro x hx
   -- Consider the preferred chart at `x`.
   let e := chartAt H x
@@ -133,16 +122,16 @@ lemma interior_isOpen : IsOpen (SmoothManifoldWithCorners.interior I M) := by
     fun y hy ↦ isInteriorPoint_iff (chart_mem_atlas H x) hy
   use (e.extend I).source ∩ (e.extend I) ⁻¹' U
   refine ⟨?_, ?_, ?_⟩
-  · have : x ∈ (e.extend I).source := by
-      rw [e.extend_source]
-      exact mem_chart_source H x
-    exact mem_inter this hx
   · intro y hy
     rw [e.extend_source] at hy
     apply (this y (mem_of_mem_inter_left hy)).mpr
     have : y ∈ (LocalHomeomorph.extend e I) ⁻¹' U := mem_of_mem_inter_right hy
     exact this
   · exact (e.continuousOn_extend I).preimage_open_of_open (e.isOpen_extend_source I) hU
+  · have : x ∈ (e.extend I).source := by
+      rw [e.extend_source]
+      exact mem_chart_source H x
+    exact mem_inter this hx
 
 /-- The boundary of any extended chart has empty interior. -/
 -- NB: this is *false* for any set instead of (e.extend I).target:
