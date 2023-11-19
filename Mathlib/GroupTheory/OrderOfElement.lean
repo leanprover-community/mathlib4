@@ -627,11 +627,19 @@ theorem orderOf_inv (x : G) : orderOf x⁻¹ = orderOf x := by simp [orderOf_eq_
 #align order_of_inv orderOf_inv
 #align order_of_neg addOrderOf_neg
 
+namespace Subgroup
+variable {H : Subgroup G}
+
 @[to_additive (attr := norm_cast)] -- Porting note: simp can prove this (so removed simp)
-theorem orderOf_subgroup {H : Subgroup G} (y : H) : orderOf (y : G) = orderOf y :=
-  orderOf_injective H.subtype Subtype.coe_injective y
-#align order_of_subgroup orderOf_subgroup
-#align order_of_add_subgroup addOrderOf_addSubgroup
+lemma orderOf_coe (a : H) : orderOf (a : G) = orderOf a :=
+  orderOf_injective H.subtype Subtype.coe_injective _
+#align order_of_subgroup Subgroup.orderOf_coe
+#align order_of_add_subgroup AddSubgroup.addOrderOf_coe
+
+@[to_additive (attr := simp)]
+lemma orderOf_mk (a : G) (ha) : orderOf (⟨a, ha⟩ : H) = orderOf a := (orderOf_coe _).symm
+
+end Subgroup
 
 @[to_additive mod_addOrderOf_zsmul]
 lemma zpow_mod_orderOf (x : G) (z : ℤ) : x ^ (z % (orderOf x : ℤ)) = x ^ z :=
@@ -942,25 +950,25 @@ end Finite
 
 variable [Fintype G] {x : G} {n : ℕ}
 
-/-- See also `Nat.card_zpowers'`. -/
-@[to_additive addOrderOf_eq_card_zmultiples "See also `Nat.card_zmultiples'`."]
-theorem orderOf_eq_card_zpowers : orderOf x = Fintype.card (zpowers x) :=
-  (Fintype.card_fin (orderOf x)).symm.trans $
-    Fintype.card_eq.2 ⟨finEquivZpowers x $ isOfFinOrder_of_finite _⟩
-#align order_eq_card_zpowers orderOf_eq_card_zpowers
-#align add_order_eq_card_zmultiples addOrderOf_eq_card_zmultiples
+/-- See also `Nat.card_addSubgroupZpowers`. -/
+@[to_additive Fintype.card_zmultiples "See also `Nat.card_subgroup`."]
+theorem Fintype.card_zpowers : Fintype.card (zpowers x) = orderOf x :=
+  (Fintype.card_eq.2 ⟨finEquivZpowers x $ isOfFinOrder_of_finite _⟩).symm.trans $
+    Fintype.card_fin (orderOf x)
+#align order_eq_card_zpowers Fintype.card_zpowers
+#align add_order_eq_card_zmultiples Fintype.card_zmultiples
 
 @[to_additive card_zmultiples_le]
 theorem card_zpowers_le (a : G) {k : ℕ} (k_pos : k ≠ 0)
     (ha : a ^ k = 1) : Fintype.card (Subgroup.zpowers a) ≤ k := by
-  rw [← orderOf_eq_card_zpowers]
+  rw [Fintype.card_zpowers]
   apply orderOf_le_of_pow_eq_one k_pos.bot_lt ha
 
 open QuotientGroup
 
 
 @[to_additive]
-theorem orderOf_dvd_card_univ : orderOf x ∣ Fintype.card G := by
+theorem orderOf_dvd_card : orderOf x ∣ Fintype.card G := by
   classical
     have ft_prod : Fintype ((G ⧸ zpowers x) × zpowers x) :=
       Fintype.ofEquiv G groupEquivQuotientProdSubgroup
@@ -978,24 +986,39 @@ theorem orderOf_dvd_card_univ : orderOf x ∣ Fintype.card G := by
 
     have eq₂ : orderOf x = @Fintype.card _ ft_s :=
       calc
-        orderOf x = _ := orderOf_eq_card_zpowers
+        orderOf x = _ := Fintype.card_zpowers.symm
         _ = _ := congr_arg (@Fintype.card _) <| Subsingleton.elim _ _
 
     exact Dvd.intro (@Fintype.card (G ⧸ Subgroup.zpowers x) ft_cosets) (by rw [eq₁, eq₂, mul_comm])
-#align order_of_dvd_card_univ orderOf_dvd_card_univ
-#align add_order_of_dvd_card_univ addOrderOf_dvd_card_univ
+#align order_of_dvd_card_univ orderOf_dvd_card
+#align add_order_of_dvd_card_univ addOrderOf_dvd_card
 
 @[to_additive]
-theorem orderOf_dvd_nat_card {G : Type*} [Group G] {x : G} : orderOf x ∣ Nat.card G := by
+theorem orderOf_dvd_natCard {G : Type*} [Group G] (x : G) : orderOf x ∣ Nat.card G := by
   cases' fintypeOrInfinite G with h h
-  · simp only [Nat.card_eq_fintype_card, orderOf_dvd_card_univ]
+  · simp only [Nat.card_eq_fintype_card, orderOf_dvd_card]
   · simp only [card_eq_zero_of_infinite, dvd_zero]
-#align order_of_dvd_nat_card orderOf_dvd_nat_card
-#align add_order_of_dvd_nat_card addOrderOf_dvd_nat_card
+#align order_of_dvd_nat_card orderOf_dvd_natCard
+#align add_order_of_dvd_nat_card addOrderOf_dvd_natCard
+
+@[to_additive]
+nonrec lemma Subgroup.orderOf_dvd_natCard (s : Subgroup G) (hx : x ∈ s) :
+  orderOf x ∣ Nat.card s := by simpa using orderOf_dvd_natCard (⟨x, hx⟩ : s)
+
+@[to_additive]
+lemma Subgroup.orderOf_le_card (s : Subgroup G) (hs : (s : Set G).Finite) (hx : x ∈ s) :
+    orderOf x ≤ Nat.card s :=
+  le_of_dvd (Nat.card_pos_iff.2 $ ⟨s.coe_nonempty.to_subtype, hs.to_subtype⟩) $
+    s.orderOf_dvd_natCard hx
+
+@[to_additive]
+lemma Submonoid.orderOf_le_card (s : Submonoid G) (hs : (s : Set G).Finite) (hx : x ∈ s) :
+    orderOf x ≤ Nat.card s := by
+  rw [← Nat.card_submonoidPowers]; exact Nat.card_mono hs $ powers_le.2 hx
 
 @[to_additive (attr := simp) card_nsmul_eq_zero']
 theorem pow_card_eq_one' {G : Type*} [Group G] {x : G} : x ^ Nat.card G = 1 :=
-  orderOf_dvd_iff_pow_eq_one.mp orderOf_dvd_nat_card
+  orderOf_dvd_iff_pow_eq_one.mp $ orderOf_dvd_natCard _
 #align pow_card_eq_one' pow_card_eq_one'
 #align card_nsmul_eq_zero' card_nsmul_eq_zero'
 
@@ -1013,13 +1036,13 @@ theorem Subgroup.pow_index_mem {G : Type*} [Group G] (H : Subgroup G) [Normal H]
 
 @[to_additive]
 theorem pow_eq_mod_card (n : ℕ) : x ^ n = x ^ (n % Fintype.card G) := by
-  rw [←pow_mod_orderOf, ← Nat.mod_mod_of_dvd n orderOf_dvd_card_univ, pow_mod_orderOf]
+  rw [←pow_mod_orderOf, ← Nat.mod_mod_of_dvd n orderOf_dvd_card, pow_mod_orderOf]
 #align pow_eq_mod_card pow_eq_mod_card
 #align nsmul_eq_mod_card nsmul_eq_mod_card
 
 @[to_additive]
 theorem zpow_eq_mod_card (n : ℤ) : x ^ n = x ^ (n % Fintype.card G : ℤ) := by
-  rw [←zpow_mod_orderOf, ← Int.emod_emod_of_dvd n (Int.coe_nat_dvd.2 orderOf_dvd_card_univ),
+  rw [←zpow_mod_orderOf, ← Int.emod_emod_of_dvd n (Int.coe_nat_dvd.2 orderOf_dvd_card),
     zpow_mod_orderOf]
 #align zpow_eq_mod_card zpow_eq_mod_card
 #align zsmul_eq_mod_card zsmul_eq_mod_card
@@ -1062,8 +1085,8 @@ theorem inf_eq_bot_of_coprime {G : Type*} [Group G] {H K : Subgroup G} [Fintype 
   refine' (H ⊓ K).eq_bot_iff_forall.mpr fun x hx => _
   rw [← orderOf_eq_one_iff, ← Nat.dvd_one, ← h.gcd_eq_one, Nat.dvd_gcd_iff]
   exact
-    ⟨(congr_arg (· ∣ Fintype.card H) (orderOf_subgroup ⟨x, hx.1⟩)).mpr orderOf_dvd_card_univ,
-      (congr_arg (· ∣ Fintype.card K) (orderOf_subgroup ⟨x, hx.2⟩)).mpr orderOf_dvd_card_univ⟩
+    ⟨(congr_arg (· ∣ Fintype.card H) (orderOf_coe ⟨x, hx.1⟩)).mpr orderOf_dvd_card,
+      (congr_arg (· ∣ Fintype.card K) (orderOf_coe ⟨x, hx.2⟩)).mpr orderOf_dvd_card⟩
 #align inf_eq_bot_of_coprime inf_eq_bot_of_coprime
 #align add_inf_eq_bot_of_coprime add_inf_eq_bot_of_coprime
 
@@ -1152,7 +1175,7 @@ theorem LinearOrderedRing.orderOf_le_two : orderOf x ≤ 2 := by
   cases' ne_or_eq |x| 1 with h h
   · simp [orderOf_abs_ne_one h]
   rcases eq_or_eq_neg_of_abs_eq h with (rfl | rfl)
-  · simp
+  · simp; decide
   apply orderOf_le_of_pow_eq_one <;> norm_num
 #align linear_ordered_ring.order_of_le_two LinearOrderedRing.orderOf_le_two
 

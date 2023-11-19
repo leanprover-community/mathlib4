@@ -151,8 +151,9 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
     refine ⟨E, isCompact_iff_compactSpace.mp E_closed.isCompact, E_surj, ?_⟩
     intro E₀ E₀_min E₀_closed
     contrapose! E₀_min
-    exact eq_univ_of_coe_eq <|
-      E_min E₀ ⟨E₀_closed.trans E_closed, image_coe_eq_restrict_image ▸ E₀_min⟩ coe_subset
+    exact eq_univ_of_image_val_eq <|
+      E_min E₀ ⟨E₀_closed.trans E_closed, image_image_val_eq_restrict_image ▸ E₀_min⟩
+        image_val_subset
   -- suffices to prove intersection of chain is minimal
   intro C C_sub C_chain
   -- prove intersection of chain is closed
