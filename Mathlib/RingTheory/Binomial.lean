@@ -65,7 +65,7 @@ theorem factorial_mul_multichoose_eq_ascPochhammer [BinomialSemiring R] (r : R) 
   BinomialSemiring.factorial_smul_multichoose r n
 
 theorem ascPochhammer_smeval_eq_eval (n k : ℕ) :
-  Polynomial.smeval (ascPochhammer ℕ k) n = Polynomial.eval n (ascPochhammer ℕ k) := by
+    Polynomial.smeval (ascPochhammer ℕ k) n = Polynomial.eval n (ascPochhammer ℕ k) := by
   rw [Polynomial.smeval_eq_eval]
 
 instance naturals_binomial_semiring : BinomialSemiring ℕ := by
@@ -96,7 +96,8 @@ namespace Ring
 
 variable [BinomialRing R]
 
-theorem ascPochhammer_smeval_nat_int (r : R) : ∀(n : ℕ), Polynomial.smeval (ascPochhammer ℤ n) r = Polynomial.smeval (ascPochhammer ℕ n) r
+theorem ascPochhammer_smeval_nat_int (r : R) :
+    ∀(n : ℕ), Polynomial.smeval (ascPochhammer ℤ n) r = Polynomial.smeval (ascPochhammer ℕ n) r
   | 0 => by
     simp only [ascPochhammer_zero, Polynomial.smeval_one]
   | n + 1 => by

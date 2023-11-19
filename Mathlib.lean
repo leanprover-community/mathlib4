@@ -171,6 +171,7 @@ import Mathlib.Algebra.Group.MinimalAxioms
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.OrderSynonym
 import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.PowAssoc
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Semiconj.Basic
 import Mathlib.Algebra.Group.Semiconj.Defs
@@ -1754,6 +1755,7 @@ import Mathlib.Data.Polynomial.Monomial
 import Mathlib.Data.Polynomial.PartialFractions
 import Mathlib.Data.Polynomial.Reverse
 import Mathlib.Data.Polynomial.RingDivision
+import Mathlib.Data.Polynomial.Smeval
 import Mathlib.Data.Polynomial.Splits
 import Mathlib.Data.Polynomial.Taylor
 import Mathlib.Data.Polynomial.UnitTrinomial

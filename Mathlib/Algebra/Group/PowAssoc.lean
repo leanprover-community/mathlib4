@@ -35,7 +35,9 @@ section NonUnital
 
 /-- A power operation. `ppowRec n a = a*(a*(⋯*a)⋯)` n times. -/
 def ppowRec [Mul M] : ℕ+ → M → M :=
-  let rec loop : ℕ → M → M
+  let rec
+  /-- An auxiliary function for easy induction on ℕ. -/
+    loop : ℕ → M → M
     | 0 => fun x ↦ x
     | n + 1 => fun x ↦ x * loop n x
   fun n x => loop (PNat.natPred n) x
@@ -49,7 +51,9 @@ theorem ppowRec_succ [Mul M] (x : M) (n: ℕ+) : ppowRec (n+1) x = x * ppowRec n
 
 /-- A scalar multiplication. `psmulRec n a = a+(a+(⋯+a)⋯)` n times. -/
 def psmulRec [Add M] : ℕ+ → M → M :=
-  let rec loop : ℕ → M → M
+  let rec
+    /-- An auxiliary function for easy induction on ℕ. -/
+    loop : ℕ → M → M
     | 0 => fun x ↦ x
     | n + 1 => fun x ↦ x + loop n x
   fun n x => loop (PNat.natPred n) x
@@ -148,7 +152,8 @@ instance Semiring.PowAssoc [Semiring M] : PowAssoc M := by
 
 theorem npowRec_eq_pow [MulOneClass M] [PowAssoc M] (n : ℕ) (x : M) : npowRec n x = x ^ n := rfl
 
-theorem nsmulRec_eq_smul [AddZeroClass M] [NsmulAssoc M] (n : ℕ) (x : M) : nsmulRec n x = n • x := rfl
+theorem nsmulRec_eq_smul [AddZeroClass M] [NsmulAssoc M] (n : ℕ) (x : M) :
+    nsmulRec n x = n • x := rfl
 
 theorem npow_zero [MulOneClass M] [PowAssoc M] (x : M) : x ^ 0 = 1 := rfl
 

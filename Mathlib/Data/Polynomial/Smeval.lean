@@ -65,6 +65,7 @@ section NonUnital
 
 variable [AddCommMonoid S] [MulActionWithZero R S] [Pow S ℕ+] (p: ℕ+ →₀ R) (x : S)
 
+/-- Scalar multiplication by a positive power. -/
 def smul_ppow : ℕ+ → R → S := fun n r => r • x^n
 
 /-- Evaluate a polynomial `p` in the scalar commutative semiring `R` with vanishing constant term at
@@ -94,6 +95,7 @@ section Unital
 
 variable [AddCommMonoid S] [MulActionWithZero R S] [Pow S ℕ] (p q : R[X]) (r : R) (x : S)
 
+/-- Scalar multiplication by a natural number power. -/
 def smul_pow : ℕ → R → S := fun n r => r • x^n
 
 /-- Evaluate a polynomial `p` in the scalar commutative semiring `R` at an element `x` in the target
@@ -152,7 +154,7 @@ section UnitalPowAssoc
 
 variable [NonAssocSemiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S]
 
-variable [PowAssoc S] -- Power-associativity is for nontrivial theorems.
+variable [PowAssoc S] -- Unfortunately the theorems here can't be used in the associative case.
 
 variable (x : S) (p q : R[X])
 
