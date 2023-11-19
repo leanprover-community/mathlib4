@@ -84,29 +84,74 @@ lemma isLocalDiffeomorph_iff {f : M → N} :
 lemma Diffeomorph.isLocalDiffeomorph (Φ : M ≃ₘ^n⟮I, J⟯ N) : IsLocalDiffeomorph I J M N n Φ := by
   intro x
   use ⟨univ, isOpen_univ⟩, ⟨univ, isOpen_univ⟩
-  use sorry -- xxx: use Φ now; don't have the same type!!
+  use sorry -- xxx: want to use Φ, but cannot as they have different types!
   refine ⟨trivial, ?_⟩
-  -- obvious once this is shown
+  -- obvious once I'm using Φ
   sorry
 
--- TODO: the image of a local diffeomorphism is open
--- def LocalDiffeomorph.image {f : M → N} (hf : IsLocalDiffeomorph I J M N n f) : Opens N := sorry
--- lemma LocalDiffeomorph.image_coe {f : M → N} (hf : IsLocalDiffeomorph I J M N n f) :
---  (LocalDiffeomorph.image I J M N n hf).1 = range f := sorry
--- then deduce the following as a special case
+/-- The image of a local diffeomorphism is open. -/
+def LocalDiffeomorph.image {f : M → N} (hf : IsLocalDiffeomorph I J M N n f) : Opens N := by
+  refine ⟨range f, ?_⟩
+  apply isOpen_iff_forall_mem_open.mpr
+  intro y hy
+  -- Given y = f x ∈ range f, we need to find V ⊆ N open containing y.
+  rw [mem_range] at hy
+  rcases hy with ⟨x, hxy⟩
+  -- Is f is a local diffeo, on some open set U ∋ x it agrees with a diffeo Φ : U → V.
+  choose U V Φ hyp using hf x
+  rcases hyp with ⟨hxU, heq⟩
+  -- Then V does what we want.
+  refine ⟨V, ?_, V.2, ?_⟩
+  · -- V ⊆ range f is easy: for y ∈ V, we have y = f x' = φ x' ∈ φ U = V
+    -- FIXME: making this precise leaves me stuck in DTT hell...
+    intro y' hy'
+    obtain ⟨x', hx'U⟩ := Φ.invFun ⟨y', hy'⟩
+    have : Φ ⟨x', hx'U⟩ = y' := by sorry --apply Φ.right_inv ⟨y', hy'⟩
+    have aux2 : Φ ⟨x', hx'U⟩ = f x' := by
+      let r := heq ⟨x', hx'U⟩
+      sorry
+    rw [← this, aux2]
+    exact mem_range_self x'
+  · rw [← hxy, heq ⟨x, hxU⟩] -- xxx: is there a nicer proof?
+    exact Subtype.mem (Φ { val := x, property := hxU })
+
+lemma LocalDiffeomorph.image_coe {f : M → N} (hf : IsLocalDiffeomorph I J M N n f) :
+  (LocalDiffeomorph.image I J M N n hf).1 = range f := rfl
+
+/-- A local diffeomorphism is a diffeomorphism to its image. -/
+def LocalDiffeomorph.toDiffeomorphImage {f : M → N} (hf : IsLocalDiffeomorph I J M N n f) :
+    Diffeomorph I J M (LocalDiffeomorph.image I J M N n hf) n := sorry -- TODO!
 
 /-- A bijective local diffeomorphism is a diffeomorphism. -/
 def Diffeomorph.of_bijective_local_diffeomorph {f : M → N} (hf : IsLocalDiffeomorph I J M N n f)
-    (hf' : Bijective f) : Diffeomorph I J M N n := sorry
+    (hf' : Bijective f) : Diffeomorph I J M N n := by
+  have : (LocalDiffeomorph.image I J M N n hf).1 = (univ : Set N) := by
+    rw [LocalDiffeomorph.image_coe]
+    exact range_iff_surjective.mpr hf'.surjective
+  -- Hmm: I cannot easily conclude `LocalDiffeomorph.image I J M N n hf = N` for type reasons...
+  let r := LocalDiffeomorph.toDiffeomorphImage I J M N n hf
+  set im := LocalDiffeomorph.image I J M N n hf
+  have : im = ⟨univ, isOpen_univ⟩ := sorry -- is this true, as "the second component is unique"??!!
+  rw [this] at r -- doesn't give what I want!
+  sorry
 
 section Differential
-variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N] {f : M → N} {x : M}
+variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
+  {f : M → N} {x : M} (hn : 1 ≤ n)
 
 /-- If `f` is a `C^n` local diffeomorphism at `x`, for `n ≥ 1`,
   the differential `df_x` is a linear equivalence. -/
-  -- LocalDiffeomorphAt.differential_toContinuousLinearEquiv
-lemma LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv (hf : IsLocalDiffeomorphAt I J M N n f x) :
-    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) := by
+lemma LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv (hf : IsLocalDiffeomorphAt I J M N n f x)
+    (hn : 1 ≤ n) : ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) := by
+  choose U V Φ hyp using hf
+  rcases hyp with ⟨hxU, _⟩
+  exact Φ.mfderiv_toContinuousLinearEquiv hn ⟨x, hxU⟩
+
+lemma LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe (hf : IsLocalDiffeomorphAt I J M N n f x) :
+    LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv I J M N n hf hn = mfderiv I J f x := by
+  --choose U V Φ hyp using hf
+  --rcases hyp with ⟨hxU, _⟩
+  -- have : mfderiv I J f x = mfderiv I J Φ ⟨x, hxU⟩ := sorry
   sorry
 
 end Differential
