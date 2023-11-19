@@ -454,7 +454,7 @@ theorem FiniteAtFilter.exists_mem_basis {f : Filter α} (hμ : FiniteAtFilter μ
 #align measure_theory.measure.finite_at_filter.exists_mem_basis MeasureTheory.Measure.FiniteAtFilter.exists_mem_basis
 
 theorem finiteAtBot {m0 : MeasurableSpace α} (μ : Measure α) : μ.FiniteAtFilter ⊥ :=
-  ⟨∅, mem_bot, by simp only [measure_empty, WithTop.zero_lt_top]⟩
+  ⟨∅, mem_bot, by simp only [OuterMeasure.empty', zero_lt_top]⟩
 #align measure_theory.measure.finite_at_bot MeasureTheory.Measure.finiteAtBot
 
 /-- `μ` has finite spanning sets in `C` if there is a countable sequence of sets in `C` that have
