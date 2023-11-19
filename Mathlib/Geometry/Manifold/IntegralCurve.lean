@@ -35,16 +35,14 @@ variable
   {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] [SmoothManifoldWithCorners I' M']
 
-lemma ModelWithCorners.Boundaryless.isOpen_target
-    [I.Boundaryless] {x : M} : IsOpen (extChartAt I x).target := by
-rw [extChartAt_target, ModelWithCorners.Boundaryless.range_eq_univ, Set.inter_univ]
-exact (ModelWithCorners.continuous_symm _).isOpen_preimage _ (LocalHomeomorph.open_target _)
+lemma ModelWithCorners.isOpen_target [I.Boundaryless] {x : M} : IsOpen (extChartAt I x).target := by
+  rw [extChartAt_target, I.range_eq_univ, Set.inter_univ]
+  exact I.continuous_symm.isOpen_preimage _ (LocalHomeomorph.open_target _)
 
-lemma ModelWithCorners.Boundaryless.isInteriorPoint
-    [I.Boundaryless] {x : M} : I.IsInteriorPoint x := by
-rw [ModelWithCorners.IsInteriorPoint,
-  IsOpen.interior_eq ModelWithCorners.Boundaryless.isOpen_target]
-exact LocalEquiv.map_source _ (mem_extChartAt_source _ _)
+lemma ModelWithCorners.Boundaryless.isInteriorPoint [I.Boundaryless] {x : M} :
+    I.isInteriorPoint x := by
+  rw [ModelWithCorners.isInteriorPoint, IsOpen.interior_eq I.isOpen_target]
+  exact LocalEquiv.map_source _ (mem_extChartAt_source _ _)
 
 end
 
@@ -65,7 +63,7 @@ def HasIntegralCurveAt (v : (x : M) → TangentSpace I x) (γ : ℝ → M) (x₀
 /-- For any continuously differentiable vector field and any chosen non-boundary point `x₀` on the
   manifold, an integral curve `γ : ℝ → M` exists such that `γ t₀ = x₀` and the tangent vector of `γ`
   at `t` coincides with the vector field at `γ t` for all `t` within an open interval around `t₀`.-/
-theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoint x₀) :
+theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.isInteriorPoint x₀) :
     ∃ (γ : ℝ → M), HasIntegralCurveAt v γ x₀ t₀ := by
 rw [contMDiffAt_iff] at hv
 obtain ⟨_, hv⟩ := hv
