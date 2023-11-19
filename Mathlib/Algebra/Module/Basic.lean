@@ -353,31 +353,6 @@ instance (priority := 910) Semiring.toOppositeModule [Semiring R] : Module Rᵐ�
     add_smul := fun _ _ _ => mul_add _ _ _ }
 #align semiring.to_opposite_module Semiring.toOppositeModule
 
-/-- for commutative rings, right modules and left modules are the same -/
-def Module.fromOppositeModule [CommSemiring R] [AddCommMonoid M] [Module Rᵐᵒᵖ M] :
-    Module R M :=
-  Module.compHom M ((RingHom.id R).toOpposite fun _ _ => mul_comm _ _)
-
-/-- for commutative rings, right modules and left modules are the same -/
-def Module.toOppositeModule [CommSemiring R] [AddCommMonoid M] [Module R M] :
-    Module Rᵐᵒᵖ M :=
-  Module.compHom M ((RingHom.id R).fromOpposite fun _ _ => mul_comm _ _)
-
-scoped[Bimodule] attribute [instance] Module.fromOppositeModule Module.toOppositeModule
-
-open Bimodule in
-lemma Module.fromOppositeModule_smul_def [CommSemiring R] [AddCommMonoid M] [Module Rᵐᵒᵖ M]
-    (r : R) (m : M) :
-  r • m = (MulOpposite.op r) • m := rfl
-
-open Bimodule in
-/-- For any ring `R`, any `R`-module is also an `(R, ℤ)`-bimodule. -/
-def Module.intMopBimodule [Semiring R] [AddCommGroup M] [Module R M] :
-    SMulCommClass R ℤᵐᵒᵖ M where
-  smul_comm r' z n := show r' • z.unop • n = z.unop • r' • n from smul_comm _ _ _
-
-scoped[Bimodule] attribute [instance] Module.intMopBimodule
-
 /-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`. -/
 def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
