@@ -2,16 +2,13 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.closed.monoidal
-! leanprover-community/mathlib commit 0caf3701139ef2e69c215717665361cda205a90b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Functor.InvIsos
+
+#align_import category_theory.closed.monoidal from "leanprover-community/mathlib"@"0caf3701139ef2e69c215717665361cda205a90b"
 
 /-!
 # Closed monoidal categories
@@ -76,7 +73,11 @@ def unitClosed : Closed (𝟙_ C) where
                 right_inv := by aesop_cat }
             homEquiv_naturality_left_symm := fun f g => by
               dsimp
-              rw [leftUnitor_naturality_assoc] } }
+              rw [leftUnitor_naturality_assoc]
+            -- This used to be automatic before leanprover/lean4#2644
+            homEquiv_naturality_right := by  -- aesop failure
+              dsimp
+              simp }}
 #align category_theory.unit_closed CategoryTheory.unitClosed
 
 variable (A B : C) {X X' Y Y' Z : C}
@@ -164,12 +165,14 @@ def uncurry : (Y ⟶ A ⟶[C] X) → (A ⊗ Y ⟶ X) :=
   ((ihom.adjunction A).homEquiv _ _).symm
 #align category_theory.monoidal_closed.uncurry CategoryTheory.MonoidalClosed.uncurry
 
-@[simp]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
 theorem homEquiv_apply_eq (f : A ⊗ Y ⟶ X) : (ihom.adjunction A).homEquiv _ _ f = curry f :=
   rfl
 #align category_theory.monoidal_closed.hom_equiv_apply_eq CategoryTheory.MonoidalClosed.homEquiv_apply_eq
 
-@[simp]
+-- This lemma has always been bad, but the linter only noticed after lean4#2644.
+@[simp, nolint simpNF]
 theorem homEquiv_symm_apply_eq (f : Y ⟶ A ⟶[C] X) :
     ((ihom.adjunction A).homEquiv _ _).symm f = uncurry f :=
   rfl
@@ -304,8 +307,8 @@ variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
 /-- Transport the property of being monoidal closed across a monoidal equivalence of categories -/
 noncomputable def ofEquiv (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor]
-    [h : MonoidalClosed D] : MonoidalClosed C
-    where closed X :=
+    [h : MonoidalClosed D] : MonoidalClosed C where
+  closed X :=
     { isAdj := by
         haveI q : Closed (F.obj X) := inferInstance
         haveI : IsLeftAdjoint (tensorLeft (F.obj X)) := q.isAdj
@@ -346,5 +349,6 @@ theorem ofEquiv_uncurry_def (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor
 end OfEquiv
 
 end MonoidalClosed
-
+attribute [nolint simpNF] CategoryTheory.MonoidalClosed.homEquiv_apply_eq
+  CategoryTheory.MonoidalClosed.homEquiv_symm_apply_eq
 end CategoryTheory

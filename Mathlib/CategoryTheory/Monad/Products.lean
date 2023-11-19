@@ -2,15 +2,12 @@
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.monad.products
-! leanprover-community/mathlib commit d6814c584384ddf2825ff038e868451a7c956f31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Over
 import Mathlib.CategoryTheory.Monad.Algebra
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+
+#align_import category_theory.monad.products from "leanprover-community/mathlib"@"d6814c584384ddf2825ff038e868451a7c956f31"
 
 /-!
 # Algebras for the coproduct monad

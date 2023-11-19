@@ -88,6 +88,8 @@ open scoped Bicategory
 
 variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
 
+example {a : B} (f : a ⟶ a) : 𝟙 f ▷ f = 𝟙 (f ≫ f) := by whisker_simps
+
 example : (λ_ (𝟙 a)).hom = (ρ_ (𝟙 a)).hom := by bicategory_coherence
 example : (λ_ (𝟙 a)).inv = (ρ_ (𝟙 a)).inv := by bicategory_coherence
 example (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
@@ -123,6 +125,6 @@ example (f₁ : a ⟶ b) (f₂ : b ⟶ c) :
                         (α_ f₁ f₂ (𝟙 c ≫ 𝟙 c)).inv =
   ((λ_ (𝟙 a)).hom ▷ (f₁ ≫ f₂) ≫ (λ_ (f₁ ≫ f₂)).hom ≫ (ρ_ (f₁ ≫ f₂)).inv) ≫
     (f₁ ≫ f₂) ◁ (λ_ (𝟙 c)).inv :=
-by coherence
+by pure_coherence
 
 end Bicategory

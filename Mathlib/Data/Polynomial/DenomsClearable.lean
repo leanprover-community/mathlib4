@@ -2,14 +2,11 @@
 Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module data.polynomial.denoms_clearable
-! leanprover-community/mathlib commit 85d9f2189d9489f9983c0d01536575b0233bd305
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.EraseLead
 import Mathlib.Data.Polynomial.Eval
+
+#align_import data.polynomial.denoms_clearable from "leanprover-community/mathlib"@"85d9f2189d9489f9983c0d01536575b0233bd305"
 
 /-!
 # Denominators of evaluation of polynomials at ratios
@@ -27,7 +24,7 @@ open Polynomial
 
 section DenomsClearable
 
-variable {R K : Type _} [Semiring R] [CommSemiring K] {i : R →+* K}
+variable {R K : Type*} [Semiring R] [CommSemiring K] {i : R →+* K}
 
 variable {a b : R} {bi : K}
 
@@ -45,7 +42,7 @@ def DenomsClearable (a b : R) (N : ℕ) (f : R[X]) (i : R →+* K) : Prop :=
 
 theorem denomsClearable_zero (N : ℕ) (a : R) (bu : bi * i b = 1) : DenomsClearable a b N 0 i :=
   ⟨0, bi, bu, by
-    simp only [eval_zero, RingHom.map_zero, MulZeroClass.mul_zero, Polynomial.map_zero]⟩
+    simp only [eval_zero, RingHom.map_zero, mul_zero, Polynomial.map_zero]⟩
 #align denoms_clearable_zero denomsClearable_zero
 
 theorem denomsClearable_C_mul_X_pow {N : ℕ} (a : R) (bu : bi * i b = 1) {n : ℕ} (r : R)
@@ -91,7 +88,7 @@ denominators, yields a number greater than or equal to one.  The target can be a
 `LinearOrderedField K`.
 The assumption on `K` could be weakened to `LinearOrderedCommRing` assuming that the
 image of the denominator is invertible in `K`. -/
-theorem one_le_pow_mul_abs_eval_div {K : Type _} [LinearOrderedField K] {f : ℤ[X]} {a b : ℤ}
+theorem one_le_pow_mul_abs_eval_div {K : Type*} [LinearOrderedField K] {f : ℤ[X]} {a b : ℤ}
     (b0 : 0 < b) (fab : eval ((a : K) / b) (f.map (algebraMap ℤ K)) ≠ 0) :
     (1 : K) ≤ (b : K) ^ f.natDegree * |eval ((a : K) / b) (f.map (algebraMap ℤ K))| := by
   obtain ⟨ev, bi, bu, hF⟩ :=

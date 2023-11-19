@@ -6,14 +6,18 @@ Authors: Henrik Böving, Simon Hudon
 import Mathlib.Testing.SlimCheck.Sampleable
 import Lean
 
+#align_import testing.slim_check.testable from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
+
 /-!
 # `Testable` Class
+
 Testable propositions have a procedure that can generate counter-examples
 together with a proof that they invalidate the proposition.
 
 This is a port of the Haskell QuickCheck library.
 
 ## Creating Customized Instances
+
 The type classes `Testable`, `SampleableExt` and `Shrinkable` are the
 means by which `SlimCheck` creates samples and tests them. For instance,
 the proposition `∀ i j : ℕ, i ≤ j` has a `Testable` instance because `ℕ`
@@ -25,7 +29,9 @@ example. This allows the user to create new instances and apply
 `SlimCheck` to new situations.
 
 ### What do I do if I'm testing a property about my newly defined type?
+
 Let us consider a type made for a new formalization:
+
 ```lean
 structure MyType where
   x : ℕ
@@ -33,10 +39,12 @@ structure MyType where
   h : x ≤ y
   deriving Repr
 ```
+
 How do we test a property about `MyType`? For instance, let us consider
 `Testable.check $ ∀ a b : MyType, a.y ≤ b.x → a.x ≤ b.y`. Writing this
 property as is will give us an error because we do not have an instance
 of `Shrinkable MyType` and `SampleableExt MyType`. We can define one as follows:
+
 ```lean
 instance : Shrinkable MyType where
   shrink := λ ⟨x,y,h⟩ =>
@@ -49,44 +57,50 @@ instance : SampleableExt MyType :=
     let xyDiff ← SampleableExt.interpSample Nat
     pure $ ⟨x, x + xyDiff, sorry⟩
 ```
+
 Again, we take advantage of the fact that other types have useful
 `Shrinkable` implementations, in this case `Prod`. Note that the second
-proof is heavily based on `WellFoundedRelation` since its used for termination so
+proof is heavily based on `WellFoundedRelation` since it's used for termination so
 the first step you want to take is almost always to `simp_wf` in order to
 get through the `WellFoundedRelation`.
 
 ## Main definitions
-  * `Testable` class
-  * `Testable.check`: a way to test a proposition using random examples
+
+* `Testable` class
+* `Testable.check`: a way to test a proposition using random examples
 
 ## Tags
 
 random testing
 
 ## References
-  * https://hackage.haskell.org/package/QuickCheck
+
+* https://hackage.haskell.org/package/QuickCheck
+
 -/
+
+set_option autoImplicit true
 
 namespace SlimCheck
 
 /-- Result of trying to disprove `p`
 The constructors are:
-  *  `success : (PSum Unit p) → TestResult p`
-     succeed when we find another example satisfying `p`
-     In `success h`, `h` is an optional proof of the proposition.
-     Without the proof, all we know is that we found one example
-     where `p` holds. With a proof, the one test was sufficient to
-     prove that `p` holds and we do not need to keep finding examples.
-   * `gaveUp : ℕ → TestResult p`
-     give up when a well-formed example cannot be generated.
-     `gaveUp n` tells us that `n` invalid examples were tried.
-     Above 100, we give up on the proposition and report that we
-     did not find a way to properly test it.
-   * `failure : ¬ p → (List String) → ℕ → TestResult p`
-     a counter-example to `p`; the strings specify values for the relevant variables.
-     `failure h vs n` also carries a proof that `p` does not hold. This way, we can
-     guarantee that there will be no false positive. The last component, `n`,
-     is the number of times that the counter-example was shrunk.
+* `success : (PSum Unit p) → TestResult p`
+  succeed when we find another example satisfying `p`
+  In `success h`, `h` is an optional proof of the proposition.
+  Without the proof, all we know is that we found one example
+  where `p` holds. With a proof, the one test was sufficient to
+  prove that `p` holds and we do not need to keep finding examples.
+* `gaveUp : ℕ → TestResult p`
+  give up when a well-formed example cannot be generated.
+  `gaveUp n` tells us that `n` invalid examples were tried.
+  Above 100, we give up on the proposition and report that we
+  did not find a way to properly test it.
+* `failure : ¬ p → (List String) → ℕ → TestResult p`
+  a counter-example to `p`; the strings specify values for the relevant variables.
+  `failure h vs n` also carries a proof that `p` does not hold. This way, we can
+  guarantee that there will be no false positive. The last component, `n`,
+  is the number of times that the counter-example was shrunk.
 -/
 inductive TestResult (p : Prop) where
   | success : PSum Unit p → TestResult p
@@ -203,7 +217,7 @@ def addInfo (x : String) (h : q → p) (r : TestResult p)
 
 /-- Add some formatting to the information recorded by `addInfo`. -/
 def addVarInfo [Repr γ] (var : String) (x : γ) (h : q → p) (r : TestResult p)
-    (p : PSum Unit (p → q) := PSum.inl ()) : TestResult q  :=
+    (p : PSum Unit (p → q) := PSum.inl ()) : TestResult q :=
   addInfo s!"{var} := {repr x}" h r p
 
 def isFailure : TestResult p → Bool
@@ -399,16 +413,16 @@ instance LE.printableProp [Repr α] [LE α] {x y : α} : PrintableProp (x ≤ y)
 instance LT.printableProp [Repr α] [LT α] {x y : α} : PrintableProp (x < y) where
   printProp := s!"{repr x} < {repr y}"
 
-instance And.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x ∧ y) where
+instance And.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ∧ y) where
   printProp := s!"{printProp x} ∧ {printProp y}"
 
-instance Or.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x ∨ y) where
+instance Or.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ∨ y) where
   printProp := s!"{printProp x} ∨ {printProp y}"
 
-instance Iff.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x ↔ y) where
+instance Iff.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x ↔ y) where
   printProp := s!"{printProp x} ↔ {printProp y}"
 
-instance Imp.printableProp [PrintableProp x] [PrintableProp y]  : PrintableProp (x → y) where
+instance Imp.printableProp [PrintableProp x] [PrintableProp y] : PrintableProp (x → y) where
   printProp := s!"{printProp x} → {printProp y}"
 
 instance Not.printableProp [PrintableProp x] : PrintableProp (¬x) where
@@ -447,7 +461,7 @@ def giveUp (x : Nat) : TestResult p → TestResult p
 
 /-- Try `n` times to find a counter-example for `p`. -/
 def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) :
-  TestResult p → Nat → Rand (TestResult p)
+    TestResult p → Nat → Rand (TestResult p)
 | r, 0 => pure r
 | r, n+1 => do
   let size := (cfg.numInst - n - 1) * cfg.maxSize / cfg.numInst
@@ -517,7 +531,7 @@ scoped elab "mk_decorations" : tactic => do
 end Decorations
 
 open Decorations in
-/-- Run a test suite for `p` and throw an exception if `p` does not not hold.-/
+/-- Run a test suite for `p` and throw an exception if `p` does not hold. -/
 def Testable.check (p : Prop) (cfg : Configuration := {})
     (p' : Decorations.DecorationsOf p := by mk_decorations) [Testable p'] : IO PUnit := do
   match ← Testable.checkIO p' cfg with

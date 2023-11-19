@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module analysis.special_functions.complex.circle
-! leanprover-community/mathlib commit f333194f5ecd1482191452c5ea60b37d4d6afa08
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
+
+#align_import analysis.special_functions.complex.circle from "leanprover-community/mathlib"@"f333194f5ecd1482191452c5ea60b37d4d6afa08"
 
 /-!
 # Maps on the unit circle
@@ -50,7 +47,7 @@ namespace circle
 
 /-- `Complex.arg ∘ (↑)` and `expMapCircle` define a local equivalence between `circle` and `ℝ`
 with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 noncomputable def argLocalEquiv : LocalEquiv circle ℝ where
   toFun := arg ∘ (↑)
   invFun := expMapCircle
@@ -63,7 +60,7 @@ noncomputable def argLocalEquiv : LocalEquiv circle ℝ where
 #align circle.arg_local_equiv circle.argLocalEquiv
 
 /-- `Complex.arg` and `expMapCircle` define an equivalence between `circle` and `(-π, π]`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 noncomputable def argEquiv : circle ≃ Ioc (-π) π where
   toFun z := ⟨arg z, neg_pi_lt_arg _, arg_le_pi _⟩
   invFun := expMapCircle ∘ (↑)

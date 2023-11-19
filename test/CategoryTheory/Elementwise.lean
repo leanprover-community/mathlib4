@@ -2,6 +2,8 @@ import Std.Tactic.GuardExpr
 import Mathlib.Tactic.CategoryTheory.Elementwise
 --import Mathlib.Algebra.Category.Mon.Basic
 
+set_option autoImplicit true
+
 namespace ElementwiseTest
 open CategoryTheory
 
@@ -88,7 +90,7 @@ lemma bar'' {M N K : Mon} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g
     g (f x) = h x := by apply foo_apply w
 
 lemma bar''' {M N K : Mon} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
-  g (f x) = h x := by apply foo_apply w
+    g (f x) = h x := by apply foo_apply w
 
 example (M N K : Mon) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g = h) (m : M) :
     g (f m) = h m := by rw [elementwise_of% w]

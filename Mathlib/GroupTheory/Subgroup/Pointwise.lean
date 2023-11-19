@@ -2,15 +2,12 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.subgroup.pointwise
-! leanprover-community/mathlib commit e655e4ea5c6d02854696f97494997ba4c31be802
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.MulOpposite
 import Mathlib.GroupTheory.Submonoid.Pointwise
 import Mathlib.GroupTheory.GroupAction.ConjAct
+
+#align_import group_theory.subgroup.pointwise from "leanprover-community/mathlib"@"e655e4ea5c6d02854696f97494997ba4c31be802"
 
 /-! # Pointwise instances on `Subgroup` and `AddSubgroup`s
 
@@ -34,7 +31,7 @@ open Set
 
 open Pointwise
 
-variable {α G A S : Type _}
+variable {α G A S : Type*}
 
 @[to_additive (attr := simp)]
 theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : (H : Set G)⁻¹ = H :=
@@ -113,7 +110,7 @@ then it holds for all elements of the supremum of `S`. -/
 @[to_additive (attr := elab_as_elim) " An induction principle for elements of `⨆ i, S i`.
 If `C` holds for `0` and all elements of `S i` for all `i`, and is preserved under addition,
 then it holds for all elements of the supremum of `S`. "]
-theorem iSup_induction {ι : Sort _} (S : ι → Subgroup G) {C : G → Prop} {x : G} (hx : x ∈ ⨆ i, S i)
+theorem iSup_induction {ι : Sort*} (S : ι → Subgroup G) {C : G → Prop} {x : G} (hx : x ∈ ⨆ i, S i)
     (hp : ∀ (i), ∀ x ∈ S i, C x) (h1 : C 1) (hmul : ∀ x y, C x → C y → C (x * y)) : C x := by
   rw [iSup_eq_closure] at hx
   refine' closure_induction'' hx (fun x hx => _) (fun x hx => _) h1 hmul
@@ -126,7 +123,7 @@ theorem iSup_induction {ι : Sort _} (S : ι → Subgroup G) {C : G → Prop} {x
 
 /-- A dependent version of `Subgroup.iSup_induction`. -/
 @[to_additive (attr := elab_as_elim) "A dependent version of `AddSubgroup.iSup_induction`. "]
-theorem iSup_induction' {ι : Sort _} (S : ι → Subgroup G) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
+theorem iSup_induction' {ι : Sort*} (S : ι → Subgroup G) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
     (hp : ∀ (i), ∀ x (hx : x ∈ S i), C x (mem_iSup_of_mem i hx)) (h1 : C 1 (one_mem _))
     (hmul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x : G}
     (hx : x ∈ ⨆ i, S i) : C x hx := by
@@ -148,13 +145,13 @@ theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure
 #align add_subgroup.closure_add_le AddSubgroup.closure_add_le
 
 @[to_additive]
-theorem sup_eq_closure (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) * (K : Set G)) :=
+theorem sup_eq_closure_mul (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) * (K : Set G)) :=
   le_antisymm
     (sup_le (fun h hh => subset_closure ⟨h, 1, hh, K.one_mem, mul_one h⟩) fun k hk =>
       subset_closure ⟨1, k, H.one_mem, hk, one_mul k⟩)
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
-#align subgroup.sup_eq_closure Subgroup.sup_eq_closure
-#align add_subgroup.sup_eq_closure AddSubgroup.sup_eq_closure
+#align subgroup.sup_eq_closure Subgroup.sup_eq_closure_mul
+#align add_subgroup.sup_eq_closure AddSubgroup.sup_eq_closure_add
 
 @[to_additive]
 theorem set_mul_normal_comm (s : Set G) (N : Subgroup G) [hN : N.Normal] :
@@ -162,13 +159,13 @@ theorem set_mul_normal_comm (s : Set G) (N : Subgroup G) [hN : N.Normal] :
   ext x
   refine (exists_congr fun y => ?_).trans exists_swap
   simp only [exists_and_left, @and_left_comm _ (y ∈ s), ← eq_inv_mul_iff_mul_eq (b := y),
-    ← eq_mul_inv_iff_mul_eq  (c := y), exists_eq_right, SetLike.mem_coe, hN.mem_comm_iff]
+    ← eq_mul_inv_iff_mul_eq (c := y), exists_eq_right, SetLike.mem_coe, hN.mem_comm_iff]
 
 /-- The carrier of `H ⊔ N` is just `↑H * ↑N` (pointwise set product) when `N` is normal. -/
 @[to_additive "The carrier of `H ⊔ N` is just `↑H + ↑N` (pointwise set addition)
 when `N` is normal."]
 theorem mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) = H * N := by
-  rw [sup_eq_closure]
+  rw [sup_eq_closure_mul]
   refine Set.Subset.antisymm (fun x hx => ?_) subset_closure
   refine closure_induction'' (p := fun x => x ∈ (H : Set G) * (N : Set G)) hx ?_ ?_ ?_ ?_
   · rintro _ ⟨x, y, hx, hy, rfl⟩
@@ -243,7 +240,7 @@ theorem smul_opposite_image_mul_preimage' (g : G) (h : Gᵐᵒᵖ) (s : Set G) :
 
 -- porting note: deprecate?
 @[to_additive]
-theorem smul_opposite_image_mul_preimage {H : Subgroup G} (g : G) (h : opposite H) (s : Set G) :
+theorem smul_opposite_image_mul_preimage {H : Subgroup G} (g : G) (h : H.op) (s : Set G) :
     (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) :=
   smul_opposite_image_mul_preimage' g h s
 #align subgroup.smul_opposite_image_mul_preimage Subgroup.smul_opposite_image_mul_preimage
@@ -383,7 +380,7 @@ theorem singleton_mul_subgroup {H : Subgroup G} {h : G} (hh : h ∈ H) : {h} * (
   rfl
 #align subgroup.singleton_mul_subgroup Subgroup.singleton_mul_subgroup
 
-theorem Normal.conjAct {G : Type _} [Group G] {H : Subgroup G} (hH : H.Normal) (g : ConjAct G) :
+theorem Normal.conjAct {G : Type*} [Group G] {H : Subgroup G} (hH : H.Normal) (g : ConjAct G) :
     g • H = H :=
   have : ∀ g : ConjAct G, g • H ≤ H :=
     fun _ => map_le_iff_le_comap.2 fun _ h => hH.conj_mem _ h _

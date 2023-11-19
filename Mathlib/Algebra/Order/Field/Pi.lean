@@ -2,14 +2,11 @@
 Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.order.field.pi
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Fintype.Lattice
+
+#align_import algebra.order.field.pi from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # Lemmas about (finite domain) functions into fields.
@@ -18,7 +15,7 @@ We split this from `Algebra.Order.Field.Basic` to avoid importing the finiteness
 -/
 
 
-variable {α ι : Type _} [LinearOrderedSemifield α]
+variable {α ι : Type*} [LinearOrderedSemifield α]
 
 theorem Pi.exists_forall_pos_add_lt [ExistsAddOfLE α] [Finite ι] {x y : ι → α}
     (h : ∀ i, x i < y i) : ∃ ε, 0 < ε ∧ ∀ i, x i + ε < y i := by

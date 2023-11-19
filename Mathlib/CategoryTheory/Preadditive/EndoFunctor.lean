@@ -2,15 +2,12 @@
 Copyright (c) 2022 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
-
-! This file was ported from Lean 3 source module category_theory.preadditive.endo_functor
-! leanprover-community/mathlib commit 829895f162a1f29d0133f4b3538f4cd1fb5bffd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Endofunctor.Algebra
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+
+#align_import category_theory.preadditive.endo_functor from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 
 /-!
 # Preadditive structure on algebras over a monad

@@ -2,17 +2,14 @@
 Copyright (c) 2022 Daniel Roca González. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Roca González
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.lax_milgram
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.NormedSpace.Banach
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 import Mathlib.Topology.MetricSpace.Antilipschitz
+
+#align_import analysis.inner_product_space.lax_milgram from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
 /-!
 # The Lax-Milgram Theorem
@@ -97,7 +94,7 @@ theorem range_eq_top (coercive : IsCoercive B) : range B♯ = ⊤ := by
   intro v w mem_w_orthogonal
   rcases coercive with ⟨C, C_pos, coercivity⟩
   obtain rfl : w = 0 := by
-    rw [← norm_eq_zero, ← mul_self_eq_zero, ← mul_right_inj' C_pos.ne', MulZeroClass.mul_zero, ←
+    rw [← norm_eq_zero, ← mul_self_eq_zero, ← mul_right_inj' C_pos.ne', mul_zero, ←
       mul_assoc]
     apply le_antisymm
     · calc

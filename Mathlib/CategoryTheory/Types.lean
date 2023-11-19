@@ -2,16 +2,14 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl
-
-! This file was ported from Lean 3 source module category_theory.types
-! leanprover-community/mathlib commit 48085f140e684306f9e7da907cd5932056d1aded
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.PPWithUniv
+
+#align_import category_theory.types from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
 /-!
 # The category `Type`.
@@ -130,7 +128,7 @@ def sections (F : J ⥤ Type w) : Set (∀ j, F.obj j) :=
 -- porting note: added this simp lemma
 @[simp]
 lemma sections_property {F : J ⥤ Type w} (s : (F.sections : Type _))
-  {j j' : J} (f : j ⟶ j') : F.map f (s.val j) = s.val j' :=
+    {j j' : J} (f : j ⟶ j') : F.map f (s.val j) = s.val j' :=
   s.property f
 
 end Functor
@@ -197,8 +195,9 @@ def uliftTrivial (V : Type u) : ULift.{u} V ≅ V where
 #align category_theory.ulift_trivial CategoryTheory.uliftTrivial
 
 /-- The functor embedding `Type u` into `Type (max u v)`.
-Write this as `uliftFunctor.{5 2}` to get `Type 2 ⥤ Type 5`.
+Write this as `uliftFunctor.{5, 2}` to get `Type 2 ⥤ Type 5`.
 -/
+@[pp_with_univ]
 def uliftFunctor : Type u ⥤ Type max u v
     where
   obj X := ULift.{v} X
@@ -214,8 +213,8 @@ theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
 instance uliftFunctorFull : Full.{u} uliftFunctor where preimage f x := (f (ULift.up x)).down
 #align category_theory.ulift_functor_full CategoryTheory.uliftFunctorFull
 
-instance uliftFunctor_faithful : Faithful uliftFunctor
-    where map_injective {_X} {_Y} f g p :=
+instance uliftFunctor_faithful : Faithful uliftFunctor where
+  map_injective {_X} {_Y} f g p :=
     funext fun x =>
       congr_arg ULift.down (congr_fun p (ULift.up x) : ULift.up (f x) = ULift.up (g x))
 #align category_theory.ulift_functor_faithful CategoryTheory.uliftFunctor_faithful
@@ -340,16 +339,14 @@ open CategoryTheory
 
 variable {X Y : Type u}
 
-/-- Any isomorphism between types gives an equivalence.
--/
+/-- Any isomorphism between types gives an equivalence. -/
+@[pp_dot]
 def toEquiv (i : X ≅ Y) : X ≃ Y where
   toFun := i.hom
   invFun := i.inv
   left_inv x := congr_fun i.hom_inv_id x
   right_inv y := congr_fun i.inv_hom_id y
 #align category_theory.iso.to_equiv CategoryTheory.Iso.toEquiv
-
-pp_extended_field_notation Iso.toEquiv
 
 @[simp]
 theorem toEquiv_fun (i : X ≅ Y) : (i.toEquiv : X → Y) = i.hom :=
@@ -382,8 +379,8 @@ theorem isIso_iff_bijective {X Y : Type u} (f : X ⟶ Y) : IsIso f ↔ Function.
     IsIso.of_iso (Equiv.ofBijective f b).toIso
 #align category_theory.is_iso_iff_bijective CategoryTheory.isIso_iff_bijective
 
-instance : SplitEpiCategory (Type u)
-    where isSplitEpi_of_epi f hf :=
+instance : SplitEpiCategory (Type u) where
+  isSplitEpi_of_epi f hf :=
     IsSplitEpi.mk' <|
       { section_ := Function.surjInv <| (epi_iff_surjective f).1 hf
         id := funext <| Function.rightInverse_surjInv <| (epi_iff_surjective f).1 hf }

@@ -2,14 +2,12 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.psub
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Option.Basic
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Nat.Basic
+
+#align_import data.nat.psub from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Partial predecessor and partial subtraction on the natural numbers
@@ -24,6 +22,8 @@ wrap the result in an `Option` type instead:
 - `Nat.psub`: a partial subtraction operation
 
 -/
+
+set_option autoImplicit true
 
 
 namespace Nat
@@ -108,7 +108,7 @@ theorem psub_eq_sub {m n} (h : n ≤ m) : psub m n = some (m - n) :=
 theorem psub_add (m n k) :
     psub m (n + k) = (do psub (← psub m n) k) := by
     induction k
-    simp [Option.bind_eq_bind, Option.bind_some]
+    simp only [zero_eq, add_zero, psub_zero, Option.bind_eq_bind, Option.bind_some]
     simp [*, Nat.add_succ]
 #align nat.psub_add Nat.psub_add
 

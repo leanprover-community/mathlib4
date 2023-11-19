@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.monoidal.limits
-! leanprover-community/mathlib commit 744d59af0b28d0c42f631038627df9b85ae1d1ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Functorial
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 import Mathlib.CategoryTheory.Limits.HasLimits
+
+#align_import category_theory.monoidal.limits from "leanprover-community/mathlib"@"744d59af0b28d0c42f631038627df9b85ae1d1ce"
 
 /-!
 # `lim : (J ⥤ C) ⥤ C` is lax monoidal when `C` is a monoidal category.
@@ -84,7 +81,9 @@ instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F where
     dsimp; simp
   left_unitality X := by
     ext j; dsimp
-    simp
+    simp only [limit.lift_map, Category.assoc, limit.lift_π, Cones.postcompose_obj_pt,
+      Cones.postcompose_obj_π, NatTrans.comp_app, Functor.const_obj_obj, Monoidal.tensorObj_obj,
+      Monoidal.tensorUnit_obj, Monoidal.leftUnitor_hom_app]
     conv_rhs => rw [← tensor_id_comp_id_tensor (limit.π X j)]
     slice_rhs 1 2 =>
       rw [← comp_tensor_id]
@@ -94,7 +93,9 @@ instance limitLaxMonoidal : LaxMonoidal fun F : J ⥤ C => limit F where
     simp
   right_unitality X := by
     ext j; dsimp
-    simp
+    simp only [limit.lift_map, Category.assoc, limit.lift_π, Cones.postcompose_obj_pt,
+      Cones.postcompose_obj_π, NatTrans.comp_app, Functor.const_obj_obj, Monoidal.tensorObj_obj,
+      Monoidal.tensorUnit_obj, Monoidal.rightUnitor_hom_app]
     conv_rhs => rw [← id_tensor_comp_tensor_id _ (limit.π X j)]
     slice_rhs 1 2 =>
       rw [← id_tensor_comp]

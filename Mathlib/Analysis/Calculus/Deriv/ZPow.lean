@@ -2,14 +2,11 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.calculus.deriv.zpow
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.Deriv.Inv
+
+#align_import analysis.calculus.deriv.zpow from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 # Derivatives of `x ^ m`, `m : ℤ`
@@ -95,7 +92,7 @@ theorem deriv_zpow (m : ℤ) (x : 𝕜) : deriv (fun x => x ^ m) x = m * x ^ (m 
   · rw [deriv_zero_of_not_differentiableAt (mt differentiableAt_zpow.1 H)]
     push_neg at H
     rcases H with ⟨rfl, hm⟩
-    rw [zero_zpow _ ((sub_one_lt _).trans hm).ne, MulZeroClass.mul_zero]
+    rw [zero_zpow _ ((sub_one_lt _).trans hm).ne, mul_zero]
 #align deriv_zpow deriv_zpow
 
 @[simp]
@@ -110,7 +107,7 @@ theorem derivWithin_zpow (hxs : UniqueDiffWithinAt 𝕜 s x) (h : x ≠ 0 ∨ 0 
 
 @[simp]
 theorem iter_deriv_zpow' (m : ℤ) (k : ℕ) :
-    ((deriv^[k]) fun x : 𝕜 => x ^ m) =
+    (deriv^[k] fun x : 𝕜 => x ^ m) =
       fun x => (∏ i in Finset.range k, ((m : 𝕜) - i)) * x ^ (m - k) := by
   induction' k with k ihk
   · simp only [Nat.zero_eq, one_mul, Int.ofNat_zero, id, sub_zero, Finset.prod_range_zero,
@@ -120,35 +117,35 @@ theorem iter_deriv_zpow' (m : ℤ) (k : ℕ) :
 #align iter_deriv_zpow' iter_deriv_zpow'
 
 theorem iter_deriv_zpow (m : ℤ) (x : 𝕜) (k : ℕ) :
-    (deriv^[k]) (fun y => y ^ m) x = (∏ i in Finset.range k, ((m : 𝕜) - i)) * x ^ (m - k) :=
+    deriv^[k] (fun y => y ^ m) x = (∏ i in Finset.range k, ((m : 𝕜) - i)) * x ^ (m - k) :=
   congr_fun (iter_deriv_zpow' m k) x
 #align iter_deriv_zpow iter_deriv_zpow
 
 theorem iter_deriv_pow (n : ℕ) (x : 𝕜) (k : ℕ) :
-    (deriv^[k]) (fun x : 𝕜 => x ^ n) x = (∏ i in Finset.range k, ((n : 𝕜) - i)) * x ^ (n - k) := by
+    deriv^[k] (fun x : 𝕜 => x ^ n) x = (∏ i in Finset.range k, ((n : 𝕜) - i)) * x ^ (n - k) := by
   simp only [← zpow_ofNat, iter_deriv_zpow, Int.cast_ofNat]
   cases' le_or_lt k n with hkn hnk
   · rw [Int.ofNat_sub hkn]
   · have : (∏ i in Finset.range k, (n - i : 𝕜)) = 0 :=
       Finset.prod_eq_zero (Finset.mem_range.2 hnk) (sub_self _)
-    simp only [this, MulZeroClass.zero_mul]
+    simp only [this, zero_mul]
 #align iter_deriv_pow iter_deriv_pow
 
 @[simp]
 theorem iter_deriv_pow' (n k : ℕ) :
-    ((deriv^[k]) fun x : 𝕜 => x ^ n) =
+    (deriv^[k] fun x : 𝕜 => x ^ n) =
       fun x => (∏ i in Finset.range k, ((n : 𝕜) - i)) * x ^ (n - k) :=
   funext fun x => iter_deriv_pow n x k
 #align iter_deriv_pow' iter_deriv_pow'
 
 theorem iter_deriv_inv (k : ℕ) (x : 𝕜) :
-    (deriv^[k]) Inv.inv x = (∏ i in Finset.range k, (-1 - i : 𝕜)) * x ^ (-1 - k : ℤ) := by
+    deriv^[k] Inv.inv x = (∏ i in Finset.range k, (-1 - i : 𝕜)) * x ^ (-1 - k : ℤ) := by
   simpa only [zpow_neg_one, Int.cast_neg, Int.cast_one] using iter_deriv_zpow (-1) x k
 #align iter_deriv_inv iter_deriv_inv
 
 @[simp]
 theorem iter_deriv_inv' (k : ℕ) :
-    (deriv^[k]) Inv.inv = fun x : 𝕜 => (∏ i in Finset.range k, (-1 - i : 𝕜)) * x ^ (-1 - k : ℤ) :=
+    deriv^[k] Inv.inv = fun x : 𝕜 => (∏ i in Finset.range k, (-1 - i : 𝕜)) * x ^ (-1 - k : ℤ) :=
   funext (iter_deriv_inv k)
 #align iter_deriv_inv' iter_deriv_inv'
 

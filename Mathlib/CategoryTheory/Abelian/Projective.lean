@@ -2,16 +2,13 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison, Jakob von Raumer
-
-! This file was ported from Lean 3 source module category_theory.abelian.projective
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.CategoryTheory.Preadditive.ProjectiveResolution
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
+
+#align_import category_theory.abelian.projective from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Abelian categories with enough projectives have projective resolutions
@@ -115,9 +112,8 @@ describing the inductive steps. The problems apparent here clearly indicate that
 theorem ofComplex_sq_10_comm (Z : C) :
     0 ≫ HomologicalComplex.d ((ChainComplex.single₀ C).obj Z) 1 0 =
     HomologicalComplex.d (ofComplex Z) 1 0 ≫ Projective.π Z := by
-  simp only [ofComplex_X, ChainComplex.single₀_obj_X_0, ChainComplex.single₀_obj_X_succ,
-    ComplexShape.down_Rel, not_true, ChainComplex.single₀_obj_X_d, comp_zero, ofComplex_d,
-    eqToHom_refl, Category.id_comp, dite_eq_ite, ite_true]
+  dsimp
+  simp only [ite_true, Category.id_comp, zero_comp]
   exact (exact_d_f (Projective.π Z)).w.symm
 
 -- Porting note: the `exact` in `of` was very, very slow. To assist,
@@ -168,7 +164,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 then `X` is a projective resolution of `Y.` -/
 def toSingle₀ProjectiveResolution {X : ChainComplex C ℕ} {Y : C}
     -- porting note: autoporter incorrectly went for `X.pt` at the end there
-    (f : X ⟶ (ChainComplex.single₀ C).obj Y) [QuasiIso f] (H : ∀ n, Projective (X.X n)) :
+    (f : X ⟶ (ChainComplex.single₀ C).obj Y) [QuasiIso' f] (H : ∀ n, Projective (X.X n)) :
     ProjectiveResolution Y where
   complex := X
   π := f

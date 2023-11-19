@@ -2,17 +2,14 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Frédéric Dupuis
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.rayleigh
-! leanprover-community/mathlib commit 6b0169218d01f2837d79ea2784882009a0da1aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Analysis.Calculus.LagrangeMultipliers
 import Mathlib.LinearAlgebra.Eigenspace.Basic
+
+#align_import analysis.inner_product_space.rayleigh from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
 /-!
 # The Rayleigh quotient
@@ -40,9 +37,9 @@ A slightly more elaborate corollary is that if `E` is complete and `T` is a comp
 -/
 
 
-variable {𝕜 : Type _} [IsROrC 𝕜]
+variable {𝕜 : Type*} [IsROrC 𝕜]
 
-variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
@@ -85,17 +82,17 @@ theorem image_rayleigh_eq_image_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
 #align continuous_linear_map.image_rayleigh_eq_image_rayleigh_sphere ContinuousLinearMap.image_rayleigh_eq_image_rayleigh_sphere
 
 theorem iSup_rayleigh_eq_iSup_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
-    (⨆ x : { x : E // x ≠ 0 }, rayleighQuotient T x) =
+    ⨆ x : { x : E // x ≠ 0 }, rayleighQuotient T x =
       ⨆ x : sphere (0 : E) r, rayleighQuotient T x :=
-  show (⨆ x : ({0}ᶜ : Set E), rayleighQuotient T x) = _ by
+  show ⨆ x : ({0}ᶜ : Set E), rayleighQuotient T x = _ by
     simp only [← @sSup_image' _ _ _ _ (rayleighQuotient T),
       T.image_rayleigh_eq_image_rayleigh_sphere hr]
 #align continuous_linear_map.supr_rayleigh_eq_supr_rayleigh_sphere ContinuousLinearMap.iSup_rayleigh_eq_iSup_rayleigh_sphere
 
 theorem iInf_rayleigh_eq_iInf_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
-    (⨅ x : { x : E // x ≠ 0 }, rayleighQuotient T x) =
+    ⨅ x : { x : E // x ≠ 0 }, rayleighQuotient T x =
       ⨅ x : sphere (0 : E) r, rayleighQuotient T x :=
-  show (⨅ x : ({0}ᶜ : Set E), rayleighQuotient T x) = _ by
+  show ⨅ x : ({0}ᶜ : Set E), rayleighQuotient T x = _ by
     simp only [← @sInf_image' _ _ _ _ (rayleighQuotient T),
       T.image_rayleigh_eq_image_rayleigh_sphere hr]
 #align continuous_linear_map.infi_rayleigh_eq_infi_rayleigh_sphere ContinuousLinearMap.iInf_rayleigh_eq_iInf_rayleigh_sphere
@@ -106,7 +103,7 @@ namespace IsSelfAdjoint
 
 section Real
 
-variable {F : Type _} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 theorem _root_.LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf {T : F →L[ℝ] F}
     (hT : (T : F →ₗ[ℝ] F).IsSymmetric) (x₀ : F) :
@@ -119,8 +116,6 @@ theorem _root_.LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf {T : F �
 #align linear_map.is_symmetric.has_strict_fderiv_at_re_apply_inner_self LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf
 
 variable [CompleteSpace F] {T : F →L[ℝ] F}
-
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 
 theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : F) ‖x₀‖) x₀) :
@@ -245,7 +240,7 @@ namespace IsSymmetric
 /-- The supremum of the Rayleigh quotient of a symmetric operator `T` on a nontrivial
 finite-dimensional vector space is an eigenvalue for that operator. -/
 theorem hasEigenvalue_iSup_of_finiteDimensional (hT : T.IsSymmetric) :
-    HasEigenvalue T ↑(⨆ x : { x : E // x ≠ 0 }, IsROrC.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2) := by
+    HasEigenvalue T ↑(⨆ x : { x : E // x ≠ 0 }, IsROrC.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2 : ℝ) := by
   haveI := FiniteDimensional.proper_isROrC 𝕜 E
   let T' := hT.toSelfAdjoint
   obtain ⟨x, hx⟩ : ∃ x : E, x ≠ 0 := exists_ne 0
@@ -265,7 +260,7 @@ theorem hasEigenvalue_iSup_of_finiteDimensional (hT : T.IsSymmetric) :
 /-- The infimum of the Rayleigh quotient of a symmetric operator `T` on a nontrivial
 finite-dimensional vector space is an eigenvalue for that operator. -/
 theorem hasEigenvalue_iInf_of_finiteDimensional (hT : T.IsSymmetric) :
-    HasEigenvalue T ↑(⨅ x : { x : E // x ≠ 0 }, IsROrC.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2) := by
+    HasEigenvalue T ↑(⨅ x : { x : E // x ≠ 0 }, IsROrC.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2 : ℝ) := by
   haveI := FiniteDimensional.proper_isROrC 𝕜 E
   let T' := hT.toSelfAdjoint
   obtain ⟨x, hx⟩ : ∃ x : E, x ≠ 0 := exists_ne 0

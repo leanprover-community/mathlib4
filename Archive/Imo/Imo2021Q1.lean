@@ -2,16 +2,13 @@
 Copyright (c) 2021 Mantas Bakšys. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
-
-! This file was ported from Lean 3 source module imo.imo2021_q1
-! leanprover-community/mathlib commit 308826471968962c6b59c7ff82a22757386603e3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
+
+#align_import imo.imo2021_q1 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 2021 Q1
@@ -43,6 +40,7 @@ Then, by the Pigeonhole principle, at least two numbers in the triplet must lie 
 which finishes the proof.
 -/
 
+open Finset
 
 namespace Imo2021Q1
 
@@ -60,7 +58,7 @@ theorem exists_numbers_in_interval (n : ℕ) (hn : 100 ≤ n) :
     linarith only [hn]
   rw [← Nat.sub_add_cancel hn'] at h₁ h₂ h₃
   set l := (n + 1).sqrt - 1
-  refine ⟨l, ?_,  ?_⟩
+  refine ⟨l, ?_, ?_⟩
   · calc n + 4 * l ≤ (l ^ 2 + 4 * l + 2) + 4 * l := by linarith only [h₂]
       _ ≤ 2 * l ^ 2 := by nlinarith only [h₃]
   · linarith only [h₁]
@@ -126,8 +124,8 @@ theorem imo2021_q1 :
   have hBsub : B ⊆ Finset.Icc n (2 * n) := by
     intro c hcB; simpa only [Finset.mem_Icc] using h₂ c hcB
   have hB' : 2 * 1 < (B ∩ (Finset.Icc n (2 * n) \ A) ∪ B ∩ A).card := by
-    rw [← Finset.inter_distrib_left, Finset.sdiff_union_self_eq_union,
-      Finset.union_eq_left_iff_subset.mpr hA, (Finset.inter_eq_left_iff_subset _ _).mpr hBsub]
+    rw [←inter_distrib_left, sdiff_union_self_eq_union, union_eq_left.2 hA,
+      inter_eq_left.2 hBsub]
     exact Nat.succ_le_iff.mp hB
   -- Since B has cardinality greater or equal to 3, there must exist a subset C ⊆ B such that
   -- for any A ⊆ [n, 2n], either C ⊆ A or C ⊆ [n, 2n] \ A and C has cardinality greater

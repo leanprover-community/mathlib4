@@ -2,14 +2,11 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.function.conditional_expectation.condexp_L2
-! leanprover-community/mathlib commit d8bbb04e2d2a44596798a9207ceefc0fb236e41e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Unique
+
+#align_import measure_theory.function.conditional_expectation.condexp_L2 from "leanprover-community/mathlib"@"d8bbb04e2d2a44596798a9207ceefc0fb236e41e"
 
 /-! # Conditional expectation in L2
 
@@ -43,7 +40,7 @@ open scoped ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
 
-variable {α E E' F G G' 𝕜 : Type _} {p : ℝ≥0∞} [IsROrC 𝕜]
+variable {α E E' F G G' 𝕜 : Type*} {p : ℝ≥0∞} [IsROrC 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- E for an inner product space
   [NormedAddCommGroup E]
@@ -134,7 +131,7 @@ theorem condexpL2_indicator_of_measurable (hm : m ≤ m0) (hs : MeasurableSet[m]
   have h_mem : indicatorConstLp 2 (hm s hs) hμs c ∈ lpMeas E 𝕜 m 2 μ :=
     mem_lpMeas_indicatorConstLp hm hs hμs
   let ind := (⟨indicatorConstLp 2 (hm s hs) hμs c, h_mem⟩ : lpMeas E 𝕜 m 2 μ)
-  have h_coe_ind : (ind : α →₂[μ] E) = indicatorConstLp 2 (hm s hs) hμs c := by rfl
+  have h_coe_ind : (ind : α →₂[μ] E) = indicatorConstLp 2 (hm s hs) hμs c := rfl
   have h_orth_mem := orthogonalProjection_mem_subspace_eq_self ind
   rw [← h_coe_ind, h_orth_mem]
 #align measure_theory.condexp_L2_indicator_of_measurable MeasureTheory.condexpL2_indicator_of_measurable
@@ -276,7 +273,7 @@ theorem integral_condexpL2_eq (hm : m ≤ m0) (f : Lp E' 2 μ) (hs : MeasurableS
   exact integral_condexpL2_eq_of_fin_meas_real _ hs hμs
 #align measure_theory.integral_condexp_L2_eq MeasureTheory.integral_condexpL2_eq
 
-variable {E'' 𝕜' : Type _} [IsROrC 𝕜'] [NormedAddCommGroup E''] [InnerProductSpace 𝕜' E'']
+variable {E'' 𝕜' : Type*} [IsROrC 𝕜'] [NormedAddCommGroup E''] [InnerProductSpace 𝕜' E'']
   [CompleteSpace E''] [NormedSpace ℝ E'']
 
 variable (𝕜 𝕜')
@@ -463,7 +460,7 @@ theorem integrable_condexpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hs
 
 theorem condexpIndSMul_empty {x : G} : condexpIndSMul hm MeasurableSet.empty
     ((@measure_empty _ _ μ).le.trans_lt ENNReal.coe_lt_top).ne x = 0 := by
-  rw [condexpIndSMul, indicatorConst_empty]
+  rw [condexpIndSMul, indicatorConstLp_empty]
   simp only [Submodule.coe_zero, ContinuousLinearMap.map_zero]
 #align measure_theory.condexp_ind_smul_empty MeasureTheory.condexpIndSMul_empty
 

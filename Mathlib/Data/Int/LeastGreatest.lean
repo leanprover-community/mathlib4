@@ -2,13 +2,10 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.int.least_greatest
-! leanprover-community/mathlib commit 3342d1b2178381196f818146ff79bc0e7ccd9e2d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Order.Basic
+
+#align_import data.int.least_greatest from "leanprover-community/mathlib"@"3342d1b2178381196f818146ff79bc0e7ccd9e2d"
 
 /-! # Least upper bound and greatest lower bound properties for integers
 

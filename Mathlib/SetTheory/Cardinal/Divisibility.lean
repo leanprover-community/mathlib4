@@ -2,15 +2,12 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module set_theory.cardinal.divisibility
-! leanprover-community/mathlib commit ea050b44c0f9aba9d16a948c7cc7d2e7c8493567
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.Tactic.WLOG
+
+#align_import set_theory.cardinal.divisibility from "leanprover-community/mathlib"@"ea050b44c0f9aba9d16a948c7cc7d2e7c8493567"
 
 /-!
 # Cardinal Divisibility
@@ -153,7 +150,8 @@ theorem isPrimePow_iff {a : Cardinal} : IsPrimePow a ↔ ℵ₀ ≤ a ∨ ∃ n 
     ⟨_, fun ⟨n, han, p, k, hp, hk, h⟩ =>
           ⟨p, k, nat_is_prime_iff.2 hp, hk, by rw [han]; exact_mod_cast h⟩⟩
   rintro ⟨p, k, hp, hk, hpk⟩
-  have key : p ^ 1 ≤ ↑a := by rw [←hpk]; apply power_le_power_left hp.ne_zero; exact_mod_cast hk
+  have key : p ^ (1 : Cardinal) ≤ ↑a := by
+    rw [←hpk]; apply power_le_power_left hp.ne_zero; exact_mod_cast hk
   rw [power_one] at key
   lift p to ℕ using key.trans_lt (nat_lt_aleph0 a)
   exact ⟨a, rfl, p, k, nat_is_prime_iff.mp hp, hk, by exact_mod_cast hpk⟩

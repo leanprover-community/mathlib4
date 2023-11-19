@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.group.measurable_equiv
-! leanprover-community/mathlib commit 95413e23e3d29b45c701fcd31f2dbadaf1b79cba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Group.Arithmetic
+
+#align_import measure_theory.group.measurable_equiv from "leanprover-community/mathlib"@"95413e23e3d29b45c701fcd31f2dbadaf1b79cba"
 
 /-!
 # (Scalar) multiplication and (vector) addition as measurable equivalences
@@ -41,12 +38,12 @@ measurable, equivalence, group action
 
 namespace MeasurableEquiv
 
-variable {G G₀ α : Type _} [MeasurableSpace G] [MeasurableSpace G₀] [MeasurableSpace α] [Group G]
+variable {G G₀ α : Type*} [MeasurableSpace G] [MeasurableSpace G₀] [MeasurableSpace α] [Group G]
   [GroupWithZero G₀] [MulAction G α] [MulAction G₀ α] [MeasurableSMul G α] [MeasurableSMul G₀ α]
 
 /-- If a group `G` acts on `α` by measurable maps, then each element `c : G` defines a measurable
 automorphism of `α`. -/
-@[to_additive (attr := simps! (config := { fullyApplied := false }) toEquiv apply)
+@[to_additive (attr := simps! (config := .asFn) toEquiv apply)
       "If an additive group `G` acts on `α` by measurable maps, then each element `c : G`
       defines a measurable automorphism of `α`." ]
 def smul (c : G) : α ≃ᵐ α where
@@ -223,7 +220,7 @@ theorem toEquiv_mulRight₀ {g : G₀} (hg : g ≠ 0) : (mulRight₀ g hg).toEqu
 end Mul
 
 /-- Inversion as a measurable automorphism of a group or group with zero. -/
-@[to_additive (attr := simps! (config := { fullyApplied := false }) toEquiv apply)
+@[to_additive (attr := simps! (config := .asFn) toEquiv apply)
     "Negation as a measurable automorphism of an additive group."]
 def inv (G) [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] : G ≃ᵐ G where
   toEquiv := Equiv.inv G

@@ -2,13 +2,11 @@
 Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Bhavik Mehta
-
-! This file was ported from Lean 3 source module probability.cond_count
-! leanprover-community/mathlib commit 117e93f82b5f959f8193857370109935291f0cc4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.ConditionalProbability
+import Mathlib.MeasureTheory.Measure.Count
+
+#align_import probability.cond_count from "leanprover-community/mathlib"@"117e93f82b5f959f8193857370109935291f0cc4"
 
 /-!
 # Classical probability
@@ -46,7 +44,7 @@ open MeasureTheory MeasurableSpace
 
 namespace ProbabilityTheory
 
-variable {Ω : Type _} [MeasurableSpace Ω]
+variable {Ω : Type*} [MeasurableSpace Ω]
 
 /-- Given a set `s`, `condCount s` is the counting measure conditioned on `s`. In particular,
 `condCount s t` is the proportion of `s` that is contained in `t`.
@@ -140,7 +138,7 @@ theorem condCount_of_univ (hs : s.Finite) (hs' : s.Nonempty) : condCount s Set.u
 theorem condCount_inter (hs : s.Finite) :
     condCount s (t ∩ u) = condCount (s ∩ t) u * condCount s t := by
   by_cases hst : s ∩ t = ∅
-  · rw [hst, condCount_empty_meas, Measure.coe_zero, Pi.zero_apply, MulZeroClass.zero_mul,
+  · rw [hst, condCount_empty_meas, Measure.coe_zero, Pi.zero_apply, zero_mul,
       condCount_eq_zero_iff hs, ← Set.inter_assoc, hst, Set.empty_inter]
   rw [condCount, condCount, cond_apply _ hs.measurableSet, cond_apply _ hs.measurableSet,
     cond_apply _ (hs.inter_of_left _).measurableSet, mul_comm _ (Measure.count (s ∩ t)),
@@ -164,7 +162,7 @@ theorem condCount_union (hs : s.Finite) (htu : Disjoint t u) :
 #align probability_theory.cond_count_union ProbabilityTheory.condCount_union
 
 theorem condCount_compl (t : Set Ω) (hs : s.Finite) (hs' : s.Nonempty) :
-    condCount s t + condCount s (tᶜ) = 1 := by
+    condCount s t + condCount s tᶜ = 1 := by
   rw [← condCount_union hs disjoint_compl_right, Set.union_compl_self,
     (condCount_isProbabilityMeasure hs hs').measure_univ]
 #align probability_theory.cond_count_compl ProbabilityTheory.condCount_compl
@@ -193,7 +191,7 @@ theorem condCount_disjoint_union (hs : s.Finite) (ht : t.Finite) (hst : Disjoint
 
 /-- A version of the law of total probability for counting probabilities. -/
 theorem condCount_add_compl_eq (u t : Set Ω) (hs : s.Finite) :
-    condCount (s ∩ u) t * condCount s u + condCount (s ∩ uᶜ) t * condCount s (uᶜ) =
+    condCount (s ∩ u) t * condCount s u + condCount (s ∩ uᶜ) t * condCount s uᶜ =
       condCount s t := by
   -- Porting note: The original proof used `conv_rhs`. However, that tactic timed out.
   have : condCount s t = (condCount (s ∩ u) t * condCount (s ∩ u ∪ s ∩ uᶜ) (s ∩ u) +

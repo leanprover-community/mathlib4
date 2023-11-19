@@ -2,21 +2,18 @@
 Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module algebra.order.sub.canonical
-! leanprover-community/mathlib commit 62a5626868683c104774de8d85b9855234ac807c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Sub.Defs
+
+#align_import algebra.order.sub.canonical from "leanprover-community/mathlib"@"62a5626868683c104774de8d85b9855234ac807c"
 
 /-!
 # Lemmas about subtraction in canonically ordered monoids
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 section ExistsAddOfLE
 
@@ -310,9 +307,9 @@ end ExistsAddOfLE
 /-! ### Lemmas in a canonically ordered monoid. -/
 
 
-section CanonicallyOrderedAddMonoid
+section CanonicallyOrderedAddCommMonoid
 
-variable [CanonicallyOrderedAddMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
+variable [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
 
 theorem add_tsub_cancel_iff_le : a + (b - a) = b ↔ a ≤ b :=
   ⟨fun h => le_iff_exists_add.mpr ⟨b - a, h.symm⟩, add_tsub_cancel_of_le⟩
@@ -328,7 +325,7 @@ theorem tsub_eq_zero_iff_le : a - b = 0 ↔ a ≤ b := by
   rw [← nonpos_iff_eq_zero, tsub_le_iff_left, add_zero]
 #align tsub_eq_zero_iff_le tsub_eq_zero_iff_le
 
-alias tsub_eq_zero_iff_le ↔ _ tsub_eq_zero_of_le
+alias ⟨_, tsub_eq_zero_of_le⟩ := tsub_eq_zero_iff_le
 #align tsub_eq_zero_of_le tsub_eq_zero_of_le
 
 attribute [simp] tsub_eq_zero_of_le
@@ -397,27 +394,27 @@ theorem tsub_right_inj (hba : b ≤ a) (hca : c ≤ a) : a - b = a - c ↔ b = c
 
 variable (α)
 
-/-- A `CanonicallyOrderedAddMonoid` with ordered subtraction and order-reflecting addition is
-cancellative. This is not an instance at it would form a typeclass loop.
+/-- A `CanonicallyOrderedAddCommMonoid` with ordered subtraction and order-reflecting addition is
+cancellative. This is not an instance as it would form a typeclass loop.
 
 See note [reducible non-instances]. -/
 @[reducible]
-def CanonicallyOrderedAddMonoid.toAddCancelCommMonoid : AddCancelCommMonoid α :=
+def CanonicallyOrderedAddCommMonoid.toAddCancelCommMonoid : AddCancelCommMonoid α :=
   { (by infer_instance : AddCommMonoid α) with
     add_left_cancel := fun a b c h => by
       simpa only [add_tsub_cancel_left] using congr_arg (fun x => x - a) h }
-#align canonically_ordered_add_monoid.to_add_cancel_comm_monoid CanonicallyOrderedAddMonoid.toAddCancelCommMonoid
+#align canonically_ordered_add_monoid.to_add_cancel_comm_monoid CanonicallyOrderedAddCommMonoid.toAddCancelCommMonoid
 
 end Contra
 
-end CanonicallyOrderedAddMonoid
+end CanonicallyOrderedAddCommMonoid
 
 /-! ### Lemmas in a linearly canonically ordered monoid. -/
 
 
-section CanonicallyLinearOrderedAddMonoid
+section CanonicallyLinearOrderedAddCommMonoid
 
-variable [CanonicallyLinearOrderedAddMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
+variable [CanonicallyLinearOrderedAddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
 
 @[simp]
 theorem tsub_pos_iff_lt : 0 < a - b ↔ b < a := by rw [tsub_pos_iff_not_le, not_le]
@@ -512,4 +509,4 @@ theorem tsub_add_min : a - b + min a b = a := by
   apply min_le_left
 #align tsub_add_min tsub_add_min
 
-end CanonicallyLinearOrderedAddMonoid
+end CanonicallyLinearOrderedAddCommMonoid

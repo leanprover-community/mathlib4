@@ -1,6 +1,9 @@
 import Mathlib.Tactic.LiftLets
 import Std.Tactic.GuardExpr
 
+private axiom test_sorry : ∀ {α}, α
+set_option autoImplicit true
+
 example : (let x := 1; x) = 1 := by
   lift_lets
   guard_target =ₛ let x := 1; x = 1
@@ -11,6 +14,12 @@ example : (let x := 1; x) = (let y := 1; y) := by
   lift_lets
   guard_target =ₛ let x := 1; x = x
   intro _x
+  rfl
+
+example : (let x := 1; x) = (let y := 1; y) := by
+  lift_lets (config := {merge := false})
+  guard_target =ₛ let x := 1; let y := 1; x = y
+  intros _x _y
   rfl
 
 example : (let x := (let y := 1; y + 1); x + 1) = 3 := by
@@ -90,3 +99,11 @@ example : let x := 1; ∀ n, let y := 1; x + n = y + n := by
   guard_target =ₛ let x := 1; ∀ n, x + n = x + n
   intros x n
   rfl
+
+example (m : Nat) (h : ∃ n, n + 1 = m) (x : Fin m) (y : Fin _) :
+    cast (let h' := h.choose_spec.symm; congrArg Fin h') x = y := by
+  lift_lets (config := {proofs := true})
+  intro h'
+  clear_value h'
+  guard_hyp h' : m = Exists.choose h + 1
+  exact test_sorry

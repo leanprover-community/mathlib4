@@ -2,21 +2,18 @@
 Copyright (c) 2021 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
-
-! This file was ported from Lean 3 source module algebraic_geometry.Gamma_Spec_adjunction
-! leanprover-community/mathlib commit d39590fc8728fbf6743249802486f8c91ffe07bc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.AlgebraicGeometry.Scheme
+import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Reflective
+
+#align_import algebraic_geometry.Gamma_Spec_adjunction from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
 
 /-!
 # Adjunction between `Γ` and `Spec`
 
-We define the adjunction `Γ_Spec.adjunction : Γ ⊣ Spec` by defining the unit (`to_Γ_Spec`,
-in multiple steps in this file) and counit (done in Spec.lean) and checking that they satisfy
+We define the adjunction `ΓSpec.adjunction : Γ ⊣ Spec` by defining the unit (`toΓSpec`,
+in multiple steps in this file) and counit (done in `Spec.lean`) and checking that they satisfy
 the left and right triangle identities. The constructions and proofs make use of
 maps and lemmas defined and proved in structure_sheaf.lean extensively.
 
@@ -27,10 +24,10 @@ case the unit and the counit would switch to each other.
 
 ## Main definition
 
-* `algebraic_geometry.identity_to_Γ_Spec` : The natural transformation `𝟭 _ ⟶ Γ ⋙ Spec`.
-* `algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction` : The adjunction `Γ ⊣ Spec` from
+* `AlgebraicGeometry.identityToΓSpec` : The natural transformation `𝟭 _ ⟶ Γ ⋙ Spec`.
+* `AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction` : The adjunction `Γ ⊣ Spec` from
   `CommRingᵒᵖ` to `LocallyRingedSpace`.
-* `algebraic_geometry.Γ_Spec.adjunction` : The adjunction `Γ ⊣ Spec` from
+* `AlgebraicGeometry.ΓSpec.adjunction` : The adjunction `Γ ⊣ Spec` from
   `CommRingᵒᵖ` to `Scheme`.
 
 -/
@@ -82,27 +79,30 @@ theorem not_mem_prime_iff_unit_in_stalk (r : Γ.obj (op X)) (x : X) :
 
 /-- The preimage of a basic open in `Spec Γ(X)` under the unit is the basic
 open in `X` defined by the same element (they are equal as sets). -/
-theorem to_Γ_Spec_preim_basicOpen_eq (r : Γ.obj (op X)) :
+theorem toΓSpec_preim_basicOpen_eq (r : Γ.obj (op X)) :
     X.toΓSpecFun ⁻¹' (basicOpen r).1 = (X.toRingedSpace.basicOpen r).1 := by
       ext
       erw [X.toRingedSpace.mem_top_basicOpen]; apply not_mem_prime_iff_unit_in_stalk
-#align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_preim_basic_open_eq AlgebraicGeometry.LocallyRingedSpace.to_Γ_Spec_preim_basicOpen_eq
+#align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_preim_basic_open_eq AlgebraicGeometry.LocallyRingedSpace.toΓSpec_preim_basicOpen_eq
 
 /-- `toΓSpecFun` is continuous. -/
-theorem to_Γ_Spec_continuous : Continuous X.toΓSpecFun := by
+theorem toΓSpec_continuous : Continuous X.toΓSpecFun := by
   apply isTopologicalBasis_basic_opens.continuous
   rintro _ ⟨r, rfl⟩
-  erw [X.to_Γ_Spec_preim_basicOpen_eq r]
+  erw [X.toΓSpec_preim_basicOpen_eq r]
   exact (X.toRingedSpace.basicOpen r).2
-#align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_continuous AlgebraicGeometry.LocallyRingedSpace.to_Γ_Spec_continuous
+#align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_continuous AlgebraicGeometry.LocallyRingedSpace.toΓSpec_continuous
 
 /-- The canonical (bundled) continuous map from the underlying topological
 space of `X` to the prime spectrum of its global sections. -/
 @[simps]
 def toΓSpecBase : X.toTopCat ⟶ Spec.topObj (Γ.obj (op X)) where
   toFun := X.toΓSpecFun
-  continuous_toFun := X.to_Γ_Spec_continuous
+  continuous_toFun := X.toΓSpec_continuous
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_base AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase
+
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AlgebraicGeometry.LocallyRingedSpace.toΓSpecBase_apply
 
 variable (r : Γ.obj (op X))
 
@@ -113,7 +113,7 @@ abbrev toΓSpecMapBasicOpen : Opens X :=
 
 /-- The preimage is the basic open in `X` defined by the same element `r`. -/
 theorem toΓSpecMapBasicOpen_eq : X.toΓSpecMapBasicOpen r = X.toRingedSpace.basicOpen r :=
-  Opens.ext (X.to_Γ_Spec_preim_basicOpen_eq r)
+  Opens.ext (X.toΓSpec_preim_basicOpen_eq r)
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_map_basic_open_eq AlgebraicGeometry.LocallyRingedSpace.toΓSpecMapBasicOpen_eq
 
 /-- The map from the global sections `Γ(X)` to the sections on the (preimage of) a basic open. -/
@@ -169,7 +169,7 @@ theorem toΓSpecCApp_spec : toOpen _ (basicOpen r) ≫ X.toΓSpecCApp r = X.toTo
 @[simps app]
 def toΓSpecCBasicOpens :
     (inducedFunctor basicOpen).op ⋙ (structureSheaf (Γ.obj (op X))).1 ⟶
-      (inducedFunctor basicOpen).op ⋙ ((TopCat.Sheaf.pushforward X.toΓSpecBase).obj X.𝒪).1 where
+      (inducedFunctor basicOpen).op ⋙ ((TopCat.Sheaf.pushforward _ X.toΓSpecBase).obj X.𝒪).1 where
   app r := X.toΓSpecCApp r.unop
   naturality r s f := by
     apply (StructureSheaf.to_basicOpen_epi (Γ.obj (op X)) r.unop).1
@@ -194,12 +194,11 @@ def toΓSpecSheafedSpace : X.toSheafedSpace ⟶ Spec.toSheafedSpace.obj (op (Γ.
 theorem toΓSpecSheafedSpace_app_eq :
     X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) = X.toΓSpecCApp r := by
   have := TopCat.Sheaf.extend_hom_app (Spec.toSheafedSpace.obj (op (Γ.obj (op X)))).presheaf
-    ((TopCat.Sheaf.pushforward X.toΓSpecBase).obj X.𝒪)
+    ((TopCat.Sheaf.pushforward _ X.toΓSpecBase).obj X.𝒪)
     isBasis_basic_opens X.toΓSpecCBasicOpens r
   dsimp at this
   rw [←this]
   dsimp
-  congr
 
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_SheafedSpace_app_eq AlgebraicGeometry.LocallyRingedSpace.toΓSpecSheafedSpace_app_eq
 
@@ -213,11 +212,11 @@ theorem toΓSpecSheafedSpace_app_eq :
 
 /-- The map on stalks induced by the unit commutes with maps from `Γ(X)` to
     stalks (in `Spec Γ(X)` and in `X`). -/
-theorem toStalk_stalkMap_to_Γ_Spec (x : X) :
+theorem toStalk_stalkMap_toΓSpec (x : X) :
     toStalk _ _ ≫ PresheafedSpace.stalkMap X.toΓSpecSheafedSpace x = X.ΓToStalk x := by
   rw [PresheafedSpace.stalkMap]
   erw [← toOpen_germ _ (basicOpen (1 : Γ.obj (op X)))
-      ⟨X.toΓSpecFun x, by rw [basicOpen_one] ; trivial⟩]
+      ⟨X.toΓSpecFun x, by rw [basicOpen_one]; trivial⟩]
   rw [← Category.assoc, Category.assoc (toOpen _ _)]
   erw [stalkFunctor_map_germ]
   -- Porting note : was `rw [←assoc, toΓSpecSheafedSpace_app_spec]`, but Lean did not like it.
@@ -227,7 +226,7 @@ theorem toStalk_stalkMap_to_Γ_Spec (x : X) :
   congr 1
   change (X.toΓSpecBase _* X.presheaf).map le_top.hom.op ≫ _ = _
   apply germ_res
-#align algebraic_geometry.LocallyRingedSpace.to_stalk_stalk_map_to_Γ_Spec AlgebraicGeometry.LocallyRingedSpace.toStalk_stalkMap_to_Γ_Spec
+#align algebraic_geometry.LocallyRingedSpace.to_stalk_stalk_map_to_Γ_Spec AlgebraicGeometry.LocallyRingedSpace.toStalk_stalkMap_toΓSpec
 
 /-- The canonical morphism from `X` to the spectrum of its global sections. -/
 @[simps! val_base]
@@ -248,7 +247,7 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     rw [he]
     refine' IsLocalization.map_units S (⟨r, _⟩ : p.asIdeal.primeCompl)
     apply (not_mem_prime_iff_unit_in_stalk _ _ _).mpr
-    rw [← toStalk_stalkMap_to_Γ_Spec]
+    rw [← toStalk_stalkMap_toΓSpec]
     erw [comp_apply, ← he]
     rw [RingHom.map_mul]
     -- Porting note : `IsLocalization.map_units` and the goal needs to be simplified before Lean
@@ -279,7 +278,7 @@ theorem comp_ring_hom_ext {X : LocallyRingedSpace} {R : CommRingCat} {f : R ⟶ 
   convert h r using 1
 #align algebraic_geometry.LocallyRingedSpace.comp_ring_hom_ext AlgebraicGeometry.LocallyRingedSpace.comp_ring_hom_ext
 
-/-- `to_Spec_Γ _` is an isomorphism so these are mutually two-sided inverses. -/
+/-- `toSpecΓ _` is an isomorphism so these are mutually two-sided inverses. -/
 theorem Γ_Spec_left_triangle : toSpecΓ (Γ.obj (op X)) ≫ X.toΓSpec.1.c.app (op ⊤) = 𝟙 _ := by
   unfold toSpecΓ
   rw [← toOpen_res _ (basicOpen (1 : Γ.obj (op X))) ⊤ (eqToHom basicOpen_one.symm)]
@@ -302,9 +301,17 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
       --Porting Note: Had to add the next four lines
       rw [comp_apply, comp_apply]
       dsimp [toΓSpecBase]
-      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]
+      -- The next six lines were `rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]` before
+      -- leanprover/lean4#2644
+      have : (ContinuousMap.mk (toΓSpecFun Y) (toΓSpec_continuous _)) (f.val.base x)
+        = toΓSpecFun Y (f.val.base x) := by rw [ContinuousMap.coe_mk]
+      erw [this]
+      have : (ContinuousMap.mk (toΓSpecFun X) (toΓSpec_continuous _)) x
+        = toΓSpecFun X x := by rw [ContinuousMap.coe_mk]
+      erw [this]
       dsimp [toΓSpecFun]
-      rw [← LocalRing.comap_closedPoint (PresheafedSpace.stalkMap f.val x), ←
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [← LocalRing.comap_closedPoint (PresheafedSpace.stalkMap f.val x), ←
         PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply]
       congr 2
       exact (PresheafedSpace.stalkMap_germ f.1 ⊤ ⟨x, trivial⟩).symm
@@ -321,7 +328,7 @@ theorem left_triangle (X : LocallyRingedSpace) :
   X.Γ_Spec_left_triangle
 #align algebraic_geometry.Γ_Spec.left_triangle AlgebraicGeometry.ΓSpec.left_triangle
 
-/-- `Spec_Γ_identity` is iso so these are mutually two-sided inverses. -/
+/-- `SpecΓIdentity` is iso so these are mutually two-sided inverses. -/
 theorem right_triangle (R : CommRingCat) :
     identityToΓSpec.app (Spec.toLocallyRingedSpace.obj <| op R) ≫
         Spec.toLocallyRingedSpace.map (SpecΓIdentity.inv.app R).op =
@@ -336,19 +343,8 @@ theorem right_triangle (R : CommRingCat) :
   · intro r; apply toOpen_res
 #align algebraic_geometry.Γ_Spec.right_triangle AlgebraicGeometry.ΓSpec.right_triangle
 
--- Porting note : the two unification hint is to help compile `locallyRingedSpaceAdjunction`
--- faster, from 900000 to normal maxHeartbeats
-/-- opposite of composition of two functors -/
-unif_hint uh_functor_op1 where ⊢
-  Functor.op (Spec.toLocallyRingedSpace.rightOp ⋙ Γ) ≟
-  Spec.toLocallyRingedSpace.{u} ⋙ Γ.rightOp in
-
-/-- opposite of identity functor -/
-unif_hint uh_functor_op2 where ⊢
-  Functor.op (𝟭 CommRingCat.{u}) ≟ 𝟭 CommRingCatᵒᵖ in
-
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
---Porting Note: `simps` cause a time out, so `unit` and `counit` will be added manually
+--Porting Note: `simps` cause a time out, so `Unit` and `counit` will be added manually
 def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} :=
   Adjunction.mkOfUnitCounit
     { unit := identityToΓSpec
@@ -368,11 +364,11 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} 
 #align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction
 
 lemma locallyRingedSpaceAdjunction_unit :
-  locallyRingedSpaceAdjunction.unit = identityToΓSpec := rfl
+    locallyRingedSpaceAdjunction.unit = identityToΓSpec := rfl
 #align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction_unit AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction_unit
 
 lemma locallyRingedSpaceAdjunction_counit :
-  locallyRingedSpaceAdjunction.counit = (NatIso.op SpecΓIdentity.{u}).inv := rfl
+    locallyRingedSpaceAdjunction.counit = (NatIso.op SpecΓIdentity.{u}).inv := rfl
 #align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction_counit AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction_counit
 
 -- Porting Note: Commented
@@ -439,12 +435,12 @@ theorem adjunction_unit_app_app_top (X : Scheme) :
     SpecΓIdentity.hom.app (X.presheaf.obj (op ⊤)) := by
   have := congr_app ΓSpec.adjunction.left_triangle X
   dsimp at this
-  -- -- Porting Notes: Slightly changed some rewrites.
-  -- -- Originally:
-  -- --  rw [← is_iso.eq_comp_inv] at this
-  -- --  simp only [Γ_Spec.LocallyRingedSpace_adjunction_counit, nat_trans.op_app, category.id_comp,
-  -- --    Γ_Spec.adjunction_counit_app] at this
-  -- --  rw [← op_inv, nat_iso.inv_inv_app, quiver.hom.op_inj.eq_iff] at this
+  -- Porting Notes: Slightly changed some rewrites.
+  -- Originally:
+  --  rw [← is_iso.eq_comp_inv] at this
+  --  simp only [Γ_Spec.LocallyRingedSpace_adjunction_counit, nat_trans.op_app, category.id_comp,
+  --    Γ_Spec.adjunction_counit_app] at this
+  --  rw [← op_inv, nat_iso.inv_inv_app, quiver.hom.op_inj.eq_iff] at this
   rw [← IsIso.eq_comp_inv] at this
   simp only [adjunction_counit_app, locallyRingedSpaceAdjunction_counit, NatIso.op_inv,
     NatTrans.op_app, unop_op, Functor.id_obj, Functor.comp_obj, Functor.rightOp_obj,
@@ -452,11 +448,27 @@ theorem adjunction_unit_app_app_top (X : Scheme) :
     Spec.sheafedSpaceObj_carrier, Spec.sheafedSpaceObj_presheaf,
     SpecΓIdentity_inv_app, Category.id_comp] at this
   rw [← op_inv, Quiver.Hom.op_inj.eq_iff] at this
-  rw [SpecΓIdentity_hom_app]
+  -- Note: changed from `rw` to `simp_rw` to improve performance
+  simp_rw [SpecΓIdentity_hom_app]
   convert this using 1
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app_app_top AlgebraicGeometry.ΓSpec.adjunction_unit_app_app_top
 
 end ΓSpec
+
+@[reassoc]
+theorem SpecΓIdentity_naturality {R S : CommRingCat} (f : R ⟶ S) :
+    (Scheme.Spec.map f.op).1.c.app (op ⊤) ≫ SpecΓIdentity.hom.app _ =
+      SpecΓIdentity.hom.app _ ≫ f := SpecΓIdentity.hom.naturality f
+
+theorem SpecΓIdentity_hom_app_presheaf_obj {X : Scheme} (U : Opens X) :
+    SpecΓIdentity.hom.app (X.presheaf.obj (op U)) =
+      Scheme.Γ.map (Scheme.Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op).op).op ≫
+      (ΓSpec.adjunction.unit.app (X ∣_ᵤ U)).val.c.app (op ⊤) ≫
+      X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op := by
+  rw [ΓSpec.adjunction_unit_app_app_top]
+  dsimp [-SpecΓIdentity_hom_app]
+  rw [SpecΓIdentity_naturality_assoc, ← Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
+    op_id, CategoryTheory.Functor.map_id, Category.comp_id]
 
 /-! Immediate consequences of the adjunction. -/
 

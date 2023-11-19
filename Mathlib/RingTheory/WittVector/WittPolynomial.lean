@@ -2,11 +2,6 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.witt_polynomial
-! leanprover-community/mathlib commit c3019c79074b0619edb4b27553a91b2e82242395
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.Fintype.BigOperators
@@ -14,6 +9,8 @@ import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Expand
 import Mathlib.Data.ZMod.Basic
+
+#align_import ring_theory.witt_vector.witt_polynomial from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 
 /-!
 # Witt polynomials
@@ -73,7 +70,7 @@ open BigOperators
 
 variable (p : ℕ)
 
-variable (R : Type _) [CommRing R] [DecidableEq R]
+variable (R : Type*) [CommRing R] [DecidableEq R]
 
 /-- `wittPolynomial p R n` is the `n`-th Witt polynomial
 with respect to a prime `p` with coefficients in a commutative ring `R`.
@@ -84,14 +81,14 @@ noncomputable def wittPolynomial (n : ℕ) : MvPolynomial ℕ R :=
   ∑ i in range (n + 1), monomial (single i (p ^ (n - i))) ((p : R) ^ i)
 #align witt_polynomial wittPolynomial
 
-theorem wittPolynomial_eq_sum_c_mul_x_pow (n : ℕ) :
+theorem wittPolynomial_eq_sum_C_mul_X_pow (n : ℕ) :
     wittPolynomial p R n = ∑ i in range (n + 1), C ((p : R) ^ i) * X i ^ p ^ (n - i) := by
   apply sum_congr rfl
   rintro i -
   rw [monomial_eq, Finsupp.prod_single_index]
   rw [pow_zero]
 set_option linter.uppercaseLean3 false in
-#align witt_polynomial_eq_sum_C_mul_X_pow wittPolynomial_eq_sum_c_mul_x_pow
+#align witt_polynomial_eq_sum_C_mul_X_pow wittPolynomial_eq_sum_C_mul_X_pow
 
 /-! We set up notation locally to this file, to keep statements short and comprehensible.
 This allows us to simply write `W n` or `W_ ℤ n`. -/
@@ -116,7 +113,7 @@ If we map the coefficients through a ring homomorphism, we obtain the correspond
 over the target ring. -/
 section
 
-variable {R} {S : Type _} [CommRing S]
+variable {R} {S : Type*} [CommRing S]
 
 @[simp]
 theorem map_wittPolynomial (f : R →+* S) (n : ℕ) : map f (W n) = W n := by
@@ -145,11 +142,11 @@ theorem wittPolynomial_zero : wittPolynomial p R 0 = X 0 := by
 
 @[simp]
 theorem wittPolynomial_one : wittPolynomial p R 1 = C (p : R) * X 1 + X 0 ^ p := by
-  simp only [wittPolynomial_eq_sum_c_mul_x_pow, sum_range_succ_comm, range_one, sum_singleton,
+  simp only [wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ_comm, range_one, sum_singleton,
     one_mul, pow_one, C_1, pow_zero, tsub_self, tsub_zero]
 #align witt_polynomial_one wittPolynomial_one
 
-theorem aeval_wittPolynomial {A : Type _} [CommRing A] [Algebra R A] (f : ℕ → A) (n : ℕ) :
+theorem aeval_wittPolynomial {A : Type*} [CommRing A] [Algebra R A] (f : ℕ → A) (n : ℕ) :
     aeval f (W_ R n) = ∑ i in range (n + 1), (p : A) ^ i * f i ^ p ^ (n - i) := by
   simp [wittPolynomial, AlgHom.map_sum, aeval_monomial, Finsupp.prod_single_index]
 #align aeval_witt_polynomial aeval_wittPolynomial
@@ -158,17 +155,17 @@ theorem aeval_wittPolynomial {A : Type _} [CommRing A] [Algebra R A] (f : ℕ �
 by expanding the `n`th Witt polynomial by `p`.
 -/
 @[simp]
-theorem wittPolynomial_zMod_self (n : ℕ) :
+theorem wittPolynomial_zmod_self (n : ℕ) :
     W_ (ZMod (p ^ (n + 1))) (n + 1) = expand p (W_ (ZMod (p ^ (n + 1))) n) := by
-  simp only [wittPolynomial_eq_sum_c_mul_x_pow]
+  simp only [wittPolynomial_eq_sum_C_mul_X_pow]
   rw [sum_range_succ, ← Nat.cast_pow, CharP.cast_eq_zero (ZMod (p ^ (n + 1))) (p ^ (n + 1)), C_0,
-    MulZeroClass.zero_mul, add_zero, AlgHom.map_sum, sum_congr rfl]
+    zero_mul, add_zero, AlgHom.map_sum, sum_congr rfl]
   intro k hk
   rw [AlgHom.map_mul, AlgHom.map_pow, expand_X, algHom_C, ← pow_mul, ← pow_succ]
   congr
   rw [mem_range] at hk
   rw [add_comm, add_tsub_assoc_of_le (Nat.lt_succ_iff.mp hk), ← add_comm]
-#align witt_polynomial_zmod_self wittPolynomial_zMod_self
+#align witt_polynomial_zmod_self wittPolynomial_zmod_self
 
 section PPrime
 
@@ -226,7 +223,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : ℕ) :
     constantCoeff (xInTermsOfW p R n) = 0 := by
-  apply Nat.strongInductionOn n ; clear n
+  apply Nat.strongInductionOn n; clear n
   intro n IH
   rw [xInTermsOfW_eq, mul_comm, RingHom.map_mul, RingHom.map_sub, map_sum, constantCoeff_C,
     constantCoeff_X, zero_sub, mul_neg, neg_eq_zero]
@@ -273,14 +270,14 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     rcases H with ⟨j, hj, H⟩
     rw [vars_C_mul] at H
     swap
-    . apply pow_ne_zero
+    · apply pow_ne_zero
       exact_mod_cast hp.1.ne_zero
     rw [mem_range] at hj
     replace H := (ih j hj).2 (vars_pow _ _ H)
     rw [mem_range] at H
-  . rw [mem_range]
+  · rw [mem_range]
     linarith
-  . linarith
+  · linarith
 set_option linter.uppercaseLean3 false in
 #align X_in_terms_of_W_vars_aux xInTermsOfW_vars_aux
 
@@ -302,7 +299,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem bind₁_xInTermsOfW_wittPolynomial [Invertible (p : R)] (k : ℕ) :
     bind₁ (xInTermsOfW p R) (W_ R k) = X k := by
-  rw [wittPolynomial_eq_sum_c_mul_x_pow, AlgHom.map_sum]
+  rw [wittPolynomial_eq_sum_C_mul_X_pow, AlgHom.map_sum]
   simp only [Nat.cast_pow, AlgHom.map_pow, C_pow, AlgHom.map_mul, algHom_C]
   rw [sum_range_succ_comm, tsub_self, pow_zero, pow_one, bind₁_X_right, mul_comm, ← C_pow,
     xInTermsOfW_aux]
@@ -320,7 +317,7 @@ theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
     show X n = (X n * C ((p : R) ^ n)) * C ((⅟p : R) ^ n) by
       rw [mul_assoc, ← C_mul, ← mul_pow, mul_invOf_self, one_pow, map_one, mul_one]]
   congr 1
-  rw [wittPolynomial_eq_sum_c_mul_x_pow, sum_range_succ_comm,
+  rw [wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ_comm,
     tsub_self, pow_zero, pow_one, mul_comm (X n), add_sub_assoc, add_right_eq_self, sub_eq_zero]
   apply sum_congr rfl
   intro i h

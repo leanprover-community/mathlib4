@@ -2,13 +2,10 @@
 Copyright (c) 2022 Floris van Doorn, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
-
-! This file was ported from Lean 3 source module geometry.manifold.vector_bundle.fiberwise_linear
-! leanprover-community/mathlib commit be2c24f56783935652cefffb4bfca7e4b25d167e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.ContMDiff
+
+#align_import geometry.manifold.vector_bundle.fiberwise_linear from "leanprover-community/mathlib"@"be2c24f56783935652cefffb4bfca7e4b25d167e"
 
 /-! # The groupoid of smooth, fiberwise-linear maps
 
@@ -25,7 +22,7 @@ open scoped Manifold Topology
 /-! ### The groupoid of smooth, fiberwise-linear maps -/
 
 
-variable {𝕜 B F : Type _} [TopologicalSpace B]
+variable {𝕜 B F : Type*} [TopologicalSpace B]
 
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
@@ -52,11 +49,11 @@ def localHomeomorph (φ : B → F ≃L[𝕜] F) (hU : IsOpen U)
   continuous_toFun :=
     have : ContinuousOn (fun p : B × F => ((φ p.1 : F →L[𝕜] F), p.2)) (U ×ˢ univ) :=
       hφ.prod_map continuousOn_id
-    continuousOn_fst.prod (isBoundedBilinearMapApply.continuous.comp_continuousOn this)
+    continuousOn_fst.prod (isBoundedBilinearMap_apply.continuous.comp_continuousOn this)
   continuous_invFun :=
     haveI : ContinuousOn (fun p : B × F => (((φ p.1).symm : F →L[𝕜] F), p.2)) (U ×ˢ univ) :=
       h2φ.prod_map continuousOn_id
-    continuousOn_fst.prod (isBoundedBilinearMapApply.continuous.comp_continuousOn this)
+    continuousOn_fst.prod (isBoundedBilinearMap_apply.continuous.comp_continuousOn this)
 #align fiberwise_linear.local_homeomorph FiberwiseLinear.localHomeomorph
 
 /-- Compute the composition of two local homeomorphisms induced by fiberwise linear
@@ -100,7 +97,7 @@ theorem target_trans_localHomeomorph (hU : IsOpen U)
 
 end FiberwiseLinear
 
-variable {EB : Type _} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type _}
+variable {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*}
   [TopologicalSpace HB] [ChartedSpace HB B] {IB : ModelWithCorners 𝕜 EB HB}
 
 /-- Let `e` be a local homeomorphism of `B × F`.  Suppose that at every point `p` in the source of
@@ -122,7 +119,7 @@ theorem SmoothFiberwiseLinear.locality_aux₁ (e : LocalHomeomorph (B × F) (B �
             (h2φ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => ((φ x).symm : F →L[𝕜] F)) u),
             (e.restr (u ×ˢ univ)).EqOnSource
               (FiberwiseLinear.localHomeomorph φ hu hφ.continuousOn h2φ.continuousOn) := by
-  rw [SetCoe.forall'] at h 
+  rw [SetCoe.forall'] at h
   choose s hs hsp φ u hu hφ h2φ heφ using h
   have hesu : ∀ p : e.source, e.source ∩ s p = u p ×ˢ univ := by
     intro p
@@ -135,7 +132,7 @@ theorem SmoothFiberwiseLinear.locality_aux₁ (e : LocalHomeomorph (B × F) (B �
   have heu : ∀ p : e.source, ∀ q : B × F, q.fst ∈ u p → q ∈ e.source := by
     intro p q hq
     have : q ∈ u p ×ˢ (univ : Set F) := ⟨hq, trivial⟩
-    rw [← hesu p] at this 
+    rw [← hesu p] at this
     exact this.1
   have he : e.source = (Prod.fst '' e.source) ×ˢ (univ : Set F) := by
     apply HasSubset.Subset.antisymm
@@ -174,7 +171,7 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : LocalHomeomorph (B × F) (B �
       SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun x => ((Φ x).symm : F →L[𝕜] F)) U),
       e.EqOnSource (FiberwiseLinear.localHomeomorph Φ hU₀ hΦ.continuousOn h2Φ.continuousOn) := by
   classical
-  rw [SetCoe.forall'] at h 
+  rw [SetCoe.forall'] at h
   choose! φ u hu hUu hux hφ h2φ heφ using h
   have heuφ : ∀ x : U, EqOn e (fun q => (q.1, φ x q.1 q.2)) (u x ×ˢ univ) := fun x p hp ↦ by
     refine' (heφ x).2 _
@@ -217,10 +214,9 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : LocalHomeomorph (B × F) (B �
     intro y hy
     rw [hΦφ ⟨x, hx⟩ y hy]
   refine' ⟨Φ, U, hU', hΦ, h2Φ, hU, fun p hp => _⟩
-  rw [hU] at hp 
+  rw [hU] at hp
   rw [heuφ ⟨p.fst, hp.1⟩ ⟨hux _, hp.2⟩]
-  -- porting note: replaced `congrm` with manual `congr_arg`
-  refine congr_arg (Prod.mk _) ?_
+  congrm (_, ?_)
   rw [hΦφ]
   apply hux
 #align smooth_fiberwise_linear.locality_aux₂ SmoothFiberwiseLinear.locality_aux₂

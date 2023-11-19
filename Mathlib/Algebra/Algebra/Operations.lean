@@ -2,14 +2,10 @@
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.algebra.operations
-! leanprover-community/mathlib commit 27b54c47c3137250a521aa64e9f1db90be5f6a26
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.Algebra.Module.Opposites
@@ -18,6 +14,8 @@ import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
+
+#align_import algebra.algebra.operations from "leanprover-community/mathlib"@"27b54c47c3137250a521aa64e9f1db90be5f6a26"
 
 /-!
 # Multiplication and division of submodules of an algebra.
@@ -296,8 +294,8 @@ theorem map_op_mul :
 theorem comap_unop_mul :
     comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) (M * N) =
       comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) N *
-        comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) M :=
-  by simp_rw [← map_equiv_eq_comap_symm, map_op_mul]
+        comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) M := by
+  simp_rw [← map_equiv_eq_comap_symm, map_op_mul]
 #align submodule.comap_unop_mul Submodule.comap_unop_mul
 
 theorem map_unop_mul (M N : Submodule R Aᵐᵒᵖ) :
@@ -314,8 +312,8 @@ theorem map_unop_mul (M N : Submodule R Aᵐᵒᵖ) :
 theorem comap_op_mul (M N : Submodule R Aᵐᵒᵖ) :
     comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (M * N) =
       comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) N *
-        comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M :=
-  by simp_rw [comap_equiv_eq_map_symm, map_unop_mul]
+        comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M := by
+  simp_rw [comap_equiv_eq_map_symm, map_unop_mul]
 #align submodule.comap_op_mul Submodule.comap_op_mul
 
 section
@@ -465,10 +463,7 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
     obtain ⟨r, rfl⟩ := hx
     exact hr r
   revert hx
-  -- porting note: workaround for lean4#1926, was `simp_rw [pow_succ']`
-  suffices h_lean4_1926 : ∀ (hx' : x ∈ M ^ n * M), C (Nat.succ n) x (by rwa [pow_succ']) from
-    fun hx => h_lean4_1926 (by rwa [← pow_succ'])
-  -- porting note: end workaround
+  simp_rw [pow_succ']
   intro hx
   exact
     Submodule.mul_induction_on' (fun m hm x ih => hmul _ _ hm (n_ih _) _ ih)
@@ -539,14 +534,14 @@ theorem comap_op_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
 
 theorem map_op_pow (n : ℕ) :
     map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (M ^ n) =
-      map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M ^ n :=
-  by rw [map_equiv_eq_comap_symm, map_equiv_eq_comap_symm, comap_unop_pow]
+      map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M ^ n := by
+  rw [map_equiv_eq_comap_symm, map_equiv_eq_comap_symm, comap_unop_pow]
 #align submodule.map_op_pow Submodule.map_op_pow
 
 theorem map_unop_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
     map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) (M ^ n) =
-      map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) M ^ n :=
-  by rw [← comap_equiv_eq_map_symm, ← comap_equiv_eq_map_symm, comap_op_pow]
+      map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) M ^ n := by
+  rw [← comap_equiv_eq_map_symm, ← comap_equiv_eq_map_symm, comap_op_pow]
 #align submodule.map_unop_pow Submodule.map_unop_pow
 
 /-- `span` is a semiring homomorphism (recall multiplication is pointwise multiplication of subsets
@@ -564,7 +559,7 @@ def span.ringHom : SetSemiring A →+* Submodule R A where
 
 section
 
-variable {α : Type _} [Monoid α] [MulSemiringAction α A] [SMulCommClass α R A]
+variable {α : Type*} [Monoid α] [MulSemiringAction α A] [SMulCommClass α R A]
 
 /-- The action on a submodule corresponding to applying the action to every element.
 
@@ -605,7 +600,7 @@ protected theorem mul_comm : M * N = N * M :=
 instance : IdemCommSemiring (Submodule R A) :=
   { Submodule.idemSemiring with mul_comm := Submodule.mul_comm }
 
-theorem prod_span {ι : Type _} (s : Finset ι) (M : ι → Set A) :
+theorem prod_span {ι : Type*} (s : Finset ι) (M : ι → Set A) :
     (∏ i in s, Submodule.span R (M i)) = Submodule.span R (∏ i in s, M i) := by
   letI := Classical.decEq ι
   refine' Finset.induction_on s _ _
@@ -614,7 +609,7 @@ theorem prod_span {ι : Type _} (s : Finset ι) (M : ι → Set A) :
     rw [Finset.prod_insert H, Finset.prod_insert H, ih, span_mul_span]
 #align submodule.prod_span Submodule.prod_span
 
-theorem prod_span_singleton {ι : Type _} (s : Finset ι) (x : ι → A) :
+theorem prod_span_singleton {ι : Type*} (s : Finset ι) (x : ι → A) :
     (∏ i in s, span R ({x i} : Set A)) = span R {∏ i in s, x i} := by
   rw [prod_span, Set.finset_prod_singleton]
 #align submodule.prod_span_singleton Submodule.prod_span_singleton
@@ -640,7 +635,7 @@ instance moduleSet : Module (SetSemiring A) (Submodule R A) where
 variable {R A}
 
 theorem smul_def (s : SetSemiring A) (P : Submodule R A) :
-  s • P = span R (SetSemiring.down s) * P :=
+    s • P = span R (SetSemiring.down s) * P :=
   rfl
 #align submodule.smul_def Submodule.smul_def
 
@@ -726,7 +721,7 @@ theorem mul_one_div_le_one {I : Submodule R A} : I * (1 / I) ≤ 1 := by
 #align submodule.mul_one_div_le_one Submodule.mul_one_div_le_one
 
 @[simp]
-protected theorem map_div {B : Type _} [CommSemiring B] [Algebra R B] (I J : Submodule R A)
+protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Submodule R A)
     (h : A ≃ₐ[R] B) : (I / J).map h.toLinearMap = I.map h.toLinearMap / J.map h.toLinearMap := by
   ext x
   simp only [mem_map, mem_div_iff_forall_mul_mem]

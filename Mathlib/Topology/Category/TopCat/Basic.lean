@@ -2,15 +2,12 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro
-
-! This file was ported from Lean 3 source module topology.category.Top.basic
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.Topology.ContinuousFunction.Basic
+
+#align_import topology.category.Top.basic from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # Category instance for topological spaces
@@ -29,6 +26,7 @@ open TopologicalSpace
 universe u
 
 /-- The category of topological spaces and continuous maps. -/
+@[to_additive existing TopCat]
 def TopCat : Type (u + 1) :=
   Bundled TopologicalSpace
 set_option linter.uppercaseLean3 false in
@@ -51,7 +49,8 @@ instance concreteCategory : ConcreteCategory TopCat := by
   dsimp [TopCat]
   infer_instance
 
-instance : CoeSort TopCat (Type _) :=
+@[to_additive existing TopCat.instCoeSortTopCatType]
+instance instCoeSortTopCatType : CoeSort TopCat (Type*) :=
   Bundled.coeSort
 
 instance topologicalSpaceUnbundled (x : TopCat) : TopologicalSpace x :=
@@ -99,8 +98,7 @@ instance inhabited : Inhabited TopCat :=
   ⟨TopCat.of Empty⟩
 
 -- porting note: added to ease the port of `AlgebraicTopology.TopologicalSimplex`
-lemma hom_apply {X Y : TopCat} (f : X ⟶ Y) (x : X) :
-  f x = ContinuousMap.toFun f x := rfl
+lemma hom_apply {X Y : TopCat} (f : X ⟶ Y) (x : X) : f x = ContinuousMap.toFun f x := rfl
 
 /-- The discrete topology on any type. -/
 def discrete : Type u ⥤ TopCat.{u} where

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.category.ulift
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Equivalence
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.Data.ULift
+
+#align_import category_theory.category.ulift from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Basic API for ULift
@@ -19,8 +16,8 @@ import Mathlib.Data.ULift
 This file contains a very basic API for working with the categorical
 instance on `ULift C` where `C` is a type with a category instance.
 
-1. `CategoryTheory.ULift.up` is the functorial version of the usual `ULift.up`.
-2. `CategoryTheory.ULift.down` is the functorial version of the usual `ULift.down`.
+1. `CategoryTheory.ULift.upFunctor` is the functorial version of the usual `ULift.up`.
+2. `CategoryTheory.ULift.downFunctor` is the functorial version of the usual `ULift.down`.
 3. `CategoryTheory.ULift.equivalence` is the categorical equivalence between
   `C` and `ULift C`.
 

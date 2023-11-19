@@ -2,14 +2,11 @@
 Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
-
-! This file was ported from Lean 3 source module algebra.continued_fractions.basic
-! leanprover-community/mathlib commit a7e36e48519ab281320c4d192da6a7b348ce40ad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Seq.Seq
 import Mathlib.Algebra.Field.Defs
+
+#align_import algebra.continued_fractions.basic from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
 /-!
 # Basic Definitions/Theorems for Continued Fractions
@@ -45,7 +42,7 @@ numerics, number theory, approximations, fractions
 -/
 
 -- Fix a carrier `α`.
-variable (α : Type _)
+variable (α : Type*)
 
 /-!### Definitions-/
 
@@ -72,14 +69,14 @@ instance [Repr α] : Repr (Pair α) :=
   ⟨fun p _ ↦ "(a : " ++ repr p.a ++ ", b : " ++ repr p.b ++ ")"⟩
 
 /-- Maps a function `f` on both components of a given pair. -/
-def map {β : Type _} (f : α → β) (gp : Pair α) : Pair β :=
+def map {β : Type*} (f : α → β) (gp : Pair α) : Pair β :=
   ⟨f gp.a, f gp.b⟩
 #align generalized_continued_fraction.pair.map GeneralizedContinuedFraction.Pair.map
 
 section coe
 
 -- Fix another type `β` which we will convert to.
-variable {β : Type _} [Coe α β]
+variable {β : Type*} [Coe α β]
 
 -- Porting note: added so we can add the `@[coe]` attribute
 /-- The coercion between numerator-denominator pairs happens componentwise. -/
@@ -166,7 +163,7 @@ section coe
 /-! Interlude: define some expected coercions. -/
 
 -- Fix another type `β` which we will convert to.
-variable {β : Type _} [Coe α β]
+variable {β : Type*} [Coe α β]
 
 -- Porting note: Added to put `@[coe]` attr on it.
 /-- The coercion between `GeneralizedContinuedFraction` happens on the head term
@@ -320,7 +317,7 @@ For (r)cfs, these computations are equivalent as shown in
 -/
 
 -- Fix a division ring for the computations.
-variable {K : Type _} [DivisionRing K]
+variable {K : Type*} [DivisionRing K]
 
 /-!
 We start with the definition of the recurrence relation. Given a gcf `g`, for all `n ≥ 1`, we define

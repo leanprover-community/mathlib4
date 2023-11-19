@@ -2,14 +2,11 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.direct_sum.tensor_product
-! leanprover-community/mathlib commit 9b9d125b7be0930f564a68f1d73ace10cf46064d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.Algebra.DirectSum.Module
+
+#align_import linear_algebra.direct_sum.tensor_product from "leanprover-community/mathlib"@"9b9d125b7be0930f564a68f1d73ace10cf46064d"
 /-!
 # Tensor products of direct sums
 
@@ -21,6 +18,8 @@ This file shows that taking `TensorProduct`s commutes with taking `DirectSum`s i
 * `TensorProduct.directSumLeft`
 * `TensorProduct.directSumRight`
 -/
+
+suppress_compilation
 
 universe u v₁ v₂ w₁ w₁' w₂ w₂'
 
@@ -146,7 +145,7 @@ def directSumLeft : (⨁ i₁, M₁ i₁) ⊗[R] M₂' ≃ₗ[R] ⨁ i, M₁ i �
 /-- Tensor products distribute over a direct sum on the right. -/
 def directSumRight : (M₁' ⊗[R] ⨁ i, M₂ i) ≃ₗ[R] ⨁ i, M₁' ⊗[R] M₂ i :=
   TensorProduct.comm R _ _ ≪≫ₗ directSumLeft R M₂ M₁' ≪≫ₗ
-    Dfinsupp.mapRange.linearEquiv fun _ => TensorProduct.comm R _ _
+    DFinsupp.mapRange.linearEquiv fun _ => TensorProduct.comm R _ _
 #align tensor_product.direct_sum_right TensorProduct.directSumRight
 
 variable {M₁ M₁' M₂ M₂'}
@@ -157,6 +156,13 @@ theorem directSum_lof_tmul_lof (i₁ : ι₁) (m₁ : M₁ i₁) (i₂ : ι₂) 
       DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂) (m₁ ⊗ₜ m₂) := by
   simp [TensorProduct.directSum]
 #align tensor_product.direct_sum_lof_tmul_lof TensorProduct.directSum_lof_tmul_lof
+
+@[simp]
+theorem directSum_symm_lof_tmul (i₁ : ι₁) (m₁ : M₁ i₁) (i₂ : ι₂) (m₂ : M₂ i₂) :
+    (TensorProduct.directSum R M₁ M₂).symm
+      (DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂) (m₁ ⊗ₜ m₂)) =
+      (DirectSum.lof R ι₁ M₁ i₁ m₁ ⊗ₜ DirectSum.lof R ι₂ M₂ i₂ m₂) := by
+  rw [LinearEquiv.symm_apply_eq, directSum_lof_tmul_lof]
 
 @[simp]
 theorem directSumLeft_tmul_lof (i : ι₁) (x : M₁ i) (y : M₂') :
@@ -180,7 +186,7 @@ theorem directSumRight_tmul_lof (x : M₁') (i : ι₂) (y : M₂ i) :
     DirectSum.lof R _ _ i (x ⊗ₜ[R] y) := by
   dsimp only [directSumRight, LinearEquiv.trans_apply, TensorProduct.comm_tmul]
   rw [directSumLeft_tmul_lof]
-  exact Dfinsupp.mapRange_single (hf := fun _ => rfl)
+  exact DFinsupp.mapRange_single (hf := fun _ => rfl)
 #align tensor_product.direct_sum_right_tmul_lof TensorProduct.directSumRight_tmul_lof
 
 @[simp]

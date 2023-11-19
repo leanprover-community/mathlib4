@@ -2,26 +2,24 @@
 Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.abel_ruffini
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.Calculus.LocalExtr
+import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
 import Mathlib.FieldTheory.AbelRuffini
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.EisensteinCriterion
+
+#align_import wiedijk_100_theorems.abel_ruffini from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 # Construction of an algebraic number that is not solvable by radicals.
 
 The main ingredients are:
- * `solvableByRad.isSolvable'` in `FieldTheory/AbelRuffini` :
+ * `solvableByRad.isSolvable'` in `Mathlib/FieldTheory/AbelRuffini.lean` :
   an irreducible polynomial with an `IsSolvableByRad` root has solvable Galois group
- * `galActionHom_bijective_of_prime_degree'` in `FieldTheory/PolynomialGaloisGroup` :
+ * `galActionHom_bijective_of_prime_degree'` in `Mathlib/FieldTheory/PolynomialGaloisGroup.lean` :
   an irreducible polynomial of prime degree with 1-3 non-real roots has full Galois group
- * `Equiv.Perm.not_solvable` in `GroupTheory/Solvable` : the symmetric group is not solvable
+ * `Equiv.Perm.not_solvable` in `Mathlib/GroupTheory/Solvable.lean` : the symmetric group is not
+  solvable
 
 Then all that remains is the construction of a specific polynomial satisfying the conditions of
 `galActionHom_bijective_of_prime_degree'`, which is done in this file.
@@ -33,15 +31,13 @@ namespace AbelRuffini
 
 set_option linter.uppercaseLean3 false
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
 open Function Polynomial Polynomial.Gal Ideal
 
 open scoped Polynomial
 
 attribute [local instance] splits_ℚ_ℂ
 
-variable (R : Type _) [CommRing R] (a b : ℕ)
+variable (R : Type*) [CommRing R] (a b : ℕ)
 
 /-- A quintic polynomial that we will show is irreducible -/
 noncomputable def Φ : R[X] :=
@@ -51,11 +47,11 @@ noncomputable def Φ : R[X] :=
 variable {R}
 
 @[simp]
-theorem map_Phi {S : Type _} [CommRing S] (f : R →+* S) : (Φ R a b).map f = Φ S a b := by simp [Φ]
+theorem map_Phi {S : Type*} [CommRing S] (f : R →+* S) : (Φ R a b).map f = Φ S a b := by simp [Φ]
 #align abel_ruffini.map_Phi AbelRuffini.map_Phi
 
 @[simp]
-theorem coeff_zero_Phi : (Φ R a b).coeff 0 = ↑b := by simp [Φ, coeff_X_pow]
+theorem coeff_zero_Phi : (Φ R a b).coeff 0 = (b : R) := by simp [Φ, coeff_X_pow]
 #align abel_ruffini.coeff_zero_Phi AbelRuffini.coeff_zero_Phi
 
 @[simp]
@@ -65,13 +61,12 @@ theorem coeff_five_Phi : (Φ R a b).coeff 5 = 1 := by
 
 variable [Nontrivial R]
 
-theorem degree_Phi : (Φ R a b).degree = ↑5 := by
-  suffices degree (X ^ 5 - C (a : R) * X) = ↑5 by
+theorem degree_Phi : (Φ R a b).degree = ((5 : ℕ) : WithBot ℕ) := by
+  suffices degree (X ^ 5 - C (a : R) * X) = ((5 : ℕ) : WithBot ℕ) by
     rwa [Φ, degree_add_eq_left_of_degree_lt]
     convert (degree_C_le (R := R)).trans_lt (WithBot.coe_lt_coe.mpr (show 0 < 5 by norm_num))
-  rw [degree_sub_eq_left_of_degree_lt]; · simp
-  rw [degree_X_pow]
-  exact (degree_C_mul_X_le _).trans_lt (WithBot.coe_lt_coe.mpr (show 1 < 5 by norm_num))
+  rw [degree_sub_eq_left_of_degree_lt] <;> rw [degree_X_pow]
+  exact (degree_C_mul_X_le (a : R)).trans_lt (WithBot.coe_lt_coe.mpr (show 1 < 5 by norm_num))
 #align abel_ruffini.degree_Phi AbelRuffini.degree_Phi
 
 theorem natDegree_Phi : (Φ R a b).natDegree = 5 :=
@@ -97,10 +92,11 @@ theorem irreducible_Phi (p : ℕ) (hp : p.Prime) (hpa : p ∣ a) (hpb : p ∣ b)
     rw [mem_span_singleton]
     rw [degree_Phi] at hn; norm_cast at hn
     interval_cases hn : n <;>
-    simp only [Φ, coeff_X_pow, coeff_C, Int.coe_nat_dvd.mpr, hpb, if_true, coeff_C_mul, if_false,
-      coeff_X_zero, hpa, coeff_add, zero_add, mul_zero, coeff_sub, add_zero, zero_sub, dvd_neg,
-      neg_zero, dvd_mul_of_dvd_left]
+    simp (config := {decide := true}) only [Φ, coeff_X_pow, coeff_C, Int.coe_nat_dvd.mpr, hpb,
+      if_true, coeff_C_mul, if_false, coeff_X_zero, hpa, coeff_add, zero_add, mul_zero, coeff_sub,
+      add_zero, zero_sub, dvd_neg, neg_zero, dvd_mul_of_dvd_left]
   · simp only [degree_Phi, ← WithBot.coe_zero, WithBot.coe_lt_coe, Nat.succ_pos']
+    decide
   · rw [coeff_zero_Phi, span_singleton_pow, mem_span_singleton]
     exact mt Int.coe_nat_dvd.mp hp2b
   all_goals exact Monic.isPrimitive (monic_Phi a b)
@@ -110,14 +106,16 @@ theorem real_roots_Phi_le : Fintype.card ((Φ ℚ a b).rootSet ℝ) ≤ 3 := by
   rw [← map_Phi a b (algebraMap ℤ ℚ), Φ, ← one_mul (X ^ 5), ← C_1]
   refine' (card_rootSet_le_derivative _).trans
     (Nat.succ_le_succ ((card_rootSet_le_derivative _).trans (Nat.succ_le_succ _)))
-  simp [-map_ofNat]
-  rw [Fintype.card_le_one_iff_subsingleton, ← mul_assoc, ← _root_.map_mul, rootSet_C_mul_X_pow] <;>
+  suffices : (Polynomial.rootSet (C (20 : ℚ) * X ^ 3) ℝ).Subsingleton
+  · norm_num [Fintype.card_le_one_iff_subsingleton, ← mul_assoc] at *
+    exact this
+  rw [rootSet_C_mul_X_pow] <;>
   norm_num
 #align abel_ruffini.real_roots_Phi_le AbelRuffini.real_roots_Phi_le
 
 theorem real_roots_Phi_ge_aux (hab : b < a) :
     ∃ x y : ℝ, x ≠ y ∧ aeval x (Φ ℚ a b) = 0 ∧ aeval y (Φ ℚ a b) = 0 := by
-  let f := fun x : ℝ => aeval x (Φ ℚ a b)
+  let f : ℝ → ℝ := fun x : ℝ => aeval x (Φ ℚ a b)
   have hf : f = fun x : ℝ => x ^ 5 - a * x + b := by simp [Φ]
   have hc : ∀ s : Set ℝ, ContinuousOn f s := fun s => (Φ ℚ a b).continuousOn_aeval
   have ha : (1 : ℝ) ≤ a := Nat.one_le_cast.mpr (Nat.one_le_of_lt hab)
@@ -126,7 +124,8 @@ theorem real_roots_Phi_ge_aux (hab : b < a) :
   by_cases hb : (1 : ℝ) - a + b < 0
   · have hf1 : f 1 < 0 := by simp [hf, hb]
     have hfa : 0 ≤ f a := by
-      simp [hf, ← sq]
+      -- Porting note: was `simp_rw`
+      simp only [hf, ← sq]
       refine' add_nonneg (sub_nonneg.mpr (pow_le_pow ha _)) _ <;> norm_num
     obtain ⟨x, ⟨-, hx1⟩, hx2⟩ := intermediate_value_Ico' hle (hc _) (Set.mem_Ioc.mpr ⟨hf1, hf0⟩)
     obtain ⟨y, ⟨hy1, -⟩, hy2⟩ := intermediate_value_Ioc ha (hc _) (Set.mem_Ioc.mpr ⟨hf1, hfa⟩)
@@ -135,8 +134,9 @@ theorem real_roots_Phi_ge_aux (hab : b < a) :
     have hf1 : f 1 = 0 := by simp [hf, hb]
     have hfa :=
       calc
-        f (-a) = ↑a ^ 2 - ↑a ^ 5 + b := by simp [hf, ← sq]; rw [Odd.neg_pow]; ring; norm_num
-        _ ≤ ↑a ^ 2 - ↑a ^ 3 + (a - 1) := by
+        f (-a) = (a : ℝ) ^ 2 - (a : ℝ) ^ 5 + b := by
+          norm_num [hf, ← sq, sub_eq_add_neg, add_comm, Odd.neg_pow (by decide : Odd 5)]
+        _ ≤ (a : ℝ) ^ 2 - (a : ℝ) ^ 3 + (a - 1) := by
           refine' add_le_add (sub_le_sub_left (pow_le_pow ha _) _) _ <;> linarith
         _ = -((a : ℝ) - 1) ^ 2 * (a + 1) := by ring
         _ ≤ 0 := by nlinarith
@@ -162,7 +162,7 @@ theorem complex_roots_Phi (h : (Φ ℚ a b).Separable) : Fintype.card ((Φ ℚ a
 theorem gal_Phi (hab : b < a) (h_irred : Irreducible (Φ ℚ a b)) :
     Bijective (galActionHom (Φ ℚ a b) ℂ) := by
   apply galActionHom_bijective_of_prime_degree' h_irred
-  · rw [natDegree_Phi]; norm_num
+  · simp only [natDegree_Phi]; decide
   · rw [complex_roots_Phi a b h_irred.separable, Nat.succ_le_succ_iff]
     exact (real_roots_Phi_le a b).trans (Nat.le_succ 3)
   · simp_rw [complex_roots_Phi a b h_irred.separable, Nat.succ_le_succ_iff]
@@ -180,7 +180,7 @@ theorem not_solvable_by_rad (p : ℕ) (x : ℂ) (hx : aeval x (Φ ℚ a b) = 0) 
 #align abel_ruffini.not_solvable_by_rad AbelRuffini.not_solvable_by_rad
 
 theorem not_solvable_by_rad' (x : ℂ) (hx : aeval x (Φ ℚ 4 2) = 0) : ¬IsSolvableByRad ℚ x := by
-  apply not_solvable_by_rad 4 2 2 x hx <;> norm_num
+  apply not_solvable_by_rad 4 2 2 x hx <;> decide
 #align abel_ruffini.not_solvable_by_rad' AbelRuffini.not_solvable_by_rad'
 
 /-- **Abel-Ruffini Theorem** -/

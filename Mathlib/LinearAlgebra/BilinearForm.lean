@@ -2,14 +2,10 @@
 Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow, Kexing Ying
-
-! This file was ported from Lean 3 source module linear_algebra.bilinear_form
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Dual
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+
+#align_import linear_algebra.bilinear_form from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Bilinear form
@@ -55,7 +51,7 @@ open BigOperators
 universe u v w
 
 /-- `BilinForm R M` is the type of `R`-bilinear functions `M → M → R`. -/
-structure BilinForm (R : Type _) (M : Type _) [Semiring R] [AddCommMonoid M] [Module R M] where
+structure BilinForm (R : Type*) (M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] where
   bilin : M → M → R
   bilin_add_left : ∀ x y z : M, bilin (x + y) z = bilin x z + bilin y z
   bilin_smul_left : ∀ (a : R) (x y : M), bilin (a • x) y = a * bilin x y
@@ -63,15 +59,15 @@ structure BilinForm (R : Type _) (M : Type _) [Semiring R] [AddCommMonoid M] [Mo
   bilin_smul_right : ∀ (a : R) (x y : M), bilin x (a • y) = a * bilin x y
 #align bilin_form BilinForm
 
-variable {R : Type _} {M : Type _} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
-variable {R₁ : Type _} {M₁ : Type _} [Ring R₁] [AddCommGroup M₁] [Module R₁ M₁]
+variable {R₁ : Type*} {M₁ : Type*} [Ring R₁] [AddCommGroup M₁] [Module R₁ M₁]
 
-variable {R₂ : Type _} {M₂ : Type _} [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
+variable {R₂ : Type*} {M₂ : Type*} [CommSemiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
 
-variable {R₃ : Type _} {M₃ : Type _} [CommRing R₃] [AddCommGroup M₃] [Module R₃ M₃]
+variable {R₃ : Type*} {M₃ : Type*} [CommRing R₃] [AddCommGroup M₃] [Module R₃ M₃]
 
-variable {V : Type _} {K : Type _} [Field K] [AddCommGroup V] [Module K V]
+variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
 
 variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁} {B₂ : BilinForm R₂ M₂}
 
@@ -113,12 +109,12 @@ theorem smul_right (a : R) (x y : M) : B x (a • y) = a * B x y :=
 
 @[simp]
 theorem zero_left (x : M) : B 0 x = 0 := by
-  rw [← @zero_smul R _ _ _ _ (0 : M), smul_left, MulZeroClass.zero_mul]
+  rw [← @zero_smul R _ _ _ _ (0 : M), smul_left, zero_mul]
 #align bilin_form.zero_left BilinForm.zero_left
 
 @[simp]
 theorem zero_right (x : M) : B x 0 = 0 := by
-  rw [← @zero_smul R _ _ _ _ (0 : M), smul_right, MulZeroClass.zero_mul]
+  rw [← @zero_smul R _ _ _ _ (0 : M), smul_right, zero_mul]
 #align bilin_form.zero_right BilinForm.zero_right
 
 @[simp]
@@ -169,9 +165,9 @@ instance : Zero (BilinForm R M) where
   zero :=
     { bilin := fun _ _ => 0
       bilin_add_left := fun _ _ _ => (add_zero 0).symm
-      bilin_smul_left := fun a _ _ => (MulZeroClass.mul_zero a).symm
+      bilin_smul_left := fun a _ _ => (mul_zero a).symm
       bilin_add_right := fun _ _ _ => (zero_add 0).symm
-      bilin_smul_right := fun a _ _ => (MulZeroClass.mul_zero a).symm }
+      bilin_smul_right := fun a _ _ => (mul_zero a).symm }
 
 @[simp]
 theorem coe_zero : ⇑(0 : BilinForm R M) = 0 :=
@@ -226,6 +222,21 @@ theorem smul_apply {α} [Monoid α] [DistribMulAction α R] [SMulCommClass α R 
     (B : BilinForm R M) (x y : M) : (a • B) x y = a • B x y :=
   rfl
 #align bilin_form.smul_apply BilinForm.smul_apply
+
+instance {α β} [Monoid α] [Monoid β] [DistribMulAction α R] [DistribMulAction β R]
+    [SMulCommClass α R R] [SMulCommClass β R R] [SMulCommClass α β R] :
+    SMulCommClass α β (BilinForm R M) :=
+  ⟨fun a b B => ext $ fun x y => smul_comm a b (B x y)⟩
+
+instance {α β} [Monoid α] [Monoid β] [SMul α β] [DistribMulAction α R] [DistribMulAction β R]
+    [SMulCommClass α R R] [SMulCommClass β R R] [IsScalarTower α β R] :
+    IsScalarTower α β (BilinForm R M) :=
+  ⟨fun a b B => ext $ fun x y => smul_assoc a b (B x y)⟩
+
+instance {α} [Monoid α] [DistribMulAction α R] [DistribMulAction αᵐᵒᵖ R]
+    [SMulCommClass α R R] [IsCentralScalar α R] :
+    IsCentralScalar α (BilinForm R M) :=
+  ⟨fun a B => ext $ fun x y => op_smul_eq_smul a (B x y)⟩
 
 instance : AddCommMonoid (BilinForm R M) :=
   Function.Injective.addCommMonoid _ coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
@@ -432,8 +443,15 @@ theorem sum_left {α} (t : Finset α) (g : α → M) (w : M) :
 @[simp]
 theorem sum_right {α} (t : Finset α) (w : M) (g : α → M) :
     B w (∑ i in t, g i) = ∑ i in t, B w (g i) :=
-  (BilinForm.toLin' B w).map_sum
+  map_sum (BilinForm.toLin' B w) _ _
 #align bilin_form.sum_right BilinForm.sum_right
+
+@[simp]
+theorem sum_apply {α} (t : Finset α) (B : α → BilinForm R M) (v w : M) :
+    (∑ i in t, B i) v w = ∑ i in t, B i v w := by
+  show coeFnAddMonoidHom (∑ i in t, B i) v w = _
+  rw [map_sum, Finset.sum_apply, Finset.sum_apply]
+  rfl
 
 variable (R₂)
 
@@ -517,6 +535,11 @@ theorem BilinForm.toLin_symm :
 #align bilin_form.to_lin_symm BilinForm.toLin_symm
 
 @[simp, norm_cast]
+theorem LinearMap.toBilin_apply (f : M₂ →ₗ[R₂] M₂ →ₗ[R₂] R₂) (x y : M₂) :
+    toBilin f x y = f x y :=
+  rfl
+
+@[simp, norm_cast]
 theorem BilinForm.toLin_apply (x : M₂) : ⇑(BilinForm.toLin B₂ x) = B₂ x :=
   rfl
 #align bilin_form.to_lin_apply BilinForm.toLin_apply
@@ -525,7 +548,7 @@ end EquivLin
 
 namespace LinearMap
 
-variable {R' : Type _} [CommSemiring R'] [Algebra R' R] [Module R' M] [IsScalarTower R' R M]
+variable {R' : Type*} [CommSemiring R'] [Algebra R' R] [Module R' M] [IsScalarTower R' R M]
 
 /-- Apply a linear map on the output of a bilinear form. -/
 @[simps]
@@ -570,7 +593,7 @@ def compRight (B : BilinForm R M) (f : M →ₗ[R] M) : BilinForm R M :=
   B.comp LinearMap.id f
 #align bilin_form.comp_right BilinForm.compRight
 
-theorem comp_comp {M'' : Type _} [AddCommMonoid M''] [Module R M''] (B : BilinForm R M'')
+theorem comp_comp {M'' : Type*} [AddCommMonoid M''] [Module R M''] (B : BilinForm R M'')
     (l r : M →ₗ[R] M') (l' r' : M' →ₗ[R] M'') :
     (B.comp l' r').comp l r = B.comp (l'.comp l) (r'.comp r) :=
   rfl
@@ -653,7 +676,7 @@ theorem comp_inj (B₁ B₂ : BilinForm R M') {l r : M →ₗ[R] M'} (hₗ : Fun
 
 end Comp
 
-variable {M₂' M₂'' : Type _}
+variable {M₂' M₂'' : Type*}
 
 variable [AddCommMonoid M₂'] [AddCommMonoid M₂''] [Module R₂ M₂'] [Module R₂ M₂'']
 
@@ -788,7 +811,7 @@ set_option linter.uppercaseLean3 false in
 
 section
 
-variable {R₄ M₄ : Type _} [Ring R₄] [IsDomain R₄]
+variable {R₄ M₄ : Type*} [Ring R₄] [IsDomain R₄]
 
 variable [AddCommGroup M₄] [Module R₄ M₄] {G : BilinForm R₄ M₄}
 
@@ -817,7 +840,7 @@ theorem linearIndependent_of_iIsOrtho {n : Type w} {B : BilinForm K V} {v : n �
     have hsum : (s.sum fun j : n => w j * B (v j) (v i)) = w i * B (v i) (v i) := by
       apply Finset.sum_eq_single_of_mem i hi
       intro j _ hij
-      rw [iIsOrtho_def.1 hv₁ _ _ hij, MulZeroClass.mul_zero]
+      rw [iIsOrtho_def.1 hv₁ _ _ hij, mul_zero]
     simp_rw [sum_left, smul_left, hsum] at this
     exact eq_zero_of_ne_zero_of_mul_right_eq_zero (hv₂ i) this
 set_option linter.uppercaseLean3 false in
@@ -829,7 +852,7 @@ section Basis
 
 variable {F₂ : BilinForm R₂ M₂}
 
-variable {ι : Type _} (b : Basis ι R₂ M₂)
+variable {ι : Type*} (b : Basis ι R₂ M₂)
 
 /-- Two bilinear forms are equal when they are equal on all basis vectors. -/
 theorem ext_basis (h : ∀ i j, B₂ (b i) (b j) = F₂ (b i) (b j)) : B₂ = F₂ :=
@@ -939,14 +962,10 @@ theorem isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
   ⟨fun h => neg_neg B ▸ h.neg, IsSymm.neg⟩
 #align bilin_form.is_symm_neg BilinForm.isSymm_neg
 
-theorem isSymm_iff_flip' [Algebra R₂ R] : B.IsSymm ↔ flipHom R₂ B = B := by
-  constructor
-  · intro h
-    ext x y
-    exact h y x
-  · intro h x y
-    conv_lhs => rw [← h]
-#align bilin_form.is_symm_iff_flip' BilinForm.isSymm_iff_flip'
+variable (R₂) in
+theorem isSymm_iff_flip [Algebra R₂ R] : B.IsSymm ↔ flipHom R₂ B = B :=
+  (forall₂_congr fun _ _ => by exact eq_comm).trans ext_iff.symm
+#align bilin_form.is_symm_iff_flip' BilinForm.isSymm_iff_flip
 
 /-- The proposition that a bilinear form is alternating -/
 def IsAlt (B : BilinForm R M) : Prop :=
@@ -1010,7 +1029,7 @@ section LinearAdjoints
 
 variable (B) (F : BilinForm R M)
 
-variable {M' : Type _} [AddCommMonoid M'] [Module R M']
+variable {M' : Type*} [AddCommMonoid M'] [Module R M']
 
 variable (B' : BilinForm R M') (f f' : M →ₗ[R] M') (g g' : M' →ₗ[R] M)
 
@@ -1049,7 +1068,7 @@ theorem IsAdjointPair.add (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' 
   rw [LinearMap.add_apply, LinearMap.add_apply, add_left, add_right, h, h']
 #align bilin_form.is_adjoint_pair.add BilinForm.IsAdjointPair.add
 
-variable {M₁' : Type _} [AddCommGroup M₁'] [Module R₁ M₁']
+variable {M₁' : Type*} [AddCommGroup M₁'] [Module R₁ M₁']
 
 variable {B₁' : BilinForm R₁ M₁'} {f₁ f₁' : M₁ →ₗ[R₁] M₁'} {g₁ g₁' : M₁' →ₗ[R₁] M₁}
 
@@ -1065,7 +1084,7 @@ theorem IsAdjointPair.smul (c : R₂) (h : IsAdjointPair B₂ B₂' f₂ g₂) :
   rw [LinearMap.smul_apply, LinearMap.smul_apply, smul_left, smul_right, h]
 #align bilin_form.is_adjoint_pair.smul BilinForm.IsAdjointPair.smul
 
-variable {M'' : Type _} [AddCommMonoid M''] [Module R M'']
+variable {M'' : Type*} [AddCommMonoid M''] [Module R M'']
 
 variable (B'' : BilinForm R M'')
 
@@ -1099,7 +1118,7 @@ def isPairSelfAdjointSubmodule : Submodule R₂ (Module.End R₂ M₂) where
 
 @[simp]
 theorem mem_isPairSelfAdjointSubmodule (f : Module.End R₂ M₂) :
-    f ∈ isPairSelfAdjointSubmodule B₂ F₂ ↔ IsPairSelfAdjoint B₂ F₂ f := by rfl
+    f ∈ isPairSelfAdjointSubmodule B₂ F₂ ↔ IsPairSelfAdjoint B₂ F₂ f :=  by rfl
 #align bilin_form.mem_is_pair_self_adjoint_submodule BilinForm.mem_isPairSelfAdjointSubmodule
 
 theorem isPairSelfAdjoint_equiv (e : M₂' ≃ₗ[R₂] M₂) (f : Module.End R₂ M₂) :
@@ -1183,7 +1202,7 @@ def orthogonal (B : BilinForm R M) (N : Submodule R M) : Submodule R M where
   add_mem' {x y} hx hy n hn := by
     rw [IsOrtho, add_right, show B n x = 0 from hx n hn, show B n y = 0 from hy n hn, zero_add]
   smul_mem' c x hx n hn := by
-    rw [IsOrtho, smul_right, show B n x = 0 from hx n hn, MulZeroClass.mul_zero]
+    rw [IsOrtho, smul_right, show B n x = 0 from hx n hn, mul_zero]
 #align bilin_form.orthogonal BilinForm.orthogonal
 
 variable {N L : Submodule R M}
@@ -1285,7 +1304,7 @@ theorem not_nondegenerate_zero [Nontrivial M] : ¬(0 : BilinForm R M).Nondegener
 
 end
 
-variable {M₂' : Type _}
+variable {M₂' : Type*}
 
 variable [AddCommMonoid M₂'] [Module R₂ M₂']
 
@@ -1350,7 +1369,7 @@ theorem iIsOrtho.not_isOrtho_basis_self_of_nondegenerate {n : Type w} [Nontrivia
   apply Finset.sum_eq_zero
   rintro j -
   rw [smul_right]
-  convert MulZeroClass.mul_zero (vi j) using 2
+  convert mul_zero (vi j) using 2
   obtain rfl | hij := eq_or_ne i j
   · exact ho
   · exact h hij
@@ -1372,10 +1391,10 @@ theorem iIsOrtho.nondegenerate_iff_not_isOrtho_basis_self {n : Type w} [Nontrivi
   rw [Finset.sum_eq_single i] at hB
   · exact eq_zero_of_ne_zero_of_mul_right_eq_zero (ho i) hB
   · intro j _ hij
-    convert MulZeroClass.mul_zero (vi j) using 2
+    convert mul_zero (vi j) using 2
     exact hO hij
   · intro hi
-    convert MulZeroClass.zero_mul (M₀ := R) _ using 2
+    convert zero_mul (M₀ := R) _ using 2
     exact Finsupp.not_mem_support_iff.mp hi
 set_option linter.uppercaseLean3 false in
 #align bilin_form.is_Ortho.nondegenerate_iff_not_is_ortho_basis_self BilinForm.iIsOrtho.nondegenerate_iff_not_isOrtho_basis_self
@@ -1415,13 +1434,13 @@ theorem toLin_restrict_range_dualCoannihilator_eq_orthogonal (B : BilinForm K V)
 
 variable [FiniteDimensional K V]
 
-open FiniteDimensional
+open FiniteDimensional Submodule
 
 theorem finrank_add_finrank_orthogonal {B : BilinForm K V} {W : Subspace K V} (b₁ : B.IsRefl) :
     finrank K W + finrank K (B.orthogonal W) =
       finrank K V + finrank K (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
   rw [← toLin_restrict_ker_eq_inf_orthogonal _ _ b₁, ←
-    toLin_restrict_range_dualCoannihilator_eq_orthogonal _ _, Submodule.finrank_map_subtype_eq]
+    toLin_restrict_range_dualCoannihilator_eq_orthogonal _ _, finrank_map_subtype_eq]
   conv_rhs =>
     rw [← @Subspace.finrank_add_finrank_dualCoannihilator_eq K V _ _ _ _
         (LinearMap.range (B.toLin.domRestrict W)),
@@ -1436,14 +1455,14 @@ theorem restrict_nondegenerate_of_isCompl_orthogonal {B : BilinForm K V} {W : Su
   have : W ⊓ B.orthogonal W = ⊥ := by
     rw [eq_bot_iff]
     intro x hx
-    obtain ⟨hx₁, hx₂⟩ := Submodule.mem_inf.1 hx
+    obtain ⟨hx₁, hx₂⟩ := mem_inf.1 hx
     refine' Subtype.mk_eq_mk.1 (b₂ ⟨x, hx₁⟩ _)
     rintro ⟨n, hn⟩
-    rw [restrict_apply, Submodule.coe_mk, Submodule.coe_mk, b₁]
+    rw [restrict_apply, coe_mk, coe_mk, b₁]
     exact hx₂ n hn
-  refine' IsCompl.of_eq this (eq_top_of_finrank_eq <| (Submodule.finrank_le _).antisymm _)
+  refine' IsCompl.of_eq this (eq_top_of_finrank_eq <| (finrank_le _).antisymm _)
   conv_rhs => rw [← add_zero (finrank K _)]
-  rw [← finrank_bot K V, ← this, Submodule.finrank_sup_add_finrank_inf_eq,
+  rw [← finrank_bot K V, ← this, finrank_sup_add_finrank_inf_eq,
     finrank_add_finrank_orthogonal b₁]
   exact le_self_add
 #align bilin_form.restrict_nondegenerate_of_is_compl_orthogonal BilinForm.restrict_nondegenerate_of_isCompl_orthogonal
@@ -1470,7 +1489,7 @@ theorem toDual_def {B : BilinForm K V} (b : B.Nondegenerate) {m n : V} : B.toDua
 
 section DualBasis
 
-variable {ι : Type _} [DecidableEq ι] [Fintype ι]
+variable {ι : Type*} [DecidableEq ι] [Fintype ι]
 
 /-- The `B`-dual basis `B.dualBasis hB b` to a finite basis `b` satisfies
 `B (B.dualBasis hB b i) (b j) = B (b i) (B.dualBasis hB b j) = if i = j then 1 else 0`,

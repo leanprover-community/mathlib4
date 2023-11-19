@@ -2,27 +2,24 @@
 Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
-
-! This file was ported from Lean 3 source module algebra.continued_fractions.computation.terminates_iff_rat
-! leanprover-community/mathlib commit a7e36e48519ab281320c4d192da6a7b348ce40ad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
 import Mathlib.Data.Rat.Floor
 
+#align_import algebra.continued_fractions.computation.terminates_iff_rat from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
+
 /-!
-# Termination of Continued Fraction Computations (`gcf.of`)
+# Termination of Continued Fraction Computations (`GeneralizedContinuedFraction.of`)
 
 ## Summary
 We show that the continued fraction for a value `v`, as defined in
-`algebra.continued_fractions.computation.basic`, terminates if and only if `v` corresponds to a
+`Mathlib.Algebra.ContinuedFractions.Basic`, terminates if and only if `v` corresponds to a
 rational number, that is `↑v = q` for some `q : ℚ`.
 
 ## Main Theorems
 
-- `generalized_continued_fraction.coe_of_rat` shows that
+- `GeneralizedContinuedFraction.coe_of_rat_eq` shows that
   `GeneralizedContinuedFraction.of v = GeneralizedContinuedFraction.of q` for `v : α` given that
   `↑v = q` and `q : ℚ`.
 - `GeneralizedContinuedFraction.terminates_iff_rat` shows that
@@ -39,7 +36,7 @@ namespace GeneralizedContinuedFraction
 /- ./././Mathport/Syntax/Translate/Command.lean:230:11: unsupported: unusual advanced open style -/
 open GeneralizedContinuedFraction (of)
 
-variable {K : Type _} [LinearOrderedField K] [FloorRing K]
+variable {K : Type*} [LinearOrderedField K] [FloorRing K]
 
 /-
 We will have to constantly coerce along our structures in the following proofs using their provided
@@ -136,8 +133,7 @@ theorem exists_rat_eq_of_terminates (terminates : (of v).Terminates) : ∃ q : �
   obtain ⟨q, conv_eq_q⟩ : ∃ q : ℚ, (of v).convergents n = (↑q : K)
   exact exists_rat_eq_nth_convergent v n
   have : v = (↑q : K) := Eq.trans v_eq_conv conv_eq_q
-  -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5072): was `use`
-  exact ⟨q, this⟩
+  use q, this
 #align generalized_continued_fraction.exists_rat_eq_of_terminates GeneralizedContinuedFraction.exists_rat_eq_of_terminates
 
 end RatOfTerminates
@@ -152,11 +148,11 @@ some technical translation lemmas. More precisely, in this section, we show that
 number `q : ℚ` and value `v : K` with `v = ↑q`, the continued fraction of `q` and `v` coincide.
 In particular, we show that
 ```lean
-    (↑(GeneralizedContinuedFraction.of q : GeneralizedContinuedFraction ℚ)
-      : GeneralizedContinuedFraction K)
+    (↑(GeneralizedContinuedFraction.of q : GeneralizedContinuedFraction ℚ) :
+      GeneralizedContinuedFraction K)
   = GeneralizedContinuedFraction.of v`
 ```
-in `generalized_continued_fraction.coe_of_rat`.
+in `GeneralizedContinuedFraction.coe_of_rat_eq`.
 
 To do this, we proceed bottom-up, showing the correspondence between the basic functions involved in
 the Computation first and then lift the results step-by-step.
@@ -222,14 +218,14 @@ theorem coe_of_s_get?_rat_eq :
   simp only [Stream'.Seq.get?]
   rw [← IntFractPair.coe_stream'_rat_eq v_eq_q]
   rcases succ_nth_stream_eq : IntFractPair.stream q (n + 1) with (_ | ⟨_, _⟩) <;>
-    simp [Stream'.map, Stream'.nth, succ_nth_stream_eq]
+    simp [Stream'.map, Stream'.get, succ_nth_stream_eq]
 #align generalized_continued_fraction.coe_of_s_nth_rat_eq GeneralizedContinuedFraction.coe_of_s_get?_rat_eq
 
 theorem coe_of_s_rat_eq : ((of q).s.map (Pair.map ((↑))) : Stream'.Seq <| Pair K) = (of v).s := by
   ext n; rw [← coe_of_s_get?_rat_eq v_eq_q]; rfl
 #align generalized_continued_fraction.coe_of_s_rat_eq GeneralizedContinuedFraction.coe_of_s_rat_eq
 
-/-- Given `(v : K), (q : ℚ), and v = q`, we have that `gcf.of q = gcf.of v` -/
+/-- Given `(v : K), (q : ℚ), and v = q`, we have that `of q = of v` -/
 theorem coe_of_rat_eq :
     (⟨(of q).h, (of q).s.map (Pair.map (↑))⟩ : GeneralizedContinuedFraction K) = of v := by
   cases' gcf_v_eq : of v with h s; subst v
@@ -272,7 +268,7 @@ namespace IntFractPair
 variable {q : ℚ} {n : ℕ}
 
 /-- Shows that for any `q : ℚ` with `0 < q < 1`, the numerator of the fractional part of
-`int_fract_pair.of q⁻¹` is smaller than the numerator of `q`.
+`IntFractPair.of q⁻¹` is smaller than the numerator of `q`.
 -/
 theorem of_inv_fr_num_lt_num_of_pos (q_pos : 0 < q) : (IntFractPair.of q⁻¹).fr.num < q.num :=
   Rat.fract_inv_num_lt_num_of_pos q_pos
@@ -320,7 +316,7 @@ theorem stream_nth_fr_num_le_fr_num_sub_n_rat :
 theorem exists_nth_stream_eq_none_of_rat (q : ℚ) : ∃ n : ℕ, IntFractPair.stream q n = none := by
   let fract_q_num := (Int.fract q).num; let n := fract_q_num.natAbs + 1
   cases' stream_nth_eq : IntFractPair.stream q n with ifp
-  · use n; exact stream_nth_eq
+  · use n, stream_nth_eq
   · -- arrive at a contradiction since the numerator decreased num + 1 times but every fractional
     -- value is nonnegative.
     have ifp_fr_num_le_q_fr_num_sub_n : ifp.fr.num ≤ fract_q_num - n :=

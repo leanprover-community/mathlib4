@@ -2,15 +2,13 @@
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.cubing_a_cube
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Intervals.Disjoint
+import Mathlib.Data.Set.Intervals.Group
+
+#align_import wiedijk_100_theorems.cubing_a_cube from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 Proof that a cube (in dimension n ≥ 3) cannot be cubed:
@@ -140,7 +138,7 @@ def unitCube : Cube n :=
 
 @[simp]
 theorem side_unitCube {j : Fin n} : unitCube.side j = Ico 0 1 := by
-  rw [unitCube, side]; norm_num
+  norm_num [unitCube, side]
 #align theorems_100.«82».cube.side_unit_cube Theorems100.«82».Cube.side_unitCube
 
 end Cube
@@ -152,7 +150,7 @@ variable {ι : Type} {cs : ι → Cube (n + 1)} {i i' : ι}
 /-- A finite family of (at least 2) cubes partitioning the unit cube with different sizes -/
 structure Correct (cs : ι → Cube n) : Prop where
   PairwiseDisjoint : Pairwise (Disjoint on Cube.toSet ∘ cs)
-  iUnion_eq : (⋃ i : ι, (cs i).toSet) = unitCube.toSet
+  iUnion_eq : ⋃ i : ι, (cs i).toSet = unitCube.toSet
   Injective : Injective (Cube.w ∘ cs)
   three_le : 3 ≤ n
 #align theorems_100.«82».correct Theorems100.«82».Correct
@@ -222,7 +220,7 @@ theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
   rw [mem_iUnion]; use i'; refine' ⟨_, fun j => hi' j.succ⟩
   have : i ≠ i' := by rintro rfl; apply not_le_of_lt (hi' 0).2; rw [hp0]; rfl
   have := h.1 this
-  rw [onFun, comp, comp, toSet_disjoint, exists_fin_succ] at this
+  rw [onFun, comp_apply, comp_apply, toSet_disjoint, exists_fin_succ] at this
   rcases this with (h0 | ⟨j, hj⟩)
   rw [hp0]; symm; apply eq_of_Ico_disjoint h0 (by simp [hw]) _
   convert hi' 0; rw [hp0]; rfl
@@ -257,7 +255,7 @@ theorem valley_unitCube [Nontrivial ι] (h : Correct cs) : Valley cs unitCube :=
     intro h0 hv
     have : v ∈ (unitCube : Cube (n + 1)).toSet := by
       dsimp only [toSet, unitCube, mem_setOf_eq]
-      rw [forall_fin_succ, h0]; constructor; rw [side, unitCube]; norm_num; exact hv
+      rw [forall_fin_succ, h0]; constructor; norm_num [side, unitCube]; exact hv
     rw [← h.2, mem_iUnion] at this; rcases this with ⟨i, hi⟩
     use i
     constructor
@@ -575,7 +573,7 @@ theorem cannot_cube_a_cube :
     ∀ {s : Set (Cube n)}, s.Finite →           -- given a finite collection of (hyper)cubes
     s.Nontrivial →                             -- containing at least two elements
     s.PairwiseDisjoint Cube.toSet →            -- which is pairwise disjoint
-    (⋃ c ∈ s, Cube.toSet c) = unitCube.toSet → -- whose union is the unit cube
+    ⋃ c ∈ s, Cube.toSet c = unitCube.toSet → -- whose union is the unit cube
     InjOn Cube.w s →                           -- such that the widths of all cubes are different
     False := by                                -- then we can derive a contradiction
   intro n hn s hfin h2 hd hU hinj

@@ -2,11 +2,6 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebra.category.Ring.constructions
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.RingTheory.TensorProduct
@@ -14,6 +9,8 @@ import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.RingTheory.Subring.Basic
+
+#align_import algebra.category.Ring.constructions from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Constructions of (co)limits in `CommRingCat`
@@ -27,6 +24,7 @@ In this file we provide the explicit (co)cones for various (co)limits in `CommRi
 
 -/
 
+suppress_compilation
 
 universe u u'
 
@@ -44,7 +42,7 @@ def pushoutCocone : Limits.PushoutCocone f g := by
   letI := RingHom.toAlgebra g
   fapply Limits.PushoutCocone.mk
   show CommRingCat; exact CommRingCat.of (A ⊗[R] B)
-  show A ⟶ _; exact Algebra.TensorProduct.includeLeft.toRingHom
+  show A ⟶ _; exact Algebra.TensorProduct.includeLeftRingHom
   show B ⟶ _; exact Algebra.TensorProduct.includeRight.toRingHom
   ext r
   trans algebraMap R (A ⊗[R] B) r
@@ -58,7 +56,7 @@ theorem pushoutCocone_inl :
     (pushoutCocone f g).inl = by
       letI := f.toAlgebra
       letI := g.toAlgebra
-      exact Algebra.TensorProduct.includeLeft.toRingHom :=
+      exact Algebra.TensorProduct.includeLeftRingHom :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CommRing.pushout_cocone_inl CommRingCat.pushoutCocone_inl
@@ -131,7 +129,7 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone f g) :=
       ext x
       change h' x = Algebra.TensorProduct.productMap f' g' x
       rw [this]
-    apply Algebra.TensorProduct.ext
+    apply Algebra.TensorProduct.ext'
     intro a b
     simp only [PushoutCocone.ι_app_left, pushoutCocone_pt, coe_of, RingHom.toMonoidHom_eq_coe,
       AlgHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_coe, ← eq1, AlgHom.toRingHom_eq_coe,
@@ -163,8 +161,8 @@ instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRin
   have e : (0 : X) = 1 := by
     rw [← f.map_one, ← f.map_zero]
     congr
-  replace e : 0 * x = 1 * x := congr_arg (. * x) e
-  rw [one_mul, MulZeroClass.zero_mul, ← f.map_zero] at e
+  replace e : 0 * x = 1 * x := congr_arg (· * x) e
+  rw [one_mul, zero_mul, ← f.map_zero] at e
   exact e
 set_option linter.uppercaseLean3 false in
 #align CommRing.CommRing_has_strict_terminal_objects CommRingCat.commRingCat_hasStrictTerminalObjects
@@ -209,7 +207,8 @@ def prodFanIsLimit : IsLimit (prodFan A B) where
     have eq1 := congr_hom (h ⟨WalkingPair.left⟩) x
     have eq2 := congr_hom (h ⟨WalkingPair.right⟩) x
     dsimp at eq1 eq2
-    rw [←eq1, ←eq2]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [←eq1, ←eq2]
     rfl
 set_option linter.uppercaseLean3 false in
 #align CommRing.prod_fan_is_limit CommRingCat.prodFanIsLimit

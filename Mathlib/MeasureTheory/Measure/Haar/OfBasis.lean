@@ -2,14 +2,11 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.measure.haar.of_basis
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Haar.Basic
 import Mathlib.Analysis.InnerProductSpace.PiL2
+
+#align_import measure_theory.measure.haar.of_basis from "leanprover-community/mathlib"@"92bd7b1ffeb306a89f450bee126ddd8a284c259d"
 
 /-!
 # Additive Haar measure constructed from a basis
@@ -37,7 +34,7 @@ open scoped BigOperators Pointwise
 
 noncomputable section
 
-variable {ι ι' E F : Type _} [Fintype ι] [Fintype ι']
+variable {ι ι' E F : Type*} [Fintype ι] [Fintype ι']
 
 section AddCommGroup
 
@@ -57,7 +54,7 @@ theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
     f '' parallelepiped v = parallelepiped (f ∘ v) := by
   simp only [parallelepiped, ← image_comp]
   congr 1 with t
-  simp only [Function.comp_apply, LinearMap.map_sum, LinearMap.map_smulₛₗ, RingHom.id_apply]
+  simp only [Function.comp_apply, map_sum, LinearMap.map_smulₛₗ, RingHom.id_apply]
 #align image_parallelepiped image_parallelepiped
 
 /-- Reindexing a family of vectors does not change their parallelepiped. -/
@@ -80,8 +77,7 @@ theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
   congr 1 with x
   have := fun z : ι' → ℝ => e.symm.sum_comp fun i => z i • v (e i)
   simp_rw [Equiv.apply_symm_apply] at this
-  simp_rw [Function.comp_apply, ge_iff_le, zero_le_one, not_true, gt_iff_lt, mem_image, mem_Icc,
-    Equiv.piCongrLeft'_apply, this]
+  simp_rw [Function.comp_apply, mem_image, mem_Icc, Equiv.piCongrLeft'_apply, this]
 #align parallelepiped_comp_equiv parallelepiped_comp_equiv
 
 -- The parallelepiped associated to an orthonormal basis of `ℝ` is either `[0, 1]` or `[-1, 0]`.
@@ -110,7 +106,7 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
     simp only [Finset.univ_unique, Fin.default_eq_zero, smul_eq_mul, mul_one, Finset.sum_singleton,
       ← image_comp, Function.comp_apply, image_id', ge_iff_le, zero_le_one, not_true, gt_iff_lt]
   · right
-    simp_rw [H, parallelepiped, Algebra.id.smul_eq_mul, mul_one, A]
+    simp_rw [H, parallelepiped, Algebra.id.smul_eq_mul, A]
     simp only [Finset.univ_unique, Fin.default_eq_zero, mul_neg, mul_one, Finset.sum_neg_distrib,
       Finset.sum_singleton, ← image_comp, Function.comp, image_neg, preimage_neg_Icc, neg_zero]
 #align parallelepiped_orthonormal_basis_one_dim parallelepiped_orthonormalBasis_one_dim
@@ -130,24 +126,13 @@ theorem parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i,
 
 theorem convex_parallelepiped (v : ι → E) : Convex ℝ (parallelepiped v) := by
   rw [parallelepiped_eq_sum_segment]
-  -- TODO: add `convex.sum` to match `Convex.add`
-  let A : AddSubmonoid (Set E) :=
-    { carrier := { s | Convex ℝ s }
-      zero_mem' := convex_singleton _
-      add_mem' := Convex.add }
-  refine A.sum_mem (fun i _hi => convex_segment _ _)
+  exact convex_sum _ fun _i _hi => convex_segment _ _
 #align convex_parallelepiped convex_parallelepiped
 
 /-- A `parallelepiped` is the convex hull of its vertices -/
 theorem parallelepiped_eq_convexHull (v : ι → E) :
     parallelepiped v = convexHull ℝ (∑ i, {(0 : E), v i}) := by
-  -- TODO: add `convex_hull_sum` to match `convexHull_add`
-  let A : Set E →+ Set E :=
-    { toFun := convexHull ℝ
-      map_zero' := convexHull_singleton _
-      map_add' := convexHull_add }
-  simp_rw [parallelepiped_eq_sum_segment, ← convexHull_pair]
-  exact (A.map_sum _ _).symm
+  simp_rw [convexHull_sum, convexHull_pair, parallelepiped_eq_sum_segment]
 #align parallelepiped_eq_convex_hull parallelepiped_eq_convexHull
 
 /-- The axis aligned parallelepiped over `ι → ℝ` is a cuboid. -/
@@ -178,7 +163,7 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
       simp only [smul_eq_mul, Pi.mul_apply]
       cases' eq_or_ne (a i) 0 with hai hai
       · rw [hai, inf_idem, sup_idem, ← le_antisymm_iff] at h
-        rw [hai, ← h, zero_div, MulZeroClass.zero_mul]
+        rw [hai, ← h, zero_div, zero_mul]
       · rw [div_mul_cancel _ hai]
 #align parallelepiped_single parallelepiped_single
 
@@ -206,11 +191,10 @@ def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
     rwa [← Homeomorph.image_interior, nonempty_image_iff]
 #align basis.parallelepiped Basis.parallelepiped
 
--- Porting note: lint complains that this result is a tautology and thus unnecessary
--- @[simp]
--- theorem Basis.coe_parallelepiped (b : Basis ι ℝ E) :
---    (b.parallelepiped : Set E) = parallelepiped b := rfl
--- #align basis.coe_parallelepiped Basis.coe_parallelepiped
+@[simp]
+theorem Basis.coe_parallelepiped (b : Basis ι ℝ E) :
+    (b.parallelepiped : Set E) = _root_.parallelepiped b := rfl
+#align basis.coe_parallelepiped Basis.coe_parallelepiped
 
 @[simp]
 theorem Basis.parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
@@ -226,8 +210,9 @@ theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     @LinearMap.continuous_of_finiteDimensional _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ this (e.toLinearMap))
     (have := FiniteDimensional.of_fintype_basis (b.map e)
     -- Porting note: Lean cannot infer the instance above
-    @LinearMap.isOpenMap_of_finiteDimensional _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ this _ e.surjective)
-    := PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
+    @LinearMap.isOpenMap_of_finiteDimensional _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ this _
+      e.surjective) :=
+  PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 #align basis.parallelepiped_map Basis.parallelepiped_map
 
 variable [MeasurableSpace E] [BorelSpace E]
@@ -242,7 +227,24 @@ instance IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure 
   rw [Basis.addHaar]; exact Measure.isAddHaarMeasure_addHaarMeasure _
 #align is_add_haar_measure_basis_add_haar IsAddHaarMeasure_basis_addHaar
 
-theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (parallelepiped b) = 1 := by
+instance [SecondCountableTopology E] (b : Basis ι ℝ E) :
+    SigmaFinite b.addHaar := by
+  rw [Basis.addHaar_def]; exact sigmaFinite_addHaarMeasure
+
+/-- Let `μ` be a σ-finite left invariant measure on `E`. Then `μ` is equal to the Haar measure
+defined by `b` iff the parallelepiped defined by `b` has measure `1` for `μ`. -/
+theorem Basis.addHaar_eq_iff [SecondCountableTopology E] (b : Basis ι ℝ E) (μ : Measure E)
+    [SigmaFinite μ] [IsAddLeftInvariant μ] :
+    b.addHaar = μ ↔ μ b.parallelepiped = 1 := by
+  rw [Basis.addHaar_def]
+  exact addHaarMeasure_eq_iff b.parallelepiped μ
+
+@[simp]
+theorem Basis.addHaar_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
+    (b.reindex e).addHaar = b.addHaar := by
+  rw [Basis.addHaar, b.parallelepiped_reindex e, ← Basis.addHaar]
+
+theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepiped b) = 1 := by
   rw [Basis.addHaar]; exact addHaarMeasure_self
 #align basis.add_haar_self Basis.addHaar_self
 
@@ -281,15 +283,18 @@ instance : MeasurableSpace (EuclideanSpace ℝ ι) := MeasurableSpace.pi
 
 instance : BorelSpace (EuclideanSpace ℝ ι) := Pi.borelSpace
 
-/-- `PiLp.equiv` as a `MeasurableEquiv`. -/
+/-- `WithLp.equiv` as a `MeasurableEquiv`. -/
 @[simps toEquiv]
 protected def measurableEquiv : EuclideanSpace ℝ ι ≃ᵐ (ι → ℝ) where
-  toEquiv := PiLp.equiv _ _
+  toEquiv := WithLp.equiv _ _
   measurable_toFun := measurable_id
   measurable_invFun := measurable_id
 #align euclidean_space.measurable_equiv EuclideanSpace.measurableEquiv
 
-theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = PiLp.equiv 2 _ := rfl
+theorem coe_measurableEquiv : ⇑(EuclideanSpace.measurableEquiv ι) = WithLp.equiv 2 _ := rfl
 #align euclidean_space.coe_measurable_equiv EuclideanSpace.coe_measurableEquiv
+
+theorem coe_measurableEquiv_symm :
+    ⇑(EuclideanSpace.measurableEquiv ι).symm = (WithLp.equiv 2 _).symm := rfl
 
 end EuclideanSpace

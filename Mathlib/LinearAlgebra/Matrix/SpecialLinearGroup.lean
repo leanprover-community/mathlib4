@@ -2,15 +2,12 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.special_linear_group
-! leanprover-community/mathlib commit f06058e64b7e8397234455038f3f8aec83aaba5a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.LinearAlgebra.Matrix.ToLin
+
+#align_import linear_algebra.matrix.special_linear_group from "leanprover-community/mathlib"@"f06058e64b7e8397234455038f3f8aec83aaba5a"
 
 /-!
 # The Special Linear group $SL(n, R)$
@@ -114,7 +111,7 @@ instance hasInv : Inv (SpecialLinearGroup n R) :=
 #align matrix.special_linear_group.has_inv Matrix.SpecialLinearGroup.hasInv
 
 instance hasMul : Mul (SpecialLinearGroup n R) :=
-  ⟨fun A B => ⟨↑ₘA ⬝ ↑ₘB, by rw [det_mul, A.prop, B.prop, one_mul]⟩⟩
+  ⟨fun A B => ⟨↑ₘA * ↑ₘB, by rw [det_mul, A.prop, B.prop, one_mul]⟩⟩
 #align matrix.special_linear_group.has_mul Matrix.SpecialLinearGroup.hasMul
 
 instance hasOne : One (SpecialLinearGroup n R) :=
@@ -142,7 +139,7 @@ theorem coe_inv : ↑ₘA⁻¹ = adjugate A :=
 #align matrix.special_linear_group.coe_inv Matrix.SpecialLinearGroup.coe_inv
 
 @[simp]
-theorem coe_mul : ↑ₘ(A * B) = ↑ₘA ⬝ ↑ₘB :=
+theorem coe_mul : ↑ₘ(A * B) = ↑ₘA * ↑ₘB :=
   rfl
 #align matrix.special_linear_group.coe_mul Matrix.SpecialLinearGroup.coe_mul
 
@@ -228,7 +225,7 @@ theorem coe_toGL (A : SpecialLinearGroup n R) : SpecialLinearGroup.toGL A = A.to
 set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.coe_to_GL Matrix.SpecialLinearGroup.coe_toGL
 
-variable {S : Type _} [CommRing S]
+variable {S : Type*} [CommRing S]
 
 /-- A ring homomorphism from `R` to `S` induces a group homomorphism from
 `SpecialLinearGroup n R` to `SpecialLinearGroup n S`. -/
@@ -312,12 +309,12 @@ theorem fin_two_induction (P : SL(2, R) → Prop)
   ext i j; fin_cases i <;> fin_cases j <;> rfl
 #align matrix.special_linear_group.fin_two_induction Matrix.SpecialLinearGroup.fin_two_induction
 
-theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type _} [Field R] (g : SL(2, R))
+theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g : SL(2, R))
     (hg : (g : Matrix (Fin 2) (Fin 2) R) 1 0 = 0) :
     ∃ (a b : R) (h : a ≠ 0), g = (⟨!![a, b; 0, a⁻¹], by simp [h]⟩ : SL(2, R)) := by
   induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h_det
   replace hg : c = 0 := by simpa using hg
-  have had : a * d = 1 := by rwa [hg, MulZeroClass.mul_zero, sub_zero] at h_det
+  have had : a * d = 1 := by rwa [hg, mul_zero, sub_zero] at h_det
   refine' ⟨a, b, left_ne_zero_of_mul_eq_one had, _⟩
   simp_rw [eq_inv_of_mul_eq_one_right had, hg]
 #align matrix.special_linear_group.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero Matrix.SpecialLinearGroup.fin_two_exists_eq_mk_of_apply_zero_one_eq_zero
@@ -368,16 +365,16 @@ theorem coe_T_zpow (n : ℤ) : ↑ₘ(T ^ n) = !![1, n; 0, 1] := by
   induction' n using Int.induction_on with n h n h
   · rw [zpow_zero, coe_one, Matrix.one_fin_two]
   · simp_rw [zpow_add, zpow_one, coe_mul, h, coe_T, Matrix.mul_fin_two]
-    -- Porting note: was congrm !![_, _; _, _]
-    ring_nf
+    congrm !![_, ?_; _, _]
+    rw [mul_one, mul_one, add_comm]
   · simp_rw [zpow_sub, zpow_one, coe_mul, h, coe_T_inv, Matrix.mul_fin_two]
-    -- Porting note: was congrm !![_, _; _, _]
-    ring_nf
+    congrm !![?_, ?_; _, _] <;> ring
 #align modular_group.coe_T_zpow ModularGroup.coe_T_zpow
 
 @[simp]
 theorem T_pow_mul_apply_one (n : ℤ) (g : SL(2, ℤ)) : ↑ₘ(T ^ n * g) 1 = ↑ₘg 1 := by
-  simp [coe_T_zpow, Matrix.mul, Matrix.dotProduct, Fin.sum_univ_succ]
+  ext j
+  simp [coe_T_zpow, Matrix.vecMul, Matrix.dotProduct, Fin.sum_univ_succ, vecTail]
 #align modular_group.T_pow_mul_apply_one ModularGroup.T_pow_mul_apply_one
 
 @[simp]

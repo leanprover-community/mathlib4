@@ -14,7 +14,7 @@ Time the elaboration of a command, and print the result (in milliseconds).
 section
 open Lean Elab Command
 
-syntax (name := timeCmd)  "#time " command : command
+syntax (name := timeCmd) "#time " command : command
 
 /--
 Time the elaboration of a command, and print the result (in milliseconds).

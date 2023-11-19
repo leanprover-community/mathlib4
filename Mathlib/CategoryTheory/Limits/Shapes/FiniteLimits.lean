@@ -2,11 +2,6 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.finite_limits
-! leanprover-community/mathlib commit c3019c79074b0619edb4b27553a91b2e82242395
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.FinCategory
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
@@ -14,6 +9,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.Data.Fintype.Option
+
+#align_import category_theory.limits.shapes.finite_limits from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 
 /-!
 # Categories with finite limits.
@@ -72,16 +69,16 @@ theorem hasFiniteLimits_of_hasFiniteLimits_of_size
     HasFiniteLimits C where
   out := fun J hJ hhJ => by
     haveI := h (ULiftHom.{w} (ULift.{w} J)) <| @CategoryTheory.finCategoryUlift J hJ hhJ
-    have l :
-      @Equivalence J (ULiftHom (ULift J)) hJ (@ULiftHom.category (ULift J) (@uliftCategory J hJ))
-      := @ULiftHomULiftCategory.equiv J hJ
+    have l : @Equivalence J (ULiftHom (ULift J)) hJ
+                          (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) :=
+      @ULiftHomULiftCategory.equiv J hJ
     apply @hasLimitsOfShape_of_equivalence (ULiftHom (ULift J))
       (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) C _ J hJ
       (@Equivalence.symm J hJ (ULiftHom (ULift J))
       (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) l) _
     /- Porting note: tried to factor out (@instCategoryULiftHom (ULift J) (@uliftCategory J hJ)
     but when doing that would then find the instance and say it was not definitionally equal to
-    to the provide one (the same thing factored out) -/
+    the provided one (the same thing factored out) -/
 #align category_theory.limits.has_finite_limits_of_has_finite_limits_of_size CategoryTheory.Limits.hasFiniteLimits_of_hasFiniteLimits_of_size
 
 /-- A category has all finite colimits if every functor `J ⥤ C` with a `FinCategory J`
@@ -117,9 +114,9 @@ theorem hasFiniteColimits_of_hasFiniteColimits_of_size
     HasFiniteColimits C where
   out := fun J hJ hhJ => by
     haveI := h (ULiftHom.{w} (ULift.{w} J)) <| @CategoryTheory.finCategoryUlift J hJ hhJ
-    have l :
-      @Equivalence J (ULiftHom (ULift J)) hJ (@ULiftHom.category (ULift J) (@uliftCategory J hJ))
-      := @ULiftHomULiftCategory.equiv J hJ
+    have l : @Equivalence J (ULiftHom (ULift J)) hJ
+                           (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) :=
+      @ULiftHomULiftCategory.equiv J hJ
     apply @hasColimitsOfShape_of_equivalence (ULiftHom (ULift J))
       (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) C _ J hJ
       (@Equivalence.symm J hJ (ULiftHom (ULift J))
@@ -137,7 +134,8 @@ instance fintypeWalkingParallelPair : Fintype WalkingParallelPair where
 
 -- attribute [local tidy] tactic.case_bash Porting note: no tidy; no case_bash
 
-instance (j j' : WalkingParallelPair) : Fintype (WalkingParallelPairHom j j') where
+instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
+    Fintype (WalkingParallelPairHom j j') where
   elems :=
     WalkingParallelPair.recOn j
       (WalkingParallelPair.recOn j' [WalkingParallelPairHom.id zero].toFinset

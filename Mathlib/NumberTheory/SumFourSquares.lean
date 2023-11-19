@@ -2,17 +2,14 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module number_theory.sum_four_squares
-! leanprover-community/mathlib commit bd9851ca476957ea4549eb19b40e7b5ade9428cc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Identities
 import Mathlib.Data.ZMod.Basic
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.Data.Int.Parity
 import Mathlib.Data.Fintype.BigOperators
+
+#align_import number_theory.sum_four_squares from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
 
 /-!
 # Lagrange's four square theorem
@@ -30,10 +27,8 @@ open Finset Polynomial FiniteField Equiv
 
 open scoped BigOperators
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
-
 /-- **Euler's four-square identity**. -/
-theorem euler_four_squares {R : Type _} [CommRing R] (a b c d x y z w : R) :
+theorem euler_four_squares {R : Type*} [CommRing R] (a b c d x y z w : R) :
     (a * x - b * y - c * z - d * w) ^ 2 + (a * y + b * x + c * w - d * z) ^ 2 +
       (a * z - b * w + c * x + d * y) ^ 2 + (a * w + b * z - c * y + d * x) ^ 2 =
       (a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2) * (x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2) := by ring
@@ -60,7 +55,7 @@ theorem sq_add_sq_of_two_mul_sq_add_sq {m x y : ℤ} (h : 2 * m = x ^ 2 + y ^ 2)
     calc
       2 * 2 * m = (x - y) ^ 2 + (x + y) ^ 2 := by rw [mul_assoc, h]; ring
       _ = (2 * ((x - y) / 2)) ^ 2 + (2 * ((x + y) / 2)) ^ 2 := by
-        rw [even_iff_two_dvd] at hxsuby hxaddy 
+        rw [even_iff_two_dvd] at hxsuby hxaddy
         rw [Int.mul_ediv_cancel' hxsuby, Int.mul_ediv_cancel' hxaddy]
       _ = 2 * 2 * (((x - y) / 2) ^ 2 + ((x + y) / 2) ^ 2) := by
         simp [mul_add, pow_succ, mul_comm, mul_assoc, mul_left_comm]
@@ -89,7 +84,7 @@ theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
   rcases Int.modEq_iff_dvd.1 hab.symm with ⟨k, hk⟩
   rw [sub_neg_eq_add, mul_comm] at hk
   have hk₀ : 0 < k
-  · refine pos_of_mul_pos_left  ?_ (Nat.cast_nonneg p)
+  · refine pos_of_mul_pos_left ?_ (Nat.cast_nonneg p)
     rw [← hk]
     positivity
   lift k to ℕ using hk₀.le
@@ -190,7 +185,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     rcases (zero_le r).eq_or_gt with rfl | hr₀
     · replace hr : f a = 0 ∧ f b = 0 ∧ f c = 0 ∧ f d = 0; · simpa [and_assoc] using hr
       obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩, ⟨c, rfl⟩, ⟨d, rfl⟩⟩ : m ∣ a ∧ m ∣ b ∧ m ∣ c ∧ m ∣ d
-      · simp only [← ZMod.nat_cast_zmod_eq_zero_iff_dvd, ← hf_mod, hr, Int.cast_zero]
+      · simp only [← ZMod.nat_cast_zmod_eq_zero_iff_dvd, ← hf_mod, hr, Int.cast_zero, and_self]
       have : m * m ∣ m * p := habcd ▸ ⟨a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2, by ring⟩
       rw [mul_dvd_mul_iff_left hm₀.ne'] at this
       exact (hp.eq_one_or_self_of_dvd _ this).elim hm₁.ne' hmp.ne
@@ -237,7 +232,7 @@ theorem sum_four_squares (n : ℕ) : ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + 
     rcases hm with ⟨a, b, c, d, rfl⟩
     rcases hn with ⟨w, x, y, z, rfl⟩
     exact ⟨_, _, _, _, euler_four_squares _ _ _ _ _ _ _ _⟩
-  
+
 #align nat.sum_four_squares Nat.sum_four_squares
 
 end Nat

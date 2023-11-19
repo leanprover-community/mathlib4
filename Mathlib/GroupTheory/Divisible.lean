@@ -2,15 +2,13 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
-
-! This file was ported from Lean 3 source module group_theory.divisible
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.ULift
+
+#align_import group_theory.divisible from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-!
 # Divisible Group and rootable group
@@ -75,7 +73,7 @@ open Pointwise
 
 section AddMonoid
 
-variable (A α : Type _) [AddMonoid A] [SMul α A] [Zero α]
+variable (A α : Type*) [AddMonoid A] [SMul α A] [Zero α]
 
 /--
 An `AddMonoid A` is `α`-divisible iff `n • x = a` has a solution for all `n ≠ 0 ∈ α` and `a ∈ A`.
@@ -93,7 +91,7 @@ end AddMonoid
 
 section Monoid
 
-variable (A α : Type _) [Monoid A] [Pow A α] [Zero α]
+variable (A α : Type*) [Monoid A] [Pow A α] [Zero α]
 
 /-- A `Monoid A` is `α`-rootable iff `xⁿ = a` has a solution for all `n ≠ 0 ∈ α` and `a ∈ A`.
 Here we adopt a constructive approach where we ask an explicit `root : A → α → A` function such that
@@ -134,7 +132,7 @@ noncomputable def rootableByOfPowLeftSurj
 
 section Pi
 
-variable {ι β : Type _} (B : ι → Type _) [∀ i : ι, Pow (B i) β]
+variable {ι β : Type*} (B : ι → Type*) [∀ i : ι, Pow (B i) β]
 
 variable [Zero β] [∀ i : ι, Monoid (B i)] [∀ i, RootableBy (B i) β]
 
@@ -150,7 +148,7 @@ end Pi
 
 section Prod
 
-variable {β B B' : Type _} [Pow B β] [Pow B' β]
+variable {β B B' : Type*} [Pow B β] [Pow B' β]
 
 variable [Zero β] [Monoid B] [Monoid B'] [RootableBy B β] [RootableBy B' β]
 
@@ -164,11 +162,21 @@ instance Prod.rootableBy : RootableBy (B × B') β where
 
 end Prod
 
+section ULift
+
+@[to_additive]
+instance ULift.instRootableBy [RootableBy A α] : RootableBy (ULift A) α where
+  root x a := ULift.up <| RootableBy.root x.down a
+  root_zero x := ULift.ext _ _ <| RootableBy.root_zero x.down
+  root_cancel _ h := ULift.ext _ _ <| RootableBy.root_cancel _ h
+
+end ULift
+
 end Monoid
 
 namespace AddCommGroup
 
-variable (A : Type _) [AddCommGroup A]
+variable (A : Type*) [AddCommGroup A]
 
 theorem smul_top_eq_top_of_divisibleBy_int [DivisibleBy A ℤ] {n : ℤ} (hn : n ≠ 0) :
     n • (⊤ : AddSubgroup A) = ⊤ :=
@@ -200,7 +208,7 @@ instance (priority := 100) divisibleByIntOfCharZero {𝕜} [DivisionRing 𝕜] [
 
 namespace Group
 
-variable (A : Type _) [Group A]
+variable (A : Type*) [Group A]
 
 open Int in
 /-- A group is `ℤ`-rootable if it is `ℕ`-rootable.
@@ -243,7 +251,7 @@ end Group
 section Hom
 
 -- Porting note: reordered variables to fix `to_additive` on `QuotientGroup.rootableBy`
-variable {A B α : Type _}
+variable {A B α : Type*}
 
 variable [Zero α] [Monoid A] [Monoid B] [Pow A α] [Pow B α] [RootableBy A α]
 
@@ -265,7 +273,7 @@ noncomputable def Function.Surjective.rootableBy (hf : Function.Surjective f)
 #align function.surjective.divisible_by Function.Surjective.divisibleByₓ
 
 @[to_additive DivisibleBy.surjective_smul]
-theorem RootableBy.surjective_pow (A α : Type _) [Monoid A] [Pow A α] [Zero α] [RootableBy A α]
+theorem RootableBy.surjective_pow (A α : Type*) [Monoid A] [Pow A α] [Zero α] [RootableBy A α]
     {n : α} (hn : n ≠ 0) : Function.Surjective fun a : A => a ^ n := fun a =>
   ⟨RootableBy.root a n, RootableBy.root_cancel a hn⟩
 #align rootable_by.surjective_pow RootableBy.surjective_pow
@@ -275,7 +283,7 @@ end Hom
 
 section Quotient
 
-variable (α : Type _) {A : Type _} [CommGroup A] (B : Subgroup A)
+variable (α : Type*) {A : Type*} [CommGroup A] (B : Subgroup A)
 
 /-- Any quotient group of a rootable group is rootable. -/
 @[to_additive "Any quotient group of a divisible group is divisible"]

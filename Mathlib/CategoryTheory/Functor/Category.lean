@@ -2,14 +2,11 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
-
-! This file was ported from Lean 3 source module category_theory.functor.category
-! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Iso
+
+#align_import category_theory.functor.category from "leanprover-community/mathlib"@"63721b2c3eba6c325ecf8ae8cca27155a4f6306f"
 
 /-!
 # The category of functors and natural transformations between two fixed categories.
@@ -79,6 +76,8 @@ theorem id_app (F : C ⥤ D) (X : C) : (𝟙 F : F ⟶ F).app X = 𝟙 (F.obj X)
 theorem comp_app {F G H : C ⥤ D} (α : F ⟶ G) (β : G ⟶ H) (X : C) :
     (α ≫ β).app X = α.app X ≫ β.app X := rfl
 #align category_theory.nat_trans.comp_app CategoryTheory.NatTrans.comp_app
+
+attribute [reassoc] comp_app
 
 theorem app_naturality {F G : C ⥤ D ⥤ E} (T : F ⟶ G) (X : C) {Y Z : D} (f : Y ⟶ Z) :
     (F.obj X).map f ≫ (T.app X).app Z = (T.app X).app Y ≫ (G.obj X).map f :=

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
-
-! This file was ported from Lean 3 source module combinatorics.young.young_diagram
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Data.Finset.Preimage
+
+#align_import combinatorics.young.young_diagram from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
 /-!
 # Young diagrams
@@ -111,8 +108,8 @@ theorem cells_ssubset_iff {μ ν : YoungDiagram} : μ.cells ⊂ ν.cells ↔ μ 
   Iff.rfl
 #align young_diagram.cells_ssubset_iff YoungDiagram.cells_ssubset_iff
 
-instance : Sup YoungDiagram
-    where sup μ ν :=
+instance : Sup YoungDiagram where
+  sup μ ν :=
     { cells := μ.cells ∪ ν.cells
       isLowerSet := by
         rw [Finset.coe_union]
@@ -133,8 +130,8 @@ theorem mem_sup {μ ν : YoungDiagram} {x : ℕ × ℕ} : x ∈ μ ⊔ ν ↔ x 
   Finset.mem_union
 #align young_diagram.mem_sup YoungDiagram.mem_sup
 
-instance : Inf YoungDiagram
-    where inf μ ν :=
+instance : Inf YoungDiagram where
+  inf μ ν :=
     { cells := μ.cells ∩ ν.cells
       isLowerSet := by
         rw [Finset.coe_inter]
@@ -502,7 +499,7 @@ theorem rowLens_length_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hpo
     (ofRowLens w hw).rowLens.length = w.length := by
   simp only [length_rowLens, colLen, Nat.find_eq_iff, mem_cells, mem_ofRowLens,
     lt_self_iff_false, IsEmpty.exists_iff, Classical.not_not]
-  refine' ⟨True.intro, fun n hn => ⟨hn, hpos _ (List.get_mem _ _ hn)⟩⟩
+  refine' ⟨not_false, fun n hn => ⟨hn, hpos _ (List.get_mem _ _ hn)⟩⟩
 #align young_diagram.row_lens_length_of_row_lens YoungDiagram.rowLens_length_ofRowLens
 
 -- Porting note: use `List.get` instead of `List.nthLe` because it has been deprecated

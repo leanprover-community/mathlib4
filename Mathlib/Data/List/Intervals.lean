@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module data.list.intervals
-! leanprover-community/mathlib commit 7b78d1776212a91ecc94cf601f83bdcc46b04213
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Range
 import Mathlib.Data.Bool.Basic
+
+#align_import data.list.intervals from "leanprover-community/mathlib"@"7b78d1776212a91ecc94cf601f83bdcc46b04213"
 /-!
 # Intervals in ℕ
 
@@ -48,17 +45,17 @@ theorem zero_bot (n : ℕ) : Ico 0 n = range n := by rw [Ico, tsub_zero, range_e
 @[simp]
 theorem length (n m : ℕ) : length (Ico n m) = m - n := by
   dsimp [Ico]
-  simp only [length_range']
+  simp [length_range', autoParam]
 #align list.Ico.length List.Ico.length
 
 theorem pairwise_lt (n m : ℕ) : Pairwise (· < ·) (Ico n m) := by
   dsimp [Ico]
-  simp only [pairwise_lt_range']
+  simp [pairwise_lt_range', autoParam]
 #align list.Ico.pairwise_lt List.Ico.pairwise_lt
 
 theorem nodup (n m : ℕ) : Nodup (Ico n m) := by
   dsimp [Ico]
-  simp only [nodup_range']
+  simp [nodup_range', autoParam]
 #align list.Ico.nodup List.Ico.nodup
 
 @[simp]
@@ -107,7 +104,7 @@ theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
 theorem inter_consecutive (n m l : ℕ) : Ico n m ∩ Ico m l = [] := by
   apply eq_nil_iff_forall_not_mem.2
   intro a
-  simp only [and_imp, not_and, not_lt, List.mem_inter, List.Ico.mem]
+  simp only [and_imp, not_and, not_lt, List.mem_inter_iff, List.Ico.mem]
   intro _ h₂ h₃
   exfalso
   exact not_lt_of_ge h₃ h₂

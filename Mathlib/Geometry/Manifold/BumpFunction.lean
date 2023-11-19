@@ -2,25 +2,22 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module geometry.manifold.bump_function
-! leanprover-community/mathlib commit b018406ad2f2a73223a3a9e198ccae61e6f05318
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.Calculus.BumpFunctionFindim
+import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
 import Mathlib.Geometry.Manifold.ContMDiff
+
+#align_import geometry.manifold.bump_function from "leanprover-community/mathlib"@"b018406ad2f2a73223a3a9e198ccae61e6f05318"
 
 /-!
 # Smooth bump functions on a smooth manifold
 
 In this file we define `SmoothBumpFunction I c` to be a bundled smooth "bump" function centered at
-`c`. It is a structure that consists of two real numbers `0 < r < R` with small enough `R`. We
-define a coercion to function for this type, and for `f : SmoothBumpFunction I c`, the function
+`c`. It is a structure that consists of two real numbers `0 < rIn < rOut` with small enough `rOut`.
+We define a coercion to function for this type, and for `f : SmoothBumpFunction I c`, the function
 `⇑f` written in the extended chart at `c` has the following properties:
 
-* `f x = 1` in the closed ball of radius `f.r` centered at `c`;
-* `f x = 0` outside of the ball of radius `f.R` centered at `c`;
+* `f x = 1` in the closed ball of radius `f.rIn` centered at `c`;
+* `f x = 0` outside of the ball of radius `f.rOut` centered at `c`;
 * `0 ≤ f x ≤ 1` for all `x`.
 
 The actual statements involve (pre)images under `extChartAt I f` and are given as lemmas in the
@@ -53,8 +50,8 @@ In this section we define a structure for a bundled smooth bump function and pro
 `f : SmoothBumpFunction I M` is a smooth function on `M` such that in the extended chart `e` at
 `f.c`:
 
-* `f x = 1` in the closed ball of radius `f.r` centered at `f.c`;
-* `f x = 0` outside of the ball of radius `f.R` centered at `f.c`;
+* `f x = 1` in the closed ball of radius `f.rIn` centered at `f.c`;
+* `f x = 0` outside of the ball of radius `f.rOut` centered at `f.c`;
 * `0 ≤ f x ≤ 1` for all `x`.
 
 The structure contains data required to construct a function with these properties. The function is
@@ -137,7 +134,7 @@ theorem support_subset_source : support f ⊆ (chartAt H c).source := by
 theorem image_eq_inter_preimage_of_subset_support {s : Set M} (hs : s ⊆ support f) :
     extChartAt I c '' s =
       closedBall (extChartAt I c c) f.rOut ∩ range I ∩ (extChartAt I c).symm ⁻¹' s := by
-  rw [support_eq_inter_preimage, subset_inter_iff, ← extChartAt_source I, ← image_subset_iff] at hs 
+  rw [support_eq_inter_preimage, subset_inter_iff, ← extChartAt_source I, ← image_subset_iff] at hs
   cases' hs with hse hsf
   apply Subset.antisymm
   · refine' subset_inter (subset_inter (hsf.trans ball_subset_closedBall) _) _
@@ -207,7 +204,7 @@ theorem nhdsWithin_range_basis :
     (𝓝[range I] extChartAt I c c).HasBasis (fun _ : SmoothBumpFunction I c => True) fun f =>
       closedBall (extChartAt I c c) f.rOut ∩ range I := by
   refine' ((nhdsWithin_hasBasis nhds_basis_closedBall _).restrict_subset
-    (extChartAt_target_mem_nhdsWithin _ _)).to_has_basis' _ _
+    (extChartAt_target_mem_nhdsWithin _ _)).to_hasBasis' _ _
   · rintro R ⟨hR0, hsub⟩
     exact ⟨⟨⟨R / 2, R, half_pos hR0, half_lt_self hR0⟩, hsub⟩, trivial, Subset.rfl⟩
   · exact fun f _ => inter_mem (mem_nhdsWithin_of_mem_nhds <| closedBall_mem_nhds _ f.rOut_pos)
@@ -223,14 +220,14 @@ theorem isClosed_image_of_isClosed {s : Set M} (hsc : IsClosed s) (hs : s ⊆ su
 #align smooth_bump_function.is_closed_image_of_is_closed SmoothBumpFunction.isClosed_image_of_isClosed
 
 /-- If `f` is a smooth bump function and `s` closed subset of the support of `f` (i.e., of the open
-ball of radius `f.R`), then there exists `0 < r < f.R` such that `s` is a subset of the open ball of
-radius `r`. Formally, `s ⊆ e.source ∩ e ⁻¹' (ball (e c) r)`, where `e = extChartAt I c`. -/
+ball of radius `f.rOut`), then there exists `0 < r < f.rOut` such that `s` is a subset of the open
+ball of radius `r`. Formally, `s ⊆ e.source ∩ e ⁻¹' (ball (e c) r)`, where `e = extChartAt I c`. -/
 theorem exists_r_pos_lt_subset_ball {s : Set M} (hsc : IsClosed s) (hs : s ⊆ support f) :
     ∃ r ∈ Ioo 0 f.rOut,
       s ⊆ (chartAt H c).source ∩ extChartAt I c ⁻¹' ball (extChartAt I c c) r := by
   set e := extChartAt I c
   have : IsClosed (e '' s) := f.isClosed_image_of_isClosed hsc hs
-  rw [support_eq_inter_preimage, subset_inter_iff, ← image_subset_iff] at hs 
+  rw [support_eq_inter_preimage, subset_inter_iff, ← image_subset_iff] at hs
   rcases exists_pos_lt_subset_ball f.rOut_pos this hs.2 with ⟨r, hrR, hr⟩
   exact ⟨r, hrR, subset_inter hs.1 (image_subset_iff.1 hr)⟩
 #align smooth_bump_function.exists_r_pos_lt_subset_ball SmoothBumpFunction.exists_r_pos_lt_subset_ball
@@ -280,7 +277,7 @@ theorem tsupport_subset_chartAt_source : tsupport f ⊆ (chartAt H c).source := 
 #align smooth_bump_function.tsupport_subset_chart_at_source SmoothBumpFunction.tsupport_subset_chartAt_source
 
 protected theorem hasCompactSupport : HasCompactSupport f :=
-  isCompact_of_isClosed_subset f.isCompact_symm_image_closedBall isClosed_closure
+  f.isCompact_symm_image_closedBall.of_isClosed_subset isClosed_closure
     f.tsupport_subset_symm_image_closedBall
 #align smooth_bump_function.has_compact_support SmoothBumpFunction.hasCompactSupport
 
@@ -296,7 +293,7 @@ theorem nhds_basis_tsupport :
       (extChartAt I c).symm '' (closedBall (extChartAt I c c) f.rOut ∩ range I) := by
     rw [← map_extChartAt_symm_nhdsWithin_range I c]
     exact nhdsWithin_range_basis.map _
-  refine' this.to_has_basis' (fun f _ => ⟨f, trivial, f.tsupport_subset_symm_image_closedBall⟩)
+  refine' this.to_hasBasis' (fun f _ => ⟨f, trivial, f.tsupport_subset_symm_image_closedBall⟩)
     fun f _ => f.tsupport_mem_nhds
 #align smooth_bump_function.nhds_basis_tsupport SmoothBumpFunction.nhds_basis_tsupport
 
@@ -304,11 +301,11 @@ variable {c}
 
 /-- Given `s ∈ 𝓝 c`, the supports of smooth bump functions `f : SmoothBumpFunction I c` such that
 `tsupport f ⊆ s` form a basis of `𝓝 c`.  In other words, each of these supports is a
-neighborhood of `c` and each neighborhood of `c` includes `support f` for some `f :
-SmoothBumpFunction I c` such that `tsupport f ⊆ s`. -/
+neighborhood of `c` and each neighborhood of `c` includes `support f` for some
+`f : SmoothBumpFunction I c` such that `tsupport f ⊆ s`. -/
 theorem nhds_basis_support {s : Set M} (hs : s ∈ 𝓝 c) :
     (𝓝 c).HasBasis (fun f : SmoothBumpFunction I c => tsupport f ⊆ s) fun f => support f :=
-  ((nhds_basis_tsupport I c).restrict_subset hs).to_has_basis'
+  ((nhds_basis_tsupport I c).restrict_subset hs).to_hasBasis'
     (fun f hf => ⟨f, hf.2, subset_closure⟩) fun f _ => f.support_mem_nhds
 #align smooth_bump_function.nhds_basis_support SmoothBumpFunction.nhds_basis_support
 
@@ -347,4 +344,3 @@ theorem smooth_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M → G}
 #align smooth_bump_function.smooth_smul SmoothBumpFunction.smooth_smul
 
 end SmoothBumpFunction
-

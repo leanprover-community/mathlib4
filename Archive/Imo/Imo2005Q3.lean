@@ -2,14 +2,13 @@
 Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
-
-! This file was ported from Lean 3 source module imo.imo2005_q3
-! leanprover-community/mathlib commit 308826471968962c6b59c7ff82a22757386603e3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Linarith
+
+#align_import imo.imo2005_q3 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 2005 Q3
@@ -28,9 +27,6 @@ namespace Imo2005Q3
 
 theorem key_insight (x y z : ℝ) (hx : x > 0) (hy : y > 0) (hz : z > 0) (h : x * y * z ≥ 1) :
     (x ^ 5 - x ^ 2) / (x ^ 5 + y ^ 2 + z ^ 2) ≥ (x ^ 2 - y * z) / (x ^ 2 + y ^ 2 + z ^ 2) := by
-  have h₁ : x ^ 5 + y ^ 2 + z ^ 2 ≠ 0 := by positivity
-  have h₃ : x ^ 2 + y ^ 2 + z ^ 2 ≠ 0 := by positivity
-  have h₄ : x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2) ≠ 0 := by positivity
   have key :
     (x ^ 5 - x ^ 2) / (x ^ 5 + y ^ 2 + z ^ 2) -
         (x ^ 5 - x ^ 2 * 1) / (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2)) =
@@ -40,9 +36,7 @@ theorem key_insight (x y z : ℝ) (hx : x > 0) (hy : y > 0) (hz : z > 0) (h : x 
     ring
   have h₅ :
     (x ^ 3 - 1) ^ 2 * x ^ 2 * (y ^ 2 + z ^ 2) /
-        ((x ^ 5 + y ^ 2 + z ^ 2) * (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2))) ≥
-      0 :=
-    by positivity
+        ((x ^ 5 + y ^ 2 + z ^ 2) * (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2))) ≥ 0 := by positivity
   calc
     (x ^ 5 - x ^ 2) / (x ^ 5 + y ^ 2 + z ^ 2)
       ≥ (x ^ 5 - x ^ 2 * 1) / (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2)) := by linarith only [key, h₅]

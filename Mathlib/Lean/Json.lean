@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module data.json
-! leanprover-community/mathlib commit b93a64dac6f7e8f10164b867ac329dda0747e075
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Lean
 import Mathlib.Mathport.Rename
+
+#align_import data.json from "leanprover-community/mathlib"@"b93a64dac6f7e8f10164b867ac329dda0747e075"
 
 /-!
 # Json serialization typeclass for `PUnit` & `Fin n` & `Subtype p`

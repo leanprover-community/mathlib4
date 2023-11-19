@@ -2,14 +2,11 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.engel
-! leanprover-community/mathlib commit 210657c4ea4a4a7b234392f70a3a2a83346dfa90
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.Normalizer
+
+#align_import algebra.lie.engel from "leanprover-community/mathlib"@"210657c4ea4a4a7b234392f70a3a2a83346dfa90"
 
 /-!
 # Engel's theorem
@@ -26,7 +23,7 @@ Engel's theorem is true for any coefficients (i.e., it is really a theorem about
 we work with coefficients in any commutative ring `R` throughout.
 
 On the other hand, Engel's theorem is not true for infinite-dimensional Lie algebras and so a
-finite-dimensionality assumption is required. We prove the theorem subject to the the assumption
+finite-dimensionality assumption is required. We prove the theorem subject to the assumption
 that the Lie algebra is Noetherian as an `R`-module, though actually we only need the slightly
 weaker property that the relation `>` is well-founded on the complete lattice of Lie subalgebras.
 
@@ -225,14 +222,12 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
 
 attribute [local instance] LieSubalgebra.subsingleton_bot
 
-variable [IsNoetherian R L]
-
 /-- *Engel's theorem*.
 
 Note that this implies all traditional forms of Engel's theorem via
 `LieModule.nontrivial_max_triv_of_isNilpotent`, `LieModule.isNilpotent_iff_forall`,
 `LieAlgebra.isNilpotent_iff_forall`. -/
-theorem LieAlgebra.isEngelian_of_isNoetherian : LieAlgebra.IsEngelian R L := by
+theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.IsEngelian R L := by
   intro M _i1 _i2 _i3 _i4 h
   rw [← isNilpotent_range_toEndomorphism_iff]
   let L' := (toEndomorphism R L M).range
@@ -286,17 +281,22 @@ theorem LieAlgebra.isEngelian_of_isNoetherian : LieAlgebra.IsEngelian R L := by
   exact hK₃ ▸ hK₁
 #align lie_algebra.is_engelian_of_is_noetherian LieAlgebra.isEngelian_of_isNoetherian
 
-/-- Engel's theorem. -/
-theorem LieModule.isNilpotent_iff_forall :
+/-- Engel's theorem.
+
+See also `LieModule.isNilpotent_iff_forall'` which assumes that `M` is Noetherian instead of `L`. -/
+theorem LieModule.isNilpotent_iff_forall [IsNoetherian R L] :
     LieModule.IsNilpotent R L M ↔ ∀ x, _root_.IsNilpotent <| toEndomorphism R L M x :=
-  ⟨by
-    intro h
-    obtain ⟨k, hk⟩ := nilpotent_endo_of_nilpotent_module R L M
-    exact fun x => ⟨k, hk x⟩, fun h => LieAlgebra.isEngelian_of_isNoetherian M h⟩
+  ⟨fun _ ↦ isNilpotent_toEndomorphism_of_isNilpotent R L M,
+   fun h => LieAlgebra.isEngelian_of_isNoetherian M h⟩
 #align lie_module.is_nilpotent_iff_forall LieModule.isNilpotent_iff_forall
 
 /-- Engel's theorem. -/
-theorem LieAlgebra.isNilpotent_iff_forall :
+theorem LieModule.isNilpotent_iff_forall' [IsNoetherian R M] :
+    LieModule.IsNilpotent R L M ↔ ∀ x, _root_.IsNilpotent <| toEndomorphism R L M x := by
+  rw [← isNilpotent_range_toEndomorphism_iff, LieModule.isNilpotent_iff_forall]; simp
+
+/-- Engel's theorem. -/
+theorem LieAlgebra.isNilpotent_iff_forall [IsNoetherian R L] :
     LieAlgebra.IsNilpotent R L ↔ ∀ x, _root_.IsNilpotent <| LieAlgebra.ad R L x :=
   LieModule.isNilpotent_iff_forall
 #align lie_algebra.is_nilpotent_iff_forall LieAlgebra.isNilpotent_iff_forall

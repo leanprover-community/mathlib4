@@ -2,17 +2,14 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Patrick Massot
-
-! This file was ported from Lean 3 source module data.set.pointwise.interval
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.UnorderedInterval
 import Mathlib.Data.Set.Intervals.Monoid
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Group.MinMax
+
+#align_import data.set.pointwise.interval from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 # (Pre)images of intervals
@@ -26,7 +23,7 @@ lemmas about preimages and images of all intervals. We also prove a few lemmas a
 
 open Interval Pointwise
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Set
 
@@ -319,49 +316,49 @@ theorem image_neg_Ioo : Neg.neg '' Ioo a b = Ioo (-b) (-a) := by simp
 
 @[simp]
 theorem image_const_sub_Ici : (fun x => a - x) '' Ici b = Iic (a - b) := by
-  have := image_comp (fun x => a + x) fun x => -x; dsimp [Function.comp] at this
+  have := image_comp (fun x => a + x) fun x => -x; dsimp [Function.comp_def] at this
   simp [sub_eq_add_neg, this, add_comm]
 #align set.image_const_sub_Ici Set.image_const_sub_Ici
 
 @[simp]
 theorem image_const_sub_Iic : (fun x => a - x) '' Iic b = Ici (a - b) := by
-  have := image_comp (fun x => a + x) fun x => -x; dsimp [Function.comp] at this
+  have := image_comp (fun x => a + x) fun x => -x; dsimp [Function.comp_def] at this
   simp [sub_eq_add_neg, this, add_comm]
 #align set.image_const_sub_Iic Set.image_const_sub_Iic
 
 @[simp]
 theorem image_const_sub_Ioi : (fun x => a - x) '' Ioi b = Iio (a - b) := by
-  have := image_comp (fun x => a + x) fun x => -x; dsimp [Function.comp] at this
+  have := image_comp (fun x => a + x) fun x => -x; dsimp [Function.comp_def] at this
   simp [sub_eq_add_neg, this, add_comm]
 #align set.image_const_sub_Ioi Set.image_const_sub_Ioi
 
 @[simp]
 theorem image_const_sub_Iio : (fun x => a - x) '' Iio b = Ioi (a - b) := by
-  have := image_comp (fun x => a + x) fun x => -x; dsimp [Function.comp] at this
+  have := image_comp (fun x => a + x) fun x => -x; dsimp [Function.comp_def] at this
   simp [sub_eq_add_neg, this, add_comm]
 #align set.image_const_sub_Iio Set.image_const_sub_Iio
 
 @[simp]
 theorem image_const_sub_Icc : (fun x => a - x) '' Icc b c = Icc (a - c) (a - b) := by
-  have := image_comp (fun x => a + x) fun x => -x; dsimp [Function.comp] at this
+  have := image_comp (fun x => a + x) fun x => -x; dsimp [Function.comp_def] at this
   simp [sub_eq_add_neg, this, add_comm]
 #align set.image_const_sub_Icc Set.image_const_sub_Icc
 
 @[simp]
 theorem image_const_sub_Ico : (fun x => a - x) '' Ico b c = Ioc (a - c) (a - b) := by
-  have := image_comp (fun x => a + x) fun x => -x; dsimp [Function.comp] at this
+  have := image_comp (fun x => a + x) fun x => -x; dsimp [Function.comp_def] at this
   simp [sub_eq_add_neg, this, add_comm]
 #align set.image_const_sub_Ico Set.image_const_sub_Ico
 
 @[simp]
 theorem image_const_sub_Ioc : (fun x => a - x) '' Ioc b c = Ico (a - c) (a - b) := by
-  have := image_comp (fun x => a + x) fun x => -x; dsimp [Function.comp] at this
+  have := image_comp (fun x => a + x) fun x => -x; dsimp [Function.comp_def] at this
   simp [sub_eq_add_neg, this, add_comm]
 #align set.image_const_sub_Ioc Set.image_const_sub_Ioc
 
 @[simp]
 theorem image_const_sub_Ioo : (fun x => a - x) '' Ioo b c = Ioo (a - c) (a - b) := by
-  have := image_comp (fun x => a + x) fun x => -x; dsimp [Function.comp] at this
+  have := image_comp (fun x => a + x) fun x => -x; dsimp [Function.comp_def] at this
   simp [sub_eq_add_neg, this, add_comm]
 #align set.image_const_sub_Ioo Set.image_const_sub_Ioo
 
@@ -462,7 +459,7 @@ theorem image_add_const_uIcc : (fun x => x + a) '' [[b, c]] = [[b + a, c + a]] :
 
 @[simp]
 theorem image_const_sub_uIcc : (fun x => a - x) '' [[b, c]] = [[a - b, a - c]] := by
-  have := image_comp (fun x => a + x) fun x => -x; dsimp [Function.comp] at this
+  have := image_comp (fun x => a + x) fun x => -x; dsimp [Function.comp_def] at this
   simp [sub_eq_add_neg, this, add_comm]
 #align set.image_const_sub_uIcc Set.image_const_sub_uIcc
 
@@ -772,7 +769,7 @@ theorem inv_Ioi {a : α} (ha : 0 < a) : (Ioi a)⁻¹ = Ioo 0 a⁻¹ := by
   rw [inv_eq_iff_eq_inv, inv_Ioo_0_left (inv_pos.2 ha), inv_inv]
 #align set.inv_Ioi Set.inv_Ioi
 
-theorem image_const_mul_Ioi_zero {k : Type _} [LinearOrderedField k] {x : k} (hx : 0 < x) :
+theorem image_const_mul_Ioi_zero {k : Type*} [LinearOrderedField k] {x : k} (hx : 0 < x) :
     (fun y => x * y) '' Ioi (0 : k) = Ioi 0 := by
   erw [(Units.mk0 x hx.ne').mulLeft.image_eq_preimage, preimage_const_mul_Ioi 0 (inv_pos.mpr hx),
     zero_div]

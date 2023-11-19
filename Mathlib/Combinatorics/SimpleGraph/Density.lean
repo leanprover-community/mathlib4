@@ -2,17 +2,16 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.density
-! leanprover-community/mathlib commit a4ec43f53b0bd44c697bcc3f5a62edd56f269ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Order.Partition.Finpartition
+import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.GCongr
+
+#align_import combinatorics.simple_graph.density from "leanprover-community/mathlib"@"a4ec43f53b0bd44c697bcc3f5a62edd56f269ef1"
 
 /-!
 # Edge density
@@ -28,12 +27,11 @@ Between two finsets of vertices,
 * `SimpleGraph.edgeDensity`: Edge density of a graph.
 -/
 
-
 open Finset
 
 open BigOperators
 
-variable {𝕜 ι κ α β : Type _}
+variable {𝕜 ι κ α β : Type*}
 
 /-! ### Density of a relation -/
 

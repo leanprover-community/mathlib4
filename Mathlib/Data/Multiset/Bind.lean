@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.multiset.bind
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Basic
+
+#align_import data.multiset.bind from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Bind operation for multisets
@@ -23,8 +20,9 @@ This file defines a few basic operations on `Multiset`, notably the monadic bind
 * `Multiset.sigma`: Disjoint sum of multisets in a sigma type.
 -/
 
+universe v
 
-variable {α β γ δ : Type _}
+variable {α : Type*} {β : Type v} {γ δ : Type*}
 
 namespace Multiset
 
@@ -152,7 +150,7 @@ theorem bind_congr {f g : α → Multiset β} {m : Multiset α} :
     (∀ a ∈ m, f a = g a) → bind m f = bind m g := by simp (config := { contextual := true }) [bind]
 #align multiset.bind_congr Multiset.bind_congr
 
-theorem bind_hcongr {β' : Type _} {m : Multiset α} {f : α → Multiset β} {f' : α → Multiset β'}
+theorem bind_hcongr {β' : Type v} {m : Multiset α} {f : α → Multiset β} {f' : α → Multiset β'}
     (h : β = β') (hf : ∀ a ∈ m, HEq (f a) (f' a)) : HEq (bind m f) (bind m f') := by
   subst h
   simp only [heq_eq_eq] at hf
@@ -209,7 +207,7 @@ theorem count_bind [DecidableEq α] {m : Multiset β} {f : β → Multiset α} {
   count_sum
 #align multiset.count_bind Multiset.count_bind
 
-theorem le_bind {α β : Type _} {f : α → Multiset β} (S : Multiset α) {x : α} (hx : x ∈ S) :
+theorem le_bind {α β : Type*} {f : α → Multiset β} (S : Multiset α) {x : α} (hx : x ∈ S) :
     f x ≤ S.bind f := by
   classical
     rw [le_iff_count]
@@ -303,7 +301,7 @@ end Product
 
 section Sigma
 
-variable {σ : α → Type _} (a : α) (s : Multiset α) (t : ∀ a, Multiset (σ a))
+variable {σ : α → Type*} (a : α) (s : Multiset α) (t : ∀ a, Multiset (σ a))
 
 /-- `Multiset.sigma s t` is the dependent version of `Multiset.product`. It is the sum of
   `(a, b)` as `a` ranges over `s` and `b` ranges over `t a`. -/

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.sum_of_prime_reciprocals_diverges
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Data.Nat.Squarefree
+
+#align_import wiedijk_100_theorems.sum_of_prime_reciprocals_diverges from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 # Divergence of the Prime Reciprocal Series
@@ -147,7 +144,7 @@ The number of `e < x` for which `e + 1` is a squarefree product of primes smalle
 theorem card_le_two_pow {x k : ℕ} :
     card (Finset.filter (fun e => Squarefree (e + 1)) (M x k)) ≤ 2 ^ k := by
   let M₁ := Finset.filter (fun e => Squarefree (e + 1)) (M x k)
-  let f s := (Finset.prod s fun a => a) - 1
+  let f s := (∏ a in s, a) - 1
   let K := powerset (image Nat.succ (range k))
   -- Take `e` in `M x k`. If `e + 1` is squarefree, then it is the product of a subset of `[1, k]`.
   -- It follows that `e` is one less than such a product.
@@ -155,7 +152,7 @@ theorem card_le_two_pow {x k : ℕ} :
     intro m hm
     simp only [M, mem_filter, mem_range, mem_powerset, mem_image, exists_prop] at hm ⊢
     obtain ⟨⟨-, hmp⟩, hms⟩ := hm
-    use ⟨(m + 1).factors, ?_⟩
+    use! (m + 1).factors
     · rwa [Multiset.coe_nodup, ← Nat.squarefree_iff_nodup_factors m.succ_ne_zero]
     refine' ⟨fun p => _, _⟩
     · suffices p ∈ (m + 1).factors → ∃ a : ℕ, a < k ∧ a.succ = p by simpa
@@ -243,7 +240,7 @@ theorem Real.tendsto_sum_one_div_prime_atTop :
   have h4 :=
     calc
       (card M' : ℝ) ≤ 2 ^ k * x.sqrt := by exact_mod_cast card_le_two_pow_mul_sqrt
-      _ = 2 ^ k * ↑(2 ^ (k + 1)) := by rw [Nat.sqrt_eq]
+      _ = 2 ^ k * (2 ^ (k + 1) : ℕ) := by rw [Nat.sqrt_eq]
       _ = x / 2 := by field_simp [mul_right_comm, ← pow_succ']
   refine' lt_irrefl (x : ℝ) _
   calc

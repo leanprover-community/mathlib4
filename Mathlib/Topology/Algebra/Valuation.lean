@@ -2,15 +2,12 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.algebra.valuation
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.RingTheory.Valuation.Basic
+
+#align_import topology.algebra.valuation from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # The topology on a valued ring
@@ -40,7 +37,9 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
   { inter := by
       rintro γ₀ γ₁
       use min γ₀ γ₁
-      simp [Valuation.ltAddSubgroup]
+      simp only [ltAddSubgroup, ge_iff_le, Units.min_val, Units.val_le_val, lt_min_iff,
+        AddSubgroup.mk_le_mk, setOf_subset_setOf, le_inf_iff, and_imp, imp_self, implies_true,
+        forall_const, and_true]
       tauto
     mul := by
       rintro γ
@@ -57,10 +56,9 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
       · use (1 : Γ₀ˣ)
         rintro y _
         change v (x * y) < _
-        rw [Valuation.map_mul, Hx, MulZeroClass.zero_mul]
+        rw [Valuation.map_mul, Hx, zero_mul]
         exact Units.zero_lt γ
-      · simp only [image_subset_iff, setOf_subset_setOf, preimage_setOf_eq, Valuation.map_mul]
-        use γx⁻¹ * γ
+      · use γx⁻¹ * γ
         rintro y (vy_lt : v y < ↑(γx⁻¹ * γ))
         change (v (x * y) : Γ₀) < γ
         rw [Valuation.map_mul, Hx, mul_comm]
@@ -72,7 +70,7 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
       · use 1
         rintro y _
         change v (y * x) < _
-        rw [Valuation.map_mul, Hx, MulZeroClass.mul_zero]
+        rw [Valuation.map_mul, Hx, mul_zero]
         exact Units.zero_lt γ
       · use γx⁻¹ * γ
         rintro y (vy_lt : v y < ↑(γx⁻¹ * γ))
@@ -131,7 +129,7 @@ theorem hasBasis_uniformity : (uniformity R).HasBasis (fun _ => True)
 
 theorem toUniformSpace_eq :
     toUniformSpace = @TopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _ :=
-  uniformSpace_eq
+  UniformSpace.ext
     ((hasBasis_uniformity R Γ₀).eq_of_same_basis <| v.subgroups_basis.hasBasis_nhds_zero.comap _)
 #align valued.to_uniform_space_eq Valued.toUniformSpace_eq
 

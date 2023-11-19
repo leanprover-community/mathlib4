@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.pi.basic
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.Data.Sum.Basic
+
+#align_import category_theory.pi.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Categories of indexed families of objects.
@@ -175,11 +172,8 @@ variable {C}
 pair of corresponding components. -/
 @[simps]
 def isoApp {X Y : ∀ i, C i} (f : X ≅ Y) (i : I) : X i ≅ Y i :=
-  ⟨f.hom i, f.inv i, by
-    dsimp
-    rw [← comp_apply, Iso.hom_inv_id, id_apply], by
-    dsimp
-    rw [← comp_apply, Iso.inv_hom_id, id_apply]⟩
+  ⟨f.hom i, f.inv i,
+    by rw [← comp_apply, Iso.hom_inv_id, id_apply], by rw [← comp_apply, Iso.inv_hom_id, id_apply]⟩
 #align category_theory.pi.iso_app CategoryTheory.Pi.isoApp
 
 @[simp]
@@ -236,7 +230,7 @@ end EqToHom
 -- One could add some natural isomorphisms showing
 -- how `Functor.pi` commutes with `Pi.eval` and `Pi.comap`.
 @[simp]
-theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙  Pi.eval C i = f i := by
+theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i := by
   apply Functor.ext
   intro _ _ _
   · simp
@@ -245,8 +239,8 @@ theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙  Pi.eval C i = f i :
 #align category_theory.functor.pi'_eval CategoryTheory.Functor.pi'_eval
 
 /-- Two functors to a product category are equal iff they agree on every coordinate. -/
-theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙ (Pi.eval C i) = f' ⋙ (Pi.eval C i))
-    : f = f' := by
+theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙ (Pi.eval C i) = f' ⋙ (Pi.eval C i)) :
+    f = f' := by
   apply Functor.ext; rotate_left
   · intro X
     ext i

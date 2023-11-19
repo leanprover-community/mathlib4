@@ -2,14 +2,11 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.traversable.equiv
-! leanprover-community/mathlib commit 706d88f2b8fdfeb0b22796433d7a6c1a010af9f2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Traversable.Lemmas
 import Mathlib.Logic.Equiv.Defs
+
+#align_import control.traversable.equiv from "leanprover-community/mathlib"@"706d88f2b8fdfeb0b22796433d7a6c1a010af9f2"
 
 /-!
 # Transferring `Traversable` instances along isomorphisms
@@ -118,9 +115,8 @@ section Equiv
 
 variable {t t' : Type u → Type u} (eqv : ∀ α, t α ≃ t' α)
 
--- Porting note: The naming `IsLawfulTraversable` seems weird, why not `LawfulTraversable`?
 -- Is this to do with the fact it lives in `Type (u+1)` not `Prop`?
-variable [Traversable t] [IsLawfulTraversable t]
+variable [Traversable t] [LawfulTraversable t]
 
 variable {F G : Type u → Type u} [Applicative F] [Applicative G]
 
@@ -130,7 +126,7 @@ variable (η : ApplicativeTransformation F G)
 
 variable {α β γ : Type u}
 
-open IsLawfulTraversable Functor
+open LawfulTraversable Functor
 
 -- Porting note: Id.bind_eq is missing an `#align`.
 
@@ -147,7 +143,10 @@ protected theorem traverse_eq_map_id (f : α → β) (x : t' α) :
 protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : t' α) :
     Equiv.traverse eqv (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Equiv.traverse eqv f <$> Equiv.traverse eqv g x) := by
-  simp [Equiv.traverse, comp_traverse, functor_norm]; congr; ext; simp
+  simp (config := { unfoldPartialApp := true }) [Equiv.traverse, comp_traverse, functor_norm]
+  congr
+  ext
+  simp
 #align equiv.comp_traverse Equiv.comp_traverse
 
 protected theorem naturality (f : α → F β) (x : t' α) :
@@ -158,7 +157,7 @@ protected theorem naturality (f : α → F β) (x : t' α) :
 /-- The fact that `t` is a lawful traversable functor carries over the
 equivalences to `t'`, with the traversable functor structure given by
 `Equiv.traversable`. -/
-protected def isLawfulTraversable : @IsLawfulTraversable t' (Equiv.traversable eqv) :=
+protected theorem isLawfulTraversable : @LawfulTraversable t' (Equiv.traversable eqv) :=
   -- Porting note: Same `_inst` local variable problem.
   let _inst := Equiv.traversable eqv; {
     toLawfulFunctor := Equiv.lawfulFunctor eqv
@@ -173,13 +172,13 @@ protected def isLawfulTraversable : @IsLawfulTraversable t' (Equiv.traversable e
 carrying the traversable functor structure from `t` over the
 equivalences, then the fact that `t` is a lawful traversable functor
 carries over as well. -/
-protected def isLawfulTraversable' [Traversable t']
+protected theorem isLawfulTraversable' [Traversable t']
     (h₀ : ∀ {α β} (f : α → β), map f = Equiv.map eqv f)
     (h₁ : ∀ {α β} (f : β), mapConst f = (Equiv.map eqv ∘ Function.const α) f)
     (h₂ :
       ∀ {F : Type u → Type u} [Applicative F],
         ∀ [LawfulApplicative F] {α β} (f : α → F β), traverse f = Equiv.traverse eqv f) :
-    IsLawfulTraversable t' := by
+    LawfulTraversable t' := by
   -- we can't use the same approach as for `lawful_functor'` because
   -- h₂ needs a `LawfulApplicative` assumption
   refine' { toLawfulFunctor := Equiv.lawfulFunctor' eqv @h₀ @h₁.. } <;> intros

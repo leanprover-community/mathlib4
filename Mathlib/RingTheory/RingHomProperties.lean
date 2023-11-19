@@ -2,17 +2,14 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.ring_hom_properties
-! leanprover-community/mathlib commit a7c017d750512a352b623b1824d75da5998457d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.CategoryTheory.Iso
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.IsTensorProduct
+
+#align_import ring_theory.ring_hom_properties from "leanprover-community/mathlib"@"a7c017d750512a352b623b1824d75da5998457d0"
 
 /-!
 # Properties of ring homomorphisms
@@ -65,8 +62,8 @@ theorem RespectsIso.cancel_right_isIso (hP : RespectsIso @P) {R S T : CommRingCa
     simp, hP.1 f (asIso g).commRingCatIsoToRingEquiv⟩
 #align ring_hom.respects_iso.cancel_right_is_iso RingHom.RespectsIso.cancel_right_isIso
 
-theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S : Type _}
-    (R' S' : Type _) [CommRing R] [CommRing S] [CommRing R'] [CommRing S'] [Algebra R R']
+theorem RespectsIso.is_localization_away_iff (hP : RingHom.RespectsIso @P) {R S : Type u}
+    (R' S' : Type u) [CommRing R] [CommRing S] [CommRing R'] [CommRing S'] [Algebra R R']
     [Algebra S S'] (f : R →+* S) (r : R) [IsLocalization.Away r R'] [IsLocalization.Away (f r) S'] :
     P (Localization.awayMap f r) ↔ P (IsLocalization.Away.map R' S' f r) := by
   let e₁ : R' ≃+* Localization.Away r :=
@@ -108,7 +105,7 @@ def StableUnderComposition : Prop :=
 variable {P}
 
 theorem StableUnderComposition.respectsIso (hP : RingHom.StableUnderComposition @P)
-    (hP' : ∀ {R S : Type _} [CommRing R] [CommRing S] (e : R ≃+* S), P e.toRingHom) :
+    (hP' : ∀ {R S : Type u} [CommRing R] [CommRing S] (e : R ≃+* S), P e.toRingHom) :
     RingHom.RespectsIso @P := by
   constructor
   · introv H
@@ -139,7 +136,7 @@ theorem StableUnderBaseChange.mk (h₁ : RespectsIso @P)
       ∀ ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T],
         ∀ [Algebra R S] [Algebra R T],
           P (algebraMap R T) →
-            P (Algebra.TensorProduct.includeLeft.toRingHom : S →+* TensorProduct R S T)) :
+            P (Algebra.TensorProduct.includeLeftRingHom : S →+* TensorProduct R S T)) :
     StableUnderBaseChange @P := by
   introv R h H
   let e := h.symm.1.equiv
