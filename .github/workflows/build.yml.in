@@ -373,6 +373,11 @@ jobs:
           echo "\`\`\`diff" >> leaff.diff
           lake exe leaff Mathlib $(tr ':' ',' <<<"$(eval $(lake --dir ../old/ env) && echo $LEAN_PATH)") $(tr ':' ',' <<<"$(eval $(lake --dir ../new/ env) && echo $LEAN_PATH)") >> leaff.diff
           echo "\`\`\`" >> leaff.diff
+
+      - uses: jwalton/gh-find-current-pr@v1
+        id: finder
+
       - uses: marocchino/sticky-pull-request-comment@v2
         with:
+          number: ${{ steps.finder.outputs.pr }}
           path: leaff/leaff.diff
