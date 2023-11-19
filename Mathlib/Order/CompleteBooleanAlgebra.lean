@@ -213,12 +213,14 @@ instance Prod.frame (α β) [Frame α] [Frame β] : Frame (α × β) where
   inf_sSup_le_iSup_inf a s := by
     simp [Prod.le_def, sSup_eq_iSup, fst_iSup, snd_iSup, fst_iInf, snd_iInf, inf_iSup_eq]
 
-theorem iSup₂_inf_eq {f : ∀ i, κ i → α} (a : α) : (⨆ (i) (j), f i j) ⊓ a = ⨆ (i) (j), f i j ⊓ a :=
-  by simp only [iSup_inf_eq]
+theorem iSup₂_inf_eq {f : ∀ i, κ i → α} (a : α) :
+    (⨆ (i) (j), f i j) ⊓ a = ⨆ (i) (j), f i j ⊓ a := by
+  simp only [iSup_inf_eq]
 #align bsupr_inf_eq iSup₂_inf_eq
 
-theorem inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊓ ⨆ (i) (j), f i j) = ⨆ (i) (j), a ⊓ f i j :=
-  by simp only [inf_iSup_eq]
+theorem inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) :
+    (a ⊓ ⨆ (i) (j), f i j) = ⨆ (i) (j), a ⊓ f i j := by
+  simp only [inf_iSup_eq]
 #align inf_bsupr_eq inf_iSup₂_eq
 
 theorem iSup_inf_iSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} :

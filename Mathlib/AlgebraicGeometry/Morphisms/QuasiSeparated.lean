@@ -453,17 +453,10 @@ theorem is_localization_basicOpen_of_qcqs {X : Scheme} {U : Opens X.carrier} (hU
     rw [← sub_eq_zero, ← map_sub, RingHom.algebraMap_toAlgebra]
     simp_rw [← @sub_eq_zero _ _ (_ * x) (_ * y), ← mul_sub]
     generalize x - y = z
-    constructor
-    · intro H
-      obtain ⟨n, e⟩ := exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact X hU _ _ H
-      refine' ⟨⟨_, n, rfl⟩, _⟩
-      simpa [mul_comm z] using e
-    · rintro ⟨⟨_, n, rfl⟩, e : f ^ n * z = 0⟩
-      rw [← ((RingedSpace.isUnit_res_basicOpen _ f).pow n).mul_right_inj, mul_zero, ←
-        map_pow]
-      -- Porting note: this one lemma needs `erw`
-      erw [← map_mul]
-      rw [e, map_zero]
+    intro H
+    obtain ⟨n, e⟩ := exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact X hU _ _ H
+    refine' ⟨⟨_, n, rfl⟩, _⟩
+    simpa [mul_comm z] using e
 #align algebraic_geometry.is_localization_basic_open_of_qcqs AlgebraicGeometry.is_localization_basicOpen_of_qcqs
 
 end AlgebraicGeometry
