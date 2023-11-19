@@ -143,6 +143,29 @@ protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
       exact add _ _ (tmul ..) ih
 #align tensor_product.induction_on TensorProduct.induction_on
 
+/-- Lift a map that is additive in both arguments, such that scalar multiplication in either
+argument is equivalent, to the tensor product. -/
+def liftAddHom (f : M →+ N →+ P)
+    (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) :
+    M ⊗[R] N →+ P :=
+  (addConGen (TensorProduct.Eqv R M N)).lift (FreeAddMonoid.lift (fun mn : M × N => f mn.1 mn.2)) <|
+      AddCon.addConGen_le fun x y hxy =>
+        match x, y, hxy with
+        | _, _, .of_zero_left n =>
+          (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, map_zero,
+            AddMonoidHom.zero_apply]
+        | _, _, .of_zero_right m =>
+          (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, map_zero]
+        | _, _, .of_add_left m₁ m₂ n =>
+          (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, map_add,
+            AddMonoidHom.add_apply]
+        | _, _, .of_add_right m n₁ n₂ =>
+          (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, map_add]
+        | _, _, .of_smul s m n =>
+          (AddCon.ker_rel _).2 <| by rw [FreeAddMonoid.lift_eval_of, FreeAddMonoid.lift_eval_of, hf]
+        | _, _, .add_comm x y =>
+          (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]
+
 variable (M)
 
 @[simp]
