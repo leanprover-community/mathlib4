@@ -111,7 +111,7 @@ theorem abelian_radical_iff_solvable_is_abelian [IsNoetherian R L] :
   constructor
   · rintro h₁ I h₂
     rw [LieIdeal.solvable_iff_le_radical] at h₂
-    exact (LieIdeal.homOfLe_injective h₂).isLieAbelian h₁
+    exact (LieIdeal.inclusion_injective h₂).isLieAbelian h₁
   · intro h; apply h; infer_instance
 #align lie_algebra.abelian_radical_iff_solvable_is_abelian LieAlgebra.abelian_radical_iff_solvable_is_abelian
 

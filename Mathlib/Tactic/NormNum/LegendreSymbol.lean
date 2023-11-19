@@ -124,6 +124,7 @@ theorem jacobiSymNat.odd_even (a b c : ℕ) (r : ℤ) (ha : a % 2 = 1) (hb : b %
     jacobiSymNat a b = r := by
   have ha' : legendreSym 2 a = 1 := by
     simp only [legendreSym.mod 2 a, Int.ofNat_mod_ofNat, ha]
+    decide
   rcases eq_or_ne c 0 with (rfl | hc')
   · rw [← hr, Nat.eq_zero_of_dvd_of_div_eq_zero (Nat.dvd_of_mod_eq_zero hb) hc]
   · haveI : NeZero c := ⟨hc'⟩
