@@ -545,6 +545,7 @@ instance inhabited (n : ℕ) [NeZero n] : Inhabited (Fin n) :=
 theorem default_eq_zero (n : ℕ) [NeZero n] : (default : Fin n) = 0 :=
   rfl
 #align fin.default_eq_zero Fin.default_eq_zero
+
 section from_ad_hoc
 
 @[simp] lemma ofNat'_zero [NeZero n] : (Fin.ofNat' 0 h : Fin n) = 0 := rfl
