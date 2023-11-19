@@ -81,10 +81,10 @@ end Fintype
 /-! ### pi -/
 
 /-- A dependent product of fintypes, indexed by a fintype, is a fintype. -/
-instance Pi.fintype {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
+instance Pi.instFintype {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] : Fintype (∀ a, β a) :=
   ⟨Fintype.piFinset fun _ => univ, by simp⟩
-#align pi.fintype Pi.fintype
+#align pi.fintype Pi.instFintype
 
 @[simp]
 theorem Fintype.piFinset_univ {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
