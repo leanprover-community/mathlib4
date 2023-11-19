@@ -71,7 +71,7 @@ structure Mat_ where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_ CategoryTheory.Mat_
 
-attribute [instance] Mat_.F
+attribute [instance] Mat_.fintype
 
 namespace Mat_
 
