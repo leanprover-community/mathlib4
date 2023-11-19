@@ -113,6 +113,8 @@ namespace SnakeInput
 
 variable (D : SnakeInput C)
 
+/-- This lemma allows the computation of the connecting homomorphism
+`D.δ` when `D : SnakeInput C` and `C` is a concrete category. -/
 lemma δ_apply (x₃ : D.L₀.X₃) (x₂ : D.L₁.X₂) (x₁ : D.L₂.X₁)
     (h₂ : D.L₁.g x₂ = D.v₀₁.τ₃ x₃) (h₁ : D.L₂.f x₁ = D.v₁₂.τ₂ x₂) :
     D.δ x₃ = D.v₂₃.τ₁ x₁ := by
