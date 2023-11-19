@@ -766,7 +766,7 @@ variable (P)
 /-- The direction of `⊤` is the whole module as a submodule. -/
 @[simp]
 theorem direction_top : (⊤ : AffineSubspace k P).direction = ⊤ := by
-  cases' S.Nonempty with p
+  cases' S.nonempty with p
   ext v
   refine' ⟨imp_intro Submodule.mem_top, fun _hv => _⟩
   have hpv : (v +ᵥ p -ᵥ p : V) ∈ (⊤ : AffineSubspace k P).direction :=
