@@ -113,6 +113,20 @@ def hintCore : TacticM (Array (Suggestion × List MVarId × SavedState)) := do
   cancel -- Cancel any remaining tasks, in case one closed the goal early.
   return results.qsort (·.2.1.length < ·.2.1.length)
 
+open Meta Term in
+/--
+`MetaM` version of the `hint` tactic. Returns an array of tuples containing
+* a `Suggestion` suitable for "Try this:"
+* the `MetavarContext` after successfully running a `hint` tactic
+* the new goals after running that `hint` tactic
+-/
+def hints (g : MVarId) : MetaM (Array (Suggestion × MetavarContext × List MVarId)) :=
+  TermElabM.run' do
+    (show TacticM _ from do
+      let r ← hintCore
+      r.mapM fun p => return (p.1, ← do restoreState p.2.2; getMCtx, p.2.1))
+      { elaborator := .anonymous } |>.run' { goals := [g] }
+
 /--
 Run all tactics registered using `register_hint`.
 Print a "Try these:" suggestion for each of the successful tactics.

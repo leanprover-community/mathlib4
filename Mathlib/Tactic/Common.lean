@@ -46,6 +46,7 @@ import Mathlib.Tactic.Have
 import Mathlib.Tactic.HelpCmd
 import Mathlib.Tactic.HigherOrder
 import Mathlib.Tactic.Hint
+import Mathlib.Tactic.Hint.HoleCodeAction
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
@@ -101,7 +102,6 @@ import Mathlib.Tactic.Use
 import Mathlib.Tactic.Variable
 import Mathlib.Tactic.WLOG
 import Mathlib.Util.AssertExists
-import Mathlib.Util.CodeAction.RunTactic
 import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.Imports
 import Mathlib.Util.WhatsNew
