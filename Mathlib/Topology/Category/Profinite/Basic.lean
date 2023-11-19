@@ -88,7 +88,7 @@ lemma forget_ContinuousMap_mk {X Y : Profinite} (f : X → Y) (hf : Continuous f
   rfl
 
 instance {X : Profinite} : TotallyDisconnectedSpace X :=
-  X.IsTotallyDisconnected
+  X.isTotallyDisconnected
 
 -- We check that we automatically infer that Profinite sets are compact and Hausdorff.
 example {X : Profinite} : CompactSpace X :=
@@ -151,7 +151,7 @@ show Faithful <| inducedFunctor _ from inferInstance
 
 -- Porting note: added, as it is not found otherwise.
 instance {X : Profinite} : TotallyDisconnectedSpace (profiniteToCompHaus.obj X) :=
-  X.IsTotallyDisconnected
+  X.isTotallyDisconnected
 
 /-- The fully faithful embedding of `Profinite` in `TopCat`.
 This is definitionally the same as the obvious composite. -/
