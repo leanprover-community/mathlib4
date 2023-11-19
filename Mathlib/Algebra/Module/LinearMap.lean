@@ -1024,30 +1024,31 @@ instance [NoZeroSMulDivisors S M₂]  [SMulCommClass R₂ S M₂] :
     NoZeroSMulDivisors S (M →ₛₗ[σ₁₂] M₂) :=
   coe_injective.noZeroSMulDivisors _ rfl coe_smul
 
+open MulOpposite in
 /-- If `M` is an `(R, S)` bimodule and `M₂` an `S`-module, then `M ⟶ M₂` is also
   a bimodule-/
 protected def bimodule
-    [Module R M] [Module S M] [SMulCommClass R S M] [SMulCommClass R R M] [Module S M₂] :
-    Module R (M →ₗ[S] M₂) where
+    [Module R M] [Module S M] [SMulCommClass R S M] [Module S M₂] :
+    Module Rᵐᵒᵖ (M →ₗ[S] M₂) where
   smul r l :=
-  { toFun := fun x => l <| r • x
+  { toFun := fun x => l (r.unop • x)
     map_add' := fun x y => by dsimp; rw [smul_add, map_add]
     map_smul' := fun s x => by dsimp; rw [smul_comm, map_smul] }
-  one_smul l := LinearMap.ext fun x => show l _ = _ by rw [one_smul]
-  mul_smul r₁ r₂ l := LinearMap.ext fun x => show l _ = l _ by rw [smul_comm, mul_smul]
+  one_smul l := LinearMap.ext fun x => show l _ = _ by rw [unop_one, one_smul]
+  mul_smul r₁ r₂ l := LinearMap.ext fun x => show l _ = l _ by rw [unop_mul, mul_smul]
   smul_zero r := rfl
   smul_add r l₁ l₂ := LinearMap.ext fun x => show (l₁ + _) _ = _ by
     rw [LinearMap.add_apply, LinearMap.add_apply]; rfl
-  add_smul r₁ r₂ l := LinearMap.ext fun x => show l _ = l _ + l _ by rw [add_smul, map_add]
-  zero_smul l := LinearMap.ext fun x => show l _ = 0 by rw [zero_smul, map_zero]
-
+  add_smul r₁ r₂ l := LinearMap.ext fun x => show l _ = l _ + l _ by
+    rw [unop_add, add_smul, map_add]
+  zero_smul l := LinearMap.ext fun x => show l _ = 0 by rw [unop_zero, zero_smul, map_zero]
 scoped[Bimodule] attribute [instance] LinearMap.bimodule
 
 open Bimodule in
 protected lemma bimodule_smul_apply
-    [Module R M] [Module S M] [SMulCommClass R S M] [SMulCommClass R R M] [Module S M₂]
-    (r : R) (l : M →ₗ[S] M₂) (m : M) :
-    (r • l) m = l (r • m) := rfl
+    [Module R M] [Module S M] [SMulCommClass R S M] [Module S M₂]
+    (r : Rᵐᵒᵖ) (l : M →ₗ[S] M₂) (m : M) :
+    (r • l) m = l (r.unop • m) := rfl
 
 end Module
 

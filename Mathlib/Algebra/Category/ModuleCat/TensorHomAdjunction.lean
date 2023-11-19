@@ -63,7 +63,13 @@ noncomputable def tensorFunctor : ModuleCat.{v} R ⥤ ModuleCat.{v} S where
     have eq1 := FunLike.congr_fun (TensorProduct.map_comp LinearMap.id LinearMap.id l' l) x
     rwa [LinearMap.comp_id] at eq1
 
+instance opModule (M : Type _) [AddCommGroup M] [Module Rᵐᵒᵖ M] : Module R M :=
+Module.compHom M ((RingHom.id R).toOpposite fun _ _ => mul_comm _ _)
+
 open Bimodule
+
+instance bimodule' (Z : ModuleCat.{v} S) : Module R (X →ₗ[S] Z) :=
+  opModule _ _
 
 /--
 Let `X` be an `(R,S)`-bimodule. Then `(X →ₗ[S] .)` is a functor from the category of `S`-modules
@@ -103,7 +109,9 @@ def uncurry' {X' : ModuleCat.{v} R} {Y : ModuleCat.{v} S} (l : X' →ₗ[R] (X �
     | _, _, Eqv.of_zero_right _    => by aesop
     | _, _, Eqv.of_add_left _ _ _  => by aesop
     | _, _, Eqv.of_add_right _ _ _ => by aesop
-    | _, _, Eqv.of_smul _ _ _      => by aesop
+    | _, _, Eqv.of_smul r x x'     => (AddCon.ker_rel _).2 <| by
+      simpa only [FreeAddMonoid.lift_eval_of, l.map_smul] using
+        Eq.symm <| LinearMap.bimodule_smul_apply (MulOpposite.op r) (l x') _
     | _, _, Eqv.add_comm _ _       => by simp [map_add, add_comm]
   { L with
     map_smul' := fun _ z => z.induction_on
