@@ -63,15 +63,6 @@ lean_lib docs
 lean_exe cache where
   root := `Cache.Main
 
-/-- `lake exe runMathlibLinter` runs the linter on all of Mathlib (or individual files). -/
--- Due to a change in Lake at v4.1.0-rc1, we need to give this a different name
--- than the `lean_exe runLinter` inherited from Std, or we always run that.
--- See https://github.com/leanprover/lean4/issues/2548
--- TODO this is just a copy and paste of Std's linter, and they should be combined.
-lean_exe runMathlibLinter where
-  srcDir := "scripts"
-  supportInterpreter := true
-
 /-- `lake exe checkYaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
 lean_exe checkYaml where
   srcDir := "scripts"
