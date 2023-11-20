@@ -462,7 +462,7 @@ lemma norm_smul_basis (p q : R[X]) :
   simp_rw [Algebra.norm_eq_matrix_det <| CoordinateRing.basis W, Matrix.det_fin_two,
     Algebra.leftMulMatrix_eq_repr_mul, basis_zero, mul_one, basis_one, smul_basis_mul_Y, map_add,
     Finsupp.add_apply, map_smul, Finsupp.smul_apply, ← basis_zero, ← basis_one,
-    Basis.repr_self_apply, if_pos, if_neg, smul_eq_mul]
+    Basis.repr_self_apply, if_pos, one_ne_zero, if_false, smul_eq_mul]
   ring1
 #align weierstrass_curve.coordinate_ring.norm_smul_basis WeierstrassCurve.Affine.CoordinateRing.norm_smul_basis
 

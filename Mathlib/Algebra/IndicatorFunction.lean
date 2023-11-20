@@ -355,8 +355,9 @@ variable [MulOneClass M] {s t : Set α} {f g : α → M} {a : α}
 
 @[to_additive]
 theorem mulIndicator_union_mul_inter_apply (f : α → M) (s t : Set α) (a : α) :
-    mulIndicator (s ∪ t) f a * mulIndicator (s ∩ t) f a = mulIndicator s f a * mulIndicator t f a :=
-  by by_cases hs : a ∈ s <;> by_cases ht : a ∈ t <;> simp [*]
+    mulIndicator (s ∪ t) f a * mulIndicator (s ∩ t) f a
+      = mulIndicator s f a * mulIndicator t f a := by
+  by_cases hs : a ∈ s <;> by_cases ht : a ∈ t <;> simp [*]
 #align set.mul_indicator_union_mul_inter_apply Set.mulIndicator_union_mul_inter_apply
 #align set.indicator_union_add_inter_apply Set.indicator_union_add_inter_apply
 

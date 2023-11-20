@@ -85,7 +85,7 @@ theorem rename_rename (f : σ → τ) (g : τ → α) (p : MvPolynomial σ R) :
     -- porting note: the Lean 3 proof of this was very fragile and included a nonterminal `simp`.
     -- Hopefully this is less prone to breaking
     rw [eval₂_comp_left (eval₂Hom (algebraMap R (MvPolynomial α R)) (X ∘ g)) C (X ∘ f) p]
-    simp only [(· ∘ ·), eval₂Hom_X', coe_eval₂Hom]
+    simp only [(· ∘ ·), eval₂Hom_X']
     refine' eval₂Hom_congr _ rfl rfl
     ext1; simp only [comp_apply, RingHom.coe_comp, eval₂Hom_C]
 #align mv_polynomial.rename_rename MvPolynomial.rename_rename

@@ -170,8 +170,8 @@ lemma irreducible_polynomial [IsDomain R] : Irreducible W.polynomial := by
   apply (h1.symm.le.trans Cubic.degree_of_b_eq_zero').not_lt
   rcases Nat.WithBot.add_eq_three_iff.mp h0.symm with h | h | h | h
   -- porting note: replaced two `any_goals` proofs with two `iterate 2` proofs
-  iterate 2 rw [degree_add_eq_right_of_degree_lt] <;> simp only [h]
-  iterate 2 rw [degree_add_eq_left_of_degree_lt] <;> simp only [h]
+  iterate 2 rw [degree_add_eq_right_of_degree_lt] <;> simp only [h] <;> decide
+  iterate 2 rw [degree_add_eq_left_of_degree_lt] <;> simp only [h] <;> decide
 #align weierstrass_curve.irreducible_polynomial WeierstrassCurve.Affine.irreducible_polynomial
 
 -- porting note: removed `@[simp]` to avoid a `simpNF` linter error

@@ -48,7 +48,10 @@ submonoids `ℳ i` of that `M`, such that the "recomposition" is canonical. This
 works for additive groups and modules.
 
 This is a version of `DirectSum.IsInternal` which comes with a constructive inverse to the
-canonical "recomposition" rather than just a proof that the "recomposition" is bijective. -/
+canonical "recomposition" rather than just a proof that the "recomposition" is bijective.
+
+Often it is easier to construct a term of this type via `Decomposition.ofAddHom` or
+`Decomposition.ofLinearMap`. -/
 class Decomposition where
   decompose' : M → ⨁ i, ℳ i
   left_inv : Function.LeftInverse (DirectSum.coeAddMonoidHom ℳ) decompose'
@@ -62,6 +65,22 @@ instance : Subsingleton (Decomposition ℳ) :=
     cases' y with y yl yr
     congr
     exact Function.LeftInverse.eq_rightInverse xr yl⟩
+
+/-- A convenience method to construct a decomposition from an `AddMonoidHom`, such that the proofs
+of left and right inverse can be constructed via `ext`. -/
+abbrev Decomposition.ofAddHom (decompose : M →+ ⨁ i, ℳ i)
+    (h_left_inv : (DirectSum.coeAddMonoidHom ℳ).comp decompose = .id _)
+    (h_right_inv : decompose.comp (DirectSum.coeAddMonoidHom ℳ) = .id _) : Decomposition ℳ where
+  decompose' := decompose
+  left_inv := FunLike.congr_fun h_left_inv
+  right_inv := FunLike.congr_fun h_right_inv
+
+/-- Noncomputably conjure a decomposition instance from a `DirectSum.IsInternal` proof. -/
+noncomputable def IsInternal.chooseDecomposition (h : IsInternal ℳ) :
+    DirectSum.Decomposition ℳ where
+  decompose' := (Equiv.ofBijective _ h).symm
+  left_inv := (Equiv.ofBijective _ h).right_inv
+  right_inv := (Equiv.ofBijective _ h).left_inv
 
 variable [Decomposition ℳ]
 
@@ -229,6 +248,15 @@ section Module
 variable [DecidableEq ι] [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable (ℳ : ι → Submodule R M)
+
+/-- A convenience method to construct a decomposition from an `LinearMap`, such that the proofs
+of left and right inverse can be constructed via `ext`. -/
+abbrev Decomposition.ofLinearMap (decompose : M →ₗ[R] ⨁ i, ℳ i)
+    (h_left_inv : DirectSum.coeLinearMap ℳ ∘ₗ decompose = .id)
+    (h_right_inv : decompose ∘ₗ DirectSum.coeLinearMap ℳ = .id) : Decomposition ℳ where
+  decompose' := decompose
+  left_inv := FunLike.congr_fun h_left_inv
+  right_inv := FunLike.congr_fun h_right_inv
 
 variable [Decomposition ℳ]
 

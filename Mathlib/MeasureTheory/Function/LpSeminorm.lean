@@ -176,6 +176,7 @@ theorem snorm'_exponent_zero {f : α → F} : snorm' f 0 μ = 1 := by
 theorem snorm_exponent_zero {f : α → F} : snorm f 0 μ = 0 := by simp [snorm]
 #align measure_theory.snorm_exponent_zero MeasureTheory.snorm_exponent_zero
 
+@[simp]
 theorem memℒp_zero_iff_aestronglyMeasurable {f : α → E} : Memℒp f 0 μ ↔ AEStronglyMeasurable f μ :=
   by simp [Memℒp, snorm_exponent_zero]
 #align measure_theory.mem_ℒp_zero_iff_ae_strongly_measurable MeasureTheory.memℒp_zero_iff_aestronglyMeasurable
@@ -326,10 +327,10 @@ theorem snorm_const_lt_top_iff {p : ℝ≥0∞} {c : F} (hp_ne_zero : p ≠ 0) (
     snorm (fun _ : α => c) p μ < ∞ ↔ c = 0 ∨ μ Set.univ < ∞ := by
   have hp : 0 < p.toReal := ENNReal.toReal_pos hp_ne_zero hp_ne_top
   by_cases hμ : μ = 0
-  · simp only [hμ, Measure.coe_zero, Pi.zero_apply, or_true_iff, WithTop.zero_lt_top,
+  · simp only [hμ, Measure.coe_zero, Pi.zero_apply, or_true_iff, zero_lt_top,
       snorm_measure_zero]
   by_cases hc : c = 0
-  · simp only [hc, true_or_iff, eq_self_iff_true, WithTop.zero_lt_top, snorm_zero']
+  · simp only [hc, true_or_iff, eq_self_iff_true, zero_lt_top, snorm_zero']
   rw [snorm_const' c hp_ne_zero hp_ne_top]
   by_cases hμ_top : μ Set.univ = ∞
   · simp [hc, hμ_top, hp]
@@ -356,7 +357,7 @@ theorem memℒp_const (c : E) [IsFiniteMeasure μ] : Memℒp (fun _ : α => c) p
 theorem memℒp_top_const (c : E) : Memℒp (fun _ : α => c) ∞ μ := by
   refine' ⟨aestronglyMeasurable_const, _⟩
   by_cases h : μ = 0
-  · simp only [h, snorm_measure_zero, WithTop.zero_lt_top]
+  · simp only [h, snorm_measure_zero, zero_lt_top]
   · rw [snorm_const _ ENNReal.top_ne_zero h]
     simp only [ENNReal.top_toReal, _root_.div_zero, ENNReal.rpow_zero, mul_one, ENNReal.coe_lt_top]
 #align measure_theory.mem_ℒp_top_const MeasureTheory.memℒp_top_const
@@ -907,6 +908,20 @@ theorem ae_le_snormEssSup {f : α → F} : ∀ᵐ y ∂μ, ‖f y‖₊ ≤ snor
 theorem meas_snormEssSup_lt {f : α → F} : μ { y | snormEssSup f μ < ‖f y‖₊ } = 0 :=
   meas_essSup_lt
 #align measure_theory.meas_snorm_ess_sup_lt MeasureTheory.meas_snormEssSup_lt
+
+lemma snormEssSup_piecewise {s : Set α} (f g : α → E) [DecidablePred (· ∈ s)]
+    (hs : MeasurableSet s) :
+    snormEssSup (Set.piecewise s f g) μ
+      = max (snormEssSup f (μ.restrict s)) (snormEssSup g (μ.restrict sᶜ)) := by
+  simp only [snormEssSup, ← essSup_piecewise hs]
+  congr with x
+  by_cases hx : x ∈ s <;> simp [hx]
+
+lemma snorm_top_piecewise {s : Set α} (f g : α → E) [DecidablePred (· ∈ s)]
+    (hs : MeasurableSet s) :
+    snorm (Set.piecewise s f g) ∞ μ
+      = max (snorm f ∞ (μ.restrict s)) (snorm g ∞ (μ.restrict sᶜ)) :=
+  snormEssSup_piecewise f g hs
 
 section MapMeasure
 

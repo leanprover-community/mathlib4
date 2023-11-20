@@ -39,7 +39,7 @@ torsion submodules, where `I = ∏ i, p i ^ e i` is its unique decomposition in 
 theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal {I : Ideal R} (hI : I ≠ ⊥)
     (hM : Module.IsTorsionBySet R M I) :
     DirectSum.IsInternal fun p : (factors I).toFinset =>
-      torsionBySet R M ((p : Ideal R) ^ (factors I).count ↑p) := by
+      torsionBySet R M (p ^ (factors I).count ↑p : Ideal R) := by
   let P := factors I
   have prime_of_mem := fun p (hp : p ∈ P.toFinset) =>
     prime_of_factor p (Multiset.mem_toFinset.mp hp)
@@ -66,7 +66,7 @@ theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal {I : Ideal R} (hI 
 `e i` are their multiplicities. -/
 theorem isInternal_prime_power_torsion [Module.Finite R M] (hM : Module.IsTorsion R M) :
     DirectSum.IsInternal fun p : (factors (⊤ : Submodule R M).annihilator).toFinset =>
-      torsionBySet R M ((p : Ideal R) ^ (factors (⊤ : Submodule R M).annihilator).count ↑p) := by
+      torsionBySet R M (p ^ (factors (⊤ : Submodule R M).annihilator).count ↑p : Ideal R) := by
   have hM' := Module.isTorsionBySet_annihilator_top R M
   have hI := Submodule.annihilator_top_inter_nonZeroDivisors hM
   refine' isInternal_prime_power_torsion_of_is_torsion_by_ideal _ hM'
@@ -78,7 +78,7 @@ theorem isInternal_prime_power_torsion [Module.Finite R M] (hM : Module.IsTorsio
 `p i ^ e i`-torsion submodules for some prime ideals `p i` and numbers `e i`.-/
 theorem exists_isInternal_prime_power_torsion [Module.Finite R M] (hM : Module.IsTorsion R M) :
     ∃ (P : Finset <| Ideal R) (_ : DecidableEq P) (_ : ∀ p ∈ P, Prime p) (e : P → ℕ),
-      DirectSum.IsInternal fun p : P => torsionBySet R M ((p : Ideal R) ^ e p) :=
+      DirectSum.IsInternal fun p : P => torsionBySet R M (p ^ e p : Ideal R) :=
   ⟨_, _, fun p hp => prime_of_factor p (Multiset.mem_toFinset.mp hp), _,
     isInternal_prime_power_torsion hM⟩
 #align submodule.exists_is_internal_prime_power_torsion Submodule.exists_isInternal_prime_power_torsion

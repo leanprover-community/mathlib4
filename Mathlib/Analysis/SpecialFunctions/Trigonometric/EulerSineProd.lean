@@ -20,9 +20,6 @@ is to prove a recurrence relation for the integrals `∫ x in 0..π/2, cos 2 z x
 generalising the arguments used to prove Wallis' limit formula for `π`.
 -/
 
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open scoped Real Topology BigOperators
 
 open Real Set Filter intervalIntegral MeasureTheory.MeasureSpace
@@ -336,8 +333,8 @@ theorem _root_.Real.tendsto_euler_sin_prod (x : ℝ) :
   · ext1 n
     rw [Function.comp_apply, ← Complex.ofReal_mul, Complex.ofReal_mul_re]
     suffices
-      (∏ j : ℕ in Finset.range n, ((1 : ℂ) - (x : ℂ) ^ 2 / ((j : ℂ) + 1) ^ 2)) =
-        (∏ j : ℕ in Finset.range n, ((1 : ℝ) - x ^ 2 / ((j : ℝ) + 1) ^ 2) : ℝ) by
+      (∏ j : ℕ in Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℂ) =
+        (∏ j : ℕ in Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℝ) by
       rw [this, Complex.ofReal_re]
     rw [Complex.ofReal_prod]
     refine' Finset.prod_congr (by rfl) fun n _ => _
