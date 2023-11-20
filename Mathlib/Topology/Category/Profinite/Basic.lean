@@ -188,7 +188,7 @@ def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
     { toTop := TopCat.of (ConnectedComponents X)
       is_compact := Quotient.compactSpace
       is_hausdorff := ConnectedComponents.t2 }
-  IsTotallyDisconnected := ConnectedComponents.totallyDisconnectedSpace
+  isTotallyDisconnected := ConnectedComponents.totallyDisconnectedSpace
 #align CompHaus.to_Profinite_obj CompHaus.toProfiniteObj
 
 /-- (Implementation) The bijection of homsets to establish the reflective adjunction of Profinite
@@ -251,7 +251,7 @@ namespace Profinite
 def limitCone {J : Type u} [SmallCategory J] (F : J ⥤ Profinite.{u}) : Limits.Cone F where
   pt :=
     { toCompHaus := (CompHaus.limitCone.{u, u} (F ⋙ profiniteToCompHaus)).pt
-      IsTotallyDisconnected := by
+      isTotallyDisconnected := by
         change TotallyDisconnectedSpace ({ u : ∀ j : J, F.obj j | _ } : Type _)
         exact Subtype.totallyDisconnectedSpace }
   π :=
