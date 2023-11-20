@@ -38,8 +38,8 @@ lemma lintegral_Iic_eq_lintegral_Iio_add_Icc {y z : ℝ} (f : ℝ → ℝ≥0∞
   rintro x ⟨h1 : x < _, h2, _⟩
   linarith
 
-lemma lintegral_split (f : ℝ → ℝ≥0∞) (c : ℝ) :
-    ∫⁻ x, f x = (∫⁻ x in {x | x ≥ c}, f x) + ∫⁻ x in {x | x < c}, f x := by
+lemma lintegral_eq_lintegral_Ici_add_Iio (f : ℝ → ℝ≥0∞) (c : ℝ) :
+    ∫⁻ x, f x = (∫⁻ x in Ici c, f x) + ∫⁻ x in Iio c, f x := by
   have union : univ = {x: ℝ | x ≥ c} ∪ {x : ℝ | x < c} := by
     ext x; simp [le_or_lt]
   have : IsOpen {x : ℝ | x < c} := by exact isOpen_gt' c
@@ -117,7 +117,7 @@ lemma exponentialPdf_eval_pos {r : ℝ} : ∀ᵐ x : ℝ ∂ volume , x < 0 →
   simp only [exponentialPdf_eq]
   exact ae_of_all _ (fun x hx ↦ by simp [not_le.mpr hx])
 
-lemma exponentialPdf_eval_neg {r : ℝ} : ∀ᵐ x : ℝ ∂ volume, (x ∈ {x | 0 ≤ x} →
+lemma exponentialPdf_eval_neg {r : ℝ} : ∀ᵐ x : ℝ ∂ volume, (x ∈ Ici 0 →
     exponentialPdf r x =
     ENNReal.ofReal (r * rexp (-(r * x)))) := by
   simp only [exponentialPdf_eq]
@@ -136,11 +136,10 @@ open Measure
 /-- The Pdf of the exponential Distribution integrates to 1-/
 @[simp]
 lemma lintegral_exponentialPdf_eq_one (r : ℝ) (hr : 0 < r) : ∫⁻ x, exponentialPdf r x = 1 := by
-  rw [lintegral_split (exponentialPdf r) 0, ← ENNReal.toReal_eq_one_iff]
-  have leftSide : ∫⁻ x in {x | x < 0}, exponentialPdf r x = 0 := by
-    rw [set_lintegral_congr_fun (isOpen_gt' 0).measurableSet
-      exponentialPdf_eval_pos, lintegral_zero]
-  have rightSide : ∫⁻ x in {x | x ≥ 0}, exponentialPdf r x
+  rw [lintegral_eq_lintegral_Ici_add_Iio (exponentialPdf r) 0, ← ENNReal.toReal_eq_one_iff]
+  have leftSide : ∫⁻ x in Iio 0, exponentialPdf r x = 0 := by
+    rw [set_lintegral_congr_fun measurableSet_Iio exponentialPdf_eval_pos, lintegral_zero]
+  have rightSide : ∫⁻ x in Ici 0, exponentialPdf r x
       = ∫⁻ x in {x | x ≥ 0}, ENNReal.ofReal (r * rexp (-(r * x))) := by
     exact set_lintegral_congr_fun isClosed_Ici.measurableSet exponentialPdf_eval_neg
   simp only [leftSide, add_zero]
