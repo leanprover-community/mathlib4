@@ -282,7 +282,7 @@ class Presieve.extensive {X : C} (R : Presieve X) :
 
 instance {X : C} (S : Presieve X) [S.extensive] : S.hasPullbacks where
   has_pullbacks := by
-    obtain ⟨_, _, _, _, hS, ⟨hc⟩⟩ := Presieve.extensive.arrows_sigma_desc_iso (R := S)
+    obtain ⟨_, _, _, _, rfl, ⟨hc⟩⟩ := Presieve.extensive.arrows_sigma_desc_iso (R := S)
     intro _ _ f hf _ hg
     rw [hS] at hf hg
     cases' hg with b
