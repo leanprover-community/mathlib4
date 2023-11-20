@@ -23,6 +23,7 @@ integral curve, vector field, local existence
 -/
 
 open scoped Manifold
+open Set
 
 section
 
@@ -37,7 +38,7 @@ variable
 
 lemma ModelWithCorners.isOpen_extend_target [I.Boundaryless] {e : LocalHomeomorph M H} :
     IsOpen (e.extend I).target := by
-  rw [LocalHomeomorph.extend_target, I.range_eq_univ, Set.inter_univ]
+  rw [LocalHomeomorph.extend_target, I.range_eq_univ, inter_univ]
   exact I.continuous_symm.isOpen_preimage _ e.open_target
 
 lemma ModelWithCorners.isOpen_target [I.Boundaryless] {x : M} :
@@ -64,7 +65,7 @@ variable
 /-- If `v : M → TM` is a vector field on `M` and `x : M`, `IsIntegralCurveAt γ v t₀ x₀` means
   `γ : ℝ → M` is a differentiable integral curve of `v` with `γ x₀ = t₀`. -/
 def IsIntegralCurveAt (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (t₀ : ℝ) (x₀ : M) :=
-  γ t₀ = x₀ ∧ ∃ ε > (0 : ℝ), ∀ (t : ℝ), t ∈ Set.Ioo (t₀ - ε) (t₀ + ε) →
+  γ t₀ = x₀ ∧ ∃ ε > (0 : ℝ), ∀ (t : ℝ), t ∈ Ioo (t₀ - ε) (t₀ + ε) →
     HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t)))
 
 /-
@@ -88,7 +89,7 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
   /- express the derivative of the section `v` in the local charts -/
   rw [contMDiffAt_iff] at hv
   obtain ⟨_, hv⟩ := hv
-  have hI : Set.range I ∈ nhds (extChartAt I x₀ x₀) := by
+  have hI : range I ∈ nhds (extChartAt I x₀ x₀) := by
     rw [mem_nhds_iff]
     refine ⟨interior (extChartAt I x₀).target,
       subset_trans interior_subset (extChartAt_target_subset_range ..),
@@ -105,7 +106,7 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
     hcont _ (IsOpen.mem_nhds isOpen_interior hx)
   rw [Metric.mem_nhds_iff] at hnhds
   obtain ⟨ε2, hε2, hf3⟩ := hnhds
-  simp_rw [Set.subset_def, Set.mem_preimage] at hf3
+  simp_rw [subset_def, mem_preimage] at hf3
   /- prove that `γ := (extChartAt I x₀).symm ∘ f` is a desired integral curve -/
   refine' ⟨(extChartAt I x₀).symm ∘ f, _, min ε1 ε2, lt_min hε1 hε2, _⟩
   · apply Eq.symm
@@ -113,20 +114,20 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
   intros t ht
   /- collect useful terms in convenient forms -/
   rw [←Real.ball_eq_Ioo] at ht
-  have ht1 := Set.mem_of_mem_of_subset ht (Metric.ball_subset_ball (min_le_left ..))
-  have ht2 := Set.mem_of_mem_of_subset ht (Metric.ball_subset_ball (min_le_right ..))
+  have ht1 := mem_of_mem_of_subset ht (Metric.ball_subset_ball (min_le_left ..))
+  have ht2 := mem_of_mem_of_subset ht (Metric.ball_subset_ball (min_le_right ..))
   have h : HasDerivAt f
     ((fderivWithin ℝ ((extChartAt I x₀) ∘ (extChartAt I ((extChartAt I x₀).symm (f t))).symm)
-        (Set.range I) (extChartAt I ((extChartAt I x₀).symm (f t)) ((extChartAt I x₀).symm (f t))))
+        (range I) (extChartAt I ((extChartAt I x₀).symm (f t)) ((extChartAt I x₀).symm (f t))))
       (v ((extChartAt I x₀).symm (f t))))
     t := hf2 t ht1
-  have hf3' := Set.mem_of_mem_of_subset (hf3 t ht2) interior_subset
+  have hf3' := mem_of_mem_of_subset (hf3 t ht2) interior_subset
   /- express the derivative of the integral curve in the local chart -/
   rw [HasMFDerivAt]
   use ContinuousAt.comp
     (continuousAt_extChartAt_symm'' _ _ hf3') ((hf2 t ht1).continuousAt)
   apply HasDerivWithinAt.hasFDerivWithinAt
-  rw [modelWithCornersSelf_coe, Set.range_id, hasDerivWithinAt_univ, ext_chart_model_space_apply,
+  rw [modelWithCornersSelf_coe, range_id, hasDerivWithinAt_univ, ext_chart_model_space_apply,
     writtenInExtChartAt, Function.comp_apply, Function.comp.assoc, extChartAt_model_space_eq_id,
     LocalEquiv.refl_symm, LocalEquiv.refl_coe, Function.comp.right_id, ←Function.comp.assoc]
   /- `h` gives the derivative of `f` at `t` as `↑D (v (γ t))`, where `D` is the change of
@@ -142,11 +143,11 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
     · rw [tangentBundleCore_baseSet, coe_achart, ←extChartAt_source I, ←LocalEquiv.symm_target]
       exact mem_extChartAt_source ..
     · rw [tangentBundleCore_baseSet, tangentBundleCore_baseSet, coe_achart, coe_achart,
-        ←extChartAt_source I, ←extChartAt_source I, Set.inter_comm, ←Set.inter_assoc, Set.inter_self]
+        ←extChartAt_source I, ←extChartAt_source I, inter_comm, ←inter_assoc, inter_self]
       constructor
       · exact mem_extChartAt_source ..
-      · rw [←Set.mem_preimage]
-        apply Set.mem_of_mem_of_subset _ (LocalEquiv.source_subset_preimage_target _)
+      · rw [←mem_preimage]
+        apply mem_of_mem_of_subset _ (LocalEquiv.source_subset_preimage_target _)
         rw [LocalEquiv.symm_source]
         exact hf3'
   rw [hvsub]
