@@ -48,26 +48,27 @@ open MonoidalPredicate
 
 variable [MonoidalPredicate P]
 
+@[simps]
+instance : MonoidalCategoryStruct (FullSubcategory P) where
+  tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
+  whiskerLeft X _ _ f := X.1 ◁ f
+  whiskerRight {X₁ X₂} (f : X₁.1 ⟶ X₂.1) Y := (f ▷ Y.1 :)
+  tensorHom f g := f ⊗ g
+  tensorUnit := ⟨𝟙_ C, prop_id⟩
+  associator X Y Z :=
+    ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv, hom_inv_id (α_ X.1 Y.1 Z.1),
+      inv_hom_id (α_ X.1 Y.1 Z.1)⟩
+  leftUnitor X := ⟨(λ_ X.1).hom, (λ_ X.1).inv, hom_inv_id (λ_ X.1), inv_hom_id (λ_ X.1)⟩
+  rightUnitor X := ⟨(ρ_ X.1).hom, (ρ_ X.1).inv, hom_inv_id (ρ_ X.1), inv_hom_id (ρ_ X.1)⟩
+
 /--
 When `P` is a monoidal predicate, the full subcategory for `P` inherits the monoidal structure of
   `C`.
 -/
 instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
   Monoidal.induced (fullSubcategoryInclusion P)
-    { tensorObj := fun X Y => ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
-      μIsoSymm := fun X Y => eqToIso rfl
-      whiskerLeft := fun X _ _ f ↦ X.1 ◁ f
-      whiskerRight := @fun X₁ X₂ (f : X₁.1 ⟶ X₂.1) Y ↦ (f ▷ Y.1 :)
-      tensorHom := fun f g => f ⊗ g
-      tensorUnit' := ⟨𝟙_ C, prop_id⟩
-      εIsoSymm := eqToIso rfl
-      associator := fun X Y Z =>
-        ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv, hom_inv_id (α_ X.1 Y.1 Z.1),
-          inv_hom_id (α_ X.1 Y.1 Z.1)⟩
-      leftUnitor := fun X =>
-        ⟨(λ_ X.1).hom, (λ_ X.1).inv, hom_inv_id (λ_ X.1), inv_hom_id (λ_ X.1)⟩
-      rightUnitor := fun X =>
-        ⟨(ρ_ X.1).hom, (ρ_ X.1).inv, hom_inv_id (ρ_ X.1), inv_hom_id (ρ_ X.1)⟩ }
+    { μIso := fun X Y => eqToIso rfl
+      εIso := eqToIso rfl }
 #align category_theory.monoidal_category.full_monoidal_subcategory CategoryTheory.MonoidalCategory.fullMonoidalSubcategory
 
 /-- The forgetful monoidal functor from a full monoidal subcategory into the original category
@@ -116,7 +117,7 @@ end
 variable {P} {P' : C → Prop} [MonoidalPredicate P']
 
 -- needed for `aesop_cat`
-attribute [simp] FullSubcategory.comp_def FullSubcategory.id_def in
+attribute [local simp] FullSubcategory.comp_def FullSubcategory.id_def in
 /-- An implication of predicates `P → P'` induces a monoidal functor between full monoidal
 subcategories. -/
 @[simps]
@@ -227,8 +228,8 @@ instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) wher
           counit :=
           { app := fun Y => (ihom.ev X.1).app Y.1
             naturality := fun Y Z f => ihom.ev_naturality X.1 f }
-          left_triangle := by ext Y; simp
-          right_triangle := by ext Y; simp } } }
+          left_triangle := by ext Y; simp [FullSubcategory.comp_def, FullSubcategory.id_def]
+          right_triangle := by ext Y; simp [FullSubcategory.comp_def, FullSubcategory.id_def] } } }
 #align category_theory.monoidal_category.full_monoidal_closed_subcategory CategoryTheory.MonoidalCategory.fullMonoidalClosedSubcategory
 
 @[simp]

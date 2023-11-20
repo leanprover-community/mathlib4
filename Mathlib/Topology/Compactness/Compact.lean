@@ -144,6 +144,29 @@ theorem isCompact_iff_ultrafilter_le_nhds :
 alias ⟨IsCompact.ultrafilter_le_nhds, _⟩ := isCompact_iff_ultrafilter_le_nhds
 #align is_compact.ultrafilter_le_nhds IsCompact.ultrafilter_le_nhds
 
+theorem isCompact_iff_ultrafilter_le_nhds' :
+    IsCompact s ↔ ∀ f : Ultrafilter α, s ∈ f → ∃ a ∈ s, ↑f ≤ 𝓝 a := by
+  simp only [isCompact_iff_ultrafilter_le_nhds, le_principal_iff, Ultrafilter.mem_coe]
+
+alias ⟨IsCompact.ultrafilter_le_nhds', _⟩ := isCompact_iff_ultrafilter_le_nhds'
+
+/-- If a compact set belongs to a filter and this filter has a unique cluster point `y` in this set,
+then the filter is less than or equal to `𝓝 y`. -/
+lemma IsCompact.le_nhds_of_unique_clusterPt (hs : IsCompact s) {l : Filter α} {y : α}
+    (hmem : s ∈ l) (h : ∀ x ∈ s, ClusterPt x l → x = y) : l ≤ 𝓝 y := by
+  refine le_iff_ultrafilter.2 fun f hf ↦ ?_
+  rcases hs.ultrafilter_le_nhds' f (hf hmem) with ⟨x, hxs, hx⟩
+  convert ← hx
+  exact h x hxs (.mono (.of_le_nhds hx) hf)
+
+/-- If values of `f : β → α` belong to a compact set `s` eventually along a filter `l`
+and `y` is a unique `MapClusterPt` for `f` along `l` in `s`,
+then `f` tends to `𝓝 y` along `l`. -/
+lemma IsCompact.tendsto_nhds_of_unique_mapClusterPt {l : Filter β} {y : α} {f : β → α}
+    (hs : IsCompact s) (hmem : ∀ᶠ x in l, f x ∈ s) (h : ∀ x ∈ s, MapClusterPt x l f → x = y) :
+    Tendsto f l (𝓝 y) :=
+  hs.le_nhds_of_unique_clusterPt (mem_map.2 hmem) h
+
 /-- For every open directed cover of a compact set, there exists a single element of the
 cover which itself includes the set. -/
 theorem IsCompact.elim_directed_cover {ι : Type v} [hι : Nonempty ι] (hs : IsCompact s)
@@ -163,7 +186,8 @@ theorem IsCompact.elim_directed_cover {ι : Type v} [hι : Nonempty ι] (hs : Is
 theorem IsCompact.elim_finite_subcover {ι : Type v} (hs : IsCompact s) (U : ι → Set α)
     (hUo : ∀ i, IsOpen (U i)) (hsU : s ⊆ ⋃ i, U i) : ∃ t : Finset ι, s ⊆ ⋃ i ∈ t, U i :=
   hs.elim_directed_cover _ (fun _ => isOpen_biUnion fun i _ => hUo i)
-    (iUnion_eq_iUnion_finset U ▸ hsU) (directed_of_sup fun _ _ h => biUnion_subset_biUnion_left h)
+    (iUnion_eq_iUnion_finset U ▸ hsU)
+    (directed_of_isDirected_le fun _ _ h => biUnion_subset_biUnion_left h)
 #align is_compact.elim_finite_subcover IsCompact.elim_finite_subcover
 
 theorem IsCompact.elim_nhds_subcover' (hs : IsCompact s) (U : ∀ x ∈ s, Set α)
@@ -227,7 +251,8 @@ theorem IsCompact.elim_finite_subfamily_closed {s : Set α} {ι : Type v} (hs : 
     (Z : ι → Set α) (hZc : ∀ i, IsClosed (Z i)) (hsZ : (s ∩ ⋂ i, Z i) = ∅) :
     ∃ t : Finset ι, (s ∩ ⋂ i ∈ t, Z i) = ∅ :=
   hs.elim_directed_family_closed _ (fun t ↦ isClosed_biInter fun _ _ ↦ hZc _)
-    (by rwa [← iInter_eq_iInter_finset]) (directed_of_sup fun _ _ h ↦ biInter_subset_biInter_left h)
+    (by rwa [← iInter_eq_iInter_finset])
+    (directed_of_isDirected_le fun _ _ h ↦ biInter_subset_biInter_left h)
 #align is_compact.elim_finite_subfamily_closed IsCompact.elim_finite_subfamily_closed
 
 /-- If `s` is a compact set in a topological space `α` and `f : ι → Set α` is a locally finite
@@ -247,8 +272,8 @@ theorem LocallyFinite.finite_nonempty_inter_compact {ι : Type*} {f : ι → Set
 theorem IsCompact.inter_iInter_nonempty {s : Set α} {ι : Type v} (hs : IsCompact s) (Z : ι → Set α)
     (hZc : ∀ i, IsClosed (Z i)) (hsZ : ∀ t : Finset ι, (s ∩ ⋂ i ∈ t, Z i).Nonempty) :
     (s ∩ ⋂ i, Z i).Nonempty := by
-  simp only [nonempty_iff_ne_empty] at hsZ ⊢
-  apply mt (hs.elim_finite_subfamily_closed Z hZc); push_neg; exact hsZ
+  contrapose! hsZ
+  exact hs.elim_finite_subfamily_closed Z hZc hsZ
 #align is_compact.inter_Inter_nonempty IsCompact.inter_iInter_nonempty
 
 /-- Cantor's intersection theorem:
@@ -274,7 +299,7 @@ theorem IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed (Z : ℕ �
     (hZd : ∀ i, Z (i + 1) ⊆ Z i) (hZn : ∀ i, (Z i).Nonempty) (hZ0 : IsCompact (Z 0))
     (hZcl : ∀ i, IsClosed (Z i)) : (⋂ i, Z i).Nonempty :=
   have Zmono : Antitone Z := antitone_nat_of_succ_le hZd
-  have hZd : Directed (· ⊇ ·) Z := directed_of_sup Zmono
+  have hZd : Directed (· ⊇ ·) Z := Zmono.directed_ge
   have : ∀ i, Z i ⊆ Z 0 := fun i => Zmono <| zero_le i
   have hZc : ∀ i, IsCompact (Z i) := fun i => hZ0.of_isClosed_subset (hZcl i) (this i)
   IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed Z hZd hZn hZc hZcl
@@ -399,8 +424,8 @@ theorem Set.Subsingleton.isCompact {s : Set α} (hs : s.Subsingleton) : IsCompac
 -- porting note: golfed a proof instead of fixing it
 theorem Set.Finite.isCompact_biUnion {s : Set ι} {f : ι → Set α} (hs : s.Finite)
     (hf : ∀ i ∈ s, IsCompact (f i)) : IsCompact (⋃ i ∈ s, f i) :=
-  isCompact_iff_ultrafilter_le_nhds.2 <| fun l hl => by
-    rw [le_principal_iff, Ultrafilter.mem_coe, Ultrafilter.finite_biUnion_mem_iff hs] at hl
+  isCompact_iff_ultrafilter_le_nhds'.2 <| fun l hl => by
+    rw [Ultrafilter.finite_biUnion_mem_iff hs] at hl
     rcases hl with ⟨i, his, hi⟩
     rcases (hf i his).ultrafilter_le_nhds _ (le_principal_iff.2 hi) with ⟨x, hxi, hlx⟩
     exact ⟨x, mem_iUnion₂.2 ⟨i, his, hxi⟩, hlx⟩
@@ -688,6 +713,12 @@ theorem cluster_point_of_compact [CompactSpace α] (f : Filter α) [NeBot f] : �
   by simpa using isCompact_univ (show f ≤ 𝓟 univ by simp)
 #align cluster_point_of_compact cluster_point_of_compact
 
+nonrec theorem Ultrafilter.le_nhds_lim [CompactSpace α] (F : Ultrafilter α) : ↑F ≤ 𝓝 F.lim := by
+  rcases isCompact_univ.ultrafilter_le_nhds F (by simp) with ⟨x, -, h⟩
+  exact le_nhds_lim ⟨x, h⟩
+set_option linter.uppercaseLean3 false in
+#align ultrafilter.le_nhds_Lim Ultrafilter.le_nhds_lim
+
 theorem CompactSpace.elim_nhds_subcover [CompactSpace α] (U : α → Set α) (hU : ∀ x, U x ∈ 𝓝 x) :
     ∃ t : Finset α, ⋃ x ∈ t, U x = ⊤ := by
   obtain ⟨t, -, s⟩ := IsCompact.elim_nhds_subcover isCompact_univ U fun x _ => hU x
@@ -705,6 +736,20 @@ theorem compactSpace_of_finite_subfamily_closed
 theorem IsClosed.isCompact [CompactSpace α] {s : Set α} (h : IsClosed s) : IsCompact s :=
   isCompact_univ.of_isClosed_subset h (subset_univ _)
 #align is_closed.is_compact IsClosed.isCompact
+
+/-- If a filter has a unique cluster point `y` in a compact topological space,
+then the filter is less than or equal to `𝓝 y`. -/
+lemma le_nhds_of_unique_clusterPt [CompactSpace α] {l : Filter α} {y : α}
+    (h : ∀ x, ClusterPt x l → x = y) : l ≤ 𝓝 y :=
+  isCompact_univ.le_nhds_of_unique_clusterPt univ_mem fun x _ ↦ h x
+
+/-- If `y` is a unique `MapClusterPt` for `f` along `l`
+and the codomain of `f` is a compact space,
+then `f` tends to `𝓝 y` along `l`. -/
+lemma tendsto_nhds_of_unique_mapClusterPt [CompactSpace α] {l : Filter β} {y : α} {f : β → α}
+    (h : ∀ x, MapClusterPt x l f → x = y) :
+    Tendsto f l (𝓝 y) :=
+  le_nhds_of_unique_clusterPt h
 
 /-- `α` is a noncompact topological space if it is not a compact space. -/
 class NoncompactSpace (α : Type*) [TopologicalSpace α] : Prop where
@@ -831,6 +876,11 @@ theorem isClosedMap_snd_of_compactSpace {X : Type*} [TopologicalSpace X] [Compac
   exact hs ⟨hU trivial, hzV⟩ hzs
 #align is_closed_proj_of_is_compact isClosedMap_snd_of_compactSpace
 
+/-- If `Y` is a compact topological space, then `Prod.fst : X × Y → X` is a closed map. -/
+theorem isClosedMap_fst_of_compactSpace {X Y : Type*} [TopologicalSpace X]
+    [TopologicalSpace Y] [CompactSpace Y] : IsClosedMap (Prod.fst : X × Y → X) :=
+  isClosedMap_snd_of_compactSpace.comp isClosedMap_swap
+
 theorem exists_subset_nhds_of_compactSpace [CompactSpace α] {ι : Type*} [Nonempty ι]
     {V : ι → Set α} (hV : Directed (· ⊇ ·) V) (hV_closed : ∀ i, IsClosed (V i)) {U : Set α}
     (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U :=
@@ -910,13 +960,12 @@ protected theorem ClosedEmbedding.compactSpace [h : CompactSpace β] {f : α →
 
 theorem IsCompact.prod {s : Set α} {t : Set β} (hs : IsCompact s) (ht : IsCompact t) :
     IsCompact (s ×ˢ t) := by
-  rw [isCompact_iff_ultrafilter_le_nhds] at hs ht ⊢
+  rw [isCompact_iff_ultrafilter_le_nhds'] at hs ht ⊢
   intro f hfs
-  rw [le_principal_iff] at hfs
   obtain ⟨a : α, sa : a ∈ s, ha : map Prod.fst f.1 ≤ 𝓝 a⟩ :=
-    hs (f.map Prod.fst) (le_principal_iff.2 <| mem_map.2 <| mem_of_superset hfs fun x => And.left)
+    hs (f.map Prod.fst) (mem_map.2 <| mem_of_superset hfs fun x => And.left)
   obtain ⟨b : β, tb : b ∈ t, hb : map Prod.snd f.1 ≤ 𝓝 b⟩ :=
-    ht (f.map Prod.snd) (le_principal_iff.2 <| mem_map.2 <| mem_of_superset hfs fun x => And.right)
+    ht (f.map Prod.snd) (mem_map.2 <| mem_of_superset hfs fun x => And.right)
   rw [map_le_iff_le_comap] at ha hb
   refine' ⟨⟨a, b⟩, ⟨sa, tb⟩, _⟩
   rw [nhds_prod_eq]; exact le_inf ha hb
@@ -947,26 +996,11 @@ instance [Finite ι] [∀ i, TopologicalSpace (π i)] [∀ i, CompactSpace (π i
 their product. -/
 theorem Filter.coprod_cocompact :
     (Filter.cocompact α).coprod (Filter.cocompact β) = Filter.cocompact (α × β) := by
-  ext S
-  simp only [mem_coprod_iff, exists_prop, mem_comap, Filter.mem_cocompact]
-  constructor
-  · rintro ⟨⟨A, ⟨t, ht, hAt⟩, hAS⟩, B, ⟨t', ht', hBt'⟩, hBS⟩
-    refine' ⟨t ×ˢ t', ht.prod ht', _⟩
-    refine' Subset.trans _ (union_subset hAS hBS)
-    rw [compl_subset_comm] at hAt hBt' ⊢
-    refine' Subset.trans (fun x => _) (Set.prod_mono hAt hBt')
-    simp only [compl_union, mem_inter_iff, mem_prod, mem_preimage, mem_compl_iff]
-    tauto
-  · rintro ⟨t, ht, htS⟩
-    refine' ⟨⟨(Prod.fst '' t)ᶜ, _, _⟩, ⟨(Prod.snd '' t)ᶜ, _, _⟩⟩
-    · exact ⟨Prod.fst '' t, ht.image continuous_fst, Subset.rfl⟩
-    · rw [preimage_compl]
-      rw [compl_subset_comm] at htS ⊢
-      exact htS.trans (subset_preimage_image Prod.fst _)
-    · exact ⟨Prod.snd '' t, ht.image continuous_snd, Subset.rfl⟩
-    · rw [preimage_compl]
-      rw [compl_subset_comm] at htS ⊢
-      exact htS.trans (subset_preimage_image Prod.snd _)
+  apply le_antisymm
+  · exact sup_le (comap_cocompact_le continuous_fst) (comap_cocompact_le continuous_snd)
+  · refine (hasBasis_cocompact.coprod hasBasis_cocompact).ge_iff.2 fun K hK ↦ ?_
+    rw [← univ_prod, ← prod_univ, ← compl_prod_eq_union]
+    exact (hK.1.prod hK.2).compl_mem_cocompact
 #align filter.coprod_cocompact Filter.coprod_cocompact
 
 theorem Prod.noncompactSpace_iff :

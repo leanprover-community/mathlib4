@@ -413,8 +413,9 @@ protected theorem Antiperiodic.neg [AddGroup α] [InvolutiveNeg β] (h : Antiper
     Antiperiodic f (-c) := by simpa only [sub_eq_add_neg, Antiperiodic] using h.sub_eq
 #align function.antiperiodic.neg Function.Antiperiodic.neg
 
-theorem Antiperiodic.neg_eq [AddGroup α] [InvolutiveNeg β] (h : Antiperiodic f c) : f (-c) = -f 0 :=
-  by simpa only [zero_add] using h.neg 0
+theorem Antiperiodic.neg_eq [AddGroup α] [InvolutiveNeg β] (h : Antiperiodic f c) :
+    f (-c) = -f 0 := by
+  simpa only [zero_add] using h.neg 0
 #align function.antiperiodic.neg_eq Function.Antiperiodic.neg_eq
 
 theorem Antiperiodic.nat_mul_eq_of_eq_zero [Semiring α] [NegZeroClass β] (h : Antiperiodic f c)
@@ -541,6 +542,5 @@ theorem Antiperiodic.div [Add α] [DivisionMonoid β] [HasDistribNeg β] (hf : A
 end Function
 
 theorem Int.fract_periodic (α) [LinearOrderedRing α] [FloorRing α] :
-    Function.Periodic Int.fract (1 : α) := fun a => by
-  exact_mod_cast Int.fract_add_int a 1
+    Function.Periodic Int.fract (1 : α) := fun a => mod_cast Int.fract_add_int a 1
 #align int.fract_periodic Int.fract_periodic

@@ -525,4 +525,22 @@ noncomputable instance : LinearOrderedField (P c d) := test_sorry
 example (p : P PUnit.{u+1} PUnit.{v+1}) (h : 0 < p) : 0 < 2 * p := by
   linarith
 
+example (n : Nat) : n + 1 ≥ (1 / 2 : ℚ) := by linarith
+
+example {α : Type} [LinearOrderedCommRing α] (n : Nat) : (5 : α) - (n : α) ≤ (6 : α) := by
+  linarith
+
+example {α : Type} [LinearOrderedCommRing α] (n : Nat) : -(n : α) ≤ 0 := by
+  linarith
+
+example {α : Type} [LinearOrderedCommRing α]
+    (n : Nat) (a : α) (h : a ≥ 2) : a * (n : α) + 5 ≥ 4 := by nlinarith
 example (x : ℚ) (h : x * (2⁻¹ + 2 / 3) = 1) : x = 6 / 7 := by linarith
+
+example {α} [LinearOrderedCommSemiring α] (x : α) (_ : 0 ≤ x) : 0 ≤ 1 := by linarith
+
+example (k : ℤ) (h : k < 1) (h₁ : -1 < k) : k = 0 := by
+  -- Make h₁'s type be a metavariable. At one point this caused the strengthenStrictInt
+  -- linarith preprocessor to fail.
+  change _ at h₁
+  linarith

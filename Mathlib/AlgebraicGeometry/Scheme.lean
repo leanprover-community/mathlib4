@@ -190,6 +190,9 @@ theorem inv_val_c_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : Opens X.carrie
     eqToHom_op]
 #align algebraic_geometry.Scheme.inv_val_c_app AlgebraicGeometry.Scheme.inv_val_c_app
 
+theorem inv_val_c_app_top {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
+    (inv f).val.c.app (op ⊤) = inv (f.val.c.app (op ⊤)) := by simp
+
 /-- Given a morphism of schemes `f : X ⟶ Y`, and open sets `U ⊆ Y`, `V ⊆ f ⁻¹' U`,
 this is the induced map `Γ(Y, U) ⟶ Γ(X, V)`. -/
 abbrev Hom.appLe {X Y : Scheme} (f : X ⟶ Y) {V : Opens X.carrier} {U : Opens Y.carrier}
@@ -289,6 +292,7 @@ section BasicOpen
 variable (X : Scheme) {V U : Opens X.carrier} (f g : X.presheaf.obj (op U))
 
 /-- The subset of the underlying space where the given section does not vanish. -/
+@[pp_dot]
 def basicOpen : Opens X.carrier :=
   X.toLocallyRingedSpace.toRingedSpace.basicOpen f
 #align algebraic_geometry.Scheme.basic_open AlgebraicGeometry.Scheme.basicOpen
@@ -298,7 +302,6 @@ theorem mem_basicOpen (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.ge
   RingedSpace.mem_basicOpen _ _ _
 #align algebraic_geometry.Scheme.mem_basic_open AlgebraicGeometry.Scheme.mem_basicOpen
 
-@[aesop norm simp (rule_sets [Restrict])]
 theorem mem_basicOpen_top' {U : Opens X} (f : X.presheaf.obj (op U)) (x : X.carrier) :
     x ∈ X.basicOpen f ↔ ∃ (m : x ∈ U), IsUnit (X.presheaf.germ (⟨x, m⟩ : U) f) := by
   fconstructor
@@ -330,11 +333,16 @@ theorem basicOpen_le : X.basicOpen f ≤ U :=
   RingedSpace.basicOpen_le _ _
 #align algebraic_geometry.Scheme.basic_open_le AlgebraicGeometry.Scheme.basicOpen_le
 
+@[sheaf_restrict]
+lemma basicOpen_restrict (i : V ⟶ U) (f : X.presheaf.obj (op U)) :
+    X.basicOpen (f |_ₕ i) ≤ X.basicOpen f :=
+  (Scheme.basicOpen_res _ _ _).trans_le inf_le_right
+
 @[simp]
 theorem preimage_basicOpen {X Y : Scheme} (f : X ⟶ Y) {U : Opens Y.carrier}
     (r : Y.presheaf.obj <| op U) :
     (Opens.map f.1.base).obj (Y.basicOpen r) =
-      @Scheme.basicOpen X ((Opens.map f.1.base).obj U) (f.1.c.app _ r) :=
+      @Scheme.basicOpen X ((Opens.map f.1.base).obj U) (f.1.c.app (op U) r) :=
   LocallyRingedSpace.preimage_basicOpen f r
 #align algebraic_geometry.Scheme.preimage_basic_open AlgebraicGeometry.Scheme.preimage_basicOpen
 
@@ -351,6 +359,10 @@ theorem basicOpen_mul : X.basicOpen (f * g) = X.basicOpen f ⊓ X.basicOpen g :=
 theorem basicOpen_of_isUnit {f : X.presheaf.obj (op U)} (hf : IsUnit f) : X.basicOpen f = U :=
   RingedSpace.basicOpen_of_isUnit _ hf
 #align algebraic_geometry.Scheme.basic_open_of_is_unit AlgebraicGeometry.Scheme.basicOpen_of_isUnit
+
+instance algebra_section_section_basicOpen {X : Scheme} {U : Opens X} (f : X.presheaf.obj (op U)) :
+    Algebra (X.presheaf.obj (op U)) (X.presheaf.obj (op <| X.basicOpen f)) :=
+  (X.presheaf.map (homOfLE <| X.basicOpen_le f : _ ⟶ U).op).toAlgebra
 
 end BasicOpen
 
@@ -378,5 +390,15 @@ theorem basicOpen_eq_of_affine' {R : CommRingCat}
   convert basicOpen_eq_of_affine ((SpecΓIdentity.app R).hom f)
   exact (Iso.hom_inv_id_apply (SpecΓIdentity.app R) f).symm
 #align algebraic_geometry.basic_open_eq_of_affine' AlgebraicGeometry.basicOpen_eq_of_affine'
+
+theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : Opens X} (h : U = V) (W) :
+    (Scheme.Spec.map (X.presheaf.map (eqToHom h).op).op).val.c.app W =
+      eqToHom (by cases h; induction W using Opposite.rec'; dsimp; simp) := by
+  have : Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op = 𝟙 _ := by
+    rw [X.presheaf.map_id, op_id, Scheme.Spec.map_id]
+  cases h
+  refine' (Scheme.congr_app this _).trans _
+  simp [eqToHom_map]
+#align algebraic_geometry.Scheme.Spec_map_presheaf_map_eqToHom AlgebraicGeometry.Scheme.Spec_map_presheaf_map_eqToHom
 
 end AlgebraicGeometry

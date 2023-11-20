@@ -70,6 +70,7 @@ structure Equiv (α : Sort*) (β : Sort _) where
   protected right_inv : RightInverse invFun toFun
 #align equiv Equiv
 
+@[inherit_doc]
 infixl:25 " ≃ " => Equiv
 
 /-- Turn an element of a type `F` satisfying `EquivLike F α β` into an actual
@@ -184,12 +185,6 @@ instance : Trans Equiv Equiv Equiv where
 -- the coercion from `e` to a function is now `FunLike.coe` not `e.toFun`
 @[simp, mfld_simps] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
 #align equiv.to_fun_as_coe Equiv.toFun_as_coe
-
--- porting note: `simp` should prove this using `toFun_as_coe`, but it doesn't.
--- This might be a bug in `simp` -- see https://github.com/leanprover/lean4/issues/1937
--- If this issue is fixed then the simp linter probably will start complaining, and
--- this theorem can be deleted hopefully without breaking any `simp` proofs.
-@[simp] theorem toFun_as_coe_apply (e : α ≃ β) (x : α) : e.toFun x = e x := rfl
 
 @[simp, mfld_simps] theorem invFun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
 #align equiv.inv_fun_as_coe Equiv.invFun_as_coe
@@ -489,14 +484,14 @@ def propEquivPUnit {p : Prop} (h : p) : p ≃ PUnit.{0} := @equivPUnit p <| uniq
 #align equiv.prop_equiv_punit Equiv.propEquivPUnit
 
 /-- `ULift α` is equivalent to `α`. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps (config := .asFn) apply]
 protected def ulift {α : Type v} : ULift.{u} α ≃ α :=
   ⟨ULift.down, ULift.up, ULift.up_down, ULift.down_up.{v, u}⟩
 #align equiv.ulift Equiv.ulift
 #align equiv.ulift_apply Equiv.ulift_apply
 
 /-- `PLift α` is equivalent to `α`. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps (config := .asFn) apply]
 protected def plift : PLift α ≃ α := ⟨PLift.down, PLift.up, PLift.up_down, PLift.down_up⟩
 #align equiv.plift Equiv.plift
 #align equiv.plift_apply Equiv.plift_apply
@@ -619,20 +614,17 @@ def arrowPUnitEquivPUnit (α : Sort*) : (α → PUnit.{v}) ≃ PUnit.{w} :=
   ⟨fun _ => .unit, fun _ _ => .unit, fun _ => rfl, fun _ => rfl⟩
 #align equiv.arrow_punit_equiv_punit Equiv.arrowPUnitEquivPUnit
 
-/-- If `α` is `Subsingleton` and `a : α`, then the type of dependent functions `Π (i : α), β i`
-is equivalent to `β a`. -/
-@[simps] def piSubsingleton (β : α → Sort*) [Subsingleton α] (a : α) : (∀ a', β a') ≃ β a where
-  toFun := eval a
-  invFun x b := cast (congr_arg β <| Subsingleton.elim a b) x
-  left_inv _ := funext fun b => by rw [Subsingleton.elim b a]; rfl
-  right_inv _ := rfl
-#align equiv.Pi_subsingleton_apply Equiv.piSubsingleton_apply
-#align equiv.Pi_subsingleton_symm_apply Equiv.piSubsingleton_symm_apply
-#align equiv.Pi_subsingleton Equiv.piSubsingleton
+/-- The equivalence `(∀ i, β i) ≃ β ⋆` when the domain of `β` only contains `⋆` -/
+@[simps (config := .asFn)]
+def piUnique [Unique α] (β : α → Sort*) : (∀ i, β i) ≃ β default where
+  toFun f := f default
+  invFun := uniqueElim
+  left_inv f := by ext i; cases Unique.eq_default i; rfl
+  right_inv x := rfl
 
 /-- If `α` has a unique term, then the type of function `α → β` is equivalent to `β`. -/
-@[simps! (config := { fullyApplied := false }) apply]
-def funUnique (α β) [Unique.{u} α] : (α → β) ≃ β := piSubsingleton _ default
+@[simps! (config := .asFn) apply]
+def funUnique (α β) [Unique.{u} α] : (α → β) ≃ β := piUnique _
 #align equiv.fun_unique Equiv.funUnique
 #align equiv.fun_unique_apply Equiv.funUnique_apply
 

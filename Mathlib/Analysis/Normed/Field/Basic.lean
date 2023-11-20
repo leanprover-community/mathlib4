@@ -19,7 +19,7 @@ definitions.
 
 variable {α : Type*} {β : Type*} {γ : Type*} {ι : Type*}
 
-open Filter Metric
+open Filter Metric Bornology
 
 open Topology BigOperators NNReal ENNReal uniformity Pointwise
 
@@ -616,6 +616,25 @@ theorem Filter.tendsto_mul_right_cobounded {a : α} (ha : a ≠ 0) :
     tendsto_comap.atTop_mul (norm_pos_iff.2 ha) tendsto_const_nhds
 #align filter.tendsto_mul_right_cobounded Filter.tendsto_mul_right_cobounded
 
+@[simp]
+lemma Filter.inv_cobounded₀ : (cobounded α)⁻¹ = 𝓝[≠] 0 := by
+  rw [← comap_norm_atTop, ← Filter.comap_inv, ← comap_norm_nhdsWithin_Ioi_zero,
+    ← inv_atTop₀, ← Filter.comap_inv]
+  simp only [comap_comap, (· ∘ ·), norm_inv]
+
+@[simp]
+lemma Filter.inv_nhdsWithin_ne_zero : (𝓝[≠] (0 : α))⁻¹ = cobounded α := by
+  rw [← inv_cobounded₀, inv_inv]
+
+lemma Filter.tendsto_inv₀_cobounded' : Tendsto Inv.inv (cobounded α) (𝓝[≠] 0) :=
+  inv_cobounded₀.le
+
+theorem Filter.tendsto_inv₀_cobounded : Tendsto Inv.inv (cobounded α) (𝓝 0) :=
+  tendsto_inv₀_cobounded'.mono_right inf_le_left
+
+lemma Filter.tendsto_inv₀_nhdsWithin_ne_zero : Tendsto Inv.inv (𝓝[≠] 0) (cobounded α) :=
+  inv_nhdsWithin_ne_zero.le
+
 -- see Note [lower instance priority]
 instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContinuousInv₀ α := by
   refine' ⟨fun r r0 => tendsto_iff_norm_sub_tendsto_zero.2 _⟩
@@ -764,8 +783,8 @@ theorem exists_lt_norm_lt {r₁ r₂ : ℝ} (h₀ : 0 ≤ r₁) (h : r₁ < r₂
   DenselyNormedField.lt_norm_lt r₁ r₂ h₀ h
 #align normed_field.exists_lt_norm_lt NormedField.exists_lt_norm_lt
 
-theorem exists_lt_nnnorm_lt {r₁ r₂ : ℝ≥0} (h : r₁ < r₂) : ∃ x : α, r₁ < ‖x‖₊ ∧ ‖x‖₊ < r₂ := by
-  exact_mod_cast exists_lt_norm_lt α r₁.prop h
+theorem exists_lt_nnnorm_lt {r₁ r₂ : ℝ≥0} (h : r₁ < r₂) : ∃ x : α, r₁ < ‖x‖₊ ∧ ‖x‖₊ < r₂ :=
+  mod_cast exists_lt_norm_lt α r₁.prop h
 #align normed_field.exists_lt_nnnorm_lt NormedField.exists_lt_nnnorm_lt
 
 instance denselyOrdered_range_norm : DenselyOrdered (Set.range (norm : α → ℝ)) where
@@ -791,6 +810,19 @@ theorem denseRange_nnnorm : DenseRange (nnnorm : α → ℝ≥0) :=
 end Densely
 
 end NormedField
+
+/-- A normed field is nontrivially normed
+provided that the norm of some nonzero element is not one. -/
+def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
+    (h : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1) : NontriviallyNormedField 𝕜 where
+  toNormedField := h'
+  non_trivial := by
+    rcases h with ⟨x, hx, hx1⟩
+    rcases hx1.lt_or_lt with hlt | hlt
+    · use x⁻¹
+      rw [norm_inv]
+      exact one_lt_inv (norm_pos_iff.2 hx) hlt
+    · exact ⟨x, hlt⟩
 
 instance Real.normedCommRing : NormedCommRing ℝ :=
   { Real.normedAddCommGroup, Real.commRing with norm_mul := fun x y => (abs_mul x y).le }

@@ -176,20 +176,9 @@ theorem lt_self_iff_false (x : α) : x < x ↔ False :=
   ⟨lt_irrefl x, False.elim⟩
 #align lt_self_iff_false lt_self_iff_false
 
-theorem le_of_le_of_eq (hab : a ≤ b) (hbc : b = c) : a ≤ c :=
-  hab.trans hbc.le
 #align le_of_le_of_eq le_of_le_of_eq
-
-theorem le_of_eq_of_le (hab : a = b) (hbc : b ≤ c) : a ≤ c :=
-  hab.le.trans hbc
 #align le_of_eq_of_le le_of_eq_of_le
-
-theorem lt_of_lt_of_eq (hab : a < b) (hbc : b = c) : a < c :=
-  hab.trans_le hbc.le
 #align lt_of_lt_of_eq lt_of_lt_of_eq
-
-theorem lt_of_eq_of_lt (hab : a = b) (hbc : b < c) : a < c :=
-  hab.le.trans_lt hbc
 #align lt_of_eq_of_lt lt_of_eq_of_lt
 
 theorem le_of_le_of_eq' : b ≤ c → a = b → a ≤ c :=
@@ -353,18 +342,7 @@ theorem ge_of_eq [Preorder α] {a b : α} (h : a = b) : a ≥ b :=
   h.ge
 #align ge_of_eq ge_of_eq
 
--- see Note [nolint_ge]
--- Porting note: linter not found @[nolint ge_or_gt]
-@[simp]
-theorem ge_iff_le [LE α] {a b : α} : a ≥ b ↔ b ≤ a :=
-  Iff.rfl
 #align ge_iff_le ge_iff_le
-
--- see Note [nolint_ge]
--- Porting note: linter not found @[nolint ge_or_gt]
-@[simp]
-theorem gt_iff_lt [LT α] {a b : α} : a > b ↔ b < a :=
-  Iff.rfl
 #align gt_iff_lt gt_iff_lt
 
 theorem not_le_of_lt [Preorder α] {a b : α} (h : a < b) : ¬b ≤ a :=
@@ -1371,7 +1349,7 @@ namespace PUnit
 
 variable (a b : PUnit.{u + 1})
 
-instance linearOrder: LinearOrder PUnit where
+instance linearOrder : LinearOrder PUnit where
   le  := fun _ _ ↦ True
   lt  := fun _ _ ↦ False
   max := fun _ _ ↦ unit

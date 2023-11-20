@@ -34,7 +34,7 @@ namespace SignType
 
 -- Porting note: Added Fintype SignType manually
 instance : Fintype SignType :=
-   Fintype.ofMultiset (zero :: neg :: pos :: List.nil) (fun x ↦ by cases x <;> simp only)
+   Fintype.ofMultiset (zero :: neg :: pos :: List.nil) (fun x ↦ by cases x <;> decide)
 
 instance : Zero SignType :=
   ⟨zero⟩
@@ -155,7 +155,7 @@ def fin3Equiv : SignType ≃* Fin 3 where
     | ⟨2, _⟩ => by simp
     | ⟨n + 3, h⟩ => by simp at h
   map_mul' a b := by
-    cases a <;> cases b <;> simp
+    cases a <;> cases b <;> rfl
 #align sign_type.fin3_equiv SignType.fin3Equiv
 
 section CaseBashing

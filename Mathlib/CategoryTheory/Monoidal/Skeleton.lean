@@ -67,7 +67,7 @@ noncomputable instance instBraidedCategory [BraidedCategory C] : BraidedCategory
   braidedCategoryOfFullyFaithful (Monoidal.fromTransported (skeletonEquivalence C).symm)
 
 /--
-The skeleton of a braided monoidal category can be viewed as a commutative  monoid, where the
+The skeleton of a braided monoidal category can be viewed as a commutative monoid, where the
 multiplication is given by the tensor product, and satisfies the monoid axioms since it is a
 skeleton.
 -/

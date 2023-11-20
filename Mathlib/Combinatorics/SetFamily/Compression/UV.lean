@@ -143,9 +143,9 @@ theorem compress_injOn : Set.InjOn (compress u v) ↑(s.filter (compress u v · 
   intro a ha b hb hab
   rw [mem_coe, mem_filter] at ha hb
   rw [compress] at ha hab
-  split_ifs at ha hab  with has
+  split_ifs at ha hab with has
   · rw [compress] at hb hab
-    split_ifs at hb hab  with hbs
+    split_ifs at hb hab with hbs
     · exact sup_sdiff_injOn u v has hbs hab
     · exact (hb.2 hb.1).elim
   · exact (ha.2 ha.1).elim

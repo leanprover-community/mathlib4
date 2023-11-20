@@ -20,10 +20,24 @@ Main definitions:
 
 - `DirichletCharacter`: The type representing a Dirichlet character.
 - `changeLevel`: Extend the Dirichlet character χ of level `n` to level `m`, where `n` divides `m`.
+- `conductor`: The conductor of a Dirichlet character.
+- `isPrimitive`: If the level is equal to the conductor.
 
 ## TODO
 
-- properties of the conductor
+- reduction, even, odd
+- add
+  `lemma unitsMap_surjective {n m : ℕ} (h : n ∣ m) (hm : m ≠ 0) : Function.Surjective (unitsMap h)`
+  and then
+  ```
+  lemma changeLevel_injective {d : ℕ} (h : d ∣ n) (hn : n ≠ 0) :
+      Function.Injective (changeLevel (R := R) h)
+  ```
+  and
+  ```
+  lemma changeLevel_one_iff {d : ℕ} {χ : DirichletCharacter R n} {χ' : DirichletCharacter R d}
+    (hdn : d ∣ n) (hn : n ≠ 0) (h : χ = changeLevel hdn χ') : χ = 1 ↔ χ' = 1
+  ```
 
 ## Tags
 
@@ -101,6 +115,31 @@ lemma same_level : FactorsThrough χ n := ⟨dvd_refl n, χ, (changeLevel_self �
 
 end FactorsThrough
 
+lemma level_one (χ : DirichletCharacter R 1) : χ = 1 := by
+  ext
+  simp [units_eq_one]
+
+lemma level_one' (hn : n = 1) : χ = 1 := by
+  subst hn
+  exact level_one _
+
+instance : Subsingleton (DirichletCharacter R 1) := by
+  refine subsingleton_iff.mpr (fun χ χ' ↦ ?_)
+  simp [level_one]
+
+noncomputable instance : Inhabited (DirichletCharacter R n) := ⟨1⟩
+
+noncomputable instance : Unique (DirichletCharacter R 1) := Unique.mk' (DirichletCharacter R 1)
+
+lemma changeLevel_one {d : ℕ} (h : d ∣ n) :
+    changeLevel h (1 : DirichletCharacter R d) = 1 := by
+  simp [changeLevel]
+
+lemma factorsThrough_one_iff : FactorsThrough χ 1 ↔ χ = 1 := by
+  refine ⟨fun ⟨_, χ₀, hχ₀⟩ ↦ ?_,
+          fun h ↦ ⟨one_dvd n, 1, by rw [h, changeLevel_one]⟩⟩
+  rwa [level_one χ₀, changeLevel_one] at hχ₀
+
 /-- The set of natural numbers for which a Dirichlet character is periodic. -/
 def conductorSet : Set ℕ := {x : ℕ | FactorsThrough χ x}
 
@@ -113,5 +152,51 @@ lemma mem_conductorSet_dvd {x : ℕ} (hx : x ∈ conductorSet χ) : x ∣ n := h
 /-- The minimum natural number `n` for which a Dirichlet character is periodic.
 The Dirichlet character `χ` can then alternatively be reformulated on `ℤ/nℤ`. -/
 noncomputable def conductor : ℕ := sInf (conductorSet χ)
+
+lemma conductor_mem_conductorSet : conductor χ ∈ conductorSet χ :=
+  Nat.sInf_mem (Set.nonempty_of_mem (level_mem_conductorSet χ))
+
+lemma conductor_dvd_level : conductor χ ∣ n := (conductor_mem_conductorSet χ).dvd
+
+lemma factorsThrough_conductor : FactorsThrough χ (conductor χ) := conductor_mem_conductorSet χ
+
+lemma conductor_ne_zero (hn : n ≠ 0) : conductor χ ≠ 0 :=
+  fun h ↦ hn <| Nat.eq_zero_of_zero_dvd <| h ▸ conductor_dvd_level _
+
+lemma conductor_one (hn : n ≠ 0) : conductor (1 : DirichletCharacter R n) = 1 := by
+  suffices : FactorsThrough (1 : DirichletCharacter R n) 1
+  · have h : conductor (1 : DirichletCharacter R n) ≤ 1 :=
+      Nat.sInf_le <| (mem_conductorSet_iff _).mpr this
+    exact Nat.le_antisymm h (Nat.pos_of_ne_zero <| conductor_ne_zero _ hn)
+  · exact (factorsThrough_one_iff _).mpr rfl
+
+variable {χ}
+
+lemma eq_one_iff_conductor_eq_one (hn : n ≠ 0) : χ = 1 ↔ conductor χ = 1 := by
+  refine ⟨fun h ↦ h ▸ conductor_one hn, fun hχ ↦ ?_⟩
+  obtain ⟨h', χ₀, h⟩ := factorsThrough_conductor χ
+  exact (level_one' χ₀ hχ ▸ h).trans <| changeLevel_one h'
+
+lemma conductor_eq_zero_iff_level_eq_zero : conductor χ = 0 ↔ n = 0 := by
+  refine ⟨(conductor_ne_zero χ).mtr, ?_⟩
+  rintro rfl
+  exact Nat.sInf_eq_zero.mpr <| Or.inl <| level_mem_conductorSet χ
+
+variable (χ)
+
+/-- A character is primitive if its level is equal to its conductor. -/
+def isPrimitive : Prop := conductor χ = n
+
+lemma isPrimitive_def : isPrimitive χ ↔ conductor χ = n := Iff.rfl
+
+lemma isPrimitive_one_level_one : isPrimitive (1 : DirichletCharacter R 1) :=
+  Nat.dvd_one.mp (conductor_dvd_level _)
+
+lemma isPritive_one_level_zero : isPrimitive (1 : DirichletCharacter R 0) :=
+  conductor_eq_zero_iff_level_eq_zero.mpr rfl
+
+lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n := by
+  rw [(isPrimitive_def _).mp isPrimitive_one_level_one]
+  apply one_dvd _
 
 end DirichletCharacter

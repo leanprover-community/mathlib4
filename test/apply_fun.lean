@@ -258,3 +258,14 @@ example : 1 = 1 := by
   · exact test_sorry
   apply_fun f using (g f)
   rfl
+
+
+def funFamily (_i : ℕ) : Bool → Bool := id
+
+-- `apply_fun` should not silence errors in `assumption`
+/--
+error: maximum recursion depth has been reached (use `set_option maxRecDepth <num>` to increase limit)
+-/
+#guard_msgs (error) in
+example (_h₁ : Function.Injective (funFamily ((List.range 128).map (fun _ => 0)).sum)) : true = true := by
+  apply_fun funFamily 0

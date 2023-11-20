@@ -198,7 +198,7 @@ section Equivs
 
 /-- `AddMonoidAlgebra.toDirectSum` and `DirectSum.toAddMonoidAlgebra` together form an
 equiv. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def addMonoidAlgebraEquivDirectSum [DecidableEq ι] [Semiring M] [∀ m : M, Decidable (m ≠ 0)] :
     AddMonoidAlgebra M ι ≃ ⨁ _ : ι, M :=
   { finsuppEquivDFinsupp with
@@ -207,7 +207,7 @@ def addMonoidAlgebraEquivDirectSum [DecidableEq ι] [Semiring M] [∀ m : M, Dec
 #align add_monoid_algebra_equiv_direct_sum addMonoidAlgebraEquivDirectSum
 
 /-- The additive version of `AddMonoidAlgebra.addMonoidAlgebraEquivDirectSum`.  -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def addMonoidAlgebraAddEquivDirectSum [DecidableEq ι] [Semiring M] [∀ m : M, Decidable (m ≠ 0)] :
     AddMonoidAlgebra M ι ≃+ ⨁ _ : ι, M :=
   { addMonoidAlgebraEquivDirectSum with
@@ -217,7 +217,7 @@ def addMonoidAlgebraAddEquivDirectSum [DecidableEq ι] [Semiring M] [∀ m : M, 
 #align add_monoid_algebra_add_equiv_direct_sum addMonoidAlgebraAddEquivDirectSum
 
 /-- The ring version of `AddMonoidAlgebra.addMonoidAlgebraEquivDirectSum`.  -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def addMonoidAlgebraRingEquivDirectSum [DecidableEq ι] [AddMonoid ι] [Semiring M]
     [∀ m : M, Decidable (m ≠ 0)] : AddMonoidAlgebra M ι ≃+* ⨁ _ : ι, M :=
   { (addMonoidAlgebraAddEquivDirectSum : AddMonoidAlgebra M ι ≃+ ⨁ _ : ι, M) with
@@ -227,7 +227,7 @@ def addMonoidAlgebraRingEquivDirectSum [DecidableEq ι] [AddMonoid ι] [Semiring
 #align add_monoid_algebra_ring_equiv_direct_sum addMonoidAlgebraRingEquivDirectSum
 
 /-- The algebra version of `AddMonoidAlgebra.addMonoidAlgebraEquivDirectSum`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def addMonoidAlgebraAlgEquivDirectSum [DecidableEq ι] [AddMonoid ι] [CommSemiring R] [Semiring A]
     [Algebra R A] [∀ m : A, Decidable (m ≠ 0)] : AddMonoidAlgebra A ι ≃ₐ[R] ⨁ _ : ι, A :=
   { (addMonoidAlgebraRingEquivDirectSum : AddMonoidAlgebra A ι ≃+* ⨁ _ : ι, A) with
