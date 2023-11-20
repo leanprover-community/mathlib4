@@ -302,22 +302,44 @@ variable {S : C} {X : Unit → C} (f : ∀ i, X i ⟶ S)
   [H : ∀ (n : ℕ), HasWidePullback (Arrow.mk (f ())).right
     (fun (_ : Fin (n + 1)) ↦ (Arrow.mk (f ())).left) fun _ ↦ (Arrow.mk (f ())).hom]
 
-/-def cechObjectSummandIsoCechNerveObj (Δ : SimplexCategory)
+noncomputable def cechObjectSummandIsoCechNerveObj (Δ : SimplexCategory)
     (φ : SimplexCategory.toNonemptyFintypeCat.obj Δ → Unit) :
-    cechObjectSummand f φ ≅ (Arrow.cechNerve (Arrow.mk (f Unit.unit))).obj (Opposite.op Δ) := by
-  sorry
+    cechObjectSummand f φ ≅ (Arrow.cechNerve (Arrow.mk (f Unit.unit))).obj (Opposite.op Δ) :=
+  Iso.refl _
+
+lemma cechObjectSummandMap_toNonemptyFintypeCat_map {Δ₁ Δ₂ : SimplexCategory} (g : Δ₂ ⟶ Δ₁) :
+  cechObjectSummandMap f (SimplexCategory.toNonemptyFintypeCat.map g) (fun _ => Unit.unit)
+    (fun _ => Unit.unit) rfl = (Arrow.cechNerve (Arrow.mk (f Unit.unit))).map g.op := by
+  ext i ⟨⟩ ⟨⟩
+  rw [cechObjectSummandMap_π f (SimplexCategory.toNonemptyFintypeCat.map g) (fun _ => Unit.unit)
+    (fun _ => Unit.unit) rfl i Unit.unit rfl _ rfl]
+  dsimp [cechObjectSummandπ]
+  simp only [comp_id]
+  symm
+  apply @WidePullback.lift_π _ _ _ _ _ _ (H _)
 
 noncomputable def cechObjectToSimplicialObjectIsoApp (Δ : SimplexCategory) :
     (cechObject f).toSimplicialObject.obj (Opposite.op Δ) ≅
       (Arrow.cechNerve (Arrow.mk (f Unit.unit))).obj (Opposite.op Δ) where
   hom := cechObjectDesc f (fun φ => (cechObjectSummandIsoCechNerveObj f Δ φ).hom)
   inv := (cechObjectSummandIsoCechNerveObj f Δ (fun _ => Unit.unit)).inv ≫ ιCechObjectObj f _
-  hom_inv_id := sorry
-  inv_hom_id := sorry
+  hom_inv_id := cechObjectObj_ext f (fun φ => by
+    obtain rfl : φ = fun _ => Unit.unit := rfl
+    dsimp
+    simp only [ι_cechObjectDesc_assoc, Iso.hom_inv_id_assoc]
+    erw [comp_id])
 
 noncomputable def cechObjectToSimplicialObjectIso :
     (cechObject f).toSimplicialObject ≅ Arrow.cechNerve (Arrow.mk (f Unit.unit)) :=
-  NatIso.ofComponents (fun Δ => cechObjectToSimplicialObjectIsoApp f Δ.unop) (sorry)-/
+  NatIso.ofComponents (fun Δ => cechObjectToSimplicialObjectIsoApp f Δ.unop) (by
+    rintro ⟨Δ₁⟩ ⟨Δ₂⟩ ⟨g : Δ₂ ⟶ Δ₁⟩
+    exact cechObjectObj_ext f (fun φ => by
+      obtain rfl : φ = fun _ => Unit.unit := rfl
+      dsimp [cechObjectToSimplicialObjectIsoApp, cechObjectSummandIsoCechNerveObj,
+        toSimplicialObject, toSimplicialObjectFunctor]
+      rw [ι_cechObjectDesc_assoc, id_comp, ι_cechObjectMap_assoc f _ _ _ rfl,
+        ι_cechObjectDesc, comp_id]
+      exact cechObjectSummandMap_toNonemptyFintypeCat_map f g))
 
 end
 
