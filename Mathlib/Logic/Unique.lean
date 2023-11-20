@@ -284,12 +284,3 @@ instance Unique.subtypeEq' (y : α) : Unique { x // y = x } where
   uniq := fun ⟨x, hx⟩ ↦ by subst hx; congr
 
 end Subtype
-
-/- There is `Quot.instInhabitedQuot` and `Quot.Subsingleton` but the file they are in
-  and this file don't import each other. -/
-instance Quot.instUniqueQuot {α} (r : α → α → Prop) [Unique α] : Unique (Quot r) where
-  default := Quot.mk r default
-  uniq := by rintro ⟨a⟩; exact congr_arg (Quot.mk r) (Unique.uniq _ a)
-
-instance Quotient.instUniqueQuotient (s : Setoid α) [Unique α] : Unique (Quotient s) :=
-  Quot.instUniqueQuot _
