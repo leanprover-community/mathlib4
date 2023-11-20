@@ -36,9 +36,8 @@ lemma ConvexOn.smul' (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) (hf₀ : 
     add_nonneg (smul_nonneg ha $ hf₀ hx) $ smul_nonneg hb $ hf₀ hy).trans ?_
   calc
       _ = (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g y + f y • g x) := ?_
-    _ ≤ (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g x + f y • g y) :=
-        add_le_add_left (smul_le_smul_of_nonneg (hfg.smul_add_smul_le_smul_add_smul hx hy) $
-            mul_nonneg ha hb) _
+    _ ≤ (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g x + f y • g y) := by
+        gcongr _ + (a * b) • ?_; exact hfg.smul_add_smul_le_smul_add_smul hx hy
     _ = (a * (a + b)) • (f x • g x) + (b * (a + b)) • (f y • g y) := by
         simp only [mul_add, add_smul, smul_add, mul_comm _ a]; abel
     _ = _ := by simp_rw [hab, mul_one]
@@ -57,9 +56,8 @@ lemma ConcaveOn.smul' (hf : ConcaveOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g) (hf₀
         = (a * (a + b)) • (f x • g x) + (b * (a + b)) • (f y • g y) := by simp_rw [hab, mul_one]
     _ = (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g x + f y • g y) := by
         simp only [mul_add, add_smul, smul_add, mul_comm _ a]; abel
-    _ ≤ (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g y + f y • g x) :=
-        add_le_add_left (smul_le_smul_of_nonneg (hfg.smul_add_smul_le_smul_add_smul hx hy) $
-            mul_nonneg ha hb) _
+    _ ≤ (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g y + f y • g x) := by
+        gcongr _ + (a * b) • ?_; exact hfg.smul_add_smul_le_smul_add_smul hx hy
     _ = _ := ?_
   simp only [mul_add, add_smul, smul_add]
   rw [←smul_smul_smul_comm a, ←smul_smul_smul_comm b, ←smul_smul_smul_comm a b,
