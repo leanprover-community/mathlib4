@@ -10,7 +10,7 @@ import Mathlib.LinearAlgebra.Finsupp
 
 /-!
 # Tensor-Hom adjunction
-Consider two commutative rings `R` and `S` and `X` an `(S, R)`-bimodule.
+Consider two commutative rings `R` and `S` and `X` an `(S,R)`-bimodule.
 Consider the tensor functor `(X ⊗[R] ·)` from the category of left `R`-module to the category of
 left `S`-module and the hom functor `(X →ₗ[S] ·)` from the category of left `S`-module to the
 category of left `R`-module. They form an adjunction. In particular we have that
@@ -46,12 +46,13 @@ variable [AddCommGroup X] [Module Rᵐᵒᵖ X] [Module S X] [SMulCommClass S R�
 
 open MulOpposite
 
-instance leftMod_eq_rightMod : Module R X :=
+/-- The `R`-module structure instance on a `Rᵐᵒᵖ`-module `X` for a commutative ring `R`. -/
+private instance leftMod_eq_rightMod : Module R X :=
   Module.compHom X ((RingHom.id R).toOpposite fun _ _ => mul_comm _ _)
 
 variable {Y : Type v'} [AddCommGroup Y] [Module R Y]
 
-noncomputable instance tensorMod : Module S (X ⊗[R] Y) :=
+private noncomputable instance tensorMod : Module S (X ⊗[R] Y) :=
   have : SMulCommClass R S X :=
     ⟨fun r s x ↦ show (op r) • s • x = s • (op r) • x by rw [← smul_comm]⟩
   inferInstance
@@ -59,9 +60,10 @@ noncomputable instance tensorMod : Module S (X ⊗[R] Y) :=
 @[simp] lemma tensorModSMul_smul_tmul
   (s : S) (x : X) (y : Y) : s • (x ⊗ₜ[R] y) = (s • x) ⊗ₜ[R] y := rfl
 
+variable {Z : Type v''} [AddCommGroup Z] [Module S Z]
 /--
 Let `R` be a commutative ring and `S` a ring.
-Given an `(S, R)`-bimodule `X` and a left `S`-module `Y`, the set of
+Given an `(S,R)`-bimodule `X` and a left `S`-module `Y`, the set of
 `S`-linear maps from `X` to `Y` has a left `R`-module structure given by:
 -```
 l : X →ₗ[S] Y
@@ -71,8 +73,7 @@ x : X
 (r • l) x = l (op r • x)
 ```
 -/
-local instance hom_bimodule {Y : Type v''} [AddCommGroup Y] [Module S Y] :
-    Module R (X →ₗ[S] Y) where
+private instance hom_bimodule : Module R (X →ₗ[S] Z) where
   smul r l :=
   { toFun := fun x => l (op r • x)
     map_add' := fun x y => by dsimp; rw [smul_add, map_add]
@@ -87,10 +88,9 @@ local instance hom_bimodule {Y : Type v''} [AddCommGroup Y] [Module S Y] :
   zero_smul l := LinearMap.ext fun x => show l _ = 0 by rw [op_zero, zero_smul, map_zero]
 
 variable {R S X}
-variable {Z : Type v''} [AddCommGroup Z] [Module S Z]
 /--
 Let `R` be a commutative ring and `S` a ring.
-Given an `(S, R)`-bimodule `X`, a left `R`-module `Y` and a left `S`-module `Z`,
+Given an `(S,R)`-bimodule `X`, a left `R`-module `Y` and a left `S`-module `Z`,
 any `S`-linear map `X ⊗[R] Y ⟶ Z` can by curried into a bilinear map `Y ⟶ X ⟶ Z` that
 is `R`-linear in the first argument and `S`-linear in the second.
 
@@ -112,9 +112,9 @@ noncomputable def TensorProduct.hcurry (l : X ⊗[R] Y →ₗ[S] Z) : Y →ₗ[R
 attribute [aesop unsafe] add_comm in
 /--
 Let `R` be a commutative ring and `S` a ring.
-Give `(R, S)`-bimodule `X`, a left `R`-module `X` and a right `S`-module `Y`,
-any bilinear map `X' ⟶ X ⟶ Y` whose first argument is `R`-linear and second `S`-linear can by
-uncurried into a map `X ⊗[R] X' ⟶ Y`.
+Given an `(S,R)`-bimodule `X`, a left `R`-module `Y` and a left `S`-module `Z`,
+any bilinear map `Y ⟶ X ⟶ Z` that is `R`-linear in the first argument and `S`-linear in the second
+can be uncurried into a `S`-linear map `X ⊗[R] Y ⟶ₗ[S] Z`.
 
 "h" stands for "heterogeneous".
 -/
