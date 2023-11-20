@@ -29,6 +29,11 @@ instance : Category NonemptyFintypeCat.{u} := by
 lemma hom_ext {X Y : NonemptyFintypeCat.{u}} {f g : X ⟶ Y}
     (h : ∀ (x : X), f x = g x) : f = g := funext h
 
+lemma isSplitEpi_of_surjective {X Y : NonemptyFintypeCat.{u}} (f : X ⟶ Y)
+    (hf : Function.Surjective f) : IsSplitEpi f := by
+  obtain ⟨h, eq⟩ := Function.surjective_iff_hasRightInverse.1 hf
+  exact ⟨h, funext eq⟩
+
 end NonemptyFintypeCat
 
 @[simps]
@@ -144,13 +149,20 @@ noncomputable def cechObjectSummandMap {A B : NonemptyFintypeCat.{0}}
     (fun a => cechObjectSummandπ f φ (g a) (ψ a) (by subst h; rfl)) (by simp)
 
 @[reassoc]
-lemma cechObjectMap_π {A B : NonemptyFintypeCat.{0}}
+lemma cechObjectSummandMap_π {A B : NonemptyFintypeCat.{0}}
     (g : A ⟶ B) (φ : B → I) (ψ : A → I) (h : φ.comp g = ψ) (a : A) (i : I)
     (h' : ψ a = i) (b : B) (h'' : g a = b) :
     (cechObjectSummandMap f g φ ψ h) ≫ cechObjectSummandπ f ψ a i h' =
       cechObjectSummandπ f φ b i (by rw [← h'', ← h', ← h]; rfl) := by
   subst h h' h''
   dsimp [cechObjectSummandMap, cechObjectSummandπ]
+  simp
+
+@[reassoc (attr := simp)]
+lemma cechObjectSummandMap_base {A B : NonemptyFintypeCat.{0}}
+    (g : A ⟶ B) (φ : B → I) (ψ : A → I) (h : φ.comp g = ψ) :
+    cechObjectSummandMap f g φ ψ h ≫ cechObjectSummandBase f ψ = cechObjectSummandBase f φ := by
+  dsimp [cechObjectSummandMap, cechObjectSummandBase]
   simp
 
 @[ext]
@@ -169,7 +181,7 @@ lemma cechObjectSummand_ext {A : NonemptyFintypeCat.{0}} {φ : A → I} {Z : C}
 lemma cechObjectSummandMap_id {A : NonemptyFintypeCat.{0}} (φ : A → I) :
     cechObjectSummandMap f (𝟙 A) φ φ rfl = 𝟙 _ := by
   ext a i h
-  rw [id_comp, cechObjectMap_π f (𝟙 A) φ φ rfl a i h a rfl]
+  rw [id_comp, cechObjectSummandMap_π f (𝟙 A) φ φ rfl a i h a rfl]
 
 lemma cechObjectSummandMap_comp {A₁ A₂ A₃ : NonemptyFintypeCat.{0}}
     (g₁ : A₁ → A₂) (g₂ : A₂ → A₃) (g₁₂ : A₁ → A₃) (h : g₁₂ = g₂.comp g₁)
@@ -179,9 +191,9 @@ lemma cechObjectSummandMap_comp {A₁ A₂ A₃ : NonemptyFintypeCat.{0}}
       cechObjectSummandMap f g₂ φ₃ φ₂ h' ≫ cechObjectSummandMap f g₁ φ₂ φ₁ h'' := by
   subst h
   ext a _ rfl
-  rw [assoc, cechObjectMap_π f g₁ φ₂ φ₁ h'' a _ rfl _ rfl,
-    cechObjectMap_π f g₂ φ₃ φ₂ h' (g₁ a) (φ₁ a) (by rw [← h'']; rfl) _ rfl,
-    cechObjectMap_π f (g₂.comp g₁) φ₃ φ₁ (by rw [← h'', ← h']; rfl) a _ rfl (g₂ (g₁ a)) rfl]
+  rw [assoc, cechObjectSummandMap_π f g₁ φ₂ φ₁ h'' a _ rfl _ rfl,
+    cechObjectSummandMap_π f g₂ φ₃ φ₂ h' (g₁ a) (φ₁ a) (by rw [← h'']; rfl) _ rfl,
+    cechObjectSummandMap_π f (g₂.comp g₁) φ₃ φ₁ (by rw [← h'', ← h']; rfl) a _ rfl (g₂ (g₁ a)) rfl]
 
 variable [HasCechObjectCoproducts f]
 
@@ -197,9 +209,21 @@ noncomputable def ιCechObjectObj {A : NonemptyFintypeCat.{0}} (φ : A → I) :
     cechObjectSummand f φ ⟶ cechObjectObj f A :=
   Sigma.ι _ φ
 
+noncomputable def cechObjectDesc {A : NonemptyFintypeCat.{0}} {X : C}
+    (α : ∀ (φ : A → I), cechObjectSummand f φ ⟶ X) :
+    cechObjectObj f A ⟶ X :=
+  Sigma.desc α
+
+@[reassoc (attr := simp)]
+lemma ι_cechObjectDesc {A : NonemptyFintypeCat.{0}} {X : C}
+    (α : ∀ (φ : A → I), cechObjectSummand f φ ⟶ X) (φ : A → I) :
+    ιCechObjectObj f φ ≫ cechObjectDesc f α = α φ := by
+  dsimp [ιCechObjectObj, cechObjectDesc]
+  simp
+
 noncomputable def cechObjectMap {A B : NonemptyFintypeCat.{0}} (g : A ⟶ B) :
     cechObjectObj f B ⟶ cechObjectObj f A :=
-  Sigma.desc (fun φ => cechObjectSummandMap f g φ _ rfl ≫ ιCechObjectObj f _)
+  cechObjectDesc f (fun φ => cechObjectSummandMap f g φ _ rfl ≫ ιCechObjectObj f _)
 
 @[reassoc]
 lemma ι_cechObjectMap {A B : NonemptyFintypeCat.{0}} (g : A ⟶ B) (φ : B → I) (ψ : A → I)
@@ -207,7 +231,7 @@ lemma ι_cechObjectMap {A B : NonemptyFintypeCat.{0}} (g : A ⟶ B) (φ : B → 
     ιCechObjectObj f φ ≫ cechObjectMap f g =
       cechObjectSummandMap f g φ ψ h ≫ ιCechObjectObj f ψ := by
   subst h
-  dsimp only [ιCechObjectObj, cechObjectMap]
+  dsimp only [cechObjectMap]
   simp
 
 @[ext]
@@ -234,6 +258,41 @@ noncomputable def cechObject  : SymmetricObject C where
       cechObjectSummandMap_comp f f₂ f₁ (f₂ ≫ f₁) rfl φ _ _ rfl rfl, assoc,
       ι_cechObjectMap_assoc f f₁ φ _ rfl, ι_cechObjectMap f f₂ (φ.comp f₁) _ rfl]
 
+section
+
+variable [∀ i, Mono (f i)]
+
+instance {A : NonemptyFintypeCat.{0}} (φ : A → I) :
+    Mono (cechObjectSummandBase f φ) where
+  right_cancellation {Z} α β h := by
+    ext a _ rfl
+    simp only [← cancel_mono (f (φ a)), assoc, cechObjectSummandπ_f f φ a, h]
+
+instance {A : NonemptyFintypeCat.{0}} (φ : A → I) (a : A) (i : I) (h : φ a = i) :
+    Mono (cechObjectSummandπ f φ a i h) :=
+  mono_of_mono_fac (cechObjectSummandπ_f f φ a i h)
+
+instance {A B : NonemptyFintypeCat.{0}} (g : A ⟶ B) (φ : B → I) (ψ : A → I) (h : φ.comp g = ψ) :
+    Mono (cechObjectSummandMap f g φ ψ h) := by
+  have a : A := Nonempty.some A.2
+  exact mono_of_mono_fac (cechObjectSummandMap_π f g φ ψ h a _ rfl _ rfl)
+
+lemma isIso_cechObjectMap {A B : NonemptyFintypeCat.{0}}
+    (g : A ⟶ B) (φ : B → I) (ψ : A → I) (h : φ.comp g = ψ) (hg : Function.Surjective g) :
+    IsIso (cechObjectSummandMap f g φ ψ h) := by
+  have := NonemptyFintypeCat.isSplitEpi_of_surjective g hg
+  have eq : g ∘ section_ g = id := IsSplitEpi.id g
+  refine' ⟨cechObjectSummandMap f (section_ g) ψ φ _, _, _⟩
+  · rw [← h]
+    change φ ∘ (g ∘ section_ g) = φ
+    rw [eq, Function.comp.right_id]
+  · simp only [← cancel_mono (cechObjectSummandBase f φ), assoc,
+      id_comp, cechObjectSummandMap_base]
+  · simp only [← cancel_mono (cechObjectSummandBase f ψ), assoc,
+      id_comp, cechObjectSummandMap_base]
+
+end
+
 end
 
 section
@@ -243,9 +302,18 @@ variable {S : C} {X : Unit → C} (f : ∀ i, X i ⟶ S)
   [H : ∀ (n : ℕ), HasWidePullback (Arrow.mk (f ())).right
     (fun (_ : Fin (n + 1)) ↦ (Arrow.mk (f ())).left) fun _ ↦ (Arrow.mk (f ())).hom]
 
-/-noncomputable def cechObjectToSimplicialObjectIsoApp (Δ : SimplexCategory) :
+/-def cechObjectSummandIsoCechNerveObj (Δ : SimplexCategory)
+    (φ : SimplexCategory.toNonemptyFintypeCat.obj Δ → Unit) :
+    cechObjectSummand f φ ≅ (Arrow.cechNerve (Arrow.mk (f Unit.unit))).obj (Opposite.op Δ) := by
+  sorry
+
+noncomputable def cechObjectToSimplicialObjectIsoApp (Δ : SimplexCategory) :
     (cechObject f).toSimplicialObject.obj (Opposite.op Δ) ≅
       (Arrow.cechNerve (Arrow.mk (f Unit.unit))).obj (Opposite.op Δ) where
+  hom := cechObjectDesc f (fun φ => (cechObjectSummandIsoCechNerveObj f Δ φ).hom)
+  inv := (cechObjectSummandIsoCechNerveObj f Δ (fun _ => Unit.unit)).inv ≫ ιCechObjectObj f _
+  hom_inv_id := sorry
+  inv_hom_id := sorry
 
 noncomputable def cechObjectToSimplicialObjectIso :
     (cechObject f).toSimplicialObject ≅ Arrow.cechNerve (Arrow.mk (f Unit.unit)) :=
