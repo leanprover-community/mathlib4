@@ -238,6 +238,7 @@ value! -/
 private def addCommMonoidWithBadSMul : AddCommMonoid (M ⊗[R] N) where
   __ := (addConGen (TensorProduct.Eqv R M N)).addMonoid
   __ := addCommSemigroup M N
+  toAddSemigroup := addSemigroup _ _
 
 
 variable [SMulCommClass R R' M] [SMulCommClass R R'' M]
