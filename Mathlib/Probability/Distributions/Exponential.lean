@@ -195,7 +195,7 @@ lemma hasDerivAt_neg_exp_mul_exp {r x : ℝ} :
   · simp only [one_mul, id_eq, neg_mul]
   simp only [id_eq, neg_mul, mul_one, mul_neg, one_mul, neg_neg, mul_comm]
 
-lemma lint_eq_antiDeriv (r : ℝ) (hr : 0 < r) : ∀ x : ℝ,
+lemma lintegral_exponentialPdf_eq_antiDeriv (r : ℝ) (hr : 0 < r) : ∀ x : ℝ,
     (∫⁻ y in Iic x, exponentialPdf r y =
     ENNReal.ofReal (if 0 ≤ x then 1 - exp (-(r * x)) else 0)) := by
   intro x'
@@ -236,7 +236,7 @@ lemma lint_eq_antiDeriv (r : ℝ) (hr : 0 < r) : ∀ x : ℝ,
 /-- The Definition of the CDF equals the known Formular ``1 - exp (-(r * x))``-/
 lemma exponentialCdfReal_eq {r : ℝ} [Fact (0 < r)] (x : ℝ) : exponentialCdfReal r x =
     if 0 ≤ x then 1 - exp (-(r * x)) else 0 := by
-  simp only [exponentialCdfReal_eq_lintegral, lint_eq_antiDeriv _ Fact.out,
+  simp only [exponentialCdfReal_eq_lintegral, lintegral_exponentialPdf_eq_antiDeriv _ Fact.out,
     ENNReal.toReal_ofReal_eq_iff]
   split_ifs with h <;> simp [mul_nonneg (le_of_lt Fact.out) _]
   exact mul_nonneg (le_of_lt Fact.out) h
