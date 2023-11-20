@@ -12,7 +12,7 @@ import Mathlib.AlgebraicTopology.DoldKan.NReflectsIso
 
 In order to construct the unit isomorphism of the Dold-Kan equivalence,
 we first construct natural transformations
-`Γ₂N₁.natTrans : N₁ ⋙ Γ₂ ⟶ toKaroubi (simplicial_object C)` and
+`Γ₂N₁.natTrans : N₁ ⋙ Γ₂ ⟶ toKaroubi (SimplicialObject C)` and
 `Γ₂N₂.natTrans : N₂ ⋙ Γ₂ ⟶ 𝟭 (SimplicialObject C)`.
 It is then shown that `Γ₂N₂.natTrans` is an isomorphism by using
 that it becomes an isomorphism after the application of the functor

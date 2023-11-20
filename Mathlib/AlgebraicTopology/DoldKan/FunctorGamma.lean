@@ -336,7 +336,8 @@ def Γ₂ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialObject C) :=
 #align algebraic_topology.dold_kan.Γ₂ AlgebraicTopology.DoldKan.Γ₂
 
 theorem HigherFacesVanish.on_Γ₀_summand_id (K : ChainComplex C ℕ) (n : ℕ) :
-    @HigherFacesVanish C _ _ (Γ₀.obj K) _ n (n + 1) (((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op [n + 1]))) := by
+    @HigherFacesVanish C _ _ (Γ₀.obj K) _ n (n + 1)
+      (((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op [n + 1]))) := by
   intro j _
   have eq := Γ₀.Obj.mapMono_on_summand_id K (SimplexCategory.δ j.succ)
   rw [Γ₀.Obj.Termwise.mapMono_eq_zero K, zero_comp] at eq; rotate_left
@@ -348,7 +349,8 @@ theorem HigherFacesVanish.on_Γ₀_summand_id (K : ChainComplex C ℕ) (n : ℕ)
 
 @[reassoc (attr := simp)]
 theorem PInfty_on_Γ₀_splitting_summand_eq_self (K : ChainComplex C ℕ) {n : ℕ} :
-    ((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op [n])) ≫ (PInfty : K[Γ₀.obj K] ⟶ _).f n =
+    ((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op [n])) ≫
+      (PInfty : K[Γ₀.obj K] ⟶ _).f n =
       ((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op [n])) := by
   rw [PInfty_f]
   rcases n with _|n
