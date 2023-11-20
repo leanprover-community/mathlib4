@@ -141,7 +141,6 @@ theorem arg_mem_Ioc (z : ℂ) : arg z ∈ Set.Ioc (-π) π := by
   rcases existsUnique_add_zsmul_mem_Ioc Real.two_pi_pos (arg z) (-π) with ⟨N, hN, -⟩
   rw [two_mul, neg_add_cancel_left, ← two_mul, zsmul_eq_mul] at hN
   rw [← abs_mul_cos_add_sin_mul_I z, ← cos_add_int_mul_two_pi _ N, ← sin_add_int_mul_two_pi _ N]
-  simp only [← ofReal_one, ← ofReal_bit0, ← ofReal_mul, ← ofReal_add, ofReal_int_cast]
   have := arg_mul_cos_add_sin_mul_I (abs.pos hz) hN
   push_cast at this
   rwa [this]

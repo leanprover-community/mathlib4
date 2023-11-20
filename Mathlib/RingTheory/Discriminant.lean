@@ -290,7 +290,7 @@ variable {R : Type z} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R 
 theorem discr_isIntegral {b : ι → L} (h : ∀ i, IsIntegral R (b i)) : IsIntegral R (discr K b) := by
   classical
   rw [discr_def]
-  exact IsIntegral.det fun i j => isIntegral_trace (isIntegral_mul (h i) (h j))
+  exact IsIntegral.det fun i j => isIntegral_trace (IsIntegral.mul (h i) (h j))
 #align algebra.discr_is_integral Algebra.discr_isIntegral
 
 /-- If `b` and `b'` are `ℚ`-bases of a number field `K` such that
@@ -364,12 +364,12 @@ theorem discr_mul_isIntegral_mem_adjoin [IsSeparable K L] [IsIntegrallyClosed R]
     exact
       mem_bot.2
         (IsIntegrallyClosed.isIntegral_iff.1 <|
-          isIntegral_trace <| isIntegral_mul hz <| IsIntegral.pow hint _)
+          isIntegral_trace <| IsIntegral.mul hz <| IsIntegral.pow hint _)
   · simp only [updateColumn_apply, hji, PowerBasis.coe_basis]
     exact
       mem_bot.2
         (IsIntegrallyClosed.isIntegral_iff.1 <|
-          isIntegral_trace <| isIntegral_mul (IsIntegral.pow hint _) (IsIntegral.pow hint _))
+          isIntegral_trace <| IsIntegral.mul (IsIntegral.pow hint _) (IsIntegral.pow hint _))
 #align algebra.discr_mul_is_integral_mem_adjoin Algebra.discr_mul_isIntegral_mem_adjoin
 
 end Integral

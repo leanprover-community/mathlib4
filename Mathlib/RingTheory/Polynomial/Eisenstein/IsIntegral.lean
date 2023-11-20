@@ -175,8 +175,8 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
     IsIntegral R
       (z * B.gen ^ n - ∑ x : ℕ in (range (Q.natDegree + 1)).erase 0, Q.coeff x • f (x + n)) := by
     refine
-      isIntegral_sub (isIntegral_mul hzint (IsIntegral.pow hBint _))
-        (IsIntegral.sum _ fun i hi => isIntegral_smul _ ?_)
+      IsIntegral.sub (IsIntegral.mul hzint (IsIntegral.pow hBint _))
+        (IsIntegral.sum _ fun i hi => IsIntegral.smul _ ?_)
     exact adjoin_le_integralClosure hBint (hf _ (aux i hi)).1
   obtain ⟨r, hr⟩ := isIntegral_iff.1 (isIntegral_norm K hintsum)
   use r
@@ -351,10 +351,10 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
         (∑ x : ℕ in (range (Q.natDegree - j)).erase 0,
           Q.coeff (j + 1 + x) • f (x + P.natDegree - 1) +
             ∑ x : ℕ in range (j + 1), g x • B.gen ^ x * B.gen ^ (P.natDegree - (j + 2)))) := by
-      refine isIntegral_sub (isIntegral_mul hzint (IsIntegral.pow hBint _))
-          (isIntegral_add (IsIntegral.sum _ fun k hk => isIntegral_smul _ ?_)
+      refine IsIntegral.sub (IsIntegral.mul hzint (IsIntegral.pow hBint _))
+          (IsIntegral.add (IsIntegral.sum _ fun k hk => IsIntegral.smul _ ?_)
             (IsIntegral.sum _ fun k _ =>
-              isIntegral_mul (isIntegral_smul _ (IsIntegral.pow hBint _)) (IsIntegral.pow hBint _)))
+              IsIntegral.mul (IsIntegral.smul _ (IsIntegral.pow hBint _)) (IsIntegral.pow hBint _)))
       refine adjoin_le_integralClosure hBint (hf _ ?_).1
       rw [(minpoly.monic hBint).natDegree_map (algebraMap R L)]
       rw [add_comm, Nat.add_sub_assoc, le_add_iff_nonneg_right]
@@ -391,7 +391,7 @@ theorem mem_adjoin_of_smul_prime_pow_smul_of_minpoly_isEisensteinAt {B : PowerBa
     exact
       hn
         (mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt hp hBint
-          (isIntegral_smul _ hzint) hz hei)
+          (IsIntegral.smul _ hzint) hz hei)
 #align mem_adjoin_of_smul_prime_pow_smul_of_minpoly_is_eiseinstein_at mem_adjoin_of_smul_prime_pow_smul_of_minpoly_isEisensteinAt
 
 end IsIntegral

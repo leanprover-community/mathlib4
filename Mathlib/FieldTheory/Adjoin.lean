@@ -1013,14 +1013,14 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     · exact subset_adjoin F _ (mem_frange_iff.mpr ⟨n, hn, rfl⟩)
     · exact not_mem_support_iff.mp hn ▸ zero_mem K'
   obtain ⟨p, hp⟩ := g.lifts_and_natDegree_eq_and_monic
-    g_lifts ((minpoly.monic <| isIntegral_of_finite K α).map _)
+    g_lifts ((minpoly.monic <| IsIntegral.of_finite K α).map _)
   have dvd_p : minpoly K' α ∣ p
   · apply minpoly.dvd
     rw [aeval_def, eval₂_eq_eval_map, hp.1, ← eval₂_eq_eval_map, ← aeval_def]
     exact minpoly.aeval K α
   have finrank_eq : ∀ K : IntermediateField F E, finrank K E = natDegree (minpoly K α)
   · intro K
-    have := adjoin.finrank (isIntegral_of_finite K α)
+    have := adjoin.finrank (IsIntegral.of_finite K α)
     erw [adjoin_eq_top_of_adjoin_eq_top F hprim, finrank_top K E] at this
     exact this
   refine eq_of_le_of_finrank_le' hsub ?_
@@ -1030,7 +1030,7 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
 
 theorem _root_.minpoly.natDegree_le (x : L) [FiniteDimensional K L] :
     (minpoly K x).natDegree ≤ finrank K L :=
-  le_of_eq_of_le (IntermediateField.adjoin.finrank (isIntegral_of_finite _ _)).symm
+  le_of_eq_of_le (IntermediateField.adjoin.finrank (IsIntegral.of_finite _ _)).symm
     K⟮x⟯.toSubmodule.finrank_le
 #align minpoly.nat_degree_le minpoly.natDegree_le
 

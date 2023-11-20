@@ -140,9 +140,9 @@ theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
   rw [← hp]
   induction p using MvPolynomial.induction_on generalizing z with
     | h_C => exact isIntegral_algebraMap
-    | h_add _ _ ha hb => exact isIntegral_add (ha _ rfl) (hb _ rfl)
+    | h_add _ _ ha hb => exact IsIntegral.add (ha _ rfl) (hb _ rfl)
     | h_X p f ih =>
-      · refine @isIntegral_mul k _ _ _ _ _ (Ideal.Quotient.mk (maxIdeal k) _) (ih _ rfl) ?_
+      · refine @IsIntegral.mul k _ _ _ _ _ (Ideal.Quotient.mk (maxIdeal k) _) (ih _ rfl) ?_
         refine ⟨f, f.2.1, ?_⟩
         erw [AdjoinMonic.algebraMap, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
         exact le_maxIdeal k (Ideal.subset_span ⟨f, rfl⟩)
@@ -383,7 +383,7 @@ def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosureAux k :=
 theorem isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosureAux k) := fun z =>
   isAlgebraic_iff_isIntegral.2 <|
     let ⟨n, x, hx⟩ := exists_ofStep k z
-    hx ▸ map_isIntegral (ofStepHom k n) (Step.isIntegral k n x)
+    hx ▸ IsIntegral.map (ofStepHom k n) (Step.isIntegral k n x)
 
 @[local instance] theorem isAlgClosure : IsAlgClosure k (AlgebraicClosureAux k) :=
   ⟨AlgebraicClosureAux.instIsAlgClosed k, isAlgebraic k⟩

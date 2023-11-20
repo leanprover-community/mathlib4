@@ -151,7 +151,7 @@ theorem mul_polyOfInterest_aux3 (n : ℕ) : wittPolyProd p (n + 1) =
     (p : 𝕄) ^ (n + 1) * X (1, n + 1) * rename (Prod.mk (0 : Fin 2)) (wittPolynomial p ℤ (n + 1)) +
     remainder p n := by
   -- a useful auxiliary fact
-  have mvpz : (p : 𝕄) ^ (n + 1) = MvPolynomial.C ((p : ℤ) ^ (n + 1)) := by simp only; norm_cast
+  have mvpz : (p : 𝕄) ^ (n + 1) = MvPolynomial.C ((p : ℤ) ^ (n + 1)) := by norm_cast
   -- Porting note: the original proof applies `sum_range_succ` through a non-`conv` rewrite,
   -- but this does not work in Lean 4; the whole proof also times out very badly. The proof has been
   -- nearly totally rewritten here and now finishes quite fast.
@@ -209,7 +209,7 @@ theorem polyOfInterest_vars_eq (n : ℕ) : (polyOfInterest p n).vars =
     ((p : 𝕄) ^ (n + 1) * (wittMul p (n + 1) + (p : 𝕄) ^ (n + 1) * X (0, n + 1) * X (1, n + 1) -
       X (0, n + 1) * rename (Prod.mk (1 : Fin 2)) (wittPolynomial p ℤ (n + 1)) -
       X (1, n + 1) * rename (Prod.mk (0 : Fin 2)) (wittPolynomial p ℤ (n + 1)))).vars := by
-  have : (p : 𝕄) ^ (n + 1) = C ((p : ℤ) ^ (n + 1)) := by simp only; norm_cast
+  have : (p : 𝕄) ^ (n + 1) = C ((p : ℤ) ^ (n + 1)) := by norm_cast
   rw [polyOfInterest, this, vars_C_mul]
   apply pow_ne_zero
   exact_mod_cast hp.out.ne_zero

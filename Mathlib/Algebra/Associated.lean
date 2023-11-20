@@ -913,8 +913,8 @@ theorem isUnit_iff_eq_bot {a : Associates α} : IsUnit a ↔ a = ⊥ := by
 
 theorem isUnit_mk {a : α} : IsUnit (Associates.mk a) ↔ IsUnit a :=
   calc
-    IsUnit (Associates.mk a) ↔ a ~ᵤ 1 :=
-    by rw [isUnit_iff_eq_one, one_eq_mk_one, mk_eq_mk_iff_associated]
+    IsUnit (Associates.mk a) ↔ a ~ᵤ 1 := by
+      rw [isUnit_iff_eq_one, one_eq_mk_one, mk_eq_mk_iff_associated]
     _ ↔ IsUnit a := associated_one_iff_isUnit
 #align associates.is_unit_mk Associates.isUnit_mk
 
@@ -1123,8 +1123,7 @@ instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero (Associates α)
     have hu : a * (b * ↑u) = a * c := by rwa [← mul_assoc]
     exact Quotient.sound' ⟨u, mul_left_cancel₀ (mk_ne_zero.1 ha) hu⟩ }
 
-instance : NoZeroDivisors (Associates α) :=
-  by infer_instance
+instance : NoZeroDivisors (Associates α) := by infer_instance
 
 theorem le_of_mul_le_mul_left (a b c : Associates α) (ha : a ≠ 0) : a * b ≤ a * c → b ≤ c
   | ⟨d, hd⟩ => ⟨d, mul_left_cancel₀ ha <| by rwa [← mul_assoc]⟩

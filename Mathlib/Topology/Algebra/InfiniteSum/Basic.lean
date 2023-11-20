@@ -695,8 +695,8 @@ theorem tsum_eq_add_tsum_ite' [DecidableEq β] {f : β → α} (b : β) (hf : Su
     _ = ite (b = b) (f b) 0 + ∑' x, update f b 0 x := by
       congr
       exact tsum_eq_single b fun b' hb' => if_neg hb'
-    _ = f b + ∑' x, ite (x = b) 0 (f x) :=
-    by simp only [update, eq_self_iff_true, if_true, eq_rec_constant, dite_eq_ite]
+    _ = f b + ∑' x, ite (x = b) 0 (f x) := by
+      simp only [update, eq_self_iff_true, if_true, eq_rec_constant, dite_eq_ite]
 #align tsum_eq_add_tsum_ite' tsum_eq_add_tsum_ite'
 
 variable [AddCommMonoid δ] [TopologicalSpace δ] [T3Space δ] [ContinuousAdd δ]
