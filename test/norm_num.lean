@@ -37,7 +37,7 @@ example : (6:ℝ) < 10 := by norm_num1
 example : (7:ℝ)/2 > 3 := by norm_num1
 example : (4:ℝ)⁻¹ < 1 := by norm_num1
 example : ((1:ℝ) / 2)⁻¹ = 2 := by norm_num1
--- example : 2 ^ 17 - 1 = 131071 := by norm_num1
+example : 2 ^ 17 - 1 = 131071 := by norm_num1
 -- example : (3 : ℝ) ^ (-2 : ℤ) = 1/9 := by norm_num1
 -- example : (3 : ℝ) ^ (-2 : ℤ) = 1/9 := by norm_num1
 -- example : (-3 : ℝ) ^ (0 : ℤ) = 1 := by norm_num1
@@ -678,4 +678,7 @@ example : (1 : R PUnit.{u+1} PUnit.{v+1}) <= 2 := by
   norm_num
 
 -- Check that we avoid deep recursion in evaluating large powers.
-example : 10^40000000 = 10^40000000 := by norm_num
+-- This used to be 10^40000000, but Lean's non-GMP multiplication is
+-- asymptotically slower than the GMP implementation.
+-- It would be great to fix that, and restore this test.
+example : 10^400000 = 10^400000 := by norm_num

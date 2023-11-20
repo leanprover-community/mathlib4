@@ -31,7 +31,8 @@ variable [Applicative F] [LawfulApplicative F]
 variable {α β γ σ : Type u}
 
 theorem Applicative.map_seq_map (f : α → β → γ) (g : σ → β) (x : F α) (y : F σ) :
-    f <$> x <*> g <$> y = (flip (· ∘ ·) g ∘ f) <$> x <*> y := by simp [flip, functor_norm]
+    f <$> x <*> g <$> y = (flip (· ∘ ·) g ∘ f) <$> x <*> y := by
+  simp [flip, functor_norm]
 #align applicative.map_seq_map Applicative.map_seq_map
 
 theorem Applicative.pure_seq_eq_map' (f : α → β) : (· <*> ·) (pure f : F (α → β)) = (· <$> ·) f :=

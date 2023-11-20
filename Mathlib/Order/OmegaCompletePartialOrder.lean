@@ -116,7 +116,7 @@ lemma directed : Directed (· ≤ ·) c := directedOn_range.2 c.isChain_range.di
 
 /-- `map` function for `Chain` -/
 -- Porting note: `simps` doesn't work with type synonyms
--- @[simps! (config := { fullyApplied := false })]
+-- @[simps! (config := .asFn)]
 def map : Chain β :=
   f.comp c
 #align omega_complete_partial_order.chain.map OmegaCompletePartialOrder.Chain.map

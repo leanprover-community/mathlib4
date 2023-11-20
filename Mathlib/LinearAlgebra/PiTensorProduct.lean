@@ -114,10 +114,9 @@ def PiTensorProduct : Type _ :=
 variable {R}
 
 unsuppress_compilation in
--- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product, given `s : ι → Type*`.
---scoped[TensorProduct] -- Porting note: `scoped` caused an error, so I commented it out.
-/-- notation for tensor product over some indexed type -/
-notation3:100"⨂["R"] "(...)", "r:(scoped f => PiTensorProduct R f) => r
+/-- This enables the notation `⨂[R] i : ι, s i` for the pi tensor product `PiTensorProduct`,
+given an indexed family of types `s : ι → Type*`. -/
+scoped[TensorProduct] notation3:100"⨂["R"] "(...)", "r:(scoped f => PiTensorProduct R f) => r
 
 open TensorProduct
 
@@ -528,6 +527,7 @@ theorem reindex_refl : reindex R M (Equiv.refl ι) = LinearEquiv.refl R _ := by
 
 variable (ι)
 
+attribute [local simp] eq_iff_true_of_subsingleton in
 /-- The tensor product over an empty index type `ι` is isomorphic to the base ring. -/
 @[simps symm_apply]
 def isEmptyEquiv [IsEmpty ι] : (⨂[R] _ : ι, M) ≃ₗ[R] R where

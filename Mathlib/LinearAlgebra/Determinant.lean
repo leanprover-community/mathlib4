@@ -322,7 +322,7 @@ theorem det_conj {N : Type*} [AddCommGroup N] [Module A N] (f : M →ₗ[A] M) (
         contrapose! H
         rcases H with ⟨s, ⟨b⟩⟩
         exact ⟨_, ⟨(b.map e.symm).reindexFinsetRange⟩⟩
-      simp only [coe_det, H, H', MonoidHom.one_apply, dif_neg]
+      simp only [coe_det, H, H', MonoidHom.one_apply, dif_neg, not_false_eq_true]
 #align linear_map.det_conj LinearMap.det_conj
 
 /-- If a linear map is invertible, so is its determinant. -/
@@ -419,8 +419,8 @@ theorem LinearEquiv.det_mul_det_symm {A : Type*} [CommRing A] [Module A M] (f : 
 /-- The determinants of a `LinearEquiv` and its inverse multiply to 1. -/
 @[simp]
 theorem LinearEquiv.det_symm_mul_det {A : Type*} [CommRing A] [Module A M] (f : M ≃ₗ[A] M) :
-    LinearMap.det (f.symm : M →ₗ[A] M) * LinearMap.det (f : M →ₗ[A] M) = 1 :=
-  by simp [← LinearMap.det_comp]
+    LinearMap.det (f.symm : M →ₗ[A] M) * LinearMap.det (f : M →ₗ[A] M) = 1 := by
+  simp [← LinearMap.det_comp]
 #align linear_equiv.det_symm_mul_det LinearEquiv.det_symm_mul_det
 
 -- Cannot be stated using `LinearMap.det` because `f` is not an endomorphism.
