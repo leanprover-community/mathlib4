@@ -531,8 +531,8 @@ theorem isNat_natDiv : {a b : ℕ} → {a' b' c : ℕ} →
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.div a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num (_ : ℕ) / _, Div.div (_ : ℕ) _, Nat.div _ _] def evalNatDiv :
-    NormNumExt where eval {u α} e := do
+@[norm_num (_ : ℕ) / _, Div.div (_ : ℕ) _, Nat.div _ _]
+def evalNatDiv : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
   haveI' : $e =Q $a / $b := ⟨⟩
@@ -543,3 +543,28 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   have nc : Q(ℕ) := mkRawNatLit (na.natLit! / nb.natLit!)
   haveI' : Nat.div $na $nb =Q $nc := ⟨⟩
   return .isNat sℕ nc q(isNat_natDiv $pa $pb (.refl $nc))
+
+theorem isNat_dvd_true : {a b : ℕ} → {a' b' : ℕ} →
+    IsNat a a' → IsNat b b' → Nat.mod b' a' = nat_lit 0 → a ∣ b
+  | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, e => Nat.dvd_of_mod_eq_zero e
+
+theorem isNat_dvd_false : {a b : ℕ} → {a' b' c : ℕ} →
+    IsNat a a' → IsNat b b' → Nat.mod b' a' = Nat.succ c → ¬a ∣ b
+  | _, _, _, _, c, ⟨rfl⟩, ⟨rfl⟩, e => mt Nat.mod_eq_zero_of_dvd (e.symm ▸ Nat.succ_ne_zero c :)
+
+/-- The `norm_num` extension which identifies expressions of the form `(a : ℕ) | b`,
+such that `norm_num` successfully recognises both `a` and `b`. -/
+@[norm_num (_ : ℕ) ∣ _] def evalNatDvd : NormNumExt where eval {u α} e := do
+  let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
+  -- We trust that the default instance for `Dvd` is `Nat.dvd` when the first parameter is `ℕ`.
+  guard <|← withNewMCtxDepth <| isDefEq f q(Dvd.dvd (α := ℕ))
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let ⟨na, pa⟩ ← deriveNat a sℕ; let ⟨nb, pb⟩ ← deriveNat b sℕ
+  match nb.natLit! % na.natLit! with
+  | 0 =>
+    have : Q(Nat.mod $nb $na = nat_lit 0) := (q(Eq.refl (nat_lit 0)) : Expr)
+    return .isTrue q(isNat_dvd_true $pa $pb $this)
+  | c+1 =>
+    have nc : Q(ℕ) := mkRawNatLit c
+    have : Q(Nat.mod $nb $na = Nat.succ $nc) := (q(Eq.refl (nat_lit 0)) : Expr)
+    return .isFalse q(isNat_dvd_false $pa $pb $this)
