@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.Finsupp
 # Tensor-Hom adjunction
 Consider two commutative rings `R` and `S` and `X` an `(S, R)`-bimodule.
 Consider the tensor functor `(X ⊗[R] .)` from the category of left `R`-module to the category of
-left `S`-module and the hom functor `X →ₗ[S] .` from the category of right `S`-module to the
+left `S`-module and the hom functor `(X →ₗ[S] ·)` from the category of left `S`-module to the
 category of left `R`-module. They form an adjunction. In particular we have that
 ```
 Hom_S(X⊗[R]Y, Z) ≃ Hom_R(Y, Hom_S(X, Z))
