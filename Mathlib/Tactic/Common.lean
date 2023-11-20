@@ -123,8 +123,8 @@ section Hint
 register_hint split
 register_hint intro
 register_hint aesop
-register_hint decide
 register_hint simp_all?
 register_hint exact?
+register_hint decide
 
 end Hint
