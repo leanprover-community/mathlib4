@@ -271,20 +271,20 @@ variable [FinitaryPreExtensive C] {C}
 
 /-- A presieve is *extensive* if it is finite and its arrows induce an isomorphism from the
 coproduct to the target. -/
-class Presieve.extensive [HasFiniteCoproducts C] {X : C} (R : Presieve X) :
+class Presieve.extensive {X : C} (R : Presieve X) :
     Prop where
   /-- `R` consists of a finite collection of arrows that together induce an isomorphism from the
   coproduct of their sources. -/
   arrows_sigma_desc_iso : ∃ (α : Type) (_ : Fintype α) (Z : α → C) (π : (a : α) → (Z a ⟶ X)),
-    R = Presieve.ofArrows Z π ∧ IsIso (Sigma.desc π)
+    R = Presieve.ofArrows Z π ∧ Nonempty (IsColimit (Cofan.mk X π))
 
 instance {X : C} (S : Presieve X) [S.extensive] : S.hasPullbacks where
   has_pullbacks := by
-    obtain ⟨_, _, _, _, hS, _⟩ := Presieve.extensive.arrows_sigma_desc_iso (R := S)
+    obtain ⟨_, _, _, _, hS, ⟨hc⟩⟩ := Presieve.extensive.arrows_sigma_desc_iso (R := S)
     intro _ _ f hf _ hg
     rw [hS] at hf hg
     cases' hg with b
-    apply FinitaryPreExtensive.hasPullbacks_of_inclusions f
+    apply FinitaryPreExtensive.hasPullbacks_of_is_coproduct hc
 
 instance {α : Type} [Fintype α] {Z : α → C} {F : C ⥤ Type w}
     [PreservesFiniteProducts F] : PreservesLimit (Discrete.functor fun a => (Z a)) F :=
@@ -298,19 +298,14 @@ A finite product preserving presheaf is a sheaf for the extensive topology on a 
 -/
 theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [S.extensive]
     (F : Cᵒᵖ ⥤ Type max u v) [PreservesFiniteProducts F] : S.IsSheafFor F  := by
-  obtain ⟨_, _, Z, π, hS, _⟩ := extensive.arrows_sigma_desc_iso (R := S)
+  obtain ⟨_, _, Z, π, hS, ⟨hc⟩⟩ := extensive.arrows_sigma_desc_iso (R := S)
   subst hS
   have : (ofArrows Z (Cofan.mk X π).inj).hasPullbacks :=
     (inferInstance : (ofArrows Z π).hasPullbacks)
-  have : IsIso (Sigma.desc (Cofan.mk X π).inj) := (inferInstance : IsIso (Sigma.desc π))
-  exact isSheafFor_of_preservesProduct _ _ (Cofan.isColimitOfIsIsoSigmaDesc (Cofan.mk X π))
+  exact isSheafFor_of_preservesProduct _ _ hc
 
-instance {α : Type} [Fintype α] (Z : α → C) : (ofArrows Z (fun i ↦ Sigma.ι Z i)).extensive where
-  arrows_sigma_desc_iso := by
-    refine ⟨α, inferInstance, Z, (fun i ↦ Sigma.ι Z i), rfl, ?_⟩
-    convert IsIso.id _
-    ext
-    simp
+instance {α : Type} [Fintype α] (Z : α → C) : (ofArrows Z (fun i ↦ Sigma.ι Z i)).extensive :=
+  ⟨⟨α, inferInstance, Z, (fun i ↦ Sigma.ι Z i), rfl, ⟨coproductIsCoproduct _⟩⟩⟩
 
 /--
 A presheaf on a category which is `FinitaryExtensive` is a sheaf iff it preserves finite products.
@@ -342,8 +337,9 @@ theorem isSheaf_iff_preservesFiniteProducts [FinitaryExtensive C] (F : Cᵒᵖ �
       simp
   · let _ := hF.some
     rw [Presieve.isSheaf_coverage]
-    intro _ R ⟨Y, hR⟩
-    have _ : R.extensive := ⟨Y, hR⟩
+    intro X R ⟨Y, α, Z, π, hR, hi⟩
+    have : IsIso (Sigma.desc (Cofan.inj (Cofan.mk X π))) := hi
+    have : R.extensive := ⟨Y, α, Z, π, hR, ⟨Cofan.isColimitOfIsIsoSigmaDesc (Cofan.mk X π)⟩⟩
     exact isSheafFor_extensive_of_preservesFiniteProducts R F
 
 end ExtensiveSheaves
