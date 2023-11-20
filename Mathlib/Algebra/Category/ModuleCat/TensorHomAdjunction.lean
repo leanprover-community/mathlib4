@@ -22,7 +22,7 @@ Hom_S(X⊗[R]Y, Z) ≃ Hom_R(Y, Hom_S(X, Z))
 
 1. Order of arguments
 ```
-Hom_Sᵐᵒᵖ(Y⊗[R]X, Z) ≃ Hom_R(Y, Hom_Sᵐᵒᵖ(X, Z))
+Hom_S(Y⊗[R]X, Z) ≃ Hom_R(Y, Hom_S(X, Z))
 ```
 is perhaps more natural to work with because all the argument have the same order.
 But currently mathlib4 does not know `Y⊗[R] X` is an right `S`-module as well.
@@ -254,42 +254,3 @@ instance : Functor.PreservesEpimorphisms (tensorFunctor R S X) :=
   inferInstance
 
 end ModuleCat
-
-namespace TensorProduct
-
-variable (R' : Type u) [CommRing R']
-variable {M : Type v} {N : Type v'} [AddCommGroup M] [AddCommGroup N]
-variable [Module R' M] [Module R' N]
-
-open ModuleCat
-
-/-
-/--
-Constructing an additive group map `M ⊗[R] N → C` by lifting a function from
-`M × N → C` that is zero-preserving, additive in both arguments and compatible with scalar action.
--/
-noncomputable def toAddCommGroup' {C : Type v} [AddCommGroup C]
-  (b : M × N → C)
-  (map_zero_left : ∀ (n : N), b (0, n) = 0)
-  (map_zero_right : ∀ (m : M), b (m, 0) = 0)
-  (map_add_left : ∀ (n : N) (m m' : M), b (m + m', n) = b (m, n) + b (m', n))
-  (map_add_right : ∀ (m : M) (n n' : N), b (m, n + n') = b (m, n) + b (m, n'))
-  (compatible_smul : ∀ (r : R') (m : M) (n : N), b ((r • m), n) = b (m, (r • n))) :
-  (M ⊗[R'] N) →+ C :=
-toAddCommGroup R'
-  { toFun := fun m => ⟨⟨fun n => b (m, n), map_zero_right _⟩, map_add_right _⟩
-    map_zero' := AddMonoidHom.ext fun _ => map_zero_left _
-    map_add' := fun _ _ => AddMonoidHom.ext fun _ => map_add_left _ _ _ } compatible_smul
-
-lemma toAddCommGroup'_apply_tmul {C : Type v} [AddCommGroup C]
-    (b : M × N → C)
-    (map_zero_left : ∀ (n : N), b (0, n) = 0)
-    (map_zero_right : ∀ (m : M), b (m, 0) = 0)
-    (map_add_left : ∀ (n : N) (m m' : M), b (m + m', n) = b (m, n) + b (m', n))
-    (map_add_right : ∀ (m : M) (n n' : N), b (m, n + n') = b (m, n) + b (m, n'))
-    (compatible_smul : ∀ (r : R') (m : M) (n : N), b ((r • m), n) = b (m, (r • n)))
-    (m : M) (n : N) :
-    toAddCommGroup' R' b map_zero_left map_zero_right map_add_left map_add_right compatible_smul
-      (m ⊗ₜ n) = b (m, n) := rfl
--/
-end TensorProduct
