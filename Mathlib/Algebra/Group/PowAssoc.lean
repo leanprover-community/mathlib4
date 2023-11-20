@@ -53,7 +53,8 @@ theorem mul_ppow [Mul M] [Pow M ℕ+] [PosPowAssoc M] (k n : ℕ+) (x : M) : x^k
 theorem ppow_one [Mul M] [Pow M ℕ+] [PosPowAssoc M] (x : M) : x ^ (1:ℕ+) = x :=
   PosPowAssoc.ppow_one x
 
-theorem add_psmul [Add M] [SMul ℕ+ M] [PosSmulAssoc M] (k n : ℕ+) (x : M) : k • x + n • x = (k+n) • x :=
+theorem add_psmul [Add M] [SMul ℕ+ M] [PosSmulAssoc M] (k n : ℕ+) (x : M) :
+    k • x + n • x = (k+n) • x :=
   PosSmulAssoc.add_psmul k n x
 
 theorem one_psmul [Add M] [SMul ℕ+ M] [PosSmulAssoc M] (x : M) : (1:ℕ+) • x = x :=

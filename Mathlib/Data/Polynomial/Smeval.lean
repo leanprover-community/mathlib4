@@ -162,7 +162,7 @@ section UnitalPowAssoc
 
 variable [NonAssocSemiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S]
 
-variable [Pow S ℕ] [PowAssoc S] -- Unfortunately the theorems here can't be used in the associative case.
+variable [Pow S ℕ] [PowAssoc S]
 
 variable (x : S) (p q : R[X])
 
