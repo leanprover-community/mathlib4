@@ -49,7 +49,7 @@ section
 You should extend this class when you extend `ContinuousOrderHom`. -/
 class ContinuousOrderHomClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
     [TopologicalSpace α] [TopologicalSpace β] [NDFunLike F α β] extends
-    ContinuousMapClass F α β where
+    ContinuousMapClass F α β : Prop where
   map_monotone (f : F) : Monotone f
 #align continuous_order_hom_class ContinuousOrderHomClass
 
