@@ -97,8 +97,8 @@ noncomputable def directLimitCommutesTensorProduct :
 `limᵢ (M ⊗ Gᵢ)` and `M ⊗ (limᵢ Gᵢ)` are isomorphic as modules
 -/
 noncomputable def directLimitCommutesTensorProduct' :
-  (DirectLimit (M ⊗[R] G ·) fun i j h => LinearMap.lTensor M (f _ _ h)) ≃ₗ[R]
-  M ⊗[R] Lim_G :=
+    (DirectLimit (M ⊗[R] G ·) fun i j h => LinearMap.lTensor M (f _ _ h)) ≃ₗ[R]
+    M ⊗[R] Lim_G :=
   LinearEquiv.ofLinear
     (lift _ _ _ _ (fun i => of R ι _ _ i ∘ₗ (TensorProduct.comm R M (G i)).toLinearMap)
       fun i j h x => x.induction_on (by aesop) (fun m g =>
