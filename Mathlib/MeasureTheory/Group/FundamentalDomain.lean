@@ -742,7 +742,7 @@ noncomputable def NullMeasurableSet.quotientMeasure : Measure (Quotient α_mod_G
   · intro x y x_ne_y
     have := (Disjoint.preimage π (disjoint_f x_ne_y))
     rw [Function.onFun_apply]
-    have : Disjoint (ff x) (ff y) := by aesop
+    have : Disjoint (ff x) (ff y) := by dsimp [Disjoint]; aesop
     exact this.aedisjoint
   convert measure_iUnion₀ disjoint_ff meas_ff using 1
   simp [iUnion_inter]
