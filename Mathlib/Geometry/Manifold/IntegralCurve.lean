@@ -17,10 +17,11 @@ For any continuously differentiable vector field on a manifold `M` and any chose
 As a corollary, such an integral curve exists for any starting point `x₀` if `M` is a manifold
 without boundary.
 
-## Implementation notes
+## Main definition
 
-If `v : M → TM` is a vector field on `M` and `x : M`, `IsIntegralCurveAt γ v t₀ x₀` means
-`γ : ℝ → M` is a differentiable integral curve of `v` with `γ x₀ = t₀`.
+- **IsInteriorPoint x**: If `v : M → TM` is a vector field on `M` and `x : M`,
+`IsIntegralCurveAt γ v t₀ x₀` means `γ : ℝ → M` is a differentiable integral curve of `v` with
+`γ x₀ = t₀`.
 
 ## Tags
 
@@ -78,12 +79,23 @@ TODO:
 * split the theorem below into smaller lemmas, e.g. involving IsIntegralCurveAt?
 * shift and stretch theorems
 -/
-example (γ : ℝ → M) (dt : ℝ) :
-    IsIntegralCurveAt γ v t₀ x₀ ↔ IsIntegralCurveAt (γ ∘ (fun t => t + dt)) v (t₀ + dt) x₀ :=
-  sorry
+lemma IsIntegralCurveAt.comp_add {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀ x₀) (dt : ℝ) :
+    IsIntegralCurveAt (γ ∘ (fun t => t + dt)) v (t₀ - dt) x₀ := by
+  obtain ⟨h1, ε, hε, h2⟩ := hγ
+  refine' ⟨by simp [h1], ε, hε, _⟩
+  intros t ht
+  rw [sub_right_comm, sub_add_eq_add_sub, ←add_mem_Ioo_iff_left] at ht
+  have h2' := h2 (t + dt) ht
+  rw [Function.comp_apply,
+    ←ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
+  apply HasMFDerivAt.comp t h2' (f := fun t : ℝ => t + dt)
+  refine' ⟨(continuous_add_right _).continuousAt, _⟩
+  simp
+  apply HasFDerivAt.add_const
+  exact hasFDerivAt_id _
 
-example (γ : ℝ → M) (a : ℝ) :
-    IsIntegralCurveAt γ v t₀ x₀ ↔ IsIntegralCurveAt (γ ∘ (fun t => a * t)) (a • v) t₀ x₀ := sorry
+lemma IsIntegralCurveAt.comp_mul (γ : ℝ → M) (a : ℝ) :
+    IsIntegralCurveAt γ v t₀ x₀ → IsIntegralCurveAt (γ ∘ (fun t => a * t)) (a • v) t₀ x₀ := sorry
 
 /-- For any continuously differentiable vector field and any chosen non-boundary point `x₀` on the
   manifold, there exists an integral curve `γ : ℝ → M` such that `γ t₀ = x₀` and the tangent vector
@@ -94,6 +106,7 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
   /- express the derivative of the section `v` in the local charts -/
   rw [contMDiffAt_iff] at hv
   obtain ⟨_, hv⟩ := hv
+  /- `hI` should be a separate lemma -/
   have hI : range I ∈ nhds (extChartAt I x₀ x₀) := by
     rw [mem_nhds_iff]
     refine ⟨interior (extChartAt I x₀).target,
