@@ -217,7 +217,7 @@ lemma reduction_isPrimitive : isPrimitive (χ.primitiveCharacter) := by
   · rw [isPrimitive_def]
     convert conductor_eq_zero_iff_level_eq_zero.mpr h
   · exact le_antisymm (Nat.le_of_dvd (Nat.pos_of_ne_zero h) (conductor_dvd_level _)) <|
-      conductor_le_conductor_mem_conductorSet _ <| conductor_mem_conductorSet χ
+      conductor_le_conductor_mem_conductorSet <| conductor_mem_conductorSet χ
 
 lemma reduction_one (hn : n ≠ 0) : (1 : DirichletCharacter R n).primitiveCharacter = 1 := by
   rw [eq_one_iff_conductor_eq_one <| (@conductor_one R _ _ hn) ▸ Nat.one_ne_zero,
