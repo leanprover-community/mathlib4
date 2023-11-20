@@ -63,12 +63,11 @@ namespace MeasureTheory
 variable {Ω E : Type*} [MeasurableSpace E]
 
 /-- A random variable `X : Ω → E` is said to `HasPDF` with respect to the measure `ℙ` on `Ω` and
-`μ` on `E` if there exists a measurable function `f` such that the push-forward measure of `ℙ`
-along `X` equals `μ.withDensity f`. -/
+`μ` on `E` if the push-forward measure of `ℙ` along `X` is absolutely continuous with respect to
+`μ` and they `HaveLebesgueDecomposition`. -/
 class HasPDF {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
     (μ : Measure E := by volume_tac) : Prop where
-  -- porting note: TODO: split into fields `Measurable` and `exists_pdf`
-  pdf' : Measurable X ∧ ∃ f : E → ℝ≥0∞, Measurable f ∧ map X ℙ = μ.withDensity f
+  pdf' : Measurable X ∧ HaveLebesgueDecomposition (map X ℙ) μ ∧ map X ℙ ≪ μ
 #align measure_theory.has_pdf MeasureTheory.HasPDF
 
 @[measurability]
@@ -78,15 +77,19 @@ theorem HasPDF.measurable {_ : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure
   hX.pdf'.1
 #align measure_theory.has_pdf.measurable MeasureTheory.HasPDF.measurable
 
-/-- If `X` is a random variable that `HasPDF X ℙ μ`, then `pdf X` is the measurable function `f`
-such that the push-forward measure of `ℙ` along `X` equals `μ.withDensity f`. -/
+instance HasPDF.haveLebesgueDecomposition {_ : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
+    (μ : Measure E := by volume_tac) [hX : HasPDF X ℙ μ] : HaveLebesgueDecomposition (map X ℙ) μ :=
+  hX.pdf'.2.1
+
+/-- If `X` is a random variable that `HasPDF X ℙ μ`, then `pdf X` is the Radon–Nikodym
+derivative of the push-forward measure of `ℙ` along `X` with respect to `μ`. -/
 def pdf {_ : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω) (μ : Measure E := by volume_tac) :
     E → ℝ≥0∞ :=
-  if hX : HasPDF X ℙ μ then Classical.choose hX.pdf'.2 else 0
+  if HasPDF X ℙ μ then (map X ℙ).rnDeriv μ else 0
 #align measure_theory.pdf MeasureTheory.pdf
 
-theorem pdf_undef {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E} {X : Ω → E}
-    (h : ¬HasPDF X ℙ μ) : pdf X ℙ μ = 0 := by simp only [pdf, dif_neg h]
+theorem pdf_undef {_ : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E} {X : Ω → E}
+    (h : ¬HasPDF X ℙ μ) : pdf X ℙ μ = 0 := if_neg h
 #align measure_theory.pdf_undef MeasureTheory.pdf_undef
 
 theorem hasPDF_of_pdf_ne_zero {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E} {X : Ω → E}
@@ -111,14 +114,14 @@ theorem measurable_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω
     (μ : Measure E := by volume_tac) : Measurable (pdf X ℙ μ) := by
   unfold pdf
   split_ifs with h
-  exacts [(Classical.choose_spec h.1.2).1, measurable_zero]
+  exacts [measurable_rnDeriv _ _, measurable_zero]
 #align measure_theory.measurable_pdf MeasureTheory.measurable_pdf
 
 theorem map_eq_withDensity_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
     (μ : Measure E := by volume_tac) [hX : HasPDF X ℙ μ] :
     Measure.map X ℙ = μ.withDensity (pdf X ℙ μ) := by
-  simp only [pdf, dif_pos hX]
-  exact (Classical.choose_spec hX.pdf'.2).2
+  simp [pdf, if_pos hX]
+  rw [withDensity_rnDeriv_eq _ _ hX.pdf'.2.2]
 #align measure_theory.map_eq_with_density_pdf MeasureTheory.map_eq_withDensity_pdf
 
 theorem map_eq_set_lintegral_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
@@ -232,14 +235,8 @@ theorem haveLebesgueDecomposition_of_hasPDF {X : Ω → E} [hX' : HasPDF X ℙ �
 #align measure_theory.pdf.have_lebesgue_decomposition_of_has_pdf MeasureTheory.pdf.haveLebesgueDecomposition_of_hasPDF
 
 theorem hasPDF_iff {X : Ω → E} :
-    HasPDF X ℙ μ ↔ Measurable X ∧ (map X ℙ).HaveLebesgueDecomposition μ ∧ map X ℙ ≪ μ := by
-  constructor
-  · intro hX'
-    exact ⟨hX'.pdf'.1, haveLebesgueDecomposition_of_hasPDF, map_absolutelyContinuous⟩
-  · rintro ⟨hX, h_decomp, h⟩
-    haveI := h_decomp
-    refine' ⟨⟨hX, (Measure.map X ℙ).rnDeriv μ, measurable_rnDeriv _ _, _⟩⟩
-    rwa [withDensity_rnDeriv_eq]
+    HasPDF X ℙ μ ↔ Measurable X ∧ (map X ℙ).HaveLebesgueDecomposition μ ∧ map X ℙ ≪ μ :=
+  ⟨@HasPDF.pdf' _ _ _ _ _ _ _, HasPDF.mk⟩
 #align measure_theory.pdf.has_pdf_iff MeasureTheory.pdf.hasPDF_iff
 
 theorem hasPDF_iff_of_measurable {X : Ω → E} (hX : Measurable X) :
