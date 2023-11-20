@@ -138,6 +138,38 @@ protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
       exact add _ _ (tmul ..) ih
 #align tensor_product.induction_on TensorProduct.induction_on
 
+/-- An unbundled version of `TensorProduct.liftAddHom`, for better performance. -/
+def liftFun (f : M → N → P)
+    (hf_zero_left : ∀ n, f 0 n = 0) (hf_zero_right : ∀ m, f m 0 = 0)
+    (hf_add_left : ∀ m₁ m₂ n, f (m₁ + m₂) n = f m₁ n + f m₂ n)
+    (hf_add_right : ∀ m n₁ n₂, f m (n₁ + n₂) = f m n₁ + f m n₂)
+    (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) :
+    M ⊗[R] N →+ P :=
+  (addConGen (TensorProduct.Eqv R M N)).lift (FreeAddMonoid.lift (fun mn : M × N => f mn.1 mn.2)) <|
+      AddCon.addConGen_le fun x y hxy =>
+        match x, y, hxy with
+        | _, _, .of_zero_left n =>
+          (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, hf_zero_left]
+        | _, _, .of_zero_right m =>
+          (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, hf_zero_right]
+        | _, _, .of_add_left m₁ m₂ n =>
+          (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, hf_add_left]
+        | _, _, .of_add_right m n₁ n₂ =>
+          (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, hf_add_right]
+        | _, _, .of_smul s m n =>
+          (AddCon.ker_rel _).2 <| by rw [FreeAddMonoid.lift_eval_of, FreeAddMonoid.lift_eval_of, hf]
+        | _, _, .add_comm x y =>
+          (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]
+
+@[simp]
+theorem liftFun_tmul (f : M → N → P)
+    (hf_zero_left : ∀ n, f 0 n = 0) (hf_zero_right : ∀ m, f m 0 = 0)
+    (hf_add_left : ∀ m₁ m₂ n, f (m₁ + m₂) n = f m₁ n + f m₂ n)
+    (hf_add_right : ∀ m n₁ n₂, f m (n₁ + n₂) = f m n₁ + f m n₂)
+    (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) (m : M) (n : N) :
+    liftFun f hf_zero_left hf_zero_right hf_add_left hf_add_right hf (m ⊗ₜ n) = f m n :=
+  rfl
+
 /-- Lift a map that is additive in both arguments, such that scalar multiplication in either
 argument is equivalent, to the tensor product.
 
@@ -146,23 +178,10 @@ so it doesn't matter. -/
 def liftAddHom (f : M →+ N →+ P)
     (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) :
     M ⊗[R] N →+ P :=
-  (addConGen (TensorProduct.Eqv R M N)).lift (FreeAddMonoid.lift (fun mn : M × N => f mn.1 mn.2)) <|
-      AddCon.addConGen_le fun x y hxy =>
-        match x, y, hxy with
-        | _, _, .of_zero_left n =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, map_zero,
-            AddMonoidHom.zero_apply]
-        | _, _, .of_zero_right m =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, map_zero]
-        | _, _, .of_add_left m₁ m₂ n =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, map_add,
-            AddMonoidHom.add_apply]
-        | _, _, .of_add_right m n₁ n₂ =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, map_add]
-        | _, _, .of_smul s m n =>
-          (AddCon.ker_rel _).2 <| by rw [FreeAddMonoid.lift_eval_of, FreeAddMonoid.lift_eval_of, hf]
-        | _, _, .add_comm x y =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]
+  liftFun (f · ·)
+    (fun _ => by simp_rw [map_zero, AddMonoidHom.zero_apply]) (fun _ => map_zero _)
+    (fun _ _ _ => by simp_rw [map_add, AddMonoidHom.add_apply]) (fun _ _ _ => map_add _ _ _)
+    hf
 
 @[simp]
 theorem liftAddHom_tmul (f : M →+ N →+ P)
@@ -258,13 +277,8 @@ Note that in the special case that `R = R'`, since `R` is commutative, we just g
 action on a tensor product of two modules. This special case is important enough that, for
 performance reasons, we define it explicitly below. -/
 instance leftHasSMul : SMul R' (M ⊗[R] N) where
-  smul r := liftAddHom
-    (AddMonoidHom.comp
-      { toFun := fun m =>
-          { toFun := fun n => m ⊗ₜ n, map_zero' := tmul_zero _ _, map_add' := tmul_add _ }
-        map_add' := fun m₁ m₂ => AddMonoidHom.ext fun n => add_tmul _ _ _,
-        map_zero' := AddMonoidHom.ext fun m => zero_tmul _ _ }
-      (DistribMulAction.toAddMonoidHom M r))
+  smul r := liftFun (fun m n => (r • m) ⊗ₜ n)
+    (by simp) (by simp) (by simp [add_tmul]) (by simp [tmul_add])
     (fun r' m n => by dsimp; rw [←smul_comm, smul_tmul])
 #align tensor_product.left_has_smul TensorProduct.leftHasSMul
 attribute [-instance] addCommMonoidWithBadSMul
