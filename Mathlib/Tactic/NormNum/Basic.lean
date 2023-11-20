@@ -498,7 +498,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num (_ : ℕ) - _, Sub.sub (_ : ℕ) _, Nat.sub _ _] def evalNatSub :
     NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
-  -- We trust that the default instance for `HSub` is `Nat.sub` when the first parameter is `ℕ`.
+  -- We assert that the default instance for `HSub` is `Nat.sub` when the first parameter is `ℕ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(HSub.hSub (α := ℕ))
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
   haveI' : $e =Q $a - $b := ⟨⟩
@@ -519,7 +519,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
   haveI' : $e =Q $a % $b := ⟨⟩
-  -- We trust that the default instance for `HMod` is `Nat.mod` when the first parameter is `ℕ`.
+  -- We assert that the default instance for `HMod` is `Nat.mod` when the first parameter is `ℕ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(HMod.hMod (α := ℕ))
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨na, pa⟩ ← deriveNat a sℕ; let ⟨nb, pb⟩ ← deriveNat b sℕ
@@ -538,7 +538,7 @@ def evalNatDiv : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
   haveI' : $e =Q $a / $b := ⟨⟩
-  -- We trust that the default instance for `HDiv` is `Nat.div` when the first parameter is `ℕ`.
+  -- We assert that the default instance for `HDiv` is `Nat.div` when the first parameter is `ℕ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := ℕ))
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨na, pa⟩ ← deriveNat a sℕ; let ⟨nb, pb⟩ ← deriveNat b sℕ
@@ -558,7 +558,7 @@ theorem isNat_dvd_false : {a b : ℕ} → {a' b' c : ℕ} →
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num (_ : ℕ) ∣ _] def evalNatDvd : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
-  -- We trust that the default instance for `Dvd` is `Nat.dvd` when the first parameter is `ℕ`.
+  -- We assert that the default instance for `Dvd` is `Nat.dvd` when the first parameter is `ℕ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(Dvd.dvd (α := ℕ))
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨na, pa⟩ ← deriveNat a sℕ; let ⟨nb, pb⟩ ← deriveNat b sℕ
