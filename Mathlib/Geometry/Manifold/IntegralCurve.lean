@@ -17,6 +17,11 @@ For any continuously differentiable vector field on a manifold `M` and any chose
 As a corollary, such an integral curve exists for any starting point `x₀` if `M` is a manifold
 without boundary.
 
+## Implementation notes
+
+If `v : M → TM` is a vector field on `M` and `x : M`, `IsIntegralCurveAt γ v t₀ x₀` means
+`γ : ℝ → M` is a differentiable integral curve of `v` with `γ x₀ = t₀`.
+
 ## Tags
 
 integral curve, vector field, local existence
