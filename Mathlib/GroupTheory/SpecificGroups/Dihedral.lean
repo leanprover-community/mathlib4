@@ -272,7 +272,7 @@ noncomputable def mulEquivOfCardEqFourAndNotIsCyclic (h1 : Fintype.card G = 4) (
     have : orderOf x ≠ 4 := fun h => h2 <| isCyclic_of_orderOf_eq_card x (h1 ▸ h)
     generalize orderOf x = n at *
     rw [← pow_one 2, Nat.dvd_prime_pow Nat.prime_two]
-    rw [show 4 = 2 ^ 2 by norm_num1, Nat.dvd_prime_pow Nat.prime_two] at h_dvd_four
+    rw [show 4 = 2 ^ 2 by rfl, Nat.dvd_prime_pow Nat.prime_two] at h_dvd_four
     obtain ⟨k, hk, rfl⟩ := h_dvd_four
     use k
     revert k
