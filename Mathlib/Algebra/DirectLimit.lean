@@ -103,8 +103,8 @@ instance module : Module R (DirectLimit G f) :=
 instance inhabited : Inhabited (DirectLimit G f) :=
   ⟨0⟩
 
-instance unique [IsEmpty ι] : Unique (DirectLimit G f) := by
-  change Unique (Quotient _); infer_instance
+instance unique [IsEmpty ι] : Unique (DirectLimit G f) :=
+  inferInstanceAs <| Unique (Quotient _)
 
 variable (R ι)
 

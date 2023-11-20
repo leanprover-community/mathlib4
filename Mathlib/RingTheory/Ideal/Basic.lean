@@ -639,6 +639,30 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
   exact ⟨f x ^ (n + 1), mul_comm _ _⟩
 #align ideal.span_pow_eq_top Ideal.span_pow_eq_top
 
+lemma isPrime_of_maximally_disjoint (I : Ideal α)
+    (S : Submonoid α)
+    (disjoint : Disjoint (I : Set α) S)
+    (maximally_disjoint : ∀ (J : Ideal α), I < J → ¬ Disjoint (J : Set α) S) :
+    I.IsPrime where
+  ne_top' := by
+    rintro rfl
+    have : 1 ∈ (S : Set α) := S.one_mem
+    aesop
+  mem_or_mem' {x y} hxy := by
+    by_contra' rid
+    have hx := maximally_disjoint (I ⊔ span {x}) (Submodule.lt_sup_iff_not_mem.mpr rid.1)
+    have hy := maximally_disjoint (I ⊔ span {y}) (Submodule.lt_sup_iff_not_mem.mpr rid.2)
+    simp only [Set.not_disjoint_iff, mem_inter_iff, SetLike.mem_coe, Submodule.mem_sup,
+      mem_span_singleton] at hx hy
+    obtain ⟨s₁, ⟨i₁, hi₁, ⟨_, ⟨r₁, rfl⟩, hr₁⟩⟩, hs₁⟩ := hx
+    obtain ⟨s₂, ⟨i₂, hi₂, ⟨_, ⟨r₂, rfl⟩, hr₂⟩⟩, hs₂⟩ := hy
+    refine disjoint.ne_of_mem
+      (I.add_mem (I.mul_mem_left (i₁ + x * r₁) hi₂) <| I.add_mem (I.mul_mem_right (y * r₂) hi₁) <|
+        I.mul_mem_right (r₁ * r₂) hxy)
+      (S.mul_mem hs₁ hs₂) ?_
+    rw [← hr₁, ← hr₂]
+    ring
+
 end Ideal
 
 end CommSemiring
