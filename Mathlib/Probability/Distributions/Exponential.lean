@@ -31,7 +31,7 @@ open scoped ENNReal NNReal Real
 open MeasureTheory Real Set Filter Topology
 
   /-- A Lebesgue Integral from -∞ to y can be expressed as the sum of one from -∞ to 0 and 0 to x -/
-lemma lintegral_split_bounded {y z : ℝ} (f : ℝ → ℝ≥0∞) (hzy : z ≤ y) :
+lemma lintegral_Iic_eq_lintegral_Iio_add_Icc {y z : ℝ} (f : ℝ → ℝ≥0∞) (hzy : z ≤ y) :
     ∫⁻ x in Iic y, f x = (∫⁻ x in Iio z, f x) + ∫⁻ x in Icc z y, f x := by
   rw [← Iio_union_Icc_eq_Iic hzy, lintegral_union measurableSet_Icc]
   rw [Set.disjoint_iff]
@@ -69,12 +69,12 @@ def exponentialPdf (r x : ℝ) : ℝ≥0∞ :=
 lemma exponentialPdf_eq (r x : ℝ) :
     exponentialPdf r x = ENNReal.ofReal (if 0 ≤ x then r * exp (-(r * x)) else 0) := rfl
 
-lemma antiDeriv_expDeriv_pos' {r x : ℝ} (hr : 0 < r) :
+lemma hasDerivAt_exp_neg {r x : ℝ} (hr : 0 < r) :
     HasDerivAt (fun a ↦ -1/r * exp (-(r * a))) (exp (-(r * x))) x := by
   convert (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1/r)) using 1 <;> field_simp
 
 /-- the Lebesgue-Integral of the exponential PDF over nonpositive Reals equals 0-/
-lemma lintegral_nonpos {x r : ℝ} (hx : x ≤ 0) :
+lemma lintegral_exponentialPdf_of_nonpos  {x r : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, exponentialPdf r y = 0 := by
   rw [set_lintegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
@@ -133,8 +133,9 @@ lemma antiDeriv_tendsto_zero {r : ℝ} (hr : 0 < r) :
 
 open Measure
 
-lemma lintegral_exponentialPdfReal_eq_one (r : ℝ) (hr : 0 < r) :
-    ∫⁻ x, exponentialPdf r x = 1 := by
+/-- The Pdf of the exponential Distribution integrates to 1-/
+@[simp]
+lemma lintegral_exponentialPdf_eq_one (r : ℝ) (hr : 0 < r) : ∫⁻ x, exponentialPdf r x = 1 := by
   rw [lintegral_split (exponentialPdf r) 0, ← ENNReal.toReal_eq_one_iff]
   have leftSide : ∫⁻ x in {x | x < 0}, exponentialPdf r x = 0 := by
     rw [set_lintegral_congr_fun (isOpen_gt' 0).measurableSet
@@ -149,16 +150,10 @@ lemma lintegral_exponentialPdfReal_eq_one (r : ℝ) (hr : 0 < r) :
     have IntegrOn : IntegrableOn (fun x ↦ rexp (-(r * x))) (Ioi 0) := by
       simp only [← neg_mul, exp_neg_integrableOn_Ioi 0 hr]
     rw [integral_mul_left, Ici_def, integral_Ici_eq_integral_Ioi,
-        integral_Ioi_of_hasDerivAt_of_tendsto' (fun _ _ ↦ antiDeriv_expDeriv_pos' hr) IntegrOn
+        integral_Ioi_of_hasDerivAt_of_tendsto' (fun _ _ ↦ hasDerivAt_exp_neg hr) IntegrOn
         (antiDeriv_tendsto_zero hr)]
     field_simp
   · exact ((measurable_id'.const_mul r).neg.exp.const_mul r).stronglyMeasurable.aestronglyMeasurable
-
-/-- The Pdf of the exponential Distribution integrates to 1-/
-@[simp]
-lemma lintegral_exponentialPdf_eq_one (r : ℝ) (hr : 0 < r) :
-    ∫⁻ x, exponentialPdf r x = 1 :=
-  lintegral_exponentialPdfReal_eq_one r hr
 
 end ExponentialPdf
 
@@ -180,7 +175,7 @@ noncomputable
 def exponentialCdfReal (r : ℝ) : StieltjesFunction :=
     cdf (expMeasure r)
 
-lemma expCdf_eq_integral (r : ℝ) [Fact (0 < r)] : exponentialCdfReal r
+lemma exponentialCdfReal_eq_integral (r : ℝ) [Fact (0 < r)] : exponentialCdfReal r
     = fun x ↦ ∫ x in Iic x, exponentialPdfReal r x := by
   ext x
   rw [exponentialCdfReal,cdf_eq_toReal]
@@ -189,7 +184,7 @@ lemma expCdf_eq_integral (r : ℝ) [Fact (0 < r)] : exponentialCdfReal r
   · exact ae_of_all _ fun a ↦ by simp [Pi.zero_apply, exponentialPdfReal_nonneg Fact.out a]
   · exact (Measurable.aestronglyMeasurable (measurable_exponentialPdfReal r)).restrict
 
-lemma expCdf_eq_lintegral (r : ℝ) [Fact (0 < r)] : exponentialCdfReal r =
+lemma exponentialCdfReal_eq_lintegral (r : ℝ) [Fact (0 < r)] : exponentialCdfReal r =
     fun x ↦ ENNReal.toReal (∫⁻ x in Iic x, exponentialPdf r x) := by
   ext x
   simp only [exponentialPdf, exponentialCdfReal, cdf_eq_toReal]
@@ -198,7 +193,7 @@ lemma expCdf_eq_lintegral (r : ℝ) [Fact (0 < r)] : exponentialCdfReal r =
 
 open Topology
 
-lemma antiDeriv_expDeriv_pos {r x : ℝ} :
+lemma hasDerivAt_neg_exp_mul_exp {r x : ℝ} :
     HasDerivAt (fun a ↦ -1 * exp (-(r * a))) (r * exp (-(r * x))) x := by
   convert (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1)) using 1
   · simp only [id_eq, neg_mul]
@@ -214,7 +209,8 @@ lemma lint_eq_antiDeriv (r : ℝ) (hr : 0 < r) : ∀ x : ℝ,
     rw [set_lintegral_congr_fun measurableSet_Iic, lintegral_zero, ENNReal.ofReal_zero]
     exact ae_of_all _ fun a (_ : a ≤ _) ↦ by rw [if_neg (by linarith), ENNReal.ofReal_eq_zero]
   case pos =>
-    rw [lintegral_split_bounded _ h, lintegral_nonpos (le_refl 0), zero_add]
+    rw [lintegral_Iic_eq_lintegral_Iio_add_Icc _ h, lintegral_exponentialPdf_of_nonpos  (le_refl 0),
+      zero_add]
     simp only [exponentialPdf_eq]
     rw[set_lintegral_congr_fun measurableSet_Icc (ae_of_all _
         (by intro a ⟨(hle : _ ≤ a), _⟩; rw [if_pos hle]))]
@@ -232,7 +228,7 @@ lemma lint_eq_antiDeriv (r : ℝ) (hr : 0 < r) : ∀ x : ℝ,
     · have : Continuous (fun a ↦ rexp (-(r * a))) := by
         simp only [← neg_mul]; exact  (continuous_mul_left (-r)).exp
       exact Continuous.continuousOn (Continuous.comp' (continuous_mul_left (-1)) this)
-    · exact fun _ _ ↦ HasDerivAt.hasDerivWithinAt antiDeriv_expDeriv_pos
+    · exact fun _ _ ↦ HasDerivAt.hasDerivWithinAt hasDerivAt_neg_exp_mul_exp
     · apply Integrable.aestronglyMeasurable (Integrable.const_mul _ _)
       rw [← integrableOn_def, integrableOn_Icc_iff_integrableOn_Ioc]
       exact exp_neg_integrableOn_Ioc hr
@@ -241,9 +237,9 @@ lemma lint_eq_antiDeriv (r : ℝ) (hr : 0 < r) : ∀ x : ℝ,
       apply Integrable.const_mul (exp_neg_integrableOn_Ioc hr)
 
 /-- The Definition of the CDF equals the known Formular ``1 - exp (-(r * x))``-/
-lemma exponentialCdf_eq {r : ℝ} [Fact (0 < r)] : exponentialCdfReal r =
+lemma exponentialCdfReal_eq {r : ℝ} [Fact (0 < r)] : exponentialCdfReal r =
     fun x ↦ if 0 ≤ x then 1 - exp (-(r * x)) else 0 := by
-  rw[expCdf_eq_lintegral]; ext x; rw [lint_eq_antiDeriv _ Fact.out]
+  rw[exponentialCdfReal_eq_lintegral]; ext x; rw [lint_eq_antiDeriv _ Fact.out]
   rw[ENNReal.toReal_ofReal_eq_iff]
   split_ifs with h <;> simp [mul_nonneg (le_of_lt Fact.out) _]
   exact mul_nonneg (le_of_lt Fact.out) h
