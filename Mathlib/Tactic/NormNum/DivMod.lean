@@ -55,7 +55,7 @@ partial def evalIntDiv : NormNumExt where eval {u α} e := do
   | .isNat inst nb pb =>
     assumeInstancesCommute
     if nb.natLit! == 0 then
-      have : $nb =Q nat_lit 0 := ⟨⟩
+      have _ : $nb =Q nat_lit 0 := ⟨⟩
       return .isNat q(instAddMonoidWithOne) q(nat_lit 0) q(isInt_ediv_zero $pa $pb)
     else
       let ⟨zq, q, p⟩ := core a na za pa b nb pb
@@ -117,7 +117,7 @@ where
     | .isNat inst nb pb => do
       assumeInstancesCommute
       if nb.natLit! == 0 then
-        have : $nb =Q nat_lit 0 := ⟨⟩
+        have _ : $nb =Q nat_lit 0 := ⟨⟩
         return .isInt q(Int.instRingInt) na za q(isInt_emod_zero $pa $pb)
       else
         let ⟨r, p⟩ := core a na za pa b nb pb
