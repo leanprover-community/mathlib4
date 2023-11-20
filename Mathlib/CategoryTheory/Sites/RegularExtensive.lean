@@ -98,6 +98,8 @@ def regularCoverage [Preregular C] : Coverage C where
 
 /--
 The extensive coverage on an extensive category `C`
+
+TODO: use general colimit API instead of `IsIso (Sigma.desc π)`
 -/
 def extensiveCoverage [FinitaryPreExtensive C] : Coverage C where
   covering B := { S | ∃ (α : Type) (_ : Fintype α) (X : α → C) (π : (a : α) → (X a ⟶ B)),
