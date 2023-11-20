@@ -237,7 +237,9 @@ lemma exponentialCdfReal_eq {r : ℝ} [Fact (0 < r)] (x : ℝ) : exponentialCdfR
     if 0 ≤ x then 1 - exp (-(r * x)) else 0 := by
   simp only [exponentialCdfReal_eq_lintegral, lintegral_exponentialPdf_eq_antiDeriv _ Fact.out,
     ENNReal.toReal_ofReal_eq_iff]
-  split_ifs with h <;> simp [mul_nonneg (le_of_lt Fact.out) _]
-  exact mul_nonneg (le_of_lt Fact.out) h
+  split_ifs with h
+  · simp only [sub_nonneg, exp_le_one_iff, Left.neg_nonpos_iff, gt_iff_lt, ge_iff_le]
+    exact mul_nonneg (le_of_lt Fact.out) h
+  · simp
 
 end ExponentialCdf
