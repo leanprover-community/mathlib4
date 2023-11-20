@@ -237,7 +237,7 @@ theorem ascFactorial_succ {n k : ℕ} : n.ascFactorial k.succ = (n + k) * n.ascF
 
 theorem zero_ascFactorial : ∀ (k : ℕ), (0 : ℕ).ascFactorial k.succ = 0
   | 0 => by
-    simp only
+    rw [ascFactorial_succ, ascFactorial_zero, zero_add, zero_mul]
   | (k+1) => by
     rw [ascFactorial_succ, zero_ascFactorial k, mul_zero]
 
