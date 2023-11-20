@@ -13,7 +13,8 @@ import Mathlib.Probability.Independence.Basic
 # Probability density function
 
 This file defines the probability density function of random variables, by which we mean
-measurable functions taking values in a Borel space. In particular, a measurable function `f`
+measurable functions taking values in a Borel space. The probability density function is defined
+as the Radon–Nikodym derivative of the law of `X`. In particular, a measurable function `f`
 is said to the probability density function of a random variable `X` if for all measurable
 sets `S`, `ℙ(X ∈ S) = ∫ x in S, f x dx`. Probability density functions are one way of describing
 the distribution of a random variable, and are useful for calculating probabilities and
@@ -25,11 +26,10 @@ random variables with this distribution.
 ## Main definitions
 
 * `MeasureTheory.HasPDF` : A random variable `X : Ω → E` is said to `HasPDF` with
-  respect to the measure `ℙ` on `Ω` and `μ` on `E` if there exists a measurable function `f`
-  such that the push-forward measure of `ℙ` along `X` equals `μ.withDensity f`.
+  respect to the measure `ℙ` on `Ω` and `μ` on `E` if the push-forward measure of `ℙ` along `X`
+  is absolutely continuous with respect to `μ` and they `HaveLebesgueDecomposition`.
 * `MeasureTheory.pdf` : If `X` is a random variable that `HasPDF X ℙ μ`, then `pdf X`
-  is the measurable function `f` such that the push-forward measure of `ℙ` along `X` equals
-  `μ.withDensity f`.
+  is the Radon–Nikodym derivative of the push-forward measure of `ℙ` along `X` with respect to `μ`.
 * `MeasureTheory.pdf.IsUniform` : A random variable `X` is said to follow the uniform
   distribution if it has a constant probability density function with a compact, non-null support.
 
