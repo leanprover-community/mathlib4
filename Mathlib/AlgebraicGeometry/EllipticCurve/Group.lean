@@ -11,7 +11,8 @@ import Mathlib.RingTheory.ClassGroup
 # Group law on Weierstrass curves
 
 This file proves that the nonsingular rational points on a Weierstrass curve forms an abelian group
-under the geometric group law defined in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine`.
+under the geometric group law defined in `Mathlib.AlgebraicGeometry.EllipticCurve.Affine` and in
+`Mathlib.AlgebraicGeometry.EllipticCurve.Projective`.
 
 ## Mathematical background
 
@@ -31,6 +32,9 @@ Injectivity can then be shown by computing the degree of such a norm $N(p + qY)$
 ways, which is done in `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis` and in the
 auxiliary lemmas in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroupPoint`.
 
+When `W` is given in projective coordinates, `WeierstrassCurve.Projective.Point.toAffine_addEquiv`
+pulls back the group law on `WeierstrassCurve.Affine.Point` to `WeierstrassCurve.Projective.Point`.
+
 ## Main definitions
 
  * `WeierstrassCurve.Affine.CoordinateRing`: the coordinate ring `F[W]` of a Weierstrass curve `W`.
@@ -38,12 +42,14 @@ auxiliary lemmas in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroup
 
 ## Main statements
 
- * `WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing`: the coordinate ring of a
-    Weierstrass curve is an integral domain.
+ * `WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing`: the coordinate ring of an
+    affine Weierstrass curve is an integral domain.
  * `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis`: the degree of the norm of an
-    element in the coordinate ring in terms of the power basis.
+    element in the coordinate ring of an affine Weierstrass curve in terms of the power basis.
  * `WeierstrassCurve.Affine.Point.instAddCommGroupPoint`: the type of nonsingular rational points on
-    a Weierstrass curve forms an abelian group under addition.
+    an affine Weierstrass curve forms an abelian group under addition.
+ * `WeierstrassCurve.Projective.Point.instAddCommGroupPoint`: the type of nonsingular rational
+    points on a projective Weierstrass curve forms an abelian group under addition.
 
 ## References
 
@@ -644,6 +650,33 @@ noncomputable instance instAddCommGroupPoint : AddCommGroup W.Point where
 end Point
 
 end WeierstrassCurve.Affine
+
+namespace WeierstrassCurve.Projective.Point
+
+/-! ## Weierstrass curves in projective coordinates -/
+
+variable {F : Type u} [Field F] {W : Affine F}
+
+lemma add_left_neg (P : W.Point) : -P + P = 0 :=
+  toAffine_addEquiv.injective <| by
+    rcases P with @⟨⟨_⟩, _⟩
+    simp only [map_add, toAffine_addEquiv_apply, toAffine_lift_neg, Affine.Point.add_left_neg,
+      toAffine_lift_zero]
+
+lemma add_comm (P Q : W.Point) : P + Q = Q + P :=
+  toAffine_addEquiv.injective <| by simp_rw [map_add, Affine.Point.add_comm]
+
+lemma add_assoc (P Q R : W.Point) : P + Q + R = P + (Q + R) :=
+  toAffine_addEquiv.injective <| by simp only [map_add, Affine.Point.add_assoc]
+
+noncomputable instance instAddCommGroupPoint : AddCommGroup W.Point where
+  zero_add := zero_add
+  add_zero := add_zero
+  add_left_neg := add_left_neg
+  add_comm := add_comm
+  add_assoc := add_assoc
+
+end WeierstrassCurve.Projective.Point
 
 namespace EllipticCurve.Affine
 

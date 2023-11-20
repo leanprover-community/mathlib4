@@ -47,6 +47,8 @@ Note that most computational proofs follow from their analogous proofs for affin
  * `WeierstrassCurve.Projective.Point`: a nonsingular rational point.
  * `WeierstrassCurve.Projective.Point.neg`: the negation operation on a nonsingular rational point.
  * `WeierstrassCurve.Projective.Point.add`: the addition operation on a nonsingular rational point.
+ * `WeierstrassCurve.Projective.Point.toAffine_addEquiv`: the equivalence between the nonsingular
+    rational points on a projective Weierstrass curve with those on an affine Weierstrass curve.
 
 ## Main statements
 
