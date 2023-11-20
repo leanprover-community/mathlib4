@@ -331,34 +331,36 @@ lemma getLsb_bitwise (f) (x y : BitVec w) (i : Fin w) (hf : f false false = fals
   have hffb₂ (b) (hf' : f false true ≠ true) : f false b = false  := by cases b <;> simp [hf, hf']
   have hfbf₁ (b) (hf' : f true false = true) : f b false = b      := by cases b <;> simp [hf, hf']
   have hfbf₂ (b) (hf' : f true false ≠ true) : f b false = false  := by cases b <;> simp [hf, hf']
-  stop
   induction' i with i ih generalizing x y
   · cases' x using Nat.binaryRec with x₀ x
     <;> cases' y using Nat.binaryRec with y₀ y
-    <;> simp [hf]
-    · split_ifs <;> simp [Nat.bit_and_one, -Nat.bit_false, -Nat.bit_true, *]
-    · split_ifs <;> simp [Nat.bit_and_one, -Nat.bit_false, -Nat.bit_true, *]
+    <;> simp [hf, bitwise_bit hf]
+    · split_ifs <;> simp [Nat.bit_and_one, *]
+    · split_ifs <;> simp [Nat.bit_and_one, *]
   · cases' x using Nat.binaryRec with x₀ x
     <;> cases' y using Nat.binaryRec with y₀ y
-    <;> simp [hf]
-    · split_ifs <;> simp [Nat.bit_and_one, -Nat.bit_false, -Nat.bit_true, *]
-    · split_ifs <;> simp [Nat.bit_and_one, -Nat.bit_false, -Nat.bit_true, *]
+    <;> simp [hf, bitwise_bit hf]
+    · split_ifs <;> simp [Nat.bit_and_one, *]
+    · split_ifs <;> simp [Nat.bit_and_one, *]
     · simp [Nat.bit_and_two_pow_succ, ih]
 
 @[simp] lemma getLsb_and (x y : BitVec w) (i : Fin w) :
     (x &&& y).getLsb i = (x.getLsb i && y.getLsb i) := by
-  simp only [HAnd.hAnd, AndOp.and, BitVec.and, Fin.land, land, getLsb_bitwise]
-  sorry
+  simp only [HAnd.hAnd, AndOp.and, BitVec.and, Fin.land, land]
+  rw [getLsb_bitwise]
+  rfl
 
 @[simp] lemma getLsb_or (x y : BitVec w) (i : Fin w) :
     (x ||| y).getLsb i = (x.getLsb i || y.getLsb i) := by
-  simp only [HOr.hOr, OrOp.or, BitVec.or, Fin.lor, lor, getLsb_bitwise]
-  sorry
+  simp only [HOr.hOr, OrOp.or, BitVec.or, Fin.lor, lor]
+  rw [getLsb_bitwise]
+  rfl
 
 @[simp] lemma getLsb_xor (x y : BitVec w) (i : Fin w) :
     (x ^^^ y).getLsb i = xor (x.getLsb i) (y.getLsb i) := by
-  simp only [HXor.hXor, Xor.xor, BitVec.xor, Fin.xor, Nat.xor, getLsb_bitwise]
-  sorry
+  simp only [HXor.hXor, Xor.xor, BitVec.xor, Fin.xor, Nat.xor]
+  rw [getLsb_bitwise]
+  rfl
 
 @[simp] lemma getLsb_negOne (i : Fin w) : getLsb (-1 : BitVec w) i = true := by
   simp only [getLsb, ofNat_eq_ofNat, Nat.shiftLeft_eq, one_mul, bne_iff_ne, ne_eq]
