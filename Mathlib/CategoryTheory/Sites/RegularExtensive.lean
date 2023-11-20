@@ -282,7 +282,7 @@ class Presieve.extensive {X : C} (R : Presieve X) :
 
 instance {X : C} (S : Presieve X) [S.extensive] : S.hasPullbacks where
   has_pullbacks := by
-    obtain ⟨_, _, _, _, rfl, ⟨hc⟩⟩ := Presieve.extensive.arrows_sigma_desc_iso (R := S)
+    obtain ⟨_, _, _, _, rfl, ⟨hc⟩⟩ := Presieve.extensive.arrows_nonempty_isColimit (R := S)
     intro _ _ f hf _ hg
     rw [hS] at hf hg
     cases' hg with b
@@ -300,7 +300,7 @@ A finite product preserving presheaf is a sheaf for the extensive topology on a 
 -/
 theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [S.extensive]
     (F : Cᵒᵖ ⥤ Type max u v) [PreservesFiniteProducts F] : S.IsSheafFor F  := by
-  obtain ⟨_, _, Z, π, rfl, ⟨hc⟩⟩ := extensive.arrows_sigma_desc_iso (R := S)
+  obtain ⟨_, _, Z, π, rfl, ⟨hc⟩⟩ := extensive.arrows_nonempty_isColimit (R := S)
   subst hS
   have : (ofArrows Z (Cofan.mk X π).inj).hasPullbacks :=
     (inferInstance : (ofArrows Z π).hasPullbacks)
