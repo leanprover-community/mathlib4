@@ -84,7 +84,7 @@ lemma isLocalDiffeomorph_iff {f : M → N} :
 lemma Diffeomorph.isLocalDiffeomorph (Φ : M ≃ₘ^n⟮I, J⟯ N) : IsLocalDiffeomorph I J M N n Φ := by
   intro x
   use ⟨univ, isOpen_univ⟩, ⟨univ, isOpen_univ⟩
-  use sorry -- xxx: want to use Φ, but cannot as they have different types!
+  use sorry--sorry -- xxx: want to use Φ, but cannot as they have different types!
   refine ⟨trivial, ?_⟩
   -- obvious once I'm using Φ
   sorry
@@ -120,7 +120,8 @@ lemma LocalDiffeomorph.image_coe {f : M → N} (hf : IsLocalDiffeomorph I J M N 
 
 /-- A local diffeomorphism is a diffeomorphism to its image. -/
 def LocalDiffeomorph.toDiffeomorphImage {f : M → N} (hf : IsLocalDiffeomorph I J M N n f) :
-    Diffeomorph I J M (LocalDiffeomorph.image I J M N n hf) n := sorry -- TODO!
+    Diffeomorph I J M (LocalDiffeomorph.image I J M N n hf) n := sorry
+  -- can glue the inverses at each point... omitted for now
 
 /-- A bijective local diffeomorphism is a diffeomorphism. -/
 def Diffeomorph.of_bijective_local_diffeomorph {f : M → N} (hf : IsLocalDiffeomorph I J M N n f)
@@ -149,9 +150,72 @@ lemma LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv (hf : IsLocalDiffeomorp
 
 lemma LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe (hf : IsLocalDiffeomorphAt I J M N n f x) :
     LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv I J M N n hf hn = mfderiv I J f x := by
-  --choose U V Φ hyp using hf
-  --rcases hyp with ⟨hxU, _⟩
-  -- have : mfderiv I J f x = mfderiv I J Φ ⟨x, hxU⟩ := sorry
+  -- choose U V Φ hyp using hf--: fails, as `hf` is also part of the conclusion...
+  -- rcases hyp with ⟨hxU, h2⟩
+  -- have : mfderiv I J f x = mfderiv I J Φ ⟨x, hxU⟩ := calc mfderiv I J f x
+  --   _ = mfderivWithin I J f U.1 x := (mfderivWithin_of_isOpen U.2 hxU).symm
+  --   _ = mfderivWithin I J Φ univ ⟨x, hxU⟩ := by sorry
+  --     -- this is not trivial: Φ has different domain from f, which is annoying all over the place!
+  --     -- have : f x = Φ ⟨x, hxU⟩ := sorry
+  --     -- apply mfderivWithin_congr (hL := h2) (hx := this)
+  --   _ = mfderiv I J Φ ⟨x, hxU⟩ := mfderivWithin_of_isOpen isOpen_univ trivial
   sorry
+
+/-- If `f : M → N` is differentiable at `x` and `mfderiv I J f x` is a linear isomorphism,
+  then `f` is a local diffeomorphism at `x`. -/
+def LocalDiffeomorphAt.of_mfderivIsomorphism
+    {f' : TangentSpace I x →L[𝕜] TangentSpace J (f x)} (hf' : HasMFDerivAt I J f x f')
+    {g' : TangentSpace J (f x) →L[𝕜] TangentSpace I x} (hinv₁ : g' ∘ f' = id) (hinv₂ : f' ∘ g' = id)
+    (hf : ContMDiffAt I J n f x) : IsLocalDiffeomorphAt I J M N n f x := by
+  -- XXX: is hypothesis `hf` required?
+  -- xxx: which is more convenient later: stating hinv₁₂ with ∘ or with comp?
+  have : ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
+    {
+      toFun := f'
+      invFun := g'
+      continuous_toFun := f'.cont
+      continuous_invFun := g'.cont
+      map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add f' x_1 y
+      map_smul' := by intros; simp
+      left_inv := congrFun hinv₁
+      right_inv := congrFun hinv₂
+    }
+  -- Now, we apply the inverse function theorem: not yet in mathlib.
+  sorry
+
+/-- If `f : M → N` is `C^n` and each differential `mfderiv I J f x` is a linear isomorphism,
+  `f` is a local diffeomorphism. -/
+-- TODO: that's not the right statement yet; need that each g_x is **continuous and linear**
+-- how can I encode this nicely?
+def LocalDiffeomorph.of_mfderivIsomorphism (hf : ContMDiff I J n f)
+    {g' : TangentBundle J N → TangentBundle I M}
+    (hg : ∀ x : M, Continuous (fun v ↦ (g' ⟨f x, v⟩).2))
+    (hinv₁ : (tangentMap I J f) ∘ g' = id) (hinv₂ : g' ∘ (tangentMap I J f) = id) :
+    IsLocalDiffeomorph I J M N n f := by
+  intro x
+  let realg' : TangentSpace J (f x) → TangentSpace I x := fun v ↦ (g' ⟨f x, v⟩).2
+  -- TODO: upgrade this, once I have stated the right hypothesis
+  let g' : TangentSpace J (f x) →L[𝕜] TangentSpace I x := sorry
+  apply LocalDiffeomorphAt.of_mfderivIsomorphism (f' := mfderiv I J f x) (g' := g') (hf := hf x)
+  · sorry -- routine stuff about differentiability
+  · -- apply hinv₂ at point x and simp lemmas about tangentMap I J f
+    have : realg' ∘ (mfderiv I J f x) = id := sorry
+    sorry -- now, if g' were what I want, I'd be happy
+  · sorry -- similar: apply hinv₁ instead
+
+variable (x) in
+/-- If `f` is a `C^n` local diffeomorphism (`n ≥ 1`), each differential is a linear equivalence. -/
+lemma LocalDiffeomorph.mfderiv_toContinuousLinearEquiv (hf : IsLocalDiffeomorph I J M N n f)
+    (hn : 1 ≤ n) : ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
+  LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv I J M N n (hf x) hn
+
+variable (x) in
+lemma LocalDiffeomorph.mfderiv_toContinuousLinearEquiv_coe (hf : IsLocalDiffeomorph I J M N n f):
+    LocalDiffeomorph.mfderiv_toContinuousLinearEquiv I J M N n x hf hn = mfderiv I J f x := by
+  let r := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe I J M N n hn (hf x)
+  have : ↑(LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv I J M N n (hf x) hn) =
+    ↑(LocalDiffeomorph.mfderiv_toContinuousLinearEquiv I J M N n x hf hn) :=
+    sorry -- why is this not obvious?
+  exact this ▸ r
 
 end Differential
