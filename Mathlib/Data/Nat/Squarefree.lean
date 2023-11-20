@@ -51,7 +51,7 @@ theorem Squarefree.factorization_le_one {n : ℕ} (p : ℕ) (hn : Squarefree n) 
   · have := hn p
     simp only [multiplicity_eq_factorization hp hn', Nat.isUnit_iff, hp.ne_one, or_false_iff]
       at this
-    exact_mod_cast this
+    exact mod_cast this
   · rw [factorization_eq_zero_of_non_prime _ hp]
     exact zero_le_one
 #align nat.squarefree.factorization_le_one Nat.Squarefree.factorization_le_one
@@ -254,7 +254,7 @@ instance : DecidablePred (Squarefree : ℕ → Prop) := fun _ =>
   decidable_of_iff' _ squarefree_iff_minSqFac
 
 theorem squarefree_two : Squarefree 2 := by
-  rw [squarefree_iff_nodup_factors] <;> norm_num
+  rw [squarefree_iff_nodup_factors] <;> decide
 #align nat.squarefree_two Nat.squarefree_two
 
 theorem divisors_filter_squarefree_of_squarefree {n : ℕ} (hn : Squarefree n) :

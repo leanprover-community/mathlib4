@@ -928,7 +928,7 @@ theorem measurable_uniqueElim [Unique δ] [∀ i, MeasurableSpace (π i)] :
 
 theorem measurable_updateFinset [DecidableEq δ] {s : Finset δ} {x : ∀ i, π i} :
     Measurable (updateFinset x s) := by
-  simp_rw [updateFinset, measurable_pi_iff]
+  simp (config := { unfoldPartialApp := true }) only [updateFinset, measurable_pi_iff]
   intro i
   by_cases h : i ∈ s <;> simp [h, measurable_pi_apply]
 

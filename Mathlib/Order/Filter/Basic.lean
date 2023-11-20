@@ -1056,7 +1056,7 @@ theorem iInf_principal {ι : Type w} [Finite ι] (f : ι → Set α) : ⨅ i, �
 theorem iInf_principal_finite {ι : Type w} {s : Set ι} (hs : s.Finite) (f : ι → Set α) :
     ⨅ i ∈ s, 𝓟 (f i) = 𝓟 (⋂ i ∈ s, f i) := by
   lift s to Finset ι using hs
-  exact_mod_cast iInf_principal_finset s f
+  exact mod_cast iInf_principal_finset s f
 #align filter.infi_principal_finite Filter.iInf_principal_finite
 
 end Lattice
@@ -1948,8 +1948,8 @@ theorem mem_comap'' : s ∈ comap f l ↔ kernImage f s ∈ l :=
 
 /-- RHS form is used, e.g., in the definition of `UniformSpace`. -/
 lemma mem_comap_prod_mk {x : α} {s : Set β} {F : Filter (α × β)} :
-    s ∈ comap (Prod.mk x) F ↔ {p : α × β | p.fst = x → p.snd ∈ s} ∈ F :=
-by simp_rw [mem_comap', Prod.ext_iff, and_imp, @forall_swap β (_ = _), forall_eq, eq_comm]
+    s ∈ comap (Prod.mk x) F ↔ {p : α × β | p.fst = x → p.snd ∈ s} ∈ F := by
+  simp_rw [mem_comap', Prod.ext_iff, and_imp, @forall_swap β (_ = _), forall_eq, eq_comm]
 #align filter.mem_comap_prod_mk Filter.mem_comap_prod_mk
 
 @[simp]

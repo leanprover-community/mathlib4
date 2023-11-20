@@ -30,14 +30,6 @@ lean_lib Mathlib where
   moreLeanArgs := moreLeanArgs
   weakLeanArgs := weakLeanArgs
 
-/-- `lake exe runMathlibLinter` runs the linter on all of Mathlib (or individual files). -/
--- Due to a change in Lake at v4.1.0-rc1, we need to give this a different name
--- than the `lean_exe runLinter` inherited from Std, or we always run that.
--- See https://github.com/leanprover/lean4/issues/2548
-lean_exe runMathlibLinter where
-  root := `scripts.runMathlibLinter
-  supportInterpreter := true
-
 /-- `lake exe checkYaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
 lean_exe checkYaml where
   root := `scripts.checkYaml
@@ -77,16 +69,17 @@ post_update pkg do
   let wsToolchainFile := rootPkg.dir / "lean-toolchain"
   let mathlibToolchain := ← IO.FS.readFile <| pkg.dir / "lean-toolchain"
   IO.FS.writeFile wsToolchainFile mathlibToolchain
-  /-
-  Instead of building and running cache via the Lake API,
-  spawn a new `lake` since the toolchain may have changed.
-  -/
-  let exitCode ← IO.Process.spawn {
-    cmd := "elan"
-    args := #["run", mathlibToolchain.trim, "lake", "exe", "cache", "get"]
-  } >>= (·.wait)
-  if exitCode ≠ 0 then
-    logError s!"{pkg.name}: failed to fetch cache"
+  if (← IO.getEnv "MATHLIB_NO_CACHE_ON_UPDATE") != some "1" then
+    /-
+    Instead of building and running cache via the Lake API,
+    spawn a new `lake` since the toolchain may have changed.
+    -/
+    let exitCode ← IO.Process.spawn {
+      cmd := "elan"
+      args := #["run", mathlibToolchain.trim, "lake", "exe", "cache", "get"]
+    } >>= (·.wait)
+    if exitCode ≠ 0 then
+      logError s!"{pkg.name}: failed to fetch cache"
 
 lean_lib MathlibExtras where
   roots := #[`MathlibExtras]

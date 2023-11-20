@@ -21,4 +21,4 @@ test/%.run: build
 
 
 lint: build
-	env LEAN_ABORT_ON_PANIC=1 lake exe runMathlibLinter
+	env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib

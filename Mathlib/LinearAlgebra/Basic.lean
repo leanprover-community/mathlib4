@@ -55,8 +55,6 @@ linear algebra, vector space, module
 
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Function
 
 open BigOperators Pointwise
@@ -328,8 +326,9 @@ theorem ker_le_comap {p : Submodule R₂ M₂} (f : M →ₛₗ[τ₁₂] M₂) 
     ker f ≤ p.comap f :=
   fun x hx ↦ by simp [mem_ker.mp hx]
 
-theorem disjoint_ker {f : F} {p : Submodule R M} : Disjoint p (ker f) ↔ ∀ x ∈ p, f x = 0 → x = 0 :=
-  by simp [disjoint_def]
+theorem disjoint_ker {f : F} {p : Submodule R M} :
+    Disjoint p (ker f) ↔ ∀ x ∈ p, f x = 0 → x = 0 := by
+  simp [disjoint_def]
 #align linear_map.disjoint_ker LinearMap.disjoint_ker
 
 theorem ker_eq_bot' {f : F} : ker f = ⊥ ↔ ∀ m, f m = 0 → m = 0 := by
@@ -641,18 +640,19 @@ theorem comap_subtype_self : comap p.subtype p = ⊤ :=
 #align submodule.comap_subtype_self Submodule.comap_subtype_self
 
 @[simp]
-theorem ker_ofLe (p p' : Submodule R M) (h : p ≤ p') : ker (ofLe h) = ⊥ := by
-  rw [ofLe, ker_codRestrict, ker_subtype]
-#align submodule.ker_of_le Submodule.ker_ofLe
+theorem ker_inclusion (p p' : Submodule R M) (h : p ≤ p') : ker (inclusion h) = ⊥ := by
+  rw [inclusion, ker_codRestrict, ker_subtype]
+#align submodule.ker_of_le Submodule.ker_inclusion
 
-theorem range_ofLe (p q : Submodule R M) (h : p ≤ q) : range (ofLe h) = comap q.subtype p := by
-  rw [← map_top, ofLe, LinearMap.map_codRestrict, map_top, range_subtype]
-#align submodule.range_of_le Submodule.range_ofLe
+theorem range_inclusion (p q : Submodule R M) (h : p ≤ q) :
+    range (inclusion h) = comap q.subtype p := by
+  rw [← map_top, inclusion, LinearMap.map_codRestrict, map_top, range_subtype]
+#align submodule.range_of_le Submodule.range_inclusion
 
 @[simp]
-theorem map_subtype_range_ofLe {p p' : Submodule R M} (h : p ≤ p') :
-    map p'.subtype (range $ ofLe h) = p := by simp [range_ofLe, map_comap_eq, h]
-#align submodule.map_subtype_range_of_le Submodule.map_subtype_range_ofLe
+theorem map_subtype_range_inclusion {p p' : Submodule R M} (h : p ≤ p') :
+    map p'.subtype (range $ inclusion h) = p := by simp [range_inclusion, map_comap_eq, h]
+#align submodule.map_subtype_range_of_le Submodule.map_subtype_range_inclusion
 
 theorem disjoint_iff_comap_eq_bot {p q : Submodule R M} : Disjoint p q ↔ comap p.subtype q = ⊥ := by
   rw [← (map_injective_of_injective (show Injective p.subtype from Subtype.coe_injective)).eq_iff,
@@ -750,11 +750,11 @@ theorem mem_submoduleImage_of_le {M' : Type*} [AddCommMonoid M'] [Module R M'] {
     exact ⟨y, hNO yN, yN, h⟩
 #align linear_map.mem_submodule_image_of_le LinearMap.mem_submoduleImage_of_le
 
-theorem submoduleImage_apply_ofLe {M' : Type*} [AddCommGroup M'] [Module R M'] {O : Submodule R M}
-    (ϕ : O →ₗ[R] M') (N : Submodule R M) (hNO : N ≤ O) :
-    ϕ.submoduleImage N = range (ϕ.comp (Submodule.ofLe hNO)) := by
-  rw [submoduleImage, range_comp, Submodule.range_ofLe]
-#align linear_map.submodule_image_apply_of_le LinearMap.submoduleImage_apply_ofLe
+theorem submoduleImage_apply_of_le {M' : Type*} [AddCommGroup M'] [Module R M']
+    {O : Submodule R M} (ϕ : O →ₗ[R] M') (N : Submodule R M) (hNO : N ≤ O) :
+    ϕ.submoduleImage N = range (ϕ.comp (Submodule.inclusion hNO)) := by
+  rw [submoduleImage, range_comp, Submodule.range_inclusion]
+#align linear_map.submodule_image_apply_of_le LinearMap.submoduleImage_apply_of_le
 
 end Image
 
@@ -1160,6 +1160,11 @@ theorem ofBijective_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ�
     ofBijective f hf x = f x :=
   rfl
 #align linear_equiv.of_bijective_apply LinearEquiv.ofBijective_apply
+
+@[simp]
+theorem ofBijective_symm_apply_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {h} (x : M) :
+    (ofBijective f h).symm (f x) = x := by
+  simp [LinearEquiv.symm_apply_eq]
 
 end
 

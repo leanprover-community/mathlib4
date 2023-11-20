@@ -71,7 +71,7 @@ Linear algebra:
     examples: ''
   Exponential:
     endomorphism exponential: ''
-    matrix exponential: 'exp'
+    matrix exponential: 'NormedSpace.exp'
 
 # 2.
 Group Theory:
