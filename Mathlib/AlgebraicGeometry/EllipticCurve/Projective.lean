@@ -100,9 +100,11 @@ def PointRel (P Q : PointRep R) : Prop :=
   ∃ u : Rˣ, P.x = (u : R) * Q.x ∧ P.y = (u : R) * Q.y ∧ P.z = (u : R) * Q.z
 
 lemma PointEquiv : Equivalence <| PointRel R :=
-  ⟨fun _ => ⟨1, by simp only [Units.val_one, one_pow, one_mul]⟩,
-    fun ⟨u, hu⟩ => ⟨u⁻¹, by simp only [hu, ← u.val_pow_eq_pow_val, inv_pow, u.inv_mul_cancel_left]⟩,
-    fun ⟨u, hu⟩ ⟨u', hu'⟩ => ⟨u * u', by simp only [hu, hu', u.val_mul, mul_pow, mul_assoc]⟩⟩
+  ⟨fun _ => ⟨1, by simp only [Units.val_one, one_pow, one_mul, and_self]⟩,
+    fun ⟨u, hu⟩ =>
+      ⟨u⁻¹, by simp only [hu, ← u.val_pow_eq_pow_val, inv_pow, u.inv_mul_cancel_left, and_self]⟩,
+    fun ⟨u, hu⟩ ⟨u', hu'⟩ =>
+      ⟨u * u', by simp only [hu, hu', u.val_mul, mul_pow, mul_assoc, and_self]⟩⟩
 
 instance instSetoidPointRep : Setoid <| PointRep R :=
   ⟨PointRel R, PointEquiv R⟩
@@ -552,11 +554,11 @@ lemma add_mul_equiv (P Q : PointRep R) (u v : Rˣ) :
             by simpa only [negY_mul, mul_mul_mul_comm] using hy ∘ mul_left_cancel₀ huv,
             W.add_of_Yne hPz hQz hx hy]
           exact ⟨u ^ 6, by simp only [Units.val_pow_eq_pow_val,
-            addX_of_Yne_mul, addY_of_Yne_mul, addZ_of_Yne_mul]⟩
+            addX_of_Yne_mul, addY_of_Yne_mul, addZ_of_Yne_mul, and_self]⟩
       · rw [W.add_of_Xne huz hvz <|
           by simpa only [mul_mul_mul_comm] using hx ∘ mul_left_cancel₀ huv, W.add_of_Xne hPz hQz hx]
         exact ⟨u ^ 4 * v ^ 4, by simp only [Units.val_mul, Units.val_pow_eq_pow_val,
-          addX_of_Xne_mul, addY_of_Xne_mul, addZ_of_Xne_mul]⟩
+          addX_of_Xne_mul, addY_of_Xne_mul, addZ_of_Xne_mul, and_self]⟩
 
 lemma add_equiv {P P' Q Q' : PointRep R} (hP : P ≈ P') (hQ : Q ≈ Q') : W.add P Q ≈ W.add P' Q' := by
   rcases P, Q with ⟨⟨_, _, _⟩, ⟨_, _, _⟩⟩
