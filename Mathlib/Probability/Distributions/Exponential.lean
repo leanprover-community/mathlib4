@@ -115,11 +115,9 @@ lemma exponentialPdf_eval_pos {r : ℝ} : ∀ᵐ x : ℝ ∂volume, x < 0 →
   simp only [exponentialPdf_eq]
   exact ae_of_all _ (fun x hx ↦ by simp [not_le.mpr hx])
 
-lemma exponentialPdf_eval_neg {r : ℝ} :
-    ∀ᵐ x : ℝ ∂volume, (x ∈ Ici 0 →
-    exponentialPdf r x = ENNReal.ofReal (r * rexp (-(r * x)))) := by
-  simp only [exponentialPdf_eq]
-  exact ae_of_all _ (fun x (hx : 0 ≤ x) ↦ by rw [if_pos hx])
+lemma exponentialPdf_eval_neg {r x : ℝ} (hx : 0 ≤ x) :
+    exponentialPdf r x = ENNReal.ofReal (r * rexp (-(r * x))) := by
+  simp only [exponentialPdf_eq, if_pos hx]
 
 lemma antiDeriv_tendsto_zero {r : ℝ} (hr : 0 < r) :
     Tendsto (fun x ↦ -1/r * exp (-(r * x))) atTop (𝓝 0) := by
@@ -139,7 +137,8 @@ lemma lintegral_exponentialPdf_eq_one (r : ℝ) (hr : 0 < r) : ∫⁻ x, exponen
     rw [set_lintegral_congr_fun measurableSet_Iio exponentialPdf_eval_pos, lintegral_zero]
   have rightSide : ∫⁻ x in Ici 0, exponentialPdf r x
       = ∫⁻ x in {x | x ≥ 0}, ENNReal.ofReal (r * rexp (-(r * x))) := by
-    exact set_lintegral_congr_fun isClosed_Ici.measurableSet exponentialPdf_eval_neg
+    exact set_lintegral_congr_fun isClosed_Ici.measurableSet
+      (ae_of_all _ (fun x (hx : 0 ≤ x) ↦ exponentialPdf_eval_neg hx))
   simp only [leftSide, add_zero]
   rw [rightSide, ENNReal.toReal_eq_one_iff, ←ENNReal.toReal_eq_one_iff]
   rw [← integral_eq_lintegral_of_nonneg_ae (ae_of_all _ (fun _ ↦ by positivity))]
