@@ -173,14 +173,14 @@ theorem Bool.beq_eq_decide_eq' {α : Type*} (a b : α) [BEq α] [LawfulBEq α] [
 namespace Nat
 open Nat
 
-lemma two_pow_succ_eq_bit_false (x : Nat) :
+lemma two_pow_succ_eq_bit (x : Nat) :
     2^(x+1) = bit false (2^x) := by
   rw [Nat.pow_succ, Nat.mul_two]; rfl
 
 @[simp] lemma bit_and_two_pow_succ (x₀ : Bool) (x n : Nat) :
     bit x₀ x &&& 2^(n + 1) = bit false (x &&& 2^n) := by
   show bitwise .. = bit _ (bitwise ..)
-  rw [two_pow_succ_eq_bit_false, bitwise_bit, Bool.and_false]
+  rw [two_pow_succ_eq_bit, bitwise_bit, Bool.and_false]
 
 @[simp]
 lemma bit_and_one (x₀ : Bool) (x : Nat) :
