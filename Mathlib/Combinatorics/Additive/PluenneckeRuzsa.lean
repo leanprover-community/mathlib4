@@ -129,7 +129,7 @@ private theorem mul_aux (hA : A.Nonempty) (hAB : A ⊆ B)
   · simp
   have hA₀ : (0 : ℚ≥0) < A.card := cast_pos.2 hA.card_pos
   have hA₀' : (0 : ℚ≥0) < A'.card := cast_pos.2 hA'.card_pos
-  exact_mod_cast
+  exact mod_cast
     (div_le_div_iff hA₀ hA₀').1
       (h _ <| mem_erase_of_ne_of_mem hA'.ne_empty <| mem_powerset.2 <| hAA'.trans hAB)
 
@@ -154,7 +154,7 @@ theorem card_mul_mul_card_le_card_mul_mul_card_mul (A B C : Finset α) :
       (zero_le _) (zero_le _))
   rw [← mul_div_right_comm, ← mul_assoc]
   refine' (le_div_iff <| cast_pos.2 hU.1.card_pos).2 _
-  exact_mod_cast mul_pluennecke_petridis C (mul_aux hU.1 hU.2 hUA)
+  exact mod_cast mul_pluennecke_petridis C (mul_aux hU.1 hU.2 hUA)
 #align finset.card_mul_mul_card_le_card_mul_mul_card_mul Finset.card_mul_mul_card_le_card_mul_mul_card_mul
 #align finset.card_add_mul_card_le_card_add_mul_card_add Finset.card_add_mul_card_le_card_add_mul_card_add
 

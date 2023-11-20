@@ -1072,7 +1072,7 @@ variable [HasTerminal C]
 def prod.leftUnitor (P : C) [HasBinaryProduct (⊤_ C) P] : (⊤_ C) ⨯ P ≅ P where
   hom := prod.snd
   inv := prod.lift (terminal.from P) (𝟙 _)
-  hom_inv_id := by apply prod.hom_ext <;> simp
+  hom_inv_id := by apply prod.hom_ext <;> simp [eq_iff_true_of_subsingleton]
   inv_hom_id := by simp
 #align category_theory.limits.prod.left_unitor CategoryTheory.Limits.prod.leftUnitor
 
@@ -1081,7 +1081,7 @@ def prod.leftUnitor (P : C) [HasBinaryProduct (⊤_ C) P] : (⊤_ C) ⨯ P ≅ P
 def prod.rightUnitor (P : C) [HasBinaryProduct P (⊤_ C)] : P ⨯ ⊤_ C ≅ P where
   hom := prod.fst
   inv := prod.lift (𝟙 _) (terminal.from P)
-  hom_inv_id := by apply prod.hom_ext <;> simp
+  hom_inv_id := by apply prod.hom_ext <;> simp [eq_iff_true_of_subsingleton]
   inv_hom_id := by simp
 #align category_theory.limits.prod.right_unitor CategoryTheory.Limits.prod.rightUnitor
 
@@ -1173,7 +1173,7 @@ variable [HasInitial C]
 def coprod.leftUnitor (P : C) : (⊥_ C) ⨿ P ≅ P where
   hom := coprod.desc (initial.to P) (𝟙 _)
   inv := coprod.inr
-  hom_inv_id := by apply coprod.hom_ext <;> simp
+  hom_inv_id := by apply coprod.hom_ext <;> simp [eq_iff_true_of_subsingleton]
   inv_hom_id := by simp
 #align category_theory.limits.coprod.left_unitor CategoryTheory.Limits.coprod.leftUnitor
 
@@ -1182,7 +1182,7 @@ def coprod.leftUnitor (P : C) : (⊥_ C) ⨿ P ≅ P where
 def coprod.rightUnitor (P : C) : P ⨿ ⊥_ C ≅ P where
   hom := coprod.desc (𝟙 _) (initial.to P)
   inv := coprod.inl
-  hom_inv_id := by apply coprod.hom_ext <;> simp
+  hom_inv_id := by apply coprod.hom_ext <;> simp [eq_iff_true_of_subsingleton]
   inv_hom_id := by simp
 #align category_theory.limits.coprod.right_unitor CategoryTheory.Limits.coprod.rightUnitor
 
