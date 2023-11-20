@@ -39,12 +39,6 @@ disjoint.
 
 * `isSheaf_iff_preservesFiniteProducts`: In a finitary extensive category, the sheaves for the
   extensive topology are precisely those preserving finite products.
-
-TODO: figure out under what conditions `Preregular` and `Extensive` are implied by `Precoherent` and
-vice versa.
-
-TODO: refactor the section `RegularSheaves` to use the new `Arrows` sheaf API.
-
 -/
 
 universe v u w
