@@ -5,11 +5,11 @@ Authors: Scott Morrison
 -/
 
 -- First import Aesop and Qq
-import Aesop
 import Qq
 
 -- Now import all tactics defined in Mathlib that do not require theory files.
 import Mathlib.Mathport.Rename
+import Mathlib.Tactic.Aesop
 import Mathlib.Tactic.ApplyCongr
 -- ApplyFun imports `Mathlib.Order.Monotone.Basic`
 -- import Mathlib.Tactic.ApplyFun

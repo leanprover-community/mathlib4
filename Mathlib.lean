@@ -3147,6 +3147,7 @@ import Mathlib.SetTheory.ZFC.Basic
 import Mathlib.SetTheory.ZFC.Ordinal
 import Mathlib.Tactic
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Aesop
 import Mathlib.Tactic.ApplyAt
 import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyFun
