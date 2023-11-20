@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.WithZero
+import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.Hom.Set
@@ -536,6 +537,18 @@ protected theorem zero_add [NeZero n] (k : Fin n) : 0 + k = k := by
 
 instance [NeZero n] : OfNat (Fin n) a where
   ofNat := Fin.ofNat' a (NeZero.pos n)
+
+instance inhabited (n : ℕ) [NeZero n] : Inhabited (Fin n) :=
+  ⟨0⟩
+
+instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
+  haveI : NeZero (1 + n) := by rw [Nat.add_comm]; infer_instance
+  inferInstance
+
+@[simp]
+theorem default_eq_zero (n : ℕ) [NeZero n] : (default : Fin n) = 0 :=
+  rfl
+#align fin.default_eq_zero Fin.default_eq_zero
 
 section from_ad_hoc
 
@@ -1225,6 +1238,12 @@ protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
 protected theorem coe_sub (a b : Fin n) : ((a - b : Fin n) : ℕ) = (a + (n - b)) % n := by
   cases a; cases b; rfl
 #align fin.coe_sub Fin.coe_sub
+
+theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
+#align fin.eq_zero Fin.eq_zero
+
+instance uniqueFinOne : Unique (Fin 1) where
+  uniq _ := Subsingleton.elim _ _
 
 @[simp]
 theorem coe_fin_one (a : Fin 1) : (a : ℕ) = 0 := by simp [Subsingleton.elim a 0]

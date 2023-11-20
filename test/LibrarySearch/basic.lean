@@ -17,7 +17,7 @@ set_option autoImplicit true
 -- Recall that `apply?` caches the discrimination tree on disk.
 -- If you are modifying the way that `apply?` indexes lemmas,
 -- while testing you will probably want to delete
--- `build/lib/MathlibExtras/LibrarySearch.extra`
+-- `.lake/build/lib/MathlibExtras/LibrarySearch.extra`
 -- so that the cache is rebuilt.
 
 -- We need to set this here, as the lakefile does not enable this during testing.

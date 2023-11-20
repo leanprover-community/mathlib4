@@ -543,7 +543,7 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
   refine' Finset.sum_le_sum fun i hi => _
   rw [mul_comm (‖x‖ ^ i), mul_assoc]
   refine' mul_le_mul _ _ (by positivity) (by positivity)
-  · exact_mod_cast Nat.choose_le_choose i hk
+  · exact mod_cast Nat.choose_le_choose i hk
   · trans
     · exact le_seminorm 𝕜 i n f x
     · apply Seminorm.le_def.1
