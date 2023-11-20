@@ -99,8 +99,9 @@ theorem mulSupport_disjoint_iff {f : α → M} {s : Set α} :
 #align function.support_disjoint_iff Function.support_disjoint_iff
 
 @[to_additive]
-theorem disjoint_mulSupport_iff {f : α → M} {s : Set α} : Disjoint s (mulSupport f) ↔ EqOn f 1 s :=
-  by rw [disjoint_comm, mulSupport_disjoint_iff]
+theorem disjoint_mulSupport_iff {f : α → M} {s : Set α} :
+    Disjoint s (mulSupport f) ↔ EqOn f 1 s := by
+  rw [disjoint_comm, mulSupport_disjoint_iff]
 #align function.disjoint_mul_support_iff Function.disjoint_mulSupport_iff
 #align function.disjoint_support_iff Function.disjoint_support_iff
 

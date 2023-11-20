@@ -828,6 +828,17 @@ theorem card_pos_of_affineSpan_eq_top {ι : Type*} [Fintype ι] {p : ι → P}
   exact Fintype.card_pos_iff.mpr ⟨i⟩
 #align affine_subspace.card_pos_of_affine_span_eq_top AffineSubspace.card_pos_of_affineSpan_eq_top
 
+attribute [local instance] toAddTorsor
+
+/-- The top affine subspace is linearly equivalent to the affine space.
+
+This is the affine version of `Submodule.topEquiv`. -/
+@[simps! linear apply symm_apply_coe]
+def topEquiv : (⊤ : AffineSubspace k P) ≃ᵃ[k] P where
+  toEquiv := Equiv.Set.univ P
+  linear := .ofEq _ _ (direction_top _ _ _) ≪≫ₗ Submodule.topEquiv
+  map_vadd' _p _v := rfl
+
 variable {P}
 
 /-- No points are in `⊥`. -/
@@ -1588,6 +1599,29 @@ theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s)
         subset_affineSpan k _ (mem_image_of_mem f hp)⟩
 #align affine_subspace.map_span AffineSubspace.map_span
 
+section inclusion
+variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁] [Nonempty S₂]
+
+attribute [local instance] AffineSubspace.toAddTorsor
+
+/-- Affine map from a smaller to a larger subspace of the same space.
+
+This is the affine version of `Submodule.inclusion`. -/
+@[simps linear]
+def inclusion (h : S₁ ≤ S₂) : S₁ →ᵃ[k] S₂ where
+  toFun := Set.inclusion h
+  linear := Submodule.inclusion <| AffineSubspace.direction_le h
+  map_vadd' _ _ := rfl
+
+@[simp]
+theorem coe_inclusion_apply (h : S₁ ≤ S₂) (x : S₁) : (inclusion h x : P₁) = x :=
+  rfl
+
+@[simp]
+theorem inclusion_rfl : inclusion (le_refl S₁) = AffineMap.id k S₁ := rfl
+
+end inclusion
+
 end AffineSubspace
 
 namespace AffineMap
@@ -1606,6 +1640,33 @@ theorem span_eq_top_of_surjective {s : Set P₁} (hf : Function.Surjective f)
 end AffineMap
 
 namespace AffineEquiv
+
+section ofEq
+variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
+
+attribute [local instance] AffineSubspace.toAddTorsor
+
+/-- Affine equivalence between two equal affine subspace.
+
+This is the affine version of `LinearEquiv.ofEq`. -/
+@[simps linear]
+def ofEq (h : S₁ = S₂) : S₁ ≃ᵃ[k] S₂ where
+  toEquiv := Equiv.Set.ofEq <| congr_arg _ h
+  linear := .ofEq _ _ <| congr_arg _ h
+  map_vadd' _ _ := rfl
+
+@[simp]
+theorem coe_ofEq_apply (h : S₁ = S₂) (x : S₁) : (ofEq S₁ S₂ h x : P₁) = x :=
+  rfl
+
+@[simp]
+theorem ofEq_symm (h : S₁ = S₂) : (ofEq S₁ S₂ h).symm = ofEq S₂ S₁ h.symm :=
+  rfl
+
+@[simp]
+theorem ofEq_rfl : ofEq S₁ S₁ rfl = AffineEquiv.refl k S₁ := rfl
+
+end ofEq
 
 theorem span_eq_top_iff {s : Set P₁} (e : P₁ ≃ᵃ[k] P₂) :
     affineSpan k s = ⊤ ↔ affineSpan k (e '' s) = ⊤ := by
