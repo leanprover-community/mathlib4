@@ -49,65 +49,15 @@ open MulOpposite
 instance leftMod_eq_rightMod : Module R X :=
   Module.compHom X ((RingHom.id R).toOpposite fun _ _ => mul_comm _ _)
 
-section
-
 variable {Y : Type v'} [AddCommGroup Y] [Module R Y]
 
-noncomputable local instance tensorModSMul :
-    SMul S (X ⊗[R] Y) where
-  smul := fun s => map
-    { toFun := (s • ·)
-      map_add' := smul_add _
-      map_smul' := fun r x => by
-        show s • (op r) • x = (op r) • s • x
-        exact smul_comm _ _ _ } LinearMap.id
+noncomputable instance tensorMod : Module S (X ⊗[R] Y) :=
+  have : SMulCommClass R S X :=
+    ⟨fun r s x ↦ show (op r) • s • x = s • (op r) • x by rw [← smul_comm]⟩
+  inferInstance
 
-@[simp] private lemma tensorModSMul_smul_tmul
+@[simp] lemma tensorModSMul_smul_tmul
   (s : S) (x : X) (y : Y) : s • (x ⊗ₜ[R] y) = (s • x) ⊗ₜ[R] y := rfl
-
-@[simp] private lemma tensorModSMul_one_smul
-    (z : X ⊗[R] Y) :
-    (1 : S) • z = z :=
-  z.induction_on rfl
-    (fun x y => by rw [tensorModSMul_smul_tmul, one_smul])
-    (fun _ _ h h' => show map _ _ (_ + _) = _ by
-      simpa only [map_add] using congr_arg₂ (· + ·) h h')
-
-private lemma tensorModSMul_mul_smul
-    (s s' : S)
-    (z : X ⊗[R] Y) :
-    (s * s') • z = s • s' • z :=
-  z.induction_on rfl
-    (fun x' x => by simp only [tensorModSMul_smul_tmul, mul_smul])
-    (fun _ _ (h : map _ _ _ = _) (h' : map _ _ _ = _) => by
-        show map _ _ (_ + _) = map _ _ (map _ _ _)
-        rw [map_add, h, h', map_add, map_add]
-        rfl)
-
-private lemma tensorModSMul_add_smul
-    (s s' : S)
-    (z : X ⊗[R] Y) :
-    (s + s') • z = s • z + s' • z :=
-  z.induction_on rfl
-    (fun x' x => by simp only [tensorModSMul_smul_tmul, add_smul, add_tmul])
-    (fun z z' (h : map _ _ _ = _) (h' : map _ _ _ = _) => by
-        show map _ _ (_ + _) = map _ _ _ + map _ _ _
-        rw [map_add, h, h', map_add, map_add]
-        change _ = (s • z + s • z') + (s' • z + s' • z')
-        abel)
-
-noncomputable local instance tensorMod :
-    Module S (X ⊗[R] Y) where
-  smul := (· • ·)
-  one_smul := tensorModSMul_one_smul _ _ _
-  mul_smul := tensorModSMul_mul_smul _ _ _
-  smul_zero := fun _ => rfl
-  smul_add := fun _ _ _ => map_add _ _ _
-  add_smul := tensorModSMul_add_smul _ _ _
-  zero_smul := fun z => z.induction_on rfl
-    (fun _ _ => by rw [tensorModSMul_smul_tmul, zero_smul, zero_tmul])
-    (fun _ _ (h : map _ _ _ = _) (h' : map _ _ _ = _) => show map _ _ _ = _ by
-      rw [map_add, h, h', zero_add])
 
 /--
 Let `R` be a commutative ring and `S` a ring.
@@ -137,9 +87,7 @@ local instance hom_bimodule {Y : Type v''} [AddCommGroup Y] [Module S Y] :
   zero_smul l := LinearMap.ext fun x => show l _ = 0 by rw [op_zero, zero_smul, map_zero]
 
 variable {R S X}
-variable
-  {Y : Type v'} [AddCommGroup Y] [Module R Y]
-  {Z : Type v''} [AddCommGroup Z] [Module S Z]
+variable {Z : Type v''} [AddCommGroup Z] [Module S Z]
 /--
 Let `R` be a commutative ring and `S` a ring.
 Given an `(S, R)`-bimodule `X`, a left `R`-module `Y` and a left `S`-module `Z`,
