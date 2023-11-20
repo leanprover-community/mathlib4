@@ -679,3 +679,5 @@ example : (1 : R PUnit.{u+1} PUnit.{v+1}) <= 2 := by
 
 -- Check that we avoid deep recursion in evaluating large powers.
 example : 10^40000000 = 10^40000000 := by norm_num
+
+example : (1 + 1, 2 * 2) = (2, 4) := by norm_num1
