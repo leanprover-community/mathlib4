@@ -173,6 +173,10 @@ theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (↑e₁ : M →ₛ
   toLinearMap_injective.eq_iff
 #align linear_equiv.to_linear_map_inj LinearEquiv.toLinearMap_inj
 
+instance : NDFunLike (M ≃ₛₗ[σ] M₂) M M₂ where
+  coe := LinearEquiv.toFun
+  coe_injective' := FunLike.coe_injective
+
 instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
   inv := LinearEquiv.invFun
   coe_injective' _ _ h _ := toLinearMap_injective (FunLike.coe_injective h)
