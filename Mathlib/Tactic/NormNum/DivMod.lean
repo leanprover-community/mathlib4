@@ -56,7 +56,7 @@ partial def evalIntDiv : NormNumExt where eval {u α} e := do
     assumeInstancesCommute
     if nb.natLit! == 0 then
       have : $nb =Q nat_lit 0 := ⟨⟩
-      return .isNat q(AddGroupWithOne.toAddMonoidWithOne) q(nat_lit 0) q(isInt_ediv_zero $pa $pb)
+      return .isNat q(instAddMonoidWithOne) q(nat_lit 0) q(isInt_ediv_zero $pa $pb)
     else
       let ⟨zq, q, p⟩ := core a na za pa b nb pb
       return .isInt rℤ q zq p
@@ -109,21 +109,25 @@ partial def evalIntMod : NormNumExt where eval {u α} e := do
   haveI' : $e =Q ($a % $b) := ⟨⟩
   let rℤ : Q(Ring ℤ) := q(Int.instRingInt)
   let some ⟨za, na, pa⟩ := (← derive a).toInt rℤ | failure
-  match ← derive (u := .zero) b with
-  | .isNat inst nb pb =>
-    assumeInstancesCommute
-    if nb.natLit! == 0 then
-      have : $nb =Q nat_lit 0 := ⟨⟩
-      return .isInt rℤ na za q(isInt_emod_zero $pa $pb)
-    else
-      let ⟨r, p⟩ := core a na za pa b nb pb
-      return .isNat q(AddGroupWithOne.toAddMonoidWithOne) r p
-  | .isNegNat _ nb pb =>
-    assumeInstancesCommute
-    let ⟨r, p⟩ := core a na za pa q(-$b) nb q(isNat_neg_of_isNegNat $pb)
-    return .isNat q(AddGroupWithOne.toAddMonoidWithOne) r q(isInt_emod_neg $p)
-  | _ => failure
+  go a na za pa b (← derive (u := .zero) b)
 where
+  /-- Given a result for evaluating `a b` in `ℤ`, evaluate `a % b`. -/
+  go (a na : Q(ℤ)) (za : ℤ) (pa : Q(IsInt $a $na))
+      (b : Q(ℤ)) : Result b → Option (Result q($a % $b))
+    | .isNat inst nb pb => do
+      assumeInstancesCommute
+      if nb.natLit! == 0 then
+        have : $nb =Q nat_lit 0 := ⟨⟩
+        return .isInt q(Int.instRingInt) na za q(isInt_emod_zero $pa $pb)
+      else
+        let ⟨r, p⟩ := core a na za pa b nb pb
+        return .isNat q(instAddMonoidWithOne) r p
+    | .isNegNat _ nb pb => do
+      assumeInstancesCommute
+      let ⟨r, p⟩ := core a na za pa q(-$b) nb q(isNat_neg_of_isNegNat $pb)
+      return .isNat q(instAddMonoidWithOne) r q(isInt_emod_neg $p)
+    | _ => none
+
   /-- Given a result for evaluating `a b` in `ℤ` where `b > 0`, evaluate `a % b`. -/
   core (a na : Q(ℤ)) (za : ℤ) (pa : Q(IsInt $a $na))
       (b : Q(ℤ)) (nb : Q(ℕ)) (pb : Q(IsNat $b $nb)) :

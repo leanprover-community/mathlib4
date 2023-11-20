@@ -31,6 +31,8 @@ open Meta
 namespace Meta.NormNum
 open Qq
 
+theorem IsInt.raw_refl (n : ℤ) : IsInt n n := ⟨rfl⟩
+
 /-! # Constructors and constants -/
 
 theorem isNat_zero (α) [AddMonoidWithOne α] : IsNat (Zero.zero : α) (nat_lit 0) :=
@@ -72,8 +74,8 @@ theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
 @[norm_num Int.ofNat _] def evalIntOfNat : NormNumExt where eval {u α} e := do
   let .app (.const ``Int.ofNat _) (n : Q(ℕ)) ← whnfR e | failure
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q Int := ⟨⟩
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(AddCommMonoidWithOne.toAddMonoidWithOne)
-  let sℤ : Q(AddMonoidWithOne ℤ) := q(AddGroupWithOne.toAddMonoidWithOne)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℤ : Q(AddMonoidWithOne ℤ) := q(instAddMonoidWithOne)
   let ⟨n', p⟩ ← deriveNat n sℕ
   haveI' x : $e =Q Int.ofNat $n := ⟨⟩
   return .isNat sℤ n' q(isNat_intOfNat $p)
