@@ -261,12 +261,63 @@ def IsTensorProduct.rightSmul (r : Cᵐᵒᵖ) : X →+ X := lift tmul
     dsimp
     rw [tmul.apply_smul_apply, smul_comm] }
 
-lemma IsTensorProduct.one_smul (x : X) : rightSmul tmul (1 : Cᵐᵒᵖ) x = x := by
+@[simp] lemma IsTensorProduct.rightSmul_tmul (a : Cᵐᵒᵖ) (m : M) (n : N) :
+    rightSmul tmul a (tmul m n) = tmul m (a • n) := by
+  erw [lift_comp]; rfl
+
+lemma IsTensorProduct.rightSmul.one_smul (x : X) : rightSmul tmul (1 : Cᵐᵒᵖ) x = x := by
   suffices h : rightSmul tmul (1 : Cᵐᵒᵖ) = AddMonoidHom.id _
   · rw [h]; rfl
   refine lift_uniq _ _ fun m n => ?_
   change tmul m n = tmul m (1 • n)
   rw [_root_.one_smul]
+
+lemma IsTensorProduct.rightSmul.mul_smul (a a' : Cᵐᵒᵖ) (x : X) :
+    rightSmul tmul (a * a') x =
+    rightSmul tmul a (rightSmul tmul a' x) := by
+  refine IsTensorProduct.induction B tmul ?_ ?_ ?_ x
+  · intro m n
+    simp only [rightSmul_tmul]
+    rw [MulAction.mul_smul]
+  · intro x x' hx hx'
+    simp only [map_add, hx, hx']
+  · intro x
+    simp only [map_neg, neg_inj, imp_self]
+
+def IsTensorProduct.rightSmul.smul : SMul Cᵐᵒᵖ X where
+  smul r := rightSmul tmul r
+
+def IsTensorProduct.rightSmul.mulAction : MulAction Cᵐᵒᵖ X where
+  __ := rightSmul.smul tmul
+  one_smul := rightSmul.one_smul tmul
+  mul_smul := rightSmul.mul_smul tmul
+
+def IsTensorProduct.rightSmul.distribMulAction : DistribMulAction Cᵐᵒᵖ X where
+  __ := rightSmul.mulAction tmul
+  smul_zero _ := show rightSmul tmul _ _ = 0 by simp
+  smul_add a x y := show rightSmul tmul _ _ = rightSmul tmul _ _ + rightSmul tmul _ _ by simp
+
+def IsTensorProduct.rightModule : Module Cᵐᵒᵖ X where
+  __ := rightSmul.distribMulAction tmul
+  smul_add a x y := by simp
+  add_smul a b x := show rightSmul tmul _ _ = rightSmul tmul _ _ + rightSmul tmul _ _ by
+    refine IsTensorProduct.induction B tmul ?_ ?_ ?_ x
+    · intro m n; simp only [rightSmul_tmul, add_smul, tmul.apply_apply_add]
+    · intro x y hx hy
+      simp only [map_add, hx, hy]
+      abel
+    · intro x hx
+      simp only [map_neg, hx]
+      abel
+  zero_smul x := show rightSmul tmul _ _ = 0 by
+    refine IsTensorProduct.induction B tmul ?_ ?_ ?_ x
+    · intro m n; simp only [rightSmul_tmul, zero_smul, tmul.apply_apply_zero]
+    · intro x y hx hy
+      simp only [map_add, hx, hy]
+      abel
+    · intro x hx
+      simp only [map_neg, hx]
+      abel
 
 end right_mod
 
