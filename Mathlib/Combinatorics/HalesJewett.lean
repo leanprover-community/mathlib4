@@ -26,7 +26,7 @@ huge) finite type `ι` such that whenever `ι → α` is `κ`-colored (i.e. for 
 the idea of *color focusing* and a *product argument*. See the proof of
 `Combinatorics.Line.exists_mono_in_high_dimension'` for details.
 
-*Combinatorial subspaces* are higher-dimensional analogues of combinatorial lines, defined in
+*Combinatorial subspaces* are higher-dimensional analogues of combinatorial lines. See
 `Combinatorics.Subspace`. The extended Hales-Jewett theorem generalises the statement above from
 combinatorial lines to combinatorial subspaces of a fixed dimension.
 
