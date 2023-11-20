@@ -3,12 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Riccardo Brasca, Filippo A. E. Nuccio
 -/
-
 import Mathlib.Condensed.Equivalence
 import Mathlib.Topology.Category.Profinite.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.EffectiveEpi
-
 /-!
+
+# The explicit sheaf condition for condensed sets
 
 We give the following three explicit descriptions of condensed sets:
 
@@ -147,5 +147,14 @@ noncomputable def ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)) [Prese
     rw [CompHaus.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) F,
         Functor.comp_id]
     exact ⟨⟨inferInstance⟩, hF⟩
+
+/-- A condensed set satisfies the equalizer condition. -/
+theorem equalizerCondition (X : CondensedSet) : EqualizerCondition X.val :=
+  CompHaus.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) X.val |>.mp X.cond |>.2
+
+/-- A condensed set preserves finite products. -/
+noncomputable instance (X : CondensedSet) : PreservesFiniteProducts X.val :=
+  CompHaus.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) X.val |>.mp
+    X.cond |>.1.some
 
 end Condensed
