@@ -24,24 +24,12 @@ def weakLeanArgs : Array String :=
 
 package mathlib where
   moreServerArgs := moreServerArgs
-
-@[default_target]
-lean_lib Mathlib where
   moreLeanArgs := moreLeanArgs
   weakLeanArgs := weakLeanArgs
 
-/-- `lake exe runMathlibLinter` runs the linter on all of Mathlib (or individual files). -/
--- Due to a change in Lake at v4.1.0-rc1, we need to give this a different name
--- than the `lean_exe runLinter` inherited from Std, or we always run that.
--- See https://github.com/leanprover/lean4/issues/2548
-lean_exe runMathlibLinter where
-  root := `scripts.runMathlibLinter
-  supportInterpreter := true
-
-/-- `lake exe checkYaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
-lean_exe checkYaml where
-  root := `scripts.checkYaml
-  supportInterpreter := true
+/-!
+## Mathlib dependencies on upstream projects.
+-/
 
 meta if get_config? doc = some "on" then -- do not download and build doc-gen4 by default
 require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
@@ -49,17 +37,45 @@ require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 require std from git "https://github.com/leanprover/std4" @ "main"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 require aesop from git "https://github.com/leanprover-community/aesop" @ "master"
-require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
 require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.22"
+require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
 
-lean_lib Cache where
-  moreLeanArgs := moreLeanArgs
-  weakLeanArgs := weakLeanArgs
-  roots := #[`Cache]
+/-!
+## Mathlib libraries
+-/
+
+@[default_target]
+lean_lib Mathlib
+
+lean_lib Cache
+lean_lib MathlibExtras
+lean_lib Archive
+lean_lib Counterexamples
+lean_lib ImportGraph
+/-- Additional documentation in the form of modules that only contain module docstrings. -/
+lean_lib docs
+
+/-!
+## Executables provided by Mathlib
+-/
 
 /-- `lake exe cache get` retrieves precompiled `.olean` files from a central server. -/
 lean_exe cache where
   root := `Cache.Main
+
+/-- `lake exe checkYaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
+lean_exe checkYaml where
+  srcDir := "scripts"
+  supportInterpreter := true
+
+/-- `lake exe graph` constructs import graphs in `.dot` or graphical formats. -/
+lean_exe graph where
+  root := `ImportGraph.Main
+  supportInterpreter := true
+
+/-!
+## Other configuration
+-/
 
 /--
 When a package depending on Mathlib updates its dependencies,
@@ -88,24 +104,3 @@ post_update pkg do
     } >>= (·.wait)
     if exitCode ≠ 0 then
       logError s!"{pkg.name}: failed to fetch cache"
-
-lean_lib MathlibExtras where
-  roots := #[`MathlibExtras]
-
-lean_lib Archive where
-  roots := #[`Archive]
-
-lean_lib Counterexamples where
-  roots := #[`Counterexamples]
-
-lean_lib ImportGraph where
-  roots := #[`ImportGraph]
-
-/-- `lake exe graph` constructs import graphs in `.dot` or graphical formats. -/
-lean_exe graph where
-  root := `ImportGraph.Main
-  supportInterpreter := true
-
-/-- Additional documentation in the form of modules that only contain module docstrings. -/
-lean_lib docs where
-  roots := #[`docs]
