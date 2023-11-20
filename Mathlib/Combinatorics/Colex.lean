@@ -60,7 +60,7 @@ colex, colexicographic, binary
 open Finset Function
 open scoped BigOperators
 
-#align nat.sum_two_pow_lt Nat.sum_two_pow_lt
+#align nat.sum_two_pow_lt Nat.geomSum_lt
 
 variable {α β : Type*}
 
@@ -101,11 +101,12 @@ variable [PartialOrder α] [PartialOrder β] {f : α → β} {𝒜 𝒜₁ 𝒜�
 instance instLE : LE (Colex α) where
   le s t := ∀ ⦃a⦄, a ∈ ofColex s → a ∉ ofColex t → ∃ b, b ∈ ofColex t ∧ b ∉ ofColex s ∧ a ≤ b
 
+-- TODO: This lemma is weirdly useful given how strange its statement is.
+-- Is there a nicer statement? Should this lemma be made public?
 private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toColex u)
-    (a : α) (has : a ∈ s) (hat : a ∉ t) :
-    ∃ b : α, b ∈ u ∧ b ∉ s ∧ a ≤ b := by
+    (has : a ∈ s) (hat : a ∉ t) : ∃ b, b ∈ u ∧ b ∉ s ∧ a ≤ b := by
   classical
-  let s' : Finset α := s.filter (fun a' => a' ∉ t ∧ a ≤ a')
+  let s' : Finset α := s.filter fun b ↦ b ∉ t ∧ a ≤ b
   have ⟨b, hb, hbmax⟩ := exists_maximal s' ⟨a, by simp [has, hat]⟩
   simp only [mem_filter, and_imp] at hb hbmax
   have ⟨c, hct, hcs, hbc⟩ := hst hb.1 hb.2.1
@@ -119,7 +120,7 @@ private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toC
 private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ toColex s) : s ⊆ t := by
   intro a has
   by_contra' hat
-  have ⟨_b, hb₁, hb₂, _⟩ := trans_aux hst hts a has hat
+  have ⟨_b, hb₁, hb₂, _⟩ := trans_aux hst hts has hat
   exact hb₂ hb₁
 
 instance instPartialOrder : PartialOrder (Colex α) where
@@ -129,10 +130,10 @@ instance instPartialOrder : PartialOrder (Colex α) where
     by_cases hat : a ∈ ofColex t
     · have ⟨b, hbu, hbt, hab⟩ := htu hat hau
       by_cases hbs : b ∈ ofColex s
-      · have ⟨c, hcu, hcs, hbc⟩ := trans_aux hst htu b hbs hbt
+      · have ⟨c, hcu, hcs, hbc⟩ := trans_aux hst htu hbs hbt
         exact ⟨c, hcu, hcs, hab.trans hbc⟩
       · exact ⟨b, hbu, hbs, hab⟩
-    · exact trans_aux hst htu _ has hat
+    · exact trans_aux hst htu has hat
 
 lemma le_def {s t : Colex α} :
     s ≤ t ↔ ∀ ⦃a⦄, a ∈ ofColex s → a ∉ ofColex t → ∃ b, b ∈ ofColex t ∧ b ∉ ofColex s ∧ a ≤ b :=
@@ -313,6 +314,10 @@ lemma toColex_image_lt_toColex_image (hf : StrictMono f) :
     toColex (s.image f) < toColex (t.image f) ↔ toColex s < toColex t :=
   lt_iff_lt_of_le_iff_le <| toColex_image_le_toColex_image hf
 
+lemma toColex_image_ofColex_strictMono (hf : StrictMono f) :
+    StrictMono fun s ↦ toColex $ image f $ ofColex s :=
+  fun _s _t ↦ (toColex_image_lt_toColex_image hf).2
+
 /-! ### Initial segments -/
 
 /-- `𝒜` is an initial segment of the colexigraphic order on sets of `r`, and that if `t` is below
@@ -340,8 +345,8 @@ lemma IsInitSeg.total (h₁ : IsInitSeg 𝒜₁ r) (h₂ : IsInitSeg 𝒜₂ r) 
 
 variable [Fintype α]
 
-/-- Gives all sets up to `s` with the same size as it: this is equivalent to
-being an initial segment of colex. -/
+/-- The initial segment of the colexicographic order on sets with `s.card` elements and ending at
+`s`. -/
 def initSeg (s : Finset α) : Finset (Finset α) :=
   univ.filter fun t ↦ s.card = t.card ∧ toColex t ≤ toColex s
 
@@ -371,7 +376,7 @@ lemma IsInitSeg.exists_initSeg (h𝒜 : IsInitSeg 𝒜 r) (h𝒜₀ : 𝒜.Nonem
   · rwa [toColex_inj.1 p]
   · exact h𝒜.2 hs ⟨p, cards ▸ h𝒜.1 hs⟩
 
-/-- Being a nonempty initial segment of colex if equivalent to being an `initSeg`. -/
+/-- Being a nonempty initial segment of colex is equivalent to being an `initSeg`. -/
 lemma isInitSeg_iff_exists_initSeg :
     IsInitSeg 𝒜 r ∧ 𝒜.Nonempty ↔ ∃ s : Finset α, s.card = r ∧ 𝒜 = initSeg s := by
   refine ⟨fun h𝒜 ↦ h𝒜.1.exists_initSeg h𝒜.2, ?_⟩
@@ -390,25 +395,29 @@ binary expansion.
 -/
 
 section Nat
-variable {s t : Finset ℕ}
+variable {s t : Finset ℕ} {n : ℕ}
 
-private lemma aux : StrictMono (fun s : Colex ℕ ↦ ∑ k in ofColex s, 2 ^ k) := by
+lemma geomSum_ofColex_strictMono (hn : 2 ≤ n) : StrictMono fun s ↦ ∑ k in ofColex s, n ^ k := by
   rintro ⟨s⟩ ⟨t⟩ hst
   rw [toColex_lt_toColex_iff_exists_forall_lt] at hst
   obtain ⟨a, hat, has, ha⟩ := hst
   rw [←sum_sdiff_lt_sum_sdiff]
-  exact (Nat.sum_two_pow_lt <| by simpa).trans_le <|
-    single_le_sum (fun _ _ ↦ by positivity) <| mem_sdiff.2 ⟨hat, has⟩
+  exact (Nat.geomSum_lt hn $ by simpa).trans_le <| single_le_sum (fun _ _ ↦ by positivity) <|
+    mem_sdiff.2 ⟨hat, has⟩
 
 /-- For finsets of naturals of naturals, the colexicographic order is equivalent to the order
 induced by the binary expansion. -/
-lemma sum_two_pow_le_iff_colex_le : ∑ k in s, 2 ^ k ≤ ∑ k in t, 2 ^ k ↔ toColex s ≤ toColex t :=
-  aux.le_iff_le
+lemma geomSum_le_geomSum_iff_toColex_le_toColex (hn : 2 ≤ n) :
+    ∑ k in s, n ^ k ≤ ∑ k in t, n ^ k ↔ toColex s ≤ toColex t :=
+  (geomSum_ofColex_strictMono hn).le_iff_le
 
 /-- For finsets of naturals of naturals, the colexicographic order is equivalent to the order
 induced by the binary expansion. -/
-lemma sum_two_pow_lt_iff_colex_lt : ∑ i in s, 2 ^ i < ∑ i in t, 2 ^ i ↔ toColex s < toColex t :=
-  aux.lt_iff_lt
+lemma geomSum_lt_geomSum_iff_toColex_lt_toColex (hn : 2 ≤ n) :
+    ∑ i in s, n ^ i < ∑ i in t, n ^ i ↔ toColex s < toColex t :=
+  (geomSum_ofColex_strictMono hn).lt_iff_lt
+
+-- TODO: Package the above as an order isomorphism `Colex ℕ ≃o ℕ`
 
 end Nat
 end Finset
