@@ -51,11 +51,11 @@ theorem irreducible_iff_nat_prime (a : ℕ) : Irreducible a ↔ Nat.Prime a :=
   Iff.rfl
 #align irreducible_iff_nat_prime Nat.irreducible_iff_nat_prime
 
-theorem not_prime_zero : ¬Prime 0
+@[aesop safe destruct] theorem not_prime_zero : ¬Prime 0
   | h => h.ne_zero rfl
 #align nat.not_prime_zero Nat.not_prime_zero
 
-theorem not_prime_one : ¬Prime 1
+@[aesop safe destruct] theorem not_prime_one : ¬Prime 1
   | h => h.ne_one rfl
 #align nat.not_prime_one Nat.not_prime_one
 
@@ -585,16 +585,16 @@ theorem Prime.dvd_of_dvd_pow {p m n : ℕ} (pp : Prime p) (h : p ∣ m ^ n) : p 
   pp.prime.dvd_of_dvd_pow h
 #align nat.prime.dvd_of_dvd_pow Nat.Prime.dvd_of_dvd_pow
 
-theorem Prime.pow_not_prime' {x n : ℕ} (hn : n ≠ 1) : ¬(x ^ n).Prime :=
-  pow_not_prime hn ∘ Nat.Prime.prime
-#align nat.prime.pow_not_prime' Nat.Prime.pow_not_prime'
+theorem Prime.not_prime_pow' {x n : ℕ} (hn : n ≠ 1) : ¬(x ^ n).Prime :=
+  not_irreducible_pow hn
+#align nat.prime.pow_not_prime' Nat.Prime.not_prime_pow'
 
-theorem Prime.pow_not_prime {x n : ℕ} (hn : 2 ≤ n) : ¬(x ^ n).Prime :=
-  pow_not_prime' ((two_le_iff _).mp hn).2
-#align nat.prime.pow_not_prime Nat.Prime.pow_not_prime
+theorem Prime.not_prime_pow {x n : ℕ} (hn : 2 ≤ n) : ¬(x ^ n).Prime :=
+  not_prime_pow' ((two_le_iff _).mp hn).2
+#align nat.prime.pow_not_prime Nat.Prime.not_prime_pow
 
 theorem Prime.eq_one_of_pow {x n : ℕ} (h : (x ^ n).Prime) : n = 1 :=
-  not_imp_not.mp Prime.pow_not_prime' h
+  not_imp_not.mp Prime.not_prime_pow' h
 #align nat.prime.eq_one_of_pow Nat.Prime.eq_one_of_pow
 
 theorem Prime.pow_eq_iff {p a k : ℕ} (hp : p.Prime) : a ^ k = p ↔ a = p ∧ k = 1 := by

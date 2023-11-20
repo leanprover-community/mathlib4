@@ -248,6 +248,22 @@ instance epi_right [Epi sq] : Epi sq.right where
     · exact h
 #align category_theory.arrow.epi_right CategoryTheory.Arrow.epi_right
 
+@[reassoc (attr := simp)]
+lemma hom_inv_id_left (e : f ≅ g) : e.hom.left ≫ e.inv.left = 𝟙 _ := by
+  rw [← comp_left, e.hom_inv_id, id_left]
+
+@[reassoc (attr := simp)]
+lemma inv_hom_id_left (e : f ≅ g) : e.inv.left ≫ e.hom.left = 𝟙 _ := by
+  rw [← comp_left, e.inv_hom_id, id_left]
+
+@[reassoc (attr := simp)]
+lemma hom_inv_id_right (e : f ≅ g) : e.hom.right ≫ e.inv.right = 𝟙 _ := by
+  rw [← comp_right, e.hom_inv_id, id_right]
+
+@[reassoc (attr := simp)]
+lemma inv_hom_id_right (e : f ≅ g) : e.inv.right ≫ e.hom.right = 𝟙 _ := by
+  rw [← comp_right, e.inv_hom_id, id_right]
+
 end
 
 /-- Given a square from an arrow `i` to an isomorphism `p`, express the source part of `sq`
