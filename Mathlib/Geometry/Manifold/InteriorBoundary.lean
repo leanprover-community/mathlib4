@@ -44,22 +44,22 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 /-- `p ∈ M` is an interior point of a smooth manifold `M` iff
 for `φ` being the preferred chart at `x`, `φ x` is an interior point of `φ.target`. -/
-def ModelWithCorners.isInteriorPoint (x : M) := extChartAt I x x ∈ interior (extChartAt I x).target
+def ModelWithCorners.IsInteriorPoint (x : M) := extChartAt I x x ∈ interior (extChartAt I x).target
 
 /-- `p ∈ M` is a boundary point of a smooth manifold `M` iff
 for `φ` being the preferred chart at `x`, `φ x` is a boundary point of `φ.target`. -/
-def ModelWithCorners.isBoundaryPoint (x : M) := extChartAt I x x ∈ frontier (extChartAt I x).target
+def ModelWithCorners.IsBoundaryPoint (x : M) := extChartAt I x x ∈ frontier (extChartAt I x).target
 
 namespace SmoothManifoldWithCorners
 -- FIXME(MR): can I enable dot notation, like `M.interior I` or so?
 
 variable (I M) in
 /-- The **interior** of a manifold `M` is the set of its interior points. -/
-protected def interior : Set M := { x : M | I.isInteriorPoint x}
+protected def interior : Set M := { x : M | I.IsInteriorPoint x}
 
 variable (I M) in
 /-- The **boundary** of a manifold `M` is the set of its boundary points. -/
-protected def boundary : Set M := { x : M | I.isBoundaryPoint x}
+protected def boundary : Set M := { x : M | I.IsBoundaryPoint x}
 
 /-- If `e` and `e'` are two charts, the transition map maps interior points to interior points. -/
 lemma foobar {e e' : LocalHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M) {x : M}
@@ -79,17 +79,17 @@ lemma foobar' {e e' : LocalHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ 
 /-- Whether `x` is an interior point can equivalently be described by any chart
   whose source contains `x`. -/
 lemma isInteriorPoint_iff {e : LocalHomeomorph M H} (he : e ∈ atlas H M) {x : M}
-    (hx : x ∈ e.source) : I.isInteriorPoint x ↔ (e.extend I) x ∈ interior (e.extend I).target := by
+    (hx : x ∈ e.source) : I.IsInteriorPoint x ↔ (e.extend I) x ∈ interior (e.extend I).target := by
   sorry
 
 /-- Whether `x` is a boundary point of `M` can equivalently be described by any chart
 whose source contains `x`. -/
 lemma isBoundaryPoint_iff {e : LocalHomeomorph M H} (he : e ∈ atlas H M) {x : M}
-    (hx : x ∈ e.source) : I.isBoundaryPoint x ↔ (e.extend I) x ∈ frontier (e.extend I).target := by
+    (hx : x ∈ e.source) : I.IsBoundaryPoint x ↔ (e.extend I) x ∈ frontier (e.extend I).target := by
   sorry
 
 /-- Every point is either an interior or a boundary point. -/ -- FIXME: better name?!
-lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.isInteriorPoint x ∨ I.isBoundaryPoint x := by
+lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsBoundaryPoint x := by
   set e := extChartAt I x
   set y := extChartAt I x x
   have : IsClosed I.target := I.target_eq ▸ (I.closed_range)
