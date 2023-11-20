@@ -133,13 +133,21 @@ section NonUnitalPowAssoc
 
 variable [NonUnitalNonAssocSemiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S]
 
-variable [PosPowAssoc S] (p: ℕ+ →₀ R) (x : S)
+variable [Pow S ℕ+] [PosPowAssoc S] (p: ℕ+ →₀ R) (x : S)
 
-theorem _root_.zero_ppow : ∀(n : ℕ+), (0:S)^n = 0
-  | 1 => by exact rfl
-  | ⟨k+2, h⟩ => by
-    have h : (0 : S) ^ ⟨k+2, h⟩ = (0 : S) * (0 : S) ^ ⟨k+1, (Nat.succ_pos k)⟩ := by exact rfl
-    rw [h, zero_mul]
+theorem _root_.zero_ppow : ∀(n : ℕ+), (0:S)^n = 0 := by  --use Nat.succPNat in exponents
+  have h : ∀(k : ℕ), (0:S)^(Nat.succPNat k) = 0
+    | 0 => by
+      have h : Nat.succPNat 0 = 1 := by exact rfl
+      rw [h, ppow_one]
+    | (k+1) => by
+      have h : Nat.succPNat (k+1) = 1 + Nat.succPNat k := by
+        refine PNat.natPred_inj.mp ?_
+        rw [Nat.natPred_succPNat, PNat.natPred, PNat.add_coe]
+        exact (Nat.add_sub_self_left ↑1 ↑(Nat.succPNat k)).symm
+      rw [h, ← mul_ppow, ppow_one, zero_mul]
+  intro n
+  rw [← PNat.succPNat_natPred n, h]
 
 theorem smnueval_at_zero : smnueval p (0:S) = 0 := by
   simp only [smnueval_eq_sum, smul_ppow]
@@ -154,7 +162,7 @@ section UnitalPowAssoc
 
 variable [NonAssocSemiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S]
 
-variable [PowAssoc S] -- Unfortunately the theorems here can't be used in the associative case.
+variable [Pow S ℕ] [PowAssoc S] -- Unfortunately the theorems here can't be used in the associative case.
 
 variable (x : S) (p q : R[X])
 
@@ -177,7 +185,7 @@ theorem smeval_mul_X_pow_assoc : (p * X).smeval x = p.smeval x * x := by
   | h_monomial n a =>
     simp only [← monomial_one_one_eq_X, monomial_mul_monomial, smeval_monomial, mul_one, pow_succ',
       mul_assoc]
-    rw [npow_succ, smul_mul_assoc]
+    rw [← mul_npow, smul_mul_assoc, npow_one]
 
 -- smevalcomp, etc.
 
