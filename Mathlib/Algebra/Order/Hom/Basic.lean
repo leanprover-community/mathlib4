@@ -159,7 +159,7 @@ open Lean Meta Qq Function
 def evalMap : PositivityExt where eval {_ β} _ _ e := do
   let .app (.app _ f) a ← whnfR e
     | throwError "not ↑f · where f is of NonnegHomClass"
-  let pa ← mkAppOptM ``map_nonneg #[none, none, β, none, none, none, f, a]
+  let pa ← mkAppOptM ``map_nonneg #[none, none, β, none, none, none, none, f, a]
   pure (.nonnegative pa)
 
 end Mathlib.Meta.Positivity
