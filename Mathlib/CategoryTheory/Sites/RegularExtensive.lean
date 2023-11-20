@@ -300,7 +300,7 @@ A finite product preserving presheaf is a sheaf for the extensive topology on a 
 -/
 theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X) [S.extensive]
     (F : Cᵒᵖ ⥤ Type max u v) [PreservesFiniteProducts F] : S.IsSheafFor F  := by
-  obtain ⟨_, _, Z, π, hS, ⟨hc⟩⟩ := extensive.arrows_sigma_desc_iso (R := S)
+  obtain ⟨_, _, Z, π, rfl, ⟨hc⟩⟩ := extensive.arrows_sigma_desc_iso (R := S)
   subst hS
   have : (ofArrows Z (Cofan.mk X π).inj).hasPullbacks :=
     (inferInstance : (ofArrows Z π).hasPullbacks)
