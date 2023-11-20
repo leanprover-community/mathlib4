@@ -47,8 +47,6 @@ then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or
 
 open Function Set Filter Topology
 
-open TopologicalSpace (SecondCountableTopology)
-
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} [TopologicalSpace α]
   [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
@@ -897,8 +895,9 @@ theorem ofSet_trans {s : Set α} (hs : IsOpen s) : (ofSet s hs).trans e = e.rest
   LocalHomeomorph.ext _ _ (fun x => rfl) (fun x => rfl) <| by simp [hs.interior_eq, inter_comm]
 #align local_homeomorph.of_set_trans LocalHomeomorph.ofSet_trans
 
-theorem ofSet_trans' {s : Set α} (hs : IsOpen s) : (ofSet s hs).trans e = e.restr (e.source ∩ s) :=
-  by rw [ofSet_trans, restr_source_inter]
+theorem ofSet_trans' {s : Set α} (hs : IsOpen s) :
+    (ofSet s hs).trans e = e.restr (e.source ∩ s) := by
+  rw [ofSet_trans, restr_source_inter]
 #align local_homeomorph.of_set_trans' LocalHomeomorph.ofSet_trans'
 
 @[simp, mfld_simps]
@@ -914,7 +913,7 @@ theorem restr_trans (s : Set α) : (e.restr s).trans e' = (e.trans e').restr s :
 
 /-- Postcompose a local homeomorphism with a homeomorphism.
 We modify the source and target to have better definitional behavior. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def transHomeomorph (e' : β ≃ₜ γ) : LocalHomeomorph α γ where
   toLocalEquiv := e.toLocalEquiv.transEquiv e'.toEquiv
   open_source := e.open_source
@@ -930,7 +929,7 @@ theorem transHomeomorph_eq_trans (e' : β ≃ₜ γ) :
 
 /-- Precompose a local homeomorphism with a homeomorphism.
 We modify the source and target to have better definitional behavior. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def _root_.Homeomorph.transLocalHomeomorph (e : α ≃ₜ β) : LocalHomeomorph α γ where
   toLocalEquiv := e.toEquiv.transLocalEquiv e'.toLocalEquiv
   open_source := e'.open_source.preimage e.continuous
@@ -1088,7 +1087,7 @@ are inverse of each other on the new `source` and `target`, the definition assum
 and `t` are related both by `e.is_image` and `e'.is_image`. To ensure that the new maps are
 continuous on `source`/`target`, it also assumes that `e.source` and `e'.source` meet `frontier s`
 on the same set and `e x = e' x` on this intersection. -/
-@[simps! (config := { fullyApplied := false }) toLocalEquiv apply]
+@[simps! (config := .asFn) toLocalEquiv apply]
 def piecewise (e e' : LocalHomeomorph α β) (s : Set α) (t : Set β) [∀ x, Decidable (x ∈ s)]
     [∀ y, Decidable (y ∈ t)] (H : e.IsImage s t) (H' : e'.IsImage s t)
     (Hs : e.source ∩ frontier s = e'.source ∩ frontier s)

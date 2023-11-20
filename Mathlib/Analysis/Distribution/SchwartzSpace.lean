@@ -3,7 +3,9 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.Calculus.ContDiff
+import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.IteratedDeriv
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.UniformFilterBasis
@@ -57,8 +59,6 @@ The implementation of the seminorms is taken almost literally from `ContinuousLi
 
 Schwartz space, tempered distributions
 -/
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
@@ -543,7 +543,7 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
   refine' Finset.sum_le_sum fun i hi => _
   rw [mul_comm (‖x‖ ^ i), mul_assoc]
   refine' mul_le_mul _ _ (by positivity) (by positivity)
-  · exact_mod_cast Nat.choose_le_choose i hk
+  · exact mod_cast Nat.choose_le_choose i hk
   · trans
     · exact le_seminorm 𝕜 i n f x
     · apply Seminorm.le_def.1
@@ -597,7 +597,7 @@ instance instLocallyConvexSpace : LocallyConvexSpace ℝ 𝓢(E, F) :=
   (schwartz_withSeminorms ℝ E F).toLocallyConvexSpace
 #align schwartz_map.locally_convex_space SchwartzMap.instLocallyConvexSpace
 
-instance instFirstCountableTopology : TopologicalSpace.FirstCountableTopology 𝓢(E, F) :=
+instance instFirstCountableTopology : FirstCountableTopology 𝓢(E, F) :=
   (schwartz_withSeminorms ℝ E F).first_countable
 #align schwartz_map.topological_space.first_countable_topology SchwartzMap.instFirstCountableTopology
 

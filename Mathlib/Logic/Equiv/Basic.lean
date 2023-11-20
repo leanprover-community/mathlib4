@@ -164,7 +164,7 @@ theorem prodProdProdComm_symm (α β γ δ : Type*) :
 #align equiv.prod_prod_prod_comm_symm Equiv.prodProdProdComm_symm
 
 /-- `γ`-valued functions on `α × β` are equivalent to functions `α → β → γ`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def curry (α β γ) : (α × β → γ) ≃ (α → β → γ) where
   toFun := Function.curry
   invFun := uncurry
@@ -388,7 +388,7 @@ def boolEquivPUnitSumPUnit : Bool ≃ Sum PUnit.{u + 1} PUnit.{v + 1} :=
 #align equiv.bool_equiv_punit_sum_punit Equiv.boolEquivPUnitSumPUnit
 
 /-- Sum of types is commutative up to an equivalence. This is `Sum.swap` as an equivalence. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps (config := .asFn) apply]
 def sumComm (α β) : Sum α β ≃ Sum β α :=
   ⟨Sum.swap, Sum.swap, Sum.swap_swap, Sum.swap_swap⟩
 #align equiv.sum_comm Equiv.sumComm
@@ -840,7 +840,7 @@ theorem ofFiberEquiv_map {α β γ} {f : α → γ} {g : β → γ}
 /-- A variation on `Equiv.prodCongr` where the equivalence in the second component can depend
   on the first component. A typical example is a shear mapping, explaining the name of this
   declaration. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def prodShear (e₁ : α₁ ≃ α₂) (e₂ : α₁ → β₁ ≃ β₂) : α₁ × β₁ ≃ α₂ × β₂ where
   toFun := fun x : α₁ × β₁ => (e₁ x.1, e₂ x.1 x.2)
   invFun := fun y : α₂ × β₂ => (e₁.symm y.1, (e₂ <| e₁.symm y.1).symm y.2)

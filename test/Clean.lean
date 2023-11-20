@@ -19,22 +19,22 @@ info: def Tests.x' : Id Nat :=
 #guard_msgs in #print x'
 -- def x : Id Nat := 1
 
-def withClean : 2 + 2 = 4 := clean% by exact id rfl
-def withoutClean : 2 + 2 = 4 := by exact id rfl
+theorem withClean : 2 + 2 = 4 := clean% by exact id rfl
+theorem withoutClean : 2 + 2 = 4 := by exact id rfl
 
 /--
-info: theorem Tests.withClean.proof_1 : 2 + 2 = 2 + 2 :=
+info: theorem Tests.withClean : 2 + 2 = 4 :=
 rfl
 -/
 #guard_msgs in
-#print Tests.withClean.proof_1
+#print Tests.withClean
 
 /--
-info: theorem Tests.withoutClean.proof_1 : 2 + 2 = 4 :=
+info: theorem Tests.withoutClean : 2 + 2 = 4 :=
 id rfl
 -/
 #guard_msgs in
-#print Tests.withoutClean.proof_1
+#print Tests.withoutClean
 
 example : True := by
   let x : id Nat := by dsimp; exact 1

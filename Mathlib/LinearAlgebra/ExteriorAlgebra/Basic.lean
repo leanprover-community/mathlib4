@@ -138,7 +138,7 @@ theorem induction {C : ExteriorAlgebra R M → Prop}
 
 /-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : ExteriorAlgebra R M →ₐ[R] R :=
-  ExteriorAlgebra.lift R ⟨(0 : M →ₗ[R] R), fun m => by simp⟩
+  ExteriorAlgebra.lift R ⟨(0 : M →ₗ[R] R), fun _ => by simp⟩
 #align exterior_algebra.algebra_map_inv ExteriorAlgebra.algebraMapInv
 
 variable (M)
