@@ -76,7 +76,7 @@ instance isArtinian_submodule' [IsArtinian R M] (N : Submodule R M) : IsArtinian
 #align is_artinian_submodule' isArtinian_submodule'
 
 theorem isArtinian_of_le {s t : Submodule R M} [IsArtinian R t] (h : s ≤ t) : IsArtinian R s :=
-  isArtinian_of_injective (Submodule.ofLe h) (Submodule.ofLe_injective h)
+  isArtinian_of_injective (Submodule.inclusion h) (Submodule.inclusion_injective h)
 #align is_artinian_of_le isArtinian_of_le
 
 variable (M)

@@ -2214,18 +2214,24 @@ end Asymptotics
 
 open Asymptotics
 
-theorem summable_of_isBigO {ι E} [NormedAddCommGroup E] [CompleteSpace E] {f : ι → E} {g : ι → ℝ}
-    (hg : Summable g) (h : f =O[cofinite] g) : Summable f :=
+theorem summable_of_isBigO {ι E} [SeminormedAddCommGroup E] [CompleteSpace E]
+    {f : ι → E} {g : ι → ℝ} (hg : Summable g) (h : f =O[cofinite] g) : Summable f :=
   let ⟨C, hC⟩ := h.isBigOWith
   .of_norm_bounded_eventually (fun x => C * ‖g x‖) (hg.abs.mul_left _) hC.bound
 set_option linter.uppercaseLean3 false in
 #align summable_of_is_O summable_of_isBigO
 
-theorem summable_of_isBigO_nat {E} [NormedAddCommGroup E] [CompleteSpace E] {f : ℕ → E} {g : ℕ → ℝ}
-    (hg : Summable g) (h : f =O[atTop] g) : Summable f :=
+theorem summable_of_isBigO_nat {E} [SeminormedAddCommGroup E] [CompleteSpace E]
+    {f : ℕ → E} {g : ℕ → ℝ} (hg : Summable g) (h : f =O[atTop] g) : Summable f :=
   summable_of_isBigO hg <| Nat.cofinite_eq_atTop.symm ▸ h
 set_option linter.uppercaseLean3 false in
 #align summable_of_is_O_nat summable_of_isBigO_nat
+
+lemma Asymptotics.IsBigO.comp_summable_norm {ι E F : Type*}
+    [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] {f : E → F} {g : ι → E}
+    (hf : f =O[𝓝 0] id) (hg : Summable (‖g ·‖)) : Summable (‖f <| g ·‖) :=
+  summable_of_isBigO hg <| hf.norm_norm.comp_tendsto <|
+    tendsto_zero_iff_norm_tendsto_zero.2 hg.tendsto_cofinite_zero
 
 namespace LocalHomeomorph
 

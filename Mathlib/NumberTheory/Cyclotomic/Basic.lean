@@ -161,7 +161,7 @@ theorem subsingleton_iff [Subsingleton B] : IsCyclotomicExtension S A B ↔ S = 
     intro t ht
     obtain ⟨ζ, hζ⟩ := hprim ht
     rw [mem_singleton_iff, ← PNat.coe_eq_one_iff]
-    exact_mod_cast hζ.unique (IsPrimitiveRoot.of_subsingleton ζ)
+    exact mod_cast hζ.unique (IsPrimitiveRoot.of_subsingleton ζ)
   · rintro (rfl | rfl)
 -- Porting note: `R := A` was not needed.
     · exact ⟨fun h => h.elim, fun x => by convert (mem_top (R := A) : x ∈ ⊤)⟩
@@ -309,7 +309,7 @@ theorem finite_of_singleton [IsDomain B] [h : IsCyclotomicExtension {n} A B] :
     Module.Finite A B := by
   classical
   rw [Module.finite_def, ← top_toSubmodule, ← ((iff_adjoin_eq_top _ _ _).1 h).2]
-  refine' FG_adjoin_of_finite _ fun b hb => _
+  refine' fg_adjoin_of_finite _ fun b hb => _
   · simp only [mem_singleton_iff, exists_eq_left]
     have : {b : B | b ^ (n : ℕ) = 1} = (nthRoots n (1 : B)).toFinset :=
       Set.ext fun x => ⟨fun h => by simpa using h, fun h => by simpa using h⟩

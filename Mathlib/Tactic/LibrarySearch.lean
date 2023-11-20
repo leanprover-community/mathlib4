@@ -64,18 +64,6 @@ def processLemma (name : Name) (constInfo : ConstantInfo) :
         |>.push (← DiscrTree.mkPath lhs discrTreeConfig, (name, .mpr))
     | _ => return r
 
-/-- Insert a lemma into the discrimination tree. -/
--- Recall that `apply?` caches the discrimination tree on disk.
--- If you are modifying this file, you will probably want to delete
--- `build/lib/MathlibExtras/LibrarySearch.extra`
--- so that the cache is rebuilt.
-def addLemma (name : Name) (constInfo : ConstantInfo)
-    (lemmas : DiscrTree (Name × DeclMod)) : MetaM (DiscrTree (Name × DeclMod)) := do
-  let mut lemmas := lemmas
-  for (key, value) in ← processLemma name constInfo do
-    lemmas := lemmas.insertIfSpecific key value discrTreeConfig
-  return lemmas
-
 /-- Construct the discrimination tree of all lemmas. -/
 def buildDiscrTree : IO (DiscrTreeCache (Name × DeclMod)) :=
   DiscrTreeCache.mk "apply?: init cache" processLemma
@@ -94,7 +82,7 @@ def cachePath : IO FilePath :=
   try
     return (← findOLean `MathlibExtras.LibrarySearch).withExtension "extra"
   catch _ =>
-    return "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
+    return ".lake" / "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
 
 /--
 Retrieve the current current of lemmas.

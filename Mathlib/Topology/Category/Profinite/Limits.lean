@@ -224,8 +224,6 @@ instance : PreservesFiniteCoproducts profiniteToCompHaus := by
   exact CompHaus.finiteCoproduct.isColimit _
 
 instance : FinitaryExtensive Profinite :=
-  have := fullyFaithfulReflectsLimits profiniteToCompHaus
-  have := fullyFaithfulReflectsColimits profiniteToCompHaus
   finitaryExtensive_of_preserves_and_reflects profiniteToCompHaus
 
 end FiniteCoproducts
