@@ -27,7 +27,7 @@ example : Nat := by exact?
 
 namespace Mathlib.Tactic.LibrarySearch
 
-open Lean Meta Std.Tactic.TryThis
+open Lean Meta Std.Tactic TryThis
 
 initialize registerTraceClass `Tactic.librarySearch
 initialize registerTraceClass `Tactic.librarySearch.lemmas
@@ -67,7 +67,7 @@ def processLemma (name : Name) (constInfo : ConstantInfo) :
 /-- Insert a lemma into the discrimination tree. -/
 -- Recall that `apply?` caches the discrimination tree on disk.
 -- If you are modifying this file, you will probably want to delete
--- `build/lib/MathlibExtras/LibrarySearch.extra`
+-- `.lake/build/lib/MathlibExtras/LibrarySearch.extra`
 -- so that the cache is rebuilt.
 def addLemma (name : Name) (constInfo : ConstantInfo)
     (lemmas : DiscrTree (Name × DeclMod)) : MetaM (DiscrTree (Name × DeclMod)) := do
@@ -94,7 +94,7 @@ def cachePath : IO FilePath :=
   try
     return (← findOLean `MathlibExtras.LibrarySearch).withExtension "extra"
   catch _ =>
-    return "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
+    return ".lake" / "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
 
 /--
 Retrieve the current current of lemmas.
