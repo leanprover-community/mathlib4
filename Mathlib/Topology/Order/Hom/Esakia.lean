@@ -54,7 +54,8 @@ section
 
 You should extend this class when you extend `PseudoEpimorphism`. -/
 class PseudoEpimorphismClass (F : Type*) (α β : outParam <| Type*) [Preorder α] [Preorder β]
-    extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
+    [NDFunLike F α β]
+    extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) : Prop where
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b
 #align pseudo_epimorphism_class PseudoEpimorphismClass
 
@@ -62,7 +63,8 @@ class PseudoEpimorphismClass (F : Type*) (α β : outParam <| Type*) [Preorder �
 
 You should extend this class when you extend `EsakiaHom`. -/
 class EsakiaHomClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α] [Preorder α]
-    [TopologicalSpace β] [Preorder β] extends ContinuousOrderHomClass F α β where
+    [TopologicalSpace β] [Preorder β] [NDFunLike F α β]
+    extends ContinuousOrderHomClass F α β : Prop where
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b
 #align esakia_hom_class EsakiaHomClass
 

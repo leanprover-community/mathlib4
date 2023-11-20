@@ -103,7 +103,7 @@ class MulLEAddHomClass (F α β : Type*) [Mul α] [Add β] [LE β] [NDFunLike F 
 #align mul_le_add_hom_class MulLEAddHomClass
 
 /-- `NonarchimedeanHomClass F α β` states that `F` is a type of non-archimedean morphisms. -/
-class NonarchimedeanHomClass (F α β : Type*) [Add α] [LinearOrder β] [NDFunLike F α β] where
+class NonarchimedeanHomClass (F α β : Type*) [Add α] [LinearOrder β] [NDFunLike F α β] : Prop where
   /-- the image of a sum is less or equal than the maximum of the images. -/
   map_add_le_max (f : F) : ∀ a b, f (a + b) ≤ max (f a) (f b)
 #align nonarchimedean_hom_class NonarchimedeanHomClass
