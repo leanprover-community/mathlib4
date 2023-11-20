@@ -111,14 +111,14 @@ noncomputable local instance tensorMod :
 
 /--
 Let `R` be a commutative ring and `S` a ring.
-Give `(S, R)`-bimodule `X`, a left `R`-module `X` and a right `S`-module `Y`, then the the set of
-`S`-linear maps from `X` to `Y` has a (left) `R`-module structure given by:
-```
-l : X →ₗ[Sᵐᵒᵖ] Y
+Given an `(S, R)`-bimodule `X` and a left `S`-module `Y`, the set of
+`S`-linear maps from `X` to `Y` has a left `R`-module structure given by:
+-```
+l : X →ₗ[S] Y
 r : R
 x : X
 -------------
-(r • l) x = l (r • x)
+(r • l) x = l (op r • x)
 ```
 -/
 local instance hom_bimodule {Y : Type v''} [AddCommGroup Y] [Module S Y] :
