@@ -288,7 +288,7 @@ noncomputable def mulEquivOfCardEqFourAndNotIsCyclic (h1 : Fintype.card G = 4) (
       by_cases hyx : y = x; simp [hyx, h3, h4]
       set z := x * y
       have : equiv x ≠ equiv 1 := fun h => hx1 <| equiv.injective h
-      have : equiv y ≠ equiv 1 := fun h => hy1<| equiv.injective h
+      have : equiv y ≠ equiv 1 := fun h => hy1 <| equiv.injective h
       have : equiv y ≠ equiv x := fun h => hyx <| equiv.injective h
       have : equiv z ≠ equiv 1 :=
         fun h => hyx <| (mul_right_inj x).mp <| (h3 x).symm ▸ equiv.injective h
