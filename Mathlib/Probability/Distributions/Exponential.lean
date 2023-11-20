@@ -44,8 +44,8 @@ lemma lintegral_eq_lintegral_Ici_add_Iio (f : ℝ → ℝ≥0∞) (c : ℝ) :
     ext x; simp [le_or_lt]
   have : IsOpen {x : ℝ | x < c} := by exact isOpen_gt' c
   calc
-  ∫⁻ x, f x = ∫⁻ x in univ, f x ∂ volume := (set_lintegral_univ f).symm
-  _ = ∫⁻ x in {x | x ≥ c} ∪ {x | x < c} , f x ∂ volume := by rw [← union]
+  ∫⁻ x, f x = ∫⁻ x in univ, f x ∂volume := (set_lintegral_univ f).symm
+  _ = ∫⁻ x in {x | x ≥ c} ∪ {x | x < c} , f x ∂volume := by rw [← union]
   _ = _ := by
     apply lintegral_union this.measurableSet
     rw [Set.disjoint_iff]
@@ -74,7 +74,7 @@ lemma hasDerivAt_exp_neg {r x : ℝ} (hr : 0 < r) :
   convert (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1/r)) using 1 <;> field_simp
 
 /-- the Lebesgue-Integral of the exponential PDF over nonpositive Reals equals 0-/
-lemma lintegral_exponentialPdf_of_nonpos  {x r : ℝ} (hx : x ≤ 0) :
+lemma lintegral_exponentialPdf_of_nonpos {x r : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, exponentialPdf r y = 0 := by
   rw [set_lintegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
@@ -112,14 +112,14 @@ lemma exp_neg_integrableOn_Ioc {b x : ℝ} (hb : 0 < b) :
   simp only [neg_mul_eq_neg_mul]
   exact (exp_neg_integrableOn_Ioi _ hb).mono_set Ioc_subset_Ioi_self
 
-lemma exponentialPdf_eval_pos {r : ℝ} : ∀ᵐ x : ℝ ∂ volume , x < 0 →
+lemma exponentialPdf_eval_pos {r : ℝ} : ∀ᵐ x : ℝ ∂volume, x < 0 →
     exponentialPdf r x = 0 := by
   simp only [exponentialPdf_eq]
   exact ae_of_all _ (fun x hx ↦ by simp [not_le.mpr hx])
 
-lemma exponentialPdf_eval_neg {r : ℝ} : ∀ᵐ x : ℝ ∂ volume, (x ∈ Ici 0 →
-    exponentialPdf r x =
-    ENNReal.ofReal (r * rexp (-(r * x)))) := by
+lemma exponentialPdf_eval_neg {r : ℝ} :
+    ∀ᵐ x : ℝ ∂volume, (x ∈ Ici 0 →
+    exponentialPdf r x = ENNReal.ofReal (r * rexp (-(r * x)))) := by
   simp only [exponentialPdf_eq]
   exact ae_of_all _ (fun x (hx : 0 ≤ x) ↦ by rw [if_pos hx])
 
@@ -223,9 +223,9 @@ lemma lint_eq_antiDeriv (r : ℝ) (hr : 0 < r) : ∀ x : ℝ,
     rw [ENNReal.toReal_ofReal_eq_iff.2 (by norm_num; positivity)]
     · norm_num; ring
     · simp only [intervalIntegrable_iff, uIoc_of_le h]
-      apply Integrable.const_mul (exp_neg_integrableOn_Ioc hr)
+      exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
     · have : Continuous (fun a ↦ rexp (-(r * a))) := by
-        simp only [← neg_mul]; exact  (continuous_mul_left (-r)).exp
+        simp only [← neg_mul]; exact (continuous_mul_left (-r)).exp
       exact Continuous.continuousOn (Continuous.comp' (continuous_mul_left (-1)) this)
     · exact fun _ _ ↦ HasDerivAt.hasDerivWithinAt hasDerivAt_neg_exp_mul_exp
     · apply Integrable.aestronglyMeasurable (Integrable.const_mul _ _)
@@ -233,7 +233,7 @@ lemma lint_eq_antiDeriv (r : ℝ) (hr : 0 < r) : ∀ x : ℝ,
       exact exp_neg_integrableOn_Ioc hr
     · refine ne_of_lt (IntegrableOn.set_lintegral_lt_top ?_)
       rw [integrableOn_Icc_iff_integrableOn_Ioc]
-      apply Integrable.const_mul (exp_neg_integrableOn_Ioc hr)
+      exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
 
 /-- The Definition of the CDF equals the known Formular ``1 - exp (-(r * x))``-/
 lemma exponentialCdfReal_eq {r : ℝ} [Fact (0 < r)] : exponentialCdfReal r =
