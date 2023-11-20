@@ -172,17 +172,6 @@ theorem lift_unique [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →ₗ[R] P
   · exact DirectLimit.induction_on x fun i x => by rw [lift_of]; rfl
 #align module.direct_limit.lift_unique Module.DirectLimit.lift_unique
 
-lemma lift_injective [IsDirected ι (· ≤ ·)]
-    (injective : ∀ i, Function.Injective <| g i) :
-    Function.Injective (lift R ι G f g Hg) := by
-  cases isEmpty_or_nonempty ι
-  · apply Function.injective_of_subsingleton
-  simp_rw [injective_iff_map_eq_zero] at injective ⊢
-  intros z hz
-  induction' z using DirectLimit.induction_on with _ g
-  rw [lift_of] at hz
-  rw [injective _ g hz, _root_.map_zero]
-
 section Totalize
 
 open Classical
@@ -366,17 +355,6 @@ theorem lift_unique [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →+ P) (x)
   · simp_rw [Subsingleton.elim x 0, _root_.map_zero]
   · exact DirectLimit.induction_on x fun i x => by simp
 #align add_comm_group.direct_limit.lift_unique AddCommGroup.DirectLimit.lift_unique
-
-lemma lift_injective [IsDirected ι (· ≤ ·)]
-    (injective : ∀ i, Function.Injective <| g i) :
-    Function.Injective (lift G f P g Hg) := by
-  cases isEmpty_or_nonempty ι
-  · apply Function.injective_of_subsingleton
-  simp_rw [injective_iff_map_eq_zero] at injective ⊢
-  intros z hz
-  induction' z using DirectLimit.induction_on with _ g
-  rw [lift_of] at hz
-  rw [injective _ g hz, _root_.map_zero]
 
 end DirectLimit
 
@@ -711,15 +689,6 @@ theorem lift_unique [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →+* P) (x
     exact IsEmpty.elim' inferInstance i
   · exact DirectLimit.induction_on x fun i x => by simp [lift_of]
 #align ring.direct_limit.lift_unique Ring.DirectLimit.lift_unique
-
-lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
-    (injective : ∀ i, Function.Injective <| g i) :
-    Function.Injective (lift G f P g Hg) := by
-  simp_rw [injective_iff_map_eq_zero] at injective ⊢
-  intros z hz
-  induction' z using DirectLimit.induction_on with _ g
-  rw [lift_of] at hz
-  rw [injective _ g hz, _root_.map_zero]
 
 end DirectLimit
 
