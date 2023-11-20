@@ -45,12 +45,12 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num (_ : ℤ) / _, Div.div (_ : ℤ) _, Int.ediv _ _]
 partial def evalIntDiv : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℤ))) (b : Q(ℤ)) ← whnfR e | failure
-  -- We trust that the default instance for `HDiv` is `Int.div` when the first parameter is `ℤ`.
+  -- We assert that the default instance for `HDiv` is `Int.div` when the first parameter is `ℤ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := ℤ))
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℤ := ⟨⟩
   haveI' : $e =Q ($a / $b) := ⟨⟩
   let rℤ : Q(Ring ℤ) := q(Int.instRingInt)
-  let some ⟨za, na, pa⟩ := (← derive a).toInt rℤ | failure
+  let ⟨za, na, pa⟩ ← (← derive a).toInt rℤ
   match ← derive (u := .zero) b with
   | .isNat inst nb pb =>
     assumeInstancesCommute
@@ -103,7 +103,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num (_ : ℤ) % _, Mod.mod (_ : ℤ) _, Int.emod _ _]
 partial def evalIntMod : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℤ))) (b : Q(ℤ)) ← whnfR e | failure
-  -- We trust that the default instance for `HMod` is `Int.mod` when the first parameter is `ℤ`.
+  -- We assert that the default instance for `HMod` is `Int.mod` when the first parameter is `ℤ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(HMod.hMod (α := ℤ))
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℤ := ⟨⟩
   haveI' : $e =Q ($a % $b) := ⟨⟩
@@ -158,11 +158,11 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let .app (.app f (a : Q(ℤ))) (b : Q(ℤ)) ← whnfR e | failure
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q Prop := ⟨⟩
   haveI' : $e =Q ($a ∣ $b) := ⟨⟩
-  -- We trust that the default instance for `Dvd` is `Int.dvd` when the first parameter is `ℕ`.
+  -- We assert that the default instance for `Dvd` is `Int.dvd` when the first parameter is `ℕ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(Dvd.dvd (α := ℤ))
   let rℤ : Q(Ring ℤ) := q(Int.instRingInt)
-  let some ⟨za, na, pa⟩ := (← derive a).toInt rℤ | failure
-  let some ⟨zb, nb, pb⟩ := (← derive b).toInt rℤ | failure
+  let ⟨za, na, pa⟩ ← (← derive a).toInt rℤ
+  let ⟨zb, nb, pb⟩ ← (← derive b).toInt rℤ
   if zb % za == 0 then
     let zc := zb / za
     have c := mkRawIntLit zc
