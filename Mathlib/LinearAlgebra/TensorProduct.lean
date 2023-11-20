@@ -502,8 +502,10 @@ variable (f : M →ₗ[R] N →ₗ[R] P)
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
 def liftAux : M ⊗[R] N →+ P :=
-  liftAddHom (LinearMap.toAddMonoidHom'.comp <| f.toAddMonoidHom) fun r m n => by
-    dsimp; rw [LinearMap.map_smul₂, map_smul]
+  -- too slow: `liftAddHom (LinearMap.toAddMonoidHom'.comp <| f.toAddMonoidHom)`
+  liftFun (f · ·)
+    (by simp) (by simp) (by simp) (by simp)
+  fun r m n => by dsimp; rw [LinearMap.map_smul₂, map_smul]
 #align tensor_product.lift_aux TensorProduct.liftAux
 
 theorem liftAux_tmul (m n) : liftAux f (m ⊗ₜ n) = f m n :=
