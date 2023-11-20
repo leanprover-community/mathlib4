@@ -193,9 +193,9 @@ lemma exponentialCdfReal_eq_lintegral (r : ℝ) [Fact (0 < r)] : exponentialCdfR
 open Topology
 
 lemma hasDerivAt_neg_exp_mul_exp {r x : ℝ} :
-    HasDerivAt (fun a ↦ -1 * exp (-(r * a))) (r * exp (-(r * x))) x := by
+    HasDerivAt (fun a ↦ -exp (-(r * a))) (r * exp (-(r * x))) x := by
   convert (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1)) using 1
-  · simp only [id_eq, neg_mul]
+  · simp only [one_mul, id_eq, neg_mul]
   simp only [id_eq, neg_mul, mul_one, mul_neg, one_mul, neg_neg, mul_comm]
 
 lemma lint_eq_antiDeriv (r : ℝ) (hr : 0 < r) : ∀ x : ℝ,
@@ -227,7 +227,8 @@ lemma lint_eq_antiDeriv (r : ℝ) (hr : 0 < r) : ∀ x : ℝ,
     · have : Continuous (fun a ↦ rexp (-(r * a))) := by
         simp only [← neg_mul]; exact (continuous_mul_left (-r)).exp
       exact Continuous.continuousOn (Continuous.comp' (continuous_mul_left (-1)) this)
-    · exact fun _ _ ↦ HasDerivAt.hasDerivWithinAt hasDerivAt_neg_exp_mul_exp
+    · simp only [neg_mul, one_mul]
+      exact fun _ _ ↦ HasDerivAt.hasDerivWithinAt hasDerivAt_neg_exp_mul_exp
     · apply Integrable.aestronglyMeasurable (Integrable.const_mul _ _)
       rw [← integrableOn_def, integrableOn_Icc_iff_integrableOn_Ioc]
       exact exp_neg_integrableOn_Ioc hr
