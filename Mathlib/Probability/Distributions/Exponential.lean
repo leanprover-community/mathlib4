@@ -31,14 +31,14 @@ open scoped ENNReal NNReal Real
 open MeasureTheory Real Set Filter Topology
 
   /-- A Lebesgue Integral from -∞ to y can be expressed as the sum of one from -∞ to 0 and 0 to x -/
-lemma lintegral_split_bounded {y z : ℝ} (f : ℝ → ENNReal) (hzy : z ≤ y) :
+lemma lintegral_split_bounded {y z : ℝ} (f : ℝ → ℝ≥0∞) (hzy : z ≤ y) :
     ∫⁻ x in Iic y, f x = (∫⁻ x in Iio z, f x) + ∫⁻ x in Icc z y, f x := by
   rw [← Iio_union_Icc_eq_Iic hzy, lintegral_union measurableSet_Icc]
   rw [Set.disjoint_iff]
   rintro x ⟨h1 : x < _, h2, _⟩
   linarith
 
-lemma lintegral_split (f : ℝ → ENNReal) (c : ℝ) :
+lemma lintegral_split (f : ℝ → ℝ≥0∞) (c : ℝ) :
     ∫⁻ x, f x = (∫⁻ x in {x | x ≥ c}, f x) + ∫⁻ x in {x | x < c}, f x := by
   have union : univ = {x: ℝ | x ≥ c} ∪ {x : ℝ | x < c} := by
     ext x; simp [le_or_lt]
