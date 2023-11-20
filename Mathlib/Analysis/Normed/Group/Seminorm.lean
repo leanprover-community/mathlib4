@@ -512,10 +512,13 @@ section AddGroup
 
 variable [AddGroup E] [AddGroup F] [AddGroup G] {p q : NonarchAddGroupSeminorm E}
 
-instance nonarchAddGroupSeminormClass : NonarchAddGroupSeminormClass (NonarchAddGroupSeminorm E) E
+instance funLike : NDFunLike (NonarchAddGroupSeminorm E) E ℝ
     where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _⟩, _, _⟩ := f; cases g; congr
+
+instance nonarchAddGroupSeminormClass : NonarchAddGroupSeminormClass (NonarchAddGroupSeminorm E) E
+    where
   map_add_le_max f := f.add_le_max'
   map_zero f := f.map_zero'
   map_neg_eq_map' f := f.neg'
@@ -749,10 +752,14 @@ section Group
 variable [Group E] [Group F] [Group G] {p q : GroupNorm E}
 
 @[to_additive]
-instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ
+instance funLike : NDFunLike (GroupNorm E) E ℝ
     where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨_, _, _, _⟩, _⟩ := f; cases g; congr
+
+@[to_additive]
+instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ
+    where
   map_one_eq_zero f := f.map_one'
   map_mul_le_add f := f.mul_le'
   map_inv_eq_map f := f.inv'
@@ -904,10 +911,13 @@ section AddGroup
 
 variable [AddGroup E] [AddGroup F] {p q : NonarchAddGroupNorm E}
 
-instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNorm E) E
+instance funLike : NDFunLike (NonarchAddGroupNorm E) E ℝ
     where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _, _⟩, _⟩ := f; cases g; congr
+
+instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNorm E) E
+    where
   map_add_le_max f := f.add_le_max'
   map_zero f := f.map_zero'
   map_neg_eq_map' f := f.neg'

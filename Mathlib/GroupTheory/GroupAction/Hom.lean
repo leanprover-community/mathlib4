@@ -76,7 +76,7 @@ scalar multiplication by `M`.
 
 You should extend this class when you extend `MulActionHom`. -/
 class SMulHomClass (F : Type*) (M : outParam <| Type*) (X Y : Type*) [SMul M X] [SMul M Y]
-    [NDFunLike F X Y] where
+    [NDFunLike F X Y] : Prop where
   /-- The proposition that the function preserves the action. -/
   map_smul : ∀ (f : F) (c : M) (x : X), f (c • x) = c • f x
 #align smul_hom_class SMulHomClass
@@ -224,7 +224,7 @@ You should extend this class when you extend `DistribMulActionHom`. -/
 class DistribMulActionHomClass (F : Type*) (M : outParam <| Type*) (A B : Type*)
   [Monoid M] [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B]
   [NDFunLike F A B]
-  extends SMulHomClass F M A B, AddMonoidHomClass F A B
+  extends SMulHomClass F M A B, AddMonoidHomClass F A B : Prop
 #align distrib_mul_action_hom_class DistribMulActionHomClass
 
 /- porting note: Removed a @[nolint dangerousInstance] for
@@ -456,7 +456,7 @@ You should extend this class when you extend `MulSemiringActionHom`. -/
 class MulSemiringActionHomClass (F : Type*) (M : outParam <| Type*) (R S : Type*)
   [Monoid M] [Semiring R] [Semiring S] [DistribMulAction M R] [DistribMulAction M S]
   [NDFunLike F R S]
-  extends DistribMulActionHomClass F M R S, RingHomClass F R S
+  extends DistribMulActionHomClass F M R S, RingHomClass F R S : Prop
 #align mul_semiring_action_hom_class MulSemiringActionHomClass
 
 /- porting note: Removed a @[nolint dangerousInstance] for MulSemiringActionHomClass.toRingHomClass
