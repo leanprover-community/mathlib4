@@ -10,12 +10,12 @@ import Mathlib.LinearAlgebra.Finsupp
 
 /-!
 # Tensor-Hom adjunction
-Consider two commutative rings `R` and `S` and `X` an `(R, S)`-bimodule.
+Consider two commutative rings `R` and `S` and `X` an `(S, R)`-bimodule.
 Consider the tensor functor `(X ⊗[R] .)` from the category of left `R`-module to the category of
-right `S`-module and the hom functor `X →ₗ[Sᵐᵒᵖ] .` from the category of right `S`-module to the
+left `S`-module and the hom functor `X →ₗ[S] .` from the category of right `S`-module to the
 category of left `R`-module. They form an adjunction. In particular we have that
 ```
-Hom_Sᵐᵒᵖ(X⊗[R]Y, Z) ≃ Hom_R(Y, Hom_Sᵐᵒᵖ(X, Z))
+Hom_S(X⊗[R]Y, Z) ≃ Hom_R(Y, Hom_S(X, Z))
 ```
 
 ## Implementation notes
@@ -42,11 +42,74 @@ open TensorProduct CategoryTheory
 
 variable (R : Type u) (S : Type u') (X : Type v)
 variable [CommRing R] [Ring S]
-variable [AddCommGroup X] [Module R X] [Module Sᵐᵒᵖ X] [SMulCommClass R Sᵐᵒᵖ X]
+variable [AddCommGroup X] [Module Rᵐᵒᵖ X] [Module S X] [SMulCommClass S Rᵐᵒᵖ X]
+
+open MulOpposite
+
+local instance : SMulCommClass Rᵐᵒᵖ S X := SMulCommClass.symm _ _ _
+
+instance leftMod_eq_rightMod : Module R X :=
+  Module.compHom X ((RingHom.id R).toOpposite fun _ _ => mul_comm _ _)
+
+noncomputable local instance tensorModSMul {X' : Type v'} [AddCommGroup X'] [Module R X'] :
+    SMul S (X' ⊗[R] X) where
+  smul := fun s => map LinearMap.id
+    { toFun := (s • ·)
+      map_add' := smul_add _
+      map_smul' := fun r x => by
+        show s • (op r) • x = (op r) • s • x
+        exact smul_comm _ _ _  }
+
+@[simp] private lemma tensorModSMul_smul_tmul {X' : Type v'} [AddCommGroup X'] [Module R X']
+  (s : S) (x' : X') (x : X) : s • (x' ⊗ₜ[R] x) = x' ⊗ₜ[R] (s • x) := rfl
+
+@[simp] private lemma tensorModSMul_one_smul {X' : Type v'} [AddCommGroup X'] [Module R X']
+    (z : X' ⊗[R] X) :
+    (1 : S) • z = z :=
+  z.induction_on rfl
+    (fun x' x => by rw [tensorModSMul_smul_tmul, one_smul])
+    (fun _ _ h h' => show map _ _ (_ + _) = _ by
+      simpa only [map_add] using congr_arg₂ (· + ·) h h')
+
+private lemma tensorModSMul_mul_smul {X' : Type v'} [AddCommGroup X'] [Module R X']
+    (s s' : S)
+    (z : X' ⊗[R] X) :
+    (s * s') • z = s • s' • z :=
+  z.induction_on rfl
+    (fun x' x => by simp only [tensorModSMul_smul_tmul, mul_smul])
+    (fun _ _ (h : map _ _ _ = _) (h' : map _ _ _ = _) => by
+        show map _ _ (_ + _) = map _ _ (map _ _ _)
+        rw [map_add, h, h', map_add, map_add]
+        rfl)
+
+private lemma tensorModSMul_add_smul {X' : Type v'} [AddCommGroup X'] [Module R X']
+    (s s' : S)
+    (z : X' ⊗[R] X) :
+    (s + s') • z = s • z + s' • z :=
+  z.induction_on rfl
+    (fun x' x => by simp only [tensorModSMul_smul_tmul, mul_smul, add_smul, tmul_add])
+    (fun z z' (h : map _ _ _ = _) (h' : map _ _ _ = _) => by
+        show map _ _ (_ + _) = map _ _ _ + map _ _ _
+        rw [map_add, h, h', map_add, map_add]
+        change _ = (s • z + s • z') + (s' • z + s' • z')
+        abel)
+
+noncomputable local instance tensorMod {X' : Type v'} [AddCommGroup X'] [Module R X'] :
+    Module S (X' ⊗[R] X) where
+  smul := (· • ·)
+  one_smul := tensorModSMul_one_smul _ _ _
+  mul_smul := tensorModSMul_mul_smul _ _ _
+  smul_zero := fun _ => rfl
+  smul_add := fun _ _ _ => map_add _ _ _
+  add_smul := tensorModSMul_add_smul _ _ _
+  zero_smul := fun z => z.induction_on rfl
+    (fun _ _ => by rw [tensorModSMul_smul_tmul, zero_smul, tmul_zero])
+    (fun _ _ (h : map _ _ _ = _) (h' : map _ _ _ = _) => show map _ _ _ = _ by
+      rw [map_add, h, h', zero_add])
 
 /--
 Let `R` be a commutative ring and `S` a ring.
-Give `(R, S)`-bimodule `X`, a left `R`-module `X` and a right `S`-module `Y`, then the the set of
+Give `(S, R)`-bimodule `X`, a left `R`-module `X` and a right `S`-module `Y`, then the the set of
 `S`-linear maps from `X` to `Y` has a (left) `R`-module structure given by:
 ```
 l : X →ₗ[Sᵐᵒᵖ] Y
@@ -56,25 +119,25 @@ x : X
 (r • l) x = l (r • x)
 ```
 -/
-local instance hom_bimodule {Y : Type v''} [AddCommGroup Y] [Module Sᵐᵒᵖ Y] :
-    Module R (X →ₗ[Sᵐᵒᵖ] Y) where
+local instance hom_bimodule {Y : Type v''} [AddCommGroup Y] [Module S Y] :
+    Module R (X →ₗ[S] Y) where
   smul r l :=
-  { toFun := fun x => l (r • x)
+  { toFun := fun x => l (op r • x)
     map_add' := fun x y => by dsimp; rw [smul_add, map_add]
-    map_smul' := fun s x => by dsimp; rw [smul_comm, map_smul] }
-  one_smul l := LinearMap.ext fun x => show l _ = _ by rw [one_smul]
-  mul_smul r₁ r₂ l := LinearMap.ext fun x => show l _ = l _ by rw [mul_comm, mul_smul]
+    map_smul' := fun s x => by dsimp; rw [smul_comm, l.map_smul] }
+  one_smul l := LinearMap.ext fun x => show l _ = _ by rw [op_one, one_smul]
+  mul_smul r₁ r₂ l := LinearMap.ext fun x => show l _ = l _ by rw [op_mul, mul_smul]
   smul_zero r := rfl
   smul_add r l₁ l₂ := LinearMap.ext fun x => show (l₁ + _) _ = _ by
     rw [LinearMap.add_apply, LinearMap.add_apply]; rfl
   add_smul r₁ r₂ l := LinearMap.ext fun x => show l _ = l _ + l _ by
-    rw [add_smul, map_add]
-  zero_smul l := LinearMap.ext fun x => show l _ = 0 by rw [zero_smul, map_zero]
+    rw [op_add, add_smul, map_add]
+  zero_smul l := LinearMap.ext fun x => show l _ = 0 by rw [op_zero, zero_smul, map_zero]
 
 variable {R S X}
 /--
 Let `R` be a commutative ring and `S` a ring.
-Give `(R, S)`-bimodule `X`, a left `R`-module `X` and a right `S`-module `Y`,
+Give `(S, R)`-bimodule `X`, a left `R`-module `X` and a right `S`-module `Y`,
 any `S`-linear map `X ⊗[R] X' ⟶ Y` can by curried into a bilinear map `X' ⟶ X ⟶ Y` where
 the first argument is `R`-linear and second is `S`-linear.
 
@@ -82,21 +145,22 @@ the first argument is `R`-linear and second is `S`-linear.
 -/
 noncomputable def TensorProduct.hcurry
     {X' : Type v'} [AddCommGroup X'] [Module R X']
-    {Y : Type v''} [AddCommGroup Y] [Module Sᵐᵒᵖ Y]
-    (l : X ⊗[R] X' →ₗ[Sᵐᵒᵖ] Y) :
-    X' →ₗ[R] (X →ₗ[Sᵐᵒᵖ] Y) where
+    {Y : Type v''} [AddCommGroup Y] [Module S Y]
+    (l : X' ⊗[R] X →ₗ[S] Y) :
+    X' →ₗ[R] (X →ₗ[S] Y) where
   toFun x' :=
-    { toFun := (l <| . ⊗ₜ x')
-      map_add' := fun _ _ => show l _ = l _ + l _ by rw [add_tmul _ _ x', map_add]
-      map_smul' := fun s _ => show l _ = s • l _ by rw [← smul_tmul', map_smul] }
-  map_add' := fun _ _ => LinearMap.ext fun _ => show l _ = l _ + l _ by rw [tmul_add, map_add]
-  map_smul' := fun r _ => LinearMap.ext fun _ => show l _ = l (r • _ ⊗ₜ _) by
-    rw [← smul_tmul, smul_tmul']
+    { toFun := (l <| x' ⊗ₜ ·)
+      map_add' := fun _ _ => show l _ = l _ + l _ by rw [tmul_add, map_add]
+      map_smul' := fun s _ => show l _ = s • l _ by rw [← l.map_smul, tensorModSMul_smul_tmul] }
+  map_add' := fun _ _ => LinearMap.ext fun _ => show l _ = l _ + l _ by rw [add_tmul, map_add]
+  map_smul' := fun r _ => LinearMap.ext fun _ => show l _ = l (_ ⊗ₜ (op r • _)) by
+    rw [smul_tmul]
+    rfl
 
 @[simp] lemma TensorProduct.hcurry_apply_apply {X' : Type v'} [AddCommGroup X'] [Module R X']
-    {Y : Type v''} [AddCommGroup Y] [Module Sᵐᵒᵖ Y]
-    (l : X ⊗[R] X' →ₗ[Sᵐᵒᵖ] Y) (x : X) (x' : X') :
-    TensorProduct.hcurry l x' x = l (x ⊗ₜ x') := rfl
+    {Y : Type v''} [AddCommGroup Y] [Module S Y]
+    (l : X' ⊗[R] X →ₗ[S] Y) (x : X) (x' : X') :
+    TensorProduct.hcurry l x' x = l (x' ⊗ₜ x) := rfl
 
 attribute [aesop unsafe] add_comm in
 /--
@@ -109,32 +173,34 @@ uncurried into a map `X ⊗[R] X' ⟶ Y`.
 -/
 def TensorProduct.huncurry
     {X' : Type v'} [AddCommGroup X'] [Module R X']
-    {Y : Type v''} [AddCommGroup Y] [Module Sᵐᵒᵖ Y]
-    (l : X' →ₗ[R] (X →ₗ[Sᵐᵒᵖ] Y)) :
-    X ⊗[R] X' →ₗ[Sᵐᵒᵖ] Y :=
-  let L : (X ⊗[R] X') →+ Y := (addConGen _).lift (FreeAddMonoid.lift fun p => l p.2 p.1) <|
-    AddCon.addConGen_le <| by rintro _ _ (_|_|_|_|_|_) <;> aesop
+    {Y : Type v''} [AddCommGroup Y] [Module S Y]
+    (l : X' →ₗ[R] X →ₗ[S] Y) :
+    X' ⊗[R] X →ₗ[S] Y :=
+  let L : (X' ⊗[R] X) →+ Y := (addConGen _).lift (FreeAddMonoid.lift fun p => l p.1 p.2) <|
+    AddCon.addConGen_le <| by
+      rintro _ _ (_|_|_|_|_|_) <;> try aesop
+      exact (AddCon.ker_rel _).2 <| FunLike.congr_fun (l.map_smul _ _) _
   { L with
     map_smul' := fun _ z => z.induction_on
       (by aesop) (fun _ _ => LinearMap.map_smul _ _ _) (by aesop) }
 
 @[simp] lemma TensorProduct.huncurry_apply_tmul
     {X' : Type v'} [AddCommGroup X'] [Module R X']
-    {Y : Type v''} [AddCommGroup Y] [Module Sᵐᵒᵖ Y]
-    (l : X' →ₗ[R] (X →ₗ[Sᵐᵒᵖ] Y)) (x : X) (x' : X') :
-    TensorProduct.huncurry l (x ⊗ₜ x') = l x' x := rfl
+    {Y : Type v''} [AddCommGroup Y] [Module S Y]
+    (l : X' →ₗ[R] (X →ₗ[S] Y)) (x : X) (x' : X') :
+    TensorProduct.huncurry l (x' ⊗ₜ x) = l x' x := rfl
 
 lemma TensorProduct.hcurry_huncurry
     {X' : Type v'} [AddCommGroup X'] [Module R X']
-    {Y : Type v''} [AddCommGroup Y] [Module Sᵐᵒᵖ Y]
-    (l : X' →ₗ[R] (X →ₗ[Sᵐᵒᵖ] Y)) :
+    {Y : Type v''} [AddCommGroup Y] [Module S Y]
+    (l : X' →ₗ[R] (X →ₗ[S] Y)) :
     hcurry (huncurry l) = l :=
   FunLike.ext _ _ fun _ => FunLike.ext _ _ fun _ => rfl
 
 lemma TensorProduct.huncurry_hcurry
     {X' : Type v'} [AddCommGroup X'] [Module R X']
-    {Y : Type v''} [AddCommGroup Y] [Module Sᵐᵒᵖ Y]
-    (l : X ⊗[R] X' →ₗ[Sᵐᵒᵖ] Y) :
+    {Y : Type v''} [AddCommGroup Y] [Module S Y]
+    (l : X' ⊗[R] X →ₗ[S] Y) :
     huncurry (hcurry l) = l :=
   FunLike.ext _ _ fun x => by refine x.induction_on ?_ ?_ ?_ <;> aesop
 
@@ -147,31 +213,34 @@ Let `X` be an `(R,S)`-bimodule. Then `(X ⊗[R] .)` is a functor from the catego
 to the category of `S`-modules.
 -/
 @[simps!]
-noncomputable def tensorFunctor : ModuleCat.{v} R ⥤ ModuleCat.{v} Sᵐᵒᵖ where
-  obj Y := ModuleCat.of Sᵐᵒᵖ <| X ⊗[R] Y
+noncomputable def tensorFunctor : ModuleCat.{v} R ⥤ ModuleCat.{v} S where
+  obj Y := ModuleCat.of S <| Y ⊗[R] X
   map {Y Y'} l :=
-  { __ := l.lTensor _
-    map_smul' := fun s x => x.induction_on (by aesop) (by aesop)
-      fun _ _ (h : l.lTensor _ _ = s • l.lTensor _ _) (h' : l.lTensor _ _ = s • l.lTensor _ _) =>
-        show l.lTensor _ _ = s • l.lTensor _ _ by rw [smul_add, map_add, h, h', map_add, smul_add] }
+  { toFun := l.rTensor _
+    map_add' := fun _ _ => map_add _ _ _
+    map_smul' := fun s x => x.induction_on (by aesop)
+      (fun y x => by simp only [tensorModSMul_smul_tmul]; rfl)
+      fun _ _ (h : l.rTensor _ _ = s • l.rTensor _ _) (h' : l.rTensor _ _ = s • l.rTensor _ _) =>
+        show l.rTensor _ _ = s • l.rTensor _ _ by rw [smul_add, map_add, h, h', map_add, smul_add] }
   map_id _ := LinearMap.ext fun x => FunLike.congr_fun TensorProduct.map_id x
-  map_comp {_ _ _} l l' := LinearMap.ext fun x => by
-    have eq1 := FunLike.congr_fun (TensorProduct.map_comp LinearMap.id LinearMap.id l' l) x
-    rwa [LinearMap.comp_id] at eq1
+  map_comp {A B C} l l' := LinearMap.ext fun (x : A ⊗[R] X) => by
+    change map (l'.comp l) _ _ = (map _ _).comp (map _ _) _
+    rw [← map_comp, LinearMap.id_comp]
+
 
 /--
 Let `X` be an `(R,S)`-bimodule. Then `(X →ₗ[S] .)` is a functor from the category of `S`-modules
 to the category of `R`-modules.
 -/
 @[simps]
-def homFunctor : ModuleCat.{v} Sᵐᵒᵖ ⥤ ModuleCat.{v} R where
-  obj Z := ModuleCat.of R <| X →ₗ[Sᵐᵒᵖ] Z
+def homFunctor : ModuleCat.{v} S ⥤ ModuleCat.{v} R where
+  obj Z := ModuleCat.of R <| X →ₗ[S] Z
   map {_ _} l :=
   { toFun := (l ∘ₗ .)
     map_add' := fun _ _ => LinearMap.ext fun _ => l.map_add _ _
     map_smul' := fun r L => LinearMap.ext fun x => rfl }
-  map_id Z := LinearMap.ext fun (L : _ →ₗ[Sᵐᵒᵖ] Z) => by aesop
-  map_comp {Z _ _} _ _ := LinearMap.ext fun (L : X →ₗ[Sᵐᵒᵖ] Z) => LinearMap.ext fun x => by aesop
+  map_id Z := LinearMap.ext fun (L : _ →ₗ[S] Z) => by aesop
+  map_comp {Z _ _} _ _ := LinearMap.ext fun (L : X →ₗ[S] Z) => LinearMap.ext fun x => by aesop
 
 /-- The tensor functor is left adjoint to the hom functor. -/
 noncomputable def tensorHomAdjunction : tensorFunctor R S X ⊣ homFunctor R S X :=
@@ -218,20 +287,14 @@ compatible with scalar action.
 noncomputable def toAddCommGroup {C : Type v''} [AddCommGroup C]
     (b : M →+ (N →+ C)) (compatible_smul : ∀ (r : R') (m : M) (n : N), b (r • m) n = b m (r • n)) :
     (M ⊗[R'] N) →+ C :=
-  let inst1 (A : Type _) [AddCommGroup A] : Module ℤᵐᵒᵖ A :=
-    Module.compHom _ ((RingHom.id ℤ).fromOpposite fun _ _ => mul_comm _ _)
-  let inst2 : SMulCommClass R' ℤᵐᵒᵖ M :=
-    ⟨fun r' z n => show r' • z.unop • n = z.unop • r' • n from smul_comm _ _ _⟩
-  let inst3 : Module ℤᵐᵒᵖ C :=
-    Module.compHom _ ((RingHom.id ℤ).fromOpposite fun _ _ => mul_comm _ _)
-  LinearMap.toAddMonoidHom (huncurry
-  { toFun := fun n =>
-    { toFun := fun m => b m n
-      map_add' := by aesop
-      map_smul' := fun z m => FunLike.congr_fun (b.toIntLinearMap.map_smul z.unop m) n }
-    map_add' := by aesop
-    map_smul' := fun _ _ => LinearMap.ext fun _ => (compatible_smul _ _ _).symm } :
-      M ⊗[R'] N →ₗ[ℤᵐᵒᵖ] C)
+  letI inst1 : Module R'ᵐᵒᵖ N :=
+    Module.compHom N ((RingHom.id R').fromOpposite fun _ _ => mul_comm _ _)
+  LinearMap.toAddMonoidHom
+    (huncurry
+      (⟨⟨fun m => (b m).toIntLinearMap,
+        fun _ _ => FunLike.ext _ _ fun _ => by aesop⟩,
+        fun r m => FunLike.ext _ _ fun n => compatible_smul r m n⟩ : M →ₗ[R'] N →ₗ[ℤ] C) :
+      (M ⊗[R'] N) →ₗ[ℤ] C)
 
 lemma toAddCommGroup_apply_tmul {C : Type v} [AddCommGroup C]
     (b : M →+ (N →+ C)) (compatible_smul : ∀ (r : R') (m : M) (n : N), b (r • m) n = b m (r • n))
