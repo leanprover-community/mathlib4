@@ -277,7 +277,7 @@ class Presieve.extensive {X : C} (R : Presieve X) :
     Prop where
   /-- `R` consists of a finite collection of arrows that together induce an isomorphism from the
   coproduct of their sources. -/
-  arrows_sigma_desc_iso : ∃ (α : Type) (_ : Fintype α) (Z : α → C) (π : (a : α) → (Z a ⟶ X)),
+  arrows_nonempty_isColimit : ∃ (α : Type) (_ : Fintype α) (Z : α → C) (π : (a : α) → (Z a ⟶ X)),
     R = Presieve.ofArrows Z π ∧ Nonempty (IsColimit (Cofan.mk X π))
 
 instance {X : C} (S : Presieve X) [S.extensive] : S.hasPullbacks where
