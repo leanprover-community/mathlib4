@@ -100,11 +100,9 @@ lemma exponentialPdfReal_pos {x r : ℝ} {hr : 0 < r} (hx : 0 < x) :
   positivity
 
 /-- The exponential Pdf is nonnegative-/
-lemma exponentialPdfReal_nonneg {r : ℝ} (hr : 0 < r) :
-    ∀ x : ℝ, 0 ≤ exponentialPdfReal r x := by
-  unfold exponentialPdfReal
-  intro x
-  split_ifs <;> positivity
+lemma exponentialPdfReal_nonneg {r : ℝ} (hr : 0 < r) (x : ℝ):
+    0 ≤ exponentialPdfReal r x := by
+  unfold exponentialPdfReal; split_ifs <;> positivity
 
 /-- A negative exponential function is integrable on Intervals in R≥0 -/
 lemma exp_neg_integrableOn_Ioc {b x : ℝ} (hb : 0 < b) :
@@ -174,9 +172,8 @@ noncomputable
 def exponentialCdfReal (r : ℝ) : StieltjesFunction :=
     cdf (expMeasure r)
 
-lemma exponentialCdfReal_eq_integral (r : ℝ) [Fact (0 < r)] : exponentialCdfReal r
-    = fun x ↦ ∫ x in Iic x, exponentialPdfReal r x := by
-  ext x
+lemma exponentialCdfReal_eq_integral (r : ℝ) [Fact (0 < r)] (x : ℝ) :
+    exponentialCdfReal r x = ∫ x in Iic x, exponentialPdfReal r x := by
   rw [exponentialCdfReal,cdf_eq_toReal]
   simp only [expMeasure, measurableSet_Iic, withDensity_apply]
   rw [integral_eq_lintegral_of_nonneg_ae]; exact rfl
@@ -237,10 +234,10 @@ lemma lint_eq_antiDeriv (r : ℝ) (hr : 0 < r) : ∀ x : ℝ,
       exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
 
 /-- The Definition of the CDF equals the known Formular ``1 - exp (-(r * x))``-/
-lemma exponentialCdfReal_eq {r : ℝ} [Fact (0 < r)] : exponentialCdfReal r =
-    fun x ↦ if 0 ≤ x then 1 - exp (-(r * x)) else 0 := by
-  rw[exponentialCdfReal_eq_lintegral]; ext x; rw [lint_eq_antiDeriv _ Fact.out]
-  rw[ENNReal.toReal_ofReal_eq_iff]
+lemma exponentialCdfReal_eq {r : ℝ} [Fact (0 < r)] (x : ℝ) : exponentialCdfReal r x =
+    if 0 ≤ x then 1 - exp (-(r * x)) else 0 := by
+  simp only [exponentialCdfReal_eq_lintegral, lint_eq_antiDeriv _ Fact.out,
+    ENNReal.toReal_ofReal_eq_iff]
   split_ifs with h <;> simp [mul_nonneg (le_of_lt Fact.out) _]
   exact mul_nonneg (le_of_lt Fact.out) h
 
