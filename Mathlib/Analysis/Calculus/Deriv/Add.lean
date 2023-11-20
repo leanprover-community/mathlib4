@@ -50,21 +50,21 @@ section Add
 
 
 nonrec theorem HasDerivAtFilter.add (hf : HasDerivAtFilter f f' x L)
-    (hg : HasDerivAtFilter g g' x L) : HasDerivAtFilter (fun y => f y + g y) (f' + g') x L := by
+    (hg : HasDerivAtFilter g g' x L) : HasDerivAtFilter (f + g) (f' + g') x L := by
   simpa using (hf.add hg).hasDerivAtFilter
 #align has_deriv_at_filter.add HasDerivAtFilter.add
 
 nonrec theorem HasStrictDerivAt.add (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x) :
-    HasStrictDerivAt (fun y => f y + g y) (f' + g') x := by simpa using (hf.add hg).hasStrictDerivAt
+    HasStrictDerivAt (f + g) (f' + g') x := by simpa using (hf.add hg).hasStrictDerivAt
 #align has_strict_deriv_at.add HasStrictDerivAt.add
 
 nonrec theorem HasDerivWithinAt.add (hf : HasDerivWithinAt f f' s x)
-    (hg : HasDerivWithinAt g g' s x) : HasDerivWithinAt (fun y => f y + g y) (f' + g') s x :=
+    (hg : HasDerivWithinAt g g' s x) : HasDerivWithinAt (f + g) (f' + g') s x :=
   hf.add hg
 #align has_deriv_within_at.add HasDerivWithinAt.add
 
 nonrec theorem HasDerivAt.add (hf : HasDerivAt f f' x) (hg : HasDerivAt g g' x) :
-    HasDerivAt (fun x => f x + g x) (f' + g') x :=
+    HasDerivAt (f + g) (f' + g') x :=
   hf.add hg
 #align has_deriv_at.add HasDerivAt.add
 
@@ -198,20 +198,20 @@ section Neg
 /-! ### Derivative of the negative of a function -/
 
 nonrec theorem HasDerivAtFilter.neg (h : HasDerivAtFilter f f' x L) :
-    HasDerivAtFilter (fun x => -f x) (-f') x L := by simpa using h.neg.hasDerivAtFilter
+    HasDerivAtFilter (-f) (-f') x L := by simpa using h.neg.hasDerivAtFilter
 #align has_deriv_at_filter.neg HasDerivAtFilter.neg
 
 nonrec theorem HasDerivWithinAt.neg (h : HasDerivWithinAt f f' s x) :
-    HasDerivWithinAt (fun x => -f x) (-f') s x :=
+    HasDerivWithinAt (-f) (-f') s x :=
   h.neg
 #align has_deriv_within_at.neg HasDerivWithinAt.neg
 
-nonrec theorem HasDerivAt.neg (h : HasDerivAt f f' x) : HasDerivAt (fun x => -f x) (-f') x :=
+nonrec theorem HasDerivAt.neg (h : HasDerivAt f f' x) : HasDerivAt (-f) (-f') x :=
   h.neg
 #align has_deriv_at.neg HasDerivAt.neg
 
 nonrec theorem HasStrictDerivAt.neg (h : HasStrictDerivAt f f' x) :
-    HasStrictDerivAt (fun x => -f x) (-f') x := by simpa using h.neg.hasStrictDerivAt
+    HasStrictDerivAt (-f) (-f') x := by simpa using h.neg.hasStrictDerivAt
 #align has_strict_deriv_at.neg HasStrictDerivAt.neg
 
 theorem derivWithin.neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
@@ -289,22 +289,22 @@ section Sub
 /-! ### Derivative of the difference of two functions -/
 
 theorem HasDerivAtFilter.sub (hf : HasDerivAtFilter f f' x L) (hg : HasDerivAtFilter g g' x L) :
-    HasDerivAtFilter (fun x => f x - g x) (f' - g') x L := by
+    HasDerivAtFilter (f - g) (f' - g') x L := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 #align has_deriv_at_filter.sub HasDerivAtFilter.sub
 
 nonrec theorem HasDerivWithinAt.sub (hf : HasDerivWithinAt f f' s x)
-    (hg : HasDerivWithinAt g g' s x) : HasDerivWithinAt (fun x => f x - g x) (f' - g') s x :=
+    (hg : HasDerivWithinAt g g' s x) : HasDerivWithinAt (f - g) (f' - g') s x :=
   hf.sub hg
 #align has_deriv_within_at.sub HasDerivWithinAt.sub
 
 nonrec theorem HasDerivAt.sub (hf : HasDerivAt f f' x) (hg : HasDerivAt g g' x) :
-    HasDerivAt (fun x => f x - g x) (f' - g') x :=
+    HasDerivAt (f - g) (f' - g') x :=
   hf.sub hg
 #align has_deriv_at.sub HasDerivAt.sub
 
 theorem HasStrictDerivAt.sub (hf : HasStrictDerivAt f f' x) (hg : HasStrictDerivAt g g' x) :
-    HasStrictDerivAt (fun x => f x - g x) (f' - g') x := by
+    HasStrictDerivAt (f - g) (f' - g') x := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 #align has_strict_deriv_at.sub HasStrictDerivAt.sub
 
