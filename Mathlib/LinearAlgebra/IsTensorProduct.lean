@@ -60,9 +60,7 @@ lemma BalancedBiAddMonoidHom.apply_smul_apply (f : BalancedBiAddMonoidHom R M N 
     f (op r • m) n = f m (r • n) :=
   f.balanced r m n
 
-variable (tmul : BalancedBiAddMonoidHom R M N X)
-
-class IsTensorProduct :=
+class IsTensorProduct (tmul : BalancedBiAddMonoidHom R M N X) :=
 (lift ⦃P : Type uX⦄ [AddCommMonoid P] (_ : BalancedBiAddMonoidHom R M N P) : X →+ P)
 (lift_comp ⦃P : Type uX⦄ [AddCommMonoid P] (f : BalancedBiAddMonoidHom R M N P) (m : M) (n : N) :
   lift f (tmul m n) = f m n)
@@ -72,7 +70,7 @@ class IsTensorProduct :=
 end defs
 
 section addGroups
-
+-- I feel like these should work for "semimodules" as well, but I don't know how to prove it
 open IsTensorProduct
 
 universe uR uM uN uX
@@ -136,7 +134,7 @@ section left_mod
 universe uA uB uC uR
 
 variable (A : Type uA) [Semiring A]
-variable (B : semiOutParam <| Type uB) [Semiring B]
+variable (B : Type uB) [Semiring B]
 variable (C : Type uC) [Semiring C]
 variable (R : Type uR) [Semiring R]
 
@@ -323,24 +321,42 @@ end right_mod
 
 end module_structure
 
+noncomputable section examples
 
--- variable (M N) in
--- @[simps]
--- noncomputable def TensorProduct.mkAddHom : M →+ N →+ M ⊗[Rc] N where
---   toFun := fun m =>
---   { toFun := (m ⊗ₜ ·)
---     map_zero' := tmul_zero _ _
---     map_add' := tmul_add _ }
---   map_zero' := by aesop
---   map_add' := fun _ _ => FunLike.ext _ _ fun _ => add_tmul _ _ _
+universe uR uS uM uN
+variable (R : Type uR) [CommRing R]
+variable (S : Type uS) [CommRing S]
+variable (M : Type uM) [AddCommGroup M] [Module R M]
+variable (N : Type uN) [AddCommGroup N] [Module R N] [Module S N] [SMulCommClass R S N]
 
+local instance : Module Rᵐᵒᵖ M := Module.compHom M ((RingHom.id _).fromOpposite mul_comm)
+local instance : Module Sᵐᵒᵖ N := Module.compHom N ((RingHom.id _).fromOpposite mul_comm)
+local instance : SMulCommClass R Sᵐᵒᵖ N where
+  smul_comm r s n := smul_comm r s.unop n
 
--- instance : Module Rcᵐᵒᵖ M := Module.compHom M ((RingHom.id Rc).fromOpposite mul_comm)
+@[simps]
+noncomputable def TensorProduct.mkAddHom : M →+ N →+ M ⊗[R] N where
+  toFun := fun m =>
+  { toFun := (m ⊗ₜ ·)
+    map_zero' := tmul_zero _ _
+    map_add' := tmul_add _ }
+  map_zero' := by aesop
+  map_add' := fun _ _ => FunLike.ext _ _ fun _ => add_tmul _ _ _
 
--- noncomputable instance : IsTensorProduct Rc
---   (⟨TensorProduct.mkAddHom Rc M N, fun r m n => smul_tmul r m n⟩ : BalancedBiAddMonoidHom Rc M N (M ⊗[Rc] N)) where
---   lift P _ f := TensorProduct.liftAddHom f.toAddMonoidHom f.balanced
---   lift_comp P _ f m n := rfl
---   lift_uniq P _ f fHat H := FunLike.ext _ _ fun x => x.induction_on (by aesop)
---     (fun m n => by rw [show fHat (m ⊗ₜ n) = _ from H m n]; rfl)
---     (fun z z' h h' => by simp only [map_add, h, h'])
+noncomputable instance isTensorProduct1 : IsTensorProduct R
+  (⟨TensorProduct.mkAddHom R M N, fun r m n => smul_tmul r m n⟩ :
+    BalancedBiAddMonoidHom R M N (M ⊗[R] N)) where
+  lift P _ f := TensorProduct.liftAddHom f.toAddMonoidHom f.balanced
+  lift_comp P _ f m n := rfl
+  lift_uniq P _ f fHat H := FunLike.ext _ _ fun x => x.induction_on (by aesop)
+    (fun m n => by rw [show fHat (m ⊗ₜ n) = _ from H m n]; rfl)
+    (fun z z' h h' => by simp only [map_add, h, h'])
+
+instance : Module S (M ⊗[R] N) :=
+  have i1 := IsTensorProduct.rightModule (B := R) (C := S) (M := M) (N := N) (X := M ⊗[R] N)
+  @Module.compHom _ _ (M ⊗[R] N) _ _ (@i1 _ (isTensorProduct1 R M N)) _
+    ((RingHom.id S).toOpposite mul_comm)
+
+example (s : S) (m : M) (n : N) : s • (m ⊗ₜ[R] n) = m ⊗ₜ (s • n) := rfl
+
+end examples
