@@ -119,12 +119,6 @@ lemma exponentialPdf_eval_neg {r x : ℝ} (hx : 0 ≤ x) :
     exponentialPdf r x = ENNReal.ofReal (r * rexp (-(r * x))) := by
   simp only [exponentialPdf_eq, if_pos hx]
 
-lemma tendsto_exp_neg_antiDeriv_atTop_nhds_0 {r : ℝ} (hr : 0 < r) :
-    Tendsto (fun x ↦ -1/r * exp (-(r * x))) atTop (𝓝 0) := by
-  rw [← mul_zero (-1/r)]
-  apply tendsto_const_nhds.mul (tendsto_exp_neg_atTop_nhds_0.comp
-    ((tendsto_const_mul_atTop_of_pos hr).2 tendsto_id))
-
 open Measure
 
 /-- The Pdf of the exponential Distribution integrates to 1-/
@@ -143,9 +137,11 @@ lemma lintegral_exponentialPdf_eq_one (r : ℝ) (hr : 0 < r) : ∫⁻ x, exponen
   · have IntegrOn : IntegrableOn (fun x ↦ rexp (-(r * x))) (Ioi 0) := by
       simp only [← neg_mul, exp_neg_integrableOn_Ioi 0 hr]
     rw [integral_mul_left, integral_Ici_eq_integral_Ioi,
-        integral_Ioi_of_hasDerivAt_of_tendsto' (fun _ _ ↦ hasDerivAt_exp_neg hr) IntegrOn
-        (tendsto_exp_neg_antiDeriv_atTop_nhds_0 hr)]
-    field_simp
+        integral_Ioi_of_hasDerivAt_of_tendsto' (m:=0) (fun _ _ ↦ hasDerivAt_exp_neg hr) IntegrOn]
+    · field_simp
+    · rw [← mul_zero (-1/r)]
+      exact tendsto_const_nhds.mul (tendsto_exp_neg_atTop_nhds_0.comp
+        ((tendsto_const_mul_atTop_of_pos hr).2 tendsto_id))
   · exact ((measurable_id'.const_mul r).neg.exp.const_mul r).stronglyMeasurable.aestronglyMeasurable
 
 end ExponentialPdf
