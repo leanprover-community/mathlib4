@@ -814,7 +814,7 @@ lemma mk₅_surjective (X : ComposableArrows C 5) :
 def arrow (i : ℕ) (hi : i < n := by linarith) :
     ComposableArrows C 1 := mk₁ (F.map' i (i + 1))
 
-section mkOfObj
+section mkOfObjOfMapSucc
 
 variable (obj : Fin (n + 1) → C) (mapSucc : ∀ (i : Fin n), obj i.castSucc ⟶ obj i.succ)
 
@@ -841,7 +841,7 @@ lemma mkOfObjOfMapSucc_exists : ∃ (F : ComposableArrows C n) (e : ∀ i, F.obj
 for all `i : Fin n`, this is `F : ComposableArrows C n` such that `F.obj i` is
 definitionally equal to `obj i`, see  -/
 noncomputable def mkOfObjOfMapSucc : ComposableArrows C n :=
-  (mkOfObjOfMapSucc_exists obj mapSucc).choose.mkOfFunctor obj
+  (mkOfObjOfMapSucc_exists obj mapSucc).choose.mkOfFunctorOfObj obj
     (mkOfObjOfMapSucc_exists obj mapSucc).choose_spec.choose
 
 @[simp]
@@ -856,7 +856,7 @@ lemma mkOfObjOfMapSucc_arrow (i : ℕ) (hi : i < n := by linarith) :
     (mkOfObjOfMapSucc obj mapSucc).arrow i = mk₁ (mapSucc ⟨i, hi⟩) :=
   ext₁ rfl rfl (by simpa using mkOfObjOfMapSucc_map_succ obj mapSucc i hi)
 
-end mkOfObj
+end mkOfObjOfMapSucc
 
 end ComposableArrows
 
