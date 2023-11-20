@@ -169,6 +169,13 @@ theorem IntegrableOn.restrict (h : IntegrableOn f s μ) (hs : MeasurableSet s) :
   rw [IntegrableOn, Measure.restrict_restrict hs]; exact h.mono_set (inter_subset_left _ _)
 #align measure_theory.integrable_on.restrict MeasureTheory.IntegrableOn.restrict
 
+lemma Integrable.piecewise [DecidablePred (· ∈ s)]
+    (hs : MeasurableSet s) (hf : IntegrableOn f s μ) (hg : IntegrableOn g sᶜ μ) :
+    Integrable (s.piecewise f g) μ := by
+  rw [IntegrableOn] at hf hg
+  rw [← memℒp_one_iff_integrable] at hf hg ⊢
+  exact Memℒp.piecewise hs hf hg
+
 theorem IntegrableOn.left_of_union (h : IntegrableOn f (s ∪ t) μ) : IntegrableOn f s μ :=
   h.mono_set <| subset_union_left _ _
 #align measure_theory.integrable_on.left_of_union MeasureTheory.IntegrableOn.left_of_union

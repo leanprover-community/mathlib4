@@ -66,7 +66,7 @@ structure Partition (n : ℕ) where
 
 namespace Partition
 
-instance decidableEqParition: DecidableEq (Partition n)
+instance decidableEqParition : DecidableEq (Partition n)
   | p, q => by simp [Partition.ext_iff]; exact decidableEq p.parts q.parts
 
 /-- A composition induces a partition (just convert the list to a multiset). -/

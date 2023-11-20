@@ -44,9 +44,8 @@ elab "(" "↑" ")" : term <= expectedType =>
       throwError "cannot coerce{indentExpr x}\nto type{indentExpr b}"
 
 /-- `⇑ t` coerces `t` to a function. -/
--- We increase the right precedence so this goes above most binary operators.
--- Otherwise `⇑f = g` will parse as `⇑(f = g)`.
-elab "⇑" m:term:80 : term => do
+-- the precedence matches that of `coeNotation`
+elab:1024 (name := coeFunNotation) "⇑" m:term:1024 : term => do
   let x ← elabTerm m none
   if let some ty ← coerceToFunction? x then
     return ty
@@ -62,7 +61,7 @@ elab "(" "⇑" ")" : term <= expectedType =>
       throwError "cannot coerce to function{indentExpr x}"
 
 /-- `↥ t` coerces `t` to a type. -/
-elab "↥" t:term:80 : term => do
+elab:1024 (name := coeSortNotation) "↥" t:term:1024 : term => do
   let x ← elabTerm t none
   if let some ty ← coerceToSort? x then
     return ty

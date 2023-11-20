@@ -356,6 +356,9 @@ def WellFoundedGT (α : Type*) [LT α] : Prop :=
   IsWellFounded α (· > ·)
 #align well_founded_gt WellFoundedGT
 
+lemma wellFounded_lt [LT α] [WellFoundedLT α] : @WellFounded α (· < ·) := IsWellFounded.wf
+lemma wellFounded_gt [LT α] [WellFoundedGT α] : @WellFounded α (· > ·) := IsWellFounded.wf
+
 -- See note [lower instance priority]
 instance (priority := 100) (α : Type*) [LT α] [h : WellFoundedLT α] : WellFoundedGT αᵒᵈ :=
   h
@@ -382,8 +385,8 @@ instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] :
     IsStrictTotalOrder α r where
 
 -- see Note [lower instance priority]
-instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsTrichotomous α r :=
-  by infer_instance
+instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsTrichotomous α r := by
+  infer_instance
 
 -- see Note [lower instance priority]
 instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsTrans α r := by
@@ -544,7 +547,7 @@ def Unbounded (r : α → α → Prop) (s : Set α) : Prop :=
   ∀ a, ∃ b ∈ s, ¬r b a
 #align set.unbounded Set.Unbounded
 
-/-- A bounded or final set. Not to be confused with `Metric.bounded`. -/
+/-- A bounded or final set. Not to be confused with `Bornology.IsBounded`. -/
 def Bounded (r : α → α → Prop) (s : Set α) : Prop :=
   ∃ a, ∀ b ∈ s, r b a
 #align set.bounded Set.Bounded
