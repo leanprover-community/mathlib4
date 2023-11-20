@@ -119,13 +119,11 @@ lemma exponentialPdf_eval_neg {r x : ℝ} (hx : 0 ≤ x) :
     exponentialPdf r x = ENNReal.ofReal (r * rexp (-(r * x))) := by
   simp only [exponentialPdf_eq, if_pos hx]
 
-lemma antiDeriv_tendsto_zero {r : ℝ} (hr : 0 < r) :
+lemma tendsto_exp_neg_antiDeriv_atTop_nhds_0 {r : ℝ} (hr : 0 < r) :
     Tendsto (fun x ↦ -1/r * exp (-(r * x))) atTop (𝓝 0) := by
   rw [← mul_zero (-1/r)]
-  apply Tendsto.mul
-  · exact tendsto_const_nhds
-  · apply tendsto_exp_neg_atTop_nhds_0.comp
-    exact (tendsto_const_mul_atTop_of_pos hr).2 tendsto_id
+  apply tendsto_const_nhds.mul (tendsto_exp_neg_atTop_nhds_0.comp
+    ((tendsto_const_mul_atTop_of_pos hr).2 tendsto_id))
 
 open Measure
 
@@ -136,18 +134,17 @@ lemma lintegral_exponentialPdf_eq_one (r : ℝ) (hr : 0 < r) : ∫⁻ x, exponen
   have leftSide : ∫⁻ x in Iio 0, exponentialPdf r x = 0 := by
     rw [set_lintegral_congr_fun measurableSet_Iio exponentialPdf_eval_pos, lintegral_zero]
   have rightSide : ∫⁻ x in Ici 0, exponentialPdf r x
-      = ∫⁻ x in {x | x ≥ 0}, ENNReal.ofReal (r * rexp (-(r * x))) := by
+      = ∫⁻ x in Ici 0, ENNReal.ofReal (r * rexp (-(r * x))) := by
     exact set_lintegral_congr_fun isClosed_Ici.measurableSet
       (ae_of_all _ (fun x (hx : 0 ≤ x) ↦ exponentialPdf_eval_neg hx))
   simp only [leftSide, add_zero]
   rw [rightSide, ENNReal.toReal_eq_one_iff, ←ENNReal.toReal_eq_one_iff]
   rw [← integral_eq_lintegral_of_nonneg_ae (ae_of_all _ (fun _ ↦ by positivity))]
-  · simp only [ge_iff_le, restrictₗ_apply]
-    have IntegrOn : IntegrableOn (fun x ↦ rexp (-(r * x))) (Ioi 0) := by
+  · have IntegrOn : IntegrableOn (fun x ↦ rexp (-(r * x))) (Ioi 0) := by
       simp only [← neg_mul, exp_neg_integrableOn_Ioi 0 hr]
-    rw [integral_mul_left, Ici_def, integral_Ici_eq_integral_Ioi,
+    rw [integral_mul_left, integral_Ici_eq_integral_Ioi,
         integral_Ioi_of_hasDerivAt_of_tendsto' (fun _ _ ↦ hasDerivAt_exp_neg hr) IntegrOn
-        (antiDeriv_tendsto_zero hr)]
+        (tendsto_exp_neg_antiDeriv_atTop_nhds_0 hr)]
     field_simp
   · exact ((measurable_id'.const_mul r).neg.exp.const_mul r).stronglyMeasurable.aestronglyMeasurable
 
