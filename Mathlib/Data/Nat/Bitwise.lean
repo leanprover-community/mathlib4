@@ -347,6 +347,66 @@ theorem bitwise_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' 
     _ = swap (bitwise f) := bitwise_swap
 #align nat.bitwise_comm Nat.bitwise_comm
 
+theorem testBit_two_pow_mul_add {n b w i} (h: i < w) :
+    Nat.testBit (2 ^ w * b + n) i = Nat.testBit n i := by
+  simp only [testBit, shiftRight_eq_div_pow, bodd_eq_bodd_iff]
+  rw [← Nat.add_sub_of_le (succ_le_of_lt h), Nat.succ_eq_add_one, Nat.add_assoc]
+  rw [Nat.pow_add, Nat.add_comm, Nat.mul_assoc, add_mul_div_left _ _ (two_pow_pos _), add_mod]
+  rw [Nat.pow_add, Nat.pow_one, Nat.mul_assoc]
+  simp
+
+theorem testBit_two_pow_mul_toNat_add {n w b} (h: n < 2 ^ w) :
+    testBit (2 ^ w * b.toNat + n) w = b := by
+  simp only [testBit, shiftRight_eq_div_pow]
+  rw [Nat.add_div_of_dvd_right (Dvd.intro _ rfl), Nat.div_eq_of_lt h, add_zero]
+  cases' b <;> simp
+
+/-- Create a natural number by appending bits tail-recursively, where a boolean function `f` gives
+    the value of each bit such that `f 0` is the least significant bit. -/
+def ofBits {n : ℕ} (f : Fin n → Bool) : ℕ :=
+  go (Fin.extendFun f false) 0 n
+  where
+    /-- A helper method where `z` the starting point.
+    Note that `ofBits.go f z i = 2 ^ i * z + ofBits f i` which we prove next. -/
+    go (f : ℕ → Bool) (z : ℕ) : ℕ → ℕ
+    | 0 => z
+    | i + 1 => go f (bit (f i) z) i
+
+theorem ofBits.go_eq_pow_mul_add (f z i) :
+    ofBits.go f z i = 2 ^ i * z + ofBits (f ∘ Fin.val : Fin i → _) := by
+  induction' i with i ih generalizing z f
+  · simp [ofBits, ofBits.go, bit_val]
+  · simp only [ofBits, ofBits.go]
+    conv_rhs => rw [ih]
+    have : (f ∘ Fin.val) ∘ Fin.castAdd 1 = (f ∘ Fin.val : Fin i → _) := rfl
+    rw [ih, bit_val, mul_add, ← mul_assoc, ← pow_succ, Fin.extendFun_comp_val' 1, this]
+    simp only [add_assoc, Fin.extendFun, lt_succ_self, comp_apply, dite_eq_ite, ite_true, bit_val,
+      mul_zero, zero_add]
+
+theorem ofBits_lt {i} {f : Fin i → Bool} : ofBits f < 2 ^ i := by
+  unfold ofBits
+  induction' i with i ih
+  · simp [ofBits, ofBits.go, bit_val, lt_succ, Bool.toNat_le_one]
+  · simp only [ofBits, ofBits.go, bit_zero]
+    rw [ofBits.go_eq_pow_mul_add]
+    cases' (Fin.extendFun f false i) <;> simp [two_pow_succ, ofBits, Nat.lt_of_lt_of_le ih]
+
+/-- The `ith` bit of `ofBits` is the function at `i` -/
+theorem testBit_ofBits {j} {i : Fin j} {f : Fin j → Bool} : (ofBits f).testBit i = f i := by
+  unfold ofBits
+  rcases i with ⟨i, hi⟩
+  induction' j, (pos_of_gt hi) using Nat.le_induction with j _ ih generalizing i
+  · simp only [ofBits.go, Fin.extendFun_succ, Fin.zero_eta, bit_zero, lt_one_iff.1 hi]
+    cases (f 0) <;> rfl
+  · simp only
+    cases' lt_or_eq_of_le (lt_succ_iff.mp hi) with hi hi
+    · have : f ⟨i, by assumption⟩ = (f ∘ Fin.castAdd 1) ⟨i, hi⟩ := rfl
+      rw [this, ← ih (f := f ∘ Fin.castAdd 1) i hi, ofBits.go, ofBits.go_eq_pow_mul_add, ofBits,
+        testBit_two_pow_mul_add hi, Fin.extendFun_comp_val']
+    · subst hi
+      simp only [ofBits.go, add_eq, add_zero, Fin.extendFun_add, bit_zero, ofBits.go_eq_pow_mul_add,
+        Fin.extendFun_comp_val', testBit_two_pow_mul_toNat_add (ofBits_lt)]
+
 /-- If `x` and `y` fit within `n` bits, then the result of any (well-behaved) bitwise operation on
     `x` and `y` also fits within `n` bits -/
 theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy: y < 2 ^ n) (h: f false false = false) :
