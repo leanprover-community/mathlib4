@@ -254,7 +254,7 @@ def updateNth (s : WSeq α) (n : ℕ) (a : α) : WSeq α where
 def removeNth (s : WSeq α) (n : ℕ) : WSeq α where
   data :=
     Seq'.corec
-      (fun ⟨n, s⟩ =>
+      (fun (n, s) =>
         match Seq'.dest s, n with
         | none, _ => none
         | some (none, s'), n => some (none, n, s')
@@ -306,7 +306,7 @@ def zip : WSeq α → WSeq β → WSeq (α × β) :=
 
 /-- Get the list of indexes of elements of `s` satisfying `p` -/
 def findIndexes (p : α → Prop) [DecidablePred p] (s : WSeq α) : WSeq ℕ :=
-  (zip s (Stream'.nats : WSeq ℕ)).filterMap fun ⟨a, n⟩ => if p a then some n else none
+  (zip s (Stream'.nats : WSeq ℕ)).filterMap fun (a, n) => if p a then some n else none
 #align stream.wseq.find_indexes WSeq.findIndexes
 
 /-- Get the index of the first element of `s` satisfying `p` -/
@@ -1277,7 +1277,7 @@ theorem toList'_cons (l : List α) (s : WSeq α) (a : α) :
       | none => Sum.inl l.reverse
       | some (none, s') => Sum.inr (l, s')
       | some (some a, s') => Sum.inr (a :: l, s')) (l, data (a ::ₐ s)) =
-      (Computation.corec (fun ⟨l, s⟩ =>
+      (Computation.corec (fun (l, s) =>
         match Seq'.dest s with
         | none => Sum.inl l.reverse
         | some (none, s') => Sum.inr (l, s')
@@ -1287,12 +1287,12 @@ theorem toList'_cons (l : List α) (s : WSeq α) (a : α) :
 
 @[simp]
 theorem toList'_think (l : List α) (s : WSeq α) :
-    Computation.corec (fun ⟨l, s⟩ =>
+    Computation.corec (fun (l, s) =>
       match Seq'.dest s with
       | none => Sum.inl l.reverse
       | some (none, s') => Sum.inr (l, s')
       | some (some a, s') => Sum.inr (a :: l, s')) (l, data (think s)) =
-      (Computation.corec (fun ⟨l, s⟩ =>
+      (Computation.corec (fun (l, s) =>
         match Seq'.dest s with
         | none => Sum.inl l.reverse
         | some (none, s') => Sum.inr (l, s')
@@ -1301,7 +1301,7 @@ theorem toList'_think (l : List α) (s : WSeq α) :
 #align stream.wseq.to_list'_think WSeq.toList'_think
 
 theorem toList'_map (l : List α) (s : WSeq α) :
-    Computation.corec (fun ⟨l, s⟩ =>
+    Computation.corec (fun (l, s) =>
       match Seq'.dest s with
       | none => Sum.inl l.reverse
       | some (none, s') => Sum.inr (l, s')
@@ -1316,7 +1316,7 @@ theorem toList'_map (l : List α) (s : WSeq α) :
             | none => Sum.inl l.reverse
             | some (none, s') => Sum.inr (l, s')
             | some (some a, s') => Sum.inr (a :: l, s')) (l' ++ l, data s) ∧
-            c2 = Computation.map (l.reverse ++ ·) (Computation.corec (fun ⟨l, s⟩ =>
+            c2 = Computation.map (l.reverse ++ ·) (Computation.corec (fun (l, s) =>
               match Seq'.dest s with
               | none => Sum.inl l.reverse
               | some (none, s') => Sum.inr (l, s')
