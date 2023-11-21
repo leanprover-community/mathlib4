@@ -329,6 +329,16 @@ def recOn' {C : Seq' α → Sort v} (s : Seq' α) (nil : C nil) (cons : ∀ x s,
   | some (a, s') => cast (congr_arg C (dest_eq_cons H)).symm (cons a s')
 #align stream.seq.rec_on Seq'.recOn'
 
+@[simp]
+theorem recOn'_nil {C : Seq' α → Sort v} (nil : C nil) (cons : ∀ x s, C (x ::ₑ s)) :
+    recOn' (C := C) Seq'.nil nil cons = nil :=
+  rfl
+
+@[simp]
+theorem recOn'_cons {C : Seq' α → Sort v} (a : α) (s : Seq' α) (nil : C nil)
+    (cons : ∀ x s, C (x ::ₑ s)) : recOn' (C := C) (a ::ₑ s) nil cons = cons a s :=
+  rfl
+
 theorem dest_injective : Injective (dest : Seq' α → Option (α × Seq' α)) := by
   intro s₁ s₂ hs
   cases s₂ using recOn' with
@@ -436,8 +446,29 @@ theorem nil_terminates : (nil : Seq' α).Terminates :=
   terminates_of_terminatedAt <| nil_terminatedAt 0
 
 @[simp]
-theorem cons_terminates (a : α) (s : Seq' α) : (a ::ₑ s).Terminates ↔ s.Terminates := by
+theorem cons_terminates {a : α} {s : Seq' α} : (a ::ₑ s).Terminates ↔ s.Terminates := by
   unfold Terminates; nth_rw 1 [← Nat.or_exists_succ]; simp
+
+theorem terminates_iff_acc {s : Seq' α} :
+    Terminates s ↔ Acc (fun s₁ s₂ => ∃ a, dest s₂ = some (a, s₁)) s := by
+  constructor
+  · intro hs; unfold Terminates TerminatedAt at hs
+    rcases hs with ⟨n, hs⟩
+    induction n using Nat.recAux generalizing s with
+    | zero =>
+      cases s using recOn' <;> simp at hs
+      constructor; simp
+    | succ n hn =>
+      cases s using recOn' <;> simp at hs
+      case nil => constructor; simp
+      case cons a s => constructor; simp [hn hs]
+  · intro hs
+    induction hs with
+    | intro s' hs'₂ hs' =>
+      clear s hs'₂
+      cases s' using recOn' with
+      | nil => simp
+      | cons a s' => simp [hs' s' ⟨a, rfl⟩]
 
 theorem not_terminates_iff {s : Seq' α} : ¬s.Terminates ↔ ∀ n, (s.get? n).isSome := by
   simp only [Terminates, not_terminatedAt_iff, not_exists]
@@ -705,19 +736,10 @@ unsafe def forceToList (s : Seq' α) : List α :=
   (toLazyList s).toList
 #align stream.seq.force_to_list Seq'.forceToList
 
-/-- The sequence of natural numbers some 0, some 1, ... -/
-def nats : Seq' ℕ :=
-  ↑Stream'.nats
-#align stream.seq.nats Seq'.nats
 
-@[simp]
-theorem nats_get? (n : ℕ) : get? nats n = some n := by
-  simp [nats]
-#align stream.seq.nats_nth Seq'.nats_get?
+#align stream.seq.nats Stream'.nats
 
-@[simp, norm_cast]
-theorem ofStream_nats : (↑Stream'.nats : Seq' ℕ) = nats :=
-  rfl
+#align stream.seq.nats_nth Stream'.get_nats
 
 /-- Corecursor where it is possible to return a fully formed value at any point of the
 computation. -/
@@ -1039,15 +1061,28 @@ theorem dest_zip  (s : Seq' α) (s' : Seq' β) :
       Option.map₂ (fun (a, s) (b, s') => ((a, b), zip s s')) (dest s) (dest s') :=
   dest_zipWith _ _ _
 
+/-- Like `enum` but it allows you to specify the initial index. -/
+def enumFrom (n : ℕ) (s : Seq' α) : Seq' (ℕ × α) :=
+  Seq'.zip ↑(Stream'.iota n) s
+
 /-- Enumerate a sequence by tagging each element with its index. -/
 def enum (s : Seq' α) : Seq' (ℕ × α) :=
-  Seq'.zip nats s
+  enumFrom 0 s
 #align stream.seq.enum Seq'.enum
+
+@[simp]
+theorem get?_enumFrom (m : ℕ) (s : Seq' α) (n : ℕ) :
+    get? (enumFrom m s) n = Option.map (Prod.mk (m + n)) (get? s n) := by
+  simp [enumFrom]
 
 @[simp]
 theorem get?_enum (s : Seq' α) (n : ℕ) : get? (enum s) n = Option.map (Prod.mk n) (get? s n) := by
   simp [enum]
 #align stream.seq.nth_enum Seq'.get?_enum
+
+@[simp]
+theorem enumFrom_nil (n : ℕ) : enumFrom n (nil : Seq' α) = nil := by
+  simp [enumFrom]
 
 @[simp]
 theorem enum_nil : enum (nil : Seq' α) = nil := by
@@ -1060,41 +1095,109 @@ def unzip (s : Seq' (α × β)) : Seq' α × Seq' β :=
 #align stream.seq.unzip Seq'.unzip
 
 /-- Convert a sequence which is known to terminate into a list -/
-def toList (s : Seq' α) (h : s.Terminates) : List α :=
-  take (Nat.find h) s
+def toList (s : Seq' α) (hs : s.Terminates) : List α :=
+  take (Nat.find hs) s
 #align stream.seq.to_list Seq'.toList
 
 @[simp]
-theorem get?_toList {s : Seq' α} (h : s.Terminates) (n : ℕ) :
-    List.get? (toList s h) n = get? s n := by
+theorem get?_toList {s : Seq' α} (hs : s.Terminates) (n : ℕ) :
+    List.get? (toList s hs) n = get? s n := by
   simp [toList]
   intro m hmn ht
-  symm; exact Seq.terminated_stable s hmn ht
+  symm; exact Seq'.terminated_stable s hmn ht
+
+@[simp]
+theorem toList_nil (hn : (nil : Seq' α).Terminates) : toList nil hn = [] := by
+  ext1; simp
+
+@[simp]
+theorem toList_cons {a : α} {s : Seq' α} (has : (a ::ₑ s).Terminates) :
+    toList (a ::ₑ s) has = a :: toList s (cons_terminates.mp has) := by
+  ext1 (_ | _) <;> simp
 
 @[simp, norm_cast]
-theorem toList_ofList {l : List α} (h : (↑l : Seq' α).Terminates) : toList ↑l h = l := by
+theorem toList_ofList {l : List α} (hl : (↑l : Seq' α).Terminates) : toList ↑l hl = l := by
   ext1 n; rw [get?_toList, get?_ofList]
 
 @[simp, norm_cast]
-theorem ofList_toList {s : Seq' α} (h : s.Terminates) : (toList s h : List α) = s := by
+theorem ofList_toList {s : Seq' α} (hs : s.Terminates) : (toList s hs : List α) = s := by
   ext1 n; rw [get?_ofList, get?_toList]
+
+/-- Corecursive verseion of `toList`. -/
+@[inline, simp]
+def toListCorec (s : Seq' α) (hs : s.Terminates) : List α :=
+  loop (terminates_iff_acc.mp hs) #[]
+where
+  /-- The mail loop for `toListCorec`. -/
+  loop {s : Seq' α} (hs : Acc (fun s₁ s₂ => ∃ a, dest s₂ = some (a, s₁)) s) (ar : Array α) :
+      List α :=
+    Acc.rec
+      (fun s _ F ar =>
+        match hs : dest s with
+        | none => Array.data ar
+        | some (a, s) => F s ⟨a, hs⟩ (Array.push ar a))
+      hs ar
+
+theorem toListCorec.loop_intro {s : Seq' α}
+    (hs : ∀ s', (∃ a, dest s = some (a, s')) →
+      Acc (fun s₁ s₂ => ∃ a, dest s₂ = some (a, s₁)) s') (ar : Array α) :
+    loop (Acc.intro s hs) ar =
+      match hs' : dest s with
+      | none => Array.data ar
+      | some (a, s) => loop (hs s ⟨a, hs'⟩) (Array.push ar a) :=
+  rfl
+
+theorem toListCorec.loop_eq {s : Seq' α}
+    (hs : Acc (fun s₁ s₂ => ∃ a, dest s₂ = some (a, s₁)) s) (ar : Array α) :
+    loop hs ar =
+      Array.data ar ++ toList s (terminates_iff_acc.mpr hs) := by
+  induction hs generalizing ar with
+  | intro s hh hs =>
+    rw [toListCorec.loop_intro hh]
+    split
+    next hn =>
+      replace hn := dest_eq_nil hn; subst hn
+      simp
+    next a s' hs' =>
+      replace hs' := dest_eq_cons hs'; subst hs'
+      simp [hs]
+
+@[csimp]
+theorem toList_eq_toListCorec : @toList.{u} = @toListCorec.{u} := by
+  funext α s hs
+  simp [toListCorec.loop_eq]
 
 instance : CanLift (Seq' α) (List α) (↑) (·.Terminates) where
   prf s h := ⟨toList s h, ofList_toList h⟩
 
 /-- Convert a sequence which is known not to terminate into a stream -/
-def toStream (s : Seq' α) (h : ¬s.Terminates) : Stream' α :=
-  ₛ[ Option.get _ <| not_terminates_iff.1 h n | n ]
+def toStream (s : Seq' α) (hs : ¬s.Terminates) : Stream' α :=
+  Stream'.corec' (α := { s : Seq' α // ¬s.Terminates })
+    (fun ⟨s, hs⟩ =>
+      recOn' s (absurd nil_terminates)
+        (fun a s' has' => (a, ⟨s', mt cons_terminates.mpr has'⟩))
+        hs)
+    ⟨s, hs⟩
 #align stream.seq.to_stream Seq'.toStream
 
 @[simp]
-theorem get_toStream {s : Seq' α} (h : ¬s.Terminates) (n : ℕ) :
-    Stream'.get (toStream s h) n = Option.get (get? s n) (not_terminates_iff.1 h n) :=
-  rfl
+theorem get_toStream {s : Seq' α} (hs : ¬s.Terminates) (n : ℕ) :
+    Stream'.get (toStream s hs) n = Option.get (get? s n) (not_terminates_iff.mp hs n) := by
+  induction n using Nat.recAux generalizing s hs with
+  | zero =>
+    cases s using recOn' with
+    | nil       => simp at hs
+    | cons a s' => simp [toStream]
+  | succ n hn =>
+    cases s using recOn' with
+    | nil       => simp at hs
+    | cons a s' =>
+      simp [toStream]
+      apply hn
 
 @[simp, norm_cast]
-theorem toStream_ofStream {s : Stream' α} (h : ¬(↑s : Seq' α).Terminates) : toStream ↑s h = s :=
-  rfl
+theorem toStream_ofStream {s : Stream' α} (h : ¬(↑s : Seq' α).Terminates) : toStream ↑s h = s := by
+  ext1 n; simp
 
 @[simp, norm_cast]
 theorem ofStream_toStream {s : Seq' α} (h : ¬s.Terminates) : (toStream s h : Seq' α) = s := by
