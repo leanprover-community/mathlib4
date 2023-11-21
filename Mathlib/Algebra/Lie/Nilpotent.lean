@@ -3,6 +3,7 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.Lie.BaseChange
 import Mathlib.Algebra.Lie.Solvable
 import Mathlib.Algebra.Lie.Quotient
 import Mathlib.Algebra.Lie.Normalizer
@@ -29,7 +30,6 @@ carries a natural concept of nilpotency. We define these here via the lower cent
 
 lie algebra, lower central series, nilpotent
 -/
-
 
 universe u v w w₁ w₂
 
@@ -856,3 +856,166 @@ theorem _root_.LieAlgebra.isNilpotent_ad_of_isNilpotent {L : LieSubalgebra R A} 
 #align lie_algebra.is_nilpotent_ad_of_is_nilpotent LieAlgebra.isNilpotent_ad_of_isNilpotent
 
 end OfAssociative
+
+-- TODO Relocate + polish everything below
+
+open TensorProduct
+
+variable (R A L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+  [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+  [CommRing A] [Algebra R A]
+
+namespace Submodule
+
+variable (p : Submodule R M)
+
+variable {R M} in
+def extendScalars : Submodule A (A ⊗[R] M) :=
+  span A <| p.map (TensorProduct.mk R A M 1)
+
+@[simp]
+lemma extendScalars_bot : (⊥ : Submodule R M).extendScalars A = ⊥ := by simp [extendScalars]
+
+@[simp]
+lemma extendScalars_top : (⊤ : Submodule R M).extendScalars A = ⊤ := by
+  rw [extendScalars, map_top, eq_top_iff']
+  intro x
+  refine x.induction_on (by simp) (fun a y ↦ ?_) (fun _ _ ↦ Submodule.add_mem _)
+  rw [← mul_one a, ← smul_eq_mul, ← smul_tmul']
+  apply smul_mem _ _ (subset_span _)
+  simp
+
+variable {R A M p} in
+lemma tmul_mem_extendScalars_of_mem (a : A) {m : M} (hm : m ∈ p) :
+    a ⊗ₜ[R] m ∈ p.extendScalars A := by
+  suffices 1 ⊗ₜ[R] m ∈ p.extendScalars A by
+    rw [← mul_one a, ← smul_eq_mul, ← smul_tmul']
+    exact smul_mem (extendScalars A p) a this
+  exact subset_span ⟨m, hm, rfl⟩
+
+@[simp]
+lemma extendScalars_span (s : Set M) :
+    (span R s).extendScalars A = span A (TensorProduct.mk R A M 1 '' s) := by
+  simp only [extendScalars, map_coe]
+  refine le_antisymm (span_le.mpr ?_) (span_mono <| Set.image_subset _ subset_span)
+  rintro - ⟨m : M, hm : m ∈ span R s, rfl⟩
+  simp only [mk_apply, SetLike.mem_coe]
+  apply span_induction (p := fun m' ↦ (1 : A) ⊗ₜ[R] m' ∈ span A ((fun a ↦ 1 ⊗ₜ[R] a) '' s)) hm
+  · intro m hm
+    apply subset_span
+    exact ⟨m, hm, rfl⟩
+  · simp
+  · intro m₁ m₂ hm₁ hm₂
+    rw [tmul_add]
+    exact Submodule.add_mem _ hm₁ hm₂
+  · intro r m' hm'
+     -- Should we generalise `Submodule.smul_mem` avoid the `one_smul`, `smul_assoc` dance below?
+    rw [tmul_smul, ← one_smul A ((1 : A) ⊗ₜ[R] m'), ← smul_assoc]
+    exact smul_mem _ (r • 1) hm'
+
+end Submodule
+
+namespace LieSubmodule
+
+open LieModule
+
+variable {R L M} in
+def extendScalars (N : LieSubmodule R L M) : LieSubmodule A (A ⊗[R] L) (A ⊗[R] M) :=
+  { (N : Submodule R M).extendScalars A with
+    lie_mem := by
+      intro x m hm
+      simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+        Submodule.mem_toAddSubmonoid] at hm ⊢
+      obtain ⟨c, rfl⟩ := (Finsupp.mem_span_iff_total _ _ _).mp hm
+      refine x.induction_on (by simp) (fun a y ↦ ?_) (fun y z hy hz ↦ ?_)
+      · change toEndomorphism A (A ⊗[R] L) (A ⊗[R] M) _ _ ∈ _
+        simp_rw [Finsupp.total_apply, Finsupp.sum, map_sum, map_smul, toEndomorphism_apply_apply]
+        suffices ∀ n : (N : Submodule R M).map (TensorProduct.mk R A M 1),
+            ⁅a ⊗ₜ[R] y, (n : A ⊗[R] M)⁆ ∈ (N : Submodule R M).extendScalars A by
+          exact Submodule.sum_mem _ fun n _ ↦ Submodule.smul_mem _ _ (this n)
+        rintro ⟨-, ⟨n : M, hn : n ∈ N, rfl⟩⟩
+        exact Submodule.tmul_mem_extendScalars_of_mem _ (N.lie_mem hn)
+      · rw [add_lie]
+        exact ((N : Submodule R M).extendScalars A).add_mem hy hz }
+
+variable {R A L M} in
+lemma tmul_mem_extendScalars_of_mem {N : LieSubmodule R L M} (a : A) {m : M} (hm : m ∈ N) :
+    a ⊗ₜ[R] m ∈ N.extendScalars A :=
+  (N : Submodule R M).tmul_mem_extendScalars_of_mem a hm
+
+lemma mem_extendScalars_iff {N : LieSubmodule R L M} {m : A ⊗[R] M} :
+    m ∈ N.extendScalars A ↔
+    m ∈ Submodule.span A ((N : Submodule R M).map (TensorProduct.mk R A M 1)) :=
+  Iff.rfl
+
+@[simp]
+lemma coe_extendScalars (N : LieSubmodule R L M) :
+    (N.extendScalars A : Submodule A (A ⊗[R] M)) = (N : Submodule R M).extendScalars A :=
+  rfl
+
+@[simp]
+lemma extendScalars_bot : (⊥ : LieSubmodule R L M).extendScalars A = ⊥ := by
+  simp only [extendScalars, bot_coeSubmodule, Submodule.extendScalars_bot,
+    Submodule.bot_toAddSubmonoid]
+  rfl
+
+@[simp]
+lemma extendScalars_top : (⊤ : LieSubmodule R L M).extendScalars A = ⊤ := by
+  simp only [extendScalars, top_coeSubmodule, Submodule.extendScalars_top,
+    Submodule.bot_toAddSubmonoid]
+  rfl
+
+lemma lie_extendScalars {I : LieIdeal R L} {N : LieSubmodule R L M} :
+    ⁅I, N⁆.extendScalars A = ⁅I.extendScalars A, N.extendScalars A⁆ := by
+  set s : Set (A ⊗[R] M) := { m | ∃ x ∈ I, ∃ n ∈ N, 1 ⊗ₜ ⁅x, n⁆ = m}
+  have : (TensorProduct.mk R A M 1) '' {m | ∃ x ∈ I, ∃ n ∈ N, ⁅x, n⁆ = m} = s := by ext; simp
+  rw [← coe_toSubmodule_eq_iff, coe_extendScalars, lieIdeal_oper_eq_linear_span',
+    Submodule.extendScalars_span, this, lieIdeal_oper_eq_linear_span']
+  clear this
+  refine le_antisymm (Submodule.span_mono ?_) (Submodule.span_le.mpr ?_)
+  · rintro - ⟨x, hx, m, hm, rfl⟩
+    exact ⟨1 ⊗ₜ x, tmul_mem_extendScalars_of_mem 1 hx,
+           1 ⊗ₜ m, tmul_mem_extendScalars_of_mem 1 hm, by simp⟩
+  · rintro - ⟨x, hx, m, hm, rfl⟩
+    revert m
+    apply Submodule.span_induction
+      (p := fun x' ↦ ∀ m' ∈ N.extendScalars A, ⁅x', m'⁆ ∈ Submodule.span A s) hx
+    · rintro _ ⟨y : L, hy : y ∈ I, rfl⟩ m hm
+      apply Submodule.span_induction (p := fun m' ↦ ⁅(1 : A) ⊗ₜ[R] y, m'⁆ ∈ Submodule.span A s) hm
+      · rintro - ⟨m', hm' : m' ∈ N, rfl⟩
+        rw [mk_apply, LieAlgebra.ExtendScalars.bracket_tmul, mul_one]
+        apply Submodule.subset_span
+        exact ⟨y, hy, m', hm', rfl⟩
+      · simp
+      · intro u v hu hv
+        rw [lie_add]
+        exact Submodule.add_mem _ hu hv
+      · intro a u hu
+        rw [lie_smul]
+        exact Submodule.smul_mem _ a hu
+    · simp
+    · intro x y hx hy m' hm'
+      rw [add_lie]
+      exact Submodule.add_mem _ (hx _ hm') (hy _ hm')
+    · intro a x hx m' hm'
+      rw [smul_lie]
+      exact Submodule.smul_mem _ a (hx _ hm')
+
+@[simp]
+lemma lowerCentralSeries_tensor_eq_extendScalars (k : ℕ) :
+    lowerCentralSeries A (A ⊗[R] L) (A ⊗[R] M) k =
+    (lowerCentralSeries R L M k).extendScalars A := by
+  induction' k with k ih; simp
+  simp only [lowerCentralSeries_succ, ih, ← extendScalars_top, lie_extendScalars]
+
+instance instIsNilpotentTensor [LieModule.IsNilpotent R L M] :
+    LieModule.IsNilpotent A (A ⊗[R] L) (A ⊗[R] M) := by
+  obtain ⟨k, hk⟩ := inferInstanceAs (LieModule.IsNilpotent R L M)
+  use k
+  simp [hk]
+
+end LieSubmodule
+
+lemma LieModule.extendScalars_toEndomorphism (A : Type*) [CommRing A] [Algebra R A] (x : L) :
+    (toEndomorphism R L M x).extendScalars A = toEndomorphism A (A ⊗[R] L) (A ⊗[R] M) (1 ⊗ₜ x) := by
+  ext; simp

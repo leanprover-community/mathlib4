@@ -450,3 +450,27 @@ end CommSemiring
 end AlgebraTensorModule
 
 end TensorProduct
+
+namespace LinearMap
+
+open TensorProduct
+
+variable {R M₁ M₂ M₃ : Type*} (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+  [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] [Module R M₃]
+  (f : M₁ →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃)
+
+/-- If `A` is an `R`-algebra, any `R`-linear map `M₁ → M₂` naturally induces an `A`-linear map
+`A ⊗ M₁ → A ⊗ M₂`. -/
+def extendScalars : A ⊗[R] M₁ →ₗ[A] A ⊗[R] M₂ :=
+  TensorProduct.AlgebraTensorModule.map LinearMap.id f
+
+@[simp]
+lemma extendScalars_tmul (a : A) (m : M₁) :
+    f.extendScalars A (a ⊗ₜ m) = a ⊗ₜ f m :=
+  rfl
+
+lemma extendScalars_comp :
+    (g ∘ₗ f).extendScalars A = g.extendScalars A ∘ₗ f.extendScalars A := by
+  ext; simp
+
+end LinearMap
