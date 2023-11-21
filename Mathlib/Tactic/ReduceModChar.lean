@@ -63,7 +63,7 @@ partial def normIntNumeral {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (instRing 
     (instCharP : Q(CharP $α $n)) :
     MetaM (Mathlib.Meta.NormNum.Result e) := do
   let instRingInt := q(Int.instRingInt)
-  let ⟨_, ne, pe⟩ ← Result.toInt instRing (←derive e)
+  let ⟨_, ne, pe⟩ ← Result.toInt instRing (← Mathlib.Meta.NormNum.derive e)
   let ⟨r, nr, pr⟩ ← Result.toInt instRingInt (←evalIntMod.go ne q(($n : ℤ)))
   return .isInt instRing nr r q(CharP.isInt_of_mod $n $instCharP $pe $pr)
 

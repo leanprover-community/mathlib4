@@ -310,7 +310,7 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
       (fun h => s.inl <| eX.symm ⟨x, h⟩) fun h => s.inr <| eY.symm ⟨x, (this x).resolve_left h⟩, _⟩
     rw [continuous_iff_continuousAt]
     intro x
-    by_cases f x = Sum.inl PUnit.unit
+    by_cases h : f x = Sum.inl PUnit.unit
     · revert h x
       apply (IsOpen.continuousOn_iff _).mp
       · rw [continuousOn_iff_continuous_restrict]
