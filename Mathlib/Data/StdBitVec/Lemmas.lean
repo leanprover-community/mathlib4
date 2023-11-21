@@ -443,9 +443,15 @@ theorem bitwise_self_eq_zero (f : Bool → Bool → Bool)
 @[simp] lemma xor_self (x : Nat) : x ^^^ x = 0 :=
   bitwise_self_eq_zero _ rfl rfl _
 
-@[simp] lemma land_land_self (x y : Nat) :
+/-- `land` with a fixed right operand is idempotent -/
+@[simp] lemma land_land_right (x y : Nat) :
     x &&& y &&& y = x &&& y := by
   rw [land_assoc, land_self]
+
+/-- `land` with a fixed left operand is idempotent -/
+@[simp] lemma land_land_left (x y : Nat) :
+    x &&& (x &&& y) = x &&& y := by
+  rw [←land_assoc, land_self]
 
 theorem and_two_pow_or_and_two_pow_sub_one (x n : ℕ) :
     x &&& 2^n ||| x &&& 2^n - 1 = x &&& 2^(n+1) - 1 := by
