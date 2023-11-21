@@ -549,11 +549,4 @@ theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b <
     · simp only [h, zero_bits, List.foldr_nil]
     · simp [bits_bit h, ih]
 
-theorem decide_bit_mod_two {x b} : decide (bit b x % 2 = 1) = b := by
-  cases b <;>  simp only [bit, bit1, bit0, cond_false, cond_true]
-  · rw [decide_eq_false_iff_not, ←two_mul, Nat.mul_mod_right]
-    decide
-  · rw [decide_eq_true_iff, ←two_mul, add_comm, Nat.add_mul_mod_self_left]
-    decide
-
 end Nat

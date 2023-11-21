@@ -79,8 +79,8 @@ theorem addLsb_div_two {x b} : addLsb x b / 2 = x := by
   rw [addLsb, ← Nat.div2_val, Nat.div2_bit]
 #align bitvec.add_lsb_div_two Std.BitVec.addLsb_div_two
 
-theorem decide_addLsb_mod_two {x b} : decide (addLsb x b % 2 = 1) = b :=
-  decide_bit_mod_two ..
+theorem decide_addLsb_mod_two {x b} : decide (addLsb x b % 2 = 1) = b := by
+  simp [addLsb]
 #align bitvec.to_bool_add_lsb_mod_two Std.BitVec.decide_addLsb_mod_two
 
 @[simp]
