@@ -1,4 +1,6 @@
 import Mathlib.Topology.Category.Profinite.Basic
+import Mathlib.CategoryTheory.Sites.RegularExtensive
+import Mathlib.CategoryTheory.Sites.Sheafification
 
 universe u
 
@@ -25,31 +27,6 @@ instance : Faithful lightToProfinite := show Faithful <| inducedFunctor _ from i
 instance : Full lightToProfinite := show Full <| inducedFunctor _ from inferInstance
 
 end LightProfinite
-
-structure LightProfiniteExplicit : Type (u+1) where
-  diagram : ℕ ⥤ FintypeCat.{u}
-
-namespace LightProfiniteExplicit
-
-noncomputable section
-
-def toProfinite (S : LightProfiniteExplicit) : Profinite := limit <|
-  S.diagram ⋙ FintypeCat.toProfinite
-
-instance : Category LightProfiniteExplicit := InducedCategory.category toProfinite
-
-instance concreteCategory : ConcreteCategory LightProfinite := InducedCategory.concreteCategory _
-
-@[simps!]
-def lightToProfinite : LightProfinite ⥤ Profinite := inducedFunctor _
-
-instance : Faithful lightToProfinite := show Faithful <| inducedFunctor _ from inferInstance
-
-instance : Full lightToProfinite := show Full <| inducedFunctor _ from inferInstance
-
-end
-
-end LightProfiniteExplicit
 
 structure LightProfinite' : Type u where
   diagram : ℕ ⥤ FintypeCat.Skeleton.{u}
@@ -80,39 +57,45 @@ end LightProfinite'
 
 noncomputable section Equivalence
 
-def explicitToSmall_aux : LightProfiniteExplicit ⥤ LightProfinite' where
-  obj X := ⟨X.diagram ⋙ Skeleton.equivalence.inverse⟩
-  map f := sorry
-  map_id := sorry
-  map_comp := sorry
-
-def lightToSmall_aux : LightProfinite ⥤ LightProfiniteExplicit where
-  obj X := ⟨X.diagram⟩
-  map {X Y} f := ((IsLimit.conePointUniqueUpToIso X.isLimit (limit.isLimit _)).inv ≫ f ≫
-      (IsLimit.conePointUniqueUpToIso Y.isLimit (limit.isLimit _)).hom : _)
-  map_id X := by
-    simp only [limit.cone_x]
-    erw [Category.id_comp]
-    simp only [Iso.inv_hom_id]
-    rfl
-  map_comp {X Y Z} f g := by
-    simp only [limit.cone_x]
-    change _ = _ ≫ _ ≫ (IsLimit.conePointUniqueUpToIso Y.isLimit (limit.isLimit _)).hom  ≫
-      (IsLimit.conePointUniqueUpToIso Y.isLimit (limit.isLimit _)).inv ≫ _ ≫ _
-    rw [Iso.hom_inv_id_assoc]
-    rfl
-
-def lightToSmall : LightProfinite ⥤ LightProfinite' := lightToSmall_aux ⋙ explicitToSmall_aux
-
 def smallToLight : LightProfinite' ⥤ LightProfinite where
   obj X := ⟨X.diagram ⋙ Skeleton.equivalence.functor, _, limit.isLimit _⟩
   map f := f
 
-def LightProfinite.equivSmall : LightProfinite ≌ LightProfinite' where
-  functor := lightToSmall_aux ⋙ explicitToSmall_aux
-  inverse := smallToLight
-  unitIso := sorry
-  counitIso := sorry
-  functor_unitIso_comp := sorry
+instance : Faithful smallToLight := ⟨id⟩
+
+instance : Full smallToLight := ⟨id, fun _ ↦ rfl⟩
+
+instance : EssSurj smallToLight := by
+  constructor
+  intro Y
+  let i : limit (((Y.diagram ⋙ Skeleton.equivalence.inverse) ⋙ Skeleton.equivalence.functor) ⋙
+    toProfinite) ≅ Y.cone.pt := (Limits.lim.mapIso (isoWhiskerRight ((Functor.associator _ _ _) ≪≫
+    (isoWhiskerLeft Y.diagram Skeleton.equivalence.counitIso)) toProfinite)) ≪≫
+    IsLimit.conePointUniqueUpToIso (limit.isLimit _) Y.isLimit
+  exact ⟨⟨Y.diagram ⋙ Skeleton.equivalence.inverse⟩, ⟨⟨i.hom, i.inv, i.hom_inv_id, i.inv_hom_id⟩⟩⟩
+  -- why can't I just write `i`?
+
+instance : IsEquivalence smallToLight := Equivalence.ofFullyFaithfullyEssSurj _
+
+def LightProfinite.equivSmall : LightProfinite ≌ LightProfinite' := smallToLight.asEquivalence.symm
+
+instance : EssentiallySmall LightProfinite where
+  equiv_smallCategory := ⟨LightProfinite', inferInstance, ⟨LightProfinite.equivSmall⟩⟩
 
 end Equivalence
+
+instance : Precoherent LightProfinite := sorry
+
+variable (P : LightProfinite.{0}ᵒᵖ ⥤ Type)
+
+-- #check (coherentTopology LightProfinite.{0}).sheafify P (D := Type)
+-- Doesn't work, need a universe bump
+
+instance : Precoherent LightProfinite' := sorry
+
+variable (P : LightProfinite'.{0}ᵒᵖ ⥤ Type)
+
+-- #check (coherentTopology LightProfinite'.{0}).sheafify P (D := Type)
+-- Works
+
+-- TODO: provide API to sheafify over essentially small categories
