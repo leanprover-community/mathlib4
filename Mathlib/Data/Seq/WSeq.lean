@@ -1360,24 +1360,24 @@ theorem head_ofSeq (s : Seq' α) : head ↑s = Computation.pure s.head := by
 #align stream.wseq.head_of_seq WSeq.head_ofSeq
 
 @[simp]
-theorem tail_ofSeq (s : Seq' α) : tail (s : WSeq α) = ↑s.tail := by
+theorem tail_ofSeq (s : Seq' α) : tail (↑s : WSeq α) = ↑s.tail := by
   simp [tail]; induction' s using Seq'.recOn' with x s <;> simp [ofSeq]
   · rfl
 #align stream.wseq.tail_of_seq WSeq.tail_ofSeq
 
 @[simp, norm_cast]
-theorem drop_ofSeq (s : Seq' α) : ∀ n, drop (s : WSeq α) n = ↑(s.drop n)
+theorem drop_ofSeq (s : Seq' α) : ∀ n, drop (↑s : WSeq α) n = ↑(s.drop n)
   | 0 => rfl
   | n + 1 => by
     simp only [drop, Nat.add_eq, add_zero]
     rw [drop_ofSeq s n, tail_ofSeq, Seq'.tail_drop]
 #align stream.wseq.dropn_of_seq WSeq.drop_ofSeq
 
-theorem get?_ofSeq (s : Seq' α) (n) : get? (s : WSeq α) n = Computation.pure (Seq'.get? s n) := by
+theorem get?_ofSeq (s : Seq' α) (n) : get? (↑s : WSeq α) n = Computation.pure (Seq'.get? s n) := by
   dsimp [get?]; rw [drop_ofSeq, head_ofSeq, Seq'.head_drop]
 #align stream.wseq.nth_of_seq WSeq.get?_ofSeq
 
-instance productive_ofSeq (s : Seq' α) : Productive (s : WSeq α) :=
+instance productive_ofSeq (s : Seq' α) : Productive (↑s : WSeq α) :=
   ⟨fun n => by rw [get?_ofSeq]; infer_instance⟩
 #align stream.wseq.productive_of_seq WSeq.productive_ofSeq
 
