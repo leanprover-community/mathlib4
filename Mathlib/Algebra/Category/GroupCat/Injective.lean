@@ -80,6 +80,9 @@ variable (R : Type u) [CommRing R]
 variable (M : Type w) [AddCommGroup M] [Module R M]
 variable (N : Type w') [AddCommGroup N] [Module R N]
 
+/--
+If `M` is an abelian group, its character module is defined to be the `Hom_ℤ(M, ℚ/ℤ)`
+-/
 def CharacterModule : Type w :=
 M →ₗ[ℤ] (ULift.{w} <| AddCircle (1 : ℚ))
 
@@ -115,6 +118,10 @@ instance : Module R (CharacterModule M) where
     (r • f) m = f (r • m) := rfl
 
 variable {R}
+
+/--
+For a linear map `L : M → N`, `(· ∘ L)` defines map from `CharacterModule N` to `CharacterModule M`
+-/
 @[simps] def LinearMap.characterfy
     (L : M →ₗ[R] N) :
     CharacterModule N →ₗ[R] CharacterModule M where
@@ -152,6 +159,10 @@ lemma LinearMap.charaterfy_surjective_of_injective
   convert (ULift.ext_iff _ _).mp <| FunLike.congr_fun (Injective.comp_factorThru g' L') (ULift.up x)
 
 variable (R)
+/--
+If `R` is a commutative ring, `M ↦ CharacterModule M` and `L ↦ (· ∘ L)` defines a contravariant
+ endofunctor on `R`-modules.
+-/
 @[simps]
 def CharacterModuleFunctor :
     (ModuleCat R)ᵒᵖ ⥤ ModuleCat R where
@@ -192,6 +203,11 @@ lemma equivZModSpanAddOrderOf_apply_self (a : M) :
     equivZModSpanAddOrderOf a ⟨a, Submodule.mem_span_singleton_self a⟩ = Submodule.Quotient.mk 1 :=
   (LinearEquiv.eq_symm_apply _).mp (one_zsmul _).symm
 
+/--
+For an abelian group `M` and an element `a ∈ M`, there is a character `c : ℤ ∙ a → ℚ⧸ℤ` given by
+`m • a ↦ m / n` where `n` is the smallest natural number such that `na = 0` and when such `n` does
+not exist, `c` is defined by `m • a ↦ m / 2`
+-/
 noncomputable def CharacterModule.ofSpanSingleton (a : M) : CharacterModule (ℤ ∙ a) :=
 let l' :  CharacterModule <| ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)} :=
     Submodule.liftQSpanSingleton _
@@ -234,6 +250,10 @@ open TensorProduct
 
 variable (M)
 
+/--
+for a linear map `f : N → CharacterModule M`, i.e. `f : N → M → ℚ/ℤ`, we can uncurry it into
+`(N ⊗ M) → ℚ/ℤ`, i.e. a character in `CharacterModule (N ⊗[R] M)`.
+-/
 @[simps!]
 noncomputable def CharacterModule.uncurry (f : N →ₗ[R] CharacterModule M) :
     CharacterModule (N ⊗[R] M) :=
@@ -242,6 +262,10 @@ noncomputable def CharacterModule.uncurry (f : N →ₗ[R] CharacterModule M) :
       (⟨⟨fun x => AddMonoidHom.comp ⟨⟨ULift.up ∘ ULift.down, by aesop⟩, by aesop⟩
         (f x).toAddMonoidHom , by aesop⟩,  by aesop⟩) fun r n m => by aesop
 
+/--
+for a character in `CharacterModule (N ⊗[R] M)` i.e. `N ⊗ M → ℚ/ℤ`, we can curry it into
+`N → M → ℚ/ℤ`, i.e. a linear map `N → CharacterModule M`
+-/
 @[simps]
 noncomputable def CharacterModule.curry (c : CharacterModule (N ⊗[R] M)):
     (N →ₗ[R] CharacterModule M) where
@@ -249,13 +273,21 @@ noncomputable def CharacterModule.curry (c : CharacterModule (N ⊗[R] M)):
   map_add' _ _ := LinearMap.ext <| by aesop
   map_smul' r n := LinearMap.ext fun m => ULift.ext _ _ <| show (c _).down = (c _).down by aesop
 
+/--
+`CharacterModule.uncurry` and `CharacterModule.curry` defines a bijection between linear map
+`Hom(N, CharacterModule M)` and `CharacterModule(N ⊗ M)`
+-/
 @[simps]
-noncomputable def CharacterModule.homEquiv : (N →ₗ[R] CharacterModule M) ≃ CharacterModule (N ⊗[R] M) :=
+noncomputable def CharacterModule.homEquiv :
+  (N →ₗ[R] CharacterModule M) ≃ CharacterModule (N ⊗[R] M) :=
 { toFun := CharacterModule.uncurry R M N
   invFun := CharacterModule.curry R M N
   left_inv := fun _ => LinearMap.ext fun _ => LinearMap.ext fun _ => by simp
   right_inv := fun _ => LinearMap.ext fun z => by refine z.induction_on ?_ ?_ ?_ <;> aesop }
 
+/--
+Equivalent modules have equivalent character modules
+-/
 @[simps!]
 def CharacterModule.cong (e : M ≃ₗ[R] N) : CharacterModule M ≃ₗ[R] CharacterModule N := by
   refine LinearEquiv.ofLinear e.symm.toLinearMap.characterfy e.toLinearMap.characterfy ?_ ?_ <;>
@@ -308,7 +340,8 @@ lemma toNext_inj : Function.Injective <| toNext A_ :=
       let g : of (ℤ ∙ a) ⟶ A_ := AddSubgroupClass.subtype _
       have : Mono g := (mono_iff_injective _).mpr Subtype.val_injective
       (FunLike.congr_fun (Injective.comp_factorThru f g) _).symm.trans <|
-        ULift.ext _ _ <| (ULift.ext_iff _ _).mp <| congr_fun h0 (Injective.factorThru f g).toIntLinearMap
+        ULift.ext _ _ <| (ULift.ext_iff _ _).mp <| congr_fun h0
+          (Injective.factorThru f g).toIntLinearMap
 
 /-- An injective presentation of `A`: `A → ∏_{A →+ ℚ/ℤ}, ℚ/ℤ`. -/
 @[simps] def presentation : InjectivePresentation A_ where
