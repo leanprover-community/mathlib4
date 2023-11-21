@@ -60,8 +60,8 @@ def ofList (l : List α) : WSeq α :=
 
 /-- Turn a stream into a weak sequence -/
 @[coe]
-def ofStream (l : Stream' α) : WSeq α :=
-  ofSeq ↑l
+def ofStream (s : Stream' α) : WSeq α :=
+  ofSeq ↑s
 #align stream.wseq.of_stream WSeq.ofStream
 
 instance coeSeq : Coe (Seq' α) (WSeq α) :=
