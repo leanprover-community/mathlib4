@@ -52,9 +52,11 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 for `φ` being the preferred chart at `x`, `φ x` is an interior point of `φ.target`. -/
 def ModelWithCorners.IsInteriorPoint (x : M) := extChartAt I x x ∈ interior (extChartAt I x).target
 
-/-- `p ∈ M` is a boundary point of a smooth manifold `M` iff
-for `φ` being the preferred chart at `x`, `φ x` is a boundary point of `φ.target`. -/
-def ModelWithCorners.IsBoundaryPoint (x : M) := extChartAt I x x ∈ frontier (extChartAt I x).target
+/-- `p ∈ M` is a boundary point of a smooth manifold `M` iff it is not an interior point.
+This means that, for `φ` being the preferred chart at `x`, `φ x` is not an interior point of
+`φ.target`. We do not say "boundary point" as `frontier φ.target` has two components, one on the
+boundary of range I and another on the boundary of e.target (which we don't want). -/
+def ModelWithCorners.isBoundaryPoint (x : M) := extChartAt I x x ∉ interior (extChartAt I x).target
 
 namespace SmoothManifoldWithCorners
 -- FIXME(MR): can I enable dot notation, like `M.interior I` or so?
@@ -92,20 +94,18 @@ lemma isInteriorPoint_iff {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source
 /-- Whether `x` is a boundary point of `M` can equivalently be described by any chart
 whose source contains `x`. -/
 lemma isBoundaryPoint_iff {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source) :
-    I.isBoundaryPoint x ↔ (e.extend I) x ∈ frontier (e.extend I).target := by
+    I.isBoundaryPoint x ↔ (e.extend I) x ∉ interior (e.extend I).target := by
   sorry
 
 /-- Every point is either an interior or a boundary point. -/ -- FIXME: better name?!
 lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsBoundaryPoint x := by
   set e := extChartAt I x
   set y := extChartAt I x x
-  have : IsClosed I.target := I.target_eq ▸ (I.closed_range)
-  -- TODO: this should be obvious now!
-  have : IsClosed e.target := sorry
-  have : y ∈ interior e.target ∪ frontier e.target := by
-    rw [← closure_eq_interior_union_frontier (e.target), this.closure_eq]
-    exact mem_extChartAt_target I x
-  exact (mem_union y _ _).mp this
+  by_cases y ∈ interior e.target
+  · have : I.isInteriorPoint x := (isInteriorPoint_iff (mem_chart_source H x) (I := I)).mpr h
+    exact Or.inl h
+  · have : I.isBoundaryPoint x := (isBoundaryPoint_iff (mem_chart_source H x) (I := I)).mpr h
+    exact Or.inr h
 
 /-- A manifold decomposes into interior and boundary. -/
 lemma univ_eq_interior_union_boundary : (SmoothManifoldWithCorners.interior I M) ∪
@@ -128,10 +128,7 @@ lemma interior_boundary_disjoint :
     (SmoothManifoldWithCorners.interior I M) ∩ (SmoothManifoldWithCorners.boundary I M) = ∅ := by
   ext x
   constructor; intro h
-  · let e := extChartAt I x
-    have : e x ∈ interior e.target ∩ frontier e.target := h
-    rw [interior_frontier_disjoint] at this
-    exact this
+  · exact (not_mem_of_mem_diff h) (mem_of_mem_diff h)
   · exfalso
 
 /-- The interior of a manifold is an open subset. -/
