@@ -1196,7 +1196,7 @@
  ["docBlame", "AddCommGroup.PositiveCone.zero_nonneg"],
  ["docBlame", "AddGroup.FG.out"],
  ["docBlame", "AddMonoid.FG.out"],
- ["docBlame", "Affine.Simplex.Independent"],
+ ["docBlame", "Affine.Simplex.independent"],
  ["docBlame", "Affine.Simplex.points"],
  ["docBlame", "Algebra.FiniteType.out"],
  ["docBlame", "Algebra.FormallyEtale.comp_bijective"],

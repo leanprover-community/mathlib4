@@ -259,7 +259,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     simp_rw [map_sum, LinearEquiv.map_sub, LinearEquiv.map_smul, Finset.sum_apply',
       Finsupp.sub_apply, Finsupp.smul_apply, Finset.sum_sub_distrib, Basis.repr_self_apply,
       smul_eq_mul, mul_boole, Finset.sum_ite_eq', Finset.mem_univ, if_true]
-  · exact_mod_cast ε_le
+  · exact mod_cast ε_le
 #align class_group.exists_mem_finset_approx ClassGroup.exists_mem_finsetApprox
 
 /-- We can approximate `a / b : L` with `q / r`, where `r` has finitely many options for `L`. -/
@@ -402,7 +402,7 @@ noncomputable def fintypeOfAdmissibleOfFinite : Fintype (ClassGroup S) := by
     · exact IsIntegralClosure.algebraMap_injective _ R _
   let bS := b.map ((LinearMap.quotKerEquivRange _).symm ≪≫ₗ f)
   exact fintypeOfAdmissibleOfAlgebraic L bS adm (fun x =>
-    (IsFractionRing.isAlgebraic_iff R K L).mpr (Algebra.isAlgebraic_of_finite K _ x))
+    (IsFractionRing.isAlgebraic_iff R K L).mpr (Algebra.IsAlgebraic.of_finite K _ x))
 #align class_group.fintype_of_admissible_of_finite ClassGroup.fintypeOfAdmissibleOfFinite
 
 end IsAdmissible

@@ -111,6 +111,14 @@ lemma Prime.smoothNumbers_coprime {p n : ℕ} (hp : p.Prime) (hn : n ∈ smoothN
   rw [hp.coprime_iff_not_dvd, ← mem_factors_iff_dvd hn.1 hp]
   exact fun H ↦ (hn.2 p H).false
 
+/-- If `f : ℕ → F` is multiplicative on coprime arguments, `p` is a prime and `m` is `p`-smooth,
+then `f (p^e * m) = f (p^e) * f m`. -/
+lemma map_prime_pow_mul {F : Type*} [CommSemiring F] {f : ℕ → F}
+    (hmul : ∀ {m n}, Nat.Coprime m n → f (m * n) = f m * f n) {p : ℕ} (hp : p.Prime) (e : ℕ)
+    {m : p.smoothNumbers} :
+    f (p ^ e * m) = f (p ^ e) * f m :=
+  hmul <| Coprime.pow_left _ <| hp.smoothNumbers_coprime <| Subtype.mem m
+
 open List Perm in
 /-- We establish the bijection from `ℕ × smoothNumbers p` to `smoothNumbers (p+1)`
 given by `(e, n) ↦ p^e * n` when `p` is a prime. See `Nat.smoothNumbers_succ` for
