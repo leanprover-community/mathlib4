@@ -188,8 +188,14 @@ namespace SmoothManifoldWithCorners
 variable (I) in
 /-- The boundary of a manifold has empty interior. -/
 lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary I M) = ∅ := by
-  -- Easy argument. Postponed for now.
-  have aux1 : ⋃ x : M, (extChartAt I x).source = univ := sorry
+  -- The chart domains of M cover M. Should be an easy lemma; extract if not already exists.
+  -- Or can I avoid this?
+  have aux1 : ⋃ x : M, (extChartAt I x).source = univ := by
+    apply subset_antisymm <;> intro y hy
+    · trivial
+    · rw [mem_iUnion]
+      use y
+      exact mem_extChartAt_source I y
 
   let bd := SmoothManifoldWithCorners.boundary I M
   have := calc interior (SmoothManifoldWithCorners.boundary I M)
@@ -223,7 +229,7 @@ lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary 
       apply (isBoundaryPoint_iff I hsource).mpr (not_mem_of_mem_diff hbd)
 
   have := calc interior (bd)
-    _ = ⋃ (x : M), interior (bd ∩ (extChartAt I x).source) := sorry -- computation 1
+    _ = ⋃ (x : M), interior (bd ∩ (extChartAt I x).source) := sorry -- previous computation
     _ = ⋃ (x : M), interior ((extChartAt I x).source ∩ (extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target)) := by simp_rw [this]
 
     -- this step is SCIFI: very happy if true!! need a rigorous argument, though
@@ -232,7 +238,7 @@ lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary 
     -- next up: f continuous on A, then A ∩ interior f⁻¹'(B) = f⁻¹(interior B) assuming f⁻¹B ⊆ A somehow
     _ = ⋃ (x : M), (extChartAt I x).source ∩ ((extChartAt I x) ⁻¹' (interior ((extChartAt I x).target \ interior (extChartAt I x).target))) := sorry
 
-    _ = ⋃ (x : M), ∅ := by --sorry
+    _ = ⋃ (x : M), ∅ := by
       have aux : ∀ x : M, (extChartAt I x).source ∩ (extChartAt I x) ⁻¹' (interior ((extChartAt I x).target \ interior (extChartAt I x).target)) = ∅ := by
         intro x
         set e := extChartAt I x
@@ -242,8 +248,7 @@ lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary 
         rw [this, preimage_empty, inter_empty]
       simp_rw [aux]
     _ = ∅ := iUnion_empty
-  -- use `isBoundaryPoint_iff`; similar to `interior_isOpen`
-  exact this--sorry
+  exact this
 
 -- interior I M is a manifold (use TopologicalSpace.Opens.instSmoothManifoldWithCornersSubtypeMemOpensInstMembershipInstSetLikeOpensInstTopologicalSpaceSubtypeInstChartedSpace)
 end SmoothManifoldWithCorners
