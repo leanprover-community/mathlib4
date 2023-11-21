@@ -139,17 +139,4 @@ so long as they eventually get filled by unification.
 -/
 macro "prod_assoc%" : term => `((prod_assoc_internal% : _ ≃ _))
 
-variable {α β γ δ : Type*}
-
-example : (α × β) × (γ × δ) ≃ α × (β × γ) × δ := by
-  have := (prod_assoc% : (α × β) × (γ × δ) ≃ α × (β × γ) × δ)
-  exact this
-
-example : (α × β) × (γ × δ) ≃ α × (β × γ) × δ := prod_assoc%
-
-example : (α × β) × (γ × δ) ≃ α × (β × γ) × δ :=
-  (prod_assoc% : _ ≃ α × β × γ × δ).trans prod_assoc%
-
-example {α β γ δ : Type*} (x : (α × β) × (γ × δ)) : α × (β × γ) × δ := prod_assoc% x
-
 end Lean.Expr
