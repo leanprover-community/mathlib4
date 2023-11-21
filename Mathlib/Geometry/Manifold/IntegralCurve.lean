@@ -78,6 +78,7 @@ def IsIntegralCurveAt (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (t₀ 
 TODO:
 * split the theorem below into smaller lemmas, e.g. involving IsIntegralCurveAt?
 * shift and stretch theorems
+* constant curve at stationary point of v
 -/
 lemma IsIntegralCurveAt.comp_add {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀ x₀) (dt : ℝ) :
     IsIntegralCurveAt (γ ∘ (fun t => t + dt)) v (t₀ - dt) x₀ := by
@@ -88,14 +89,67 @@ lemma IsIntegralCurveAt.comp_add {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v 
   have h2' := h2 (t + dt) ht
   rw [Function.comp_apply,
     ←ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
-  apply HasMFDerivAt.comp t h2' (f := fun t : ℝ => t + dt)
+  apply HasMFDerivAt.comp t h2'
+  /- this makes me think we need lemmas for `HasMFDerivAt 𝓘(E, E) 𝓘(E, E)` of simple operations -/
   refine' ⟨(continuous_add_right _).continuousAt, _⟩
-  simp
+  simp only [writtenInExtChartAt, extChartAt, LocalHomeomorph.extend,
+    LocalHomeomorph.refl_localEquiv, LocalEquiv.refl_source,
+    LocalHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_localEquiv,
+    LocalEquiv.trans_refl, LocalEquiv.refl_coe, LocalEquiv.refl_symm, Function.comp.right_id,
+    Function.comp.left_id, modelWithCornersSelf_coe, range_id, id_eq, hasFDerivWithinAt_univ]
   apply HasFDerivAt.add_const
   exact hasFDerivAt_id _
 
-lemma IsIntegralCurveAt.comp_mul (γ : ℝ → M) (a : ℝ) :
-    IsIntegralCurveAt γ v t₀ x₀ → IsIntegralCurveAt (γ ∘ (fun t => a * t)) (a • v) t₀ x₀ := sorry
+lemma IsIntegralCurveAt.comp_mul_pos {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀ x₀) {a : ℝ}
+    (ha : 0 < a) : IsIntegralCurveAt (γ ∘ (fun t => t * a)) (a • v) (t₀ / a) x₀ := by
+  obtain ⟨h1, ε, hε, h2⟩ := hγ
+  refine' ⟨by rw [Function.comp_apply, div_mul_cancel _ (ne_of_gt ha)]; exact h1, ε / a,
+    div_pos hε ha, _⟩
+  intros t ht
+  have ht : t * a ∈ Ioo (t₀ - ε) (t₀ + ε) := by
+    rw [mem_Ioo, ←div_lt_iff ha, ←lt_div_iff ha, sub_div, add_div]
+    exact ht
+  have h2' := h2 (t * a) ht
+  rw [Function.comp_apply, Pi.smul_apply, ←ContinuousLinearMap.smulRight_comp]
+  apply HasMFDerivAt.comp t h2'
+  refine' ⟨(continuous_mul_right _).continuousAt, _⟩
+  simp only [writtenInExtChartAt, extChartAt, LocalHomeomorph.extend,
+    LocalHomeomorph.refl_localEquiv, LocalEquiv.refl_source,
+    LocalHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_localEquiv,
+    LocalEquiv.trans_refl, LocalEquiv.refl_coe, LocalEquiv.refl_symm, Function.comp.right_id,
+    Function.comp.left_id, modelWithCornersSelf_coe, range_id, id_eq, hasFDerivWithinAt_univ]
+  apply HasFDerivAt.mul_const'
+  exact hasFDerivAt_id _
+
+lemma IsIntegralCurveAt.comp_neg {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀ x₀) :
+    IsIntegralCurveAt (γ ∘ Neg.neg) (-v) (-t₀) x₀ := by
+  obtain ⟨h1, ε, hε, h2⟩ := hγ
+  refine' ⟨by simp [h1], ε, hε, _⟩
+  intros t ht
+  rw [←neg_add', neg_add_eq_sub, ←neg_sub, ←neg_mem_Ioo_iff] at ht
+  have h2' := h2 (-t) ht
+  rw [Function.comp_apply, Pi.neg_apply, ←neg_one_smul ℝ (v (γ (-t))),
+    ←ContinuousLinearMap.smulRight_comp]
+  apply HasMFDerivAt.comp t h2'
+  refine' ⟨continuousAt_neg, _⟩
+  simp only [writtenInExtChartAt, extChartAt, LocalHomeomorph.extend,
+    LocalHomeomorph.refl_localEquiv, LocalEquiv.refl_source,
+    LocalHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_localEquiv,
+    LocalEquiv.trans_refl, LocalEquiv.refl_coe, LocalEquiv.refl_symm, Function.comp.right_id,
+    Function.comp.left_id, modelWithCornersSelf_coe, range_id, id_eq, hasFDerivWithinAt_univ]
+  apply HasDerivAt.hasFDerivAt
+  exact hasDerivAt_neg _
+
+lemma IsIntegralCurveAt.comp_mul_ne_zero {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀ x₀) {a : ℝ}
+    (ha : a ≠ 0) : IsIntegralCurveAt (γ ∘ (fun t => t * a)) (a • v) (t₀ / a) x₀ := by
+  rw [ne_iff_lt_or_gt] at ha
+  cases' ha with ha ha
+  /- this makes me think we need inverses of the above theorems -/
+  · have h := (hγ.comp_mul_pos _ (neg_pos_of_neg ha)).comp_neg
+    have : γ ∘ (fun t ↦ t * -a) ∘ Neg.neg = γ ∘ fun t ↦ t * a := by ext; simp
+    rw [Function.comp.assoc, ←neg_smul, neg_neg, neg_div', neg_div_neg_eq, this] at h
+    exact h
+  · exact hγ.comp_mul_pos _ ha
 
 /-- For any continuously differentiable vector field and any chosen non-boundary point `x₀` on the
   manifold, there exists an integral curve `γ : ℝ → M` such that `γ t₀ = x₀` and the tangent vector
