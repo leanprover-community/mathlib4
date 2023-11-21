@@ -214,6 +214,9 @@ theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n 
     rw [this, bit_false, bit0_val, hn fun i => by rw [← h (i + 1), testBit_succ], mul_zero]
 #align nat.zero_of_test_bit_eq_ff Nat.zero_of_testBit_eq_false
 
+theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
+  simp [testBit, shiftRight_eq_div_pow, Nat.div_eq_of_lt h]
+
 @[simp]
 theorem zero_testBit (i : ℕ) : testBit 0 i = false := by
   simp only [testBit, zero_shiftRight, bodd_zero]
@@ -315,6 +318,12 @@ theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
   · rw [testBit_two_pow_of_ne h]
     simp [h]
 #align nat.test_bit_two_pow Nat.testBit_two_pow
+
+lemma and_two_pow {n i} : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
+  apply eq_of_testBit_eq; intro j
+  rw [mul_comm, testBit_land]
+  cases' h : n.testBit i <;> cases' (ne_or_eq i j) with h1 h1
+  <;> simp [testBit_two_pow_of_ne _, *] at * <;> assumption
 
 theorem bitwise_swap {f : Bool → Bool → Bool} :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
