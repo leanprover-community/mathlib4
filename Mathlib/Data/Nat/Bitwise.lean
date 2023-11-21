@@ -369,6 +369,8 @@ theorem bitwise_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' 
     _ = swap (bitwise f) := bitwise_swap
 #align nat.bitwise_comm Nat.bitwise_comm
 
+/-- If `x` and `y` fit within `n` bits, then the result of any (well-behaved) bitwise operation on
+    `x` and `y` also fits within `n` bits -/
 theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy: y < 2 ^ n) (h: f false false = false) :
     bitwise f x y < 2 ^ n := by
   apply lt_of_testBit n (by simp [testBit_bitwise h x y n,
@@ -381,7 +383,6 @@ theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy: y < 2 ^ n) (h: f false false 
   rw [testBit_two_pow_of_ne (ne_of_lt hj)]
 
 lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy: y < 2 ^ m) : y <<< n ||| x < 2 ^ (n + m) := by
-  simp only [lor, shiftLeft_eq]
   apply bitwise_lt
   · rw [pow_add, mul_comm]; simp[hy, mul_lt_mul_left (two_pow_pos n)]
   · exact lt_of_lt_of_le hx ((pow_add 2 n m).symm ▸ le_mul_of_one_le_right' (by linarith))
