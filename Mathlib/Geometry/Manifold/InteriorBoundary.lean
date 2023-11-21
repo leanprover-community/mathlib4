@@ -41,6 +41,34 @@ manifold, interior, boundary
 
 open Set
 
+section TopologyHelpers -- should be in mathlib; Mathlib.Topology.Basic
+variable {X : Type*} [TopologicalSpace X] {s : Set X}
+
+-- I don't need it; still useful?
+lemma interior_frontier_disjoint : interior s ∩ frontier s = ∅ := by
+  rw [← closure_diff_interior s]
+  have : (closure s \ interior s) = closure s ∩ (interior s)ᶜ := rfl
+  rw [this]
+  rw [← inter_assoc, inter_comm, ← inter_assoc, compl_inter_self, empty_inter]
+
+-- FIXME: what's a good name?
+lemma aux {O t : Set X} (h : s = O ∩ t) (hO : IsOpen O) :
+    s \ interior s ⊆ t \ interior t := by
+  let aux := calc interior s
+    _ = interior O ∩ interior t := by rw [h, interior_inter]
+    _ = O ∩ interior t := by rw [hO.interior_eq]
+  calc s \ interior s
+    _ = (O ∩ t) \ (O ∩ interior t) := by rw [aux, h]
+    _ = O ∩ (t \ interior t) := by rw [inter_diff_distrib_left]
+    _ ⊆ t \ interior t := inter_subset_right _ _
+
+-- is this a better lemma; is `aux` useful on its own?
+lemma aux2 {O t : Set X} (h : s = O ∩ t) (hO : IsOpen O)
+    (ht : IsClosed t) : s \ interior s ⊆ frontier t :=
+  ht.frontier_eq ▸ aux h hO
+
+end TopologyHelpers
+
 -- Let `M` be a smooth manifold with corners over the pair `(E, H)`.
 -- NB: smoothness is not required; all results in this file hold for topological manifolds.
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -84,6 +112,7 @@ lemma foobar' {e e' : LocalHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ 
 -- more abstract result: a local homeomorphism maps interior to interior and boundary to boundary
 
 -- FIXME(MR): find a better wording for the next two docstrings
+variable (I) in
 /-- Whether `x` is an interior point can equivalently be described by any chart
   whose source contains `x`. -/
 -- as we only need continuity properties, `e` being in the atlas is not required
@@ -91,6 +120,7 @@ lemma isInteriorPoint_iff {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source
     I.isInteriorPoint x ↔ (e.extend I) x ∈ interior (e.extend I).target := by
   sorry
 
+variable (I) in
 /-- Whether `x` is a boundary point of `M` can equivalently be described by any chart
 whose source contains `x`. -/
 lemma isBoundaryPoint_iff {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source) :
@@ -102,25 +132,18 @@ lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsB
   set e := extChartAt I x
   set y := extChartAt I x x
   by_cases y ∈ interior e.target
-  · have : I.isInteriorPoint x := (isInteriorPoint_iff (mem_chart_source H x) (I := I)).mpr h
+  · have : I.isInteriorPoint x := (isInteriorPoint_iff I (mem_chart_source H x)).mpr h
     exact Or.inl h
-  · have : I.isBoundaryPoint x := (isBoundaryPoint_iff (mem_chart_source H x) (I := I)).mpr h
+  · have : I.isBoundaryPoint x := (isBoundaryPoint_iff I (mem_chart_source H x)).mpr h
     exact Or.inr h
 
+variable (I M) in
 /-- A manifold decomposes into interior and boundary. -/
 lemma univ_eq_interior_union_boundary : (SmoothManifoldWithCorners.interior I M) ∪
     (SmoothManifoldWithCorners.boundary I M) = (univ : Set M) := by
   apply le_antisymm
   · exact fun x _ ↦ trivial
   · exact fun x _ ↦ isInteriorPoint_or_isBoundaryPoint x
-
--- should be in mathlib; Mathlib.Topology.Basic
-lemma interior_frontier_disjoint {X : Type*} [TopologicalSpace X] {s : Set X} :
-    interior s ∩ frontier s = ∅ := by
-  rw [← closure_diff_interior s]
-  have : (closure s \ interior s) = closure s ∩ (interior s)ᶜ := rfl
-  rw [this]
-  rw [← inter_assoc, inter_comm, ← inter_assoc, compl_inter_self, empty_inter]
 
 -- proper name? or _eq_emptyset?
 /-- The interior and boundary of `M` are disjoint. -/
@@ -144,7 +167,7 @@ lemma interior_isOpen : IsOpen (SmoothManifoldWithCorners.interior I M) := by
   refine ⟨?_, ?_, ?_⟩
   · intro y hy
     rw [e.extend_source] at hy
-    apply (isInteriorPoint_iff (mem_of_mem_inter_left hy)).mpr
+    apply (isInteriorPoint_iff I (mem_of_mem_inter_left hy)).mpr
     exact mem_of_mem_inter_right (a := e.source) hy
   · exact (e.continuousOn_extend I).preimage_open_of_open (e.isOpen_extend_source I) isOpen_interior
   · have : x ∈ (e.extend I).source := by
@@ -156,28 +179,14 @@ lemma interior_isOpen : IsOpen (SmoothManifoldWithCorners.interior I M) := by
 lemma boundary_isClosed : IsClosed (SmoothManifoldWithCorners.boundary I M) := by
   apply isOpen_compl_iff.mp
   have : (SmoothManifoldWithCorners.interior I M)ᶜ = SmoothManifoldWithCorners.boundary I M :=
-    (compl_unique interior_boundary_disjoint (univ_eq_interior_union_boundary (I := I) (M := M)))
+    (compl_unique interior_boundary_disjoint (univ_eq_interior_union_boundary I M))
   rw [← this, compl_compl]
   exact interior_isOpen
+end SmoothManifoldWithCorners
 
--- FIXME: good name? should go in Mathlib.Topology.Basic
-lemma aux {X : Type*} [TopologicalSpace X] {s O t : Set X} (h : s = O ∩ t) (hO : IsOpen O) :
-    s \ interior s ⊆ t \ interior t := by
-  let aux := calc interior s
-    _ = interior O ∩ interior t := by rw [h, interior_inter]
-    _ = O ∩ interior t := by rw [hO.interior_eq]
-  calc s \ interior s
-    _ = (O ∩ t) \ (O ∩ interior t) := by rw [aux, h]
-    _ = O ∩ (t \ interior t) := by rw [inter_diff_distrib_left]
-    _ ⊆ t \ interior t := inter_subset_right _ _
-
--- is this a better lemma; is `aux` useful on its own?
-lemma aux2 {X : Type*} [TopologicalSpace X] {s O t : Set X} (h : s = O ∩ t) (hO : IsOpen O)
-    (ht : IsClosed t) : s \ interior s ⊆ frontier t :=
-  ht.frontier_eq ▸ aux h hO
-
+variable (I) in
 /-- The boundary of any extended chart has empty interior. -/
-lemma __root__.LocalHomeomorph.extend_interior_boundary_eq_empty {e : LocalHomeomorph M H} :
+lemma LocalHomeomorph.extend_interior_boundary_eq_empty {e : LocalHomeomorph M H} :
     interior ((e.extend I).target \ interior (e.extend I).target) = ∅ := by
   -- `e.extend_target I = (I.symm ⁻¹' e.target) ∩ range I` is the union of an open set and a
   -- closed set: hence the frontier is contained in the second factor.
@@ -188,6 +197,8 @@ lemma __root__.LocalHomeomorph.extend_interior_boundary_eq_empty {e : LocalHomeo
   -- As `range I` is closed, its frontier has empty interior.
   exact interior_frontier I.closed_range
 
+namespace SmoothManifoldWithCorners
+variable (I) in
 /-- The boundary of a manifold has empty interior. -/
 lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary I M) = ∅ := by
   -- use `isBoundaryPoint_iff` and the previous lemma; similar to `interior_isOpen`
