@@ -42,7 +42,7 @@ variable [ConcreteCategory.{max w v} C] {J : Type w} (F : J → C)
 /-- The equivalence `(forget C).obj (∏ F) ≃ ∀ j, F j` if `F : J → C` is a family of objects
 in a concrete category `C`. -/
 noncomputable def productEquiv : (forget C).obj (∏ F) ≃ ∀ j, F j :=
-  ((PreservesProduct.iso (forget C) F) ≪≫ (Types.productIso.{w, v} F)).toEquiv
+  ((PreservesProduct.iso (forget C) F) ≪≫ (Types.productIso.{w, v} (fun j => F j))).toEquiv
 
 @[simp]
 lemma productEquiv_apply_apply (x : (forget C).obj (∏ F)) (j : J) :
