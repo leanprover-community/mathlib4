@@ -69,6 +69,13 @@ def exponentialPdf (r x : ℝ) : ℝ≥0∞ :=
 lemma exponentialPdf_eq (r x : ℝ) :
     exponentialPdf r x = ENNReal.ofReal (if 0 ≤ x then r * exp (-(r * x)) else 0) := rfl
 
+lemma exponentialPdf_of_neg {r x : ℝ} (hx : x < 0) : exponentialPdf r x = 0 := by
+  simp only [exponentialPdf_eq, if_neg (not_le.mpr hx), ENNReal.ofReal_zero]
+
+lemma exponentialPdf_of_nonneg {r x : ℝ} (hx : 0 ≤ x) :
+    exponentialPdf r x = ENNReal.ofReal (r * rexp (-(r * x))) := by
+  simp only [exponentialPdf_eq, if_pos hx]
+
 lemma hasDerivAt_exp_neg {r x : ℝ} (hr : 0 < r) :
     HasDerivAt (fun a ↦ -1/r * exp (-(r * a))) (exp (-(r * x))) x := by
   convert (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1/r)) using 1 <;> field_simp
@@ -110,15 +117,6 @@ lemma exp_neg_integrableOn_Ioc {b x : ℝ} (hb : 0 < b) :
   simp only [neg_mul_eq_neg_mul]
   exact (exp_neg_integrableOn_Ioi _ hb).mono_set Ioc_subset_Ioi_self
 
-lemma exponentialPdf_eval_pos {r : ℝ} : ∀ᵐ x : ℝ ∂volume, x < 0 →
-    exponentialPdf r x = 0 := by
-  simp only [exponentialPdf_eq]
-  exact ae_of_all _ (fun x hx ↦ by simp [not_le.mpr hx])
-
-lemma exponentialPdf_eval_neg {r x : ℝ} (hx : 0 ≤ x) :
-    exponentialPdf r x = ENNReal.ofReal (r * rexp (-(r * x))) := by
-  simp only [exponentialPdf_eq, if_pos hx]
-
 open Measure
 
 /-- The Pdf of the exponential Distribution integrates to 1-/
@@ -126,11 +124,12 @@ open Measure
 lemma lintegral_exponentialPdf_eq_one (r : ℝ) (hr : 0 < r) : ∫⁻ x, exponentialPdf r x = 1 := by
   rw [lintegral_eq_lintegral_Ici_add_Iio (exponentialPdf r) 0, ← ENNReal.toReal_eq_one_iff]
   have leftSide : ∫⁻ x in Iio 0, exponentialPdf r x = 0 := by
-    rw [set_lintegral_congr_fun measurableSet_Iio exponentialPdf_eval_pos, lintegral_zero]
+    rw [set_lintegral_congr_fun measurableSet_Iio
+      (ae_of_all _ (fun x (hx : x < 0) ↦ exponentialPdf_of_neg hx)), lintegral_zero]
   have rightSide : ∫⁻ x in Ici 0, exponentialPdf r x
       = ∫⁻ x in Ici 0, ENNReal.ofReal (r * rexp (-(r * x))) := by
     exact set_lintegral_congr_fun isClosed_Ici.measurableSet
-      (ae_of_all _ (fun x (hx : 0 ≤ x) ↦ exponentialPdf_eval_neg hx))
+      (ae_of_all _ (fun x (hx : 0 ≤ x) ↦ exponentialPdf_of_nonneg hx))
   simp only [leftSide, add_zero]
   rw [rightSide, ENNReal.toReal_eq_one_iff, ←ENNReal.toReal_eq_one_iff]
   rw [← integral_eq_lintegral_of_nonneg_ae (ae_of_all _ (fun _ ↦ by positivity))]
