@@ -14,21 +14,55 @@ the Zariski topology on `Over X` can be obtained as `Scheme.zariskiTopology.over
 
 -/
 
-universe u
+universe w v u
 
 open CategoryTheory
 
-lemma CategoryTheory.Presieve.ofArrows.mk' {C : Type*} [Category C] {ι : Type*}
-    (Y : ι → C) {X : C} (f : ∀ i, Y i ⟶ X) {Z : C} (g : Z ⟶ X) (i : ι) (hZ : Z = Y i)
-    (hg : g = eqToHom hZ ≫ f i) :
-    Presieve.ofArrows Y f g := by
-  subst hZ
-  obtain rfl : g = f i := by simpa using hg
-  exact ⟨i⟩
+-- to be moved
+theorem CategoryTheory.Presieve.ofArrows_bind'
+    {C : Type*} [Category C] {ι : Type*} {X : C} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
+    {ι' : ι → Type*} (W : ∀ i, ι' i → C) (h : ∀ i i', W i i' ⟶ Z i)
+    (T : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, ofArrows Z g f → Presieve Y)
+    (hT : ∀ (i : ι), T ⟨i⟩ = ofArrows (W i) (h i)) :
+    (ofArrows Z g).bind T =
+      (ofArrows (fun (⟨i, i'⟩ : Sigma ι') => W i i') (fun ⟨i, i'⟩ => h i i' ≫ g i)) := by
+  funext X
+  ext f
+  constructor
+  · rintro ⟨Y, a, _, ⟨i⟩, h, rfl⟩
+    rw [hT] at h
+    obtain ⟨i'⟩ := h
+    exact ⟨show Sigma ι' from ⟨i, i'⟩⟩
+  · rintro ⟨i, i'⟩
+    exact ⟨_, h i i', _, ⟨i⟩, by rw [hT]; exact ⟨i'⟩, rfl⟩
 
 namespace AlgebraicGeometry
 
 namespace Scheme
+
+namespace OpenCover
+-- to be moved
+
+/-- Given `U : OpenCover X`, this is a choice of lifting of `x : X` in `U.obj (U.f x)`. -/
+noncomputable def lift {X : Scheme} (U : OpenCover X) (x : X) : U.obj (U.f x) :=
+  (U.Covers x).choose
+
+@[simp]
+lemma lift_covers {X : Scheme} (U : OpenCover X) (x : X) :
+    (U.map (U.f x)).1.base (U.lift x) = x :=
+  (U.Covers x).choose_spec
+
+/-- Composition of open covers -/
+@[simps J obj map]
+noncomputable def trans {X : Scheme.{u}} (U : OpenCover.{v} X)
+    (V : ∀ (j : U.J), OpenCover.{w} (U.obj j)) : OpenCover.{max v w} X where
+  J := Sigma (fun j ↦ (V j).J)
+  obj := fun ⟨j, k⟩ => (V j).obj k
+  map := fun ⟨j, k⟩ => (V j).map k ≫ U.map j
+  f x := ⟨U.f x, (V (U.f x)).f (U.lift x)⟩
+  Covers x := ⟨(V (U.f x)).lift (U.lift x), by simp⟩
+
+end OpenCover
 
 /-- The Zariski pretopology on the category of schemes. -/
 def zariskiPretopology : Pretopology (Scheme.{u}) where
@@ -39,31 +73,9 @@ def zariskiPretopology : Pretopology (Scheme.{u}) where
     exact ⟨U.pullbackCover' f, (Presieve.ofArrows_pullback _ _ _).symm⟩
   Transitive := by
     rintro X _ T ⟨U, rfl⟩ H
-    let S := fun (j : U.J) ↦ T (U.map j) ⟨j⟩
     let V : ∀ (j : U.J), OpenCover (U.obj j) := fun j => (H (U.map j) ⟨j⟩).choose
-    have hV : ∀ (j : U.J) , S j = Presieve.ofArrows (V j).obj (V j).map :=
-      fun j => (H (U.map j) ⟨j⟩).choose_spec
-    obtain ⟨σ, hσ⟩  : ∃ (σ : ∀ (x : X), U.obj (U.f x)),
-      ∀ (x : X), (U.map (U.f x)).1.base (σ x) = x := ⟨fun x => (U.Covers x).choose,
-        fun x => (U.Covers x).choose_spec⟩
-    let W : OpenCover.{u} X :=
-      { J := Sigma (fun (j : U.J) ↦ (V j).J)
-        obj := fun ⟨j, k⟩ => (V j).obj k
-        map := fun ⟨j, k⟩ => (V j).map k ≫ U.map j
-        f := fun x => ⟨U.f x, (V (U.f x)).f (σ x)⟩
-        Covers := fun x => by
-          obtain ⟨y, hy⟩ := (V (U.f x)).Covers (σ x)
-          exact ⟨y, (congr_arg (U.map (U.f x)).1.base hy).trans (hσ _)⟩ }
-    refine' ⟨W, _⟩
-    funext Y
-    ext f
-    constructor
-    · rintro ⟨Z, a, _, ⟨j⟩, (h : S _ _), rfl⟩
-      rw [hV] at h
-      obtain ⟨j⟩ := h
-      exact Presieve.ofArrows.mk' _ _ _ ⟨_, j⟩ rfl (by simp)
-    · rintro ⟨j, k⟩
-      exact ⟨_, (V j).map k, _, ⟨j⟩, show S _ _ by rw [hV]; exact ⟨k⟩, rfl⟩
+    exact ⟨U.trans V, Presieve.ofArrows_bind' U.obj U.map (fun i => (V i).obj)
+      (fun i => (V i).map) T (fun j => (H (U.map j) ⟨j⟩).choose_spec)⟩
 
 /-- The Zariski topology on the category of schemes. -/
 abbrev zariskiTopology : GrothendieckTopology (Scheme.{u}) :=
