@@ -43,12 +43,12 @@ def ProdTree.components : ProdTree → List Expr
   | prod fst snd _ _ => fst.components ++ snd.components
 
 /-- Make a `ProdTree` out of an `Expr`. -/
-def mkProdTree (e : Expr) : MetaM ProdTree :=
-  match e with
+partial def mkProdTree (e : Expr) : MetaM ProdTree :=
+  match e.consumeMData with
     | .app (.app (.const ``Prod [u,v]) X) Y => do
         return .prod (← X.mkProdTree) (← Y.mkProdTree) u v
     | X => do
-      let some u := (← inferType X).type? | throwError "Not a type{indentExpr X}"
+      let some u := (← whnfD <| ← inferType X).type? | throwError "Not a type{indentExpr X}"
       return .type X u
 
 /-- Given `P : ProdTree` representing an iterated product and `e : Expr` which
@@ -96,17 +96,17 @@ def mkProdFun (a b : Expr) : MetaM Expr := do
   let pa ← a.mkProdTree
   let pb ← b.mkProdTree
   unless pa.components.length == pb.components.length do
-    throwError "The number of components of {a} and {b} must match."
+    throwError "The number of components in{indentD a}\nand{indentD b}\nmust match."
   for (x,y) in pa.components.zip pb.components do
     unless ← isDefEq x y do
-      throwError "Components {x} is not defeq to component {y}."
+      throwError "Component{indentD x}\nis not definitionally equal to component{indentD y}."
   return .lam `t a (← pa.convertTo pb <| .bvar 0) .default
 
 /-- Construct the equivalence between iterated products of the same type, associated
 in possibly different ways. -/
 def mkProdEquiv (a b : Expr) : MetaM Expr := do
-  let some u := (← inferType a).type? | throwError "Not a type{indentExpr a}"
-  let some v := (← inferType b).type? | throwError "Not a type{indentExpr b}"
+  let some u := (← whnfD <| ← inferType a).type? | throwError "Not a type{indentExpr a}"
+  let some v := (← whnfD <| ← inferType b).type? | throwError "Not a type{indentExpr b}"
   return mkAppN (.const ``Equiv.mk [.succ u,.succ v])
     #[a, b, ← mkProdFun a b, ← mkProdFun b a,
       .app (.const ``rfl [.succ u]) a,
@@ -124,13 +124,18 @@ def elabProdAssoc : TermElab := fun stx expectedType? => do
     let some expectedType ← tryPostponeIfHasMVars? expectedType?
           | throwError "expected type must be known"
     let .app (.app (.const ``Equiv _) a) b := expectedType
-          | throwError "Expected type {expectedType} is not of the form `α ≃ β`."
+          | throwError "Expected type{indentD expectedType}\nis not of the form `α ≃ β`."
     mkProdEquiv a b
   | _ => throwUnsupportedSyntax
 
 /--
-`prod_assoc%` will construct the "obvious" equivalence between iterated products of types,
+`prod_assoc%` elaborates to the "obvious" equivalence between iterated products of types,
 regardless of how the products are parenthesized.
+The `prod_assoc%` term uses the expected type when elaborating.
+For example, `(prod_assoc% : (α × β) × (γ × δ) ≃ α × (β × γ) × δ)`.
+
+The elaborator can handle holes in the expected type,
+so long as they eventually get filled by unification.
 -/
 macro "prod_assoc%" : term => `((prod_assoc_internal% : _ ≃ _))
 
