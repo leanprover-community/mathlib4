@@ -750,7 +750,7 @@ def Scheme.OpenCover.pullbackCover {X : Scheme} (𝒰 : X.OpenCover) {W : Scheme
     · rw [← TopCat.epi_iff_surjective]; infer_instance
 #align algebraic_geometry.Scheme.open_cover.pullback_cover AlgebraicGeometry.Scheme.OpenCover.pullbackCover
 
-/-- Given an open cover on `X`, we may pull them back along a morphism `W ⟶ X` to obtain
+/-- Given an open cover on `X`, we may pull them back along a morphism `f : W ⟶ X` to obtain
 an open cover of `W`. This is similar to `Scheme.OpenCover.pullbackCover`, but here we
 take `pullback (𝒰.map x) f` instead of `pullback f (𝒰.map x)`. -/
 @[simps]
