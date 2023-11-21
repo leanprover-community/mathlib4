@@ -5,6 +5,7 @@ Authors: Michael Rothgang, Winston Yin
 -/
 
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
+import Mathlib.Topology.Maps
 
 -- FIXME: should this be its own file or go in SmoothManifoldWithCorners?
 -- the latter is already huge, or its own file - move other results about boundaryless here?
@@ -184,6 +185,24 @@ lemma LocalHomeomorph.extend_interior_boundary_eq_empty {e : LocalHomeomorph M H
   -- As `range I` is closed, its frontier has empty interior.
   exact interior_frontier I.closed_range
 
+
+lemma auxaux {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
+    {O : Set X} {t : Set Y} (hO : IsOpen O) (hf : ContinuousOn f O) :
+    interior (O ∩ f ⁻¹' t) = O ∩ f ⁻¹' (interior t) := by
+  -- well, ⊇ always holds!
+  have : interior (O ∩ f ⁻¹' t) ⊇ O ∩ f ⁻¹' (interior t) := by
+    rw [interior_inter, hO.interior_eq]
+    exact hf.preimage_interior_subset_interior_preimage hO
+
+  -- **IF** f were an open map, I'd be happy... that only holds without boundary, though...
+  have pretend : IsOpenMap f := sorry
+  let r := pretend.interior_preimage_subset_preimage_interior (s := t)
+  have : interior (O ∩ f ⁻¹' t) ⊆ O ∩ f ⁻¹' (interior t) := by
+    rw [interior_inter, hO.interior_eq]
+    exact inter_subset_inter_right O r
+  sorry -- sCIFI!
+
+
 namespace SmoothManifoldWithCorners
 variable (I) in
 /-- The boundary of a manifold has empty interior. -/
@@ -238,7 +257,21 @@ lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary 
     -- extChart is continuous on its source, so this might hold?
     -- lemma: f is continuous, then interior f⁻¹'B = f⁻¹ (interior B)
     -- next up: f continuous on A, then A ∩ interior f⁻¹'(B) = f⁻¹(interior B) assuming f⁻¹B ⊆ A somehow
-    _ = ⋃ (x : M), (extChartAt I x).source ∩ ((extChartAt I x) ⁻¹' (interior ((extChartAt I x).target \ interior (extChartAt I x).target))) := sorry
+    _ = ⋃ (x : M), (extChartAt I x).source ∩ ((extChartAt I x) ⁻¹' (interior ((extChartAt I x).target \ interior (extChartAt I x).target))) := by
+      have goal : ∀ x : M,  interior ((extChartAt I x).source ∩ (extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target)) = (extChartAt I x).source ∩ ((extChartAt I x) ⁻¹' (interior ((extChartAt I x).target \ interior (extChartAt I x).target))) := by
+        intro x
+        set e := extChartAt I x
+        let r := (chartAt H x).continuousOn_extend I
+        have : (chartAt H x).extend I = e := rfl
+        rw [this] at r
+        -- interior (e.source ∩ ↑e ⁻¹' (e.target \ interior e.target)) = e.source ∩ ↑e ⁻¹' interior (e.target \ interior e.target)
+        have : IsOpen e.source := sorry -- easy
+        -- abstracted this into a lemma. now, let's see if that is actually true!!!
+        -- well, one direction holds - but it's the wrong one...
+        apply auxaux (O := e.source) this r (t := e.target \ interior e.target)
+      simp_rw [goal]
+      --let r := (chartAt H x).continuousOn_extend I
+      --sorry
 
     _ = ⋃ (x : M), ∅ := by
       have aux : ∀ x : M, (extChartAt I x).source ∩ (extChartAt I x) ⁻¹' (interior ((extChartAt I x).target \ interior (extChartAt I x).target)) = ∅ := by
