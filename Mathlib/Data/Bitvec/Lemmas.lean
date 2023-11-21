@@ -33,10 +33,6 @@ lemma toNat_ofNat {m} (h : m < 2^w) : (BitVec.ofNat w m).toNat = m := Fin.val_ca
 @[simp]
 lemma toNat_ofFin (x : Fin (2^w)) : (ofFin x).toNat = x.val := rfl
 
-@[simp]
-lemma cast_eq (x : BitVec w) : x.cast rfl = x :=
-  rfl
-
 theorem toNat_append {msbs : BitVec w} {lsbs : BitVec v} :
     (msbs ++ lsbs).toNat = msbs.toNat <<< v ||| lsbs.toNat := by
   rcases msbs with ⟨msbs, hm⟩
