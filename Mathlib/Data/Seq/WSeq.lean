@@ -717,7 +717,7 @@ theorem dest_flatten (c : Computation (WSeq α)) :
       · exact Or.inr ⟨c', rfl, rfl⟩
 #align stream.wseq.destruct_flatten WSeq.dest_flatten
 
-theorem head_terminates_iff (s : WSeq α) : Terminates (head s) ↔ Terminates (dest s) :=
+theorem head_terminates_iff {s : WSeq α} : Terminates (head s) ↔ Terminates (dest s) :=
   terminates_map_iff _ (dest s)
 #align stream.wseq.head_terminates_iff WSeq.head_terminates_iff
 
@@ -846,8 +846,8 @@ theorem dest_drop :
 
 theorem head_terminates_of_head_tail_terminates (s : WSeq α) [T : Terminates (head (tail s))] :
     Terminates (head s) :=
-  (head_terminates_iff _).2 <| by
-    rcases (head_terminates_iff _).1 T with ⟨⟨a, h⟩⟩
+  head_terminates_iff.2 <| by
+    rcases head_terminates_iff.1 T with ⟨⟨a, h⟩⟩
     simp [tail] at h
     rcases exists_of_mem_bind h with ⟨s', h1, _⟩
     exact
@@ -882,6 +882,9 @@ theorem head_some_of_get?_some {s : WSeq α} {a n} (h : some a ∈ get? s n) :
       exact IH h'
 #align stream.wseq.head_some_of_nth_some WSeq.head_some_of_get?_some
 
+instance dest_terminates (s : WSeq α) [Productive s] : (dest s).Terminates :=
+  head_terminates_iff.mp (head_terminates s)
+
 instance productive_tail (s : WSeq α) [Productive s] : Productive (tail s) :=
   ⟨fun n => by rw [get?_tail]; infer_instance⟩
 #align stream.wseq.productive_tail WSeq.productive_tail
@@ -892,17 +895,22 @@ instance productive_drop (s : WSeq α) [Productive s] (n) : Productive (drop s n
 
 /-- Given a productive weak sequence, we can collapse all the `think`s to
   produce a sequence. -/
-def toSeq (s : WSeq α) [Productive s] : Seq' α :=
-  ⟨fun n => (get? s n).get,
-   fun {n} h => by
+def toSeq (s : WSeq α) [Productive s] : Seq' α where
+  get? n := Computation.get (get? s n)
+  succ_stable n h := by
     cases e : Computation.get (get? s (n + 1))
     · assumption
     have := Computation.mem_of_get_eq _ e
     simp [get?] at this h
     cases' head_some_of_head_tail_some this with a' h'
     have := mem_unique h' (@Computation.mem_of_get_eq _ _ _ _ h)
-    contradiction⟩
+    contradiction
 #align stream.wseq.to_seq WSeq.toSeq
+
+@[simp]
+theorem get?_toSeq (s : WSeq α) [Productive s] (n : ℕ) :
+    Seq'.get? (toSeq s) n = Computation.get (get? s n) :=
+  rfl
 
 theorem get?_terminates_le {s : WSeq α} {m n} (h : m ≤ n) :
     Terminates (get? s n) → Terminates (get? s m) := by
@@ -917,7 +925,7 @@ theorem head_terminates_of_get?_terminates {s : WSeq α} {n} :
 
 theorem dest_terminates_of_get?_terminates {s : WSeq α} {n} (T : Terminates (get? s n)) :
     Terminates (dest s) :=
-  (head_terminates_iff _).1 <| head_terminates_of_get?_terminates T
+  head_terminates_iff.1 <| head_terminates_of_get?_terminates T
 #align stream.wseq.destruct_terminates_of_nth_terminates WSeq.dest_terminates_of_get?_terminates
 
 @[simp]
@@ -1025,7 +1033,7 @@ theorem exists_drop_of_mem {s : WSeq α} {a} (h : a ∈ s) :
     ∃ n s', some (a, s') ∈ dest (drop s n) :=
   let ⟨n, h⟩ := exists_get?_of_mem h
   ⟨n, by
-    rcases (head_terminates_iff _).1 ⟨⟨_, h⟩⟩ with ⟨⟨o, om⟩⟩
+    rcases head_terminates_iff.1 ⟨⟨_, h⟩⟩ with ⟨⟨o, om⟩⟩
     have := Computation.mem_unique (Computation.mem_map _ om) h
     cases' o with o
     · injection this
@@ -1150,6 +1158,12 @@ theorem flatten_equiv {c : Computation (WSeq α)} {s} (h : s ∈ c) : flatten c 
     · simp [think_equiv]
     · exact h
 #align stream.wseq.flatten_equiv WSeq.flatten_equiv
+
+theorem congr_tail_of_some_mem_dest {a : α} {s' s : WSeq α} (hds : some (a, s') ∈ dest s) :
+    s' ≈ tail s := by
+  apply Setoid.symm
+  apply flatten_equiv
+  exact Computation.mem_map _ hds
 
 theorem liftRel_flatten {R : α → β → Prop} {c1 : Computation (WSeq α)} {c2 : Computation (WSeq β)}
     (h : c1.LiftRel (LiftRel R) c2) : LiftRel R (flatten c1) (flatten c2) :=
@@ -1383,9 +1397,67 @@ instance productive_ofSeq (s : Seq' α) : Productive (↑s : WSeq α) :=
 
 theorem toSeq_ofSeq (s : Seq' α) : toSeq ↑s = s := by
   ext1 n
-  dsimp [toSeq]; apply get_eq_of_mem
+  dsimp; apply get_eq_of_mem
   rw [get?_ofSeq]; apply mem_pure
 #align stream.wseq.to_seq_of_seq WSeq.toSeq_ofSeq
+
+/-- Corecursive verseion of `toSeq`. -/
+@[simp]
+def toSeqCorec (s : WSeq α) [hs : Productive s] : Seq' α :=
+  Seq'.corec (β := { s : WSeq α // Productive s })
+    (fun ⟨s, _⟩ =>
+      match Computation.get (dest s), Computation.get_mem (dest s) with
+      | some (a, s'), hs' =>
+        some (a, ⟨s', (productive_congr (congr_tail_of_some_mem_dest hs')).mpr (productive_tail s)⟩)
+      | none       , _  => none)
+    ⟨s, hs⟩
+
+@[csimp]
+theorem toSeq_eq_toSeqCorec : @toSeq.{u} = @toSeqCorec.{u} := by
+  funext α s hs
+  ext1 n
+  simp
+  apply Computation.get_eq_of_mem
+  have hpf :
+      (Prod.fst : α × { s : WSeq α // Productive s } → α) = Prod.fst ∘ Prod.map id Subtype.val := by
+    simp [Prod.map_fst']
+  rw [get?, head, hpf, ← Option.map_map]
+  apply Computation.mem_map
+  induction n using Nat.recAux with
+  | zero =>
+    simp [drop]
+    split
+    next _ _ a s₁ hs₁ _ _ => exact hs₁
+    next _ _ hds _ _ => exact hds
+  | succ n hn =>
+    simp [drop, dest_tail, iterate_succ', - iterate_succ]
+    rcases hms :
+      Option.map (Prod.map id Subtype.val)
+        ((fun o ↦
+            Option.bind o
+              ((fun ⟨s, _⟩ ↦
+                  match Computation.get (dest s), Computation.get_mem (dest s) with
+                  | some (a, s'), hs' =>
+                    some (a, ⟨s', (productive_congr (congr_tail_of_some_mem_dest hs')).mpr
+                      (productive_tail s)⟩)
+                  | none, _ => none) ∘
+                Prod.snd))^[n]
+          (match Computation.get (dest s), Computation.get_mem (dest s) with
+           | some (a, s'), hs' =>
+             some (a, ⟨s', (productive_congr (congr_tail_of_some_mem_dest hs')).mpr
+              (productive_tail s)⟩)
+           | none, _ => none)) with (_ | ⟨a, s₁⟩)
+    · simp at hms
+      simp [hms] at hn ⊢
+      exact Computation.mem_bind (f := tail.aux) hn (Computation.mem_pure none)
+    · simp at hms
+      rcases hms with ⟨hs₁, hms⟩
+      simp [hms] at hn ⊢
+      split
+      next _ _ a s₃ hs₃ _ _ =>
+        exact Computation.mem_bind (f := tail.aux) hn hs₃
+      next _ _ hds _ _ =>
+        exact Computation.mem_bind (f := tail.aux) hn hds
 
 /-- The monadic `pure a` is a singleton list containing `a`. -/
 def pure (a : α) : WSeq α :=
