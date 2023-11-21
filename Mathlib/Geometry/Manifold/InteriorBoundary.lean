@@ -163,13 +163,34 @@ lemma boundary_isClosed : IsClosed (SmoothManifoldWithCorners.boundary I M) := b
   rw [← this, compl_compl]
   exact interior_isOpen
 
+-- XXX: this is not fully true! frontier s includes t ∖ interior t, but also closure(O) ∖ O...
+-- ACTUALLY: this means the definition of boundary is not right: want to take target without interior,
+-- **not** the frontier!!
+lemma aux {X : Type*} [TopologicalSpace X] {s O t : Set X} (h : s = O ∩ t) (hO : IsOpen O) :
+    frontier s ⊆ frontier t := by
+  let aux := calc interior s
+    _ = interior O ∩ interior t := by rw [h, interior_inter]
+    _ = O ∩ interior t := by rw [hO.interior_eq]
+
+  -- closure s = closure O ∩ closure t ⊆ closure t
+  -- frontier s = closure s ∖ interior s ⊆ closure(t) ∖ (O ∩ interior t)... not good enough!!
+  -- s ∖ interior s = (O ∩ t) ∖ (O ∩ interior t) = O ∩ (t ∖ interior t) ⊆ t ∖ interior t
+  --   ⊆ closure t ∖ interior t = frontiert t
+
+  sorry
+
 /-- The boundary of any extended chart has empty interior. -/
--- NB: this is *false* for any set instead of `(e.extend I).target`:
--- for instance, $ℚ ⊆ ℝ$ has frontier ℝ (ℚ is dense in ℝ and ℚ has empty interior).
--- xxx: do I need that e is in the atlas? I think not; not double-checked.
--- xxx: is this lemma true with mathlib's current definitions?
 lemma __root__.LocalHomeomorph.extend_interior_boundary_eq_empty {e : LocalHomeomorph M H} :
-    interior (frontier (e.extend I).target) = ∅ := sorry
+    interior (frontier (e.extend I).target) = ∅ := by
+  -- `e.extend_target I = (I.symm ⁻¹' e.target) ∩ range I` is the union of an open set and a
+  -- closed set: hence the frontier is contained in the second factor.
+  have h1 : frontier (e.extend I).target ⊆ frontier (range I) := by
+    rw [e.extend_target I]
+    exact aux rfl (e.open_target.preimage I.continuous_symm)
+  suffices interior (frontier (range I)) = ∅ by
+    exact subset_eq_empty (interior_mono h1) this
+  -- As `range I` is closed, its frontier has empty interior.
+  exact interior_frontier I.closed_range
 
 /-- The boundary of a manifold has empty interior. -/
 lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary I M) = ∅ := by
