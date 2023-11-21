@@ -80,6 +80,8 @@ TODO:
 * shift and stretch theorems
 * constant curve at stationary point of v
 -/
+variable {t₀}
+
 lemma IsIntegralCurveAt.comp_add {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀ x₀) (dt : ℝ) :
     IsIntegralCurveAt (γ ∘ (fun t => t + dt)) v (t₀ - dt) x₀ := by
   obtain ⟨h1, ε, hε, h2⟩ := hγ
@@ -99,6 +101,16 @@ lemma IsIntegralCurveAt.comp_add {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v 
     Function.comp.left_id, modelWithCornersSelf_coe, range_id, id_eq, hasFDerivWithinAt_univ]
   apply HasFDerivAt.add_const
   exact hasFDerivAt_id _
+
+lemma isIntegralCurveAt_comp_add {γ : ℝ → M} {dt : ℝ} : IsIntegralCurveAt γ v t₀ x₀ ↔
+    IsIntegralCurveAt (γ ∘ (fun t => t + dt)) v (t₀ - dt) x₀ := by
+  refine' ⟨fun hγ => IsIntegralCurveAt.comp_add hγ _, _⟩
+  intro hγ
+  have := hγ.comp_add (-dt)
+  rw [sub_neg_eq_add, sub_add_cancel] at this
+  convert this
+  ext
+  simp
 
 lemma IsIntegralCurveAt.comp_mul_pos {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀ x₀) {a : ℝ}
     (ha : 0 < a) : IsIntegralCurveAt (γ ∘ (fun t => t * a)) (a • v) (t₀ / a) x₀ := by
@@ -121,6 +133,17 @@ lemma IsIntegralCurveAt.comp_mul_pos {γ : ℝ → M} (hγ : IsIntegralCurveAt �
   apply HasFDerivAt.mul_const'
   exact hasFDerivAt_id _
 
+lemma isIntegralCurvAt_comp_mul_pos {γ : ℝ → M} {a : ℝ} (ha : 0 < a) :
+    IsIntegralCurveAt γ v t₀ x₀ ↔ IsIntegralCurveAt (γ ∘ (fun t => t * a)) (a • v) (t₀ / a) x₀ := by
+  refine' ⟨fun hγ => IsIntegralCurveAt.comp_mul_pos hγ ha, _⟩
+  intro hγ
+  have := hγ.comp_mul_pos (inv_pos_of_pos ha)
+  rw [smul_smul, inv_mul_eq_div, div_self (ne_of_gt ha), one_smul, ←div_mul_eq_div_div_swap,
+    inv_mul_eq_div, div_self (ne_of_gt ha), div_one, Function.comp.assoc] at this
+  convert this
+  ext
+  simp [inv_mul_eq_div, div_self (ne_of_gt ha)]
+
 lemma IsIntegralCurveAt.comp_neg {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀ x₀) :
     IsIntegralCurveAt (γ ∘ Neg.neg) (-v) (-t₀) x₀ := by
   obtain ⟨h1, ε, hε, h2⟩ := hγ
@@ -140,16 +163,34 @@ lemma IsIntegralCurveAt.comp_neg {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v 
   apply HasDerivAt.hasFDerivAt
   exact hasDerivAt_neg _
 
+lemma isIntegralCurveAt_comp_neg {γ : ℝ → M} :
+    IsIntegralCurveAt γ v t₀ x₀ ↔ IsIntegralCurveAt (γ ∘ Neg.neg) (-v) (-t₀) x₀ := by
+  refine' ⟨fun hγ => IsIntegralCurveAt.comp_neg hγ, _⟩
+  intro hγ
+  have := hγ.comp_neg
+  rw [Function.comp.assoc, neg_comp_neg, neg_neg, neg_neg] at this
+  exact this
+
 lemma IsIntegralCurveAt.comp_mul_ne_zero {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀ x₀) {a : ℝ}
     (ha : a ≠ 0) : IsIntegralCurveAt (γ ∘ (fun t => t * a)) (a • v) (t₀ / a) x₀ := by
   rw [ne_iff_lt_or_gt] at ha
   cases' ha with ha ha
-  /- this makes me think we need inverses of the above theorems -/
-  · have h := (hγ.comp_mul_pos _ (neg_pos_of_neg ha)).comp_neg
-    have : γ ∘ (fun t ↦ t * -a) ∘ Neg.neg = γ ∘ fun t ↦ t * a := by ext; simp
-    rw [Function.comp.assoc, ←neg_smul, neg_neg, neg_div', neg_div_neg_eq, this] at h
-    exact h
-  · exact hγ.comp_mul_pos _ ha
+  · apply isIntegralCurveAt_comp_neg.mpr
+    have : (fun t ↦ t * a) ∘ Neg.neg = fun t ↦ t * -a := by ext; simp
+    rw [Function.comp.assoc, this, ←neg_smul, ←div_neg]
+    exact hγ.comp_mul_pos (neg_pos_of_neg ha)
+  · exact hγ.comp_mul_pos ha
+
+lemma isIntegralCurveAt_comp_mul_ne_zero {γ : ℝ → M} {a : ℝ} (ha : a ≠ 0) :
+    IsIntegralCurveAt γ v t₀ x₀ ↔ IsIntegralCurveAt (γ ∘ (fun t => t * a)) (a • v) (t₀ / a) x₀ := by
+  refine' ⟨fun hγ => IsIntegralCurveAt.comp_mul_ne_zero hγ ha, _⟩
+  intro hγ
+  have := hγ.comp_mul_ne_zero (inv_ne_zero ha)
+  rw [smul_smul, inv_mul_eq_div, div_self ha, one_smul, ←div_mul_eq_div_div_swap,
+    inv_mul_eq_div, div_self ha, div_one, Function.comp.assoc] at this
+  convert this
+  ext
+  simp [inv_mul_eq_div, div_self ha]
 
 /-- For any continuously differentiable vector field and any chosen non-boundary point `x₀` on the
   manifold, there exists an integral curve `γ : ℝ → M` such that `γ t₀ = x₀` and the tangent vector
@@ -245,4 +286,4 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
   interval around `t₀`. -/
 lemma exists_integralCurve_of_contMDiff_tangent_section_boundaryless [I.Boundaryless] :
     ∃ (γ : ℝ → M), IsIntegralCurveAt γ v t₀ x₀ :=
-  exists_integralCurve_of_contMDiff_tangent_section hv _ I.isInteriorPoint
+  exists_integralCurve_of_contMDiff_tangent_section hv I.isInteriorPoint
