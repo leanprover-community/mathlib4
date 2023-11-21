@@ -10,7 +10,8 @@ import Mathlib.CategoryTheory.Sites.Pretopology
 
 In this file, we define the Zariski topology, as a Grothendieck topology on the
 category `Scheme.{u}`: this is `Scheme.zariskiTopology.{u}`. If `X : Scheme.{u}`,
-the Zariski topology on `Over X` can be obtained as `Scheme.zariskiTopology.over X`.
+the Zariski topology on `Over X` can be obtained as `Scheme.zariskiTopology.over X`
+(see `CategoryTheory.Sites.Over`.).
 
 -/
 
