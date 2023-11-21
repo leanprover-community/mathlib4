@@ -19,7 +19,7 @@ without boundary.
 
 ## Main definition
 
-- **IsInteriorPoint x**: If `v : M → TM` is a vector field on `M` and `x : M`,
+- **IsIntegralCurve γ v t₀ x₀**: If `v : M → TM` is a vector field on `M` and `x : M`,
 `IsIntegralCurveAt γ v t₀ x₀` means `γ : ℝ → M` is a differentiable integral curve of `v` with
 `γ x₀ = t₀`.
 
@@ -51,9 +51,10 @@ lemma ModelWithCorners.isOpen_target [I.Boundaryless] {x : M} :
     IsOpen (extChartAt I x).target := I.isOpen_extend_target
 
 /-- If `M` has no boundary, then every point in `M` is an interior point. -/
-lemma ModelWithCorners.isInteriorPoint [I.Boundaryless] {x : M} :
-    I.IsInteriorPoint x := by
-  rw [ModelWithCorners.IsInteriorPoint, IsOpen.interior_eq I.isOpen_target]
+-- FIXME: better name?
+lemma ModelWithCorners.isInteriorPoint' [I.Boundaryless] {x : M} :
+    I.isInteriorPoint x := by
+  rw [ModelWithCorners.isInteriorPoint, IsOpen.interior_eq I.isOpen_target]
   exact LocalEquiv.map_source _ (mem_extChartAt_source _ _)
 
 end
@@ -196,7 +197,7 @@ lemma isIntegralCurveAt_comp_mul_ne_zero {γ : ℝ → M} {a : ℝ} (ha : a ≠ 
   manifold, there exists an integral curve `γ : ℝ → M` such that `γ t₀ = x₀` and the tangent vector
   of `γ` at `t` coincides with the vector field at `γ t` for all `t` within an open interval around
   `t₀`.-/
-theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoint x₀) :
+theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.isInteriorPoint x₀) :
     ∃ (γ : ℝ → M), IsIntegralCurveAt γ v t₀ x₀ := by
   /- express the derivative of the section `v` in the local charts -/
   rw [contMDiffAt_iff] at hv
@@ -286,4 +287,4 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
   interval around `t₀`. -/
 lemma exists_integralCurve_of_contMDiff_tangent_section_boundaryless [I.Boundaryless] :
     ∃ (γ : ℝ → M), IsIntegralCurveAt γ v t₀ x₀ :=
-  exists_integralCurve_of_contMDiff_tangent_section hv I.isInteriorPoint
+  exists_integralCurve_of_contMDiff_tangent_section hv I.isInteriorPoint'

@@ -78,7 +78,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 /-- `p ∈ M` is an interior point of a smooth manifold `M` iff
 for `φ` being the preferred chart at `x`, `φ x` is an interior point of `φ.target`. -/
-def ModelWithCorners.IsInteriorPoint (x : M) := extChartAt I x x ∈ interior (extChartAt I x).target
+def ModelWithCorners.isInteriorPoint (x : M) := extChartAt I x x ∈ interior (extChartAt I x).target
 
 /-- `p ∈ M` is a boundary point of a smooth manifold `M` iff it is not an interior point.
 This means that, for `φ` being the preferred chart at `x`, `φ x` is not an interior point of
@@ -91,11 +91,11 @@ namespace SmoothManifoldWithCorners
 
 variable (I M) in
 /-- The **interior** of a manifold `M` is the set of its interior points. -/
-protected def interior : Set M := { x : M | I.IsInteriorPoint x}
+protected def interior : Set M := { x : M | I.isInteriorPoint x}
 
 variable (I M) in
 /-- The **boundary** of a manifold `M` is the set of its boundary points. -/
-protected def boundary : Set M := { x : M | I.IsBoundaryPoint x}
+protected def boundary : Set M := { x : M | I.isBoundaryPoint x}
 
 /-- If `e` and `e'` are two charts, the transition map maps interior points to interior points. -/
 -- as we only need continuity property, e or e' being in the atlas is not required
