@@ -1465,6 +1465,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 open Seq'
 
 /-- Convert a `Seq1` to a sequence. -/
+@[coe]
 def toSeq : Seq1 α → Seq' α
   | ⟨a, s⟩ => a ::ₑ s
 #align stream.seq1.to_seq Seq1.toSeq
