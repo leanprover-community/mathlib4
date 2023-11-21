@@ -80,6 +80,12 @@ lemma hasDerivAt_exp_neg {r x : ℝ} (hr : 0 < r) :
     HasDerivAt (fun a ↦ -1/r * exp (-(r * a))) (exp (-(r * x))) x := by
   convert (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1/r)) using 1 <;> field_simp
 
+lemma hasDerivAt_neg_exp_mul_exp {r x : ℝ} :
+    HasDerivAt (fun a ↦ -exp (-(r * a))) (r * exp (-(r * x))) x := by
+  convert (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1)) using 1
+  · simp only [one_mul, id_eq, neg_mul]
+  simp only [id_eq, neg_mul, mul_one, mul_neg, one_mul, neg_neg, mul_comm]
+
 /-- the Lebesgue-Integral of the exponential PDF over nonpositive Reals equals 0-/
 lemma lintegral_exponentialPdf_of_nonpos {x r : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, exponentialPdf r y = 0 := by
@@ -126,8 +132,8 @@ lemma lintegral_exponentialPdf_eq_one (r : ℝ) (hr : 0 < r) : ∫⁻ x, exponen
   have leftSide : ∫⁻ x in Iio 0, exponentialPdf r x = 0 := by
     rw [set_lintegral_congr_fun measurableSet_Iio
       (ae_of_all _ (fun x (hx : x < 0) ↦ exponentialPdf_of_neg hx)), lintegral_zero]
-  have rightSide : ∫⁻ x in Ici 0, exponentialPdf r x
-      = ∫⁻ x in Ici 0, ENNReal.ofReal (r * rexp (-(r * x))) := by
+  have rightSide :
+    ∫⁻ x in Ici 0, exponentialPdf r x = ∫⁻ x in Ici 0, ENNReal.ofReal (r * rexp (-(r * x))) := by
     exact set_lintegral_congr_fun isClosed_Ici.measurableSet
       (ae_of_all _ (fun x (hx : 0 ≤ x) ↦ exponentialPdf_of_nonneg hx))
   simp only [leftSide, add_zero]
@@ -179,15 +185,9 @@ lemma exponentialCdfReal_eq_lintegral (r x : ℝ) [Fact (0 < r)] :
 
 open Topology
 
-lemma hasDerivAt_neg_exp_mul_exp {r x : ℝ} :
-    HasDerivAt (fun a ↦ -exp (-(r * a))) (r * exp (-(r * x))) x := by
-  convert (((hasDerivAt_id x).const_mul (-r)).exp.const_mul (-1)) using 1
-  · simp only [one_mul, id_eq, neg_mul]
-  simp only [id_eq, neg_mul, mul_one, mul_neg, one_mul, neg_neg, mul_comm]
-
 lemma lintegral_exponentialPdf_eq_antiDeriv (r x : ℝ) (hr : 0 < r) :
-    (∫⁻ y in Iic x, exponentialPdf r y =
-    ENNReal.ofReal (if 0 ≤ x then 1 - exp (-(r * x)) else 0)) := by
+    ∫⁻ y in Iic x, exponentialPdf r y
+    = ENNReal.ofReal (if 0 ≤ x then 1 - exp (-(r * x)) else 0) := by
   split_ifs with h
   case neg =>
     simp only [exponentialPdf_eq]
@@ -223,8 +223,8 @@ lemma lintegral_exponentialPdf_eq_antiDeriv (r x : ℝ) (hr : 0 < r) :
       exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
 
 /-- The Definition of the CDF equals the known Formular ``1 - exp (-(r * x))``-/
-lemma exponentialCdfReal_eq {r : ℝ} [Fact (0 < r)] (x : ℝ) : exponentialCdfReal r x =
-    if 0 ≤ x then 1 - exp (-(r * x)) else 0 := by
+lemma exponentialCdfReal_eq {r : ℝ} [Fact (0 < r)] (x : ℝ) :
+    exponentialCdfReal r x = if 0 ≤ x then 1 - exp (-(r * x)) else 0 := by
   simp only [exponentialCdfReal_eq_lintegral, lintegral_exponentialPdf_eq_antiDeriv _ _ Fact.out,
     ENNReal.toReal_ofReal_eq_iff]
   split_ifs with h
