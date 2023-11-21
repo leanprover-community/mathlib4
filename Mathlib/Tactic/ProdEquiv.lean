@@ -37,6 +37,11 @@ def ProdTree.size : ProdTree → Nat
   | type _ _ => 1
   | prod fst snd _ _ => fst.size + snd.size
 
+/-- The components of an interated product, presented as a `ProdTree`. -/
+def ProdTree.components : ProdTree → List Expr
+  | type tp _ => [tp]
+  | prod fst snd _ _ => fst.components ++ snd.components
+
 /-- Make a `ProdTree` out of an `Expr`. -/
 def mkProdTree (e : Expr) : MetaM ProdTree :=
   match e with
@@ -65,13 +70,10 @@ def ProdTree.unpack (t : Expr) : ProdTree → MetaM (List Expr)
 /-- This function should act as the "reverse" of `ProdTree.unpack`, constructing
 a term of the iterated product out of a list of terms of the types appearing in the product. -/
 def ProdTree.pack (ts : List Expr) : ProdTree → MetaM Expr
-  | type tp _ => do
+  | type _ _ => do
     match ts with
       | [] => throwError "Can't pack the empty list."
       | [a] => return a
-        --if ← isDefEq tp (← inferType a) then return a
-        --else throwError "Type error: Expected type{indentExpr <| ← inferType a }
---but got type{indentExpr tp}"
       | _ => throwError "Failed due to size mismatch."
   | prod fst snd u v => do
     let fstSize := fst.size
@@ -90,6 +92,11 @@ possibly different ways, this constructs the "obvious" function from one to the 
 def mkProdFun (a b : Expr) : MetaM Expr := do
   let pa ← a.mkProdTree
   let pb ← b.mkProdTree
+  unless pa.components.length == pb.components.length do
+    throwError "The number of components of {a} and {b} must match."
+  for (x,y) in pa.components.zip pb.components do
+    unless ← isDefEq x y do
+      throwError "Components {x} is not defeq to component {y}."
   return .lam `t a (← pa.convertTo pb <| .bvar 0) .default
 
 /-- Construct the equivalence between iterated products of the same type, associated
@@ -102,18 +109,19 @@ def mkProdEquiv (a b : Expr) : MetaM Expr := do
       .app (.const ``rfl [.succ u]) a,
       .app (.const ``rfl [.succ v]) b]
 
-
 /-- An elaborator version of `Lean.Expr.mkEquiv`. -/
 elab "prod_assoc(" a:term "," b:term ")" : term => do
   let a ← Elab.Term.elabTerm a none
   let b ← Elab.Term.elabTerm b none
-  let some u := (← inferType a).type? | throwError "Error"
-  let some v := (← inferType b).type? | throwError "Error"
+  let some u := (← inferType a).type? | throwError "Not a type{indentExpr a}"
+  let some v := (← inferType b).type? | throwError "Not a type{indentExpr b}"
   let e ← mkProdEquiv a b
   let _ ← Elab.Term.ensureHasType (some <| mkApp2 (.const ``Equiv [u.succ, v.succ]) a b) e
   mkProdEquiv a b
 
---def foo : Nat × Rat ≃ Nat × Nat := prod_assoc(Nat × Nat, Nat × Nat)
-#check prod_assoc(Nat × Rat, Nat × Nat)
+variable {α β γ δ : Type*}
+
+example : (α × β) × (γ × δ) ≃ α × (β × γ) × δ :=
+  prod_assoc((α × β) × (γ × δ), α × (β × γ) × δ)
 
 end Lean.Expr
