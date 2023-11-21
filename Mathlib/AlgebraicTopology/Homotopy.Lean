@@ -125,13 +125,10 @@ theorem binProdCone_snd (X Y : SSet) : (binProdCone X Y).snd = proj2 :=
 def binProdLim (X Y : SSet) : IsLimit (binProdCone X Y) where
   lift (s : BinaryFan X Y) := {
     app := fun n x => ((s.fst).app n x, (s.snd).app n x)
-    naturality := by
-      intro j k g
+    naturality := fun j k g => by
       ext a
-      simp only [Functor.const_obj_obj, pair_obj_left, pair_obj_right, types_comp_apply]
+      simp [FunctorToTypes.naturality]
       congr
-      exact FunctorToTypes.naturality s.pt X (BinaryFan.fst s) g a
-      exact FunctorToTypes.naturality s.pt Y (BinaryFan.snd s) g a
   }
   fac _ j := Discrete.recOn j fun j => WalkingPair.casesOn j rfl rfl
   uniq s t ht := by
@@ -146,27 +143,24 @@ noncomputable def binProdIso (X Y : SSet) : X ⨯ Y ≅ Prod X Y :=
 
 def IHom (X Y : SSet) : SSet where
   obj n := Prod (standardSimplex.obj n.unop) X ⟶ Y
-  map := by
-    intro m n f F
-    refine {
-    app := fun k a => F.app k (((standardSimplex.map f.unop).app k) a.1, a.2)
+  map {m n} f F := {
+    app := fun k a => F.app k ((standardSimplex.map f.unop).app k a.1, a.2)
     naturality := fun j k g => by
       ext a
-      have := (F.naturality g)
-      apply_fun (fun F => F (a.1 ≫ f.unop, a.2)) at this
-      simpa
+      exact congr_fun (F.naturality g) (a.1 ≫ f.unop, a.2)
   }
   map_id _ := by
     dsimp only [standardSimplex]
     aesop_cat
 
+example (X Y Z : SSet) (h : X ≅ Z) : (X ⟶ Y) ≅ (Z ⟶ Y) := ((yoneda.obj Y).mapIso h.op).symm
+
 /- easier way? -/
-noncomputable def HomIsoProd {X Y : SSet} : (X ⟶ Y) ≅ (Prod Δ[0] X ⟶ Y) where
-  hom x := ((leftUnitor X).symm ≪≫ (binProdIso Δ[0] X)).inv ≫ x
-  inv x := ((leftUnitor X).symm ≪≫ (binProdIso Δ[0] X)).hom ≫ x
+noncomputable def HomIsoProd {X Y : SSet} : (X ⟶ Y) ≅ (Prod Δ[0] X ⟶ Y) :=
+  ((yoneda.obj Y).mapIso ((leftUnitor X).symm ≪≫ (binProdIso Δ[0] X)).op).symm
 
 noncomputable
-def IHomZero {X Y : SSet} : (X ⟶ Y) ≅ (IHom X Y) _[0] :=  HomIsoProd ≪≫ (eqToIso rfl)
+def IHomZero {X Y : SSet} : (X ⟶ Y) ≅ (IHom X Y) _[0] := HomIsoProd ≪≫ (eqToIso rfl)
 
 def bruh (X Y : SSet) : (Δ[0] ⟶ IHom X Y) ≃ (IHom X Y) _[0] := yonedaEquiv
 
