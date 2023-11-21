@@ -523,7 +523,7 @@ theorem coinduction2 (s) (f g : Seq' α → Seq' β)
   rw [h1, h2]; apply H
 #align stream.seq.coinduction2 Seq'.coinduction2
 
-@[inherit_doc mk, specialize, simp]
+@[inherit_doc mk, nolint unusedArguments, specialize, simp]
 def mkComputable (f : ℕ → Option α) (_ : ∀ ⦃n⦄, f n = none → f (n + 1) = none) : Seq' α :=
   corec (fun n => Option.map ((·, n + 1)) (f n)) 0
 

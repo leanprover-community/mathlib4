@@ -322,7 +322,7 @@ set_option linter.uppercaseLean3 false in
 unsafe def corecUnsafe (f : β → α ⊕ β) (b : β) : Computation α :=
   unsafeCast (corec f b)
 
-@[implemented_by corecUnsafe]
+@[inherit_doc corecUnsafe, implemented_by corecUnsafe]
 def corec (f : β → α ⊕ β) (b : β) : Computation α where
   runFor n := Sum.getLeft? ((Sum.elim Sum.inl f)^[n] (f b))
   succ_stable n a h := by
@@ -340,7 +340,7 @@ theorem dest_corec (f : β → α ⊕ β) (b : β) : dest (corec f b) = Sum.map 
   cases hb : f b <;> simp [corec, dest, head, tail, hb]
 #align computation.corec_eq Computation.dest_corec
 
-@[inherit_doc mk, specialize, simp]
+@[inherit_doc mk, nolint unusedArguments, specialize, simp]
 def mkComputable (f : ℕ → Option α) (_ : ∀ ⦃n a⦄, f n = some a → f (n + 1) = some a) :
     Computation α :=
   corec (fun n => Option.elim (f n) (Sum.inr (n + 1)) Sum.inl) 0
@@ -817,6 +817,7 @@ set_option linter.uppercaseLean3 false in
 def lengthGetCorec (c : Computation α) [h : Terminates c] : ℕ × α :=
   loop (terminates_iff_acc.mp h) 0
 where
+  /-- The mail loop for `lengthGetCorec`. -/
   loop {c : Computation α} (hc : Acc (fun c₁ c₂ => dest c₂ = Sum.inr c₁) c) (n : ℕ) : ℕ × α :=
     Acc.rec
       (fun c _ F n =>
