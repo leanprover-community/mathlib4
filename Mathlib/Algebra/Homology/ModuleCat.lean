@@ -42,7 +42,7 @@ theorem homology'_ext {L M N K : ModuleCat R} {f : L ⟶ M} {g : M ⟶ N} (w : f
         h (cokernel.π (imageToKernel _ _ w) (toKernelSubobject x)) =
           k (cokernel.π (imageToKernel _ _ w) (toKernelSubobject x))) :
     h = k := by
-  refine' cokernel_funext fun n => _
+  refine' Concrete.cokernel_funext fun n => _
   -- porting note: as `equiv_rw` was not ported, it was replaced by `Equiv.surjective`
   -- Gosh it would be nice if `equiv_rw` could directly use an isomorphism, or an enriched `≃`.
   obtain ⟨n, rfl⟩ := (kernelSubobjectIso g ≪≫
