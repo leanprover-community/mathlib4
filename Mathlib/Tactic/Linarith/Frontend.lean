@@ -390,8 +390,8 @@ syntax (name := nlinarith) "nlinarith" "!"? linarithArgsRest : tactic
   `(tactic| nlinarith ! $rest:linarithArgsRest)
 
 /-- Elaborate `t` in a way that is suitable for linarith. -/
-def elabLinarithArg (tactic : String) (t : Term) : TacticM Expr := Term.withoutErrToSorry do
-  let (e, mvars) ← elabTermWithHoles t none `linarith (allowNaturalHoles := true)
+def elabLinarithArg (tactic : Name) (t : Term) : TacticM Expr := Term.withoutErrToSorry do
+  let (e, mvars) ← elabTermWithHoles t none tactic
   unless mvars.isEmpty do
     throwErrorAt t "Argument passed to {tactic} has metavariables:{indentD e}"
   return e
@@ -406,7 +406,7 @@ elab_rules : tactic
     withMainContext do commitIfNoEx do
       liftMetaFinishingTactic <|
         Linarith.linarith o.isSome
-          (← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg "linarith")).toList
+          (← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `linarith)).toList
           ((← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome)
 
 -- TODO restore this when `add_tactic_doc` is ported
@@ -427,7 +427,7 @@ elab_rules : tactic
         [(nlinarithExtras : GlobalBranchingPreprocessor)]) }
     liftMetaFinishingTactic <|
       Linarith.linarith o.isSome
-        (← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg "nlinarith")).toList
+        (← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `nlinarith)).toList
         (cfg.updateReducibility bang.isSome)
 
 -- TODO restore this when `add_tactic_doc` is ported
