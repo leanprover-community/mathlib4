@@ -269,8 +269,8 @@ theorem get_drop (n m : ℕ) (s : Stream' α) : get (drop m s) n = get s (m + n)
 #align stream.nth_drop Stream'.get_drop
 
 @[simp]
-theorem drop_drop (n m : ℕ) (s : Stream' α) : drop m (drop n s) = drop (n + m) s := by
-  ext; simp [Nat.add_assoc]
+theorem drop_drop (n m : ℕ) (s : Stream' α) : drop m (drop n s) = drop (m + n) s := by
+  ext; simp [← Nat.add_assoc, Nat.add_comm n m]
 #align stream.drop_drop Stream'.drop_drop
 
 end Drop
