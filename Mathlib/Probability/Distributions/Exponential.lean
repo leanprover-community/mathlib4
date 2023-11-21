@@ -22,7 +22,7 @@ Define the Exponential Measure over the Reals
 * `exponentialCdfReal`: the Cdf given by the Definition of CDF in `ProbabilityTheory.Cdf` on
 
 ## Main results
-* `ExpCdf_eq`: Proof that the `exponentialCdfReal` given by the Definition equals the known
+* `exponentialCdfReal_eq`: Proof that the `exponentialCdfReal` given by the Definition equals the known
   function given as `r x ↦ 1 - (Real.exp (-(r * ↑x))` for `0 ≤ x` or `0` else.
 -/
 
