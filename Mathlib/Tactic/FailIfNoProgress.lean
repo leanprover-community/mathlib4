@@ -69,7 +69,7 @@ def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit) : TacticM (List
       let ctxDecls := (← goal.getDecl).lctx.decls.toList
       let newCtxDecls := (← newGoal.getDecl).lctx.decls.toList
       guard <|← withNewMCtxDepth <| withReducible <| lctxIsDefEq ctxDecls newCtxDecls
-      -- They are compatible, so now we can check that the goals are the equivalent
+      -- They are compatible, so now we can check that the goals are equivalent
       guard <|← withNewMCtxDepth <| withReducible <| isDefEq (← newGoal.getType) (← goal.getType)
   catch _ =>
     return l
