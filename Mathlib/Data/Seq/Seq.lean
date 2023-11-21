@@ -510,7 +510,8 @@ theorem coinduction {s₁ s₂ : Seq' α} (hh : head s₁ = head s₂)
 
 theorem coinduction2 (s) (f g : Seq' α → Seq' β)
     (H : ∀ s,
-      Option.Rel (Prod.RProd Eq (fun s₁ s₂ => ∃ s, s₁ = f s ∧ s₂ = g s)) (dest (f s)) (dest (g s))) :
+      Option.Rel (Prod.RProd Eq (fun s₁ s₂ => ∃ s, s₁ = f s ∧ s₂ = g s))
+        (dest (f s)) (dest (g s))) :
     f s = g s := by
   refine' eq_of_bisim (fun s₁ s₂ => ∃ s, s₁ = f s ∧ s₂ = g s) _ ⟨s, rfl, rfl⟩
   intro s1 s2 h; rcases h with ⟨s, h1, h2⟩
