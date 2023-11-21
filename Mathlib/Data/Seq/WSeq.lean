@@ -107,7 +107,7 @@ def think (s : WSeq α) : WSeq α where
 #align stream.wseq.think WSeq.think
 
 @[simp]
-theorem toSeqO_think (s : WSeq α) : data (think s) = none ::ₑ data s :=
+theorem data_think (s : WSeq α) : data (think s) = none ::ₑ data s :=
   rfl
 
 /-- Destruct a weak sequence, to (eventually possibly) produce either
