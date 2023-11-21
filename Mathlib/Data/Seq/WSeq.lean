@@ -112,12 +112,12 @@ theorem toSeqO_think (s : WSeq α) : data (think s) = none ::ₑ data s :=
 
 /-- Destruct a weak sequence, to (eventually possibly) produce either
   `none` for `nil` or `some (a, s)` if an element is produced. -/
-def dest : WSeq α → Computation (Option (α × WSeq α)) :=
-  Computation.corec fun s =>
-    match Seq'.dest (data s) with
+def dest (s : WSeq α) : Computation (Option (α × WSeq α)) :=
+  Computation.corec (fun s =>
+    match Seq'.dest s with
     | none => Sum.inl none
-    | some (none, s') => Sum.inr ⟨s'⟩
-    | some (some a, s') => Sum.inl (some (a, ⟨s'⟩))
+    | some (none, s') => Sum.inr s'
+    | some (some a, s') => Sum.inl (some (a, ⟨s'⟩))) (data s)
 #align stream.wseq.destruct WSeq.dest
 
 /-- Recursion principle for weak sequences, compare with `List.recOn`. -/
