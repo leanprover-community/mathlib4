@@ -168,6 +168,23 @@ theorem ofArrows_bind {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
     exact bind_comp _ (ofArrows.mk _) (ofArrows.mk _)
 #align category_theory.presieve.of_arrows_bind CategoryTheory.Presieve.ofArrows_bind
 
+theorem ofArrows_bind'
+    {ι : Type*} {X : C} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
+    {ι' : ι → Type*} (W : ∀ i, ι' i → C) (h : ∀ i i', W i i' ⟶ Z i)
+    (T : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, ofArrows Z g f → Presieve Y)
+    (hT : ∀ (i : ι), T ⟨i⟩ = ofArrows (W i) (h i)) :
+    (ofArrows Z g).bind T =
+      (ofArrows (fun (⟨i, i'⟩ : Sigma ι') => W i i') (fun ⟨i, i'⟩ => h i i' ≫ g i)) := by
+  funext X
+  ext f
+  constructor
+  · rintro ⟨Y, a, _, ⟨i⟩, h, rfl⟩
+    rw [hT] at h
+    obtain ⟨i'⟩ := h
+    exact ⟨show Sigma ι' from ⟨i, i'⟩⟩
+  · rintro ⟨i, i'⟩
+    exact ⟨_, h i i', _, ⟨i⟩, by rw [hT]; exact ⟨i'⟩, rfl⟩
+
 theorem ofArrows_surj {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) {Z : C} (g : Z ⟶ X)
     (hg : ofArrows Y f g) : ∃ (i : ι) (h : Y i = Z),
     g = eqToHom h.symm ≫ f i := by
