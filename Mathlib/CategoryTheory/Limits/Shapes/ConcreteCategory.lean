@@ -24,11 +24,7 @@ to compatible tuples of elements in `X₁ × X₂`.
 
 universe w v u
 
-namespace CategoryTheory
-
-namespace Limits
-
-namespace Concrete
+namespace CategoryTheory.Limits.Concrete
 
 attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
 
@@ -93,8 +89,4 @@ lemma pullbackMk_snd (x₁ : X₁) (x₂ : X₂) (h : f₁ x₁ = f₂ x₂) :
 
 end Pullbacks
 
-end Concrete
-
-end Limits
-
-end CategoryTheory
+end CategoryTheory.Limits.Concrete
