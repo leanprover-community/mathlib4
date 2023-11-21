@@ -84,6 +84,9 @@ def ProdTree.pack (ts : List Expr) : ProdTree → MetaM Expr
     let mk : Expr := mkAppN (.const ``Prod.mk [u,v]) #[fst.getType, snd.getType]
     return .app (.app mk (← fst.pack tsfst)) (← snd.pack tssnd)
 
+/-- Converts a term `e` in an iterated product `P1` into a term of an iterated product `P2`.
+Here `e` is an `Expr` representing the term, and the iterated products are represented
+by terms of `ProdTree`. -/
 def ProdTree.convertTo (P1 P2 : ProdTree) (e : Expr) : MetaM Expr :=
   return ← P2.pack <| ← P1.unpack e
 
@@ -111,12 +114,39 @@ def mkProdEquiv (a b : Expr) : MetaM Expr := do
 
 --syntax (name := prodAssocStx) "prod_assoc(" term "," term ")" : term
 
-elab "associate%" : term <= expectedType => do
-  match expectedType with
-    | .app (.app (.const ``Equiv _) a) b => do
-      mkProdEquiv a b
-    | _ => throwError "Expected type {expectedType} is not of the form `α ≃ β`."
+/-- IMPLEMENTATION: Syntax used in the implementation of `prod_assoc%`. -/
+syntax (name := prodAssocStx) "prod_assoc_internal%" : term
 
---example {α β γ δ : Type*} (x : (α × β) × (γ × δ)) : α × (β × γ) × δ := associate% x
+open Elab Term in
+/-- Elaborator for `prod_assoc%`. -/
+@[term_elab prodAssocStx]
+def elabProdAssoc : TermElab := fun stx expectedType? => do
+  match stx with
+  | `(prod_assoc_internal%) => do
+    let some expectedType ← tryPostponeIfHasMVars? expectedType?
+          | throwError "expected type must be known"
+    let .app (.app (.const ``Equiv _) a) b := expectedType
+          | throwError "Expected type {expectedType} is not of the form `α ≃ β`."
+    mkProdEquiv a b
+  | _ => throwUnsupportedSyntax
+
+/--
+`prod_assoc%` will construct the "obvious" equivalence between iterated products of types,
+regardless of how the products are parenthesized.
+-/
+macro "prod_assoc%" : term => `((prod_assoc_internal% : _ ≃ _))
+
+variable {α β γ δ : Type*}
+
+example : (α × β) × (γ × δ) ≃ α × (β × γ) × δ := by
+  have := (prod_assoc% : (α × β) × (γ × δ) ≃ α × (β × γ) × δ)
+  exact this
+
+example : (α × β) × (γ × δ) ≃ α × (β × γ) × δ := prod_assoc%
+
+example : (α × β) × (γ × δ) ≃ α × (β × γ) × δ :=
+  (prod_assoc% : _ ≃ α × β × γ × δ).trans prod_assoc%
+
+example {α β γ δ : Type*} (x : (α × β) × (γ × δ)) : α × (β × γ) × δ := prod_assoc% x
 
 end Lean.Expr
