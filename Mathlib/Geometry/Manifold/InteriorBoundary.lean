@@ -26,6 +26,9 @@ Define the interior and boundary of a manifold.
 ## Main results
 - `univ_eq_interior_union_boundary`: `M` is the union of its interior and boundary
 - `interior_isOpen`: `interior I M` is open
+- `boundary_isClosed`: `boundary I M` is closed
+- `interior_boundary_eq_empty`: `boundary I M` has empty interior
+(this implies it has "measure zero", see different file)
 
 **TODO**
 - `interior I M` is a manifold without boundary
@@ -111,7 +114,27 @@ lemma univ_eq_interior_union_boundary : (SmoothManifoldWithCorners.interior I M)
   · exact fun x _ ↦ trivial
   · exact fun x _ ↦ isInteriorPoint_or_isBoundaryPoint x
 
-/-- Ihe interior of a manifold is an open subset. -/
+-- should be in mathlib; Mathlib.Topology.Basic
+lemma interior_frontier_disjoint {X : Type*} [TopologicalSpace X] {s : Set X} :
+    interior s ∩ frontier s = ∅ := by
+  rw [← closure_diff_interior s]
+  have : (closure s \ interior s) = closure s ∩ (interior s)ᶜ := rfl
+  rw [this]
+  rw [← inter_assoc, inter_comm, ← inter_assoc, compl_inter_self, empty_inter]
+
+-- proper name? or _eq_emptyset?
+/-- The interior and boundary of `M` are disjoint. -/
+lemma interior_boundary_disjoint :
+    (SmoothManifoldWithCorners.interior I M) ∩ (SmoothManifoldWithCorners.boundary I M) = ∅ := by
+  ext x
+  constructor; intro h
+  · let e := extChartAt I x
+    have : e x ∈ interior e.target ∩ frontier e.target := h
+    rw [interior_frontier_disjoint] at this
+    exact this
+  · exfalso
+
+/-- The interior of a manifold is an open subset. -/
 lemma interior_isOpen : IsOpen (SmoothManifoldWithCorners.interior I M) := by
   apply isOpen_iff_forall_mem_open.mpr
   intro x hx
@@ -131,6 +154,14 @@ lemma interior_isOpen : IsOpen (SmoothManifoldWithCorners.interior I M) := by
       rw [e.extend_source]
       exact mem_chart_source H x
     exact mem_inter this hx
+
+/-- The boundary of a manifold is a closed subset. -/
+lemma boundary_isClosed : IsClosed (SmoothManifoldWithCorners.boundary I M) := by
+  apply isOpen_compl_iff.mp
+  have : (SmoothManifoldWithCorners.interior I M)ᶜ = SmoothManifoldWithCorners.boundary I M :=
+    (compl_unique interior_boundary_disjoint (univ_eq_interior_union_boundary (I := I) (M := M)))
+  rw [← this, compl_compl]
+  exact interior_isOpen
 
 /-- The boundary of any extended chart has empty interior. -/
 -- NB: this is *false* for any set instead of `(e.extend I).target`:
