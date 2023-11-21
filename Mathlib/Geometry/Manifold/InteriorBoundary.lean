@@ -202,10 +202,14 @@ lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary 
     _ = interior (bd) := rfl
     _ = interior (bd) ∩ univ := by rw [inter_univ]
     _ = interior (bd) ∩ ⋃ (x : M), (extChartAt I x).source := by simp_rw [aux1]
-    -- perhaps permute the next steps a bit
-    --_ = interior (bd ∩ ⋃ (x : M), (extChartAt I x).source) := by sorry
-    --_ = ⋃ (x : M), interior bd ∩ (extChartAt I x).source := sorry
-    _ = ⋃ (x : M), interior bd ∩ interior ((extChartAt I x).source) := sorry
+    _ = interior (bd) ∩ ⋃ (x : M), interior ((extChartAt I x).source) := by
+      have : ∀ x : M, interior ((extChartAt I x).source) = (extChartAt I x).source := by
+        intro x
+        have : extChartAt I x = (chartAt H x).extend I := rfl
+        rw [this]
+        exact (chartAt H x).isOpen_extend_source I (M := M).interior_eq
+      simp_rw [this]
+    _ = ⋃ (x : M), interior bd ∩ interior ((extChartAt I x).source) := inter_iUnion _ _
     _ = ⋃ (x : M), interior (bd ∩ (extChartAt I x).source) := by simp_rw [interior_inter]
 
   -- Apply my characterisation of boundary points.
