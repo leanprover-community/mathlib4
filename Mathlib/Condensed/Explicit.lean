@@ -3,6 +3,7 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Riccardo Brasca, Filippo A. E. Nuccio
 -/
+import Mathlib.Condensed.Abelian
 import Mathlib.Condensed.Equivalence
 import Mathlib.Topology.Category.Profinite.EffectiveEpi
 import Mathlib.Topology.Category.Stonean.EffectiveEpi
@@ -114,39 +115,59 @@ end Stonean
 
 namespace Condensed
 
+variable {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1)) [HasLimits A] [PreservesLimits G]
+    [ReflectsIsomorphisms G]
+
 /-- The condensed set associated to a finite-product-preserving presheaf on `Stonean`. -/
-noncomputable def ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFiniteProducts F] :
-    CondensedSet.{u} :=
-  StoneanCompHaus.equivalence (Type (u+1)) |>.functor.obj {
+noncomputable def ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts F] :
+    Condensed A :=
+  StoneanCompHaus.equivalence A |>.functor.obj {
     val := F
     cond := by
-      rw [Stonean.isSheaf_iff_preservesFiniteProducts' (𝟭 _) F, Functor.comp_id]
-      exact ⟨inferInstance⟩ }
+      rw [Stonean.isSheaf_iff_preservesFiniteProducts' G F]
+      exact ⟨⟨fun _ _ ↦ inferInstance⟩⟩ }
 
 /--
 The condensed set associated to a presheaf on `Profinite` which preserves finite products and
 satisfies the equalizer condition.
 -/
-noncomputable def ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFiniteProducts F]
-    (hF : EqualizerCondition F) : CondensedSet.{u} :=
-  ProfiniteCompHaus.equivalence (Type (u+1)) |>.functor.obj {
+noncomputable def ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts F]
+    (hF : EqualizerCondition (F ⋙ G)) : Condensed A :=
+  ProfiniteCompHaus.equivalence A |>.functor.obj {
     val := F
     cond := by
-      rw [Profinite.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) F,
-        Functor.comp_id]
-      exact ⟨⟨inferInstance⟩, hF⟩ }
+      rw [Profinite.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' G F]
+      exact ⟨⟨⟨fun _ _ ↦ inferInstance⟩⟩, hF⟩ }
 
 /--
 The condensed set associated to a presheaf on `CompHaus` which preserves finite products and
 satisfies the equalizer condition.
 -/
-noncomputable def ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFiniteProducts F]
-    (hF : EqualizerCondition F) : CondensedSet.{u} where
+noncomputable def ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts F]
+    (hF : EqualizerCondition (F ⋙ G)) : Condensed A where
   val := F
   cond := by
-    rw [CompHaus.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) F,
-        Functor.comp_id]
-    exact ⟨⟨inferInstance⟩, hF⟩
+    rw [CompHaus.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' G F]
+    exact ⟨⟨⟨fun _ _ ↦ inferInstance⟩⟩, hF⟩
+
+end Condensed
+
+namespace CondensedSet
+
+/-- A `CondensedSet` version of `Condensed.ofSheafStonean`. -/
+noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFiniteProducts F] :
+    CondensedSet :=
+  Condensed.ofSheafStonean (𝟭 _) F
+
+/-- A `CondensedSet` version of `Condensed.ofSheafProfinite`. -/
+noncomputable abbrev ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ Type (u+1))
+    [PreservesFiniteProducts F] (hF : EqualizerCondition F) : CondensedSet :=
+  Condensed.ofSheafProfinite (𝟭 _) F hF
+
+/-- A `CondensedSet` version of `Condensed.ofSheafCompHaus`. -/
+noncomputable abbrev ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1))
+    [PreservesFiniteProducts F] (hF : EqualizerCondition F) : CondensedSet :=
+  Condensed.ofSheafCompHaus (𝟭 _) F hF
 
 /-- A condensed set satisfies the equalizer condition. -/
 theorem equalizerCondition (X : CondensedSet) : EqualizerCondition X.val :=
@@ -157,4 +178,23 @@ noncomputable instance (X : CondensedSet) : PreservesFiniteProducts X.val :=
   CompHaus.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) X.val |>.mp
     X.cond |>.1.some
 
-end Condensed
+end CondensedSet
+
+namespace CondensedAb
+
+/-- A `CondensedAb` version of `Condensed.ofSheafStonean`. -/
+noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ AddCommGroupCat.{u+1})
+    [PreservesFiniteProducts F] : CondensedAb :=
+  Condensed.ofSheafStonean (forget _) F
+
+/-- A `CondensedAb` version of `Condensed.ofSheafProfinite`. -/
+noncomputable abbrev ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ AddCommGroupCat.{u+1})
+    [PreservesFiniteProducts F] (hF : EqualizerCondition (F ⋙ forget _)) : CondensedAb :=
+  Condensed.ofSheafProfinite (forget _) F hF
+
+/-- A `CondensedAb` version of `Condensed.ofSheafCompHaus`. -/
+noncomputable abbrev ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ AddCommGroupCat.{u+1})
+    [PreservesFiniteProducts F] (hF : EqualizerCondition (F ⋙ forget _)) : CondensedAb :=
+  Condensed.ofSheafCompHaus (forget _) F hF
+
+end CondensedAb
