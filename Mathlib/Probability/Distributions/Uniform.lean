@@ -46,13 +46,25 @@ def uniformPdfReal (a b x : ℝ) : ℝ :=
   Lebesgue-Integration -/
 noncomputable
 def uniformPdf (a b x : ℝ) : ℝ≥0∞ :=
- ENNReal.ofReal (uniformPdfReal a b x)
+  ENNReal.ofReal (uniformPdfReal a b x)
 
 lemma uniformPdf_eq (a b x : ℝ) : uniformPdf a b x =
     ENNReal.ofReal (if x ∈ Icc (a ⊓ b) (a ⊔ b) then (fun x ↦ 1 / abs (b - a)) x else 0) := by
-   unfold uniformPdf uniformPdfReal indicator uIcc; congr
+  unfold uniformPdf uniformPdfReal indicator uIcc; congr
 
-lemma split_uniform_lintegral {a b : ℝ} : (∫⁻ x, uniformPdf a b x) =
+@[simp]
+lemma uniformPdf_eq_zero_lower {a b : ℝ} : ∫⁻ x in Iio (a ⊓ b) , uniformPdf a b x = 0 := by
+  rw [set_lintegral_congr_fun measurableSet_Iio
+    (ae_of_all _ fun _ (h : _ < _) ↦
+      by rw [uniformPdf_eq, if_neg fun ⟨_, _⟩ ↦ by linarith, ENNReal.ofReal_zero]), lintegral_zero]
+
+@[simp]
+lemma uniformPdf_eq_zero_upper {a b : ℝ} : ∫⁻ x in Ioi (a ⊔ b) , uniformPdf a b x = 0 := by
+  rw [set_lintegral_congr_fun measurableSet_Ioi
+    (ae_of_all _ fun _ (h : _ < _) ↦
+      by rw [uniformPdf_eq, if_neg fun ⟨_, _⟩ ↦ by linarith, ENNReal.ofReal_zero]), lintegral_zero]
+
+lemma split_lintegral_of_uniformPdf {a b : ℝ} : (∫⁻ x, uniformPdf a b x) =
     (∫⁻ x in Iio (a ⊓ b) , uniformPdf a b x) + (∫⁻ x in uIcc a b, uniformPdf a b x) +
     ∫⁻ x in Ioi (a ⊔ b), uniformPdf a b x := by
   have union : Iio (a ⊓ b) ∪ uIcc a b ∪ Ioi (a ⊔ b) = univ := by
@@ -64,7 +76,7 @@ lemma split_uniform_lintegral {a b : ℝ} : (∫⁻ x, uniformPdf a b x) =
     intro _
     simp only [mem_inter_iff, mem_Iio, lt_inf_iff, mem_Icc, inf_le_iff, le_sup_iff,
         mem_empty_iff_false, and_imp]
-    intro hxa hxb habx _; rcases habx <;> linarith
+    intro _ _ habx _; rcases habx <;> linarith
 
 /-- The uniform Pdf is measurable-/
 lemma measurable_uniformPdfReal (a b : ℝ) : Measurable (uniformPdfReal a b) :=
@@ -75,26 +87,13 @@ lemma stronglyMeasurable_uniformPdfReal (a b : ℝ) :
     StronglyMeasurable (uniformPdfReal a b) :=
   (measurable_uniformPdfReal a b).stronglyMeasurable
 
-@[simp]
-lemma Iio_eq_zero {a b : ℝ} : ∫⁻ x in Iio (a ⊓ b) , uniformPdf a b x = 0 := by
-  rw [set_lintegral_congr_fun measurableSet_Iio, lintegral_zero]
-  apply ae_of_all
-  rintro x (hxab : x < _)
-  rw [uniformPdf_eq, if_neg fun ⟨_, _⟩ ↦ by linarith, ENNReal.ofReal_zero]
-
-@[simp]
-lemma Ioi_eq_zero {a b : ℝ} : ∫⁻ x in Ioi (a ⊔ b) , uniformPdf a b x = 0 := by
-  rw [set_lintegral_congr_fun measurableSet_Ioi, lintegral_zero]
-  apply ae_of_all
-  rintro x (hxab : (_ < x))
-  rw [uniformPdf_eq, if_neg fun ⟨_, _⟩ ↦ by linarith, ENNReal.ofReal_zero]
-
 /-- The integral of the uniform PDF is equal to integrating over `uIcc a b` -/
 lemma carrier_of_uniform_lintegral {a b : ℝ} : (∫⁻ x, uniformPdf a b x) =
     (∫⁻ x in uIcc a b, uniformPdf a b x) := by
-  simp [split_uniform_lintegral]
+  simp [split_lintegral_of_uniformPdf]
 
-lemma lintegral_uniformPdfReal_eq_one (a b : ℝ) (hab : a ≠ b) :
+/-- the uniform PDF integrates to 1 -/
+lemma lintegral_uniformPdf_eq_one (a b : ℝ) (hab : a ≠ b) :
     ∫⁻ x, uniformPdf a b x = 1 := by
   rw [carrier_of_uniform_lintegral]
   simp only [uniformPdf_eq, uIcc]
@@ -102,11 +101,6 @@ lemma lintegral_uniformPdfReal_eq_one (a b : ℝ) (hab : a ≠ b) :
       set_lintegral_const, Real.volume_Icc, one_div, LatticeOrderedGroup.sup_sub_inf_eq_abs_sub,
       ← ENNReal.ofReal_mul' (abs_nonneg (b - a)), inv_mul_cancel ?neq, ENNReal.ofReal_one]
   exact ne_iff_lt_or_gt.mpr (Or.inr (abs_pos.mpr (sub_ne_zero.mpr hab.symm)))
-
-/-- the uniform PDF integrates to 1 -/
-lemma lintegral_uniformPdf_eq_one (a b : ℝ) (hab : a ≠ b) :
-    ∫⁻ x, uniformPdf a b x = 1 := by
-  exact lintegral_uniformPdfReal_eq_one a b hab
 
 end UniformPdf
 
@@ -134,39 +128,39 @@ def uniformCdfReal (a b : ℝ) : StieltjesFunction :=
   cdf (uniformMeasure a b)
 
 /-- The uniform CDF equals the integration of the PDF -/
-lemma uniformCdf_eq_Lintegral {a b : ℝ} (hab : a ≠ b) :
+lemma uniformCdf_eq_lintegral {a b : ℝ} (hab : a ≠ b) :
     uniformCdfReal a b = fun x ↦ ENNReal.toReal (∫⁻ x in (Iic x), uniformPdf a b x) := by
   ext x
   simp only [cdf_eq_toReal, uniformCdfReal]
   simp [uniformMeasure, if_neg hab, uniformPdf, cdf_eq_toReal]
 
 /-- Equality of the CDF of the uniform distribution in case of `a = b` -/
-lemma uniformCdf_eq_dirac {a b x: ℝ} (hab : a = b) :
+lemma uniformCdfReal_eq_dirac {a b x: ℝ} (hab : a = b) :
     uniformCdfReal a b x = ENNReal.toReal (if a ≤ x then 1 else 0) := by
   simp only [uniformCdfReal, cdf_eq_toReal, uniformMeasure, if_pos hab, measurableSet_Iic,
     dirac_apply', mem_Iic, not_le, indicator, ENNReal.toReal_eq_toReal_iff]
   left
   rfl
 
-lemma uniformCdf_eq_zero {a b : ℝ} x (hx: x < a ⊓ b) : uniformCdfReal a b x = 0 := by
+lemma uniformCdfReal_eq_zero {a b : ℝ} x (hx: x < a ⊓ b) : uniformCdfReal a b x = 0 := by
   by_cases hab : a = b
-  · rw [uniformCdf_eq_dirac hab, if_neg (by simp at hx; linarith)]
+  · rw [uniformCdfReal_eq_dirac hab, if_neg (by simp at hx; linarith)]
     rfl
-  · simp only [uniformCdf_eq_Lintegral hab, uniformPdf_eq]
+  · simp only [uniformCdf_eq_lintegral hab, uniformPdf_eq]
     rw [set_lintegral_congr_fun measurableSet_Iic, lintegral_zero]
     · rfl
     · apply ae_of_all
       rintro y (hy : y ≤ _)
       rw [if_neg fun ⟨_, _⟩ ↦ by linarith, ENNReal.ofReal_zero]
 
-lemma uniformCdf_eq_fromInf {a b : ℝ} (x : ℝ) (h : a ⊓ b ≤ x) (hab : a ≠ b) :
+lemma uniformCdfReal_eq_fromInf {a b : ℝ} (x : ℝ) (h : a ⊓ b ≤ x) (hab : a ≠ b) :
     uniformCdfReal a b x =
     ENNReal.toReal (∫⁻ x' in Icc (a ⊓ b) x, uniformPdf a b x') := by
-  simp [uniformCdf_eq_Lintegral hab, lintegral_split_bounded _ h]
+  simp [uniformCdf_eq_lintegral hab, lintegral_split_bounded _ h]
 
-lemma uniformCdf_eq_toSup {a b : ℝ} (x : ℝ) (h : a ⊔ b ≤ x) (hab : a ≠ b) : uniformCdfReal a b x =
+lemma uniformCdfReal_eq_toSup {a b : ℝ} (x : ℝ) (h : a ⊔ b ≤ x) (hab : a ≠ b) : uniformCdfReal a b x =
     ENNReal.toReal (∫⁻ x' in Icc (a ⊓ b) (a ⊔ b), uniformPdf a b x') := by
-  rw [uniformCdf_eq_fromInf _ (le_trans inf_le_sup h) hab, ← Icc_union_Ioc_eq_Icc inf_le_sup h,
+  rw [uniformCdfReal_eq_fromInf _ (le_trans inf_le_sup h) hab, ← Icc_union_Ioc_eq_Icc inf_le_sup h,
       lintegral_union measurableSet_Ioc]
   have : ∫⁻ y in Ioc (a ⊔ b) x, uniformPdf a b y = 0 := by
     rw [set_lintegral_congr_fun measurableSet_Ioc, lintegral_zero]
@@ -180,10 +174,10 @@ lemma uniformCdf_eq_toSup {a b : ℝ} (x : ℝ) (h : a ⊔ b ≤ x) (hab : a ≠
   rintro x ⟨⟨_, h2⟩, ⟨h3, _⟩⟩; linarith
 
 /-- The CDF of the uniform distribution equals the known formular for `a ≠ b` -/
-lemma uniformCdf_eq' {a b x: ℝ} (hab : a ≠ b) : uniformCdfReal a b x =
+lemma uniformCdfReal_eq' {a b x: ℝ} (hab : a ≠ b) : uniformCdfReal a b x =
     if a ⊓ b ≤ x then if x < a ⊔ b then (x - a ⊓ b) / (a ⊔ b - a ⊓ b) else 1 else 0 := by
   split_ifs with h h'<;> push_neg at *
-  · simp only [uniformCdf_eq_fromInf _ h hab, uniformPdf_eq]
+  · simp only [uniformCdfReal_eq_fromInf _ h hab, uniformPdf_eq]
     rw [set_lintegral_congr_fun measurableSet_Icc
         (g := fun _ ↦ ENNReal.ofReal (1 / (a ⊔ b - a ⊓ b)))]
     · simp only [inv_nonneg, sub_nonneg, le_sup_iff, inf_le_left, inf_le_right, one_div,
@@ -193,17 +187,17 @@ lemma uniformCdf_eq' {a b x: ℝ} (hab : a ≠ b) : uniformCdfReal a b x =
       linarith
     · apply ae_of_all; rintro x ⟨hab, htop⟩
       rw [if_pos ⟨hab, by linarith⟩, LatticeOrderedGroup.sup_sub_inf_eq_abs_sub]
-  · simp only [uniformCdf_eq_toSup _ h' hab, uniformPdf_eq]
+  · simp only [uniformCdfReal_eq_toSup _ h' hab, uniformPdf_eq]
     rw [set_lintegral_congr_fun measurableSet_Icc
         (g := fun _ ↦ ENNReal.ofReal (1 / (a ⊔ b - a ⊓ b)))]
     · simp [inv_mul_cancel (sub_ne_zero.2 (ne_of_lt (inf_lt_sup.mpr hab)).symm)]
     · apply ae_of_all
       intro _ hx
       rw [if_pos hx, LatticeOrderedGroup.sup_sub_inf_eq_abs_sub]
-  · exact uniformCdf_eq_zero _ h
+  · exact uniformCdfReal_eq_zero _ h
 
 /-- General case of the equation of the CDF of the uniform distribution -/
-lemma uniformCdf_eq (a b : ℝ) : uniformCdfReal a b =
+lemma uniformCdfReal_eq (a b : ℝ) : uniformCdfReal a b =
     if a = b then fun x ↦ ENNReal.toReal (if a ≤ x then 1 else 0) else fun x ↦
     if a ⊓ b ≤ x then if x < a ⊔ b then (x - a ⊓ b) / (a ⊔ b - a ⊓ b) else 1 else 0 := by
-  ext _; split_ifs with hab; exact uniformCdf_eq_dirac hab; exact uniformCdf_eq' hab
+  ext _; split_ifs with hab; exact uniformCdfReal_eq_dirac hab; exact uniformCdfReal_eq' hab
