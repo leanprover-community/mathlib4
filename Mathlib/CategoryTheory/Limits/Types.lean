@@ -110,20 +110,20 @@ implemented as flat sections of a pi type
 noncomputable def limitCone (F : J ⥤ Type u) : Cone F where
   pt := Shrink F.sections
   π :=
-    { app := fun j u => ((equivShrink _).symm u).val j
+    { app := fun j u => ((equivShrink F.sections).symm u).val j
       naturality := fun j j' f => by
         funext x
         simp }
 
 @[ext]
 lemma limitCone_pt_ext (F : J ⥤ Type u) {x y : (limitCone F).pt}
-    (w : (equivShrink _).symm x = (equivShrink _).symm y) : x = y := by
+    (w : (equivShrink F.sections).symm x = (equivShrink F.sections).symm y) : x = y := by
   aesop
 
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
 @[simps]
 noncomputable def limitConeIsLimit (F : J ⥤ Type u) : IsLimit (limitCone.{v, u} F) where
-  lift s v := (equivShrink _)
+  lift s v := equivShrink F.sections
     { val := fun j => s.π.app j v
       property := fun f => congr_fun (Cone.w s f) _ }
   uniq := fun _ _ w => by
