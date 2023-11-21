@@ -98,18 +98,11 @@ variable (I M) in
 protected def boundary : Set M := { x : M | I.IsBoundaryPoint x}
 
 /-- If `e` and `e'` are two charts, the transition map maps interior points to interior points. -/
-lemma foobar {e e' : LocalHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M) {x : M}
-    (hx : x ∈ e.source ∩ e'.source) :
-      (e.extend I) x ∈ interior (e.extend I).target ↔
-      (e'.extend I) x ∈ interior (e'.extend I).target := sorry
-
-/-- If `e` and `e'` are two charts, the transition map maps boundary points to boundary points. -/
-lemma foobar' {e e' : LocalHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M) {x : M}
-    (hx : x ∈ e.source ∩ e'.source) :
-    (e.extend I) x ∈ frontier (e.extend I).target ↔
-    (e'.extend I) x ∈ frontier (e'.extend I).target := sorry
-
--- more abstract result: a local homeomorphism maps interior to interior and boundary to boundary
+-- as we only need continuity property, e or e' being in the atlas is not required
+lemma foobar {e e' : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source ∩ e'.source) :
+    (e.extend I) x ∈ interior (e.extend I).target ↔
+    (e'.extend I) x ∈ interior (e'.extend I).target := sorry
+-- both directions should be the same, more general lemma
 
 -- FIXME(MR): find a better wording for the next two docstrings
 variable (I) in
@@ -117,15 +110,18 @@ variable (I) in
   whose source contains `x`. -/
 -- as we only need continuity properties, `e` being in the atlas is not required
 lemma isInteriorPoint_iff {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source) :
-    I.isInteriorPoint x ↔ (e.extend I) x ∈ interior (e.extend I).target := by
-  sorry
+    I.isInteriorPoint x ↔ (e.extend I) x ∈ interior (e.extend I).target :=
+  foobar (mem_inter (mem_chart_source H x) hx)
 
 variable (I) in
 /-- Whether `x` is a boundary point of `M` can equivalently be described by any chart
 whose source contains `x`. -/
 lemma isBoundaryPoint_iff {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source) :
     I.isBoundaryPoint x ↔ (e.extend I) x ∉ interior (e.extend I).target := by
-  sorry
+  -- This lemma is just the "negation" (applying not_iff_not) to isInteriorPoint_iff.
+  constructor <;> intro h
+  · exact (not_iff_not.mpr (isInteriorPoint_iff I hx)).mp h
+  · exact (not_iff_not.mpr (isInteriorPoint_iff I hx)).mpr h
 
 /-- Every point is either an interior or a boundary point. -/ -- FIXME: better name?!
 lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsBoundaryPoint x := by
