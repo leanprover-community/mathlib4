@@ -352,14 +352,17 @@ theorem head_eq_headComputable : @head.{u} = @headComputable.{u} := by
   funext α s
   rw [headComputable, head_eq_dest]
 
-@[inherit_doc tail, simp]
+theorem tail_eq_dest (s : Seq' α) : tail s = Option.elim (dest s) nil Prod.snd := by
+  cases s using recOn' <;> simp
+
+@[inherit_doc tail]
 def tailComputable (s : Seq' α) : Seq' α :=
   Option.elim (dest s) nil Prod.snd
 
 @[csimp]
 theorem tail_eq_tailComputable : @tail.{u} = @tailComputable.{u} := by
   funext α s
-  cases s using recOn' <;> simp
+  rw [tailComputable, tail_eq_dest]
 
 @[inherit_doc get?, simp]
 def get?Computable (s : Seq' α) : ℕ → Option α
@@ -451,6 +454,11 @@ theorem dest_corec (f : β → Option (α × β)) (b : β) :
     dest (corec f b) = Option.map (Prod.map id (corec f)) (f b) := by
   rcases hb : f b with (_ | ⟨_, _⟩) <;> simp [corec, dest, head, tail, hb]
 #align stream.seq.corec_eq Seq'.dest_corec
+
+@[simp]
+theorem head_corec (f : β → Option (α × β)) (b : β) :
+    head (corec f b) = Option.map Prod.fst (f b) := by
+  rcases hb : f b with (_ | ⟨_, _⟩) <;> simp [head_eq_dest, hb]
 
 section Bisim
 
@@ -610,16 +618,31 @@ theorem ofList_terminates (l : List α) : (↑l : Seq' α).Terminates :=
 /-- Embed an infinite stream as a sequence -/
 @[coe]
 def ofStream (s : Stream' α) : Seq' α :=
-  ⟨s.map some, fun {n} h => by contradiction⟩
+  corec (some ∘ Stream'.dest) s
 #align stream.seq.of_stream Seq'.ofStream
 
 instance coeStream : Coe (Stream' α) (Seq' α) :=
   ⟨ofStream⟩
 #align stream.seq.coe_stream Seq'.coeStream
 
+@[simp]
+theorem dest_ofStream (s : Stream' α) :
+    dest (↑s : Seq' α) = some (Prod.map id (↑) (Stream'.dest s)) := by
+  simp [ofStream]
+
+@[simp]
+theorem head_ofStream (s : Stream' α) : head (↑s : Seq' α) = some (Stream'.head s) := by
+  simp [ofStream]
+
+@[simp]
+theorem tail_ofStream (s : Stream' α) : tail (↑s : Seq' α) = ↑(Stream'.tail s) := by
+  simp [tail_eq_dest, ofStream]
+
 @[simp, norm_cast]
-theorem ofStream_get? (s : Stream' α) (n : ℕ) : (↑s : Seq' α).get? n = some (s.get n) :=
-  rfl
+theorem ofStream_get? (s : Stream' α) (n : ℕ) : (↑s : Seq' α).get? n = some (s.get n) := by
+  induction n using Nat.recAux generalizing s with
+  | zero => simp
+  | succ n hn => simp [hn]
 
 theorem ofStream_injective : Function.Injective ((↑) : Stream' α → Seq' α) := by
   intro s₁ s₂ h
@@ -631,8 +654,8 @@ theorem ofStream_inj {s₁ s₂ : Stream' α} : (↑s₁ : Seq' α) = ↑s₂ �
   ofStream_injective.eq_iff
 
 @[simp]
-theorem not_ofStream_terminatedAt (s : Stream' α) (n : ℕ) : ¬(↑s : Seq' α).TerminatedAt n :=
-  Option.some_ne_none (get s n)
+theorem not_ofStream_terminatedAt (s : Stream' α) (n : ℕ) : ¬(↑s : Seq' α).TerminatedAt n := by
+  simp [TerminatedAt]
 
 @[simp]
 theorem not_ofStream_terminates (s : Stream' α) : ¬(↑s : Seq' α).Terminates :=
@@ -641,6 +664,10 @@ theorem not_ofStream_terminates (s : Stream' α) : ¬(↑s : Seq' α).Terminates
 /-- Embed a `LazyList α` as a sequence. Note that even though this
   is non-meta, it will produce infinite sequences if used with
   cyclic `LazyList`s created by meta constructions. -/
+unsafe def ofLazyListUnsafe : LazyList α → Seq' α :=
+  unsafeCast
+
+@[inherit_doc ofLazyListUnsafe, implemented_by ofLazyListUnsafe]
 def ofLazyList : LazyList α → Seq' α :=
   corec fun
         | LazyList.nil => none
@@ -653,11 +680,8 @@ instance coeLazyList : Coe (LazyList α) (Seq' α) :=
 
 /-- Translate a sequence into a `LazyList`. Since `LazyList` and `List`
   are isomorphic as non-meta types, this function is necessarily meta. -/
-unsafe def toLazyList : Seq' α → LazyList α
-  | s =>
-    match dest s with
-    | none => LazyList.nil
-    | some (a, s') => LazyList.cons a (toLazyList s')
+unsafe def toLazyList : Seq' α → LazyList α :=
+  unsafeCast
 #align stream.seq.to_lazy_list Seq'.toLazyList
 
 /-- Translate a sequence to a list. This function will run forever if
@@ -668,16 +692,16 @@ unsafe def forceToList (s : Seq' α) : List α :=
 
 /-- The sequence of natural numbers some 0, some 1, ... -/
 def nats : Seq' ℕ :=
-  Stream'.nats
+  ↑Stream'.nats
 #align stream.seq.nats Seq'.nats
 
 @[simp]
-theorem nats_get? (n : ℕ) : nats.get? n = some n :=
-  rfl
+theorem nats_get? (n : ℕ) : get? nats n = some n := by
+  simp [nats]
 #align stream.seq.nats_nth Seq'.nats_get?
 
 @[simp, norm_cast]
-theorem ofStream_nats : (Stream'.nats : Seq' ℕ) = nats :=
+theorem ofStream_nats : (↑Stream'.nats : Seq' ℕ) = nats :=
   rfl
 
 /-- Append two sequences. If `s₁` is infinite, then `s₁ ++ s₂ = s₁`,
@@ -686,7 +710,7 @@ def append (s₁ s₂ : Seq' α) : Seq' α :=
   @corec α (Seq' α × Seq' α)
     (fun ⟨s₁, s₂⟩ =>
       match dest s₁ with
-      | none => omap (fun s₂ => (nil, s₂)) (dest s₂)
+      | none => Option.map (Prod.map id (Prod.mk nil)) (dest s₂)
       | some (a, s₁') => some (a, s₁', s₂))
     (s₁, s₂)
 #align stream.seq.append Seq'.append
@@ -699,7 +723,7 @@ theorem append_def (s₁ s₂ : Seq' α) :
       @corec α (Seq' α × Seq' α)
         (fun ⟨s₁, s₂⟩ =>
           match dest s₁ with
-          | none => omap (fun s₂ => (nil, s₂)) (dest s₂)
+          | none => Option.map (Prod.map id (Prod.mk nil)) (dest s₂)
           | some (a, s₁') => some (a, s₁', s₂))
         (s₁, s₂) :=
   rfl
