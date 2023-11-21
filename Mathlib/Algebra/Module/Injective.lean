@@ -127,7 +127,7 @@ set_option linter.uppercaseLean3 false in
 theorem ExtensionOf.ext_iff {a b : ExtensionOf i f} :
     a = b ↔ ∃ _ : a.domain = b.domain, ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄,
     (x : N) = y → a.toLinearPMap x = b.toLinearPMap y :=
-  ⟨fun r => r ▸ ⟨rfl, fun x y h => congr_arg a.toFun <| by exact_mod_cast h⟩, fun ⟨h1, h2⟩ =>
+  ⟨fun r => r ▸ ⟨rfl, fun _ _ h => congr_arg a.toFun <| mod_cast h⟩, fun ⟨h1, h2⟩ =>
     ExtensionOf.ext h1 h2⟩
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of.ext_iff Module.Baer.ExtensionOf.ext_iff
@@ -160,7 +160,7 @@ instance : SemilatticeInf (ExtensionOf i f) :=
     fun X Y =>
     LinearPMap.ext rfl fun x y h => by
       congr
-      exact_mod_cast h
+      exact mod_cast h
 
 variable {i f}
 

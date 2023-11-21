@@ -1374,6 +1374,8 @@ import Mathlib.Condensed.Basic
 import Mathlib.Condensed.Discrete
 import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Functors
+import Mathlib.Condensed.Limits
+import Mathlib.Condensed.Solid
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.Bifunctor

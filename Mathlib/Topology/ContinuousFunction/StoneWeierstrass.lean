@@ -128,7 +128,7 @@ theorem inf_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
           (A.le_topologicalClosure g.property))
         _)
       _
-  exact_mod_cast abs_mem_subalgebra_closure A _
+  exact mod_cast abs_mem_subalgebra_closure A _
 #align continuous_map.inf_mem_subalgebra_closure ContinuousMap.inf_mem_subalgebra_closure
 
 theorem inf_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (A : Set C(X, ℝ)))
@@ -150,7 +150,7 @@ theorem sup_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
           (A.le_topologicalClosure g.property))
         _)
       _
-  exact_mod_cast abs_mem_subalgebra_closure A _
+  exact mod_cast abs_mem_subalgebra_closure A _
 #align continuous_map.sup_mem_subalgebra_closure ContinuousMap.sup_mem_subalgebra_closure
 
 theorem sup_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (A : Set C(X, ℝ)))

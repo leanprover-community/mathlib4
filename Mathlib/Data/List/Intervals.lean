@@ -140,7 +140,7 @@ theorem pred_singleton {m : ℕ} (h : 0 < m) : Ico (m - 1) m = [m - 1] := by
 #align list.Ico.pred_singleton List.Ico.pred_singleton
 
 theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
-  by_cases n < m
+  by_cases h : n < m
   · rw [eq_cons h]
     exact chain_succ_range' _ _ 1
   · rw [eq_nil_of_le (le_of_not_gt h)]
