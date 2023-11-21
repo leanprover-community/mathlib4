@@ -89,13 +89,13 @@ instance : Precoherent LightProfinite := sorry
 variable (P : LightProfinite.{0}ᵒᵖ ⥤ Type)
 
 -- #check (coherentTopology LightProfinite.{0}).sheafify P (D := Type)
--- Doesn't work, need a universe bump
+-- Doesn't work, need a universe bump because `LightProfinite` is large.
 
 instance : Precoherent LightProfinite' := sorry
 
 variable (P : LightProfinite'.{0}ᵒᵖ ⥤ Type)
 
 -- #check (coherentTopology LightProfinite'.{0}).sheafify P (D := Type)
--- Works
+-- Works because `LightProfinite'` is actually small.
 
 -- TODO: provide API to sheafify over essentially small categories
