@@ -127,10 +127,10 @@ theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
   have n_pos : 0 < n := (by decide : 0 < 512).trans_le n_large
   have n2_pos : 1 ≤ 2 * n := mul_pos (by decide) n_pos
   refine' _root_.trans (mul_le_mul _ _ _ _)
-      (Bertrand.real_main_inequality (by exact_mod_cast n_large))
+      (Bertrand.real_main_inequality (mod_cast n_large))
   · refine' mul_le_mul_of_nonneg_left _ (Nat.cast_nonneg _)
-    refine' Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast n2_pos) _
-    exact_mod_cast Real.nat_sqrt_le_real_sqrt
+    refine' Real.rpow_le_rpow_of_exponent_le (mod_cast n2_pos) _
+    exact mod_cast Real.nat_sqrt_le_real_sqrt
   · exact Real.rpow_le_rpow_of_exponent_le (by norm_num1) (cast_div_le.trans (by norm_cast))
   · exact Real.rpow_nonneg_of_nonneg (by norm_num1) _
   · refine' mul_nonneg (Nat.cast_nonneg _) _

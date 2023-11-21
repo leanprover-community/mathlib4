@@ -565,8 +565,12 @@ theorem tendsto_measure_biInter_gt {ι : Type*} [LinearOrder ι] [TopologicalSpa
   filter_upwards [this] with r hr using lt_of_le_of_lt (measure_mono (hm _ _ hr.1 hr.2)) hn
 #align measure_theory.tendsto_measure_bInter_gt MeasureTheory.tendsto_measure_biInter_gt
 
-/-- One direction of the **Borel-Cantelli lemma**: if (sᵢ) is a sequence of sets such
-that `∑ μ sᵢ` is finite, then the limit superior of the `sᵢ` is a null set. -/
+/-- One direction of the **Borel-Cantelli lemma** (sometimes called the "*first* Borel-Cantelli
+lemma"): if (sᵢ) is a sequence of sets such that `∑ μ sᵢ` is finite, then the limit superior of the
+`sᵢ` is a null set.
+
+Note: for the *second* Borel-Cantelli lemma (applying to independent sets in a probability space),
+see `ProbabilityTheory.measure_limsup_eq_one`. -/
 theorem measure_limsup_eq_zero {s : ℕ → Set α} (hs : (∑' i, μ (s i)) ≠ ∞) :
     μ (limsup s atTop) = 0 := by
   -- First we replace the sequence `sₙ` with a sequence of measurable sets `tₙ ⊇ sₙ` of the same
