@@ -179,10 +179,6 @@ theorem bit_eq_zero {n : ℕ} {b : Bool} : n.bit b = 0 ↔ n = 0 ∧ b = false :
   cases b <;> simp [Nat.bit0_eq_zero, Nat.bit1_ne_zero]
 #align nat.bit_eq_zero Nat.bit_eq_zero
 
-theorem bodd_eq_bodd_iff {m n} : bodd n = bodd m ↔ n % 2 = m % 2 := by
-  cases' hn : bodd n <;> cases' hm : bodd m
-  <;> simp [mod_two_of_bodd, hn, hm]
-
 theorem bit_ne_zero_iff {n : ℕ} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = true := by
   simpa only [not_and, Bool.not_eq_false] using (@bit_eq_zero n b).not
 
@@ -344,20 +340,6 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
   · specialize ih ((m+1) / 2) (div_lt_self' ..)
     simp [bitwise_of_ne_zero, ih]
 #align nat.bitwise_swap Nat.bitwise_swap
-
-theorem testBit_two_pow_mul_add {n b w i} (h: i < w) :
-    Nat.testBit (2 ^ w * b + n) i = Nat.testBit n i := by
-  simp only [testBit, shiftRight_eq_div_pow, bodd_eq_bodd_iff]
-  rw [← Nat.add_sub_of_le (succ_le_of_lt h), Nat.succ_eq_add_one, Nat.add_assoc]
-  rw [Nat.pow_add, Nat.add_comm, Nat.mul_assoc, add_mul_div_left _ _ (two_pow_pos _), add_mod]
-  rw [Nat.pow_add, Nat.pow_one, Nat.mul_assoc]
-  simp
-
-theorem testBit_two_pow_mul_toNat_add {n w b} (h: n < 2 ^ w) :
-    testBit (2 ^ w * b.toNat + n) w = b := by
-  simp only [testBit, shiftRight_eq_div_pow]
-  rw [Nat.add_div_of_dvd_right (Dvd.intro _ rfl), Nat.div_eq_of_lt h, add_zero]
-  cases' b <;> simp
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
     is also commutative. -/
@@ -536,18 +518,5 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ≠ b ^^^ c) :
 theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b < c :=
   (or_iff_right fun h' => (h.asymm h').elim).1 <| xor_trichotomy h.ne
 #align nat.lt_lxor_cases Nat.lt_xor_cases
-
-@[simp] lemma bits_bit {b x} (h : bit b x ≠ zero) :
-    bits (bit b x) = b :: bits x := by
-  rw [bits, binaryRec_of_ne_zero (h:=h)]
-  simp
-
-@[simp] lemma foldr_bit_bits (v : Nat) :
-    v.bits.foldr bit 0 = v := by
-  induction' v using Nat.binaryRec with b v ih
-  · rfl
-  · by_cases h : bit b v = 0
-    · simp only [h, zero_bits, List.foldr_nil]
-    · simp [bits_bit h, ih]
 
 end Nat
