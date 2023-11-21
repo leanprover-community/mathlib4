@@ -172,6 +172,9 @@ def LocalDiffeomorph.toDiffeomorphImage {f : M → N} (hf : IsLocalDiffeomorph I
 /-- A bijective local diffeomorphism is a diffeomorphism. -/
 def Diffeomorph.of_bijective_local_diffeomorph {f : M → N} (hf : IsLocalDiffeomorph I J M N n f)
     (hf' : Bijective f) : Diffeomorph I J M N n := by
+  -- complication: need to argue a diffeo to image yields a diffeo...
+  -- bijectivity implies equality *of sets*
+  -- xxx: is the inclusion a diffeo? in this case, I'd be happy...
   have : (LocalDiffeomorph.image I J M N n hf).1 = (univ : Set N) := by
     rw [LocalDiffeomorph.image_coe]
     exact range_iff_surjective.mpr hf'.surjective
