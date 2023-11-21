@@ -6,7 +6,7 @@ Authors: Scott Morrison
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Subobject
-import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 
 #align_import algebra.homology.Module from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
