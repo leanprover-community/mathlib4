@@ -28,8 +28,6 @@ This file implements diffeomorphisms.
 
 ## Main results
 * TODO(everybody): complete this overview
-* `Diffeomorph.mfderiv_toContinuousLinearEquiv`: each differential of a `C^n` diffeomorphism
-(`n ≥ 1`) is a linear equivalence.
 
 ## Notations
 
@@ -668,44 +666,3 @@ lemma RightInverse.of_composition {f : E →L[R] F} {g : F →L[R] E}
     (hinv : f.comp g = ContinuousLinearMap.id R F) : RightInverse g f :=
   LeftInverse.of_composition hinv
 end helper
-
-section Differential
-variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
-
-/-- Each differential of a `C^n` diffeomorphism (`n ≥ 1`) is a linear equivalence. -/
-noncomputable def Diffeomorph.mfderiv_toContinuousLinearEquiv (hn : 1 ≤ n) (Φ : M ≃ₘ^n⟮I, J⟯ N)
-    (x : M) : ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (Φ x)) := by
-  let A := mfderiv I J Φ x
-  let B := mfderiv J I Φ.invFun (Φ x)
-  have inv1 : B.comp A = ContinuousLinearMap.id 𝕜 (TangentSpace I x) := calc B.comp A
-    _ = mfderiv I I (Φ.invFun ∘ Φ) x :=
-      (mfderiv_comp x (Φ.symm.mdifferentiable hn (Φ x)) (Φ.mdifferentiable hn x)).symm
-    _ = mfderiv I I id x := mfderiv_congr (funext (fun x ↦ Φ.left_inv x))
-    _ = ContinuousLinearMap.id 𝕜 (TangentSpace I x) := mfderiv_id I
-  have inv2 : A.comp B = ContinuousLinearMap.id 𝕜 (TangentSpace J (Φ x)) := calc A.comp B
-    _ = mfderiv J J (Φ ∘ Φ.invFun) (Φ x) := by
-          -- Use the chain rule: need to rewrite both the base point Φ (Φ.invFun x)
-          -- and the map Φ.invFun ∘ Φ. FIXME: can this be golfed?
-          have hfat : MDifferentiableAt I J Φ x := Φ.mdifferentiable hn x
-          rw [← (Φ.left_inv x)] at hfat
-          let r := mfderiv_comp (Φ x) hfat (Φ.symm.mdifferentiable hn (Φ x))
-          have : (Equiv.invFun Φ.toEquiv (Φ x)) = x := Φ.left_inv x
-          rw [this] at r
-          exact r.symm
-    _ = mfderiv J J id (Φ x) := mfderiv_congr (funext (fun x ↦ Φ.right_inv x))
-    _ = ContinuousLinearMap.id 𝕜 (TangentSpace J (Φ x)) := mfderiv_id J
-  exact {
-    toFun := A
-    invFun := B
-    left_inv := LeftInverse.of_composition inv1
-    right_inv := RightInverse.of_composition inv2
-    continuous_toFun := A.cont
-    continuous_invFun := B.cont
-    map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add A x_1 y
-    map_smul' := by intros; simp
-  }
-
-lemma Diffeomorph.mfderiv_toContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ N) {x : M} (hn : 1 ≤ n) :
-    (Φ.mfderiv_toContinuousLinearEquiv hn x).toFun = mfderiv I J Φ x := rfl
-
-end Differential
