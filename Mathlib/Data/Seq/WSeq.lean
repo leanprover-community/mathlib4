@@ -126,7 +126,7 @@ def recOn' {C : WSeq α → Sort v} (s : WSeq α) (nil : C nil) (cons : ∀ x s,
     (think : ∀ s, C (think s)) : C s :=
   Seq'.recOn' (C := fun s => C ⟨s⟩) (data s) nil
     (fun o s => Option.recOn (motive := fun o => (s : WSeq α) → C ⟨o ::ₑ data s⟩) o think cons ⟨s⟩)
-#align stream.wseq.rec_on WSeq.recOn
+#align stream.wseq.rec_on WSeq.recOn'
 
 /-- membership for weak sequences-/
 protected def Mem (a : α) (s : WSeq α) :=
