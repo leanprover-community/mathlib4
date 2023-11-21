@@ -1492,9 +1492,10 @@ theorem map_append (f : α → β) (s t) : map f (s ++ t) = map f s ++ map f t :
   WSeq.ext _ _ <| Seq'.map_append _ _ _
 #align stream.wseq.map_append WSeq.map_append
 
-theorem map_comp (f : α → β) (g : β → γ) (s : WSeq α) : map (g ∘ f) s = map g (map f s) := by
+@[simp]
+theorem map_map (g : β → γ) (f : α → β) (s : WSeq α) : map g (map f s) = map (g ∘ f) s := by
   simp [map]
-#align stream.wseq.map_comp WSeq.map_comp
+#align stream.wseq.map_comp WSeq.map_map
 
 theorem mem_map (f : α → β) {a : α} {s : WSeq α} : a ∈ s → f a ∈ map f s :=
   Seq'.mem_map (Option.map f)
@@ -1807,7 +1808,7 @@ theorem join_append (S T : WSeq (WSeq α)) : join (S ++ T) ≈ join S ++ join T 
 @[simp]
 theorem bind_pure (f : α → β) (s) : bind s (pure ∘ f) ≈ map f s := by
   dsimp [bind]
-  rw [map_comp]
+  rw [← map_map]
   apply join_map_pure
 #align stream.wseq.bind_ret WSeq.bind_pure
 
@@ -1875,7 +1876,7 @@ theorem join_join (SS : WSeq (WSeq (WSeq α))) : join (join SS) ≈ join (map jo
 @[simp]
 theorem bind_assoc (s : WSeq α) (f : α → WSeq β) (g : β → WSeq γ) :
     bind (bind s f) g ≈ bind s fun x : α => bind (f x) g := by
-  simp [bind]; erw [← map_comp f (map g), map_comp (map g ∘ f) join]
+  simp [bind]; erw [← map_map join (map g ∘ f)]
   apply join_join
 #align stream.wseq.bind_assoc WSeq.bind_assoc
 
