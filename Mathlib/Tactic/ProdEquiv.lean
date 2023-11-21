@@ -68,25 +68,29 @@ def ProdTree.pack (ts : List Expr) : ProdTree → MetaM Expr
   | type tp _ => do
     match ts with
       | [] => throwError "Can't pack the empty list."
-      | [a] =>
-        if ← isDefEq tp (← inferType a) then return a
-        else throwError m!"Type error: {a} must have type {tp}."
-      | _ => throwError "Failed to pack due to size mismatch."
+      | [a] => return a
+        --if ← isDefEq tp (← inferType a) then return a
+        --else throwError "Type error: Expected type{indentExpr <| ← inferType a }
+--but got type{indentExpr tp}"
+      | _ => throwError "Failed due to size mismatch."
   | prod fst snd u v => do
     let fstSize := fst.size
     let sndSize := snd.size
-    unless ts.length == fstSize + sndSize do throwError "Failed to pack due to size mismatch."
+    unless ts.length == fstSize + sndSize do throwError "Failed due to size mismatch."
     let tsfst := ts.toArray[:fstSize] |>.toArray.toList
     let tssnd := ts.toArray[fstSize:] |>.toArray.toList
     let mk : Expr := mkAppN (.const ``Prod.mk [u,v]) #[fst.getType, snd.getType]
     return .app (.app mk (← fst.pack tsfst)) (← snd.pack tssnd)
+
+def ProdTree.convertTo (P1 P2 : ProdTree) (e : Expr) : MetaM Expr :=
+  return ← P2.pack <| ← P1.unpack e
 
 /-- Given two expressions corresponding to iterated products of the same types, associated in
 possibly different ways, this constructs the "obvious" function from one to the other. -/
 def mkProdFun (a b : Expr) : MetaM Expr := do
   let pa ← a.mkProdTree
   let pb ← b.mkProdTree
-  return .lam `t a (← pb.pack <| (← pa.unpack <| .bvar 0)) .default
+  return .lam `t a (← pa.convertTo pb <| .bvar 0) .default
 
 /-- Construct the equivalence between iterated products of the same type, associated
 in possibly different ways. -/
@@ -103,9 +107,13 @@ def mkProdEquiv (a b : Expr) : MetaM Expr := do
 elab "prod_assoc(" a:term "," b:term ")" : term => do
   let a ← Elab.Term.elabTerm a none
   let b ← Elab.Term.elabTerm b none
+  let some u := (← inferType a).type? | throwError "Error"
+  let some v := (← inferType b).type? | throwError "Error"
+  let e ← mkProdEquiv a b
+  let _ ← Elab.Term.ensureHasType (some <| mkApp2 (.const ``Equiv [u.succ, v.succ]) a b) e
   mkProdEquiv a b
 
-#check prod_assoc(Nat,Nat)
+--def foo : Nat × Rat ≃ Nat × Nat := prod_assoc(Nat × Nat, Nat × Nat)
+#check prod_assoc(Nat × Rat, Nat × Nat)
 
 end Lean.Expr
-#lint
