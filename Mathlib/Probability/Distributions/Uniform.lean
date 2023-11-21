@@ -185,15 +185,13 @@ lemma uniformCdfReal_eq' {a b x: ℝ} (hab : a ≠ b) : uniformCdfReal a b x =
       ENNReal.toReal_mul, mem_Icc, ENNReal.toReal_ofReal, ENNReal.toReal_ofReal]
       rw [inv_mul_eq_div, ENNReal.toReal_ofReal]
       linarith
-    · apply ae_of_all; rintro x ⟨hab, htop⟩
-      rw [if_pos ⟨hab, by linarith⟩, LatticeOrderedGroup.sup_sub_inf_eq_abs_sub]
+    · exact ae_of_all _
+        fun x ⟨h, _⟩ ↦ by rw [if_pos ⟨h, by linarith⟩, LatticeOrderedGroup.sup_sub_inf_eq_abs_sub]
   · simp only [uniformCdfReal_eq_toSup _ h' hab, uniformPdf_eq]
     rw [set_lintegral_congr_fun measurableSet_Icc
         (g := fun _ ↦ ENNReal.ofReal (1 / (a ⊔ b - a ⊓ b)))]
     · simp [inv_mul_cancel (sub_ne_zero.2 (ne_of_lt (inf_lt_sup.mpr hab)).symm)]
-    · apply ae_of_all
-      intro _ hx
-      rw [if_pos hx, LatticeOrderedGroup.sup_sub_inf_eq_abs_sub]
+    · exact ae_of_all _ fun _ hx ↦ by rw [if_pos hx, LatticeOrderedGroup.sup_sub_inf_eq_abs_sub]
   · exact uniformCdfReal_eq_zero _ h
 
 /-- General case of the equation of the CDF of the uniform distribution -/
