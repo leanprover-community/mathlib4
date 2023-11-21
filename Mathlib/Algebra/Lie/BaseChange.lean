@@ -10,13 +10,15 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 #align_import algebra.lie.base_change from "leanprover-community/mathlib"@"9264b15ee696b7ca83f13c8ad67c83d6eb70b730"
 
 /-!
-# Extension and restriction of scalars for Lie algebras
+# Extension and restriction of scalars for Lie algebras and Lie modules
 
-Lie algebras have a well-behaved theory of extension and restriction of scalars.
+Lie algebras and their representations have a well-behaved theory of extension and restriction of
+scalars.
 
 ## Main definitions
 
- * `LieAlgebra.ExtendScalars.lieAlgebra`
+ * `LieAlgebra.ExtendScalars.instLieAlgebra`
+ * `LieAlgebra.ExtendScalars.instLieModule`
  * `LieAlgebra.RestrictScalars.lieAlgebra`
 
 ## Tags
