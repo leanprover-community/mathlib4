@@ -4,14 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Harun Khan, Abdalrhman M Mohamed, Alex Keizer
 -/
 import Mathlib.Data.List.Basic
-import Mathlib.Data.Bool.Basic
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Size
-import Mathlib.Data.Nat.Order.Lemmas
-import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Tactic.Set
-import Mathlib.Tactic.Linarith
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
 
@@ -367,7 +361,7 @@ theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy: y < 2 ^ n) (h: f false false 
 lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy: y < 2 ^ m) : y <<< n ||| x < 2 ^ (n + m) := by
   apply bitwise_lt
   · rw [pow_add, mul_comm]; simp[hy, mul_lt_mul_left (two_pow_pos n)]
-  · exact lt_of_lt_of_le hx ((pow_add 2 n m).symm ▸ le_mul_of_one_le_right' (by linarith))
+  · exact lt_of_lt_of_le hx ((pow_add 2 n m).symm ▸ le_mul_of_one_le_right' (one_le_two_pow m))
   · rfl
 
 theorem lor_comm (n m : ℕ) : n ||| m = m ||| n :=
