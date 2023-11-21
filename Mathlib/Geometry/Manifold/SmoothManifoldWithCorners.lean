@@ -807,6 +807,24 @@ theorem mem_analyticGroupoid_of_boundaryless [CompleteSpace E] [I.Boundaryless]
 
 end analyticGroupoid
 
+/-! Topological manifolds with corners: no smoothness assumed, but boundary and/or corners
+are possible. -/
+section ManifoldWithCorners
+/-- Typeclass defining topological manifolds with corners with respect to a model with corners,
+over a field `𝕜`. -/
+class ManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M] extends
+    HasGroupoid M (contDiffGroupoid 0 I) : Prop
+
+theorem ManifoldWithCorners.mk' {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+    [gr : HasGroupoid M (contDiffGroupoid 0 I)] : ManifoldWithCorners I M :=
+  { gr with }
+
+end ManifoldWithCorners
+
 section SmoothManifoldWithCorners
 
 /-! ### Smooth manifolds with corners -/

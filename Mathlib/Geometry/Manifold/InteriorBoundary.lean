@@ -8,8 +8,8 @@ import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 
 -- FIXME: should this be its own file or go in SmoothManifoldWithCorners?
 -- the latter is already huge, or its own file - move other results about boundaryless here?
-
--- NB: all results in this file hold for topological manifolds
+-- xxx: if I can use dot notation, how set things up so they're also available for smooth manifolds?
+-- manually re-declare them?
 
 /-!
 # Interior and boundary of a manifold
@@ -69,24 +69,23 @@ lemma aux2 {O t : Set X} (h : s = O ∩ t) (hO : IsOpen O)
 
 end TopologyHelpers
 
--- Let `M` be a smooth manifold with corners over the pair `(E, H)`.
--- NB: smoothness is not required; all results in this file hold for topological manifolds.
+-- Let `M` be a manifold with corners over the pair `(E, H)`.
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [ManifoldWithCorners I M]
 
-/-- `p ∈ M` is an interior point of a smooth manifold `M` iff
+/-- `p ∈ M` is an interior point of a manifold `M` iff
 for `φ` being the preferred chart at `x`, `φ x` is an interior point of `φ.target`. -/
 def ModelWithCorners.IsInteriorPoint (x : M) := extChartAt I x x ∈ interior (extChartAt I x).target
 
-/-- `p ∈ M` is a boundary point of a smooth manifold `M` iff it is not an interior point.
+/-- `p ∈ M` is a boundary point of a manifold `M` iff it is not an interior point.
 This means that, for `φ` being the preferred chart at `x`, `φ x` is not an interior point of
 `φ.target`. We do not say "boundary point" as `frontier φ.target` has two components, one on the
 boundary of range I and another on the boundary of e.target (which we don't want). -/
 def ModelWithCorners.IsBoundaryPoint (x : M) := extChartAt I x x ∉ interior (extChartAt I x).target
 
-namespace SmoothManifoldWithCorners
+namespace ManifoldWithCorners
 -- FIXME(MR): can I enable dot notation, like `M.interior I` or so?
 
 variable (I M) in
@@ -130,20 +129,20 @@ lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsB
 
 variable (I M) in
 /-- A manifold decomposes into interior and boundary. -/
-lemma univ_eq_interior_union_boundary : (SmoothManifoldWithCorners.interior I M) ∪
-    (SmoothManifoldWithCorners.boundary I M) = (univ : Set M) := by
+lemma univ_eq_interior_union_boundary : (ManifoldWithCorners.interior I M) ∪
+    (ManifoldWithCorners.boundary I M) = (univ : Set M) := by
   apply le_antisymm
   · exact fun x _ ↦ trivial
   · exact fun x _ ↦ isInteriorPoint_or_isBoundaryPoint x
 
 /-- The interior and boundary of `M` are disjoint. -/ -- xxx: name `..._eq_empty` instead?
 lemma interior_boundary_disjoint :
-    (SmoothManifoldWithCorners.interior I M) ∩ (SmoothManifoldWithCorners.boundary I M) = ∅ := by
+    (ManifoldWithCorners.interior I M) ∩ (ManifoldWithCorners.boundary I M) = ∅ := by
   ext
   exact ⟨fun h ↦ (not_mem_of_mem_diff h) (mem_of_mem_diff h), by exfalso⟩
 
 /-- The interior of a manifold is an open subset. -/
-lemma interior_isOpen : IsOpen (SmoothManifoldWithCorners.interior I M) := by
+lemma interior_isOpen : IsOpen (ManifoldWithCorners.interior I M) := by
   apply isOpen_iff_forall_mem_open.mpr
   intro x hx
   -- Consider the preferred chart at `x`. Its extended chart has open interior.
@@ -164,13 +163,13 @@ lemma interior_isOpen : IsOpen (SmoothManifoldWithCorners.interior I M) := by
     exact mem_inter this hx
 
 /-- The boundary of a manifold is a closed subset. -/
-lemma boundary_isClosed : IsClosed (SmoothManifoldWithCorners.boundary I M) := by
+lemma boundary_isClosed : IsClosed (ManifoldWithCorners.boundary I M) := by
   apply isOpen_compl_iff.mp
-  have : (SmoothManifoldWithCorners.interior I M)ᶜ = SmoothManifoldWithCorners.boundary I M :=
+  have : (ManifoldWithCorners.interior I M)ᶜ = ManifoldWithCorners.boundary I M :=
     (compl_unique interior_boundary_disjoint (univ_eq_interior_union_boundary I M))
   rw [← this, compl_compl]
   exact interior_isOpen
-end SmoothManifoldWithCorners
+end ManifoldWithCorners
 
 variable (I) in
 /-- The boundary of any extended chart has empty interior. -/
@@ -188,7 +187,7 @@ lemma LocalHomeomorph.extend_interior_boundary_eq_empty {e : LocalHomeomorph M H
 namespace SmoothManifoldWithCorners
 variable (I) in
 /-- The boundary of a manifold has empty interior. -/
-lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary I M) = ∅ := by
+lemma interior_boundary_eq_empty : interior (ManifoldWithCorners.boundary I M) = ∅ := by
   -- use `isBoundaryPoint_iff` and the previous lemma; similar to `interior_isOpen`
   sorry
 
