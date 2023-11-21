@@ -111,21 +111,12 @@ def mkProdEquiv (a b : Expr) : MetaM Expr := do
 
 --syntax (name := prodAssocStx) "prod_assoc(" term "," term ")" : term
 
-/-- An elaborator version of `Lean.Expr.mkEquiv`. -/
-elab "prod_assoc(" a:term "," b:term ")" : term => do
-  let a ← Elab.Term.elabTerm a none
-  let b ← Elab.Term.elabTerm b none
-  mkProdEquiv a b
-
-elab "prod_assoc%" : term <= expectedType => do
+elab "associate%" : term <= expectedType => do
   match expectedType with
     | .app (.app (.const ``Equiv _) a) b => do
       mkProdEquiv a b
     | _ => throwError "Expected type {expectedType} is not of the form `α ≃ β`."
 
-variable {α β γ δ : Type*}
-
-example : (α × β) × (γ × δ) ≃ α × (β × γ) × δ := prod_assoc((α × β) × (γ × δ), α × (β × γ) × δ)
-example : (α × β) × (γ × δ) ≃ α × (β × γ) × δ := prod_assoc%
+--example {α β γ δ : Type*} (x : (α × β) × (γ × δ)) : α × (β × γ) × δ := associate% x
 
 end Lean.Expr
