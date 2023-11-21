@@ -1461,7 +1461,7 @@ theorem toSeq_eq_toSeqCorec : @toSeq.{u} = @toSeqCorec.{u} := by
 
 /-- The monadic `pure a` is a singleton list containing `a`. -/
 def pure (a : α) : WSeq α :=
-  ↑[a]
+  a ::ₐ nil
 #align stream.wseq.ret WSeq.pure
 
 @[simp]
