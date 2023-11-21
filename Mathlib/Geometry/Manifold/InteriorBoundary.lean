@@ -9,27 +9,27 @@ import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 -- FIXME: should this be its own file or go in SmoothManifoldWithCorners?
 -- the latter is already huge, or its own file - move other results about boundaryless here?
 
-/-!
-# Interior and boundary of a smooth manifold
+-- NB: all results in this file hold for topological manifolds
 
-Define the interior and boundary of a smooth manifold.
+/-!
+# Interior and boundary of a manifold
+
+Define the interior and boundary of a manifold.
 
 ## Main definitions
 - **IsInteriorPoint x**: `p ∈ M` is an interior point if, for `φ` being the preferred chart at `x`,
  `φ x` is an interior point of `φ.target`.
 - **IsBoundaryPoint x**: `p ∈ M` is a boundary point if, for `φ` being the preferred chart at `x`,
-- **SmoothManifoldWithBoundary.interior I M** is the **interior** of `M`, the set of its interior
-points.
-- **SmoothManifoldWithBoundary.boundary I M** is the **boundary** of `M`, the set of its boundary
-points.
+- **interior I M** is the **interior** of `M`, the set of its interior points.
+- **boundary I M** is the **boundary** of `M`, the set of its boundary points.
 
 ## Main results
-- `xxx`: M is the union of its interior and boundary
-- `yyy`: interior I M is open
+- `univ_eq_interior_union_boundary`: `M` is the union of its interior and boundary
+- `interior_isOpen`: `interior I M` is open
 
-**TODO**: show that
-- interior I M is a manifold without boundary
-  (need to upgrade the above; map the charts from an open ball to entire ℝ^n)
+**TODO**
+- `interior I M` is a manifold without boundary
+  (need to upgrade the model used; map the charts from an open ball to entire ℝ^n)
 - the boundary is a submanifold of codimension 1 (once mathlib has submanifolds)
 
 ## Tags
@@ -39,6 +39,7 @@ manifold, interior, boundary
 open Set
 
 -- Let `M` be a smooth manifold with corners over the pair `(E, H)`.
+-- NB: smoothness is not required; all results in this file hold for topological manifolds.
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
@@ -80,14 +81,15 @@ lemma foobar' {e e' : LocalHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ 
 -- FIXME(MR): find a better wording for the next two docstrings
 /-- Whether `x` is an interior point can equivalently be described by any chart
   whose source contains `x`. -/
-lemma isInteriorPoint_iff {e : LocalHomeomorph M H} (he : e ∈ atlas H M) {x : M}
-    (hx : x ∈ e.source) : I.IsInteriorPoint x ↔ (e.extend I) x ∈ interior (e.extend I).target := by
+-- as we only need continuity properties, `e` being in the atlas is not required
+lemma isInteriorPoint_iff {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source) :
+    I.isInteriorPoint x ↔ (e.extend I) x ∈ interior (e.extend I).target := by
   sorry
 
 /-- Whether `x` is a boundary point of `M` can equivalently be described by any chart
 whose source contains `x`. -/
-lemma isBoundaryPoint_iff {e : LocalHomeomorph M H} (he : e ∈ atlas H M) {x : M}
-    (hx : x ∈ e.source) : I.IsBoundaryPoint x ↔ (e.extend I) x ∈ frontier (e.extend I).target := by
+lemma isBoundaryPoint_iff {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source) :
+    I.isBoundaryPoint x ↔ (e.extend I) x ∈ frontier (e.extend I).target := by
   sorry
 
 /-- Every point is either an interior or a boundary point. -/ -- FIXME: better name?!
@@ -102,14 +104,14 @@ lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsB
     exact mem_extChartAt_target I x
   exact (mem_union y _ _).mp this
 
-/-- A smooth manifold decomposes into interior and boundary. -/
+/-- A manifold decomposes into interior and boundary. -/
 lemma univ_eq_interior_union_boundary : (SmoothManifoldWithCorners.interior I M) ∪
     (SmoothManifoldWithCorners.boundary I M) = (univ : Set M) := by
   apply le_antisymm
   · exact fun x _ ↦ trivial
   · exact fun x _ ↦ isInteriorPoint_or_isBoundaryPoint x
 
-/-- Ihe interior of a smooth manifold is an open subset. -/
+/-- Ihe interior of a manifold is an open subset. -/
 lemma interior_isOpen : IsOpen (SmoothManifoldWithCorners.interior I M) := by
   apply isOpen_iff_forall_mem_open.mpr
   intro x hx
@@ -122,7 +124,7 @@ lemma interior_isOpen : IsOpen (SmoothManifoldWithCorners.interior I M) := by
   refine ⟨?_, ?_, ?_⟩
   · intro y hy
     rw [e.extend_source] at hy
-    apply (isInteriorPoint_iff (chart_mem_atlas H x) (mem_of_mem_inter_left hy)).mpr
+    apply (isInteriorPoint_iff (mem_of_mem_inter_left hy)).mpr
     exact mem_of_mem_inter_right (a := e.source) hy
   · exact (e.continuousOn_extend I).preimage_open_of_open (e.isOpen_extend_source I) isOpen_interior
   · have : x ∈ (e.extend I).source := by
@@ -138,10 +140,10 @@ lemma interior_isOpen : IsOpen (SmoothManifoldWithCorners.interior I M) := by
 lemma __root__.LocalHomeomorph.extend_interior_boundary_eq_empty {e : LocalHomeomorph M H} :
     interior (frontier (e.extend I).target) = ∅ := sorry
 
-/-- The boundary of a smooth manifold has empty interior. -/
+/-- The boundary of a manifold has empty interior. -/
 lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary I M) = ∅ := by
   -- use `isBoundaryPoint_iff` and the previous lemma; similar to `interior_isOpen`
   sorry
 
--- interior I M is a smooth manifold (use TopologicalSpace.Opens.instSmoothManifoldWithCornersSubtypeMemOpensInstMembershipInstSetLikeOpensInstTopologicalSpaceSubtypeInstChartedSpace)
+-- interior I M is a manifold (use TopologicalSpace.Opens.instSmoothManifoldWithCornersSubtypeMemOpensInstMembershipInstSetLikeOpensInstTopologicalSpaceSubtypeInstChartedSpace)
 end SmoothManifoldWithCorners
