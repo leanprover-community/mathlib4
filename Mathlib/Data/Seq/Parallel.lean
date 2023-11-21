@@ -122,8 +122,8 @@ theorem terminates_parallel.aux :
       rw [H2]
       refine @Computation.think_terminates _ _ ?_
       have := H1 _ h
-      rcases Seq'.dest (WSeq.data S) with (_ | ⟨_ | c, S'⟩) <;> simp [parallel.aux1] <;> apply IH <;>
-        simp [this]
+      rcases Seq'.dest (WSeq.data S) with (_ | ⟨_ | c, S'⟩) <;> simp [parallel.aux1] <;>
+        apply IH <;> simp [this]
 #align computation.terminates_parallel.aux Computation.terminates_parallel.aux
 
 theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : Terminates c] :
@@ -320,7 +320,7 @@ def parallelRec {S : WSeq (Computation α)} (C : α → Sort v) (H : ∀ s ∈ S
     (h : a ∈ parallel S) : C a := by
   let T : WSeq (Computation (α × Computation α)) := S.map fun c => c.map fun a => (a, c)
   have : S = T.map (map fun c => c.1) := by
-    rw [← WSeq.map_comp]
+    rw [WSeq.map_map]
     refine' (WSeq.map_id _).symm.trans (congr_arg (fun f => WSeq.map f S) _)
     funext c
     dsimp [id, Function.comp_def]
