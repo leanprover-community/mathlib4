@@ -151,8 +151,10 @@ def IHom (X Y : SSet) : SSet where
     refine {
     app := fun k a => F.app k (((standardSimplex.map f.unop).app k) a.1, a.2)
     naturality := fun j k g => by
-      dsimp only [standardSimplex, Prod]
-      sorry
+      ext a
+      have := (F.naturality g)
+      apply_fun (fun F => F (a.1 ≫ f.unop, a.2)) at this
+      simpa
   }
   map_id _ := by
     dsimp only [standardSimplex]
