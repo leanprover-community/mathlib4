@@ -327,10 +327,16 @@ theorem BilinForm.toMatrix'_apply (B : BilinForm R₂ (n → R₂)) (i j : n) :
   rfl
 #align bilin_form.to_matrix'_apply BilinForm.toMatrix'_apply
 
+/--
+Multiplication of an n by o matrix on the left by an m by n matrix of scalars
+-/
 def SMatrixLeftMul  {m : Type*} :
     HSMul (Matrix m n R₂) (Matrix n o N₂) (Matrix m o N₂) where
   hSMul M₁ M₂ := fun i k => ∑ j, M₁ i j • M₂ j k
 
+/--
+Multiplication of an m by n matrix on the right by an n by o matrix of scalars
+-/
 def SMatrixRightMul {m : Type*} :
     HSMul (Matrix m n N₂) (Matrix n o R₂) (Matrix m o N₂) where
   hSMul M₁ M₂ := fun i k => ∑ j, M₂ j k • M₁ i j
