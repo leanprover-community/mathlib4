@@ -9,11 +9,11 @@ open Lean Meta
 inductive ProdTree where
   | type (tp : Expr) (l : Level)
   | prod (fst snd : ProdTree) (lfst lsnd : Level)
+deriving Repr
 
 def ProdTree.getType : ProdTree → Expr
   | type tp _ => tp
   | prod fst snd u v => mkAppN (.const ``Prod [u,v]) #[fst.getType, snd.getType]
-
 
 def ProdTree.size : ProdTree → Nat
   | type _ _ => 1
@@ -24,7 +24,7 @@ def mkProdTree (e : Expr) : MetaM ProdTree :=
     | .app (.app (.const ``Prod [u,v]) X) Y => do
         return .prod (← X.mkProdTree) (← Y.mkProdTree) u v
     | X => do
-      let .sort (.succ u) ← inferType X | throwError "Type expected."
+      let some u := (← inferType X).type? | throwError "Type expected."
       return .type X u
 
 def ProdTree.unpack (t : Expr) : ProdTree → MetaM (List Expr)
@@ -37,15 +37,15 @@ def ProdTree.unpack (t : Expr) : ProdTree → MetaM (List Expr)
 def ProdTree.pack (ts : List Expr) : ProdTree → MetaM Expr
   | type tp _ => do
     match ts with
-      | [] => throwError "empty list"
+      | [] => throwError "Can't pack the empty list."
       | [a] =>
         if ← isDefEq tp (← inferType a) then return a
-        else throwError "Types are different"
-      | _ => throwError "Wrong size"
+        else throwError m!"Type error: {a} must have type {tp}."
+      | _ => throwError "Failed to pack due to size mismatch."
   | prod fst snd u v => do
     let fstSize := fst.size
     let sndSize := snd.size
-    unless ts.length == fstSize + sndSize do throwError "Wrong size"
+    unless ts.length == fstSize + sndSize do throwError "Failed to pack due to size mismatch."
     let tsfst := ts.toArray[:fstSize] |>.toArray.toList
     let tssnd := ts.toArray[fstSize:] |>.toArray.toList
     let mk : Expr := mkAppN (.const ``Prod.mk [u,v]) #[fst.getType, snd.getType]
@@ -57,17 +57,19 @@ def mkFun (a b : Expr) : MetaM Expr := do
   return .lam `t a (← pb.pack <| (← pa.unpack <| .bvar 0)) .default
 
 def mkEquiv (a b : Expr) : MetaM Expr := do
-  let .sort (u) ← inferType a | throwError "Type expected."
-  let .sort (v) ← inferType b | throwError "Type expected."
-  return mkAppN (.const ``Equiv.mk [u,v])
-    #[a, b, ← mkFun a b, ← mkFun b a, .app (.const ``rfl [u]) a, .app (.const ``rfl [v]) b]
+  let some u := (← inferType a).type? | throwError "Type expected."
+  let some v := (← inferType b).type? | throwError "Type expected."
+  return mkAppN (.const ``Equiv.mk [.succ u,.succ v])
+    #[a, b, ← mkFun a b, ← mkFun b a,
+      .app (.const ``rfl [.succ u]) a,
+      .app (.const ``rfl [.succ v]) b]
 
-elab "associate(" a:term "," b:term ")" : term => do
+elab "prod_assoc(" a:term "," b:term ")" : term => do
   let a ← Elab.Term.elabTerm a none
   let b ← Elab.Term.elabTerm b none
   mkEquiv a b
 
 example {α β γ δ : Type*} (a : α) (b : β) (g : γ) (d : δ) :
-  associate((α × β) × (γ × δ), α × (β × γ) × δ) ((a,b),(g,d)) = (a,(b,g),d) := rfl
+  prod_assoc((α × β) × (γ × δ), α × (β × γ) × δ) ((a,b),(g,d)) = (a,(b,g),d) := rfl
 
 end Lean.Expr
