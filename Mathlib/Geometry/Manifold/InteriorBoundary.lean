@@ -160,30 +160,29 @@ lemma boundary_isClosed : IsClosed (SmoothManifoldWithCorners.boundary I M) := b
   rw [← this, compl_compl]
   exact interior_isOpen
 
--- XXX: this is not fully true! frontier s includes t ∖ interior t, but also closure(O) ∖ O...
--- ACTUALLY: this means the definition of boundary is not right: want to take target without interior,
--- **not** the frontier!!
+-- FIXME: good name? should go in Mathlib.Topology.Basic
 lemma aux {X : Type*} [TopologicalSpace X] {s O t : Set X} (h : s = O ∩ t) (hO : IsOpen O) :
-    frontier s ⊆ frontier t := by
+    s \ interior s ⊆ t \ interior t := by
   let aux := calc interior s
     _ = interior O ∩ interior t := by rw [h, interior_inter]
     _ = O ∩ interior t := by rw [hO.interior_eq]
+  calc s \ interior s
+    _ = (O ∩ t) \ (O ∩ interior t) := by rw [aux, h]
+    _ = O ∩ (t \ interior t) := by rw [inter_diff_distrib_left]
+    _ ⊆ t \ interior t := inter_subset_right _ _
 
-  -- closure s = closure O ∩ closure t ⊆ closure t
-  -- frontier s = closure s ∖ interior s ⊆ closure(t) ∖ (O ∩ interior t)... not good enough!!
-  -- s ∖ interior s = (O ∩ t) ∖ (O ∩ interior t) = O ∩ (t ∖ interior t) ⊆ t ∖ interior t
-  --   ⊆ closure t ∖ interior t = frontiert t
-
-  sorry
+-- is this a better lemma; is `aux` useful on its own?
+lemma aux2 {X : Type*} [TopologicalSpace X] {s O t : Set X} (h : s = O ∩ t) (hO : IsOpen O)
+    (ht : IsClosed t) : s \ interior s ⊆ frontier t :=
+  ht.frontier_eq ▸ aux h hO
 
 /-- The boundary of any extended chart has empty interior. -/
 lemma __root__.LocalHomeomorph.extend_interior_boundary_eq_empty {e : LocalHomeomorph M H} :
-    interior (frontier (e.extend I).target) = ∅ := by
+    interior ((e.extend I).target \ interior (e.extend I).target) = ∅ := by
   -- `e.extend_target I = (I.symm ⁻¹' e.target) ∩ range I` is the union of an open set and a
   -- closed set: hence the frontier is contained in the second factor.
-  have h1 : frontier (e.extend I).target ⊆ frontier (range I) := by
-    rw [e.extend_target I]
-    exact aux rfl (e.open_target.preimage I.continuous_symm)
+  have h1 : (e.extend I).target \ interior (e.extend I).target ⊆ frontier (range I) :=
+    aux2 (e.extend_target I) (e.open_target.preimage I.continuous_symm) I.closed_range
   suffices interior (frontier (range I)) = ∅ by
     exact subset_eq_empty (interior_mono h1) this
   -- As `range I` is closed, its frontier has empty interior.
