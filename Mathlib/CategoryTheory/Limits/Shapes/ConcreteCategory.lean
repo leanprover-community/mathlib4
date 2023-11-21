@@ -23,6 +23,8 @@ Similarly, if `f₁ : X₁ ⟶ S` and `f₂ : X₂ ⟶ S` are two morphisms, the
 in `pullback f₁ f₂` are identified by `Limits.Concrete.pullbackEquiv``
 to compatible tuples of elements in `X₁ × X₂`.
 
+Some results are also obtained for wide-pullbacks, wide-pushouts, multiequalizers and cokernels.
+
 -/
 
 universe w v u
