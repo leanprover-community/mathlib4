@@ -15,8 +15,10 @@ namespace LightProfinite
 
 def toProfinite (S : LightProfinite) : Profinite := S.cone.pt
 
+@[simps!]
 instance : Category LightProfinite := InducedCategory.category toProfinite
 
+@[simps!]
 instance concreteCategory : ConcreteCategory LightProfinite := InducedCategory.concreteCategory _
 
 @[simps!]
