@@ -945,9 +945,10 @@ theorem map_id (c : Computation α) : map id c = c := by
   ext1 n; simp
 #align computation.map_id Computation.map_id
 
-theorem map_comp (f : α → β) (g : β → γ) (c : Computation α) : map (g ∘ f) c = map g (map f c) := by
+@[simp]
+theorem map_map (g : β → γ) (f : α → β) (c : Computation α) : map g (map f c) = map (g ∘ f) c := by
   ext1 n; simp
-#align computation.map_comp Computation.map_comp
+#align computation.map_comp Computation.map_map
 
 /-- Corecursor where it is possible to return a fully formed value at any point of the
 computation. -/
