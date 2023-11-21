@@ -173,8 +173,8 @@ theorem eq_of_map_eq_withDensity [IsFiniteMeasure ℙ] {X : Ω → E} [HasPDF X 
   rw [lintegral_eq_measure_univ]
   exact measure_ne_top _ _
 
-theorem eq_of_map_eq_withDensity' [SigmaFinite μ] {X : Ω → E} [HasPDF X ℙ μ] (f : E → ℝ≥0∞) (hmf : AEMeasurable f μ) :
-    ℙ.map X = μ.withDensity f ↔ pdf X ℙ μ =ᵐ[μ] f :=
+theorem eq_of_map_eq_withDensity' [SigmaFinite μ] {X : Ω → E} [HasPDF X ℙ μ] (f : E → ℝ≥0∞)
+    (hmf : AEMeasurable f μ) : ℙ.map X = μ.withDensity f ↔ pdf X ℙ μ =ᵐ[μ] f :=
   map_eq_withDensity_pdf X ℙ μ ▸
     withDensity_eq_iff_of_sigmaFinite (measurable_pdf X ℙ μ).aemeasurable hmf
 
