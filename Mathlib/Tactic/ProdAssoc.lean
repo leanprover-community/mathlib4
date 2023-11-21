@@ -100,7 +100,8 @@ def mkProdFun (a b : Expr) : MetaM Expr := do
   for (x,y) in pa.components.zip pb.components do
     unless ← isDefEq x y do
       throwError "Component{indentD x}\nis not definitionally equal to component{indentD y}."
-  return .lam `t a (← pa.convertTo pb <| .bvar 0) .default
+  withLocalDeclD `t a fun fvar => do
+    mkLambdaFVars #[fvar] (← pa.convertTo pb fvar)
 
 /-- Construct the equivalence between iterated products of the same type, associated
 in possibly different ways. -/
