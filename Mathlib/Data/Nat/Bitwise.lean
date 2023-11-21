@@ -349,16 +349,14 @@ theorem bitwise_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' 
 
 /-- If `x` and `y` fit within `n` bits, then the result of any (well-behaved) bitwise operation on
     `x` and `y` also fits within `n` bits -/
-theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy: y < 2 ^ n) (h: f false false = false) :
+theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy: y < 2 ^ n) (h : f false false = false) :
     bitwise f x y < 2 ^ n := by
-  apply lt_of_testBit n (by simp [testBit_bitwise h x y n,
-                                  testBit_eq_false_of_lt hx,
-                                  testBit_eq_false_of_lt hy, h])
-                        (testBit_two_pow_self n)
+  refine lt_of_testBit n ?_ (testBit_two_pow_self n) ?_
+  · simp [testBit_bitwise h x y n, testBit_eq_false_of_lt hx, testBit_eq_false_of_lt hy, h]
   intro j hj; rw [testBit_bitwise h x y j]
-  rw [testBit_eq_false_of_lt (lt_trans hx (pow_lt_pow_of_lt_right (by decide) hj))]
-  rw [testBit_eq_false_of_lt (lt_trans hy (pow_lt_pow_of_lt_right (by decide) hj)), h]
-  rw [testBit_two_pow_of_ne (ne_of_lt hj)]
+  rw [testBit_eq_false_of_lt (hx.trans (pow_lt_pow_of_lt_right one_lt_two hj))]
+  rw [testBit_eq_false_of_lt (hy.trans (pow_lt_pow_of_lt_right one_lt_two hj)), h]
+  rw [testBit_two_pow_of_ne hj.ne]
 
 lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy: y < 2 ^ m) : y <<< n ||| x < 2 ^ (n + m) := by
   apply bitwise_lt
