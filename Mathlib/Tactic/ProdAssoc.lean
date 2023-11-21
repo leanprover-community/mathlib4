@@ -112,8 +112,6 @@ def mkProdEquiv (a b : Expr) : MetaM Expr := do
       .app (.const ``rfl [.succ u]) a,
       .app (.const ``rfl [.succ v]) b]
 
---syntax (name := prodAssocStx) "prod_assoc(" term "," term ")" : term
-
 /-- IMPLEMENTATION: Syntax used in the implementation of `prod_assoc%`. -/
 syntax (name := prodAssocStx) "prod_assoc_internal%" : term
 
