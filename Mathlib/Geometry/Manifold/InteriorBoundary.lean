@@ -203,28 +203,28 @@ lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary 
     _ = ⋃ (x : M), interior (bd ∩ (extChartAt I x).source) := by simp_rw [interior_inter]
 
   -- Apply my characterisation of boundary points.
-  have : ∀ x : M, bd ∩ (extChartAt I x).source = (extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target) := by
+  have : ∀ x : M, bd ∩ (extChartAt I x).source = (extChartAt I x).source ∩ (extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target) := by
     intro x
     have r' : (chartAt H x).extend I = extChartAt I x := rfl
     rw [← r']
     ext y
     constructor
     · rintro ⟨hbd, hsource⟩
+      apply mem_inter hsource ?_ -- discharge first condition, easy
       rw [(chartAt H x).extend_source] at hsource
       let s := (isBoundaryPoint_iff I hsource).mp hbd
-      apply mem_inter
-      · sorry -- is y ∈ target? true for local homeos...
-      · apply s
-    · intro hy
-      have : y ∈ (chartAt H x).source := sorry -- TODO!
-      apply mem_inter
-      · apply (isBoundaryPoint_iff I this).mpr (not_mem_of_mem_diff hy)
-      · rw [(chartAt H x).extend_source]
-        exact this
+      sorry --apply (mem_diff y).mp ?_ s
+      --apply s--mem_inter
+      --· sorry -- is y ∈ target? true for local homeos...
+      --· apply s
+    · rintro ⟨hsource, hbd⟩
+      apply mem_inter ?_ hsource
+      rw [(chartAt H x).extend_source] at hsource
+      apply (isBoundaryPoint_iff I hsource).mpr (not_mem_of_mem_diff hbd)
 
   have := calc interior (bd)
     _ = ⋃ (x : M), interior (bd ∩ (extChartAt I x).source) := sorry -- computation 1
-    _ = ⋃ (x : M), interior ((extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target)) := by simp_rw [this]
+    _ = ⋃ (x : M), interior ((extChartAt I x).source ∩ (extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target)) := by simp_rw [this]
 
     -- this step is SCIFI: very happy if true!! need a rigorous argument, though
     -- extChart is continuous on its source, so this might hold?
