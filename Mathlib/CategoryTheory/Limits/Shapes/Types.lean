@@ -405,8 +405,9 @@ noncomputable def productLimitCone {J : Type v} (F : J → Type u) [UnivLE.{v, u
     Limits.LimitCone (Discrete.functor F) where
   cone :=
     { pt := Shrink (∀ j, F j)
-      π := Discrete.natTrans (fun ⟨j⟩ f => (equivShrink _).symm f j) }
+      π := Discrete.natTrans (fun ⟨j⟩ f => (equivShrink (∀ j, F j)).symm f j) }
   isLimit :=
+    have : Small.{u} (∀ j, F j) := inferInstance
     { lift := fun s x => (equivShrink _) (fun j => s.π.app ⟨j⟩ x)
       uniq := fun s m w => funext fun x => Shrink.ext <| funext fun j => by
         simpa using (congr_fun (w ⟨j⟩) x : _) }
@@ -419,19 +420,19 @@ noncomputable def productIso {J : Type v} (F : J → Type u) [UnivLE.{v, u}] :
 
 @[simp]
 theorem productIso_hom_comp_eval {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) :
-    ((productIso.{v, u} F).hom ≫ fun f => (equivShrink _).symm f j) = Pi.π F j :=
+    ((productIso.{v, u} F).hom ≫ fun f => (equivShrink (∀ j, F j)).symm f j) = Pi.π F j :=
   limit.isoLimitCone_hom_π (productLimitCone.{v, u} F) ⟨j⟩
 
 -- Porting note:
 -- `elementwise` seems to be broken. Applied to the previous lemma, it should produce:
 @[simp]
 theorem productIso_hom_comp_eval_apply {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) (x) :
-    (equivShrink _).symm ((productIso F).hom x) j = Pi.π F j x :=
+    (equivShrink (∀ j, F j)).symm ((productIso F).hom x) j = Pi.π F j x :=
   congr_fun (productIso_hom_comp_eval F j) x
 
 @[elementwise (attr := simp)]
 theorem productIso_inv_comp_π {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) :
-    (productIso.{v, u} F).inv ≫ Pi.π F j = fun f => ((equivShrink _).symm f) j :=
+    (productIso.{v, u} F).inv ≫ Pi.π F j = fun f => ((equivShrink (∀ j, F j)).symm f) j :=
   limit.isoLimitCone_inv_π (productLimitCone.{v, u} F) ⟨j⟩
 
 end UnivLE
