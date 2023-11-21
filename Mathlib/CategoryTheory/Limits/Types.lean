@@ -27,13 +27,13 @@ set_option autoImplicit true
 
 open CategoryTheory CategoryTheory.Limits
 
-universe w v u
+universe v u w
 
 namespace CategoryTheory.Limits.Types
 
 section limit_characterization
 
-variable {J : Type v} [Category J] {F : J ⥤ Type u}
+variable {J : Type v} [Category.{w} J] {F : J ⥤ Type u}
 
 /-- Given a section of a functor F into `Type*`,
   construct a cone over F with `PUnit` as the cone point. -/
@@ -82,7 +82,7 @@ theorem isLimitEquivSections_symm_apply {c : Cone F} (t : IsLimit c)
 
 end limit_characterization
 
-variable {J : Type v} [Category J]
+variable {J : Type v} [Category.{w} J]
 
 /-! We now provide two distinct implementations in the category of types.
 
@@ -182,7 +182,7 @@ More specifically, when `UnivLE.{v, u}`, the category `Type u` has all `v`-small
 
 See <https://stacks.math.columbia.edu/tag/002U>.
 -/
-instance (priority := 1300) hasLimitsOfSize : HasLimitsOfSize.{w, v} (Type u) where
+instance (priority := 1300) hasLimitsOfSize : HasLimitsOfSize.{w', v} (Type u) where
   has_limits_of_shape _ :=
     { has_limit := fun F =>
         HasLimit.mk
@@ -375,13 +375,15 @@ def colimitCoconeIsColimit (F : J ⥤ TypeMax.{v, u}) : IsColimit (colimitCocone
 
 See <https://stacks.math.columbia.edu/tag/002U>.
 -/
-instance hasColimitsOfSize : HasColimitsOfSize.{w, v} TypeMax.{v, u} where
+instance hasColimitsOfSize : HasColimitsOfSize.{w', v} TypeMax.{v, u} where
   has_colimits_of_shape _ :=
     { has_colimit := fun F =>
         HasColimit.mk
           { cocone := colimitCocone.{v, u} F
             isColimit := colimitCoconeIsColimit F } }
 #align category_theory.limits.types.has_colimits_of_size CategoryTheory.Limits.Types.hasColimitsOfSize
+
+instance : HasColimitsOfSize.{w', v} (Type v) := hasColimitsOfSize.{v, v}
 
 instance : HasColimits (Type u) :=
   Types.hasColimitsOfSize.{u, u, u}
@@ -426,7 +428,7 @@ theorem Colimit.ι_desc_apply (F : J ⥤ TypeMax.{v, u}) (s : Cocone F) (j : J) 
 
 --porting note: @[simp] was removed because the linter said it was useless
 theorem Colimit.ι_map_apply {F G : J ⥤ TypeMax.{v, u}} (α : F ⟶ G) (j : J) (x : F.obj j) :
-    colim.{v, v}.map α (colimit.ι F j x) = colimit.ι G j (α.app j x) :=
+    colim.map α (colimit.ι F j x) = colimit.ι G j (α.app j x) :=
   congr_fun (colimit.ι_map α j) x
 #align category_theory.limits.types.colimit.ι_map_apply CategoryTheory.Limits.Types.Colimit.ι_map_apply
 
