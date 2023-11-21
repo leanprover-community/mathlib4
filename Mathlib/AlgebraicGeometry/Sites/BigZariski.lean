@@ -19,7 +19,8 @@ universe u
 open CategoryTheory
 
 lemma CategoryTheory.Presieve.ofArrows.mk' {C : Type*} [Category C] {ι : Type*}
-    (Y : ι → C) {X : C} (f : ∀ i, Y i ⟶ X) {Z : C} (g : Z ⟶ X) (i : ι) (hZ : Z = Y i) (hg : g = eqToHom hZ ≫ f i) :
+    (Y : ι → C) {X : C} (f : ∀ i, Y i ⟶ X) {Z : C} (g : Z ⟶ X) (i : ι) (hZ : Z = Y i)
+    (hg : g = eqToHom hZ ≫ f i) :
     Presieve.ofArrows Y f g := by
   subst hZ
   obtain rfl : g = f i := by simpa using hg
