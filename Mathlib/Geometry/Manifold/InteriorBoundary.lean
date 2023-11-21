@@ -119,19 +119,14 @@ whose source contains `x`. -/
 lemma isBoundaryPoint_iff {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source) :
     I.isBoundaryPoint x ↔ (e.extend I) x ∉ interior (e.extend I).target := by
   -- This lemma is just the "negation" (applying not_iff_not) to isInteriorPoint_iff.
-  constructor <;> intro h
-  · exact (not_iff_not.mpr (isInteriorPoint_iff I hx)).mp h
-  · exact (not_iff_not.mpr (isInteriorPoint_iff I hx)).mpr h
+  rw [← not_iff_not.mpr (isInteriorPoint_iff I hx)]
+  exact Iff.rfl
 
 /-- Every point is either an interior or a boundary point. -/ -- FIXME: better name?!
-lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsBoundaryPoint x := by
-  set e := extChartAt I x
-  set y := extChartAt I x x
-  by_cases y ∈ interior e.target
-  · have : I.isInteriorPoint x := (isInteriorPoint_iff I (mem_chart_source H x)).mpr h
-    exact Or.inl h
-  · have : I.isBoundaryPoint x := (isBoundaryPoint_iff I (mem_chart_source H x)).mpr h
-    exact Or.inr h
+lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.isInteriorPoint x ∨ I.isBoundaryPoint x := by
+  by_cases extChartAt I x x ∈ interior (extChartAt I x).target
+  · exact Or.inl h
+  · exact Or.inr h
 
 variable (I M) in
 /-- A manifold decomposes into interior and boundary. -/
@@ -141,14 +136,11 @@ lemma univ_eq_interior_union_boundary : (SmoothManifoldWithCorners.interior I M)
   · exact fun x _ ↦ trivial
   · exact fun x _ ↦ isInteriorPoint_or_isBoundaryPoint x
 
--- proper name? or _eq_emptyset?
-/-- The interior and boundary of `M` are disjoint. -/
+/-- The interior and boundary of `M` are disjoint. -/ -- xxx: name `..._eq_empty` instead?
 lemma interior_boundary_disjoint :
     (SmoothManifoldWithCorners.interior I M) ∩ (SmoothManifoldWithCorners.boundary I M) = ∅ := by
-  ext x
-  constructor; intro h
-  · exact (not_mem_of_mem_diff h) (mem_of_mem_diff h)
-  · exfalso
+  ext
+  exact ⟨fun h ↦ (not_mem_of_mem_diff h) (mem_of_mem_diff h), by exfalso⟩
 
 /-- The interior of a manifold is an open subset. -/
 lemma interior_isOpen : IsOpen (SmoothManifoldWithCorners.interior I M) := by
