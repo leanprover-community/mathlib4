@@ -188,8 +188,62 @@ namespace SmoothManifoldWithCorners
 variable (I) in
 /-- The boundary of a manifold has empty interior. -/
 lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary I M) = ∅ := by
-  -- use `isBoundaryPoint_iff` and the previous lemma; similar to `interior_isOpen`
-  sorry
+  -- Easy argument. Postponed for now.
+  have aux1 : ⋃ x : M, (extChartAt I x).source = univ := sorry
+
+  let bd := SmoothManifoldWithCorners.boundary I M
+  have := calc interior (SmoothManifoldWithCorners.boundary I M)
+    _ = interior (bd) := rfl
+    _ = interior (bd) ∩ univ := by rw [inter_univ]
+    _ = interior (bd) ∩ ⋃ (x : M), (extChartAt I x).source := by simp_rw [aux1]
+    -- perhaps permute the next steps a bit
+    --_ = interior (bd ∩ ⋃ (x : M), (extChartAt I x).source) := by sorry
+    --_ = ⋃ (x : M), interior bd ∩ (extChartAt I x).source := sorry
+    _ = ⋃ (x : M), interior bd ∩ interior ((extChartAt I x).source) := sorry
+    _ = ⋃ (x : M), interior (bd ∩ (extChartAt I x).source) := by simp_rw [interior_inter]
+
+  -- Apply my characterisation of boundary points.
+  have : ∀ x : M, bd ∩ (extChartAt I x).source = (extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target) := by
+    intro x
+    have r' : (chartAt H x).extend I = extChartAt I x := rfl
+    rw [← r']
+    ext y
+    constructor
+    · rintro ⟨hbd, hsource⟩
+      rw [(chartAt H x).extend_source] at hsource
+      let s := (isBoundaryPoint_iff I hsource).mp hbd
+      apply mem_inter
+      · sorry -- is y ∈ target? true for local homeos...
+      · apply s
+    · intro hy
+      have : y ∈ (chartAt H x).source := sorry -- TODO!
+      apply mem_inter
+      · apply (isBoundaryPoint_iff I this).mpr (not_mem_of_mem_diff hy)
+      · rw [(chartAt H x).extend_source]
+        exact this
+
+  have := calc interior (bd)
+    _ = ⋃ (x : M), interior (bd ∩ (extChartAt I x).source) := sorry -- computation 1
+    _ = ⋃ (x : M), interior ((extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target)) := by simp_rw [this]
+
+    -- this step is SCIFI: very happy if true!! need a rigorous argument, though
+    -- extChart is continuous on its source, so this might hold?
+    -- lemma: f is continuous, then interior f⁻¹'B = f⁻¹ (interior B)
+    -- next up: f continuous on A, then A ∩ interior f⁻¹'(B) = f⁻¹(interior B) assuming f⁻¹B ⊆ A somehow
+    _ = ⋃ (x : M), (extChartAt I x).source ∩ ((extChartAt I x) ⁻¹' (interior ((extChartAt I x).target \ interior (extChartAt I x).target))) := sorry
+
+    _ = ⋃ (x : M), ∅ := by --sorry
+      have aux : ∀ x : M, (extChartAt I x).source ∩ (extChartAt I x) ⁻¹' (interior ((extChartAt I x).target \ interior (extChartAt I x).target)) = ∅ := by
+        intro x
+        set e := extChartAt I x
+        have : interior ((e.target \ interior e.target)) = ∅ := by
+          have : (chartAt H x).extend I = e := rfl
+          apply this ▸ ((chartAt H x).extend_interior_boundary_eq_empty (I := I))
+        rw [this, preimage_empty, inter_empty]
+      simp_rw [aux]
+    _ = ∅ := iUnion_empty
+  -- use `isBoundaryPoint_iff`; similar to `interior_isOpen`
+  exact this--sorry
 
 -- interior I M is a manifold (use TopologicalSpace.Opens.instSmoothManifoldWithCornersSubtypeMemOpensInstMembershipInstSetLikeOpensInstTopologicalSpaceSubtypeInstChartedSpace)
 end SmoothManifoldWithCorners
