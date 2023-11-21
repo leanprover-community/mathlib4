@@ -12,7 +12,7 @@ import Mathlib.Logic.Equiv.Basic
 This file constructs a term elaborator for "obvious" equivalences between iterated products.
 For example,
 ```lean
-prod_assoc((α × β) × (γ × δ), α × (β × γ) × δ)
+(prod_assoc% : (α × β) × (γ × δ) ≃ α × (β × γ) × δ)
 ```
 gives the "obvious" equivalence between `(α × β) × (γ × δ)` and `α × (β × γ) × δ`.
 -/
