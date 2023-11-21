@@ -198,22 +198,8 @@ lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary 
       exact mem_extChartAt_source I y
 
   let bd := SmoothManifoldWithCorners.boundary I M
-  have := calc interior (SmoothManifoldWithCorners.boundary I M)
-    _ = interior (bd) := rfl
-    _ = interior (bd) ∩ univ := by rw [inter_univ]
-    _ = interior (bd) ∩ ⋃ (x : M), (extChartAt I x).source := by simp_rw [aux1]
-    _ = interior (bd) ∩ ⋃ (x : M), interior ((extChartAt I x).source) := by
-      have : ∀ x : M, interior ((extChartAt I x).source) = (extChartAt I x).source := by
-        intro x
-        have : extChartAt I x = (chartAt H x).extend I := rfl
-        rw [this]
-        exact (chartAt H x).isOpen_extend_source I (M := M).interior_eq
-      simp_rw [this]
-    _ = ⋃ (x : M), interior bd ∩ interior ((extChartAt I x).source) := inter_iUnion _ _
-    _ = ⋃ (x : M), interior (bd ∩ (extChartAt I x).source) := by simp_rw [interior_inter]
-
   -- Apply my characterisation of boundary points.
-  have : ∀ x : M, bd ∩ (extChartAt I x).source = (extChartAt I x).source ∩ (extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target) := by
+  have aux2 : ∀ x : M, bd ∩ (extChartAt I x).source = (extChartAt I x).source ∩ (extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target) := by
     intro x
     have r' : (chartAt H x).extend I = extChartAt I x := rfl
     rw [← r']
@@ -232,9 +218,21 @@ lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary 
       rw [(chartAt H x).extend_source] at hsource
       apply (isBoundaryPoint_iff I hsource).mpr (not_mem_of_mem_diff hbd)
 
-  have := calc interior (bd)
-    _ = ⋃ (x : M), interior (bd ∩ (extChartAt I x).source) := sorry -- previous computation
-    _ = ⋃ (x : M), interior ((extChartAt I x).source ∩ (extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target)) := by simp_rw [this]
+  -- Now, compute.
+  have := calc interior (SmoothManifoldWithCorners.boundary I M)
+    _ = interior (bd) := rfl
+    _ = interior (bd) ∩ univ := by rw [inter_univ]
+    _ = interior (bd) ∩ ⋃ (x : M), (extChartAt I x).source := by simp_rw [aux1]
+    _ = interior (bd) ∩ ⋃ (x : M), interior ((extChartAt I x).source) := by
+      have : ∀ x : M, interior ((extChartAt I x).source) = (extChartAt I x).source := by
+        intro x
+        have : extChartAt I x = (chartAt H x).extend I := rfl
+        rw [this]
+        exact (chartAt H x).isOpen_extend_source I (M := M).interior_eq
+      simp_rw [this]
+    _ = ⋃ (x : M), interior bd ∩ interior ((extChartAt I x).source) := inter_iUnion _ _
+    _ = ⋃ (x : M), interior (bd ∩ (extChartAt I x).source) := by simp_rw [interior_inter]
+    _ = ⋃ (x : M), interior ((extChartAt I x).source ∩ (extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target)) := by simp_rw [aux2]
 
     -- this step is SCIFI: very happy if true!! need a rigorous argument, though
     -- extChart is continuous on its source, so this might hold?
