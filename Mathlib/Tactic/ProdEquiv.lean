@@ -109,19 +109,23 @@ def mkProdEquiv (a b : Expr) : MetaM Expr := do
       .app (.const ``rfl [.succ u]) a,
       .app (.const ``rfl [.succ v]) b]
 
+--syntax (name := prodAssocStx) "prod_assoc(" term "," term ")" : term
+
 /-- An elaborator version of `Lean.Expr.mkEquiv`. -/
 elab "prod_assoc(" a:term "," b:term ")" : term => do
   let a ← Elab.Term.elabTerm a none
   let b ← Elab.Term.elabTerm b none
-  let some u := (← inferType a).type? | throwError "Not a type{indentExpr a}"
-  let some v := (← inferType b).type? | throwError "Not a type{indentExpr b}"
-  let e ← mkProdEquiv a b
-  let _ ← Elab.Term.ensureHasType (some <| mkApp2 (.const ``Equiv [u.succ, v.succ]) a b) e
   mkProdEquiv a b
+
+elab "prod_assoc%" : term <= expectedType => do
+  match expectedType with
+    | .app (.app (.const ``Equiv _) a) b => do
+      mkProdEquiv a b
+    | _ => throwError "Expected type {expectedType} is not of the form `α ≃ β`."
 
 variable {α β γ δ : Type*}
 
-example : (α × β) × (γ × δ) ≃ α × (β × γ) × δ :=
-  prod_assoc((α × β) × (γ × δ), α × (β × γ) × δ)
+example : (α × β) × (γ × δ) ≃ α × (β × γ) × δ := prod_assoc((α × β) × (γ × δ), α × (β × γ) × δ)
+example : (α × β) × (γ × δ) ≃ α × (β × γ) × δ := prod_assoc%
 
 end Lean.Expr
