@@ -69,11 +69,7 @@ theorem addLsb_eq_twice_add_one {x b} : addLsb x b = 2 * x + cond b 1 0 := by
   simp [addLsb, two_mul]; cases b <;> rfl
 #align bitvec.add_lsb_eq_twice_add_one Std.BitVec.addLsb_eq_twice_add_one
 
-theorem toNat_eq_foldl_toBEList {n : ℕ} (v : BitVec n) :
-    v.toNat = v.toBEList.foldl (flip bit) 0 := by
-  simp [toBEList]
-  sorry
-#align bitvec.to_nat_eq_foldr_reverse Std.BitVec.toNat_eq_foldl_toBEList
+#noalign bitvec.to_nat_eq_foldr_reverse
 
 theorem toNat_lt {n : ℕ} (v : BitVec n) : v.toNat < 2 ^ n := by
   exact v.toFin.2
