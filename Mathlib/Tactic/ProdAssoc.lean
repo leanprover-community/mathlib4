@@ -113,7 +113,11 @@ def mkProdEquiv (a b : Expr) : MetaM Expr := do
       .app (.const ``rfl [.succ u]) a,
       .app (.const ``rfl [.succ v]) b]
 
-/-- IMPLEMENTATION: Syntax used in the implementation of `prod_assoc%`. -/
+/-- IMPLEMENTATION: Syntax used in the implementation of `prod_assoc%`.
+This elaborator postpones if there are metavariables in the expected type,
+and to propagate the fact that this elaborator produces an `Equiv`,
+the `prod_assoc%` macro sets things up with a type ascription.
+This enables using `prod_assoc%` with, for example `Equiv.trans` dot notation. -/
 syntax (name := prodAssocStx) "prod_assoc_internal%" : term
 
 open Elab Term in
