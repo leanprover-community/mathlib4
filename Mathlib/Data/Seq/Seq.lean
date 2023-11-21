@@ -442,6 +442,11 @@ def corec (f : β → Option (α × β)) (b : β) : Seq' α where
 #align stream.seq.corec Seq'.corec
 
 @[simp]
+theorem get?_corec (f : β → Option (α × β)) (b : β) (n : ℕ) :
+    get? (corec f b) n = Option.map Prod.fst ((fun o => Option.bind o (f ∘ Prod.snd))^[n] (f b)) :=
+  rfl
+
+@[simp]
 theorem dest_corec (f : β → Option (α × β)) (b : β) :
     dest (corec f b) = Option.map (Prod.map id (corec f)) (f b) := by
   rcases hb : f b with (_ | ⟨_, _⟩) <;> simp [corec, dest, head, tail, hb]
@@ -517,6 +522,38 @@ theorem coinduction2 (s) (f g : Seq' α → Seq' β)
   intro s1 s2 h; rcases h with ⟨s, h1, h2⟩
   rw [h1, h2]; apply H
 #align stream.seq.coinduction2 Seq'.coinduction2
+
+@[inherit_doc mk, specialize, simp]
+def mkComputable (f : ℕ → Option α) (_ : ∀ ⦃n⦄, f n = none → f (n + 1) = none) : Seq' α :=
+  corec (fun n => Option.map ((·, n + 1)) (f n)) 0
+
+@[csimp]
+theorem mk_eq_mkComputable : @mk.{u} = @mkComputable.{u} := by
+  funext α f hf
+  ext1 n
+  simp; symm
+  induction n using Nat.recAux with
+  | zero => cases f 0 <;> simp
+  | succ n hn =>
+    cases hfn : f n with
+    | none =>
+      simp [hfn] at hn
+      simp [iterate_succ', hn, hf hfn, - iterate_succ]
+    | some a =>
+      clear hn
+      simp [iterate_succ', hfn, - iterate_succ]
+      suffices he :
+          ((fun o ↦ Option.bind o ((fun n ↦ Option.map (fun x ↦ (x, n + 1)) (f n)) ∘ Prod.snd))^[n]
+            (Option.map (fun x ↦ (x, 1)) (f 0))) = some (a, n + 1) by
+        simp [iterate_succ', he, hfn, - iterate_succ]
+        cases f (n + 1) <;> simp
+      induction n using Nat.recAux generalizing a with
+      | zero => simp [hfn]
+      | succ n hn =>
+        cases hfn' : f n with
+        | none => simp [hf hfn'] at hfn
+        | some a =>
+          simp [iterate_succ', hn a hfn', hfn, - iterate_succ]
 
 /-- Embed a list as a sequence -/
 @[coe]
