@@ -373,7 +373,7 @@ lemma EnoughInjectives.of_adjunction {C : Type u₁} {D : Type u₂}
 lemma EnoughInjectives.of_equivalence {C : Type u₁} {D : Type u₂}
     [Category.{v₁} C] [Category.{v₂} D]
     (e : C ⥤ D) [IsEquivalence e] [EnoughInjectives D] : EnoughInjectives C :=
-EnoughInjectives.of_adjunction (adj := e.asEquivalence.toAdjunction)
+  EnoughInjectives.of_adjunction (adj := e.asEquivalence.toAdjunction)
 
 namespace Equivalence
 
