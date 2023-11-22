@@ -6,6 +6,7 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Logic.UnivLE
+import Mathlib.Logic.Small.Basic
 
 #align_import category_theory.essentially_small from "leanprover-community/mathlib"@"f7707875544ef1f81b32cb68c79e0e24e45a0e76"
 

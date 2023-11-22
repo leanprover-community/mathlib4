@@ -3,15 +3,15 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Logic.Small.Basic
-import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.Logic.Small.Defs
+
 /-!
 # UnivLE
 
 A proposition expressing a universe inequality. `UnivLE.{u, v}` expresses that `u ≤ v`,
 in the form `∀ α : Type u, Small.{v} α`.
 
-See the doc-string for the comparison with an alternative weaker definition.
+See the doc-string for the comparison with an alternative stronger definition.
 -/
 
 set_option autoImplicit true
@@ -55,25 +55,9 @@ theorem UnivLE.trans [UnivLE.{u, v}] [UnivLE.{v, w}] : UnivLE.{u, w} :=
 /- This is the crucial instance that subsumes `univLE_max`. -/
 instance univLE_of_max [UnivLE.{max u v, v}] : UnivLE.{u, v} := @UnivLE.trans univLE_max.{v,u} ‹_›
 
-/- uses small_Pi -/
-example (α : Type u) (β : Type v) [UnivLE.{u, v}] : Small.{v} (α → β) := inferInstance
+/- When `small_Pi` from `Mathlib.Logic.Small.Basic` is imported, we have : -/
+-- example (α : Type u) (β : Type v) [UnivLE.{u, v}] : Small.{v} (α → β) := inferInstance
 
 example : ¬ UnivLE.{u+1, u} := by
   simp only [Small_iff, not_forall, not_exists, not_nonempty_iff]
   exact ⟨Type u, fun α => ⟨fun f => Function.not_surjective_Type.{u, u} f.symm f.symm.surjective⟩⟩
-
-open Cardinal
-
-theorem univLE_iff_cardinal_le : UnivLE.{u, v} ↔ univ.{u, v+1} ≤ univ.{v, u+1} := by
-  rw [← not_iff_not, UnivLE]; simp_rw [small_iff_lift_mk_lt_univ]; push_neg
-  -- strange: simp_rw [univ_umax.{v,u}] doesn't work
-  refine ⟨fun ⟨α, le⟩ ↦ ?_, fun h ↦ ?_⟩
-  · rw [univ_umax.{v,u}, ← lift_le.{u+1}, lift_univ, lift_lift] at le
-    exact le.trans_lt (lift_lt_univ'.{u,v+1} #α)
-  · obtain ⟨⟨α⟩, h⟩ := lt_univ'.mp h; use α
-    rw [univ_umax.{v,u}, ← lift_le.{u+1}, lift_univ, lift_lift]
-    exact h.le
-
-/-- Together with transitivity, this shows UnivLE "IsTotalPreorder". -/
-theorem univLE_total : UnivLE.{u, v} ∨ UnivLE.{v, u} := by
-  simp_rw [univLE_iff_cardinal_le]; apply le_total
