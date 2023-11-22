@@ -1071,7 +1071,6 @@ theorem mk_multiset_of_nonempty (α : Type u) [Nonempty α] : #(Multiset α) = m
 theorem mk_multiset_of_infinite (α : Type u) [Infinite α] : #(Multiset α) = #α := by simp
 #align cardinal.mk_multiset_of_infinite Cardinal.mk_multiset_of_infinite
 
-@[simp]
 theorem mk_multiset_of_isEmpty (α : Type u) [IsEmpty α] : #(Multiset α) = 1 :=
   Multiset.toFinsupp.toEquiv.cardinal_eq.trans (by simp)
 #align cardinal.mk_multiset_of_is_empty Cardinal.mk_multiset_of_isEmpty
