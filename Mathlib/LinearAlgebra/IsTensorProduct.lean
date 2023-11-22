@@ -41,12 +41,13 @@ open TensorProduct MulOpposite
 
 section defs
 
-universe uR uM uN uX
+universe uR uM uN uX uY
 
 variable (R : Type uR) [Semiring R]
 variable {M : Type uM} [AddCommMonoid M] [Module Rᵐᵒᵖ M]
 variable {N : Type uN} [AddCommMonoid N] [Module R N]
 variable {X : Type uX} [AddCommMonoid X]
+variable {X' : Type uX} [AddCommMonoid X']
 
 variable (M N X) in
 structure BalancedBiAddMonoidHom extends (M →+ N →+ X) where
@@ -146,6 +147,20 @@ lemma IsTensorProduct.induction {motive : X → Prop}
   fun x => AddSubmonoid.closure_induction (mem_closure R tmul x)
     (by rintro _ ⟨m, n, rfl⟩; exact tensor _ _)
     (by convert tensor 0 0 using 1; rw [tmul.apply_apply_zero]) add
+
+variable (tmul' : BalancedBiAddMonoidHom R M N X') [h : IsTensorProduct R tmul']
+
+@[simps]
+def IsTensorProduct.cong : X ≃+ X' where
+  toFun := lift tmul tmul'
+  invFun := lift tmul' tmul
+  left_inv := IsTensorProduct.induction _ tmul
+    (fun m n ↦ by rw [lift_comp, lift_comp])
+    (fun _ _ h₁ h₂ ↦ by rw [map_add, map_add, h₁, h₂])
+  right_inv := IsTensorProduct.induction _ tmul'
+    (fun m n ↦ by rw [lift_comp, lift_comp])
+    (fun _ _ h₁ h₂ ↦ by rw [map_add, map_add, h₁, h₂])
+  map_add' _ _ := by simp
 
 end defs
 
@@ -251,10 +266,10 @@ variable (R : Type uR) [Semiring R]
 universe uM uN uX
 
 -- M is right B-module
-variable (M : Type uM) [AddCommGroup M] [Module Bᵐᵒᵖ M]
+variable (M : Type uM) [AddCommMonoid M] [Module Bᵐᵒᵖ M]
 -- N is (B, C)-bimodule
-variable (N : Type uN) [AddCommGroup N] [Module B N] [Module Cᵐᵒᵖ N] [SMulCommClass B Cᵐᵒᵖ N]
-variable (X : Type uX) [AddCommGroup X]
+variable (N : Type uN) [AddCommMonoid N] [Module B N] [Module Cᵐᵒᵖ N] [SMulCommClass B Cᵐᵒᵖ N]
+variable (X : Type uX) [AddCommMonoid X]
 variable (tmul : BalancedBiAddMonoidHom B M N X) [IsTensorProduct B tmul]
 -- then X is right C module
 
