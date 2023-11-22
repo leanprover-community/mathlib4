@@ -45,10 +45,10 @@ open Set
 section TopologyHelpers -- should be in mathlib; Mathlib.Topology.Basic
 variable {X : Type*} [TopologicalSpace X] {s : Set X}
 
--- I don't need this lemma; is is useful independently itself?
+/-- Interior and frontier are disjoint. -/
 lemma interior_frontier_disjoint : interior s ∩ frontier s = ∅ := by
-  rw [← closure_diff_interior s, diff_eq]
-  rw [← inter_assoc, inter_comm, ← inter_assoc, compl_inter_self, empty_inter]
+  rw [← closure_diff_interior s, diff_eq, ← inter_assoc, inter_comm, ← inter_assoc,
+    compl_inter_self, empty_inter]
 
 end TopologyHelpers
 
@@ -81,28 +81,30 @@ protected def boundary : Set M := { x : M | I.IsBoundaryPoint x}
 end SmoothManifoldWithCorners
 
 namespace LocalHomeomorph -- move to SmoothManifoldsWithCorners!
+variable {e e' : LocalHomeomorph M H}
+
 -- more general lemma underlying foobar. xxx: find a better name!
 lemma foobar_abstract {f : LocalHomeomorph H H} {y : H} (hy : y ∈ f.source)
     (h : I y ∈ interior (range I)) : I (f y) ∈ interior (range I) := by
   sorry
 
 -- xxx: needs better name!
--- the interior of the target of an extended local homeo is contained in the interior of it's model's range
-lemma extend_interior_target_subset {e : LocalHomeomorph M H} :
-    interior (e.extend I).target ⊆ interior (range I) := by
+-- the interior of the target of an extended local homeo is contained in the interior of its
+-- model's range
+lemma extend_interior_target_subset : interior (e.extend I).target ⊆ interior (range I) := by
   rw [e.extend_target, interior_inter, (e.open_target.preimage I.continuous_symm).interior_eq]
   exact inter_subset_right _ _
 
 -- xxx: find a good name!!
-lemma foobaz {e : LocalHomeomorph M H} {y : H} (hy : y ∈ e.target)
-    (hy' : I y ∈ interior (range ↑I)) : I y ∈ interior (e.extend I).target := by
+lemma foobaz {y : H} (hy : y ∈ e.target) (hy' : I y ∈ interior (range ↑I)) :
+    I y ∈ interior (e.extend I).target := by
   rw [e.extend_target, interior_inter, (e.open_target.preimage I.continuous_symm).interior_eq,
     mem_inter_iff, mem_preimage]
   exact ⟨mem_of_eq_of_mem (I.left_inv (y)) hy, hy'⟩
 
 /-- If `e` and `e'` are two charts, the transition map maps interior points to interior points. -/
 -- as we only need continuity property, e or e' being in the atlas is not required
-lemma foobar {e e' : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source ∩ e'.source) :
+lemma foobar {x : M} (hx : x ∈ e.source ∩ e'.source) :
     (e.extend I) x ∈ interior (e.extend I).target ↔
     (e'.extend I) x ∈ interior (e'.extend I).target := by
   rcases ((mem_inter_iff x _ _).mp hx) with ⟨hxe, hxe'⟩
@@ -145,7 +147,7 @@ lemma isBoundaryPoint_iff {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source
   rw [← not_iff_not.mpr (isInteriorPoint_iff I hx)]
   exact Iff.rfl
 
-/-- Every point is either an interior or a boundary point. -/ -- FIXME: better name?!
+/-- Every point is either an interior or a boundary point. -/
 lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsBoundaryPoint x := by
   by_cases extChartAt I x x ∈ interior (extChartAt I x).target
   · exact Or.inl h
@@ -154,10 +156,8 @@ lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsB
 variable (I M) in
 /-- A manifold decomposes into interior and boundary. -/
 lemma univ_eq_interior_union_boundary : (SmoothManifoldWithCorners.interior I M) ∪
-    (SmoothManifoldWithCorners.boundary I M) = (univ : Set M) := by
-  apply le_antisymm
-  · exact fun x _ ↦ trivial
-  · exact fun x _ ↦ isInteriorPoint_or_isBoundaryPoint x
+    (SmoothManifoldWithCorners.boundary I M) = (univ : Set M) :=
+  le_antisymm (fun _ _ ↦ trivial) (fun x _ ↦ isInteriorPoint_or_isBoundaryPoint x)
 
 /-- The interior and boundary of `M` are disjoint. -/ -- xxx: name `..._eq_empty` instead?
 lemma interior_boundary_disjoint :
@@ -174,8 +174,7 @@ lemma interior_isOpen : IsOpen (SmoothManifoldWithCorners.interior I M) := by
   let U := interior (e.extend I).target
   -- For all `y ∈ e.source`, `y` is an interior point iff its image lies in `U`.
   -- FIXME: should this be a separate lemma?
-  use (e.extend I).source ∩ (e.extend I) ⁻¹' U
-  refine ⟨?_, ?_, ?_⟩
+  refine ⟨(e.extend I).source ∩ (e.extend I) ⁻¹' U, ?_, ?_, ?_⟩
   · intro y hy
     rw [e.extend_source] at hy
     apply (isInteriorPoint_iff I (mem_of_mem_inter_left hy)).mpr
