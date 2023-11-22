@@ -87,8 +87,8 @@ variable {J : Type v} [SmallCategory J]
 
 /-! We now provide two distinct implementations in the category of types.
 
-The first, in the `CategoryTheory.Limits.Types.UnivLE` namespace,
-assumes `UnivLE.{v, u}` and constructs `v`-small limits in `Type u`.
+The first, in the `CategoryTheory.Limits.Types.Small` namespace,
+assumes `Small.{u} J` and constructs `J`-indexed limits in `Type u`.
 
 The second, in the `CategoryTheory.Limits.Types.TypeMax` namespace
 constructs limits for functors `F : J ⥤ TypeMax.{v, u}`, for `J : Type v`.
@@ -99,9 +99,9 @@ Hopefully we might be able to entirely remove the `TypeMax` constructions,
 but for now they are useful glue for the later parts of the library.
 -/
 
-namespace UnivLE
+namespace Small
 
-variable [UnivLE.{v, u}]
+variable [Small.{u} J]
 
 /-- (internal implementation) the limit cone of a functor,
 implemented as flat sections of a pi type
@@ -130,7 +130,7 @@ noncomputable def limitConeIsLimit (F : J ⥤ Type u) : IsLimit (limitCone.{v, u
     ext x j
     simpa using congr_fun (w j) x
 
-end UnivLE
+end Small
 
 -- TODO: If `UnivLE` works out well, we will eventually want to deprecate these
 -- definitions, and probably as a first step put them in namespace or otherwise rename them.
@@ -174,7 +174,11 @@ we leave them in the main `CategoryTheory.Limits.Types` namespace.
 section UnivLE
 
 open UnivLE
-variable [UnivLE.{v, u}]
+
+instance hasLimit [Small.{u} J] (F : J ⥤ Type u) : HasLimit F :=
+  HasLimit.mk
+    { cone := Small.limitCone.{v, u} F
+      isLimit := Small.limitConeIsLimit F }
 
 /--
 The category of types has all limits.
@@ -183,17 +187,11 @@ More specifically, when `UnivLE.{v, u}`, the category `Type u` has all `v`-small
 
 See <https://stacks.math.columbia.edu/tag/002U>.
 -/
-instance (priority := 1300) hasLimitsOfSize : HasLimitsOfSize.{v} (Type u) where
-  has_limits_of_shape _ :=
-    { has_limit := fun F =>
-        HasLimit.mk
-          { cone := UnivLE.limitCone.{v, u} F
-            isLimit := UnivLE.limitConeIsLimit F } }
+instance (priority := 1300) hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{v} (Type u) where
+  has_limits_of_shape _ := { }
 #align category_theory.limits.types.has_limits_of_size CategoryTheory.Limits.Types.hasLimitsOfSize
 
-instance hasLimit (F : J ⥤ Type u) : HasLimit F :=
-  (Types.hasLimitsOfSize.{v, u}.has_limits_of_shape J).has_limit F
-
+variable [Small.{u} J]
 /-- The equivalence between the abstract limit of `F` in `TypeMax.{v, u}`
 and the "concrete" definition as the sections of `F`.
 -/
