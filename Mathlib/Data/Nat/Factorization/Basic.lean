@@ -773,7 +773,7 @@ theorem factorization_eq_of_coprime_right {p a b : ℕ} (hab : Coprime a b) (hpb
 
 /-- The prime factorizations of coprime `a` and `b` are disjoint -/
 theorem factorization_disjoint_of_coprime {a b : ℕ} (hab : Coprime a b) :
-    Disjoint a.factorization.support b.factorization.support := by
+    _root_.Disjoint a.factorization.support b.factorization.support := by
   simpa only [support_factorization] using
     disjoint_toFinset_iff_disjoint.mpr (coprime_factors_disjoint hab)
 #align nat.factorization_disjoint_of_coprime Nat.factorization_disjoint_of_coprime
