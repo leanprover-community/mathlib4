@@ -290,7 +290,35 @@ theorem ofMulAction_single (g : G) (x : H) (r : k) :
 #align representation.of_mul_action_single Representation.ofMulAction_single
 
 end MulAction
+section DistribMulAction
 
+variable (M A : Type*) [Monoid M] [AddCommGroup A] [DistribMulAction M A]
+
+/-- Turns an `AddCommGroup` `A` with a `DistribMulAction` of a monoid `M` into a
+`ℤ`-linear `M`-representation on `A`. -/
+def Representation.ofDistribMulAction : Representation ℤ M A :=
+(addMonoidEndRingEquivInt A : _ →* _).comp (DistribMulAction.toAddMonoidEnd M A)
+
+variable {M A}
+
+@[simp] theorem Representation.ofDistribMulAction_apply_apply (g : M) (a : A) :
+  Representation.ofDistribMulAction M A g a = g • a := rfl
+
+end DistribMulAction
+section MulDistribMulAction
+variable (M G : Type*) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
+
+/-- Turns a `CommGroup` `G` with a `MulDistribMulAction` of a monoid `M` into a
+`ℤ`-linear `M`-representation on `Additive G`. -/
+def Representation.ofMulDistribMulAction : Representation ℤ M (Additive G) :=
+(addMonoidEndRingEquivInt (Additive G) : AddMonoid.End (Additive G) →* _).comp
+  ((monoidEndToAdditive G : _ →* _).comp
+  (MulDistribMulAction.toMonoidEnd M G))
+
+@[simp] theorem Representation.ofMulDistribMulAction_apply_apply (g : M) (a : G) :
+  ofMulDistribMulAction M G g a = g • a := rfl
+
+end MulDistribMulAction
 section Group
 
 variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]

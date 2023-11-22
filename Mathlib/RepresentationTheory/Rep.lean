@@ -288,6 +288,32 @@ noncomputable def linearizationOfMulActionIso (H : Type u) [MulAction G H] :
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization_of_mul_action_iso Rep.linearizationOfMulActionIso
 
+section
+
+variable (M A : Type) [Monoid M] [AddCommGroup A] [DistribMulAction M A]
+
+/-- Turns an `AddCommGroup` `A` with a `DistribMulAction` of a monoid `M` into a
+`ℤ`-linear `M`-representation on `A`. -/
+def Rep.ofDistribMulAction : Rep ℤ M :=
+Rep.of (Representation.ofDistribMulAction M A)
+
+@[simp] theorem Rep.ofDistribMulAction_ρ_apply_apply (g : M) (a : A) :
+    (Rep.ofDistribMulAction M A).ρ g a = g • a := rfl
+
+end
+section
+variable (M G : Type) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
+
+/-- Turns a `CommGroup` `G` with a `MulDistribMulAction` of a monoid `M` into a
+`ℤ`-linear `M`-representation on `Additive G`. -/
+def Rep.ofMulDistribMulAction : Rep ℤ M :=
+Rep.of (Representation.ofMulDistribMulAction M G)
+
+@[simp] theorem Rep.ofMulDistribMulAction_ρ_apply_apply (g : M) (a : G) :
+  (ofMulDistribMulAction M G).ρ g a = g • a := rfl
+
+end
+
 variable {k G}
 
 /-- Given an element `x : A`, there is a natural morphism of representations `k[G] ⟶ A` sending
