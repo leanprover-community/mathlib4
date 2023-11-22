@@ -226,13 +226,15 @@ instance uniqueOfRight [Subsingleton M₂] : Unique (M →ₛₗ[σ₁₂] M₂)
 #align linear_map.unique_of_right LinearMap.uniqueOfRight
 
 /-- Evaluation of a `σ₁₂`-linear map at a fixed `a`, as an `AddMonoidHom`. -/
+@[simps]
 def evalAddMonoidHom (a : M) : (M →ₛₗ[σ₁₂] M₂) →+ M₂ where
   toFun f := f a
   map_add' f g := LinearMap.add_apply f g a
   map_zero' := rfl
 #align linear_map.eval_add_monoid_hom LinearMap.evalAddMonoidHom
 
-/-- `LinearMap.toAddMonoidHom` promoted to a `AddMonoidHom` -/
+/-- `LinearMap.toAddMonoidHom` promoted to an `AddMonoidHom`. -/
+@[simps]
 def toAddMonoidHom' : (M →ₛₗ[σ₁₂] M₂) →+ M →+ M₂ where
   toFun := toAddMonoidHom
   map_zero' := by ext; rfl
