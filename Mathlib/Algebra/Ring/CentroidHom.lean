@@ -5,6 +5,8 @@ Authors: Yaël Dillies, Christopher Hoskin
 -/
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.GroupTheory.Submonoid.Centralizer
+import Mathlib.GroupTheory.Subgroup.Basic
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -132,13 +134,21 @@ theorem coe_toAddMonoidHom_injective : Injective ((↑) : CentroidHom α → α 
 #align centroid_hom.coe_to_add_monoid_hom_injective CentroidHom.coe_toAddMonoidHom_injective
 
 /-- Turn a centroid homomorphism into an additive monoid endomorphism. -/
-def toEnd (f : CentroidHom α) : AddMonoid.End α :=
+def toEnd  (f : CentroidHom α) : AddMonoid.End α :=
   (f : α →+ α)
 #align centroid_hom.to_End CentroidHom.toEnd
+
+
 
 theorem toEnd_injective : Injective (CentroidHom.toEnd : CentroidHom α → AddMonoid.End α) :=
   coe_toAddMonoidHom_injective
 #align centroid_hom.to_End_injective CentroidHom.toEnd_injective
+
+--#check @toEnd α _
+
+--instance : AddHomClass (@toEnd α _):= sorry
+
+--instance : AddHom (toEnd) := sorry
 
 /-- Copy of a `CentroidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
@@ -398,6 +408,19 @@ theorem comp_mul_comm (T S : CentroidHom α) (a b : α) : (T ∘ S) (a * b) = (S
   simp only [Function.comp_apply]
   rw [map_mul_right, map_mul_left, ← map_mul_right, ← map_mul_left]
 #align centroid_hom.comp_mul_comm CentroidHom.comp_mul_comm
+
+local notation "L" => AddMonoid.End.mulLeft
+local notation "R" => AddMonoid.End.mulRight
+
+def toEnd' (α : Type*) [NonUnitalNonAssocSemiring α] :
+    AddMonoidHom (CentroidHom α) (AddMonoid.End α) where
+  toFun := toEnd
+  map_add' _ _ := by
+    simp only [toEnd_add]
+  map_zero' := by simp only [toEnd_zero]
+
+lemma centroid_eq_centralizer_mul_op :
+    AddMonoidHom.mrange (toEnd' α) = AddSubmonoid.centralizer (Set.range L ∪ Set.range R) := sorry
 
 end NonUnitalNonAssocSemiring
 
