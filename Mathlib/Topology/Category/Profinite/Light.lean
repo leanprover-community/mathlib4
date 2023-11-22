@@ -108,7 +108,7 @@ theorem cofinal_cofinal_sequence (S : Profinite) [S.IsLight] :
       (cofinal_sequence S m)).choose_spec.choose
 
 @[simps]
-theorem initial_functor (S : Profinite) [S.IsLight] : ℕᵒᵖ ⥤ DiscreteQuotient S where
+noncomputable def initial_functor (S : Profinite) [S.IsLight] : ℕᵒᵖ ⥤ DiscreteQuotient S where
   obj n := cofinal_sequence S (unop n)
   map h := homOfLE (antitone_cofinal_sequence S (leOfHom h.unop))
 
