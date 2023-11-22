@@ -763,6 +763,31 @@ theorem mul_sub_mul_mem {R : Type*} [CommRing R] (I : Ideal R) {a b c d : R} (h1
   exact I.add_mem (I.mul_mem_right _ h1) (I.mul_mem_left _ h2)
 #align ideal.mul_sub_mul_mem Ideal.mul_sub_mul_mem
 
+open BigOperators
+theorem prod_mem_of_mem {ι R : Type*} [CommRing R] {t : Finset ι} {f : ι → R}
+    (I : Ideal R) (mem : ∃ c ∈ t, f c ∈ I) :
+    ∏ i in t, f i ∈ I := by
+  classical
+  induction' t using Finset.induction_on with j t hj ih
+  · aesop
+  · simp_rw [Finset.mem_insert] at mem
+    rw [Finset.prod_insert hj]
+    obtain ⟨c, (rfl|hc1), hc2⟩ := mem
+    · exact I.mul_mem_right _ hc2
+    · exact I.mul_mem_left _ <| ih ⟨c, hc1, hc2⟩
+
+theorem IsPrime.prod_mem_iff_exists_mem {ι R : Type*} [CommRing R] {t : Finset ι} {f : ι → R}
+    (I : Ideal R) [isPrime : I.IsPrime] :
+    (∏ i in t, f i) ∈ I ↔ ∃ c ∈ t, f c ∈ I := by
+  classical
+  refine ⟨t.induction_on (fun h ↦ (isPrime.1 <| (eq_top_iff_one _).mpr <| by aesop).elim)
+    fun j t hj ih h ↦ ?_, I.prod_mem_of_mem⟩
+  rw [Finset.prod_insert hj] at h
+  rcases isPrime.mem_or_mem h with rid|rid
+  · exact ⟨j, Finset.mem_insert.mpr <| Or.intro_left _ rfl, rid⟩
+  · obtain ⟨c, hc1, hc2⟩ := ih rid
+    exact ⟨c, Finset.mem_insert.mpr <| Or.intro_right _ hc1, hc2⟩
+
 end Ideal
 
 end CommRing
