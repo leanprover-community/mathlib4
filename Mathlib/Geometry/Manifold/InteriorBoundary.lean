@@ -90,14 +90,55 @@ protected def interior : Set M := { x : M | I.IsInteriorPoint x}
 variable (I M) in
 /-- The **boundary** of a manifold `M` is the set of its boundary points. -/
 protected def boundary : Set M := { x : M | I.IsBoundaryPoint x}
+end SmoothManifoldWithCorners
+
+namespace LocalHomeomorph -- move to SmoothManifoldsWithCorners!
+-- more general lemma underlying foobar. xxx: find a better name!
+lemma foobar_abstract {f : LocalHomeomorph H H} {y : H} (hy : y ∈ f.source)
+    (h : I y ∈ interior (range I)) : I (f y) ∈ interior (range I) := by
+  sorry
+
+-- xxx: needs better name!
+-- the interior of the target of an extended local homeo is contained in the interior of it's model's range
+lemma extend_interior_target_subset {e : LocalHomeomorph M H} :
+    interior (e.extend I).target ⊆ interior (range I) := by
+  rw [e.extend_target, interior_inter, (e.open_target.preimage I.continuous_symm).interior_eq]
+  exact inter_subset_right _ _
+
+-- xxx: find a good name!!
+lemma foobaz {e : LocalHomeomorph M H} {y : H} (hy : y ∈ e.target)
+    (hy' : I y ∈ interior (range ↑I)) : I y ∈ interior (e.extend I).target := by
+  rw [e.extend_target, interior_inter, (e.open_target.preimage I.continuous_symm).interior_eq,
+    mem_inter_iff, mem_preimage]
+  exact ⟨mem_of_eq_of_mem (I.left_inv (y)) hy, hy'⟩
 
 /-- If `e` and `e'` are two charts, the transition map maps interior points to interior points. -/
 -- as we only need continuity property, e or e' being in the atlas is not required
 lemma foobar {e e' : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source ∩ e'.source) :
     (e.extend I) x ∈ interior (e.extend I).target ↔
-    (e'.extend I) x ∈ interior (e'.extend I).target := sorry
--- both directions should be the same, more general lemma
+    (e'.extend I) x ∈ interior (e'.extend I).target := by
+  rcases ((mem_inter_iff x _ _).mp hx) with ⟨hxe, hxe'⟩
+  -- reduction, step 1: simplify what the interior means
+  have : (e.extend I) x ∈ interior (e.extend I).target ↔ I (e x) ∈ interior (range I) :=
+    ⟨fun hx ↦ extend_interior_target_subset hx, fun hx ↦ foobaz (e.map_source hxe) hx⟩
+  rw [this]
+  have : (e'.extend I) x ∈ interior (e'.extend I).target ↔ I (e' x) ∈ interior (range I) :=
+    ⟨fun hx ↦ extend_interior_target_subset hx, fun hx ↦ foobaz (e'.map_source hxe') hx⟩
+  rw [this]
+  -- step 2: rewrite in terms of coordinate changes
+  constructor
+  · intro h
+    let f := e.symm.trans e'
+    have h2 : e x ∈ f.source := by
+      have : e.symm (e x) = x := e.left_inv' hxe
+      rw [LocalHomeomorph.trans_source, mem_inter_iff (e x), e.symm_source, mem_preimage, this]
+      exact ⟨e.map_source hxe, hxe'⟩
+    rw [← (e.left_inv' hxe)]
+    exact foobar_abstract h2 h
+  · sorry -- exactly the same... what's the best way to deduplicate?
+end LocalHomeomorph
 
+namespace SmoothManifoldWithCorners
 -- FIXME(MR): find a better wording for the next two docstrings
 variable (I) in
 /-- Whether `x` is an interior point can equivalently be described by any chart
@@ -105,7 +146,7 @@ variable (I) in
 -- as we only need continuity properties, `e` being in the atlas is not required
 lemma isInteriorPoint_iff {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source) :
     I.IsInteriorPoint x ↔ (e.extend I) x ∈ interior (e.extend I).target :=
-  foobar (mem_inter (mem_chart_source H x) hx)
+  (chartAt H x).foobar (mem_inter (mem_chart_source H x) hx)
 
 variable (I) in
 /-- Whether `x` is a boundary point of `M` can equivalently be described by any chart
