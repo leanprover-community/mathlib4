@@ -3518,6 +3518,7 @@ theorem toList_cons {a : α} {s : Finset α} (h : a ∉ s) : (cons a s h).toList
     simp only [List.mem_cons, Finset.mem_toList, Finset.mem_cons]
 #align finset.to_list_cons Finset.toList_cons
 
+open List in
 theorem toList_insert [DecidableEq α] {a : α} {s : Finset α} (h : a ∉ s) :
     (insert a s).toList ~ a :: s.toList :=
   cons_eq_insert _ _ h ▸ toList_cons _
