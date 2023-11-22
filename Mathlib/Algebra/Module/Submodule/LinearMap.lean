@@ -233,7 +233,7 @@ def evalAddMonoidHom (a : M) : (M →ₛₗ[σ₁₂] M₂) →+ M₂ where
   map_zero' := rfl
 #align linear_map.eval_add_monoid_hom LinearMap.evalAddMonoidHom
 
-/-- `LinearMap.toAddMonoidHom` promoted to a `AddMonoidHom`. -/
+/-- `LinearMap.toAddMonoidHom` promoted to an `AddMonoidHom`. -/
 @[simps]
 def toAddMonoidHom' : (M →ₛₗ[σ₁₂] M₂) →+ M →+ M₂ where
   toFun := toAddMonoidHom
