@@ -389,18 +389,23 @@ syntax (name := nlinarith) "nlinarith" "!"? linarithArgsRest : tactic
 @[inherit_doc nlinarith] macro "nlinarith!" rest:linarithArgsRest : tactic =>
   `(tactic| nlinarith ! $rest:linarithArgsRest)
 
+/-- Elaborate `t` in a way that is suitable for linarith. -/
+def elabLinarithArg (tactic : Name) (t : Term) : TacticM Expr := Term.withoutErrToSorry do
+  let (e, mvars) ← elabTermWithHoles t none tactic
+  unless mvars.isEmpty do
+    throwErrorAt t "Argument passed to {tactic} has metavariables:{indentD e}"
+  return e
+
 /--
 Allow elaboration of `LinarithConfig` arguments to tactics.
 -/
 declare_config_elab elabLinarithConfig Linarith.LinarithConfig
 
 elab_rules : tactic
-  | `(tactic| linarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) =>
-    withMainContext do commitIfNoEx do
-      liftMetaFinishingTactic <|
-        Linarith.linarith o.isSome
-          (← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTerm ·.raw none)).toList
-          ((← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome)
+  | `(tactic| linarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) => withMainContext do
+    let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `linarith)
+    let cfg := (← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome
+    commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
 -- TODO restore this when `add_tactic_doc` is ported
 -- add_tactic_doc
@@ -413,15 +418,12 @@ open Linarith
 
 elab_rules : tactic
   | `(tactic| nlinarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) => withMainContext do
-    let cfg ← elabLinarithConfig (mkOptionalNode cfg)
-    let cfg :=
-    { cfg with
+    let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `nlinarith)
+    let cfg := (← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome
+    let cfg := { cfg with
       preprocessors := some (cfg.preprocessors.getD defaultPreprocessors ++
         [(nlinarithExtras : GlobalBranchingPreprocessor)]) }
-    liftMetaFinishingTactic <|
-      Linarith.linarith o.isSome
-        (← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTerm ·.raw none)).toList
-        (cfg.updateReducibility bang.isSome)
+    commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
 -- TODO restore this when `add_tactic_doc` is ported
 -- add_tactic_doc

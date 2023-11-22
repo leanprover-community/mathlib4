@@ -570,7 +570,7 @@ theorem equivIccQuot_comp_mk_eq_toIocMod :
       Quot.mk _ ⟨toIocMod hp.out a x, Ioc_subset_Icc_self <| toIocMod_mem_Ioc _ _ x⟩ := by
   rw [equivIccQuot_comp_mk_eq_toIcoMod]
   funext x
-  by_cases a ≡ x [PMOD p]
+  by_cases h : a ≡ x [PMOD p]
   · simp_rw [(modEq_iff_toIcoMod_eq_left hp.out).1 h, (modEq_iff_toIocMod_eq_right hp.out).1 h]
     exact Quot.sound EndpointIdent.mk
   · simp_rw [(not_modEq_iff_toIcoMod_eq_toIocMod hp.out).1 h]
