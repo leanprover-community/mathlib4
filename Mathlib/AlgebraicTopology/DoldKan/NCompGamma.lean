@@ -234,16 +234,17 @@ theorem identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
     simp only [N₂Γ₂_inv_app_f_f, N₂_obj_p_f, assoc]
   have eq₂ : (Γ₀.splitting (N₂.obj P).X).ιSummand (Splitting.IndexSet.id (op [n])) ≫
       (N₂.map (Γ₂N₂.natTrans.app P)).f.f n = PInfty.f n ≫ P.p.app (op [n]) := by
-    sorry
-    --dsimp
-    --simp only [assoc, Γ₂N₂.natTrans_app_f_app, Functor.comp_map, NatTrans.comp_app,
-    --  Karoubi.comp_f, compatibility_Γ₂N₁_Γ₂N₂_hom_app, eqToHom_refl, Karoubi.eqToHom_f,
-    --  PInfty_on_Γ₀_splitting_summand_eq_self_assoc, Functor.comp_obj]
-    --dsimp [N₂]
-    --simp only [Splitting.ι_desc_assoc, assoc, id_comp, unop_op,
-    --  Splitting.IndexSet.id_fst, len_mk, Splitting.IndexSet.e,
-    --  Splitting.IndexSet.id_snd_coe, op_id, P.X.map_id, id_comp,
-    --  PInfty_f_naturality_assoc, PInfty_f_idem_assoc, app_idem]
+    dsimp
+    rw [PInfty_on_Γ₀_splitting_summand_eq_self_assoc, Γ₂N₂.natTrans_app_f_app]
+    dsimp
+    rw [Γ₂N₂ToKaroubiIso_hom_app, assoc, Splitting.ι_desc_assoc, assoc, assoc]
+    dsimp [toKaroubi]
+    rw [Splitting.ι_desc_assoc]
+    dsimp
+    simp only [assoc, Splitting.ι_desc_assoc, unop_op, Splitting.IndexSet.id_fst,
+      len_mk, NatTrans.naturality, PInfty_f_idem_assoc,
+      PInfty_f_naturality_assoc, app_idem_assoc]
+    erw [P.X.map_id, comp_id]
   simp only [Karoubi.comp_f, HomologicalComplex.comp_f, Karoubi.id_eq, N₂_obj_p_f, assoc,
     eq₁, eq₂, PInfty_f_naturality_assoc, app_idem, PInfty_f_idem_assoc]
 set_option linter.uppercaseLean3 false in
