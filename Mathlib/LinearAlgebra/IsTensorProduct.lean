@@ -215,13 +215,10 @@ def IsTensorProduct.leftModule : Module A X where
   __ := leftSmul.distribMulAction tmul
   smul_add a x y := by simp
   add_smul a b x := show leftSmul tmul _ _ = leftSmul tmul _ _ + leftSmul tmul _ _ by
-    refine IsTensorProduct.induction B tmul ?_ ?_ ?_ x
+    refine IsTensorProduct.induction B tmul ?_ ?_ x
     · intro m n; simp only [leftSmul_tmul, add_smul, tmul.apply_add_apply]
     · intro x y hx hy
       simp only [map_add, hx, hy]
-      abel
-    · intro x hx
-      simp only [map_neg, hx]
       abel
   zero_smul x := show leftSmul tmul _ _ = 0 by
     refine IsTensorProduct.induction B tmul ?_ ?_ x
@@ -282,14 +279,12 @@ lemma IsTensorProduct.rightSmul.one_smul (x : X) : rightSmul tmul (1 : Cᵐᵒ�
 lemma IsTensorProduct.rightSmul.mul_smul (a a' : Cᵐᵒᵖ) (x : X) :
     rightSmul tmul (a * a') x =
     rightSmul tmul a (rightSmul tmul a' x) := by
-  refine IsTensorProduct.induction B tmul ?_ ?_ ?_ x
+  refine IsTensorProduct.induction B tmul ?_ ?_ x
   · intro m n
     simp only [rightSmul_tmul]
     rw [MulAction.mul_smul]
   · intro x x' hx hx'
     simp only [map_add, hx, hx']
-  · intro x
-    simp only [map_neg, neg_inj, imp_self]
 
 def IsTensorProduct.rightSmul.smul : SMul Cᵐᵒᵖ X where
   smul r := rightSmul tmul r
@@ -308,22 +303,16 @@ def IsTensorProduct.rightModule : Module Cᵐᵒᵖ X where
   __ := rightSmul.distribMulAction tmul
   smul_add a x y := by simp
   add_smul a b x := show rightSmul tmul _ _ = rightSmul tmul _ _ + rightSmul tmul _ _ by
-    refine IsTensorProduct.induction B tmul ?_ ?_ ?_ x
+    refine IsTensorProduct.induction B tmul ?_ ?_ x
     · intro m n; simp only [rightSmul_tmul, add_smul, tmul.apply_apply_add]
     · intro x y hx hy
       simp only [map_add, hx, hy]
       abel
-    · intro x hx
-      simp only [map_neg, hx]
-      abel
   zero_smul x := show rightSmul tmul _ _ = 0 by
-    refine IsTensorProduct.induction B tmul ?_ ?_ ?_ x
+    refine IsTensorProduct.induction B tmul ?_ ?_ x
     · intro m n; simp only [rightSmul_tmul, zero_smul, tmul.apply_apply_zero]
     · intro x y hx hy
       simp only [map_add, hx, hy]
-      abel
-    · intro x hx
-      simp only [map_neg, hx]
       abel
 
 end right_mod
