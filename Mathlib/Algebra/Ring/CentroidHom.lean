@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.Tactic.LibrarySearch
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -412,15 +413,96 @@ theorem comp_mul_comm (T S : CentroidHom α) (a b : α) : (T ∘ S) (a * b) = (S
 local notation "L" => AddMonoid.End.mulLeft
 local notation "R" => AddMonoid.End.mulRight
 
+/-- Ring hom from the centroid into the additive monoid endomorphisms. -/
 def toEnd' (α : Type*) [NonUnitalNonAssocSemiring α] :
-    AddMonoidHom (CentroidHom α) (AddMonoid.End α) where
+    RingHom (CentroidHom α) (AddMonoid.End α) where
   toFun := toEnd
   map_add' _ _ := by
     simp only [toEnd_add]
   map_zero' := by simp only [toEnd_zero]
+  map_one' := by simp only [toEnd_one]
+  map_mul' := by simp only [toEnd_mul, forall_const]
+
+lemma mul_apply' (S T : AddMonoid.End α) (a : α) : T (S a) = (T * S) a := by
+  rw [← AddMonoidHom.comp_apply, AddMonoidHom.coe_comp, AddMonoid.coe_mul]
+
+lemma map_mul_left (f : CentroidHom α) (a b : α) : f (a * b) = a * f b :=
+    CentroidHomClass.map_mul_left _ _ _
+
+lemma map_mul_right (f : CentroidHom α) (a b : α) : f (a * b) = f a * b :=
+    CentroidHomClass.map_mul_right _ _ _
 
 lemma centroid_eq_centralizer_mul_op :
-    AddMonoidHom.mrange (toEnd' α) = AddSubmonoid.centralizer (Set.range L ∪ Set.range R) := sorry
+    MonoidHom.mrange (toEnd' α) = Submonoid.centralizer (Set.range L ∪ Set.range R) := by
+  ext T
+  simp only [MonoidHom.mem_mrange]
+  constructor
+  · intro ⟨f,hf⟩
+    rw [Submonoid.centralizer]
+    simp only [Submonoid.mem_mk, Subsemigroup.mem_mk]
+    rw [Set.centralizer]
+    simp only [Set.mem_union, Set.mem_range, Set.mem_setOf_eq]
+    intro S hS
+    cases' hS with h₁ h₂
+    cases' h₁ with a ha
+    rw [← ha, ← hf]
+    rw [toEnd']
+    simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+    rw [toEnd]
+    apply AddMonoidHom.ext
+    intro b
+    rw [AddMonoid.coe_mul, ← AddMonoidHom.coe_comp, AddMonoidHom.comp_apply]
+    rw [AddMonoid.coe_mul, ← AddMonoidHom.coe_comp, AddMonoidHom.comp_apply]
+    rw [AddMonoid.End.mulLeft_apply_apply]
+    rw [AddMonoid.End.mulLeft_apply_apply]
+    simp only [AddMonoidHom.coe_coe]
+    rw [f.map_mul_left]
+    cases' h₂ with b hb
+    rw [← hb, ← hf]
+    rw [toEnd']
+    simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+    rw [toEnd]
+    apply AddMonoidHom.ext
+    intro a
+    rw [AddMonoid.coe_mul, ← AddMonoidHom.coe_comp, AddMonoidHom.comp_apply]
+    rw [AddMonoid.coe_mul, ← AddMonoidHom.coe_comp, AddMonoidHom.comp_apply]
+    rw [AddMonoid.End.mulRight_apply_apply]
+    rw [AddMonoid.End.mulRight_apply_apply]
+    simp only [AddMonoidHom.coe_coe]
+    rw [f.map_mul_right]
+  · intro h
+    use ⟨T, fun a b => by
+      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
+      rw [Submonoid.mem_centralizer_iff] at h
+      rw [← AddMonoid.End.mulLeft_apply_apply]
+      rw [← AddMonoid.End.mulLeft_apply_apply]
+      have e1 : L a * T = T * L a := by
+        apply (Submonoid.mem_centralizer_iff.mp h)
+        apply (Set.mem_union _ _ _).mpr
+        simp only [Set.mem_range, exists_apply_eq_apply, true_or]
+      rw [← AddMonoidHom.comp_apply, AddMonoidHom.coe_comp, ← AddMonoid.coe_mul]
+      rw [← AddMonoidHom.comp_apply, AddMonoidHom.coe_comp, ← AddMonoid.coe_mul]
+      rw [e1]
+    , fun a b => by
+      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
+      rw [← AddMonoid.End.mulRight_apply_apply]
+      rw [← AddMonoid.End.mulRight_apply_apply]
+      have e1 : R b * T = T * R b := by
+        apply (Submonoid.mem_centralizer_iff.mp h)
+        apply (Set.mem_union _ _ _).mpr
+        simp only [Set.mem_union, Set.mem_range, exists_apply_eq_apply, or_true]
+      rw [← AddMonoidHom.comp_apply, AddMonoidHom.coe_comp, ← AddMonoid.coe_mul]
+      rw [← AddMonoidHom.comp_apply, AddMonoidHom.coe_comp, ← AddMonoid.coe_mul]
+      rw [e1]⟩
+    rw [toEnd']
+    simp
+    rw [toEnd]
+    exact rfl
+
+
+
+
+
 
 end NonUnitalNonAssocSemiring
 
