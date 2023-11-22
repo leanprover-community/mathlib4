@@ -331,7 +331,6 @@ lemma and_two_pow {n i} : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
   · simp only [h1, testBit_two_pow_self, Bool.and_true, Bool.toNat_true, mul_one, h, h1];
     rw [←h1, h]
 
-
 theorem bitwise_swap {f : Bool → Bool → Bool} :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
   funext m n
