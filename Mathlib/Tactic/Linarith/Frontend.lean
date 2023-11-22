@@ -418,15 +418,12 @@ open Linarith
 
 elab_rules : tactic
   | `(tactic| nlinarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) => withMainContext do
-    let cfg ← elabLinarithConfig (mkOptionalNode cfg)
-    let cfg :=
-    { cfg with
+    let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `nlinarith)
+    let cfg := (← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome
+    let cfg := { cfg with
       preprocessors := some (cfg.preprocessors.getD defaultPreprocessors ++
         [(nlinarithExtras : GlobalBranchingPreprocessor)]) }
-    liftMetaFinishingTactic <|
-      Linarith.linarith o.isSome
-        (← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `nlinarith)).toList
-        (cfg.updateReducibility bang.isSome)
+    commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
 -- TODO restore this when `add_tactic_doc` is ported
 -- add_tactic_doc

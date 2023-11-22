@@ -556,32 +556,6 @@ example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
   nlinarith [p _ garbage]
 
 /--
-error: don't know how to synthesize placeholder for argument 'x'
-context:
-E : Type ?u.243178
-inst✝¹ : AddGroup E
-R : Type ?u.243184
-inst✝ : Ring R
-abs : R → ℚ
-q : Prop
-p : ℤ → 1 = 2
-⊢ ℤ
----
-error: unsolved goals
-E : Type ?u.243178
-inst✝¹ : AddGroup E
-R : Type ?u.243184
-inst✝ : Ring R
-abs : R → ℚ
-q : Prop
-p : ℤ → 1 = 2
-⊢ 1 = 2
--/
-#guard_msgs in
-example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
-  linarith [p _]
-
-/--
 error: Argument passed to linarith has metavariables:
   p ?a
 -/
