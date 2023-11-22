@@ -413,8 +413,7 @@ theorem rootMultiplicity_mul_X_sub_C_pow' {p : R[X]} {a : R} {n : ℕ} (h : p * 
     (p * (X - C a) ^ n).rootMultiplicity a = p.rootMultiplicity a + n := by
   refine le_antisymm ?_ ?_
   · rw [rootMultiplicity_le_iff h]
-    by_contra h'
-    obtain ⟨q, h'⟩ := h'
+    intro ⟨q, h'⟩
     rw [mul_comm p _, add_comm _ n, add_assoc, pow_add, mul_assoc,
       mul_cancel_left_mem_nonZeroDivisors (monic_X_sub_C a |>.pow n |>.mem_nonZeroDivisors)] at h'
     exact pow_rootMultiplicity_not_dvd (left_ne_zero_of_mul h) a ⟨q, h'⟩
