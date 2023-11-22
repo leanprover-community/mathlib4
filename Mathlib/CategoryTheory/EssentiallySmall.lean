@@ -262,4 +262,6 @@ theorem essentiallySmall_iff_of_thin {C : Type u} [Category.{v} C] [Quiver.IsThi
   simp [essentiallySmall_iff, CategoryTheory.locallySmall_of_thin]
 #align category_theory.essentially_small_iff_of_thin CategoryTheory.essentiallySmall_iff_of_thin
 
+instance [Small.{w} C] : Small.{w} (Discrete C) := small_map discreteEquiv
+
 end CategoryTheory

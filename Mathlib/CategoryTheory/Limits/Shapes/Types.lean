@@ -52,9 +52,6 @@ example [UnivLE.{v, u}] : HasProducts.{v} (Type u) := inferInstance
 -- although I don't understand why, and wish it wasn't.
 instance : HasProducts.{v} (Type v) := inferInstance
 
-instance CategoryTheory.small_discrete (α : Type v) [Small.{u} α] : Small.{u} (Discrete α) :=
-  small_map discreteEquiv
-
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
 @[simp 1001]
 theorem pi_lift_π_apply {β : Type v} [Small.{u} β] (f : β → Type u) {P : Type u}
