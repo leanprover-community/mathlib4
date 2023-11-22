@@ -794,7 +794,7 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
   let to_fun : ZMod (m * n) → ZMod m × ZMod n :=
     ZMod.castHom (show m.lcm n ∣ m * n by simp [Nat.lcm_dvd_iff]) (ZMod m × ZMod n)
   let inv_fun : ZMod m × ZMod n → ZMod (m * n) := fun x =>
-    if m * n = 0 then if m = 1 then RingHom.snd _ _ x else RingHom.fst _ _ x
+    if m * n = 0 then if m = 1 then RingHom.snd _ (ZMod n) x else RingHom.fst (ZMod m) _ x
     else Nat.chineseRemainder h x.1.val x.2.val
   have inv : Function.LeftInverse inv_fun to_fun ∧ Function.RightInverse inv_fun to_fun :=
     if hmn0 : m * n = 0 then by
@@ -853,7 +853,7 @@ theorem neg_one_ne_one {n : ℕ} [Fact (2 < n)] : (-1 : ZMod n) ≠ 1 :=
 #align zmod.neg_one_ne_one ZMod.neg_one_ne_one
 
 theorem neg_eq_self_mod_two (a : ZMod 2) : -a = a := by
-  fin_cases a <;> apply Fin.ext <;> simp [Fin.coe_neg, Int.natMod]
+  fin_cases a <;> apply Fin.ext <;> simp [Fin.coe_neg, Int.natMod]; rfl
 #align zmod.neg_eq_self_mod_two ZMod.neg_eq_self_mod_two
 
 @[simp]
@@ -1008,7 +1008,7 @@ theorem valMinAbs_mul_two_eq_iff {n : ℕ} (a : ZMod n) : a.valMinAbs * 2 = n �
 theorem valMinAbs_mem_Ioc {n : ℕ} [NeZero n] (x : ZMod n) :
     x.valMinAbs * 2 ∈ Set.Ioc (-n : ℤ) n := by
   simp_rw [valMinAbs_def_pos, Nat.le_div_two_iff_mul_two_le]; split_ifs with h
-  · refine' ⟨(neg_lt_zero.2 <| by exact_mod_cast NeZero.pos n).trans_le (mul_nonneg _ _), h⟩
+  · refine' ⟨(neg_lt_zero.2 <| mod_cast NeZero.pos n).trans_le (mul_nonneg _ _), h⟩
     exacts [Nat.cast_nonneg _, zero_le_two]
   · refine' ⟨_, le_trans (mul_nonpos_of_nonpos_of_nonneg _ zero_le_two) <| Nat.cast_nonneg _⟩
     · linarith only [h]

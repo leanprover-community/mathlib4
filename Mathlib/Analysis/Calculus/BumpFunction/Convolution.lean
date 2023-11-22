@@ -104,8 +104,6 @@ theorem convolution_tendsto_right_of_continuous {ι} {φ : ι → ContDiffBump (
     ((hg.tendsto x₀).comp tendsto_snd) tendsto_const_nhds
 #align cont_diff_bump.convolution_tendsto_right_of_continuous ContDiffBump.convolution_tendsto_right_of_continuous
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 /-- If a function `g` is locally integrable, then the convolution `φ i * g` converges almost
 everywhere to `g` if `φ i` is a sequence of bump functions with support tending to `0`, provided
 that the ratio between the inner and outer radii of `φ i` remains bounded. -/

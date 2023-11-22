@@ -832,7 +832,7 @@ theorem progMeasurable_min_stopping_time [MetrizableSpace ι] (hτ : IsStoppingT
     suffices h_min_eq_left :
       (fun x : sc => min (↑(x : Set.Iic i × Ω).fst) (τ (x : Set.Iic i × Ω).snd)) = fun x : sc =>
         ↑(x : Set.Iic i × Ω).fst
-    · simp_rw [Set.restrict, h_min_eq_left]
+    · simp (config := { unfoldPartialApp := true }) only [Set.restrict, h_min_eq_left]
       exact h_meas_fst _
     ext1 ω
     rw [min_eq_left]
