@@ -66,6 +66,7 @@ def Γ [IsIdempotentComplete C] [HasFiniteCoproducts C] : ChainComplex C ℕ ⥤
 
 variable [IsIdempotentComplete C] [HasFiniteCoproducts C]
 
+/-- A reformulation of the isomorphism `toKaroubi (SimplicialObject C) ⋙ N₂ ≅ N₁` -/
 def isoN₁ :
     (toKaroubiEquivalence (SimplicialObject C)).functor ⋙
       Preadditive.DoldKan.equivalence.functor ≅ N₁ := toKaroubiCompN₂IsoN₁
@@ -74,6 +75,8 @@ def isoN₁ :
 lemma isoN₁_hom_app_f (X : SimplicialObject C) :
     (isoN₁.hom.app X).f = PInfty := rfl
 
+/-- A reformulation of the canonical isomorphism
+`toKaroubi (ChainComplex C ℕ) ⋙ Γ₂ ≅ Γ ⋙ toKaroubi (SimplicialObject C)`. -/
 def isoΓ₀ :
     (toKaroubiEquivalence (ChainComplex C ℕ)).functor ⋙ Preadditive.DoldKan.equivalence.inverse ≅
       Γ ⋙ (toKaroubiEquivalence _).functor :=
