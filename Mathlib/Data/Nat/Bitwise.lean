@@ -358,9 +358,9 @@ theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy: y < 2 ^ n) :
   induction x using Nat.binaryRec' generalizing n y with
   | z => aesop
   | @f bx nx hnx ih =>
-    induction y using Nat.binaryRec' generalizing n with
+    cases y using Nat.binaryRec' with
     | z => aesop
-    | f «by» ny hny _ =>
+    | f «by» ny hny =>
       cases n with
       | zero => aesop
       | succ n =>
