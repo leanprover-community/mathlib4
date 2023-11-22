@@ -238,7 +238,7 @@ theorem halting_problem (n) : ¬ComputablePred fun c => (eval c n).Dom
   | h => rice { f | (f n).Dom } h Nat.Partrec.zero Nat.Partrec.none trivial
 #align computable_pred.halting_problem ComputablePred.halting_problem
 
--- Post's theorem on the equivalence of r.e., co-r.e. sets and
+-- **Post's theorem** on the equivalence of r.e., co-r.e. sets and
 -- computable sets. The assumption that p is decidable is required
 -- unless we assume Markov's principle or LEM.
 -- @[nolint decidable_classical]
