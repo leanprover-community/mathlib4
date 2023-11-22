@@ -278,18 +278,29 @@ instance {A B : NonemptyFintypeCat.{0}} (g : A ⟶ B) (φ : B → I) (ψ : A →
   exact mono_of_mono_fac (cechObjectSummandMap_π f g φ ψ h a _ rfl _ rfl)
 
 lemma isIso_cechObjectMap {A B : NonemptyFintypeCat.{0}}
+    (g : A ⟶ B) (φ : B → I) (ψ : A → I) (h : φ.comp g = ψ) (hg : Set.range φ = Set.range ψ) :
+    IsIso (cechObjectSummandMap f g φ ψ h) := by
+  obtain ⟨σ, hσ⟩ : ∃ (σ : B → A), ψ.comp σ = φ := by
+    obtain h : ∀ (b : B), φ b ∈ Set.range ψ :=
+      fun b => by simp only [← hg, Set.mem_range, exists_apply_eq_apply]
+    exact ⟨fun b ↦ (h b).choose, funext (fun b ↦ (h b).choose_spec)⟩
+  refine' ⟨cechObjectSummandMap f σ ψ φ hσ, _, _⟩
+  all_goals
+    simp only [← cancel_mono (cechObjectSummandBase f _), assoc,
+      cechObjectSummandMap_base, id_comp]
+
+lemma isIso_cechObjectMap' {A B : NonemptyFintypeCat.{0}}
     (g : A ⟶ B) (φ : B → I) (ψ : A → I) (h : φ.comp g = ψ) (hg : Function.Surjective g) :
     IsIso (cechObjectSummandMap f g φ ψ h) := by
-  have := NonemptyFintypeCat.isSplitEpi_of_surjective g hg
-  have eq : g ∘ section_ g = id := IsSplitEpi.id g
-  refine' ⟨cechObjectSummandMap f (section_ g) ψ φ _, _, _⟩
-  · rw [← h]
-    change φ ∘ (g ∘ section_ g) = φ
-    rw [eq, Function.comp.right_id]
-  · simp only [← cancel_mono (cechObjectSummandBase f φ), assoc,
-      id_comp, cechObjectSummandMap_base]
-  · simp only [← cancel_mono (cechObjectSummandBase f ψ), assoc,
-      id_comp, cechObjectSummandMap_base]
+  apply isIso_cechObjectMap
+  subst h
+  ext i
+  constructor
+  · rintro ⟨b, rfl⟩
+    obtain ⟨a, rfl⟩ := hg b
+    exact ⟨a, rfl⟩
+  · rintro ⟨a, rfl⟩
+    exact ⟨g a, rfl⟩
 
 end
 
