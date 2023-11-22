@@ -76,52 +76,66 @@ open IsTensorProduct
 universe uR uM uN uX
 
 variable (R : Type uR) [Semiring R]
-variable {M : Type uM} [AddCommGroup M] [Module Rᵐᵒᵖ M]
-variable {N : Type uN} [AddCommGroup N] [Module R N]
-variable {X : Type uX} [AddCommGroup X]
+variable {M : Type uM} [AddCommMonoid M] [Module Rᵐᵒᵖ M]
+variable {N : Type uN} [AddCommMonoid N] [Module R N]
+variable {X : Type uX} [AddCommMonoid X]
 
 variable (tmul : BalancedBiAddMonoidHom R M N X) [IsTensorProduct R tmul]
 
 lemma IsTensorProduct.mem_closure (x : X) :
-    x ∈ AddSubgroup.closure { y | ∃ (m : M) (n : N), y = tmul m n } := by
-  let l : AddSubgroup X := AddSubgroup.closure { y | ∃ (m : M) (n : N), y = tmul m n }
-  let Q := X ⧸ l
-  let b : BalancedBiAddMonoidHom R M N Q :=
+    x ∈ AddSubmonoid.closure { y | ∃ (m : M) (n : N), y = tmul m n } := by
+  let img : AddSubmonoid X := AddSubmonoid.closure { y | ∃ (m : M) (n : N), y = tmul m n }
+  let b : BalancedBiAddMonoidHom R M N img :=
   { toFun := fun m =>
-    { toFun := fun n => QuotientAddGroup.mk' _ (tmul m n)
-      map_zero' := by
-        dsimp; rw [tmul.apply_apply_zero]; rfl
-      map_add' := fun _ _ => by
-        dsimp; rw [tmul.apply_apply_add]; rfl }
-    map_zero' := FunLike.ext _ _ fun _ => by
-      dsimp; rw [tmul.apply_zero_apply]; rfl
-    map_add' := fun _ _ => FunLike.ext _ _ fun _ => by
-      dsimp; rw [tmul.apply_add_apply]; rfl
-    balanced := fun r m n => by
-      dsimp; rw [tmul.apply_smul_apply] }
-  let q : X →+ Q := lift tmul b
-  let q' : X →+ Q := QuotientAddGroup.mk' _
+    { toFun := fun n => ⟨tmul m n, AddSubmonoid.subset_closure ⟨_, _, rfl⟩⟩
+      map_zero' := by aesop
+      map_add' := fun _ _ => by ext; dsimp; rw [tmul.apply_apply_add] }
+    map_zero' := FunLike.ext _ _ fun _ => by ext; dsimp; rw [tmul.apply_zero_apply]
+    map_add' := fun _ _ => FunLike.ext _ _ fun _ => by ext; dsimp; rw [tmul.apply_add_apply]
+    balanced := fun _ _ _ => by ext; dsimp; rw [tmul.apply_smul_apply] }
+  let β : BalancedBiAddMonoidHom R M N X :=
+  { toFun := fun m =>
+    { toFun := fun n => tmul m n
+      map_zero' := by aesop
+      map_add' := fun _ _ => by dsimp; rw [tmul.apply_apply_add] }
+    map_zero' := FunLike.ext _ _ fun _ => by dsimp; rw [tmul.apply_zero_apply]
+    map_add' := fun _ _ => FunLike.ext _ _ fun _ => by dsimp; rw [tmul.apply_add_apply]
+    balanced :=  fun _ _ _ => by dsimp; rw [tmul.apply_smul_apply] }
+  let φ := lift tmul b
+  let ψ := img.subtype
+  have eq1 : φ.comp ψ = AddMonoidHom.id _
+  · refine FunLike.ext _ _ fun ⟨x, hx⟩ ↦ AddSubmonoid.closure_induction hx ?_ ?_ ?_
+    · rintro _ ⟨m, n, rfl⟩
+      ext
+      simp only [AddMonoidHom.coe_comp, AddSubmonoid.coe_subtype, Function.comp_apply,
+        AddMonoidHom.id_apply]
+      rw [lift_comp]
+      rfl
+    · ext; aesop
+    · intros; ext; aesop
+  have eq2 : ψ.comp φ = AddMonoidHom.id _
+  · rw [← show lift tmul β = ψ.comp φ by
+        refine lift_uniq _ _ ?_
+        intro m n
+        simp only [AddMonoidHom.coe_comp, AddSubmonoid.coe_subtype, Function.comp_apply]
+        rw [lift_comp]
+        rfl]
+    exact lift_uniq _ _ <| by intros; aesop
 
-  have eq1 : q = 0
-  · refine lift_uniq (tmul := tmul) b 0 fun m n => ?_
-    simp only [AddMonoidHom.zero_apply, QuotientAddGroup.mk'_apply]
-    symm
-    erw [QuotientAddGroup.eq_zero_iff]
-    exact AddSubgroup.subset_closure ⟨m, n, rfl⟩
-  have eq2 : q = q'
-  · refine lift_uniq (tmul := tmul) b q' fun m n => rfl
-  rw [eq1] at eq2
-  exact (QuotientAddGroup.eq_zero_iff _).mp (FunLike.congr_fun eq2 x).symm
+  have hsurj : Function.Surjective φ
+  · sorry
+  have hinj : Function.Injective φ
+  · sorry
+  sorry
 
 @[elab_as_elim]
 lemma IsTensorProduct.induction {motive : X → Prop}
     (tensor : ∀ m n, motive (tmul m n))
-    (add : ∀ x x', motive x → motive x' → motive (x + x'))
-    (neg : ∀ x, motive x → motive (-x)) :
+    (add : ∀ x x', motive x → motive x' → motive (x + x')) :
     ∀ x, motive x :=
-  fun x => AddSubgroup.closure_induction (mem_closure R tmul x)
+  fun x => AddSubmonoid.closure_induction (mem_closure R tmul x)
     (by rintro _ ⟨m, n, rfl⟩; exact tensor _ _)
-    (by convert tensor 0 0 using 1; rw [tmul.apply_apply_zero]) add neg
+    (by convert tensor 0 0 using 1; rw [tmul.apply_apply_zero]) add
 
 end addGroups
 
@@ -141,10 +155,10 @@ variable (R : Type uR) [Semiring R]
 universe uM uN uX
 
 -- M is (A, B)-bimodule
-variable (M : Type uM) [AddCommGroup M] [Module A M] [Module Bᵐᵒᵖ M] [SMulCommClass A Bᵐᵒᵖ M]
+variable (M : Type uM) [AddCommMonoid M] [Module A M] [Module Bᵐᵒᵖ M] [SMulCommClass A Bᵐᵒᵖ M]
 -- N is left B-module
-variable (N : Type uN) [AddCommGroup N] [Module B N]
-variable (X : Type uX) [AddCommGroup X]
+variable (N : Type uN) [AddCommMonoid N] [Module B N]
+variable (X : Type uX) [AddCommMonoid X]
 variable (tmul : BalancedBiAddMonoidHom B M N X) [IsTensorProduct B tmul]
 -- Then X is a left A-module
 
@@ -177,14 +191,12 @@ lemma IsTensorProduct.leftSmul.one_smul (x : X) : leftSmul tmul (1 : A) x = x :=
 lemma IsTensorProduct.leftSmul.mul_smul (a a' : A) (x : X) :
     leftSmul tmul (a * a') x =
     leftSmul tmul a (leftSmul tmul a' x) := by
-  refine IsTensorProduct.induction B tmul ?_ ?_ ?_ x
+  refine IsTensorProduct.induction B tmul ?_ ?_ x
   · intro m n
     simp only [leftSmul_tmul]
     rw [MulAction.mul_smul]
   · intro x x' hx hx'
     simp only [map_add, hx, hx']
-  · intro x
-    simp only [map_neg, neg_inj, imp_self]
 
 def IsTensorProduct.leftSmul.smul : SMul A X where
   smul r := leftSmul tmul r
@@ -212,13 +224,10 @@ def IsTensorProduct.leftModule : Module A X where
       simp only [map_neg, hx]
       abel
   zero_smul x := show leftSmul tmul _ _ = 0 by
-    refine IsTensorProduct.induction B tmul ?_ ?_ ?_ x
+    refine IsTensorProduct.induction B tmul ?_ ?_ x
     · intro m n; simp only [leftSmul_tmul, zero_smul, tmul.apply_zero_apply]
     · intro x y hx hy
       simp only [map_add, hx, hy]
-      abel
-    · intro x hx
-      simp only [map_neg, hx]
       abel
 
 end left_mod
