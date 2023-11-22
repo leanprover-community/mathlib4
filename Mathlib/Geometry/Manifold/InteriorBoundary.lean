@@ -205,8 +205,8 @@ lemma ChartedSpace.covering : ⋃ x : M, (chartAt H x).source = univ := by
     use y
     exact mem_chart_source H y
 
-namespace SmoothManifoldWithCorners
--- XXX: fix name; move to LocalHomeomorph
+namespace LocalHomeomorph -- FIXME: move to SmoothManifoldWithCorners
+-- XXX: fix name
 lemma extend_source_map_target {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source) :
     (e.extend I) x ∈ (e.extend I).target := by
   rw [e.extend_target]
@@ -215,8 +215,13 @@ lemma extend_source_map_target {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.s
   rw [mem_preimage, I.left_inv]
   exact e.map_source hx
 
--- XXX: fix name; move to LocalHomeomorph
--- xxx: can this be golfed?
+-- XXX: mapsTo_extend has a different formula from extend_target...
+-- should unify these/relate these better!
+lemma LocalHomeomorph.mapsTo_source_target {e : LocalHomeomorph M H} :
+    MapsTo (e.extend I) (e.extend I).source (e.extend I).target :=
+  fun _ hx ↦(e.extend I).map_source hx
+
+-- XXX: fix name; can this be golfed?
 lemma extend_source_map_target' {e : LocalHomeomorph M H} :
     (e.extend I) '' (e.extend I).source ⊆ (e.extend I).target := by
   rw [e.extend_source]
@@ -224,7 +229,9 @@ lemma extend_source_map_target' {e : LocalHomeomorph M H} :
   choose x hx hxy using ((mem_image (e.extend I) e.source) y).mp hy
   rw [← hxy]
   exact extend_source_map_target hx
+end LocalHomeomorph
 
+namespace SmoothManifoldWithCorners
 lemma isBoundaryPoint_iff' {x : M} :
   SmoothManifoldWithCorners.boundary I M ∩ (chartAt H x).source =
     (chartAt H x).source ∩ (extChartAt I x) ⁻¹'
@@ -237,7 +244,7 @@ lemma isBoundaryPoint_iff' {x : M} :
     apply mem_inter hsource ?_
     rw [mem_preimage]
     apply (mem_diff ((chartAt H x).extend I y)).mpr
-    exact ⟨extend_source_map_target hsource, (isBoundaryPoint_iff I hsource).mp hbd⟩
+    exact ⟨(chartAt H x).extend_source_map_target hsource, (isBoundaryPoint_iff I hsource).mp hbd⟩
   · rintro ⟨hsource, hbd⟩
     apply mem_inter ?_ hsource
     apply (isBoundaryPoint_iff I hsource).mpr (not_mem_of_mem_diff hbd)
