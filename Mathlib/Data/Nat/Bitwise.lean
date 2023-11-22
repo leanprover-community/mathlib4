@@ -320,17 +320,12 @@ theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
 #align nat.test_bit_two_pow Nat.testBit_two_pow
 
 lemma and_two_pow {n i} : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
-  apply eq_of_testBit_eq; intro j
-  rw [mul_comm, testBit_land]
-  cases' h : n.testBit i <;> cases' (ne_or_eq i j) with h1 h1
-  · simp only [ne_eq, not_false_eq_true, testBit_two_pow_of_ne, Bool.and_false, Bool.toNat_false,
-      mul_zero, zero_testBit, h, h1]
-  · simp only [testBit_two_pow_self, Bool.and_true, Bool.toNat_false, mul_zero, zero_testBit, h1];
-    rw [← h1, h]
-  · simp only [ne_eq, not_false_eq_true, testBit_two_pow_of_ne, Bool.and_false, Bool.toNat_true,
-      mul_one, h1]
-  · simp only [testBit_two_pow_self, Bool.and_true, Bool.toNat_true, mul_one, h, h1];
-    rw [←h1, h]
+  refine eq_of_testBit_eq fun j => ?_
+  obtain rfl | hij := Decidable.eq_or_ne i j <;> cases' h : n.testBit i
+  · simp [h]
+  · simp [h]
+  · simp [h, testBit_two_pow_of_ne hij]
+  · simp [h, testBit_two_pow_of_ne hij]
 
 theorem bitwise_swap {f : Bool → Bool → Bool} :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
