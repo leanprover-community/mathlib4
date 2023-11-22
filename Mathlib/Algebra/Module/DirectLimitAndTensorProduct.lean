@@ -107,18 +107,11 @@ noncomputable def directLimitCommutesTensorProduct' :
       fun i j h x => x.induction_on (by aesop) (fun m g =>
         show of R ι (M ⊗[R] G ·) _ j ((f i j h).lTensor M (g ⊗ₜ m)) = _ from of_f) (by aesop))
     ((isEmpty_or_nonempty ι).elim (fun _ => by ext; apply Subsingleton.elim)
-      (fun inst_ => FunLike.ext _ _ fun x => x.induction_on fun i g => by
-        refine g.induction_on ?_ (fun g m => ?_) ?_
-        · aesop
-        · simp [lift_of]
-        · aesop))
+      fun inst_ => FunLike.ext _ _ fun x => x.induction_on
+        fun i g => g.induction_on (by aesop) (fun g m => by simp [lift_of]) <| by aesop)
     ((isEmpty_or_nonempty ι).elim (fun _ => by ext; apply Subsingleton.elim)
-      (fun inst_ => FunLike.ext _ _ fun x => x.induction_on fun i g => by
-        refine g.induction_on ?_ (fun g m => ?_) ?_
-        · aesop
-        · simp [lift_of]
-        · aesop)) ≪≫ₗ
+      fun inst_ => FunLike.ext _ _ fun x => x.induction_on
+        fun i g => g.induction_on (by aesop) (fun g m => by simp [lift_of]) <| by aesop) ≪≫ₗ
   directLimitCommutesTensorProduct f M ≪≫ₗ TensorProduct.comm _ _ _
-
 
 end Module
