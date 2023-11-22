@@ -211,12 +211,30 @@ lemma covering : ⋃ x : M, (extChartAt I x).source = univ := by
   simp_rw [extChartAt_source]
   exact ChartedSpace.covering
 
+-- XXX: fix name; move to LocalHomeomorph
+lemma extend_source_map_target {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source) :
+    (e.extend I) x ∈ (e.extend I).target := by
+  rw [e.extend_target]
+  apply mem_inter ?_ (mem_range_self _)
+  show I (e x) ∈ I.symm ⁻¹' e.target
+  rw [mem_preimage, I.left_inv]
+  exact e.map_source hx
+
+-- XXX: fix name; move to LocalHomeomorph
+lemma extend_source_map_target' {e : LocalHomeomorph M H} :
+    (e.extend I) '' (e.extend I).source ⊆ (e.extend I).target := by
+  --rw [e.extend_source]
+  --intro y hy
+  --rw [mem_image.mp (e.extend I) (e.extend I.source)]
+  --apply (extend_source_map_target hx)
+  sorry -- easy
+
 lemma isBoundaryPoint_iff' {x : M} :
   SmoothManifoldWithCorners.boundary I M ∩ (extChartAt I x).source =
     (extChartAt I x).source ∩ (extChartAt I x) ⁻¹'
       ((extChartAt I x).target \ interior (extChartAt I x).target) := by
   have r' : (chartAt H x).extend I = extChartAt I x := rfl
-  rw [← r']
+  rw [← r'] -- XXX: does this mean extChart needs more lemmas? or a named rewrite equation?
   ext y
   -- This can surely be golfed: first three lines on both cases are the same.
   -- First steps: reorder target conditions; then try and_congr or so...
@@ -224,19 +242,10 @@ lemma isBoundaryPoint_iff' {x : M} :
   · rintro ⟨hbd, hsource⟩
     apply mem_inter hsource ?_ -- discharge first condition, easy
     rw [(chartAt H x).extend_source] at hsource
-    let s := (isBoundaryPoint_iff I hsource).mp hbd
     -- This part can surely also be golfed!
-    set e := chartAt H x
-    set e' := e.extend I -- readability
     rw [mem_preimage]
-    apply (mem_diff (e' y)).mpr
-    constructor
-    · rw [r', extChartAt_target]
-      apply mem_inter ?_ (mem_range_self _)
-      show I (e y) ∈ I.symm ⁻¹' e.target
-      rw [mem_preimage, I.left_inv]
-      exact e.map_source hsource
-    · exact s
+    apply (mem_diff ((chartAt H x).extend I y)).mpr
+    exact ⟨extend_source_map_target hsource, (isBoundaryPoint_iff I hsource).mp hbd⟩
   · rintro ⟨hsource, hbd⟩
     apply mem_inter ?_ hsource
     rw [(chartAt H x).extend_source] at hsource
