@@ -280,6 +280,12 @@ def preservesLimitsOfSizeShrink (F : C ⥤ D) [PreservesLimitsOfSize.{max w w₂
   ⟨fun {J} _ => preservesLimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv.{w₂, w₂'} J).symm F⟩
 #align category_theory.limits.preserves_limits_of_size_shrink CategoryTheory.Limits.preservesLimitsOfSizeShrink
 
+/-- A functor preserving larger limits also preserves smaller limits. -/
+def preservesLimitsOfSizeOfUnivLE (F : C ⥤ D) [UnivLE.{w, w'}] [UnivLE.{w₂, w₂'}]
+    [PreservesLimitsOfSize.{w', w₂'} F] : PreservesLimitsOfSize.{w, w₂} F where
+  preservesLimitsOfShape {J} := preservesLimitsOfShapeOfEquiv
+    ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm F
+
 /-- Preserving limits at any universe level implies preserving limits in universe `0`. -/
 def preservesSmallestLimitsOfPreservesLimits (F : C ⥤ D) [PreservesLimitsOfSize.{v₃, u₃} F] :
     PreservesLimitsOfSize.{0, 0} F :=
@@ -345,6 +351,12 @@ def preservesColimitsOfSizeShrink (F : C ⥤ D) [PreservesColimitsOfSize.{max w 
   ⟨fun {J} =>
     preservesColimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv.{w₂, w₂'} J).symm F⟩
 #align category_theory.limits.preserves_colimits_of_size_shrink CategoryTheory.Limits.preservesColimitsOfSizeShrink
+
+/-- A functor preserving larger colimits also preserves smaller colimits. -/
+def preservesColimitsOfSizeOfUnivLE (F : C ⥤ D) [UnivLE.{w, w'}] [UnivLE.{w₂, w₂'}]
+    [PreservesColimitsOfSize.{w', w₂'} F] : PreservesColimitsOfSize.{w, w₂} F where
+  preservesColimitsOfShape {J} := preservesColimitsOfShapeOfEquiv
+    ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm F
 
 /-- Preserving colimits at any universe implies preserving colimits at universe `0`. -/
 def preservesSmallestColimitsOfPreservesColimits (F : C ⥤ D) [PreservesColimitsOfSize.{v₃, u₃} F] :
@@ -624,6 +636,12 @@ def reflectsLimitsOfSizeShrink (F : C ⥤ D) [ReflectsLimitsOfSize.{max w w₂, 
   ⟨fun {J} => reflectsLimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv.{w₂, w₂'} J).symm F⟩
 #align category_theory.limits.reflects_limits_of_size_shrink CategoryTheory.Limits.reflectsLimitsOfSizeShrink
 
+/-- A functor reflecting larger limits also reflects smaller limits. -/
+def reflectsLimitsOfSizeOfUnivLE (F : C ⥤ D) [UnivLE.{w, w'}] [UnivLE.{w₂, w₂'}]
+    [ReflectsLimitsOfSize.{w', w₂'} F] : ReflectsLimitsOfSize.{w, w₂} F where
+  reflectsLimitsOfShape {J} := reflectsLimitsOfShapeOfEquiv
+    ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm F
+
 /-- Reflecting limits at any universe implies reflecting limits at universe `0`. -/
 def reflectsSmallestLimitsOfReflectsLimits (F : C ⥤ D) [ReflectsLimitsOfSize.{v₃, u₃} F] :
     ReflectsLimitsOfSize.{0, 0} F :=
@@ -733,6 +751,12 @@ def reflectsColimitsOfSizeShrink (F : C ⥤ D) [ReflectsColimitsOfSize.{max w w�
     ReflectsColimitsOfSize.{w, w'} F :=
   ⟨fun {J} => reflectsColimitsOfShapeOfEquiv (ULiftHomULiftCategory.equiv.{w₂, w₂'} J).symm F⟩
 #align category_theory.limits.reflects_colimits_of_size_shrink CategoryTheory.Limits.reflectsColimitsOfSizeShrink
+
+/-- A functor reflecting larger colimits also reflects smaller colimits. -/
+def reflectsColimitsOfSizeOfUnivLE (F : C ⥤ D) [UnivLE.{w, w'}] [UnivLE.{w₂, w₂'}]
+    [ReflectsColimitsOfSize.{w', w₂'} F] : ReflectsColimitsOfSize.{w, w₂} F where
+  reflectsColimitsOfShape {J} := reflectsColimitsOfShapeOfEquiv
+    ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm F
 
 /-- Reflecting colimits at any universe implies reflecting colimits at universe `0`. -/
 def reflectsSmallestColimitsOfReflectsColimits (F : C ⥤ D) [ReflectsColimitsOfSize.{v₃, u₃} F] :
