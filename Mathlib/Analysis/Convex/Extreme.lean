@@ -140,7 +140,7 @@ theorem mem_extremePoints : x ∈ A.extremePoints 𝕜 ↔
   exact hAx hx₁A hx₂A
 #align mem_extreme_points_iff_extreme_singleton isExtreme_singleton
 
-alias ⟨_, IsExtreme.mem_extremePoints⟩ := isExtreme_singleton
+alias ⟨IsExtreme.mem_extremePoints, _⟩ := isExtreme_singleton
 
 theorem extremePoints_subset : A.extremePoints 𝕜 ⊆ A :=
   fun _ hx ↦ hx.1
