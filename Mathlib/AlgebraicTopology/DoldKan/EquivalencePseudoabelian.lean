@@ -72,8 +72,7 @@ def isoN₁ :
 
 @[simp]
 lemma isoN₁_hom_app_f (X : SimplicialObject C) :
-    (isoN₁.hom.app X).f = PInfty := by
-  simp [isoN₁]
+    (isoN₁.hom.app X).f = PInfty := rfl
 
 def isoΓ₀ :
     (toKaroubiEquivalence (ChainComplex C ℕ)).functor ⋙ Preadditive.DoldKan.equivalence.inverse ≅
