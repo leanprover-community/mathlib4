@@ -347,22 +347,31 @@ theorem bitwise_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' 
     _ = swap (bitwise f) := bitwise_swap
 #align nat.bitwise_comm Nat.bitwise_comm
 
+@[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
+  rw [pow_succ', ←bit0_eq_two_mul]
+  cases b <;> simp
+
 /-- If `x` and `y` fit within `n` bits, then the result of any (well-behaved) bitwise operation on
     `x` and `y` also fits within `n` bits -/
-theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy: y < 2 ^ n) (h : f false false = false) :
+theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy: y < 2 ^ n) :
     bitwise f x y < 2 ^ n := by
-  refine lt_of_testBit n ?_ (testBit_two_pow_self n) ?_
-  · simp [testBit_bitwise h x y n, testBit_eq_false_of_lt hx, testBit_eq_false_of_lt hy, h]
-  intro j hj; rw [testBit_bitwise h x y j]
-  rw [testBit_eq_false_of_lt (hx.trans (pow_lt_pow_of_lt_right one_lt_two hj))]
-  rw [testBit_eq_false_of_lt (hy.trans (pow_lt_pow_of_lt_right one_lt_two hj)), h]
-  rw [testBit_two_pow_of_ne hj.ne]
+  induction x using Nat.binaryRec' generalizing n y with
+  | z => aesop
+  | @f bx nx hnx ih =>
+    induction y using Nat.binaryRec' generalizing n with
+    | z => aesop
+    | f «by» ny hny _ =>
+      cases n with
+      | zero => aesop
+      | succ n =>
+        rw [bitwise_bit' _ _ _ _ hnx hny]
+        aesop
 
 lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy: y < 2 ^ m) : y <<< n ||| x < 2 ^ (n + m) := by
   apply bitwise_lt
-  · rw [pow_add, mul_comm]; simp[hy, mul_lt_mul_left (two_pow_pos n)]
+  · rw [pow_add, mul_comm]
+    simp [hy, mul_lt_mul_left (two_pow_pos n)]
   · exact lt_of_lt_of_le hx ((pow_add 2 n m).symm ▸ le_mul_of_one_le_right' (one_le_two_pow m))
-  · rfl
 
 theorem lor_comm (n m : ℕ) : n ||| m = m ||| n :=
   bitwise_comm Bool.or_comm n m
