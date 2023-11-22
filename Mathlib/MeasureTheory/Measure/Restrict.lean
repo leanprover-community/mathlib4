@@ -1009,7 +1009,7 @@ theorem piecewise_ae_eq_restrict_compl [DecidablePred (· ∈ s)] (hs : Measurab
 
 theorem piecewise_ae_eq_of_ae_eq_set [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)]
     (hst : s =ᵐ[μ] t) : s.piecewise f g =ᵐ[μ] t.piecewise f g :=
-  hst.mem_iff.mono fun x hx => by simp [piecewise, hx]
+  hst.mem_iff.mono fun x hx => by simp [piecewise, piecewiseMem, hx]
 #align piecewise_ae_eq_of_ae_eq_set piecewise_ae_eq_of_ae_eq_set
 
 end Piecewise
