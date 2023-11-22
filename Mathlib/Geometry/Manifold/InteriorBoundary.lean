@@ -216,13 +216,14 @@ lemma extend_source_map_target {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.s
   exact e.map_source hx
 
 -- XXX: fix name; move to LocalHomeomorph
+-- xxx: can this be golfed?
 lemma extend_source_map_target' {e : LocalHomeomorph M H} :
     (e.extend I) '' (e.extend I).source ⊆ (e.extend I).target := by
-  --rw [e.extend_source]
-  --intro y hy
-  --rw [mem_image.mp (e.extend I) (e.extend I.source)]
-  --apply (extend_source_map_target hx)
-  sorry -- easy
+  rw [e.extend_source]
+  intro y hy
+  choose x hx hxy using ((mem_image (e.extend I) e.source) y).mp hy
+  rw [← hxy]
+  exact extend_source_map_target hx
 
 lemma isBoundaryPoint_iff' {x : M} :
   SmoothManifoldWithCorners.boundary I M ∩ (chartAt H x).source =
