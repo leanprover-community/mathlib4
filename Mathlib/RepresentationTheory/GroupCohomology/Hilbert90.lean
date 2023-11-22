@@ -1,8 +1,6 @@
-import Mathlib.RepresentationTheory.GroupCohomology.hmmm
 import Mathlib.FieldTheory.Galois
 import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
 import Mathlib.LinearAlgebra.LinearIndependent
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.RingTheory.Norm
 universe v u
 suppress_compilation
