@@ -15,9 +15,10 @@ produces the third one.
 
 ## Main definitions
 
-* `KleinFour` : Klein four-group with elements `e`, `a`, `b`, and `c`, which is defined
-  in terms of `Multiplicative (ZMod 2 × ZMod 2)`.
-* `mulEquivDihedralGroup2` : Klein four-group is isomorphic to `DihedralGroup 2`.
+* `IsKleinFour` : A mixin class which states that the group has order four and exponent two.
+* `mulEquiv'` : An equivalence between a Klein four-group and a group of exponent two which
+  preserves the identity is in fact an isomorphism.
+* `mulEquiv`: Any two Klein four-groups are isomorphic via any identity preserving equivalence.
 
 ## References
 
@@ -26,7 +27,7 @@ produces the third one.
 
 ## TODO
 
-* Prove `KleinFour` is isomorphic to the normal subgroup of `alternatingGroup (Fin 4)`
+* Prove an `IsKleinFour` group is isomorphic to the normal subgroup of `alternatingGroup (Fin 4)`
   with the permutation cycles `V = {(), (1 2)(3 4), (1 3)(2 4), (1 4)(2 3)}`.  This is the kernel
   of the surjection of `alternatingGroup (Fin 4)` onto `alternatingGroup (Fin 3) ≃ (ZMod 3)`.
   In other words, we have the exact sequence `V → A₄ → A₃`.
