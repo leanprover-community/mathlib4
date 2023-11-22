@@ -218,15 +218,25 @@ lemma isBoundaryPoint_iff' {x : M} :
   have r' : (chartAt H x).extend I = extChartAt I x := rfl
   rw [← r']
   ext y
+  -- This can surely be golfed: first three lines on both cases are the same.
+  -- First steps: reorder target conditions; then try and_congr or so...
   constructor
   · rintro ⟨hbd, hsource⟩
     apply mem_inter hsource ?_ -- discharge first condition, easy
     rw [(chartAt H x).extend_source] at hsource
     let s := (isBoundaryPoint_iff I hsource).mp hbd
-    sorry --apply (mem_diff y).mp ?_ s
-    --apply s--mem_inter
-    --· sorry -- is y ∈ target? true for local homeos...
-    --· apply s
+    -- This part can surely also be golfed!
+    set e := chartAt H x
+    set e' := e.extend I -- readability
+    rw [mem_preimage]
+    apply (mem_diff (e' y)).mpr
+    constructor
+    · rw [r', extChartAt_target]
+      apply mem_inter ?_ (mem_range_self _)
+      show I (e y) ∈ I.symm ⁻¹' e.target
+      rw [mem_preimage, I.left_inv]
+      exact e.map_source hsource
+    · exact s
   · rintro ⟨hsource, hbd⟩
     apply mem_inter ?_ hsource
     rw [(chartAt H x).extend_source] at hsource
