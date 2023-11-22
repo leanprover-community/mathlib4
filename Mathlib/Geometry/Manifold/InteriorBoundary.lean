@@ -42,16 +42,6 @@ manifold, interior, boundary
 
 open Set
 
-section TopologyHelpers -- should be in mathlib; Mathlib.Topology.Basic
-variable {X : Type*} [TopologicalSpace X] {s : Set X}
-
-/-- Interior and frontier are disjoint. -/
-lemma interior_frontier_disjoint : interior s ∩ frontier s = ∅ := by
-  rw [← closure_diff_interior s, diff_eq, ← inter_assoc, inter_comm, ← inter_assoc,
-    compl_inter_self, empty_inter]
-
-end TopologyHelpers
-
 -- Let `M` be a manifold with corners over the pair `(E, H)`.
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -193,33 +183,5 @@ lemma boundary_isClosed : IsClosed (SmoothManifoldWithCorners.boundary I M) := b
   rw [← this, compl_compl]
   exact interior_isOpen
 end SmoothManifoldWithCorners
-
-/-- The charts of a charted space cover its domain. -/
--- {H M : Type*} [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
-lemma ChartedSpace.covering : ⋃ x : M, (chartAt H x).source = univ := by
-  apply subset_antisymm <;> intro y _
-  · trivial
-  · rw [mem_iUnion]
-    use y
-    exact mem_chart_source H y
-
-namespace LocalHomeomorph -- FIXME: move to SmoothManifoldWithCorners
-lemma extend_map_source {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source) :
-    (e.extend I) x ∈ (e.extend I).target := by
-  rw [← e.extend_source I] at hx
-  exact (e.extend I).map_source hx
-
--- XXX: mapsTo_extend has a different formula from extend_target...
--- should unify these/relate these better!
-lemma mapsTo_extend' {e : LocalHomeomorph M H} :
-    MapsTo (e.extend I) (e.extend I).source (e.extend I).target :=
-  fun _ hx ↦(e.extend I).map_source hx
-
-/-- Variant of `extend_map_source`, stated for images of subsets. -/
-lemma extend_map_source' {e : LocalHomeomorph M H} :
-    (e.extend I) '' (e.extend I).source ⊆ (e.extend I).target :=
-  Set.mapsTo'.mp e.mapsTo_extend'
-
-end LocalHomeomorph
 
 -- TODO: interior I M is a manifold

@@ -1006,6 +1006,9 @@ theorem mapsTo_extend (hs : s ⊆ f.source) :
   exact image_subset _ (inter_subset_right _ _)
 #align local_homeomorph.maps_to_extend LocalHomeomorph.mapsTo_extend
 
+lemma mapsTo_extend' : MapsTo (f.extend I) (f.extend I).source (f.extend I).target :=
+  fun _ hx ↦(f.extend I).map_source hx
+
 theorem extend_left_inv {x : M} (hxf : x ∈ f.source) : (f.extend I).symm (f.extend I x) = x :=
   (f.extend I).left_inv <| by rwa [f.extend_source]
 #align local_homeomorph.extend_left_inv LocalHomeomorph.extend_left_inv
