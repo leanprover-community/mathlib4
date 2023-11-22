@@ -506,7 +506,7 @@ theorem contMDiffOn_iff_of_mem_maximalAtlas (he : e ∈ maximalAtlas I M)
     ContMDiffOn I I' n f s ↔
       ContinuousOn f s ∧
         ContDiffOn 𝕜 n (e'.extend I' ∘ f ∘ (e.extend I).symm) (e.extend I '' s) := by
-  simp_rw [ContinuousOn, ContDiffOn, Set.ball_image_iff, ← forall_and, ContMDiffOn]
+  simp_rw [ContinuousOn, ContDiffOn, ball_image_iff, ← forall_and, ContMDiffOn]
   exact forall₂_congr fun x hx => contMDiffWithinAt_iff_image he he' hs (hs hx) (h2s hx)
 #align cont_mdiff_on_iff_of_mem_maximal_atlas contMDiffOn_iff_of_mem_maximalAtlas
 
@@ -582,7 +582,7 @@ theorem contMDiffOn_iff_target :
           ContMDiffOn I 𝓘(𝕜, E') n (extChartAt I' y ∘ f) (s ∩ f ⁻¹' (extChartAt I' y).source) := by
   simp only [contMDiffOn_iff, ModelWithCorners.source_eq, chartAt_self_eq,
     LocalHomeomorph.refl_localEquiv, LocalEquiv.refl_trans, extChartAt, LocalHomeomorph.extend,
-    Set.preimage_univ, Set.inter_univ, and_congr_right_iff]
+    preimage_univ, inter_univ, and_congr_right_iff]
   intro h
   constructor
   · refine' fun h' y => ⟨_, fun x _ => h' x y⟩
@@ -800,7 +800,7 @@ theorem SmoothOn.smoothAt (h : SmoothOn I I' f s) (hx : s ∈ 𝓝 x) : SmoothAt
 theorem contMDiffOn_iff_source_of_mem_maximalAtlas (he : e ∈ maximalAtlas I M) (hs : s ⊆ e.source) :
     ContMDiffOn I I' n f s ↔
       ContMDiffOn 𝓘(𝕜, E) I' n (f ∘ (e.extend I).symm) (e.extend I '' s) := by
-  simp_rw [ContMDiffOn, Set.ball_image_iff]
+  simp_rw [ContMDiffOn, ball_image_iff]
   refine' forall₂_congr fun x hx => _
   rw [contMDiffWithinAt_iff_source_of_mem_maximalAtlas he (hs hx)]
   apply contMDiffWithinAt_congr_nhds
@@ -1049,12 +1049,12 @@ nonrec theorem SmoothAt.comp {g : M' → M''} (x : M) (hg : SmoothAt I' I'' g (f
 
 theorem ContMDiff.comp_contMDiffOn {f : M → M'} {g : M' → M''} {s : Set M}
     (hg : ContMDiff I' I'' n g) (hf : ContMDiffOn I I' n f s) : ContMDiffOn I I'' n (g ∘ f) s :=
-  hg.contMDiffOn.comp hf Set.subset_preimage_univ
+  hg.contMDiffOn.comp hf subset_preimage_univ
 #align cont_mdiff.comp_cont_mdiff_on ContMDiff.comp_contMDiffOn
 
 theorem Smooth.comp_smoothOn {f : M → M'} {g : M' → M''} {s : Set M} (hg : Smooth I' I'' g)
     (hf : SmoothOn I I' f s) : SmoothOn I I'' (g ∘ f) s :=
-  hg.smoothOn.comp hf Set.subset_preimage_univ
+  hg.smoothOn.comp hf subset_preimage_univ
 #align smooth.comp_smooth_on Smooth.comp_smoothOn
 
 theorem ContMDiffOn.comp_contMDiff {t : Set M'} {g : M' → M''} (hg : ContMDiffOn I' I'' n g t)
@@ -1312,18 +1312,18 @@ section
 open TopologicalSpace
 
 theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
-    ContMDiff I I n (Set.inclusion h : U → V) := by
+    ContMDiff I I n (inclusion h : U → V) := by
   rintro ⟨x, hx : x ∈ U⟩
   apply (contDiffWithinAt_localInvariantProp I I n).liftProp_inclusion
   intro y
   dsimp [ContDiffWithinAtProp]
-  rw [Set.univ_inter]
+  rw [univ_inter]
   refine' contDiffWithinAt_id.congr _ _
   · exact I.rightInvOn
   · exact congr_arg I (I.left_inv y)
 #align cont_mdiff_inclusion contMDiff_inclusion
 
-theorem smooth_inclusion {U V : Opens M} (h : U ≤ V) : Smooth I I (Set.inclusion h : U → V) :=
+theorem smooth_inclusion {U V : Opens M} (h : U ≤ V) : Smooth I I (inclusion h : U → V) :=
   contMDiff_inclusion h
 #align smooth_inclusion smooth_inclusion
 
@@ -2044,37 +2044,42 @@ lemma contMDiff_openEmbedding :
   haveI := h.singleton_smoothManifoldWithCorners I
   rw [@contMDiff_iff _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
   use h.continuous
-  intros x y -- show the function is actually the identity on the range of I ∘ e
+  intros x y
+  -- show the function is actually the identity on the range of I ∘ e
   apply contDiffOn_id.congr
-  intros z hz -- factorise into the chart (=e) and the model (=id)
+  intros z hz
+  -- factorise into the chart (=e) and the model (=id)
   rw [extChartAt_coe, @extChartAt_coe_symm _ _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace,
     chartAt_self_eq]
   repeat rw [Function.comp_apply]
   rw [LocalHomeomorph.refl_apply, id.def, LocalHomeomorph.singletonChartedSpace_chartAt_eq,
     h.toLocalHomeomorph_right_inv]
   · rw [id.def, I.right_inv]
-    apply Set.mem_of_subset_of_mem _ hz.1
+    apply mem_of_subset_of_mem _ hz.1
     exact @extChartAt_target_subset_range _ _ _ _ _ _ _ _ _ I x h.singletonChartedSpace
-  · rw [ModelWithCorners.symm] -- show hz implies z is in range of I ∘ e
+  · -- show hz implies z is in range of I ∘ e
+    rw [ModelWithCorners.symm]
     have := hz.1
     rw [@extChartAt_target _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace] at this
     have := this.1
-    rw [Set.mem_preimage, LocalHomeomorph.singletonChartedSpace_chartAt_eq,
+    rw [mem_preimage, LocalHomeomorph.singletonChartedSpace_chartAt_eq,
       h.toLocalHomeomorph_target] at this
     exact this
 
 variable {I}
 lemma contMDiffOn_openEmbedding_symm :
     @ContMDiffOn _ _ _ _ _ _ _ I _ _ _ _ _ _ _ _ I _ _ h.singletonChartedSpace
-      n (OpenEmbedding.toLocalHomeomorph e h).symm (Set.range e) := by
+      n (OpenEmbedding.toLocalHomeomorph e h).symm (range e) := by
   haveI := h.singleton_smoothManifoldWithCorners I
   rw [@contMDiffOn_iff _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
   constructor
   · rw [←h.toLocalHomeomorph_target]
-    apply (h.toLocalHomeomorph e).continuousOn_symm
-  · intros z hz -- show the function is actually the identity on the range of I ∘ e
+    exact (h.toLocalHomeomorph e).continuousOn_symm
+  · intros z hz
+    -- show the function is actually the identity on the range of I ∘ e
     apply contDiffOn_id.congr
-    intros z hz -- factorise into the chart (=e) and the model (=id)
+    intros z hz
+    -- factorise into the chart (=e) and the model (=id)
     rw [@extChartAt_coe _ _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace,
       extChartAt_coe_symm, chartAt_self_eq]
     simp_rw [Function.comp_apply]
@@ -2082,11 +2087,11 @@ lemma contMDiffOn_openEmbedding_symm :
       LocalHomeomorph.singletonChartedSpace_chartAt_eq, LocalHomeomorph.right_inv]
     · rw [ModelWithCorners.right_inv]
       · rfl
-      apply Set.mem_of_subset_of_mem _ hz.1
-      exact extChartAt_target_subset_range _ _ --show hz implies z is in range of I ∘ e
-    · rw [h.toLocalHomeomorph_target, ModelWithCorners.symm, ←Set.mem_preimage]
+      · apply mem_of_subset_of_mem _ hz.1
+        exact extChartAt_target_subset_range _ _ --show hz implies z is in range of I ∘ e
+    · rw [h.toLocalHomeomorph_target, ModelWithCorners.symm, ←mem_preimage]
       have := hz.2
-      rw [Set.preimage_inter] at this
+      rw [preimage_inter] at this
       exact this.1
 
 /-- Let `M'` be a manifold whose chart structure is given by an open embedding `e'` into its model
@@ -2100,10 +2105,10 @@ lemma ContMDiff.of_comp_openEmbedding {f : M → M'} (hf : ContMDiff I I' n (e' 
     rw [Function.comp_apply, Function.comp_apply, OpenEmbedding.toLocalHomeomorph_left_inv]
   rw [this]
   apply @ContMDiffOn.comp_contMDiff _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-    h'.singletonChartedSpace _ _ (Set.range e') _ _ hf
+    h'.singletonChartedSpace _ _ (range e') _ _ hf
   · intros
     simp
-  exact contMDiffOn_openEmbedding_symm h'
+  · exact contMDiffOn_openEmbedding_symm h'
 
 end
 

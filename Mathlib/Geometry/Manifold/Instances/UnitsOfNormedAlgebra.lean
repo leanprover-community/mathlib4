@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Heather Macbeth, Winston Yin
 -/
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
-import Mathlib.Analysis.NormedSpace.Units
 
 #align_import geometry.manifold.instances.units_of_normed_algebra from "leanprover-community/mathlib"@"ef901ea68d3bb1dd08f8bc3034ab6b32b2e6ecdf"
 
@@ -53,26 +52,13 @@ instance : SmoothManifoldWithCorners 𝓘(𝕜, R) Rˣ :=
 
 /-- For a complete normed ring `R`, the embedding of the units `Rˣ` into `R` is a smooth map between
 manifolds. -/
-lemma contMDiff_val {m : WithTop ℕ} : ContMDiff 𝓘(𝕜, R) 𝓘(𝕜, R) m (val : Rˣ → R) :=
+lemma contMDiff_val {m : ℕ∞} : ContMDiff 𝓘(𝕜, R) 𝓘(𝕜, R) m (val : Rˣ → R) :=
   contMDiff_openEmbedding 𝓘(𝕜, R) Units.openEmbedding_val
-
-/-- For any map `f` from a manifold `M` to the units `Rˣ` of a complete normed ring `R`, the
-smoothness of `val ∘ f`, where `val : Rˣ → R` is the embedding, implies the smoothness of `f`.
-
-This can be used to show that ring multiplication `Rˣ × Rˣ → Rˣ` and inverse `Rˣ → Rˣ` are
-smooth. -/
-lemma ContMDiff.of_comp_units_val
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
-    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-    {n : WithTop ℕ} {f : M → Rˣ} (hf : ContMDiff I 𝓘(𝕜, R) n ((val : Rˣ → R) ∘ f)) :
-    ContMDiff I 𝓘(𝕜, R) n f :=
-  ContMDiff.of_comp_openEmbedding Units.openEmbedding_val hf
 
 /-- The units of a complete normed ring form a Lie group. -/
 instance : LieGroup 𝓘(𝕜, R) Rˣ where
   smooth_mul := by
-    apply ContMDiff.of_comp_units_val
+    apply ContMDiff.of_comp_openEmbedding Units.openEmbedding_val
     have : (val : Rˣ → R) ∘ (fun x : Rˣ × Rˣ => x.1 * x.2) =
       (fun x : R × R => x.1 * x.2) ∘ (fun x : Rˣ × Rˣ => (x.1, x.2)) := by ext; simp
     rw [this]
@@ -83,11 +69,10 @@ instance : LieGroup 𝓘(𝕜, R) Rˣ where
     rw [contMDiff_iff_contDiff]
     exact contDiff_mul
   smooth_inv := by
-    apply ContMDiff.of_comp_units_val
+    apply ContMDiff.of_comp_openEmbedding Units.openEmbedding_val
     have : (val : Rˣ → R) ∘ (fun x : Rˣ => x⁻¹) = Ring.inverse ∘ val := by ext; simp
     rw [this, ContMDiff]
-    intro x
-    refine' ContMDiffAt.comp x _ (contMDiff_val x)
+    refine' fun x => ContMDiffAt.comp x _ (contMDiff_val x)
     rw [contMDiffAt_iff_contDiffAt]
     exact contDiffAt_ring_inverse _ _
 
