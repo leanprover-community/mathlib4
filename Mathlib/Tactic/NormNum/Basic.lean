@@ -568,5 +568,5 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     return .isTrue q(isNat_dvd_true $pa $pb $this)
   | c+1 =>
     have nc : Q(ℕ) := mkRawNatLit c
-    have : Q(Nat.mod $nb $na = Nat.succ $nc) := (q(Eq.refl (nat_lit 0)) : Expr)
+    have : Q(Nat.mod $nb $na = Nat.succ $nc) := (q(Eq.refl (Nat.succ $nc)) : Expr)
     return .isFalse q(isNat_dvd_false $pa $pb $this)
