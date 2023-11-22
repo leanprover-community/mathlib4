@@ -107,9 +107,8 @@ theorem hη :
       Compatibility.τ₁ isoN₁ isoΓ₀
         (N₁Γ₀ : Γ ⋙ N₁ ≅ (toKaroubiEquivalence (ChainComplex C ℕ)).functor) := by
   ext K : 3
-  simp only [Compatibility.τ₀_hom_app, Compatibility.τ₁_hom_app, eqToIso.hom]
-  dsimp
-  refine' (N₂Γ₂_compatible_with_N₁Γ₀ K).trans (by simp)
+  simp only [Compatibility.τ₀_hom_app, Compatibility.τ₁_hom_app]
+  refine' (N₂Γ₂_compatible_with_N₁Γ₀ K).trans (by simp )
 #align category_theory.idempotents.dold_kan.hη CategoryTheory.Idempotents.DoldKan.hη
 
 /-- The counit isomorphism induced by `N₁Γ₀` -/
@@ -136,8 +135,7 @@ theorem hε :
   erw [compatibility_Γ₂N₁_Γ₂N₂_natTrans X]
   rw [Compatibility.υ_hom_app, Preadditive.DoldKan.equivalence_unitIso, Iso.app_inv, assoc]
   erw [← NatTrans.comp_app_assoc, IsIso.hom_inv_id]
-  rw [NatTrans.id_app, id_comp, NatTrans.id_app]
-  rw [Γ₂N₂ToKaroubiIso_inv_app]
+  rw [NatTrans.id_app, id_comp, NatTrans.id_app, Γ₂N₂ToKaroubiIso_inv_app]
   dsimp only [Preadditive.DoldKan.equivalence_inverse, Preadditive.DoldKan.Γ]
   rw [← Γ₂.map_comp, Iso.inv_hom_id_app, Γ₂.map_id]
   rfl
