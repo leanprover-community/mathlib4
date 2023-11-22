@@ -10,7 +10,7 @@ import Mathlib.Geometry.Manifold.MFDeriv
 /-!
 # Integral curves of vector fields on a manifold
 
-For any continuously differentiable vector field on a manifold `M` and any chosen non-boundary point
+For any continuously differentiable vector field on a manifold `M` and any chosen interior point
 `x₀ : M`, there exists an integral curve `γ : ℝ → M` such that `γ t₀ = x₀` and the tangent vector of
 `γ` at `t` coincides with the vector field at `γ t` for all `t` within an open interval around `t₀`.
 
@@ -43,7 +43,7 @@ variable
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] [SmoothManifoldWithCorners I' M']
 
 lemma ModelWithCorners.isOpen_target [I.Boundaryless] {x : M} :
-    IsOpen (extChartAt I x).target := LocalHomeomorph.isOpen_extend_target
+    IsOpen (extChartAt I x).target := LocalHomeomorph.isOpen_extend_target ..
 
 /-- If `M` has no boundary, every point of `M` is an interior point. -/
 lemma ModelWithCorners.isInteriorPoint [I.Boundaryless] {x : M} : I.IsInteriorPoint x := by
