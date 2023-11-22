@@ -27,13 +27,14 @@ Define the interior and boundary of a manifold.
 - `univ_eq_interior_union_boundary`: `M` is the union of its interior and boundary
 - `interior_isOpen`: `interior I M` is open
 - `boundary_isClosed`: `boundary I M` is closed
-- `interior_boundary_eq_empty`: `boundary I M` has empty interior
-(this implies it has "measure zero", see different file)
 
 **TODO**
+- under suitable assumptions, `boundary I M` has empty interior
+(if `M` is finite-dimensional, `boundary I M` should have measure 0, which implies this)
 - `interior I M` is a manifold without boundary
   (need to upgrade the model used; map the charts from an open ball to entire ℝ^n)
-- the boundary is a submanifold of codimension 1 (once mathlib has submanifolds)
+- the boundary is a submanifold of codimension 1, perhaps with boundary and corners
+(this requires a definition of submanifolds)
 
 ## Tags
 manifold, interior, boundary
@@ -48,19 +49,6 @@ variable {X : Type*} [TopologicalSpace X] {s : Set X}
 lemma interior_frontier_disjoint : interior s ∩ frontier s = ∅ := by
   rw [← closure_diff_interior s, diff_eq]
   rw [← inter_assoc, inter_comm, ← inter_assoc, compl_inter_self, empty_inter]
-
--- FIXME: what's a good name?
-lemma aux {O t : Set X} (h : s = O ∩ t) (hO : IsOpen O) :
-    s \ interior s ⊆ t \ interior t := by
-  rw [h, interior_inter, hO.interior_eq, ← inter_diff_distrib_left]
-  exact inter_subset_right O (t \ interior t)
-
--- is this a better lemma; is `aux` useful on its own?
-lemma aux2 {O t : Set X} (h : s = O ∩ t) (hO : IsOpen O)
-    (ht : IsClosed t) : s \ interior s ⊆ frontier t := by
-  rw [ht.frontier_eq, h, interior_inter, hO.interior_eq, ← inter_diff_distrib_left]
-  exact inter_subset_right _ _
-  -- alternative proof, if `aux` is useful: ht.frontier_eq ▸ aux h hO
 
 end TopologyHelpers
 
@@ -207,36 +195,6 @@ lemma boundary_isClosed : IsClosed (SmoothManifoldWithCorners.boundary I M) := b
   exact interior_isOpen
 end SmoothManifoldWithCorners
 
-variable (I) in
-/-- The boundary of any extended chart has empty interior. -/
-lemma LocalHomeomorph.extend_interior_boundary_eq_empty {e : LocalHomeomorph M H} :
-    interior ((e.extend I).target \ interior (e.extend I).target) = ∅ := by
-  -- `e.extend_target I = (I.symm ⁻¹' e.target) ∩ range I` is the union of an open set and a
-  -- closed set: hence the frontier is contained in the second factor.
-  have h1 : (e.extend I).target \ interior (e.extend I).target ⊆ frontier (range I) :=
-    aux2 (e.extend_target I) (e.open_target.preimage I.continuous_symm) I.closed_range
-  suffices interior (frontier (range I)) = ∅ by
-    exact subset_eq_empty (interior_mono h1) this
-  -- As `range I` is closed, its frontier has empty interior.
-  exact interior_frontier I.closed_range
-
-
-lemma auxaux {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
-    {O : Set X} {t : Set Y} (hO : IsOpen O) (hf : ContinuousOn f O) :
-    interior (O ∩ f ⁻¹' t) = O ∩ f ⁻¹' (interior t) := by
-  -- well, ⊇ always holds!
-  have : interior (O ∩ f ⁻¹' t) ⊇ O ∩ f ⁻¹' (interior t) := by
-    rw [interior_inter, hO.interior_eq]
-    exact hf.preimage_interior_subset_interior_preimage hO
-
-  -- **IF** f were an open map, I'd be happy... that only holds without boundary, though...
-  have pretend : IsOpenMap f := sorry
-  let r := pretend.interior_preimage_subset_preimage_interior (s := t)
-  have : interior (O ∩ f ⁻¹' t) ⊆ O ∩ f ⁻¹' (interior t) := by
-    rw [interior_inter, hO.interior_eq]
-    exact inter_subset_inter_right O r
-  sorry -- sCIFI!
-
 /-- The charts of a charted space cover its domain. -/
 -- {H M : Type*} [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
 lemma ChartedSpace.covering : ⋃ x : M, (chartAt H x).source = univ := by
@@ -272,70 +230,4 @@ lemma extend_source_map_target' {e : LocalHomeomorph M H} :
   exact extend_source_map_target hx
 end LocalHomeomorph
 
-namespace SmoothManifoldWithCorners
-lemma isBoundaryPoint_iff' {x : M} :
-  SmoothManifoldWithCorners.boundary I M ∩ (chartAt H x).source =
-    (chartAt H x).source ∩ (extChartAt I x) ⁻¹'
-      ((extChartAt I x).target \ interior (extChartAt I x).target) := by
-  ext y
-  -- This can surely be golfed: first three lines on both cases are the same.
-  -- First steps: reorder target conditions; then try and_congr or so...
-  constructor
-  · rintro ⟨hbd, hsource⟩
-    apply mem_inter hsource ?_
-    rw [mem_preimage]
-    apply (mem_diff ((chartAt H x).extend I y)).mpr
-    exact ⟨(chartAt H x).extend_source_map_target hsource, (isBoundaryPoint_iff I hsource).mp hbd⟩
-  · rintro ⟨hsource, hbd⟩
-    apply mem_inter ?_ hsource
-    apply (isBoundaryPoint_iff I hsource).mpr (not_mem_of_mem_diff hbd)
-
-variable (I) in
-/-- The boundary of a manifold has empty interior. -/
-lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary I M) = ∅ := by
-  set bd := SmoothManifoldWithCorners.boundary I M
-  -- Now, compute.
-  have := calc interior (bd)
-    _ = interior (bd) ∩ univ := by rw [inter_univ]
-    _ = interior (bd) ∩ ⋃ (x : M), (chartAt H x).source := by simp_rw [ChartedSpace.covering]
-    _ = interior (bd) ∩ ⋃ (x : M), interior ((chartAt H x).source) := by
-      have : ∀ x : M, interior ((chartAt H x).source) = (chartAt H x).source := by
-        intro x
-        exact (chartAt H x).open_source.interior_eq
-      simp_rw [this]
-    _ = ⋃ (x : M), interior bd ∩ interior ((chartAt H x).source) := inter_iUnion _ _
-    _ = ⋃ (x : M), interior (bd ∩ (chartAt H x).source) := by simp_rw [interior_inter]
-    _ = ⋃ (x : M), interior ((chartAt H x).source ∩
-        (extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target)) := by
-      simp_rw [isBoundaryPoint_iff']
-    -- this step is SCIFI: very happy if true!! need a rigorous argument, though
-    -- extChart is continuous on its source, so this might hold?
-    -- lemma: f is continuous, then interior f⁻¹'B = f⁻¹ (interior B)
-    -- next up: f continuous on A, then A ∩ interior f⁻¹'(B) = f⁻¹(interior B) assuming f⁻¹B ⊆ A somehow
-    _ = ⋃ (x : M), (chartAt H x).source ∩ ((extChartAt I x) ⁻¹' (interior ((extChartAt I x).target \ interior (extChartAt I x).target))) := by
-      have goal : ∀ x : M,  interior ((chartAt H x).source ∩ (extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target)) = (chartAt H x).source ∩ ((extChartAt I x) ⁻¹' (interior ((extChartAt I x).target \ interior (extChartAt I x).target))) := by
-        intro x
-        set e := extChartAt I x
-        let r := (chartAt H x).continuousOn_extend I
-        have : (chartAt H x).extend I = e := rfl
-        rw [this] at r
-        -- interior (e.source ∩ ↑e ⁻¹' (e.target \ interior e.target)) = e.source ∩ ↑e ⁻¹' interior (e.target \ interior e.target)
-        -- abstracted this into a lemma. now, let's see if that is actually true!!!
-        -- well, one direction holds - but it's the wrong one...
-        rw [← (chartAt H x).extend_source I]
-        exact auxaux (O := e.source) (isOpen_extChartAt_source I x) r (t := e.target \ interior e.target)
-      simp_rw [goal]
-    _ = ⋃ (_ : M), ∅ := by
-      have aux : ∀ x : M, (chartAt H x).source ∩ (extChartAt I x) ⁻¹' (interior ((extChartAt I x).target \ interior (extChartAt I x).target)) = ∅ := by
-        intro x
-        set e := extChartAt I x
-        have : interior ((e.target \ interior e.target)) = ∅ := by
-          have : (chartAt H x).extend I = e := rfl
-          apply this ▸ ((chartAt H x).extend_interior_boundary_eq_empty (I := I))
-        rw [this, preimage_empty, inter_empty]
-      simp_rw [aux]
-    _ = ∅ := iUnion_empty
-  exact this
-
--- interior I M is a manifold (use TopologicalSpace.Opens.instSmoothManifoldWithCornersSubtypeMemOpensInstMembershipInstSetLikeOpensInstTopologicalSpaceSubtypeInstChartedSpace)
-end SmoothManifoldWithCorners
+-- TODO: interior I M is a manifold
