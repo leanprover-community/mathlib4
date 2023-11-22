@@ -126,9 +126,19 @@ def subsingletonElim (mvarId : MVarId) : MetaM Bool :=
       return true
     return res.getD false
 
+/-- Get the type the given metavariable after instantiating metavariables and cleaning up
+annotations. -/
+def getType'' (mvarId : MVarId) : MetaM Expr :=
+  return (← instantiateMVars (← mvarId.getType)).cleanupAnnotations
+
 end Lean.MVarId
 
+/-! ## Additional Meta utilities and components -/
+
 namespace Lean.Meta
+
+-- Currently (October 2023), `MetavarKind` does not derive `BEq`
+deriving instance BEq for MetavarKind
 
 /-- Return local hypotheses which are not "implementation detail", as `Expr`s. -/
 def getLocalHyps [Monad m] [MonadLCtx m] : m (Array Expr) := do
@@ -159,13 +169,9 @@ and then builds the lambda telescope term for the new term.
 def mapForallTelescope (F : Expr → MetaM Expr) (forallTerm : Expr) : MetaM Expr := do
   mapForallTelescope' (fun _ e => F e) forallTerm
 
-
-/-- Get the type the given metavariable after instantiating metavariables and cleaning up
-annotations. -/
-def _root_.Lean.MVarId.getType'' (mvarId : MVarId) : MetaM Expr :=
-  return (← instantiateMVars (← mvarId.getType)).cleanupAnnotations
-
 end Lean.Meta
+
+/-! ## Additional `TacticM` utilities -/
 
 namespace Lean.Elab.Tactic
 
