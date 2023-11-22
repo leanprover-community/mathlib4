@@ -101,18 +101,7 @@ class IsTensorProduct (tmul : BalancedBiAddMonoidHom R M N X) :=
 (lift_uniq ⦃P : Type uX⦄ [AddCommMonoid P] (f : BalancedBiAddMonoidHom R M N P) (fHat : X →+ P) :
   (∀ m n, fHat (tmul m n) = f m n) → lift f = fHat)
 
-end defs
-
-section addGroups
--- I feel like these should work for "semimodules" as well, but I don't know how to prove it
 open IsTensorProduct
-
-universe uR uM uN uX
-
-variable (R : Type uR) [Semiring R]
-variable {M : Type uM} [AddCommMonoid M] [Module Rᵐᵒᵖ M]
-variable {N : Type uN} [AddCommMonoid N] [Module R N]
-variable {X : Type uX} [AddCommMonoid X]
 
 variable (tmul : BalancedBiAddMonoidHom R M N X) [IsTensorProduct R tmul]
 
@@ -158,7 +147,7 @@ lemma IsTensorProduct.induction {motive : X → Prop}
     (by rintro _ ⟨m, n, rfl⟩; exact tensor _ _)
     (by convert tensor 0 0 using 1; rw [tmul.apply_apply_zero]) add
 
-end addGroups
+end defs
 
 section module_structure
 
