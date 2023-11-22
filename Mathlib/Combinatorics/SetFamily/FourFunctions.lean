@@ -44,6 +44,10 @@ Prove the Fishburn-Shepp inequality.
 
 Is `collapse` a construct generally useful for set family inductions? If so, we should move it to an
 earlier file and give it a proper API.
+
+## References
+
+[*Applications of the FKG Inequality and Its Relatives*, Graham][Graham1983]
 -/
 
 open Finset Fintype
