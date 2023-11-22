@@ -63,6 +63,7 @@ def N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ) :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₂ AlgebraicTopology.DoldKan.N₂
 
+/-- The canonical isomorphism `toKaroubi (SimplicialObject C) ⋙ N₂ ≅ N₁`. -/
 def toKaroubiCompN₂IsoN₁ : toKaroubi (SimplicialObject C) ⋙ N₂ ≅ N₁ :=
   (functorExtension₁CompWhiskeringLeftToKaroubiIso _ _).app N₁
 
