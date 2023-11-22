@@ -406,7 +406,7 @@ lemma primeFactors_prod (hs : ∀ p ∈ s, p.Prime) : primeFactors (∏ p in s, 
   rintro ⟨hp, q, hq, hpq⟩
   rwa [←((hs _ hq).dvd_iff_eq hp.ne_one).1 hpq]
 
-lemma primeFactors_div_gcd (hm : Squarefree m) (hn  : n ≠ 0) :
+lemma primeFactors_div_gcd (hm : Squarefree m) (hn : n ≠ 0) :
     primeFactors (m / m.gcd n) = primeFactors m \ primeFactors n := by
   ext p
   have : m / m.gcd n ≠ 0 :=
