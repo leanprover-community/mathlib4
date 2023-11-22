@@ -209,7 +209,7 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
     intro x hx
     have d1 : HasDerivAt (fun y : ℝ => (-y).exp) (-(-x).exp) x := by
       simpa using (hasDerivAt_neg x).exp
-    have d2 : HasDerivAt (fun y : ℝ => ↑y ^ s) (s * x ^ (s - 1)) x := by
+    have d2 : HasDerivAt (fun y : ℝ => (y : ℂ) ^ s) (s * x ^ (s - 1)) x := by
       have t := @HasDerivAt.cpow_const _ _ _ s (hasDerivAt_id ↑x) ?_
       simpa only [mul_one] using t.comp_ofReal
       simpa only [id.def, ofReal_re, ofReal_im, Ne.def, eq_self_iff_true, not_true, or_false_iff,
@@ -322,7 +322,7 @@ theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = Ga
       refine' lt_add_of_lt_of_nonneg i0 _
       rw [← Nat.cast_zero, Nat.cast_le]; exact Nat.zero_le k
   convert (u <| n - ⌊1 - s.re⌋₊).symm; rw [Nat.add_sub_of_le]
-  by_cases 0 ≤ 1 - s.re
+  by_cases h : 0 ≤ 1 - s.re
   · apply Nat.le_of_lt_succ
     exact_mod_cast lt_of_le_of_lt (Nat.floor_le h) (by linarith : 1 - s.re < n + 1)
   · rw [Nat.floor_of_nonpos]; linarith; linarith
@@ -354,8 +354,8 @@ theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by
 
 @[simp]
 theorem Gamma_ofNat_eq_factorial (n : ℕ) [(n + 1).AtLeastTwo] :
-    Gamma (no_index (OfNat.ofNat (n + 1) : ℂ)) = n ! := by
-  exact_mod_cast Gamma_nat_eq_factorial (n : ℕ)
+    Gamma (no_index (OfNat.ofNat (n + 1) : ℂ)) = n ! :=
+  mod_cast Gamma_nat_eq_factorial (n : ℕ)
 
 /-- At `0` the Gamma function is undefined; by convention we assign it the value `0`. -/
 @[simp]
@@ -440,7 +440,7 @@ theorem differentiableAt_GammaAux (s : ℂ) (n : ℕ) (h1 : 1 - s.re < n) (h2 : 
 
 theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : DifferentiableAt ℂ Gamma s := by
   let n := ⌊1 - s.re⌋₊ + 1
-  have hn : 1 - s.re < n := by exact_mod_cast Nat.lt_floor_add_one (1 - s.re)
+  have hn : 1 - s.re < n := mod_cast Nat.lt_floor_add_one (1 - s.re)
   apply (differentiableAt_GammaAux s n hn hs).congr_of_eventuallyEq
   let S := {t : ℂ | 1 - t.re < n}
   have : S ∈ 𝓝 s := by
@@ -517,8 +517,8 @@ theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by
 
 @[simp]
 theorem Gamma_ofNat_eq_factorial (n : ℕ) [(n + 1).AtLeastTwo] :
-    Gamma (no_index (OfNat.ofNat (n + 1) : ℝ)) = n ! := by
-  exact_mod_cast Gamma_nat_eq_factorial (n : ℕ)
+    Gamma (no_index (OfNat.ofNat (n + 1) : ℝ)) = n ! :=
+  mod_cast Gamma_nat_eq_factorial (n : ℕ)
 
 /-- At `0` the Gamma function is undefined; by convention we assign it the value `0`. -/
 @[simp]

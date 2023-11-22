@@ -391,7 +391,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
     haveI : NoZeroSMulDivisors R L := NoZeroSMulDivisors.of_algebraMap_injective hRL
     rw [← IsFractionRing.isAlgebraic_iff' R S]
     intro x
-    exact IsIntegral.isAlgebraic _ (isIntegral_of_noetherian inferInstance _)
+    exact (isIntegral_of_noetherian inferInstance _).isAlgebraic
 #align ideal.finrank_quotient_map.span_eq_top Ideal.FinrankQuotientMap.span_eq_top
 
 variable (K L)
