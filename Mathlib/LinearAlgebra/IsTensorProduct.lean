@@ -1,5 +1,39 @@
+/-
+Copyright (c) 2023 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang
+
+This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
+-/
+
 import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.GroupTheory.QuotientGroup
+
+/-!
+
+# Characteristic Predicate of Tensor Product
+
+Given `Semiring R`, right `R`-modules `M`, left `R`-module N, an `AddCommMonoid X`, we say an
+`f : M →+ N →+ X` is `R`-balanced biadditive monoid homomorphism if `f (m • r) n = f m (r • n)`
+for all `r ∈ R`, `m ∈ M` and `n ∈ N`. A `R`-balanced biadditive monoid hom `tmul : M →+ N →+ X`
+defines `R`-tensor product of `M, N` if it is universal: for any `AddCommMonoid P`, balanced
+biadditive monoid hom `f : M →+ N →+ P`, there exists a unique homomorphism `f' : X →+ P` such that
+`f' (tmul m n) = f m n` for all `m ∈ M` and `n ∈ N`.
+
+
+## Main results
+
+### Left modules
+
+If `M` is `(A, B)`-bimodule and `N` is left B-module such that balanced `tmul : M →+ N →+ X` is a
+`B`-tensor product. Then `X` has an `A`-module structure.
+
+### Right modules
+
+If `M` is right `B`-module, `N` is `(B, C)`-bimodule such that balanced `tmul : M →+ N →+ X` is a
+`B`-tensor product. Then `X` has a right `C`-module structure.
+
+-/
 
 set_option autoImplicit false
 
