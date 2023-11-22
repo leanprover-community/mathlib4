@@ -42,13 +42,8 @@ variable
   {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] [SmoothManifoldWithCorners I' M']
 
-lemma ModelWithCorners.isOpen_extend_target [I.Boundaryless] {e : LocalHomeomorph M H} :
-    IsOpen (e.extend I).target := by
-  rw [LocalHomeomorph.extend_target, I.range_eq_univ, inter_univ]
-  exact I.continuous_symm.isOpen_preimage _ e.open_target
-
 lemma ModelWithCorners.isOpen_target [I.Boundaryless] {x : M} :
-    IsOpen (extChartAt I x).target := I.isOpen_extend_target
+    IsOpen (extChartAt I x).target := LocalHomeomorph.isOpen_extend_target
 
 /-- If `M` has no boundary, every point of `M` is an interior point. -/
 lemma ModelWithCorners.isInteriorPoint [I.Boundaryless] {x : M} : I.IsInteriorPoint x := by
@@ -203,7 +198,7 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
   /- `hI` should be a separate lemma -/
   have hI : range I ∈ nhds (extChartAt I x₀ x₀) := by
     rw [mem_nhds_iff]
-    refine ⟨interior (extChartAt I x₀).target,
+    exact ⟨interior (extChartAt I x₀).target,
       subset_trans interior_subset (extChartAt_target_subset_range ..),
       isOpen_interior, hx⟩
   /- use Picard-Lindelöf theorem to extract a solution to the ODE in the chart defined by `v` -/
@@ -276,7 +271,7 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
       rw [mem_nhds_iff]
       exact ⟨interior (extChartAt I x₀).target, interior_subset, isOpen_interior, hf3 _ ht2⟩
   · rw [mem_nhds_iff]
-    refine ⟨interior (extChartAt I x₀).target,
+    exact ⟨interior (extChartAt I x₀).target,
       subset_trans interior_subset (extChartAt_target_subset_range ..), isOpen_interior, hf3 _ ht2⟩
 
 /-- For any continuously differentiable vector field defined on a manifold without boundary and any

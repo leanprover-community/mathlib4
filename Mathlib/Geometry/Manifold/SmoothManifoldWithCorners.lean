@@ -976,6 +976,11 @@ theorem extend_target : (f.extend I).target = I.symm ⁻¹' f.target ∩ range I
   simp_rw [extend, LocalEquiv.trans_target, I.target_eq, I.toLocalEquiv_coe_symm, inter_comm]
 #align local_homeomorph.extend_target LocalHomeomorph.extend_target
 
+lemma isOpen_extend_target [I.Boundaryless] :
+    IsOpen (f.extend I).target := by
+  rw [LocalHomeomorph.extend_target, I.range_eq_univ, inter_univ]
+  exact I.continuous_symm.isOpen_preimage _ f.open_target
+
 theorem mapsTo_extend (hs : s ⊆ f.source) :
     MapsTo (f.extend I) s ((f.extend I).symm ⁻¹' s ∩ range I) := by
   rw [mapsTo', extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
