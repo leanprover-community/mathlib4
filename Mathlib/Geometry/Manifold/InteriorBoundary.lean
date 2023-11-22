@@ -205,29 +205,22 @@ lemma ChartedSpace.covering : ⋃ x : M, (chartAt H x).source = univ := by
     exact mem_chart_source H y
 
 namespace LocalHomeomorph -- FIXME: move to SmoothManifoldWithCorners
--- XXX: fix name
-lemma extend_source_map_target {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source) :
+lemma extend_map_source {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source) :
     (e.extend I) x ∈ (e.extend I).target := by
-  rw [e.extend_target]
-  apply mem_inter ?_ (mem_range_self _)
-  show I (e x) ∈ I.symm ⁻¹' e.target
-  rw [mem_preimage, I.left_inv]
-  exact e.map_source hx
+  rw [← e.extend_source I] at hx
+  exact (e.extend I).map_source hx
 
 -- XXX: mapsTo_extend has a different formula from extend_target...
 -- should unify these/relate these better!
-lemma LocalHomeomorph.mapsTo_source_target {e : LocalHomeomorph M H} :
+lemma mapsTo_extend' {e : LocalHomeomorph M H} :
     MapsTo (e.extend I) (e.extend I).source (e.extend I).target :=
   fun _ hx ↦(e.extend I).map_source hx
 
--- XXX: fix name; can this be golfed?
-lemma extend_source_map_target' {e : LocalHomeomorph M H} :
-    (e.extend I) '' (e.extend I).source ⊆ (e.extend I).target := by
-  rw [e.extend_source]
-  intro y hy
-  choose x hx hxy using ((mem_image (e.extend I) e.source) y).mp hy
-  rw [← hxy]
-  exact extend_source_map_target hx
+/-- Variant of `extend_map_source`, stated for images of subsets. -/
+lemma extend_map_source' {e : LocalHomeomorph M H} :
+    (e.extend I) '' (e.extend I).source ⊆ (e.extend I).target :=
+  Set.mapsTo'.mp e.mapsTo_extend'
+
 end LocalHomeomorph
 
 -- TODO: interior I M is a manifold
