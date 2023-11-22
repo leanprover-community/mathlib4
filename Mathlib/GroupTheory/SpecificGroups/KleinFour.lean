@@ -45,19 +45,6 @@ section ExponentTwo
 
 variable {G : Type*} [Group G]
 
-@[to_additive AddMonoid.one_lt_exponent]
-lemma Monoid.one_lt_exponent {G : Type*} [LeftCancelMonoid G] [Finite G] [Nontrivial G] :
-    1 < Monoid.exponent G := by
-  let _inst := Fintype.ofFinite G
-  obtain ⟨g, hg⟩ := exists_ne (1 : G)
-  rw [Ne.def, ← orderOf_eq_one_iff] at hg
-  rw [← Monoid.lcm_order_eq_exponent, ← Nat.succ_le_iff]
-  have hg' : 2 ≤ orderOf g := Nat.lt_of_le_of_ne (orderOf_pos g) (Ne.symm hg)
-  refine hg'.trans <| Nat.le_of_dvd ?_ <| Finset.dvd_lcm (by simp)
-  rw [Nat.pos_iff_ne_zero, Ne.def, Finset.lcm_eq_zero_iff]
-  rintro ⟨x, -, hx⟩
-  exact (orderOf_pos x).ne' hx
-
 /-- In a group of exponent two, every element is its own inverse. -/
 @[to_additive]
 lemma inv_eq_self_of_exponent_two (hG : Monoid.exponent G = 2) (x : G) :
@@ -95,9 +82,6 @@ lemma mul_not_mem_of_exponent_two {G : Type*} [Group G] (h : Monoid.exponent G =
     (hx : x ≠ 1) (hy : y ≠ 1) (hxy : x ≠ y) : x * y ∉ ({x, y, 1} : Set G) :=
   mul_not_mem_of_orderOf_eq_two (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one x) hx)
     (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one y) hy) hxy
-
-lemma mul_self_of_orderOf_eq_two {G : Type*} [Group G] {x : G} (hx : orderOf x = 2) : x * x = 1 :=
-  pow_two (a := x) ▸ hx ▸ pow_orderOf_eq_one x
 
 end ExponentTwo
 
