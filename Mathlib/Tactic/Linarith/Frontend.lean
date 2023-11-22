@@ -402,12 +402,10 @@ Allow elaboration of `LinarithConfig` arguments to tactics.
 declare_config_elab elabLinarithConfig Linarith.LinarithConfig
 
 elab_rules : tactic
-  | `(tactic| linarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) =>
-    withMainContext do commitIfNoEx do
-      liftMetaFinishingTactic <|
-        Linarith.linarith o.isSome
-          (← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `linarith)).toList
-          ((← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome)
+  | `(tactic| linarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) => withMainContext do
+    let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `linarith)
+    let cfg := (← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome
+    commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
 -- TODO restore this when `add_tactic_doc` is ported
 -- add_tactic_doc
