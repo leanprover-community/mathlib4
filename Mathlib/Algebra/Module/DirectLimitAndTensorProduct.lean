@@ -16,19 +16,17 @@ as `R`-modules.
 
 open TensorProduct Module.DirectLimit
 
-universe u v w
-
-variable {R : Type u} [CommRing R]
-variable {ι : Type v}
+variable {R : Type*} [CommRing R]
+variable {ι : Type*}
 variable [DecidableEq ι] [Preorder ι]
-variable {G : ι → Type w}
+variable {G : ι → Type*}
 
 namespace Module
 
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
 
 variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
-variable (M : Type w) [AddCommGroup M] [Module R M]
+variable (M : Type*) [AddCommGroup M] [Module R M]
 
 /-- limᵢ (Gᵢ ⊗ M) -/
 local notation "Lim_G_tensor" =>
