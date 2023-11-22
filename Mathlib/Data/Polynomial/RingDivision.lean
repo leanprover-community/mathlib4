@@ -457,6 +457,33 @@ theorem rootMultiplicity_add {p q : R[X]} (a : R) (hzero : p + q ≠ 0) :
   exact min_pow_dvd_add hdivp hdivq
 #align polynomial.root_multiplicity_add Polynomial.rootMultiplicity_add
 
+theorem rootMultiplicity_mul' {p q : R[X]} {x : R}
+    (hpq : (p /ₘ (X - C x) ^ (p.rootMultiplicity x)).eval x *
+      (q /ₘ (X - C x) ^ (q.rootMultiplicity x)).eval x ≠ 0) :
+    rootMultiplicity x (p * q) = rootMultiplicity x p + rootMultiplicity x q := by
+  have h : p * q = (p /ₘ (X - C x) ^ (p.rootMultiplicity x) * (X - C x) ^ (p.rootMultiplicity x)) *
+      (q /ₘ (X - C x) ^ (q.rootMultiplicity x) * (X - C x) ^ (q.rootMultiplicity x)) := by
+    simp only [divByMonic_mul_pow_rootMultiplicity_eq]
+  rw [mul_comm _ <| (X - C x) ^ (q.rootMultiplicity x), ← mul_assoc,
+    mul_assoc _ _ <| (X - C x) ^ (q.rootMultiplicity x), ← pow_add,
+    mul_comm _ <| (X - C x) ^ (p.rootMultiplicity x + q.rootMultiplicity x), mul_assoc] at h
+  have hpq' : p * q ≠ 0 := fun h' ↦ by
+    rw [h, mul_left_mem_nonZeroDivisors_eq_zero_iff
+      (monic_X_sub_C x |>.pow _ |>.mem_nonZeroDivisors)] at h'
+    apply_fun eval x at h'
+    rw [eval_mul, eval_zero] at h'
+    exact hpq h'
+  refine le_antisymm ?_ ?_
+  · rw [rootMultiplicity_le_iff hpq']
+    intro ⟨f, h'⟩
+    rw [h, pow_succ', mul_assoc, mul_cancel_left_mem_nonZeroDivisors
+      (monic_X_sub_C x |>.pow _ |>.mem_nonZeroDivisors)] at h'
+    apply_fun eval x at h'
+    simp only [eval_mul, eval_sub, eval_X, eval_C, sub_self, zero_mul] at h'
+    exact hpq h'
+  · rw [le_rootMultiplicity_iff hpq', h]
+    exact dvd_mul_right _ _
+
 variable [IsDomain R] {p q : R[X]}
 
 section Roots
