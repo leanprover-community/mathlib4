@@ -206,11 +206,6 @@ lemma ChartedSpace.covering : ⋃ x : M, (chartAt H x).source = univ := by
     exact mem_chart_source H y
 
 namespace SmoothManifoldWithCorners
--- can I avoid using this lemma?
-lemma covering : ⋃ x : M, (extChartAt I x).source = univ := by
-  simp_rw [extChartAt_source]
-  exact ChartedSpace.covering
-
 -- XXX: fix name; move to LocalHomeomorph
 lemma extend_source_map_target {e : LocalHomeomorph M H} {x : M} (hx : x ∈ e.source) :
     (e.extend I) x ∈ (e.extend I).target := by
@@ -230,25 +225,20 @@ lemma extend_source_map_target' {e : LocalHomeomorph M H} :
   sorry -- easy
 
 lemma isBoundaryPoint_iff' {x : M} :
-  SmoothManifoldWithCorners.boundary I M ∩ (extChartAt I x).source =
-    (extChartAt I x).source ∩ (extChartAt I x) ⁻¹'
+  SmoothManifoldWithCorners.boundary I M ∩ (chartAt H x).source =
+    (chartAt H x).source ∩ (extChartAt I x) ⁻¹'
       ((extChartAt I x).target \ interior (extChartAt I x).target) := by
-  have r' : (chartAt H x).extend I = extChartAt I x := rfl
-  rw [← r'] -- XXX: does this mean extChart needs more lemmas? or a named rewrite equation?
   ext y
   -- This can surely be golfed: first three lines on both cases are the same.
   -- First steps: reorder target conditions; then try and_congr or so...
   constructor
   · rintro ⟨hbd, hsource⟩
-    apply mem_inter hsource ?_ -- discharge first condition, easy
-    rw [(chartAt H x).extend_source] at hsource
-    -- This part can surely also be golfed!
+    apply mem_inter hsource ?_
     rw [mem_preimage]
     apply (mem_diff ((chartAt H x).extend I y)).mpr
     exact ⟨extend_source_map_target hsource, (isBoundaryPoint_iff I hsource).mp hbd⟩
   · rintro ⟨hsource, hbd⟩
     apply mem_inter ?_ hsource
-    rw [(chartAt H x).extend_source] at hsource
     apply (isBoundaryPoint_iff I hsource).mpr (not_mem_of_mem_diff hbd)
 
 variable (I) in
@@ -258,42 +248,36 @@ lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary 
   -- Now, compute.
   have := calc interior (bd)
     _ = interior (bd) ∩ univ := by rw [inter_univ]
-    _ = interior (bd) ∩ ⋃ (x : M), (extChartAt I x).source := by simp_rw [covering]
-    _ = interior (bd) ∩ ⋃ (x : M), interior ((extChartAt I x).source) := by
-      have : ∀ x : M, interior ((extChartAt I x).source) = (extChartAt I x).source := by
+    _ = interior (bd) ∩ ⋃ (x : M), (chartAt H x).source := by simp_rw [ChartedSpace.covering]
+    _ = interior (bd) ∩ ⋃ (x : M), interior ((chartAt H x).source) := by
+      have : ∀ x : M, interior ((chartAt H x).source) = (chartAt H x).source := by
         intro x
-        have : extChartAt I x = (chartAt H x).extend I := rfl
-        rw [this]
-        exact (chartAt H x).isOpen_extend_source I (M := M).interior_eq
+        exact (chartAt H x).open_source.interior_eq
       simp_rw [this]
-    _ = ⋃ (x : M), interior bd ∩ interior ((extChartAt I x).source) := inter_iUnion _ _
-    _ = ⋃ (x : M), interior (bd ∩ (extChartAt I x).source) := by simp_rw [interior_inter]
-    _ = ⋃ (x : M), interior ((extChartAt I x).source ∩
+    _ = ⋃ (x : M), interior bd ∩ interior ((chartAt H x).source) := inter_iUnion _ _
+    _ = ⋃ (x : M), interior (bd ∩ (chartAt H x).source) := by simp_rw [interior_inter]
+    _ = ⋃ (x : M), interior ((chartAt H x).source ∩
         (extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target)) := by
       simp_rw [isBoundaryPoint_iff']
-
     -- this step is SCIFI: very happy if true!! need a rigorous argument, though
     -- extChart is continuous on its source, so this might hold?
     -- lemma: f is continuous, then interior f⁻¹'B = f⁻¹ (interior B)
     -- next up: f continuous on A, then A ∩ interior f⁻¹'(B) = f⁻¹(interior B) assuming f⁻¹B ⊆ A somehow
-    _ = ⋃ (x : M), (extChartAt I x).source ∩ ((extChartAt I x) ⁻¹' (interior ((extChartAt I x).target \ interior (extChartAt I x).target))) := by
-      have goal : ∀ x : M,  interior ((extChartAt I x).source ∩ (extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target)) = (extChartAt I x).source ∩ ((extChartAt I x) ⁻¹' (interior ((extChartAt I x).target \ interior (extChartAt I x).target))) := by
+    _ = ⋃ (x : M), (chartAt H x).source ∩ ((extChartAt I x) ⁻¹' (interior ((extChartAt I x).target \ interior (extChartAt I x).target))) := by
+      have goal : ∀ x : M,  interior ((chartAt H x).source ∩ (extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target)) = (chartAt H x).source ∩ ((extChartAt I x) ⁻¹' (interior ((extChartAt I x).target \ interior (extChartAt I x).target))) := by
         intro x
         set e := extChartAt I x
         let r := (chartAt H x).continuousOn_extend I
         have : (chartAt H x).extend I = e := rfl
         rw [this] at r
         -- interior (e.source ∩ ↑e ⁻¹' (e.target \ interior e.target)) = e.source ∩ ↑e ⁻¹' interior (e.target \ interior e.target)
-        have : IsOpen e.source := sorry -- easy
         -- abstracted this into a lemma. now, let's see if that is actually true!!!
         -- well, one direction holds - but it's the wrong one...
-        apply auxaux (O := e.source) this r (t := e.target \ interior e.target)
+        rw [← (chartAt H x).extend_source I]
+        exact auxaux (O := e.source) (isOpen_extChartAt_source I x) r (t := e.target \ interior e.target)
       simp_rw [goal]
-      --let r := (chartAt H x).continuousOn_extend I
-      --sorry
-
-    _ = ⋃ (x : M), ∅ := by
-      have aux : ∀ x : M, (extChartAt I x).source ∩ (extChartAt I x) ⁻¹' (interior ((extChartAt I x).target \ interior (extChartAt I x).target)) = ∅ := by
+    _ = ⋃ (_ : M), ∅ := by
+      have aux : ∀ x : M, (chartAt H x).source ∩ (extChartAt I x) ⁻¹' (interior ((extChartAt I x).target \ interior (extChartAt I x).target)) = ∅ := by
         intro x
         set e := extChartAt I x
         have : interior ((e.target \ interior e.target)) = ∅ := by
