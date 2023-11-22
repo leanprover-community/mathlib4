@@ -544,3 +544,39 @@ example (k : ℤ) (h : k < 1) (h₁ : -1 < k) : k = 0 := by
   -- linarith preprocessor to fail.
   change _ at h₁
   linarith
+
+/-- error: unknown identifier 'garbage' -/
+#guard_msgs in
+example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
+  linarith [p _ garbage]
+
+/-- error: unknown identifier 'garbage' -/
+#guard_msgs in
+example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
+  nlinarith [p _ garbage]
+
+-- Commented out for now since `#guard_msgs` prints the metavariable numbers, which are
+-- subject to change.
+-- /--
+-- error: don't know how to synthesize placeholder for argument 'x'
+-- ...
+-- -/
+-- #guard_msgs in
+-- example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
+--   linarith [p _]
+
+/--
+error: Argument passed to linarith has metavariables:
+  p ?a
+-/
+#guard_msgs in
+example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
+  linarith [p ?a]
+
+/--
+error: Argument passed to nlinarith has metavariables:
+  p ?a
+-/
+#guard_msgs in
+example (q : Prop) (p : ∀ (x : ℤ), 1 = 2) : 1 = 2 := by
+  nlinarith [p ?a]
