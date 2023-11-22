@@ -394,15 +394,20 @@ theorem pow_rootMultiplicity_not_dvd {p : R[X]} (p0 : p ≠ 0) (a : R) :
     ¬(X - C a) ^ (rootMultiplicity a p + 1) ∣ p := by rw [← rootMultiplicity_le_iff p0]
 #align polynomial.pow_root_multiplicity_not_dvd Polynomial.pow_rootMultiplicity_not_dvd
 
-theorem Monic.mem_nonZeroDivisors {p : R[X]} (h : p.Monic) : p ∈ nonZeroDivisors R[X] :=
+section nonZeroDivisors
+
+open scoped nonZeroDivisors
+
+theorem Monic.mem_nonZeroDivisors {p : R[X]} (h : p.Monic) : p ∈ R[X]⁰ :=
   mem_nonZeroDivisors_iff.2 fun _ hx ↦ (mul_left_eq_zero_iff h).1 hx
 
-theorem mem_nonZeroDivisors_of_leadingCoeff_mem_nonZeroDivisors {p : R[X]}
-    (h : p.leadingCoeff ∈ nonZeroDivisors R) : p ∈ nonZeroDivisors R[X] := by
+theorem mem_nonZeroDivisors_of_leadingCoeff {p : R[X]} (h : p.leadingCoeff ∈ R⁰) : p ∈ R[X]⁰ := by
   refine mem_nonZeroDivisors_iff.2 fun x hx ↦ leadingCoeff_eq_zero.1 ?_
   by_contra hx'
   rw [← mul_right_mem_nonZeroDivisors_eq_zero_iff h] at hx'
   simp only [← leadingCoeff_mul' hx', hx, leadingCoeff_zero, not_true] at hx'
+
+end nonZeroDivisors
 
 theorem rootMultiplicity_mul_X_sub_C_pow' {p : R[X]} {a : R} {n : ℕ} (h : p * (X - C a) ^ n ≠ 0) :
     (p * (X - C a) ^ n).rootMultiplicity a = p.rootMultiplicity a + n := by
@@ -420,10 +425,17 @@ theorem rootMultiplicity_mul_X_sub_C_pow {p : R[X]} {a : R} {n : ℕ} (h : p ≠
     (p * (X - C a) ^ n).rootMultiplicity a = p.rootMultiplicity a + n :=
   rootMultiplicity_mul_X_sub_C_pow' (monic_X_sub_C a |>.pow n |>.mul_left_ne_zero h)
 
+/-- The multiplicity of `a` as root of `(X - a) ^ n` is `n`. -/
+theorem rootMultiplicity_X_sub_C_pow [Nontrivial R] (a : R) (n : ℕ) :
+    rootMultiplicity a ((X - C a) ^ n) = n := by
+  have := rootMultiplicity_mul_X_sub_C_pow (a := a) (n := n) C.map_one_ne_zero
+  rwa [rootMultiplicity_C, map_one, one_mul, zero_add] at this
+set_option linter.uppercaseLean3 false in
+#align polynomial.root_multiplicity_X_sub_C_pow Polynomial.rootMultiplicity_X_sub_C_pow
+
 theorem rootMultiplicity_X_sub_C_self [Nontrivial R] {x : R} :
-    rootMultiplicity x (X - C x) = 1 := by
-  have := rootMultiplicity_mul_X_sub_C_pow (a := x) (n := 1) <| RingHom.map_one_ne_zero C
-  rwa [rootMultiplicity_C, map_one, one_mul, zero_add, pow_one] at this
+    rootMultiplicity x (X - C x) = 1 :=
+  pow_one (X - C x) ▸ rootMultiplicity_X_sub_C_pow x 1
 set_option linter.uppercaseLean3 false in
 #align polynomial.root_multiplicity_X_sub_C_self Polynomial.rootMultiplicity_X_sub_C_self
 
@@ -436,14 +448,6 @@ theorem rootMultiplicity_X_sub_C [Nontrivial R] [DecidableEq R] {x y : R} :
   exact rootMultiplicity_eq_zero (mt root_X_sub_C.mp (Ne.symm hxy))
 set_option linter.uppercaseLean3 false in
 #align polynomial.root_multiplicity_X_sub_C Polynomial.rootMultiplicity_X_sub_C
-
-/-- The multiplicity of `a` as root of `(X - a) ^ n` is `n`. -/
-theorem rootMultiplicity_X_sub_C_pow [Nontrivial R] (a : R) (n : ℕ) :
-    rootMultiplicity a ((X - C a) ^ n) = n := by
-  have := rootMultiplicity_mul_X_sub_C_pow (a := a) (n := n) <| RingHom.map_one_ne_zero C
-  rwa [rootMultiplicity_C, map_one, one_mul, zero_add] at this
-set_option linter.uppercaseLean3 false in
-#align polynomial.root_multiplicity_X_sub_C_pow Polynomial.rootMultiplicity_X_sub_C_pow
 
 /-- The multiplicity of `p + q` is at least the minimum of the multiplicities. -/
 theorem rootMultiplicity_add {p q : R[X]} (a : R) (hzero : p + q ≠ 0) :
