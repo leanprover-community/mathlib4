@@ -409,20 +409,17 @@ theorem mem_nonZeroDivisors_of_leadingCoeff {p : R[X]} (h : p.leadingCoeff ∈ R
 
 end nonZeroDivisors
 
-theorem rootMultiplicity_mul_X_sub_C_pow' {p : R[X]} {a : R} {n : ℕ} (h : p * (X - C a) ^ n ≠ 0) :
+theorem rootMultiplicity_mul_X_sub_C_pow {p : R[X]} {a : R} {n : ℕ} (h : p ≠ 0) :
     (p * (X - C a) ^ n).rootMultiplicity a = p.rootMultiplicity a + n := by
+  have h2 := monic_X_sub_C a |>.pow n |>.mul_left_ne_zero h
   refine le_antisymm ?_ ?_
-  · rw [rootMultiplicity_le_iff h]
+  · rw [rootMultiplicity_le_iff h2]
     intro ⟨q, h'⟩
     rw [mul_comm p _, add_comm _ n, add_assoc, pow_add, mul_assoc,
       mul_cancel_left_mem_nonZeroDivisors (monic_X_sub_C a |>.pow n |>.mem_nonZeroDivisors)] at h'
-    exact pow_rootMultiplicity_not_dvd (left_ne_zero_of_mul h) a ⟨q, h'⟩
-  · rw [le_rootMultiplicity_iff h, pow_add]
+    exact pow_rootMultiplicity_not_dvd h a ⟨q, h'⟩
+  · rw [le_rootMultiplicity_iff h2, pow_add]
     exact mul_dvd_mul_right (pow_rootMultiplicity_dvd p a) _
-
-theorem rootMultiplicity_mul_X_sub_C_pow {p : R[X]} {a : R} {n : ℕ} (h : p ≠ 0) :
-    (p * (X - C a) ^ n).rootMultiplicity a = p.rootMultiplicity a + n :=
-  rootMultiplicity_mul_X_sub_C_pow' (monic_X_sub_C a |>.pow n |>.mul_left_ne_zero h)
 
 /-- The multiplicity of `a` as root of `(X - a) ^ n` is `n`. -/
 theorem rootMultiplicity_X_sub_C_pow [Nontrivial R] (a : R) (n : ℕ) :
