@@ -9,7 +9,9 @@ import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.Interval
 import Mathlib.Algebra.Order.Sub.Defs
 
-/-! # Partial HasAntidiagonal for functions with finite support
+import Mathlib.RingTheory.PowerSeries.Basic
+
+/-! # Partial HasAntidibgonal for functions with finite support
 
 Let `μ` be an AddCommMonoid.
 
@@ -42,6 +44,13 @@ open scoped BigOperators
 open Function
 
 class HasPiAntidiagonal (μ : Type*) [AddCommMonoid μ]
+  (ι : Type*) [Fintype ι] where
+  /-- The piAntidiagonal function -/
+  piAntidiagonal : μ → Finset (ι → μ)
+  /-- A function belongs to `piAntidiagonal n` iff the sum of its values is equal to `n` -/
+  mem_piAntidiagonal {n} {f} : f ∈ piAntidiagonal n ↔ univ.sum f = n
+
+class HasPiAntidiagonal' (μ : Type*) [AddCommMonoid μ]
   {ι : Type*} (s : Finset ι) where
   /-- The piAntidiagonal function -/
   piAntidiagonal : μ → Finset (ι → μ)
@@ -100,9 +109,36 @@ lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d → μ) :
         · rw [ih]
         · apply Fin.cons_self_tail)
 
+/- TODO :
+* update what follows for `HasPiAntidiagonal`
+* check that it is enough for application to products of powers series
+* (ifthat works), provide the instance when μ = ℕ  using `Nat.AntidiagonalTuple`
+-/
+
+section Test -- not conclusive for the moment
+
+open MvPowerSeries
+
+variable {α σ : Type*} [CommSemiring α]
+
+theorem coeff_prod [Fintype ι] [HasPiAntidiagonal (σ →₀ ℕ) ι]
+    (f : ι → MvPowerSeries σ α) (d : σ →₀ ℕ) :
+    coeff α d (∏ j in univ, f j) =
+      ∑ l in HasPiAntidiagonal.piAntidiagonal d,
+        ∏ i in univ, coeff α (l i) (f i) := by sorry
+
+variable (s : Finset ι)
+
+example : Fintype s := by exact FinsetCoe.fintype s
+
+#check h s (FinsetCoe.fintype s)
+
+
+end Test
+
 /-- HasPiAntidiagonal for `Fin d` and `Finset.univ` -/
 def _root_.Fin.hasPiAntidiagonal_univ (d : ℕ) :
-    HasPiAntidiagonal μ (Finset.univ : Finset (Fin d)) := {
+    HasPiAntidiagonal' μ (Finset.univ : Finset (Fin d)) := {
   piAntidiagonal := finAntidiagonal d
   mem_piAntidiagonal := fun {n} {f} => by
     rw [mem_finAntidiagonal]
@@ -110,7 +146,7 @@ def _root_.Fin.hasPiAntidiagonal_univ (d : ℕ) :
 
 /-- HasPiAntidiagonal for a `Fintype` -/
 noncomputable def _root_.Fintype.hasPiAntidiagonal_univ (ι : Type*) [Fintype ι] :
-    HasPiAntidiagonal μ (Finset.univ : Finset ι) := { piAntidiagonal := by
+    HasPiAntidiagonal' μ (Finset.univ : Finset ι) := { piAntidiagonal := by
   have e : Finset (ι → μ) ≃ Finset (Fin (Fintype.card ι) → μ) :=
     Equiv.finsetCongr (Equiv.piCongrLeft' _ (Fintype.equivFin ι))
   intro n

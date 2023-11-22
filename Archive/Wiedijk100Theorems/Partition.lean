@@ -195,6 +195,12 @@ theorem cut_insert {ι : Type*} (n : ℕ) (a : ι) (s : Finset ι) (h : a ∉ s)
 #align theorems_100.cut_insert Theorems100.piAntidiagonal_insert
 -/
 
+/- TODO :
+* tell Lean what piAntidiagonal is (it was `cut` above)
+* check that piAntidiagonal on a Fintype is enough
+* move this to the file on PowerSeries
+* make it work for MvPowerSeries
+-/
 theorem coeff_prod_range [CommSemiring α] {ι : Type*} -- [DecidableEq ι] -- [DecidableEq (ι → ℕ)]
     (s : Finset ι) (f : ι → PowerSeries α) (n : ℕ) :
     coeff α n (∏ j in s, f j) = ∑ l in piAntidiagonal s n, ∏ i in s, coeff α (l i) (f i) := by
