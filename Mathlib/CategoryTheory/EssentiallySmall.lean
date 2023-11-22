@@ -142,16 +142,6 @@ def ShrinkHoms (C : Type u) :=
   C
 #align category_theory.shrink_homs CategoryTheory.ShrinkHoms
 
-namespace Shrink
-
-noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
-  InducedCategory.category (equivShrink C).symm
-
-noncomputable def equivalence [Small.{w} C] : C ≌ Shrink.{w} C :=
-  (inducedFunctor (equivShrink C).symm).asEquivalence.symm
-
-end Shrink
-
 namespace ShrinkHoms
 
 section
@@ -216,6 +206,17 @@ noncomputable def equivalence : C ≌ ShrinkHoms C :=
 #align category_theory.shrink_homs.equivalence CategoryTheory.ShrinkHoms.equivalence
 
 end ShrinkHoms
+
+namespace Shrink
+
+noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
+  InducedCategory.category (equivShrink C).symm
+
+/-- The categorical equivalence between `C` and `Shrink C`, when `C` is small. -/
+noncomputable def equivalence [Small.{w} C] : C ≌ Shrink.{w} C :=
+  (inducedFunctor (equivShrink C).symm).asEquivalence.symm
+
+end Shrink
 
 /-- A category is essentially small if and only if
 the underlying type of its skeleton (i.e. the "set" of isomorphism classes) is small,
