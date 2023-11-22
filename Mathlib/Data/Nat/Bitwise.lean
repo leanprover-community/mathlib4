@@ -6,7 +6,6 @@ Authors: Markus Himmel, Alex Keizer
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Nat.Size
 import Mathlib.Tactic.Set
-
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
 
 /-!
@@ -323,7 +322,15 @@ lemma and_two_pow {n i} : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
   apply eq_of_testBit_eq; intro j
   rw [mul_comm, testBit_land]
   cases' h : n.testBit i <;> cases' (ne_or_eq i j) with h1 h1
-  <;> simp [testBit_two_pow_of_ne _, *] at * <;> assumption
+  · simp only [ne_eq, not_false_eq_true, testBit_two_pow_of_ne, Bool.and_false, Bool.toNat_false,
+      mul_zero, zero_testBit, h, h1]
+  · simp only [testBit_two_pow_self, Bool.and_true, Bool.toNat_false, mul_zero, zero_testBit, h1];
+    rw [← h1, h]
+  · simp only [ne_eq, not_false_eq_true, testBit_two_pow_of_ne, Bool.and_false, Bool.toNat_true,
+      mul_one, h1]
+  · simp only [h1, testBit_two_pow_self, Bool.and_true, Bool.toNat_true, mul_one, h, h1];
+    rw [←h1, h]
+
 
 theorem bitwise_swap {f : Bool → Bool → Bool} :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
