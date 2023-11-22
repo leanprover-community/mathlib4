@@ -7,7 +7,6 @@ import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.Semisimple
 import Mathlib.Algebra.Lie.Weights.Cartan
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.LinearAlgebra.PID
 import Mathlib.LinearAlgebra.Trace
 
@@ -37,8 +36,8 @@ We define the trace / Killing form in this file and prove some basic properties.
    a Lie algebra is non-singular, it remains non-singular when restricted to a Cartan subalgebra.
  * `LieAlgebra.IsKilling.isSemisimple`: if a Lie algebra has non-singular Killing form then it is
    semisimple.
- * `LieAlgebra.IsKilling.instIsLieAbelian_of_isCartanSubalgebra`: if the Killing form of a Lie
-   algebra is non-singular, then its Cartan subalgebras are Abelian.
+ * `LieAlgebra.IsKilling.isLieAbelian_of_isCartanSubalgebra`: if the Killing form of a Lie algebra
+   is non-singular, then its Cartan subalgebras are Abelian.
 
 ## TODO
 
@@ -185,11 +184,10 @@ lemma trace_toEndomorphism_eq_zero_of_mem_lcs
   · simp [hu, hv]
   · simp [hu]
 
-open TensorProduct
+variable [LieAlgebra.IsNilpotent R L] [IsTriangularizable R L M]
+  [IsDomain R] [IsPrincipalIdealRing R]
 
-variable [LieAlgebra.IsNilpotent R L] [IsDomain R] [IsPrincipalIdealRing R]
-
-lemma traceForm_eq_sum_weightSpaceOf [IsTriangularizable R L M] (z : L) :
+lemma traceForm_eq_sum_weightSpaceOf (z : L) :
     traceForm R L M =
     ∑ χ in (finite_weightSpaceOf_ne_bot R L M z).toFinset, traceForm R L (weightSpaceOf M χ z) := by
   ext x y
@@ -212,27 +210,18 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm :
     lowerCentralSeries R L L 1 ⊓ LieAlgebra.center R L ≤ LinearMap.ker (traceForm R L M) := by
   rintro z ⟨hz : z ∈ lowerCentralSeries R L L 1, hzc : z ∈ LieAlgebra.center R L⟩
   ext x
-  rw [traceForm_apply_apply, LinearMap.zero_apply]
-  let A := AlgebraicClosure (FractionRing R)
-  suffices algebraMap R A (trace R _ ((φ z).comp (φ x))) = 0 by
-    have _i : NoZeroSMulDivisors R A := NoZeroSMulDivisors.trans R (FractionRing R) A
-    rw [← map_zero (algebraMap R A)] at this
-    exact NoZeroSMulDivisors.algebraMap_injective R A this
-  rw [← LinearMap.trace_extendScalars, LinearMap.extendScalars_comp, ← toEndomorphism_extendScalars,
-    ← toEndomorphism_extendScalars]
-  replace hz : 1 ⊗ₜ z ∈ lowerCentralSeries A (A ⊗[R] L) (A ⊗[R] L) 1 := by
-    simp only [lowerCentralSeries_succ, lowerCentralSeries_zero] at hz ⊢
-    rw [← LieSubmodule.extendScalars_top, ← LieSubmodule.lie_extendScalars]
-    exact Submodule.tmul_mem_extendScalars_of_mem 1 hz
-  replace hzc : 1 ⊗ₜ[R] z ∈ LieAlgebra.center A (A ⊗[R] L) := by
-    simp only [mem_maxTrivSubmodule] at hzc ⊢
-    intro y
-    exact y.induction_on rfl (fun a u ↦ by simp [hzc u]) (fun u v hu hv ↦ by simp [hu, hv])
-  apply LinearMap.trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
-  · exact IsTriangularizable.iSup_eq_top (1 ⊗ₜ[R] x)
-  · exact fun μ ↦ trace_toEndomorphism_eq_zero_of_mem_lcs A (A ⊗[R] L)
-      (weightSpaceOf (A ⊗[R] M) μ (1 ⊗ₜ x)) (le_refl 1) hz
-  · exact commute_toEndomorphism_of_mem_center_right (A ⊗[R] M) hzc (1 ⊗ₜ x)
+  suffices ∀ χ : R, traceForm R L (weightSpaceOf M χ x) z x = 0 by
+    simp [traceForm_eq_sum_weightSpaceOf R L M x, this]
+  intro χ
+  replace hz : LinearMap.trace R _ (toEndomorphism R L (weightSpaceOf M χ x) z) = 0 :=
+    trace_toEndomorphism_eq_zero_of_mem_lcs R L _ (le_refl _) hz
+  let f := toEndomorphism R L (weightSpaceOf M χ x) z
+  let g := toEndomorphism R L (weightSpaceOf M χ x) x
+  have h_comm : Commute f g := commute_toEndomorphism_of_mem_center_left _ hzc x
+  have hg : _root_.IsNilpotent (g - algebraMap R _ χ) :=
+    (toEndomorphism R L M x).isNilpotent_restrict_iSup_sub_algebraMap χ
+  rw [traceForm_apply_apply, LinearMap.trace_comp_eq_mul_of_commute_of_isNilpotent χ h_comm hg, hz,
+    mul_zero]
 
 /-- A nilpotent Lie algebra with a representation whose trace form is non-singular is Abelian. -/
 lemma isLieAbelian_of_ker_traceForm_eq_bot (h : LinearMap.ker (traceForm R L M) = ⊥) :
@@ -397,7 +386,7 @@ instance isSemisimple [IsDomain R] [IsPrincipalIdealRing R] : IsSemisimple R L :
 
 instance instIsLieAbelian_of_isCartanSubalgebra
     [IsDomain R] [IsPrincipalIdealRing R] [IsArtinian R L]
-    (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
+    (H : LieSubalgebra R L) [H.IsCartanSubalgebra] [LieModule.IsTriangularizable R H L] :
     IsLieAbelian H :=
   LieModule.isLieAbelian_of_ker_traceForm_eq_bot R H L <|
     ker_restrictBilinear_of_isCartanSubalgebra_eq_bot R L H

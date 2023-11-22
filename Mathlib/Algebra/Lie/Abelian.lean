@@ -284,20 +284,11 @@ theorem isLieAbelian_iff_center_eq_top : IsLieAbelian L ↔ center R L = ⊤ :=
 
 end LieAlgebra
 
-namespace LieModule
-
-variable {R L}
-variable {x : L} (hx : x ∈ LieAlgebra.center R L) (y : L)
-
-lemma commute_toEndomorphism_of_mem_center_left :
+variable {R L} in
+lemma LieModule.commute_toEndomorphism_of_mem_center_left
+    {x : L} (hx : x ∈ LieAlgebra.center R L) (y : L) :
     Commute (toEndomorphism R L M x) (toEndomorphism R L M y) := by
   rw [Commute.symm_iff, commute_iff_lie_eq, ← LieHom.map_lie, hx y, LieHom.map_zero]
-
-lemma commute_toEndomorphism_of_mem_center_right :
-    Commute (toEndomorphism R L M y) (toEndomorphism R L M x) :=
-  (LieModule.commute_toEndomorphism_of_mem_center_left M hx y).symm
-
-end LieModule
 
 end Center
 
