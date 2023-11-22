@@ -5,10 +5,11 @@ Authors: Anne Baanen, Mario Carneiro, Alex J. Best
 -/
 
 import Lean
+import Mathlib.Lean.Meta.Simp
 
 namespace Mathlib.Tactic
 
-open Lean Parser.Tactic Elab.Tactic
+open Lean Parser.Tactic Elab.Tactic Meta
 
 /-- A version of `withRWRulesSeq` (in core) that doesn't attempt to find equation lemmas, and simply
   passes the rw rules on to `x`. -/
@@ -54,9 +55,8 @@ by simp_rw [h1, h2]
 ```
 -/
 elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => do
-  -- TODO We should use the passed `cfg` here too,
-  -- but I don't know how to convert it back and forth from `Syntax`.
-  evalTactic (← `(tactic| simp%$s (config := { failIfUnchanged := false }) only $g ?))
+  let loc := g.map expandLocation |>.getD (Location.targets #[] true)
+  _ ← simpLocation (← Simp.Context.ofNames [] (config := { failIfUnchanged := false })) none loc
   withSimpRWRulesSeq s rws fun symm term => do
     evalTactic (← match term with
     | `(term| $e:term) =>
