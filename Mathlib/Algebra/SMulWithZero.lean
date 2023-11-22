@@ -175,11 +175,13 @@ protected lemma MulActionWithZero.nontrivial
 #align mul_action_with_zero.nontrivial MulActionWithZero.nontrivial
 
 variable {R M}
-variable [MulActionWithZero R M] [Zero M'] [SMul R M']
+variable [MulActionWithZero R M] [Zero M'] [SMul R M'] (p : Prop) [Decidable p]
 
 @[simp]
-lemma boole_smul (p : Prop) [Decidable p] (a : M) :
-    (if p then 1 else 0 : R) • a = if p then a else 0 := by rw [ite_smul, one_smul, zero_smul]
+lemma ite_zero_smul (a : R) (b : M) : (if p then a else 0 : R) • b = if p then a • b else 0 := by
+  rw [ite_smul, zero_smul]
+
+lemma boole_smul (a : M) : (if p then 1 else 0 : R) • a = if p then a else 0 := by simp
 
 /-- Pullback a `MulActionWithZero` structure along an injective zero-preserving homomorphism.
 See note [reducible non-instances]. -/

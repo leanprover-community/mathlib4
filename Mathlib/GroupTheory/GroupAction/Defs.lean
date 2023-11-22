@@ -734,7 +734,7 @@ theorem smul_zero (a : M) : a • (0 : A) = 0 :=
 #align smul_zero smul_zero
 
 @[simp]
-lemma smul_boole (p : Prop) [Decidable p] (a : M) (b : A) :
+lemma smul_ite_zero (p : Prop) [Decidable p] (a : M) (b : A) :
     (a • if p then b else 0) = if p then a • b else 0 := by rw [smul_ite, smul_zero]
 
 /-- Pullback a zero-preserving scalar multiplication along an injective zero-preserving map.
