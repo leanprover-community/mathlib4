@@ -107,7 +107,7 @@ theorem zero_rpow_eq_iff {x : ℝ} {a : ℝ} : 0 ^ x = a ↔ x ≠ 0 ∧ a = 0 �
   constructor
   · intro hyp
     simp only [rpow_def, Complex.ofReal_zero] at hyp
-    by_cases x = 0
+    by_cases h : x = 0
     · subst h
       simp only [Complex.one_re, Complex.ofReal_zero, Complex.cpow_zero] at hyp
       exact Or.inr ⟨rfl, hyp.symm⟩
@@ -745,7 +745,7 @@ variable {n : ℕ}
 
 theorem exists_rat_pow_btwn_rat_aux (hn : n ≠ 0) (x y : ℝ) (h : x < y) (hy : 0 < y) :
     ∃ q : ℚ, 0 < q ∧ x < (q : ℝ) ^ n ∧ (q : ℝ) ^ n < y := by
-  have hn' : 0 < (n : ℝ) := by exact_mod_cast hn.bot_lt
+  have hn' : 0 < (n : ℝ) := mod_cast hn.bot_lt
   obtain ⟨q, hxq, hqy⟩ :=
     exists_rat_btwn (rpow_lt_rpow (le_max_left 0 x) (max_lt hy h) <| inv_pos.mpr hn')
   have := rpow_nonneg_of_nonneg (le_max_left 0 x) n⁻¹
@@ -753,7 +753,7 @@ theorem exists_rat_pow_btwn_rat_aux (hn : n ≠ 0) (x y : ℝ) (h : x < y) (hy :
   replace hxq := rpow_lt_rpow this hxq hn'
   replace hqy := rpow_lt_rpow hq.le hqy hn'
   rw [rpow_nat_cast, rpow_nat_cast, rpow_nat_inv_pow_nat _ hn] at hxq hqy
-  · exact ⟨q, by exact_mod_cast hq, (le_max_right _ _).trans_lt hxq, hqy⟩
+  · exact ⟨q, mod_cast hq, (le_max_right _ _).trans_lt hxq, hqy⟩
   · exact hy.le
   · exact le_max_left _ _
 #align real.exists_rat_pow_btwn_rat_aux Real.exists_rat_pow_btwn_rat_aux

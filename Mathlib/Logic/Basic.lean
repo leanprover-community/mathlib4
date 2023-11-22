@@ -682,7 +682,6 @@ theorem exists_swap {p : α → β → Prop} : (∃ x y, p x y) ↔ ∃ y x, p x
 #align forall_exists_index forall_exists_index
 
 #align exists_imp_distrib exists_imp
-alias ⟨_, not_exists_of_forall_not⟩ := exists_imp
 #align not_exists_of_forall_not not_exists_of_forall_not
 
 #align Exists.some Exists.choose

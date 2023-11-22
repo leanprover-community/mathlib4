@@ -573,7 +573,7 @@ section Regular
 
 open RegularEpi in
 /-- The data of an `EffectiveEpi` structure on a `RegularEpi`. -/
-noncomputable def effectiveEpiStructOfRegularEpi {B X : C} (f : X ⟶ B) [RegularEpi f] :
+def effectiveEpiStructOfRegularEpi {B X : C} (f : X ⟶ B) [RegularEpi f] :
     EffectiveEpiStruct f where
   desc _ h := Cofork.IsColimit.desc isColimit _ (h _ _ w)
   fac _ _ := Cofork.IsColimit.π_desc' isColimit _ _

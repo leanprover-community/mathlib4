@@ -47,4 +47,12 @@ lemma trace_eq_sum_trace_restrict [Fintype ι]
     toMatrix_directSum_collectedBasis_eq_blockDiagonal' h h b b hf, Matrix.trace_blockDiagonal',
     ← trace_eq_matrix_trace]
 
+lemma trace_eq_sum_trace_restrict' (hN : {i | N i ≠ ⊥}.Finite)
+    {f : M →ₗ[R] M} (hf : ∀ i, MapsTo f (N i) (N i)) :
+    trace R M f = ∑ i in hN.toFinset, trace R (N i) (f.restrict (hf i)) := by
+  let _ : Fintype {i // N i ≠ ⊥} := hN.fintype
+  let _ : Fintype {i | N i ≠ ⊥} := hN.fintype
+  rw [← Finset.sum_coe_sort, trace_eq_sum_trace_restrict (isInternal_ne_bot_iff.mpr h) _]
+  exact Fintype.sum_equiv hN.subtypeEquivToFinset _ _ (fun i ↦ rfl)
+
 end LinearMap
