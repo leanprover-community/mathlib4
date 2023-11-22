@@ -103,17 +103,7 @@ lemma IsTensorProduct.mem_closure (x : X) :
     balanced :=  fun _ _ _ => by dsimp; rw [tmul.apply_smul_apply] }
   let φ := lift tmul b
   let ψ := img.subtype
-  have eq1 : φ.comp ψ = AddMonoidHom.id _
-  · refine FunLike.ext _ _ fun ⟨x, hx⟩ ↦ AddSubmonoid.closure_induction hx ?_ ?_ ?_
-    · rintro _ ⟨m, n, rfl⟩
-      ext
-      simp only [AddMonoidHom.coe_comp, AddSubmonoid.coe_subtype, Function.comp_apply,
-        AddMonoidHom.id_apply]
-      rw [lift_comp]
-      rfl
-    · ext; aesop
-    · intros; ext; aesop
-  have eq2 : ψ.comp φ = AddMonoidHom.id _
+  have eq1 : ψ.comp φ = AddMonoidHom.id _
   · rw [← show lift tmul β = ψ.comp φ by
         refine lift_uniq _ _ ?_
         intro m n
@@ -122,11 +112,8 @@ lemma IsTensorProduct.mem_closure (x : X) :
         rfl]
     exact lift_uniq _ _ <| by intros; aesop
 
-  have hsurj : Function.Surjective φ
-  · sorry
-  have hinj : Function.Injective φ
-  · sorry
-  sorry
+  convert (φ x).2
+  exact (FunLike.congr_fun eq1 x).symm
 
 @[elab_as_elim]
 lemma IsTensorProduct.induction {motive : X → Prop}
