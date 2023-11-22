@@ -132,7 +132,7 @@ theorem tendsto_normSq_coprime_pair :
       normSq ∘ f ∘ fun p : Fin 2 → ℤ => ((↑) : ℤ → ℝ) ∘ p := by
     ext1
     rw [f_def]
-    dsimp only [Function.comp]
+    dsimp only [Function.comp_def]
     rw [ofReal_int_cast, ofReal_int_cast]
   rw [this]
   have hf : LinearMap.ker f = ⊥ := by
@@ -240,7 +240,7 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
     ↑(g • z) =
       (lcRow0 p ↑(g : SL(2, ℝ)) : ℂ) / ((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) +
         ((p 1 : ℂ) * z - p 0) / (((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) * (p 0 * z + p 1)) := by
-  have nonZ1 : (p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2 ≠ 0 := by exact_mod_cast hp.sq_add_sq_ne_zero
+  have nonZ1 : (p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2 ≠ 0 := mod_cast hp.sq_add_sq_ne_zero
   have : ((↑) : ℤ → ℝ) ∘ p ≠ 0 := fun h => hp.ne_zero (by ext i; simpa using congr_fun h i)
   have nonZ2 : (p 0 : ℂ) * z + p 1 ≠ 0 := by simpa using linear_ne_zero _ z this
   field_simp [nonZ1, nonZ2, denom_ne_zero, num]
@@ -261,7 +261,7 @@ theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
     by exact tendsto_norm_cocompact_atTop.comp this
   have : ((p 0 : ℝ) ^ 2 + (p 1 : ℝ) ^ 2)⁻¹ ≠ 0 := by
     apply inv_ne_zero
-    exact_mod_cast hp.sq_add_sq_ne_zero
+    exact mod_cast hp.sq_add_sq_ne_zero
   let f := Homeomorph.mulRight₀ _ this
   let ff := Homeomorph.addRight
     (((p 1 : ℂ) * z - p 0) / (((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) * (p 0 * z + p 1))).re
@@ -270,7 +270,7 @@ theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
     ((g : SL(2, ℤ)) • z).re =
       lcRow0 p ↑(↑g : SL(2, ℝ)) / ((p 0 : ℝ) ^ 2 + (p 1 : ℝ) ^ 2) +
         Complex.re (((p 1 : ℂ) * z - p 0) / (((p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2) * (p 0 * z + p 1)))
-  exact_mod_cast congr_arg Complex.re (smul_eq_lcRow0_add z hp g.2)
+  exact mod_cast congr_arg Complex.re (smul_eq_lcRow0_add z hp g.2)
 #align modular_group.tendsto_abs_re_smul ModularGroup.tendsto_abs_re_smul
 
 end TendstoLemmas
@@ -369,7 +369,6 @@ theorem g_eq_of_c_eq_one (hc : (↑ₘg) 1 0 = 1) : g = T ^ (↑ₘg) 0 0 * S * 
   congrm !![?_, ?_; ?_, ?_] <;> ring
 #align modular_group.g_eq_of_c_eq_one ModularGroup.g_eq_of_c_eq_one
 
-set_option maxHeartbeats 250000 in
 /-- If `1 < |z|`, then `|S • z| < 1`. -/
 theorem normSq_S_smul_lt_one (h : 1 < normSq z) : normSq ↑(S • z) < 1 := by
   simpa [coe_S, num, denom] using (inv_lt_inv z.normSq_pos zero_lt_one).mpr h
@@ -415,7 +414,6 @@ theorem three_lt_four_mul_im_sq_of_mem_fdo (h : z ∈ 𝒟ᵒ) : 3 < 4 * z.im ^ 
   cases abs_cases z.re <;> nlinarith
 #align modular_group.three_lt_four_mul_im_sq_of_mem_fdo ModularGroup.three_lt_four_mul_im_sq_of_mem_fdo
 
-set_option maxHeartbeats 260000 in
 /-- If `z ∈ 𝒟ᵒ`, and `n : ℤ`, then `|z + n| > 1`. -/
 theorem one_lt_normSq_T_zpow_smul (hz : z ∈ 𝒟ᵒ) (n : ℤ) : 1 < normSq (T ^ n • z : ℍ) := by
   have hz₁ : 1 < z.re * z.re + z.im * z.im := hz.1

@@ -103,7 +103,7 @@ theorem add_tsub_le_left : a + b - a ≤ b :=
   tsub_le_iff_left.mpr le_rfl
 #align add_tsub_le_left add_tsub_le_left
 
-theorem tsub_le_tsub_right (h : a ≤ b) (c : α) : a - c ≤ b - c :=
+@[gcongr] theorem tsub_le_tsub_right (h : a ≤ b) (c : α) : a - c ≤ b - c :=
   tsub_le_iff_left.mpr <| h.trans le_add_tsub
 #align tsub_le_tsub_right tsub_le_tsub_right
 
@@ -119,11 +119,11 @@ section Cov
 
 variable [CovariantClass α α (· + ·) (· ≤ ·)]
 
-theorem tsub_le_tsub_left (h : a ≤ b) (c : α) : c - b ≤ c - a :=
+@[gcongr] theorem tsub_le_tsub_left (h : a ≤ b) (c : α) : c - b ≤ c - a :=
   tsub_le_iff_left.mpr <| le_add_tsub.trans <| add_le_add_right h _
 #align tsub_le_tsub_left tsub_le_tsub_left
 
-theorem tsub_le_tsub (hab : a ≤ b) (hcd : c ≤ d) : a - d ≤ b - c :=
+@[gcongr] theorem tsub_le_tsub (hab : a ≤ b) (hcd : c ≤ d) : a - d ≤ b - c :=
   (tsub_le_tsub_right hab _).trans <| tsub_le_tsub_left hcd _
 #align tsub_le_tsub tsub_le_tsub
 

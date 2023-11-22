@@ -18,7 +18,7 @@ This file is a place for results related to nilpotency in (single-variable) poly
 
 namespace Polynomial
 
-variable {R : Type _} {r : R}
+variable {R : Type*} {r : R}
 
 section Semiring
 

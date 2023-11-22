@@ -21,7 +21,7 @@ We formulate this result in terms of `IsMaxChain` and `Flag`.
 
 open Set
 
-variable {α : Type _} [PartialOrder α] [BoundedOrder α] {n : ℕ} {f : Fin (n + 1) → α}
+variable {α : Type*} [PartialOrder α] [BoundedOrder α] {n : ℕ} {f : Fin (n + 1) → α}
 
 /-- Let `f : Fin (n + 1) → α` be an `(n + 1)`-tuple `(f₀, …, fₙ)` such that
 - `f₀ = ⊥` and `fₙ = ⊤`;

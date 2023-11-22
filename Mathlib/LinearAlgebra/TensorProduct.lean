@@ -5,6 +5,7 @@ Authors: Kenny Lau, Mario Carneiro
 -/
 import Mathlib.GroupTheory.Congruence
 import Mathlib.Algebra.Module.Submodule.Bilinear
+import Mathlib.Tactic.SuppressCompilation
 
 #align_import linear_algebra.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
 
@@ -33,6 +34,7 @@ as `m ⊗ₜ n` and `m ⊗ₜ[R] n` for `TensorProduct.tmul R m n`.
 bilinear, tensor, tensor product
 -/
 
+suppress_compilation
 
 section Semiring
 
@@ -166,6 +168,16 @@ variable {N}
 theorem tmul_add (m : M) (n₁ n₂ : N) : m ⊗ₜ (n₁ + n₂) = m ⊗ₜ n₁ + m ⊗ₜ[R] n₂ :=
   Eq.symm <| Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.of_add_right _ _ _
 #align tensor_product.tmul_add TensorProduct.tmul_add
+
+instance uniqueLeft [Subsingleton M] : Unique (M ⊗[R] N) where
+  default := 0
+  uniq z := z.induction_on rfl (fun x y ↦ by rw [Subsingleton.elim x 0, zero_tmul]; rfl) <| by
+    rintro _ _ rfl rfl; apply add_zero
+
+instance uniqueRight [Subsingleton N] : Unique (M ⊗[R] N) where
+  default := 0
+  uniq z := z.induction_on rfl (fun x y ↦ by rw [Subsingleton.elim y 0, tmul_zero]; rfl) <| by
+    rintro _ _ rfl rfl; apply add_zero
 
 section
 

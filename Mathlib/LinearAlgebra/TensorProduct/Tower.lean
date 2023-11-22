@@ -45,6 +45,8 @@ probably should still implement the less general ones as abbreviations to the mo
 fewer type arguments.
 -/
 
+suppress_compilation
+
 namespace TensorProduct
 
 namespace AlgebraTensorModule
@@ -303,10 +305,16 @@ protected def rid : M ⊗[R] R ≃ₗ[A] M :=
     (LinearMap.ext <| one_smul _)
     (ext <| fun _ _ => smul_tmul _ _ _ |>.trans <| congr_arg _ <| mul_one _)
 
-variable {R M}
+theorem rid_eq_rid : AlgebraTensorModule.rid R R M = TensorProduct.rid R M :=
+  LinearEquiv.toLinearMap_injective <| TensorProduct.ext' fun _ _ => rfl
 
+variable {R M} in
 @[simp]
 theorem rid_tmul (r : R) (m : M) : AlgebraTensorModule.rid R A M (m ⊗ₜ r) = r • m := rfl
+
+variable {M} in
+@[simp]
+theorem rid_symm_apply (m : M) : (AlgebraTensorModule.rid R A M).symm m = m ⊗ₜ 1 := rfl
 
 end Semiring
 

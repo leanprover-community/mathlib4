@@ -16,6 +16,8 @@ taking values in the tensor product of the codomains of the original maps.
 
 #align_import linear_algebra.alternating from "leanprover-community/mathlib"@"0c1d80f5a86b36c1db32e021e8d19ae7809d5b79"
 
+suppress_compilation
+
 open BigOperators TensorProduct
 
 variable {ιa ιb : Type*} [Fintype ιa] [Fintype ιb]

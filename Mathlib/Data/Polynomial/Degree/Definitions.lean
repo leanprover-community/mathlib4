@@ -35,7 +35,7 @@ noncomputable section
 
 open Finsupp Finset
 
-open BigOperators Classical Polynomial
+open BigOperators Polynomial
 
 namespace Polynomial
 
@@ -55,7 +55,7 @@ def degree (p : R[X]) : WithBot ℕ :=
 #align polynomial.degree Polynomial.degree
 
 theorem degree_lt_wf : WellFounded fun p q : R[X] => degree p < degree q :=
-  InvImage.wf degree (WithBot.wellFounded_lt Nat.lt_wfRel.wf)
+  InvImage.wf degree wellFounded_lt
 #align polynomial.degree_lt_wf Polynomial.degree_lt_wf
 
 instance : WellFoundedRelation R[X] :=
@@ -298,6 +298,7 @@ theorem degree_C_mul_X (ha : a ≠ 0) : degree (C a * X) = 1 := by
 #align polynomial.degree_C_mul_X Polynomial.degree_C_mul_X
 
 theorem degree_monomial_le (n : ℕ) (a : R) : degree (monomial n a) ≤ n :=
+  letI := Classical.decEq R
   if h : a = 0 then by rw [h, (monomial n).map_zero]; exact bot_le
   else le_of_eq (degree_monomial n h)
 #align polynomial.degree_monomial_le Polynomial.degree_monomial_le
@@ -330,12 +331,14 @@ theorem natDegree_monomial [DecidableEq R] (i : ℕ) (r : R) :
 #align polynomial.nat_degree_monomial Polynomial.natDegree_monomial
 
 theorem natDegree_monomial_le (a : R) {m : ℕ} : (monomial m a).natDegree ≤ m := by
+  classical
   rw [Polynomial.natDegree_monomial]
   split_ifs
   exacts [Nat.zero_le _, rfl.le]
 #align polynomial.nat_degree_monomial_le Polynomial.natDegree_monomial_le
 
 theorem natDegree_monomial_eq (i : ℕ) {r : R} (r0 : r ≠ 0) : (monomial i r).natDegree = i :=
+  letI := Classical.decEq R
   Eq.trans (natDegree_monomial _ _) (if_neg r0)
 #align polynomial.nat_degree_monomial_eq Polynomial.natDegree_monomial_eq
 
@@ -762,6 +765,7 @@ theorem degree_erase_lt (hp : p ≠ 0) : degree (p.erase (natDegree p)) < degree
 #align polynomial.degree_erase_lt Polynomial.degree_erase_lt
 
 theorem degree_update_le (p : R[X]) (n : ℕ) (a : R) : degree (p.update n a) ≤ max (degree p) n := by
+  classical
   rw [degree, support_update]
   split_ifs
   · exact (Finset.max_mono (erase_subset _ _)).trans (le_max_left _ _)
@@ -771,12 +775,12 @@ theorem degree_update_le (p : R[X]) (n : ℕ) (a : R) : degree (p.update n a) �
 
 theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
     degree (∑ i in s, f i) ≤ s.sup fun b => degree (f b) :=
-  Finset.induction_on s (by simp only [sum_empty, sup_empty, degree_zero, le_refl])
+  Finset.cons_induction_on s (by simp only [sum_empty, sup_empty, degree_zero, le_refl])
     fun a s has ih =>
     calc
-      degree (∑ i in insert a s, f i) ≤ max (degree (f a)) (degree (∑ i in s, f i)) := by
-        rw [sum_insert has]; exact degree_add_le _ _
-      _ ≤ _ := by rw [sup_insert, sup_eq_max]; exact max_le_max le_rfl ih
+      degree (∑ i in cons a s has, f i) ≤ max (degree (f a)) (degree (∑ i in s, f i)) := by
+        rw [Finset.sum_cons]; exact degree_add_le _ _
+      _ ≤ _ := by rw [sup_cons, sup_eq_max]; exact max_le_max le_rfl ih
 #align polynomial.degree_sum_le Polynomial.degree_sum_le
 
 theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q := by
@@ -807,6 +811,7 @@ theorem degree_pow_le_of_le {a : WithBot ℕ} (b : ℕ) (hp : degree p ≤ a) :
 
 @[simp]
 theorem leadingCoeff_monomial (a : R) (n : ℕ) : leadingCoeff (monomial n a) = a := by
+  classical
   by_cases ha : a = 0
   · simp only [ha, (monomial n).map_zero, leadingCoeff_zero]
   · rw [leadingCoeff, natDegree_monomial, if_neg ha, coeff_monomial]
@@ -911,12 +916,12 @@ theorem coeff_mul_degree_add_degree (p q : R[X]) :
     coeff (p * q) (natDegree p + natDegree q) = leadingCoeff p * leadingCoeff q :=
   calc
     coeff (p * q) (natDegree p + natDegree q) =
-        ∑ x in Nat.antidiagonal (natDegree p + natDegree q), coeff p x.1 * coeff q x.2 :=
+        ∑ x in antidiagonal (natDegree p + natDegree q), coeff p x.1 * coeff q x.2 :=
       coeff_mul _ _ _
     _ = coeff p (natDegree p) * coeff q (natDegree q) := by
       refine' Finset.sum_eq_single (natDegree p, natDegree q) _ _
       · rintro ⟨i, j⟩ h₁ h₂
-        rw [Nat.mem_antidiagonal] at h₁
+        rw [mem_antidiagonal] at h₁
         by_cases H : natDegree p < i
         · rw [coeff_eq_zero_of_degree_lt
               (lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 H)),
@@ -939,7 +944,7 @@ theorem coeff_mul_degree_add_degree (p q : R[X]) :
       · intro H
         exfalso
         apply H
-        rw [Nat.mem_antidiagonal]
+        rw [mem_antidiagonal]
 #align polynomial.coeff_mul_degree_add_degree Polynomial.coeff_mul_degree_add_degree
 
 theorem degree_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
@@ -954,6 +959,7 @@ theorem degree_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
 #align polynomial.degree_mul' Polynomial.degree_mul'
 
 theorem Monic.degree_mul (hq : Monic q) : degree (p * q) = degree p + degree q :=
+  letI := Classical.decEq R
   if hp : p = 0 then by simp [hp]
   else degree_mul' <| by rwa [hq.leadingCoeff, mul_one, Ne.def, leadingCoeff_eq_zero]
 #align polynomial.monic.degree_mul Polynomial.Monic.degree_mul
@@ -975,6 +981,7 @@ theorem leadingCoeff_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
 
 theorem monomial_natDegree_leadingCoeff_eq_self (h : p.support.card ≤ 1) :
     monomial p.natDegree p.leadingCoeff = p := by
+  classical
   rcases card_support_le_one_iff_monomial.1 h with ⟨n, a, rfl⟩
   by_cases ha : a = 0 <;> simp [ha]
 #align polynomial.monomial_nat_degree_leading_coeff_eq_self Polynomial.monomial_natDegree_leadingCoeff_eq_self
@@ -1000,6 +1007,7 @@ theorem degree_pow' : ∀ {n : ℕ}, leadingCoeff p ^ n ≠ 0 → degree (p ^ n)
 #align polynomial.degree_pow' Polynomial.degree_pow'
 
 theorem natDegree_pow' {n : ℕ} (h : leadingCoeff p ^ n ≠ 0) : natDegree (p ^ n) = n * natDegree p :=
+  letI := Classical.decEq R
   if hp0 : p = 0 then
     if hn0 : n = 0 then by simp [*] else by rw [hp0, zero_pow (Nat.pos_of_ne_zero hn0)]; simp
   else
@@ -1021,6 +1029,7 @@ theorem leadingCoeff_monic_mul {p q : R[X]} (hp : Monic p) :
 
 theorem leadingCoeff_mul_monic {p q : R[X]} (hq : Monic q) :
     leadingCoeff (p * q) = leadingCoeff p :=
+  letI := Classical.decEq R
   Decidable.byCases
     (fun H : leadingCoeff p = 0 => by
       rw [H, leadingCoeff_eq_zero.1 H, zero_mul, leadingCoeff_zero])
@@ -1089,14 +1098,14 @@ theorem coeff_mul_add_eq_of_natDegree_le {df dg : ℕ} {g : R[X]}
     (hdf : natDegree f ≤ df) (hdg : natDegree g ≤ dg) :
     (f * g).coeff (df + dg) = f.coeff df * g.coeff dg := by
   rw [coeff_mul, Finset.sum_eq_single_of_mem (df, dg)]
-  · rw [Finset.Nat.mem_antidiagonal]
+  · rw [mem_antidiagonal]
   rintro ⟨df', dg'⟩ hmem hne
   obtain h | hdf' := lt_or_le df df'
   · rw [coeff_eq_zero_of_natDegree_lt (hdf.trans_lt h), zero_mul]
   obtain h | hdg' := lt_or_le dg dg'
   · rw [coeff_eq_zero_of_natDegree_lt (hdg.trans_lt h), mul_zero]
   obtain ⟨rfl, rfl⟩ :=
-    (add_eq_add_iff_eq_and_eq hdf' hdg').mp (Finset.Nat.mem_antidiagonal.1 hmem)
+    (add_eq_add_iff_eq_and_eq hdf' hdg').mp (mem_antidiagonal.1 hmem)
   exact (hne rfl).elim
 
 theorem zero_le_degree_iff : 0 ≤ degree p ↔ p ≠ 0 := by
@@ -1335,6 +1344,13 @@ section Ring
 
 variable [Ring R] {p q : R[X]}
 
+theorem degree_sub_C (hp : 0 < degree p) : degree (p - C a) = degree p := by
+  rw [sub_eq_add_neg, ← C_neg, degree_add_C hp]
+
+@[simp]
+theorem natDegree_sub_C {a : R} : natDegree (p - C a) = natDegree p := by
+  rw [sub_eq_add_neg, ← C_neg, natDegree_add_C]
+
 theorem degree_sub_le (p q : R[X]) : degree (p - q) ≤ max (degree p) (degree q) := by
   simpa only [degree_neg q] using degree_add_le p (-q)
 #align polynomial.degree_sub_le Polynomial.degree_sub_le
@@ -1537,9 +1553,8 @@ theorem degree_X_sub_C (a : R) : degree (X - C a) = 1 := by
   rw [sub_eq_add_neg, ← map_neg C a, degree_X_add_C]
 #align polynomial.degree_X_sub_C Polynomial.degree_X_sub_C
 
-@[simp]
-theorem natDegree_X_sub_C (x : R) : (X - C x).natDegree = 1 :=
-  natDegree_eq_of_degree_eq_some <| degree_X_sub_C x
+theorem natDegree_X_sub_C (x : R) : (X - C x).natDegree = 1 := by
+  rw [natDegree_sub_C, natDegree_X]
 #align polynomial.nat_degree_X_sub_C Polynomial.natDegree_X_sub_C
 
 @[simp]
@@ -1583,6 +1598,7 @@ variable [Semiring R] [NoZeroDivisors R] {p q : R[X]}
 
 @[simp]
 theorem degree_mul : degree (p * q) = degree p + degree q :=
+  letI := Classical.decEq R
   if hp0 : p = 0 then by simp only [hp0, degree_zero, zero_mul, WithBot.bot_add]
   else
     if hq0 : q = 0 then by simp only [hq0, degree_zero, mul_zero, WithBot.add_bot]
