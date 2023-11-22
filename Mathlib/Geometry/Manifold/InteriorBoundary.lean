@@ -196,46 +196,50 @@ lemma auxaux {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → 
     exact inter_subset_inter_right O r
   sorry -- sCIFI!
 
+/-- The charts of a charted space cover its domain. -/
+-- {H M : Type*} [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
+lemma ChartedSpace.covering : ⋃ x : M, (chartAt H x).source = univ := by
+  apply subset_antisymm <;> intro y _
+  · trivial
+  · rw [mem_iUnion]
+    use y
+    exact mem_chart_source H y
 
 namespace SmoothManifoldWithCorners
+-- can I avoid using this lemma?
+lemma covering : ⋃ x : M, (extChartAt I x).source = univ := by
+  simp_rw [extChartAt_source]
+  exact ChartedSpace.covering
+
+lemma isBoundaryPoint_iff' {x : M} :
+  SmoothManifoldWithCorners.boundary I M ∩ (extChartAt I x).source =
+    (extChartAt I x).source ∩ (extChartAt I x) ⁻¹'
+      ((extChartAt I x).target \ interior (extChartAt I x).target) := by
+  have r' : (chartAt H x).extend I = extChartAt I x := rfl
+  rw [← r']
+  ext y
+  constructor
+  · rintro ⟨hbd, hsource⟩
+    apply mem_inter hsource ?_ -- discharge first condition, easy
+    rw [(chartAt H x).extend_source] at hsource
+    let s := (isBoundaryPoint_iff I hsource).mp hbd
+    sorry --apply (mem_diff y).mp ?_ s
+    --apply s--mem_inter
+    --· sorry -- is y ∈ target? true for local homeos...
+    --· apply s
+  · rintro ⟨hsource, hbd⟩
+    apply mem_inter ?_ hsource
+    rw [(chartAt H x).extend_source] at hsource
+    apply (isBoundaryPoint_iff I hsource).mpr (not_mem_of_mem_diff hbd)
+
 variable (I) in
 /-- The boundary of a manifold has empty interior. -/
 lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary I M) = ∅ := by
-  -- The chart domains of M cover M. Should be an easy lemma; extract if not already exists.
-  -- Or can I avoid this?
-  have aux1 : ⋃ x : M, (extChartAt I x).source = univ := by
-    apply subset_antisymm <;> intro y hy
-    · trivial
-    · rw [mem_iUnion]
-      use y
-      exact mem_extChartAt_source I y
-
-  let bd := SmoothManifoldWithCorners.boundary I M
-  -- Apply my characterisation of boundary points.
-  have aux2 : ∀ x : M, bd ∩ (extChartAt I x).source = (extChartAt I x).source ∩ (extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target) := by
-    intro x
-    have r' : (chartAt H x).extend I = extChartAt I x := rfl
-    rw [← r']
-    ext y
-    constructor
-    · rintro ⟨hbd, hsource⟩
-      apply mem_inter hsource ?_ -- discharge first condition, easy
-      rw [(chartAt H x).extend_source] at hsource
-      let s := (isBoundaryPoint_iff I hsource).mp hbd
-      sorry --apply (mem_diff y).mp ?_ s
-      --apply s--mem_inter
-      --· sorry -- is y ∈ target? true for local homeos...
-      --· apply s
-    · rintro ⟨hsource, hbd⟩
-      apply mem_inter ?_ hsource
-      rw [(chartAt H x).extend_source] at hsource
-      apply (isBoundaryPoint_iff I hsource).mpr (not_mem_of_mem_diff hbd)
-
+  set bd := SmoothManifoldWithCorners.boundary I M
   -- Now, compute.
-  have := calc interior (SmoothManifoldWithCorners.boundary I M)
-    _ = interior (bd) := rfl
+  have := calc interior (bd)
     _ = interior (bd) ∩ univ := by rw [inter_univ]
-    _ = interior (bd) ∩ ⋃ (x : M), (extChartAt I x).source := by simp_rw [aux1]
+    _ = interior (bd) ∩ ⋃ (x : M), (extChartAt I x).source := by simp_rw [covering]
     _ = interior (bd) ∩ ⋃ (x : M), interior ((extChartAt I x).source) := by
       have : ∀ x : M, interior ((extChartAt I x).source) = (extChartAt I x).source := by
         intro x
@@ -245,7 +249,9 @@ lemma interior_boundary_eq_empty : interior (SmoothManifoldWithCorners.boundary 
       simp_rw [this]
     _ = ⋃ (x : M), interior bd ∩ interior ((extChartAt I x).source) := inter_iUnion _ _
     _ = ⋃ (x : M), interior (bd ∩ (extChartAt I x).source) := by simp_rw [interior_inter]
-    _ = ⋃ (x : M), interior ((extChartAt I x).source ∩ (extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target)) := by simp_rw [aux2]
+    _ = ⋃ (x : M), interior ((extChartAt I x).source ∩
+        (extChartAt I x) ⁻¹' ((extChartAt I x).target \ interior (extChartAt I x).target)) := by
+      simp_rw [isBoundaryPoint_iff']
 
     -- this step is SCIFI: very happy if true!! need a rigorous argument, though
     -- extChart is continuous on its source, so this might hold?
