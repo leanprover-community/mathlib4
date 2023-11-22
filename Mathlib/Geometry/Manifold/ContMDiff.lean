@@ -2088,8 +2088,9 @@ lemma contMDiffOn_openEmbedding_symm :
     · rw [ModelWithCorners.right_inv]
       · rfl
       · apply mem_of_subset_of_mem _ hz.1
-        exact extChartAt_target_subset_range _ _ --show hz implies z is in range of I ∘ e
-    · rw [h.toLocalHomeomorph_target, ModelWithCorners.symm, ←mem_preimage]
+        exact extChartAt_target_subset_range _ _
+    · -- show hz implies z is in range of I ∘ e
+      rw [h.toLocalHomeomorph_target, ModelWithCorners.symm, ←mem_preimage]
       have := hz.2
       rw [preimage_inter] at this
       exact this.1
