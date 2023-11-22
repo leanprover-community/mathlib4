@@ -46,16 +46,23 @@ variable [AddCommGroup X] [Module Rᵐᵒᵖ X] [Module S X] [SMulCommClass S R�
 
 open MulOpposite
 
-/-- The `R`-module structure instance on a `Rᵐᵒᵖ`-module `X` for a commutative ring `R`. -/
-private instance leftMod_eq_rightMod : Module R X :=
+-- TODO: remove these local instances when TensorProduct is generalized over non-commutative rings.
+
+/-- The `R`-module structure on a `Rᵐᵒᵖ`-module `X` for a commutative ring `R`. -/
+def Module.ofMop : Module R X :=
   Module.compHom X ((RingHom.id R).toOpposite fun _ _ => mul_comm _ _)
+
+attribute [local instance] Module.ofMop
 
 variable {Y : Type v'} [AddCommGroup Y] [Module R Y]
 
-private noncomputable instance tensorMod : Module S (X ⊗[R] Y) :=
+/-- A version of `TensorProduct.leftModule` with `Rᵐᵒᵖ` in place of `R`. -/
+noncomputable def Module.tensorLeftOfMop : Module S (X ⊗[R] Y) :=
   have : SMulCommClass R S X :=
     ⟨fun r s x ↦ show (op r) • s • x = s • (op r) • x by rw [← smul_comm]⟩
   inferInstance
+
+attribute [local instance] Module.tensorLeftOfMop
 
 @[simp] lemma tensorModSMul_smul_tmul
   (s : S) (x : X) (y : Y) : s • (x ⊗ₜ[R] y) = (s • x) ⊗ₜ[R] y := rfl
@@ -65,7 +72,7 @@ variable {Z : Type v''} [AddCommGroup Z] [Module S Z]
 Let `R` be a commutative ring and `S` a ring.
 Given an `(S,R)`-bimodule `X` and a left `S`-module `Y`, the set of
 `S`-linear maps from `X` to `Y` has a left `R`-module structure given by:
--```
+```
 l : X →ₗ[S] Y
 r : R
 x : X
@@ -73,7 +80,7 @@ x : X
 (r • l) x = l (op r • x)
 ```
 -/
-private instance hom_bimodule : Module R (X →ₗ[S] Z) where
+def Module.linearMapLeft : Module R (X →ₗ[S] Z) where
   smul r l :=
   { toFun := fun x => l (op r • x)
     map_add' := fun x y => by dsimp; rw [smul_add, map_add]
@@ -86,6 +93,8 @@ private instance hom_bimodule : Module R (X →ₗ[S] Z) where
   add_smul r₁ r₂ l := LinearMap.ext fun x => show l _ = l _ + l _ by
     rw [op_add, add_smul, map_add]
   zero_smul l := LinearMap.ext fun x => show l _ = 0 by rw [op_zero, zero_smul, map_zero]
+
+attribute [local instance] Module.linearMapLeft
 
 variable {R S X}
 /--
