@@ -2685,6 +2685,7 @@ import Mathlib.NumberTheory.Liouville.Measure
 import Mathlib.NumberTheory.Liouville.Residual
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.LucasPrimality
+import Mathlib.NumberTheory.MaricaSchoenheim
 import Mathlib.NumberTheory.Modular
 import Mathlib.NumberTheory.ModularForms.Basic
 import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
