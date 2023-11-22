@@ -136,7 +136,7 @@ theorem comap_dist_left_atTop (c : α) : comap (dist c) atTop = cobounded α := 
 @[simp]
 theorem tendsto_dist_right_atTop_iff (c : α) {f : β → α} {l : Filter β} :
     Tendsto (fun x ↦ dist (f x) c) l atTop ↔ Tendsto f l (cobounded α) := by
-  rw [← comap_dist_right_atTop c, tendsto_comap_iff]; rfl
+  rw [← comap_dist_right_atTop c, tendsto_comap_iff, Function.comp_def]
 
 @[simp]
 theorem tendsto_dist_left_atTop_iff (c : α) {f : β → α} {l : Filter β} :
@@ -337,7 +337,7 @@ section Diam
 variable {s : Set α} {x y z : α}
 
 /-- The diameter of a set in a metric space. To get controllable behavior even when the diameter
-should be infinite, we express it in terms of the emetric.diameter -/
+should be infinite, we express it in terms of the `EMetric.diam` -/
 noncomputable def diam (s : Set α) : ℝ :=
   ENNReal.toReal (EMetric.diam s)
 #align metric.diam Metric.diam

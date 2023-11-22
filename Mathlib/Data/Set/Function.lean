@@ -191,6 +191,10 @@ theorem eqOn_singleton : Set.EqOn f₁ f₂ {a} ↔ f₁ a = f₂ a := by
 #align set.eq_on_singleton Set.eqOn_singleton
 
 @[simp]
+theorem eqOn_univ (f₁ f₂ : α → β) : EqOn f₁ f₂ univ ↔ f₁ = f₂ := by
+  simp [EqOn, funext_iff]
+
+@[simp]
 theorem restrict_eq_restrict_iff : restrict s f₁ = restrict s f₂ ↔ EqOn f₁ f₂ s :=
   restrict_eq_iff
 #align set.restrict_eq_restrict_iff Set.restrict_eq_restrict_iff
@@ -220,6 +224,10 @@ theorem EqOn.trans (h₁ : EqOn f₁ f₂ s) (h₂ : EqOn f₂ f₃ s) : EqOn f�
 theorem EqOn.image_eq (heq : EqOn f₁ f₂ s) : f₁ '' s = f₂ '' s :=
   image_congr heq
 #align set.eq_on.image_eq Set.EqOn.image_eq
+
+/-- Variant of `EqOn.image_eq`, for one function being the identity. -/
+theorem EqOn.image_eq_self {f : α → α} (h : Set.EqOn f id s) : f '' s = s := by
+  rw [h.image_eq, image_id]
 
 theorem EqOn.inter_preimage_eq (heq : EqOn f₁ f₂ s) (t : Set β) : s ∩ f₁ ⁻¹' t = s ∩ f₂ ⁻¹' t :=
   ext fun x => and_congr_right_iff.2 fun hx => by rw [mem_preimage, mem_preimage, heq hx]

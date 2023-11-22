@@ -197,7 +197,7 @@ instance : RepresentablyFlat (Opens.map f) := by
 
 theorem compatiblePreserving_opens_map :
     CompatiblePreserving (Opens.grothendieckTopology X) (Opens.map f) :=
-compatiblePreservingOfFlat _ _
+  compatiblePreservingOfFlat _ _
 
 theorem coverPreserving_opens_map : CoverPreserving (Opens.grothendieckTopology Y)
     (Opens.grothendieckTopology X) (Opens.map f) := by

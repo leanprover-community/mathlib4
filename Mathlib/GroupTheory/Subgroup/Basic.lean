@@ -1329,23 +1329,23 @@ theorem closure_eq_top_of_mclosure_eq_top {S : Set G} (h : Submonoid.closure S =
 @[to_additive]
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (hK : Directed (· ≤ ·) K)
     {x : G} : x ∈ (iSup K : Subgroup G) ↔ ∃ i, x ∈ K i := by
-  refine' ⟨_, fun ⟨i, hi⟩ => (SetLike.le_def.1 <| le_iSup K i) hi⟩
+  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup K i hi⟩
   suffices x ∈ closure (⋃ i, (K i : Set G)) → ∃ i, x ∈ K i by
     simpa only [closure_iUnion, closure_eq (K _)] using this
-  refine' fun hx => closure_induction hx (fun _ => mem_iUnion.1) _ _ _
-  · exact hι.elim fun i => ⟨i, (K i).one_mem⟩
+  refine fun hx ↦ closure_induction hx (fun _ ↦ mem_iUnion.1) ?_ ?_ ?_
+  · exact hι.elim fun i ↦ ⟨i, (K i).one_mem⟩
   · rintro x y ⟨i, hi⟩ ⟨j, hj⟩
     rcases hK i j with ⟨k, hki, hkj⟩
     exact ⟨k, mul_mem (hki hi) (hkj hj)⟩
-  rintro _ ⟨i, hi⟩
-  exact ⟨i, inv_mem hi⟩
+  · rintro _ ⟨i, hi⟩
+    exact ⟨i, inv_mem hi⟩
 #align subgroup.mem_supr_of_directed Subgroup.mem_iSup_of_directed
 #align add_subgroup.mem_supr_of_directed AddSubgroup.mem_iSup_of_directed
 
 @[to_additive]
 theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Subgroup G} (hS : Directed (· ≤ ·) S) :
-    ((⨆ i, S i : Subgroup G) : Set G) = ⋃ i, ↑(S i) :=
-  Set.ext fun x => by simp [mem_iSup_of_directed hS]
+    ((⨆ i, S i : Subgroup G) : Set G) = ⋃ i, S i :=
+  Set.ext fun x ↦ by simp [mem_iSup_of_directed hS]
 #align subgroup.coe_supr_of_directed Subgroup.coe_iSup_of_directed
 #align add_subgroup.coe_supr_of_directed AddSubgroup.coe_iSup_of_directed
 

@@ -629,7 +629,7 @@ instance (priority := 100) of_pseudoEMetricSpace_of_isFiniteMeasure {X : Type*}
 /-- Any locally finite measure on a second countable metric space (or even a pseudo emetric space)
 is weakly regular. -/
 instance (priority := 100) of_pseudoEMetric_secondCountable_of_locallyFinite {X : Type*}
-    [PseudoEMetricSpace X] [TopologicalSpace.SecondCountableTopology X] [MeasurableSpace X]
+    [PseudoEMetricSpace X] [SecondCountableTopology X] [MeasurableSpace X]
     [BorelSpace X] (μ : Measure X) [IsLocallyFiniteMeasure μ] : WeaklyRegular μ :=
   haveI : OuterRegular μ := by
     refine' (μ.finiteSpanningSetsInOpen'.mono' fun U hU => _).outerRegular

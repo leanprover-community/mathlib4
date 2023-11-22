@@ -1109,19 +1109,19 @@ def prodEquiv (s : Subsemiring R) (t : Subsemiring S) : s.prod t ≃+* s × t :=
 
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subsemiring R} (hS : Directed (· ≤ ·) S)
     {x : R} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
-  refine' ⟨_, fun ⟨i, hi⟩ => (SetLike.le_def.1 <| le_iSup S i) hi⟩
+  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   let U : Subsemiring R :=
-    Subsemiring.mk' (⋃ i, (S i : Set R)) (⨆ i, (S i).toSubmonoid)
-      (Submonoid.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id) (⨆ i, (S i).toAddSubmonoid)
-      (AddSubmonoid.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
+    Subsemiring.mk' (⋃ i, (S i : Set R))
+      (⨆ i, (S i).toSubmonoid) (Submonoid.coe_iSup_of_directed hS)
+      (⨆ i, (S i).toAddSubmonoid) (AddSubmonoid.coe_iSup_of_directed hS)
   -- Porting note: gave the hypothesis an explicit name because `@this` doesn't work
   suffices h : ⨆ i, S i ≤ U by simpa using @h x
-  exact iSup_le fun i x hx => Set.mem_iUnion.2 ⟨i, hx⟩
+  exact iSup_le fun i x hx ↦ Set.mem_iUnion.2 ⟨i, hx⟩
 #align subsemiring.mem_supr_of_directed Subsemiring.mem_iSup_of_directed
 
 theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subsemiring R}
-    (hS : Directed (· ≤ ·) S) : ((⨆ i, S i : Subsemiring R) : Set R) = ⋃ i, ↑(S i) :=
-  Set.ext fun x => by simp [mem_iSup_of_directed hS]
+    (hS : Directed (· ≤ ·) S) : ((⨆ i, S i : Subsemiring R) : Set R) = ⋃ i, S i :=
+  Set.ext fun x ↦ by simp [mem_iSup_of_directed hS]
 #align subsemiring.coe_supr_of_directed Subsemiring.coe_iSup_of_directed
 
 theorem mem_sSup_of_directedOn {S : Set (Subsemiring R)} (Sne : S.Nonempty)
