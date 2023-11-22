@@ -51,7 +51,7 @@ lemma ModelWithCorners.isOpen_target [I.Boundaryless] {x : M} :
     IsOpen (extChartAt I x).target := I.isOpen_extend_target
 
 /-- If `M` has no boundary, every point of `M` is an interior point. -/
-lemma ModelWithCorners.is_interior_point [I.Boundaryless] {x : M} : I.IsInteriorPoint x := by
+lemma ModelWithCorners.isInteriorPoint [I.Boundaryless] {x : M} : I.IsInteriorPoint x := by
   rw [ModelWithCorners.IsInteriorPoint, IsOpen.interior_eq I.isOpen_target]
   exact LocalEquiv.map_source _ (mem_extChartAt_source _ _)
 
@@ -285,4 +285,4 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
   interval around `t₀`. -/
 lemma exists_integralCurve_of_contMDiff_tangent_section_boundaryless [I.Boundaryless] :
     ∃ (γ : ℝ → M), IsIntegralCurveAt γ v t₀ x₀ :=
-  exists_integralCurve_of_contMDiff_tangent_section hv I.is_interior_point
+  exists_integralCurve_of_contMDiff_tangent_section hv I.isInteriorPoint
