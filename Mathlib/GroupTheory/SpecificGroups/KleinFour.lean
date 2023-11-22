@@ -58,6 +58,11 @@ lemma inv_eq_self_of_orderOf_eq_two {x : G} (hx : orderOf x = 2) :
     x⁻¹ = x :=
   inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hx ▸ pow_orderOf_eq_one x
 
+@[to_additive]
+lemma orderOf_eq_two_iff (hG : Monoid.exponent G = 2) {x : G} :
+    orderOf x = 2 ↔ x ≠ 1 :=
+  ⟨by rintro hx rfl; norm_num at hx, orderOf_eq_prime (hG ▸ Monoid.pow_exponent_eq_one x)⟩
+
 /-- In a group of exponent two, all elements commute. -/
 @[to_additive]
 lemma mul_comm_of_exponent_two (hG : Monoid.exponent G = 2) (x y : G) :
@@ -150,6 +155,13 @@ variable [IsKleinFour G]
 lemma not_isCyclic : ¬ IsCyclic G :=
   fun h ↦ by simpa using h.exponent_eq_card
 
+@[to_additive (attr := simp)]
+lemma inv_eq_self (x : G) : x⁻¹ = x := inv_eq_self_of_exponent_two (by simp) x
+
+@[to_additive (attr := simp)]
+lemma mul_self (x : G) : x * x = 1 := by
+  rw [mul_eq_one_iff_eq_inv, inv_eq_self]
+
 @[to_additive]
 lemma eq_finset_univ [DecidableEq G]
     {x y : G} (hx : x ≠ 1) (hy : y ≠ 1) (hxy : x ≠ y) : {x * y, x, y, (1 : G)} = Finset.univ := by
@@ -180,8 +192,7 @@ def mulEquiv' (e : G₁ ≃ G₂) (he : e 1 = 1) (h : Monoid.exponent G₂ = 2) 
     by_cases hx : x = 1 <;> by_cases hy : y = 1
     all_goals try simp only [hx, hy, mul_one, one_mul, Equiv.toFun_as_coe, he]
     by_cases hxy : x = y
-    · simp [hxy, ← pow_two, exponent_two (G := G₁) ▸ Monoid.pow_exponent_eq_one y,
-      h ▸ Monoid.pow_exponent_eq_one (e y), he]
+    · simp [hxy, ← pow_two (e y), h ▸ Monoid.pow_exponent_eq_one (e y), he]
     · classical
       have univ₂ : {e (x * y), e x, e y, (1 : G₂)} = Finset.univ := by
         simpa [map_univ_equiv e, map_insert, he]
