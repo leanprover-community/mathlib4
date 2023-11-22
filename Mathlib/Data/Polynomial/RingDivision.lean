@@ -394,6 +394,55 @@ theorem pow_rootMultiplicity_not_dvd {p : R[X]} (p0 : p ≠ 0) (a : R) :
     ¬(X - C a) ^ (rootMultiplicity a p + 1) ∣ p := by rw [← rootMultiplicity_le_iff p0]
 #align polynomial.pow_root_multiplicity_not_dvd Polynomial.pow_rootMultiplicity_not_dvd
 
+theorem X_sub_C_pow_dvd_iff {p : R[X]} {t : R} {n : ℕ} :
+    (X - C t) ^ n ∣ p ↔ X ^ n ∣ p.comp (X + C t) := by
+  change (X - C t) ^ n ∣ p ↔ X ^ n ∣ aeval (X + C t) p
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · replace h := (aeval (X + C t)).map_dvd h
+    simpa only [AlgHom.toRingHom_eq_coe, map_pow, map_sub, RingHom.coe_coe, aeval_X, aeval_C,
+      ← C_eq_algebraMap, add_sub_cancel] using h
+  · replace h := (aeval (X - C t)).map_dvd h
+    simpa only [AlgHom.toRingHom_eq_coe, map_pow, RingHom.coe_coe, aeval_X, ← AlgHom.comp_apply,
+      ← aeval_algHom, map_add, aeval_C, ← C_eq_algebraMap, sub_add_cancel, aeval_X_left,
+      AlgHom.coe_id, id_eq] using h
+
+theorem comp_X_add_C_eq_zero_iff {p : R[X]} (t : R) :
+    p.comp (X + C t) = 0 ↔ p = 0 := by
+  change aeval (X + C t) p = 0 ↔ p = 0
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]; exact aeval_zero _⟩
+  apply_fun aeval (X - C t) at h
+  rwa [map_zero, ← AlgHom.comp_apply, ← aeval_algHom, map_add, aeval_X, aeval_C,
+    ← C_eq_algebraMap, sub_add_cancel, aeval_X_left, AlgHom.coe_id, id_eq] at h
+
+theorem comp_X_add_C_ne_zero_iff {p : R[X]} (t : R) :
+    p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := by
+  simp only [ne_eq, comp_X_add_C_eq_zero_iff]
+
+theorem rootMultiplicity_eq_rootMultiplicity {p : R[X]} {t : R} :
+    p.rootMultiplicity t = (p.comp (X + C t)).rootMultiplicity 0 := by
+  by_cases h : p = 0
+  · simp only [h, zero_comp, rootMultiplicity_zero]
+  refine le_antisymm ?_ ?_
+  · have := pow_rootMultiplicity_not_dvd ((comp_X_add_C_ne_zero_iff t).2 h) 0
+    rwa [map_zero, sub_zero, ← X_sub_C_pow_dvd_iff, ← rootMultiplicity_le_iff h] at this
+  · have := pow_rootMultiplicity_dvd (p.comp (X + C t)) 0
+    rwa [map_zero, sub_zero, ← X_sub_C_pow_dvd_iff, ← le_rootMultiplicity_iff h] at this
+
+theorem rootMultiplicity_eq_natTrailingDegree' {p : R[X]} :
+    p.rootMultiplicity 0 = p.natTrailingDegree := by
+  by_cases h : p = 0
+  · simp only [h, rootMultiplicity_zero, natTrailingDegree_zero]
+  refine le_antisymm ?_ ?_
+  · rw [rootMultiplicity_le_iff h, map_zero, sub_zero, X_pow_dvd_iff, not_forall]
+    exact ⟨p.natTrailingDegree,
+      fun h' ↦ trailingCoeff_nonzero_iff_nonzero.2 h <| h' <| Nat.lt.base _⟩
+  · rw [le_rootMultiplicity_iff h, map_zero, sub_zero, X_pow_dvd_iff]
+    exact fun _ ↦ coeff_eq_zero_of_lt_natTrailingDegree
+
+theorem rootMultiplicity_eq_natTrailingDegree {p : R[X]} {t : R} :
+    p.rootMultiplicity t = (p.comp (X + C t)).natTrailingDegree :=
+  rootMultiplicity_eq_rootMultiplicity.trans rootMultiplicity_eq_natTrailingDegree'
+
 section nonZeroDivisors
 
 open scoped nonZeroDivisors
