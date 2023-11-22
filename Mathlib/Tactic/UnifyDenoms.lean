@@ -66,6 +66,11 @@ macro_rules
   | (rw [Nat.mul_one] $[at $location]?) -- n * 1 = n
   | (rw [Nat.mul_div_mul_right] $[at $location]?) -- n * m / (k * m) = n / k
   | (rw [Nat.mul_div_mul_left] $[at $location]?) -- m * n / (m * k) = n / k
+  | (rw [Nat.mul_div_left] $[at $location]?) -- n * m / m = n
+  | (rw [Nat.mul_div_right] $[at $location]?) -- m * n / m = n
+  | (rw [←Nat.mul_div_assoc] $[at $location]?) -- m * (n / k) = m * n / k
+  | (rw [Nat.div_mul_assoc] $[at $location]?) -- n / k * m = n * m / k
+  | (rw [Nat.div_mul_div_comm] $[at $location]?)-- m / n * (k / l) = m * k / (n * l)
   | (rw [Nat.div_add_div_of_dvd] $[at $location]?) -- m / n + k / l = (m * l + n * k) / (n * l)
   | (rw [Nat.div_sub_div_of_dvd] $[at $location]?) -- m / n - k / l = (m * l - n * k) / (n * l)
   | (rw [Nat.div_add_of_dvd] $[at $location]?) -- m / n + k = (m + n * k) / n
@@ -86,11 +91,8 @@ macro_rules
   | (rw [EuclideanDomain.div_add_of_dvd] $[at $location]?) -- x / y + z = (x + y * z) / y
   | (rw [EuclideanDomain.div_sub_of_dvd] $[at $location]?) -- x / y - z = (x - y * z) / y
   | (rw [EuclideanDomain.add_div_of_dvd] $[at $location]?) -- x + y / z = (z * x + y) / z
-  | (rw [EuclideanDomain.sub_div_of_dvd] $[at $location]?) -- x - y / z = (z * x - y) / z
-  | (rw [←Nat.mul_div_assoc] $[at $location]?) -- m * (n / k) = m * n / k
-  | (rw [Nat.div_mul_assoc] $[at $location]?) -- n / k * m = n * m / k
-  | (rw [Nat.div_mul_div_comm] $[at $location]?) -- m * k / (n * l)
-   )))
+  | (rw [EuclideanDomain.sub_div_of_dvd] $[at $location]?) ) -- x - y / z = (z * x - y) / z
+  try (any_goals assumption) ))
 
 /--
 `unify_denoms!` works as `unify_denoms`, but:
@@ -103,8 +105,52 @@ syntax (name := unify_denoms!) "unify_denoms!" (location)?: tactic
 
 macro_rules
 | `(tactic | unify_denoms! $[at $location]?) => `(tactic |(
-  unify_denoms $[at $location]?
+  try field_simp $[at $location]?
   repeat (first
+  | (rw [← one_div] $[at $location]?) -- x⁻¹ = 1 / x
+  | (rw [one_mul] $[at $location]?) -- 1 * x = x
+  | (rw [mul_one] $[at $location]?) -- x * 1 = x
+  | (rw [mul_div_mul_right] $[at $location]?) -- a * c / (b * c) = a / b
+  | (rw [mul_div_mul_left] $[at $location]?) -- c * a / (c * b) = a / b
+  | (rw [div_add_div] $[at $location]?) -- a / b + c / d = (a * d + b * c) / (b * d)
+  | (rw [div_sub_div] $[at $location]?) -- a / b - c / d = (a * d - b * c) / (b * d)
+  | (rw [add_div'] $[at $location]?) -- b + a / c = (b * c + a) / c
+  | (rw [div_add'] $[at $location]?) -- a / c + b = (a + b * c) / c
+  | (rw [div_sub'] $[at $location]?) -- a / c - b = (a - c * b) / c
+  | (rw [sub_div'] $[at $location]?) -- b - a / c = (b * c - a) / c
+  | (rw [Nat.div_div_eq_div_mul] $[at $location]?) -- m / n / k = m / (n * k)
+  | (rw [Nat.div_self] $[at $location]?) -- n / n = 1
+  | (rw [Nat.one_mul] $[at $location]?) -- 1 * n = n
+  | (rw [Nat.mul_one] $[at $location]?) -- n * 1 = n
+  | (rw [Nat.mul_div_mul_right] $[at $location]?) -- n * m / (k * m) = n / k
+  | (rw [Nat.mul_div_mul_left] $[at $location]?) -- m * n / (m * k) = n / k
+  | (rw [Nat.mul_div_left] $[at $location]?) -- n * m / m = n
+  | (rw [Nat.mul_div_right] $[at $location]?) -- m * n / m = n
+  | (rw [←Nat.mul_div_assoc] $[at $location]?) -- m * (n / k) = m * n / k
+  | (rw [Nat.div_mul_assoc] $[at $location]?) -- n / k * m = n * m / k
+  | (rw [Nat.div_mul_div_comm] $[at $location]?)-- m / n * (k / l) = m * k / (n * l)
+  | (rw [Nat.div_add_div_of_dvd] $[at $location]?) -- m / n + k / l = (m * l + n * k) / (n * l)
+  | (rw [Nat.div_sub_div_of_dvd] $[at $location]?) -- m / n - k / l = (m * l - n * k) / (n * l)
+  | (rw [Nat.div_add_of_dvd] $[at $location]?) -- m / n + k = (m + n * k) / n
+  | (rw [Nat.div_sub_of_dvd] $[at $location]?) -- m / n - k = (m - n * k) / n
+  | (rw [Nat.add_div_of_dvd] $[at $location]?) -- m + n / k = (k * m + n) / k
+  | (rw [Nat.sub_div_of_dvd] $[at $location]?) -- m - n / k = (k * m - n) / k
+  | (rw [Int.div_self] $[at $location]?) -- n / n = 1
+  | (rw [Int.one_mul] $[at $location]?) -- 1 * n = n
+  | (rw [Int.mul_one] $[at $location]?) -- 1 * n = n
+  | (rw [EuclideanDomain.mul_div_cancel] $[at $location]?) -- a * b / b = a
+  | (rw [EuclideanDomain.mul_div_cancel'] $[at $location]?) -- b * (a / b) = a
+  | (rw [EuclideanDomain.mul_div_cancel_left] $[at $location]?) -- a * b / a = b
+  | (rw [EuclideanDomain.mul_div_mul_cancel] $[at $location]?) -- a * b / (a * c) = b / c
+  | (rw [←EuclideanDomain.mul_div_assoc] $[at $location]?) -- x * (y / z) = x * y / z
+  | (rw [EuclideanDomain.div_div] $[at $location]?) -- x / y / z = x / (y * z)
+  | (rw [EuclideanDomain.div_add_div_of_dvd] $[at $location]?) -- x/y + z/t = (t*x + y*z)/(t*y)
+  | (rw [EuclideanDomain.div_sub_div_of_dvd] $[at $location]?) -- x/y - z/t = (t*x - y*z)/(t*y)
+  | (rw [EuclideanDomain.div_add_of_dvd] $[at $location]?) -- x / y + z = (x + y * z) / y
+  | (rw [EuclideanDomain.div_sub_of_dvd] $[at $location]?) -- x / y - z = (x - y * z) / y
+  | (rw [EuclideanDomain.add_div_of_dvd] $[at $location]?) -- x + y / z = (z * x + y) / z
+  | (rw [EuclideanDomain.sub_div_of_dvd] $[at $location]?)  -- x - y / z = (z * x - y) / z
+----------------------------
   | (rw [mul_eq_zero] $[at $location]?) -- a * b = 0 ↔ a = 0 ∨ b = 0
   | (rw [eq_comm,mul_eq_zero] $[at $location]?) -- 0 = a * b ↔ a = 0 ∨ b = 0
   | (rw [div_eq_zero_iff] $[at $location]?) -- a / b = 0 ↔ a = 0 ∨ b = 0

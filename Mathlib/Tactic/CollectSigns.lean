@@ -9,6 +9,7 @@ import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Sub.Defs
+import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Tactic.FieldSimp
 
 /-!
@@ -57,7 +58,8 @@ macro_rules
   | (rw [sub_neg_eq_add]              $[at $location]?) -- x - -y = x + y
   | (rw [← sub_eq_add_neg]            $[at $location]?) -- x + -y = x - y
   | (rw [neg_add_eq_sub]              $[at $location]?) -- -x + y = x - y
-  | (rw [← add_assoc]                 $[at $location]?)))) -- x + (y + z) = x + y + z
+  | (rw [← add_assoc]                 $[at $location]?)) -- x + (y + z) = x + y + z
+  try (any_goals assumption) ))
 
 /-These two lemmas are also used as rewriting rules later.-/
 lemma Nat.sub_sub_of_le (m n k : ℕ) (h : k ≤ n) : m - (n - k) = m + k - n := by
@@ -111,4 +113,43 @@ macro_rules
   | (rw [sub_neg_eq_add]              $[at $location]?) -- x - -y = x + y
   | (rw [← sub_eq_add_neg]            $[at $location]?) -- x + -y = x - y
   | (rw [neg_add_eq_sub]              $[at $location]?) -- -x + y = y - x
-  | (rw [← add_assoc]                 $[at $location]?)))) -- x + (y + z) = x + y + z
+  | (rw [← add_assoc]                 $[at $location]?) -- x + (y + z) = x + y + z
+  | (rw [add_le_add_iff_left]         $[at $location]?) -- a + b ≤ a + c ↔ b ≤ c
+  | (rw [add_lt_add_iff_left]         $[at $location]?) -- a + b < a + c ↔ b < c
+  | (rw [add_le_add_iff_right]        $[at $location]?) -- b + a ≤ c + a ↔ b ≤ c
+  | (rw [add_lt_add_iff_right]        $[at $location]?) -- b + a < c + a ↔ b < c
+  | (rw [sub_le_sub_iff_left]         $[at $location]?) -- a - b ≤ a - c ↔ c ≤ b
+  | (rw [sub_lt_sub_iff_left]         $[at $location]?) -- a - b < a - c ↔ c < b
+  | (rw [sub_le_sub_iff_right]        $[at $location]?) -- a - c ≤ b - c ↔ a ≤ b
+  | (rw [sub_lt_sub_iff_right]        $[at $location]?) -- a - c < b - c ↔ a < b
+  | (rw [Nat.add_le_add_iff_left]     $[at $location]?) -- a + b ≤ a + c ↔ b ≤ c
+  | (rw [Nat.add_lt_add_iff_left]     $[at $location]?) -- a + b < a + c ↔ b < c
+  | (rw [Nat.add_le_add_iff_right]    $[at $location]?) -- b + a ≤ c + a ↔ b ≤ c
+  | (rw [Nat.add_lt_add_iff_right]    $[at $location]?) -- b + a < c + a ↔ b < c
+  | (rw [Nat.sub_le_sub_iff_left]     $[at $location]?) -- a - b ≤ a - c ↔ c ≤ b
+  | (rw [Nat.sub_lt_sub_iff_left]     $[at $location]?) -- a - b < a - c ↔ c < b
+  | (rw [Nat.sub_le_sub_iff_right]    $[at $location]?) -- a - c ≤ b - c ↔ a ≤ b
+  | (rw [Nat.sub_lt_sub_iff_right]    $[at $location]?) -- a - c < b - c ↔ a < b
+  | (simp only [add_assoc,add_le_add_iff_left]         $[at $location]?) -- a + b ≤ a + c ↔ b ≤ c
+  | (simp only [add_assoc,add_lt_add_iff_left]         $[at $location]?) -- a + b < a + c ↔ b < c
+  | (simp only [add_assoc,add_le_add_iff_right]        $[at $location]?) -- b + a ≤ c + a ↔ b ≤ c
+  | (simp only [add_assoc,add_lt_add_iff_right]        $[at $location]?) -- b + a < c + a ↔ b < c
+  | (simp only [add_assoc,sub_le_sub_iff_left]         $[at $location]?) -- a - b ≤ a - c ↔ c ≤ b
+  | (simp only [add_assoc,sub_lt_sub_iff_left]         $[at $location]?) -- a - b < a - c ↔ c < b
+  | (simp only [add_assoc,sub_le_sub_iff_right]        $[at $location]?) -- a - c ≤ b - c ↔ a ≤ b
+  | (simp only [add_assoc,sub_lt_sub_iff_right]        $[at $location]?) -- a - c < b - c ↔ a < b
+  | (simp only [add_assoc,Nat.add_le_add_iff_left]     $[at $location]?) -- a + b ≤ a + c ↔ b ≤ c
+  | (simp only [add_assoc,Nat.add_lt_add_iff_left]     $[at $location]?) -- a + b < a + c ↔ b < c
+  | (simp only [add_assoc,Nat.add_le_add_iff_right]    $[at $location]?) -- b + a ≤ c + a ↔ b ≤ c
+  | (simp only [add_assoc,Nat.add_lt_add_iff_right]    $[at $location]?) -- b + a < c + a ↔ b < c
+  | (simp only [add_assoc,Nat.sub_le_sub_iff_left]     $[at $location]?) -- a - b ≤ a - c ↔ c ≤ b
+  | (simp only [add_assoc,Nat.sub_lt_sub_iff_left]     $[at $location]?) -- a - b < a - c ↔ c < b
+  | (simp only [add_assoc,Nat.sub_le_sub_iff_right]    $[at $location]?) -- a - c ≤ b - c ↔ a ≤ b
+  | (simp only [add_assoc,Nat.sub_lt_sub_iff_right]    $[at $location]?) -- a - c < b - c ↔ a < b
+  | (rw [sub_le_iff_le_add]         $[at $location]?) --  a - c ≤ b ↔ a ≤ b + c
+  | (rw [sub_lt_iff_lt_add]         $[at $location]?) --  a - c < b ↔ a < b + c
+  | (rw [le_sub_iff_add_le]         $[at $location]?) -- a ≤ c - b ↔ a + b ≤ c
+  | (rw [lt_sub_iff_add_lt]         $[at $location]?) -- a < c - b ↔ a + b < c
+  | (rw [Nat.sub_le_iff_le_add]         $[at $location]?) -- a - b ≤ c ↔ a ≤ c + b
+  | (rw [Nat.le_sub_iff_add_le]         $[at $location]?) ) -- x ≤ y - k ↔ x + k ≤ y
+  try (any_goals assumption)))
