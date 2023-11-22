@@ -309,25 +309,6 @@ def GradedRing.projZeroRingHom : A →+* A where
 
 section GradeZero
 
-namespace GradedRing
-
-/--
-The subsemiring `𝒜 0` of the internally graded semiring `A`.
--/
-def GradeZero.subsemiring : Subsemiring A where
-  carrier := 𝒜 0
-  mul_mem' ha hb := add_zero (0 : ι) ▸ SetLike.mul_mem_graded ha hb
-  one_mem' := SetLike.one_mem_graded 𝒜
-  add_mem' := fun ha hb ↦ add_mem ha hb
-  zero_mem' := zero_mem (𝒜 0)
-
-/--
-The semiring `𝒜 0` derived from `GradedRing 𝒜`.
--/
-instance GradeZero.semiring : Semiring (𝒜 0) := (GradeZero.subsemiring 𝒜).toSemiring
-
-end GradedRing
-
 /--
 The semiring homomorphism from `A` to `𝒜 0` sending every `a : A` to `a₀`.
 -/
@@ -401,31 +382,9 @@ section GradeZero
 
 variable {ι A σ : Type*}
 variable [Ring A]
-variable [DecidableEq ι] [CanonicallyOrderedAddMonoid ι]
+variable [DecidableEq ι] [CanonicallyOrderedAddCommMonoid ι]
 variable [SetLike σ A] [AddSubgroupClass σ A]
 variable (𝒜 : ι → σ) [GradedRing 𝒜]
-
-namespace GradedRing
-
-/--
-The subring `𝒜 0` of the internally graded ring `A`.
--/
-def GradeZero.subring : Subring A where
-  carrier := 𝒜 0
-  mul_mem' := by
-    intro a b ha hb; let hab := SetLike.mul_mem_graded ha hb;
-    simp only [add_zero] at hab; exact hab
-  one_mem' := SetLike.one_mem_graded 𝒜
-  add_mem' := fun ha hb ↦ add_mem ha hb
-  zero_mem' := zero_mem (𝒜 0)
-  neg_mem' := by simp only [SetLike.mem_coe, neg_mem_iff, imp_self, forall_const]
-
-/--
-The ring `𝒜 0` derived from `GradedRing 𝒜`.
--/
-instance GradeZero.ring : Ring (𝒜 0) := (GradeZero.subring 𝒜).toRing
-
-end GradedRing
 
 /--
 The ring homomorphism from `A` to `𝒜 0` sending every `a : A` to `a₀`.

@@ -632,7 +632,7 @@ section GradedRing
 
 variable {ι A σ : Type*}
 variable [Ring A]
-variable [DecidableEq ι] [CanonicallyOrderedAddMonoid ι]
+variable [DecidableEq ι] [CanonicallyOrderedAddCommMonoid ι]
 variable [SetLike σ A] [AddSubgroupClass σ A]
 variable (𝒜 : ι → σ) [GradedRing 𝒜]
 

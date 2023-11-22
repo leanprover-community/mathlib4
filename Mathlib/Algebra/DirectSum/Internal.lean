@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang
+Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang, Fangming Li
 -/
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
@@ -275,6 +275,57 @@ theorem coe_of_mul_apply {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) [Decidabl
 #align direct_sum.coe_of_mul_apply DirectSum.coe_of_mul_apply
 
 end CanonicallyOrderedAddCommMonoid
+
+section GradeZeroSubsemiring
+
+variable [Semiring R]
+variable [CanonicallyOrderedAddCommMonoid ι]
+variable [SetLike σ R] [AddSubmonoidClass σ R]
+variable (A : ι → σ) [SetLike.GradedMonoid (fun i ↦ A i)]
+
+/--
+The subsemiring `A 0` of `R`.
+-/
+def GradeZero.subsemiring : Subsemiring R where
+  carrier := A 0
+  mul_mem' := by
+    intro a b ha hb
+    simp only [SetLike.mem_coe]
+    rw [show A 0 = A (0 + 0) by simp only [add_zero]]
+    exact SetLike.mul_mem_graded ha hb
+  one_mem' := SetLike.one_mem_graded A
+  add_mem' := λ a1 a2 ↦ add_mem a1 a2
+  zero_mem' := zero_mem (A 0)
+
+/--
+The semiring `A 0` derived from `SetLike.GradedMonoid (fun i ↦ A i)`.
+-/
+instance GradeZero.semiring' : Semiring (A 0) := (GradeZero.subsemiring A).toSemiring
+
+end GradeZeroSubsemiring
+
+section GradeZeroSubring
+
+variable [Ring R]
+variable [CanonicallyOrderedAddCommMonoid ι]
+variable [SetLike σ R] [AddSubgroupClass σ R]
+variable (A : ι → σ) [SetLike.GradedMonoid (fun i ↦ A i)]
+
+/--
+The subring `A 0` of `R`.
+-/
+def GradeZero.subring : Subring R where
+  carrier := A 0
+  __ := GradeZero.subsemiring A
+  neg_mem' := by
+    simp only [SetLike.mem_coe, neg_mem_iff, imp_self, forall_const]
+
+/--
+The ring `A 0` derived from `SetLike.GradedMonoid (fun i ↦ A i)`.
+-/
+instance GradeZero.ring' : Ring (A 0) := (GradeZero.subring A).toRing
+
+end GradeZeroSubring
 
 end DirectSum
 
