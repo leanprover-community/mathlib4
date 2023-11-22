@@ -5,7 +5,6 @@ Authors: Michael Rothgang, Winston Yin
 -/
 
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
-import Mathlib.Topology.Maps
 
 -- FIXME: should this be its own file or go in SmoothManifoldWithCorners?
 -- the latter is already huge, or its own file - move other results about boundaryless here?
@@ -45,28 +44,23 @@ open Set
 section TopologyHelpers -- should be in mathlib; Mathlib.Topology.Basic
 variable {X : Type*} [TopologicalSpace X] {s : Set X}
 
--- I don't need it; still useful?
+-- I don't need this lemma; is is useful independently itself?
 lemma interior_frontier_disjoint : interior s ∩ frontier s = ∅ := by
-  rw [← closure_diff_interior s]
-  have : (closure s \ interior s) = closure s ∩ (interior s)ᶜ := rfl
-  rw [this]
+  rw [← closure_diff_interior s, diff_eq]
   rw [← inter_assoc, inter_comm, ← inter_assoc, compl_inter_self, empty_inter]
 
 -- FIXME: what's a good name?
 lemma aux {O t : Set X} (h : s = O ∩ t) (hO : IsOpen O) :
     s \ interior s ⊆ t \ interior t := by
-  let aux := calc interior s
-    _ = interior O ∩ interior t := by rw [h, interior_inter]
-    _ = O ∩ interior t := by rw [hO.interior_eq]
-  calc s \ interior s
-    _ = (O ∩ t) \ (O ∩ interior t) := by rw [aux, h]
-    _ = O ∩ (t \ interior t) := by rw [inter_diff_distrib_left]
-    _ ⊆ t \ interior t := inter_subset_right _ _
+  rw [h, interior_inter, hO.interior_eq, ← inter_diff_distrib_left]
+  exact inter_subset_right O (t \ interior t)
 
 -- is this a better lemma; is `aux` useful on its own?
 lemma aux2 {O t : Set X} (h : s = O ∩ t) (hO : IsOpen O)
-    (ht : IsClosed t) : s \ interior s ⊆ frontier t :=
-  ht.frontier_eq ▸ aux h hO
+    (ht : IsClosed t) : s \ interior s ⊆ frontier t := by
+  rw [ht.frontier_eq, h, interior_inter, hO.interior_eq, ← inter_diff_distrib_left]
+  exact inter_subset_right _ _
+  -- alternative proof, if `aux` is useful: ht.frontier_eq ▸ aux h hO
 
 end TopologyHelpers
 
