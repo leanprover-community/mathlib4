@@ -361,7 +361,7 @@ lemma and_two_pow (n i : ℕ) : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
   · simp [h, testBit_two_pow_of_ne hij]
   · simp [h, testBit_two_pow_of_ne hij]
 
-lemma two_pow_and (n i : ℕ) : (2 ^ i &&& n) = 2 ^ i * (n.testBit i).toNat := by
+lemma two_pow_and (n i : ℕ) : 2 ^ i &&& n = 2 ^ i * (n.testBit i).toNat := by
   rw [mul_comm, land_comm, and_two_pow]
 
 @[simp]
