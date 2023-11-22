@@ -172,7 +172,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem N₂Γ₂_inv_app_f_f (X : Karoubi (ChainComplex C ℕ)) (n : ℕ) :
     (N₂Γ₂.inv.app X).f.f n =
-      X.p.f n ≫ (Γ₀.splitting X.X).ιSummand (Splitting.IndexSet.id (op [n])) := by
+      X.p.f n ≫ ((Γ₀.splitting X.X).cofan _).inj (Splitting.IndexSet.id (op [n])) := by
   dsimp [N₂Γ₂]
   simp only [whiskeringLeft_obj_preimage_app, NatTrans.comp_app, Functor.comp_map,
     Karoubi.comp_f, N₂Γ₂ToKaroubiIso_inv_app, HomologicalComplex.comp_f,
