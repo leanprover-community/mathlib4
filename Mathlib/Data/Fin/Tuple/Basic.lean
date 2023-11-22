@@ -68,8 +68,7 @@ def cons (x : α 0) (p : ∀ i : Fin n, α i.succ) : ∀ i, α i := fun j ↦ Fi
 #align fin.cons Fin.cons
 
 @[simp]
-theorem tail_cons : tail (cons x p) = p := by
-  simp (config := { unfoldPartialApp := true }) [tail, cons]
+theorem tail_cons : tail (cons x p) = p := by simp [tail, cons]
 #align fin.tail_cons Fin.tail_cons
 
 @[simp]
@@ -244,7 +243,7 @@ theorem comp_cons {α : Type*} {β : Type*} (g : α → β) (y : α) (q : Fin n 
     rfl
   · let j' := pred j h
     have : j'.succ = j := succ_pred j h
-    rw [← this, cons_succ, comp_apply, comp_apply, cons_succ]
+    rw [← this, cons_succ, comp, comp, cons_succ]
 #align fin.comp_cons Fin.comp_cons
 
 theorem comp_tail {α : Type*} {β : Type*} (g : α → β) (q : Fin n.succ → α) :
@@ -375,9 +374,8 @@ theorem cons_eq_append {α : Type*} (x : α) (xs : Fin n → α) :
     Fin.append (xs ∘ Fin.cast h) ys = Fin.append xs ys ∘ (Fin.cast <| by rw[h]) := by
   subst h
   funext i
-  simp (config := {unfoldPartialApp := true}) only [Fin.append, Fin.addCases, comp_def, Fin.cast,
-    Fin.coe_castLT, Fin.subNat_mk, Fin.natAdd_mk, ge_iff_le, eq_rec_constant, Fin.eta, Eq.ndrec,
-    id_eq, eq_mpr_eq_cast, cast_eq]
+  simp only [Fin.append, Fin.addCases, comp, Fin.cast, Fin.coe_castLT, Fin.subNat_mk, Fin.natAdd_mk,
+    ge_iff_le, eq_rec_constant, Fin.eta, Eq.ndrec, id_eq, eq_mpr_eq_cast, cast_eq]
 
 @[simp] lemma append_cast_right {n m} {α : Type*} (xs : Fin n → α) (ys : Fin m → α) (m' : ℕ)
     (h : m' = m) :
@@ -1085,14 +1083,11 @@ abbrev extendFun {α : Type*} {n : ℕ} (f : Fin n → α) (a : α) : ℕ → α
     (extendFun f a) ∘ val = f ∘ (castAdd m) := by
   funext i; apply extendFun_val'
 
-@[simp] lemma extendFun_add {α a n} (m) {f : Fin (n+(m+1)) → α} :
-    (extendFun f a) n = f ⟨n, by simp⟩ := by
-  apply Subtype.extendFun_of_p; simp
-
-@[simp (high)] -- specialize `extendFun_add` for the case when `m=0`
+@[simp]
 lemma extendFun_succ {α a n} {f : Fin (n+1) → α} :
-    (extendFun f a) n = f (Fin.last n) :=
-  extendFun_add 0
+    extendFun f a n = f (Fin.last n) := by
+  apply Subtype.extendFun_of_p
+  apply lt_add_one
 
 end ExtendFun
 
