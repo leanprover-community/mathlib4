@@ -476,8 +476,10 @@ theorem NodupKeys.kerase (a : α) : NodupKeys l → (kerase a l).NodupKeys :=
 #align list.nodupkeys.kerase List.NodupKeys.kerase
 
 theorem Perm.kerase {a : α} {l₁ l₂ : List (Sigma β)} (nd : l₁.NodupKeys) :
-    l₁ ~ l₂ → kerase a l₁ ~ kerase a l₂ :=
-  Perm.erasep _ <| (nodupKeys_iff_pairwise.1 nd).imp <| by rintro x y h rfl; exact h
+    l₁ ~ l₂ → kerase a l₁ ~ kerase a l₂ := by
+  apply Perm.eraseP
+  apply (nodupKeys_iff_pairwise.1 nd).imp
+  intros; simp_all
 #align list.perm.kerase List.Perm.kerase
 
 @[simp]

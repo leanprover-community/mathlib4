@@ -3512,6 +3512,7 @@ theorem exists_list_nodup_eq [DecidableEq α] (s : Finset α) :
   ⟨s.toList, s.nodup_toList, s.toList_toFinset⟩
 #align finset.exists_list_nodup_eq Finset.exists_list_nodup_eq
 
+open List in
 theorem toList_cons {a : α} {s : Finset α} (h : a ∉ s) : (cons a s h).toList ~ a :: s.toList :=
   (List.perm_ext (nodup_toList _) (by simp [h, nodup_toList s])).2 fun x => by
     simp only [List.mem_cons, Finset.mem_toList, Finset.mem_cons]
