@@ -53,12 +53,14 @@ example {a : ℕ}
 by simp_rw [h1, h2]
 ```
 -/
-elab s:"simp_rw " rws:rwRuleSeq g:(location)? : tactic => do
+elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => do
+  -- TODO We should use the passed `cfg` here too,
+  -- but I don't know how to convert it back and forth from `Syntax`.
   evalTactic (← `(tactic| simp%$s (config := { failIfUnchanged := false }) only $g ?))
   withSimpRWRulesSeq s rws fun symm term => do
     evalTactic (← match term with
     | `(term| $e:term) =>
       if symm then
-        `(tactic| simp%$e only [←$e:term] $g ?)
+        `(tactic| simp%$e $[$cfg]? only [←$e:term] $g ?)
       else
-        `(tactic| simp%$e only [$e:term] $g ?))
+        `(tactic| simp%$e $[$cfg]? only [$e:term] $g ?))
