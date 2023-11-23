@@ -294,11 +294,15 @@ variable (M A : Type) [Monoid M] [AddCommGroup A] [DistribMulAction M A]
 
 /-- Turns an `AddCommGroup` `A` with a `DistribMulAction` of a monoid `M` into a
 `ℤ`-linear `M`-representation on `A`. -/
-def ofDistribMulAction : Rep ℤ M :=
-Rep.of (Representation.ofDistribMulAction M A)
+def ofDistribMulAction : Rep ℤ M := Rep.of (Representation.ofDistribMulAction M A)
 
 @[simp] theorem ofDistribMulAction_ρ_apply_apply (g : M) (a : A) :
     (ofDistribMulAction M A).ρ g a = g • a := rfl
+
+/-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
+`S ≃ₐ[R] S` on `S`. -/
+@[simp] def ofAlgebraAut (R S : Type) [CommRing R] [CommRing S] [Algebra R S] :
+    Rep ℤ (S ≃ₐ[R] S) := ofDistribMulAction (S ≃ₐ[R] S) S
 
 end
 section
@@ -306,11 +310,15 @@ variable (M G : Type) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
 
 /-- Turns a `CommGroup` `G` with a `MulDistribMulAction` of a monoid `M` into a
 `ℤ`-linear `M`-representation on `Additive G`. -/
-def ofMulDistribMulAction : Rep ℤ M :=
-Rep.of (Representation.ofMulDistribMulAction M G)
+def ofMulDistribMulAction : Rep ℤ M := Rep.of (Representation.ofMulDistribMulAction M G)
 
 @[simp] theorem ofMulDistribMulAction_ρ_apply_apply (g : M) (a : G) :
-  (ofMulDistribMulAction M G).ρ g a = g • a := rfl
+    (ofMulDistribMulAction M G).ρ g a = g • a := rfl
+
+/-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
+`S ≃ₐ[R] S` on `Sˣ`. -/
+@[simp] def ofAlgebraAutOnUnits (R S : Type) [CommRing R] [CommRing S] [Algebra R S] :
+    Rep ℤ (S ≃ₐ[R] S) := Rep.ofMulDistribMulAction (S ≃ₐ[R] S) Sˣ
 
 end
 
