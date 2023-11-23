@@ -108,7 +108,6 @@ lemma InjectiveResolution.isoRightDerivedToHomotopyCategoryObj_inv_naturality
     rw [← isoRightDerivedToHomotopyCategoryObj_hom_naturality_assoc f I J φ comm F,
       Iso.hom_inv_id, Category.comp_id]
 
-
 -- TODO: needs `HomotopyCategory.homologyFunctor` for the new homology API
 
 /-- The right derived functors of an additive functor. -/
