@@ -263,7 +263,7 @@ rely on the association list API defined in `data.list.sigma`.
 -/
 inductive InjectiveFunction (α : Type u) : Type u
   | mapToSelf (xs : List (Σ _ : α, α)) :
-      (xs.map Sigma.fst : List α) ~ (xs.map Sigma.snd : List α) → List.Nodup (xs.map Sigma.snd) → InjectiveFunction α
+      xs.map Sigma.fst ~ xs.map Sigma.snd → List.Nodup (xs.map Sigma.snd) → InjectiveFunction α
 #align slim_check.injective_function SlimCheck.InjectiveFunction
 #align slim_check.injective_function.map_to_self SlimCheck.InjectiveFunction.mapToSelf
 
