@@ -783,8 +783,8 @@ theorem exists_lt_norm_lt {r₁ r₂ : ℝ} (h₀ : 0 ≤ r₁) (h : r₁ < r₂
   DenselyNormedField.lt_norm_lt r₁ r₂ h₀ h
 #align normed_field.exists_lt_norm_lt NormedField.exists_lt_norm_lt
 
-theorem exists_lt_nnnorm_lt {r₁ r₂ : ℝ≥0} (h : r₁ < r₂) : ∃ x : α, r₁ < ‖x‖₊ ∧ ‖x‖₊ < r₂ := by
-  exact_mod_cast exists_lt_norm_lt α r₁.prop h
+theorem exists_lt_nnnorm_lt {r₁ r₂ : ℝ≥0} (h : r₁ < r₂) : ∃ x : α, r₁ < ‖x‖₊ ∧ ‖x‖₊ < r₂ :=
+  mod_cast exists_lt_norm_lt α r₁.prop h
 #align normed_field.exists_lt_nnnorm_lt NormedField.exists_lt_nnnorm_lt
 
 instance denselyOrdered_range_norm : DenselyOrdered (Set.range (norm : α → ℝ)) where
@@ -810,6 +810,19 @@ theorem denseRange_nnnorm : DenseRange (nnnorm : α → ℝ≥0) :=
 end Densely
 
 end NormedField
+
+/-- A normed field is nontrivially normed
+provided that the norm of some nonzero element is not one. -/
+def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
+    (h : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1) : NontriviallyNormedField 𝕜 where
+  toNormedField := h'
+  non_trivial := by
+    rcases h with ⟨x, hx, hx1⟩
+    rcases hx1.lt_or_lt with hlt | hlt
+    · use x⁻¹
+      rw [norm_inv]
+      exact one_lt_inv (norm_pos_iff.2 hx) hlt
+    · exact ⟨x, hlt⟩
 
 instance Real.normedCommRing : NormedCommRing ℝ :=
   { Real.normedAddCommGroup, Real.commRing with norm_mul := fun x y => (abs_mul x y).le }

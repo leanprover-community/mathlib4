@@ -398,7 +398,7 @@ theorem comap_injective [T0Space β] : Injective (comap : C(α, β) → FrameHom
 #align topological_space.opens.comap_injective TopologicalSpace.Opens.comap_injective
 
 /-- A homeomorphism induces an order-preserving equivalence on open sets, by taking comaps. -/
-@[simps (config := { fullyApplied := false }) apply]
+@[simps (config := .asFn) apply]
 def _root_.Homeomorph.opensCongr (f : α ≃ₜ β) : Opens α ≃o Opens β where
   toFun := Opens.comap f.symm.toContinuousMap
   invFun := Opens.comap f.toContinuousMap

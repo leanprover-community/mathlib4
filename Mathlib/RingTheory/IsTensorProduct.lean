@@ -179,9 +179,7 @@ noncomputable nonrec def IsBaseChange.lift (g : M →ₗ[R] Q) : N →ₗ[S] Q :
       · rw [smul_zero, map_zero, smul_zero]
       · intro s m
         change h.lift F (r • s • f m) = r • h.lift F (s • f m)
-        rw [← mul_smul, hF, hF]
-        rw [mul_smul] -- Porting note: this line does nothing
-        apply mul_smul
+        rw [← mul_smul, hF, hF, mul_smul]
       · intro x₁ x₂ e₁ e₂
         rw [map_add, smul_add, map_add, smul_add, e₁, e₂] }
 #align is_base_change.lift IsBaseChange.lift
@@ -433,7 +431,7 @@ instance TensorProduct.isPushout' {R S T : Type*} [CommRing R] [CommRing S] [Com
 /-- If `S' = S ⊗[R] R'`, then any pair of `R`-algebra homomorphisms `f : S → A` and `g : R' → A`
 such that `f x` and `g y` commutes for all `x, y` descends to a (unique) homomoprhism `S' → A`.
 -/
---@[simps (config := { isSimp := false }) apply] --Porting note: removed and added by hand
+--@[simps (config := .lemmasOnly) apply] --Porting note: removed and added by hand
 noncomputable def Algebra.pushoutDesc [H : Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (hf : ∀ x y, f x * g y = g y * f x) :
     S' →ₐ[R] A := by

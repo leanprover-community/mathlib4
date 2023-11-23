@@ -262,7 +262,7 @@ implicit arguments, requires us to unfold the defs and split the `if`s in the de
 macro "compareOfLessAndEq_rfl" : tactic =>
   `(tactic| (intros a b; first | rfl |
     (simp only [compare, compareOfLessAndEq]; split_ifs <;> rfl) |
-    (induction a <;> induction b <;> simp only [])))
+    (induction a <;> induction b <;> simp (config := {decide := true}) only [])))
 
 /-- A linear order is reflexive, transitive, antisymmetric and total relation `≤`.
 We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/
@@ -436,16 +436,16 @@ theorem compare_eq_iff_eq {a b : α} : (compare a b = .eq) ↔ a = b := by
   case _ _ h => exact false_iff_iff.2 h
 
 theorem compare_le_iff_le {a b : α} : (compare a b ≠ .gt) ↔ a ≤ b := by
-  cases h : compare a b <;> simp only []
-  · exact true_iff_iff.2 <| le_of_lt <| compare_lt_iff_lt.1 h
-  · exact true_iff_iff.2 <| le_of_eq <| compare_eq_iff_eq.1 h
-  · exact false_iff_iff.2 <| not_le_of_gt <| compare_gt_iff_gt.1 h
+  cases h : compare a b <;> simp
+  · exact le_of_lt <| compare_lt_iff_lt.1 h
+  · exact le_of_eq <| compare_eq_iff_eq.1 h
+  · exact compare_gt_iff_gt.1 h
 
 theorem compare_ge_iff_ge {a b : α} : (compare a b ≠ .lt) ↔ a ≥ b := by
-  cases h : compare a b <;> simp only []
-  · exact false_iff_iff.2 <| (lt_iff_not_ge a b).1 <| compare_lt_iff_lt.1 h
-  · exact true_iff_iff.2 <| le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
-  · exact true_iff_iff.2 <| le_of_lt <| compare_gt_iff_gt.1 h
+  cases h : compare a b <;> simp
+  · exact compare_lt_iff_lt.1 h
+  · exact le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
+  · exact le_of_lt <| compare_gt_iff_gt.1 h
 
 theorem compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.toRel a b := by
   cases o <;> simp only [Ordering.toRel]

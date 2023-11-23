@@ -115,7 +115,7 @@ class PseudoMetricSpace (α : Type u) extends Dist α : Type u where
   dist_self : ∀ x : α, dist x x = 0
   dist_comm : ∀ x y : α, dist x y = dist y x
   dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z
-  edist : α → α → ℝ≥0∞ := fun x y => ENNReal.some ⟨dist x y, dist_nonneg' _ ‹_› ‹_› ‹_›⟩
+  edist : α → α → ℝ≥0∞ := fun x y => ENNReal.ofNNReal ⟨dist x y, dist_nonneg' _ ‹_› ‹_› ‹_›⟩
   edist_dist : ∀ x y : α, edist x y = ENNReal.ofReal (dist x y) -- porting note: todo: add := by _
   toUniformSpace : UniformSpace α := .ofDist dist dist_self dist_comm dist_triangle
   uniformity_dist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | dist p.1 p.2 < ε } := by intros; rfl
@@ -499,8 +499,8 @@ theorem sphere_eq_empty_of_subsingleton [Subsingleton α] (hε : ε ≠ 0) : sph
   Set.eq_empty_iff_forall_not_mem.mpr fun _ h => ne_of_mem_sphere h hε (Subsingleton.elim _ _)
 #align metric.sphere_eq_empty_of_subsingleton Metric.sphere_eq_empty_of_subsingleton
 
-theorem sphere_isEmpty_of_subsingleton [Subsingleton α] (hε : ε ≠ 0) : IsEmpty (sphere x ε) := by
-  rw [sphere_eq_empty_of_subsingleton hε]; infer_instance
+instance sphere_isEmpty_of_subsingleton [Subsingleton α] [NeZero ε] : IsEmpty (sphere x ε) := by
+  rw [sphere_eq_empty_of_subsingleton (NeZero.ne ε)]; infer_instance
 #align metric.sphere_is_empty_of_subsingleton Metric.sphere_isEmpty_of_subsingleton
 
 theorem mem_closedBall_self (h : 0 ≤ ε) : x ∈ closedBall x ε := by
@@ -760,9 +760,9 @@ theorem uniformity_basis_dist_inv_nat_succ :
 
 theorem uniformity_basis_dist_inv_nat_pos :
     (𝓤 α).HasBasis (fun n : ℕ => 0 < n) fun n : ℕ => { p : α × α | dist p.1 p.2 < 1 / ↑n } :=
-  Metric.mk_uniformity_basis (fun n hn => div_pos zero_lt_one <| Nat.cast_pos.2 hn) fun ε ε0 =>
+  Metric.mk_uniformity_basis (fun _ hn => div_pos zero_lt_one <| Nat.cast_pos.2 hn) fun _ ε0 =>
     let ⟨n, hn⟩ := exists_nat_one_div_lt ε0
-    ⟨n + 1, Nat.succ_pos n, by exact_mod_cast hn.le⟩
+    ⟨n + 1, Nat.succ_pos n, mod_cast hn.le⟩
 #align metric.uniformity_basis_dist_inv_nat_pos Metric.uniformity_basis_dist_inv_nat_pos
 
 theorem uniformity_basis_dist_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
@@ -2192,9 +2192,9 @@ theorem secondCountable_of_almost_dense_set
     SecondCountableTopology α := by
   refine' EMetric.secondCountable_of_almost_dense_set fun ε ε0 => _
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 ε0 with ⟨ε', ε'0, ε'ε⟩
-  choose s hsc y hys hyx using H ε' (by exact_mod_cast ε'0)
+  choose s hsc y hys hyx using H ε' (mod_cast ε'0)
   refine' ⟨s, hsc, iUnion₂_eq_univ_iff.2 fun x => ⟨y x, hys _, le_trans _ ε'ε.le⟩⟩
-  exact_mod_cast hyx x
+  exact mod_cast hyx x
 #align metric.second_countable_of_almost_dense_set Metric.secondCountable_of_almost_dense_set
 
 end SecondCountable

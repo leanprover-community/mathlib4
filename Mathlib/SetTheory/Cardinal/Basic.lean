@@ -345,7 +345,7 @@ theorem lift_le {a b : Cardinal.{v}} : lift.{u, v} a ≤ lift.{u, v} b ↔ a ≤
 
 -- Porting note: changed `simps` to `simps!` because the linter told to do so.
 /-- `Cardinal.lift` as an `OrderEmbedding`. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def liftOrderEmbedding : Cardinal.{v} ↪o Cardinal.{max v u} :=
   OrderEmbedding.ofMapLEIff lift.{u, v} fun _ _ => lift_le
 #align cardinal.lift_order_embedding Cardinal.liftOrderEmbedding
@@ -484,16 +484,7 @@ private theorem mul_comm' (a b : Cardinal.{u}) : a * b = b * a :=
 instance instPowCardinal : Pow Cardinal.{u} Cardinal.{u} :=
   ⟨map₂ (fun α β => β → α) fun _ _ _ _ e₁ e₂ => e₂.arrowCongr e₁⟩
 
--- Porting note: This "workaround" does not work and break everything.
--- I changed it now from `^` to `^'` to prevent a clash
--- with `HPow`, but somebody should figure out
--- if this is still relevant in Lean4.
--- mathport name: cardinal.pow
-local infixr:80 " ^' " => @HPow.hPow Cardinal Cardinal Cardinal _
--- -- mathport name: cardinal.pow.nat
-local infixr:80 " ^ℕ " => @HPow.hPow Cardinal ℕ Cardinal instHPow
-
-theorem power_def (α β) : #α ^ #β = #(β → α) :=
+theorem power_def (α β : Type u) : #α ^ #β = #(β → α) :=
   rfl
 #align cardinal.power_def Cardinal.power_def
 
@@ -602,7 +593,7 @@ theorem power_mul {a b c : Cardinal} : a ^ (b * c) = (a ^ b) ^ c := by
 #align cardinal.power_mul Cardinal.power_mul
 
 @[simp]
-theorem pow_cast_right (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ℕ n :=
+theorem pow_cast_right (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ n :=
   rfl
 #align cardinal.pow_cast_right Cardinal.pow_cast_right
 
@@ -1326,18 +1317,18 @@ theorem lift_mk_fin (n : ℕ) : lift #(Fin n) = n := rfl
 theorem mk_coe_finset {α : Type u} {s : Finset α} : #s = ↑(Finset.card s) := by simp
 #align cardinal.mk_coe_finset Cardinal.mk_coe_finset
 
-theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ℕ Fintype.card α := by
+theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α := by
   simp [Pow.pow]
 #align cardinal.mk_finset_of_fintype Cardinal.mk_finset_of_fintype
 
 @[simp]
 theorem mk_finsupp_lift_of_fintype (α : Type u) (β : Type v) [Fintype α] [Zero β] :
-    #(α →₀ β) = lift.{u} #β ^ℕ Fintype.card α := by
+    #(α →₀ β) = lift.{u} #β ^ Fintype.card α := by
   simpa using (@Finsupp.equivFunOnFinite α β _ _).cardinal_eq
 #align cardinal.mk_finsupp_lift_of_fintype Cardinal.mk_finsupp_lift_of_fintype
 
 theorem mk_finsupp_of_fintype (α β : Type u) [Fintype α] [Zero β] :
-    #(α →₀ β) = #β ^ℕ Fintype.card α := by simp
+    #(α →₀ β) = #β ^ Fintype.card α := by simp
 #align cardinal.mk_finsupp_of_fintype Cardinal.mk_finsupp_of_fintype
 
 theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
@@ -1615,6 +1606,9 @@ theorem infinite_iff {α : Type u} : Infinite α ↔ ℵ₀ ≤ #α := by
   rw [← not_lt, lt_aleph0_iff_finite, not_finite_iff_infinite]
 #align cardinal.infinite_iff Cardinal.infinite_iff
 
+lemma aleph0_le_mk_iff : ℵ₀ ≤ #α ↔ Infinite α := infinite_iff.symm
+lemma mk_lt_aleph0_iff : #α < ℵ₀ ↔ Finite α := by simp [← not_le, aleph0_le_mk_iff]
+
 @[simp]
 theorem aleph0_le_mk (α : Type u) [Infinite α] : ℵ₀ ≤ #α :=
   infinite_iff.1 ‹_›
@@ -1692,6 +1686,8 @@ theorem ofNat_add_aleph0 {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n)
 theorem aleph0_add_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ + no_index (OfNat.ofNat n) = ℵ₀ :=
   aleph0_add_nat n
 
+variable {c : Cardinal}
+
 /-- This function sends finite cardinals to the corresponding natural, and infinite cardinals
   to 0. -/
 def toNat : ZeroHom Cardinal ℕ where
@@ -1702,6 +1698,15 @@ def toNat : ZeroHom Cardinal ℕ where
     rw [dif_pos h, ← Cardinal.natCast_inj, ← Classical.choose_spec (lt_aleph0.1 h),
       Nat.cast_zero]
 #align cardinal.to_nat Cardinal.toNat
+
+@[simp]
+lemma toNat_eq_zero : toNat c = 0 ↔ c = 0 ∨ ℵ₀ ≤ c := by
+  simp only [toNat, ZeroHom.coe_mk, dite_eq_right_iff, or_iff_not_imp_right, not_le]
+  refine' forall_congr' fun h => _
+  rw [←@Nat.cast_eq_zero Cardinal, ← Classical.choose_spec (p := fun n : ℕ ↦ c = n)]
+
+lemma toNat_ne_zero : toNat c ≠ 0 ↔ c ≠ 0 ∧ c < ℵ₀ := by simp [not_or]
+@[simp] lemma toNat_pos : 0 < toNat c ↔ c ≠ 0 ∧ c < ℵ₀ := pos_iff_ne_zero.trans toNat_ne_zero
 
 theorem toNat_apply_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) :
     toNat c = Classical.choose (lt_aleph0.1 h) :=
@@ -1884,13 +1889,13 @@ def toPartENat : Cardinal →+ PartENat where
         rw [← Nat.cast_add, toNat_cast, Nat.cast_add]
       · simp_rw [if_neg hy, PartENat.add_top]
         contrapose! hy
-        simp only [ne_eq, ite_eq_right_iff,
-          PartENat.natCast_ne_top, not_forall, exists_prop, and_true] at hy
+        simp only [ne_eq, ite_eq_right_iff, PartENat.natCast_ne_top, not_forall, exists_prop,
+          and_true, not_false_eq_true] at hy
         exact le_add_self.trans_lt hy
     · simp_rw [if_neg hx, PartENat.top_add]
       contrapose! hx
-      simp only [ne_eq, ite_eq_right_iff,
-      PartENat.natCast_ne_top, not_forall, exists_prop, and_true] at hx
+      simp only [ne_eq, ite_eq_right_iff, PartENat.natCast_ne_top, not_forall, exists_prop,
+        and_true, not_false_eq_true] at hx
       exact le_self_add.trans_lt hx
 #align cardinal.to_part_enat Cardinal.toPartENat
 
@@ -2072,14 +2077,14 @@ theorem mk_plift_false : #(PLift False) = 0 :=
 #align cardinal.mk_plift_false Cardinal.mk_plift_false
 
 @[simp]
-theorem mk_vector (α : Type u) (n : ℕ) : #(Vector α n) = #α ^ℕ n :=
+theorem mk_vector (α : Type u) (n : ℕ) : #(Vector α n) = #α ^ n :=
   (mk_congr (Equiv.vectorEquivFin α n)).trans <| by simp
 #align cardinal.mk_vector Cardinal.mk_vector
 
-theorem mk_list_eq_sum_pow (α : Type u) : #(List α) = sum fun n : ℕ => #α ^ℕ n :=
+theorem mk_list_eq_sum_pow (α : Type u) : #(List α) = sum fun n : ℕ => #α ^ n :=
   calc
     #(List α) = #(Σn, Vector α n) := mk_congr (Equiv.sigmaFiberEquiv List.length).symm
-    _ = sum fun n : ℕ => #α ^ℕ n := by simp
+    _ = sum fun n : ℕ => #α ^ n := by simp
 #align cardinal.mk_list_eq_sum_pow Cardinal.mk_list_eq_sum_pow
 
 theorem mk_quot_le {α : Type u} {r : α → α → Prop} : #(Quot r) ≤ #α :=
@@ -2408,14 +2413,14 @@ theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z 
 
 /-- The function `a ^< b`, defined as the supremum of `a ^ c` for `c < b`. -/
 def powerlt (a b : Cardinal.{u}) : Cardinal.{u} :=
-  ⨆ c : Iio b, a ^ c
+  ⨆ c : Iio b, a ^ (c : Cardinal)
 #align cardinal.powerlt Cardinal.powerlt
 
 @[inherit_doc]
 infixl:80 " ^< " => powerlt
 
-theorem le_powerlt {b c : Cardinal.{u}} (a) (h : c < b) : a ^ c ≤ a ^< b := by
-  refine le_ciSup (f := fun y : Iio b => a ^ y) ?_ ⟨c, h⟩
+theorem le_powerlt {b c : Cardinal.{u}} (a) (h : c < b) : (a^c) ≤ a ^< b := by
+  refine le_ciSup (f := fun y : Iio b => a ^ (y : Cardinal)) ?_ ⟨c, h⟩
   rw [← image_eq_range]
   exact bddAbove_image.{u, u} _ bddAbove_Iio
 #align cardinal.le_powerlt Cardinal.le_powerlt

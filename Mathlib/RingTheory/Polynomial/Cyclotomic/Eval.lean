@@ -191,7 +191,7 @@ theorem sub_one_pow_totient_lt_cyclotomic_eval {n : ℕ} {q : ℝ} (hn' : 2 ≤ 
         simp only [hζ.norm'_eq_one hn.ne', Real.norm_of_nonneg hq.le, Complex.norm_real]
     rw [Complex.sameRay_iff]
     push_neg
-    refine' ⟨by exact_mod_cast hq.ne', hζ.ne_zero hn.ne', _⟩
+    refine' ⟨mod_cast hq.ne', hζ.ne_zero hn.ne', _⟩
     rw [Complex.arg_ofReal_of_nonneg hq.le, Ne.def, eq_comm, hζ.arg_eq_zero_iff hn.ne']
     clear_value ζ
     rintro rfl
@@ -251,7 +251,7 @@ theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ 
       · simp [abs_of_pos hq, hζ.norm'_eq_one hn.ne', -Complex.norm_eq_abs]
     rw [Complex.sameRay_iff]
     push_neg
-    refine' ⟨by exact_mod_cast hq.ne', neg_ne_zero.mpr <| hζ.ne_zero hn.ne', _⟩
+    refine' ⟨mod_cast hq.ne', neg_ne_zero.mpr <| hζ.ne_zero hn.ne', _⟩
     rw [Complex.arg_ofReal_of_nonneg hq.le, Ne.def, eq_comm]
     intro h
     rw [Complex.arg_eq_zero_iff, Complex.neg_re, neg_nonneg, Complex.neg_im, neg_eq_zero] at h
