@@ -14,14 +14,12 @@ as `R`-modules.
 
 -/
 
-open TensorProduct Module.DirectLimit
+open TensorProduct Module Module.DirectLimit
 
 variable {R : Type*} [CommRing R]
 variable {ι : Type*}
 variable [DecidableEq ι] [Preorder ι]
 variable {G : ι → Type*}
-
-namespace Module
 
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
 
@@ -30,25 +28,24 @@ variable (M : Type*) [AddCommGroup M] [Module R M]
 
 /-- limᵢ (Gᵢ ⊗ M) -/
 local notation "Lim_G_tensor" =>
-  (DirectLimit (G · ⊗[R] M) fun i j h => LinearMap.rTensor M (f _ _ h))
+  (DirectLimit (G · ⊗[R] M) fun i j h ↦ LinearMap.rTensor M (f _ _ h))
 
 /-- limᵢ Gᵢ -/
 local notation "Lim_G" => (DirectLimit G f)
+
+namespace TensorProduct
 
 /--
 the map `limᵢ (Gᵢ ⊗ M) → (limᵢ Gᵢ) ⊗ M` induced by the family of maps `Gᵢ ⊗ M → (limᵢ Gᵢ) ⊗ M`
 given by `gᵢ ⊗ m ↦ [gᵢ] ⊗ m`.
 -/
-noncomputable def directLimitOfTensorProductToTensorProductWithDirectLimit :
-    Lim_G_tensor →ₗ[R] Lim_G ⊗[R] M :=
-  lift _ _ _ _ (fun _ => (of _ _ _ _ _).rTensor M)
-    fun _ _ _ x => by refine' x.induction_on _ _ _ <;> aesop
+noncomputable def fromDirectLimit : Lim_G_tensor →ₗ[R] Lim_G ⊗[R] M :=
+  DirectLimit.lift _ _ _ _ (fun _ ↦ (of _ _ _ _ _).rTensor M)
+    fun _ _ _ x ↦ by refine' x.induction_on _ _ _ <;> aesop
 
 variable {M} in
-@[simp] lemma directLimitOfTensorProductToTensorProductWithDirectLimit_apply_of_tmul
-    {i : ι} (g : G i) (m : M) :
-    directLimitOfTensorProductToTensorProductWithDirectLimit f M (of _ _ _ _ i (g ⊗ₜ m)) =
-    (of _ _ _ _ i g : Lim_G) ⊗ₜ m :=
+@[simp] lemma fromDirectLimit_of_tmul {i : ι} (g : G i) (m : M) :
+    fromDirectLimit f M (of _ _ _ _ i (g ⊗ₜ m)) = (of _ _ _ _ i g : Lim_G) ⊗ₜ m :=
   lift_of (G := (G · ⊗[R] M)) _ _ (g ⊗ₜ m)
 
 /--
@@ -56,22 +53,19 @@ the map `(limᵢ Gᵢ) ⊗ M → limᵢ (Gᵢ ⊗ M)` from the bilinear map `lim
 by the family of maps `Gᵢ → M → limᵢ (Gᵢ ⊗ M)` where `gᵢ ↦ m ↦ [gᵢ ⊗ m]`
 
 -/
-noncomputable def tensorProductWithDirectLimitToDirectLimitOfTensorProduct :
-    Lim_G ⊗[R] M →ₗ[R] Lim_G_tensor :=
+noncomputable def toDirectLimit : Lim_G ⊗[R] M →ₗ[R] Lim_G_tensor :=
   TensorProduct.lift <| DirectLimit.lift _ _ _ _
-    (fun i =>
-      { toFun := (of R ι _ (fun i j h => (f _ _ h).rTensor M) i ∘ₗ TensorProduct.mk R _ _ ·)
+    (fun i ↦
+      { toFun := (of R ι _ (fun i j h ↦ (f _ _ h).rTensor M) i ∘ₗ TensorProduct.mk R _ _ ·)
         map_add' := by aesop
         map_smul' := by aesop })
-    fun _ _ _ g => FunLike.ext _ _ (of_f (G := (G · ⊗[R] M)) (x := g ⊗ₜ ·))
+    fun _ _ _ g ↦ FunLike.ext _ _ (of_f (G := (G · ⊗[R] M)) (x := g ⊗ₜ ·))
 
 variable {M} in
-@[simp] lemma tensorProductWithDirectLimitToDirectLimitOfTensorProduct_apply_of_tmul
+@[simp] lemma toDirectLimit_tmul_of
     {i : ι} (g : G i) (m : M) :
-    (tensorProductWithDirectLimitToDirectLimitOfTensorProduct f M <|
-      (of _ _ _ _ i g : Lim_G) ⊗ₜ m) =
-    (of _ _ _ _ i (g ⊗ₜ m) : Lim_G_tensor) := by
-  rw [tensorProductWithDirectLimitToDirectLimitOfTensorProduct, lift.tmul, lift_of]
+    (toDirectLimit f M <| (of _ _ _ _ i g : Lim_G) ⊗ₜ m) = (of _ _ _ _ i (g ⊗ₜ m)) := by
+  rw [toDirectLimit, lift.tmul, lift_of]
   rfl
 
 variable [IsDirected ι (· ≤ ·)]
@@ -79,37 +73,55 @@ variable [IsDirected ι (· ≤ ·)]
 /--
 `limᵢ (Gᵢ ⊗ M)` and `(limᵢ Gᵢ) ⊗ M` are isomorphic as modules
 -/
-@[simps!]
-noncomputable def directLimitCommutesTensorProduct :
+noncomputable def directLimit :
     Lim_G_tensor ≃ₗ[R] Lim_G ⊗[R] M := by
-  refine LinearEquiv.ofLinear
-    (directLimitOfTensorProductToTensorProductWithDirectLimit f M)
-    (tensorProductWithDirectLimitToDirectLimitOfTensorProduct f M) ?_ ?_
+  refine LinearEquiv.ofLinear (fromDirectLimit f M) (toDirectLimit f M) ?_ ?_
     <;> cases isEmpty_or_nonempty ι
   · ext; apply Subsingleton.elim
-  · exact ext (FunLike.ext _ _ fun g => FunLike.ext _ _ fun _ => g.induction_on <| by aesop)
+  · exact ext (FunLike.ext _ _ fun g ↦ FunLike.ext _ _ fun _ ↦ g.induction_on <| by aesop)
   · ext; apply Subsingleton.elim
-  · refine FunLike.ext _ _ fun x => x.induction_on fun i g => g.induction_on ?_ ?_ ?_ <;> aesop
+  · refine FunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ g.induction_on ?_ ?_ ?_ <;> aesop
+
+@[simp] lemma directLimit_of_tmul {i : ι} (g : G i) (m : M) :
+    directLimit f M (of _ _ _ _ _ (g ⊗ₜ m)) = (of _ _ _ _ _ g : Lim_G) ⊗ₜ m :=
+  fromDirectLimit_of_tmul f g m
+
+@[simp] lemma directLimit_symm_tmul_of {i : ι} (g : G i) (m : M) :
+    (directLimit f M).symm ((of _ _ _ _ _ g) ⊗ₜ m) = (of _ _ _ _ _ (g ⊗ₜ m) : Lim_G_tensor) :=
+  toDirectLimit_tmul_of f g m
 
 /--
 `limᵢ (M ⊗ Gᵢ)` and `M ⊗ (limᵢ Gᵢ)` are isomorphic as modules
 -/
-noncomputable def directLimitCommutesTensorProduct' :
-    (DirectLimit (M ⊗[R] G ·) fun i j h => LinearMap.lTensor M (f _ _ h)) ≃ₗ[R]
+noncomputable def directLimitRight :
+    (DirectLimit (M ⊗[R] G ·) fun i j h ↦ LinearMap.lTensor M (f _ _ h)) ≃ₗ[R]
     M ⊗[R] Lim_G :=
   LinearEquiv.ofLinear
-    (lift _ _ _ _ (fun i => of R ι _ _ i ∘ₗ (TensorProduct.comm R M (G i)).toLinearMap)
-      fun i j h x => x.induction_on (by aesop) (fun m g =>
+    (DirectLimit.lift _ _ _ _
+      (fun i ↦ of R ι _ _ i ∘ₗ (TensorProduct.comm R M (G i)).toLinearMap)
+      fun i j h x ↦ x.induction_on (by aesop) (fun m g ↦
         show of R ι (G · ⊗[R] M) _ j ((f i j h).rTensor M (g ⊗ₜ m)) = _ from of_f) (by aesop))
-    (lift _ _ _ _ (fun i => of R ι _ _ i ∘ₗ (TensorProduct.comm R M (G i)).symm.toLinearMap)
-      fun i j h x => x.induction_on (by aesop) (fun m g =>
+    (DirectLimit.lift _ _ _ _
+      (fun i ↦ of R ι _ _ i ∘ₗ (TensorProduct.comm R M (G i)).symm.toLinearMap)
+      fun i j h x ↦ x.induction_on (by aesop) (fun m g ↦
         show of R ι (M ⊗[R] G ·) _ j ((f i j h).lTensor M (g ⊗ₜ m)) = _ from of_f) (by aesop))
-    ((isEmpty_or_nonempty ι).elim (fun _ => by ext; apply Subsingleton.elim)
-      fun inst_ => FunLike.ext _ _ fun x => x.induction_on
-        fun i g => g.induction_on (by aesop) (fun g m => by simp [lift_of]) <| by aesop)
-    ((isEmpty_or_nonempty ι).elim (fun _ => by ext; apply Subsingleton.elim)
-      fun inst_ => FunLike.ext _ _ fun x => x.induction_on
-        fun i g => g.induction_on (by aesop) (fun g m => by simp [lift_of]) <| by aesop) ≪≫ₗ
-  directLimitCommutesTensorProduct f M ≪≫ₗ TensorProduct.comm _ _ _
+    ((isEmpty_or_nonempty ι).elim (fun _ ↦ by ext; apply Subsingleton.elim)
+      fun inst_ ↦ FunLike.ext _ _ fun x ↦ x.induction_on
+        fun i g ↦ g.induction_on (by aesop) (fun g m ↦ by simp [lift_of]) <| by aesop)
+    ((isEmpty_or_nonempty ι).elim (fun _ ↦ by ext; apply Subsingleton.elim)
+      fun inst_ ↦ FunLike.ext _ _ fun x ↦ x.induction_on
+        fun i g ↦ g.induction_on (by aesop) (fun g m ↦ by simp [lift_of]) <| by aesop) ≪≫ₗ
+  directLimit f M ≪≫ₗ TensorProduct.comm _ _ _
 
-end Module
+@[simp] lemma directLimitRight_of_tmul {i : ι} (m : M) (g : G i) :
+    directLimitRight f M (of _ _ _ _ _ (m ⊗ₜ g)) = m ⊗ₜ (of _ _ _ _ _ g : Lim_G) := by
+  simp only [directLimitRight, LinearEquiv.trans_apply, LinearEquiv.ofLinear_apply, lift_of,
+    LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, comm_tmul, directLimit_of_tmul]
+
+@[simp] lemma directLimitRight_symm_tmul_of {i : ι} (m : M) (g : G i):
+    (directLimitRight f M).symm (m ⊗ₜ of _ _ _ _ _ g) = of _ _ _ _ i (m ⊗ₜ g) := by
+  simp only [directLimitRight, LinearEquiv.trans_symm, LinearEquiv.trans_apply, comm_symm_tmul,
+    directLimit_symm_tmul_of, LinearEquiv.ofLinear_symm_apply, lift_of, LinearMap.coe_comp,
+    LinearEquiv.coe_coe, Function.comp_apply]
+
+end TensorProduct
