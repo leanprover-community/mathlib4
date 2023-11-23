@@ -16,6 +16,9 @@ namespace Std.BitVec
 
 open Nat
 
+#noalign bits_to_nat_to_list
+#noalign toNat_append
+
 variable {w v : Nat}
 
 theorem toNat_inj {x y : BitVec w} : x.toNat = y.toNat ↔ x = y :=
@@ -41,6 +44,10 @@ theorem toNat_append {msbs : BitVec w} {lsbs : BitVec v} :
   rw [toNat_ofNat (Nat.add_comm w v ▸ append_lt hl hm)]
 
 #noalign bitvec.bits_to_nat_to_bool
+
+-- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
+#noalign bitvec.of_nat_succ
+
 #align bitvec.to_nat_of_nat Std.BitVec.toNat_ofNat
 
 @[simp]
