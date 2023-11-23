@@ -48,8 +48,8 @@ namespace Functor
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
-  [Functor.Additive F]
+variable {C D E : Type*} [Category C] [Category D] [Category E]
+  [Preadditive C] [Preadditive D] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
 
 @[simp]
 theorem map_add {X Y : C} {f g : X ⟶ Y} : F.map (f + g) = F.map f + F.map g :=
@@ -105,7 +105,7 @@ theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
 
 variable {F}
 
-lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) [F.Additive] : G.Additive := by
+lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) : G.Additive := by
   constructor
   intro X Y f g
   simp only [← NatIso.naturality_1 e (f + g), map_add, Preadditive.add_comp,
@@ -113,8 +113,7 @@ lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) [F.Additive] : G.Additive := b
 
 variable (F)
 
-lemma additive_of_full_essSurj_comp {E : Type _} [Category E] [Preadditive E]
-    (F : C ⥤ D) [Full F] [EssSurj F] [F.Additive] (G : D ⥤ E)
+lemma additive_of_full_essSurj_comp [Full F] [EssSurj F] (G : D ⥤ E)
     [(F ⋙ G).Additive] : G.Additive where
   map_add {X Y f g} := by
     obtain ⟨f', hf'⟩ := F.map_surjective ((F.objObjPreimageIso X).hom ≫ f ≫
@@ -128,7 +127,7 @@ lemma additive_of_full_essSurj_comp {E : Type _} [Category E] [Preadditive E]
     dsimp
     rw [F.map_add]
 
-lemma additive_of_comp_faithful {E : Type _} [Category E] [Preadditive E]
+lemma additive_of_comp_faithful
     (F : C ⥤ D) (G : D ⥤ E) [G.Additive] [(F ⋙ G).Additive] [Faithful G] :
     F.Additive where
   map_add {_ _ f₁ f₂} := G.map_injective (by
