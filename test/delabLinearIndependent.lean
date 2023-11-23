@@ -1,6 +1,6 @@
 import Mathlib.LinearAlgebra.LinearIndependent
 
-#check LinearIndependent.insert
+set_option pp.unicode.fun true
 
 variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V] {s : Set V} {x : V}
   (hs : LinearIndependent K (fun b => b : s → V))
