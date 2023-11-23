@@ -417,66 +417,48 @@ local notation "R" => AddMonoid.End.mulRight
 def toEnd' (α : Type*) [NonUnitalNonAssocSemiring α] :
     RingHom (CentroidHom α) (AddMonoid.End α) where
   toFun := toEnd
-  map_add' _ _ := by
-    simp only [toEnd_add]
-  map_zero' := by simp only [toEnd_zero]
-  map_one' := by simp only [toEnd_one]
-  map_mul' := by simp only [toEnd_mul, forall_const]
+  map_add' := toEnd_add
+  map_zero' := toEnd_zero
+  map_one' := toEnd_one
+  map_mul' := toEnd_mul
+
+lemma toEnd'_apply (f : CentroidHom α) : (toEnd' α) f = (f : α →+ α) := rfl
 
 lemma centroid_eq_centralizer_mul_op :
     MonoidHom.mrange (toEnd' α) = Submonoid.centralizer (Set.range L ∪ Set.range R) := by
   ext T
-  simp only [MonoidHom.mem_mrange]
   constructor
-  · intro ⟨f,hf⟩
-    rw [Submonoid.centralizer]
-    rw [Submonoid.mem_mk, Subsemigroup.mem_mk]
-    rw [Set.centralizer]
-    rw [  Set.mem_setOf_eq]
-    simp only [Set.mem_union, Set.mem_range]
-    intro S hS
+  · intro ⟨f,hf⟩ S hS
     cases' hS with h₁ h₂
-    cases' h₁ with a ha
-    rw [← ha, ← hf]
-    rw [toEnd']
-    simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
-    rw [toEnd]
-    apply AddMonoidHom.ext
-    intro b
-    rw [AddMonoid.mul_apply, AddMonoid.mul_apply, AddMonoid.End.mulLeft_apply_apply,
-      AddMonoid.End.mulLeft_apply_apply, AddMonoidHom.coe_coe, f.map_mul_left]
-    cases' h₂ with b hb
-    rw [← hb, ← hf]
-    rw [toEnd']
-    simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
-    rw [toEnd]
-    apply AddMonoidHom.ext
-    intro a
-    rw [AddMonoid.mul_apply, AddMonoid.mul_apply, AddMonoid.End.mulRight_apply_apply,
-      AddMonoid.End.mulRight_apply_apply, AddMonoidHom.coe_coe, f.map_mul_right]
+    · cases' h₁ with a ha
+      rw [← ha, ← hf, toEnd'_apply]
+      apply AddMonoidHom.ext
+      intro b
+      rw [AddMonoid.mul_apply, AddMonoid.mul_apply, AddMonoid.End.mulLeft_apply_apply,
+        AddMonoid.End.mulLeft_apply_apply, AddMonoidHom.coe_coe, f.map_mul_left]
+    · cases' h₂ with b hb
+      rw [← hb, ← hf, toEnd'_apply]
+      apply AddMonoidHom.ext
+      intro a
+      rw [AddMonoid.mul_apply, AddMonoid.mul_apply, AddMonoid.End.mulRight_apply_apply,
+        AddMonoid.End.mulRight_apply_apply, AddMonoidHom.coe_coe, f.map_mul_right]
   · intro h
     use ⟨T, fun a b => by
       simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
-      rw [Submonoid.mem_centralizer_iff] at h
-      rw [← AddMonoid.End.mulLeft_apply_apply, ← AddMonoid.End.mulLeft_apply_apply]
-      have e1 : L a * T = T * L a := by
-        apply (Submonoid.mem_centralizer_iff.mp h)
-        apply (Set.mem_union _ _ _).mpr
-        simp only [Set.mem_range, exists_apply_eq_apply, true_or]
-      rw [← AddMonoid.mul_apply, ← AddMonoid.mul_apply]
-      rw [e1]
+      rw [← AddMonoid.End.mulLeft_apply_apply, ← AddMonoid.End.mulLeft_apply_apply,
+        ← AddMonoid.mul_apply, ← AddMonoid.mul_apply]
+      apply congrFun (congrArg FunLike.coe (id _)) b
+      rw [(Submonoid.mem_centralizer_iff.mp h)]
+      apply (Set.mem_union _ _ _).mpr
+      simp only [Set.mem_range, exists_apply_eq_apply, true_or]
     , fun a b => by
       simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
-      rw [← AddMonoid.End.mulRight_apply_apply, ← AddMonoid.End.mulRight_apply_apply]
-      have e1 : R b * T = T * R b := by
-        apply (Submonoid.mem_centralizer_iff.mp h)
-        apply (Set.mem_union _ _ _).mpr
-        simp only [Set.mem_union, Set.mem_range, exists_apply_eq_apply, or_true]
-      rw [← AddMonoid.mul_apply, ← AddMonoid.mul_apply]
-      rw [e1]⟩
-    rw [toEnd']
-    simp
-    rw [toEnd]
+      rw [← AddMonoid.End.mulRight_apply_apply, ← AddMonoid.End.mulRight_apply_apply,
+        ← AddMonoid.mul_apply, ← AddMonoid.mul_apply]
+      apply congrFun (congrArg FunLike.coe (id _)) a
+      rw [(Submonoid.mem_centralizer_iff.mp h)]
+      apply (Set.mem_union _ _ _).mpr
+      simp only [Set.mem_range, exists_apply_eq_apply, or_true] ⟩
     exact rfl
 
 end NonUnitalNonAssocSemiring
