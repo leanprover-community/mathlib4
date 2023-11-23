@@ -3381,7 +3381,7 @@ theorem toFinset_surjective : Surjective (toFinset : List α → Finset α) := f
 #align list.to_finset_surjective List.toFinset_surjective
 
 theorem toFinset_eq_iff_perm_dedup : l.toFinset = l'.toFinset ↔ l.dedup ~ l'.dedup := by
-  simp [Finset.ext_iff, perm_ext (nodup_dedup _) (nodup_dedup _)]
+  simp [Finset.ext_iff, perm_ext_iff_of_nodup (nodup_dedup _) (nodup_dedup _)]
 #align list.to_finset_eq_iff_perm_dedup List.toFinset_eq_iff_perm_dedup
 
 theorem toFinset.ext_iff {a b : List α} : a.toFinset = b.toFinset ↔ ∀ x, x ∈ a ↔ x ∈ b := by
@@ -3514,7 +3514,7 @@ theorem exists_list_nodup_eq [DecidableEq α] (s : Finset α) :
 
 open List in
 theorem toList_cons {a : α} {s : Finset α} (h : a ∉ s) : (cons a s h).toList ~ a :: s.toList :=
-  (List.perm_ext (nodup_toList _) (by simp [h, nodup_toList s])).2 fun x => by
+  (List.perm_ext_iff_of_nodup (nodup_toList _) (by simp [h, nodup_toList s])).2 fun x => by
     simp only [List.mem_cons, Finset.mem_toList, Finset.mem_cons]
 #align finset.to_list_cons Finset.toList_cons
 

@@ -414,7 +414,7 @@ theorem sublists'_map (f : α → β) : ∀ (l : List α),
 theorem sublists_perm_sublists' (l : List α) : sublists l ~ sublists' l := by
   rw [← finRange_map_get l, sublists_map, sublists'_map]
   refine' Perm.map _ _
-  exact (perm_ext (nodup_sublists.2 (nodup_finRange _)) (nodup_sublists'.2 (nodup_finRange _))).2
+  exact (perm_ext_iff_of_nodup (nodup_sublists.2 (nodup_finRange _)) (nodup_sublists'.2 (nodup_finRange _))).2
     (by simp)
 #align list.sublists_perm_sublists' List.sublists_perm_sublists'
 

@@ -155,7 +155,7 @@ theorem nodup_enum_map_fst (l : List α) : (l.enum.map Prod.fst).Nodup := by sim
 
 theorem mem_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.Nodup) (nd₁ : l₁.Nodup)
     (h : ∀ x, x ∈ l₀ ↔ x ∈ l₁) : l₀ ~ l₁ :=
-  (perm_ext nd₀ nd₁).2 h
+  (perm_ext_iff_of_nodup nd₀ nd₁).2 h
 #align list.mem_ext List.mem_ext
 
 variable [DecidableEq α]

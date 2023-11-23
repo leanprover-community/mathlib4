@@ -373,9 +373,9 @@ protected theorem Nodup.subperm (d : Nodup l₁) (H : l₁ ⊆ l₂) : l₁ <+~ 
   subperm_of_subset d H
 #align list.nodup.subperm List.Nodup.subperm
 
-#align list.perm_ext List.perm_ext
+#align list.perm_ext List.perm_ext_iff_of_nodup
 
-#align list.nodup.sublist_ext List.Nodup.sublist_ext
+#align list.nodup.sublist_ext List.Nodup.perm_iff_eq_of_sublist
 
 section
 
