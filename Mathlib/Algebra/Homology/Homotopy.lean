@@ -906,6 +906,7 @@ lemma Homotopy.homologyMap_eq (ho : Homotopy f g) (i : ι) [K.HasHomology i] [L.
     homologyMap f i = homologyMap g i :=
   ShortComplex.Homotopy.homologyMap_congr (ho.toShortComplex i)
 
+/-- The isomorphism in homology induced by an homotopy equivalence. -/
 noncomputable def HomotopyEquiv.toHomologyIso (h : HomotopyEquiv K L) (i : ι)
     [K.HasHomology i] [L.HasHomology i] : K.homology i ≅ L.homology i where
   hom := homologyMap h.hom i
