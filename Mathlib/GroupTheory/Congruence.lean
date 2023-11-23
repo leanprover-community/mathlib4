@@ -121,13 +121,13 @@ instance : Inhabited (Con M) :=
 --Porting note: upgraded to FunLike
 /-- A coercion from a congruence relation to its underlying binary relation. -/
 @[to_additive "A coercion from an additive congruence relation to its underlying binary relation."]
-instance : FunLike (Con M) M (fun _ => M → Prop) :=
-  { coe := fun c => fun x y => c.r x y
-    coe_injective' := fun x y h => by
-      rcases x with ⟨⟨x, _⟩, _⟩
-      rcases y with ⟨⟨y, _⟩, _⟩
-      have : x = y := h
-      subst x; rfl }
+instance : FunLike (Con M) M (fun _ => M → Prop) where
+  coe c := c.r
+  coe_injective' := fun x y h => by
+    rcases x with ⟨⟨x, _⟩, _⟩
+    rcases y with ⟨⟨y, _⟩, _⟩
+    have : x = y := h
+    subst x; rfl
 
 @[to_additive (attr := simp)]
 theorem rel_eq_coe (c : Con M) : c.r = c :=
@@ -207,10 +207,9 @@ theorem ext_iff {c d : Con M} : (∀ x y, c x y ↔ d x y) ↔ c = d :=
 /-- Two congruence relations are equal iff their underlying binary relations are equal. -/
 @[to_additive "Two additive congruence relations are equal iff their underlying binary relations
 are equal."]
-theorem ext'_iff {c d : Con M} : ⇑c = ⇑d ↔ c = d :=
-  ⟨ext', fun h => h ▸ rfl⟩
-#align con.ext'_iff Con.ext'_iff
-#align add_con.ext'_iff AddCon.ext'_iff
+theorem coe_inj {c d : Con M} : ⇑c = ⇑d ↔ c = d := FunLike.coe_injective.eq_iff
+#align con.ext'_iff Con.coe_inj
+#align add_con.ext'_iff AddCon.coe_inj
 
 /-- The kernel of a multiplication-preserving function as a congruence relation. -/
 @[to_additive "The kernel of an addition-preserving function as an additive congruence relation."]
@@ -454,7 +453,6 @@ theorem coe_sInf (S : Set (Con M)) :
 
 @[to_additive]
 instance : PartialOrder (Con M) where
-  le := (· ≤ ·)
   le_refl _ _ _ := id
   le_trans _ _ _ h1 h2 _ _ h := h2 <| h1 h
   le_antisymm _ _ hc hd := ext fun _ _ => ⟨fun h => hc h, fun h => hd h⟩
