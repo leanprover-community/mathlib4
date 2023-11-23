@@ -2276,7 +2276,7 @@ theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → �
       refine' Set.iUnion_inter_of_monotone (monotone_spanningSets μ) fun i j hij x => _
       simp only [Set.mem_setOf_eq]
       refine' fun hif => hif.trans _
-      exact_mod_cast hij
+      exact mod_cast hij
     rw [this, norm_sets_spanning, iUnion_spanningSets μ, Set.inter_univ]
 
 section NormedAddCommGroup

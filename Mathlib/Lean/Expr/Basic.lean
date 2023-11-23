@@ -284,6 +284,11 @@ def fvarId? : Expr → Option FVarId
   | .fvar n => n
   | _ => none
 
+/-- If an `Expr` has the form `Type u`, then return `some u`, otherwise `none`. -/
+def type? : Expr → Option Level
+  | .sort u => u.dec
+  | _ => none
+
 /-- `isConstantApplication e` checks whether `e` is syntactically an application of the form
   `(fun x₁ ⋯ xₙ => H) y₁ ⋯ yₙ` where `H` does not contain the variable `xₙ`. In other words,
   it does a syntactic check that the expression does not depend on `yₙ`. -/
