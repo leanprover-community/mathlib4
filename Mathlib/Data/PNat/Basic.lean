@@ -39,6 +39,13 @@ theorem natPred_add_one (n : ℕ+) : n.natPred + 1 = n :=
   (add_comm _ _).trans n.one_add_natPred
 #align pnat.nat_pred_add_one PNat.natPred_add_one
 
+theorem natPred_add (k n : ℕ+) : (k + n).natPred = k.natPred + n.natPred + 1 := by
+  simp only [natPred, add_assoc]
+  rw [tsub_add_cancel_iff_le.mpr <| show 1 ≤ n from n.2]
+  rw [tsub_add_eq_add_tsub]
+  norm_cast
+  exact k.2
+
 @[mono]
 theorem natPred_strictMono : StrictMono natPred := fun m _ h => Nat.pred_lt_pred m.2.ne' h
 #align pnat.nat_pred_strict_mono PNat.natPred_strictMono
