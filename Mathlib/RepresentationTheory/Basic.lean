@@ -3,6 +3,7 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
+import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Algebra.MonoidAlgebra.Basic
