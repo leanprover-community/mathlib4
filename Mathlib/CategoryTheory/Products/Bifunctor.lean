@@ -108,14 +108,14 @@ abbrev app₃ {H G : C ⥤ D ⥤ E ⥤ F} (α : NatTrans H G) (X : C) (Y : D) (Z
 
 /- Naturality for natural transformations in two variables. -/
 @[reassoc (attr := simp)]
-lemma naturality₂ {H G : C ⥤ D ⥤ E} (α : H ⟶ G) {X Y X' Y'} (f : X ⟶ X') (g : Y ⟶ Y') :
+def naturality₂ {H G : C ⥤ D ⥤ E} (α : NatTrans H G) {X Y X' Y'} (f : X ⟶ X') (g : Y ⟶ Y') :
     H.map₂ f g ≫ α.app₂ _ _ = α.app₂ _ _ ≫ G.map₂ f g := by
   unfold Functor.map₂ NatTrans.app₂
   rw [Category.assoc, NatTrans.naturality, reassoc_of% NatTrans.naturality_app α]
 
 /- Naturality for natural transformations in three variables. -/
 @[reassoc (attr := simp)]
-lemma naturality₃ {H G : C ⥤ D ⥤ E ⥤ F} (α : H ⟶ G) {X Y Z X' Y' Z'} (f : X ⟶ X') (g : Y ⟶ Y') (h : Z ⟶ Z') :
+def naturality₃ {H G : C ⥤ D ⥤ E ⥤ F} (α : NatTrans H G) {X Y Z X' Y' Z'} (f : X ⟶ X') (g : Y ⟶ Y') (h : Z ⟶ Z') :
     H.map₃ f g h ≫ α.app₃ _ _ _ = α.app₃ _ _ _ ≫ G.map₃ f g h := by
   unfold Functor.map₃ NatTrans.app₃ Functor.obj₂
   rw [Category.assoc]
