@@ -105,7 +105,7 @@ is `R`-linear in the first argument and `S`-linear in the second.
 
 "h" stands for "heterogeneous".
 -/
-noncomputable def TensorProduct.hcurry (l : X ⊗[R] Y →ₗ[S] Z) : Y →ₗ[R] (X →ₗ[S] Z) where
+noncomputable def TensorProduct.hcurry (l : X ⊗[R] Y →ₗ[S] Z) : Y →ₗ[R] X →ₗ[S] Z where
   toFun y :=
     { toFun := (l <| · ⊗ₜ y)
       map_add' := fun _ _ => show l _ = l _ + l _ by rw [add_tmul, map_add]
