@@ -193,7 +193,7 @@ instance isSeparable [Algebra k K] [IsSepClosure k K] : IsSeparable k K :=
   IsSepClosure.separable
 
 instance (priority := 100) normal [Algebra k K] [IsSepClosure k K] : Normal k K :=
-  ⟨fun x ↦ (IsSeparable.isIntegral' x).isAlgebraic k,
+  ⟨fun x ↦ (IsSeparable.isIntegral' x).isAlgebraic,
     fun x ↦ (IsSepClosure.sep_closed k).splits_codomain _ (IsSeparable.separable k x)⟩
 
 end IsSepClosure

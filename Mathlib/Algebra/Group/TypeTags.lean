@@ -116,11 +116,17 @@ theorem ofMul_toMul (x : Additive α) : ofMul (toMul x) = x :=
   rfl
 #align of_mul_to_mul ofMul_toMul
 
+instance [Subsingleton α] : Subsingleton (Additive α) := toMul.injective.subsingleton
+instance [Subsingleton α] : Subsingleton (Multiplicative α) := toAdd.injective.subsingleton
+
 instance [Inhabited α] : Inhabited (Additive α) :=
   ⟨ofMul default⟩
 
 instance [Inhabited α] : Inhabited (Multiplicative α) :=
   ⟨ofAdd default⟩
+
+instance [Unique α] : Unique (Additive α) := toMul.unique
+instance [Unique α] : Unique (Multiplicative α) := toAdd.unique
 
 instance [Finite α] : Finite (Additive α) :=
   Finite.of_equiv α (by rfl)
