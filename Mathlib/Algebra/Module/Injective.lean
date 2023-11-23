@@ -8,6 +8,7 @@ import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.Data.TypeMax -- Porting note: added for universe issues
+import Mathlib.Algebra.Module.ULift
 
 #align_import algebra.module.injective from "leanprover-community/mathlib"@"f8d8465c3c392a93b9ed226956e26dee00975946"
 
@@ -467,8 +468,8 @@ set_option linter.uppercaseLean3 false in
 
 protected theorem ofInjective (inj : Module.Injective R Q) : Module.Baer R Q := fun I g ↦
   let ⟨g', hg'⟩ := inj.1 (ULift.{max u v} I) (ULift.{max u v} R)
-    (⟨⟨ULift.up, by aesop⟩, by aesop⟩ ∘ₗ I.subtype ∘ₗ ⟨⟨ULift.down, by aesop⟩, by aesop⟩)
-    (fun a b h ↦ by aesop) (g ∘ₗ ⟨⟨ULift.down, by aesop⟩, by aesop⟩)
-  ⟨g' ∘ₗ ⟨⟨ULift.up, by aesop⟩, by aesop⟩, fun x m ↦ by aesop⟩
+    (ULift.moduleEquiv.symm.toLinearMap ∘ₗ I.subtype ∘ₗ ULift.moduleEquiv.toLinearMap)
+    (fun a b h ↦ by aesop) (g ∘ₗ ULift.moduleEquiv.toLinearMap)
+  ⟨g' ∘ₗ ULift.moduleEquiv.symm.toLinearMap, by aesop⟩
 
 end Module.Baer
