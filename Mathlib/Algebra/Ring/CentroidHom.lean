@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.GroupTheory.Subgroup.Basic
-import Mathlib.Tactic.LibrarySearch
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -144,8 +143,6 @@ lemma map_mul_right (f : CentroidHom α) (a b : α) : f (a * b) = f a * b :=
 def toEnd  (f : CentroidHom α) : AddMonoid.End α :=
   (f : α →+ α)
 #align centroid_hom.to_End CentroidHom.toEnd
-
-
 
 theorem toEnd_injective : Injective (CentroidHom.toEnd : CentroidHom α → AddMonoid.End α) :=
   coe_toAddMonoidHom_injective
