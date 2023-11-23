@@ -689,10 +689,10 @@ theorem flatten_pure (s : WSeq α) : flatten (Computation.pure s) = s := by
   refine' Seq'.eq_of_bisim (fun s1 s2 => data (flatten (Computation.pure ⟨s2⟩)) = s1) _ rfl
   intro s' s h; rw [← h]; simp [flatten]
   cases Seq'.dest s with
-  | none => simp; constructor
+  | none => simp
   | some val =>
     cases' val with o s'
-    simp; constructor; constructor <;> rfl
+    simp
 #align stream.wseq.flatten_ret WSeq.flatten_pure
 
 @[simp]
@@ -1826,19 +1826,10 @@ theorem map_join (f : α → β) (S) : map f (join S) = join (map (map f) S) := 
     rcases h with ⟨s, S, rfl, rfl⟩
     induction' s using WSeq.recOn' with a s s <;> simp
     · induction' S using WSeq.recOn' with s S S <;> simp
-      · constructor
-      · constructor; constructor
-        · rfl
-        · use map f s, S
-      · constructor; constructor
-        · rfl
-        · use nil, S; simp
-    · constructor; constructor
-      · rfl
-      · use s, S
-    · constructor; constructor
-      · rfl
-      · use s, S
+      · exact ⟨map f s, S, rfl, rfl⟩
+      · refine' ⟨nil, S, _, _⟩ <;> simp
+    · exact ⟨_, _, rfl, rfl⟩
+    · exact ⟨_, _, rfl, rfl⟩
   · refine' ⟨nil, S, _, _⟩ <;> simp
 #align stream.wseq.map_join WSeq.map_join
 

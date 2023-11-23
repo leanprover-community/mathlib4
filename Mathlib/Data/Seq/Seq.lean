@@ -552,10 +552,9 @@ theorem coinduction {s₁ s₂ : Seq' α} (hh : head s₁ = head s₂)
       cases s₁ using recOn' <;> cases s₂ using recOn' <;> simp at hh
       case nil.nil =>
         simp
-        constructor
       case cons.cons a₁ s₁ a₂ s₂ =>
         simp
-        constructor; constructor
+        constructor
         · exact hh
         · constructor
           · specialize ht (Option α) head
@@ -769,7 +768,7 @@ theorem dest_corec' (f : β → Seq' α ⊕ Option (α × β)) (b : β) :
         (Sum.inl s₂))
     ?_ rfl; clear s'
   rintro _ s rfl
-  simp; rcases hdc : dest s with (_ | ⟨_, _⟩) <;> simp <;> constructor; constructor <;> rfl
+  simp; rcases hdc : dest s with (_ | ⟨_, _⟩) <;> simp
 
 /-- Map a function over a sequence. -/
 def map (f : α → β) (s : Seq' α) : Seq' β where
@@ -828,8 +827,7 @@ theorem map_eq_mapComputable : @map.{u, v} = @mapComputable.{u, v} := by
     (fun s₁ s₂ => ∃ s, s₁ = map f s ∧ s₂ = corec (Option.map (Prod.map f id) ∘ dest) s)
     ?_ ⟨s, rfl, rfl⟩; clear s
   rintro _ _ ⟨s, rfl, rfl⟩
-  cases s using recOn' <;> simp <;> constructor; constructor
-  next => rfl
+  cases s using recOn' <;> simp
   next _ s => exists s
 
 /-- Flatten a sequence of sequences. (It is required that the
@@ -1018,8 +1016,7 @@ theorem zipWith_eq_zipWithComputable : @zipWith.{u, v, w} = @zipWithComputable.{
         (s₃, s₄))
     ?_ ⟨s₁, s₂, rfl, rfl⟩; clear s₁ s₂
   rintro _ _ ⟨s₁, s₂, rfl, rfl⟩
-  cases s₁ using recOn' <;> cases s₂ using recOn' <;> simp <;> constructor; constructor
-  next => rfl
+  cases s₁ using recOn' <;> cases s₂ using recOn' <;> simp
   next _ s₁ _ s₂ => exists s₁, s₂
 
 /-- Pair two sequences into a sequence of pairs -/
@@ -1252,9 +1249,7 @@ theorem cons_append (a : α) (s t) : a ::ₑ s ++ t = a ::ₑ (s ++ t) := by
 @[simp]
 theorem append_nil (s : Seq' α) : s ++ nil = s := by
   apply coinduction2 s; intro s
-  induction s using recOn' with
-  | nil => simp; constructor
-  | cons x s => simp; constructor; constructor <;> rfl
+  induction s using recOn' <;> simp
 #align stream.seq.append_nil Seq'.append_nil
 
 @[simp]
@@ -1267,16 +1262,9 @@ theorem append_assoc (s t u : Seq' α) : s ++ t ++ u = s ++ (t ++ u) := by
         induction' s using recOn' with _ s <;> simp
         · induction' t using recOn' with _ t <;> simp
           · induction' u using recOn' with _ u <;> simp
-            · constructor
-            · constructor; constructor
-              · rfl
-              · use nil, nil, u; simp
-          · constructor; constructor
-            · rfl
-            · use nil, t, u; simp
-        · constructor; constructor
-          · rfl
-          · use s, t, u
+            · refine' ⟨nil, nil, u, _, _⟩ <;> simp
+          · refine' ⟨nil, t, u, _, _⟩ <;> simp
+        · exact ⟨s, t, u, rfl, rfl⟩
   · exact ⟨s, t, u, rfl, rfl⟩
 #align stream.seq.append_assoc Seq'.append_assoc
 
@@ -1290,10 +1278,9 @@ theorem map_append (f : α → β) (s t) : map f (s ++ t) = map f s ++ map f t :
     match s1, s2, h with
     | _, _, ⟨s, t, rfl, rfl⟩ => by
       induction' s using recOn' with _ s <;> simp
-      · induction' t using recOn' with _ t <;> simp <;> constructor; constructor
-        · rfl
-        · use nil, t; simp
-      · exact Option.Rel.some (Prod.RProd.intro rfl ⟨s, t, rfl, rfl⟩)
+      · induction' t using recOn' with _ t <;> simp
+        refine' ⟨nil, t, _, _⟩ <;> simp
+      · refine' ⟨s, t, rfl, rfl⟩
 #align stream.seq.map_append Seq'.map_append
 
 instance : Functor Seq' where map := @map
@@ -1341,22 +1328,14 @@ theorem join_cons (a : α) (s S) : join (⟨a, s⟩ ::ₑ S) = a ::ₑ (s ++ (jo
   exact
     match s1, s2, h with
     | s, _, Or.inl <| Eq.refl s => by
-      induction s using recOn' with
-      | nil => simp; constructor
-      | cons x s =>
-        simp; constructor; constructor
-        · rfl
-        · left; rfl
+      induction s using recOn' <;> simp
     | _, _, Or.inr ⟨a, s, S, rfl, rfl⟩ => by
       induction s using recOn' with
       | nil =>
-        simp [join_cons_cons, join_cons_nil]; constructor; constructor
-        · rfl
-        · left; rfl
+        simp [join_cons_cons, join_cons_nil]
       | cons x s =>
-        simp [join_cons_cons, join_cons_nil]; constructor; constructor
-        · rfl
-        · right; use x, s, S
+        simp [join_cons_cons, join_cons_nil]
+        refine' Or.inr ⟨x, s, S, rfl, rfl, rfl⟩
 #align stream.seq.join_cons Seq'.join_cons
 
 @[simp]
@@ -1371,16 +1350,12 @@ theorem join_append (S T : Seq' (Seq1 α)) : join (S ++ T) = join S ++ join T :=
         induction' s using recOn' with _ s <;> simp
         · induction' S using recOn' with s S <;> simp
           · induction' T using recOn' with s T
-            · simp; constructor
-            · cases' s with a s; simp; constructor; constructor
-              · rfl
-              · use s, nil, T; simp
-          · cases' s with a s; simp; constructor; constructor
-            · rfl
-            · use s, S, T
-        · constructor; constructor
-          · rfl
-          · use s, S, T
+            · simp
+            · cases' s with a s; simp
+              refine' ⟨s, nil, T, _, _⟩ <;> simp
+          · cases' s with a s; simp
+            exact ⟨s, S, T, rfl, rfl⟩
+        · exact ⟨s, S, T, rfl, rfl⟩
   · refine' ⟨nil, S, T, _, _⟩ <;> simp
 #align stream.seq.join_append Seq'.join_append
 
@@ -1529,8 +1504,7 @@ def bind (s : Seq1 α) (f : α → Seq1 β) : Seq1 β :=
 
 @[simp]
 theorem join_map_pure (s : Seq' α) : Seq'.join (Seq'.map pure s) = s := by
-  apply coinduction2 s; intro s; induction s using recOn' <;> simp [pure] <;>
-    constructor; constructor <;> rfl
+  apply coinduction2 s; intro s; induction s using recOn' <;> simp [pure]
 #align stream.seq1.join_map_ret Seq1.join_map_pure
 
 @[simp]
@@ -1558,14 +1532,9 @@ theorem map_join' (f : α → β) (S) : Seq'.map f (Seq'.join S) = Seq'.join (Se
       | _, _, ⟨s, S, rfl, rfl⟩ => by
         induction' s using recOn' with _ s <;> simp
         · induction' S using recOn' with x S <;> simp
-          · constructor
           · cases' x with a s; simp [map]
-            constructor; constructor
-            · rfl
-            · use Seq'.map f s, S
-        · constructor; constructor
-          · rfl
-          · use s, S
+            exact ⟨_, _, rfl, rfl⟩
+        · refine' ⟨s, S, rfl, rfl⟩
   · refine' ⟨nil, S, _, _⟩ <;> simp
 #align stream.seq1.map_join' Seq1.map_join'
 
@@ -1587,18 +1556,11 @@ theorem join_join (SS : Seq' (Seq1 (Seq1 α))) :
       | _, _, ⟨s, SS, rfl, rfl⟩ => by
         induction' s using recOn' with _ s <;> simp
         · induction' SS using recOn' with S SS <;> simp
-          · constructor
           · cases' S with s S; cases' s with x s; simp [map]
             induction' s using recOn' with x s <;> simp
-            · constructor; constructor
-              · rfl
-              · use Seq'.join S, SS
-            · constructor; constructor
-              · rfl
-              · use x ::ₑ (s ++ Seq'.join S), SS; simp
-        · constructor; constructor
-          · rfl
-          · use s, SS
+            · exact ⟨_, _, rfl, rfl⟩
+            · refine' ⟨x ::ₑ (s ++ Seq'.join S), SS, _, _⟩ <;> simp
+        · exact ⟨s, SS, rfl, rfl⟩
   · refine' ⟨nil, SS, _, _⟩ <;> simp
 #align stream.seq1.join_join Seq1.join_join
 

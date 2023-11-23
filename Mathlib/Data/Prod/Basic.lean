@@ -226,6 +226,9 @@ theorem snd_eq_iff : ∀ {p : α × β} {x : β}, p.2 = x ↔ p = (p.1, x)
 
 variable {r : α → α → Prop} {s : β → β → Prop} {x y : α × β}
 
+@[simp] theorem rprod_mk_mk {a₁ b₁ a₂ b₂} : RProd r s (a₁, b₁) (a₂, b₂) ↔ r a₁ a₂ ∧ s b₁ b₂ :=
+  ⟨fun h => by cases h; constructor <;> assumption, fun ⟨ha, hb⟩ => RProd.intro ha hb⟩
+
 theorem lex_def (r : α → α → Prop) (s : β → β → Prop) {p q : α × β} :
     Prod.Lex r s p q ↔ r p.1 q.1 ∨ p.1 = q.1 ∧ s p.2 q.2 :=
   ⟨fun h ↦ by cases h <;> simp [*], fun h ↦
