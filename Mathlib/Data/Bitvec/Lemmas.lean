@@ -65,6 +65,8 @@ theorem addLsb_eq_twice_add_one {x b} : addLsb x b = 2 * x + cond b 1 0 := by
   simp [addLsb, two_mul]; cases b <;> rfl
 #align bitvec.add_lsb_eq_twice_add_one Std.BitVec.addLsb_eq_twice_add_one
 
+-- The previous statement was `(v : Bitvec n) : v.toNat = v.toList.reverse.foldr (flip addLsb) 0`.
+-- Since the statement is awkward and `Std.BitVec` has no comparable API, we just drop it.
 #noalign bitvec.to_nat_eq_foldr_reverse
 
 theorem toNat_lt {n : ℕ} (v : BitVec n) : v.toNat < 2 ^ n := by
