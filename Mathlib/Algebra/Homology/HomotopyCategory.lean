@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.CategoryTheory.Quotient
+import Mathlib.Algebra.Homology.Additive
+import Mathlib.CategoryTheory.Quotient.Preadditive
 
 #align_import algebra.homology.homotopy_category from "leanprover-community/mathlib"@"13ff898b0eee75d3cc75d1c06a491720eaaf911d"
 
@@ -59,10 +60,20 @@ instance : Category (HomotopyCategory V v) := by
 -- TODO the homotopy_category is preadditive
 namespace HomotopyCategory
 
+instance : Preadditive (HomotopyCategory V c) := Quotient.preadditive _ (by
+  rintro _ _ _ _ _ _ ⟨h⟩ ⟨h'⟩
+  exact ⟨Homotopy.add h h'⟩)
+
 /-- The quotient functor from complexes to the homotopy category. -/
 def quotient : HomologicalComplex V c ⥤ HomotopyCategory V c :=
   CategoryTheory.Quotient.functor _
 #align homotopy_category.quotient HomotopyCategory.quotient
+
+instance : Full (quotient V c) := Quotient.fullFunctor _
+
+instance : EssSurj (quotient V c) := Quotient.essSurj_functor _
+
+instance : (quotient V c).Additive where
 
 open ZeroObject
 
@@ -141,6 +152,9 @@ def homotopyEquivOfIso {C D : HomologicalComplex V c}
 #align homotopy_category.homotopy_equiv_of_iso HomotopyCategory.homotopyEquivOfIso
 
 variable (V c)
+
+section
+
 variable [HasEqualizers V] [HasImages V] [HasImageMaps V] [HasCokernels V]
 
 /-- The `i`-th homology, as a functor from the homotopy category. -/
@@ -172,6 +186,34 @@ theorem homology'Functor_map_factors (i : ι) {C D : HomologicalComplex V c} (f 
       ((homology'Functor V c i).map ((quotient V c).map f) : _) :=
   (CategoryTheory.Quotient.lift_map_functor_map _ (_root_.homology'Functor V c i) _ f).symm
 #align homotopy_category.homology_functor_map_factors HomotopyCategory.homology'Functor_map_factors
+
+end
+
+section
+
+variable [CategoryWithHomology V]
+
+/-- The `i`-th homology, as a functor from the homotopy category. -/
+noncomputable def homologyFunctor (i : ι) : HomotopyCategory V c ⥤ V :=
+  CategoryTheory.Quotient.lift _ (HomologicalComplex.homologyFunctor V c i) (by
+    rintro K L f g ⟨h⟩
+    exact h.homologyMap_eq i)
+
+/-- The homology functor on the homotopy category is induced by
+the homology functor on homological complexes. -/
+noncomputable def homologyFunctorFactors (i : ι) :
+    quotient V c ⋙ homologyFunctor V c i ≅
+      HomologicalComplex.homologyFunctor V c i :=
+  Quotient.lift.isLift _ _ _
+
+-- this is to prevent any abuse of defeq
+attribute [irreducible] homologyFunctor homologyFunctorFactors
+
+instance (i : ι) : (homologyFunctor V c i).Additive := by
+  have := Functor.additive_of_iso (homologyFunctorFactors V c i).symm
+  exact Functor.additive_of_full_essSurj_comp (quotient V c) _
+
+end
 
 end HomotopyCategory
 
