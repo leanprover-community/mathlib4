@@ -611,7 +611,11 @@ import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Calculus.Gradient.Basic
 import Mathlib.Analysis.Calculus.Implicit
-import Mathlib.Analysis.Calculus.Inverse
+import Mathlib.Analysis.Calculus.Inverse.ApproximatesLinearOn
+import Mathlib.Analysis.Calculus.Inverse.ContDiff
+import Mathlib.Analysis.Calculus.Inverse.Deriv
+import Mathlib.Analysis.Calculus.Inverse.FDeriv
+import Mathlib.Analysis.Calculus.Inverse.FiniteDimensional
 import Mathlib.Analysis.Calculus.IteratedDeriv
 import Mathlib.Analysis.Calculus.LHopital
 import Mathlib.Analysis.Calculus.LagrangeMultipliers

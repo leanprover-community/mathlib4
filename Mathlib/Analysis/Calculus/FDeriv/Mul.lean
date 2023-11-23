@@ -17,8 +17,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 * multiplication of a function by a scalar function
 * multiplication of two scalar functions
-* inverse function (assuming that it exists; the inverse function theorem is in
-  `Mathlib/Analysis/Calculus/Inverse.lean`)
+* inverse function (as in `Ring.inverse` or `Inv.inv`, not `Function.LeftInverse`).
 -/
 
 
