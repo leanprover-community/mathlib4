@@ -3866,8 +3866,11 @@ theorem nthLe_enum (l : List α) (i : ℕ) (hi' : i < l.enum.length)
 #align list.nth_le_enum List.nthLe_enum
 
 @[simp]
-theorem enum_eq_nil {l : List α} : List.enum l = [] ↔ l = [] := by
+theorem enumFrom_eq_nil {n : ℕ} {l : List α} : List.enumFrom n l = [] ↔ l = [] := by
   cases l <;> simp [List.enum_cons]
+
+@[simp]
+theorem enum_eq_nil {l : List α} : List.enum l = [] ↔ l = [] := enumFrom_eq_nil
 
 section Choose
 
