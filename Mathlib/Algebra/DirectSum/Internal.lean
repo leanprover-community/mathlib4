@@ -288,18 +288,15 @@ The subsemiring `A 0` of `R`.
 -/
 def GradeZero.subsemiring : Subsemiring R where
   carrier := A 0
-  mul_mem' {a b} ha hb := by
-    simp only [SetLike.mem_coe]
-    rw [show A 0 = A (0 + 0) by simp only [add_zero]]
-    exact SetLike.mul_mem_graded ha hb
+  mul_mem' ha hb := add_zero (0 : ι) ▸ SetLike.mul_mem_graded ha hb
   one_mem' := SetLike.one_mem_graded A
   add_mem' a1 a2 := add_mem a1 a2
   zero_mem' := zero_mem (A 0)
 
 /--
-The semiring `A 0` derived from `SetLike.GradedMonoid (fun i ↦ A i)`.
+The semiring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`.
 -/
-instance GradeZero.semiring' : Semiring (A 0) := (GradeZero.subsemiring A).toSemiring
+instance GradeZero.instSemiring : Semiring (A 0) := (GradeZero.subsemiring A).toSemiring
 
 end GradeZeroSubsemiring
 
@@ -319,9 +316,9 @@ def GradeZero.subring : Subring R where
   neg_mem' hx := neg_mem hx
 
 /--
-The ring `A 0` derived from `SetLike.GradedMonoid (fun i ↦ A i)`.
+The ring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`.
 -/
-instance GradeZero.ring' : Ring (A 0) := (GradeZero.subring A).toRing
+instance GradeZero.instRing : Ring (A 0) := (GradeZero.subring A).toRing
 
 end GradeZeroSubring
 

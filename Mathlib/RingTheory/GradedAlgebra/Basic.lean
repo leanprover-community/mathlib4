@@ -312,7 +312,7 @@ section GradeZero
 /--
 The semiring homomorphism from `A` to `𝒜 0` sending every `a : A` to `a₀`.
 -/
-def GradedRing.projZeroRingHom' : A →+* (𝒜 0) :=
+def GradedRing.projZeroRingHom' : A →+* 𝒜 0 :=
   ((GradedRing.projZeroRingHom 𝒜).codRestrict _ fun _x => SetLike.coe_mem _ :
   A →+* GradeZero.subsemiring 𝒜)
 
