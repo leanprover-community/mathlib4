@@ -377,34 +377,3 @@ theorem coe_decompose_mul_of_right_mem (n) [Decidable (i ≤ n)] (b_mem : b ∈ 
 end DirectSum
 
 end CanonicalOrder
-
-section GradeZero
-
-variable {ι A σ : Type*}
-variable [Ring A]
-variable [DecidableEq ι] [CanonicallyOrderedAddCommMonoid ι]
-variable [SetLike σ A] [AddSubgroupClass σ A]
-variable (𝒜 : ι → σ) [GradedRing 𝒜]
-
-/--
-The ring homomorphism from `A` to `𝒜 0` sending every `a : A` to `a₀`.
--/
-def GradedRing.projZeroRingHom'' : A →+* (𝒜 0) :=
-  ((GradedRing.projZeroRingHom 𝒜).codRestrict _ fun _x => SetLike.coe_mem _ :
-  A →+* GradeZero.subring 𝒜)
-
-@[simp] lemma GradedRing.coe_projZeroRingHom''_apply (a : A) :
-    (GradedRing.projZeroRingHom'' 𝒜 a : A) = GradedRing.projZeroRingHom 𝒜 a := rfl
-
-lemma GradedRing.projZeroRingHom''_apply_coe (a : 𝒜 0) :
-    GradedRing.projZeroRingHom'' 𝒜 a = a := by
-  ext; simp only [coe_projZeroRingHom''_apply, projZeroRingHom_apply, decompose_coe, of_eq_same]
-
-/--
-The ring homomorphism `GradedRing.projZeroRingHom'' 𝒜` is surjective.
--/
-lemma GradedRing.projZeroRingHom''_surjective :
-    Function.Surjective (GradedRing.projZeroRingHom'' 𝒜) :=
-  Function.RightInverse.surjective (GradedRing.projZeroRingHom''_apply_coe 𝒜)
-
-end GradeZero

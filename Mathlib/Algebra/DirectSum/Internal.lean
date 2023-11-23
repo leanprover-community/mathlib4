@@ -279,17 +279,16 @@ end CanonicallyOrderedAddCommMonoid
 section GradeZeroSubsemiring
 
 variable [Semiring R]
-variable [CanonicallyOrderedAddCommMonoid ι]
+variable [AddMonoid ι]
 variable [SetLike σ R] [AddSubmonoidClass σ R]
-variable (A : ι → σ) [SetLike.GradedMonoid (fun i ↦ A i)]
+variable (A : ι → σ) [SetLike.GradedMonoid A]
 
 /--
 The subsemiring `A 0` of `R`.
 -/
 def GradeZero.subsemiring : Subsemiring R where
   carrier := A 0
-  mul_mem' := by
-    intro a b ha hb
+  mul_mem' {a b} ha hb := by
     simp only [SetLike.mem_coe]
     rw [show A 0 = A (0 + 0) by simp only [add_zero]]
     exact SetLike.mul_mem_graded ha hb
@@ -307,9 +306,9 @@ end GradeZeroSubsemiring
 section GradeZeroSubring
 
 variable [Ring R]
-variable [CanonicallyOrderedAddCommMonoid ι]
+variable [AddMonoid ι]
 variable [SetLike σ R] [AddSubgroupClass σ R]
-variable (A : ι → σ) [SetLike.GradedMonoid (fun i ↦ A i)]
+variable (A : ι → σ) [SetLike.GradedMonoid A]
 
 /--
 The subring `A 0` of `R`.
