@@ -815,6 +815,24 @@ lemma epi_τ₂_of_exact_of_epi {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂
   have := mono_τ₂_of_exact_of_mono (opMap φ) h₂.op
   exact unop_epi_of_mono (opMap φ).τ₂
 
+variable (S)
+
+lemma exact_and_mono_f_iff_f_is_kernel [S.HasHomology] :
+    S.Exact ∧ Mono S.f ↔ Nonempty (IsLimit (KernelFork.ofι S.f S.zero)) := by
+  constructor
+  · intro ⟨hS, _⟩
+    exact ⟨hS.fIsKernel⟩
+  · intro ⟨hS⟩
+    exact ⟨S.exact_of_f_is_kernel hS, mono_of_isLimit_fork hS⟩
+
+lemma exact_and_epi_g_iff_g_is_kernel [S.HasHomology] :
+    S.Exact ∧ Epi S.g ↔ Nonempty (IsColimit (CokernelCofork.ofπ S.g S.zero)) := by
+  constructor
+  · intro ⟨hS, _⟩
+    exact ⟨hS.gIsCokernel⟩
+  · intro ⟨hS⟩
+    exact ⟨S.exact_of_g_is_cokernel hS, epi_of_isColimit_cofork hS⟩
+
 end Balanced
 
 end Preadditive

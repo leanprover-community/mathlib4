@@ -136,6 +136,7 @@ instance (n : ℕ) : Mono (I.ι.f n) := by
 variable (Z)
 
 /-- An injective object admits a trivial injective resolution: itself in degree 0. -/
+@[simps]
 def self [Injective Z] : InjectiveResolution Z where
   cocomplex := (CochainComplex.single₀ C).obj Z
   ι := 𝟙 ((CochainComplex.single₀ C).obj Z)
