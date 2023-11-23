@@ -73,8 +73,8 @@ open Hilbert90
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 
 theorem hilbert90 (f : (L ≃ₐ[K] L) → Lˣ)
-  (hf : ∀ (g h : (L ≃ₐ[K] L)), f (g * h) = g (f h) * f g) :
-  ∃ β : Lˣ, ∀ g : (L ≃ₐ[K] L), f g * Units.map g β = β := by
+    (hf : ∀ (g h : (L ≃ₐ[K] L)), f (g * h) = g (f h) * f g) :
+    ∃ β : Lˣ, ∀ g : (L ≃ₐ[K] L), f g * Units.map g β = β := by
 /- Let `z : L` be such that `∑ f(h) * h(z) ≠ 0`, for `h ∈ Aut_K(L)` -/
   obtain ⟨z, hz⟩ : ∃ z, aux K L f z ≠ 0 :=
     not_forall.1 (fun H => aux_ne_zero K L f $ funext $ fun x => H x)

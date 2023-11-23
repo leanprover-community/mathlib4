@@ -102,8 +102,8 @@ def addMonoidHomLequivInt {A B : Type*} (R : Type*) [Semiring R] [AddCommGroup A
 /-- Ring equivalence between additive group endomorphisms of an `AddCommGroup` `A` and
 `ℤ`-module endomorphisms of `A.` -/
 @[simps] def addMonoidEndRingEquivInt (A : Type*) [AddCommGroup A] :
-  AddMonoid.End A ≃+* Module.End ℤ A :=
-{  addMonoidHomLequivInt (B := A) ℤ with
+    AddMonoid.End A ≃+* Module.End ℤ A :=
+  { addMonoidHomLequivInt (B := A) ℤ with
     map_mul' := fun _ _ => rfl }
 
 /-! ### Properties of linear maps -/
