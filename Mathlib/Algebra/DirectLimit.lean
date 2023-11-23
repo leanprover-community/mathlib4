@@ -191,14 +191,18 @@ respectively, if there is a compatible family of linear-equivalence `eᵢ : Gᵢ
 `i ≤ j`, we have `eᵢ ∘ fᵢⱼ = fᵢⱼ' ∘ eⱼ`, there is a linear equivalence `lim G ≅ lim G'`.
 -/
 def congr [IsDirected ι (· ≤ ·)] (equiv : (i : ι) → G i ≃ₗ[R] G' i)
-    (compatible_equiv : ∀ i j h x, equiv j (f i j h x) = f' _ _ h (equiv _ x)) :
+    (compatible_equiv : ∀ i j h, (equiv j) ∘ₗ f i j h = f' i j h ∘ₗ equiv i) :
     (DirectLimit G f) ≃ₗ[R] DirectLimit G' f' :=
   LinearEquiv.ofLinear
-    (lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ (equiv i).toLinearMap) fun i j hij g ↦ by aesop)
-    (lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ (equiv i).symm.toLinearMap) fun i j hij g ↦ by
-      have eq1 := FunLike.congr_arg (equiv _).symm <| compatible_equiv i j hij ((equiv i).symm g)
-      simp only [LinearEquiv.symm_apply_apply, LinearEquiv.apply_symm_apply] at eq1
-      dsimp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+    (lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ (equiv i).toLinearMap) fun i j h g ↦ by
+      have eq1 := FunLike.congr_fun (compatible_equiv i j h) g
+      simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply] at eq1 ⊢
+      rw [eq1, of_f])
+    (lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ (equiv i).symm.toLinearMap) fun i j h g ↦ by
+      have eq1 := FunLike.congr_arg (equiv _).symm <| FunLike.congr_fun (compatible_equiv i j h) <|
+        (equiv i).symm g
+      simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+        LinearEquiv.symm_apply_apply, LinearEquiv.apply_symm_apply] at eq1 ⊢
       rw [← eq1, of_f])
     (FunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _)
       fun _ ↦ DirectLimit.induction_on x fun _ _ ↦ by simp [lift_of])
@@ -207,19 +211,19 @@ def congr [IsDirected ι (· ≤ ·)] (equiv : (i : ι) → G i ≃ₗ[R] G' i)
 
 @[simp] lemma congr_apply_of [IsDirected ι (· ≤ ·)]
     (equiv : (i : ι) → G i ≃ₗ[R] G' i)
-    (compatible_equiv : ∀ i j h x, equiv j (f i j h x) = f' _ _ h (equiv _ x))
+    (compatible_equiv : ∀ i j h, (equiv j) ∘ₗ f i j h = f' i j h ∘ₗ equiv i)
     {i : ι} (g : G i) :
     congr f f' equiv compatible_equiv (of _ _ _ _ i g : DirectLimit G f) =
     of R ι G' f' i (equiv i g) := by
-  simpa only [congr, LinearEquiv.ofLinear_apply] using lift_of _ _ _
+  simpa [congr] using lift_of _ _ _
 
 @[simp] lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)]
     (equiv : (i : ι) → G i ≃ₗ[R] G' i)
-    (compatible_equiv : ∀ i j h x, equiv j (f i j h x) = f' _ _ h (equiv _ x))
+    (compatible_equiv : ∀ i j h, (equiv j) ∘ₗ f i j h = f' i j h ∘ₗ equiv i)
     {i : ι} (g : G' i) :
     (congr f f' equiv compatible_equiv).symm (of _ _ _ _ i g) =
     of R ι G f i ((equiv i).symm g) := by
-  simpa only [congr, LinearEquiv.ofLinear_symm_apply] using lift_of _ _ _
+  simpa [congr] using lift_of _ _ _
 
 section Totalize
 
