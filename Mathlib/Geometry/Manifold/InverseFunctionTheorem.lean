@@ -32,12 +32,15 @@ variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 /-- A pregroupoid which satisfies the necessary conditions for the implicit function theorem.
 Over the real or complex numbers, this includes the `C^n` and analytic pre-groupoids.
 There's a design choice when defining this: one can either
-  - assume that `P` contains only continuously differentiable functions on `s`
-  (making this a slightly stronger condition, excluding e.g. the category PDiff), or
-  - assume in the IFT hypothesis that `f` is cont. differentiable on some open set `s ∋ x`.
-  With this definition, even the trivial and the continuous pregroupoid (over ℝ or ℂ) is an
-  IFT groupoid, as the inverse `g` needs to satisfy fewer conditions.
-  We have chosen the latter, for slightly greater generality. -/
+  - assume that `P` contains only continuously differentiable functions on `s` or
+  - assume in the IFT hypothesis that `f` is continuously differentiable on some open set `s ∋ x`.
+
+The first definition is more restrictive, excluding e.g. the category PDiff;
+on the other hand, with the latter definition, even the trivial and the continuous pregroupoid
+(over ℝ or ℂ) is an IFT groupoid, as the inverse `g` needs to satisfy fewer conditions.
+
+We have chosen the latter, for slightly greater generality. In practice, one would only apply the
+IFT in contexts where the differentiability follows anyway. -/
 structure IFTPregroupoid (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] extends Pregroupoid E
 where
   /-- Our property is **monotone** on open sets: if `s` is open and `s ⊆ t`, then
