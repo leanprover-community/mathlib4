@@ -4,7 +4,7 @@
  [{"url": "https://github.com/JamesGallicchio/std4",
    "type": "git",
    "subDir": null,
-   "rev": "7b22b5cd1384e026f1c90749d6c6f915ed6fba2e",
+   "rev": "edeef7743c8e68396f36fce89bfbc9d80b69348c",
    "name": "std",
    "manifestFile": "lake-manifest.json",
    "inputRev": "perm-move",
