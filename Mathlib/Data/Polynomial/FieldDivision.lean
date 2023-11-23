@@ -31,6 +31,14 @@ section CommRing
 
 variable [CommRing R]
 
+-- Adhoc
+theorem rootMultiplicity_mul_X_sub_C_pow {p : R[X]} {a : R} {n : ℕ} (h : p ≠ 0) :
+    (p * (X - C a) ^ n).rootMultiplicity a = p.rootMultiplicity a + n := sorry
+
+-- Adhoc
+lemma Monic.mem_nonZeroDivisors {p : R[X]} (h : p.Monic) : p ∈ nonZeroDivisors R[X] :=
+  mem_nonZeroDivisors_iff.2 fun _ hx ↦ (mul_left_eq_zero_iff h).1 hx
+
 theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity_of_ne_zero
     (p : R[X]) (t : R) (hnezero : derivative p ≠ 0) :
     p.rootMultiplicity t - 1 ≤ p.derivative.rootMultiplicity t := by
@@ -55,6 +63,32 @@ theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity_of_ne_zero
     exact m.sub_le 1 |>.trans <| Nat.le_add_left m _
   · rw [rootMultiplicity_mul_X_sub_C_pow <| left_ne_zero_of_mul h2]
     exact Nat.le_add_left (m - 1) _
+
+theorem derivative_rootMultiplicity_of_root_of_mem_nonZeroDivisors
+    {p : R[X]} {t : R} (hpt : Polynomial.IsRoot p t)
+    (hnzd : (p.rootMultiplicity t : R) ∈ nonZeroDivisors R) :
+    (derivative p).rootMultiplicity t = p.rootMultiplicity t - 1 := by
+  by_cases h : p = 0
+  · simp only [h, map_zero, rootMultiplicity_zero]
+  have hp := divByMonic_mul_pow_rootMultiplicity_eq p t
+  set m := p.rootMultiplicity t
+  have hm : m - 1 + 1 = m := Nat.sub_add_cancel <| (rootMultiplicity_pos h).2 hpt
+  set g := p /ₘ (X - C t) ^ m
+  have hndvd : ¬(X - C t) ^ m ∣ derivative p := fun hdvd ↦ by
+    rw [← hp, derivative_mul, derivative_pow, map_sub, derivative_X, derivative_C, sub_zero,
+      mul_one, ← mul_assoc] at hdvd
+    obtain ⟨q, hq⟩ := (dvd_add_right <| dvd_mul_left _ _).1 hdvd
+    rw [mul_comm _ q, show (X - C t) ^ m = (X - C t) * (X - C t) ^ (m - 1) by
+        rw [← pow_succ, hm], ← mul_assoc,
+      mul_cancel_right_mem_nonZeroDivisors
+        (monic_X_sub_C t |>.pow (m - 1) |>.mem_nonZeroDivisors)] at hq
+    apply_fun eval t at hq
+    rw [eval_mul, eval_mul, eval_sub, eval_X, eval_C, eval_C, sub_self, mul_zero,
+      mul_right_mem_nonZeroDivisors_eq_zero_iff hnzd] at hq
+    exact eval_divByMonic_pow_rootMultiplicity_ne_zero t h hq
+  have hnezero : derivative p ≠ 0 := fun h ↦ hndvd (by rw [h]; exact dvd_zero _)
+  exact le_antisymm (by rwa [rootMultiplicity_le_iff hnezero, hm])
+    (rootMultiplicity_sub_one_le_derivative_rootMultiplicity_of_ne_zero _ t hnezero)
 
 end CommRing
 
