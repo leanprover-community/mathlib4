@@ -1310,7 +1310,7 @@ theorem list_cycles_perm_list_cycles {α : Type*} [Finite α] {l₁ l₂ : List 
     (h₂l₂ : l₂.Pairwise Disjoint) : l₁ ~ l₂ := by
   classical
     refine'
-      (List.perm_ext (nodup_of_pairwise_disjoint_cycles h₁l₁ h₂l₁)
+      (List.perm_ext_iff_of_nodup (nodup_of_pairwise_disjoint_cycles h₁l₁ h₂l₁)
             (nodup_of_pairwise_disjoint_cycles h₁l₂ h₂l₂)).mpr
         fun σ => _
     by_cases hσ : σ.IsCycle
