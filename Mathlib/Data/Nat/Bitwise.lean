@@ -345,27 +345,30 @@ theorem bitwise_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' 
   rw [pow_succ', ←bit0_eq_two_mul]
   cases b <;> simp
 
-/-- If `x` and `y` fit within `n` bits, then the result of any (well-behaved) bitwise operation on
-    `x` and `y` also fits within `n` bits -/
-theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy: y < 2 ^ n) :
+/-- If `x` and `y` fit within `n` bits, then the result of any bitwise operation on `x` and `y` also
+fits within `n` bits -/
+theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy : y < 2 ^ n) :
     bitwise f x y < 2 ^ n := by
   induction x using Nat.binaryRec' generalizing n y with
-  | z => aesop
+  | z =>
+    simp only [bitwise_zero_left]
+    split <;> assumption
   | @f bx nx hnx ih =>
     cases y using Nat.binaryRec' with
-    | z => aesop
+    | z =>
+      simp only [bitwise_zero_right]
+      split <;> assumption
     | f «by» ny hny =>
-      cases n with
-      | zero => aesop
-      | succ n =>
-        rw [bitwise_bit' _ _ _ _ hnx hny]
-        aesop
+      rw [bitwise_bit' _ _ _ _ hnx hny]
+      cases n <;> simp_all
 
-lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy: y < 2 ^ m) : y <<< n ||| x < 2 ^ (n + m) := by
+lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
+  simp only [pow_add, shiftLeft_eq, mul_lt_mul_right (two_pow_pos _), h]
+
+lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy : y < 2 ^ m) : y <<< n ||| x < 2 ^ (n + m) := by
   apply bitwise_lt
-  · rw [pow_add, mul_comm]
-    simp [hy, mul_lt_mul_left (two_pow_pos n)]
-  · exact lt_of_lt_of_le hx ((pow_add 2 n m).symm ▸ le_mul_of_one_le_right' (one_le_two_pow m))
+  · rw [add_comm]; apply shiftLeft_lt hy
+  · apply lt_of_lt_of_le hx <| pow_le_pow (le_succ _) (le_add_right _ _)
 
 theorem lor_comm (n m : ℕ) : n ||| m = m ||| n :=
   bitwise_comm Bool.or_comm n m
