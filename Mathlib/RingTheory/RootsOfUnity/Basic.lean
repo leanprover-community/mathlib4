@@ -135,7 +135,7 @@ theorem rootsOfUnity.coe_pow [CommMonoid R] (ζ : rootsOfUnity k R) (m : ℕ) :
 
 section CommSemiring
 
-variable [CommSemiring R] [CommSemiring S]
+variable [CommSemiring R] [CommSemiring S] [NDFunLike F R S]
 
 /-- Restrict a ring homomorphism to the nth roots of unity. -/
 def restrictRootsOfUnity [RingHomClass F R S] (σ : F) (n : ℕ+) :
@@ -250,7 +250,7 @@ theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k :=
 
 variable {k R}
 
-theorem map_rootsOfUnity_eq_pow_self [RingHomClass F R R] (σ : F) (ζ : rootsOfUnity k R) :
+theorem map_rootsOfUnity_eq_pow_self [NDFunLike F R R] [RingHomClass F R R] (σ : F) (ζ : rootsOfUnity k R) :
     ∃ m : ℕ, σ (ζ : Rˣ) = ((ζ : Rˣ) : R) ^ m := by
   obtain ⟨m, hm⟩ := MonoidHom.map_cyclic (restrictRootsOfUnity σ k)
   rw [← restrictRootsOfUnity_coe_apply, hm, ← zpow_mod_orderOf, ← Int.toNat_of_nonneg
@@ -497,6 +497,8 @@ theorem pow {n : ℕ} {a b : ℕ} (hn : 0 < n) (h : IsPrimitiveRoot ζ n) (hprod
 section Maps
 
 open Function
+
+variable [NDFunLike F M N]
 
 theorem map_of_injective [MonoidHomClass F M N] (h : IsPrimitiveRoot ζ k) (hf : Injective f) :
     IsPrimitiveRoot (f ζ) k where

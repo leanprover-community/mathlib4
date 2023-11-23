@@ -367,6 +367,9 @@ local instance instAlgebra : Algebra k (AlgebraicClosureAux k) :=
 
 #noalign algebraic_closure.algebra_map_def
 
+-- TODO: is there a better solution?
+attribute [instance 50] MulRingSeminormClass.toMonoidHomClass
+
 /-- Canonical algebra embedding from the `n`th step to the algebraic closure. -/
 def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosureAux k :=
   { ofStep k n with
@@ -424,6 +427,9 @@ def algEquivAlgebraicClosureAux :
   delta AlgebraicClosure
   exact Ideal.quotientKerAlgEquivOfSurjective
     (fun x => ⟨MvPolynomial.X x, by simp⟩)
+
+-- TODO: is there a more principled fix?
+attribute [instance 50] MulRingSeminormClass.toMonoidWithZeroHomClass
 
 -- This instance is basically copied from the `Field` instance on `SplittingField`
 instance : Field (AlgebraicClosure k) :=
