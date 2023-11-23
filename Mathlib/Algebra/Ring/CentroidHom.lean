@@ -134,6 +134,12 @@ theorem coe_toAddMonoidHom_injective : Injective ((↑) : CentroidHom α → α 
     this
 #align centroid_hom.coe_to_add_monoid_hom_injective CentroidHom.coe_toAddMonoidHom_injective
 
+lemma map_mul_left (f : CentroidHom α) (a b : α) : f (a * b) = a * f b :=
+    CentroidHomClass.map_mul_left _ _ _
+
+lemma map_mul_right (f : CentroidHom α) (a b : α) : f (a * b) = f a * b :=
+    CentroidHomClass.map_mul_right _ _ _
+
 /-- Turn a centroid homomorphism into an additive monoid endomorphism. -/
 def toEnd  (f : CentroidHom α) : AddMonoid.End α :=
   (f : α →+ α)
@@ -144,12 +150,6 @@ def toEnd  (f : CentroidHom α) : AddMonoid.End α :=
 theorem toEnd_injective : Injective (CentroidHom.toEnd : CentroidHom α → AddMonoid.End α) :=
   coe_toAddMonoidHom_injective
 #align centroid_hom.to_End_injective CentroidHom.toEnd_injective
-
---#check @toEnd α _
-
---instance : AddHomClass (@toEnd α _):= sorry
-
---instance : AddHom (toEnd) := sorry
 
 /-- Copy of a `CentroidHom` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
@@ -423,15 +423,6 @@ def toEnd' (α : Type*) [NonUnitalNonAssocSemiring α] :
   map_one' := by simp only [toEnd_one]
   map_mul' := by simp only [toEnd_mul, forall_const]
 
-lemma mul_apply' (S T : AddMonoid.End α) (a : α) : T (S a) = (T * S) a := by
-  rw [← AddMonoidHom.comp_apply, AddMonoidHom.coe_comp, AddMonoid.coe_mul]
-
-lemma map_mul_left (f : CentroidHom α) (a b : α) : f (a * b) = a * f b :=
-    CentroidHomClass.map_mul_left _ _ _
-
-lemma map_mul_right (f : CentroidHom α) (a b : α) : f (a * b) = f a * b :=
-    CentroidHomClass.map_mul_right _ _ _
-
 lemma centroid_eq_centralizer_mul_op :
     MonoidHom.mrange (toEnd' α) = Submonoid.centralizer (Set.range L ∪ Set.range R) := by
   ext T
@@ -439,9 +430,10 @@ lemma centroid_eq_centralizer_mul_op :
   constructor
   · intro ⟨f,hf⟩
     rw [Submonoid.centralizer]
-    simp only [Submonoid.mem_mk, Subsemigroup.mem_mk]
+    rw [Submonoid.mem_mk, Subsemigroup.mem_mk]
     rw [Set.centralizer]
-    simp only [Set.mem_union, Set.mem_range, Set.mem_setOf_eq]
+    rw [  Set.mem_setOf_eq]
+    simp only [Set.mem_union, Set.mem_range]
     intro S hS
     cases' hS with h₁ h₂
     cases' h₁ with a ha
@@ -451,12 +443,8 @@ lemma centroid_eq_centralizer_mul_op :
     rw [toEnd]
     apply AddMonoidHom.ext
     intro b
-    rw [AddMonoid.coe_mul, ← AddMonoidHom.coe_comp, AddMonoidHom.comp_apply]
-    rw [AddMonoid.coe_mul, ← AddMonoidHom.coe_comp, AddMonoidHom.comp_apply]
-    rw [AddMonoid.End.mulLeft_apply_apply]
-    rw [AddMonoid.End.mulLeft_apply_apply]
-    simp only [AddMonoidHom.coe_coe]
-    rw [f.map_mul_left]
+    rw [AddMonoid.mul_apply, AddMonoid.mul_apply, AddMonoid.End.mulLeft_apply_apply,
+      AddMonoid.End.mulLeft_apply_apply, AddMonoidHom.coe_coe, f.map_mul_left]
     cases' h₂ with b hb
     rw [← hb, ← hf]
     rw [toEnd']
@@ -464,45 +452,32 @@ lemma centroid_eq_centralizer_mul_op :
     rw [toEnd]
     apply AddMonoidHom.ext
     intro a
-    rw [AddMonoid.coe_mul, ← AddMonoidHom.coe_comp, AddMonoidHom.comp_apply]
-    rw [AddMonoid.coe_mul, ← AddMonoidHom.coe_comp, AddMonoidHom.comp_apply]
-    rw [AddMonoid.End.mulRight_apply_apply]
-    rw [AddMonoid.End.mulRight_apply_apply]
-    simp only [AddMonoidHom.coe_coe]
-    rw [f.map_mul_right]
+    rw [AddMonoid.mul_apply, AddMonoid.mul_apply, AddMonoid.End.mulRight_apply_apply,
+      AddMonoid.End.mulRight_apply_apply, AddMonoidHom.coe_coe, f.map_mul_right]
   · intro h
     use ⟨T, fun a b => by
       simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
       rw [Submonoid.mem_centralizer_iff] at h
-      rw [← AddMonoid.End.mulLeft_apply_apply]
-      rw [← AddMonoid.End.mulLeft_apply_apply]
+      rw [← AddMonoid.End.mulLeft_apply_apply, ← AddMonoid.End.mulLeft_apply_apply]
       have e1 : L a * T = T * L a := by
         apply (Submonoid.mem_centralizer_iff.mp h)
         apply (Set.mem_union _ _ _).mpr
         simp only [Set.mem_range, exists_apply_eq_apply, true_or]
-      rw [← AddMonoidHom.comp_apply, AddMonoidHom.coe_comp, ← AddMonoid.coe_mul]
-      rw [← AddMonoidHom.comp_apply, AddMonoidHom.coe_comp, ← AddMonoid.coe_mul]
+      rw [← AddMonoid.mul_apply, ← AddMonoid.mul_apply]
       rw [e1]
     , fun a b => by
       simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
-      rw [← AddMonoid.End.mulRight_apply_apply]
-      rw [← AddMonoid.End.mulRight_apply_apply]
+      rw [← AddMonoid.End.mulRight_apply_apply, ← AddMonoid.End.mulRight_apply_apply]
       have e1 : R b * T = T * R b := by
         apply (Submonoid.mem_centralizer_iff.mp h)
         apply (Set.mem_union _ _ _).mpr
         simp only [Set.mem_union, Set.mem_range, exists_apply_eq_apply, or_true]
-      rw [← AddMonoidHom.comp_apply, AddMonoidHom.coe_comp, ← AddMonoid.coe_mul]
-      rw [← AddMonoidHom.comp_apply, AddMonoidHom.coe_comp, ← AddMonoid.coe_mul]
+      rw [← AddMonoid.mul_apply, ← AddMonoid.mul_apply]
       rw [e1]⟩
     rw [toEnd']
     simp
     rw [toEnd]
     exact rfl
-
-
-
-
-
 
 end NonUnitalNonAssocSemiring
 
