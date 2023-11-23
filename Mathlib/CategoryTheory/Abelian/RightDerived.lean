@@ -62,9 +62,58 @@ variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
 
 variable [Abelian C] [HasInjectiveResolutions C] [Abelian D]
 
+variable [Abelian C] [HasInjectiveResolutions C] [Abelian D]
+
+/-- When `F : C ⥤ D` is an additive functor, this is
+the functor `C ⥤ HomotopyCategory D (ComplexShape.up ℕ)` which
+sends `X : C` to `F` applied to an injective resolution of `X`. -/
+def Functor.rightDerivedToHomotopyCategory (F : C ⥤ D) [F.Additive] :
+    C ⥤ HomotopyCategory D (ComplexShape.up ℕ) :=
+  injectiveResolutions C ⋙ F.mapHomotopyCategory _
+
+/-- If `I : InjectiveResolution Z` and `F : C ⥤ D` is an additive functor, this is
+an isomorphism between `F.rightDerivedToHomotopyCategory.obj X` and the complex
+obtained by applying `F` to `I.cocomplex`. -/
+def InjectiveResolution.isoRightDerivedToHomotopyCategoryObj {X : C}
+    (I : InjectiveResolution X) (F : C ⥤ D) [F.Additive] :
+    F.rightDerivedToHomotopyCategory.obj X ≅
+      (F.mapHomologicalComplex _ ⋙ HomotopyCategory.quotient _ _).obj I.cocomplex :=
+  (F.mapHomotopyCategory _).mapIso I.iso ≪≫
+    (F.mapHomotopyCategoryFactors _).app I.cocomplex
+
+@[reassoc]
+lemma InjectiveResolution.isoRightDerivedToHomotopyCategoryObj_hom_naturality
+    {X Y : C} (f : X ⟶ Y) (I : InjectiveResolution X) (J : InjectiveResolution Y)
+    (φ : I.cocomplex ⟶ J.cocomplex) (comm : I.ι.f 0 ≫ φ.f 0 = f ≫ J.ι.f 0)
+    (F : C ⥤ D) [F.Additive] :
+    F.rightDerivedToHomotopyCategory.map f ≫ (J.isoRightDerivedToHomotopyCategoryObj F).hom =
+      (I.isoRightDerivedToHomotopyCategoryObj F).hom ≫
+        (F.mapHomologicalComplex _ ⋙ HomotopyCategory.quotient _ _).map φ := by
+  dsimp [Functor.rightDerivedToHomotopyCategory, isoRightDerivedToHomotopyCategoryObj]
+  rw [← Functor.map_comp_assoc, iso_hom_naturality f I J φ comm, Functor.map_comp,
+    Category.assoc, Category.assoc]
+  erw [(F.mapHomotopyCategoryFactors (ComplexShape.up ℕ)).hom.naturality]
+  rfl
+
+@[reassoc]
+lemma InjectiveResolution.isoRightDerivedToHomotopyCategoryObj_inv_naturality
+    {X Y : C} (f : X ⟶ Y) (I : InjectiveResolution X) (J : InjectiveResolution Y)
+    (φ : I.cocomplex ⟶ J.cocomplex) (comm : I.ι.f 0 ≫ φ.f 0 = f ≫ J.ι.f 0)
+    (F : C ⥤ D) [F.Additive] :
+    (I.isoRightDerivedToHomotopyCategoryObj F).inv ≫ F.rightDerivedToHomotopyCategory.map f =
+      (F.mapHomologicalComplex _ ⋙ HomotopyCategory.quotient _ _).map φ ≫
+        (J.isoRightDerivedToHomotopyCategoryObj F).inv := by
+    rw [← cancel_epi (I.isoRightDerivedToHomotopyCategoryObj F).hom, Iso.hom_inv_id_assoc]
+    dsimp
+    rw [← isoRightDerivedToHomotopyCategoryObj_hom_naturality_assoc f I J φ comm F,
+      Iso.hom_inv_id, Category.comp_id]
+
+
+-- TODO: needs `HomotopyCategory.homologyFunctor` for the new homology API
+
 /-- The right derived functors of an additive functor. -/
 def Functor.rightDerived (F : C ⥤ D) [F.Additive] (n : ℕ) : C ⥤ D :=
-  injectiveResolutions C ⋙ F.mapHomotopyCategory _ ⋙ HomotopyCategory.homology'Functor D _ n
+  injectiveResolutions C ⋙ F.mapHomotopyCategory _ ⋙ HomotopyCategory.homologyFunctor D _ n
 #align category_theory.functor.right_derived CategoryTheory.Functor.rightDerived
 
 /-- We can compute a right derived functor using a chosen injective resolution. -/
