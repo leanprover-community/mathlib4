@@ -31,8 +31,22 @@ def LightProfinite.of (F : ℕᵒᵖ ⥤ FintypeCat) : LightProfinite where
 class Profinite.IsLight (S : Profinite) : Prop where
   countable_clopens : Countable {s : Set S // IsClopen s}
 
-def clopensEquiv (S : Profinite) : {s : Set S // IsClopen s} ≃ LocallyConstant S (Fin 2) :=
-  sorry
+open Classical in
+noncomputable
+def clopensEquiv (S : Profinite) : {s : Set S // IsClopen s} ≃ LocallyConstant S Bool where
+  toFun s := {
+    toFun := fun x ↦ decide (x ∈ s.val)
+    isLocallyConstant := by
+      rw [IsLocallyConstant.iff_isOpen_fiber]
+      intro y
+      cases y with
+      | false => convert s.prop.compl.1; ext; simp
+      | true => convert s.prop.1; ext; simp }
+  invFun f := {
+    val := f ⁻¹' {true}
+    property := f.2.isClopen_fiber _ }
+  left_inv s := by ext; simp
+  right_inv f := by ext; simp
 
 attribute [instance] Profinite.IsLight.countable_clopens
 
@@ -154,11 +168,11 @@ instance (S : LightProfinite) : S.toProfinite.IsLight where
   countable_clopens := by
     refine @Countable.of_equiv _ _ ?_ (clopensEquiv S.toProfinite).symm
     refine @Function.Surjective.countable
-      (Σ (n : ℕ), LocallyConstant ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩) (Fin 2)) _ ?_ ?_ ?_
+      (Σ (n : ℕ), LocallyConstant ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩) Bool) _ ?_ ?_ ?_
     · apply @instCountableSigma _ _ _ ?_
       intro n
       refine @Finite.to_countable _ ?_
-      refine @Finite.of_injective _ ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩ → (Fin 2)) ?_ _
+      refine @Finite.of_injective _ ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩ → Bool) ?_ _
         LocallyConstant.coe_injective
       refine @Pi.finite _ _ ?_ _
       simp only [Functor.comp_obj, toProfinite_obj_toCompHaus_toTop_α]
