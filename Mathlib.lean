@@ -1717,7 +1717,7 @@ import Mathlib.Data.Nat.Factorial.SuperFactorial
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Data.Nat.Factors
-import Mathlib.Data.Nat.Fib
+import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Data.Nat.Fib.Zeckendorf
 import Mathlib.Data.Nat.ForSqrt
 import Mathlib.Data.Nat.GCD.Basic
