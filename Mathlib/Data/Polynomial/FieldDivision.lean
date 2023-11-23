@@ -31,14 +31,6 @@ section CommRing
 
 variable [CommRing R]
 
--- Adhoc
-theorem rootMultiplicity_mul_X_sub_C_pow {p : R[X]} {a : R} {n : ℕ} (h : p ≠ 0) :
-    (p * (X - C a) ^ n).rootMultiplicity a = p.rootMultiplicity a + n := sorry
-
--- Adhoc
-lemma Monic.mem_nonZeroDivisors {p : R[X]} (h : p.Monic) : p ∈ nonZeroDivisors R[X] :=
-  mem_nonZeroDivisors_iff.2 fun _ hx ↦ (mul_left_eq_zero_iff h).1 hx
-
 theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity_of_ne_zero
     (p : R[X]) (t : R) (hnezero : derivative p ≠ 0) :
     p.rootMultiplicity t - 1 ≤ p.derivative.rootMultiplicity t := by
