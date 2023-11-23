@@ -29,5 +29,5 @@ variable (R : Type u) [Ring R]
 instance : EnoughInjectives (ModuleCat.{v} ℤ) :=
   EnoughInjectives.of_equivalence (forget₂ (ModuleCat ℤ) AddCommGroupCat)
 
-def ModuleCat.enoughInjectives : EnoughInjectives (ModuleCat.{max v u} R) :=
+lemma ModuleCat.enoughInjectives : EnoughInjectives (ModuleCat.{max v u} R) :=
   EnoughInjectives.of_adjunction (ModuleCat.restrictCoextendScalarsAdj.{max v u} (algebraMap ℤ R))
