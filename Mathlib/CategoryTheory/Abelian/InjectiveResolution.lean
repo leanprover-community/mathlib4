@@ -3,7 +3,6 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Scott Morrison
 -/
-import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.CategoryTheory.Preadditive.InjectiveResolution
 import Mathlib.Algebra.Homology.HomotopyCategory
 
@@ -38,46 +37,6 @@ universe v u
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
-
--- should be moved to `ShortComplex.Exact`
-namespace ShortComplex
-
-variable [Abelian C] {S : ShortComplex C}
-
-/-- If `S` is an exact short complex and `f : S.X₂ ⟶ J` is a morphism to an injective object `J`
-such that `S.f ≫ f = 0`, this a morphism `φ : S.X₃ ⟶ J` such that `S.g ≫ φ = f`. -/
-def Exact.descToInjective (hS : S.Exact) {J : C} (f : S.X₂ ⟶ J) [Injective J] (hf : S.f ≫ f = 0) :
-    S.X₃ ⟶ J := by
-  have := hS.mono_fromOpcycles
-  exact Injective.factorThru (S.descOpcycles f hf) S.fromOpcycles
-
-@[reassoc (attr := simp, nolint unusedHavesSuffices)]
-lemma Exact.comp_descToInjective
-    (hS : S.Exact) {J : C} (f : S.X₂ ⟶ J) [Injective J] (hf : S.f ≫ f = 0) :
-    S.g ≫ hS.descToInjective f hf = f := by
-  have := hS.mono_fromOpcycles
-  dsimp [descToInjective]
-  simp only [← p_fromOpcycles, assoc, Injective.comp_factorThru, p_descOpcycles]
-
-end ShortComplex
-
-lemma ShortComplex.exact_and_mono_f_iff_of_iso
-    [HasZeroMorphisms C] {S T : ShortComplex C} (e : S ≅ T) :
-    S.Exact ∧ Mono S.f ↔ T.Exact ∧ Mono T.f := by
-  have : Mono S.f ↔ Mono T.f :=
-    MorphismProperty.RespectsIso.arrow_mk_iso_iff
-      (MorphismProperty.RespectsIso.monomorphisms C)
-      (Arrow.isoMk (ShortComplex.π₁.mapIso e) (ShortComplex.π₂.mapIso e) e.hom.comm₁₂)
-  rw [exact_iff_of_iso e, this]
-
-lemma ShortComplex.exact_and_epi_g_iff_of_iso
-    [HasZeroMorphisms C] {S T : ShortComplex C} (e : S ≅ T) :
-    S.Exact ∧ Epi S.f ↔ T.Exact ∧ Epi T.f := by
-  have : Epi S.f ↔ Epi T.f :=
-    MorphismProperty.RespectsIso.arrow_mk_iso_iff
-      (MorphismProperty.RespectsIso.epimorphisms C)
-      (Arrow.isoMk (ShortComplex.π₁.mapIso e) (ShortComplex.π₂.mapIso e) e.hom.comm₁₂)
-  rw [exact_iff_of_iso e, this]
 
 open Injective
 
@@ -144,11 +103,11 @@ theorem desc_commutes {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y)
   simp [desc, descFOne, descFZero]
 #align category_theory.InjectiveResolution.desc_commutes CategoryTheory.InjectiveResolution.desc_commutes
 
---@[reassoc (attr := simp)]
---lemma desc_commutes_zero {Y Z : C} (f : Z ⟶ Y)
---    (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
---    J.ι.f 0 ≫ (desc f I J).f 0 = f ≫ I.ι.f 0 :=
---  (HomologicalComplex.congr_hom (desc_commutes f I J) 0).trans (by simp)
+@[reassoc (attr := simp)]
+lemma desc_commutes_zero {Y Z : C} (f : Z ⟶ Y)
+    (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
+    J.ι.f 0 ≫ (desc f I J).f 0 = f ≫ I.ι.f 0 :=
+  (HomologicalComplex.congr_hom (desc_commutes f I J) 0).trans (by simp)
 
 -- Now that we've checked this property of the descent, we can seal away the actual definition.
 /-- An auxiliary definition for `descHomotopyZero`. -/
