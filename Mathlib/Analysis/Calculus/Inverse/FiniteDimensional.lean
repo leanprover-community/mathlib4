@@ -1,5 +1,21 @@
+/-
+Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
 import Mathlib.Analysis.Calculus.Inverse.ApproximatesLinearOn
 import Mathlib.Analysis.NormedSpace.FiniteDimension
+
+/-!
+# A lemma about `ApproximatesLinearOn` that needs `FiniteDimensional`
+
+In this file we prove that In a real vector space,
+a function `f` that approximates a linear equivalence on a subset `s`
+can be extended to a homeomorphism of the whole space.
+
+This used to be the only lemma in `Mathlib/Analysis/Calculus/Inverse`
+depending on `FiniteDimensional`, so it was moved to a new file when the original file got split.
+-/
 
 open Set
 open scoped NNReal
