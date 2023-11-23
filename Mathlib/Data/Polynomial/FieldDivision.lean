@@ -50,8 +50,7 @@ theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity_of_ne_zero
     have := h.symm ▸ rootMultiplicity_mul_X_sub_C_pow (a := t) <| left_ne_zero_of_mul (h ▸ hnezero)
     rw [this]
     exact m.sub_le 1 |>.trans <| Nat.le_add_left m _
-  have := h.symm ▸ rootMultiplicity_add t (h ▸ hnezero)
-  refine le_min ?_ ?_ |>.trans this
+  refine le_min ?_ ?_ |>.trans <| h.symm ▸ rootMultiplicity_add t (h ▸ hnezero)
   · rw [rootMultiplicity_mul_X_sub_C_pow <| left_ne_zero_of_mul h1]
     exact m.sub_le 1 |>.trans <| Nat.le_add_left m _
   · rw [rootMultiplicity_mul_X_sub_C_pow <| left_ne_zero_of_mul h2]
