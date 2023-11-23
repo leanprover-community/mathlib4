@@ -81,8 +81,14 @@ theorem eq_iff_eq_true_iff {a b : Bool} : a = b ↔ ((a = true) ↔ (b = true)) 
   cases a <;> cases b <;> simp
 
 -- Porting note: new theorem
-theorem beq_eq_decide_eq {α} [DecidableEq α]
-    (a b : α) : (a == b) = decide (a = b) := rfl
+/- Even though `DecidableEq α` implies an instance of (`Lawful`)`BEq α`, we keep the seemingly
+redundant typeclass assumptions so that the theorem is also applicable for types that have
+overridden this default instance of `LawfulBEq α` -/
+theorem beq_eq_decide_eq {α} [BEq α] [LawfulBEq α] [DecidableEq α]
+    (a b : α) : (a == b) = decide (a = b) := by
+  cases h : a == b
+  · simp [ne_of_beq_false h]
+  · simp [eq_of_beq h]
 
 -- Porting note: new theorem
 theorem beq_comm {α} [BEq α] [LawfulBEq α] {a b : α} : (a == b) = (b == a) :=
