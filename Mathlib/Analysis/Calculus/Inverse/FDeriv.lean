@@ -15,7 +15,7 @@ In this file we prove the inverse function theorem. It says that if a map `f : E
 has an invertible strict derivative `f'` at `a`, then it is locally invertible,
 and the inverse function has derivative `f' ⁻¹`.
 
-We define `HasStrictDerivAt.toLocalHomeomorph` that repacks a function `f`
+We define `HasStrictFDerivAt.toLocalHomeomorph` that repacks a function `f`
 with a `hf : HasStrictFDerivAt f f' a`, `f' : E ≃L[𝕜] F`, into a `LocalHomeomorph`.
 The `toFun` of this `LocalHomeomorph` is defeq to `f`, so one can apply theorems
 about `LocalHomeomorph` to `hf.toLocalHomeomorph f`, and get statements about `f`.
@@ -31,26 +31,9 @@ and prove two versions of the inverse function theorem:
   the strict sense and `g` is locally left inverse to `f` near `a`, then `g` has derivative
   `f'.symm` at `f a` in the strict sense.
 
-In the one-dimensional case we reformulate these theorems in terms of `HasStrictDerivAt` and
-`f'⁻¹`.
-
-We also reformulate the theorems in terms of `ContDiff`, to give that `C^k` (respectively,
-smooth) inputs give `C^k` (smooth) inverses.  These versions require that continuous
-differentiability implies strict differentiability; this is false over a general field, true over
-`ℝ` or `ℂ` and implemented here assuming `IsROrC 𝕂`.
-
 Some related theorems, providing the derivative and higher regularity assuming that we already know
 the inverse function, are formulated in the `Analysis/Calculus/FDeriv` and `Analysis/Calculus/Deriv`
 folders, and in `ContDiff.lean`.
-
-## Notations
-
-In the section about `ApproximatesLinearOn` we introduce some `local notation` to make formulas
-shorter:
-
-* by `N` we denote `‖f'⁻¹‖`;
-* by `g` we denote the auxiliary contracting map `x ↦ x + f'.symm (y - f x)` used to prove that
-  `{x | f x = y}` is nonempty.
 
 ## Tags
 

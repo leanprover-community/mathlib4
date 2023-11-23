@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury G. Kudryashov
+-/
 import Mathlib.Analysis.Calculus.Deriv.Inverse
 import Mathlib.Analysis.Calculus.Inverse.FDeriv
 

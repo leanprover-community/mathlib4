@@ -30,6 +30,14 @@ lemmas. This approach makes it possible
 
 - to reuse parts of the proofs in the case if a function is not strictly differentiable. E.g., for a
   function `f : E × F → G` with estimates on `f x y₁ - f x y₂` but not on `f x₁ y - f x₂ y`.
+
+## Notations
+
+We introduce some `local notation` to make formulas shorter:
+
+* by `N` we denote `‖f'⁻¹‖`;
+* by `g` we denote the auxiliary contracting map `x ↦ x + f'.symm (y - f x)` used to prove that
+  `{x | f x = y}` is nonempty.
 -/
 
 open Function Set Filter Metric
