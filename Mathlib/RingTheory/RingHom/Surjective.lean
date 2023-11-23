@@ -33,6 +33,9 @@ theorem surjective_respectsIso : RespectsIso surjective := by
   exact e.surjective
 #align ring_hom.surjective_respects_iso RingHom.surjective_respectsIso
 
+-- TODO: this fixes the timeout but is not very principled
+attribute [instance 50] DistribMulActionHomClass.toAddMonoidHomClass
+
 theorem surjective_stableUnderBaseChange : StableUnderBaseChange surjective := by
   refine' StableUnderBaseChange.mk _ surjective_respectsIso _
   classical
