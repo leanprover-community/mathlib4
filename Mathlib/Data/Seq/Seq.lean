@@ -31,12 +31,14 @@ variable {α : Type u} {β : Type v} {δ : Type w}
 
 /-- Destructor for a lazy list, resulting in either `none` (for `nil`) or
   `some (a, l.get)` (for `cons a l`). -/
+@[inline]
 def dest : (l : LazyList α) → Option (α × LazyList α)
   | nil      => none
   | cons a t => some (a, Thunk.get t)
 
 /-- Corecursor for `LazyList α` as a coinductive type. Iterates `f` to produce new elements
   of the sequence until `none` is obtained. -/
+@[specialize]
 unsafe def corec (f : β → Option (α × β)) (b : β) : LazyList α :=
   match f b with
   | none        => nil
