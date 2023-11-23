@@ -262,6 +262,10 @@ theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m 
   CompatibleSMul.smul_tmul _ _ _
 #align tensor_product.smul_tmul TensorProduct.smul_tmul
 
+
+
+variable [SMulCommClass R R' M] [SMulCommClass R R'' M]
+
 /-- This has the wrong value for the `nsmul` field, but we need it in order to create the right
 value! -/
 private def addCommMonoidWithBadSMul : AddCommMonoid (M ⊗[R] N) where
@@ -270,11 +274,7 @@ private def addCommMonoidWithBadSMul : AddCommMonoid (M ⊗[R] N) where
   toZero := (TensorProduct.addZeroClass _ _).toZero
   toAddSemigroup := addSemigroup _ _
 
-
-variable [SMulCommClass R R' M] [SMulCommClass R R'' M]
-
-attribute [local instance] addCommMonoidWithBadSMul
-
+attribute [local instance] addCommMonoidWithBadSMul in
 /-- Given two modules over a commutative semiring `R`, if one of the factors carries a
 (distributive) action of a second type of scalars `R'`, which commutes with the action of `R`, then
 the tensor product (over `R`) carries an action of `R'`.
@@ -292,7 +292,6 @@ instance leftHasSMul : SMul R' (M ⊗[R] N) where
     (by simp) (by simp) (by simp [add_tmul]) (by simp [tmul_add])
     (fun r' m n => by dsimp; rw [←smul_comm, smul_tmul])
 #align tensor_product.left_has_smul TensorProduct.leftHasSMul
-attribute [-instance] addCommMonoidWithBadSMul
 
 instance : SMul R (M ⊗[R] N) :=
   TensorProduct.leftHasSMul

@@ -487,6 +487,13 @@ example (a b : Nat) (h1 : a < b + 1) (h2 : ¬ a = b) : a < b := by
 
 end
 
+-- Checks that splitNe handles metavariables and also that conjunction splitting occurs
+-- before splitNe splitting
+example (r : ℚ) (h' : 1 = r * 2) : 1 = 0 ∨ r = 1 / 2 := by
+  by_contra h''
+  push_neg at h''
+  linarith (config := {splitNe := true})
+
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x * x := by nlinarith
 
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x ^ 2 := by nlinarith
