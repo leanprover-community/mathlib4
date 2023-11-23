@@ -498,9 +498,7 @@ set_option linter.uppercaseLean3 false in
 theorem rootMultiplicity_add {p q : R[X]} (a : R) (hzero : p + q ≠ 0) :
     min (rootMultiplicity a p) (rootMultiplicity a q) ≤ rootMultiplicity a (p + q) := by
   rw [le_rootMultiplicity_iff hzero]
-  have hdivp : (X - C a) ^ rootMultiplicity a p ∣ p := pow_rootMultiplicity_dvd p a
-  have hdivq : (X - C a) ^ rootMultiplicity a q ∣ q := pow_rootMultiplicity_dvd q a
-  exact min_pow_dvd_add hdivp hdivq
+  exact min_pow_dvd_add (pow_rootMultiplicity_dvd p a) (pow_rootMultiplicity_dvd q a)
 #align polynomial.root_multiplicity_add Polynomial.rootMultiplicity_add
 
 theorem rootMultiplicity_mul' {p q : R[X]} {x : R}
