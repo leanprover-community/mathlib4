@@ -518,7 +518,7 @@ theorem diophFn_vec_comp1 {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) {f : Ve
 #align dioph.dioph_fn_vec_comp1 Dioph.diophFn_vec_comp1
 
 theorem vec_ex1_dioph (n) {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) :
-    Dioph {v : Fin2 n → ℕ | ∃ x, (x::v) ∈ S} :=
+    Dioph {v : Fin2 n → ℕ | ∃ x, (x :: v : Vector3 ℕ (succ n)) ∈ S} :=
   ext (ex1_dioph <| reindex_dioph _ (none::some) d) fun v =>
     exists_congr fun x => by
       dsimp
