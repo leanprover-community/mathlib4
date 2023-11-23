@@ -109,6 +109,11 @@ instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
     obtain ⟨⟨g,_⟩,_⟩ := g
     congr
 
+/-- Helper instance since the coercion is not always found. -/
+instance : NDFunLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
+  coe := FunLike.coe
+  coe_injective' := FunLike.coe_injective'
+
 instance : AlgEquivClass (A₁ ≃ₐ[R] A₂) R A₁ A₂ where
   map_add f := f.map_add'
   map_mul f := f.map_mul'
