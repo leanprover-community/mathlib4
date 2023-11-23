@@ -10,6 +10,7 @@ import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.Data.LazyList
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
+import Std.Data.List.Perm
 
 #align_import testing.slim_check.functions from "leanprover-community/mathlib"@"f9c300047a57aeda7c2fe15a3ac2455eb05ec225"
 
@@ -246,6 +247,10 @@ end SampleableExt
 
 end TotalFunction
 
+-- We need List perm notation from `List` namespace but
+-- can't open `_root_.List` directly
+end SlimCheck open List namespace SlimCheck
+
 /-- Data structure specifying a total function using a list of pairs
 and a default value returned when the input is not in the domain of
 the partial function.
@@ -258,7 +263,7 @@ rely on the association list API defined in `data.list.sigma`.
 -/
 inductive InjectiveFunction (α : Type u) : Type u
   | mapToSelf (xs : List (Σ _ : α, α)) :
-      xs.map Sigma.fst ~ xs.map Sigma.snd → List.Nodup (xs.map Sigma.snd) → InjectiveFunction α
+      (xs.map Sigma.fst : List α) ~ (xs.map Sigma.snd : List α) → List.Nodup (xs.map Sigma.snd) → InjectiveFunction α
 #align slim_check.injective_function SlimCheck.InjectiveFunction
 #align slim_check.injective_function.map_to_self SlimCheck.InjectiveFunction.mapToSelf
 
