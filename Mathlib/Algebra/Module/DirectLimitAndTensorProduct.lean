@@ -97,32 +97,16 @@ noncomputable def directLimitLeft :
 -/
 noncomputable def directLimitRight :
     M ⊗[R] DirectLimit G f ≃ₗ[R] DirectLimit (M ⊗[R] G ·) (M ◁ f) :=
-  LinearEquiv.ofLinear
-    (DirectLimit.lift _ _ _ _
-      (fun i ↦ of R ι _ _ i ∘ₗ (TensorProduct.comm R M (G i)).symm.toLinearMap)
-      fun i j h x ↦ x.induction_on (by aesop) (fun m g ↦
-        show of R ι (M ⊗[R] G ·) _ j ((f i j h).lTensor M (g ⊗ₜ m)) = _ from of_f) (by aesop))
-    (DirectLimit.lift _ _ _ _
-      (fun i ↦ of R ι _ _ i ∘ₗ (TensorProduct.comm R M (G i)).toLinearMap)
-      fun i j h x ↦ x.induction_on (by aesop) (fun m g ↦
-        show of R ι (G · ⊗[R] M) _ j ((f i j h).rTensor M (g ⊗ₜ m)) = _ from of_f) (by aesop))
-    ((isEmpty_or_nonempty ι).elim (fun _ ↦ by ext; apply Subsingleton.elim)
-      fun inst_ ↦ FunLike.ext _ _ fun x ↦ x.induction_on
-        fun i g ↦ g.induction_on (by aesop) (fun g m ↦ by simp [lift_of]) <| by aesop)
-    ((isEmpty_or_nonempty ι).elim (fun _ ↦ by ext; apply Subsingleton.elim)
-      fun inst_ ↦ FunLike.ext _ _ fun x ↦ x.induction_on
-        fun i g ↦ g.induction_on (by aesop) (fun g m ↦ by simp [lift_of]) <| by aesop) ≪≫ₗ
-  directLimit f M ≪≫ₗ TensorProduct.comm _ _ _
+  TensorProduct.comm _ _ _ ≪≫ₗ directLimitLeft f M ≪≫ₗ
+  Module.DirectLimit.congr _ _ (fun i ↦ TensorProduct.comm _ _ _) fun i j h ↦ FunLike.ext _ _
+    fun x ↦ by refine x.induction_on ?_ ?_ ?_ <;> aesop
 
 @[simp] lemma directLimitRight_tmul_of {i : ι} (m : M) (g : G i):
     directLimitRight f M (m ⊗ₜ of _ _ _ _ _ g) = of _ _ _ _ i (m ⊗ₜ g) := by
-  simp only [directLimitRight, LinearEquiv.trans_symm, LinearEquiv.trans_apply, comm_symm_tmul,
-    directLimit_symm_tmul_of, LinearEquiv.ofLinear_symm_apply, lift_of, LinearMap.coe_comp,
-    LinearEquiv.coe_coe, Function.comp_apply]
+  simp [directLimitRight]
 
 @[simp] lemma directLimitRight_syymm_of_tmul {i : ι} (m : M) (g : G i) :
     (directLimitRight f M).symm (of _ _ _ _ _ (m ⊗ₜ g)) = m ⊗ₜ of _ _ _ f _ g := by
-  simp only [directLimitRight, LinearEquiv.trans_apply, LinearEquiv.ofLinear_apply, lift_of,
-    LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, comm_tmul, directLimit_of_tmul]
+  simp [directLimitRight]
 
 end TensorProduct
