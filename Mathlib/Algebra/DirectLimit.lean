@@ -328,7 +328,7 @@ end Module
 
 namespace AddCommGroup
 
-variable [∀ i, AddCommGroup (G i)]
+variable [∀ i, AddCommGroup (G i)] [∀ i, AddCommGroup (G' i)]
 
 /-- The direct limit of a directed system is the abelian groups glued together along the maps. -/
 def DirectLimit (f : ∀ i j, i ≤ j → G i →+ G j) : Type _ :=
@@ -337,7 +337,7 @@ def DirectLimit (f : ∀ i j, i ≤ j → G i →+ G j) : Type _ :=
 
 namespace DirectLimit
 
-variable (f : ∀ i j, i ≤ j → G i →+ G j)
+variable (f : ∀ i j, i ≤ j → G i →+ G j) (f' : ∀  i j, i ≤ j → G' i →+ G' j)
 
 protected theorem directedSystem [h : DirectedSystem G fun i j h => f i j h] :
     DirectedSystem G fun i j hij => (f i j hij).toIntLinearMap :=
@@ -419,6 +419,17 @@ lemma lift_injective [IsDirected ι (· ≤ ·)]
   induction' z using DirectLimit.induction_on with _ g
   rw [lift_of] at hz
   rw [injective _ g hz, _root_.map_zero]
+
+variable {G'} (f) in
+def congr [IsDirected ι (· ≤ ·)] (equiv : (i : ι) → G i ≃+ G' i)
+    (compatible_equiv : ∀ i j h,
+      (equiv j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (equiv i).toAddMonoidHom) :
+    (DirectLimit G f) ≃+ DirectLimit G' f' :=
+  (Module.DirectLimit.congr _ _
+    (fun i ↦ { __ := equiv i
+               map_smul' := fun m x ↦ by simp })
+    fun i j h ↦ FunLike.ext _ _ fun x ↦ by
+      simpa using FunLike.congr_fun (compatible_equiv i j h) x).toAddEquiv
 
 end DirectLimit
 
