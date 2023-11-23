@@ -465,4 +465,10 @@ protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q :=
 set_option linter.uppercaseLean3 false in
 #align module.Baer.injective Module.Baer.injective
 
+protected theorem ofInjective (inj : Module.Injective R Q) : Module.Baer R Q := fun I g ↦
+  let ⟨g', hg'⟩ := inj.1 (ULift.{max u v} I) (ULift.{max u v} R)
+    (⟨⟨ULift.up, by aesop⟩, by aesop⟩ ∘ₗ I.subtype ∘ₗ ⟨⟨ULift.down, by aesop⟩, by aesop⟩)
+    (fun a b h ↦ by aesop) (g ∘ₗ ⟨⟨ULift.down, by aesop⟩, by aesop⟩)
+  ⟨g' ∘ₗ ⟨⟨ULift.up, by aesop⟩, by aesop⟩, fun x m ↦ by aesop⟩
+
 end Module.Baer
