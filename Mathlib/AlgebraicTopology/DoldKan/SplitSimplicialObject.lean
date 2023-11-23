@@ -38,7 +38,7 @@ by a splitting of a simplicial object. -/
 noncomputable def πSummand [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
     X.obj Δ ⟶ s.N A.1.unop.len := by
   refine' (s.iso Δ).inv ≫ Sigma.desc fun B => _
-  by_cases B = A
+  by_cases h : B = A
   · exact eqToHom (by subst h; rfl)
   · exact 0
 #align simplicial_object.splitting.π_summand SimplicialObject.Splitting.πSummand
@@ -254,7 +254,7 @@ noncomputable def nondegComplexFunctor : Split C ⥤ ChainComplex C ℕ where
         intro A
         dsimp [alternatingFaceMapComplex]
         erw [ιSummand_naturality_symm_assoc Φ A]
-        by_cases A.EqId
+        by_cases h : A.EqId
         · dsimp at h
           subst h
           simp only [Splitting.ι_πSummand_eq_id, comp_id, Splitting.ι_πSummand_eq_id_assoc]

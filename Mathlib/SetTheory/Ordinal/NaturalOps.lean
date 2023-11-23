@@ -58,9 +58,9 @@ def NatOrdinal : Type _ :=
   Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
 #align nat_ordinal NatOrdinal
 
-instance NatOrdinal.linearOrder: LinearOrder NatOrdinal := {Ordinal.linearOrder with}
+instance NatOrdinal.linearOrder : LinearOrder NatOrdinal := {Ordinal.linearOrder with}
 
-instance NatOrdinal.succOrder: SuccOrder NatOrdinal := {Ordinal.succOrder with}
+instance NatOrdinal.succOrder : SuccOrder NatOrdinal := {Ordinal.succOrder with}
 
 /-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]

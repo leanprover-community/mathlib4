@@ -211,7 +211,7 @@ theorem get_one (h : (1 : PartENat).Dom) : (1 : PartENat).get h = 1 :=
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem get_ofNat' (x : ℕ) [x.AtLeastTwo] (h : (no_index (OfNat.ofNat x: PartENat)).Dom) :
+theorem get_ofNat' (x : ℕ) [x.AtLeastTwo] (h : (no_index (OfNat.ofNat x : PartENat)).Dom) :
     Part.get (no_index (OfNat.ofNat x : PartENat)) h = (no_index (OfNat.ofNat x)) :=
   get_natCast' x h
 
@@ -562,7 +562,7 @@ theorem add_eq_top_iff {a b : PartENat} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ :=
   refine PartENat.casesOn a ?_ ?_
   <;> refine PartENat.casesOn b ?_ ?_
   <;> simp [top_add, add_top]
-  simp only [←Nat.cast_add, PartENat.natCast_ne_top, forall_const]
+  simp only [←Nat.cast_add, PartENat.natCast_ne_top, forall_const, not_false_eq_true]
 #align part_enat.add_eq_top_iff PartENat.add_eq_top_iff
 
 protected theorem add_right_cancel_iff {a b c : PartENat} (hc : c ≠ ⊤) : a + c = b + c ↔ a = b := by
@@ -698,7 +698,7 @@ lemma ofENat_some (n : ℕ) : ofENat (Option.some n) = ↑n := rfl
 @[simp, norm_cast]
 theorem toWithTop_ofENat (n : ℕ∞) {_ : Decidable (n : PartENat).Dom} : toWithTop (↑n) = n := by
   induction n with
-  | none => simp
+  | none => simp; rfl
   | some n =>
     simp only [toWithTop_natCast', ofENat_some]
     rfl
