@@ -515,5 +515,4 @@ lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy : y < 2 ^ m) : y <<< n ||| x < 2 
   · rw [add_comm]; apply shiftLeft_lt hy
   · apply lt_of_lt_of_le hx <| pow_le_pow (le_succ _) (le_add_right _ _)
 
-
 end Nat
