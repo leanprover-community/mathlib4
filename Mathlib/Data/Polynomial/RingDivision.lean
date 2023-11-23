@@ -501,6 +501,11 @@ theorem rootMultiplicity_add {p q : R[X]} (a : R) (hzero : p + q ≠ 0) :
   exact min_pow_dvd_add (pow_rootMultiplicity_dvd p a) (pow_rootMultiplicity_dvd q a)
 #align polynomial.root_multiplicity_add Polynomial.rootMultiplicity_add
 
+theorem le_rootMultiplicity_mul {p q : R[X]} (x : R) (hpq : p * q ≠ 0) :
+    rootMultiplicity x p + rootMultiplicity x q ≤ rootMultiplicity x (p * q) := by
+  rw [le_rootMultiplicity_iff hpq, pow_add]
+  exact mul_dvd_mul (pow_rootMultiplicity_dvd p x) (pow_rootMultiplicity_dvd q x)
+
 theorem rootMultiplicity_mul' {p q : R[X]} {x : R}
     (hpq : (p /ₘ (X - C x) ^ (p.rootMultiplicity x)).eval x *
       (q /ₘ (X - C x) ^ (q.rootMultiplicity x)).eval x ≠ 0) :
