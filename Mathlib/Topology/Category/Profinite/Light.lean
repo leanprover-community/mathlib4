@@ -1,4 +1,5 @@
 import Mathlib.Topology.Category.Profinite.AsLimit
+import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Sites.RegularExtensive
 import Mathlib.CategoryTheory.Sites.Sheafification
@@ -29,6 +30,9 @@ def LightProfinite.of (F : ℕᵒᵖ ⥤ FintypeCat) : LightProfinite where
 
 class Profinite.IsLight (S : Profinite) : Prop where
   countable_clopens : Countable {s : Set S // IsClopen s}
+
+def clopensEquiv (S : Profinite) : {s : Set S // IsClopen s} ≃ LocallyConstant S (Fin 2) :=
+  sorry
 
 attribute [instance] Profinite.IsLight.countable_clopens
 
@@ -87,7 +91,13 @@ instance (S : Profinite) [S.IsLight] : Countable (DiscreteQuotient S) := by
 instance (S : Profinite) : IsCofiltered (DiscreteQuotient S) := inferInstance
 
 noncomputable
-def cofinal_sequence (S : Profinite) [S.IsLight] : ℕ → DiscreteQuotient S := fun n ↦ by
+def cofinal_sequence (S : Profinite) [S.IsLight] : ℕ → DiscreteQuotient S := fun
+  | .zero => (exists_surjective_nat _).choose 0
+  | .succ n => (IsCofiltered.toIsCofilteredOrEmpty.cone_objs ((exists_surjective_nat _).choose n)
+      (cofinal_sequence S n)).choose
+
+noncomputable
+def cofinal_sequence' (S : Profinite) [S.IsLight] : ℕ → DiscreteQuotient S := fun n ↦ by
   induction n with
   | zero => exact (exists_surjective_nat _).choose 0
   | succ n D => exact
@@ -139,6 +149,24 @@ def ofIsLight (S : Profinite) [S.IsLight] : LightProfinite where
   diagram := initial_functor S ⋙ S.fintypeDiagram
   cone := (Functor.Initial.limitConeComp (initial_functor S) S.lim).cone
   isLimit := (Functor.Initial.limitConeComp (initial_functor S) S.lim).isLimit
+
+instance (S : LightProfinite) : S.toProfinite.IsLight where
+  countable_clopens := by
+    refine @Countable.of_equiv _ _ ?_ (clopensEquiv S.toProfinite).symm
+    refine @Function.Surjective.countable
+      (Σ (n : ℕ), LocallyConstant ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩) (Fin 2)) _ ?_ ?_ ?_
+    · apply @instCountableSigma _ _ _ ?_
+      intro n
+      refine @Finite.to_countable _ ?_
+      refine @Finite.of_injective _ ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩ → (Fin 2)) ?_ _
+        LocallyConstant.coe_injective
+      refine @Pi.finite _ _ ?_ _
+      simp only [Functor.comp_obj, toProfinite_obj_toCompHaus_toTop_α]
+      infer_instance
+    · exact fun a ↦ a.snd.comap (S.cone.π.app ⟨a.fst⟩).1
+    · intro a
+      obtain ⟨n, g, h⟩ := Profinite.exists_locallyConstant S.cone S.isLimit a
+      exact ⟨⟨unop n, g⟩, h.symm⟩
 
 @[simps!]
 instance : Category LightProfinite := InducedCategory.category toProfinite
