@@ -114,7 +114,7 @@ lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) [F.Additive] : G.Additive := b
 variable (F)
 
 lemma additive_of_full_essSurj_comp {E : Type _} [Category E] [Preadditive E]
-  (F : C ⥤ D) [Full F] [EssSurj F] [F.Additive] (G : D ⥤ E)
+    (F : C ⥤ D) [Full F] [EssSurj F] [F.Additive] (G : D ⥤ E)
     [(F ⋙ G).Additive] : G.Additive where
   map_add {X Y f g} := by
     obtain ⟨f', hf'⟩ := F.map_surjective ((F.objObjPreimageIso X).hom ≫ f ≫
