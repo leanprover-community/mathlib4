@@ -510,6 +510,7 @@ theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy : y < 2 ^ n) :
 lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
   simp only [pow_add, shiftLeft_eq, mul_lt_mul_right (two_pow_pos _), h]
 
+/-- Note that the LHS is the expression used within `Std.BitVec.append`, hence the name. -/
 lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy : y < 2 ^ m) : y <<< n ||| x < 2 ^ (n + m) := by
   apply bitwise_lt
   · rw [add_comm]; apply shiftLeft_lt hy
