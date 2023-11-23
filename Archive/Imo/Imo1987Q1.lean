@@ -25,6 +25,8 @@ holds true for `n = 0` as well, so we first prove it, then deduce the original v
 `n ≥ 1`. -/
 
 
+set_option autoImplicit true
+
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
 open scoped BigOperators Nat

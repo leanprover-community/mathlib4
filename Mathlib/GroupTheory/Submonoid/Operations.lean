@@ -1525,15 +1525,20 @@ instance isScalarTower [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' 
     IsScalarTower S α β :=
   ⟨fun a => (smul_assoc (a : M') : _)⟩
 
-@[to_additive]
-theorem smul_def [SMul M' α] {S : Submonoid M'} (g : S) (m : α) : g • m = (g : M') • m :=
-  rfl
+section SMul
+variable [SMul M' α] {S : Submonoid M'}
+
+@[to_additive] lemma smul_def (g : S) (a : α) : g • a = (g : M') • a := rfl
 #align submonoid.smul_def Submonoid.smul_def
 #align add_submonoid.vadd_def AddSubmonoid.vadd_def
 
-instance faithfulSMul [SMul M' α] [FaithfulSMul M' α] (S : Submonoid M') : FaithfulSMul S α :=
+@[to_additive (attr := simp)]
+lemma mk_smul (g : M') (hg : g ∈ S) (a : α) : (⟨g, hg⟩ : S) • a = g • a := rfl
+
+instance faithfulSMul [FaithfulSMul M' α] : FaithfulSMul S α :=
   ⟨fun h => Subtype.ext <| eq_of_smul_eq_smul h⟩
 
+end SMul
 end MulOneClass
 
 variable [Monoid M']

@@ -480,7 +480,7 @@ theorem exists_pos_set_lintegral_lt_of_measure_lt {f : α → ℝ≥0∞} (h : �
       rw [← SimpleFunc.add_lintegral, ← SimpleFunc.map_add @ENNReal.coe_add]
       refine' SimpleFunc.lintegral_mono (fun x => _) le_rfl
       simp only [add_tsub_eq_max, le_max_right, coe_map, Function.comp_apply, SimpleFunc.coe_add,
-        SimpleFunc.coe_sub, Pi.add_apply, Pi.sub_apply, WithTop.coe_max (φ x) (ψ x), ENNReal.some]
+        SimpleFunc.coe_sub, Pi.add_apply, Pi.sub_apply, ENNReal.coe_max (φ x) (ψ x)]
     _ ≤ (map (↑) φ).lintegral (μ.restrict s) + ε₁ := by
       refine' add_le_add le_rfl (le_trans _ (hφ _ hψ).le)
       exact SimpleFunc.lintegral_mono le_rfl Measure.restrict_le_self
@@ -1497,7 +1497,7 @@ theorem _root_.NNReal.count_const_le_le_of_tsum_le [MeasurableSingletonClass α]
       simp only [ENNReal.coe_le_coe, Function.comp]]
   apply
     ENNReal.count_const_le_le_of_tsum_le (measurable_coe_nnreal_ennreal.comp a_mble) _
-      (by exact_mod_cast ε_ne_zero) (@ENNReal.coe_ne_top ε)
+      (mod_cast ε_ne_zero) (@ENNReal.coe_ne_top ε)
   convert ENNReal.coe_le_coe.mpr tsum_le_c
   simp_rw [Function.comp_apply]
   rw [ENNReal.tsum_coe_eq a_summable.hasSum]

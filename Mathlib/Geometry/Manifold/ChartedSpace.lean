@@ -1153,7 +1153,6 @@ protected instance instHasGroupoid [ClosedUnderRestriction G] : HasGroupoid s G 
   compatible := by
     rintro e e' ⟨_, ⟨x, hc⟩, he⟩ ⟨_, ⟨x', hc'⟩, he'⟩
     haveI : Nonempty s := ⟨x⟩
-    have asdf := he
     rw [hc.symm, mem_singleton_iff] at he
     rw [hc'.symm, mem_singleton_iff] at he'
     rw [he, he']

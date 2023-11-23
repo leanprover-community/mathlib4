@@ -210,7 +210,7 @@ theorem not_cliqueFree_card_of_top_embedding [Fintype α] (f : (⊤ : SimpleGrap
 theorem cliqueFree_bot (h : 2 ≤ n) : (⊥ : SimpleGraph α).CliqueFree n := by
   intro t ht
   have := le_trans h (isNClique_bot_iff.1 ht).1
-  simp only at this
+  contradiction
 #align simple_graph.clique_free_bot SimpleGraph.cliqueFree_bot
 
 theorem CliqueFree.mono (h : m ≤ n) : G.CliqueFree m → G.CliqueFree n := by
