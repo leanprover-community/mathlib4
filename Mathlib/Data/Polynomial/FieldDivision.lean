@@ -27,6 +27,38 @@ universe u v w y z
 
 variable {R : Type u} {S : Type v} {k : Type y} {A : Type z} {a b : R} {n : ℕ}
 
+section CommRing
+
+variable [CommRing R]
+
+theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity_of_ne_zero
+    (p : R[X]) (t : R) (hnezero : derivative p ≠ 0) :
+    p.rootMultiplicity t - 1 ≤ p.derivative.rootMultiplicity t := by
+  have hp := divByMonic_mul_pow_rootMultiplicity_eq p t
+  set m := p.rootMultiplicity t
+  set g := p /ₘ (X - C t) ^ m
+  have h : derivative p = derivative g * (X - C t) ^ m + g * (C (m : R)) * (X - C t) ^ (m - 1) := by
+    rw [← hp, derivative_mul, derivative_pow, map_sub, derivative_X, derivative_C, sub_zero,
+      mul_one, mul_assoc]
+  by_cases h1 : derivative g * (X - C t) ^ m = 0
+  · rw [h1, zero_add] at h
+    have := h.symm ▸ rootMultiplicity_mul_X_sub_C_pow (a := t) <| left_ne_zero_of_mul (h ▸ hnezero)
+    rw [this]
+    exact Nat.le_add_left (m - 1) _
+  by_cases h2 : g * (C (m : R)) * (X - C t) ^ (m - 1) = 0
+  · rw [h2, add_zero] at h
+    have := h.symm ▸ rootMultiplicity_mul_X_sub_C_pow (a := t) <| left_ne_zero_of_mul (h ▸ hnezero)
+    rw [this]
+    exact m.sub_le 1 |>.trans <| Nat.le_add_left m _
+  have := h.symm ▸ rootMultiplicity_add t (h ▸ hnezero)
+  refine le_min ?_ ?_ |>.trans this
+  · rw [rootMultiplicity_mul_X_sub_C_pow <| left_ne_zero_of_mul h1]
+    exact m.sub_le 1 |>.trans <| Nat.le_add_left m _
+  · rw [rootMultiplicity_mul_X_sub_C_pow <| left_ne_zero_of_mul h2]
+    exact Nat.le_add_left (m - 1) _
+
+end CommRing
+
 section IsDomain
 
 variable [CommRing R] [IsDomain R]
