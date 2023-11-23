@@ -129,7 +129,7 @@ theorem isSheaf_yoneda_obj (W : C) : Presieve.IsSheaf (coherentTopology C) (yone
   · exact fun y hy ↦ t_uniq y <| Presieve.isAmalgamation_sieveExtend x y hy
 
 /-- The coherent topology on a precoherent category is subcanonical. -/
-theorem isSubcanonical : Sheaf.Subcanonical (coherentTopology C) :=
+theorem subcanonical : Sheaf.Subcanonical (coherentTopology C) :=
   Sheaf.Subcanonical.of_yoneda_isSheaf _ isSheaf_yoneda_obj
 
 end coherentTopology

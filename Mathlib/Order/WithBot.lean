@@ -198,8 +198,8 @@ instance (priority := 10) le : LE (WithBot α) :=
   ⟨fun o₁ o₂ : Option α => ∀ a ∈ o₁, ∃ b ∈ o₂, a ≤ b⟩
 
 @[simp]
-theorem some_le_some : @LE.le (WithBot α) _ (Option.some a) (Option.some b) ↔ a ≤ b :=
-  by simp [LE.le]
+theorem some_le_some : @LE.le (WithBot α) _ (Option.some a) (Option.some b) ↔ a ≤ b := by
+  simp [LE.le]
 #align with_bot.some_le_some WithBot.some_le_some
 
 @[simp, norm_cast]

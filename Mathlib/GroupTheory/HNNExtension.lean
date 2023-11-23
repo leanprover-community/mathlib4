@@ -400,7 +400,7 @@ theorem not_cancels_of_cons_hyp (u : ℤˣ) (w : NormalWord d)
 theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
     Cancels (-u) (unitsSMul φ u w) ↔ ¬ Cancels u w := by
   by_cases h : Cancels u w
-  · simp only [unitsSMul, dif_pos trivial, h, iff_false]
+  · simp only [unitsSMul, h, dite_true, not_true_eq_false, iff_false]
     induction w using consRecOn with
     | ofGroup => simp [Cancels, unitsSMulWithCancel]
     | cons g u' w h1 h2 _ =>

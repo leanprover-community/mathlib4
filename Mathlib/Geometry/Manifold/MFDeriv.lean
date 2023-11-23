@@ -1616,11 +1616,11 @@ theorem MDifferentiable.add (hf : MDifferentiable I 𝓘(𝕜, E') f)
   (hf x).add (hg x)
 #align mdifferentiable.add MDifferentiable.add
 
--- porting note: forcing types using `@Add.add`
+-- porting note: forcing types using `by exact`
 theorem mfderiv_add (hf : MDifferentiableAt I 𝓘(𝕜, E') f z)
     (hg : MDifferentiableAt I 𝓘(𝕜, E') g z) :
-    (mfderiv I 𝓘(𝕜, E') (f + g) z : TangentSpace I z →L[𝕜] E') =
-      @Add.add (TangentSpace I z →L[𝕜] E') _ (mfderiv I 𝓘(𝕜, E') f z) (mfderiv I 𝓘(𝕜, E') g z) :=
+    (by exact mfderiv I 𝓘(𝕜, E') (f + g) z : TangentSpace I z →L[𝕜] E') =
+      (by exact mfderiv I 𝓘(𝕜, E') f z) + (by exact mfderiv I 𝓘(𝕜, E') g z) :=
   (hf.hasMFDerivAt.add hg.hasMFDerivAt).mfderiv
 #align mfderiv_add mfderiv_add
 
@@ -1693,8 +1693,8 @@ theorem MDifferentiable.sub (hf : MDifferentiable I 𝓘(𝕜, E') f)
 
 theorem mfderiv_sub (hf : MDifferentiableAt I 𝓘(𝕜, E') f z)
     (hg : MDifferentiableAt I 𝓘(𝕜, E') g z) :
-    (mfderiv I 𝓘(𝕜, E') (f - g) z : TangentSpace I z →L[𝕜] E') =
-      @Sub.sub (TangentSpace I z →L[𝕜] E') _ (mfderiv I 𝓘(𝕜, E') f z) (mfderiv I 𝓘(𝕜, E') g z) :=
+    (by exact mfderiv I 𝓘(𝕜, E') (f - g) z : TangentSpace I z →L[𝕜] E') =
+      (by exact mfderiv I 𝓘(𝕜, E') f z) - (by exact mfderiv I 𝓘(𝕜, E') g z) :=
   (hf.hasMFDerivAt.sub hg.hasMFDerivAt).mfderiv
 #align mfderiv_sub mfderiv_sub
 

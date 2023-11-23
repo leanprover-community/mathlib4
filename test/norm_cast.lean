@@ -7,8 +7,6 @@ import Mathlib.Tactic.Ring
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Complex.Basic
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 -- set_option trace.Tactic.norm_cast true
 -- set_option trace.Meta.Tactic.simp true
 set_option autoImplicit true
@@ -142,7 +140,7 @@ namespace ennreal
 
 end ennreal
 
-lemma b (h g : true) : true ∧ true := by
+lemma b (_h g : true) : true ∧ true := by
   constructor
   assumption_mod_cast
   assumption_mod_cast
