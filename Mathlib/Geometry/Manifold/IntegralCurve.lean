@@ -50,6 +50,34 @@ lemma ModelWithCorners.isInteriorPoint [I.Boundaryless] {x : M} : I.IsInteriorPo
   rw [ModelWithCorners.IsInteriorPoint, IsOpen.interior_eq I.isOpen_target]
   exact LocalEquiv.map_source _ (mem_extChartAt_source _ _)
 
+variable (I)
+def tangentCoordChange (x y : M) := (tangentBundleCore I M).coordChange (achart H x) (achart H y)
+
+variable {I}
+lemma tangentCoordChange_def {x y z : M} : tangentCoordChange I x y z =
+    fderivWithin 𝕜 (extChartAt I y ∘ (extChartAt I x).symm) (range I) (extChartAt I x z) := rfl
+
+lemma tangentCoordChange_self {x z : M} {v : E} (h : z ∈ (extChartAt I x).source) :
+    tangentCoordChange I x x z v = v := by
+  apply (tangentBundleCore I M).coordChange_self
+  rw [tangentBundleCore_baseSet, coe_achart, ←extChartAt_source I]
+  exact h
+
+-- continuousOn?
+
+lemma tangentCoordChange_comp {w x y z : M} {v : E}
+    (h : z ∈ (extChartAt I w).source ∩ (extChartAt I x).source ∩ (extChartAt I y).source) :
+    tangentCoordChange I x y z (tangentCoordChange I w x z v) = tangentCoordChange I w y z v := by
+  apply (tangentBundleCore I M).coordChange_comp
+  simp only [tangentBundleCore_baseSet, coe_achart, ←extChartAt_source I]
+  exact h
+
+lemma hasFDerivWithinAt_tangentCoordChange {x y z : M}
+    (h : extChartAt I x z ∈ ((extChartAt I x).symm ≫ (extChartAt I y)).source) :
+    HasFDerivWithinAt ((extChartAt I y) ∘ (extChartAt I x).symm) (tangentCoordChange I x y z)
+      (range I) (extChartAt I x z) :=
+  ((contDiffWithinAt_ext_coord_change I y x h).differentiableWithinAt (by simp)).hasFDerivWithinAt
+
 end
 
 variable
@@ -228,6 +256,9 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
         (range I) (extChartAt I ((extChartAt I x₀).symm (f t)) ((extChartAt I x₀).symm (f t))))
       (v ((extChartAt I x₀).symm (f t))))
     t := hf2 t ht1
+  rw [←tangentCoordChange_def] at h
+
+
   have hf3' := mem_of_mem_of_subset (hf3 t ht2) interior_subset
   /- express the derivative of the integral curve in the local chart -/
   rw [HasMFDerivAt]
@@ -242,37 +273,22 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
     `HasFDerivAt.comp_hasDerivAt` to get the derivative of `γ` at `t` as `v (γ t)`, which requires
     first expressing `v (γ t)` as `↑D_inv ↑D (v (γ t))`, where `D_inv` is the opposite change of
     coordinates as `D`. -/
-  have hvsub : v ((extChartAt I x₀).symm (f t)) = (tangentBundleCore I M).coordChange
-    (achart H x₀) (achart H ((extChartAt I x₀).symm (f t))) ((extChartAt I x₀).symm (f t))
-    ((tangentBundleCore I M).coordChange (achart H ((extChartAt I x₀).symm (f t))) (achart H x₀)
-      ((extChartAt I x₀).symm (f t)) (v ((extChartAt I x₀).symm (f t)))) := by
-    rw [(tangentBundleCore I M).coordChange_comp, (tangentBundleCore I M).coordChange_self]
-    · rw [tangentBundleCore_baseSet, coe_achart, ←extChartAt_source I, ←LocalEquiv.symm_target]
-      exact mem_extChartAt_source ..
-    · rw [tangentBundleCore_baseSet, tangentBundleCore_baseSet, coe_achart, coe_achart,
-        ←extChartAt_source I, ←extChartAt_source I, inter_comm, ←inter_assoc, inter_self]
-      constructor
-      · exact mem_extChartAt_source ..
-      · rw [←mem_preimage]
-        apply mem_of_mem_of_subset _ (LocalEquiv.source_subset_preimage_target _)
-        rw [LocalEquiv.symm_source]
-        exact hf3'
-  rw [hvsub]
+  rw [←tangentCoordChange_self (I := I) (M := M) (x := (extChartAt I x₀).symm (f t))
+    (z := (extChartAt I x₀).symm (f t)) (v := v ((extChartAt I x₀).symm (f t)))]
+  rw [←tangentCoordChange_comp (x := x₀)]
   apply HasFDerivAt.comp_hasDerivAt _ _ h
-  /- change of coordinates in the tangent bundle is exactly the derivative of composition of local
-    charts -/
-  rw [tangentBundleCore_coordChange_achart, LocalEquiv.right_inv _ hf3', fderivWithin_of_mem_nhds]
-  · apply DifferentiableAt.hasFDerivAt
-    apply MDifferentiableAt.differentiableAt
-    apply MDifferentiableAt.comp (I' := I)
-    · exact (contMDiffAt_extChartAt (n := 1)).mdifferentiableAt (le_refl _)
-    · apply MDifferentiableOn.mdifferentiableAt
-        ((contMDiffOn_extChartAt_symm (n := 1) _).mdifferentiableOn (le_refl _))
-      rw [mem_nhds_iff]
-      exact ⟨interior (extChartAt I x₀).target, interior_subset, isOpen_interior, hf3 _ ht2⟩
+  apply HasFDerivWithinAt.hasFDerivAt (s := range I)
+  nth_rw 4 [←(extChartAt I x₀).right_inv hf3']
+  apply hasFDerivWithinAt_tangentCoordChange
+  · sorry
   · rw [mem_nhds_iff]
     exact ⟨interior (extChartAt I x₀).target,
       subset_trans interior_subset (extChartAt_target_subset_range ..), isOpen_interior, hf3 _ ht2⟩
+  · rw [inter_right_comm, inter_self, mem_inter_iff]
+    use mem_extChartAt_source ..
+    rw [←mem_preimage]
+    exact mem_of_mem_of_subset hf3' (extChartAt I x₀).target_subset_preimage_source
+  · sorry
 
 /-- For any continuously differentiable vector field defined on a manifold without boundary and any
   chosen starting point `x₀ : M`, an integral curve `γ : ℝ → M` exists such that `γ t₀ = x₀` and the
