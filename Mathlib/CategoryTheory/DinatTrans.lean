@@ -3,12 +3,6 @@ Copyright (c) 2023 Andrea Laretto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrea Laretto
 -/
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.CategoryTheory.Functor.Basic
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.CategoryTheory.Products.Basic
-import Mathlib.Tactic.CategoryTheory.Reassoc
 import Mathlib.CategoryTheory.Products.Bifunctor
 
 /-!
