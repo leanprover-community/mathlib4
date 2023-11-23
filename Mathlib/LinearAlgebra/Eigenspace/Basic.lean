@@ -337,7 +337,7 @@ lemma disjoint_generalizedEigenspace [NoZeroSMulDivisors R M]
     · ext; simp [smul_sub, sub_sub, smul_comm μ₁, add_sub_left_comm]
     all_goals ext ⟨x, _, _⟩; simpa [LinearMap.restrict_apply, LinearMap.pow_restrict _] using ‹_›
   have hf₁₂ : f₂ - f₁ = algebraMap R (End R p) (μ₁ - μ₂) := by ext; simp [sub_smul]
-  rw [hf₁₂, IsNilpotent.map_iff (NoZeroSMulDivisors.algebraMap_injective _ _),
+  rw [hf₁₂, IsNilpotent.map_iff (NoZeroSMulDivisors.algebraMap_injective R (End R p)),
     isNilpotent_iff_eq_zero, sub_eq_zero] at this
   contradiction
 

@@ -172,7 +172,7 @@ group `α`.
 
 You should extend this class when you extend `AddGroupSeminorm`. -/
 class AddGroupSeminormClass (F α β : Type*) [AddGroup α] [OrderedAddCommMonoid β] [NDFunLike F α β]
-  extends SubadditiveHomClass F α β where
+  extends SubadditiveHomClass F α β : Prop where
   /-- The image of zero is zero. -/
   map_zero (f : F) : f 0 = 0
   /-- The map is invariant under negation of its argument. -/
@@ -184,7 +184,7 @@ class AddGroupSeminormClass (F α β : Type*) [AddGroup α] [OrderedAddCommMonoi
 You should extend this class when you extend `GroupSeminorm`. -/
 @[to_additive]
 class GroupSeminormClass (F α β : Type*) [Group α] [OrderedAddCommMonoid β] [NDFunLike F α β]
-  extends MulLEAddHomClass F α β where
+  extends MulLEAddHomClass F α β : Prop where
   /-- The image of one is zero. -/
   map_one_eq_zero (f : F) : f 1 = 0
   /-- The map is invariant under inversion of its argument. -/
@@ -196,7 +196,7 @@ class GroupSeminormClass (F α β : Type*) [Group α] [OrderedAddCommMonoid β] 
 
 You should extend this class when you extend `AddGroupNorm`. -/
 class AddGroupNormClass (F α β : Type*) [AddGroup α] [OrderedAddCommMonoid β] [NDFunLike F α β]
-  extends AddGroupSeminormClass F α β where
+  extends AddGroupSeminormClass F α β : Prop where
   /-- The argument is zero if its image under the map is zero. -/
   eq_zero_of_map_eq_zero (f : F) {a : α} : f a = 0 → a = 0
 #align add_group_norm_class AddGroupNormClass
@@ -206,7 +206,7 @@ class AddGroupNormClass (F α β : Type*) [AddGroup α] [OrderedAddCommMonoid β
 You should extend this class when you extend `GroupNorm`. -/
 @[to_additive]
 class GroupNormClass (F α β : Type*) [Group α] [OrderedAddCommMonoid β] [NDFunLike F α β]
-  extends GroupSeminormClass F α β where
+  extends GroupSeminormClass F α β : Prop where
   /-- The argument is one if its image under the map is zero. -/
   eq_one_of_map_eq_zero (f : F) {a : α} : f a = 0 → a = 1
 #align group_norm_class GroupNormClass
@@ -314,14 +314,14 @@ theorem map_pos_of_ne_one [Group α] [LinearOrderedAddCommMonoid β] [GroupNormC
 
 You should extend this class when you extend `RingSeminorm`. -/
 class RingSeminormClass (F α β : Type*) [NonUnitalNonAssocRing α] [OrderedSemiring β]
-  [NDFunLike F α β] extends AddGroupSeminormClass F α β, SubmultiplicativeHomClass F α β
+  [NDFunLike F α β] extends AddGroupSeminormClass F α β, SubmultiplicativeHomClass F α β : Prop
 #align ring_seminorm_class RingSeminormClass
 
 /-- `RingNormClass F α` states that `F` is a type of `β`-valued norms on the ring `α`.
 
 You should extend this class when you extend `RingNorm`. -/
 class RingNormClass (F α β : Type*) [NonUnitalNonAssocRing α] [OrderedSemiring β] [NDFunLike F α β]
-  extends RingSeminormClass F α β, AddGroupNormClass F α β
+  extends RingSeminormClass F α β, AddGroupNormClass F α β : Prop
 #align ring_norm_class RingNormClass
 
 /-- `MulRingSeminormClass F α` states that `F` is a type of `β`-valued multiplicative seminorms
@@ -329,7 +329,7 @@ on the ring `α`.
 
 You should extend this class when you extend `MulRingSeminorm`. -/
 class MulRingSeminormClass (F α β : Type*) [NonAssocRing α] [OrderedSemiring β] [NDFunLike F α β]
-  extends AddGroupSeminormClass F α β, MonoidWithZeroHomClass F α β
+  extends AddGroupSeminormClass F α β, MonoidWithZeroHomClass F α β : Prop
 #align mul_ring_seminorm_class MulRingSeminormClass
 
 /-- `MulRingNormClass F α` states that `F` is a type of `β`-valued multiplicative norms on the
@@ -337,7 +337,7 @@ ring `α`.
 
 You should extend this class when you extend `MulRingNorm`. -/
 class MulRingNormClass (F α β : Type*) [NonAssocRing α] [OrderedSemiring β] [NDFunLike F α β]
-  extends MulRingSeminormClass F α β, AddGroupNormClass F α β
+  extends MulRingSeminormClass F α β, AddGroupNormClass F α β : Prop
 #align mul_ring_norm_class MulRingNormClass
 
 -- See note [out-param inheritance]

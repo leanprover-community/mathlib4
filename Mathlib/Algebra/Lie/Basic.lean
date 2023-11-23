@@ -564,6 +564,10 @@ instance : EquivLike (L₁ ≃ₗ⁅R⁆ L₂) L₁ L₂ :=
     coe_injective' := fun f g h₁ h₂ =>
       by cases f; cases g; simp at h₁ h₂; simp [*] }
 
+instance : NDFunLike (L₁ ≃ₗ⁅R⁆ L₂) L₁ L₂ where
+  coe f := f.toFun
+  coe_injective' := FunLike.coe_injective
+
 theorem coe_to_lieHom (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑(e : L₁ →ₗ⁅R⁆ L₂) = e :=
   rfl
 #align lie_equiv.coe_to_lie_hom LieEquiv.coe_to_lieHom

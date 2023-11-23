@@ -66,9 +66,11 @@ theorem range_toContinuousMultilinearMap :
       {f | ∀ (v : ι → M) (i j : ι), v i = v j → i ≠ j → f v = 0} :=
   Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.2, fun h => ⟨⟨f, h⟩, rfl⟩⟩
 
-instance continuousMapClass : ContinuousMapClass (M [Λ^ι]→L[R] N) (ι → M) N where
+instance funLike : NDFunLike (M [Λ^ι]→L[R] N) (ι → M) N where
   coe f := f.toFun
   coe_injective' _ _ h := toContinuousMultilinearMap_injective <| FunLike.ext' h
+
+instance continuousMapClass : ContinuousMapClass (M [Λ^ι]→L[R] N) (ι → M) N where
   map_continuous f := f.cont
 
 initialize_simps_projections ContinuousAlternatingMap (toFun → apply)

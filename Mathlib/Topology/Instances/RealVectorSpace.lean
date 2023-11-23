@@ -20,7 +20,8 @@ variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [Conti
   {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F] [ContinuousSMul ℝ F] [T2Space F]
 
 /-- A continuous additive map between two vector spaces over `ℝ` is `ℝ`-linear. -/
-theorem map_real_smul {G} [AddMonoidHomClass G E F] (f : G) (hf : Continuous f) (c : ℝ) (x : E) :
+theorem map_real_smul {G} [NDFunLike G E F] [AddMonoidHomClass G E F] (f : G) (hf : Continuous f)
+    (c : ℝ) (x : E) :
     f (c • x) = c • f x :=
   suffices (fun c : ℝ => f (c • x)) = fun c : ℝ => c • f x from congr_fun this c
   Rat.denseEmbedding_coe_real.dense.equalizer (hf.comp <| continuous_id.smul continuous_const)

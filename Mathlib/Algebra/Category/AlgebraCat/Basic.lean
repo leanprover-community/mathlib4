@@ -57,6 +57,9 @@ instance : Category (AlgebraCat.{v} R) where
   id A := AlgHom.id R A
   comp f g := g.comp f
 
+instance {M N : AlgebraCat.{v} R} : NDFunLike (M ⟶ N) M N :=
+  AlgHom.funLike
+
 instance {M N : AlgebraCat.{v} R} : AlgHomClass (M ⟶ N) R M N :=
   AlgHom.algHomClass
 

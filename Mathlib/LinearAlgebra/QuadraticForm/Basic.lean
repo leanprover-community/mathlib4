@@ -124,7 +124,7 @@ theorem polar_add_left_iff {f : M → R} {x x' y : M} :
     add_right_comm (f (x + y)), add_left_inj]
 #align quadratic_form.polar_add_left_iff QuadraticForm.polar_add_left_iff
 
-theorem polar_comp {F : Type*} [CommRing S] [AddMonoidHomClass F R S]
+theorem polar_comp {F : Type*} [CommRing S] [NDFunLike F R S] [AddMonoidHomClass F R S]
     (f : M → R) (g : F) (x y : M) :
     polar (g ∘ f) x y = g (polar f x y) := by
   simp only [polar, Pi.smul_apply, Function.comp_apply, map_sub]
