@@ -872,7 +872,8 @@ variable {S : ShortComplex C}
 
 /-- If `S` is an exact short complex and `f : S.X₂ ⟶ J` is a morphism to an injective object `J`
 such that `S.f ≫ f = 0`, this a morphism `φ : S.X₃ ⟶ J` such that `S.g ≫ φ = f`. -/
-noncomputable def Exact.descToInjective (hS : S.Exact) {J : C} (f : S.X₂ ⟶ J) [Injective J] (hf : S.f ≫ f = 0) :
+noncomputable def Exact.descToInjective
+    (hS : S.Exact) {J : C} (f : S.X₂ ⟶ J) [Injective J] (hf : S.f ≫ f = 0) :
     S.X₃ ⟶ J := by
   have := hS.mono_fromOpcycles
   exact Injective.factorThru (S.descOpcycles f hf) S.fromOpcycles
