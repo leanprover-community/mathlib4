@@ -238,7 +238,7 @@ lemma Functor.mapHomotopyCategory_map (F : V ⥤ W) [F.Additive] {c : ComplexSha
       (HomotopyCategory.quotient W c).map ((F.mapHomologicalComplex c).map f) :=
   rfl
 
-/- The obvious isomorphism between
+/-- The obvious isomorphism between
 `HomotopyCategory.quotient V c ⋙ F.mapHomotopyCategory c` and
 `F.mapHomologicalComplex c ⋙ HomotopyCategory.quotient W c` when `F : V ⥤ W` is
 an additive functor. -/
