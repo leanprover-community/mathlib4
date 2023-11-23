@@ -211,10 +211,12 @@ theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m 
   CompatibleSMul.smul_tmul _ _ _
 #align tensor_product.smul_tmul TensorProduct.smul_tmul
 
--- porting note: This is added as a local instance for `SMul.aux`.
--- For some reason type-class inference in Lean 3 unfolded this definition.
-private def addMonoidWithWrongNSMul : AddMonoid (M ⊗[R] N) :=
-  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
+/-- This has the wrong value for the `nsmul` field, but we need it in order to create the right
+value! -/
+private def addMonoidWithWrongNSMul : AddMonoid (M ⊗[R] N) where
+  toAddSemigroup := addSemigroup _ _
+  __ := addZeroClass _ _
+  nsmul := nsmulRec
 
 attribute [local instance] addMonoidWithWrongNSMul in
 /-- Auxiliary function to defining scalar multiplication on tensor product. -/
