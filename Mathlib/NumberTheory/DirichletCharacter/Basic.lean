@@ -183,7 +183,7 @@ lemma conductor_eq_zero_iff_level_eq_zero : conductor χ = 0 ↔ n = 0 := by
   exact Nat.sInf_eq_zero.mpr <| Or.inl <| level_mem_conductorSet χ
 
 lemma conductor_le_conductor_mem_conductorSet {d : ℕ} (hd : d ∈ conductorSet χ) :
-    χ.conductor ≤ (Classical.choose hd.2 ).conductor := by
+    χ.conductor ≤ (Classical.choose hd.2).conductor := by
   refine Nat.sInf_le <| (mem_conductorSet_iff χ).mpr <|
     ⟨dvd_trans (conductor_dvd_level _) hd.1,
      (factorsThrough_conductor (Classical.choose hd.2)).2.choose, ?_⟩
@@ -212,16 +212,17 @@ lemma conductor_one_dvd (n : ℕ) : conductor (1 : DirichletCharacter R 1) ∣ n
 noncomputable def primitiveCharacter : DirichletCharacter R χ.conductor :=
   Classical.choose (factorsThrough_conductor χ).choose_spec
 
-lemma reduction_isPrimitive : isPrimitive (χ.primitiveCharacter) := by
+lemma primitiveCharacter_isPrimitive : isPrimitive (χ.primitiveCharacter) := by
   by_cases h : χ.conductor = 0
   · rw [isPrimitive_def]
     convert conductor_eq_zero_iff_level_eq_zero.mpr h
   · exact le_antisymm (Nat.le_of_dvd (Nat.pos_of_ne_zero h) (conductor_dvd_level _)) <|
       conductor_le_conductor_mem_conductorSet <| conductor_mem_conductorSet χ
 
-lemma reduction_one (hn : n ≠ 0) : (1 : DirichletCharacter R n).primitiveCharacter = 1 := by
+lemma primitiveCharacter_one (hn : n ≠ 0) :
+    (1 : DirichletCharacter R n).primitiveCharacter = 1 := by
   rw [eq_one_iff_conductor_eq_one <| (@conductor_one R _ _ hn) ▸ Nat.one_ne_zero,
-      (isPrimitive_def _).1 (1 : DirichletCharacter R n).reduction_isPrimitive,
+      (isPrimitive_def _).1 (1 : DirichletCharacter R n).primitiveCharacter_isPrimitive,
       conductor_one hn]
 
 end DirichletCharacter
