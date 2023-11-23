@@ -21,10 +21,11 @@ and `t` of `x` and `f x`, respectively such that `f` restricts to a diffeomorphi
 * `LocalDiffeomorphAt I J M N n f x`: `f` is a `C^n` local diffeomorphism at `x`
 * `LocalDiffeomorph I J M N n f`: `f` is a `C^n` local diffeomorphism
 
-## Main results
+## Main results (some are still sorried)
 * Each of `Diffeomorph`, `LocalDiffeomorph`, and `LocalDiffeomorphAt` implies the next condition.
-* `Diffeomorph.of_bijective_local_diffeomorph`: a bijective local diffeomorphisms is a diffeomorphism.
-TODO: a local diffeomorphism is a diffeomorphism to its image
+* `LocalDiffeomorph.toDiffeomorphImage`: a local diffeomorphism is a diffeomorphism to its image
+* `Diffeomorph.of_bijective_localDiffeomorph`: a bijective local diffeomorphism is a diffeomorphism.
+* `LocalDiffeomorph.image`: the image of a local diffeomorphism is open
 
 * `Diffeomorph.mfderiv_toContinuousLinearEquiv`: each differential of a `C^n` diffeomorphism
 (`n ≥ 1`) is a linear equivalence.
@@ -133,7 +134,7 @@ def IsLocalDiffeomorph (f : M → N) : Prop :=
   ∀ x : M, IsLocalDiffeomorphAt I J M N n f x
 
 lemma isLocalDiffeomorph_iff {f : M → N} :
-  IsLocalDiffeomorph I J M N n f ↔ ∀ x : M, IsLocalDiffeomorphAt I J M N n f x := by rfl
+    IsLocalDiffeomorph I J M N n f ↔ ∀ x : M, IsLocalDiffeomorphAt I J M N n f x := by rfl
 
 /-- A `C^n` diffeomorphism is a local diffeomorphism. -/
 lemma Diffeomorph.isLocalDiffeomorph (Φ : M ≃ₘ^n⟮I, J⟯ N) : IsLocalDiffeomorph I J M N n Φ :=
@@ -162,7 +163,7 @@ def LocalDiffeomorph.image {f : M → N} (hf : IsLocalDiffeomorph I J M N n f) :
     exact Φ.toLocalHomeomorph.map_source hxU
 
 lemma LocalDiffeomorph.image_coe {f : M → N} (hf : IsLocalDiffeomorph I J M N n f) :
-  (LocalDiffeomorph.image I J M N n hf).1 = range f := rfl
+    (LocalDiffeomorph.image I J M N n hf).1 = range f := rfl
 
 /-- A local diffeomorphism is a diffeomorphism to its image. -/
 def LocalDiffeomorph.toDiffeomorphImage {f : M → N} (hf : IsLocalDiffeomorph I J M N n f) :
@@ -170,7 +171,7 @@ def LocalDiffeomorph.toDiffeomorphImage {f : M → N} (hf : IsLocalDiffeomorph I
   -- can glue the inverses at each point... omitted for now
 
 /-- A bijective local diffeomorphism is a diffeomorphism. -/
-def Diffeomorph.of_bijective_local_diffeomorph {f : M → N} (hf : IsLocalDiffeomorph I J M N n f)
+def Diffeomorph.of_bijective_localDiffeomorph {f : M → N} (hf : IsLocalDiffeomorph I J M N n f)
     (hf' : Bijective f) : Diffeomorph I J M N n := by
   -- complication: need to argue a diffeo to image yields a diffeo...
   -- bijectivity implies equality *of sets*
@@ -186,13 +187,15 @@ def Diffeomorph.of_bijective_local_diffeomorph {f : M → N} (hf : IsLocalDiffeo
   sorry
 
 section Differential
+variable {I J M N n}
 variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
   {f : M → N} {x : M} (hn : 1 ≤ n)
 
 /-- If `f` is a `C^n` local diffeomorphism at `x`, for `n ≥ 1`,
   the differential `df_x` is a linear equivalence. -/
 lemma LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv (hf : IsLocalDiffeomorphAt I J M N n f x)
-    (hn : 1 ≤ n) : ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) := by
+    (hn : 1 ≤ n) : ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
+  by
   choose Φ hyp using hf
   rcases hyp with ⟨hxU, heq⟩
   let A := mfderiv I J f x
@@ -206,7 +209,8 @@ lemma LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv (hf : IsLocalDiffeomorp
     _ = B.comp (mfderiv I J Φ x) := by rw [hA]
     _ = mfderiv I I (Φ.invFun ∘ Φ) x :=
       (mfderiv_comp x (Φ.mdifferentiableAt_symm hn hxU) (Φ.mdifferentiableAt hn hxU)).symm
-    _ = mfderivWithin I I (Φ.invFun ∘ Φ) Φ.source x := (mfderivWithin_of_isOpen Φ.open_source hxU).symm
+    _ = mfderivWithin I I (Φ.invFun ∘ Φ) Φ.source x :=
+      (mfderivWithin_of_isOpen Φ.open_source hxU).symm
     _ = mfderivWithin I I id Φ.source x := by
       have : EqOn (Φ.invFun ∘ Φ) id Φ.source := fun _ hx ↦ Φ.left_inv' hx
       apply mfderivWithin_congr (Φ.open_source.uniqueMDiffWithinAt hxU) this (this hxU)
@@ -244,13 +248,13 @@ lemma LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv (hf : IsLocalDiffeomorp
 -- FIXME: for some reason, "rfl" fails.
 lemma LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe
     (hf : IsLocalDiffeomorphAt I J M N n f x) :
-    LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv I J M N n hf hn = mfderiv I J f x := by
+    LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv hf hn = mfderiv I J f x := by
   sorry
 
 /-- Each differential of a `C^n` diffeomorphism (`n ≥ 1`) is a linear equivalence. -/
 noncomputable def Diffeomorph.mfderiv_toContinuousLinearEquiv (hn : 1 ≤ n) (Φ : M ≃ₘ^n⟮I, J⟯ N)
     (x : M) : ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (Φ x)) :=
-  LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv I J M N n (Φ.isLocalDiffeomorph x) hn
+  LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv (Φ.isLocalDiffeomorph x) hn
 
 lemma Diffeomorph.mfderiv_toContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ N) {x : M} (hn : 1 ≤ n) :
     (Φ.mfderiv_toContinuousLinearEquiv hn x).toFun = mfderiv I J Φ x := sorry -- TODO! rfl
@@ -301,14 +305,14 @@ variable (x) in
 /-- If `f` is a `C^n` local diffeomorphism (`n ≥ 1`), each differential is a linear equivalence. -/
 lemma LocalDiffeomorph.mfderiv_toContinuousLinearEquiv (hf : IsLocalDiffeomorph I J M N n f)
     (hn : 1 ≤ n) : ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
-  LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv I J M N n (hf x) hn
+  LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv (hf x) hn
 
 variable (x) in
 lemma LocalDiffeomorph.mfderiv_toContinuousLinearEquiv_coe (hf : IsLocalDiffeomorph I J M N n f):
-    LocalDiffeomorph.mfderiv_toContinuousLinearEquiv I J M N n x hf hn = mfderiv I J f x := by
-  let r := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe I J M N n hn (hf x)
-  have : ↑(LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv I J M N n (hf x) hn) =
-    ↑(LocalDiffeomorph.mfderiv_toContinuousLinearEquiv I J M N n x hf hn) :=
+    LocalDiffeomorph.mfderiv_toContinuousLinearEquiv x hf hn = mfderiv I J f x := by
+  let r := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe hn (hf x)
+  have : ↑(LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv (hf x) hn) =
+    ↑(LocalDiffeomorph.mfderiv_toContinuousLinearEquiv x hf hn) :=
     sorry -- why is this not obvious?
   exact this ▸ r
 

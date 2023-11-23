@@ -166,9 +166,6 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
   monotonicity := fun {f} _ _ _ hst hf ↦ hf.mono hst
   inverse := by
     intro f g s t x f' hs hx hf hf' hinv
-    -- FIXME: is there a better way than these two lines?
-    unfold contDiffPregroupoidBasic
-    simp only
     -- Since f is continuously differentiable on s, there's a neighbourhood `U` of `x` s.t.
     -- `df_x'` is an isomorphism for all `x' ∈ U`.
     rcases mem_nhds_iff.mp f'.nhds with ⟨t', ht, htopen, hft⟩
