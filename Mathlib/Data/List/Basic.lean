@@ -3867,7 +3867,7 @@ theorem nthLe_enum (l : List α) (i : ℕ) (hi' : i < l.enum.length)
 
 @[simp]
 theorem enumFrom_eq_nil {n : ℕ} {l : List α} : List.enumFrom n l = [] ↔ l = [] := by
-  cases l <;> simp [List.enum_cons]
+  cases l <;> simp
 
 @[simp]
 theorem enum_eq_nil {l : List α} : List.enum l = [] ↔ l = [] := enumFrom_eq_nil
