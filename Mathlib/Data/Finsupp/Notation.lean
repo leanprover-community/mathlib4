@@ -19,11 +19,15 @@ open Lean
 open Lean.Parser
 open Lean.Parser.Term
 
-/-- A variant of `Lean.Parser.Term.matchAlts` with less line wrapping. -/
+-- A variant of `Lean.Parser.Term.matchAlts` with less line wrapping.
 def fun₀.matchAlts : Parser :=
   leading_parser withPosition $ ppRealGroup <| many1Indent (ppSpace >> ppGroup matchAlt)
 
-@[term_parser, inherit_doc Finsupp]
+/-- `fun₀ | i => a` is notation for `Finsupp.single i a`, and with multiple match arms,
+`fun₀ ... | i => a` is notation for `Finsupp.update (fun₀ ...) i a`.
+
+As a result, if multiple match arms coincide, the last one takes precedence. -/
+@[term_parser]
 def fun₀ := leading_parser:maxPrec
   ppAllowUngrouped >> unicodeSymbol "λ₀" "fun₀" >> fun₀.matchAlts
 
