@@ -859,7 +859,7 @@ open HomologicalComplex CategoryTheory
 variable {C : Type*} [Category C] [Preadditive C] {ι : Type _} {c : ComplexShape ι}
   [DecidableRel c.Rel] {K L : HomologicalComplex C c} {f g : K ⟶ L}
 
-/-- A homotopy between morphisms of homological complexes `K ⟶ L` induces an homotopy
+/-- A homotopy between morphisms of homological complexes `K ⟶ L` induces a homotopy
 between morphisms of short complexes `K.sc i ⟶ L.sc i`. -/
 noncomputable def Homotopy.toShortComplex (ho : Homotopy f g) (i : ι) :
     ShortComplex.Homotopy ((shortComplexFunctor C c i).map f)
