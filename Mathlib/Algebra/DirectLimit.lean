@@ -32,7 +32,7 @@ so as to make the operations (addition etc.) "computable".
 -/
 
 
-universe u v w u₁
+universe u v w w' u₁
 
 open Submodule
 
@@ -42,7 +42,7 @@ variable {ι : Type v}
 
 variable [dec_ι : DecidableEq ι] [Preorder ι]
 
-variable (G : ι → Type w)
+variable (G : ι → Type w) (G' : ι → Type w')
 
 /-- A directed system is a functor from a category (directed poset) to another category. -/
 class DirectedSystem (f : ∀ i j, i ≤ j → G i → G j) : Prop where
@@ -64,8 +64,9 @@ end
 namespace Module
 
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
+variable [∀ i, AddCommGroup (G' i)] [∀ i, Module R (G' i)]
 
-variable {G} (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
+variable {G G'} (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) (f' : ∀  i j, i ≤ j → G' i →ₗ[R] G' j)
 
 /-- A copy of `DirectedSystem.map_self` specialized to linear maps, as otherwise the
 `fun i j h ↦ f i j h` can confuse the simplifier. -/
@@ -182,6 +183,43 @@ lemma lift_injective [IsDirected ι (· ≤ ·)]
   induction' z using DirectLimit.induction_on with _ g
   rw [lift_of] at hz
   rw [injective _ g hz, _root_.map_zero]
+
+variable (f) in
+/--
+For two family of modules `G` and `G'` indexed by the same set with direct system `f` and `f'`
+respectively, if there is a compatible family of linear-equivalence `eᵢ : Gᵢ ≅ Gᵢ'`, i.e. for
+`i ≤ j`, we have `eᵢ ∘ fᵢⱼ = fᵢⱼ' ∘ eⱼ`, there is a linear equivalence `lim G ≅ lim G'`.
+-/
+def congr [IsDirected ι (· ≤ ·)] (equiv : (i : ι) → G i ≃ₗ[R] G' i)
+    (compatible_equiv : ∀ i j h x, equiv j (f i j h x) = f' _ _ h (equiv _ x)) :
+    (DirectLimit G f) ≃ₗ[R] DirectLimit G' f' :=
+  LinearEquiv.ofLinear
+    (lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ (equiv i).toLinearMap) fun i j hij g ↦ by aesop)
+    (lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ (equiv i).symm.toLinearMap) fun i j hij g ↦ by
+      have eq1 := FunLike.congr_arg (equiv _).symm <| compatible_equiv i j hij ((equiv i).symm g)
+      simp only [LinearEquiv.symm_apply_apply, LinearEquiv.apply_symm_apply] at eq1
+      dsimp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+      rw [← eq1, of_f])
+    (FunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _)
+      fun _ ↦ DirectLimit.induction_on x fun _ _ ↦ by simp [lift_of])
+    (FunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _)
+      fun _ ↦ DirectLimit.induction_on x fun _ _ ↦ by simp [lift_of])
+
+@[simp] lemma congr_apply_of [IsDirected ι (· ≤ ·)]
+    (equiv : (i : ι) → G i ≃ₗ[R] G' i)
+    (compatible_equiv : ∀ i j h x, equiv j (f i j h x) = f' _ _ h (equiv _ x))
+    {i : ι} (g : G i) :
+    congr f f' equiv compatible_equiv (of _ _ _ _ i g : DirectLimit G f) =
+    of R ι G' f' i (equiv i g) := by
+  simpa only [congr, LinearEquiv.ofLinear_apply] using lift_of _ _ _
+
+@[simp] lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)]
+    (equiv : (i : ι) → G i ≃ₗ[R] G' i)
+    (compatible_equiv : ∀ i j h x, equiv j (f i j h x) = f' _ _ h (equiv _ x))
+    {i : ι} (g : G' i) :
+    (congr f f' equiv compatible_equiv).symm (of _ _ _ _ i g) =
+    of R ι G f i ((equiv i).symm g) := by
+  simpa only [congr, LinearEquiv.ofLinear_symm_apply] using lift_of _ _ _
 
 section Totalize
 
