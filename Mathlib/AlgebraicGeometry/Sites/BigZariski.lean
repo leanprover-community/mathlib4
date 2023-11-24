@@ -57,7 +57,7 @@ lemma zariskiPretopology_openCover {Y : Scheme.{u}} (U : OpenCover.{u} Y) :
   ⟨U, rfl⟩
 
 lemma zariskiTopology_openCover {Y : Scheme.{u}} (U : OpenCover.{v} Y) :
-    zariskiTopology.{u} Y (Sieve.generate (Presieve.ofArrows U.obj U.map)) := by
+    zariskiTopology Y (Sieve.generate (Presieve.ofArrows U.obj U.map)) := by
   let V : OpenCover.{u} Y :=
     { J := Y
       obj := fun y => U.obj (U.f y)
