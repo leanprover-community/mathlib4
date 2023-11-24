@@ -612,7 +612,7 @@ lemma eventually_asympBound_r_pos : ∀ᶠ (n:ℕ) in atTop, ∀ i, 0 < asympBou
   exact fun i => (R.tendsto_atTop_r i).eventually R.eventually_asympBound_pos
 
 -- The linter falsely flags `hc₂_pos` as being unused.
-set_option linter.unusedVariables false in
+@[nolint unusedHavesSuffices]
 lemma eventually_atTop_sumTransform_le :
     ∃ c > 0, ∀ᶠ (n:ℕ) in atTop, ∀ i, sumTransform (p a b) g (r i n) n ≤ c * g n := by
   obtain ⟨c₁, hc₁_mem, hc₁⟩ := R.exists_eventually_const_mul_le_r
