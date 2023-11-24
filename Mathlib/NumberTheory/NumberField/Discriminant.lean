@@ -107,8 +107,7 @@ theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
   refine ⟨x, h_nz, ?_⟩
   convert h_bd
   rw [div_pow B, ← Real.rpow_nat_cast B, ← Real.rpow_mul (by positivity), div_mul_cancel _
-    (Nat.cast_ne_zero.mpr <| ne_of_gt finrank_pos), Real.rpow_one, Nat.cast_pow, mul_comm_div,
-    mul_div_assoc']
+    (Nat.cast_ne_zero.mpr <| ne_of_gt finrank_pos), Real.rpow_one, mul_comm_div, mul_div_assoc']
   congr 1
   rw [eq_comm]
   calc
@@ -117,8 +116,8 @@ theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
           (Nat.factorial (finrank ℚ K)))⁻¹ := by
       simp_rw [minkowskiBound, convexBodySumFactor, volume_fundamentalDomain_latticeBasis,
         toReal_mul, toReal_inv, toReal_div, toReal_mul, coe_toReal, toReal_pow, toReal_inv,
-        toReal_ofNat, mixedEmbedding.finrank, NNReal.coe_pow, NNReal.coe_div, coe_real_pi,
-        NNReal.coe_ofNat, toReal_nat]
+        toReal_ofNat, mixedEmbedding.finrank, toReal_div, toReal_ofNat, coe_toReal, coe_real_pi,
+        toReal_nat]
     _ = (2:ℝ) ^ (finrank ℚ K - NrComplexPlaces K - NrRealPlaces K + NrComplexPlaces K : ℤ) *
           Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) * π⁻¹ ^ (NrComplexPlaces K) := by
       simp_rw [inv_div, div_eq_mul_inv, mul_inv, ← zpow_neg_one, ← zpow_coe_nat, mul_zpow,
@@ -146,7 +145,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
     exact Int.one_le_abs (Algebra.norm_ne_zero_iff.mpr h_nz)
   replace h_bd := le_trans h_nm h_bd
   rw [← inv_mul_le_iff (by positivity), inv_div, mul_one, Real.le_sqrt (by positivity)
-    (by positivity), ← Int.cast_abs, div_pow, mul_pow, ← pow_mul, Nat.cast_pow, ← pow_mul] at h_bd
+    (by positivity), ← Int.cast_abs, div_pow, mul_pow, ← pow_mul, ← pow_mul] at h_bd
   refine le_trans ?_ h_bd
   -- The sequence `a n` is a lower bound for `|discr K|`. We prove below by induction an uniform
   -- lower bound for this sequence from which we deduce the result.
