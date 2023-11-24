@@ -419,7 +419,7 @@ def toEndRingHom (α : Type*) [NonUnitalNonAssocSemiring α] :
   map_one' := toEnd_one
   map_mul' := toEnd_mul
 
-lemma toEnd'_apply (f : CentroidHom α) : (toEnd' α) f = (f : α →+ α) := rfl
+lemma toEnd'_apply (f : CentroidHom α) : toEndRingHom α f = f.toEnd := rfl
 
 lemma centroid_eq_centralizer_mul_op :
     MonoidHom.mrange (toEnd' α) = Submonoid.centralizer (Set.range L ∪ Set.range R) := by
