@@ -98,62 +98,62 @@ variable {G : Type*} {P : Type*} [Group G] [T : MulTorsor G P]
 
 @[to_additive (attr := simp)
   "Adding the result of subtracting from another point produces that point."]
-theorem sdiv_smul (p1 p2 : P) : p1 /ₛ p2 +ᵥ p2 = p1 :=
+theorem sdiv_smul (p1 p2 : P) : p1 /ₛ p2 • p2 = p1 :=
   MulTorsor.sdiv_smul' p1 p2
 #align vsub_vadd vsub_vadd
 
 /-- Adding a group element then subtracting the original point
 produces that group element. -/
 @[simp]
-theorem vadd_vsub (g : G) (p : P) : g +ᵥ p /ₛ p = g :=
+theorem vadd_vsub (g : G) (p : P) : g • p /ₛ p = g :=
   MulTorsor.vadd_vsub' g p
 #align vadd_vsub vadd_vsub
 
 /-- If the same point added to two group elements produces equal
 results, those group elements are equal. -/
-theorem vadd_right_cancel {g1 g2 : G} (p : P) (h : g1 +ᵥ p = g2 +ᵥ p) : g1 = g2 := by
+theorem vadd_right_cancel {g1 g2 : G} (p : P) (h : g1 • p = g2 • p) : g1 = g2 := by
 -- Porting note: vadd_vsub g₁ → vadd_vsub g₁ p
   rw [← vadd_vsub g1 p, h, vadd_vsub]
 #align vadd_right_cancel vadd_right_cancel
 
 @[simp]
-theorem vadd_right_cancel_iff {g1 g2 : G} (p : P) : g1 +ᵥ p = g2 +ᵥ p ↔ g1 = g2 :=
+theorem vadd_right_cancel_iff {g1 g2 : G} (p : P) : g1 • p = g2 • p ↔ g1 = g2 :=
   ⟨vadd_right_cancel p, fun h => h ▸ rfl⟩
 #align vadd_right_cancel_iff vadd_right_cancel_iff
 
 /-- Adding a group element to the point `p` is an injective
 function. -/
-theorem vadd_right_injective (p : P) : Function.Injective ((· +ᵥ p) : G → P) := fun _ _ =>
+theorem vadd_right_injective (p : P) : Function.Injective ((· • p) : G → P) := fun _ _ =>
   vadd_right_cancel p
 #align vadd_right_injective vadd_right_injective
 
 /-- Adding a group element to a point, then subtracting another point,
 produces the same result as subtracting the points then adding the
 group element. -/
-theorem vadd_vsub_assoc (g : G) (p1 p2 : P) : g +ᵥ p1 /ₛ p2 = g + (p1 /ₛ p2) := by
+theorem vadd_vsub_assoc (g : G) (p1 p2 : P) : g • p1 /ₛ p2 = g + (p1 /ₛ p2) := by
   apply vadd_right_cancel p2
   rw [vsub_vadd, add_vadd, vsub_vadd]
 #align vadd_vsub_assoc vadd_vsub_assoc
 
 /-- Subtracting a point from itself produces 0. -/
 @[simp]
-theorem vsub_self (p : P) : p /ₛ p = (0 : G) := by
+theorem vsub_self (p : P) : p /ₛ p = (1 : G) := by
   rw [← zero_add (p /ₛ p), ← vadd_vsub_assoc, vadd_vsub]
 #align vsub_self vsub_self
 
 /-- If subtracting two points produces 0, they are equal. -/
-theorem eq_of_vsub_eq_zero {p1 p2 : P} (h : p1 /ₛ p2 = (0 : G)) : p1 = p2 := by
+theorem eq_of_vsub_eq_zero {p1 p2 : P} (h : p1 /ₛ p2 = (1 : G)) : p1 = p2 := by
   rw [← vsub_vadd p1 p2, h, zero_vadd]
 #align eq_of_vsub_eq_zero eq_of_vsub_eq_zero
 
 /-- Subtracting two points produces 0 if and only if they are
 equal. -/
 @[simp]
-theorem vsub_eq_zero_iff_eq {p1 p2 : P} : p1 /ₛ p2 = (0 : G) ↔ p1 = p2 :=
+theorem vsub_eq_zero_iff_eq {p1 p2 : P} : p1 /ₛ p2 = (1 : G) ↔ p1 = p2 :=
   Iff.intro eq_of_vsub_eq_zero fun h => h ▸ vsub_self _
 #align vsub_eq_zero_iff_eq vsub_eq_zero_iff_eq
 
-theorem vsub_ne_zero {p q : P} : p /ₛ q ≠ (0 : G) ↔ p ≠ q :=
+theorem vsub_ne_zero {p q : P} : p /ₛ q ≠ (1 : G) ↔ p ≠ q :=
   not_congr vsub_eq_zero_iff_eq
 #align vsub_ne_zero vsub_ne_zero
 
@@ -172,13 +172,13 @@ theorem neg_vsub_eq_vsub_rev (p1 p2 : P) : -(p1 /ₛ p2) = p2 /ₛ p1 := by
   rw [vsub_add_vsub_cancel, vsub_self]
 #align neg_vsub_eq_vsub_rev neg_vsub_eq_vsub_rev
 
-theorem vadd_vsub_eq_sub_vsub (g : G) (p q : P) : g +ᵥ p /ₛ q = g - (q /ₛ p) := by
+theorem vadd_vsub_eq_sub_vsub (g : G) (p q : P) : g • p /ₛ q = g - (q /ₛ p) := by
   rw [vadd_vsub_assoc, sub_eq_add_neg, neg_vsub_eq_vsub_rev]
 #align vadd_vsub_eq_sub_vsub vadd_vsub_eq_sub_vsub
 
 /-- Subtracting the result of adding a group element produces the same result
 as subtracting the points and subtracting that group element. -/
-theorem vsub_vadd_eq_vsub_sub (p1 p2 : P) (g : G) : p1 /ₛ (g +ᵥ p2) = p1 /ₛ p2 - g := by
+theorem vsub_vadd_eq_vsub_sub (p1 p2 : P) (g : G) : p1 /ₛ (g • p2) = p1 /ₛ p2 - g := by
   rw [← add_right_inj (p2 /ₛ p1 : G), vsub_add_vsub_cancel, ← neg_vsub_eq_vsub_rev, vadd_vsub, ←
     add_sub_assoc, ← neg_vsub_eq_vsub_rev, neg_add_self, zero_sub]
 #align vsub_vadd_eq_vsub_sub vsub_vadd_eq_vsub_sub
@@ -192,12 +192,12 @@ theorem vsub_sub_vsub_cancel_right (p1 p2 p3 : P) : p1 /ₛ p3 - (p2 /ₛ p3) = 
 /-- Convert between an equality with adding a group element to a point
 and an equality of a subtraction of two points with a group
 element. -/
-theorem eq_vadd_iff_vsub_eq (p1 : P) (g : G) (p2 : P) : p1 = g +ᵥ p2 ↔ p1 /ₛ p2 = g :=
+theorem eq_vadd_iff_vsub_eq (p1 : P) (g : G) (p2 : P) : p1 = g • p2 ↔ p1 /ₛ p2 = g :=
   ⟨fun h => h.symm ▸ vadd_vsub _ _, fun h => h ▸ (vsub_vadd _ _).symm⟩
 #align eq_vadd_iff_vsub_eq eq_vadd_iff_vsub_eq
 
 theorem vadd_eq_vadd_iff_neg_add_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
-    v₁ +ᵥ p₁ = v₂ +ᵥ p₂ ↔ -v₁ + v₂ = p₁ /ₛ p₂ := by
+    v₁ • p₁ = v₂ • p₂ ↔ -v₁ + v₂ = p₁ /ₛ p₂ := by
   rw [eq_vadd_iff_vsub_eq, vadd_vsub_assoc, ← add_right_inj (-v₁), neg_add_cancel_left, eq_comm]
 #align vadd_eq_vadd_iff_neg_add_eq_vsub vadd_eq_vadd_iff_neg_add_eq_vsub
 
@@ -207,14 +207,14 @@ open Pointwise
 
 -- Porting note: simp can prove this
 --@[simp]
-theorem singleton_vsub_self (p : P) : ({p} : Set P) /ₛ {p} = {(0 : G)} := by
+theorem singleton_vsub_self (p : P) : ({p} : Set P) /ₛ {p} = {(1 : G)} := by
   rw [Set.singleton_vsub_singleton, vsub_self]
 #align set.singleton_vsub_self Set.singleton_vsub_self
 
 end Set
 
 @[simp]
-theorem vadd_vsub_vadd_cancel_right (v₁ v₂ : G) (p : P) : v₁ +ᵥ p /ₛ (v₂ +ᵥ p) = v₁ - v₂ := by
+theorem vadd_vsub_vadd_cancel_right (v₁ v₂ : G) (p : P) : v₁ • p /ₛ (v₂ • p) = v₁ - v₂ := by
   rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, vsub_self, add_zero]
 #align vadd_vsub_vadd_cancel_right vadd_vsub_vadd_cancel_right
 
@@ -272,17 +272,17 @@ theorem vsub_sub_vsub_cancel_left (p1 p2 p3 : P) : p3 /ₛ p2 - (p3 /ₛ p1) = p
 #align vsub_sub_vsub_cancel_left vsub_sub_vsub_cancel_left
 
 @[simp]
-theorem vadd_vsub_vadd_cancel_left (v : G) (p1 p2 : P) : v +ᵥ p1 /ₛ (v +ᵥ p2) = p1 /ₛ p2 := by
+theorem vadd_vsub_vadd_cancel_left (v : G) (p1 p2 : P) : v • p1 /ₛ (v • p2) = p1 /ₛ p2 := by
   rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub_cancel']
 #align vadd_vsub_vadd_cancel_left vadd_vsub_vadd_cancel_left
 
-theorem vsub_vadd_comm (p1 p2 p3 : P) : (p1 /ₛ p2 : G) +ᵥ p3 = p3 /ₛ p2 +ᵥ p1 := by
+theorem vsub_vadd_comm (p1 p2 p3 : P) : (p1 /ₛ p2 : G) • p3 = p3 /ₛ p2 • p1 := by
   rw [← @vsub_eq_zero_iff_eq G, vadd_vsub_assoc, vsub_vadd_eq_vsub_sub]
   simp
 #align vsub_vadd_comm vsub_vadd_comm
 
 theorem vadd_eq_vadd_iff_sub_eq_vsub {v₁ v₂ : G} {p₁ p₂ : P} :
-    v₁ +ᵥ p₁ = v₂ +ᵥ p₂ ↔ v₂ - v₁ = p₁ /ₛ p₂ := by
+    v₁ • p₁ = v₂ • p₂ ↔ v₂ - v₁ = p₁ /ₛ p₂ := by
   rw [vadd_eq_vadd_iff_neg_add_eq_vsub, neg_add_eq_sub]
 #align vadd_eq_vadd_iff_sub_eq_vsub vadd_eq_vadd_iff_sub_eq_vsub
 
@@ -297,7 +297,7 @@ namespace Prod
 variable {G : Type*} [AddGroup G] [AddGroup G'] [AddTorsor G P] [AddTorsor G' P']
 
 instance instAddTorsor : AddTorsor (G × G') (P × P') where
-  vadd v p := (v.1 +ᵥ p.1, v.2 +ᵥ p.2)
+  vadd v p := (v.1 • p.1, v.2 • p.2)
   zero_vadd _ := Prod.ext (zero_vadd _ _) (zero_vadd _ _)
   add_vadd _ _ _ := Prod.ext (add_vadd _ _ _) (add_vadd _ _ _)
   vsub p₁ p₂ := (p₁.1 /ₛ p₂.1, p₁.2 /ₛ p₂.2)
@@ -306,26 +306,26 @@ instance instAddTorsor : AddTorsor (G × G') (P × P') where
   vadd_vsub' _ _ := Prod.ext (vadd_vsub _ _) (vadd_vsub _ _)
 
 -- Porting note: The proofs above used to be shorter:
--- zero_vadd p := by simp ⊢ 0 +ᵥ p = p
+-- zero_vadd p := by simp ⊢ 0 • p = p
 -- add_vadd := by simp [add_vadd] ⊢ ∀ (a : G) (b : G') (a_1 : G) (b_1 : G') (a_2 : P) (b_2 : P'),
---  (a + a_1, b + b_1) +ᵥ (a_2, b_2) = (a, b) +ᵥ ((a_1, b_1) +ᵥ (a_2, b_2))
--- vsub_vadd' p₁ p₂ := show (p₁.1 /ₛ p₂.1 +ᵥ p₂.1, _) = p₁ by simp
---   ⊢ (p₁.fst /ₛ p₂.fst +ᵥ p₂.fst, ((p₁.fst /ₛ p₂.fst, p₁.snd /ₛ p₂.snd) +ᵥ p₂).snd) = p₁
--- vadd_vsub' v p := show (v.1 +ᵥ p.1 /ₛ p.1, v.2 +ᵥ p.2 /ₛ p.2) = v by simp
---   ⊢ (v.fst +ᵥ p.fst /ₛ p.fst, v.snd) = v
+--  (a + a_1, b + b_1) • (a_2, b_2) = (a, b) • ((a_1, b_1) • (a_2, b_2))
+-- vsub_vadd' p₁ p₂ := show (p₁.1 /ₛ p₂.1 • p₂.1, _) = p₁ by simp
+--   ⊢ (p₁.fst /ₛ p₂.fst • p₂.fst, ((p₁.fst /ₛ p₂.fst, p₁.snd /ₛ p₂.snd) • p₂).snd) = p₁
+-- vadd_vsub' v p := show (v.1 • p.1 /ₛ p.1, v.2 • p.2 /ₛ p.2) = v by simp
+--   ⊢ (v.fst • p.fst /ₛ p.fst, v.snd) = v
 
 @[simp]
-theorem fst_vadd (v : G × G') (p : P × P') : (v +ᵥ p).1 = v.1 +ᵥ p.1 :=
+theorem fst_vadd (v : G × G') (p : P × P') : (v • p).1 = v.1 • p.1 :=
   rfl
 #align prod.fst_vadd Prod.fst_vadd
 
 @[simp]
-theorem snd_vadd (v : G × G') (p : P × P') : (v +ᵥ p).2 = v.2 +ᵥ p.2 :=
+theorem snd_vadd (v : G × G') (p : P × P') : (v • p).2 = v.2 • p.2 :=
   rfl
 #align prod.snd_vadd Prod.snd_vadd
 
 @[simp]
-theorem mk_vadd_mk (v : G) (v' : G') (p : P) (p' : P') : (v, v') +ᵥ (p, p') = (v +ᵥ p, v' +ᵥ p') :=
+theorem mk_vadd_mk (v : G) (v' : G') (p : P) (p' : P') : (v, v') • (p, p') = (v • p, v' • p') :=
   rfl
 #align prod.mk_vadd_mk Prod.mk_vadd_mk
 
@@ -357,7 +357,7 @@ open AddAction AddTorsor
 
 /-- A product of `AddTorsor`s is an `AddTorsor`. -/
 instance instAddTorsor [∀ i, AddTorsor (fg i) (fp i)] : AddTorsor (∀ i, fg i) (∀ i, fp i) where
-  vadd g p i := g i +ᵥ p i
+  vadd g p i := g i • p i
   zero_vadd p := funext fun i => zero_vadd (fg i) (p i)
   add_vadd g₁ g₂ p := funext fun i => add_vadd (g₁ i) (g₂ i) (p i)
   vsub p₁ p₂ i := p₁ i /ₛ p₂ i
@@ -373,16 +373,16 @@ variable {G : Type*} {P : Type*} [AddGroup G] [AddTorsor G P]
 -- Porting note: Removed:
 -- include G
 
-/-- `v ↦ v +ᵥ p` as an equivalence. -/
+/-- `v ↦ v • p` as an equivalence. -/
 def vaddConst (p : P) : G ≃ P where
-  toFun v := v +ᵥ p
+  toFun v := v • p
   invFun p' := p' /ₛ p
   left_inv _ := vadd_vsub _ _
   right_inv _ := vsub_vadd _ _
 #align equiv.vadd_const Equiv.vaddConst
 
 @[simp]
-theorem coe_vaddConst (p : P) : ⇑(vaddConst p) = fun v => v +ᵥ p :=
+theorem coe_vaddConst (p : P) : ⇑(vaddConst p) = fun v => v • p :=
   rfl
 #align equiv.coe_vadd_const Equiv.coe_vaddConst
 
@@ -394,7 +394,7 @@ theorem coe_vaddConst_symm (p : P) : ⇑(vaddConst p).symm = fun p' => p' /ₛ p
 /-- `p' ↦ p /ₛ p'` as an equivalence. -/
 def constVSub (p : P) : P ≃ G where
   toFun := (· /ₛ ·) p
-  invFun v := -v +ᵥ p
+  invFun v := -v • p
   left_inv p' := by simp
   right_inv v := by simp [vsub_vadd_eq_vsub_sub]
 #align equiv.const_vsub Equiv.constVSub
@@ -405,29 +405,29 @@ theorem coe_constVSub (p : P) : ⇑(constVSub p) = (· /ₛ ·) p :=
 #align equiv.coe_const_vsub Equiv.coe_constVSub
 
 @[simp]
-theorem coe_constVSub_symm (p : P) : ⇑(constVSub p).symm = fun (v : G) => -v +ᵥ p :=
+theorem coe_constVSub_symm (p : P) : ⇑(constVSub p).symm = fun (v : G) => -v • p :=
   rfl
 #align equiv.coe_const_vsub_symm Equiv.coe_constVSub_symm
 
 variable (P)
 
-/-- The permutation given by `p ↦ v +ᵥ p`. -/
+/-- The permutation given by `p ↦ v • p`. -/
 def constVAdd (v : G) : Equiv.Perm P where
-  toFun := (· +ᵥ ·) v
-  invFun := (· +ᵥ ·) (-v)
+  toFun := (· • ·) v
+  invFun := (· • ·) (-v)
   left_inv p := by simp [vadd_vadd]
   right_inv p := by simp [vadd_vadd]
 #align equiv.const_vadd Equiv.constVAdd
 
 @[simp]
-theorem coe_constVAdd (v : G) : ⇑(constVAdd P v) = (· +ᵥ ·) v :=
+theorem coe_constVAdd (v : G) : ⇑(constVAdd P v) = (· • ·) v :=
   rfl
 #align equiv.coe_const_vadd Equiv.coe_constVAdd
 
 variable (G)
 
 @[simp]
-theorem constVAdd_zero : constVAdd P (0 : G) = 1 :=
+theorem constVAdd_zero : constVAdd P (1 : G) = 1 :=
   ext <| zero_vadd G
 #align equiv.const_vadd_zero Equiv.constVAdd_zero
 

@@ -19,7 +19,7 @@ This file defines pointwise algebraic operations on sets.
 For sets `s` and `t` and scalar `a`:
 * `s • t`: Scalar multiplication, set of all `x • y` where `x ∈ s` and `y ∈ t`.
 * `s +ᵥ t`: Scalar addition, set of all `x +ᵥ y` where `x ∈ s` and `y ∈ t`.
-* `s -ᵥ t`: Scalar subtraction, set of all `x -ᵥ y` where `x ∈ s` and `y ∈ t`.
+* `s /ₛ t`: Scalar subtraction, set of all `x /ₛ y` where `x ∈ s` and `y ∈ t`.
 * `a • s`: Scaling, set of all `a • x` where `x ∈ s`.
 * `a +ᵥ s`: Translation, set of all `a +ᵥ x` where `x ∈ s`.
 
@@ -586,169 +586,216 @@ instance [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivisors (Set α) :=
 
 end SMul
 
-section VSub
+section SDiv
 
-variable {ι : Sort*} {κ : ι → Sort*} [VSub α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α}
+variable {ι : Sort*} {κ : ι → Sort*} [SDiv α β] {s s₁ s₂ t t₁ t₂ : Set β} {u : Set α} {a : α}
   {b c : β}
 
-instance vsub : VSub (Set α) (Set β) :=
-  ⟨image2 (· -ᵥ ·)⟩
-#align set.has_vsub Set.vsub
+@[to_additive]
+instance instSDiv : SDiv (Set α) (Set β) :=
+  ⟨image2 (· /ₛ ·)⟩
+#align set.has_vsub Set.instVSub
 
-@[simp]
-theorem image2_vsub : (image2 VSub.vsub s t : Set α) = s -ᵥ t :=
+@[to_additive (attr := simp)]
+theorem image2_sdiv : (image2 SDiv.sdiv s t : Set α) = s /ₛ t :=
   rfl
 #align set.image2_vsub Set.image2_vsub
 
-theorem image_vsub_prod : (fun x : β × β ↦ x.fst -ᵥ x.snd) '' s ×ˢ t = s -ᵥ t :=
+@[to_additive image_vsub_prod]
+theorem image_sdiv_prod : (fun x : β × β ↦ x.fst /ₛ x.snd) '' s ×ˢ t = s /ₛ t :=
   image_prod _
 #align set.image_vsub_prod Set.image_vsub_prod
 
-theorem mem_vsub : a ∈ s -ᵥ t ↔ ∃ x y, x ∈ s ∧ y ∈ t ∧ x -ᵥ y = a :=
+@[to_additive]
+theorem mem_sdiv : a ∈ s /ₛ t ↔ ∃ x y, x ∈ s ∧ y ∈ t ∧ x /ₛ y = a :=
   Iff.rfl
 #align set.mem_vsub Set.mem_vsub
 
-theorem vsub_mem_vsub (hb : b ∈ s) (hc : c ∈ t) : b -ᵥ c ∈ s -ᵥ t :=
+@[to_additive]
+theorem sdiv_mem_sdiv (hb : b ∈ s) (hc : c ∈ t) : b /ₛ c ∈ s /ₛ t :=
   mem_image2_of_mem hb hc
 #align set.vsub_mem_vsub Set.vsub_mem_vsub
 
-@[simp]
-theorem empty_vsub (t : Set β) : ∅ -ᵥ t = ∅ :=
+@[to_additive (attr := simp)]
+theorem empty_sdiv (t : Set β) : ∅ /ₛ t = ∅ :=
   image2_empty_left
 #align set.empty_vsub Set.empty_vsub
 
-@[simp]
-theorem vsub_empty (s : Set β) : s -ᵥ ∅ = ∅ :=
+@[to_additive (attr := simp)]
+theorem sdiv_empty (s : Set β) : s /ₛ ∅ = ∅ :=
   image2_empty_right
 #align set.vsub_empty Set.vsub_empty
 
-@[simp]
-theorem vsub_eq_empty : s -ᵥ t = ∅ ↔ s = ∅ ∨ t = ∅ :=
+@[to_additive (attr := simp)]
+theorem sdiv_eq_empty : s /ₛ t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image2_eq_empty_iff
 #align set.vsub_eq_empty Set.vsub_eq_empty
 
-@[simp]
-theorem vsub_nonempty : (s -ᵥ t : Set α).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
+@[to_additive (attr := simp)]
+theorem sdiv_nonempty : (s /ₛ t : Set α).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image2_nonempty_iff
 #align set.vsub_nonempty Set.vsub_nonempty
 
-theorem Nonempty.vsub : s.Nonempty → t.Nonempty → (s -ᵥ t : Set α).Nonempty :=
+@[to_additive]
+theorem Nonempty.sdiv : s.Nonempty → t.Nonempty → (s /ₛ t : Set α).Nonempty :=
   Nonempty.image2
 #align set.nonempty.vsub Set.Nonempty.vsub
 
-theorem Nonempty.of_vsub_left : (s -ᵥ t : Set α).Nonempty → s.Nonempty :=
+@[to_additive]
+theorem Nonempty.of_sdiv_left : (s /ₛ t : Set α).Nonempty → s.Nonempty :=
   Nonempty.of_image2_left
 #align set.nonempty.of_vsub_left Set.Nonempty.of_vsub_left
 
-theorem Nonempty.of_vsub_right : (s -ᵥ t : Set α).Nonempty → t.Nonempty :=
+@[to_additive]
+theorem Nonempty.of_sdiv_right : (s /ₛ t : Set α).Nonempty → t.Nonempty :=
   Nonempty.of_image2_right
 #align set.nonempty.of_vsub_right Set.Nonempty.of_vsub_right
 
-@[simp low+1]
-theorem vsub_singleton (s : Set β) (b : β) : s -ᵥ {b} = (· -ᵥ b) '' s :=
+@[to_additive (attr := simp low+1)]
+theorem sdiv_singleton (s : Set β) (b : β) : s /ₛ {b} = (· /ₛ b) '' s :=
   image2_singleton_right
 #align set.vsub_singleton Set.vsub_singleton
 
-@[simp low+1]
-theorem singleton_vsub (t : Set β) (b : β) : {b} -ᵥ t = (· -ᵥ ·) b '' t :=
+@[to_additive (attr := simp low+1)]
+theorem singleton_sdiv (t : Set β) (b : β) : {b} /ₛ t = (· /ₛ ·) b '' t :=
   image2_singleton_left
 #align set.singleton_vsub Set.singleton_vsub
 
-@[simp high]
-theorem singleton_vsub_singleton : ({b} : Set β) -ᵥ {c} = {b -ᵥ c} :=
+@[to_additive (attr := simp high)]
+theorem singleton_sdiv_singleton : ({b} : Set β) /ₛ {c} = {b /ₛ c} :=
   image2_singleton
 #align set.singleton_vsub_singleton Set.singleton_vsub_singleton
 
-@[mono]
-theorem vsub_subset_vsub : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ -ᵥ t₁ ⊆ s₂ -ᵥ t₂ :=
+@[to_additive (attr := mono)]
+theorem sdiv_subset_sdiv : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ /ₛ t₁ ⊆ s₂ /ₛ t₂ :=
   image2_subset
 #align set.vsub_subset_vsub Set.vsub_subset_vsub
 
-theorem vsub_subset_vsub_left : t₁ ⊆ t₂ → s -ᵥ t₁ ⊆ s -ᵥ t₂ :=
+
+@[to_additive]
+theorem sdiv_subset_sdiv_left : t₁ ⊆ t₂ → s /ₛ t₁ ⊆ s /ₛ t₂ :=
   image2_subset_left
 #align set.vsub_subset_vsub_left Set.vsub_subset_vsub_left
 
-theorem vsub_subset_vsub_right : s₁ ⊆ s₂ → s₁ -ᵥ t ⊆ s₂ -ᵥ t :=
+
+@[to_additive]
+theorem sdiv_subset_sdiv_right : s₁ ⊆ s₂ → s₁ /ₛ t ⊆ s₂ /ₛ t :=
   image2_subset_right
 #align set.vsub_subset_vsub_right Set.vsub_subset_vsub_right
 
-theorem vsub_subset_iff : s -ᵥ t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x -ᵥ y ∈ u :=
+
+@[to_additive]
+theorem sdiv_subset_iff : s /ₛ t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, x /ₛ y ∈ u :=
   image2_subset_iff
 #align set.vsub_subset_iff Set.vsub_subset_iff
 
-theorem vsub_self_mono (h : s ⊆ t) : s -ᵥ s ⊆ t -ᵥ t :=
-  vsub_subset_vsub h h
+
+@[to_additive]
+theorem sdiv_self_mono (h : s ⊆ t) : s /ₛ s ⊆ t /ₛ t :=
+  sdiv_subset_sdiv h h
 #align set.vsub_self_mono Set.vsub_self_mono
 
-theorem union_vsub : s₁ ∪ s₂ -ᵥ t = s₁ -ᵥ t ∪ (s₂ -ᵥ t) :=
+
+@[to_additive]
+theorem union_sdiv : (s₁ ∪ s₂) /ₛ t = (s₁ /ₛ t) ∪ (s₂ /ₛ t) :=
   image2_union_left
 #align set.union_vsub Set.union_vsub
 
-theorem vsub_union : s -ᵥ (t₁ ∪ t₂) = s -ᵥ t₁ ∪ (s -ᵥ t₂) :=
+
+@[to_additive]
+theorem sdiv_union : s /ₛ (t₁ ∪ t₂) = s /ₛ t₁ ∪ (s /ₛ t₂) :=
   image2_union_right
 #align set.vsub_union Set.vsub_union
 
-theorem inter_vsub_subset : s₁ ∩ s₂ -ᵥ t ⊆ (s₁ -ᵥ t) ∩ (s₂ -ᵥ t) :=
+
+@[to_additive]
+theorem inter_sdiv_subset : (s₁ ∩ s₂) /ₛ t ⊆ (s₁ /ₛ t) ∩ (s₂ /ₛ t) :=
   image2_inter_subset_left
 #align set.inter_vsub_subset Set.inter_vsub_subset
 
-theorem vsub_inter_subset : s -ᵥ t₁ ∩ t₂ ⊆ (s -ᵥ t₁) ∩ (s -ᵥ t₂) :=
+
+@[to_additive]
+theorem sdiv_inter_subset : s /ₛ (t₁ ∩ t₂) ⊆ (s /ₛ t₁) ∩ (s /ₛ t₂) :=
   image2_inter_subset_right
 #align set.vsub_inter_subset Set.vsub_inter_subset
 
-theorem inter_vsub_union_subset_union : s₁ ∩ s₂ -ᵥ (t₁ ∪ t₂) ⊆ s₁ -ᵥ t₁ ∪ (s₂ -ᵥ t₂) :=
+
+@[to_additive]
+theorem inter_sdiv_union_subset_union : (s₁ ∩ s₂) /ₛ (t₁ ∪ t₂) ⊆ (s₁ /ₛ t₁) ∪ (s₂ /ₛ t₂) :=
   image2_inter_union_subset_union
 #align set.inter_vsub_union_subset_union Set.inter_vsub_union_subset_union
 
-theorem union_vsub_inter_subset_union : s₁ ∪ s₂ -ᵥ t₁ ∩ t₂ ⊆ s₁ -ᵥ t₁ ∪ (s₂ -ᵥ t₂) :=
+
+@[to_additive]
+theorem union_sdiv_inter_subset_union : (s₁ ∪ s₂) /ₛ (t₁ ∩ t₂) ⊆ (s₁ /ₛ t₁) ∪ (s₂ /ₛ t₂) :=
   image2_union_inter_subset_union
 #align set.union_vsub_inter_subset_union Set.union_vsub_inter_subset_union
 
-theorem iUnion_vsub_left_image : ⋃ a ∈ s, (· -ᵥ ·) a '' t = s -ᵥ t :=
+
+@[to_additive]
+theorem iUnion_sdiv_left_image : ⋃ a ∈ s, (· /ₛ ·) a '' t = s /ₛ t :=
   iUnion_image_left _
 #align set.Union_vsub_left_image Set.iUnion_vsub_left_image
 
-theorem iUnion_vsub_right_image : ⋃ a ∈ t, (· -ᵥ a) '' s = s -ᵥ t :=
+
+@[to_additive]
+theorem iUnion_sdiv_right_image : ⋃ a ∈ t, (· /ₛ a) '' s = s /ₛ t :=
   iUnion_image_right _
 #align set.Union_vsub_right_image Set.iUnion_vsub_right_image
 
-theorem iUnion_vsub (s : ι → Set β) (t : Set β) : (⋃ i, s i) -ᵥ t = ⋃ i, s i -ᵥ t :=
+
+@[to_additive]
+theorem iUnion_sdiv (s : ι → Set β) (t : Set β) : (⋃ i, s i) /ₛ t = ⋃ i, s i /ₛ t :=
   image2_iUnion_left _ _ _
 #align set.Union_vsub Set.iUnion_vsub
 
-theorem vsub_iUnion (s : Set β) (t : ι → Set β) : (s -ᵥ ⋃ i, t i) = ⋃ i, s -ᵥ t i :=
+
+@[to_additive]
+theorem sdiv_iUnion (s : Set β) (t : ι → Set β) : (s /ₛ ⋃ i, t i) = ⋃ i, s /ₛ t i :=
   image2_iUnion_right _ _ _
 #align set.vsub_Union Set.vsub_iUnion
 
-theorem iUnion₂_vsub (s : ∀ i, κ i → Set β) (t : Set β) :
-    (⋃ (i) (j), s i j) -ᵥ t = ⋃ (i) (j), s i j -ᵥ t :=
+
+@[to_additive]
+theorem iUnion₂_sdiv (s : ∀ i, κ i → Set β) (t : Set β) :
+    (⋃ (i) (j), s i j) /ₛ t = ⋃ (i) (j), s i j /ₛ t :=
   image2_iUnion₂_left _ _ _
 #align set.Union₂_vsub Set.iUnion₂_vsub
 
-theorem vsub_iUnion₂ (s : Set β) (t : ∀ i, κ i → Set β) :
-    (s -ᵥ ⋃ (i) (j), t i j) = ⋃ (i) (j), s -ᵥ t i j :=
+
+@[to_additive]
+theorem sdiv_iUnion₂ (s : Set β) (t : ∀ i, κ i → Set β) :
+    (s /ₛ ⋃ (i) (j), t i j) = ⋃ (i) (j), s /ₛ t i j :=
   image2_iUnion₂_right _ _ _
 #align set.vsub_Union₂ Set.vsub_iUnion₂
 
-theorem iInter_vsub_subset (s : ι → Set β) (t : Set β) : (⋂ i, s i) -ᵥ t ⊆ ⋂ i, s i -ᵥ t :=
+
+@[to_additive]
+theorem iInter_sdiv_subset (s : ι → Set β) (t : Set β) : (⋂ i, s i) /ₛ t ⊆ ⋂ i, s i /ₛ t :=
   image2_iInter_subset_left _ _ _
 #align set.Inter_vsub_subset Set.iInter_vsub_subset
 
-theorem vsub_iInter_subset (s : Set β) (t : ι → Set β) : (s -ᵥ ⋂ i, t i) ⊆ ⋂ i, s -ᵥ t i :=
+
+@[to_additive]
+theorem sdiv_iInter_subset (s : Set β) (t : ι → Set β) : (s /ₛ ⋂ i, t i) ⊆ ⋂ i, s /ₛ t i :=
   image2_iInter_subset_right _ _ _
 #align set.vsub_Inter_subset Set.vsub_iInter_subset
 
-theorem iInter₂_vsub_subset (s : ∀ i, κ i → Set β) (t : Set β) :
-    (⋂ (i) (j), s i j) -ᵥ t ⊆ ⋂ (i) (j), s i j -ᵥ t :=
+
+@[to_additive]
+theorem iInter₂_sdiv_subset (s : ∀ i, κ i → Set β) (t : Set β) :
+    (⋂ (i) (j), s i j) /ₛ t ⊆ ⋂ (i) (j), s i j /ₛ t :=
   image2_iInter₂_subset_left _ _ _
 #align set.Inter₂_vsub_subset Set.iInter₂_vsub_subset
 
-theorem vsub_iInter₂_subset (s : Set β) (t : ∀ i, κ i → Set β) :
-    (s -ᵥ ⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), s -ᵥ t i j :=
+
+@[to_additive]
+theorem sdiv_iInter₂_subset (s : Set β) (t : ∀ i, κ i → Set β) :
+    (s /ₛ ⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), s /ₛ t i j :=
   image2_iInter₂_subset_right _ _ _
 #align set.vsub_Inter₂_subset Set.vsub_iInter₂_subset
 
-end VSub
+end SDiv
 
 open Pointwise
 
