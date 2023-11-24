@@ -84,6 +84,8 @@ instance FreeAbelianGroup.addCommGroup : AddCommGroup (FreeAbelianGroup α) :=
 instance : Inhabited (FreeAbelianGroup α) :=
   ⟨0⟩
 
+instance [IsEmpty α] : Unique (FreeAbelianGroup α) := by unfold FreeAbelianGroup; infer_instance
+
 variable {α}
 
 namespace FreeAbelianGroup
