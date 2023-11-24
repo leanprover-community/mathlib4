@@ -303,7 +303,7 @@ lemma homology_exact₁ : (ShortComplex.mk _ _ (δ_comp hS i j hij)).Exact :=
 lemma homology_exact₂ : (ShortComplex.mk (HomologicalComplex.homologyMap S.f i)
     (HomologicalComplex.homologyMap S.g i) (by rw [← HomologicalComplex.homologyMap_comp,
       S.zero, HomologicalComplex.homologyMap_zero])).Exact := by
-  by_cases c.Rel i (c.next i)
+  by_cases h : c.Rel i (c.next i)
   · exact (snakeInput hS i _ h).L₀_exact
   · have := hS.epi_g
     have : ∀ (K : HomologicalComplex C c), IsIso (K.homologyι i) :=
