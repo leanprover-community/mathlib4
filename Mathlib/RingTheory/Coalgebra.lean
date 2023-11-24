@@ -13,6 +13,8 @@ universe u v
 
 open scoped TensorProduct
 
+/-- A coalgebra over a commutative ring `R` is a module over `R` equipped with a coassociative
+comultiplication Δ and a counit ε obeying the left and right conunitality laws. -/
 class Coalgebra (R : Type u) (A : Type v) [CommRing R] [AddCommGroup A] [Module R A] where
   /-- The comultiplication of the coalgebra -/
   Δ : A →ₗ[R] A ⊗[R] A
@@ -26,6 +28,10 @@ class Coalgebra (R : Type u) (A : Type v) [CommRing R] [AddCommGroup A] [Module 
   /-- The counit satisfies the right counitality law -/
   id_ε : TensorProduct.rid R A ∘ₗ TensorProduct.map .id ε ∘ₗ Δ = .id
 
+/-- The `R`-module whose elements are functions `S → R` which are zero on all but finitely many
+elements of `S` has a coalgebra structure. The coproduct is given by `Δ(fₛ) = fₛ ⊗ fₛ` and the
+counit by `ε(fₛ) =  1`, where `fₛ` is the function sending `s` to `1` and all other elements of `S`
+to zero. -/
 noncomputable
 def Finsupp.Coalgebra (R : Type u) (S : Type v) [CommRing R] : Coalgebra R (S →₀ R) where
   Δ := Finsupp.total S ((S →₀ R) ⊗[R] (S →₀ R)) R
