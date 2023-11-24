@@ -1220,6 +1220,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
   have h_asympBound_pos' : 0 < asympBound g a b n := h_asympBound_pos n hn
   have h_one_sub_smoothingFn_pos' : 0 < 1 - ε n := h_smoothing_pos n hn
   rw [Real.norm_of_nonneg (R.T_nonneg n), Real.norm_of_nonneg (by positivity)]
+  -- We now prove all other cases by induction
   induction n using Nat.strongInductionOn
   case ind n h_ind =>
     have b_mul_n₀_le_ri i : ⌊b' * ↑n₀⌋₊ ≤ r i n := by
@@ -1364,6 +1365,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
   have h_asympBound_pos' : 0 < asympBound g a b n := h_asympBound_pos n hn
   have h_one_sub_smoothingFn_pos' : 0 < 1 + ε n := h_smoothing_pos n hn
   rw [Real.norm_of_nonneg (R.T_nonneg n), Real.norm_of_nonneg (by positivity)]
+  -- We now prove all other cases by induction
   induction n using Nat.strongInductionOn
   case ind n h_ind =>
     have b_mul_n₀_le_ri i : ⌊b' * ↑n₀⌋₊ ≤ r i n := by
