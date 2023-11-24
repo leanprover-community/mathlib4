@@ -866,11 +866,11 @@ variable (R A L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [CommRing A] [Algebra R A]
 
 @[simp]
-lemma LieSubmodule.lowerCentralSeries_tensor_eq_extendScalars (k : ℕ) :
+lemma LieSubmodule.lowerCentralSeries_tensor_eq_baseChange (k : ℕ) :
     lowerCentralSeries A (A ⊗[R] L) (A ⊗[R] M) k =
-    (lowerCentralSeries R L M k).extendScalars A := by
+    (lowerCentralSeries R L M k).baseChange A := by
   induction' k with k ih; simp
-  simp only [lowerCentralSeries_succ, ih, ← extendScalars_top, lie_extendScalars]
+  simp only [lowerCentralSeries_succ, ih, ← baseChange_top, lie_baseChange]
 
 instance LieModule.instIsNilpotentTensor [IsNilpotent R L M] :
     IsNilpotent A (A ⊗[R] L) (A ⊗[R] M) := by
