@@ -64,7 +64,9 @@ variable (r : R) (f g : M →ₗ[R] N)
 
 variable (A)
 
-/-- `baseChange A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`. -/
+/-- `baseChange A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`.
+
+Also known as the "extension of scalars" of a linear map. -/
 def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N :=
   AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) f
 #align linear_map.base_change LinearMap.baseChange
@@ -98,6 +100,10 @@ theorem baseChange_smul : (r • f).baseChange A = r • f.baseChange A := by
   ext
   simp [baseChange_tmul]
 #align linear_map.base_change_smul LinearMap.baseChange_smul
+
+lemma baseChange_comp {P : Type*} [AddCommMonoid P] [Module R P] (g : N →ₗ[R] P) :
+    (g ∘ₗ f).baseChange A = g.baseChange A ∘ₗ f.baseChange A := by
+  ext; simp
 
 variable (R A M N)
 
@@ -1109,8 +1115,8 @@ variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
   [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
 
 @[simp]
-lemma toMatrix_extendScalars (f : M₁ →ₗ[R] M₂) (b₁ : Basis ι R M₁) (b₂ : Basis ι₂ R M₂) :
-    toMatrix (basis A b₁) (basis A b₂) (f.extendScalars A) =
+lemma toMatrix_baseChange (f : M₁ →ₗ[R] M₂) (b₁ : Basis ι R M₁) (b₂ : Basis ι₂ R M₂) :
+    toMatrix (basis A b₁) (basis A b₂) (f.baseChange A) =
     (toMatrix b₁ b₂ f).map (algebraMap R A) := by
   ext; simp [toMatrix_apply]
 
