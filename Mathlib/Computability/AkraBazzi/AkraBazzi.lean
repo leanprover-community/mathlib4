@@ -132,25 +132,17 @@ lemma dist_r_b' : ∀ᶠ n in atTop, ∀ i, ‖(r i n : ℝ) - b i * n‖ ≤ n 
   simpa using IsLittleO.eventuallyLE (R.dist_r_b i)
 
 lemma isLittleO_self_div_log_id : (fun (n:ℕ) => n / log n ^ 2) =o[atTop] (fun (n:ℕ) => (n:ℝ)) := by
-  calc (fun (n:ℕ) => n / log n ^ 2) = fun (n:ℕ) => n * ((log n) ^ 2)⁻¹ := by
+  calc (fun (n:ℕ) => (n:ℝ) / log n ^ 2) = fun (n:ℕ) => (n:ℝ) * ((log n) ^ 2)⁻¹ := by
                   simp_rw [div_eq_mul_inv]
          _ =o[atTop] fun (n:ℕ) => (n:ℝ) * 1⁻¹    := by
                   refine IsBigO.mul_isLittleO (isBigO_refl _ _) ?_
                   refine IsLittleO.inv_rev ?main ?zero
                   case zero => simp
                   case main => calc
-                    _ = (fun (n:ℕ) => ((1:ℝ) ^ 2))        := by simp
-                    _ =o[atTop] (fun (n:ℕ) => (log n)^2)  := by
-                          refine IsLittleO.rpow (by linarith) ?nonneg ?log
-                          case nonneg =>
-                            filter_upwards [eventually_ge_atTop 1] with n hn
-                            have hn' : (1:ℝ) ≤ (n:ℝ) := by
-                              convert_to ((1:ℕ) : ℝ) ≤ (n:ℝ)
-                              · exact Nat.cast_one.symm
-                              · exact Nat.cast_le_cast hn
-                            simp [log_nonneg hn']
-                          case log => exact IsLittleO.nat_cast_atTop (f := fun _ => 1)
-                                        <| isLittleO_const_log_atTop
+                    _ = (fun (_:ℕ) => ((1:ℝ) ^ 2))        := by simp
+                    _ =o[atTop] (fun (n:ℕ) => (log n)^2)  :=
+                          IsLittleO.pow (IsLittleO.nat_cast_atTop
+                            <| isLittleO_const_log_atTop) (by norm_num)
          _ = (fun (n:ℕ) => (n:ℝ)) := by ext; simp
 
 lemma eventually_b_le_r : ∀ᶠ (n:ℕ) in atTop, ∀ i, (b i : ℝ) * n - (n / log n ^ 2) ≤ r i n := by
@@ -313,7 +305,7 @@ lemma one_add_smoothingFn_le_two {x : ℝ} (hx : exp 1 ≤ x) : 1 + ε x ≤ 2 :
        _ ≤ log x := log_le_log' (exp_pos _) hx
 
 lemma isLittleO_smoothingFn_one : ε =o[atTop] (fun _ => (1:ℝ)) := by
-  simp only [smoothingFn]
+  unfold smoothingFn
   refine isLittleO_of_tendsto (fun _ h => False.elim <| one_ne_zero h) ?_
   simp only [one_div, div_one]
   exact Tendsto.inv_tendsto_atTop Real.tendsto_log_atTop
@@ -396,7 +388,7 @@ lemma isLittleO_deriv_smoothingFn : deriv ε =o[atTop] fun x => x⁻¹ := calc
                 (by rw [isBigO_neg_right]; aesop (add safe isBigO_refl)) ?_
               rw [isLittleO_one_left_iff]
               exact Tendsto.comp tendsto_norm_atTop_atTop
-                <| Tendsto.comp (tendsto_rpow_atTop (by norm_num)) tendsto_log_atTop
+                <| Tendsto.comp (tendsto_pow_atTop (by norm_num)) tendsto_log_atTop
             · exact Filter.eventually_of_forall (fun x hx => by rw [mul_one] at hx; simp [hx])
     _ = fun x => x⁻¹ := by simp
 
@@ -480,7 +472,7 @@ lemma isEquivalent_smoothingFn_sub_self (i : α) :
             exact IsEquivalent.add_isLittleO IsEquivalent.refl
               <| IsLittleO.nat_cast_atTop (f := fun (_:ℝ) => log (b i))
                 isLittleO_const_log_atTop
-      _ = (fun (n:ℕ) => -log (b i) / (log n)^2) := by ext; congr; rw [← pow_two, Real.rpow_two]
+      _ = (fun (n:ℕ) => -log (b i) / (log n)^2) := by ext; congr 1; rw [← pow_two]
 
 lemma isTheta_smoothingFn_sub_self (i : α) :
     (fun (n : ℕ) => ε (b i * n) - ε n) =Θ[atTop] fun n => 1 / (log n)^2 := by
@@ -583,18 +575,18 @@ lemma sumTransform_def {p : ℝ} {g : ℝ → ℝ} {n₀ n : ℕ} :
 variable (g) (a) (b)
 /-- The asymptotic bound satisfied by an Akra-Bazzi recurrence, namely
 `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. -/
-noncomputable def asympBound (n : ℕ) : ℝ := n^p a b + sumTransform (p a b) g 0 n
+noncomputable def asympBound (n : ℕ) : ℝ := n ^ p a b + sumTransform (p a b) g 0 n
 
-lemma asympBound_def {n : ℕ} : asympBound g a b n = n^p a b + sumTransform (p a b) g 0 n := rfl
+lemma asympBound_def {n : ℕ} : asympBound g a b n = n ^ p a b + sumTransform (p a b) g 0 n := rfl
 
 variable {g} {a} {b}
 
 lemma asympBound_def' {n : ℕ} :
-    asympBound g a b n = n^p a b * (1 + (∑ u in range n, g u / u^(p a b + 1))) := by
+    asympBound g a b n = n ^ p a b * (1 + (∑ u in range n, g u / u ^ (p a b + 1))) := by
   simp [asympBound_def, sumTransform, mul_add, mul_one, Finset.sum_Ico_eq_sum_range]
 
 lemma asympBound_pos (n : ℕ) (hn : 0 < n) : 0 < asympBound g a b n := by
-  calc 0 < n^p a b * (1 + 0)    := by aesop (add safe Real.rpow_pos_of_pos)
+  calc 0 < (n:ℝ) ^ p a b * (1 + 0)    := by aesop (add safe Real.rpow_pos_of_pos)
        _ ≤ asympBound g a b n    := by
                     simp only [asympBound_def']
                     gcongr n^p a b * (1 + ?_)
@@ -871,7 +863,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_sub_smoothingFn {p : ℝ} (hp : p ≠ 0)
                       rw [isLittleO_const_left]
                       refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
                       exact Tendsto.comp (g := fun z => z ^ 2)
-                        (tendsto_rpow_atTop (by norm_num)) tendsto_log_atTop
+                        (tendsto_pow_atTop (by norm_num)) tendsto_log_atTop
           _ = fun z => z ^ (p-1) := by ext; simp
           _ =Θ[atTop] fun z => p * z ^ (p-1) := by
                       exact IsTheta.const_mul_right hp <| isTheta_refl _ _
@@ -895,7 +887,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_add_smoothingFn {p : ℝ} (hp : p ≠ 0)
                       rw [isLittleO_const_left]
                       refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
                       exact Tendsto.comp (g := fun z => z ^ 2)
-                        (tendsto_rpow_atTop (by norm_num)) tendsto_log_atTop
+                        (tendsto_pow_atTop (by norm_num)) tendsto_log_atTop
           _ = fun z => z ^ (p-1) := by ext; simp
           _ =Θ[atTop] fun z => p * z ^ (p-1) := by
                       exact IsTheta.const_mul_right hp <| isTheta_refl _ _

@@ -27,10 +27,6 @@ this issue doesn't seem to arise in practice.
 
 -/
 
-set_option autoImplicit false
-
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
-
 open Finset Real Filter Asymptotics BigOperators
 open scoped Topology
 
@@ -224,7 +220,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
             have h₁ : (2:ℝ)^n = ((1:ℝ)/(2:ℝ)) * (2:ℝ)^(n+1) := by
               rw [one_div, pow_add, pow_one]
               ring
-            rw [rpow_nat_cast, h₁, mul_assoc]
+            rw [h₁, mul_assoc]
             gcongr
             exact_mod_cast hz.2
         rw [← z_to_half_z, half_z_to_base]
