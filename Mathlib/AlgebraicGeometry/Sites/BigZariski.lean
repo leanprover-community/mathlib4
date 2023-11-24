@@ -32,9 +32,10 @@ def zariskiPretopology : Pretopology (Scheme.{u}) where
     exact ⟨U.pullbackCover' f, (Presieve.ofArrows_pullback _ _ _).symm⟩
   Transitive := by
     rintro X _ T ⟨U, rfl⟩ H
-    let V : ∀ (j : U.J), OpenCover (U.obj j) := fun j => (H (U.map j) ⟨j⟩).choose
-    exact ⟨U.bind V, Presieve.ofArrows_bind' U.obj U.map (fun i => (V i).obj)
-      (fun i => (V i).map) T (fun j => (H (U.map j) ⟨j⟩).choose_spec)⟩
+    choose V hV using H
+    use U.bind (fun j => V (U.map j) ⟨j⟩)
+    simpa only [OpenCover.bind, ← hV] using Presieve.ofArrows_bind U.obj U.map _
+      (fun _ f H => (V f H).obj) (fun _ f H => (V f H).map)
 
 /-- The Zariski topology on the category of schemes. -/
 abbrev zariskiTopology : GrothendieckTopology (Scheme.{u}) :=
