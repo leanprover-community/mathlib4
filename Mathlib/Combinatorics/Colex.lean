@@ -31,9 +31,9 @@ fixed size. For example, for size 3, the colex order on ℕ starts
 * `Finset.Colex.forall_lt_mono`: if `s < t` in colex, and everything in `t` is `< a`, then
   everything in `s` is `< a`. This confirms the idea that an enumeration under colex will exhaust
   all sets using elements `< a` before allowing `a` to be included.
-* `Finset.toColex_image_lt_toColex_image`: Strictly monotone functions preserve colex.
-* `Finset.sum_two_pow_le_iff_colex_le`: colex for α = ℕ is the same as binary
-  (this also proves binary expansions are unique)
+* `Finset.toColex_image_le_toColex_image`: Strictly monotone functions preserve colex.
+* `Finset.geomSum_le_geomSum_iff_toColex_le_toColex`: Colex for α = ℕ is the same as binary.
+  This also proves binary expansions are unique.
 
 ## See also
 
@@ -391,7 +391,7 @@ open Colex
 ### Colex on `ℕ`
 
 The colexicographic order agrees with the order induced by interpreting a set of naturals as a
-binary expansion.
+`n`-ary expansion.
 -/
 
 section Nat
@@ -406,18 +406,18 @@ lemma geomSum_ofColex_strictMono (hn : 2 ≤ n) : StrictMono fun s ↦ ∑ k in 
     mem_sdiff.2 ⟨hat, has⟩
 
 /-- For finsets of naturals of naturals, the colexicographic order is equivalent to the order
-induced by the binary expansion. -/
+induced by the `n`-ary expansion. -/
 lemma geomSum_le_geomSum_iff_toColex_le_toColex (hn : 2 ≤ n) :
     ∑ k in s, n ^ k ≤ ∑ k in t, n ^ k ↔ toColex s ≤ toColex t :=
   (geomSum_ofColex_strictMono hn).le_iff_le
 
 /-- For finsets of naturals of naturals, the colexicographic order is equivalent to the order
-induced by the binary expansion. -/
+induced by the `n`-ary expansion. -/
 lemma geomSum_lt_geomSum_iff_toColex_lt_toColex (hn : 2 ≤ n) :
     ∑ i in s, n ^ i < ∑ i in t, n ^ i ↔ toColex s < toColex t :=
   (geomSum_ofColex_strictMono hn).lt_iff_lt
 
--- TODO: Package the above as an order isomorphism `Colex ℕ ≃o ℕ`
+-- TODO: Package the above in the `n = 2` case as an order isomorphism `Colex ℕ ≃o ℕ`
 
 end Nat
 end Finset
