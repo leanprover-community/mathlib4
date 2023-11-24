@@ -230,6 +230,7 @@ import Mathlib.Algebra.Homology.ExactSequence
 import Mathlib.Algebra.Homology.Flip
 import Mathlib.Algebra.Homology.Functor
 import Mathlib.Algebra.Homology.HomologicalComplex
+import Mathlib.Algebra.Homology.HomologicalComplexLimits
 import Mathlib.Algebra.Homology.Homology
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Homology.HomotopyCategory
@@ -1718,7 +1719,7 @@ import Mathlib.Data.Nat.Factorial.SuperFactorial
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Data.Nat.Factors
-import Mathlib.Data.Nat.Fib
+import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Data.Nat.Fib.Zeckendorf
 import Mathlib.Data.Nat.ForSqrt
 import Mathlib.Data.Nat.GCD.Basic
@@ -2255,6 +2256,7 @@ import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Exception
 import Mathlib.Lean.Expr
 import Mathlib.Lean.Expr.Basic
+import Mathlib.Lean.Expr.ExtraRecognizers
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr.Traverse
 import Mathlib.Lean.IO.Process
@@ -2469,6 +2471,7 @@ import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Relator
 import Mathlib.Logic.Small.Basic
+import Mathlib.Logic.Small.Defs
 import Mathlib.Logic.Small.Group
 import Mathlib.Logic.Small.List
 import Mathlib.Logic.Small.Module
@@ -2881,6 +2884,7 @@ import Mathlib.Probability.CondCount
 import Mathlib.Probability.ConditionalExpectation
 import Mathlib.Probability.ConditionalProbability
 import Mathlib.Probability.Density
+import Mathlib.Probability.Distributions.Exponential
 import Mathlib.Probability.Distributions.Gaussian
 import Mathlib.Probability.IdentDistrib
 import Mathlib.Probability.Independence.Basic
@@ -3125,6 +3129,7 @@ import Mathlib.SetTheory.Cardinal.Divisibility
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
+import Mathlib.SetTheory.Cardinal.UnivLE
 import Mathlib.SetTheory.Game.Basic
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Game.Domineering
@@ -3248,13 +3253,13 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.Core
+import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.NormNum.Eq
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.LegendreSymbol
-import Mathlib.Tactic.NormNum.Mod
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.OfScientific
@@ -3270,6 +3275,7 @@ import Mathlib.Tactic.Polyrith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Positivity.Core
+import Mathlib.Tactic.ProdAssoc
 import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.ProxyType
