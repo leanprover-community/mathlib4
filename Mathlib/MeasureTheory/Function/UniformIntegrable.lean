@@ -488,7 +488,7 @@ theorem tendsto_Lp_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp
     Tendsto (fun n => snorm (f n - g) p μ) atTop (𝓝 0) := by
   rw [ENNReal.tendsto_atTop_zero]
   intro ε hε
-  by_cases ε < ∞; swap
+  by_cases h : ε < ∞; swap
   · rw [not_lt, top_le_iff] at h
     exact ⟨0, fun n _ => by simp [h]⟩
   by_cases hμ : μ = 0

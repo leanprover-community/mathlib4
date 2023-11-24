@@ -134,7 +134,7 @@ theorem le_radius_of_bound (C : ℝ) {r : ℝ≥0} (h : ∀ n : ℕ, ‖p n‖ *
 /-- If `‖pₙ‖ rⁿ` is bounded in `n`, then the radius of `p` is at least `r`. -/
 theorem le_radius_of_bound_nnreal (C : ℝ≥0) {r : ℝ≥0} (h : ∀ n : ℕ, ‖p n‖₊ * r ^ n ≤ C) :
     (r : ℝ≥0∞) ≤ p.radius :=
-  p.le_radius_of_bound C fun n => by exact_mod_cast h n
+  p.le_radius_of_bound C fun n => mod_cast h n
 #align formal_multilinear_series.le_radius_of_bound_nnreal FormalMultilinearSeries.le_radius_of_bound_nnreal
 
 /-- If `‖pₙ‖ rⁿ = O(1)`, as `n → ∞`, then the radius of `p` is at least `r`. -/
@@ -157,7 +157,7 @@ theorem le_radius_of_summable_nnnorm (h : Summable fun n => ‖p n‖₊ * r ^ n
 theorem le_radius_of_summable (h : Summable fun n => ‖p n‖ * (r : ℝ) ^ n) : ↑r ≤ p.radius :=
   p.le_radius_of_summable_nnnorm <| by
     simp only [← coe_nnnorm] at h
-    exact_mod_cast h
+    exact mod_cast h
 #align formal_multilinear_series.le_radius_of_summable FormalMultilinearSeries.le_radius_of_summable
 
 theorem radius_eq_top_of_forall_nnreal_isBigO
@@ -258,7 +258,7 @@ theorem norm_le_div_pow_of_pos_of_lt_radius (p : FormalMultilinearSeries 𝕜 E 
 theorem nnnorm_mul_pow_le_of_lt_radius (p : FormalMultilinearSeries 𝕜 E F) {r : ℝ≥0}
     (h : (r : ℝ≥0∞) < p.radius) : ∃ C > 0, ∀ n, ‖p n‖₊ * r ^ n ≤ C :=
   let ⟨C, hC, hp⟩ := p.norm_mul_pow_le_of_lt_radius h
-  ⟨⟨C, hC.lt.le⟩, hC, by exact_mod_cast hp⟩
+  ⟨⟨C, hC.lt.le⟩, hC, mod_cast hp⟩
 #align formal_multilinear_series.nnnorm_mul_pow_le_of_lt_radius FormalMultilinearSeries.nnnorm_mul_pow_le_of_lt_radius
 
 theorem le_radius_of_tendsto (p : FormalMultilinearSeries 𝕜 E F) {l : ℝ}
@@ -676,7 +676,7 @@ theorem HasFPowerSeriesOnBall.uniform_geometric_approx' {r' : ℝ≥0}
   have hr'0 : 0 < (r' : ℝ) := (norm_nonneg _).trans_lt yr'
   have : y ∈ EMetric.ball (0 : E) r := by
     refine' mem_emetric_ball_zero_iff.2 (lt_trans _ h)
-    exact_mod_cast yr'
+    exact mod_cast yr'
   rw [norm_sub_rev, ← mul_div_right_comm]
   have ya : a * (‖y‖ / ↑r') ≤ a :=
     mul_le_of_le_one_right ha.1.le (div_le_one_of_le yr'.le r'.coe_nonneg)
@@ -720,7 +720,7 @@ theorem HasFPowerSeriesAt.isBigO_sub_partialSum_pow (hf : HasFPowerSeriesAt f p 
       ‖f (x + y) - p.partialSum n y‖ ≤ C * (a * (‖y‖ / r')) ^ n :=
     hf.uniform_geometric_approx' h
   refine' isBigO_iff.2 ⟨C * (a / r') ^ n, _⟩
-  replace r'0 : 0 < (r' : ℝ); · exact_mod_cast r'0
+  replace r'0 : 0 < (r' : ℝ); · exact mod_cast r'0
   filter_upwards [Metric.ball_mem_nhds (0 : E) r'0] with y hy
   simpa [mul_pow, mul_div_assoc, mul_assoc, div_mul_eq_mul_div] using hp y hy n
 set_option linter.uppercaseLean3 false in
@@ -1308,7 +1308,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
     rwa [lt_tsub_iff_right, add_comm]
   have x_add_y_mem_ball : x + y ∈ EMetric.ball (0 : E) p.radius := by
     refine' mem_emetric_ball_zero_iff.2 (lt_of_le_of_lt _ h)
-    exact_mod_cast nnnorm_add_le x y
+    exact mod_cast nnnorm_add_le x y
   set f : (Σk l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) → F := fun s =>
     p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ => x) fun _ => y
   have hsf : Summable f := by
@@ -1372,7 +1372,7 @@ theorem HasFPowerSeriesOnBall.changeOrigin (hf : HasFPowerSeriesOnBall f p x r)
         rw [mem_emetric_ball_zero_iff, lt_tsub_iff_right, add_comm] at hz
         rw [p.changeOrigin_eval (hz.trans_le hf.r_le), add_assoc, hf.sum]
         refine' mem_emetric_ball_zero_iff.2 (lt_of_le_of_lt _ hz)
-        exact_mod_cast nnnorm_add_le y z
+        exact mod_cast nnnorm_add_le y z
       rw [this]
       apply (p.changeOrigin y).hasSum
       refine' EMetric.ball_subset_ball (le_trans _ p.changeOrigin_radius) hz
