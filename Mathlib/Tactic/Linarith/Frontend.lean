@@ -221,7 +221,7 @@ If `prefType` is given, it will first use the class of proofs of comparisons ove
 -- If it succeeds, the passed metavariable should have been assigned.
 def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
     (hyps : List Expr) : MetaM Unit := do
-  let singleProcess (g : MVarId) (hyps : List Expr) : MetaM Expr := do
+  let singleProcess (g : MVarId) (hyps : List Expr) : MetaM Expr := g.withContext do
     linarithTraceProofs s!"after preprocessing, linarith has {hyps.length} facts:" hyps
     let hyp_set ← partitionByType hyps
     trace[linarith] "hypotheses appear in {hyp_set.size} different types"
@@ -230,10 +230,11 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
         proveFalseByLinarith cfg g vs <|>
         findLinarithContradiction cfg g ((hyp_set.eraseIdx i).toList.map (·.2))
       else findLinarithContradiction cfg g (hyp_set.toList.map (·.2))
-  let preprocessors :=
-    (if cfg.splitHypotheses then [Linarith.splitConjunctions.globalize.branching] else []) ++
-    cfg.preprocessors.getD defaultPreprocessors
-  let preprocessors := if cfg.splitNe then Linarith.removeNe::preprocessors else preprocessors
+  let mut preprocessors := cfg.preprocessors.getD defaultPreprocessors
+  if cfg.splitNe then
+    preprocessors := Linarith.removeNe :: preprocessors
+  if cfg.splitHypotheses then
+    preprocessors := Linarith.splitConjunctions.globalize.branching :: preprocessors
   let branches ← preprocess preprocessors g hyps
   for (g, es) in branches do
     let r ← singleProcess g es
@@ -263,7 +264,7 @@ if it does not succeed at doing this.
   it will unfold semireducible definitions when trying to match atomic expressions.
 -/
 partial def linarith (only_on : Bool) (hyps : List Expr) (cfg : LinarithConfig := {})
-    (g : MVarId) : MetaM Unit := do
+    (g : MVarId) : MetaM Unit := g.withContext do
   -- if the target is an equality, we run `linarith` twice, to prove ≤ and ≥.
   if (← whnfR (← instantiateMVars (← g.getType))).isEq then
     trace[linarith] "target is an equality: splitting"

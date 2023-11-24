@@ -214,6 +214,9 @@ theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n 
     rw [this, bit_false, bit0_val, hn fun i => by rw [← h (i + 1), testBit_succ], mul_zero]
 #align nat.zero_of_test_bit_eq_ff Nat.zero_of_testBit_eq_false
 
+theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
+  simp [testBit, shiftRight_eq_div_pow, Nat.div_eq_of_lt h]
+
 @[simp]
 theorem zero_testBit (i : ℕ) : testBit 0 i = false := by
   simp only [testBit, zero_shiftRight, bodd_zero]
@@ -349,6 +352,17 @@ theorem land_comm (n m : ℕ) : n &&& m = m &&& n :=
 theorem xor_comm (n m : ℕ) : n ^^^ m = m ^^^ n :=
   bitwise_comm (Bool.bne_eq_xor ▸ Bool.xor_comm) n m
 #align nat.lxor_comm Nat.xor_comm
+
+lemma and_two_pow (n i : ℕ) : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
+  refine eq_of_testBit_eq fun j => ?_
+  obtain rfl | hij := Decidable.eq_or_ne i j <;> cases' h : n.testBit i
+  · simp [h]
+  · simp [h]
+  · simp [h, testBit_two_pow_of_ne hij]
+  · simp [h, testBit_two_pow_of_ne hij]
+
+lemma two_pow_and (n i : ℕ) : 2 ^ i &&& n = 2 ^ i * (n.testBit i).toNat := by
+  rw [mul_comm, land_comm, and_two_pow]
 
 @[simp]
 theorem zero_xor (n : ℕ) : 0 ^^^ n = n := by simp [HXor.hXor, Xor.xor, xor]
