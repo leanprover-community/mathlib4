@@ -131,7 +131,7 @@ theorem lt_rootMultiplicity_of_isRoot_iterate_derivative
   exact eval_divByMonic_pow_rootMultiplicity_ne_zero t h hroot
 
 theorem lt_rootMultiplicity_of_isRoot_iterate_derivative'
-    [Nontrivial R] {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)
+    {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)
     (hroot : ∀ m ≤ n, (derivative^[m] p).IsRoot t)
     (hnzd : ∀ m ≤ n, m ≠ 0 → (m : R) ∈ nonZeroDivisors R) :
     n < p.rootMultiplicity t := lt_rootMultiplicity_of_isRoot_iterate_derivative h hroot <| by
@@ -151,21 +151,21 @@ theorem lt_rootMultiplicity_iff_isRoot_iterate_derivative
     fun hroot ↦ lt_rootMultiplicity_of_isRoot_iterate_derivative h hroot hnzd⟩
 
 theorem lt_rootMultiplicity_iff_isRoot_iterate_derivative'
-    [Nontrivial R] {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)
+    {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)
     (hnzd : ∀ m ≤ n, m ≠ 0 → (m : R) ∈ nonZeroDivisors R) :
     n < p.rootMultiplicity t ↔ ∀ m ≤ n, (derivative^[m] p).IsRoot t :=
   ⟨fun hn _ hm ↦ isRoot_iterate_derivative_of_lt_rootMultiplicity <| Nat.lt_of_le_of_lt hm hn,
     fun hroot ↦ lt_rootMultiplicity_of_isRoot_iterate_derivative' h hroot hnzd⟩
 
 theorem one_lt_rootMultiplicity_iff_isRoot_iterate_derivative
-    [Nontrivial R] {p : R[X]} {t : R} (h : p ≠ 0) :
+    {p : R[X]} {t : R} (h : p ≠ 0) :
     1 < p.rootMultiplicity t ↔ ∀ m ≤ 1, (derivative^[m] p).IsRoot t := by
   refine lt_rootMultiplicity_iff_isRoot_iterate_derivative h ?_
   simp only [Nat.factorial_one, Nat.cast_one]
   exact Submonoid.one_mem _
 
 theorem one_lt_rootMultiplicity_iff_isRoot
-    [Nontrivial R] {p : R[X]} {t : R} (h : p ≠ 0) :
+    {p : R[X]} {t : R} (h : p ≠ 0) :
     1 < p.rootMultiplicity t ↔ p.IsRoot t ∧ (derivative p).IsRoot t := by
   rw [one_lt_rootMultiplicity_iff_isRoot_iterate_derivative h]
   refine ⟨fun h ↦ ⟨h 0 (by norm_num), h 1 (by norm_num)⟩, fun ⟨h0, h1⟩ m hm ↦ ?_⟩
