@@ -627,7 +627,7 @@ lemma eventually_atTop_sumTransform_le :
                 refine ⟨?_, by norm_cast; linarith⟩
                 calc c₁ * n ≤ r i n := by exact hn₁ i
                           _ ≤ u := by exact_mod_cast hu'.1
-         _ ≤ n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
+         _ ≤ n ^ (p a b) * (∑ _u in Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
                   gcongr with u hu; rw [Finset.mem_Ico] at hu; exact hu.1
          _ ≤ n ^ (p a b) * (Finset.Ico (r i n) n).card • (c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
                   gcongr; exact Finset.sum_le_card_nsmul _ _ _ (fun x _ => by rfl)
@@ -659,7 +659,7 @@ lemma eventually_atTop_sumTransform_le :
                 refine ⟨?_, by norm_cast; linarith⟩
                 calc c₁ * n ≤ r i n      := by exact hn₁ i
                           _ ≤ u          := by exact_mod_cast hu'.1
-         _ ≤ n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
+         _ ≤ n ^ (p a b) * (∑ _u in Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
                 gcongr n ^ (p a b) * (Finset.Ico (r i n) n).sum (fun _ => c₂ * g n / ?_) with u hu
                 rw [Finset.mem_Ico] at hu
                 have : 0 < u := calc
@@ -706,7 +706,7 @@ lemma eventually_atTop_sumTransform_ge :
                 refine ⟨?_, by norm_cast; linarith⟩
                 calc c₁ * n ≤ r i n      := by exact hn₁ i
                           _ ≤ u            := by exact_mod_cast hu'.1
-         _ ≥ n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
+         _ ≥ n ^ (p a b) * (∑ _u in Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
                 gcongr with u hu
                 · rw [Finset.mem_Ico] at hu
                   have := calc 0 < r i n := hrpos_i
@@ -740,7 +740,7 @@ lemma eventually_atTop_sumTransform_ge :
              refine ⟨?_, by norm_cast; linarith⟩
              calc c₁ * n ≤ r i n := by exact hn₁ i
                        _ ≤ u := by exact_mod_cast hu'.1
-      _ ≥ n ^ (p a b) * (∑ u in Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
+      _ ≥ n ^ (p a b) * (∑ _u in Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
              gcongr n^(p a b) * (Finset.Ico (r i n) n).sum (fun _ => c₂ * g n / ?_) with u hu
              · rw [Finset.mem_Ico] at hu
                have := calc 0 < r i n := hrpos_i
