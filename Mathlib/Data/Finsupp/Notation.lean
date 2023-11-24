@@ -19,7 +19,8 @@ open Lean
 open Lean.Parser
 open Lean.Parser.Term
 
-/-- A variant of `Lean.Parser.Term.matchAlts` with less line wrapping. -/
+-- A variant of `Lean.Parser.Term.matchAlts` with less line wrapping.
+@[nolint docBlame] -- we do not want any doc hover on this notation.
 def fun₀.matchAlts : Parser :=
   leading_parser withPosition $ ppRealGroup <| many1Indent (ppSpace >> ppGroup matchAlt)
 
