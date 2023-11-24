@@ -20,8 +20,6 @@ number field, discriminant
 -- TODO. Rewrite some of the FLT results on the disciminant using the definitions and results of
 -- this file
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace NumberField
 
 open Classical NumberField Matrix NumberField.InfinitePlace

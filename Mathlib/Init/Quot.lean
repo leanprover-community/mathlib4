@@ -39,3 +39,5 @@ protected abbrev Quot.recOnSubsingleton'
   apply f
   apply Subsingleton.elim
 #align quot.rec_on_subsingleton Quot.recOnSubsingleton'
+
+theorem Quotient.mk'_eq_mk [s : Setoid α] : Quotient.mk' = Quotient.mk s := rfl
