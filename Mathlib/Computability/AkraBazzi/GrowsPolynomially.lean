@@ -614,12 +614,12 @@ protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
 
 protected lemma GrowsPolynomially.pow (p : ℕ) (hf : GrowsPolynomially f)
     (hf_nonneg : ∀ᶠ x in atTop, 0 ≤ f x) : GrowsPolynomially fun x => (f x) ^ p := by
-  simp_rw [←rpow_nat_cast]
+  simp_rw [← rpow_nat_cast]
   exact hf.rpow p hf_nonneg
 
 protected lemma GrowsPolynomially.zpow (p : ℤ) (hf : GrowsPolynomially f)
     (hf_nonneg : ∀ᶠ x in atTop, 0 ≤ f x) : GrowsPolynomially fun x => (f x) ^ p := by
-  simp_rw [←rpow_int_cast]
+  simp_rw [← rpow_int_cast]
   exact hf.rpow p hf_nonneg
 
 lemma growsPolynomially_rpow (p : ℝ) : GrowsPolynomially fun x => x ^ p :=
