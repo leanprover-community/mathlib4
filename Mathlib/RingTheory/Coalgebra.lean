@@ -3,12 +3,10 @@ Copyright (c) 2023 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey
 -/
-
 import Mathlib.RingTheory.TensorProduct
 
 /-!
 # Definition and example of a coalgebra
-
 -/
 
 universe u v
@@ -16,10 +14,15 @@ universe u v
 open scoped TensorProduct
 
 class Coalgebra (R : Type u) (A : Type v) [CommRing R] [AddCommGroup A] [Module R A] where
+  /-- The comultiplication of the coalgebra -/
   Δ : A →ₗ[R] A ⊗[R] A
+  /-- The counit of the coalgebra -/
   ε : A →ₗ[R] R
+  /-- The comultiplication is coassociative -/
   coassoc : TensorProduct.assoc R A A A ∘ₗ TensorProduct.map Δ .id ∘ₗ Δ = TensorProduct.map .id Δ ∘ₗ Δ
+  /-- The counit satisfies the left counitality law -/
   ε_id : TensorProduct.lid R A ∘ₗ TensorProduct.map ε .id ∘ₗ Δ = .id
+  /-- The counit satisfies the right counitality law -/
   id_ε : TensorProduct.rid R A ∘ₗ TensorProduct.map .id ε ∘ₗ Δ = .id
 
 noncomputable
