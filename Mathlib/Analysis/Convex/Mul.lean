@@ -15,7 +15,7 @@ This file proves that the product of convex functions is convex, provided they m
 As corollaries, we also prove that `x ↦ x ^ n` is convex
 * `Even.convexOn_pow`: for even `n : ℕ`.
 * `convexOn_pow`: over $[0, +∞)$ for `n : ℕ`.
-* `convexOn_zpow`: over $[0, +∞)$ For `n : ℤ`.
+* `convexOn_zpow`: over $(0, +∞)$ For `n : ℤ`.
 -/
 
 open Set
@@ -136,12 +136,12 @@ lemma ConcaveOn.mul_convexOn' (hf : ConcaveOn 𝕜 s f) (hg : ConvexOn 𝕜 s g)
 lemma ConvexOn.pow (hf : ConvexOn 𝕜 s f) (hf₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ f x) :
     ∀ n, ConvexOn 𝕜 s (f ^ n)
   | 0 => by simpa using convexOn_const 1 hf.1
-  | n + 1 => by rw [pow_succ]; exact hf.mul (hf.pow hf₀ _) hf₀ (fun x hx ↦ pow_nonneg (hf₀ hx) _) $
+  | n + 1 => by rw [pow_succ]; exact hf.mul (hf.pow hf₀ _) hf₀ (fun x hx ↦ pow_nonneg (hf₀ hx) _) <|
       (monovaryOn_self f s).pow_right₀ hf₀ n
 
 /-- `x^n`, `n : ℕ` is convex on `[0, +∞)` for all `n`. -/
-lemma convexOn_pow : ∀ n, ConvexOn 𝕜 (Ici 0) (fun x : 𝕜 ↦ x ^ n) :=
-  (convexOn_id $ convex_Ici _).pow fun _ ↦ id
+lemma convexOn_pow : ∀ n, ConvexOn 𝕜 (Ici 0) fun x : 𝕜 ↦ x ^ n :=
+  (convexOn_id <| convex_Ici _).pow fun _ ↦ id
 
 /-- `x^n`, `n : ℕ` is convex on the whole real line whenever `n` is even. -/
 protected lemma Even.convexOn_pow {n : ℕ} (hn : Even n) : ConvexOn 𝕜 univ fun x : 𝕜 ↦ x ^ n := by
