@@ -40,7 +40,7 @@ namespace AkraBazziRecurrence
 It roughly states that `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for `u` between `b*n` and `n` for any
 constant `b ∈ (0,1)`. -/
 def GrowsPolynomially (f : ℝ → ℝ) : Prop :=
-  ∀ b ∈ Set.Ioo 0 1, ∃ c₁ ∈ Set.Ioi 0, ∃ c₂ ∈ Set.Ioi 0,
+  ∀ b ∈ Set.Ioo 0 1, ∃ c₁ > 0, ∃ c₂ > 0,
     ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (b * x) x, f u ∈ Set.Icc (c₁ * (f x)) (c₂ * f x)
 
 namespace GrowsPolynomially
@@ -64,26 +64,26 @@ lemma iff_eventuallyEq {f g : ℝ → ℝ} (h : f =ᶠ[atTop] g) :
 variable {f : ℝ → ℝ}
 
 lemma eventually_atTop_le {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
-    ∃ c ∈ Set.Ioi 0, ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (b * x) x, f u ≤ c * f x := by
+    ∃ c > 0, ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (b * x) x, f u ≤ c * f x := by
   obtain ⟨c₁, _, c₂, hc₂, h⟩ := hf b hb
   refine ⟨c₂, hc₂, ?_⟩
   filter_upwards [h]
   exact fun _ H u hu => (H u hu).2
 
 lemma eventually_atTop_le_nat {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
-    ∃ c ∈ Set.Ioi 0, ∀ᶠ (n:ℕ) in atTop, ∀ u ∈ Set.Icc (b * n) n, f u ≤ c * f n := by
+    ∃ c > 0, ∀ᶠ (n:ℕ) in atTop, ∀ u ∈ Set.Icc (b * n) n, f u ≤ c * f n := by
   obtain ⟨c, hc_mem, hc⟩ := hf.eventually_atTop_le hb
   exact ⟨c, hc_mem, hc.nat_cast_atTop⟩
 
 lemma eventually_atTop_ge {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
-    ∃ c ∈ Set.Ioi 0, ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (b * x) x, c * f x ≤ f u := by
+    ∃ c > 0, ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (b * x) x, c * f x ≤ f u := by
   obtain ⟨c₁, hc₁, c₂, _, h⟩ := hf b hb
   refine ⟨c₁, hc₁, ?_⟩
   filter_upwards [h]
   exact fun _ H u hu => (H u hu).1
 
 lemma eventually_atTop_ge_nat {b : ℝ} (hb : b ∈ Set.Ioo 0 1) (hf : GrowsPolynomially f) :
-    ∃ c ∈ Set.Ioi 0, ∀ᶠ (n:ℕ) in atTop, ∀ u ∈ Set.Icc (b * n) n, c * f n ≤ f u := by
+    ∃ c > 0, ∀ᶠ (n:ℕ) in atTop, ∀ u ∈ Set.Icc (b * n) n, c * f n ≤ f u := by
   obtain ⟨c, hc_mem, hc⟩ := hf.eventually_atTop_ge hb
   exact ⟨c, hc_mem, hc.nat_cast_atTop⟩
 
