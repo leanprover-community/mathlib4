@@ -341,10 +341,6 @@ protected lemma GrowsPolynomially.mul {f g : ℝ → ℝ} (hf : GrowsPolynomiall
     have hg := hg.abs b hb
     obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf
     obtain ⟨c₃, hc₃_mem, c₄, hc₄_mem, hg⟩ := hg
-    have c₁_pos : 0 < c₁ := hc₁_mem
-    have c₂_pos : 0 < c₂ := hc₂_mem
-    have c₃_pos : 0 < c₃ := hc₃_mem
-    have c₄_pos : 0 < c₄ := hc₄_mem
     refine ⟨c₁ * c₃, by show 0 < c₁ * c₃; positivity, ?_⟩
     refine ⟨c₂ * c₄, by show 0 < c₂ * c₄; positivity, ?_⟩
     filter_upwards [hf, hg] with x hf hg
@@ -375,9 +371,6 @@ protected lemma GrowsPolynomially.add {f g : ℝ → ℝ} (hf : GrowsPolynomiall
   have hg := hg b hb
   obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf
   obtain ⟨c₃, hc₃_mem, c₄, _, hg⟩ := hg
-  have c₁_pos : 0 < c₁ := hc₁_mem
-  have c₂_pos : 0 < c₂ := hc₂_mem
-  have c₃_pos : 0 < c₃ := hc₃_mem
   refine ⟨min c₁ c₃, by show 0 < min c₁ c₃; positivity, ?_⟩
   refine ⟨max c₂ c₄, by show 0 < max c₂ c₄; positivity, ?_⟩
   filter_upwards [hf, hg,
@@ -549,8 +542,6 @@ protected lemma GrowsPolynomially.inv {f : ℝ → ℝ} (hf : GrowsPolynomially 
     intro b hb
     have hb_pos := hb.1
     obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf b hb
-    have c₁_pos : 0 < c₁ := hc₁_mem
-    have c₂_pos : 0 < c₂ := hc₂_mem
     refine ⟨c₂⁻¹, by show 0 < c₂⁻¹; positivity, ?_⟩
     refine ⟨c₁⁻¹, by show 0 < c₁⁻¹; positivity, ?_⟩
     filter_upwards [hf, hf', (tendsto_id.const_mul_atTop hb_pos).eventually_forall_ge_atTop hf']
