@@ -450,3 +450,76 @@ end CommSemiring
 end AlgebraTensorModule
 
 end TensorProduct
+
+namespace LinearMap
+
+open TensorProduct
+
+variable {R M₁ M₂ M₃ : Type*} (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+  [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] [Module R M₃]
+  (f : M₁ →ₗ[R] M₂) (g : M₂ →ₗ[R] M₃)
+
+/-- If `A` is an `R`-algebra, any `R`-linear map `M₁ → M₂` naturally induces an `A`-linear map
+`A ⊗ M₁ → A ⊗ M₂`. -/
+def extendScalars : A ⊗[R] M₁ →ₗ[A] A ⊗[R] M₂ :=
+  TensorProduct.AlgebraTensorModule.map LinearMap.id f
+
+@[simp]
+lemma extendScalars_tmul (a : A) (m : M₁) :
+    f.extendScalars A (a ⊗ₜ m) = a ⊗ₜ f m :=
+  rfl
+
+lemma extendScalars_comp :
+    (g ∘ₗ f).extendScalars A = g.extendScalars A ∘ₗ f.extendScalars A := by
+  ext; simp
+
+end LinearMap
+
+namespace Submodule
+
+open TensorProduct
+
+variable {R M : Type*} (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
+  [AddCommMonoid M] [Module R M] (p : Submodule R M)
+
+/-- If `A` is an `R`-algebra, any `R`-submodule `p` of an `R`-module `M` may be pushed forward to
+an `A`-submodule of `A ⊗ M`. -/
+def extendScalars : Submodule A (A ⊗[R] M) :=
+  span A <| p.map (TensorProduct.mk R A M 1)
+
+@[simp]
+lemma extendScalars_bot : (⊥ : Submodule R M).extendScalars A = ⊥ := by simp [extendScalars]
+
+@[simp]
+lemma extendScalars_top : (⊤ : Submodule R M).extendScalars A = ⊤ := by
+  rw [extendScalars, map_top, eq_top_iff']
+  intro x
+  refine x.induction_on (by simp) (fun a y ↦ ?_) (fun _ _ ↦ Submodule.add_mem _)
+  rw [← mul_one a, ← smul_eq_mul, ← smul_tmul']
+  refine smul_mem _ _ (subset_span ?_)
+  simp
+
+variable {A p} in
+lemma tmul_mem_extendScalars_of_mem (a : A) {m : M} (hm : m ∈ p) :
+    a ⊗ₜ[R] m ∈ p.extendScalars A := by
+  rw [← mul_one a, ← smul_eq_mul, ← smul_tmul']
+  exact smul_mem (extendScalars A p) a (subset_span ⟨m, hm, rfl⟩)
+
+@[simp]
+lemma extendScalars_span (s : Set M) :
+    (span R s).extendScalars A = span A (TensorProduct.mk R A M 1 '' s) := by
+  simp only [extendScalars, map_coe]
+  refine le_antisymm (span_le.mpr ?_) (span_mono <| Set.image_subset _ subset_span)
+  rintro - ⟨m : M, hm : m ∈ span R s, rfl⟩
+  apply span_induction (p := fun m' ↦ (1 : A) ⊗ₜ[R] m' ∈ span A (TensorProduct.mk R A M 1 '' s)) hm
+  · intro m hm
+    exact subset_span ⟨m, hm, rfl⟩
+  · simp
+  · intro m₁ m₂ hm₁ hm₂
+    rw [tmul_add]
+    exact Submodule.add_mem _ hm₁ hm₂
+  · intro r m' hm'
+    rw [tmul_smul, ← one_smul A ((1 : A) ⊗ₜ[R] m'), ← smul_assoc]
+    exact smul_mem _ (r • 1) hm'
+
+end Submodule

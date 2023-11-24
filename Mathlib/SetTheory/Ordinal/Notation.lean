@@ -687,7 +687,7 @@ def opowAux2 (o₂ : ONote) (o₁ : ONote × ℕ) : ONote :=
   | (0, 1) => 1
   | (0, m + 1) =>
     let (b', k) := split' o₂
-    oadd b' (HPow.hPow (α := ℕ+) m.succPNat k) 0
+    oadd b' (m.succPNat ^ k) 0
   | (a@(oadd a0 _ _), m) =>
     match split o₂ with
     | (b, 0) => oadd (a0 * b) 1 0
@@ -970,12 +970,12 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
   cases' nf_repr_split e₁ with N₁ r₁
   cases' a with a0 n a'
   · cases' m with m
-    · by_cases o₂ = 0 <;> simp [opow_def, opowAux2, opow, e₁, h, r₁]
+    · by_cases h : o₂ = 0 <;> simp [opow_def, opowAux2, opow, e₁, h, r₁]
       have := mt repr_inj.1 h
       rw [zero_opow this]
     · cases' e₂ : split' o₂ with b' k
       cases' nf_repr_split' e₂ with _ r₂
-      by_cases m = 0
+      by_cases h : m = 0
       · simp [opow_def, opow, e₁, h, r₁, e₂, r₂, -Nat.cast_succ, ← Nat.one_eq_succ_zero]
       simp only [opow_def, opowAux2, opow, e₁, h, r₁, e₂, r₂, repr,
           opow_zero, Nat.succPNat_coe, Nat.cast_succ, Nat.cast_zero, _root_.zero_add, mul_one,
@@ -983,7 +983,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
       rw [opow_add, opow_mul, opow_omega, add_one_eq_succ]
       congr
       conv_lhs =>
-        simp [HPow.hPow]
+        simp only [(· ^ ·)]
         simp [Pow.pow, opow, Ordinal.succ_ne_zero]
       · simpa using nat_cast_lt.2 (Nat.succ_lt_succ <| pos_iff_ne_zero.2 h)
       · rw [←Nat.cast_succ, lt_omega]

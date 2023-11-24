@@ -41,8 +41,6 @@ fundamental system `fundSystem`.
 number field, units
  -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open scoped NumberField
 
 noncomputable section
