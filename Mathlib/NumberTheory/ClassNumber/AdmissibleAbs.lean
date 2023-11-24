@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
+import Mathlib.Data.Real.Archimedean
 
 #align_import number_theory.class_number.admissible_abs from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 

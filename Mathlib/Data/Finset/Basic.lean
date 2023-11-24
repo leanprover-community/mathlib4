@@ -755,7 +755,7 @@ theorem eq_singleton_iff_nonempty_unique_mem {s : Finset α} {a : α} :
 #align finset.eq_singleton_iff_nonempty_unique_mem Finset.eq_singleton_iff_nonempty_unique_mem
 
 theorem nonempty_iff_eq_singleton_default [Unique α] {s : Finset α} : s.Nonempty ↔ s = {default} :=
-  by simp [eq_singleton_iff_nonempty_unique_mem]
+  by simp [eq_singleton_iff_nonempty_unique_mem, eq_iff_true_of_subsingleton]
 #align finset.nonempty_iff_eq_singleton_default Finset.nonempty_iff_eq_singleton_default
 
 alias ⟨Nonempty.eq_singleton_default, _⟩ := nonempty_iff_eq_singleton_default
@@ -1233,8 +1233,8 @@ theorem insert_inj_on (s : Finset α) : Set.InjOn (fun a => insert a s) sᶜ := 
   (insert_inj h).1
 #align finset.insert_inj_on Finset.insert_inj_on
 
-theorem ssubset_iff : s ⊂ t ↔ ∃ (a : α) (_ : a ∉ s), insert a s ⊆ t := by
-  exact_mod_cast @Set.ssubset_iff_insert α s t
+theorem ssubset_iff : s ⊂ t ↔ ∃ (a : α) (_ : a ∉ s), insert a s ⊆ t :=
+  mod_cast @Set.ssubset_iff_insert α s t
 #align finset.ssubset_iff Finset.ssubset_iff
 
 theorem ssubset_insert (h : a ∉ s) : s ⊂ insert a s :=

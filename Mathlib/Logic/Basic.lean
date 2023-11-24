@@ -293,7 +293,8 @@ theorem Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d)
 
 /-! ### Declarations about `Xor'` -/
 
-@[simp] theorem xor_true : Xor' True = Not := by simp [Xor']
+@[simp] theorem xor_true : Xor' True = Not := by
+  simp (config := { unfoldPartialApp := true }) [Xor']
 #align xor_true xor_true
 
 @[simp] theorem xor_false : Xor' False = id := by ext; simp [Xor']
@@ -693,7 +694,6 @@ theorem exists_swap {p : α → β → Prop} : (∃ x y, p x y) ↔ ∃ y x, p x
 #align forall_exists_index forall_exists_index
 
 #align exists_imp_distrib exists_imp
-alias ⟨_, not_exists_of_forall_not⟩ := exists_imp
 #align not_exists_of_forall_not not_exists_of_forall_not
 
 #align Exists.some Exists.choose
@@ -897,8 +897,6 @@ theorem exists_unique_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∃! h
   @exists_unique_const (q h) p ⟨h⟩ _
 #align exists_unique_prop_of_true exists_unique_prop_of_true
 
-theorem forall_prop_of_false {p : Prop} {q : p → Prop} (hn : ¬p) : (∀ h' : p, q h') ↔ True :=
-  iff_true_intro fun h ↦ hn.elim h
 #align forall_prop_of_false forall_prop_of_false
 
 theorem exists_prop_of_false {p : Prop} {q : p → Prop} : ¬p → ¬∃ h' : p, q h' :=
@@ -1157,18 +1155,9 @@ theorem dite_eq_iff' : dite P A B = c ↔ (∀ h, A h = c) ∧ ∀ h, B h = c :=
 theorem ite_eq_iff' : ite P a b = c ↔ (P → a = c) ∧ (¬P → b = c) := dite_eq_iff'
 #align ite_eq_iff' ite_eq_iff'
 
-@[simp] theorem dite_eq_left_iff : dite P (fun _ ↦ a) B = a ↔ ∀ h, B h = a := by
-  by_cases P <;> simp [*, forall_prop_of_true, forall_prop_of_false]
 #align dite_eq_left_iff dite_eq_left_iff
-
-@[simp] theorem dite_eq_right_iff : (dite P A fun _ ↦ b) = b ↔ ∀ h, A h = b := by
-  by_cases P <;> simp [*, forall_prop_of_true, forall_prop_of_false]
 #align dite_eq_right_iff dite_eq_right_iff
-
-@[simp] theorem ite_eq_left_iff : ite P a b = a ↔ ¬P → b = a := dite_eq_left_iff
 #align ite_eq_left_iff ite_eq_left_iff
-
-@[simp] theorem ite_eq_right_iff : ite P a b = b ↔ P → a = b := dite_eq_right_iff
 #align ite_eq_right_iff ite_eq_right_iff
 
 theorem dite_ne_left_iff : dite P (fun _ ↦ a) B ≠ a ↔ ∃ h, a ≠ B h := by
