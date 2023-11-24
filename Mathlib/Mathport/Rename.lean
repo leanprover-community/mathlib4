@@ -59,7 +59,8 @@ instance [Inhabited α] : Inhabited (Thunk α) where
   default := .pure default
 
 /-- This extension stores the lookup data generated from `#align` commands. -/
--- wrap state in `Thunk` as we rarely actually query it
+-- wrap state in `Thunk` as downstream projects rarely actually query it; it only
+-- gets queried when new `#align`s are added.
 initialize renameExtension : SimplePersistentEnvExtension NameEntry (Thunk RenameMap) ←
   registerSimplePersistentEnvExtension {
     addEntryFn := fun t e => t.map (·.insert e)
