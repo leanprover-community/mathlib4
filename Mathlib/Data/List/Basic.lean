@@ -1756,6 +1756,16 @@ theorem bind_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = 
   (congr_arg List.join <| map_congr h : _)
 #align list.bind_congr List.bind_congr
 
+theorem bind_option_toList_of_eq_some {f : β → Option α} {g : β → α} {bs : List β}
+    (h : ∀ x ∈ bs, f x = some (g x)) : bs.bind (fun i => (f i).toList) = bs.map g := by
+  have : bs.bind (fun i => (f i).toList) = bs.bind (List.ret ∘ g) :=
+    List.bind_congr (by simp; intro m hm; simp[h _ hm]; rfl)
+  rw [this, List.bind_ret_eq_map]
+
+theorem subset_bind_of_mem {a : α} {as : List α} (h : a ∈ as) (f : α → List α) :
+    f a ⊆ as.bind f := by
+  intro _ ha; simpa using ⟨a, h, ha⟩
+
 @[simp]
 theorem map_eq_map {α β} (f : α → β) (l : List α) : f <$> l = map f l :=
   rfl
@@ -4453,5 +4463,20 @@ theorem disjoint_pmap {p : α → Prop} {f : ∀ a : α, p a → β} {s t : List
   exact ha'
 
 end Disjoint
+
+section lookup
+
+variable {α β : Type*} [BEq α] [LawfulBEq α]
+
+lemma lookup_graph (f : α → β) {a : α} {as : List α} (h : a ∈ as) :
+    lookup a (as.map $ fun x => (x, f x)) = some (f a) := by
+  induction' as with a' as ih
+  · exact (List.not_mem_nil _ h).elim
+  · by_cases ha : a = a'
+    · simp [ha, lookup_cons]
+    · simp [lookup_cons, beq_false_of_ne ha]
+      exact ih (List.mem_of_ne_of_mem ha h)
+
+end lookup
 
 end List
