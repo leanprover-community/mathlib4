@@ -15,6 +15,12 @@ We collect facts about factorials in context of modular arithmetic.
 
 * `Nat.descFactorialZMod`: For natural numbers `n` and `p`, where `n` is less than or equal to `p`
   the descending factorial of `(p - 1)` taken `n` times modulo `p` equals `(-1) ^ n * n!`.
+
+## See also
+
+For the prime case and involving `factorial` rather than `descFactorial`, see Wilson's theorem:
+* Nat.prime_iff_fac_equiv_neg_one
+
 -/
 
 open Finset Nat
