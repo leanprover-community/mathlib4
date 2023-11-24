@@ -45,17 +45,17 @@ theorem zero_bot (n : ℕ) : Ico 0 n = range n := by rw [Ico, tsub_zero, range_e
 @[simp]
 theorem length (n m : ℕ) : length (Ico n m) = m - n := by
   dsimp [Ico]
-  simp only [length_range']
+  simp [length_range', autoParam]
 #align list.Ico.length List.Ico.length
 
 theorem pairwise_lt (n m : ℕ) : Pairwise (· < ·) (Ico n m) := by
   dsimp [Ico]
-  simp only [pairwise_lt_range']
+  simp [pairwise_lt_range', autoParam]
 #align list.Ico.pairwise_lt List.Ico.pairwise_lt
 
 theorem nodup (n m : ℕ) : Nodup (Ico n m) := by
   dsimp [Ico]
-  simp only [nodup_range']
+  simp [nodup_range', autoParam]
 #align list.Ico.nodup List.Ico.nodup
 
 @[simp]
@@ -140,7 +140,7 @@ theorem pred_singleton {m : ℕ} (h : 0 < m) : Ico (m - 1) m = [m - 1] := by
 #align list.Ico.pred_singleton List.Ico.pred_singleton
 
 theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
-  by_cases n < m
+  by_cases h : n < m
   · rw [eq_cons h]
     exact chain_succ_range' _ _ 1
   · rw [eq_nil_of_le (le_of_not_gt h)]

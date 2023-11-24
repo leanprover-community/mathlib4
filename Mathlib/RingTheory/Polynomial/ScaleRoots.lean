@@ -103,28 +103,32 @@ end Semiring
 
 section CommSemiring
 
-variable [Semiring S] [CommSemiring R] [CommSemiring A] [Field K]
+variable [Semiring S] [CommSemiring R] [Semiring A] [Field K]
 
-theorem scaleRoots_eval₂_mul {p : S[X]} (f : S →+* R) (r : R) (s : S) :
-    eval₂ f (f s * r) (scaleRoots p s) = f s ^ p.natDegree * eval₂ f r p :=
-  calc
+theorem scaleRoots_eval₂_mul_of_commute {p : S[X]} (f : S →+* A) (a : A) (s : S)
+    (hsa : Commute (f s) a) (hf : ∀ s₁ s₂, Commute (f s₁) (f s₂)) :
+    eval₂ f (f s * a) (scaleRoots p s) = f s ^ p.natDegree * eval₂ f a p := by
+   calc
     _ = (scaleRoots p s).support.sum fun i =>
-          f (coeff p i * s ^ (p.natDegree - i)) * (f s * r) ^ i :=
+          f (coeff p i * s ^ (p.natDegree - i)) * (f s * a) ^ i :=
       by simp [eval₂_eq_sum, sum_def]
-    _ = p.support.sum fun i => f (coeff p i * s ^ (p.natDegree - i)) * (f s * r) ^ i :=
+    _ = p.support.sum fun i => f (coeff p i * s ^ (p.natDegree - i)) * (f s * a) ^ i :=
       (Finset.sum_subset (support_scaleRoots_le p s) fun i _hi hi' => by
         let this : coeff p i * s ^ (p.natDegree - i) = 0 := by simpa using hi'
         simp [this])
-    _ = p.support.sum fun i : ℕ => f (p.coeff i) * f s ^ (p.natDegree - i + i) * r ^ i :=
+    _ = p.support.sum fun i : ℕ => f (p.coeff i) * f s ^ (p.natDegree - i + i) * a ^ i :=
       (Finset.sum_congr rfl fun i _hi => by
-        simp_rw [f.map_mul, f.map_pow, pow_add, mul_pow, mul_assoc])
-    _ = p.support.sum fun i : ℕ => f s ^ p.natDegree * (f (p.coeff i) * r ^ i) :=
+        simp_rw [f.map_mul, f.map_pow, pow_add, hsa.mul_pow, mul_assoc])
+    _ = p.support.sum fun i : ℕ => f s ^ p.natDegree * (f (p.coeff i) * a ^ i) :=
       (Finset.sum_congr rfl fun i hi => by
-        rw [mul_assoc, mul_left_comm, tsub_add_cancel_of_le]
+        rw [mul_assoc, ← map_pow, (hf _ _).left_comm, map_pow, tsub_add_cancel_of_le]
         exact le_natDegree_of_ne_zero (Polynomial.mem_support_iff.mp hi))
-    _ = f s ^ p.natDegree * p.support.sum fun i : ℕ => f (p.coeff i) * r ^ i := Finset.mul_sum.symm
-    _ = f s ^ p.natDegree * eval₂ f r p := by simp [eval₂_eq_sum, sum_def]
+    _ = f s ^ p.natDegree * p.support.sum fun i : ℕ => f (p.coeff i) * a ^ i := Finset.mul_sum.symm
+    _ = f s ^ p.natDegree * eval₂ f a p := by simp [eval₂_eq_sum, sum_def]
 
+theorem scaleRoots_eval₂_mul {p : S[X]} (f : S →+* R) (r : R) (s : S) :
+    eval₂ f (f s * r) (scaleRoots p s) = f s ^ p.natDegree * eval₂ f r p :=
+  scaleRoots_eval₂_mul_of_commute f r s (mul_comm _ _) fun _ _ ↦ mul_comm _ _
 #align polynomial.scale_roots_eval₂_mul Polynomial.scaleRoots_eval₂_mul
 
 theorem scaleRoots_eval₂_eq_zero {p : S[X]} (f : S →+* R) {r : R} {s : S} (hr : eval₂ f r p = 0) :
@@ -132,8 +136,10 @@ theorem scaleRoots_eval₂_eq_zero {p : S[X]} (f : S →+* R) {r : R} {s : S} (h
 #align polynomial.scale_roots_eval₂_eq_zero Polynomial.scaleRoots_eval₂_eq_zero
 
 theorem scaleRoots_aeval_eq_zero [Algebra R A] {p : R[X]} {a : A} {r : R} (ha : aeval a p = 0) :
-    aeval (algebraMap R A r * a) (scaleRoots p r) = 0 :=
-  scaleRoots_eval₂_eq_zero (algebraMap R A) ha
+    aeval (algebraMap R A r * a) (scaleRoots p r) = 0 := by
+  rw [aeval_def, scaleRoots_eval₂_mul_of_commute, ← aeval_def, ha, mul_zero]
+  · apply Algebra.commutes
+  · intros; rw [Commute, SemiconjBy, ← map_mul, ← map_mul, mul_comm]
 #align polynomial.scale_roots_aeval_eq_zero Polynomial.scaleRoots_aeval_eq_zero
 
 theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+* K}

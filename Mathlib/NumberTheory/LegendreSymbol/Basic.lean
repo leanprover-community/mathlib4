@@ -193,7 +193,7 @@ theorem eq_one_iff {a : ℤ} (ha0 : (a : ZMod p) ≠ 0) : legendreSym p a = 1 �
 #align legendre_sym.eq_one_iff legendreSym.eq_one_iff
 
 theorem eq_one_iff' {a : ℕ} (ha0 : (a : ZMod p) ≠ 0) :
-    legendreSym p a = 1 ↔ IsSquare (a : ZMod p) := by rw [eq_one_iff]; norm_cast; exact_mod_cast ha0
+    legendreSym p a = 1 ↔ IsSquare (a : ZMod p) := by rw [eq_one_iff]; norm_cast; exact mod_cast ha0
 #align legendre_sym.eq_one_iff' legendreSym.eq_one_iff'
 
 /-- `legendreSym p a = -1` iff `a` is a nonsquare mod `p`. -/
