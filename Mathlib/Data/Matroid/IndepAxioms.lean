@@ -57,7 +57,7 @@ This is the axiom that appears in all most of the definitions.
   predicate on `Finset α`.
 
 * `Matroid.matroidOfIndepOfExistsMatroid` constructs a 'copy' of a matroid that is known only
-  existentially, but whose independent predicate is known explicitly.
+  existentially, but whose independence predicate is known explicitly.
 -/
 
 open Set
@@ -150,7 +150,9 @@ def matroidOfIndep (E : Set α) (Indep : Set α → Prop) (h_empty : Indep ∅)
     (matroidOfIndep E Indep h_empty h_subset h_aug h_maximal h_support).E = E := rfl
 
 /-- An independence predicate satisfying the finite matroid axioms determines a matroid,
-  provided independence is determined by its behaviour on finite sets. Uses choice. -/
+  provided independence is determined by its behaviour on finite sets.
+  This fundamentally needs choice, since it can be used to prove that every vector space
+  has a basis. -/
 def matroidOfIndepOfFinitary (E : Set α) (Indep : Set α → Prop)
     (h_empty : Indep ∅)
     (ind_mono : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
@@ -225,7 +227,6 @@ def matroidOfIndepOfFinitary (E : Set α) (Indep : Set α → Prop)
       have hfE₀ : f ∈ E₀ := mem_of_mem_of_subset hfI (insert_subset_insert (subset_union_left _ _))
       refine hfJ (insert_eq_self.1 <| Eq.symm (hJmax _
         ⟨hB₀J.trans <| subset_insert _ _,hfi,insert_subset hfE₀ hJss⟩ (subset_insert _ _)))
-
 
     -- But this means `|I₀| < |J|`, and extending `I₀` into `J` gives a contradiction
     rw [ncard_insert_of_not_mem heI₀ hI₀fin, ←Nat.lt_iff_add_one_le] at hcard
@@ -517,8 +518,7 @@ def matroidOfIndepFinset [DecidableEq α] (E : Set α) (Indep : Finset α → Pr
     (h_support : ∀ ⦃I⦄, Indep I → (I : Set α) ⊆ E) :
   (matroidOfIndepFinset E Indep h_empty ind_mono ind_aug h_support).E = E := rfl
 
-/-- This isn't a `simp` lemma, because the simplifier already reduces it to `∀ J ⊆ I, Indep J`. -/
-theorem matroidOfIndepFinset_apply [DecidableEq α] (E : Set α) (Indep : Finset α → Prop)
+@[simp] theorem matroidOfIndepFinset_apply [DecidableEq α] (E : Set α) (Indep : Finset α → Prop)
     (h_empty : Indep ∅)
     (ind_mono : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
     (ind_aug : ∀ ⦃I J⦄, Indep I → Indep J → I.card < J.card →
@@ -528,7 +528,9 @@ theorem matroidOfIndepFinset_apply [DecidableEq α] (E : Set α) (Indep : Finset
   simp only [matroidOfIndepFinset, matroidOfIndepOfFinitary_apply, Finset.coe_subset]
   exact ⟨fun h ↦ h _ Subset.rfl, fun h J hJI ↦ ind_mono h hJI⟩
 
-@[simp] theorem matroidOfIndepFinset_apply' [DecidableEq α] (E : Set α) (Indep : Finset α → Prop)
+/-- This can't be `@[simp]`, because it would cause the more useful
+  `matroidOfIndepFinset_apply` not to be in simp normal form. -/
+theorem matroidOfIndepFinset_apply_set [DecidableEq α] (E : Set α) (Indep : Finset α → Prop)
     (h_empty : Indep ∅)
     (ind_mono : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
     (ind_aug : ∀ ⦃I J⦄, Indep I → Indep J → I.card < J.card →
