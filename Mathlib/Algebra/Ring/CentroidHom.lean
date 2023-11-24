@@ -422,7 +422,7 @@ def toEndRingHom (α : Type*) [NonUnitalNonAssocSemiring α] :
 lemma toEnd'_apply (f : CentroidHom α) : toEndRingHom α f = f.toEnd := rfl
 
 lemma centroid_eq_centralizer_mul_op :
-    MonoidHom.mrange (toEnd' α) = Submonoid.centralizer (Set.range L ∪ Set.range R) := by
+    MonoidHom.mrange (toEndRingHom α) = Submonoid.centralizer (Set.range L ∪ Set.range R) := by
   ext T
   constructor
   · intro ⟨f,hf⟩ S hS
@@ -432,13 +432,13 @@ lemma centroid_eq_centralizer_mul_op :
       apply AddMonoidHom.ext
       intro b
       rw [AddMonoid.mul_apply, AddMonoid.mul_apply, AddMonoid.End.mulLeft_apply_apply,
-        AddMonoid.End.mulLeft_apply_apply, AddMonoidHom.coe_coe, f.map_mul_left]
+        AddMonoid.End.mulLeft_apply_apply, toEnd, AddMonoidHom.coe_coe, f.map_mul_left]
     · cases' h₂ with b hb
       rw [← hb, ← hf, toEnd'_apply]
       apply AddMonoidHom.ext
       intro a
       rw [AddMonoid.mul_apply, AddMonoid.mul_apply, AddMonoid.End.mulRight_apply_apply,
-        AddMonoid.End.mulRight_apply_apply, AddMonoidHom.coe_coe, f.map_mul_right]
+        AddMonoid.End.mulRight_apply_apply, toEnd, AddMonoidHom.coe_coe, f.map_mul_right]
   · intro h
     use ⟨T, fun a b => by
       simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
