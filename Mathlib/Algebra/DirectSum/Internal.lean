@@ -276,56 +276,9 @@ theorem coe_of_mul_apply {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι) [Decidabl
 
 end CanonicallyOrderedAddCommMonoid
 
-section GradeZeroSubsemiring
-
-variable [Semiring R]
-variable [AddMonoid ι]
-variable [SetLike σ R] [AddSubmonoidClass σ R]
-variable (A : ι → σ) [SetLike.GradedMonoid A]
-
-/--
-The subsemiring `A 0` of `R`.
--/
-def GradeZero.subsemiring : Subsemiring R where
-  carrier := A 0
-  mul_mem' ha hb := add_zero (0 : ι) ▸ SetLike.mul_mem_graded ha hb
-  one_mem' := SetLike.one_mem_graded A
-  add_mem' a1 a2 := add_mem a1 a2
-  zero_mem' := zero_mem (A 0)
-
-/--
-The semiring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`.
--/
-instance GradeZero.instSemiring : Semiring (A 0) := (GradeZero.subsemiring A).toSemiring
-
-end GradeZeroSubsemiring
-
-section GradeZeroSubring
-
-variable [Ring R]
-variable [AddMonoid ι]
-variable [SetLike σ R] [AddSubgroupClass σ R]
-variable (A : ι → σ) [SetLike.GradedMonoid A]
-
-/--
-The subring `A 0` of `R`.
--/
-def GradeZero.subring : Subring R where
-  carrier := A 0
-  __ := GradeZero.subsemiring A
-  neg_mem' hx := neg_mem hx
-
-/--
-The ring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`.
--/
-instance GradeZero.instRing : Ring (A 0) := (GradeZero.subring A).toRing
-
-end GradeZeroSubring
-
 end DirectSum
 
 /-! #### From `Submodule`s -/
-
 
 namespace Submodule
 
@@ -382,6 +335,86 @@ theorem DirectSum.coeAlgHom_of [AddMonoid ι] [CommSemiring S] [Semiring R] [Alg
 #align direct_sum.coe_alg_hom_of DirectSum.coeAlgHom_of
 
 end DirectSum
+
+/-! ### Facts about grade zero -/
+
+namespace SetLike.GradeZero
+
+section Semiring
+variable [Semiring R] [AddMonoid ι] [SetLike σ R] [AddSubmonoidClass σ R]
+variable (A : ι → σ) [SetLike.GradedMonoid A]
+
+/-- The subsemiring `A 0` of `R`. -/
+def subsemiring : Subsemiring R where
+  carrier := A 0
+  __ := submonoid A
+  add_mem' := add_mem
+  zero_mem' := zero_mem (A 0)
+
+/-- The semiring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
+instance instSemiring : Semiring (A 0) := (subsemiring A).toSemiring
+
+@[simp, norm_cast] theorem coe_natCast (n : ℕ) : (n : A 0) = (n : R) := rfl
+
+@[simp, norm_cast] theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n) : A 0) = (OfNat.ofNat n : R) := rfl
+
+end Semiring
+
+section CommSemiring
+variable [CommSemiring R] [AddCommMonoid ι] [SetLike σ R] [AddSubmonoidClass σ R]
+variable (A : ι → σ) [SetLike.GradedMonoid A]
+
+/-- The commutativ esemiring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
+instance instCommSemiring : CommSemiring (A 0) := (subsemiring A).toCommSemiring
+
+end CommSemiring
+
+section Ring
+variable [Ring R] [AddMonoid ι] [SetLike σ R] [AddSubgroupClass σ R]
+variable (A : ι → σ) [SetLike.GradedMonoid A]
+
+/-- The subring `A 0` of `R`. -/
+def subring : Subring R where
+  carrier := A 0
+  __ := subsemiring A
+  neg_mem' := neg_mem
+
+/-- The ring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
+instance instRing : Ring (A 0) := (subring A).toRing
+
+theorem coe_intCast (z : ℤ) : (z : A 0) = (z : R) := rfl
+
+end Ring
+
+section CommRing
+variable [CommRing R] [AddCommMonoid ι] [SetLike σ R] [AddSubgroupClass σ R]
+variable (A : ι → σ) [SetLike.GradedMonoid A]
+
+/-- The commutative ring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
+instance instCommRing : CommRing (A 0) := (subring A).toCommRing
+
+end CommRing
+
+section Algebra
+variable [CommSemiring S] [Semiring R] [Algebra S R] [AddMonoid ι]
+variable (A : ι → Submodule S R) [SetLike.GradedMonoid A]
+
+/-- The subalgebra `A 0` of `R`. -/
+def subalgebra : Subalgebra S R where
+  carrier := A 0
+  __ := subsemiring A
+  algebraMap_mem' := algebraMap_mem_graded A
+
+/-- The `S`-algebra `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
+instance instAlgebra : Algebra S (A 0) := inferInstanceAs <| Algebra S (subalgebra A)
+
+@[simp, norm_cast] theorem coe_algebraMap (s : S) :
+    ↑(algebraMap _ (A 0) s) = algebraMap _ R s := rfl
+
+end Algebra
+
+end SetLike.GradeZero
 
 section HomogeneousElement
 
