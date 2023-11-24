@@ -479,7 +479,7 @@ theorem toSubmonoid_le {p q : Subgroup G} : p.toSubmonoid ≤ q.toSubmonoid ↔ 
 #align add_subgroup.to_add_submonoid_le AddSubgroup.toAddSubmonoid_le
 
 @[to_additive (attr := simp)]
-lemma nonempty (s : Subgroup G) : (s : Set G).Nonempty := ⟨1, one_mem _⟩
+lemma coe_nonempty (s : Subgroup G) : (s : Set G).Nonempty := ⟨1, one_mem _⟩
 
 end Subgroup
 

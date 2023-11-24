@@ -538,7 +538,6 @@ theorem Sbtw.affineCombination_of_mem_affineSpan_pair [NoZeroDivisors R] [NoZero
   rw [hr i his, sbtw_mul_sub_add_iff] at hs
   change ∀ i ∈ s, w i = (r • (w₂ - w₁) + w₁) i at hr
   rw [s.affineCombination_congr hr fun _ _ => rfl]
-  dsimp only
   rw [← s.weightedVSub_vadd_affineCombination, s.weightedVSub_const_smul,
     ← s.affineCombination_vsub, ← lineMap_apply, sbtw_lineMap_iff, and_iff_left hs.2,
     ← @vsub_ne_zero V, s.affineCombination_vsub]
@@ -611,7 +610,8 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by
     clear h₁ h₂ h₁' h₂'
     -- Porting note: Originally `decide!`
-    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃ <;> simp at h₁₂ h₁₃ h₂₃ ⊢
+    fin_cases i₁ <;> fin_cases i₂ <;> fin_cases i₃
+      <;> simp (config := {decide := true}) at h₁₂ h₁₃ h₂₃ ⊢
   have hp : p ∈ affineSpan R (Set.range t.points) := by
     have hle : line[R, t.points i₁, p₁] ≤ affineSpan R (Set.range t.points) := by
       refine' affineSpan_pair_le_of_mem_of_mem (mem_affineSpan R (Set.mem_range_self _)) _
@@ -629,17 +629,17 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   rcases h₂i with ⟨r₂, ⟨hr₂0, hr₂1⟩, rfl⟩
   rcases eq_affineCombination_of_mem_affineSpan_of_fintype hp with ⟨w, hw, rfl⟩
   have h₁s :=
-    sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.Independent hw (Finset.mem_univ _)
+    sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.independent hw (Finset.mem_univ _)
       (Finset.mem_univ _) (Finset.mem_univ _) h₁₂ h₁₃ h₂₃ hr₁0 hr₁1 h₁'
   have h₂s :=
-    sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.Independent hw (Finset.mem_univ _)
+    sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.independent hw (Finset.mem_univ _)
       (Finset.mem_univ _) (Finset.mem_univ _) h₁₂.symm h₂₃ h₁₃ hr₂0 hr₂1 h₂'
   rw [← Finset.univ.affineCombination_affineCombinationSingleWeights R t.points
       (Finset.mem_univ i₁),
     ← Finset.univ.affineCombination_affineCombinationLineMapWeights t.points (Finset.mem_univ _)
       (Finset.mem_univ _)] at h₁' ⊢
   refine'
-    Sbtw.affineCombination_of_mem_affineSpan_pair t.Independent hw
+    Sbtw.affineCombination_of_mem_affineSpan_pair t.independent hw
       (Finset.univ.sum_affineCombinationSingleWeights R (Finset.mem_univ _))
       (Finset.univ.sum_affineCombinationLineMapWeights (Finset.mem_univ _) (Finset.mem_univ _) _)
       h₁' (Finset.mem_univ i₁) _

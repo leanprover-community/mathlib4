@@ -788,7 +788,7 @@ lemma to_digits_core_length (b : Nat) (h : 2 <= b) (f n e : Nat)
         rw [‹e = 0›]
         have _ : b ^ 1 = b := by simp only [pow_succ, pow_zero, Nat.one_mul]
         have _ : n < b := ‹b ^ 1 = b› ▸ (‹e = 0› ▸ hlt : n < b ^ Nat.succ 0)
-        simp only [(@Nat.div_eq_of_lt n b ‹n < b› : n / b = 0), if_true, List.length]
+        simp [(@Nat.div_eq_of_lt n b ‹n < b› : n / b = 0)]
 
 /-- The core implementation of `Nat.repr` returns a String with length less than or equal to the
 number of digits in the decimal number (represented by `e`). For example, the decimal string
