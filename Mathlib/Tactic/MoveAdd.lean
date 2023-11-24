@@ -223,12 +223,11 @@ If `exs` is the list `[e₁, e₂, ..., eₙ]` of `Expr`essions, then `sumList p
 `prepOp (prepOp( ... prepOp (prepOp e₁ e₂) e₃) ... eₙ)`.
 -/
 partial
-def sumList (prepOp : Expr) (l : List Expr) (left_assoc? : Bool := false) : Expr :=
-match left_assoc?, l with
-  | _,     []    => default
-  | _,     [a]   => a
-  | true,  a::as => Expr.app (prepOp.app a) (sumList prepOp as)
-  | false, a::as => as.foldl (fun x y => Expr.app (prepOp.app x) y) a
+def sumList (prepOp : Expr) : List Expr → Bool → Expr
+  | []    , _     => default
+  | [a]   , _     => a
+  | a::as , true  => Expr.app (prepOp.app a) (sumList prepOp as true)
+  | a::as , false => as.foldl (fun x y => Expr.app (prepOp.app x) y) a
 
 end ExprProcessing
 
@@ -276,7 +275,7 @@ def rankSums (tgt : Expr) (instructions : List (Expr × Bool)) : MetaM (List (Ex
   let candidates := sums.map fun (addends, sum) => do
     let reord := reorderUsing addends.toList instructions
     let left_assoc? := sum.getAppFn.isConstOf `And || sum.getAppFn.isConstOf `Or
-    let resummed := sumList (prepareOp sum) reord (left_assoc? := left_assoc?)
+    let resummed := sumList (prepareOp sum) reord left_assoc?
     if (resummed != sum) then some (sum, resummed) else none
   return (candidates.toList.reduceOption.toArray.qsort
     (fun x y : Expr × Expr ↦ (y.1.size  ≤ x.1.size))).toList
