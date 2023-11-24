@@ -159,11 +159,8 @@ theorem essInf_mono_ae {f g : α → β} (hfg : f ≤ᵐ[μ] g) : essInf f μ �
   liminf_le_liminf hfg
 #align ess_inf_mono_ae essInf_mono_ae
 
-theorem essSup_le_of_ae_le {f : α → β} (c : β) (hf : f ≤ᵐ[μ] fun _ => c) : essSup f μ ≤ c := by
-  refine' (essSup_mono_ae hf).trans _
-  by_cases hμ : μ = 0
-  · simp [hμ]
-  · rwa [essSup_const]
+theorem essSup_le_of_ae_le {f : α → β} (c : β) (hf : f ≤ᵐ[μ] fun _ => c) : essSup f μ ≤ c :=
+  limsup_le_of_le (by isBoundedDefault) hf
 #align ess_sup_le_of_ae_le essSup_le_of_ae_le
 
 theorem le_essInf_of_ae_le {f : α → β} (c : β) (hf : (fun _ => c) ≤ᵐ[μ] f) : c ≤ essInf f μ :=
@@ -262,44 +259,19 @@ end TopologicalSpace
 
 end CompleteLattice
 
-section CompleteLinearOrder
-
-variable [CompleteLinearOrder β]
-theorem essSup_indicator_eq_essSup_restrict [Zero β] {s : Set α} {f : α → β}
-    (hf : 0 ≤ᵐ[μ.restrict s] f) (hs : MeasurableSet s) (hs_not_null : μ s ≠ 0) :
-    essSup (s.indicator f) μ = essSup f (μ.restrict s) := by
-  refine'
-    le_antisymm _
-      (limsSup_le_limsSup_of_le (map_restrict_ae_le_map_indicator_ae hs)
-        (by isBoundedDefault) (by isBoundedDefault) )
-  refine' limsSup_le_limsSup (by isBoundedDefault) (by isBoundedDefault) (fun c h_restrict_le => _)
-  rw [eventually_map] at h_restrict_le ⊢
-  rw [ae_restrict_iff' hs] at h_restrict_le
-  have hc : 0 ≤ c := by
-    rsuffices ⟨x, hx⟩ : ∃ x, 0 ≤ f x ∧ f x ≤ c
-    exact hx.1.trans hx.2
-    refine' Frequently.exists _
-    · exact μ.ae
-    rw [EventuallyLE, ae_restrict_iff' hs] at hf
-    have hs' : ∃ᵐ x ∂μ, x ∈ s := by
-      contrapose! hs_not_null
-      rw [not_frequently, ae_iff] at hs_not_null
-      suffices { a : α | ¬a ∉ s } = s by rwa [← this]
-      simp
-    refine' hs'.mp (hf.mp (h_restrict_le.mono fun x hxs_imp_c hxf_nonneg hxs => _))
-    rw [Pi.zero_apply] at hxf_nonneg
-    exact ⟨hxf_nonneg hxs, hxs_imp_c hxs⟩
-  refine' h_restrict_le.mono fun x hxc => _
-  by_cases hxs : x ∈ s
-  · simpa [hxs] using hxc hxs
-  · simpa [hxs] using hc
-#align ess_sup_indicator_eq_ess_sup_restrict essSup_indicator_eq_essSup_restrict
-
-end CompleteLinearOrder
-
 namespace ENNReal
 
 variable {f : α → ℝ≥0∞}
+
+lemma essSup_piecewise {s : Set α} [DecidablePred (· ∈ s)] {g} (hs : MeasurableSet s) :
+    essSup (s.piecewise f g) μ = max (essSup f (μ.restrict s)) (essSup g (μ.restrict sᶜ)) := by
+  simp only [essSup, limsup_piecewise, blimsup_eq_limsup, ae_restrict_eq, hs, hs.compl]; rfl
+
+theorem essSup_indicator_eq_essSup_restrict {s : Set α} {f : α → ℝ≥0∞} (hs : MeasurableSet s) :
+    essSup (s.indicator f) μ = essSup f (μ.restrict s) := by
+  classical
+  simp only [← piecewise_eq_indicator, essSup_piecewise hs, max_eq_left_iff]
+  exact limsup_const_bot.trans_le (zero_le _)
 
 theorem ae_le_essSup (f : α → ℝ≥0∞) : ∀ᵐ y ∂μ, f y ≤ essSup f μ :=
   eventually_le_limsup f

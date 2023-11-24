@@ -31,6 +31,10 @@ related results.
 The representation of a partition as a multiset is very handy as multisets are very flexible and
 already have a well-developed API.
 
+## TODO
+
+Link this to Young diagrams.
+
 ## Tags
 
 Partition
@@ -39,11 +43,6 @@ Partition
 
 <https://en.wikipedia.org/wiki/Partition_(number_theory)>
 -/
-
-set_option autoImplicit true
-
-
-variable {α : Type*}
 
 open Multiset
 
@@ -66,22 +65,22 @@ structure Partition (n : ℕ) where
 
 namespace Partition
 
-instance decidableEqParition : DecidableEq (Partition n)
-  | p, q => by simp [Partition.ext_iff]; exact decidableEq p.parts q.parts
+-- TODO: This should be automatically derived, see lean4#2914
+instance decidableEqPartition {n : ℕ} : DecidableEq (Partition n) :=
+  fun _ _ => decidable_of_iff' _ <| Partition.ext_iff _ _
 
 /-- A composition induces a partition (just convert the list to a multiset). -/
-def ofComposition (n : ℕ) (c : Composition n) : Partition n
-    where
+@[simps]
+def ofComposition (n : ℕ) (c : Composition n) : Partition n where
   parts := c.blocks
-  parts_pos {i} hi := c.blocks_pos hi
+  parts_pos hi := c.blocks_pos hi
   parts_sum := by rw [Multiset.coe_sum, c.blocks_sum]
 #align nat.partition.of_composition Nat.Partition.ofComposition
 
 theorem ofComposition_surj {n : ℕ} : Function.Surjective (ofComposition n) := by
   rintro ⟨b, hb₁, hb₂⟩
   rcases Quotient.exists_rep b with ⟨b, rfl⟩
-  refine' ⟨⟨b, fun {i} hi => hb₁ hi, _⟩, Partition.ext _ _ rfl⟩
-  simpa using hb₂
+  exact ⟨⟨b, hb₁, by simpa using hb₂⟩, Partition.ext _ _ rfl⟩
 #align nat.partition.of_composition_surj Nat.Partition.ofComposition_surj
 
 -- The argument `n` is kept explicit here since it is useful in tactic mode proofs to generate the
@@ -89,31 +88,43 @@ theorem ofComposition_surj {n : ℕ} : Function.Surjective (ofComposition n) := 
 /-- Given a multiset which sums to `n`, construct a partition of `n` with the same multiset, but
 without the zeros.
 -/
-def ofSums (n : ℕ) (l : Multiset ℕ) (hl : l.sum = n) : Partition n
-    where
+@[simps]
+def ofSums (n : ℕ) (l : Multiset ℕ) (hl : l.sum = n) : Partition n where
   parts := l.filter (· ≠ 0)
-  parts_pos {i} hi := Nat.pos_of_ne_zero <| by apply of_mem_filter hi
+  parts_pos hi := (of_mem_filter hi).bot_lt
   parts_sum := by
-    have lt : l.filter (· = 0) + l.filter (· ≠ 0) = l := filter_add_not _ l
-    apply_fun Multiset.sum at lt
-    have lz : (l.filter (· = 0)).sum = 0 := by
-      rw [Multiset.sum_eq_zero_iff]
-      simp
-    rwa [sum_add (filter (fun x => x = 0) l) (filter (fun x => ¬x = 0) l),lz,hl, zero_add] at lt
+    have lz : (l.filter (· = 0)).sum = 0 := by simp [sum_eq_zero_iff]
+    rwa [←filter_add_not (· = 0) l, sum_add, lz, zero_add] at hl
 #align nat.partition.of_sums Nat.Partition.ofSums
 
 /-- A `Multiset ℕ` induces a partition on its sum. -/
-def ofMultiset (l : Multiset ℕ) : Partition l.sum :=
-  ofSums _ l rfl
+@[simps!]
+def ofMultiset (l : Multiset ℕ) : Partition l.sum := ofSums _ l rfl
 #align nat.partition.of_multiset Nat.Partition.ofMultiset
 
 /-- The partition of exactly one part. -/
-def indiscretePartition (n : ℕ) : Partition n :=
-  ofSums n {n} rfl
-#align nat.partition.indiscrete_partition Nat.Partition.indiscretePartition
+def indiscrete (n : ℕ) : Partition n := ofSums n {n} rfl
+#align nat.partition.indiscrete_partition Nat.Partition.indiscrete
 
-instance {n : ℕ} : Inhabited (Partition n) :=
-  ⟨indiscretePartition n⟩
+instance {n : ℕ} : Inhabited (Partition n) := ⟨indiscrete n⟩
+
+@[simp] lemma indiscretePartition_parts {n : ℕ} (hn : n ≠ 0) : (indiscrete n).parts = {n} := by
+  simp [indiscrete, filter_eq_self, hn]
+
+@[simp] lemma partition_zero_parts (p : Partition 0) : p.parts = 0 :=
+  eq_zero_of_forall_not_mem <| fun _ h => (p.parts_pos h).ne' <| sum_eq_zero_iff.1 p.parts_sum _ h
+
+instance UniquePartitionZero : Unique (Partition 0) where
+  uniq _ := Partition.ext _ _ <| by simp
+
+@[simp] lemma partition_one_parts (p : Partition 1) : p.parts = {1} := by
+  have h : p.parts = replicate (card p.parts) 1 := eq_replicate_card.2 fun x hx =>
+    ((le_sum_of_mem hx).trans_eq p.parts_sum).antisymm (p.parts_pos hx)
+  have h' : card p.parts = 1 := by simpa using (congrArg sum h.symm).trans p.parts_sum
+  rw [h, h', replicate_one]
+
+instance UniquePartitionOne : Unique (Partition 1) where
+  uniq _ := Partition.ext _ _ <| by simp
 
 /-- The number of times a positive integer `i` appears in the partition `ofSums n l hl` is the same
 as the number of times it appears in the multiset `l`.

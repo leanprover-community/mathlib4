@@ -255,9 +255,8 @@ theorem tsum_geometric_inv_two : (∑' n : ℕ, (2 : ℝ)⁻¹ ^ n) = 2 :=
 theorem tsum_geometric_inv_two_ge (n : ℕ) :
     (∑' i, ite (n ≤ i) ((2 : ℝ)⁻¹ ^ i) 0) = 2 * 2⁻¹ ^ n := by
   have A : Summable fun i : ℕ => ite (n ≤ i) ((2⁻¹ : ℝ) ^ i) 0 := by
-    apply summable_of_nonneg_of_le _ _ summable_geometric_two <;>
-      · intro i
-        by_cases hi : n ≤ i <;> simp [hi]; apply pow_nonneg; exact zero_le_two
+    simpa only [← piecewise_eq_indicator, one_div]
+      using summable_geometric_two.indicator {i | n ≤ i}
   have B : ((Finset.range n).sum fun i : ℕ => ite (n ≤ i) ((2⁻¹ : ℝ) ^ i) 0) = 0 :=
     Finset.sum_eq_zero fun i hi =>
       ite_eq_right_iff.2 fun h => (lt_irrefl _ ((Finset.mem_range.1 hi).trans_le h)).elim
@@ -459,9 +458,7 @@ end LeGeometric
 /-- A series whose terms are bounded by the terms of a converging geometric series converges. -/
 theorem summable_one_div_pow_of_le {m : ℝ} {f : ℕ → ℕ} (hm : 1 < m) (fi : ∀ i, i ≤ f i) :
     Summable fun i => 1 / m ^ f i := by
-  refine'
-    summable_of_nonneg_of_le (fun a => one_div_nonneg.mpr (pow_nonneg (zero_le_one.trans hm.le) _))
-      (fun a => _)
+  refine .of_nonneg_of_le (fun a => by positivity) (fun a => ?_)
       (summable_geometric_of_lt_1 (one_div_nonneg.mpr (zero_le_one.trans hm.le))
         ((one_div_lt (zero_lt_one.trans hm) zero_lt_one).mpr (one_div_one.le.trans_lt hm)))
   rw [div_pow, one_pow]
@@ -567,8 +564,8 @@ theorem tendsto_factorial_div_pow_self_atTop :
   tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds
     (tendsto_const_div_atTop_nhds_0_nat 1)
     (eventually_of_forall fun n =>
-      div_nonneg (by exact_mod_cast n.factorial_pos.le)
-        (pow_nonneg (by exact_mod_cast n.zero_le) _))
+      div_nonneg (mod_cast n.factorial_pos.le)
+        (pow_nonneg (mod_cast n.zero_le) _))
     (by
       refine' (eventually_gt_atTop 0).mono fun n hn => _
       rcases Nat.exists_eq_succ_of_ne_zero hn.ne.symm with ⟨k, rfl⟩
@@ -577,11 +574,11 @@ theorem tendsto_factorial_div_pow_self_atTop :
         Finset.prod_range_succ']
       simp only [prod_range_succ', one_mul, Nat.cast_add, zero_add, Nat.cast_one]
       refine'
-            mul_le_of_le_one_left (inv_nonneg.mpr <| by exact_mod_cast hn.le) (prod_le_one _ _) <;>
+            mul_le_of_le_one_left (inv_nonneg.mpr <| mod_cast hn.le) (prod_le_one _ _) <;>
           intro x hx <;>
         rw [Finset.mem_range] at hx
       · refine' mul_nonneg _ (inv_nonneg.mpr _) <;> norm_cast <;> linarith
-      · refine' (div_le_one <| by exact_mod_cast hn).mpr _
+      · refine' (div_le_one <| mod_cast hn).mpr _
         norm_cast
         linarith)
 #align tendsto_factorial_div_pow_self_at_top tendsto_factorial_div_pow_self_atTop
