@@ -3,8 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
+import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.ShortComplex.Exact
+import Mathlib.Algebra.Homology.ShortComplex.Preadditive
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -601,3 +602,32 @@ lemma isoHomologyπ₀_inv_naturality [L.HasHomology 0] :
     HomologicalComplex.isoHomologyπ_hom_inv_id_assoc]
 
 end CochainComplex
+
+namespace HomologicalComplex
+
+variable {C ι : Type*} [Category C] [Preadditive C] {c : ComplexShape ι}
+  {K L : HomologicalComplex C c} {f g : K ⟶ L}
+
+variable (φ ψ : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i]
+
+@[simp]
+lemma homologyMap_neg : homologyMap (-φ) i = -homologyMap φ i := by
+  dsimp [homologyMap]
+  rw [← ShortComplex.homologyMap_neg]
+  rfl
+
+@[simp]
+lemma homologyMap_add : homologyMap (φ + ψ) i = homologyMap φ i + homologyMap ψ i := by
+  dsimp [homologyMap]
+  rw [← ShortComplex.homologyMap_add]
+  rfl
+
+@[simp]
+lemma homologyMap_sub : homologyMap (φ - ψ) i = homologyMap φ i - homologyMap ψ i := by
+  dsimp [homologyMap]
+  rw [← ShortComplex.homologyMap_sub]
+  rfl
+
+instance [CategoryWithHomology C] : (homologyFunctor C c i).Additive where
+
+end HomologicalComplex
