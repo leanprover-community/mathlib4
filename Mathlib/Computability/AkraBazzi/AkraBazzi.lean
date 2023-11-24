@@ -230,7 +230,9 @@ lemma exists_eventually_r_le_const_mul :
     ∃ c ∈ Set.Ioo (0:ℝ) 1, ∀ᶠ (n:ℕ) in atTop, ∀ i, r i n ≤ c * n := by
   let c := b (max_bi b) + (1 - b (max_bi b)) / 2
   have h_max_bi_pos : 0 < b (max_bi b) := R.b_pos _
-  have h_max_bi_lt_one : 0 < 1 - b (max_bi b) := by have : b (max_bi b) < 1 := R.b_lt_one _; linarith
+  have h_max_bi_lt_one : 0 < 1 - b (max_bi b) := by
+    have : b (max_bi b) < 1 := R.b_lt_one _
+    linarith
   have hc_pos : 0 < c := by positivity
   have h₁ : 0 < (1 - b (max_bi b)) / 2 := by positivity
   have hc_lt_one : c < 1 :=
@@ -528,7 +530,8 @@ lemma tendsto_zero_sumCoeffsExp : Tendsto (fun (p : ℝ) => ∑ i, a i * (b i)^p
 lemma tendsto_atTop_sumCoeffsExp : Tendsto (fun (p : ℝ) => ∑ i, a i * (b i)^p) atBot atTop := by
   have h₁ : Tendsto (fun p => (a (max_bi b) : ℝ) * b (max_bi b) ^ p) atBot atTop :=
     Tendsto.mul_atTop (R.a_pos (max_bi b)) (by simp)
-      <| tendsto_rpow_atBot_of_base_lt_one _ (by have := R.b_pos (max_bi b); linarith) (R.b_lt_one _)
+      <| tendsto_rpow_atBot_of_base_lt_one _
+      (by have := R.b_pos (max_bi b); linarith) (R.b_lt_one _)
   refine tendsto_atTop_mono (fun p => ?_) h₁
   let f := fun i => (a i : ℝ) * b i ^ p
   show f (max_bi b) ≤ Finset.univ.sum f
