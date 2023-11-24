@@ -130,7 +130,7 @@ section HasOuterApproxClosed
 
 /-- A type class for topological spaces in which the indicator functions of closed sets can be
 approximated pointwise from above by a sequence of bounded continuous functions. -/
-class HasOuterApproxClosed (X : Type _) [TopologicalSpace X] where
+class HasOuterApproxClosed (X : Type _) [TopologicalSpace X] : Prop where
   exAppr : ∀ (F : Set X), IsClosed F → ∃ (fseq: ℕ → (X →ᵇ ℝ≥0)),
     (∀ n x, fseq n x ≤ 1) ∧ (∀ n x, x ∈ F → 1 ≤ fseq n x) ∧
     Tendsto (fun n : ℕ ↦ (fun x ↦ fseq n x)) atTop (𝓝 (indicator F fun _ ↦ (1 : ℝ≥0)))
