@@ -33,9 +33,27 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-universe u
+/--
+Universe inequalities in Mathlib 3 are expressed through use of `max u v`. Unfortunately,
+this leads to unbound universes which cannot be solved for during unification, eg
+`max u v =?= max v ?`.
+The current solution is to wrap `Type max u v` in `TypeMax.{u,v}`
+to expose both universe parameters directly.
 
-variable {J : Type u} [SmallCategory J] [IsCofiltered J] {F : J ⥤ Profinite.{u}} (C : Cone F)
+Similarly, for other concrete categories for which we need to refer to the maximum of two universes
+(e.g. any category for which we are constructing limits), we need an analogous abbreviation.
+-/
+@[nolint checkUnivs]
+abbrev ProfiniteMax.{u, v} := Profinite.{max u v}
+
+universe u v
+
+variable {J : Type v} [SmallCategory J] [IsCofiltered J] {F : J ⥤ ProfiniteMax.{u, v}} (C : Cone F)
+
+noncomputable
+instance preserves_smaller_limits_toTopCat :
+    PreservesLimitsOfSize.{v, v} (toTopCat : ProfiniteMax.{v, u} ⥤ TopCatMax.{v, u}) :=
+  Limits.preservesLimitsOfSizeShrink.{v, max u v, v, max u v} _
 
 -- include hC
 -- Porting note: I just add `(hC : IsLimit C)` explicitly as a hypothesis to all the theorems
@@ -45,9 +63,10 @@ a clopen set in one of the terms in the limit.
 -/
 theorem exists_clopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClopen U) :
     ∃ (j : J) (V : Set (F.obj j)) (_ : IsClopen V), U = C.π.app j ⁻¹' V := by
+  have := preserves_smaller_limits_toTopCat.{u, v}
   -- First, we have the topological basis of the cofiltered limit obtained by pulling back
   -- clopen sets from the factors in the limit. By continuity, all such sets are again clopen.
-  have hB := TopCat.isTopologicalBasis_cofiltered_limit.{u, u} (F ⋙ Profinite.toTopCat)
+  have hB := TopCat.isTopologicalBasis_cofiltered_limit.{u, v} (F ⋙ Profinite.toTopCat.{max u v})
       (Profinite.toTopCat.mapCone C) (isLimitOfPreserves _ hC) (fun j => {W | IsClopen W}) ?_
       (fun i => isClopen_univ) (fun i U1 U2 hU1 hU2 => hU1.inter hU2) ?_
   rotate_left
@@ -214,6 +233,7 @@ set_option linter.uppercaseLean3 false in
 one of the components. -/
 theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstant C.pt α) :
     ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _) := by
+  have := preserves_smaller_limits_toTopCat.{u, v}
   let S := f.discreteQuotient
   let ff : S → α := f.lift
   cases isEmpty_or_nonempty S
@@ -238,7 +258,7 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
     suffices : Nonempty C.pt; exact IsEmpty.false (S.proj this.some)
     let D := Profinite.toTopCat.mapCone C
     have hD : IsLimit D := isLimitOfPreserves Profinite.toTopCat hC
-    have CD := (hD.conePointUniqueUpToIso (TopCat.limitConeIsLimit.{u, u} _)).inv
+    have CD := (hD.conePointUniqueUpToIso (TopCat.limitConeIsLimit.{v, max u v} _)).inv
     exact cond.map CD
   · let f' : LocallyConstant C.pt S := ⟨S.proj, S.proj_isLocallyConstant⟩
     obtain ⟨j, g', hj⟩ := exists_locallyConstant_finite_nonempty _ hC f'
