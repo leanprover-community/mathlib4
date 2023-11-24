@@ -44,7 +44,6 @@ statement is clearer.
 for all $1 ≤ n.$
 
 -/
-suppress_compilation
 
 open BigOperators
 namespace Hilbert90
@@ -59,10 +58,10 @@ noncomputable def aux (f : (L ≃ₐ[K] L) → Lˣ) : L → L :=
 theorem aux_ne_zero (f : (L ≃ₐ[K] L) → Lˣ) : aux K L f ≠ 0 :=
 /- the set `Aut_K(L)` is linearly independent in the `L`-vector space `L → L`, by Dedekind's
 linear independence of characters -/
-  have : @LinearIndependent (L ≃ₐ[K] L) L (L → L) (fun f => f) _ _ _ :=
-    @LinearIndependent.comp (L →* L) (L ≃ₐ[K] L) L (L → L) (fun f => f)
-    _ _ _ (linearIndependent_monoidHom L L) (fun f => f)
-    (fun x y h => by ext; exact FunLike.ext_iff.1 h _)
+  have : LinearIndependent L (fun (f : L ≃ₐ[K] L) => (f : L → L)) :=
+    LinearIndependent.comp (ι' := L ≃ₐ[K] L)
+      (linearIndependent_monoidHom L L) (fun f => f)
+      (fun x y h => by ext; exact FunLike.ext_iff.1 h _)
   have h := linearIndependent_iff.1 this
     (Finsupp.equivFunOnFinite.symm (fun φ => (f φ : L)))
   fun H => Units.ne_zero (f 1) (FunLike.ext_iff.1 (h H) 1)
@@ -93,7 +92,7 @@ variable (K L : Type) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 
 /-- Given a finite extension of fields `L/K`, the first group cohomology `H¹(Aut_K(L), Lˣ)` is
 trivial. -/
-instance hilbert90 : Unique (H1 (Rep.ofAlgebraAutOnUnits K L)) where
+noncomputable instance hilbert90 : Unique (H1 (Rep.ofAlgebraAutOnUnits K L)) where
   default := 0
   uniq := fun a => Quotient.inductionOn' a fun x => (Submodule.Quotient.mk_eq_zero _).2 <| by
     rcases _root_.hilbert90 (Additive.toMul ∘ x.1) (fun g h => Units.ext_iff.1
