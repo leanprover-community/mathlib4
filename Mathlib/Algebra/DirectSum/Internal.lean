@@ -375,7 +375,7 @@ section CommSemiring
 variable [CommSemiring R] [AddCommMonoid ι] [SetLike σ R] [AddSubmonoidClass σ R]
 variable (A : ι → σ) [SetLike.GradedMonoid A]
 
-/-- The commutativ esemiring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
+/--The commutative semiring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`.-/
 instance instCommSemiring : CommSemiring (A 0) := (subsemiring A).toCommSemiring
 
 end CommSemiring
