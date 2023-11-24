@@ -90,28 +90,11 @@ variable [CommRing R] [IsDomain R]
 
 theorem derivative_rootMultiplicity_of_root [CharZero R] {p : R[X]} {t : R} (hpt : p.IsRoot t) :
     p.derivative.rootMultiplicity t = p.rootMultiplicity t - 1 := by
-  rcases eq_or_ne p 0 with (rfl | hp)
-  · simp
-  nth_rw 1 [← p.divByMonic_mul_pow_rootMultiplicity_eq t]
-  simp only [derivative_pow, derivative_mul, derivative_sub, derivative_X, derivative_C, sub_zero,
-    mul_one]
-  set n := p.rootMultiplicity t - 1
-  have hn : n + 1 = _ := tsub_add_cancel_of_le ((rootMultiplicity_pos hp).mpr hpt)
-  rw [← hn]
-  set q := p /ₘ (X - C t) ^ (n + 1) with _hq
-  convert_to rootMultiplicity t ((X - C t) ^ n * (derivative q * (X - C t) + q * C ↑(n + 1))) = n
-  · congr
-    rw [mul_add, mul_left_comm <| (X - C t) ^ n, ← pow_succ']
-    congr 1
-    rw [mul_left_comm <| (X - C t) ^ n, mul_comm <| (X - C t) ^ n]
-  have h : eval t (derivative q * (X - C t) + q * C (R := R) ↑(n + 1)) ≠ 0 := by
-    suffices eval t q * ↑(n + 1) ≠ 0 by simpa
-    refine' mul_ne_zero _ (Nat.cast_ne_zero.mpr n.succ_ne_zero)
-    convert eval_divByMonic_pow_rootMultiplicity_ne_zero t hp
-  rw [rootMultiplicity_mul, rootMultiplicity_X_sub_C_pow, rootMultiplicity_eq_zero h, add_zero]
-  refine' mul_ne_zero (pow_ne_zero n <| X_sub_C_ne_zero t) _
-  contrapose! h
-  rw [h, eval_zero]
+  by_cases h : p = 0
+  · simp only [h, map_zero, rootMultiplicity_zero]
+  exact derivative_rootMultiplicity_of_root_of_mem_nonZeroDivisors hpt <|
+    mem_nonZeroDivisors_of_ne_zero <| Nat.cast_ne_zero.2 <| Nat.pos_iff_ne_zero.1 <|
+      (rootMultiplicity_pos h).2 hpt
 #align polynomial.derivative_root_multiplicity_of_root Polynomial.derivative_rootMultiplicity_of_root
 
 theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity [CharZero R] (p : R[X]) (t : R) :
