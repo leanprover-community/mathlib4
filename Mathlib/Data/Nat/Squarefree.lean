@@ -392,6 +392,12 @@ theorem squarefree_mul_iff {m n : ℕ} :
   ⟨fun h => ⟨coprime_of_squarefree_mul h, (squarefree_mul $ coprime_of_squarefree_mul h).mp h⟩,
     fun h => (squarefree_mul h.1).mpr h.2⟩
 
+lemma coprime_div_gcd_of_squarefree (hm : Squarefree m) (hn : n ≠ 0) : Coprime (m / gcd m n) n := by
+  have : Coprime (m / gcd m n) (gcd m n) :=
+    coprime_of_squarefree_mul $ by simpa [Nat.div_mul_cancel, gcd_dvd_left]
+  simpa [Nat.div_mul_cancel, gcd_dvd_right] using
+    (coprime_div_gcd_div_gcd (m := m) (gcd_ne_zero_right hn).bot_lt).mul_right this
+
 lemma prod_primeFactors_of_squarefree (hn : Squarefree n) : ∏ p in n.primeFactors, p = n := by
   convert factorization_prod_pow_eq_self hn.ne_zero
   refine prod_congr rfl fun p hp ↦ ?_
