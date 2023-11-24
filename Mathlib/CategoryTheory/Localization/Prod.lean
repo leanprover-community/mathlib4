@@ -122,8 +122,6 @@ variable (W₁ W₂)
 for `W₁ : MorphismProperty C₁` and `W₂ : MorphismProperty C₂` respectively,
 and if both `W₁` and `W₂` contain identites, then the product
 functor `L₁.prod L₂ : C₁ × C₂ ⥤ D₁ × D₂` is a localization functor for `W₁.prod W₂`. -/
-  (L₁ : C₁ ⥤ D₁) {W₁ : MorphismProperty C₁} [W₁.ContainsIdentities]
-  (L₂ : C₂ ⥤ D₂) {W₂ : MorphismProperty C₂} [W₂.ContainsIdentities]
 instance prod [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] :
     (L₁.prod L₂).IsLocalization (W₁.prod W₂) := by
   haveI := Construction.prodIsLocalization W₁ W₂
