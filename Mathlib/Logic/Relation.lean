@@ -221,8 +221,7 @@ variable {r : α → β → Prop} {f : α → γ} {g : β → δ} {c : γ} {d : 
 lemma map_apply : Relation.Map r f g c d ↔ ∃ a b, r a b ∧ f a = c ∧ g b = d := Iff.rfl
 #align relation.map_apply Relation.map_apply
 
-@[simp]
-lemma map_id_id (r : α → β → Prop) : Relation.Map r id id = r := by simp [Relation.Map]
+@[simp] lemma map_id_id (r : α → β → Prop) : Relation.Map r id id = r := by ext; simp [Relation.Map]
 #align relation.map_id_id Relation.map_id_id
 
 @[simp]
