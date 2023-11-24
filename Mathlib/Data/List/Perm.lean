@@ -110,7 +110,7 @@ theorem Perm.subset_congr_right {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l
 
 #align list.perm_cons_erase List.perm_cons_erase
 
-#align list.perm_induction_on List.perm_induction_onₓ
+#align list.perm_induction_on List.Perm.recOnSwap'
 
 -- Porting note: used to be @[congr]
 #align list.perm.filter_map List.Perm.filterMap
@@ -251,7 +251,7 @@ theorem Perm.foldl_eq {f : β → α → β} {l₁ l₂ : List α} (rcomm : Righ
 
 theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} (lcomm : LeftCommutative f) (p : l₁ ~ l₂) :
     ∀ b, foldr f b l₁ = foldr f b l₂ :=
-  perm_induction_on p (fun b => rfl) (fun x t₁ t₂ _p r b => by simp; rw [r b])
+  Perm.recOnSwap' p (fun b => rfl) (fun x t₁ t₂ _p r b => by simp; rw [r b])
     (fun x y t₁ t₂ _p r b => by simp; rw [lcomm, r b]) fun t₁ t₂ t₃ _p₁ _p₂ r₁ r₂ a =>
     Eq.trans (r₁ a) (r₂ a)
 #align list.perm.foldr_eq List.Perm.foldr_eq
