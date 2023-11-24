@@ -98,7 +98,7 @@ class SDiv (M : outParam (Type*)) (α : Type*) where
 infixl:65 " +ᵥ " => HVAdd.hVAdd
 infixl:65 " -ᵥ " => VSub.vsub
 infixr:73 " • " => HSMul.hSMul
-infixr:73 " /ₛ " => SDiv.sdiv
+infixl:73 " /ₛ " => SDiv.sdiv
 
 /-!
 We have a macro to make `x • y` notation participate in the expression tree elaborator,
