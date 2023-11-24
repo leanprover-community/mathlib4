@@ -383,7 +383,7 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGrap
       exact x.irrefl h.1
     inf_compl_le_bot := fun G v w h => False.elim <| h.2.2 h.1
     top_le_sup_compl := fun G v w hvw => by
-      by_cases G.Adj v w
+      by_cases h : G.Adj v w
       · exact Or.inl h
       · exact Or.inr ⟨hvw, h⟩
     sSup := sSup

@@ -218,7 +218,7 @@ instance : Add (RingQuot r) :=
 instance : Mul (RingQuot r) :=
   ⟨mul r⟩
 
-instance : Pow (RingQuot r) ℕ :=
+instance : NatPow (RingQuot r) :=
   ⟨fun x n ↦ npow r n x⟩
 
 instance {R : Type uR} [Ring R] (r : R → R → Prop) : Neg (RingQuot r) :=

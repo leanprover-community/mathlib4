@@ -83,7 +83,7 @@ See <https://stacks.math.columbia.edu/tag/002V>. (They also define a diagram bei
 -/
 class IsFiltered extends IsFilteredOrEmpty C : Prop where
   /-- a filtered category must be non empty -/
-  [Nonempty : Nonempty C]
+  [nonempty : Nonempty C]
 #align category_theory.is_filtered CategoryTheory.IsFiltered
 
 instance (priority := 100) isFilteredOrEmpty_of_semilatticeSup (α : Type u) [SemilatticeSup α] :
@@ -123,7 +123,6 @@ instance : IsFiltered (Discrete PUnit) where
   cocone_maps X Y f g := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, by
     apply ULift.ext
     apply Subsingleton.elim⟩
-  Nonempty := ⟨⟨PUnit.unit⟩⟩
 
 namespace IsFiltered
 
@@ -234,10 +233,10 @@ variable [IsFiltered C]
 
 /-- Any finite collection of objects in a filtered category has an object "to the right".
 -/
-theorem sup_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → _root_.Nonempty (X ⟶ S) := by
+theorem sup_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → Nonempty (X ⟶ S) := by
   classical
   induction' O using Finset.induction with X O' nm h
-  · exact ⟨Classical.choice IsFiltered.Nonempty, by intro; simp⟩
+  · exact ⟨Classical.choice IsFiltered.nonempty, by intro; simp⟩
   · obtain ⟨S', w'⟩ := h
     use max X S'
     rintro Y mY
@@ -312,7 +311,7 @@ variable {J : Type v} [SmallCategory J] [FinCategory J]
 /-- If we have `IsFiltered C`, then for any functor `F : J ⥤ C` with `FinCategory J`,
 there exists a cocone over `F`.
 -/
-theorem cocone_nonempty (F : J ⥤ C) : _root_.Nonempty (Cocone F) := by
+theorem cocone_nonempty (F : J ⥤ C) : Nonempty (Cocone F) := by
   classical
   let O := Finset.univ.image F.obj
   let H : Finset (Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
@@ -342,7 +341,7 @@ variable {D : Type u₁} [Category.{v₁} D]
 -/
 theorem of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFiltered D :=
   { IsFilteredOrEmpty.of_right_adjoint h with
-    Nonempty := IsFiltered.Nonempty.map R.obj }
+    nonempty := IsFiltered.nonempty.map R.obj }
 #align category_theory.is_filtered.of_right_adjoint CategoryTheory.IsFiltered.of_right_adjoint
 
 /-- If `C` is filtered, and we have a right adjoint functor `R : C ⥤ D`, then `D` is filtered. -/
@@ -512,7 +511,7 @@ See <https://stacks.math.columbia.edu/tag/04AZ>.
 -/
 class IsCofiltered extends IsCofilteredOrEmpty C : Prop where
   /-- a cofiltered category must be non empty -/
-  [Nonempty : Nonempty C]
+  [nonempty : Nonempty C]
 #align category_theory.is_cofiltered CategoryTheory.IsCofiltered
 
 instance (priority := 100) isCofilteredOrEmpty_of_semilatticeInf (α : Type u) [SemilatticeInf α] :
@@ -551,7 +550,6 @@ instance : IsCofiltered (Discrete PUnit) where
   cone_maps X Y f g := ⟨⟨PUnit.unit⟩, ⟨⟨by trivial⟩⟩, by
     apply ULift.ext
     apply Subsingleton.elim⟩
-  Nonempty := ⟨⟨PUnit.unit⟩⟩
 
 namespace IsCofiltered
 
@@ -678,10 +676,10 @@ variable [IsCofiltered C]
 
 /-- Any finite collection of objects in a cofiltered category has an object "to the left".
 -/
-theorem inf_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → _root_.Nonempty (S ⟶ X) := by
+theorem inf_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → Nonempty (S ⟶ X) := by
   classical
   induction' O using Finset.induction with X O' nm h
-  · exact ⟨Classical.choice IsCofiltered.Nonempty, by intro; simp⟩
+  · exact ⟨Classical.choice IsCofiltered.nonempty, by intro; simp⟩
   · obtain ⟨S', w'⟩ := h
     use min X S'
     rintro Y mY
@@ -756,7 +754,7 @@ variable {J : Type w} [SmallCategory J] [FinCategory J]
 /-- If we have `IsCofiltered C`, then for any functor `F : J ⥤ C` with `FinCategory J`,
 there exists a cone over `F`.
 -/
-theorem cone_nonempty (F : J ⥤ C) : _root_.Nonempty (Cone F) := by
+theorem cone_nonempty (F : J ⥤ C) : Nonempty (Cone F) := by
   classical
   let O := Finset.univ.image F.obj
   let H : Finset (Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
@@ -788,7 +786,7 @@ then `D` is cofiltered.
 -/
 theorem of_left_adjoint {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) : IsCofiltered D :=
   { IsCofilteredOrEmpty.of_left_adjoint h with
-    Nonempty := IsCofiltered.Nonempty.map L.obj }
+    nonempty := IsCofiltered.nonempty.map L.obj }
 #align category_theory.is_cofiltered.of_left_adjoint CategoryTheory.IsCofiltered.of_left_adjoint
 
 /-- If `C` is cofiltered, and we have a left adjoint functor `L : C ⥤ D`, then `D` is cofiltered. -/
@@ -821,7 +819,7 @@ instance isCofilteredOrEmpty_op_of_isFilteredOrEmpty [IsFilteredOrEmpty C] :
       exact IsFiltered.coeq_condition f.unop g.unop⟩
 
 instance isCofiltered_op_of_isFiltered [IsFiltered C] : IsCofiltered Cᵒᵖ where
-  Nonempty := ⟨op IsFiltered.Nonempty.some⟩
+  nonempty := letI : Nonempty C := IsFiltered.nonempty; inferInstance
 #align category_theory.is_cofiltered_op_of_is_filtered CategoryTheory.isCofiltered_op_of_isFiltered
 
 instance isFilteredOrEmpty_op_of_isCofilteredOrEmpty [IsCofilteredOrEmpty C] :
@@ -836,7 +834,7 @@ instance isFilteredOrEmpty_op_of_isCofilteredOrEmpty [IsCofilteredOrEmpty C] :
       exact IsCofiltered.eq_condition f.unop g.unop⟩
 
 instance isFiltered_op_of_isCofiltered [IsCofiltered C] : IsFiltered Cᵒᵖ where
-  Nonempty := ⟨op IsCofiltered.Nonempty.some⟩
+  nonempty := letI : Nonempty C := IsCofiltered.nonempty; inferInstance
 #align category_theory.is_filtered_op_of_is_cofiltered CategoryTheory.isFiltered_op_of_isCofiltered
 
 /-- If Cᵒᵖ is filtered or empty, then C is cofiltered or empty. -/

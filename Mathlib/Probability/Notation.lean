@@ -38,10 +38,11 @@ open scoped MeasureTheory
 scoped[ProbabilityTheory] notation "𝔼[" X "|" m "]" =>
   MeasureTheory.condexp m MeasureTheory.MeasureSpace.volume X
 
+-- Note(kmill): this notation tends to lead to ambiguity with GetElem notation.
 set_option quotPrecheck false in
 scoped[ProbabilityTheory] notation P "[" X "]" => ∫ x, ↑(X x) ∂P
 
-scoped[ProbabilityTheory] notation "𝔼[" X "]" => ∫ a, X a
+scoped[ProbabilityTheory] notation "𝔼[" X "]" => ∫ a, (X : _ → _) a
 
 scoped[ProbabilityTheory] notation P "⟦" s "|" m "⟧" =>
   MeasureTheory.condexp m P (Set.indicator s fun ω => (1 : ℝ))

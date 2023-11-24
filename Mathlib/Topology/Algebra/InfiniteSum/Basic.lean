@@ -647,21 +647,14 @@ theorem tsum_range {g : γ → β} (f : β → α) (hg : Injective g) :
   simp_rw [← comp_apply (g := g), tsum_univ (f ∘ g)]
 #align tsum_range tsum_range
 
-open Set in
 /-- If `f b = 0` for all `b ∈ t`, then the sum over `f a` with `a ∈ s` is the same as the
 sum over `f a` with `a ∈ s ∖ t`. -/
 lemma tsum_setElem_eq_tsum_setElem_diff [T2Space α] {f : β → α} (s t : Set β)
     (hf₀ : ∀ b ∈ t, f b = 0) :
-    ∑' a : s, f a = ∑' a : (s \ t : Set β), f a := by
-  simp_rw [_root_.tsum_subtype]
-  refine tsum_congr fun b' ↦ ?_
-  by_cases hs : b' ∈ s \ t
-  · rw [indicator_of_mem hs f, indicator_of_mem (mem_of_mem_diff hs) f]
-  · rw [indicator_of_not_mem hs f]
-    rw [mem_diff, not_and, not_not_mem] at hs
-    by_cases h₁ : b' ∈ s
-    · simpa [indicator_of_mem h₁] using hf₀ b' <| hs h₁
-    · exact indicator_of_not_mem h₁ f
+    ∑' a : s, f a = ∑' a : (s \ t : Set β), f a :=
+  tsum_eq_tsum_of_hasSum_iff_hasSum fun {a} ↦ Iff.symm <|
+    (Set.inclusion_injective <| s.diff_subset t).hasSum_iff
+      (f := fun b : s ↦ f b) fun b hb ↦ hf₀ b <| by simpa using hb
 
 /-- If `f b = 0`, then the sum over `f a` with `a ∈ s` is the same as the sum over `f a` for
 `a ∈ s ∖ {b}`. -/
@@ -1135,8 +1128,9 @@ theorem cauchySeq_finset_iff_vanishing :
     (CauchySeq fun s : Finset β ↦ ∑ b in s, f b) ↔
       ∀ e ∈ 𝓝 (0 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∑ b in t, f b) ∈ e := by
   classical
-  simp_rw [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
-    uniformity_eq_comap_nhds_zero α, tendsto_comap_iff, (· ∘ ·), tendsto_atTop']
+  simp only [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
+    uniformity_eq_comap_nhds_zero α, tendsto_comap_iff, (· ∘ ·), atTop_neBot, true_and]
+  rw [tendsto_atTop']
   constructor
   · intro h e he
     obtain ⟨⟨s₁, s₂⟩, h⟩ := h e he

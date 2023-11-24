@@ -29,7 +29,6 @@ In the namespace `CategoryTheory.ComposableArrows`, we provide constructors
 like `mk₁ f`, `mk₂ f g`, `mk₃ f g h` for `ComposableArrows C n` for small `n`.
 
 TODO (@joelriou):
-* define various constructors for objects, morphisms, isomorphisms in `ComposableArrows C n`
 * redefine `Arrow C` as `ComposableArrow C 1`?
 * construct some elements in `ComposableArrows m (Fin (n + 1))` for small `n`
 the precomposition with which shall induce funtors
@@ -538,6 +537,7 @@ variable
     (w₀ : f.map' 0 1 ≫ app₁ = app₀ ≫ g.map' 0 1)
     (w₁ : f.map' 1 2 ≫ app₂ = app₁ ≫ g.map' 1 2)
 
+/-- Constructor for morphisms in `ComposableArrows C 2`. -/
 def homMk₂ : f ⟶ g := homMkSucc app₀ (homMk₁ app₁ app₂ w₁) w₀
 
 @[simp]
@@ -557,6 +557,7 @@ lemma hom_ext₂ {f g : ComposableArrows C 2} {φ φ' : f ⟶ g}
     φ = φ' :=
   hom_ext_succ h₀ (hom_ext₁ h₁ h₂)
 
+/-- Constructor for isomorphisms in `ComposableArrows C 2`. -/
 @[simps]
 def isoMk₂ {f g : ComposableArrows C 2}
     (app₀ : f.obj' 0 ≅ g.obj' 0) (app₁ : f.obj' 1 ≅ g.obj' 1) (app₂ : f.obj' 2 ≅ g.obj' 2)
@@ -589,6 +590,7 @@ variable
   (w₁ : f.map' 1 2 ≫ app₂ = app₁ ≫ g.map' 1 2)
   (w₂ : f.map' 2 3 ≫ app₃ = app₂ ≫ g.map' 2 3)
 
+/-- Constructor for morphisms in `ComposableArrows C 3`. -/
 def homMk₃ : f ⟶ g := homMkSucc app₀ (homMk₂ app₁ app₂ app₃ w₁ w₂) w₀
 
 @[simp]
@@ -612,6 +614,7 @@ lemma hom_ext₃ {f g : ComposableArrows C 3} {φ φ' : f ⟶ g}
     φ = φ' :=
   hom_ext_succ h₀ (hom_ext₂ h₁ h₂ h₃)
 
+/-- Constructor for isomorphisms in `ComposableArrows C 3`. -/
 @[simps]
 def isoMk₃ {f g : ComposableArrows C 3}
     (app₀ : f.obj' 0 ≅ g.obj' 0) (app₁ : f.obj' 1 ≅ g.obj' 1) (app₂ : f.obj' 2 ≅ g.obj' 2)
