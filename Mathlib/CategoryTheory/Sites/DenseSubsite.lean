@@ -500,7 +500,7 @@ noncomputable instance fullSheafPushforwardContinuous [G.IsContinuous J K] :
   witness α := Sheaf.Hom.ext _ _ <| sheafHom_restrict_eq α.val
 #align category_theory.cover_dense.sites.pullback.full CategoryTheory.Functor.IsCoverDense.fullSheafPushforwardContinuous
 
-instance faithful_sheafPushforwardContinuous [Faithful G] [G.IsContinuous J K] :
+instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :
     Faithful (G.sheafPushforwardContinuous A J K) where
   map_injective := by
     intro ℱ ℱ' α β e
