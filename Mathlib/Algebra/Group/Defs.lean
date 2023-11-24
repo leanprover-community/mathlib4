@@ -90,9 +90,15 @@ class SMul (M : Type u) (α : Type v) where
   smul : M → α → α
 #align has_smul SMul
 
+/-- Type class for the `/ₛ` notation. -/
+@[to_additive (attr := ext)]
+class SDiv (M : outParam (Type*)) (α : Type*) where
+  sdiv : α → α → M
+
 infixl:65 " +ᵥ " => HVAdd.hVAdd
 infixl:65 " -ᵥ " => VSub.vsub
 infixr:73 " • " => HSMul.hSMul
+infixr:73 " /ₛ " => SDiv.sdiv
 
 /-!
 We have a macro to make `x • y` notation participate in the expression tree elaborator,
