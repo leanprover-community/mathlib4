@@ -100,12 +100,10 @@ immediate predecessors and what conditions are added to each of them.
   - `StrictOrderedRing` & totality of the order
   - `LinearOrderedSemiring` & additive inverses
   - `LinearOrderedAddCommGroup` & multiplication & `*` respects `<`
-  - `IsDomain` & linear order structure
 * `LinearOrderedCommRing`
   - `StrictOrderedCommRing` & totality of the order
   - `LinearOrderedRing` & commutativity of multiplication
   - `LinearOrderedCommSemiring` & additive inverses
-  - `IsDomain` & linear order structure & commutativity of multiplication
 
 -/
 
