@@ -4474,7 +4474,7 @@ section Disjoint
 
 variable {α β : Type*}
 
-/-- The images of disjoint maps under a map are disjoint -/
+/-- The images of disjoint lists under an injective map are disjoint -/
 theorem disjoint_map {f : α → β} {s t : List α} (hf : Function.Injective f)
     (h : Disjoint s t) : Disjoint (s.map f) (t.map f) := by
   simp only [Disjoint]
