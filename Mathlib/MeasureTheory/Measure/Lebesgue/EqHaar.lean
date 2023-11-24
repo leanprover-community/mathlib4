@@ -43,8 +43,6 @@ density one for the rescaled copies `{x} + r • t` of a given set `t` with posi
 small `r`, see `eventually_nonempty_inter_smul_of_density_one`.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 assert_not_exists MeasureTheory.integral
 
 open TopologicalSpace Set Filter Metric Bornology
