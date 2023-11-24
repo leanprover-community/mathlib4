@@ -19,7 +19,8 @@ class Coalgebra (R : Type u) (A : Type v) [CommRing R] [AddCommGroup A] [Module 
   /-- The counit of the coalgebra -/
   ε : A →ₗ[R] R
   /-- The comultiplication is coassociative -/
-  coassoc : TensorProduct.assoc R A A A ∘ₗ TensorProduct.map Δ .id ∘ₗ Δ = TensorProduct.map .id Δ ∘ₗ Δ
+  coassoc : TensorProduct.assoc R A A A ∘ₗ TensorProduct.map Δ .id ∘ₗ Δ =
+    TensorProduct.map .id Δ ∘ₗ Δ
   /-- The counit satisfies the left counitality law -/
   ε_id : TensorProduct.lid R A ∘ₗ TensorProduct.map ε .id ∘ₗ Δ = .id
   /-- The counit satisfies the right counitality law -/
@@ -27,7 +28,8 @@ class Coalgebra (R : Type u) (A : Type v) [CommRing R] [AddCommGroup A] [Module 
 
 noncomputable
 def Finsupp.Coalgebra (R : Type u) (S : Type v) [CommRing R] : Coalgebra R (S →₀ R) where
-  Δ := Finsupp.total S ((S →₀ R) ⊗[R] (S →₀ R)) R (fun s ↦ Finsupp.single s 1 ⊗ₜ Finsupp.single s 1)
+  Δ := Finsupp.total S ((S →₀ R) ⊗[R] (S →₀ R)) R
+    (fun s ↦ Finsupp.single s 1 ⊗ₜ Finsupp.single s 1)
   ε := Finsupp.total S R R (fun _ ↦ 1)
   coassoc := by
     ext; simp
