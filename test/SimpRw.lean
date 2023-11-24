@@ -7,6 +7,8 @@ Authors: Anne Baanen, Mario Carneiro
 import Mathlib.Tactic.SimpRw
 import Std.Tactic.GuardExpr
 
+private axiom test_sorry : ∀ {α}, α
+
 -- `simp_rw` can perform rewrites under binders:
 example : (λ (x y : Nat) => x + y) = (λ x y => y + x) := by simp_rw [Nat.add_comm]
 
@@ -39,4 +41,4 @@ example : 1 = 2 := by
   show 1 = a
   simp_rw (config := {zeta := false}) []
   guard_target =ₛ 1 = a
-  sorry
+  exact test_sorry
