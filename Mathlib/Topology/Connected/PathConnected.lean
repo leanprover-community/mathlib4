@@ -1118,9 +1118,9 @@ theorem IsPathConnected.exists_path_through_family' {n : ℕ}
 joined by a continuous path. -/
 class PathConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- A path-connected space must be nonempty. -/
-  Nonempty : Nonempty X
+  nonempty : Nonempty X
   /-- Any two points in a path-connected space must be joined by a continuous path. -/
-  Joined : ∀ x y : X, Joined x y
+  joined : ∀ x y : X, Joined x y
 #align path_connected_space PathConnectedSpace
 
 theorem pathConnectedSpace_iff_zerothHomotopy :
@@ -1130,7 +1130,7 @@ theorem pathConnectedSpace_iff_zerothHomotopy :
   · intro h
     refine' ⟨(nonempty_quotient_iff _).mpr h.1, ⟨_⟩⟩
     rintro ⟨x⟩ ⟨y⟩
-    exact Quotient.sound (PathConnectedSpace.Joined x y)
+    exact Quotient.sound (PathConnectedSpace.joined x y)
   · unfold ZerothHomotopy
     rintro ⟨h, h'⟩
     skip
@@ -1143,7 +1143,7 @@ variable [PathConnectedSpace X]
 
 /-- Use path-connectedness to build a path between two points. -/
 def somePath (x y : X) : Path x y :=
-  Nonempty.some (Joined x y)
+  Nonempty.some (joined x y)
 #align path_connected_space.some_path PathConnectedSpace.somePath
 
 end PathConnectedSpace
@@ -1165,11 +1165,11 @@ theorem isPathConnected_iff_pathConnectedSpace : IsPathConnected F ↔ PathConne
 theorem pathConnectedSpace_iff_univ : PathConnectedSpace X ↔ IsPathConnected (univ : Set X) := by
   constructor
   · intro h
-    haveI := @PathConnectedSpace.Nonempty X _ _
+    haveI := @PathConnectedSpace.nonempty X _ _
     inhabit X
     refine' ⟨default, mem_univ _, _⟩
     intros y _hy
-    simpa using PathConnectedSpace.Joined default y
+    simpa using PathConnectedSpace.joined default y
   · intro h
     have h' := h.joinedIn
     cases' h with x h
@@ -1196,8 +1196,8 @@ instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
 /-- This is a special case of `NormedSpace.instPathConnectedSpace` (and
 `TopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
 instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
-  Nonempty := inferInstance
-  Joined := fun x y ↦ ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by continuity⟩, by simp, by simp⟩⟩
+  joined x y := ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by continuity⟩, by simp, by simp⟩⟩
+  nonempty := inferInstance
 
 theorem pathConnectedSpace_iff_eq : PathConnectedSpace X ↔ ∃ x : X, pathComponent x = univ := by
   simp [pathConnectedSpace_iff_univ, isPathConnected_iff_eq]

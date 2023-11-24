@@ -116,7 +116,7 @@ theorem affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div [CompleteSpace E] [St
     Set.EqOn f (fun z => f c + (z - c) • dslope f c z₀) (ball c R₁) := by
   set g := dslope f c
   rintro z hz
-  by_cases z = c; · simp [h]
+  by_cases h : z = c; · simp [h]
   have h_R₁ : 0 < R₁ := nonempty_ball.mp ⟨_, h_z₀⟩
   have g_le_div : ∀ z ∈ ball c R₁, ‖g z‖ ≤ R₂ / R₁ := fun z hz =>
     norm_dslope_le_div_of_mapsTo_ball hd h_maps hz

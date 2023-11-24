@@ -28,8 +28,6 @@ zeta functions, in terms of Bernoulli polynomials.
   an explicit multiple of `Bₖ(x)`, for any `x ∈ [0, 1]` and `k ≥ 3` odd.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open scoped Nat Real Interval
@@ -169,7 +167,7 @@ def periodizedBernoulli (k : ℕ) : 𝕌 → ℝ :=
 
 theorem periodizedBernoulli.continuous {k : ℕ} (hk : k ≠ 1) : Continuous (periodizedBernoulli k) :=
   AddCircle.liftIco_zero_continuous
-    (by exact_mod_cast (bernoulliFun_endpoints_eq_of_ne_one hk).symm)
+    (mod_cast (bernoulliFun_endpoints_eq_of_ne_one hk).symm)
     (Polynomial.continuous _).continuousOn
 #align periodized_bernoulli.continuous periodizedBernoulli.continuous
 

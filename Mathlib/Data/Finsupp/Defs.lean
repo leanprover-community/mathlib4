@@ -211,8 +211,8 @@ theorem ext_iff' {f g : α →₀ M} : f = g ↔ f.support = g.support ∧ ∀ x
 #align finsupp.ext_iff' Finsupp.ext_iff'
 
 @[simp]
-theorem support_eq_empty {f : α →₀ M} : f.support = ∅ ↔ f = 0 := by
-  exact_mod_cast @Function.support_eq_empty_iff _ _ _ f
+theorem support_eq_empty {f : α →₀ M} : f.support = ∅ ↔ f = 0 :=
+  mod_cast @Function.support_eq_empty_iff _ _ _ f
 #align finsupp.support_eq_empty Finsupp.support_eq_empty
 
 theorem support_nonempty_iff {f : α →₀ M} : f.support.Nonempty ↔ f ≠ 0 := by
@@ -774,7 +774,7 @@ theorem mapRange_apply {f : M → N} {hf : f 0 = 0} {g : α →₀ M} {a : α} :
 
 @[simp]
 theorem mapRange_zero {f : M → N} {hf : f 0 = 0} : mapRange f hf (0 : α →₀ M) = 0 :=
-  ext fun a => by simp only [hf, zero_apply, mapRange_apply]
+  ext fun _ => by simp only [hf, zero_apply, mapRange_apply]
 #align finsupp.map_range_zero Finsupp.mapRange_zero
 
 @[simp]
@@ -835,7 +835,7 @@ def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
     · simp only [h, true_iff_iff, Ne.def]
       rw [← not_mem_support_iff, not_not]
       classical apply Finset.choose_mem
-    · simp only [h, Ne.def, ne_self_iff_false]
+    · simp only [h, Ne.def, ne_self_iff_false, not_true_eq_false]
 #align finsupp.emb_domain Finsupp.embDomain
 
 @[simp]

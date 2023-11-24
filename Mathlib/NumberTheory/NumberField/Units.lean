@@ -41,8 +41,6 @@ fundamental system `fundSystem`.
 number field, units
  -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open scoped NumberField
 
 noncomputable section
@@ -56,10 +54,6 @@ theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 
     RingEquiv.coe_toRingHom, RingEquiv.map_eq_one_iff, RingEquiv.map_eq_neg_one_iff, ←
     Subtype.coe_injective.eq_iff]; rfl
 #align rat.ring_of_integers.is_unit_iff Rat.RingOfIntegers.isUnit_iff
-
-theorem Algebra.coe_norm_int {K : Type*} [Field K] [NumberField K] (x : 𝓞 K) :
-    Algebra.norm ℤ x = Algebra.norm ℚ (x : K) :=
-  (Algebra.norm_localization (R := ℤ) (Rₘ := ℚ) (S := 𝓞 K) (Sₘ := K) (nonZeroDivisors ℤ) x).symm
 
 end Rat
 
@@ -88,10 +82,10 @@ variable {K}
 
 theorem coe_mul (x y : (𝓞 K)ˣ) : ((x * y : (𝓞 K)ˣ) : K) = (x : K) * (y : K) := rfl
 
-theorem coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : (x ^ n : K) = (x : K) ^ n := by
+theorem coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : (↑(x ^ n) : K) = (x : K) ^ n := by
   rw [← SubmonoidClass.coe_pow, ← val_pow_eq_pow_val]
 
-theorem coe_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (x ^ n : K) = (x : K) ^ n := by
+theorem coe_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (↑(x ^ n) : K) = (x : K) ^ n := by
   change ((Units.coeHom K).comp (map (algebraMap (𝓞 K) K))) (x ^ n) = _
   exact map_zpow _ x n
 
@@ -199,7 +193,7 @@ variable (K)
 
 /-- The logarithmic embedding of the units (seen as an `Additive` group). -/
 def logEmbedding : Additive ((𝓞 K)ˣ) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
-{ toFun := fun x w => mult w.val * Real.log (w.val (Additive.toMul x))
+{ toFun := fun x w => mult w.val * Real.log (w.val ↑(Additive.toMul x))
   map_zero' := by simp; rfl
   map_add' := fun _ _ => by simp [Real.log_mul, mul_add]; rfl }
 
@@ -227,7 +221,7 @@ theorem mult_log_place_eq_zero {x : (𝓞 K)ˣ} {w : InfinitePlace K} :
     mult w * Real.log (w x) = 0 ↔ w x = 1 := by
   rw [mul_eq_zero, or_iff_right, Real.log_eq_zero, or_iff_right, or_iff_left]
   · linarith [(map_nonneg _ _ : 0 ≤ w x)]
-  · simp only [ne_eq, map_eq_zero, coe_ne_zero x]
+  · simp only [ne_eq, map_eq_zero, coe_ne_zero x, not_false_eq_true]
   · refine (ne_of_gt ?_)
     rw [mult]; split_ifs <;> norm_num
 
@@ -345,7 +339,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
           simp_rw [← NNReal.coe_pow, ← NNReal.coe_prod]
           exact le_of_eq (congr_arg toReal h_gprod)
     · refine div_lt_self ?_ (by norm_num)
-      simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, hx]
+      simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, hx, not_false_eq_true]
   intro _ _
   rw [ne_eq, Nonneg.mk_eq_zero, div_eq_zero_iff, map_eq_zero, not_or, ZeroMemClass.coe_eq_zero]
   exact ⟨hx, by norm_num⟩
@@ -410,7 +404,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
       (Ideal.span ({ (seq K w₁ hB n : 𝓞 K) }) = Ideal.span ({ (seq K w₁ hB m : 𝓞 K) }))
   · have hu := Ideal.span_singleton_eq_span_singleton.mp h
     refine ⟨hu.choose, fun w hw => Real.log_neg ?_ ?_⟩
-    · simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, ne_zero]
+    · simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, ne_zero, not_false_eq_true]
     · calc
         _ = w ((seq K w₁ hB m : K) * (seq K w₁ hB n : K)⁻¹) := by
           rw [← congr_arg ((↑) : (𝓞 K) → K) hu.choose_spec, mul_comm, Submonoid.coe_mul,
@@ -555,7 +549,8 @@ def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsio
 /-- A fundamental system of units of `K`. The units of `fundSystem` are arbitrary lifts of the
 units in `basisModTorsion`. -/
 def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
-  fun i => Quotient.out' (Additive.toMul (basisModTorsion K i))
+  -- `:)` prevents the `⧸` decaying to a quotient by `leftRel` when we unfold this later
+  fun i => Quotient.out' (Additive.toMul (basisModTorsion K i) :)
 
 /-- The exponents that appear in the unique decomposition of a unit as the product of
 a root of unity and powers of the units of the fundamental system `fundSystem` (see
@@ -580,7 +575,7 @@ theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! (ζ : torsion K) (e : F
   have h_tors : ζ ∈ torsion K := by
     rw [← QuotientGroup.eq_one_iff, QuotientGroup.mk_mul, QuotientGroup.mk_inv, ← ofMul_eq_zero,
       ofMul_mul, ofMul_inv, QuotientGroup.mk_prod, ofMul_prod]
-    simp_rw [QuotientGroup.mk_zpow, ofMul_zpow, fundSystem, QuotientGroup.out_eq', ofMul_toMul]
+    simp_rw [QuotientGroup.mk_zpow, ofMul_zpow, fundSystem, QuotientGroup.out_eq']
     rw [add_eq_zero_iff_eq_neg, neg_neg]
     exact ((basisModTorsion K).sum_repr (Additive.ofMul ↑x)).symm
   refine ⟨⟨ζ, h_tors⟩, ?_, ?_⟩

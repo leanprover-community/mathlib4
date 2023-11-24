@@ -50,7 +50,7 @@ variable (D : Type u') [Category.{v'} D]
 and compositions of zero morphisms with anything give the zero morphism. -/
 class HasZeroMorphisms where
   /-- Every morphism space has zero -/
-  [Zero : ∀ X Y : C, Zero (X ⟶ Y)]
+  [zero : ∀ X Y : C, Zero (X ⟶ Y)]
   /-- `f` composed with `0` is `0` -/
   comp_zero : ∀ {X Y : C} (f : X ⟶ Y) (Z : C), f ≫ (0 : Y ⟶ Z) = (0 : X ⟶ Z) := by aesop_cat
   /-- `0` composed with `f` is `0` -/
@@ -59,7 +59,7 @@ class HasZeroMorphisms where
 #align category_theory.limits.has_zero_morphisms.comp_zero' CategoryTheory.Limits.HasZeroMorphisms.comp_zero
 #align category_theory.limits.has_zero_morphisms.zero_comp' CategoryTheory.Limits.HasZeroMorphisms.zero_comp
 
-attribute [instance] HasZeroMorphisms.Zero
+attribute [instance] HasZeroMorphisms.zero
 
 variable {C}
 
@@ -76,19 +76,19 @@ theorem zero_comp [HasZeroMorphisms C] {X : C} {Y Z : C} {f : Y ⟶ Z} :
 #align category_theory.limits.zero_comp CategoryTheory.Limits.zero_comp
 
 instance hasZeroMorphismsPEmpty : HasZeroMorphisms (Discrete PEmpty) where
-  Zero := by aesop_cat
+  zero := by aesop_cat
 #align category_theory.limits.has_zero_morphisms_pempty CategoryTheory.Limits.hasZeroMorphismsPEmpty
 
 instance hasZeroMorphismsPUnit : HasZeroMorphisms (Discrete PUnit) where
-  Zero := fun X Y => by repeat (constructor)
+  zero X Y := by repeat (constructor)
 #align category_theory.limits.has_zero_morphisms_punit CategoryTheory.Limits.hasZeroMorphismsPUnit
 
 namespace HasZeroMorphisms
 
 /-- This lemma will be immediately superseded by `ext`, below. -/
 private theorem ext_aux (I J : HasZeroMorphisms C)
-    (w : ∀ X Y : C, (I.Zero X Y).zero = (J.Zero X Y).zero) : I = J := by
-  have : I.Zero = J.Zero := by
+    (w : ∀ X Y : C, (I.zero X Y).zero = (J.zero X Y).zero) : I = J := by
+  have : I.zero = J.zero := by
     funext X Y
     specialize w X Y
     apply congrArg Zero.mk w
@@ -107,10 +107,10 @@ See, particularly, the note on `zeroMorphismsOfZeroObject` below.
 theorem ext (I J : HasZeroMorphisms C) : I = J := by
   apply ext_aux
   intro X Y
-  have : (I.Zero X Y).zero ≫ (J.Zero Y Y).zero = (I.Zero X Y).zero := by
-    apply I.zero_comp X (J.Zero Y Y).zero
-  have that : (I.Zero X Y).zero ≫ (J.Zero Y Y).zero = (J.Zero X Y).zero := by
-    apply J.comp_zero (I.Zero X Y).zero Y
+  have : (I.zero X Y).zero ≫ (J.zero Y Y).zero = (I.zero X Y).zero := by
+    apply I.zero_comp X (J.zero Y Y).zero
+  have that : (I.zero X Y).zero ≫ (J.zero Y Y).zero = (J.zero X Y).zero := by
+    apply J.comp_zero (I.zero X Y).zero Y
   rw[←this,←that]
 #align category_theory.limits.has_zero_morphisms.ext CategoryTheory.Limits.HasZeroMorphisms.ext
 
@@ -122,7 +122,7 @@ end HasZeroMorphisms
 open Opposite HasZeroMorphisms
 
 instance hasZeroMorphismsOpposite [HasZeroMorphisms C] : HasZeroMorphisms Cᵒᵖ where
-  Zero X Y := ⟨(0 : unop Y ⟶ unop X).op⟩
+  zero X Y := ⟨(0 : unop Y ⟶ unop X).op⟩
   comp_zero f Z := congr_arg Quiver.Hom.op (HasZeroMorphisms.zero_comp (unop Z) f.unop)
   zero_comp X {Y Z} (f : Y ⟶ Z) :=
     congrArg Quiver.Hom.op (HasZeroMorphisms.comp_zero f.unop (unop X))
@@ -163,7 +163,7 @@ section
 variable [HasZeroMorphisms D]
 
 instance : HasZeroMorphisms (C ⥤ D) where
-  Zero F G := ⟨{ app := fun X => 0 }⟩
+  zero F G := ⟨{ app := fun X => 0 }⟩
   comp_zero := fun η H => by
     ext X; dsimp; apply comp_zero
   zero_comp := fun F {G H} η => by
@@ -256,7 +256,7 @@ end IsZero
     code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
     asks for an instance of `HasZeroObjects`. -/
 def IsZero.hasZeroMorphisms {O : C} (hO : IsZero O) : HasZeroMorphisms C where
-  Zero X Y := { zero := hO.from_ X ≫ hO.to_ Y }
+  zero X Y := { zero := hO.from_ X ≫ hO.to_ Y }
   zero_comp X {Y Z} f := by
     change (hO.from_ X ≫ hO.to_ Y) ≫ f = hO.from_ X ≫ hO.to_ Z
     rw [Category.assoc]
@@ -284,7 +284,7 @@ open ZeroObject
     code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
     asks for an instance of `HasZeroObjects`. -/
 def zeroMorphismsOfZeroObject : HasZeroMorphisms C where
-  Zero X Y := { zero := (default : X ⟶ 0) ≫ default }
+  zero X Y := { zero := (default : X ⟶ 0) ≫ default }
   zero_comp X {Y Z} f := by
     change ((default : X ⟶ 0) ≫ default) ≫ f = (default : X ⟶ 0) ≫ default
     rw [Category.assoc]
