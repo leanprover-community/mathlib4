@@ -460,15 +460,15 @@ variable {R M : Type*} (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 
 /-- If `A` is an `R`-algebra, any `R`-submodule `p` of an `R`-module `M` may be pushed forward to
 an `A`-submodule of `A ⊗ M`. -/
-def extendScalars : Submodule A (A ⊗[R] M) :=
+def baseChange : Submodule A (A ⊗[R] M) :=
   span A <| p.map (TensorProduct.mk R A M 1)
 
 @[simp]
-lemma extendScalars_bot : (⊥ : Submodule R M).extendScalars A = ⊥ := by simp [extendScalars]
+lemma baseChange_bot : (⊥ : Submodule R M).baseChange A = ⊥ := by simp [baseChange]
 
 @[simp]
-lemma extendScalars_top : (⊤ : Submodule R M).extendScalars A = ⊤ := by
-  rw [extendScalars, map_top, eq_top_iff']
+lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
+  rw [baseChange, map_top, eq_top_iff']
   intro x
   refine x.induction_on (by simp) (fun a y ↦ ?_) (fun _ _ ↦ Submodule.add_mem _)
   rw [← mul_one a, ← smul_eq_mul, ← smul_tmul']
@@ -476,15 +476,15 @@ lemma extendScalars_top : (⊤ : Submodule R M).extendScalars A = ⊤ := by
   simp
 
 variable {A p} in
-lemma tmul_mem_extendScalars_of_mem (a : A) {m : M} (hm : m ∈ p) :
-    a ⊗ₜ[R] m ∈ p.extendScalars A := by
+lemma tmul_mem_baseChange_of_mem (a : A) {m : M} (hm : m ∈ p) :
+    a ⊗ₜ[R] m ∈ p.baseChange A := by
   rw [← mul_one a, ← smul_eq_mul, ← smul_tmul']
-  exact smul_mem (extendScalars A p) a (subset_span ⟨m, hm, rfl⟩)
+  exact smul_mem (baseChange A p) a (subset_span ⟨m, hm, rfl⟩)
 
 @[simp]
-lemma extendScalars_span (s : Set M) :
-    (span R s).extendScalars A = span A (TensorProduct.mk R A M 1 '' s) := by
-  simp only [extendScalars, map_coe]
+lemma baseChange_span (s : Set M) :
+    (span R s).baseChange A = span A (TensorProduct.mk R A M 1 '' s) := by
+  simp only [baseChange, map_coe]
   refine le_antisymm (span_le.mpr ?_) (span_mono <| Set.image_subset _ subset_span)
   rintro - ⟨m : M, hm : m ∈ span R s, rfl⟩
   apply span_induction (p := fun m' ↦ (1 : A) ⊗ₜ[R] m' ∈ span A (TensorProduct.mk R A M 1 '' s)) hm
