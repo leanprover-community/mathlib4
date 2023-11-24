@@ -133,7 +133,7 @@ theorem maxPowDiv_eq_multiplicity_get {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (h :
 @[csimp]
 theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
   ext p n
-  by_cases (1 < p ∧ 0 < n)
+  by_cases h : 1 < p ∧ 0 < n
   · dsimp [padicValNat]
     rw [dif_pos ⟨Nat.ne_of_gt h.1,h.2⟩, maxPowDiv_eq_multiplicity_get h.1 h.2]
   · simp only [not_and_or,not_gt_eq,le_zero_iff] at h
@@ -402,9 +402,9 @@ theorem le_padicValRat_add_of_le {q r : ℚ} (hqr : q + r ≠ 0)
     if hr : r = 0 then by simp [hr]
     else by
       have hqn : q.num ≠ 0 := Rat.num_ne_zero_of_ne_zero hq
-      have hqd : (q.den : ℤ) ≠ 0 := by exact_mod_cast Rat.den_nz _
+      have hqd : (q.den : ℤ) ≠ 0 := mod_cast Rat.den_nz _
       have hrn : r.num ≠ 0 := Rat.num_ne_zero_of_ne_zero hr
-      have hrd : (r.den : ℤ) ≠ 0 := by exact_mod_cast Rat.den_nz _
+      have hrd : (r.den : ℤ) ≠ 0 := mod_cast Rat.den_nz _
       have hqreq : q + r = (q.num * r.den + q.den * r.num) /. (q.den * r.den) := Rat.add_num_den _ _
       have hqrd : q.num * r.den + q.den * r.num ≠ 0 := Rat.mk_num_ne_zero_of_ne_zero hqr hqreq
       conv_lhs => rw [← @Rat.num_den q]
@@ -506,7 +506,7 @@ variable {p a b : ℕ} [hp : Fact p.Prime]
 
 /-- A rewrite lemma for `padicValNat p (a * b)` with conditions `a ≠ 0`, `b ≠ 0`. -/
 protected theorem mul : a ≠ 0 → b ≠ 0 → padicValNat p (a * b) = padicValNat p a + padicValNat p b :=
-  by exact_mod_cast @padicValRat.mul p _ a b
+  mod_cast @padicValRat.mul p _ a b
 #align padic_val_nat.mul padicValNat.mul
 
 protected theorem div_of_dvd (h : b ∣ a) :

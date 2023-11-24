@@ -60,7 +60,7 @@ instance (priority := 100) OrderedCommGroup.toOrderedCancelCommMonoid [OrderedCo
 #align ordered_add_comm_group.to_ordered_cancel_add_comm_monoid OrderedAddCommGroup.toOrderedCancelAddCommMonoid
 
 example (α : Type u) [OrderedAddCommGroup α] : CovariantClass α α (swap (· + ·)) (· < ·) :=
-  AddRightCancelSemigroup.covariant_swap_add_lt_of_covariant_swap_add_le α
+  IsRightCancelAdd.covariant_swap_add_lt_of_covariant_swap_add_le α
 
 -- Porting note: this instance is not used,
 -- and causes timeouts after lean4#2210.
