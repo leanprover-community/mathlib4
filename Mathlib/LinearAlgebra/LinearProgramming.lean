@@ -8,7 +8,8 @@ import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 
 /-! # Linear programming
 
-Minimizing a linear function on a region defined by linear inequalities.
+Minimizing a linear function on a region defined by linear inequalities (technically speaking,
+they are affine inequalities and an affine function to be minized).
 
 ## Main definitions
 
@@ -21,9 +22,9 @@ Minimizing a linear function on a region defined by linear inequalities.
 /-- Linear program in the form of inequalities with general variables. -/
 structure LinearProgram (R : Type*) {V : Type*} (P : Type*)
     [LinearOrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P] where
-  /-- Inequality constraints (given in the form "aᵀx - b ≥ 0") -/
+  /-- Inequality constraints (values must be nonnegative) -/
   constraints : List (P →ᵃ[R] R)
-  /-- The objective function (affine map) -/
+  /-- The objective function (an affine map) -/
   objective : P →ᵃ[R] R
 
 variable {R V P : Type*} [LinearOrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
@@ -53,13 +54,13 @@ lemma LinearProgram.feasibles_mkOfEqs
       {x : P | (∀ a ∈ inequalities, 0 ≤ a x) ∧ (∀ a ∈ equalities, a x = 0)} := by
   ext x
   simp only [mem_feasibles, LinearProgram.mkOfEqs, Set.mem_setOf]
-  have : (∀ a ∈ equalities, a x = 0) ↔ (∀ a, a ∈ equalities ∨ -a ∈ equalities → 0 ≤ a x) := by
-    simp_rw [le_antisymm_iff, ←neg_nonneg, and_comm, or_imp, imp_and, forall_and]
-    refine and_congr_right' ?_
+  have hiff : (∀ a ∈ equalities, a x = 0) ↔ (∀ a, a ∈ equalities ∨ -a ∈ equalities → 0 ≤ a x)
+  · simp_rw [le_antisymm_iff, ←neg_nonneg, and_comm, or_imp, imp_and, forall_and]
+    apply and_congr_right'
     rw [Iff.comm, neg_involutive.surjective.forall]
     simp_rw [neg_neg, AffineMap.coe_neg, Pi.neg_apply]
   simp_rw [List.mem_append, List.mem_map_of_involutive neg_involutive, or_assoc,
-    @or_imp (_ ∈ inequalities), forall_and, this]
+    @or_imp (_ ∈ inequalities), forall_and, hiff]
 
 /-- Adding more constraints cannot enlarge the set of feasible solutions. -/
 lemma LinearProgram.feasibles_superset_of_constraints_subset {lp₁ lp₂ : LinearProgram R P}
