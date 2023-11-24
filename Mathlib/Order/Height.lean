@@ -167,7 +167,7 @@ theorem chainHeight_add_le_chainHeight_add (s : Set α) (t : Set β) (n m : ℕ)
       le_chainHeight_add_nat_iff.1
         ((add_le_add_right (length_le_chainHeight_of_mem_subchain h) _).trans e),
       fun H ↦ _⟩
-  by_cases s.chainHeight = ⊤
+  by_cases h : s.chainHeight = ⊤
   · suffices t.chainHeight = ⊤ by
       rw [this, top_add]
       exact le_top
