@@ -181,12 +181,6 @@ lemma ZMod.min_le_card_add {p : ℕ} (hp : p.Prime) {s t : Finset (ZMod p)} (hs 
 lemma Finset.card_add_card_sub_one_le_card_mul [LinearOrder α] [Semigroup α] [IsCancelMul α]
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
     {s t : Finset α} (hs : s.Nonempty) (ht : t.Nonempty) : s.card + t.card - 1 ≤ (s * t).card := by
-  --TODO: Remove this hack once we've decided what to do between defining `CancelSemigroup` and
-  -- removing `LeftCancelSemigroup`/`RightCancelSemigroup`.
-  let _ : LeftCancelSemigroup α :=
-    { ‹Semigroup α› with mul_left_cancel := fun _ _ _ ↦ mul_left_cancel }
-  let h : RightCancelSemigroup α :=
-    { ‹Semigroup α› with mul_right_cancel := fun _ _ _ ↦ mul_right_cancel }
   suffices s * {t.min' ht} ∩ ({s.max' hs} * t) = {s.max' hs * t.min' ht} by
     rw [←card_singleton_mul t (s.max' hs), ←card_mul_singleton s (t.min' ht),
       ←card_union_add_card_inter, ←card_singleton _, ←this, Nat.add_sub_cancel]
