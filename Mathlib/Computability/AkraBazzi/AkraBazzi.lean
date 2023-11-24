@@ -611,13 +611,10 @@ lemma eventually_asympBound_r_pos : ∀ᶠ (n:ℕ) in atTop, ∀ i, 0 < asympBou
   rw [Filter.eventually_all]
   exact fun i => (R.tendsto_atTop_r i).eventually R.eventually_asympBound_pos
 
--- The linter falsely flags `hc₂_pos` as being unused.
-@[nolint unusedHavesSuffices]
 lemma eventually_atTop_sumTransform_le :
     ∃ c > 0, ∀ᶠ (n:ℕ) in atTop, ∀ i, sumTransform (p a b) g (r i n) n ≤ c * g n := by
   obtain ⟨c₁, hc₁_mem, hc₁⟩ := R.exists_eventually_const_mul_le_r
   obtain ⟨c₂, hc₂_mem, hc₂⟩ := R.g_grows_poly.eventually_atTop_le_nat hc₁_mem
-  have hc₂_pos : 0 < c₂ := hc₂_mem
   have hc₁_pos : 0 < c₁ := hc₁_mem.1
   refine ⟨max c₂ (c₂ / c₁ ^ (p a b + 1)), by positivity, ?_⟩
   filter_upwards [hc₁, hc₂, R.eventually_r_pos, R.eventually_r_lt_n, eventually_gt_atTop 0]
@@ -696,7 +693,6 @@ lemma eventually_atTop_sumTransform_ge :
   obtain ⟨c₁, hc₁_mem, hc₁⟩ := R.exists_eventually_const_mul_le_r
   obtain ⟨c₂, hc₂_mem, hc₂⟩ := R.g_grows_poly.eventually_atTop_ge_nat hc₁_mem
   obtain ⟨c₃, hc₃_mem, hc₃⟩ := R.exists_eventually_r_le_const_mul
-  have hc₂_pos : 0 < c₂ := hc₂_mem
   have hc₁_pos : 0 < c₁ := hc₁_mem.1
   have hc₃' : 0 < (1 - c₃) := by have := hc₃_mem.2; linarith
   refine ⟨min (c₂ * (1 - c₃)) ((1 - c₃) * c₂ / c₁^((p a b) + 1)), by positivity, ?_⟩
