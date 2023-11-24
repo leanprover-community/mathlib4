@@ -14,7 +14,7 @@ universe u v
 open scoped TensorProduct
 
 /-- A coalgebra over a commutative ring `R` is a module over `R` equipped with a coassociative
-comultiplication Δ and a counit ε obeying the left and right conunitality laws. -/
+comultiplication `Δ` and a counit `ε` obeying the left and right conunitality laws. -/
 class Coalgebra (R : Type u) (A : Type v) [CommRing R] [AddCommGroup A] [Module R A] where
   /-- The comultiplication of the coalgebra -/
   Δ : A →ₗ[R] A ⊗[R] A
