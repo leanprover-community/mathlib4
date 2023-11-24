@@ -319,7 +319,7 @@ def GradedRing.projZeroRingHom' : A →+* 𝒜 0 :=
 @[simp] lemma GradedRing.coe_projZeroRingHom'_apply (a : A) :
     (GradedRing.projZeroRingHom' 𝒜 a : A) = GradedRing.projZeroRingHom 𝒜 a := rfl
 
-lemma GradedRing.projZeroRingHom'_apply_coe (a : 𝒜 0) :
+@[simp] lemma GradedRing.projZeroRingHom'_apply_coe (a : 𝒜 0) :
     GradedRing.projZeroRingHom' 𝒜 a = a := by
   ext; simp only [coe_projZeroRingHom'_apply, projZeroRingHom_apply, decompose_coe, of_eq_same]
 
