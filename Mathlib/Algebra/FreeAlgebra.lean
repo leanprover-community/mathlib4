@@ -61,14 +61,14 @@ namespace FreeAlgebra
 -/
 inductive Pre
   | of : X → Pre
-  | of_scalar : R → Pre
+  | ofScalar : R → Pre
   | add : Pre → Pre → Pre
   | mul : Pre → Pre → Pre
 #align free_algebra.pre FreeAlgebra.Pre
 
 namespace Pre
 
-instance : Inhabited (Pre R X) := ⟨of_scalar 0⟩
+instance : Inhabited (Pre R X) := ⟨ofScalar 0⟩
 
 -- Note: These instances are only used to simplify the notation.
 /-- Coercion from `X` to `Pre R X`. Note: Used for notation only. -/
@@ -76,7 +76,7 @@ def hasCoeGenerator : Coe X (Pre R X) := ⟨of⟩
 #align free_algebra.pre.has_coe_generator FreeAlgebra.Pre.hasCoeGenerator
 
 /-- Coercion from `R` to `Pre R X`. Note: Used for notation only. -/
-def hasCoeSemiring : Coe R (Pre R X) := ⟨of_scalar⟩
+def hasCoeSemiring : Coe R (Pre R X) := ⟨ofScalar⟩
 #align free_algebra.pre.has_coe_semiring FreeAlgebra.Pre.hasCoeSemiring
 
 /-- Multiplication in `Pre R X` defined as `Pre.mul`. Note: Used for notation only. -/
@@ -88,17 +88,17 @@ def hasAdd : Add (Pre R X) := ⟨add⟩
 #align free_algebra.pre.has_add FreeAlgebra.Pre.hasAdd
 
 /-- Zero in `Pre R X` defined as the image of `0` from `R`. Note: Used for notation only. -/
-def hasZero : Zero (Pre R X) := ⟨of_scalar 0⟩
+def hasZero : Zero (Pre R X) := ⟨ofScalar 0⟩
 #align free_algebra.pre.has_zero FreeAlgebra.Pre.hasZero
 
 /-- One in `Pre R X` defined as the image of `1` from `R`. Note: Used for notation only. -/
-def hasOne : One (Pre R X) := ⟨of_scalar 1⟩
+def hasOne : One (Pre R X) := ⟨ofScalar 1⟩
 #align free_algebra.pre.has_one FreeAlgebra.Pre.hasOne
 
 /-- Scalar multiplication defined as multiplication by the image of elements from `R`.
 Note: Used for notation only.
 -/
-def hasSmul : SMul R (Pre R X) := ⟨fun r m ↦ mul (of_scalar r) m⟩
+def hasSmul : SMul R (Pre R X) := ⟨fun r m ↦ mul (ofScalar r) m⟩
 #align free_algebra.pre.has_smul FreeAlgebra.Pre.hasSmul
 
 end Pre
@@ -115,7 +115,7 @@ def liftFun {A : Type*} [Semiring A] [Algebra R A] (f : X → A) :
   | .of t => f t
   | .add a b => liftFun f a + liftFun f b
   | .mul a b => liftFun f a * liftFun f b
-  | .of_scalar c => algebraMap _ _ c
+  | .ofScalar c => algebraMap _ _ c
 #align free_algebra.lift_fun FreeAlgebra.liftFun
 
 /-- An inductively defined relation on `Pre R X` used to force the initial algebra structure on
@@ -170,6 +170,10 @@ attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre
 
 instance instSMul {A} [CommSemiring A] [Algebra R A] : SMul R (FreeAlgebra A X) where
   smul r := Quot.map (HMul.hMul (algebraMap R A r : Pre A X)) fun _ _ ↦ Rel.mul_compat_right
+
+instance instOpSMul {A} [CommSemiring A] [Algebra R A] :
+    SMul Rᵐᵒᵖ (FreeAlgebra A X) where
+  smul r := Quot.map (HMul.hMul · (algebraMap R A r.unop : Pre A X)) fun _ _ ↦ Rel.mul_compat_left
 
 instance instZero : Zero (FreeAlgebra R X) where zero := Quot.mk _ 0
 
@@ -266,6 +270,24 @@ instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra
     rintro ⟨⟩
     exact Quot.sound Rel.central_scalar
   smul_def' _ _ := rfl
+
+-- TODO: eliminate this once `Algebra R (FreeAlgebra A X)` implies it (mathlib4#7152)
+instance {A} [CommSemiring A] [Algebra R A] : IsCentralScalar R (FreeAlgebra A X) where
+  op_smul_eq_smul r := by
+    rintro ⟨⟩; exact (Quot.sound (.central_scalar)).symm
+
+-- TODO: eliminate this once `Algebra R (FreeAlgebra A X)` implies it (mathlib4#7152)
+instance {A} [CommSemiring A] [Algebra R A] : Module Rᵐᵒᵖ (FreeAlgebra A X) where
+  zero_smul x := by rw [← MulOpposite.op_zero, op_smul_eq_smul, zero_smul]
+  one_smul x := by rw [← MulOpposite.op_one, op_smul_eq_smul, one_smul]
+  add_smul r₁ r₂ x := by
+    induction r₁ using MulOpposite.rec'; induction r₂ using MulOpposite.rec'
+    simp_rw [← MulOpposite.op_add, op_smul_eq_smul, add_smul]
+  mul_smul r₁ r₂ x := by
+    induction r₁ using MulOpposite.rec'; induction r₂ using MulOpposite.rec'
+    simp_rw [← MulOpposite.op_mul, op_smul_eq_smul, mul_comm, mul_smul]
+  smul_zero r := by induction r using MulOpposite.rec'; rw [op_smul_eq_smul, smul_zero]
+  smul_add r x y:= by induction r using MulOpposite.rec'; simp_rw [op_smul_eq_smul, smul_add]
 
 -- verify there is no diamond
 variable (S : Type) [CommSemiring S] in
@@ -375,7 +397,7 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
       case of =>
         change ((F : FreeAlgebra R X → A) ∘ ι R) _ = _
         simp only [Function.comp_apply, ι_def]
-      case of_scalar x =>
+      case ofScalar x =>
         change algebraMap _ _ x = F (algebraMap _ _ x)
         rw [AlgHom.commutes F _]
       case add a b ha hb =>
