@@ -95,8 +95,8 @@ evaluated at `x` if and only if we eventually have the equivalence `x ∈ Asᵢ 
     Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b) x) L (𝓝 (A.indicator (fun (_ : α) ↦ b) x))
       ↔ ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A) := by
   apply tendsto_indicator_const_apply_iff_eventually' _ b
-  · simp only [compl_singleton_mem_nhds_iff, ne_eq, NeZero.ne]
-  · simp only [compl_singleton_mem_nhds_iff, ne_eq, (NeZero.ne b).symm]
+  · simp only [compl_singleton_mem_nhds_iff, ne_eq, NeZero.ne, not_false_eq_true]
+  · simp only [compl_singleton_mem_nhds_iff, ne_eq, (NeZero.ne b).symm, not_false_eq_true]
 
 /-- The indicator functions of `Asᵢ` tend to the indicator function of `A` pointwise if and only if
 for every `x`, we eventually have the equivalence `x ∈ Asᵢ ↔ x ∈ A`. -/
@@ -104,8 +104,8 @@ for every `x`, we eventually have the equivalence `x ∈ Asᵢ ↔ x ∈ A`. -/
     Tendsto (fun i ↦ (As i).indicator (fun (_ : α) ↦ b)) L (𝓝 (A.indicator (fun (_ : α) ↦ b)))
       ↔ ∀ x, ∀ᶠ i in L, (x ∈ As i ↔ x ∈ A) := by
   apply tendsto_indicator_const_iff_forall_eventually' _ b
-  · simp only [compl_singleton_mem_nhds_iff, ne_eq, NeZero.ne]
-  · simp only [compl_singleton_mem_nhds_iff, ne_eq, (NeZero.ne b).symm]
+  · simp only [compl_singleton_mem_nhds_iff, ne_eq, NeZero.ne, not_false_eq_true]
+  · simp only [compl_singleton_mem_nhds_iff, ne_eq, (NeZero.ne b).symm, not_false_eq_true]
 
 lemma tendsto_indicator_const_iff_tendsto_pi_pure'
     (b : β) (nhd_b : {0}ᶜ ∈ 𝓝 b) (nhd_o : {b}ᶜ ∈ 𝓝 0) :
