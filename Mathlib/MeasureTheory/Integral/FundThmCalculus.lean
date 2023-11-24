@@ -90,7 +90,7 @@ We use FTC-1 to prove several versions of FTC-2 for the Lebesgue measure, using 
 scheme as for the versions of FTC-1. They include:
 * `intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le` - most general version, for functions
   with a right derivative
-* `intervalIntegral.integral_eq_sub_of_hasDerivAt'` - version for functions with a derivative on
+* `intervalIntegral.integral_eq_sub_of_hasDerivAt` - version for functions with a derivative on
   an open set
 * `intervalIntegral.integral_deriv_eq_sub'` - version that is easiest to use when computing the
   integral of a specific function
@@ -1242,6 +1242,28 @@ theorem integral_deriv_eq_sub' (f) (hderiv : deriv f = f')
   rw [hderiv]
   exact hcont.intervalIntegrable
 #align interval_integral.integral_deriv_eq_sub' intervalIntegral.integral_deriv_eq_sub'
+
+/-- A variant of the Fundamental theorem of calculus-2 involving integrating over the
+unit interval. -/
+lemma integral_unitInterval_eq_sub {C E : Type*} [NontriviallyNormedField C]
+    [NormedAlgebra ℝ C] [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace C E]
+    [CompleteSpace E] [IsScalarTower ℝ C E] {f f' : C → E} {z₀ z₁ : C}
+    (hcont : ContinuousOn (fun t : ℝ ↦ f' (z₀ + t • z₁)) (Set.Icc 0 1))
+    (hderiv : ∀ t ∈ Set.Icc (0 : ℝ) 1, HasDerivAt f (f' (z₀ + t • z₁)) (z₀ + t • z₁)) :
+    z₁ • ∫ t in (0 : ℝ)..1, f' (z₀ + t • z₁) = f (z₀ + z₁) - f z₀ := by
+  let γ (t : ℝ) : C := z₀ + t • z₁
+  have hint : IntervalIntegrable (z₁ • (f' ∘ γ)) MeasureTheory.volume 0 1 :=
+    (ContinuousOn.const_smul hcont z₁).intervalIntegrable_of_Icc zero_le_one
+  have hderiv' : ∀ t ∈ Set.uIcc (0 : ℝ) 1, HasDerivAt (f ∘ γ) (z₁ • (f' ∘ γ) t) t
+  · intro t ht
+    refine (hderiv t <| (Set.uIcc_of_le (α := ℝ) zero_le_one).symm ▸ ht).scomp t ?_
+    have : HasDerivAt (fun t : ℝ ↦ t • z₁) z₁ t
+    · convert (hasDerivAt_id t).smul_const (F := C) _ using 1
+      simp only [one_smul]
+    exact this.const_add z₀
+  convert (integral_eq_sub_of_hasDerivAt hderiv' hint) using 1
+  · simp_rw [← integral_smul, Function.comp_apply]
+  · simp only [Function.comp_apply, one_smul, zero_smul, add_zero]
 
 /-!
 ### Automatic integrability for nonnegative derivatives
