@@ -227,11 +227,11 @@ the concrete multiequalizer. -/
 noncomputable def multiequalizerEquiv (I : MulticospanIndex.{w} C) [HasMultiequalizer I]
     [PreservesLimit I.multicospan (forget C)] :
     (multiequalizer I : C) ≃
-      { x : ∀ i : I.L, I.left i // ∀ i : I.R, I.fst i (x _) = I.snd i (x _) } := by
-  let h1 := limit.isLimit I.multicospan
-  let h2 := isLimitOfPreserves (forget C) h1
-  let E := h2.conePointUniqueUpToIso (Types.limitConeIsLimit.{w, v} _)
-  exact Equiv.trans E.toEquiv (Concrete.multiequalizerEquivAux.{w, v} I)
+      { x : ∀ i : I.L, I.left i // ∀ i : I.R, I.fst i (x _) = I.snd i (x _) } :=
+  letI h1 := limit.isLimit I.multicospan
+  letI h2 := isLimitOfPreserves (forget C) h1
+  letI E := h2.conePointUniqueUpToIso (Types.limitConeIsLimit.{w, v} _)
+  Equiv.trans E.toEquiv (Concrete.multiequalizerEquivAux.{w, v} I)
 #align category_theory.limits.concrete.multiequalizer_equiv CategoryTheory.Limits.Concrete.multiequalizerEquiv
 
 @[simp]
