@@ -91,15 +91,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
   rw [Algebra.norm_apply, ← LinearMap.det_toMatrix bS]
   simp only [Algebra.norm_apply, AlgHom.map_sum, AlgHom.map_smul, map_sum,
     map_smul, Algebra.toMatrix_lmul_eq, normBound, smul_mul_assoc, ← mul_pow]
-  --Porting note: rest of proof was
-  -- convert Matrix.det_sum_smul_le Finset.univ _ hy using 3
-  -- · rw [Finset.card_univ, smul_mul_assoc, mul_comm]
-  -- · intro i j k
-  --   apply Finset.le_max'
-  --   exact finset.mem_image.mpr ⟨⟨i, j, k⟩, Finset.mem_univ _, rfl⟩
-  rw [← LinearMap.det_toMatrix bS]
-  convert Matrix.det_sum_smul_le (n := ι) Finset.univ _ hy using 3
-  · simp; rfl
+  convert Matrix.det_sum_smul_le Finset.univ _ hy using 3
   · rw [Finset.card_univ, smul_mul_assoc, mul_comm]
   · intro i j k
     apply Finset.le_max'
@@ -267,7 +259,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     simp_rw [map_sum, LinearEquiv.map_sub, LinearEquiv.map_smul, Finset.sum_apply',
       Finsupp.sub_apply, Finsupp.smul_apply, Finset.sum_sub_distrib, Basis.repr_self_apply,
       smul_eq_mul, mul_boole, Finset.sum_ite_eq', Finset.mem_univ, if_true]
-  · exact_mod_cast ε_le
+  · exact mod_cast ε_le
 #align class_group.exists_mem_finset_approx ClassGroup.exists_mem_finsetApprox
 
 /-- We can approximate `a / b : L` with `q / r`, where `r` has finitely many options for `L`. -/
@@ -410,7 +402,7 @@ noncomputable def fintypeOfAdmissibleOfFinite : Fintype (ClassGroup S) := by
     · exact IsIntegralClosure.algebraMap_injective _ R _
   let bS := b.map ((LinearMap.quotKerEquivRange _).symm ≪≫ₗ f)
   exact fintypeOfAdmissibleOfAlgebraic L bS adm (fun x =>
-    (IsFractionRing.isAlgebraic_iff R K L).mpr (Algebra.isAlgebraic_of_finite K _ x))
+    (IsFractionRing.isAlgebraic_iff R K L).mpr (Algebra.IsAlgebraic.of_finite K _ x))
 #align class_group.fintype_of_admissible_of_finite ClassGroup.fintypeOfAdmissibleOfFinite
 
 end IsAdmissible

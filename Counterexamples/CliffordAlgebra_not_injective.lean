@@ -54,8 +54,9 @@ theorem mem_kIdeal_iff (x : MvPolynomial (Fin 3) (ZMod 2)) :
 theorem X0_X1_X2_not_mem_kIdeal : (X 0 * X 1 * X 2 : MvPolynomial (Fin 3) (ZMod 2)) ∉ kIdeal := by
   intro h
   simp_rw [mem_kIdeal_iff, support_mul_X, support_X, Finset.map_singleton, addRightEmbedding_apply,
-    Finset.mem_singleton, forall_eq, ← Fin.sum_univ_three fun i => Finsupp.single i 1] at h
-  simp (config := {decide := true}) [← Finsupp.equivFunOnFinite_symm_eq_sum] at h
+    Finset.mem_singleton, forall_eq, ← Fin.sum_univ_three fun i => Finsupp.single i 1,
+    ← Finsupp.equivFunOnFinite_symm_eq_sum] at h
+  contradiction
 
 theorem mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem {x : MvPolynomial (Fin 3) (ZMod 2)}
     (h : X 0 * X 1 * X 2 * x ∈ kIdeal) : x * x ∈ kIdeal := by
@@ -129,9 +130,6 @@ theorem sq_zero_of_αβγ_mul {x : K} : α * β * γ * x = 0 → x * x = 0 := by
 /-- Though `αβγ` is not itself zero-/
 theorem αβγ_ne_zero : α * β * γ ≠ 0 := fun h =>
   X0_X1_X2_not_mem_kIdeal <| Ideal.Quotient.eq_zero_iff_mem.1 h
-
--- A variant of lean4#2220
-local macro_rules | `($x • $y) => `(@HSMul.hSMul _ _ _ instHSMul $x $y)
 
 /-- The 1-form on $K^3$, the kernel of which we will take a quotient by.
 

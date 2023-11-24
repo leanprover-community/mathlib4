@@ -237,7 +237,7 @@ def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
         rw [hn₁, hn₂, Submonoid.log_pow_int_eq_self h₂, Submonoid.log_pow_int_eq_self h₂]
         apply dyadic_aux
         rwa [ha₁, ha₂, mul_comm, mul_comm m₂]
-      · have : (1 : ℤ) ≤ 2 ^ y₃ := by exact_mod_cast Nat.one_le_pow y₃ 2 Nat.succ_pos'
+      · have : (1 : ℤ) ≤ 2 ^ y₃ := mod_cast Nat.one_le_pow y₃ 2 Nat.succ_pos'
         linarith
   map_zero' := Localization.liftOn_zero _ _
   map_add' x y :=

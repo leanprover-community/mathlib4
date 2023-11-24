@@ -510,7 +510,7 @@ theorem exists_multiset_roots [DecidableEq R] :
         calc
           (card (x ::ₘ t) : WithBot ℕ) = Multiset.card t + 1 := by
             congr
-            exact_mod_cast Multiset.card_cons _ _
+            exact mod_cast Multiset.card_cons _ _
           _ ≤ degree p := by
             rw [← degree_add_divByMonic (monic_X_sub_C x) hdeg, degree_X_sub_C, add_comm];
               exact add_le_add (le_refl (1 : WithBot ℕ)) htd,

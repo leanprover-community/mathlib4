@@ -527,7 +527,7 @@ instance isSeparable_self (F : Type*) [Field F] : IsSeparable F F :=
 /-- A finite field extension in characteristic 0 is separable. -/
 instance (priority := 100) IsSeparable.of_finite (F K : Type*) [Field F] [Field K] [Algebra F K]
     [FiniteDimensional F K] [CharZero F] : IsSeparable F K :=
-  have : ∀ x : K, IsIntegral F x := fun _x => Algebra.isIntegral_of_finite _ _ _
+  have : ∀ x : K, IsIntegral F x := fun _x ↦ .of_finite F _
   ⟨this, fun x => (minpoly.irreducible (this x)).separable⟩
 #align is_separable.of_finite IsSeparable.of_finite
 
@@ -537,15 +537,13 @@ variable (F K E : Type*) [Field F] [Field K] [Field E] [Algebra F K] [Algebra F 
   [IsScalarTower F K E]
 
 theorem isSeparable_tower_top_of_isSeparable [IsSeparable F E] : IsSeparable K E :=
-  ⟨fun x => isIntegral_of_isScalarTower (IsSeparable.isIntegral F x), fun x =>
+  ⟨fun x ↦ (IsSeparable.isIntegral F x).tower_top, fun x ↦
     (IsSeparable.separable F x).map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)⟩
 #align is_separable_tower_top_of_is_separable isSeparable_tower_top_of_isSeparable
 
 theorem isSeparable_tower_bot_of_isSeparable [h : IsSeparable F E] : IsSeparable F K :=
-  isSeparable_iff.2 fun x => by
-    refine'
-      (isSeparable_iff.1 h (algebraMap K E x)).imp isIntegral_tower_bot_of_isIntegral_field
-        fun hs => _
+  isSeparable_iff.2 fun x ↦ by
+    refine (isSeparable_iff.1 h (algebraMap K E x)).imp .tower_bot_of_field fun hs ↦ ?_
     obtain ⟨q, hq⟩ :=
       minpoly.dvd F x
         ((aeval_algebraMap_eq_zero_iff _ _ _).mp (minpoly.aeval F ((algebraMap K E) x)))

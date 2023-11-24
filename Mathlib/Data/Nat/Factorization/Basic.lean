@@ -429,7 +429,8 @@ theorem factorization_prime_le_iff_dvd {d n : ℕ} (hd : d ≠ 0) (hn : n ≠ 0)
     (∀ p : ℕ, p.Prime → d.factorization p ≤ n.factorization p) ↔ d ∣ n := by
   rw [← factorization_le_iff_dvd hd hn]
   refine' ⟨fun h p => (em p.Prime).elim (h p) fun hp => _, fun h p _ => h p⟩
-  simp_rw [factorization_eq_zero_of_non_prime _ hp, le_refl]
+  simp_rw [factorization_eq_zero_of_non_prime _ hp]
+  rfl
 #align nat.factorization_prime_le_iff_dvd Nat.factorization_prime_le_iff_dvd
 
 theorem pow_succ_factorization_not_dvd {n p : ℕ} (hn : n ≠ 0) (hp : p.Prime) :

@@ -210,7 +210,7 @@ theorem sub_one_dvd_pow_sub_one [Ring α] (x : α) (n : ℕ) :
 theorem nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
   cases' le_or_lt y x with h h
   · have : y ^ n ≤ x ^ n := Nat.pow_le_pow_of_le_left h _
-    exact_mod_cast sub_dvd_pow_sub_pow (x : ℤ) (↑y) n
+    exact mod_cast sub_dvd_pow_sub_pow (x : ℤ) (↑y) n
   · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_of_le_left h.le _
     exact (Nat.sub_eq_zero_of_le this).symm ▸ dvd_zero (x - y)
 #align nat_sub_dvd_pow_sub_pow nat_sub_dvd_pow_sub_pow
@@ -222,8 +222,8 @@ theorem Odd.add_dvd_pow_add_pow [CommRing α] (x y : α) {n : ℕ} (h : Odd n) :
   exact Dvd.intro_left _ h₁
 #align odd.add_dvd_pow_add_pow Odd.add_dvd_pow_add_pow
 
-theorem Odd.nat_add_dvd_pow_add_pow (x y : ℕ) {n : ℕ} (h : Odd n) : x + y ∣ x ^ n + y ^ n := by
-  exact_mod_cast Odd.add_dvd_pow_add_pow (x : ℤ) (↑y) h
+theorem Odd.nat_add_dvd_pow_add_pow (x y : ℕ) {n : ℕ} (h : Odd n) : x + y ∣ x ^ n + y ^ n :=
+  mod_cast Odd.add_dvd_pow_add_pow (x : ℤ) (↑y) h
 #align odd.nat_add_dvd_pow_add_pow Odd.nat_add_dvd_pow_add_pow
 
 theorem geom_sum_mul [Ring α] (x : α) (n : ℕ) : (∑ i in range n, x ^ i) * (x - 1) = x ^ n - 1 := by
@@ -418,8 +418,8 @@ theorem Nat.pred_mul_geom_sum_le (a b n : ℕ) :
     ((b - 1) * ∑ i in range n.succ, a / b ^ i) ≤ a * b - a / b ^ n :=
   calc
     ((b - 1) * ∑ i in range n.succ, a / b ^ i) =
-        (∑ i in range n, a / b ^ (i + 1) * b) + a * b - ((∑ i in range n, a / b ^ i) + a / b ^ n) :=
-      by rw [tsub_mul, mul_comm, sum_mul, one_mul, sum_range_succ', sum_range_succ, pow_zero,
+    (∑ i in range n, a / b ^ (i + 1) * b) + a * b - ((∑ i in range n, a / b ^ i) + a / b ^ n) := by
+      rw [tsub_mul, mul_comm, sum_mul, one_mul, sum_range_succ', sum_range_succ, pow_zero,
         Nat.div_one]
     _ ≤ (∑ i in range n, a / b ^ i) + a * b - ((∑ i in range n, a / b ^ i) + a / b ^ n) := by
       refine' tsub_le_tsub_right (add_le_add_right (sum_le_sum fun i _ => _) _) _

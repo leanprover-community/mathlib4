@@ -642,13 +642,6 @@ theorem isEmpty_iff_eq_nil {l : List α} : l.isEmpty ↔ l = [] := by cases l <;
 
 /-! ### dropLast -/
 
-@[simp]
-theorem length_dropLast : ∀ l : List α, length l.dropLast = length l - 1
-  | [] | [_] => rfl
-  | a::b::l => by
-    rw [dropLast, length_cons, length_cons, length_dropLast (b::l), succ_sub_one, length_cons,
-      succ_sub_one]
-    simp
 #align list.length_init List.length_dropLast
 
 /-! ### getLast -/
@@ -2441,9 +2434,12 @@ theorem injective_foldl_comp {α : Type*} {l : List (α → α)} {f : α → α}
     apply hl _ (List.mem_cons_self _ _)
 #align list.injective_foldl_comp List.injective_foldl_comp
 
-/- Porting note: couldn't do induction proof because "code generator does not support recursor
-  'List.rec' yet". Earlier proof:
-
+/-- Induction principle for values produced by a `foldr`: if a property holds
+for the seed element `b : β` and for all incremental `op : α → β → β`
+performed on the elements `(a : α) ∈ l`. The principle is given for
+a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
+def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β) (hb : C b)
+    (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op a b)) : C (foldr op b l) := by
   induction l with
   | nil => exact hb
   | cons hd tl IH =>
@@ -2451,46 +2447,17 @@ theorem injective_foldl_comp {α : Type*} {l : List (α → α)} {f : α → α}
     refine' IH _
     intro y hy x hx
     exact hl y hy x (mem_cons_of_mem hd hx)
--/
-/-- Induction principle for values produced by a `foldr`: if a property holds
-for the seed element `b : β` and for all incremental `op : α → β → β`
-performed on the elements `(a : α) ∈ l`. The principle is given for
-a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
-def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β) (hb : C b)
-    (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op a b)) : C (foldr op b l) := by
-  cases l with
-  | nil => exact hb
-  | cons hd tl =>
-    have IH : ((b : β) → C b → (a : α) → a ∈ tl → C (op a b)) → C (foldr op b tl) :=
-      foldrRecOn _ _ _ hb
-    refine' hl _ _ hd (mem_cons_self hd tl)
-    refine' IH _
-    intro y hy x hx
-    exact hl y hy x (mem_cons_of_mem hd hx)
 #align list.foldr_rec_on List.foldrRecOn
 
-/- Porting note: couldn't do induction proof because "code generator does not support recursor
-  'List.rec' yet". Earlier proof:
-
-  induction l generalizing b with
-  | nil => exact hb
-  | cons hd tl IH =>
-    refine' IH _ _ _
-    · exact hl b hb hd (mem_cons_self hd tl)
-    · intro y hy x hx
-      exact hl y hy x (mem_cons_of_mem hd hx)
--/
 /-- Induction principle for values produced by a `foldl`: if a property holds
 for the seed element `b : β` and for all incremental `op : β → α → β`
 performed on the elements `(a : α) ∈ l`. The principle is given for
 a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
 def foldlRecOn {C : β → Sort*} (l : List α) (op : β → α → β) (b : β) (hb : C b)
     (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op b a)) : C (foldl op b l) := by
-  cases l with
+  induction l generalizing b with
   | nil => exact hb
-  | cons hd tl =>
-    have IH : (b : β) → C b → ((b : β) → C b → (a : α) → a ∈ tl → C (op b a)) → C (foldl op b tl) :=
-      foldlRecOn _ _
+  | cons hd tl IH =>
     refine' IH _ _ _
     · exact hl b hb hd (mem_cons_self hd tl)
     · intro y hy x hx
@@ -3754,14 +3721,8 @@ end Diff
 
 /-! ### enum -/
 
-theorem length_enumFrom : ∀ (n) (l : List α), length (enumFrom n l) = length l
-  | _, [] => rfl
-  | _, _ :: _ => congr_arg Nat.succ (length_enumFrom _ _)
-#align list.length_enum_from List.length_enumFrom
-
-theorem length_enum : ∀ l : List α, length (enum l) = length l :=
-  length_enumFrom _
-#align list.length_enum List.length_enum
+#align list.length_enum_from List.enumFrom_length
+#align list.length_enum List.enum_length
 
 @[simp]
 theorem enumFrom_get? :
@@ -3878,7 +3839,7 @@ theorem enum_map (l : List α) (f : α → β) : (l.map f).enum = l.enum.map (Pr
 #align list.enum_map List.enum_map
 
 theorem get_enumFrom (l : List α) (n) (i : Fin (l.enumFrom n).length)
-    (hi : i.1 < l.length := (by simpa [length_enumFrom] using i.2)) :
+    (hi : i.1 < l.length := (by simpa using i.2)) :
     (l.enumFrom n).get i = (n + i, l.get ⟨i, hi⟩) := by
   rw [← Option.some_inj, ← get?_eq_get]
   simp [enumFrom_get?, get?_eq_get hi]
@@ -3886,13 +3847,13 @@ theorem get_enumFrom (l : List α) (n) (i : Fin (l.enumFrom n).length)
 set_option linter.deprecated false in
 @[deprecated get_enumFrom]
 theorem nthLe_enumFrom (l : List α) (n i : ℕ) (hi' : i < (l.enumFrom n).length)
-    (hi : i < l.length := (by simpa [length_enumFrom] using hi')) :
+    (hi : i < l.length := (by simpa using hi')) :
     (l.enumFrom n).nthLe i hi' = (n + i, l.nthLe i hi) :=
   get_enumFrom ..
 #align list.nth_le_enum_from List.nthLe_enumFrom
 
 theorem get_enum (l : List α) (i : Fin l.enum.length)
-    (hi : i < l.length := (by simpa [length_enum] using i.2)) :
+    (hi : i < l.length := (by simpa using i.2)) :
     l.enum.get i = (i.1, l.get ⟨i, hi⟩) := by
   convert get_enumFrom _ _ i
   exact (zero_add _).symm
@@ -3900,9 +3861,16 @@ theorem get_enum (l : List α) (i : Fin l.enum.length)
 set_option linter.deprecated false in
 @[deprecated get_enum]
 theorem nthLe_enum (l : List α) (i : ℕ) (hi' : i < l.enum.length)
-    (hi : i < l.length := (by simpa [length_enum] using hi')) :
+    (hi : i < l.length := (by simpa using hi')) :
     l.enum.nthLe i hi' = (i, l.nthLe i hi) := get_enum ..
 #align list.nth_le_enum List.nthLe_enum
+
+@[simp]
+theorem enumFrom_eq_nil {n : ℕ} {l : List α} : List.enumFrom n l = [] ↔ l = [] := by
+  cases l <;> simp
+
+@[simp]
+theorem enum_eq_nil {l : List α} : List.enum l = [] ↔ l = [] := enumFrom_eq_nil
 
 section Choose
 

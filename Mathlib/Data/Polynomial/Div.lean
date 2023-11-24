@@ -237,7 +237,7 @@ theorem degree_modByMonic_le (p : R[X]) {q : R[X]} (hq : Monic q) : degree (p %�
 
 theorem natDegree_modByMonic_le (p : Polynomial R) {g : Polynomial R} (hg : g.Monic) :
     natDegree (p %ₘ g) ≤ g.natDegree :=
-natDegree_le_natDegree (degree_modByMonic_le p hg)
+  natDegree_le_natDegree (degree_modByMonic_le p hg)
 
 end Ring
 

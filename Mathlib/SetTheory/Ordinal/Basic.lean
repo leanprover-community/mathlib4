@@ -302,10 +302,10 @@ theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α 
   (RelIso.preimage f r).ordinal_type_eq
 #align ordinal.type_preimage Ordinal.type_preimage
 
-@[simp]
+@[simp, nolint simpNF] -- `simpNF` incorrectly complains the LHS doesn't simplify.
 theorem type_preimage_aux {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
     @type _ (fun x y => r (f x) (f y)) (inferInstanceAs (IsWellOrder β (↑f ⁻¹'o r))) = type r := by
-    convert (RelIso.preimage f r).ordinal_type_eq
+  convert (RelIso.preimage f r).ordinal_type_eq
 
 @[elab_as_elim]
 theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
@@ -1224,7 +1224,7 @@ theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
 -- intended to be used with explicit universe parameters
 /-- `univ.{u v}` is the order type of the ordinals of `Type u` as a member
   of `Ordinal.{v}` (when `u < v`). It is an inaccessible cardinal. -/
- @[nolint checkUnivs]
+@[pp_with_univ, nolint checkUnivs]
 def univ : Ordinal.{max (u + 1) v} :=
   lift.{v, u + 1} (@type Ordinal (· < ·) _)
 #align ordinal.univ Ordinal.univ
@@ -1475,7 +1475,7 @@ theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = o
 /-- The cardinal `univ` is the cardinality of ordinal `univ`, or
   equivalently the cardinal of `Ordinal.{u}`, or `Cardinal.{u}`,
   as an element of `Cardinal.{v}` (when `u < v`). -/
-@[nolint checkUnivs]
+@[pp_with_univ, nolint checkUnivs]
 def univ :=
   lift.{v, u + 1} #Ordinal
 #align cardinal.univ Cardinal.univ

@@ -14,6 +14,7 @@ import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.GroupTheory.GroupAction.BigOperators
 
 #align_import data.matrix.basic from "leanprover-community/mathlib"@"eba5bb3155cab51d80af00e8d7d69fa271b1302b"
 
@@ -1065,7 +1066,7 @@ theorem mul_diagonal [Fintype n] [DecidableEq n] (d : n → α) (M : Matrix m n 
 theorem diagonal_mul_diagonal [Fintype n] [DecidableEq n] (d₁ d₂ : n → α) :
     diagonal d₁ * diagonal d₂ = diagonal fun i => d₁ i * d₂ i := by
   ext i j
-  by_cases i = j <;>
+  by_cases h : i = j <;>
   simp [h]
 #align matrix.diagonal_mul_diagonal Matrix.diagonal_mul_diagonal
 
@@ -2000,7 +2001,7 @@ theorem transpose_eq_zero [Zero α] {M : Matrix m n α} : Mᵀ = 0 ↔ M = 0 := 
 theorem transpose_one [DecidableEq n] [Zero α] [One α] : (1 : Matrix n n α)ᵀ = 1 := by
   ext i j
   rw [transpose_apply, ← diagonal_one]
-  by_cases i = j
+  by_cases h : i = j
   · simp only [h, diagonal_apply_eq]
   · simp only [diagonal_apply_ne _ h, diagonal_apply_ne' _ h]
 #align matrix.transpose_one Matrix.transpose_one
@@ -2688,7 +2689,6 @@ def subDownLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin d) (Fin l) α :=
   subDown (subLeft A)
 #align matrix.sub_down_left Matrix.subDownLeft
-
 
 end Matrix
 
