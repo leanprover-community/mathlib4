@@ -612,8 +612,24 @@ protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
       rw [Filter.eventually_false_iff_eq_bot] at this
       exact False.elim <| (atTop_neBot).ne this
 
+protected lemma GrowsPolynomially.pow (p : ℕ) (hf : GrowsPolynomially f)
+    (hf_nonneg : ∀ᶠ x in atTop, 0 ≤ f x) : GrowsPolynomially fun x => (f x) ^ p := by
+  simp_rw [←rpow_nat_cast]
+  exact hf.rpow p hf_nonneg
+
+protected lemma GrowsPolynomially.zpow (p : ℤ) (hf : GrowsPolynomially f)
+    (hf_nonneg : ∀ᶠ x in atTop, 0 ≤ f x) : GrowsPolynomially fun x => (f x) ^ p := by
+  simp_rw [←rpow_int_cast]
+  exact hf.rpow p hf_nonneg
+
 lemma growsPolynomially_rpow (p : ℝ) : GrowsPolynomially fun x => x ^ p :=
   (growsPolynomially_id).rpow p (eventually_ge_atTop 0)
+
+lemma growsPolynomially_pow (p : ℕ) : GrowsPolynomially fun x => x ^ p :=
+  (growsPolynomially_id).pow p (eventually_ge_atTop 0)
+
+lemma growsPolynomially_zpow (p : ℤ) : GrowsPolynomially fun x => x ^ p :=
+  (growsPolynomially_id).zpow p (eventually_ge_atTop 0)
 
 lemma growsPolynomially_log : GrowsPolynomially Real.log := by
   intro b hb

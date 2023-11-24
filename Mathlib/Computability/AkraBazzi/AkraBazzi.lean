@@ -921,7 +921,7 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
       simp only [hp, Real.rpow_zero, one_mul, differentiableAt_const, hx, Real.norm_of_nonneg this]
     refine GrowsPolynomially.congr_of_eventuallyEq h₁ ?_
     refine GrowsPolynomially.div (GrowsPolynomially.inv growsPolynomially_id)
-      (GrowsPolynomially.rpow 2 growsPolynomially_log ?_)
+      (GrowsPolynomially.pow 2 growsPolynomially_log ?_)
     filter_upwards [eventually_ge_atTop 1] with _ hx
     exact log_nonneg hx
   case inr =>  -- p ≠ 0
@@ -944,7 +944,7 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
         one_mul, differentiableAt_const, hx, Real.norm_of_nonneg this]
     refine GrowsPolynomially.congr_of_eventuallyEq h₁ ?_
     refine GrowsPolynomially.div (GrowsPolynomially.inv growsPolynomially_id)
-      (GrowsPolynomially.rpow 2 growsPolynomially_log ?_)
+      (GrowsPolynomially.pow 2 growsPolynomially_log ?_)
     filter_upwards [eventually_ge_atTop 1] with x hx
     exact log_nonneg hx
   case inr =>    -- p ≠ 0
