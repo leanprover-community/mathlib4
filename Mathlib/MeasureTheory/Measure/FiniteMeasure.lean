@@ -318,7 +318,7 @@ variable [TopologicalSpace Ω]
 
 /-- Two finite Borel measures are equal if the integrals of all bounded continuous functions with
 respect to both agree. -/
-theorem ext_of_forall_lintegral_eq {Ω : Type*} [HasOuterApproxClosed Ω] [BorelSpace Ω]
+theorem ext_of_forall_lintegral_eq [HasOuterApproxClosed Ω] [BorelSpace Ω]
     {μ ν : FiniteMeasure Ω} (h : ∀ (f : Ω →ᵇ ℝ≥0), ∫⁻ x, f x ∂μ = ∫⁻ x, f x ∂ν) :
     μ = ν := by
   apply Subtype.ext
