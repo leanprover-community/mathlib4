@@ -1,0 +1,34 @@
+/-
+Copyright (c) 2023 Ali Ramsey. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Ali Ramsey
+-/
+
+import Mathlib.RingTheory.TensorProduct
+
+/-!
+# Definition and example of a coalgebra
+
+-/
+
+universe u v
+
+open scoped TensorProduct
+
+class Coalgebra (R : Type u) (A : Type v) [CommRing R] [AddCommGroup A] [Module R A] where
+  Δ : A →ₗ[R] A ⊗[R] A
+  ε : A →ₗ[R] R
+  coassoc : TensorProduct.assoc R A A A ∘ₗ TensorProduct.map Δ .id ∘ₗ Δ = TensorProduct.map .id Δ ∘ₗ Δ
+  ε_id : TensorProduct.lid R A ∘ₗ TensorProduct.map ε .id ∘ₗ Δ = .id
+  id_ε : TensorProduct.rid R A ∘ₗ TensorProduct.map .id ε ∘ₗ Δ = .id
+
+noncomputable
+def Finsupp.Coalgebra (R : Type u) (S : Type v) [CommRing R] : Coalgebra R (S →₀ R) where
+  Δ := Finsupp.total S ((S →₀ R) ⊗[R] (S →₀ R)) R (fun s ↦ Finsupp.single s 1 ⊗ₜ Finsupp.single s 1)
+  ε := Finsupp.total S R R (fun _ ↦ 1)
+  coassoc := by
+    ext; simp
+  ε_id := by
+    ext; simp
+  id_ε := by
+    ext; simp
