@@ -1,12 +1,13 @@
 /-
 Copyright (c) 2023 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Martin Dvorak
+Authors: Martin Dvorak, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 
-/-! # Linear programming
+/-!
+
+# Linear programming
 
 Minimizing a linear function on a region defined by linear inequalities (technically speaking,
 they are affine inequalities and an affine function to be minized).
@@ -48,6 +49,7 @@ def LinearProgram.feasibles (lp : LinearProgram R P) : Set P :=
 def LinearProgram.MinAt (lp : LinearProgram R P) (x : P) : Prop :=
   IsLeast (lp.objective '' lp.feasibles) (lp.objective x)
 
+/-- Feasible solutions are exactly those that satisfy all equalities and all inequalities. -/
 lemma LinearProgram.feasibles_mkOfEqs
     (equalities inequalities : List (P →ᵃ[R] R)) (objective : P →ᵃ[R] R) :
     (mkOfEqs equalities inequalities objective).feasibles =
