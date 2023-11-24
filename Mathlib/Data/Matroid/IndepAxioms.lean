@@ -148,7 +148,7 @@ protected def ofIndep (E : Set α) (Indep : Set α → Prop) (h_empty : Indep �
   provided independence is determined by its behaviour on finite sets.
   This fundamentally needs choice, since it can be used to prove that every vector space
   has a basis. -/
-protected def Matroid.ofIndepOfFinitary (E : Set α) (Indep : Set α → Prop)
+protected def ofIndepOfFinitary (E : Set α) (Indep : Set α → Prop)
     (h_empty : Indep ∅)
     (ind_mono : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
     (ind_aug : ∀ ⦃I J⦄, Indep I → I.Finite → Indep J → J.Finite → I.ncard < J.ncard →
@@ -486,7 +486,7 @@ instance ofIndepOfFinite.finite {E : Set α} (hE : E.Finite) (Indep : Set α →
 
 /-- An independence predicate on `Finset α` that obeys the finite matroid axioms determines a
   finitary matroid on `α`. -/
-def Matroid.ofIndepFinset [DecidableEq α] (E : Set α) (Indep : Finset α → Prop)
+def ofIndepFinset [DecidableEq α] (E : Set α) (Indep : Finset α → Prop)
     (h_empty : Indep ∅)
     (ind_mono : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
     (ind_aug : ∀ ⦃I J⦄, Indep I → Indep J → I.card < J.card →
