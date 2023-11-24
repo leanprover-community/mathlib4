@@ -1114,6 +1114,12 @@ theorem prod_ite_eq' [DecidableEq α] (s : Finset α) (a : α) (b : α → β) :
 #align finset.prod_ite_eq' Finset.prod_ite_eq'
 #align finset.sum_ite_eq' Finset.sum_ite_eq'
 
+@[to_additive (attr := simp)]
+theorem prod_ite_eq_iff [DecidableEq α] (s : Finset α) (a : α) (b : α → β)
+    {p : α → Prop} [DecidablePred p] (h : ∀ x ∈ s, p x ↔ x = a) :
+    (∏ x in s, ite (p x) (b x) 1) = ite (a ∈ s) (b a) 1 :=
+  (prod_ite_eq' s a b).symm ▸ prod_congr rfl (fun a ha => if_congr (h a ha) rfl rfl)
+
 @[to_additive]
 theorem prod_ite_index (p : Prop) [Decidable p] (s t : Finset α) (f : α → β) :
     ∏ x in if p then s else t, f x = if p then ∏ x in s, f x else ∏ x in t, f x :=
