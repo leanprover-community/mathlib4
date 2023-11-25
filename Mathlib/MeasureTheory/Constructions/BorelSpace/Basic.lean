@@ -283,6 +283,12 @@ instance Subtype.borelSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace 
   ⟨by borelize α; symm; apply borel_comap⟩
 #align subtype.borel_space Subtype.borelSpace
 
+instance Countable.instBorelSpace [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α]
+    [TopologicalSpace α] [DiscreteTopology α] : BorelSpace α := by
+  have : ∀ s, @MeasurableSet α inferInstance s := fun s ↦ s.to_countable.measurableSet
+  have : ∀ s, @MeasurableSet α (borel α) s := fun s ↦ measurableSet_generateFrom (isOpen_discrete s)
+  exact ⟨by aesop⟩
+
 instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
     [h : OpensMeasurableSpace α] (s : Set α) : OpensMeasurableSpace s :=
   ⟨by
@@ -1547,15 +1553,12 @@ def Homemorph.toMeasurableEquiv (h : α ≃ₜ β) : α ≃ᵐ β where
   measurable_invFun := h.continuous_invFun.measurable
 #align homemorph.to_measurable_equiv Homemorph.toMeasurableEquiv
 
-protected theorem IsFiniteMeasureOnCompacts.map {α : Type*} {m0 : MeasurableSpace α}
-    [TopologicalSpace α] [OpensMeasurableSpace α] {β : Type*} [MeasurableSpace β]
-    [TopologicalSpace β] [BorelSpace β] [T2Space β] (μ : Measure α) [IsFiniteMeasureOnCompacts μ]
-    (f : α ≃ₜ β) : IsFiniteMeasureOnCompacts (Measure.map f μ) :=
-  ⟨by
-    intro K hK
-    rw [Measure.map_apply f.measurable hK.measurableSet]
-    apply IsCompact.measure_lt_top
-    rwa [f.isCompact_preimage]⟩
+protected theorem IsFiniteMeasureOnCompacts.map (μ : Measure α) [IsFiniteMeasureOnCompacts μ]
+    (f : α ≃ₜ β) : IsFiniteMeasureOnCompacts (Measure.map f μ) := by
+  refine ⟨fun K hK ↦ ?_⟩
+  change Measure.map f.toMeasurableEquiv μ K < ∞
+  rw [MeasurableEquiv.map_apply]
+  exact IsCompact.measure_lt_top (f.isCompact_preimage.2 hK)
 #align is_finite_measure_on_compacts.map IsFiniteMeasureOnCompacts.map
 
 end BorelSpace
@@ -1635,10 +1638,17 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow [MeasurableSpace �
     · exact hs.inter (hf measurableSet_Ioi)
   have B : μ (s ∩ f ⁻¹' Ioi 0) = μ (s ∩ f ⁻¹' {∞}) + μ (s ∩ f ⁻¹' Ioo 0 ∞) := by
     rw [← measure_union]
-    · rw [← inter_union_distrib_left, ← preimage_union,
-      ← Ioo_union_Ici_eq_Ioi ENNReal.zero_ne_top.lt_top, Ici_top, union_comm]
-    · refine disjoint_singleton_left.mpr right_mem_Ioo.mp
-        |>.preimage f |>.inter_right' s |>.inter_left' s
+    · rw [← inter_union_distrib_left]
+      congr
+      ext x
+      simp only [mem_singleton_iff, mem_union, mem_Ioo, mem_Ioi, mem_preimage]
+      have H : f x = ∞ ∨ f x < ∞ := eq_or_lt_of_le le_top
+      cases' H with H H
+      · simp only [H, eq_self_iff_true, or_false_iff, zero_lt_top, not_top_lt, and_false_iff]
+      · simp only [H, H.ne, and_true_iff, false_or_iff]
+    · refine disjoint_left.2 fun x hx h'x => ?_
+      have : f x < ∞ := h'x.2.2
+      exact lt_irrefl _ (this.trans_le (le_of_eq hx.2.symm))
     · exact hs.inter (hf measurableSet_Ioo)
   have C : μ (s ∩ f ⁻¹' Ioo 0 ∞) =
       ∑' n : ℤ, μ (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) := by
@@ -2004,6 +2014,11 @@ theorem Measurable.ennreal_ofReal {f : α → ℝ} (hf : Measurable f) :
   ENNReal.continuous_ofReal.measurable.comp hf
 #align measurable.ennreal_of_real Measurable.ennreal_ofReal
 
+@[measurability]
+lemma AEMeasurable.ennreal_ofReal {f : α → ℝ} {μ : Measure α} (hf : AEMeasurable f μ) :
+    AEMeasurable (fun x ↦ ENNReal.ofReal (f x)) μ :=
+  ENNReal.continuous_ofReal.measurable.comp_aemeasurable hf
+
 @[simp, norm_cast]
 theorem measurable_coe_nnreal_real_iff {f : α → ℝ≥0} :
     Measurable (fun x => f x : α → ℝ) ↔ Measurable f :=
@@ -2236,6 +2251,39 @@ theorem AEMeasurable.coe_ereal_ennreal {f : α → ℝ≥0∞} {μ : Measure α}
     AEMeasurable (fun x => (f x : EReal)) μ :=
   measurable_coe_ennreal_ereal.comp_aemeasurable hf
 #align ae_measurable.coe_ereal_ennreal AEMeasurable.coe_ereal_ennreal
+
+/-- If a function `f : α → ℝ≥0` is measurable and the measure is σ-finite, then there exists
+spanning measurable sets with finite measure on which `f` is bounded.
+See also `StronglyMeasurable.exists_spanning_measurableSet_norm_le` for functions into normed
+groups. -/
+theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → ℝ≥0}
+    (hf : Measurable f) (μ : Measure α) [SigmaFinite μ] :
+    ∃ s : ℕ → Set α,
+      (∀ n, MeasurableSet (s n) ∧ μ (s n) < ∞ ∧ ∀ x ∈ s n, f x ≤ n) ∧
+      ⋃ i, s i = Set.univ := by
+  let sigma_finite_sets := spanningSets μ
+  let norm_sets := fun n : ℕ => { x | f x ≤ n }
+  have norm_sets_spanning : ⋃ n, norm_sets n = Set.univ := by
+    ext1 x
+    simp only [Set.mem_iUnion, Set.mem_setOf_eq, Set.mem_univ, iff_true_iff]
+    exact exists_nat_ge (f x)
+  let sets n := sigma_finite_sets n ∩ norm_sets n
+  have h_meas : ∀ n, MeasurableSet (sets n) := by
+    refine' fun n => MeasurableSet.inter _ _
+    · exact measurable_spanningSets μ n
+    · exact hf measurableSet_Iic
+  have h_finite : ∀ n, μ (sets n) < ∞ := by
+    refine' fun n => (measure_mono (Set.inter_subset_left _ _)).trans_lt _
+    exact measure_spanningSets_lt_top μ n
+  refine' ⟨sets, fun n => ⟨h_meas n, h_finite n, _⟩, _⟩
+  · exact fun x hx => hx.2
+  · have :
+      ⋃ i, sigma_finite_sets i ∩ norm_sets i = (⋃ i, sigma_finite_sets i) ∩ ⋃ i, norm_sets i := by
+      refine' Set.iUnion_inter_of_monotone (monotone_spanningSets μ) fun i j hij x => _
+      simp only [Set.mem_setOf_eq]
+      refine' fun hif => hif.trans _
+      exact mod_cast hij
+    rw [this, norm_sets_spanning, iUnion_spanningSets μ, Set.inter_univ]
 
 section NormedAddCommGroup
 

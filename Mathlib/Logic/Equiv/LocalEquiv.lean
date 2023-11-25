@@ -283,7 +283,7 @@ instance inhabitedOfEmpty [IsEmpty α] [IsEmpty β] : Inhabited (LocalEquiv α �
 #align local_equiv.inhabited_of_empty LocalEquiv.inhabitedOfEmpty
 
 /-- Create a copy of a `LocalEquiv` providing better definitional equalities. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def copy (e : LocalEquiv α β) (f : α → β) (hf : ⇑e = f) (g : β → α) (hg : ⇑e.symm = g) (s : Set α)
     (hs : e.source = s) (t : Set β) (ht : e.target = t) :
     LocalEquiv α β where
@@ -386,7 +386,7 @@ theorem symm_mapsTo (h : e.IsImage s t) : MapsTo e.symm (e.target ∩ t) (e.sour
 #align local_equiv.is_image.symm_maps_to LocalEquiv.IsImage.symm_mapsTo
 
 /-- Restrict a `LocalEquiv` to a pair of corresponding sets. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def restr (h : e.IsImage s t) : LocalEquiv α β where
   toFun := e
   invFun := e.symm
@@ -987,7 +987,7 @@ end Prod
 sends `e.source ∩ s` to `e.target ∩ t` using `e` and `e'.source \ s` to `e'.target \ t` using `e'`,
 and similarly for the inverse function. The definition assumes `e.isImage s t` and
 `e'.isImage s t`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def piecewise (e e' : LocalEquiv α β) (s : Set α) (t : Set β) [∀ x, Decidable (x ∈ s)]
     [∀ y, Decidable (y ∈ t)] (H : e.IsImage s t) (H' : e'.IsImage s t) :
     LocalEquiv α β where
@@ -1014,7 +1014,7 @@ theorem symm_piecewise (e e' : LocalEquiv α β) {s : Set α} {t : Set β} [∀ 
 /-- Combine two `LocalEquiv`s with disjoint sources and disjoint targets. We reuse
 `LocalEquiv.piecewise`, then override `source` and `target` to ensure better definitional
 equalities. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def disjointUnion (e e' : LocalEquiv α β) (hs : Disjoint e.source e'.source)
     (ht : Disjoint e.target e'.target) [∀ x, Decidable (x ∈ e.source)]
     [∀ y, Decidable (y ∈ e.target)] : LocalEquiv α β :=
@@ -1084,7 +1084,7 @@ namespace Set
 -- All arguments are explicit to avoid missing information in the pretty printer output
 /-- A bijection between two sets `s : Set α` and `t : Set β` provides a local equivalence
 between `α` and `β`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 noncomputable def BijOn.toLocalEquiv [Nonempty α] (f : α → β) (s : Set α) (t : Set β)
     (hf : BijOn f s t) : LocalEquiv α β where
   toFun := f

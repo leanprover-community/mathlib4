@@ -585,8 +585,8 @@ theorem continuousWithinAt_update_of_ne [T1Space X] [DecidableEq X] [Topological
 
 theorem continuousAt_update_of_ne [T1Space X] [DecidableEq X] [TopologicalSpace Y]
     {f : X → Y} {x x' : X} {y : Y} (hne : x' ≠ x) :
-    ContinuousAt (Function.update f x y) x' ↔ ContinuousAt f x' :=
-  by simp only [← continuousWithinAt_univ, continuousWithinAt_update_of_ne hne]
+    ContinuousAt (Function.update f x y) x' ↔ ContinuousAt f x' := by
+  simp only [← continuousWithinAt_univ, continuousWithinAt_update_of_ne hne]
 #align continuous_at_update_of_ne continuousAt_update_of_ne
 
 theorem continuousOn_update_iff [T1Space X] [DecidableEq X] [TopologicalSpace Y] {f : X → Y}
@@ -872,6 +872,17 @@ theorem nhds_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology s]
     (hx : x ∈ s) : ∃ U ∈ 𝓝 x, U ∩ s = {x} := by
   simpa using (𝓝 x).basis_sets.exists_inter_eq_singleton_of_mem_discrete hx
 #align nhds_inter_eq_singleton_of_mem_discrete nhds_inter_eq_singleton_of_mem_discrete
+
+/-- Let `x` be a point in a discrete subset `s` of a topological space, then there exists an open
+set that only meets `s` at `x`.  -/
+theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
+    (hx : x ∈ s) : ∃ U : Set X, IsOpen U ∧ U ∩ s = {x} := by
+  obtain ⟨U, hU_nhds, hU_inter⟩ := nhds_inter_eq_singleton_of_mem_discrete hx
+  obtain ⟨t, ht_sub, ht_open, ht_x⟩ := mem_nhds_iff.mp hU_nhds
+  refine ⟨t, ht_open, Set.Subset.antisymm ?_ ?_⟩
+  · exact hU_inter ▸ Set.inter_subset_inter_left s ht_sub
+  · rw [Set.subset_inter_iff, Set.singleton_subset_iff, Set.singleton_subset_iff]
+    exact ⟨ht_x, hx⟩
 
 /-- For point `x` in a discrete subset `s` of a topological space, there is a set `U`
 such that
@@ -1324,13 +1335,12 @@ section SeparatedFinset
 
 theorem finset_disjoint_finset_opens_of_t2 [T2Space X] (s t : Finset X) (h : Disjoint s t) :
     SeparatedNhds (s : Set X) t :=
-  isCompact_isCompact_separated s.finite_toSet.isCompact t.finite_toSet.isCompact <| by
-    exact_mod_cast h
+  isCompact_isCompact_separated s.finite_toSet.isCompact t.finite_toSet.isCompact <| mod_cast h
 #align finset_disjoint_finset_opens_of_t2 finset_disjoint_finset_opens_of_t2
 
 theorem point_disjoint_finset_opens_of_t2 [T2Space X] {x : X} {s : Finset X} (h : x ∉ s) :
-    SeparatedNhds ({x} : Set X) s := by
-  exact_mod_cast finset_disjoint_finset_opens_of_t2 {x} s (Finset.disjoint_singleton_left.mpr h)
+    SeparatedNhds ({x} : Set X) s :=
+  mod_cast finset_disjoint_finset_opens_of_t2 {x} s (Finset.disjoint_singleton_left.mpr h)
 #align point_disjoint_finset_opens_of_t2 point_disjoint_finset_opens_of_t2
 
 end SeparatedFinset

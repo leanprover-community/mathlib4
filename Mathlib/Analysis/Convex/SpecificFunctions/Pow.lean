@@ -27,8 +27,6 @@ requires slightly less imports.
 * Prove convexity for negative powers.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Set
 
 namespace NNReal
@@ -61,7 +59,7 @@ lemma concaveOn_rpow {p : ℝ} (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) :
 
 lemma strictConcaveOn_sqrt : StrictConcaveOn ℝ≥0 univ NNReal.sqrt := by
   have : NNReal.sqrt = fun (x:ℝ≥0) ↦ x ^ (1 / (2:ℝ)) := by
-    ext x; exact_mod_cast NNReal.sqrt_eq_rpow x
+    ext x; exact mod_cast NNReal.sqrt_eq_rpow x
   rw [this]
   exact strictConcaveOn_rpow (by positivity) (by linarith)
 
@@ -84,7 +82,7 @@ lemma strictConcaveOn_rpow {p : ℝ} (hp₀ : 0 < p) (hp₁ : p < 1) :
   have hab' : a' + b' = 1 := by ext; simp [hab]
   rw [hx', hy']
   exact (NNReal.strictConcaveOn_rpow hp₀ hp₁).2 (Set.mem_univ x') (Set.mem_univ y')
-    hxy' (by exact_mod_cast ha) (by exact_mod_cast hb) hab'
+    hxy' (mod_cast ha) (mod_cast hb) hab'
 
 lemma concaveOn_rpow {p : ℝ} (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) :
     ConcaveOn ℝ (Set.Ici 0) fun x : ℝ ↦ x ^ p := by

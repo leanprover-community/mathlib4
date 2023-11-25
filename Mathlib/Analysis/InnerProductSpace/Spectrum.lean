@@ -276,8 +276,6 @@ end LinearMap
 
 section Nonneg
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 @[simp]
 theorem inner_product_apply_eigenvector {μ : 𝕜} {v : E} {T : E →ₗ[𝕜] E}
     (h : v ∈ Module.End.eigenspace T μ) : ⟪v, T v⟫ = μ * (‖v‖ : 𝕜) ^ 2 := by
@@ -292,7 +290,7 @@ theorem eigenvalue_nonneg_of_nonneg {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : Has
     have := congr_arg IsROrC.re (inner_product_apply_eigenvector hv.1)
     -- porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
     rw [←IsROrC.ofReal_pow, ←IsROrC.ofReal_mul] at this
-    exact_mod_cast this
+    exact mod_cast this
   exact (zero_le_mul_right hpos).mp (this ▸ hnn v)
 #align eigenvalue_nonneg_of_nonneg eigenvalue_nonneg_of_nonneg
 
@@ -304,7 +302,7 @@ theorem eigenvalue_pos_of_pos {μ : ℝ} {T : E →ₗ[𝕜] E} (hμ : HasEigenv
     have := congr_arg IsROrC.re (inner_product_apply_eigenvector hv.1)
     -- porting note: why can't `exact_mod_cast` do this? These lemmas are marked `norm_cast`
     rw [←IsROrC.ofReal_pow, ←IsROrC.ofReal_mul] at this
-    exact_mod_cast this
+    exact mod_cast this
   exact (zero_lt_mul_right hpos).mp (this ▸ hnn v)
 #align eigenvalue_pos_of_pos eigenvalue_pos_of_pos
 

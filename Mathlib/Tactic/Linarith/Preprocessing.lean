@@ -121,7 +121,7 @@ partial def isNatProp (e : Expr) : Bool :=
 
 
 /-- If `e` is of the form `((n : ℕ) : C)`, `isNatCoe e` returns `⟨n, C⟩`. -/
-def isNatCoe (e: Expr) : Option (Expr × Expr) :=
+def isNatCoe (e : Expr) : Option (Expr × Expr) :=
   match e.getAppFnArgs with
   | (``Nat.cast, #[target, _, n]) => some ⟨n, target⟩
   | _ => none
@@ -193,50 +193,31 @@ end natToInt
 section strengthenStrictInt
 
 /--
-`isStrictIntComparison tp` is true iff `tp` is a strict inequality between integers
-or the negation of a weak inequality between integers.
--/
-def isStrictIntComparison (e : Expr) : Bool :=
-  match e.getAppFnArgs with
-  | (``LT.lt, #[.const ``Int [], _, _, _]) => true
-  | (``GT.gt, #[.const ``Int [], _, _, _]) => true
-  | (``Not, #[e]) => match e.getAppFnArgs with
-    | (``LE.le, #[.const ``Int [], _, _, _]) => true
-    | (``GE.ge, #[.const ``Int [], _, _, _]) => true
-    | _ => false
-  | _ => false
-
-/--
 If `pf` is a proof of a strict inequality `(a : ℤ) < b`,
 `mkNonstrictIntProof pf` returns a proof of `a + 1 ≤ b`,
 and similarly if `pf` proves a negated weak inequality.
 -/
-def mkNonstrictIntProof (pf : Expr) : MetaM Expr := do
-  match (← inferType pf).getAppFnArgs with
-  | (``LT.lt, #[_, _, a, b]) =>
+def mkNonstrictIntProof (pf : Expr) : MetaM (Option Expr) := do
+  match (← instantiateMVars (← inferType pf)).getAppFnArgs with
+  | (``LT.lt, #[.const ``Int [], _, a, b]) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
-  | (``GT.gt, #[_, _, a, b]) =>
+  | (``GT.gt, #[.const ``Int [], _, a, b]) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[b, a]]) pf
   | (``Not, #[P]) => match P.getAppFnArgs with
-    | (``LE.le, #[_, _, a, b]) =>
+    | (``LE.le, #[.const ``Int [], _, a, b]) =>
       return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[b, a]])
         (← mkAppM ``lt_of_not_ge #[pf])
-    | (``GE.ge, #[_, _, a, b]) =>
+    | (``GE.ge, #[.const ``Int [], _, a, b]) =>
       return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]])
         (← mkAppM ``lt_of_not_ge #[pf])
-    | _ => throwError "mkNonstrictIntProof failed: proof is not an inequality"
-  | _ => throwError "mkNonstrictIntProof failed: proof is not an inequality"
-
+    | _ => return none
+  | _ => return none
 
 /-- `strengthenStrictInt h` turns a proof `h` of a strict integer inequality `t1 < t2`
 into a proof of `t1 ≤ t2 + 1`. -/
 def strengthenStrictInt : Preprocessor where
   name := "strengthen strict inequalities over int"
-  transform h := do
-    if isStrictIntComparison (← inferType h) then
-      return [← mkNonstrictIntProof h]
-    else
-      return [h]
+  transform h := return [(← mkNonstrictIntProof h).getD h]
 
 end strengthenStrictInt
 
@@ -398,7 +379,7 @@ This produces `2^n` branches when there are `n` such hypotheses in the input.
 -/
 partial def removeNe_aux : MVarId → List Expr → MetaM (List Branch) := fun g hs => do
   let some (e, α, a, b) ← hs.findSomeM? (fun e : Expr => do
-    let some (α, a, b) := (← inferType e).ne?' | return none
+    let some (α, a, b) := (← instantiateMVars (← inferType e)).ne?' | return none
     return some (e, α, a, b)) | return [(g, hs)]
   let [ng1, ng2] ← g.apply (← mkAppOptM ``Or.elim #[none, none, ← g.getType,
       ← mkAppOptM ``lt_or_gt_of_ne #[α, none, a, b, e]]) | failure
@@ -435,7 +416,7 @@ Note that a preprocessor may produce multiple or no expressions from each input 
 so the size of the list may change.
 -/
 def preprocess (pps : List GlobalBranchingPreprocessor) (g : MVarId) (l : List Expr) :
-    MetaM (List Branch) :=
+    MetaM (List Branch) := g.withContext <|
   pps.foldlM (fun ls pp => return (← ls.mapM fun (g, l) => do pp.process g l).join) [(g, l)]
 
 end Linarith

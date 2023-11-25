@@ -45,6 +45,14 @@ theorem trivial_lie_zero (L : Type v) (M : Type w) [Bracket L M] [Zero M] [LieMo
   LieModule.IsTrivial.trivial x m
 #align trivial_lie_zero trivial_lie_zero
 
+instance LieModule.instIsTrivialOfSubsingleton {L M : Type*}
+    [LieRing L] [AddCommGroup M] [LieRingModule L M] [Subsingleton L] : LieModule.IsTrivial L M :=
+  ⟨fun x m ↦ by rw [Subsingleton.eq_zero x, zero_lie]⟩
+
+instance LieModule.instIsTrivialOfSubsingleton' {L M : Type*}
+    [LieRing L] [AddCommGroup M] [LieRingModule L M] [Subsingleton M] : LieModule.IsTrivial L M :=
+  ⟨fun x m ↦ by simp_rw [Subsingleton.eq_zero m, lie_zero]⟩
+
 /-- A Lie algebra is Abelian iff it is trivial as a Lie module over itself. -/
 abbrev IsLieAbelian (L : Type v) [Bracket L L] [Zero L] : Prop :=
   LieModule.IsTrivial L L
@@ -86,11 +94,6 @@ theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
   have h₂ : IsLieAbelian A ↔ ∀ a b : A, ⁅a, b⁆ = 0 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
   simp only [h₁, h₂, LieRing.of_associative_ring_bracket, sub_eq_zero]
 #align commutative_ring_iff_abelian_lie_ring commutative_ring_iff_abelian_lie_ring
-
-theorem LieAlgebra.isLieAbelian_bot (R : Type u) (L : Type v) [CommRing R] [LieRing L]
-    [LieAlgebra R L] : IsLieAbelian (⊥ : LieIdeal R L) :=
-  ⟨fun ⟨x, hx⟩ _ => by simp⟩
-#align lie_algebra.is_lie_abelian_bot LieAlgebra.isLieAbelian_bot
 
 section Center
 
@@ -280,6 +283,21 @@ theorem isLieAbelian_iff_center_eq_top : IsLieAbelian L ↔ center R L = ⊤ :=
 #align lie_algebra.is_lie_abelian_iff_center_eq_top LieAlgebra.isLieAbelian_iff_center_eq_top
 
 end LieAlgebra
+
+namespace LieModule
+
+variable {R L}
+variable {x : L} (hx : x ∈ LieAlgebra.center R L) (y : L)
+
+lemma commute_toEndomorphism_of_mem_center_left :
+    Commute (toEndomorphism R L M x) (toEndomorphism R L M y) := by
+  rw [Commute.symm_iff, commute_iff_lie_eq, ← LieHom.map_lie, hx y, LieHom.map_zero]
+
+lemma commute_toEndomorphism_of_mem_center_right :
+    Commute (toEndomorphism R L M y) (toEndomorphism R L M x) :=
+  (LieModule.commute_toEndomorphism_of_mem_center_left M hx y).symm
+
+end LieModule
 
 end Center
 

@@ -224,7 +224,6 @@ namespace AlternatingFaceMapComplex
 
 /-- The natural transformation which gives the augmentation of the alternating face map
 complex attached to an augmented simplicial object. -/
---@[simps]
 def ε [Limits.HasZeroObject C] :
     SimplicialObject.Augmented.drop ⋙ AlgebraicTopology.alternatingFaceMapComplex C ⟶
       SimplicialObject.Augmented.point ⋙ ChainComplex.single₀ C where
@@ -236,8 +235,23 @@ def ε [Limits.HasZeroObject C] :
       pow_zero, one_smul, Fin.val_one, pow_one, neg_smul, one_smul, add_comp,
       neg_comp, SimplicialObject.δ_naturality, SimplicialObject.δ_naturality]
     apply add_right_neg
-  naturality _ _ f := ChainComplex.to_single₀_ext _ _ (by exact congr_app f.w _)
+  naturality X Y f := by
+    apply HomologicalComplex.to_single_hom_ext
+    dsimp
+    erw [ChainComplex.toSingle₀Equiv_symm_apply_f_zero,
+      ChainComplex.toSingle₀Equiv_symm_apply_f_zero]
+    simp only [ChainComplex.single₀_map_f_zero]
+    exact congr_app f.w _
 #align algebraic_topology.alternating_face_map_complex.ε AlgebraicTopology.AlternatingFaceMapComplex.ε
+
+@[simp]
+lemma ε_app_f_zero [Limits.HasZeroObject C] (X : SimplicialObject.Augmented C) :
+    (ε.app X).f 0 = X.hom.app (op [0]) :=
+  ChainComplex.toSingle₀Equiv_symm_apply_f_zero _ _
+
+@[simp]
+lemma ε_app_f_succ [Limits.HasZeroObject C] (X : SimplicialObject.Augmented C) (n : ℕ) :
+    (ε.app X).f (n + 1) = 0 := rfl
 
 end AlternatingFaceMapComplex
 
