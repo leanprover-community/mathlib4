@@ -203,6 +203,19 @@ theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity [CharZero R] (p 
     exact zero_le _
 #align polynomial.root_multiplicity_sub_one_le_derivative_root_multiplicity Polynomial.rootMultiplicity_sub_one_le_derivative_rootMultiplicity
 
+theorem lt_rootMultiplicity_of_isRoot_iterate_derivative
+    [CharZero R] {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)
+    (hroot : ∀ m ≤ n, (derivative^[m] p).IsRoot t) :
+    n < p.rootMultiplicity t :=
+  lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors h hroot <|
+    mem_nonZeroDivisors_of_ne_zero <| Nat.cast_ne_zero.2 <| Nat.factorial_ne_zero n
+
+theorem lt_rootMultiplicity_iff_isRoot_iterate_derivative
+    [CharZero R] {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0) :
+    n < p.rootMultiplicity t ↔ ∀ m ≤ n, (derivative^[m] p).IsRoot t :=
+  ⟨fun hn _ hm ↦ isRoot_iterate_derivative_of_lt_rootMultiplicity <| Nat.lt_of_le_of_lt hm hn,
+    fun hr ↦ lt_rootMultiplicity_of_isRoot_iterate_derivative h hr⟩
+
 section NormalizationMonoid
 
 variable [NormalizationMonoid R]
