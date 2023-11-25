@@ -674,8 +674,7 @@ theorem nnnorm_equiv_symm_fst (x : α) :
   | top =>
     simp [prod_nnnorm_eq_sup]
   | coe p =>
-    have hp0 : (p : ℝ) ≠ 0 := by
-      exact_mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
+    have hp0 : (p : ℝ) ≠ 0 := mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
     simp [prod_nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel hp0]
 
 @[simp]
@@ -685,8 +684,7 @@ theorem nnnorm_equiv_symm_snd (y : β) :
   | top =>
     simp [prod_nnnorm_eq_sup]
   | coe p =>
-    have hp0 : (p : ℝ) ≠ 0 := by
-      exact_mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
+    have hp0 : (p : ℝ) ≠ 0 := mod_cast (zero_lt_one.trans_le <| Fact.out (p := 1 ≤ (p : ℝ≥0∞))).ne'
     simp [prod_nnnorm_eq_add, NNReal.zero_rpow hp0, ← NNReal.rpow_mul, mul_inv_cancel hp0]
 
 @[simp]
@@ -745,7 +743,7 @@ variable [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β]
 instance instProdNormedSpace : NormedSpace 𝕜 (WithLp p (α × β)) where
   norm_smul_le c f := by
     rcases p.dichotomy with (rfl | hp)
-    · suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ by exact_mod_cast NNReal.coe_mono this.le
+    · suffices ‖c • f‖₊ = ‖c‖₊ * ‖f‖₊ from mod_cast NNReal.coe_mono this.le
       simp only [prod_nnnorm_eq_sup, NNReal.mul_sup, ← nnnorm_smul]
       rfl
     · have : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le hp).ne'

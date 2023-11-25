@@ -484,15 +484,6 @@ private theorem mul_comm' (a b : Cardinal.{u}) : a * b = b * a :=
 instance instPowCardinal : Pow Cardinal.{u} Cardinal.{u} :=
   ⟨map₂ (fun α β => β → α) fun _ _ _ _ e₁ e₂ => e₂.arrowCongr e₁⟩
 
--- Porting note: This "workaround" does not work and break everything.
--- I changed it now from `^` to `^'` to prevent a clash
--- with `HPow`, but somebody should figure out
--- if this is still relevant in Lean4.
--- mathport name: cardinal.pow
-local infixr:80 " ^' " => @HPow.hPow Cardinal Cardinal Cardinal _
--- -- mathport name: cardinal.pow.nat
-local infixr:80 " ^ℕ " => @HPow.hPow Cardinal ℕ Cardinal instHPow
-
 theorem power_def (α β : Type u) : #α ^ #β = #(β → α) :=
   rfl
 #align cardinal.power_def Cardinal.power_def
@@ -602,7 +593,7 @@ theorem power_mul {a b c : Cardinal} : a ^ (b * c) = (a ^ b) ^ c := by
 #align cardinal.power_mul Cardinal.power_mul
 
 @[simp]
-theorem pow_cast_right (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ℕ n :=
+theorem pow_cast_right (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ n :=
   rfl
 #align cardinal.pow_cast_right Cardinal.pow_cast_right
 
@@ -1326,18 +1317,18 @@ theorem lift_mk_fin (n : ℕ) : lift #(Fin n) = n := rfl
 theorem mk_coe_finset {α : Type u} {s : Finset α} : #s = ↑(Finset.card s) := by simp
 #align cardinal.mk_coe_finset Cardinal.mk_coe_finset
 
-theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ℕ Fintype.card α := by
+theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α := by
   simp [Pow.pow]
 #align cardinal.mk_finset_of_fintype Cardinal.mk_finset_of_fintype
 
 @[simp]
 theorem mk_finsupp_lift_of_fintype (α : Type u) (β : Type v) [Fintype α] [Zero β] :
-    #(α →₀ β) = lift.{u} #β ^ℕ Fintype.card α := by
+    #(α →₀ β) = lift.{u} #β ^ Fintype.card α := by
   simpa using (@Finsupp.equivFunOnFinite α β _ _).cardinal_eq
 #align cardinal.mk_finsupp_lift_of_fintype Cardinal.mk_finsupp_lift_of_fintype
 
 theorem mk_finsupp_of_fintype (α β : Type u) [Fintype α] [Zero β] :
-    #(α →₀ β) = #β ^ℕ Fintype.card α := by simp
+    #(α →₀ β) = #β ^ Fintype.card α := by simp
 #align cardinal.mk_finsupp_of_fintype Cardinal.mk_finsupp_of_fintype
 
 theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
@@ -2086,14 +2077,14 @@ theorem mk_plift_false : #(PLift False) = 0 :=
 #align cardinal.mk_plift_false Cardinal.mk_plift_false
 
 @[simp]
-theorem mk_vector (α : Type u) (n : ℕ) : #(Vector α n) = #α ^ℕ n :=
+theorem mk_vector (α : Type u) (n : ℕ) : #(Vector α n) = #α ^ n :=
   (mk_congr (Equiv.vectorEquivFin α n)).trans <| by simp
 #align cardinal.mk_vector Cardinal.mk_vector
 
-theorem mk_list_eq_sum_pow (α : Type u) : #(List α) = sum fun n : ℕ => #α ^ℕ n :=
+theorem mk_list_eq_sum_pow (α : Type u) : #(List α) = sum fun n : ℕ => #α ^ n :=
   calc
     #(List α) = #(Σn, Vector α n) := mk_congr (Equiv.sigmaFiberEquiv List.length).symm
-    _ = sum fun n : ℕ => #α ^ℕ n := by simp
+    _ = sum fun n : ℕ => #α ^ n := by simp
 #align cardinal.mk_list_eq_sum_pow Cardinal.mk_list_eq_sum_pow
 
 theorem mk_quot_le {α : Type u} {r : α → α → Prop} : #(Quot r) ≤ #α :=

@@ -857,9 +857,9 @@ theorem op_smul_set_mul_eq_mul_smul_set (a : α) (s : Set α) (t : Set α) :
 
 end Semigroup
 
-section LeftCancelSemigroup
+section IsLeftCancelMul
 
-variable [LeftCancelSemigroup α] {s t : Set α}
+variable [Mul α] [IsLeftCancelMul α] {s t : Set α}
 
 @[to_additive]
 theorem pairwiseDisjoint_smul_iff :
@@ -868,7 +868,7 @@ theorem pairwiseDisjoint_smul_iff :
 #align set.pairwise_disjoint_smul_iff Set.pairwiseDisjoint_smul_iff
 #align set.pairwise_disjoint_vadd_iff Set.pairwiseDisjoint_vadd_iff
 
-end LeftCancelSemigroup
+end IsLeftCancelMul
 
 section Group
 
