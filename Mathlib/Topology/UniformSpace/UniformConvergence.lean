@@ -221,7 +221,7 @@ theorem TendstoUniformlyOn.congr {F' : ι → α → β} (hf : TendstoUniformlyO
 
 theorem TendstoUniformlyOn.congr_right {g : α → β} (hf : TendstoUniformlyOn F f p s)
     (hfg : EqOn f g s) : TendstoUniformlyOn F g p s := fun u hu => by
-  filter_upwards [hf u hu]with i hi a ha using hfg ha ▸ hi a ha
+  filter_upwards [hf u hu] with i hi a ha using hfg ha ▸ hi a ha
 #align tendsto_uniformly_on.congr_right TendstoUniformlyOn.congr_right
 
 protected theorem TendstoUniformly.tendstoUniformlyOn (h : TendstoUniformly F f p) :
@@ -548,7 +548,7 @@ theorem UniformCauchySeqOn.cauchy_map [hp : NeBot p] (hf : UniformCauchySeqOn F 
   simp only [cauchy_map_iff, hp, true_and_iff]
   intro u hu
   rw [mem_map]
-  filter_upwards [hf u hu]with p hp using hp x hx
+  filter_upwards [hf u hu] with p hp using hp x hx
 #align uniform_cauchy_seq_on.cauchy_map UniformCauchySeqOn.cauchy_map
 
 section SeqTendsto
@@ -785,7 +785,7 @@ theorem TendstoLocallyUniformlyOn.congr {G : ι → α → β} (hf : TendstoLoca
   rintro u hu x hx
   obtain ⟨t, ht, h⟩ := hf u hu x hx
   refine' ⟨s ∩ t, inter_mem self_mem_nhdsWithin ht, _⟩
-  filter_upwards [h]with i hi y hy using hg i hy.1 ▸ hi y hy.2
+  filter_upwards [h] with i hi y hy using hg i hy.1 ▸ hi y hy.2
 #align tendsto_locally_uniformly_on.congr TendstoLocallyUniformlyOn.congr
 
 theorem TendstoLocallyUniformlyOn.congr_right {g : α → β} (hf : TendstoLocallyUniformlyOn F f p s)
@@ -793,7 +793,7 @@ theorem TendstoLocallyUniformlyOn.congr_right {g : α → β} (hf : TendstoLocal
   rintro u hu x hx
   obtain ⟨t, ht, h⟩ := hf u hu x hx
   refine' ⟨s ∩ t, inter_mem self_mem_nhdsWithin ht, _⟩
-  filter_upwards [h]with i hi y hy using hg hy.1 ▸ hi y hy.2
+  filter_upwards [h] with i hi y hy using hg hy.1 ▸ hi y hy.2
 #align tendsto_locally_uniformly_on.congr_right TendstoLocallyUniformlyOn.congr_right
 
 /-!

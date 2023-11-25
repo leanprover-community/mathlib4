@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Topology.MetricSpace.Metrizable
+import Mathlib.Topology.Metrizable.Basic
 
 #align_import measure_theory.constructions.borel_space.metrizable from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
@@ -67,7 +67,7 @@ theorem measurable_of_tendsto_metrizable' {ι} {f : ι → α → β} {g : α �
     [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :
     Measurable g := by
   letI : PseudoMetricSpace β := pseudoMetrizableSpacePseudoMetric β
-  apply measurable_of_is_closed'
+  apply measurable_of_isClosed'
   intro s h1s h2s h3s
   have : Measurable fun x => infNndist (g x) s := by
     suffices : Tendsto (fun i x => infNndist (f i x) s) u (𝓝 fun x => infNndist (g x) s)
@@ -96,7 +96,7 @@ theorem aemeasurable_of_tendsto_metrizable_ae {ι} {μ : Measure α} {f : ι →
   have h'f : ∀ n, AEMeasurable (f (v n)) μ := fun n => hf (v n)
   set p : α → (ℕ → β) → Prop := fun x f' => Tendsto (fun n => f' n) atTop (𝓝 (g x))
   have hp : ∀ᵐ x ∂μ, p x fun n => f (v n) x := by
-    filter_upwards [h_tendsto]with x hx using hx.comp hv
+    filter_upwards [h_tendsto] with x hx using hx.comp hv
   set aeSeqLim := fun x => ite (x ∈ aeSeqSet h'f p) (g x) (⟨f (v 0) x⟩ : Nonempty β).some
   refine'
     ⟨aeSeqLim,
@@ -176,8 +176,8 @@ end Limits
 
 section TendstoIndicator
 
-variable {α : Type _} [MeasurableSpace α] {A : Set α}
-variable {ι : Type _} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}
+variable {α : Type*} [MeasurableSpace α] {A : Set α}
+variable {ι : Type*} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set α}
 
 /-- If the indicator functions of measurable sets `Aᵢ` converge to the indicator function of
 a set `A` along a nontrivial countably generated filter, then `A` is also measurable. -/

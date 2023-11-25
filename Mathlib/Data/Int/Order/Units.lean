@@ -39,6 +39,9 @@ theorem units_mul_self (u : ℤˣ) : u * u = 1 := by rw [← sq, units_sq]
 theorem units_inv_eq_self (u : ℤˣ) : u⁻¹ = u := by rw [inv_eq_iff_mul_eq_one, units_mul_self]
 #align int.units_inv_eq_self Int.units_inv_eq_self
 
+theorem units_div_eq_mul (u₁ u₂ : ℤˣ) : u₁ / u₂ = u₁ * u₂ := by
+  rw [div_eq_mul_inv, units_inv_eq_self]
+
 -- `Units.val_mul` is a "wrong turn" for the simplifier, this undoes it and simplifies further
 @[simp]
 theorem units_coe_mul_self (u : ℤˣ) : (u * u : ℤ) = 1 := by

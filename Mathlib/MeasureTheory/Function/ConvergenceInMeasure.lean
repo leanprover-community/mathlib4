@@ -139,8 +139,6 @@ theorem tendstoInMeasure_of_tendsto_ae [IsFiniteMeasure μ] (hf : ∀ n, AEStron
   exact hxfg
 #align measure_theory.tendsto_in_measure_of_tendsto_ae MeasureTheory.tendstoInMeasure_of_tendsto_ae
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace ExistsSeqTendstoAe
 
 theorem exists_nat_measure_lt_two_inv (hfg : TendstoInMeasure μ f atTop g) (n : ℕ) :
@@ -211,7 +209,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
   set s := Filter.atTop.limsup S with hs
   have hμs : μ s = 0 := by
     refine' measure_limsup_eq_zero (ne_of_lt <| lt_of_le_of_lt (ENNReal.tsum_le_tsum hμS_le) _)
-    simp only [ENNReal.tsum_geometric, ENNReal.one_sub_inv_two, inv_inv]
+    simp only [ENNReal.tsum_geometric, ENNReal.one_sub_inv_two, ENNReal.two_lt_top, inv_inv]
   have h_tendsto : ∀ x ∈ sᶜ, Tendsto (fun i => f (ns i) x) atTop (𝓝 (g x)) := by
     refine' fun x hx => Metric.tendsto_atTop.mpr fun ε hε => _
     rw [hs, limsup_eq_iInf_iSup_of_nat] at hx
