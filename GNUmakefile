@@ -14,7 +14,7 @@ test/%.run: build
 	@if [ -s test/$*.log ]; then \
 		echo "Error: Test output is not empty"; \
 		cat test/$*.log; \
-		rm -f test/$*.log \
+		rm -f test/$*.log; \
 		exit 1; \
 	fi
 	@rm -f test/$*.log
