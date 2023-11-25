@@ -1,4 +1,4 @@
- /-
+/-
 Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
@@ -220,7 +220,8 @@ theorem smeval_X_pow_mul : ∀(n : ℕ), (X^n * p).smeval x = x^n * p.smeval x
   | 0 => by
     simp [npow_zero, one_mul]
   | n + 1 => by
-    rw [add_comm, npow_add, mul_assoc, npow_one, smeval_X_mul, smeval_X_pow_mul n, npow_add, smeval_X_pow_assoc, npow_one]
+    rw [add_comm, npow_add, mul_assoc, npow_one, smeval_X_mul, smeval_X_pow_mul n, npow_add,
+      smeval_X_pow_assoc, npow_one]
 
 theorem smeval_C_mul : (C a * p).smeval x = a • p.smeval x := by
   induction p using Polynomial.induction_on' with
