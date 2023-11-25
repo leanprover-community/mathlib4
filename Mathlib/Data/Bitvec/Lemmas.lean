@@ -21,8 +21,17 @@ open Nat
 
 variable {w v : Nat}
 
-theorem toNat_inj {x y : BitVec w} : x.toNat = y.toNat ↔ x = y :=
-  ⟨(match x, y, · with | ⟨_, _⟩,⟨_, _⟩, rfl => rfl), (· ▸ rfl)⟩
+theorem toNat_inj {n : Nat}: Function.Injective (@Std.BitVec.toNat n) := by
+  unfold BitVec.toNat
+  unfold Function.Injective
+  unfold toFin
+  intros v1 v2 f
+  simp at f
+  have ll : v1.1 = v2.1 := Fin.val_injective f
+  cases v1
+  cases v2
+  dsimp only at ll
+  simp [ll]
 
 /-- `x < y` as natural numbers if and only if `x < y` as `BitVec w`. -/
 theorem toNat_lt_toNat {x y : BitVec w} : x.toNat < y.toNat ↔ x < y :=
