@@ -126,8 +126,8 @@ theorem hasPDF_of_map_eq_withDensity {X : Ω → E} {ℙ : Measure Ω} {μ : Mea
 
 end HasPDF
 
-/-- If `X` is a random variable that `HasPDF X ℙ μ`, then `pdf X` is the Radon–Nikodym
-derivative of the push-forward measure of `ℙ` along `X` with respect to `μ`. -/
+/-- If `X` is a random variable, then `pdf X` is the Radon–Nikodym derivative of the push-forward
+measure of `ℙ` along `X` with respect to `μ`. -/
 def pdf {_ : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω) (μ : Measure E := by volume_tac) :
     E → ℝ≥0∞ :=
   (map X ℙ).rnDeriv μ
