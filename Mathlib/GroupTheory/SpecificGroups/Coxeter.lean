@@ -46,6 +46,9 @@ And the six exceptional systems:
 coxeter system, coxeter group
 -/
 
+
+universe u
+
 noncomputable section
 
 variable {B : Type*} [DecidableEq B]
@@ -54,7 +57,7 @@ variable (M : Matrix B B ℕ)
 
 /-- A matrix `IsCoxeter` if it is a symmetric matrix with diagonal entries equal to one
 and off-diagonal entries distinct from one. -/
-class Matrix.IsCoxeter (M : Matrix B B ℕ) : Prop where
+class Matrix.IsCoxeter : Prop where
   symmetric : M.IsSymm := by aesop
   diagonal : ∀ i : B, M i i = 1 := by aesop
   off_diagonal : ∀ i j : B, i ≠ j → M i j ≠ 1 := by aesop
@@ -64,13 +67,11 @@ namespace CoxeterGroup
 namespace Relations
 
 /-- The relations corresponding to a Coxeter matrix. -/
-@[nolint unusedArguments]
-def ofMatrix [M.IsCoxeter] : B × B → FreeGroup B :=
-  Function.uncurry fun i j =>
-    (FreeGroup.of i * FreeGroup.of j) ^ M i j
+def ofMatrix : B × B → FreeGroup B :=
+ Function.uncurry fun i j => (FreeGroup.of i * FreeGroup.of j) ^ M i j
 
 /-- The set of relations corresponding to a Coxeter matrix. -/
-def toSet [M.IsCoxeter] : Set (FreeGroup B) :=
+def toSet : Set (FreeGroup B) :=
   Set.range <| ofMatrix M
 
 end Relations
@@ -78,38 +79,130 @@ end Relations
 end CoxeterGroup
 
 /-- The group presentation corresponding to a Coxeter matrix. -/
-abbrev Matrix.CoxeterGroup [M.IsCoxeter] := PresentedGroup <| CoxeterGroup.Relations.toSet M
+@[simp]
+def Matrix.CoxeterGroup := PresentedGroup <| CoxeterGroup.Relations.toSet M
+
+instance : Group (Matrix.CoxeterGroup M) := by
+  exact QuotientGroup.Quotient.group _
+
+namespace CoxeterGroup
+
+def of (b : B) : Matrix.CoxeterGroup M := by
+  unfold Matrix.CoxeterGroup
+  exact PresentedGroup.of b
+
+end CoxeterGroup
 
 /-- A Coxeter system `CoxeterSystem W` is a structure recording the isomorphism between
 a group `W` and the group presentation corresponding to a Coxeter matrix. Equivalently, this can
 be seen as a list of generators of `W` parameterized by the underlying type of `M`, which
 satisfy the relations of the Coxeter matrix `M`. -/
-structure CoxeterSystem [M.IsCoxeter] (W : Type*) [Group W]  where
+structure CoxeterSystem (W : Type*) [Group W]  where
   /-- `CoxeterSystem.ofMulEquiv` constructs a Coxeter system given an equivalence with the group
   presentation corresponding to a Coxeter matrix `M`. -/
   ofMulEquiv ::
     /-- `mulEquiv` is the isomorphism between the group `W` and the group presentation
     corresponding to a Coxeter matrix `M`. -/
-    mulEquiv : Matrix.CoxeterGroup M ≃* W
+    mulEquiv : W ≃* Matrix.CoxeterGroup M
 
 /-- Coxeter system of type `M` on the group `M.CoxeterGroup`. -/
-def Matrix.coxeterSystemCoxeterGroup [M.IsCoxeter] : CoxeterSystem M M.CoxeterGroup :=
-  CoxeterSystem.ofMulEquiv (MulEquiv.refl (CoxeterGroup M))
+def Matrix.coxeterSystemCoxeterGroup : CoxeterSystem M M.CoxeterGroup :=
+  CoxeterSystem.ofMulEquiv (MulEquiv.refl _)
 
-/-- A group is a Coxeter group if it is registered in a Coxeter system. -/
-class IsCoxeterGroup [M.IsCoxeter] (W : Type*) [Group W] : Prop where
-  nonempty_system : Nonempty (CoxeterSystem M W)
+/-- A group is a Coxeter group if it is registered in a Coxeter system
+ for some Coxeter matrix `M`. -/
+class IsCoxeterGroup (W : Type u) [Group W] : Prop where
+  nonempty_system : ∃ (B : Type u), ∃ (M : Matrix B B ℕ),
+    M.IsCoxeter ∧ Nonempty (CoxeterSystem M W)
 
 namespace CoxeterSystem
 
-variable {W : Type*} [Group W]
+open Matrix
 
-/-- A group registered in a Coxeter system is a Coxeter Group. -/
-lemma isCoxeterGroup [M.IsCoxeter] (cs : CoxeterSystem M W) : IsCoxeterGroup M W where
-  nonempty_system := Nonempty.intro cs
+variable {B B' W H : Type*} [Group W] [Group H]
 
-instance [M.IsCoxeter] : IsCoxeterGroup M M.CoxeterGroup :=
-  isCoxeterGroup M (Matrix.coxeterSystemCoxeterGroup M)
+variable {M : Matrix B B ℕ} [M.IsCoxeter]
+
+instance funLike : FunLike (CoxeterSystem M W) B (fun _ => W) where
+  coe cs := fun b => cs.mulEquiv.symm (.of b)
+  coe_injective' := by
+    rintro ⟨cs⟩ ⟨cs'⟩ hcs'
+    have H : (cs.symm : CoxeterGroup M →* W) = (cs'.symm : CoxeterGroup M →* W) := by
+      unfold CoxeterGroup
+      ext i; exact congr_fun hcs' i
+    have : cs.symm = cs'.symm := by ext x; exact FunLike.congr_fun H x
+    rw [ofMulEquiv.injEq, ← MulEquiv.symm_symm cs, ← MulEquiv.symm_symm cs', this]
+
+@[simp] lemma mulEquiv_apply_coe (cs : CoxeterSystem M W) (b : B) :
+    cs.mulEquiv (cs b) = .of b :=
+  (MulEquiv.eq_symm_apply cs.mulEquiv).mp rfl
+
+/-- The canonical Coxeter system of the Coxeter group over `X`. -/
+def ofCoxeterGroup (X : Type*) (D : Matrix X X ℕ) : CoxeterSystem D (CoxeterGroup D) :=
+  ofMulEquiv (MulEquiv.refl _)
+
+@[simp] lemma ofCoxeterGroup_apply {X : Type*} (D : Matrix X X ℕ) (x : X) :
+    CoxeterSystem.ofCoxeterGroup X D x = CoxeterGroup.of D x :=
+  rfl
+
+def coxeterGroupCongr (e : B ≃ B') : CoxeterGroup M ≃* CoxeterGroup (reindex e e M) := by
+  refine QuotientGroup.congr (Subgroup.normalClosure (CoxeterGroup.Relations.toSet M))
+    (Subgroup.normalClosure (CoxeterGroup.Relations.toSet (reindex e e M)))
+    (FreeGroup.freeGroupCongr e) ?_
+  refine Subgroup.ext ?h
+  intro fb'
+  constructor
+  · simp only [Subgroup.mem_map, MonoidHom.coe_coe, FreeGroup.freeGroupCongr_apply, reindex_apply,
+    forall_exists_index, and_imp]
+    intro fb fbm mp1
+    -- have h1 := @Subgroup.mem_closure (FreeGroup B) _
+    --   (Group.conjugatesOfSet (CoxeterGroup.Relations.toSet M)) fb
+    simp [Subgroup.normalClosure] at fbm ⊢
+    -- have h2 := h1.mp fbm
+    simp [Subgroup.mem_closure] at fbm ⊢
+    intro K HK
+    rw [← mp1]
+    sorry
+  · sorry
+
+    /-- Reindex a Coxeter system through a bijection of the indexing sets. -/
+protected def reindex (cs : CoxeterSystem M W) (e : B ≃ B') :
+    CoxeterSystem (reindex e e M) W := by
+  have := QuotientGroup.congr (Subgroup.normalClosure (CoxeterGroup.Relations.toSet M))
+    (Subgroup.normalClosure (CoxeterGroup.Relations.toSet (reindex e e M)))
+    (FreeGroup.freeGroupCongr e)
+  exact ofMulEquiv (cs.mulEquiv.trans (coxeterGroupCongr e))
+
+@[simp] lemma reindex_apply (cs : CoxeterSystem M W) (e : B ≃ B') (b : B') :
+    cs.reindex e b = cs (e.symm b) := by rfl
+
+/-- Pushing a Coxeter system through a group isomorphism. -/
+protected def map (cs : CoxeterSystem M W) (e : W ≃* H) : CoxeterSystem M H :=
+  ofMulEquiv (e.symm.trans cs.mulEquiv)
+
+@[simp] lemma map_apply (cs : CoxeterSystem M W) (e : W ≃* H) (x : B) :
+    cs.map e x = e (cs x) := rfl
+
+lemma presentedGroup.of_injective :
+    Function.Injective (PresentedGroup.of (rels := CoxeterGroup.Relations.toSet M)) :=
+  fun _ _ H => by
+    simp [PresentedGroup.of] at H
+    sorry
+
+protected lemma injective (cs : CoxeterSystem M W) : Function.Injective cs :=
+  cs.mulEquiv.symm.injective.comp (presentedGroup.of_injective)
+
+lemma isCoxeterGroup (cs : CoxeterSystem M W) : IsCoxeterGroup W := by
+  use Set.range cs
+  have h₁ := Equiv.ofInjective (↑cs) cs.injective
+  use M.submatrix h₁.symm h₁.symm
+  rename_i isCoxeter
+  exact ⟨IsCoxeter.mk (by simp_all only [isCoxeter.symmetric, IsSymm.submatrix])
+    (by intro i; simp_all only [isCoxeter.diagonal, submatrix_apply])
+    (by intro i j a; simp_all [isCoxeter.off_diagonal]), ⟨cs.reindex h₁⟩⟩
+
+instance (X : Type*) (D : Matrix X X ℕ) [D.IsCoxeter] : IsCoxeterGroup D.CoxeterGroup :=
+  (coxeterSystemCoxeterGroup D).isCoxeterGroup
 
 end CoxeterSystem
 
@@ -126,12 +219,12 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-abbrev Aₙ [NeZero n] : Matrix (Fin n) (Fin n) ℕ :=
+abbrev Aₙ : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j : Fin n =>
     if i == j then 1
       else (if i == n - 1 ∨ j == n - 1 then 2 else 3)
 
-instance AₙIsCoxeter [NeZero n] : IsCoxeter (Aₙ n) where
+instance AₙIsCoxeter : IsCoxeter (Aₙ n) where
 
 /-- The Coxeter matrix of family Bₙ.
 
@@ -141,13 +234,13 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-abbrev Bₙ [NeZero n] : Matrix (Fin n) (Fin n) ℕ :=
+abbrev Bₙ : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j : Fin n =>
     if i == j then 1
-      else (if i == 1 ∨ j == 1 then 4
+      else (if i == (1 : ℕ) ∨ j == (1 : ℕ) then 4
         else (if i == n - 1 ∨ j == n - 1 then 2 else 3))
 
-instance BₙIsCoxeter [NeZero n] : IsCoxeter (Bₙ n) where
+instance BₙIsCoxeter : IsCoxeter (Bₙ n) where
 
 /-- The Coxeter matrix of family Dₙ.
 
@@ -160,13 +253,13 @@ The corresponding Coxeter-Dynkin diagram is:
     o
 ```
 -/
-abbrev Dₙ [NeZero n] : Matrix (Fin n) (Fin n) ℕ :=
+abbrev Dₙ : Matrix (Fin n) (Fin n) ℕ :=
   Matrix.of fun i j : Fin n =>
     if i == j then 1
-      else (if i == 1 ∨ j == 1 then 4
+      else (if i == (1 : ℕ) ∨ j == (1 : ℕ) then 4
         else (if i == n - 1 ∨ j == n - 1 then 2 else 3))
 
-instance DₙIsCoxeter [NeZero n] : IsCoxeter (Dₙ n) where
+instance DₙIsCoxeter : IsCoxeter (Dₙ n) where
 
 /-- The Coxeter matrix of m-indexed family I₂(m).
 
@@ -199,7 +292,7 @@ def E₆ : Matrix (Fin 6) (Fin 6) ℕ :=
      2, 2, 2, 2, 3, 1]
 
 instance E₆IsCoxeter : IsCoxeter E₆ where
-  symmetric := by simp [Matrix.IsSymm]
+  symmetric := by simp [Matrix.IsSymm]; decide
   diagonal := by decide
   off_diagonal := by decide
 
@@ -222,7 +315,7 @@ def E₇ : Matrix (Fin 7) (Fin 7) ℕ :=
      2, 2, 2, 2, 2, 3, 1]
 
 instance E₇IsCoxeter : IsCoxeter E₇ where
-  symmetric := by simp [Matrix.IsSymm]
+  symmetric := by simp [Matrix.IsSymm]; decide
   diagonal := by decide
   off_diagonal := by decide
 
@@ -246,7 +339,7 @@ def E₈ : Matrix (Fin 8) (Fin 8) ℕ :=
      2, 2, 2, 2, 2, 2, 3, 1]
 
 instance E₈IsCoxeter : IsCoxeter E₈ where
-  symmetric := by simp [Matrix.IsSymm]
+  symmetric := by simp [Matrix.IsSymm]; decide
   diagonal := by decide
   off_diagonal := by decide
 
@@ -265,7 +358,7 @@ def F₄ : Matrix (Fin 4) (Fin 4) ℕ :=
      2, 2, 3, 1]
 
 instance F₄IsCoxeter : IsCoxeter F₄ where
-  symmetric := by simp [Matrix.IsSymm]
+  symmetric := by simp [Matrix.IsSymm]; decide
   diagonal := by decide
   off_diagonal := by decide
 
@@ -282,7 +375,7 @@ def G₂ : Matrix (Fin 2) (Fin 2) ℕ :=
      6, 1]
 
 instance G₂IsCoxeter : IsCoxeter G₂ where
-  symmetric := by simp [Matrix.IsSymm]
+  symmetric := by simp [Matrix.IsSymm]; decide
   diagonal := by decide
   off_diagonal := by decide
 
@@ -300,7 +393,7 @@ def H₃ : Matrix (Fin 3) (Fin 3) ℕ :=
      2, 5, 1]
 
 instance H₃IsCoxeter : IsCoxeter H₃ where
-  symmetric := by simp [Matrix.IsSymm]
+  symmetric := by simp [Matrix.IsSymm]; decide
   diagonal := by decide
   off_diagonal := by decide
 
@@ -319,7 +412,7 @@ def H₄ : Matrix (Fin 4) (Fin 4) ℕ :=
      2, 2, 5, 1]
 
 instance H₄IsCoxeter : IsCoxeter H₄ where
-  symmetric := by simp [Matrix.IsSymm]
+  symmetric := by simp [Matrix.IsSymm]; decide
   diagonal := by decide
   off_diagonal := by decide
 
