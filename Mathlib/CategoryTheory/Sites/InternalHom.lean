@@ -250,17 +250,44 @@ end Presheaf
 
 namespace Sheaf
 
+def internalHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ Type _ where
+  obj X := (J.overPullback A X.unop).obj F ⟶ (J.overPullback A X.unop).obj G
+  map f := fun φ => (J.overMapPullback A f.unop).map φ
+  map_id X := by
+    ext φ
+    exact Sheaf.Hom.ext _ _ (congr_fun ((Presheaf.internalHom F.1 G.1).map_id X) φ.1)
+  map_comp f g := by
+    ext φ
+    exact Sheaf.Hom.ext _ _ (congr_fun ((Presheaf.internalHom F.1 G.1).map_comp f g) φ.1)
+
+def internalHom'Iso (F G : Sheaf J A) :
+    internalHom' F G ≅ Presheaf.internalHom F.1 G.1 :=
+  NatIso.ofComponents (fun _ => Equiv.toIso
+    { toFun := fun φ => φ.1
+      invFun := fun φ => ⟨φ⟩
+      left_inv := fun _ => rfl
+      right_inv := fun _ => rfl }) (fun _ => rfl)
+
 def internalHom (F G : Sheaf J A) : Sheaf J (Type _) where
-  val := Presheaf.internalHom F.1 G.1
-  cond := Presheaf.internalHom_isSheaf F.1 G.1 G.2
+  val := internalHom' F G
+  cond := (Presheaf.isSheaf_of_iso_iff (internalHom'Iso F G)).2
+    (Presheaf.internalHom_isSheaf F.1 G.1 G.2)
 
 def internalHomSectionsEquiv (F G : Sheaf J A) :
     (internalHom F G).1.sections ≃ (F ⟶ G) :=
-  (Presheaf.internalHomSectionsEquiv F.1 G.1).trans
-    { toFun := fun f => (sheafToPresheaf J A).preimage f
-      invFun := fun f => (sheafToPresheaf J A).map f
-      left_inv := fun _ => rfl
-      right_inv := fun _ => rfl }
+  ((Functor.sectionsFunctor Cᵒᵖ).mapIso (internalHom'Iso F G)).toEquiv.trans
+    ((Presheaf.internalHomSectionsEquiv F.1 G.1).trans
+      { toFun := fun f => (sheafToPresheaf J A).preimage f
+        invFun := fun f => (sheafToPresheaf J A).map f
+        left_inv := fun _ => rfl
+        right_inv := fun _ => rfl })
+
+@[reassoc (attr := simp)]
+lemma internalHomSectionsEquiv_symm_apply_comp_coe_apply {F G H : Sheaf J A}
+    (α : F ⟶ G) (β : G ⟶ H) (X : Cᵒᵖ) :
+      ((internalHomSectionsEquiv F H).symm (α ≫ β)).1 X =
+        ((internalHomSectionsEquiv F G).symm (α)).1 X ≫
+          ((internalHomSectionsEquiv G H).symm (β)).1 X := rfl
 
 end Sheaf
 
@@ -330,6 +357,7 @@ lemma exists_unique_section :
 
 noncomputable def section_ : F.sections := (hx.exists_unique_section hY hF).choose
 
+@[simp]
 lemma section_apply (i : I) : (hx.section_ hY hF).1 (Opposite.op (Y i)) = x i :=
   (hx.exists_unique_section hY hF).choose_spec.1 i
 
@@ -343,21 +371,35 @@ namespace Sheaf
 
 variable {F G : Sheaf J A} (φ : F ⟶ G) {I : Type*} (Y : I → C)
 
-/-lemma isIso_of_isIso_pullback (hY : J.ObjectsCoverTop Y)
+lemma isIso_of_isIso_pullback (hY : J.ObjectsCoverTop Y)
     (hφ : ∀ (i : I), IsIso ((J.overPullback A (Y i)).map φ)) :
     IsIso φ := by
   let e : ∀ (i : I), ((J.overPullback A (Y i)).obj F) ≅
     ((J.overPullback A (Y i)).obj G) := fun i =>
       asIso ((J.overPullback A (Y i)).map φ)
+  have hφ : ∀ {Z : C} {i : I} (_ : Z ⟶ Y i), IsIso ((J.overPullback A Z).map φ) := by
+    intro Z i g
+    rw [← J.overMapPullback_map_overPullback_map g φ]
+    infer_instance
   let f : Presheaf.FamilyOfElementsOnObjects (internalHom G F).1 Y :=
-    fun i => (sheafToPresheaf (J.over (Y i)) A).map (e i).inv
+    fun i => (e i).inv
   have hf : f.IsCompatible := fun Z i j a b => by
-    sorry
-  let α := (internalHomSectionsEquiv G F).1
-    (hf.section_ hY (Presheaf.internalHom_isSheaf G.1 F.1 F.2))
-  refine' ⟨α, _, _⟩
-  · sorry
-  · sorry-/
+    have := hφ a
+    rw [← cancel_mono ((J.overPullback A Z).map φ)]
+    simp [internalHom, internalHom']
+  refine' ⟨(internalHomSectionsEquiv G F).1 (hf.section_ hY (Sheaf.cond _)), _, _⟩
+  · refine' (internalHomSectionsEquiv F F).symm.injective
+      (hY.ext (Sheaf.cond _) (fun i => Eq.trans _ (e i).hom_inv_id))
+    dsimp
+    simp only [Equiv.symm_apply_apply, IsIso.hom_inv_id,
+      Presheaf.FamilyOfElementsOnObjects.IsCompatible.section_apply]
+    exact IsIso.hom_inv_id ((GrothendieckTopology.overPullback J A (Y i)).map φ)
+  · refine' (internalHomSectionsEquiv G G).symm.injective
+      (hY.ext (Sheaf.cond _) (fun i => Eq.trans _ (e i).inv_hom_id))
+    dsimp
+    simp only [Equiv.symm_apply_apply, IsIso.inv_hom_id,
+      Presheaf.FamilyOfElementsOnObjects.IsCompatible.section_apply]
+    exact IsIso.inv_hom_id ((GrothendieckTopology.overPullback J A (Y i)).map φ)
 
 end Sheaf
 

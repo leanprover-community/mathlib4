@@ -121,6 +121,8 @@ lemma InjectiveResolution.isoRightDerivedObj_hom_naturality
     (F.rightDerived n).map f ≫ (J.isoRightDerivedObj F n).hom =
       (I.isoRightDerivedObj F n).hom ≫
         (F.mapHomologicalComplex _ ⋙ HomologicalComplex.homologyFunctor _ _ n).map φ := by
+  dsimp only [Functor.rightDerived]
+  dsimp
   dsimp [isoRightDerivedObj, Functor.rightDerived]
   rw [Category.assoc, ← Functor.map_comp_assoc,
     InjectiveResolution.isoRightDerivedToHomotopyCategoryObj_hom_naturality f I J φ comm F,
