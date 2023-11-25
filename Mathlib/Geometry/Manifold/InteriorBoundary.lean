@@ -47,7 +47,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 /-- `p ∈ M` is an interior point of a manifold `M` iff
 for `φ` being the preferred chart at `x`, `φ x` is an interior point of `φ.target`. -/
-def ModelWithCorners.IsInteriorPoint (x : M) := extChartAt I x x ∈ interior (extChartAt I x).target
+def ModelWithCorners.IsInteriorPoint (x : M) := extChartAt I x x ∈ interior (range I)
 
 /-- `p ∈ M` is a boundary point of a manifold `M` iff its image in the extended chart
 lies on the boundary of the model space. -/
@@ -61,7 +61,9 @@ variable (I M) in
 protected def interior : Set M := { x : M | I.IsInteriorPoint x}
 
 lemma _root_.ModelWithCorners.isInteriorPoint_iff {x : M} :
-    I.IsInteriorPoint x ↔ extChartAt I x x ∈ interior (extChartAt I x).target := Iff.rfl
+    I.IsInteriorPoint x ↔ extChartAt I x x ∈ interior (extChartAt I x).target :=
+  ⟨fun h ↦ (chartAt H x).mem_interior_extend_target _ (mem_chart_target H x) h,
+    fun h ↦ LocalHomeomorph.interior_extend_target_subset_interior_range _ _ h⟩
 
 variable (I M) in
 /-- The **boundary** of a manifold `M` is the set of its boundary points. -/
@@ -72,13 +74,11 @@ lemma _root_.ModelWithCorners.isBoundaryPoint_iff {x : M} :
 
 /-- Every point is either an interior or a boundary point. -/
 lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsBoundaryPoint x := by
-  by_cases h : extChartAt I x x ∈ interior (extChartAt I x).target
+  by_cases h : extChartAt I x x ∈ interior (range I)
   · exact Or.inl h
   · right -- Otherwise, we have a boundary point.
     rw [I.isBoundaryPoint_iff, ← closure_diff_interior, I.closed_range.closure_eq]
-    refine ⟨mem_range_self _, ?_⟩
-    by_contra h'
-    exact h ((chartAt H x).mem_interior_extend_target I (mem_chart_target H x) h')
+    exact ⟨mem_range_self _, h⟩
 
 /-- A manifold decomposes into interior and boundary. -/
 lemma univ_eq_interior_union_boundary : (SmoothManifoldWithCorners.interior I M) ∪
@@ -94,7 +94,7 @@ lemma interior_boundary_disjoint :
   rcases hx with ⟨h1, h2⟩
   show (extChartAt I x) x ∈ (∅ : Set E)
   rw [← interior_frontier_disjoint]
-  exact ⟨(chartAt H x).interior_extend_target_subset_interior_range I h1, h2⟩
+  exact ⟨h1, h2⟩
 
 /-- The boundary is the complement of the interior. -/
 lemma boundary_eq_complement_interior :
@@ -107,7 +107,7 @@ lemma ModelWithCorners.isInteriorPoint [I.Boundaryless] {x : M} : I.IsInteriorPo
   let r := ((chartAt H x).isOpen_extend_target I).interior_eq
   have : extChartAt I x = (chartAt H x).extend I := rfl
   rw [← this] at r
-  rw [ModelWithCorners.IsInteriorPoint, r]
+  rw [ModelWithCorners.isInteriorPoint_iff, r]
   exact LocalEquiv.map_source _ (mem_extChartAt_source _ _)
 
 /-- If `I` is boundaryless, `M` has full interior interior. -/
