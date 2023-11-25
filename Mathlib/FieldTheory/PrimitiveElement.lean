@@ -378,32 +378,30 @@ theorem primitive_element_of_minpoly_degree_eq (α : E) :
 
 variable [IsSeparable F E] (A : Type*) [Field A] [IsAlgClosed A] [Algebra F A]
 
-theorem primitive_element_of_algHom_eval_pairwise_ne (α : E) :
-    F⟮α⟯ = ⊤ ↔ ∀ φ ψ : E →ₐ[F] A, φ ≠ ψ → φ α ≠ ψ α := by
+theorem primitive_element_iff_algHom_eq_of_eval' (α : E) :
+    F⟮α⟯ = ⊤ ↔ ∀ φ ψ : E →ₐ[F] A, φ α = ψ α → φ = ψ := by
   classical
   simp_rw [primitive_element_of_minpoly_natDegree_eq, ← card_rootSet_eq_natDegree (K := A)
     (IsSeparable.separable F α) (IsAlgClosed.splits_codomain (minpoly F α)), ← toFinset_card,
     ← IsAlgebraic.range_eval_eq_rootSet_minpoly A (Algebra.IsAlgebraic.of_finite F E) α,
-    ← AlgHom.card F E A, not_imp_not, Fintype.card, toFinset_range, Finset.card_image_iff,
-    Finset.coe_univ, ← injective_iff_injOn_univ, Function.Injective]
+    ← AlgHom.card F E A, Fintype.card, toFinset_range, Finset.card_image_iff, Finset.coe_univ,
+    ← injective_iff_injOn_univ, Function.Injective]
 
-theorem primitive_element_of_algHom_eval_ne (α : E) (φ : E →ₐ[F] A) :
-    F⟮α⟯ = ⊤ ↔ ∀ ψ : E →ₐ[F] A, φ ≠ ψ → φ α ≠ ψ α := by
-  rw [Field.primitive_element_of_algHom_eval_pairwise_ne F A]
-  refine ⟨fun h ψ =>  h φ ψ, fun h φ₀ ψ₀ => ?_⟩
+theorem primitive_element_iff_algHom_eq_of_eval (α : E) (φ : E →ₐ[F] A) :
+    F⟮α⟯ = ⊤ ↔ ∀ ψ : E →ₐ[F] A, φ α = ψ α → φ = ψ := by
+  rw [Field.primitive_element_iff_algHom_eq_of_eval' F A]
+  refine ⟨fun h ψ =>  h φ ψ, fun h φ₀ ψ₀ h' => ?_⟩
   let K := IntermediateField.adjoin F (⋃ ν : E →ₐ[F] A, Set.range ν)
   have hK_mem : ∀ (ψ : E →ₐ[F] A) (x : E), ψ x ∈ K := fun ψ x =>
     Subfield.subset_closure (mem_union_right _ (mem_iUnion.mpr ⟨ψ, mem_range_self x⟩))
   let res : (E →ₐ[F] A) → (E →ₐ[F] K) := fun ψ => AlgHom.codRestrict ψ K.toSubalgebra (hK_mem ψ)
   rsuffices ⟨σ, hσ⟩ : ∃ σ : K →ₐ[F] A, σ (⟨φ₀ α, hK_mem _ _⟩) = φ α
-  · contrapose!
-    intro h'
-    suffices res φ₀ = res ψ₀ by
+  · suffices res φ₀ = res ψ₀ by
       ext x
       exact Subtype.mk_eq_mk.mp (AlgHom.congr_fun this x)
-    have eq₁ : φ = AlgHom.comp σ (res φ₀) := not_imp_not.mp (h (AlgHom.comp σ (res φ₀))) hσ.symm
+    have eq₁ : φ = AlgHom.comp σ (res φ₀) := h (AlgHom.comp σ (res φ₀)) hσ.symm
     have eq₂ : φ = AlgHom.comp σ (res ψ₀) := by
-      refine not_imp_not.mp (h (AlgHom.comp σ (res ψ₀))) ?_
+      refine h (AlgHom.comp σ (res ψ₀)) ?_
       simp_rw [← hσ, h']
       rfl
     ext1 x
