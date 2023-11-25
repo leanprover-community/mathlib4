@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel, Harun Khan, Abdalrhman M Mohamed, Alex Keizer
+Authors: Markus Himmel, Alex Keizer
 -/
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Nat.Size
