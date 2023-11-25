@@ -94,17 +94,14 @@ instance HasPDF.haveLebesgueDecomposition {X : Ω → E} {ℙ : Measure Ω}
     {μ : Measure E} [hX : HasPDF X ℙ μ] : (map X ℙ).HaveLebesgueDecomposition μ :=
   hX.pdf'.2.1
 
-theorem HasPDF.absolutelyContinuous (X : Ω → E) (ℙ : Measure Ω) (μ : Measure E)
-    [hX : HasPDF X ℙ μ] : map X ℙ ≪ μ := hX.pdf'.2.2
-
-theorem HasPDF.ac {X : Ω → E} {ℙ : Measure Ω} {μ : Measure E}
+theorem HasPDF.absolutelyContinuous {X : Ω → E} {ℙ : Measure Ω} {μ : Measure E}
     [hX : HasPDF X ℙ μ] : map X ℙ ≪ μ := hX.pdf'.2.2
 
 /-- A random variable that `HasPDF` is quasi-measure preserving. -/
 theorem HasPDF.quasiMeasurePreserving_of_measurable (X : Ω → E) (ℙ : Measure Ω) (μ : Measure E)
     [HasPDF X ℙ μ] (h : Measurable X) : QuasiMeasurePreserving X ℙ μ :=
   { measurable := h
-    absolutelyContinuous := HasPDF.ac }
+    absolutelyContinuous := HasPDF.absolutelyContinuous }
 
 theorem HasPDF.congr {X Y : Ω → E} {ℙ : Measure Ω} {μ : Measure E} (hXY : X =ᵐ[ℙ] Y)
     [hX : HasPDF X ℙ μ] : HasPDF Y ℙ μ :=
@@ -231,8 +228,9 @@ section IntegralPDFMul
 /-- **The Law of the Unconscious Statistician** for nonnegative random variables. -/
 theorem lintegral_pdf_mul {X : Ω → E} [HasPDF X ℙ μ] {f : E → ℝ≥0∞}
     (hf : AEMeasurable f μ) : ∫⁻ x, pdf X ℙ μ x * f x ∂μ = ∫⁻ x, f (X x) ∂ℙ := by
-  rw [pdf_def, ← lintegral_map' (hf.mono_ac HasPDF.ac) (HasPDF.aemeasurable X ℙ μ),
-  lintegral_rnDeriv_mul HasPDF.ac hf]
+  rw [pdf_def,
+    ← lintegral_map' (hf.mono_ac HasPDF.absolutelyContinuous) (HasPDF.aemeasurable X ℙ μ),
+  lintegral_rnDeriv_mul HasPDF.absolutelyContinuous hf]
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
 
@@ -241,18 +239,19 @@ theorem integrable_pdf_smul_iff [IsFiniteMeasure ℙ] {X : Ω → E} [HasPDF X �
     Integrable (fun x => (pdf X ℙ μ x).toReal • f x) μ ↔ Integrable (fun x => f (X x)) ℙ := by
   -- porting note: using `erw` because `rw` doesn't recognize `(f <| X ·)` as `f ∘ X`
   -- https://github.com/leanprover-community/mathlib4/issues/5164
-  erw [← integrable_map_measure (hf.mono' HasPDF.ac) (HasPDF.aemeasurable X ℙ μ),
-    map_eq_withDensity_pdf X ℙ μ, pdf_def, integrable_rnDeriv_smul_iff (E := F) HasPDF.ac]
+  erw [← integrable_map_measure (hf.mono' HasPDF.absolutelyContinuous) (HasPDF.aemeasurable X ℙ μ),
+    map_eq_withDensity_pdf X ℙ μ, pdf_def, integrable_rnDeriv_smul_iff HasPDF.absolutelyContinuous]
   eta_reduce
-  rw [withDensity_rnDeriv_eq _ _ HasPDF.ac]
+  rw [withDensity_rnDeriv_eq _ _ HasPDF.absolutelyContinuous]
 
 /-- **The Law of the Unconscious Statistician**: Given a random variable `X` and a measurable
 function `f`, `f ∘ X` is a random variable with expectation `∫ x, pdf X x • f x ∂μ`
 where `μ` is a measure on the codomain of `X`. -/
 theorem integral_pdf_smul [IsFiniteMeasure ℙ] {X : Ω → E} [HasPDF X ℙ μ] {f : E → F}
     (hf : AEStronglyMeasurable f μ) : ∫ x, (pdf X ℙ μ x).toReal • f x ∂μ = ∫ x, f (X x) ∂ℙ := by
-  rw [← integral_map (HasPDF.aemeasurable X ℙ μ) (hf.mono' HasPDF.ac), map_eq_withDensity_pdf X ℙ μ,
-    pdf_def, integral_rnDeriv_smul HasPDF.ac, withDensity_rnDeriv_eq _ _ HasPDF.ac]
+  rw [← integral_map (HasPDF.aemeasurable X ℙ μ) (hf.mono' HasPDF.absolutelyContinuous),
+    map_eq_withDensity_pdf X ℙ μ, pdf_def, integral_rnDeriv_smul HasPDF.absolutelyContinuous,
+    withDensity_rnDeriv_eq _ _ HasPDF.absolutelyContinuous]
 
 end IntegralPDFMul
 
