@@ -3,6 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Scott Morrison, Adam Topaz
 -/
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Types
@@ -20,8 +21,11 @@ If `F : J → C` is a family of objects in `C`, we define a bijection
 `Limits.Concrete.productEquiv F : (forget C).obj (∏ F) ≃ ∀ j, F j`.
 
 Similarly, if `f₁ : X₁ ⟶ S` and `f₂ : X₂ ⟶ S` are two morphisms, the elements
-in `pullback f₁ f₂` are identified by `Limits.Concrete.pullbackEquiv``
+in `pullback f₁ f₂` are identified by `Limits.Concrete.pullbackEquiv`
 to compatible tuples of elements in `X₁ × X₂`.
+
+Some results are also obtained for the terminal object, binary products,
+wide-pullbacks, wide-pushouts, multiequalizers and cokernels.
 
 -/
 
@@ -54,6 +58,56 @@ lemma productEquiv_symm_apply_π (x : ∀ j, F j) (j : J) :
   rw [← productEquiv_apply_apply, Equiv.apply_symm_apply]
 
 end Products
+
+section Terminal
+
+variable (C)
+variable [ConcreteCategory.{w} C] [HasTerminal C]
+  [PreservesLimit (Functor.empty.{0} C) (forget C)]
+
+/-- The equivalence `(forget C).obj (⊤_ C) ≃ PUnit` when `C` is a concrete category. -/
+noncomputable def terminalEquiv : (forget C).obj (⊤_ C) ≃ PUnit :=
+  (PreservesTerminal.iso (forget C) ≪≫ Types.terminalIso).toEquiv
+
+noncomputable instance : Unique ((forget C).obj (⊤_ C)) where
+  default := (terminalEquiv C).symm PUnit.unit
+  uniq _ := (terminalEquiv C).injective (Subsingleton.elim _ _)
+
+end Terminal
+
+section BinaryProducts
+
+variable [ConcreteCategory.{w} C] (X₁ X₂ : C) [HasBinaryProduct X₁ X₂]
+  [PreservesLimit (pair X₁ X₂) (forget C)]
+
+/-- The equivalence `(forget C).obj (X₁ ⨯ X₂) ≃ ((forget C).obj X₁) × ((forget C).obj X₂)`
+if `X₁` and `X₂` are objects in a concrete category `C`. -/
+noncomputable def prodEquiv : (forget C).obj (X₁ ⨯ X₂) ≃ X₁ × X₂ :=
+  (PreservesLimitPair.iso (forget C) X₁ X₂ ≪≫ Types.binaryProductIso _ _).toEquiv
+
+@[simp]
+lemma prodEquiv_apply_fst (x : (forget C).obj (X₁ ⨯ X₂)) :
+    (prodEquiv X₁ X₂ x).fst = (Limits.prod.fst : X₁ ⨯ X₂ ⟶ X₁) x :=
+  congr_fun (prodComparison_fst (forget C) X₁ X₂) x
+
+@[simp]
+lemma prodEquiv_apply_snd (x : (forget C).obj (X₁ ⨯ X₂)) :
+    (prodEquiv X₁ X₂ x).snd = (Limits.prod.snd : X₁ ⨯ X₂ ⟶ X₂) x :=
+  congr_fun (prodComparison_snd (forget C) X₁ X₂) x
+
+@[simp]
+lemma prodEquiv_symm_apply_fst (x : X₁ × X₂) :
+    (Limits.prod.fst : X₁ ⨯ X₂ ⟶ X₁) ((prodEquiv X₁ X₂).symm x) = x.1 := by
+  obtain ⟨y, rfl⟩ := (prodEquiv X₁ X₂).surjective x
+  simp
+
+@[simp]
+lemma prodEquiv_symm_apply_snd (x : X₁ × X₂) :
+    (Limits.prod.snd : X₁ ⨯ X₂ ⟶ X₂) ((prodEquiv X₁ X₂).symm x) = x.2 := by
+  obtain ⟨y, rfl⟩ := (prodEquiv X₁ X₂).surjective x
+  simp
+
+end BinaryProducts
 
 section Pullbacks
 
@@ -173,11 +227,11 @@ the concrete multiequalizer. -/
 noncomputable def multiequalizerEquiv (I : MulticospanIndex.{w} C) [HasMultiequalizer I]
     [PreservesLimit I.multicospan (forget C)] :
     (multiequalizer I : C) ≃
-      { x : ∀ i : I.L, I.left i // ∀ i : I.R, I.fst i (x _) = I.snd i (x _) } := by
-  let h1 := limit.isLimit I.multicospan
-  let h2 := isLimitOfPreserves (forget C) h1
-  let E := h2.conePointUniqueUpToIso (Types.limitConeIsLimit.{w, v} _)
-  exact Equiv.trans E.toEquiv (Concrete.multiequalizerEquivAux.{w, v} I)
+      { x : ∀ i : I.L, I.left i // ∀ i : I.R, I.fst i (x _) = I.snd i (x _) } :=
+  letI h1 := limit.isLimit I.multicospan
+  letI h2 := isLimitOfPreserves (forget C) h1
+  letI E := h2.conePointUniqueUpToIso (Types.limitConeIsLimit.{w, v} _)
+  Equiv.trans E.toEquiv (Concrete.multiequalizerEquivAux.{w, v} I)
 #align category_theory.limits.concrete.multiequalizer_equiv CategoryTheory.Limits.Concrete.multiequalizerEquiv
 
 @[simp]

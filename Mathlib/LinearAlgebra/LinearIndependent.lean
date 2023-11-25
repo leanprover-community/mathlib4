@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.Prod
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Lean.Expr.ExtraRecognizers
 
 #align_import linear_algebra.linear_independent from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
@@ -99,6 +100,26 @@ variable (R) (v)
 def LinearIndependent : Prop :=
   LinearMap.ker (Finsupp.total ι M R v) = ⊥
 #align linear_independent LinearIndependent
+
+open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Delaborator for `LinearIndependent` that suggests pretty printing with type hints
+in case the family of vectors is over a `Set`.
+
+Type hints look like `LinearIndependent fun (v : ↑s) => ↑v` or `LinearIndependent (ι := ↑s) f`,
+depending on whether the family is a lambda expression or not. -/
+@[delab app.LinearIndependent]
+def delabLinearIndependent : Delab :=
+  whenPPOption getPPNotation <|
+  whenNotPPOption getPPAnalysisSkip <|
+  withOptionAtCurrPos `pp.analysis.skip true do
+    let e ← getExpr
+    guard <| e.isAppOfArity ``LinearIndependent 7
+    let some _ := (e.getArg! 0).coeTypeSet? | failure
+    let optionsPerPos ← if (e.getArg! 3).isLambda then
+      withNaryArg 3 do return (← read).optionsPerPos.setBool (← getPos) pp.funBinderTypes.name true
+    else
+      withNaryArg 0 do return (← read).optionsPerPos.setBool (← getPos) `pp.analysis.namedArg true
+    withTheReader Context ({· with optionsPerPos}) delab
 
 variable {R} {v}
 
