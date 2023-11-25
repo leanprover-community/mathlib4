@@ -350,13 +350,43 @@ theorem mono_light {X Y : Profinite} [Y.IsLight] (f : X ⟶ Y) [Mono f] : X.IsLi
   let X' : LightProfinite := {
     diagram := {
       obj := fun n ↦ FintypeCat.of (Set.range (f ≫ Y'.cone.π.app n) : Set (Y'.diagram.obj n))
-      map := sorry
-      map_id := sorry
-      map_comp := sorry
+      map := fun h ⟨x, hx⟩ ↦ ⟨Y'.diagram.map h x, (by
+        obtain ⟨y, hx⟩ := hx
+        rw [← hx]
+        use y
+        have := Y'.cone.π.naturality h
+        simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map, Category.id_comp,
+          Functor.comp_map] at this
+        rw [this]
+        rfl )⟩
+      map_id := by
+        intro
+        simp only [Functor.comp_obj, id_eq, Functor.const_obj_obj, Functor.const_obj_map,
+          Functor.comp_map, eq_mp_eq_cast, cast_eq, eq_mpr_eq_cast, CategoryTheory.Functor.map_id,
+          FintypeCat.id_apply]
+        rfl
+      map_comp := by
+        intros
+        simp only [Functor.comp_obj, id_eq, Functor.const_obj_obj, Functor.const_obj_map,
+          Functor.comp_map, eq_mp_eq_cast, cast_eq, eq_mpr_eq_cast, Functor.map_comp,
+          FintypeCat.comp_apply]
+        rfl
     }
     cone := {
       pt := X
-      π := sorry
+      π := {
+        app := fun n ↦ by
+          refine ⟨fun x ↦ ⟨Y'.cone.π.app n (f x), ⟨x, rfl⟩⟩, ?_⟩
+          have : Continuous (fun x ↦ Y'.cone.π.app n (f x)) :=
+            Continuous.comp (Y'.cone.π.app n).continuous f.continuous
+          sorry
+        naturality := by
+          intro n m h
+          simp only [Functor.const_obj_obj, Functor.comp_obj, id_eq, Functor.const_obj_map,
+            Functor.comp_map, eq_mp_eq_cast, cast_eq, eq_mpr_eq_cast,
+            toProfinite_obj_toCompHaus_toTop_α, Category.id_comp]
+          sorry
+      }
     }
     isLimit := sorry
   }
