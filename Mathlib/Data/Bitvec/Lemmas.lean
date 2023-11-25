@@ -21,15 +21,10 @@ open Nat
 
 variable {w v : Nat}
 
-theorem toNat_inj {n : Nat}: Function.Injective (@Std.BitVec.toNat n) := by
+theorem toNat_injective {n : Nat}: Function.Injective (@Std.BitVec.toNat n) := by
   unfold BitVec.toNat Function.Injective toFin
-  intros v0 v1 f
-  simp at f
-  rw [← BitVec.toNat] at f; rw [← BitVec.toNat] at f
-  have toNat_inj' {x y : BitVec n} : x.toNat = y.toNat ↔ x = y :=
-    ⟨(match x, y, · with | ⟨_, _⟩,⟨_, _⟩, rfl => rfl), (· ▸ rfl)⟩
-  rw [toNat_inj'] at f
-  exact f
+  intros x y
+  exact (match x, y, · with | ⟨_, _⟩,⟨_, _⟩, rfl => rfl)
 
 /-- `x < y` as natural numbers if and only if `x < y` as `BitVec w`. -/
 theorem toNat_lt_toNat {x y : BitVec w} : x.toNat < y.toNat ↔ x < y :=
