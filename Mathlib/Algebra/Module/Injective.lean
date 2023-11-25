@@ -472,7 +472,7 @@ protected theorem of_injective (inj : Module.Injective R Q) : Module.Baer R Q :=
     (fun a b h ↦ by aesop) (g ∘ₗ ULift.moduleEquiv.toLinearMap)
   ⟨g' ∘ₗ ULift.moduleEquiv.symm.toLinearMap, by aesop⟩
 
-protected theorem iff_injective : Module.Baer R Q <-> Module.Injective R Q :=
+protected theorem iff_injective : Module.Baer R Q ↔ Module.Injective R Q :=
   ⟨Module.Baer.injective, Module.Baer.of_injective⟩
 
 end Module.Baer
