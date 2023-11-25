@@ -42,14 +42,6 @@ variable
   {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] [SmoothManifoldWithCorners I' M']
 
-lemma ModelWithCorners.isOpen_target [I.Boundaryless] {x : M} :
-    IsOpen (extChartAt I x).target := LocalHomeomorph.isOpen_extend_target ..
-
-/-- If `M` has no boundary, every point of `M` is an interior point. -/
-lemma ModelWithCorners.isInteriorPoint [I.Boundaryless] {x : M} : I.IsInteriorPoint x := by
-  rw [ModelWithCorners.IsInteriorPoint, IsOpen.interior_eq I.isOpen_target]
-  exact LocalEquiv.map_source _ (mem_extChartAt_source _ _)
-
 variable (I)
 def tangentCoordChange (x y : M) := (tangentBundleCore I M).coordChange (achart H x) (achart H y)
 
