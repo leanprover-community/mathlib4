@@ -238,12 +238,12 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm :
     have _i : NoZeroSMulDivisors R A := NoZeroSMulDivisors.trans R (FractionRing R) A
     rw [← map_zero (algebraMap R A)] at this
     exact NoZeroSMulDivisors.algebraMap_injective R A this
-  rw [← LinearMap.trace_extendScalars, LinearMap.extendScalars_comp, ← toEndomorphism_extendScalars,
-    ← toEndomorphism_extendScalars]
+  rw [← LinearMap.trace_baseChange, LinearMap.baseChange_comp, ← toEndomorphism_baseChange,
+    ← toEndomorphism_baseChange]
   replace hz : 1 ⊗ₜ z ∈ lowerCentralSeries A (A ⊗[R] L) (A ⊗[R] L) 1 := by
     simp only [lowerCentralSeries_succ, lowerCentralSeries_zero] at hz ⊢
-    rw [← LieSubmodule.extendScalars_top, ← LieSubmodule.lie_extendScalars]
-    exact Submodule.tmul_mem_extendScalars_of_mem 1 hz
+    rw [← LieSubmodule.baseChange_top, ← LieSubmodule.lie_baseChange]
+    exact Submodule.tmul_mem_baseChange_of_mem 1 hz
   replace hzc : 1 ⊗ₜ[R] z ∈ LieAlgebra.center A (A ⊗[R] L) := by
     simp only [mem_maxTrivSubmodule] at hzc ⊢
     intro y
