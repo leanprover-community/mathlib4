@@ -116,7 +116,7 @@ theorem descPochhammer_eq_factorial_mul_choose (r : R) (n : ℕ) :
     Polynomial.smeval (descPochhammer ℤ n) r = n.factorial • choose r n := by
   unfold choose
   rw [factorial_mul_multichoose_eq_ascPochhammer, descPochhammer_eq_ascPochhammer,
-    Polynomial.smeval_comp, add_comm_sub, Polynomial.smeval_add, Polynomial.smeval_X, pow_one]
+    Polynomial.smeval_comp r, add_comm_sub, Polynomial.smeval_add, Polynomial.smeval_X, pow_one]
   have h : Polynomial.smeval (1 - n : Polynomial ℤ) r = 1 - n := by
     rw [← Polynomial.C_eq_nat_cast, ←Polynomial.C_1, ← Polynomial.C_sub, Polynomial.smeval_C]
     simp only [pow_zero, zsmul_eq_mul, Int.cast_sub, Int.cast_one, Int.cast_ofNat, mul_one]
@@ -130,7 +130,7 @@ theorem choose_zero_right (r : R) : choose r 0 = 1 := by
 theorem choose_zero_succ (k : ℕ) : choose (0 : R) (Nat.succ k) = 0 := by
   refine eq_of_smul_factorial_eq (Nat.succ k) ?_
   rw [← descPochhammer_eq_factorial_mul_choose, smul_zero, descPochhammer_succ_left, mul_comm,
-    Polynomial.smeval_mul_X, mul_zero]
+    Polynomial.smeval_mul_X (0 : R), mul_zero]
 
 theorem choose_zero_pos (k : ℕ) (h_pos: 0 < k) : choose (0:R) k = 0 := by
   rw [← Nat.succ_pred_eq_of_pos h_pos, choose_zero_succ]
