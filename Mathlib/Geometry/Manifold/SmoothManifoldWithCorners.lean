@@ -807,24 +807,6 @@ theorem mem_analyticGroupoid_of_boundaryless [CompleteSpace E] [I.Boundaryless]
 
 end analyticGroupoid
 
-/-! Topological manifolds with corners: no smoothness assumed, but boundary and/or corners
-are possible. -/
-section ManifoldWithCorners
-/-- Typeclass defining topological manifolds with corners with respect to a model with corners,
-over a field `𝕜`. -/
-class ManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M] extends
-    HasGroupoid M (contDiffGroupoid 0 I) : Prop
-
-theorem ManifoldWithCorners.mk' {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    [gr : HasGroupoid M (contDiffGroupoid 0 I)] : ManifoldWithCorners I M :=
-  { gr with }
-
-end ManifoldWithCorners
-
 section SmoothManifoldWithCorners
 
 /-! ### Smooth manifolds with corners -/
@@ -1005,9 +987,6 @@ theorem mapsTo_extend (hs : s ⊆ f.source) :
     f.image_eq_target_inter_inv_preimage hs]
   exact image_subset _ (inter_subset_right _ _)
 #align local_homeomorph.maps_to_extend LocalHomeomorph.mapsTo_extend
-
-lemma mapsTo_extend' : MapsTo (f.extend I) (f.extend I).source (f.extend I).target :=
-  fun _ hx ↦(f.extend I).map_source hx
 
 theorem extend_left_inv {x : M} (hxf : x ∈ f.source) : (f.extend I).symm (f.extend I x) = x :=
   (f.extend I).left_inv <| by rwa [f.extend_source]
