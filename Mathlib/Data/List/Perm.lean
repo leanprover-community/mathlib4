@@ -250,10 +250,13 @@ theorem Perm.foldl_eq {f : β → α → β} {l₁ l₂ : List α} (rcomm : Righ
 #align list.perm.foldl_eq List.Perm.foldl_eq
 
 theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} (lcomm : LeftCommutative f) (p : l₁ ~ l₂) :
-    ∀ b, foldr f b l₁ = foldr f b l₂ :=
-  Perm.recOnSwap' p (fun b => rfl) (fun x t₁ t₂ _p r b => by simp; rw [r b])
-    (fun x y t₁ t₂ _p r b => by simp; rw [lcomm, r b]) fun t₁ t₂ t₃ _p₁ _p₂ r₁ r₂ a =>
-    Eq.trans (r₁ a) (r₂ a)
+    ∀ b, foldr f b l₁ = foldr f b l₂ := by
+  intro b
+  induction p using Perm.recOnSwap' generalizing b
+  case nil => rfl
+  case cons r  => simp; rw [r b]
+  case swap' r => simp; rw [lcomm, r b]
+  case trans r₁ r₂ => exact Eq.trans (r₁ b) (r₂ b)
 #align list.perm.foldr_eq List.Perm.foldr_eq
 
 #align list.perm.rec_heq List.Perm.rec_heq
