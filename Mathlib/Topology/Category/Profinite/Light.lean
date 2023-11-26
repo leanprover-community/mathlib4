@@ -322,7 +322,7 @@ namespace LightProfinite
 def toProfinite (S : LightProfinite) : Profinite := S.cone.pt
 
 noncomputable
-def ofIsLight (S : Profinite) [S.IsLight] : LightProfinite where
+def ofIsLight (S : Profinite.{u}) [S.IsLight] : LightProfinite.{u} where
   diagram := initial_functor S ⋙ S.fintypeDiagram
   cone := (Functor.Initial.limitConeComp (initial_functor S) S.lim).cone
   isLimit := (Functor.Initial.limitConeComp (initial_functor S) S.lim).isLimit
@@ -419,7 +419,33 @@ instance isIso_indexCone_lift {X : Profinite} {Y : LightProfinite.{u}} (f : X �
       f.val n at h
     erw [ContinuousMap.coe_mk, Subtype.ext_iff] at h
     exact h
-  · sorry
+  · suffices : ∃ x, ∀ n, monoLight_cone_π_app (op n) f x = a.val (op n)
+    · obtain ⟨x, h⟩ := this
+      use x
+      apply Subtype.ext
+      apply funext
+      intro n
+      exact h (unop n)
+    have : Set.Nonempty (⋂ (n : ℕ), (monoLight_cone_π_app (op n) f) ⁻¹' {a.val (op n)})
+    · refine IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
+        (fun n ↦ (monoLight_cone_π_app (op n) f) ⁻¹' {a.val (op n)}) (directed_of_isDirected_le ?_)
+        (fun _ ↦ (Set.singleton_nonempty _).preimage fun ⟨a, ⟨b, hb⟩⟩ ↦ ⟨b, Subtype.ext hb⟩)
+        (fun _ ↦ (IsClosed.preimage (monoLight_cone_π_app _ _).continuous (T1Space.t1 _)).isCompact)
+        (fun _ ↦ IsClosed.preimage (monoLight_cone_π_app _ _).continuous (T1Space.t1 _))
+      intro i j h x hx
+      simp only [Functor.comp_obj, profiniteToCompHaus_obj, compHausToTop_obj,
+        toProfinite_obj_toCompHaus_toTop_α, Functor.comp_map, profiniteToCompHaus_map,
+        compHausToTop_map, Set.mem_setOf_eq, Set.mem_preimage, Set.mem_singleton_iff] at hx ⊢
+      have := (monoLight_cone f).π.naturality (homOfLE h).op
+      simp only [monoLight_cone, Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map,
+        Category.id_comp, Functor.comp_map] at this
+      rw [this]
+      simp only [CategoryTheory.comp_apply]
+      rw [hx, ← a.prop (homOfLE h).op]
+      rfl
+    obtain ⟨x, hx⟩ := this
+    exact ⟨x, Set.mem_iInter.1 hx⟩
+
 
 noncomputable
 def monoLight_isLimit {X : Profinite} {Y : LightProfinite} (f : X ⟶ Y.toProfinite) [Mono f] :
@@ -436,13 +462,17 @@ theorem mono_light {X Y : Profinite} [Y.IsLight] (f : X ⟶ Y) [Mono f] : X.IsLi
   change (mono_lightProfinite (Y := Y') f).toProfinite.IsLight
   infer_instance
 
-instance {X Y B : Profinite} (f : X ⟶ B) (g : Y ⟶ B) [X.IsLight] [Y.IsLight] :
+instance {X Y B : Profinite.{u}} (f : X ⟶ B) (g : Y ⟶ B) [X.IsLight] [Y.IsLight] :
     (Profinite.pullback f g).IsLight := by
   let i : Profinite.pullback f g ⟶ Profinite.of (X × Y) := ⟨fun x ↦ x.val, continuous_induced_dom⟩
   have : Mono i := by
     rw [Profinite.mono_iff_injective]
     exact Subtype.val_injective
   exact mono_light i
+
+instance {α : Type} [Fintype α] (X : α → Profinite.{u}) [∀ a, (X a).IsLight] :
+    (Profinite.finiteCoproduct X).IsLight where
+  countable_clopens := sorry
 
 @[simps!]
 instance : Category LightProfinite := InducedCategory.category toProfinite
@@ -451,7 +481,7 @@ instance : Category LightProfinite := InducedCategory.category toProfinite
 instance concreteCategory : ConcreteCategory LightProfinite := InducedCategory.concreteCategory _
 
 @[simps!]
-def lightToProfinite : LightProfinite ⥤ Profinite := inducedFunctor _
+def lightToProfinite : LightProfinite.{u} ⥤ Profinite.{u} := inducedFunctor _
 
 instance : Faithful lightToProfinite := show Faithful <| inducedFunctor _ from inferInstance
 
@@ -470,6 +500,139 @@ instance {X : LightProfinite} : CompactSpace ((forget LightProfinite).obj X) :=
 
 instance {X : LightProfinite} : T2Space ((forget LightProfinite).obj X) :=
   (inferInstance : T2Space X.cone.pt )
+
+instance {X : LightProfinite.{u}} : (lightToProfinite.obj X).IsLight :=
+  (inferInstance : X.toProfinite.IsLight)
+
+section Pullback
+
+-- TODO: is there a way to avoid this code duplication from `Profinite`?
+
+variable {X Y B : LightProfinite.{u}} (f : X ⟶ B) (g : Y ⟶ B)
+
+noncomputable
+def pullback : LightProfinite.{u} :=
+  ofIsLight.{u} (Profinite.pullback.{u} (lightToProfinite.{u}.map f) (lightToProfinite.{u}.map g))
+
+/-- The projection from the pullback to the first component. -/
+def pullback.fst : pullback f g ⟶ X where
+  toFun := fun ⟨⟨x, _⟩, _⟩ => x
+  continuous_toFun := Continuous.comp continuous_fst continuous_subtype_val
+
+/-- The projection from the pullback to the second component. -/
+def pullback.snd : pullback f g ⟶ Y where
+  toFun := fun ⟨⟨_, y⟩, _⟩ => y
+  continuous_toFun := Continuous.comp continuous_snd continuous_subtype_val
+
+@[reassoc]
+lemma pullback.condition : pullback.fst f g ≫ f = pullback.snd f g ≫ g := by
+  ext ⟨_, h⟩
+  exact h
+
+/--
+Construct a morphism to the explicit pullback given morphisms to the factors
+which are compatible with the maps to the base.
+This is essentially the universal property of the pullback.
+-/
+def pullback.lift {Z : LightProfinite.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
+    Z ⟶ pullback f g where
+  toFun := fun z => ⟨⟨a z, b z⟩, by apply_fun (· z) at w; exact w⟩
+  continuous_toFun := by
+    apply Continuous.subtype_mk
+    rw [continuous_prod_mk]
+    exact ⟨a.continuous, b.continuous⟩
+
+@[reassoc (attr := simp)]
+lemma pullback.lift_fst {Z : LightProfinite.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
+    pullback.lift f g a b w ≫ pullback.fst f g = a := rfl
+
+@[reassoc (attr := simp)]
+lemma pullback.lift_snd {Z : LightProfinite.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
+    pullback.lift f g a b w ≫ pullback.snd f g = b := rfl
+
+lemma pullback.hom_ext {Z : LightProfinite.{u}} (a b : Z ⟶ pullback f g)
+    (hfst : a ≫ pullback.fst f g = b ≫ pullback.fst f g)
+    (hsnd : a ≫ pullback.snd f g = b ≫ pullback.snd f g) : a = b := by
+  ext z
+  apply_fun (· z) at hfst hsnd
+  apply Subtype.ext
+  apply Prod.ext
+  · exact hfst
+  · exact hsnd
+
+/-- The pullback cone whose cone point is the explicit pullback. -/
+@[simps! pt π]
+noncomputable def pullback.cone : Limits.PullbackCone f g :=
+  Limits.PullbackCone.mk (pullback.fst f g) (pullback.snd f g) (pullback.condition f g)
+
+/-- The explicit pullback cone is a limit cone. -/
+@[simps! lift]
+def pullback.isLimit : Limits.IsLimit (pullback.cone f g) :=
+  Limits.PullbackCone.isLimitAux _
+    (fun s => pullback.lift f g s.fst s.snd s.condition)
+    (fun _ => pullback.lift_fst _ _ _ _ _)
+    (fun _ => pullback.lift_snd _ _ _ _ _)
+    (fun _ _ hm => pullback.hom_ext _ _ _ _ (hm .left) (hm .right))
+
+end Pullback
+
+-- section FiniteCoproduct
+
+-- variable {α : Type} [Fintype α] (X : α → LightProfinite.{u})
+
+-- /--
+-- The coproduct of a finite family of objects in `Profinite`, constructed as the disjoint
+-- union with its usual topology.
+-- -/
+-- def finiteCoproduct : LightProfinite := Profinite.of <| Σ (a : α), X a
+
+-- /-- The inclusion of one of the factors into the explicit finite coproduct. -/
+-- def finiteCoproduct.ι (a : α) : X a ⟶ finiteCoproduct X where
+--   toFun := (⟨a, ·⟩)
+--   continuous_toFun := continuous_sigmaMk (σ := fun a => X a)
+
+-- /--
+-- To construct a morphism from the explicit finite coproduct, it suffices to
+-- specify a morphism from each of its factors.
+-- This is essentially the universal property of the coproduct.
+-- -/
+-- def finiteCoproduct.desc {B : Profinite.{u}} (e : (a : α) → (X a ⟶ B)) :
+--     finiteCoproduct X ⟶ B where
+--   toFun := fun ⟨a, x⟩ => e a x
+--   continuous_toFun := by
+--     apply continuous_sigma
+--     intro a
+--     exact (e a).continuous
+
+-- @[reassoc (attr := simp)]
+-- lemma finiteCoproduct.ι_desc {B : Profinite.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :
+--     finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
+
+-- lemma finiteCoproduct.hom_ext {B : Profinite.{u}} (f g : finiteCoproduct X ⟶ B)
+--     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
+--   ext ⟨a, x⟩
+--   specialize h a
+--   apply_fun (· x) at h
+--   exact h
+
+-- /-- The coproduct cocone associated to the explicit finite coproduct. -/
+-- @[simps]
+-- def finiteCoproduct.cocone : Limits.Cocone (Discrete.functor X) where
+--   pt := finiteCoproduct X
+--   ι := Discrete.natTrans fun ⟨a⟩ => finiteCoproduct.ι X a
+
+-- /-- The explicit finite coproduct cocone is a colimit cocone. -/
+-- @[simps]
+-- def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cocone X) where
+--   desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app ⟨a⟩
+--   fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
+--   uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
+--     specialize hm ⟨a⟩
+--     ext t
+--     apply_fun (· t) at hm
+--     exact hm
+
+-- end FiniteCoproduct
 
 def fintypeCatToLightProfinite : FintypeCat ⥤ LightProfinite where
   obj X := X.toLightProfinite
