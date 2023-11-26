@@ -372,22 +372,19 @@ section vecMul
 
 variable [Fintype m] [DecidableEq m] {K : Type*} [Field K]
 
-theorem mulVec_surjective_iff_exists_right_inverse {A : Matrix m n α} :
-    Function.Surjective A.mulVec ↔ ∃ B : Matrix n m α, A * B = 1 := by
-  refine ⟨fun h ↦ ?_, fun ⟨B, hBA⟩ y ↦ ⟨B.mulVec y, by simp [hBA]⟩⟩
-  have hch : ∀ i : m, ∃ x, A.mulVec x = Pi.single i 1 := fun _ ↦ h _
-  choose cols hcols using hch
-  use (Matrix.of cols).transpose
-  apply_fun Matrix.transpose using transpose_injective
-  apply funext fun j ↦ ?_
-  convert hcols j
-  ext i
-  rw [Pi.single_apply]
-  rfl
 
 theorem vecMul_surjective_iff_exists_left_inverse {A : Matrix m n α} :
     Function.Surjective A.vecMul ↔ ∃ B : Matrix n m α, B * A = 1 := by
-  simp_rw [← mulVec_transpose, mulVec_surjective_iff_exists_right_inverse]
+  refine ⟨fun h ↦ ?_, fun ⟨B, hBA⟩ y ↦ ⟨B.vecMul y, by simp [hBA]⟩⟩
+  choose rows hrows using (h <| Pi.single · 1)
+  refine ⟨Matrix.of rows, Matrix.ext fun i j => ?_⟩
+  rw [mul_apply_eq_vecMul, one_eq_pi_single, ←hrows]
+  rfl
+
+theorem mulVec_surjective_iff_exists_right_inverse {A : Matrix m n α} :
+    Function.Surjective A.mulVec ↔ ∃ B : Matrix n m α, A * B = 1 := by
+  conv_lhs => arg 1; eta_expand
+  simp_rw [← vecMul_transpose, vecMul_surjective_iff_exists_left_inverse]
   refine ⟨fun ⟨B, hB⟩ ↦ ⟨Bᵀ, ?_⟩, fun ⟨B, hB⟩ ↦ ⟨Bᵀ, by rw [←transpose_mul, hB, transpose_one]⟩⟩
   apply_fun Matrix.transpose using transpose_injective
   rw [transpose_mul, transpose_transpose, hB, transpose_one]
