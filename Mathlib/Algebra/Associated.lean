@@ -572,6 +572,19 @@ theorem dvd_dvd_iff_associated [CancelMonoidWithZero α] {a b : α} : a ∣ b �
 instance [CancelMonoidWithZero α] [DecidableRel ((· ∣ ·) : α → α → Prop)] :
     DecidableRel ((· ~ᵤ ·) : α → α → Prop) := fun _ _ => decidable_of_iff _ dvd_dvd_iff_associated
 
+theorem associated_of_dvd_dvd' [CancelMonoid α] {a b : α} (hab : a ∣ b) (hba : b ∣ a) :
+    a ~ᵤ b := by
+  rcases hab with ⟨c, rfl⟩
+  rcases hba with ⟨d, a_eq⟩
+  have : a * (c * d) = a * 1 := by rw [← mul_assoc, ← a_eq, mul_one]
+  have hcd : c * d = 1 := mul_left_cancel this
+  have : a * c * (d * c) = a * c * 1 := by rw [← mul_assoc, ← a_eq, mul_one]
+  have hdc : d * c = 1 := mul_left_cancel this
+  exact ⟨⟨c, d, hcd, hdc⟩, rfl⟩
+
+theorem dvd_dvd_iff_associated' [CancelMonoid α] {a b : α} : a ∣ b ∧ b ∣ a ↔ a ~ᵤ b :=
+  ⟨fun ⟨h1, h2⟩ => associated_of_dvd_dvd' h1 h2, Associated.dvd_dvd⟩
+
 theorem Associated.dvd_iff_dvd_left [Monoid α] {a b c : α} (h : a ~ᵤ b) : a ∣ c ↔ b ∣ c :=
   let ⟨_, hu⟩ := h
   hu ▸ Units.mul_right_dvd.symm
