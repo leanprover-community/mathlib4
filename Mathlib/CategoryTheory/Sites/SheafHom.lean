@@ -109,55 +109,72 @@ lemma InternalHom.isAmalgamation_iff {X : C} (S : Sieve X)
     rw [H, internalHom_map_app_op_mk_id]
     rfl
 
-variable (F G)
+section
 
-lemma internalHom_isSheafFor {X : C} (S : Sieve X)
-    (hG : ∀ ⦃Y : C⦄ (f : Y ⟶ X), IsLimit (G.mapCone (S.pullback f).arrows.cocone.op)) :
+variable {X : C} {S : Sieve X}
+    (hG : ∀ ⦃Y : C⦄ (f : Y ⟶ X), IsLimit (G.mapCone (S.pullback f).arrows.cocone.op))
+
+namespace InternalHom.IsSheafFor
+
+variable (x : Presieve.FamilyOfElements (internalHom F G) S.arrows) (hx : x.Compatible)
+  {Y : C} (g : Y ⟶ X)
+
+lemma exists_app :
+    ∃ (φ : F.obj (op Y) ⟶ G.obj (op Y)),
+      ∀ {Z : C} (p : Z ⟶ Y) (hp : S (p ≫ g)), φ ≫ G.map p.op =
+        F.map p.op ≫ (x (p ≫ g) hp).app ⟨Over.mk (𝟙 Z)⟩ := by
+  let c : Cone ((Presieve.diagram (Sieve.pullback g S).arrows).op ⋙ G) :=
+    { pt := F.obj (op Y)
+      π :=
+        { app := fun ⟨Z, hZ⟩ => F.map Z.hom.op ≫ (x _ hZ).app (op (Over.mk (𝟙 _)))
+          naturality := by
+            rintro ⟨Z₁, hZ₁⟩ ⟨Z₂, hZ₂⟩ ⟨f : Z₂ ⟶ Z₁⟩
+            dsimp
+            rw [id_comp, assoc]
+            have H := hx f.left (𝟙 _) hZ₁ hZ₂ (by simp)
+            simp only [internalHom_obj, unop_op, Functor.id_obj, op_id,
+              FunctorToTypes.map_id_apply] at H
+            let φ : Over.mk f.left ⟶ Over.mk (𝟙 Z₁.left) := Over.homMk f.left
+            have H' := (x (Z₁.hom ≫ g) hZ₁).naturality φ.op
+            dsimp at H H' ⊢
+            erw [← H, ← H', internalHom_map_app_op_mk_id, ← F.map_comp_assoc,
+              ← op_comp, Over.w f] } }
+  use (hG g).lift c
+  intro Z p hp
+  exact ((hG g).fac c ⟨Over.mk p, hp⟩)
+
+/-- Auxiliary definition for `Presheaf.internalHom_isSheafFor`. -/
+noncomputable def app : F.obj (op Y) ⟶ G.obj (op Y) := (exists_app hG x hx g).choose
+
+lemma app_cond {Z : C} (p : Z ⟶ Y) (hp : S (p ≫ g)) :
+    app hG x hx g ≫ G.map p.op = F.map p.op ≫ (x (p ≫ g) hp).app ⟨Over.mk (𝟙 Z)⟩ :=
+  (exists_app hG x hx g).choose_spec p hp
+
+end InternalHom.IsSheafFor
+
+variable (F G S)
+
+open InternalHom.IsSheafFor in
+lemma internalHom_isSheafFor  :
     Presieve.IsSheafFor (internalHom F G) S.arrows := by
   intro x hx
   apply exists_unique_of_exists_of_unique
-  · have Φ : ∀ {Y : C} (g : Y ⟶ X), ∃ (φ : F.obj (op Y) ⟶ G.obj (op Y)),
-      ∀ {Z : C} (p : Z ⟶ Y) (hp : S (p ≫ g)), φ ≫ G.map p.op =
-        F.map p.op ≫ (x (p ≫ g) hp).app ⟨Over.mk (𝟙 Z)⟩ := fun {Y} g => by
-        let c : Cone ((Presieve.diagram (Sieve.pullback g S).arrows).op ⋙ G) :=
-          { pt := F.obj (op Y)
-            π :=
-              { app := fun ⟨Z, hZ⟩ => F.map Z.hom.op ≫ (x _ hZ).app (op (Over.mk (𝟙 _)))
-                naturality := by
-                  rintro ⟨Z₁, hZ₁⟩ ⟨Z₂, hZ₂⟩ ⟨f : Z₂ ⟶ Z₁⟩
-                  dsimp
-                  rw [id_comp, assoc]
-                  have H := hx f.left (𝟙 _) hZ₁ hZ₂ (by simp)
-                  simp only [internalHom_obj, unop_op, Functor.id_obj, op_id,
-                    FunctorToTypes.map_id_apply] at H
-                  let φ : Over.mk f.left ⟶ Over.mk (𝟙 Z₁.left) := Over.homMk f.left
-                  have H' := (x (Z₁.hom ≫ g) hZ₁).naturality φ.op
-                  dsimp at H H' ⊢
-                  erw [← H, ← H', internalHom_map_app_op_mk_id, ← F.map_comp_assoc,
-                    ← op_comp, Over.w f] } }
-        use (hG g).lift c
-        intro Z p hp
-        exact ((hG g).fac c ⟨Over.mk p, hp⟩)
-    let app : ∀ {Y : C} (_ : Y ⟶ X), F.obj (op Y) ⟶ G.obj (op Y) := fun g => (Φ g).choose
-    have happ : ∀ {Y : C} (g : Y ⟶ X) {Z : C} (p : Z ⟶ Y) (hp : S (p ≫ g)),
-      app g ≫ G.map p.op = F.map p.op ≫ (x (p ≫ g) hp).app ⟨Over.mk (𝟙 Z)⟩ :=
-        fun g => (Φ g).choose_spec
-    refine ⟨
-      { app := fun Y => app Y.unop.hom
+  · refine' ⟨
+      { app := fun Y => app hG x hx Y.unop.hom
         naturality := by
           rintro ⟨Y₁ : Over X⟩ ⟨Y₂ : Over X⟩ ⟨φ : Y₂ ⟶ Y₁⟩
           apply (hG Y₂.hom).hom_ext
           rintro ⟨Z : Over Y₂.left, hZ⟩
-          change (F.map φ.left.op ≫ app Y₂.hom) ≫ G.map Z.hom.op =
-            (app Y₁.hom ≫ G.map φ.left.op) ≫ G.map Z.hom.op
-          rw [assoc, assoc, happ Y₂.hom Z.hom hZ, ← G.map_comp, ← op_comp,
-            happ Y₁.hom (Z.hom ≫ φ.left) (by simpa using hZ), ← F.map_comp_assoc, op_comp]
+          dsimp
+          rw [assoc, assoc, app_cond hG x hx Y₂.hom Z.hom hZ, ← G.map_comp, ← op_comp]
+          erw [app_cond hG x hx Y₁.hom (Z.hom ≫ φ.left) (by simpa using hZ),
+            ← F.map_comp_assoc, op_comp]
           congr 3
-          simp }, ?_⟩
+          simp }, _⟩
     rw [InternalHom.isAmalgamation_iff _ _ hx]
     intro Y g hg
     dsimp
-    have H := happ g (𝟙 _) (by simpa using hg)
+    have H := app_cond hG x hx g (𝟙 _) (by simpa using hg)
     rw [op_id, G.map_id, comp_id, F.map_id, id_comp] at H
     exact H.trans (by congr; simp)
   · intro y₁ y₂ hy₁ hy₂
@@ -170,6 +187,10 @@ lemma internalHom_isSheafFor {X : C} (S : Sieve X)
     let φ : Over.mk (Z.hom ≫ Y.hom) ⟶ Y := Over.homMk Z.hom
     refine' (y₁.naturality φ.op).symm.trans (Eq.trans _ (y₂.naturality φ.op))
     rw [(hy₁ _ _ hZ), ← ((hy₂ _ _ hZ))]
+
+end
+
+variable (F G)
 
 lemma internalHom_isSheaf (hG : IsSheaf J G) :
     IsSheaf J (internalHom F G) := by
