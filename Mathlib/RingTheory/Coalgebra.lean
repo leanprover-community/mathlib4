@@ -33,7 +33,7 @@ elements of `S` has a coalgebra structure. The coproduct is given by `Δ(fₛ) =
 counit by `ε(fₛ) =  1`, where `fₛ` is the function sending `s` to `1` and all other elements of `S`
 to zero. -/
 noncomputable
-def Finsupp.Coalgebra (R : Type u) (S : Type v) [CommRing R] : Coalgebra R (S →₀ R) where
+instance Finsupp.instCoalgebra (R : Type u) (S : Type v) [CommRing R] : Coalgebra R (S →₀ R) where
   Δ := Finsupp.total S ((S →₀ R) ⊗[R] (S →₀ R)) R
     (fun s ↦ Finsupp.single s 1 ⊗ₜ Finsupp.single s 1)
   ε := Finsupp.total S R R (fun _ ↦ 1)
