@@ -323,7 +323,7 @@ def domRestrict' (p : Submodule R M) : (M →ₗ[R] M₂) →ₗ[R] p →ₗ[R] 
 
 @[simp]
 theorem domRestrict'_apply (f : M →ₗ[R] M₂) (p : Submodule R M) (x : p) :
-    domRestrict' p f x = f x :=
+    domRestrict' (M₂ := M₂) p f x = f x :=
   rfl
 #align linear_map.dom_restrict'_apply LinearMap.domRestrict'_apply
 
