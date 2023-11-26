@@ -260,6 +260,11 @@ theorem doubleton_eq [DecidableEq α] {x y : α} (h : x ≠ y) : ({x, y} : List 
   rwa [singleton_eq, mem_singleton]
 #align list.doubleton_eq List.doubleton_eq
 
+theorem doubleton_eq' [DecidableEq α] {x y : α} :
+    ({x, y} : List α) = if x = y then [x] else [x, y] :=
+  show (if x ∈ [y] then [y] else [x, y]) = (if x = y then [x] else [x, y])
+  from if_ctx_congr List.mem_singleton (Eq.symm ∘ congrArg (fun t => [t])) (fun _ => rfl)
+
 /-! ### bounded quantifiers over lists -/
 
 #align list.forall_mem_nil List.forall_mem_nil
@@ -3279,6 +3284,40 @@ attribute [simp 1100] filterMap_cons_some
 theorem Sublist.map (f : α → β) {l₁ l₂ : List α} (s : l₁ <+ l₂) : map f l₁ <+ map f l₂ :=
   filterMap_eq_map f ▸ s.filterMap _
 #align list.sublist.map List.Sublist.map
+
+lemma cons_sublist_cons_iff' {xs ys : List α} {x y : α} :
+    x :: xs <+ y :: ys ↔ (x = y ∧ xs <+ ys) ∨ x :: xs <+ ys := by
+  rw [iff_iff_implies_and_implies, or_imp, and_imp]
+  refine ⟨?_, fun h => h ▸ Sublist.cons₂ x, Sublist.cons y⟩
+  generalize h1 : x :: xs = xs'; generalize h2 : y :: ys = ys'
+  intro H; revert xs ys
+  cases' H with _ ys' y' h xs' ys' z h <;> intro xs ys h1 h2
+  . exfalso; exact cons_ne_nil _ _ h1
+  . rw [tail_eq_of_cons_eq h2]; right; assumption
+  . left; simp only [cons.injEq] at h1 h2; cases h1; cases h2
+    subst x y xs' ys'; apply And.intro rfl; assumption
+
+lemma pair_sublist_append {a b : α} {xs ys : List α} :
+    [a, b] <+ xs ++ ys ↔ [a, b] <+ xs ∨ (a ∈ xs ∧ b ∈ ys) ∨ [a, b] <+ ys := by
+  induction' xs with x xs ih
+  . simp only [nil_append, sublist_nil, not_mem_nil, false_and, false_or]
+  . simp only [cons_sublist_cons_iff', cons_append, mem_append, mem_cons,
+               and_or_left, singleton_sublist, ih, or_assoc, or_and_right]
+    exact or_congr_right or_left_comm
+
+lemma Sublist.map_inj (f : α → β) (h : f.Injective) {xs ys} :
+    List.map f xs <+ List.map f ys ↔ xs <+ ys := by
+  refine Iff.intro ?_ (Sublist.map f)
+  revert xs; induction' ys with y ys <;> intro xs
+  . simp only [map_nil, sublist_nil, map_eq_nil, imp_self]
+  . intro H
+    cases' xs with x xs
+    . apply nil_sublist
+    . simp only [map_cons, cons_sublist_cons_iff', h.eq_iff] at H ⊢
+      refine Or.imp (And.imp_right ?_) ?_ H
+      . apply_assumption
+      . rw [← map_cons]
+        apply_assumption
 
 /-! ### reduceOption -/
 

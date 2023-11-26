@@ -199,3 +199,27 @@ instance : LawfulMonadLift m (StateT σ m) where
                                       bind_assoc, bind, StateT.bind, pure_bind]
 
 end StateT
+
+section ShouldBeMoved
+
+universe v
+
+@[reassocM (attr:=simp)]
+lemma cond_bind {m : Type u → Type v} [Monad m] {α β}
+  (b : Bool) (t e : m α) (f : α → m β)
+    : (cond b t e) >>= f = cond b (t >>= f) (e >>= f) :=
+  by cases b <;> exact rfl
+
+@[reassocM (attr:=simp)]
+lemma ite_bind {m : Type u → Type v} [Monad m] {α β}
+  (P : Prop) [d : Decidable P] (t e : m α) (f : α → m β)
+    : (ite P t e) >>= f = ite P (t >>= f) (e >>= f) :=
+  by cases d <;> exact rfl
+
+@[reassocM (attr:=simp)]
+lemma dite_bind {m : Type u → Type v} [Monad m] {α β}
+  (P : Prop) [d : Decidable P] (t : P → m α) (e : ¬ P → m α) (f : α → m β)
+    : (dite P t e) >>= f = dite P (t . >>= f) (e . >>= f) :=
+  by cases d <;> exact rfl
+
+end ShouldBeMoved

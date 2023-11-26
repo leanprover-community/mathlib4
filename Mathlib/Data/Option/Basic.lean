@@ -62,6 +62,18 @@ theorem exists_mem_map {f : α → β} {o : Option α} {p : β → Prop} :
     (∃ y ∈ o.map f, p y) ↔ ∃ x ∈ o, p (f x) := by simp
 #align option.exists_mem_map Option.exists_mem_map
 
+@[simp] lemma isSome_map {f : α → β} : ∀ {o : Option α},
+    (o.map f).isSome = o.isSome
+  | some _ => rfl
+  | none   => rfl
+
+lemma isSome_map' (f : α → β) {o : Option α} : o.isSome → (o.map f).isSome :=
+  Eq.trans isSome_map
+
+@[simp] lemma get_map {f : α → β} :
+    ∀ {o : Option α} (h : o.isSome), (o.map f).get (isSome_map' f h) = f (o.get h)
+  | some _, _ => rfl
+
 theorem coe_get {o : Option α} (h : o.isSome) : ((Option.get _ h : α) : Option α) = o :=
   Option.some_get h
 #align option.coe_get Option.coe_get
