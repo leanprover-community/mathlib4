@@ -132,7 +132,8 @@ variable {r ε ρ σ : Type u} {m : Type u → Type v₁} [Monad m] [LawfulMonad
 namespace ContT
 
 instance : LawfulMonadLift m (ContT r m) where
-  monadLift_pure x := by simp only [MonadLift.monadLift, monadLift, pure_bind, pure]
+  monadLift_pure x :=
+    by funext; simp only [MonadLift.monadLift, monadLift, pure_bind, pure]
   monadLift_bind   := ContT.monadLift_bind
 
 end ContT
@@ -140,8 +141,10 @@ end ContT
 namespace ExceptCpsT
 
 instance : LawfulMonadLift m (ExceptCpsT ε m) where
-  monadLift_pure x := by simp_rw [MonadLift.monadLift, lift, pure, pure_bind]
-  monadLift_bind x f := by simp only [MonadLift.monadLift, lift, bind_assoc, bind]; rfl
+  monadLift_pure x :=
+    by funext; simp_rw [MonadLift.monadLift, lift, pure, pure_bind]
+  monadLift_bind x f :=
+    by funext; simp only [MonadLift.monadLift, lift, bind_assoc, bind]; rfl
 
 end ExceptCpsT
 
@@ -186,17 +189,21 @@ end ReaderT
 namespace StateCpsT
 
 instance : LawfulMonadLift m (StateCpsT σ m) where
-  monadLift_pure x := by simp_rw [MonadLift.monadLift, StateCpsT.lift, pure, pure_bind]
-  monadLift_bind x f := by simp only [MonadLift.monadLift, StateCpsT.lift, bind_assoc, bind]; rfl
+  monadLift_pure x :=
+    by funext; simp_rw [MonadLift.monadLift, StateCpsT.lift, pure, pure_bind]
+  monadLift_bind x f :=
+    by funext; simp only [MonadLift.monadLift, StateCpsT.lift, bind_assoc, bind]; rfl
 
 end StateCpsT
 
 namespace StateT
 
 instance : LawfulMonadLift m (StateT σ m) where
-  monadLift_pure x := by simp_rw [MonadLift.monadLift, StateT.lift, pure, StateT.pure, pure_bind]
-  monadLift_bind x f := by simp only [MonadLift.monadLift, StateT.lift, Function.comp_apply,
-                                      bind_assoc, bind, StateT.bind, pure_bind]
+  monadLift_pure x :=
+    by funext; simp_rw [MonadLift.monadLift, StateT.lift, pure, StateT.pure, pure_bind]
+  monadLift_bind x f :=
+    by funext; simp only [MonadLift.monadLift, StateT.lift, bind_assoc, bind,
+                          Function.comp_apply, StateT.bind, pure_bind]
 
 end StateT
 
