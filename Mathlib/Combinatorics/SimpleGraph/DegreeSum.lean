@@ -121,7 +121,7 @@ theorem card_edgeFinset_top_eq_card_choose_two :
 /-- Any graph on `n` vertices has at most `n.choose 2` edges. -/
 theorem card_edgeFinset_le_card_choose_two : G.edgeFinset.card ≤ (Fintype.card V).choose 2 := by
   apply (card_le_of_subset _).trans_eq card_edgeFinset_top_eq_card_choose_two
-  simp
+  simp only [Set.subset_toFinset, Set.coe_toFinset, edgeSet_subset_edgeSet, le_top]
 
 end DegreeSum
 
