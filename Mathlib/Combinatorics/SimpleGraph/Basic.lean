@@ -953,7 +953,7 @@ theorem edgeFinset_bot : (⊥ : SimpleGraph V).edgeFinset = ∅ := by simp [edge
 @[simp]
 theorem edgeFinset_top [Fintype V] [DecidableEq V] :
     (⊤ : SimpleGraph V).edgeFinset = univ.filter fun e => ¬e.IsDiag := by
-  ext f
+  ext
   constructor <;> intro hm
   · simp [not_isDiag_of_mem_edgeFinset hm]
   · simp_all [hm]
