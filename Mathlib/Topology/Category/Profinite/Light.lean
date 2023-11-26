@@ -167,6 +167,12 @@ structure LightProfinite : Type (u+1) where
   cone : Cone (diagram ⋙ toProfinite.{u})
   isLimit : IsLimit cone
 
+@[ext]
+theorem LightProfinite.ext {Y : LightProfinite} {a b : Y.cone.pt}
+    (h : ∀ n, Y.cone.π.app n a = Y.cone.π.app n b) : a = b := by
+  have : PreservesLimitsOfSize.{0, 0} (forget Profinite) := preservesLimitsOfSizeShrink _
+  exact Concrete.isLimit_ext _ Y.isLimit _ _ h
+
 def FintypeCat.toLightProfinite (X : FintypeCat) : LightProfinite where
   diagram := (Functor.const _).obj X
   cone := {
@@ -186,8 +192,6 @@ class Profinite.IsLight (S : Profinite) : Prop where
   countable_clopens : Countable {s : Set S // IsClopen s}
 
 attribute [instance] Profinite.IsLight.countable_clopens
-
-theorem Profinite.isLight_ofIso (S T : Profinite) [S.IsLight] (i : S ≅ T) : T.IsLight := sorry
 
 instance (X Y : Profinite) [X.IsLight] [Y.IsLight] : (Profinite.of (X × Y)).IsLight where
   countable_clopens := countable_clopens_prod
@@ -342,57 +346,95 @@ instance (S : LightProfinite.{u}) : S.toProfinite.IsLight where
       exact ⟨⟨unop n, g⟩, h.symm⟩
 
 open Classical in
+noncomputable def monoLight_diagram {X : Profinite} {Y : LightProfinite} (f : X ⟶ Y.toProfinite) :
+    ℕᵒᵖ ⥤ FintypeCat where
+  obj := fun n ↦ FintypeCat.of (Set.range (f ≫ Y.cone.π.app n) : Set (Y.diagram.obj n))
+  map := fun h ⟨x, hx⟩ ↦ ⟨Y.diagram.map h x, (by
+    obtain ⟨y, hx⟩ := hx
+    rw [← hx]
+    use y
+    have := Y.cone.π.naturality h
+    simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map, Category.id_comp,
+      Functor.comp_map] at this
+    rw [this]
+    rfl )⟩
+  map_id := by -- `aesop` can handle it but is a bit slow
+    intro
+    simp only [Functor.comp_obj, id_eq, Functor.const_obj_obj, Functor.const_obj_map,
+      Functor.comp_map, eq_mp_eq_cast, cast_eq, eq_mpr_eq_cast, CategoryTheory.Functor.map_id,
+      FintypeCat.id_apply]
+    rfl
+  map_comp := by -- `aesop` can handle it but is a bit slow
+    intros
+    simp only [Functor.comp_obj, id_eq, Functor.const_obj_obj, Functor.const_obj_map,
+      Functor.comp_map, eq_mp_eq_cast, cast_eq, eq_mpr_eq_cast, Functor.map_comp,
+      FintypeCat.comp_apply]
+    rfl
+
+attribute [local instance] FintypeCat.discreteTopology
+
+def monoLight_cone_π_app' (n : ℕᵒᵖ) {X : Profinite} {Y : LightProfinite} (f : X ⟶ Y.toProfinite) :
+    C(X, Set.range (f ≫ Y.cone.π.app n)) where
+  toFun := fun x ↦ ⟨Y.cone.π.app n (f x), ⟨x, rfl⟩⟩
+  continuous_toFun := Continuous.subtype_mk ((Y.cone.π.app n).continuous.comp f.continuous) _
+
+def monoLight_cone_π_app (n : ℕᵒᵖ) {X : Profinite} {Y : LightProfinite} (f : X ⟶ Y.toProfinite) :
+    X ⟶ (monoLight_diagram f ⋙ FintypeCat.toProfinite).obj n where
+  toFun x := ⟨Y.cone.π.app n (f x), ⟨x, rfl⟩⟩
+  continuous_toFun := by
+    convert (monoLight_cone_π_app' n f).continuous_toFun
+    change ⊥ = _
+    ext U
+    rw [isOpen_induced_iff]
+    have := discreteTopology_bot
+    refine ⟨fun _ ↦ ⟨Subtype.val '' U, isOpen_discrete _,
+      Function.Injective.preimage_image Subtype.val_injective _⟩, fun _ ↦ isOpen_discrete U⟩
+    -- This is annoying
+
+def monoLight_cone {X : Profinite} {Y : LightProfinite.{u}} (f : X ⟶ Y.toProfinite) :
+    Cone ((monoLight_diagram f) ⋙ FintypeCat.toProfinite) where
+  pt := X
+  π := {
+    app := fun n ↦ monoLight_cone_π_app n f
+    naturality := by
+      intro n m h
+      have := Y.cone.π.naturality h
+      simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map, Category.id_comp,
+        Functor.comp_map] at this
+      simp only [Functor.comp_obj, toProfinite_obj_toCompHaus_toTop_α, Functor.const_obj_obj,
+        Functor.const_obj_map, monoLight_cone_π_app, this, CategoryTheory.comp_apply,
+        Category.id_comp, Functor.comp_map]
+      rfl }
+
+instance isIso_indexCone_lift {X : Profinite} {Y : LightProfinite.{u}} (f : X ⟶ Y.toProfinite)
+    [Mono f] : IsIso ((Profinite.limitConeIsLimit ((monoLight_diagram f) ⋙
+    FintypeCat.toProfinite)).lift (monoLight_cone f)) := by
+  apply Profinite.isIso_of_bijective
+  refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
+  · have hf : Function.Injective f := by rwa [← Profinite.mono_iff_injective]
+    suffices f a = f b by exact hf this
+    apply LightProfinite.ext
+    intro n
+    apply_fun fun f : (Profinite.limitCone ((monoLight_diagram f) ⋙ FintypeCat.toProfinite)).pt =>
+      f.val n at h
+    erw [ContinuousMap.coe_mk, Subtype.ext_iff] at h
+    exact h
+  · sorry
+
+noncomputable
+def monoLight_isLimit {X : Profinite} {Y : LightProfinite} (f : X ⟶ Y.toProfinite) [Mono f] :
+    IsLimit (monoLight_cone f) := Limits.IsLimit.ofIsoLimit (Profinite.limitConeIsLimit _)
+    (Limits.Cones.ext (asIso ((Profinite.limitConeIsLimit ((monoLight_diagram f) ⋙
+    FintypeCat.toProfinite)).lift (monoLight_cone f))) fun _ => rfl).symm
+
+noncomputable
+def mono_lightProfinite {X : Profinite} {Y : LightProfinite} (f : X ⟶ Y.toProfinite) [Mono f] :
+    LightProfinite := ⟨monoLight_diagram f, monoLight_cone f, monoLight_isLimit f⟩
+
 theorem mono_light {X Y : Profinite} [Y.IsLight] (f : X ⟶ Y) [Mono f] : X.IsLight := by
   let Y' : LightProfinite := ofIsLight Y
-  have : ∀ n, Fintype (Y'.diagram.obj n) := fun n ↦ by
-    simp only [Functor.comp_obj, toProfinite_obj_toCompHaus_toTop_α]
-    infer_instance
-  let X' : LightProfinite := {
-    diagram := {
-      obj := fun n ↦ FintypeCat.of (Set.range (f ≫ Y'.cone.π.app n) : Set (Y'.diagram.obj n))
-      map := fun h ⟨x, hx⟩ ↦ ⟨Y'.diagram.map h x, (by
-        obtain ⟨y, hx⟩ := hx
-        rw [← hx]
-        use y
-        have := Y'.cone.π.naturality h
-        simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map, Category.id_comp,
-          Functor.comp_map] at this
-        rw [this]
-        rfl )⟩
-      map_id := by
-        intro
-        simp only [Functor.comp_obj, id_eq, Functor.const_obj_obj, Functor.const_obj_map,
-          Functor.comp_map, eq_mp_eq_cast, cast_eq, eq_mpr_eq_cast, CategoryTheory.Functor.map_id,
-          FintypeCat.id_apply]
-        rfl
-      map_comp := by
-        intros
-        simp only [Functor.comp_obj, id_eq, Functor.const_obj_obj, Functor.const_obj_map,
-          Functor.comp_map, eq_mp_eq_cast, cast_eq, eq_mpr_eq_cast, Functor.map_comp,
-          FintypeCat.comp_apply]
-        rfl
-    }
-    cone := {
-      pt := X
-      π := {
-        app := fun n ↦ by
-          refine ⟨fun x ↦ ⟨Y'.cone.π.app n (f x), ⟨x, rfl⟩⟩, ?_⟩
-          have : Continuous (fun x ↦ Y'.cone.π.app n (f x)) :=
-            Continuous.comp (Y'.cone.π.app n).continuous f.continuous
-          sorry
-        naturality := by
-          intro n m h
-          simp only [Functor.const_obj_obj, Functor.comp_obj, id_eq, Functor.const_obj_map,
-            Functor.comp_map, eq_mp_eq_cast, cast_eq, eq_mpr_eq_cast,
-            toProfinite_obj_toCompHaus_toTop_α, Category.id_comp]
-          sorry
-      }
-    }
-    isLimit := sorry
-  }
-  change X'.toProfinite.IsLight
+  change (mono_lightProfinite (Y := Y') f).toProfinite.IsLight
   infer_instance
-
 
 instance {X Y B : Profinite} (f : X ⟶ B) (g : Y ⟶ B) [X.IsLight] [Y.IsLight] :
     (Profinite.pullback f g).IsLight := by
