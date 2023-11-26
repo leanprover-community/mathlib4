@@ -317,7 +317,7 @@ lemma reverse_reverse : l.reverse.reverse = l := by
   · rw [List.reverse_reverse]
   rw [reverse_mem_reverse, reverse_mem_reverse]
 
-lemma reverse_union : (l + m).reverse = l.reverse + m.reverse := by
+lemma reverse_add : (l + m).reverse = l.reverse + m.reverse := by
   ext w
   apply mem_add
 
