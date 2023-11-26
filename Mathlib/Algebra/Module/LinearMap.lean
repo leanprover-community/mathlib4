@@ -1406,7 +1406,7 @@ def compRight (f : M₂ →ₗ[R] M₃) : (M →ₗ[R] M₂) →ₗ[R] M →ₗ[
 #align linear_map.comp_right LinearMap.compRight
 
 @[simp]
-theorem compRight_apply (f : M₂ →ₗ[R] M₃) (g : M →ₗ[R] M₂) : compRight f g = f.comp g :=
+theorem compRight_apply (f : M₂ →ₗ[R] M₃) (g : M →ₗ[R] M₂) : compRight (M := M) f g = f.comp g :=
   rfl
 #align linear_map.comp_right_apply LinearMap.compRight_apply
 
