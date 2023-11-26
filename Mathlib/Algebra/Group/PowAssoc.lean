@@ -22,6 +22,7 @@ powers are considered.
 - `ppow_assoc` strictly positive powers of an element have associative multiplication.
 - `ppow_comm` `x ^ m * x ^ n = x ^ n * x ^ m` for strictly positive `m` and `n`.
 - `ppow_mul` `x ^ (m * n) = (x ^ m) ^ n` for strictly positive `m` and `n`.
+- `ppow_eq_pow` monoid exponentiation coincides with semigroup exponentiation.
 
 ## Instances
 
@@ -30,10 +31,9 @@ powers are considered.
 
 ## Todo
 
-* `NatPowAssoc` for `MulWithOne` classes - this should be easier.
+* `NatPowAssoc` for `MulOneClass` - more or less the same flow
 * It seems unlikely that anyone will want `NatSMulAssoc` and `PNatSmulAssoc` as additive versions of
 power-associativity, but we have found that it is not hard to write.
-* simp tags?
 
 -/
 
@@ -55,6 +55,7 @@ class PNatPowAssoc (M : Type u) [Mul M] [Pow M ℕ+] : Prop where
 theorem ppow_add [PNatPowAssoc M] (k n : ℕ+) (x : M) : x ^ (k + n) = x ^ k * x ^ n :=
   PNatPowAssoc.ppow_add k n x
 
+@[simp]
 theorem ppow_one [PNatPowAssoc M] (x : M) : x ^ (1 : ℕ+) = x :=
   PNatPowAssoc.ppow_one x
 
@@ -77,10 +78,11 @@ section ppowRec
 
 variable [Mul M]
 
-/-- A strictly positive integer power operation. `ppowRec n a = a*(a*(⋯*a)⋯)` n times. -/
+/-- A strictly positive integer power operation. `ppowRec n a = a * (a * (⋯ * a) ⋯ )` n times. -/
 def ppowRec : ℕ+ → M → M :=
   fun n => PNat.recOn n (fun x ↦ x) (fun _ y => fun x => x * y x)
 
+@[simp]
 theorem ppowRec_one (x : M) : ppowRec 1 x = x := rfl
 
 theorem ppowRec_succ (x : M) (n : ℕ+) : ppowRec (n + 1) x = x * ppowRec n x := by
@@ -94,6 +96,8 @@ section Semigroup
 
 variable [Semigroup M]
 
+namespace Semigroup
+
 instance (M: Type u) [Semigroup M] : Pow M ℕ+ :=
   {
     pow := fun x n => ppowRec n x
@@ -101,7 +105,7 @@ instance (M: Type u) [Semigroup M] : Pow M ℕ+ :=
 
 theorem ppow_eq_ppowRec (x : M) (n : ℕ+) : x ^ n = ppowRec n x := rfl
 
-theorem semigroup_ppow_add (x : M) (k n : ℕ+) : x ^ (k + n) = x ^ k * x ^ n := by
+theorem ppow_add (x : M) (k n : ℕ+) : x ^ (k + n) = x ^ k * x ^ n := by
   simp only [ppow_eq_ppowRec]
   refine PNat.recOn k ?_ ?_
   rw [add_comm, ppowRec_one, ppowRec_succ]
@@ -110,11 +114,17 @@ theorem semigroup_ppow_add (x : M) (k n : ℕ+) : x ^ (k + n) = x ^ k * x ^ n :=
 
 instance (M: Type u) [Semigroup M] : PNatPowAssoc M :=
   {
-    ppow_add := by
-      intro k n x
-      exact semigroup_ppow_add x k n
-    ppow_one := by
-      exact ppowRec_one
+    ppow_add := fun k n x => ppow_add x k n
+    ppow_one := ppowRec_one
   }
 
 end Semigroup
+
+end Semigroup
+
+theorem ppow_eq_pow [Monoid M] (x : M) (n : ℕ+) : x ^ n = x ^ (n : ℕ) := by
+  refine PNat.recOn n ?_ ?_
+  rw [Semigroup.ppow_eq_ppowRec, ppowRec_one, PNat.one_coe, pow_one]
+  intro k hk
+  rw [Semigroup.ppow_eq_ppowRec, ppowRec_succ, PNat.add_coe, add_comm, pow_add, PNat.one_coe, ← hk,
+    pow_one, Semigroup.ppow_eq_ppowRec]
