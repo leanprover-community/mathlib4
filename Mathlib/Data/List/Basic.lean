@@ -2586,7 +2586,7 @@ private lemma ge_of_add_eq_add_of_le {a b c d : ℕ} (total : a + b = c + d) (a_
     d < b := by
   by_contra contr
   rw [not_lt] at contr
-  exact (Nat.ne_of_lt (add_lt_add_of_lt_of_le a_lt_c contr)) total
+  exact (add_lt_add_of_lt_of_le a_lt_c contr).ne total
 
 lemma append_singleton_append_inj_of_nmem {x₁ x₂ z₁ z₂ : List α} {Y₁ Y₂ : α}
     (notin_x : Y₂ ∉ x₁) (notin_z : Y₂ ∉ z₁) :
