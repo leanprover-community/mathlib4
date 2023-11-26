@@ -38,9 +38,7 @@ simple graphs, sums, degree-sum formula, handshaking lemma
 -/
 
 
-open Finset
-
-open BigOperators
+open Finset BigOperators
 
 namespace SimpleGraph
 
@@ -51,9 +49,6 @@ variable {V : Type u} (G : SimpleGraph V)
 section DegreeSum
 
 variable [Fintype V] [DecidableRel G.Adj]
-
--- Porting note: Changed to `Fintype (Sym2 V)` to match Combinatorics.SimpleGraph.Basic
-variable [Fintype (Sym2 V)]
 
 theorem dart_fst_fiber [DecidableEq V] (v : V) :
     (univ.filter fun d : G.Dart => d.fst = v) = univ.image (G.dartOfNeighborSet v) := by
@@ -112,6 +107,21 @@ more specifically refer to `SimpleGraph.even_card_odd_degree_vertices`. -/
 theorem sum_degrees_eq_twice_card_edges : ∑ v, G.degree v = 2 * G.edgeFinset.card :=
   G.dart_card_eq_sum_degrees.symm.trans G.dart_card_eq_twice_card_edges
 #align simple_graph.sum_degrees_eq_twice_card_edges SimpleGraph.sum_degrees_eq_twice_card_edges
+
+/-- The complete graph on `n` vertices has `n.choose 2` edges. -/
+theorem top_card_edges_eq_card_choose_two :
+    (⊤ : SimpleGraph V).edgeFinset.card = (Fintype.card V).choose 2 := by
+  have : 2 * (⊤ : SimpleGraph V).edgeFinset.card = Fintype.card V * (Fintype.card V - 1) := by
+    simp only [← sum_degrees_eq_twice_card_edges, complete_graph_degree, sum_const, smul_eq_mul,
+      mul_eq_mul_right_iff]
+    left; rfl
+  rw [← Nat.div_two_mul_two_of_even <| Nat.even_mul_self_pred <| _, ← Nat.choose_two_right] at this
+  linarith
+
+/-- Any graph on `n` vertices has at most `n.choose 2` edges. -/
+theorem card_edges_le_card_choose_two : G.edgeFinset.card ≤ (Fintype.card V).choose 2 := by
+  apply (card_le_of_subset _).trans_eq top_card_edges_eq_card_choose_two
+  simp
 
 end DegreeSum
 
