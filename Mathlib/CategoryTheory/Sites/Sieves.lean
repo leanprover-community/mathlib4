@@ -492,8 +492,7 @@ def ofObjects {I : Type*} (Y : I → C) (X : C) : Sieve X where
     rintro Z₁ Z₂ p ⟨i, ⟨f⟩⟩ g
     exact ⟨i, ⟨g ≫ f⟩⟩
 
-lemma mem_ofObjects_iff {I : Type*} (Y : I → C) {Z X : C}
-    (g : Z ⟶ X) :
+lemma mem_ofObjects_iff {I : Type*} (Y : I → C) {Z X : C} (g : Z ⟶ X) :
     ofObjects Y X g ↔ ∃ (i : I), Nonempty (Z ⟶ Y i) := by rfl
 
 lemma ofArrows_le_ofObjects
