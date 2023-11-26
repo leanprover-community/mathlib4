@@ -542,6 +542,5 @@ theorem Antiperiodic.div [Add α] [DivisionMonoid β] [HasDistribNeg β] (hf : A
 end Function
 
 theorem Int.fract_periodic (α) [LinearOrderedRing α] [FloorRing α] :
-    Function.Periodic Int.fract (1 : α) := fun a => by
-  exact_mod_cast Int.fract_add_int a 1
+    Function.Periodic Int.fract (1 : α) := fun a => mod_cast Int.fract_add_int a 1
 #align int.fract_periodic Int.fract_periodic

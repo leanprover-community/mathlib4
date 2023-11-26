@@ -66,13 +66,13 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
             refine ⟨fun _ => ?_, fun _ => ?_⟩
             · congr
               ext w
-              by_cases w = v <;> rename_i x
+              by_cases h : w = v <;> rename_i x
               · substs h
                 simp_all
               · simp_all
             · congr
               ext w
-              by_cases w = v <;> rename_i x
+              by_cases h : w = v <;> rename_i x
               · substs h
                 simp_all
               · simp_all
@@ -80,13 +80,13 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
             refine ⟨fun _ => ?_, fun _ => ?_⟩
             · congr
               ext w
-              by_cases w = v <;> rename_i x
+              by_cases h : w = v <;> rename_i x
               · substs h
                 simp_all
               · simp_all
             · congr
               ext w
-              by_cases w = v <;> rename_i x
+              by_cases h : w = v <;> rename_i x
               · substs h
                 simp_all
               · simp_all
@@ -105,7 +105,7 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
             constructor <;> assumption
         · have := ht₃ w
           have := he₃ w
-          by_cases w = v
+          by_cases h : w = v
           · subst h; simp_all
           · simp_all? says simp_all only [Option.elim, ne_eq, normalized, Bool.and_eq_true,
               Bool.not_eq_true', not_false_eq_true, AList.lookup_insert_ne]

@@ -807,24 +807,6 @@ theorem mem_analyticGroupoid_of_boundaryless [CompleteSpace E] [I.Boundaryless]
 
 end analyticGroupoid
 
-/-! Topological manifolds with corners: no smoothness assumed, but boundary and/or corners
-are possible. -/
-section ManifoldWithCorners
-/-- Typeclass defining topological manifolds with corners with respect to a model with corners,
-over a field `𝕜`. -/
-class ManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M] extends
-    HasGroupoid M (contDiffGroupoid 0 I) : Prop
-
-theorem ManifoldWithCorners.mk' {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    [gr : HasGroupoid M (contDiffGroupoid 0 I)] : ManifoldWithCorners I M :=
-  { gr with }
-
-end ManifoldWithCorners
-
 section SmoothManifoldWithCorners
 
 /-! ### Smooth manifolds with corners -/
@@ -994,9 +976,8 @@ theorem extend_target : (f.extend I).target = I.symm ⁻¹' f.target ∩ range I
   simp_rw [extend, LocalEquiv.trans_target, I.target_eq, I.toLocalEquiv_coe_symm, inter_comm]
 #align local_homeomorph.extend_target LocalHomeomorph.extend_target
 
-lemma isOpen_extend_target [I.Boundaryless] :
-    IsOpen (f.extend I).target := by
-  rw [LocalHomeomorph.extend_target, I.range_eq_univ, inter_univ]
+lemma isOpen_extend_target [I.Boundaryless] : IsOpen (f.extend I).target := by
+  rw [extend_target, I.range_eq_univ, inter_univ]
   exact I.continuous_symm.isOpen_preimage _ f.open_target
 
 theorem mapsTo_extend (hs : s ⊆ f.source) :
@@ -1005,9 +986,6 @@ theorem mapsTo_extend (hs : s ⊆ f.source) :
     f.image_eq_target_inter_inv_preimage hs]
   exact image_subset _ (inter_subset_right _ _)
 #align local_homeomorph.maps_to_extend LocalHomeomorph.mapsTo_extend
-
-lemma mapsTo_extend' : MapsTo (f.extend I) (f.extend I).source (f.extend I).target :=
-  fun _ hx ↦(f.extend I).map_source hx
 
 theorem extend_left_inv {x : M} (hxf : x ∈ f.source) : (f.extend I).symm (f.extend I x) = x :=
   (f.extend I).left_inv <| by rwa [f.extend_source]
@@ -1048,6 +1026,19 @@ theorem extend_target_mem_nhdsWithin {y : M} (hy : y ∈ f.source) :
 
 theorem extend_target_subset_range : (f.extend I).target ⊆ range I := by simp only [mfld_simps]
 #align local_homeomorph.extend_target_subset_range LocalHomeomorph.extend_target_subset_range
+
+lemma interior_extend_target_subset_interior_range :
+    interior (f.extend I).target ⊆ interior (range I) := by
+  rw [f.extend_target, interior_inter, (f.open_target.preimage I.continuous_symm).interior_eq]
+  exact inter_subset_right _ _
+
+/-- If `y ∈ f.target` and `I y ∈ interior (range I)`,
+  then `I y` is an interior point of `(I ∘ f).target`. -/
+lemma mem_interior_extend_target {y : H} (hy : y ∈ f.target)
+    (hy' : I y ∈ interior (range I)) : I y ∈ interior (f.extend I).target := by
+  rw [f.extend_target, interior_inter, (f.open_target.preimage I.continuous_symm).interior_eq,
+    mem_inter_iff, mem_preimage]
+  exact ⟨mem_of_eq_of_mem (I.left_inv (y)) hy, hy'⟩
 
 theorem nhdsWithin_extend_target_eq {y : M} (hy : y ∈ f.source) :
     𝓝[(f.extend I).target] f.extend I y = 𝓝[range I] f.extend I y :=
