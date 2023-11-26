@@ -33,7 +33,7 @@ powers are considered.
 
 * `NatPowAssoc` for `MulOneClass` - more or less the same flow
 * It seems unlikely that anyone will want `NatSMulAssoc` and `PNatSmulAssoc` as additive versions of
-power-associativity, but we have found that it is not hard to write.
+  power-associativity, but we have found that it is not hard to write.
 
 -/
 
