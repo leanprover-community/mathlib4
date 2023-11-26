@@ -8,6 +8,7 @@ import Mathlib.Data.Tree.Defs
 import Mathlib.Data.Tree.Instances
 import Mathlib.Control.Monad.MonadState
 import Mathlib.Control.Monad.MonadLift
+import Mathlib.Data.Set.Finite
 
 namespace Tree
 
@@ -20,6 +21,351 @@ universe u v
 variable {α : Type u} {β : Type v}
 
 open MonadState renaming get → get'
+
+lemma follow_faithful ⦃t₁ t₂ : Tree α⦄ (h : ∀ p, t₁.follow p = t₂.follow p)
+    : t₁ = t₂ := by
+  revert t₂ h; induction' t₁ with a₁ l₁ r₁ ihₗ ihᵣ <;> intro t₂ h
+  . cases t₂; rfl
+    exact absurd (Eq.symm (h Path.here)) (Option.some_ne_none _)
+  . cases' t₂ with a₂ l₂ r₂; exact absurd (h Path.here) (Option.some_ne_none _)
+    congr
+    . exact Option.some_injective _ (h Path.here)
+    . apply ihₗ; intro p; exact h (Path.left p)
+    . apply ihᵣ; intro p; exact h (Path.right p)
+
+@[ext]
+def ext (t₁ t₂ : Tree α) (h : ∀ p : Path, t₁[p]? = t₂[p]?) : t₁ = t₂ :=
+  by simp only [← follow_eq_getElem?] at h; exact follow_faithful h
+
+private def labelWithIndex' : Tree α → Tree (α × Path) :=
+  let rec go (acc : Path) : Tree α → Tree (α × Path)
+    | nil => nil
+    | node a l r =>
+      node (a, acc.reverse) (go (Path.left acc) l) (go (Path.right acc) r)
+  go Path.here
+
+@[implemented_by labelWithIndex']
+def labelWithIndex : Tree α → Tree (α × Path)
+  | nil => nil
+  | node a l r =>
+    node (a, Path.here)
+         (Tree.map (Prod.map id Path.left) $ labelWithIndex l)
+         (Tree.map (Prod.map id Path.right) $ labelWithIndex r)
+
+lemma labelWithIndex'_correct : @labelWithIndex' α = @labelWithIndex α := by
+  dsimp [labelWithIndex']
+  funext t
+  suffices : ∀ (acc : Path),
+    labelWithIndex'.go acc t = (labelWithIndex t).map (Prod.map id acc.appendRev)
+  . rw [this]; exact Tree.map_id _
+  induction' t with a l r ihₗ ihᵣ <;> intro acc
+  . rfl
+  . simp only [labelWithIndex'.go, ← Path.reverse'_correct, ihₗ, ihᵣ, id_eq,
+               Prod.map, Tree.map, Tree.map_map]; rfl
+
+-- this fully specifies the function due to `follow_faithful`
+lemma labelWithIndex_spec (t : Tree α) (p : Path) :
+    (labelWithIndex t)[p]? = t[p]?.map (fun a => (a, p)) := by
+  revert t; induction' p with p ih p ih <;> intro t
+  <;> cases' t with a l r
+  <;> simp only [labelWithIndex, follow, Option.map_some', Option.map_none',
+                 getElem?_map, getElem?_nil, getElem?_here, getElem?_left, getElem?_right]
+  <;> rw [ih, Option.map_map] <;> rfl
+
+lemma labelWithIndex_naturality {β : Type v} (f : α → β) :
+    labelWithIndex ∘ Tree.map f = Tree.map (Prod.map f id) ∘ labelWithIndex := by
+  ext t p : 2
+  simp only [Function.comp_apply, labelWithIndex_spec, getElem?_map, Option.map_map]
+  rfl
+
+@[simp] lemma labelWithIndex_map {β : Type v} (f : α → β) : ∀ (t : Tree α),
+    labelWithIndex (Tree.map f t) = Tree.map (Prod.map f id) (labelWithIndex t) :=
+  congrFun (labelWithIndex_naturality f)
+
+-- produce a list of node-values by performing a preorder traversal
+def flatten : Tree α → List α :=
+  (depthFirstTraversable VisitOrder.Node1st).foldl (flip List.cons) []
+
+lemma flatten_eq_toList_reverse :
+    @flatten α = List.reverse ∘ (depthFirstTraversable VisitOrder.Node1st).toList := by
+  simp only [Traversable.toList, flatten, ← Function.comp.assoc,
+             List.reverse_involutive.comp_self, Function.comp.left_id]
+
+@[simp] lemma flatten_nil : flatten (@nil α) = [] := rfl
+@[simp] lemma flatten_node (a : α) l r :
+    flatten (node a l r) = flatten r ++ flatten l ++ [a] :=
+  by simp only [flatten_eq_toList_reverse, Function.comp_apply,
+                ← List.reverse_append, ← List.reverse_cons, toList_def]; rfl
+
+lemma flatten_naturality {β : Type v} (f : α → β) :
+    flatten ∘ Tree.map f = List.map f ∘ flatten := by
+  ext t : 1
+  induction t
+  <;> simp only [Function.comp_apply, map_node, flatten_node, List.map_cons,
+                 List.map_append, List.cons.injEq, true_and, map_nil,
+                 flatten_nil, List.map_nil]
+  congr
+
+@[simp] lemma flatten_map {β : Type v} (f : α → β) : ∀ (t : Tree α),
+    flatten (Tree.map f t) = List.map f (flatten t) :=
+  congrFun (flatten_naturality f)
+
+-- def
+
+def validPaths (t : Tree α) : List Path :=
+  List.map Prod.snd $ flatten $ labelWithIndex t
+
+@[simp] lemma validPaths_nil : validPaths (@nil α) = [] := rfl
+@[simp] lemma validPaths_node (a : α) l r :
+    validPaths (node a l r)
+    = List.map Path.right (validPaths r)
+      ++ List.map Path.left (validPaths l)
+      ++ [Path.here] :=
+  by simp only [validPaths, labelWithIndex, flatten_node, List.map_cons,
+                List.map_append, List.cons.injEq, true_and, flatten_map,
+                List.map_map]; congr
+
+@[simp] lemma validPaths_map (f : α → β) (t : Tree α) :
+    validPaths (Tree.map f t) = validPaths t := by
+  induction t
+  <;> simp only [map_nil, map_node, validPaths_nil, validPaths_node,
+                 List.cons.injEq, true_and]
+  congr
+
+@[simp] lemma mem_validPaths_iff_validFor (p : Path) (t : Tree α) :
+    p ∈ t.validPaths ↔ p.validFor t := by
+  revert p; induction t <;> intro p <;> cases p
+    <;> simp only [validPaths_nil, List.find?_nil, List.not_mem_nil, Path.validFor,
+                   validPaths_node, Bool.not_eq_true, List.mem_cons, List.mem_append,
+                   List.mem_map, and_false, exists_const, or_self, or_false, false_or,
+                   Path.left.injEq, Path.right.injEq, exists_eq_right]
+    <;> apply_assumption
+
+lemma validPaths_nodup (t : Tree α) : t.validPaths.Nodup := by
+  induction t
+  . exact List.nodup_nil
+  . simp only [validPaths_node, List.nodup_cons, List.mem_append, List.mem_map,
+               and_false, exists_const, or_self, not_false_eq_true, and_true,
+               List.nodup_append, List.disjoint_singleton]
+    rw [List.nodup_map_iff Path.left_injective, List.nodup_map_iff Path.right_injective]
+    simp only [List.Disjoint, List.mem_map, forall_exists_index, and_imp, forall_const,
+               forall_apply_eq_imp_iff₂, IsEmpty.forall_iff, implies_true, and_true]
+    constructor <;> assumption
+
+@[reducible, simp] def before_in_flattening (p q : Path) :=
+  q < p ∨ (p ⊓ q ++ Path.left Path.here ≤ q ∧ p ⊓ q ++ Path.right Path.here ≤ p)
+
+lemma validPaths_order : ∀ (p q : Path) (t : Tree α),
+    List.Sublist [p, q] (validPaths t)
+    ↔ (before_in_flattening p q ∧ p.validFor t ∧ q.validFor t) :=
+  have lem0 {t : Tree α} {p q : Path} :
+      List.Sublist [p, q] (validPaths t) → p.validFor t ∧ q.validFor t :=
+    by refine ?_ ∘ List.Sublist.subset
+       simp only [List.cons_subset, mem_validPaths_iff_validFor,
+                  List.nil_subset, and_true, imp_self]
+  have lem1 (p q r : Path) : ¬ List.Sublist [p, q] [r]
+    | List.Sublist.cons   x h => List.cons_ne_nil _ _ $ List.sublist_nil.mp h
+    | List.Sublist.cons₂  x h => List.cons_ne_nil _ _ $ List.sublist_nil.mp h
+  have lem2 (t : Tree α) p (h : p ≠ Path.here) :
+      List.Sublist [p, Path.here] (validPaths t) ↔ p.validFor t := by
+    refine ⟨And.left ∘ lem0, ?_⟩
+    intro h'; revert h
+    rw [← Decidable.or_iff_not_imp_left, ← List.reverse_sublist]; revert h'
+    cases t <;> cases p
+    <;> simp only [Path.validFor, true_or, false_or, forall_true_left,
+                   IsEmpty.forall_iff, validPaths_nil, validPaths_node,
+                   List.cons_sublist_cons, List.singleton_sublist, and_false,
+                   mem_validPaths_iff_validFor, exists_eq_right, imp_self,
+                   exists_const, or_false, List.mem_map, List.reverse_nil,
+                   List.mem_append, Path.left.injEq, Path.right.injEq,
+                   List.reverse_append, List.reverse_map, List.reverse_cons,
+                   List.nil_append, List.singleton_append, List.mem_reverse]
+  have lem3 (t : Tree α) q :
+      ¬ List.Sublist [Path.here, q] (validPaths t) := by
+    cases t
+    <;> simp only [validPaths_nil, validPaths_node, List.sublist_nil,
+                   not_false_eq_true, List.map_nil]
+    rw [← List.reverse_sublist]
+    simp only [List.reverse_cons, List.reverse_nil, List.nil_append,
+               List.append_assoc, List.reverse_append, List.cons_append,
+               List.singleton_append, List.reverse_map, or_self,
+               List.cons_sublist_cons_iff', List.singleton_sublist,
+               List.mem_append, List.mem_map, List.mem_reverse, false_or,
+               mem_validPaths_iff_validFor, and_false, exists_const,
+               List.pair_sublist_append, not_or]
+    constructor
+    <;> refine mt List.Sublist.subset ?_
+    <;> simp only [List.cons_subset, List.mem_map, and_false, exists_false,
+                   List.nil_subset, and_true, not_false_eq_true]
+  have lem4 (t : Tree α) p q :
+      ¬ List.Sublist [Path.left p, Path.right q] (validPaths t) := by
+    cases t
+    <;> simp only [validPaths_nil, validPaths_node, List.append_assoc, List.pair_sublist_append, List.mem_map,
+                   and_false, exists_const, List.mem_append, List.mem_singleton, or_self, and_self,
+                   Path.left.injEq, exists_eq_right, lem1, or_false, false_or, not_or, List.sublist_nil]
+    constructor
+    <;> refine mt List.Sublist.subset ?_
+    <;> simp only [List.cons_subset, List.mem_map, Path.left.injEq, exists_eq_right, and_false,
+                   exists_const, List.nil_subset, and_true, not_false_eq_true, false_and]
+  have lem5 (t : Tree α) p q :
+      List.Sublist [Path.right p, Path.left q] (validPaths t)
+      ↔ (Path.validFor (Path.right p) t ∧ Path.validFor (Path.left q) t) := by
+    refine ⟨lem0, ?_⟩
+    cases t
+    <;> simp only [Path.validFor, validPaths_nil, List.pair_sublist_append,
+                   List.mem_map, mem_validPaths_iff_validFor, Path.right.injEq,
+                   List.mem_append, Path.left.injEq, List.mem_singleton,
+                   and_self, false_or, List.sublist_nil, IsEmpty.forall_iff,
+                   or_assoc, exists_eq_right, and_false, exists_const,
+                   or_false, validPaths_node]
+    exact Or.inr ∘ Or.inl
+  have lem6 a (l r : Tree α) p q :
+      List.Sublist [Path.left p, Path.left q] (validPaths (node a l r))
+      ↔ List.Sublist [p, q] (validPaths l) := by
+    simp only [validPaths_nil, validPaths_node, List.append_assoc,
+               List.pair_sublist_append, false_and, false_or, or_false,
+               List.mem_map, and_false, exists_const, List.mem_append,
+               Path.left.injEq, exists_eq_right, List.mem_singleton, lem1]
+    rw [or_iff_right]
+    . refine @List.Sublist.map_inj _ _ Path.left ?_ [p, q] _
+      intro _ _; exact Eq.mp (Path.left.injEq _ _)
+    . refine mt List.Sublist.subset ?_
+      simp only [List.cons_subset, List.mem_map, and_false, exists_const,
+                 List.nil_subset, and_true, and_self, not_false_eq_true]
+  have lem7 a (l r : Tree α) p q :
+      List.Sublist [Path.right p, Path.right q] (validPaths (node a l r))
+      ↔ List.Sublist [p, q] (validPaths r) := by
+    simp only [validPaths_nil, validPaths_node, List.append_assoc,
+               List.mem_map, and_false, exists_const, List.mem_append,
+               Path.right.injEq, exists_eq_right, List.mem_singleton,
+               List.pair_sublist_append, false_and, or_false, false_or, lem1]
+    rw [or_iff_left]
+    . refine @List.Sublist.map_inj _ _ Path.right ?_ [p, q] _
+      intro _ _; exact Eq.mp (Path.right.injEq _ _)
+    . refine mt List.Sublist.subset ?_
+      simp only [List.cons_subset, List.mem_map, and_false, exists_const,
+                 List.nil_subset, and_true, and_self, not_false_eq_true]
+  by intros p q t
+     dsimp only [before_in_flattening]
+     by_cases h : p = q
+     . subst h
+       apply iff_of_false
+       . refine List.nodup_iff_sublist.mp ?_ p
+         apply validPaths_nodup
+       . simp only [lt_self_iff_false, le_refl, inf_of_le_left, false_or]
+         refine mt (And.left ∘ And.left) (not_le_of_lt ?_)
+         refine ⟨⟨Path.left Path.here, rfl⟩, mt (congrArg Path.length) ?_⟩
+         simp only [Path.length_append, self_eq_add_right, not_false_eq_true]
+     dsimp only [Inf.inf]
+     rw [← and_iff_left_of_imp lem0, and_congr_left_iff, and_imp]
+     revert h p q
+     induction' t with a l r ihₗ ihᵣ <;> intro p q h
+     . simp only [Path.validFor, IsEmpty.forall_iff, implies_true]
+     . intro hp hq
+       cases' q with q q
+       . simp only [ne_eq, Path.lt_def, Path.here_le, true_and, true_iff,
+                    Path.le_here_iff_eq_here, false_and, or_false, h,
+                    Path.longestCommonPrefix, lem2, hp]
+         apply Ne.symm; assumption
+       all_goals cases' p with p p
+       all_goals simp only
+         [Path.longestCommonPrefix, false_or, Path.right_le_right_iff_le,
+          Path.here_append, Path.left_lt_left_iff_lt, Path.not_right_lt_left,
+          and_false, or_self, Path.not_left_lt_right, Path.left_le_left_iff_le,
+          true_and, and_self, Path.right_lt_right_iff_lt, Path.here_le,
+          false_and, Path.not_left_le_right,
+          iff_true, true_iff, or_false, true_or, false_iff, Path.not_lt_here,
+          hp, hq, lem3, lem4, lem5, lem6, lem7]
+       . refine Iff.trans (ihₗ p q (Path.left.injEq p q ▸ h) hp hq) (or_congr_right ?_)
+         simp only [Path.left_append, Path.left_le_left_iff_le]
+       . refine Iff.trans (ihᵣ p q (Path.right.injEq p q ▸ h) hp hq) (or_congr_right ?_)
+         simp only [Path.right_append, Path.right_le_right_iff_le]
+
+-- need to think harder about how this should work ...
+def mkTreeWithNodes (nodes : List (Path × α)) : Option (Tree α) :=
+  StateT.run' (nodes.foldlM (m := StateT (Option (Tree α) × Tree α) Option) (s := Tree α)
+    sorry
+    nil) (some nil, nil)
+  -- StateT.run' (m := Option) (σ := Option (Tree α) × Tree α)
+  --   ∘ List.foldlM (m := StateT (Option (Tree α) × Tree α) Option) (s := Tree α)
+  --       sorry sorry
+
+-- grr irritating not to be able to use do notation here
+-- def mkTreeWithNodes : List (Path × α) → Option (Tree α)
+--   | [] => none
+--   | x::xs => (go x.fst.reverse $ xs.map (Prod.map Path.reverse id)).map Prod.fst
+--   where
+--   go (car : Path) (cdr : List (Path × α)) : Option (Tree α × List (Path × α)) :=
+--     bif car.isRight? && (cdr.head?.map (Path.isLeft? ∘ Prod.fst)).getD false
+--     then cdr.head?.map (fun x => (node x.snd nil nil, cdr.tail))
+--     else match cdr with
+--          | [] => none
+--          | cadr::cddr => go cadr.fst cddr
+
+-- lemma mkTreeWithNodes_map_validPaths_eq_self
+--     {paths} (h : paths.Sorted before_in_flattening) :
+--     paths ∈ Option.map validPaths (mkTreeWithNodes paths) := by
+
+--   admit
+
+-- lemma mkTreeWithNodes_defined_iff_sorted (paths : List Path) :
+--     (mkTreeWithNodes paths).isSome ↔ paths.Sorted before_in_flattening := by
+--   constructor
+--   . dsimp only [mkTreeWithNodes, Function.comp_apply, StateT.run'_eq, Option.map_eq_map]
+--     rw [List.Sorted, ← List.pairwise_reverse, ← List.Sorted]
+--     conv => left; left; right; right; right
+--             rw [← List.reverse_reverse paths, List.foldl_reverse, ← List.map_eq_foldr]
+--     generalize List.reverse paths = paths'; clear paths; rename List Path => paths
+
+--     intro h
+--     generalize h' : List.length paths = n
+--     revert h; revert paths
+--     induction' n using Nat.strongInductionOn with n ih
+--     intro paths _; subst n
+--     conv at ih => intro; rw [imp_forall_iff]; intro; rw [imp.swap]
+--     rw [forall_swap] at ih; simp only [forall_eq'] at ih
+
+
+
+    -- simp_rw [imp.swap] at ih
+
+    -- cases paths with
+    --   | List.nil => admit
+    --   | List.cons (Path.left _) (List.cons (Path.right _) ps) => admit
+    --   | _ :: ps =>admit
+  -- . refine ?_ ∘ mkTreeWithNodes_map_validPaths_eq_self
+  --   rw [Option.mem_def, Option.map_eq_some', Option.isSome_iff_exists]
+  --   refine Exists.imp (fun _ => And.left)
+
+-- should state the constructive version of this at least for Tree Unit
+lemma validPaths_characterization [Nonempty α] (s : Set Path) :
+    (∃ (t : Tree α), s = setOf (. ∈ validPaths t))
+    ↔ s.Finite ∧ (∀ p q, p ++ q ∈ s → p ∈ s) := by
+  constructor
+  . rintro ⟨t, ⟨rfl⟩⟩
+    refine ⟨List.finite_toSet _, ?_⟩
+    simp_rw [mem_validPaths_iff_validFor]
+    intros p q hpq
+    -- TODO: prove lemma about p ++ q being followable iff p is followable and q is followable from p
+
+    admit
+  . rintro ⟨h1, h2⟩
+    simp only [mem_validPaths_iff_validFor, ← followable_iff_validFor]
+    suffices : ∃ t : Tree Unit, s = {x | Option.isSome (follow x t) }
+    . obtain ⟨t, h⟩ := this; subst h
+      apply @Nonempty.elim_to_inhabited α; rintro ⟨a⟩
+      existsi t.map (fun _ => a)
+      ext p
+      dsimp only [Set.mem_setOf_eq]
+      simp only [mem_validPaths_iff_validFor, ← followable_iff_validFor,
+                 Option.isSome_iff_exists, map_follow, Option.map_eq_some',
+                 exists_and_left, exists_and_right, exists_eq', and_true]
+
+    -- idea: generate a tree until the path from root is bigger than every element of s
+
+    -- or show that for any path and any tree we can (minimally) extend the tree so that it contains the path
+    -- then induct to do this for any finite set, et voila
+    admit
 
 /-- Auxiliary definition for `Tree.graft`. -/
 def graftAux (g : Tree α) (t' : Tree α) {m : Type u → Type u}
@@ -39,30 +385,6 @@ def graftAux (g : Tree α) (t' : Tree α) {m : Type u → Type u}
 -- not well defined if i > numLeaves t
 def graft (t : Tree α) (i : ℕ) (g : Tree α) : Tree α :=
   (graftAux (m := StateM.{u} (ULift ℕ)) t g).run' (ULift.up (i + 1))
-
-section ShouldBeMoved
-
-abbrev List.headB (xs : List α) h := xs.head $ mt List.isEmpty_iff_eq_nil.mpr h
-
-@[reassocM (attr:=simp)]
-lemma cond_bind {m : Type u → Type v} [Monad m] {α β}
-  (b : Bool) (t e : m α) (f : α → m β)
-    : (cond b t e) >>= f = cond b (t >>= f) (e >>= f) :=
-  by cases b <;> exact rfl
-
-@[reassocM (attr:=simp)]
-lemma ite_bind {m : Type u → Type v} [Monad m] {α β}
-  (P : Prop) [d : Decidable P] (t e : m α) (f : α → m β)
-    : (ite P t e) >>= f = ite P (t >>= f) (e >>= f) :=
-  by cases d <;> exact rfl
-
-@[reassocM (attr:=simp)]
-lemma dite_bind {m : Type u → Type v} [Monad m] {α β}
-  (P : Prop) [d : Decidable P] (t : P → m α) (e : ¬ P → m α) (f : α → m β)
-    : (dite P t e) >>= f = dite P (t . >>= f) (e . >>= f) :=
-  by cases d <;> exact rfl
-
-end ShouldBeMoved
 
 open LawfulMonadStateOf
 lemma graft.go_remainder_eq (t : Tree α) (g : Tree α) {m : Type u → Type u}
@@ -92,7 +414,7 @@ def graftManyAux {m : Type u → Type u} [Monad m]
   else match t' with
        | nil =>
            set gs.tail -- we know gs ≠ []
-           return List.headB gs h
+           return List.head gs (List.isEmpty_iff_eq_nil.not.mp h)
        | node a l r =>
            let l' ← graftManyAux l
            let r' ← graftManyAux r

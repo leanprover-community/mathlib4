@@ -6,12 +6,153 @@ Authors: Brendan Murphy
 import Mathlib.Data.Tree.Defs
 import Mathlib.Control.Fold
 import Mathlib.Control.Bitraversable.Basic
+import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Algebra.Associated
+import Mathlib.SetTheory.Tree.Basic
+
+section ShouldBeMoved
+
+lemma lt_iff_le_not_le' {α : Type*} [LE α]
+    (h : ∀ (a b : α), a ≤ b → b ≤ a → a = b)
+    (a b : α) : (a ≤ b ∧ a ≠ b) ↔ a ≤ b ∧ ¬b ≤ a :=
+  and_congr_right $ fun h' => not_congr $
+    Iff.intro (fun h'' => h'' ▸ h''.subst (motive := (. ≤ b)) h') (h a b h')
+
+def PartialOrder.mk' {α : Type*} [LE α] (le_refl : ∀ a : α, a ≤ a)
+    (le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c)
+    (le_antisymm : ∀ (a b : α), a ≤ b → b ≤ a → a = b) : PartialOrder α := {
+  le_refl := le_refl, le_trans := le_trans, le_antisymm := le_antisymm,
+  lt := fun a b => a ≤ b ∧ a ≠ b
+  lt_iff_le_not_le := lt_iff_le_not_le' le_antisymm
+}
+
+end ShouldBeMoved
 
 namespace Tree
 
 universe u v w
 
 variable (o : Tree.VisitOrder) {α : Type u} {β : Type v} {γ : Type w}
+
+namespace VisitOrder
+
+instance : FinEnum VisitOrder :=
+  FinEnum.ofNodupList [Node1st, Node2nd, Node3rd]
+                      (fun o => by cases o <;> simp only []) (by simp only [])
+
+end VisitOrder
+
+namespace Path
+
+instance : Inhabited Path where default := Path.here
+instance : EmptyCollection Path where emptyCollection := Path.here
+instance : IsAssociative Path (· ++ ·) where assoc := append_assoc
+
+lemma isPrefix_antisymm : ∀ {p q}, isPrefix p q → isPrefix q p → p = q := by
+  intro p; induction p <;> intro q <;> cases q
+  <;> simp only [isPrefix, forall_true_left, IsEmpty.forall_iff, left.injEq, right.injEq]
+  <;> apply_assumption
+
+instance : LE Path where le p q := ∃ r, q = p ++ r
+
+lemma le_def (p q : Path) : p ≤ q ↔ ∃ r, q = p ++ r := Iff.rfl
+lemma le_iff_isPrefix {p q} : p ≤ q ↔ isPrefix p q := (isPrefix_def p q).symm
+
+instance : @DecidableRel Path (. ≤ .) :=
+  fun _ _ => decidable_of_bool _ le_iff_isPrefix.symm
+
+private def instMonoid : Monoid Path :=
+  { one := Path.here, mul := (. ++ .),
+    one_mul := here_append, mul_one := append_here, mul_assoc := append_assoc }
+
+instance : PartialOrder Path :=
+  PartialOrder.mk' (@dvd_refl _ instMonoid)
+                   (@dvd_trans _ instMonoid.toSemigroup)
+                   (by simp only [le_iff_isPrefix]; exact @isPrefix_antisymm)
+
+lemma lt_def (p q : Path) : p < q ↔ p ≤ q ∧ p ≠ q := Iff.rfl
+lemma lt_iff_isStrictPrefix {p q} : p < q ↔ isStrictPrefix p q :=
+  Iff.trans (and_congr_left' le_iff_isPrefix) (isStrictPrefix_def p q).symm
+
+instance : @DecidableRel Path (. < .) :=
+  fun _ _ => decidable_of_bool _ lt_iff_isStrictPrefix.symm
+
+@[simp] lemma left_le_left_iff_le {p q} : left p ≤ left q ↔ p ≤ q := by simp only [le_iff_isPrefix, isPrefix]
+@[simp] lemma right_le_right_iff_le {p q} : right p ≤ right q ↔ p ≤ q := by simp only [le_iff_isPrefix, isPrefix]
+@[simp] lemma not_left_le_right {p q} : ¬ (left p ≤ right q) := by simp only [le_iff_isPrefix, isPrefix]
+@[simp] lemma not_right_le_left {p q} : ¬ (right p ≤ left q) := by simp only [le_iff_isPrefix, isPrefix]
+@[simp] lemma not_left_le_here {p} : ¬ (left p ≤ here) := by simp only [le_iff_isPrefix, isPrefix]
+@[simp] lemma not_right_le_here {p} : ¬ (right p ≤ here) := by simp only [le_iff_isPrefix, isPrefix]
+@[simp] lemma left_lt_left_iff_lt {p q} : left p < left q ↔ p < q := by simp only [lt_iff_isStrictPrefix, isStrictPrefix]
+@[simp] lemma right_lt_right_iff_lt {p q} : right p < right q ↔ p < q := by simp only [lt_iff_isStrictPrefix, isStrictPrefix]
+@[simp] lemma not_left_lt_right {p q} : ¬ (left p < right q) := by simp only [lt_iff_isStrictPrefix, isStrictPrefix]
+@[simp] lemma not_right_lt_left {p q} : ¬ (right p < left q) := by simp only [lt_iff_isStrictPrefix, isStrictPrefix]
+@[simp] lemma not_lt_here {p} : ¬ (p < here) := by cases p <;> simp only [lt_iff_isStrictPrefix, isStrictPrefix]
+
+lemma here_le {p} : here ≤ p := ⟨p, rfl⟩
+
+instance : OrderBot Path := { bot := here, bot_le := @here_le }
+
+lemma eq_here_of_le_here : ∀ {p}, p ≤ here → p = here := bot_unique
+
+lemma le_here_iff_eq_here : ∀ {p}, p ≤ here ↔ p = here :=
+  Iff.intro eq_here_of_le_here (fun h => h ▸ le_refl here)
+
+lemma le_append_right (p q : Path) : p ≤ p ++ q := ⟨q, rfl⟩
+lemma left_append_le_of_le p {q r : Path} : q ≤ r → p ++ q ≤ p ++ r
+  | ⟨s, h⟩ => ⟨s, Eq.trans (congrArg _ h) $ Eq.symm $ append_assoc p q s⟩
+
+instance : SemilatticeInf Path where
+  inf := longestCommonPrefix
+  inf_le_left := by simp only [le_iff_isPrefix, implies_true,
+                               longestCommonPrefix_isPrefix_left]
+  inf_le_right := by simp only [le_iff_isPrefix, implies_true,
+                               longestCommonPrefix_isPrefix_right]
+  le_inf := by simp_rw [le_iff_isPrefix]; exact @longestCommonPrefix_is_maximum
+
+instance : WellFoundedLT Path where
+  wf := WellFounded.mono (InvImage.wf length wellFounded_lt)
+        $ fun _ _ h => isStrictPrefix_length_lt (lt_iff_isStrictPrefix.mp h)
+
+instance : IsTree Path where
+  toWellFoundedLT := inferInstance
+  downset_trichot p q r := by
+    simp_rw [lt_iff_isStrictPrefix]
+    exact isStrictPrefix_trichot_of_common_extension
+
+end Path
+
+instance : GetElem (Tree α) Path α (fun t p => p.validFor t) where
+  getElem t p h := (t.follow p).get (Eq.trans (followable_iff_validFor p t) h)
+
+@[simp]
+lemma follow_eq_getElem? (t : Tree α) (p : Path) : t.follow p = t[p]? :=
+  by simp only [getElem?, ← followable_iff_validFor, getElem, Option.some_get,
+                dite_eq_ite, eq_ite_iff, and_true, Bool.not_eq_true, and_self,
+                ← Option.not_isSome_iff_eq_none, Bool.eq_false_or_eq_true]
+
+@[simp] lemma getElem?_nil (p : Path) : (@nil α)[p]? = none := by cases p <;> rfl
+@[simp] lemma getElem?_here {a : α} {l r} : (node a l r)[Path.here]? = a := rfl
+@[simp] lemma getElem?_left {a : α} {l r} (p : Path) :
+    (node a l r)[Path.left p]? = l[p]? := rfl
+@[simp] lemma getElem?_right {a : α} {l r} (p : Path) :
+    (node a l r)[Path.right p]? = r[p]? := rfl
+
+@[simp] lemma getElem_here {a : α} {l r} : (node a l r)[Path.here] = a := rfl
+@[simp] lemma getElem_left {a : α} {l r} (p : Path) (h : p.validFor l) :
+    (node a l r)[Path.left p] = l[p] := rfl
+@[simp] lemma getElem_right {a : α} {l r} (p : Path) (h : p.validFor r) :
+    (node a l r)[Path.right p] = r[p] := rfl
+
+@[simp]
+lemma getElem?_map (f : α → β) (t : Tree α) (p : Path) :
+    (Tree.map f t)[p]? = Option.map f t[p]? :=
+  by rw [← follow_eq_getElem?, follow_naturality, follow_eq_getElem?]
+
+@[simp]
+lemma getElem_map (f : α → β) (t : Tree α) (p : Path) (h : p.validFor t) :
+    (Tree.map f t)[p]'(validFor_map' f p t h) = f t[p] :=
+  by simp only [getElem, follow_naturality]; rw [Option.get_map]
 
 instance : Inhabited (Tree α) := ⟨nil⟩
 
@@ -104,15 +245,46 @@ lemma foldMap_def {ω : Type u} [One ω] [Mul ω] (f : α → ω) (t : Tree α)
   rw [← ihₗ, ← ihᵣ]
   cases o <;> exact rfl
 
+@[inline]
+def toList.branch_step {ω : Type u} [Append ω] : ω → ω → ω → ω :=
+  match o with
+  | VisitOrder.Node1st => fun x y z => x ++ y ++ z
+  | VisitOrder.Node2nd => fun x y z => y ++ x ++ z
+  | VisitOrder.Node3rd => fun x y z => y ++ z ++ x
+
 @[simp]
 lemma toList_def (t : Tree α)
   : @Traversable.toList _ _ (depthFirstTraversable o) t
-  = Tree.rec [] (fun a _ _ => @foldMap.branch_step o _ ⟨List.append⟩ [a]) t := by
+  = Tree.rec [] (fun a _ _ => toList.branch_step o [a]) t := by
     rw [@Traversable.toList_spec _ _ (depthFirstTraversable o)
                                      (depthFirstLawfulTraversable o),
         Tree.foldMap_def]
-    induction' t with x l r ihₗ ihᵣ; exact rfl
-    cases o <;> simp [*] <;> exact rfl
+    cases' t; exact rfl; cases o <;> exact rfl
+
+lemma mem_toList_iff_exists_follow_eq (t : Tree α) (a : α) :
+    a ∈ @Traversable.toList _ _ (depthFirstTraversable o) t
+    ↔ ∃ p, t.follow p = some a := by
+  induction' t with x l r ihₗ ihᵣ
+  . simp only [toList_def, List.find?_nil, List.not_mem_nil, follow, exists_const]
+  . rw [toList_def]; dsimp only [follow]; rw [← toList_def, ← toList_def]
+    refine @Iff.trans _ (a = x ∨ (∃ p, follow p l = some a)
+                               ∨ (∃ p, follow p r = some a)) _ ?_ ?_
+    . rw [← ihₗ, ← ihᵣ]
+      cases o
+      <;> simp only [toList.branch_step, List.mem_append, List.mem_singleton]
+      . rw [or_assoc]
+      . rw [or_left_comm, or_assoc]
+      . rw [or_comm]
+    . constructor
+      . rintro (h | ⟨p, h⟩ | ⟨p, h⟩)
+        . exact ⟨Path.here, Eq.symm $ congrArg some h⟩
+        . exact ⟨Path.left p, h⟩
+        . exact ⟨Path.right p, h⟩
+      . simp only [forall_exists_index]
+        rintro (_ | p | p) h
+        . exact Or.inl $ Eq.symm (Option.some_injective _ h)
+        . exact Or.inr $ Or.inl ⟨p, h⟩
+        . exact Or.inr $ Or.inr $ ⟨p, h⟩
 
 end Tree
 
