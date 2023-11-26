@@ -24,7 +24,7 @@ variable {w v : Nat}
 theorem toNat_injective {n : Nat}: Function.Injective (@Std.BitVec.toNat n)
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
-theorem toNat_inj {x y : BitVec w} : x.toNat = y.toNat → x = y :=
+theorem toNat_inj {x y : BitVec w} : x.toNat = y.toNat ↔ x = y :=
   toNat_injective.eq_iff
 
 /-- `x < y` as natural numbers if and only if `x < y` as `BitVec w`. -/
