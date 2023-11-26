@@ -193,3 +193,7 @@ lemma Derives.append_right {v w : List (Symbol T g.NT)}
     apply ContextFreeGrammar.Produces.append_right last
 
 end ContextFreeGrammar
+
+/-- Context-free languages are defined by context-free grammars. -/
+def Language.IsContextFree (L : Language T) : Prop :=
+  ∃ g : ContextFreeGrammar.{uT} T, g.language = L
