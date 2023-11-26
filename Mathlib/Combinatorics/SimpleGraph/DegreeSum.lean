@@ -109,7 +109,7 @@ theorem sum_degrees_eq_twice_card_edges : ∑ v, G.degree v = 2 * G.edgeFinset.c
 #align simple_graph.sum_degrees_eq_twice_card_edges SimpleGraph.sum_degrees_eq_twice_card_edges
 
 /-- The complete graph on `n` vertices has `n.choose 2` edges. -/
-theorem top_card_edges_eq_card_choose_two :
+theorem card_edgeFinset_top_eq_card_choose_two :
     (⊤ : SimpleGraph V).edgeFinset.card = (Fintype.card V).choose 2 := by
   have : 2 * (⊤ : SimpleGraph V).edgeFinset.card = Fintype.card V * (Fintype.card V - 1) := by
     simp only [← sum_degrees_eq_twice_card_edges, complete_graph_degree, sum_const, smul_eq_mul,
@@ -119,8 +119,8 @@ theorem top_card_edges_eq_card_choose_two :
   linarith
 
 /-- Any graph on `n` vertices has at most `n.choose 2` edges. -/
-theorem card_edges_le_card_choose_two : G.edgeFinset.card ≤ (Fintype.card V).choose 2 := by
-  apply (card_le_of_subset _).trans_eq top_card_edges_eq_card_choose_two
+theorem card_edgeFinset_le_card_choose_two : G.edgeFinset.card ≤ (Fintype.card V).choose 2 := by
+  apply (card_le_of_subset _).trans_eq card_edgeFinset_top_eq_card_choose_two
   simp
 
 end DegreeSum
