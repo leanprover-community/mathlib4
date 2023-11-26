@@ -56,16 +56,17 @@ variable {I : Type*} {Y : I → C} (hY : J.ObjectsCoverTop Y)
 `J.ObjectsCoverTop Y` -/
 abbrev cover (W : C) : Cover J W := ⟨Sieve.ofObjects Y W, hY W⟩
 
-lemma ext (F : Sheaf J A) {c : Cone F.1} (hc : IsLimit c)
-    {X : A} {f g : X ⟶ c.pt}
-      (h : ∀ (i : I), f ≫ c.π.app (Opposite.op (Y i)) =
-        g ≫ c.π.app (Opposite.op (Y i))) : f = g := by
+lemma ext (F : Sheaf J A) {c : Cone F.1} (hc : IsLimit c) {X : A} {f g : X ⟶ c.pt}
+    (h : ∀ (i : I), f ≫ c.π.app (Opposite.op (Y i)) =
+      g ≫ c.π.app (Opposite.op (Y i))) :
+    f = g := by
   refine' hc.hom_ext (fun Z => F.2.hom_ext (hY.cover Z.unop) _ _ _)
   rintro ⟨W, a, ⟨i, ⟨b⟩⟩⟩
   simpa using h i =≫ F.1.map b.op
 
 lemma sections_ext (F : Sheaf J (Type _)) {x y : F.1.sections}
-    (h : ∀ (i : I), x.1 (Opposite.op (Y i)) = y.1 (Opposite.op (Y i))) : x = y := by
+    (h : ∀ (i : I), x.1 (Opposite.op (Y i)) = y.1 (Opposite.op (Y i))) :
+    x = y := by
   ext W
   apply (Presieve.isSeparated_of_isSheaf J F.1
     ((isSheaf_iff_isSheaf_of_type _ _).1 F.2) _ (hY W.unop)).ext
@@ -128,8 +129,7 @@ lemma exists_unique_section :
     have hs : ∀ {X : C} (i : I) (f : X ⟶ Y i), s X = F.map f.op (x i) := fun {X} i f => by
       have h := Presieve.IsSheafFor.valid_glue (H _ (hY X))
           (hx.familyOfElements_isCompatible _) (𝟙 _) ⟨i, ⟨f⟩⟩
-      dsimp at h
-      rw [F.map_id] at h
+      simp only [op_id, F.map_id, types_id_apply] at h
       exact h.trans (hx.familyOfElements_apply _ _ _)
     have hs' : ∀ {W X : C} (a : W ⟶ X) (i : I) (_ : W ⟶ Y i), F.map a.op (s X) = s W := by
       intro W X a i b
@@ -144,9 +144,7 @@ lemma exists_unique_section :
     rw [hs' φ i g, ← hs' (φ ≫ f) i g, op_comp, F.map_comp]
     rfl
   · intro y₁ y₂ hy₁ hy₂
-    apply hY.sections_ext ⟨F, hF⟩
-    intro i
-    rw [hy₁, hy₂]
+    exact hY.sections_ext ⟨F, hF⟩ (fun i => by rw [hy₁, hy₂])
 
 /-- The section of a sheaf of types which lifts a compatible family of elements indexed
 by objects which cover the terminal object. -/
