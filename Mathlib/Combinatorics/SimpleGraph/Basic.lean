@@ -540,6 +540,13 @@ theorem edgeSet_bot : (⊥ : SimpleGraph V).edgeSet = ∅ :=
 #align simple_graph.edge_set_bot SimpleGraph.edgeSet_bot
 
 @[simp]
+theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = {e | ¬e.IsDiag} := by
+  ext f
+  constructor <;> intro hm
+  · simp [(⊤ : SimpleGraph V).not_isDiag_of_mem_edgeSet hm]
+  · obtain ⟨_, _⟩ := f; exact hm
+
+@[simp]
 theorem edgeSet_sup : (G₁ ⊔ G₂).edgeSet = G₁.edgeSet ∪ G₂.edgeSet := by
   ext ⟨x, y⟩
   rfl
@@ -942,6 +949,14 @@ attribute [mono] edgeFinset_mono edgeFinset_strict_mono
 @[simp]
 theorem edgeFinset_bot : (⊥ : SimpleGraph V).edgeFinset = ∅ := by simp [edgeFinset]
 #align simple_graph.edge_finset_bot SimpleGraph.edgeFinset_bot
+
+@[simp]
+theorem edgeFinset_top [Fintype V] [DecidableEq V] :
+    (⊤ : SimpleGraph V).edgeFinset = univ.filter fun e => ¬e.IsDiag := by
+  ext f
+  constructor <;> intro hm
+  · simp [not_isDiag_of_mem_edgeFinset hm]
+  · simp_all [hm]
 
 @[simp]
 theorem edgeFinset_sup [DecidableEq V] : (G₁ ⊔ G₂).edgeFinset = G₁.edgeFinset ∪ G₂.edgeFinset := by
