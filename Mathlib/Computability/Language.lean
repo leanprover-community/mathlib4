@@ -321,7 +321,7 @@ lemma reverse_union : (l + m).reverse = l.reverse + m.reverse := by
   ext w
   apply mem_add
 
-lemma reverse_concatenation : (l * m).reverse = m.reverse * l.reverse := by
+lemma reverse_mul : (l * m).reverse = m.reverse * l.reverse := by
   ext w
   show
     (∃ u v, u ∈ l ∧ v ∈ m ∧ u ++ v = w.reverse) ↔
