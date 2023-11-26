@@ -2582,16 +2582,11 @@ private lemma append_singleton_append_mem_left_of_length_lt {x₁ x₂ z₁ z₂
   ] at middle
   exact get?_mem middle
 
-private lemma todo_refactor {a b c d : ℕ}
-    (total : a + b = c + d) (a_lt_c : a < c) :
+private lemma ge_of_add_eq_add_of_le {a b c d : ℕ} (total : a + b = c + d) (a_lt_c : a < c) :
     d < b := by
   by_contra contr
   rw [not_lt] at contr
-  have impossi : a + b < c + d
-  · exact add_lt_add_of_lt_of_le a_lt_c contr
-  have impossineq : a + b ≠ c + d
-  · exact Nat.ne_of_lt impossi
-  exact impossineq total
+  exact (Nat.ne_of_lt (add_lt_add_of_lt_of_le a_lt_c contr)) total
 
 lemma append_singleton_append_inj_of_nmem {x₁ x₂ z₁ z₂ : List α} {Y₁ Y₂ : α}
     (notin_x : Y₂ ∉ x₁) (notin_z : Y₂ ∉ z₁) :
@@ -2614,9 +2609,7 @@ lemma append_singleton_append_inj_of_nmem {x₁ x₂ z₁ z₂ : List α} {Y₁ 
         rw [length_reverse, length_reverse]
         have total := congr_arg length together
         rw [length_append_append, length_append_append, length_singleton, length_singleton] at total
-        have xlt : x₁.length + 1 < x₂.length + 1
-        · exact Nat.add_lt_add_right contra_lt 1
-        exact todo_refactor total xlt
+        exact ge_of_add_eq_add_of_le total (Nat.add_lt_add_right contra_lt 1)
       rw [Nat.not_lt] at not_gt not_lt
       exact Nat.le_antisymm not_gt not_lt
     constructor
@@ -2634,8 +2627,8 @@ lemma append_singleton_append_inj_of_nmem {x₁ x₂ z₁ z₂ : List α} {Y₁ 
         rw [length_append, length_singleton]
       · rw [xlens, drop_left']
         rw [length_append, length_singleton]
-  · rintro ⟨eqx, eqY, eqz⟩
-    rw [eqx, eqY, eqz]
+  · rintro ⟨rfl, rfl, rfl⟩
+    rfl
 
 section Scanl
 
