@@ -415,8 +415,7 @@ theorem comp_X_add_C_eq_zero_iff {p : R[X]} (t : R) :
     ← C_eq_algebraMap, sub_add_cancel, aeval_X_left, AlgHom.coe_id, id_eq] at h
 
 theorem comp_X_add_C_ne_zero_iff {p : R[X]} (t : R) :
-    p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := by
-  simp only [ne_eq, comp_X_add_C_eq_zero_iff]
+    p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := Iff.not <| comp_X_add_C_eq_zero_iff t
 
 theorem rootMultiplicity_eq_rootMultiplicity {p : R[X]} {t : R} :
     p.rootMultiplicity t = (p.comp (X + C t)).rootMultiplicity 0 := by
