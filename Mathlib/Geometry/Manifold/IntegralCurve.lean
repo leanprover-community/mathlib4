@@ -42,10 +42,9 @@ variable
   {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] [SmoothManifoldWithCorners I' M']
 
-variable (I)
+variable (I) in
 def tangentCoordChange (x y : M) := (tangentBundleCore I M).coordChange (achart H x) (achart H y)
 
-variable {I}
 lemma tangentCoordChange_def {x y z : M} : tangentCoordChange I x y z =
     fderivWithin 𝕜 (extChartAt I y ∘ (extChartAt I x).symm) (range I) (extChartAt I x z) := rfl
 
@@ -215,15 +214,10 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
   /- express the derivative of the section `v` in the local charts -/
   rw [contMDiffAt_iff] at hv
   obtain ⟨_, hv⟩ := hv
-  /- `hI` should be a separate lemma -/
-  have hI : range I ∈ nhds (extChartAt I x₀ x₀) := by
-    rw [mem_nhds_iff]
-    exact ⟨interior (extChartAt I x₀).target,
-      subset_trans interior_subset (extChartAt_target_subset_range ..),
-      isOpen_interior, hx⟩
   /- use Picard-Lindelöf theorem to extract a solution to the ODE in the chart defined by `v` -/
   obtain ⟨f, hf1, ε1, hε1, hf2⟩ :=
-    exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀ (ContDiffAt.snd (hv.contDiffAt hI))
+    exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀
+      (ContDiffAt.snd (hv.contDiffAt (SmoothManifoldWithCorners.range_mem_nhds_isInteriorPoint hx)))
   rw [←Real.ball_eq_Ioo] at hf2
   /- use continuity of `f` to extract `ε2` so that for `t ∈ Real.ball t₀ ε2`,
     `f t ∈ interior (extChartAt I x₀).target` -/
@@ -249,8 +243,6 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
       (v ((extChartAt I x₀).symm (f t))))
     t := hf2 t ht1
   rw [←tangentCoordChange_def] at h
-
-
   have hf3' := mem_of_mem_of_subset (hf3 t ht2) interior_subset
   /- express the derivative of the integral curve in the local chart -/
   rw [HasMFDerivAt]
