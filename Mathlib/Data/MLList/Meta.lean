@@ -73,7 +73,7 @@ def asTask (t : CoreM α) : CoreM (BaseIO Unit × Task (CoreM α)) := do
   let task ← (t.toIO (← read) (← get)).asTask
   return (IO.cancel task, task.map fun
   | .ok (a, s) => do set s; pure a
-  | .error e => throwError m!"{e}")
+  | .error e => throwError m!"Task failed:\n{e}")
 
 /--
 Given a monadic value in `CoreM`, creates a task that runs it in the current state,

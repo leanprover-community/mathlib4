@@ -101,7 +101,7 @@ returning a list of triples consisting of
 If one tactic succeeds and closes the goal, we cancel subsequent tactics.
 -/
 def hintCore : TacticM (Array (Suggestion × List MVarId × SavedState)) := do
-  let tacs := (← getHints)
+  let tacs ← getHints
   let tasks := tacs.map fun t : TSyntax `tactic => do
     if let some msgs ← observing? (withMessageLog (withoutInfoTrees (evalTactic t))) then
       return some (← suggestion t msgs, ← getGoals, ← saveState)
@@ -109,9 +109,9 @@ def hintCore : TacticM (Array (Suggestion × List MVarId × SavedState)) := do
       return none
   let (cancel, results) ← TacticM.runGreedily tasks
   let results := results.filterMap id
-  let results ← (results.takeUpToFirst fun r => r.2.1.isEmpty).asArray
+  let results ← (results.takeUpToFirst fun (_, mvars, _) => mvars.isEmpty).asArray
   cancel -- Cancel any remaining tasks, in case one closed the goal early.
-  return results.qsort (·.2.1.length < ·.2.1.length)
+  return results.qsort fun (_, mvars₁, _) (_, mvars₂, _) => mvars₁.length < mvars₂.length
 
 /--
 Run all tactics registered using `register_hint`.
@@ -122,10 +122,10 @@ If one tactic succeeds and closes the goal, we cancel subsequent tactics.
 def hint (stx : Syntax) : TacticM Unit := do
   let results ← hintCore
   addSuggestions stx (results.map (·.1))
-  match results.find? (·.2.1.isEmpty) with
-  | some r =>
+  match results.find? fun (_, mvars, _) => mvars.isEmpty with
+  | some (_, _, s) =>
     -- We don't restore the entire state, as that would delete the suggestion messages.
-    setMCtx r.2.2.term.meta.meta.mctx
+    setMCtx s.term.meta.meta.mctx
   | none => admitGoal (← getMainGoal)
 
 /--

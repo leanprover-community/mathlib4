@@ -58,11 +58,11 @@ where put
 /--
 Variant of `MLList.fix?` that allows returning values of a different type.
 -/
-partial def fix?' [Monad m] (f : α → m (Option (α × β))) (init : α) : MLList m β :=
+partial def fix?' [Monad m] (f : α → m (Option (β × α))) (init : α) : MLList m β :=
   squash fun _ => do
     match ← f init with
     | none => pure .nil
-    | some (a, b) => pure (.cons b (fix?' f a))
+    | some (b, a) => pure (.cons b (fix?' f a))
 
 /--
 Give a list of tasks, return the monadic lazy list which
@@ -71,7 +71,6 @@ returns the values as they become available.
 def ofTaskList (tasks : List (Task α)) : MLList BaseIO α :=
   fix?' (init := tasks) fun t => do
     if h : 0 < t.length then
-      let (a, t') ← IO.waitAny' t h
-      pure (some (t', a))
+      some <$> IO.waitAny' t h
     else
       pure none
