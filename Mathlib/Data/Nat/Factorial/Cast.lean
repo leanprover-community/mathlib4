@@ -41,7 +41,7 @@ theorem cast_descFactorial :
   rw [← ascPochhammer_eval_cast, ascPochhammer_nat_eq_descFactorial]
   induction' b with b
   · simp
-  · simp_rw [add_succ, succ_sub_one]
+  · simp_rw [add_succ, Nat.add_one_sub_one]
     obtain h | h := le_total a b
     · rw [descFactorial_of_lt (lt_succ_of_le h), descFactorial_of_lt (lt_succ_of_le _)]
       rw [tsub_eq_zero_iff_le.mpr h, zero_add]
