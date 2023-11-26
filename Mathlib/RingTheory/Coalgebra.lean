@@ -28,6 +28,25 @@ class Coalgebra (R : Type u) (A : Type v) [CommRing R] [AddCommGroup A] [Module 
   /-- The counit satisfies the right counitality law -/
   id_ε : TensorProduct.rid R A ∘ₗ TensorProduct.map .id ε ∘ₗ Δ = .id
 
+namespace Coalgebra
+
+@[simp]
+theorem coassoc_apply {R : Type u} {A : Type v} [CommRing R] [AddCommGroup A] [Module R A]
+    [C : Coalgebra R A] (a : A) : TensorProduct.assoc R A A A (TensorProduct.map C.Δ .id (C.Δ a)) =
+    TensorProduct.map .id C.Δ (C.Δ a) := LinearMap.congr_fun C.coassoc a
+
+@[simp]
+theorem ε_id_apply {R : Type u} {A : Type v} [CommRing R] [AddCommGroup A] [Module R A]
+    [C : Coalgebra R A] (a : A) : TensorProduct.lid R A (TensorProduct.map C.ε .id (C.Δ a)) = a :=
+    LinearMap.congr_fun C.ε_id a
+
+@[simp]
+theorem id_ε_apply {R : Type u} {A : Type v} [CommRing R] [AddCommGroup A] [Module R A]
+    [C : Coalgebra R A] (a : A) : TensorProduct.rid R A (TensorProduct.map .id C.ε (C.Δ a)) = a :=
+    LinearMap.congr_fun C.id_ε a
+
+end Coalgebra
+
 /-- The `R`-module whose elements are functions `S → R` which are zero on all but finitely many
 elements of `S` has a coalgebra structure. The coproduct is given by `Δ(fₛ) = fₛ ⊗ fₛ` and the
 counit by `ε(fₛ) =  1`, where `fₛ` is the function sending `s` to `1` and all other elements of `S`
