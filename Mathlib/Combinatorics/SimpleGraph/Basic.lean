@@ -542,7 +542,7 @@ theorem edgeSet_bot : (⊥ : SimpleGraph V).edgeSet = ∅ :=
 @[simp]
 theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = {e | ¬e.IsDiag} := by
   ext f
-  exact Quot.inductionOn f fun _ => ⟨id, id⟩
+  exact f.inductionOn (by simp)
 
 @[simp]
 theorem edgeSet_sup : (G₁ ⊔ G₂).edgeSet = G₁.edgeSet ∪ G₂.edgeSet := by
@@ -952,7 +952,7 @@ theorem edgeFinset_bot : (⊥ : SimpleGraph V).edgeFinset = ∅ := by simp [edge
 theorem edgeFinset_top [Fintype V] [DecidableEq V] :
     (⊤ : SimpleGraph V).edgeFinset = univ.filter fun e => ¬e.IsDiag := by
   ext f
-  exact Quot.inductionOn f (by simp)
+  exact f.inductionOn (by simp)
 
 @[simp]
 theorem edgeFinset_sup [DecidableEq V] : (G₁ ⊔ G₂).edgeFinset = G₁.edgeFinset ∪ G₂.edgeFinset := by
