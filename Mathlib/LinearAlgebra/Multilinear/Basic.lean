@@ -1212,7 +1212,7 @@ def LinearMap.uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => 
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     by_cases h : i = 0
     · subst i
-      simp only [update_same, map_smul, tail_update_zero, MultilinearMap.smul_apply]
+      simp only [update_same, map_smul f, tail_update_zero, MultilinearMap.smul_apply]
     · simp_rw [update_noteq (Ne.symm h)]
       revert x
       rw [← succ_pred i h]
