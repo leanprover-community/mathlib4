@@ -397,21 +397,21 @@ theorem mulVec_surjective_iff_isUnit {A : Matrix m m α} :
     Function.Surjective A.mulVec ↔ IsUnit A := by
   rw [mulVec_surjective_iff_exists_right_inverse, exists_right_inverse_iff_isUnit]
 
-theorem mulVec_injective_iff_isUnit {A : Matrix m m K} :
-    Function.Injective A.mulVec ↔ IsUnit A := by
+theorem vecMul_injective_iff_isUnit {A : Matrix m m K} :
+    Function.Injective A.vecMul ↔ IsUnit A := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← isUnit_transpose, ← vecMul_surjective_iff_isUnit]
-    simp_rw [vecMul_transpose]
-    exact LinearMap.surjective_of_injective (f := A.mulVecLin) h
-  change Function.Injective A.mulVecLin
+  · rw [← vecMul_surjective_iff_isUnit]
+    exact LinearMap.surjective_of_injective (f := A.vecMulLinear) h
+  change Function.Injective A.vecMulLinear
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
   intro c hc
   replace h := h.invertible
-  simpa using congr_arg A⁻¹.mulVecLin hc
+  simpa using congr_arg A⁻¹.vecMulLinear hc
 
-theorem vecMul_injective_iff_isUnit {A : Matrix m m K} :
-    Function.Injective A.vecMul ↔ IsUnit A := by
-  simp_rw [← mulVec_transpose, mulVec_injective_iff_isUnit, isUnit_transpose]
+theorem mulVec_injective_iff_isUnit {A : Matrix m m K} :
+    Function.Injective A.mulVec ↔ IsUnit A := by
+  rw [← isUnit_transpose, ← vecMul_injective_iff_isUnit]
+  simp_rw [vecMul_transpose]
 
 theorem linearIndependent_rows_iff_isUnit {A : Matrix m m K} :
     LinearIndependent K (fun i ↦ A i) ↔ IsUnit A := by
