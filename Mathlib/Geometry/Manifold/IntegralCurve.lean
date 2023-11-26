@@ -220,7 +220,7 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
       (ContDiffAt.snd (hv.contDiffAt (range_mem_nhds_isInteriorPoint hx)))
   rw [←Real.ball_eq_Ioo] at hf2
   -- use continuity of `f` to extract `ε2` so that for `t ∈ Real.ball t₀ ε2`,
-  -- `f t ∈ interior (extChartAt I x₀).target` -/
+  -- `f t ∈ interior (extChartAt I x₀).target`
   have hcont := (hf2 t₀ (Real.ball_eq_Ioo .. ▸ Metric.mem_ball_self hε1)).continuousAt
   rw [continuousAt_def, hf1] at hcont
   have hnhds : f ⁻¹' (interior (extChartAt I x₀).target) ∈ nhds t₀ :=
@@ -228,12 +228,12 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
   rw [Metric.mem_nhds_iff] at hnhds
   obtain ⟨ε2, hε2, hf3⟩ := hnhds
   simp_rw [subset_def, mem_preimage] at hf3
-  /- prove that `γ := (extChartAt I x₀).symm ∘ f` is a desired integral curve -/
+  -- prove that `γ := (extChartAt I x₀).symm ∘ f` is a desired integral curve
   refine' ⟨(extChartAt I x₀).symm ∘ f, _, min ε1 ε2, lt_min hε1 hε2, _⟩
   · apply Eq.symm
     rw [Function.comp_apply, hf1, LocalEquiv.left_inv _ (mem_extChartAt_source ..)]
   intros t ht
-  /- collect useful terms in convenient forms -/
+  -- collect useful terms in convenient forms
   rw [←Real.ball_eq_Ioo] at ht
   have ht1 := mem_of_mem_of_subset ht (Metric.ball_subset_ball (min_le_left ..))
   have ht2 := mem_of_mem_of_subset ht (Metric.ball_subset_ball (min_le_right ..))
@@ -244,22 +244,21 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
     t := hf2 t ht1
   rw [←tangentCoordChange_def] at h
   have hf3' := mem_of_mem_of_subset (hf3 t ht2) interior_subset
-  /- express the derivative of the integral curve in the local chart -/
-  rw [HasMFDerivAt]
-  use ContinuousAt.comp
-    (continuousAt_extChartAt_symm'' _ _ hf3') ((hf2 t ht1).continuousAt)
-  apply HasDerivWithinAt.hasFDerivWithinAt
+  -- express the derivative of the integral curve in the local chart
+  refine' ⟨ContinuousAt.comp (continuousAt_extChartAt_symm'' _ _ hf3') ((hf2 t ht1).continuousAt),
+    HasDerivWithinAt.hasFDerivWithinAt _⟩
   rw [modelWithCornersSelf_coe, range_id, hasDerivWithinAt_univ, ext_chart_model_space_apply,
     writtenInExtChartAt, Function.comp_apply, Function.comp.assoc, extChartAt_model_space_eq_id,
     LocalEquiv.refl_symm, LocalEquiv.refl_coe, Function.comp.right_id, ←Function.comp.assoc]
-  /- `h` gives the derivative of `f` at `t` as `↑D (v (γ t))`, where `D` is the change of
-    coordinates from the chart at `γ t` to the chart at `x₀`. we wish to use
-    `HasFDerivAt.comp_hasDerivAt` to get the derivative of `γ` at `t` as `v (γ t)`, which requires
-    first expressing `v (γ t)` as `↑D_inv ↑D (v (γ t))`, where `D_inv` is the opposite change of
-    coordinates as `D`. -/
-  rw [←tangentCoordChange_self (I := I) (M := M) (x := (extChartAt I x₀).symm (f t))
-    (z := (extChartAt I x₀).symm (f t)) (v := v ((extChartAt I x₀).symm (f t)))]
-  rw [←tangentCoordChange_comp (x := x₀)]
+  -- `h` gives the derivative of `f` at `t` as `↑D (v (γ t))`, where `D` is the change of
+  -- coordinates from the chart at `γ t` to the chart at `x₀`. we wish to use
+  -- `HasFDerivAt.comp_hasDerivAt` to get the derivative of `γ` at `t` as `v (γ t)`, which requires
+  -- first expressing `v (γ t)` as `↑D_inv ↑D (v (γ t))`, where `D_inv` is the opposite change of
+  -- coordinates as `D`.
+  rw [←tangentCoordChange_self (I := I) (x := (extChartAt I x₀).symm (f t))
+      (z := (extChartAt I x₀).symm (f t)) (v := v ((extChartAt I x₀).symm (f t)))
+      (mem_extChartAt_source ..),
+    ←tangentCoordChange_comp (x := x₀)]
   apply HasFDerivAt.comp_hasDerivAt _ _ h
   apply HasFDerivWithinAt.hasFDerivAt (s := range I)
   nth_rw 4 [←(extChartAt I x₀).right_inv hf3']
@@ -275,7 +274,6 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
     use mem_extChartAt_source ..
     rw [←mem_preimage]
     exact mem_of_mem_of_subset hf3' (extChartAt I x₀).target_subset_preimage_source
-  · exact mem_extChartAt_source ..
 
 /-- For any continuously differentiable vector field defined on a manifold without boundary and any
   chosen starting point `x₀ : M`, an integral curve `γ : ℝ → M` exists such that `γ t₀ = x₀` and the
