@@ -472,7 +472,24 @@ instance {X Y B : Profinite.{u}} (f : X ⟶ B) (g : Y ⟶ B) [X.IsLight] [Y.IsLi
 
 instance {α : Type} [Fintype α] (X : α → Profinite.{u}) [∀ a, (X a).IsLight] :
     (Profinite.finiteCoproduct X).IsLight where
-  countable_clopens := sorry
+  countable_clopens := by
+    refine @Function.Surjective.countable ((a : α) → {s : Set (X a) // IsClopen s}) _ inferInstance
+      (fun f ↦ ⟨⋃ (a : α), Sigma.mk a '' (f a).val, ?_⟩) ?_
+    · apply isClopen_iUnion_of_finite
+      intro i
+      exact ⟨isOpenMap_sigmaMk _ (f i).prop.1, isClosedMap_sigmaMk _ (f i).prop.2⟩
+    · intro ⟨s, ⟨hso, hsc⟩⟩
+      rw [isOpen_sigma_iff] at hso
+      rw [isClosed_sigma_iff] at hsc
+      refine ⟨fun i ↦ ⟨_, ⟨hso i, hsc i⟩⟩, ?_⟩
+      simp only [Subtype.mk.injEq]
+      ext ⟨i, xi⟩
+      refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+      · rw [Set.mem_iUnion] at hx
+        obtain ⟨_, _, hj, hxj⟩ := hx
+        simpa [hxj] using hj
+      · rw [Set.mem_iUnion]
+        refine ⟨i, xi, (by simpa using hx), rfl⟩
 
 @[simps!]
 instance : Category LightProfinite := InducedCategory.category toProfinite
@@ -576,63 +593,65 @@ def pullback.isLimit : Limits.IsLimit (pullback.cone f g) :=
 
 end Pullback
 
--- section FiniteCoproduct
+section FiniteCoproduct
 
--- variable {α : Type} [Fintype α] (X : α → LightProfinite.{u})
+variable {α : Type} [Fintype α] (X : α → LightProfinite.{u})
 
--- /--
--- The coproduct of a finite family of objects in `Profinite`, constructed as the disjoint
--- union with its usual topology.
--- -/
--- def finiteCoproduct : LightProfinite := Profinite.of <| Σ (a : α), X a
+/--
+The coproduct of a finite family of objects in `LightProfinite`, constructed as the disjoint
+union with its usual topology.
+-/
+noncomputable
+def finiteCoproduct : LightProfinite :=
+  ofIsLight (Profinite.finiteCoproduct fun a ↦ (X a).toProfinite)
 
--- /-- The inclusion of one of the factors into the explicit finite coproduct. -/
--- def finiteCoproduct.ι (a : α) : X a ⟶ finiteCoproduct X where
---   toFun := (⟨a, ·⟩)
---   continuous_toFun := continuous_sigmaMk (σ := fun a => X a)
+/-- The inclusion of one of the factors into the explicit finite coproduct. -/
+def finiteCoproduct.ι (a : α) : X a ⟶ finiteCoproduct X where
+  toFun := (⟨a, ·⟩)
+  continuous_toFun := continuous_sigmaMk (σ := fun a => (X a).toProfinite)
 
--- /--
--- To construct a morphism from the explicit finite coproduct, it suffices to
--- specify a morphism from each of its factors.
--- This is essentially the universal property of the coproduct.
--- -/
--- def finiteCoproduct.desc {B : Profinite.{u}} (e : (a : α) → (X a ⟶ B)) :
---     finiteCoproduct X ⟶ B where
---   toFun := fun ⟨a, x⟩ => e a x
---   continuous_toFun := by
---     apply continuous_sigma
---     intro a
---     exact (e a).continuous
+/--
+To construct a morphism from the explicit finite coproduct, it suffices to
+specify a morphism from each of its factors.
+This is essentially the universal property of the coproduct.
+-/
+def finiteCoproduct.desc {B : LightProfinite.{u}} (e : (a : α) → (X a ⟶ B)) :
+    finiteCoproduct X ⟶ B where
+  toFun := fun ⟨a, x⟩ => e a x
+  continuous_toFun := by
+    apply continuous_sigma
+    intro a
+    exact (e a).continuous
 
--- @[reassoc (attr := simp)]
--- lemma finiteCoproduct.ι_desc {B : Profinite.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :
---     finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
+@[reassoc (attr := simp)]
+lemma finiteCoproduct.ι_desc {B : LightProfinite.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :
+    finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
 
--- lemma finiteCoproduct.hom_ext {B : Profinite.{u}} (f g : finiteCoproduct X ⟶ B)
---     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
---   ext ⟨a, x⟩
---   specialize h a
---   apply_fun (· x) at h
---   exact h
+lemma finiteCoproduct.hom_ext {B : LightProfinite.{u}} (f g : finiteCoproduct X ⟶ B)
+    (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
+  ext ⟨a, x⟩
+  specialize h a
+  apply_fun (· x) at h
+  exact h
 
--- /-- The coproduct cocone associated to the explicit finite coproduct. -/
--- @[simps]
--- def finiteCoproduct.cocone : Limits.Cocone (Discrete.functor X) where
---   pt := finiteCoproduct X
---   ι := Discrete.natTrans fun ⟨a⟩ => finiteCoproduct.ι X a
+/-- The coproduct cocone associated to the explicit finite coproduct. -/
+@[simps]
+noncomputable def finiteCoproduct.cocone : Limits.Cocone (Discrete.functor X) where
+  pt := finiteCoproduct X
+  ι := Discrete.natTrans fun ⟨a⟩ => finiteCoproduct.ι X a
 
--- /-- The explicit finite coproduct cocone is a colimit cocone. -/
--- @[simps]
--- def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cocone X) where
---   desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app ⟨a⟩
---   fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
---   uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
---     specialize hm ⟨a⟩
---     ext t
---     apply_fun (· t) at hm
---     exact hm
+/-- The explicit finite coproduct cocone is a colimit cocone. -/
+@[simps]
+def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cocone X) where
+  desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app ⟨a⟩
+  fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
+  uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
+    specialize hm ⟨a⟩
+    ext t
+    apply_fun (· t) at hm
+    exact hm
 
--- end FiniteCoproduct
+end FiniteCoproduct
 
 def fintypeCatToLightProfinite : FintypeCat ⥤ LightProfinite where
   obj X := X.toLightProfinite
@@ -700,9 +719,52 @@ theorem effectiveEpi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
   rw [← epi_iff_surjective]
   infer_instance
 
-instance : Preregular LightProfinite := sorry
+instance : Preregular LightProfinite where
+  exists_fac := by
+    intro X Y Z f π hπ
+    refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩
+    rw [LightProfinite.effectiveEpi_iff_surjective] at hπ ⊢
+    intro y
+    obtain ⟨z,hz⟩ := hπ (f y)
+    exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
 
-instance : FinitaryExtensive LightProfinite := sorry
+instance (n : ℕ) (F : Discrete (Fin n) ⥤ LightProfinite) :
+    HasColimit (Discrete.functor (F.obj ∘ Discrete.mk) : Discrete (Fin n) ⥤ LightProfinite) where
+  exists_colimit := ⟨⟨finiteCoproduct.cocone _, finiteCoproduct.isColimit _⟩⟩
+
+instance : HasFiniteCoproducts LightProfinite where
+  out _ := {
+    has_colimit := fun _ ↦ hasColimitOfIso Discrete.natIsoFunctor
+  }
+
+instance {X Y B : LightProfinite} (f : X ⟶ B) (g : Y ⟶ B) : HasLimit (cospan f g) where
+  exists_limit := ⟨⟨pullback.cone f g, pullback.isLimit f g⟩⟩
+
+instance : HasPullbacks LightProfinite where
+  has_limit F := hasLimitOfIso (diagramIsoCospan F).symm
+
+noncomputable
+instance : PreservesFiniteCoproducts lightToProfinite := by
+  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
+  suffices : PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) lightToProfinite
+  · exact preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
+  apply preservesColimitOfPreservesColimitCocone (finiteCoproduct.isColimit _)
+  exact Profinite.finiteCoproduct.isColimit _
+
+noncomputable
+instance : PreservesLimitsOfShape WalkingCospan lightToProfinite := by
+  refine ⟨fun {F} ↦ ?_⟩
+  suffices : ∀ {X Y B} (f : X ⟶ B) (g : Y ⟶ B), PreservesLimit (cospan f g) lightToProfinite
+  · exact preservesLimitOfIsoDiagram _ (diagramIsoCospan F).symm
+  intro _ _ _ f g
+  apply preservesLimitOfPreservesLimitCone (pullback.isLimit f g)
+  exact (isLimitMapConePullbackConeEquiv lightToProfinite (pullback.condition f g)).symm
+    (Profinite.pullback.isLimit _ _)
+
+instance : FinitaryExtensive LightProfinite :=
+  finitaryExtensive_of_preserves_and_reflects lightToProfinite
+
+instance : Precoherent LightProfinite := sorry -- see #8399
 
 end LightProfinite
 
