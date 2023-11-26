@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fox Thomson
+Authors: Fox Thomson, Martin Dvorak
 -/
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Algebra.Ring.Hom.Defs
@@ -14,8 +14,8 @@ import Mathlib.Tactic.DeriveFintype
 /-!
 # Languages
 
-This file contains the definition and operations on formal languages over an alphabet. Note strings
-are implemented as lists over the alphabet.
+This file contains the definition and operations on formal languages over an alphabet. Note that
+strings are implemented as lists over the alphabet.
 The operations in this file define a [Kleene algebra](https://en.wikipedia.org/wiki/Kleene_algebra)
 over the languages.
 -/
@@ -296,6 +296,65 @@ instance : KleeneAlgebra (Language α) :=
       · simp
       rw [pow_succ, ←mul_assoc m l (l^n)]
       exact le_trans (le_mul_congr h le_rfl) ih }
+
+/-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
+def reverse (l : Language α) : Language α := { w : List α | w.reverse ∈ l }
+
+@[simp]
+lemma reverse_mem_reverse : a.reverse ∈ l.reverse ↔ a ∈ l := by
+  show a.reverse.reverse ∈ l ↔ a ∈ l
+  rw [List.reverse_reverse]
+
+lemma reverse_zero : (0 : Language α).reverse = 0 := by
+  rfl
+
+lemma reverse_one : (1 : Language α).reverse = 1 := by
+  simp [reverse, ← one_def]
+
+lemma reverse_reverse : l.reverse.reverse = l := by
+  ext w
+  convert_to w.reverse.reverse ∈ reverse (reverse l) ↔ w ∈ l using 5
+  · rw [List.reverse_reverse]
+  rw [reverse_mem_reverse, reverse_mem_reverse]
+
+lemma reverse_union : (l + m).reverse = l.reverse + m.reverse := by
+  ext w
+  apply mem_add
+
+lemma reverse_concatenation : (l * m).reverse = m.reverse * l.reverse := by
+  ext w
+  show
+    (∃ u v, u ∈ l ∧ v ∈ m ∧ u ++ v = w.reverse) ↔
+    (∃ u v, u.reverse ∈ m ∧ v.reverse ∈ l ∧ u ++ v = w)
+  constructor <;>
+  · rintro ⟨u, v, hul, hvm, huvw⟩
+    use v.reverse, u.reverse
+    simp_all [← List.reverse_append]
+
+lemma reverse_kstar : l∗.reverse = l.reverse∗ := by
+  ext w
+  simp only [reverse, kstar_def]
+  show
+    (∃ L, w.reverse = join L ∧ ∀ y, y ∈ L → y ∈ l) ↔
+    (∃ L, w = join L ∧ ∀ y, y ∈ L → y.reverse ∈ l)
+  constructor
+  · rintro ⟨L, hwL, hLl⟩
+    use (L.map List.reverse).reverse
+    constructor
+    · rw [List.reverse_eq_iff] at hwL
+      simp [hwL, List.join_reverse, List.map_map, reverse_involutive]
+    · intros
+      simp_all [mem_reverse, mem_map, reverse_involutive,
+        Function.Involutive.exists_mem_and_apply_eq_iff]
+  · rintro ⟨L, hwL, hLl⟩
+    use (L.map List.reverse).reverse
+    constructor
+    · simp [List.join_reverse, List.map_map, hwL, reverse_involutive]
+    · intro y hy
+      simp only [mem_reverse, mem_map, reverse_involutive,
+        Function.Involutive.exists_mem_and_apply_eq_iff] at hy
+      specialize hLl y.reverse hy
+      rwa [List.reverse_reverse] at hLl
 
 end Language
 
