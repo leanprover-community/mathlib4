@@ -5,12 +5,36 @@ import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.MonoCoprod
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+import Mathlib.Data.Finite.Card
 
 universe u v w v₁ u₁ u₂ w₂
+
+section Finite
+
+theorem bijective_of_injective_of_card_eq {α β : Type*} [Finite β] (f : α → β)
+    (hfinj : Function.Injective f) (hcardeq : Nat.card α = Nat.card β) : Function.Bijective f := by
+  have : Finite α := Finite.of_injective f hfinj
+  have : Fintype α := Fintype.ofFinite α
+  have : Fintype β := Fintype.ofFinite β
+  simp only [Fintype.bijective_iff_injective_and_card f]
+  refine ⟨hfinj, ?_⟩
+  rwa [←Nat.card_eq_fintype_card, ←Nat.card_eq_fintype_card]
+
+end Finite
 
 open CategoryTheory Limits Functor
 
 variable {C : Type u} [Category.{v, u} C]
+
+section Pi
+
+@[simp]
+lemma Pi.lift_π {β : Type w} {f : β → C} [HasProduct f] {P : C} (p : (b : β) → P ⟶ f b) (b : β) :
+    Pi.lift p ≫ Pi.π f b = p b := by
+  simp only [limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
+
+end Pi
 
 section CombineLimits
 
@@ -282,7 +306,7 @@ lemma FintypeCat.isIso_iff_bijective { X Y : FintypeCat.{u} } (f : X ⟶ Y) :
     (CategoryTheory.isIso_iff_bijective _).mpr h
   exact CategoryTheory.isIso_of_reflects_iso f FintypeCat.incl
 
-lemma Types.mono_of_cofanInj {ι : Type u} {f : ι → Type u} (t : Cofan f) (h : IsColimit t)
+lemma Types.mono_of_cofanInj {ι : Type w} {f : ι → TypeMax.{w, u}} (t : Cofan f) (h : IsColimit t)
     (i : ι) : Mono (Cofan.inj t i) := by
   simp only [mono_iff_injective]
   show Function.Injective (t.ι.app ⟨i⟩)
@@ -299,10 +323,147 @@ lemma Types.mono_of_cofanInj {ι : Type u} {f : ι → Type u} (t : Cofan f) (h 
   exact injective_of_mono (inv φ.hom)
   exact sigma_mk_injective
 
-lemma FintypeCat.mono_of_cofanInj {ι : Type u} [Fintype ι] {f : ι → FintypeCat.{u}} (t : Cofan f)
+lemma FintypeCat.mono_of_cofanInj {ι : Type} [Fintype ι] {f : ι → FintypeCat.{u}} (t : Cofan f)
     (h : IsColimit t) (i : ι) : Mono (Cofan.inj t i) := by
   apply mono_of_mono_map FintypeCat.incl
   let s : Cofan (fun j => FintypeCat.incl.obj <| f j) := FintypeCat.incl.mapCocone t
   show Mono (Cofan.inj s i)
   let h : IsColimit s := isColimitOfPreserves FintypeCat.incl h
   exact Types.mono_of_cofanInj s h i
+
+lemma FintypeCat.mono_of_cofanInj' {ι : Type} [Fintype ι] (F : Discrete ι ⥤ FintypeCat.{u})
+    (t : ColimitCocone F) (i : ι) : Mono (t.cocone.ι.app ⟨i⟩) := by
+  let f : ι → FintypeCat.{u} := fun i => F.obj ⟨i⟩
+  have hi : F ≅ Discrete.functor f := Discrete.natIsoFunctor
+  let s : Cofan f := (Cocones.precompose hi.inv).obj t.cocone
+  let hs : IsColimit s := (IsColimit.precomposeHomEquiv hi.symm t.cocone).symm t.isColimit
+  have : hi.hom.app ⟨i⟩ ≫ Cofan.inj s i = t.cocone.ι.app ⟨i⟩ := by
+    show hi.hom.app ⟨i⟩ ≫ hi.inv.app ⟨i⟩ ≫ t.cocone.ι.app ⟨i⟩ = t.cocone.ι.app ⟨i⟩
+    simp
+  rw [←this]
+  have : Mono (Cofan.inj s i) := FintypeCat.mono_of_cofanInj s hs i
+  exact mono_comp _ _
+
+lemma FintypeCat.jointly_surjective {J : Type} [SmallCategory J] [FinCategory J]
+    (F : J ⥤ FintypeCat.{u}) (t : Cocone F) (h : IsColimit t) (x : t.pt) :
+    ∃ j y, t.ι.app j y = x := by
+  let s : Cocone (F ⋙ FintypeCat.incl) := FintypeCat.incl.mapCocone t
+  let hs : IsColimit s := isColimitOfPreserves FintypeCat.incl.{u} h
+  exact Types.jointly_surjective (F ⋙ FintypeCat.incl) hs x
+
+namespace FintypeCat
+
+def FProd.fst {X Y : FintypeCat.{u}} : FintypeCat.of (X × Y) ⟶ X := Prod.fst
+
+@[simps! pt]
+def binaryProductCone (X Y : FintypeCat.{u}) : BinaryFan X Y :=
+  BinaryFan.mk FProd.fst Prod.snd
+
+@[simp]
+theorem binaryProductCone_fst (X Y : FintypeCat.{u}) : (binaryProductCone X Y).fst = Prod.fst :=
+  rfl
+
+@[simp]
+theorem binaryProductCone_snd (X Y : FintypeCat.{u}) : (binaryProductCone X Y).snd = Prod.snd :=
+  rfl
+
+/-- The product type `X × Y` is a binary product for `X` and `Y`. -/
+@[simps!]
+def binaryProductLimit (X Y : FintypeCat.{u}) : IsLimit (binaryProductCone X Y) where
+  lift (s : BinaryFan X Y) x := (s.fst x, s.snd x)
+  fac _ j := Discrete.recOn j fun j => WalkingPair.casesOn j rfl rfl
+  uniq _ _ w := funext fun x => Prod.ext (congr_fun (w ⟨WalkingPair.left⟩) x) (congr_fun (w ⟨WalkingPair.right⟩) x)
+
+/-- The category of types has `X × Y`, the usual cartesian product,
+as the binary product of `X` and `Y`.
+-/
+@[simps]
+def binaryProductLimitCone (X Y : FintypeCat.{u}) : Limits.LimitCone (pair X Y) :=
+  ⟨_, binaryProductLimit X Y⟩
+
+/-- The categorical binary product in `Type u` is cartesian product. -/
+noncomputable def binaryProductIso (X Y : FintypeCat.{u}) : Limits.prod X Y ≅ FintypeCat.of (X × Y) :=
+  limit.isoLimitCone (binaryProductLimitCone X Y)
+
+@[elementwise (attr := simp)]
+theorem binaryProductIso_hom_comp_fst (X Y : FintypeCat.{u}) :
+    (binaryProductIso X Y).hom ≫ _root_.Prod.fst = Limits.prod.fst :=
+  limit.isoLimitCone_hom_π (binaryProductLimitCone X Y) ⟨WalkingPair.left⟩
+
+@[elementwise (attr := simp)]
+theorem binaryProductIso_hom_comp_snd (X Y : FintypeCat.{u}) :
+    (binaryProductIso X Y).hom ≫ _root_.Prod.snd = Limits.prod.snd :=
+  limit.isoLimitCone_hom_π (binaryProductLimitCone X Y) ⟨WalkingPair.right⟩
+
+@[simp]
+lemma hom_inv_id_apply {X Y : FintypeCat.{u}} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
+  congr_fun f.hom_inv_id x
+
+@[simp]
+lemma inv_hom_id_apply {X Y : FintypeCat.{u}} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
+  congr_fun f.inv_hom_id y
+
+@[simp]
+lemma FunctorToFintypeCat.map_inv_map_hom_apply {C : Type u} [Category.{v, u} C]
+    (F : C ⥤ FintypeCat.{w}) {X Y : C} (f : X ≅ Y) (x : F.obj X) :
+    F.map f.inv (F.map f.hom x) = x :=
+  congr_fun (F.mapIso f).hom_inv_id x
+
+noncomputable def Limit.mk [UnivLE.{v, u}] {J : Type v} [SmallCategory J] [FinCategory J]
+    (F : J ⥤ FintypeCat.{u}) (x : ∀ j, F.obj j)
+    (h : ∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j') : (limit F : FintypeCat.{u}) := by
+  let y : limit (F ⋙ FintypeCat.incl) := Types.Limit.mk (F ⋙ FintypeCat.incl) x h
+  have h2 : IsLimit (incl.mapCone (limit.cone F)) := PreservesLimit.preserves (limit.isLimit F)
+  let i : FintypeCat.incl.obj (limit F) ≅ limit (F ⋙ FintypeCat.incl) := by
+    exact IsLimit.conePointUniqueUpToIso h2 (limit.isLimit (F ⋙ incl))
+  exact i.inv y
+
+@[simp]
+lemma Limit.π_mk [UnivLE.{v, u}] {J : Type v} [SmallCategory J] [FinCategory J]
+    (F : J ⥤ FintypeCat.{u}) (x : ∀ j, F.obj j)
+    (h : ∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j') (j : J) :
+    limit.π F j (Limit.mk F x h) = x j := by
+  admit
+
+noncomputable def Pi.mk [UnivLE.{v, u}] {ι : Type v} [Fintype ι] (f : ι → FintypeCat.{u})
+    (x : ∀ j, f j) : (∏ f : FintypeCat.{u}) := by
+  apply FintypeCat.Limit.mk (Discrete.functor f) (fun ⟨i⟩ => x i)
+  intro ⟨i⟩ ⟨j⟩ u
+  have h : i = j := Discrete.eq_of_hom u
+  aesop_subst h
+  simp only [Discrete.functor_obj, Discrete.functor_map_id, id_apply]
+
+@[simp]
+lemma Pi.π_mk [UnivLE.{v, u}] {ι : Type v} [Fintype ι] (f : ι → FintypeCat.{u})
+    (x : ∀ j, f j) (j : ι) : Pi.π f j (Pi.mk f x) = x j := by
+  admit
+
+end FintypeCat
+
+namespace Types
+
+noncomputable def Pi.mk [UnivLE.{v, u}] {ι : Type v} (f : ι → Type u) (x : ∀ j, f j) :
+    (∏ f : Type u) := by
+  apply Types.Limit.mk (Discrete.functor f) (fun ⟨i⟩ => x i)
+  intro ⟨i⟩ ⟨j⟩ u
+  have h : i = j := Discrete.eq_of_hom u
+  aesop_subst [h]
+  simp only [Discrete.functor_obj, Discrete.functor_map_id, types_id_apply]
+
+@[simp]
+lemma Pi.π_mk [UnivLE.{v, u}] {ι : Type v} (f : ι → Type u) (x : ∀ j, f j) (j : ι) :
+    Pi.π f j (Pi.mk f x) = x j := by
+  show limit.π (Discrete.functor f) ⟨j⟩ (Pi.mk f x) = x j
+  erw [Types.Limit.π_mk]
+
+end Types
+
+example (X Y : FintypeCat.{u}) (x : X) (y : Y) :
+    @prod.fst FintypeCat.{u} _ X Y _ ((FintypeCat.binaryProductIso X Y).inv (x, y)) = x := by
+  rw [←FintypeCat.binaryProductIso_hom_comp_fst]
+  simp only [FintypeCat.comp_apply, FintypeCat.inv_hom_id_apply]
+
+example (X Y : Type u) (x : X) (y : Y) :
+    @prod.fst (Type u) _ X Y _ ((Types.binaryProductIso X Y).inv (x, y)) = x := by
+  rw [←Types.binaryProductIso_hom_comp_fst]
+  simp only [types_comp_apply, inv_hom_id_apply]

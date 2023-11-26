@@ -91,6 +91,15 @@ lemma initialIffFibreEmpty (X : C) : Nonempty (IsInitial X) ↔ IsEmpty (F.obj X
   rw [IsInitial.isInitialIffObj F X]
   exact FintypeCat.initialIffEmpty (F.obj X)
 
+lemma notinitial_of_inhabited {X : C} (x : F.obj X) : IsInitial X → False := by
+  intro hin
+  exact ((initialIffFibreEmpty X).mp ⟨hin⟩).false x
+
+lemma nonempty_fibre_of_connected (X : C) [ConnectedObject X] : Nonempty (F.obj X) := by
+  by_contra h
+  have ⟨hin⟩ : Nonempty (IsInitial X) := (initialIffFibreEmpty X).mpr (not_nonempty_iff.mp h)
+  exact ConnectedObject.notInitial hin
+
 instance preservesMonomorphisms : PreservesMonomorphisms F :=
   preservesMonomorphisms_of_preservesLimitsOfShape F
 
@@ -204,6 +213,14 @@ lemma evaluationInjectiveOfConnected (A X : C) [ConnectedObject A] (a : F.obj A)
     use a
   exact eq_of_epi_equalizer
 
+/- The evaluation map on automorphisms is injective for connected objects. -/
+lemma evaluation_aut_injective_of_connected (A : C) [ConnectedObject A] (a : F.obj A) :
+    Function.Injective (fun f : Aut A => F.map (f.hom) a) := by
+  show Function.Injective ((fun f : A ⟶ A => F.map f a) ∘ (fun f : Aut A => f.hom))
+  apply Function.Injective.comp
+  exact evaluationInjectiveOfConnected A A a
+  exact @Aut.ext _ _ A
+
 /- The fibre functor is faithful. -/
 lemma fibreFunctorFaithful : Faithful F where
   map_injective {X Y} := by
@@ -218,5 +235,92 @@ lemma fibreFunctorFaithful : Faithful F where
     exact eq_of_epi_equalizer
 
 end Def
+
+section GaloisObjects
+
+variable {C : Type u} [Category.{v, u} C]
+
+variable (F : C ⥤ FintypeCat.{w}) [PreGaloisCategory C] [FibreFunctor F]
+
+instance (X : C) : SMul (Aut X) (F.obj X) := ⟨fun σ a => F.map σ.hom a⟩
+
+class GaloisObject (X : C) : Prop where
+  connected : ConnectedObject X
+  transitiveAction : MulAction.IsPretransitive (Aut X) (F.obj X)
+
+instance (X : C) [GaloisObject F X] : MulAction.IsPretransitive (Aut X) (F.obj X) :=
+  GaloisObject.transitiveAction
+
+--instance (X : C) [GaloisObject F X] : ConnectedObject X := sorry
+
+lemma evaluation_bijective_of_galois (X : C) [GaloisObject F X] (x : F.obj X) :
+    Function.Bijective (fun f : Aut X => F.map (f.hom) x) := by
+  constructor
+  have : ConnectedObject X := GaloisObject.connected F
+  exact evaluation_aut_injective_of_connected X x
+  intro y
+  exact MulAction.IsPretransitive.exists_smul_eq x y
+
+lemma galois_iff_card_aut_eq_fibre_of_connected (X : C) [ConnectedObject X] :
+    GaloisObject F X ↔ Nat.card (Aut X) = Nat.card (F.obj X) := by
+  constructor
+  intro _
+  obtain ⟨x⟩ := @nonempty_fibre_of_connected _ _ F _ _ X _
+  exact Nat.card_eq_of_bijective _ (evaluation_bijective_of_galois F X x)
+  intro h
+  refine ⟨?_, ⟨?_⟩⟩
+  infer_instance
+  intro x y
+  refine Function.Bijective.surjective ?_ y
+  apply bijective_of_injective_of_card_eq _
+  exact evaluation_aut_injective_of_connected X x
+  assumption
+
+def ConnectedObjects := { A : C | ConnectedObject A }
+
+def GaloisObjects := { A : C | GaloisObject F A }
+
+end GaloisObjects
+
+section More
+
+variable {C : Type u} [Category.{v, u} C]
+
+variable (F : C ⥤ FintypeCat.{w}) [PreGaloisCategory C] [FibreFunctor F]
+
+lemma card_hom_le_fibre_of_connected (A X : C) [ConnectedObject A]
+    : Nat.card (A ⟶ X) ≤ Nat.card (F.obj X) := by
+  obtain ⟨a⟩ := @nonempty_fibre_of_connected _ _ F _ _ A _
+  apply Finite.card_le_of_injective (evaluation A X a)
+  exact evaluationInjectiveOfConnected A X a
+
+lemma card_aut_le_fibre_of_connected (A : C) [ConnectedObject A]
+    : Nat.card (Aut A) ≤ Nat.card (F.obj A) := by
+  obtain ⟨a⟩ := @nonempty_fibre_of_connected _ _ F _ _ A _
+  apply Finite.card_le_of_injective (fun f : Aut A => F.map f.hom a)
+  exact evaluation_aut_injective_of_connected A a
+
+end More
+
+section Examples
+
+variable {G : Type*} [Group G]
+
+instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
+  hasTerminalObject := inferInstance
+  hasPullbacks := inferInstance
+  hasFiniteCoproducts := by
+    constructor
+    intro n
+    constructor
+    intro F
+    let H := F ⋙ forget₂ _ FintypeCat
+    have : HasColimit H := inferInstance
+    admit
+  hasQuotientsByFiniteGroups := sorry
+  epiMonoFactorisation := sorry
+  monoInducesIsoOnDirectSummand := sorry
+
+end Examples
 
 end Galois
