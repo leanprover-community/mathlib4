@@ -499,6 +499,7 @@ import Mathlib.AlgebraicGeometry.Properties
 import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.AlgebraicGeometry.Scheme
+import Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
@@ -1083,6 +1084,7 @@ import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
+import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
@@ -3510,6 +3512,7 @@ import Mathlib.Topology.Homotopy.HSpaces
 import Mathlib.Topology.Homotopy.HomotopyGroup
 import Mathlib.Topology.Homotopy.Path
 import Mathlib.Topology.Homotopy.Product
+import Mathlib.Topology.IndicatorConstPointwise
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Instances.Complex
