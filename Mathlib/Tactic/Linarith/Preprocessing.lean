@@ -379,7 +379,7 @@ This produces `2^n` branches when there are `n` such hypotheses in the input.
 -/
 partial def removeNe_aux : MVarId → List Expr → MetaM (List Branch) := fun g hs => do
   let some (e, α, a, b) ← hs.findSomeM? (fun e : Expr => do
-    let some (α, a, b) := (← inferType e).ne?' | return none
+    let some (α, a, b) := (← instantiateMVars (← inferType e)).ne?' | return none
     return some (e, α, a, b)) | return [(g, hs)]
   let [ng1, ng2] ← g.apply (← mkAppOptM ``Or.elim #[none, none, ← g.getType,
       ← mkAppOptM ``lt_or_gt_of_ne #[α, none, a, b, e]]) | failure
@@ -416,7 +416,7 @@ Note that a preprocessor may produce multiple or no expressions from each input 
 so the size of the list may change.
 -/
 def preprocess (pps : List GlobalBranchingPreprocessor) (g : MVarId) (l : List Expr) :
-    MetaM (List Branch) :=
+    MetaM (List Branch) := g.withContext <|
   pps.foldlM (fun ls pp => return (← ls.mapM fun (g, l) => do pp.process g l).join) [(g, l)]
 
 end Linarith
