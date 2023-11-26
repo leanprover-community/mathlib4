@@ -936,10 +936,12 @@ variable (R) (M) [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- Given an element `x` of a module `M` over `R`, the natural map from
     `R` to scalar multiples of `x`.-/
-@[simps!]
 def toSpanSingleton (x : M) : R →ₗ[R] M :=
   LinearMap.id.smulRight x
 #align linear_map.to_span_singleton LinearMap.toSpanSingleton
+
+/-- `@[simps!]` generates `AddHom.toFun (LinearMap.toSpanSingleton R M x).toAddHom b = b • x` -/
+@[simp] lemma toSpanSingleton_apply (x : M) (b : R) : toSpanSingleton R M x b = b • x := rfl
 
 /-- The range of `toSpanSingleton x` is the span of `x`.-/
 theorem span_singleton_eq_range (x : M) : (R ∙ x) = range (toSpanSingleton R M x) :=
