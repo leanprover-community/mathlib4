@@ -400,29 +400,28 @@ theorem comp_mul_comm (T S : CentroidHom α) (a b : α) : (T ∘ S) (a * b) = (S
   rw [map_mul_right, map_mul_left, ← map_mul_right, ← map_mul_left]
 #align centroid_hom.comp_mul_comm CentroidHom.comp_mul_comm
 
+local notation "L" => AddMonoid.End.mulLeft
+local notation "R" => AddMonoid.End.mulRight
+
 /-- The canonical homomorphism from the center into the centroid -/
 def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α where
-  toFun z := {
-    toFun := fun a => z * a
-    map_zero' := by
-      simp only [mul_zero]
-    map_add' := fun a b => by
-      simp only [mul_add]
-    map_mul_left' := fun a b => by
-      simp only
+  toFun z := {AddMonoid.End.mulLeft (z : α) with
+    map_mul_left' := fun _ _ => by
+      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
+        AddMonoid.End.mulLeft_apply_apply]
       rw [((Set.mem_center_iff _).mp z.prop).comm, ((Set.mem_center_iff _).mp z.prop).right_assoc,
         ((Set.mem_center_iff _).mp z.prop).comm]
-    map_mul_right' := fun a b => by
-      simp only
+    map_mul_right' := fun _ _ => by
+      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
+        AddMonoid.End.mulLeft_apply_apply]
       rw [((Set.mem_center_iff _).mp z.prop).left_assoc]
   }
   map_zero' := by
-    simp
+    simp only [ZeroMemClass.coe_zero, map_zero]
     exact rfl
-  map_add' := fun z₁ z₂ => by
-    ext a
-    show (z₁ + z₂) * a = z₁ * a + z₂ * a
-    rw [add_mul]
+  map_add' := fun _ _ => by
+    simp only [AddSubmonoid.coe_add, NonUnitalSubsemiring.coe_toAddSubmonoid, map_add]
+    exact rfl
   map_mul' := fun z₁ z₂ => by
     ext a
     show  (z₁ * z₂) * a = z₁ * (z₂ * a)
@@ -430,9 +429,6 @@ def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α wh
 
 lemma centerToCentroid_apply (z : { x // x ∈ NonUnitalSubsemiring.center α }) (a : α) :
     (centerToCentroid z) a = z * a := rfl
-
-local notation "L" => AddMonoid.End.mulLeft
-local notation "R" => AddMonoid.End.mulRight
 
 lemma center_iff_op_centroid (a : α) :
     a ∈ NonUnitalSubsemiring.center α ↔ L a = R a ∧ (L a) ∈ Set.range CentroidHom.toEnd := by
