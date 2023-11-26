@@ -405,7 +405,7 @@ local notation "R" => AddMonoid.End.mulRight
 
 /-- The canonical homomorphism from the center into the centroid -/
 def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α where
-  toFun z := {AddMonoid.End.mulLeft (z : α) with
+  toFun z := {L (z : α) with
     map_mul_left' := fun _ _ => by
       simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
         AddMonoid.End.mulLeft_apply_apply]
