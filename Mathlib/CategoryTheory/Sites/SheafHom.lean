@@ -8,8 +8,8 @@ import Mathlib.CategoryTheory.Sites.Over
 
 /-! Internal hom of sheaves
 
-In this file, given two sheaves `F` and `G` in `Sheaf J A`
-(with `J : GrothendieckTopology C`), we shall define a sheaf of types
+In this file, given two sheaves `F` and `G` on a site `(C, J)` with values
+in a category `A`, we shall define a sheaf of types
 `Sheaf.internalHom F G` which sends `X : C` to the type of morphisms
 between the restrictions of `F` and `G` to the categories `Over X`.
 
@@ -40,12 +40,10 @@ def internalHom : Cᵒᵖ ⥤ Type _ where
   map f := whiskerLeft (Over.map f.unop).op
   map_id := by
     rintro ⟨X⟩
-    dsimp
     ext φ ⟨Y⟩
     simpa [Over.mapId] using φ.naturality ((Over.mapId X).hom.app Y).op
   map_comp := by
     rintro ⟨X⟩ ⟨Y⟩ ⟨Z⟩ ⟨f : Y ⟶ X⟩ ⟨g : Z ⟶ Y⟩
-    dsimp
     ext φ ⟨W⟩
     simpa [Over.mapComp] using φ.naturality ((Over.mapComp g f).hom.app W).op
 
