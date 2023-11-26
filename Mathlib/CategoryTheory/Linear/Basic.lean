@@ -118,7 +118,6 @@ instance fullSubcategory (Z : C → Prop) : Linear.{w, v} R (FullSubcategory Z)
 variable (R)
 
 /-- Composition by a fixed left argument as an `R`-linear map. -/
-@[simps]
 def leftComp {X Y : C} (Z : C) (f : X ⟶ Y) : (Y ⟶ Z) →ₗ[R] X ⟶ Z
     where
   toFun g := f ≫ g
@@ -126,14 +125,19 @@ def leftComp {X Y : C} (Z : C) (f : X ⟶ Y) : (Y ⟶ Z) →ₗ[R] X ⟶ Z
   map_smul' := by simp
 #align category_theory.linear.left_comp CategoryTheory.Linear.leftComp
 
+@[simp]
+lemma leftComp_apply {X Y : C} (Z : C) (f : X ⟶ Y) (g : Y ⟶ Z) : leftComp R Z f g = f ≫ g := rfl
+
 /-- Composition by a fixed right argument as an `R`-linear map. -/
-@[simps]
 def rightComp (X : C) {Y Z : C} (g : Y ⟶ Z) : (X ⟶ Y) →ₗ[R] X ⟶ Z
     where
   toFun f := f ≫ g
   map_add' := by simp
   map_smul' := by simp
 #align category_theory.linear.right_comp CategoryTheory.Linear.rightComp
+
+@[simp]
+lemma rightComp_apply (X : C) {Y Z : C} (g : Y ⟶ Z) (f : X ⟶ Y) : rightComp R X g f = f ≫ g := rfl
 
 instance {X Y : C} (f : X ⟶ Y) [Epi f] (r : R) [Invertible r] : Epi (r • f) :=
   ⟨fun g g' H => by
