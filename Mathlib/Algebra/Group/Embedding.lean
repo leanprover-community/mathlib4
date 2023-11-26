@@ -13,17 +13,16 @@ import Mathlib.Logic.Embedding.Basic
 -/
 
 
-variable {R : Type*}
+variable {G : Type*}
 
 section LeftOrRightCancelSemigroup
 
-/-- The embedding of a left cancellative semigroup into itself
-by left multiplication by a fixed element.
- -/
+/-- If left-multiplication by any element is cancellative, left-multiplication by `g` is an
+embedding. -/
 @[to_additive (attr := simps)
-      "The embedding of a left cancellative additive semigroup into itself
-         by left translation by a fixed element." ]
-def mulLeftEmbedding {G : Type*} [LeftCancelSemigroup G] (g : G) : G ↪ G where
+      "If left-addition by any element is cancellative, left-addition by `g` is an
+        embedding."]
+def mulLeftEmbedding [Mul G] [IsLeftCancelMul G] (g : G) : G ↪ G where
   toFun h := g * h
   inj' := mul_right_injective g
 #align mul_left_embedding mulLeftEmbedding
@@ -31,13 +30,12 @@ def mulLeftEmbedding {G : Type*} [LeftCancelSemigroup G] (g : G) : G ↪ G where
 #align add_left_embedding_apply addLeftEmbedding_apply
 #align mul_left_embedding_apply mulLeftEmbedding_apply
 
-/-- The embedding of a right cancellative semigroup into itself
-by right multiplication by a fixed element.
- -/
+/-- If right-multiplication by any element is cancellative, right-multiplication by `g` is an
+embedding. -/
 @[to_additive (attr := simps)
-      "The embedding of a right cancellative additive semigroup into itself
-         by right translation by a fixed element."]
-def mulRightEmbedding {G : Type*} [RightCancelSemigroup G] (g : G) : G ↪ G where
+      "If right-addition by any element is cancellative, right-addition by `g` is an
+        embedding."]
+def mulRightEmbedding [Mul G] [IsRightCancelMul G] (g : G) : G ↪ G where
   toFun h := h * g
   inj' := mul_left_injective g
 #align mul_right_embedding mulRightEmbedding
@@ -46,7 +44,7 @@ def mulRightEmbedding {G : Type*} [RightCancelSemigroup G] (g : G) : G ↪ G whe
 #align add_right_embedding_apply addRightEmbedding_apply
 
 @[to_additive]
-theorem mulLeftEmbedding_eq_mulRightEmbedding {G : Type*} [CancelCommMonoid G] (g : G) :
+theorem mulLeftEmbedding_eq_mulRightEmbedding [CommSemigroup G] [IsCancelMul G] (g : G) :
     mulLeftEmbedding g = mulRightEmbedding g := by
   ext
   exact mul_comm _ _
