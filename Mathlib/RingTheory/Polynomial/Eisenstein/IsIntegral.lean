@@ -95,7 +95,7 @@ theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (
       · simp only [ite_eq_right_iff]
         rintro ⟨k, hk⟩
         rw [natDegree_comp, show (X + 1 : ℤ[X]) = X + C 1 by simp, natDegree_X_add_C, mul_one,
-          natDegree_cyclotomic, Nat.totient_prime_pow hp.out (Nat.succ_pos _), Nat.succ_sub_one]
+          natDegree_cyclotomic, Nat.totient_prime_pow hp.out (Nat.succ_pos _), Nat.add_one_sub_one]
           at hn hi
         rw [hk, pow_succ, mul_assoc] at hi
         rw [hk, mul_comm, Nat.mul_div_cancel _ hp.out.pos]
