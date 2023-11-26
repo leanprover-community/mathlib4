@@ -448,13 +448,17 @@ lemma center_iff_op_centroid (a : α) :
     have e1 (d : α) : T d = a * d := (FunLike.congr (id hT.symm) rfl).symm
     have e2 (d : α) : a * d = d * a := FunLike.congr (hc) rfl
     constructor
-    · intro b
+    case comm =>
+      intro b
       exact e2 b
-    · intro b c
+    case left_assoc =>
+      intro b c
       rw [← e1, map_mul_right, e1]
-    · intro b c
+    case mid_assoc =>
+      intro b c
       rw [← e2, ← e1, ←e1, ← map_mul_left, ← map_mul_right]
-    · intro b c
+    case right_assoc =>
+      intro b c
       rw [← e2, ← e2, ← e1, ← e1, ← map_mul_left]
 
 end NonUnitalNonAssocSemiring
