@@ -102,22 +102,32 @@ lemma boundary_eq_complement_interior :
   (compl_unique interior_boundary_disjoint univ_eq_interior_union_boundary).symm
 end SmoothManifoldWithCorners
 
+lemma range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
+    range I ∈ nhds (extChartAt I x x) := by
+  rw [mem_nhds_iff]
+  exact ⟨interior (range I), interior_subset, isOpen_interior, h⟩
+
+namespace ModelWithCorners
+
+variable [I.Boundaryless]
+
 /-- If `M` has no boundary, every point of `M` is an interior point. -/
-lemma ModelWithCorners.isInteriorPoint [I.Boundaryless] {x : M} : I.IsInteriorPoint x := by
+lemma isInteriorPoint {x : M} : I.IsInteriorPoint x := by
   let r := ((chartAt H x).isOpen_extend_target I).interior_eq
   have : extChartAt I x = (chartAt H x).extend I := rfl
   rw [← this] at r
-  rw [ModelWithCorners.isInteriorPoint_iff, r]
+  rw [isInteriorPoint_iff, r]
   exact LocalEquiv.map_source _ (mem_extChartAt_source _ _)
 
 /-- If `I` is boundaryless, `M` has full interior interior. -/
-lemma ModelWithCorners.interior_eq_univ [I.Boundaryless] :
-    SmoothManifoldWithCorners.interior I M = univ := by
+lemma interior_eq_univ : SmoothManifoldWithCorners.interior I M = univ := by
   ext
   refine ⟨fun _ ↦ trivial, fun _ ↦ I.isInteriorPoint⟩
 
 /-- If `I` is boundaryless, `M` has empty boundary. -/
-lemma ModelWithCorners.Boundaryless.boundary_eq_empty [I.Boundaryless] :
+lemma Boundaryless.boundary_eq_empty :
     SmoothManifoldWithCorners.boundary I M = ∅ := by
   rw [SmoothManifoldWithCorners.boundary_eq_complement_interior, I.interior_eq_univ,
     compl_empty_iff]
+
+end ModelWithCorners
