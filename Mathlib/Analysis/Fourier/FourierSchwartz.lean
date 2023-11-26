@@ -65,16 +65,17 @@ theorem hasFDerivAt_fourier {f : E → F} (hf_int : Integrable f)
       apply Continuous.measurable
       continuity
   · filter_upwards [] with w u hu
-    simp only [neg_mul, neg_smul, norm_neg, norm_smul, norm_mul, norm_inv, norm_eq_of_mem_sphere,
-      inv_one, IsROrC.norm_ofNat, Complex.norm_eq_abs, abs_ofReal, abs_I, mul_one, one_mul,
-      ge_iff_le]
+    simp only [Multiplicative.toAdd_symm_eq, ContinuousLinearMap.toSpanSingleton, neg_smul,
+      norm_smul, norm_inv, norm_eq_of_mem_sphere, inv_one, one_mul, ge_iff_le]
+    rw [ContinuousLinearMap.coe_mk']
+    apply le_of_eq
 
 
+#exit
 ---- STOPPED HERE 11/20/23
 
 
     --rw [_root_.abs_of_nonneg (by positivity)]
-    apply le_of_eq
     -- congr! 1
     -- let nsE : NormedSpace ℝ E := InnerProductSpace.toNormedSpace -- Typeclass Inference???
     calc _ = ‖ofRealLi.toContinuousLinearMap ∘L (innerSL ℝ) w‖ := ?_
