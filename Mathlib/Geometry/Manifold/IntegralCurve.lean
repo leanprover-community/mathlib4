@@ -280,7 +280,10 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
   apply HasFDerivWithinAt.hasFDerivAt (s := range I)
   nth_rw 4 [←(extChartAt I x₀).right_inv hf3']
   apply hasFDerivWithinAt_tangentCoordChange
-  · sorry
+  · rw [LocalEquiv.right_inv _ hf3', LocalEquiv.trans_source, LocalEquiv.symm_source]
+    use hf3'
+    rw [mem_preimage]
+    exact mem_extChartAt_source ..
   · rw [mem_nhds_iff]
     exact ⟨interior (extChartAt I x₀).target,
       subset_trans interior_subset (extChartAt_target_subset_range ..), isOpen_interior, hf3 _ ht2⟩
@@ -288,7 +291,7 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
     use mem_extChartAt_source ..
     rw [←mem_preimage]
     exact mem_of_mem_of_subset hf3' (extChartAt I x₀).target_subset_preimage_source
-  · sorry
+  · exact mem_extChartAt_source ..
 
 /-- For any continuously differentiable vector field defined on a manifold without boundary and any
   chosen starting point `x₀ : M`, an integral curve `γ : ℝ → M` exists such that `γ t₀ = x₀` and the
