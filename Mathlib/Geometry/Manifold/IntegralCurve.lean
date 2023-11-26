@@ -211,20 +211,20 @@ lemma isIntegralCurveAt_comp_mul_ne_zero {γ : ℝ → M} {a : ℝ} (ha : a ≠ 
   `t₀`.-/
 theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoint x₀) :
     ∃ (γ : ℝ → M), IsIntegralCurveAt γ v t₀ x₀ := by
-  /- express the derivative of the section `v` in the local charts -/
+  -- express the differentiability of the section `v` in the local charts
   rw [contMDiffAt_iff] at hv
   obtain ⟨_, hv⟩ := hv
-  /- use Picard-Lindelöf theorem to extract a solution to the ODE in the chart defined by `v` -/
+  -- use Picard-Lindelöf theorem to extract a solution to the ODE in the local chart
   obtain ⟨f, hf1, ε1, hε1, hf2⟩ :=
     exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀
-      (ContDiffAt.snd (hv.contDiffAt (SmoothManifoldWithCorners.range_mem_nhds_isInteriorPoint hx)))
+      (ContDiffAt.snd (hv.contDiffAt (range_mem_nhds_isInteriorPoint hx)))
   rw [←Real.ball_eq_Ioo] at hf2
-  /- use continuity of `f` to extract `ε2` so that for `t ∈ Real.ball t₀ ε2`,
-    `f t ∈ interior (extChartAt I x₀).target` -/
+  -- use continuity of `f` to extract `ε2` so that for `t ∈ Real.ball t₀ ε2`,
+  -- `f t ∈ interior (extChartAt I x₀).target` -/
   have hcont := (hf2 t₀ (Real.ball_eq_Ioo .. ▸ Metric.mem_ball_self hε1)).continuousAt
   rw [continuousAt_def, hf1] at hcont
   have hnhds : f ⁻¹' (interior (extChartAt I x₀).target) ∈ nhds t₀ :=
-    hcont _ (IsOpen.mem_nhds isOpen_interior hx)
+    hcont _ (IsOpen.mem_nhds isOpen_interior (ModelWithCorners.isInteriorPoint_iff.mp hx))
   rw [Metric.mem_nhds_iff] at hnhds
   obtain ⟨ε2, hε2, hf3⟩ := hnhds
   simp_rw [subset_def, mem_preimage] at hf3
