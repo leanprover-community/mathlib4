@@ -219,8 +219,6 @@ example {F} [Ring F] {a : F} : natDegree (X ^ 3 + C a * X ^ 10 : F[X]) ≤ 10 :=
 
 example [Semiring R] : natDegree (7 * X : R[X]) ≤ 1 := by compute_degree
 
-example [Semiring R] : natDegree (7 * X : R[X]) ≤ 1 := by compute_degree
-
 example [Semiring R] {a : R} : natDegree (a • X ^ 5 : R[X]) ≤ 5 := by
   compute_degree
 
