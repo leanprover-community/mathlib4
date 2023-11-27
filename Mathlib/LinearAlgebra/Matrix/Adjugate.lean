@@ -476,9 +476,6 @@ theorem adjugate_mul_distrib_aux (A B : Matrix n n α) (hA : IsLeftRegular A.det
     smul_mul, Matrix.one_mul, mul_smul, mul_adjugate, smul_smul, mul_comm, ← det_mul]
 #align matrix.adjugate_mul_distrib_aux Matrix.adjugate_mul_distrib_aux
 
--- Reducing this priority fixes a timeout below.
-attribute [instance 50] DistribMulActionHomClass.toAddMonoidHomClass
-
 /-- Proof follows from "The trace Cayley-Hamilton theorem" by Darij Grinberg, Section 5.3
 -/
 theorem adjugate_mul_distrib (A B : Matrix n n α) : adjugate (A * B) = adjugate B * adjugate A := by

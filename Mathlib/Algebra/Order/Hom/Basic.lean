@@ -332,6 +332,10 @@ class MulRingSeminormClass (F α β : Type*) [NonAssocRing α] [OrderedSemiring 
   extends AddGroupSeminormClass F α β, MonoidWithZeroHomClass F α β : Prop
 #align mul_ring_seminorm_class MulRingSeminormClass
 
+-- Lower the priority of these instances since they require synthesizing an order structure.
+attribute [instance 50]
+  MulRingSeminormClass.toMonoidHomClass MulRingSeminormClass.toMonoidWithZeroHomClass
+
 /-- `MulRingNormClass F α` states that `F` is a type of `β`-valued multiplicative norms on the
 ring `α`.
 

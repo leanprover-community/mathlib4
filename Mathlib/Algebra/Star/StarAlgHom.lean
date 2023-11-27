@@ -73,9 +73,8 @@ class NonUnitalStarAlgHomClass (F : Type*) (R A B : outParam Type*)
   extends NonUnitalAlgHomClass F R A B, StarHomClass F A B : Prop
 #align non_unital_star_alg_hom_class NonUnitalStarAlgHomClass
 
--- Porting note: no longer needed
----- `R` becomes a metavariable but that's fine because it's an `outParam`
---attribute [nolint dangerousInstance] NonUnitalStarAlgHomClass.toStarHomClass
+-- Lower the priority of this instance, since it requires synthesizing extra `Star` instances
+attribute [instance 50] NonUnitalStarAlgHomClass.toNonUnitalAlgHomClass
 
 namespace NonUnitalStarAlgHomClass
 

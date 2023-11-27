@@ -122,10 +122,6 @@ theorem unitization_range : (unitization s).range = Algebra.adjoin R (s : Set A)
 
 end Semiring
 
--- Note: fixes a timeout since going through this class will cause a huge synthesis goal
--- TODO: why is this so expensive here?
-attribute [instance 50] NonUnitalStarAlgHomClass.toNonUnitalAlgHomClass
-
 /-- A sufficient condition for injectivity of `NonUnitalSubalgebra.unitization` when the scalars
 are a commutative ring. When the scalars are a field, one should use the more natural
 `NonUnitalStarSubalgebra.unitization_injective` whose hypothesis is easier to verify. -/
