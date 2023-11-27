@@ -225,9 +225,9 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
   -- express the derivative of the integral curve in the local chart
   refine ⟨ContinuousAt.comp (continuousAt_extChartAt_symm'' _ _ hf3') ((hf2 t ht1).continuousAt),
     HasDerivWithinAt.hasFDerivWithinAt ?_⟩
-  rw [modelWithCornersSelf_coe, range_id, hasDerivWithinAt_univ, ext_chart_model_space_apply,
-    writtenInExtChartAt, Function.comp_apply, Function.comp.assoc, extChartAt_model_space_eq_id,
-    LocalEquiv.refl_symm, LocalEquiv.refl_coe, Function.comp.right_id, ←Function.comp.assoc]
+  simp only [mfld_simps, hasDerivWithinAt_univ]
+  show HasDerivAt (((extChartAt I ((extChartAt I x₀).symm (f t))) ∘ (extChartAt I x₀).symm) ∘ f)
+      (v ((extChartAt I x₀).symm (f t))) t
   -- `h` gives the derivative of `f` at `t` as `↑D (v (γ t))`, where `D` is the change of
   -- coordinates from the chart at `γ t` to the chart at `x₀`. we wish to use
   -- `HasFDerivAt.comp_hasDerivAt` to get the derivative of `γ` at `t` as `v (γ t)`, which requires
