@@ -2204,18 +2204,17 @@ theorem ker_le_comap {K : Ideal S} (f : F) : RingHom.ker f ≤ comap f K := fun 
 
 theorem map_isPrime_of_equiv {F' : Type*} [RingEquivClass F' R S] (f : F') {I : Ideal R}
 [IsPrime I]: IsPrime (map f I) := by 
-   have h: (I.map f)=(I.map ((f:R  ≃+* S ):R →+* S)):= by congr
-   rw [h,map_comap_of_equiv I (f:R  ≃+* S )]
-   exact Ideal.IsPrime.comap (RingEquiv.symm (f : R ≃+* S ))
+  have h: (I.map f)=(I.map ((f:R  ≃+* S ):R →+* S)):= by congr
+  rw [h,map_comap_of_equiv I (f:R  ≃+* S )]
+  exact Ideal.IsPrime.comap (RingEquiv.symm (f : R ≃+* S ))
 #align ideal.map_is_prime_of_equiv Ideal.map_isPrime_of_equiv
 
 
 theorem comap_symm (I : Ideal R) (f : R ≃+* S) : I.comap f.symm= I.map (f) :=  by
-   rw[←@map_comap_of_equiv];rfl
+  rw[←@map_comap_of_equiv];rfl
 
 theorem map_symm (I : Ideal S) (f : R ≃+* S) : I.comap f= I.map f.symm :=  by
-   rw [← @comap_symm,@RingEquiv.symm_symm]
-
+  rw [← @comap_symm,@RingEquiv.symm_symm]
 
 
 end Semiring
