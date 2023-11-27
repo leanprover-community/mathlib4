@@ -83,8 +83,7 @@ variable (N : Type w') [AddCommGroup N] [Module R N]
 /--
 If `M` is an abelian group, its character module is defined to be the `Hom_ℤ(M, ℚ/ℤ)`
 -/
-def CharacterModule : Type w :=
-M →ₗ[ℤ] (ULift.{w} <| AddCircle (1 : ℚ))
+def CharacterModule : Type w := M →ₗ[ℤ] (ULift.{w} <| AddCircle (1 : ℚ))
 
 instance : FunLike (CharacterModule M) M (fun _ => ULift <| AddCircle (1 : ℚ)) where
   coe (f : M →ₗ[ℤ] ULift <| AddCircle (1 : ℚ)) m := f m
@@ -96,9 +95,8 @@ instance : AddMonoidHomClass (CharacterModule M) M (ULift <| AddCircle (1 : ℚ)
   map_add f := f.map_add
   map_zero f := f.map_zero
 
-instance : AddCommGroup (CharacterModule M) := by
-  delta CharacterModule
-  infer_instance
+instance : AddCommGroup (CharacterModule M) :=
+  inferInstanceAs <| AddCommGroup <| M →ₗ[ℤ] ULift.{w} <| AddCircle (1 : ℚ)
 
 instance : Module R (CharacterModule M) where
   smul r l :=
@@ -112,7 +110,7 @@ instance : Module R (CharacterModule M) where
     rw [LinearMap.add_apply, LinearMap.add_apply]; rfl
   add_smul r₁ r₂ l := LinearMap.ext fun x => show l _ = l _ + l _ by
     rw [add_smul, map_add]
-  zero_smul l := LinearMap.ext fun x => show l _ = 0 by rw [zero_smul, map_zero]
+  zero_smul l := LinearMap.ext fun _ => show l _ = 0 by rw [zero_smul, map_zero]
 
 @[simp] lemma CharacterModule.smul_apply (f : CharacterModule M) (r : R) (m : M) :
     (r • f) m = f (r • m) := rfl
@@ -125,14 +123,14 @@ For a linear map `L : M → N`, `(· ∘ L)` defines map from `CharacterModule N
 @[simps] def LinearMap.characterfy
     (L : M →ₗ[R] N) :
     CharacterModule N →ₗ[R] CharacterModule M where
-  toFun f := ⟨⟨ULift.up ∘ ULift.down, by aesop⟩, by aesop⟩ ∘ₗ f ∘ₗ L.toAddMonoidHom.toIntLinearMap
+  toFun f := ULift.moduleEquiv'.toLinearMap ∘ₗ f ∘ₗ L.toAddMonoidHom.toIntLinearMap
   map_add' _ _ := FunLike.ext _ _ fun _ => by aesop
   map_smul' _ _ := FunLike.ext _ _ fun _ => by
     ext
-    simp only [RingHom.id_apply, CharacterModule.smul_apply]
-    rw [LinearMap.comp_apply, LinearMap.comp_apply, LinearMap.comp_apply, LinearMap.comp_apply]
-    simp only [AddMonoidHom.coe_toIntLinearMap, LinearMap.toAddMonoidHom_coe, LinearMap.coe_mk,
-      AddHom.coe_mk, Function.comp_apply, map_smul]
+    dsimp
+    repeat rw [LinearMap.comp_apply]
+    simp only [AddMonoidHom.coe_toIntLinearMap, toAddMonoidHom_coe, LinearEquiv.coe_coe,
+      ULift.moduleEquiv_apply, ULift.moduleEquiv_symm_apply, map_smul, ULift.down_inj]
     rfl
 
 variable {M N} in
@@ -141,9 +139,9 @@ lemma LinearMap.charaterfy_surjective_of_injective
     Function.Surjective L.characterfy := by
   rintro (g : _ →ₗ[_] _)
   let g'' : (ULift.{max w w'} M) →ₗ[ℤ] (ULift.{max w w'} (AddCircle (1 : ℚ))) :=
-    ⟨⟨ULift.up ∘ ULift.down, by aesop⟩, by aesop⟩ ∘ₗ g ∘ₗ ⟨⟨ULift.down, by aesop⟩, by aesop⟩
+    ULift.moduleEquiv'.toLinearMap ∘ₗ g ∘ₗ ULift.moduleEquiv.toLinearMap
   let L'' : ULift.{max w w'} M →ₗ[R] ULift.{max w w'} N :=
-    ⟨⟨ULift.up, by aesop⟩, by aesop⟩ ∘ₗ L ∘ₗ ⟨⟨ULift.down, by aesop⟩, by aesop⟩
+    ULift.moduleEquiv.symm.toLinearMap ∘ₗ L ∘ₗ ULift.moduleEquiv.toLinearMap
   let L' := AddCommGroupCat.ofHom L''.toAddMonoidHom
   have m1 : Mono <| L'
   · rw [AddCommGroupCat.mono_iff_injective]
@@ -152,8 +150,8 @@ lemma LinearMap.charaterfy_surjective_of_injective
   have i1 : Injective (AddCommGroupCat.of <| ULift.{max w w'} <| AddCircle (1 : ℚ)) :=
     AddCommGroupCat.injective_of_divisible _
   let g' := AddCommGroupCat.ofHom g''.toAddMonoidHom
-  refine ⟨⟨⟨ULift.up ∘ ULift.down, by aesop⟩, by aesop⟩ ∘ₗ
-    (Injective.factorThru g' L').toIntLinearMap ∘ₗ ⟨⟨ULift.up, by aesop⟩, by aesop⟩,
+  refine ⟨ULift.moduleEquiv'.toLinearMap ∘ₗ
+    (Injective.factorThru g' L').toIntLinearMap ∘ₗ ULift.moduleEquiv.symm.toLinearMap,
     LinearMap.ext fun x => ?_⟩
   ext
   convert (ULift.ext_iff _ _).mp <| FunLike.congr_fun (Injective.comp_factorThru g' L') (ULift.up x)

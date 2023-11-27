@@ -21,7 +21,7 @@ We also provide `ULift.moduleEquiv : ULift M ≃ₗ[R] M`.
 
 namespace ULift
 
-universe u v w
+universe u v w w'
 
 variable {R : Type u} {M : Type v} {N : Type w}
 
@@ -170,5 +170,14 @@ def moduleEquiv [Semiring R] [AddCommMonoid M] [Module R M] : ULift.{w} M ≃ₗ
   map_smul' _ _ := rfl
   __ := AddEquiv.ulift
 #align ulift.module_equiv ULift.moduleEquiv
+
+@[simps apply symm_apply]
+def moduleEquiv' [Semiring R] [AddCommMonoid M] [Module R M] : ULift.{w} M ≃ₗ[R] ULift.{w'} M where
+  toFun := ULift.up ∘ ULift.down
+  invFun := ULift.up ∘ ULift.down
+  map_smul' _ _ := rfl
+  map_add' _ _ := rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 end ULift
