@@ -71,11 +71,19 @@ instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α]
 #align is_cyclic_of_subsingleton isCyclic_of_subsingleton
 #align is_add_cyclic_of_subsingleton isAddCyclic_of_subsingleton
 
+@[simp]
 theorem isCyclic_multiplicative_iff [AddGroup α] : IsCyclic (Multiplicative α) ↔ IsAddCyclic α :=
   ⟨fun H ↦ ⟨H.1⟩, fun H ↦ ⟨H.1⟩⟩
 
 instance isCyclic_multiplicative [AddGroup α] [IsAddCyclic α] : IsCyclic (Multiplicative α) :=
   isCyclic_multiplicative_iff.mpr inferInstance
+
+@[simp]
+theorem isAddCyclic_additive_iff [Group α] : IsAddCyclic (Additive α) ↔ IsCyclic α :=
+  ⟨fun H ↦ ⟨H.1⟩, fun H ↦ ⟨H.1⟩⟩
+
+instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive α) :=
+  isAddCyclic_additive_iff.mpr inferInstance
 
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
 proof of `CommGroup`. -/
@@ -583,7 +591,7 @@ section SpecificInstances
 
 instance : IsAddCyclic ℤ := ⟨1, fun n ↦ ⟨n, by simp only [smul_eq_mul, mul_one]⟩⟩
 
-instance (n : ℕ) : IsAddCyclic (ZMod n) :=
+instance ZMod.instIsAddCyclic (n : ℕ) : IsAddCyclic (ZMod n) :=
   isAddCyclic_of_surjective (Int.castRingHom _) (ZMod.int_cast_surjective)
 
 instance ZMod.instIsSimpleAddGroup {p : ℕ} [Fact p.Prime] : IsSimpleAddGroup (ZMod p) :=
