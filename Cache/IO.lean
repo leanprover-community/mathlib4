@@ -334,7 +334,7 @@ def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
     let args := (if force then #["-f"] else #[]) ++ #["-x", "-j", "-"]
     let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
     let (stdin, child) ← child.takeStdin
-    let mathlibDepPath := (←mathlibDepPath).toString
+    let mathlibDepPath := (← mathlibDepPath).toString
     let config : Array Lean.Json := hashMap.fold (init := #[]) fun config path hash =>
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
       if isMathlibRoot || !isPathFromMathlib path then

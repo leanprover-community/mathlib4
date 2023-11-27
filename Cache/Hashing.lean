@@ -73,7 +73,7 @@ def getRootHash : IO UInt64 := do
     if isMathlibRoot then
       pure id
     else
-      pure ((←mathlibDepPath) / ·)
+      pure ((← mathlibDepPath) / ·)
   let hashs ← rootFiles.mapM fun path =>
     hashFileContents <$> IO.FS.readFile (qualifyPath path)
   return hash ((hash Lean.versionString) :: hashs)
