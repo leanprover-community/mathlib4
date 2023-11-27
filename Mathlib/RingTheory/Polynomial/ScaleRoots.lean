@@ -99,6 +99,30 @@ theorem map_scaleRoots (p : R[X]) (x : R) (f : R →+* S) (h : f p.leadingCoeff 
   simp [Polynomial.natDegree_map_of_leadingCoeff_ne_zero _ h]
 #align polynomial.map_scale_roots Polynomial.map_scaleRoots
 
+@[simp]
+lemma scaleRoots_C (r c : R) : (C c).scaleRoots r = C c := by
+  ext; simp
+
+@[simp]
+lemma scaleRoots_one (p : R[X]) :
+    p.scaleRoots 1 = p := by ext; simp
+
+@[simp]
+lemma scaleRoots_zero (p : R[X]) :
+    p.scaleRoots 0 = p.leadingCoeff • X ^ p.natDegree := by
+  ext n
+  simp only [coeff_scaleRoots, ge_iff_le, ne_eq, tsub_eq_zero_iff_le, not_le, zero_pow_eq, mul_ite,
+    mul_one, mul_zero, coeff_smul, coeff_X_pow, smul_eq_mul]
+  split_ifs with h₁ h₂ h₂
+  · subst h₂; rfl
+  · exact coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne h₁ (Ne.symm h₂))
+  · exact (h₁ h₂.ge).elim
+  · rfl
+
+@[simp]
+lemma one_scaleRoots (r : R) :
+    (1 : R[X]).scaleRoots r = 1 := by ext; simp
+
 end Semiring
 
 section CommSemiring
@@ -157,6 +181,72 @@ theorem scaleRoots_aeval_eq_zero_of_aeval_div_eq_zero [Algebra R K]
     aeval (algebraMap R K r) (scaleRoots p s) = 0 :=
   scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero inj hr hs
 #align polynomial.scale_roots_aeval_eq_zero_of_aeval_div_eq_zero Polynomial.scaleRoots_aeval_eq_zero_of_aeval_div_eq_zero
+
+@[simp]
+lemma scaleRoots_mul (p : R[X]) (r s) :
+    p.scaleRoots (r * s) = (p.scaleRoots r).scaleRoots s := by
+  ext; simp [mul_pow, mul_assoc]
+
+lemma mul_scaleRoots (p q : R[X]) (r : R) :
+    r ^ (natDegree p + natDegree q - natDegree (p * q)) • (p * q).scaleRoots r =
+      p.scaleRoots r * q.scaleRoots r := by
+  ext n; simp only [coeff_scaleRoots, coeff_smul, smul_eq_mul]
+  trans (∑ x in Finset.antidiagonal n, coeff p x.1 * coeff q x.2) *
+    r ^ (natDegree p + natDegree q - n)
+  · rw [← coeff_mul]
+    cases lt_or_le (natDegree (p * q)) n with
+    | inl h => simp only [coeff_eq_zero_of_natDegree_lt h, zero_mul, mul_zero]
+    | inr h =>
+      rw [mul_comm, mul_assoc, ← pow_add, add_comm, tsub_add_tsub_cancel natDegree_mul_le h]
+  · rw [coeff_mul, Finset.sum_mul]
+    apply Finset.sum_congr rfl
+    simp only [Finset.mem_antidiagonal, coeff_scaleRoots, Prod.forall]
+    intros a b e
+    cases lt_or_le (natDegree p) a with
+    | inl h => simp only [coeff_eq_zero_of_natDegree_lt h, zero_mul, mul_zero]
+    | inr ha =>
+      cases lt_or_le (natDegree q) b with
+      | inl h => simp only [coeff_eq_zero_of_natDegree_lt h, zero_mul, mul_zero]
+      | inr hb =>
+        simp only [← e, mul_assoc, mul_comm (r ^ (_ - a)), ← pow_add]
+        rw [add_comm (_ - _), tsub_add_tsub_comm ha hb]
+
+lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R)
+    (h : natDegree p = natDegree q) :
+    r ^ (natDegree p - natDegree (p + q)) • (p + q).scaleRoots r =
+      p.scaleRoots r + q.scaleRoots r := by
+  ext n; simp only [ge_iff_le, coeff_smul, coeff_scaleRoots, coeff_add, smul_eq_mul,
+    mul_comm (r ^ _), mul_assoc, ← pow_add, ← h, ← add_mul, add_comm (_ - n)]
+  cases lt_or_le (natDegree (p + q)) n with
+  | inl hn => simp only [← coeff_add, coeff_eq_zero_of_natDegree_lt hn, zero_mul]
+  | inr hn => rw [tsub_add_tsub_cancel (natDegree_add_le_of_degree_le le_rfl h.ge) hn]
+
+lemma scaleRoots_dvd (p q : R[X]) (r : R) (hr : IsUnit r)
+    (hpq : p ∣ q) : p.scaleRoots r ∣ q.scaleRoots r := by
+  obtain ⟨a, rfl⟩ := hpq
+  rw [← ((hr.pow (natDegree p + natDegree a - natDegree (p * a))).map
+    (algebraMap R R[X])).dvd_mul_left, ← Algebra.smul_def, mul_scaleRoots]
+  exact dvd_mul_right (scaleRoots p r) (scaleRoots a r)
+
+lemma scaleRoots_dvd_iff (p q : R[X]) (r : R) (hr : IsUnit r) :
+    p.scaleRoots r ∣ q.scaleRoots r ↔ p ∣ q := by
+  refine ⟨?_ ∘ scaleRoots_dvd _ _ _ (hr.unit⁻¹).isUnit,
+    scaleRoots_dvd p q r hr⟩
+  simp [← scaleRoots_mul, scaleRoots_one]
+
+lemma isCoprime_scaleRoots (p q : R[X]) (r : R) (hr : IsUnit r)
+    (h : IsCoprime p q) :
+    IsCoprime (p.scaleRoots r) (q.scaleRoots r) := by
+  obtain ⟨a, b, e⟩ := h
+  let s : R := ↑hr.unit⁻¹
+  have : natDegree (a * p) = natDegree (b * q)
+  · apply natDegree_eq_of_natDegree_add_eq_zero
+    rw [e, natDegree_one]
+  use s ^ natDegree (a * p) • s ^ (natDegree a + natDegree p - natDegree (a * p)) • a.scaleRoots r
+  use s ^ natDegree (a * p) • s ^ (natDegree b + natDegree q - natDegree (b * q)) • b.scaleRoots r
+  simp only [smul_mul_assoc, ← mul_scaleRoots, smul_smul, Units.smul_def, mul_assoc,
+    ← mul_pow, IsUnit.val_inv_mul, one_pow, mul_one, ← smul_add, one_smul, e, natDegree_one,
+    one_scaleRoots, ← add_scaleRoots_of_natDegree_eq _ _ _ this, tsub_zero]
 
 end CommSemiring
 
