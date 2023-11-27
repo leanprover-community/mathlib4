@@ -54,13 +54,14 @@ by simp_rw [h1, h2]
 ```
 -/
 elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => do
-  let cfg' : TSyntax `Lean.Parser.Tactic.config ← (do
+  let cfg' : TSyntax `Lean.Parser.Tactic.config ← do
     match cfg with
     | Option.none =>
       `(config| (config := ({ failIfUnchanged := false } : Lean.Meta.Simp.Config)))
-    | Option.some cfg =>
-      let cf : TSyntax `term := ⟨cfg.raw[3]⟩
-      `(config| (config := ({ ($cf : Lean.Meta.Simp.Config) with failIfUnchanged := false }))))
+    | Option.some c => match c with
+      | `(config| (config := $cfg)) =>
+        `(config| (config := ({ ($cfg : Lean.Meta.Simp.Config) with failIfUnchanged := false })))
+      | _ => throwError "malformed cfg"
   evalTactic (← `(tactic| simp%$s $cfg' only $g ?))
   withSimpRWRulesSeq s rws fun symm term => do
     evalTactic (← match term with
