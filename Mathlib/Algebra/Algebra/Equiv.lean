@@ -276,10 +276,6 @@ theorem coe_algHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂)
   fun _ _ h => ext <| AlgHom.congr_fun h
 #align alg_equiv.coe_alg_hom_injective AlgEquiv.coe_algHom_injective
 
-theorem coe_MulEquiv_injective :
-    Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ ≃* A₂) :=
-  fun _ _ e ↦ ext fun a ↦ FunLike.congr_fun e a
-
 @[simp, norm_cast]
 lemma AlgEquiv.toAlgHom_toRingHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = e :=
   rfl
