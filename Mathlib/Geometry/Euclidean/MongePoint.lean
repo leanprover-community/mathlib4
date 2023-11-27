@@ -161,8 +161,8 @@ centroid of an n-dimensional face, in terms of
 `pointsWithCircumcenter`.  This definition is only valid when `i₁ ≠ i₂`. -/
 def mongePointVSubFaceCentroidWeightsWithCircumcenter {n : ℕ} (i₁ i₂ : Fin (n + 3)) :
     PointsWithCircumcenterIndex (n + 2) → ℝ
-  | point_index i => if i = i₁ ∨ i = i₂ then ((n + 1 : ℕ) : ℝ)⁻¹ else 0
-  | circumcenter_index => -2 / ((n + 1 : ℕ) : ℝ)
+  | pointIndex i => if i = i₁ ∨ i = i₂ then ((n + 1 : ℕ) : ℝ)⁻¹ else 0
+  | circumcenterIndex => -2 / ((n + 1 : ℕ) : ℝ)
 #align affine.simplex.monge_point_vsub_face_centroid_weights_with_circumcenter Affine.Simplex.mongePointVSubFaceCentroidWeightsWithCircumcenter
 
 /-- `mongePointVSubFaceCentroidWeightsWithCircumcenter` is the
