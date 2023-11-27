@@ -119,8 +119,9 @@ theorem range_vecMulLinear (M : Matrix m n R) :
     dotProduct, stdBasis_apply', ite_mul, one_mul, zero_mul, Finset.sum_ite_eq,
     Finset.mem_univ, ite_true]
 
-theorem Matrix.vecMulLinear_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} :
-    Function.Injective M.vecMulLinear ↔ LinearIndependent R (fun i ↦ M i) := by
+theorem Matrix.vecMul_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} :
+    Function.Injective M.vecMul ↔ LinearIndependent R (fun i ↦ M i) := by
+  rw [← coe_vecMulLinear ]
   simp only [← LinearMap.ker_eq_bot, Fintype.linearIndependent_iff, Submodule.eq_bot_iff,
      LinearMap.mem_ker, vecMulLinear_apply, vecMul, dotProduct]
   refine ⟨fun h c h0 i ↦ ?_, fun h c h0 ↦ funext fun i ↦ ?_⟩
@@ -314,9 +315,10 @@ theorem Matrix.range_mulVecLin (M : Matrix m n R) :
   rw [← vecMulLinear_transpose, range_vecMulLinear]
 #align matrix.range_mul_vec_lin Matrix.range_mulVecLin
 
-theorem Matrix.mulVecLin_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} :
-    Function.Injective M.mulVecLin ↔ LinearIndependent R (fun i ↦ Mᵀ i) := by
-  rw [← vecMulLinear_transpose, vecMulLinear_injective_iff]
+theorem Matrix.mulVec_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} :
+    Function.Injective M.mulVec ↔ LinearIndependent R (fun i ↦ Mᵀ i) := by
+  change Function.Injective (fun x ↦ _) ↔ _
+  simp_rw [← M.vecMul_transpose, vecMul_injective_iff]
 
 end mulVec
 
