@@ -1173,6 +1173,12 @@ instance CompatibleSMul.ofSMulCommClass {α M : Type*}
     [MulOneClass M] [SMul α M] [SMulCommClass α M M] (c : Con M) : CompatibleSMul α c where
   rel_smul a w x h := by simpa only [mul_smul_one] using c.mul h (c.refl' (a • (1 : M) : M))
 
+/-- This instance notably works for `α = Mᵐᵒᵖ`. -/
+@[to_additive]
+instance CompatibleSMul.ofSMulCommClass' {α M : Type*}
+    [MulOneClass M] [SMul α M] [SMulCommClass M α M] (c : Con M) : CompatibleSMul α c :=
+  letI := SMulCommClass.symm; inferInstance
+
 @[to_additive]
 theorem smul {α M : Type*} [Mul M] [SMul α M] (c : Con M) [CompatibleSMul α c] (a : α)
     {w x : M} (h : c w x) : c (a • w) (a • x) :=
