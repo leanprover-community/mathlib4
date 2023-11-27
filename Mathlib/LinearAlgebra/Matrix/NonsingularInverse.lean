@@ -370,24 +370,23 @@ end InjectiveMul
 
 section vecMul
 
-variable [Fintype m] [DecidableEq m] {K : Type*} [Field K]
+variable [Fintype m] [DecidableEq m] {K R : Type*} [Field K]
 
-
-theorem vecMul_surjective_iff_exists_left_inverse {A : Matrix m n α} :
-    Function.Surjective A.vecMul ↔ ∃ B : Matrix n m α, B * A = 1 := by
+theorem vecMul_surjective_iff_exists_left_inverse [Semiring R] {A : Matrix m n R} :
+    Function.Surjective A.vecMul ↔ ∃ B : Matrix n m R, B * A = 1 := by
   refine ⟨fun h ↦ ?_, fun ⟨B, hBA⟩ y ↦ ⟨B.vecMul y, by simp [hBA]⟩⟩
   choose rows hrows using (h <| Pi.single · 1)
   refine ⟨Matrix.of rows, Matrix.ext fun i j => ?_⟩
   rw [mul_apply_eq_vecMul, one_eq_pi_single, ←hrows]
   rfl
 
-theorem mulVec_surjective_iff_exists_right_inverse {A : Matrix m n α} :
-    Function.Surjective A.mulVec ↔ ∃ B : Matrix n m α, A * B = 1 := by
-  conv_lhs => arg 1; eta_expand
-  simp_rw [← vecMul_transpose, vecMul_surjective_iff_exists_left_inverse]
-  refine ⟨fun ⟨B, hB⟩ ↦ ⟨Bᵀ, ?_⟩, fun ⟨B, hB⟩ ↦ ⟨Bᵀ, by rw [←transpose_mul, hB, transpose_one]⟩⟩
-  apply_fun Matrix.transpose using transpose_injective
-  rw [transpose_mul, transpose_transpose, hB, transpose_one]
+theorem mulVec_surjective_iff_exists_right_inverse [Semiring R] {A : Matrix m n R} :
+    Function.Surjective A.mulVec ↔ ∃ B : Matrix n m R, A * B = 1 := by
+  refine ⟨fun h ↦ ?_, fun ⟨B, hBA⟩ y ↦ ⟨B.mulVec y, by simp [hBA]⟩⟩
+  choose cols hcols using (h <| Pi.single · 1)
+  refine ⟨(Matrix.of cols)ᵀ, Matrix.ext fun i j ↦ ?_⟩
+  rw [one_eq_pi_single, Pi.single_comm, ← hcols j]
+  rfl
 
 theorem vecMul_surjective_iff_isUnit {A : Matrix m m α} :
     Function.Surjective A.vecMul ↔ IsUnit A := by
