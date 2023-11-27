@@ -67,14 +67,73 @@ instance : Module R (M →+ X) where
   add_smul _ _ _ := FunLike.ext _ _ fun _ ↦ by simp [add_smul]
   zero_smul _ := FunLike.ext _ _ fun _ ↦ by simp
 
+variable {R} in
+@[simps!]
+def LinearMap.comp₂AddMonoidHom (f : N →ₗ[R] M →+ X) (g : X →+ X') : N →ₗ[R] M →+ X' :=
+  { toFun := g.comp
+    map_add' := by aesop
+    map_smul' := by aesop } ∘ₗ f
+
+-- This prediacte is weaker than the concrete construction because of `P`'s universe level must be
+-- small relative to some universe level. I am unsure how to prevent this.
 class IsTensorProduct (flippedTmul :  N →ₗ[R] M →+ X) :=
 (lift ⦃P : Type uX⦄ [AddCommMonoid P] (_ : N →ₗ[R] M →+ P) : X →+ P)
-(lift_comp ⦃P : Type uX⦄ [AddCommMonoid P] (f : N →ₗ[R] M →+ P) (m : M) (n : N) :
-  lift f (flippedTmul n m) = f n m)
-  -- this would be better if I write it as `lift ∘ flippedTmul = f`
-  -- or something similar
+(lift_comp ⦃P : Type uX⦄ [AddCommMonoid P] (f : N →ₗ[R] M →+ P) :
+  flippedTmul.comp₂AddMonoidHom (lift f) = f)
 (lift_uniq ⦃P : Type uX⦄ [AddCommMonoid P] (f : N →ₗ[R] M →+ P) (fHat : X →+ P) :
-  (∀ m n, fHat (flippedTmul n m) = f n m) → lift f = fHat)
+  (flippedTmul.comp₂AddMonoidHom fHat = f) → lift f = fHat)
+
+@[simp] lemma IsTensorProduct.lift_flippedTmul
+    (flippedTmul :  N →ₗ[R] M →+ X) [IsTensorProduct R flippedTmul]
+    ⦃P : Type uX⦄ [AddCommMonoid P]
+    (f : N →ₗ[R] M →+ P) (m : M) (n : N) :
+    IsTensorProduct.lift flippedTmul f (flippedTmul n m) = f n m :=
+  FunLike.congr_fun (FunLike.congr_fun (IsTensorProduct.lift_comp f) n) m
+
+-- @[simps]
+-- def toClosure (flippedTmul :  N →ₗ[R] M →+ X) :
+--     N →ₗ[R] M →+ AddSubmonoid.closure { y | ∃ (m : M) (n : N), y = flippedTmul n m } where
+--   toFun n :=
+--   { toFun := fun m ↦ ⟨flippedTmul n m, AddSubmonoid.subset_closure ⟨m, n, rfl⟩⟩
+--     map_zero' := by aesop
+--     map_add' := fun _ _ ↦ by simp }
+--   map_add' _ _ := FunLike.ext _ _ <| by aesop
+--   map_smul' _ _ := FunLike.ext _ _ <| by aesop
+
+-- -- this is weaker than `IsTensorProduct`, I don't think it can characterise `M ⊗ N` upto group
+-- -- isomorphism.
+-- class IsTensorProduct' (flippedTmul :  N →ₗ[R] M →+ X) :=
+-- (retract : X →+ AddSubmonoid.closure { y | ∃ (m : M) (n : N), y = flippedTmul n m })
+-- (is_retract : retract.comp (AddSubmonoid.subtype _) = .id _)
+-- (retract_comp : ∀ m n, toClosure R flippedTmul n m = retract (flippedTmul n m))
+
+-- noncomputable example (flippedTmul :  N →ₗ[R] M →+ X)
+--     [IsTensorProduct R flippedTmul] : IsTensorProduct' R flippedTmul where
+--   retract := IsTensorProduct.lift flippedTmul
+--     { toFun := fun n ↦
+--       { toFun := fun m ↦ ⟨flippedTmul n m, AddSubmonoid.subset_closure ⟨m, ⟨n, rfl⟩⟩⟩
+--         map_zero' := by ext; aesop
+--         map_add' := by intros; ext; aesop }
+--       map_add' := by intros; ext; aesop
+--       map_smul' := by intros; ext; aesop }
+--   is_retract := FunLike.ext _ _ <| by
+--     rintro ⟨x, hx⟩
+--     ext
+--     dsimp
+--     refine AddSubmonoid.closure_induction hx ?_ ?_ ?_
+--     · rintro _ ⟨m, ⟨n, rfl⟩⟩
+--       simp only [IsTensorProduct.lift_flippedTmul, LinearMap.coe_mk, AddHom.coe_mk,
+--         AddMonoidHom.coe_mk, ZeroHom.coe_mk]
+--     · simp only [map_zero, ZeroMemClass.coe_zero]
+--     · intro x x' h h'
+--       simp only [map_add, AddSubmonoid.coe_add] at h h' ⊢
+--       rw [h, h']
+--   retract_comp m n := by
+--     ext
+--     simp only [toClosure_apply_apply_coe, IsTensorProduct.lift_flippedTmul, LinearMap.coe_mk,
+--       AddHom.coe_mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
+
+-- if any `b : N →ₗ[R] M →+ P` can be lifted to `span ⟨tmul m n⟩ →+ P`, then `IsTensorProduct'` implies `IsTensorProduct` as well.
 
 open IsTensorProduct
 
@@ -94,12 +153,7 @@ lemma IsTensorProduct.mem_closure (x : X) :
   let φ := lift flippedTmul b
   let ψ := img.subtype
   have eq1 : ψ.comp φ = AddMonoidHom.id _
-  · rw [← show lift flippedTmul flippedTmul = ψ.comp φ by
-        refine lift_uniq _ _ ?_
-        intro m n
-        simp only [AddMonoidHom.coe_comp, AddSubmonoid.coe_subtype, Function.comp_apply]
-        rw [lift_comp]
-        rfl]
+  · rw [← show lift flippedTmul flippedTmul = ψ.comp φ from lift_uniq _ _ <| by aesop]
     exact lift_uniq _ _ <| by intros; aesop
 
   convert (φ x).2
@@ -110,7 +164,7 @@ lemma IsTensorProduct.induction {motive : X → Prop}
     (tensor : ∀ m n, motive (flippedTmul m n))
     (add : ∀ x x', motive x → motive x' → motive (x + x')) :
     ∀ x, motive x :=
-  fun x => AddSubmonoid.closure_induction (mem_closure R flippedTmul x)
+  fun x ↦ AddSubmonoid.closure_induction (mem_closure R flippedTmul x)
     (by rintro _ ⟨m, n, rfl⟩; exact tensor _ _)
     (by convert tensor 0 0 using 1; simp only [map_zero]) add
 
@@ -121,10 +175,10 @@ def IsTensorProduct.cong : X ≃+ X' where
   toFun := lift flippedTmul flippedTmul'
   invFun := lift flippedTmul' flippedTmul
   left_inv := IsTensorProduct.induction _ flippedTmul
-    (fun m n ↦ by rw [lift_comp, lift_comp])
+    (fun m n ↦ by simp)
     (fun _ _ h₁ h₂ ↦ by rw [map_add, map_add, h₁, h₂])
   right_inv := IsTensorProduct.induction _ flippedTmul'
-    (fun m n ↦ by rw [lift_comp, lift_comp])
+    (fun m n ↦ by simp)
     (fun _ _ h₁ h₂ ↦ by rw [map_add, map_add, h₁, h₂])
   map_add' _ _ := by simp
 
@@ -165,14 +219,12 @@ def IsTensorProduct.leftSmul (a : A) : X →+ X := IsTensorProduct.lift flippedT
 
 @[simp] lemma IsTensorProduct.leftSmul_flippedTmul (a : A) (m : M) (n : N) :
     leftSmul flippedTmul a (flippedTmul n m) = flippedTmul n (a • m) := by
-  erw [lift_comp]; rfl
+  erw [lift_flippedTmul]; rfl
 
 lemma IsTensorProduct.leftSmul.one_smul (x : X) : leftSmul flippedTmul (1 : A) x = x := by
   suffices h : leftSmul flippedTmul (1 : A) = AddMonoidHom.id _
   · rw [h]; rfl
-  refine lift_uniq _ _ fun m n => ?_
-  change flippedTmul n m = flippedTmul n (1 • m)
-  rw [_root_.one_smul]
+  exact lift_uniq _ _ <| FunLike.ext _ _ <| by aesop
 
 lemma IsTensorProduct.leftSmul.mul_smul (a a' : A) (x : X) :
     leftSmul flippedTmul (a * a') x =
@@ -248,14 +300,12 @@ def IsTensorProduct.rightSmul (r : Cᵐᵒᵖ) : X →+ X := lift flippedTmul
 
 @[simp] lemma IsTensorProduct.rightSmul_flippedTmul (a : Cᵐᵒᵖ) (m : M) (n : N) :
     rightSmul flippedTmul a (flippedTmul n m) = flippedTmul (a • n) m := by
-  erw [lift_comp]; rfl
+  erw [lift_flippedTmul]; rfl
 
 lemma IsTensorProduct.rightSmul.one_smul (x : X) : rightSmul flippedTmul (1 : Cᵐᵒᵖ) x = x := by
   suffices h : rightSmul flippedTmul (1 : Cᵐᵒᵖ) = AddMonoidHom.id _
   · rw [h]; rfl
-  refine lift_uniq _ _ fun m n => ?_
-  change flippedTmul n m = flippedTmul (1 • n) m
-  rw [_root_.one_smul]
+  exact lift_uniq _ _ <| FunLike.ext _ _ <| by aesop
 
 lemma IsTensorProduct.rightSmul.mul_smul (a a' : Cᵐᵒᵖ) (x : X) :
     rightSmul flippedTmul (a * a') x =
@@ -324,10 +374,8 @@ noncomputable def TensorProduct.flippedMKAddHom : N →ₗ[R] M →+ M ⊗[R] N 
 
 noncomputable instance isTensorProduct1 : IsTensorProduct R (TensorProduct.flippedMKAddHom R M N) where
   lift P _ f := TensorProduct.liftAddHom (AddMonoidHom.flip f.toAddMonoidHom) fun r m n ↦ by aesop
-  lift_comp P _ f m n := rfl
-  lift_uniq P _ f fHat H := FunLike.ext _ _ fun x => x.induction_on (by aesop)
-    (fun m n => by rw [show fHat (m ⊗ₜ n) = _ from H m n]; rfl)
-    (fun z z' h h' => by simp only [map_add, h, h'])
+  lift_comp P _ f := rfl
+  lift_uniq P _ f fHat H := FunLike.ext _ _ fun x ↦ x.induction_on (by aesop) (by aesop) (by aesop)
 
 instance : Module S (M ⊗[R] N) :=
   have i0 :  SMulCommClass Sᵐᵒᵖ R N :=
