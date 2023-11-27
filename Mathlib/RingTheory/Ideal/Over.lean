@@ -402,7 +402,7 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isPrime
     simpa [← RingHom.ker_eq_comap_bot] using hIP
 
 lemma exists_ideal_comap_le_prime (P : Ideal R) [P.IsPrime]
-  (I : Ideal S) (hI : I.comap (algebraMap R S) ≤ P) :
+    (I : Ideal S) (hI : I.comap (algebraMap R S) ≤ P) :
     ∃ Q ≥ I, Q.IsPrime ∧ Q.comap (algebraMap R S) ≤ P := by
   let Sₚ := Localization (Algebra.algebraMapSubmonoid S P.primeCompl)
   let Iₚ := I.map (algebraMap S Sₚ)
