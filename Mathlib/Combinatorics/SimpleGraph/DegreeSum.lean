@@ -38,7 +38,8 @@ simple graphs, sums, degree-sum formula, handshaking lemma
 -/
 
 
-open Finset BigOperators
+open Finset
+open scoped BigOperators
 
 namespace SimpleGraph
 
