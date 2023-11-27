@@ -45,7 +45,7 @@ add_decl_doc RingCon.toCon
 /-- The induced additive congruence from a `RingCon`. -/
 add_decl_doc RingCon.toAddCon
 
-variable {α R : Type*}
+variable {α β R : Type*}
 
 /-- The inductively defined smallest ring congruence relation containing a given binary
     relation. -/
@@ -223,9 +223,21 @@ end One
 
 section SMul
 
-variable [Add R] [MulOneClass R] [SMul α R] [IsScalarTower α R R] (c : RingCon R)
+variable [Add R] [Mul R]
+variable [SMul α R] [SMul β R] (c : RingCon R)
+variable [Con.CompatibleSMul α c.toCon] [Con.CompatibleSMul β c.toCon]
 
 instance : SMul α c.Quotient := inferInstanceAs (SMul α c.toCon.Quotient)
+
+instance [SMul α β] [IsScalarTower α β R] : IsScalarTower α β c.Quotient :=
+  inferInstanceAs (IsScalarTower α β c.toCon.Quotient)
+
+instance [SMulCommClass α β R] : SMulCommClass α β c.Quotient :=
+  inferInstanceAs (SMulCommClass α β c.toCon.Quotient)
+
+instance [SMul αᵐᵒᵖ R] [Con.CompatibleSMul αᵐᵒᵖ c.toCon] [IsCentralScalar α R] :
+    IsCentralScalar α c.Quotient :=
+  inferInstanceAs (IsCentralScalar α c.toCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_smul (a : α) (x : R) : (↑(a • x) : c.Quotient) = a • (x : c.Quotient) :=
