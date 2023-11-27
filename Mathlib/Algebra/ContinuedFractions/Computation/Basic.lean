@@ -18,8 +18,8 @@ fields. The algorithm is rather simple. Here is an outline of the procedure adap
 
 Take a value `v`. We call `⌊v⌋` the *integer part* of `v` and `v - ⌊v⌋` the *fractional part* of
 `v`.  A continued fraction representation of `v` can then be given by `CF[⌊v⌋; b₀, b₁, b₂,...]`,
-where `CF[b₀; b₁, b₂,...]` recursively is the continued fraction representation of `1 / (v - ⌊v⌋)`.  This
-process stops when the fractional part hits 0.
+where `CF[b₀; b₁, b₂,...]` recursively is the continued fraction representation of `1 / (v - ⌊v⌋)`.
+This process stops when the fractional part hits 0.
 
 In other words: to calculate a continued fraction representation of a number `v`, write down the
 integer part (i.e. the floor) of `v`. Subtract this integer part from `v`. If the difference is 0,
