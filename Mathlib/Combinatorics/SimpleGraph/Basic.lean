@@ -6,7 +6,7 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 import Mathlib.Combinatorics.SimpleGraph.Init
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
-import Mathlib.Data.Sym.Sym2
+import Mathlib.Data.Sym.Card
 
 #align_import combinatorics.simple_graph.basic from "leanprover-community/mathlib"@"c6ef6387ede9983aee397d442974e61f89dfd87b"
 
@@ -948,11 +948,6 @@ theorem edgeFinset_bot : (⊥ : SimpleGraph V).edgeFinset = ∅ := by simp [edge
 #align simple_graph.edge_finset_bot SimpleGraph.edgeFinset_bot
 
 @[simp]
-theorem edgeFinset_top [Fintype V] [DecidableEq V] :
-    (⊤ : SimpleGraph V).edgeFinset = univ.filter fun e => ¬e.IsDiag := by
-  ext f; exact f.inductionOn (by simp)
-
-@[simp]
 theorem edgeFinset_sup [DecidableEq V] : (G₁ ⊔ G₂).edgeFinset = G₁.edgeFinset ∪ G₂.edgeFinset := by
   simp [edgeFinset]
 #align simple_graph.edge_finset_sup SimpleGraph.edgeFinset_sup
@@ -975,6 +970,22 @@ theorem edgeFinset_card : G.edgeFinset.card = Fintype.card G.edgeSet :=
 theorem edgeSet_univ_card : (univ : Finset G.edgeSet).card = G.edgeFinset.card :=
   Fintype.card_of_subtype G.edgeFinset fun _ => mem_edgeFinset
 #align simple_graph.edge_set_univ_card SimpleGraph.edgeSet_univ_card
+
+variable [Fintype V] [DecidableEq V]
+
+@[simp]
+theorem edgeFinset_top : (⊤ : SimpleGraph V).edgeFinset = univ.filter fun e => ¬e.IsDiag := by
+  ext f; exact f.inductionOn (by simp)
+
+/-- The complete graph on `n` vertices has `n.choose 2` edges. -/
+theorem card_edgeFinset_top_eq_card_choose_two :
+    (⊤ : SimpleGraph V).edgeFinset.card = (Fintype.card V).choose 2 := by
+  simp only [Set.toFinset_card, edgeSet_top, Set.coe_setOf, ← Sym2.card_subtype_not_diag]
+
+/-- Any graph on `n` vertices has at most `n.choose 2` edges. -/
+theorem card_edgeFinset_le_card_choose_two : G.edgeFinset.card ≤ (Fintype.card V).choose 2 := by
+  apply (card_le_of_subset _).trans_eq card_edgeFinset_top_eq_card_choose_two
+  simp only [Set.subset_toFinset, Set.coe_toFinset, edgeSet_subset_edgeSet, le_top]
 
 end EdgeFinset
 

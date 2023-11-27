@@ -108,21 +108,6 @@ theorem sum_degrees_eq_twice_card_edges : ∑ v, G.degree v = 2 * G.edgeFinset.c
   G.dart_card_eq_sum_degrees.symm.trans G.dart_card_eq_twice_card_edges
 #align simple_graph.sum_degrees_eq_twice_card_edges SimpleGraph.sum_degrees_eq_twice_card_edges
 
-/-- The complete graph on `n` vertices has `n.choose 2` edges. -/
-theorem card_edgeFinset_top_eq_card_choose_two :
-    (⊤ : SimpleGraph V).edgeFinset.card = (Fintype.card V).choose 2 := by
-  have : 2 * (⊤ : SimpleGraph V).edgeFinset.card = Fintype.card V * (Fintype.card V - 1) := by
-    simp only [← sum_degrees_eq_twice_card_edges, complete_graph_degree, sum_const, smul_eq_mul,
-      mul_eq_mul_right_iff]
-    left; rfl
-  rw [← Nat.div_two_mul_two_of_even <| Nat.even_mul_self_pred <| _, ← Nat.choose_two_right] at this
-  linarith
-
-/-- Any graph on `n` vertices has at most `n.choose 2` edges. -/
-theorem card_edgeFinset_le_card_choose_two : G.edgeFinset.card ≤ (Fintype.card V).choose 2 := by
-  apply (card_le_of_subset _).trans_eq card_edgeFinset_top_eq_card_choose_two
-  simp only [Set.subset_toFinset, Set.coe_toFinset, edgeSet_subset_edgeSet, le_top]
-
 end DegreeSum
 
 /-- The handshaking lemma.  See also `SimpleGraph.sum_degrees_eq_twice_card_edges`. -/
