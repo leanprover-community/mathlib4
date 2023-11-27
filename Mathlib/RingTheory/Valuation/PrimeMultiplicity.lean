@@ -19,6 +19,7 @@ noncomputable def multiplicity.addValuation (hp : Prime p) : AddValuation R Part
 #align multiplicity.add_valuation multiplicity.addValuation
 
 @[simp]
-theorem multiplicity.addValuation_apply {hp : Prime p} {r : R} : addValuation hp r = multiplicity p r :=
+theorem multiplicity.addValuation_apply {hp : Prime p} {r : R} :
+    addValuation hp r = multiplicity p r :=
   rfl
 #align multiplicity.add_valuation_apply multiplicity.addValuation_apply
