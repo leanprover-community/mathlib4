@@ -20,8 +20,8 @@ $$(a \otimes b) \cdot (a' \otimes b') = (-1)^{\deg a' \deg b} (a \cdot a') \otim
 where $A$ and $B$ are algebras graded by `ℕ`, `ℤ`, or `ZMod 2` (or more generally, any index
 that satisfies `Module ι (Additive ℤˣ)`).
 
-The results for internally-graded algebras (via `GradedAlgebra` are elsewhere, as the type
-`GradedTensorProduct`).
+The results for internally-graded algebras (via `GradedAlgebra`) are elsewhere, as is the type
+`GradedTensorProduct`.
 
 ## Main results
 
