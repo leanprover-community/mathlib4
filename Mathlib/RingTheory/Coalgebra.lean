@@ -66,3 +66,8 @@ instance Finsupp.instCoalgebra (R : Type u) (S : Type v) [CommRing R] : Coalgebr
     ext; simp
   id_ε := by
     ext; simp
+
+theorem Finsupp.Δ_basis (R : Type u) (S : Type v) [CommRing R] (s : S) :
+    (Finsupp.instCoalgebra R S).Δ (Finsupp.single s 1) =
+    (Finsupp.single s 1) ⊗ₜ[R] (Finsupp.single s 1) := by
+  unfold Coalgebra.Δ; unfold Finsupp.instCoalgebra; simp
