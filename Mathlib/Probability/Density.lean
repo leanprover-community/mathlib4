@@ -98,7 +98,8 @@ instance HasPDF.haveLebesgueDecomposition {X : Ω → E} {ℙ : Measure Ω}
 #align measure_theory.pdf.have_lebesgue_decomposition_of_has_pdf MeasureTheory.HasPDF.haveLebesgueDecomposition
 
 theorem HasPDF.absolutelyContinuous {X : Ω → E} {ℙ : Measure Ω} {μ : Measure E}
-    [hX : HasPDF X ℙ μ] : map X ℙ ≪ μ := hX.pdf'.2.2
+    [hX : HasPDF X ℙ μ] : map X ℙ ≪ μ :=
+  hX.pdf'.2.2
 #align measure_theory.pdf.map_absolutely_continuous MeasureTheory.HasPDF.absolutelyContinuous
 
 /-- A random variable that `HasPDF` is quasi-measure preserving. -/
@@ -140,15 +141,13 @@ theorem pdf_def {_ : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E} {X 
 
 theorem pdf_of_not_aemeasurable {_ : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E}
     {X : Ω → E} (hX : ¬AEMeasurable X ℙ) : pdf X ℙ μ =ᵐ[μ] 0 := by
-  unfold pdf
-  rw [map_of_not_aemeasurable hX]
+  rw [pdf_def, map_of_not_aemeasurable hX]
   exact rnDeriv_zero μ
 #align measure_theory.pdf_eq_zero_of_not_measurable MeasureTheory.pdf_of_not_aemeasurable
 
 theorem pdf_of_not_haveLebesgueDecomposition {_ : MeasurableSpace Ω} {ℙ : Measure Ω}
-    {μ : Measure E} {X : Ω → E} (h : ¬(map X ℙ).HaveLebesgueDecomposition μ) : pdf X ℙ μ = 0 := by
-  unfold pdf
-  exact rnDeriv_of_not_haveLebesgueDecomposition h
+    {μ : Measure E} {X : Ω → E} (h : ¬(map X ℙ).HaveLebesgueDecomposition μ) : pdf X ℙ μ = 0 :=
+  rnDeriv_of_not_haveLebesgueDecomposition h
 
 theorem aemeasurable_of_pdf_ne_zero {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E}
     (X : Ω → E) (h : ¬pdf X ℙ μ =ᵐ[μ] 0) : AEMeasurable X ℙ := by
@@ -171,10 +170,9 @@ theorem measurable_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω
   exact measurable_rnDeriv _ _
 #align measure_theory.measurable_pdf MeasureTheory.measurable_pdf
 
-theorem withDensity_pdf_le_map {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
-    (μ : Measure E := by volume_tac) : μ.withDensity (pdf X ℙ μ) ≤ map X ℙ := by
-  rw [pdf_def]
-  exact withDensity_rnDeriv_le _ _
+theorem withDensity_pdf_le_map {_ : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
+    (μ : Measure E := by volume_tac) : μ.withDensity (pdf X ℙ μ) ≤ map X ℙ :=
+  withDensity_rnDeriv_le _ _
 
 theorem set_lintegral_pdf_le_map {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
     (μ : Measure E := by volume_tac) {s : Set E} (hs : MeasurableSet s) :
@@ -220,9 +218,8 @@ theorem eq_of_map_eq_withDensity' [SigmaFinite μ] {X : Ω → E} [HasPDF X ℙ 
     withDensity_eq_iff_of_sigmaFinite (measurable_pdf X ℙ μ).aemeasurable hmf
 
 nonrec theorem ae_lt_top [IsFiniteMeasure ℙ] {μ : Measure E} {X : Ω → E} :
-    ∀ᵐ x ∂μ, pdf X ℙ μ x < ∞ := by
-  rw [pdf_def]
-  exact rnDeriv_lt_top (map X ℙ) μ
+    ∀ᵐ x ∂μ, pdf X ℙ μ x < ∞ :=
+  rnDeriv_lt_top (map X ℙ) μ
 #align measure_theory.pdf.ae_lt_top MeasureTheory.pdf.ae_lt_top
 
 nonrec theorem ofReal_toReal_ae_eq [IsFiniteMeasure ℙ] {X : Ω → E} :
@@ -237,7 +234,7 @@ theorem lintegral_pdf_mul {X : Ω → E} [HasPDF X ℙ μ] {f : E → ℝ≥0∞
     (hf : AEMeasurable f μ) : ∫⁻ x, pdf X ℙ μ x * f x ∂μ = ∫⁻ x, f (X x) ∂ℙ := by
   rw [pdf_def,
     ← lintegral_map' (hf.mono_ac HasPDF.absolutelyContinuous) (HasPDF.aemeasurable X ℙ μ),
-  lintegral_rnDeriv_mul HasPDF.absolutelyContinuous hf]
+    lintegral_rnDeriv_mul HasPDF.absolutelyContinuous hf]
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
 
