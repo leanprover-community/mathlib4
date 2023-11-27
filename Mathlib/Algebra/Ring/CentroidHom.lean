@@ -486,37 +486,56 @@ lemma centerToCentroid_apply (z : { x // x ∈ NonUnitalSubsemiring.center α })
     (centerToCentroid z) a = z * a := rfl
 
 lemma center_iff_op_centroid (a : α) :
-    a ∈ NonUnitalSubsemiring.center α ↔ L a = R a ∧ (L a) ∈ Set.range CentroidHom.toEnd := by
+    a ∈ NonUnitalSubsemiring.center α ↔ R a = L a ∧ (L a) ∈ MonoidHom.mrange (toEndRingHom α) := by
   constructor
   · intro ha
     constructor
-    · apply AddMonoidHom.ext
-      intro b
-      rw [AddMonoid.End.mulLeft_apply_apply, AddMonoid.End.mulRight_apply_apply]
-      exact IsMulCentral.comm ha b
-    · rw [Set.mem_range]
+    · exact AddMonoid.End.commute_mulRight_eq_mulLeft a (IsMulCentral.comm ha)
+    · rw [MonoidHom.mem_mrange]
       use centerToCentroid ⟨a, ha⟩
       rfl
   · intro hla
     simp at hla
     obtain ⟨hc,⟨T,hT⟩⟩  := hla
     have e1 (d : α) : T d = a * d := (FunLike.congr (id hT.symm) rfl).symm
-    have e2 (d : α) : a * d = d * a := FunLike.congr (hc) rfl
+    have e2 (d : α) : d * a = a * d := FunLike.congr (hc) rfl
     constructor
     case comm =>
       intro b
-      exact e2 b
+      exact (e2 b).symm
     case left_assoc =>
       intro b c
       rw [← e1, map_mul_right, e1]
     case mid_assoc =>
       intro b c
-      rw [← e2, ← e1, ←e1, ← map_mul_left, ← map_mul_right]
+      rw [e2, ← e1, ← e1, ← map_mul_left, ← map_mul_right]
     case right_assoc =>
       intro b c
-      rw [← e2, ← e2, ← e1, ← e1, ← map_mul_left]
+      rw [e2, e2, ← e1, ← e1, ← map_mul_left]
 
 end NonUnitalNonAssocSemiring
+
+section NonUnitalNonAssocCommSemiring
+
+variable [NonUnitalNonAssocCommSemiring α]
+
+local notation "L" => AddMonoid.End.mulLeft
+local notation "R" => AddMonoid.End.mulRight
+
+lemma center_iff_op_mul_commute (a : α) :
+    a ∈ NonUnitalSubsemiring.center α ↔ ∀ b : α, Commute (L b) (L a) := by
+  rw [center_iff_op_centroid, centroid_eq_centralizer_mul_op, Submonoid.mem_centralizer_iff,
+    AddMonoid.End.comm_mulRight_eq_mulLeft, Set.union_self]
+  simp_rw [true_and]
+  constructor
+  · intro h b
+    apply h (L b)
+    simp only [Set.mem_range, exists_apply_eq_apply]
+  · intro h _ ⟨b, hb⟩
+    rw [← hb]
+    exact h b
+
+end NonUnitalNonAssocCommSemiring
 
 section NonAssocSemiring
 
