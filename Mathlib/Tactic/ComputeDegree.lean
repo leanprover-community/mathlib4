@@ -118,11 +118,11 @@ theorem coeff_pow_of_natDegree_le_of_eq_ite' [Semiring R] {m n o : ℕ} {a : R} 
 
 theorem natDegree_smul_le_of_le {n : ℕ} {a : R} {f : R[X]} (hf : natDegree f ≤ n) :
     natDegree (a • f) ≤ n :=
-(natDegree_smul_le a f).trans hf
+  (natDegree_smul_le a f).trans hf
 
 theorem degree_smul_le_of_le {n : ℕ} {a : R} {f : R[X]} (hf : degree f ≤ n) :
     degree (a • f) ≤ n :=
-(degree_smul_le a f).trans hf
+  (degree_smul_le a f).trans hf
 
 theorem coeff_smul {n : ℕ} {a : R} {f : R[X]} : (a • f).coeff n = a * f.coeff n := rfl
 
