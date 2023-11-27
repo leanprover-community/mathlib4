@@ -48,6 +48,14 @@ unsafe def corec' (f : α → β × α) (a : α) : Stream'Impl β :=
   match f a with
   | (a, b) => cons a ⟨fun _ => corec' f b⟩
 
+/-- Corecursor where it is possible to return a fully formed value at any point of the
+computation. -/
+@[specialize]
+unsafe def corec'' (f : β → Stream'Impl α ⊕ α × β) (b : β) : Stream'Impl α :=
+  match f b with
+  | Sum.inl c => c
+  | Sum.inr (a, b) => cons a ⟨fun _ => corec'' f b⟩
+
 end Stream'Impl
 
 open Stream'Impl
@@ -127,6 +135,16 @@ unsafe def destUnsafe (s : Stream' α) : α × Stream' α :=
 @[inherit_doc destUnsafe, implemented_by destUnsafe, simp]
 def dest (s : Stream' α) : α × Stream' α :=
   (head s, tail s)
+
+@[higher_order dest_fst']
+theorem dest_fst (s : Stream' α) : Prod.fst (dest s) = head s :=
+  rfl
+
+@[higher_order dest_snd']
+theorem dest_snd (s : Stream' α) : Prod.snd (dest s) = tail s :=
+  rfl
+
+attribute [simp] dest_fst' dest_snd'
 
 @[inherit_doc head, inline]
 def headComputable (s : Stream' α) : α :=
@@ -1422,5 +1440,44 @@ theorem interchange (fs : Stream' (α → β)) (a : α) :
 theorem const_apply (f : α → β) (s : Stream' α) : const f ⊛ s = map f s :=
   rfl
 #align stream.map_eq_apply Stream'.const_apply
+
+/-- Corecursor where it is possible to return a fully formed value at any point of the
+computation. -/
+@[inline]
+unsafe def corec''Unsafe (f : β → Stream' α ⊕ α × β) (b : β) : Stream' α :=
+  unsafeCast (corec'' (unsafeCast f) b : Stream'Impl α)
+
+@[inherit_doc corec''Unsafe, implemented_by corec''Unsafe]
+def corec'' (f : β → Stream' α ⊕ α × β) (b : β) : Stream' α :=
+  corec'
+    (Sum.elim (Prod.map id Sum.inl ∘ dest) (Prod.map id Sum.inr) ∘
+      Sum.elim Sum.inl f)
+    (Sum.inr b)
+
+theorem dest_corec'' (f : β → Stream' α ⊕ α × β) (b : β) :
+    dest (corec'' f b) = Sum.elim dest (Prod.map id (corec'' f)) (f b) := by
+  unfold corec''; simp
+  rcases f b with (s' | ⟨a, b⟩) <;> simp
+  refine eq_of_bisim
+    (fun s₁ s₂ =>
+      s₁ = corec'
+        (Sum.elim (Prod.map id Sum.inl ∘ dest) (Prod.map id Sum.inr) ∘
+          Sum.elim Sum.inl f)
+        (Sum.inl s₂))
+    ?_ rfl; clear s'
+  rintro _ s rfl
+  simp
+
+@[simp]
+theorem head_corec'' (f : β → Stream' α ⊕ α × β) (b : β) :
+    head (corec'' f b) = Sum.elim head Prod.fst (f b) := by
+  simpa [← comp_apply (f := Prod.fst), Sum.comp_elim, Prod.map_fst', - comp_apply]
+    using congr_arg Prod.fst (dest_corec'' f b)
+
+@[simp]
+theorem tail_corec'' (f : β → Stream' α ⊕ α × β) (b : β) :
+    tail (corec'' f b) = Sum.elim tail (corec'' f ∘ Prod.snd) (f b) := by
+  simpa [← comp_apply (f := Prod.snd), Sum.comp_elim, Prod.map_snd', - comp_apply]
+    using congr_arg Prod.snd (dest_corec'' f b)
 
 end Stream'

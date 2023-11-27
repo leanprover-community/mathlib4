@@ -765,7 +765,7 @@ def corec' (f : β → Seq' α ⊕ Option (α × β)) (b : β) : Seq' α :=
 theorem dest_corec' (f : β → Seq' α ⊕ Option (α × β)) (b : β) :
     dest (corec' f b) = Sum.elim dest (Option.map (Prod.map id (corec' f))) (f b) := by
   simp (config := { unfoldPartialApp := true }) [corec']
-  rcases f b with (s | ⟨a, b⟩) <;> simp
+  rcases f b with (s | _ | ⟨a, b⟩) <;> simp
   rcases dest s with (_ | ⟨a, s'⟩) <;> simp; clear s
   refine eq_of_bisim
     (fun s₁ s₂ =>
