@@ -297,6 +297,10 @@ theorem aeval_algebraMap_apply_eq_algebraMap_eval (x : R) (p : R[X]) :
   aeval_algHom_apply (Algebra.ofId R A) x p
 #align polynomial.aeval_algebra_map_apply_eq_algebra_map_eval Polynomial.aeval_algebraMap_apply_eq_algebraMap_eval
 
+theorem aeval_algebraMap_apply_eq_algebraMap_aeval [Algebra A' B] [IsScalarTower R A' B]
+  (x : A') (p : R[X]) : aeval (algebraMap A' B x) p = algebraMap A' B (aeval x p) := by
+  rw [aeval_def, aeval_def, hom_eval₂, IsScalarTower.algebraMap_eq R A' B]
+
 @[simp]
 theorem coe_aeval_eq_eval (r : R) : (aeval r : R[X] → R) = eval r :=
   rfl
