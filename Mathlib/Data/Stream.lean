@@ -124,17 +124,9 @@ noncomputable def tail (s : Stream' α) : Stream' α where
 unsafe def destUnsafe (s : Stream' α) : α × Stream' α :=
   unsafeCast (dest (unsafeCast s) : α × Stream'Impl α)
 
-@[inherit_doc destUnsafe, implemented_by destUnsafe]
+@[inherit_doc destUnsafe, implemented_by destUnsafe, simp]
 def dest (s : Stream' α) : α × Stream' α :=
   (head s, tail s)
-
-@[simp]
-theorem dest_fst (s : Stream' α) : Prod.fst (dest s) = head s :=
-  rfl
-
-@[simp]
-theorem dest_snd (s : Stream' α) : Prod.snd (dest s) = tail s :=
-  rfl
 
 @[inherit_doc head, inline]
 def headComputable (s : Stream' α) : α :=
@@ -166,10 +158,6 @@ theorem tail_cons (a : α) (s : Stream' α) : tail (a ::ₛ s) = s :=
   rfl
 #align stream.tail_cons Stream'.tail_cons
 
-@[simp]
-theorem dest_cons (a : α) (s : Stream' α) : dest (a ::ₛ s) = (a, s) :=
-  rfl
-
 theorem cons_injective2 : Function.Injective2 (cons : α → Stream' α → Stream' α) := by
   intro a₁ a₂ s₁ s₂ h
   constructor
@@ -182,7 +170,7 @@ theorem cons_eq_cons {a₁ a₂ : α} {s₁ s₂ : Stream' α} : a₁ ::ₛ s₁
   cons_injective2.eq_iff
 
 theorem dest_eq_cons {s : Stream' α} {a s'} (hs : dest s = (a, s')) : s = a ::ₛ s' := by
-  simp [dest] at hs
+  simp at hs
   rw [← Stream'.eta s, hs.left, hs.right]
 
 theorem cons_injective_left (s : Stream' α) : Function.Injective (· ::ₛ s) :=
@@ -258,10 +246,6 @@ theorem tail_drop (n : ℕ) (s : Stream' α) : tail (drop n s) = drop n (tail s)
   | succ n hn => simp [hn]
 
 @[simp]
-theorem dest_drop (n : ℕ) (s : Stream' α) : dest (drop n s) = (get s n, drop n (tail s)) := by
-  simp [dest]
-
-@[simp]
 theorem get_drop (n m : ℕ) (s : Stream' α) : get (drop m s) n = get s (m + n) := by
   induction n using Nat.recAux generalizing s with
   | zero => simp
@@ -282,7 +266,7 @@ variable (R : Stream' α → Stream' α → Prop)
 /-- Streams `s₁` and `s₂` are defined to be bisimulations if
 their heads are equal and tails are bisimulations. -/
 def IsBisimulation :=
-  ∀ ⦃s₁ s₂⦄, R s₁ s₂ → Prod.RProd Eq R (dest s₁) (dest s₂)
+  ∀ ⦃s₁ s₂⦄, R s₁ s₂ → head s₁ = head s₂ ∧ R (tail s₁) (tail s₂)
 #align stream.is_bisimulation Stream'.IsBisimulation
 
 theorem get_of_bisim (bisim : IsBisimulation R) :
@@ -327,7 +311,7 @@ theorem coinduction {s₁ s₂ : Stream' α} :
         ∀ (β : Type u) (fr : Stream' α → β),
           fr (tail s₁) = fr (tail s₂) → fr (tail (tail s₁)) = fr (tail (tail s₂)) :=
         fun β fr => And.right h β fun s => fr (tail s)
-      Prod.RProd.intro h₁ (And.intro h₂ h₃))
+      And.intro h₁ (And.intro h₂ h₃))
     (And.intro hh ht)
 #align stream.coinduction Stream'.coinduction
 
@@ -413,10 +397,6 @@ theorem tail_map (s : Stream' α) : tail (map f s) = map f (tail s) :=
 #align stream.tail_map Stream'.tail_map
 
 @[simp]
-theorem dest_map (s : Stream' α) : dest (map f s) = Prod.map f (map f) (dest s) := by
-  rfl
-
-@[simp]
 theorem get_map (n : ℕ) (s : Stream' α) : get (map f s) n = f (get s n) :=
   rfl
 #align stream.nth_map Stream'.get_map
@@ -489,10 +469,6 @@ theorem tail_iterate (f : α → α) (a : α) : tail (iterate f a) = iterate f (
   rfl
 #align stream.tail_iterate Stream'.tail_iterate
 
-@[simp]
-theorem dest_iterate (f : α → α) (a : α) : dest (iterate f a) = (a, iterate f (f a)) :=
-  rfl
-
 theorem iterate_eq (f : α → α) (a : α) : iterate f a = a ::ₛ iterate f (f a) := by
   apply dest_eq_cons
   simp
@@ -537,10 +513,6 @@ theorem head_corec (f : α → β) (g : α → α) (a : α) : head (corec f g a)
 theorem tail_corec (f : α → β) (g : α → α) (a : α) : tail (corec f g a) = corec f g (g a) :=
   rfl
 
-@[simp]
-theorem dest_corec (f : α → β) (g : α → α) (a : α) : dest (corec f g a) = (f a, corec f g (g a)) :=
-  rfl
-
 theorem corec_eq (f : α → β) (g : α → α) (a : α) : corec f g a = f a ::ₛ corec f g (g a) := by
   apply dest_eq_cons
   simp
@@ -556,7 +528,6 @@ theorem corec_head_tail (s : Stream' α) : corec head tail s = s := by
   refine eq_of_bisim (fun s₁ s₂ => s₁ = corec head tail s₂) ?_ rfl; clear s
   rintro _ s rfl
   simp
-  constructor <;> rfl
 #align stream.unfolds_head_eq Stream'.corec_head_tail
 
 end Corec
@@ -578,10 +549,6 @@ theorem head_corec' (f : α → β × α) (a : α) : head (corec' f a) = (f a).1
 
 @[simp]
 theorem tail_corec' (f : α → β × α) (a : α) : tail (corec' f a) = corec' f (f a).2 :=
-  rfl
-
-@[simp]
-theorem dest_corec' (f : α → β × α) (a : α) : dest (corec' f a) = Prod.map id (corec' f) (f a) :=
   rfl
 
 theorem corec'_eq (f : α → β × α) (a : α) : corec' f a = (f a).1 ::ₛ corec' f (f a).2 :=
@@ -658,14 +625,6 @@ theorem tail_nats : tail nats = iota 1 :=
   tail_iota 0
 
 @[simp]
-theorem dest_iota (n : ℕ) : dest (iota n) = (n, iota (n + 1)) :=
-  rfl
-
-@[simp]
-theorem dest_nats : dest nats = (0, iota 1) :=
-  rfl
-
-@[simp]
 theorem get_iota (m n : ℕ) : get (iota m) n = m + n := by
   simp [iota, Nat.succ_iterate]
 
@@ -718,11 +677,6 @@ theorem tail_zipWith (s₁ : Stream' α) (s₂ : Stream' β) :
     tail (zipWith f s₁ s₂) = zipWith f (tail s₁) (tail s₂) :=
   rfl
 #align stream.tail_zip Stream'.tail_zipWith
-
-@[simp]
-theorem dest_zipWith (s₁ : Stream' α) (s₂ : Stream' β) :
-    dest (zipWith f s₁ s₂) = (f (head s₁) (head s₂), zipWith f (tail s₁) (tail s₂)) :=
-  rfl
 
 theorem zipWith_eq (s₁ : Stream' α) (s₂ : Stream' β) :
     zipWith f s₁ s₂ = f (head s₁) (head s₂) ::ₛ zipWith f (tail s₁) (tail s₂) := by
@@ -788,11 +742,6 @@ theorem head_zip (s₁ : Stream' α) (s₂ : Stream' β) : head (zip s₁ s₂) 
 theorem tail_zip (s₁ : Stream' α) (s₂ : Stream' β) : tail (zip s₁ s₂) = zip (tail s₁) (tail s₂) :=
   tail_zipWith Prod.mk s₁ s₂
 
-@[simp]
-theorem dest_zip (s₁ : Stream' α) (s₂ : Stream' β) :
-    dest (zip s₁ s₂) = ((head s₁, head s₂), zip (tail s₁) (tail s₂)) :=
-  dest_zipWith Prod.mk s₁ s₂
-
 theorem zip_eq (s₁ : Stream' α) (s₂ : Stream' β) :
     zip s₁ s₂ = (head s₁, head s₂) ::ₛ zip (tail s₁) (tail s₂) :=
   zipWith_eq Prod.mk s₁ s₂
@@ -823,15 +772,6 @@ theorem tail_enum (s : Stream' α) : tail (enum s) = enumFrom 1 (tail s) :=
   tail_enumFrom 0 s
 
 @[simp]
-theorem dest_enumFrom (n : ℕ) (s : Stream' α) :
-    dest (enumFrom n s) = ((n, head s), enumFrom (n + 1) (tail s)) :=
-  dest_zip (iota n) s
-
-@[simp]
-theorem dest_enum (s : Stream' α) : dest (enum s) = ((0, head s), enumFrom 1 (tail s)) :=
-  dest_enumFrom 0 s
-
-@[simp]
 theorem get_enumFrom (m : ℕ) (s : Stream' α) (n : ℕ) :
     get (enumFrom m s) n = (m + n, s.get n) := by
   simp [enumFrom]
@@ -858,10 +798,6 @@ theorem head_const (a : α) : head (const a) = a :=
 theorem tail_const (a : α) : tail (const a) = const a :=
   rfl
 #align stream.tail_const Stream'.tail_const
-
-@[simp]
-theorem dest_const (a : α) : dest (const a) = (a, const a) :=
-  rfl
 
 theorem const_eq (a : α) : const a = a ::ₛ const a := by
   apply dest_eq_cons
@@ -975,10 +911,6 @@ theorem tail_interleave (s₁ s₂ : Stream' α) : tail (s₁ ⋈ s₂) = s₂ �
   simp [interleave]
 #align stream.tail_interleave Stream'.tail_interleave
 
-@[simp]
-theorem dest_interleave (s₁ s₂ : Stream' α) : dest (s₁ ⋈ s₂) = Prod.map id (s₂ ⋈ ·) (dest s₁) := by
-  simp [dest]
-
 theorem interleave_eq (s₁ s₂ : Stream' α) :
     s₁ ⋈ s₂ = head s₁ ::ₛ head s₂ ::ₛ (tail s₁ ⋈ tail s₂) := by
   apply dest_eq_cons
@@ -1048,10 +980,6 @@ theorem tail_even (s : Stream' α) : tail (even s) = even (tail (tail s)) := by
   simp [even]
 #align stream.tail_even Stream'.tail_even
 
-@[simp]
-theorem dest_even (s : Stream' α) : dest (even s) = Prod.map id (even ∘ tail) (dest s) := by
-  simp [dest]
-
 theorem even_cons_cons (a₁ a₂ : α) (s : Stream' α) : even (a₁ ::ₛ a₂ ::ₛ s) = a₁ ::ₛ even s := by
   apply dest_eq_cons
   simp
@@ -1074,7 +1002,6 @@ theorem interleave_even_odd (s : Stream' α) : even s ⋈ odd s = s := by
     ?_ rfl; clear s
   rintro _ s rfl
   simp [odd_eq]
-  constructor <;> rfl
 #align stream.interleave_even_odd Stream'.interleave_even_odd
 
 @[simp]
