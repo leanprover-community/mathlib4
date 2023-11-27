@@ -192,6 +192,7 @@ def MulEquivClass.toMulEquiv [Mul α] [Mul β] [MulEquivClass F α β] (f : F) :
 instance [Mul α] [Mul β] [MulEquivClass F α β] : CoeTC F (α ≃* β) :=
   ⟨MulEquivClass.toMulEquiv⟩
 
+@[to_additive]
 theorem toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α β] :
     Function.Injective ((↑) : F → α ≃* β) :=
   fun _ _ e ↦ FunLike.ext _ _ <| fun a ↦ congr_arg (fun e : α ≃* β ↦ e.toFun a) e
