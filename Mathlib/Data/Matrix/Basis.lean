@@ -235,26 +235,25 @@ theorem diag_eq_of_commute_stdBasisMatrix {i j : n} {M : Matrix n n α}
   have := ext_iff.mpr hM i j
   aesop
 
-/-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`.​-/
+/-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`. ​-/
 theorem mem_range_scalar_of_commute_stdBasisMatrix {M : Matrix n n α}
     (hM : ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M):
     M ∈ Set.range (Matrix.scalar n) := by
   cases isEmpty_or_nonempty n
-  · refine ⟨0, Subsingleton.elim _ _⟩
+  · exact ⟨0, Subsingleton.elim _ _⟩
   obtain ⟨i⟩ := ‹Nonempty n›
-  refine ⟨M i i, ?_⟩
-  rewrite [← ext_iff]
-  intro j k
-  by_cases h : j = k
-  · by_cases hij : i = j
-    · simp [hij, h]
-    · push_neg at hij
-      rewrite [h] at hij
-      simp [diag_eq_of_commute_stdBasisMatrix <| hM k i hij.symm, h]
-  · push_neg at h
-    by_cases hij : i = j
-    · simp [hij, col_eq_zero_of_commute_stdBasisMatrix (hM k j h.symm) h, h]
-    · simp [row_eq_zero_of_commute_stdBasisMatrix (hM i j hij) h.symm, h]
+  refine ⟨M i i, Matrix.ext fun j k => ?_⟩
+  simp only [scalar_apply]
+  obtain rfl | hkl := Decidable.eq_or_ne j k
+  · rw [diagonal_apply_eq]
+    obtain rfl | hij := Decidable.eq_or_ne i j
+    · rfl
+    · exact diag_eq_of_commute_stdBasisMatrix (hM _ _ hij)
+  · push_neg at hkl
+    rw [diagonal_apply_ne _ hkl]
+    obtain rfl | hij := Decidable.eq_or_ne i j
+    · rw [col_eq_zero_of_commute_stdBasisMatrix (hM k i hkl.symm) hkl]
+    · rw [row_eq_zero_of_commute_stdBasisMatrix (hM i j hij) hkl.symm]
 
 end Commute
 
