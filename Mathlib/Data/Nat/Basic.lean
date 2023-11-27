@@ -288,11 +288,11 @@ theorem exists_eq_add_of_lt (h : m < n) : ∃ k : ℕ, n = m + k + 1 :=
 /-! ### `pred` -/
 
 @[simp]
-theorem add_succ_sub_one (n m : ℕ) : n + succ m - 1 = n + m := by rw [add_succ, succ_sub_one]
+theorem add_succ_sub_one (n m : ℕ) : n + succ m - 1 = n + m := by rw [add_succ, Nat.add_one_sub_one]
 #align nat.add_succ_sub_one Nat.add_succ_sub_one
 
 @[simp]
-theorem succ_add_sub_one (n m : ℕ) : succ n + m - 1 = n + m := by rw [succ_add, succ_sub_one]
+theorem succ_add_sub_one (n m : ℕ) : succ n + m - 1 = n + m := by rw [succ_add, Nat.add_one_sub_one]
 #align nat.succ_add_sub_one Nat.succ_add_sub_one
 
 theorem pred_eq_sub_one (n : ℕ) : pred n = n - 1 :=
