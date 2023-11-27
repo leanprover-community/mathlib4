@@ -33,13 +33,13 @@ The results for internally-graded algebras (via `GradedAlgebra` are elsewhere, a
 ## Implementation notes
 
 Rather than implementing the multiplication directly as above, we first implement the canonical
-non-trivial braiding sending $a \otimes b)$ to $(-1)^{\deg a' \deg b} (b \otimes a)$, as the
+non-trivial braiding sending $a \otimes b$ to $(-1)^{\deg a' \deg b} (b \otimes a)$, as the
 multiplication follows trivially from this after some point-free nonsense.
 
 ## References
 
 * https://math.stackexchange.com/q/202718/1896
-* TODO: find appropriate part of Bourbaki
+* [*Algebra I*, Bourbaki : Chapter III, §4.7, example (2)][bourbaki1989]
 
 -/
 
