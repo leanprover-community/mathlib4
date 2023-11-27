@@ -127,7 +127,7 @@ instance (X : Stonean.{u}) : ExtremallyDisconnected X :=
 def toProfinite : Stonean.{u} ⥤ Profinite.{u} where
   obj X :=
     { toCompHaus := X.compHaus,
-      IsTotallyDisconnected := show TotallyDisconnectedSpace X from inferInstance }
+      isTotallyDisconnected := show TotallyDisconnectedSpace X from inferInstance }
   map f := f
 
 /-- The functor from Stonean spaces to profinite spaces is full. -/

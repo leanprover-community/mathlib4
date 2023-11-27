@@ -53,8 +53,6 @@ For consequences in infinite dimension (Hilbert bases, etc.), see the file
 
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 set_option linter.uppercaseLean3 false
 
 open Real Set Filter IsROrC Submodule Function BigOperators Uniformity Topology NNReal ENNReal

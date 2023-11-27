@@ -22,14 +22,14 @@ open scoped TensorProduct
 open TensorProduct Algebra.TensorProduct
 
 theorem isIntegral_stableUnderComposition : StableUnderComposition fun f => f.IsIntegral := by
-  introv R hf hg; exact RingHom.isIntegral_trans _ _ hf hg
+  introv R hf hg; exact hf.trans _ _ hg
 #align ring_hom.is_integral_stable_under_composition RingHom.isIntegral_stableUnderComposition
 
 theorem isIntegral_respectsIso : RespectsIso fun f => f.IsIntegral := by
   apply isIntegral_stableUnderComposition.respectsIso
   introv x
   rw [← e.apply_symm_apply x]
-  apply RingHom.is_integral_map
+  apply RingHom.isIntegralElem_map
 #align ring_hom.is_integral_respects_iso RingHom.isIntegral_respectsIso
 
 theorem isIntegral_stableUnderBaseChange : StableUnderBaseChange fun f => f.IsIntegral := by
