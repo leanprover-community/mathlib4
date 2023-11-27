@@ -731,8 +731,8 @@ lemma finEquivZpowers_apply (hx) {n : Fin (orderOf x)} :
  -- This lemma has always been bad, but the linter only noticed after leanprover/lean4#2644.
 @[to_additive (attr := simp, nolint simpNF) finEquivZmultiples_symm_apply]
 lemma finEquivZpowers_symm_apply (x : G) (hx) (n : ℕ) :
-    letI hn : ∃ m : ℤ, x ^ m = x ^ n := ⟨n, by simp⟩
-    (finEquivZpowers x hx).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
+    (finEquivZpowers x hx).symm ⟨x ^ n, ⟨n, by simp⟩⟩ =
+    ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
   rw [finEquivZpowers, Equiv.symm_trans_apply]; exact finEquivPowers_symm_apply x _ n
 #align fin_equiv_zpowers_symm_apply finEquivZpowers_symm_apply
 #align fin_equiv_zmultiples_symm_apply finEquivZmultiples_symm_apply
