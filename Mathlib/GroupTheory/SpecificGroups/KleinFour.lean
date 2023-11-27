@@ -223,4 +223,12 @@ equivalence which sends the identity of one group to the identity of the other."
 def mulEquiv [IsKleinFour G₂] (e : G₁ ≃ G₂) (he : e 1 = 1) : G₁ ≃* G₂ :=
   mulEquiv' e he exponent_two
 
+/-- Any two `IsKleinFour` groups are isomorphic. -/
+@[to_additive "Any two `IsAddKleinFour` groups are isomorphic."]
+lemma nonempty_mulEquiv [IsKleinFour G₂] : Nonempty (G₁ ≃* G₂) := by
+  classical
+  let _inst₁ := Fintype.ofFinite G₁
+  let _inst₁ := Fintype.ofFinite G₂
+  exact ⟨mulEquiv ((Fintype.equivOfCardEq <| by simp).setValue 1 1) <| by simp⟩
+
 end IsKleinFour
