@@ -11,9 +11,11 @@ import Mathlib.RingTheory.Polynomial.Basic
 # Funny docstring placeholder blablabla
 -/
 
-open Nat BigOperators Polynomial
 /- An alternative is to use n.choose k everywhere. Otherwise, this imports `Finset.choose` -/
 open Finset hiding choose
+open Nat BigOperators Polynomial
+
+namespace Choose
 
 variable {n k p : ℕ} [hp : Fact p.Prime]
 
