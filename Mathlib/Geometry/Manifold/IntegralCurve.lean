@@ -107,22 +107,17 @@ lemma IsIntegralCurveAt.comp_add {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v 
   apply HasMFDerivAt.comp t h2'
   /- this makes me think we need lemmas for `HasMFDerivAt 𝓘(E, E) 𝓘(E, E)` of simple operations -/
   refine ⟨(continuous_add_right _).continuousAt, ?_⟩
-  simp only [writtenInExtChartAt, extChartAt, LocalHomeomorph.extend,
-    LocalHomeomorph.refl_localEquiv, LocalEquiv.refl_source,
-    LocalHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_localEquiv,
-    LocalEquiv.trans_refl, LocalEquiv.refl_coe, LocalEquiv.refl_symm, Function.comp.right_id,
-    Function.comp.left_id, modelWithCornersSelf_coe, range_id, id_eq, hasFDerivWithinAt_univ]
+  simp only [mfld_simps, hasFDerivWithinAt_univ]
   apply HasFDerivAt.add_const (hasFDerivAt_id _)
 
 lemma isIntegralCurveAt_comp_add {γ : ℝ → M} {dt : ℝ} : IsIntegralCurveAt γ v t₀ x₀ ↔
     IsIntegralCurveAt (γ ∘ (fun t => t + dt)) v (t₀ - dt) x₀ := by
-  refine ⟨fun hγ => IsIntegralCurveAt.comp_add hγ _, ?_⟩
-  intro hγ
+  refine ⟨fun hγ => IsIntegralCurveAt.comp_add hγ _, fun hγ ↦ ?_⟩
   have := hγ.comp_add (-dt)
   rw [sub_neg_eq_add, sub_add_cancel] at this
   convert this
   ext
-  simp
+  simp only [Function.comp_apply, neg_add_cancel_right]
 
 lemma IsIntegralCurveAt.comp_mul_pos {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀ x₀) {a : ℝ}
     (ha : 0 < a) : IsIntegralCurveAt (γ ∘ (fun t => t * a)) (a • v) (t₀ / a) x₀ := by
@@ -133,21 +128,14 @@ lemma IsIntegralCurveAt.comp_mul_pos {γ : ℝ → M} (hγ : IsIntegralCurveAt �
   have ht : t * a ∈ Ioo (t₀ - ε) (t₀ + ε) := by
     rw [mem_Ioo, ←div_lt_iff ha, ←lt_div_iff ha, sub_div, add_div]
     exact ht
-  have h2' := h2 (t * a) ht
   rw [Function.comp_apply, Pi.smul_apply, ←ContinuousLinearMap.smulRight_comp]
-  apply HasMFDerivAt.comp t h2'
-  refine ⟨(continuous_mul_right _).continuousAt, ?_⟩
-  simp only [writtenInExtChartAt, extChartAt, LocalHomeomorph.extend,
-    LocalHomeomorph.refl_localEquiv, LocalEquiv.refl_source,
-    LocalHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_localEquiv,
-    LocalEquiv.trans_refl, LocalEquiv.refl_coe, LocalEquiv.refl_symm, Function.comp.right_id,
-    Function.comp.left_id, modelWithCornersSelf_coe, range_id, id_eq, hasFDerivWithinAt_univ]
+  refine HasMFDerivAt.comp t (h2 (t * a) ht) ⟨(continuous_mul_right _).continuousAt, ?_⟩
+  simp only [mfld_simps, hasFDerivWithinAt_univ]
   apply HasFDerivAt.mul_const' (hasFDerivAt_id _)
 
 lemma isIntegralCurvAt_comp_mul_pos {γ : ℝ → M} {a : ℝ} (ha : 0 < a) :
     IsIntegralCurveAt γ v t₀ x₀ ↔ IsIntegralCurveAt (γ ∘ (fun t => t * a)) (a • v) (t₀ / a) x₀ := by
-  refine ⟨fun hγ => IsIntegralCurveAt.comp_mul_pos hγ ha, ?_⟩
-  intro hγ
+  refine ⟨fun hγ => IsIntegralCurveAt.comp_mul_pos hγ ha, fun hγ ↦ ?_⟩
   have := hγ.comp_mul_pos (inv_pos_of_pos ha)
   rw [smul_smul, inv_mul_eq_div, div_self (ne_of_gt ha), one_smul, ←div_mul_eq_div_div_swap,
     inv_mul_eq_div, div_self (ne_of_gt ha), div_one, Function.comp.assoc] at this
@@ -161,22 +149,15 @@ lemma IsIntegralCurveAt.comp_neg {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v 
   refine ⟨by simp [h1], ε, hε, ?_⟩
   intros t ht
   rw [←neg_add', neg_add_eq_sub, ←neg_sub, ←neg_mem_Ioo_iff] at ht
-  have h2' := h2 (-t) ht
   rw [Function.comp_apply, Pi.neg_apply, ←neg_one_smul ℝ (v (γ (-t))),
     ←ContinuousLinearMap.smulRight_comp]
-  apply HasMFDerivAt.comp t h2'
-  refine ⟨continuousAt_neg, ?_⟩
-  simp only [writtenInExtChartAt, extChartAt, LocalHomeomorph.extend,
-    LocalHomeomorph.refl_localEquiv, LocalEquiv.refl_source,
-    LocalHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_localEquiv,
-    LocalEquiv.trans_refl, LocalEquiv.refl_coe, LocalEquiv.refl_symm, Function.comp.right_id,
-    Function.comp.left_id, modelWithCornersSelf_coe, range_id, id_eq, hasFDerivWithinAt_univ]
-  apply HasDerivAt.hasFDerivAt (hasDerivAt_neg _)
+  apply (h2 (-t) ht).comp t ⟨continuousAt_neg, ?_⟩
+  simp only [mfld_simps, hasFDerivWithinAt_univ]
+  exact HasDerivAt.hasFDerivAt (hasDerivAt_neg _)
 
 lemma isIntegralCurveAt_comp_neg {γ : ℝ → M} :
     IsIntegralCurveAt γ v t₀ x₀ ↔ IsIntegralCurveAt (γ ∘ Neg.neg) (-v) (-t₀) x₀ := by
-  refine ⟨fun hγ => IsIntegralCurveAt.comp_neg hγ, ?_⟩
-  intro hγ
+  refine ⟨fun hγ => IsIntegralCurveAt.comp_neg hγ, fun hγ ↦ ?_⟩
   have := hγ.comp_neg
   rw [Function.comp.assoc, neg_comp_neg, neg_neg, neg_neg] at this
   exact this
@@ -193,8 +174,7 @@ lemma IsIntegralCurveAt.comp_mul_ne_zero {γ : ℝ → M} (hγ : IsIntegralCurve
 
 lemma isIntegralCurveAt_comp_mul_ne_zero {γ : ℝ → M} {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveAt γ v t₀ x₀ ↔ IsIntegralCurveAt (γ ∘ (fun t => t * a)) (a • v) (t₀ / a) x₀ := by
-  refine ⟨fun hγ => IsIntegralCurveAt.comp_mul_ne_zero hγ ha, ?_⟩
-  intro hγ
+  refine ⟨fun hγ => IsIntegralCurveAt.comp_mul_ne_zero hγ ha, fun hγ ↦ ?_⟩
   have := hγ.comp_mul_ne_zero (inv_ne_zero ha)
   rw [smul_smul, inv_mul_eq_div, div_self ha, one_smul, ←div_mul_eq_div_div_swap,
     inv_mul_eq_div, div_self ha, div_one, Function.comp.assoc] at this
@@ -214,14 +194,14 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
   -- use Picard-Lindelöf theorem to extract a solution to the ODE in the local chart
   obtain ⟨f, hf1, ε1, hε1, hf2⟩ :=
     exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀
-      (ContDiffAt.snd (hv.contDiffAt (range_mem_nhds_isInteriorPoint hx)))
+      (hv.contDiffAt (range_mem_nhds_isInteriorPoint hx)).snd
   rw [←Real.ball_eq_Ioo] at hf2
   -- use continuity of `f` to extract `ε2` so that for `t ∈ Real.ball t₀ ε2`,
   -- `f t ∈ interior (extChartAt I x₀).target`
   have hcont := (hf2 t₀ (Real.ball_eq_Ioo .. ▸ Metric.mem_ball_self hε1)).continuousAt
   rw [continuousAt_def, hf1] at hcont
   have hnhds : f ⁻¹' (interior (extChartAt I x₀).target) ∈ nhds t₀ :=
-    hcont _ (IsOpen.mem_nhds isOpen_interior (ModelWithCorners.isInteriorPoint_iff.mp hx))
+    hcont _ (isOpen_interior.mem_nhds (ModelWithCorners.isInteriorPoint_iff.mp hx))
   rw [Metric.mem_nhds_iff] at hnhds
   obtain ⟨ε2, hε2, hf3⟩ := hnhds
   simp_rw [subset_def, mem_preimage] at hf3
@@ -229,7 +209,7 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
   refine ⟨(extChartAt I x₀).symm ∘ f, ?_, min ε1 ε2, lt_min hε1 hε2, ?_⟩
   · apply Eq.symm
     rw [Function.comp_apply, hf1, LocalEquiv.left_inv _ (mem_extChartAt_source ..)]
-  -- xxx: indent!
+  -- xxx: indent this, as it's a new goal!
   intros t ht
   -- collect useful terms in convenient forms
   rw [←Real.ball_eq_Ioo] at ht
@@ -262,9 +242,7 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
   nth_rw 4 [←(extChartAt I x₀).right_inv hf3']
   apply hasFDerivWithinAt_tangentCoordChange
   · rw [LocalEquiv.right_inv _ hf3', LocalEquiv.trans_source, LocalEquiv.symm_source]
-    use hf3'
-    rw [mem_preimage]
-    exact mem_extChartAt_source ..
+    exact ⟨hf3', mem_extChartAt_source ..⟩
   · rw [mem_nhds_iff]
     exact ⟨interior (extChartAt I x₀).target,
       subset_trans interior_subset (extChartAt_target_subset_range ..), isOpen_interior, hf3 _ ht2⟩
