@@ -193,6 +193,29 @@ theorem Transcendental.pow {r : A} (ht : Transcendental R r) {n : ℕ} (hn : 0 <
     Transcendental R (r ^ n) := fun ht' ↦ ht <| ht'.of_pow hn
 #align transcendental.pow Transcendental.pow
 
+lemma IsAlgebraic.invOf {x : S} [Invertible x] (h : IsAlgebraic R x) : IsAlgebraic R (⅟ x) := by
+  obtain ⟨p, hp, hp'⟩ := h
+  refine ⟨p.reverse, by simpa using hp, ?_⟩
+  rwa [Polynomial.aeval_def, Polynomial.eval₂_reverse_eq_zero_iff, ← Polynomial.aeval_def]
+
+lemma IsAlgebraic.invOf_iff {x : S} [Invertible x] :
+    IsAlgebraic R (⅟ x) ↔ IsAlgebraic R x :=
+  ⟨IsAlgebraic.invOf, IsAlgebraic.invOf⟩
+
+lemma IsAlgebraic.inv {R K} [CommRing R] [Field K] [Algebra R K] {x : K} (h : IsAlgebraic R x) :
+    IsAlgebraic R (x⁻¹) := by
+  by_cases hx : x = 0
+  · simpa [hx] using h
+  letI := invertibleOfNonzero hx
+  exact h.invOf
+
+lemma IsAlgebraic.inv_iff {R K} [CommRing R] [Field K] [Algebra R K] {x : K} :
+    IsAlgebraic R (x⁻¹) ↔ IsAlgebraic R x := by
+  by_cases hx : x = 0
+  · simp [hx]
+  letI := invertibleOfNonzero hx
+  exact IsAlgebraic.invOf_iff (R := R) (x := x)
+
 end zero_ne_one
 
 section Field
