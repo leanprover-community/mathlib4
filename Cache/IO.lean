@@ -115,7 +115,7 @@ def mathlibDepPath : IO FilePath := do
         return ⟨"."⟩
       else
         throw $ IO.userError s!"Mathlib not found in dependencies"
-  | .error e => throw $ IO.userError s!"Cannot parse lake-manifest: {e}"
+  | .error e => throw $ IO.userError s!"Cannot parse lake-manifest.json: {e}"
 
 -- TODO this should be generated automatically from the information in `lakefile.lean`.
 def getPackageDirs : IO PackageDirs := do
