@@ -429,12 +429,40 @@ For two family of abelian groups `G` and `G'` indexed by the same set with direc
 def congr [IsDirected ι (· ≤ ·)] (equiv : (i : ι) → G i ≃+ G' i)
     (compatible_equiv : ∀ i j h,
       (equiv j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (equiv i).toAddMonoidHom) :
-    (DirectLimit G f) ≃+ DirectLimit G' f' :=
-  (Module.DirectLimit.congr _ _
-    (fun i ↦ { __ := equiv i
-               map_smul' := fun m x ↦ by simp })
-    fun i j h ↦ FunLike.ext _ _ fun x ↦ by
-      simpa using FunLike.congr_fun (compatible_equiv i j h) x).toAddEquiv
+    (DirectLimit G f) ≃+ DirectLimit G' f' where
+  __ := lift _ _ _ (fun i ↦ (of _ _ _).toAddMonoidHom.comp (equiv i).toAddMonoidHom)
+    fun _ _ h x ↦ by
+      have eq1 := FunLike.congr_fun (compatible_equiv _ _ h) x
+      simp only [AddMonoidHom.coe_comp, AddEquiv.coe_toAddMonoidHom, Function.comp_apply,
+        LinearMap.toAddMonoidHom_coe] at eq1 ⊢
+      rw [eq1, of_f]
+  invFun := lift _ _ _ (fun i ↦ (of _ _ _).toAddMonoidHom.comp (equiv _).symm.toAddMonoidHom)
+    fun _ _ h x ↦ by
+      have eq1 := FunLike.congr_fun (compatible_equiv _ _ h) <| (equiv _).symm x
+      simp only [AddMonoidHom.coe_comp, AddEquiv.coe_toAddMonoidHom, Function.comp_apply,
+        AddEquiv.apply_symm_apply] at eq1
+      simp only [← eq1, AddMonoidHom.coe_comp, LinearMap.toAddMonoidHom_coe,
+        AddEquiv.coe_toAddMonoidHom, Function.comp_apply, AddEquiv.symm_apply_apply, of_f]
+  left_inv x := (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
+    x.induction_on <| by aesop
+  right_inv x := (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
+    x.induction_on <| by aesop
+
+@[simp] lemma congr_apply_of [IsDirected ι (· ≤ ·)]
+    (equiv : (i : ι) → G i ≃+ G' i)
+    (compatible_equiv : ∀ i j h,
+      (equiv j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (equiv i).toAddMonoidHom)
+    {i : ι} (g : G i) :
+    congr f f' equiv compatible_equiv (of _ _ i g : DirectLimit G f) =
+    of G' f' i (equiv i g) := by simp [congr]
+
+@[simp] lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)]
+    (equiv : (i : ι) → G i ≃+ G' i)
+    (compatible_equiv : ∀ i j h,
+      (equiv j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (equiv i).toAddMonoidHom)
+    {i : ι} (g : G' i) :
+    (congr f f' equiv compatible_equiv).symm (of _ _ i g : DirectLimit G' f') =
+    of G f i ((equiv i).symm g) := by simp [congr]
 
 end DirectLimit
 
@@ -806,6 +834,23 @@ def congr [IsDirected ι (· ≤ ·)] [Nonempty ι] (equiv : (i : ι) → G i �
   left_inv x := x.induction_on fun _ _ ↦ by simp [lift_of]
   right_inv x := x.induction_on fun _ _ ↦ by simp [lift_of]
 
+variable (f : ∀ i j, i ≤ j → G i →+* G j) (f' : ∀ i j, i ≤ j → G' i →+* G' j) in
+@[simp] lemma congr_apply_of [IsDirected ι (· ≤ ·)] [Nonempty ι]
+    (equiv : (i : ι) → G i ≃+* G' i)
+    (compatible_equiv : ∀ i j h,
+      (equiv j).toRingHom.comp (f i j h) = (f' i j h).comp (equiv i).toRingHom)
+    {i : ι} (g : G i) :
+    congr f f' equiv compatible_equiv (of _ _ i g) =
+    of G' (fun _ _ _ ↦ f' _ _ _) i (equiv i g) := by simp [congr, lift_of]
+
+variable (f : ∀ i j, i ≤ j → G i →+* G j) (f' : ∀ i j, i ≤ j → G' i →+* G' j) in
+@[simp] lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)] [Nonempty ι]
+    (equiv : (i : ι) → G i ≃+* G' i)
+    (compatible_equiv : ∀ i j h,
+      (equiv j).toRingHom.comp (f i j h) = (f' i j h).comp (equiv i).toRingHom)
+    {i : ι} (g : G' i) :
+    (congr f f' equiv compatible_equiv).symm (of _ _ i g) =
+    of G (fun _ _ _ ↦ f _ _ _) i ((equiv i).symm g) := by simp [congr, lift_of]
 
 end DirectLimit
 
