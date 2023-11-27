@@ -1052,10 +1052,50 @@ instance module : Module S (M →ₛₗ[σ₁₂] M₂) where
 instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (M →ₛₗ[σ₁₂] M₂) :=
   coe_injective.noZeroSMulDivisors _ rfl coe_smul
 
-instance {S'} [Semiring S'] [Module S' M] [SMulCommClass R S' M] :
-    Module S'ᵈᵐᵃ (M →ₛₗ[σ₁₂] M₂) where
+variable {S : Type*} [Semiring S] [Module S M]
+
+instance : Module Sᵈᵐᵃ (M →+ M₂) where
+  add_smul s s' f := AddMonoidHom.ext fun m ↦ by
+    simp_rw [AddMonoidHom.add_apply, DomMulAct.smul_addMonoidHom_apply, ← map_add, ← add_smul]; rfl
+  zero_smul _ := AddMonoidHom.ext fun _ ↦ by
+    erw [DomMulAct.smul_addMonoidHom_apply, zero_smul, map_zero]; rfl
+
+instance [SMulCommClass R S M] : Module Sᵈᵐᵃ (M →ₛₗ[σ₁₂] M₂) where
   add_smul _ _ _ := ext fun _ ↦ by simp_rw [add_apply, smul_apply', ← map_add, ← add_smul]; rfl
   zero_smul _ := ext fun _ ↦ by erw [smul_apply', zero_smul, map_zero]; rfl
+
+abbrev _root_.AddMonoidHom.domModule' : Module Sᵐᵒᵖ (M →+ M₂) := inferInstanceAs (Module Sᵈᵐᵃ _)
+
+abbrev domModule' [SMulCommClass S R M] : Module Sᵐᵒᵖ (M →ₛₗ[σ₁₂] M₂) :=
+  have := SMulCommClass.symm S R M; inferInstanceAs (Module Sᵈᵐᵃ _)
+
+attribute [local instance] AddMonoidHom.domModule' domModule'
+
+@[simp] lemma _root_.AddMonoidHom.domModule_smul_apply' (s : Sᵐᵒᵖ) (f : M →+ M₂) (m : M) :
+    (s • f) m = f (s.unop • m) := rfl
+
+@[simp] lemma domModule_smul_apply' [SMulCommClass S R M] (s : Sᵐᵒᵖ) (f : M →ₛₗ[σ₁₂] M₂) (m : M) :
+    (s • f) m = f (s.unop • m) := rfl
+
+variable {S : Type*} [Semiring S] [Module Sᵐᵒᵖ M]
+
+/-- If `M` is a right `S`-module and `M₂` is an commutative monoid, then `M →+ M₂` is
+  a left `S`-module. This is not an instance because `S` may also act on `M₂`. -/
+abbrev _root_.AddMonoidHom.domModule : Module S (M →+ M₂) :=
+  Module.compHom _ (show S →+* (Sᵐᵒᵖ)ᵈᵐᵃ from (RingEquiv.opOp S).toRingHom)
+
+/-- If `M` is a `(R,S)`-bimodule, `M₂` is a `R₂`-module, and `σ₁₂` is a ring homomorphism from
+  `R` to `R₂`, then `M →ₗ[σ₁₂] M₂` is a `S`-module. -/
+abbrev domModule [SMulCommClass R Sᵐᵒᵖ M] : Module S (M →ₛₗ[σ₁₂] M₂) :=
+  Module.compHom _ (show S →+* (Sᵐᵒᵖ)ᵈᵐᵃ from (RingEquiv.opOp S).toRingHom)
+
+attribute [local instance] AddMonoidHom.domModule domModule
+
+@[simp] lemma _root_.AddMonoidHom.domModule_smul_apply (s : S) (f : M →+ M₂) (m : M) :
+    (s • f) m = f (MulOpposite.op s • m) := rfl
+
+@[simp] lemma domModule_smul_apply [SMulCommClass R Sᵐᵒᵖ M]
+    (s : S) (f : M →ₛₗ[σ₁₂] M₂) (m : M) : (s • f) m = f (MulOpposite.op s • m) := rfl
 
 end Module
 
