@@ -593,6 +593,14 @@ theorem det_smul_inv_vecMul_eq_cramer_transpose (A : Matrix n n α) (b : n → �
     Aᵀ.det_smul_inv_mulVec_eq_cramer _ (isUnit_det_transpose A h)]
 #align matrix.det_smul_inv_vec_mul_eq_cramer_transpose Matrix.det_smul_inv_vecMul_eq_cramer_transpose
 
+lemma mulVec_bijective (hA : IsUnit A.det) : Function.Bijective (mulVec A) := by
+  rw [Function.bijective_iff_has_inverse]
+  use mulVec A⁻¹
+  simp [Function.LeftInverse, Function.RightInverse, nonsing_inv_mul _ hA, mul_nonsing_inv _ hA]
+
+lemma mulVec_injective (hA : IsUnit A.det) : Function.Injective (mulVec A) :=
+  (A.mulVec_bijective hA).injective
+
 /-! ### Inverses of permutated matrices
 
 Note that the simp-normal form of `Matrix.reindex` is `Matrix.submatrix`, so we prove most of these
