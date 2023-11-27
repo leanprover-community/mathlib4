@@ -466,6 +466,12 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
             throwError Lean.MessageData.joinSep
               (m!"The given degree is '{deg}'.  However,\n" :: errors) "\n"
 
+macro "monicity" : tactic =>
+  `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree))
+
+macro "monicity!" : tactic =>
+  `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree!))
+
 end Tactic
 
 end Mathlib.Tactic.ComputeDegree

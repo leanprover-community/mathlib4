@@ -154,6 +154,9 @@ example (h : n ≤ 5) : natDegree (monomial n (5 + n : R)) ≤ 5 := by compute_d
 --  Expr.fvar
 example {f : R[X]} : natDegree f ≤ natDegree f := by compute_degree
 
+example {R} [Semiring R] [Nontrivial R] : Monic (1 * X ^ 5 + X ^ 6 * monomial 10 1 : R[X]) := by
+  monicity!
+
 end native_mathlib4_tests
 
 section tests_from_mathlib3
