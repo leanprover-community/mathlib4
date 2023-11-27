@@ -49,6 +49,9 @@ theorem IsNilpotent.mk [Zero R] [Pow R ℕ] (x : R) (n : ℕ) (e : x ^ n = 0) : 
   ⟨1, pow_one 0⟩
 #align is_nilpotent.zero IsNilpotent.zero
 
+theorem not_isNilpotent_one [MonoidWithZero R] [Nontrivial R] :
+    ¬ IsNilpotent (1 : R) := fun ⟨_, H⟩ ↦ zero_ne_one (H.symm.trans (one_pow _))
+
 theorem IsNilpotent.neg [Ring R] (h : IsNilpotent x) : IsNilpotent (-x) := by
   obtain ⟨n, hn⟩ := h
   use n
