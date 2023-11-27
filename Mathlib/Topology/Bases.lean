@@ -26,9 +26,9 @@ conditions are equivalent in this case).
 * `TopologicalSpace.IsTopologicalBasis s`: The topological space `t` has basis `s`.
 * `TopologicalSpace.SeparableSpace α`: The topological space `t` has a countable, dense subset.
 * `TopologicalSpace.IsSeparable s`: The set `s` is contained in the closure of a countable set.
-* `TopologicalSpace.FirstCountableTopology α`: A topology in which `𝓝 x` is countably generated for
+* `FirstCountableTopology α`: A topology in which `𝓝 x` is countably generated for
   every `x`.
-* `TopologicalSpace.SecondCountableTopology α`: A topology which has a topological basis which is
+* `SecondCountableTopology α`: A topology which has a topological basis which is
   countable.
 
 ## Main results
@@ -39,8 +39,8 @@ conditions are equivalent in this case).
   the union of arbitrarily-many open sets is equal to a sub-union of only countably many of these
   sets.
 * `TopologicalSpace.SecondCountableTopology.countable_cover_nhds`: Consider `f : α → Set α` with the
-  property that `f x ∈ 𝓝 x` for all `x`. Then there is some countable set `s` whose image covers the
-  space.
+  property that `f x ∈ 𝓝 x` for all `x`. Then there is some countable set `s` whose image covers
+  the space.
 
 ## Implementation Notes
 For our applications we are interested that there exists a countable basis, but we do not need the
@@ -48,7 +48,7 @@ concrete basis itself. This allows us to declare these type classes as `Prop` to
 
 ### TODO:
 
-More fine grained instances for `TopologicalSpace.FirstCountableTopology`,
+More fine grained instances for `FirstCountableTopology`,
 `TopologicalSpace.SeparableSpace`, and more.
 -/
 
@@ -303,10 +303,10 @@ variable (α)
 `TopologicalSpace.denseRange_denseSeq`.
 
 If `α` is a uniform space with countably generated uniformity filter (e.g., an `EMetricSpace`), then
-this condition is equivalent to `TopologicalSpace.SecondCountableTopology α`. In this case the
+this condition is equivalent to `SecondCountableTopology α`. In this case the
 latter should be used as a typeclass argument in theorems because Lean can automatically deduce
-`TopologicalSpace.SeparableSpace` from `TopologicalSpace.SecondCountableTopology` but it can't
-deduce `TopologicalSpace.SecondCountableTopology` from `TopologicalSpace.SeparableSpace`.
+`TopologicalSpace.SeparableSpace` from `SecondCountableTopology` but it can't
+deduce `SecondCountableTopology` from `TopologicalSpace.SeparableSpace`.
 
 Porting note: TODO: the previous paragraph describes the state of the art in Lean 3. We can have
 instance cycles in Lean 4 but we might want to postpone adding them till after the port. -/
@@ -620,10 +620,10 @@ variable (α : Type u) [t : TopologicalSpace α]
 
 /-- A first-countable space is one in which every point has a
   countable neighborhood basis. -/
-class FirstCountableTopology : Prop where
+class _root_.FirstCountableTopology : Prop where
   /-- The filter `𝓝 a` is countably generated for all points `a`. -/
   nhds_generated_countable : ∀ a : α, (𝓝 a).IsCountablyGenerated
-#align topological_space.first_countable_topology TopologicalSpace.FirstCountableTopology
+#align topological_space.first_countable_topology FirstCountableTopology
 
 attribute [instance] FirstCountableTopology.nhds_generated_countable
 
@@ -662,10 +662,10 @@ instance isCountablyGenerated_nhdsWithin (x : α) [IsCountablyGenerated (𝓝 x)
 variable (α)
 
 /-- A second-countable space is one with a countable basis. -/
-class SecondCountableTopology : Prop where
+class _root_.SecondCountableTopology : Prop where
   /-- There exists a countable set of sets that generates the topology. -/
   is_open_generated_countable : ∃ b : Set (Set α), b.Countable ∧ t = TopologicalSpace.generateFrom b
-#align topological_space.second_countable_topology TopologicalSpace.SecondCountableTopology
+#align topological_space.second_countable_topology SecondCountableTopology
 
 variable {α}
 

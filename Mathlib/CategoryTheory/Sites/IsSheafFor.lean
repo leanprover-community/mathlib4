@@ -113,6 +113,9 @@ In special cases, this condition can be simplified, see `pullbackCompatible_iff`
 
 This is referred to as a "compatible family" in Definition C2.1.2 of [Elephant], and on nlab:
 https://ncatlab.org/nlab/show/sheaf#GeneralDefinitionInComponents
+
+For a more explicit version in the case where `R` is of the form `Presieve.ofArrows`, see
+`CategoryTheory.Presieve.Arrows.Compatible`.
 -/
 def FamilyOfElements.Compatible (x : FamilyOfElements P R) : Prop :=
   ∀ ⦃Y₁ Y₂ Z⦄ (g₁ : Z ⟶ Y₁) (g₂ : Z ⟶ Y₂) ⦃f₁ : Y₁ ⟶ X⦄ ⦃f₂ : Y₂ ⟶ X⦄ (h₁ : R f₁) (h₂ : R f₂),
@@ -130,6 +133,9 @@ This is the definition for a "matching" family given in [MM92], Chapter III, Sec
 Equation (5). Viewing the type `FamilyOfElements` as the middle object of the fork in
 https://stacks.math.columbia.edu/tag/00VM, this condition expresses that `pr₀* (x) = pr₁* (x)`,
 using the notation defined there.
+
+For a more explicit version in the case where `R` is of the form `Presieve.ofArrows`, see
+`CategoryTheory.Presieve.Arrows.PullbackCompatible`.
 -/
 def FamilyOfElements.PullbackCompatible (x : FamilyOfElements P R) [R.hasPullbacks] : Prop :=
   ∀ ⦃Y₁ Y₂⦄ ⦃f₁ : Y₁ ⟶ X⦄ ⦃f₂ : Y₂ ⟶ X⦄ (h₁ : R f₁) (h₂ : R f₂),
@@ -699,5 +705,86 @@ theorem isSheafFor_subsieve (P : Cᵒᵖ ⥤ Type w) {S : Sieve X} {R : Presieve
     IsSheafFor P R :=
   isSheafFor_subsieve_aux P h (by simpa using trans (𝟙 _)) fun Y f _ => (trans f).isSeparatedFor
 #align category_theory.presieve.is_sheaf_for_subsieve CategoryTheory.Presieve.isSheafFor_subsieve
+
+section Arrows
+
+variable {B : C} {I : Type*} {X : I → C} (π : (i : I) → X i ⟶ B) (P)
+
+/--
+A more explicit version of `FamilyOfElements.Compatible` for a `Presieve.ofArrows`.
+-/
+def Arrows.Compatible (x : (i : I) → P.obj (op (X i))) : Prop :=
+  ∀ i j Z (gi : Z ⟶ X i) (gj : Z ⟶ X j), gi ≫ π i = gj ≫ π j →
+    P.map gi.op (x i) = P.map gj.op (x j)
+
+lemma FamilyOfElements.isAmalgamation_iff_ofArrows (x : FamilyOfElements P (ofArrows X π))
+    (t : P.obj (op B)) :
+    x.IsAmalgamation t ↔ ∀ (i : I), P.map (π i).op t = x _ (ofArrows.mk i) :=
+  ⟨fun h i ↦ h _ (ofArrows.mk i), fun h _ f ⟨i⟩ ↦ h i⟩
+
+namespace Arrows.Compatible
+
+variable {x : (i : I) → P.obj (op (X i))} (hx : Compatible P π x)
+variable {P π}
+
+theorem exists_familyOfElements :
+    ∃ (x' : FamilyOfElements P (ofArrows X π)), ∀ (i : I), x' _ (ofArrows.mk i) = x i := by
+  choose i h h' using @ofArrows_surj _ _ _ _ _ π
+  exact ⟨fun Y f hf ↦ P.map (eqToHom (h f hf).symm).op (x _),
+    fun j ↦ (hx _ j (X j) _ (𝟙 _) <| by rw [← h', id_comp]).trans <| by simp⟩
+
+/--
+A `FamilyOfElements` associated to an explicit family of elements.
+-/
+noncomputable
+def familyOfElements : FamilyOfElements P (ofArrows X π) :=
+  (exists_familyOfElements hx).choose
+
+@[simp]
+theorem familyOfElements_ofArrows_mk (i : I) :
+    hx.familyOfElements _ (ofArrows.mk i) = x i :=
+  (exists_familyOfElements hx).choose_spec _
+
+theorem familyOfElements_compatible : hx.familyOfElements.Compatible := by
+  rintro Y₁ Y₂ Z g₁ g₂ f₁ f₂ ⟨i⟩ ⟨j⟩ hgf
+  simp [hx i j Z g₁ g₂ hgf]
+
+end Arrows.Compatible
+
+theorem isSheafFor_arrows_iff : (ofArrows X π).IsSheafFor P ↔
+    (∀ (x : (i : I) → P.obj (op (X i))), Arrows.Compatible P π x →
+    ∃! t, ∀ i, P.map (π i).op t = x i) := by
+  refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
+  · obtain ⟨t, ht₁, ht₂⟩ := h _ hx.familyOfElements_compatible
+    refine ⟨t, fun i ↦ ?_, fun t' ht' ↦ ht₂ _ fun _ _ ⟨i⟩ ↦ ?_⟩
+    · rw [ht₁ _ (ofArrows.mk i), hx.familyOfElements_ofArrows_mk]
+    · rw [ht', hx.familyOfElements_ofArrows_mk]
+  · obtain ⟨t, hA, ht⟩ := h (fun i ↦ x (π i) (ofArrows.mk _))
+      (fun i j Z gi gj ↦ hx gi gj (ofArrows.mk _) (ofArrows.mk _))
+    exact ⟨t, fun Y f ⟨i⟩ ↦ hA i, fun y hy ↦ ht y (fun i ↦ hy (π i) (ofArrows.mk _))⟩
+
+variable [(ofArrows X π).hasPullbacks]
+
+/--
+A more explicit version of `FamilyOfElements.PullbackCompatible` for a `Presieve.ofArrows`.
+-/
+def Arrows.PullbackCompatible (x : (i : I) → P.obj (op (X i))) : Prop :=
+  ∀ i j, P.map (pullback.fst (f := π i) (g := π j)).op (x i) =
+    P.map (pullback.snd (f := π i) (g := π j)).op (x j)
+
+theorem Arrows.pullbackCompatible_iff (x : (i : I) → P.obj (op (X i))) :
+    Compatible P π x ↔ PullbackCompatible P π x := by
+  refine ⟨fun t i j ↦ ?_, fun t i j Z gi gj comm ↦ ?_⟩
+  · apply t
+    exact pullback.condition
+  · rw [← pullback.lift_fst _ _ comm, op_comp, FunctorToTypes.map_comp_apply, t i j,
+      ← FunctorToTypes.map_comp_apply, ← op_comp, pullback.lift_snd]
+
+theorem isSheafFor_arrows_iff_pullbacks : (ofArrows X π).IsSheafFor P ↔
+    (∀ (x : (i : I) → P.obj (op (X i))), Arrows.PullbackCompatible P π x →
+    ∃! t, ∀ i, P.map (π i).op t = x i) := by
+  simp_rw [← Arrows.pullbackCompatible_iff, isSheafFor_arrows_iff]
+
+end Arrows
 
 end Presieve

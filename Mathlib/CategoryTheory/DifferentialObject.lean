@@ -200,8 +200,8 @@ def mapDifferentialObject (F : C ⥤ D)
         slice_lhs 2 3 => rw [← Functor.comp_map F (shiftFunctor D (1 : S)), ← η.naturality f.f]
         slice_lhs 1 2 => rw [Functor.comp_map, ← F.map_comp, f.comm, F.map_comp]
         rw [Category.assoc] }
-  map_id := by intros; ext; simp
-  map_comp := by intros; ext; simp
+  map_id := by intros; ext; simp [autoParam]
+  map_comp := by intros; ext; simp [autoParam]
 #align category_theory.functor.map_differential_object CategoryTheory.Functor.mapDifferentialObject
 
 end Functor
@@ -219,12 +219,10 @@ variable [(shiftFunctor C (1 : S)).PreservesZeroMorphisms]
 
 open scoped ZeroObject
 
-instance hasZeroObject : HasZeroObject (DifferentialObject S C) := by
-  -- Porting note(https://github.com/leanprover-community/mathlib4/issues/4998): added `aesop_cat`
-  -- Porting note: added `simp only [eq_iff_true_of_subsingleton]`
-  refine' ⟨⟨⟨0, 0, by aesop_cat⟩, fun X => ⟨⟨⟨⟨0, by aesop_cat⟩⟩, fun f => _⟩⟩,
-    fun X => ⟨⟨⟨⟨0, by aesop_cat⟩⟩, fun f => _⟩⟩⟩⟩ <;> ext <;>
-    simp only [eq_iff_true_of_subsingleton]
+instance hasZeroObject : HasZeroObject (DifferentialObject S C) where
+  zero := ⟨{ obj := 0, d := 0 },
+    { unique_to := fun X => ⟨⟨⟨{ f := 0 }⟩, fun f => by ext⟩⟩,
+      unique_from := fun X => ⟨⟨⟨{ f := 0 }⟩, fun f => by ext⟩⟩ }⟩
 #align category_theory.differential_object.has_zero_object CategoryTheory.DifferentialObject.hasZeroObject
 
 end DifferentialObject
