@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Sites.ObjectsCoverTop
 import Mathlib.CategoryTheory.Sites.SheafHom
+import Mathlib.CategoryTheory.Sites.InducedTopology
 
 /-! Descent of sheaves
 
@@ -211,6 +212,7 @@ lemma isCompatible_toFamilyOfElementsOnObjects {F G : Sheaf J A}
 end Hom
 
 end SheafToDescentData
+
 noncomputable instance : Full (hY.sheafToDescentData A) where
   preimage {F G} φ := (sheafHomSectionsEquiv _ _)
     ((SheafToDescentData.Hom.isCompatible_toFamilyOfElementsOnObjects φ).section_
@@ -218,6 +220,66 @@ noncomputable instance : Full (hY.sheafToDescentData A) where
   witness φ := by
     ext1 i
     simp
+
+/-- Given `Y : I → C` (which cover the final object for a certain Grothendieck topology `J`),
+this is the full subcategory of `C` consisting of objects `X` such that there is a
+morphism `f : X ⟶ Y i` for some `i : I`. The fact that `i` and `f` are data will ease the
+gluing process. -/
+structure OverSome (hY : J.ObjectsCoverTop Y) where
+  /-- an object of the original category -/
+  X : C
+  /-- an index -/
+  i : I
+  /-- a morphism to one of the objects of the given family -/
+  f : X ⟶ Y i
+
+instance : Category hY.OverSome := InducedCategory.category OverSome.X
+
+variable (hY)
+
+/-- The obvious fully faithful functor `hY.OverSome ⥤ C`. -/
+@[simps!]
+def overSomeForget : hY.OverSome ⥤ C := inducedFunctor _
+
+instance : Full hY.overSomeForget := InducedCategory.full _
+instance : Faithful hY.overSomeForget := InducedCategory.faithful _
+
+instance : Functor.IsCoverDense hY.overSomeForget J where
+  is_cover X := by
+    refine' J.superset_covering _ (hY X)
+    rintro W f ⟨i, ⟨g⟩⟩
+    exact
+     ⟨{ obj := ⟨W, i, g⟩
+        lift := 𝟙 _
+        map := f }⟩
+
+/-- The induced Grothendieck topology on `hY.overSome`. -/
+abbrev overSomeTopology : GrothendieckTopology hY.OverSome :=
+  Functor.inducedTopologyOfIsCoverDense hY.overSomeForget J
+
+/- TODO: a presheaf on `hY.OverSome` is a sheaf iff the restriction to `Over (Y i)`
+is for all `i`. -/
+
+namespace SheafDescentData
+
+variable {hY A}
+
+/-def toPresheafOverSome (F : hY.SheafDescentData A) : hY.OverSomeᵒᵖ ⥤ A where
+  obj W := (F.sheaf W.unop.i).1.obj (Opposite.op (Over.mk W.unop.f))
+  map {W₁ W₂} φ := (F.sheaf W₁.unop.i).val.map (Quiver.Hom.op (by exact Over.homMk φ.unop)) ≫
+      (F.iso W₂.unop.f (φ.unop ≫ W₁.unop.f)).inv.1.app (Opposite.op (Over.mk (𝟙 _))) ≫
+      (F.sheaf W₂.unop.i).val.map (Quiver.Hom.op (Over.homMk (𝟙 _)))
+  map_id := by
+    rintro ⟨W, i, f⟩
+    dsimp
+    sorry
+  map_comp := by
+    rintro ⟨W₁, i₁, f₁⟩ ⟨W₂, i₂, f₂⟩ ⟨W₃, i₃, f₃⟩ ⟨φ : W₂ ⟶ W₁⟩ ⟨ψ : W₃ ⟶ W₂⟩
+    dsimp
+    sorry-/
+
+end SheafDescentData
+
 
 end ObjectsCoverTop
 
