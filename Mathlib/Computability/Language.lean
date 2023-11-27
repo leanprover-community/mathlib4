@@ -300,20 +300,26 @@ instance : KleeneAlgebra (Language α) :=
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
 def reverse (l : Language α) : Language α := { w : List α | w.reverse ∈ l }
 
+lemma mem_reverse : a ∈ l.reverse ↔ a.reverse ∈ l := by
+  rfl
+
 @[simp]
 lemma reverse_mem_reverse : a.reverse ∈ l.reverse ↔ a ∈ l := by
   show a.reverse.reverse ∈ l ↔ a ∈ l
   rw [List.reverse_reverse]
 
+@[simp]
 lemma reverse_zero : (0 : Language α).reverse = 0 := by
   rfl
 
+@[simp]
 lemma reverse_one : (1 : Language α).reverse = 1 := by
   simp [reverse, ← one_def]
 
+@[simp]
 lemma reverse_reverse : l.reverse.reverse = l := by
   ext w
-  convert_to w.reverse.reverse ∈ reverse (reverse l) ↔ w ∈ l using 5
+  convert_to w.reverse.reverse ∈ l.reverse.reverse ↔ w ∈ l using 5
   · rw [List.reverse_reverse]
   rw [reverse_mem_reverse, reverse_mem_reverse]
 
@@ -344,14 +350,14 @@ lemma reverse_kstar : l∗.reverse = l.reverse∗ := by
     · rw [List.reverse_eq_iff] at hwL
       simp [hwL, List.join_reverse, List.map_map, reverse_involutive]
     · intros
-      simp_all [mem_reverse, mem_map, reverse_involutive,
+      simp_all [List.mem_reverse, mem_map, reverse_involutive,
         Function.Involutive.exists_mem_and_apply_eq_iff]
   · rintro ⟨L, hwL, hLl⟩
     use (L.map List.reverse).reverse
     constructor
     · simp [List.join_reverse, List.map_map, hwL, reverse_involutive]
     · intro y hy
-      simp only [mem_reverse, mem_map, reverse_involutive,
+      simp only [List.mem_reverse, mem_map, reverse_involutive,
         Function.Involutive.exists_mem_and_apply_eq_iff] at hy
       specialize hLl y.reverse hy
       rwa [List.reverse_reverse] at hLl
