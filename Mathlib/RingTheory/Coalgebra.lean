@@ -30,20 +30,24 @@ class Coalgebra (R : Type u) (A : Type v) [CommRing R] [AddCommGroup A] [Module 
 
 namespace Coalgebra
 
+section CommRingAddCommGroup
+
+variable {R : Type u} {A : Type v}
+variable [CommRing R] [AddCommGroup A] [Module R A] [C : Coalgebra R A]
+
 @[simp]
-theorem coassoc_apply {R : Type u} {A : Type v} [CommRing R] [AddCommGroup A] [Module R A]
-    [C : Coalgebra R A] (a : A) : TensorProduct.assoc R A A A (TensorProduct.map C.Δ .id (C.Δ a)) =
+theorem coassoc_apply (a : A) : TensorProduct.assoc R A A A (TensorProduct.map C.Δ .id (C.Δ a)) =
     TensorProduct.map .id C.Δ (C.Δ a) := LinearMap.congr_fun C.coassoc a
 
 @[simp]
-theorem ε_id_apply {R : Type u} {A : Type v} [CommRing R] [AddCommGroup A] [Module R A]
-    [C : Coalgebra R A] (a : A) : TensorProduct.lid R A (TensorProduct.map C.ε .id (C.Δ a)) = a :=
+theorem ε_id_apply (a : A) : TensorProduct.lid R A (TensorProduct.map C.ε .id (C.Δ a)) = a :=
     LinearMap.congr_fun C.ε_id a
 
 @[simp]
-theorem id_ε_apply {R : Type u} {A : Type v} [CommRing R] [AddCommGroup A] [Module R A]
-    [C : Coalgebra R A] (a : A) : TensorProduct.rid R A (TensorProduct.map .id C.ε (C.Δ a)) = a :=
+theorem id_ε_apply (a : A) : TensorProduct.rid R A (TensorProduct.map .id C.ε (C.Δ a)) = a :=
     LinearMap.congr_fun C.id_ε a
+
+end CommRingAddCommGroup
 
 end Coalgebra
 
