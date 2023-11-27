@@ -237,7 +237,7 @@ theorem diag_eq_of_commute_stdBasisMatrix {i j : n} {M : Matrix n n α}
 
 /-- `M` is a scalar matrix if it commutes with every non-diagonal `stdBasisMatrix`. ​-/
 theorem mem_range_scalar_of_commute_stdBasisMatrix {M : Matrix n n α}
-    (hM : ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M):
+    (hM : ∀ (i j : n), i ≠ j → Commute (stdBasisMatrix i j 1) M) :
     M ∈ Set.range (Matrix.scalar n) := by
   cases isEmpty_or_nonempty n
   · exact ⟨0, Subsingleton.elim _ _⟩
