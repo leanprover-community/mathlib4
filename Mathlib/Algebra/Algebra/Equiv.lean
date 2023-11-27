@@ -59,9 +59,7 @@ namespace AlgEquivClass
 instance (priority := 100) toAlgHomClass (F R A B : Type*) [CommSemiring R] [Semiring A]
     [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B] [h : AlgEquivClass F R A B] :
     AlgHomClass F R A B :=
-  { h with
-    map_zero := map_zero
-    map_one := map_one }
+  { h with }
 #align alg_equiv_class.to_alg_hom_class AlgEquivClass.toAlgHomClass
 
 instance (priority := 100) toLinearEquivClass (F R A B : Type*) [CommSemiring R]

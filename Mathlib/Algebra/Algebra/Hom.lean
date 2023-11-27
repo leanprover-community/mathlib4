@@ -48,9 +48,9 @@ notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 
 /-- `AlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`.  -/
-class AlgHomClass (F : Type*) (R : outParam (Type*)) (A : outParam (Type*))
-  (B : outParam (Type*)) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
-  [Algebra R B] [NDFunLike F A B] extends RingHomClass F A B : Prop where
+class AlgHomClass (F : Type*) (R A B : outParam Type*)
+  {_ : outParam <| CommSemiring R} {_ : outParam <| Semiring A} {_ : outParam <| Semiring B}
+  [Algebra R A] [Algebra R B] [NDFunLike F A B] extends RingHomClass F A B : Prop where
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 #align alg_hom_class AlgHomClass
 

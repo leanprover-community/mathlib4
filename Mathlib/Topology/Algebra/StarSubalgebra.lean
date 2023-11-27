@@ -253,7 +253,7 @@ theorem closedEmbedding_coe (x : A) : ClosedEmbedding ((↑) : elementalStarAlge
 #align elemental_star_algebra.closed_embedding_coe elementalStarAlgebra.closedEmbedding_coe
 
 theorem starAlgHomClass_ext [T2Space B] {F : Type*} {a : A}
-    [NDFunLike F (elementalStarAlgebra R a) B] [StarAlgHomClass F R (elementalStarAlgebra R a) B]
+    [NDFunLike F (elementalStarAlgebra R a) B] [StarAlgHomClass F R _ B]
     {φ ψ : F} (hφ : Continuous φ)
     (hψ : Continuous ψ) (h : φ ⟨a, self_mem R a⟩ = ψ ⟨a, self_mem R a⟩) : φ = ψ := by
   -- Note: help with unfolding `elementalStarAlgebra`

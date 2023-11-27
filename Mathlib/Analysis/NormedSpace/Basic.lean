@@ -540,7 +540,7 @@ def NormedAlgebra.induced {F : Type*} (α β γ : Type*) [NormedField α] [Ring 
 -- Porting note: failed to synth NonunitalAlgHomClass
 instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
-  @NormedAlgebra.induced _ 𝕜 S A _ (SubringClass.toRing S) _ _ _ _ _ S.val
+  NormedAlgebra.induced 𝕜 S A S.val
 #align subalgebra.to_normed_algebra Subalgebra.toNormedAlgebra
 
 section RestrictScalars

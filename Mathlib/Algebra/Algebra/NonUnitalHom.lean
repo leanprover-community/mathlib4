@@ -66,8 +66,9 @@ attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 
 /-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`.  -/
-class NonUnitalAlgHomClass (F : Type*) (R : outParam (Type*)) (A B : Type*)
-  [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
+class NonUnitalAlgHomClass (F : Type*) (R A B : outParam Type*)
+  {_ : outParam <| Monoid R} {_ : outParam <| NonUnitalNonAssocSemiring A}
+  {_ : outParam <| NonUnitalNonAssocSemiring B}
   [DistribMulAction R A] [DistribMulAction R B] [NDFunLike F A B]
   extends DistribMulActionHomClass F R A B, MulHomClass F A B : Prop
 #align non_unital_alg_hom_class NonUnitalAlgHomClass
@@ -80,8 +81,8 @@ namespace NonUnitalAlgHomClass
 -- Porting note: Made following instance non-dangerous through [...] -> [...] replacement
 -- See note [lower instance priority]
 instance (priority := 100) toNonUnitalRingHomClass {F R A B : Type*}
-    [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-    [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [NDFunLike F A B]
+    {_ : Monoid R} {_ : NonUnitalNonAssocSemiring A} [DistribMulAction R A]
+    {_ : NonUnitalNonAssocSemiring B} [DistribMulAction R B] [NDFunLike F A B]
     [NonUnitalAlgHomClass F R A B] : NonUnitalRingHomClass F A B :=
   { ‹NonUnitalAlgHomClass F R A B› with }
 #align non_unital_alg_hom_class.non_unital_alg_hom_class.to_non_unital_ring_hom_class NonUnitalAlgHomClass.toNonUnitalRingHomClass
@@ -90,7 +91,10 @@ variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
   [NonUnitalNonAssocSemiring B] [Module R B]
 
 -- see Note [lower instance priority]
-instance (priority := 100) {F : Type*} [NDFunLike F A B] [NonUnitalAlgHomClass F R A B] :
+instance (priority := 100) {F R A B : Type*}
+    {_ : Semiring R} {_ : NonUnitalSemiring A} {_ : NonUnitalSemiring B}
+    [Module R A] [Module R B]
+    [NDFunLike F A B] [NonUnitalAlgHomClass F R A B] :
     LinearMapClass F R A B :=
   { ‹NonUnitalAlgHomClass F R A B› with map_smulₛₗ := map_smul }
 
@@ -158,10 +162,10 @@ instance : NDFunLike (A →ₙₐ[R] B) A B
 
 instance : NonUnitalAlgHomClass (A →ₙₐ[R] B) R A B
     where
-  map_smul f := f.map_smul'
   map_add f := f.map_add'
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
+  map_smul f := f.map_smul'
 
 @[ext]
 theorem ext {f g : A →ₙₐ[R] B} (h : ∀ x, f x = g x) : f = g :=

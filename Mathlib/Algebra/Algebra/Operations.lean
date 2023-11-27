@@ -94,7 +94,7 @@ theorem le_one_toAddSubmonoid : 1 ≤ (1 : Submodule R A).toAddSubmonoid := by
 #align submodule.le_one_to_add_submonoid Submodule.le_one_toAddSubmonoid
 
 theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : Submodule R A) :=
-  LinearMap.mem_range_self _ _
+  LinearMap.mem_range_self (Algebra.linearMap R A) _
 #align submodule.algebra_map_mem Submodule.algebraMap_mem
 
 @[simp]

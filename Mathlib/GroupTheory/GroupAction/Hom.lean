@@ -75,7 +75,7 @@ notation:25 (name := «MulActionHomLocal≺») X " →[" M:25 "] " Y:0 => MulAct
 scalar multiplication by `M`.
 
 You should extend this class when you extend `MulActionHom`. -/
-class SMulHomClass (F : Type*) (M : outParam <| Type*) (X Y : Type*) [SMul M X] [SMul M Y]
+class SMulHomClass (F : Type*) (M X Y : outParam <| Type*) [SMul M X] [SMul M Y]
     [NDFunLike F X Y] : Prop where
   /-- The proposition that the function preserves the action. -/
   map_smul : ∀ (f : F) (c : M) (x : X), f (c • x) = c • f x
@@ -221,14 +221,15 @@ notation:25 (name := «DistribMulActionHomLocal≺»)
 the additive monoid structure and scalar multiplication by `M`.
 
 You should extend this class when you extend `DistribMulActionHom`. -/
-class DistribMulActionHomClass (F : Type*) (M : outParam <| Type*) (A B : Type*)
-  [Monoid M] [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B]
+class DistribMulActionHomClass (F : Type*) (M A B : outParam <| Type*)
+  -- These instances are found when the `AddMonoidHomClass` argument is filled,
+  -- so we make them implicit `outParam`s instead of instance parameters (between `[]`)
+  -- to avoid double work.
+  {_ : outParam <| Monoid M} {_ : outParam <| AddMonoid A} {_ : outParam <| AddMonoid B}
+  [DistribMulAction M A] [DistribMulAction M B]
   [NDFunLike F A B]
   extends SMulHomClass F M A B, AddMonoidHomClass F A B : Prop
 #align distrib_mul_action_hom_class DistribMulActionHomClass
-
-/- porting note: Removed a @[nolint dangerousInstance] for
-DistribMulActionHomClass.toAddMonoidHomClass not dangerous due to `outParam`s -/
 
 namespace DistribMulActionHom
 
@@ -253,9 +254,9 @@ instance : NDFunLike (A →+[M] B) A B where
     cases tF; cases tG; congr
 
 instance : DistribMulActionHomClass (A →+[M] B) M A B where
-  map_smul m := m.map_smul'
   map_zero := DistribMulActionHom.map_zero'
   map_add := DistribMulActionHom.map_add'
+  map_smul m := m.map_smul'
 
 initialize_simps_projections DistribMulActionHom (toFun → apply)
 
@@ -272,7 +273,8 @@ def _root_.DistribMulActionHomClass.toDistribMulActionHom [NDFunLike F A B]
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
   `SMulHomClass.toMulActionHom`. -/
-instance [NDFunLike F A B] [DistribMulActionHomClass F M A B] : CoeTC F (A →+[M] B) :=
+instance [NDFunLike F A B] [DistribMulActionHomClass F M A B] :
+    CoeTC F (A →+[M] B) :=
   ⟨DistribMulActionHomClass.toDistribMulActionHom⟩
 
 @[simp]
@@ -453,8 +455,9 @@ notation:25 (name := «MulSemiringActionHomLocal≺»)
 the ring structure and scalar multiplication by `M`.
 
 You should extend this class when you extend `MulSemiringActionHom`. -/
-class MulSemiringActionHomClass (F : Type*) (M : outParam <| Type*) (R S : Type*)
-  [Monoid M] [Semiring R] [Semiring S] [DistribMulAction M R] [DistribMulAction M S]
+class MulSemiringActionHomClass (F : Type*) (M R S : outParam <| Type*)
+  {_ : outParam <| Monoid M} {_ : outParam <| Semiring R} {_ : outParam <| Semiring S}
+  [DistribMulAction M R] [DistribMulAction M S]
   [NDFunLike F R S]
   extends DistribMulActionHomClass F M R S, RingHomClass F R S : Prop
 #align mul_semiring_action_hom_class MulSemiringActionHomClass
@@ -489,11 +492,11 @@ instance : NDFunLike (R →+*[M] S) R S where
     cases tF; cases tG; congr
 
 instance : MulSemiringActionHomClass (R →+*[M] S) M R S where
-  map_smul m := m.map_smul'
   map_zero m := m.map_zero'
   map_add m := m.map_add'
   map_one := MulSemiringActionHom.map_one'
   map_mul := MulSemiringActionHom.map_mul'
+  map_smul m := m.map_smul'
 
 initialize_simps_projections MulSemiringActionHom (toFun → apply)
 
@@ -512,7 +515,8 @@ def _root_.MulSemiringActionHomClass.toMulSemiringActionHom [NDFunLike F R S]
 
 /-- Any type satisfying `MulSemiringActionHomClass` can be cast into `MulSemiringActionHom` via
   `MulSemiringActionHomClass.toMulSemiringActionHom`. -/
-instance [NDFunLike F R S] [MulSemiringActionHomClass F M R S] : CoeTC F (R →+*[M] S) :=
+instance [NDFunLike F R S] [MulSemiringActionHomClass F M R S] :
+    CoeTC F (R →+*[M] S) :=
   ⟨MulSemiringActionHomClass.toMulSemiringActionHom⟩
 
 @[norm_cast]

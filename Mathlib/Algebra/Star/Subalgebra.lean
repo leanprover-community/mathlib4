@@ -759,8 +759,8 @@ theorem map_adjoin [StarModule R B] (f : A →⋆ₐ[R] B) (s : Set A) :
     StarSubalgebra.gc fun _ => rfl
 #align star_alg_hom.map_adjoin StarAlgHom.map_adjoin
 
-theorem ext_adjoin {s : Set A} [NDFunLike F (adjoin R s) B] [StarAlgHomClass F R (adjoin R s) B]
-    {f g : F}
+theorem ext_adjoin {s : Set A} [NDFunLike F (adjoin R s) B]
+    [StarAlgHomClass F R (adjoin R s) B] {f g : F}
     (h : ∀ x : adjoin R s, (x : A) ∈ s → f x = g x) : f = g := by
   refine' FunLike.ext f g fun a =>
     adjoin_induction' (p := fun y => f y = g y) a (fun x hx => _) (fun r => _)
@@ -772,8 +772,8 @@ theorem ext_adjoin {s : Set A} [NDFunLike F (adjoin R s) B] [StarAlgHomClass F R
   · simp only [map_star, hx]
 #align star_alg_hom.ext_adjoin StarAlgHom.ext_adjoin
 
-theorem ext_adjoin_singleton {a : A} [NDFunLike F (adjoin R ({a} : Set A)) B]
-    [StarAlgHomClass F R (adjoin R ({a} : Set A)) B] {f g : F}
+theorem ext_adjoin_singleton {a : A} [NDFunLike F (adjoin R ({a} : Set A)) B] [StarHomClass F _ B]
+    [RingHomClass F _ B] [StarAlgHomClass F R (adjoin R ({a} : Set A)) B] {f g : F}
     (h : f ⟨a, self_mem_adjoin_singleton R a⟩ = g ⟨a, self_mem_adjoin_singleton R a⟩) : f = g :=
   ext_adjoin fun x hx =>
     (show x = ⟨a, self_mem_adjoin_singleton R a⟩ from

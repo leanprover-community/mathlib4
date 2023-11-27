@@ -1372,7 +1372,7 @@ def map (I : Ideal R) : Ideal S :=
 def comap (I : Ideal S) : Ideal R where
   carrier := f ⁻¹' I
   add_mem' {x y} hx hy := by
-    simp only [Set.mem_preimage, SetLike.mem_coe, map_add] at hx hy ⊢
+    simp only [Set.mem_preimage, SetLike.mem_coe, map_add f] at hx hy ⊢
     exact add_mem hx hy
   zero_mem' := by simp only [Set.mem_preimage, map_zero, SetLike.mem_coe, Submodule.zero_mem]
   smul_mem' c x hx := by
