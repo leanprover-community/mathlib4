@@ -158,8 +158,8 @@ lemma uniformCdfReal_eq_fromInf {a b : ℝ} (x : ℝ) (h : a ⊓ b ≤ x) (hab :
     ENNReal.toReal (∫⁻ x' in Icc (a ⊓ b) x, uniformPdf a b x') := by
   simp [uniformCdf_eq_lintegral hab, lintegral_split_bounded _ h]
 
-lemma uniformCdfReal_eq_toSup {a b : ℝ} (x : ℝ) (h : a ⊔ b ≤ x) (hab : a ≠ b) : uniformCdfReal a b x =
-    ENNReal.toReal (∫⁻ x' in Icc (a ⊓ b) (a ⊔ b), uniformPdf a b x') := by
+lemma uniformCdfReal_eq_toSup {a b : ℝ} (x : ℝ) (h : a ⊔ b ≤ x) (hab : a ≠ b) :
+    uniformCdfReal a b x = ENNReal.toReal (∫⁻ x' in Icc (a ⊓ b) (a ⊔ b), uniformPdf a b x') := by
   rw [uniformCdfReal_eq_fromInf _ (le_trans inf_le_sup h) hab, ← Icc_union_Ioc_eq_Icc inf_le_sup h,
       lintegral_union measurableSet_Ioc]
   have : ∫⁻ y in Ioc (a ⊔ b) x, uniformPdf a b y = 0 := by
