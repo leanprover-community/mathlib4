@@ -50,7 +50,7 @@ structure Profinite where
   /-- The underlying compact Hausdorff space of a profinite space. -/
   toCompHaus : CompHaus
   /-- A profinite space is totally disconnected. -/
-  [IsTotallyDisconnected : TotallyDisconnectedSpace toCompHaus]
+  [isTotallyDisconnected : TotallyDisconnectedSpace toCompHaus]
 #align Profinite Profinite
 
 namespace Profinite
@@ -88,7 +88,7 @@ lemma forget_ContinuousMap_mk {X Y : Profinite} (f : X → Y) (hf : Continuous f
   rfl
 
 instance {X : Profinite} : TotallyDisconnectedSpace X :=
-  X.IsTotallyDisconnected
+  X.isTotallyDisconnected
 
 -- We check that we automatically infer that Profinite sets are compact and Hausdorff.
 example {X : Profinite} : CompactSpace X :=
@@ -151,7 +151,7 @@ show Faithful <| inducedFunctor _ from inferInstance
 
 -- Porting note: added, as it is not found otherwise.
 instance {X : Profinite} : TotallyDisconnectedSpace (profiniteToCompHaus.obj X) :=
-  X.IsTotallyDisconnected
+  X.isTotallyDisconnected
 
 /-- The fully faithful embedding of `Profinite` in `TopCat`.
 This is definitionally the same as the obvious composite. -/
@@ -188,7 +188,7 @@ def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
     { toTop := TopCat.of (ConnectedComponents X)
       is_compact := Quotient.compactSpace
       is_hausdorff := ConnectedComponents.t2 }
-  IsTotallyDisconnected := ConnectedComponents.totallyDisconnectedSpace
+  isTotallyDisconnected := ConnectedComponents.totallyDisconnectedSpace
 #align CompHaus.to_Profinite_obj CompHaus.toProfiniteObj
 
 /-- (Implementation) The bijection of homsets to establish the reflective adjunction of Profinite
@@ -251,7 +251,7 @@ namespace Profinite
 def limitCone {J : Type u} [SmallCategory J] (F : J ⥤ Profinite.{u}) : Limits.Cone F where
   pt :=
     { toCompHaus := (CompHaus.limitCone.{u, u} (F ⋙ profiniteToCompHaus)).pt
-      IsTotallyDisconnected := by
+      isTotallyDisconnected := by
         change TotallyDisconnectedSpace ({ u : ∀ j : J, F.obj j | _ } : Type _)
         exact Subtype.totallyDisconnectedSpace }
   π :=
