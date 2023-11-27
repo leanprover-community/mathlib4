@@ -44,6 +44,9 @@ abbrev IsFractionRing [CommRing K] [Algebra R K] :=
   IsLocalization (nonZeroDivisors R) K
 #align is_fraction_ring IsFractionRing
 
+instance {R : Type*} [Field R] : IsFractionRing R R :=
+  IsLocalization.at_units _ (fun s ↦ isUnit_of_mem_nonZeroDivisors s.prop)
+
 /-- The cast from `Int` to `Rat` as a `FractionRing`. -/
 instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
   map_units' := by
@@ -334,5 +337,14 @@ instance [Algebra R A] [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R (Fraction
   rw [IsScalarTower.algebraMap_eq R A]
   apply Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective A (FractionRing A))
     (NoZeroSMulDivisors.algebraMap_injective R A)
+
+noncomputable
+instance {A B} [CommRing A] [CommRing B] [Algebra A B] [IsDomain A] [IsDomain B]
+    [NoZeroSMulDivisors A B] : Algebra (FractionRing A) (FractionRing B) :=
+  FractionRing.liftAlgebra A _
+
+instance {A B} [CommRing A] [CommRing B] [Algebra A B] [IsDomain A] [IsDomain B]
+    [NoZeroSMulDivisors A B] : IsScalarTower A (FractionRing A) (FractionRing B) :=
+  FractionRing.isScalarTower_liftAlgebra _ _
 
 end FractionRing
