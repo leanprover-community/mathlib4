@@ -421,6 +421,11 @@ lemma lift_injective [IsDirected ι (· ≤ ·)]
   rw [injective _ g hz, _root_.map_zero]
 
 variable {G'} (f) in
+/--
+For two family of abelian groups `G` and `G'` indexed by the same set with direct system `f` and
+`f'` respectively, if there is a compatible family of group-equivalence `eᵢ : Gᵢ ≅ Gᵢ'`, i.e. for
+`i ≤ j`, we have `eᵢ ∘ fᵢⱼ = fᵢⱼ' ∘ eⱼ`, there is a group equivalence `lim G ≅ lim G'`.
+-/
 def congr [IsDirected ι (· ≤ ·)] (equiv : (i : ι) → G i ≃+ G' i)
     (compatible_equiv : ∀ i j h,
       (equiv j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (equiv i).toAddMonoidHom) :
@@ -437,7 +442,7 @@ end AddCommGroup
 
 namespace Ring
 
-variable [∀ i, CommRing (G i)]
+variable [∀ i, CommRing (G i)] [∀ i, CommRing (G' i)]
 
 section
 
@@ -773,6 +778,34 @@ lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
   induction' z using DirectLimit.induction_on with _ g
   rw [lift_of] at hz
   rw [injective _ g hz, _root_.map_zero]
+
+
+variable (f : ∀ i j, i ≤ j → G i →+* G j) (f' : ∀ i j, i ≤ j → G' i →+* G' j) in
+variable {G'} in
+/--
+For two family of abelian groups `G` and `G'` indexed by the same set with direct system `f` and
+`f'` respectively, if there is a compatible family of group-equivalence `eᵢ : Gᵢ ≅ Gᵢ'`, i.e. for
+`i ≤ j`, we have `eᵢ ∘ fᵢⱼ = fᵢⱼ' ∘ eⱼ`, there is a group equivalence `lim G ≅ lim G'`.
+-/
+def congr [IsDirected ι (· ≤ ·)] [Nonempty ι] (equiv : (i : ι) → G i ≃+* G' i)
+    (compatible_equiv : ∀ i j h,
+      (equiv j).toRingHom.comp (f i j h) = (f' i j h).comp (equiv i).toRingHom) :
+    (DirectLimit G fun _ _ h ↦ f _ _ h) ≃+* DirectLimit G' fun _ _ h ↦ f' _ _ h where
+  __ := lift G _ _ (fun i ↦ (of G' _ i).comp (equiv i).toRingHom)
+    fun i j h g ↦ by
+      have eq1 := FunLike.congr_fun (compatible_equiv i j h) g
+      simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
+        Function.comp_apply] at eq1 ⊢
+      rw [eq1, of_f]
+  invFun := lift G' _ _ (fun i ↦ (of G _ i).comp (equiv i).symm.toRingHom)
+    fun i j h g ↦ by
+      have eq1 := FunLike.congr_fun (compatible_equiv i j h) ((equiv i).symm g)
+      simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
+        RingEquiv.apply_symm_apply] at eq1 ⊢
+      simp only [← eq1, RingEquiv.symm_apply_apply, of_f]
+  left_inv x := x.induction_on fun _ _ ↦ by simp [lift_of]
+  right_inv x := x.induction_on fun _ _ ↦ by simp [lift_of]
+
 
 end DirectLimit
 
