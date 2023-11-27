@@ -592,7 +592,7 @@ section SpecificInstances
 instance : IsAddCyclic ℤ := ⟨1, fun n ↦ ⟨n, by simp only [smul_eq_mul, mul_one]⟩⟩
 
 instance ZMod.instIsAddCyclic (n : ℕ) : IsAddCyclic (ZMod n) :=
-  isAddCyclic_of_surjective (Int.castRingHom _) (ZMod.int_cast_surjective)
+  isAddCyclic_of_surjective (Int.castRingHom _) ZMod.int_cast_surjective
 
 instance ZMod.instIsSimpleAddGroup {p : ℕ} [Fact p.Prime] : IsSimpleAddGroup (ZMod p) :=
   AddCommGroup.is_simple_iff_isAddCyclic_and_prime_card.2
