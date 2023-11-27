@@ -3,9 +3,6 @@
 name: Merge master to nightly
 
 on:
-  push:
-    branches:
-      - master
   schedule:
     - cron: '30 */3 * * *'  # 8AM CET/11PM PT
 
