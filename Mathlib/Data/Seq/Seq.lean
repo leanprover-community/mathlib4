@@ -511,11 +511,18 @@ section Bisim
 
 variable (R : Seq' α → Seq' α → Prop)
 
-#noalign stream.seq.bisim_o
+/-- Bisimilarity relation over `Option` of `α × Seq' α`-/
+def BisimO : Option (α × Seq' α) → Option (α × Seq' α) → Prop
+  | none, none => True
+  | some (a, s), some (a', s') => a = a' ∧ R s s'
+  | _, _ => False
+#align stream.seq.bisim_o Seq'.BisimO
+
+attribute [simp] BisimO
 
 /-- a relation is bisimilar if it meets the `BisimO` test-/
 def IsBisimulation :=
-  ∀ ⦃s₁ s₂⦄, R s₁ s₂ → Option.Rel (Prod.RProd Eq R) (dest s₁) (dest s₂)
+  ∀ ⦃s₁ s₂⦄, R s₁ s₂ → BisimO R (dest s₁) (dest s₂)
 #align stream.seq.is_bisimulation Seq'.IsBisimulation
 
 -- If two streams are bisimilar, then they are equal
@@ -525,16 +532,16 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : R s₁ s₂) : s
   | zero =>
     specialize bisim r
     match hs₁ : dest s₁, hs₂ : dest s₂, bisim with
-    | none, none, Option.Rel.none =>
+    | none, none, True.intro =>
       simp [dest_eq_nil hs₁, dest_eq_nil hs₂]
-    | some (a₁, s₁'), some (a₂, s₂'), Option.Rel.some (Prod.RProd.intro ha _) =>
+    | some (a₁, s₁'), some (a₂, s₂'), And.intro ha _ =>
       simp [dest_eq_cons hs₁, dest_eq_cons hs₂, ha]
   | succ n hn =>
     specialize bisim r
     match hs₁ : dest s₁, hs₂ : dest s₂, bisim with
-    | none, none, Option.Rel.none =>
+    | none, none, True.intro =>
       simp [dest_eq_nil hs₁, dest_eq_nil hs₂]
-    | some (a₁, s₁'), some (a₂, s₂'), Option.Rel.some (Prod.RProd.intro ha hs') =>
+    | some (a₁, s₁'), some (a₂, s₂'), And.intro ha hs' =>
       simp [dest_eq_cons hs₁, dest_eq_cons hs₂, ha, hn hs']
 #align stream.seq.eq_of_bisim Seq'.eq_of_bisim
 
@@ -569,7 +576,7 @@ theorem coinduction {s₁ s₂ : Seq' α} (hh : head s₁ = head s₂)
 
 theorem coinduction2 (s) (f g : Seq' α → Seq' β)
     (H : ∀ s,
-      Option.Rel (Prod.RProd Eq (fun s₁ s₂ => ∃ s, s₁ = f s ∧ s₂ = g s))
+      BisimO (fun s₁ s₂ => ∃ s, s₁ = f s ∧ s₂ = g s)
         (dest (f s)) (dest (g s))) :
     f s = g s := by
   refine' eq_of_bisim (fun s₁ s₂ => ∃ s, s₁ = f s ∧ s₂ = g s) _ ⟨s, rfl, rfl⟩

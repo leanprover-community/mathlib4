@@ -273,22 +273,6 @@ theorem join_pmap_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} 
 
 end pmap
 
-section Rel
-
-variable {r : α → β → Prop} {a : α} {b : β}
-
-@[simp] theorem rel_none_none : Rel r none none :=
-  Rel.none
-
-@[simp] theorem not_rel_none_some : ¬Rel r none (some b) := fun.
-
-@[simp] theorem not_rel_some_none : ¬Rel r (some a) none := fun.
-
-@[simp] theorem rel_some_some : Rel r (some a) (some b) ↔ r a b :=
-  ⟨fun h => by cases h; assumption, Rel.some⟩
-
-end Rel
-
 @[simp]
 theorem seq_some {α β} {a : α} {f : α → β} : some f <*> some a = some (f a) :=
   rfl

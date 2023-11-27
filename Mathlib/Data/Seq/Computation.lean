@@ -429,11 +429,18 @@ section Bisim
 
 variable (R : Computation α → Computation α → Prop)
 
-#noalign computation.bisim_o
+/-- Bisimilarity over a sum of `Computation`s-/
+def BisimO : α ⊕ Computation α → α ⊕ Computation α → Prop
+  | Sum.inl a, Sum.inl a' => a = a'
+  | Sum.inr s, Sum.inr s' => R s s'
+  | _, _ => False
+#align computation.bisim_o Computation.BisimO
+
+attribute [simp] BisimO
 
 /-- Attribute expressing bisimilarity over two `Computation`s -/
 def IsBisimulation :=
-  ∀ ⦃s₁ s₂⦄, R s₁ s₂ → Sum.LiftRel Eq R (dest s₁) (dest s₂)
+  ∀ ⦃s₁ s₂⦄, R s₁ s₂ → BisimO R (dest s₁) (dest s₂)
 #align computation.is_bisimulation Computation.IsBisimulation
 
 -- If two computations are bisimilar, then they are equal
@@ -443,16 +450,16 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : R s₁ s₂) : s
   | zero =>
     specialize bisim r
     match hs₁ : dest s₁, hs₂ : dest s₂, bisim with
-    | Sum.inl a, Sum.inl _, Sum.LiftRel.inl rfl =>
+    | Sum.inl a, Sum.inl _, rfl =>
       simp [dest_eq_pure hs₁, dest_eq_pure hs₂]
-    | Sum.inr s₁', Sum.inr s₂', Sum.LiftRel.inr _ =>
+    | Sum.inr s₁', Sum.inr s₂', _ =>
       simp [dest_eq_think hs₁, dest_eq_think hs₂]
   | succ n hn =>
     specialize bisim r
     match hs₁ : dest s₁, hs₂ : dest s₂, bisim with
-    | Sum.inl a, Sum.inl _, Sum.LiftRel.inl rfl =>
+    | Sum.inl a, Sum.inl _, rfl =>
       simp [dest_eq_pure hs₁, dest_eq_pure hs₂]
-    | Sum.inr s₁', Sum.inr s₂', Sum.LiftRel.inr r =>
+    | Sum.inr s₁', Sum.inr s₂', r =>
       simp [dest_eq_think hs₁, dest_eq_think hs₂, hn r]
 #align computation.eq_of_bisim Computation.eq_of_bisim
 
