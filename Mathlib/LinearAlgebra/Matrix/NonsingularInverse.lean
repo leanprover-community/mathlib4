@@ -414,7 +414,7 @@ theorem mulVec_injective_iff_isUnit {A : Matrix m m K} :
 
 theorem linearIndependent_rows_iff_isUnit {A : Matrix m m K} :
     LinearIndependent K (fun i ↦ A i) ↔ IsUnit A := by
-  rw [← transpose_transpose A, ← mulVec_injective_iff, mulVecLin_transpose,
+  rw [← transpose_transpose A, ← mulVec_injective_iff, ← coe_mulVecLin, mulVecLin_transpose,
     transpose_transpose, ←vecMul_injective_iff_isUnit, coe_vecMulLinear]
 
 theorem linearIndependent_cols_iff_isUnit {A : Matrix m m K} :
