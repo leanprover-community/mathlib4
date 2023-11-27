@@ -1781,7 +1781,6 @@ theorem map_comp_map (g : β → γ) (f : α → β) : map g ∘ map f = map (g 
   ext l; rw [comp_map, Function.comp_apply]
 #align list.map_comp_map List.map_comp_map
 
-
 section map_bijectivity
 
 theorem _root_.Function.LeftInverse.list_map {f : α → β} {g : β → α} (h : LeftInverse f g) :
@@ -1834,7 +1833,7 @@ theorem map_surjective_iff {f : α → β} : Surjective (map f) ↔ Surjective f
   refine ⟨fun h x => ?_, (·.list_map)⟩
   obtain ⟨y, hxy⟩ := h [x]
   match y with
-  | [y] => injection hxy with hxy;  exact ⟨_, hxy⟩
+  | [y] => injection hxy with hxy; exact ⟨_, hxy⟩
 
 theorem _root_.Function.Bijective.list_map {f : α → β} (h : Bijective f) : Bijective (map f) :=
   ⟨h.1.list_map, h.2.list_map⟩
