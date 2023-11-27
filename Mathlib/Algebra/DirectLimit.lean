@@ -209,6 +209,7 @@ def congr [IsDirected ι (· ≤ ·)] (equiv : (i : ι) → G i ≃ₗ[R] G' i)
     (FunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _)
       fun _ ↦ DirectLimit.induction_on x fun _ _ ↦ by simp [lift_of])
 
+variable (f) in
 @[simp] lemma congr_apply_of [IsDirected ι (· ≤ ·)]
     (equiv : (i : ι) → G i ≃ₗ[R] G' i)
     (compatible_equiv : ∀ i j h, (equiv j) ∘ₗ f i j h = f' i j h ∘ₗ equiv i)
@@ -217,6 +218,7 @@ def congr [IsDirected ι (· ≤ ·)] (equiv : (i : ι) → G i ≃ₗ[R] G' i)
     of R ι G' f' i (equiv i g) := by
   simpa [congr] using lift_of _ _ _
 
+variable (f) in
 @[simp] lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)]
     (equiv : (i : ι) → G i ≃ₗ[R] G' i)
     (compatible_equiv : ∀ i j h, (equiv j) ∘ₗ f i j h = f' i j h ∘ₗ equiv i)
@@ -448,6 +450,7 @@ def congr [IsDirected ι (· ≤ ·)] (equiv : (i : ι) → G i ≃+ G' i)
   right_inv x := (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
     x.induction_on <| by aesop
 
+variable (f) in
 @[simp] lemma congr_apply_of [IsDirected ι (· ≤ ·)]
     (equiv : (i : ι) → G i ≃+ G' i)
     (compatible_equiv : ∀ i j h,
@@ -456,6 +459,7 @@ def congr [IsDirected ι (· ≤ ·)] (equiv : (i : ι) → G i ≃+ G' i)
     congr f f' equiv compatible_equiv (of _ _ i g : DirectLimit G f) =
     of G' f' i (equiv i g) := by simp [congr]
 
+variable (f) in
 @[simp] lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)]
     (equiv : (i : ι) → G i ≃+ G' i)
     (compatible_equiv : ∀ i j h,
