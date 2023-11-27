@@ -1,5 +1,4 @@
 import Mathlib.Tactic.ComputeDegree
-import Mathlib.adomaniLeanUtils.inspect
 
 open Polynomial
 
