@@ -575,7 +575,7 @@ theorem coinduction {s₁ s₂ : Seq' α} (hh : head s₁ = head s₂)
     ⟨hh, ht⟩
 #align stream.seq.coinduction Seq'.coinduction
 
-theorem coinduction2 (s) (f g : Seq' α → Seq' β)
+theorem coinduction2 (s) (f g : α → Seq' β)
     (H : ∀ s,
       BisimO (fun s₁ s₂ => ∃ s, s₁ = f s ∧ s₂ = g s)
         (dest (f s)) (dest (g s))) :
