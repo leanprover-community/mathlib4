@@ -156,7 +156,7 @@ lemma uniformCdfReal_eq_zero {a b : ℝ} x (hx: x < a ⊓ b) : uniformCdfReal a 
 lemma uniformCdfReal_eq_fromInf {a b : ℝ} (x : ℝ) (h : a ⊓ b ≤ x) (hab : a ≠ b) :
     uniformCdfReal a b x =
     ENNReal.toReal (∫⁻ x' in Icc (a ⊓ b) x, uniformPdf a b x') := by
-  simp [uniformCdf_eq_lintegral hab, lintegral_split_bounded _ h]
+  simp [uniformCdf_eq_lintegral hab, lintegral_Iic_eq_lintegral_Iio_add_Icc _ h]
 
 lemma uniformCdfReal_eq_toSup {a b : ℝ} (x : ℝ) (h : a ⊔ b ≤ x) (hab : a ≠ b) :
     uniformCdfReal a b x = ENNReal.toReal (∫⁻ x' in Icc (a ⊓ b) (a ⊔ b), uniformPdf a b x') := by
