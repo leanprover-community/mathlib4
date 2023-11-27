@@ -64,10 +64,13 @@ lemma tangentCoordChange_comp {w x y z : M} {v : E}
   exact h
 
 lemma hasFDerivWithinAt_tangentCoordChange {x y z : M}
-    (h : extChartAt I x z ∈ ((extChartAt I x).symm ≫ (extChartAt I y)).source) :
+    (h : z ∈ (extChartAt I x).source ∩ (extChartAt I y).source) :
     HasFDerivWithinAt ((extChartAt I y) ∘ (extChartAt I x).symm) (tangentCoordChange I x y z)
       (range I) (extChartAt I x z) :=
-  ((contDiffWithinAt_ext_coord_change I y x h).differentiableWithinAt (by simp)).hasFDerivWithinAt
+  have h' : extChartAt I x z ∈ ((extChartAt I x).symm ≫ (extChartAt I y)).source := by
+    rw [LocalEquiv.trans_source'', LocalEquiv.symm_symm, LocalEquiv.symm_target]
+    exact mem_image_of_mem _ h
+  ((contDiffWithinAt_ext_coord_change I y x h').differentiableWithinAt (by simp)).hasFDerivWithinAt
 
 end
 
@@ -209,47 +212,46 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
   refine ⟨(extChartAt I x₀).symm ∘ f, ?_, min ε1 ε2, lt_min hε1 hε2, ?_⟩
   · apply Eq.symm
     rw [Function.comp_apply, hf1, LocalEquiv.left_inv _ (mem_extChartAt_source ..)]
-  -- xxx: indent this, as it's a new goal!
-  intros t ht
-  -- collect useful terms in convenient forms
-  rw [←Real.ball_eq_Ioo] at ht
-  have ht1 := mem_of_mem_of_subset ht (Metric.ball_subset_ball (min_le_left ..))
-  have ht2 := mem_of_mem_of_subset ht (Metric.ball_subset_ball (min_le_right ..))
-  have h : HasDerivAt f
-    ((fderivWithin ℝ ((extChartAt I x₀) ∘ (extChartAt I ((extChartAt I x₀).symm (f t))).symm)
-        (range I) (extChartAt I ((extChartAt I x₀).symm (f t)) ((extChartAt I x₀).symm (f t))))
-      (v ((extChartAt I x₀).symm (f t))))
-    t := hf2 t ht1
-  rw [←tangentCoordChange_def] at h
-  have hf3' := mem_of_mem_of_subset (hf3 t ht2) interior_subset
-  -- express the derivative of the integral curve in the local chart
-  refine ⟨ContinuousAt.comp (continuousAt_extChartAt_symm'' _ _ hf3') ((hf2 t ht1).continuousAt),
-    HasDerivWithinAt.hasFDerivWithinAt ?_⟩
-  simp only [mfld_simps, hasDerivWithinAt_univ]
-  show HasDerivAt (((extChartAt I ((extChartAt I x₀).symm (f t))) ∘ (extChartAt I x₀).symm) ∘ f)
-      (v ((extChartAt I x₀).symm (f t))) t
-  -- `h` gives the derivative of `f` at `t` as `↑D (v (γ t))`, where `D` is the change of
-  -- coordinates from the chart at `γ t` to the chart at `x₀`. we wish to use
-  -- `HasFDerivAt.comp_hasDerivAt` to get the derivative of `γ` at `t` as `v (γ t)`, which requires
-  -- first expressing `v (γ t)` as `↑D_inv ↑D (v (γ t))`, where `D_inv` is the opposite change of
-  -- coordinates as `D`.
-  rw [←tangentCoordChange_self (I := I) (x := (extChartAt I x₀).symm (f t))
-      (z := (extChartAt I x₀).symm (f t)) (v := v ((extChartAt I x₀).symm (f t)))
-      (mem_extChartAt_source ..),
-    ←tangentCoordChange_comp (x := x₀)]
-  apply HasFDerivAt.comp_hasDerivAt _ _ h
-  apply HasFDerivWithinAt.hasFDerivAt (s := range I)
-  nth_rw 4 [←(extChartAt I x₀).right_inv hf3']
-  apply hasFDerivWithinAt_tangentCoordChange
-  · rw [LocalEquiv.right_inv _ hf3', LocalEquiv.trans_source, LocalEquiv.symm_source]
-    exact ⟨hf3', mem_extChartAt_source ..⟩
-  · rw [mem_nhds_iff]
-    exact ⟨interior (extChartAt I x₀).target,
-      subset_trans interior_subset (extChartAt_target_subset_range ..), isOpen_interior, hf3 _ ht2⟩
-  · rw [inter_right_comm, inter_self, mem_inter_iff]
-    use mem_extChartAt_source ..
-    rw [←mem_preimage]
-    exact mem_of_mem_of_subset hf3' (extChartAt I x₀).target_subset_preimage_source
+  · intros t ht
+    -- collect useful terms in convenient forms
+    rw [←Real.ball_eq_Ioo] at ht
+    have ht1 := mem_of_mem_of_subset ht (Metric.ball_subset_ball (min_le_left ..))
+    have ht2 := mem_of_mem_of_subset ht (Metric.ball_subset_ball (min_le_right ..))
+    have h : HasDerivAt f
+      ((fderivWithin ℝ ((extChartAt I x₀) ∘ (extChartAt I ((extChartAt I x₀).symm (f t))).symm)
+          (range I) (extChartAt I ((extChartAt I x₀).symm (f t)) ((extChartAt I x₀).symm (f t))))
+        (v ((extChartAt I x₀).symm (f t))))
+      t := hf2 t ht1
+    rw [←tangentCoordChange_def] at h
+    have hf3' := mem_of_mem_of_subset (hf3 t ht2) interior_subset
+    -- express the derivative of the integral curve in the local chart
+    refine ⟨ContinuousAt.comp (continuousAt_extChartAt_symm'' _ _ hf3') ((hf2 t ht1).continuousAt),
+      HasDerivWithinAt.hasFDerivWithinAt ?_⟩
+    simp only [mfld_simps, hasDerivWithinAt_univ]
+    show HasDerivAt (((extChartAt I ((extChartAt I x₀).symm (f t))) ∘ (extChartAt I x₀).symm) ∘ f)
+        (v ((extChartAt I x₀).symm (f t))) t
+    -- `h` gives the derivative of `f` at `t` as `↑D (v (γ t))`, where `D` is the change of
+    -- coordinates from the chart at `γ t` to the chart at `x₀`. we wish to use
+    -- `HasFDerivAt.comp_hasDerivAt` to get the derivative of `γ` at `t` as `v (γ t)`, which requires
+    -- first expressing `v (γ t)` as `↑D_inv ↑D (v (γ t))`, where `D_inv` is the opposite change of
+    -- coordinates as `D`.
+    rw [←tangentCoordChange_self (I := I) (x := (extChartAt I x₀).symm (f t))
+        (z := (extChartAt I x₀).symm (f t)) (v := v ((extChartAt I x₀).symm (f t)))
+        (mem_extChartAt_source ..),
+      ←tangentCoordChange_comp (x := x₀)]
+    apply HasFDerivAt.comp_hasDerivAt _ _ h
+    apply HasFDerivWithinAt.hasFDerivAt (s := range I) _ <|
+      mem_nhds_iff.mpr ⟨interior (extChartAt I x₀).target,
+        subset_trans interior_subset (extChartAt_target_subset_range ..), isOpen_interior, hf3 _ ht2⟩
+    nth_rw 4 [←(extChartAt I x₀).right_inv hf3']
+    apply hasFDerivWithinAt_tangentCoordChange
+    · rw [mem_inter_iff, ←mem_preimage]
+      exact ⟨mem_of_mem_of_subset hf3' (LocalEquiv.target_subset_preimage_source _),
+        mem_extChartAt_source ..⟩
+    · rw [inter_right_comm, inter_self, mem_inter_iff]
+      use mem_extChartAt_source ..
+      rw [←mem_preimage]
+      exact mem_of_mem_of_subset hf3' (extChartAt I x₀).target_subset_preimage_source
 
 /-- For any continuously differentiable vector field defined on a manifold without boundary and any
   chosen starting point `x₀ : M`, an integral curve `γ : ℝ → M` exists such that `γ t₀ = x₀` and the
