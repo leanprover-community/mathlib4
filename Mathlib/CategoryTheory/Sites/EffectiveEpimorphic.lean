@@ -697,4 +697,21 @@ noncomputable instance regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPull
 
 end Regular
 
+section Epi
+
+variable [HasFiniteCoproducts C] (h : ∀ {α : Type} [Fintype α] {B : C}
+    (X : α → C) (π : (a : α) → (X a ⟶ B)), EffectiveEpiFamily X π ↔ Epi (Sigma.desc π ))
+
+lemma effectiveEpi_iff_epi {X Y : C} (f : X ⟶ Y) : EffectiveEpi f ↔ Epi f := by
+  rw [effectiveEpi_iff_effectiveEpiFamily, h]
+  have w : f = (Limits.Sigma.ι (fun () ↦ X) ()) ≫ (Limits.Sigma.desc (fun () ↦ f))
+  · simp only [Limits.colimit.ι_desc, Limits.Cofan.mk_pt, Limits.Cofan.mk_ι_app]
+  refine ⟨?_, fun _ ↦ epi_of_epi_fac w.symm⟩
+  intro
+  rw [w]
+  have : Epi (Limits.Sigma.ι (fun () ↦ X) ()) := ⟨fun _ _ h ↦ by ext; exact h⟩
+  exact epi_comp _ _
+
+end Epi
+
 end CategoryTheory
