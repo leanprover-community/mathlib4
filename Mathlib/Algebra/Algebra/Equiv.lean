@@ -792,15 +792,15 @@ theorem algebraMap_eq_apply (e : A₁ ≃ₐ[R] A₂) {y : R} {x : A₁} :
 
 /-- `AlgEquiv.toLinearMap` as a `MonoidHom`. -/
 @[simps]
-def toLinearMapHom :
-    (A₁ ≃ₐ[R] A₁) →* A₁ →ₗ[R] A₁ where
+def toLinearMapHom (R A) [CommSemiring R] [Semiring A] :
+    (A ≃ₐ[R] A) →* A →ₗ[R] A where
   toFun := AlgEquiv.toLinearMap
   map_one' := rfl
   map_mul' := fun _ _ ↦ rfl
 
 lemma pow_toLinearMap (σ : A₁ ≃ₐ[R] A₁) (n : ℕ) :
     (σ ^ n).toLinearMap = σ.toLinearMap ^ n :=
-  (AlgEquiv.toLinearMapHom K L).map_pow σ n
+  (AlgEquiv.toLinearMapHom R A₁).map_pow σ n
 
 lemma one_toLinearMap :
     (1 : A₁ ≃ₐ[R] A₁).toLinearMap = 1 := rfl
