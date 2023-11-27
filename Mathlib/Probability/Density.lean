@@ -77,31 +77,36 @@ variable {_ : MeasurableSpace Ω}
 theorem hasPDF_iff {X : Ω → E} {ℙ : Measure Ω} {μ : Measure E} :
     HasPDF X ℙ μ ↔ AEMeasurable X ℙ ∧ (map X ℙ).HaveLebesgueDecomposition μ ∧ map X ℙ ≪ μ :=
   ⟨@HasPDF.pdf' _ _ _ _ _ _ _, HasPDF.mk⟩
-#align measure_theory.has_pdf_iff MeasureTheory.hasPDF_iff
+#align measure_theory.pdf.has_pdf_iff MeasureTheory.hasPDF_iff
 
 theorem hasPDF_iff_of_aemeasurable {X : Ω → E} {ℙ : Measure Ω}
     {μ : Measure E} (hX : AEMeasurable X ℙ) :
     HasPDF X ℙ μ ↔ (map X ℙ).HaveLebesgueDecomposition μ ∧ map X ℙ ≪ μ := by
   rw [hasPDF_iff]
   simp only [hX, true_and]
+#align measure_theory.pdf.has_pdf_iff_of_measurable MeasureTheory.hasPDF_iff_of_aemeasurable
 
 @[measurability]
 theorem HasPDF.aemeasurable (X : Ω → E) (ℙ : Measure Ω)
     (μ : Measure E) [hX : HasPDF X ℙ μ] : AEMeasurable X ℙ :=
   hX.pdf'.1
+#align measure_theory.has_pdf.measurable MeasureTheory.HasPDF.aemeasurable
 
 instance HasPDF.haveLebesgueDecomposition {X : Ω → E} {ℙ : Measure Ω}
     {μ : Measure E} [hX : HasPDF X ℙ μ] : (map X ℙ).HaveLebesgueDecomposition μ :=
   hX.pdf'.2.1
+#align measure_theory.pdf.have_lebesgue_decomposition_of_has_pdf MeasureTheory.HasPDF.haveLebesgueDecomposition
 
 theorem HasPDF.absolutelyContinuous {X : Ω → E} {ℙ : Measure Ω} {μ : Measure E}
     [hX : HasPDF X ℙ μ] : map X ℙ ≪ μ := hX.pdf'.2.2
+#align measure_theory.pdf.map_absolutely_continuous MeasureTheory.HasPDF.absolutelyContinuous
 
 /-- A random variable that `HasPDF` is quasi-measure preserving. -/
 theorem HasPDF.quasiMeasurePreserving_of_measurable (X : Ω → E) (ℙ : Measure Ω) (μ : Measure E)
     [HasPDF X ℙ μ] (h : Measurable X) : QuasiMeasurePreserving X ℙ μ :=
   { measurable := h
     absolutelyContinuous := HasPDF.absolutelyContinuous }
+#align measure_theory.pdf.to_quasi_measure_preserving MeasureTheory.HasPDF.quasiMeasurePreserving_of_measurable
 
 theorem HasPDF.congr {X Y : Ω → E} {ℙ : Measure Ω} {μ : Measure E} (hXY : X =ᵐ[ℙ] Y)
     [hX : HasPDF X ℙ μ] : HasPDF Y ℙ μ :=
@@ -138,6 +143,7 @@ theorem pdf_of_not_aemeasurable {_ : MeasurableSpace Ω} {ℙ : Measure Ω} {μ 
   unfold pdf
   rw [map_of_not_aemeasurable hX]
   exact rnDeriv_zero μ
+#align measure_theory.pdf_eq_zero_of_not_measurable MeasureTheory.pdf_of_not_aemeasurable
 
 theorem pdf_of_not_haveLebesgueDecomposition {_ : MeasurableSpace Ω} {ℙ : Measure Ω}
     {μ : Measure E} {X : Ω → E} (h : ¬(map X ℙ).HaveLebesgueDecomposition μ) : pdf X ℙ μ = 0 := by
@@ -148,6 +154,7 @@ theorem aemeasurable_of_pdf_ne_zero {m : MeasurableSpace Ω} {ℙ : Measure Ω} 
     (X : Ω → E) (h : ¬pdf X ℙ μ =ᵐ[μ] 0) : AEMeasurable X ℙ := by
   contrapose! h
   exact pdf_of_not_aemeasurable h
+#align measure_theory.measurable_of_pdf_ne_zero MeasureTheory.aemeasurable_of_pdf_ne_zero
 
 theorem hasPDF_of_pdf_ne_zero {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E} {X : Ω → E}
     (hac : map X ℙ ≪ μ) (hpdf : ¬pdf X ℙ μ =ᵐ[μ] 0) : HasPDF X ℙ μ := by
@@ -243,6 +250,7 @@ theorem integrable_pdf_smul_iff [IsFiniteMeasure ℙ] {X : Ω → E} [HasPDF X �
     map_eq_withDensity_pdf X ℙ μ, pdf_def, integrable_rnDeriv_smul_iff HasPDF.absolutelyContinuous]
   eta_reduce
   rw [withDensity_rnDeriv_eq _ _ HasPDF.absolutelyContinuous]
+#align measure_theory.pdf.integrable_iff_integrable_mul_pdf MeasureTheory.pdf.integrable_pdf_smul_iff
 
 /-- **The Law of the Unconscious Statistician**: Given a random variable `X` and a measurable
 function `f`, `f ∘ X` is a random variable with expectation `∫ x, pdf X x • f x ∂μ`
@@ -252,6 +260,7 @@ theorem integral_pdf_smul [IsFiniteMeasure ℙ] {X : Ω → E} [HasPDF X ℙ μ]
   rw [← integral_map (HasPDF.aemeasurable X ℙ μ) (hf.mono' HasPDF.absolutelyContinuous),
     map_eq_withDensity_pdf X ℙ μ, pdf_def, integral_rnDeriv_smul HasPDF.absolutelyContinuous,
     withDensity_rnDeriv_eq _ _ HasPDF.absolutelyContinuous]
+#align measure_theory.pdf.integral_fun_mul_eq_integral MeasureTheory.pdf.integral_pdf_smul
 
 end IntegralPDFMul
 
@@ -300,6 +309,7 @@ nonrec theorem _root_.Real.hasPDF_iff_of_aemeasurable (hX : AEMeasurable X ℙ) 
     HasPDF X ℙ ↔ map X ℙ ≪ volume := by
   rw [hasPDF_iff_of_aemeasurable hX]
   exact and_iff_right inferInstance
+#align measure_theory.pdf.real.has_pdf_iff_of_measurable Real.hasPDF_iff_of_aemeasurable
 
 theorem _root_.Real.hasPDF_iff : HasPDF X ℙ ↔ AEMeasurable X ℙ ∧ map X ℙ ≪ volume := by
   by_cases hX : AEMeasurable X ℙ
