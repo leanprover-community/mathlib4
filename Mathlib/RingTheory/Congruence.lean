@@ -115,12 +115,11 @@ instance : Inhabited (RingCon R) :=
   ⟨ringConGen EmptyRelation⟩
 
 @[simp]
-theorem rel_mk {s : Con R} {h a b} : RingCon.mk s h a b ↔ @Setoid.r _ s.toSetoid a b :=
+theorem rel_mk {s : Con R} {h a b} : RingCon.mk s h a b ↔ s a b :=
   Iff.rfl
 
 /-- The map sending a congruence relation to its underlying binary relation is injective. -/
-theorem ext' {c d : RingCon R} (H : c.r = d.r) : c = d := by
-  rcases c with ⟨⟨⟨⟩⟩⟩; rcases d with ⟨⟨⟨⟩⟩⟩; cases H; congr
+theorem ext' {c d : RingCon R} (H : ⇑c = ⇑d) : c = d := FunLike.coe_injective H
 
 /-- Extensionality rule for congruence relations. -/
 theorem ext {c d : RingCon R} (H : ∀ x y, c x y ↔ d x y) : c = d :=
@@ -463,11 +462,8 @@ theorem sInf_def (S : Set (RingCon R)) :
   ext; simp only [sInf_image, iInf_apply, iInf_Prop_eq]; rfl
 
 instance : PartialOrder (RingCon R) where
-  le := (· ≤ ·)
-  lt c d := c ≤ d ∧ ¬d ≤ c
   le_refl _c _ _ := id
   le_trans _c1 _c2 _c3 h1 h2 _x _y h := h2 <| h1 h
-  lt_iff_le_not_le _ _ := Iff.rfl
   le_antisymm _c _d hc hd := ext fun _x _y => ⟨fun h => hc h, fun h => hd h⟩
 
 /-- The complete lattice of congruence relations on a given type with multiplication and
@@ -496,7 +492,7 @@ instance : CompleteLattice (RingCon R) where
 
 /-- The infimum of two congruence relations equals the infimum of the underlying binary
 operations. -/
-theorem inf_def {c d : RingCon R} : (c ⊓ d).r = c.r ⊓ d.r :=
+theorem coe_inf {c d : RingCon R} : ⇑(c ⊓ d) = ⇑c ⊓ ⇑d :=
   rfl
 
 /-- Definition of the infimum of two congruence relations. -/
@@ -518,7 +514,7 @@ theorem ringConGen_eq (r : R → R → Prop) :
 /-- The smallest congruence relation containing a binary relation `r` is contained in any
     congruence relation containing `r`. -/
 theorem ringConGen_le {r : R → R → Prop} {c : RingCon R}
-    (h : ∀ x y, r x y → @Setoid.r _ c.toSetoid x y) : ringConGen r ≤ c := by
+    (h : ∀ x y, r x y → c x y) : ringConGen r ≤ c := by
   rw [ringConGen_eq]; exact sInf_le h
 
 /-- Given binary relations `r, s` with `r` contained in `s`, the smallest congruence relation
@@ -545,7 +541,7 @@ theorem sup_eq_ringConGen (c d : RingCon R) : c ⊔ d = ringConGen fun x y => c 
 
 /-- The supremum of two congruence relations equals the smallest congruence relation containing
     the supremum of the underlying binary operations. -/
-theorem sup_def {c d : RingCon R} : c ⊔ d = ringConGen (c.r ⊔ d.r) := by
+theorem sup_def {c d : RingCon R} : c ⊔ d = ringConGen (⇑c ⊔ ⇑d) := by
   rw [sup_eq_ringConGen]; rfl
 
 /-- The supremum of a set of congruence relations `S` equals the smallest congruence relation
