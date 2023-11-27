@@ -95,14 +95,16 @@ def isMathlibRoot : IO Bool :=
 
 def parseMathlibDepPath (json : Lean.Json) : Except String FilePath := do
   let deps ← (← json.getObjVal? "packages").getArr?
-  let some mathlib ← deps.findSomeM? (fun j => do
-    let t := ← (←j.getObjVal? "type").getStr?
+  for d in deps do
+    let n := ← (← d.getObjVal? "name").getStr?
+    if n != "mathlib" then
+      continue
+    let t := ← (← d.getObjVal? "type").getStr?
     if t == "path" then
-      return some ⟨←(←j.getObjVal? "dir").getStr?⟩
+      return ⟨← (← d.getObjVal? "dir").getStr?⟩
     else
       return LAKEPACKAGESDIR / "mathlib"
-    ) | .error "Mathlib not found in dependencies"
-  pure mathlib
+  throw "Mathlib not found in dependencies"
 
 def mathlibDepPath : IO FilePath := do
   let raw ← IO.FS.readFile "lake-manifest.json"
