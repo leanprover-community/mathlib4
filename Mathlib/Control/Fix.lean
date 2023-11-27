@@ -5,7 +5,6 @@ Authors: Simon Hudon
 -/
 import Mathlib.Data.Part
 import Mathlib.Data.Nat.Upto
-import Mathlib.Tactic.Common
 
 #align_import control.fix from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
