@@ -220,6 +220,8 @@ end
 
 open HomologicalComplex
 
+section
+
 variable {ι : Type*} {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
   {c : ComplexShape ι} {K L M K' L' : HomologicalComplex C c}
 
@@ -417,3 +419,43 @@ lemma quasiIso_of_arrow_mk_iso (φ : K ⟶ L) (φ' : K' ⟶ L') (e : Arrow.mk φ
     [∀ i, K'.HasHomology i] [∀ i, L'.HasHomology i]
     [hφ : QuasiIso φ] : QuasiIso φ' := by
   simpa only [← quasiIso_iff_of_arrow_mk_iso φ φ' e]
+
+namespace HomologicalComplex
+
+variable (C c)
+
+/-- The morphism property on `HomologicalComplex C c` given by quasi-isomorphisms. -/
+def qis [CategoryWithHomology C] :
+    MorphismProperty (HomologicalComplex C c) := fun _ _ f => QuasiIso f
+
+variable {C c}
+
+@[simp]
+lemma qis_iff [CategoryWithHomology C] (f : K ⟶ L) : qis C c f ↔ QuasiIso f := by rfl
+
+end HomologicalComplex
+
+end
+
+section
+
+variable {ι : Type*} {C : Type u} [Category.{v} C] [Preadditive C]
+  {c : ComplexShape ι} {K L : HomologicalComplex C c}
+
+section
+
+variable (e : HomotopyEquiv K L) [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
+
+instance : QuasiIso e.hom where
+  quasiIsoAt n := by
+    classical
+    rw [quasiIsoAt_iff_isIso_homologyMap]
+    exact IsIso.of_iso (e.toHomologyIso n)
+
+instance : QuasiIso e.inv := (inferInstance : QuasiIso e.symm.hom)
+
+lemma homotopyEquivalences_subset_qis [CategoryWithHomology C] :
+    homotopyEquivalences C c ⊆ qis C c := by
+  rintro K L _ ⟨e, rfl⟩
+  simp only [qis_iff]
+  infer_instance

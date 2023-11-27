@@ -595,6 +595,11 @@ theorem tendsto_nat_floor_atTop {α : Type*} [LinearOrderedSemiring α] [FloorSe
   Nat.floor_mono.tendsto_atTop_atTop fun x => ⟨max 0 (x + 1), by simp [Nat.le_floor_iff]⟩
 #align tendsto_nat_floor_at_top tendsto_nat_floor_atTop
 
+lemma tendsto_nat_floor_mul_atTop {α : Type _} [LinearOrderedSemifield α] [FloorSemiring α]
+    [Archimedean α] (a : α) (ha : 0 < a) : Tendsto (fun (x:ℕ) => ⌊a * x⌋₊) atTop atTop :=
+  Tendsto.comp tendsto_nat_floor_atTop
+    <| Tendsto.const_mul_atTop ha tendsto_nat_cast_atTop_atTop
+
 variable {R : Type*} [TopologicalSpace R] [LinearOrderedField R] [OrderTopology R] [FloorRing R]
 
 theorem tendsto_nat_floor_mul_div_atTop {a : R} (ha : 0 ≤ a) :

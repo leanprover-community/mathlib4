@@ -138,50 +138,33 @@ protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
       exact add _ _ (tmul ..) ih
 #align tensor_product.induction_on TensorProduct.induction_on
 
-/-- An unbundled version of `TensorProduct.liftAddHom`, for better performance. -/
-def liftFun (f : M → N → P)
-    (hf_zero_left : ∀ n, f 0 n = 0) (hf_zero_right : ∀ m, f m 0 = 0)
-    (hf_add_left : ∀ m₁ m₂ n, f (m₁ + m₂) n = f m₁ n + f m₂ n)
-    (hf_add_right : ∀ m n₁ n₂, f m (n₁ + n₂) = f m n₁ + f m n₂)
-    (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) :
-    M ⊗[R] N →+ P :=
-  (addConGen (TensorProduct.Eqv R M N)).lift (FreeAddMonoid.lift (fun mn : M × N => f mn.1 mn.2)) <|
-      AddCon.addConGen_le fun x y hxy =>
-        match x, y, hxy with
-        | _, _, .of_zero_left n =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, hf_zero_left]
-        | _, _, .of_zero_right m =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, hf_zero_right]
-        | _, _, .of_add_left m₁ m₂ n =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, hf_add_left]
-        | _, _, .of_add_right m n₁ n₂ =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, hf_add_right]
-        | _, _, .of_smul s m n =>
-          (AddCon.ker_rel _).2 <| by rw [FreeAddMonoid.lift_eval_of, FreeAddMonoid.lift_eval_of, hf]
-        | _, _, .add_comm x y =>
-          (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]
-
-@[simp]
-theorem liftFun_tmul (f : M → N → P)
-    (hf_zero_left : ∀ n, f 0 n = 0) (hf_zero_right : ∀ m, f m 0 = 0)
-    (hf_add_left : ∀ m₁ m₂ n, f (m₁ + m₂) n = f m₁ n + f m₂ n)
-    (hf_add_right : ∀ m n₁ n₂, f m (n₁ + n₂) = f m n₁ + f m n₂)
-    (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) (m : M) (n : N) :
-    liftFun f hf_zero_left hf_zero_right hf_add_left hf_add_right hf (m ⊗ₜ n) = f m n :=
-  rfl
-
-/-- Lift a map that is additive in both arguments, such that scalar multiplication in either
-argument is equivalent, to the tensor product.
+/-- Lift a map that is additive in both arguments to the tensor product, provided scalar
+multiplication in either argument is equivalent.
 
 Note that strictly the first action should be a right-action by `R`, but for now `R` is commutative
 so it doesn't matter. -/
+-- TODO: use this to implement `lift` and `SMul.aux`. For now we do not do this as it causes
+-- performance issues elsewhere.
 def liftAddHom (f : M →+ N →+ P)
     (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) :
     M ⊗[R] N →+ P :=
-  liftFun (f · ·)
-    (fun _ => by simp_rw [map_zero, AddMonoidHom.zero_apply]) (fun _ => map_zero _)
-    (fun _ _ _ => by simp_rw [map_add, AddMonoidHom.add_apply]) (fun _ _ _ => map_add _ _ _)
-    hf
+  (addConGen (TensorProduct.Eqv R M N)).lift (FreeAddMonoid.lift (fun mn : M × N => f mn.1 mn.2)) <|
+    AddCon.addConGen_le fun x y hxy =>
+      match x, y, hxy with
+      | _, _, .of_zero_left n =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, map_zero,
+          AddMonoidHom.zero_apply]
+      | _, _, .of_zero_right m =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, map_zero]
+      | _, _, .of_add_left m₁ m₂ n =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, map_add,
+          AddMonoidHom.add_apply]
+      | _, _, .of_add_right m n₁ n₂ =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, map_add]
+      | _, _, .of_smul s m n =>
+        (AddCon.ker_rel _).2 <| by rw [FreeAddMonoid.lift_eval_of, FreeAddMonoid.lift_eval_of, hf]
+      | _, _, .add_comm x y =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]
 
 @[simp]
 theorem liftAddHom_tmul (f : M →+ N →+ P)
@@ -214,6 +197,16 @@ variable {N}
 theorem tmul_add (m : M) (n₁ n₂ : N) : m ⊗ₜ (n₁ + n₂) = m ⊗ₜ n₁ + m ⊗ₜ[R] n₂ :=
   Eq.symm <| Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.of_add_right _ _ _
 #align tensor_product.tmul_add TensorProduct.tmul_add
+
+instance uniqueLeft [Subsingleton M] : Unique (M ⊗[R] N) where
+  default := 0
+  uniq z := z.induction_on rfl (fun x y ↦ by rw [Subsingleton.elim x 0, zero_tmul]; rfl) <| by
+    rintro _ _ rfl rfl; apply add_zero
+
+instance uniqueRight [Subsingleton N] : Unique (M ⊗[R] N) where
+  default := 0
+  uniq z := z.induction_on rfl (fun x y ↦ by rw [Subsingleton.elim y 0, tmul_zero]; rfl) <| by
+    rintro _ _ rfl rfl; apply add_zero
 
 section
 
@@ -252,13 +245,16 @@ theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m 
   CompatibleSMul.smul_tmul _ _ _
 #align tensor_product.smul_tmul TensorProduct.smul_tmul
 
-/-- This has the wrong value for the `nsmul` field, but we need it in order to create the right
-value! -/
-private def addCommMonoidWithBadSMul : AddCommMonoid (M ⊗[R] N) where
-  __ := (addConGen (TensorProduct.Eqv R M N)).addMonoid
-  __ := addCommSemigroup M N
-  toZero := (TensorProduct.addZeroClass _ _).toZero
-  toAddSemigroup := addSemigroup _ _
+-- porting note: This is added as a local instance for `SMul.aux`.
+-- For some reason type-class inference in Lean 3 unfolded this definition.
+private def addMonoidWithWrongNSMul : AddMonoid (M ⊗[R] N) :=
+  { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
+
+attribute [local instance] addMonoidWithWrongNSMul in
+/-- Auxiliary function to defining scalar multiplication on tensor product. -/
+def SMul.aux {R' : Type*} [SMul R' M] (r : R') : FreeAddMonoid (M × N) →+ M ⊗[R] N :=
+  FreeAddMonoid.lift fun p : M × N => (r • p.1) ⊗ₜ p.2
+#align tensor_product.smul.aux TensorProduct.SMul.aux
 
 
 variable [SMulCommClass R R' M] [SMulCommClass R R'' M]

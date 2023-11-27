@@ -107,7 +107,7 @@ theorem zero_rpow_eq_iff {x : ℝ} {a : ℝ} : 0 ^ x = a ↔ x ≠ 0 ∧ a = 0 �
   constructor
   · intro hyp
     simp only [rpow_def, Complex.ofReal_zero] at hyp
-    by_cases x = 0
+    by_cases h : x = 0
     · subst h
       simp only [Complex.one_re, Complex.ofReal_zero, Complex.cpow_zero] at hyp
       exact Or.inr ⟨rfl, hyp.symm⟩
