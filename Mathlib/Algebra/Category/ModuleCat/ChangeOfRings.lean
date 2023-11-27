@@ -124,8 +124,6 @@ instance (priority := 100) sMulCommClass_mk {R : Type u₁} {S : Type u₂} [Rin
     (f : R →+* S) (M : Type v) [I : AddCommGroup M] [Module S M] :
     haveI : SMul R M := (RestrictScalars.obj' f (ModuleCat.mk M)).isModule.toSMul
     SMulCommClass R S M :=
-  -- Porting note: cannot synth SMul R M
-  have : SMul R M := (RestrictScalars.obj' f (ModuleCat.mk M)).isModule.toSMul
   @SMulCommClass.mk R S M (_) _
    <| fun r s m => (by simp [← mul_smul, mul_comm] : f r • s • m = s • f r • m)
 #align category_theory.Module.smul_comm_class_mk ModuleCat.sMulCommClass_mk
@@ -333,8 +331,8 @@ instance mulAction : MulAction S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M 
 
 instance distribMulAction : DistribMulAction S <| (restrictScalars f).obj ⟨S⟩ →ₗ[R] M :=
   { CoextendScalars.mulAction f _ with
-    smul_add := fun s g h => LinearMap.ext fun t : S => by simp
-    smul_zero := fun s => LinearMap.ext fun t : S => by simp }
+    smul_add := fun s g h => LinearMap.ext fun _ : S => by simp
+    smul_zero := fun s => LinearMap.ext fun _ : S => by simp }
 #align category_theory.Module.coextend_scalars.distrib_mul_action ModuleCat.CoextendScalars.distribMulAction
 
 /-- `S` acts on Hom(S, M) by `s • g = x ↦ g (x • s)`, this action defines an `S`-module structure on
@@ -586,8 +584,7 @@ def HomEquiv.toRestrictScalars {X Y} (g : (extendScalars f).obj X ⟶ Y) :
     letI : Module R S := Module.compHom S f
     letI : Module R Y := Module.compHom Y f
     dsimp
-    rw [RestrictScalars.smul_def, ← LinearMap.map_smul]
-    erw [tmul_smul]
+    erw [RestrictScalars.smul_def, ← LinearMap.map_smul, tmul_smul]
     congr
 #align category_theory.Module.extend_restrict_scalars_adj.hom_equiv.to_restrict_scalars ModuleCat.ExtendRestrictScalarsAdj.HomEquiv.toRestrictScalars
 
@@ -658,6 +655,7 @@ def homEquiv {X Y} :
       change S at x
       dsimp
       erw [← LinearMap.map_smul, ExtendScalars.smul_tmul, mul_one x]
+      rfl
     · rw [map_add, map_add, ih1, ih2]
   right_inv g := by
     letI m1 : Module R S := Module.compHom S f; letI m2 : Module R Y := Module.compHom Y f
@@ -747,7 +745,7 @@ def counit : restrictScalars.{max v u₂,u₁,u₂} f ⋙ extendScalars f ⟶ �
     induction' z using TensorProduct.induction_on with s' y z₁ z₂ ih₁ ih₂
     · rw [map_zero, map_zero]
     · dsimp
-      rw [ModuleCat.coe_comp, ModuleCat.coe_comp,Function.comp,Function.comp,
+      rw [ModuleCat.coe_comp, ModuleCat.coe_comp, Function.comp_apply, Function.comp_apply,
         ExtendScalars.map_tmul, restrictScalars.map_apply]
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [Counit.map_apply]
@@ -771,7 +769,7 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
   counit := ExtendRestrictScalarsAdj.counit.{v,u₁,u₂} f
   homEquiv_unit {X Y g} := LinearMap.ext fun x => by
     dsimp
-    rw [ModuleCat.coe_comp, Function.comp, restrictScalars.map_apply]
+    rw [ModuleCat.coe_comp, Function.comp_apply, restrictScalars.map_apply]
     rfl
   homEquiv_counit {X Y g} := LinearMap.ext fun x => by
       -- Porting note: once again reminding Lean of the instances

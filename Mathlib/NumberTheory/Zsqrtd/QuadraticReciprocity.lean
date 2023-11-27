@@ -23,8 +23,6 @@ open Zsqrtd Complex
 
 open scoped ComplexConjugate
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 local notation "ℤ[i]" => GaussianInt
 
 namespace GaussianInt
@@ -89,7 +87,7 @@ theorem prime_of_nat_prime_of_mod_four_eq_three (p : ℕ) [hp : Fact p.Prime] (h
   irreducible_iff_prime.1 <|
     by_contradiction fun hpi =>
       let ⟨a, b, hab⟩ := sq_add_sq_of_nat_prime_of_not_irreducible p hpi
-      have : ∀ a b : ZMod 4, a ^ 2 + b ^ 2 ≠ p := by
+      have : ∀ a b : ZMod 4, a ^ 2 + b ^ 2 ≠ ↑p := by
         erw [← ZMod.nat_cast_mod p 4, hp3]; exact by decide
       this a b (hab ▸ by simp)
 #align gaussian_int.prime_of_nat_prime_of_mod_four_eq_three GaussianInt.prime_of_nat_prime_of_mod_four_eq_three

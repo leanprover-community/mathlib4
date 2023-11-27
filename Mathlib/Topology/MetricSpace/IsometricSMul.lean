@@ -276,8 +276,9 @@ theorem smul_ball (c : G) (x : X) (r : ℝ≥0∞) : c • ball x r = ball (c �
 #align emetric.vadd_ball EMetric.vadd_ball
 
 @[to_additive (attr := simp)]
-theorem preimage_smul_ball (c : G) (x : X) (r : ℝ≥0∞) : (· • ·) c ⁻¹' ball x r = ball (c⁻¹ • x) r :=
-  by rw [preimage_smul, smul_ball]
+theorem preimage_smul_ball (c : G) (x : X) (r : ℝ≥0∞) :
+    (· • ·) c ⁻¹' ball x r = ball (c⁻¹ • x) r := by
+  rw [preimage_smul, smul_ball]
 #align emetric.preimage_smul_ball EMetric.preimage_smul_ball
 #align emetric.preimage_vadd_ball EMetric.preimage_vadd_ball
 

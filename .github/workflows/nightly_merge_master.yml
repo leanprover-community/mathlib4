@@ -3,9 +3,8 @@
 name: Merge master to nightly
 
 on:
-  push:
-    branches:
-      - master
+  schedule:
+    - cron: '30 */3 * * *'  # 8AM CET/11PM PT
 
 jobs:
   merge-to-nightly:
@@ -25,6 +24,11 @@ jobs:
       - name: Merge master to nightly favoring nightly changes
         run: |
           git checkout nightly-testing
-          git merge master --strategy-option ours --no-commit --allow-unrelated-histories
-          git commit -m "Merge master into nightly-testing"
+          # If the merge goes badly, we proceed anyway via '|| true'.
+          # CI will report failures on the 'nightly-testing' branch direct to Zulip.
+          git merge master --strategy-option ours --no-commit --allow-unrelated-histories || true
+          git add .
+          # If there's nothing to do (because there are no new commits from master),
+          # that's okay, hence the '|| true'.
+          git commit -m "Merge master into nightly-testing" || true
           git push origin nightly-testing
