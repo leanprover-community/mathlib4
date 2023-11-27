@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
+import Mathlib.Tactic.FinCases
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.LinearAlgebra.Finsupp
 
@@ -721,6 +722,17 @@ theorem eq_bot_or_top : I = ⊥ ∨ I = ⊤ := by
   by_cases H : r = 0; · simpa
   simpa [H, h1] using I.mul_mem_left r⁻¹ hr
 #align ideal.eq_bot_or_top Ideal.eq_bot_or_top
+
+variable (K) in
+/-- A bijection between between (left) ideals of a division ring and `{0, 1}`, sending `⊥` to `0`
+and `⊤` to `1`. -/
+def equivFinTwo [DecidableEq (Ideal K)] : Ideal K ≃ Fin 2 where
+  toFun := fun I ↦ if I = ⊥ then 0 else 1
+  invFun := ![⊥, ⊤]
+  left_inv := fun I ↦ by rcases eq_bot_or_top I with rfl | rfl <;> simp
+  right_inv := fun i ↦ by fin_cases i <;> simp
+
+instance : Finite (Ideal K) := let _i := Classical.decEq (Ideal K); ⟨equivFinTwo K⟩
 
 /-- Ideals of a `DivisionSemiring` are a simple order. Thanks to the way abbreviations work,
 this automatically gives an `IsSimpleModule K` instance. -/
