@@ -2049,16 +2049,13 @@ lemma contMDiff_openEmbedding :
   apply contDiffOn_id.congr
   intros z hz
   -- factorise into the chart (=e) and the model (=id)
-  rw [extChartAt_coe, @extChartAt_coe_symm _ _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace,
-    chartAt_self_eq]
-  repeat rw [Function.comp_apply]
-  rw [LocalHomeomorph.refl_apply, id.def, LocalHomeomorph.singletonChartedSpace_chartAt_eq,
-    h.toLocalHomeomorph_right_inv]
-  · rw [id.def, I.right_inv]
+  rw [@extChartAt_coe_symm _ _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
+  simp only [mfld_simps]
+  rw [h.toLocalHomeomorph_right_inv]
+  · rw [I.right_inv]
     apply mem_of_subset_of_mem _ hz.1
     exact @extChartAt_target_subset_range _ _ _ _ _ _ _ _ _ I x h.singletonChartedSpace
-  -- show hz implies z is in range of I ∘ e
-  · rw [ModelWithCorners.symm]
+  · -- `hz` implies that `z ∈ range (I ∘ e)`
     have := hz.1
     rw [@extChartAt_target _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace] at this
     have := this.1
@@ -2089,11 +2086,9 @@ lemma contMDiffOn_openEmbedding_symm :
       · rfl
       · apply mem_of_subset_of_mem _ hz.1
         exact extChartAt_target_subset_range _ _
-    -- show hz implies z is in range of I ∘ e
-    · rw [h.toLocalHomeomorph_target, ModelWithCorners.symm, ←mem_preimage]
-      have := hz.2
-      rw [preimage_inter] at this
-      exact this.1
+    · -- `hz` implies that `z ∈ range (I ∘ e)`
+      rw [h.toLocalHomeomorph_target, ModelWithCorners.symm, ←mem_preimage]
+      exact hz.2.1
 
 /-- Let `M'` be a manifold whose chart structure is given by an open embedding `e'` into its model
 space `H'`. Then the smoothness of `e' ∘ f : M → H'` implies the smoothness of `f`.
