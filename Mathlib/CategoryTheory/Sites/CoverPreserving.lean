@@ -257,6 +257,7 @@ def Functor.sheafPushforwardContinuous [Functor.IsContinuous.{v₄} F J K] :
     apply ((whiskeringLeft _ _ _).obj F.op).map_comp
 #align category_theory.sites.pullback CategoryTheory.Functor.sheafPushforwardContinuous
 
+/-- Isomorphic continuous functors induce isomorphic pushforward functors of sheaves. -/
 @[simps! hom_app_val_app inv_app_val_app]
 def Functor.sheafPushforwardContinuousIso {F F' : C ⥤ D} (e : F ≅ F')
     (A : Type u₄) [Category.{v₄} A] (J : GrothendieckTopology C) (K : GrothendieckTopology D)
@@ -269,6 +270,8 @@ def Functor.sheafPushforwardContinuousIso {F F' : C ⥤ D} (e : F ≅ F')
       simp only [Functor.map_comp, preimageIso_hom, image_preimage]
       aesop_cat)
 
+/-- A composition of pushforward functors by continuous functors identify to
+the pushforward functor for their composition. -/
 @[simps! hom_app_val_app inv_app_val_app]
 def Functor.sheafPushforwardContinuousComp [Functor.IsContinuous.{v₄} F J K]
     [Functor.IsContinuous.{v₄} G K L] [Functor.IsContinuous.{v₄} (F ⋙ G) J L] :
@@ -284,6 +287,8 @@ variable {F₁ : C ⥤ D} {F₂ : D ⥤ E} {F₁₂ : C ⥤ E}
   [Functor.IsContinuous.{v₄} F₁ J K] [Functor.IsContinuous.{v₄} F₂ K L]
   [Functor.IsContinuous.{v₄} F₁₂ J L]
 
+/-- A composition of pushforward functors by continuous functors identify to
+the pushforward functor for their composition. -/
 def Functor.sheafPushforwardContinuousComp' :
     F₂.sheafPushforwardContinuous A K L ⋙ F₁.sheafPushforwardContinuous A J K ≅
       F₁₂.sheafPushforwardContinuous A J L :=
