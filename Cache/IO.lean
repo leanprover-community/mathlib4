@@ -93,7 +93,7 @@ abbrev PackageDirs := Lean.RBMap String FilePath compare
 def isMathlibRoot : IO Bool :=
   FilePath.mk "Mathlib" |>.pathExists
 
-def parseMathlibDepPath (json : Lean.Json) : Except String FilePath := do
+def parseMathlibDepPath (json : Lean.Json) : Except String (Option FilePath) := do
   let deps ← (← json.getObjVal? "packages").getArr?
   for d in deps do
     let n := ← (← d.getObjVal? "name").getStr?
@@ -101,20 +101,25 @@ def parseMathlibDepPath (json : Lean.Json) : Except String FilePath := do
       continue
     let t := ← (← d.getObjVal? "type").getStr?
     if t == "path" then
-      return ⟨← (← d.getObjVal? "dir").getStr?⟩
+      return some ⟨← (← d.getObjVal? "dir").getStr?⟩
     else
       return LAKEPACKAGESDIR / "mathlib"
-  throw "Mathlib not found in dependencies"
+  return none
 
 def mathlibDepPath : IO FilePath := do
   let raw ← IO.FS.readFile "lake-manifest.json"
   match (Lean.Json.parse raw >>= parseMathlibDepPath) with
-  | .ok p => return p
+  | .ok (some p) => return p
+  | .ok none =>
+      if ← isMathlibRoot then
+        return ⟨"."⟩
+      else
+        throw $ IO.userError s!"Mathlib not found in dependencies"
   | .error e => throw $ IO.userError s!"Cannot parse lake-manifest: {e}"
 
 -- TODO this should be generated automatically from the information in `lakefile.lean`.
 def getPackageDirs : IO PackageDirs := do
-  let root : FilePath := if ← isMathlibRoot then "." else ←mathlibDepPath
+  let root ← mathlibDepPath
   return .ofList [
     ("Mathlib", root),
     ("MathlibExtras", root),
