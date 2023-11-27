@@ -63,5 +63,6 @@ jobs:
       run: |
         git remote add nightly https://github.com/leanprover/lean4-nightly.git
         git fetch nightly --tags
+        # Note: old jobs may run out of order, but it is safe to merge an older `nightly-YYYY-MM-DD`.
         git merge nightly-${NIGHTLY} --strategy-option ours --allow-unrelated-histories || true
         git push origin
