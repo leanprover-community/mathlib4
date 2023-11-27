@@ -309,17 +309,72 @@ variable {G : Type*} [Group G]
 instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
   hasTerminalObject := inferInstance
   hasPullbacks := inferInstance
-  hasFiniteCoproducts := by
-    constructor
-    intro n
-    constructor
-    intro F
-    let H := F ⋙ forget₂ _ FintypeCat
-    have : HasColimit H := inferInstance
-    admit
+  hasFiniteCoproducts := inferInstance
   hasQuotientsByFiniteGroups := sorry
   epiMonoFactorisation := sorry
-  monoInducesIsoOnDirectSummand := sorry
+  monoInducesIsoOnDirectSummand := by
+    intro X Y ⟨i, hi⟩ h
+    let Z₁ : Set Y.V := Set.range i
+    let Z₂ : Set Y.V := (Set.range i)ᶜ
+    have : Fintype Z₂ := Fintype.ofFinite Z₂
+    let Z : FintypeCat := FintypeCat.of Z₂
+    --let j : X.V → Z₁ := Set.codRestrict i Z₁ (by simp)
+    --have hinj : Function.Injective i := by exact?
+    --have h1 : Function.Injective j := Function.Injective.codRestrict _ hinj
+    --have h2 : Function.Surjective j := by
+    --  intro ⟨b, a, hab⟩
+    --  use a
+    --  ext
+    --  exact hab
+    --have : Function.Bijective j := ⟨h1, h2⟩
+    let ac (g : G) : Z → Z := by
+      let f : Y.V → Y.V := Y.ρ g
+      apply Set.MapsTo.restrict f Z₂ Z₂
+      intro z hz
+      by_contra hc
+      simp at hc
+      obtain ⟨x, hx⟩ := hc
+      have hx' : Y.ρ g⁻¹ (i x) = Y.ρ g⁻¹ (Y.ρ g z) := congrArg (Y.ρ g⁻¹) hx
+      have := congrFun (hi g⁻¹) x
+      simp at this
+      rw [←this] at hx'
+      have : Y.ρ g⁻¹ (Y.ρ g z) = z := by
+        show (Y.ρ g⁻¹ * Y.ρ g) z = z
+        rw [←MonoidHom.map_mul Y.ρ g⁻¹ g]
+        simp
+      rw [this] at hx'
+      apply hz
+      use X.ρ g⁻¹ x
+    let a : G →* End Z := by
+      apply MonoidHom.mk
+      swap
+      constructor
+      swap
+      exact ac
+      show Set.MapsTo.restrict (Y.ρ 1) Z₂ Z₂ _ = 𝟙 Z
+      ext
+      simp
+      intro g h
+      show ac (g * h) = ac g ∘ ac h
+      ext ⟨z, _⟩
+      apply Subtype.ext
+      show Y.ρ (g * h) z = Y.ρ g (Y.ρ h z)
+      rw [MonoidHom.map_mul]
+      show (Y.ρ g ∘ Y.ρ h) z = Y.ρ g (Y.ρ h z)
+      simp
+    let Z : Action FintypeCat (MonCat.of G) := {
+      V := Z
+      ρ := a
+    }
+    use Z
+    let u : Z ⟶ Y := by
+      constructor
+      swap
+      show Z₂ → Y.V
+      exact (↑)
+      intro g
+      aesop
+    use u
 
 end Examples
 
