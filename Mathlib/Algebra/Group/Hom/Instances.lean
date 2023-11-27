@@ -359,7 +359,7 @@ variable {R S : Type*} [NonUnitalNonAssocCommSemiring R]
 
 namespace AddMonoid.End
 
-lemma comm_mulLeft_eq_mulRight : mulRight = (mulLeft : R →+ AddMonoid.End R) := by
+lemma comm_mulRight_eq_mulLeft : mulRight = (mulLeft : R →+ AddMonoid.End R) := by
   ext a
   exact commute_mulRight_eq_mulLeft _ (Commute.all _)
 
