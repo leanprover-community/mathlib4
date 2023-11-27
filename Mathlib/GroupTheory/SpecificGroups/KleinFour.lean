@@ -94,66 +94,77 @@ end ExponentTwo
 /-! # Klein four-groups as a mixin class -/
 
 /-- An (additive) Klein four-group is an (additive) group of cardinality four and exponent two. -/
-class IsAddKleinFour (G : Type*) [AddGroup G] [Fintype G] : Prop where
-  card_four : Fintype.card G = 4
+class IsAddKleinFour (G : Type*) [AddGroup G] : Prop where
+  card_four : Nat.card G = 4
   exponent_two : AddMonoid.exponent G = 2
 
 /-- A Klein four-group is a group of cardinality four and exponent two. -/
 @[to_additive existing IsAddKleinFour]
-class IsKleinFour (G : Type*) [Group G] [Fintype G] : Prop where
-  card_four : Fintype.card G = 4
+class IsKleinFour (G : Type*) [Group G] : Prop where
+  card_four : Nat.card G = 4
   exponent_two : Monoid.exponent G = 2
 
 attribute [simp] IsKleinFour.card_four IsKleinFour.exponent_two
   IsAddKleinFour.card_four IsAddKleinFour.exponent_two
 
 instance : IsAddKleinFour (ZMod 2 × ZMod 2) where
-  card_four := rfl
+  card_four := by simp
   exponent_two := by simp [AddMonoid.exponent_prod]
 
 instance : IsKleinFour (DihedralGroup 2) where
-  card_four := rfl
+  card_four := by simp only [Nat.card_eq_fintype_card]; rfl
   exponent_two := by simp [DihedralGroup.exponent]
 
-instance {G : Type*} [Group G] [Fintype G] [IsKleinFour G] :
+instance {G : Type*} [Group G] [IsKleinFour G] :
     IsAddKleinFour (Additive G) where
   card_four := by rw [← IsKleinFour.card_four (G := G)]; congr!
   exponent_two := by simp
 
-instance {G : Type*} [AddGroup G] [Fintype G] [IsAddKleinFour G] :
+instance {G : Type*} [AddGroup G] [IsAddKleinFour G] :
     IsKleinFour (Multiplicative G) where
   card_four := by rw [← IsAddKleinFour.card_four (G := G)]; congr!
   exponent_two := by simp
 
 namespace IsKleinFour
 
+@[to_additive]
+instance instFinite {G : Type*} [Group G] [IsKleinFour G] : Finite G :=
+  Nat.finite_of_card_ne_zero <| by norm_num [IsKleinFour.card_four]
+
+@[to_additive (attr := simp)]
+lemma card_four' {G : Type*} [Group G] [Fintype G] [IsKleinFour G] :
+    Fintype.card G = 4 :=
+  Nat.card_eq_fintype_card (α := G).symm ▸ IsKleinFour.card_four
+
 open Finset
 
-variable {G : Type*} [Group G] [Fintype G]
+variable {G : Type*} [Group G]
 
 /-- A group of order 4 is not cyclic if and only if its exponent is two. -/
 @[to_additive]
-lemma not_isCyclic_iff (hG : Fintype.card G = 4) :
+lemma not_isCyclic_iff (hG : Nat.card G = 4) :
     ¬ IsCyclic G ↔ Monoid.exponent G = 2 := by
-  refine ⟨fun h_cyc ↦ ?_, fun h_exp h_cyc ↦ by simpa [hG, h_exp] using h_cyc.exponent_eq_card⟩
+  let _inst : Fintype G := @Fintype.ofFinite G <| Nat.finite_of_card_ne_zero <| by norm_num [hG]
+  have hG' : Fintype.card G = 4 := by simpa using hG
+  refine ⟨fun h_cyc ↦ ?_, fun h_exp h_cyc ↦ by simpa [hG', h_exp] using h_cyc.exponent_eq_card⟩
   apply le_antisymm
   · refine Nat.le_of_dvd zero_lt_two <| Monoid.exponent_dvd_of_forall_pow_eq_one G 2 fun g ↦ ?_
     have hg' : orderOf g ∈ {1, 2, 4} :=
-      (Nat.mem_divisors (m := 4)).mpr ⟨hG ▸ orderOf_dvd_card, by norm_num⟩
+      (Nat.mem_divisors (m := 4)).mpr ⟨hG' ▸ orderOf_dvd_card, by norm_num⟩
     simp only [mem_singleton, Nat.succ.injEq, OfNat.one_ne_ofNat, mem_insert, or_self,
       orderOf_eq_one_iff] at hg'
     obtain (rfl|hg|hg) := hg'
     · simp
     · exact hg ▸ pow_orderOf_eq_one g
-    · apply False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g (hG ▸ hg)
-  · have := (Fintype.one_lt_card_iff_nontrivial (α := G)).mp <| by norm_num [hG]
+    · apply False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g (hG' ▸ hg)
+  · have := (Fintype.one_lt_card_iff_nontrivial (α := G)).mp <| by norm_num [hG']
     exact Monoid.one_lt_exponent
 
 variable [IsKleinFour G]
 
 @[to_additive]
 lemma not_isCyclic : ¬ IsCyclic G :=
-  fun h ↦ by simpa using h.exponent_eq_card
+  fun h ↦ by let _inst := Fintype.ofFinite G; simpa using h.exponent_eq_card
 
 @[to_additive]
 lemma inv_eq_self (x : G) : x⁻¹ = x := inv_eq_self_of_exponent_two (by simp) x
@@ -163,10 +174,10 @@ lemma mul_self (x : G) : x * x = 1 := by
   rw [mul_eq_one_iff_eq_inv, inv_eq_self]
 
 @[to_additive]
-lemma eq_finset_univ [DecidableEq G]
+lemma eq_finset_univ [Fintype G] [DecidableEq G]
     {x y : G} (hx : x ≠ 1) (hy : y ≠ 1) (hxy : x ≠ y) : {x * y, x, y, (1 : G)} = Finset.univ := by
   apply Finset.eq_univ_of_card
-  rw [card_four]
+  rw [card_four']
   repeat rw [card_insert_of_not_mem]
   on_goal 4 => simpa using mul_not_mem_of_exponent_two (by simp) hx hy hxy
   all_goals aesop
@@ -175,10 +186,11 @@ lemma eq_finset_univ [DecidableEq G]
 lemma eq_mul_of_ne_all {x y z : G} (hx : x ≠ 1)
     (hy : y ≠ 1) (hxy : x ≠ y) (hz : z ≠ 1) (hzx : z ≠ x) (hzy : z ≠ y) : z = x * y := by
   classical
+  let _ := Fintype.ofFinite G
   apply eq_of_not_mem_of_mem_insert <| (eq_finset_univ hx hy hxy).symm ▸ mem_univ _
   simpa only [mem_singleton, mem_insert, not_or] using ⟨hzx, hzy, hz⟩
 
-variable {G₁ G₂ : Type*} [Group G₁] [Group G₂] [Fintype G₁] [IsKleinFour G₁]
+variable {G₁ G₂ : Type*} [Group G₁] [Group G₂] [IsKleinFour G₁]
 
 /-- An equivalence between an `IsKleinFour` group `G₁` and a group `G₂` of exponent two which sends
 `1 : G₁` to `1 : G₂` is in fact an isomorphism. -/
@@ -187,7 +199,8 @@ two which sends `0 : G₁` to `0 : G₂` is in fact an isomorphism."]
 def mulEquiv' (e : G₁ ≃ G₂) (he : e 1 = 1) (h : Monoid.exponent G₂ = 2) : G₁ ≃* G₂ where
   toEquiv := e
   map_mul' := by
-    let _ := Fintype.ofEquiv G₁ e
+    let _inst₁ := Fintype.ofFinite G₁
+    let _inst₂ := Fintype.ofEquiv G₁ e
     intro x y
     by_cases hx : x = 1 <;> by_cases hy : y = 1
     all_goals try simp only [hx, hy, mul_one, one_mul, Equiv.toFun_as_coe, he]
@@ -207,7 +220,7 @@ def mulEquiv' (e : G₁ ≃ G₂) (he : e 1 = 1) (h : Monoid.exponent G₂ = 2) 
 group to the identity of the other. -/
 @[to_additive (attr := reducible) "Any two `IsAddKleinFour` groups are isomorphic via any
 equivalence which sends the identity of one group to the identity of the other."]
-def mulEquiv [Fintype G₂] [IsKleinFour G₂] (e : G₁ ≃ G₂) (he : e 1 = 1) : G₁ ≃* G₂ :=
+def mulEquiv [IsKleinFour G₂] (e : G₁ ≃ G₂) (he : e 1 = 1) : G₁ ≃* G₂ :=
   mulEquiv' e he exponent_two
 
 end IsKleinFour
