@@ -9,6 +9,7 @@ import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.Interval
 import Mathlib.Algebra.Order.Sub.Defs
 
+import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.RingTheory.PowerSeries.Basic
 
 /-! # Partial HasAntidibgonal for functions with finite support
@@ -43,27 +44,46 @@ open scoped BigOperators
 
 open Function
 
-class HasPiAntidiagonal (μ : Type*) [AddCommMonoid μ]
-  (ι : Type*) [Fintype ι] where
+class HasPiAntidiagonal (ι : Type*) [Fintype ι] (μ : Type*) [AddCommMonoid μ]
+  where
   /-- The piAntidiagonal function -/
   piAntidiagonal : μ → Finset (ι → μ)
   /-- A function belongs to `piAntidiagonal n` iff the sum of its values is equal to `n` -/
   mem_piAntidiagonal {n} {f} : f ∈ piAntidiagonal n ↔ univ.sum f = n
 
-class HasPiAntidiagonal' (μ : Type*) [AddCommMonoid μ]
-  {ι : Type*} (s : Finset ι) where
-  /-- The piAntidiagonal function -/
-  piAntidiagonal : μ → Finset (ι → μ)
-  /-- A function belongs to `piAntidiagonal n`
-    iff its support is contained in s and the sum of its components is equal to `n` -/
-  mem_piAntidiagonal {n} {f} : f ∈ piAntidiagonal n ↔ f.support ≤ s ∧ s.sum f = n
+export HasPiAntidiagonal (piAntidiagonal mem_piAntidiagonal)
 
-section HasAntidiagonal
+/-- piAntidiagonal instance for ℕ, using `Finset.Nat.andidiagonalTuple` -/
+instance (k : ℕ) : HasPiAntidiagonal (Fin k) ℕ where
+  piAntidiagonal n := Finset.Nat.antidiagonalTuple k n
+  mem_piAntidiagonal := Finset.Nat.mem_antidiagonalTuple
+
+namespace HasPiAntidiagonal
+
+open Finset
+
+variable {ι : Type*} [Fintype ι] (μ : Type*) [CanonicallyOrderedAddCommMonoid μ]
+  [HasPiAntidiagonal ι μ]
+
+theorem piAntidiagonal_zero :
+    piAntidiagonal (0 : μ) = {(0 : ι → μ)} := by
+  ext f
+  simp only [mem_piAntidiagonal, mem_singleton, sum_eq_zero_iff, mem_univ, forall_true_left, funext_iff, Pi.zero_apply]
+
+theorem piAntidiagonal_empty [IsEmpty ι] [DecidableEq μ] (n : μ) :
+    piAntidiagonal n = if n = 0 then  {(0 : ι → μ)} else ∅ := by
+  ext f
+  split_ifs with hn
+  · simp only [hn, piAntidiagonal_zero]
+  · simp only [mem_piAntidiagonal, univ_eq_empty, sum_empty, not_mem_empty, iff_false]
+    exact ne_comm.mp hn
+
+section HasPiAntidiagonal
+
+variable {ι : Type*} [DecidableEq ι]
 
 variable {μ : Type*} [AddCommMonoid μ] [HasAntidiagonal μ]
   [DecidableEq μ]
-
-variable {ι : Type*} [DecidableEq ι]
 
 /-- `finAntidiagonal d n` is the type of d-tuples with sum n -/
 def finAntidiagonal : (d : ℕ) → μ → Finset (Fin d → μ)
@@ -109,11 +129,144 @@ lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d → μ) :
         · rw [ih]
         · apply Fin.cons_self_tail)
 
+
+end HasPiAntidiagonal
+end HasPiAntidiagonal
+
+
 /- TODO :
 * update what follows for `HasPiAntidiagonal`
 * check that it is enough for application to products of powers series
 * (ifthat works), provide the instance when μ = ℕ  using `Nat.AntidiagonalTuple`
 -/
+
+class HasPiAntidiagonal' (ι : Type*)
+    (μ : Type*) [AddCommMonoid μ] where
+  /-- The piAntidiagonal function -/
+  piAntidiagonal : Finset ι → μ → Finset (ι → μ)
+  /-- A function belongs to `piAntidiagonal n`
+    iff its support is contained in s and the sum of its components is equal to `n` -/
+  mem_piAntidiagonal {s} {n} {f} :
+    f ∈ piAntidiagonal s n ↔ f.support ≤ s ∧ s.sum f = n
+
+
+export HasPiAntidiagonal' (piAntidiagonal mem_piAntidiagonal)
+
+namespace HasPiAntidiagonal'
+
+variable {ι μ : Type*}
+
+section
+
+def _root_.Set.InjOn.embedding {α β : Type*} {f : α → β}  {s : Finset α}
+    (hs : Set.InjOn f s) : s ↪ β := { inj' := hs.injective }
+
+def _root_.Finset.map_of_injOn {α β : Type*} (f : α → β)
+    (s : Finset α) (hs : Set.InjOn f s) : Finset β  :=
+  s.attach.map { inj' := hs.injective }
+
+variable [AddCommMonoid μ] [HasAntidiagonal μ] [HasPiAntidiagonal' ι μ]
+  [DecidableEq μ]
+variable [DecidableEq ι] [DecidableEq (ι → μ)]
+
+theorem piAntidiagonal_empty [DecidableEq μ] (n : μ) :
+    piAntidiagonal (∅ : Finset ι) n =
+      if n = 0 then  {(0 : ι → μ)} else ∅ := by
+  ext f
+  rw [mem_piAntidiagonal]
+  simp only [coe_empty, Set.le_eq_subset, support_subset_iff, ne_eq, Set.mem_empty_iff_false, imp_false, not_not, ← funext_iff]
+  simp only [Finset.sum_empty]
+  split_ifs with hn
+  · simp only [hn, and_true, mem_singleton]
+    rfl
+  · simp only [not_mem_empty, iff_false, not_and]
+    exact fun _ => ne_comm.mp hn
+
+theorem piAntidiagonal_insert (a : ι) (s : Finset ι) (h : a ∉ s) (n : μ) :
+    piAntidiagonal (insert a s) n =
+      (antidiagonal n).biUnion fun p : μ × μ =>
+          (piAntidiagonal s p.snd).attach.map
+          (Set.InjOn.embedding (f := fun f x => if (x = a) then p.fst else f x)
+          (fun f hf g hg => by
+            simp only [mem_coe, mem_piAntidiagonal] at hf hg
+            simp only [funext_iff]
+            intro h' x
+            specialize h' x
+            by_cases hx : x = a
+            · rw [hx, nmem_support.mp (fun H => h (hf.1 H)), nmem_support.mp (fun H => h (hg.1 H))]
+            · simpa only [if_neg hx] using h')) := by
+  ext f
+  rw [mem_piAntidiagonal, mem_biUnion, sum_insert h]
+  constructor
+  · rintro ⟨hsupp, hsum⟩
+    simp only [mem_antidiagonal, mem_map, mem_attach, true_and, Subtype.exists, Prod.exists]
+    refine' ⟨f a, s.sum f, hsum, fun i => if i = a then 0 else f i, _, _⟩
+    · rw [mem_piAntidiagonal]
+      refine' ⟨_, _⟩
+      · simp only [Set.le_eq_subset, support_subset_iff, ne_eq, ite_eq_left_iff, not_forall,
+        exists_prop, mem_coe, and_imp]
+        intro x hx
+        rw [not_imp_comm]
+        intro hx'
+        rw [← nmem_support]
+        apply Set.not_mem_subset hsupp
+        simp only [coe_insert, mem_coe, Set.mem_insert_iff]
+        exact not_or_intro hx hx'
+      · rw [sum_ite]
+        have : filter (fun x => x ≠ a) s = s := by
+          apply filter_true_of_mem
+          rintro i hi rfl
+          apply h hi
+        simp [this]
+    · ext x
+      simp only [Set.InjOn.embedding, Embedding.coeFn_mk, Set.restrict_apply]
+      split_ifs with hx
+      · rw [hx]
+      · rfl
+  · simp only [mem_insert, Function.Embedding.coeFn_mk, mem_map, mem_antidiagonal, Prod.exists,
+      exists_prop, mem_piAntidiagonal, not_or]
+    rintro ⟨p, q, rfl, ⟨g, hg⟩, _, rfl⟩
+    refine' ⟨_, _⟩
+    · intro x hx
+      simp only [Set.InjOn.embedding, Embedding.coeFn_mk, Set.restrict_apply, mem_support, ne_eq] at hx
+      simp only [mem_piAntidiagonal] at hg
+      simp only [coe_insert, mem_coe, Set.mem_insert_iff]
+      by_cases hx' : x = a
+      · left; exact hx'
+      · right
+        rw [if_neg hx'] at hx
+        apply hg.1
+        rw [mem_support]
+        exact hx
+    · simp only [Set.InjOn.embedding, Embedding.coeFn_mk, Set.restrict_apply, ite_true]
+      apply congr_arg₂ _ rfl
+      rw [mem_piAntidiagonal] at hg
+      rw [← hg.2]
+      apply Finset.sum_congr rfl
+      intro x hx
+      rw [if_neg (ne_of_mem_of_not_mem hx h)]
+
+end
+
+section CanonicallyOrderedAddCommMonoid
+
+variable [CanonicallyOrderedAddCommMonoid μ] [HasPiAntidiagonal' ι μ]
+
+theorem piAntidiagonal_zero (s : Finset ι) :
+    piAntidiagonal s (0 : μ) = {(0 : ι → μ)} := by
+  ext f
+  simp only [mem_piAntidiagonal, mem_singleton, sum_eq_zero_iff]
+  simp only [Set.le_eq_subset, support_subset_iff, ne_eq, mem_coe, not_imp_comm]
+  constructor
+  · rintro ⟨hsupp, hsum⟩
+    ext x
+    by_cases hx : x ∈ s
+    · exact hsum x hx
+    · exact hsupp x hx
+  · intro hf
+    simp only [hf, Pi.zero_apply, implies_true, and_self]
+
+end CanonicallyOrderedAddCommMonoid
 
 section Test -- not conclusive for the moment
 
@@ -121,11 +274,23 @@ open MvPowerSeries
 
 variable {α σ : Type*} [CommSemiring α]
 
-theorem coeff_prod [Fintype ι] [HasPiAntidiagonal (σ →₀ ℕ) ι]
-    (f : ι → MvPowerSeries σ α) (d : σ →₀ ℕ) :
-    coeff α d (∏ j in univ, f j) =
-      ∑ l in HasPiAntidiagonal.piAntidiagonal d,
-        ∏ i in univ, coeff α (l i) (f i) := by sorry
+theorem coeff_prod [HasPiAntidiagonal' ι (σ →₀ ℕ)]
+    (f : ι → MvPowerSeries σ α) (d : σ →₀ ℕ) (s : Finset ι) :
+    coeff α d (∏ j in s, f j) =
+      ∑ l in piAntidiagonal s d,
+        ∏ i in s, coeff α (l i) (f i) := by
+  induction s using Finset.induction_on with
+  | empty =>
+    simp only [prod_empty, sum_const, nsmul_eq_mul, mul_one]
+    classical
+    rw [coeff_one]
+    simp only [piAntidiagonal_empty]
+    split_ifs with hd
+    · simp only [card_singleton, Nat.cast_one]
+    · simp only [card_empty, Nat.cast_zero]
+  | insert x y =>
+    sorry
+
 
 variable (s : Finset ι)
 
