@@ -65,7 +65,7 @@ theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) 
     rw [IsScalarTower.algebraMap_eq R K, coeff_map, ← eval₂_map, eval₂_at_apply] at he
     rw [eval₂_eq_eval_map]; apply (injective_iff_map_eq_zero _).1 _ _ he
     · apply RingHom.injective
-  rw [IsScalarTower.algebraMap_eq R K _, ← map_map]
+  rw [aroots_def, IsScalarTower.algebraMap_eq R K _, ← map_map]
   refine' Multiset.mem_of_le (roots.le_of_dvd ((hf.map _).map _).ne_zero _) ha
   exact map_dvd (algebraMap K g.SplittingField) hd
 #align integral_closure.mem_lifts_of_monic_of_dvd_map integralClosure.mem_lifts_of_monic_of_dvd_map

@@ -35,7 +35,7 @@ theorem Set.restrictPreimage_inducing (s : Set β) (h : Inducing f) :
   rw [← h, ← inducing_subtype_val.nhds_eq_comap]
 #align set.restrict_preimage_inducing Set.restrictPreimage_inducing
 
-alias Set.restrictPreimage_inducing ← Inducing.restrictPreimage
+alias Inducing.restrictPreimage := Set.restrictPreimage_inducing
 #align inducing.restrict_preimage Inducing.restrictPreimage
 
 theorem Set.restrictPreimage_embedding (s : Set β) (h : Embedding f) :
@@ -43,7 +43,7 @@ theorem Set.restrictPreimage_embedding (s : Set β) (h : Embedding f) :
   ⟨h.1.restrictPreimage s, h.2.restrictPreimage s⟩
 #align set.restrict_preimage_embedding Set.restrictPreimage_embedding
 
-alias Set.restrictPreimage_embedding ← Embedding.restrictPreimage
+alias Embedding.restrictPreimage := Set.restrictPreimage_embedding
 #align embedding.restrict_preimage Embedding.restrictPreimage
 
 theorem Set.restrictPreimage_openEmbedding (s : Set β) (h : OpenEmbedding f) :
@@ -52,7 +52,7 @@ theorem Set.restrictPreimage_openEmbedding (s : Set β) (h : OpenEmbedding f) :
     (s.range_restrictPreimage f).symm ▸ continuous_subtype_val.isOpen_preimage _ h.2⟩
 #align set.restrict_preimage_open_embedding Set.restrictPreimage_openEmbedding
 
-alias Set.restrictPreimage_openEmbedding ← OpenEmbedding.restrictPreimage
+alias OpenEmbedding.restrictPreimage := Set.restrictPreimage_openEmbedding
 #align open_embedding.restrict_preimage OpenEmbedding.restrictPreimage
 
 theorem Set.restrictPreimage_closedEmbedding (s : Set β) (h : ClosedEmbedding f) :
@@ -61,7 +61,7 @@ theorem Set.restrictPreimage_closedEmbedding (s : Set β) (h : ClosedEmbedding f
     (s.range_restrictPreimage f).symm ▸ inducing_subtype_val.isClosed_preimage _ h.2⟩
 #align set.restrict_preimage_closed_embedding Set.restrictPreimage_closedEmbedding
 
-alias Set.restrictPreimage_closedEmbedding ← ClosedEmbedding.restrictPreimage
+alias ClosedEmbedding.restrictPreimage := Set.restrictPreimage_closedEmbedding
 #align closed_embedding.restrict_preimage ClosedEmbedding.restrictPreimage
 
 theorem Set.restrictPreimage_isClosedMap (s : Set β) (H : IsClosedMap f) :

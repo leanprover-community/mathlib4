@@ -365,11 +365,10 @@ theorem coe_T_zpow (n : ℤ) : ↑ₘ(T ^ n) = !![1, n; 0, 1] := by
   induction' n using Int.induction_on with n h n h
   · rw [zpow_zero, coe_one, Matrix.one_fin_two]
   · simp_rw [zpow_add, zpow_one, coe_mul, h, coe_T, Matrix.mul_fin_two]
-    -- Porting note: was congrm !![_, _; _, _]
-    ring_nf
+    congrm !![_, ?_; _, _]
+    rw [mul_one, mul_one, add_comm]
   · simp_rw [zpow_sub, zpow_one, coe_mul, h, coe_T_inv, Matrix.mul_fin_two]
-    -- Porting note: was congrm !![_, _; _, _]
-    ring_nf
+    congrm !![?_, ?_; _, _] <;> ring
 #align modular_group.coe_T_zpow ModularGroup.coe_T_zpow
 
 @[simp]

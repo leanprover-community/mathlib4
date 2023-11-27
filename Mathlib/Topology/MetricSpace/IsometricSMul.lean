@@ -276,8 +276,9 @@ theorem smul_ball (c : G) (x : X) (r : ℝ≥0∞) : c • ball x r = ball (c �
 #align emetric.vadd_ball EMetric.vadd_ball
 
 @[to_additive (attr := simp)]
-theorem preimage_smul_ball (c : G) (x : X) (r : ℝ≥0∞) : (· • ·) c ⁻¹' ball x r = ball (c⁻¹ • x) r :=
-  by rw [preimage_smul, smul_ball]
+theorem preimage_smul_ball (c : G) (x : X) (r : ℝ≥0∞) :
+    (· • ·) c ⁻¹' ball x r = ball (c⁻¹ • x) r := by
+  rw [preimage_smul, smul_ball]
 #align emetric.preimage_smul_ball EMetric.preimage_smul_ball
 #align emetric.preimage_vadd_ball EMetric.preimage_vadd_ball
 
@@ -420,16 +421,16 @@ theorem nndist_div_left [Group G] [PseudoMetricSpace G] [IsometricSMul G G]
 #align nndist_div_left nndist_div_left
 #align nndist_sub_left nndist_sub_left
 
-namespace Metric
-
 /-- If `G` acts isometrically on `X`, then the image of a bounded set in `X` under scalar
-multiplication by `c : G` is bounded. See also `Metric.Bounded.smul₀` for a similar lemma about
+multiplication by `c : G` is bounded. See also `Bornology.IsBounded.smul₀` for a similar lemma about
 normed spaces. -/
 @[to_additive "Given an additive isometric action of `G` on `X`, the image of a bounded set in `X`
 under translation by `c : G` is bounded"]
-theorem Bounded.smul [PseudoMetricSpace X] [SMul G X] [IsometricSMul G X] {s : Set X}
-    (hs : Bounded s) (c : G) : Bounded (c • s) :=
-  (isometry_smul X c).lipschitz.bounded_image hs
+theorem Bornology.IsBounded.smul [PseudoMetricSpace X] [SMul G X] [IsometricSMul G X] {s : Set X}
+    (hs : IsBounded s) (c : G) : IsBounded (c • s) :=
+  (isometry_smul X c).lipschitz.isBounded_image hs
+
+namespace Metric
 
 variable [PseudoMetricSpace X] [Group G] [MulAction G X] [IsometricSMul G X]
 

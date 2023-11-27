@@ -7,6 +7,7 @@ import Mathlib.Algebra.MonoidAlgebra.Division
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Polynomial.Degree.Definitions
 import Mathlib.Data.Polynomial.Induction
+import Mathlib.Data.Polynomial.EraseLead
 
 #align_import data.polynomial.inductions from "leanprover-community/mathlib"@"57e09a1296bfb4330ddf6624f1028ba186117d82"
 
@@ -19,7 +20,7 @@ This file contains lemmas dealing with different flavours of induction on polyno
 
 noncomputable section
 
-open Classical BigOperators Polynomial
+open BigOperators Polynomial
 
 open Finset
 
@@ -52,6 +53,10 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.div_X_mul_X_add Polynomial.divX_mul_X_add
 
 @[simp]
+theorem X_mul_divX_add (p : R[X]) : X * divX p + C (p.coeff 0) = p :=
+  ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C, Nat.succ_ne_zero, coeff_mul_X]
+
+@[simp]
 theorem divX_C (a : R) : divX (C a) = 0 :=
   ext fun n => by simp [coeff_divX, coeff_C, Finsupp.single_eq_of_ne _]
 set_option linter.uppercaseLean3 false in
@@ -66,6 +71,50 @@ theorem divX_add : divX (p + q) = divX p + divX q :=
   ext <| by simp
 set_option linter.uppercaseLean3 false in
 #align polynomial.div_X_add Polynomial.divX_add
+
+@[simp]
+theorem divX_zero : divX (0 : R[X]) = 0 := leadingCoeff_eq_zero.mp rfl
+
+@[simp]
+theorem divX_one : divX (1 : R[X]) = 0 := by
+  ext
+  simpa only [coeff_divX, coeff_zero] using coeff_one
+
+@[simp]
+theorem divX_C_mul : divX (C a * p) = C a * divX p := by
+  ext
+  simp
+
+theorem divX_X_pow : divX (X ^ n : R[X]) = if (n = 0) then 0 else X ^ (n - 1) := by
+  cases n
+  · simp
+  · ext n
+    simp [coeff_X_pow]
+
+/-- `divX` as an additive homomorphism. -/
+noncomputable
+def divX_hom : R[X] →+ R[X] :=
+  { toFun := divX
+    map_zero' := divX_zero
+    map_add' := fun _ _ => divX_add }
+
+@[simp] theorem divX_hom_toFun : divX_hom p = divX p := rfl
+
+theorem natDegree_divX_eq_natDegree_tsub_one : p.divX.natDegree = p.natDegree - 1 := by
+  apply map_natDegree_eq_sub (φ := divX_hom)
+  · intro f
+    simpa [divX_hom, divX_eq_zero_iff] using eq_C_of_natDegree_eq_zero
+  · intros n c c0
+    rw [← C_mul_X_pow_eq_monomial, divX_hom_toFun, divX_C_mul, divX_X_pow]
+    split_ifs with n0
+    · simp [n0]
+    · exact natDegree_C_mul_X_pow (n - 1) c c0
+
+theorem natDegree_divX_le : p.divX.natDegree ≤ p.natDegree :=
+  natDegree_divX_eq_natDegree_tsub_one.trans_le (Nat.pred_le _)
+
+theorem divX_C_mul_X_pow : divX (C a * X ^ n) = if n = 0 then 0 else C a * X ^ (n - 1) := by
+  simp only [divX_C_mul, divX_X_pow, mul_ite, mul_zero]
 
 theorem degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
   haveI := Nontrivial.of_polynomial_ne hp0
@@ -100,6 +149,7 @@ set_option linter.uppercaseLean3 false in
 noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
     (MC : ∀ p a, coeff p 0 = 0 → a ≠ 0 → M p → M (p + C a))
     (MX : ∀ p, p ≠ 0 → M p → M (p * X)) : M p :=
+  letI := Classical.decEq R
   if hp : p = 0 then hp ▸ M0
   else by
     have wf : degree (divX p) < degree p := degree_divX_lt hp

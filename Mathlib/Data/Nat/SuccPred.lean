@@ -90,5 +90,5 @@ theorem Fin.coe_covby_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b 
   and_congr_right' ⟨fun h _c hc => h hc, fun h c ha hb => @h ⟨c, hb.trans b.prop⟩ ha hb⟩
 #align fin.coe_covby_iff Fin.coe_covby_iff
 
-alias Fin.coe_covby_iff ↔ _ Covby.coe_fin
+alias ⟨_, Covby.coe_fin⟩ := Fin.coe_covby_iff
 #align covby.coe_fin Covby.coe_fin

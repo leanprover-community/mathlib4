@@ -316,15 +316,15 @@ theorem prehaar_pos (K₀ : PositiveCompacts G) {U : Set G} (hU : (interior U).N
 theorem prehaar_mono {K₀ : PositiveCompacts G} {U : Set G} (hU : (interior U).Nonempty)
     {K₁ K₂ : Compacts G} (h : (K₁ : Set G) ⊆ K₂.1) :
     prehaar (K₀ : Set G) U K₁ ≤ prehaar (K₀ : Set G) U K₂ := by
-  simp only [prehaar]; rw [div_le_div_right]; exact_mod_cast index_mono K₂.2 h hU
-  exact_mod_cast index_pos K₀ hU
+  simp only [prehaar]; rw [div_le_div_right]; exact mod_cast index_mono K₂.2 h hU
+  exact mod_cast index_pos K₀ hU
 #align measure_theory.measure.haar.prehaar_mono MeasureTheory.Measure.haar.prehaar_mono
 #align measure_theory.measure.haar.add_prehaar_mono MeasureTheory.Measure.haar.addPrehaar_mono
 
 @[to_additive]
 theorem prehaar_self {K₀ : PositiveCompacts G} {U : Set G} (hU : (interior U).Nonempty) :
     prehaar (K₀ : Set G) U K₀.toCompacts = 1 :=
-  div_self <| ne_of_gt <| by exact_mod_cast index_pos K₀ hU
+  div_self <| ne_of_gt <| mod_cast index_pos K₀ hU
 #align measure_theory.measure.haar.prehaar_self MeasureTheory.Measure.haar.prehaar_self
 #align measure_theory.measure.haar.add_prehaar_self MeasureTheory.Measure.haar.addPrehaar_self
 
@@ -333,7 +333,7 @@ theorem prehaar_sup_le {K₀ : PositiveCompacts G} {U : Set G} (K₁ K₂ : Comp
     (hU : (interior U).Nonempty) :
     prehaar (K₀ : Set G) U (K₁ ⊔ K₂) ≤ prehaar (K₀ : Set G) U K₁ + prehaar (K₀ : Set G) U K₂ := by
   simp only [prehaar]; rw [div_add_div_same, div_le_div_right]
-  exact_mod_cast index_union_le K₁ K₂ hU; exact_mod_cast index_pos K₀ hU
+  exact mod_cast index_union_le K₁ K₂ hU; exact mod_cast index_pos K₀ hU
 #align measure_theory.measure.haar.prehaar_sup_le MeasureTheory.Measure.haar.prehaar_sup_le
 #align measure_theory.measure.haar.add_prehaar_sup_le MeasureTheory.Measure.haar.addPrehaar_sup_le
 
@@ -344,7 +344,7 @@ theorem prehaar_sup_eq {K₀ : PositiveCompacts G} {U : Set G} {K₁ K₂ : Comp
   simp only [prehaar]; rw [div_add_div_same]
   -- Porting note: Here was `congr`, but `to_additive` failed to generate a theorem.
   refine congr_arg (fun x : ℝ => x / index K₀ U) ?_
-  exact_mod_cast index_union_eq K₁ K₂ hU h
+  exact mod_cast index_union_eq K₁ K₂ hU h
 #align measure_theory.measure.haar.prehaar_sup_eq MeasureTheory.Measure.haar.prehaar_sup_eq
 #align measure_theory.measure.haar.add_prehaar_sup_eq MeasureTheory.Measure.haar.addPrehaar_sup_eq
 
@@ -374,8 +374,7 @@ theorem nonempty_iInter_clPrehaar (K₀ : PositiveCompacts G) :
     apply isCompact_univ_pi; intro K; apply isCompact_Icc
   refine' this.inter_iInter_nonempty (clPrehaar K₀) (fun s => isClosed_closure) fun t => _
   let V₀ := ⋂ V ∈ t, (V : OpenNhdsOf (1 : G)).carrier
-  have h1V₀ : IsOpen V₀ := by
-    apply isOpen_biInter; apply Finset.finite_toSet; rintro ⟨⟨V, hV₁⟩, hV₂⟩ _; exact hV₁
+  have h1V₀ : IsOpen V₀ := isOpen_biInter_finset $ by rintro ⟨⟨V, hV₁⟩, hV₂⟩ _; exact hV₁
   have h2V₀ : (1 : G) ∈ V₀ := by simp only [mem_iInter]; rintro ⟨⟨V, hV₁⟩, hV₂⟩ _; exact hV₂
   refine' ⟨prehaar K₀ V₀, _⟩
   constructor
@@ -666,7 +665,7 @@ instance isHaarMeasure_haarMeasure (K₀ : PositiveCompacts G) : IsHaarMeasure (
     isHaarMeasure_of_isCompact_nonempty_interior (haarMeasure K₀) K₀ K₀.isCompact
       K₀.interior_nonempty
   · simp only [haarMeasure_self]; exact one_ne_zero
-  · simp only [haarMeasure_self]
+  · simp only [haarMeasure_self, ne_eq, ENNReal.one_ne_top, not_false_eq_true]
 #align measure_theory.measure.is_haar_measure_haar_measure MeasureTheory.Measure.isHaarMeasure_haarMeasure
 #align measure_theory.measure.is_add_haar_measure_add_haar_measure MeasureTheory.Measure.isAddHaarMeasure_addHaarMeasure
 
@@ -698,6 +697,14 @@ theorem haarMeasure_unique (μ : Measure G) [SigmaFinite μ] [IsMulLeftInvariant
     (by rw [haarMeasure_self, div_one])
 #align measure_theory.measure.haar_measure_unique MeasureTheory.Measure.haarMeasure_unique
 #align measure_theory.measure.add_haar_measure_unique MeasureTheory.Measure.addHaarMeasure_unique
+
+/-- Let `μ` be a σ-finite left invariant measure on `G`. Then `μ` is equal to the Haar measure
+defined by `K₀` iff `μ K₀ = 1`. -/
+@[to_additive]
+theorem haarMeasure_eq_iff (K₀ : PositiveCompacts G) (μ : Measure G) [SigmaFinite μ]
+    [IsMulLeftInvariant μ] :
+    haarMeasure K₀ = μ ↔ μ K₀ = 1 :=
+  ⟨fun h => h.symm ▸ haarMeasure_self, fun h => by rw [haarMeasure_unique μ K₀, h, one_smul]⟩
 
 example [LocallyCompactSpace G] (μ : Measure G) [IsHaarMeasure μ] (K₀ : PositiveCompacts G) :
     μ = μ K₀.1 • haarMeasure K₀ :=
@@ -733,6 +740,17 @@ theorem isHaarMeasure_eq_smul_isHaarMeasure [LocallyCompactSpace G] (μ ν : Mea
       _ = (μ K / ν K) • ν := by rw [← haarMeasure_unique ν K]
 #align measure_theory.measure.is_haar_measure_eq_smul_is_haar_measure MeasureTheory.Measure.isHaarMeasure_eq_smul_isHaarMeasure
 #align measure_theory.measure.is_add_haar_measure_eq_smul_is_add_haar_measure MeasureTheory.Measure.isAddHaarMeasure_eq_smul_isAddHaarMeasure
+
+/-- An invariant measure is absolutely continuous with respect to a Haar measure. -/
+@[to_additive
+"An invariant measure is absolutely continuous with respect to an additive Haar measure. "]
+theorem absolutelyContinuous_isHaarMeasure [LocallyCompactSpace G] (μ ν : Measure G)
+    [SigmaFinite μ] [IsMulLeftInvariant μ] [IsHaarMeasure ν] : μ ≪ ν := by
+  have K : PositiveCompacts G := Classical.arbitrary _
+  obtain ⟨c, -, -, h⟩ : ∃ c : ℝ≥0∞, c ≠ 0 ∧ c ≠ ∞ ∧ haarMeasure K = c • ν :=
+    isHaarMeasure_eq_smul_isHaarMeasure _ _
+  rw [haarMeasure_unique μ K, h, smul_smul]
+  exact AbsolutelyContinuous.smul (Eq.absolutelyContinuous rfl) _
 
 -- see Note [lower instance priority]
 @[to_additive]

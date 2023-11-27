@@ -89,7 +89,7 @@ theorem isBounded_prod : IsBounded (s ×ˢ t) ↔ s = ∅ ∨ t = ∅ ∨ IsBoun
 
 theorem isBounded_prod_self : IsBounded (s ×ˢ s) ↔ IsBounded s := by
   rcases s.eq_empty_or_nonempty with (rfl | hs); · simp
-  exact (isBounded_prod_of_nonempty (hs.prod hs)).trans (and_self_iff _)
+  exact (isBounded_prod_of_nonempty (hs.prod hs)).trans and_self_iff
 #align bornology.is_bounded_prod_self Bornology.isBounded_prod_self
 
 /-!
@@ -168,10 +168,10 @@ theorem boundedSpace_val_set_iff {s : Set α} : BoundedSpace s ↔ IsBounded s :
   boundedSpace_subtype_iff
 #align bounded_space_coe_set_iff boundedSpace_val_set_iff
 
-alias boundedSpace_subtype_iff ↔ _ Bornology.IsBounded.boundedSpace_subtype
+alias ⟨_, Bornology.IsBounded.boundedSpace_subtype⟩ := boundedSpace_subtype_iff
 #align bornology.is_bounded.bounded_space_subtype Bornology.IsBounded.boundedSpace_subtype
 
-alias boundedSpace_val_set_iff ↔ _ Bornology.IsBounded.boundedSpace_val
+alias ⟨_, Bornology.IsBounded.boundedSpace_val⟩ := boundedSpace_val_set_iff
 #align bornology.is_bounded.bounded_space_coe Bornology.IsBounded.boundedSpace_val
 
 instance [BoundedSpace α] {p : α → Prop} : BoundedSpace (Subtype p) :=

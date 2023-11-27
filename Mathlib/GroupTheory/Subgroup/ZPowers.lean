@@ -37,6 +37,10 @@ theorem coe_zpowers (g : G) : ↑(zpowers g) = Set.range (g ^ · : ℤ → G) :=
   rfl
 #align subgroup.coe_zpowers Subgroup.coe_zpowers
 
+noncomputable instance decidableMemZpowers {a : G} : DecidablePred (· ∈ Subgroup.zpowers a) :=
+  Classical.decPred _
+#align decidable_zpowers Subgroup.decidableMemZpowers
+
 theorem zpowers_eq_closure (g : G) : zpowers g = closure {g} := by
   ext
   exact mem_closure_singleton.symm
@@ -97,6 +101,9 @@ attribute [to_additive (attr := simp) AddSubgroup.mem_zmultiples] Subgroup.mem_z
 #align add_subgroup.mem_zmultiples AddSubgroup.mem_zmultiples
 
 attribute [to_additive (attr := norm_cast) AddSubgroup.coe_zmultiples] Subgroup.coe_zpowers
+
+attribute [to_additive AddSubgroup.decidableMemZmultiples] Subgroup.decidableMemZpowers
+#align decidable_zmultiples AddSubgroup.decidableMemZmultiples
 
 attribute [to_additive AddSubgroup.zmultiples_eq_closure] Subgroup.zpowers_eq_closure
 #align add_subgroup.zmultiples_eq_closure AddSubgroup.zmultiples_eq_closure
@@ -203,10 +210,10 @@ theorem zpowers_le {g : G} {H : Subgroup G} : zpowers g ≤ H ↔ g ∈ H := by
 #align subgroup.zpowers_le Subgroup.zpowers_le
 #align add_subgroup.zmultiples_le AddSubgroup.zmultiples_le
 
-alias zpowers_le ↔ _ zpowers_le_of_mem
+alias ⟨_, zpowers_le_of_mem⟩ := zpowers_le
 #align subgroup.zpowers_le_of_mem Subgroup.zpowers_le_of_mem
 
-alias AddSubgroup.zmultiples_le ↔ _ _root_.AddSubgroup.zmultiples_le_of_mem
+alias ⟨_, _root_.AddSubgroup.zmultiples_le_of_mem⟩ := AddSubgroup.zmultiples_le
 #align add_subgroup.zmultiples_le_of_mem AddSubgroup.zmultiples_le_of_mem
 
 attribute [to_additive existing zmultiples_le_of_mem] zpowers_le_of_mem

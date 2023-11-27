@@ -86,6 +86,14 @@ theorem log_mul_ofReal (r : ℝ) (hr : 0 < r) (x : ℂ) (hx : x ≠ 0) :
     log (x * r) = Real.log r + log x := by rw [mul_comm, log_ofReal_mul hr hx, add_comm]
 #align complex.log_mul_of_real Complex.log_mul_ofReal
 
+lemma log_mul_eq_add_log_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
+    log (x * y) = log x + log y ↔ arg x + arg y ∈ Set.Ioc (-π) π := by
+  refine ext_iff.trans <| Iff.trans ?_ <| arg_mul_eq_add_arg_iff hx₀ hy₀
+  simp_rw [add_re, add_im, log_re, log_im, AbsoluteValue.map_mul,
+    Real.log_mul (abs.ne_zero hx₀) (abs.ne_zero hy₀), true_and]
+
+alias ⟨_, log_mul⟩ := log_mul_eq_add_log_iff
+
 @[simp]
 theorem log_zero : log 0 = 0 := by simp [log]
 #align complex.log_zero Complex.log_zero
@@ -133,7 +141,7 @@ theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x)
 theorem log_inv (x : ℂ) (hx : x.arg ≠ π) : log x⁻¹ = -log x := by rw [log_inv_eq_ite, if_neg hx]
 #align complex.log_inv Complex.log_inv
 
-theorem two_pi_I_ne_zero : (2 * π * I : ℂ) ≠ 0 := by norm_num; simp [Real.pi_ne_zero, I_ne_zero]
+theorem two_pi_I_ne_zero : (2 * π * I : ℂ) ≠ 0 := by norm_num [Real.pi_ne_zero, I_ne_zero]
 set_option linter.uppercaseLean3 false in
 #align complex.two_pi_I_ne_zero Complex.two_pi_I_ne_zero
 
@@ -173,7 +181,7 @@ theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Co
       simp [Set.preimage, hne]
 #align complex.countable_preimage_exp Complex.countable_preimage_exp
 
-alias countable_preimage_exp ↔ _ _root_.Set.Countable.preimage_cexp
+alias ⟨_, _root_.Set.Countable.preimage_cexp⟩ := countable_preimage_exp
 #align set.countable.preimage_cexp Set.Countable.preimage_cexp
 
 theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
@@ -199,8 +207,7 @@ theorem continuousWithinAt_log_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (
         tendsto_const_nhds) using 1
   · lift z to ℝ using him
     simpa using hre.ne
-#align complex.continuous_within_at_log_of_re_neg_of_im_zero
-Complex.continuousWithinAt_log_of_re_neg_of_im_zero
+#align complex.continuous_within_at_log_of_re_neg_of_im_zero Complex.continuousWithinAt_log_of_re_neg_of_im_zero
 
 theorem tendsto_log_nhdsWithin_im_nonneg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
     (him : z.im = 0) : Tendsto log (𝓝[{ z : ℂ | 0 ≤ z.im }] z) (𝓝 <| Real.log (abs z) + π * I) := by

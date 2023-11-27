@@ -56,7 +56,7 @@ theorem map_add {X Y : C} {f g : X ⟶ Y} : F.map (f + g) = F.map f + F.map g :=
   Functor.Additive.map_add
 #align category_theory.functor.map_add CategoryTheory.Functor.map_add
 
--- porting note: it was originally @[simps (config := { fullyApplied := false })]
+-- porting note: it was originally @[simps (config := .asFn)]
 /-- `F.mapAddHom` is an additive homomorphism whose underlying function is `F.map`. -/
 @[simps!]
 def mapAddHom {X Y : C} : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y) :=
@@ -67,8 +67,8 @@ theorem coe_mapAddHom {X Y : C} : ⇑(F.mapAddHom : (X ⟶ Y) →+ _) = F.map :=
   rfl
 #align category_theory.functor.coe_map_add_hom CategoryTheory.Functor.coe_mapAddHom
 
-instance (priority := 100) preservesZeroMorphisms_of_additive : PreservesZeroMorphisms F
-    where map_zero _ _ := F.mapAddHom.map_zero
+instance (priority := 100) preservesZeroMorphisms_of_additive : PreservesZeroMorphisms F where
+  map_zero _ _ := F.mapAddHom.map_zero
 #align category_theory.functor.preserves_zero_morphisms_of_additive CategoryTheory.Functor.preservesZeroMorphisms_of_additive
 
 instance : Additive (𝟭 C) where

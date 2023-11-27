@@ -7,10 +7,10 @@ import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
-import Mathlib.MeasureTheory.Group.Integration
+import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
-import Mathlib.Topology.MetricSpace.EMetricParacompact
+import Mathlib.Topology.EMetricSpace.Paracompact
 
 #align_import analysis.fourier.riemann_lebesgue_lemma from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -44,8 +44,6 @@ equivalence to an inner-product space.
   reformulations explicitly using the Fourier integral.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open MeasureTheory Filter Complex Set FiniteDimensional
@@ -72,9 +70,7 @@ theorem fourier_integrand_integrable (w : V) :
 
 variable [CompleteSpace E]
 
--- Porting note: binary operations appear not to work?
--- local notation "i" => fun w => (1 / (2 * ‖w‖ ^ 2)) • w
-local notation "i" => fun (w : V) => HDiv.hDiv (1 : ℝ) (HMul.hMul (2 : ℝ) (HPow.hPow ‖w‖ 2)) • w
+local notation3 "i" => fun (w : V) => (1 / (2 * ‖w‖ ^ 2) : ℝ) • w
 
 /-- Shifting `f` by `(1 / (2 * ‖w‖ ^ 2)) • w` negates the integral in the Riemann-Lebesgue lemma. -/
 theorem fourier_integral_half_period_translate {w : V} (hw : w ≠ 0) :

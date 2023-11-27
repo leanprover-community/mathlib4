@@ -64,8 +64,8 @@ theorem pi_lift_π_apply [UnivLE.{v, u}] {β : Type v} (f : β → Type u) {P : 
 with specialized universes. -/
 theorem pi_lift_π_apply' {β : Type v} (f : β → Type v) {P : Type v}
     (s : ∀ b, P ⟶ f b) (b : β) (x : P) :
-    (Pi.π f b : (piObj f) → f b) (@Pi.lift β _ _ f _ P s x) = s b x :=
-  by simp
+    (Pi.π f b : (piObj f) → f b) (@Pi.lift β _ _ f _ P s x) = s b x := by
+  simp
 #align category_theory.limits.types.pi_lift_π_apply' CategoryTheory.Limits.Types.pi_lift_π_apply'
 
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`. -/
@@ -79,8 +79,8 @@ theorem pi_map_π_apply [UnivLE.{v, u}] {β : Type v} {f g : β → Type u}
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`,
 with specialized universes. -/
 theorem pi_map_π_apply' {β : Type v} {f g : β → Type v} (α : ∀ j, f j ⟶ g j) (b : β) (x) :
-    (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) :=
-   by simp
+    (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) := by
+  simp
 #align category_theory.limits.types.pi_map_π_apply' CategoryTheory.Limits.Types.pi_map_π_apply'
 
 /-- The category of types has `PUnit` as a terminal object. -/
@@ -426,7 +426,7 @@ theorem productIso_hom_comp_eval {J : Type v} (F : J → Type u) [UnivLE.{v, u}]
 -- `elementwise` seems to be broken. Applied to the previous lemma, it should produce:
 @[simp]
 theorem productIso_hom_comp_eval_apply {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) (x) :
-   (equivShrink _).symm ((productIso F).hom x) j = Pi.π F j x :=
+    (equivShrink _).symm ((productIso F).hom x) j = Pi.π F j x :=
   congr_fun (productIso_hom_comp_eval F j) x
 
 @[elementwise (attr := simp)]
@@ -438,7 +438,7 @@ end UnivLE
 
 /-- The category of types has `Σ j, f j` as the coproduct of a type family `f : J → Type`.
 -/
-def coproductColimitCocone {J : Type u} (F : J → Type u) :
+def coproductColimitCocone {J : Type v} (F : J → TypeMax.{v, u}) :
     Limits.ColimitCocone (Discrete.functor F) where
   cocone :=
     { pt := Σj, F j
@@ -451,19 +451,19 @@ def coproductColimitCocone {J : Type u} (F : J → Type u) :
 #align category_theory.limits.types.coproduct_colimit_cocone CategoryTheory.Limits.Types.coproductColimitCocone
 
 /-- The categorical coproduct in `Type u` is the type theoretic coproduct `Σ j, F j`. -/
-noncomputable def coproductIso {J : Type u} (F : J → Type u) : ∐ F ≅ Σj, F j :=
+noncomputable def coproductIso {J : Type v} (F : J → TypeMax.{v, u}) : ∐ F ≅ Σj, F j :=
   colimit.isoColimitCocone (coproductColimitCocone F)
 #align category_theory.limits.types.coproduct_iso CategoryTheory.Limits.Types.coproductIso
 
 @[elementwise (attr := simp)]
-theorem coproductIso_ι_comp_hom {J : Type u} (F : J → Type u) (j : J) :
+theorem coproductIso_ι_comp_hom {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
     Sigma.ι F j ≫ (coproductIso F).hom = fun x : F j => (⟨j, x⟩ : Σj, F j) :=
   colimit.isoColimitCocone_ι_hom (coproductColimitCocone F) ⟨j⟩
 #align category_theory.limits.types.coproduct_iso_ι_comp_hom CategoryTheory.Limits.Types.coproductIso_ι_comp_hom
 
 -- porting note: was @[elementwise (attr := simp)], but it produces a trivial lemma
 -- removed simp attribute because it seems it never applies
-theorem coproductIso_mk_comp_inv {J : Type u} (F : J → Type u) (j : J) :
+theorem coproductIso_mk_comp_inv {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
     (↾fun x : F j => (⟨j, x⟩ : Σj, F j)) ≫ (coproductIso F).inv = Sigma.ι F j :=
   rfl
 #align category_theory.limits.types.coproduct_iso_mk_comp_inv CategoryTheory.Limits.Types.coproductIso_mk_comp_inv
@@ -497,8 +497,8 @@ theorem unique_of_type_equalizer (t : IsLimit (Fork.ofι _ w)) (y : Y) (hy : g y
   have hy' : y' ≫ g = y' ≫ h := funext fun _ => hy
   refine' ⟨(Fork.IsLimit.lift' t _ hy').1 ⟨⟩, congr_fun (Fork.IsLimit.lift' t y' _).2 ⟨⟩, _⟩
   intro x' hx'
-  suffices : (fun _ : PUnit => x') = (Fork.IsLimit.lift' t y' hy').1
-  rw [← this]
+  suffices (fun _ : PUnit => x') = (Fork.IsLimit.lift' t y' hy').1 by
+    rw [← this]
   apply Fork.IsLimit.hom_ext t
   funext ⟨⟩
   apply hx'.trans (congr_fun (Fork.IsLimit.lift' t _ hy').2 ⟨⟩).symm

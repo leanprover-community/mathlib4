@@ -76,9 +76,6 @@ make no sense. However, the measure is not globally zero if the space is big eno
 * [Herbert Federer, Geometric Measure Theory, Chapter 2.9][Federer1996]
 -/
 
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure
 
 open scoped Filter ENNReal MeasureTheory NNReal Topology
@@ -552,13 +549,16 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
   let ν := μ.withDensity (v.limRatioMeas hρ)
   let f := v.limRatioMeas hρ
   have f_meas : Measurable f := v.limRatioMeas_measurable hρ
-  have A : ν (s ∩ f ⁻¹' {0}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ) (s ∩ f ⁻¹' {0}) := by
+  -- Note(kmill): smul elaborator when used for CoeFun fails to get CoeFun instance to trigger
+  -- unless you use the `(... :)` notation. Another fix is using `(2 : Nat)`, so this appears
+  -- to be an unpleasant interaction with default instances.
+  have A : ν (s ∩ f ⁻¹' {0}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {0}) := by
     apply le_trans _ (zero_le _)
     have M : MeasurableSet (s ∩ f ⁻¹' {0}) := hs.inter (f_meas (measurableSet_singleton _))
     simp only [nonpos_iff_eq_zero, M, withDensity_apply, lintegral_eq_zero_iff f_meas]
     apply (ae_restrict_iff' M).2
     exact eventually_of_forall fun x hx => hx.2
-  have B : ν (s ∩ f ⁻¹' {∞}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ) (s ∩ f ⁻¹' {∞}) := by
+  have B : ν (s ∩ f ⁻¹' {∞}) ≤ ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {∞}) := by
     apply le_trans (le_of_eq _) (zero_le _)
     apply withDensity_absolutelyContinuous μ _
     rw [← nonpos_iff_eq_zero]
@@ -566,13 +566,13 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
   have C :
     ∀ n : ℤ,
       ν (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) ≤
-        ((t : ℝ≥0∞) ^ 2 • ρ) (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) := by
+        ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) := by
     intro n
     let I := Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))
     have M : MeasurableSet (s ∩ f ⁻¹' I) := hs.inter (f_meas measurableSet_Ico)
     simp only [M, withDensity_apply, coe_nnreal_smul_apply]
     calc
-      (∫⁻ x in s ∩ f ⁻¹' I, f x ∂μ) ≤ ∫⁻ x in s ∩ f ⁻¹' I, (t : ℝ≥0∞) ^ (n + 1) ∂μ :=
+      (∫⁻ x in s ∩ f ⁻¹' I, f x ∂μ) ≤ ∫⁻ _ in s ∩ f ⁻¹' I, (t : ℝ≥0∞) ^ (n + 1) ∂μ :=
         lintegral_mono_ae ((ae_restrict_iff' M).2 (eventually_of_forall fun x hx => hx.2.2.le))
       _ = (t : ℝ≥0∞) ^ (n + 1) * μ (s ∩ f ⁻¹' I) := by
         simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
@@ -598,10 +598,10 @@ theorem withDensity_le_mul {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
         ∑' n : ℤ, ν (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) :=
       measure_eq_measure_preimage_add_measure_tsum_Ico_zpow ν f_meas hs ht
     _ ≤
-        ((t : ℝ≥0∞) ^ 2 • ρ) (s ∩ f ⁻¹' {0}) + ((t : ℝ≥0∞) ^ 2 • ρ) (s ∩ f ⁻¹' {∞}) +
-          ∑' n : ℤ, ((t : ℝ≥0∞) ^ 2 • ρ) (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) :=
+        ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {0}) + ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' {∞}) +
+          ∑' n : ℤ, ((t : ℝ≥0∞) ^ 2 • ρ :) (s ∩ f ⁻¹' Ico (t ^ n) (t ^ (n + 1))) :=
       (add_le_add (add_le_add A B) (ENNReal.tsum_le_tsum C))
-    _ = ((t : ℝ≥0∞) ^ 2 • ρ) s :=
+    _ = ((t : ℝ≥0∞) ^ 2 • ρ :) s :=
       (measure_eq_measure_preimage_add_measure_tsum_Ico_zpow ((t : ℝ≥0∞) ^ 2 • ρ) f_meas hs ht).symm
 #align vitali_family.with_density_le_mul VitaliFamily.withDensity_le_mul
 
@@ -642,7 +642,7 @@ theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
         intro x hx
         apply hx.2.2.trans_le (le_of_eq _)
         rw [ENNReal.coe_zpow t_ne_zero']
-      _ = ∫⁻ x in s ∩ f ⁻¹' I, (t : ℝ≥0∞) ^ (n + 1) ∂μ := by
+      _ = ∫⁻ _ in s ∩ f ⁻¹' I, (t : ℝ≥0∞) ^ (n + 1) ∂μ := by
         simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter]
       _ ≤ ∫⁻ x in s ∩ f ⁻¹' I, t * f x ∂μ := by
         apply lintegral_mono_ae ((ae_restrict_iff' M).2 (eventually_of_forall fun x hx => ?_))
@@ -740,7 +740,7 @@ theorem ae_tendsto_measure_inter_div_of_measurableSet {s : Set α} (hs : Measura
     ∀ᵐ x ∂μ, Tendsto (fun a => μ (s ∩ a) / μ a) (v.filterAt x) (𝓝 (s.indicator 1 x)) := by
   haveI : IsLocallyFiniteMeasure (μ.restrict s) :=
     isLocallyFiniteMeasure_of_le restrict_le_self
-  filter_upwards [ae_tendsto_rnDeriv v (μ.restrict s), rnDeriv_restrict μ hs]
+  filter_upwards [ae_tendsto_rnDeriv v (μ.restrict s), rnDeriv_restrict_self μ hs]
   intro x hx h'x
   simpa only [h'x, restrict_apply' hs, inter_comm] using hx
 #align vitali_family.ae_tendsto_measure_inter_div_of_measurable_set VitaliFamily.ae_tendsto_measure_inter_div_of_measurableSet
@@ -767,7 +767,7 @@ theorem ae_tendsto_measure_inter_div (s : Set α) :
   apply hx.congr' _
   filter_upwards [v.eventually_filterAt_measurableSet x] with _ ha
   congr 1
-  exact measure_toMeasurable_inter_of_sigmaFinite ha _
+  exact measure_toMeasurable_inter_of_sFinite ha _
 #align vitali_family.ae_tendsto_measure_inter_div VitaliFamily.ae_tendsto_measure_inter_div
 
 /-! ### Lebesgue differentiation theorem -/
@@ -939,7 +939,7 @@ theorem ae_tendsto_average [NormedSpace ℝ E] [CompleteSpace E] {f : α → E}
     (hf : LocallyIntegrable f μ) :
     ∀ᵐ x ∂μ, Tendsto (fun a => ⨍ y in a, f y ∂μ) (v.filterAt x) (𝓝 (f x)) := by
   filter_upwards [v.ae_tendsto_average_norm_sub hf, v.ae_eventually_measure_pos] with x hx h'x
-  rw [tendsto_iff_norm_tendsto_zero]
+  rw [tendsto_iff_norm_sub_tendsto_zero]
   refine' squeeze_zero' (eventually_of_forall fun a => norm_nonneg _) _ hx
   filter_upwards [h'x, v.eventually_measure_lt_top x, v.eventually_filterAt_integrableOn x hf]
     with a ha h'a h''a

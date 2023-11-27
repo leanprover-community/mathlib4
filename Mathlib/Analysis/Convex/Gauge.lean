@@ -66,12 +66,8 @@ theorem gauge_def : gauge s x = sInf ({ r ∈ Set.Ioi (0 : ℝ) | x ∈ r • s 
 
 /-- An alternative definition of the gauge using scalar multiplication on the element rather than on
 the set. -/
-theorem gauge_def' : gauge s x = sInf ({ r ∈ Set.Ioi (0 : ℝ) | r⁻¹ • x ∈ s }) := by
-  -- Porting note: used `congrm`
-  rw [gauge]
-  apply congr_arg
-  ext
-  simp only [mem_setOf, mem_Ioi]
+theorem gauge_def' : gauge s x = sInf {r ∈ Set.Ioi (0 : ℝ) | r⁻¹ • x ∈ s} := by
+  congrm sInf {r | ?_}
   exact and_congr_right fun hr => mem_smul_set_iff_inv_smul_mem₀ hr.ne' _ _
 #align gauge_def' gauge_def'
 

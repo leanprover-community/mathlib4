@@ -148,7 +148,7 @@ theorem term_add_term {α} [AddCommMonoid α] (n₁ x a₁ n₂ a₂ n' a') (h�
 theorem term_add_termg {α} [AddCommGroup α] (n₁ x a₁ n₂ a₂ n' a')
     (h₁ : n₁ + n₂ = n') (h₂ : a₁ + a₂ = a') :
     @termg α _ n₁ x a₁ + @termg α _ n₂ x a₂ = termg n' x a' := by
-  simp [h₁.symm, h₂.symm, termg, add_zsmul]
+  simp only [termg, h₁.symm, add_zsmul, h₂.symm]
   exact add_add_add_comm (n₁ • x) a₁ (n₂ • x) a₂
 
 theorem zero_term {α} [AddCommMonoid α] (x a) : @term α _ 0 x a = a := by
@@ -214,13 +214,13 @@ theorem zero_smulg {α} [AddCommGroup α] (c) : smulg c (0 : α) = 0 := by
   simp [smulg, zsmul_zero]
 
 theorem term_smul {α} [AddCommMonoid α] (c n x a n' a')
-  (h₁ : c * n = n') (h₂ : smul c a = a') :
-  smul c (@term α _ n x a) = term n' x a' := by
+    (h₁ : c * n = n') (h₂ : smul c a = a') :
+    smul c (@term α _ n x a) = term n' x a' := by
   simp [h₂.symm, h₁.symm, term, smul, nsmul_add, mul_nsmul']
 
 theorem term_smulg {α} [AddCommGroup α] (c n x a n' a')
-  (h₁ : c * n = n') (h₂ : smulg c a = a') :
-  smulg c (@termg α _ n x a) = termg n' x a' := by
+    (h₁ : c * n = n') (h₂ : smulg c a = a') :
+    smulg c (@termg α _ n x a) = termg n' x a' := by
   simp [h₂.symm, h₁.symm, termg, smulg, zsmul_add, mul_zsmul]
 
 /--
@@ -301,7 +301,7 @@ def evalSMul' (eval : Expr → M (NormalExpr × Expr))
   trace[abel] "Calling NormNum on {e₁}"
   let ⟨e₁', p₁, _⟩ ← try Meta.NormNum.eval e₁ catch _ => pure { expr := e₁ }
   let p₁ ← p₁.getDM (mkEqRefl e₁')
-  match Meta.NormNum.isIntLit e₁' with
+  match e₁'.int? with
   | some n => do
     let c ← read
     let (e₂', p₂) ← eval e₂
@@ -480,6 +480,7 @@ def abelNFTarget (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) : TacticM Unit :
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
   else
+    if r.expr == tgt then throwError "abel_nf made no progress"
     replaceMainGoal [← applySimpResultToTarget goal tgt r]
 
 /-- Use `abel_nf` to rewrite hypothesis `h`. -/
@@ -488,6 +489,7 @@ def abelNFLocalDecl (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (fvarId : FVa
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal
   let myres ← abelNFCore s cfg tgt
+  if myres.expr == tgt then throwError "abel_nf made no progress"
   match ← applySimpResultToLocalDecl goal fvarId myres false with
   | none => replaceMainGoal []
   | some (_, newGoal) => replaceMainGoal [newGoal]
@@ -513,7 +515,7 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic 
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   withLocation loc (abelNFLocalDecl s cfg) (abelNFTarget s cfg)
-    fun _ ↦ throwError "abel_nf failed"
+    fun _ ↦ throwError "abel_nf made no progress"
 
 @[inherit_doc abelNF] macro "abel_nf!" cfg:(config)? loc:(location)? : tactic =>
   `(tactic| abel_nf ! $(cfg)? $(loc)?)

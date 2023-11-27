@@ -10,6 +10,7 @@ import Mathlib.Order.Basic
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Int.Cast.Lemmas
 import Qq
 
 /-!
@@ -61,16 +62,19 @@ def mkPositivityExt (n : Name) : ImportM PositivityExt := do
   let { env, opts, .. } ← read
   IO.ofExcept <| unsafe env.evalConstCheck PositivityExt opts ``PositivityExt n
 
+/-- Configuration for `DiscrTree`. -/
+def discrTreeConfig : WhnfCoreConfig := {}
+
 /-- Each `positivity` extension is labelled with a collection of patterns
 which determine the expressions to which it should be applied. -/
-abbrev Entry := Array (Array (DiscrTree.Key true)) × Name
+abbrev Entry := Array (Array DiscrTree.Key) × Name
 
 /-- Environment extensions for `positivity` declarations -/
 initialize positivityExt : PersistentEnvExtension Entry (Entry × PositivityExt)
-    (List Entry × DiscrTree PositivityExt true) ←
+    (List Entry × DiscrTree PositivityExt) ←
   -- we only need this to deduplicate entries in the DiscrTree
   have : BEq PositivityExt := ⟨fun _ _ => false⟩
-  let insert kss v dt := kss.foldl (fun dt ks => dt.insertCore ks v) dt
+  let insert kss v dt := kss.foldl (fun dt ks => dt.insertCore ks v discrTreeConfig) dt
   registerPersistentEnvExtension {
     mkInitial := pure ([], {})
     addImportedFn := fun s => do
@@ -100,7 +104,7 @@ initialize registerBuiltinAttribute {
             let e ← elabTerm stx none
             let (_, _, e) ← lambdaMetaTelescope (← mkLambdaFVars (← getLCtx).getFVars e)
             return e
-        DiscrTree.mkPath e
+        DiscrTree.mkPath e discrTreeConfig
       setEnv <| positivityExt.addEntry env ((keys, declName), ext)
     | _ => throwUnsupportedSyntax
 }
@@ -200,9 +204,9 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
       haveI' w : decide ($n < 0) =Q true := ⟨⟩
       pure (.nonzero q(nz_of_isRat $p $w))
 
-/-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAddMonoid`. -/
+/-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAddCommMonoid`. -/
 def positivityCanon (e : Q($α)) : MetaM (Strictness zα pα e) := do
-  let _i ← synthInstanceQ (q(CanonicallyOrderedAddMonoid $α) : Q(Type u))
+  let _i ← synthInstanceQ (q(CanonicallyOrderedAddCommMonoid $α) : Q(Type u))
   assumeInstancesCommute
   pure (.nonnegative q(zero_le $e))
 
@@ -286,7 +290,7 @@ def orElse (t₁ : Strictness zα pα e) (t₂ : MetaM (Strictness zα pα e)) :
 def core (e : Q($α)) : MetaM (Strictness zα pα e) := do
   let mut result := .none
   trace[Tactic.positivity] "trying to prove positivity of {e}"
-  for ext in ← (positivityExt.getState (← getEnv)).2.getMatch e do
+  for ext in ← (positivityExt.getState (← getEnv)).2.getMatch e discrTreeConfig do
     try
       result ← orElse result <| ext.eval zα pα e
     catch err =>
@@ -311,12 +315,11 @@ private inductive OrderRel : Type
 end Meta.Positivity
 namespace Meta.Positivity
 
-/-- The main entry point to the `positivity` tactic. Given a goal `goal` of the form `0 [≤/</≠] e`,
-attempts to recurse on the structure of `e` to prove the goal.
-It will either close `goal` or fail. -/
-def positivity (goal : MVarId) : MetaM Unit := do
-  let t : Q(Prop) ← withReducible goal.getType'
-  let rest {u : Level} (α : Q(Type u)) z e (relDesired : OrderRel) : MetaM Unit := do
+/-- An auxillary entry point to the `positivity` tactic. Given a proposition `t` of the form
+`0 [≤/</≠] e`, attempts to recurse on the structure of `t` to prove it. It returns a proof
+or fails. -/
+def solve (t : Q(Prop)) : MetaM Expr := do
+  let rest {u : Level} (α : Q(Type u)) z e (relDesired : OrderRel) : MetaM Expr := do
     let zα ← synthInstanceQ q(Zero $α)
     assumeInstancesCommute
     let .true ← isDefEq z q(0 : $α) | throwError "not a positivity goal"
@@ -339,7 +342,7 @@ def positivity (goal : MVarId) : MetaM Unit := do
     | .ne, .nonnegative _
     | .ne', .nonnegative _ => throw "nonzeroness" "nonnegativity"
     | _, .none => throwError "failed to prove positivity/nonnegativity/nonzeroness"
-    goal.assign p
+    pure p
   match t with
   | ~q(@LE.le $α $_a $z $e) => rest α z e .le
   | ~q(@LT.lt $α $_a $z $e) => rest α z e .lt
@@ -351,6 +354,14 @@ def positivity (goal : MVarId) : MetaM Unit := do
       let .true ← isDefEq a q((0 : $α)) | throwError "not a positivity goal"
       rest α a b .ne'
   | _ => throwError "not a positivity goal"
+
+/-- The main entry point to the `positivity` tactic. Given a goal `goal` of the form `0 [≤/</≠] e`,
+attempts to recurse on the structure of `e` to prove the goal.
+It will either close `goal` or fail. -/
+def positivity (goal : MVarId) : MetaM Unit := do
+  let t : Q(Prop) ← withReducible goal.getType'
+  let p ← solve t
+  goal.assign p
 
 end Meta.Positivity
 

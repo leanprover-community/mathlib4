@@ -348,7 +348,7 @@ def Any (P : α → Prop) : Ordnode α → Prop
   | node _ l x r => Any P l ∨ P x ∨ Any P r
 #align ordnode.any Ordnode.Any
 
-instance Any.decidable {P : α → Prop} : (t: Ordnode α ) → [DecidablePred P] → Decidable (Any P t)
+instance Any.decidable {P : α → Prop} : (t : Ordnode α ) → [DecidablePred P] → Decidable (Any P t)
   | nil => decidableFalse
   | node _ l _ r =>
     have : Decidable (Any P l) := Any.decidable l
@@ -876,11 +876,11 @@ def ofAscListAux₁ : ∀ l : List α, ℕ → Ordnode α × { l' : List α // l
   | x :: xs => fun s =>
     if s = 1 then (ι x, ⟨xs, Nat.le_succ _⟩)
     else
-      match ofAscListAux₁ xs (s.shiftl 1) with
+      match ofAscListAux₁ xs (s <<< 1) with
       | (t, ⟨[], _⟩) => (t, ⟨[], Nat.zero_le _⟩)
       | (l, ⟨y :: ys, h⟩) =>
         have := Nat.le_succ_of_le h
-        let (r, ⟨zs, h'⟩) := ofAscListAux₁ ys (s.shiftl 1)
+        let (r, ⟨zs, h'⟩) := ofAscListAux₁ ys (s <<< 1)
         (link l y r, ⟨zs, le_trans h' (le_of_lt this)⟩)
         termination_by ofAscListAux₁ l => l.length
 #align ordnode.of_asc_list_aux₁ Ordnode.ofAscListAux₁
@@ -892,7 +892,7 @@ def ofAscListAux₂ : List α → Ordnode α → ℕ → Ordnode α
     match ofAscListAux₁ xs s with
     | (r, ⟨ys, h⟩) =>
       have := Nat.lt_succ_of_le h
-      ofAscListAux₂ ys (link l x r) (s.shiftl 1)
+      ofAscListAux₂ ys (link l x r) (s <<< 1)
       termination_by ofAscListAux₂ l => l.length
 #align ordnode.of_asc_list_aux₂ Ordnode.ofAscListAux₂
 

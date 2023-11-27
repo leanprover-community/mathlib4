@@ -42,6 +42,10 @@ def Disjoint (a b : α) : Prop :=
   ∀ ⦃x⦄, x ≤ a → x ≤ b → x ≤ ⊥
 #align disjoint Disjoint
 
+@[simp]
+theorem disjoint_of_subsingleton [Subsingleton α] : Disjoint a b :=
+  fun x _ _ ↦ le_of_eq (Subsingleton.elim x ⊥)
+
 theorem disjoint_comm : Disjoint a b ↔ Disjoint b a :=
   forall_congr' fun _ ↦ forall_swap
 #align disjoint.comm disjoint_comm
@@ -82,7 +86,7 @@ theorem disjoint_self : Disjoint a a ↔ a = ⊥ :=
 
 /- TODO: Rename `Disjoint.eq_bot` to `Disjoint.inf_eq` and `Disjoint.eq_bot_of_self` to
 `Disjoint.eq_bot` -/
-alias disjoint_self ↔ Disjoint.eq_bot_of_self _
+alias ⟨Disjoint.eq_bot_of_self, _⟩ := disjoint_self
 #align disjoint.eq_bot_of_self Disjoint.eq_bot_of_self
 
 theorem Disjoint.ne (ha : a ≠ ⊥) (hab : Disjoint a b) : a ≠ b :=
@@ -266,7 +270,7 @@ theorem codisjoint_self : Codisjoint a a ↔ a = ⊤ :=
 
 /- TODO: Rename `Codisjoint.eq_top` to `Codisjoint.sup_eq` and `Codisjoint.eq_top_of_self` to
 `Codisjoint.eq_top` -/
-alias codisjoint_self ↔ Codisjoint.eq_top_of_self _
+alias ⟨Codisjoint.eq_top_of_self, _⟩ := codisjoint_self
 #align codisjoint.eq_top_of_self Codisjoint.eq_top_of_self
 
 theorem Codisjoint.ne (ha : a ≠ ⊤) (hab : Codisjoint a b) : a ≠ b :=
@@ -469,6 +473,8 @@ variable [PartialOrder α] [BoundedOrder α] {x y z : α}
 protected theorem symm (h : IsCompl x y) : IsCompl y x :=
   ⟨h.1.symm, h.2.symm⟩
 #align is_compl.symm IsCompl.symm
+
+lemma _root_.isCompl_comm : IsCompl x y ↔ IsCompl y x := ⟨IsCompl.symm, IsCompl.symm⟩
 
 theorem dual (h : IsCompl x y) : IsCompl (toDual x) (toDual y) :=
   ⟨h.2, h.1⟩

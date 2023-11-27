@@ -168,6 +168,12 @@ theorem ofArrows_bind {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
     exact bind_comp _ (ofArrows.mk _) (ofArrows.mk _)
 #align category_theory.presieve.of_arrows_bind CategoryTheory.Presieve.ofArrows_bind
 
+theorem ofArrows_surj {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) {Z : C} (g : Z ⟶ X)
+    (hg : ofArrows Y f g) : ∃ (i : ι) (h : Y i = Z),
+    g = eqToHom h.symm ≫ f i := by
+  cases' hg with i
+  exact ⟨i, rfl, by simp only [eqToHom_refl, id_comp]⟩
+
 /-- Given a presieve on `F(X)`, we can define a presieve on `X` by taking the preimage via `F`. -/
 def functorPullback (R : Presieve (F.obj X)) : Presieve X := fun _ f => R (F.map f)
 #align category_theory.presieve.functor_pullback CategoryTheory.Presieve.functorPullback
@@ -182,6 +188,18 @@ theorem functorPullback_mem (R : Presieve (F.obj X)) {Y} (f : Y ⟶ X) :
 theorem functorPullback_id (R : Presieve X) : R.functorPullback (𝟭 _) = R :=
   rfl
 #align category_theory.presieve.functor_pullback_id CategoryTheory.Presieve.functorPullback_id
+
+/-- Given a presieve `R` on `X`, the predicate `R.hasPullbacks` means that for all arrows `f` and
+    `g` in `R`, the pullback of `f` and `g` exists. -/
+class hasPullbacks (R : Presieve X) : Prop where
+  /-- For all arrows `f` and `g` in `R`, the pullback of `f` and `g` exists. -/
+  has_pullbacks : ∀ {Y Z} {f : Y ⟶ X} (_ : R f) {g : Z ⟶ X} (_ : R g), HasPullback f g
+
+instance (R : Presieve X) [HasPullbacks C] : R.hasPullbacks := ⟨fun _ _ ↦ inferInstance⟩
+
+instance {α : Type v₂} {X : α → C} {B : C} (π : (a : α) → X a ⟶ B)
+    [(Presieve.ofArrows X π).hasPullbacks] (a b : α) : HasPullback (π a) (π b) :=
+  Presieve.hasPullbacks.has_pullbacks (Presieve.ofArrows.mk _) (Presieve.ofArrows.mk _)
 
 section FunctorPushforward
 

@@ -355,8 +355,9 @@ variable [MulOneClass M] {s t : Set α} {f g : α → M} {a : α}
 
 @[to_additive]
 theorem mulIndicator_union_mul_inter_apply (f : α → M) (s t : Set α) (a : α) :
-    mulIndicator (s ∪ t) f a * mulIndicator (s ∩ t) f a = mulIndicator s f a * mulIndicator t f a :=
-  by by_cases hs : a ∈ s <;> by_cases ht : a ∈ t <;> simp [*]
+    mulIndicator (s ∪ t) f a * mulIndicator (s ∩ t) f a
+      = mulIndicator s f a * mulIndicator t f a := by
+  by_cases hs : a ∈ s <;> by_cases ht : a ∈ t <;> simp [*]
 #align set.mul_indicator_union_mul_inter_apply Set.mulIndicator_union_mul_inter_apply
 #align set.indicator_union_add_inter_apply Set.indicator_union_add_inter_apply
 
@@ -380,6 +381,11 @@ theorem mulIndicator_union_of_disjoint (h : Disjoint s t) (f : α → M) :
   funext fun _ => mulIndicator_union_of_not_mem_inter (fun ha => h.le_bot ha) _
 #align set.mul_indicator_union_of_disjoint Set.mulIndicator_union_of_disjoint
 #align set.indicator_union_of_disjoint Set.indicator_union_of_disjoint
+
+@[to_additive]
+theorem mulIndicator_symmDiff (s t : Set α) (f : α → M) :
+    mulIndicator (s ∆ t) f = mulIndicator (s \ t) f * mulIndicator (t \ s) f :=
+  mulIndicator_union_of_disjoint (disjoint_sdiff_self_right.mono_left sdiff_le) _
 
 @[to_additive]
 theorem mulIndicator_mul (s : Set α) (f g : α → M) :
@@ -580,7 +586,18 @@ theorem mulIndicator_diff' (h : s ⊆ t) (f : α → G) :
   rw [mulIndicator_diff h, div_eq_mul_inv]
 #align set.indicator_diff Set.indicator_diff
 
+@[to_additive]
+theorem apply_mulIndicator_symmDiff {g : G → β} (hg : ∀ x, g x⁻¹ = g x)
+    (s t : Set α) (f : α → G) (x : α):
+    g (mulIndicator (s ∆ t) f x) = g (mulIndicator s f x / mulIndicator t f x) := by
+  by_cases hs : x ∈ s <;> by_cases ht : x ∈ t <;> simp [mem_symmDiff, *]
+
 end Group
+
+theorem abs_indicator_symmDiff {G : Type*} [LinearOrderedAddCommGroup G]
+    (s t : Set α) (f : α → G) (x : α) :
+    |indicator (s ∆ t) f x| = |indicator s f x - indicator t f x| :=
+  apply_indicator_symmDiff abs_neg s t f x
 
 section CommMonoid
 
@@ -877,9 +894,9 @@ theorem mulIndicator_iUnion_apply {ι : Sort*} {M : Type*} [CompleteLattice M] [
 
 end Order
 
-section CanonicallyOrderedMonoid
+section CanonicallyOrderedCommMonoid
 
-variable [CanonicallyOrderedMonoid M]
+variable [CanonicallyOrderedCommMonoid M]
 
 @[to_additive]
 theorem mulIndicator_le_self (s : Set α) (f : α → M) : mulIndicator s f ≤ f :=
@@ -901,7 +918,7 @@ theorem mulIndicator_le {s : Set α} {f g : α → M} (hfg : ∀ a ∈ s, f a �
 #align set.mul_indicator_le Set.mulIndicator_le
 #align set.indicator_le Set.indicator_le
 
-end CanonicallyOrderedMonoid
+end CanonicallyOrderedCommMonoid
 
 theorem indicator_le_indicator_nonneg {β} [LinearOrder β] [Zero β] (s : Set α) (f : α → β) :
     s.indicator f ≤ { x | 0 ≤ f x }.indicator f := by

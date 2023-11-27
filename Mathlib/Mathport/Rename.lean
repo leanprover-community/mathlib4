@@ -54,17 +54,16 @@ def RenameMap.insert (m : RenameMap) (e : NameEntry) : RenameMap :=
 /-- Look up a lean 4 name from the lean 3 name. Also return the `dubious` error message. -/
 def RenameMap.find? (m : RenameMap) : Name → Option (String × Name) := m.toLean4.find?
 
+/-- This extension stores the lookup data generated from `#align` commands. -/
 initialize renameExtension : SimplePersistentEnvExtension NameEntry RenameMap ←
   registerSimplePersistentEnvExtension {
     addEntryFn := (·.insert)
     addImportedFn := mkStateFromImportedEntries (·.insert) {}
   }
 
-def getRenameMap (env : Environment) : RenameMap :=
-  renameExtension.getState env
-
+/-- Insert a new name alignment into the rename extension. -/
 def addNameAlignment (n3 : Name) (n4 : Name) (synthetic := false) (dubious := "") : CoreM Unit := do
-  modifyEnv fun env ↦ renameExtension.addEntry env { n3, n4, synthetic, dubious }
+  modifyEnv fun env => renameExtension.addEntry env { n3, n4, synthetic, dubious }
 
 /-- The `@[binport]` attribute should not be added manually, it is added automatically by mathport
 to definitions that it created based on a lean 3 definition (as opposed to pre-existing
@@ -122,7 +121,7 @@ syntax (name := align) "#align " ident ppSpace ident : command
 
 /-- Checks that `id` has not already been `#align`ed or `#noalign`ed. -/
 def ensureUnused [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := do
-  if let some (_, n) := (getRenameMap (← getEnv)).toLean4.find? id then
+  if let some (_, n) := (renameExtension.getState (← getEnv)).toLean4.find? id then
     if n.isAnonymous then
       throwError "{id} has already been no-aligned"
     else
@@ -192,7 +191,7 @@ syntax (name := lookup3) "#lookup3 " ident : command
 @[command_elab lookup3] def elabLookup3 : CommandElab
   | `(#lookup3%$tk $id3:ident) => do
     let n3 := id3.getId
-    let m := getRenameMap (← getEnv)
+    let m := renameExtension.getState (← getEnv)
     match m.find? n3 with
     | none    => logInfoAt tk s!"name `{n3} not found"
     | some (dubious, n4) => do
@@ -210,20 +209,50 @@ syntax (name := lookup3) "#lookup3 " ident : command
 
 open Lean Lean.Parser Lean.PrettyPrinter
 
+/-- An entry in the `#align_import` extension, containing all the data in the command. -/
+structure ImportEntry where
+  /-- The lean 3 name of the module. -/
+  mod3 : Name
+  /-- The original repository from which this module was derived. -/
+  origin : Option (String × String)
+
+/-- The data for `#align_import` that is stored in memory while processing a lean file. -/
+structure ImportState where
+  /-- This is the same as `(← getEnv).header.mainModule`,
+  but we need access to it in `exportEntriesFn` where the environment is not available. -/
+  mod4 : Name := .anonymous
+  /-- The original list of import entries from imported files. We do not process these because
+  only mathport actually uses it. -/
+  extern : Array (Array (Name × ImportEntry)) := #[]
+  /-- The import entries from the current file. -/
+  entries : List ImportEntry := []
+  deriving Inhabited
+
+/-- This extension stores the lookup data generated from `#align_import` commands. -/
+initialize renameImportExtension :
+    PersistentEnvExtension (Name × ImportEntry) (Name × ImportEntry) ImportState ←
+  registerPersistentEnvExtension {
+    mkInitial := pure {}
+    addEntryFn := fun s (mod4, e) => { s with mod4, entries := e :: s.entries }
+    addImportedFn := fun extern => return { mod4 := (← read).env.header.mainModule, extern }
+    exportEntriesFn := fun s => s.entries.reverse.foldl (fun a b => a.push (s.mod4, b)) #[]
+  }
+
 /-- Declare the corresponding mathlib3 module for the current mathlib4 module. -/
-syntax (name := alignImport) "#align_import " ident " from " str "@" str : command
+syntax (name := alignImport) "#align_import " ident (" from " str "@" str)? : command
 
-/-- Elaborate a `#align_import` command.
-
-TODO: do something with this information beyond ignore it. -/
+/-- Elaborate a `#align_import` command. -/
 @[command_elab alignImport] def elabAlignImport : CommandElab
-  | `(#align_import $f3:ident from $_repo:str @ $sha:str ) => do
-    if !sha.getString.all ("abcdef0123456789".contains) then
-      throwErrorAt sha "not a valid hex sha, bad digits"
-    else if sha.getString.length ≠ 40 then
-      throwErrorAt sha "must be a full sha"
-    else
-      let _f3 : Name := f3.getId
-      let _f4 := (← getEnv).mainModule
-      pure ()
+  | `(#align_import $mod3 $[from $repo @ $sha]?) => do
+    let origin ← repo.mapM fun repo => do
+      let sha := sha.get!
+      let shaStr := sha.getString
+      if !shaStr.all ("abcdef0123456789".contains) then
+        throwErrorAt sha "not a valid hex sha, bad digits"
+      else if shaStr.length ≠ 40 then
+        throwErrorAt sha "must be a full sha"
+      else
+        pure (repo.getString, shaStr)
+    modifyEnv fun env =>
+      renameImportExtension.addEntry env (env.header.mainModule, { mod3 := mod3.getId, origin })
   | _ => throwUnsupportedSyntax

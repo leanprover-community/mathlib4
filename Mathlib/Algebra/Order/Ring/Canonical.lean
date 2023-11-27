@@ -13,7 +13,7 @@ import Mathlib.GroupTheory.GroupAction.Defs
 # Canonically ordered rings and semirings.
 
 * `CanonicallyOrderedCommSemiring`
-  - `CanonicallyOrderedAddMonoid` & multiplication & `*` respects `≤` & no zero divisors
+  - `CanonicallyOrderedAddCommMonoid` & multiplication & `*` respects `≤` & no zero divisors
   - `CommSemiring` & `a ≤ b ↔ ∃ c, b = a + c` & no zero divisors
 
 ## TODO
@@ -33,7 +33,7 @@ variable {α : Type u} {β : Type*}
 /-- A canonically ordered commutative semiring is an ordered, commutative semiring in which `a ≤ b`
 iff there exists `c` with `b = a + c`. This is satisfied by the natural numbers, for example, but
 not the integers or other ordered groups. -/
-class CanonicallyOrderedCommSemiring (α : Type*) extends CanonicallyOrderedAddMonoid α,
+class CanonicallyOrderedCommSemiring (α : Type*) extends CanonicallyOrderedAddCommMonoid α,
     CommSemiring α where
   /-- No zero divisors. -/
   protected eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : α}, a * b = 0 → a = 0 ∨ b = 0

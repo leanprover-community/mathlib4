@@ -77,8 +77,8 @@ def γ₂ {K : J ⥤ C} (X : C) : K ⋙ prod.functor.obj X ⟶ K where app Y := 
 
 /-- (Impl). The obvious natural transformation from (X × K -) to X -/
 @[simps]
-def γ₁ {K : J ⥤ C} (X : C) : K ⋙ prod.functor.obj X ⟶ (Functor.const J).obj X
-    where app Y := Limits.prod.fst
+def γ₁ {K : J ⥤ C} (X : C) : K ⋙ prod.functor.obj X ⟶ (Functor.const J).obj X where
+  app Y := Limits.prod.fst
 #align category_theory.prod_preserves_connected_limits.γ₁ CategoryTheory.ProdPreservesConnectedLimits.γ₁
 
 /-- (Impl).

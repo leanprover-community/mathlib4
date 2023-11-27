@@ -42,6 +42,19 @@ def Cone.toStructuredArrow {F : J ⥤ C} (c : Cone F) : J ⥤ StructuredArrow c.
   obj j := StructuredArrow.mk (c.π.app j)
   map f := StructuredArrow.homMk f
 
+/-- `Cone.toStructuredArrow` can be expressed in terms of `Functor.toStructuredArrow`. -/
+def Cone.toStructuredArrowIsoToStructuredArrow {F : J ⥤ C} (c : Cone F) :
+    c.toStructuredArrow ≅ (𝟭 J).toStructuredArrow c.pt F c.π.app (by simp) :=
+  Iso.refl _
+
+/-- `Functor.toStructuredArrow` can be expressed in terms of `Cone.toStructuredArrow`. -/
+def _root_.CategoryTheory.Functor.toStructuredArrowIsoToStructuredArrow (G : J ⥤ K) (X : C)
+    (F : K ⥤ C) (f : (Y : J) → X ⟶ F.obj (G.obj Y))
+    (h : ∀ {Y Z : J} (g : Y ⟶ Z), f Y ≫ F.map (G.map g) = f Z) :
+    G.toStructuredArrow X F f h ≅
+      (Cone.mk X ⟨f, by simp [h]⟩).toStructuredArrow ⋙ StructuredArrow.pre _ _ _ :=
+  Iso.refl _
+
 /-- Interpreting the legs of a cone as a structured arrow and then forgetting the arrow again does
     nothing. -/
 @[simps!]
@@ -90,7 +103,7 @@ def Cone.toStructuredArrowCone {K : J ⥤ C} (c : Cone K) (F : C ⥤ D) {X : D} 
 def Cone.toCostructuredArrow (F : J ⥤ C) : Cone F ⥤ CostructuredArrow (const J) F
     where
   obj c := CostructuredArrow.mk c.π
-  map f := CostructuredArrow.homMk f.Hom
+  map f := CostructuredArrow.homMk f.hom
 #align category_theory.limits.cone.to_costructured_arrow CategoryTheory.Limits.Cone.toCostructuredArrow
 
 /-- Construct a cone on `F` from an object of the category `(Δ ↓ F)`. This is part of an
@@ -100,7 +113,7 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
     where
   obj c := ⟨c.left, c.hom⟩
   map f :=
-    { Hom := f.left
+    { hom := f.left
       w := fun j => by
         convert congr_fun (congr_arg NatTrans.app f.w) j
         dsimp
@@ -180,6 +193,19 @@ def Cocone.toCostructuredArrow {F : J ⥤ C} (c : Cocone F) : J ⥤ Costructured
   obj j := CostructuredArrow.mk (c.ι.app j)
   map f := CostructuredArrow.homMk f
 
+/-- `Cocone.toCostructuredArrow` can be expressed in terms of `Functor.toCostructuredArrow`. -/
+def Cocone.toCostructuredArrowIsoToCostructuredArrow {F : J ⥤ C} (c : Cocone F) :
+    c.toCostructuredArrow ≅ (𝟭 J).toCostructuredArrow F c.pt c.ι.app (by simp) :=
+  Iso.refl _
+
+/-- `Functor.toCostructuredArrow` can be expressed in terms of `Cocone.toCostructuredArrow`. -/
+def _root_.CategoryTheory.Functor.toCostructuredArrowIsoToCostructuredArrow (G : J ⥤ K)
+    (F : K ⥤ C) (X : C) (f : (Y : J) → F.obj (G.obj Y) ⟶ X)
+    (h : ∀ {Y Z : J} (g : Y ⟶ Z), F.map (G.map g) ≫ f Z = f Y) :
+    G.toCostructuredArrow F X f h ≅
+      (Cocone.mk X ⟨f, by simp [h]⟩).toCostructuredArrow ⋙ CostructuredArrow.pre _ _ _ :=
+  Iso.refl _
+
 /-- Interpreting the legs of a cocone as a costructured arrow and then forgetting the arrow again
     does nothing. -/
 @[simps!]
@@ -226,7 +252,7 @@ def Cocone.toCostructuredArrowCocone {K : J ⥤ C} (c : Cocone K) (F : C ⥤ D) 
 def Cocone.toStructuredArrow (F : J ⥤ C) : Cocone F ⥤ StructuredArrow F (const J)
     where
   obj c := StructuredArrow.mk c.ι
-  map f := StructuredArrow.homMk f.Hom
+  map f := StructuredArrow.homMk f.hom
 #align category_theory.limits.cocone.to_structured_arrow CategoryTheory.Limits.Cocone.toStructuredArrow
 
 /-- Construct a cocone on `F` from an object of the category `(F ↓ Δ)`. This is part of an
@@ -236,7 +262,7 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
     where
   obj c := ⟨c.right, c.hom⟩
   map f :=
-    { Hom := f.right
+    { hom := f.right
       w := fun j => by
         convert (congr_fun (congr_arg NatTrans.app f.w) j).symm
         dsimp

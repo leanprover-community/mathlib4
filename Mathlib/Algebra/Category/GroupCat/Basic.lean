@@ -145,7 +145,7 @@ set_option linter.uppercaseLean3 false in
 /-- Typecheck an `AddMonoidHom` as a morphism in `AddGroup`. -/
 add_decl_doc AddGroupCat.ofHom
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem ofHom_apply {X Y : Type _} [Group X] [Group Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x :=
   rfl
@@ -491,9 +491,7 @@ end CategoryTheory.Aut
 instance GroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget GroupCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget GroupCat).map f)
-    let e : X ≃* Y := MulEquiv.mk i.toEquiv
-      -- Porting note: this would ideally be `by aesop`, as in `MonCat.forget_reflects_isos`
-      (MonoidHom.map_mul (show MonoidHom X Y from f))
+    let e : X ≃* Y := { i.toEquiv with map_mul' := by aesop }
     exact IsIso.of_iso e.toGroupCatIso
 set_option linter.uppercaseLean3 false in
 #align Group.forget_reflects_isos GroupCat.forget_reflects_isos
@@ -504,11 +502,29 @@ set_option linter.uppercaseLean3 false in
 instance CommGroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommGroupCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommGroupCat).map f)
-    let e : X ≃* Y := MulEquiv.mk i.toEquiv
-      -- Porting note: this would ideally be `by aesop`, as in `MonCat.forget_reflects_isos`
-      (MonoidHom.map_mul (show MonoidHom X Y from f))
+    let e : X ≃* Y := { i.toEquiv with map_mul' := by aesop }
     exact IsIso.of_iso e.toCommGroupCatIso
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget_reflects_isos CommGroupCat.forget_reflects_isos
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.forget_reflects_isos AddCommGroupCat.forget_reflects_isos
+
+-- note: in the following definitions, there is a problem with `@[to_additive]`
+-- as the `Category` instance is not found on the additive variant
+-- this variant is then renamed with a `Aux` suffix
+
+/-- An alias for `GroupCat.{max u v}`, to deal around unification issues. -/
+@[to_additive (attr := nolint checkUnivs) GroupCatMaxAux
+  "An alias for `AddGroupCat.{max u v}`, to deal around unification issues."]
+abbrev GroupCatMax.{u1, u2} := GroupCat.{max u1 u2}
+/-- An alias for `AddGroupCat.{max u v}`, to deal around unification issues. -/
+@[nolint checkUnivs]
+abbrev AddGroupCatMax.{u1, u2} := AddGroupCat.{max u1 u2}
+
+/-- An alias for `CommGroupCat.{max u v}`, to deal around unification issues. -/
+@[to_additive (attr := nolint checkUnivs) AddCommGroupCatMaxAux
+  "An alias for `AddCommGroupCat.{max u v}`, to deal around unification issues."]
+abbrev CommGroupCatMax.{u1, u2} := CommGroupCat.{max u1 u2}
+/-- An alias for `AddCommGroupCat.{max u v}`, to deal around unification issues. -/
+@[nolint checkUnivs]
+abbrev AddCommGroupCatMax.{u1, u2} := AddCommGroupCat.{max u1 u2}

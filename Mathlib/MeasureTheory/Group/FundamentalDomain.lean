@@ -6,7 +6,7 @@ Authors: Yury G. Kudryashov
 import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Integral.SetIntegral
 
-#align_import measure_theory.group.fundamental_domain from "leanprover-community/mathlib"@"eb810cf549db839dadf13353dbe69bac55acdbbc"
+#align_import measure_theory.group.fundamental_domain from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
 
 /-!
 # Fundamental domain of a group action
@@ -137,6 +137,16 @@ theorem iUnion_smul_ae_eq (h : IsFundamentalDomain G s μ) : ⋃ g : G, g • s 
 #align measure_theory.is_add_fundamental_domain.Union_vadd_ae_eq MeasureTheory.IsAddFundamentalDomain.iUnion_vadd_ae_eq
 
 @[to_additive]
+theorem measure_ne_zero [MeasurableSpace G] [Countable G] [MeasurableSMul G α]
+    [SMulInvariantMeasure G α μ] (hμ : μ ≠ 0) (h : IsFundamentalDomain G s μ) :
+    μ s ≠ 0 := by
+  have hc := measure_univ_pos.mpr hμ
+  contrapose! hc
+  rw [← measure_congr h.iUnion_smul_ae_eq]
+  refine le_trans (measure_iUnion_le _) ?_
+  simp_rw [measure_smul, hc, tsum_zero, le_refl]
+
+@[to_additive]
 theorem mono (h : IsFundamentalDomain G s μ) {ν : Measure α} (hle : ν ≪ μ) :
     IsFundamentalDomain G s ν :=
   ⟨h.1.mono_ac hle, hle h.2, h.aedisjoint.mono fun _ _ h => hle h⟩
@@ -252,6 +262,10 @@ theorem lintegral_eq_tsum' (h : IsFundamentalDomain G s μ) (f : α → ℝ≥0�
       (measurePreserving_smul g⁻¹ μ).set_lintegral_comp_emb (measurableEmbedding_const_smul _) _ _
 #align measure_theory.is_fundamental_domain.lintegral_eq_tsum' MeasureTheory.IsFundamentalDomain.lintegral_eq_tsum'
 #align measure_theory.is_add_fundamental_domain.lintegral_eq_tsum' MeasureTheory.IsAddFundamentalDomain.lintegral_eq_tsum'
+
+@[to_additive] lemma lintegral_eq_tsum'' (h : IsFundamentalDomain G s μ) (f : α → ℝ≥0∞) :
+    ∫⁻ x, f x ∂μ = ∑' g : G, ∫⁻ x in s, f (g • x) ∂μ :=
+  (lintegral_eq_tsum' h f).trans ((Equiv.inv G).tsum_eq (fun g ↦ ∫⁻ (x : α) in s, f (g • x) ∂μ))
 
 @[to_additive]
 theorem set_lintegral_eq_tsum (h : IsFundamentalDomain G s μ) (f : α → ℝ≥0∞) (t : Set α) :
@@ -425,6 +439,10 @@ theorem integral_eq_tsum' (h : IsFundamentalDomain G s μ) (f : α → E) (hf : 
       (measurePreserving_smul g⁻¹ μ).set_integral_image_emb (measurableEmbedding_const_smul _) _ _
 #align measure_theory.is_fundamental_domain.integral_eq_tsum' MeasureTheory.IsFundamentalDomain.integral_eq_tsum'
 #align measure_theory.is_add_fundamental_domain.integral_eq_tsum' MeasureTheory.IsAddFundamentalDomain.integral_eq_tsum'
+
+@[to_additive] lemma integral_eq_tsum'' (h : IsFundamentalDomain G s μ)
+    (f : α → E) (hf : Integrable f μ) : ∫ x, f x ∂μ = ∑' g : G, ∫ x in s, f (g • x) ∂μ :=
+  (integral_eq_tsum' h f hf).trans ((Equiv.inv G).tsum_eq (fun g ↦ ∫ (x : α) in s, f (g • x) ∂μ))
 
 @[to_additive]
 theorem set_integral_eq_tsum (h : IsFundamentalDomain G s μ) {f : α → E} {t : Set α}
@@ -612,14 +630,14 @@ theorem sdiff_fundamentalFrontier : s \ fundamentalFrontier G s = fundamentalInt
 @[to_additive (attr := simp) MeasureTheory.addFundamentalFrontier_vadd]
 theorem fundamentalFrontier_smul [Group H] [MulAction H α] [SMulCommClass H G α] (g : H) :
     fundamentalFrontier G (g • s) = g • fundamentalFrontier G s := by
-  simp_rw [fundamentalFrontier, smul_set_inter, smul_set_Union, smul_comm g (_ : G) (_ : Set α)]
+  simp_rw [fundamentalFrontier, smul_set_inter, smul_set_iUnion, smul_comm g (_ : G) (_ : Set α)]
 #align measure_theory.fundamental_frontier_smul MeasureTheory.fundamentalFrontier_smul
 #align measure_theory.add_fundamental_frontier_vadd MeasureTheory.addFundamentalFrontier_vadd
 
 @[to_additive (attr := simp) MeasureTheory.addFundamentalInterior_vadd]
 theorem fundamentalInterior_smul [Group H] [MulAction H α] [SMulCommClass H G α] (g : H) :
     fundamentalInterior G (g • s) = g • fundamentalInterior G s := by
-  simp_rw [fundamentalInterior, smul_set_sdiff, smul_set_Union, smul_comm g (_ : G) (_ : Set α)]
+  simp_rw [fundamentalInterior, smul_set_sdiff, smul_set_iUnion, smul_comm g (_ : G) (_ : Set α)]
 #align measure_theory.fundamental_interior_smul MeasureTheory.fundamentalInterior_smul
 #align measure_theory.add_fundamental_interior_vadd MeasureTheory.addFundamentalInterior_vadd
 

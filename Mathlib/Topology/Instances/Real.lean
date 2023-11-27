@@ -3,16 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.UniformMulAction
-import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.RingTheory.Subring.Basic
-import Mathlib.GroupTheory.Archimedean
-import Mathlib.Algebra.Order.Group.Bounds
 import Mathlib.Algebra.Periodic
 import Mathlib.Topology.Instances.Int
 
@@ -25,7 +18,8 @@ import Mathlib.Topology.Instances.Int
 
 noncomputable section
 
-open Classical Filter Int Metric Set TopologicalSpace Topology Uniformity Interval
+open Classical Filter Int Metric Set TopologicalSpace Bornology
+open scoped Topology Uniformity Interval
 
 universe u v w
 
@@ -77,10 +71,16 @@ theorem Real.isTopologicalBasis_Ioo_rat :
 #align real.is_topological_basis_Ioo_rat Real.isTopologicalBasis_Ioo_rat
 
 @[simp]
+theorem Real.cobounded_eq : cobounded ℝ = atBot ⊔ atTop := by
+  simp only [← comap_dist_right_atTop (0 : ℝ), Real.dist_eq, sub_zero, comap_abs_atTop]
+
+@[simp]
 theorem Real.cocompact_eq : cocompact ℝ = atBot ⊔ atTop := by
-  simp only [← comap_dist_right_atTop_eq_cocompact (0 : ℝ), Real.dist_eq, sub_zero,
-    comap_abs_atTop]
+  rw [← cobounded_eq_cocompact, cobounded_eq]
 #align real.cocompact_eq Real.cocompact_eq
+
+theorem Real.atBot_le_cocompact : atBot ≤ cocompact ℝ := by simp
+theorem Real.atTop_le_cocompact : atTop ≤ cocompact ℝ := by simp
 
 /- TODO(Mario): Prove that these are uniform isomorphisms instead of uniform embeddings
 lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (fun p : ℚ => p + r) :=
@@ -175,22 +175,19 @@ lemma closure_of_rat_image_le_le_eq {a b : ℚ} (hab : a ≤ b) :
     closure (of_rat '' {q:ℚ | a ≤ q ∧ q ≤ b}) = {r:ℝ | of_rat a ≤ r ∧ r ≤ of_rat b} :=
   _
 -/
-theorem Real.bounded_iff_bddBelow_bddAbove {s : Set ℝ} : Bounded s ↔ BddBelow s ∧ BddAbove s :=
-  ⟨by
-    intro bdd
-    rcases (bounded_iff_subset_ball 0).1 bdd with ⟨r, hr⟩
-    -- hr : s ⊆ closed_ball 0 r
-    rw [Real.closedBall_eq_Icc] at hr
-    -- hr : s ⊆ Icc (0 - r) (0 + r)
+theorem Real.isBounded_iff_bddBelow_bddAbove {s : Set ℝ} : IsBounded s ↔ BddBelow s ∧ BddAbove s :=
+  ⟨fun bdd ↦ by
+    obtain ⟨r, hr⟩ : ∃ r : ℝ, s ⊆ Icc (-r) r := by
+      simpa [Real.closedBall_eq_Icc] using bdd.subset_closedBall 0
     exact ⟨bddBelow_Icc.mono hr, bddAbove_Icc.mono hr⟩,
-    fun h => bounded_of_bddAbove_of_bddBelow h.2 h.1⟩
-#align real.bounded_iff_bdd_below_bdd_above Real.bounded_iff_bddBelow_bddAbove
+    fun h => isBounded_of_bddAbove_of_bddBelow h.2 h.1⟩
+#align real.bounded_iff_bdd_below_bdd_above Real.isBounded_iff_bddBelow_bddAbove
 
-theorem Real.subset_Icc_sInf_sSup_of_bounded {s : Set ℝ} (h : Bounded s) :
+theorem Real.subset_Icc_sInf_sSup_of_isBounded {s : Set ℝ} (h : IsBounded s) :
     s ⊆ Icc (sInf s) (sSup s) :=
-  subset_Icc_csInf_csSup (Real.bounded_iff_bddBelow_bddAbove.1 h).1
-    (Real.bounded_iff_bddBelow_bddAbove.1 h).2
-#align real.subset_Icc_Inf_Sup_of_bounded Real.subset_Icc_sInf_sSup_of_bounded
+  subset_Icc_csInf_csSup (Real.isBounded_iff_bddBelow_bddAbove.1 h).1
+    (Real.isBounded_iff_bddBelow_bddAbove.1 h).2
+#align real.subset_Icc_Inf_Sup_of_bounded Real.subset_Icc_sInf_sSup_of_isBounded
 
 end
 
@@ -212,10 +209,10 @@ theorem Periodic.compact_of_continuous' [TopologicalSpace α] {f : ℝ → α} {
 #align function.periodic.compact_of_continuous' Function.Periodic.compact_of_continuous'
 
 /-- A continuous, periodic function is bounded. -/
-theorem Periodic.bounded_of_continuous [PseudoMetricSpace α] {f : ℝ → α} {c : ℝ} (hp : Periodic f c)
-    (hc : c ≠ 0) (hf : Continuous f) : Bounded (range f) :=
-  (hp.compact_of_continuous hc hf).bounded
-#align function.periodic.bounded_of_continuous Function.Periodic.bounded_of_continuous
+theorem Periodic.isBounded_of_continuous [PseudoMetricSpace α] {f : ℝ → α} {c : ℝ}
+    (hp : Periodic f c) (hc : c ≠ 0) (hf : Continuous f) : IsBounded (range f) :=
+  (hp.compact_of_continuous hc hf).isBounded
+#align function.periodic.bounded_of_continuous Function.Periodic.isBounded_of_continuous
 
 end Function
 

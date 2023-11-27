@@ -1,6 +1,7 @@
 import Mathlib.Tactic.LiftLets
 import Std.Tactic.GuardExpr
 
+private axiom test_sorry : ∀ {α}, α
 set_option autoImplicit true
 
 example : (let x := 1; x) = 1 := by
@@ -105,4 +106,4 @@ example (m : Nat) (h : ∃ n, n + 1 = m) (x : Fin m) (y : Fin _) :
   intro h'
   clear_value h'
   guard_hyp h' : m = Exists.choose h + 1
-  sorry
+  exact test_sorry

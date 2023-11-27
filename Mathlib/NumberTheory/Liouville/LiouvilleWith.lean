@@ -310,7 +310,7 @@ theorem nat_sub (h : LiouvilleWith p x) (n : ℕ) : LiouvilleWith p (n - x) :=
 
 theorem ne_cast_int (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := by
   rintro rfl; rename' m => M
-  rcases((eventually_gt_atTop 0).and_frequently (h.frequently_lt_rpow_neg hp)).exists with
+  rcases ((eventually_gt_atTop 0).and_frequently (h.frequently_lt_rpow_neg hp)).exists with
     ⟨n : ℕ, hn : 0 < n, m : ℤ, hne : (M : ℝ) ≠ m / n, hlt : |(M - m / n : ℝ)| < n ^ (-1 : ℝ)⟩
   refine hlt.not_le ?_
   have hn' : (0 : ℝ) < n := by simpa
@@ -318,7 +318,7 @@ theorem ne_cast_int (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := 
   norm_cast
   rw [← zero_add (1 : ℤ), Int.add_one_le_iff, abs_pos, sub_ne_zero]
   rw [Ne.def, eq_div_iff hn'.ne'] at hne
-  exact_mod_cast hne
+  exact mod_cast hne
 #align liouville_with.ne_cast_int LiouvilleWith.ne_cast_int
 
 /-- A number satisfying the Liouville condition with exponent `p > 1` is an irrational number. -/
@@ -336,8 +336,6 @@ end LiouvilleWith
 namespace Liouville
 
 variable {x : ℝ}
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 /-- If `x` is a Liouville number, then for any `n`, for infinitely many denominators `b` there
 exists a numerator `a` such that `x ≠ a / b` and `|x - a / b| < 1 / b ^ n`. -/
@@ -357,7 +355,7 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
     exact fun m hm a => hm a
   have : ∀ᶠ m : ℕ in atTop, ∀ b < N, 1 < b → ∀ a : ℤ, 1 / (b : ℝ) ^ m ≤ |x - a / b| :=
     (finite_lt_nat N).eventually_all.2 fun b _hb => eventually_imp_distrib_left.2 (this b)
-  rcases(this.and (eventually_ge_atTop n)).exists with ⟨m, hm, hnm⟩
+  rcases (this.and (eventually_ge_atTop n)).exists with ⟨m, hm, hnm⟩
   rcases hx m with ⟨a, b, hb, hne, hlt⟩
   lift b to ℕ using zero_le_one.trans hb.le; norm_cast at hb; push_cast at hne hlt
   cases' le_or_lt N b with h h
@@ -386,5 +384,5 @@ theorem forall_liouvilleWith_iff {x : ℝ} : (∀ p, LiouvilleWith p x) ↔ Liou
   rcases ((eventually_gt_atTop 1).and_frequently
     ((H (n + 1)).frequently_lt_rpow_neg (lt_add_one (n : ℝ)))).exists
     with ⟨b, hb, a, hne, hlt⟩
-  exact ⟨a, b, by exact_mod_cast hb, hne, by simpa [rpow_neg] using hlt⟩
+  exact ⟨a, b, mod_cast hb, hne, by simpa [rpow_neg] using hlt⟩
 #align forall_liouville_with_iff forall_liouvilleWith_iff

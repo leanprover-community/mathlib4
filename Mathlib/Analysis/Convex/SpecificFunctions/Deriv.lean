@@ -34,8 +34,6 @@ open Real Set
 
 open scoped BigOperators NNReal
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 /-- `x^n`, `n : ℕ` is strictly convex on `[0, +∞)` for all `n` greater than `2`. -/
 theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
   apply StrictMonoOn.strictConvexOn_of_deriv (convex_Ici _) (continuousOn_pow _)
@@ -105,7 +103,7 @@ theorem strictConvexOn_zpow {m : ℤ} (hm₀ : m ≠ 0) (hm₁ : m ≠ 1) :
   rw [iter_deriv_zpow]
   refine' mul_pos _ (zpow_pos_of_pos hx _)
   norm_cast
-  refine' int_prod_range_pos (by simp only) fun hm => _
+  refine' int_prod_range_pos (by decide) fun hm => _
   rw [← Finset.coe_Ico] at hm
   norm_cast at hm
   fin_cases hm <;> simp_all -- Porting note: `simp_all` was `cc`
@@ -147,7 +145,9 @@ theorem deriv2_sqrt_mul_log (x : ℝ) :
     convert (((hasDerivAt_log hx.ne').const_add 2).div ((hasDerivAt_sqrt hx.ne').const_mul 2) <|
       mul_ne_zero two_ne_zero h₀).deriv using 1
     nth_rw 3 [← mul_self_sqrt hx.le]
-    field_simp; ring
+    generalize sqrt x = sqx at h₀ -- else field_simp rewrites sqrt x * sqrt x back to x
+    field_simp
+    ring
 #align deriv2_sqrt_mul_log deriv2_sqrt_mul_log
 
 theorem strictConcaveOn_sqrt_mul_log_Ioi :

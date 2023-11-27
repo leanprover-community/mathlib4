@@ -77,16 +77,13 @@ section SMul
 variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
   {b : β}
 
-/- Porting note: Could `@[simp, to_additive]` be automatically changed to
-`@[to_additive (attr := simp)]`?
--/
 @[to_additive (attr := simp)]
 theorem image2_smul : image2 SMul.smul s t = s • t :=
   rfl
 #align set.image2_smul Set.image2_smul
 #align set.image2_vadd Set.image2_vadd
 
--- @[to_additive add_image_prod] -- Porting note: bug in mathlib3
+@[to_additive vadd_image_prod]
 theorem image_smul_prod : (fun x : α × β ↦ x.fst • x.snd) '' s ×ˢ t = s • t :=
   image_prod _
 #align set.image_smul_prod Set.image_smul_prod
@@ -375,10 +372,10 @@ theorem smul_set_inter_subset : a • (t₁ ∩ t₂) ⊆ a • t₁ ∩ a • t
 #align set.vadd_set_inter_subset Set.vadd_set_inter_subset
 
 @[to_additive]
-theorem smul_set_Union (a : α) (s : ι → Set β) : (a • ⋃ i, s i) = ⋃ i, a • s i :=
+theorem smul_set_iUnion (a : α) (s : ι → Set β) : (a • ⋃ i, s i) = ⋃ i, a • s i :=
   image_iUnion
-#align set.smul_set_Union Set.smul_set_Union
-#align set.vadd_set_Union Set.vadd_set_Union
+#align set.smul_set_Union Set.smul_set_iUnion
+#align set.vadd_set_Union Set.vadd_set_iUnion
 
 @[to_additive]
 theorem smul_set_iUnion₂ (a : α) (s : ∀ i, κ i → Set β) :

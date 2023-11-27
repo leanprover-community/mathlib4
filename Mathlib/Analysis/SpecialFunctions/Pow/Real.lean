@@ -255,6 +255,22 @@ theorem ofReal_cpow_of_nonpos {x : ℝ} (hx : x ≤ 0) (y : ℂ) :
     arg_ofReal_of_nonneg (neg_nonneg.2 hx), ofReal_zero, zero_mul, add_zero]
 #align complex.of_real_cpow_of_nonpos Complex.ofReal_cpow_of_nonpos
 
+lemma cpow_ofReal (x : ℂ) (y : ℝ) :
+    x ^ (y : ℂ) = ↑(abs x ^ y) * (Real.cos (arg x * y) + Real.sin (arg x * y) * I) := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp [ofReal_cpow le_rfl]
+  · rw [cpow_def_of_ne_zero hx, exp_eq_exp_re_mul_sin_add_cos, mul_comm (log x)]
+    norm_cast
+    rw [ofReal_mul_re, ofReal_mul_im, log_re, log_im, mul_comm y, mul_comm y, Real.exp_mul,
+      Real.exp_log]
+    rwa [abs.pos_iff]
+
+lemma cpow_ofReal_re (x : ℂ) (y : ℝ) : (x ^ (y : ℂ)).re = (abs x) ^ y * Real.cos (arg x * y) := by
+  rw [cpow_ofReal]; generalize arg x * y = z; simp [Real.cos]
+
+lemma cpow_ofReal_im (x : ℂ) (y : ℝ) : (x ^ (y : ℂ)).im = (abs x) ^ y * Real.sin (arg x * y) := by
+  rw [cpow_ofReal]; generalize arg x * y = z; simp [Real.sin]
+
 theorem abs_cpow_of_ne_zero {z : ℂ} (hz : z ≠ 0) (w : ℂ) :
     abs (z ^ w) = abs z ^ w.re / Real.exp (arg z * im w) := by
   rw [cpow_def_of_ne_zero hz, abs_exp, mul_re, log_re, log_im, Real.exp_sub,
@@ -271,16 +287,15 @@ theorem abs_cpow_of_imp {z w : ℂ} (h : z = 0 → w.re = 0 → w = 0) :
 #align complex.abs_cpow_of_imp Complex.abs_cpow_of_imp
 
 theorem abs_cpow_le (z w : ℂ) : abs (z ^ w) ≤ abs z ^ w.re / Real.exp (arg z * im w) := by
-  rcases ne_or_eq z 0 with (hz | rfl) <;> [exact (abs_cpow_of_ne_zero hz w).le; rw [map_zero]]
-  rcases eq_or_ne w 0 with (rfl | hw); · simp
-  rw [zero_cpow hw, map_zero]
-  exact div_nonneg (Real.rpow_nonneg_of_nonneg le_rfl _) (Real.exp_pos _).le
+  by_cases h : z = 0 → w.re = 0 → w = 0
+  · exact (abs_cpow_of_imp h).le
+  · push_neg at h
+    simp [h]
 #align complex.abs_cpow_le Complex.abs_cpow_le
 
 @[simp]
 theorem abs_cpow_real (x : ℂ) (y : ℝ) : abs (x ^ (y : ℂ)) = Complex.abs x ^ y := by
-  rcases eq_or_ne x 0 with (rfl | hx) <;> [rcases eq_or_ne y 0 with (rfl | hy); skip] <;>
-    simp [*, abs_cpow_of_ne_zero]
+  rw [abs_cpow_of_imp] <;> simp
 #align complex.abs_cpow_real Complex.abs_cpow_real
 
 @[simp]
@@ -295,10 +310,7 @@ theorem abs_cpow_eq_rpow_re_of_pos {x : ℝ} (hx : 0 < x) (y : ℂ) : abs (x ^ y
 
 theorem abs_cpow_eq_rpow_re_of_nonneg {x : ℝ} (hx : 0 ≤ x) {y : ℂ} (hy : re y ≠ 0) :
     abs (x ^ y) = x ^ re y := by
-  rcases hx.eq_or_lt with (rfl | hlt)
-  · rw [ofReal_zero, zero_cpow, map_zero, Real.zero_rpow hy]
-    exact ne_of_apply_ne re hy
-  · exact abs_cpow_eq_rpow_re_of_pos hlt y
+  rw [abs_cpow_of_imp] <;> simp [*, arg_ofReal_of_nonneg, _root_.abs_of_nonneg]
 #align complex.abs_cpow_eq_rpow_re_of_nonneg Complex.abs_cpow_eq_rpow_re_of_nonneg
 
 end Complex
@@ -309,8 +321,6 @@ end Complex
 
 
 namespace Real
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 variable {x y z : ℝ}
 
@@ -403,6 +413,11 @@ theorem log_rpow {x : ℝ} (hx : 0 < x) (y : ℝ) : log (x ^ y) = y * log x := b
   rw [exp_log (rpow_pos_of_pos hx y), ← exp_log hx, mul_comm, rpow_def_of_pos (exp_pos (log x)) y]
 #align real.log_rpow Real.log_rpow
 
+theorem mul_log_eq_log_iff {x y z : ℝ} (hx : 0 < x) (hz : 0 < z) :
+    y * log x = log z ↔ x ^ y = z :=
+  ⟨fun h ↦ log_injOn_pos (rpow_pos_of_pos hx _) hz <| log_rpow hx _ |>.trans h,
+  by rintro rfl; rw [log_rpow hx]⟩
+
 /-! Note: lemmas about `(∏ i in s, f i ^ r)` such as `Real.finset_prod_rpow` are proved
 in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 
@@ -420,12 +435,20 @@ theorem rpow_lt_rpow (hx : 0 ≤ x) (hxy : x < y) (hz : 0 < z) : x ^ z < y ^ z :
     exact mul_lt_mul_of_pos_right (log_lt_log hx hxy) hz
 #align real.rpow_lt_rpow Real.rpow_lt_rpow
 
+theorem strictMonoOn_rpow_Ici_of_exponent_pos {r : ℝ} (hr : 0 < r) :
+    StrictMonoOn (fun (x : ℝ) => x ^ r) (Set.Ici 0) :=
+  fun _ ha _ _ hab => rpow_lt_rpow ha hab hr
+
 @[gcongr]
 theorem rpow_le_rpow {x y z : ℝ} (h : 0 ≤ x) (h₁ : x ≤ y) (h₂ : 0 ≤ z) : x ^ z ≤ y ^ z := by
   rcases eq_or_lt_of_le h₁ with (rfl | h₁'); · rfl
   rcases eq_or_lt_of_le h₂ with (rfl | h₂'); · simp
   exact le_of_lt (rpow_lt_rpow h h₁' h₂')
 #align real.rpow_le_rpow Real.rpow_le_rpow
+
+theorem monotoneOn_rpow_Ici_of_exponent_nonneg {r : ℝ} (hr : 0 ≤ r) :
+    MonotoneOn (fun (x : ℝ) => x ^ r) (Set.Ici 0) :=
+  fun _ ha _ _ hab => rpow_le_rpow ha hab hr
 
 theorem rpow_lt_rpow_iff (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z < y ^ z ↔ x < y :=
   ⟨lt_imp_lt_of_le_imp_le fun h => rpow_le_rpow hy h (le_of_lt hz), fun h => rpow_lt_rpow hx h hz⟩
@@ -487,6 +510,10 @@ theorem rpow_lt_rpow_of_exponent_neg {x y z : ℝ} (hy : 0 < y) (hxy : y < x) (h
       inv_lt_inv (rpow_pos_of_pos hx _) (rpow_pos_of_pos hy _)]
   exact Real.rpow_lt_rpow (by positivity) hxy <| neg_pos_of_neg hz
 
+theorem strictAntiOn_rpow_Ioi_of_exponent_neg {r : ℝ} (hr : r < 0) :
+    StrictAntiOn (fun (x:ℝ) => x ^ r) (Set.Ioi 0) :=
+  fun _ ha _ _ hab => rpow_lt_rpow_of_exponent_neg ha hab hr
+
 theorem rpow_le_rpow_of_exponent_nonpos {x y : ℝ} (hy : 0 < y) (hxy : y ≤ x) (hz : z ≤ 0) :
     x ^ z ≤ y ^ z := by
   rcases ne_or_eq z 0 with hz_zero | rfl
@@ -497,6 +524,10 @@ theorem rpow_le_rpow_of_exponent_nonpos {x y : ℝ} (hy : 0 < y) (hxy : y ≤ x)
         (Ne.lt_of_le hz_zero hz)
     case inr => simp
   case inr => simp
+
+theorem antitoneOn_rpow_Ioi_of_exponent_nonpos {r : ℝ} (hr : r ≤ 0) :
+    AntitoneOn (fun (x:ℝ) => x ^ r) (Set.Ioi 0) :=
+  fun _ ha _ _ hab => rpow_le_rpow_of_exponent_nonpos ha hab hr
 
 @[simp]
 theorem rpow_le_rpow_left_iff (hx : 1 < x) : x ^ y ≤ x ^ z ↔ y ≤ z := by
@@ -698,8 +729,7 @@ theorem sqrt_eq_rpow (x : ℝ) : sqrt x = x ^ (1 / (2 : ℝ)) := by
   · rw [← mul_self_inj_of_nonneg (sqrt_nonneg _) (rpow_nonneg_of_nonneg h _), mul_self_sqrt h, ← sq,
       ← rpow_nat_cast, ← rpow_mul h]
     norm_num
-  · have : 1 / (2 : ℝ) * π = π / (2 : ℝ)
-    ring
+  · have : 1 / (2 : ℝ) * π = π / (2 : ℝ) := by ring
     rw [sqrt_eq_zero_of_nonpos h.le, rpow_def_of_neg h, this, cos_pi_div_two, mul_zero]
 #align real.sqrt_eq_rpow Real.sqrt_eq_rpow
 
@@ -713,11 +743,9 @@ end Sqrt
 
 variable {n : ℕ}
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 theorem exists_rat_pow_btwn_rat_aux (hn : n ≠ 0) (x y : ℝ) (h : x < y) (hy : 0 < y) :
     ∃ q : ℚ, 0 < q ∧ x < (q : ℝ) ^ n ∧ (q : ℝ) ^ n < y := by
-  have hn' : 0 < (n : ℝ) := by exact_mod_cast hn.bot_lt
+  have hn' : 0 < (n : ℝ) := mod_cast hn.bot_lt
   obtain ⟨q, hxq, hqy⟩ :=
     exists_rat_btwn (rpow_lt_rpow (le_max_left 0 x) (max_lt hy h) <| inv_pos.mpr hn')
   have := rpow_nonneg_of_nonneg (le_max_left 0 x) n⁻¹
@@ -725,7 +753,7 @@ theorem exists_rat_pow_btwn_rat_aux (hn : n ≠ 0) (x y : ℝ) (h : x < y) (hy :
   replace hxq := rpow_lt_rpow this hxq hn'
   replace hqy := rpow_lt_rpow hq.le hqy hn'
   rw [rpow_nat_cast, rpow_nat_cast, rpow_nat_inv_pow_nat _ hn] at hxq hqy
-  · exact ⟨q, by exact_mod_cast hq, (le_max_right _ _).trans_lt hxq, hqy⟩
+  · exact ⟨q, mod_cast hq, (le_max_right _ _).trans_lt hxq, hqy⟩
   · exact hy.le
   · exact le_max_left _ _
 #align real.exists_rat_pow_btwn_rat_aux Real.exists_rat_pow_btwn_rat_aux
@@ -747,6 +775,36 @@ theorem exists_rat_pow_btwn {α : Type*} [LinearOrderedField α] [Archimedean α
 #align real.exists_rat_pow_btwn Real.exists_rat_pow_btwn
 
 end Real
+
+namespace Complex
+
+lemma cpow_inv_two_re (x : ℂ) : (x ^ (2⁻¹ : ℂ)).re = sqrt ((abs x + x.re) / 2) := by
+  rw [← ofReal_ofNat, ← ofReal_inv, cpow_ofReal_re, ← div_eq_mul_inv, ← one_div,
+    ← Real.sqrt_eq_rpow, cos_half, ← sqrt_mul, ← mul_div_assoc, mul_add, mul_one, abs_mul_cos_arg]
+  exacts [abs.nonneg _, (neg_pi_lt_arg _).le, arg_le_pi _]
+
+lemma cpow_inv_two_im_eq_sqrt {x : ℂ} (hx : 0 ≤ x.im) :
+    (x ^ (2⁻¹ : ℂ)).im = sqrt ((abs x - x.re) / 2) := by
+  rw [← ofReal_ofNat, ← ofReal_inv, cpow_ofReal_im, ← div_eq_mul_inv, ← one_div,
+    ← Real.sqrt_eq_rpow, sin_half_eq_sqrt, ← sqrt_mul (abs.nonneg _), ← mul_div_assoc, mul_sub,
+    mul_one, abs_mul_cos_arg]
+  · rwa [arg_nonneg_iff]
+  · linarith [pi_pos, arg_le_pi x]
+
+lemma cpow_inv_two_im_eq_neg_sqrt {x : ℂ} (hx : x.im < 0) :
+    (x ^ (2⁻¹ : ℂ)).im = -sqrt ((abs x - x.re) / 2) := by
+  rw [← ofReal_ofNat, ← ofReal_inv, cpow_ofReal_im, ← div_eq_mul_inv, ← one_div,
+    ← Real.sqrt_eq_rpow, sin_half_eq_neg_sqrt, mul_neg, ← sqrt_mul (abs.nonneg _),
+    ← mul_div_assoc, mul_sub, mul_one, abs_mul_cos_arg]
+  · linarith [pi_pos, neg_pi_lt_arg x]
+  · exact (arg_neg_iff.2 hx).le
+
+lemma abs_cpow_inv_two_im (x : ℂ) : |(x ^ (2⁻¹ : ℂ)).im| = sqrt ((abs x - x.re) / 2) := by
+  rw [← ofReal_ofNat, ← ofReal_inv, cpow_ofReal_im, ← div_eq_mul_inv, ← one_div,
+    ← Real.sqrt_eq_rpow, _root_.abs_mul, _root_.abs_of_nonneg (sqrt_nonneg _), abs_sin_half,
+    ← sqrt_mul (abs.nonneg _), ← mul_div_assoc, mul_sub, mul_one, abs_mul_cos_arg]
+
+end Complex
 
 section Tactics
 

@@ -617,7 +617,7 @@ theorem dist_reflection_eq_of_mem (s : AffineSubspace ℝ P) [Nonempty s]
     [HasOrthogonalProjection s.direction] {p₁ : P} (hp₁ : p₁ ∈ s) (p₂ : P) :
     dist p₁ (reflection s p₂) = dist p₁ p₂ := by
   rw [← reflection_eq_self_iff p₁] at hp₁
-  convert(reflection s).dist_map p₁ p₂
+  convert (reflection s).dist_map p₁ p₂
   rw [hp₁]
 #align euclidean_geometry.dist_reflection_eq_of_mem EuclideanGeometry.dist_reflection_eq_of_mem
 

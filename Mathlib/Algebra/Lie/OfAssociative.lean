@@ -45,7 +45,7 @@ namespace Ring
 
 /-- The bracket operation for rings is the ring commutator, which captures the extent to which a
 ring is commutative. It is identically zero exactly when the ring is commutative. -/
-instance (priority := 100) : Bracket A A :=
+instance (priority := 100) instBracket : Bracket A A :=
   ⟨fun x y => x * y - y * x⟩
 
 theorem lie_def (x y : A) : ⁅x, y⁆ = x * y - y * x :=
@@ -254,9 +254,26 @@ theorem LieSubalgebra.toEndomorphism_mk (K : LieSubalgebra R L) {x : L} (hx : x 
 
 variable {R L M}
 
+namespace LieModule
+
+variable {M₂ : Type w₁} [AddCommGroup M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
+  (f : M →ₗ⁅R,L⁆ M₂) (k : ℕ) (x : L)
+
+lemma toEndomorphism_pow_comp_lieHom :
+    (toEndomorphism R L M₂ x ^ k) ∘ₗ f = f ∘ₗ toEndomorphism R L M x ^ k := by
+  apply LinearMap.commute_pow_left_of_commute
+  ext
+  simp
+
+lemma toEndomorphism_pow_apply_map (m : M) :
+    (toEndomorphism R L M₂ x ^ k) (f m) = f ((toEndomorphism R L M x ^ k) m) :=
+  LinearMap.congr_fun (toEndomorphism_pow_comp_lieHom f k x) m
+
+end LieModule
+
 namespace LieSubmodule
 
-open LieModule
+open LieModule Set
 
 variable {N : LieSubmodule R L M} {x : L}
 
@@ -278,6 +295,11 @@ theorem toEndomorphism_restrict_eq_toEndomorphism (h := N.toEndomorphism_comp_su
     (toEndomorphism R L M x).restrict h = toEndomorphism R L N x := by
   ext; simp [LinearMap.restrict_apply]
 #align lie_submodule.to_endomorphism_restrict_eq_to_endomorphism LieSubmodule.toEndomorphism_restrict_eq_toEndomorphism
+
+lemma mapsTo_pow_toEndomorphism_sub_algebraMap {φ : R} {k : ℕ} {x : L} :
+    MapsTo ((toEndomorphism R L M x - algebraMap R (Module.End R M) φ) ^ k) N N := by
+  rw [LinearMap.coe_pow]
+  exact MapsTo.iterate (fun m hm ↦ N.sub_mem (N.lie_mem hm) (N.smul_mem _ hm)) k
 
 end LieSubmodule
 

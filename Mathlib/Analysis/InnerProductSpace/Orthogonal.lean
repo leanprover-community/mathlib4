@@ -420,7 +420,7 @@ theorem orthogonalFamily_iff_pairwise {ι} {V : ι → Submodule 𝕜 E} :
         forall₂_congr fun _y _hy => inner_eq_zero_symm
 #align orthogonal_family_iff_pairwise orthogonalFamily_iff_pairwise
 
-alias orthogonalFamily_iff_pairwise ↔ OrthogonalFamily.pairwise OrthogonalFamily.of_pairwise
+alias ⟨OrthogonalFamily.pairwise, OrthogonalFamily.of_pairwise⟩ := orthogonalFamily_iff_pairwise
 #align orthogonal_family.pairwise OrthogonalFamily.pairwise
 #align orthogonal_family.of_pairwise OrthogonalFamily.of_pairwise
 

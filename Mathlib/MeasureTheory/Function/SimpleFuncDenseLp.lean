@@ -72,7 +72,7 @@ theorem nnnorm_approxOn_le [OpensMeasurableSpace E] {f : β → E} (hf : Measura
   have := edist_approxOn_le hf h₀ x n
   rw [edist_comm y₀] at this
   simp only [edist_nndist, nndist_eq_nnnorm] at this
-  exact_mod_cast this
+  exact mod_cast this
 #align measure_theory.simple_func.nnnorm_approx_on_le MeasureTheory.SimpleFunc.nnnorm_approxOn_le
 
 theorem norm_approxOn_y₀_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
@@ -80,7 +80,7 @@ theorem norm_approxOn_y₀_le [OpensMeasurableSpace E] {f : β → E} (hf : Meas
     ‖approxOn f hf s y₀ h₀ n x - y₀‖ ≤ ‖f x - y₀‖ + ‖f x - y₀‖ := by
   have := edist_approxOn_y0_le hf h₀ x n
   repeat' rw [edist_comm y₀, edist_eq_coe_nnnorm_sub] at this
-  exact_mod_cast this
+  exact mod_cast this
 #align measure_theory.simple_func.norm_approx_on_y₀_le MeasureTheory.SimpleFunc.norm_approxOn_y₀_le
 
 theorem norm_approxOn_zero_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
@@ -88,7 +88,7 @@ theorem norm_approxOn_zero_le [OpensMeasurableSpace E] {f : β → E} (hf : Meas
     ‖approxOn f hf s 0 h₀ n x‖ ≤ ‖f x‖ + ‖f x‖ := by
   have := edist_approxOn_y0_le hf h₀ x n
   simp [edist_comm (0 : E), edist_eq_coe_nnnorm] at this
-  exact_mod_cast this
+  exact mod_cast this
 #align measure_theory.simple_func.norm_approx_on_zero_le MeasureTheory.SimpleFunc.norm_approxOn_zero_le
 
 theorem tendsto_approxOn_Lp_snorm [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f)
@@ -667,7 +667,6 @@ theorem sub_toSimpleFunc (f g : Lp.simpleFunc E p μ) :
 
 variable [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
-set_option synthInstance.maxHeartbeats 30000 in
 theorem smul_toSimpleFunc (k : 𝕜) (f : Lp.simpleFunc E p μ) :
     toSimpleFunc (k • f) =ᵐ[μ] k • ⇑(toSimpleFunc f) := by
   filter_upwards [toSimpleFunc_eq_toFun (k • f), toSimpleFunc_eq_toFun f,
@@ -987,7 +986,7 @@ theorem Memℒp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop
     (h1P : ∀ f g, P f → P g → P (f + g)) (h2P : ∀ f, P f → AEStronglyMeasurable f μ) {f : α → E}
     (hf : Memℒp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) : ∃ g : α → E, snorm (f - g) p μ ≤ ε ∧ P g := by
   rcases eq_or_ne p 0 with (rfl | hp_pos)
-  · rcases h0P (0 : E) MeasurableSet.empty (by simp only [measure_empty, WithTop.zero_lt_top])
+  · rcases h0P (0 : E) MeasurableSet.empty (by simp only [measure_empty, zero_lt_top])
         hε with ⟨g, _, Pg⟩
     exact ⟨g, by simp only [snorm_exponent_zero, zero_le'], Pg⟩
   suffices H :
@@ -1002,7 +1001,7 @@ theorem Memℒp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop
   apply SimpleFunc.induction
   · intro c s hs ε εpos Hs
     rcases eq_or_ne c 0 with (rfl | hc)
-    · rcases h0P (0 : E) MeasurableSet.empty (by simp only [measure_empty, WithTop.zero_lt_top])
+    · rcases h0P (0 : E) MeasurableSet.empty (by simp only [measure_empty, zero_lt_top])
           εpos with ⟨g, hg, Pg⟩
       rw [← snorm_neg, neg_sub] at hg
       refine' ⟨g, _, Pg⟩

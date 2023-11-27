@@ -201,8 +201,8 @@ theorem comp_toThinSkeleton (F : C ⥤ D) : F ⋙ toThinSkeleton D = toThinSkele
 #align category_theory.thin_skeleton.comp_to_thin_skeleton CategoryTheory.ThinSkeleton.comp_toThinSkeleton
 
 /-- Given a natural transformation `F₁ ⟶ F₂`, induce a natural transformation `map F₁ ⟶ map F₂`.-/
-def mapNatTrans {F₁ F₂ : C ⥤ D} (k : F₁ ⟶ F₂) : map F₁ ⟶ map F₂
-    where app X := Quotient.recOnSubsingleton X fun x => ⟨⟨⟨k.app x⟩⟩⟩
+def mapNatTrans {F₁ F₂ : C ⥤ D} (k : F₁ ⟶ F₂) : map F₁ ⟶ map F₂ where
+  app X := Quotient.recOnSubsingleton X fun x => ⟨⟨⟨k.app x⟩⟩⟩
 #align category_theory.thin_skeleton.map_nat_trans CategoryTheory.ThinSkeleton.mapNatTrans
 
 /- Porting note: `map₂ObjMap`, `map₂Functor`, and `map₂NatTrans` were all extracted

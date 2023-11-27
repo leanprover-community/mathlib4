@@ -71,7 +71,7 @@ theorem compares_swap [LT α] {a b : α} {o : Ordering} : o.swap.Compares a b �
   · exact Iff.rfl
 #align ordering.compares_swap Ordering.compares_swap
 
-alias compares_swap ↔ Compares.of_swap Compares.swap
+alias ⟨Compares.of_swap, Compares.swap⟩ := compares_swap
 #align ordering.compares.of_swap Ordering.Compares.of_swap
 #align ordering.compares.swap Ordering.Compares.swap
 

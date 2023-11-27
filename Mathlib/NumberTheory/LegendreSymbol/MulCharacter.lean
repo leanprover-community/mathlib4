@@ -237,6 +237,10 @@ theorem equivToUnitHom_symm_coe (f : Rˣ →* R'ˣ) (a : Rˣ) : equivToUnitHom.s
   ofUnitHom_coe f a
 #align mul_char.equiv_unit_hom_symm_coe MulChar.equivToUnitHom_symm_coe
 
+@[simp]
+lemma coe_toMonoidHom [CommMonoid R] (χ : MulChar R R')
+    (x : R) : χ.toMonoidHom x = χ x := rfl
+
 /-!
 ### Commutative group structure on multiplicative characters
 
@@ -330,9 +334,7 @@ theorem inv_apply {R : Type u} [CommMonoidWithZero R] (χ : MulChar R R') (a : R
   by_cases ha : IsUnit a
   · rw [inv_apply_eq_inv]
     have h := IsUnit.map χ ha
-    -- Porting note: was
-    -- apply_fun (χ a * ·) using IsUnit.mul_right_injective h
-    apply IsUnit.mul_right_injective h
+    apply_fun (χ a * ·) using IsUnit.mul_right_injective h
     dsimp only
     -- Porting note: was
     -- rw [Ring.mul_inverse_cancel _ h, ← map_mul, Ring.mul_inverse_cancel _ ha, MulChar.map_one]

@@ -38,7 +38,8 @@ section set_options
 
 set_option linter.uppercaseLean3 false
 set_option quotPrecheck false
-local notation "⟪" x ", " y "⟫ₑ" => @inner 𝕜 _ _ ((PiLp.equiv 2 _).symm x) ((PiLp.equiv _ _).symm y)
+local notation "⟪" x ", " y "⟫ₑ" =>
+  @inner 𝕜 _ _ ((WithLp.equiv 2 _).symm x) ((WithLp.equiv _ _).symm y)
 
 open Matrix
 

@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro
 -/
 import Qq.MetaM
-import Mathlib.Logic.Nontrivial
+import Mathlib.Logic.Nontrivial.Basic
+import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.SolveByElim
 
 /-! # The `nontriviality` tactic. -/
@@ -12,7 +13,7 @@ import Mathlib.Tactic.SolveByElim
 set_option autoImplicit true
 
 namespace Mathlib.Tactic.Nontriviality
-open Lean Elab Meta Tactic Linter Std.Linter UnreachableTactic Qq
+open Lean Elab Meta Tactic Qq
 
 theorem subsingleton_or_nontrivial_elim {p : Prop} {α : Type u}
     (h₁ : Subsingleton α → p) (h₂ : Nontrivial α → p) : p :=

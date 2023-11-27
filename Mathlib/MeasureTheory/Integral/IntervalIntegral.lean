@@ -50,8 +50,6 @@ integral
 
 noncomputable section
 
-open TopologicalSpace (SecondCountableTopology)
-
 open MeasureTheory Set Classical Filter Function
 
 open scoped Classical Topology Filter ENNReal BigOperators Interval NNReal
@@ -227,10 +225,10 @@ protected theorem aestronglyMeasurable (h : IntervalIntegrable f μ a b) :
   h.1.aestronglyMeasurable
 #align interval_integrable.ae_strongly_measurable IntervalIntegrable.aestronglyMeasurable
 
-protected theorem ae_strongly_measurable' (h : IntervalIntegrable f μ a b) :
+protected theorem aestronglyMeasurable' (h : IntervalIntegrable f μ a b) :
     AEStronglyMeasurable f (μ.restrict (Ioc b a)) :=
   h.2.aestronglyMeasurable
-#align interval_integrable.ae_strongly_measurable' IntervalIntegrable.ae_strongly_measurable'
+#align interval_integrable.ae_strongly_measurable' IntervalIntegrable.aestronglyMeasurable'
 
 end
 
@@ -405,8 +403,8 @@ Suppose that `f : ℝ → E` has a finite limit at `l' ⊓ μ.ae`. Then `f` is i
 `u..v` provided that both `u` and `v` tend to `l`.
 
 Typeclass instances allow Lean to find `l'` based on `l` but not vice versa, so
-`apply tendsto.eventually_interval_integrable_ae` will generate goals `Filter ℝ` and
-`tendsto_Ixx_class Ioc ?m_1 l'`. -/
+`apply Tendsto.eventually_intervalIntegrable_ae` will generate goals `Filter ℝ` and
+`TendstoIxxClass Ioc ?m_1 l'`. -/
 theorem Filter.Tendsto.eventually_intervalIntegrable_ae {f : ℝ → E} {μ : Measure ℝ}
     {l l' : Filter ℝ} (hfm : StronglyMeasurableAtFilter f l' μ) [TendstoIxxClass Ioc l l']
     [IsMeasurablyGenerated l'] (hμ : μ.FiniteAtFilter l') {c : E} (hf : Tendsto f (l' ⊓ μ.ae) (𝓝 c))
@@ -423,8 +421,8 @@ Suppose that `f : ℝ → E` has a finite limit at `l`. Then `f` is interval int
 provided that both `u` and `v` tend to `l`.
 
 Typeclass instances allow Lean to find `l'` based on `l` but not vice versa, so
-`apply tendsto.eventually_interval_integrable_ae` will generate goals `Filter ℝ` and
-`tendsto_Ixx_class Ioc ?m_1 l'`. -/
+`apply Tendsto.eventually_intervalIntegrable` will generate goals `Filter ℝ` and
+`TendstoIxxClass Ioc ?m_1 l'`. -/
 theorem Filter.Tendsto.eventually_intervalIntegrable {f : ℝ → E} {μ : Measure ℝ} {l l' : Filter ℝ}
     (hfm : StronglyMeasurableAtFilter f l' μ) [TendstoIxxClass Ioc l l'] [IsMeasurablyGenerated l']
     (hμ : μ.FiniteAtFilter l') {c : E} (hf : Tendsto f l' (𝓝 c)) {u v : ι → ℝ} {lt : Filter ι}
@@ -1054,7 +1052,7 @@ theorem hasSum_intervalIntegral_of_summable_norm [Countable ι] {f : ι → C(�
   · exact intervalIntegrable_const
   · refine ae_of_all _ fun x hx => Summable.hasSum ?_
     let x : (⟨uIcc a b, isCompact_uIcc⟩ : Compacts ℝ) := ⟨x, ?_⟩; swap; exact ⟨hx.1.le, hx.2⟩
-    have := summable_of_summable_norm hf_sum
+    have := hf_sum.of_norm
     simpa only [Compacts.coe_mk, ContinuousMap.restrict_apply]
       using ContinuousMap.summable_apply this x
 #align interval_integral.has_sum_interval_integral_of_summable_norm intervalIntegral.hasSum_intervalIntegral_of_summable_norm

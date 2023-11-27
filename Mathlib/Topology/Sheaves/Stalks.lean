@@ -112,7 +112,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note : `@[elementwise]` did not generate the best lemma when applied to `germ_res`
 theorem germ_res_apply (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) [ConcreteCategory C]
-  (s) : germ F x (F.map i.op s) = germ F (i x) s := by rw [←comp_apply, germ_res]
+    (s) : germ F x (F.map i.op s) = germ F (i x) s := by rw [←comp_apply, germ_res]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_res_apply TopCat.Presheaf.germ_res_apply
 
@@ -195,7 +195,6 @@ theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
   change (_ : colimit _ ⟶ _) = (_ : colimit _ ⟶ _)
   ext U
   rcases U with ⟨⟨_, _⟩, _⟩
-  simp only [colimit.ι_map_assoc, colimit.ι_pre_assoc, whiskerRight_app, Category.assoc]
   simp [stalkFunctor, stalkPushforward]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.comp TopCat.Presheaf.stalkPushforward.comp
@@ -332,11 +331,11 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_stalk_specializes TopCat.Presheaf.germ_stalkSpecializes
 
 @[reassoc, elementwise nosimp]
-theorem germ_stalk_specializes' (F : X.Presheaf C) {U : Opens X} {x y : X} (h : x ⤳ y)
+theorem germ_stalkSpecializes' (F : X.Presheaf C) {U : Opens X} {x y : X} (h : x ⤳ y)
     (hy : y ∈ U) : F.germ ⟨y, hy⟩ ≫ F.stalkSpecializes h = F.germ ⟨x, h.mem_open U.isOpen hy⟩ :=
   colimit.ι_desc _ _
 set_option linter.uppercaseLean3 false in
-#align Top.presheaf.germ_stalk_specializes' TopCat.Presheaf.germ_stalk_specializes'
+#align Top.presheaf.germ_stalk_specializes' TopCat.Presheaf.germ_stalkSpecializes'
 
 @[simp]
 theorem stalkSpecializes_refl {C : Type*} [Category C] [Limits.HasColimits C] {X : TopCat}
@@ -364,7 +363,7 @@ theorem stalkSpecializes_stalkFunctor_map {F G : X.Presheaf C} (f : F ⟶ G) {x 
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_specializes_stalk_functor_map TopCat.Presheaf.stalkSpecializes_stalkFunctor_map
 
-@[simp, reassoc, elementwise]
+@[reassoc, elementwise, simp, nolint simpNF] -- see std4#365 for the simpNF issue
 theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     (f _* F).stalkSpecializes (f.map_specializes h) ≫ F.stalkPushforward _ f x =
       F.stalkPushforward _ f y ≫ F.stalkSpecializes h := by
@@ -463,7 +462,7 @@ theorem section_ext (F : Sheaf C X) (U : Opens X) (s t : F.1.obj (op U))
   -- neighborhoods form a cover of `U`.
   apply F.eq_of_locally_eq' V U i₁
   · intro x hxU
-    erw [Opens.mem_iSup]
+    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe]
     exact ⟨⟨x, hxU⟩, m ⟨x, hxU⟩⟩
   · intro x
     rw [heq, Subsingleton.elim (i₁ x) (i₂ x)]
@@ -544,7 +543,7 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
   -- These neighborhoods clearly cover all of `U`.
   have V_cover : U ≤ iSup V := by
     intro x hxU
-    erw [Opens.mem_iSup]
+    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe]
     exact ⟨⟨x, hxU⟩, mV ⟨x, hxU⟩⟩
   suffices IsCompatible F.val V sf by
     -- Since `F` is a sheaf, we can glue all the local preimages together to get a global preimage.

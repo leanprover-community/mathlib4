@@ -160,7 +160,9 @@ theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finit
     cases' x with a b
     · rw [Equiv.sumCongr_apply, Sum.map_inl, permCongr_apply, Equiv.symm_symm,
         apply_ofInjective_symm Sum.inl_injective]
-      rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk, subtypePerm_apply]
+      rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [subtypePerm_apply]
     · rw [Equiv.sumCongr_apply, Sum.map_inr, permCongr_apply, Equiv.symm_symm,
         apply_ofInjective_symm Sum.inr_injective]
       erw [subtypePerm_apply]
@@ -194,7 +196,7 @@ section Fintype
 
 variable [Fintype α]
 
-theorem support_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.coprime n (orderOf σ)) :
+theorem support_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.Coprime n (orderOf σ)) :
     (σ ^ n).support = σ.support := by
   obtain ⟨m, hm⟩ := exists_pow_eq_self_of_coprime h
   exact
@@ -434,7 +436,6 @@ private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2
       have : 1 < a₁ := lt_of_le_of_ne (Nat.succ_le_of_lt ha₁)
         (Ne.symm (by intro h; apply ha₂; simp [h]))
       have h01 : Equiv.swap (0 : Fin (n + 2)) 1 0 = 1 := by simp
-      -- Porting note: replaced `norm_num` by `rw`
       rw [swap_apply_of_ne_of_ne (ne_of_gt H) ha₂, h01, if_neg this.not_le]
     · have le : 1 ≤ a₂ := Nat.succ_le_of_lt H'
       have lt : 1 < a₁ := le.trans_lt ha₁

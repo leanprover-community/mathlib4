@@ -19,7 +19,7 @@ variable {R : Type*}
 open BigOperators
 
 @[simp]
-theorem star_prod [CommMonoid R] [StarSemigroup R] {α : Type*} (s : Finset α) (f : α → R) :
+theorem star_prod [CommMonoid R] [StarMul R] {α : Type*} (s : Finset α) (f : α → R) :
     star (∏ x in s, f x) = ∏ x in s, star (f x) := map_prod (starMulAut : R ≃* R) _ _
 #align star_prod star_prod
 

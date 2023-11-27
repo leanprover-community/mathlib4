@@ -3,7 +3,6 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Invertible
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.Algebra.Lie.Abelian
@@ -225,8 +224,9 @@ def soIndefiniteEquiv {i : R} (hi : i * i = -1) : so' p q R ≃ₗ⁅R⁆ so (Su
 theorem soIndefiniteEquiv_apply {i : R} (hi : i * i = -1) (A : so' p q R) :
     (soIndefiniteEquiv p q R hi A : Matrix (Sum p q) (Sum p q) R) =
       (Pso p q R i)⁻¹ * (A : Matrix (Sum p q) (Sum p q) R) * Pso p q R i := by
-  rw [soIndefiniteEquiv, LieEquiv.trans_apply, LieEquiv.ofEq_apply,
-    skewAdjointMatricesLieSubalgebraEquiv_apply]
+  rw [soIndefiniteEquiv, LieEquiv.trans_apply, LieEquiv.ofEq_apply]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [skewAdjointMatricesLieSubalgebraEquiv_apply]
 #align lie_algebra.orthogonal.so_indefinite_equiv_apply LieAlgebra.Orthogonal.soIndefiniteEquiv_apply
 
 /-- A matrix defining a canonical even-rank symmetric bilinear form.
@@ -291,7 +291,7 @@ def typeDEquivSo' [Fintype l] [Invertible (2 : R)] : typeD l R ≃ₗ⁅R⁆ so'
   apply (skewAdjointMatricesLieSubalgebraEquiv (JD l R) (PD l R) (by infer_instance)).trans
   apply LieEquiv.ofEq
   ext A
-  rw [jd_transform, ← unitOfInvertible_val (2 : R), ← Units.smul_def, LieSubalgebra.mem_coe,
+  rw [jd_transform, ← val_unitOfInvertible (2 : R), ← Units.smul_def, LieSubalgebra.mem_coe,
     mem_skewAdjointMatricesLieSubalgebra_unit_smul]
   rfl
 #align lie_algebra.orthogonal.type_D_equiv_so' LieAlgebra.Orthogonal.typeDEquivSo'
@@ -380,7 +380,7 @@ def typeBEquivSo' [Invertible (2 : R)] : typeB l R ≃ₗ⁅R⁆ so' (Sum Unit l
         (Matrix.reindexAlgEquiv _ (Equiv.sumAssoc PUnit l l)) (Matrix.transpose_reindex _ _)).trans
   apply LieEquiv.ofEq
   ext A
-  rw [jb_transform, ← unitOfInvertible_val (2 : R), ← Units.smul_def, LieSubalgebra.mem_coe,
+  rw [jb_transform, ← val_unitOfInvertible (2 : R), ← Units.smul_def, LieSubalgebra.mem_coe,
     LieSubalgebra.mem_coe, mem_skewAdjointMatricesLieSubalgebra_unit_smul]
   simp [indefiniteDiagonal_assoc, S]
 #align lie_algebra.orthogonal.type_B_equiv_so' LieAlgebra.Orthogonal.typeBEquivSo'

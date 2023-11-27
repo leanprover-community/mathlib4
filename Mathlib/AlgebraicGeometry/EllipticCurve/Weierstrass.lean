@@ -638,8 +638,8 @@ lemma irreducible_polynomial [IsDomain R] : Irreducible W.polynomial := by
   apply (h1.symm.le.trans Cubic.degree_of_b_eq_zero').not_lt
   rcases Nat.WithBot.add_eq_three_iff.mp h0.symm with h | h | h | h
   -- porting note: replaced two `any_goals` proofs with two `iterate 2` proofs
-  iterate 2 rw [degree_add_eq_right_of_degree_lt] <;> simp only [h]
-  iterate 2 rw [degree_add_eq_left_of_degree_lt] <;> simp only [h]
+  iterate 2 rw [degree_add_eq_right_of_degree_lt] <;> simp only [h] <;> decide
+  iterate 2 rw [degree_add_eq_left_of_degree_lt] <;> simp only [h] <;> decide
 #align weierstrass_curve.irreducible_polynomial WeierstrassCurve.irreducible_polynomial
 
 -- porting note: removed `@[simp]` to avoid a `simpNF` linter error
@@ -1029,7 +1029,7 @@ lemma norm_smul_basis (p q : R[X]) :
   simp_rw [Algebra.norm_eq_matrix_det <| CoordinateRing.basis W, Matrix.det_fin_two,
     Algebra.leftMulMatrix_eq_repr_mul, basis_zero, mul_one, basis_one, smul_basis_mul_Y, map_add,
     Finsupp.add_apply, map_smul, Finsupp.smul_apply, ← basis_zero, ← basis_one,
-    Basis.repr_self_apply, if_pos, if_neg, smul_eq_mul]
+    Basis.repr_self_apply, if_pos, one_ne_zero, if_false, smul_eq_mul]
   ring1
 #align weierstrass_curve.coordinate_ring.norm_smul_basis WeierstrassCurve.CoordinateRing.norm_smul_basis
 
@@ -1144,7 +1144,7 @@ It is of $j$-invariant $0$ (see `EllipticCurve.ofJ0_j`). -/
 def ofJ0 [Invertible (3 : R)] : EllipticCurve R :=
   have := invertibleNeg (3 ^ 3 : R)
   ⟨WeierstrassCurve.ofJ0 R, unitOfInvertible (-3 ^ 3 : R),
-    by rw [unitOfInvertible_val, WeierstrassCurve.ofJ0_Δ R]; norm_num1⟩
+    by rw [val_unitOfInvertible, WeierstrassCurve.ofJ0_Δ R]; norm_num1⟩
 
 lemma ofJ0_j [Invertible (3 : R)] : (ofJ0 R).j = 0 := by
   simp only [j, ofJ0, WeierstrassCurve.ofJ0_c₄]
@@ -1155,10 +1155,10 @@ It is of $j$-invariant $1728$ (see `EllipticCurve.ofJ1728_j`). -/
 def ofJ1728 [Invertible (2 : R)] : EllipticCurve R :=
   have := invertibleNeg (2 ^ 6 : R)
   ⟨WeierstrassCurve.ofJ1728 R, unitOfInvertible (-2 ^ 6 : R),
-    by rw [unitOfInvertible_val, WeierstrassCurve.ofJ1728_Δ R]; norm_num1⟩
+    by rw [val_unitOfInvertible, WeierstrassCurve.ofJ1728_Δ R]; norm_num1⟩
 
 lemma ofJ1728_j [Invertible (2 : R)] : (ofJ1728 R).j = 1728 := by
-  field_simp [j, ofJ1728, @unitOfInvertible_val _ _ _ <| invertibleNeg _,
+  field_simp [j, ofJ1728, @val_unitOfInvertible _ _ _ <| invertibleNeg _,
     WeierstrassCurve.ofJ1728_c₄]
   norm_num1
 
@@ -1173,14 +1173,14 @@ def ofJ' (j : R) [Invertible j] [Invertible (j - 1728)] : EllipticCurve R :=
     (WeierstrassCurve.ofJ_Δ j).symm⟩
 
 lemma ofJ'_j (j : R) [Invertible j] [Invertible (j - 1728)] : (ofJ' j).j = j := by
-  field_simp [EllipticCurve.j, ofJ', @unitOfInvertible_val _ _ _ <| invertibleMul _ _,
+  field_simp [EllipticCurve.j, ofJ', @val_unitOfInvertible _ _ _ <| invertibleMul _ _,
     WeierstrassCurve.ofJ_c₄]
   ring1
 
 variable {F : Type u} [Field F] (j : F)
 
 private lemma two_or_three_ne_zero : (2 : F) ≠ 0 ∨ (3 : F) ≠ 0 :=
-  ne_zero_or_ne_zero_of_nat_coprime (show Nat.coprime 2 3 by norm_num1)
+  ne_zero_or_ne_zero_of_nat_coprime (show Nat.Coprime 2 3 by norm_num1)
 
 variable [DecidableEq F]
 

@@ -16,8 +16,8 @@ import Mathlib.Data.Rat.Floor
 
 @[nolint docBlame]
 def Int.shift2 (a b : ℕ) : ℤ → ℕ × ℕ
-  | Int.ofNat e => (a.shiftl e, b)
-  | Int.negSucc e => (a, b.shiftl e.succ)
+  | Int.ofNat e => (a <<< e, b)
+  | Int.negSucc e => (a, b <<< e.succ)
 #align int.shift2 Int.shift2
 
 namespace FP
@@ -138,8 +138,8 @@ protected def Float.neg : Float → Float
 
 @[nolint docBlame]
 def divNatLtTwoPow (n d : ℕ) : ℤ → Bool
-  | Int.ofNat e => n < d.shiftl e
-  | Int.negSucc e => n.shiftl e.succ < d
+  | Int.ofNat e => n < d <<< e
+  | Int.negSucc e => n <<< e.succ < d
 #align fp.div_nat_lt_two_pow FP.divNatLtTwoPowₓ -- Porting note: TC argument `[C : FP.FloatCfg]` no longer present
 
 

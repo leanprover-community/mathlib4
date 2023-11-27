@@ -330,7 +330,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_of_equiv {F : Typ
             f i (eL.symm <| i.insertNth (eL b i) x)) -
           ∫ x in Icc (eL a ∘ i.succAbove) (eL b ∘ i.succAbove),
             f i (eL.symm <| i.insertNth (eL a i) x)) :=
-  have he_emb : MeasurableEmbedding eL := eL.toHomeomorph.toMeasurableEquiv.measurableEmbedding
+  have he_emb : MeasurableEmbedding eL := eL.toHomeomorph.measurableEmbedding
   have hIcc : eL ⁻¹' Icc (eL a) (eL b) = Icc a b := by
     ext1 x; simp only [Set.mem_preimage, Set.mem_Icc, he_ord]
   have hIcc' : Icc (eL a) (eL b) = eL.symm ⁻¹' Icc a b := by rw [← hIcc, eL.symm_preimage_preimage]

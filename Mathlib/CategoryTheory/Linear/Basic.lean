@@ -5,7 +5,6 @@ Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.Algebra.Module.LinearMap
-import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Algebra.Basic
 
 #align_import category_theory.linear.basic from "leanprover-community/mathlib"@"3dec44d0b621a174c56e994da4aae15ba60110a2"
@@ -176,6 +175,18 @@ theorem homCongr_symm_apply (k : Type*) {C : Type*} [Category C] [Semiring k] [P
     (homCongr k f₁ f₂).symm f = f₁.hom ≫ f ≫ f₂.inv :=
   rfl
 #align category_theory.linear.hom_congr_symm_apply CategoryTheory.Linear.homCongr_symm_apply
+
+variable {R}
+
+@[simp]
+lemma units_smul_comp {X Y Z : C} (r : Rˣ) (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (r • f) ≫ g = r • f ≫ g := by
+  apply Linear.smul_comp
+
+@[simp]
+lemma comp_units_smul {X Y Z : C} (f : X ⟶ Y) (r : Rˣ) (g : Y ⟶ Z) :
+    f ≫ (r • g) = r • f ≫ g := by
+  apply Linear.comp_smul
 
 end
 

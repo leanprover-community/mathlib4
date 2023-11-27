@@ -104,13 +104,11 @@ variable (G)
 
 /-- A group `G` is solvable if its derived series is eventually trivial. We use this definition
   because it's the most convenient one to work with. -/
+@[mk_iff isSolvable_def]
 class IsSolvable : Prop where
   /-- A group `G` is solvable if its derived series is eventually trivial. -/
   solvable : ∃ n : ℕ, derivedSeries G n = ⊥
 #align is_solvable IsSolvable
-
-theorem isSolvable_def : IsSolvable G ↔ ∃ n : ℕ, derivedSeries G n = ⊥ :=
-  ⟨fun h => h.solvable, fun h => ⟨h⟩⟩
 #align is_solvable_def isSolvable_def
 
 instance (priority := 100) CommGroup.isSolvable {G : Type*} [CommGroup G] : IsSolvable G :=
@@ -129,7 +127,7 @@ theorem isSolvable_of_top_eq_bot (h : (⊤ : Subgroup G) = ⊥) : IsSolvable G :
 #align is_solvable_of_top_eq_bot isSolvable_of_top_eq_bot
 
 instance (priority := 100) isSolvable_of_subsingleton [Subsingleton G] : IsSolvable G :=
-  isSolvable_of_top_eq_bot G (by simp)
+  isSolvable_of_top_eq_bot G (by simp [eq_iff_true_of_subsingleton])
 #align is_solvable_of_subsingleton isSolvable_of_subsingleton
 
 variable {G}

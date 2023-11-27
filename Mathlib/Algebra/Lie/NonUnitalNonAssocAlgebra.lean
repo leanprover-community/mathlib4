@@ -3,7 +3,7 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Hom.NonUnitalAlg
+import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Lie.Basic
 
 #align_import algebra.lie.non_unital_non_assoc_algebra from "leanprover-community/mathlib"@"841ac1a3d9162bf51c6327812ecb6e5e71883ac4"

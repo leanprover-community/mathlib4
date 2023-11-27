@@ -25,7 +25,7 @@ namespace Finset
 
 section Preimage
 
-/-- Preimage of `s : Finset β` under a map `f` injective of `f ⁻¹' s` as a `Finset`.  -/
+/-- Preimage of `s : Finset β` under a map `f` injective on `f ⁻¹' s` as a `Finset`.  -/
 noncomputable def preimage (s : Finset β) (f : α → β) (hf : Set.InjOn f (f ⁻¹' ↑s)) : Finset α :=
   (s.finite_toSet.preimage hf).toFinset
 #align finset.preimage Finset.preimage

@@ -53,7 +53,7 @@ instance Sym.hasCoe (α : Type*) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
 #align sym.has_coe Sym.hasCoe
 
 -- Porting note: instance needed for Data.Finset.Sym
-instance [DecidableEq α]: DecidableEq (Sym α n) := Subtype.instDecidableEqSubtype
+instance [DecidableEq α] : DecidableEq (Sym α n) := Subtype.instDecidableEqSubtype
 
 /-- This is the `List.Perm` setoid lifted to `Vector`.
 
@@ -169,6 +169,10 @@ instance decidableMem [DecidableEq α] (a : α) (s : Sym α n) : Decidable (a �
 theorem mem_mk (a : α) (s : Multiset α) (h : Multiset.card s = n) : a ∈ mk s h ↔ a ∈ s :=
   Iff.rfl
 #align sym.mem_mk Sym.mem_mk
+
+@[simp]
+theorem not_mem_nil (a : α) : ¬ a ∈ (nil : Sym α 0) :=
+  Multiset.not_mem_zero a
 
 @[simp]
 theorem mem_cons : a ∈ b ::ₛ s ↔ a = b ∨ a ∈ s :=
@@ -298,6 +302,16 @@ theorem exists_mem (s : Sym α n.succ) : ∃ a, a ∈ s :=
   Multiset.card_pos_iff_exists_mem.1 <| s.2.symm ▸ n.succ_pos
 #align sym.exists_mem Sym.exists_mem
 
+theorem exists_cons_of_mem {s : Sym α (n + 1)} {a : α} (h : a ∈ s) : ∃ t, s = a ::ₛ t := by
+  obtain ⟨m, h⟩ := Multiset.exists_cons_of_mem h
+  have : Multiset.card m = n := by
+    apply_fun Multiset.card at h
+    rw [s.2, Multiset.card_cons, add_left_inj] at h
+    exact h.symm
+  use ⟨m, this⟩
+  apply Subtype.ext
+  exact h
+
 theorem exists_eq_cons_of_succ (s : Sym α n.succ) : ∃ (a : α) (s' : Sym α n), s = a ::ₛ s' := by
   obtain ⟨a, ha⟩ := exists_mem s
   classical exact ⟨a, s.erase a ha, (cons_erase ha).symm⟩
@@ -315,7 +329,7 @@ theorem eq_replicate_of_subsingleton [Subsingleton α] (a : α) {n : ℕ} (s : S
 instance [Subsingleton α] (n : ℕ) : Subsingleton (Sym α n) :=
   ⟨by
     cases n
-    · simp
+    · simp [eq_iff_true_of_subsingleton]
     · intro s s'
       obtain ⟨b, -⟩ := exists_mem s
       rw [eq_replicate_of_subsingleton b s', eq_replicate_of_subsingleton b s]⟩
@@ -544,9 +558,9 @@ def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σi : Fin (n + 1), Sym �
     eq_tsub_of_add_eq <|
       Eq.trans
         (by
-          rw [← countp_eq_card_filter, add_comm]
+          rw [← countP_eq_card_filter, add_comm]
           simp only [eq_comm, Ne.def, count]
-          rw [← card_eq_countp_add_countp _ _])
+          rw [← card_eq_countP_add_countP _ _])
         m.2⟩
 #align sym.filter_ne Sym.filterNe
 

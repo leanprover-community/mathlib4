@@ -171,7 +171,7 @@ theorem subsingleton_of_not_nonempty {α : Sort*} (h : ¬Nonempty α) : Subsingl
 #align subsingleton_of_not_nonempty subsingleton_of_not_nonempty
 
 theorem Function.Surjective.nonempty [h : Nonempty β] {f : α → β} (hf : Function.Surjective f) :
-      Nonempty α :=
+    Nonempty α :=
   let ⟨y⟩ := h
   let ⟨x, _⟩ := hf y
   ⟨x⟩

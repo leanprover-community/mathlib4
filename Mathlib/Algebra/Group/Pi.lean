@@ -3,10 +3,11 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Logic.Pairwise
-import Mathlib.Algebra.Hom.GroupInstances
+import Mathlib.Init.CCLemmas
+import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Data.Set.Function
+import Mathlib.Logic.Pairwise
 
 #align_import algebra.group.pi from "leanprover-community/mathlib"@"e4bc74cbaf429d706cb9140902f7ca6c431e75a4"
 
@@ -245,7 +246,7 @@ namespace MulHom
 
 @[to_additive]
 theorem coe_mul {M N} {_ : Mul M} {_ : CommSemigroup N} (f g : M →ₙ* N) : (f * g : M → N) =
-  fun x => f x * g x := rfl
+    fun x => f x * g x := rfl
 #align mul_hom.coe_mul MulHom.coe_mul
 #align add_hom.coe_add AddHom.coe_add
 

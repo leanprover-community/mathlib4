@@ -19,8 +19,7 @@ While in terms of semantics they could be in the `Basic.lean` file, importing
 -/
 
 
-open Nat
-open BigOperators
+open BigOperators Finset Nat
 
 namespace Nat
 
@@ -33,10 +32,14 @@ theorem prod_factorial_pos : 0 < ∏ i in s, (f i)! :=
 theorem prod_factorial_dvd_factorial_sum : (∏ i in s, (f i)!) ∣ (∑ i in s, f i)! := by
   classical
     induction' s using Finset.induction with a' s' has ih
-    · simp only [Finset.sum_empty, Finset.prod_empty, factorial]
+    · simp only [prod_empty, factorial, dvd_refl]
     · simp only [Finset.prod_insert has, Finset.sum_insert has]
       refine' dvd_trans (mul_dvd_mul_left (f a')! ih) _
       apply Nat.factorial_mul_factorial_dvd_factorial_add
 #align nat.prod_factorial_dvd_factorial_sum Nat.prod_factorial_dvd_factorial_sum
+
+theorem descFactorial_eq_prod_range (n : ℕ) : ∀ k, n.descFactorial k = ∏ i in range k, (n - i)
+  | 0 => rfl
+  | k + 1 => by rw [descFactorial, prod_range_succ, mul_comm, descFactorial_eq_prod_range n k]
 
 end Nat
