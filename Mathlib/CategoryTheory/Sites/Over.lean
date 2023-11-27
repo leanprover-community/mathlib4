@@ -191,6 +191,7 @@ instance {X Y : C} (f : X ⟶ Y) : (Over.map f).IsContinuous (J.over X) (J.over 
     (over_map_compatiblePreserving J f)
     (over_map_coverPreserving J f)
 
+/-- The functor `Sheaf (J.over Y) A ⥤ Sheaf (J.over X) A` induced by a morphism `f : X ⟶ Y`. -/
 abbrev overMapPullback (A : Type u') [Category.{v'} A] {X Y : C} (f : X ⟶ Y) :
     Sheaf (J.over Y) A ⥤ Sheaf (J.over X) A :=
   (Over.map f).sheafPushforwardContinuous _ _ _
@@ -200,10 +201,11 @@ lemma overMapPullback_map_overPullback_map {A : Type u'} [Category.{v'} A] {X Y 
     {F G : Sheaf J A} (φ : F ⟶ G) :
     (J.overMapPullback A f).map ((J.overPullback A Y).map φ) = (J.overPullback A X).map φ := rfl
 
+/-- The functors `J.overMapPullback A` are compatible with the composition of morphisms. -/
 def overMapPullbackComp (A : Type u') [Category.{v'} A] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     J.overMapPullback A g ⋙ J.overMapPullback A f ≅
-      J.overMapPullback A (f ≫ g) := by
-  sorry
+      J.overMapPullback A (f ≫ g) :=
+  Functor.sheafPushforwardContinuousComp' A (Over.mapComp f g).symm _ _ _
 
 end GrothendieckTopology
 

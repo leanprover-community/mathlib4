@@ -197,4 +197,48 @@ lemma presheafHom_isSheaf (hG : Presheaf.IsSheaf J G) :
   exact presheafHom_isSheafFor F G S
     (fun _ _ => ((Presheaf.isSheaf_iff_isLimit J G).1 hG _ (J.pullback_stable _ hS)).some)
 
+/-- Given two sheaves `F` and `G`, this is the underlying presheaf of `sheafHom F G`:
+it is isomorphic to `presheafHom F.1 G.1` (see `sheafHom'Iso`), but it is better
+definitional properties. -/
+def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ Type _ where
+  obj X := (J.overPullback A X.unop).obj F ⟶ (J.overPullback A X.unop).obj G
+  map f := fun φ => (J.overMapPullback A f.unop).map φ
+  map_id X := by
+    ext φ : 2
+    exact congr_fun ((presheafHom F.1 G.1).map_id X) φ.1
+  map_comp f g := by
+    ext φ : 2
+    exact congr_fun ((presheafHom F.1 G.1).map_comp f g) φ.1
+
+/-- Auxiliary isomorphism for the definition of `sheafHom`. -/
+def sheafHom'Iso (F G : Sheaf J A) :
+    sheafHom' F G ≅ presheafHom F.1 G.1 :=
+  NatIso.ofComponents (fun _ => (equivOfFullyFaithful (sheafToPresheaf _ _)).toIso)
+    (fun _ => rfl)
+
+/-- The sheaf of morphisms `F ⟶ G`: its sections on an object `X` are the morphisms
+between the "restrictions" of `F` and `G` to the category `Over X`. -/
+def sheafHom (F G : Sheaf J A) : Sheaf J (Type _) where
+  val := sheafHom' F G
+  cond := (Presheaf.isSheaf_of_iso_iff (sheafHom'Iso F G)).2
+    (presheafHom_isSheaf F.1 G.1 G.2)
+
+/-- The sections of the sheaf `sheafHom F G` identify to morphisms `F ⟶ G`. -/
+def sheafHomSectionsEquiv (F G : Sheaf J A) :
+    (sheafHom F G).1.sections ≃ (F ⟶ G) :=
+  ((Functor.sectionsFunctor Cᵒᵖ).mapIso (sheafHom'Iso F G)).toEquiv.trans
+    ((presheafHomSectionsEquiv F.1 G.1).trans (equivOfFullyFaithful (sheafToPresheaf J A)).symm)
+
+@[simp]
+lemma sheafHomSectionsEquiv_symm_apply_coe_apply {F G : Sheaf J A} (φ : F ⟶ G) (X : Cᵒᵖ):
+    ((sheafHomSectionsEquiv F G).symm φ).1 X = (J.overPullback A X.unop).map φ := by
+  rfl
+
+@[simp]
+lemma overPullback_map_sheafHomSectionsEquiv_apply {F G : Sheaf J A}
+    (s : (sheafHom F G).1.sections) (X : C) :
+    (J.overPullback A X).map (sheafHomSectionsEquiv F G s) = s.1 (Opposite.op X) := by
+  obtain ⟨φ, rfl⟩ := (sheafHomSectionsEquiv F G).symm.surjective s
+  simp
+
 end CategoryTheory
