@@ -2203,6 +2203,11 @@ theorem ker_le_comap {K : Ideal S} (f : F) : RingHom.ker f ≤ comap f K := fun 
 #align ideal.ker_le_comap Ideal.ker_le_comap
 
 theorem map_isPrime_of_equiv {F' : Type*} [RingEquivClass F' R S] (f : F') {I : Ideal R}
+    [IsPrime I]: IsPrime (map f I) := by 
+     have h: (I. map f) = (I.map ((f : R  ≃+* S ) : R →+* S)) := by congr
+     rw [h,map_comap_of_equiv I (f : R  ≃+* S )]
+     exact Ideal.IsPrime.comap (RingEquiv.symm (f : R ≃+* S ))
+
 
 #align ideal.map_is_prime_of_equiv Ideal.map_isPrime_of_equiv
 
