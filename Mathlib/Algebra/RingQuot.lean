@@ -150,58 +150,45 @@ end RingQuot
 
 /-- The quotient of a ring by an arbitrary relation. -/
 structure RingQuot (r : R → R → Prop) where
-  toQuot : Quot (RingQuot.Rel r)
+  toQuot : (RingQuot.ringCon r).Quotient
 #align ring_quot RingQuot
 
 namespace RingQuot
 
 variable (r : R → R → Prop)
 
+theorem toQuot_injective : Function.Injective (toQuot : RingQuot r → _)
+  | ⟨_⟩, ⟨_⟩, h => congr_arg _ h
+
 -- can't be irreducible, causes diamonds in ℕ-algebras
 private def natCast (n : ℕ) : RingQuot r :=
-  ⟨Quot.mk _ n⟩
+  ⟨n⟩
 
 private irreducible_def zero : RingQuot r :=
-  ⟨Quot.mk _ 0⟩
+  ⟨0⟩
 
 private irreducible_def one : RingQuot r :=
-  ⟨Quot.mk _ 1⟩
+  ⟨1⟩
 
 private irreducible_def add : RingQuot r → RingQuot r → RingQuot r
-  | ⟨a⟩, ⟨b⟩ => ⟨Quot.map₂ (· + ·) Rel.add_right Rel.add_left a b⟩
+  | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
 
 private irreducible_def mul : RingQuot r → RingQuot r → RingQuot r
-  | ⟨a⟩, ⟨b⟩ => ⟨Quot.map₂ (· * ·) Rel.mul_right Rel.mul_left a b⟩
+  | ⟨a⟩, ⟨b⟩ => ⟨a * b⟩
 
 private irreducible_def neg {R : Type uR} [Ring R] (r : R → R → Prop) : RingQuot r → RingQuot r
-  | ⟨a⟩ => ⟨Quot.map (fun a ↦ -a) Rel.neg a⟩
+  | ⟨a⟩ => ⟨-a⟩
 
 private irreducible_def sub {R : Type uR} [Ring R] (r : R → R → Prop) :
   RingQuot r → RingQuot r → RingQuot r
-  | ⟨a⟩, ⟨b⟩ => ⟨Quot.map₂ Sub.sub Rel.sub_right Rel.sub_left a b⟩
+  | ⟨a⟩, ⟨b⟩ => ⟨a - b⟩
 
 private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
-  | ⟨a⟩ =>
-    ⟨Quot.lift (fun a ↦ Quot.mk (RingQuot.Rel r) (a ^ n))
-        (fun a b (h : Rel r a b) ↦ by
-          -- note we can't define a `Rel.pow` as `Rel` isn't reflexive so `Rel r 1 1` isn't true
-          dsimp only
-          induction n with
-          | zero => rw [pow_zero, pow_zero]
-          | succ n ih =>
-            rw [pow_succ, pow_succ]
-            -- Porting note:
-            -- `simpa [mul_def] using congr_arg₂ (fun x y ↦ mul r ⟨x⟩ ⟨y⟩) (Quot.sound h) ih`
-            -- mysteriously doesn't work
-            have := congr_arg₂ (fun x y ↦ mul r ⟨x⟩ ⟨y⟩) (Quot.sound h) ih
-            dsimp only at this
-            simp [mul_def] at this
-            exact this)
-        a⟩
+  | ⟨a⟩ => ⟨a ^ n⟩
 
 -- note: this cannot be irreducible, as otherwise diamonds don't commute.
 private def smul [Algebra S R] (n : S) : RingQuot r → RingQuot r
-  | ⟨a⟩ => ⟨Quot.map (fun a ↦ n • a) (Rel.smul n) a⟩
+  | ⟨a⟩ => ⟨n • a⟩
 
 instance : NatCast (RingQuot r) :=
   ⟨natCast r⟩
@@ -230,55 +217,88 @@ instance {R : Type uR} [Ring R] (r : R → R → Prop) : Sub (RingQuot r) :=
 instance [Algebra S R] : SMul S (RingQuot r) :=
   ⟨smul r⟩
 
-theorem zero_quot : (⟨Quot.mk _ 0⟩ : RingQuot r) = 0 :=
-  show _ = zero r by rw [zero_def]
-#align ring_quot.zero_quot RingQuot.zero_quot
+@[simp]
+theorem toQuot_zero : (0 : RingQuot r).toQuot = 0 := congr_arg toQuot <| zero_def r
 
-theorem one_quot : (⟨Quot.mk _ 1⟩ : RingQuot r) = 1 :=
-  show _ = one r by rw [one_def]
-#align ring_quot.one_quot RingQuot.one_quot
+@[simp]
+theorem toQuot_one : (1 : RingQuot r).toQuot = 1 := congr_arg toQuot <| one_def r
 
-theorem add_quot {a b} : (⟨Quot.mk _ a⟩ + ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a + b)⟩ := by
-  show add r _ _ = _
-  rw [add_def]
+@[simp]
+theorem toQuot_add (a b : RingQuot r) : (a + b).toQuot = a.toQuot + b.toQuot :=
+  congr_arg toQuot <| add_def r _ _
+
+@[simp]
+theorem toQuot_mul (a b : RingQuot r) : (a * b).toQuot = a.toQuot * b.toQuot :=
+  congr_arg toQuot <| mul_def r _ _
+
+@[simp]
+theorem toQuot_pow (a : RingQuot r) (n : ℕ) : (a ^ n).toQuot = a.toQuot ^ n :=
+  congr_arg toQuot <| npow_def _ _ _
+
+@[simp]
+theorem toQuot_neg {R : Type uR} [Ring R] (r : R → R → Prop) (a : RingQuot r) :
+    (-a).toQuot = -a.toQuot :=
+  congr_arg toQuot <| neg_def r _
+
+@[simp]
+theorem toQuot_sub {R : Type uR} [Ring R] (r : R → R → Prop) (a b : RingQuot r) :
+    (a - b).toQuot = a.toQuot - b.toQuot :=
+  congr_arg toQuot <| sub_def r _ _
+
+@[simp]
+theorem toQuot_smul [Algebra S R] {s : S} (a : RingQuot r) :
+    (s • a).toQuot = (s • a.toQuot) :=
   rfl
-#align ring_quot.add_quot RingQuot.add_quot
 
-theorem mul_quot {a b} : (⟨Quot.mk _ a⟩ * ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a * b)⟩ := by
-  show mul r _ _ = _
-  rw [mul_def]
-  rfl
-#align ring_quot.mul_quot RingQuot.mul_quot
+-- theorem zero_quot : (⟨0⟩ : RingQuot r) = 0 :=
+--   show _ = zero r by rw [zero_def]
+-- #align ring_quot.zero_quot RingQuot.zero_quot
 
-theorem pow_quot {a} {n : ℕ} : (⟨Quot.mk _ a⟩ ^ n : RingQuot r) = ⟨Quot.mk _ (a ^ n)⟩ := by
-  show npow r _ _ = _
-  rw [npow_def]
-#align ring_quot.pow_quot RingQuot.pow_quot
+-- theorem one_quot : (⟨1⟩ : RingQuot r) = 1 :=
+--   show _ = one r by rw [one_def]
+-- #align ring_quot.one_quot RingQuot.one_quot
 
-theorem neg_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a} :
-    (-⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (-a)⟩ := by
-  show neg r _ = _
-  rw [neg_def]
-  rfl
-#align ring_quot.neg_quot RingQuot.neg_quot
+-- theorem add_quot {a b} : (⟨Quot.mk _ a⟩ + ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a + b)⟩ := by
+--   show add r _ _ = _
+--   rw [add_def]
+--   rfl
+-- #align ring_quot.add_quot RingQuot.add_quot
 
-theorem sub_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a b} :
-    (⟨Quot.mk _ a⟩ - ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a - b)⟩ := by
-  show sub r _ _ = _
-  rw [sub_def]
-  rfl
-#align ring_quot.sub_quot RingQuot.sub_quot
+-- theorem mul_quot {a b} : (⟨Quot.mk _ a⟩ * ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a * b)⟩ := by
+--   show mul r _ _ = _
+--   rw [mul_def]
+--   rfl
+-- #align ring_quot.mul_quot RingQuot.mul_quot
 
-theorem smul_quot [Algebra S R] {n : S} {a : R} :
-    (n • ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (n • a)⟩ := by
-  show smul r _ _ = _
-  rw [smul]
-  rfl
-#align ring_quot.smul_quot RingQuot.smul_quot
+-- theorem pow_quot {a} {n : ℕ} : (⟨Quot.mk _ a⟩ ^ n : RingQuot r) = ⟨Quot.mk _ (a ^ n)⟩ := by
+--   show npow r _ _ = _
+--   rw [npow_def]
+-- #align ring_quot.pow_quot RingQuot.pow_quot
+
+-- theorem neg_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a} :
+--     (-⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (-a)⟩ := by
+--   show neg r _ = _
+--   rw [neg_def]
+--   rfl
+-- #align ring_quot.neg_quot RingQuot.neg_quot
+
+-- theorem sub_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a b} :
+--     (⟨Quot.mk _ a⟩ - ⟨Quot.mk _ b⟩ : RingQuot r) = ⟨Quot.mk _ (a - b)⟩ := by
+--   show sub r _ _ = _
+--   rw [sub_def]
+--   rfl
+-- #align ring_quot.sub_quot RingQuot.sub_quot
+
+-- theorem smul_quot [Algebra S R] {n : S} {a : R} :
+--     (n • ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (n • a)⟩ := by
+--   show smul r _ _ = _
+--   rw [smul]
+--   rfl
+-- #align ring_quot.smul_quot RingQuot.smul_quot
 
 instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
     [IsScalarTower S T R] : IsScalarTower S T (RingQuot r) :=
-  ⟨fun s t ⟨a⟩ => Quot.inductionOn a <| fun a' => by simp only [RingQuot.smul_quot, smul_assoc]⟩
+  ⟨fun s t ⟨a⟩ => congr_arg mk <| smul_assoc _ _ _⟩
 
 instance instSMulCommClass [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
     SMulCommClass S T (RingQuot r) :=
