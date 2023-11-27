@@ -272,9 +272,7 @@ theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
   -- Porting note: need to fix breakage of Set notation
   change _ ∈ FP _
   have := FP.singleton (a.drop i).tail d
-  rw [Stream'.tail_eq_drop, Stream'.get_drop, Stream'.get_drop] at this
-  convert this
-  rw [hd, add_comm, Nat.succ_add, Nat.add_succ]
+  rwa [Stream'.tail_eq_drop, Stream'.get_drop, Stream'.get_drop, ← Nat.add_assoc, ← hd] at this
 set_option linter.uppercaseLean3 false in
 #align hindman.FP.mul_two Hindman.FP.mul_two
 set_option linter.uppercaseLean3 false in
