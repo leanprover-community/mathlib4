@@ -138,7 +138,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
   · cases' o with a a
     · exact terminates_parallel.aux a T
     have H : Seq'.dest S = some (some c, _) := by
-      dsimp [Seq'.dest] at a ⊢
+      dsimp [Seq'.dest, Seq'.get?_zero] at a ⊢
       rw [← a]
       simp
       rfl

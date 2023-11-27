@@ -125,10 +125,12 @@ theorem get?_nil (n : ℕ) : get? (nil : Seq' α) n = none :=
   rfl
 #align stream.seq.nth_nil Seq'.get?_nil
 
+@[simp]
 theorem get?_cons_zero (a : α) (s : Seq' α) : get? (a ::ₑ s) 0 = some a :=
   rfl
 #align stream.seq.nth_cons_zero Seq'.get?_cons_zero
 
+@[simp]
 theorem get?_cons_succ (a : α) (s : Seq' α) (n : ℕ) : get? (a ::ₑ s) (n + 1) = get? s n :=
   rfl
 #align stream.seq.nth_cons_succ Seq'.get?_cons_succ
@@ -181,7 +183,6 @@ noncomputable def head (s : Seq' α) : Option α :=
   get? s 0
 #align stream.seq.head Seq'.head
 
-@[simp]
 theorem get?_zero (s : Seq' α) : get? s 0 = head s :=
   rfl
 
@@ -694,8 +695,8 @@ theorem tail_ofStream (s : Stream' α) : tail (↑s : Seq' α) = ↑(Stream'.tai
 @[simp, norm_cast]
 theorem ofStream_get? (s : Stream' α) (n : ℕ) : (↑s : Seq' α).get? n = some (s.get n) := by
   induction n using Nat.recAux generalizing s with
-  | zero => simp
-  | succ n hn => simp [hn]
+  | zero => simp [Stream'.get_zero, get?_zero]
+  | succ n hn => simp [Stream'.get_succ, hn]
 
 theorem ofStream_injective : Function.Injective ((↑) : Stream' α → Seq' α) := by
   intro s₁ s₂ h
@@ -1192,7 +1193,7 @@ theorem get_toStream {s : Seq' α} (hs : ¬s.Terminates) (n : ℕ) :
   | zero =>
     cases s using recOn' with
     | nil       => simp at hs
-    | cons a s' => simp [toStream]
+    | cons a s' => simp [Stream'.get_zero, toStream]
   | succ n hn =>
     cases s using recOn' with
     | nil       => simp at hs

@@ -96,10 +96,12 @@ def cons (a : α) (s : Stream' α) : Stream' α where
 @[inherit_doc cons]
 infixr:67 " ::ₛ " => cons
 
+@[simp]
 theorem get_zero_cons (a : α) (s : Stream' α) : get (a ::ₛ s) 0 = a :=
   rfl
 #align stream.nth_zero_cons Stream'.get_zero_cons
 
+@[simp]
 theorem get_succ_cons (n : ℕ) (s : Stream' α) (x : α) : get (x ::ₛ s) (n + 1) = get s n :=
   rfl
 #align stream.nth_succ_cons Stream'.get_succ_cons
@@ -109,7 +111,6 @@ noncomputable def head (s : Stream' α) : α :=
   get s 0
 #align stream.head Stream'.head
 
-@[simp]
 theorem get_zero (s : Stream' α) : get s 0 = head s :=
   rfl
 
@@ -166,7 +167,6 @@ protected theorem eta (s : Stream' α) : head s ::ₛ tail s = s := by
   ext (_ | n) <;> rfl
 #align stream.eta Stream'.eta
 
-@[simp]
 theorem get_succ (s : Stream' α) (n : ℕ) : get s (n + 1) = get (tail s) n :=
   rfl
 #align stream.nth_succ Stream'.get_succ
@@ -208,8 +208,8 @@ def getComputable (s : Stream' α) : ℕ → α
 theorem get_eq_getComputable : @get.{u} = @getComputable.{u} := by
   funext α s n
   induction n generalizing s with
-  | zero => simp
-  | succ n hn => simp [← hn]
+  | zero => simp [get_zero]
+  | succ n hn => simp [get_succ, ← hn]
 
 /-- The implemention of `Stream'.casesOn`. -/
 @[inline]
@@ -249,8 +249,8 @@ theorem drop_succ (n : ℕ) (s : Stream' α) : drop (n + 1) s = drop n (tail s) 
 @[simp]
 theorem head_drop (n : ℕ) (s : Stream' α) : head (drop n s) = get s n := by
   induction n generalizing s with
-  | zero => simp
-  | succ n hn => simp [hn]
+  | zero => simp [get_zero]
+  | succ n hn => simp [get_succ, hn]
 #align stream.head_drop Stream'.head_drop
 
 theorem tail_eq_drop (s : Stream' α) : tail s = drop 1 s :=
@@ -266,8 +266,8 @@ theorem tail_drop (n : ℕ) (s : Stream' α) : tail (drop n s) = drop n (tail s)
 @[simp]
 theorem get_drop (n m : ℕ) (s : Stream' α) : get (drop m s) n = get s (m + n) := by
   induction n using Nat.recAux generalizing s with
-  | zero => simp
-  | succ n hn => simp [hn, ← Nat.add_assoc]
+  | zero => simp [get_zero]
+  | succ n hn => simp [get_succ, hn, ← Nat.add_assoc]
 #align stream.nth_drop Stream'.get_drop
 
 @[simp]
@@ -943,13 +943,13 @@ theorem tail_tail_interleave (s₁ s₂ : Stream' α) : tail (tail (s₁ ⋈ s�
 
 theorem get_interleave_left (n : ℕ) (s₁ s₂ : Stream' α) : get (s₁ ⋈ s₂) (2 * n) = get s₁ n := by
   induction n using Nat.recAux generalizing s₁ s₂ with
-  | zero => simp
-  | succ n hn => simp [Nat.mul_add, hn]
+  | zero => simp [get_zero]
+  | succ n hn => simp [get_succ, Nat.mul_add, hn]
 #align stream.nth_interleave_left Stream'.get_interleave_left
 
 theorem get_interleave_right (n : ℕ) (s₁ s₂ : Stream' α) :
     get (s₁ ⋈ s₂) (2 * n + 1) = get s₂ n := by
-  simp [get_interleave_left]
+  simp [get_succ, get_interleave_left]
 #align stream.nth_interleave_right Stream'.get_interleave_right
 
 theorem mem_interleave_left {a : α} {s₁ : Stream' α} (s₂ : Stream' α) : a ∈ s₁ → a ∈ s₁ ⋈ s₂ :=
@@ -1025,12 +1025,12 @@ theorem interleave_even_odd (s : Stream' α) : even s ⋈ odd s = s := by
 @[simp]
 theorem get_even (n : ℕ) (s : Stream' α) : get (even s) n = get s (2 * n) := by
   induction n using Nat.recAux generalizing s with
-  | zero => simp
-  | succ n hn => simp [Nat.mul_add, hn]
+  | zero => simp [get_zero]
+  | succ n hn => simp [get_succ, Nat.mul_add, hn]
 #align stream.nth_even Stream'.get_even
 
 theorem get_odd (n : ℕ) (s : Stream' α) : get (odd s) n = get s (2 * n + 1) := by
-  simp [odd_eq]
+  simp [get_succ, odd_eq]
 #align stream.nth_odd Stream'.get_odd
 
 theorem mem_of_mem_even (a : α) (s : Stream' α) : a ∈ even s → a ∈ s := fun ⟨n, h⟩ =>
@@ -1175,8 +1175,8 @@ theorem take_succ_cons (n : ℕ) (a : α) (s : Stream' α) :
 @[simp]
 theorem concat_take_get (n : ℕ) (s : Stream' α) : take n s ++ [get s n] = take (n + 1) s := by
   induction n using Nat.recAux generalizing s with
-  | zero => simp
-  | succ n hn => simp [hn]
+  | zero => simp [get_zero]
+  | succ n hn => simp [get_succ, hn]
 
 theorem take_succ' (n : ℕ) (s : Stream' α) : take (n + 1) s = take n s ++ [get s n] :=
   Eq.symm (concat_take_get n s)
@@ -1336,8 +1336,8 @@ theorem tails_eq (s : Stream' α) : tails s = s ::ₛ tails (tail s) := by
 @[simp]
 theorem get_tails (n : ℕ) (s : Stream' α) : get (tails s) n = drop n s := by
   induction n using Nat.recAux generalizing s with
-  | zero => simp
-  | succ n hn => simp [hn]
+  | zero => simp [get_zero]
+  | succ n hn => simp [get_succ, hn]
 #align stream.nth_tails Stream'.get_tails
 
 /-- An auxiliary definition for `inits`. -/
@@ -1378,16 +1378,16 @@ theorem initsCore_eq (l : List α) (s : Stream' α) :
 theorem cons_get_initsCore (a : α) (n : ℕ) (l : List α) (s : Stream' α) :
     get (initsCore (a :: l) s) n = a :: get (initsCore l s) n := by
   induction n using Nat.recAux generalizing l s with
-  | zero => simp
-  | succ n hn => simp [hn]
+  | zero => simp [get_zero]
+  | succ n hn => simp [get_succ, hn]
 #align stream.cons_nth_inits_core Stream'.cons_get_initsCore
 
 @[simp]
 theorem get_inits (n : ℕ) (s : Stream' α) : get (inits s) n = take n s := by
   unfold inits
   induction n using Nat.recAux generalizing s with
-  | zero => simp
-  | succ n hn => simp [hn]
+  | zero => simp [get_zero]
+  | succ n hn => simp [get_succ, hn]
 #align stream.nth_inits Stream'.get_inits
 
 theorem inits_eq (s : Stream' α) :

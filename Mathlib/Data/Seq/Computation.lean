@@ -157,7 +157,6 @@ noncomputable def head (c : Computation α) : Option α :=
   runFor c 0
 #align computation.head Computation.head
 
-@[simp]
 theorem runFor_zero (c : Computation α) : runFor c 0 = head c :=
   rfl
 
@@ -169,7 +168,6 @@ noncomputable def tail (c : Computation α) : Computation α where
   succ_stable _ _ h := succ_stable c h
 #align computation.tail Computation.tail
 
-@[simp]
 theorem runFor_succ (c : Computation α) (n : ℕ) : runFor c (n + 1) = runFor (tail c) n :=
   rfl
 
@@ -295,8 +293,8 @@ theorem runFor_eq_runForComputable : @runFor.{u} = @runForComputable.{u} := by
   funext α c n
   unfold runForComputable
   induction n using Nat.recAux generalizing c with
-  | zero => cases c using recOn' <;> simp
-  | succ n hn => cases c using recOn' <;> simp [hn]
+  | zero => cases c using recOn' <;> simp [runFor_zero]
+  | succ n hn => cases c using recOn' <;> simp [runFor_succ, hn]
 
 /-- The implemention of `Computation.casesOn`. -/
 @[inline]
@@ -453,14 +451,14 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : R s₁ s₂) : s
     | Sum.inl a, Sum.inl _, rfl =>
       simp [dest_eq_pure hs₁, dest_eq_pure hs₂]
     | Sum.inr s₁', Sum.inr s₂', _ =>
-      simp [dest_eq_think hs₁, dest_eq_think hs₂]
+      simp [dest_eq_think hs₁, dest_eq_think hs₂, runFor_zero]
   | succ n hn =>
     specialize bisim r
     match hs₁ : dest s₁, hs₂ : dest s₂, bisim with
     | Sum.inl a, Sum.inl _, rfl =>
       simp [dest_eq_pure hs₁, dest_eq_pure hs₂]
     | Sum.inr s₁', Sum.inr s₂', r =>
-      simp [dest_eq_think hs₁, dest_eq_think hs₂, hn r]
+      simp [dest_eq_think hs₁, dest_eq_think hs₂, hn r, runFor_succ]
 #align computation.eq_of_bisim Computation.eq_of_bisim
 
 end Bisim
@@ -598,7 +596,7 @@ theorem terminates_iff_acc {c : Computation α} :
         simp at hc; subst hc
         constructor; intro c' hc'
         simp at hc'
-      | think c => simp at hc
+      | think c => simp [runFor_zero] at hc
     | succ n hn =>
       cases c using recOn' with
       | pure a =>
@@ -606,7 +604,7 @@ theorem terminates_iff_acc {c : Computation α} :
         constructor; intro c' hc'
         simp at hc'
       | think c =>
-        simp at hc
+        simp [runFor_succ] at hc
         constructor; intro c' hc'
         simp at hc'; subst hc'
         exact hn hc
@@ -755,7 +753,7 @@ theorem length_think (s : Computation α) [h : Terminates s] : length (think s) 
   · have : (Option.isSome (runFor (think s) (length (think s))) : Prop) :=
       Nat.find_spec ((terminates_def _).1 s.think_terminates)
     revert this; cases' length (think s) with n <;> intro this
-    · simp at this
+    · simp [runFor_zero] at this
     · apply Nat.succ_le_succ
       apply Nat.find_min'
       apply this
