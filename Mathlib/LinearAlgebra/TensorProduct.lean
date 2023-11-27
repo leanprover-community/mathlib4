@@ -143,8 +143,8 @@ protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
       exact add _ _ (tmul ..) ih
 #align tensor_product.induction_on TensorProduct.induction_on
 
-/-- Lift a map that is additive in both arguments, such that scalar multiplication in either
-argument is equivalent, to the tensor product.
+/-- Lift a map that is additive in both arguments to the tensor product, provided scalar
+multiplication in either argument is equivalent.
 
 Note that strictly the first action should be a right-action by `R`, but for now `R` is commutative
 so it doesn't matter. -/
