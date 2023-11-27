@@ -48,7 +48,7 @@ numerics, number theory, approximations, fractions
 
 universe u
 
-open Int Stream'.Seq
+open Int Seq'
 
 namespace CF
 
@@ -99,8 +99,8 @@ For example, let `(v : ℚ) := 3.4`. The process goes as follows:
 -/
 @[simps]
 protected def of (v : K) : CF K where
-  h  := ⌊v⌋
-  sb := corec next? ⟨fract v, ⟨fract_nonneg v, fract_lt_one v⟩⟩
+  h := ⌊v⌋
+  s := corec next? ⟨fract v, ⟨fract_nonneg v, fract_lt_one v⟩⟩
 where
   /-- Creates the pair of integer and fractional parts of a value `v⁻¹` for `0 < v < 1`.
   If `v = 0`, returns `none`.

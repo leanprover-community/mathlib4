@@ -140,8 +140,8 @@ theorem bind_squash?_go_evalF?_loop_eq_evalF?_mk_concat
   | cons p'' l' hl' =>
     by_cases hps : p.2 = 0
     · by_cases hpf : p.1 = 0 <;> simp [squash?.go, hps, hpf] at hl' <;>
-        simp [squash?.go, ← hl', hps, hpf]
-    · simp [squash?.go, hps] at hl'; simp [squash?.go, ← hl', hps]
+        simp [squash?.go, ← hl', hps, hpf, - cons_append]
+    · simp [squash?.go, hps] at hl'; simp [squash?.go, ← hl', hps, - cons_append]
 #align generalized_continued_fraction.succ_succ_nth_convergent'_aux_eq_succ_nth_convergent'_aux_squash_seq FGCF.bind_squash?_go_evalF?_loop_eq_evalF?_mk_concatₓ
 
 #noalign generalized_continued_fraction.squash_gcf_eq_self_of_terminated

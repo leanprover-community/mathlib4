@@ -108,9 +108,9 @@ theorem bind_eq_none' {o : Option α} {f : α → Option β} :
   simp only [eq_none_iff_forall_not_mem, mem_def, bind_eq_some, not_exists, not_and]
 #align option.bind_eq_none' Option.bind_eq_none'
 
-theorem Option.bind_congr {f g : α → Option β} {x : Option α}
+theorem bind_congr {f g : α → Option β} {x : Option α}
     (h : ∀ a ∈ x, f a = g a) : x.bind f = x.bind g := by
-  cases x <;> simp only [Option.some_bind, Option.none_bind, Option.mem_def, h]
+  cases x <;> simp only [some_bind, none_bind, mem_def, h]
 
 theorem joinM_eq_join : joinM = @join α :=
   funext fun _ ↦ rfl

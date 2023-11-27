@@ -62,13 +62,13 @@ theorem partDenom_eq_s_snd {gp : α × α} (s_nth_eq : g.s.get? n = some gp) :
 
 theorem exists_s_fst_of_partNum {a : α} (nth_partNum_eq : g.partNums.get? n = some a) :
     ∃ gp, g.s.get? n = some gp ∧ gp.1 = a := by
-  simpa [partNums, Stream'.Seq.map_get?] using nth_partNum_eq
+  simpa [partNums] using nth_partNum_eq
 #align generalized_continued_fraction.exists_s_a_of_part_num GCF.exists_s_fst_of_partNum
 
 theorem exists_s_snd_of_partDenom {b : α}
     (nth_partDenom_eq : g.partDenoms.get? n = some b) :
     ∃ gp, g.s.get? n = some gp ∧ gp.2 = b := by
-  simpa [partDenoms, Stream'.Seq.map_get?] using nth_partDenom_eq
+  simpa [partDenoms] using nth_partDenom_eq
 #align generalized_continued_fraction.exists_s_b_of_part_denom GCF.exists_s_snd_of_partDenom
 
 end GCF
