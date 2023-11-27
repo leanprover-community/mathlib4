@@ -103,6 +103,7 @@ import Mathlib.Algebra.CharP.LocalRing
 import Mathlib.Algebra.CharP.MixedCharZero
 import Mathlib.Algebra.CharP.Pi
 import Mathlib.Algebra.CharP.Quotient
+import Mathlib.Algebra.CharP.Reduced
 import Mathlib.Algebra.CharP.Subring
 import Mathlib.Algebra.CharP.Two
 import Mathlib.Algebra.CharZero.Defs
