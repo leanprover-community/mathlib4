@@ -27,6 +27,10 @@ Calling `IO.cancel` on `t.map f` does not cancel `t`,
 so we have to be careful throughout this file
 to construct cancellation hooks connected to the underlying task,
 rather than the various maps of it that we construct to pass state.
+
+Thomas Murrills has a suggestion to significantly refactor this code,
+reducing duplication using `MonadControl`, but it will require a core change.
+See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/.60StateRefT'.60.20.60MonadControl.60.20instance.3F
 -/
 
 set_option autoImplicit true
@@ -71,7 +75,7 @@ returning
 -/
 def asTask (t : CoreM α) : CoreM (BaseIO Unit × Task (CoreM α)) := do
   let task ← (t.toIO (← read) (← get)).asTask
-  return (IO.cancel task, task.map fun
+  return (IO.cancel task, task.map (prio := .max) fun
   | .ok (a, s) => do set s; pure a
   | .error e => throwError m!"Task failed:\n{e}")
 
@@ -111,7 +115,8 @@ returning
 -/
 def asTask (t : MetaM α) : MetaM (BaseIO Unit × Task (MetaM α)) := do
   let (cancel, task) ← (t.run (← read) (← get)).asTask
-  return (cancel, task.map fun c : CoreM (α × Meta.State) => do let (a, s) ← c; set s; pure a)
+  return (cancel, task.map (prio := .max)
+    fun c : CoreM (α × Meta.State) => do let (a, s) ← c; set s; pure a)
 
 /--
 Given a monadic value in `MetaM`, creates a task that runs it in the current state,
@@ -150,7 +155,8 @@ returning
 -/
 def asTask (t : TermElabM α) : TermElabM (BaseIO Unit × Task (TermElabM α)) := do
   let (cancel, task) ← (t.run (← read) (← get)).asTask
-  return (cancel, task.map fun c : MetaM (α × Term.State) => do let (a, s) ← c; set s; pure a)
+  return (cancel, task.map (prio := .max)
+    fun c : MetaM (α × Term.State) => do let (a, s) ← c; set s; pure a)
 
 /--
 Given a monadic value in `TermElabM`, creates a task that runs it in the current state,
@@ -188,7 +194,8 @@ returning
 -/
 def asTask (t : TacticM α) : TacticM (BaseIO Unit × Task (TacticM α)) := do
   let (cancel, task) ← (t (← read) |>.run (← get)).asTask
-  return (cancel, task.map fun c : TermElabM (α × Tactic.State) => do let (a, s) ← c; set s; pure a)
+  return (cancel, task.map (prio := .max)
+    fun c : TermElabM (α × Tactic.State) => do let (a, s) ← c; set s; pure a)
 
 /--
 Given a monadic value in `TacticM`, creates a task that runs it in the current state,
