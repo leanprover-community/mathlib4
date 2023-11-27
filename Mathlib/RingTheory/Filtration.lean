@@ -269,7 +269,7 @@ protected def submodule : Submodule (reesAlgebra I) (PolynomialModule R M) where
     rw [Subalgebra.smul_def, PolynomialModule.smul_apply]
     apply Submodule.sum_mem
     rintro ⟨j, k⟩ e
-    rw [Finset.Nat.mem_antidiagonal] at e
+    rw [Finset.mem_antidiagonal] at e
     subst e
     exact F.pow_smul_le j k (Submodule.smul_mem_smul (r.2 j) (hf k))
 #align ideal.filtration.submodule Ideal.Filtration.submodule

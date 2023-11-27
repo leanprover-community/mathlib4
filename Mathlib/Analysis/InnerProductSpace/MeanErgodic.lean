@@ -22,7 +22,7 @@ see `ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection`.
 open Filter Finset Function Bornology
 open scoped BigOperators Topology
 
-variable {𝕜 E : Type _} [IsROrC 𝕜] [NormedAddCommGroup E]
+variable {𝕜 E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E]
 
 /-- **Von Neumann Mean Ergodic Theorem**, a version for a normed space.
 

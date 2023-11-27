@@ -28,7 +28,7 @@ coinductive seq (α : Type u) : Type u
 | nil : seq α
 | cons : α → seq α → seq α
 -/
-/-- A stream `s : Option α` is a sequence if `s.nth n = none` implies `s.nth (n + 1) = none`.
+/-- A stream `s : Option α` is a sequence if `s.get n = none` implies `s.get (n + 1) = none`.
 -/
 def IsSeq {α : Type u} (s : Stream' (Option α)) : Prop :=
   ∀ {n : ℕ}, s n = none → s (n + 1) = none
@@ -166,7 +166,7 @@ theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.get? m = none → s.get? 
   exacts [id, fun h2 => al (IH h2)]
 #align stream.seq.le_stable Stream'.Seq.le_stable
 
-/-- If a sequence terminated at position `n`, it also terminated at `m ≥ n `. -/
+/-- If a sequence terminated at position `n`, it also terminated at `m ≥ n`. -/
 theorem terminated_stable : ∀ (s : Seq α) {m n : ℕ}, m ≤ n → s.TerminatedAt m → s.TerminatedAt n :=
   le_stable
 #align stream.seq.terminated_stable Stream'.Seq.terminated_stable
@@ -290,7 +290,7 @@ def recOn {C : Seq α → Sort v} (s : Seq α) (nil : C nil) (cons : ∀ x s, C 
 
 theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
     (h1 : ∀ b s', a = b ∨ C s' → C (cons b s')) : C s := by
-  cases' M with k e; unfold Stream'.nth at e
+  cases' M with k e; unfold Stream'.get at e
   induction' k with k IH generalizing s
   · have TH : s = cons a (tail s) := by
       apply destruct_eq_cons
@@ -342,7 +342,7 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
 @[simp]
 theorem corec_eq (f : β → Option (α × β)) (b : β) :
     destruct (corec f b) = omap (corec f) (f b) := by
-  dsimp [corec, destruct, nth]
+  dsimp [corec, destruct, get]
   -- porting note: next two lines were `change`...`with`...
   have h: Stream'.corec' (Corec.f f) (some b) 0 = (Corec.f f (some b)).1 := rfl
   rw [h]
@@ -539,7 +539,7 @@ def append (s₁ s₂ : Seq α) : Seq α :=
 def map (f : α → β) : Seq α → Seq β
   | ⟨s, al⟩ =>
     ⟨s.map (Option.map f), fun {n} => by
-      dsimp [Stream'.map, Stream'.nth]
+      dsimp [Stream'.map, Stream'.get]
       induction' e : s n with e <;> intro
       · rw [al e]
         assumption
@@ -1046,7 +1046,7 @@ theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
 
 @[simp]
 theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
-  simp [ret, bind, map]
+  simp only [bind, map, ret._eq_1, map_nil]
   cases' f a with a s
   induction s using recOn <;> simp
 #align stream.seq1.ret_bind Stream'.Seq1.ret_bind
