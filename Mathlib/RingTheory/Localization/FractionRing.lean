@@ -318,7 +318,7 @@ noncomputable def liftAlgebra [IsDomain R] [Field K] [Algebra R K]
 
 -- Porting note: had to fill in the `_` by hand for this instance
 /-- Should be introduced locally after introducing `FractionRing.liftAlgebra` -/
-theorem isScalarTower_liftAlgebra [IsDomain R] [Field K] [Algebra R K] [NoZeroSMulDivisors R K] :
+instance isScalarTower_liftAlgebra [IsDomain R] [Field K] [Algebra R K] [NoZeroSMulDivisors R K] :
     by letI := liftAlgebra R K; exact IsScalarTower R (FractionRing R) K := by
   letI := liftAlgebra R K
   exact IsScalarTower.of_algebraMap_eq fun x =>
@@ -337,14 +337,5 @@ instance [Algebra R A] [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R (Fraction
   rw [IsScalarTower.algebraMap_eq R A]
   apply Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective A (FractionRing A))
     (NoZeroSMulDivisors.algebraMap_injective R A)
-
-noncomputable
-instance {A B} [CommRing A] [CommRing B] [Algebra A B] [IsDomain A] [IsDomain B]
-    [NoZeroSMulDivisors A B] : Algebra (FractionRing A) (FractionRing B) :=
-  FractionRing.liftAlgebra A _
-
-instance {A B} [CommRing A] [CommRing B] [Algebra A B] [IsDomain A] [IsDomain B]
-    [NoZeroSMulDivisors A B] : IsScalarTower A (FractionRing A) (FractionRing B) :=
-  FractionRing.isScalarTower_liftAlgebra _ _
 
 end FractionRing
