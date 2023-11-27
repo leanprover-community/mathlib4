@@ -135,6 +135,18 @@ class NormedCommRing (α : Type*) extends NormedRing α where
 #align normed_comm_ring NormedCommRing
 
 -- see Note [lower instance priority]
+/-- A seminormed commutative ring is a non-unital seminormed commutative ring. -/
+instance (priority := 100) SeminormedCommRing.toNonUnitalSeminormedCommRing
+    [β : SeminormedCommRing α] : NonUnitalSeminormedCommRing α :=
+  { β with }
+
+-- see Note [lower instance priority]
+/-- A normed commutative ring is a non-unital normed commutative ring. -/
+instance (priority := 100) NormedCommRing.toNonUnitalNormedCommRing
+    [β : NormedCommRing α] : NonUnitalNormedCommRing α :=
+  { β with }
+
+-- see Note [lower instance priority]
 /-- A normed commutative ring is a seminormed commutative ring. -/
 instance (priority := 100) NormedCommRing.toSeminormedCommRing [β : NormedCommRing α] :
     SeminormedCommRing α :=
