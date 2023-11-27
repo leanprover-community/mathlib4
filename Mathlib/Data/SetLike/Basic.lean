@@ -39,7 +39,7 @@ namespace MySubobject
 variables {X : Type*} [ObjectTypeclass X] {x : X}
 
 instance : SetLike (MySubobject X) X :=
-  ⟨MySubobject.carrier, λ p q h, by cases p; cases q; congr'⟩
+  ⟨MySubobject.carrier, fun p q h => by cases p; cases q; congr!⟩
 
 @[simp] lemma mem_carrier {p : MySubobject X} : x ∈ p.carrier ↔ x ∈ (p : Set X) := Iff.rfl
 

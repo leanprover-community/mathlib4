@@ -23,3 +23,25 @@ jobs:
         topic: 'CI failure on the nightly-testing branch'
         content: |
           The latest CI for branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}).
+
+  handle_success:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'nightly-testing' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        ref: nightly-testing # checkout nightly-testing branch
+        fetch-depth: 0 # checkout all branches so that we can push from `nightly-testing` to `nightly-testing-YYYY-MM-DD`
+        token: ${{ secrets.NIGHTLY_TESTING }}
+    - name: Update the nightly-testing-YYYY-MM-DD branch
+      run: |
+        toolchain=$(<lean-toolchain)
+        if [[ $toolchain =~ leanprover/lean4:nightly-([a-zA-Z0-9_-]+) ]]; then
+          version=${BASH_REMATCH[1]}
+          git push origin refs/heads/nightly-testing:refs/heads/nightly-testing-$version
+        else
+          echo "Error: The file lean-toolchain does not contain the expected pattern."
+          exit 1
+        fi

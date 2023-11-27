@@ -138,7 +138,7 @@ theorem induction {C : ExteriorAlgebra R M → Prop}
 
 /-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : ExteriorAlgebra R M →ₐ[R] R :=
-  ExteriorAlgebra.lift R ⟨(0 : M →ₗ[R] R), fun m => by simp⟩
+  ExteriorAlgebra.lift R ⟨(0 : M →ₗ[R] R), fun _ => by simp⟩
 #align exterior_algebra.algebra_map_inv ExteriorAlgebra.algebraMapInv
 
 variable (M)
@@ -332,6 +332,10 @@ theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
       simp_rw [Matrix.tail_cons]
       rfl
 #align exterior_algebra.ι_multi_succ_curry_left ExteriorAlgebra.ιMulti_succ_curryLeft
+
+/-- An `ExteriorAlgebra` over a nontrivial ring is nontrivial. -/
+instance [Nontrivial R] : Nontrivial (ExteriorAlgebra R M) :=
+  (algebraMap_leftInverse M).injective.nontrivial
 
 end ExteriorAlgebra
 

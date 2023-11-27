@@ -62,39 +62,6 @@ partial def intros! (mvarId : MVarId) : MetaM (Array FVarId × MVarId) :=
   catch _ =>
     pure (acc, g)
 
-/-- Check if a goal is of a subsingleton type. -/
-def subsingleton? (g : MVarId) : MetaM Bool := do
-  try
-    _ ← Lean.Meta.synthInstance (← mkAppM `Subsingleton #[← g.getType])
-    return true
-  catch _ =>
-    return false
-
-/--
-Check if a goal is "independent" of a list of other goals.
-We say a goal is independent of other goals if assigning a value to it
-can not change the solvability of the other goals.
-
-This function only calculates a conservative approximation of this condition.
--/
-def independent? (L : List MVarId) (g : MVarId) : MetaM Bool := do
-  let t ← instantiateMVars (← g.getType)
-  if t.hasExprMVar then
-    -- If the goal's type contains other meta-variables,
-    -- we conservatively say that `g` is not independent.
-    return false
-  if t.isProp then
-    -- If the goal is propositional,
-    -- proof-irrelevance should ensure it is independent of any other goals.
-    return true
-  if ← g.subsingleton? then
-    -- If the goal is a subsingleton, it should be independent of any other goals.
-    return true
-  -- Finally, we check if the goal `g` appears in the type of any of the goals `L`.
-  L.allM fun g' => do
-    let mvars ← Meta.getMVars (← g'.getType)
-    pure <| !(mvars.contains g)
-
 /--
 Try to convert an `Iff` into an `Eq` by applying `iff_of_eq`.
 If successful, returns the new goal, and otherwise returns the original `MVarId`.

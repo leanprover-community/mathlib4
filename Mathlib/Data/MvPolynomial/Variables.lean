@@ -348,7 +348,7 @@ theorem vars_mul [DecidableEq σ] (φ ψ : MvPolynomial σ R) : (φ * ψ).vars �
   cases hd
   rw [Finset.sum_eq_zero]
   rintro ⟨d₁, d₂⟩ H
-  rw [Finsupp.mem_antidiagonal] at H
+  rw [Finset.mem_antidiagonal] at H
   subst H
   obtain H | H : i ∈ d₁.support ∨ i ∈ d₂.support := by
     simpa only [Finset.mem_union] using Finsupp.support_add hi
@@ -686,7 +686,7 @@ theorem totalDegree_smul_le [CommSemiring S] [DistribMulAction R S] (a : R) (f :
 theorem totalDegree_pow (a : MvPolynomial σ R) (n : ℕ) :
     (a ^ n).totalDegree ≤ n * a.totalDegree := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, zero_mul, pow_zero, totalDegree_one]
+  · simp only [Nat.zero_eq, pow_zero, totalDegree_one, zero_mul, le_refl]
   rw [pow_succ]
   calc
     totalDegree (a * a ^ n) ≤ a.totalDegree + (a ^ n).totalDegree := totalDegree_mul _ _
