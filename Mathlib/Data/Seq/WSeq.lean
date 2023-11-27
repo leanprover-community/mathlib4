@@ -1086,7 +1086,6 @@ theorem mem_append_left {s₁ s₂ : WSeq α} {a : α} : a ∈ s₁ → a ∈ s�
 #align stream.wseq.mem_append_left WSeq.mem_append_left
 
 theorem exists_of_mem_map {f} {b : β} {s : WSeq α} (h : b ∈ map f s) : ∃ a, a ∈ s ∧ f a = b := by
-  simp [mem_def, map] at h
   let ⟨o, om, oe⟩ := Seq'.exists_of_mem_map h
   cases' o with a
   · injection oe
@@ -1498,7 +1497,7 @@ theorem map_map (g : β → γ) (f : α → β) (s : WSeq α) : map g (map f s) 
 #align stream.wseq.map_comp WSeq.map_map
 
 theorem mem_map (f : α → β) {a : α} {s : WSeq α} : a ∈ s → f a ∈ map f s :=
-  Seq'.mem_map (Option.map f)
+  Seq'.mem_map_of_mem (Option.map f)
 #align stream.wseq.mem_map WSeq.mem_map
 
 -- The converse is not true without additional assumptions

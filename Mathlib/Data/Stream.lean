@@ -449,6 +449,13 @@ theorem map_tail (s : Stream' α) : map f (tail s) = tail (map f s) :=
   rfl
 #align stream.map_tail Stream'.map_tail
 
+theorem map_injective {f : α → β} (hf : Injective f) : Injective (map f) := by
+  intro s₁ s₂ hs
+  ext1 n
+  replace hs := congr_arg (fun s => get s n) hs
+  simp only [get_map] at hs
+  exact hf hs
+
 theorem mem_map_of_mem {a : α} {s : Stream' α} : a ∈ s → f a ∈ map f s := fun ⟨n, h⟩ =>
   Exists.intro n (by rw [get_map, h])
 #align stream.mem_map Stream'.mem_map_of_mem
@@ -456,6 +463,9 @@ theorem mem_map_of_mem {a : α} {s : Stream' α} : a ∈ s → f a ∈ map f s :
 theorem exists_of_mem_map {b : β} {f} {s : Stream' α} : b ∈ map f s → ∃ a, a ∈ s ∧ f a = b :=
   fun ⟨n, h⟩ => ⟨get s n, ⟨n, rfl⟩, h.symm⟩
 #align stream.exists_of_mem_map Stream'.exists_of_mem_map
+
+theorem map_congr {f g : α → β} {s : Stream' α} : (∀ a ∈ s, f a = g a) → map f s = map g s :=
+  fun h => Stream'.ext fun n => h (get s n) (mem_get n s)
 
 theorem mem_map {b : β} {f} {s : Stream' α} : b ∈ map f s ↔ ∃ a, a ∈ s ∧ f a = b := by
   constructor

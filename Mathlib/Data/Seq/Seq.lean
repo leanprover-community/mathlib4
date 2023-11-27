@@ -1277,6 +1277,16 @@ theorem append_assoc (s t u : Seq' α) : s ++ t ++ u = s ++ (t ++ u) := by
 #align stream.seq.append_assoc Seq'.append_assoc
 
 @[simp]
+theorem map_id' (s : Seq' α) : map (fun a => a) s = s := map_id s
+
+theorem map_injective {f : α → β} (hf : Function.Injective f) : Function.Injective (map f) := by
+  intro s₁ s₂ hs
+  ext1 n
+  replace hs := congr_arg (fun s => get? s n) hs
+  simp only [map_get?] at hs
+  exact Option.map_injective hf hs
+
+@[simp]
 theorem map_append (f : α → β) (s t) : map f (s ++ t) = map f s ++ map f t := by
   apply
     eq_of_bisim (fun s1 s2 => ∃ s t, s1 = map f (s ++ t) ∧ s2 = map f s ++ map f t) _
@@ -1292,6 +1302,9 @@ theorem map_append (f : α → β) (s t) : map f (s ++ t) = map f s ++ map f t :
 #align stream.seq.map_append Seq'.map_append
 
 instance : Functor Seq' where map := @map
+
+theorem map_congr {f g : α → β} {s : Seq' α} : (∀ a ∈ s, f a = g a) → map f s = map g s :=
+  fun h => Seq'.ext fun n => Option.map_congr (fun a ha => h a ⟨n, ha⟩)
 
 instance : LawfulFunctor Seq' where
   id_map := @map_id
@@ -1395,16 +1408,21 @@ def toList' {α} (s : Seq' α) : Computation (List α) :=
     ([], s)
 #align stream.seq.to_list' Seq'.toList'
 
-theorem mem_map (f : α → β) {a : α} {s : Seq' α} (ha : a ∈ s) : f a ∈ map f s := by
+theorem mem_map_of_mem (f : α → β) {a : α} {s : Seq' α} (ha : a ∈ s) : f a ∈ map f s := by
   simp [mem_def] at ha ⊢
   cases ha with | intro n ha => exists n, a
-#align stream.seq.mem_map Seq'.mem_map
+#align stream.seq.mem_map Seq'.mem_map_of_mem
 
 theorem exists_of_mem_map {f} {b : β} {s : Seq' α} (hb : b ∈ map f s) : ∃ a, a ∈ s ∧ f a = b := by
   simp [mem_def] at hb ⊢
   rcases hb with ⟨n, a, ha, rfl⟩
   exact ⟨a, ⟨n, ha⟩, rfl⟩
 #align stream.seq.exists_of_mem_map Seq'.exists_of_mem_map
+
+@[simp]
+theorem mem_map {b : β} {f : α → β} {s : Seq' α} : b ∈ map f s ↔ ∃ a, a ∈ s ∧ f a = b where
+  mp  := exists_of_mem_map
+  mpr := by rintro ⟨b, h, rfl⟩; exact mem_map_of_mem f h
 
 theorem of_mem_append {s₁ s₂ : Seq' α} {a : α} (h : a ∈ s₁ ++ s₂) : a ∈ s₁ ∨ a ∈ s₂ := by
   generalize e : s₁ ++ s₂ = ss at h
