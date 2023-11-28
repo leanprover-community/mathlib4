@@ -940,7 +940,7 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
     ((MultilinearMap R M₁' M₂) →ₗ[R] MultilinearMap R M₁ M₂) _ _ _ (λ i ↦ LinearMap.module) _ where
   toFun := MultilinearMap.compLinearMapₗ
   map_add' := by
-    intro _i f i f₁ f₂
+    intro _ f i f₁ f₂
     ext g x
     dsimp
     let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := λ i f ↦ f (x i)
@@ -949,11 +949,11 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
     · exact Function.apply_update c f i f₁ j
     · exact Function.apply_update c f i f₂ j
   map_smul' := by
-    intro _i f i a f₀
+    intro _ f i a f₀
     ext g x
     dsimp
     let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := λ i f ↦ f (x i)
-    convert g.map_smul (λ j ↦ f j (x j)) i a (f₀ (x i)) with j j  j
+    convert g.map_smul (λ j ↦ f j (x j)) i a (f₀ (x i)) with j j j
     · exact Function.apply_update c f i (a • f₀) j
     · exact Function.apply_update c f i f₀ j
 
