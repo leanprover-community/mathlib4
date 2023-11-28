@@ -11,7 +11,8 @@ import Mathlib.Util.Qq
 import Mathlib.Tactic.ByApprox.Lemmas
 import Mathlib.Tactic.ByApprox.Core
 import Mathlib.Tactic.ByApprox.Util
-import Mathlib.Tactic.ByApprox.Extensions
+import Mathlib.Tactic.ByApprox.Basic
+import Mathlib.Tactic.ByApprox.Exp
 
 namespace Mathlib.Tactic.ByApprox
 
@@ -58,15 +59,18 @@ partial def byApprox (g : MVarId) : MetaM Unit := do
           g.assign (← mkAppM ``le_of_lt #[prf])
         return true
 
-      if ne && (lhs_lower > rhs_upper) then
-        let ⟨_, lhs_lower_prf, _, _⟩ ← approximate precision true lhs
-        let ⟨_, _, _, rhs_upper_prf⟩ ← approximate precision true rhs
+      if lhs_lower > rhs_upper then
+        if ne then
+          let ⟨_, lhs_lower_prf, _, _⟩ ← approximate precision true lhs
+          let ⟨_, _, _, rhs_upper_prf⟩ ← approximate precision true rhs
 
-        let prf ← mkAppNormNum ``lt_of_le_of_ge
-          #[none, none, none, none, rhs_upper_prf.get!, lhs_lower_prf.get!, none]
+          let prf ← mkAppNormNum ``lt_of_le_of_ge
+            #[none, none, none, none, rhs_upper_prf.get!, lhs_lower_prf.get!, none]
 
-        g.assign (← mkAppM ``ne_of_gt #[prf])
-        return true
+          g.assign (← mkAppM ``ne_of_gt #[prf])
+          return true
+        else
+          throwError "by_approx: {target} seems false"
       return false
     if finished then return
 

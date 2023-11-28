@@ -3,9 +3,10 @@ import Mathlib.Tactic.ByApprox.Lemmas
 
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Sqrt
+import Mathlib.Data.Complex.Exponential
 
 set_option trace.ByApprox true
-set_option trace.profiler true
+-- set_option trace.profiler true
 
 open Real
 
@@ -36,3 +37,17 @@ example : sqrt 2 * sqrt 3 ≠ 2 := by by_approx
 example : sqrt 2 * sqrt 3 ≠ 100 := by by_approx
 
 example : 10 / sqrt 11 < sqrt 10 := by by_approx
+
+example : Real.exp 2 > 7 := by by_approx
+
+open BigOperators Finset
+
+set_option trace.Tactic.norm_num true
+example : (10).factorial > 5 := by
+  -- conv =>
+  --   lhs
+  --   whnf
+  norm_num
+
+
+  sorry

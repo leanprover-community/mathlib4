@@ -145,14 +145,14 @@ private lemma lower_bound_pos_inv (a : ℝ) (a_l a_u l : ℚ)
   . rwa [hl, Rat.cast_inv, inv_inv]
 
 private lemma upper_bound_pos_inv (a : ℝ) (a_l a_u u : ℚ)
-    (hal : a_l ≤ a) (hau : a_u ≥ a) (hu : u = a_l⁻¹) (al_pos : 0 < a_l) : a⁻¹ ≤ u := by
+    (hal : a_l ≤ a) (_ : a_u ≥ a) (hu : u = a_l⁻¹) (al_pos : 0 < a_l) : a⁻¹ ≤ u := by
   have a_pos : 0 < a := lt_of_lt_of_le (Rat.cast_pos.mpr al_pos) hal
   refine (inv_le a_pos ?_).mpr ?_
   . rwa [hu, Rat.cast_inv, inv_pos, Rat.cast_pos]
   . rwa [hu, Rat.cast_inv, inv_inv]
 
 private lemma lower_bound_neg_inv (a : ℝ) (a_l a_u l : ℚ)
-    (hal : a_l ≤ a) (hau : a_u ≥ a) (hl : l = a_u⁻¹) (au_neg : 0 > a_u) : a⁻¹ ≥ l := by
+    (_ : a_l ≤ a) (hau : a_u ≥ a) (hl : l = a_u⁻¹) (au_neg : 0 > a_u) : a⁻¹ ≥ l := by
   refine (le_inv_of_neg ?_ ?_).mp ?_
   . exact lt_of_le_of_lt (b := ↑a_u) hau (Rat.cast_lt_zero.mpr au_neg)
   . rwa [hl, Rat.cast_inv, inv_lt_zero, Rat.cast_lt_zero]
