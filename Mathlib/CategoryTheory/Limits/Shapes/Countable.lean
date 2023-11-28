@@ -7,6 +7,22 @@ import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Countable
 import Mathlib.Data.Countable.Defs
+/-!
+# Countable limits and colimits
+
+A typeclass for categories with all countable (co)limits.
+
+We also prove that all cofiltered limits over countable preorders are isomorphic to sequential
+limits, see `sequentialFunctor_initial`.
+
+## Projects
+
+* There is a series of `proof_wanted` at the bottom of this file, implying that all cofiltered
+  limits over countable categories are isomorphic to sequential limits.
+
+* Prove the dual result for filtered colimits.
+
+-/
 
 open CategoryTheory Opposite
 
