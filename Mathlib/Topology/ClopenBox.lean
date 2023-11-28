@@ -44,12 +44,21 @@ theorem exists_clopen_box (a : X) (b : Y) (h : (a, b) ∈ W) :
     simp only [Set.singleton_prod, Set.mem_image, Set.mem_setOf_eq, Prod.mk.injEq, true_and,
       exists_eq_right]
     exact hw.2
+  -- The hard part of the proof is to show that `U` is clopen. The fact that it is closed is proved
+  -- in [buzyakovaClopenBox], Lemma 2, and the fact that it is open can be deduced from the proof of
+  -- [engelking1989], Lemma 3.1.15.
   refine ⟨U, V, ⟨?_, ?_⟩, ⟨hW.1.preimage hp, hW.2.preimage hp⟩, ?_, h, hUV⟩
+  -- `U` is open:
   · rw [isOpen_iff_mem_nhds]
     intro x hx
     rw [mem_nhds_iff]
+    -- We show that `U` contains an open neighbourhood of each of its points.
     have := hW.1
     rw [isOpen_prod_iff] at this
+    -- The fact that `W` is open gives an open cover of the compact set `V`, together with a
+    -- collection of open neighbourhoods of `x`, such that the collection of products is contained
+    -- in `W`. We extract a finite subcover and the desired open neighbourhood of `x` is the
+    -- (finite, thus open) intersection of the corresponding neighbourhoods.
     rw [isCompact_iff_finite_subcover] at hVC
     specialize @hVC V
       (fun (v : V) ↦ (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose) ?_ ?_
@@ -89,6 +98,8 @@ theorem exists_clopen_box (a : X) (b : Y) (h : (a, b) ∈ W) :
       rw [Set.mem_iInter]
       intro
       exact (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.2.2.1
+  -- `U` is closed. This is a fairly simple calculation using the fact that `W` is closed and the
+  -- definition of `U`.
   · apply isClosed_of_closure_subset
     intro x hx
     have hhx : {x} ×ˢ V ⊆ (closure U) ×ˢ V := by
@@ -103,6 +114,7 @@ theorem exists_clopen_box (a : X) (b : Y) (h : (a, b) ∈ W) :
     refine subset_trans hU ?_
     refine subset_trans ?_ hW.2.closure_subset
     exact closure_mono hUV
+  -- `a ∈ U`
   · intro ⟨w₁, w₂⟩ hw
     rw [Set.prod_mk_mem_set_prod_eq] at hw
     simp only [Set.mem_singleton_iff, Set.mem_setOf_eq] at hw
