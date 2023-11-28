@@ -91,7 +91,7 @@ instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
 
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     (restrictScalars.{v} f).PreservesMonomorphisms where
-  preserves {X Y} f {h} := by rwa [mono_iff_injective] at h ⊢
+  preserves _ {h} := by rwa [mono_iff_injective] at h ⊢
 
 -- Porting note: this should be automatic
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
