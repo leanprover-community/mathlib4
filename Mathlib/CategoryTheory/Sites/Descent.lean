@@ -432,39 +432,46 @@ section
 
 variable (X : hY.OverSome) (S : Sieve X.X)
 
-@[simps!]
+@[simps]
 def OverSome.diagramFunctor :
-    ((overSomeSieveEquiv X).symm S).arrows.diagramCategory ⥤
-      ((Sieve.overEquiv (Over.mk X.f)).symm S).arrows.diagramCategory where
-  obj := fun ⟨Z, hZ⟩ => ⟨Over.mk (show (Over.mk (Z.hom ≫ X.f) : Over (Y X.i)) ⟶ Over.mk X.f from Over.homMk Z.hom), hZ⟩
-  map {Z₁ Z₂} φ := Over.homMk (Over.homMk φ.left (by
+    ((Sieve.overEquiv (Over.mk X.f)).symm S).arrows.diagramCategory ⥤
+      ((overSomeSieveEquiv X).symm S).arrows.diagramCategory where
+  obj := fun ⟨Z, hZ⟩ =>
+    ⟨Over.mk (show OverSome.mk Z.left.left X.i (Z.hom.left ≫ X.f) ⟶ X from Z.hom.left), hZ⟩
+  map {Z₁ Z₂} φ := Over.homMk φ.left.left (by
     dsimp
     rw [← Over.w φ]
-    erw [assoc])) (by
-    ext
-    exact Over.w φ)
+    rfl)
 
 instance : Faithful (OverSome.diagramFunctor X S) where
   map_injective := by
-    rintro ⟨Z₁, h₁⟩ ⟨Z₂, h₂⟩ (φ ψ : Z₁ ⟶ Z₂) h
+    rintro ⟨Z₁, hZ₁⟩ ⟨Z₂, hZ₂⟩ (f f' : Z₁ ⟶ Z₂) h
     apply CostructuredArrow.hom_ext
-    have := (Over.forget _).congr_map ((Over.forget _).congr_map h)
+    apply CostructuredArrow.hom_ext
+    have := (Over.forget _).congr_map h
     exact this
 
-instance : Full (OverSome.diagramFunctor X S) where
-  preimage {Z₁ Z₂} φ := Over.homMk φ.left.left ((Over.forget _).congr_map (Over.w φ))
+noncomputable instance : Full (OverSome.diagramFunctor X S) :=
+  Functor.fullOfSurjective _ (by
+    rintro ⟨Z₁, hZ₁⟩ ⟨Z₂, hZ₂⟩ φ
+    refine' ⟨Over.homMk (Over.homMk φ.left _) _, rfl⟩
+    · dsimp
+      have h₁ := Over.w Z₁.hom
+      have h₂ := Over.w Z₂.hom
+      have h₃ := Over.w φ
+      dsimp at h₁ h₂ h₃
+      simp only [← h₁, ← h₂, ← h₃]
+      erw [assoc]
+    · ext
+      exact Over.w φ)
 
 instance : EssSurj (OverSome.diagramFunctor X S) where
   mem_essImage := by
     rintro ⟨Z, hZ⟩
-    let W : hY.OverSome := ⟨Z.left.left, X.i, Z.hom.left ≫ X.f⟩
-    let α : W ⟶ X := Z.hom.left
-    refine' ⟨⟨Over.mk α, hZ⟩, ⟨(fullSubcategoryInclusion _).preimageIso _⟩⟩
-    refine' Over.isoMk (Over.isoMk (Iso.refl _) _) _
-    · dsimp
-      simpa only [id_comp] using (Over.w Z.hom).symm
-    · ext
-      simp
+    let W := Over.mk (hY.overSomeForget.map Z.hom ≫ X.f)
+    let α : W ⟶ Over.mk X.f := Over.homMk Z.hom
+    exact ⟨⟨Over.mk α, hZ⟩, ⟨(fullSubcategoryInclusion _).preimageIso
+      (Over.isoMk (hY.overSomeForget.preimageIso (Iso.refl _)) (id_comp _))⟩⟩
 
 noncomputable instance : IsEquivalence (OverSome.diagramFunctor X S) :=
   Equivalence.ofFullyFaithfullyEssSurj _
@@ -475,13 +482,38 @@ noncomputable def OverSome.diagramFunctorEquivalence :=
 
 end
 
-def OverSome.isLimitCone (P : hY.OverSomeᵒᵖ ⥤ A) (X : hY.OverSome) (S : Sieve X.X)
+def OverSome.diagramIso (P : hY.OverSomeᵒᵖ ⥤ A) (X : hY.OverSome) (S : Sieve X.X) :
+    ((((Sieve.overEquiv (Over.mk X.f)).symm S).arrows.diagram).op ⋙
+        (hY.toOverSome X.i).op ⋙ P) ≅
+      ((diagramFunctor X S).op ⋙ (((overSomeSieveEquiv X).symm S).arrows.diagram).op ⋙ P) :=
+  NatIso.ofComponents (fun ⟨Z, hZ⟩ => P.mapIso
+    ((hY.overSomeForget.preimageIso (by exact Iso.refl _)).op)) (by
+      rintro ⟨⟨Z₁, hZ₁⟩⟩ ⟨⟨Z₂, hZ₂⟩⟩ ⟨f : Z₂ ⟶ Z₁⟩
+      dsimp
+      simp only [← P.map_comp, ← op_comp]
+      congr 2
+      apply hY.overSomeForget.map_injective
+      simp
+      rfl)
+
+noncomputable def OverSome.coneIso (P : hY.OverSomeᵒᵖ ⥤ A) (X : hY.OverSome) (S : Sieve X.X) :
+  ((toOverSome hY X.i).op ⋙ P).mapCone (((Sieve.overEquiv (Over.mk X.f)).symm S).arrows.cocone.op) ≅
+  (Cones.postcompose (diagramIso P X S).inv).obj
+    (Cone.whisker (Equivalence.op (diagramFunctorEquivalence X S)).functor
+      (P.mapCone ((((overSomeSieveEquiv X).symm S).arrows.cocone.op)))) :=
+  Cones.ext (Iso.refl _) (by
+    rintro ⟨Z, hZ⟩
+    dsimp [diagramIso, diagramFunctor]
+    rw [id_comp, ← P.map_comp, ← op_comp]
+    erw [id_comp])
+
+noncomputable def OverSome.isLimitCone (P : hY.OverSomeᵒᵖ ⥤ A) (X : hY.OverSome) (S : Sieve X.X)
     (h : IsLimit (((hY.toOverSome X.i).op ⋙ P).mapCone
       ((Presieve.cocone ((Sieve.overEquiv (Over.mk X.f)).symm S).arrows).op))) :
-    IsLimit (P.mapCone (Presieve.cocone ((overSomeSieveEquiv X).symm S).arrows).op) := by
-  sorry
-
-#check Presieve.cocone
+    IsLimit (P.mapCone (Presieve.cocone ((overSomeSieveEquiv X).symm S).arrows).op) :=
+  IsLimit.ofWhiskerEquivalence (diagramFunctorEquivalence X S).op
+    ((IsLimit.postcomposeInvEquiv (diagramIso P X S) _).1
+      (IsLimit.ofIsoLimit h (coneIso P X S)))
 
 lemma OverSome.isSheaf_iff (P : hY.OverSomeᵒᵖ ⥤ A) :
     Presheaf.IsSheaf hY.overSomeTopology P ↔
@@ -569,6 +601,14 @@ def toSheafOverSome (F : hY.SheafDescentData A) : Sheaf hY.overSomeTopology A wh
 def overSomeRestrictionToSheafOverSome (F : hY.SheafDescentData A) (i : I) :
     (hY.overSomeRestriction A i).obj F.toSheafOverSome ≅ F.sheaf i :=
   (sheafToPresheaf _ _).preimageIso (toOverSomeOpToPresheafSheafOverSome F i)
+
+
+/- TODO: show that `toSheafOverSome` extends to a functor
+`hY.SheafDescentData A ⥤ Sheaf hY.overSomeTopology A` which is an equivalence of categories,
+and that the composition `Sheaf J A ⥤ hY.SheafDescentData A ⥤ Sheaf hY.overSomeTopology A`
+identifies to the obvious restriction, which under suitable assumptions is an equivalence
+of categories (see `Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting`)
+-/
 
 end SheafDescentData
 
