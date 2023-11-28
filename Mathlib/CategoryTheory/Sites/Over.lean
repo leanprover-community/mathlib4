@@ -207,6 +207,12 @@ def overMapPullbackComp (A : Type u') [Category.{v'} A] {X Y Z : C} (f : X ⟶ Y
       J.overMapPullback A (f ≫ g) :=
   Functor.sheafPushforwardContinuousComp' A (Over.mapComp f g).symm _ _ _
 
+def overMapPullbackSectionsIso (A : Type u') [Category.{v'} A] {X Y : C} (f : X ⟶ Y)
+    (W : Over X) (W' : Over Y) (e : W' ≅ (Over.map f).obj W) :
+    (J.overMapPullback A f) ⋙ (sheafSections (J.over X) A).obj (Opposite.op W) ≅
+      (sheafSections (J.over Y) A).obj (Opposite.op W') :=
+  (sheafSections (J.over Y) A).mapIso e.op
+
 end GrothendieckTopology
 
 end CategoryTheory
