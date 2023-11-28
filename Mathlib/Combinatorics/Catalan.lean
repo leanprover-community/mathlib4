@@ -8,7 +8,7 @@ import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Central
-import Mathlib.Data.Tree
+import Mathlib.Data.Tree.BinTree
 import Mathlib.Tactic.FieldSimp
 
 #align_import combinatorics.catalan from "leanprover-community/mathlib"@"26b40791e4a5772a4e53d0e28e4df092119dc7da"
@@ -148,19 +148,19 @@ theorem catalan_three : catalan 3 = 5 := by
   norm_num [catalan_eq_centralBinom_div, Nat.centralBinom, Nat.choose]
 #align catalan_three catalan_three
 
-namespace Tree
+namespace BinTree
 
-open Tree
+open BinTree
 
 /-- Given two finsets, find all trees that can be formed with
   left child in `a` and right child in `b` -/
 @[reducible]
-def pairwiseNode (a b : Finset (Tree Unit)) : Finset (Tree Unit) :=
+def pairwiseNode (a b : Finset BinTree.Bare) : Finset BinTree.Bare :=
   (a ×ˢ b).map ⟨fun x => x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => fun h => by simpa using h⟩
-#align tree.pairwise_node Tree.pairwiseNode
+#align tree.pairwise_node BinTree.pairwiseNode
 
 /-- A Finset of all trees with `n` nodes. See `mem_treesOfNodesEq` -/
-def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
+def treesOfNumNodesEq : ℕ → Finset BinTree.Bare
   | 0 => {nil}
   | n + 1 =>
     (antidiagonal n).attach.biUnion fun ijh =>
@@ -173,11 +173,11 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
       simp_wf
       try exact Nat.lt_succ_of_le (fst_le ijh.2)
       try exact Nat.lt_succ_of_le (snd_le ijh.2)
-#align tree.trees_of_num_nodes_eq Tree.treesOfNumNodesEq
+#align tree.trees_of_num_nodes_eq BinTree.treesOfNumNodesEq
 
 @[simp]
 theorem treesOfNumNodesEq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNumNodesEq]
-#align tree.trees_of_nodes_eq_zero Tree.treesOfNumNodesEq_zero
+#align tree.trees_of_nodes_eq_zero BinTree.treesOfNumNodesEq_zero
 
 theorem treesOfNumNodesEq_succ (n : ℕ) :
     treesOfNumNodesEq (n + 1) =
@@ -186,25 +186,25 @@ theorem treesOfNumNodesEq_succ (n : ℕ) :
   rw [treesOfNumNodesEq]
   ext
   simp
-#align tree.trees_of_nodes_eq_succ Tree.treesOfNumNodesEq_succ
+#align tree.trees_of_nodes_eq_succ BinTree.treesOfNumNodesEq_succ
 
 @[simp]
-theorem mem_treesOfNumNodesEq {x : Tree Unit} {n : ℕ} :
+theorem mem_treesOfNumNodesEq {x : BinTree.Bare} {n : ℕ} :
     x ∈ treesOfNumNodesEq n ↔ x.numNodes = n := by
-  induction x using Tree.unitRecOn generalizing n <;> cases n <;>
+  induction x using BinTree.recOnBare generalizing n <;> cases n <;>
     simp [treesOfNumNodesEq_succ, Nat.succ_eq_add_one, *]
   exact (Nat.succ_ne_zero _).symm
-#align tree.mem_trees_of_nodes_eq Tree.mem_treesOfNumNodesEq
+#align tree.mem_trees_of_nodes_eq BinTree.mem_treesOfNumNodesEq
 
-theorem mem_treesOfNumNodesEq_numNodes (x : Tree Unit) : x ∈ treesOfNumNodesEq x.numNodes :=
+theorem mem_treesOfNumNodesEq_numNodes (x : BinTree.Bare) : x ∈ treesOfNumNodesEq x.numNodes :=
   mem_treesOfNumNodesEq.mpr rfl
-#align tree.mem_trees_of_nodes_eq_num_nodes Tree.mem_treesOfNumNodesEq_numNodes
+#align tree.mem_trees_of_nodes_eq_num_nodes BinTree.mem_treesOfNumNodesEq_numNodes
 
 @[simp, norm_cast]
 theorem coe_treesOfNumNodesEq (n : ℕ) :
-    ↑(treesOfNumNodesEq n) = { x : Tree Unit | x.numNodes = n } :=
+    ↑(treesOfNumNodesEq n) = { x : BinTree.Bare | x.numNodes = n } :=
   Set.ext (by simp)
-#align tree.coe_trees_of_nodes_eq Tree.coe_treesOfNumNodesEq
+#align tree.coe_trees_of_nodes_eq BinTree.coe_treesOfNumNodesEq
 
 theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : (treesOfNumNodesEq n).card = catalan n := by
   induction' n using Nat.case_strong_induction_on with n ih
@@ -217,13 +217,13 @@ theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : (treesOfNumNodesEq n).card
     rintro ⟨i, j⟩ _ ⟨i', j'⟩ _
     -- Porting note: was clear * -; tidy
     intros h a
-    cases' a with a l r
+    cases' a with _ a l r
     · intro h; simp at h
     · intro h1 h2
       apply h
       trans (numNodes l, numNodes r)
       · simp at h1; simp [h1]
       · simp at h2; simp [h2]
-#align tree.trees_of_nodes_eq_card_eq_catalan Tree.treesOfNumNodesEq_card_eq_catalan
+#align tree.trees_of_nodes_eq_card_eq_catalan BinTree.treesOfNumNodesEq_card_eq_catalan
 
-end Tree
+end BinTree
