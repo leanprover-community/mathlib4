@@ -31,49 +31,6 @@ integral curve, vector field, local existence
 open scoped Manifold
 open Set
 
-section
-
-variable
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
-  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] [SmoothManifoldWithCorners I' M']
-
-variable (I) in
-def tangentCoordChange (x y : M) := (tangentBundleCore I M).coordChange (achart H x) (achart H y)
-
-lemma tangentCoordChange_def {x y z : M} : tangentCoordChange I x y z =
-    fderivWithin 𝕜 (extChartAt I y ∘ (extChartAt I x).symm) (range I) (extChartAt I x z) := rfl
-
-lemma tangentCoordChange_self {x z : M} {v : E} (h : z ∈ (extChartAt I x).source) :
-    tangentCoordChange I x x z v = v := by
-  apply (tangentBundleCore I M).coordChange_self
-  rw [tangentBundleCore_baseSet, coe_achart, ←extChartAt_source I]
-  exact h
-
--- continuousOn?
-
-lemma tangentCoordChange_comp {w x y z : M} {v : E}
-    (h : z ∈ (extChartAt I w).source ∩ (extChartAt I x).source ∩ (extChartAt I y).source) :
-    tangentCoordChange I x y z (tangentCoordChange I w x z v) = tangentCoordChange I w y z v := by
-  apply (tangentBundleCore I M).coordChange_comp
-  simp only [tangentBundleCore_baseSet, coe_achart, ←extChartAt_source I]
-  exact h
-
-lemma hasFDerivWithinAt_tangentCoordChange {x y z : M}
-    (h : z ∈ (extChartAt I x).source ∩ (extChartAt I y).source) :
-    HasFDerivWithinAt ((extChartAt I y) ∘ (extChartAt I x).symm) (tangentCoordChange I x y z)
-      (range I) (extChartAt I x z) :=
-  have h' : extChartAt I x z ∈ ((extChartAt I x).symm ≫ (extChartAt I y)).source := by
-    rw [LocalEquiv.trans_source'', LocalEquiv.symm_symm, LocalEquiv.symm_target]
-    exact mem_image_of_mem _ h
-  ((contDiffWithinAt_ext_coord_change I y x h').differentiableWithinAt (by simp)).hasFDerivWithinAt
-
-end
-
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
