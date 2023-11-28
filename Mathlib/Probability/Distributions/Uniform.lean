@@ -195,7 +195,9 @@ lemma uniformCdfReal_eq' {a b x: ℝ} (hab : a ≠ b) : uniformCdfReal a b x =
   · exact uniformCdfReal_eq_zero _ h
 
 /-- General case of the equation of the CDF of the uniform distribution -/
-lemma uniformCdfReal_eq (a b : ℝ) : uniformCdfReal a b =
-    if a = b then fun x ↦ ENNReal.toReal (if a ≤ x then 1 else 0) else fun x ↦
+lemma uniformCdfReal_eq (a b x : ℝ) : uniformCdfReal a b x =
+    if a = b then ENNReal.toReal (if a ≤ x then 1 else 0) else
     if a ⊓ b ≤ x then if x < a ⊔ b then (x - a ⊓ b) / (a ⊔ b - a ⊓ b) else 1 else 0 := by
-  ext _; split_ifs with hab; exact uniformCdfReal_eq_dirac hab; exact uniformCdfReal_eq' hab
+  by_cases a = b
+  · rw [if_pos h, uniformCdfReal_eq_dirac h]
+  · rw [if_neg h, uniformCdfReal_eq' h]
