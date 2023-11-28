@@ -509,7 +509,7 @@ def toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S
   { f with commutes' := fun n => by simp }
 #align ring_hom.to_int_alg_hom RingHom.toIntAlgHom
 
-lemma RingHom.toIntAlgHom_injective [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] :
+lemma toIntAlgHom_injective [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] :
     Function.Injective (RingHom.toIntAlgHom : (R →+* S) → _) :=
   fun _ _ e ↦ FunLike.ext _ _ (fun x ↦ FunLike.congr_fun e x)
 

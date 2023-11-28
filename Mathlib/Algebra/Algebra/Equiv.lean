@@ -277,11 +277,11 @@ theorem coe_algHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂)
 #align alg_equiv.coe_alg_hom_injective AlgEquiv.coe_algHom_injective
 
 @[simp, norm_cast]
-lemma AlgEquiv.toAlgHom_toRingHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = e :=
+lemma toAlgHom_toRingHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = e :=
   rfl
 
 @[simp, norm_cast]
-lemma AlgEquiv.toRingEquiv_toRingHom : ((e : A₁ ≃+* A₂) : A₁ →+* A₂) = e :=
+lemma toRingEquiv_toRingHom : ((e : A₁ ≃+* A₂) : A₁ →+* A₂) = e :=
   rfl
 
 /-- The two paths coercion can take to a `RingHom` are equivalent -/
