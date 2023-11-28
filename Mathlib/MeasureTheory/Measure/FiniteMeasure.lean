@@ -714,6 +714,9 @@ noncomputable def map (ν : FiniteMeasure Ω) (f : Ω → Ω') : FiniteMeasure �
       exact measure_lt_top (↑ν) (f ⁻¹' univ)
     · simp [Measure.map, f_aemble]⟩
 
+@[simp] lemma toMeasure_map (ν : FiniteMeasure Ω) (f : Ω → Ω') :
+    (ν.map f).toMeasure = ν.toMeasure.map f := rfl
+
 /-- Note that this is an equality of elements of `ℝ≥0∞`. See also
 `MeasureTheory.FiniteMeasure.map_apply` for the corresponding equality as elements of `ℝ≥0`. -/
 lemma map_apply' (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_aemble : AEMeasurable f ν)
@@ -735,7 +738,7 @@ lemma map_apply_of_aemeasurable (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_aemb
 @[simp] lemma map_add {f : Ω → Ω'} (f_mble : Measurable f) (ν₁ ν₂ : FiniteMeasure Ω) :
     (ν₁ + ν₂).map f = ν₁.map f + ν₂.map f := by
   ext s s_mble
-  simp [map_apply' _ f_mble.aemeasurable s_mble, toMeasure_add]
+  simp only [map_apply' _ f_mble.aemeasurable s_mble, toMeasure_add, Measure.add_apply]
 
 @[simp] lemma map_smul {f : Ω → Ω'} (f_mble : Measurable f) (c : ℝ≥0) (ν : FiniteMeasure Ω) :
     (c • ν).map f = c • (ν.map f) := by
