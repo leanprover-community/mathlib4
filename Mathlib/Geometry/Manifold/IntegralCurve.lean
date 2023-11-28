@@ -50,7 +50,7 @@ def IsIntegralCurveAt (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (t₀ 
 variable {t₀}
 
 lemma IsIntegralCurveAt.comp_add {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀ x₀) (dt : ℝ) :
-    IsIntegralCurveAt (γ ∘ (fun t => t + dt)) v (t₀ - dt) x₀ := by
+    IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) x₀ := by
   obtain ⟨h1, ε, hε, h2⟩ := hγ
   refine ⟨by simp [h1], ε, hε, ?_⟩
   intros t ht
@@ -65,7 +65,7 @@ lemma IsIntegralCurveAt.comp_add {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v 
   apply HasFDerivAt.add_const (hasFDerivAt_id _)
 
 lemma isIntegralCurveAt_comp_add {γ : ℝ → M} {dt : ℝ} : IsIntegralCurveAt γ v t₀ x₀ ↔
-    IsIntegralCurveAt (γ ∘ (fun t => t + dt)) v (t₀ - dt) x₀ := by
+    IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) x₀ := by
   refine ⟨fun hγ => IsIntegralCurveAt.comp_add hγ _, fun hγ ↦ ?_⟩
   have := hγ.comp_add (-dt)
   rw [sub_neg_eq_add, sub_add_cancel] at this
@@ -74,7 +74,7 @@ lemma isIntegralCurveAt_comp_add {γ : ℝ → M} {dt : ℝ} : IsIntegralCurveAt
   simp only [Function.comp_apply, neg_add_cancel_right]
 
 lemma IsIntegralCurveAt.comp_mul_pos {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀ x₀) {a : ℝ}
-    (ha : 0 < a) : IsIntegralCurveAt (γ ∘ (fun t => t * a)) (a • v) (t₀ / a) x₀ := by
+    (ha : 0 < a) : IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) x₀ := by
   obtain ⟨h1, ε, hε, h2⟩ := hγ
   refine ⟨by rw [Function.comp_apply, div_mul_cancel _ (ne_of_gt ha)]; exact h1, ε / a,
     div_pos hε ha, ?_⟩
@@ -88,7 +88,7 @@ lemma IsIntegralCurveAt.comp_mul_pos {γ : ℝ → M} (hγ : IsIntegralCurveAt �
   apply HasFDerivAt.mul_const' (hasFDerivAt_id _)
 
 lemma isIntegralCurvAt_comp_mul_pos {γ : ℝ → M} {a : ℝ} (ha : 0 < a) :
-    IsIntegralCurveAt γ v t₀ x₀ ↔ IsIntegralCurveAt (γ ∘ (fun t => t * a)) (a • v) (t₀ / a) x₀ := by
+    IsIntegralCurveAt γ v t₀ x₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) x₀ := by
   refine ⟨fun hγ => IsIntegralCurveAt.comp_mul_pos hγ ha, fun hγ ↦ ?_⟩
   have := hγ.comp_mul_pos (inv_pos_of_pos ha)
   rw [smul_smul, inv_mul_eq_div, div_self (ne_of_gt ha), one_smul, ←div_mul_eq_div_div_swap,
@@ -117,17 +117,17 @@ lemma isIntegralCurveAt_comp_neg {γ : ℝ → M} :
   exact this
 
 lemma IsIntegralCurveAt.comp_mul_ne_zero {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀ x₀) {a : ℝ}
-    (ha : a ≠ 0) : IsIntegralCurveAt (γ ∘ (fun t => t * a)) (a • v) (t₀ / a) x₀ := by
+    (ha : a ≠ 0) : IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) x₀ := by
   rw [ne_iff_lt_or_gt] at ha
   cases' ha with ha ha
   · apply isIntegralCurveAt_comp_neg.mpr
-    have : (fun t ↦ t * a) ∘ Neg.neg = fun t ↦ t * -a := by ext; simp
+    have : (· * a) ∘ Neg.neg = fun t ↦ t * -a := by ext; simp
     rw [Function.comp.assoc, this, ←neg_smul, ←div_neg]
     exact hγ.comp_mul_pos (neg_pos_of_neg ha)
   · exact hγ.comp_mul_pos ha
 
 lemma isIntegralCurveAt_comp_mul_ne_zero {γ : ℝ → M} {a : ℝ} (ha : a ≠ 0) :
-    IsIntegralCurveAt γ v t₀ x₀ ↔ IsIntegralCurveAt (γ ∘ (fun t => t * a)) (a • v) (t₀ / a) x₀ := by
+    IsIntegralCurveAt γ v t₀ x₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) x₀ := by
   refine ⟨fun hγ => IsIntegralCurveAt.comp_mul_ne_zero hγ ha, fun hγ ↦ ?_⟩
   have := hγ.comp_mul_ne_zero (inv_ne_zero ha)
   rw [smul_smul, inv_mul_eq_div, div_self ha, one_smul, ←div_mul_eq_div_div_swap,
