@@ -1227,7 +1227,7 @@ sending a continuous multilinear map `g` to `g (f₁ ·, ..., fₙ ·)` is conti
 continuous-multilinear in `f₁, ..., fₙ`. -/
 noncomputable def compContinuousLinearMapContinuousMultilinear :
     ContinuousMultilinearMap 𝕜 (fun i ↦ E i →L[𝕜] E₁ i)
-      ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) := by
+      ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) :=
   @MultilinearMap.mkContinuous 𝕜 ι (fun i ↦ E i →L[𝕜] E₁ i)
     ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) _ _
     (fun _ ↦ ContinuousLinearMap.toNormedAddCommGroup)
