@@ -494,7 +494,32 @@ instance isFiniteMeasure_sFiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure
 lemma sum_sFiniteSeq (μ : Measure α) [h : SFinite μ] : sum (sFiniteSeq μ) = μ :=
   h.1.choose_spec.2.symm
 
+/-- A countable sum of finite measures is s-finite. -/
+lemma sfinite_sum_of_countable {ι : Type*} [Countable ι]
+    (m : ι → Measure α) [∀ n, IsFiniteMeasure (m n)] : SFinite (Measure.sum m) := by
+  classical
+  obtain ⟨f, hf⟩ : ∃ f : ι → ℕ, Function.Injective f := Countable.exists_injective_nat ι
+  let e : ι ≃ range f := Equiv.ofInjective f hf
+  let m' : ℕ → Measure α := fun n ↦ if hn : n ∈ range f then m (e.symm ⟨n, hn⟩) else 0
+  have : Measure.sum m = Measure.sum m' := by
+    ext s hs
+    simp only [hs, sum_apply]
+    calc
+    ∑' (i : ι), m i s
+      = ∑' (n : range f), m (e.symm n) s := (e.symm.tsum_eq (fun n ↦ m n s)).symm
+    _ = ∑' (n : range f), m' n s := by congr 1 with n; simp [-mem_range, n.2]
+    _ = ∑' n, m' n s := by
+      apply tsum_subtype_eq_of_support_subset (f := fun n ↦ m' n s)
+      apply Function.support_subset_iff'.2 (fun x hx ↦ by simp [-mem_range, hx])
+  refine ⟨⟨m', fun n ↦ ?_, this⟩⟩
+  by_cases hn : n ∈ range f
+  · simp [-mem_range, hn]
+    infer_instance
+  · simp [-mem_range, hn]
+    infer_instance
+
 end SFinite
+
 /-- A measure `μ` is called σ-finite if there is a countable collection of sets
  `{ A i | i ∈ ℕ }` such that `μ (A i) < ∞` and `⋃ i, A i = s`. -/
 class SigmaFinite {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
