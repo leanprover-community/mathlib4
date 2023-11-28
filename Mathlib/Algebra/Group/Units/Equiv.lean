@@ -250,7 +250,7 @@ theorem MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
 section UnitHom
 variable {G' G''} [Monoid G] [Monoid H] [Monoid G'] [Monoid G'']
 
-class UnitHom (f : G →* H) where
+class UnitHom (f : G →* H) : Prop where
   of_map_isUnit : ∀ x, IsUnit (f x) → IsUnit x
 
 instance (priority := 100) {G H} [Group G] [Monoid H] (f : G →* H) : UnitHom f where

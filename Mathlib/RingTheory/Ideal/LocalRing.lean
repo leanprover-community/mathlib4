@@ -199,25 +199,27 @@ end LocalRing
 
 end CommRing
 
-/-- A local ring homomorphism is a homomorphism `f` between local rings such that `a` in the domain
-  is a unit if `f a` is a unit for any `a`. See `LocalRing.local_hom_TFAE` for other equivalent
-  definitions. -/
-class IsLocalRingHom [Semiring R] [Semiring S] (f : R →+* S) : Prop where
-  /-- A local ring homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
-  map_nonunit : ∀ a, IsUnit (f a) → IsUnit a
+abbrev IsLocalRingHom [Semiring R] [Semiring S] (f : R →+* S) := UnitHom (f : R →* S)
+
+-- /-- A local ring homomorphism is a homomorphism `f` between local rings such that `a` in the domain
+--   is a unit if `f a` is a unit for any `a`. See `LocalRing.local_hom_TFAE` for other equivalent
+--   definitions. -/
+-- class IsLocalRingHom [Semiring R] [Semiring S] (f : R →+* S) : Prop where
+--   /-- A local ring homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
+--   map_nonunit : ∀ a, IsUnit (f a) → IsUnit a
 #align is_local_ring_hom IsLocalRingHom
 
 section
 
 variable [Semiring R] [Semiring S] [Semiring T]
 
-instance isLocalRingHom_id (R : Type*) [Semiring R] : IsLocalRingHom (RingHom.id R) where
-  map_nonunit _ := id
+instance isLocalRingHom_id (R : Type*) [Semiring R] : IsLocalRingHom (RingHom.id R) :=
+  unitHom_id
 #align is_local_ring_hom_id isLocalRingHom_id
 
 @[simp]
-theorem isUnit_map_iff (f : R →+* S) [IsLocalRingHom f] (a) : IsUnit (f a) ↔ IsUnit a :=
-  ⟨IsLocalRingHom.map_nonunit a, f.isUnit_map⟩
+theorem IsLocalRingHom.isUnit_map_iff (f : R →+* S) [IsLocalRingHom f] (a) :
+    IsUnit (f a) ↔ IsUnit a := _root_.isUnit_map_iff (f : R →* S) a
 #align is_unit_map_iff isUnit_map_iff
 
 -- Porting note : as this can be proved by other `simp` lemmas, this is marked as high priority.
@@ -228,19 +230,16 @@ theorem map_mem_nonunits_iff (f : R →+* S) [IsLocalRingHom f] (a) :
 #align map_mem_nonunits_iff map_mem_nonunits_iff
 
 instance isLocalRingHom_comp (g : S →+* T) (f : R →+* S) [IsLocalRingHom g] [IsLocalRingHom f] :
-    IsLocalRingHom (g.comp f) where
-  map_nonunit a := IsLocalRingHom.map_nonunit a ∘ IsLocalRingHom.map_nonunit (f a)
+    IsLocalRingHom (g.comp f) := unitHom_comp (g : S →* T) (f : R →* S)
 #align is_local_ring_hom_comp isLocalRingHom_comp
 
-instance isLocalRingHom_equiv (f : R ≃+* S) : IsLocalRingHom (f : R →+* S) where
-  map_nonunit a ha := by
-    convert RingHom.isUnit_map (f.symm : S →+* R) ha
-    exact (RingEquiv.symm_apply_apply f a).symm
+instance isLocalRingHom_equiv (f : R ≃+* S) : IsLocalRingHom (f : R →+* S) :=
+  unitHom_equiv f
 #align is_local_ring_hom_equiv isLocalRingHom_equiv
 
 @[simp]
 theorem isUnit_of_map_unit (f : R →+* S) [IsLocalRingHom f] (a) (h : IsUnit (f a)) : IsUnit a :=
-  IsLocalRingHom.map_nonunit a h
+  UnitHom.of_map_isUnit (f := (f : R →* S)) a h
 #align is_unit_of_map_unit isUnit_of_map_unit
 
 theorem of_irreducible_map (f : R →+* S) [h : IsLocalRingHom f] {x} (hfx : Irreducible (f x)) :
