@@ -138,12 +138,8 @@ theorem finite_of_finite [Finite K] [FiniteDimensional K V] : Finite V := by
 variable {K V}
 
 /-- If a vector space has a finite basis, then it is finite-dimensional. -/
-theorem of_fintype_basis {ι : Type w} [Finite ι] (h : Basis ι K V) : FiniteDimensional K V := by
-  classical
-  cases nonempty_fintype ι
-  exact ⟨⟨Finset.univ.image h, by
-    convert h.span_eq
-    simp⟩⟩
+theorem of_fintype_basis {ι : Type w} [Finite ι] (h : Basis ι K V) : FiniteDimensional K V :=
+  Module.Finite.of_fintype_basis h
 #align finite_dimensional.of_fintype_basis FiniteDimensional.of_fintype_basis
 
 /-- If a vector space is `FiniteDimensional`, all bases are indexed by a finite type -/
