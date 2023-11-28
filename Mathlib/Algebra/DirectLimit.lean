@@ -536,7 +536,6 @@ lemma congr_apply_of [IsDirected ι (· ≤ ·)]
     (of _ _ i (equivs i g) : DirectLimit G' f') :=
   map_apply_of _ equivs_compatible _
 
-open LinearEquiv LinearMap in
 lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)]
     (equivs : (i : ι) → G i ≃+ G' i)
     (equivs_compatible : ∀ i j h, (equivs j).toAddMonoidHom.comp (f i j h) =
@@ -908,7 +907,7 @@ homomorphism `lim G ⟶ lim G'`.
 -/
 def map (maps : (i : ι) → G i →+* G' i)
     (maps_compatible : ∀ i j h, (maps j).comp (f i j h) = (f' i j h).comp (maps i)) :
-    DirectLimit G (fun _ _ h ↦ f _ _ h) →+* DirectLimit G' (fun _ _ h ↦ f' _ _ h) :=
+    DirectLimit G (fun _ _ h ↦ f _ _ h) →+* DirectLimit G' fun _ _ h ↦ f' _ _ h :=
   lift _ _ _ (fun i ↦ (of _ _ _).comp (maps i)) fun i j h g ↦ by
       have eq1 := FunLike.congr_fun (maps_compatible i j h) g
       simp only [RingHom.coe_comp, Function.comp_apply] at eq1 ⊢
@@ -922,7 +921,7 @@ def map (maps : (i : ι) → G i →+* G' i)
 
 lemma map_id [IsDirected ι (· ≤ ·)] :
     map (fun i ↦ RingHom.id _) (fun _ _ _ ↦ rfl) =
-    RingHom.id (DirectLimit G (fun _ _ h ↦ f _ _ h)) :=
+    RingHom.id (DirectLimit G fun _ _ h ↦ f _ _ h) :=
   FunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ by simp
 
 lemma map_comp [IsDirected ι (· ≤ ·)]
@@ -930,11 +929,11 @@ lemma map_comp [IsDirected ι (· ≤ ·)]
     (maps_compatible : ∀ i j h, (maps j).comp (f i j h) = (f' i j h).comp (maps i))
     (maps_compatible' : ∀ i j h, (maps' j).comp (f' i j h) = (f'' i j h).comp (maps' i)) :
     ((map maps' maps_compatible').comp (map maps maps_compatible) :
-      DirectLimit G (fun _ _ h ↦ f _ _ h) →+* DirectLimit G'' (fun _ _ h ↦ f'' _ _ h) ) =
+      DirectLimit G (fun _ _ h ↦ f _ _ h) →+* DirectLimit G'' fun _ _ h ↦ f'' _ _ h) =
     (map (fun i ↦ (maps' i).comp (maps i)) fun i j h ↦ by
       rw [RingHom.comp_assoc, maps_compatible i, ← RingHom.comp_assoc,
         maps_compatible' i, RingHom.comp_assoc] :
-      DirectLimit G (fun _ _ h ↦ f _ _ h) →+* DirectLimit G'' (fun _ _ h ↦ f'' _ _ h)) :=
+      DirectLimit G (fun _ _ h ↦ f _ _ h) →+* DirectLimit G'' fun _ _ h ↦ f'' _ _ h) :=
   FunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ by simp
 
 /--
@@ -946,7 +945,7 @@ def congr [IsDirected ι (· ≤ ·)]
     (equivs : (i : ι) → G i ≃+* G' i)
     (equivs_compatible : ∀ i j h, (equivs j).toRingHom.comp (f i j h) =
       (f' i j h).comp (equivs i)) :
-    DirectLimit G (fun _ _ h ↦ f _ _ h) ≃+* DirectLimit G' (fun _ _ h ↦ f' _ _ h) :=
+    DirectLimit G (fun _ _ h ↦ f _ _ h) ≃+* DirectLimit G' fun _ _ h ↦ f' _ _ h :=
   RingEquiv.ofHomInv
     (map (equivs ·) equivs_compatible)
     (map (fun i ↦ (equivs i).symm) fun i j h ↦ FunLike.ext _ _ fun x ↦ by
@@ -958,23 +957,22 @@ def congr [IsDirected ι (· ≤ ·)]
     (FunLike.ext _ _ fun x ↦ x.induction_on <| by simp)
 
 lemma congr_apply_of [IsDirected ι (· ≤ ·)]
-    (equivs : (i : ι) → G i ≃+ G' i)
-    (equivs_compatible : ∀ i j h, (equivs j).toAddMonoidHom.comp (f i j h) =
+    (equivs : (i : ι) → G i ≃+* G' i)
+    (equivs_compatible : ∀ i j h, (equivs j).toRingHom.comp (f i j h) =
       (f' i j h).comp (equivs i))
     {i : ι} (g : G i) :
     congr equivs equivs_compatible (of _ _ i g) =
-    (of _ _ i (equivs i g) : DirectLimit G' f') :=
+    (of _ _ i (equivs i g) : DirectLimit G' fun _ _ h ↦ f' _ _ h) :=
   map_apply_of _ equivs_compatible _
 
-open LinearEquiv LinearMap in
 lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)]
-    (equivs : (i : ι) → G i ≃+ G' i)
-    (equivs_compatible : ∀ i j h, (equivs j).toAddMonoidHom.comp (f i j h) =
+    (equivs : (i : ι) → G i ≃+* G' i)
+    (equivs_compatible : ∀ i j h, (equivs j).toRingHom.comp (f i j h) =
       (f' i j h).comp (equivs i))
     {i : ι} (g : G' i) :
     (congr equivs equivs_compatible).symm (of _  _ i g) =
-    (of _ _ i ((equivs i).symm g) : DirectLimit G f) := by
-  simp only [congr, AddMonoidHom.toAddEquiv_symm_apply, map_apply_of, AddMonoidHom.coe_coe]
+    (of _ _ i ((equivs i).symm g) : DirectLimit G fun _ _ h ↦ f _ _ h) := by
+  simp only [congr, RingEquiv.ofHomInv_symm_apply, map_apply_of, RingHom.coe_coe]
 
 end interaction_with_other_directLimits
 
