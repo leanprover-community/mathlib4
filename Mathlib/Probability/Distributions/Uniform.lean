@@ -88,14 +88,14 @@ lemma stronglyMeasurable_uniformPdfReal (a b : ℝ) :
   (measurable_uniformPdfReal a b).stronglyMeasurable
 
 /-- The integral of the uniform PDF is equal to integrating over `uIcc a b` -/
-lemma carrier_of_uniform_lintegral {a b : ℝ} : (∫⁻ x, uniformPdf a b x) =
+lemma carrier_lintegral_of_uniformPdf {a b : ℝ} : (∫⁻ x, uniformPdf a b x) =
     (∫⁻ x in uIcc a b, uniformPdf a b x) := by
   simp [split_lintegral_of_uniformPdf]
 
 /-- the uniform PDF integrates to 1 -/
 lemma lintegral_uniformPdf_eq_one (a b : ℝ) (hab : a ≠ b) :
     ∫⁻ x, uniformPdf a b x = 1 := by
-  rw [carrier_of_uniform_lintegral]
+  rw [carrier_lintegral_of_uniformPdf]
   simp only [uniformPdf_eq, uIcc]
   rw [set_lintegral_congr_fun measurableSet_Icc (ae_of_all _ (fun _ hx ↦ by rw [if_pos hx])),
       set_lintegral_const, Real.volume_Icc, one_div, LatticeOrderedGroup.sup_sub_inf_eq_abs_sub,
