@@ -1,10 +1,10 @@
 {"version": 7,
  "packagesDir": ".lake/packages",
  "packages":
- [{"url": "https://github.com/leanprover/std4",
+ [{"url": "https://github.com/kmill/std4",
    "type": "git",
    "subDir": null,
-   "rev": "8f543b17ad95f3741d5e449723466f1f3d02bc8f",
+   "rev": "7ca1c2c8232a72a10ba14e69869d1efc6666b043",
    "name": "std",
    "manifestFile": "lake-manifest.json",
    "inputRev": "nightly-testing",
