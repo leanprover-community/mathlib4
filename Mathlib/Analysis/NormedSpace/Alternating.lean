@@ -479,7 +479,7 @@ to a map `(E [Λ^ι]→L[𝕜] G) →L[𝕜] ContinuousAlternatingMap 𝕜 E' G'
 one can apply this construction to `f.comp ContinuousAlternatingMap.to_alternating_map_linear`
 which is a linear map from `E [Λ^ι]→L[𝕜] G` to `multilinear_map 𝕜 E' G'`. -/
 def mk_continuous_linear (f : G →ₗ[𝕜] alternating_map 𝕜 E G ι') (C : ℝ)
-  (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) :
+    (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) :
   G →L[𝕜] E [Λ^ι]→L[𝕜] G' :=
 linear_map.mk_continuous
   { to_fun := λ x, (f x).mk_continuous (C * ‖x‖) $ H x,
@@ -489,7 +489,7 @@ linear_map.mk_continuous
     by rw [max_mul_of_nonneg _ _ (norm_nonneg x), zero_mul]
 
 lemma mk_continuous_linear_norm_le' (f : G →ₗ[𝕜] alternating_map 𝕜 E G ι') (C : ℝ)
-  (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) :
+    (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) :
   ‖mk_continuous_linear f C H‖ ≤ max C 0 :=
 begin
   dunfold mk_continuous_linear,
@@ -497,7 +497,7 @@ begin
 end
 
 lemma mk_continuous_linear_norm_le (f : G →ₗ[𝕜] alternating_map 𝕜 E G ι') {C : ℝ} (hC : 0 ≤ C)
-  (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) :
+    (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) :
   ‖mk_continuous_linear f C H‖ ≤ C :=
 (mk_continuous_linear_norm_le' f C H).trans_eq (max_eq_left hC)
 
@@ -505,7 +505,7 @@ lemma mk_continuous_linear_norm_le (f : G →ₗ[𝕜] alternating_map 𝕜 E G 
 `H : ∀ m m', ‖f m m'‖ ≤ C * ∏ i, ‖m i‖ * ∏ i, ‖m' i‖`, upgrade all `multilinear_map`s in the type to
 `ContinuousAlternatingMap`s. -/
 def mk_continuous_alternating (f : multilinear_map 𝕜 E (multilinear_map 𝕜 E' G)) (C : ℝ)
-  (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ C * (∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
+    (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ C * (∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
   ContinuousAlternatingMap 𝕜 E (ContinuousAlternatingMap 𝕜 E' G) :=
 mk_continuous
   { to_fun := λ m, mk_continuous (f m) (C * ∏ i, ‖m i‖) $ H m,
@@ -520,7 +520,7 @@ mk_continuous
 rfl
 
 lemma mk_continuous_alternating_norm_le' (f : multilinear_map 𝕜 E (multilinear_map 𝕜 E' G)) (C : ℝ)
-  (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ C * (∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
+    (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ C * (∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
   ‖mk_continuous_alternating f C H‖ ≤ max C 0 :=
 begin
   dunfold mk_continuous_alternating,
@@ -528,7 +528,7 @@ begin
 end
 
 lemma mk_continuous_alternating_norm_le (f : multilinear_map 𝕜 E (multilinear_map 𝕜 E' G)) {C : ℝ}
-  (hC : 0 ≤ C) (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ C * (∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
+    (hC : 0 ≤ C) (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ C * (∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
   ‖mk_continuous_alternating f C H‖ ≤ C :=
 (mk_continuous_alternating_norm_le' f C H).trans_eq (max_eq_left hC)
 
@@ -537,7 +537,7 @@ end multilinear_map
 namespace ContinuousAlternatingMap
 
 lemma norm_comp_continuous_linear_le (g : ContinuousAlternatingMap 𝕜 E₁ G)
-  (f : ι → E →L[𝕜] E₁ i) :
+    (f : ι → E →L[𝕜] E₁ i) :
   ‖g.comp_continuous_linear_map f‖ ≤ ‖g‖ * ∏ i, ‖f i‖ :=
 op_norm_le_bound _ (mul_nonneg (norm_nonneg _) $ prod_nonneg $ λ i hi, norm_nonneg _) $ λ m,
 calc ‖g (λ i, f i (m i))‖ ≤ ‖g‖ * ∏ i, ‖f i (m i)‖ : g.le_op_norm _
@@ -547,7 +547,7 @@ calc ‖g (λ i, f i (m i))‖ ≤ ‖g‖ * ∏ i, ‖f i (m i)‖ : g.le_op_no
 ... = (‖g‖ * ∏ i, ‖f i‖) * ∏ i, ‖m i‖ : by rw [prod_mul_distrib, mul_assoc]
 
 lemma norm_comp_continuous_linear_isometry_le (g : ContinuousAlternatingMap 𝕜 E₁ G)
-  (f : ι → E →ₗᵢ[𝕜] E₁ i) :
+    (f : ι → E →ₗᵢ[𝕜] E₁ i) :
   ‖g.comp_continuous_linear_map (λ i, (f i).to_continuous_linear_map)‖ ≤ ‖g‖ :=
 begin
   apply op_norm_le_bound _ (norm_nonneg _) (λ m, _),
@@ -557,7 +557,7 @@ begin
 end
 
 lemma norm_comp_continuous_linear_isometry_equiv (g : ContinuousAlternatingMap 𝕜 E₁ G)
-  (f : ι → E ≃ₗᵢ[𝕜] E₁ i) :
+    (f : ι → E ≃ₗᵢ[𝕜] E₁ i) :
   ‖g.comp_continuous_linear_map (λ i, (f i : E i →L[𝕜] E₁ i))‖ = ‖g‖ :=
 begin
   apply le_antisymm (g.norm_comp_continuous_linear_isometry_le (λ i, (f i).to_linear_isometry)),
@@ -577,7 +577,7 @@ This implementation fixes `f : ι → E →L[𝕜] E₁ i`.
 TODO: Actually, the map is multilinear in `f` but an attempt to formalize this failed because of
 issues with class instances. -/
 def comp_continuous_linear_mapL (f : ι → E →L[𝕜] E₁ i) :
-  ContinuousAlternatingMap 𝕜 E₁ G →L[𝕜] E [Λ^ι]→L[𝕜] G :=
+    ContinuousAlternatingMap 𝕜 E₁ G →L[𝕜] E [Λ^ι]→L[𝕜] G :=
 linear_map.mk_continuous
   { to_fun := λ g, g.comp_continuous_linear_map f,
     map_add' := λ g₁ g₂, rfl,
@@ -590,7 +590,7 @@ linear_map.mk_continuous
 rfl
 
 lemma norm_comp_continuous_linear_mapL_le (f : ι → E →L[𝕜] E₁ i) :
-  ‖@comp_continuous_linear_mapL 𝕜 ι E E₁ G _ _ _ _ _ _ _ _ f‖ ≤ (∏ i, ‖f i‖) :=
+    ‖@comp_continuous_linear_mapL 𝕜 ι E E₁ G _ _ _ _ _ _ _ _ f‖ ≤ (∏ i, ‖f i‖) :=
 linear_map.mk_continuous_norm_le _ (prod_nonneg $ λ i _, norm_nonneg _) _
 
 variable (G)
@@ -598,7 +598,7 @@ variable (G)
 /-- `ContinuousAlternatingMap.comp_continuous_linear_map` as a bundled continuous linear equiv,
 given `f : ι → E ≃L[𝕜] E₁ i`. -/
 def comp_continuous_linear_map_equivL (f : ι → E ≃L[𝕜] E₁ i) :
-  ContinuousAlternatingMap 𝕜 E₁ G ≃L[𝕜] E [Λ^ι]→L[𝕜] G :=
+    ContinuousAlternatingMap 𝕜 E₁ G ≃L[𝕜] E [Λ^ι]→L[𝕜] G :=
 { inv_fun := comp_continuous_linear_mapL (λ i, ((f i).symm : E₁ i →L[𝕜] E i)),
   continuous_to_fun := (comp_continuous_linear_mapL (λ i, (f i : E i →L[𝕜] E₁ i))).continuous,
   continuous_inv_fun :=
@@ -661,7 +661,7 @@ We also register continuous linear equiv versions of these correspondences, in
 open Fin function
 
 lemma continuous_linear_map.norm_map_tail_le
-  (f : Ei 0 →L[𝕜] (ContinuousAlternatingMap 𝕜 (λ(i : Fin n), Ei i.succ) G)) (m : ∀i, Ei i) :
+    (f : Ei 0 →L[𝕜] (ContinuousAlternatingMap 𝕜 (λ(i : Fin n), Ei i.succ) G)) (m : ∀i, Ei i) :
   ‖f (m 0) (tail m)‖ ≤ ‖f‖ * ∏ i, ‖m i‖ :=
 calc
   ‖f (m 0) (tail m)‖ ≤ ‖f (m 0)‖ * ∏ i, ‖(tail m) i‖ : (f (m 0)).le_op_norm _
@@ -671,7 +671,7 @@ calc
   ... = ‖f‖ * ∏ i, ‖m i‖ : by { rw prod_univ_succ, refl }
 
 lemma ContinuousAlternatingMap.norm_map_init_le
-  (f : ContinuousAlternatingMap 𝕜 (λ(i : Fin n), Ei i.cast_succ) (Ei (last n) →L[𝕜] G))
+    (f : ContinuousAlternatingMap 𝕜 (λ(i : Fin n), Ei i.cast_succ) (Ei (last n) →L[𝕜] G))
   (m : ∀i, Ei i) :
   ‖f (init m) (m (last n))‖ ≤ ‖f‖ * ∏ i, ‖m i‖ :=
 calc
@@ -682,14 +682,14 @@ calc
   ... = ‖f‖ * ∏ i, ‖m i‖ : by { rw prod_univ_cast_succ, refl }
 
 lemma ContinuousAlternatingMap.norm_map_cons_le
-  (f : ContinuousAlternatingMap 𝕜 Ei G) (x : Ei 0) (m : ∀(i : Fin n), Ei i.succ) :
+    (f : ContinuousAlternatingMap 𝕜 Ei G) (x : Ei 0) (m : ∀(i : Fin n), Ei i.succ) :
   ‖f (cons x m)‖ ≤ ‖f‖ * ‖x‖ * ∏ i, ‖m i‖ :=
 calc
   ‖f (cons x m)‖ ≤ ‖f‖ * ∏ i, ‖cons x m i‖ : f.le_op_norm _
   ... = (‖f‖ * ‖x‖) * ∏ i, ‖m i‖ : by { rw prod_univ_succ, simp [mul_assoc] }
 
 lemma ContinuousAlternatingMap.norm_map_snoc_le
-  (f : ContinuousAlternatingMap 𝕜 Ei G) (m : ∀(i : Fin n), Ei i.cast_succ) (x : Ei (last n)) :
+    (f : ContinuousAlternatingMap 𝕜 Ei G) (m : ∀(i : Fin n), Ei i.cast_succ) (x : Ei (last n)) :
   ‖f (snoc m x)‖ ≤ ‖f‖ * (∏ i, ‖m i‖) * ‖x‖ :=
 calc
   ‖f (snoc m x)‖ ≤ ‖f‖ * ∏ i, ‖snoc m x i‖ : f.le_op_norm _
@@ -701,7 +701,7 @@ calc
 construct the corresponding continuous multilinear map on `n+1` variables obtained by concatenating
 the variables, given by `m ↦ f (m 0) (tail m)`-/
 def continuous_linear_map.uncurry_left
-  (f : Ei 0 →L[𝕜] (ContinuousAlternatingMap 𝕜 (λ(i : Fin n), Ei i.succ) G)) :
+    (f : Ei 0 →L[𝕜] (ContinuousAlternatingMap 𝕜 (λ(i : Fin n), Ei i.succ) G)) :
   ContinuousAlternatingMap 𝕜 Ei G :=
 (@linear_map.uncurry_left 𝕜 n Ei G _ _ _ _ _
   (ContinuousAlternatingMap.to_alternating_map_linear.comp f.to_linear_map)).mk_continuous
@@ -715,7 +715,7 @@ def continuous_linear_map.uncurry_left
 a continuous linear map into continuous multilinear maps in `n` variables, given by
 `x ↦ (m ↦ f (cons x m))`. -/
 def ContinuousAlternatingMap.curry_left
-  (f : ContinuousAlternatingMap 𝕜 Ei G) :
+    (f : ContinuousAlternatingMap 𝕜 Ei G) :
   Ei 0 →L[𝕜] (ContinuousAlternatingMap 𝕜 (λ(i : Fin n), Ei i.succ) G) :=
 linear_map.mk_continuous
 { -- define a linear map into `n` continuous multilinear maps from an `n+1` continuous multilinear
@@ -756,7 +756,7 @@ in `multilinear_curry_left_equiv 𝕜 E E₂`.
 The direct and inverse maps are given by `f.uncurry_left` and `f.curry_left`. Use these
 unless you need the full framework of linear isometric equivs. -/
 def continuous_alternating_curry_left_equiv :
-  (Ei 0 →L[𝕜] (ContinuousAlternatingMap 𝕜 (λ(i : Fin n), Ei i.succ) G)) ≃ₗᵢ[𝕜]
+    (Ei 0 →L[𝕜] (ContinuousAlternatingMap 𝕜 (λ(i : Fin n), Ei i.succ) G)) ≃ₗᵢ[𝕜]
   (ContinuousAlternatingMap 𝕜 Ei G) :=
 linear_isometry_equiv.of_bounds
   { to_fun    := continuous_linear_map.uncurry_left,
@@ -793,7 +793,7 @@ variables {𝕜 Ei G}
 continuous linear maps on `E 0`, construct the corresponding continuous multilinear map on `n+1`
 variables obtained by concatenating the variables, given by `m ↦ f (init m) (m (last n))`. -/
 def ContinuousAlternatingMap.uncurry_right
-  (f : ContinuousAlternatingMap 𝕜 (λ i : Fin n, Ei i.cast_succ) (Ei (last n) →L[𝕜] G)) :
+    (f : ContinuousAlternatingMap 𝕜 (λ i : Fin n, Ei i.cast_succ) (Ei (last n) →L[𝕜] G)) :
   ContinuousAlternatingMap 𝕜 Ei G :=
 let f' : multilinear_map 𝕜 (λ(i : Fin n), Ei i.cast_succ) (Ei (last n) →ₗ[𝕜] G) :=
 { to_fun    := λ m, (f m).to_linear_map,
@@ -811,7 +811,7 @@ let f' : multilinear_map 𝕜 (λ(i : Fin n), Ei i.cast_succ) (Ei (last n) →�
 a continuous multilinear map in `n` variables into continuous linear maps, given by
 `m ↦ (x ↦ f (snoc m x))`. -/
 def ContinuousAlternatingMap.curry_right
-  (f : ContinuousAlternatingMap 𝕜 Ei G) :
+    (f : ContinuousAlternatingMap 𝕜 Ei G) :
   ContinuousAlternatingMap 𝕜 (λ i : Fin n, Ei i.cast_succ) (Ei (last n) →L[𝕜] G) :=
 let f' : multilinear_map 𝕜 (λ(i : Fin n), Ei i.cast_succ) (Ei (last n) →L[𝕜] G) :=
 { to_fun    := λm, (f.to_alternating_map.curry_right m).mk_continuous
@@ -852,7 +852,7 @@ The direct and inverse maps are given by `f.uncurry_right` and `f.curry_right`. 
 unless you need the full framework of linear isometric equivs.
 -/
 def continuous_alternating_curry_right_equiv :
-  (ContinuousAlternatingMap 𝕜 (λ(i : Fin n), Ei i.cast_succ) (Ei (last n) →L[𝕜] G)) ≃ₗᵢ[𝕜]
+    (ContinuousAlternatingMap 𝕜 (λ(i : Fin n), Ei i.cast_succ) (Ei (last n) →L[𝕜] G)) ≃ₗᵢ[𝕜]
   (ContinuousAlternatingMap 𝕜 Ei G) :=
 linear_isometry_equiv.of_bounds
   { to_fun    := ContinuousAlternatingMap.uncurry_right,
@@ -876,7 +876,7 @@ are no dependent types, use the primed version as it helps Lean a lot for unific
 The direct and inverse maps are given by `f.uncurry_right` and `f.curry_right`. Use these
 unless you need the full framework of linear isometric equivs. -/
 def continuous_alternating_curry_right_equiv' :
-  (G [×n]→L[𝕜] (G →L[𝕜] G')) ≃ₗᵢ[𝕜] (G [×n.succ]→L[𝕜] G') :=
+    (G [×n]→L[𝕜] (G →L[𝕜] G')) ≃ₗᵢ[𝕜] (G [×n.succ]→L[𝕜] G') :=
 continuous_alternating_curry_right_equiv 𝕜 (λ (i : Fin n.succ), G) G'
 
 variables {n 𝕜 G Ei G'}
@@ -923,7 +923,7 @@ variables {𝕜 G G'}
 
 /-- Associating to a continuous multilinear map in `0` variables the unique value it takes. -/
 def ContinuousAlternatingMap.uncurry0
-  (f : ContinuousAlternatingMap 𝕜 (λ (i : Fin 0), G) G') : G' := f 0
+    (f : ContinuousAlternatingMap 𝕜 (λ (i : Fin 0), G) G') : G' := f 0
 
 variables (𝕜 G)
 /-- Associating to an element `x` of a vector space `E₂` the continuous multilinear map in `0`
@@ -944,7 +944,7 @@ variable {𝕜}
 by { ext m, simp [(subsingleton.elim _ _ : x = m)] }
 
 lemma ContinuousAlternatingMap.uncurry0_curry0 (f : G [×0]→L[𝕜] G') :
-  ContinuousAlternatingMap.curry0 𝕜 G (f.uncurry0) = f :=
+    ContinuousAlternatingMap.curry0 𝕜 G (f.uncurry0) = f :=
 by simp
 
 variables (𝕜 G)
@@ -1021,7 +1021,7 @@ variables (𝕜 G G')
 /-- An equivalence of the index set defines a linear isometric equivalence between the spaces
 of multilinear maps. -/
 def dom_dom_congr (σ : ι ≃ ι') :
-  ContinuousAlternatingMap 𝕜 (λ _ : ι, G) G' ≃ₗᵢ[𝕜]
+    ContinuousAlternatingMap 𝕜 (λ _ : ι, G) G' ≃ₗᵢ[𝕜]
     ContinuousAlternatingMap 𝕜 (λ _ : ι', G) G' :=
 linear_isometry_equiv.of_bounds
   { to_fun := λ f, (multilinear_map.dom_dom_congr σ f.to_alternating_map).mk_continuous ‖f‖ $
@@ -1043,7 +1043,7 @@ section
 map with variables indexed by `ι` taking values in the space of continuous multilinear maps with
 variables indexed by `ι'`. -/
 def curry_sum (f : ContinuousAlternatingMap 𝕜 (λ x : ι ⊕ ι', G) G') :
-  ContinuousAlternatingMap 𝕜 (λ x : ι, G) (ContinuousAlternatingMap 𝕜 (λ x : ι', G) G') :=
+    ContinuousAlternatingMap 𝕜 (λ x : ι, G) (ContinuousAlternatingMap 𝕜 (λ x : ι', G) G') :=
 multilinear_map.mk_continuous_alternating (multilinear_map.curry_sum f.to_alternating_map) (‖f‖) $
   λ m m', by simpa [fintype.prod_sum_type, mul_assoc] using f.le_op_norm (sum.elim m m')
 
@@ -1056,7 +1056,7 @@ rfl
 continuous multilinear maps with variables indexed by `ι'` defines a continuous multilinear map with
 variables indexed by `ι ⊕ ι'`. -/
 def uncurry_sum
-  (f : ContinuousAlternatingMap 𝕜 (λ x : ι, G) (ContinuousAlternatingMap 𝕜 (λ x : ι', G) G')) :
+    (f : ContinuousAlternatingMap 𝕜 (λ x : ι, G) (ContinuousAlternatingMap 𝕜 (λ x : ι', G) G')) :
   ContinuousAlternatingMap 𝕜 (λ x : ι ⊕ ι', G) G' :=
 multilinear_map.mk_continuous
   (to_alternating_map_linear.comp_alternating_map f.to_alternating_map).uncurry_sum (‖f‖) $ λ m,
@@ -1079,7 +1079,7 @@ The forward and inverse functions are `ContinuousAlternatingMap.curry_sum`
 and `ContinuousAlternatingMap.uncurry_sum`. Use this definition only if you need
 some properties of `linear_isometry_equiv`. -/
 def curry_sum_equiv : ContinuousAlternatingMap 𝕜 (λ x : ι ⊕ ι', G) G' ≃ₗᵢ[𝕜]
-  ContinuousAlternatingMap 𝕜 (λ x : ι, G) (ContinuousAlternatingMap 𝕜 (λ x : ι', G) G') :=
+    ContinuousAlternatingMap 𝕜 (λ x : ι, G) (ContinuousAlternatingMap 𝕜 (λ x : ι', G) G') :=
 linear_isometry_equiv.of_bounds
   { to_fun := curry_sum,
     inv_fun := uncurry_sum,
@@ -1102,7 +1102,7 @@ variables (𝕜 G G') {k l : ℕ} {s : finset (Fin n)}
 to the space of continuous multilinear maps `G [×k]→L[𝕜] G [×l]→L[𝕜] G'` of `k` variables taking
 values in the space of continuous multilinear maps of `l` variables. -/
 def curry_fin_finset {k l n : ℕ} {s : finset (Fin n)}
-  (hk : s.card = k) (hl : sᶜ.card = l) :
+    (hk : s.card = k) (hl : sᶜ.card = l) :
   (G [×n]→L[𝕜] G') ≃ₗᵢ[𝕜] (G [×k]→L[𝕜] G [×l]→L[𝕜] G') :=
 (dom_dom_congr 𝕜 G G' (fin_sum_equiv_of_finset hk hl).symm).trans
   (curry_sum_equiv 𝕜 (Fin k) (Fin l) G G')
