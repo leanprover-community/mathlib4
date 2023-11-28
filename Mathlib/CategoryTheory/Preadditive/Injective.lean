@@ -349,7 +349,7 @@ def mapInjectivePresentation (adj : F ⊣ G) [F.PreservesMonomorphisms] (X : D)
 /-- Given an adjunction `F ⊣ G` such that `F` preserves monomorphisms and is faithful,
   then any injective presentation of `F(X)` can be pulled back to an injective presentation of `X`.
   This is similar to `mapInjectivePresentation`. -/
-def injectivePresentationOfMapInjectivePresentation (adj : F ⊣ G)
+def injectivePresentationOfMap (adj : F ⊣ G)
     [F.PreservesMonomorphisms] [F.ReflectsMonomorphisms] (X : C)
     (I : InjectivePresentation <| F.obj X) :
     InjectivePresentation X where
