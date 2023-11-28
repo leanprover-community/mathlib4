@@ -171,6 +171,7 @@ def moduleEquiv [Semiring R] [AddCommMonoid M] [Module R M] : ULift.{w} M ≃ₗ
   __ := AddEquiv.ulift
 #align ulift.module_equiv ULift.moduleEquiv
 
+/-- Linear equivalence between `ULift.{w₁} M` and `ULift.{w₂} M`-/
 @[simps apply symm_apply]
 def moduleEquiv' [Semiring R] [AddCommMonoid M] [Module R M] : ULift.{w} M ≃ₗ[R] ULift.{w'} M where
   toFun := ULift.up ∘ ULift.down
