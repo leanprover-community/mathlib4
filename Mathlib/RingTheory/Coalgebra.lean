@@ -51,12 +51,19 @@ end CommRingAddCommGroup
 
 end Coalgebra
 
+namespace Finsupp
+
+section CommRing
+
+variable (R : Type u) (S : Type v)
+variable [CommRing R]
+
 /-- The `R`-module whose elements are functions `S → R` which are zero on all but finitely many
 elements of `S` has a coalgebra structure. The coproduct is given by `Δ(fₛ) = fₛ ⊗ fₛ` and the
 counit by `ε(fₛ) =  1`, where `fₛ` is the function sending `s` to `1` and all other elements of `S`
 to zero. -/
 noncomputable
-instance Finsupp.instCoalgebra (R : Type u) (S : Type v) [CommRing R] : Coalgebra R (S →₀ R) where
+instance instCoalgebra : Coalgebra R (S →₀ R) where
   Δ := Finsupp.total S ((S →₀ R) ⊗[R] (S →₀ R)) R
     (fun s ↦ Finsupp.single s 1 ⊗ₜ Finsupp.single s 1)
   ε := Finsupp.total S R R (fun _ ↦ 1)
@@ -67,7 +74,10 @@ instance Finsupp.instCoalgebra (R : Type u) (S : Type v) [CommRing R] : Coalgebr
   id_ε := by
     ext; simp
 
-theorem Finsupp.Δ_basis (R : Type u) (S : Type v) [CommRing R] (s : S) :
-    (Finsupp.instCoalgebra R S).Δ (Finsupp.single s 1) =
+theorem Δ_single_one (s : S) : (instCoalgebra R S).Δ (Finsupp.single s 1) =
     (Finsupp.single s 1) ⊗ₜ[R] (Finsupp.single s 1) := by
-  unfold Coalgebra.Δ; unfold Finsupp.instCoalgebra; simp
+  unfold Coalgebra.Δ; unfold instCoalgebra; simp
+
+end CommRing
+
+end Finsupp
