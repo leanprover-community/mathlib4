@@ -246,3 +246,36 @@ theorem MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
   rfl
 #align mul_equiv.inv_symm MulEquiv.inv_symm
 -- porting note: no `add_equiv.neg_symm` in `mathlib3`
+
+section UnitHom
+variable {G' G''} [Monoid G] [Monoid H] [Monoid G'] [Monoid G'']
+
+class UnitHom (f : G →* H) where
+  of_map_isUnit : ∀ x, IsUnit (f x) → IsUnit x
+
+instance (priority := 100) {G H} [Group G] [Monoid H] (f : G →* H) : UnitHom f where
+  of_map_isUnit _ _ := Group.isUnit _
+
+instance unitHom_id : UnitHom (MonoidHom.id H) where
+  of_map_isUnit _ := id
+
+@[simp]
+lemma isUnit_map_iff (f : G →* H) [UnitHom f] (a) : IsUnit (f a) ↔ IsUnit a :=
+  ⟨UnitHom.of_map_isUnit a, IsUnit.map f⟩
+
+instance unitHom_comp (g : G →* G'') (f : G' →* G) [UnitHom g] [UnitHom f] :
+    UnitHom (g.comp f) where
+  of_map_isUnit a := UnitHom.of_map_isUnit a ∘ UnitHom.of_map_isUnit (f a)
+
+instance unitHom_equiv (f : G ≃* H) : UnitHom (f : G →* H) where
+  of_map_isUnit a ha := by
+    convert IsUnit.map (f.symm : H →* G) ha
+    exact (MulEquiv.symm_apply_apply f a).symm
+
+lemma unitHom_of_bijective {f : G →* H} (hf : Function.Bijective f) : UnitHom f :=
+  inferInstanceAs (UnitHom (MulEquiv.ofBijective f hf))
+
+lemma unitHom_of_comp (g : G →* G'') (f : G' →* G) [UnitHom (g.comp f)] : UnitHom f where
+  of_map_isUnit _ ha := (isUnit_map_iff (g.comp f) _).mp (ha.map g)
+
+end UnitHom

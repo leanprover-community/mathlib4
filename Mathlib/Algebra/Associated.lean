@@ -295,6 +295,16 @@ theorem irreducible_mul_iff {a b : α} :
     · rwa [irreducible_isUnit_mul ha]
 #align irreducible_mul_iff irreducible_mul_iff
 
+theorem Irreducible.of_map [Monoid β] (f : α →* β) [h : UnitHom f] {x} (hfx : Irreducible (f x)) :
+    Irreducible x :=
+  ⟨fun h => hfx.not_unit <| IsUnit.map f h, fun p q hx =>
+    Or.imp (h.1 p) (h.1 q) <| hfx.isUnit_or_isUnit <| f.map_mul p q ▸ congr_arg f hx⟩
+
+@[simp]
+theorem irreducible_map_iff [Monoid β] (f : α ≃* β) (x) :
+    Irreducible (f x) ↔ Irreducible x :=
+  ⟨Irreducible.of_map (f : α →* β), fun h ↦ Irreducible.of_map (f.symm : β →* α) (by simpa)⟩
+
 end
 
 section CommMonoid
