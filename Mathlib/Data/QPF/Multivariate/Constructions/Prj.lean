@@ -45,12 +45,12 @@ set_option linter.uppercaseLean3 false in
 #align mvqpf.prj.P MvQPF.Prj.P
 
 /-- Abstraction function of the `QPF` instance -/
-def Prj.abs ⦃α : TypeVec n⦄ : (Prj.P i).Obj α → Prj i α
+def Prj.abs ⦃α : TypeVec n⦄ : Prj.P i α → Prj i α
   | ⟨_x, f⟩ => f _ ⟨⟨rfl⟩⟩
 #align mvqpf.prj.abs MvQPF.Prj.abs
 
 /-- Representation function of the `QPF` instance -/
-def Prj.repr ⦃α : TypeVec n⦄ : Prj i α → (Prj.P i).Obj α := fun x : α i =>
+def Prj.repr ⦃α : TypeVec n⦄ : Prj i α → Prj.P i α := fun x : α i =>
   ⟨⟨⟩, fun j ⟨⟨h⟩⟩ => (h.rec x : α j)⟩
 #align mvqpf.prj.repr MvQPF.Prj.repr
 

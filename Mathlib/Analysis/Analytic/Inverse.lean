@@ -525,7 +525,7 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
       apply (tendsto_order.1 this).2; simp [zero_lt_one]
     have C : ∀ᶠ a in 𝓝[>] (0 : ℝ), (0 : ℝ) < a := by
       filter_upwards [self_mem_nhdsWithin] with _ ha using ha
-    rcases(C.and ((A.and B).filter_mono inf_le_left)).exists with ⟨a, ha⟩
+    rcases (C.and ((A.and B).filter_mono inf_le_left)).exists with ⟨a, ha⟩
     exact ⟨a, ha.1, ha.2.1.le, ha.2.2.le⟩
   -- check by induction that the partial sums are suitably bounded, using the choice of `a` and the
   -- inductive control from Lemma `radius_rightInv_pos_of_radius_pos_aux2`.
@@ -563,7 +563,9 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
   -- conclude that all coefficients satisfy `aⁿ Qₙ ≤ (I + 1) a`.
   let a' : NNReal := ⟨a, apos.le⟩
   suffices H : (a' : ENNReal) ≤ (p.rightInv i).radius
-  · apply lt_of_lt_of_le _ H; exact_mod_cast apos
+  · apply lt_of_lt_of_le _ H
+    -- Prior to leanprover/lean4#2734, this was `exact_mod_cast apos`.
+    simpa only [ENNReal.coe_pos]
   apply le_radius_of_bound _ ((I + 1) * a) fun n => ?_
   by_cases hn : n = 0
   · have : ‖p.rightInv i n‖ = ‖p.rightInv i 0‖ := by congr <;> try rw [hn]

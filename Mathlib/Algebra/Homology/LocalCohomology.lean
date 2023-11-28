@@ -122,7 +122,6 @@ variable {R : Type max u v v'} [CommRing R] {D : Type v} [SmallCategory D]
 
 variable {E : Type v'} [SmallCategory E] (I' : E ⥤ D) (I : D ⥤ Ideal R)
 
-set_option maxHeartbeats 250000 in
 /-- Local cohomology along a composition of diagrams. -/
 def diagramComp (i : ℕ) : diagram (I' ⋙ I) i ≅ I'.op ⋙ diagram I i :=
   Iso.refl _

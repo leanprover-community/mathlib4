@@ -300,7 +300,7 @@ lemma segment_inter_eq_endpoint_of_linearIndependent_sub
   rw [Hx, Hy, smul_add, smul_add] at H
   have : c + q • (y - c) = c + p • (x - c) := by
     convert H using 1 <;> simp [sub_smul]
-  obtain ⟨rfl, rfl⟩ : p = 0 ∧ q = 0 := h.eq_zero_of_pair' ((add_right_inj c).1 this ).symm
+  obtain ⟨rfl, rfl⟩ : p = 0 ∧ q = 0 := h.eq_zero_of_pair' ((add_right_inj c).1 this).symm
   simp
 
 end OrderedRing

@@ -205,3 +205,6 @@ theorem ofLex_inj {a b : Lex α} : ofLex a = ofLex b ↔ a = b :=
 /-- A recursor for `Lex`. Use as `induction x using Lex.rec`. -/
 protected def Lex.rec {β : Lex α → Sort*} (h : ∀ a, β (toLex a)) : ∀ a, β a := fun a => h (ofLex a)
 #align lex.rec Lex.rec
+
+@[simp] lemma Lex.forall {p : Lex α → Prop} : (∀ a, p a) ↔ ∀ a, p (toLex a) := Iff.rfl
+@[simp] lemma Lex.exists {p : Lex α → Prop} : (∃ a, p a) ↔ ∃ a, p (toLex a) := Iff.rfl

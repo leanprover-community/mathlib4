@@ -6,7 +6,7 @@ Authors: Anne Baanen, Paul Lezeau
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.IsAdjoinRoot
 
-#align_import number_theory.kummer_dedekind from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
+#align_import number_theory.kummer_dedekind from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-!
 # Kummer-Dedekind theorem
@@ -144,7 +144,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
         (⟨z, hz⟩ : R<x>) ∈ I.map (algebraMap R R<x>) by
       rw [← this, ← temp]
       obtain ⟨a, ha⟩ := (Set.mem_image _ _ _).mp (prod_mem_ideal_map_of_mem_conductor hp
-          (show z ∈ I.map (algebraMap R S) by rwa [Ideal.mem_comap] at hy ))
+          (show z ∈ I.map (algebraMap R S) by rwa [Ideal.mem_comap] at hy))
       use a + algebraMap R R<x> q * ⟨z, hz⟩
       refine ⟨Ideal.add_mem (I.map (algebraMap R R<x>)) ha.left ?_, by
           simp only [ha.right, map_add, AlgHom.map_mul, add_right_inj]; rfl⟩
@@ -297,7 +297,7 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
   rw [Multiset.count_map_eq_count' fun f =>
       ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm f :
         Ideal S),
-    Multiset.attach_count_eq_count_coe]
+    Multiset.count_attach]
   · exact Subtype.coe_injective.comp (Equiv.injective _)
   · exact (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx' _).prop
   · exact irreducible_of_normalized_factor _
