@@ -1228,12 +1228,12 @@ continuous-multilinear in `f₁, ..., fₙ`. -/
 noncomputable def compContinuousLinearMapContinuousMultilinear :
     ContinuousMultilinearMap 𝕜 (fun i ↦ E i →L[𝕜] E₁ i)
       ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) := by
-  refine @MultilinearMap.mkContinuous 𝕜 ι (fun i ↦ E i →L[𝕜] E₁ i)
+  @MultilinearMap.mkContinuous 𝕜 ι (fun i ↦ E i →L[𝕜] E₁ i)
     ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) _ _
     (fun _ ↦ ContinuousLinearMap.toNormedAddCommGroup)
     (fun _ ↦ ContinuousLinearMap.toNormedSpace) _ _
-    (compContinuousLinearMapMultilinear 𝕜 E E₁ G) 1 fun f ↦ ?_
-  simpa using norm_compContinuousLinearMapL_le G f
+    (compContinuousLinearMapMultilinear 𝕜 E E₁ G) 1 
+    fun f ↦ by simpa using norm_compContinuousLinearMapL_le G f
 
 variable {𝕜 E E₁}
 
