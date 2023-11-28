@@ -1723,15 +1723,15 @@ theorem map_comap_of_equiv (I : Ideal R) (f : R ≃+* S) : I.map (f : R →+* S)
       (Ideal.comap_le_map_of_inverse _ _ _ (Equiv.right_inv' _))
 #align ideal.map_comap_of_equiv Ideal.map_comap_of_equiv
 
-/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `I.comap f.symm= I.map f`. -/
+/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `comap f.symm I = map f I`. -/
 @[simp]
-theorem comap_symm (I : Ideal R) (f : R ≃+* S) : I.comap f.symm= I.map f :=  by
-  rw[←@map_comap_of_equiv]; rfl
+theorem comap_symm (I : Ideal R) (f : R ≃+* S) : I.comap f.symm = I.map f :=
+  (map_comap_of_equiv I f).symm
 
-/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `I.comap f= I.map f.symm`. -/
+/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f.symm I = comap f I`. -/
 @[simp]
-theorem map_symm (I : Ideal S) (f : R ≃+* S) : I.comap f= I.map f.symm :=  by
-  rw [← @comap_symm,@RingEquiv.symm_symm]
+theorem map_symm (I : Ideal S) (f : R ≃+* S) :  I.map f.symm = I.comap f :=
+  map_comap_of_equiv I (RingEquiv.symm f)
 
 
 
