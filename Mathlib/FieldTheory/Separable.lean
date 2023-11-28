@@ -284,7 +284,7 @@ theorem separable_iff_derivative_ne_zero {f : F[X]} (hf : Irreducible f) :
 #align polynomial.separable_iff_derivative_ne_zero Polynomial.separable_iff_derivative_ne_zero
 
 attribute [local instance] Ideal.Quotient.field in
-theorem separable_map {S} [CommRing S] [Nontrivial S] (f : F →+* S) (p : F[X]) :
+theorem separable_map {S} [CommRing S] [Nontrivial S] (f : F →+* S) {p : F[X]} :
     (p.map f).Separable ↔ p.Separable := by
   refine ⟨fun H ↦ ?_, fun H ↦ H.map⟩
   obtain ⟨m, hm⟩ := Ideal.exists_maximal S
