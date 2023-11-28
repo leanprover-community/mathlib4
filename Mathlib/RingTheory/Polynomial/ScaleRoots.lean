@@ -187,6 +187,8 @@ lemma scaleRoots_mul (p : R[X]) (r s) :
     p.scaleRoots (r * s) = (p.scaleRoots r).scaleRoots s := by
   ext; simp [mul_pow, mul_assoc]
 
+/-- Multiplication and `scaleRoots` commute up to a power of `r`. The factor disappears if we
+assume that the product of the leading coeffs does not vanish. See `Polynomial.mul_scaleRoots'`. -/
 lemma mul_scaleRoots (p q : R[X]) (r : R) :
     r ^ (natDegree p + natDegree q - natDegree (p * q)) • (p * q).scaleRoots r =
       p.scaleRoots r * q.scaleRoots r := by
@@ -210,6 +212,17 @@ lemma mul_scaleRoots (p q : R[X]) (r : R) :
       | inr hb =>
         simp only [← e, mul_assoc, mul_comm (r ^ (_ - a)), ← pow_add]
         rw [add_comm (_ - _), tsub_add_tsub_comm ha hb]
+
+lemma mul_scaleRoots' (p q : R[X]) (r : R) (h : leadingCoeff p * leadingCoeff q ≠ 0) :
+    (p * q).scaleRoots r = p.scaleRoots r * q.scaleRoots r := by
+  rw [← mul_scaleRoots, natDegree_mul' h, tsub_self, pow_zero, one_smul]
+
+lemma mul_scaleRoots_of_noZeroDivisors (p q : R[X]) (r : R) [NoZeroDivisors R] :
+    (p * q).scaleRoots r = p.scaleRoots r * q.scaleRoots r := by
+  by_cases hp : p = 0; · simp [hp]
+  by_cases hq : q = 0; · simp [hq]
+  apply mul_scaleRoots'
+  simp only [ne_eq, mul_eq_zero, leadingCoeff_eq_zero, hp, hq, or_self, not_false_eq_true]
 
 lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R)
     (h : natDegree p = natDegree q) :
