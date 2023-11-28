@@ -29,6 +29,8 @@ also contains unrelated results about `Units` that depend on `MonoidHom`.
 
 The results that don't mention homomorphisms should be proved (earlier?) in a different file and be
 used to golf the basic `Group` lemmas.
+
+Add a `@[to_additive]` version of `IsLocalRingHom`.
 -/
 
 

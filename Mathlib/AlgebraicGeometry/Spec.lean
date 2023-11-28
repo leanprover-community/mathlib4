@@ -262,11 +262,13 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat} (f : R ⟶ S) :
       replace ha := (stalkIso S p).hom.isUnit_map ha
       rw [← comp_apply, show localizationToStalk S p = (stalkIso S p).inv from rfl,
         Iso.inv_hom_id, id_apply] at ha
-      -- note to reviewers: Lean won't find this instance automatically anymore.
-      have := Localization.isLocalRingHom_localRingHom (PrimeSpectrum.comap f p).asIdeal _ f rfl
       convert (ha.of_map).map (stalkIso R (PrimeSpectrum.comap f p)).inv
       erw [← comp_apply, show stalkToFiberRingHom R _ = (stalkIso _ _).hom from rfl,
            Iso.hom_inv_id, id_apply]
+      -- note to reviewers: before refactor, this instance was found by instance search.
+      -- maybe it's worth writing a version that has `hIJ` automatically? I guess instance
+      -- search tried `rfl` before there.
+      exact Localization.isLocalRingHom_localRingHom (PrimeSpectrum.comap f p).asIdeal _ f rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec.LocallyRingedSpace_map AlgebraicGeometry.Spec.locallyRingedSpaceMap
 
