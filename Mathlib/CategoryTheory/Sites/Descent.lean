@@ -161,7 +161,7 @@ lemma isoSections_symm ⦃X : C⦄ ⦃i₁ i₂ : I⦄ (f₁ : X ⟶ Y i₁) (f�
   rw [isoSections_inv]
 
 lemma pullback_iso' ⦃X Z : C⦄ (h : X ⟶ Z) ⦃i₁ : I⦄
-      (f₁ : X ⟶ Y i₁) (g₁ : Z ⟶ Y i₁) (fac₁ : h ≫ g₁ = f₁)
+    (f₁ : X ⟶ Y i₁) (g₁ : Z ⟶ Y i₁) (fac₁ : h ≫ g₁ = f₁)
       ⦃i₂ : I⦄ (f₂ : X ⟶ Y i₂) (g₂ : Z ⟶ Y i₂) (fac₂ : h ≫ g₂ = f₂) :
       D.iso f₁ f₂ = (J.overMapPullbackComp' A h g₁ f₁ fac₁).symm.app _ ≪≫
           (J.overMapPullback A h).mapIso (D.iso g₁ g₂)  ≪≫
