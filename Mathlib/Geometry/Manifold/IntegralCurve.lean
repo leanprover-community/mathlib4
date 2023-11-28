@@ -201,7 +201,7 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
   rw [←Real.ball_eq_Ioo] at hf2
   -- use continuity of `f` to extract `ε2` so that for `t ∈ Real.ball t₀ ε2`,
   -- `f t ∈ interior (extChartAt I x₀).target`
-  have hcont := (hf2 t₀ (Real.ball_eq_Ioo .. ▸ Metric.mem_ball_self hε1)).continuousAt
+  have hcont := (hf2 t₀ (Metric.mem_ball_self hε1)).continuousAt
   rw [continuousAt_def, hf1] at hcont
   have hnhds : f ⁻¹' (interior (extChartAt I x₀).target) ∈ nhds t₀ :=
     hcont _ (isOpen_interior.mem_nhds (ModelWithCorners.isInteriorPoint_iff.mp hx))
