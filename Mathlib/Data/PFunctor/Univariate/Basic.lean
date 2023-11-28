@@ -18,7 +18,7 @@ pfunctor/M.lean.)
 -- "W", "Idx"
 set_option linter.uppercaseLean3 false
 
-universe u v v₁ v₂
+universe u v v₁ v₂ v₃
 
 /-- A polynomial functor `P` is given by a type `A` and a family `B` of types over `A`. `P` maps
 any type `α` to a new type `P α`, which is defined as the sigma type `Σ x, P.B x → α`.
@@ -40,7 +40,7 @@ namespace PFunctor
 instance : Inhabited PFunctor :=
   ⟨⟨default, default⟩⟩
 
-variable (P : PFunctor.{u}) {α : Type v₁} {β : Type v₂}
+variable (P : PFunctor.{u}) {α : Type v₁} {β : Type v₂} {γ : Type v₃}
 
 /-- Applying `P` to an object of `Type` -/
 @[coe]
@@ -62,22 +62,30 @@ instance Obj.inhabited [Inhabited P.A] [Inhabited α] : Inhabited (P α) :=
 
 instance : Functor.{v, max u v} P.Obj where map := @map P
 
-protected theorem map_eq {α β : Type u} (f : α → β) (a : P.A) (g : P.B a → α) :
-    @Functor.map P.Obj _ _ _ f ⟨a, g⟩ = ⟨a, f ∘ g⟩ :=
+/-- We prefer `PFunctor.map` to `Functor.map` because it is universe-polymorphic. -/
+@[simp]
+theorem map_eq_map {α β : Type v} (f : α → β) (x : P α) : f <$> x = P.map f x :=
+  rfl
+
+@[simp]
+protected theorem map_eq (f : α → β) (a : P.A) (g : P.B a → α) :
+    P.map f ⟨a, g⟩ = ⟨a, f ∘ g⟩ :=
   rfl
 #align pfunctor.map_eq PFunctor.map_eq
 
-protected theorem id_map {α : Type v} : ∀ x : P α, id <$> x = id x := fun ⟨_a, _b⟩ => rfl
+@[simp]
+protected theorem id_map : ∀ x : P α, P.map id x = x := fun ⟨_, _⟩ => rfl
 #align pfunctor.id_map PFunctor.id_map
 
-protected theorem comp_map {α β γ : Type v} (f : α → β) (g : β → γ) :
-    ∀ x : P α, (g ∘ f) <$> x = g <$> f <$> x := fun ⟨_a, _b⟩ => rfl
-#align pfunctor.comp_map PFunctor.comp_map
+@[simp]
+protected theorem map_map (f : α → β) (g : β → γ) :
+    ∀ x : P α, P.map g (P.map f x) = P.map (g ∘ f) x := fun ⟨_, _⟩ => rfl
+#align pfunctor.comp_map PFunctor.map_map
 
 instance : LawfulFunctor.{v, max u v} P.Obj where
   map_const := rfl
-  id_map := @PFunctor.id_map P
-  comp_map := @PFunctor.comp_map P
+  id_map x := P.id_map x
+  comp_map f g x := P.map_map f g x |>.symm
 
 /-- re-export existing definition of W-types and
 adapt it to a packaged definition of polynomial functor -/
@@ -142,12 +150,12 @@ def Obj.iget [DecidableEq P.A] {α} [Inhabited α] (x : P α) (i : P.Idx) : α :
 #align pfunctor.obj.iget PFunctor.Obj.iget
 
 @[simp]
-theorem fst_map {α β : Type u} (x : P α) (f : α → β) : (f <$> x).1 = x.1 := by cases x; rfl
+theorem fst_map (x : P α) (f : α → β) : (P.map f x).1 = x.1 := by cases x; rfl
 #align pfunctor.fst_map PFunctor.fst_map
 
 @[simp]
-theorem iget_map [DecidableEq P.A] {α β : Type u} [Inhabited α] [Inhabited β] (x : P α)
-    (f : α → β) (i : P.Idx) (h : i.1 = x.1) : (f <$> x).iget i = f (x.iget i) := by
+theorem iget_map [DecidableEq P.A] [Inhabited α] [Inhabited β] (x : P α)
+    (f : α → β) (i : P.Idx) (h : i.1 = x.1) : (P.map f x).iget i = f (x.iget i) := by
   simp only [Obj.iget, fst_map, *, dif_pos, eq_self_iff_true]
   cases x
   rfl
@@ -192,7 +200,7 @@ theorem liftp_iff {α : Type u} (p : α → Prop) (x : P α) :
   · rintro ⟨y, hy⟩
     cases' h : y with a f
     refine' ⟨a, fun i => (f i).val, _, fun i => (f i).property⟩
-    rw [← hy, h, PFunctor.map_eq]
+    rw [← hy, h, map_eq_map, PFunctor.map_eq]
     congr
   rintro ⟨a, f, xeq, pf⟩
   use ⟨a, fun i => ⟨f i, pf i⟩⟩

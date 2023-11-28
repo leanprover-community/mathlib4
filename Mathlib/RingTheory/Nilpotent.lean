@@ -49,6 +49,9 @@ theorem IsNilpotent.mk [Zero R] [Pow R ℕ] (x : R) (n : ℕ) (e : x ^ n = 0) : 
   ⟨1, pow_one 0⟩
 #align is_nilpotent.zero IsNilpotent.zero
 
+theorem not_isNilpotent_one [MonoidWithZero R] [Nontrivial R] :
+    ¬ IsNilpotent (1 : R) := fun ⟨_, H⟩ ↦ zero_ne_one (H.symm.trans (one_pow _))
+
 theorem IsNilpotent.neg [Ring R] (h : IsNilpotent x) : IsNilpotent (-x) := by
   obtain ⟨n, hn⟩ := h
   use n
@@ -72,11 +75,23 @@ theorem isNilpotent_neg_iff [Ring R] : IsNilpotent (-x) ↔ IsNilpotent x :=
   ⟨fun h => neg_neg x ▸ h.neg, fun h => h.neg⟩
 #align is_nilpotent_neg_iff isNilpotent_neg_iff
 
+lemma IsNilpotent.smul [MonoidWithZero R] [MonoidWithZero S] [MulActionWithZero R S]
+    [SMulCommClass R S S] [IsScalarTower R S S] {a : S} (ha : IsNilpotent a) (t : R) :
+    IsNilpotent (t • a) := by
+  obtain ⟨k, ha⟩ := ha
+  use k
+  rw [smul_pow, ha, smul_zero]
+
 theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
     [MonoidWithZeroHomClass F R S] (hr : IsNilpotent r) (f : F) : IsNilpotent (f r) := by
   use hr.choose
   rw [← map_pow, hr.choose_spec, map_zero]
 #align is_nilpotent.map IsNilpotent.map
+
+lemma IsNilpotent.map_iff [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
+    [MonoidWithZeroHomClass F R S] {f : F} (hf : Function.Injective f) :
+    IsNilpotent (f r) ↔ IsNilpotent r :=
+  ⟨fun ⟨k, hk⟩ ↦ ⟨k, (map_eq_zero_iff f hf).mp <| by rwa [map_pow]⟩, fun h ↦ h.map f⟩
 
 theorem IsNilpotent.sub_one_isUnit [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r - 1) := by
   obtain ⟨n, hn⟩ := hnil
@@ -181,7 +196,7 @@ theorem isNilpotent_add (hx : IsNilpotent x) (hy : IsNilpotent y) : IsNilpotent 
   apply Finset.sum_eq_zero
   rintro ⟨i, j⟩ hij
   suffices x ^ i * y ^ j = 0 by simp only [this, nsmul_eq_mul, mul_zero]
-  cases' Nat.le_or_le_of_add_eq_add_pred (Finset.Nat.mem_antidiagonal.mp hij) with hi hj
+  cases' Nat.le_or_le_of_add_eq_add_pred (Finset.mem_antidiagonal.mp hij) with hi hj
   · rw [pow_eq_zero_of_le hi hn, zero_mul]
   · rw [pow_eq_zero_of_le hj hm, mul_zero]
 #align commute.is_nilpotent_add Commute.isNilpotent_add
@@ -322,3 +337,16 @@ theorem IsNilpotent.mapQ (hnp : IsNilpotent f) : IsNilpotent (p.mapQ p f hp) := 
 #align module.End.is_nilpotent.mapq Module.End.IsNilpotent.mapQ
 
 end Module.End
+
+lemma NoZeroSMulDivisors.isReduced (R M : Type*)
+    [MonoidWithZero R] [Zero M] [MulActionWithZero R M] [Nontrivial M] [NoZeroSMulDivisors R M] :
+    IsReduced R := by
+  refine ⟨fun x ⟨k, hk⟩ ↦ ?_⟩
+  induction' k with k ih
+  · rw [Nat.zero_eq, pow_zero] at hk
+    exact eq_zero_of_zero_eq_one hk.symm x
+  · obtain ⟨m : M, hm : m ≠ 0⟩ := exists_ne (0 : M)
+    have : x ^ (k + 1) • m = 0 := by simp only [hk, zero_smul]
+    rw [pow_succ, mul_smul] at this
+    rcases eq_zero_or_eq_zero_of_smul_eq_zero this with rfl | hx; rfl
+    exact ih <| (eq_zero_or_eq_zero_of_smul_eq_zero hx).resolve_right hm

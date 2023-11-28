@@ -95,7 +95,7 @@ protected theorem HasBasis.nhds {l : Filter α} {p : ι → Prop} {s : ι → Se
 protected theorem tendsto_pure_self (l : Filter X) :
     Tendsto (pure : X → Filter X) l (𝓝 l) := by
   rw [Filter.tendsto_nhds]
-  refine fun s hs ↦ Eventually.mono hs fun x ↦ id
+  exact fun s hs ↦ Eventually.mono hs fun x ↦ id
 
 /-- Neighborhoods of a countably generated filter is a countably generated filter. -/
 instance {l : Filter α} [IsCountablyGenerated l] : IsCountablyGenerated (𝓝 l) :=
@@ -207,8 +207,9 @@ protected theorem tendsto_nhds_atBot_iff [Preorder β] {l : Filter α} {f : α �
 
 variable [TopologicalSpace X]
 
-theorem nhds_nhds (x : X) : 𝓝 (𝓝 x) = ⨅ (s : Set X) (_ : IsOpen s) (_ : x ∈ s), 𝓟 (Iic (𝓟 s)) :=
-  by simp only [(nhds_basis_opens x).nhds.eq_biInf, iInf_and, @iInf_comm _ (_ ∈ _)]
+theorem nhds_nhds (x : X) :
+    𝓝 (𝓝 x) = ⨅ (s : Set X) (_ : IsOpen s) (_ : x ∈ s), 𝓟 (Iic (𝓟 s)) := by
+  simp only [(nhds_basis_opens x).nhds.eq_biInf, iInf_and, @iInf_comm _ (_ ∈ _)]
 #align filter.nhds_nhds Filter.nhds_nhds
 
 theorem inducing_nhds : Inducing (𝓝 : X → Filter X) :=

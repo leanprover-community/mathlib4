@@ -103,22 +103,6 @@ theorem Directed.mono_comp (r : α → α → Prop) {ι} {rb : β → β → Pro
   directed_comp.2 <| hf.mono hg
 #align directed.mono_comp Directed.mono_comp
 
-/-- A monotone function on a sup-semilattice is directed. -/
-theorem directed_of_sup [SemilatticeSup α] {f : α → β} {r : β → β → Prop}
-    (H : ∀ ⦃i j⦄, i ≤ j → r (f i) (f j)) : Directed r f := fun a b =>
-  ⟨a ⊔ b, H le_sup_left, H le_sup_right⟩
-#align directed_of_sup directed_of_sup
-
-theorem Monotone.directed_le [SemilatticeSup α] [Preorder β] {f : α → β} :
-    Monotone f → Directed (· ≤ ·) f :=
-  directed_of_sup
-#align monotone.directed_le Monotone.directed_le
-
-theorem Antitone.directed_ge [SemilatticeSup α] [Preorder β] {f : α → β} (hf : Antitone f) :
-    Directed (· ≥ ·) f :=
-  directed_of_sup hf
-#align antitone.directed_ge Antitone.directed_ge
-
 /-- A set stable by supremum is `≤`-directed. -/
 theorem directedOn_of_sup_mem [SemilatticeSup α] {S : Set α}
     (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊔ j ∈ S) : DirectedOn (· ≤ ·) S := fun a ha b hb =>
@@ -140,26 +124,10 @@ theorem Directed.extend_bot [Preorder α] [OrderBot α] {e : ι → β} {f : ι 
   simp only [he.extend_apply, *, true_and_iff]
 #align directed.extend_bot Directed.extend_bot
 
-/-- An antitone function on an inf-semilattice is directed. -/
-theorem directed_of_inf [SemilatticeInf α] {r : β → β → Prop} {f : α → β}
-    (hf : ∀ a₁ a₂, a₁ ≤ a₂ → r (f a₂) (f a₁)) : Directed r f := fun x y =>
-  ⟨x ⊓ y, hf _ _ inf_le_left, hf _ _ inf_le_right⟩
-#align directed_of_inf directed_of_inf
-
-theorem Monotone.directed_ge [SemilatticeInf α] [Preorder β] {f : α → β} (hf : Monotone f) :
-    Directed (· ≥ ·) f :=
-  directed_of_inf hf
-#align monotone.directed_ge Monotone.directed_ge
-
-theorem Antitone.directed_le [SemilatticeInf α] [Preorder β] {f : α → β} (hf : Antitone f) :
-    Directed (· ≤ ·) f :=
-  directed_of_inf hf
-#align antitone.directed_le Antitone.directed_le
-
 /-- A set stable by infimum is `≥`-directed. -/
 theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}
-    (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊓ j ∈ S) : DirectedOn (· ≥ ·) S := fun a ha b hb =>
-  ⟨a ⊓ b, H ha hb, inf_le_left, inf_le_right⟩
+    (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊓ j ∈ S) : DirectedOn (· ≥ ·) S :=
+  directedOn_of_sup_mem (α := αᵒᵈ) H
 #align directed_on_of_inf_mem directedOn_of_inf_mem
 
 theorem IsTotal.directed [IsTotal α r] (f : ι → α) : Directed r f := fun i j =>
@@ -178,7 +146,7 @@ theorem directed_of (r : α → α → Prop) [IsDirected α r] (a b : α) : ∃ 
   IsDirected.directed _ _
 #align directed_of directed_of
 
-theorem directed_id [IsDirected α r] : Directed r id := by convert directed_of r
+theorem directed_id [IsDirected α r] : Directed r id := directed_of r
 #align directed_id directed_id
 
 theorem directed_id_iff : Directed r id ↔ IsDirected α r :=
@@ -199,8 +167,8 @@ theorem directedOn_univ_iff : DirectedOn r Set.univ ↔ IsDirected α r :=
 #align directed_on_univ_iff directedOn_univ_iff
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsTotal.to_isDirected [IsTotal α r] : IsDirected α r := by
-  rw [← directed_id_iff]; exact IsTotal.directed _
+instance (priority := 100) IsTotal.to_isDirected [IsTotal α r] : IsDirected α r :=
+  directed_id_iff.1 <| IsTotal.directed _
 #align is_total.to_is_directed IsTotal.to_isDirected
 
 theorem isDirected_mono [IsDirected α r] (h : ∀ ⦃a b⦄, r a b → s a b) : IsDirected α s :=
@@ -224,6 +192,38 @@ instance OrderDual.isDirected_ge [LE α] [IsDirected α (· ≤ ·)] : IsDirecte
 instance OrderDual.isDirected_le [LE α] [IsDirected α (· ≥ ·)] : IsDirected αᵒᵈ (· ≤ ·) := by
   assumption
 #align order_dual.is_directed_le OrderDual.isDirected_le
+
+/-- A monotone function on an upwards-directed type is directed. -/
+theorem directed_of_isDirected_le [LE α] [IsDirected α (· ≤ ·)] {f : α → β} {r : β → β → Prop}
+    (H : ∀ ⦃i j⦄, i ≤ j → r (f i) (f j)) : Directed r f :=
+  directed_id.mono_comp H
+#align directed_of_sup directed_of_isDirected_le
+
+theorem Monotone.directed_le [Preorder α] [IsDirected α (· ≤ ·)] [Preorder β] {f : α → β} :
+    Monotone f → Directed (· ≤ ·) f :=
+  directed_of_isDirected_le
+#align monotone.directed_le Monotone.directed_le
+
+theorem Antitone.directed_ge [Preorder α] [IsDirected α (· ≤ ·)] [Preorder β] {f : α → β}
+    (hf : Antitone f) : Directed (· ≥ ·) f :=
+  directed_of_isDirected_le hf
+#align antitone.directed_ge Antitone.directed_ge
+
+/-- An antitone function on a downwards-directed type is directed. -/
+theorem directed_of_isDirected_ge [LE α] [IsDirected α (· ≥ ·)] {r : β → β → Prop} {f : α → β}
+    (hf : ∀ a₁ a₂, a₁ ≤ a₂ → r (f a₂) (f a₁)) : Directed r f :=
+  directed_of_isDirected_le (α := αᵒᵈ) fun _ _ ↦ hf _ _
+#align directed_of_inf directed_of_isDirected_ge
+
+theorem Monotone.directed_ge [Preorder α] [IsDirected α (· ≥ ·)] [Preorder β] {f : α → β}
+    (hf : Monotone f) : Directed (· ≥ ·) f :=
+  directed_of_isDirected_ge hf
+#align monotone.directed_ge Monotone.directed_ge
+
+theorem Antitone.directed_le [Preorder α] [IsDirected α (· ≥ ·)] [Preorder β] {f : α → β}
+    (hf : Antitone f) : Directed (· ≤ ·) f :=
+  directed_of_isDirected_ge hf
+#align antitone.directed_le Antitone.directed_le
 
 section Reflexive
 
