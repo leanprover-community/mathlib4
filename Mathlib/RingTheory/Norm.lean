@@ -331,7 +331,7 @@ theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSep
   · apply IsAlgClosed.splits_codomain
 #align algebra.is_integral_norm Algebra.isIntegral_norm
 
-lemma Algebra.norm_eq_of_algEquiv [Ring T] [Algebra R T] (e : S ≃ₐ[R] T) (x) :
+lemma norm_eq_of_algEquiv [Ring T] [Algebra R T] (e : S ≃ₐ[R] T) (x) :
     Algebra.norm R (e x) = Algebra.norm R x := by
   by_cases hB : ∃ s : Finset S, Nonempty (Basis s R S)
   · obtain ⟨s, ⟨b⟩⟩ := hB
@@ -349,7 +349,7 @@ lemma Algebra.norm_eq_of_algEquiv [Ring T] [Algebra R T] (e : S ≃ₐ[R] T) (x)
   exact hB ⟨s.image e.symm, ⟨(b.map e.symm.toLinearEquiv).reindex
     ((e.symm.image s).trans (Equiv.Set.ofEq Finset.coe_image.symm))⟩⟩
 
-lemma Algebra.norm_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [Ring C]
+lemma norm_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [Ring C]
     [Algebra A C] [Algebra B C] (e : A ≃+* B) (he : (algebraMap B C).comp e = algebraMap A C)
     (x : C) :
     e (Algebra.norm A x) = Algebra.norm B x := by
@@ -369,7 +369,7 @@ lemma Algebra.norm_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [Ri
   intro ⟨s, ⟨b⟩⟩
   exact h ⟨s, ⟨b.mapCoeffs e (by simp [Algebra.smul_def, ← he])⟩⟩
 
-lemma Algebra.norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring B₁]
+lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring B₁]
     [CommRing A₂] [Ring B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁)) (x) :
     Algebra.norm A₁ x = e₁.symm (Algebra.norm A₂ (e₂ x)) := by
