@@ -176,6 +176,9 @@ theorem tail_cons (a : α) (s : Stream' α) : tail (a ::ₛ s) = s :=
   rfl
 #align stream.tail_cons Stream'.tail_cons
 
+theorem dest_cons (a : α) (s : Stream' α) : dest (a ::ₛ s) = (a, s) :=
+  rfl
+
 theorem cons_injective2 : Function.Injective2 (cons : α → Stream' α → Stream' α) := by
   intro a₁ a₂ s₁ s₂ h
   constructor
@@ -190,6 +193,17 @@ theorem cons_eq_cons {a₁ a₂ : α} {s₁ s₂ : Stream' α} : a₁ ::ₛ s₁
 theorem dest_eq_cons {s : Stream' α} {a s'} (hs : dest s = (a, s')) : s = a ::ₛ s' := by
   simp at hs
   rw [← Stream'.eta s, hs.left, hs.right]
+
+/-- Recursion principle for sequences, compare with `List.recOn`. -/
+@[elab_as_elim]
+def recOn' {C : Stream' α → Sort v} (s : Stream' α) (cons : ∀ x s, C (x ::ₛ s)) : C s :=
+  match H : dest s with
+  | (a, s') => cast (congr_arg C (dest_eq_cons H)).symm (cons a s')
+
+theorem dest_injective : Injective (dest : Stream' α → α × Stream' α) := by
+  intro s₁ s₂ hs
+  cases s₂ using recOn' with
+  | cons a s₂ => rw [dest_cons] at hs; exact dest_eq_cons hs
 
 theorem cons_injective_left (s : Stream' α) : Function.Injective (· ::ₛ s) :=
   cons_injective2.left _

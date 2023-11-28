@@ -318,7 +318,6 @@ theorem tail_cons (a : α) (s) : tail (a ::ₑ s) = s := by
   dsimp [tail, cons]
 #align stream.seq.tail_cons Seq'.tail_cons
 
-@[simp]
 theorem get?_succ (s : Seq' α) (n) : get? s (n + 1) = get? (tail s) n :=
   rfl
 #align stream.seq.nth_tail Seq'.get?_succ
@@ -681,7 +680,7 @@ instance coeStream : Coe (Stream' α) (Seq' α) :=
 
 @[simp]
 theorem dest_ofStream (s : Stream' α) :
-    dest (↑s : Seq' α) = some (Prod.map id (↑) (Stream'.dest s)) := by
+    dest (↑s : Seq' α) = some (Stream'.head s, ↑(Stream'.tail s)) := by
   simp [ofStream]
 
 @[simp]
@@ -696,7 +695,7 @@ theorem tail_ofStream (s : Stream' α) : tail (↑s : Seq' α) = ↑(Stream'.tai
 theorem ofStream_get? (s : Stream' α) (n : ℕ) : (↑s : Seq' α).get? n = some (s.get n) := by
   induction n using Nat.recAux generalizing s with
   | zero => simp [Stream'.get_zero, get?_zero]
-  | succ n hn => simp [Stream'.get_succ, hn]
+  | succ n hn => simp [Stream'.get_succ, get?_succ, hn]
 
 theorem ofStream_injective : Function.Injective ((↑) : Stream' α → Seq' α) := by
   intro s₁ s₂ h
@@ -783,7 +782,7 @@ def map (f : α → β) (s : Seq' α) : Seq' β where
   get? n := Option.map f (get? s n)
   succ_stable n h := by
     simp at h
-    simp [- get?_succ, succ_stable s h]
+    simp [succ_stable s h]
 #align stream.seq.map Seq'.map
 
 @[simp]
@@ -938,6 +937,13 @@ theorem get?_take :
     | nil       => simp
     | cons a s' => simp [get?_take m' n' s']
 
+theorem take_stable {s : Seq' α} {m n} (hs : s.TerminatedAt m) (hmn : m ≤ n) :
+    take n s = take m s := by
+  ext1 k
+  by_cases hk : k < m
+  case pos => simp [hk, lt_of_lt_of_le hk hmn]
+  case neg => simp [hk, le_stable s (not_lt.mp hk) hs]
+
 /-- Split a sequence at `n`, producing a finite initial segment
   and an infinite tail. -/
 def splitAt : ℕ → Seq' α → List α × Seq' α
@@ -967,8 +973,8 @@ def zipWith (f : α → β → γ) (s₁ : Seq' α) (s₂ : Seq' β) : Seq' γ w
   succ_stable n h := by
     simp at h
     cases h with
-    | inl h => simp [- get?_succ, succ_stable s₁ h]
-    | inr h => simp [- get?_succ, succ_stable s₂ h]
+    | inl h => simp [succ_stable s₁ h]
+    | inr h => simp [succ_stable s₂ h]
 #align stream.seq.zip_with Seq'.zipWith
 
 @[simp]
@@ -1401,12 +1407,36 @@ theorem ofStream_append (l : List α) (s : Stream' α) :
   never returns anything). -/
 def toList' {α} (s : Seq' α) : Computation (List α) :=
   Computation.corec
-    (fun ⟨l, s⟩ =>
+    (fun (l, s) =>
       match dest s with
       | none => Sum.inl l.reverse
       | some (a, s') => Sum.inr (a :: l, s'))
     ([], s)
 #align stream.seq.to_list' Seq'.toList'
+
+/-- Embed a sequence into a stream. -/
+def toStream' : (s : Seq' α) → Stream' (Option α) :=
+  Stream'.corec''
+    (fun s =>
+      match dest s with
+      | none => Sum.inl (Stream'.const none)
+      | some (a, s) => Sum.inr (some a, s))
+
+@[simp]
+theorem head_toStream' (s : Seq' α) : Stream'.head (toStream' s) = head s := by
+  cases s using recOn' <;> simp [toStream']
+
+@[simp]
+theorem tail_toStream' (s : Seq' α) :
+    Stream'.tail (toStream' s) =
+      Option.elim (dest s) (Stream'.const none) (toStream' ∘ Prod.snd) := by
+  cases s using recOn' <;> simp [toStream']
+
+@[simp]
+theorem get_toStream' (s : Seq' α) (n : ℕ) : Stream'.get (toStream' s) n = get? s n := by
+  induction n using Nat.recAux generalizing s with
+  | zero => simp [Stream'.get_zero, get?_zero]
+  | succ n hn => cases s using recOn' <;> simp [Stream'.get_succ, get?_succ, hn]
 
 theorem mem_map_of_mem (f : α → β) {a : α} {s : Seq' α} (ha : a ∈ s) : f a ∈ map f s := by
   simp [mem_def] at ha ⊢

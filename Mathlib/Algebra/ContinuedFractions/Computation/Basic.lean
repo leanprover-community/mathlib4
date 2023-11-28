@@ -86,15 +86,15 @@ For example, let `(v : ℚ) := 3.4`. The process goes as follows:
                                             ↓ fract
                                            0.4
                                             ↓ of.next?
-(CF.of v).sb.get? 0     := some 2   ←   some (2, 0.5)
+(CF.of v).s.get? 0      := some 2   ←   some (2, 0.5)
                                             ↓
                                            0.5
                                             ↓ of.next?
-(CF.of v).sb.get? 1     := some 2   ←   some (2, 0)
+(CF.of v).s.get? 1      := some 2   ←   some (2, 0)
                                             ↓
                                             0
                                             ↓ of.next?
-(CF.of v).sb.get? n ≥ 2 :=  none    ←     none
+(CF.of v).s.get? n ≥ 2  :=  none    ←     none
 ```
 -/
 @[simps]
@@ -105,6 +105,7 @@ where
   /-- Creates the pair of integer and fractional parts of a value `v⁻¹` for `0 < v < 1`.
   If `v = 0`, returns `none`.
   -/
+  @[simp]
   next? : { v : K // 0 ≤ v ∧ v < 1 } → Option (ℕ+ × { v : K // 0 ≤ v ∧ v < 1 })
     | ⟨v, hv⟩ =>
       if hvn : v = 0 then
@@ -116,6 +117,38 @@ where
           exact ⟨⟨hvge, hvn⟩, le_of_lt hvlt⟩
         some (Nat.toPNat ⌊v⁻¹⌋₊ hvo, ⟨fract v⁻¹, ⟨fract_nonneg v⁻¹, fract_lt_one v⁻¹⟩⟩)
 #align generalized_continued_fraction.of CF.ofₓ
-#align generalized_continued_fraction.int_fract_pair.stream CF.of.next?ₓ
+
+/-- Returns the values which is used in the calculation of `CF.of`.
+
+For example, let `(v : ℚ) := 3.4`. The process goes as follows:
+```lean
+                                              3.4
+                                               ↓ fract
+                                              0.4
+                                               ↓ partQuots.next?
+(CF.partQuots v).get? 0     := some 2.5 ← some (2.5, 0.5)
+                                               ↓
+                                              0.5
+                                               ↓ partQuots.next?
+(CF.partQuots v).get? 1     := some 2   ←   some (2, 0)
+                                               ↓
+                                               0
+                                               ↓ partQuots.next?
+(CF.partQuots v).get? n ≥ 2 :=  none    ←     none
+```
+-/
+def partQuots (v : K) : Seq' K :=
+  corec next? (fract v)
+where
+  /-- Creates the pair of a direct value and fractional parts of a value `v⁻¹` for `0 < v < 1`.
+  If `v = 0`, returns `none`.
+  -/
+  @[simp]
+  next? (v : K) : Option (K × K) :=
+    if v = 0 then
+      none
+    else
+      some (v⁻¹, fract v⁻¹)
+#align generalized_continued_fraction.int_fract_pair.stream CF.partQuots
 
 end CF
