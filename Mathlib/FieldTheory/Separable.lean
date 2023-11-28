@@ -514,6 +514,16 @@ theorem isSeparable_iff : IsSeparable F K ↔ ∀ x : K, IsIntegral F x ∧ (min
     ⟨fun x => (h x).1, fun x => (h x).2⟩⟩
 #align is_separable_iff isSeparable_iff
 
+variable {E : Type*} [Ring E] [Algebra F E] (e : K ≃ₐ[F] E)
+
+/-- Transfer `IsSeparable` across an `AlgEquiv`. -/
+theorem AlgEquiv.isSeparable [IsSeparable F K] : IsSeparable F E :=
+  ⟨fun _ ↦ by rw [← isIntegral_algEquiv e.symm]; exact IsSeparable.isIntegral F _,
+    fun _ ↦ by rw [← minpoly.algEquiv_eq e.symm]; exact IsSeparable.separable F _⟩
+
+theorem AlgEquiv.isSeparable_iff : IsSeparable F K ↔ IsSeparable F E :=
+  ⟨fun _ ↦ e.isSeparable, fun _ ↦ e.symm.isSeparable⟩
+
 end CommRing
 
 instance isSeparable_self (F : Type*) [Field F] : IsSeparable F F :=
