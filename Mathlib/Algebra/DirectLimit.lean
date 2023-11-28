@@ -230,12 +230,11 @@ lemma map_comp [IsDirected ι (· ≤ ·)]
 open LinearEquiv LinearMap in
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
-family of equivalences `gᵢ : Gᵢ ≅ G'ᵢ` such that `g ∘ f = f' ∘ g` induces an equivalence
-`lim G ⟶ lim G'`.
+family of equivalences `eᵢ : Gᵢ ≅ G'ᵢ` such that `e ∘ f = f' ∘ e` induces an equivalence
+`lim G ≅ lim G'`.
 -/
 def congr [IsDirected ι (· ≤ ·)]
-    (equivs : (i : ι) → G i ≃ₗ[R] G' i)
-    (equivs_compatible : ∀ i j h, equivs j ∘ₗ f i j h = f' i j h ∘ₗ equivs i) :
+    (e : (i : ι) → G i ≃ₗ[R] G' i) (he : ∀ i j h, e j ∘ₗ f i j h = f' i j h ∘ₗ e i) :
     DirectLimit G f ≃ₗ[R] DirectLimit G' f' :=
   LinearEquiv.ofLinear (map (equivs ·) equivs_compatible)
     (map (fun i ↦ (equivs i).symm) fun i j h ↦ by
