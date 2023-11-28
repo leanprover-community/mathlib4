@@ -87,14 +87,12 @@ namespace SheafDescentData
 variable {hY : J.ObjectsCoverTop Y} {A : Type u'} [Category.{v'} A]
     (D D₁ D₂ D₃ : hY.SheafDescentData A)
 
-attribute [simp] iso_trans
-
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma iso_trans_hom ⦃X : C⦄ ⦃i₁ i₂ i₃ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂) (f₃ : X ⟶ Y i₃) :
     (D.iso f₁ f₂).hom ≫ (D.iso f₂ f₃).hom = (D.iso f₁ f₃).hom := by
   rw [← Iso.trans_hom, D.iso_trans]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma iso_trans_inv ⦃X : C⦄ ⦃i₁ i₂ i₃ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂) (f₃ : X ⟶ Y i₃) :
     (D.iso f₂ f₃).inv ≫ (D.iso f₁ f₂).inv = (D.iso f₁ f₃).inv := by
   rw [← Iso.trans_inv, D.iso_trans]
@@ -129,6 +127,77 @@ def isoSections ⦃X : C⦄ ⦃i₁ i₂ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X 
     ((sheafSections (J.over X) A).obj (Opposite.op (Over.mk (𝟙 X)))).mapIso (D.iso f₁ f₂) ≪≫
     (overMapPullbackSectionsIso J A f₂ (Over.mk (𝟙 _)) (Over.mk f₂)
       (Over.isoMk (Iso.refl _))).app (D.sheaf i₂)
+
+lemma isoSections_trans ⦃X : C⦄ ⦃i₁ i₂ i₃ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂) (f₃ : X ⟶ Y i₃) :
+    D.isoSections f₁ f₂ ≪≫ D.isoSections f₂ f₃ = D.isoSections f₁ f₃ := by
+  ext1
+  simp [isoSections, ← D.iso_trans_hom f₁ f₂ f₃]
+
+@[reassoc]
+lemma isoSections_trans_hom ⦃X : C⦄ ⦃i₁ i₂ i₃ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂) (f₃ : X ⟶ Y i₃) :
+    (D.isoSections f₁ f₂).hom ≫ (D.isoSections f₂ f₃).hom = (D.isoSections f₁ f₃).hom := by
+  rw [← Iso.trans_hom, isoSections_trans ]
+
+@[reassoc]
+lemma isoSections_trans_inv ⦃X : C⦄ ⦃i₁ i₂ i₃ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂) (f₃ : X ⟶ Y i₃) :
+    (D.isoSections f₂ f₃).inv ≫ (D.isoSections f₁ f₂).inv = (D.isoSections f₁ f₃).inv := by
+  rw [← Iso.trans_inv, isoSections_trans]
+
+lemma isoSections_refl ⦃X : C⦄ ⦃i : I⦄ (f : X ⟶ Y i) :
+    D.isoSections f f = Iso.refl _ := by
+  ext1
+  dsimp
+  rw [← cancel_mono (D.isoSections f f).hom, isoSections_trans_hom, id_comp]
+
+lemma isoSections_inv ⦃X : C⦄ ⦃i₁ i₂ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂) :
+    (D.isoSections f₁ f₂).inv = (D.isoSections f₂ f₁).hom := by
+  rw [← cancel_mono (D.isoSections f₁ f₂).hom, Iso.inv_hom_id, isoSections_trans_hom,
+    isoSections_refl, Iso.refl_hom]
+
+lemma isoSections_symm ⦃X : C⦄ ⦃i₁ i₂ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂) :
+    (D.isoSections f₁ f₂).symm = (D.isoSections f₂ f₁) := by
+  ext1
+  dsimp
+  rw [isoSections_inv]
+
+lemma pullback_iso' ⦃X Z : C⦄ (h : X ⟶ Z) ⦃i₁ : I⦄
+      (f₁ : X ⟶ Y i₁) (g₁ : Z ⟶ Y i₁) (fac₁ : h ≫ g₁ = f₁)
+      ⦃i₂ : I⦄ (f₂ : X ⟶ Y i₂) (g₂ : Z ⟶ Y i₂) (fac₂ : h ≫ g₂ = f₂) :
+      D.iso f₁ f₂ = (J.overMapPullbackComp' A h g₁ f₁ fac₁).symm.app _ ≪≫
+          (J.overMapPullback A h).mapIso (D.iso g₁ g₂)  ≪≫
+          (J.overMapPullbackComp' A h g₂ f₂ fac₂).app _ := by
+  subst fac₁ fac₂
+  apply pullback_iso
+
+@[reassoc]
+lemma isoSections_naturality ⦃X Z : C⦄ (h : X ⟶ Z) ⦃i₁ : I⦄ (f₁ : X ⟶ Y i₁)
+    (g₁ : Z ⟶ Y i₁) (fac₁ : h ≫ g₁ = f₁) ⦃i₂ : I⦄ (f₂ : X ⟶ Y i₂) (g₂ : Z ⟶ Y i₂)
+    (fac₂ : h ≫ g₂ = f₂) :
+      (D.sheaf i₁).val.map (Quiver.Hom.op (by exact Over.homMk h)) ≫
+        (D.isoSections f₁ f₂).hom = (D.isoSections g₁ g₂).hom ≫
+        (D.sheaf i₂).val.map (Quiver.Hom.op (by exact Over.homMk h)) := by
+  dsimp [isoSections]
+  rw [D.pullback_iso' h f₁ g₁ fac₁ f₂ g₂ fac₂]
+  dsimp [overMapPullbackSectionsIso]
+  simp only [assoc, ← (D.sheaf i₂).val.map_comp, ← op_comp]
+  let α : (Over.map h).obj (Over.mk (𝟙 X)) ⟶ Over.mk (𝟙 Z) := Over.homMk h
+  have H := (iso D g₁ g₂).hom.val.naturality α.op
+  dsimp at H
+  let β : Over.mk f₂ ⟶ Over.mk g₂ := Over.homMk h
+  let γ : Over.mk g₂ ≅ (Over.map g₂).obj (Over.mk (𝟙 Z)) := Over.isoMk (Iso.refl _)
+  have fac : β ≫ γ.hom = (by exact Over.homMk (𝟙 _)) ≫ (Over.map g₂).map α := by
+    ext; simp
+  conv_rhs =>
+    erw [fac]
+  rw [op_comp, (D.sheaf i₂).val.map_comp, ← reassoc_of% H]
+  sorry
+
+lemma isoSections_naturality' ⦃X Z : C⦄ (h : X ⟶ Z) ⦃i₁ : I⦄ (f₁ : X ⟶ Y i₁)
+    (g₁ : Z ⟶ Y i₁) (fac₁ : h ≫ g₁ = f₁) ⦃i₂ : I⦄ (f₂ : X ⟶ Y i₂) (g₂ : Z ⟶ Y i₂)
+    (fac₂ : h ≫ g₂ = f₂) :
+      (D.sheaf i₁).val.map (Quiver.Hom.op (by exact Over.homMk h)) = (D.isoSections g₁ g₂).hom ≫
+        (D.sheaf i₂).val.map (Quiver.Hom.op (by exact Over.homMk h)) ≫(D.isoSections f₁ f₂).inv := by
+  rw [← D.isoSections_naturality_assoc h f₁ g₁ fac₁ f₂ g₂ fac₂, Iso.hom_inv_id, comp_id]
 
 /-- The type of morphisms between families of sheaves equipped with a descent data. -/
 @[ext]
@@ -189,7 +258,10 @@ def sheafToDescentData : Sheaf J A ⥤ hY.SheafDescentData A where
       iso := fun _ _ _ _ _ => Iso.refl _
       pullback_iso := fun X X' g i₁ i₂ f₁ f₂ => by
         ext W
-        simp [overMapPullbackComp, Over.mapComp] }
+        dsimp
+        erw [overMapPullBackComp'_hom_app_overPullback_obj,
+          overMapPullBackComp'_inv_app_overPullback_obj]
+        simp }
   map {F G} φ :=
     { hom := fun i => (J.overPullback A (Y i)).map φ }
 
@@ -269,6 +341,57 @@ abbrev overSomeTopology : GrothendieckTopology hY.OverSome :=
 /- TODO: a presheaf on `hY.OverSome` is a sheaf iff the restriction to `Over (Y i)`
 is for all `i`. -/
 
+@[simps]
+def toOverSome (i : I) : Over (Y i) ⥤ hY.OverSome where
+  obj X :=
+    { X := X.left
+      i := i
+      f := X.hom }
+  map f := f.left
+
+@[simps!]
+def toOverSomeForget (i : I) :
+    hY.toOverSome i ⋙ hY.overSomeForget ≅ Over.forget (Y i) :=
+  Iso.refl _
+
+lemma toOverSome_coverPreserving (i : I) :
+    CoverPreserving (J.over (Y i)) hY.overSomeTopology (hY.toOverSome i) where
+  cover_preserve {U S} hS := by
+    change _ ∈ J U.left
+    rw [mem_over_iff] at hS
+    convert hS
+    exact (Sieve.functorPushforward_comp (hY.toOverSome i) (hY.overSomeForget) S).symm
+
+lemma toOverSome_compatiblePreserving (i : I) :
+    CompatiblePreserving hY.overSomeTopology (hY.toOverSome i) where
+  compatible ℱ Z T x hx Y₁ Y₂ X f₁ f₂ g₁ g₂ hg₁ hg₂ h := by
+    replace h := hY.overSomeForget.congr_map h
+    simp at h
+    let X' : Over (Y i) := Over.mk (hY.overSomeForget.map f₁ ≫ Y₁.hom)
+    let φ₁ : X' ⟶ Y₁ := Over.homMk f₁
+    let φ₂ : X' ⟶ Y₂ := Over.homMk f₂ (by
+      dsimp
+      erw [← Over.w g₂, ← reassoc_of% h, Over.w g₁])
+    have H := hx φ₁ φ₂ hg₁ hg₂ (by ext; exact h)
+    let e : X ≅ (hY.toOverSome i).obj X' := hY.overSomeForget.preimageIso (Iso.refl _)
+    refine' Eq.trans _ ((congr_arg (ℱ.val.map e.hom.op) H).trans _)
+    all_goals
+      dsimp
+      rw [← FunctorToTypes.map_comp_apply, ← op_comp]
+      apply congr_fun
+      congr 2
+      apply hY.overSomeForget.map_injective
+      simp
+      rfl
+
+instance (i : I) : (hY.toOverSome i).IsContinuous (J.over (Y i)) hY.overSomeTopology :=
+  Functor.isContinuous_of_coverPreserving (hY.toOverSome_compatiblePreserving i)
+    (hY.toOverSome_coverPreserving i)
+
+def restriction (i : I) :
+    Sheaf hY.overSomeTopology A ⥤ Sheaf (J.over (Y i)) A :=
+  (hY.toOverSome i).sheafPushforwardContinuous _ _ _
+
 namespace SheafDescentData
 
 variable {hY A} (F : hY.SheafDescentData A)
@@ -279,19 +402,23 @@ def obj (W : hY.OverSome) : A :=
   (F.sheaf W.i).1.obj (Opposite.op (Over.mk W.f))
 
 def map {W₁ W₂ : hY.OverSome} (φ : W₁ ⟶ W₂) : obj F W₂ ⟶ obj F W₁ :=
-  (F.sheaf W₂.i).1.map (Quiver.Hom.op (by exact Over.homMk φ)) ≫
-    (F.isoSections (φ ≫ W₂.f) W₁.f).hom
+  (F.sheaf W₂.i).1.map (Quiver.Hom.op (by exact Over.homMk (hY.overSomeForget.map φ))) ≫
+    (F.isoSections ((hY.overSomeForget.map φ) ≫ W₂.f) W₁.f).hom
 
-/-lemma map_eq {W₁ W₂ : hY.OverSome} (φ : W₁ ⟶ W₂) {i : I} (f₁ : W₁.X ⟶ Y i) (f₂ : W₂.X ⟶ Y i)
+lemma map_eq {W₁ W₂ : hY.OverSome} (φ : W₁ ⟶ W₂) {i : I} (f₁ : W₁.X ⟶ Y i) (f₂ : W₂.X ⟶ Y i)
     (fac : f₁ = hY.overSomeForget.map φ ≫ f₂) :
     map F φ = (F.isoSections W₂.f f₂).hom ≫
       (F.sheaf i).1.map (Quiver.Hom.op (by exact Over.homMk (hY.overSomeForget.map φ))) ≫
         (F.isoSections W₁.f f₁).inv := by
-  sorry-/
+  dsimp [map]
+  rw [F.isoSections_naturality' (hY.overSomeForget.map φ)
+    ((hY.overSomeForget.map φ) ≫ W₂.f) W₂.f rfl f₁ f₂ fac.symm]
+  simp only [overSomeForget_obj, assoc, Iso.cancel_iso_hom_left,
+    isoSections_inv, isoSections_trans_hom]
 
 end ToPresheafOverSome
 
-/-open ToPresheafOverSome in
+open ToPresheafOverSome in
 def toPresheafOverSome (F : hY.SheafDescentData A) : hY.OverSomeᵒᵖ ⥤ A where
   obj W := obj F W.unop
   map φ := map F φ.unop
@@ -310,10 +437,26 @@ def toPresheafOverSome (F : hY.SheafDescentData A) : hY.OverSomeᵒᵖ ⥤ A whe
     simp only [overSomeForget_obj, Functor.map_comp, assoc, Iso.inv_hom_id_assoc,
       Iso.cancel_iso_hom_left]
     rw [← Functor.map_comp_assoc ]
-    rfl-/
+    rfl
+
+@[simps]
+def toSheafOverSome (F : hY.SheafDescentData A) : Sheaf hY.overSomeTopology A where
+  val := F.toPresheafOverSome
+  cond := sorry
+
+def restrictionToSheafOverSome (F : hY.SheafDescentData A) (i : I) :
+    (hY.restriction A i).obj F.toSheafOverSome ≅ F.sheaf i :=
+  (sheafToPresheaf _ _).preimageIso (NatIso.ofComponents (fun W => Iso.refl _) (by
+    rintro ⟨W₁⟩ ⟨W₂⟩ ⟨f : W₂ ⟶ W₁⟩
+    dsimp [restriction, toPresheafOverSome]
+    rw [comp_id, id_comp]
+    let φ : (toOverSome hY i).obj W₂ ⟶ (toOverSome hY i).obj W₁ := f.left
+    refine' (ToPresheafOverSome.map_eq F φ W₂.hom W₁.hom (Over.w f).symm).trans _
+    dsimp
+    simp only [isoSections_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
+    rfl))
 
 end SheafDescentData
-
 
 end ObjectsCoverTop
 
