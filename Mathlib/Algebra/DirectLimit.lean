@@ -241,7 +241,7 @@ def congr [IsDirected ι (· ≤ ·)]
     (map (fun i ↦ (equivs i).symm) fun i j h ↦ by
       rw [toLinearMap_symm_comp_eq, ← comp_assoc, equivs_compatible i, comp_assoc, comp_coe,
         symm_trans_self, refl_toLinearMap, comp_id])
-    (by simp [map_comp, map_id]) (by simp [map_comp, map_id])
+    (by simp [map_comp]) (by simp [map_comp])
 
 lemma congr_apply_of [IsDirected ι (· ≤ ·)]
     (equivs : (i : ι) → G i ≃ₗ[R] G' i)
@@ -488,7 +488,7 @@ def map (g : (i : ι) → G i →+ G' i)
     map g hg (of _ _ _ x) = of G' f' i (g i x) :=
   lift_of _ _ _ _ _
 
-lemma map_id [IsDirected ι (· ≤ ·)] :
+@[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
     map (fun i ↦ AddMonoidHom.id _) (fun _ _ _ ↦ rfl) = AddMonoidHom.id (DirectLimit G f) :=
   FunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
     x.induction_on fun i g ↦ by simp
@@ -917,7 +917,7 @@ def map (g : (i : ι) → G i →+* G' i)
     map g hg (of _ _ _ g) = of G' (fun _ _ h ↦ f' _ _ h) i (g i g) :=
   lift_of _ _ _ _ _
 
-lemma map_id [IsDirected ι (· ≤ ·)] :
+@[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
     map (fun i ↦ RingHom.id _) (fun _ _ _ ↦ rfl) =
     RingHom.id (DirectLimit G fun _ _ h ↦ f _ _ h) :=
   FunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ by simp
