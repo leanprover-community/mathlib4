@@ -214,7 +214,7 @@ protected def linearIsometry : lp G 2 →ₗᵢ[𝕜] E where
       refine' tendsto_nhds_unique _ (lp.hasSum_norm H f)
       convert (hV.summable_of_lp f).hasSum.norm.rpow_const (Or.inr H.le) using 1
       ext s
-      exact_mod_cast (hV.norm_sum f s).symm
+      exact mod_cast (hV.norm_sum f s).symm
 #align orthogonal_family.linear_isometry OrthogonalFamily.linearIsometry
 
 protected theorem linearIsometry_apply (f : lp G 2) : hV.linearIsometry f = ∑' i, V i (f i) :=

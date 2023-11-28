@@ -182,17 +182,9 @@ namespace Expr
 
 /-! ### Declarations about `Expr` -/
 
-/-- If the expression is a constant, return that name. Otherwise return `Name.anonymous`. -/
-def constName (e : Expr) : Name :=
-  e.constName?.getD Name.anonymous
-
 def bvarIdx? : Expr → Option Nat
   | bvar idx => some idx
   | _        => none
-
-/-- Return the function (name) and arguments of an application. -/
-def getAppFnArgs (e : Expr) : Name × Array Expr :=
-  withApp e λ e a => (e.constName, a)
 
 /-- Invariant: `i : ℕ` should be less than the size of `as : Array Expr`. -/
 private def getAppAppsAux : Expr → Array Expr → Nat → Array Expr
@@ -282,6 +274,11 @@ def isExplicitNumber : Expr → Bool
 /-- If an `Expr` has form `.fvar n`, then returns `some n`, otherwise `none`. -/
 def fvarId? : Expr → Option FVarId
   | .fvar n => n
+  | _ => none
+
+/-- If an `Expr` has the form `Type u`, then return `some u`, otherwise `none`. -/
+def type? : Expr → Option Level
+  | .sort u => u.dec
   | _ => none
 
 /-- `isConstantApplication e` checks whether `e` is syntactically an application of the form

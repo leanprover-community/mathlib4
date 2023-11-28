@@ -852,7 +852,7 @@ adjoints preserve filteredness), as right adjoints are always final, see `final_
 -/
 theorem IsFiltered.of_final (F : C ⥤ D) [Final F] [IsFiltered C] : IsFiltered D :=
 { IsFilteredOrEmpty.of_final F with
-  Nonempty := Nonempty.map F.obj IsFiltered.Nonempty }
+  nonempty := Nonempty.map F.obj IsFiltered.nonempty }
 
 /-- Initial functors preserve cofilteredness.
 
