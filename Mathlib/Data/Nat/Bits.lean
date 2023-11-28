@@ -174,9 +174,7 @@ theorem binaryRec_eq' {C : ℕ → Sort*} {z : C 0} {f : ∀ b n, C n → C (bit
     simp only [imp_false, or_false_iff, eq_self_iff_true, not_true] at h
     exact h.symm
   · dsimp only []
-    -- Porting note: this line was `generalize_proofs e`:
-    generalize @id (C (bit b n) = C (bit (bodd (bit b n)) (div2 (bit b n))))
-      (Eq.symm (bit_decomp (bit b n)) ▸ Eq.refl (C (bit b n))) = e
+    generalize_proofs e
     revert e
     rw [bodd_bit, div2_bit]
     intros
