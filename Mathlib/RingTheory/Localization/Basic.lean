@@ -757,23 +757,23 @@ end AlgEquiv
 section at_units
 
 lemma at_units {R : Type*} [CommSemiring R] (S : Submonoid R)
-    (hS : ∀ s : S, IsUnit (s : R)) : IsLocalization S R where
-  map_units' := hS
+    (hS : S ≤ IsUnit.submonoid R) : IsLocalization S R where
+  map_units' y := hS y.prop
   surj' := fun s ↦ ⟨⟨s, 1⟩, by simp⟩
   exists_of_eq := fun {x y} (e : x = y) ↦ ⟨1, e ▸ rfl⟩
 
 variable (R M)
 
 /-- The localization at a module of units is isomorphic to the ring. -/
-noncomputable def atUnits (H : ∀ x : M, IsUnit (x : R)) : R ≃ₐ[R] S := by
+noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
   refine' AlgEquiv.ofBijective (Algebra.ofId R S) ⟨_, _⟩
   · intro x y hxy
     obtain ⟨c, eq⟩ := (IsLocalization.eq_iff_exists M S).mp hxy
-    obtain ⟨u, hu⟩ := H c
+    obtain ⟨u, hu⟩ := H c.prop
     rwa [← hu, Units.mul_right_inj] at eq
   · intro y
     obtain ⟨⟨x, s⟩, eq⟩ := IsLocalization.surj M y
-    obtain ⟨u, hu⟩ := H s
+    obtain ⟨u, hu⟩ := H s.prop
     use x * u.inv
     dsimp [Algebra.ofId, RingHom.toFun_eq_coe, AlgHom.coe_mks]
     rw [RingHom.map_mul, ← eq, ← hu, mul_assoc, ← RingHom.map_mul]

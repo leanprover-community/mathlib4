@@ -45,7 +45,7 @@ abbrev IsFractionRing [CommRing K] [Algebra R K] :=
 #align is_fraction_ring IsFractionRing
 
 instance {R : Type*} [Field R] : IsFractionRing R R :=
-  IsLocalization.at_units _ (fun s ↦ isUnit_of_mem_nonZeroDivisors s.prop)
+  IsLocalization.at_units _ (fun _ ↦ isUnit_of_mem_nonZeroDivisors)
 
 /-- The cast from `Int` to `Rat` as a `FractionRing`. -/
 instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
