@@ -78,7 +78,7 @@ theorem Δ_single_one (s : S) : (instCoalgebra R S).Δ (Finsupp.single s 1) =
     (Finsupp.single s 1) ⊗ₜ[R] (Finsupp.single s 1) := by
   unfold Coalgebra.Δ; unfold instCoalgebra; simp
 
-theorem ε_single_r (s : S) (r : R) : (instCoalgebra R S).ε (Finsupp.single s r) = r := by
+theorem ε_single (s : S) (r : R) : (instCoalgebra R S).ε (Finsupp.single s r) = r := by
   unfold Coalgebra.ε; unfold instCoalgebra; simp
 
 end CommRing
