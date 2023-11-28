@@ -171,15 +171,15 @@ def Matroid.ExistsMaximalSubsetProperty {α : Type _} (P : Set α → Prop) (X :
   /-- `M` has a predicate `Base` definining its bases -/
   (Base : Set α → Prop)
   /-- There is at least one `Base` -/
-  (exists_base' : ∃ B, Base B)
+  (exists_base : ∃ B, Base B)
   /-- For any bases `B`, `B'` and `e ∈ B \ B'`, there is some `f ∈ B' \ B` for which `B-e+f`
     is a base -/
-  (base_exchange' : Matroid.ExchangeProperty Base)
+  (base_exchange : Matroid.ExchangeProperty Base)
   /-- Every subset `I` of a set `X` for which `I` is contained in a base is contained in a maximal
     subset of `X` that is contained in a base. -/
-  (maximality' : ∀ X, X ⊆ E → Matroid.ExistsMaximalSubsetProperty (∃ B, Base B ∧ · ⊆ B) X)
+  (maximality : ∀ X, X ⊆ E → Matroid.ExistsMaximalSubsetProperty (∃ B, Base B ∧ · ⊆ B) X)
   /-- every base is contained in the ground set -/
-  (subset_ground' : ∀ B, Base B → B ⊆ E)
+  (subset_ground : ∀ B, Base B → B ⊆ E)
 
 namespace Matroid
 
@@ -215,7 +215,7 @@ class FiniteRk (M : Matroid α) : Prop where
   exists_finite_base : ∃ B, M.Base B ∧ B.Finite
 
 instance finiteRk_of_finite (M : Matroid α) [M.Finite] : FiniteRk M :=
-  ⟨ M.exists_base'.imp (fun B hB ↦ ⟨hB, M.set_finite B (M.subset_ground' _ hB)⟩) ⟩
+  ⟨ M.exists_base.imp (fun B hB ↦ ⟨hB, M.set_finite B (M.subset_ground _ hB)⟩) ⟩
 
 /-- An `InfiniteRk` matroid is one whose bases are infinite. -/
 class InfiniteRk (M : Matroid α) : Prop where
@@ -331,13 +331,11 @@ section Base
 
 @[aesop unsafe 10% (rule_sets [Matroid])]
 theorem Base.subset_ground (hB : M.Base B) : B ⊆ M.E :=
-  M.subset_ground' B hB
-
-theorem exists_base (M : Matroid α) : ∃ B, M.Base B := M.exists_base'
+  M.subset_ground B hB
 
 theorem Base.exchange (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) (hx : e ∈ B₁ \ B₂) :
     ∃ y ∈ B₂ \ B₁, M.Base (insert y (B₁ \ {e}))  :=
-  M.base_exchange' B₁ B₂ hB₁ hB₂ _ hx
+  M.base_exchange B₁ B₂ hB₁ hB₂ _ hx
 
 theorem Base.exchange_mem (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) (hxB₁ : e ∈ B₁) (hxB₂ : e ∉ B₂) :
     ∃ y, (y ∈ B₂ ∧ y ∉ B₁) ∧ M.Base (insert y (B₁ \ {e})) :=
@@ -345,7 +343,7 @@ theorem Base.exchange_mem (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) (hxB₁ : 
 
 theorem Base.eq_of_subset_base (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) (hB₁B₂ : B₁ ⊆ B₂) :
     B₁ = B₂ :=
-  M.base_exchange'.antichain hB₁ hB₂ hB₁B₂
+  M.base_exchange.antichain hB₁ hB₂ hB₁B₂
 
 theorem Base.not_base_of_ssubset (hB : M.Base B) (hX : X ⊂ B) : ¬ M.Base X :=
   fun h ↦ hX.ne (h.eq_of_subset_base hB hX.subset)
@@ -355,7 +353,7 @@ theorem Base.insert_not_base (hB : M.Base B) (heB : e ∉ B) : ¬ M.Base (insert
 
 theorem Base.encard_diff_comm (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) :
     (B₁ \ B₂).encard = (B₂ \ B₁).encard :=
-  M.base_exchange'.encard_diff_eq hB₁ hB₂
+  M.base_exchange.encard_diff_eq hB₁ hB₂
 
 theorem Base.ncard_diff_comm (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) :
     (B₁ \ B₂).ncard = (B₂ \ B₁).ncard := by
@@ -363,7 +361,7 @@ theorem Base.ncard_diff_comm (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) :
 
 theorem Base.card_eq_card_of_base (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) :
     B₁.encard = B₂.encard := by
-  rw [M.base_exchange'.encard_base_eq hB₁ hB₂]
+  rw [M.base_exchange.encard_base_eq hB₁ hB₂]
 
 theorem Base.ncard_eq_ncard_of_base (hB₁ : M.Base B₁) (hB₂ : M.Base B₂) : B₁.ncard = B₂.ncard := by
   rw [ncard_def B₁, hB₁.card_eq_card_of_base hB₂, ←ncard_def]
@@ -597,9 +595,9 @@ theorem Indep.exists_insert_of_not_base (hI : M.Indep I) (hI' : ¬M.Base I) (hB 
     ⟨_, hBase, insert_subset_insert (subset_diff_singleton hIB' hx)⟩⟩
 
 /-- This is the same as `Indep.exists_insert_of_not_base`, but phrased so that
-  `M.aug_property` is exactly the augmentation axiom for independent sets. -/
-theorem aug_property (M : Matroid α) ⦃I B : Set α⦄ (hI : M.Indep I)
-    (hInotmax : I ∉ maximals (· ⊆ ·) (setOf M.Indep)) (hB : B ∈ maximals (· ⊆ ·) (setOf M.Indep)) :
+  it is defeq to the augmentation axiom for independent sets. -/
+theorem Indep.exists_insert_of_not_mem_maximals (M : Matroid α) ⦃I B : Set α⦄ (hI : M.Indep I)
+    (hInotmax : I ∉ maximals (· ⊆ ·) {I | M.Indep I}) (hB : B ∈ maximals (· ⊆ ·) {I | M.Indep I}) :
     ∃ x ∈ B \ I, M.Indep (insert x I) := by
   simp only [mem_maximals_iff, mem_setOf_eq, not_and, not_forall, exists_prop,
     exists_and_left, iff_true_intro hI, true_imp_iff] at hB hInotmax
@@ -654,7 +652,7 @@ instance finitary_of_finiteRk {M : Matroid α} [FiniteRk M] : Finitary M :=
 /-- Matroids obey the maximality axiom -/
 theorem existsMaximalSubsetProperty_indep (M : Matroid α) :
     ∀ X, X ⊆ M.E → ExistsMaximalSubsetProperty M.Indep X :=
-  M.maximality'
+  M.maximality
 
 end dep_indep
 
@@ -784,7 +782,7 @@ theorem Basis.not_basis_of_ssubset (hI : M.Basis I X) (hJI : J ⊂ I) : ¬ M.Bas
 
 theorem Indep.subset_basis_of_subset (hI : M.Indep I) (hIX : I ⊆ X) (hX : X ⊆ M.E := by aesop_mat) :
     ∃ J, M.Basis J X ∧ I ⊆ J := by
-  obtain ⟨J, ⟨(hJ : M.Indep J),hIJ,hJX⟩, hJmax⟩ := M.maximality' X hX I hI hIX
+  obtain ⟨J, ⟨(hJ : M.Indep J),hIJ,hJX⟩, hJmax⟩ := M.maximality X hX I hI hIX
   use J
   rw [and_iff_left hIJ, basis_iff, and_iff_right hJ, and_iff_right hJX]
   exact fun K hK hJK hKX ↦ hJK.antisymm (hJmax ⟨hK, hIJ.trans hJK, hKX⟩ hJK)
