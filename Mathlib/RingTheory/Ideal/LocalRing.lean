@@ -309,7 +309,7 @@ theorem local_hom_TFAE (f : R →+* S) :
   tfae_have 1 → 5
   · intro
     ext
-    exact not_iff_not.2 (isUnit_map_iff f _)
+    exact not_iff_not.2 (IsLocalRingHom.isUnit_map_iff f _)
   tfae_have 5 → 4
   · exact fun h => le_of_eq h.symm
   tfae_finish
@@ -325,7 +325,7 @@ theorem of_surjective [CommSemiring R] [LocalRing R] [CommSemiring S] [Nontrivia
     obtain ⟨b, rfl⟩ := hf b
     rw [← map_add] at hab
     exact
-      (isUnit_or_isUnit_of_isUnit_add <| IsLocalRingHom.map_nonunit _ hab).imp f.isUnit_map
+      (isUnit_or_isUnit_of_isUnit_add <| isUnit_of_map_unit f _ hab).imp f.isUnit_map
         f.isUnit_map)
 #align local_ring.of_surjective LocalRing.of_surjective
 
