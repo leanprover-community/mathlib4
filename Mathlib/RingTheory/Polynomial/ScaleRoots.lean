@@ -241,6 +241,13 @@ lemma scaleRoots_dvd (p q : R[X]) (r : R) (hr : IsUnit r)
     (algebraMap R R[X])).dvd_mul_left, ← Algebra.smul_def, mul_scaleRoots]
   exact dvd_mul_right (scaleRoots p r) (scaleRoots a r)
 
+lemma scaleRoots_dvd (p q : R[X]) {r : R} [NoZeroDivisors R] (hpq : p ∣ q) :
+    p.scaleRoots r ∣ q.scaleRoots r := by
+  obtain ⟨a, rfl⟩ := hpq
+  rw [mul_scaleRoots_of_noZeroDivisors]
+  exact dvd_mul_right (scaleRoots p r) (scaleRoots a r)
+alias _root_.Dvd.dvd.scaleRoots := scaleRoots_dvd
+
 lemma scaleRoots_dvd_iff (p q : R[X]) (r : R) (hr : IsUnit r) :
     p.scaleRoots r ∣ q.scaleRoots r ↔ p ∣ q := by
   refine ⟨?_ ∘ scaleRoots_dvd _ _ _ (hr.unit⁻¹).isUnit,
