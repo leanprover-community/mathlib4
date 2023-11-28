@@ -6,6 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Lie.TensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.RingTheory.TensorProduct
 
 #align_import algebra.lie.base_change from "leanprover-community/mathlib"@"9264b15ee696b7ca83f13c8ad67c83d6eb70b730"
 
@@ -152,8 +153,8 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L]
   [CommRing A] [Algebra R A]
 
 @[simp]
-lemma LieModule.toEndomorphism_extendScalars (x : L) :
-    toEndomorphism A (A ⊗[R] L) (A ⊗[R] M) (1 ⊗ₜ x) = (toEndomorphism R L M x).extendScalars A := by
+lemma LieModule.toEndomorphism_baseChange (x : L) :
+    toEndomorphism A (A ⊗[R] L) (A ⊗[R] M) (1 ⊗ₜ x) = (toEndomorphism R L M x).baseChange A := by
   ext; simp
 
 namespace LieSubmodule
@@ -164,9 +165,11 @@ open LieModule
 
 variable {R L M} in
 /-- If `A` is an `R`-algebra, any Lie submodule of a Lie module `M` with coefficients in `R` may be
-pushed forward to a Lie submodule of `A ⊗ M` with coefficients in `A`. -/
-def extendScalars : LieSubmodule A (A ⊗[R] L) (A ⊗[R] M) :=
-  { (N : Submodule R M).extendScalars A with
+pushed forward to a Lie submodule of `A ⊗ M` with coefficients in `A`.
+
+This "base change" operation is also known as "extension of scalars". -/
+def baseChange : LieSubmodule A (A ⊗[R] L) (A ⊗[R] M) :=
+  { (N : Submodule R M).baseChange A with
     lie_mem := by
       intro x m hm
       simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
@@ -176,56 +179,56 @@ def extendScalars : LieSubmodule A (A ⊗[R] L) (A ⊗[R] M) :=
       · change toEndomorphism A (A ⊗[R] L) (A ⊗[R] M) _ _ ∈ _
         simp_rw [Finsupp.total_apply, Finsupp.sum, map_sum, map_smul, toEndomorphism_apply_apply]
         suffices ∀ n : (N : Submodule R M).map (TensorProduct.mk R A M 1),
-            ⁅a ⊗ₜ[R] y, (n : A ⊗[R] M)⁆ ∈ (N : Submodule R M).extendScalars A by
+            ⁅a ⊗ₜ[R] y, (n : A ⊗[R] M)⁆ ∈ (N : Submodule R M).baseChange A by
           exact Submodule.sum_mem _ fun n _ ↦ Submodule.smul_mem _ _ (this n)
         rintro ⟨-, ⟨n : M, hn : n ∈ N, rfl⟩⟩
-        exact Submodule.tmul_mem_extendScalars_of_mem _ (N.lie_mem hn)
+        exact Submodule.tmul_mem_baseChange_of_mem _ (N.lie_mem hn)
       · rw [add_lie]
-        exact ((N : Submodule R M).extendScalars A).add_mem hy hz }
+        exact ((N : Submodule R M).baseChange A).add_mem hy hz }
 
 @[simp]
-lemma coe_extendScalars :
-    (N.extendScalars A : Submodule A (A ⊗[R] M)) = (N : Submodule R M).extendScalars A :=
+lemma coe_baseChange :
+    (N.baseChange A : Submodule A (A ⊗[R] M)) = (N : Submodule R M).baseChange A :=
   rfl
 
 variable {N}
 
 variable {R A L M} in
-lemma tmul_mem_extendScalars_of_mem (a : A) {m : M} (hm : m ∈ N) :
-    a ⊗ₜ[R] m ∈ N.extendScalars A :=
-  (N : Submodule R M).tmul_mem_extendScalars_of_mem a hm
+lemma tmul_mem_baseChange_of_mem (a : A) {m : M} (hm : m ∈ N) :
+    a ⊗ₜ[R] m ∈ N.baseChange A :=
+  (N : Submodule R M).tmul_mem_baseChange_of_mem a hm
 
-lemma mem_extendScalars_iff {m : A ⊗[R] M} :
-    m ∈ N.extendScalars A ↔
+lemma mem_baseChange_iff {m : A ⊗[R] M} :
+    m ∈ N.baseChange A ↔
     m ∈ Submodule.span A ((N : Submodule R M).map (TensorProduct.mk R A M 1)) :=
   Iff.rfl
 
 @[simp]
-lemma extendScalars_bot : (⊥ : LieSubmodule R L M).extendScalars A = ⊥ := by
-  simp only [extendScalars, bot_coeSubmodule, Submodule.extendScalars_bot,
+lemma baseChange_bot : (⊥ : LieSubmodule R L M).baseChange A = ⊥ := by
+  simp only [baseChange, bot_coeSubmodule, Submodule.baseChange_bot,
     Submodule.bot_toAddSubmonoid]
   rfl
 
 @[simp]
-lemma extendScalars_top : (⊤ : LieSubmodule R L M).extendScalars A = ⊤ := by
-  simp only [extendScalars, top_coeSubmodule, Submodule.extendScalars_top,
+lemma baseChange_top : (⊤ : LieSubmodule R L M).baseChange A = ⊤ := by
+  simp only [baseChange, top_coeSubmodule, Submodule.baseChange_top,
     Submodule.bot_toAddSubmonoid]
   rfl
 
-lemma lie_extendScalars {I : LieIdeal R L} {N : LieSubmodule R L M} :
-    ⁅I, N⁆.extendScalars A = ⁅I.extendScalars A, N.extendScalars A⁆ := by
+lemma lie_baseChange {I : LieIdeal R L} {N : LieSubmodule R L M} :
+    ⁅I, N⁆.baseChange A = ⁅I.baseChange A, N.baseChange A⁆ := by
   set s : Set (A ⊗[R] M) := { m | ∃ x ∈ I, ∃ n ∈ N, 1 ⊗ₜ ⁅x, n⁆ = m}
   have : (TensorProduct.mk R A M 1) '' {m | ∃ x ∈ I, ∃ n ∈ N, ⁅x, n⁆ = m} = s := by ext; simp
-  rw [← coe_toSubmodule_eq_iff, coe_extendScalars, lieIdeal_oper_eq_linear_span',
-    Submodule.extendScalars_span, this, lieIdeal_oper_eq_linear_span']
+  rw [← coe_toSubmodule_eq_iff, coe_baseChange, lieIdeal_oper_eq_linear_span',
+    Submodule.baseChange_span, this, lieIdeal_oper_eq_linear_span']
   refine le_antisymm (Submodule.span_mono ?_) (Submodule.span_le.mpr ?_)
   · rintro - ⟨x, hx, m, hm, rfl⟩
-    exact ⟨1 ⊗ₜ x, tmul_mem_extendScalars_of_mem 1 hx,
-           1 ⊗ₜ m, tmul_mem_extendScalars_of_mem 1 hm, by simp⟩
+    exact ⟨1 ⊗ₜ x, tmul_mem_baseChange_of_mem 1 hx,
+           1 ⊗ₜ m, tmul_mem_baseChange_of_mem 1 hm, by simp⟩
   · rintro - ⟨x, hx, m, hm, rfl⟩
     revert m
     apply Submodule.span_induction
-      (p := fun x' ↦ ∀ m' ∈ N.extendScalars A, ⁅x', m'⁆ ∈ Submodule.span A s) hx
+      (p := fun x' ↦ ∀ m' ∈ N.baseChange A, ⁅x', m'⁆ ∈ Submodule.span A s) hx
     · rintro _ ⟨y : L, hy : y ∈ I, rfl⟩ m hm
       apply Submodule.span_induction (p := fun m' ↦ ⁅(1 : A) ⊗ₜ[R] y, m'⁆ ∈ Submodule.span A s) hm
       · rintro - ⟨m', hm' : m' ∈ N, rfl⟩
