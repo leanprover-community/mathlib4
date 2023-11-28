@@ -190,7 +190,7 @@ end
 
 variable (F G)
 
-lemma presheafHom_isSheaf (hG : Presheaf.IsSheaf J G) :
+lemma Presheaf.IsSheaf.hom (hG : Presheaf.IsSheaf J G) :
     Presheaf.IsSheaf J (presheafHom F G) := by
   rw [isSheaf_iff_isSheaf_of_type]
   intro X S hS
@@ -221,7 +221,7 @@ between the "restrictions" of `F` and `G` to the category `Over X`. -/
 def sheafHom (F G : Sheaf J A) : Sheaf J (Type _) where
   val := sheafHom' F G
   cond := (Presheaf.isSheaf_of_iso_iff (sheafHom'Iso F G)).2
-    (presheafHom_isSheaf F.1 G.1 G.2)
+    (Presheaf.IsSheaf.hom F.1 G.1 G.2)
 
 /-- The sections of the sheaf `sheafHom F G` identify to morphisms `F ⟶ G`. -/
 def sheafHomSectionsEquiv (F G : Sheaf J A) :
