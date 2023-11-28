@@ -288,6 +288,14 @@ theorem separable_map (f : F →+* K) {p : F[X]} :
   simp_rw [separable_def, derivative_map, isCoprime_map]
 #align polynomial.separable_map Polynomial.separable_map
 
+attribute [local instance] Ideal.Quotient.field in
+lemma separable_map' {S} [CommRing S] [Nontrivial S] (f : F →+* S) (p : F[X]) :
+    (p.map f).Separable ↔ p.Separable := by
+  refine ⟨fun H ↦ ?_, fun H ↦ H.map⟩
+  obtain ⟨m, hm⟩ := Ideal.exists_maximal S
+  have := Separable.map H (f := Ideal.Quotient.mk m)
+  rwa [map_map, separable_map] at this
+
 theorem separable_prod_X_sub_C_iff' {ι : Sort _} {f : ι → F} {s : Finset ι} :
     (∏ i in s, (X - C (f i))).Separable ↔ ∀ x ∈ s, ∀ y ∈ s, f x = f y → x = y :=
   ⟨fun hfs x hx y hy hfxy => hfs.inj_of_prod_X_sub_C hx hy hfxy, fun H => by
