@@ -74,9 +74,10 @@ instance instCoalgebra : Coalgebra R (S →₀ R) where
   id_ε := by
     ext; simp
 
-theorem Δ_single_one (s : S) : (instCoalgebra R S).Δ (Finsupp.single s 1) =
-    (Finsupp.single s 1) ⊗ₜ[R] (Finsupp.single s 1) := by
+theorem Δ_single (s : S) (r : R) : (instCoalgebra R S).Δ (Finsupp.single s r) =
+    (Finsupp.single s r) ⊗ₜ[R] (Finsupp.single s 1) := by
   unfold Coalgebra.Δ; unfold instCoalgebra; simp
+  rw [TensorProduct.smul_tmul', smul_single_one s r]
 
 theorem ε_single (s : S) (r : R) : (instCoalgebra R S).ε (Finsupp.single s r) = r := by
   unfold Coalgebra.ε; unfold instCoalgebra; simp
