@@ -185,29 +185,35 @@ lemma lift_injective [IsDirected ι (· ≤ ·)]
   rw [injective _ g hz, _root_.map_zero]
 
 variable (f) in
+def map [IsDirected ι (· ≤ ·)] (map : (i : ι) → G i →ₗ[R] G' i)
+    (compatible_map : ∀ i j h, map j ∘ₗ f i j h = f' i j h ∘ₗ map i) :
+    (DirectLimit G f) →ₗ[R] DirectLimit G' f' :=
+  lift _ _ _ _ (fun i ↦ of _ _ _ _ i ∘ₗ map i) fun i j h g ↦ by
+    have eq1 := FunLike.congr_fun (compatible_map i j h) g
+    simp only [LinearMap.coe_comp, Function.comp_apply] at eq1 ⊢
+    rw [eq1, of_f]
+
+variable (f) in
 /--
 For two family of modules `G` and `G'` indexed by the same set with direct system `f` and `f'`
 respectively, if there is a compatible family of linear-equivalence `eᵢ : Gᵢ ≅ Gᵢ'`, i.e. for
 `i ≤ j`, we have `eᵢ ∘ fᵢⱼ = fᵢⱼ' ∘ eⱼ`, there is a linear equivalence `lim G ≅ lim G'`.
 -/
 def congr [IsDirected ι (· ≤ ·)] (equiv : (i : ι) → G i ≃ₗ[R] G' i)
-    (compatible_equiv : ∀ i j h, (equiv j) ∘ₗ f i j h = f' i j h ∘ₗ equiv i) :
+    (compatible_equiv : ∀ i j h, equiv j ∘ₗ f i j h = f' i j h ∘ₗ equiv i) :
     (DirectLimit G f) ≃ₗ[R] DirectLimit G' f' :=
   LinearEquiv.ofLinear
-    (lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ (equiv i).toLinearMap) fun i j h g ↦ by
-      have eq1 := FunLike.congr_fun (compatible_equiv i j h) g
-      simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply] at eq1 ⊢
-      rw [eq1, of_f])
-    (lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ (equiv i).symm.toLinearMap) fun i j h g ↦ by
-      have eq1 := FunLike.congr_arg (equiv _).symm <| FunLike.congr_fun (compatible_equiv i j h) <|
-        (equiv i).symm g
+    (map f f' (fun i ↦ (equiv i).toLinearMap) compatible_equiv)
+    (map f' f (fun i ↦ (equiv i).symm.toLinearMap) fun i j h ↦ LinearMap.ext fun g ↦ by
+      have eq1 := Eq.symm <| FunLike.congr_arg (equiv _).symm <|
+        FunLike.congr_fun (compatible_equiv i j h) <| (equiv i).symm g
       simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
         LinearEquiv.symm_apply_apply, LinearEquiv.apply_symm_apply] at eq1 ⊢
-      rw [← eq1, of_f])
+      rw [← eq1])
     (FunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _)
-      fun _ ↦ DirectLimit.induction_on x fun _ _ ↦ by simp [lift_of])
+      fun _ ↦ DirectLimit.induction_on x fun _ _ ↦ by simp [lift_of, map])
     (FunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _)
-      fun _ ↦ DirectLimit.induction_on x fun _ _ ↦ by simp [lift_of])
+      fun _ ↦ DirectLimit.induction_on x fun _ _ ↦ by simp [lift_of, map])
 
 variable (f) in
 @[simp] lemma congr_apply_of [IsDirected ι (· ≤ ·)]
