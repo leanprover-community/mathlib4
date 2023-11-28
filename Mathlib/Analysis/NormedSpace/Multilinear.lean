@@ -34,8 +34,7 @@ Let `f` be a continuous multilinear map in finitely many variables.
 ## Implementation notes
 
 We mostly follow the API (and the proofs) of `OperatorNorm.lean`, with the additional complexity
-that we should deal with multilinear maps in several variables. The currying/uncurrying
-constructions are based on those in `Multilinear.lean`.
+that we should deal with multilinear maps in several variables.
 
 From the mathematical point of view, all the results follow from the results on operator norm in
 one variable, by applying them to one variable after the other through currying. However, this
@@ -51,14 +50,6 @@ noncomputable section
 open BigOperators NNReal
 
 open Finset Metric
-
-/-
-Porting note: These lines are not required in Mathlib4.
-```lean
-attribute [local instance 1001]
-  AddCommGroup.toAddCommMonoid NormedAddCommGroup.toAddCommGroup NormedSpace.toModule'
-```
--/
 
 /-!
 ### Type variables
