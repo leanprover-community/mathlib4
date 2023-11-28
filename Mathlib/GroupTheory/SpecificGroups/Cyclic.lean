@@ -71,6 +71,20 @@ instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α]
 #align is_cyclic_of_subsingleton isCyclic_of_subsingleton
 #align is_add_cyclic_of_subsingleton isAddCyclic_of_subsingleton
 
+@[simp]
+theorem isCyclic_multiplicative_iff [AddGroup α] : IsCyclic (Multiplicative α) ↔ IsAddCyclic α :=
+  ⟨fun H ↦ ⟨H.1⟩, fun H ↦ ⟨H.1⟩⟩
+
+instance isCyclic_multiplicative [AddGroup α] [IsAddCyclic α] : IsCyclic (Multiplicative α) :=
+  isCyclic_multiplicative_iff.mpr inferInstance
+
+@[simp]
+theorem isAddCyclic_additive_iff [Group α] : IsAddCyclic (Additive α) ↔ IsCyclic α :=
+  ⟨fun H ↦ ⟨H.1⟩, fun H ↦ ⟨H.1⟩⟩
+
+instance isAddCyclic_additive [Group α] [IsCyclic α] : IsAddCyclic (Additive α) :=
+  isAddCyclic_additive_iff.mpr inferInstance
+
 /-- A cyclic group is always commutative. This is not an `instance` because often we have a better
 proof of `CommGroup`. -/
 @[to_additive
@@ -141,6 +155,15 @@ theorem isCyclic_of_prime_card {α : Type u} [Group α] [Fintype α] {p : ℕ} [
         exact Subgroup.mem_top _⟩
 #align is_cyclic_of_prime_card isCyclic_of_prime_card
 #align is_add_cyclic_of_prime_card isAddCyclic_of_prime_card
+
+@[to_additive isAddCyclic_of_surjective]
+theorem isCyclic_of_surjective {H G F : Type*} [Group H] [Group G] [hH : IsCyclic H]
+    [MonoidHomClass F H G] (f : F) (hf : Function.Surjective f) : IsCyclic G := by
+  obtain ⟨x, hx⟩ := hH
+  refine ⟨f x, fun a ↦ ?_⟩
+  obtain ⟨a, rfl⟩ := hf a
+  obtain ⟨n, rfl⟩ := hx a
+  exact ⟨n, (map_zpow _ _ _).symm⟩
 
 @[to_additive addOrderOf_eq_card_of_forall_mem_zmultiples]
 theorem orderOf_eq_card_of_forall_mem_zpowers [Fintype α] {g : α} (hx : ∀ x, x ∈ zpowers g) :
@@ -564,6 +587,19 @@ theorem CommGroup.is_simple_iff_isCyclic_and_prime_card [Fintype α] [CommGroup 
 #align comm_group.is_simple_iff_is_cyclic_and_prime_card CommGroup.is_simple_iff_isCyclic_and_prime_card
 #align add_comm_group.is_simple_iff_is_add_cyclic_and_prime_card AddCommGroup.is_simple_iff_isAddCyclic_and_prime_card
 
+section SpecificInstances
+
+instance : IsAddCyclic ℤ := ⟨1, fun n ↦ ⟨n, by simp only [smul_eq_mul, mul_one]⟩⟩
+
+instance ZMod.instIsAddCyclic (n : ℕ) : IsAddCyclic (ZMod n) :=
+  isAddCyclic_of_surjective (Int.castRingHom _) ZMod.int_cast_surjective
+
+instance ZMod.instIsSimpleAddGroup {p : ℕ} [Fact p.Prime] : IsSimpleAddGroup (ZMod p) :=
+  AddCommGroup.is_simple_iff_isAddCyclic_and_prime_card.2
+    ⟨inferInstance, by simpa using (Fact.out : p.Prime)⟩
+
+end SpecificInstances
+
 section Exponent
 
 open Monoid
@@ -602,13 +638,6 @@ theorem IsCyclic.exponent_eq_zero_of_infinite [Group α] [IsCyclic α] [Infinite
   exponent_eq_zero_of_order_zero <| Infinite.orderOf_eq_zero_of_forall_mem_zpowers hg
 #align is_cyclic.exponent_eq_zero_of_infinite IsCyclic.exponent_eq_zero_of_infinite
 #align is_add_cyclic.exponent_eq_zero_of_infinite IsAddCyclic.exponent_eq_zero_of_infinite
-
-instance ZMod.instIsAddCyclic (n : ℕ) : IsAddCyclic (ZMod n) where
-  exists_generator := ⟨1, fun n ↦ ⟨n, by simp⟩⟩
-
-instance ZMod.instIsSimpleAddGroup {p : ℕ} [Fact p.Prime] : IsSimpleAddGroup (ZMod p) :=
-  AddCommGroup.is_simple_iff_isAddCyclic_and_prime_card.2
-    ⟨by infer_instance, by simpa using (Fact.out : p.Prime)⟩
 
 @[simp]
 protected theorem ZMod.exponent (n : ℕ) : AddMonoid.exponent (ZMod n) = n := by
