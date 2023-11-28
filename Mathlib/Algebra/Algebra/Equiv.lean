@@ -788,7 +788,7 @@ theorem algebraMap_eq_apply (e : A₁ ≃ₐ[R] A₂) {y : R} {x : A₁} :
 
 /-- `AlgEquiv.toLinearMap` as a `MonoidHom`. -/
 @[simps]
-def toLinearMapHom (R A) [CommSemiring R] [Semiring A] :
+def toLinearMapHom (R A) [CommSemiring R] [Semiring A] [Algebra R A] :
     (A ≃ₐ[R] A) →* A →ₗ[R] A where
   toFun := AlgEquiv.toLinearMap
   map_one' := rfl
@@ -801,7 +801,8 @@ lemma pow_toLinearMap (σ : A₁ ≃ₐ[R] A₁) (n : ℕ) :
 lemma one_toLinearMap :
     (1 : A₁ ≃ₐ[R] A₁).toLinearMap = 1 := rfl
 
-/-- The units group of `S →ₐ[R] S` is `S ≃ₐ[R] S` -/
+/-- The units group of `S →ₐ[R] S` is `S ≃ₐ[R] S`.
+See `LinearMap.GeneralLinearGroup.generalLinearEquiv` for the linear map version. -/
 @[simps]
 def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
     (S →ₐ[R] S)ˣ ≃* (S ≃ₐ[R] S) where
