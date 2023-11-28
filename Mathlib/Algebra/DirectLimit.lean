@@ -198,9 +198,10 @@ family of linear maps `gᵢ : Gᵢ ⟶ G'ᵢ` such that `g ∘ f = f' ∘ g` ind
 -/
 def map (g : (i : ι) → G i →ₗ[R] G' i) (hg : ∀ i j h, g j ∘ₗ f i j h = f' i j h ∘ₗ g i) :
     DirectLimit G f →ₗ[R] DirectLimit G' f' :=
-  lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ g i) fun i j h g ↦ (isEmpty_or_nonempty ι).elim
-    (fun _ ↦ Subsingleton.elim _ _) fun _ ↦ by
-      have eq1 := LinearMap.congr_fun (hg i j h) g
+  lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ g i) fun i j h g ↦ by
+    cases isEmpty_or_nonempty ι
+    · exact Subsingleton.elim _ _
+    · have eq1 := LinearMap.congr_fun (hg i j h) g
       simp only [LinearMap.coe_comp, Function.comp_apply] at eq1 ⊢
       rw [eq1, of_f]
 
@@ -470,10 +471,10 @@ homomorphism `lim G ⟶ lim G'`.
 def map (g : (i : ι) → G i →+ G' i)
     (hg : ∀ i j h, (g j).comp (f i j h) = (f' i j h).comp (g i)) :
     DirectLimit G f →+ DirectLimit G' f' :=
-  lift _ _ _ (fun i ↦ (of _ _ _).comp (g i)) fun i j h g ↦
-    (isEmpty_or_nonempty ι).elim
-    (fun _ ↦ Subsingleton.elim _ _) fun _ ↦ by
-      have eq1 := FunLike.congr_fun (hg i j h) g
+  lift _ _ _ (fun i ↦ (of _ _ _).comp (g i)) fun i j h g ↦ by
+    cases isEmpty_or_nonempty ι
+    · exact Subsingleton.elim _ _
+    · have eq1 := FunLike.congr_fun (hg i j h) g
       simp only [AddMonoidHom.coe_comp, Function.comp_apply] at eq1 ⊢
       rw [eq1, of_f]
 
