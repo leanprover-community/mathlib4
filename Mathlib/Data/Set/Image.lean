@@ -518,6 +518,20 @@ theorem image_preimage_eq {f : α → β} (s : Set β) (h : Surjective f) : f ''
     ⟨y, (e.symm ▸ hx : f y ∈ s), e⟩
 #align set.image_preimage_eq Set.image_preimage_eq
 
+/-- Without this theorem, `image_subset_iff` and `image_preimage_eq` create a simp confluence issue.
+ -/
+@[simp]
+theorem preimage_subset_preimage {f : α → β} (s t : Set β) (h : Surjective f) :
+    f ⁻¹' s ⊆ f ⁻¹' t ↔ s ⊆ t := by
+  rw [← image_subset_iff, image_preimage_eq s h]
+
+/-- Without this theorem, `image_subset_iff` and `Nonempty.image_const` create a simp confluence
+  issue. -/
+@[simp]
+theorem Nonempty.subset_preimage_const {s : Set α} (hs : Set.Nonempty s) (t : Set β) (a : β) :
+    s ⊆ (fun _ => a) ⁻¹' t ↔ a ∈ t := by
+  rw [← image_subset_iff, hs.image_const, singleton_subset_iff]
+
 @[simp]
 theorem preimage_eq_preimage {f : β → α} (hf : Surjective f) : f ⁻¹' s = f ⁻¹' t ↔ s = t :=
   Iff.intro
@@ -719,6 +733,11 @@ theorem image_univ {f : α → β} : f '' univ = range f := by
   ext
   simp [image, range]
 #align set.image_univ Set.image_univ
+
+/-- Without this theorem, `image_subset_iff` and `image_univ` create a simp confluence issue. -/
+@[simp]
+theorem univ_subset_preimage {f : α → β} (s) : univ ⊆ f ⁻¹' s ↔ range f ⊆ s := by
+  rw [← image_subset_iff, image_univ]
 
 theorem image_subset_range (f : α → β) (s) : f '' s ⊆ range f := by
   rw [← image_univ]; exact image_subset _ (subset_univ _)
