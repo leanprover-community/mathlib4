@@ -597,7 +597,7 @@ def swapEquiv : ℍ[R,c₁,c₂] ≃ₐ[R] ℍ[R, c₂, c₁] where
                      neg_sub, mk_mul_mk, mul_neg, neg_neg, sub_neg_eq_add]
       <;> ring
   map_add' _ _ := by ext <;> simp [add_comm]
-  commutes' _ := by simp [algebraMap_eq]
+  map_smul' _ _ := by simp [Algebra.smul_def, algebraMap_eq]
 
 end
 
@@ -744,7 +744,7 @@ def starAe : ℍ[R,c₁,c₂] ≃ₐ[R] ℍ[R,c₁,c₂]ᵐᵒᵖ :=
     toFun := op ∘ star
     invFun := star ∘ unop
     map_mul' := fun x y => by simp
-    commutes' := fun r => by simp }
+    map_smul' := by simp }
 #align quaternion_algebra.star_ae QuaternionAlgebra.starAe
 
 @[simp]

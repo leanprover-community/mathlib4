@@ -1026,7 +1026,7 @@ def conjAe : K ≃ₐ[ℝ] K :=
     invFun := conj
     left_inv := conj_conj
     right_inv := conj_conj
-    commutes' := conj_ofReal }
+    map_smul' := conj_smul }
 #align is_R_or_C.conj_ae IsROrC.conjAe
 
 @[simp, isROrC_simps]
@@ -1036,7 +1036,7 @@ theorem conjAe_coe : (conjAe : K → K) = conj :=
 
 /-- Conjugate as a linear isometry -/
 noncomputable def conjLie : K ≃ₗᵢ[ℝ] K :=
-  ⟨conjAe.toLinearEquiv, fun _ => norm_conj⟩
+  ⟨conjAe.toLinearEquiv, fun _ => by simp [norm_conj]⟩
 #align is_R_or_C.conj_lie IsROrC.conjLie
 
 @[simp, isROrC_simps]

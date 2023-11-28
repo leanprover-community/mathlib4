@@ -83,7 +83,7 @@ def pUnitAlgEquiv : MvPolynomial PUnit R ≃ₐ[R] R[X] where
         eval₂_mul, eval₂_C, eval₂_pow, eval₂_X]
   map_mul' _ _ := eval₂_mul _ _
   map_add' _ _ := eval₂_add _ _
-  commutes' _ := eval₂_C _ _ _
+  map_smul' _ _ := sorry
 #align mv_polynomial.punit_alg_equiv MvPolynomial.pUnitAlgEquiv
 
 section Map
@@ -127,7 +127,9 @@ variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 /-- If `e : A ≃ₐ[R] B` is an isomorphism of `R`-algebras, then so is `map e`. -/
 @[simps apply]
 def mapAlgEquiv (e : A₁ ≃ₐ[R] A₂) : MvPolynomial σ A₁ ≃ₐ[R] MvPolynomial σ A₂ :=
-  { mapAlgHom (e : A₁ →ₐ[R] A₂), mapEquiv σ (e : A₁ ≃+* A₂) with toFun := map (e : A₁ →+* A₂) }
+  { mapAlgHom (e : A₁ →ₐ[R] A₂), mapEquiv σ (e : A₁ ≃+* A₂) with
+    toFun := map (e : A₁ →+* A₂),
+    map_smul' := map_smul <| mapAlgHom (e : A₁ →ₐ[R] A₂) }
 #align mv_polynomial.map_alg_equiv MvPolynomial.mapAlgEquiv
 
 @[simp]
@@ -263,13 +265,11 @@ and multivariable polynomials in one of the types,
 with coefficients in multivariable polynomials in the other type.
 -/
 def sumAlgEquiv : MvPolynomial (Sum S₁ S₂) R ≃ₐ[R] MvPolynomial S₁ (MvPolynomial S₂ R) :=
-  { sumRingEquiv R S₁ S₂ with
-    commutes' := by
-      intro r
-      have A : algebraMap R (MvPolynomial S₁ (MvPolynomial S₂ R)) r = (C (C r) : _) := rfl
-      have B : algebraMap R (MvPolynomial (Sum S₁ S₂) R) r = C r := rfl
-      simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe,
-        Equiv.coe_fn_mk, B, sumToIter_C, A] }
+  .ofCommutes (sumRingEquiv R S₁ S₂) fun r => by
+    have A : algebraMap R (MvPolynomial S₁ (MvPolynomial S₂ R)) r = (C (C r) : _) := rfl
+    have B : algebraMap R (MvPolynomial (Sum S₁ S₂) R) r = C r := rfl
+    simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, B, RingEquiv.coe_mk, Equiv.coe_fn_mk,
+      sumToIter_C, A]
 #align mv_polynomial.sum_alg_equiv MvPolynomial.sumAlgEquiv
 
 section

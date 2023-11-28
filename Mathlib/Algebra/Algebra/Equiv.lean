@@ -111,7 +111,7 @@ variable {A₁' : Type uA₁'} {A₂' : Type uA₂'} {A₃' : Type uA₃'}
 section Semiring
 
 @[reducible, inline]
-def AlgEquiv.ofCommutes [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁] [Algebra R A₂]
+def ofCommutes [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁] [Algebra R A₂]
     (e : A₁ ≃+* A₂) (h_comm : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r) :
     A₁ ≃ₐ[R] A₂ where
   toEquiv := e.toEquiv

@@ -261,7 +261,7 @@ def conjAe : ℂ ≃ₐ[ℝ] ℂ :=
     invFun := conj
     left_inv := star_star
     right_inv := star_star
-    commutes' := conj_ofReal }
+    map_smul' := star_smul }
 #align complex.conj_ae Complex.conjAe
 
 @[simp]

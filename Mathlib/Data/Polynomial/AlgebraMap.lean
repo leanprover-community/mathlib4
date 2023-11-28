@@ -98,9 +98,7 @@ implementation detail, but it can be useful to transfer results from `Finsupp` t
 @[simps!]
 def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
   { toFinsuppIso R with
-    commutes' := fun r => by
-      dsimp
-      exact toFinsupp_algebraMap _ }
+    map_smul' := fun _ _ => rfl }
 #align polynomial.to_finsupp_iso_alg Polynomial.toFinsuppIsoAlg
 
 variable {R}

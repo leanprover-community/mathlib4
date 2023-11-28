@@ -1633,7 +1633,7 @@ variable [Algebra R α] [Algebra R β] [Algebra R γ]
 coefficients. This is `Matrix.map` as an `AlgEquiv`. -/
 @[simps apply]
 def mapMatrix (f : α ≃ₐ[R] β) : Matrix m m α ≃ₐ[R] Matrix m m β :=
-  { f.toAlgHom.mapMatrix,
+  { f.toLinearMap.mapMatrix,
     f.toRingEquiv.mapMatrix with
     toFun := fun M => M.map f
     invFun := fun M => M.map f.symm }
@@ -2125,8 +2125,9 @@ def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableE
   { (transposeAddEquiv m m α).trans MulOpposite.opAddEquiv,
     transposeRingEquiv m α with
     toFun := fun M => MulOpposite.op Mᵀ
-    commutes' := fun r => by
-      simp only [algebraMap_eq_diagonal, diagonal_transpose, MulOpposite.algebraMap_apply] }
+    map_smul' := fun r a => by
+      simp only [Algebra.smul_def, algebraMap_eq_diagonal, transpose_mul, diagonal_transpose,
+        MulOpposite.op_mul, MulOpposite.algebraMap_apply] }
 #align matrix.transpose_alg_equiv Matrix.transposeAlgEquiv
 
 variable {R m α}

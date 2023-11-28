@@ -116,16 +116,14 @@ end Semiring
 section Algebra
 
 variable [CommSemiring R] [Fintype n] [Fintype m] [DecidableEq m] [DecidableEq n]
-
+#check submatrix
 /-- For square matrices with coefficients in commutative semirings, the natural map that reindexes
 a matrix's rows and columns with equivalent types, `Matrix.reindex`, is an equivalence of algebras.
 -/
 def reindexAlgEquiv (e : m ≃ n) : Matrix m m R ≃ₐ[R] Matrix n n R :=
   { reindexLinearEquiv R R e e with
     toFun := reindex e e
-    map_mul' := fun a b => (reindexLinearEquiv_mul R R e e e a b).symm
-    -- Porting note: `submatrix_smul` needed help
-    commutes' := fun r => by simp [algebraMap, Algebra.toRingHom, submatrix_smul _ 1] }
+    map_mul' := fun a b => (reindexLinearEquiv_mul R R e e e a b).symm }
 #align matrix.reindex_alg_equiv Matrix.reindexAlgEquiv
 
 @[simp]

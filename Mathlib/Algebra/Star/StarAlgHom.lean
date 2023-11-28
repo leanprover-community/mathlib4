@@ -682,20 +682,18 @@ multiplication and the star operation, which allows for considering both unital 
 equivalences with a single structure. Currently, `AlgEquiv` requires unital algebras, which is
 why this structure does not extend it. -/
 structure StarAlgEquiv (R A B : Type*) [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B]
-  [Star A] [Star B] extends A ≃+* B where
+  [Star A] [Star B] extends A ≃ₐ[R] B where
   /-- By definition, a ⋆-algebra equivalence preserves the `star` operation. -/
   map_star' : ∀ a : A, toFun (star a) = star (toFun a)
-  /-- By definition, a ⋆-algebra equivalence commutes with the action of scalars. -/
-  map_smul' : ∀ (r : R) (a : A), toFun (r • a) = r • toFun a
 #align star_alg_equiv StarAlgEquiv
 
 @[inherit_doc StarAlgEquiv] infixr:25 " ≃⋆ₐ " => StarAlgEquiv _
 
 @[inherit_doc] notation:25 A " ≃⋆ₐ[" R "] " B => StarAlgEquiv R A B
 
-/-- Reinterpret a star algebra equivalence as a `RingEquiv` by forgetting the interaction with
+/-- Reinterpret a star algebra equivalence as an `AlgEquiv` by forgetting the interaction with
 the star operation and scalar multiplication. -/
-add_decl_doc StarAlgEquiv.toRingEquiv
+add_decl_doc StarAlgEquiv.toAlgEquiv
 
 /-- `StarAlgEquivClass F R A B` asserts `F` is a type of bundled ⋆-algebra equivalences between
 `A` and `B`.
@@ -703,11 +701,9 @@ add_decl_doc StarAlgEquiv.toRingEquiv
 You should also extend this typeclass when you extend `StarAlgEquiv`. -/
 class StarAlgEquivClass (F : Type*) (R : outParam (Type*)) (A : outParam (Type*))
   (B : outParam (Type*)) [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B]
-  [Star B] extends RingEquivClass F A B where
+  [Star B] extends AlgEquivClass F R A B where
   /-- By definition, a ⋆-algebra equivalence preserves the `star` operation. -/
   map_star : ∀ (f : F) (a : A), f (star a) = star (f a)
-  /-- By definition, a ⋆-algebra equivalence commutes with the action of scalars. -/
-  map_smul : ∀ (f : F) (r : R) (a : A), f (r • a) = r • f a
 #align star_alg_equiv_class StarAlgEquivClass
 
 -- Porting note: no longer needed
@@ -762,15 +758,6 @@ instance (priority := 100) instStarAlgHomClass (F R A B : Type*) [CommSemiring R
     map_zero := map_zero
     commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
 
--- See note [lower instance priority]
-instance (priority := 100) toAlgEquivClass {F R A B : Type*} [CommSemiring R]
-    [Ring A] [Ring B] [Algebra R A] [Algebra R B] [Star A] [Star B] [StarAlgEquivClass F R A B] :
-    AlgEquivClass F R A B :=
-  { StarAlgEquivClass.toRingEquivClass,
-    StarAlgEquivClass.instStarAlgHomClass F R A B with
-    coe := fun f => f
-    inv := fun f => EquivLike.inv f }
-
 end StarAlgEquivClass
 
 namespace StarAlgEquiv
@@ -793,10 +780,10 @@ instance : StarAlgEquivClass (A ≃⋆ₐ[R] B) R A B
   map_mul f := f.map_mul'
   map_add f := f.map_add'
   map_star := map_star'
-  map_smul := map_smul'
+  map_smul f := f.map_smul'
 
 @[simp]
-theorem toRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = e :=
+theorem toAlgEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toAlgEquiv = e :=
   rfl
 
 -- Porting note: this is no longer useful
@@ -870,22 +857,8 @@ theorem symm_bijective : Function.Bijective (symm : (A ≃⋆ₐ[R] B) → B ≃
   Equiv.bijective ⟨symm, symm, symm_symm, symm_symm⟩
 #align star_alg_equiv.symm_bijective StarAlgEquiv.symm_bijective
 
--- porting note: doesn't align with Mathlib 3 because `StarAlgEquiv.mk` has a new signature
-@[simp]
-theorem mk_coe' (e : A ≃⋆ₐ[R] B) (f h₁ h₂ h₃ h₄ h₅ h₆) :
-    (⟨⟨⟨f, e, h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : B ≃⋆ₐ[R] A) = e.symm :=
-  symm_bijective.injective <| ext fun _ => rfl
-#align star_alg_equiv.mk_coe' StarAlgEquiv.mk_coe'ₓ
-
--- porting note: doesn't align with Mathlib 3 because `StarAlgEquiv.mk` has a new signature
-@[simp]
-theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :
-    (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A ≃⋆ₐ[R] B).symm =
-      { (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A ≃⋆ₐ[R] B).symm with
-        toFun := f'
-        invFun := f } :=
-  rfl
-#align star_alg_equiv.symm_mk StarAlgEquiv.symm_mkₓ
+#noalign star_alg_equiv.mk_coe'
+#noalign star_alg_equiv.symm_mk
 
 @[simp]
 theorem refl_symm : (StarAlgEquiv.refl : A ≃⋆ₐ[R] A).symm = StarAlgEquiv.refl :=

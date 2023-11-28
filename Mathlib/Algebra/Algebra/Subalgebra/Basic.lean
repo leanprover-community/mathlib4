@@ -704,7 +704,7 @@ variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 This is a computable alternative to `AlgEquiv.ofInjective`. -/
 def ofLeftInverse {g : B → A} {f : A →ₐ[R] B} (h : Function.LeftInverse g f) : A ≃ₐ[R] f.range :=
-  { f.rangeRestrict with
+  { f.rangeRestrict, f.rangeRestrict.toLinearMap with
     toFun := f.rangeRestrict
     invFun := g ∘ f.range.val
     left_inv := h
@@ -747,10 +747,9 @@ noncomputable def ofInjectiveField {E F : Type*} [DivisionRing E] [Semiring F] [
 `subalgebra_map` is the induced equivalence between `S` and `S.map e` -/
 @[simps!]
 def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map (e : A →ₐ[R] B) :=
-  { e.toRingEquiv.subsemiringMap S.toSubsemiring with
-    commutes' := fun r => by
-      ext; dsimp only; erw [RingEquiv.subsemiringMap_apply_coe]
-      exact e.commutes _ }
+  .ofCommutes (e.toRingEquiv.subsemiringMap S.toSubsemiring) fun r => by
+    ext; dsimp only; erw [RingEquiv.subsemiringMap_apply_coe]
+    exact e.commutes _
 #align alg_equiv.subalgebra_map AlgEquiv.subalgebraMap
 
 end AlgEquiv
@@ -1082,7 +1081,7 @@ def equivOfEq (S T : Subalgebra R A) (h : S = T) : S ≃ₐ[R] T where
   toFun x := ⟨x, h ▸ x.2⟩
   invFun x := ⟨x, h.symm ▸ x.2⟩
   map_mul' _ _ := rfl
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 #align subalgebra.equiv_of_eq Subalgebra.equivOfEq
 
 @[simp]

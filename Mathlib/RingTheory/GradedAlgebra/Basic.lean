@@ -207,7 +207,7 @@ def decomposeAlgEquiv : A ≃ₐ[R] ⨁ i, 𝒜 i :=
   AlgEquiv.symm
     { (decomposeAddEquiv 𝒜).symm with
       map_mul' := (coeAlgHom 𝒜).map_mul
-      commutes' := (coeAlgHom 𝒜).commutes }
+      map_smul' := (coeAlgHom 𝒜).map_smul }
 #align direct_sum.decompose_alg_equiv DirectSum.decomposeAlgEquiv
 
 @[simp]

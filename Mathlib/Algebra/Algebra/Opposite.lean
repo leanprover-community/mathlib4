@@ -59,7 +59,7 @@ variable (R A)
 @[simps!]
 def opOp : A ≃ₐ[R] Aᵐᵒᵖᵐᵒᵖ where
   __ := RingEquiv.opOp A
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 @[simp] theorem toRingEquiv_opOp : (opOp R A : A ≃+* Aᵐᵒᵖᵐᵒᵖ) = RingEquiv.opOp A := rfl
 
@@ -138,10 +138,10 @@ This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 def op : (A ≃ₐ[R] B) ≃ Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ where
   toFun f :=
     { RingEquiv.op f.toRingEquiv with
-      commutes' := fun r => MulOpposite.unop_injective <| f.commutes r }
+      map_smul' := fun r _ =>  MulOpposite.unop_injective <| f.map_smul r _ }
   invFun f :=
     { RingEquiv.unop f.toRingEquiv with
-      commutes' := fun r => MulOpposite.op_injective <| f.commutes r }
+      map_smul' := fun r _ => MulOpposite.op_injective <| f.map_smul r _ }
   left_inv _f := AlgEquiv.ext fun _a => rfl
   right_inv _f := AlgEquiv.ext fun _a => rfl
 
@@ -181,7 +181,7 @@ namespace AlgEquiv
 @[simps!]
 def toOpposite : A ≃ₐ[R] Aᵐᵒᵖ where
   __ := RingEquiv.toOpposite A
-  commutes' _r := rfl
+  map_smul' _ _ := rfl
 
 @[simp] lemma toRingEquiv_toOpposite : (toOpposite R A : A ≃+* Aᵐᵒᵖ) = RingEquiv.toOpposite A := rfl
 @[simp] lemma toLinearEquiv_toOpposite : toLinearEquiv (toOpposite R A) = opLinearEquiv R := rfl

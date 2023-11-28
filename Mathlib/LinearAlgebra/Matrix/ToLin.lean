@@ -439,7 +439,7 @@ def Matrix.toLin'OfInv [Fintype m] [DecidableEq m] {M : Matrix m n R} {M' : Matr
 
 /-- Linear maps `(n → R) →ₗ[R] (n → R)` are algebra equivalent to `Matrix n n R`. -/
 def LinearMap.toMatrixAlgEquiv' : ((n → R) →ₗ[R] n → R) ≃ₐ[R] Matrix n n R :=
-  AlgEquiv.ofLinearEquiv LinearMap.toMatrix' LinearMap.toMatrix'_one LinearMap.toMatrix'_mul
+  AlgEquiv.ofLinearEquiv LinearMap.toMatrix' LinearMap.toMatrix'_mul
 #align linear_map.to_matrix_alg_equiv' LinearMap.toMatrixAlgEquiv'
 
 /-- A `Matrix n n R` is algebra equivalent to a linear map `(n → R) →ₗ[R] (n → R)`. -/
@@ -461,52 +461,52 @@ theorem Matrix.toLinAlgEquiv'_symm :
 
 @[simp]
 theorem LinearMap.toMatrixAlgEquiv'_toLinAlgEquiv' (M : Matrix n n R) :
-    LinearMap.toMatrixAlgEquiv' (Matrix.toLinAlgEquiv' M) = M :=
+    LinearMap.toMatrixAlgEquiv' (R := R) (Matrix.toLinAlgEquiv' (R := R) M) = M :=
   LinearMap.toMatrixAlgEquiv'.apply_symm_apply M
 #align linear_map.to_matrix_alg_equiv'_to_lin_alg_equiv' LinearMap.toMatrixAlgEquiv'_toLinAlgEquiv'
 
 @[simp]
 theorem Matrix.toLinAlgEquiv'_toMatrixAlgEquiv' (f : (n → R) →ₗ[R] n → R) :
-    Matrix.toLinAlgEquiv' (LinearMap.toMatrixAlgEquiv' f) = f :=
+    Matrix.toLinAlgEquiv' (R := R) (LinearMap.toMatrixAlgEquiv' f (R := R)) = f :=
   Matrix.toLinAlgEquiv'.apply_symm_apply f
 #align matrix.to_lin_alg_equiv'_to_matrix_alg_equiv' Matrix.toLinAlgEquiv'_toMatrixAlgEquiv'
 
 @[simp]
 theorem LinearMap.toMatrixAlgEquiv'_apply (f : (n → R) →ₗ[R] n → R) (i j) :
-    LinearMap.toMatrixAlgEquiv' f i j = f (fun j' => if j' = j then 1 else 0) i := by
+    LinearMap.toMatrixAlgEquiv' (R := R) f i j = f (fun j' => if j' = j then 1 else 0) i := by
   simp [LinearMap.toMatrixAlgEquiv']
 #align linear_map.to_matrix_alg_equiv'_apply LinearMap.toMatrixAlgEquiv'_apply
 
 @[simp]
 theorem Matrix.toLinAlgEquiv'_apply (M : Matrix n n R) (v : n → R) :
-    Matrix.toLinAlgEquiv' M v = M.mulVec v :=
+    Matrix.toLinAlgEquiv' (R := R) M v = M.mulVec v :=
   rfl
 #align matrix.to_lin_alg_equiv'_apply Matrix.toLinAlgEquiv'_apply
 
 -- Porting note: the simpNF lemma rejects this, as `simp` already simplifies the lhs
 -- to `(1 : (n → R) →ₗ[R] n → R)`.
 -- @[simp]
-theorem Matrix.toLinAlgEquiv'_one : Matrix.toLinAlgEquiv' (1 : Matrix n n R) = LinearMap.id :=
+theorem Matrix.toLinAlgEquiv'_one : Matrix.toLinAlgEquiv' (R := R) (1 : Matrix n n R) = LinearMap.id :=
   Matrix.toLin'_one
 #align matrix.to_lin_alg_equiv'_one Matrix.toLinAlgEquiv'_one
 
 @[simp]
 theorem LinearMap.toMatrixAlgEquiv'_id :
-    LinearMap.toMatrixAlgEquiv' (LinearMap.id : (n → R) →ₗ[R] n → R) = 1 :=
+    LinearMap.toMatrixAlgEquiv' (R := R) (LinearMap.id : (n → R) →ₗ[R] n → R) = 1 :=
   LinearMap.toMatrix'_id
 #align linear_map.to_matrix_alg_equiv'_id LinearMap.toMatrixAlgEquiv'_id
 
 #align matrix.to_lin_alg_equiv'_mul map_mulₓ
 
 theorem LinearMap.toMatrixAlgEquiv'_comp (f g : (n → R) →ₗ[R] n → R) :
-    LinearMap.toMatrixAlgEquiv' (f.comp g) =
-      LinearMap.toMatrixAlgEquiv' f * LinearMap.toMatrixAlgEquiv' g :=
+    LinearMap.toMatrixAlgEquiv' (R := R) (f.comp g) =
+      LinearMap.toMatrixAlgEquiv' (R := R) f * LinearMap.toMatrixAlgEquiv' (R := R) g :=
   LinearMap.toMatrix'_comp _ _
 #align linear_map.to_matrix_alg_equiv'_comp LinearMap.toMatrixAlgEquiv'_comp
 
 theorem LinearMap.toMatrixAlgEquiv'_mul (f g : (n → R) →ₗ[R] n → R) :
-    LinearMap.toMatrixAlgEquiv' (f * g) =
-      LinearMap.toMatrixAlgEquiv' f * LinearMap.toMatrixAlgEquiv' g :=
+    LinearMap.toMatrixAlgEquiv' (R := R) (f * g) =
+      LinearMap.toMatrixAlgEquiv' (R := R) f * LinearMap.toMatrixAlgEquiv' (R := R) g :=
   LinearMap.toMatrixAlgEquiv'_comp f g
 #align linear_map.to_matrix_alg_equiv'_mul LinearMap.toMatrixAlgEquiv'_mul
 
@@ -713,7 +713,7 @@ def Matrix.toLinOfInv [DecidableEq m] {M : Matrix m n R} {M' : Matrix n m R} (hM
 equivalence between linear maps `M₁ →ₗ M₁` and square matrices over `R` indexed by the basis. -/
 def LinearMap.toMatrixAlgEquiv : (M₁ →ₗ[R] M₁) ≃ₐ[R] Matrix n n R :=
   AlgEquiv.ofLinearEquiv
-    (LinearMap.toMatrix v₁ v₁) (LinearMap.toMatrix_one v₁) (LinearMap.toMatrix_mul v₁)
+    (LinearMap.toMatrix v₁ v₁) (LinearMap.toMatrix_mul v₁)
 #align linear_map.to_matrix_alg_equiv LinearMap.toMatrixAlgEquiv
 
 /-- Given a basis of a module `M₁` over a commutative ring `R`, we get an algebra
@@ -768,7 +768,7 @@ theorem LinearMap.toMatrixAlgEquiv_transpose_apply' (f : M₁ →ₗ[R] M₁) (j
 
 theorem Matrix.toLinAlgEquiv_apply (M : Matrix n n R) (v : M₁) :
     Matrix.toLinAlgEquiv v₁ M v = ∑ j, M.mulVec (v₁.repr v) j • v₁ j :=
-  show v₁.equivFun.symm (Matrix.toLinAlgEquiv' M (v₁.repr v)) = _ by
+  show v₁.equivFun.symm (Matrix.toLinAlgEquiv' (R := R) M (v₁.repr v)) = _ by
     rw [Matrix.toLinAlgEquiv'_apply, v₁.equivFun_symm_apply]
 #align matrix.to_lin_alg_equiv_apply Matrix.toLinAlgEquiv_apply
 
@@ -967,20 +967,21 @@ variable [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
 /-- The natural equivalence between linear endomorphisms of finite free modules and square matrices
 is compatible with the algebra structures. -/
 def algEquivMatrix' [Fintype n] : Module.End R (n → R) ≃ₐ[R] Matrix n n R :=
-  { LinearMap.toMatrix' with
-    map_mul' := LinearMap.toMatrix'_comp
-    -- porting note: golfed away messy failing proof
-    commutes' := LinearMap.toMatrix'_algebraMap }
+  .ofCommutes
+    { LinearMap.toMatrix' with
+      map_mul' := LinearMap.toMatrix'_comp }
+    LinearMap.toMatrix'_algebraMap
 #align alg_equiv_matrix' algEquivMatrix'
 
 /-- A linear equivalence of two modules induces an equivalence of algebras of their
 endomorphisms. -/
 def LinearEquiv.algConj (e : M₁ ≃ₗ[R] M₂) : Module.End R M₁ ≃ₐ[R] Module.End R M₂ :=
-  { e.conj with
-    map_mul' := fun f g => by apply e.arrowCongr_comp
-    commutes' := fun r => by
+  .ofCommutes
+    { e.conj with
+      map_mul' := fun f g => by apply e.arrowCongr_comp }
+    fun r => by
       change e.conj (r • LinearMap.id) = r • LinearMap.id
-      rw [LinearEquiv.map_smul, LinearEquiv.conj_id] }
+      rw [LinearEquiv.map_smul, LinearEquiv.conj_id]
 #align linear_equiv.alg_conj LinearEquiv.algConj
 
 /-- A basis of a module induces an equivalence of algebras from the endomorphisms of the module to

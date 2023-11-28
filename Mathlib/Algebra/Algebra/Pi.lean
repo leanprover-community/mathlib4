@@ -137,7 +137,7 @@ def piCongrRight {R ι : Type*} {A₁ A₂ : ι → Type*} [CommSemiring R] [∀
   { @RingEquiv.piCongrRight ι A₁ A₂ _ _ fun i => (e i).toRingEquiv with
     toFun := fun x j => e j (x j)
     invFun := fun x j => (e j).symm (x j)
-    commutes' := fun r => by
+    map_smul' := fun r a => by
       ext i
       simp }
 #align alg_equiv.Pi_congr_right AlgEquiv.piCongrRight
