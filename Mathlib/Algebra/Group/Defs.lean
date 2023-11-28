@@ -623,34 +623,31 @@ need right away.
 
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
-class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
-  /-- Multiplication by a natural number. -/
-  protected nsmul : ℕ → M → M := nsmulRec
-  /-- Multiplication by `(0 : ℕ)` gives `0`. -/
-  protected nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
-  /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
-  protected nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = x + nsmul n x := by intros; rfl
+class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M
 #align add_monoid AddMonoid
+
+class AddMonoidNSMul (M : Type u) [Add M] [Zero M] [SMul ℕ M] where
+  nsmul_zero : ∀ x : M, 0 • x = 0
+  nsmul_succ : ∀ (x : M) (n : ℕ), (n + 1) • x = x + n • x
 
 attribute [instance 150] AddSemigroup.toAdd
 attribute [instance 50] AddZeroClass.toAdd
 
-#align add_monoid.nsmul_zero' AddMonoid.nsmul_zero
-#align add_monoid.nsmul_succ' AddMonoid.nsmul_succ
+#align add_monoid.nsmul_zero' AddMonoidNSMul.nsmul_zero
+#align add_monoid.nsmul_succ' AddMonoidNSMul.nsmul_succ
 
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
-class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
-  /-- Raising to the power of a natural number. -/
-  protected npow : ℕ → M → M := npowRec
-  /-- Raising to the power `(0 : ℕ)` gives `1`. -/
-  protected npow_zero : ∀ x, npow 0 x = 1 := by intros; rfl
-  /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
-  protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = x * npow n x := by intros; rfl
+class Monoid (M : Type u) extends Semigroup M, MulOneClass M
 #align monoid Monoid
 
-#align monoid.npow_zero' Monoid.npow_zero
-#align monoid.npow_succ' Monoid.npow_succ
+@[to_additive]
+class MonoidPow (M : Type u) [Monoid M] [Pow M ℕ] where
+  npow_zero : ∀ x : M, x ^ 0 = 1
+  npow_succ : ∀ (x : M) (n : ℕ), x ^ (n + 1) = x * x ^ n
+
+#align monoid.npow_zero' MonoidPow.npow_zero
+#align monoid.npow_succ' MonoidPow.npow_succ
 
 -- Bug #660
 attribute [to_additive existing] Monoid.toMulOneClass
