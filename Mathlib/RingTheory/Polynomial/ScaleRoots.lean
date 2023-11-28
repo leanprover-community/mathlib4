@@ -253,6 +253,7 @@ lemma scaleRoots_dvd_iff (p q : R[X]) (r : R) (hr : IsUnit r) :
   refine ⟨?_ ∘ scaleRoots_dvd _ _ _ (hr.unit⁻¹).isUnit,
     scaleRoots_dvd p q r hr⟩
   simp [← scaleRoots_mul, scaleRoots_one]
+alias _root_.IsUnit.scaleRoots_dvd_iff := scaleRoots_dvd_iff
 
 lemma isCoprime_scaleRoots (p q : R[X]) (r : R) (hr : IsUnit r)
     (h : IsCoprime p q) :
@@ -267,6 +268,7 @@ lemma isCoprime_scaleRoots (p q : R[X]) (r : R) (hr : IsUnit r)
   simp only [smul_mul_assoc, ← mul_scaleRoots, smul_smul, Units.smul_def, mul_assoc,
     ← mul_pow, IsUnit.val_inv_mul, one_pow, mul_one, ← smul_add, one_smul, e, natDegree_one,
     one_scaleRoots, ← add_scaleRoots_of_natDegree_eq _ _ _ this, tsub_zero]
+alias _root_.IsCoprime.scaleRoots := isCoprime_scaleRoots
 
 end CommSemiring
 
