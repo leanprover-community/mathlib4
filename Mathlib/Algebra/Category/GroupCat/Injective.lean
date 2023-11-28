@@ -36,7 +36,7 @@ open CategoryTheory
 
 open Pointwise
 
-universe u v w w'
+universe u
 
 variable (A : Type u) [AddCommGroup A]
 
