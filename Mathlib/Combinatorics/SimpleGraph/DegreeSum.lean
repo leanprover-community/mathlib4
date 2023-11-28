@@ -51,6 +51,9 @@ section DegreeSum
 
 variable [Fintype V] [DecidableRel G.Adj]
 
+-- Porting note: Changed to `Fintype (Sym2 V)` to match Combinatorics.SimpleGraph.Basic
+variable [Fintype (Sym2 V)]
+
 theorem dart_fst_fiber [DecidableEq V] (v : V) :
     (univ.filter fun d : G.Dart => d.fst = v) = univ.image (G.dartOfNeighborSet v) := by
   ext d
