@@ -518,19 +518,37 @@ theorem image_preimage_eq {f : α → β} (s : Set β) (h : Surjective f) : f ''
     ⟨y, (e.symm ▸ hx : f y ∈ s), e⟩
 #align set.image_preimage_eq Set.image_preimage_eq
 
-/-- Without this theorem, `image_subset_iff` and `image_preimage_eq` create a simp confluence issue.
- -/
 @[simp]
 theorem preimage_subset_preimage {f : α → β} (s t : Set β) (h : Surjective f) :
     f ⁻¹' s ⊆ f ⁻¹' t ↔ s ⊆ t := by
   rw [← image_subset_iff, image_preimage_eq s h]
 
-/-- Without this theorem, `image_subset_iff` and `Nonempty.image_const` create a simp confluence
-  issue. -/
+/-- Without `preimage_subset_preimage`, `image_subset_iff` and `image_preimage_eq` create a simp
+  confluence issue. -/
+example {f : α → β} (s t : Set β) (h : Surjective f) :
+    f '' (f ⁻¹' s) ⊆ t ↔ f '' (f ⁻¹' s) ⊆ t := by
+  conv =>
+    congr
+    . simp [h, -image_preimage_eq, -preimage_subset_preimage]
+    . simp [h, -image_subset_iff, -preimage_subset_preimage]
+  fail_if_success simp [h, -preimage_subset_preimage]
+  simp [h]
+
 @[simp]
 theorem Nonempty.subset_preimage_const {s : Set α} (hs : Set.Nonempty s) (t : Set β) (a : β) :
     s ⊆ (fun _ => a) ⁻¹' t ↔ a ∈ t := by
   rw [← image_subset_iff, hs.image_const, singleton_subset_iff]
+
+/-- Without `Nonempty.subset_preimage_const`, `image_subset_iff` and `Nonempty.image_const` create a
+  simp confluence issue. -/
+example {s : Set α} (hs : Set.Nonempty s) (t : Set β) (a : β) :
+    (fun _ => a) '' s ⊆ t ↔ (fun _ => a) '' s ⊆ t := by
+  conv =>
+    congr
+    . simp [hs, -Nonempty.image_const, -Nonempty.subset_preimage_const]
+    . simp [hs, -image_subset_iff, -Nonempty.subset_preimage_const]
+  fail_if_success simp [hs, -Nonempty.subset_preimage_const]
+  simp [hs]
 
 @[simp]
 theorem preimage_eq_preimage {f : β → α} (hf : Surjective f) : f ⁻¹' s = f ⁻¹' t ↔ s = t :=
@@ -734,10 +752,19 @@ theorem image_univ {f : α → β} : f '' univ = range f := by
   simp [image, range]
 #align set.image_univ Set.image_univ
 
-/-- Without this theorem, `image_subset_iff` and `image_univ` create a simp confluence issue. -/
 @[simp]
 theorem univ_subset_preimage {f : α → β} (s) : univ ⊆ f ⁻¹' s ↔ range f ⊆ s := by
   rw [← image_subset_iff, image_univ]
+
+/-- Without `univ_subset_preimage`, `image_subset_iff` and `image_univ` create a
+  simp confluence issue. -/
+example {f : α → β} (s) : f '' univ ⊆ s ↔ f '' univ ⊆ s := by
+  conv =>
+    congr
+    . simp [-image_univ, -univ_subset_preimage]
+    . simp [-image_subset_iff, -univ_subset_preimage]
+  fail_if_success simp [-univ_subset_preimage]
+  simp
 
 theorem image_subset_range (f : α → β) (s) : f '' s ⊆ range f := by
   rw [← image_univ]; exact image_subset _ (subset_univ _)
