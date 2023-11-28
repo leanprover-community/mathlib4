@@ -51,6 +51,8 @@ end CommRingAddCommGroup
 
 end Coalgebra
 
+open Coalgebra
+
 namespace Finsupp
 
 section CommRing
@@ -74,14 +76,21 @@ instance instCoalgebra : Coalgebra R (S →₀ R) where
   id_ε := by
     ext; simp
 
-theorem Δ_single (s : S) (r : R) : (instCoalgebra R S).Δ (Finsupp.single s r) =
+theorem Δ_single (s : S) (r : R) : Δ (Finsupp.single s r) =
     (Finsupp.single s r) ⊗ₜ[R] (Finsupp.single s 1) := by
-  unfold Coalgebra.Δ; unfold instCoalgebra; simp
+  unfold Δ; unfold instCoalgebra; simp
   rw [TensorProduct.smul_tmul', smul_single_one s r]
 
-theorem ε_single (s : S) (r : R) : (instCoalgebra R S).ε (Finsupp.single s r) = r := by
-  unfold Coalgebra.ε; unfold instCoalgebra; simp
+theorem ε_single (s : S) (r : R) : ε (Finsupp.single s r) = r := by
+  unfold ε; unfold instCoalgebra; simp
 
 end CommRing
 
 end Finsupp
+
+instance (R : Type u) [CommRing R] : Coalgebra R R where
+  Δ := (TensorProduct.mk R R R) 1
+  ε := .id
+  coassoc := rfl
+  ε_id := by ext; simp
+  id_ε := by ext; simp
