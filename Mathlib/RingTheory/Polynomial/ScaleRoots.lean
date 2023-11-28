@@ -224,8 +224,7 @@ lemma mul_scaleRoots_of_noZeroDivisors (p q : R[X]) (r : R) [NoZeroDivisors R] :
   apply mul_scaleRoots'
   simp only [ne_eq, mul_eq_zero, leadingCoeff_eq_zero, hp, hq, or_self, not_false_eq_true]
 
-lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R)
-    (h : natDegree p = natDegree q) :
+lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R) (h : natDegree p = natDegree q) :
     r ^ (natDegree p - natDegree (p + q)) • (p + q).scaleRoots r =
       p.scaleRoots r + q.scaleRoots r := by
   ext n; simp only [coeff_smul, coeff_scaleRoots, coeff_add, smul_eq_mul,
@@ -234,7 +233,7 @@ lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R)
   | inl hn => simp only [← coeff_add, coeff_eq_zero_of_natDegree_lt hn, zero_mul]
   | inr hn => rw [tsub_add_tsub_cancel (natDegree_add_le_of_degree_le le_rfl h.ge) hn]
 
-lemma scaleRoots_dvd (p q : R[X]) (r : R) (hr : IsUnit r)
+lemma scaleRoots_dvd' (p q : R[X]) {r : R} (hr : IsUnit r)
     (hpq : p ∣ q) : p.scaleRoots r ∣ q.scaleRoots r := by
   obtain ⟨a, rfl⟩ := hpq
   rw [← ((hr.pow (natDegree p + natDegree a - natDegree (p * a))).map
@@ -250,13 +249,11 @@ alias _root_.Dvd.dvd.scaleRoots := scaleRoots_dvd
 
 lemma scaleRoots_dvd_iff (p q : R[X]) (r : R) (hr : IsUnit r) :
     p.scaleRoots r ∣ q.scaleRoots r ↔ p ∣ q := by
-  refine ⟨?_ ∘ scaleRoots_dvd _ _ _ (hr.unit⁻¹).isUnit,
-    scaleRoots_dvd p q r hr⟩
+  refine ⟨?_ ∘ scaleRoots_dvd' _ _ (hr.unit⁻¹).isUnit, scaleRoots_dvd' p q hr⟩
   simp [← scaleRoots_mul, scaleRoots_one]
 alias _root_.IsUnit.scaleRoots_dvd_iff := scaleRoots_dvd_iff
 
-lemma isCoprime_scaleRoots (p q : R[X]) (r : R) (hr : IsUnit r)
-    (h : IsCoprime p q) :
+lemma isCoprime_scaleRoots (p q : R[X]) (r : R) (hr : IsUnit r) (h : IsCoprime p q) :
     IsCoprime (p.scaleRoots r) (q.scaleRoots r) := by
   obtain ⟨a, b, e⟩ := h
   let s : R := ↑hr.unit⁻¹
