@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey
 -/
 import Mathlib.RingTheory.TensorProduct
-import Mathlib.LinearAlgebra.TensorProduct
 
 /-!
 # Definition and example of a coalgebra
 -/
+
+suppress_compilation
 
 universe u v
 
