@@ -190,7 +190,7 @@ end
 
 variable (F G)
 
-lemma presheafHom_isSheaf (hG : Presheaf.IsSheaf J G) :
+lemma Presheaf.IsSheaf.hom (hG : Presheaf.IsSheaf J G) :
     Presheaf.IsSheaf J (presheafHom F G) := by
   rw [isSheaf_iff_isSheaf_of_type]
   intro X S hS
