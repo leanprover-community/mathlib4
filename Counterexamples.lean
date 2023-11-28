@@ -1,5 +1,6 @@
 import Counterexamples.CanonicallyOrderedCommSemiringTwoMul
 import Counterexamples.CharPZeroNeCharZero
+import Counterexamples.CliffordAlgebra_not_injective
 import Counterexamples.Cyclotomic105
 import Counterexamples.DirectSumIsInternal
 import Counterexamples.Girard

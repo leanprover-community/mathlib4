@@ -5,6 +5,7 @@ Authors: Adam Topaz
 -/
 import Mathlib.Topology.Category.Profinite.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.Topology.Category.CompHaus.Limits
 
 /-!
 
@@ -24,7 +25,7 @@ namespace Profinite
 
 universe u
 
-open CategoryTheory
+open CategoryTheory Limits
 
 section Pullbacks
 
@@ -70,11 +71,11 @@ def pullback.lift {Z : Profinite.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f =
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_fst {Z : Profinite.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
-  pullback.lift f g a b w ≫ pullback.fst f g = a := rfl
+    pullback.lift f g a b w ≫ pullback.fst f g = a := rfl
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_snd {Z : Profinite.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
-  pullback.lift f g a b w ≫ pullback.snd f g = b := rfl
+    pullback.lift f g a b w ≫ pullback.snd f g = b := rfl
 
 lemma pullback.hom_ext {Z : Profinite.{u}} (a b : Z ⟶ pullback f g)
     (hfst : a ≫ pullback.fst f g = b ≫ pullback.fst f g)
@@ -157,7 +158,7 @@ def finiteCoproduct.desc {B : Profinite.{u}} (e : (a : α) → (X a ⟶ B)) :
 
 @[reassoc (attr := simp)]
 lemma finiteCoproduct.ι_desc {B : Profinite.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :
-  finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
+    finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
 
 lemma finiteCoproduct.hom_ext {B : Profinite.{u}} (f g : finiteCoproduct X ⟶ B)
     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
@@ -214,6 +215,16 @@ lemma finiteCoproduct.ι_desc_apply {B : Profinite} {π : (a : α) → X a ⟶ B
   intro x
   change (ι X a ≫ desc X π) _ = _
   simp only [ι_desc]
+
+instance : PreservesFiniteCoproducts profiniteToCompHaus := by
+  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
+  suffices : PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) profiniteToCompHaus
+  · exact preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
+  apply preservesColimitOfPreservesColimitCocone (Profinite.finiteCoproduct.isColimit _)
+  exact CompHaus.finiteCoproduct.isColimit _
+
+instance : FinitaryExtensive Profinite :=
+  finitaryExtensive_of_preserves_and_reflects profiniteToCompHaus
 
 end FiniteCoproducts
 

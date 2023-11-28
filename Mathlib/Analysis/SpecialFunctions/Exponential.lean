@@ -53,7 +53,7 @@ We prove most results for an arbitrary field `𝕂`, and then specialize to `�
 -/
 
 
-open Filter IsROrC ContinuousMultilinearMap NormedField Asymptotics
+open Filter IsROrC ContinuousMultilinearMap NormedField NormedSpace Asymptotics
 
 open scoped Nat Topology BigOperators ENNReal
 
@@ -69,7 +69,7 @@ theorem hasStrictFDerivAt_exp_zero_of_radius_pos (h : 0 < (expSeries 𝕂 𝔸).
   convert (hasFPowerSeriesAt_exp_zero_of_radius_pos h).hasStrictFDerivAt
   ext x
   change x = expSeries 𝕂 𝔸 1 fun _ => x
-  simp [expSeries_apply_eq]
+  simp [expSeries_apply_eq, Nat.factorial]
 #align has_strict_fderiv_at_exp_zero_of_radius_pos hasStrictFDerivAt_exp_zero_of_radius_pos
 
 /-- The exponential in a Banach algebra `𝔸` over a normed field `𝕂` has Fréchet derivative
@@ -216,15 +216,15 @@ theorem hasDerivAt_exp_zero : HasDerivAt (exp 𝕂) (1 : 𝕂) 0 :=
 
 end DerivROrC
 
-theorem Complex.exp_eq_exp_ℂ : Complex.exp = _root_.exp ℂ := by
+theorem Complex.exp_eq_exp_ℂ : Complex.exp = NormedSpace.exp ℂ := by
   refine' funext fun x => _
   rw [Complex.exp, exp_eq_tsum_div]
   have : CauSeq.IsComplete ℂ norm := Complex.instIsComplete
   exact tendsto_nhds_unique x.exp'.tendsto_limit (expSeries_div_summable ℝ x).hasSum.tendsto_sum_nat
 #align complex.exp_eq_exp_ℂ Complex.exp_eq_exp_ℂ
 
-theorem Real.exp_eq_exp_ℝ : Real.exp = _root_.exp ℝ := by
-  ext x; exact_mod_cast congr_fun Complex.exp_eq_exp_ℂ x
+theorem Real.exp_eq_exp_ℝ : Real.exp = NormedSpace.exp ℝ := by
+  ext x; exact mod_cast congr_fun Complex.exp_eq_exp_ℂ x
 #align real.exp_eq_exp_ℝ Real.exp_eq_exp_ℝ
 
 /-! ### Derivative of $\exp (ux)$ by $u$

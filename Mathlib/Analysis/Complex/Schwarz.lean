@@ -77,7 +77,7 @@ theorem schwarz_aux {f : ℂ → ℂ} (hd : DifferentiableOn ℂ f (ball c R₁)
     rw [closure_ball c hr₀.ne']
     exact ((differentiableOn_dslope <| ball_mem_nhds _ hR₁).mpr hd).mono
       (closedBall_subset_ball hr.2)
-  refine' norm_le_of_forall_mem_frontier_norm_le bounded_ball hd _ _
+  refine' norm_le_of_forall_mem_frontier_norm_le isBounded_ball hd _ _
   · rw [frontier_ball c hr₀.ne']
     intro z hz
     have hz' : z ≠ c := ne_of_mem_sphere hz hr₀.ne'
@@ -116,7 +116,7 @@ theorem affine_of_mapsTo_ball_of_exists_norm_dslope_eq_div [CompleteSpace E] [St
     Set.EqOn f (fun z => f c + (z - c) • dslope f c z₀) (ball c R₁) := by
   set g := dslope f c
   rintro z hz
-  by_cases z = c; · simp [h]
+  by_cases h : z = c; · simp [h]
   have h_R₁ : 0 < R₁ := nonempty_ball.mp ⟨_, h_z₀⟩
   have g_le_div : ∀ z ∈ ball c R₁, ‖g z‖ ≤ R₂ / R₁ := fun z hz =>
     norm_dslope_le_div_of_mapsTo_ball hd h_maps hz

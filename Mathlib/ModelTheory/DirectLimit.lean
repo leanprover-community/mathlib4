@@ -65,8 +65,10 @@ theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   ext x
   induction' k with k ih
-  · rw [natLERec, Nat.leRecOn_self, Embedding.refl_apply, Nat.leRecOn_self]
-  · rw [Nat.leRecOn_succ le_self_add, natLERec, Nat.leRecOn_succ le_self_add, ← natLERec,
+  · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [natLERec, Nat.leRecOn_self, Embedding.refl_apply, Nat.leRecOn_self]
+  · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [Nat.leRecOn_succ le_self_add, natLERec, Nat.leRecOn_succ le_self_add, ← natLERec,
       Embedding.comp_apply, ih]
 #align first_order.language.directed_system.coe_nat_le_rec FirstOrder.Language.DirectedSystem.coe_natLERec
 
@@ -252,7 +254,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem funMap_quotient_mk'_sigma_mk' {n : ℕ} {F : L.Functions n} {i : ι} {x : Fin n → G i} :
     funMap F (fun a => (⟦.mk f i (x a)⟧ : DirectLimit G f)) = ⟦.mk f i (funMap F x)⟧ := by
-  simp [Function.comp_apply, funMap_quotient_mk', Quotient.eq']
+  simp only [funMap_quotient_mk', Quotient.eq]
   obtain ⟨k, ik, jk⟩ :=
     directed_of (· ≤ ·) i (Classical.choose (Fintype.bddAbove_range fun _ : Fin n => i))
   refine' ⟨k, jk, ik, _⟩
@@ -295,7 +297,7 @@ def of (i : ι) : G i ↪[L] DirectLimit G f where
     obtain ⟨j, h1, _, h3⟩ := h
     exact (f i j h1).injective h3
   map_fun' F x := by
-    simp
+    simp only
     rw [← funMap_quotient_mk'_sigma_mk']
     rfl
   map_rel' := by
@@ -346,7 +348,7 @@ to a unique map out of the direct limit. -/
 def lift : DirectLimit G f ↪[L] P where
   toFun :=
     Quotient.lift (fun x : Σˣ f => (g x.1) x.2) fun x y xy => by
-      simp
+      simp only
       obtain ⟨i, hx, hy⟩ := directed_of (· ≤ ·) x.1 y.1
       rw [← Hg x.1 i hx, ← Hg y.1 i hy]
       exact congr_arg _ ((equiv_iff ..).1 xy)

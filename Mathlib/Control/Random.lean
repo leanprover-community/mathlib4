@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving
 -/
 
-import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Order.Defs
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Control.ULiftable
@@ -104,7 +104,7 @@ instance : BoundedRandom Nat where
     let z ← rand (Fin (hi - lo).succ)
     pure ⟨
       lo + z.val, Nat.le_add_right _ _,
-      Nat.add_le_of_le_sub_left h (Nat.le_of_succ_le_succ z.isLt)
+      Nat.add_le_of_le_sub' h (Nat.le_of_succ_le_succ z.isLt)
     ⟩
 
 instance : BoundedRandom Int where

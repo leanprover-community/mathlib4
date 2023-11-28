@@ -101,10 +101,10 @@ theorem IsPrimePow.dvd {n m : ℕ} (hn : IsPrimePow n) (hm : m ∣ n) (hm₁ : m
   refine' ⟨p, i, hp, _, rfl⟩
   apply Nat.pos_of_ne_zero
   rintro rfl
-  simp only [pow_zero, ne_eq] at hm₁
+  simp only [pow_zero, ne_eq, not_true_eq_false] at hm₁
 #align is_prime_pow.dvd IsPrimePow.dvd
 
-theorem Nat.disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.coprime b) :
+theorem Nat.disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.Coprime b) :
     Disjoint (a.divisors.filter IsPrimePow) (b.divisors.filter IsPrimePow) := by
   simp only [Finset.disjoint_left, Finset.mem_filter, and_imp, Nat.mem_divisors, not_and]
   rintro n han _ha hn hbn _hb -

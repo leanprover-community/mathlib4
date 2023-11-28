@@ -83,7 +83,7 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
   specialize h₃ (a * b) hab
   cases' h₃ with hab₁ hab₂
   -- f(ab) = ab → b^4 = 1 → b = 1 → f(b) = b → false
-  · rw [ hab₁, div_left_inj' h2ab_ne_0 ] at H₂
+  · rw [hab₁, div_left_inj' h2ab_ne_0] at H₂
     field_simp at H₂
     have hb₁ : b ^ 4 = 1 := by linear_combination -H₂
     obtain hb₂ := abs_eq_one_of_pow_eq_one b 4 (show 4 ≠ 0 by norm_num) hb₁

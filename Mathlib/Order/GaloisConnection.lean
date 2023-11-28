@@ -27,7 +27,7 @@ such that `∀ a b, l a ≤ b ↔ a ≤ u b`.
 ## Implementation details
 
 Galois insertions can be used to lift order structures from one type to another.
-For example if `α` is a complete lattice, and `l : α → β`, and `u : β → α` form a Galois insertion,
+For example, if `α` is a complete lattice, and `l : α → β` and `u : β → α` form a Galois insertion,
 then `β` is also a complete lattice. `l` is the lower adjoint and `u` is the upper adjoint.
 
 An example of a Galois insertion is in group theory. If `G` is a group, then there is a Galois
@@ -56,8 +56,8 @@ variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {κ : ι → So
   {b b₁ b₂ : β}
 
 /-- A Galois connection is a pair of functions `l` and `u` satisfying
-  `l a ≤ b ↔ a ≤ u b`. They are special cases of adjoint functors in category theory,
-    but do not depend on the category theory library in mathlib. -/
+`l a ≤ b ↔ a ≤ u b`. They are special cases of adjoint functors in category theory,
+but do not depend on the category theory library in mathlib. -/
 def GaloisConnection [Preorder α] [Preorder β] (l : α → β) (u : β → α) :=
   ∀ a b, l a ≤ b ↔ a ≤ u b
 #align galois_connection GaloisConnection
@@ -378,6 +378,16 @@ theorem l_comm_iff_u_comm {X : Type*} [PartialOrder X] {Y : Type*} [Preorder Y] 
 end GaloisConnection
 
 section
+
+/-- `sSup` and `Iic` form a Galois connection. -/
+theorem gc_sSup_Iic [CompleteSemilatticeSup α] :
+    GaloisConnection (sSup : Set α → α) (Iic : α → Set α) :=
+  fun _ _ ↦ sSup_le_iff
+
+/-- `toDual ∘ Ici` and `sInf ∘ ofDual` form a Galois connection. -/
+theorem gc_Ici_sInf [CompleteSemilatticeInf α] :
+    GaloisConnection (toDual ∘ Ici : α → (Set α)ᵒᵈ) (sInf ∘ ofDual : (Set α)ᵒᵈ → α) :=
+  fun _ _ ↦ le_sInf_iff.symm
 
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ] {f : α → β → γ} {s : Set α}
   {t : Set β} {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α → γ → β}
@@ -755,7 +765,7 @@ def GaloisCoinsertion.monotoneIntro [Preorder α] [Preorder β] {l : α → β} 
   (GaloisInsertion.monotoneIntro hl.dual hu.dual hlu hul).ofDual
 #align galois_coinsertion.monotone_intro GaloisCoinsertion.monotoneIntro
 
-/-- Make a `GaloisCoinsertion l u` from a `GaloisConnection l u` such that `∀ b, b ≤ l (u b)` -/
+/-- Make a `GaloisCoinsertion l u` from a `GaloisConnection l u` such that `∀ a, u (l a) ≤ a` -/
 def GaloisConnection.toGaloisCoinsertion {α β : Type*} [Preorder α] [Preorder β] {l : α → β}
     {u : β → α} (gc : GaloisConnection l u) (h : ∀ a, u (l a) ≤ a) : GaloisCoinsertion l u :=
   { choice := fun x _ => u x
@@ -937,11 +947,21 @@ end lift
 
 end GaloisCoinsertion
 
+/-- `sSup` and `Iic` form a Galois insertion. -/
+def gi_sSup_Iic [CompleteSemilatticeSup α] :
+    GaloisInsertion (sSup : Set α → α) (Iic : α → Set α) :=
+  gc_sSup_Iic.toGaloisInsertion fun _ ↦ le_sSup le_rfl
+
+/-- `toDual ∘ Ici` and `sInf ∘ ofDual` form a Galois coinsertion. -/
+def gci_Ici_sInf [CompleteSemilatticeInf α] :
+    GaloisCoinsertion (toDual ∘ Ici : α → (Set α)ᵒᵈ) (sInf ∘ ofDual : (Set α)ᵒᵈ → α) :=
+  gc_Ici_sInf.toGaloisCoinsertion fun _ ↦ sInf_le le_rfl
+
 /-- If `α` is a partial order with bottom element (e.g., `ℕ`, `ℝ≥0`), then `WithBot.unbot' ⊥` and
 coercion form a Galois insertion. -/
 def WithBot.giUnbot'Bot [Preorder α] [OrderBot α] :
     GaloisInsertion (WithBot.unbot' ⊥) (some : α → WithBot α) where
-  gc _ _ := WithBot.unbot'_bot_le_iff
+  gc _ _ := WithBot.unbot'_le_iff (fun _ ↦ bot_le)
   le_l_u _ := le_rfl
   choice o _ := o.unbot' ⊥
   choice_eq _ _ := rfl

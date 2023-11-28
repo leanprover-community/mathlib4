@@ -205,7 +205,7 @@ private theorem basic_inter {X : Compactum} (A B : Set X) : basic (A ∩ B) = ba
   ext G
   constructor
   · intro hG
-    constructor <;> filter_upwards [hG]with _
+    constructor <;> filter_upwards [hG] with _
     exacts [And.left, And.right]
   · rintro ⟨h1, h2⟩
     exact inter_mem h1 h2

@@ -54,8 +54,8 @@ open scoped Polynomial
 /-- Turn a function `f : C(X, ℝ)` into a continuous map into `Set.Icc (-‖f‖) (‖f‖)`,
 thereby explicitly attaching bounds.
 -/
-def attachBound (f : C(X, ℝ)) : C(X, Set.Icc (-‖f‖) ‖f‖)
-    where toFun x := ⟨f x, ⟨neg_norm_le_apply f x, apply_le_norm f x⟩⟩
+def attachBound (f : C(X, ℝ)) : C(X, Set.Icc (-‖f‖) ‖f‖) where
+  toFun x := ⟨f x, ⟨neg_norm_le_apply f x, apply_le_norm f x⟩⟩
 #align continuous_map.attach_bound ContinuousMap.attachBound
 
 @[simp]
@@ -70,6 +70,8 @@ theorem polynomial_comp_attachBound (A : Subalgebra ℝ C(X, ℝ)) (f : A) (g : 
   simp only [ContinuousMap.coe_comp, Function.comp_apply, ContinuousMap.attachBound_apply_coe,
     Polynomial.toContinuousMapOn_apply, Polynomial.aeval_subalgebra_coe,
     Polynomial.aeval_continuousMap_apply, Polynomial.toContinuousMap_apply]
+  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  erw [ContinuousMap.attachBound_apply_coe]
 #align continuous_map.polynomial_comp_attach_bound ContinuousMap.polynomial_comp_attachBound
 
 /-- Given a continuous function `f` in a subalgebra of `C(X, ℝ)`, postcomposing by a polynomial
@@ -126,7 +128,7 @@ theorem inf_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
           (A.le_topologicalClosure g.property))
         _)
       _
-  exact_mod_cast abs_mem_subalgebra_closure A _
+  exact mod_cast abs_mem_subalgebra_closure A _
 #align continuous_map.inf_mem_subalgebra_closure ContinuousMap.inf_mem_subalgebra_closure
 
 theorem inf_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (A : Set C(X, ℝ)))
@@ -148,7 +150,7 @@ theorem sup_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :
           (A.le_topologicalClosure g.property))
         _)
       _
-  exact_mod_cast abs_mem_subalgebra_closure A _
+  exact mod_cast abs_mem_subalgebra_closure A _
 #align continuous_map.sup_mem_subalgebra_closure ContinuousMap.sup_mem_subalgebra_closure
 
 theorem sup_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (A : Set C(X, ℝ)))
@@ -333,7 +335,7 @@ section IsROrC
 open IsROrC
 
 -- Redefine `X`, since for the next lemma it need not be compact
-variable {𝕜 : Type _} {X : Type*} [IsROrC 𝕜] [TopologicalSpace X]
+variable {𝕜 : Type*} {X : Type*} [IsROrC 𝕜] [TopologicalSpace X]
 
 open ContinuousMap
 
@@ -376,6 +378,7 @@ theorem Subalgebra.SeparatesPoints.isROrC_to_real {A : StarSubalgebra 𝕜 C(X, 
 
 variable [CompactSpace X]
 
+set_option synthInstance.maxHeartbeats 30000 in
 /-- The Stone-Weierstrass approximation theorem, `IsROrC` version, that a star subalgebra `A` of
 `C(X, 𝕜)`, where `X` is a compact topological space and `IsROrC 𝕜`, is dense if itseparates
 points. -/

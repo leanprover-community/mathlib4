@@ -37,7 +37,6 @@ instance (priority := 100) NormedSpace.to_uniformContinuousConstSMul :
 
 instance : NormedSpace 𝕜 (Completion E) :=
   { Completion.instModule with
-    smul := (· • ·)
     norm_smul_le := fun c x =>
       induction_on x
         (isClosed_le (continuous_const_smul _).norm (continuous_const.mul continuous_norm)) fun y =>

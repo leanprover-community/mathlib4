@@ -775,7 +775,6 @@ theorem setToL1S_sub {T : Set α → E →L[ℝ] F} (h_zero : ∀ s, MeasurableS
   rw [sub_eq_add_neg, setToL1S_add T h_zero h_add, setToL1S_neg h_zero h_add, sub_eq_add_neg]
 #align measure_theory.L1.simple_func.set_to_L1s_sub MeasureTheory.L1.SimpleFunc.setToL1S_sub
 
-set_option synthInstance.maxHeartbeats 30000 in
 theorem setToL1S_smul_real (T : Set α → E →L[ℝ] F)
     (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0) (h_add : FinMeasAdditive μ T) (c : ℝ)
     (f : α →₁ₛ[μ] E) : setToL1S T (c • f) = c • setToL1S T f := by
@@ -785,7 +784,6 @@ theorem setToL1S_smul_real (T : Set α → E →L[ℝ] F)
   exact smul_toSimpleFunc c f
 #align measure_theory.L1.simple_func.set_to_L1s_smul_real MeasureTheory.L1.SimpleFunc.setToL1S_smul_real
 
-set_option synthInstance.maxHeartbeats 30000 in
 theorem setToL1S_smul {E} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
     [NormedSpace 𝕜 F] (T : Set α → E →L[ℝ] F) (h_zero : ∀ s, MeasurableSet s → μ s = 0 → T s = 0)
     (h_add : FinMeasAdditive μ T) (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜)
@@ -1083,8 +1081,6 @@ theorem setToL1_add_left (hT : DominatedFinMeasAdditive μ T C)
     rw [this, ContinuousLinearMap.add_apply]
   refine' ContinuousLinearMap.extend_unique (setToL1SCLM α E μ (hT.add hT')) _ _ _ _ _
   ext1 f
-  simp only [ContinuousLinearMap.add_comp, ContinuousLinearMap.coe_comp', Function.comp_apply,
-    ContinuousLinearMap.add_apply]
   suffices setToL1 hT f + setToL1 hT' f = setToL1SCLM α E μ (hT.add hT') f by
     rw [← this]; rfl
   rw [setToL1_eq_setToL1SCLM, setToL1_eq_setToL1SCLM, setToL1SCLM_add_left hT hT']
@@ -1097,8 +1093,6 @@ theorem setToL1_add_left' (hT : DominatedFinMeasAdditive μ T C)
   suffices setToL1 hT'' = setToL1 hT + setToL1 hT' by rw [this, ContinuousLinearMap.add_apply]
   refine' ContinuousLinearMap.extend_unique (setToL1SCLM α E μ hT'') _ _ _ _ _
   ext1 f
-  simp only [ContinuousLinearMap.add_comp, ContinuousLinearMap.coe_comp', Function.comp_apply,
-    ContinuousLinearMap.add_apply]
   suffices setToL1 hT f + setToL1 hT' f = setToL1SCLM α E μ hT'' f by rw [← this]; congr
   rw [setToL1_eq_setToL1SCLM, setToL1_eq_setToL1SCLM,
     setToL1SCLM_add_left' hT hT' hT'' h_add]
@@ -1109,8 +1103,6 @@ theorem setToL1_smul_left (hT : DominatedFinMeasAdditive μ T C) (c : ℝ) (f : 
   suffices setToL1 (hT.smul c) = c • setToL1 hT by rw [this, ContinuousLinearMap.smul_apply]
   refine' ContinuousLinearMap.extend_unique (setToL1SCLM α E μ (hT.smul c)) _ _ _ _ _
   ext1 f
-  simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.smul_comp,
-    Pi.smul_apply, ContinuousLinearMap.coe_smul']
   suffices c • setToL1 hT f = setToL1SCLM α E μ (hT.smul c) f by rw [← this]; congr
   rw [setToL1_eq_setToL1SCLM, setToL1SCLM_smul_left c hT]
 #align measure_theory.L1.set_to_L1_smul_left MeasureTheory.L1.setToL1_smul_left
@@ -1122,8 +1114,6 @@ theorem setToL1_smul_left' (hT : DominatedFinMeasAdditive μ T C)
   suffices setToL1 hT' = c • setToL1 hT by rw [this, ContinuousLinearMap.smul_apply]
   refine' ContinuousLinearMap.extend_unique (setToL1SCLM α E μ hT') _ _ _ _ _
   ext1 f
-  simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.smul_comp,
-    Pi.smul_apply, ContinuousLinearMap.coe_smul']
   suffices c • setToL1 hT f = setToL1SCLM α E μ hT' f by rw [← this]; congr
   rw [setToL1_eq_setToL1SCLM, setToL1SCLM_smul_left' c hT hT' h_smul]
 #align measure_theory.L1.set_to_L1_smul_left' MeasureTheory.L1.setToL1_smul_left'
@@ -1522,7 +1512,7 @@ theorem tendsto_setToFun_of_L1 (hT : DominatedFinMeasAdditive μ T C) {ι} (f : 
       rw [Lp.tendsto_Lp_iff_tendsto_ℒp']
       simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply]
       refine' (tendsto_congr' _).mp hfs
-      filter_upwards [hfsi]with i hi
+      filter_upwards [hfsi] with i hi
       refine' lintegral_congr_ae _
       filter_upwards [hi.coeFn_toL1, hfi.coeFn_toL1] with x hxi hxf
       simp_rw [dif_pos hi, hxi, hxf]

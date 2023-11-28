@@ -206,7 +206,7 @@ example (n : ℕ) : n = 0 ∨ ∃ p : ℕ+, n = p := by
     right
     exact ⟨n, rfl⟩
   · left
-    exact Nat.eq_zero_of_nonpos _ hn
+    exact Nat.eq_zero_of_not_pos hn
 
 example (n : ℤ) (hn : 0 < n) : True := by
   lift n to ℕ+

@@ -550,6 +550,16 @@ theorem lipschitzOnWith_of_nnnorm_fderiv_le {C : ℝ≥0} (hf : ∀ x ∈ s, Dif
     (fun x hx => (hf x hx).hasFDerivAt.hasFDerivWithinAt) bound
 #align convex.lipschitz_on_with_of_nnnorm_fderiv_le Convex.lipschitzOnWith_of_nnnorm_fderiv_le
 
+/-- The mean value theorem: if the derivative of a function is bounded by `C`, then the function is
+`C`-Lipschitz. Version with `fderiv` and `LipschitzWith`. -/
+theorem _root_.lipschitzWith_of_nnnorm_fderiv_le
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f : E → G}
+    {C : ℝ≥0} (hf : Differentiable 𝕜 f)
+    (bound : ∀ x, ‖fderiv 𝕜 f x‖₊ ≤ C) : LipschitzWith C f := by
+  let A : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
+  rw [← lipschitzOn_univ]
+  exact lipschitzOnWith_of_nnnorm_fderiv_le (fun x _ ↦ hf x) (fun x _ ↦ bound x) convex_univ
+
 /-- Variant of the mean value inequality on a convex set, using a bound on the difference between
 the derivative and a fixed linear map, rather than a bound on the derivative itself. Version with
 `HasFDerivWithinAt`. -/
@@ -595,9 +605,12 @@ theorem is_const_of_fderivWithin_eq_zero (hs : Convex ℝ s) (hf : Differentiabl
     hs.norm_image_sub_le_of_norm_fderivWithin_le hf bound hx hy
 #align convex.is_const_of_fderiv_within_eq_zero Convex.is_const_of_fderivWithin_eq_zero
 
-theorem _root_.is_const_of_fderiv_eq_zero (hf : Differentiable 𝕜 f) (hf' : ∀ x, fderiv 𝕜 f x = 0)
-    (x y : E) : f x = f y :=
-  convex_univ.is_const_of_fderivWithin_eq_zero hf.differentiableOn
+theorem _root_.is_const_of_fderiv_eq_zero
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f : E → G}
+    (hf : Differentiable 𝕜 f) (hf' : ∀ x, fderiv 𝕜 f x = 0)
+    (x y : E) : f x = f y := by
+  let A : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
+  exact convex_univ.is_const_of_fderivWithin_eq_zero hf.differentiableOn
     (fun x _ => by rw [fderivWithin_univ]; exact hf' x) trivial trivial
 #align is_const_of_fderiv_eq_zero is_const_of_fderiv_eq_zero
 
@@ -612,11 +625,14 @@ theorem eqOn_of_fderivWithin_eq (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 
   rw [fderivWithin_sub (hs' _ hz) (hf _ hz) (hg _ hz), sub_eq_zero, hf' _ hz]
 #align convex.eq_on_of_fderiv_within_eq Convex.eqOn_of_fderivWithin_eq
 
-theorem _root_.eq_of_fderiv_eq (hf : Differentiable 𝕜 f) (hg : Differentiable 𝕜 g)
-    (hf' : ∀ x, fderiv 𝕜 f x = fderiv 𝕜 g x) (x : E) (hfgx : f x = g x) : f = g :=
+theorem _root_.eq_of_fderiv_eq
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f g : E → G}
+    (hf : Differentiable 𝕜 f) (hg : Differentiable 𝕜 g)
+    (hf' : ∀ x, fderiv 𝕜 f x = fderiv 𝕜 g x) (x : E) (hfgx : f x = g x) : f = g := by
+  let A : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
   suffices Set.univ.EqOn f g from funext fun x => this <| mem_univ x
-  convex_univ.eqOn_of_fderivWithin_eq hf.differentiableOn hg.differentiableOn uniqueDiffOn_univ
-    (fun x _ => by simpa using hf' _) (mem_univ _) hfgx
+  exact convex_univ.eqOn_of_fderivWithin_eq hf.differentiableOn hg.differentiableOn
+    uniqueDiffOn_univ (fun x _ => by simpa using hf' _) (mem_univ _) hfgx
 #align eq_of_fderiv_eq eq_of_fderiv_eq
 
 end Convex

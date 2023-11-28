@@ -58,8 +58,8 @@ def IsTerminal.isTerminalOfObj [ReflectsLimit (Functor.empty.{0} C) G] (l : IsTe
 
 /-- Preserving the terminal object implies preserving all limits of the empty diagram. -/
 def preservesLimitsOfShapePemptyOfPreservesTerminal [PreservesLimit (Functor.empty.{0} C) G] :
-    PreservesLimitsOfShape (Discrete PEmpty) G
-    where preservesLimit :=
+    PreservesLimitsOfShape (Discrete PEmpty) G where
+  preservesLimit :=
     preservesLimitOfIsoDiagram G (Functor.emptyExt (Functor.empty.{0} C) _)
 #align category_theory.limits.preserves_limits_of_shape_pempty_of_preserves_terminal CategoryTheory.Limits.preservesLimitsOfShapePemptyOfPreservesTerminal
 
@@ -151,8 +151,8 @@ def IsInitial.isInitialOfObj [ReflectsColimit (Functor.empty.{0} C) G] (l : IsIn
 
 /-- Preserving the initial object implies preserving all colimits of the empty diagram. -/
 def preservesColimitsOfShapePemptyOfPreservesInitial [PreservesColimit (Functor.empty.{0} C) G] :
-    PreservesColimitsOfShape (Discrete PEmpty) G
-    where preservesColimit :=
+    PreservesColimitsOfShape (Discrete PEmpty) G where
+  preservesColimit :=
     preservesColimitOfIsoDiagram G (Functor.emptyExt (Functor.empty.{0} C) _)
 #align category_theory.limits.preserves_colimits_of_shape_pempty_of_preserves_initial CategoryTheory.Limits.preservesColimitsOfShapePemptyOfPreservesInitial
 
@@ -197,7 +197,7 @@ def preservesInitialOfIsIso (f : ⊥_ D ⟶ G.obj (⊥_ C)) [i : IsIso f] :
   exact PreservesInitial.ofIsoComparison G
 #align category_theory.limits.preserves_initial_of_is_iso CategoryTheory.Limits.preservesInitialOfIsIso
 
-/-- If there is any isomorphism `⊥ ≅ G.obj ⊥ `, then `G` preserves initial objects. -/
+/-- If there is any isomorphism `⊥ ≅ G.obj ⊥`, then `G` preserves initial objects. -/
 def preservesInitialOfIso (f : ⊥_ D ≅ G.obj (⊥_ C)) : PreservesColimit (Functor.empty C) G :=
   preservesInitialOfIsIso G f.hom
 #align category_theory.limits.preserves_initial_of_iso CategoryTheory.Limits.preservesInitialOfIso

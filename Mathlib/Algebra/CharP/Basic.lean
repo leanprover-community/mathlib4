@@ -110,7 +110,7 @@ class CharP [AddMonoidWithOne R] (p : ℕ) : Prop where
 -- porting note: the field of the structure had implicit arguments where they were
 -- explicit in Lean 3
 theorem CharP.cast_eq_zero_iff (R : Type u) [AddMonoidWithOne R] (p : ℕ) [CharP R p] (x : ℕ) :
-  (x : R) = 0 ↔ p ∣ x :=
+    (x : R) = 0 ↔ p ∣ x :=
 CharP.cast_eq_zero_iff' (R := R) (p := p) x
 
 @[simp]
@@ -511,8 +511,6 @@ end CommRing
 
 section Semiring
 
-open Nat
-
 variable [NonAssocSemiring R]
 
 theorem char_ne_one [Nontrivial R] (p : ℕ) [hc : CharP R p] : p ≠ 1 := fun hp : p = 1 =>
@@ -529,7 +527,7 @@ theorem char_is_prime_of_two_le (p : ℕ) [hc : CharP R p] (hp : 2 ≤ p) : Nat.
   fun (d : ℕ) (hdvd : ∃ e, p = d * e) =>
   let ⟨e, hmul⟩ := hdvd
   have : (p : R) = 0 := (cast_eq_zero_iff R p p).mpr (dvd_refl p)
-  have : (d : R) * e = 0 := @cast_mul R _ d e ▸ hmul ▸ this
+  have : (d : R) * e = 0 := @Nat.cast_mul R _ d e ▸ hmul ▸ this
   Or.elim (eq_zero_or_eq_zero_of_mul_eq_zero this)
     (fun hd : (d : R) = 0 =>
       have : p ∣ d := (cast_eq_zero_iff R p d).mp hd
@@ -718,8 +716,8 @@ theorem Int.cast_injOn_of_ringChar_ne_two {R : Type*} [NonAssocRing R] [Nontrivi
   rintro _ (rfl | rfl | rfl) _ (rfl | rfl | rfl) h <;>
   simp only
     [cast_neg, cast_one, cast_zero, neg_eq_zero, one_ne_zero, zero_ne_one, zero_eq_neg] at h ⊢
-  · exact (Ring.neg_one_ne_one_of_char_ne_two hR).symm h
-  · exact (Ring.neg_one_ne_one_of_char_ne_two hR) h
+  · exact ((Ring.neg_one_ne_one_of_char_ne_two hR).symm h).elim
+  · exact ((Ring.neg_one_ne_one_of_char_ne_two hR) h).elim
 #align int.cast_inj_on_of_ring_char_ne_two Int.cast_injOn_of_ringChar_ne_two
 
 end

@@ -453,7 +453,7 @@ theorem mem_keys_kerase_of_ne {a₁ a₂} {l : List (Sigma β)} (h : a₁ ≠ a�
 #align list.mem_keys_kerase_of_ne List.mem_keys_kerase_of_ne
 
 theorem keys_kerase {a} {l : List (Sigma β)} : (kerase a l).keys = l.keys.erase a := by
-  rw [keys, kerase, erase_eq_eraseP, eraseP_map]; dsimp [Function.comp]
+  rw [keys, kerase, erase_eq_eraseP, eraseP_map, Function.comp]
 #align list.keys_kerase List.keys_kerase
 
 theorem kerase_kerase {a a'} {l : List (Sigma β)} :
@@ -549,7 +549,7 @@ theorem kerase_comm (a₁ a₂) (l : List (Sigma β)) :
 #align list.kerase_comm List.kerase_comm
 
 theorem sizeOf_kerase {α} {β : α → Type*} [DecidableEq α] [SizeOf (Sigma β)] (x : α)
-    (xs : List (Sigma β)) : SizeOf.sizeOf (List.kerase x xs) ≤ SizeOf.sizeOf xs :=by
+    (xs : List (Sigma β)) : SizeOf.sizeOf (List.kerase x xs) ≤ SizeOf.sizeOf xs := by
   simp only [SizeOf.sizeOf, _sizeOf_1]
   induction' xs with y ys
   · simp
@@ -641,7 +641,7 @@ theorem nodupKeys_dedupKeys (l : List (Sigma β)) : NodupKeys (dedupKeys l) := b
   induction' l with x xs l_ih
   · apply this
   · cases x
-    simp [dedupKeys]
+    simp only [foldr_cons, kinsert_def, nodupKeys_cons, ne_eq, not_true]
     constructor
     · simp [keys_kerase]
       apply l_ih.not_mem_erase

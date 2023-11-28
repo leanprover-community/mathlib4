@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Chris Hughes, Tim Baanen
+Authors: Kenny Lau, Chris Hughes, Anne Baanen
 -/
 import Mathlib.Data.Matrix.PEquiv
 import Mathlib.Data.Matrix.Block
@@ -11,7 +11,7 @@ import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Tactic.Ring
-import Mathlib.LinearAlgebra.Alternating
+import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.Pi
 
 #align_import linear_algebra.matrix.determinant from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
@@ -147,8 +147,6 @@ theorem det_mul_aux {M N : Matrix n n R} {p : n → n} (H : ¬Bijective p) :
       mul_swap_involutive i j σ
 #align matrix.det_mul_aux Matrix.det_mul_aux
 
--- Porting note: need to bump for last simp; new after #3414 (reenableeta)
-set_option maxHeartbeats 300000 in
 @[simp]
 theorem det_mul (M N : Matrix n n R) : det (M * N) = det M * det N :=
   calc
@@ -638,7 +636,7 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
     rw [mem_preserving_snd] at hσ
     obtain ⟨⟨k, x⟩, hkx⟩ := not_forall.mp hσ
     rw [Finset.prod_eq_zero (Finset.mem_univ (k, x)), mul_zero]
-    rw [← @Prod.mk.eta _ _ (σ (k, x)), blockDiagonal_apply_ne]
+    rw [blockDiagonal_apply_ne]
     exact hkx
 #align matrix.det_block_diagonal Matrix.det_blockDiagonal
 
@@ -671,9 +669,8 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
     · intro σ₁ σ₂ h₁ h₂
       dsimp only
       intro h
-      have h2 : ∀ x, Perm.sumCongr σ₁.fst σ₁.snd x = Perm.sumCongr σ₂.fst σ₂.snd x := by
-        intro x
-        exact congr_fun (congr_arg toFun h) x
+      have h2 : ∀ x, Perm.sumCongr σ₁.fst σ₁.snd x = Perm.sumCongr σ₂.fst σ₂.snd x :=
+        FunLike.congr_fun h
       simp only [Sum.map_inr, Sum.map_inl, Perm.sumCongr_apply, Sum.forall, Sum.inl.injEq,
         Sum.inr.injEq] at h2
       ext x
@@ -689,7 +686,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
       have h1 : ¬∀ x, ∃ y, Sum.inl y = σ (Sum.inl x) := by
         rw [Set.mem_toFinset] at hσn
         -- Porting note: golfed
-        simpa only [Set.MapsTo, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff'] using
+        simpa only [Set.MapsTo, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] using
           mt mem_sumCongrHom_range_of_perm_mapsTo_inl hσn
       obtain ⟨a, ha⟩ := not_forall.mp h1
       cases' hx : σ (Sum.inl a) with a2 b
@@ -796,7 +793,9 @@ theorem det_fin_one_of (a : R) : det !![a] = a :=
 
 /-- Determinant of 2x2 matrix -/
 theorem det_fin_two (A : Matrix (Fin 2) (Fin 2) R) : det A = A 0 0 * A 1 1 - A 0 1 * A 1 0 := by
-  simp [Matrix.det_succ_row_zero, Fin.sum_univ_succ]
+  simp only [det_succ_row_zero, det_unique, Fin.default_eq_zero, submatrix_apply,
+    Fin.succ_zero_eq_one, Fin.sum_univ_succ, Fin.val_zero, Fin.zero_succAbove, univ_unique,
+    Fin.val_succ, Fin.coe_fin_one, Fin.succ_succAbove_zero, sum_singleton]
   ring
 #align matrix.det_fin_two Matrix.det_fin_two
 
@@ -808,11 +807,13 @@ theorem det_fin_two_of (a b c d : R) : Matrix.det !![a, b; c, d] = a * d - b * c
 /-- Determinant of 3x3 matrix -/
 theorem det_fin_three (A : Matrix (Fin 3) (Fin 3) R) :
     det A =
-      A 0 0 * A 1 1 * A 2 2 - A 0 0 * A 1 2 * A 2 1 - A 0 1 * A 1 0 * A 2 2 +
-            A 0 1 * A 1 2 * A 2 0 +
-          A 0 2 * A 1 0 * A 2 1 -
-        A 0 2 * A 1 1 * A 2 0 := by
-  simp [Matrix.det_succ_row_zero, Fin.sum_univ_succ]
+      A 0 0 * A 1 1 * A 2 2 - A 0 0 * A 1 2 * A 2 1
+      - A 0 1 * A 1 0 * A 2 2 + A 0 1 * A 1 2 * A 2 0
+      + A 0 2 * A 1 0 * A 2 1 - A 0 2 * A 1 1 * A 2 0 := by
+  simp only [det_succ_row_zero, Nat.odd_iff_not_even, submatrix_apply, Fin.succ_zero_eq_one,
+    submatrix_submatrix, det_unique, Fin.default_eq_zero, comp_apply, Fin.succ_one_eq_two,
+    Fin.sum_univ_succ, Fin.val_zero, Fin.zero_succAbove, univ_unique, Fin.val_succ,
+    Fin.coe_fin_one, Fin.succ_succAbove_zero, sum_singleton, Fin.succ_succAbove_one, even_add_self]
   ring
 #align matrix.det_fin_three Matrix.det_fin_three
 

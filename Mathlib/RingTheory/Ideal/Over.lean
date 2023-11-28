@@ -150,13 +150,13 @@ theorem comap_eq_of_scalar_tower_quotient [Algebra R S] [Algebra (R ⧸ p) (S �
 #align ideal.comap_eq_of_scalar_tower_quotient Ideal.comap_eq_of_scalar_tower_quotient
 
 /-- If `P` lies over `p`, then `R / p` has a canonical map to `S / P`. -/
-def Quotient.algebraQuotientOfLeComap (h : p ≤ comap f P) : Algebra (R ⧸ p) (S ⧸ P) :=
+def Quotient.algebraQuotientOfLEComap (h : p ≤ comap f P) : Algebra (R ⧸ p) (S ⧸ P) :=
   RingHom.toAlgebra <| quotientMap _ f h
-#align ideal.quotient.algebra_quotient_of_le_comap Ideal.Quotient.algebraQuotientOfLeComap
+#align ideal.quotient.algebra_quotient_of_le_comap Ideal.Quotient.algebraQuotientOfLEComap
 
 /-- `R / p` has a canonical map to `S / pS`. -/
 instance Quotient.algebraQuotientMapQuotient : Algebra (R ⧸ p) (S ⧸ map f p) :=
-  Ideal.Quotient.algebraQuotientOfLeComap le_comap_map
+  Ideal.Quotient.algebraQuotientOfLEComap le_comap_map
 #align ideal.quotient.algebra_quotient_map_quotient Ideal.Quotient.algebraQuotientMapQuotient
 
 @[simp]
@@ -236,13 +236,7 @@ theorem comap_lt_comap_of_integral_mem_sdiff [Algebra R S] [hI : I.IsPrime] (hIJ
     (mem : x ∈ (J : Set S) \ I) (integral : IsIntegral R x) :
     I.comap (algebraMap R S) < J.comap (algebraMap R S) := by
   obtain ⟨p, p_monic, hpx⟩ := integral
-  refine' comap_lt_comap_of_root_mem_sdiff hIJ mem _ _
-  swap
-  · apply map_monic_ne_zero p_monic
-    -- Porting note : no longer needed
-    -- apply Quotient.NonTrivial
-    -- apply mt comap_eq_top_iff.mp
-    -- apply hI.1
+  refine comap_lt_comap_of_root_mem_sdiff hIJ mem (map_monic_ne_zero p_monic) ?_
   convert I.zero_mem
 #align ideal.comap_lt_comap_of_integral_mem_sdiff Ideal.comap_lt_comap_of_integral_mem_sdiff
 
@@ -275,7 +269,7 @@ theorem comap_ne_bot_of_algebraic_mem [IsDomain S] {x : S} (x_ne_zero : x ≠ 0)
 
 theorem comap_ne_bot_of_integral_mem [Nontrivial R] [IsDomain S] {x : S} (x_ne_zero : x ≠ 0)
     (x_mem : x ∈ I) (hx : IsIntegral R x) : I.comap (algebraMap R S) ≠ ⊥ :=
-  comap_ne_bot_of_algebraic_mem x_ne_zero x_mem (hx.isAlgebraic R)
+  comap_ne_bot_of_algebraic_mem x_ne_zero x_mem hx.isAlgebraic
 #align ideal.comap_ne_bot_of_integral_mem Ideal.comap_ne_bot_of_integral_mem
 
 theorem eq_bot_of_comap_eq_bot [Nontrivial R] [IsDomain S] (hRS : Algebra.IsIntegral R S)
@@ -290,9 +284,8 @@ theorem isMaximal_comap_of_isIntegral_of_isMaximal (hRS : Algebra.IsIntegral R S
     [hI : I.IsMaximal] : IsMaximal (I.comap (algebraMap R S)) := by
   refine' Ideal.Quotient.maximal_of_isField _ _
   haveI : IsPrime (I.comap (algebraMap R S)) := comap_isPrime _ _
-  exact
-    isField_of_isIntegral_of_isField (isIntegral_quotient_of_isIntegral hRS)
-      algebraMap_quotient_injective (by rwa [← Quotient.maximal_ideal_iff_isField_quotient])
+  exact isField_of_isIntegral_of_isField hRS.quotient
+    algebraMap_quotient_injective (by rwa [← Quotient.maximal_ideal_iff_isField_quotient])
 #align ideal.is_maximal_comap_of_is_integral_of_is_maximal Ideal.isMaximal_comap_of_isIntegral_of_isMaximal
 
 theorem isMaximal_comap_of_isIntegral_of_isMaximal' {R S : Type*} [CommRing R] [CommRing S]
@@ -393,7 +386,7 @@ theorem exists_ideal_over_prime_of_isIntegral (H : Algebra.IsIntegral R S) (P : 
     ∃ Q ≥ I, IsPrime Q ∧ Q.comap (algebraMap R S) = P := by
   obtain ⟨Q' : Ideal (S ⧸ I), ⟨Q'_prime, hQ'⟩⟩ :=
     @exists_ideal_over_prime_of_isIntegral' (R ⧸ I.comap (algebraMap R S)) _ (S ⧸ I) _
-      Ideal.quotientAlgebra _ (isIntegral_quotient_of_isIntegral H)
+      Ideal.quotientAlgebra _ H.quotient
       (map (Ideal.Quotient.mk (I.comap (algebraMap R S))) P)
       (map_isPrime_of_surjective Quotient.mk_surjective (by simp [hIP]))
       (le_trans (le_of_eq ((RingHom.injective_iff_ker_eq_bot _).1 algebraMap_quotient_injective))

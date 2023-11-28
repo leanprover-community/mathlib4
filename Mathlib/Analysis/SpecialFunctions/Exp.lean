@@ -225,8 +225,8 @@ theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) a
   have hx₀ : 0 < x := (Nat.cast_nonneg N).trans_lt hx
   rw [Set.mem_Ici, le_div_iff (pow_pos hx₀ _), ← le_div_iff' hC₀]
   calc
-    x ^ n ≤ ⌈x⌉₊ ^ n := by exact_mod_cast pow_le_pow_of_le_left hx₀.le (Nat.le_ceil _) _
-    _ ≤ exp ⌈x⌉₊ / (exp 1 * C) := by exact_mod_cast (hN _ (Nat.lt_ceil.2 hx).le).le
+    x ^ n ≤ ⌈x⌉₊ ^ n := mod_cast pow_le_pow_of_le_left hx₀.le (Nat.le_ceil _) _
+    _ ≤ exp ⌈x⌉₊ / (exp 1 * C) := mod_cast (hN _ (Nat.lt_ceil.2 hx).le).le
     _ ≤ exp (x + 1) / (exp 1 * C) :=
       (div_le_div_of_le (mul_pos (exp_pos _) hC₀).le
         (exp_le_exp.2 <| (Nat.ceil_lt_add_one hx₀.le).le))
@@ -259,12 +259,12 @@ theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
     Tendsto (fun x => x ^ n / (b * exp x + c)) atTop (𝓝 0) := by
   have H : ∀ d e, 0 < d → Tendsto (fun x : ℝ => x ^ n / (d * exp x + e)) atTop (𝓝 0) := by
     intro b' c' h
-    convert(tendsto_mul_exp_add_div_pow_atTop b' c' n h).inv_tendsto_atTop using 1
+    convert (tendsto_mul_exp_add_div_pow_atTop b' c' n h).inv_tendsto_atTop using 1
     ext x
     simp
   cases' lt_or_gt_of_ne hb with h h
   · exact H b c h
-  · convert(H (-b) (-c) (neg_pos.mpr h)).neg using 1
+  · convert (H (-b) (-c) (neg_pos.mpr h)).neg using 1
     · ext x
       field_simp
       rw [← neg_add (b * exp x) c, neg_div_neg_eq]

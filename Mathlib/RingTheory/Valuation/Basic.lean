@@ -132,12 +132,12 @@ directly. -/
 -- instance : CoeFun (Valuation R Γ₀) fun _ => R → Γ₀ :=
   -- FunLike.hasCoeToFun
 
-theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := by rfl
+theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := rfl
 #align valuation.to_fun_eq_coe Valuation.toFun_eq_coe
 
 @[simp] --Porting note: requested by simpNF as toFun_eq_coe LHS simplifies
-theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) : (v.toMonoidWithZeroHom : R → Γ₀) = v
-    := by rfl
+theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) :
+    (v.toMonoidWithZeroHom : R → Γ₀) = v := rfl
 
 @[ext]
 theorem ext {v₁ v₂ : Valuation R Γ₀} (h : ∀ r, v₁ r = v₂ r) : v₁ = v₂ :=

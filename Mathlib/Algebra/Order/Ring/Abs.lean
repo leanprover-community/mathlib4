@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.Divisibility
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Order.Group.Abs
 
 #align_import algebra.order.ring.abs from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
@@ -53,32 +53,6 @@ theorem abs_mul_abs_self (a : α) : |a| * |a| = a * a :=
 @[simp]
 theorem abs_mul_self (a : α) : |a * a| = a * a := by rw [abs_mul, abs_mul_abs_self]
 #align abs_mul_self abs_mul_self
-
-@[simp]
-theorem abs_eq_self : |a| = a ↔ 0 ≤ a := by simp [abs_eq_max_neg]
-#align abs_eq_self abs_eq_self
-
-@[simp]
-theorem abs_eq_neg_self : |a| = -a ↔ a ≤ 0 := by simp [abs_eq_max_neg]
-#align abs_eq_neg_self abs_eq_neg_self
-
-/-- For an element `a` of a linear ordered ring, either `abs a = a` and `0 ≤ a`,
-    or `abs a = -a` and `a < 0`.
-    Use cases on this lemma to automate linarith in inequalities -/
-theorem abs_cases (a : α) : |a| = a ∧ 0 ≤ a ∨ |a| = -a ∧ a < 0 := by
-  by_cases h : 0 ≤ a
-  · left
-    exact ⟨abs_eq_self.mpr h, h⟩
-  · right
-    push_neg at h
-    exact ⟨abs_eq_neg_self.mpr (le_of_lt h), h⟩
-#align abs_cases abs_cases
-
-@[simp]
-theorem max_zero_add_max_neg_zero_eq_abs_self (a : α) : max a 0 + max (-a) 0 = |a| := by
-  symm
-  rcases le_total 0 a with (ha | ha) <;> simp [ha]
-#align max_zero_add_max_neg_zero_eq_abs_self max_zero_add_max_neg_zero_eq_abs_self
 
 theorem abs_eq_iff_mul_self_eq : |a| = |b| ↔ a * a = b * b := by
   rw [← abs_mul_abs_self, ← abs_mul_abs_self b]

@@ -34,7 +34,7 @@ instance orderedCommGroup [OrderedCommGroup G] [OrderedCommGroup H] :
 @[to_additive]
 instance linearOrderedCommGroup [LinearOrderedCommGroup G] [LinearOrderedCommGroup H] :
     LinearOrderedCommGroup (G ×ₗ H) where
-  __ := (inferInstance : LinearOrder (G ×ₗ H))
+  __ : LinearOrder (G ×ₗ H) := inferInstance
   mul_le_mul_left _ _ := mul_le_mul_left'
 
 end Lex

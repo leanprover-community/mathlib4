@@ -5,6 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.LinearAlgebra.Basis
 
 #align_import algebra.direct_sum.module from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
@@ -323,6 +324,28 @@ theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i
 
 variable {A}
 
+@[simp]
+theorem IsInternal.ofBijective_coeLinearMap_same (h : IsInternal A)
+    {i : ι} (x : A i) :
+    (LinearEquiv.ofBijective (coeLinearMap A) h).symm x i = x := by
+  rw [← coeLinearMap_of, LinearEquiv.ofBijective_symm_apply_apply, of_eq_same]
+
+@[simp]
+theorem IsInternal.ofBijective_coeLinearMap_of_ne (h : IsInternal A)
+    {i j : ι} (hij : i ≠ j) (x : A i) :
+    (LinearEquiv.ofBijective (coeLinearMap A) h).symm x j = 0 := by
+  rw [← coeLinearMap_of, LinearEquiv.ofBijective_symm_apply_apply, of_eq_of_ne _ i j _ hij]
+
+theorem IsInternal.ofBijective_coeLinearMap_of_mem (h : IsInternal A)
+    {i : ι} {x : M} (hx : x ∈ A i) :
+    (LinearEquiv.ofBijective (coeLinearMap A) h).symm x i = ⟨x, hx⟩ :=
+  h.ofBijective_coeLinearMap_same ⟨x, hx⟩
+
+theorem IsInternal.ofBijective_coeLinearMap_of_mem_ne (h : IsInternal A)
+    {i j : ι} (hij : i ≠ j) {x : M} (hx : x ∈ A i) :
+    (LinearEquiv.ofBijective (coeLinearMap A) h).symm x j = 0 :=
+  h.ofBijective_coeLinearMap_of_ne hij ⟨x, hx⟩
+
 /-- If a direct sum of submodules is internal then the submodules span the module. -/
 theorem IsInternal.submodule_iSup_eq_top (h : IsInternal A) : iSup A = ⊤ := by
   rw [Submodule.iSup_eq_range_dfinsupp_lsum, LinearMap.range_eq_top]
@@ -337,8 +360,8 @@ theorem IsInternal.submodule_independent (h : IsInternal A) : CompleteLattice.In
 /-- Given an internal direct sum decomposition of a module `M`, and a basis for each of the
 components of the direct sum, the disjoint union of these bases is a basis for `M`. -/
 noncomputable def IsInternal.collectedBasis (h : IsInternal A) {α : ι → Type*}
-    (v : ∀ i, Basis (α i) R (A i)) : Basis (Σi, α i) R M
-    where repr :=
+    (v : ∀ i, Basis (α i) R (A i)) : Basis (Σi, α i) R M where
+  repr :=
     ((LinearEquiv.ofBijective (DirectSum.coeLinearMap A) h).symm ≪≫ₗ
         DFinsupp.mapRange.linearEquiv fun i ↦ (v i).repr) ≪≫ₗ
       (sigmaFinsuppLequivDFinsupp R).symm
@@ -371,6 +394,18 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
 theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) (a : Σi, α i) : h.collectedBasis v a ∈ A a.1 := by simp
 #align direct_sum.is_internal.collected_basis_mem DirectSum.IsInternal.collectedBasis_mem
+
+theorem IsInternal.collectedBasis_repr_of_mem (h : IsInternal A) {α : ι → Type*}
+    (v : ∀ i, Basis (α i) R (A i)) {x : M} {i : ι} {a : α i} (hx : x ∈ A i) :
+    (h.collectedBasis v).repr x ⟨i, a⟩ = (v i).repr ⟨x, hx⟩ a := by
+  change (sigmaFinsuppLequivDFinsupp R).symm (DFinsupp.mapRange _ (fun i ↦ map_zero _) _) _ = _
+  simp [h.ofBijective_coeLinearMap_of_mem hx]
+
+theorem IsInternal.collectedBasis_repr_of_mem_ne (h : IsInternal A) {α : ι → Type*}
+    (v : ∀ i, Basis (α i) R (A i)) {x : M} {i j : ι} (hij : i ≠ j) {a : α j} (hx : x ∈ A i) :
+    (h.collectedBasis v).repr x ⟨j, a⟩ = 0 := by
+  change (sigmaFinsuppLequivDFinsupp R).symm (DFinsupp.mapRange _ (fun i ↦ map_zero _) _) _ = _
+  simp [h.ofBijective_coeLinearMap_of_mem_ne hij hx]
 
 /-- When indexed by only two distinct elements, `DirectSum.IsInternal` implies
 the two submodules are complementary. Over a `Ring R`, this is true as an iff, as
@@ -417,6 +452,12 @@ theorem isInternal_submodule_iff_isCompl (A : ι → Submodule R M) {i j : ι} (
     Set.image_insert_eq, Set.image_singleton, sSup_pair, CompleteLattice.independent_pair hij this]
   exact ⟨fun ⟨hd, ht⟩ ↦ ⟨hd, codisjoint_iff.mpr ht⟩, fun ⟨hd, ht⟩ ↦ ⟨hd, ht.eq_top⟩⟩
 #align direct_sum.is_internal_submodule_iff_is_compl DirectSum.isInternal_submodule_iff_isCompl
+
+@[simp]
+theorem isInternal_ne_bot_iff {A : ι → Submodule R M} :
+    IsInternal (fun i : {i // A i ≠ ⊥} ↦ A i) ↔ IsInternal A := by
+  simp only [isInternal_submodule_iff_independent_and_iSup_eq_top]
+  exact Iff.and CompleteLattice.independent_ne_bot_iff_independent <| by simp
 
 /-! Now copy the lemmas for subgroup and submonoids. -/
 
