@@ -90,7 +90,8 @@ structure ZeroHom (M : Type*) (N : Type*) [Zero M] [Zero N] where
 
 You should extend this typeclass when you extend `ZeroHom`.
 -/
-class ZeroHomClass (F M N : Type*) [Zero M] [Zero N] [NDFunLike F M N] : Prop where
+class ZeroHomClass (F : Type*) (M N : outParam Type*) [Zero M] [Zero N] [NDFunLike F M N] : Prop
+    where
   /-- The proposition that the function preserves 0 -/
   map_zero : ∀ f : F, f 0 = 0
 #align zero_hom_class ZeroHomClass
@@ -118,7 +119,7 @@ structure AddHom (M : Type*) (N : Type*) [Add M] [Add N] where
 /-- `AddHomClass F M N` states that `F` is a type of addition-preserving homomorphisms.
 You should declare an instance of this typeclass when you extend `AddHom`.
 -/
-class AddHomClass (F M N : Type*) [Add M] [Add N] [NDFunLike F M N] : Prop where
+class AddHomClass (F : Type*) (M N : outParam Type*) [Add M] [Add N] [NDFunLike F M N] : Prop where
   /-- The proposition that the function preserves addition -/
   map_add : ∀ (f : F) (x y : M), f (x + y) = f x + f y
 #align add_hom_class AddHomClass
@@ -182,7 +183,7 @@ structure OneHom (M : Type*) (N : Type*) [One M] [One N] where
 You should extend this typeclass when you extend `OneHom`.
 -/
 @[to_additive]
-class OneHomClass (F M N : Type*) [One M] [One N] [NDFunLike F M N] : Prop where
+class OneHomClass (F : Type*) (M N : outParam Type*) [One M] [One N] [NDFunLike F M N] : Prop where
   /-- The proposition that the function preserves 1 -/
   map_one : ∀ f : F, f 1 = 1
 #align one_hom_class OneHomClass
@@ -284,7 +285,7 @@ infixr:25 " →ₙ* " => MulHom
 You should declare an instance of this typeclass when you extend `MulHom`.
 -/
 @[to_additive]
-class MulHomClass (F M N : Type*) [Mul M] [Mul N] [NDFunLike F M N] : Prop where
+class MulHomClass (F : Type*) (M N : outParam Type*) [Mul M] [Mul N] [NDFunLike F M N] : Prop where
   /-- The proposition that the function preserves multiplication -/
   map_mul : ∀ (f : F) (x y : M), f (x * y) = f x * f y
 #align mul_hom_class MulHomClass
@@ -360,7 +361,8 @@ infixr:25 " →* " => MonoidHom
 /-- `MonoidHomClass F M N` states that `F` is a type of `Monoid`-preserving homomorphisms.
 You should also extend this typeclass when you extend `MonoidHom`. -/
 @[to_additive]
-class MonoidHomClass (F M N : Type*) [MulOneClass M] [MulOneClass N] [NDFunLike F M N]
+class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOneClass M] [MulOneClass N]
+  [NDFunLike F M N]
   extends MulHomClass F M N, OneHomClass F M N : Prop
 #align monoid_hom_class MonoidHomClass
 
@@ -504,7 +506,8 @@ infixr:25 " →*₀ " => MonoidWithZeroHom
 
 You should also extend this typeclass when you extend `MonoidWithZeroHom`.
 -/
-class MonoidWithZeroHomClass (F M N : Type*) [MulZeroOneClass M] [MulZeroOneClass N]
+class MonoidWithZeroHomClass (F : Type*) (M N : outParam Type*)
+  [MulZeroOneClass M] [MulZeroOneClass N]
   [NDFunLike F M N]
   extends MonoidHomClass F M N, ZeroHomClass F M N : Prop
 #align monoid_with_zero_hom_class MonoidWithZeroHomClass
