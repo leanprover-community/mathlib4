@@ -690,7 +690,7 @@ instance Module.Finite.tensorProduct [CommSemiring R] [AddCommMonoid M] [Module 
 #align module.finite.tensor_product Module.Finite.tensorProduct
 
 theorem Module.Finite.of_fintype_basis [CommSemiring R] [AddCommMonoid M] [Module R M] {ι : Type*}
-  [_root_.Finite ι] (h : Basis ι R M) : Module.Finite R M := by
+    [_root_.Finite ι] (h : Basis ι R M) : Module.Finite R M := by
   classical
   cases nonempty_fintype ι
   exact ⟨⟨Finset.univ.image h, by simp⟩⟩
