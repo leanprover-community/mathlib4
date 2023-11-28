@@ -86,6 +86,10 @@ def EquivLike.toEquiv {F} [EquivLike F α β] (f : F) : α ≃ β where
 instance {F} [EquivLike F α β] : CoeTC F (α ≃ β) :=
   ⟨EquivLike.toEquiv⟩
 
+@[simp, norm_cast]
+lemma EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :
+  ((e : α ≃ β) : α → β) = e := rfl
+
 /-- `Perm α` is the type of bijections from `α` to itself. -/
 @[reducible]
 def Equiv.Perm (α : Sort*) :=
