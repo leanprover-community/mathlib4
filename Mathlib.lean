@@ -2154,9 +2154,9 @@ import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.GroupTheory.Nilpotent
 import Mathlib.GroupTheory.NoncommPiCoprod
+import Mathlib.GroupTheory.NonZeroDivisors
 import Mathlib.GroupTheory.Order.Min
 import Mathlib.GroupTheory.NoncommPiCoprod
-import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Basic
