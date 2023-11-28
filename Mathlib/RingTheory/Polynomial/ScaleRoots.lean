@@ -215,7 +215,7 @@ lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R)
     (h : natDegree p = natDegree q) :
     r ^ (natDegree p - natDegree (p + q)) • (p + q).scaleRoots r =
       p.scaleRoots r + q.scaleRoots r := by
-  ext n; simp only [ge_iff_le, coeff_smul, coeff_scaleRoots, coeff_add, smul_eq_mul,
+  ext n; simp only [coeff_smul, coeff_scaleRoots, coeff_add, smul_eq_mul,
     mul_comm (r ^ _), mul_assoc, ← pow_add, ← h, ← add_mul, add_comm (_ - n)]
   cases lt_or_le (natDegree (p + q)) n with
   | inl hn => simp only [← coeff_add, coeff_eq_zero_of_natDegree_lt hn, zero_mul]
