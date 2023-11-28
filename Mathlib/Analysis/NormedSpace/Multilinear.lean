@@ -1232,7 +1232,7 @@ noncomputable def compContinuousLinearMapContinuousMultilinear :
     ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) _ _
     (fun _ ↦ ContinuousLinearMap.toNormedAddCommGroup)
     (fun _ ↦ ContinuousLinearMap.toNormedSpace) _ _
-    (compContinuousLinearMapMultilinear 𝕜 E E₁ G) 1 
+    (compContinuousLinearMapMultilinear 𝕜 E E₁ G) 1
     fun f ↦ by simpa using norm_compContinuousLinearMapL_le G f
 
 variable {𝕜 E E₁}
