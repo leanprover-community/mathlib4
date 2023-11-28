@@ -280,9 +280,9 @@ section
 
 variable (R M₂ M₃)
 
-/-- The evaluation map from `ι → M₂` to `M₂` is multilinear at a given `i` when `ι` is subsingleton.
--/
-@[simps! apply_toMultilinearMap apply_apply]
+/-- The natural equivalence between continuous linear maps from `M₂` to `M₃`
+and continuous 1-multilinear maps from `M₂` to `M₃`. -/
+@[simps! apply_toMultilinearMap apply_apply symm_apply_apply]
 def ofSubsingleton [Subsingleton ι] (i : ι) :
     (M₂ →L[R] M₃) ≃ ContinuousMultilinearMap R (fun _ : ι => M₂) M₃ where
   toFun f := ⟨MultilinearMap.ofSubsingleton R M₂ M₃ i f,

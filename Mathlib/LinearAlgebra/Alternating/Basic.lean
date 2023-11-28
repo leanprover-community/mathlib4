@@ -436,11 +436,10 @@ section
 
 variable (R M N)
 
-/-- The evaluation map from `ι → M` to `M` at a given `i` is alternating when `ι` is subsingleton.
--/
+/-- The natural equivalence between linear maps from `M` to `N`
+and `1`-multilinear alternating maps from `M` to `N`. -/
 @[simps!]
-def ofSubsingleton [Subsingleton ι] (i : ι) :
-    (M →ₗ[R] N) ≃ AlternatingMap R M N ι where
+def ofSubsingleton [Subsingleton ι] (i : ι) : (M →ₗ[R] N) ≃ AlternatingMap R M N ι where
   toFun f := ⟨MultilinearMap.ofSubsingleton R M N i f, fun _ _ _ _ ↦ absurd (Subsingleton.elim _ _)⟩
   invFun f := (MultilinearMap.ofSubsingleton R M N i).symm f
   left_inv _ := rfl
