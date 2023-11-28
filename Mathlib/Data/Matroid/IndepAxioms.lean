@@ -6,7 +6,7 @@ Authors: Peter Nelson
 import Mathlib.Data.Matroid.Basic
 
 /-!
-### Independence and Basis axioms
+# Matroid Independence and Basis axioms
 
 Matroids in mathlib are defined axiomatically in terms of bases,
 but can be described just as naturally via their collections of independent sets,
