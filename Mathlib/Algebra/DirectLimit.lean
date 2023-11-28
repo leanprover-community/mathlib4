@@ -236,30 +236,28 @@ family of equivalences `eᵢ : Gᵢ ≅ G'ᵢ` such that `e ∘ f = f' ∘ e` in
 def congr [IsDirected ι (· ≤ ·)]
     (e : (i : ι) → G i ≃ₗ[R] G' i) (he : ∀ i j h, e j ∘ₗ f i j h = f' i j h ∘ₗ e i) :
     DirectLimit G f ≃ₗ[R] DirectLimit G' f' :=
-  LinearEquiv.ofLinear (map (equivs ·) equivs_compatible)
-    (map (fun i ↦ (equivs i).symm) fun i j h ↦ by
-      rw [toLinearMap_symm_comp_eq, ← comp_assoc, equivs_compatible i, comp_assoc, comp_coe,
-        symm_trans_self, refl_toLinearMap, comp_id])
+  LinearEquiv.ofLinear (map (e ·) he)
+    (map (fun i ↦ (e i).symm) fun i j h ↦ by
+      rw [toLinearMap_symm_comp_eq, ← comp_assoc, he i, comp_assoc, comp_coe, symm_trans_self,
+        refl_toLinearMap, comp_id])
     (by simp [map_comp]) (by simp [map_comp])
 
 lemma congr_apply_of [IsDirected ι (· ≤ ·)]
-    (equivs : (i : ι) → G i ≃ₗ[R] G' i)
-    (equivs_compatible : ∀ i j h, equivs j ∘ₗ f i j h = f' i j h ∘ₗ equivs i)
+    (e : (i : ι) → G i ≃ₗ[R] G' i) (he : ∀ i j h, e j ∘ₗ f i j h = f' i j h ∘ₗ e i)
     {i : ι} (g : G i) :
-    congr equivs equivs_compatible (of _ _ _ _ i g) =
-    (of _ _ _ _ i (equivs i g) : DirectLimit G' f') :=
-  map_apply_of _ equivs_compatible _
+    congr e he (of _ _ _ _ i g) =
+    (of _ _ _ _ i (e i g) : DirectLimit G' f') :=
+  map_apply_of _ he _
 
 open LinearEquiv LinearMap in
 lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)]
-    (equivs : (i : ι) → G i ≃ₗ[R] G' i)
-    (equivs_compatible : ∀ i j h, equivs j ∘ₗ f i j h = f' i j h ∘ₗ equivs i)
+    (e : (i : ι) → G i ≃ₗ[R] G' i) (he : ∀ i j h, e j ∘ₗ f i j h = f' i j h ∘ₗ e i)
     {i : ι} (g : G' i) :
-    (congr equivs equivs_compatible).symm (of _ _ _ _ i g) =
-    (of _ _ _ _ i ((equivs i).symm g) : DirectLimit G f) :=
+    (congr e he).symm (of _ _ _ _ i g) =
+    (of _ _ _ _ i ((e i).symm g) : DirectLimit G f) :=
   map_apply_of _ (fun i j h ↦ by
-    rw [toLinearMap_symm_comp_eq, ← comp_assoc, equivs_compatible i, comp_assoc, comp_coe,
-      symm_trans_self, refl_toLinearMap, comp_id]) _
+    rw [toLinearMap_symm_comp_eq, ← comp_assoc, he i, comp_assoc, comp_coe, symm_trans_self,
+      refl_toLinearMap, comp_id]) _
 
 end interaction_with_other_directLimits
 
@@ -507,17 +505,16 @@ lemma map_comp [IsDirected ι (· ≤ ·)]
 
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
-family of equivalences `gᵢ : Gᵢ ≅ G'ᵢ` such that `g ∘ f = f' ∘ g` induces an equivalence
+family of equivalences `eᵢ : Gᵢ ≅ G'ᵢ` such that `e ∘ f = f' ∘ e` induces an equivalence
 `lim G ⟶ lim G'`.
 -/
 def congr [IsDirected ι (· ≤ ·)]
-    (equivs : (i : ι) → G i ≃+ G' i)
-    (equivs_compatible : ∀ i j h, (equivs j).toAddMonoidHom.comp (f i j h) =
-      (f' i j h).comp (equivs i)) :
+    (e : (i : ι) → G i ≃+ G' i)
+    (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i)) :
     DirectLimit G f ≃+ DirectLimit G' f' :=
-  AddMonoidHom.toAddEquiv (map (equivs ·) equivs_compatible)
-    (map (fun i ↦ (equivs i).symm) fun i j h ↦ FunLike.ext _ _ fun x ↦ by
-      have eq1 := FunLike.congr_fun (equivs_compatible i j h) ((equivs i).symm x)
+  AddMonoidHom.toAddEquiv (map (e ·) he)
+    (map (fun i ↦ (e i).symm) fun i j h ↦ FunLike.ext _ _ fun x ↦ by
+      have eq1 := FunLike.congr_fun (he i j h) ((e i).symm x)
       simp only [AddMonoidHom.coe_comp, AddEquiv.coe_toAddMonoidHom, Function.comp_apply,
         AddMonoidHom.coe_coe, AddEquiv.apply_symm_apply] at eq1 ⊢
       simp [← eq1, of_f])
@@ -525,21 +522,19 @@ def congr [IsDirected ι (· ≤ ·)]
     (by rw [map_comp]; convert map_id <;> aesop)
 
 lemma congr_apply_of [IsDirected ι (· ≤ ·)]
-    (equivs : (i : ι) → G i ≃+ G' i)
-    (equivs_compatible : ∀ i j h, (equivs j).toAddMonoidHom.comp (f i j h) =
-      (f' i j h).comp (equivs i))
+    (e : (i : ι) → G i ≃+ G' i)
+    (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G i) :
-    congr equivs equivs_compatible (of _ _ i g) =
-    (of _ _ i (equivs i g) : DirectLimit G' f') :=
-  map_apply_of _ equivs_compatible _
+    congr e he (of _ _ i g) =
+    (of _ _ i (e i g) : DirectLimit G' f') :=
+  map_apply_of _ he _
 
 lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)]
-    (equivs : (i : ι) → G i ≃+ G' i)
-    (equivs_compatible : ∀ i j h, (equivs j).toAddMonoidHom.comp (f i j h) =
-      (f' i j h).comp (equivs i))
+    (e : (i : ι) → G i ≃+ G' i)
+    (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G' i) :
-    (congr equivs equivs_compatible).symm (of _  _ i g) =
-    (of _ _ i ((equivs i).symm g) : DirectLimit G f) := by
+    (congr e he).symm (of _  _ i g) =
+    (of _ _ i ((e i).symm g) : DirectLimit G f) := by
   simp only [congr, AddMonoidHom.toAddEquiv_symm_apply, map_apply_of, AddMonoidHom.coe_coe]
 
 end interaction_with_other_directLimits
@@ -934,18 +929,17 @@ lemma map_comp [IsDirected ι (· ≤ ·)]
 
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
-family of equivalences `gᵢ : Gᵢ ≅ G'ᵢ` such that `g ∘ f = f' ∘ g` induces an equivalence
+family of equivalences `eᵢ : Gᵢ ≅ G'ᵢ` such that `e ∘ f = f' ∘ e` induces an equivalence
 `lim G ⟶ lim G'`.
 -/
 def congr [IsDirected ι (· ≤ ·)]
-    (equivs : (i : ι) → G i ≃+* G' i)
-    (equivs_compatible : ∀ i j h, (equivs j).toRingHom.comp (f i j h) =
-      (f' i j h).comp (equivs i)) :
+    (e : (i : ι) → G i ≃+* G' i)
+    (he : ∀ i j h, (e j).toRingHom.comp (f i j h) = (f' i j h).comp (e i)) :
     DirectLimit G (fun _ _ h ↦ f _ _ h) ≃+* DirectLimit G' fun _ _ h ↦ f' _ _ h :=
   RingEquiv.ofHomInv
-    (map (equivs ·) equivs_compatible)
-    (map (fun i ↦ (equivs i).symm) fun i j h ↦ FunLike.ext _ _ fun x ↦ by
-      have eq1 := FunLike.congr_fun (equivs_compatible i j h) ((equivs i).symm x)
+    (map (e ·) he)
+    (map (fun i ↦ (e i).symm) fun i j h ↦ FunLike.ext _ _ fun x ↦ by
+      have eq1 := FunLike.congr_fun (he i j h) ((e i).symm x)
       simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
         RingEquiv.apply_symm_apply] at eq1 ⊢
       simp [← eq1, of_f])
@@ -953,21 +947,19 @@ def congr [IsDirected ι (· ≤ ·)]
     (FunLike.ext _ _ fun x ↦ x.induction_on <| by simp)
 
 lemma congr_apply_of [IsDirected ι (· ≤ ·)]
-    (equivs : (i : ι) → G i ≃+* G' i)
-    (equivs_compatible : ∀ i j h, (equivs j).toRingHom.comp (f i j h) =
-      (f' i j h).comp (equivs i))
+    (e : (i : ι) → G i ≃+* G' i)
+    (he : ∀ i j h, (e j).toRingHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G i) :
-    congr equivs equivs_compatible (of _ _ i g) =
-    (of _ _ i (equivs i g) : DirectLimit G' fun _ _ h ↦ f' _ _ h) :=
+    congr e he (of _ _ i g) =
+    (of _ _ i (e i g) : DirectLimit G' fun _ _ h ↦ f' _ _ h) :=
   map_apply_of _ equivs_compatible _
 
 lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)]
-    (equivs : (i : ι) → G i ≃+* G' i)
-    (equivs_compatible : ∀ i j h, (equivs j).toRingHom.comp (f i j h) =
-      (f' i j h).comp (equivs i))
+    (e : (i : ι) → G i ≃+* G' i)
+    (he : ∀ i j h, (equivs j).toRingHom.comp (f i j h) = (f' i j h).comp (equivs i))
     {i : ι} (g : G' i) :
-    (congr equivs equivs_compatible).symm (of _  _ i g) =
-    (of _ _ i ((equivs i).symm g) : DirectLimit G fun _ _ h ↦ f _ _ h) := by
+    (congr e he).symm (of _  _ i g) =
+    (of _ _ i ((e i).symm g) : DirectLimit G fun _ _ h ↦ f _ _ h) := by
   simp only [congr, RingEquiv.ofHomInv_symm_apply, map_apply_of, RingHom.coe_coe]
 
 end interaction_with_other_directLimits
