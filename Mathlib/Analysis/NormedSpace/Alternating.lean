@@ -21,7 +21,7 @@ open Finset Metric
 
 We use the following type variables in this file:
 
-* `𝕜` : a `nontrivially_normed_field`;
+* `𝕜` : a `NontriviallyNormedField`;
 * `ι`, `ι'` : finite index types with decidable equality;
 * `E`, `E₁` : families of normed vector spaces over `𝕜` indexed by `i : ι`;
 * `E'` : a family of normed vector spaces over `𝕜` indexed by `i' : ι'`;
@@ -101,7 +101,7 @@ def mkContinuous (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) : E [
   { f with cont := f.continuous_of_bound C H }
 
 @[simp] lemma coe_mk_continuous (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :
-    ⇑(f.mkContinuous C H) = f :=
+    (f.mkContinuous C H : (ι → E) → G) = f :=
   rfl
 
 end AlternatingMap
@@ -202,6 +202,8 @@ instance instNormedSpace : NormedSpace 𝕜' (E [Λ^ι]→L[𝕜] G) :=
 
 variable (𝕜')
 
+/-- The inclusion of *alternating* continuous multi-linear maps into continuous multi-linear maps
+as a continuous linear map. -/
 @[simps!]
 def toContinuousMultilinearMapL :
     E [Λ^ι]→L[𝕜] G →L[𝕜'] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) G :=
@@ -266,7 +268,7 @@ section
 
 variable (𝕜 E E' G G')
 
-/-- `ContinuousMultilinearMap.prod` as a `linear_isometry_equiv`. -/
+/-- `ContinuousMultilinearMap.prod` as a `LinearIsometryEquiv`. -/
 def prodₗᵢ :
     (E [Λ^ι]→L[𝕜] G) × (ContinuousAlternatingMap 𝕜 E G' ι) ≃ₗᵢ[𝕜]
       ContinuousAlternatingMap 𝕜 E (G × G') ι where
@@ -279,7 +281,7 @@ def prodₗᵢ :
   right_inv _ := rfl
   norm_map' f := op_norm_prod f.1 f.2
 
-/-- `ContinuousMultilinearMap.pi` as a `linear_isometry_equiv`. -/
+/-- `ContinuousMultilinearMap.pi` as a `LinearIsometryEquiv`. -/
 def piₗᵢ {ι' : Type v'} [Fintype ι'] {G : ι' → Type wE'} [∀ i', NormedAddCommGroup (G i')]
     [∀ i', NormedSpace 𝕜 (G i')] :
     (∀ i', E [Λ^ι]→L[𝕜] G i') ≃ₗᵢ[𝕜] (E [Λ^ι]→L[𝕜] (∀ i, G i)) where
