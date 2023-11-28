@@ -421,7 +421,7 @@ lemma _root_.continuous_linear_equiv.comp_ContinuousAlternatingMapL_apply
 def flipAlternating (f : G →L[𝕜] (E [Λ^ι]→L[𝕜] G')) : E [Λ^ι]→L[𝕜] (G →L[𝕜] G') where
   toContinuousMultilinearMap :=
     ((ContinuousAlternatingMap.toContinuousMultilinearMapL 𝕜).comp f).flipMultilinear
-  map_eq_zero_of_eq' := λ v i j hv hne, by { ext x, simp [(f x).map_eq_zero_of_eq v hv hne] }
+  map_eq_zero_of_eq' v i j hv hne := by ext x; simp [(f x).map_eq_zero_of_eq v hv hne]
 
 end ContinuousLinearMap
 
@@ -432,8 +432,6 @@ lemma LinearIsometry.norm_compContinuousAlternatingMap (g : G →ₗᵢ[𝕜] G'
 open ContinuousAlternatingMap
 
 section
-
-variable {𝕜 E E' G G'}
 
 lemma ContinuousAlternatingMap.norm_compContinuousLinearMap_le (f : E' [Λ^ι]→L[𝕜] G)
     (g : E →L[𝕜] E') : ‖f.compContinuousLinearMap g‖ ≤ ‖f‖ * (‖g‖ ^ Fintype.card ι) :=
