@@ -58,37 +58,37 @@ theorem exists_clopen_box (a : X) (b : Y) (h : (a, b) ∈ W) :
     · intro v hv
       rw [Set.mem_iUnion]
       exact ⟨⟨v, hv⟩, (this x v (hUV (Set.mk_mem_prod hx hv))).choose_spec.choose_spec.2.2.2.1⟩
-    · obtain ⟨I, hI⟩ := hVC
-      let t := ⋂ i ∈ I, (fun v ↦ (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose) i
-      refine ⟨t, ?_, ?_, ?_⟩
-      · intro x' hx'
-        have hxt : {x'} ×ˢ V ⊆ t ×ˢ V := by
-          rw [Set.prod_subset_prod_iff]
-          left
-          exact ⟨Set.singleton_subset_iff.mpr hx' , subset_refl _⟩
-        refine subset_trans hxt ?_
-        intro ⟨z, w⟩ hz
-        rw [Set.mem_prod] at hz
-        have hz' := hI hz.2
-        rw [Set.mem_iUnion] at hz'
-        obtain ⟨i, hi⟩ := hz'
-        rw [Set.mem_iUnion] at hi
-        obtain ⟨hhi, hi⟩ := hi
-        apply (this x i.val (hUV (Set.mk_mem_prod hx i.prop))).choose_spec.choose_spec.2.2.2.2
-        rw [Set.mem_prod]
-        refine ⟨?_, hi⟩
-        rw [Set.mem_iInter] at hz
-        have hhz := hz.1 i
-        rw [Set.mem_iInter] at hhz
-        exact hhz hhi
-      · apply Set.Finite.isOpen_biInter (Set.Finite.ofFinset I (fun _ ↦ Iff.rfl))
-        intro v _
-        exact (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.1
-      · rw [Set.mem_iInter]
-        intro v
-        rw [Set.mem_iInter]
-        intro
-        exact (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.2.2.1
+    obtain ⟨I, hI⟩ := hVC
+    let t := ⋂ i ∈ I, (fun v ↦ (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose) i
+    refine ⟨t, ?_, ?_, ?_⟩
+    · intro x' hx'
+      have hxt : {x'} ×ˢ V ⊆ t ×ˢ V := by
+        rw [Set.prod_subset_prod_iff]
+        left
+        exact ⟨Set.singleton_subset_iff.mpr hx' , subset_refl _⟩
+      refine subset_trans hxt ?_
+      intro ⟨z, w⟩ hz
+      rw [Set.mem_prod] at hz
+      have hz' := hI hz.2
+      rw [Set.mem_iUnion] at hz'
+      obtain ⟨i, hi⟩ := hz'
+      rw [Set.mem_iUnion] at hi
+      obtain ⟨hhi, hi⟩ := hi
+      apply (this x i.val (hUV (Set.mk_mem_prod hx i.prop))).choose_spec.choose_spec.2.2.2.2
+      rw [Set.mem_prod]
+      refine ⟨?_, hi⟩
+      rw [Set.mem_iInter] at hz
+      have hhz := hz.1 i
+      rw [Set.mem_iInter] at hhz
+      exact hhz hhi
+    · apply Set.Finite.isOpen_biInter (Set.Finite.ofFinset I (fun _ ↦ Iff.rfl))
+      intro v _
+      exact (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.1
+    · rw [Set.mem_iInter]
+      intro v
+      rw [Set.mem_iInter]
+      intro
+      exact (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.2.2.1
   · apply isClosed_of_closure_subset
     intro x hx
     have hhx : {x} ×ˢ V ⊆ (closure U) ×ˢ V := by
