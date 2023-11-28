@@ -317,7 +317,6 @@ noncomputable def liftAlgebra [IsDomain R] [Field K] [Algebra R K]
   RingHom.toAlgebra (IsFractionRing.lift (NoZeroSMulDivisors.algebraMap_injective R _))
 
 -- Porting note: had to fill in the `_` by hand for this instance
-/-- Should be introduced locally after introducing `FractionRing.liftAlgebra` -/
 instance isScalarTower_liftAlgebra [IsDomain R] [Field K] [Algebra R K] [NoZeroSMulDivisors R K] :
     by letI := liftAlgebra R K; exact IsScalarTower R (FractionRing R) K := by
   letI := liftAlgebra R K
