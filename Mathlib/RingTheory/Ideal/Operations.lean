@@ -1701,7 +1701,7 @@ theorem comap_bot_of_injective : Ideal.comap f ⊥ = ⊥ :=
 
 end Injective
 
-/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f (map f.symm) = I`. -/
+/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f (map f.symm I) = I`. -/
 @[simp]
 theorem map_of_equiv (I : Ideal R) (f : R ≃+* S) :
     (I.map (f : R →+* S)).map (f.symm : S →+* R) = I := by
