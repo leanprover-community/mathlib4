@@ -35,11 +35,11 @@ open System (FilePath)
 
 /-- Target directory for build files -/
 def LIBDIR : FilePath :=
-  "build" / "lib"
+  ".lake" / "build" / "lib"
 
 /-- Target directory for IR files -/
 def IRDIR : FilePath :=
-  "build" / "ir"
+  ".lake" / "build" / "ir"
 
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
@@ -69,7 +69,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.7"
+  "0.1.8"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -78,7 +78,7 @@ def LEANTARBIN :=
   IO.CACHEDIR / s!"leantar-{LEANTARVERSION}{EXE}"
 
 def LAKEPACKAGESDIR : FilePath :=
-  ⟨"lake-packages"⟩
+  ".lake" / "packages"
 
 def getCurl : IO String := do
   return if (← CURLBIN.pathExists) then CURLBIN.toString else "curl"

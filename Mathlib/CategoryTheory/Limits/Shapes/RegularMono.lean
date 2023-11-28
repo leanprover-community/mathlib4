@@ -212,6 +212,15 @@ instance coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
       simp [← w]
 #align category_theory.coequalizer_regular CategoryTheory.coequalizerRegular
 
+/-- A morphism which is a coequalizer for its kernel pair is a regular epi. -/
+noncomputable def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
+    (hc : IsColimit (Cofork.ofπ f pullback.condition)) : RegularEpi f where
+  W := pullback f f
+  left := pullback.fst
+  right := pullback.snd
+  w := pullback.condition
+  isColimit := hc
+
 /-- Every split epimorphism is a regular epimorphism. -/
 instance (priority := 100) RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f
     where

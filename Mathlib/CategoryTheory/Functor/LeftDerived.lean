@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Preadditive.ProjectiveResolution
+import Mathlib.Algebra.Homology.SingleHomology
 
 #align_import category_theory.functor.left_derived from "leanprover-community/mathlib"@"13ff898b0eee75d3cc75d1c06a491720eaaf911d"
 
@@ -85,7 +86,8 @@ variable [HasZeroObject D]
 def Functor.leftDerivedObjProjectiveZero (F : C ⥤ D) [F.Additive] (X : C) [Projective X] :
     (F.leftDerived 0).obj X ≅ F.obj X :=
   F.leftDerivedObjIso 0 (ProjectiveResolution.self X) ≪≫
-    (homology'Functor _ _ _).mapIso ((ChainComplex.single₀MapHomologicalComplex F).app X) ≪≫
+    (homology'Functor _ _ _).mapIso
+      ((HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.down ℕ) 0).app X) ≪≫
       (ChainComplex.homology'Functor0Single₀ D).app (F.obj X)
 #align category_theory.functor.left_derived_obj_projective_zero CategoryTheory.Functor.leftDerivedObjProjectiveZero
 
@@ -96,8 +98,10 @@ open ZeroObject
 def Functor.leftDerivedObjProjectiveSucc (F : C ⥤ D) [F.Additive] (n : ℕ) (X : C) [Projective X] :
     (F.leftDerived (n + 1)).obj X ≅ 0 :=
   F.leftDerivedObjIso (n + 1) (ProjectiveResolution.self X) ≪≫
-    (homology'Functor _ _ _).mapIso ((ChainComplex.single₀MapHomologicalComplex F).app X) ≪≫
-      (ChainComplex.homology'FunctorSuccSingle₀ D n).app (F.obj X) ≪≫ (Functor.zero_obj _).isoZero
+    (homology'Functor _ _ _).mapIso
+      ((HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.down ℕ) _).app X) ≪≫
+      (ChainComplex.homology'FunctorSuccSingle₀ D n).app (F.obj X) ≪≫
+      (Functor.zero_obj _).isoZero
 #align category_theory.functor.left_derived_obj_projective_succ CategoryTheory.Functor.leftDerivedObjProjectiveSucc
 
 end

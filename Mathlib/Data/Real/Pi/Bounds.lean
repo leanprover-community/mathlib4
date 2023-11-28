@@ -19,8 +19,6 @@ See also `Mathlib/Data/Real/Pi/Leibniz.lean` and `Mathlib/Data/Real/Pi/Wallis.le
 formulas for `π`.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 -- Porting note: needed to add a lot of type ascriptions for lean to interpret numbers as reals.
 
 open scoped Real
@@ -86,7 +84,7 @@ theorem sqrtTwoAddSeries_step_up (c d : ℕ) {a b n : ℕ} {z : ℝ} (hz : sqrtT
   have hd' : 0 < (d : ℝ) := Nat.cast_pos.2 hd
   rw [sqrt_le_left (div_nonneg c.cast_nonneg d.cast_nonneg), div_pow,
     add_div_eq_mul_add_div _ _ (ne_of_gt hb'), div_le_div_iff hb' (pow_pos hd' _)]
-  exact_mod_cast h
+  exact mod_cast h
 #align real.sqrt_two_add_series_step_up Real.sqrtTwoAddSeries_step_up
 
 section Tactic
@@ -140,7 +138,7 @@ theorem sqrtTwoAddSeries_step_down (a b : ℕ) {c d n : ℕ} {z : ℝ}
   have hb' : 0 < (b : ℝ) := Nat.cast_pos.2 hb
   have hd' : 0 < (d : ℝ) := Nat.cast_pos.2 hd
   rw [div_pow, add_div_eq_mul_add_div _ _ (ne_of_gt hd'), div_le_div_iff (pow_pos hb' _) hd']
-  exact_mod_cast h
+  exact mod_cast h
 #align real.sqrt_two_add_series_step_down Real.sqrtTwoAddSeries_step_down
 
 section Tactic

@@ -20,6 +20,7 @@ Given a type `X` and a predicate `p : X → Prop`:
 * `Set X` : the type of sets whose elements have type `X`
 * `{a : X | p a} : Set X` : the set of all elements of `X` satisfying `p`
 * `{a | p a} : Set X` : a more concise notation for `{a : X | p a}`
+* `{f x y | (x : X) (y : Y)} : Set Z` : a more concise notation for `{z : Z | ∃ x y, f x y = z}`
 * `{a ∈ S | p a} : Set X` : given `S : Set X`, the subset of `S` consisting of
    its elements satisfying `p`.
 
@@ -35,9 +36,16 @@ This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean
 
 set_option autoImplicit true
 
+/-- A set is a collection of elements of some type `α`.
+
+Although `Set` is defined as `α → Prop`, this is an implementation detail which should not be
+relied on. Instead, `setOf` and membership of a set (`∈`) should be used to convert between sets
+and predicates.
+-/
 def Set (α : Type u) := α → Prop
 #align set Set
 
+/-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
 def setOf {α : Type u} (p : α → Prop) : Set α :=
   p
 #align set_of setOf
@@ -84,6 +92,13 @@ def setOf.unexpander : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 open Std.ExtendedBinder in
+/--
+`{ f x y | (x : X) (y : Y) }` is notation for the set of elements `f x y` constructed from the
+binders `x` and `y`, equivalent to `{z : Z | ∃ x y, f x y = z}`.
+
+If `f x y` is a single identifier, it must be parenthesized to avoid ambiguity with `{x | p x}`;
+for instance, `{(x) | (x : Nat) (y : Nat) (_hxy : x = y^2)}`.
+-/
 macro (priority := low) "{" t:term " | " bs:extBinders "}" : term =>
   `({x | ∃ᵉ $bs:extBinders, $t = x})
 
@@ -126,5 +141,12 @@ instance : LawfulFunctor Set where
     ⟨λ ⟨a, ⟨h₁, h₂⟩⟩ => ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
      λ ⟨_, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ => ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
   map_const := rfl
+
+/-- The property `s.Nonempty` expresses the fact that the set `s` is not empty. It should be used
+in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives access to a nice API thanks
+to the dot notation. -/
+protected def Nonempty (s : Set α) : Prop :=
+  ∃ x, x ∈ s
+#align set.nonempty Set.Nonempty
 
 end Set

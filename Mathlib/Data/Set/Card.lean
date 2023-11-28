@@ -555,7 +555,7 @@ theorem nonempty_of_ncard_ne_zero (hs : s.ncard ≠ 0) : s.Nonempty := by
 #align set.nonempty_of_ncard_ne_zero Set.nonempty_of_ncard_ne_zero
 
 @[simp] theorem ncard_singleton (a : α) : ({a} : Set α).ncard = 1 := by
-  simp [ncard_eq_toFinset_card]
+  simp [ncard, ncard_eq_toFinset_card]
 #align set.ncard_singleton Set.ncard_singleton
 
 theorem ncard_singleton_inter (a : α) (s : Set α) : ({a} ∩ s).ncard ≤ 1 := by
@@ -985,8 +985,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s 
       (hu.subset (subset_union_right _ _))] at hst
   obtain ⟨r', hnr', hr'⟩ := Finset.exists_subset_or_subset_of_two_mul_lt_card hst
   exact ⟨r', by simpa, by simpa using hr'⟩
-#align set.exists_subset_or_subset_of_two_mul_lt_ncard
-  Set.exists_subset_or_subset_of_two_mul_lt_ncard
+#align set.exists_subset_or_subset_of_two_mul_lt_ncard Set.exists_subset_or_subset_of_two_mul_lt_ncard
 
 /-! ### Explicit description of a set from its cardinality -/
 
