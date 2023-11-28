@@ -192,7 +192,7 @@ theorem mk_zpow (a : G) (n : ℤ) : ((a ^ n : G) : Q) = (a : Q) ^ n :=
 #align quotient_add_group.coe_zsmul QuotientAddGroup.mk_zsmul
 
 @[to_additive (attr := simp)]
-theorem mk_prod {G ι : Type _} [CommGroup G] (N : Subgroup G) (s : Finset ι) {f : ι → G} :
+theorem mk_prod {G ι : Type*} [CommGroup G] (N : Subgroup G) (s : Finset ι) {f : ι → G} :
     ((Finset.prod s f : G) : G ⧸ N) = Finset.prod s (fun i => (f i : G ⧸ N)) :=
   map_prod (QuotientGroup.mk' N) _ _
 

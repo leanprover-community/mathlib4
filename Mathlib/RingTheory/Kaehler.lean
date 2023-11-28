@@ -214,7 +214,8 @@ def KaehlerDifferential.D : Derivation R S (Ω[S⁄R]) :=
     leibniz' := fun a b => by
       have : LinearMap.CompatibleSMul { x // x ∈ ideal R S } (Ω[S⁄R]) S (S ⊗[R] S) := inferInstance
       dsimp [KaehlerDifferential.DLinearMap_apply, - Ideal.toCotangent_apply]
-      rw [← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]),
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]),
         ← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]), ← map_add, Ideal.toCotangent_eq, pow_two]
       convert Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a : _)
         (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b : _) using 1
@@ -481,9 +482,8 @@ noncomputable def KaehlerDifferential.kerTotal : Submodule S (S →₀ S) :=
 
 unsuppress_compilation in
 -- Porting note: was `local notation x "𝖣" y => (KaehlerDifferential.kerTotal R S).mkQ (single y x)`
--- but `notation3` wants an explicit expansion to be able to generate a pretty printer.
-local notation3 x "𝖣" y =>
-  FunLike.coe (Submodule.mkQ (KaehlerDifferential.kerTotal R S)) (single y x)
+-- but not having `FunLike.coe` leads to `kerTotal_mkQ_single_smul` failing.
+local notation3 x "𝖣" y => FunLike.coe (KaehlerDifferential.kerTotal R S).mkQ (single y x)
 
 theorem KaehlerDifferential.kerTotal_mkQ_single_add (x y z) : (z𝖣x + y) = (z𝖣x) + z𝖣y := by
   rw [← map_add, eq_comm, ← sub_eq_zero, ← map_sub (Submodule.mkQ (kerTotal R S)),
@@ -635,18 +635,6 @@ variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 
 variable [Algebra A B] [Algebra S B] [IsScalarTower R A B] [IsScalarTower R S B]
 
-variable {R B}
-
-/-- For a tower `R → A → B` and an `R`-derivation `B → M`, we may compose with `A → B` to obtain an
-`R`-derivation `A → M`. -/
-def Derivation.compAlgebraMap [Module A M] [Module B M] [IsScalarTower A B M]
-    (d : Derivation R B M) : Derivation R A M where
-  map_one_eq_zero' := by simp
-  leibniz' a b := by simp
-  toLinearMap := d.toLinearMap.comp (IsScalarTower.toAlgHom R A B).toLinearMap
-#align derivation.comp_algebra_map Derivation.compAlgebraMap
-
-variable (R B)
 variable [SMulCommClass S A B]
 
 /-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄R]` given a square

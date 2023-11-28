@@ -114,6 +114,10 @@ def subobjectEquiv [HasLimits C] [PreservesLimits T] (A : StructuredArrow S T) :
       exact congr_arg CommaMorphism.right (Subobject.ofMkLEMk_comp h)
 #align category_theory.structured_arrow.subobject_equiv CategoryTheory.StructuredArrow.subobjectEquiv
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] CategoryTheory.StructuredArrow.subobjectEquiv_symm_apply
+  CategoryTheory.StructuredArrow.subobjectEquiv_apply_coe
+
 /-- If `C` is well-powered and complete and `T` preserves limits, then `StructuredArrow S T` is
     well-powered. -/
 instance wellPowered_structuredArrow [WellPowered C] [HasLimits C] [PreservesLimits T] :

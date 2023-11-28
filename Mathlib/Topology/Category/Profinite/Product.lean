@@ -93,7 +93,7 @@ def indexCone : Cone (indexFunctor hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
   π := { app := fun J ↦ π_app C (· ∈ unop J) }
 
-instance isIso_indexCone_lift [DecidableEq ι] :
+instance isIso_indexCone_lift :
     IsIso ((limitConeIsLimit (indexFunctor hC)).lift (indexCone hC)) :=
   haveI : CompactSpace C := by rwa [← isCompact_iff_compactSpace]
   isIso_of_bijective _
@@ -124,26 +124,26 @@ instance isIso_indexCone_lift [DecidableEq ι] :
         obtain ⟨x, hx⟩ :
             Set.Nonempty (⋂ (J : Finset ι), π_app C (· ∈ J) ⁻¹' {a.val (op J)}) :=
           IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
-            (fun J : Finset ι => π_app C (· ∈ J) ⁻¹' {a.val (op J)}) (directed_of_sup H₁)
+            (fun J : Finset ι => π_app C (· ∈ J) ⁻¹' {a.val (op J)}) (directed_of_isDirected_le H₁)
             (fun J => (Set.singleton_nonempty _).preimage (surjective_π_app _))
             (fun J => (hc J (a.val (op J))).isCompact) fun J => hc J (a.val (op J))
         exact ⟨x, Set.mem_iInter.1 hx⟩)
 
 /-- The canonical map from `C` to the explicit limit as an isomorphism. -/
 noncomputable
-def isoindexConeLift [DecidableEq ι] :
+def isoindexConeLift :
     @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _ ≅
     (Profinite.limitCone (indexFunctor hC)).pt :=
   asIso <| (Profinite.limitConeIsLimit _).lift (indexCone hC)
 
 /-- The isomorphism of cones induced by `isoindexConeLift`. -/
 noncomputable
-def asLimitindexConeIso [DecidableEq ι] : indexCone hC ≅ Profinite.limitCone _ :=
+def asLimitindexConeIso : indexCone hC ≅ Profinite.limitCone _ :=
   Limits.Cones.ext (isoindexConeLift hC) fun _ => rfl
 
 /-- `indexCone` is a limit cone. -/
 noncomputable
-def indexCone_isLimit [DecidableEq ι] : CategoryTheory.Limits.IsLimit (indexCone hC) :=
+def indexCone_isLimit : CategoryTheory.Limits.IsLimit (indexCone hC) :=
   Limits.IsLimit.ofIsoLimit (Profinite.limitConeIsLimit _) (asLimitindexConeIso hC).symm
 
 end Profinite

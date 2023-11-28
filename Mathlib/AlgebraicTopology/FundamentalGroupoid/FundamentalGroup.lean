@@ -5,7 +5,7 @@ Authors: Mark Lavrentyev
 -/
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.PathConnected
+import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Homotopy.Path
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 
@@ -32,7 +32,7 @@ open CategoryTheory
 /-- The fundamental group is the automorphism group (vertex group) of the basepoint
 in the fundamental groupoid. -/
 def FundamentalGroup (X : Type u) [TopologicalSpace X] (x : X) :=
-  @Aut (FundamentalGroupoid X) _ x
+  @Aut (FundamentalGroupoid X) _ ⟨x⟩
 #align fundamental_group FundamentalGroup
 
 instance (X : Type u) [TopologicalSpace X] (x : X) : Group (FundamentalGroup X x) := by
@@ -65,7 +65,8 @@ def fundamentalGroupMulEquivOfPathConnected [PathConnectedSpace X] :
 #align fundamental_group.fundamental_group_mul_equiv_of_path_connected FundamentalGroup.fundamentalGroupMulEquivOfPathConnected
 
 /-- An element of the fundamental group as an arrow in the fundamental groupoid. -/
-abbrev toArrow {X : TopCat} {x : X} (p : FundamentalGroup X x) : x ⟶ x :=
+abbrev toArrow {X : TopCat} {x : X} (p : FundamentalGroup X x) :
+    FundamentalGroupoid.mk x ⟶ FundamentalGroupoid.mk x :=
   p.hom
 #align fundamental_group.to_arrow FundamentalGroup.toArrow
 
@@ -75,7 +76,9 @@ abbrev toPath {X : TopCat} {x : X} (p : FundamentalGroup X x) : Path.Homotopic.Q
 #align fundamental_group.to_path FundamentalGroup.toPath
 
 /-- An element of the fundamental group, constructed from an arrow in the fundamental groupoid. -/
-abbrev fromArrow {X : TopCat} {x : X} (p : x ⟶ x) : FundamentalGroup X x where
+abbrev fromArrow {X : TopCat} {x : X}
+    (p : FundamentalGroupoid.mk x ⟶ FundamentalGroupoid.mk x) :
+    FundamentalGroup X x where
   hom := p
   inv := CategoryTheory.Groupoid.inv p
 #align fundamental_group.from_arrow FundamentalGroup.fromArrow
