@@ -2219,13 +2219,6 @@ theorem map_isPrime_of_equiv {F' : Type*} [RingEquivClass F' R S] (f : F') {I : 
 #align ideal.map_is_prime_of_equiv Ideal.map_isPrime_of_equiv
 
 
-theorem comap_symm (I : Ideal R) (f : R ≃+* S) : I.comap f.symm= I.map (f) :=  by
-  rw[←@map_comap_of_equiv];rfl
-
-theorem map_symm (I : Ideal S) (f : R ≃+* S) : I.comap f= I.map f.symm :=  by
-  rw [← @comap_symm,@RingEquiv.symm_symm]
-
-
 end Semiring
 
 section Ring
