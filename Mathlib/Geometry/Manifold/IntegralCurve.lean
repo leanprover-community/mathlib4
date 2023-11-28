@@ -142,6 +142,13 @@ lemma isIntegralCurveAt_comp_mul_ne_zero {γ : ℝ → M} {a : ℝ} (ha : a ≠ 
   ext
   simp [inv_mul_eq_div, div_self ha]
 
+variable (t₀) in
+lemma isIntegralCurveAt_const (h : v x₀ = 0) : IsIntegralCurveAt (fun _ => x₀) v t₀ x₀ := by
+  refine ⟨rfl, 1, zero_lt_one, fun t _ => ?_⟩
+  rw [h, ←ContinuousLinearMap.zero_apply (R₁ := ℝ) (R₂ := ℝ) (1 : ℝ),
+    ContinuousLinearMap.smulRight_one_one]
+  exact hasMFDerivAt_const ..
+
 /-- For any continuously differentiable vector field and any chosen non-boundary point `x₀` on the
   manifold, there exists an integral curve `γ : ℝ → M` such that `γ t₀ = x₀` and the tangent vector
   of `γ` at `t` coincides with the vector field at `γ t` for all `t` within an open interval around
