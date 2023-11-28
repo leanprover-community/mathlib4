@@ -182,7 +182,7 @@ nonrec theorem addSalemSpencer_sphere : AddSalemSpencer (sphere n d k : Set (Fin
 theorem addSalemSpencer_image_sphere :
     AddSalemSpencer ((sphere n d k).image (map (2 * d - 1)) : Set ℕ) := by
   rw [coe_image]
-  refine' @AddSalemSpencer.image _ (Fin n → ℕ) ℕ _ _ (sphere n d k) _ (map (2 * d - 1))
+  refine' AddSalemSpencer.image (α := Fin n → ℕ) (β := ℕ) (s := sphere n d k) (map (2 * d - 1))
     (map_injOn.mono _) addSalemSpencer_sphere
   · exact x
   rw [Set.add_subset_iff]
