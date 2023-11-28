@@ -102,7 +102,7 @@ theorem ext {h h' : X ≃ₜ Y} (H : ∀ x, h x = h' x) : h = h' :=
 #align homeomorph.ext Homeomorph.ext
 
 /-- Identity map as a homeomorphism. -/
-@[simps! (config := { fullyApplied := false }) apply]
+@[simps! (config := .asFn) apply]
 protected def refl (X : Type*) [TopologicalSpace X] : X ≃ₜ X where
   continuous_toFun := continuous_id
   continuous_invFun := continuous_id
@@ -254,15 +254,15 @@ noncomputable def ofEmbedding (f : X → Y) (hf : Embedding f) : X ≃ₜ Set.ra
   toEquiv := Equiv.ofInjective f hf.inj
 #align homeomorph.of_embedding Homeomorph.ofEmbedding
 
-protected theorem secondCountableTopology [TopologicalSpace.SecondCountableTopology Y]
-    (h : X ≃ₜ Y) : TopologicalSpace.SecondCountableTopology X :=
+protected theorem secondCountableTopology [SecondCountableTopology Y]
+    (h : X ≃ₜ Y) : SecondCountableTopology X :=
   h.inducing.secondCountableTopology
 #align homeomorph.second_countable_topology Homeomorph.secondCountableTopology
 
 /-- If `h : X → Y` is a homeomorphism, `h(s)` is compact iff `s` is. -/
 @[simp]
 theorem isCompact_image {s : Set X} (h : X ≃ₜ Y) : IsCompact (h '' s) ↔ IsCompact s :=
-  h.embedding.isCompact_iff_isCompact_image.symm
+  h.embedding.isCompact_iff.symm
 #align homeomorph.is_compact_image Homeomorph.isCompact_image
 
 /-- If `h : X → Y` is a homeomorphism, `h⁻¹(s)` is compact iff `s` is. -/
@@ -270,6 +270,18 @@ theorem isCompact_image {s : Set X} (h : X ≃ₜ Y) : IsCompact (h '' s) ↔ Is
 theorem isCompact_preimage {s : Set Y} (h : X ≃ₜ Y) : IsCompact (h ⁻¹' s) ↔ IsCompact s := by
   rw [← image_symm]; exact h.symm.isCompact_image
 #align homeomorph.is_compact_preimage Homeomorph.isCompact_preimage
+
+/-- If `h : X → Y` is a homeomorphism, `s` is σ-compact iff `h(s)` is. -/
+@[simp]
+theorem isSigmaCompact_image {s : Set X} (h : X ≃ₜ Y) :
+    IsSigmaCompact (h '' s) ↔ IsSigmaCompact s :=
+  h.embedding.isSigmaCompact_iff.symm
+
+/-- If `h : X → Y` is a homeomorphism, `h⁻¹(s)` is σ-compact iff `s` is. -/
+@[simp]
+theorem isSigmaCompact_preimage {s : Set Y} (h : X ≃ₜ Y) :
+    IsSigmaCompact (h ⁻¹' s) ↔ IsSigmaCompact s := by
+  rw [← image_symm]; exact h.symm.isSigmaCompact_image
 
 @[simp]
 theorem isPreconnected_image {s : Set X} (h : X ≃ₜ Y) :
@@ -549,7 +561,7 @@ def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where
 #align homeomorph.prod_assoc Homeomorph.prodAssoc
 
 /-- `X × {*}` is homeomorphic to `X`. -/
-@[simps! (config := { fullyApplied := false }) apply]
+@[simps! (config := .asFn) apply]
 def prodPUnit : X × PUnit ≃ₜ X where
   toEquiv := Equiv.prodPUnit X
   continuous_toFun := continuous_fst
@@ -580,7 +592,7 @@ end
 def piCongrLeft {ι ι' : Type*} {Y : ι' → Type*} [∀ j, TopologicalSpace (Y j)]
     (e : ι ≃ ι') : (∀ i, Y (e i)) ≃ₜ ∀ j, Y j where
   continuous_toFun := continuous_pi <| e.forall_congr_left.mp <| fun i ↦ by
-    simpa only [Equiv.toFun_as_coe_apply, Equiv.piCongrLeft_apply_apply] using continuous_apply i
+    simpa only [Equiv.toFun_as_coe, Equiv.piCongrLeft_apply_apply] using continuous_apply i
   continuous_invFun := Pi.continuous_precomp' e
   toEquiv := Equiv.piCongrLeft _ e
 
@@ -647,7 +659,7 @@ def sigmaProdDistrib : (Σi, X i) × Y ≃ₜ Σi, X i × Y :=
 end Distrib
 
 /-- If `ι` has a unique element, then `ι → X` is homeomorphic to `X`. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def funUnique (ι X : Type*) [Unique ι] [TopologicalSpace X] : (ι → X) ≃ₜ X where
   toEquiv := Equiv.funUnique ι X
   continuous_toFun := continuous_apply _
@@ -655,7 +667,7 @@ def funUnique (ι X : Type*) [Unique ι] [TopologicalSpace X] : (ι → X) ≃�
 #align homeomorph.fun_unique Homeomorph.funUnique
 
 /-- Homeomorphism between dependent functions `Π i : Fin 2, X i` and `X 0 × X 1`. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def piFinTwo.{u} (X : Fin 2 → Type u) [∀ i, TopologicalSpace (X i)] : (∀ i, X i) ≃ₜ X 0 × X 1 where
   toEquiv := piFinTwoEquiv X
   continuous_toFun := (continuous_apply 0).prod_mk (continuous_apply 1)
@@ -663,7 +675,7 @@ def piFinTwo.{u} (X : Fin 2 → Type u) [∀ i, TopologicalSpace (X i)] : (∀ i
 #align homeomorph.pi_fin_two Homeomorph.piFinTwo
 
 /-- Homeomorphism between `X² = Fin 2 → X` and `X × X`. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def finTwoArrow : (Fin 2 → X) ≃ₜ X × X :=
   { piFinTwo fun _ => X with toEquiv := finTwoArrowEquiv X }
 #align homeomorph.fin_two_arrow Homeomorph.finTwoArrow
@@ -679,7 +691,7 @@ def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
 #align homeomorph.image Homeomorph.image
 
 /-- `Set.univ X` is homeomorphic to `X`. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where
   toEquiv := Equiv.Set.univ X
   continuous_toFun := continuous_subtype_val

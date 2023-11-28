@@ -225,7 +225,7 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
         have : j ≠ i := by
           rintro rfl
           contradiction
-        simp [this]
+        simp only [ne_eq, this, not_false_eq_true, Function.update_noteq]
         exact h2 _ (Finset.mem_insert_of_mem hj)
     · apply h2
       simp

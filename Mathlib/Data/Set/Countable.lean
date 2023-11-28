@@ -166,7 +166,7 @@ theorem exists_seq_iSup_eq_top_iff_countable [CompleteLattice α] {p : α → Pr
       haveI := subsingleton_of_bot_eq_top hS
       rcases h with ⟨x, hx⟩
       exact ⟨fun _ => x, fun _ => hx, Subsingleton.elim _ _⟩
-    · rcases(Set.countable_iff_exists_surjective hne).1 hSc with ⟨s, hs⟩
+    · rcases (Set.countable_iff_exists_surjective hne).1 hSc with ⟨s, hs⟩
       refine' ⟨fun n => s n, fun n => hps _ (s n).coe_prop, _⟩
       rwa [hs.iSup_comp, ← sSup_eq_iSup']
 #align set.exists_seq_supr_eq_top_iff_countable Set.exists_seq_iSup_eq_top_iff_countable

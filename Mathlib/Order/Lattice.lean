@@ -1550,5 +1550,5 @@ instance [LinearOrder α] : LinearOrder (ULift.{v} α) :=
 end ULift
 
 --To avoid noncomputability poisoning from `Bool.completeBooleanAlgebra`
-instance : DistribLattice Bool :=
+instance Bool.instDistribLattice : DistribLattice Bool :=
   inferInstance

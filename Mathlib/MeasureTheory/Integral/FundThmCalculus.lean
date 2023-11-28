@@ -145,8 +145,6 @@ set_option autoImplicit true
 
 noncomputable section
 
-open TopologicalSpace (SecondCountableTopology)
-
 open MeasureTheory Set Classical Filter Function
 
 open scoped Classical Topology Filter ENNReal BigOperators Interval NNReal
@@ -1087,7 +1085,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
       simp only [lt_min_iff, mem_Ioi]
       exact ⟨t_lt_v, ht.2.2⟩
     -- choose a point `x` slightly to the right of `t` which satisfies the above bound
-    rcases(I3.and I4).exists with ⟨x, hx, h'x⟩
+    rcases (I3.and I4).exists with ⟨x, hx, h'x⟩
     -- we check that it belongs to `s`, essentially by construction
     refine' ⟨x, _, Ioc_subset_Ioc le_rfl (min_le_left _ _) h'x⟩
     calc

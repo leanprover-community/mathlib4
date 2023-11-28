@@ -59,7 +59,7 @@ theorem derivative_rootMultiplicity_of_root [CharZero R] {p : R[X]} {t : R} (hpt
 
 theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity [CharZero R] (p : R[X]) (t : R) :
     p.rootMultiplicity t - 1 ≤ p.derivative.rootMultiplicity t := by
-  by_cases p.IsRoot t
+  by_cases h : p.IsRoot t
   · exact (derivative_rootMultiplicity_of_root h).symm.le
   · rw [rootMultiplicity_eq_zero h, zero_tsub]
     exact zero_le _
@@ -176,7 +176,7 @@ theorem isUnit_iff_degree_eq_zero : IsUnit p ↔ degree p = 0 :=
   ⟨degree_eq_zero_of_isUnit, fun h =>
     have : degree p ≤ 0 := by simp [*, le_refl]
     have hc : coeff p 0 ≠ 0 := fun hc => by
-      rw [eq_C_of_degree_le_zero this, hc] at h; simp at h
+      rw [eq_C_of_degree_le_zero this, hc] at h; simp only [map_zero] at h; contradiction
     isUnit_iff_dvd_one.2
       ⟨C (coeff p 0)⁻¹, by
         conv in p => rw [eq_C_of_degree_le_zero this]
@@ -403,7 +403,7 @@ theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
     have : p.coeff 1 ≠ 0 := by
       have h' := natDegree_eq_of_degree_eq_some h
       change natDegree p = 1 at h'; rw [←h']
-      exact mt leadingCoeff_eq_zero.1 fun h0 => by simp [h0] at h
+      exact mt leadingCoeff_eq_zero.1 fun h0 => by simp [h0] at h; contradiction
     conv in p => rw [eq_X_add_C_of_degree_le_one (show degree p ≤ 1 by rw [h])]
     simp [IsRoot, mul_div_cancel' _ this]⟩
 #align polynomial.exists_root_of_degree_eq_one Polynomial.exists_root_of_degree_eq_one
@@ -486,7 +486,7 @@ theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
   classical
   have : Prime (normalize p) :=
     Monic.prime_of_degree_eq_one (hp1 ▸ degree_normalize)
-      (monic_normalize fun hp0 => absurd hp1 (hp0.symm ▸ by simp))
+      (monic_normalize fun hp0 => absurd hp1 (hp0.symm ▸ by simp only [degree_zero]; decide))
   exact (normalize_associated _).prime this
 #align polynomial.prime_of_degree_eq_one Polynomial.prime_of_degree_eq_one
 

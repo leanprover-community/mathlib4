@@ -199,7 +199,8 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
     rw [← Option.some_inj] at hk'
     rw [← get?_eq_get, dropLast_eq_take, get?_take, get?, get?_eq_get, Option.some_inj] at hk'
     rw [hk']
-    simp [getLast_eq_get]
+    simp only [getLast_eq_get, length_cons, ge_iff_le, Nat.succ_sub_succ_eq_sub,
+      nonpos_iff_eq_zero, add_eq_zero_iff, and_false, tsub_zero, get_cons_succ]
     simpa using hk
 #align list.next_last_cons List.next_getLast_cons
 
@@ -409,7 +410,7 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
       length_reverse, Nat.mod_eq_of_lt (tsub_lt_self lpos Nat.succ_pos'),
       tsub_tsub_cancel_of_le (Nat.succ_le_of_lt lpos)]
     rw [← nthLe_reverse]
-    · simp [tsub_tsub_cancel_of_le (Nat.le_pred_of_lt hk)]
+    · simp [tsub_tsub_cancel_of_le (Nat.le_sub_one_of_lt hk)]
     · simpa using (Nat.sub_le _ _).trans_lt (tsub_lt_self lpos Nat.succ_pos')
     · simpa
 #align list.prev_reverse_eq_next List.prev_reverse_eq_next

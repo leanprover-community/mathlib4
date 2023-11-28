@@ -142,7 +142,7 @@ theorem nodup_of_pairwise_disjoint {l : List (Perm α)} (h1 : (1 : Perm α) ∉ 
   suffices (σ : Perm α) = 1 by
     rw [this] at h_mem
     exact h1 h_mem
-  exact ext fun a => (or_self_iff _).mp (h_disjoint a)
+  exact ext fun a => or_self_iff.mp (h_disjoint a)
 #align equiv.perm.nodup_of_pairwise_disjoint Equiv.Perm.nodup_of_pairwise_disjoint
 
 theorem pow_apply_eq_self_of_apply_eq_self {x : α} (hfx : f x = x) : ∀ n : ℕ, (f ^ n) x = x

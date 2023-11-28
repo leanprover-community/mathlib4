@@ -246,9 +246,7 @@ theorem to_fromCostructuredArrow_eq (F : Cᵒᵖ ⥤ Type v) :
     ext x f
     convert congr_fun (X_hom.naturality f.op).symm (𝟙 X_left)
     simp
-  · intro X Y f
-    ext
-    simp [CostructuredArrow.eqToHom_left]
+  · aesop
 #align category_theory.category_of_elements.to_from_costructured_arrow_eq CategoryTheory.CategoryOfElements.to_fromCostructuredArrow_eq
 
 /-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
@@ -275,9 +273,7 @@ theorem costructuredArrow_yoneda_equivalence_naturality {F₁ F₂ : Cᵒᵖ ⥤
     congr
     ext _ f
     simpa using congr_fun (α.naturality f.op).symm (unop X).snd
-  · intro X Y f
-    ext
-    simp [CostructuredArrow.eqToHom_left]
+  · simp [autoParam]
 #align category_theory.category_of_elements.costructured_arrow_yoneda_equivalence_naturality CategoryTheory.CategoryOfElements.costructuredArrow_yoneda_equivalence_naturality
 
 end CategoryOfElements
