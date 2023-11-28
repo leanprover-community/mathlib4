@@ -246,6 +246,7 @@ import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 import Mathlib.Algebra.Homology.ShortComplex.Exact
+import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 import Mathlib.Algebra.Homology.ShortComplex.FunctorEquivalence
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Homology.ShortComplex.Homology
@@ -295,6 +296,7 @@ import Mathlib.Algebra.Lie.TensorProduct
 import Mathlib.Algebra.Lie.UniversalEnveloping
 import Mathlib.Algebra.Lie.Weights.Basic
 import Mathlib.Algebra.Lie.Weights.Cartan
+import Mathlib.Algebra.Lie.Weights.Linear
 import Mathlib.Algebra.LinearRecurrence
 import Mathlib.Algebra.ModEq
 import Mathlib.Algebra.Module.Algebra
@@ -499,6 +501,7 @@ import Mathlib.AlgebraicGeometry.Properties
 import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.AlgebraicGeometry.Scheme
+import Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
@@ -679,6 +682,7 @@ import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.Join
 import Mathlib.Analysis.Convex.KreinMilman
 import Mathlib.Analysis.Convex.Measure
+import Mathlib.Analysis.Convex.Mul
 import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Convex.PartitionOfUnity
 import Mathlib.Analysis.Convex.Quasiconvex
@@ -1082,6 +1086,7 @@ import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
+import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
@@ -1125,6 +1130,7 @@ import Mathlib.CategoryTheory.Localization.Equivalence
 import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Localization.Predicate
+import Mathlib.CategoryTheory.Localization.Prod
 import Mathlib.CategoryTheory.Monad.Adjunction
 import Mathlib.CategoryTheory.Monad.Algebra
 import Mathlib.CategoryTheory.Monad.Basic
@@ -1241,9 +1247,10 @@ import Mathlib.CategoryTheory.Sites.Over
 import Mathlib.CategoryTheory.Sites.Plus
 import Mathlib.CategoryTheory.Sites.Preserves
 import Mathlib.CategoryTheory.Sites.Pretopology
-import Mathlib.CategoryTheory.Sites.Pushforward
+import Mathlib.CategoryTheory.Sites.Pullback
 import Mathlib.CategoryTheory.Sites.RegularExtensive
 import Mathlib.CategoryTheory.Sites.Sheaf
+import Mathlib.CategoryTheory.Sites.SheafHom
 import Mathlib.CategoryTheory.Sites.SheafOfTypes
 import Mathlib.CategoryTheory.Sites.Sheafification
 import Mathlib.CategoryTheory.Sites.Sieves
@@ -1352,6 +1359,8 @@ import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
 import Mathlib.Computability.Ackermann
+import Mathlib.Computability.AkraBazzi.AkraBazzi
+import Mathlib.Computability.AkraBazzi.GrowsPolynomially
 import Mathlib.Computability.ContextFreeGrammar
 import Mathlib.Computability.DFA
 import Mathlib.Computability.Encoding
@@ -2662,6 +2671,7 @@ import Mathlib.NumberTheory.Cyclotomic.Rat
 import Mathlib.NumberTheory.Dioph
 import Mathlib.NumberTheory.DiophantineApproximation
 import Mathlib.NumberTheory.DirichletCharacter.Basic
+import Mathlib.NumberTheory.DirichletCharacter.Bounds
 import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.EulerProduct.Basic
 import Mathlib.NumberTheory.FLT.Basic
@@ -3064,6 +3074,7 @@ import Mathlib.RingTheory.Polynomial.Quotient
 import Mathlib.RingTheory.Polynomial.RationalRoot
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Polynomial.Selmer
+import Mathlib.RingTheory.Polynomial.SeparableDegree
 import Mathlib.RingTheory.Polynomial.Tower
 import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.RingTheory.PolynomialAlgebra
@@ -3269,7 +3280,6 @@ import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Observe
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.Peel
-import Mathlib.Tactic.PermuteGoals
 import Mathlib.Tactic.Polyrith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Positivity.Basic
@@ -3507,6 +3517,7 @@ import Mathlib.Topology.Homotopy.HSpaces
 import Mathlib.Topology.Homotopy.HomotopyGroup
 import Mathlib.Topology.Homotopy.Path
 import Mathlib.Topology.Homotopy.Product
+import Mathlib.Topology.IndicatorConstPointwise
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Instances.Complex

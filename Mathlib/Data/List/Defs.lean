@@ -446,15 +446,7 @@ def mapDiagM' {m} [Monad m] {α} (f : α → α → m Unit) : List α → m Unit
 --   | h :: t => (f h h >> t.mapM' (f h)) >> t.mapDiagM'
 #align list.mmap'_diag List.mapDiagM'
 
-/-- Map each element of a `List` to an action, evaluate these actions in order,
-    and collect the results.
--/
-protected def traverse {F : Type u → Type v} [Applicative F]
-    {α : Type*} {β : Type u} (f : α → F β) : List α → F (List β)
-  | [] => pure []
-  | x :: xs => List.cons <$> f x <*> List.traverse f xs
 #align list.traverse List.traverse
-
 #align list.get_rest List.getRest
 #align list.slice List.dropSlice
 
