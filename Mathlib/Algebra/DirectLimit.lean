@@ -204,10 +204,10 @@ def map (g : (i : ι) → G i →ₗ[R] G' i) (hg : ∀ i j h, g j ∘ₗ f i j 
       simp only [LinearMap.coe_comp, Function.comp_apply] at eq1 ⊢
       rw [eq1, of_f]
 
-@[simp] lemma map_apply_of (maps : (i : ι) → G i →ₗ[R] G' i)
-    (maps_compatible : ∀ i j h, maps j ∘ₗ f i j h = f' i j h ∘ₗ maps i)
-    {i : ι} (g : G i) :
-    map maps maps_compatible (of _ _ _ _ _ g) = of R ι G' f' i (maps i g) :=
+@[simp] lemma map_apply_of (g : (i : ι) → G i →ₗ[R] G' i)
+    (hg : ∀ i j h, g j ∘ₗ f i j h = f' i j h ∘ₗ g i)
+    {i : ι} (x : G i) :
+    map g hg (of _ _ _ _ _ x) = of R ι G' f' i (g i x) :=
   lift_of _ _ _
 
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
@@ -216,14 +216,14 @@ def map (g : (i : ι) → G i →ₗ[R] G' i) (hg : ∀ i j h, g j ∘ₗ f i j 
     x.induction_on fun i g ↦ by simp
 
 lemma map_comp [IsDirected ι (· ≤ ·)]
-    (maps : (i : ι) → G i →ₗ[R] G' i) (maps' : (i : ι) → G' i →ₗ[R] G'' i)
-    (maps_compatible : ∀ i j h, maps j ∘ₗ f i j h = f' i j h ∘ₗ maps i)
-    (maps_compatible' : ∀ i j h, maps' j ∘ₗ f' i j h = f'' i j h ∘ₗ maps' i) :
-    (map maps' maps_compatible' ∘ₗ map maps maps_compatible :
+    (g₁ : (i : ι) → G i →ₗ[R] G' i) (g₂ : (i : ι) → G' i →ₗ[R] G'' i)
+    (hg₁ : ∀ i j h, g₁ j ∘ₗ f i j h = f' i j h ∘ₗ g₁ i)
+    (hg₂ : ∀ i j h, g₂ j ∘ₗ f' i j h = f'' i j h ∘ₗ g₂ i) :
+    (map g₂ hg₂ ∘ₗ map g₁ hg₁ :
       DirectLimit G f →ₗ[R] DirectLimit G'' f'') =
-    (map (fun i ↦ maps' i ∘ₗ maps i) fun i j h ↦ by
-        rw [LinearMap.comp_assoc, maps_compatible i, ← LinearMap.comp_assoc, maps_compatible' i,
-         LinearMap.comp_assoc] : DirectLimit G f →ₗ[R] DirectLimit G'' f'') :=
+    (map (fun i ↦ g₂ i ∘ₗ g₁ i) fun i j h ↦ by
+        rw [LinearMap.comp_assoc, hg₁ i, ← LinearMap.comp_assoc, hg₂ i, LinearMap.comp_assoc] :
+      DirectLimit G f →ₗ[R] DirectLimit G'' f'') :=
   FunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
     x.induction_on fun i g ↦ by simp
 
@@ -472,20 +472,20 @@ Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` resp
 family of group homomorphisms `gᵢ : Gᵢ ⟶ G'ᵢ` such that `g ∘ f = f' ∘ g` induces a group
 homomorphism `lim G ⟶ lim G'`.
 -/
-def map (maps : (i : ι) → G i →+ G' i)
-    (maps_compatible : ∀ i j h, (maps j).comp (f i j h) = (f' i j h).comp (maps i)) :
+def map (g : (i : ι) → G i →+ G' i)
+    (hg : ∀ i j h, (g j).comp (f i j h) = (f' i j h).comp (g i)) :
     DirectLimit G f →+ DirectLimit G' f' :=
-  lift _ _ _ (fun i ↦ (of _ _ _).comp (maps i)) fun i j h g ↦
+  lift _ _ _ (fun i ↦ (of _ _ _).comp (g i)) fun i j h g ↦
     (isEmpty_or_nonempty ι).elim
     (fun _ ↦ Subsingleton.elim _ _) fun _ ↦ by
-      have eq1 := FunLike.congr_fun (maps_compatible i j h) g
+      have eq1 := FunLike.congr_fun (hg i j h) g
       simp only [AddMonoidHom.coe_comp, Function.comp_apply] at eq1 ⊢
       rw [eq1, of_f]
 
-@[simp] lemma map_apply_of (maps : (i : ι) → G i →+ G' i)
-    (maps_compatible : ∀ i j h, (maps j).comp (f i j h) = (f' i j h).comp (maps i))
-    {i : ι} (g : G i) :
-    map maps maps_compatible (of _ _ _ g) = of G' f' i (maps i g) :=
+@[simp] lemma map_apply_of (g : (i : ι) → G i →+ G' i)
+    (hg : ∀ i j h, (g j).comp (f i j h) = (f' i j h).comp (g i))
+    {i : ι} (x : G i) :
+    map g hg (of _ _ _ x) = of G' f' i (g i x) :=
   lift_of _ _ _ _ _
 
 lemma map_id [IsDirected ι (· ≤ ·)] :
@@ -494,14 +494,14 @@ lemma map_id [IsDirected ι (· ≤ ·)] :
     x.induction_on fun i g ↦ by simp
 
 lemma map_comp [IsDirected ι (· ≤ ·)]
-    (maps : (i : ι) → G i →+ G' i) (maps' : (i : ι) → G' i →+ G'' i)
-    (maps_compatible : ∀ i j h, (maps j).comp (f i j h) = (f' i j h).comp (maps i))
-    (maps_compatible' : ∀ i j h, (maps' j).comp (f' i j h) = (f'' i j h).comp (maps' i)) :
-    ((map maps' maps_compatible').comp (map maps maps_compatible) :
+    (g₁ : (i : ι) → G i →+ G' i) (g₂ : (i : ι) → G' i →+ G'' i)
+    (hg₁ : ∀ i j h, (g₁ j).comp (f i j h) = (f' i j h).comp (g₁ i))
+    (hg₂ : ∀ i j h, (g₂ j).comp (f' i j h) = (f'' i j h).comp (g₂ i)) :
+    ((map g₂ hg₂).comp (map g₁ hg₁) :
       DirectLimit G f →+ DirectLimit G'' f'') =
-    (map (fun i ↦ (maps' i).comp (maps i)) fun i j h ↦ by
-      rw [AddMonoidHom.comp_assoc, maps_compatible i, ← AddMonoidHom.comp_assoc,
-        maps_compatible' i, AddMonoidHom.comp_assoc] :
+    (map (fun i ↦ (g₂ i).comp (g₁ i)) fun i j h ↦ by
+      rw [AddMonoidHom.comp_assoc, hg₁ i, ← AddMonoidHom.comp_assoc, hg₂ i,
+        AddMonoidHom.comp_assoc] :
       DirectLimit G f →+ DirectLimit G'' f'') :=
   FunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
     x.induction_on fun i g ↦ by simp
@@ -903,18 +903,18 @@ Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` resp
 family of ring homomorphisms `gᵢ : Gᵢ ⟶ G'ᵢ` such that `g ∘ f = f' ∘ g` induces a ring
 homomorphism `lim G ⟶ lim G'`.
 -/
-def map (maps : (i : ι) → G i →+* G' i)
-    (maps_compatible : ∀ i j h, (maps j).comp (f i j h) = (f' i j h).comp (maps i)) :
+def map (g : (i : ι) → G i →+* G' i)
+    (hg : ∀ i j h, (g j).comp (f i j h) = (f' i j h).comp (g i)) :
     DirectLimit G (fun _ _ h ↦ f _ _ h) →+* DirectLimit G' fun _ _ h ↦ f' _ _ h :=
-  lift _ _ _ (fun i ↦ (of _ _ _).comp (maps i)) fun i j h g ↦ by
-      have eq1 := FunLike.congr_fun (maps_compatible i j h) g
+  lift _ _ _ (fun i ↦ (of _ _ _).comp (g i)) fun i j h g ↦ by
+      have eq1 := FunLike.congr_fun (hg i j h) g
       simp only [RingHom.coe_comp, Function.comp_apply] at eq1 ⊢
       rw [eq1, of_f]
 
-@[simp] lemma map_apply_of (maps : (i : ι) → G i →+* G' i)
-    (maps_compatible : ∀ i j h, (maps j).comp (f i j h) = (f' i j h).comp (maps i))
-    {i : ι} (g : G i) :
-    map maps maps_compatible (of _ _ _ g) = of G' (fun _ _ h ↦ f' _ _ h) i (maps i g) :=
+@[simp] lemma map_apply_of (g : (i : ι) → G i →+* G' i)
+    (hg : ∀ i j h, (g j).comp (f i j h) = (f' i j h).comp (g i))
+    {i : ι} (x : G i) :
+    map g hg (of _ _ _ g) = of G' (fun _ _ h ↦ f' _ _ h) i (g i g) :=
   lift_of _ _ _ _ _
 
 lemma map_id [IsDirected ι (· ≤ ·)] :
@@ -923,14 +923,13 @@ lemma map_id [IsDirected ι (· ≤ ·)] :
   FunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ by simp
 
 lemma map_comp [IsDirected ι (· ≤ ·)]
-    (maps : (i : ι) → G i →+* G' i) (maps' : (i : ι) → G' i →+* G'' i)
-    (maps_compatible : ∀ i j h, (maps j).comp (f i j h) = (f' i j h).comp (maps i))
-    (maps_compatible' : ∀ i j h, (maps' j).comp (f' i j h) = (f'' i j h).comp (maps' i)) :
-    ((map maps' maps_compatible').comp (map maps maps_compatible) :
+    (g₁ : (i : ι) → G i →+* G' i) (g₂ : (i : ι) → G' i →+* G'' i)
+    (hg₁ : ∀ i j h, (g j).comp (f i j h) = (f' i j h).comp (g i))
+    (hg₂ : ∀ i j h, (g₂ j).comp (f' i j h) = (f'' i j h).comp (g₂ i)) :
+    ((map g₂ hg₂).comp (map g₁ hg₁) :
       DirectLimit G (fun _ _ h ↦ f _ _ h) →+* DirectLimit G'' fun _ _ h ↦ f'' _ _ h) =
-    (map (fun i ↦ (maps' i).comp (maps i)) fun i j h ↦ by
-      rw [RingHom.comp_assoc, maps_compatible i, ← RingHom.comp_assoc,
-        maps_compatible' i, RingHom.comp_assoc] :
+    (map (fun i ↦ (g₂ i).comp (g₁ i)) fun i j h ↦ by
+      rw [RingHom.comp_assoc, hg₁ i, ← RingHom.comp_assoc, hg₂ i, RingHom.comp_assoc] :
       DirectLimit G (fun _ _ h ↦ f _ _ h) →+* DirectLimit G'' fun _ _ h ↦ f'' _ _ h) :=
   FunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ by simp
 
