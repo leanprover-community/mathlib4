@@ -238,6 +238,15 @@ lemma Functor.mapHomotopyCategory_map (F : V ⥤ W) [F.Additive] {c : ComplexSha
       (HomotopyCategory.quotient W c).map ((F.mapHomologicalComplex c).map f) :=
   rfl
 
+/-- The obvious isomorphism between
+`HomotopyCategory.quotient V c ⋙ F.mapHomotopyCategory c` and
+`F.mapHomologicalComplex c ⋙ HomotopyCategory.quotient W c` when `F : V ⥤ W` is
+an additive functor. -/
+def Functor.mapHomotopyCategoryFactors (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
+    HomotopyCategory.quotient V c ⋙ F.mapHomotopyCategory c ≅
+      F.mapHomologicalComplex c ⋙ HomotopyCategory.quotient W c :=
+  CategoryTheory.Quotient.lift.isLift _ _ _
+
 -- TODO `F.mapHomotopyCategory c` is additive (and linear when `F` is linear).
 -- TODO develop lifting of natural transformations for general quotient categories so that
 -- `NatTrans.mapHomotopyCategory` become a particular case of it
