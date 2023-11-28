@@ -51,7 +51,7 @@ universe v' v u' u
 
 namespace CategoryTheory
 
-open Category
+open Category Limits
 
 namespace GrothendieckTopology
 
@@ -388,13 +388,119 @@ instance (i : I) : (hY.toOverSome i).IsContinuous (J.over (Y i)) hY.overSomeTopo
   Functor.isContinuous_of_coverPreserving (hY.toOverSome_compatiblePreserving i)
     (hY.toOverSome_coverPreserving i)
 
-def restriction (i : I) :
+abbrev overSomeRestriction (i : I) :
     Sheaf hY.overSomeTopology A ⥤ Sheaf (J.over (Y i)) A :=
   (hY.toOverSome i).sheafPushforwardContinuous _ _ _
 
+variable {A hY}
+
+def overSomeSieveEquiv (X : hY.OverSome) :
+    Sieve X ≃ Sieve X.X where
+  toFun S := Sieve.functorPushforward hY.overSomeForget S
+  invFun S' := Sieve.functorPullback hY.overSomeForget S'
+  left_inv S := by
+    ext W g
+    dsimp [Sieve.functorPushforward, Sieve.functorPullback]
+    constructor
+    · rintro ⟨T, a, b, ha, fac⟩
+      obtain rfl : g = b ≫ a := fac
+      exact S.downward_closed ha _
+    · intro hg
+      exact ⟨W, g, 𝟙 _, hg, by simp⟩
+  right_inv S' := by
+    ext W g
+    dsimp [Sieve.functorPushforward, Sieve.functorPullback]
+    constructor
+    · rintro ⟨T, a, b, ha, rfl⟩
+      exact S'.downward_closed ha _
+    · intro hg
+      exact ⟨⟨W, X.i, g ≫ X.f⟩, g, 𝟙 _, hg, (id_comp _).symm⟩
+
+lemma overSomeSieveEquiv_apply_mem_iff {X : hY.OverSome} (S : Sieve X) :
+    overSomeSieveEquiv X S ∈ J X.X ↔ S ∈ hY.overSomeTopology X := by
+  rfl
+
+lemma overSomeSieveEquiv_symm_apply_mem_iff (X : hY.OverSome) (S : Sieve X.X) :
+    (overSomeSieveEquiv X).symm S ∈ hY.overSomeTopology X ↔ S ∈ J X.X := by
+  obtain ⟨S, rfl⟩ := (overSomeSieveEquiv X).surjective S
+  rw [overSomeSieveEquiv_apply_mem_iff, Equiv.symm_apply_apply]
+
+abbrev _root_.CategoryTheory.Presieve.diagramCategory {C : Type*} [Category C] {X : C}
+    (S : Presieve X) := FullSubcategory fun f : Over X => S f.hom
+
+section
+
+variable (X : hY.OverSome) (S : Sieve X.X)
+
+@[simps!]
+def OverSome.diagramFunctor :
+    ((overSomeSieveEquiv X).symm S).arrows.diagramCategory ⥤
+      ((Sieve.overEquiv (Over.mk X.f)).symm S).arrows.diagramCategory where
+  obj := fun ⟨Z, hZ⟩ => ⟨Over.mk (show (Over.mk (Z.hom ≫ X.f) : Over (Y X.i)) ⟶ Over.mk X.f from Over.homMk Z.hom), hZ⟩
+  map {Z₁ Z₂} φ := Over.homMk (Over.homMk φ.left (by
+    dsimp
+    rw [← Over.w φ]
+    erw [assoc])) (by
+    ext
+    exact Over.w φ)
+
+instance : Faithful (OverSome.diagramFunctor X S) where
+  map_injective := by
+    rintro ⟨Z₁, h₁⟩ ⟨Z₂, h₂⟩ (φ ψ : Z₁ ⟶ Z₂) h
+    apply CostructuredArrow.hom_ext
+    have := (Over.forget _).congr_map ((Over.forget _).congr_map h)
+    exact this
+
+instance : Full (OverSome.diagramFunctor X S) where
+  preimage {Z₁ Z₂} φ := Over.homMk φ.left.left ((Over.forget _).congr_map (Over.w φ))
+
+instance : EssSurj (OverSome.diagramFunctor X S) where
+  mem_essImage := by
+    rintro ⟨Z, hZ⟩
+    let W : hY.OverSome := ⟨Z.left.left, X.i, Z.hom.left ≫ X.f⟩
+    let α : W ⟶ X := Z.hom.left
+    refine' ⟨⟨Over.mk α, hZ⟩, ⟨(fullSubcategoryInclusion _).preimageIso _⟩⟩
+    refine' Over.isoMk (Over.isoMk (Iso.refl _) _) _
+    · dsimp
+      simpa only [id_comp] using (Over.w Z.hom).symm
+    · ext
+      simp
+
+noncomputable instance : IsEquivalence (OverSome.diagramFunctor X S) :=
+  Equivalence.ofFullyFaithfullyEssSurj _
+
+@[simps! functor]
+noncomputable def OverSome.diagramFunctorEquivalence :=
+  (OverSome.diagramFunctor X S).asEquivalence
+
+end
+
+def OverSome.isLimitCone (P : hY.OverSomeᵒᵖ ⥤ A) (X : hY.OverSome) (S : Sieve X.X)
+    (h : IsLimit (((hY.toOverSome X.i).op ⋙ P).mapCone
+      ((Presieve.cocone ((Sieve.overEquiv (Over.mk X.f)).symm S).arrows).op))) :
+    IsLimit (P.mapCone (Presieve.cocone ((overSomeSieveEquiv X).symm S).arrows).op) := by
+  sorry
+
+#check Presieve.cocone
+
+lemma OverSome.isSheaf_iff (P : hY.OverSomeᵒᵖ ⥤ A) :
+    Presheaf.IsSheaf hY.overSomeTopology P ↔
+      ∀ (i : I), Presheaf.IsSheaf (J.over (Y i)) ((hY.toOverSome i).op ⋙ P) := by
+  constructor
+  · intro h i
+    exact Functor.op_comp_isSheaf (hY.toOverSome i) _ _ ⟨_, h⟩
+  · intro h
+    rw [Presheaf.isSheaf_iff_isLimit]
+    rintro X S hS
+    simp only [Presheaf.isSheaf_iff_isLimit] at h
+    obtain ⟨S, rfl⟩ := (overSomeSieveEquiv X).symm.surjective S
+    refine' ⟨isLimitCone P X S (h X.i ((Sieve.overEquiv (Over.mk X.f)).symm S) (by
+      rw [overSomeSieveEquiv_symm_apply_mem_iff] at hS
+      exact overEquiv_symm_mem_over _ _ _ hS)).some⟩
+
 namespace SheafDescentData
 
-variable {hY A} (F : hY.SheafDescentData A)
+variable (F : hY.SheafDescentData A)
 
 namespace ToPresheafOverSome
 
@@ -439,22 +545,30 @@ def toPresheafOverSome (F : hY.SheafDescentData A) : hY.OverSomeᵒᵖ ⥤ A whe
     rw [← Functor.map_comp_assoc ]
     rfl
 
-@[simps]
-def toSheafOverSome (F : hY.SheafDescentData A) : Sheaf hY.overSomeTopology A where
-  val := F.toPresheafOverSome
-  cond := sorry
-
-def restrictionToSheafOverSome (F : hY.SheafDescentData A) (i : I) :
-    (hY.restriction A i).obj F.toSheafOverSome ≅ F.sheaf i :=
-  (sheafToPresheaf _ _).preimageIso (NatIso.ofComponents (fun W => Iso.refl _) (by
+def toOverSomeOpToPresheafSheafOverSome (F : hY.SheafDescentData A) (i : I) :
+    (hY.toOverSome i).op ⋙ F.toPresheafOverSome ≅ (F.sheaf i).1 :=
+  NatIso.ofComponents (fun W => Iso.refl _) (by
     rintro ⟨W₁⟩ ⟨W₂⟩ ⟨f : W₂ ⟶ W₁⟩
-    dsimp [restriction, toPresheafOverSome]
+    dsimp [toPresheafOverSome]
     rw [comp_id, id_comp]
     let φ : (toOverSome hY i).obj W₂ ⟶ (toOverSome hY i).obj W₁ := f.left
     refine' (ToPresheafOverSome.map_eq F φ W₂.hom W₁.hom (Over.w f).symm).trans _
     dsimp
     simp only [isoSections_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
-    rfl))
+    rfl)
+
+@[simps]
+def toSheafOverSome (F : hY.SheafDescentData A) : Sheaf hY.overSomeTopology A where
+  val := F.toPresheafOverSome
+  cond := by
+    rw [OverSome.isSheaf_iff]
+    intro i
+    rw [Presheaf.isSheaf_of_iso_iff (toOverSomeOpToPresheafSheafOverSome F i)]
+    apply Sheaf.cond
+
+def overSomeRestrictionToSheafOverSome (F : hY.SheafDescentData A) (i : I) :
+    (hY.overSomeRestriction A i).obj F.toSheafOverSome ≅ F.sheaf i :=
+  (sheafToPresheaf _ _).preimageIso (toOverSomeOpToPresheafSheafOverSome F i)
 
 end SheafDescentData
 
