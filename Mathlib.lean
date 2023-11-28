@@ -2153,8 +2153,8 @@ import Mathlib.GroupTheory.HNNExtension
 import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.GroupTheory.Nilpotent
-import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.GroupTheory.NonZeroDivisors
+import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.GroupTheory.Order.Min
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.PGroup
