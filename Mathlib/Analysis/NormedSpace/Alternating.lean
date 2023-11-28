@@ -393,42 +393,41 @@ def compContinuousAlternatingMapL : (G →L[𝕜] G') →L[𝕜] E [Λ^ι]→L[�
 
 variable {𝕜 G G'}
 
-/-- `continuous_linear_map.comp_ContinuousAlternatingMap` as a bundled
-continuous linear equiv. -/
-def _root_.continuous_linear_equiv.comp_ContinuousAlternatingMapL (g : G ≃L[𝕜] G') :
-    E [Λ^ι]→L[𝕜] G ≃L[𝕜] E [Λ^ι]→L[𝕜] G' :=
+/-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled continuous linear equiv. -/
+nonrec def _root_.ContinuousLinearEquiv.compContinuousAlternatingMapL (g : G ≃L[𝕜] G') :
+    (E [Λ^ι]→L[𝕜] G) ≃L[𝕜] (E [Λ^ι]→L[𝕜] G') :=
   { g.compContinuousAlternatingMap,
-    compContinuousAlternatingMapL 𝕜 _ _ _ g.toContinuousLinearMap with
-    inv_fun := comp_ContinuousAlternatingMapL 𝕜 _ _ _ g.symm.to_continuous_linear_map,
-    continuous_to_fun :=
-      (comp_ContinuousAlternatingMapL 𝕜 _ _ _ g.to_continuous_linear_map).continuous,
-    continuous_inv_fun :=
-      (comp_ContinuousAlternatingMapL 𝕜 _ _ _ g.symm.to_continuous_linear_map).continuous  }
+      compContinuousAlternatingMapL 𝕜 E G G' g.toContinuousLinearMap with
+    invFun := compContinuousAlternatingMapL 𝕜 E G' G g.symm.toContinuousLinearMap
+    continuous_toFun :=
+      (compContinuousAlternatingMapL 𝕜 E G G' g.toContinuousLinearMap).continuous
+    continuous_invFun :=
+      (compContinuousAlternatingMapL 𝕜 E G' G g.symm.toContinuousLinearMap).continuous }
 
-@[simp] lemma _root_.continuous_linear_equiv.comp_ContinuousAlternatingMapL_symm
-  (g : G ≃L[𝕜] G') :
-  (g.comp_ContinuousAlternatingMapL E :
-    E [Λ^ι]→L[𝕜] G ≃L[𝕜] ContinuousAlternatingMap 𝕜 E G' ι).symm =
-    g.symm.comp_ContinuousAlternatingMapL E := rfl
+@[simp]
+lemma _root_.ContinuousLinearEquiv.compContinuousAlternatingMapL_symm (g : G ≃L[𝕜] G') :
+    (g.compContinuousAlternatingMapL (ι := ι) E).symm = g.symm.compContinuousAlternatingMapL E :=
+  rfl
 
 variable {E}
 
-@[simp] lemma _root_.continuous_linear_equiv.comp_ContinuousAlternatingMapL_apply
-  (g : G ≃L[𝕜] G') (f : E [Λ^ι]→L[𝕜] G) :
-  g.comp_ContinuousAlternatingMapL E f = (g : G →L[𝕜] G').comp_ContinuousAlternatingMap f :=
-rfl
+@[simp]
+lemma _root_.continuous_linear_equiv.comp_ContinuousAlternatingMapL_apply
+    (g : G ≃L[𝕜] G') (f : E [Λ^ι]→L[𝕜] G) :
+    g.compContinuousAlternatingMapL E f = (g : G →L[𝕜] G').compContinuousAlternatingMap f :=
+  rfl
 
 /-- Flip arguments in `f : G →L[𝕜] E [Λ^ι]→L[𝕜] G'` to get `Λ^ι⟮𝕜; E; G →L[𝕜] G'⟯` -/
-def flip_alternating (f : G →L[𝕜] Λ^ι⟮𝕜; E; G'⟯) : Λ^ι⟮𝕜; E; G →L[𝕜] G'⟯ :=
-{ toContinuousMultilinearMap :=
-    ((ContinuousAlternatingMap.toContinuousMultilinearMapL 𝕜).comp f).flip_multilinear,
-  map_eq_zero_of_eq' := λ v i j hv hne, by { ext x, simp [(f x).map_eq_zero_of_eq v hv hne] } }
+def flipAlternating (f : G →L[𝕜] (E [Λ^ι]→L[𝕜] G')) : E [Λ^ι]→L[𝕜] (G →L[𝕜] G') where
+  toContinuousMultilinearMap :=
+    ((ContinuousAlternatingMap.toContinuousMultilinearMapL 𝕜).comp f).flipMultilinear
+  map_eq_zero_of_eq' := λ v i j hv hne, by { ext x, simp [(f x).map_eq_zero_of_eq v hv hne] }
 
-end continuous_linear_map
+end ContinuousLinearMap
 
-lemma linear_isometry.norm_comp_ContinuousAlternatingMap (g : G →ₗᵢ[𝕜] G') (f : E [Λ^ι]→L[𝕜] G) :
-  ‖g.to_continuous_linear_map.comp_ContinuousAlternatingMap f‖ = ‖f‖ :=
-g.norm_compContinuousMultilinearMap f.1
+lemma LinearIsometry.norm_compContinuousAlternatingMap (g : G →ₗᵢ[𝕜] G') (f : E [Λ^ι]→L[𝕜] G) :
+    ‖g.toContinuousLinearMap.compContinuousAlternatingMap f‖ = ‖f‖ :=
+  g.norm_compContinuousMultilinearMap f.1
 
 open ContinuousAlternatingMap
 
@@ -436,34 +435,36 @@ section
 
 variable {𝕜 E E' G G'}
 
-lemma ContinuousAlternatingMap.norm_comp_continuous_linear_map_le
-  (f : Λ^ι⟮𝕜; E'; G⟯) (g : E →L[𝕜] E') :
-  ‖f.comp_continuous_linear_map g‖ ≤ ‖f‖ * (‖g‖ ^ fintype.card ι) :=
-(f.1.norm_comp_continuous_linear_le _).trans_eq $ by simp [fintype.card]
+lemma ContinuousAlternatingMap.norm_compContinuousLinearMap_le (f : E' [Λ^ι]→L[𝕜] G)
+    (g : E →L[𝕜] E') : ‖f.compContinuousLinearMap g‖ ≤ ‖f‖ * (‖g‖ ^ Fintype.card ι) :=
+  (f.1.norm_compContinuousLinearMap_le _).trans_eq <| by simp [Fintype.card]
 
-def ContinuousAlternatingMap.comp_continuous_linear_mapL (f : E →L[𝕜] E') :
-  Λ^ι⟮𝕜; E'; G⟯ →L[𝕜] E [Λ^ι]→L[𝕜] G :=
-linear_map.mk_continuous
-  (ContinuousAlternatingMap.comp_continuous_linear_mapₗ f)
-  (‖f‖ ^ fintype.card ι) $ λ g, (g.norm_comp_continuous_linear_map_le f).trans_eq (mul_comm _ _)
+def ContinuousAlternatingMap.compContinuousLinearMapL (f : E →L[𝕜] E') :
+    (E' [Λ^ι]→L[𝕜] G) →L[𝕜] (E [Λ^ι]→L[𝕜] G) :=
+  LinearMap.mkContinuous
+    (ContinuousAlternatingMap.compContinuousLinearMapₗ f) (‖f‖ ^ Fintype.card ι) fun g ↦
+      (g.norm_compContinuousLinearMap_le f).trans_eq (mul_comm _ _)
 
-def ContinuousAlternatingMap.comp_continuous_linear_equivL (f : E ≃L[𝕜] E') :
-  E [Λ^ι]→L[𝕜] G ≃L[𝕜] Λ^ι⟮𝕜; E'; G⟯ :=
-{ continuous_inv_fun := (ContinuousAlternatingMap.comp_continuous_linear_mapL (f : E →L[𝕜] E')).cont,
-  continuous_to_fun := (ContinuousAlternatingMap.comp_continuous_linear_mapL (f.symm : E' →L[𝕜] E)).cont,
-  .. ContinuousAlternatingMap.comp_continuous_linear_mapL (f.symm : E' →L[𝕜] E),
-  .. f.ContinuousAlternatingMap_comp }
+def ContinuousAlternatingMap.compContinuousLinearEquivL (f : E ≃L[𝕜] E') :
+    E [Λ^ι]→L[𝕜] G ≃L[𝕜] (E' [Λ^ι]→L[𝕜] G) :=
+  { f.continuousAlternatingMapComp,
+      ContinuousAlternatingMap.compContinuousLinearMapL (f.symm : E' →L[𝕜] E) with
+    continuous_invFun :=
+      (ContinuousAlternatingMap.compContinuousLinearMapL (f : E →L[𝕜] E')).cont
+    continuous_toFun :=
+      (ContinuousAlternatingMap.compContinuousLinearMapL (f.symm : E' →L[𝕜] E)).cont }
 
-def continuous_linear_equiv.ContinuousAlternatingMap_congrL (e : E ≃L[𝕜] E') (e' : G ≃L[𝕜] G') :
-  E [Λ^ι]→L[𝕜] G ≃L[𝕜] Λ^ι⟮𝕜; E'; G'⟯ :=
-(ContinuousAlternatingMap.comp_continuous_linear_equivL e).trans $
-  e'.comp_ContinuousAlternatingMapL E'
+def ContinuousLinearEquiv.continuousAlternatingMapCongrL (e : E ≃L[𝕜] E') (e' : G ≃L[𝕜] G') :
+    (E [Λ^ι]→L[𝕜] G) ≃L[𝕜] (E' [Λ^ι]→L[𝕜] G') :=
+  (ContinuousAlternatingMap.compContinuousLinearEquivL e).trans <|
+    e'.compContinuousAlternatingMapL E'
 
-@[simp] lemma continuous_linear_equiv.ContinuousAlternatingMap_congrL_apply (e : E ≃L[𝕜] E')
-  (e' : G ≃L[𝕜] G') (f : E [Λ^ι]→L[𝕜] G) :
-  e.ContinuousAlternatingMap_congrL e' f =
-  e'.comp_ContinuousAlternatingMap (f.comp_continuous_linear_map ↑e.symm) :=
-rfl
+@[simp]
+lemma ContinuousLinearEquiv.continuousAlternatingMapCongrL_apply (e : E ≃L[𝕜] E')
+    (e' : G ≃L[𝕜] G') (f : E [Λ^ι]→L[𝕜] G) :
+    e.continuousAlternatingMapCongrL e' f =
+      e'.compContinuousAlternatingMap (f.compContinuousLinearMap ↑e.symm) :=
+  rfl
 
 end
 
