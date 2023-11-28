@@ -5,7 +5,7 @@ Authors: Jeremy Avigad
 -/
 
 import Mathlib.Data.Int.Basic
-import Mathlib.Algebra.Ring.Divisibility
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Ring.CharZero
 

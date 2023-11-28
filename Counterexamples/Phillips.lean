@@ -333,7 +333,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
 theorem exists_discrete_support (f : BoundedAdditiveMeasure α) :
     ∃ s : Set α, s.Countable ∧ ∀ t : Set α, t.Countable → f (t \ s) = 0 := by
   rcases f.exists_discrete_support_nonpos with ⟨s₁, s₁_count, h₁⟩
-  rcases(-f).exists_discrete_support_nonpos with ⟨s₂, s₂_count, h₂⟩
+  rcases (-f).exists_discrete_support_nonpos with ⟨s₂, s₂_count, h₂⟩
   refine' ⟨s₁ ∪ s₂, s₁_count.union s₂_count, fun t ht => le_antisymm _ _⟩
   · have : t \ (s₁ ∪ s₂) = (t \ (s₁ ∪ s₂)) \ s₁ := by
       rw [diff_diff, union_comm, union_assoc, union_self]
@@ -571,7 +571,7 @@ theorem countable_ne (Hcont : #ℝ = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ
       {x | φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x ≠ ∅} := by
     intro x hx
     contrapose! hx
-    simp only [Classical.not_not, mem_setOf_eq] at hx
+    simp only [Classical.not_not, mem_setOf_eq, not_nonempty_iff_eq_empty] at hx
     simp [apply_f_eq_continuousPart Hcont φ x hx]
   have B :
     {x | φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x ≠ ∅} ⊆

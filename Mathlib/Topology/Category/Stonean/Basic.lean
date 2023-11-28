@@ -127,7 +127,7 @@ instance (X : Stonean.{u}) : ExtremallyDisconnected X :=
 def toProfinite : Stonean.{u} ⥤ Profinite.{u} where
   obj X :=
     { toCompHaus := X.compHaus,
-      IsTotallyDisconnected := show TotallyDisconnectedSpace X from inferInstance }
+      isTotallyDisconnected := show TotallyDisconnectedSpace X from inferInstance }
   map f := f
 
 /-- The functor from Stonean spaces to profinite spaces is full. -/
@@ -235,6 +235,17 @@ instance (X : Stonean) : Projective (toProfinite.obj X) where
     intro B C φ f _
     haveI : ExtremallyDisconnected (toProfinite.obj X) := X.extrDisc
     have hf : Function.Surjective f := by rwa [← Profinite.epi_iff_surjective]
+    obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.continuous f.continuous hf
+    use ⟨f', h.left⟩
+    ext
+    exact congr_fun h.right _
+
+/-- Every Stonean space is projective in `Stonean`. -/
+instance (X : Stonean) : Projective X where
+  factors := by
+    intro B C φ f _
+    haveI : ExtremallyDisconnected X.compHaus.toTop := X.extrDisc
+    have hf : Function.Surjective f := by rwa [← Stonean.epi_iff_surjective]
     obtain ⟨f', h⟩ := CompactT2.ExtremallyDisconnected.projective φ.continuous f.continuous hf
     use ⟨f', h.left⟩
     ext

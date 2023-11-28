@@ -46,7 +46,7 @@ theorem Quotient.finChoiceAux_eq {ι : Type*} [DecidableEq ι] {α : ι → Type
     ∀ (l : List ι) (f : ∀ i ∈ l, α i), (Quotient.finChoiceAux l fun i h => ⟦f i h⟧) = ⟦f⟧
   | [], f => Quotient.sound fun i h => nomatch List.not_mem_nil _ h
   | i :: l, f => by
-    simp [Quotient.finChoiceAux, Quotient.finChoiceAux_eq l, -Quotient.eq]
+    simp only [finChoiceAux, Quotient.finChoiceAux_eq l, eq_mpr_eq_cast, lift_mk]
     refine' Quotient.sound fun j h => _
     by_cases e : j = i <;> simp [e] <;> try exact Setoid.refl _
     subst j; exact Setoid.refl _
@@ -63,7 +63,7 @@ def Quotient.finChoice {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → T
       Finset.univ.1 (fun l => Quotient.finChoiceAux l fun i _ => f i) (fun a b h => by
       have := fun a => Quotient.finChoiceAux_eq a fun i _ => Quotient.out (f i)
       simp [Quotient.out_eq] at this
-      simp [this]
+      simp only [Multiset.quot_mk_to_coe, this]
       let g := fun a : Multiset ι =>
         (⟦fun (i : ι) (_ : i ∈ a) => Quotient.out (f i)⟧ : Quotient (by infer_instance))
       apply eq_of_heq

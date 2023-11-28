@@ -97,7 +97,7 @@ theorem smul_diff' (h : H) :
 #align subgroup.smul_diff' Subgroup.smul_diff'
 
 theorem eq_one_of_smul_eq_one (hH : Nat.Coprime (Nat.card H) H.index) (α : H.QuotientDiff)
-  (h : H) : h • α = α → h = 1 :=
+    (h : H) : h • α = α → h = 1 :=
   Quotient.inductionOn' α fun α hα =>
     (powCoprime hH).injective <|
       calc
@@ -256,9 +256,8 @@ theorem step7 : IsCommutative N := by
   haveI := N.bot_or_nontrivial.resolve_left (step0 h1 h3)
   haveI : Fact (Fintype.card N).minFac.Prime := ⟨step4 h1 h3⟩
   exact
-    ⟨⟨fun g h =>
-        eq_top_iff.mp ((step3 h1 h2 h3 (center N)).resolve_left (step6 h1 h2 h3).bot_lt_center.ne')
-          (mem_top h) g⟩⟩
+    ⟨⟨fun g h => ((eq_top_iff.mp ((step3 h1 h2 h3 (center N)).resolve_left
+      (step6 h1 h2 h3).bot_lt_center.ne') (mem_top h)).comm g).symm⟩⟩
 #align subgroup.schur_zassenhaus_induction.step7 Subgroup.SchurZassenhausInduction.step7
 
 end SchurZassenhausInduction

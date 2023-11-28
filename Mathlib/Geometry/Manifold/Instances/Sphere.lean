@@ -72,8 +72,6 @@ open Metric FiniteDimensional Function
 
 open scoped Manifold
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 section StereographicProjection
 
 variable (v : E)
@@ -426,8 +424,6 @@ instance smoothMfldWithCorners {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
         (-- Removed type ascription, and this helped for some reason with timeout issues?
             OrthonormalBasis.fromOrthogonalSpanSingleton (𝕜 := ℝ)
             n (ne_zero_of_mem_unit_sphere v')).repr
-      -- Porting note: trouble synth instances
-      have := findim (E := E) n
       have H₁ := U'.contDiff.comp_contDiffOn contDiffOn_stereoToFun
       -- Porting note: need to help with implicit variables again
       have H₂ := (contDiff_stereoInvFunAux (v := v.val)|>.comp
@@ -541,7 +537,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
       (ℝ ∙ (↑(-v) : E))ᗮ.subtype using 1
   simp only [Submodule.range_subtype, coe_neg_sphere]
   congr 1
-  -- we must show `submodule.span ℝ {v} = submodule.span ℝ {-v}`
+  -- we must show `Submodule.span ℝ {v} = Submodule.span ℝ {-v}`
   apply Submodule.span_eq_span
   · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
     rw [← Submodule.neg_mem_iff]

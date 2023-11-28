@@ -127,7 +127,7 @@ set_option linter.uppercaseLean3 false in
 theorem ExtensionOf.ext_iff {a b : ExtensionOf i f} :
     a = b ↔ ∃ _ : a.domain = b.domain, ∀ ⦃x : a.domain⦄ ⦃y : b.domain⦄,
     (x : N) = y → a.toLinearPMap x = b.toLinearPMap y :=
-  ⟨fun r => r ▸ ⟨rfl, fun x y h => congr_arg a.toFun <| by exact_mod_cast h⟩, fun ⟨h1, h2⟩ =>
+  ⟨fun r => r ▸ ⟨rfl, fun _ _ h => congr_arg a.toFun <| mod_cast h⟩, fun ⟨h1, h2⟩ =>
     ExtensionOf.ext h1 h2⟩
 set_option linter.uppercaseLean3 false in
 #align module.Baer.extension_of.ext_iff Module.Baer.ExtensionOf.ext_iff
@@ -160,7 +160,7 @@ instance : SemilatticeInf (ExtensionOf i f) :=
     fun X Y =>
     LinearPMap.ext rfl fun x y h => by
       congr
-      exact_mod_cast h
+      exact mod_cast h
 
 variable {i f}
 
@@ -175,20 +175,20 @@ set_option linter.uppercaseLean3 false in
 /-- The maximal element of every nonempty chain of `extension_of i f`. -/
 def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
     (hnonempty : c.Nonempty) : ExtensionOf i f :=
-  {
-    LinearPMap.sSup _
+  { LinearPMap.sSup _
       (IsChain.directedOn <|
         chain_linearPMap_of_chain_extensionOf
           hchain) with
-    le :=
-      le_trans hnonempty.some.le <|
+    le := by
+      refine' le_trans hnonempty.some.le <|
         (LinearPMap.le_sSup _ <|
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
+      -- porting note: this subgoal didn't exist before the reenableeta branch
+      -- follow-up note: the subgoal was moved from after `refine'` in `is_extension` to here
+      -- after the behavior of `refine'` changed.
+      exact (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain)
     is_extension := fun m => by
       refine' Eq.trans (hnonempty.some.is_extension m) _
-      · -- porting note: this subgoal didn't exist before the reenableeta branch
-        intros c hchain _
-        exact (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain)
       symm
       generalize_proofs _ h1
       exact
@@ -414,7 +414,7 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
             ↑(r • ExtensionOfMaxAdjoin.fst i a) + (r • ExtensionOfMaxAdjoin.snd i a) • y := by
           rw [ExtensionOfMaxAdjoin.eqn, smul_add, smul_eq_mul, mul_smul]
           rfl
-        rw [ExtensionOfMaxAdjoin.extensionToFun_wd i f h (r • a) _ _ eq1, LinearMap.map_smul,
+        rw [ExtensionOfMaxAdjoin.extensionToFun_wd i f h (r • a :) _ _ eq1, LinearMap.map_smul,
           LinearPMap.map_smul, ← smul_add]
         congr }
   is_extension m := by
