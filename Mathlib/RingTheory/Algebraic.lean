@@ -202,19 +202,14 @@ lemma IsAlgebraic.invOf_iff {x : S} [Invertible x] :
     IsAlgebraic R (⅟ x) ↔ IsAlgebraic R x :=
   ⟨IsAlgebraic.invOf, IsAlgebraic.invOf⟩
 
-lemma IsAlgebraic.inv {R K} [CommRing R] [Field K] [Algebra R K] {x : K} (h : IsAlgebraic R x) :
-    IsAlgebraic R (x⁻¹) := by
-  by_cases hx : x = 0
-  · simpa [hx] using h
-  letI := invertibleOfNonzero hx
-  exact h.invOf
-
-lemma IsAlgebraic.inv_iff {R K} [CommRing R] [Field K] [Algebra R K] {x : K} :
+lemma IsAlgebraic.inv_iff {K} [Field K] [Algebra R K] {x : K} :
     IsAlgebraic R (x⁻¹) ↔ IsAlgebraic R x := by
   by_cases hx : x = 0
   · simp [hx]
   letI := invertibleOfNonzero hx
   exact IsAlgebraic.invOf_iff (R := R) (x := x)
+
+alias ⟨_, IsAlgebraic.inv⟩ := IsAlgebraic.inv_iff
 
 end zero_ne_one
 
