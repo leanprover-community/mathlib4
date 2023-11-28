@@ -196,12 +196,11 @@ Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` resp
 family of linear maps `gᵢ : Gᵢ ⟶ G'ᵢ` such that `g ∘ f = f' ∘ g` induces a linear map
 `lim G ⟶ lim G'`.
 -/
-def map (maps : (i : ι) → G i →ₗ[R] G' i)
-    (maps_compatible : ∀ i j h, maps j ∘ₗ f i j h = f' i j h ∘ₗ maps i) :
+def map (g : (i : ι) → G i →ₗ[R] G' i) (hg : ∀ i j h, g j ∘ₗ f i j h = f' i j h ∘ₗ g i) :
     DirectLimit G f →ₗ[R] DirectLimit G' f' :=
-  lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ maps i) fun i j h g ↦ (isEmpty_or_nonempty ι).elim
+  lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ g i) fun i j h g ↦ (isEmpty_or_nonempty ι).elim
     (fun _ ↦ Subsingleton.elim _ _) fun _ ↦ by
-      have eq1 := LinearMap.congr_fun (maps_compatible i j h) g
+      have eq1 := LinearMap.congr_fun (hg i j h) g
       simp only [LinearMap.coe_comp, Function.comp_apply] at eq1 ⊢
       rw [eq1, of_f]
 
@@ -211,7 +210,7 @@ def map (maps : (i : ι) → G i →ₗ[R] G' i)
     map maps maps_compatible (of _ _ _ _ _ g) = of R ι G' f' i (maps i g) :=
   lift_of _ _ _
 
-lemma map_id [IsDirected ι (· ≤ ·)] :
+@[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
     map (fun i ↦ LinearMap.id) (fun _ _ _ ↦ rfl) = LinearMap.id (R := R) (M := DirectLimit G f) :=
   FunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
     x.induction_on fun i g ↦ by simp
@@ -448,7 +447,6 @@ theorem lift_unique [IsDirected ι (· ≤ ·)] (F : DirectLimit G f →+ P) (x)
   · simp_rw [Subsingleton.elim x 0, _root_.map_zero]
   · exact DirectLimit.induction_on x fun i x => by simp
 #align add_comm_group.direct_limit.lift_unique AddCommGroup.DirectLimit.lift_unique
-
 
 lemma lift_injective [IsDirected ι (· ≤ ·)]
     (injective : ∀ i, Function.Injective <| g i) :
