@@ -914,7 +914,7 @@ def map (g : (i : ι) → G i →+* G' i)
 @[simp] lemma map_apply_of (g : (i : ι) → G i →+* G' i)
     (hg : ∀ i j h, (g j).comp (f i j h) = (f' i j h).comp (g i))
     {i : ι} (x : G i) :
-    map g hg (of _ _ _ g) = of G' (fun _ _ h ↦ f' _ _ h) i (g i g) :=
+    map g hg (of _ _ _ x) = of G' (fun _ _ h ↦ f' _ _ h) i (g i x) :=
   lift_of _ _ _ _ _
 
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
@@ -924,7 +924,7 @@ def map (g : (i : ι) → G i →+* G' i)
 
 lemma map_comp [IsDirected ι (· ≤ ·)]
     (g₁ : (i : ι) → G i →+* G' i) (g₂ : (i : ι) → G' i →+* G'' i)
-    (hg₁ : ∀ i j h, (g j).comp (f i j h) = (f' i j h).comp (g i))
+    (hg₁ : ∀ i j h, (g₁ j).comp (f i j h) = (f' i j h).comp (g₁ i))
     (hg₂ : ∀ i j h, (g₂ j).comp (f' i j h) = (f'' i j h).comp (g₂ i)) :
     ((map g₂ hg₂).comp (map g₁ hg₁) :
       DirectLimit G (fun _ _ h ↦ f _ _ h) →+* DirectLimit G'' fun _ _ h ↦ f'' _ _ h) =
