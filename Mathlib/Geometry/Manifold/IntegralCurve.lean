@@ -47,12 +47,6 @@ def IsIntegralCurveAt (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (t₀ 
   γ t₀ = x₀ ∧ ∃ ε > (0 : ℝ), ∀ (t : ℝ), t ∈ Ioo (t₀ - ε) (t₀ + ε) →
     HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t)))
 
-/-
-TODO:
-* split the theorem below into smaller lemmas, e.g. involving IsIntegralCurveAt?
-* shift and stretch theorems
-* constant curve at stationary point of v
--/
 variable {t₀}
 
 lemma IsIntegralCurveAt.comp_add {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀ x₀) (dt : ℝ) :
