@@ -2604,7 +2604,7 @@ theorem inverse_equiv (e : M ≃L[R] M₂) : inverse (e : M →L[R] M₂) = e.sy
   have h : ∃ e' : M ≃L[R] M₂, (e' : M →L[R] M₂) = ↑e := ⟨e, rfl⟩
   simp only [inverse, dif_pos h]
   congr
-  exact_mod_cast Classical.choose_spec h
+  exact mod_cast Classical.choose_spec h
 #align continuous_linear_map.inverse_equiv ContinuousLinearMap.inverse_equiv
 
 /-- By definition, if `f` is not invertible then `inverse f = 0`. -/

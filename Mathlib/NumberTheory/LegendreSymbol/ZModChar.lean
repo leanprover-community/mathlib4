@@ -72,8 +72,8 @@ theorem χ₄_int_eq_if_mod_four (n : ℤ) :
 #align zmod.χ₄_int_eq_if_mod_four ZMod.χ₄_int_eq_if_mod_four
 
 theorem χ₄_nat_eq_if_mod_four (n : ℕ) :
-    χ₄ n = if n % 2 = 0 then 0 else if n % 4 = 1 then 1 else -1 := by
-  exact_mod_cast χ₄_int_eq_if_mod_four n
+    χ₄ n = if n % 2 = 0 then 0 else if n % 4 = 1 then 1 else -1 :=
+  mod_cast χ₄_int_eq_if_mod_four n
 #align zmod.χ₄_nat_eq_if_mod_four ZMod.χ₄_nat_eq_if_mod_four
 
 /-- Alternative description of `χ₄ n` for odd `n : ℕ` in terms of powers of `-1` -/
@@ -167,8 +167,8 @@ theorem χ₈_int_eq_if_mod_eight (n : ℤ) :
 #align zmod.χ₈_int_eq_if_mod_eight ZMod.χ₈_int_eq_if_mod_eight
 
 theorem χ₈_nat_eq_if_mod_eight (n : ℕ) :
-    χ₈ n = if n % 2 = 0 then 0 else if n % 8 = 1 ∨ n % 8 = 7 then 1 else -1 := by
-  exact_mod_cast χ₈_int_eq_if_mod_eight n
+    χ₈ n = if n % 2 = 0 then 0 else if n % 8 = 1 ∨ n % 8 = 7 then 1 else -1 :=
+  mod_cast χ₈_int_eq_if_mod_eight n
 #align zmod.χ₈_nat_eq_if_mod_eight ZMod.χ₈_nat_eq_if_mod_eight
 
 /-- Define the second primitive quadratic character on `ZMod 8`, `χ₈'`.
@@ -200,8 +200,8 @@ theorem χ₈'_int_eq_if_mod_eight (n : ℤ) :
 #align zmod.χ₈'_int_eq_if_mod_eight ZMod.χ₈'_int_eq_if_mod_eight
 
 theorem χ₈'_nat_eq_if_mod_eight (n : ℕ) :
-    χ₈' n = if n % 2 = 0 then 0 else if n % 8 = 1 ∨ n % 8 = 3 then 1 else -1 := by
-  exact_mod_cast χ₈'_int_eq_if_mod_eight n
+    χ₈' n = if n % 2 = 0 then 0 else if n % 8 = 1 ∨ n % 8 = 3 then 1 else -1 :=
+  mod_cast χ₈'_int_eq_if_mod_eight n
 #align zmod.χ₈'_nat_eq_if_mod_eight ZMod.χ₈'_nat_eq_if_mod_eight
 
 /-- The relation between `χ₄`, `χ₈` and `χ₈'` -/

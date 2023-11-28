@@ -227,7 +227,7 @@ theorem log_nat_cast_nonneg (n : ℕ) : 0 ≤ log n := by
   by_cases hn : n = 0
   case pos => simp [hn]
   case neg =>
-    have : (1 : ℝ) ≤ n := by exact_mod_cast Nat.one_le_of_lt <| Nat.pos_of_ne_zero hn
+    have : (1 : ℝ) ≤ n := mod_cast Nat.one_le_of_lt <| Nat.pos_of_ne_zero hn
     exact log_nonneg this
 
 theorem log_neg_nat_cast_nonneg (n : ℕ) : 0 ≤ log (-n) := by
@@ -237,13 +237,13 @@ theorem log_neg_nat_cast_nonneg (n : ℕ) : 0 ≤ log (-n) := by
 theorem log_int_cast_nonneg (n : ℤ) : 0 ≤ log n := by
   cases lt_trichotomy 0 n with
   | inl hn =>
-      have : (1 : ℝ) ≤ n := by exact_mod_cast hn
+      have : (1 : ℝ) ≤ n := mod_cast hn
       exact log_nonneg this
   | inr hn =>
       cases hn with
       | inl hn => simp [hn.symm]
       | inr hn =>
-          have : (1 : ℝ) ≤ -n := by rw [←neg_zero, ←lt_neg] at hn; exact_mod_cast hn
+          have : (1 : ℝ) ≤ -n := by rw [←neg_zero, ←lt_neg] at hn; exact mod_cast hn
           rw [←log_neg_eq_log]
           exact log_nonneg this
 
@@ -346,6 +346,9 @@ theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[≠] 0) atBot := by
   refine' Tendsto.comp (g := log) _ tendsto_abs_nhdsWithin_zero
   simpa [← tendsto_comp_exp_atBot] using tendsto_id
 #align real.tendsto_log_nhds_within_zero Real.tendsto_log_nhdsWithin_zero
+
+lemma tendsto_log_nhdsWithin_zero_right : Tendsto log (𝓝[>] 0) atBot :=
+  tendsto_log_nhdsWithin_zero.mono_left <| nhdsWithin_mono _ fun _ h ↦ ne_of_gt h
 
 theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
   simp (config := { unfoldPartialApp := true }) only [continuousOn_iff_continuous_restrict,

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster
 -/
 import Lean.Data.NameMap
-import Std.Data.RBMap
+import Std.Data.RBMap.Basic
 
 /-!
 # Additional functions on `Lean.NameMap`.
