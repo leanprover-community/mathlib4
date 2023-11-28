@@ -5,6 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Topology.ContinuousOn
+import Mathlib.Order.LiminfLimsup
+import Mathlib.Topology.Sequences
 import Mathlib.Topology.Instances.ENNReal
 
 #align_import topology.semicontinuous from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
@@ -170,6 +172,61 @@ theorem LowerSemicontinuous.lowerSemicontinuousOn (h : LowerSemicontinuous f) (s
     LowerSemicontinuousOn f s := fun x _hx => h.lowerSemicontinuousWithinAt s x
 #align lower_semicontinuous.lower_semicontinuous_on LowerSemicontinuous.lowerSemicontinuousOn
 
+/-! #### Equivalent definitions -/
+
+
+section
+
+variable {γ : Type*} [CompleteLinearOrder γ] [DenselyOrdered γ]
+
+theorem lowerSemicontinuousAt_iff_le_liminf {f : α → γ} :
+    LowerSemicontinuousAt f x ↔ f x ≤ (liminf f <| 𝓝 x) := by
+  constructor
+  · intro hf; unfold LowerSemicontinuousAt at hf
+    contrapose! hf
+    obtain ⟨y,lty,ylt⟩ := exists_between hf; use y
+    exact ⟨ylt, fun h => not_le_of_lt lty
+      (Filter.le_liminf_of_le (by isBoundedDefault)
+        (Eventually.mono h (fun _ hx => le_of_lt hx)))⟩
+  exact fun hf y ylt => Filter.eventually_lt_of_lt_liminf (lt_of_lt_of_le ylt hf)
+
+theorem LowerSemicontinuousAt.le_liminf {f : α → γ} (hf : LowerSemicontinuousAt f x) :
+    f x ≤ (liminf f <| 𝓝 x) :=
+  lowerSemicontinuousAt_iff_le_liminf.mp hf
+
+theorem lowerSemicontinuous_iff_le_liminf {f : α → γ} :
+    LowerSemicontinuous f ↔ ∀ x, f x ≤ (liminf f <| 𝓝 x) := by
+  simp only [← lowerSemicontinuousAt_iff_le_liminf, LowerSemicontinuous]
+
+theorem LowerSemicontinuous.le_liminf {f : α → γ} (hf : LowerSemicontinuous f) :
+    ∀ x, f x ≤ (liminf f <| 𝓝 x) :=
+  lowerSemicontinuous_iff_le_liminf.mp hf
+
+theorem lowerSemicontinuousWithinAt_iff_le_liminf {f : α → γ} :
+    LowerSemicontinuousWithinAt f s x ↔ f x ≤ (liminf f <| 𝓝[s] x) := by
+  constructor
+  · intro hf; unfold LowerSemicontinuousWithinAt at hf
+    contrapose! hf
+    obtain ⟨y,lty,ylt⟩ := exists_between hf; use y
+    exact ⟨ylt, fun h => not_le_of_lt lty
+      (Filter.le_liminf_of_le (by isBoundedDefault)
+        (Eventually.mono h (fun _ hx => le_of_lt hx)))⟩
+  exact fun hf y ylt => Filter.eventually_lt_of_lt_liminf (lt_of_lt_of_le ylt hf)
+
+theorem LowerSemicontinuousWithinAt.le_liminf {f : α → γ} (hf : LowerSemicontinuousWithinAt f s x) :
+    f x ≤ (liminf f <| 𝓝[s] x) :=
+  lowerSemicontinuousWithinAt_iff_le_liminf.mp hf
+
+theorem lowerSemicontinuous_on_iff_le_liminf {f : α → γ} :
+    LowerSemicontinuousOn f s ↔ ∀ x ∈ s, f x ≤ (liminf f <| 𝓝[s] x) := by
+  simp only [← lowerSemicontinuousWithinAt_iff_le_liminf, LowerSemicontinuousOn]
+
+theorem LowerSemicontinuousOn.le_liminf {f : α → γ} (hf : LowerSemicontinuousOn f s) :
+    ∀ x ∈ s, f x ≤ (liminf f <| 𝓝[s] x) :=
+  lowerSemicontinuous_on_iff_le_liminf.mp hf
+
+end
+
 /-! #### Constants -/
 
 
@@ -294,6 +351,40 @@ theorem ContinuousOn.lowerSemicontinuousOn {f : α → γ} (h : ContinuousOn f s
 theorem Continuous.lowerSemicontinuous {f : α → γ} (h : Continuous f) : LowerSemicontinuous f :=
   fun _x => h.continuousAt.lowerSemicontinuousAt
 #align continuous.lower_semicontinuous Continuous.lowerSemicontinuous
+
+
+end
+
+section
+
+variable {γ : Type*} [CompleteLinearOrder γ] [DenselyOrdered γ]
+
+variable [TopologicalSpace γ] [FirstCountableTopology α] [FirstCountableTopology γ] [OrderTopology γ]
+
+theorem lowerSemicontinuous_iff_IsClosed_epigraph {f : α → γ} :
+    LowerSemicontinuous f ↔ IsClosed {p : α × γ | f p.1 ≤ p.2} := by
+  constructor
+  · simp only [lowerSemicontinuous_iff_le_liminf]
+    intro hf; apply IsSeqClosed.isClosed
+    intro f' ⟨x', y'⟩ hxy cxy
+    rw [Prod.tendsto_iff] at cxy
+    let x : ℕ -> α := fun (n : ℕ) => (f' n).1
+    calc
+      f x' ≤ liminf f (𝓝 x') := hf x'
+      _ ≤ liminf (f ∘ x) atTop := by
+        simp only [liminf_eq, liminf_eq]
+        exact sSup_le_sSup (fun _ fa => (eventually_iff_seq_eventually.mp fa) x cxy.1)
+      _ ≤ liminf (fun (n : ℕ) => (f' n).2) atTop :=
+        liminf_le_liminf (eventually_of_forall (fun n => by convert hxy n))
+      _ = y' := (cxy.2).liminf_eq
+  simp only [lowerSemicontinuous_iff_isClosed_preimage]
+  intro hf y; apply IsSeqClosed.isClosed
+  exact fun _ _ xns cx =>
+    IsClosed.isSeqClosed hf (fun n => xns n) (Tendsto.prod_mk_nhds cx tendsto_const_nhds)
+
+theorem LowerSemicontinuous.IsClosed_epigraph {f : α → γ} (hf : LowerSemicontinuous f) :
+    IsClosed {p : α × γ | f p.1 ≤ p.2} :=
+  lowerSemicontinuous_iff_IsClosed_epigraph.mp hf
 
 end
 
