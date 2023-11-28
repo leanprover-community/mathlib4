@@ -1200,6 +1200,7 @@ theorem norm_compContinuousLinearMapL_le (f : ∀ i, E i →L[𝕜] E₁ i) :
 
 variable (𝕜 E E₁)
 
+open Function in
 /-- If `f` is a collection of continuous linear maps, then the construction
 `ContinuousMultilinearMap.compContinuousLinearMap`
 sending a continuous multilinear map `g` to `g (f₁ ·, ..., fₙ ·)`
@@ -1210,14 +1211,15 @@ noncomputable def compContinuousLinearMapMultilinear :
   toFun := compContinuousLinearMapL
   map_add' f i f₁ f₂ := by
     ext g x
-    dsimp
+    change (g fun j ↦ update f i (f₁ + f₂) j <| x j) =
+        (g fun j ↦ update f i f₁ j <| x j) + g fun j ↦ update f i f₂ j (x j)
     convert g.map_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
-      exact Function.apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
+      exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
   map_smul' f i a f₀ := by
     ext g x
-    dsimp
+    change (g fun j ↦ update f i (a • f₀) j <| x j) = a • g fun j ↦ update f i f₀ j (x j)
     convert g.map_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
-      exact Function.apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
+      exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
 
 /-- If `f` is a collection of continuous linear maps, then the construction
 `ContinuousMultilinearMap.compContinuousLinearMap`
