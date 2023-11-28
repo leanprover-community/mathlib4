@@ -77,7 +77,8 @@ instance instSemiring (X : SemiRingCat) : Semiring X := X.str
 instance instSemiring' (X : SemiRingCat) : Semiring <| (forget SemiRingCat).obj X := X.str
 
 instance instFunLike {X Y : SemiRingCat} : NDFunLike (X ⟶ Y) X Y :=
-  RingHom.instFunLike
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike
+  ConcreteCategory.funLike
 
 -- Porting note: added
 instance instRingHomClass {X Y : SemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
@@ -200,7 +201,8 @@ instance instRing (X : RingCat) : Ring X := X.str
 instance instRing' (X : RingCat) : Ring <| (forget RingCat).obj X := X.str
 
 instance instFunLike {X Y : RingCat} : NDFunLike (X ⟶ Y) X Y :=
-  RingHom.instFunLike
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike
+  ConcreteCategory.funLike
 
 -- Porting note: added
 instance instRingHomClass {X Y : RingCat} : RingHomClass (X ⟶ Y) X Y :=
@@ -305,7 +307,8 @@ instance instCommSemiring' (X : CommSemiRingCat) : CommSemiring <| (forget CommS
   X.str
 
 instance instFunLike {X Y : CommSemiRingCat} : NDFunLike (X ⟶ Y) X Y :=
-  RingHom.instFunLike
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike
+  ConcreteCategory.funLike
 
 -- Porting note: added
 instance instRingHomClass {X Y : CommSemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
@@ -424,7 +427,8 @@ instance instCommRing (X : CommRingCat) : CommRing X := X.str
 instance instCommRing' (X : CommRingCat) : CommRing <| (forget CommRingCat).obj X := X.str
 
 instance instFunLike {X Y : CommRingCat} : NDFunLike (X ⟶ Y) X Y :=
-  RingHom.instFunLike
+  -- Note: this is apparently _not_ defeq to RingHom.instFunLike
+  ConcreteCategory.funLike
 
 -- Porting note: added
 instance instRingHomClass {X Y : CommRingCat} : RingHomClass (X ⟶ Y) X Y :=

@@ -285,11 +285,13 @@ instance : One (SmoothMonoidMorphism I I' G G') :=
 instance : Inhabited (SmoothMonoidMorphism I I' G G') :=
   ⟨1⟩
 
--- porting note: replaced `CoeFun` with `MonoidHomClass` and `ContinuousMapClass` instances
 @[to_additive]
-instance : MonoidHomClass (SmoothMonoidMorphism I I' G G') G G' where
+instance : NDFunLike (SmoothMonoidMorphism I I' G G') G G' where
   coe a := a.toFun
   coe_injective' f g h := by cases f; cases g; congr; exact FunLike.ext' h
+
+@[to_additive]
+instance : MonoidHomClass (SmoothMonoidMorphism I I' G G') G G' where
   map_one f := f.map_one
   map_mul f := f.map_mul
 
