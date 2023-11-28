@@ -57,7 +57,7 @@ namespace SmoothManifoldWithCorners
 
 variable (I M) in
 /-- The **interior** of a manifold `M` is the set of its interior points. -/
-protected def interior : Set M := { x : M | I.IsInteriorPoint x}
+protected def interior : Set M := { x : M | I.IsInteriorPoint x }
 
 lemma _root_.ModelWithCorners.isInteriorPoint_iff {x : M} :
     I.IsInteriorPoint x ↔ extChartAt I x x ∈ interior (extChartAt I x).target :=
@@ -66,7 +66,7 @@ lemma _root_.ModelWithCorners.isInteriorPoint_iff {x : M} :
 
 variable (I M) in
 /-- The **boundary** of a manifold `M` is the set of its boundary points. -/
-protected def boundary : Set M := { x : M | I.IsBoundaryPoint x}
+protected def boundary : Set M := { x : M | I.IsBoundaryPoint x }
 
 lemma _root_.ModelWithCorners.isBoundaryPoint_iff {x : M} :
     I.IsBoundaryPoint x ↔ extChartAt I x x ∈ frontier (range I) := Iff.rfl
