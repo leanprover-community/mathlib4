@@ -223,20 +223,17 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
     t := hf2 t <| mem_of_mem_of_subset ht (Metric.ball_subset_ball (min_le_left ..))
   rw [←tangentCoordChange_def] at h
   have hf3' := mem_of_mem_of_subset hf3 interior_subset
+  have hft1 := mem_preimage.mp <|
+    mem_of_mem_of_subset hf3' (extChartAt I x₀).target_subset_preimage_source
+  have hft2 := mem_extChartAt_source I ((extChartAt I x₀).symm (f t))
   -- express the derivative of the integral curve in the local chart
   refine ⟨ContinuousAt.comp (continuousAt_extChartAt_symm'' _ _ hf3') (h.continuousAt),
     HasDerivWithinAt.hasFDerivWithinAt ?_⟩
   simp only [mfld_simps, hasDerivWithinAt_univ]
   show HasDerivAt (((extChartAt I ((extChartAt I x₀).symm (f t))) ∘ (extChartAt I x₀).symm) ∘ f)
-      (v ((extChartAt I x₀).symm (f t))) t
-  -- `h` gives the derivative of `f` at `t` as `↑D (v (γ t))`, where `D` is the change of
-  -- coordinates from the chart at `γ t` to the chart at `x₀`. we wish to use
-  -- `HasFDerivAt.comp_hasDerivAt` to get the derivative of `γ` at `t` as `v (γ t)`, which requires
-  -- first expressing `v (γ t)` as `↑D_inv ↑D (v (γ t))`, where `D_inv` is the opposite change of
-  -- coordinates as `D`.
-  have hft1 := mem_preimage.mp <|
-    mem_of_mem_of_subset hf3' (extChartAt I x₀).target_subset_preimage_source
-  have hft2 := mem_extChartAt_source I ((extChartAt I x₀).symm (f t))
+    (v ((extChartAt I x₀).symm (f t))) t
+  -- express `v (γ t)` as `D⁻¹ D (v (γ t))`, where `D` is a change of coordinates, so we can use
+  -- `HasFDerivAt.comp_hasDerivAt` on `h`
   rw [←tangentCoordChange_self (I := I) (x := (extChartAt I x₀).symm (f t))
       (z := (extChartAt I x₀).symm (f t)) (v := v ((extChartAt I x₀).symm (f t))) hft2,
     ←tangentCoordChange_comp (x := x₀) ⟨⟨hft2, hft1⟩, hft2⟩]
