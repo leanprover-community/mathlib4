@@ -359,14 +359,6 @@ theorem xor_comm (n m : ℕ) : n ^^^ m = m ^^^ n :=
   bitwise_comm (Bool.bne_eq_xor ▸ Bool.xor_comm) n m
 #align nat.lxor_comm Nat.xor_comm
 
-lemma and_two_pow (n i : ℕ) : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
-  refine eq_of_testBit_eq fun j => ?_
-  obtain rfl | hij := Decidable.eq_or_ne i j <;> cases' h : n.testBit i
-  · simp [h]
-  · simp [h]
-  · simp [h, testBit_two_pow_of_ne hij]
-  · simp [h, testBit_two_pow_of_ne hij]
-
 lemma two_pow_and (n i : ℕ) : 2 ^ i &&& n = 2 ^ i * (n.testBit i).toNat := by
   rw [mul_comm, land_comm, and_two_pow]
 
