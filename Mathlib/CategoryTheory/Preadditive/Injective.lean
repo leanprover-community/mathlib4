@@ -367,7 +367,7 @@ lemma EnoughInjectives.of_adjunction {C : Type u₁} {D : Type u₂}
     {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) [L.PreservesMonomorphisms] [L.ReflectsMonomorphisms]
     [EnoughInjectives D] : EnoughInjectives C where
   presentation _ :=
-    ⟨adj.injectivePresentationOfMapInjectivePresentation _ (EnoughInjectives.presentation _).some⟩
+    ⟨adj.injectivePresentationOfMap _ (EnoughInjectives.presentation _).some⟩
 
 /-- An equivalence of categories transfers enough injectives. -/
 lemma EnoughInjectives.of_equivalence {C : Type u₁} {D : Type u₂}
@@ -386,7 +386,7 @@ theorem map_injective_iff (P : C) : Injective (F.functor.obj P) ↔ Injective P 
 injective presentation of `X.` -/
 def injectivePresentationOfMapInjectivePresentation (X : C)
     (I : InjectivePresentation (F.functor.obj X)) : InjectivePresentation X :=
-  F.toAdjunction.injectivePresentationOfMapInjectivePresentation _ I
+  F.toAdjunction.injectivePresentationOfMap _ I
 #align category_theory.equivalence.injective_presentation_of_map_injective_presentation CategoryTheory.Equivalence.injectivePresentationOfMapInjectivePresentation
 
 theorem enoughInjectives_iff (F : C ≌ D) : EnoughInjectives C ↔ EnoughInjectives D :=
@@ -394,3 +394,5 @@ theorem enoughInjectives_iff (F : C ≌ D) : EnoughInjectives C ↔ EnoughInject
 #align category_theory.equivalence.enough_injectives_iff CategoryTheory.Equivalence.enoughInjectives_iff
 
 end Equivalence
+
+end CategoryTheory
