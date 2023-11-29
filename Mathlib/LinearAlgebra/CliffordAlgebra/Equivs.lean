@@ -404,6 +404,9 @@ theorem ι_mul_ι (r₁ r₂) : ι (0 : QuadraticForm R R) r₁ * ι (0 : Quadra
     smul_zero]
 #align clifford_algebra_dual_number.ι_mul_ι CliffordAlgebraDualNumber.ι_mul_ι
 
+-- HACK, but should be findable via `MulRingSeminormClass.toMonoidWithZeroHomClass` anyway
+attribute [-instance] MulRingSeminormClass.toMonoidHomClass
+
 /-- The clifford algebra over a 1-dimensional vector space with 0 quadratic form is isomorphic to
 the dual numbers. -/
 protected def equiv : CliffordAlgebra (0 : QuadraticForm R R) ≃ₐ[R] R[ε] :=

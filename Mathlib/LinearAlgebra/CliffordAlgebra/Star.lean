@@ -33,6 +33,9 @@ variable {Q : QuadraticForm R M}
 
 namespace CliffordAlgebra
 
+-- HACK, but should be findable via `MulRingSeminormClass.toMonoidWithZeroHomClass` anyway
+attribute [-instance] MulRingSeminormClass.toMonoidHomClass
+
 instance instStarRing : StarRing (CliffordAlgebra Q) where
   star x := reverse (involute x)
   star_involutive x := by

@@ -152,6 +152,9 @@ end tensorAssoc
 
 section tensorRId
 
+-- HACK, but should be findable via `MulRingSeminormClass.toMonoidWithZeroHomClass` anyway
+attribute [-instance] MulRingSeminormClass.toMonoidHomClass
+
 theorem comp_tensorRId_eq (Q₁ : QuadraticForm R M₁) :
     Q₁.comp (TensorProduct.rid R M₁) = Q₁.tmul (sq (R := R)) := by
   refine (QuadraticForm.associated_rightInverse R).injective ?_
@@ -185,6 +188,9 @@ def tensorRId (Q₁ : QuadraticForm R M₁):
 end tensorRId
 
 section tensorLId
+
+-- HACK, but should be findable via `MulRingSeminormClass.toMonoidWithZeroHomClass` anyway
+attribute [-instance] MulRingSeminormClass.toMonoidHomClass
 
 theorem comp_tensorLId_eq (Q₂ : QuadraticForm R M₂) :
     Q₂.comp (TensorProduct.lid R M₂) = (sq (R := R)).tmul Q₂ := by
