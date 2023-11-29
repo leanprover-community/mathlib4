@@ -255,8 +255,7 @@ theorem smul_apply (c : S) (m : ι → M) : (c • f) m = c • f m :=
 #align alternating_map.smul_apply AlternatingMap.smul_apply
 
 @[norm_cast]
-theorem coe_smul (c : S) : (c • f : MultilinearMap R (fun _ : ι => M) N) =
-    c • (f : MultilinearMap R (fun _ : ι => M) N) :=
+theorem coe_smul (c : S) : ↑(c • f) = c • (f : MultilinearMap R (fun _ : ι => M) N) :=
   rfl
 #align alternating_map.coe_smul AlternatingMap.coe_smul
 
@@ -435,19 +434,21 @@ end Module
 
 section
 
-variable (R M)
+variable (R M N)
 
-/-- The evaluation map from `ι → M` to `M` at a given `i` is alternating when `ι` is subsingleton.
--/
-@[simps]
-def ofSubsingleton [Subsingleton ι] (i : ι) : AlternatingMap R M M ι :=
-  { MultilinearMap.ofSubsingleton R M i with
-    toFun := Function.eval i
-    map_eq_zero_of_eq' := fun _ _ _ _ hij => (hij <| Subsingleton.elim _ _).elim }
+/-- The natural equivalence between linear maps from `M` to `N`
+and `1`-multilinear alternating maps from `M` to `N`. -/
+@[simps!]
+def ofSubsingleton [Subsingleton ι] (i : ι) : (M →ₗ[R] N) ≃ AlternatingMap R M N ι where
+  toFun f := ⟨MultilinearMap.ofSubsingleton R M N i f, fun _ _ _ _ ↦ absurd (Subsingleton.elim _ _)⟩
+  invFun f := (MultilinearMap.ofSubsingleton R M N i).symm f
+  left_inv _ := rfl
+  right_inv _ := coe_multilinearMap_injective <|
+    (MultilinearMap.ofSubsingleton R M N i).apply_symm_apply _
 #align alternating_map.of_subsingleton AlternatingMap.ofSubsingleton
-#align alternating_map.of_subsingleton_apply AlternatingMap.ofSubsingleton_apply
+#align alternating_map.of_subsingleton_apply AlternatingMap.ofSubsingleton_apply_apply
 
-variable (ι)
+variable (ι) {N}
 
 /-- The constant map is alternating when `ι` is empty. -/
 @[simps (config := .asFn)]

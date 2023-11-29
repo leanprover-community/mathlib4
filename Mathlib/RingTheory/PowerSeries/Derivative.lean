@@ -161,7 +161,7 @@ The following theorem is stated only in the case that `R` is a field. This is be
 there is currently no instance of `Inv R⟦X⟧` for more general base rings `R`.
 -/
 @[simp] theorem derivative_inv' {R} [Field R] (f : R⟦X⟧) : d⁄dX R f⁻¹ = -f⁻¹ ^ 2 * d⁄dX R f := by
-  by_cases constantCoeff R f = 0
+  by_cases h : constantCoeff R f = 0
   · suffices f⁻¹ = 0 by
       rw [this, pow_two, zero_mul, neg_zero, zero_mul, map_zero]
     rwa [MvPowerSeries.inv_eq_zero]

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.Deriv.Comp
-import Mathlib.Analysis.Calculus.ContDiffDef
+import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 #align_import analysis.calculus.iterated_deriv from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 

@@ -873,7 +873,7 @@ theorem integrableOn_iUnion_of_summable_norm_restrict {f : C(α, E)} {s : β →
   refine'
     integrableOn_iUnion_of_summable_integral_norm (fun i => (s i).isCompact.isClosed.measurableSet)
       (fun i => (map_continuous f).continuousOn.integrableOn_compact (s i).isCompact)
-      (summable_of_nonneg_of_le (fun ι => integral_nonneg fun x => norm_nonneg _) (fun i => _) hf)
+      (.of_nonneg_of_le (fun ι => integral_nonneg fun x => norm_nonneg _) (fun i => _) hf)
   rw [← (Real.norm_of_nonneg (integral_nonneg fun a => norm_nonneg _) : ‖_‖ = ∫ x in s i, ‖f x‖ ∂μ)]
   exact
     norm_set_integral_le_of_norm_le_const' (s i).isCompact.measure_lt_top
@@ -1291,10 +1291,10 @@ theorem integral_smul_const {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [C
   by_cases hf : Integrable f μ
   · exact ((1 : 𝕜 →L[𝕜] 𝕜).smulRight c).integral_comp_comm hf
   · by_cases hc : c = 0
-    · simp only [hc, integral_zero, smul_zero]
+    · simp [hc, integral_zero, smul_zero]
     rw [integral_undef hf, integral_undef, zero_smul]
     rw [integrable_smul_const hc]
-    simp_rw [hf]
+    simp_rw [hf, not_false_eq_true]
 #align integral_smul_const integral_smul_const
 
 theorem integral_withDensity_eq_integral_smul {f : α → ℝ≥0} (f_meas : Measurable f) (g : α → E) :

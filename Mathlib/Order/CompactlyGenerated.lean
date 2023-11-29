@@ -319,6 +319,11 @@ theorem WellFounded.finite_of_setIndependent (h : WellFounded ((· > ·) : α �
     exact le_sSup _ _ hx₀
 #align complete_lattice.well_founded.finite_of_set_independent CompleteLattice.WellFounded.finite_of_setIndependent
 
+theorem WellFounded.finite_ne_bot_of_independent (hwf : WellFounded ((· > ·) : α → α → Prop))
+    {ι : Type*} {t : ι → α} (ht : Independent t) : Set.Finite {i | t i ≠ ⊥} := by
+  refine Finite.of_finite_image (Finite.subset ?_ (image_subset_range t _)) ht.injOn
+  exact WellFounded.finite_of_setIndependent hwf ht.setIndependent_range
+
 theorem WellFounded.finite_of_independent (hwf : WellFounded ((· > ·) : α → α → Prop)) {ι : Type*}
     {t : ι → α} (ht : Independent t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Finite ι :=
   haveI := (WellFounded.finite_of_setIndependent hwf ht.setIndependent_range).to_subtype
@@ -377,16 +382,19 @@ theorem DirectedOn.inf_sSup_eq (h : DirectedOn (· ≤ ·) s) : a ⊓ sSup s = �
 #align directed_on.inf_Sup_eq DirectedOn.inf_sSup_eq
 
 /-- This property is sometimes referred to as `α` being upper continuous. -/
-protected theorem DirectedOn.sSup_inf_eq (h : DirectedOn (· ≤ ·) s) : sSup s ⊓ a = ⨆ b ∈ s, b ⊓ a :=
-  by simp_rw [@inf_comm _ _ _ a, h.inf_sSup_eq]
+protected theorem DirectedOn.sSup_inf_eq (h : DirectedOn (· ≤ ·) s) :
+    sSup s ⊓ a = ⨆ b ∈ s, b ⊓ a := by
+  simp_rw [@inf_comm _ _ _ a, h.inf_sSup_eq]
 #align directed_on.Sup_inf_eq DirectedOn.sSup_inf_eq
 
-protected theorem Directed.inf_iSup_eq (h : Directed (· ≤ ·) f) : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i :=
-  by rw [iSup, h.directedOn_range.inf_sSup_eq, iSup_range]
+protected theorem Directed.inf_iSup_eq (h : Directed (· ≤ ·) f) :
+    (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i := by
+  rw [iSup, h.directedOn_range.inf_sSup_eq, iSup_range]
 #align directed.inf_supr_eq Directed.inf_iSup_eq
 
-protected theorem Directed.iSup_inf_eq (h : Directed (· ≤ ·) f) : (⨆ i, f i) ⊓ a = ⨆ i, f i ⊓ a :=
-  by rw [iSup, h.directedOn_range.sSup_inf_eq, iSup_range]
+protected theorem Directed.iSup_inf_eq (h : Directed (· ≤ ·) f) :
+    (⨆ i, f i) ⊓ a = ⨆ i, f i ⊓ a := by
+  rw [iSup, h.directedOn_range.sSup_inf_eq, iSup_range]
 #align directed.supr_inf_eq Directed.iSup_inf_eq
 
 protected theorem DirectedOn.disjoint_sSup_right (h : DirectedOn (· ≤ ·) s) :
