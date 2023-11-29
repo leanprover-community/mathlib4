@@ -128,7 +128,7 @@ lemma LPedist.lt_top (μ ν : FiniteMeasure Ω) :
 lemma LPedist.self (μ : FiniteMeasure Ω) :
     LPedist μ μ = 0 := by
   by_cases zero_meas : μ = 0
-  · exact le_antisymm (sInf_le (by simp [zero_meas])) (zero_le _)
+  · simp [zero_meas, LPedist, FiniteMeasure.toMeasure_zero]
   simp_rw [← FiniteMeasure.mass_nonzero_iff] at zero_meas
   apply sInf_eq_of_forall_ge_of_forall_gt_exists_lt (by simp)
   simp only [ne_eq, FiniteMeasure.ennreal_coeFn_eq_coeFn_toMeasure, and_self, mem_setOf_eq]
