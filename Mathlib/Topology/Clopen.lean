@@ -150,7 +150,7 @@ protected theorem QuotientMap.isClopen_preimage {f : X → Y} (hf : QuotientMap 
   and_congr hf.isOpen_preimage hf.isClosed_preimage
 #align quotient_map.is_clopen_preimage QuotientMap.isClopen_preimage
 
-theorem continuous_boolIndicator_iff_clopen (U : Set X) :
+theorem continuous_boolIndicator_iff_isClopen (U : Set X) :
     Continuous U.boolIndicator ↔ IsClopen U := by
   constructor
   · intro hc
@@ -159,12 +159,12 @@ theorem continuous_boolIndicator_iff_clopen (U : Set X) :
   · refine' fun hU => ⟨fun s _ => _⟩
     rcases U.preimage_boolIndicator s with (h | h | h | h) <;> rw [h]
     exacts [isOpen_univ, hU.1, hU.2.isOpen_compl, isOpen_empty]
-#align continuous_bool_indicator_iff_clopen continuous_boolIndicator_iff_clopen
+#align continuous_bool_indicator_iff_clopen continuous_boolIndicator_iff_isClopen
 
-theorem continuousOn_boolIndicator_iff_clopen (s U : Set X) :
+theorem continuousOn_boolIndicator_iff_isClopen (s U : Set X) :
     ContinuousOn U.boolIndicator s ↔ IsClopen (((↑) : s → X) ⁻¹' U) := by
-  rw [continuousOn_iff_continuous_restrict, ← continuous_boolIndicator_iff_clopen]
+  rw [continuousOn_iff_continuous_restrict, ← continuous_boolIndicator_iff_isClopen]
   rfl
-#align continuous_on_indicator_iff_clopen continuousOn_boolIndicator_iff_clopen
+#align continuous_on_indicator_iff_clopen continuousOn_boolIndicator_iff_isClopen
 
 end Clopen
