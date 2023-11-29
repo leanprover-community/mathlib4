@@ -238,27 +238,13 @@ variable {L : Type*} [OrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCom
 
 lemma image_extremePoints (f : L) (s : Set E) :
     f '' extremePoints 𝕜 s = extremePoints 𝕜 (f '' s) := by
-  ext
-  -- TODO: This is absolutely horrible. If we can't have coercions `F → HomType α β` from
-  -- `HomClass F α β`, can we at least have a bare function?
-  have := by simpa using image_openSegment _ {
-    toFun := f
-    linear.toFun := f
-    linear.map_add' := map_add f
-    linear.map_smul' := map_smulₛₗ f
-    map_vadd' := by simp }
-  simp only [mem_extremePoints, ←Equiv.forall_congr_left {
-        toFun := f
-        invFun := EquivLike.inv f
-        left_inv := EquivLike.left_inv f
-        right_inv := EquivLike.right_inv f
-      }, ←exists_and_right, mem_image, Equiv.coe_fn_mk,
-        LinearEquiv.coe_toEquiv, EmbeddingLike.apply_eq_iff_eq, exists_eq_right, ←this]
-  constructor
-  · rintro ⟨x, ⟨hx, hxs⟩, rfl⟩
-    exact ⟨x, ⟨hx, rfl⟩, by simpa using hxs⟩
-  · rintro ⟨x, ⟨hx, rfl⟩, hxs⟩
-    exact ⟨x, ⟨hx, by simpa using hxs⟩, rfl⟩
+  ext b
+  rcases EquivLike.surjective f b with ⟨a, rfl⟩
+  have : ∀ x y, f '' openSegment 𝕜 x y = openSegment 𝕜 (f x) (f y) :=
+    image_openSegment _ <| LinearMap.toAffineMap
+      { toFun := f, map_add' := map_add f, map_smul' := map_smul f}
+  simp only [mem_extremePoints, (EquivLike.surjective f).forall,
+    (EquivLike.injective f).mem_set_image, (EquivLike.injective f).eq_iff, ← this]
 
 end OrderedRing
 
