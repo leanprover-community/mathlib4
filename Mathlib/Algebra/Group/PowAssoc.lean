@@ -74,7 +74,8 @@ theorem ppow_mul [PNatPowAssoc M] (x : M) (m n : ℕ+) : x ^ (m * n) = (x ^ m) ^
 
 end PNatPowAssoc
 
-theorem ppow_eq_pow [Monoid M] [Pow M ℕ+] [PNatPowAssoc M] (x : M) (n : ℕ+) : x ^ n = x ^ (n : ℕ) := by
+theorem ppow_eq_pow [Monoid M] [Pow M ℕ+] [PNatPowAssoc M] (x : M) (n : ℕ+) :
+    x ^ n = x ^ (n : ℕ) := by
   refine PNat.recOn n ?_ ?_
   rw [ppow_one, PNat.one_coe, pow_one]
   intro k hk
