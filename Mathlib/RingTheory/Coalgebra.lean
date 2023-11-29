@@ -6,7 +6,16 @@ Authors: Ali Ramsey
 import Mathlib.RingTheory.TensorProduct
 
 /-!
-# Definition and example of a coalgebra
+# Coalgebras
+
+In this file we define `Coalgebra`, and provide instances for:
+
+* Commutative rings: `CommRing.toCoalgebra`
+* Finitely supported functions: `Finsupp.instCoalgebra`
+
+## References
+
+* <https://en.wikipedia.org/wiki/Coalgebra>
 -/
 
 suppress_compilation
