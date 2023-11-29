@@ -7,10 +7,10 @@ import Mathlib.Geometry.Manifold.ContMDiff.Product
 
 /-! ## Equivalence of smoothness with the basic definition for functions between vector spaces
 
-- for functions between vector spaces, smoothness is equivalent
-to the basic definition for functions between vector spaces
-- linear maps between normed spaces are smooth
-- multiplication by scalars is a smooth operation
+* `contMDiff_iff_contDiff`: for functions between vector spaces,
+  manifold-smoothness is equivalent to usual smoothness.
+* `ContinuousLinearMap.contMDiff`: continuous linear maps between normed spaces are smooth
+* `smooth_smul`: multiplication by scalars is a smooth operation
 
 -/
 
