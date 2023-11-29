@@ -467,7 +467,10 @@ def algHom : R →+* (CentroidHom α) where
     ext a
     exact add_smul r₁ r₂ a
 
-instance ringtoAlg (h : ∀ (r : R) (T : CentroidHom α), Commute (algHom r)  T ) :
+/--
+CentroidHom α as an algebra over R
+-/
+def ringtoAlg (h : ∀ (r : R) (T : CentroidHom α), algHom r * T = T * algHom r) :
   Algebra R (CentroidHom α) := algHom.toAlgebra' h
 
 end NonUnitalNonAssocSemiring
