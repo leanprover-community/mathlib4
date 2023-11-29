@@ -542,7 +542,7 @@ instance (priority := 100) IsMaximal.isPrime' (I : Ideal α) : ∀ [_H : I.IsMax
   @IsMaximal.isPrime _ _ _
 #align ideal.is_maximal.is_prime' Ideal.IsMaximal.isPrime'
 
-theorem span_singleton_lt_span_singleton  [IsDomain α] {x y : α} :
+theorem span_singleton_lt_span_singleton [IsDomain α] {x y : α} :
     span ({x} : Set α) < span ({y} : Set α) ↔ DvdNotUnit y x := by
   rw [lt_iff_le_not_le, span_singleton_le_span_singleton, span_singleton_le_span_singleton,
     dvd_and_not_dvd_iff]
