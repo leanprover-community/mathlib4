@@ -1082,8 +1082,8 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace X] {S : Set
         haveI : Nonempty { U // U ∈ c } := ⟨⟨U₀, hU₀⟩⟩
         obtain ⟨U₀compl, -, -⟩ := hc hU₀
         use ⋃₀ c
-        refine' ⟨⟨_, _, _⟩, fun U hU x hx => ⟨U, hU, hx⟩⟩
-        · exact fun x hx => ⟨U₀, hU₀, U₀compl hx⟩
+        refine' ⟨⟨_, _, _⟩, fun U hU _ hx => ⟨U, hU, hx⟩⟩
+        · exact fun _ hx => ⟨U₀, hU₀, U₀compl hx⟩
         · exact isOpen_sUnion fun _ h => (hc h).2.1
         · convert_to (⋂ U : { U // U ∈ c }, U.1ᶜ).Nonempty
           · ext
