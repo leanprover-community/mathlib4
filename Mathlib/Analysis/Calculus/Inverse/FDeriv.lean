@@ -66,7 +66,7 @@ open ContinuousLinearMap (id)
 /-!
 ### Inverse function theorem
 
-Now we prove the inverse function theorem. Let `f : E → F` be a map defined on a complete vector
+Let `f : E → F` be a map defined on a complete vector
 space `E`. Assume that `f` has an invertible derivative `f' : E ≃L[𝕜] F` at `a : E` in the strict
 sense. Then `f` approximates `f'` in the sense of `ApproximatesLinearOn` on an open neighborhood
 of `a`, and we can apply `ApproximatesLinearOn.toLocalHomeomorph` to construct the inverse

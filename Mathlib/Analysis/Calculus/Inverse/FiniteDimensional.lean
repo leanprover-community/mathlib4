@@ -9,7 +9,7 @@ import Mathlib.Analysis.NormedSpace.FiniteDimension
 /-!
 # A lemma about `ApproximatesLinearOn` that needs `FiniteDimensional`
 
-In this file we prove that In a real vector space,
+In this file we prove that in a real vector space,
 a function `f` that approximates a linear equivalence on a subset `s`
 can be extended to a homeomorphism of the whole space.
 
