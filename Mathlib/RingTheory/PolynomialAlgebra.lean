@@ -191,7 +191,9 @@ open PolyEquivTensor
 /-- The `R`-algebra isomorphism `A[X] ≃ₐ[R] (A ⊗[R] R[X])`.
 -/
 def polyEquivTensor : A[X] ≃ₐ[R] A ⊗[R] R[X] :=
-  AlgEquiv.symm { PolyEquivTensor.toFunAlgHom R A, PolyEquivTensor.equiv R A with }
+  AlgEquiv.symm
+    { PolyEquivTensor.toFunAlgHom R A, PolyEquivTensor.equiv R A with
+      map_smul' := map_smul _ }
 #align poly_equiv_tensor polyEquivTensor
 
 @[simp]
