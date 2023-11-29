@@ -811,25 +811,21 @@ section SmoothManifoldWithCorners
 
 /-! ### Smooth manifolds with corners -/
 
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
 
 /-- Typeclass defining smooth manifolds with corners with respect to a model with corners, over a
 field `𝕜` and with infinite smoothness to simplify typeclass search and statements later on. -/
-class SmoothManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M] extends
-    HasGroupoid M (contDiffGroupoid ∞ I) : Prop
+class SmoothManifoldWithCorners extends HasGroupoid M (contDiffGroupoid ∞ I) : Prop
 #align smooth_manifold_with_corners SmoothManifoldWithCorners
 
-theorem SmoothManifoldWithCorners.mk' {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    [gr : HasGroupoid M (contDiffGroupoid ∞ I)] : SmoothManifoldWithCorners I M :=
+theorem SmoothManifoldWithCorners.mk' [gr : HasGroupoid M (contDiffGroupoid ∞ I)] :
+    SmoothManifoldWithCorners I M :=
   { gr with }
 #align smooth_manifold_with_corners.mk' SmoothManifoldWithCorners.mk'
 
-theorem smoothManifoldWithCorners_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+theorem smoothManifoldWithCorners_of_contDiffOn
     (h : ∀ e e' : LocalHomeomorph M H, e ∈ atlas H M → e' ∈ atlas H M →
       ContDiffOn 𝕜 ⊤ (I ∘ e.symm ≫ₕ e' ∘ I.symm) (I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I)) :
     SmoothManifoldWithCorners I M where
@@ -838,10 +834,9 @@ theorem smoothManifoldWithCorners_of_contDiffOn {𝕜 : Type*} [NontriviallyNorm
     apply StructureGroupoid.compatible
 #align smooth_manifold_with_corners_of_cont_diff_on smoothManifoldWithCorners_of_contDiffOn
 
+variable {I} in
 /-- For any model with corners, the model space is a smooth manifold -/
-instance model_space_smooth {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    {I : ModelWithCorners 𝕜 E H} : SmoothManifoldWithCorners I H :=
+instance model_space_smooth : SmoothManifoldWithCorners I H :=
   { hasGroupoid_model_space _ _ with }
 #align model_space_smooth model_space_smooth
 
