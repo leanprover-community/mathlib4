@@ -573,11 +573,17 @@ theorem subsingleton_dual_iff :
   · ext v
     simp [Subsingleton.elim v 0]
 
+instance instSubsingletonDual [Subsingleton V] : Subsingleton (Dual K V) :=
+  (subsingleton_dual_iff K).mp inferInstance
+
 @[simp]
 theorem nontrivial_dual_iff :
     Nontrivial (Dual K V) ↔ Nontrivial V := by
   rw [← not_iff_not, not_nontrivial_iff_subsingleton, not_nontrivial_iff_subsingleton,
     subsingleton_dual_iff]
+
+instance instNontrivialDual [Nontrivial V] : Nontrivial (Dual K V) :=
+  (nontrivial_dual_iff K).mpr inferInstance
 
 theorem exists_dual_map_eq_bot_of_lt_top {p : Submodule K V} (hp : p < ⊤) (hp' : Free K (V ⧸ p)) :
     ∃ f : Dual K V, f ≠ 0 ∧ p.map f = ⊥ := by
