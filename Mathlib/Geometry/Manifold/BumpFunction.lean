@@ -214,7 +214,7 @@ theorem nhdsWithin_range_basis :
 theorem isClosed_image_of_isClosed {s : Set M} (hsc : IsClosed s) (hs : s ⊆ support f) :
     IsClosed (extChartAt I c '' s) := by
   rw [f.image_eq_inter_preimage_of_subset_support hs]
-  refine' ContinuousOn.preimage_closed_of_closed
+  refine' ContinuousOn.preimage_isClosed_of_isClosed
     ((continuousOn_extChartAt_symm _ _).mono f.closedBall_subset) _ hsc
   exact IsClosed.inter isClosed_ball I.closed_range
 #align smooth_bump_function.is_closed_image_of_is_closed SmoothBumpFunction.isClosed_image_of_isClosed
