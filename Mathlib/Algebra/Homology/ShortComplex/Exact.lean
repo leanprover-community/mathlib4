@@ -123,11 +123,11 @@ lemma exact_and_mono_f_iff_of_iso (e : S₁ ≅ S₂) :
   rw [exact_iff_of_iso e, this]
 
 lemma exact_and_epi_g_iff_of_iso (e : S₁ ≅ S₂) :
-    S₁.Exact ∧ Epi S₁.f ↔ S₂.Exact ∧ Epi S₂.f := by
-  have : Epi S₁.f ↔ Epi S₂.f :=
+    S₁.Exact ∧ Epi S₁.g ↔ S₂.Exact ∧ Epi S₂.g := by
+  have : Epi S₁.g ↔ Epi S₂.g :=
     MorphismProperty.RespectsIso.arrow_mk_iso_iff
       (MorphismProperty.RespectsIso.epimorphisms C)
-      (Arrow.isoMk (ShortComplex.π₁.mapIso e) (ShortComplex.π₂.mapIso e) e.hom.comm₁₂)
+      (Arrow.isoMk (ShortComplex.π₂.mapIso e) (ShortComplex.π₃.mapIso e) e.hom.comm₂₃)
   rw [exact_iff_of_iso e, this]
 
 lemma exact_of_isZero_X₂ (h : IsZero S.X₂) : S.Exact := by
@@ -903,6 +903,22 @@ lemma Exact.comp_descToInjective
   have := hS.mono_fromOpcycles
   dsimp [descToInjective]
   simp only [← p_fromOpcycles, assoc, Injective.comp_factorThru, p_descOpcycles]
+
+/-- If `S` is an exact short complex and `f : P ⟶ S.X₂` is a morphism from a projective object `P`
+such that `f ≫ S.g = 0`, this a morphism `φ : P ⟶ S.X₁` such that `φ ≫ S.f = f`. -/
+noncomputable def Exact.liftFromProjective
+    (hS : S.Exact) {P : C} (f : P ⟶ S.X₂) [Projective P] (hf : f ≫ S.g = 0) :
+    P ⟶ S.X₁ := by
+  have := hS.epi_toCycles
+  exact Projective.factorThru (S.liftCycles f hf) S.toCycles
+
+@[reassoc (attr := simp, nolint unusedHavesSuffices)]
+lemma Exact.liftFromProjective_comp
+    (hS : S.Exact) {P : C} (f : P ⟶ S.X₂) [Projective P] (hf : f ≫ S.g = 0) :
+    hS.liftFromProjective f hf ≫ S.f = f := by
+  have := hS.epi_toCycles
+  dsimp [liftFromProjective]
+  rw [← toCycles_i, Projective.factorThru_comp_assoc, liftCycles_i]
 
 end Abelian
 

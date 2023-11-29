@@ -1,11 +1,8 @@
 /-
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Scott Morrison, Joël Riou
 -/
-import Mathlib.CategoryTheory.Preadditive.Projective
-import Mathlib.Algebra.Homology.SingleHomology
-import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.Algebra.Homology.QuasiIso
 
 #align_import category_theory.preadditive.projective_resolution from "leanprover-community/mathlib"@"324a7502510e835cdbd3de1519b6c66b51fb2467"
@@ -18,24 +15,8 @@ an `ℕ`-indexed chain complex `P.complex` of projective objects,
 along with a quasi-isomorphism `P.π` from `C` to the chain complex consisting just
 of `Z` in degree zero.
 
-In order to show `HasProjectiveResolutions C` one will assume `EnoughProjectives C`
-and `Abelian C`. This construction appears in `CategoryTheory.Abelian.Projective`.)
-
-We show that given `P : ProjectiveResolution X` and `Q : ProjectiveResolution Y`,
-any morphism `X ⟶ Y` admits a lift to a chain map `P.complex ⟶ Q.complex`.
-(It is a lift in the sense that
-the projection maps `P.π` and `Q.π` intertwine the lift and the original morphism.)
-
-Moreover, we show that any two such lifts are homotopic.
-
-As a consequence, if every object admits a projective resolution,
-we can construct a functor
-`projectiveResolutions C : C ⥤ HomotopyCategory C (ComplexShape.down ℕ)`.
-
 -/
 
-
-noncomputable section
 
 universe v u
 
@@ -46,8 +27,6 @@ open Category Limits ChainComplex HomologicalComplex
 variable {C : Type u} [Category.{v} C]
 
 open Projective
-
-section
 
 variable [HasZeroObject C] [HasZeroMorphisms C]
 
@@ -79,8 +58,6 @@ class HasProjectiveResolution (Z : C) : Prop where
   out : Nonempty (ProjectiveResolution Z)
 #align category_theory.has_projective_resolution CategoryTheory.HasProjectiveResolution
 
-section
-
 variable (C)
 
 /-- You will rarely use this typeclass directly: it is implied by the combination
@@ -93,10 +70,9 @@ class HasProjectiveResolutions : Prop where
 
 attribute [instance 100] HasProjectiveResolutions.out
 
-end
-
 namespace ProjectiveResolution
 
+variable {C}
 variable {Z : C} (P : ProjectiveResolution Z)
 
 lemma complex_exactAt_succ (n : ℕ) :
@@ -115,7 +91,7 @@ theorem π_f_succ (n : ℕ) : P.π.f (n + 1) = 0 :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.π_f_succ CategoryTheory.ProjectiveResolution.π_f_succ
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem complex_d_comp_π_f_zero :
     P.complex.d 1 0 ≫ P.π.f 0 = 0 := by
   rw [← P.π.comm 1 0, single_obj_d, comp_zero]
@@ -132,11 +108,11 @@ set_option linter.uppercaseLean3 false in
 /-- The (limit) cokernel cofork given by the composition
 `P.complex.X 1 ⟶ P.complex.X 0 ⟶ Z` when `P : ProjectiveResolution Z`. -/
 @[simp]
-def cokernelCofork : CokernelCofork (P.complex.d 1 0) :=
+noncomputable def cokernelCofork : CokernelCofork (P.complex.d 1 0) :=
   CokernelCofork.ofπ _ P.complex_d_comp_π_f_zero
 
 /-- `Z` is the cokernel of `P.complex.X 1 ⟶ P.complex.X 0` when `P : ProjectiveResolution Z`. -/
-def isColimitCokernelCofork : IsColimit (P.cokernelCofork) := by
+noncomputable def isColimitCokernelCofork : IsColimit (P.cokernelCofork) := by
   refine IsColimit.ofIsoColimit (P.complex.opcyclesIsCokernel 1 0 (by simp)) ?_
   refine Cofork.ext (P.complex.isoHomologyι₀.symm ≪≫ isoOfQuasiIsoAt P.π 0 ≪≫
     singleObjHomologySelfIso _ _ _) ?_
@@ -156,7 +132,7 @@ variable (Z)
 
 /-- A projective object admits a trivial projective resolution: itself in degree 0. -/
 @[simps]
-def self [Projective Z] : ProjectiveResolution Z where
+noncomputable def self [Projective Z] : ProjectiveResolution Z where
   complex := (ChainComplex.single₀ C).obj Z
   π := 𝟙 ((ChainComplex.single₀ C).obj Z)
   projective n := by
@@ -167,6 +143,25 @@ def self [Projective Z] : ProjectiveResolution Z where
       simp
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.self CategoryTheory.ProjectiveResolution.self
+
+end ProjectiveResolution
+
+end CategoryTheory
+
+#exit
+/- In order to show `HasProjectiveResolutions C` one will assume `EnoughProjectives C`
+and `Abelian C`. This construction appears in `CategoryTheory.Abelian.Projective`.)
+
+We show that given `P : ProjectiveResolution X` and `Q : ProjectiveResolution Y`,
+any morphism `X ⟶ Y` admits a lift to a chain map `P.complex ⟶ Q.complex`.
+(It is a lift in the sense that
+the projection maps `P.π` and `Q.π` intertwine the lift and the original morphism.)
+
+Moreover, we show that any two such lifts are homotopic.
+
+As a consequence, if every object admits a projective resolution,
+we can construct a functor -/
+`projectiveResolutions C : C ⥤ HomotopyCategory C (ComplexShape.down ℕ)`.
 
 -- to be moved to `CategoryTheory.Abelian.ProjectiveResolution
 
