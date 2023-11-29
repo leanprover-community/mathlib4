@@ -55,12 +55,30 @@ end Coalgebra
 
 open Coalgebra
 
-namespace Finsupp
-
 section CommRing
 
-variable (R : Type u) (S : Type v)
-variable [CommRing R]
+variable (R : Type u) [CommRing R]
+
+namespace CommRing
+
+instance toCoalgebra : Coalgebra R R where
+  Δ := (TensorProduct.mk R R R) 1
+  ε := .id
+  coassoc := rfl
+  ε_id := by ext; simp
+  id_ε := by ext; simp
+
+@[simp]
+theorem Δ_apply (r : R) : Δ r = 1 ⊗ₜ[R] r := rfl
+
+@[simp]
+theorem ε_apply (r : R) : ε r = r := rfl
+
+end CommRing
+
+namespace Finsupp
+
+variable (S : Type v)
 
 /-- The `R`-module whose elements are functions `S → R` which are zero on all but finitely many
 elements of `S` has a coalgebra structure. The coproduct is given by `Δ(fₛ) = fₛ ⊗ fₛ` and the
@@ -88,29 +106,6 @@ theorem Δ_single (s : S) (r : R) : Δ (Finsupp.single s r) =
 theorem ε_single (s : S) (r : R) : ε (Finsupp.single s r) = r := by
   unfold ε; unfold instCoalgebra; simp
 
-end CommRing
-
 end Finsupp
-
-namespace CommRing
-
-section CommRing
-
-variable (R : Type u) [CommRing R]
-
-instance toCoalgebra : Coalgebra R R where
-  Δ := (TensorProduct.mk R R R) 1
-  ε := .id
-  coassoc := rfl
-  ε_id := by ext; simp
-  id_ε := by ext; simp
-
-@[simp]
-theorem Δ_apply (r : R) : Δ r = 1 ⊗ₜ[R] r := rfl
-
-@[simp]
-theorem ε_apply (r : R) : ε r = r := rfl
-
-end CommRing
 
 end CommRing
