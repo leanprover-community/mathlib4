@@ -548,6 +548,9 @@ theorem Base.dep_of_ssubset (hB : M.Base B) (h : B ⊂ X) (hX : X ⊆ M.E := by 
 theorem Base.dep_of_insert (hB : M.Base B) (heB : e ∉ B) (he : e ∈ M.E := by aesop_mat) :
     M.Dep (insert e B) := hB.dep_of_ssubset (ssubset_insert heB) (insert_subset he hB.subset_ground)
 
+theorem Base.mem_of_insert_indep (hB : M.Base B) (heB : M.Indep (insert e B)) : e ∈ B :=
+  by_contra <| fun he ↦ (hB.dep_of_insert he (heB.subset_ground (mem_insert _ _))).not_indep heB
+
 /-- If the difference of two Bases is a singleton, then they differ by an insertion/removal -/
 theorem Base.eq_exchange_of_diff_eq_singleton (hB : M.Base B) (hB' : M.Base B') (h : B \ B' = {e}) :
     ∃ f ∈ B' \ B, B' = (insert f B) \ {e} := by
@@ -736,6 +739,10 @@ theorem Basis'.basis_inter_ground (hIX : M.Basis' I X) : M.Basis I (X ∩ M.E) :
 theorem Basis'.eq_of_subset_indep (hI : M.Basis' I X) (hJ : M.Indep J) (hIJ : I ⊆ J)
     (hJX : J ⊆ X) : I = J :=
   hIJ.antisymm (hI.2 ⟨hJ, hJX⟩ hIJ)
+
+theorem Basis'.insert_not_indep (hI : M.Basis' I X) (he : e ∈ X \ I) : ¬ M.Indep (insert e I) :=
+  fun hi ↦ he.2 <| insert_eq_self.1 <| Eq.symm <|
+    hI.eq_of_subset_indep hi (subset_insert _ _) (insert_subset he.1 hI.subset)
 
 theorem basis_iff_mem_maximals (hX : X ⊆ M.E := by aesop_mat):
     M.Basis I X ↔ I ∈ maximals (· ⊆ ·) {I | M.Indep I ∧ I ⊆ X} := by
