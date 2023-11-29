@@ -260,10 +260,14 @@ instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.HasHomology i :=
   (inferInstance : (K.sc i).unop.HasHomology)
 
+/-- If `K` is a homological complex, then the homology of `K.op` identifies to
+the opposite of the homology of `K`. -/
 def homologyOp (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
     K.op.homology i ≅ op (K.homology i) :=
   (K.sc i).homologyOpIso
 
+/-- If `K` is a homological complex in the opposite category,
+then the homology of `K.unop` identifies to the opposite of the homology of `K`. -/
 def homologyUnop (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
     K.unop.homology i ≅ unop (K.homology i) :=
   (K.unop.homologyOp i).unop
