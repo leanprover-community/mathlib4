@@ -106,7 +106,7 @@ variable [Group α]
 The additive version is `not_isCyclic.Nontrivial'`. -/
 @[to_additive not_isCyclic.Nontrivial' "A non-cyclic additive group is non-trivial.
 The multiplicative version is `not_isCyclic.Nontrivial`."]
-theorem not_isCyclic.Nontrivial (nc : ¬IsCyclic α) : Nontrivial α := by
+theorem Nontrivial.of_not_isCyclic (nc : ¬IsCyclic α) : Nontrivial α := by
   contrapose! nc
   exact @isCyclic_of_subsingleton _ _ (not_nontrivial_iff_subsingleton.mp nc)
 
