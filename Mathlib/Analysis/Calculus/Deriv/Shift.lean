@@ -15,14 +15,14 @@ has derivative `h'` at `x`. Similarly for `x + a`.
 
 /-- Translation in the domain does not change the derivative. -/
 lemma HasDerivAt.comp_const_add {𝕜 : Type*} [NontriviallyNormedField 𝕜] (a x : 𝕜) {𝕜' : Type*}
-    [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {h : 𝕜 → 𝕜'} {h' : 𝕜'}
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜 𝕜'] {h : 𝕜 → 𝕜'} {h' : 𝕜'}
     (hh : HasDerivAt h h' (a + x)) :
     HasDerivAt (fun x ↦ h (a + x)) h' x := by
   simpa [Function.comp_def] using HasDerivAt.scomp (𝕜 := 𝕜) x hh <| hasDerivAt_id' x |>.const_add a
 
 /-- Translation in the domain does not change the derivative. -/
 lemma HasDerivAt.comp_add_const {𝕜 : Type*} [NontriviallyNormedField 𝕜] (x a : 𝕜) {𝕜' : Type*}
-    [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {h : 𝕜 → 𝕜'} {h' : 𝕜'}
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜 𝕜'] {h : 𝕜 → 𝕜'} {h' : 𝕜'}
     (hh : HasDerivAt h h' (x + a)) :
     HasDerivAt (fun x ↦ h (x + a)) h' x := by
   simpa [Function.comp_def] using HasDerivAt.scomp (𝕜 := 𝕜) x hh <| hasDerivAt_id' x |>.add_const a
