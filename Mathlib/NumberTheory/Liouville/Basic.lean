@@ -52,11 +52,11 @@ protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x := by
   replace a1 : |a * q - b * p| * q ^ (b + 1) < b * q
   · rw [div_sub_div _ _ b0 qR0.ne', abs_div, div_lt_div_iff (abs_pos.mpr bq0.ne') (pow_pos qR0 _),
       abs_of_pos bq0, one_mul] at a1
-    exact_mod_cast a1
+    exact mod_cast a1
   -- At a0, clear denominators...
   replace a0 : a * q - ↑b * p ≠ 0;
   · rw [Ne.def, div_eq_div_iff b0 qR0.ne', mul_comm (p : ℝ), ← sub_eq_zero] at a0
-    exact_mod_cast a0
+    exact mod_cast a0
   -- Actually, `q` is a natural number
   lift q to ℕ using (zero_lt_one.trans q1).le
   -- Looks innocuous, but we now have an integer with non-zero absolute value: this is at

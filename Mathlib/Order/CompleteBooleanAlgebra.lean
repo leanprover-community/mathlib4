@@ -139,7 +139,7 @@ instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
     _ = ⨅ b : s, ⨆ x : Bool, cond x a b := by simp_rw [iInf_subtype, iSup_bool_eq, cond]
     _ = _ := iInf_iSup_eq
     _ ≤ _ := iSup_le fun f => by
-      by_cases ∀ i, f i = false
+      by_cases h : ∀ i, f i = false
       case pos => simp [h, iInf_subtype, ← sInf_eq_iInf]
       case neg =>
         have ⟨i, h⟩ : ∃ i, f i = true := by simpa using h
@@ -162,7 +162,7 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
     let lhs := ⨅ a, ⨆ b, g a b
     let rhs := ⨆ h : ∀ a, β a, ⨅ a, g a (h a)
     suffices lhs ≤ rhs from le_antisymm this le_iInf_iSup
-    by_cases ∃ x, rhs < x ∧ x < lhs
+    by_cases h : ∃ x, rhs < x ∧ x < lhs
     case pos =>
       rcases h with ⟨x, hr, hl⟩
       suffices rhs ≥ x from nomatch not_lt.2 this hr
@@ -213,12 +213,14 @@ instance Prod.frame (α β) [Frame α] [Frame β] : Frame (α × β) where
   inf_sSup_le_iSup_inf a s := by
     simp [Prod.le_def, sSup_eq_iSup, fst_iSup, snd_iSup, fst_iInf, snd_iInf, inf_iSup_eq]
 
-theorem iSup₂_inf_eq {f : ∀ i, κ i → α} (a : α) : (⨆ (i) (j), f i j) ⊓ a = ⨆ (i) (j), f i j ⊓ a :=
-  by simp only [iSup_inf_eq]
+theorem iSup₂_inf_eq {f : ∀ i, κ i → α} (a : α) :
+    (⨆ (i) (j), f i j) ⊓ a = ⨆ (i) (j), f i j ⊓ a := by
+  simp only [iSup_inf_eq]
 #align bsupr_inf_eq iSup₂_inf_eq
 
-theorem inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊓ ⨆ (i) (j), f i j) = ⨆ (i) (j), a ⊓ f i j :=
-  by simp only [inf_iSup_eq]
+theorem inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) :
+    (a ⊓ ⨆ (i) (j), f i j) = ⨆ (i) (j), a ⊓ f i j := by
+  simp only [inf_iSup_eq]
 #align inf_bsupr_eq inf_iSup₂_eq
 
 theorem iSup_inf_iSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} :

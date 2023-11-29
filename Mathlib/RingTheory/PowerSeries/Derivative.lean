@@ -56,7 +56,7 @@ theorem derivativeFun_C (r : R) : derivativeFun (C R r) = 0 := by
   rw [coeff_derivativeFun, coeff_succ_C, zero_mul, map_zero]
 
 theorem trunc_derivativeFun (f : R⟦X⟧) (n : ℕ) :
-    trunc n f.derivativeFun = derivative (trunc (n + 1) f):= by
+    trunc n f.derivativeFun = derivative (trunc (n + 1) f) := by
   ext d
   rw [coeff_trunc]
   split_ifs with h
@@ -161,7 +161,7 @@ The following theorem is stated only in the case that `R` is a field. This is be
 there is currently no instance of `Inv R⟦X⟧` for more general base rings `R`.
 -/
 @[simp] theorem derivative_inv' {R} [Field R] (f : R⟦X⟧) : d⁄dX R f⁻¹ = -f⁻¹ ^ 2 * d⁄dX R f := by
-  by_cases constantCoeff R f = 0
+  by_cases h : constantCoeff R f = 0
   · suffices f⁻¹ = 0 by
       rw [this, pow_two, zero_mul, neg_zero, zero_mul, map_zero]
     rwa [MvPowerSeries.inv_eq_zero]

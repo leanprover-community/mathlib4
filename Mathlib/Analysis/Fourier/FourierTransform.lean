@@ -104,9 +104,7 @@ theorem fourierIntegral_comp_add_right [MeasurableAdd V] (e : Multiplicative �
   ext1 w
   dsimp only [fourierIntegral, Function.comp_apply]
   conv in L _ => rw [← add_sub_cancel v v₀]
-  rw [integral_add_right_eq_self fun v : V => e[-L (v - v₀) w] • f v]
-  dsimp only
-  rw [← integral_smul]
+  rw [integral_add_right_eq_self fun v : V => e[-L (v - v₀) w] • f v, ← integral_smul]
   congr 1 with v
   rw [← smul_assoc, smul_eq_mul, ← Submonoid.coe_mul, ← e.map_mul, ← ofAdd_add, ←
     LinearMap.neg_apply, ← sub_eq_add_neg, ← LinearMap.sub_apply, LinearMap.map_sub, neg_sub]

@@ -28,8 +28,6 @@ zeta functions, in terms of Bernoulli polynomials.
   an explicit multiple of `Bₖ(x)`, for any `x ∈ [0, 1]` and `k ≥ 3` odd.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open scoped Nat Real Interval
@@ -169,7 +167,7 @@ def periodizedBernoulli (k : ℕ) : 𝕌 → ℝ :=
 
 theorem periodizedBernoulli.continuous {k : ℕ} (hk : k ≠ 1) : Continuous (periodizedBernoulli k) :=
   AddCircle.liftIco_zero_continuous
-    (by exact_mod_cast (bernoulliFun_endpoints_eq_of_ne_one hk).symm)
+    (mod_cast (bernoulliFun_endpoints_eq_of_ne_one hk).symm)
     (Polynomial.continuous _).continuousOn
 #align periodized_bernoulli.continuous periodizedBernoulli.continuous
 
@@ -187,16 +185,14 @@ theorem summable_bernoulli_fourier {k : ℕ} (hk : 2 ≤ k) :
       ∀ n : ℤ, -(k ! : ℂ) / (2 * π * I * n) ^ k = -k ! / (2 * π * I) ^ k * (1 / (n : ℂ) ^ k) := by
     intro n; rw [mul_one_div, div_div, ← mul_pow]
   simp_rw [this]
-  apply Summable.mul_left
-  rw [← summable_norm_iff]
+  refine Summable.mul_left _ <| .of_norm ?_
   have : (fun x : ℤ => ‖1 / (x : ℂ) ^ k‖) = fun x : ℤ => |1 / (x : ℝ) ^ k| := by
     ext1 x
     rw [norm_eq_abs, ← Complex.abs_ofReal]
     congr 1
     norm_cast
   simp_rw [this]
-  rw [summable_abs_iff]
-  exact Real.summable_one_div_int_pow.mpr (one_lt_two.trans_le hk)
+  rwa [summable_abs_iff, Real.summable_one_div_int_pow]
 #align summable_bernoulli_fourier summable_bernoulli_fourier
 
 theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k) {x : ℝ}
