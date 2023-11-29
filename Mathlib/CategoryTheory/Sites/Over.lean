@@ -214,6 +214,10 @@ abbrev overMapPullbackComp (A : Type u') [Category.{v'} A] {X Y Z : C} (f : X �
       J.overMapPullback A (f ≫ g) :=
   J.overMapPullbackComp' A f g _ rfl
 
+/-- Given a morphism `f : X ⟶ Y` in a category `C` equipped with a Grothendieck topology,
+this the natural isomorphism, for each `F : Sheaf (J.over Y) A`,
+between section `(J.overMapPullback A f).obj F` on `W : Over X`
+and the sections of `F` on `W' : Over Y` when `W' ≅ (Over.map f).obj W`. -/
 def overMapPullbackSectionsIso (A : Type u') [Category.{v'} A] {X Y : C} (f : X ⟶ Y)
     (W : Over X) (W' : Over Y) (e : W' ≅ (Over.map f).obj W) :
     (J.overMapPullback A f) ⋙ (sheafSections (J.over X) A).obj (Opposite.op W) ≅

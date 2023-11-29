@@ -53,6 +53,11 @@ namespace CategoryTheory
 
 open Category Limits
 
+@[simp]
+lemma sheafToPresheaf_preimage_val {C : Type*} [Category C] {J : GrothendieckTopology C}
+    {A : Type*} [Category A] {F G : Sheaf J A} (φ : F.1 ⟶ G.1) :
+    ((sheafToPresheaf J A).preimage φ).val = φ := rfl
+
 namespace GrothendieckTopology
 
 namespace ObjectsCoverTop
@@ -119,6 +124,9 @@ lemma iso_symm ⦃X : C⦄ ⦃i₁ i₂ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X �
   ext1
   rw [Iso.symm_hom, iso_inv]
 
+/-- Given `D : hY.SheafDescentData A`, this is the isomorphism on
+sections of `D.sheaf i₁` and `D.sheaf i₂` on objects which map
+to two objects `Y i₁` and `Y i₂` of the family. -/
 def isoSections ⦃X : C⦄ ⦃i₁ i₂ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂) :
     (D.sheaf i₁).1.obj (Opposite.op (Over.mk f₁)) ≅
       (D.sheaf i₂).1.obj (Opposite.op (Over.mk f₂)) :=
@@ -190,13 +198,33 @@ lemma isoSections_naturality ⦃X Z : C⦄ (h : X ⟶ Z) ⦃i₁ : I⦄ (f₁ : 
   conv_rhs =>
     erw [fac]
   rw [op_comp, (D.sheaf i₂).val.map_comp, ← reassoc_of% H]
-  sorry
+  conv_lhs => rw [← assoc, ← assoc]
+  conv_rhs => rw [← assoc]
+  congr 1
+  · dsimp [overMapPullbackComp', Functor.sheafPushforwardContinuousComp',
+      Functor.sheafPushforwardContinuousComp, Functor.sheafPushforwardContinuousIso]
+    simp only [assoc]
+    erw [comp_id]
+    simp only [← Functor.map_comp, ← op_comp]
+    congr 2
+    ext
+    dsimp [Over.mapComp']
+    simp
+  · congr 1
+    dsimp [overMapPullbackComp', Functor.sheafPushforwardContinuousComp',
+      Functor.sheafPushforwardContinuousComp, Functor.sheafPushforwardContinuousIso]
+    simp only [id_comp, ← Functor.map_comp, ← op_comp]
+    congr 2
+    ext
+    dsimp [Over.mapComp']
+    simp
 
 lemma isoSections_naturality' ⦃X Z : C⦄ (h : X ⟶ Z) ⦃i₁ : I⦄ (f₁ : X ⟶ Y i₁)
     (g₁ : Z ⟶ Y i₁) (fac₁ : h ≫ g₁ = f₁) ⦃i₂ : I⦄ (f₂ : X ⟶ Y i₂) (g₂ : Z ⟶ Y i₂)
     (fac₂ : h ≫ g₂ = f₂) :
       (D.sheaf i₁).val.map (Quiver.Hom.op (by exact Over.homMk h)) = (D.isoSections g₁ g₂).hom ≫
-        (D.sheaf i₂).val.map (Quiver.Hom.op (by exact Over.homMk h)) ≫(D.isoSections f₁ f₂).inv := by
+        (D.sheaf i₂).val.map (Quiver.Hom.op (by exact Over.homMk h)) ≫
+          (D.isoSections f₁ f₂).inv := by
   rw [← D.isoSections_naturality_assoc h f₁ g₁ fac₁ f₂ g₂ fac₂, Iso.hom_inv_id, comp_id]
 
 /-- The type of morphisms between families of sheaves equipped with a descent data. -/
@@ -341,6 +369,7 @@ abbrev overSomeTopology : GrothendieckTopology hY.OverSome :=
 /- TODO: a presheaf on `hY.OverSome` is a sheaf iff the restriction to `Over (Y i)`
 is for all `i`. -/
 
+/-- The inclusion functor of `Over (Y i)` in `hY.OverSome`. -/
 @[simps]
 def toOverSome (i : I) : Over (Y i) ⥤ hY.OverSome where
   obj X :=
@@ -349,6 +378,8 @@ def toOverSome (i : I) : Over (Y i) ⥤ hY.OverSome where
       f := X.hom }
   map f := f.left
 
+/-- The canonical isomorphism
+`hY.toOverSome i ⋙ hY.overSomeForget ≅ Over.forget (Y i)`. -/
 @[simps!]
 def toOverSomeForget (i : I) :
     hY.toOverSome i ⋙ hY.overSomeForget ≅ Over.forget (Y i) :=
@@ -388,12 +419,16 @@ instance (i : I) : (hY.toOverSome i).IsContinuous (J.over (Y i)) hY.overSomeTopo
   Functor.isContinuous_of_coverPreserving (hY.toOverSome_compatiblePreserving i)
     (hY.toOverSome_coverPreserving i)
 
+/-- The restriction functor from sheaves on `hY.OverSome` to
+the sheaves on `Over (Y i)`. -/
 abbrev overSomeRestriction (i : I) :
     Sheaf hY.overSomeTopology A ⥤ Sheaf (J.over (Y i)) A :=
   (hY.toOverSome i).sheafPushforwardContinuous _ _ _
 
 variable {A hY}
 
+/-- Equivalence between sieves of objects in `hY.OverSome` and the
+induced objects in  -/
 def overSomeSieveEquiv (X : hY.OverSome) :
     Sieve X ≃ Sieve X.X where
   toFun S := Sieve.functorPushforward hY.overSomeForget S
@@ -425,6 +460,7 @@ lemma overSomeSieveEquiv_symm_apply_mem_iff (X : hY.OverSome) (S : Sieve X.X) :
   obtain ⟨S, rfl⟩ := (overSomeSieveEquiv X).surjective S
   rw [overSomeSieveEquiv_apply_mem_iff, Equiv.symm_apply_apply]
 
+/-- The diagram category of a presieve. -/
 abbrev _root_.CategoryTheory.Presieve.diagramCategory {C : Type*} [Category C] {X : C}
     (S : Presieve X) := FullSubcategory fun f : Over X => S f.hom
 
@@ -432,6 +468,9 @@ section
 
 variable (X : hY.OverSome) (S : Sieve X.X)
 
+/-- Given `X : hY.OverSome` and a sieve of `X.X`,
+this is the functor (which is an equivalence) between the diagram categories of
+related sieves of `Over.mk X.f : Over (Y X.i)` and `X`. -/
 @[simps]
 def OverSome.diagramFunctor :
     ((Sieve.overEquiv (Over.mk X.f)).symm S).arrows.diagramCategory ⥤
@@ -476,12 +515,16 @@ instance : EssSurj (OverSome.diagramFunctor X S) where
 noncomputable instance : IsEquivalence (OverSome.diagramFunctor X S) :=
   Equivalence.ofFullyFaithfullyEssSurj _
 
+/-- Given `X : hY.OverSome` and a sieve of `X.X`,
+this is the equivalence between the diagram categories of
+related sieves of `Over.mk X.f : Over (Y X.i)` and `X`. -/
 @[simps! functor]
 noncomputable def OverSome.diagramFunctorEquivalence :=
   (OverSome.diagramFunctor X S).asEquivalence
 
 end
 
+/-- Auxiliary definition for `OverSome.isSheaf_iff`. -/
 def OverSome.diagramIso (P : hY.OverSomeᵒᵖ ⥤ A) (X : hY.OverSome) (S : Sieve X.X) :
     ((((Sieve.overEquiv (Over.mk X.f)).symm S).arrows.diagram).op ⋙
         (hY.toOverSome X.i).op ⋙ P) ≅
@@ -496,6 +539,7 @@ def OverSome.diagramIso (P : hY.OverSomeᵒᵖ ⥤ A) (X : hY.OverSome) (S : Sie
       simp
       rfl)
 
+/-- Auxiliary definition for `OverSome.isSheaf_iff`. -/
 noncomputable def OverSome.coneIso (P : hY.OverSomeᵒᵖ ⥤ A) (X : hY.OverSome) (S : Sieve X.X) :
   ((toOverSome hY X.i).op ⋙ P).mapCone (((Sieve.overEquiv (Over.mk X.f)).symm S).arrows.cocone.op) ≅
   (Cones.postcompose (diagramIso P X S).inv).obj
@@ -507,6 +551,7 @@ noncomputable def OverSome.coneIso (P : hY.OverSomeᵒᵖ ⥤ A) (X : hY.OverSom
     rw [id_comp, ← P.map_comp, ← op_comp]
     erw [id_comp])
 
+/-- Auxiliary definition for `OverSome.isSheaf_iff`. -/
 noncomputable def OverSome.isLimitCone (P : hY.OverSomeᵒᵖ ⥤ A) (X : hY.OverSome) (S : Sieve X.X)
     (h : IsLimit (((hY.toOverSome X.i).op ⋙ P).mapCone
       ((Presieve.cocone ((Sieve.overEquiv (Over.mk X.f)).symm S).arrows).op))) :
@@ -536,9 +581,11 @@ variable (F : hY.SheafDescentData A)
 
 namespace ToPresheafOverSome
 
+/-- Auxiliary definition for `toPresheafOverSome`. -/
 def obj (W : hY.OverSome) : A :=
   (F.sheaf W.i).1.obj (Opposite.op (Over.mk W.f))
 
+/-- Auxiliary definition for `toPresheafOverSome`. -/
 def map {W₁ W₂ : hY.OverSome} (φ : W₁ ⟶ W₂) : obj F W₂ ⟶ obj F W₁ :=
   (F.sheaf W₂.i).1.map (Quiver.Hom.op (by exact Over.homMk (hY.overSomeForget.map φ))) ≫
     (F.isoSections ((hY.overSomeForget.map φ) ≫ W₂.f) W₁.f).hom
@@ -557,6 +604,7 @@ lemma map_eq {W₁ W₂ : hY.OverSome} (φ : W₁ ⟶ W₂) {i : I} (f₁ : W₁
 end ToPresheafOverSome
 
 open ToPresheafOverSome in
+/-- The presheaf on `hY.OverSome` induced by `F : hY.SheafDescentData A`. -/
 def toPresheafOverSome (F : hY.SheafDescentData A) : hY.OverSomeᵒᵖ ⥤ A where
   obj W := obj F W.unop
   map φ := map F φ.unop
@@ -577,6 +625,8 @@ def toPresheafOverSome (F : hY.SheafDescentData A) : hY.OverSomeᵒᵖ ⥤ A whe
     rw [← Functor.map_comp_assoc ]
     rfl
 
+/-- Given `F : hY.SheafDescentData A`, this is the canonical isomorphism
+from the restriction of `F.toPresheafOverSome` to `Y i` and `(F.sheaf i).1`. -/
 def toOverSomeOpToPresheafSheafOverSome (F : hY.SheafDescentData A) (i : I) :
     (hY.toOverSome i).op ⋙ F.toPresheafOverSome ≅ (F.sheaf i).1 :=
   NatIso.ofComponents (fun W => Iso.refl _) (by
@@ -589,6 +639,7 @@ def toOverSomeOpToPresheafSheafOverSome (F : hY.SheafDescentData A) (i : I) :
     simp only [isoSections_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
     rfl)
 
+/-- The sheaf on `hY.OverSome` induced by `F : hY.SheafDescentData A`. -/
 @[simps]
 def toSheafOverSome (F : hY.SheafDescentData A) : Sheaf hY.overSomeTopology A where
   val := F.toPresheafOverSome
@@ -598,10 +649,11 @@ def toSheafOverSome (F : hY.SheafDescentData A) : Sheaf hY.overSomeTopology A wh
     rw [Presheaf.isSheaf_of_iso_iff (toOverSomeOpToPresheafSheafOverSome F i)]
     apply Sheaf.cond
 
+/-- Given `F : hY.SheafDescentData A`, this is the canonical isomorphism
+from the restriction of `F.toSheafOverSome` to `Y i` and `F.sheaf i`. -/
 def overSomeRestrictionToSheafOverSome (F : hY.SheafDescentData A) (i : I) :
     (hY.overSomeRestriction A i).obj F.toSheafOverSome ≅ F.sheaf i :=
   (sheafToPresheaf _ _).preimageIso (toOverSomeOpToPresheafSheafOverSome F i)
-
 
 /- TODO: show that `toSheafOverSome` extends to a functor
 `hY.SheafDescentData A ⥤ Sheaf hY.overSomeTopology A` which is an equivalence of categories,
