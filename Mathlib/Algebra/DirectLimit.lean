@@ -183,7 +183,7 @@ lemma lift_injective [IsDirected ι (· ≤ ·)]
   rw [lift_of] at hz
   rw [injective _ g hz, _root_.map_zero]
 
-section interaction_with_other_directLimits
+section functorial
 
 variable {G' : ι → Type v'} [∀ i, AddCommGroup (G' i)] [∀ i, Module R (G' i)]
 variable {f' : ∀ i j, i ≤ j → G' i →ₗ[R] G' j}
@@ -259,7 +259,7 @@ lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)]
     rw [toLinearMap_symm_comp_eq, ← comp_assoc, he i, comp_assoc, comp_coe, symm_trans_self,
       refl_toLinearMap, comp_id]) _
 
-end interaction_with_other_directLimits
+end functorial
 
 section Totalize
 
@@ -456,7 +456,7 @@ lemma lift_injective [IsDirected ι (· ≤ ·)]
   rw [lift_of] at hz
   rw [injective _ g hz, _root_.map_zero]
 
-section interaction_with_other_directLimits
+section functorial
 
 variable {G' : ι → Type v'} [∀ i, AddCommGroup (G' i)]
 variable {f' : ∀ i j, i ≤ j → G' i →+ G' j}
@@ -537,7 +537,7 @@ lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)]
     (of _ _ i ((e i).symm g) : DirectLimit G f) := by
   simp only [congr, AddMonoidHom.toAddEquiv_symm_apply, map_apply_of, AddMonoidHom.coe_coe]
 
-end interaction_with_other_directLimits
+end functorial
 
 end DirectLimit
 
@@ -882,7 +882,7 @@ lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
   rw [lift_of] at hz
   rw [injective _ g hz, _root_.map_zero]
 
-section interaction_with_other_directLimits
+section functorial
 
 variable {f : ∀ i j, i ≤ j → G i →+* G j}
 variable {G' : ι → Type v'} [∀ i, CommRing (G' i)]
@@ -962,7 +962,7 @@ lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)]
     (of _ _ i ((e i).symm g) : DirectLimit G fun _ _ h ↦ f _ _ h) := by
   simp only [congr, RingEquiv.ofHomInv_symm_apply, map_apply_of, RingHom.coe_coe]
 
-end interaction_with_other_directLimits
+end functorial
 
 end DirectLimit
 
