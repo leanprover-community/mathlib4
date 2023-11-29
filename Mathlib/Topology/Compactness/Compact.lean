@@ -38,24 +38,24 @@ section Compact
 /-- A set `s` is compact if for every nontrivial filter `f` that contains `s`,
     there exists `a ∈ s` such that every set of `f` meets every neighborhood of `a`. -/
 def IsCompact (s : Set X) :=
-  ∀ ⦃f⦄ [NeBot f], f ≤ 𝓟 s → ∃ a ∈ s, ClusterPt a f
+  ∀ ⦃f⦄ [NeBot f], f ≤ 𝓟 s → ∃ x ∈ s, ClusterPt x f
 #align is_compact IsCompact
 
 /-- The complement to a compact set belongs to a filter `f` if it belongs to each filter
-`𝓝 a ⊓ f`, `a ∈ s`. -/
-theorem IsCompact.compl_mem_sets (hs : IsCompact s) {f : Filter X} (hf : ∀ a ∈ s, sᶜ ∈ 𝓝 a ⊓ f) :
+`𝓝 x ⊓ f`, `x ∈ s`. -/
+theorem IsCompact.compl_mem_sets (hs : IsCompact s) {f : Filter X} (hf : ∀ x ∈ s, sᶜ ∈ 𝓝 x ⊓ f) :
     sᶜ ∈ f := by
   contrapose! hf
   simp only [not_mem_iff_inf_principal_compl, compl_compl, inf_assoc] at hf ⊢
   exact @hs _ hf inf_le_right
 #align is_compact.compl_mem_sets IsCompact.compl_mem_sets
 
-/-- The complement to a compact set belongs to a filter `f` if each `a ∈ s` has a neighborhood `t`
+/-- The complement to a compact set belongs to a filter `f` if each `x ∈ s` has a neighborhood `t`
 within `s` such that `tᶜ` belongs to `f`. -/
 theorem IsCompact.compl_mem_sets_of_nhdsWithin (hs : IsCompact s) {f : Filter X}
-    (hf : ∀ a ∈ s, ∃ t ∈ 𝓝[s] a, tᶜ ∈ f) : sᶜ ∈ f := by
-  refine' hs.compl_mem_sets fun a ha => _
-  rcases hf a ha with ⟨t, ht, hst⟩
+    (hf : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, tᶜ ∈ f) : sᶜ ∈ f := by
+  refine' hs.compl_mem_sets fun x hx => _
+  rcases hf x hx with ⟨t, ht, hst⟩
   replace ht := mem_inf_principal.1 ht
   apply mem_inf_of_inter ht hst
   rintro x ⟨h₁, h₂⟩ hs
@@ -80,11 +80,11 @@ theorem IsCompact.induction_on (hs : IsCompact s) {p : Set X → Prop} (he : p �
 /-- The intersection of a compact set and a closed set is a compact set. -/
 theorem IsCompact.inter_right (hs : IsCompact s) (ht : IsClosed t) : IsCompact (s ∩ t) := by
   intro f hnf hstf
-  obtain ⟨a, hsa, ha⟩ : ∃ a ∈ s, ClusterPt a f :=
+  obtain ⟨x, hsx, hx⟩ : ∃ x ∈ s, ClusterPt x f :=
     hs (le_trans hstf (le_principal_iff.2 (inter_subset_left _ _)))
-  have : a ∈ t := ht.mem_of_nhdsWithin_neBot <|
-    ha.mono <| le_trans hstf (le_principal_iff.2 (inter_subset_right _ _))
-  exact ⟨a, ⟨hsa, this⟩, ha⟩
+  have : x ∈ t := ht.mem_of_nhdsWithin_neBot <|
+    hx.mono <| le_trans hstf (le_principal_iff.2 (inter_subset_right _ _))
+  exact ⟨x, ⟨hsx, this⟩, hx⟩
 #align is_compact.inter_right IsCompact.inter_right
 
 /-- The intersection of a closed set and a compact set is a compact set. -/
@@ -108,11 +108,11 @@ theorem IsCompact.image_of_continuousOn {f : X → Y} (hs : IsCompact s) (hf : C
   intro l lne ls
   have : NeBot (l.comap f ⊓ 𝓟 s) :=
     comap_inf_principal_neBot_of_image_mem lne (le_principal_iff.1 ls)
-  obtain ⟨a, has, ha⟩ : ∃ a ∈ s, ClusterPt a (l.comap f ⊓ 𝓟 s) := @hs _ this inf_le_right
-  haveI := ha.neBot
-  use f a, mem_image_of_mem f has
-  have : Tendsto f (𝓝 a ⊓ (comap f l ⊓ 𝓟 s)) (𝓝 (f a) ⊓ l) := by
-    convert (hf a has).inf (@tendsto_comap _ _ f l) using 1
+  obtain ⟨x, hxs, hx⟩ : ∃ x ∈ s, ClusterPt x (l.comap f ⊓ 𝓟 s) := @hs _ this inf_le_right
+  haveI := hx.neBot
+  use f x, mem_image_of_mem f hxs
+  have : Tendsto f (𝓝 x ⊓ (comap f l ⊓ 𝓟 s)) (𝓝 (f x) ⊓ l) := by
+    convert (hf x hxs).inf (@tendsto_comap _ _ f l) using 1
     rw [nhdsWithin]
     ac_rfl
   exact this.neBot
@@ -123,21 +123,21 @@ theorem IsCompact.image {f : X → Y} (hs : IsCompact s) (hf : Continuous f) : I
 #align is_compact.image IsCompact.image
 
 theorem IsCompact.adherence_nhdset {f : Filter X} (hs : IsCompact s) (hf₂ : f ≤ 𝓟 s)
-    (ht₁ : IsOpen t) (ht₂ : ∀ a ∈ s, ClusterPt a f → a ∈ t) : t ∈ f :=
+    (ht₁ : IsOpen t) (ht₂ : ∀ x ∈ s, ClusterPt x f → x ∈ t) : t ∈ f :=
   Classical.by_cases mem_of_eq_bot fun (this : f ⊓ 𝓟 tᶜ ≠ ⊥) =>
-    let ⟨a, ha, (hfa : ClusterPt a <| f ⊓ 𝓟 tᶜ)⟩ := @hs _ ⟨this⟩ <| inf_le_of_left_le hf₂
-    have : a ∈ t := ht₂ a ha hfa.of_inf_left
-    have : tᶜ ∩ t ∈ 𝓝[tᶜ] a := inter_mem_nhdsWithin _ (IsOpen.mem_nhds ht₁ this)
-    have A : 𝓝[tᶜ] a = ⊥ := empty_mem_iff_bot.1 <| compl_inter_self t ▸ this
-    have : 𝓝[tᶜ] a ≠ ⊥ := hfa.of_inf_right.ne
+    let ⟨x, hx, (hfx : ClusterPt x <| f ⊓ 𝓟 tᶜ)⟩ := @hs _ ⟨this⟩ <| inf_le_of_left_le hf₂
+    have : x ∈ t := ht₂ x hx hfx.of_inf_left
+    have : tᶜ ∩ t ∈ 𝓝[tᶜ] x := inter_mem_nhdsWithin _ (IsOpen.mem_nhds ht₁ this)
+    have A : 𝓝[tᶜ] x = ⊥ := empty_mem_iff_bot.1 <| compl_inter_self t ▸ this
+    have : 𝓝[tᶜ] x ≠ ⊥ := hfx.of_inf_right.ne
     absurd A this
 #align is_compact.adherence_nhdset IsCompact.adherence_nhdset
 
 theorem isCompact_iff_ultrafilter_le_nhds :
-    IsCompact s ↔ ∀ f : Ultrafilter X, ↑f ≤ 𝓟 s → ∃ a ∈ s, ↑f ≤ 𝓝 a := by
+    IsCompact s ↔ ∀ f : Ultrafilter X, ↑f ≤ 𝓟 s → ∃ x ∈ s, ↑f ≤ 𝓝 x := by
   refine' (forall_neBot_le_iff _).trans _
-  · rintro f g hle ⟨a, has, haf⟩
-    exact ⟨a, has, haf.mono hle⟩
+  · rintro f g hle ⟨x, hxs, hxf⟩
+    exact ⟨x, hxs, hxf.mono hle⟩
   · simp only [Ultrafilter.clusterPt_iff]
 #align is_compact_iff_ultrafilter_le_nhds isCompact_iff_ultrafilter_le_nhds
 
@@ -145,7 +145,7 @@ alias ⟨IsCompact.ultrafilter_le_nhds, _⟩ := isCompact_iff_ultrafilter_le_nhd
 #align is_compact.ultrafilter_le_nhds IsCompact.ultrafilter_le_nhds
 
 theorem isCompact_iff_ultrafilter_le_nhds' :
-    IsCompact s ↔ ∀ f : Ultrafilter X, s ∈ f → ∃ a ∈ s, ↑f ≤ 𝓝 a := by
+    IsCompact s ↔ ∀ f : Ultrafilter X, s ∈ f → ∃ x ∈ s, ↑f ≤ 𝓝 x := by
   simp only [isCompact_iff_ultrafilter_le_nhds, le_principal_iff, Ultrafilter.mem_coe]
 
 alias ⟨IsCompact.ultrafilter_le_nhds', _⟩ := isCompact_iff_ultrafilter_le_nhds'
@@ -412,9 +412,9 @@ theorem isCompact_empty : IsCompact (∅ : Set X) := fun _f hnf hsf =>
 #align is_compact_empty isCompact_empty
 
 @[simp]
-theorem isCompact_singleton {a : X} : IsCompact ({a} : Set X) := fun f hf hfa =>
-  ⟨a, rfl, ClusterPt.of_le_nhds'
-    (hfa.trans <| by simpa only [principal_singleton] using pure_le_nhds a) hf⟩
+theorem isCompact_singleton {x : X} : IsCompact ({x} : Set X) := fun f hf hfa =>
+  ⟨x, rfl, ClusterPt.of_le_nhds'
+    (hfa.trans <| by simpa only [principal_singleton] using pure_le_nhds x) hf⟩
 #align is_compact_singleton isCompact_singleton
 
 theorem Set.Subsingleton.isCompact (hs : s.Subsingleton) : IsCompact s :=
@@ -586,15 +586,15 @@ theorem Tendsto.isCompact_insert_range_of_cocompact {f : X → Y} {b}
   exact ⟨y, Or.inr <| image_subset_range _ _ hy, hyl⟩
 #align filter.tendsto.is_compact_insert_range_of_cocompact Filter.Tendsto.isCompact_insert_range_of_cocompact
 
-theorem Tendsto.isCompact_insert_range_of_cofinite {f : ι → X} {a} (hf : Tendsto f cofinite (𝓝 a)) :
-    IsCompact (insert a (range f)) := by
+theorem Tendsto.isCompact_insert_range_of_cofinite {f : ι → X} {x} (hf : Tendsto f cofinite (𝓝 x)) :
+    IsCompact (insert x (range f)) := by
   letI : TopologicalSpace ι := ⊥; haveI h : DiscreteTopology ι := ⟨rfl⟩
   rw [← cocompact_eq_cofinite ι] at hf
   exact hf.isCompact_insert_range_of_cocompact continuous_of_discreteTopology
 #align filter.tendsto.is_compact_insert_range_of_cofinite Filter.Tendsto.isCompact_insert_range_of_cofinite
 
-theorem Tendsto.isCompact_insert_range {f : ℕ → X} {a} (hf : Tendsto f atTop (𝓝 a)) :
-    IsCompact (insert a (range f)) :=
+theorem Tendsto.isCompact_insert_range {f : ℕ → X} {x} (hf : Tendsto f atTop (𝓝 x)) :
+    IsCompact (insert x (range f)) :=
   Filter.Tendsto.isCompact_insert_range_of_cofinite <| Nat.cofinite_eq_atTop.symm ▸ hf
 #align filter.tendsto.is_compact_insert_range Filter.Tendsto.isCompact_insert_range
 
@@ -918,7 +918,7 @@ theorem ClosedEmbedding.tendsto_cocompact {f : X → Y} (hf : ClosedEmbedding f)
 #align closed_embedding.tendsto_cocompact ClosedEmbedding.tendsto_cocompact
 
 /-- Sets of subtype are compact iff the image under a coercion is. -/
-theorem Subtype.isCompact_iff {p : X → Prop} {s : Set { a // p a }} :
+theorem Subtype.isCompact_iff {p : X → Prop} {s : Set { x // p x }} :
     IsCompact s ↔ IsCompact ((↑) '' s : Set X) :=
   embedding_subtype_val.isCompact_iff
 #align is_compact_iff_is_compact_in_subtype Subtype.isCompact_iff
@@ -956,13 +956,13 @@ theorem IsCompact.prod {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :
     IsCompact (s ×ˢ t) := by
   rw [isCompact_iff_ultrafilter_le_nhds'] at hs ht ⊢
   intro f hfs
-  obtain ⟨a : X, sa : a ∈ s, ha : map Prod.fst f.1 ≤ 𝓝 a⟩ :=
+  obtain ⟨x : X, sx : x ∈ s, hx : map Prod.fst f.1 ≤ 𝓝 x⟩ :=
     hs (f.map Prod.fst) (mem_map.2 <| mem_of_superset hfs fun x => And.left)
   obtain ⟨b : Y, tb : b ∈ t, hb : map Prod.snd f.1 ≤ 𝓝 b⟩ :=
     ht (f.map Prod.snd) (mem_map.2 <| mem_of_superset hfs fun x => And.right)
-  rw [map_le_iff_le_comap] at ha hb
-  refine' ⟨⟨a, b⟩, ⟨sa, tb⟩, _⟩
-  rw [nhds_prod_eq]; exact le_inf ha hb
+  rw [map_le_iff_le_comap] at hx hb
+  refine' ⟨⟨x, b⟩, ⟨sx, tb⟩, _⟩
+  rw [nhds_prod_eq]; exact le_inf hx hb
 #align is_compact.prod IsCompact.prod
 
 /-- Finite topological spaces are compact. -/
@@ -1024,11 +1024,11 @@ theorem isCompact_pi_infinite {s : ∀ i, Set (X i)} :
   simp only [isCompact_iff_ultrafilter_le_nhds, nhds_pi, Filter.pi, exists_prop, mem_setOf_eq,
     le_iInf_iff, le_principal_iff]
   intro h f hfs
-  have : ∀ i : ι, ∃ a, a ∈ s i ∧ Tendsto (Function.eval i) f (𝓝 a) := by
+  have : ∀ i : ι, ∃ x, x ∈ s i ∧ Tendsto (Function.eval i) f (𝓝 x) := by
     refine fun i => h i (f.map _) (mem_map.2 ?_)
     exact mem_of_superset hfs fun x hx => hx i
-  choose a ha using this
-  exact ⟨a, fun i => (ha i).left, fun i => (ha i).right.le_comap⟩
+  choose x hx using this
+  exact ⟨x, fun i => (hx i).left, fun i => (hx i).right.le_comap⟩
 #align is_compact_pi_infinite isCompact_pi_infinite
 
 /-- **Tychonoff's theorem** formulated using `Set.pi`: product of compact sets is compact. -/
@@ -1082,8 +1082,8 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace X] {S : Set
         haveI : Nonempty { U // U ∈ c } := ⟨⟨U₀, hU₀⟩⟩
         obtain ⟨U₀compl, -, -⟩ := hc hU₀
         use ⋃₀ c
-        refine' ⟨⟨_, _, _⟩, fun U hU a ha => ⟨U, hU, ha⟩⟩
-        · exact fun a ha => ⟨U₀, hU₀, U₀compl ha⟩
+        refine' ⟨⟨_, _, _⟩, fun U hU x hx => ⟨U, hU, hx⟩⟩
+        · exact fun x hx => ⟨U₀, hU₀, U₀compl hx⟩
         · exact isOpen_sUnion fun _ h => (hc h).2.1
         · convert_to (⋂ U : { U // U ∈ c }, U.1ᶜ).Nonempty
           · ext
