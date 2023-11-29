@@ -261,4 +261,63 @@ lemma LocalDiffeomorph.mfderiv_toContinuousLinearEquiv_coe (hf : IsLocalDiffeomo
     sorry -- TODO: why doesn't `rfl` work?
   exact this ▸ r
 
+/-! # Differential under composition with a local diffeomorphism -/
+variable
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  (M' : Type*) [TopologicalSpace M'] [ChartedSpace H' M']
+  (I' : ModelWithCorners 𝕜 E' H') [SmoothManifoldWithCorners I' M'] [SmoothManifoldWithCorners I M]
+  [SmoothManifoldWithCorners J N]
+
+variable {f : M → M'} {g : M' → N} (hf : IsLocalDiffeomorphAt I I' n f x)
+  (hg : ContMDiffAt I' J 1 g (f x))
+
+/-- If `f` is a local diffeomorphism at `x` and `g` is differentiable at `f x`,
+  d(g∘f)_x is surjective iff dg_(f x) is. -/
+lemma sdfsdf : Surjective (mfderiv I' J g (f x)) ↔ Surjective (mfderiv I J (g ∘ f) x) := by
+  set dg := mfderiv I' J g (f x)
+  set df := mfderiv I I' f x
+  let dfiso := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv hf hn
+  have aux : dfiso.toFun = df := sorry
+  --LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe hf hn; except for a universe error...
+
+  have hf' : HasMFDerivAt I I' f x df := sorry -- standard
+  have hg' : HasMFDerivAt I' J g (f x) dg := sorry -- standard
+  have : HasMFDerivAt I J (g ∘ f) x (dg.comp df) := hg'.comp hf' (M := M) (I := I) (x := x)
+  -- simp_rw [← this] at r -- doesn't match... ?!
+  -- try again: typeclass inference is stuck now...
+  --have : HasMFDerivAt I J (g ∘ f) x (dg.comp dfiso) := sorry -- rw [aux] at this, or so
+  have : mfderiv I J (g ∘ f) x = dg.comp df := sorry -- standard, from `this`
+  rw [this]
+
+  let r := Surjective.of_comp_iff dg dfiso.bijective.surjective
+  rw [← r]
+  -- remains to rewrite by aux
+  sorry
+
+
+/-- If `f` is a local diffeomorphism at `x` and `g` is differentiable at `f x`,
+  d(g∘f)_x is injective iff dg_(f x) is. -/
+lemma sdfsdf2 : Injective (mfderiv I' J g (f x)) ↔ Injective (mfderiv I J (g ∘ f) x) := by
+  -- xxx: how to reduce repetition here?
+  set dg := mfderiv I' J g (f x)
+  set df := mfderiv I I' f x
+  let dfiso := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv hf hn
+  -- coe result, see above
+  have hf' : HasMFDerivAt I I' f x df := sorry -- standard
+  have hg' : HasMFDerivAt I' J g (f x) dg := sorry -- standard
+  have : HasMFDerivAt I J (g ∘ f) x (dg.comp df) := hg'.comp hf' (M := M) (I := I) (x := x)
+  have : mfderiv I J (g ∘ f) x = dg.comp df := sorry -- standard, from `this`
+  rw [this]
+
+  rw [← Injective.of_comp_iff' dg dfiso.bijective]
+  -- remains to argue (using coe result) this is true
+  sorry
+
+/-- If `M` is finite-dimensional, then rk (dg\cdot f)_x = rk (dg_f(x)). -/
+lemma todostate3 [FiniteDimensional 𝕜 E] : 0 = 1 := sorry
+
+-- will need a similar lemma about rank of linear isos... surely exists
+
+-- similar results for composition in the other direction
+
 end Differential
