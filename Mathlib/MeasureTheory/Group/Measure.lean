@@ -431,6 +431,10 @@ theorem measurePreserving_inv (μ : Measure G) [IsInvInvariant μ] : MeasurePres
 #align measure_theory.measure.measure_preserving_inv MeasureTheory.Measure.measurePreserving_inv
 #align measure_theory.measure.measure_preserving_neg MeasureTheory.Measure.measurePreserving_neg
 
+@[to_additive]
+instance inv.instSFinite (μ : Measure G) [SFinite μ] : SFinite μ.inv := by
+  rw [Measure.inv]; infer_instance
+
 end Inv
 
 section InvolutiveInv
@@ -467,10 +471,6 @@ instance inv.instSigmaFinite (μ : Measure G) [SigmaFinite μ] : SigmaFinite μ.
   (MeasurableEquiv.inv G).sigmaFinite_map ‹_›
 #align measure_theory.measure.inv.measure_theory.sigma_finite MeasureTheory.Measure.inv.instSigmaFinite
 #align measure_theory.measure.neg.measure_theory.sigma_finite MeasureTheory.Measure.neg.instSigmaFinite
-
-@[to_additive]
-instance inv.instSFinite (μ : Measure G) [SFinite μ] : SFinite μ.inv := by
-  rw [Measure.inv]; infer_instance
 
 end InvolutiveInv
 

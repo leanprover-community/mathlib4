@@ -1407,8 +1407,7 @@ theorem le_sum_apply (f : ι → Measure α) (s : Set α) : ∑' i, f i s ≤ su
 #align measure_theory.measure.le_sum_apply MeasureTheory.Measure.le_sum_apply
 
 @[simp]
-theorem sum_apply (f : ι → Measure α) {s : Set α} (hs : MeasurableSet s) :
-    sum f s = ∑' i, f i s :=
+theorem sum_apply (f : ι → Measure α) {s : Set α} (hs : MeasurableSet s) : sum f s = ∑' i, f i s :=
   toMeasure_apply _ _ hs
 #align measure_theory.measure.sum_apply MeasureTheory.Measure.sum_apply
 

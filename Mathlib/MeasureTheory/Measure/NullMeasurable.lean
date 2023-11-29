@@ -516,5 +516,3 @@ end Measure
 end IsComplete
 
 end MeasureTheory
-
-open MeasureTheory
