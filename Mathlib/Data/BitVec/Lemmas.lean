@@ -148,6 +148,9 @@ variable (x y : BitVec w)
 @[simp] lemma toFin_sub : toFin (x - y)   = toFin x - toFin y   := rfl
 @[simp] lemma toFin_mul : toFin (x * y)   = toFin x * toFin y   := rfl
 
+@[simp] lemma toFin_zero    : @toFin w 0 = 0 := rfl
+@[simp] lemma toFin_one     : @toFin w 1 = 1 := rfl
+
 end
 
 /-!
