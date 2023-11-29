@@ -97,9 +97,9 @@ theorem isTotallyDisconnected_of_isClopen_set {X : Type*} [TopologicalSpace X]
   unfold Set.Subsingleton
   by_contra' h_contra
   rcases h_contra with ⟨x, hx, y, hy, hxy⟩
-  obtain ⟨U, h_clopen, hxU, hyU⟩ := hX hxy
+  obtain ⟨U, hU, hxU, hyU⟩ := hX hxy
   specialize
-    hS U Uᶜ h_clopen.1 h_clopen.compl.1 (fun a _ => em (a ∈ U)) ⟨x, hx, hxU⟩ ⟨y, hy, hyU⟩
+    hS U Uᶜ hU.1 hU.compl.1 (fun a _ => em (a ∈ U)) ⟨x, hx, hxU⟩ ⟨y, hy, hyU⟩
   rw [inter_compl_self, Set.inter_empty] at hS
   exact Set.not_nonempty_empty hS
 #align is_totally_disconnected_of_clopen_set isTotallyDisconnected_of_isClopen_set
