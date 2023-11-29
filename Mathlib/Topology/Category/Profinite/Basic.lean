@@ -241,7 +241,7 @@ end DiscreteTopology
 end Profinite
 
 /--
-Many definitions involving universe inequalities in Mathlib are expressed through use of `max u v`. 
+Many definitions involving universe inequalities in Mathlib are expressed through use of `max u v`.
 Unfortunately, this leads to unbound universes which cannot be solved for during unification, eg
 `max u v =?= max v ?`.
 The current solution is to wrap `Type max u v` in `TypeMax.{u,v}`
