@@ -29,8 +29,7 @@ https://ncatlab.org/nlab/show/too+simple+to+be+simple#relationship_to_biased_def
 
 open Set Classical
 
-variable {X : Type*} {Y : Type*} {ι : Type*}
-  [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
+variable {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 section Preirreducible
 
