@@ -26,11 +26,10 @@ lemma Prime.divisors_mul (n : ℕ) {p : ℕ} (hp : p.Prime) :
   aesop
 
 lemma divisors_mul {m n : ℕ} : divisors (m * n) = divisors m * divisors n := by
-  apply induction_on_primes (by simp) ?_ ?_ m
+  apply induction_on_primes (by simp) ?_ (fun p a hp han => ?_) m
   · rw [divisors_one, one_mul]
     exact (one_mul (M := Finset ℕ) _).symm
-  · intros p a hp han
-    rw [hp.divisors_mul, mul_assoc p, hp.divisors_mul, mul_assoc, han]
+  · simp only [mul_assoc, hp.divisors_mul, han]
 
 lemma Prime.divisors_sq {p : ℕ} (hp : p.Prime) : (p ^ 2).divisors = {1, p, p ^ 2} := by
   ext
