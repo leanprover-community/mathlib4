@@ -308,15 +308,15 @@ theorem IsPreirreducible.subset_irreducible {S U : Set X} (ht : IsPreirreducible
   replace ht : IsIrreducible t := ⟨⟨z, h₂ (h₁ hz)⟩, ht⟩
   refine' ⟨⟨z, h₁ hz⟩, _⟩
   rintro u v hu hv ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
-  obtain ⟨a, -, ha'⟩ : Set.Nonempty (t ∩ ⋂₀ ↑({U, u, v} : Finset (Set X)))
+  obtain ⟨x, -, hx'⟩ : Set.Nonempty (t ∩ ⋂₀ ↑({U, u, v} : Finset (Set X)))
   · refine isIrreducible_iff_sInter.mp ht {U, u, v} ?_ ?_
     · simp [*]
     · intro U H
       simp only [Finset.mem_insert, Finset.mem_singleton] at H
       rcases H with (rfl | rfl | rfl)
       exacts [⟨z, h₂ (h₁ hz), hz⟩, ⟨x, h₂ hx, hx'⟩, ⟨y, h₂ hy, hy'⟩]
-  replace ha' : a ∈ U ∧ a ∈ u ∧ a ∈ v := by simpa using ha'
-  exact ⟨a, h₁ ha'.1, ha'.2⟩
+  replace hx' : x ∈ U ∧ x ∈ u ∧ x ∈ v := by simpa using hx'
+  exact ⟨x, h₁ hx'.1, hx'.2⟩
 #align is_preirreducible.subset_irreducible IsPreirreducible.subset_irreducible
 
 theorem IsPreirreducible.open_subset {U : Set X} (ht : IsPreirreducible t) (hU : IsOpen U)
