@@ -1407,7 +1407,8 @@ theorem le_sum_apply (f : ι → Measure α) (s : Set α) : ∑' i, f i s ≤ su
 #align measure_theory.measure.le_sum_apply MeasureTheory.Measure.le_sum_apply
 
 @[simp]
-theorem sum_apply (f : ι → Measure α) {s : Set α} (hs : MeasurableSet s) : sum f s = ∑' i, f i s :=
+theorem sum_apply (f : ι → Measure α) {s : Set α} (hs : MeasurableSet s) :
+    sum f s = ∑' i, f i s :=
   toMeasure_apply _ _ hs
 #align measure_theory.measure.sum_apply MeasureTheory.Measure.sum_apply
 
@@ -1419,6 +1420,23 @@ theorem sum_apply₀ (f : ι → Measure α) {s : Set α} (hs : NullMeasurableSe
   sum f s = sum f t := measure_congr ht.symm
   _ = ∑' i, f i t := sum_apply _ t_meas
   _ ≤ ∑' i, f i s := ENNReal.tsum_le_tsum (fun i ↦ measure_mono ts)
+
+/-! For the next theorem, the countability assumption is necessary. For a counterexample, consider
+an uncountable space, with a distinguished point `x₀`, and the sigma-algebra made of countable sets
+not containing `x₀`, and their complements. All points but `x₀` are measurable.
+Consider the sum of the Dirac masses at points different from `x₀`, and `s = x₀`. For any Dirac mass
+`δ_x`, we have `δ_x (x₀) = 0`, so `∑' x, δ_x (x₀) = 0`. On the other hand, the measure `sum δ_x`
+gives mass one to each point different from `x₀`, so it gives infinite mass to any measurable set
+containing `x₀` (as such a set is uncountable), and by outer regularity one get `sum δ_x {x₀} = ∞`.
+-/
+theorem sum_apply_of_countable [Countable ι] (f : ι → Measure α) (s : Set α) :
+    sum f s = ∑' i, f i s := by
+  apply le_antisymm ?_ (le_sum_apply _ _)
+  rcases exists_measurable_superset_forall_eq f s with ⟨t, hst, htm, ht⟩
+  calc
+  sum f s ≤ sum f t := measure_mono hst
+  _ = ∑' i, f i t := sum_apply _ htm
+  _ = ∑' i, f i s := by simp [ht]
 
 theorem le_sum (μ : ι → Measure α) (i : ι) : μ i ≤ sum μ := fun s hs => by
   simpa only [sum_apply μ hs] using ENNReal.le_tsum i
@@ -1440,6 +1458,11 @@ theorem sum_apply_eq_zero [Countable ι] {μ : ι → Measure α} {s : Set α} :
 theorem sum_apply_eq_zero' {μ : ι → Measure α} {s : Set α} (hs : MeasurableSet s) :
     sum μ s = 0 ↔ ∀ i, μ i s = 0 := by simp [hs]
 #align measure_theory.measure.sum_apply_eq_zero' MeasureTheory.Measure.sum_apply_eq_zero'
+
+theorem sum_sum {ι' : Type*} (μ : ι → ι' → Measure α) :
+    (sum fun n => sum (μ n)) = sum (fun (p : ι × ι') ↦ μ p.1 p.2) := by
+  ext1 s hs
+  simp [sum_apply _ hs, ENNReal.tsum_prod']
 
 theorem sum_comm {ι' : Type*} (μ : ι → ι' → Measure α) :
     (sum fun n => sum (μ n)) = sum fun m => sum fun n => μ n m := by
@@ -1502,7 +1525,7 @@ theorem sum_congr {μ ν : ℕ → Measure α} (h : ∀ n, μ n = ν n) : sum μ
   congr_arg sum (funext h)
 #align measure_theory.measure.sum_congr MeasureTheory.Measure.sum_congr
 
-theorem sum_add_sum (μ ν : ℕ → Measure α) : sum μ + sum ν = sum fun n => μ n + ν n := by
+theorem sum_add_sum {ι : Type*} (μ ν : ι → Measure α) : sum μ + sum ν = sum fun n => μ n + ν n := by
   ext1 s hs
   simp only [add_apply, sum_apply _ hs, Pi.add_apply, coe_add,
     tsum_add ENNReal.summable ENNReal.summable]

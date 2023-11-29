@@ -545,20 +545,27 @@ noncomputable def FiniteSpanningSetsIn.prod {ν : Measure β} {C : Set (Set α)}
   · simp_rw [iUnion_unpair_prod, hμ.spanning, hν.spanning, univ_prod_univ]
 #align measure_theory.measure.finite_spanning_sets_in.prod MeasureTheory.Measure.FiniteSpanningSetsIn.prod
 
-lemma prod_sum {ι ι' : Type*} [Countable ι'] (m : ι → Measure α) (m' : ι' → Measure β)
-    [∀ n, IsFiniteMeasure (m' n)] :
-    (Measure.sum m).prod (Measure.sum m') =
-      Measure.sum (fun (p : ι × ι') ↦ (m p.1).prod (m' p.2)) := by
+lemma prod_sum_left {ι : Type*} (m : ι → Measure α) (μ : Measure β) [SFinite μ] :
+    (Measure.sum m).prod μ = Measure.sum (fun i ↦ (m i).prod μ) := by
   ext s hs
-  have : SFinite (Measure.sum m') := sfinite_sum_of_countable _
   simp only [prod_apply hs, lintegral_sum_measure, hs, sum_apply, ENNReal.tsum_prod']
-  congr 1 with i
+#align measure_theory.measure.sum_prod MeasureTheory.Measure.prod_sum_left
+
+lemma prod_sum_right {ι' : Type*} [Countable ι'] (m : Measure α) (m' : ι' → Measure β)
+    [∀ n, SFinite (m' n)] :
+    m.prod (Measure.sum m') = Measure.sum (fun p ↦ m.prod (m' p)) := by
+  ext s hs
+  simp only [prod_apply hs, lintegral_sum_measure, hs, sum_apply, ENNReal.tsum_prod']
   have M : ∀ x, MeasurableSet (Prod.mk x ⁻¹' s) := fun x => measurable_prod_mk_left hs
   simp_rw [Measure.sum_apply _ (M _)]
-  rw [lintegral_tsum]
-  intro i
-  apply Measurable.aemeasurable
-  exact measurable_measure_prod_mk_left hs
+  rw [lintegral_tsum (fun i ↦ (measurable_measure_prod_mk_left hs).aemeasurable)]
+#align measure_theory.measure.prod_sum MeasureTheory.Measure.prod_sum_right
+
+lemma prod_sum {ι ι' : Type*} [Countable ι'] (m : ι → Measure α) (m' : ι' → Measure β)
+    [∀ n, SFinite (m' n)] :
+    (Measure.sum m).prod (Measure.sum m') =
+      Measure.sum (fun (p : ι × ι') ↦ (m p.1).prod (m' p.2)) := by
+  simp_rw [prod_sum_left, prod_sum_right, sum_sum]
 
 instance prod.instSigmaFinite {α β : Type*} {_ : MeasurableSpace α} {μ : Measure α}
     [SigmaFinite μ] {_ : MeasurableSpace β} {ν : Measure β} [SigmaFinite ν] :
@@ -574,7 +581,7 @@ instance prod.instSFinite {α β : Type*} {_ : MeasurableSpace α} {μ : Measure
     conv_lhs => rw [← sum_sFiniteSeq μ, ← sum_sFiniteSeq ν]
     apply prod_sum
   rw [this]
-  exact sfinite_sum_of_countable _
+  infer_instance
 
 instance {α β} [MeasureSpace α] [SigmaFinite (volume : Measure α)]
     [MeasureSpace β] [SigmaFinite (volume : Measure β)] : SigmaFinite (volume : Measure (α × β)) :=
@@ -618,16 +625,9 @@ theorem prod_eq {μ : Measure α} [SigmaFinite μ] {ν : Measure β} [SigmaFinit
 
 variable [SFinite μ]
 
-lemma map_sum {ι : Type*} {m : ι → Measure α} {f : α → β} (hf : AEMeasurable f (Measure.sum m)) :
-    Measure.map f (Measure.sum m) = Measure.sum (fun i ↦ Measure.map f (m i)) := by
-  ext s hs
-  rw [map_apply_of_aemeasurable hf hs, sum_apply₀ _ (hf.nullMeasurable hs), sum_apply _ hs]
-  have M i : AEMeasurable f (m i) := hf.mono_measure (le_sum m i)
-  simp_rw [map_apply_of_aemeasurable (M _) hs]
-
 theorem prod_swap : map Prod.swap (μ.prod ν) = ν.prod μ := by
   have : sum (fun (i : ℕ × ℕ) ↦ map Prod.swap ((sFiniteSeq μ i.1).prod (sFiniteSeq ν i.2)))
-      = sum (fun (i : ℕ × ℕ) ↦ map Prod.swap ((sFiniteSeq μ i.2).prod (sFiniteSeq ν i.1))) := by
+       = sum (fun (i : ℕ × ℕ) ↦ map Prod.swap ((sFiniteSeq μ i.2).prod (sFiniteSeq ν i.1))) := by
     ext s hs
     rw [sum_apply _ hs, sum_apply _ hs]
     exact ((Equiv.prodComm ℕ ℕ).tsum_eq _).symm
@@ -689,9 +689,21 @@ lemma nullMeasurableSet_prod {s : Set α} {t : Set β} :
 
 theorem prodAssoc_prod [SFinite τ] :
     map MeasurableEquiv.prodAssoc ((μ.prod ν).prod τ) = μ.prod (ν.prod τ) := by
+  have : sum (fun (p : ℕ × ℕ × ℕ) ↦
+        (sFiniteSeq μ p.1).prod ((sFiniteSeq ν p.2.1).prod (sFiniteSeq τ p.2.2)))
+      = sum (fun (p : (ℕ × ℕ) × ℕ) ↦
+        (sFiniteSeq μ p.1.1).prod ((sFiniteSeq ν p.1.2).prod (sFiniteSeq τ p.2))) := by
+    ext s hs
+    rw [sum_apply _ hs, sum_apply _ hs, ← (Equiv.prodAssoc _ _ _).tsum_eq]
+    rfl
+  rw [← sum_sFiniteSeq μ, ← sum_sFiniteSeq ν, ← sum_sFiniteSeq τ, prod_sum, prod_sum,
+    map_sum MeasurableEquiv.prodAssoc.measurable.aemeasurable, prod_sum, prod_sum, this]
+  congr
+  ext1 i
   refine' (prod_eq_generateFrom generateFrom_measurableSet generateFrom_prod
-    isPiSystem_measurableSet isPiSystem_prod μ.toFiniteSpanningSetsIn
-    (ν.toFiniteSpanningSetsIn.prod τ.toFiniteSpanningSetsIn) _).symm
+    isPiSystem_measurableSet isPiSystem_prod ((sFiniteSeq μ i.1.1)).toFiniteSpanningSetsIn
+    ((sFiniteSeq ν i.1.2).toFiniteSpanningSetsIn.prod (sFiniteSeq τ i.2).toFiniteSpanningSetsIn)
+      _).symm
   rintro s hs _ ⟨t, u, ht, hu, rfl⟩; rw [mem_setOf_eq] at hs ht hu
   simp_rw [map_apply (MeasurableEquiv.measurable _) (hs.prod (ht.prod hu)),
     MeasurableEquiv.prodAssoc, MeasurableEquiv.coe_mk, Equiv.prod_assoc_preimage, prod_prod,
@@ -702,6 +714,10 @@ theorem prodAssoc_prod [SFinite τ] :
 
 theorem prod_restrict (s : Set α) (t : Set β) :
     (μ.restrict s).prod (ν.restrict t) = (μ.prod ν).restrict (s ×ˢ t) := by
+  rw [← sum_sFiniteSeq μ, ← sum_sFiniteSeq ν, restrict_sum_of_countable, restrict_sum_of_countable,
+    prod_sum, prod_sum, restrict_sum_of_countable]
+  congr 1
+  ext1 i
   refine' prod_eq fun s' t' hs' ht' => _
   rw [restrict_apply (hs'.prod ht'), prod_inter_prod, prod_prod, restrict_apply hs',
     restrict_apply ht']
@@ -714,39 +730,41 @@ theorem restrict_prod_eq_prod_univ (s : Set α) :
 #align measure_theory.measure.restrict_prod_eq_prod_univ MeasureTheory.Measure.restrict_prod_eq_prod_univ
 
 theorem prod_dirac (y : β) : μ.prod (dirac y) = map (fun x => (x, y)) μ := by
+  rw [← sum_sFiniteSeq μ, prod_sum_left, map_sum measurable_prod_mk_right.aemeasurable]
+  congr
+  ext1 i
   refine' prod_eq fun s t hs ht => _
   simp_rw [map_apply measurable_prod_mk_right (hs.prod ht), mk_preimage_prod_left_eq_if, measure_if,
-    dirac_apply' _ ht, ← indicator_mul_right _ fun _ => μ s, Pi.one_apply, mul_one]
+    dirac_apply' _ ht, ← indicator_mul_right _ fun _ => sFiniteSeq μ i s, Pi.one_apply, mul_one]
 #align measure_theory.measure.prod_dirac MeasureTheory.Measure.prod_dirac
 
 theorem dirac_prod (x : α) : (dirac x).prod ν = map (Prod.mk x) ν := by
+  rw [← sum_sFiniteSeq ν, prod_sum_right, map_sum measurable_prod_mk_left.aemeasurable]
+  congr
+  ext1 i
   refine' prod_eq fun s t hs ht => _
   simp_rw [map_apply measurable_prod_mk_left (hs.prod ht), mk_preimage_prod_right_eq_if, measure_if,
-    dirac_apply' _ hs, ← indicator_mul_left _ _ fun _ => ν t, Pi.one_apply, one_mul]
+    dirac_apply' _ hs, ← indicator_mul_left _ _ fun _ => sFiniteSeq ν i t, Pi.one_apply, one_mul]
 #align measure_theory.measure.dirac_prod MeasureTheory.Measure.dirac_prod
 
 theorem dirac_prod_dirac {x : α} {y : β} : (dirac x).prod (dirac y) = dirac (x, y) := by
   rw [prod_dirac, map_dirac measurable_prod_mk_right]
 #align measure_theory.measure.dirac_prod_dirac MeasureTheory.Measure.dirac_prod_dirac
 
-theorem prod_sum {ι : Type*} [Finite ι] (ν : ι → Measure β) [∀ i, SFinite (ν i)] :
-    μ.prod (sum ν) = sum fun i => μ.prod (ν i) := by
-  refine' prod_eq fun s t hs ht => _
-  simp_rw [sum_apply _ (hs.prod ht), sum_apply _ ht, prod_prod, ENNReal.tsum_mul_left]
-#align measure_theory.measure.prod_sum MeasureTheory.Measure.prod_sum
-
-theorem sum_prod {ι : Type*} [Finite ι] (μ : ι → Measure α) [∀ i, SFinite (μ i)] :
-    (sum μ).prod ν = sum fun i => (μ i).prod ν := by
-  refine' prod_eq fun s t hs ht => _
-  simp_rw [sum_apply _ (hs.prod ht), sum_apply _ hs, prod_prod, ENNReal.tsum_mul_right]
-#align measure_theory.measure.sum_prod MeasureTheory.Measure.sum_prod
-
 theorem prod_add (ν' : Measure β) [SFinite ν'] : μ.prod (ν + ν') = μ.prod ν + μ.prod ν' := by
+  simp_rw [← sum_sFiniteSeq ν, ← sum_sFiniteSeq ν', sum_add_sum, ← sum_sFiniteSeq μ, prod_sum,
+    sum_add_sum]
+  congr
+  ext1 i
   refine' prod_eq fun s t _ _ => _
   simp_rw [add_apply, prod_prod, left_distrib]
 #align measure_theory.measure.prod_add MeasureTheory.Measure.prod_add
 
 theorem add_prod (μ' : Measure α) [SFinite μ'] : (μ + μ').prod ν = μ.prod ν + μ'.prod ν := by
+  simp_rw [← sum_sFiniteSeq μ, ← sum_sFiniteSeq μ', sum_add_sum, ← sum_sFiniteSeq ν, prod_sum,
+    sum_add_sum]
+  congr
+  ext1 i
   refine' prod_eq fun s t _ _ => _
   simp_rw [add_apply, prod_prod, right_distrib]
 #align measure_theory.measure.add_prod MeasureTheory.Measure.add_prod
@@ -761,11 +779,13 @@ theorem zero_prod (ν : Measure β) : (0 : Measure α).prod ν = 0 := by
 theorem prod_zero (μ : Measure α) : μ.prod (0 : Measure β) = 0 := by simp [Measure.prod]
 #align measure_theory.measure.prod_zero MeasureTheory.Measure.prod_zero
 
-theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} {μa : Measure α}
-    {μc : Measure γ} (hfa : SFinite (map f μa)) (hgc : SFinite (map g μc))
-    (hf : Measurable f) (hg : Measurable g) :
+theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (μa : Measure α)
+    (μc : Measure γ) [SFinite μa] [SFinite μc] (hf : Measurable f) (hg : Measurable g) :
     (map f μa).prod (map g μc) = map (Prod.map f g) (μa.prod μc) := by
-  haveI := hgc.of_map μc hg.aemeasurable
+  simp_rw [← sum_sFiniteSeq μa, ← sum_sFiniteSeq μc, map_sum hf.aemeasurable,
+    map_sum hg.aemeasurable, prod_sum, map_sum (hf.prod_map hg).aemeasurable]
+  congr
+  ext1 i
   refine' prod_eq fun s t hs ht => _
   rw [map_apply (hf.prod_map hg) (hs.prod ht), map_apply hf hs, map_apply hg ht]
   exact prod_prod (f ⁻¹' s) (g ⁻¹' t)
@@ -780,38 +800,34 @@ namespace MeasurePreserving
 variable {δ : Type*} [MeasurableSpace δ] {μa : Measure α} {μb : Measure β} {μc : Measure γ}
   {μd : Measure δ}
 
-theorem skew_product [SFinite μb] [SFinite μd] {f : α → β} (hf : MeasurePreserving f μa μb)
+theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePreserving f μa μb)
     {g : α → γ → δ} (hgm : Measurable (uncurry g)) (hg : ∀ᵐ x ∂μa, map (g x) μc = μd) :
     MeasurePreserving (fun p : α × γ => (f p.1, g p.1 p.2)) (μa.prod μc) (μb.prod μd) := by
   classical
-    have : Measurable fun p : α × γ => (f p.1, g p.1 p.2) := (hf.1.comp measurable_fst).prod_mk hgm
-    /- if `μa = 0`, then the lemma is trivial, otherwise we can use `hg`
-      to deduce `SigmaFinite μc`. -/
-    rcases eq_or_ne μa 0 with (rfl | ha)
-    · rw [← hf.map_eq, zero_prod, Measure.map_zero, zero_prod]
-      exact ⟨this, by simp only [Measure.map_zero]⟩
-    have sf : SFinite μc := by
-      rcases (ae_neBot.2 ha).nonempty_of_mem hg with ⟨x, hx : map (g x) μc = μd⟩
-      exact SFinite.of_map _ hgm.of_uncurry_left.aemeasurable (by rwa [hx])
-    -- Thus we can apply `Measure.prod_eq` to prove equality of measures.
-    refine' ⟨this, (prod_eq fun s t hs ht => _).symm⟩
-    rw [map_apply this (hs.prod ht)]
-    refine' (prod_apply (this <| hs.prod ht)).trans _
-    have : ∀ᵐ x ∂μa,
-        μc ((fun y => (f x, g x y)) ⁻¹' s ×ˢ t) = indicator (f ⁻¹' s) (fun _ => μd t) x := by
-      refine' hg.mono fun x hx => _
-      subst hx
-      simp only [mk_preimage_prod_right_fn_eq_if, indicator_apply, mem_preimage]
-      split_ifs
-      exacts [(map_apply hgm.of_uncurry_left ht).symm, measure_empty]
-    simp only [preimage_preimage]
-    rw [lintegral_congr_ae this, lintegral_indicator _ (hf.1 hs), set_lintegral_const,
-      hf.measure_preimage hs, mul_comm]
+  have : Measurable fun p : α × γ => (f p.1, g p.1 p.2) := (hf.1.comp measurable_fst).prod_mk hgm
+  /- if `μa = 0`, then the lemma is trivial, otherwise we can use `hg`
+    to deduce `SFinite μd`. -/
+  rcases eq_or_ne μa 0 with (rfl | ha)
+  · rw [← hf.map_eq, zero_prod, Measure.map_zero, zero_prod]
+    exact ⟨this, by simp only [Measure.map_zero]⟩
+  have sf : SFinite μd := by
+    rcases (ae_neBot.2 ha).nonempty_of_mem hg with ⟨x, hx : map (g x) μc = μd⟩
+    rw [← hx]
+    infer_instance
+  -- Thus we can use the integral formula for the product measure, and compute things explicitly
+  refine ⟨this, ?_⟩
+  ext s hs
+  rw [map_apply this hs, prod_apply (this hs), prod_apply hs,
+    ← hf.lintegral_comp (measurable_measure_prod_mk_left hs)]
+  apply lintegral_congr_ae
+  filter_upwards [hg] with a ha
+  rw [← ha, map_apply hgm.of_uncurry_left (measurable_prod_mk_left hs)]
+  rfl
 #align measure_theory.measure_preserving.skew_product MeasureTheory.MeasurePreserving.skew_product
 
 /-- If `f : α → β` sends the measure `μa` to `μb` and `g : γ → δ` sends the measure `μc` to `μd`,
 then `Prod.map f g` sends `μa.prod μc` to `μb.prod μd`. -/
-protected theorem prod [SFinite μb] [SFinite μd] {f : α → β} {g : γ → δ}
+protected theorem prod [SFinite μa] [SFinite μc] {f : α → β} {g : γ → δ}
     (hf : MeasurePreserving f μa μb) (hg : MeasurePreserving g μc μd) :
     MeasurePreserving (Prod.map f g) (μa.prod μc) (μb.prod μd) :=
   have : Measurable (uncurry fun _ : α => g) := hg.1.comp measurable_snd

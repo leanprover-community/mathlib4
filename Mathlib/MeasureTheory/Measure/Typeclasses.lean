@@ -518,6 +518,13 @@ lemma sfinite_sum_of_countable {ι : Type*} [Countable ι]
   · simp [-mem_range, hn]
     infer_instance
 
+instance {ι : Type*} [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] :
+    SFinite (Measure.sum m) := by
+  change SFinite (Measure.sum (fun i ↦ m i))
+  simp_rw [← sum_sFiniteSeq (m _), Measure.sum_sum]
+  apply sfinite_sum_of_countable
+
+
 end SFinite
 
 /-- A measure `μ` is called σ-finite if there is a countable collection of sets
