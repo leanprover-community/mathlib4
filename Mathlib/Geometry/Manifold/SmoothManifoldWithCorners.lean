@@ -880,6 +880,7 @@ theorem compatible_of_mem_maximalAtlas {e e' : LocalHomeomorph M H} (he : e ∈ 
   StructureGroupoid.compatible_of_mem_maximalAtlas he he'
 #align smooth_manifold_with_corners.compatible_of_mem_maximal_atlas SmoothManifoldWithCorners.compatible_of_mem_maximalAtlas
 
+variable (M) in
 /-- The product of two smooth manifolds with corners is naturally a smooth manifold with corners. -/
 instance prod : SmoothManifoldWithCorners (I.prod I') (M × M') where
   compatible := by
