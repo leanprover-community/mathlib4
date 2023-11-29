@@ -479,32 +479,49 @@ theorem op_norm_pi {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'}
 
 section
 
+@[simp]
+theorem norm_ofSubsingleton [Subsingleton ι] (i : ι) (f : G →L[𝕜] G') :
+    ‖ofSubsingleton 𝕜 G G' i f‖ = ‖f‖ := by
+  letI : Unique ι := uniqueOfSubsingleton i
+  simp only [norm_def, ContinuousLinearMap.norm_def, (Equiv.funUnique _ _).symm.surjective.forall,
+    Fintype.prod_subsingleton _ i]; rfl
+
+@[simp]
+theorem nnnorm_ofSubsingleton [Subsingleton ι] (i : ι) (f : G →L[𝕜] G') :
+    ‖ofSubsingleton 𝕜 G G' i f‖₊ = ‖f‖₊ :=
+  NNReal.eq <| norm_ofSubsingleton i f
+
 variable (𝕜 G)
 
-theorem norm_ofSubsingleton_le [Subsingleton ι] (i' : ι) : ‖ofSubsingleton 𝕜 G i'‖ ≤ 1 :=
-  op_norm_le_bound _ zero_le_one fun m => by
-    rw [Fintype.prod_subsingleton _ i', one_mul, ofSubsingleton_apply]
-#align continuous_multilinear_map.norm_of_subsingleton_le ContinuousMultilinearMap.norm_ofSubsingleton_le
+/-- Linear isometry between continuous linear maps from `G` to `G'`
+and continuous `1`-multilinear maps from `G` to `G'`. -/
+@[simps apply symm_apply]
+def ofSubsingletonₗᵢ [Subsingleton ι] (i : ι) :
+    (G →L[𝕜] G') ≃ₗᵢ[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ G) G' :=
+  { ofSubsingleton 𝕜 G G' i with
+    map_add' := fun _ _ ↦ rfl
+    map_smul' := fun _ _ ↦ rfl
+    norm_map' := norm_ofSubsingleton i }
 
-@[simp]
-theorem norm_ofSubsingleton [Subsingleton ι] [Nontrivial G] (i' : ι) :
-    ‖ofSubsingleton 𝕜 G i'‖ = 1 := by
-  apply le_antisymm (norm_ofSubsingleton_le 𝕜 G i')
-  obtain ⟨g, hg⟩ := exists_ne (0 : G)
-  rw [← norm_ne_zero_iff] at hg
-  have := (ofSubsingleton 𝕜 G i').ratio_le_op_norm fun _ => g
-  rwa [Fintype.prod_subsingleton _ i', ofSubsingleton_apply, div_self hg] at this
-#align continuous_multilinear_map.norm_of_subsingleton ContinuousMultilinearMap.norm_ofSubsingleton
+theorem norm_ofSubsingleton_id_le [Subsingleton ι] (i : ι) :
+    ‖ofSubsingleton 𝕜 G G i (.id _ _)‖ ≤ 1 := by
+  rw [norm_ofSubsingleton]
+  apply ContinuousLinearMap.norm_id_le
+#align continuous_multilinear_map.norm_of_subsingleton_le ContinuousMultilinearMap.norm_ofSubsingleton_id_le
 
-theorem nnnorm_ofSubsingleton_le [Subsingleton ι] (i' : ι) : ‖ofSubsingleton 𝕜 G i'‖₊ ≤ 1 :=
-  norm_ofSubsingleton_le _ _ _
-#align continuous_multilinear_map.nnnorm_of_subsingleton_le ContinuousMultilinearMap.nnnorm_ofSubsingleton_le
+theorem norm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
+    ‖ofSubsingleton 𝕜 G G i (.id _ _)‖ = 1 := by simp
+#align continuous_multilinear_map.norm_of_subsingleton ContinuousMultilinearMap.norm_ofSubsingleton_id
 
-@[simp]
-theorem nnnorm_ofSubsingleton [Subsingleton ι] [Nontrivial G] (i' : ι) :
-    ‖ofSubsingleton 𝕜 G i'‖₊ = 1 :=
-  NNReal.eq <| norm_ofSubsingleton _ _ _
-#align continuous_multilinear_map.nnnorm_of_subsingleton ContinuousMultilinearMap.nnnorm_ofSubsingleton
+theorem nnnorm_ofSubsingleton_id_le [Subsingleton ι] (i : ι) :
+    ‖ofSubsingleton 𝕜 G G i (.id _ _)‖₊ ≤ 1 :=
+  norm_ofSubsingleton_id_le _ _ _
+#align continuous_multilinear_map.nnnorm_of_subsingleton_le ContinuousMultilinearMap.nnnorm_ofSubsingleton_id_le
+
+theorem nnnorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
+    ‖ofSubsingleton 𝕜 G G i (.id _ _)‖₊ = 1 :=
+  NNReal.eq <| norm_ofSubsingleton_id _ _ _
+#align continuous_multilinear_map.nnnorm_of_subsingleton ContinuousMultilinearMap.nnnorm_ofSubsingleton_id
 
 variable {G} (E)
 
@@ -1191,6 +1208,7 @@ theorem norm_compContinuousLinearMapL_le (f : ∀ i, E i →L[𝕜] E₁ i) :
 
 variable (𝕜 E E₁)
 
+open Function in
 /-- If `f` is a collection of continuous linear maps, then the construction
 `ContinuousMultilinearMap.compContinuousLinearMap`
 sending a continuous multilinear map `g` to `g (f₁ ·, ..., fₙ ·)`
@@ -1201,14 +1219,15 @@ noncomputable def compContinuousLinearMapMultilinear :
   toFun := compContinuousLinearMapL
   map_add' f i f₁ f₂ := by
     ext g x
-    dsimp
+    change (g fun j ↦ update f i (f₁ + f₂) j <| x j) =
+        (g fun j ↦ update f i f₁ j <| x j) + g fun j ↦ update f i f₂ j (x j)
     convert g.map_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
-      exact Function.apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
+      exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
   map_smul' f i a f₀ := by
     ext g x
-    dsimp
+    change (g fun j ↦ update f i (a • f₀) j <| x j) = a • g fun j ↦ update f i f₀ j (x j)
     convert g.map_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
-      exact Function.apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
+      exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
 
 /-- If `f` is a collection of continuous linear maps, then the construction
 `ContinuousMultilinearMap.compContinuousLinearMap`
@@ -1216,13 +1235,13 @@ sending a continuous multilinear map `g` to `g (f₁ ·, ..., fₙ ·)` is conti
 continuous-multilinear in `f₁, ..., fₙ`. -/
 noncomputable def compContinuousLinearMapContinuousMultilinear :
     ContinuousMultilinearMap 𝕜 (fun i ↦ E i →L[𝕜] E₁ i)
-      ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) := by
-  refine @MultilinearMap.mkContinuous 𝕜 ι (fun i ↦ E i →L[𝕜] E₁ i)
+      ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) :=
+  @MultilinearMap.mkContinuous 𝕜 ι (fun i ↦ E i →L[𝕜] E₁ i)
     ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) _ _
     (fun _ ↦ ContinuousLinearMap.toNormedAddCommGroup)
     (fun _ ↦ ContinuousLinearMap.toNormedSpace) _ _
-    (compContinuousLinearMapMultilinear 𝕜 E E₁ G) 1 fun f ↦ ?_
-  simpa using norm_compContinuousLinearMapL_le G f
+    (compContinuousLinearMapMultilinear 𝕜 E E₁ G) 1
+    fun f ↦ by simpa using norm_compContinuousLinearMapL_le G f
 
 variable {𝕜 E E₁}
 
