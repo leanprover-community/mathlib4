@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.LinearIndependent
 
 Let `L/K` be a finite extension of fields. Then this file proves Noether's generalization of
 Hilbert's Theorem 90: that the 1st group cohomology $H^1(Aut_K(L), Lˣ)$ is trivial. We state it
-both in terms of $H^1$ and otherwise.
+both in terms of $H^1$ and in terms of cocycles being coboundaries.
 
 Hilbert's original statement was that if $L/K$ is Galois, and $Gal(L/K)$ is cyclic, generated
 by an element `σ`, then for every `x : L` such that $N_{L/K}(x) = 1,$ there exists `y : L` such
@@ -22,7 +22,7 @@ analyzing the cohomology of finite cyclic groups in general.
 
 Noether's generalization also holds for infinite Galois extensions.
 
-## Main definitions
+## Main statements
 
 * `hilbert90`: for all $f: Aut_K(L) \to L^\times$ satisfying the 1-cocycle condition, there exists
 `β : Lˣ` such that $f(g)g(β) = β$ for all `g : Aut_K(L)`.

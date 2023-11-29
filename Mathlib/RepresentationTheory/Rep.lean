@@ -290,19 +290,20 @@ set_option linter.uppercaseLean3 false in
 
 section
 
-variable (M A : Type) [Monoid M] [AddCommGroup A] [DistribMulAction M A]
+variable (k G A : Type) [CommRing k] [Monoid G] [AddCommGroup A]
+  [Module k A] [DistribMulAction G A] [SMulCommClass G k A]
 
-/-- Turns an `AddCommGroup` `A` with a `DistribMulAction` of a monoid `M` into a
-`ℤ`-linear `M`-representation on `A`. -/
-def ofDistribMulAction : Rep ℤ M := Rep.of (Representation.ofDistribMulAction M A)
+/-- Turns a `k`-module `A` with a compatible `DistribMulAction` of a monoid `G` into a
+`k`-linear `G`-representation on `A`. -/
+def ofDistribMulAction : Rep k G := Rep.of (Representation.ofDistribMulAction k G A)
 
-@[simp] theorem ofDistribMulAction_ρ_apply_apply (g : M) (a : A) :
-    (ofDistribMulAction M A).ρ g a = g • a := rfl
+@[simp] theorem ofDistribMulAction_ρ_apply_apply (g : G) (a : A) :
+    (ofDistribMulAction k G A).ρ g a = g • a := rfl
 
 /-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
 `S ≃ₐ[R] S` on `S`. -/
 @[simp] def ofAlgebraAut (R S : Type) [CommRing R] [CommRing S] [Algebra R S] :
-    Rep ℤ (S ≃ₐ[R] S) := ofDistribMulAction (S ≃ₐ[R] S) S
+    Rep ℤ (S ≃ₐ[R] S) := ofDistribMulAction ℤ (S ≃ₐ[R] S) S
 
 end
 section

@@ -293,17 +293,22 @@ theorem ofMulAction_single (g : G) (x : H) (r : k) :
 end MulAction
 section DistribMulAction
 
-variable (M A : Type*) [Monoid M] [AddCommGroup A] [DistribMulAction M A]
+variable (k G A : Type*) [CommSemiring k] [Monoid G] [AddCommGroup A] [Module k A]
+  [DistribMulAction G A] [SMulCommClass G k A]
 
-/-- Turns an `AddCommGroup` `A` with a `DistribMulAction` of a monoid `M` into a
-`ℤ`-linear `M`-representation on `A`. -/
-def ofDistribMulAction : Representation ℤ M A :=
-  (addMonoidEndRingEquivInt A : _ →* _).comp (DistribMulAction.toAddMonoidEnd M A)
+/-- Turns a `k`-module `A` with a compatible `DistribMulAction` of a monoid `G` into a
+`k`-linear `G`-representation on `A`. -/
+def ofDistribMulAction : Representation k G A where
+  toFun := fun m =>
+    { DistribMulAction.toAddMonoidEnd G A m with
+      map_smul' := smul_comm _ }
+  map_one' := by ext; exact one_smul _ _
+  map_mul' := by intros; ext; exact mul_smul _ _ _
 
-variable {M A}
+variable {k G A}
 
-@[simp] theorem ofDistribMulAction_apply_apply (g : M) (a : A) :
-    ofDistribMulAction M A g a = g • a := rfl
+@[simp] theorem ofDistribMulAction_apply_apply (g : G) (a : A) :
+    ofDistribMulAction k G A g a = g • a := rfl
 
 end DistribMulAction
 section MulDistribMulAction
