@@ -432,7 +432,6 @@ theorem get_interleave_left : ∀ (n : Nat) (s₁ s₂ : Stream' α),
   | n + 1, s₁, s₂ => by
     change get (s₁ ⋈ s₂) (succ (succ (2 * n))) = get s₁ (succ n)
     rw [get_succ, get_succ, interleave_eq, tail_cons, tail_cons]
-    have : n < succ n := Nat.lt_succ_self n
     rw [get_interleave_left n (tail s₁) (tail s₂)]
     rfl
 #align stream.nth_interleave_left Stream'.get_interleave_left
