@@ -327,38 +327,35 @@ theorem lnot_bit (b) : ∀ n, lnot (bit b n) = bit (not b) (lnot n)
   | -[n+1] => by simp [lnot]
 #align int.lnot_bit Int.lnot_bit
 
--- The next set of lemmas broke after leanprover/std4#366.
--- The results are apparently unused; propose deleting.
+@[simp]
+theorem testBit_bitwise (f : Bool → Bool → Bool) (m n k) :
+    testBit (bitwise f m n) k = f (testBit m k) (testBit n k) := by
+  cases m <;> cases n <;> simp only [testBit, bitwise, natBitwise]
+  · by_cases h : f false false <;> simp [h]
+  · by_cases h : f false true <;> simp [h]
+  · by_cases h : f true false <;> simp [h]
+  · by_cases h : f true true <;> simp [h]
+#align int.test_bit_bitwise Int.testBit_bitwise
 
--- @[simp]
--- theorem testBit_bitwise (f : Bool → Bool → Bool) (m n k) :
---     testBit (bitwise f m n) k = f (testBit m k) (testBit n k) := by
---   cases m <;> cases n <;> simp only [testBit, bitwise, natBitwise]
---   · by_cases h : f false false <;> simp [h]
---   · by_cases h : f false true <;> simp [h]
---   · by_cases h : f true false <;> simp [h]
---   · by_cases h : f true true <;> simp [h]
--- #align int.test_bit_bitwise Int.testBit_bitwise
+@[simp]
+theorem testBit_lor (m n k) : testBit (lor m n) k = (testBit m k || testBit n k) := by
+  rw [← bitwise_or, testBit_bitwise]
+#align int.test_bit_lor Int.testBit_lor
 
--- @[simp]
--- theorem testBit_lor (m n k) : testBit (lor m n) k = (testBit m k || testBit n k) := by
---   rw [← bitwise_or, testBit_bitwise]
--- #align int.test_bit_lor Int.testBit_lor
+@[simp]
+theorem testBit_land (m n k) : testBit (land m n) k = (testBit m k && testBit n k) := by
+  rw [← bitwise_and, testBit_bitwise]
+#align int.test_bit_land Int.testBit_land
 
--- @[simp]
--- theorem testBit_land (m n k) : testBit (land m n) k = (testBit m k && testBit n k) := by
---   rw [← bitwise_and, testBit_bitwise]
--- #align int.test_bit_land Int.testBit_land
+@[simp]
+theorem testBit_ldiff (m n k) : testBit (ldiff m n) k = (testBit m k && not (testBit n k)) := by
+  rw [← bitwise_diff, testBit_bitwise]
+#align int.test_bit_ldiff Int.testBit_ldiff
 
--- @[simp]
--- theorem testBit_ldiff (m n k) : testBit (ldiff m n) k = (testBit m k && not (testBit n k)) := by
---   rw [← bitwise_diff, testBit_bitwise]
--- #align int.test_bit_ldiff Int.testBit_ldiff
-
--- @[simp]
--- theorem testBit_lxor (m n k) : testBit (Int.xor m n) k = xor (testBit m k) (testBit n k) := by
---   rw [← bitwise_xor, testBit_bitwise]
--- #align int.test_bit_lxor Int.testBit_lxor
+@[simp]
+theorem testBit_lxor (m n k) : testBit (Int.xor m n) k = xor (testBit m k) (testBit n k) := by
+  rw [← bitwise_xor, testBit_bitwise]
+#align int.test_bit_lxor Int.testBit_lxor
 
 @[simp]
 theorem testBit_lnot : ∀ n k, testBit (lnot n) k = not (testBit n k)

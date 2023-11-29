@@ -126,6 +126,7 @@ theorem xor_bit : ∀ a m b n, bit a m ^^^ bit b n = bit (bne a b) (m ^^^ n) :=
   bitwise_bit
 #align nat.lxor_bit Nat.xor_bit
 
+attribute [simp] Nat.testBit_bitwise
 #align nat.test_bit_bitwise Nat.testBit_bitwise
 
 @[simp]
