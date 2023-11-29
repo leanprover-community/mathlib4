@@ -157,31 +157,17 @@ end
 ## Ring
 -/
 
-lemma zero_eq_ofFin_zero : 0#w = ofFin 0 := rfl
-lemma one_eq_ofFin_one   : 1#w = ofFin 1 := rfl
-
-@[reducible]
-instance : SMul ℕ (BitVec w) where
-  smul x y := x#w * y
-
-@[reducible]
-instance : SMul ℤ (BitVec w) where
-  smul x y := (BitVec.ofInt w x) * y
-
-@[reducible]
-instance : Pow (BitVec w) ℕ where
-  pow :=
-    let rec pow x n :=
-      match n with
-      | 0   => 1
-      | n+1 => x * (pow x n)
-    pow
-
+instance : SMul ℕ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
+instance : SMul ℤ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
+instance : Pow (BitVec w) ℕ  := ⟨fun x n => ofFin <| x.toFin ^ n⟩
 instance : NatCast (BitVec w) := ⟨BitVec.ofNat w⟩
-instance : IntCast (BitVec w) := ⟨BitVec.ofInt w⟩
 
--- lemma toFin_nsmul (n : ℕ) (x : BitVec w) :
---   (n • x).toFin = n
+/-- The obvious instance would be to define `IntCast` in terms of `Std.BitVec.ofInt`.  -/
+instance : IntCast (BitVec w) := ⟨fun x => ofFin x⟩
+
+@[simp] lemma natCast (x w : Nat)         : (x : BitVec w) = BitVec.ofNat w x := rfl
+
+proof_wanted intCast (x : Int) (w : Nat) : (x : BitVec w) = BitVec.ofInt w x
 
 /-! Now we can define an instance of `CommRing (BitVector w)` straightforwardly in terms of the
     existing instance `CommRing (Fin (2^w))` -/
