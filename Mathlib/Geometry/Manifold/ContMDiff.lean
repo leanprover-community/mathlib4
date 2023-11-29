@@ -2064,7 +2064,7 @@ lemma contMDiffOn_openEmbedding_symm :
   haveI := h.singleton_smoothManifoldWithCorners I
   rw [contMDiffOn_iff (CS' := h.singletonChartedSpace)]
   constructor
-  · rw [←h.toLocalHomeomorph_target]
+  · rw [← h.toLocalHomeomorph_target]
     exact (h.toLocalHomeomorph e).continuousOn_symm
   · intros z hz
     -- show the function is actually the identity on the range of I ∘ e
@@ -2076,12 +2076,12 @@ lemma contMDiffOn_openEmbedding_symm :
     simp_rw [Function.comp_apply]
     rw [LocalHomeomorph.refl_symm, LocalHomeomorph.refl_apply, id.def,
       LocalHomeomorph.singletonChartedSpace_chartAt_eq, LocalHomeomorph.right_inv]
-    · rw [ModelWithCorners.right_inv]
+    · rw [I.right_inv]
       · rfl
       · apply mem_of_subset_of_mem _ hz.1
         exact extChartAt_target_subset_range _ _
     · -- `hz` implies that `z ∈ range (I ∘ e)`
-      rw [h.toLocalHomeomorph_target, ModelWithCorners.symm, ←mem_preimage]
+      rw [h.toLocalHomeomorph_target, ModelWithCorners.symm, ← mem_preimage]
       exact hz.2.1
 
 /-- Let `M'` be a manifold whose chart structure is given by an open embedding `e'` into its model
