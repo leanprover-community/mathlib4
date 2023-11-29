@@ -71,6 +71,7 @@ structure AlternatingMap extends MultilinearMap R (fun _ : ι => M) N where
   map_eq_zero_of_eq' : ∀ (v : ι → M) (i j : ι), v i = v j → i ≠ j → toFun v = 0
 #align alternating_map AlternatingMap
 
+@[inherit_doc]
 notation M " [Λ^" ι "]→ₗ[" R "] " N:100 => AlternatingMap R M N ι
 
 end
