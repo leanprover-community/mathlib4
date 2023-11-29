@@ -546,6 +546,14 @@ theorem codisjoint_iff_coe_toSubmodule :
   rw [codisjoint_iff, codisjoint_iff, ← coe_toSubmodule_eq_iff, sup_coe_toSubmodule,
     top_coeSubmodule, ← codisjoint_iff]
 
+theorem independent_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
+    CompleteLattice.Independent N ↔ CompleteLattice.Independent fun i ↦ (N i : Submodule R M) := by
+  simp [CompleteLattice.independent_def, disjoint_iff_coe_toSubmodule]
+
+theorem iSup_eq_top_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
+    ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := by
+  rw [← iSup_coe_toSubmodule, ← top_coeSubmodule (L := L), coe_toSubmodule_eq_iff]
+
 instance : AddCommMonoid (LieSubmodule R L M) where
   add := (· ⊔ ·)
   add_assoc _ _ _ := sup_assoc
