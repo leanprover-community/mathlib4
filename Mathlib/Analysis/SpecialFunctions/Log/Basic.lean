@@ -341,13 +341,11 @@ theorem tendsto_log_atTop : Tendsto log atTop atTop :=
   tendsto_comp_exp_atTop.1 <| by simpa only [log_exp] using tendsto_id
 #align real.tendsto_log_at_top Real.tendsto_log_atTop
 
-theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[>] 0) atBot := by
-  simpa [← tendsto_comp_exp_atBot] using tendsto_id
-
-theorem tendsto_log_nhdsWithin_zero' : Tendsto log (𝓝[≠] 0) atBot := by
+theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[≠] 0) atBot := by
   rw [← show _ = log from funext log_abs]
-  exact tendsto_log_nhdsWithin_zero.comp tendsto_abs_nhdsWithin_zero
-#align real.tendsto_log_nhds_within_zero Real.tendsto_log_nhdsWithin_zero'
+  refine' Tendsto.comp (g := log) _ tendsto_abs_nhdsWithin_zero
+  simpa [← tendsto_comp_exp_atBot] using tendsto_id
+#align real.tendsto_log_nhds_within_zero Real.tendsto_log_nhdsWithin_zero
 
 lemma tendsto_log_nhdsWithin_zero_right : Tendsto log (𝓝[>] 0) atBot :=
   tendsto_log_nhdsWithin_zero.mono_left <| nhdsWithin_mono _ fun _ h ↦ ne_of_gt h
