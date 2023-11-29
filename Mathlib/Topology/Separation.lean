@@ -2047,7 +2047,7 @@ end CompletelyNormal
 its clopen neighbourhoods. -/
 theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : X) :
     connectedComponent x = ⋂ s : { s : Set X // IsClopen s ∧ x ∈ s }, s := by
-  apply Subset.antisymm connectedComponent_subset_iInter_clopen
+  apply Subset.antisymm connectedComponent_subset_iInter_isClopen
   -- Reduce to showing that the clopen intersection is connected.
   refine' IsPreconnected.subset_connectedComponent _ (mem_iInter.2 fun s => s.2.2)
   -- We do this by showing that any disjoint cover by two closed sets implies

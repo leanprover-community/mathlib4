@@ -1120,10 +1120,10 @@ theorem IsClopen.connectedComponent_subset {x} (hs : IsClopen s) (hx : x ∈ s) 
 
 /-- The connected component of a point is always a subset of the intersection of all its clopen
 neighbourhoods. -/
-theorem connectedComponent_subset_iInter_clopen {x : α} :
+theorem connectedComponent_subset_iInter_isClopen {x : α} :
     connectedComponent x ⊆ ⋂ Z : { Z : Set α // IsClopen Z ∧ x ∈ Z }, Z :=
   subset_iInter fun Z => Z.2.1.connectedComponent_subset Z.2.2
-#align connected_component_subset_Inter_clopen connectedComponent_subset_iInter_clopen
+#align connected_component_subset_Inter_clopen connectedComponent_subset_iInter_isClopen
 
 /-- A clopen set is the union of its connected components. -/
 theorem IsClopen.biUnion_connectedComponent_eq {Z : Set α} (h : IsClopen Z) :
