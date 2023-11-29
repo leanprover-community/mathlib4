@@ -796,7 +796,7 @@ theorem finite_of_compact_of_discrete [CompactSpace X] [DiscreteTopology X] : Fi
 #align finite_of_compact_of_discrete finite_of_compact_of_discrete
 
 theorem exists_nhds_ne_neBot (X : Type*) [TopologicalSpace X] [CompactSpace X] [Infinite X] :
-    ∃ z : X, (𝓝[≠] z).NeBot := by
+    ∃ x : X, (𝓝[≠] x).NeBot := by
   by_contra' H
   simp_rw [not_neBot] at H
   haveI := discreteTopology_iff_nhds_ne.2 H
@@ -936,7 +936,7 @@ theorem IsCompact.finite (hs : IsCompact s) (hs' : DiscreteTopology s) : s.Finit
 #align is_compact.finite IsCompact.finite
 
 theorem exists_nhds_ne_inf_principal_neBot (hs : IsCompact s) (hs' : s.Infinite) :
-    ∃ z ∈ s, (𝓝[≠] z ⊓ 𝓟 s).NeBot := by
+    ∃ x ∈ s, (𝓝[≠] x ⊓ 𝓟 s).NeBot := by
   by_contra' H
   simp_rw [not_neBot] at H
   exact hs' (hs.finite <| discreteTopology_subtype_iff.mpr H)
