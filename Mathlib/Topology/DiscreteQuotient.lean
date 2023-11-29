@@ -362,7 +362,7 @@ end Map
 
 theorem eq_of_forall_proj_eq [T2Space X] [CompactSpace X] [disc : TotallyDisconnectedSpace X]
     {x y : X} (h : ∀ Q : DiscreteQuotient X, Q.proj x = Q.proj y) : x = y := by
-  rw [← mem_singleton_iff, ← connectedComponent_eq_singleton, connectedComponent_eq_iInter_clopen,
+  rw [← mem_singleton_iff, ← connectedComponent_eq_singleton, connectedComponent_eq_iInter_isClopen,
     mem_iInter]
   rintro ⟨U, hU1, hU2⟩
   exact (Quotient.exact' (h (ofClopen hU1))).mpr hU2
