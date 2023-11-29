@@ -78,17 +78,17 @@ end CommRing
 
 namespace Finsupp
 
-variable (S : Type v)
+variable (ι : Type v)
 
-/-- The `R`-module whose elements are functions `S → R` which are zero on all but finitely many
-elements of `S` has a coalgebra structure. The coproduct is given by `Δ(fₛ) = fₛ ⊗ fₛ` and the
-counit by `ε(fₛ) =  1`, where `fₛ` is the function sending `s` to `1` and all other elements of `S`
+/-- The `R`-module whose elements are functions `ι → R` which are zero on all but finitely many
+elements of `ι` has a coalgebra structure. The coproduct is given by `Δ(fᵢ) = fᵢ ⊗ fᵢ` and the
+counit by `ε(fᵢ) =  1`, where `fᵢ` is the function sending `i` to `1` and all other elements of `ι`
 to zero. -/
 noncomputable
-instance instCoalgebra : Coalgebra R (S →₀ R) where
-  Δ := Finsupp.total S ((S →₀ R) ⊗[R] (S →₀ R)) R
-    (fun s ↦ Finsupp.single s 1 ⊗ₜ Finsupp.single s 1)
-  ε := Finsupp.total S R R (fun _ ↦ 1)
+instance instCoalgebra : Coalgebra R (ι →₀ R) where
+  Δ := Finsupp.total ι ((ι →₀ R) ⊗[R] (ι →₀ R)) R
+    (fun i ↦ Finsupp.single i 1 ⊗ₜ Finsupp.single i 1)
+  ε := Finsupp.total ι R R (fun _ ↦ 1)
   coassoc := by
     ext; simp
   ε_id := by
@@ -97,13 +97,13 @@ instance instCoalgebra : Coalgebra R (S →₀ R) where
     ext; simp
 
 @[simp]
-theorem Δ_single (s : S) (r : R) : Δ (Finsupp.single s r) =
-    (Finsupp.single s r) ⊗ₜ[R] (Finsupp.single s 1) := by
+theorem Δ_single (i : ι) (r : R) : Δ (Finsupp.single i r) =
+    (Finsupp.single i r) ⊗ₜ[R] (Finsupp.single i 1) := by
   unfold Δ; unfold instCoalgebra; simp
-  rw [TensorProduct.smul_tmul', smul_single_one s r]
+  rw [TensorProduct.smul_tmul', smul_single_one i r]
 
 @[simp]
-theorem ε_single (s : S) (r : R) : ε (Finsupp.single s r) = r := by
+theorem ε_single (i : ι) (r : R) : ε (Finsupp.single i r) = r := by
   unfold ε; unfold instCoalgebra; simp
 
 end Finsupp
