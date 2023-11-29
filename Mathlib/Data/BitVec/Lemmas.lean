@@ -127,6 +127,9 @@ variable (x y : Fin (2^w))
 @[simp] lemma ofFin_sub : ofFin (x - y)   = ofFin x - ofFin y   := rfl
 @[simp] lemma ofFin_mul : ofFin (x * y)   = ofFin x * ofFin y   := rfl
 
+@[simp] lemma ofFin_zero    : @ofFin w 0 = 0 := rfl
+@[simp] lemma ofFin_one     : @ofFin w 1 = 1 := rfl
+
 end
 
 /-!
