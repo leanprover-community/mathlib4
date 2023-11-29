@@ -22,7 +22,7 @@ which may be useful due to their definitional properties.
 
 universe u
 
-open CategoryTheory
+open CategoryTheory Profinite
 
 namespace LightProfinite
 
@@ -34,7 +34,7 @@ instance {X Y B : Profinite.{u}} (f : X ⟶ B) (g : Y ⟶ B) [X.IsLight] [Y.IsLi
   have : Mono i := by
     rw [Profinite.mono_iff_injective]
     exact Subtype.val_injective
-  exact mono_light i
+  exact isLight_of_mono i
 
 variable {X Y B : LightProfinite.{u}} (f : X ⟶ B) (g : Y ⟶ B)
 
