@@ -353,19 +353,13 @@ theorem zero_land (n : ℕ) : 0 &&& n = 0 := by
   simp only [HAnd.hAnd, AndOp.and, land, bitwise_zero_left, ite_false, Bool.and_true];
 #align nat.zero_land Nat.zero_land
 
-@[simp]
-theorem land_zero (n : ℕ) : n &&& 0 = 0 := by
-  simp only [HAnd.hAnd, AndOp.and, land, bitwise_zero_right, ite_false, Bool.and_false]
+theorem land_zero (n : ℕ) : n &&& 0 = 0 := by simp
 #align nat.land_zero Nat.land_zero
 
-@[simp]
-theorem zero_lor (n : ℕ) : 0 ||| n = n := by
-  simp only [HOr.hOr, OrOp.or, lor, bitwise_zero_left, ite_true, Bool.or_true]
+theorem zero_lor (n : ℕ) : 0 ||| n = n := by simp
 #align nat.zero_lor Nat.zero_lor
 
-@[simp]
-theorem lor_zero (n : ℕ) : n ||| 0 = n := by
-  simp only [HOr.hOr, OrOp.or, lor, bitwise_zero_right, ite_true, Bool.or_false]
+theorem lor_zero (n : ℕ) : n ||| 0 = n := by simp
 #align nat.lor_zero Nat.lor_zero
 
 
