@@ -13,7 +13,7 @@ Given a Lie module `M` over a nilpotent Lie algebra `L` with coefficients in `R`
 studies `M` via its weights. These are functions `χ : L → R` whose corresponding weight space
 `LieModule.weightSpace M χ`, is non-trivial. If `L` is Abelian or if `R` has characteristic zero
 (and `M` is finite-dimensional) then such `χ` are necessarily `R`-linear. However in general
-non-linear weights do exists. For example if we take:
+non-linear weights do exist. For example if we take:
  * `R`: the field with two elements (or indeed any perfect field of characteristic two),
  * `L`: `sl₂` (this is nilpotent in characteristic two),
  * `M`: the natural two-dimensional representation of `L`,
@@ -34,6 +34,8 @@ or `R` has characteristic zero.
 
 -/
 
+open Set
+
 attribute [local instance]
   isNoetherian_of_isNoetherianRing_of_finite
   Module.free_of_finite_type_torsion_free'
@@ -50,11 +52,12 @@ class LinearWeights [LieAlgebra.IsNilpotent R L] : Prop :=
 
 /-- A weight of a Lie module, bundled as a linear map. -/
 @[simps]
-def linearWeight [LieAlgebra.IsNilpotent R L] [LinearWeights R L M]
-    (χ : L → R) (hχ : weightSpace M χ ≠ ⊥) : L →ₗ[R] R where
+def weight.toLinear [LieAlgebra.IsNilpotent R L] [LinearWeights R L M]
+    [NoZeroSMulDivisors R M] [IsNoetherian R M] (χ : weight R L M) :
+    L →ₗ[R] R where
   toFun := χ
-  map_add' := LinearWeights.map_add χ hχ
-  map_smul' := LinearWeights.map_smul χ hχ
+  map_add' := LinearWeights.map_add (χ : L → R) (M := M) <| (Finite.mem_toFinset _).mp χ.property
+  map_smul' := LinearWeights.map_smul (χ : L → R) (M := M) <| (Finite.mem_toFinset _).mp χ.property
 
 /-- For an Abelian Lie algebra, the weights of any Lie module are linear. -/
 instance instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [NoZeroSMulDivisors R M] :

@@ -600,6 +600,10 @@ lemma finite_weightSpace_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] :
   CompleteLattice.WellFounded.finite_ne_bot_of_independent
     (LieSubmodule.wellFounded_of_noetherian R L M) (independent_weightSpace R L M)
 
+/-- The collection of weights of a Noetherian Lie module, bundled as a `Finset`. -/
+noncomputable abbrev weight [NoZeroSMulDivisors R M] [IsNoetherian R M] :=
+  (finite_weightSpace_ne_bot R L M).toFinset
+
 /-- A Lie module `M` of a Lie algebra `L` is triangularizable if the endomorhpism of `M` defined by
 any `x : L` is triangularizable. -/
 class IsTriangularizable : Prop :=
