@@ -117,15 +117,15 @@ theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := by
 section
 variable (x y : Fin (2^w))
 
-@[simp] lemma ofFin_neg (x : Fin (2^w)) : ofFin (-x) = -(ofFin x) := by
+@[simp] lemma ofFin_neg : ofFin (-x) = -(ofFin x) := by
   rw [neg_eq_zero_sub]; rfl
 
-@[simp] lemma ofFin_and (x y : Fin (2^w)) : ofFin (x &&& y) = ofFin x &&& ofFin y := rfl
-@[simp] lemma ofFin_or  (x y : Fin (2^w)) : ofFin (x ||| y) = ofFin x ||| ofFin y := rfl
-@[simp] lemma ofFin_xor (x y : Fin (2^w)) : ofFin (x ^^^ y) = ofFin x ^^^ ofFin y := rfl
-@[simp] lemma ofFin_add (x y : Fin (2^w)) : ofFin (x + y)   = ofFin x + ofFin y   := rfl
-@[simp] lemma ofFin_sub (x y : Fin (2^w)) : ofFin (x - y)   = ofFin x - ofFin y   := rfl
-@[simp] lemma ofFin_mul (x y : Fin (2^w)) : ofFin (x * y)   = ofFin x * ofFin y   := rfl
+@[simp] lemma ofFin_and : ofFin (x &&& y) = ofFin x &&& ofFin y := rfl
+@[simp] lemma ofFin_or  : ofFin (x ||| y) = ofFin x ||| ofFin y := rfl
+@[simp] lemma ofFin_xor : ofFin (x ^^^ y) = ofFin x ^^^ ofFin y := rfl
+@[simp] lemma ofFin_add : ofFin (x + y)   = ofFin x + ofFin y   := rfl
+@[simp] lemma ofFin_sub : ofFin (x - y)   = ofFin x - ofFin y   := rfl
+@[simp] lemma ofFin_mul : ofFin (x * y)   = ofFin x * ofFin y   := rfl
 
 end
 
