@@ -327,35 +327,38 @@ theorem lnot_bit (b) : ∀ n, lnot (bit b n) = bit (not b) (lnot n)
   | -[n+1] => by simp [lnot]
 #align int.lnot_bit Int.lnot_bit
 
-@[simp]
-theorem testBit_bitwise (f : Bool → Bool → Bool) (m n k) :
-    testBit (bitwise f m n) k = f (testBit m k) (testBit n k) := by
-  cases m <;> cases n <;> simp only [testBit, bitwise, natBitwise]
-  · by_cases h : f false false <;> simp [h]
-  · by_cases h : f false true <;> simp [h]
-  · by_cases h : f true false <;> simp [h]
-  · by_cases h : f true true <;> simp [h]
-#align int.test_bit_bitwise Int.testBit_bitwise
+-- The next set of lemmas broke after leanprover/std4#366.
+-- The results are apparently unused; propose deleting.
 
-@[simp]
-theorem testBit_lor (m n k) : testBit (lor m n) k = (testBit m k || testBit n k) := by
-  rw [← bitwise_or, testBit_bitwise]
-#align int.test_bit_lor Int.testBit_lor
+-- @[simp]
+-- theorem testBit_bitwise (f : Bool → Bool → Bool) (m n k) :
+--     testBit (bitwise f m n) k = f (testBit m k) (testBit n k) := by
+--   cases m <;> cases n <;> simp only [testBit, bitwise, natBitwise]
+--   · by_cases h : f false false <;> simp [h]
+--   · by_cases h : f false true <;> simp [h]
+--   · by_cases h : f true false <;> simp [h]
+--   · by_cases h : f true true <;> simp [h]
+-- #align int.test_bit_bitwise Int.testBit_bitwise
 
-@[simp]
-theorem testBit_land (m n k) : testBit (land m n) k = (testBit m k && testBit n k) := by
-  rw [← bitwise_and, testBit_bitwise]
-#align int.test_bit_land Int.testBit_land
+-- @[simp]
+-- theorem testBit_lor (m n k) : testBit (lor m n) k = (testBit m k || testBit n k) := by
+--   rw [← bitwise_or, testBit_bitwise]
+-- #align int.test_bit_lor Int.testBit_lor
 
-@[simp]
-theorem testBit_ldiff (m n k) : testBit (ldiff m n) k = (testBit m k && not (testBit n k)) := by
-  rw [← bitwise_diff, testBit_bitwise]
-#align int.test_bit_ldiff Int.testBit_ldiff
+-- @[simp]
+-- theorem testBit_land (m n k) : testBit (land m n) k = (testBit m k && testBit n k) := by
+--   rw [← bitwise_and, testBit_bitwise]
+-- #align int.test_bit_land Int.testBit_land
 
-@[simp]
-theorem testBit_lxor (m n k) : testBit (Int.xor m n) k = xor (testBit m k) (testBit n k) := by
-  rw [← bitwise_xor, testBit_bitwise]
-#align int.test_bit_lxor Int.testBit_lxor
+-- @[simp]
+-- theorem testBit_ldiff (m n k) : testBit (ldiff m n) k = (testBit m k && not (testBit n k)) := by
+--   rw [← bitwise_diff, testBit_bitwise]
+-- #align int.test_bit_ldiff Int.testBit_ldiff
+
+-- @[simp]
+-- theorem testBit_lxor (m n k) : testBit (Int.xor m n) k = xor (testBit m k) (testBit n k) := by
+--   rw [← bitwise_xor, testBit_bitwise]
+-- #align int.test_bit_lxor Int.testBit_lxor
 
 @[simp]
 theorem testBit_lnot : ∀ n k, testBit (lnot n) k = not (testBit n k)
@@ -407,15 +410,15 @@ attribute [local simp] Int.zero_div
 
 theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<< (n : ℤ)) <<< k
   | (m : ℕ), n, (k : ℕ) =>
-    congr_arg ofNat (by simp [Nat.pow_add, mul_assoc])
+    congr_arg ofNat (by simp [Nat.shiftLeft_eq, Nat.pow_add, mul_assoc])
   | -[m+1], n, (k : ℕ) => congr_arg negSucc (Nat.shiftLeft'_add _ _ _ _)
   | (m : ℕ), n, -[k+1] =>
     subNatNat_elim n k.succ (fun n k i => (↑m) <<< i = (Nat.shiftLeft' false m n) >>> k)
       (fun (i n : ℕ) =>
-        by dsimp; simp [- Nat.shiftLeft_eq, ← Nat.shiftLeft_sub _ , add_tsub_cancel_left])
+        by dsimp; simp [← Nat.shiftLeft_sub _ , add_tsub_cancel_left])
       fun i n => by
         dsimp
-        simp [- Nat.shiftLeft_eq, Nat.shiftLeft_zero, Nat.shiftRight_add, ← Nat.shiftLeft_sub]
+        simp [Nat.shiftLeft_zero, Nat.shiftRight_add, ← Nat.shiftLeft_sub]
         rfl
   | -[m+1], n, -[k+1] =>
     subNatNat_elim n k.succ
@@ -433,7 +436,7 @@ theorem shiftLeft_sub (m : ℤ) (n : ℕ) (k : ℤ) : m <<< (n - k) = (m <<< (n 
 #align int.shiftl_sub Int.shiftLeft_sub
 
 theorem shiftLeft_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), m <<< (n : ℤ) = m * (2 ^ n : ℕ)
-  | (m : ℕ), _ => congr_arg ((↑) : ℕ → ℤ) (by simp)
+  | (m : ℕ), _ => congr_arg ((↑) : ℕ → ℤ) (by simp [Nat.shiftLeft_eq])
   | -[_+1], _ => @congr_arg ℕ ℤ _ _ (fun i => -i) (Nat.shiftLeft'_tt_eq_mul_pow _ _)
 #align int.shiftl_eq_mul_pow Int.shiftLeft_eq_mul_pow
 
@@ -445,7 +448,7 @@ theorem shiftRight_eq_div_pow : ∀ (m : ℤ) (n : ℕ), m >>> (n : ℤ) = m / (
 #align int.shiftr_eq_div_pow Int.shiftRight_eq_div_pow
 
 theorem one_shiftLeft (n : ℕ) : 1 <<< (n : ℤ) = (2 ^ n : ℕ) :=
-  congr_arg ((↑) : ℕ → ℤ) (by simp)
+  congr_arg ((↑) : ℕ → ℤ) (by simp [Nat.shiftLeft_eq])
 #align int.one_shiftl Int.one_shiftLeft
 
 @[simp]
