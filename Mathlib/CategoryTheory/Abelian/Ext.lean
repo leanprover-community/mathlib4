@@ -19,18 +19,16 @@ by (left) deriving in the first argument of the bifunctor `(X, Y) ↦ Module.of 
 
 ## Implementation
 
-It's not actually necessary here to assume `C` is abelian,
-but the hypotheses, involving both `C` and `Cᵒᵖ`, are quite lengthy,
-and in practice the abelian case is hopefully enough.
+TODO (@joelriou): When the derived category enters mathlib, the Ext groups shall be
+redefined using morphisms in the derived category, and then it will be possible to
+compute `Ext` using both projective or injective resolutions.
 
-PROJECT: State the alternative definition in terms of
-right deriving in the second argument, and show these agree.
 -/
 
 
 noncomputable section
 
-open CategoryTheory
+open CategoryTheory Limits
 
 variable (R : Type*) [Ring R] (C : Type*) [Category C] [Abelian C] [Linear R C]
   [EnoughProjectives C]
@@ -62,16 +60,32 @@ set_option linter.uppercaseLean3 false in
 
 open ZeroObject
 
+namespace CategoryTheory
+
+namespace ProjectiveResolution
+
+variable {R C}
+variable {X : C} (P : ProjectiveResolution X)
+
+/-- `Ext` can be computed using a projective resolution. -/
+def isoExt (n : ℕ) (Y : C) : ((Ext R C n).obj (Opposite.op X)).obj Y ≅
+    (((Functor.mapHomologicalComplex ((linearYoneda R C).obj Y).rightOp
+      (ComplexShape.down ℕ)).obj P.complex).homology n).unop :=
+  (P.isoLeftDerivedObj ((linearYoneda R C).obj Y).rightOp n).unop.symm
+
+end ProjectiveResolution
+
+end CategoryTheory
+
 /-- If `X : C` is projective and `n : ℕ`, then `Ext^(n + 1) X Y ≅ 0` for any `Y`. -/
-def extSuccOfProjective (X Y : C) [Projective X] (n : ℕ) :
-    ((Ext R C (n + 1)).obj (Opposite.op X)).obj Y ≅ 0 :=
-  let E := (((linearYoneda R C).obj Y).rightOp.leftDerivedObjProjectiveSucc n X).unop.symm
-  E ≪≫
-    { hom := 0
-      inv := 0
-      hom_inv_id := by
-        let Z : (ModuleCat R)ᵒᵖ := 0
-        rw [← (0 : 0 ⟶ Z.unop).unop_op, ← (0 : Z.unop ⟶ 0).unop_op, ← unop_id, ← unop_comp]
-        aesop }
-set_option linter.uppercaseLean3 false in
-#align Ext_succ_of_projective extSuccOfProjective
+lemma isZero_Ext_succ_of_projective (X Y : C) [Projective X] (n : ℕ) :
+    IsZero (((Ext R C (n + 1)).obj (Opposite.op X)).obj Y) := by
+  refine IsZero.of_iso (IsZero.unop ?_) ((ProjectiveResolution.self X).isoExt (n + 1) Y)
+  rw [← HomologicalComplex.exactAt_iff_isZero_homology, HomologicalComplex.exactAt_iff]
+  refine ShortComplex.exact_of_isZero_X₂ _ (IsZero.op ?_)
+  dsimp
+  rw [IsZero.iff_id_eq_zero]
+  ext (x : _ ⟶ _)
+  obtain rfl : x = 0 :=
+    (HomologicalComplex.isZero_single_obj_X _ _ _ _ (by simp)).eq_of_src _ _
+  rfl
