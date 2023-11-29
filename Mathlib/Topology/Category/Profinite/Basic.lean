@@ -27,7 +27,7 @@ compact, Hausdorff and totally disconnected.
 
 ## TODO
 
-* Define procategories and prove that `Profinite` is equiavalent to `Pro (FintypeCat)`.
+* Define procategories and prove that `Profinite` is equivalent to `Pro (FintypeCat)`.
 
 ## Tags
 
