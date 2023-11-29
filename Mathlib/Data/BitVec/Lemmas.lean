@@ -126,6 +126,11 @@ theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := by
 @[simp] lemma ofFin_sub_ofFin (x y : Fin (2^w)) : ofFin (x - y)   = ofFin x - ofFin y   := rfl
 @[simp] lemma ofFin_mul_ofFin (x y : Fin (2^w)) : ofFin (x * y)   = ofFin x * ofFin y   := rfl
 
+/-!
+  ## Distributivity of toFin
+-/
+@[simp] lemma toFin_neg (x : BitVec w) : (-x).toFin = -(x.toFin) := by
+  rw [neg_eq_zero_sub]; rfl
 
 /-!
 ## Ring
@@ -134,22 +139,37 @@ theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := by
 lemma zero_eq_ofFin_zero : 0#w = ofFin 0 := rfl
 lemma one_eq_ofFin_one   : 1#w = ofFin 1 := rfl
 
+@[reducible]
+instance : SMul ℕ (BitVec w) where
+  smul x y := x#w * y
+
+@[reducible]
+instance : SMul ℤ (BitVec w) where
+  smul x y := (BitVec.ofInt w x) * y
+
+@[reducible]
+instance : Pow (BitVec w) ℕ where
+  pow :=
+    let rec pow x n :=
+      match n with
+      | 0   => 1
+      | n+1 => x * (pow x n)
+    pow
+
+instance : NatCast (BitVec w) := ⟨BitVec.ofNat w⟩
+instance : IntCast (BitVec w) := ⟨BitVec.ofInt w⟩
+
+-- lemma toFin_nsmul (n : ℕ) (x : BitVec w) :
+--   (n • x).toFin = n
+
 /-! Now we can define an instance of `CommRing (BitVector w)` straightforwardly in terms of the
     existing instance `CommRing (Fin (2^w))` -/
-instance : CommRing (BitVec w) where
-  add_assoc       := by intro ⟨_⟩ ⟨_⟩ ⟨_⟩; simp [add_assoc]
-  zero_add        := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
-  add_zero        := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
-  sub_eq_add_neg  := by intro ⟨_⟩ ⟨_⟩; simp [sub_eq_add_neg]
-  add_comm        := by intro ⟨_⟩ ⟨_⟩; simp [add_comm]
-  left_distrib    := by intro ⟨_⟩ ⟨_⟩ ⟨_⟩; simp [left_distrib]
-  right_distrib   := by intro ⟨_⟩ ⟨_⟩ ⟨_⟩; simp [right_distrib]
-  zero_mul        := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
-  mul_zero        := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
-  mul_assoc       := by intro ⟨_⟩ ⟨_⟩ ⟨_⟩; simp [mul_assoc]
-  mul_comm        := by intro ⟨_⟩ ⟨_⟩; simp [mul_comm]
-  one_mul         := by intro ⟨_⟩; simp [one_eq_ofFin_one]
-  mul_one         := by intro ⟨_⟩; simp [one_eq_ofFin_one]
-  add_left_neg    := by intro ⟨_⟩; simp [zero_eq_ofFin_zero]
+instance : CommRing (BitVec w) := by
+  apply Function.Injective.commRing _ toFin_injective <;> (intros; try rfl)
+  · apply toFin_neg
+  · sorry
+  · sorry
+  · sorry
+  · sorry
 
 end Std.BitVec
