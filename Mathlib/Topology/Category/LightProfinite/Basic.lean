@@ -106,7 +106,7 @@ structure LightProfinite' : Type u where
   /-- The diagram takes values in a small category equivalent to `FintypeCat`. -/
   diagram : ℕᵒᵖ ⥤ FintypeCat.Skeleton.{u}
 
-/-- A `LightProfinite'` yields a `LightProfinite`. -/
+/-- A `LightProfinite'` yields a `Profinite`. -/
 def LightProfinite'.toProfinite (S : LightProfinite') : Profinite :=
   limit (S.diagram  ⋙ FintypeCat.Skeleton.equivalence.functor ⋙ FintypeCat.toProfinite.{u})
 
