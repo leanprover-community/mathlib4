@@ -338,7 +338,7 @@ theorem exists_continuous_zero_one_of_isClosed [NormalSpace X]
       exact ⟨v, v_open, cv, hv, trivial⟩ }
   exact ⟨⟨c.lim, c.continuous_lim⟩, c.lim_of_mem_C, fun x hx => c.lim_of_nmem_U _ fun h => h hx,
     c.lim_mem_Icc⟩
-#align exists_continuous_zero_one_of_isClosed exists_continuous_zero_one_of_isClosed
+#align exists_continuous_zero_one_of_closed exists_continuous_zero_one_of_isClosed
 
 /-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
 space `X`, with `s` compact and `t` closed, then there exists a continuous
