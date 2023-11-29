@@ -711,8 +711,7 @@ instance : EnoughProjectives (Rep k G) :=
 standard resolution of `k` called `groupCohomology.resolution k G`. -/
 def groupCohomology.extIso (V : Rep k G) (n : ℕ) :
     ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
-      (((((linearYoneda k (Rep k G)).obj V).rightOp.mapHomologicalComplex _).obj
-              (groupCohomology.resolution k G)).homology n).unop :=
+      ((groupCohomology.resolution k G).linearYonedaObj k V).homology n :=
   (groupCohomology.projectiveResolution k G).isoExt n V
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.Ext_iso groupCohomology.extIso

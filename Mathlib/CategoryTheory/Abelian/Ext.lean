@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Adam Topaz
 -/
 import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.Algebra.Homology.Opposite
 import Mathlib.CategoryTheory.Abelian.LeftDerived
 import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Abelian.ProjectiveResolution
@@ -60,18 +61,27 @@ set_option linter.uppercaseLean3 false in
 
 open ZeroObject
 
+variable {R C}
+
+/-- Given a chain complex `X` and and object `Y`, this is the cochain complex
+which in degree `i` consists of the module of morphisms `X.X i ⟶ Y`. -/
+@[simps! X d]
+def ChainComplex.linearYonedaObj {α : Type*} [AddRightCancelSemigroup α] [One α]
+    (X : ChainComplex C α) (A : Type*) [Ring A] [Linear A C] (Y : C):
+    CochainComplex (ModuleCat A) α :=
+  ((((linearYoneda A C).obj Y).rightOp.mapHomologicalComplex _).obj X).unop
+
 namespace CategoryTheory
 
 namespace ProjectiveResolution
 
-variable {R C}
 variable {X : C} (P : ProjectiveResolution X)
 
 /-- `Ext` can be computed using a projective resolution. -/
 def isoExt (n : ℕ) (Y : C) : ((Ext R C n).obj (Opposite.op X)).obj Y ≅
-    (((Functor.mapHomologicalComplex ((linearYoneda R C).obj Y).rightOp
-      (ComplexShape.down ℕ)).obj P.complex).homology n).unop :=
-  (P.isoLeftDerivedObj ((linearYoneda R C).obj Y).rightOp n).unop.symm
+    (P.complex.linearYonedaObj R Y).homology n :=
+  (P.isoLeftDerivedObj ((linearYoneda R C).obj Y).rightOp n).unop.symm ≪≫
+    (HomologicalComplex.homologyUnop _ _).symm
 
 end ProjectiveResolution
 
@@ -80,12 +90,12 @@ end CategoryTheory
 /-- If `X : C` is projective and `n : ℕ`, then `Ext^(n + 1) X Y ≅ 0` for any `Y`. -/
 lemma isZero_Ext_succ_of_projective (X Y : C) [Projective X] (n : ℕ) :
     IsZero (((Ext R C (n + 1)).obj (Opposite.op X)).obj Y) := by
-  refine IsZero.of_iso (IsZero.unop ?_) ((ProjectiveResolution.self X).isoExt (n + 1) Y)
+  refine IsZero.of_iso ?_ ((ProjectiveResolution.self X).isoExt (n + 1) Y)
   rw [← HomologicalComplex.exactAt_iff_isZero_homology, HomologicalComplex.exactAt_iff]
-  refine ShortComplex.exact_of_isZero_X₂ _ (IsZero.op ?_)
+  refine ShortComplex.exact_of_isZero_X₂ _ ?_
   dsimp
   rw [IsZero.iff_id_eq_zero]
   ext (x : _ ⟶ _)
-  obtain rfl : x = 0 :=
-    (HomologicalComplex.isZero_single_obj_X _ _ _ _ (by simp)).eq_of_src _ _
+  obtain rfl : x = 0 := (HomologicalComplex.isZero_single_obj_X
+    (ComplexShape.down ℕ) 0 X (n + 1) (by simp)).eq_of_src _ _
   rfl
