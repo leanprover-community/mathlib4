@@ -39,7 +39,7 @@ def FintypeCat.toLightProfinite (X : FintypeCat) : LightProfinite where
   diagram := (Functor.const _).obj X
   cone := {
     pt := toProfinite.obj X
-    π := Iso.refl _ }
+    π := (Iso.refl _).hom }
   isLimit := {
     lift := fun s ↦ s.π.app ⟨0⟩
     fac := fun s j ↦ (s.π.naturality (homOfLE (zero_le (unop j))).op)
@@ -93,7 +93,7 @@ instance {X : LightProfinite} : T2Space ((forget LightProfinite).obj X) :=
   (inferInstance : T2Space X.cone.pt )
 
 /-- The explicit functor `FintypeCat ⥤ LightProfinite`.  -/
-def fintypeCatToLightProfinite : FintypeCat ⥤ LightProfinite where
+def fintypeCatToLightProfinite : FintypeCat ⥤ LightProfinite.{u} where
   obj X := X.toLightProfinite
   map f := FintypeCat.toProfinite.map f
 
@@ -113,15 +113,15 @@ def LightProfinite'.toProfinite (S : LightProfinite') : Profinite :=
 instance : Category LightProfinite' := InducedCategory.category LightProfinite'.toProfinite
 
 /-- The functor part of the equivalence of categories `LightProfinite' ≌ LightProfinite`. -/
-def smallToLight : LightProfinite' ⥤ LightProfinite where
+def LightProfinite'.toLightFunctor : LightProfinite'.{u} ⥤ LightProfinite.{u} where
   obj X := ⟨X.diagram ⋙ Skeleton.equivalence.functor, _, limit.isLimit _⟩
   map f := f
 
-instance : Faithful smallToLight := ⟨id⟩
+instance : Faithful LightProfinite'.toLightFunctor.{u} := ⟨id⟩
 
-instance : Full smallToLight := ⟨id, fun _ ↦ rfl⟩
+instance : Full LightProfinite'.toLightFunctor.{u} := ⟨id, fun _ ↦ rfl⟩
 
-instance : EssSurj smallToLight where
+instance : EssSurj LightProfinite'.toLightFunctor.{u} where
   mem_essImage Y := by
     let i : limit (((Y.diagram ⋙ Skeleton.equivalence.inverse) ⋙ Skeleton.equivalence.functor) ⋙
       toProfinite) ≅ Y.cone.pt := (Limits.lim.mapIso (isoWhiskerRight ((Functor.associator _ _ _) ≪≫
@@ -130,12 +130,13 @@ instance : EssSurj smallToLight where
     exact ⟨⟨Y.diagram ⋙ Skeleton.equivalence.inverse⟩, ⟨⟨i.hom, i.inv, i.hom_inv_id, i.inv_hom_id⟩⟩⟩
     -- why can't I just write `i` instead of `⟨i.hom, i.inv, i.hom_inv_id, i.inv_hom_id⟩`?
 
-instance : IsEquivalence smallToLight := Equivalence.ofFullyFaithfullyEssSurj _
+instance : IsEquivalence LightProfinite'.toLightFunctor := Equivalence.ofFullyFaithfullyEssSurj _
 
 /-- The equivalence beween `LightProfinite` and a small category. -/
-def LightProfinite.equivSmall : LightProfinite ≌ LightProfinite' := smallToLight.asEquivalence.symm
+def LightProfinite.equivSmall : LightProfinite.{u} ≌ LightProfinite'.{u} :=
+  LightProfinite'.toLightFunctor.asEquivalence.symm
 
-instance : EssentiallySmall LightProfinite where
+instance : EssentiallySmall LightProfinite.{u} where
   equiv_smallCategory := ⟨LightProfinite', inferInstance, ⟨LightProfinite.equivSmall⟩⟩
 
 end EssentiallySmall
