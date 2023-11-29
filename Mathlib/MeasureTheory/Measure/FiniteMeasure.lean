@@ -175,6 +175,11 @@ theorem ennreal_mass {μ : FiniteMeasure Ω} : (μ.mass : ℝ≥0∞) = (μ : Me
 instance instZero : Zero (FiniteMeasure Ω) where zero := ⟨0, MeasureTheory.isFiniteMeasureZero⟩
 #align measure_theory.finite_measure.has_zero MeasureTheory.FiniteMeasure.instZero
 
+@[simp] lemma coe_zero : ((↑) : FiniteMeasure Ω → Measure Ω) (0 : FiniteMeasure Ω) = 0 := by
+  ext s
+  simp only [Measure.zero_toOuterMeasure, OuterMeasure.coe_zero, Pi.zero_apply]
+  rfl
+
 @[simp]
 theorem zero_mass : (0 : FiniteMeasure Ω).mass = 0 :=
   rfl
