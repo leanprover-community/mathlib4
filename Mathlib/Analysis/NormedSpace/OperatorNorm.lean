@@ -1833,7 +1833,7 @@ def smulRightL : (E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] F�
     1 fun c x => (norm_smulRight_apply c x).le.trans_eq <| by simp
     -- was
     -- simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
-         le_refl]
+    --   le_refl]
     -- after `=>` above
     -- Now it fails to use `AddHom.coe_mk`. WHY?
 #align continuous_linear_map.smul_rightL ContinuousLinearMap.smulRightL
