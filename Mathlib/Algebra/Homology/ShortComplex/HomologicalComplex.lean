@@ -651,4 +651,4 @@ lemma isIso_liftCycles_iff (K : CochainComplex C ℕ) {X : C} (φ : X ⟶ K.X 0)
   exact (ShortComplex.quasiIso_iff_isIso_liftCycles α rfl rfl (by simp)).symm.trans
     (ShortComplex.quasiIso_iff_of_zeros α rfl rfl (by simp))
 
-namespace CochainComplex
+end CochainComplex
