@@ -91,7 +91,7 @@ span. -/
 irreducible_def areaForm : E →ₗ[ℝ] E →ₗ[ℝ] ℝ := by
   let z : E [Λ^Fin 0]→ₗ[ℝ] ℝ ≃ₗ[ℝ] ℝ :=
     AlternatingMap.constLinearEquivOfIsEmpty.symm
-  let y : E [Λ^Fin 0]→ₗ[ℝ] ℝ →ₗ[ℝ] E →ₗ[ℝ] ℝ :=
+  let y : E [Λ^Fin 1]→ₗ[ℝ] ℝ →ₗ[ℝ] E →ₗ[ℝ] ℝ :=
     LinearMap.llcomp ℝ E (E [Λ^Fin 0]→ₗ[ℝ] ℝ) ℝ z ∘ₗ AlternatingMap.curryLeftLinearMap
   exact y ∘ₗ AlternatingMap.curryLeftLinearMap (R' := ℝ) o.volumeForm
 #align orientation.area_form Orientation.areaForm
