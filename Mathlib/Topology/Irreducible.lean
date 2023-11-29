@@ -89,15 +89,15 @@ theorem exists_preirreducible (s : Set X) (H : IsPreirreducible s) :
   let ⟨m, hm, hsm, hmm⟩ :=
     zorn_subset_nonempty { t : Set X | IsPreirreducible t }
       (fun c hc hcc _ =>
-        ⟨⋃₀ c, fun u v hu hv ⟨y, hy, hyu⟩ ⟨z, hz, hzv⟩ =>
+        ⟨⋃₀ c, fun u v hu hv ⟨y, hy, hyu⟩ ⟨x, hx, hxv⟩ =>
           let ⟨p, hpc, hyp⟩ := mem_sUnion.1 hy
-          let ⟨q, hqc, hzq⟩ := mem_sUnion.1 hz
+          let ⟨q, hqc, hxq⟩ := mem_sUnion.1 hx
           Or.casesOn (hcc.total hpc hqc)
             (fun hpq : p ⊆ q =>
-              let ⟨x, hxp, hxuv⟩ := hc hqc u v hu hv ⟨y, hpq hyp, hyu⟩ ⟨z, hzq, hzv⟩
+              let ⟨x, hxp, hxuv⟩ := hc hqc u v hu hv ⟨y, hpq hyp, hyu⟩ ⟨x, hxq, hxv⟩
               ⟨x, mem_sUnion_of_mem hxp hqc, hxuv⟩)
             fun hqp : q ⊆ p =>
-            let ⟨x, hxp, hxuv⟩ := hc hpc u v hu hv ⟨y, hyp, hyu⟩ ⟨z, hqp hzq, hzv⟩
+            let ⟨x, hxp, hxuv⟩ := hc hpc u v hu hv ⟨y, hyp, hyu⟩ ⟨x, hqp hxq, hxv⟩
             ⟨x, mem_sUnion_of_mem hxp hpc, hxuv⟩,
           fun _ hxc => subset_sUnion_of_mem hxc⟩)
       s H
@@ -209,12 +209,12 @@ theorem IsPreirreducible.image (H : IsPreirreducible s) (f : X → Y) (hf : Cont
   have := H u' v' hu' hv'
   rw [inter_comm s u', ← u'_eq] at this
   rw [inter_comm s v', ← v'_eq] at this
-  rcases this ⟨x, hxu, hx⟩ ⟨y, hyv, hy⟩ with ⟨z, hzs, hzu', hzv'⟩
-  refine' ⟨f z, mem_image_of_mem f hzs, _, _⟩
+  rcases this ⟨x, hxu, hx⟩ ⟨y, hyv, hy⟩ with ⟨x, hxs, hxu', hxv'⟩
+  refine' ⟨f x, mem_image_of_mem f hxs, _, _⟩
   all_goals
     rw [← mem_preimage]
     apply mem_of_mem_inter_left
-    show z ∈ _ ∩ s
+    show x ∈ _ ∩ s
     simp [*]
 #align is_preirreducible.image IsPreirreducible.image
 
@@ -226,8 +226,8 @@ theorem IsIrreducible.image (H : IsIrreducible s) (f : X → Y) (hf : Continuous
 theorem Subtype.preirreducibleSpace (h : IsPreirreducible s) : PreirreducibleSpace s where
   isPreirreducible_univ := by
     rintro _ _ ⟨u, hu, rfl⟩ ⟨v, hv, rfl⟩ ⟨⟨x, hxs⟩, -, hxu⟩ ⟨⟨y, hys⟩, -, hyv⟩
-    rcases h u v hu hv ⟨x, hxs, hxu⟩ ⟨y, hys, hyv⟩ with ⟨z, hzs, ⟨hzu, hzv⟩⟩
-    exact ⟨⟨z, hzs⟩, ⟨Set.mem_univ _, ⟨hzu, hzv⟩⟩⟩
+    rcases h u v hu hv ⟨x, hxs, hxu⟩ ⟨y, hys, hyv⟩ with ⟨x, hxs, ⟨hxu, hxv⟩⟩
+    exact ⟨⟨x, hxs⟩, ⟨Set.mem_univ _, ⟨hxu, hxv⟩⟩⟩
 #align subtype.preirreducible_space Subtype.preirreducibleSpace
 
 theorem Subtype.irreducibleSpace (h : IsIrreducible s) : IrreducibleSpace s where
