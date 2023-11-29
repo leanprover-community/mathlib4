@@ -253,7 +253,7 @@ theorem LinearIndependent.map (hv : LinearIndependent R v) {f : M →ₗ[R] M'}
   unfold LinearIndependent at hv ⊢
   rw [hv, le_bot_iff] at hf_inj
   haveI : Inhabited M := ⟨0⟩
-  rw [Finsupp.total_comp, @Finsupp.lmapDomain_total _ _ R _ _ _ _ _ _ _ _ _ _ f, LinearMap.ker_comp,
+  rw [Finsupp.total_comp, Finsupp.lmapDomain_total _ _ f, LinearMap.ker_comp,
     hf_inj]
   exact fun _ => rfl
 #align linear_independent.map LinearIndependent.map
