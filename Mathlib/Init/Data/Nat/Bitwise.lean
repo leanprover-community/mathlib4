@@ -189,8 +189,8 @@ theorem shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
   | 0 => rfl
   | n + 1 => by
     have : 2 * (m * 2^n) = 2^(n+1)*m := by
-      rw [Nat.mul_comm, Nat.mul_assoc, ← pow_succ]; simp
-    simp [shiftLeft', bit_val, shiftLeft'_false, this]
+      rw [Nat.mul_comm, Nat.mul_assoc, Nat.mul_comm, ← pow_succ]
+    simp [shiftLeft', shiftLeft_eq, bit_val, shiftLeft'_false, this]
 
 /-- Std4 takes the unprimed name for `Nat.shiftLeft_eq m n : m <<< n = m * 2 ^ n`. -/
 @[simp]
@@ -199,7 +199,7 @@ lemma shiftLeft_eq' (m n : Nat) : shiftLeft m n = m <<< n := rfl
 @[simp]
 lemma shiftRight_eq (m n : Nat) : shiftRight m n = m >>> n := rfl
 
-/-- `testBit m n` returns whether the `(n+1)ˢᵗ` least significant bit is `1` or `0`-/
+/-- `testBit' m n` returns whether the `(n+1)ˢᵗ` least significant bit is `1` or `0`-/
 -- Std has adopted a new and different definition of `testBit`.
 -- This should be removed.
 def testBit' (m n : ℕ) : Bool :=
@@ -304,7 +304,7 @@ theorem testBit'_zero (b n) : testBit' (bit b n) 0 = b :=
 
 theorem testBit'_succ (m b n) : testBit' (bit b n) (succ m) = testBit' n m := by
   have : bodd (((bit b n) >>> 1) >>> m) = bodd (n >>> m) := by
-    simp only [← shiftRight_eq]
+    simp only [shiftRight_eq_div_pow]
     simp [← div2_val, div2_bit]
   rw [← shiftRight_add, Nat.add_comm] at this
   exact this

@@ -968,9 +968,9 @@ theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n
 #align num.shiftr_to_nat Num.castNum_shiftRight
 
 @[simp]
-theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
+theorem castNum_testBit (m n) : testBit m n = Nat.testBit' m n := by
   -- Porting note: `unfold` → `dsimp only`
-  cases m <;> dsimp only [testBit, Nat.testBit]
+  cases m <;> dsimp only [testBit, Nat.testBit']
   case zero =>
     change false = Nat.bodd (0 >>> n)
     rw [Nat.zero_shiftRight]

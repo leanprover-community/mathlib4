@@ -195,20 +195,20 @@ end deprecated
 
 @[simp]
 theorem testBit_zero (b) : ∀ n, testBit (bit b n) 0 = b
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_zero
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit'_zero
   | -[n+1] => by
-    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit_zero]; clear testBit_zero;
+    rw [bit_negSucc]; dsimp [testBit]; rw [Nat.testBit'_zero]; clear testBit_zero;
         cases b <;>
       rfl
 #align int.test_bit_zero Int.testBit_zero
 
 @[simp]
 theorem testBit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit n m
-  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit_succ
+  | (n : ℕ) => by rw [bit_coe_nat]; apply Nat.testBit'_succ
   | -[n+1] => by
     dsimp only [testBit]
     simp only [bit_negSucc]
-    cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_succ]
+    cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit'_succ]
 #align int.test_bit_succ Int.testBit_succ
 
 -- Porting note: TODO
@@ -338,19 +338,19 @@ theorem testBit_bitwise (f : Bool → Bool → Bool) (m n k) :
 #align int.test_bit_bitwise Int.testBit_bitwise
 
 @[simp]
-theorem testBit_lor (m n k) : testBit (lor m n) k = (testBit m k || testBit n k) := by
+theorem testBit'_lor (m n k) : testBit (lor m n) k = (testBit m k || testBit n k) := by
   rw [← bitwise_or, testBit_bitwise]
-#align int.test_bit_lor Int.testBit_lor
+#align int.test_bit_lor Int.testBit'_lor
 
 @[simp]
-theorem testBit_land (m n k) : testBit (land m n) k = (testBit m k && testBit n k) := by
+theorem testBit'_land (m n k) : testBit (land m n) k = (testBit m k && testBit n k) := by
   rw [← bitwise_and, testBit_bitwise]
-#align int.test_bit_land Int.testBit_land
+#align int.test_bit_land Int.testBit'_land
 
 @[simp]
-theorem testBit_ldiff (m n k) : testBit (ldiff m n) k = (testBit m k && not (testBit n k)) := by
+theorem testBit'_ldiff (m n k) : testBit (ldiff m n) k = (testBit m k && not (testBit n k)) := by
   rw [← bitwise_diff, testBit_bitwise]
-#align int.test_bit_ldiff Int.testBit_ldiff
+#align int.test_bit_ldiff Int.testBit'_ldiff
 
 @[simp]
 theorem testBit_lxor (m n k) : testBit (Int.xor m n) k = xor (testBit m k) (testBit n k) := by
@@ -407,15 +407,15 @@ attribute [local simp] Int.zero_div
 
 theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<< (n : ℤ)) <<< k
   | (m : ℕ), n, (k : ℕ) =>
-    congr_arg ofNat (by simp [Nat.pow_add, mul_assoc])
+    congr_arg ofNat (by simp [Nat.shiftLeft_eq, Nat.pow_add, mul_assoc])
   | -[m+1], n, (k : ℕ) => congr_arg negSucc (Nat.shiftLeft'_add _ _ _ _)
   | (m : ℕ), n, -[k+1] =>
     subNatNat_elim n k.succ (fun n k i => (↑m) <<< i = (Nat.shiftLeft' false m n) >>> k)
       (fun (i n : ℕ) =>
-        by dsimp; simp [- Nat.shiftLeft_eq, ← Nat.shiftLeft_sub _ , add_tsub_cancel_left])
+        by dsimp; simp [← Nat.shiftLeft_sub _ , add_tsub_cancel_left])
       fun i n => by
         dsimp
-        simp [- Nat.shiftLeft_eq, Nat.shiftLeft_zero, Nat.shiftRight_add, ← Nat.shiftLeft_sub]
+        simp [Nat.shiftLeft_zero, Nat.shiftRight_add, ← Nat.shiftLeft_sub]
         rfl
   | -[m+1], n, -[k+1] =>
     subNatNat_elim n k.succ
@@ -433,7 +433,7 @@ theorem shiftLeft_sub (m : ℤ) (n : ℕ) (k : ℤ) : m <<< (n - k) = (m <<< (n 
 #align int.shiftl_sub Int.shiftLeft_sub
 
 theorem shiftLeft_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), m <<< (n : ℤ) = m * (2 ^ n : ℕ)
-  | (m : ℕ), _ => congr_arg ((↑) : ℕ → ℤ) (by simp)
+  | (m : ℕ), _ => congr_arg ((↑) : ℕ → ℤ) (by simp [Nat.shiftLeft_eq])
   | -[_+1], _ => @congr_arg ℕ ℤ _ _ (fun i => -i) (Nat.shiftLeft'_tt_eq_mul_pow _ _)
 #align int.shiftl_eq_mul_pow Int.shiftLeft_eq_mul_pow
 
@@ -445,7 +445,7 @@ theorem shiftRight_eq_div_pow : ∀ (m : ℤ) (n : ℕ), m >>> (n : ℤ) = m / (
 #align int.shiftr_eq_div_pow Int.shiftRight_eq_div_pow
 
 theorem one_shiftLeft (n : ℕ) : 1 <<< (n : ℤ) = (2 ^ n : ℕ) :=
-  congr_arg ((↑) : ℕ → ℤ) (by simp)
+  congr_arg ((↑) : ℕ → ℤ) (by simp [Nat.shiftLeft_eq])
 #align int.one_shiftl Int.one_shiftLeft
 
 @[simp]

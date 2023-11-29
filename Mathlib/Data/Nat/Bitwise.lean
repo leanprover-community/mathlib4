@@ -17,10 +17,10 @@ bitwise properties. In the second half of this file, we show properties of the b
 `lor`, `land` and `xor`, which are defined in core.
 
 ## Main results
-* `eq_of_testBit_eq`: two natural numbers are equal if they have equal bits at every position.
+* `eq_of_testBit'_eq`: two natural numbers are equal if they have equal bits at every position.
 * `exists_most_significant_bit`: if `n ≠ 0`, then there is some position `i` that contains the most
   significant `1`-bit of `n`.
-* `lt_of_testBit`: if `n` and `m` are numbers and `i` is a position such that the `i`-th bit of
+* `lt_of_testBit'`: if `n` and `m` are numbers and `i` is a position such that the `i`-th bit of
   of `n` is zero, the `i`-th bit of `m` is one, and all more significant bits are equal, then
   `n < m`.
 
@@ -127,35 +127,35 @@ theorem xor_bit : ∀ a m b n, bit a m ^^^ bit b n = bit (bne a b) (m ^^^ n) :=
 #align nat.lxor_bit Nat.xor_bit
 
 @[simp]
-theorem testBit_bitwise {f : Bool → Bool → Bool} (h : f false false = false) (m n k) :
-    testBit (bitwise f m n) k = f (testBit m k) (testBit n k) := by
+theorem testBit'_bitwise {f : Bool → Bool → Bool} (h : f false false = false) (m n k) :
+    testBit' (bitwise f m n) k = f (testBit' m k) (testBit' n k) := by
   induction' k with k ih generalizing m n
   <;> cases' m using bitCasesOn with a m
   <;> cases' n using bitCasesOn with b n
   <;> rw [bitwise_bit h]
-  · simp [testBit_zero]
-  · simp [testBit_succ, ih]
-#align nat.test_bit_bitwise Nat.testBit_bitwise
+  · simp [testBit'_zero]
+  · simp [testBit'_succ, ih]
+#align nat.test_bit_bitwise Nat.testBit'_bitwise
 
 @[simp]
-theorem testBit_lor : ∀ m n k, testBit (m ||| n) k = (testBit m k || testBit n k) :=
-  testBit_bitwise rfl
-#align nat.test_bit_lor Nat.testBit_lor
+theorem testBit'_lor : ∀ m n k, testBit' (m ||| n) k = (testBit' m k || testBit' n k) :=
+  testBit'_bitwise rfl
+#align nat.test_bit_lor Nat.testBit'_lor
 
 @[simp]
-theorem testBit_land : ∀ m n k, testBit (m &&& n) k = (testBit m k && testBit n k) :=
-  testBit_bitwise rfl
-#align nat.test_bit_land Nat.testBit_land
+theorem testBit'_land : ∀ m n k, testBit' (m &&& n) k = (testBit' m k && testBit' n k) :=
+  testBit'_bitwise rfl
+#align nat.test_bit_land Nat.testBit'_land
 
 @[simp]
-theorem testBit_ldiff : ∀ m n k, testBit (ldiff m n) k = (testBit m k && not (testBit n k)) :=
-  testBit_bitwise rfl
-#align nat.test_bit_ldiff Nat.testBit_ldiff
+theorem testBit'_ldiff : ∀ m n k, testBit' (ldiff m n) k = (testBit' m k && not (testBit' n k)) :=
+  testBit'_bitwise rfl
+#align nat.test_bit_ldiff Nat.testBit'_ldiff
 
 @[simp]
-theorem testBit_xor : ∀ m n k, testBit (m ^^^ n) k = bne (testBit m k) (testBit n k) :=
-  testBit_bitwise rfl
-#align nat.test_bit_lxor Nat.testBit_xor
+theorem testBit'_xor : ∀ m n k, testBit' (m ^^^ n) k = bne (testBit' m k) (testBit' n k) :=
+  testBit'_bitwise rfl
+#align nat.test_bit_lxor Nat.testBit'_xor
 
 end
 
@@ -207,45 +207,45 @@ lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
       simp_rw [binaryRec_of_ne_zero _ _ hyb, bitwise_of_ne_zero hxb hyb, bodd_bit, ←div2_val,
         div2_bit, eq_rec_constant, ih]
 
-theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n = 0 := by
+theorem zero_of_testBit'_eq_false {n : ℕ} (h : ∀ i, testBit' n i = false) : n = 0 := by
   induction' n using Nat.binaryRec with b n hn
   · rfl
   · have : b = false := by simpa using h 0
-    rw [this, bit_false, bit0_val, hn fun i => by rw [← h (i + 1), testBit_succ], mul_zero]
-#align nat.zero_of_test_bit_eq_ff Nat.zero_of_testBit_eq_false
+    rw [this, bit_false, bit0_val, hn fun i => by rw [← h (i + 1), testBit'_succ], mul_zero]
+#align nat.zero_of_test_bit_eq_ff Nat.zero_of_testBit'_eq_false
 
-theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
-  simp [testBit, shiftRight_eq_div_pow, Nat.div_eq_of_lt h]
+theorem testBit'_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit' i = false := by
+  simp [testBit', shiftRight_eq_div_pow, Nat.div_eq_of_lt h]
 
 @[simp]
-theorem zero_testBit (i : ℕ) : testBit 0 i = false := by
-  simp only [testBit, zero_shiftRight, bodd_zero]
+theorem zero_testBit' (i : ℕ) : testBit' 0 i = false := by
+  simp only [testBit', zero_shiftRight, bodd_zero]
 #align nat.zero_test_bit Nat.zero_testBit
 
 /-- The ith bit is the ith element of `n.bits`. -/
-theorem testBit_eq_inth (n i : ℕ) : n.testBit i = n.bits.getI i := by
+theorem testBit'_eq_inth (n i : ℕ) : n.testBit' i = n.bits.getI i := by
   induction' i with i ih generalizing n
-  · simp [testBit, bodd_eq_bits_head, List.getI_zero_eq_headI]
+  · simp [testBit', bodd_eq_bits_head, List.getI_zero_eq_headI]
   conv_lhs => rw [← bit_decomp n]
-  rw [testBit_succ, ih n.div2, div2_bits_eq_tail]
+  rw [testBit'_succ, ih n.div2, div2_bits_eq_tail]
   cases n.bits <;> simp
-#align nat.test_bit_eq_inth Nat.testBit_eq_inth
+#align nat.test_bit_eq_inth Nat.testBit'_eq_inth
 
 /-- Bitwise extensionality: Two numbers agree if they agree at every bit position. -/
-theorem eq_of_testBit_eq {n m : ℕ} (h : ∀ i, testBit n i = testBit m i) : n = m := by
+theorem eq_of_testBit'_eq {n m : ℕ} (h : ∀ i, testBit' n i = testBit' m i) : n = m := by
   induction' n using Nat.binaryRec with b n hn generalizing m
-  · simp only [zero_testBit] at h
-    exact (zero_of_testBit_eq_false fun i => (h i).symm).symm
+  · simp only [zero_testBit'] at h
+    exact (zero_of_testBit'_eq_false fun i => (h i).symm).symm
   induction' m using Nat.binaryRec with b' m
-  · simp only [zero_testBit] at h
-    exact zero_of_testBit_eq_false h
+  · simp only [zero_testBit'] at h
+    exact zero_of_testBit'_eq_false h
   suffices h' : n = m by
     rw [h', show b = b' by simpa using h 0]
-  exact hn fun i => by convert h (i + 1) using 1 <;> rw [testBit_succ]
-#align nat.eq_of_test_bit_eq Nat.eq_of_testBit_eq
+  exact hn fun i => by convert h (i + 1) using 1 <;> rw [testBit'_succ]
+#align nat.eq_of_test_bit_eq Nat.eq_of_testBit'_eq
 
 theorem exists_most_significant_bit {n : ℕ} (h : n ≠ 0) :
-    ∃ i, testBit n i = true ∧ ∀ j, i < j → testBit n j = false := by
+    ∃ i, testBit' n i = true ∧ ∀ j, i < j → testBit' n j = false := by
   induction' n using Nat.binaryRec with b n hn
   · exact False.elim (h rfl)
   by_cases h' : n = 0
@@ -253,35 +253,35 @@ theorem exists_most_significant_bit {n : ℕ} (h : n ≠ 0) :
     rw [show b = true by
         revert h
         cases b <;> simp]
-    refine' ⟨0, ⟨by rw [testBit_zero], fun j hj => _⟩⟩
+    refine' ⟨0, ⟨by rw [testBit'_zero], fun j hj => _⟩⟩
     obtain ⟨j', rfl⟩ := exists_eq_succ_of_ne_zero (ne_of_gt hj)
-    rw [testBit_succ, zero_testBit]
+    rw [testBit'_succ, zero_testBit']
   · obtain ⟨k, ⟨hk, hk'⟩⟩ := hn h'
-    refine' ⟨k + 1, ⟨by rw [testBit_succ, hk], fun j hj => _⟩⟩
+    refine' ⟨k + 1, ⟨by rw [testBit'_succ, hk], fun j hj => _⟩⟩
     obtain ⟨j', rfl⟩ := exists_eq_succ_of_ne_zero (show j ≠ 0 by intro x; subst x; simp at hj)
-    exact (testBit_succ _ _ _).trans (hk' _ (lt_of_succ_lt_succ hj))
+    exact (testBit'_succ _ _ _).trans (hk' _ (lt_of_succ_lt_succ hj))
 #align nat.exists_most_significant_bit Nat.exists_most_significant_bit
 
-theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : testBit m i = true)
-    (hnm : ∀ j, i < j → testBit n j = testBit m j) : n < m := by
+theorem lt_of_testBit' {n m : ℕ} (i : ℕ) (hn : testBit' n i = false) (hm : testBit' m i = true)
+    (hnm : ∀ j, i < j → testBit' n j = testBit' m j) : n < m := by
   induction' n using Nat.binaryRec with b n hn' generalizing i m
   · contrapose! hm
     rw [le_zero_iff] at hm
     simp [hm]
   induction' m using Nat.binaryRec with b' m hm' generalizing i
-  · exact False.elim (Bool.false_ne_true ((zero_testBit i).symm.trans hm))
+  · exact False.elim (Bool.false_ne_true ((zero_testBit' i).symm.trans hm))
   by_cases hi : i = 0
   · subst hi
-    simp only [testBit_zero] at hn hm
+    simp only [testBit'_zero] at hn hm
     have : n = m :=
-      eq_of_testBit_eq fun i => by convert hnm (i + 1) (Nat.zero_lt_succ _) using 1
-      <;> rw [testBit_succ]
+      eq_of_testBit'_eq fun i => by convert hnm (i + 1) (Nat.zero_lt_succ _) using 1
+      <;> rw [testBit'_succ]
     rw [hn, hm, this, bit_false, bit_true, bit0_val, bit1_val]
     exact lt_add_one _
   · obtain ⟨i', rfl⟩ := exists_eq_succ_of_ne_zero hi
-    simp only [testBit_succ] at hn hm
+    simp only [testBit'_succ] at hn hm
     have :=
-      hn' _ hn hm fun j hj => by convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_succ]
+      hn' _ hn hm fun j hj => by convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit'_succ]
     have this' : 2 * n < 2 * m := Nat.mul_lt_mul' (le_refl _) this two_pos
     cases b <;> cases b'
     <;> simp only [bit_false, bit_true, bit0_val n, bit1_val n, bit0_val m, bit1_val m]
@@ -291,15 +291,15 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
         2 * n + 1 < 2 * n + 2 := lt.base _
         _ ≤ 2 * m := mul_le_mul_left 2 this
     · exact Nat.succ_lt_succ this'
-#align nat.lt_of_test_bit Nat.lt_of_testBit
+#align nat.lt_of_test_bit Nat.lt_of_testBit'
 
 @[simp]
-theorem testBit_two_pow_self (n : ℕ) : testBit (2 ^ n) n = true := by
-  rw [testBit, shiftRight_eq_div_pow, Nat.div_self (pow_pos (α := ℕ) zero_lt_two n), bodd_one]
-#align nat.test_bit_two_pow_self Nat.testBit_two_pow_self
+theorem testBit'_two_pow_self (n : ℕ) : testBit' (2 ^ n) n = true := by
+  rw [testBit', shiftRight_eq_div_pow, Nat.div_self (pow_pos (α := ℕ) zero_lt_two n), bodd_one]
+#align nat.test_bit_two_pow_self Nat.testBit'_two_pow_self
 
-theorem testBit_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit (2 ^ n) m = false := by
-  rw [testBit, shiftRight_eq_div_pow]
+theorem testBit'_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit' (2 ^ n) m = false := by
+  rw [testBit', shiftRight_eq_div_pow]
   cases' hm.lt_or_lt with hm hm
   · rw [Nat.div_eq_of_lt, bodd_zero]
     exact Nat.pow_lt_pow_of_lt_right one_lt_two hm
@@ -309,15 +309,15 @@ theorem testBit_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit (2 ^ n) m = f
     simp only [ge_iff_le, tsub_le_iff_right, pow_succ, bodd_mul,
       Bool.and_eq_false_eq_eq_false_or_eq_false, or_true]
     exact Or.inr rfl
-#align nat.test_bit_two_pow_of_ne Nat.testBit_two_pow_of_ne
+#align nat.test_bit_two_pow_of_ne Nat.testBit'_two_pow_of_ne
 
-theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
+theorem testBit'_two_pow (n m : ℕ) : testBit' (2 ^ n) m = (n = m) := by
   by_cases h : n = m
   · cases h
     simp
-  · rw [testBit_two_pow_of_ne h]
+  · rw [testBit'_two_pow_of_ne h]
     simp [h]
-#align nat.test_bit_two_pow Nat.testBit_two_pow
+#align nat.test_bit_two_pow Nat.testBit'_two_pow
 
 theorem bitwise_swap {f : Bool → Bool → Bool} :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
@@ -353,15 +353,15 @@ theorem xor_comm (n m : ℕ) : n ^^^ m = m ^^^ n :=
   bitwise_comm (Bool.bne_eq_xor ▸ Bool.xor_comm) n m
 #align nat.lxor_comm Nat.xor_comm
 
-lemma and_two_pow (n i : ℕ) : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
-  refine eq_of_testBit_eq fun j => ?_
-  obtain rfl | hij := Decidable.eq_or_ne i j <;> cases' h : n.testBit i
+lemma and_two_pow (n i : ℕ) : n &&& 2 ^ i = (n.testBit' i).toNat * 2 ^ i := by
+  refine eq_of_testBit'_eq fun j => ?_
+  obtain rfl | hij := Decidable.eq_or_ne i j <;> cases' h : n.testBit' i
   · simp [h]
   · simp [h]
-  · simp [h, testBit_two_pow_of_ne hij]
-  · simp [h, testBit_two_pow_of_ne hij]
+  · simp [h, testBit'_two_pow_of_ne hij]
+  · simp [h, testBit'_two_pow_of_ne hij]
 
-lemma two_pow_and (n i : ℕ) : 2 ^ i &&& n = 2 ^ i * (n.testBit i).toNat := by
+lemma two_pow_and (n i : ℕ) : 2 ^ i &&& n = 2 ^ i * (n.testBit' i).toNat := by
   rw [mul_comm, land_comm, and_two_pow]
 
 @[simp]
@@ -416,7 +416,7 @@ theorem lor_assoc (n m k : ℕ) : (n ||| m) ||| k = n ||| (m ||| k) := by bitwis
 
 @[simp]
 theorem xor_self (n : ℕ) : n ^^^ n = 0 :=
-  zero_of_testBit_eq_false fun i => by simp
+  zero_of_testBit'_eq_false fun i => by simp
 #align nat.lxor_self Nat.xor_self
 
 -- These lemmas match `mul_inv_cancel_right` and `mul_inv_cancel_left`.
@@ -475,9 +475,9 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ≠ b ^^^ c) :
   -- If `i` is the position of the most significant bit of `v`, then at least one of `a`, `b`, `c`
   -- has a one bit at position `i`.
   obtain ⟨i, ⟨hi, hi'⟩⟩ := exists_most_significant_bit (xor_ne_zero.2 h)
-  have : testBit a i = true ∨ testBit b i = true ∨ testBit c i = true := by
+  have : testBit' a i = true ∨ testBit' b i = true ∨ testBit' c i = true := by
     contrapose! hi
-    simp only [Bool.eq_false_eq_not_eq_true, Ne, testBit_xor, Bool.bne_eq_xor] at hi ⊢
+    simp only [Bool.eq_false_eq_not_eq_true, Ne, testBit'_xor, Bool.bne_eq_xor] at hi ⊢
     rw [hi.1, hi.2.1, hi.2.2, Bool.xor_false, Bool.xor_false]
   -- If, say, `a` has a one bit at position `i`, then `a xor v` has a zero bit at position `i`, but
   -- the same bits as `a` in positions greater than `j`, so `a xor v < a`.
@@ -486,13 +486,13 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ≠ b ^^^ c) :
   on_goal 2 => right; left; rw [hac]
   on_goal 3 => right; right; rw [hab]
   all_goals
-    exact lt_of_testBit i (by
+    exact lt_of_testBit' i (by
       -- Porting note: this was originally `simp [h, hi]`
-      rw [Nat.testBit_xor, h, Bool.bne_eq_xor, Bool.true_xor,hi]
+      rw [Nat.testBit'_xor, h, Bool.bne_eq_xor, Bool.true_xor,hi]
       rfl
     ) h fun j hj => by
       -- Porting note: this was originally `simp [hi' _ hj]`
-      rw [Nat.testBit_xor, hi' _ hj, Bool.bne_eq_xor, Bool.xor_false, eq_self_iff_true]
+      rw [Nat.testBit'_xor, hi' _ hj, Bool.bne_eq_xor, Bool.xor_false, eq_self_iff_true]
       trivial
 #align nat.lxor_trichotomy Nat.xor_trichotomy
 

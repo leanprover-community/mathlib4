@@ -41,8 +41,8 @@ def bit (b : Bool) : ℤ → ℤ :=
 
 /-- `testBit m n` returns whether the `(n+1)ˢᵗ` least significant bit is `1` or `0`-/
 def testBit : ℤ → ℕ → Bool
-  | (m : ℕ), n => Nat.testBit m n
-  | -[m +1], n => !(Nat.testBit m n)
+  | (m : ℕ), n => Nat.testBit' m n
+  | -[m +1], n => !(Nat.testBit' m n)
 #align int.test_bit Int.testBit
 
 /-- `Int.natBitwise` is an auxiliary definition for `Int.bitwise`. -/
