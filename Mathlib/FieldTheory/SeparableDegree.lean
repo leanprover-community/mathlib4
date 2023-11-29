@@ -495,7 +495,7 @@ def rootsExpandPowEquivRoots
 
 /-- If a field `F` is of exponential characteristic `q`, then `Polynomial.expand F (q ^ n) f`
 and `f` have the same separable degree. -/
-theorem natSepDegree_expand_eq_natSepDegree (q : ℕ) [hF : ExpChar F q] :
+theorem natSepDegree_expand_eq_natSepDegree (q : ℕ) [hF : ExpChar F q] {n : ℕ} :
     (expand F (q ^ n) f).natSepDegree = f.natSepDegree := by
   cases' hF with hchar _ hprime hchar
   · simp only [one_pow, expand_one]
