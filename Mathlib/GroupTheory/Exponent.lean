@@ -236,6 +236,21 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
 #align nat.prime.exists_order_of_eq_pow_factorization_exponent Nat.Prime.exists_orderOf_eq_pow_factorization_exponent
 #align nat.prime.exists_order_of_eq_pow_padic_val_nat_add_exponent Nat.Prime.exists_addOrderOf_eq_pow_padic_val_nat_add_exponent
 
+/-- A nontrivial monoid has prime exponent `p` if and only if every non-identity element has
+order `p`. -/
+@[to_additive]
+lemma exponent_eq_prime_iff {G : Type*} [Monoid G] [Nontrivial G] {p : ℕ} (hp : p.Prime) :
+    Monoid.exponent G = p ↔ ∀ g : G, g ≠ 1 → orderOf g = p := by
+  refine ⟨fun hG g hg ↦ ?_, fun h ↦ dvd_antisymm ?_ ?_⟩
+  · rw [Ne.def, ←orderOf_eq_one_iff] at hg
+    exact Eq.symm <| (hp.dvd_iff_eq hg).mp <| hG ▸ Monoid.order_dvd_exponent g
+  · apply Monoid.exponent_dvd_of_forall_pow_eq_one G p fun g ↦ ?_
+    by_cases hg : g = 1
+    · simp [hg]
+    . simpa [h g hg] using pow_orderOf_eq_one g
+  · obtain ⟨g, hg⟩ := exists_ne (1 : G)
+    simpa [h g hg] using Monoid.order_dvd_exponent g
+
 variable {G}
 
 @[to_additive]
