@@ -43,7 +43,7 @@ namespace CategoryTheory.Over
 
 instance hasColimit_of_hasColimit_comp_forget (F : J ⥤ Over X) [i : HasColimit (F ⋙ forget X)] :
     HasColimit F :=
-  @CostructuredArrow.hasColimit _ _ _ _ _ _ _ _ _ i _
+  CostructuredArrow.hasColimit (i₁ := i)
 #align category_theory.over.has_colimit_of_has_colimit_comp_forget CategoryTheory.Over.hasColimit_of_hasColimit_comp_forget
 
 instance [HasColimitsOfShape J C] : HasColimitsOfShape J (Over X) where
