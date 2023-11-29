@@ -322,7 +322,7 @@ instance (E : Set α) (Indep : Set α → Prop) indep_empty indep_subset indep_a
   obtain ⟨n, hn⟩ := h_bdd
   exact finite_of_encard_le_coe <| hn B (by simpa using hB.indep)
 
-    /-- If there is an absolute upper bound on the size of an independent set, then matroids
+/-- If there is an absolute upper bound on the size of an independent set, then matroids
   can be defined using an 'augmentation' axiom similar to the standard definition of
   finite matroids for independent sets. -/
 protected def ofBddAugment (E : Set α) (Indep : Set α → Prop)
