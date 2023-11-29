@@ -114,12 +114,14 @@ coercions such as `Submodule.subtype (A i)`, and the `[GMonoid A]` structure ori
 can be discharged by `rfl`. -/
 @[simps]
 def toAlgebra (f : ∀ i, A i →ₗ[R] B) (hone : f _ GradedMonoid.GOne.one = 1)
-    (hmul : ∀ {i j} (ai : A i) (aj : A j), f _ (GradedMonoid.GMul.mul ai aj) = f _ ai * f _ aj)
-    (hcommutes : ∀ r, (f 0) (GAlgebra.toFun r) = (algebraMap R B) r) : (⨁ i, A i) →ₐ[R] B :=
-  { toSemiring (fun i => (f i).toAddMonoidHom) hone
-      @hmul with
+    (hmul : ∀ {i j} (ai : A i) (aj : A j), f _ (GradedMonoid.GMul.mul ai aj) = f _ ai * f _ aj) :
+    (⨁ i, A i) →ₐ[R] B :=
+  { toSemiring (fun i => (f i).toAddMonoidHom) hone @hmul with
     toFun := toSemiring (fun i => (f i).toAddMonoidHom) hone @hmul
-    commutes' := fun r => (DirectSum.toSemiring_of _ hone hmul _ _).trans (hcommutes r) }
+    commutes' := fun r => by
+      show toModule R _ _ f (algebraMap R _ r) = _
+      rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, map_smul, one_def,
+        ←lof_eq_of R, toModule_lof, hone] }
 #align direct_sum.to_algebra DirectSum.toAlgebra
 
 /-- Two `AlgHom`s out of a direct sum are equal if they agree on the generators.

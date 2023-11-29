@@ -142,10 +142,14 @@ theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
     t.prod.leadingCoeff = (t.map leadingCoeff).prod := by
   induction' t using Multiset.induction_on with a t ih; · simp
   simp only [Multiset.map_cons, Multiset.prod_cons] at h ⊢
-  rw [Polynomial.leadingCoeff_mul'] <;>
-    · rw [ih]
-      simp [*]
-      apply right_ne_zero_of_mul h
+  rw [Polynomial.leadingCoeff_mul']
+  · rw [ih]
+    simp only [ne_eq]
+    apply right_ne_zero_of_mul h
+  · rw [ih]
+    exact h
+    simp only [ne_eq, not_false_eq_true]
+    apply right_ne_zero_of_mul h
 #align polynomial.leading_coeff_multiset_prod' Polynomial.leadingCoeff_multiset_prod'
 
 /-- The leading coefficient of a product of polynomials is equal to
@@ -263,9 +267,10 @@ theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multise
   nontriviality R
   convert multiset_prod_X_sub_C_nextCoeff (by assumption)
   rw [nextCoeff]; split_ifs with h
-  · rw [natDegree_multiset_prod_of_monic] at h <;> simp only [Multiset.mem_map] at *
+  · rw [natDegree_multiset_prod_of_monic] at h
     swap
-    · rintro _ ⟨_, _, rfl⟩
+    · simp only [Multiset.mem_map]
+      rintro _ ⟨_, _, rfl⟩
       apply monic_X_sub_C
     simp_rw [Multiset.sum_eq_zero_iff, Multiset.mem_map] at h
     contrapose! h

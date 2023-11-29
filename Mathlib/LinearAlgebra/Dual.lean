@@ -563,6 +563,38 @@ theorem forall_dual_apply_eq_zero_iff (v : V) : (∀ φ : Module.Dual K V, φ v 
   rfl
 #align module.forall_dual_apply_eq_zero_iff Module.forall_dual_apply_eq_zero_iff
 
+@[simp]
+theorem subsingleton_dual_iff :
+    Subsingleton (Dual K V) ↔ Subsingleton V := by
+  refine ⟨fun h ↦ ⟨fun v w ↦ ?_⟩, fun h ↦ ⟨fun f g ↦ ?_⟩⟩
+  · rw [← sub_eq_zero, ← forall_dual_apply_eq_zero_iff K (v - w)]
+    intros f
+    simp [Subsingleton.elim f 0]
+  · ext v
+    simp [Subsingleton.elim v 0]
+
+instance instSubsingletonDual [Subsingleton V] : Subsingleton (Dual K V) :=
+  (subsingleton_dual_iff K).mp inferInstance
+
+@[simp]
+theorem nontrivial_dual_iff :
+    Nontrivial (Dual K V) ↔ Nontrivial V := by
+  rw [← not_iff_not, not_nontrivial_iff_subsingleton, not_nontrivial_iff_subsingleton,
+    subsingleton_dual_iff]
+
+instance instNontrivialDual [Nontrivial V] : Nontrivial (Dual K V) :=
+  (nontrivial_dual_iff K).mpr inferInstance
+
+theorem exists_dual_map_eq_bot_of_lt_top {p : Submodule K V} (hp : p < ⊤) (hp' : Free K (V ⧸ p)) :
+    ∃ f : Dual K V, f ≠ 0 ∧ p.map f = ⊥ := by
+  obtain ⟨f, g, h⟩ : Nontrivial (Dual K <| V ⧸ p) :=
+    (nontrivial_dual_iff K).mpr <| Submodule.Quotient.nontrivial_of_lt_top p hp
+  refine ⟨(f - g).comp p.mkQ, ?_, by simp [Submodule.map_comp]⟩
+  replace h : f - g ≠ 0 := sub_ne_zero.mpr h
+  contrapose! h
+  refine Submodule.quot_hom_ext (f := f - g) (g := 0) fun v ↦ (?_ : (f - g).comp p.mkQ v = _)
+  simp [h]
+
 end
 
 theorem dual_rank_eq [Module.Finite K V] :
@@ -659,7 +691,7 @@ lemma equiv [IsReflexive R M] (e : M ≃ₗ[R] N) : IsReflexive R N where
       exact FunLike.congr_arg f (e.apply_symm_apply m).symm
     simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
-    refine Bijective.comp (bijective_dual_eval R M) (LinearEquiv.bijective _)
+    exact Bijective.comp (bijective_dual_eval R M) (LinearEquiv.bijective _)
 
 instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M) :=
   equiv <| MulOpposite.opLinearEquiv _
@@ -793,7 +825,7 @@ theorem coe_basis : ⇑h.basis = e := by
 theorem mem_of_mem_span {H : Set ι} {x : M} (hmem : x ∈ Submodule.span R (e '' H)) :
     ∀ i : ι, ε i x ≠ 0 → i ∈ H := by
   intro i hi
-  rcases(Finsupp.mem_span_image_iff_total _).mp hmem with ⟨l, supp_l, rfl⟩
+  rcases (Finsupp.mem_span_image_iff_total _).mp hmem with ⟨l, supp_l, rfl⟩
   apply not_imp_comm.mp ((Finsupp.mem_supported' _ _).mp supp_l i)
   rwa [← lc_def, h.dual_lc] at hi
 #align module.dual_bases.mem_of_mem_span Module.DualBases.mem_of_mem_span

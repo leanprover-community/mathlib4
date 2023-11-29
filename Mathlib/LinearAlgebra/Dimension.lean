@@ -181,7 +181,7 @@ theorem rank_map_le (f : M →ₗ[R] M₁) (p : Submodule R M) :
 
 theorem rank_le_of_submodule (s t : Submodule R M) (h : s ≤ t) :
     Module.rank R s ≤ Module.rank R t :=
-  (ofLe h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
+  (Submodule.inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
     Subtype.eq <| show x = y from Subtype.ext_iff_val.1 eq
 #align rank_le_of_submodule rank_le_of_submodule
 
@@ -566,7 +566,7 @@ theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
 #align mk_eq_mk_of_basis mk_eq_mk_of_basis
 
 /-- Given two bases indexed by `ι` and `ι'` of an `R`-module, where `R` satisfies the invariant
-basis number property, an equiv `ι ≃ ι' `. -/
+basis number property, an equiv `ι ≃ ι'`. -/
 def Basis.indexEquiv (v : Basis ι R M) (v' : Basis ι' R M) : ι ≃ ι' :=
   (Cardinal.lift_mk_eq'.1 <| mk_eq_mk_of_basis v v').some
 #align basis.index_equiv Basis.indexEquiv
@@ -725,7 +725,7 @@ theorem linearIndependent_le_span_finset {ι : Type*} (v : ι → M) (i : Linear
 /-- An auxiliary lemma for `linearIndependent_le_basis`:
 we handle the case where the basis `b` is infinite.
 -/
-theorem linearIndependent_le_infinite_basis {ι : Type*} (b : Basis ι R M) [Infinite ι] {κ : Type _}
+theorem linearIndependent_le_infinite_basis {ι : Type w} (b : Basis ι R M) [Infinite ι] {κ : Type w}
     (v : κ → M) (i : LinearIndependent R v) : #κ ≤ #ι := by
   classical
   by_contra h
@@ -747,7 +747,7 @@ if `b` is a basis for a module `M`,
 and `s` is a linearly independent set,
 then the cardinality of `s` is bounded by the cardinality of `b`.
 -/
-theorem linearIndependent_le_basis {ι : Type*} (b : Basis ι R M) {κ : Type _} (v : κ → M)
+theorem linearIndependent_le_basis {ι : Type w} (b : Basis ι R M) {κ : Type w} (v : κ → M)
     (i : LinearIndependent R v) : #κ ≤ #ι := by
   classical
   -- We split into cases depending on whether `ι` is infinite.
@@ -775,8 +775,8 @@ then every maximal linearly independent set has the same cardinality as `b`.
 This proof (along with some of the lemmas above) comes from
 [Les familles libres maximales d'un module ont-elles le meme cardinal?][lazarus1973]
 -/
-theorem maximal_linearIndependent_eq_infinite_basis {ι : Type*} (b : Basis ι R M) [Infinite ι]
-    {κ : Type _} (v : κ → M) (i : LinearIndependent R v) (m : i.Maximal) : #κ = #ι := by
+theorem maximal_linearIndependent_eq_infinite_basis {ι : Type w} (b : Basis ι R M) [Infinite ι]
+    {κ : Type w} (v : κ → M) (i : LinearIndependent R v) (m : i.Maximal) : #κ = #ι := by
   apply le_antisymm
   · exact linearIndependent_le_basis b v i
   · haveI : Nontrivial R := nontrivial_of_invariantBasisNumber R
@@ -830,7 +830,7 @@ theorem Basis.card_le_card_of_submodule (N : Submodule R M) [Fintype ι] (b : Ba
 theorem Basis.card_le_card_of_le {N O : Submodule R M} (hNO : N ≤ O) [Fintype ι] (b : Basis ι R O)
     [Fintype ι'] (b' : Basis ι' R N) : Fintype.card ι' ≤ Fintype.card ι :=
   b.card_le_card_of_linearIndependent
-    (b'.linearIndependent.map' (Submodule.ofLe hNO) (N.ker_ofLe O _))
+    (b'.linearIndependent.map' (Submodule.inclusion hNO) (N.ker_inclusion O _))
 #align basis.card_le_card_of_le Basis.card_le_card_of_le
 
 theorem Basis.mk_eq_rank (v : Basis ι R M) :
@@ -1198,12 +1198,14 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
 theorem Submodule.rank_sup_add_rank_inf_eq (s t : Submodule K V) :
     Module.rank K (s ⊔ t : Submodule K V) + Module.rank K (s ⊓ t : Submodule K V) =
     Module.rank K s + Module.rank K t :=
-  rank_add_rank_split (ofLe le_sup_left) (ofLe le_sup_right) (ofLe inf_le_left) (ofLe inf_le_right)
+  rank_add_rank_split
+    (inclusion le_sup_left) (inclusion le_sup_right)
+    (inclusion inf_le_left) (inclusion inf_le_right)
     (by
       rw [← map_le_map_iff' (ker_subtype <| s ⊔ t), Submodule.map_sup, Submodule.map_top, ←
-        LinearMap.range_comp, ← LinearMap.range_comp, subtype_comp_ofLe, subtype_comp_ofLe,
-        range_subtype, range_subtype, range_subtype])
-    (ker_ofLe _ _ _) (by ext ⟨x, hx⟩; rfl)
+        LinearMap.range_comp, ← LinearMap.range_comp, subtype_comp_inclusion,
+        subtype_comp_inclusion, range_subtype, range_subtype, range_subtype])
+    (ker_inclusion _ _ _) (by ext ⟨x, hx⟩; rfl)
     (by
       rintro ⟨b₁, hb₁⟩ ⟨b₂, hb₂⟩ eq
       obtain rfl : b₁ = b₂ := congr_arg Subtype.val eq

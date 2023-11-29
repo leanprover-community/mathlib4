@@ -59,7 +59,7 @@ and consequences are derived.
 * `isCountablyGenerated_iff_exists_antitone_basis` : proves a filter is countably generated if and
   only if it admits a basis parametrized by a decreasing sequence of sets indexed by `ℕ`.
 
-* `tendsto_iff_seq_tendsto ` : an abstract version of "sequentially continuous implies continuous".
+* `tendsto_iff_seq_tendsto` : an abstract version of "sequentially continuous implies continuous".
 
 ## Implementation notes
 
@@ -356,6 +356,11 @@ theorem HasBasis.to_hasBasis (hl : l.HasBasis p s) (h : ∀ i, p i → ∃ i', p
     hl.mem_iff.2 ⟨i, hi, hss'⟩
 #align filter.has_basis.to_has_basis Filter.HasBasis.to_hasBasis
 
+protected lemma HasBasis.congr (hl : l.HasBasis p s) {p' s'} (hp : ∀ i, p i ↔ p' i)
+    (hs : ∀ i, p i → s i = s' i) : l.HasBasis p' s' :=
+  ⟨fun t ↦ by simp only [hl.mem_iff, ← hp]; exact exists_congr fun i ↦
+    and_congr_right fun hi ↦ hs i hi ▸ Iff.rfl⟩
+
 theorem HasBasis.to_subset (hl : l.HasBasis p s) {t : ι → Set α} (h : ∀ i, p i → t i ⊆ s i)
     (ht : ∀ i, p i → t i ∈ l) : l.HasBasis p t :=
   hl.to_hasBasis' (fun i hi => ⟨i, hi, h i hi⟩) ht
@@ -455,8 +460,8 @@ theorem HasBasis.ge_iff (hl' : l'.HasBasis p' s') : l ≤ l' ↔ ∀ i', p' i' �
 #align filter.has_basis.ge_iff Filter.HasBasis.ge_iff
 
 -- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
-theorem HasBasis.le_iff (hl : l.HasBasis p s) : l ≤ l' ↔ ∀ t ∈ l', ∃ i, p i ∧ s i ⊆ t :=
-  by simp only [le_def, hl.mem_iff]
+theorem HasBasis.le_iff (hl : l.HasBasis p s) : l ≤ l' ↔ ∀ t ∈ l', ∃ i, p i ∧ s i ⊆ t := by
+  simp only [le_def, hl.mem_iff]
 #align filter.has_basis.le_iff Filter.HasBasis.le_iffₓ
 
 -- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
@@ -576,8 +581,9 @@ theorem hasBasis_principal (t : Set α) : (𝓟 t).HasBasis (fun _ : Unit => Tru
   ⟨fun U => by simp⟩
 #align filter.has_basis_principal Filter.hasBasis_principal
 
-theorem hasBasis_pure (x : α) : (pure x : Filter α).HasBasis (fun _ : Unit => True) fun _ => {x} :=
-  by simp only [← principal_singleton, hasBasis_principal]
+theorem hasBasis_pure (x : α) :
+    (pure x : Filter α).HasBasis (fun _ : Unit => True) fun _ => {x} := by
+  simp only [← principal_singleton, hasBasis_principal]
 #align filter.has_basis_pure Filter.hasBasis_pure
 
 theorem HasBasis.sup' (hl : l.HasBasis p s) (hl' : l'.HasBasis p' s') :
@@ -847,6 +853,10 @@ theorem HasAntitoneBasis.map {l : Filter α} {s : ι'' → Set α} {m : α → �
   ⟨HasBasis.map _ hf.toHasBasis, fun _ _ h => image_subset _ <| hf.2 h⟩
 #align filter.has_antitone_basis.map Filter.HasAntitoneBasis.map
 
+lemma HasAntitoneBasis.iInf_principal {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirected ι (· ≤ ·)]
+    {s : ι → Set α} (hs : Antitone s) : (⨅ i, 𝓟 (s i)).HasAntitoneBasis s :=
+  ⟨hasBasis_iInf_principal hs.directed_ge, hs⟩
+
 end SameType
 
 section TwoTypes
@@ -939,6 +949,10 @@ theorem HasBasis.prod_self (hl : la.HasBasis pa sa) :
 theorem mem_prod_self_iff {s} : s ∈ la ×ˢ la ↔ ∃ t ∈ la, t ×ˢ t ⊆ s :=
   la.basis_sets.prod_self.mem_iff
 #align filter.mem_prod_self_iff Filter.mem_prod_self_iff
+
+lemma eventually_prod_self_iff {r : α → α → Prop} :
+    (∀ᶠ x in la ×ˢ la, r x.1 x.2) ↔ ∃ t ∈ la, ∀ x ∈ t, ∀ y ∈ t, r x y :=
+  mem_prod_self_iff.trans <| by simp only [prod_subset_iff, mem_setOf_eq]
 
 theorem HasAntitoneBasis.prod {ι : Type*} [LinearOrder ι] {f : Filter α} {g : Filter β}
     {s : ι → Set α} {t : ι → Set β} (hf : HasAntitoneBasis f s) (hg : HasAntitoneBasis g t) :
@@ -1075,14 +1089,13 @@ theorem HasBasis.exists_antitone_subbasis {f : Filter α} [h : f.IsCountablyGene
   let x : ℕ → { i : ι' // p i } := fun n =>
     Nat.recOn n (hs.index _ <| this 0) fun n xn =>
       hs.index _ <| inter_mem (this <| n + 1) (hs.mem_of_mem xn.2)
-  have x_mono : Antitone fun i => s (x i).1 :=
+  have x_anti : Antitone fun i => s (x i).1 :=
     antitone_nat_of_succ_le fun i => (hs.set_index_subset _).trans (inter_subset_right _ _)
   have x_subset : ∀ i, s (x i).1 ⊆ x' i := by
     rintro (_ | i)
     exacts [hs.set_index_subset _, (hs.set_index_subset _).trans (inter_subset_left _ _)]
   refine' ⟨fun i => (x i).1, fun i => (x i).2, _⟩
-  have : (⨅ i, 𝓟 (s (x i).1)).HasAntitoneBasis fun i => s (x i).1 :=
-    ⟨hasBasis_iInf_principal (directed_of_sup x_mono), x_mono⟩
+  have : (⨅ i, 𝓟 (s (x i).1)).HasAntitoneBasis fun i => s (x i).1 := .iInf_principal x_anti
   convert this
   exact
     le_antisymm (le_iInf fun i => le_principal_iff.2 <| by cases i <;> apply hs.set_index_mem)

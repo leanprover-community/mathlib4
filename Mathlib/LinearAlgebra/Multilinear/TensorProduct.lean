@@ -12,6 +12,7 @@ import Mathlib.LinearAlgebra.TensorProduct
 # Constructions relating multilinear maps and tensor products.
 -/
 
+suppress_compilation
 
 namespace MultilinearMap
 
