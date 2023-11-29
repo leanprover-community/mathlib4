@@ -1,10 +1,32 @@
+/-
+Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
 import Mathlib.Topology.Category.LightProfinite.IsLight
+/-!
+
+# Explicit limits and colimits
+
+This file collects some constructions of explicit limits and colimits in `LightProfinite`,
+which may be useful due to their definitional properties.
+
+## Main definitions
+
+* `LightProfinite.pullback`: Explicit pullback, defined in the "usual" way as a subset of the
+  product.
+
+* `LightProfinite.finiteCoproduct`: Explicit finite coproducts, defined as a disjoint union.
+
+-/
 
 universe u
 
 open CategoryTheory
 
 namespace LightProfinite
+
+section Pullback
 
 instance {X Y B : Profinite.{u}} (f : X ⟶ B) (g : Y ⟶ B) [X.IsLight] [Y.IsLight] :
     (Profinite.pullback f g).IsLight := by
@@ -14,14 +36,13 @@ instance {X Y B : Profinite.{u}} (f : X ⟶ B) (g : Y ⟶ B) [X.IsLight] [Y.IsLi
     exact Subtype.val_injective
   exact mono_light i
 
-section Pullback
-
--- TODO: is there a way to avoid this code duplication from `Profinite`?
-
 variable {X Y B : LightProfinite.{u}} (f : X ⟶ B) (g : Y ⟶ B)
 
-noncomputable
-def pullback : LightProfinite.{u} :=
+/--
+The "explicit" pullback of two morphisms `f, g` in `LightProfinite`, whose underlying profinite set
+is the set of pairs `(x, y)` such that `f x = g y`, with the topology induced by the product.
+-/
+noncomputable def pullback : LightProfinite.{u} :=
   ofIsLight.{u} (Profinite.pullback.{u} (lightToProfinite.{u}.map f) (lightToProfinite.{u}.map g))
 
 /-- The projection from the pullback to the first component. -/
@@ -86,6 +107,8 @@ def pullback.isLimit : Limits.IsLimit (pullback.cone f g) :=
 
 end Pullback
 
+section FiniteCoproduct
+
 instance {α : Type} [Fintype α] (X : α → Profinite.{u}) [∀ a, (X a).IsLight] :
     (Profinite.finiteCoproduct X).IsLight where
   countable_clopens := by
@@ -107,13 +130,11 @@ instance {α : Type} [Fintype α] (X : α → Profinite.{u}) [∀ a, (X a).IsLig
       · rw [Set.mem_iUnion]
         refine ⟨i, xi, (by simpa using hx), rfl⟩
 
-section FiniteCoproduct
-
 variable {α : Type} [Fintype α] (X : α → LightProfinite.{u})
 
 /--
-The coproduct of a finite family of objects in `LightProfinite`, constructed as the disjoint
-union with its usual topology.
+The "explicit" coproduct of a finite family of objects in `LightProfinite`, whose underlying
+profinite set is the disjoint union with its usual topology.
 -/
 noncomputable
 def finiteCoproduct : LightProfinite :=
@@ -126,8 +147,7 @@ def finiteCoproduct.ι (a : α) : X a ⟶ finiteCoproduct X where
 
 /--
 To construct a morphism from the explicit finite coproduct, it suffices to
-specify a morphism from each of its factors.
-This is essentially the universal property of the coproduct.
+specify a morphism from each of its factors. This is the universal property of the coproduct.
 -/
 def finiteCoproduct.desc {B : LightProfinite.{u}} (e : (a : α) → (X a ⟶ B)) :
     finiteCoproduct X ⟶ B where
@@ -166,3 +186,5 @@ def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cocone X) wher
     exact hm
 
 end FiniteCoproduct
+
+end LightProfinite

@@ -1,15 +1,45 @@
+/-
+Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
 import Mathlib.CategoryTheory.Limits.Shapes.Countable
 import Mathlib.Topology.Category.LightProfinite.Basic
 import Mathlib.Topology.Category.Profinite.AsLimit
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.Category.Profinite.Limits
 import Mathlib.Topology.ClopenBox
+/-!
+
+# Being light is a property of profinite spaces
+
+We define a class `Profinite.IsLight` which says that a profinite space `S` has countably many
+clopen subsets. We prove that a profinite space which `IsLight` gives rise to a `LightProfinite` and
+that the underlying profinite space of a `LightProfinite` is light.
+
+## Main results
+
+* `IsLight` is preserved under taking cartesian products
+
+* Given a monomorphism whose target `IsLight`, its sourse is also light: `Profinite.isLight_of_mono`
+
+## Project
+
+* Prove the Stone duality theorem that `Profinite` is equivalent to the opposite category of
+  boolean algebras. Then the property of being light says precisely that the corresponding
+  boolean algebra is countable. Maybe constructions of limits and colimits in `LightProfinite` 
+  becomes easier when transporting over this equivalence.
+-/
 
 universe u
 
 open CategoryTheory Limits FintypeCat Opposite
 
+open scoped Classical
+
+/-- A profinite space *is light* if it has countably many clopen subsets.  -/
 class Profinite.IsLight (S : Profinite) : Prop where
+  /-- The set of clopens is countable -/
   countable_clopens : Countable {s : Set S // IsClopen s}
 
 attribute [instance] Profinite.IsLight.countable_clopens
@@ -17,26 +47,7 @@ attribute [instance] Profinite.IsLight.countable_clopens
 instance (X Y : Profinite) [X.IsLight] [Y.IsLight] : (Profinite.of (X × Y)).IsLight where
   countable_clopens := countable_clopens_prod
 
-open Classical in
-noncomputable
-def clopensEquiv (S : Profinite) : {s : Set S // IsClopen s} ≃ LocallyConstant S Bool where
-  toFun s := {
-    toFun := fun x ↦ decide (x ∈ s.val)
-    isLocallyConstant := by
-      rw [IsLocallyConstant.iff_isOpen_fiber]
-      intro y
-      cases y with
-      | false => convert s.prop.compl.1; ext; simp
-      | true => convert s.prop.1; ext; simp }
-  invFun f := {
-    val := f ⁻¹' {true}
-    property := f.2.isClopen_fiber _ }
-  left_inv s := by ext; simp
-  right_inv f := by ext; simp
-
-open Classical in
 instance (S : Profinite) [S.IsLight] : Countable (DiscreteQuotient S) := by
-  have : ∀ d : DiscreteQuotient S, Fintype d := fun d ↦ Fintype.ofFinite _
   refine @Function.Surjective.countable ({t : Finset {s : Set S // IsClopen s} //
     (∀ (i j : {s : Set S // IsClopen s}), i ∈ t → j ∈ t → i ≠ j → i.val ∩ j.val = ∅) ∧
     ∀ (x : S), ∃ i, i ∈ t ∧ x ∈ i.val}) _ _ ?_ ?_
@@ -64,6 +75,7 @@ instance (S : Profinite) [S.IsLight] : Countable (DiscreteQuotient S) := by
         exact ⟨h.2, hh.2.1⟩
       · exact ⟨i, h.1, h.2, hh⟩
   · intro d
+    have : Fintype d := Fintype.ofFinite _
     refine ⟨⟨(Set.range (fun x ↦ ⟨d.proj ⁻¹' {x}, d.isClopen_preimage _⟩)).toFinset, ?_, ?_⟩, ?_⟩
     · intro i j hi hj hij
       simp only [Set.toFinset_range, Finset.mem_image, Finset.mem_univ, true_and] at hi hj
@@ -88,21 +100,21 @@ instance (S : Profinite) [S.IsLight] : Countable (DiscreteQuotient S) := by
 
 namespace LightProfinite
 
-noncomputable
-def ofIsLight (S : Profinite.{u}) [S.IsLight] : LightProfinite.{u} where
+/-- A profinite space which is light gives rise to a light profinite space. -/
+noncomputable def ofIsLight (S : Profinite.{u}) [S.IsLight] : LightProfinite.{u} where
   diagram := sequentialFunctor _ ⋙ S.fintypeDiagram
   cone := (Functor.Initial.limitConeComp (sequentialFunctor _) S.lim).cone
   isLimit := (Functor.Initial.limitConeComp (sequentialFunctor _) S.lim).isLimit
 
 instance (S : LightProfinite.{u}) : S.toProfinite.IsLight where
   countable_clopens := by
-    refine @Countable.of_equiv _ _ ?_ (clopensEquiv S.toProfinite).symm
+    refine @Countable.of_equiv _ _ ?_ (LocallyConstant.equivClopens (X := S.toProfinite))
     refine @Function.Surjective.countable
-      (Σ (n : ℕ), LocallyConstant ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩) Bool) _ ?_ ?_ ?_
+      (Σ (n : ℕ), LocallyConstant ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩) (Fin 2)) _ ?_ ?_ ?_
     · apply @instCountableSigma _ _ _ ?_
       intro n
       refine @Finite.to_countable _ ?_
-      refine @Finite.of_injective _ ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩ → Bool) ?_ _
+      refine @Finite.of_injective _ ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩ → (Fin 2)) ?_ _
         LocallyConstant.coe_injective
       refine @Pi.finite _ _ ?_ _
       simp only [Functor.comp_obj, toProfinite_obj_toCompHaus_toTop_α]
@@ -115,8 +127,22 @@ instance (S : LightProfinite.{u}) : S.toProfinite.IsLight where
 instance (S : LightProfinite.{u}) : (lightToProfinite.obj S).IsLight :=
   (inferInstance : S.toProfinite.IsLight)
 
-open Classical in
-noncomputable def monoLight_diagram {X : Profinite} {Y : LightProfinite} (f : X ⟶ Y.toProfinite) :
+end LightProfinite
+
+section Mono
+/-!
+
+Given a monomorphism `f : X ⟶ Y` in `Profinite`, such that `Y.IsLight`, we want to prove that
+`X.IsLight`. We do this by regarding `Y` as a `LightProfinite`, and constructing a `LightProfinite`
+with `X` as its underlying `Profinite`. The diagram is just the image of `f` in the diagram of `Y`.
+-/
+
+namespace Profinite
+
+variable {X : Profinite} {Y : LightProfinite} (f : X ⟶ Y.toProfinite)
+
+/-- The image of `f` in the diagram of `Y` -/
+noncomputable def lightProfiniteDiagramOfHom :
     ℕᵒᵖ ⥤ FintypeCat where
   obj := fun n ↦ FintypeCat.of (Set.range (f ≫ Y.cone.π.app n) : Set (Y.diagram.obj n))
   map := fun h ⟨x, hx⟩ ↦ ⟨Y.diagram.map h x, (by
@@ -141,18 +167,18 @@ noncomputable def monoLight_diagram {X : Profinite} {Y : LightProfinite} (f : X 
       FintypeCat.comp_apply]
     rfl
 
-attribute [local instance] FintypeCat.discreteTopology
-
-def monoLight_cone_π_app' (n : ℕᵒᵖ) {X : Profinite} {Y : LightProfinite} (f : X ⟶ Y.toProfinite) :
+/-- An auxiliary definition to prove continuity in `lightProfiniteConeOfHom_π_app`. -/
+def lightProfiniteConeOfHom_π_app' (n : ℕᵒᵖ) :
     C(X, Set.range (f ≫ Y.cone.π.app n)) where
   toFun := fun x ↦ ⟨Y.cone.π.app n (f x), ⟨x, rfl⟩⟩
   continuous_toFun := Continuous.subtype_mk ((Y.cone.π.app n).continuous.comp f.continuous) _
 
-def monoLight_cone_π_app (n : ℕᵒᵖ) {X : Profinite} {Y : LightProfinite} (f : X ⟶ Y.toProfinite) :
-    X ⟶ (monoLight_diagram f ⋙ FintypeCat.toProfinite).obj n where
+/-- An auxiliary definition for `lightProfiniteConeOfHom`. -/
+def lightProfiniteConeOfHom_π_app (n : ℕᵒᵖ) :
+    X ⟶ (lightProfiniteDiagramOfHom f ⋙ FintypeCat.toProfinite).obj n where
   toFun x := ⟨Y.cone.π.app n (f x), ⟨x, rfl⟩⟩
   continuous_toFun := by
-    convert (monoLight_cone_π_app' n f).continuous_toFun
+    convert (lightProfiniteConeOfHom_π_app' f n).continuous_toFun
     change ⊥ = _
     ext U
     rw [isOpen_induced_iff]
@@ -161,53 +187,53 @@ def monoLight_cone_π_app (n : ℕᵒᵖ) {X : Profinite} {Y : LightProfinite} (
       Function.Injective.preimage_image Subtype.val_injective _⟩, fun _ ↦ isOpen_discrete U⟩
     -- This is annoying
 
-def monoLight_cone {X : Profinite} {Y : LightProfinite.{u}} (f : X ⟶ Y.toProfinite) :
-    Cone ((monoLight_diagram f) ⋙ FintypeCat.toProfinite) where
+/-- The cone on `lightProfiniteDiagramOfHom` -/
+def lightProfiniteConeOfHom :
+    Cone ((lightProfiniteDiagramOfHom f) ⋙ FintypeCat.toProfinite) where
   pt := X
   π := {
-    app := fun n ↦ monoLight_cone_π_app n f
+    app := fun n ↦ lightProfiniteConeOfHom_π_app f n
     naturality := by
       intro n m h
       have := Y.cone.π.naturality h
       simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map, Category.id_comp,
         Functor.comp_map] at this
       simp only [Functor.comp_obj, toProfinite_obj_toCompHaus_toTop_α, Functor.const_obj_obj,
-        Functor.const_obj_map, monoLight_cone_π_app, this, CategoryTheory.comp_apply,
+        Functor.const_obj_map, lightProfiniteConeOfHom_π_app, this, CategoryTheory.comp_apply,
         Category.id_comp, Functor.comp_map]
       rfl }
 
-instance isIso_indexCone_lift {X : Profinite} {Y : LightProfinite.{u}} (f : X ⟶ Y.toProfinite)
-    [Mono f] : IsIso ((Profinite.limitConeIsLimit ((monoLight_diagram f) ⋙
-    FintypeCat.toProfinite)).lift (monoLight_cone f)) := by
+instance [Mono f] : IsIso ((Profinite.limitConeIsLimit ((lightProfiniteDiagramOfHom f) ⋙
+    FintypeCat.toProfinite)).lift (lightProfiniteConeOfHom f)) := by
   apply Profinite.isIso_of_bijective
   refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
   · have hf : Function.Injective f := by rwa [← Profinite.mono_iff_injective]
     suffices f a = f b by exact hf this
     apply LightProfinite.ext
     intro n
-    apply_fun fun f : (Profinite.limitCone ((monoLight_diagram f) ⋙ FintypeCat.toProfinite)).pt =>
+    apply_fun fun f : (Profinite.limitCone ((lightProfiniteDiagramOfHom f) ⋙ FintypeCat.toProfinite)).pt =>
       f.val n at h
     erw [ContinuousMap.coe_mk, Subtype.ext_iff] at h
     exact h
-  · suffices : ∃ x, ∀ n, monoLight_cone_π_app (op n) f x = a.val (op n)
+  · suffices : ∃ x, ∀ n, lightProfiniteConeOfHom_π_app f (op n) x = a.val (op n)
     · obtain ⟨x, h⟩ := this
       use x
       apply Subtype.ext
       apply funext
       intro n
       exact h (unop n)
-    have : Set.Nonempty (⋂ (n : ℕ), (monoLight_cone_π_app (op n) f) ⁻¹' {a.val (op n)})
+    have : Set.Nonempty (⋂ (n : ℕ), (lightProfiniteConeOfHom_π_app f (op n)) ⁻¹' {a.val (op n)})
     · refine IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
-        (fun n ↦ (monoLight_cone_π_app (op n) f) ⁻¹' {a.val (op n)}) (directed_of_isDirected_le ?_)
+        (fun n ↦ (lightProfiniteConeOfHom_π_app f (op n)) ⁻¹' {a.val (op n)}) (directed_of_isDirected_le ?_)
         (fun _ ↦ (Set.singleton_nonempty _).preimage fun ⟨a, ⟨b, hb⟩⟩ ↦ ⟨b, Subtype.ext hb⟩)
-        (fun _ ↦ (IsClosed.preimage (monoLight_cone_π_app _ _).continuous (T1Space.t1 _)).isCompact)
-        (fun _ ↦ IsClosed.preimage (monoLight_cone_π_app _ _).continuous (T1Space.t1 _))
+        (fun _ ↦ (IsClosed.preimage (lightProfiniteConeOfHom_π_app _ _).continuous (T1Space.t1 _)).isCompact)
+        (fun _ ↦ IsClosed.preimage (lightProfiniteConeOfHom_π_app _ _).continuous (T1Space.t1 _))
       intro i j h x hx
       simp only [Functor.comp_obj, profiniteToCompHaus_obj, compHausToTop_obj,
         toProfinite_obj_toCompHaus_toTop_α, Functor.comp_map, profiniteToCompHaus_map,
         compHausToTop_map, Set.mem_setOf_eq, Set.mem_preimage, Set.mem_singleton_iff] at hx ⊢
-      have := (monoLight_cone f).π.naturality (homOfLE h).op
-      simp only [monoLight_cone, Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map,
+      have := (lightProfiniteConeOfHom f).π.naturality (homOfLE h).op
+      simp only [lightProfiniteConeOfHom, Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map,
         Category.id_comp, Functor.comp_map] at this
       rw [this]
       simp only [CategoryTheory.comp_apply]
@@ -217,19 +243,24 @@ instance isIso_indexCone_lift {X : Profinite} {Y : LightProfinite.{u}} (f : X �
     exact ⟨x, Set.mem_iInter.1 hx⟩
 
 
+/-- When `f` is a monomorphism the cone `lightProfiniteConeOfHom` is limiting. -/
 noncomputable
-def monoLight_isLimit {X : Profinite} {Y : LightProfinite} (f : X ⟶ Y.toProfinite) [Mono f] :
-    IsLimit (monoLight_cone f) := Limits.IsLimit.ofIsoLimit (Profinite.limitConeIsLimit _)
-    (Limits.Cones.ext (asIso ((Profinite.limitConeIsLimit ((monoLight_diagram f) ⋙
-    FintypeCat.toProfinite)).lift (monoLight_cone f))) fun _ => rfl).symm
+def lightProfiniteIsLimitOfMono [Mono f] : IsLimit (lightProfiniteConeOfHom f) :=
+  Limits.IsLimit.ofIsoLimit (Profinite.limitConeIsLimit _)
+    (Limits.Cones.ext (asIso ((Profinite.limitConeIsLimit ((lightProfiniteDiagramOfHom f) ⋙
+      FintypeCat.toProfinite)).lift (lightProfiniteConeOfHom f))) fun _ => rfl).symm
 
-noncomputable
-def mono_lightProfinite {X : Profinite} {Y : LightProfinite} (f : X ⟶ Y.toProfinite) [Mono f] :
-    LightProfinite := ⟨monoLight_diagram f, monoLight_cone f, monoLight_isLimit f⟩
+/--
+Putting together all of the above, we get a `LightProfinite` whose underlying `Profinite` is `X`
+-/
+noncomputable def lightProfiniteOfMono [Mono f] : LightProfinite :=
+  ⟨lightProfiniteDiagramOfHom f, lightProfiniteConeOfHom f, lightProfiniteIsLimitOfMono f⟩
 
-theorem mono_light {X Y : Profinite} [Y.IsLight] (f : X ⟶ Y) [Mono f] : X.IsLight := by
-  let Y' : LightProfinite := ofIsLight Y
-  change (mono_lightProfinite (Y := Y') f).toProfinite.IsLight
+/-- `lightProfiniteOfMono` phrased in terms of `Profinite.IsLight`. -/
+theorem isLight_of_mono {X Y : Profinite} [Y.IsLight] (f : X ⟶ Y) [Mono f] : X.IsLight := by
+  change (lightProfiniteOfMono (Y := LightProfinite.ofIsLight Y) f).toProfinite.IsLight
   infer_instance
 
-end LightProfinite
+end Profinite
+
+end Mono
