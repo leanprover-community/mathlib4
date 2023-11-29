@@ -77,11 +77,9 @@ def instCommGroupOfExponentTwo (hG : Monoid.exponent G = 2) : CommGroup G where
 @[to_additive]
 lemma mul_not_mem_of_orderOf_eq_two {G : Type*} [Group G] {x y : G} (hx : orderOf x = 2)
     (hy : orderOf y = 2) (hxy : x ≠ y) : x * y ∉ ({x, y, 1} : Set G) := by
-  simp only [Set.mem_singleton_iff, Set.mem_insert_iff, mul_right_eq_self, mul_left_eq_self, not_or]
-  refine ⟨?_, ?_, fun h' ↦ hxy <| by
-    simpa only [mul_eq_one_iff_eq_inv, inv_eq_self_of_orderOf_eq_two hx,
-      inv_eq_self_of_orderOf_eq_two hy] using h'⟩
-  all_goals rw [← orderOf_eq_one_iff]; norm_num [hy, hx]
+  simp only [Set.mem_singleton_iff, Set.mem_insert_iff, mul_right_eq_self, mul_left_eq_self,
+    mul_eq_one_iff_eq_inv, inv_eq_self_of_orderOf_eq_two hy, not_or]
+  aesop
 
 @[to_additive]
 lemma mul_not_mem_of_exponent_two {G : Type*} [Group G] (h : Monoid.exponent G = 2) {x y : G}
