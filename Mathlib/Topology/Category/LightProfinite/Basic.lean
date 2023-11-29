@@ -39,7 +39,7 @@ def FintypeCat.toLightProfinite (X : FintypeCat) : LightProfinite where
   diagram := (Functor.const _).obj X
   cone := {
     pt := toProfinite.obj X
-    π := eqToHom rfl }
+    π := Iso.refl _ }
   isLimit := {
     lift := fun s ↦ s.π.app ⟨0⟩
     fac := fun s j ↦ (s.π.naturality (homOfLE (zero_le (unop j))).op)
