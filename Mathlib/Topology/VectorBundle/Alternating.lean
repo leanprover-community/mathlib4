@@ -205,7 +205,7 @@ variable (e₁ e₁' e₂ e₂')
 variable [e₁.IsLinear 𝕜] [e₁'.IsLinear 𝕜] [e₂.IsLinear 𝕜] [e₂'.IsLinear 𝕜]
 
 /-- Given trivializations `e₁`, `e₂` for vector bundles `E₁`, `E₂` over a base `B`,
-`pretrivialization.ContinuousAlternatingMap σ e₁ e₂` is the induced pretrivialization for the
+`Pretrivialization.continuousAlternatingMap 𝕜 ι e₁ e₂` is the induced pretrivialization for the
 continuous `ι`-slot alternating maps from `E₁` to `E₂`. That is, the map which will later become a
 trivialization, after the bundle of continuous alternating maps is equipped with the right
 topological vector bundle structure. -/
@@ -270,6 +270,10 @@ theorem continuousAlternatingMap_symm_apply (p : B × (F₁ [Λ^ι]→L[𝕜] F�
     (continuousAlternatingMap 𝕜 ι e₁ e₂).toLocalEquiv.symm p =
     ⟨p.1, (e₂.symmL 𝕜 p.1).compContinuousAlternatingMap <|
       p.2.compContinuousLinearMap <| e₁.continuousLinearMapAt 𝕜 p.1⟩ :=
+  rfl
+
+@[simp] theorem baseSet_continuousAlternatingMap :
+    (Pretrivialization.continuousAlternatingMap 𝕜 ι e₁ e₂).baseSet = e₁.baseSet ∩ e₂.baseSet :=
   rfl
 
 variable [Π x, ContinuousAdd (E₂ x)]
@@ -373,8 +377,6 @@ instance _root_.Bundle.continuousAlternatingMap.memTrivializationAtlas :
     MemTrivializationAtlas (e₁.continuousAlternatingMap 𝕜 ι e₂ :
     Trivialization (F₁ [Λ^ι]→L[𝕜] F₂) (π (F₁ [Λ^ι]→L[𝕜] F₂) Λ^ι⟮𝕜; F₁, E₁; F₂, E₂⟯)) where
   out := ⟨_, ⟨e₁, e₂, inferInstance, inferInstance, rfl⟩, rfl⟩
-
-variable {e₁ e₂}
 
 @[simp] theorem Trivialization.baseSet_continuousAlternatingMap :
     (e₁.continuousAlternatingMap 𝕜 ι e₂).baseSet = e₁.baseSet ∩ e₂.baseSet :=
