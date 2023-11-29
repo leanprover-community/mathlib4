@@ -208,16 +208,16 @@ theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
 
 #align nat.zero_test_bit Nat.zero_testBit
 
--- This theorem was not used, and the proof broke after leanprover/std4#366
--- Propose just deleting.
--- /-- The ith bit is the ith element of `n.bits`. -/
--- theorem testBit_eq_inth (n i : ℕ) : n.testBit i = n.bits.getI i := by
---   induction' i with i ih generalizing n
---   · simp [testBit, bodd_eq_bits_head, List.getI_zero_eq_headI]
---   conv_lhs => rw [← bit_decomp n]
---   rw [testBit_succ, ih n.div2, div2_bits_eq_tail]
---   cases n.bits <;> simp
--- #align nat.test_bit_eq_inth Nat.testBit_eq_inth
+/-- The ith bit is the ith element of `n.bits`. -/
+theorem testBit_eq_inth (n i : ℕ) : n.testBit i = n.bits.getI i := by
+  induction' i with i ih generalizing n
+  · simp only [testBit, zero_eq, shiftRight_zero, and_one_is_mod, mod_two_of_bodd,
+      bodd_eq_bits_head, List.getI_zero_eq_headI]
+    cases List.headI (bits n) <;> rfl
+  conv_lhs => rw [← bit_decomp n]
+  rw [testBit_succ, ih n.div2, div2_bits_eq_tail]
+  cases n.bits <;> simp
+#align nat.test_bit_eq_inth Nat.testBit_eq_inth
 
 #align nat.eq_of_test_bit_eq Nat.eq_of_testBit_eq
 
