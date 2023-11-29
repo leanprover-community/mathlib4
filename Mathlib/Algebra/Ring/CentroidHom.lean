@@ -471,7 +471,7 @@ def algHom : R →+* (CentroidHom α) where
 CentroidHom α as an algebra over R
 -/
 def ringtoAlg (h : ∀ (r : R) (T : CentroidHom α), algHom r * T = T * algHom r) :
-  Algebra R (CentroidHom α) := algHom.toAlgebra' h
+    Algebra R (CentroidHom α) := algHom.toAlgebra' h
 
 end NonUnitalNonAssocSemiring
 
