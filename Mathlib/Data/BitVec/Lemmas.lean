@@ -27,6 +27,12 @@ theorem toNat_injective {n : Nat} : Function.Injective (@Std.BitVec.toNat n)
 theorem toNat_inj {x y : BitVec w} : x.toNat = y.toNat ↔ x = y :=
   toNat_injective.eq_iff
 
+theorem toFin_injective {n : Nat} : Function.Injective (@Std.BitVec.toFin n)
+  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
+
+theorem toFin_inj {x y : BitVec w} : x.toFin = y.toFin ↔ x = y :=
+  toFin_injective.eq_iff
+
 /-- `x < y` as natural numbers if and only if `x < y` as `BitVec w`. -/
 theorem toNat_lt_toNat {x y : BitVec w} : x.toNat < y.toNat ↔ x < y :=
   Iff.rfl
