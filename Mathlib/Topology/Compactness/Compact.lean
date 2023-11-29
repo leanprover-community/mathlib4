@@ -569,18 +569,18 @@ theorem cocompact_eq_cofinite (X : Type*) [TopologicalSpace X] [DiscreteTopology
   (cocompact_eq_cofinite ℕ).trans Nat.cofinite_eq_atTop
 #align nat.cocompact_eq Nat.cocompact_eq
 
-theorem Tendsto.isCompact_insert_range_of_cocompact {f : X → Y} {b}
-    (hf : Tendsto f (cocompact X) (𝓝 b)) (hfc : Continuous f) : IsCompact (insert b (range f)) := by
+theorem Tendsto.isCompact_insert_range_of_cocompact {f : X → Y} {y}
+    (hf : Tendsto f (cocompact X) (𝓝 y)) (hfc : Continuous f) : IsCompact (insert y (range f)) := by
   intro l hne hle
-  by_cases hb : ClusterPt b l
-  · exact ⟨b, Or.inl rfl, hb⟩
-  simp only [clusterPt_iff, not_forall, ← not_disjoint_iff_nonempty_inter, not_not] at hb
-  rcases hb with ⟨s, hsb, t, htl, hd⟩
-  rcases mem_cocompact.1 (hf hsb) with ⟨K, hKc, hKs⟩
+  by_cases hy : ClusterPt y l
+  · exact ⟨y, Or.inl rfl, hy⟩
+  simp only [clusterPt_iff, not_forall, ← not_disjoint_iff_nonempty_inter, not_not] at hy
+  rcases hy with ⟨s, hsy, t, htl, hd⟩
+  rcases mem_cocompact.1 (hf hsy) with ⟨K, hKc, hKs⟩
   have : f '' K ∈ l := by
     filter_upwards [htl, le_principal_iff.1 hle] with y hyt hyf
     rcases hyf with (rfl | ⟨x, rfl⟩)
-    exacts [(hd.le_bot ⟨mem_of_mem_nhds hsb, hyt⟩).elim,
+    exacts [(hd.le_bot ⟨mem_of_mem_nhds hsy, hyt⟩).elim,
       mem_image_of_mem _ (not_not.1 fun hxK => hd.le_bot ⟨hKs hxK, hyt⟩)]
   rcases hKc.image hfc (le_principal_iff.2 this) with ⟨y, hy, hyl⟩
   exact ⟨y, Or.inr <| image_subset_range _ _ hy, hyl⟩
@@ -958,11 +958,11 @@ theorem IsCompact.prod {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :
   intro f hfs
   obtain ⟨x : X, sx : x ∈ s, hx : map Prod.fst f.1 ≤ 𝓝 x⟩ :=
     hs (f.map Prod.fst) (mem_map.2 <| mem_of_superset hfs fun x => And.left)
-  obtain ⟨b : Y, tb : b ∈ t, hb : map Prod.snd f.1 ≤ 𝓝 b⟩ :=
+  obtain ⟨y : Y, ty : y ∈ t, hy : map Prod.snd f.1 ≤ 𝓝 y⟩ :=
     ht (f.map Prod.snd) (mem_map.2 <| mem_of_superset hfs fun x => And.right)
-  rw [map_le_iff_le_comap] at hx hb
-  refine' ⟨⟨x, b⟩, ⟨sx, tb⟩, _⟩
-  rw [nhds_prod_eq]; exact le_inf hx hb
+  rw [map_le_iff_le_comap] at hx hy
+  refine' ⟨⟨x, y⟩, ⟨sx, ty⟩, _⟩
+  rw [nhds_prod_eq]; exact le_inf hx hy
 #align is_compact.prod IsCompact.prod
 
 /-- Finite topological spaces are compact. -/
