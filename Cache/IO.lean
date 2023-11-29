@@ -221,7 +221,7 @@ def validateLeanTar : IO Unit := do
     pure <|
       if System.Platform.getIsOSX () then s!"{arch}-apple-darwin"
       else s!"{arch}-unknown-linux-musl"
-  IO.println s!"leantar is too old; downloading more recent version"
+  IO.println s!"installing leantar {LEANTARVERSION}"
   IO.FS.createDirAll IO.CACHEDIR
   let ext := if win then "zip" else "tar.gz"
   let _ ← runCmd "curl" #[
