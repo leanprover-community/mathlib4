@@ -17,19 +17,10 @@ namespace Nat
 
 open Pointwise Finset
 
-lemma Prime.divisors_mul (n : ℕ) {p : ℕ} (hp : p.Prime) :
-    (p * n).divisors = p.divisors * n.divisors := by
-  ext
-  simp only [mem_mul, Nat.mem_divisors, Nat.isUnit_iff, Nat.dvd_mul, Nat.dvd_prime hp,
-    exists_and_left, exists_eq_or_imp, one_mul, exists_eq_right', exists_eq_left, ne_eq,
-    mul_eq_zero, hp.divisors, mem_singleton, mem_insert, exists_eq_right]
-  aesop
-
 lemma divisors_mul {m n : ℕ} : divisors (m * n) = divisors m * divisors n := by
-  apply induction_on_primes (by simp) ?_ (fun p a hp han => ?_) m
-  · rw [divisors_one, one_mul]
-    exact (one_mul (M := Finset ℕ) _).symm
-  · simp only [mul_assoc, hp.divisors_mul, han]
+  ext k
+  simp_rw [mem_mul, mem_divisors, dvd_mul, mul_ne_zero_iff, ← exists_and_right]
+  simp only [and_assoc, and_comm, and_left_comm]
 
 lemma Prime.divisors_sq {p : ℕ} (hp : p.Prime) : (p ^ 2).divisors = {1, p, p ^ 2} := by
   ext
