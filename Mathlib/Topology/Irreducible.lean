@@ -332,11 +332,11 @@ theorem IsPreirreducible.interior (ht : IsPreirreducible t) : IsPreirreducible (
 theorem IsPreirreducible.preimage (ht : IsPreirreducible t) {f : Y → X}
     (hf : OpenEmbedding f) : IsPreirreducible (f ⁻¹' t) := by
   rintro U V hU hV ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
-  obtain ⟨_, h₁, ⟨z, h₂, rfl⟩, ⟨z', h₃, h₄⟩⟩ :=
+  obtain ⟨_, h₁, ⟨y, h₂, rfl⟩, ⟨y', h₃, h₄⟩⟩ :=
     ht _ _ (hf.isOpenMap _ hU) (hf.isOpenMap _ hV) ⟨f x, hx, Set.mem_image_of_mem f hx'⟩
       ⟨f y, hy, Set.mem_image_of_mem f hy'⟩
   cases hf.inj h₄
-  exact ⟨z, h₁, h₂, h₃⟩
+  exact ⟨y, h₁, h₂, h₃⟩
 #align is_preirreducible.preimage IsPreirreducible.preimage
 
 end Preirreducible
