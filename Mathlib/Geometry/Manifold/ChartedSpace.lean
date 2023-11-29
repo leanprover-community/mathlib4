@@ -584,13 +584,6 @@ lemma chart_mem_atlas (H : Type*) {M : Type*} [TopologicalSpace H] [TopologicalS
 
 section ChartedSpace
 
-/-- The charts of a charted space cover its domain. -/
-lemma ChartedSpace.covering {H M : Type*} [TopologicalSpace H] [TopologicalSpace M]
-    [ChartedSpace H M] : ⋃ x : M, (chartAt H x).source = univ := by
-  refine subset_antisymm (fun y _ ↦ trivial) (fun y _ ↦ ?_)
-  rw [mem_iUnion]
-  exact ⟨y, mem_chart_source H y⟩
-
 /-- Any space is a `ChartedSpace` modelled over itself, by just using the identity chart. -/
 instance chartedSpaceSelf (H : Type*) [TopologicalSpace H] : ChartedSpace H H where
   atlas := {LocalHomeomorph.refl H}
