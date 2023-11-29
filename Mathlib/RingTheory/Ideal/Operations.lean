@@ -1709,7 +1709,7 @@ theorem map_of_equiv (I : Ideal R) (f : R ≃+* S) :
     RingEquiv.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, map_id]
 #align ideal.map_of_equiv Ideal.map_of_equiv
 
-/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, 
+/-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`,
   then `comap f (comap f.symm I) = I`. -/
 @[simp]
 theorem comap_of_equiv (I : Ideal R) (f : R ≃+* S) :
