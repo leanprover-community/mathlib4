@@ -233,14 +233,27 @@ theorem extremePoints_pi (s : ∀ i, Set (π i)) :
 end OrderedSemiring
 
 section OrderedRing
-variable [OrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
+variable {L : Type*} [OrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
+  [LinearEquivClass L 𝕜 E F]
 
-lemma image_extremePoints (f : E ≃ₗ[𝕜] F) (s : Set E) :
+lemma image_extremePoints (f : L) (s : Set E) :
     f '' extremePoints 𝕜 s = extremePoints 𝕜 (f '' s) := by
   ext
-  have := by simpa using image_openSegment _ f.toAffineMap
-  simp only [mem_extremePoints, ←f.toEquiv.forall_congr_left, ←exists_and_right, mem_image,
-    LinearEquiv.coe_toEquiv, EmbeddingLike.apply_eq_iff_eq, exists_eq_right, ←this]
+  -- TODO: This is absolutely horrible. If we can't have coercions `F → HomType α β` from
+  -- `HomClass F α β`, can we at least have a bare function?
+  have := by simpa using image_openSegment _ {
+    toFun := f
+    linear.toFun := f
+    linear.map_add' := map_add f
+    linear.map_smul' := map_smulₛₗ f
+    map_vadd' := by simp }
+  simp only [mem_extremePoints, ←Equiv.forall_congr_left {
+        toFun := f
+        invFun := EquivLike.inv f
+        left_inv := EquivLike.left_inv f
+        right_inv := EquivLike.right_inv f
+      }, ←exists_and_right, mem_image, Equiv.coe_fn_mk,
+        LinearEquiv.coe_toEquiv, EmbeddingLike.apply_eq_iff_eq, exists_eq_right, ←this]
   constructor
   · rintro ⟨x, ⟨hx, hxs⟩, rfl⟩
     exact ⟨x, ⟨hx, rfl⟩, by simpa using hxs⟩

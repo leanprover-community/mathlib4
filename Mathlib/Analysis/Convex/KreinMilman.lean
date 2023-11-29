@@ -106,10 +106,10 @@ theorem closure_convexHull_extremePoints (hscomp : IsCompact s) (hAconv : Convex
     h.isExtreme.extremePoints_subset_extremePoints hy), hy.1.2 x hxA]
 #align closure_convex_hull_extreme_points closure_convexHull_extremePoints
 
-/-- A continuous affine map sends extreme points of a compact set to a superset of the extreme
+/-- A continuous affine map is surjective from the extreme points of a compact set to the extreme
 points of the image of that set. This inclusion is in general strict. -/
-lemma extremePoints_image_subset_image_extremePoints (f : E →A[ℝ] F) (hs : IsCompact s) :
-    extremePoints ℝ (f '' s) ⊆ f '' extremePoints ℝ s := by
+lemma surjOn_extremePoints_image (f : E →A[ℝ] F) (hs : IsCompact s) :
+    SurjOn f (extremePoints ℝ s) (extremePoints ℝ (f '' s)) := by
   rintro w hw
   -- The fiber of `w` is nonempty and compact
   have ht : IsCompact {x ∈ s | f x = w} := hs.inter_right $ isClosed_singleton.preimage f.continuous
