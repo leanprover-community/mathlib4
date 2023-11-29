@@ -53,14 +53,9 @@ noncomputable section
 open Bundle Set ContinuousAlternatingMap
 
 section defs
-variable (𝕜 : Type*) [NormedField 𝕜] (ι : Type*)
+variable (𝕜 : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] (ι : Type*)
 variable {B : Type*}
 
--- In this definition we require the scalar rings `𝕜` and `𝕜` to be normed fields, although
--- something much weaker (maybe `comm_semiring`) would suffice mathematically -- this is because of
--- a typeclass inference bug with pi-types:
--- https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/vector.20bundles.20--.20typeclass.20inference.20issue
--- variable (F₁ F₂) in
 /- The bundle of continuous `ι`-slot alternating maps between the topological vector bundles `E₁`
 and `E₂`. This is a type synonym for `Λ^ι⟮𝕜; F₁, E₁; F₂, E₂⟯`.
 
@@ -149,7 +144,7 @@ def _root_.LinearIsometry.compLeft {𝕜 : Type*} {𝕜₂ : Type*}
     norm_map' := fun _ ↦ f.norm_toContinuousLinearMap_comp }
 
 -- move this to `ContinuousMultilinearMap`
-lemma _root_.ContinuousMultilinearMap.compContinuousLinearMapL_diag_continuous :
+theorem _root_.ContinuousMultilinearMap.compContinuousLinearMapL_diag_continuous :
   Continuous (fun p : F₁ →L[𝕜] F₁ ↦
   (ContinuousMultilinearMap.compContinuousLinearMapL (fun _ : ι ↦ p) :
     ContinuousMultilinearMap 𝕜 (fun _ ↦ F₁) F₂ →L[𝕜] ContinuousMultilinearMap 𝕜 (fun _ ↦ F₁) F₂)) := by
@@ -164,22 +159,24 @@ lemma _root_.ContinuousMultilinearMap.compContinuousLinearMapL_diag_continuous :
     exact continuous_id
 
 -- move this to `ContinuousAlternatingMap`
-lemma _root_.ContinuousAlternatingMap.compContinuousLinearMapL_continuous :
+theorem _root_.ContinuousAlternatingMap.compContinuousLinearMapL_continuous :
     Continuous (fun p : F₁ →L[𝕜] F₁ ↦
-    (ContinuousAlternatingMap.compContinuousLinearMapL p : (F₁ [Λ^ι]→L[𝕜] F₂) →L[𝕜] (F₁ [Λ^ι]→L[𝕜] F₂))) := by
+    (ContinuousAlternatingMap.compContinuousLinearMapL p :
+    (F₁ [Λ^ι]→L[𝕜] F₂) →L[𝕜] (F₁ [Λ^ι]→L[𝕜] F₂))) := by
   let φ : (F₁ [Λ^ι]→L[𝕜] F₂) →ₗᵢ[𝕜] _ := toContinuousMultilinearMapLinearIsometry
   let Φ : ((F₁ [Λ^ι]→L[𝕜] F₂) →L[𝕜] (F₁ [Λ^ι]→L[𝕜] F₂)) →ₗᵢ[𝕜] _ := φ.compLeft _ (RingHom.id _)
   rw [← Φ.comp_continuous_iff]
   show Continuous (fun p : F₁ →L[𝕜] F₁ ↦
     (ContinuousMultilinearMap.compContinuousLinearMapL (fun _ ↦ p) :
-    ContinuousMultilinearMap 𝕜 (fun _ ↦ F₁) F₂ →L[𝕜] ContinuousMultilinearMap 𝕜 (fun _ ↦ F₁) F₂).comp
+    ContinuousMultilinearMap 𝕜 (fun _ ↦ F₁) F₂ →L[𝕜]
+    ContinuousMultilinearMap 𝕜 (fun _ ↦ F₁) F₂).comp
     (toContinuousMultilinearMapL 𝕜))
   exact (ContinuousMultilinearMap.compContinuousLinearMapL_diag_continuous 𝕜 ι F₁ F₂).clm_comp
     continuous_const
 
 end
 
-lemma continuousOn_continuousAlternatingMapCoordChange
+theorem continuousOn_continuousAlternatingMapCoordChange
     [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂ E₂]
     [MemTrivializationAtlas e₁] [MemTrivializationAtlas e₁']
     [MemTrivializationAtlas e₂] [MemTrivializationAtlas e₂'] :
@@ -187,15 +184,22 @@ lemma continuousOn_continuousAlternatingMapCoordChange
     ((e₁.baseSet ∩ e₂.baseSet) ∩ (e₁'.baseSet ∩ e₂'.baseSet)) := by
   have h₃ := (continuousOn_coordChange 𝕜 e₁' e₁)
   have h₄ := (continuousOn_coordChange 𝕜 e₂ e₂')
-  let s : ((F₁ →L[𝕜] F₁) × (F₂ →L[𝕜] F₂)) → (F₁ →L[𝕜] F₁) × ((F₁ [Λ^ι]→L[𝕜] F₂) →L[𝕜] (F₁ [Λ^ι]→L[𝕜] F₂)) :=
-    fun q ↦ (q.1, ContinuousLinearMap.compContinuousAlternatingMapL 𝕜 F₁ F₂ F₂ q.2)
+  let s (q : (F₁ →L[𝕜] F₁) × (F₂ →L[𝕜] F₂)) :
+      (F₁ →L[𝕜] F₁) × ((F₁ [Λ^ι]→L[𝕜] F₂) →L[𝕜] (F₁ [Λ^ι]→L[𝕜] F₂)) :=
+    (q.1, ContinuousLinearMap.compContinuousAlternatingMapL 𝕜 F₁ F₂ F₂ q.2)
   have hs : Continuous s := continuous_id.prod_map (ContinuousLinearMap.continuous _)
-  sorry
+  -- note: the following `refine` worked in Lean 3; in Lean 4 this times out so has been replaced by
+  -- the `have`/`exact` pair with an explicitly-provided `s` argument
   -- refine ((continuous_snd.clm_comp
   --   ((ContinuousAlternatingMap.compContinuousLinearMapL_continuous 𝕜 ι F₁ F₂).comp
   --   continuous_fst)).comp hs).comp_continuousOn ((h₃.mono ?_).prod (h₄.mono ?_))
-  -- · mfld_set_tac
-  -- · mfld_set_tac
+  have' := ((continuous_snd.clm_comp
+    ((ContinuousAlternatingMap.compContinuousLinearMapL_continuous 𝕜 ι F₁ F₂).comp
+    continuous_fst)).comp hs).comp_continuousOn
+    (s := (e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet))) ((h₃.mono ?_).prod (h₄.mono ?_))
+  · exact this
+  · mfld_set_tac
+  · mfld_set_tac
 
 variable (e₁ e₁' e₂ e₂')
 variable [e₁.IsLinear 𝕜] [e₁'.IsLinear 𝕜] [e₂.IsLinear 𝕜] [e₂'.IsLinear 𝕜]
@@ -213,39 +217,31 @@ def continuousAlternatingMap : Pretrivialization (F₁ [Λ^ι]→L[𝕜] F₂)
       p.2.compContinuousLinearMap <| e₁.continuousLinearMapAt 𝕜 p.1⟩
   source := (Bundle.TotalSpace.proj) ⁻¹' (e₁.baseSet ∩ e₂.baseSet)
   target := (e₁.baseSet ∩ e₂.baseSet) ×ˢ Set.univ
-  map_source' := fun ⟨x, L⟩ h ↦ ⟨h, Set.mem_univ _⟩
-  map_target' := fun ⟨x, f⟩ h ↦ h.1
+  map_source' _ h := ⟨h, Set.mem_univ _⟩
+  map_target' _ h := h.1
   left_inv' := fun ⟨x, L⟩ ⟨h₁, h₂⟩ ↦ by
-    sorry
-    -- simp_rw [Sigma.mk.inj_iff, eq_self_iff_true, heq_iff_eq, true_and]
-    -- ext v
-    -- simp_rw [ContinuousLinearMap.comp_ContinuousAlternatingMap_coe,
-    --   function.comp_app, ContinuousAlternatingMap.comp_ContinuousLinearMap_apply,
-    --   ContinuousLinearMap.comp_ContinuousAlternatingMap_coe, function.comp_app,
-    --   trivialization.symmL_ContinuousLinearMap_at _ h₂,
-    --   ContinuousAlternatingMap.comp_ContinuousLinearMap_apply]
-    -- congr! 1
-    -- ext1 y
-    -- exact e₁.symmL_ContinuousLinearMap_at h₁ (v y)
-  right_inv' := fun ⟨x, f⟩ ⟨⟨h₁, h₂⟩, _⟩ ↦ by
-    dsimp only
-    simp_rw [Prod.mk.inj_iff, true_and]
+    rw [TotalSpace.mk_inj]
+    dsimp [Bundle.continuousAlternatingMap]
     ext v
-    sorry
-    -- simp_rw [ContinuousLinearMap.compContinuousAlternatingMap_coe,
-    --   Function.comp_apply, ContinuousAlternatingMap.compContinuousLinearMap_apply,
-    --   ContinuousLinearMap.compContinuousAlternatingMap_coe, Function.comp_apply,
-    --   Trivialization.continuousLinearMapAt_symmL _ h₂,
-    --   ContinuousAlternatingMap.compContinuousLinearMap_apply]
-    -- congr! 1
-    -- ext1 y
-    -- exact trivialization.ContinuousLinearMap_at_symmL _ h₁ (v y)
+    refine (e₂.symmₗ_linearMapAt h₂ _).trans ?_
+    dsimp
+    congr
+    ext i
+    exact e₁.symmₗ_linearMapAt h₁ _
+  right_inv' := fun ⟨x, f⟩ ⟨⟨h₁, h₂⟩, _⟩ ↦ by
+    ext v
+    dsimp
+    refine (e₂.linearMapAt_symmₗ h₂ _).trans ?_
+    dsimp
+    congr
+    ext i
+    exact e₁.linearMapAt_symmₗ h₁ _
   open_target := (e₁.open_baseSet.inter e₂.open_baseSet).prod isOpen_univ
   baseSet := e₁.baseSet ∩ e₂.baseSet
   open_baseSet := e₁.open_baseSet.inter e₂.open_baseSet
   source_eq := rfl
   target_eq := rfl
-  proj_toFun := fun ⟨x, f⟩ h ↦ rfl
+  proj_toFun _ _ := rfl
 
 instance continuousAlternatingMap.isLinear
     [Π x, ContinuousAdd (E₂ x)] [Π x, ContinuousSMul 𝕜 (E₂ x)] :
@@ -264,13 +260,13 @@ instance continuousAlternatingMap.isLinear
       rw [SMulHomClass.map_smul, SMulHomClass.map_smul]
       rfl }
 
-lemma continuousAlternatingMap_apply (p : TotalSpace (F₁ [Λ^ι]→L[𝕜] F₂) (Λ^ι⟮𝕜; F₁, E₁; F₂, E₂⟯)) :
+theorem continuousAlternatingMap_apply (p : TotalSpace (F₁ [Λ^ι]→L[𝕜] F₂) (Λ^ι⟮𝕜; F₁, E₁; F₂, E₂⟯)) :
     (continuousAlternatingMap 𝕜 ι e₁ e₂) p =
     ⟨p.1, (e₂.continuousLinearMapAt 𝕜 p.1).compContinuousAlternatingMap <|
         p.2.compContinuousLinearMap <| e₁.symmL 𝕜 p.1⟩ :=
   rfl
 
-lemma continuousAlternatingMap_symm_apply (p : B × (F₁ [Λ^ι]→L[𝕜] F₂)) :
+theorem continuousAlternatingMap_symm_apply (p : B × (F₁ [Λ^ι]→L[𝕜] F₂)) :
     (continuousAlternatingMap 𝕜 ι e₁ e₂).toLocalEquiv.symm p =
     ⟨p.1, (e₂.symmL 𝕜 p.1).compContinuousAlternatingMap <|
       p.2.compContinuousLinearMap <| e₁.continuousLinearMapAt 𝕜 p.1⟩ :=
@@ -278,7 +274,7 @@ lemma continuousAlternatingMap_symm_apply (p : B × (F₁ [Λ^ι]→L[𝕜] F₂
 
 variable [Π x, ContinuousAdd (E₂ x)]
 
-lemma continuousAlternatingMap_symm_apply' {b : B} (hb : b ∈ e₁.baseSet ∩ e₂.baseSet)
+theorem continuousAlternatingMap_symm_apply' {b : B} (hb : b ∈ e₁.baseSet ∩ e₂.baseSet)
     (L : (F₁ [Λ^ι]→L[𝕜] F₂)) :
     (continuousAlternatingMap 𝕜 ι e₁ e₂).symm b L =
     (e₂.symmL 𝕜 b).compContinuousAlternatingMap
@@ -287,7 +283,7 @@ lemma continuousAlternatingMap_symm_apply' {b : B} (hb : b ∈ e₁.baseSet ∩ 
   · rfl
   exact hb
 
-lemma continuousAlternatingMapCoordChange_apply (b : B)
+theorem continuousAlternatingMapCoordChange_apply (b : B)
   (hb : b ∈ (e₁.baseSet ∩ e₂.baseSet) ∩ (e₁'.baseSet ∩ e₂'.baseSet)) (L : F₁ [Λ^ι]→L[𝕜] F₂) :
   continuousAlternatingMapCoordChange 𝕜 ι e₁ e₁' e₂ e₂' b L =
   (continuousAlternatingMap 𝕜 ι e₁' e₂'
@@ -297,15 +293,11 @@ lemma continuousAlternatingMapCoordChange_apply (b : B)
   · ext i
     dsimp
     rw [e₁'.coordChangeL_apply e₁ ⟨hb.2.1, hb.1.1⟩, e₁.coe_linearMapAt_of_mem hb.1.1]
-  sorry
-  -- simp_rw [Pretrivialization.continuousAlternatingMap_apply,
-  --   ContinuousAlternatingMapCoordChange, ContinuousLinearEquiv.coe_coe,
-  --   ContinuousLinearEquiv.ContinuousAlternatingMap_congrL_apply,
-  --   ContinuousLinearEquiv.symm_symm, ContinuousLinearEquiv.comp_ContinuousAlternatingMap_coe,
-  --   Function.comp_apply, ContinuousAlternatingMap.comp_ContinuousLinearMap_apply,
-  --   ContinuousLinearEquiv.coe_coe]
-  -- simp [pretrivialization.ContinuousAlternatingMap_symm_apply' _ _ _ _ hb.1,
-  --   e₂.coord_changeL_apply e₂' ⟨hb.1.2, hb.2.2⟩, e₂'.coe_linear_map_at_of_mem hb.2.2, H]
+  simp [Pretrivialization.continuousAlternatingMap_apply, continuousAlternatingMapCoordChange,
+    Pretrivialization.continuousAlternatingMap_symm_apply' _ _ _ _ hb.1,
+    e₂.coordChangeL_apply e₂' ⟨hb.1.2, hb.2.2⟩, H]
+  rw [e₂'.coe_linearMapAt_of_mem hb.2.2]
+  -- FIXME this could ideally be combined with the previous simp
 
 end Pretrivialization
 
@@ -384,11 +376,11 @@ instance _root_.Bundle.continuousAlternatingMap.memTrivializationAtlas :
 
 variable {e₁ e₂}
 
-@[simp] lemma Trivialization.baseSet_continuousAlternatingMap :
+@[simp] theorem Trivialization.baseSet_continuousAlternatingMap :
     (e₁.continuousAlternatingMap 𝕜 ι e₂).baseSet = e₁.baseSet ∩ e₂.baseSet :=
   rfl
 
-lemma Trivialization.continuousAlternatingMap_apply
+theorem Trivialization.continuousAlternatingMap_apply
     (p : TotalSpace (F₁ [Λ^ι]→L[𝕜] F₂) Λ^ι⟮𝕜; F₁, E₁; F₂, E₂⟯) :
     e₁.continuousAlternatingMap 𝕜 ι e₂ p =
     ⟨p.1, (e₂.continuousLinearMapAt 𝕜 p.1).compContinuousAlternatingMap <|
@@ -396,14 +388,14 @@ lemma Trivialization.continuousAlternatingMap_apply
   rfl
 
 @[simp, mfld_simps]
-lemma continuousAlternatingMap_trivializationAt_source (x₀ : B) :
+theorem continuousAlternatingMap_trivializationAt_source (x₀ : B) :
     (trivializationAt (F₁ [Λ^ι]→L[𝕜] F₂) Λ^ι⟮𝕜; F₁, E₁; F₂, E₂⟯ x₀).source =
     π (F₁ [Λ^ι]→L[𝕜] F₂) Λ^ι⟮𝕜; F₁, E₁; F₂, E₂⟯ ⁻¹'
       ((trivializationAt F₁ E₁ x₀).baseSet ∩ (trivializationAt F₂ E₂ x₀).baseSet) :=
   rfl
 
 @[simp, mfld_simps]
-lemma continuousAlternatingMap_trivializationAt_target (x₀ : B) :
+theorem continuousAlternatingMap_trivializationAt_target (x₀ : B) :
     (trivializationAt (F₁ [Λ^ι]→L[𝕜] F₂) Λ^ι⟮𝕜; F₁, E₁; F₂, E₂⟯ x₀).target =
     ((trivializationAt F₁ E₁ x₀).baseSet ∩ (trivializationAt F₂ E₂ x₀).baseSet) ×ˢ Set.univ :=
   rfl
