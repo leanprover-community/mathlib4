@@ -1559,19 +1559,19 @@ theorem csSup_image2_eq_csSup_csSup (h₁ : ∀ b, GaloisConnection (swap l b) (
 theorem csSup_image2_eq_csSup_csInf (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a)) :
     s.Nonempty → BddAbove s → t.Nonempty → BddBelow t → sSup (image2 l s t) = l (sSup s) (sInf t) :=
-  @csSup_image2_eq_csSup_csSup _ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
+  csSup_image2_eq_csSup_csSup (β := βᵒᵈ) h₁ h₂
 #align cSup_image2_eq_cSup_cInf csSup_image2_eq_csSup_csInf
 
 theorem csSup_image2_eq_csInf_csSup (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a) (u₂ a)) :
     s.Nonempty → BddBelow s → t.Nonempty → BddAbove t → sSup (image2 l s t) = l (sInf s) (sSup t) :=
-  @csSup_image2_eq_csSup_csSup αᵒᵈ _ _ _ _ _ _ _ _ _ _ h₁ h₂
+  csSup_image2_eq_csSup_csSup (α := αᵒᵈ) h₁ h₂
 #align cSup_image2_eq_cInf_cSup csSup_image2_eq_csInf_csSup
 
 theorem csSup_image2_eq_csInf_csInf (h₁ : ∀ b, GaloisConnection (swap l b ∘ ofDual) (toDual ∘ u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a ∘ ofDual) (toDual ∘ u₂ a)) :
     s.Nonempty → BddBelow s → t.Nonempty → BddBelow t → sSup (image2 l s t) = l (sInf s) (sInf t) :=
-  @csSup_image2_eq_csSup_csSup αᵒᵈ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
+  csSup_image2_eq_csSup_csSup (α := αᵒᵈ) (β := βᵒᵈ) h₁ h₂
 #align cSup_image2_eq_cInf_cInf csSup_image2_eq_csInf_csInf
 
 theorem csInf_image2_eq_csInf_csInf (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
@@ -1584,19 +1584,19 @@ theorem csInf_image2_eq_csInf_csInf (h₁ : ∀ b, GaloisConnection (l₁ b) (sw
 theorem csInf_image2_eq_csInf_csSup (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
     (h₂ : ∀ a, GaloisConnection (toDual ∘ l₂ a) (u a ∘ ofDual)) :
     s.Nonempty → BddBelow s → t.Nonempty → BddAbove t → sInf (image2 u s t) = u (sInf s) (sSup t) :=
-  @csInf_image2_eq_csInf_csInf _ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
+  csInf_image2_eq_csInf_csInf (β := βᵒᵈ) h₁ h₂
 #align cInf_image2_eq_cInf_cSup csInf_image2_eq_csInf_csSup
 
 theorem csInf_image2_eq_csSup_csInf (h₁ : ∀ b, GaloisConnection (toDual ∘ l₁ b) (swap u b ∘ ofDual))
     (h₂ : ∀ a, GaloisConnection (l₂ a) (u a)) :
     s.Nonempty → BddAbove s → t.Nonempty → BddBelow t → sInf (image2 u s t) = u (sSup s) (sInf t) :=
-  @csInf_image2_eq_csInf_csInf αᵒᵈ _ _ _ _ _ _ _ _ _ _ h₁ h₂
+  csInf_image2_eq_csInf_csInf (α := αᵒᵈ) h₁ h₂
 #align cInf_image2_eq_cSup_cInf csInf_image2_eq_csSup_csInf
 
 theorem csInf_image2_eq_csSup_csSup (h₁ : ∀ b, GaloisConnection (toDual ∘ l₁ b) (swap u b ∘ ofDual))
     (h₂ : ∀ a, GaloisConnection (toDual ∘ l₂ a) (u a ∘ ofDual)) :
     s.Nonempty → BddAbove s → t.Nonempty → BddAbove t → sInf (image2 u s t) = u (sSup s) (sSup t) :=
-  @csInf_image2_eq_csInf_csInf αᵒᵈ βᵒᵈ _ _ _ _ _ _ _ _ _ h₁ h₂
+  csInf_image2_eq_csInf_csInf (α := αᵒᵈ) (β := βᵒᵈ) h₁ h₂
 #align cInf_image2_eq_cSup_cSup csInf_image2_eq_csSup_csSup
 
 end
