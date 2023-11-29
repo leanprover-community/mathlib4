@@ -16,8 +16,8 @@ namespace Std.BitVec
 
 open Nat
 
-#noalign bits_to_nat_to_list
-#noalign toNat_append
+#noalign bitvec.bits_to_nat_to_list
+#noalign bitvec.to_nat_append
 
 variable {w v : Nat}
 
