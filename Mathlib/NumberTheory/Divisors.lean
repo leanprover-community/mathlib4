@@ -340,6 +340,22 @@ theorem divisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
   · tauto
 #align nat.divisors_prime_pow Nat.divisors_prime_pow
 
+theorem divisors_mem_iff_mem {a b : ℕ} (h : ∀ {y}, y ∈ a.divisors ↔ y ∈ b.divisors) :
+    a = b := by
+  rcases eq_or_ne a 0 with rfl | ha <;> rcases eq_or_ne b 0 with rfl | hb
+  · rfl
+  · simp only [divisors_zero, not_mem_empty, mem_divisors, ne_eq, false_iff, not_and, not_not] at h
+    exact (h (one_dvd _)).symm
+  · simp only [mem_divisors, ne_eq, divisors_zero, not_mem_empty, iff_false, not_and, not_not] at h
+    exact (h (one_dvd _))
+  · exact dvd_left_iff_eq.mp (by simp_all)
+
+theorem divisors_injective : Function.Injective divisors :=
+  fun ⦃_ _⦄ xy ↦ divisors_mem_iff_mem fun {_} ↦ iff_of_eq (congrArg _ xy)
+
+theorem divisors_inj {a b : ℕ} : a.divisors = b.divisors ↔ a = b :=
+  ⟨fun x => divisors_injective x, congrArg divisors⟩
+
 theorem eq_properDivisors_of_subset_of_sum_eq_sum {s : Finset ℕ} (hsub : s ⊆ n.properDivisors) :
     ((∑ x in s, x) = ∑ x in n.properDivisors, x) → s = n.properDivisors := by
   cases n
