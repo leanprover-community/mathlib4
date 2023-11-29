@@ -292,18 +292,18 @@ theorem shiftLeft'_sub (b m) : ∀ {n k}, k ≤ n → shiftLeft' b m (n - k) = (
 theorem shiftLeft_sub : ∀ (m : Nat) {n k}, k ≤ n → m <<< (n - k) = (m <<< n) >>> k :=
   fun _ _ _ hk => by simp only [← shiftLeft'_false, shiftLeft'_sub false _ hk]
 
--- @[simp]
--- theorem testBit_zero (b n) : testBit (bit b n) 0 = b := by
---   bodd_bit _ _
--- #align nat.test_bit_zero Nat.testBit_zero
+@[simp]
+theorem testBit_zero (b n) : testBit (bit b n) 0 = b :=
+  bodd_bit _ _
+#align nat.test_bit_zero Nat.testBit_zero
 
--- theorem testBit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
---   have : bodd (((bit b n) >>> 1) >>> m) = bodd (n >>> m) := by
---     dsimp [shiftRight_eq]
---     simp [← div2_val, div2_bit]
---   rw [← shiftRight_add, Nat.add_comm] at this
---   exact this
--- #align nat.test_bit_succ Nat.testBit_succ
+theorem testBit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
+  have : bodd (((bit b n) >>> 1) >>> m) = bodd (n >>> m) := by
+    dsimp [shiftRight_eq]
+    simp [← div2_val, div2_bit]
+  rw [← shiftRight_add, Nat.add_comm] at this
+  exact this
+#align nat.test_bit_succ Nat.testBit_succ
 
 theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
     (h : f false 0 z = z) (b n) : binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
