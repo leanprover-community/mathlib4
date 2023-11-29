@@ -2044,15 +2044,15 @@ lemma contMDiff_openEmbedding :
   apply contDiffOn_id.congr
   intros z hz
   -- factorise into the chart (=e) and the model (=id)
-  rw [@extChartAt_coe_symm (CS : h.singletonChartedSpace)]
+  rw [extChartAt_coe_symm (CS := h.singletonChartedSpace)]
   simp only [mfld_simps]
   rw [h.toLocalHomeomorph_right_inv]
   · rw [I.right_inv]
     apply mem_of_subset_of_mem _ hz.1
-    exact @extChartAt_target_subset_range _ _ _ _ _ _ _ _ _ I x h.singletonChartedSpace
+    exact extChartAt_target_subset_range I x (CS := h.singletonChartedSpace)
   · -- `hz` implies that `z ∈ range (I ∘ e)`
     have := hz.1
-    rw [@extChartAt_target _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace] at this
+    rw [extChartAt_target (CS := h.singletonChartedSpace)] at this
     have := this.1
     rw [mem_preimage, LocalHomeomorph.singletonChartedSpace_chartAt_eq,
       h.toLocalHomeomorph_target] at this
@@ -2071,7 +2071,7 @@ lemma contMDiffOn_openEmbedding_symm :
     apply contDiffOn_id.congr
     intros z hz
     -- factorise into the chart (=e) and the model (=id)
-    rw [@extChartAt_coe _ _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace,
+    rw [extChartAt_coe (CS := h.singletonChartedSpace),
       extChartAt_coe_symm, chartAt_self_eq]
     simp_rw [Function.comp_apply]
     rw [LocalHomeomorph.refl_symm, LocalHomeomorph.refl_apply, id.def,
