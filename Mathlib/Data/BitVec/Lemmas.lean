@@ -112,10 +112,11 @@ theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := by
 #align bitvec.of_fin_to_fin Std.BitVec.ofFin_toFin
 
 /-!
-  ## Distributivity of ofFin
-  We add simp-lemmas that show how `ofFin` distributes over various bitvector operations, showing
-  that bitvector operations are equivalent to `Fin` operations
+### Distributivity of `Std.BitVec.ofFin`
 -/
+section
+variable (x y : Fin (2^w))
+
 @[simp] lemma ofFin_neg (x : Fin (2^w)) : ofFin (-x) = -(ofFin x) := by
   rw [neg_eq_zero_sub]; rfl
 
@@ -126,12 +127,25 @@ theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := by
 @[simp] lemma ofFin_sub (x y : Fin (2^w)) : ofFin (x - y)   = ofFin x - ofFin y   := rfl
 @[simp] lemma ofFin_mul (x y : Fin (2^w)) : ofFin (x * y)   = ofFin x * ofFin y   := rfl
 
+end
 
 /-!
-  ## Distributivity of toFin
+### Distributivity of `Std.BitVec.toFin`
 -/
-@[simp] lemma toFin_neg (x : BitVec w) : (-x).toFin = -(x.toFin) := by
+section
+variable (x y : BitVec w)
+
+@[simp] lemma toFin_neg : toFin (-x) = -(toFin x) := by
   rw [neg_eq_zero_sub]; rfl
+
+@[simp] lemma toFin_and : toFin (x &&& y) = toFin x &&& toFin y := rfl
+@[simp] lemma toFin_or  : toFin (x ||| y) = toFin x ||| toFin y := rfl
+@[simp] lemma toFin_xor : toFin (x ^^^ y) = toFin x ^^^ toFin y := rfl
+@[simp] lemma toFin_add : toFin (x + y)   = toFin x + toFin y   := rfl
+@[simp] lemma toFin_sub : toFin (x - y)   = toFin x - toFin y   := rfl
+@[simp] lemma toFin_mul : toFin (x * y)   = toFin x * toFin y   := rfl
+
+end
 
 /-!
 ## Ring
