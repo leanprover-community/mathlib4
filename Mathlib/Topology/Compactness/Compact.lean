@@ -26,6 +26,8 @@ We define the following properties for sets in a topological space:
 -/
 open Set Filter Topology TopologicalSpace Classical
 
+set_option autoImplicit true
+
 universe u v
 
 variable {X : Type u} {Y : Type v} {ι : Type*}
