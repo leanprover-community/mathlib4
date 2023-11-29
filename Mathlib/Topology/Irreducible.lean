@@ -284,9 +284,9 @@ theorem isPreirreducible_iff_closed_union_closed {s : Set α} :
 contained in one of the members of the collection. -/
 theorem isIrreducible_iff_sUnion_closed {s : Set α} :
     IsIrreducible s ↔
-      ∀ Z : Finset (Set α), (∀ z ∈ Z, IsClosed z) → (s ⊆ ⋃₀ ↑Z) → ∃ z ∈ Z, s ⊆ z := by
+      ∀ t : Finset (Set α), (∀ z ∈ t, IsClosed z) → (s ⊆ ⋃₀ ↑t) → ∃ z ∈ t, s ⊆ z := by
   simp only [isIrreducible_iff_sInter]
-  refine ((@compl_involutive (Set α) _).toPerm _).finsetCongr.forall_congr fun {Z} => ?_
+  refine ((@compl_involutive (Set α) _).toPerm _).finsetCongr.forall_congr fun {t} => ?_
   simp_rw [Equiv.finsetCongr_apply, Finset.forall_mem_map, Finset.mem_map, Finset.coe_map,
     sUnion_image, Equiv.coe_toEmbedding, Function.Involutive.coe_toPerm, isClosed_compl_iff,
     exists_exists_and_eq_and]
@@ -304,15 +304,15 @@ theorem subset_closure_inter_of_isPreirreducible_of_isOpen {S U : Set α} (hS : 
   exact h₃ (subset_closure ⟨h₁, h₂⟩)
 #align subset_closure_inter_of_is_preirreducible_of_is_open subset_closure_inter_of_isPreirreducible_of_isOpen
 
-/-- If `∅ ≠ U ⊆ S ⊆ Z` such that `U` is open and `Z` is preirreducible, then `S` is irreducible. -/
-theorem IsPreirreducible.subset_irreducible {S U Z : Set α} (hZ : IsPreirreducible Z)
-    (hU : U.Nonempty) (hU' : IsOpen U) (h₁ : U ⊆ S) (h₂ : S ⊆ Z) : IsIrreducible S := by
+/-- If `∅ ≠ U ⊆ S ⊆ t` such that `U` is open and `t` is preirreducible, then `S` is irreducible. -/
+theorem IsPreirreducible.subset_irreducible {S U t : Set α} (ht : IsPreirreducible t)
+    (hU : U.Nonempty) (hU' : IsOpen U) (h₁ : U ⊆ S) (h₂ : S ⊆ t) : IsIrreducible S := by
   obtain ⟨z, hz⟩ := hU
-  replace hZ : IsIrreducible Z := ⟨⟨z, h₂ (h₁ hz)⟩, hZ⟩
+  replace ht : IsIrreducible t := ⟨⟨z, h₂ (h₁ hz)⟩, ht⟩
   refine' ⟨⟨z, h₁ hz⟩, _⟩
   rintro u v hu hv ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
-  obtain ⟨a, -, ha'⟩ : Set.Nonempty (Z ∩ ⋂₀ ↑({U, u, v} : Finset (Set α)))
-  · refine isIrreducible_iff_sInter.mp hZ {U, u, v} ?_ ?_
+  obtain ⟨a, -, ha'⟩ : Set.Nonempty (t ∩ ⋂₀ ↑({U, u, v} : Finset (Set α)))
+  · refine isIrreducible_iff_sInter.mp ht {U, u, v} ?_ ?_
     · simp [*]
     · intro U H
       simp only [Finset.mem_insert, Finset.mem_singleton] at H
@@ -322,22 +322,22 @@ theorem IsPreirreducible.subset_irreducible {S U Z : Set α} (hZ : IsPreirreduci
   exact ⟨a, h₁ ha'.1, ha'.2⟩
 #align is_preirreducible.subset_irreducible IsPreirreducible.subset_irreducible
 
-theorem IsPreirreducible.open_subset {Z U : Set α} (hZ : IsPreirreducible Z) (hU : IsOpen U)
-    (hU' : U ⊆ Z) : IsPreirreducible U :=
+theorem IsPreirreducible.open_subset {t U : Set α} (ht : IsPreirreducible t) (hU : IsOpen U)
+    (hU' : U ⊆ t) : IsPreirreducible U :=
   U.eq_empty_or_nonempty.elim (fun h => h.symm ▸ isPreirreducible_empty) fun h =>
-    (hZ.subset_irreducible h hU (fun _ => id) hU').2
+    (ht.subset_irreducible h hU (fun _ => id) hU').2
 #align is_preirreducible.open_subset IsPreirreducible.open_subset
 
-theorem IsPreirreducible.interior {Z : Set α} (hZ : IsPreirreducible Z) :
-    IsPreirreducible (interior Z) :=
-  hZ.open_subset isOpen_interior interior_subset
+theorem IsPreirreducible.interior {t : Set α} (ht : IsPreirreducible t) :
+    IsPreirreducible (interior t) :=
+  ht.open_subset isOpen_interior interior_subset
 #align is_preirreducible.interior IsPreirreducible.interior
 
-theorem IsPreirreducible.preimage {Z : Set α} (hZ : IsPreirreducible Z) {f : β → α}
-    (hf : OpenEmbedding f) : IsPreirreducible (f ⁻¹' Z) := by
+theorem IsPreirreducible.preimage {t : Set α} (ht : IsPreirreducible t) {f : β → α}
+    (hf : OpenEmbedding f) : IsPreirreducible (f ⁻¹' t) := by
   rintro U V hU hV ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
   obtain ⟨_, h₁, ⟨z, h₂, rfl⟩, ⟨z', h₃, h₄⟩⟩ :=
-    hZ _ _ (hf.isOpenMap _ hU) (hf.isOpenMap _ hV) ⟨f x, hx, Set.mem_image_of_mem f hx'⟩
+    ht _ _ (hf.isOpenMap _ hU) (hf.isOpenMap _ hV) ⟨f x, hx, Set.mem_image_of_mem f hx'⟩
       ⟨f y, hy, Set.mem_image_of_mem f hy'⟩
   cases hf.inj h₄
   exact ⟨z, h₁, h₂, h₃⟩
