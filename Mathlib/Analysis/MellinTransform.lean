@@ -7,8 +7,6 @@ import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 
-import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
-
 #align_import analysis.mellin_transform from "leanprover-community/mathlib"@"917c3c072e487b3cccdbfeff17e75b40e45f66cb"
 
 /-! # The Mellin transform
