@@ -234,9 +234,10 @@ def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
 `Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
 def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
-    groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
-  ((inhomogeneousCochains A).homology'IsoHomology n).symm ≪≫
-    homologyObjIsoOfHomotopyEquiv (HomotopyEquiv.ofIso (inhomogeneousCochainsIso _)) _ ≪≫
-    HomologicalComplex.homology'Unop _ _ ≪≫ (extIso k G A n).symm
+    groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A := by
+  refine' _ ≪≫ (extIso k G A n).symm
+  refine' isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫ _
+  -- needs homology.unop/op
+  sorry
 set_option linter.uppercaseLean3 false in
 #align group_cohomology_iso_Ext groupCohomologyIsoExt
