@@ -7,7 +7,7 @@ import Mathlib.Algebra.BigOperators.Multiset.Basic
 
 @[app_unexpander List.take]
 def List.take.unexpander : Lean.PrettyPrinter.Unexpander
-  | `($_ $f $μ) => `($(μ).$(Lean.mkIdent `take) $f)
+  | `($_ $n $xs) => `($(xs).$(Lean.mkIdent `take) $n)
   | _ => throw ()
 
 @[app_unexpander List.drop]
