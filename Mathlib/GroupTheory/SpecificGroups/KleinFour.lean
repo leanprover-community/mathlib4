@@ -136,29 +136,7 @@ lemma card_four' {G : Type*} [Group G] [Fintype G] [IsKleinFour G] :
 
 open Finset
 
-variable {G : Type*} [Group G]
-
-/-- A group of order 4 is not cyclic if and only if its exponent is two. -/
-@[to_additive]
-lemma not_isCyclic_iff (hG : Nat.card G = 4) :
-    ¬ IsCyclic G ↔ Monoid.exponent G = 2 := by
-  let _inst : Fintype G := @Fintype.ofFinite G <| Nat.finite_of_card_ne_zero <| by norm_num [hG]
-  have hG' : Fintype.card G = 4 := by simpa using hG
-  refine ⟨fun h_cyc ↦ ?_, fun h_exp h_cyc ↦ by simpa [hG', h_exp] using h_cyc.exponent_eq_card⟩
-  apply le_antisymm
-  · refine Nat.le_of_dvd zero_lt_two <| Monoid.exponent_dvd_of_forall_pow_eq_one G 2 fun g ↦ ?_
-    have hg' : orderOf g ∈ {1, 2, 4} :=
-      (Nat.mem_divisors (m := 4)).mpr ⟨hG' ▸ orderOf_dvd_card, by norm_num⟩
-    simp only [mem_singleton, Nat.succ.injEq, OfNat.one_ne_ofNat, mem_insert, or_self,
-      orderOf_eq_one_iff] at hg'
-    obtain (rfl|hg|hg) := hg'
-    · simp
-    · exact hg ▸ pow_orderOf_eq_one g
-    · apply False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g (hG' ▸ hg)
-  · have := (Fintype.one_lt_card_iff_nontrivial (α := G)).mp <| by norm_num [hG']
-    exact Monoid.one_lt_exponent
-
-variable [IsKleinFour G]
+variable {G : Type*} [Group G] [IsKleinFour G]
 
 @[to_additive]
 lemma not_isCyclic : ¬ IsCyclic G :=
