@@ -28,7 +28,7 @@ open Set Filter Topology TopologicalSpace Classical
 
 universe u v
 
-variable {X : Type u} {Y : Type v} {ι : Type*} {π : ι → Type*}
+variable {X : Type u} {Y : Type v} {ι : Type*}
 
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
@@ -981,8 +981,8 @@ instance [CompactSpace X] [CompactSpace Y] : CompactSpace (X ⊕ Y) :=
     rw [← range_inl_union_range_inr]
     exact (isCompact_range continuous_inl).union (isCompact_range continuous_inr)⟩
 
-instance [Finite ι] [∀ i, TopologicalSpace (π i)] [∀ i, CompactSpace (π i)] :
-    CompactSpace (Σi, π i) := by
+instance {X : ι → Type*} [Finite ι] [∀ i, TopologicalSpace (X i)] [∀ i, CompactSpace (X i)] :
+    CompactSpace (Σi, X i) := by
   refine' ⟨_⟩
   rw [Sigma.univ]
   exact isCompact_iUnion fun i => isCompact_range continuous_sigmaMk
@@ -1017,11 +1017,11 @@ instance (priority := 100) Prod.noncompactSpace_right [Nonempty X] [NoncompactSp
 
 section Tychonoff
 
-variable [∀ i, TopologicalSpace (π i)]
+variable {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 
 /-- **Tychonoff's theorem**: product of compact sets is compact. -/
-theorem isCompact_pi_infinite {s : ∀ i, Set (π i)} :
-    (∀ i, IsCompact (s i)) → IsCompact { x : ∀ i, π i | ∀ i, x i ∈ s i } := by
+theorem isCompact_pi_infinite {s : ∀ i, Set (X i)} :
+    (∀ i, IsCompact (s i)) → IsCompact { x : ∀ i, X i | ∀ i, x i ∈ s i } := by
   simp only [isCompact_iff_ultrafilter_le_nhds, nhds_pi, Filter.pi, exists_prop, mem_setOf_eq,
     le_iInf_iff, le_principal_iff]
   intro h f hfs
@@ -1033,13 +1033,13 @@ theorem isCompact_pi_infinite {s : ∀ i, Set (π i)} :
 #align is_compact_pi_infinite isCompact_pi_infinite
 
 /-- **Tychonoff's theorem** formulated using `Set.pi`: product of compact sets is compact. -/
-theorem isCompact_univ_pi {s : ∀ i, Set (π i)} (h : ∀ i, IsCompact (s i)) :
+theorem isCompact_univ_pi {s : ∀ i, Set (X i)} (h : ∀ i, IsCompact (s i)) :
     IsCompact (pi univ s) := by
   convert isCompact_pi_infinite h
   simp only [← mem_univ_pi, setOf_mem_eq]
 #align is_compact_univ_pi isCompact_univ_pi
 
-instance Pi.compactSpace [∀ i, CompactSpace (π i)] : CompactSpace (∀ i, π i) :=
+instance Pi.compactSpace [∀ i, CompactSpace (X i)] : CompactSpace (∀ i, X i) :=
   ⟨by rw [← pi_univ univ]; exact isCompact_univ_pi fun i => isCompact_univ⟩
 #align pi.compact_space Pi.compactSpace
 
@@ -1048,9 +1048,9 @@ instance Function.compactSpace [CompactSpace Y] : CompactSpace (ι → Y) :=
 #align function.compact_space Function.compactSpace
 
 /-- **Tychonoff's theorem** formulated in terms of filters: `Filter.cocompact` on an indexed product
-type `Π d, κ d` the `Filter.coprodᵢ` of filters `Filter.cocompact` on `κ d`. -/
-theorem Filter.coprodᵢ_cocompact {δ : Type*} {κ : δ → Type*} [∀ d, TopologicalSpace (κ d)] :
-    (Filter.coprodᵢ fun d => Filter.cocompact (κ d)) = Filter.cocompact (∀ d, κ d) := by
+type `Π d, X d` the `Filter.coprodᵢ` of filters `Filter.cocompact` on `X d`. -/
+theorem Filter.coprodᵢ_cocompact {X : ι → Type*} [∀ d, TopologicalSpace (X d)] :
+    (Filter.coprodᵢ fun d => Filter.cocompact (X d)) = Filter.cocompact (∀ d, X d) := by
   refine' le_antisymm (iSup_le fun i => Filter.comap_cocompact_le (continuous_apply i)) _
   refine' compl_surjective.forall.2 fun s H => _
   simp only [compl_mem_coprodᵢ, Filter.mem_cocompact, compl_subset_compl, image_subset_iff] at H ⊢
