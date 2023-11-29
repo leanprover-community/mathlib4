@@ -299,7 +299,7 @@ theorem testBit_zero (b n) : testBit (bit b n) 0 = b :=
 
 theorem testBit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   have : bodd (((bit b n) >>> 1) >>> m) = bodd (n >>> m) := by
-    dsimp [shiftRight_eq]
+    simp only [shiftRight_eq_div_pow]
     simp [← div2_val, div2_bit]
   rw [← shiftRight_add, Nat.add_comm] at this
   exact this
