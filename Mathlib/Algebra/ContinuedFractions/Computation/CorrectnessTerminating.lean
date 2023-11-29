@@ -5,7 +5,7 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.Translations
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
-import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
+import Mathlib.Algebra.ContinuedFractions.ContinuantRecurrence
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
@@ -13,44 +13,45 @@ import Mathlib.Tactic.Ring
 #align_import algebra.continued_fractions.computation.correctness_terminating from "leanprover-community/mathlib"@"d6814c584384ddf2825ff038e868451a7c956f31"
 
 /-!
-# Correctness of Terminating Continued Fraction Computations (`GeneralizedContinuedFraction.of`)
+# Correctness of Terminating Continued Fraction Computations (`CF.of`)
 
 ## Summary
 
 We show the correctness of the
-algorithm computing continued fractions (`GeneralizedContinuedFraction.of`) in case of termination
+algorithm computing continued fractions (`CF.of`) in case of termination
 in the following sense:
 
 At every step `n : ℕ`, we can obtain the value `v` by adding a specific residual term to the last
-denominator of the fraction described by `(GeneralizedContinuedFraction.of v).convergents' n`.
+denominator of the fraction described by `(CF.of v).convergents n`.
 The residual term will be zero exactly when the continued fraction terminated; otherwise, the
-residual term will be given by the fractional part stored in
-`GeneralizedContinuedFraction.IntFractPair.stream v n`.
+residual term will be given by the fractional part stored in an argument of the corecursor.
 
 For an example, refer to
-`GeneralizedContinuedFraction.compExactValue_correctness_of_stream_eq_some` and for more
+`CF.compExactValue_correctness_of_stream_eq_some` and for more
 information about the computation process, refer to `Algebra.ContinuedFractions.Computation.Basic`.
 
 ## Main definitions
 
-- `GeneralizedContinuedFraction.compExactValue` can be used to compute the exact value
-  approximated by the continued fraction `GeneralizedContinuedFraction.of v` by adding a residual
+- `CF.compExactValue` can be used to compute the exact value
+  approximated by the continued fraction `CF.of v` by adding a residual
   term as described in the summary.
 
 ## Main Theorems
 
-- `GeneralizedContinuedFraction.compExactValue_correctness_of_stream_eq_some` shows that
-  `GeneralizedContinuedFraction.compExactValue` indeed returns the value `v` when given the
+- `CF.compExactValue_correctness_of_stream_eq_some` shows that
+  `CF.compExactValue` indeed returns the value `v` when given the
   convergent and fractional part as described in the summary.
-- `GeneralizedContinuedFraction.of_correctness_of_terminatedAt` shows the equality
-  `v = (GeneralizedContinuedFraction.of v).convergents n` if `GeneralizedContinuedFraction.of v`
+- `CF.of_correctness_of_terminatedAt` shows the equality
+  `v = (CF.of v).convergents n` if `CF.of v`
   terminated at position `n`.
 -/
 
 
-namespace GeneralizedContinuedFraction
+namespace CF
 
-open GeneralizedContinuedFraction (of)
+open Int Seq' GCF
+
+open CF (of)
 
 variable {K : Type*} [LinearOrderedField K] {v : K} {n : ℕ}
 
@@ -59,16 +60,16 @@ variable {K : Type*} [LinearOrderedField K] {v : K} {n : ℕ}
 - `(fr⁻¹ * conts.a + pconts.a) / (fr⁻¹ * conts.b + pconts.b)` otherwise.
 
 This function can be used to compute the exact value approximated by a continued fraction
-`GeneralizedContinuedFraction.of v` as described in lemma
+`CF.of v` as described in lemma
 `compExactValue_correctness_of_stream_eq_some`.
 -/
-protected def compExactValue (pconts conts : Pair K) (fr : K) : K :=
+protected def compExactValue (pconts conts : K × K) (fr : K) : K :=
   -- if the fractional part is zero, we exactly approximated the value by the last continuants
   if fr = 0 then
-    conts.a / conts.b
+    conts.1 / conts.2
   else -- otherwise, we have to include the fractional part in a final continuants step.
-    (fr⁻¹ * conts.a + pconts.a) / (fr⁻¹ * conts.b + pconts.b)
-#align generalized_continued_fraction.comp_exact_value GeneralizedContinuedFraction.compExactValue
+    (fr⁻¹ * conts.1 + pconts.1) / (fr⁻¹ * conts.2 + pconts.2)
+#align generalized_continued_fraction.comp_exact_value CF.compExactValue
 
 variable [FloorRing K]
 
@@ -79,13 +80,62 @@ protected theorem compExactValue_correctness_of_stream_eq_some_aux_comp {a : K} 
   field_simp [fract_a_ne_zero]
   rw [Int.fract]
   ring
-#align generalized_continued_fraction.comp_exact_value_correctness_of_stream_eq_some_aux_comp GeneralizedContinuedFraction.compExactValue_correctness_of_stream_eq_some_aux_comp
+#align generalized_continued_fraction.comp_exact_value_correctness_of_stream_eq_some_aux_comp CF.compExactValue_correctness_of_stream_eq_some_aux_comp
 
-open GeneralizedContinuedFraction
+open CF
   (compExactValue compExactValue_correctness_of_stream_eq_some_aux_comp)
 
+theorem seq_evalF?_concat_take_fractParts (v : K) :
+    zipWith
+      (fun l w =>
+        List.foldrM FGCF.evalF?.next? (some 0)
+          (List.map (fun n : ℕ+ => (1, ↑(n : K))) l ++ [(1, w⁻¹)]))
+      ↑(of v).s.inits (fractParts v) =
+        (fractParts v).map
+          (fun _ => some (some (fract v))) := by
+  refine eq_of_bisim
+    (fun s₁ s₂ => ∃ (v : K) (hv : 0 ≤ v ∧ v < 1) (l : List ℕ+),
+      s₁ = zipWith
+        (fun l w =>
+          List.foldrM FGCF.evalF?.next? (some 0)
+            (List.map (fun n : ℕ+ => (1, ↑(n : K))) l ++ [(1, w⁻¹)]))
+        ↑((corec of.next? ⟨v, hv⟩).initsCore l) (corec fractParts.next? v) ∧
+        s₂ = (corec fractParts.next? v).map
+          (fun _ => List.foldrM FGCF.evalF?.next? (some 0)
+            (List.map (fun n : ℕ+ => (1, ↑(n : K))) l ++ [(1, v⁻¹)])))
+    ?_ ⟨fract v, ⟨fract_nonneg v, fract_lt_one v⟩, [], rfl, ?_⟩
+  · rintro _ _ ⟨v, hv, l, rfl, rfl⟩
+    by_cases hv₂ : v = 0
+    case pos => simp [hv₂]
+    case neg =>
+      simp [fract_eq_self.mpr hv, hv₂, Option.bind_eq_bind, - List.foldrM_append]
+      have hvo : 0 < ⌊v⁻¹⌋₊ := by
+        rcases hv with ⟨hvge, hvlt⟩
+        rw [Nat.floor_pos, one_le_inv_iff, lt_iff_le_and_ne, ne_comm]
+        exact ⟨⟨hvge, hv₂⟩, le_of_lt hvlt⟩
+      use fract v⁻¹, ⟨fract_nonneg v⁻¹, fract_lt_one v⁻¹⟩, l ++ [⟨⌊v⁻¹⌋₊, hvo⟩]
+      by_cases hv₃ : fract v⁻¹ = 0
+      case pos =>
+        simp [Option.bind_eq_bind, hv₂, hv₃]
+        apply dest_injective
+        simp
+      case neg =>
+        simp [Option.bind_eq_bind, hv₂, hv₃,
+          Nat.cast_floor_eq_cast_int_floor (inv_nonneg_of_nonneg hv.1)]
+  · by_cases hv : fract v = 0 <;> simp [Option.bind_eq_bind, hv, fractParts]
+    apply dest_injective
+    simp
+
+theorem evalF?_concat_take_fractParts
+    {w : K} (hw : get? (fractParts v) n = w) :
+    (⟨↑⌊v⌋, (take n (↑(of v) : GCF K)).l ++ [(1, w⁻¹)]⟩ : FGCF K).evalF? = some v := by
+  simp [FGCF.evalF?, - List.foldrM_append]
+  use fract v
+  simpa [hw, - List.foldrM_append]
+    using congr_arg (fun s => get? s n) (seq_evalF?_concat_take_fractParts v)
+
 /-- Shows the correctness of `compExactValue` in case the continued fraction
-`GeneralizedContinuedFraction.of v` did not terminate at position `n`. That is, we obtain the
+`CF.of v` did not terminate at position `n`. That is, we obtain the
 value `v` if we pass the two successive (auxiliary) continuants at positions `n` and `n + 1` as well
 as the fractional part at `IntFractPair.stream n` to `compExactValue`.
 
@@ -93,122 +143,31 @@ The correctness might be seen more readily if one uses `convergents'` to evaluat
 fraction. Here is an example to illustrate the idea:
 
 Let `(v : ℚ) := 3.4`. We have
-- `GeneralizedContinuedFraction.IntFractPair.stream v 0 = some ⟨3, 0.4⟩`, and
-- `GeneralizedContinuedFraction.IntFractPair.stream v 1 = some ⟨2, 0.5⟩`.
-Now `(GeneralizedContinuedFraction.of v).convergents' 1 = 3 + 1/2`, and our fractional term at
+- `CF.IntFractPair.stream v 0 = some ⟨3, 0.4⟩`, and
+- `CF.IntFractPair.stream v 1 = some ⟨2, 0.5⟩`.
+Now `(CF.of v).convergents' 1 = 3 + 1/2`, and our fractional term at
 position `2` is `0.5`. We hence have `v = 3 + 1/(2 + 0.5) = 3 + 1/2.5 = 3.4`. This computation
 corresponds exactly to the one using the recurrence equation in `compExactValue`.
 -/
-theorem compExactValue_correctness_of_stream_eq_some :
-    ∀ {ifp_n : IntFractPair K}, IntFractPair.stream v n = some ifp_n →
-      v = compExactValue ((of v).continuantsAux n) ((of v).continuantsAux <| n + 1) ifp_n.fr := by
-  let g := of v
-  induction' n with n IH
-  · intro ifp_zero stream_zero_eq
-    -- Nat.zero
-    have : IntFractPair.of v = ifp_zero := by
-      have : IntFractPair.stream v 0 = some (IntFractPair.of v) := rfl
-      simpa only [Nat.zero_eq, this, Option.some.injEq] using stream_zero_eq
-    cases this
-    cases' Decidable.em (Int.fract v = 0) with fract_eq_zero fract_ne_zero
-    -- Int.fract v = 0; we must then have `v = ⌊v⌋`
-    · suffices v = ⌊v⌋ by
-        -- Porting note: was `simpa [continuantsAux, fract_eq_zero, compExactValue]`
-        field_simp [compExactValue]
-        have : (IntFractPair.of v).fr = Int.fract v := rfl
-        rwa [this, if_pos fract_eq_zero]
-      calc
-        v = Int.fract v + ⌊v⌋ := by rw [Int.fract_add_floor]
-        _ = ⌊v⌋ := by simp [fract_eq_zero]
-    -- Int.fract v ≠ 0; the claim then easily follows by unfolding a single computation step
-    · field_simp [continuantsAux, of_h_eq_floor, compExactValue]
-      -- Porting note: this and the if_neg rewrite are needed
-      have : (IntFractPair.of v).fr = Int.fract v := rfl
-      rw [this, if_neg fract_ne_zero, Int.floor_add_fract]
-  · intro ifp_succ_n succ_nth_stream_eq
-    -- Nat.succ
-    obtain ⟨ifp_n, nth_stream_eq, nth_fract_ne_zero, -⟩ :
-      ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧
-        ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n
-    exact IntFractPair.succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
-    -- introduce some notation
-    let conts := g.continuantsAux (n + 2)
-    set pconts := g.continuantsAux (n + 1) with pconts_eq
-    set ppconts := g.continuantsAux n with ppconts_eq
-    cases' Decidable.em (ifp_succ_n.fr = 0) with ifp_succ_n_fr_eq_zero ifp_succ_n_fr_ne_zero
-    -- ifp_succ_n.fr = 0
-    · suffices v = conts.a / conts.b by simpa [compExactValue, ifp_succ_n_fr_eq_zero]
-      -- use the IH and the fact that ifp_n.fr⁻¹ = ⌊ifp_n.fr⁻¹⌋ to prove this case
-      obtain ⟨ifp_n', nth_stream_eq', ifp_n_fract_inv_eq_floor⟩ :
-        ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧ ifp_n.fr⁻¹ = ⌊ifp_n.fr⁻¹⌋
-      exact IntFractPair.exists_succ_nth_stream_of_fr_zero succ_nth_stream_eq ifp_succ_n_fr_eq_zero
-      have : ifp_n' = ifp_n := by injection Eq.trans nth_stream_eq'.symm nth_stream_eq
-      cases this
-      have s_nth_eq : g.s.get? n = some ⟨1, ⌊ifp_n.fr⁻¹⌋⟩ :=
-        get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero nth_stream_eq nth_fract_ne_zero
-      rw [← ifp_n_fract_inv_eq_floor] at s_nth_eq
-      suffices v = compExactValue ppconts pconts ifp_n.fr by
-        simpa [continuantsAux, s_nth_eq, compExactValue, nth_fract_ne_zero] using this
-      exact IH nth_stream_eq
-    -- ifp_succ_n.fr ≠ 0
-    · -- use the IH to show that the following equality suffices
-      suffices
-        compExactValue ppconts pconts ifp_n.fr = compExactValue pconts conts ifp_succ_n.fr by
-        have : v = compExactValue ppconts pconts ifp_n.fr := IH nth_stream_eq
-        conv_lhs => rw [this]
-        assumption
-      -- get the correspondence between ifp_n and ifp_succ_n
-      obtain ⟨ifp_n', nth_stream_eq', ifp_n_fract_ne_zero, ⟨refl⟩⟩ :
-        ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧
-          ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n
-      exact IntFractPair.succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
-      have : ifp_n' = ifp_n := by injection Eq.trans nth_stream_eq'.symm nth_stream_eq
-      cases this
-      -- get the correspondence between ifp_n and g.s.nth n
-      have s_nth_eq : g.s.get? n = some ⟨1, (⌊ifp_n.fr⁻¹⌋ : K)⟩ :=
-        get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero nth_stream_eq ifp_n_fract_ne_zero
-      -- the claim now follows by unfolding the definitions and tedious calculations
-      -- some shorthand notation
-      let ppA := ppconts.a
-      let ppB := ppconts.b
-      let pA := pconts.a
-      let pB := pconts.b
-      have : compExactValue ppconts pconts ifp_n.fr =
-          (ppA + ifp_n.fr⁻¹ * pA) / (ppB + ifp_n.fr⁻¹ * pB) := by
-        -- unfold compExactValue and the convergent computation once
-        field_simp [ifp_n_fract_ne_zero, compExactValue]
-        ac_rfl
-      rw [this]
-      -- two calculations needed to show the claim
-      have tmp_calc :=
-        compExactValue_correctness_of_stream_eq_some_aux_comp pA ppA ifp_succ_n_fr_ne_zero
-      have tmp_calc' :=
-        compExactValue_correctness_of_stream_eq_some_aux_comp pB ppB ifp_succ_n_fr_ne_zero
-      let f := Int.fract (1 / ifp_n.fr)
-      have f_ne_zero : f ≠ 0 := by simpa using ifp_succ_n_fr_ne_zero
-      rw [inv_eq_one_div] at tmp_calc tmp_calc'
-      -- Porting note: the `tmp_calc`s need to be massaged, and some processing after `ac_rfl` done,
-      -- because `field_simp` is not as powerful
-      have hA : (↑⌊1 / ifp_n.fr⌋ * pA + ppA) + pA * f = pA * (1 / ifp_n.fr) + ppA := by
-        have := congrFun (congrArg HMul.hMul tmp_calc) f
-        rwa [right_distrib, div_mul_cancel (h := f_ne_zero),
-          div_mul_cancel (h := f_ne_zero)] at this
-      have hB : (↑⌊1 / ifp_n.fr⌋ * pB + ppB) + pB * f = pB * (1 / ifp_n.fr) + ppB := by
-        have := congrFun (congrArg HMul.hMul tmp_calc') f
-        rwa [right_distrib, div_mul_cancel (h := f_ne_zero),
-          div_mul_cancel (h := f_ne_zero)] at this
-      -- now unfold the recurrence one step and simplify both sides to arrive at the conclusion
-      field_simp [compExactValue, continuantsAux_recurrence s_nth_eq ppconts_eq pconts_eq]
-      have hfr : (IntFractPair.of (1 / ifp_n.fr)).fr = f := rfl
-      rw [one_div, if_neg _, ← one_div, hfr]
-      field_simp [hA, hB]
-      ac_rfl
-      rwa [inv_eq_one_div, hfr]
-#align generalized_continued_fraction.comp_exact_value_correctness_of_stream_eq_some GeneralizedContinuedFraction.compExactValue_correctness_of_stream_eq_some
+theorem fractParts_representation
+    {w : K} (hw : get? (fractParts v) (n + 1) = w) :
+    v = (w⁻¹ * (take (n + 1) ↑(of v)).numerator + (take n ↑(of v)).numerator) /
+      (w⁻¹ * (take (n + 1) ↑(of v)).denominator + (take n ↑(of v)).denominator) := by
+  have hv := evalF?_concat_take_fractParts hw
+  obtain ⟨p, hp⟩ : ∃ p, get? (of v).s n = some p
+  · suffices hv : ¬(fractParts v).TerminatedAt n
+    · simpa [← of_terminatedAt_iff_fractParts_terminatedAt,
+        terminatedAt_iff_s_terminatedAt, not_terminatedAt_iff (s := (of v).s),
+        Option.isSome_iff_exists] using hv
+    apply mt (succ_stable _ (n := _))
+    simp [hw]
+  simp [← FGCF.eval?_eq_evalF?, take_succ, hp, FGCF.eval?, ite_eq_iff] at hv
+  simp [GCF.take, take_succ, hp, hv.2]
+#align generalized_continued_fraction.comp_exact_value_correctness_of_stream_eq_some CF.fractParts_representation
 
-open GeneralizedContinuedFraction (of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none)
+open CF (of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none)
 
-/-- The convergent of `GeneralizedContinuedFraction.of v` at step `n - 1` is exactly `v` if the
+/-- The convergent of `CF.of v` at step `n - 1` is exactly `v` if the
 `IntFractPair.stream` of the corresponding continued fraction terminated at step `n`. -/
 theorem of_correctness_of_nth_stream_eq_none (nth_stream_eq_none : IntFractPair.stream v n = none) :
     v = (of v).convergents (n - 1) := by
@@ -234,9 +193,9 @@ theorem of_correctness_of_nth_stream_eq_none (nth_stream_eq_none : IntFractPair.
         exact IH nth_stream_eq_none
     · simpa [nth_stream_fr_eq_zero, compExactValue] using
         compExactValue_correctness_of_stream_eq_some nth_stream_eq
-#align generalized_continued_fraction.of_correctness_of_nth_stream_eq_none GeneralizedContinuedFraction.of_correctness_of_nth_stream_eq_none
+#align generalized_continued_fraction.of_correctness_of_nth_stream_eq_none CF.of_correctness_of_nth_stream_eq_none
 
-/-- If `GeneralizedContinuedFraction.of v` terminated at step `n`, then the `n`th convergent is
+/-- If `CF.of v` terminated at step `n`, then the `n`th convergent is
 exactly `v`.
 -/
 theorem of_correctness_of_terminatedAt (terminated_at_n : (of v).TerminatedAt n) :
@@ -244,20 +203,20 @@ theorem of_correctness_of_terminatedAt (terminated_at_n : (of v).TerminatedAt n)
   have : IntFractPair.stream v (n + 1) = none :=
     of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none.1 terminated_at_n
   of_correctness_of_nth_stream_eq_none this
-#align generalized_continued_fraction.of_correctness_of_terminated_at GeneralizedContinuedFraction.of_correctness_of_terminatedAt
+#align generalized_continued_fraction.of_correctness_of_terminated_at CF.of_correctness_of_terminatedAt
 
-/-- If `GeneralizedContinuedFraction.of v` terminates, then there is `n : ℕ` such that the `n`th
+/-- If `CF.of v` terminates, then there is `n : ℕ` such that the `n`th
 convergent is exactly `v`.
 -/
 theorem of_correctness_of_terminates (terminates : (of v).Terminates) :
     ∃ n : ℕ, v = (of v).convergents n :=
   Exists.elim terminates fun n terminated_at_n =>
     Exists.intro n (of_correctness_of_terminatedAt terminated_at_n)
-#align generalized_continued_fraction.of_correctness_of_terminates GeneralizedContinuedFraction.of_correctness_of_terminates
+#align generalized_continued_fraction.of_correctness_of_terminates CF.of_correctness_of_terminates
 
 open Filter
 
-/-- If `GeneralizedContinuedFraction.of v` terminates, then its convergents will eventually always
+/-- If `CF.of v` terminates, then its convergents will eventually always
 be `v`.
 -/
 theorem of_correctness_atTop_of_terminates (terminates : (of v).Terminates) :
@@ -269,6 +228,6 @@ theorem of_correctness_atTop_of_terminates (terminates : (of v).Terminates) :
   intro m m_geq_n
   rw [convergents_stable_of_terminated m_geq_n terminated_at_n]
   exact of_correctness_of_terminatedAt terminated_at_n
-#align generalized_continued_fraction.of_correctness_at_top_of_terminates GeneralizedContinuedFraction.of_correctness_atTop_of_terminates
+#align generalized_continued_fraction.of_correctness_at_top_of_terminates CF.of_correctness_atTop_of_terminates
 
-end GeneralizedContinuedFraction
+end CF

@@ -142,9 +142,13 @@ def toGCF (f : FGCF α) : GCF α where
 instance : Coe (FGCF α) (GCF α) where
   coe := toGCF
 
+@[simp, norm_cast]
+theorem toGCF_mk (h : α) (l : List (α × α)) : (↑(⟨h, l⟩ : FGCF α) : GCF α) = ⟨h, ↑l⟩ :=
+  rfl
+
 theorem toGCF_injective : Injective ((↑) : FGCF α → GCF α) := by
   rintro ⟨h₁, l₁⟩ ⟨h₂, l₂⟩ h
-  simpa [toGCF] using h
+  simpa using h
 
 @[simp, norm_cast]
 theorem toGCF_inj {f₁ f₂ : FGCF α} : (↑f₁ : GCF α) = ↑f₂ ↔ f₁ = f₂ :=
@@ -158,16 +162,20 @@ theorem _root_.GCF.exists_eq_FGCF_iff {g : GCF α} : (∃ f : FGCF α, ↑f = g)
   mpr := by
     intro hg; rcases g with ⟨h, s⟩
     use ⟨h, s.toList hg⟩
-    simp [comp, toGCF]
+    simp [comp]
 
 instance : CanLift (GCF α) (FGCF α) (↑) GCF.Terminates where
   prf _ h := GCF.exists_eq_FGCF_iff.mpr h
 
 /-- Take the head term and the first `n` pairs of a partial numerator and denominator. -/
 @[simps]
-def _root_.GCF.take (g : GCF α) (n : ℕ) : FGCF α where
+def _root_.GCF.take (n : ℕ) (g : GCF α) : FGCF α where
   h := g.h
   l := g.s.take n
+
+@[simp]
+theorem _root_.GCF.take_mk (n : ℕ) (h : α) (s : Seq' (α × α)) : GCF.take n ⟨h, s⟩ = ⟨h, s.take n⟩ :=
+  rfl
 
 open Std in
 instance [Repr α] : Repr (FGCF α) where
@@ -234,11 +242,15 @@ def toGCF (s : SCF α) : GCF α where
 instance : Coe (SCF α) (GCF α) where
   coe := toGCF
 
+@[simp]
+theorem toGCF_mk (h : α) (s : Seq' α) : (↑(⟨h, s⟩ : SCF α) : GCF α) = ⟨h, s.map ((1, ·))⟩ :=
+  rfl
+
 theorem toGCF_injective : Injective ((↑) : SCF α → GCF α) := by
   rintro ⟨h₁, s₁⟩ ⟨h₂, s₂⟩ h
   have hi : Injective (Seq'.map (((1, ·)) : α → α × α)) :=
     Seq'.map_injective (Prod.mk.inj_left 1)
-  simpa [hi.eq_iff, toGCF] using h
+  simpa [hi.eq_iff] using h
 
 @[simp, norm_cast]
 theorem toGCF_inj {s₁ s₂ : SCF α} : (↑s₁ : GCF α) = ↑s₂ ↔ s₁ = s₂ :=
@@ -252,7 +264,7 @@ theorem _root_.GCF.exists_eq_SCF_iff {g : GCF α} : (∃ s : SCF α, ↑s = g) �
   mpr := by
     intro hg; rcases g with ⟨h, s⟩
     use ⟨h, s.map Prod.snd⟩
-    simp [comp, toGCF]
+    simp [comp]
     convert Seq'.map_id s using 1
     symm; apply Seq'.map_congr
     simpa [IsSCF, partNums] using hg
@@ -302,11 +314,16 @@ def toSCF [NatCast α] [IntCast α] (c : CF α) : SCF α where
 instance [NatCast α] [IntCast α] : Coe (CF α) (SCF α) where
   coe := toSCF
 
+@[simp]
+theorem toSCF_mk [NatCast α] [IntCast α] (h : ℤ) (s : Seq' ℕ+) :
+    (↑(⟨h, s⟩ : CF α) : SCF α) = ⟨h, s.map (↑)⟩ :=
+  rfl
+
 theorem toSCF_injective [AddGroupWithOne α] [CharZero α] : Injective ((↑) : CF α → SCF α) := by
   rintro ⟨h₁, s₁⟩ ⟨h₂, s₂⟩ h
   have hi : Injective (Seq'.map (((↑)) : ℕ+ → α)) :=
     Seq'.map_injective (Nat.cast_injective.comp Subtype.val_injective)
-  simpa [Int.cast_inj, hi.eq_iff, toSCF] using h
+  simpa [Int.cast_inj, hi.eq_iff] using h
 
 @[simp, norm_cast]
 theorem toSCF_inj [AddGroupWithOne α] [CharZero α] {c₁ c₂ : CF α} :
@@ -322,7 +339,7 @@ theorem _root_.SCF.exists_eq_CF_iff [AddGroupWithOne α] [CharZero α] {s : SCF 
   mpr := by
     rcases s with ⟨h, s⟩; rintro ⟨⟨sh, rfl⟩, hs⟩
     use ⟨sh, s.map (invFun (↑))⟩
-    simp [comp, toSCF]
+    simp [comp]
     convert Seq'.map_id s using 1
     symm; apply Seq'.map_congr; intro a ha
     simp [invFun_eq (hs a ha)]
@@ -407,46 +424,42 @@ def eval? [DecidableEq K] (f : FGCF K) : Option K :=
 = 713 / 76
 ```
 A `0` in denominators is handled specially to match the value to `eval?`, and the value can be
-undefined by this. Refer to `evalF?.loop` for more detail.
+undefined by this. Refer to `evalF?.next?` for more detail.
 -/
 def evalF? [DecidableEq K] (f : FGCF K) : Option K :=
-  (loop f.l).join.map (f.h + ·)
+  (f.l.foldrM next? (some 0)).join.map (f.h + ·)
 where
   /-- Returns the value of `f` by directly evaluating the fraction.
   If `0` is appreared in the denominator and its numerator isn't `0`, the fraction is dealed as
   infinity (`some none`), if its numerator is also `0`, the fraction is dealed as undefined (`none`)
   and stop latter calculations. For example:
   ```lean
-    evalF?.loop [(1, 2), (3, 4), (5, 6)]
+    [(1, 2), (3, 4), (5, 6)].foldrM evalF?.next? (some 0)
   = 1 / (2 + 3 / (4 + 5 / 6))
   = 29 / 76
-    evalF?.loop [(1, 2), (3, 4), (5, 0)]
+    [(1, 2), (3, 4), (5, 0)].foldrM evalF?.next? (some 0)
   = 1 / (2 + 3 / (4 + 5 / 0))
   = 1 / (2 + 3 / ∞)
   = 1 / 2
-    evalF?.loop [(1, 2), (0, 4), (-4, 1)]
+    [(1, 2), (0, 4), (-4, 1)].foldrM evalF?.next? (some 0)
   = 1 / (2 + 0 / (4 + -4 / 1))
   = 1 / (2 + 0 / 0)
   = undefined
   ```
   -/
   @[simp]
-  loop [DecidableEq K] : List (K × K) → Option (Option K)
-    | []     => some (some 0)
-    | p :: l =>
-      (loop l).bind
-        fun
-        | some k =>
-          if p.2 + k = 0 then
-            if p.1 = 0 then
-              none
-            else
-              some none
-          else
-            some (some (p.1 / (p.2 + k)))
-        | none   => some (some 0)
+  next? [DecidableEq K] (p : K × K) : Option K → Option (Option K)
+  | some k =>
+    if p.2 + k = 0 then
+      if p.1 = 0 then
+        none
+      else
+        some none
+    else
+      some (some (p.1 / (p.2 + k)))
+  | none   => some (some 0)
 #align generalized_continued_fraction.convergents' FGCF.evalF?ₓ
-#align generalized_continued_fraction.convergents'_aux FGCF.evalF?.loopₓ
+#align generalized_continued_fraction.convergents'_aux FGCF.evalF?.next?ₓ
 
 end FGCF
 

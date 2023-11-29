@@ -38,10 +38,14 @@ variable [DivisionRing K] [DecidableEq K]
 
 #noalign generalized_continued_fraction.denominators_stable_of_terminated
 
+theorem take_stable (n_le_m : n ≤ m) (terminatedAt_n : g.TerminatedAt n) : g.take m = g.take n := by
+  unfold take
+  rw [Seq'.take_stable terminatedAt_n n_le_m]
+
 theorem convergents_stable (n_le_m : n ≤ m) (terminatedAt_n : g.TerminatedAt n) :
     g.convergents m = g.convergents n := by
-  unfold convergents take
-  rw [Seq'.take_stable terminatedAt_n n_le_m]
+  unfold convergents
+  rw [take_stable n_le_m terminatedAt_n]
 #align generalized_continued_fraction.convergents_stable_of_terminated GCF.convergents_stable
 
 #noalign generalized_continued_fraction.convergents'_stable_of_terminated

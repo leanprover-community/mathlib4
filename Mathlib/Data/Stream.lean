@@ -1348,10 +1348,6 @@ theorem head_tails (s : Stream' α) : head (tails s) = s :=
 theorem tail_tails (s : Stream' α) : tail (tails s) = tails (tail s) :=
   tail_iterate tail s
 
-@[simp]
-theorem dest_tails (s : Stream' α) : dest (tails s) = (s, tails (tail s)) := by
-  simp [dest]
-
 theorem tails_eq (s : Stream' α) : tails s = s ::ₛ tails (tail s) := by
   apply dest_eq_cons
   simp
@@ -1366,7 +1362,7 @@ theorem get_tails (n : ℕ) (s : Stream' α) : get (tails s) n = drop n s := by
 
 /-- An auxiliary definition for `inits`. -/
 def initsCore (l : List α) (s : Stream' α) : Stream' (List α) :=
-  corec (fun (a, _) => a) (fun (l', s') => (concat l' (head s'), tail s')) (l, s)
+  corec (fun (a, _) => a) (fun (l', s') => (l' ++ [head s'], tail s')) (l, s)
 #align stream.inits_core Stream'.initsCore
 
 /-- Initial segments of a stream. -/
@@ -1382,11 +1378,6 @@ theorem head_initsCore (l : List α) (s : Stream' α) : head (initsCore l s) = l
 theorem tail_initsCore (l : List α) (s : Stream' α) :
     tail (initsCore l s) = initsCore (l ++ [head s]) (tail s) := by
   simp [initsCore]
-
-@[simp]
-theorem dest_initsCore (l : List α) (s : Stream' α) :
-    dest (initsCore l s) = (l, initsCore (l ++ [head s]) (tail s)) := by
-  simp [dest]
 
 theorem initsCore_eq (l : List α) (s : Stream' α) :
     initsCore l s = l ::ₛ initsCore (l ++ [head s]) (tail s) := by

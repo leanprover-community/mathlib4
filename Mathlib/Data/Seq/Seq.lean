@@ -823,6 +823,14 @@ theorem map_map (g : β → γ) (f : α → β) (s : Seq' α) : map g (map f s) 
   ext1 _; simp
 #align stream.seq.map_comp Seq'.map_map
 
+@[simp]
+theorem map_terminatedAt (f : α → β) (s n) : (map f s).TerminatedAt n ↔ s.TerminatedAt n := by
+  simp [TerminatedAt]
+
+@[simp]
+theorem map_terminates (f : α → β) (s) : (map f s).Terminates ↔ s.Terminates := by
+  simp [Terminates]
+
 @[inherit_doc map, inline]
 def mapComputable (f : α → β) (s : Seq' α) : Seq' β :=
   corec (Option.map (Prod.map f id) ∘ dest) s
@@ -943,6 +951,17 @@ theorem take_stable {s : Seq' α} {m n} (hs : s.TerminatedAt m) (hmn : m ≤ n) 
   by_cases hk : k < m
   case pos => simp [hk, lt_of_lt_of_le hk hmn]
   case neg => simp [hk, le_stable s (not_lt.mp hk) hs]
+
+@[simp]
+theorem take_map (n : ℕ) (f : α → β) (s : Seq' α) : take n (map f s) = List.map f (take n s) := by
+  ext1 m
+  by_cases hm : m < n <;> simp [hm]
+
+theorem take_succ (n : ℕ) (s : Seq' α) :
+    take (n + 1) s = take n s ++ Option.toList (get? s n) := by
+  induction n using Nat.recAux generalizing s with
+  | zero => cases s using recOn' <;> simp [get?_zero]
+  | succ n hn => cases s using recOn' <;> simp [get?_succ, hn]
 
 /-- Split a sequence at `n`, producing a finite initial segment
   and an infinite tail. -/
@@ -1437,6 +1456,65 @@ theorem get_toStream' (s : Seq' α) (n : ℕ) : Stream'.get (toStream' s) n = ge
   induction n using Nat.recAux generalizing s with
   | zero => simp [Stream'.get_zero, get?_zero]
   | succ n hn => cases s using recOn' <;> simp [Stream'.get_succ, get?_succ, hn]
+
+/-- Tails of a sequences, starting with `s`. -/
+def tails (s : Seq' α) : Stream' (Seq' α) :=
+  Stream'.iterate tail s
+
+@[simp]
+theorem head_tails (s : Seq' α) : Stream'.head (tails s) = s :=
+  Stream'.head_iterate tail s
+
+@[simp]
+theorem tail_tails (s : Seq' α) : Stream'.tail (tails s) = tails (tail s) :=
+  Stream'.tail_iterate tail s
+
+theorem tails_eq (s : Seq' α) : tails s = s ::ₛ tails (tail s) := by
+  apply Stream'.dest_eq_cons
+  simp
+
+@[simp]
+theorem get_tails (n : ℕ) (s : Seq' α) : Stream'.get (tails s) n = drop n s := by
+  induction n using Nat.recAux generalizing s with
+  | zero => simp [Stream'.get_zero]
+  | succ n hn => simp [Stream'.get_succ, hn]
+
+/-- An auxiliary definition for `inits`. -/
+def initsCore (l : List α) (s : Seq' α) : Stream' (List α) :=
+  Stream'.corec''
+    (fun (l', s') =>
+      match dest s' with
+      | none => Sum.inl (Stream'.const l')
+      | some (a, s') => Sum.inr (l', (l' ++ [a], s')))
+    (l, s)
+
+/-- Initial segments of a sequence. -/
+def inits (s : Seq' α) : Stream' (List α) :=
+  initsCore [] s
+
+@[simp]
+theorem head_initsCore (l : List α) (s : Seq' α) : Stream'.head (initsCore l s) = l := by
+  cases s using recOn' <;> simp [initsCore]
+
+@[simp]
+theorem tail_initsCore (l : List α) (s : Seq' α) :
+    Stream'.tail (initsCore l s) =
+      Option.elim (dest s) (Stream'.const l) (fun (a, s') => initsCore (l ++ [a]) s') := by
+  cases s using recOn' <;> simp [initsCore]
+
+@[simp]
+theorem cons_get_initsCore (a : α) (n : ℕ) (l : List α) (s : Seq' α) :
+    Stream'.get (initsCore (a :: l) s) n = a :: Stream'.get (initsCore l s) n := by
+  induction n using Nat.recAux generalizing l s with
+  | zero => simp [Stream'.get_zero]
+  | succ n hn => cases s using recOn' <;> simp [Stream'.get_succ, hn]
+
+@[simp]
+theorem get_inits (n : ℕ) (s : Seq' α) : Stream'.get (inits s) n = take n s := by
+  unfold inits
+  induction n using Nat.recAux generalizing s with
+  | zero => simp [Stream'.get_zero]
+  | succ n hn => cases s using recOn' <;> simp [Stream'.get_succ, hn]
 
 theorem mem_map_of_mem (f : α → β) {a : α} {s : Seq' α} (ha : a ∈ s) : f a ∈ map f s := by
   simp [mem_def] at ha ⊢

@@ -43,6 +43,10 @@ theorem coe_def : (fun a ↦ ↑a : α → Option α) = some :=
   rfl
 #align option.coe_def Option.coe_def
 
+@[simp]
+theorem pure_eq_some (a : α) : (pure a : Option α) = some a :=
+  rfl
+
 theorem mem_map {f : α → β} {y : β} {o : Option α} : y ∈ o.map f ↔ ∃ x ∈ o, f x = y := by simp
 #align option.mem_map Option.mem_map
 
@@ -332,7 +336,7 @@ theorem getD_default_eq_iget [Inhabited α] (o : Option α) :
 @[simp]
 theorem guard_eq_some' {p : Prop} [Decidable p] (u) : _root_.guard p = some u ↔ p := by
   cases u
-  by_cases h : p <;> simp [_root_.guard, h]; rfl
+  by_cases h : p <;> simp [_root_.guard, h]
 #align option.guard_eq_some' Option.guard_eq_some'
 
 theorem liftOrGet_choice {f : α → α → α} (h : ∀ a b, f a b = a ∨ f a b = b) :

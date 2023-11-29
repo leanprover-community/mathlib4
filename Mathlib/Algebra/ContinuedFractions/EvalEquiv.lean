@@ -126,23 +126,17 @@ theorem length_lt_length_add_one_of_mk_mem_squash? {h h' : K} {l l' : List (K ×
 
 #noalign generalized_continued_fraction.squash_seq_succ_n_tail_eq_squash_seq_tail_n
 
-/-- The auxiliary function `evalF?.loop` returns the same value for a list and the
+/-- The auxiliary function `evalF?.next?` returns the same value for a list and the
 corresponding squashed list. -/
-theorem bind_squash?_go_evalF?_loop_eq_evalF?_mk_concat
+theorem bind_squash?_go_foldrM_evalF?_next?_eq_foldrM_evalF?_next?_concat
     (l : List (K × K)) (hl : l ≠ []) (p : K × K) :
-    (squash?.go l hl p).bind evalF?.loop = evalF?.loop (l ++ [p]) := by
+    (squash?.go l hl p).bind (foldrM evalF?.next? (some 0)) =
+      foldrM evalF?.next? (some 0) (l ++ [p]) := by
   rcases Or.resolve_left (eq_nil_or_concat l) hl with ⟨l₂, p', rfl⟩
-  induction l₂ with
-  | nil =>
-    by_cases hps : p.2 = 0
-    · by_cases hpf : p.1 = 0 <;> simp [squash?.go, hps, hpf]
-    · simp [squash?.go, hps]
-  | cons p'' l' hl' =>
-    by_cases hps : p.2 = 0
-    · by_cases hpf : p.1 = 0 <;> simp [squash?.go, hps, hpf] at hl' <;>
-        simp [squash?.go, ← hl', hps, hpf, - cons_append]
-    · simp [squash?.go, hps] at hl'; simp [squash?.go, ← hl', hps, - cons_append]
-#align generalized_continued_fraction.succ_succ_nth_convergent'_aux_eq_succ_nth_convergent'_aux_squash_seq FGCF.bind_squash?_go_evalF?_loop_eq_evalF?_mk_concatₓ
+  by_cases hps : p.2 = 0
+  · by_cases hpf : p.1 = 0 <;> simp [squash?.go, hps, hpf, Option.bind_eq_bind]
+  · simp [squash?.go, hps, Option.bind_eq_bind]
+#align generalized_continued_fraction.succ_succ_nth_convergent'_aux_eq_succ_nth_convergent'_aux_squash_seq FGCF.bind_squash?_go_foldrM_evalF?_next?_eq_foldrM_evalF?_next?_concat
 
 #noalign generalized_continued_fraction.squash_gcf_eq_self_of_terminated
 
@@ -153,11 +147,11 @@ theorem bind_squash?_evalF?_eq_evalF?_mk_concat (h : K) (l : List (K × K)) (p :
     (squash? ⟨h, l⟩ p).bind evalF? = evalF? ⟨h, l ++ [p]⟩ := by
   by_cases hl : l = []
   · by_cases hps : p.2 = 0
-    · by_cases hpf : p.1 = 0 <;> simp [squash?, evalF?, hl, hps, hpf]
-    · simp [squash?, evalF?, hl, hps]
+    · by_cases hpf : p.1 = 0 <;> simp [squash?, evalF?, hl, hps, hpf, Option.bind_eq_bind]
+    · simp [squash?, evalF?, hl, hps, Option.bind_eq_bind]
   · simp [squash?, evalF?, hl,
-      ← bind_squash?_go_evalF?_loop_eq_evalF?_mk_concat, Option.map_eq_bind,
-      Option.bind_assoc, Function.comp]
+      ← bind_squash?_go_foldrM_evalF?_next?_eq_foldrM_evalF?_next?_concat, Option.map_eq_bind,
+      Option.bind_assoc, Function.comp, Option.bind_eq_bind, - foldrM_append]
 #align generalized_continued_fraction.succ_nth_convergent'_eq_squash_gcf_nth_convergent' FGCF.bind_squash?_evalF?_eq_evalF?_mk_concatₓ
 
 #noalign generalized_continued_fraction.continuants_aux_eq_continuants_aux_squash_gcf_of_le
