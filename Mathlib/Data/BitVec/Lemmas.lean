@@ -151,32 +151,31 @@ variable (x y : BitVec w)
 @[simp] lemma toFin_zero    : @toFin w 0 = 0 := rfl
 @[simp] lemma toFin_one     : @toFin w 1 = 1 := rfl
 
+variable (n : Nat) (z : Int)
+
+@[simp] lemma toFin_nsmul   : toFin (n • x) = n • x.toFin := rfl
+@[simp] lemma toFin_zsmul   : toFin (z • x) = z • x.toFin := rfl
+@[simp] lemma toFin_pow     : toFin (x ^ n) = x.toFin ^ n := rfl
+@[simp] lemma toFin_natCast : @toFin w n = n              := rfl
+@[simp] lemma toFin_intCast : @toFin w z = z              := rfl
+
 end
 
 /-!
 ## Ring
 -/
 
-instance : SMul ℕ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
-instance : SMul ℤ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
-instance : Pow (BitVec w) ℕ  := ⟨fun x n => ofFin <| x.toFin ^ n⟩
-instance : NatCast (BitVec w) := ⟨BitVec.ofNat w⟩
-
-/-- The obvious instance would be to define `IntCast` in terms of `Std.BitVec.ofInt`.  -/
-instance : IntCast (BitVec w) := ⟨fun x => ofFin x⟩
-
-@[simp] lemma natCast (x w : Nat)         : (x : BitVec w) = BitVec.ofNat w x := rfl
-
-proof_wanted intCast (x : Int) (w : Nat) : (x : BitVec w) = BitVec.ofInt w x
-
-/-! Now we can define an instance of `CommRing (BitVector w)` straightforwardly in terms of the
-    existing instance `CommRing (Fin (2^w))` -/
-instance : CommRing (BitVec w) := by
-  apply Function.Injective.commRing _ toFin_injective <;> (intros; try rfl)
-  · apply toFin_neg
-  · sorry
-  · sorry
-  · sorry
-  · sorry
+instance : CommRing (BitVec w) := Function.Injective.commRing _ toFin_injective
+    toFin_zero
+    toFin_one
+    toFin_add
+    toFin_mul
+    toFin_neg
+    toFin_sub
+    toFin_nsmul
+    toFin_zsmul
+    toFin_pow
+    toFin_natCast
+    toFin_intCast
 
 end Std.BitVec
