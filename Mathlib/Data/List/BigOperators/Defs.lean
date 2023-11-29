@@ -19,8 +19,8 @@ namespace List
 
 /-- Product of a list.
 
-     `List.prod [a, b, c] = ((1 * a) * b) * c` -/
-@[to_additive]
+`List.prod [a, b, c] = ((1 * a) * b) * c` -/
+@[to_additive "Sum of a list.\n\n`List.sum [a, b, c] = ((0 + a) + b) + c`"]
 def prod [Mul α] [One α] : List α → α :=
   foldl (· * ·) 1
 #align list.prod List.prod
