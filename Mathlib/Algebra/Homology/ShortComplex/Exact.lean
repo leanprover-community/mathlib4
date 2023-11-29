@@ -825,7 +825,7 @@ lemma exact_and_mono_f_iff_f_is_kernel [S.HasHomology] :
   · intro ⟨hS⟩
     exact ⟨S.exact_of_f_is_kernel hS, mono_of_isLimit_fork hS⟩
 
-lemma exact_and_epi_g_iff_g_is_kernel [S.HasHomology] :
+lemma exact_and_epi_g_iff_g_is_cokernel [S.HasHomology] :
     S.Exact ∧ Epi S.g ↔ Nonempty (IsColimit (CokernelCofork.ofπ S.g S.zero)) := by
   constructor
   · intro ⟨hS, _⟩

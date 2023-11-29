@@ -3,7 +3,7 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.Functor.LeftDerived
+import Mathlib.CategoryTheory.Abelian.LeftDerived
 import Mathlib.CategoryTheory.Monoidal.Preadditive
 
 #align_import category_theory.monoidal.tor from "leanprover-community/mathlib"@"09f981f72d43749f1fa072deade828d9c1e185bb"
