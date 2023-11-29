@@ -199,13 +199,10 @@ lemma shiftLeft_eq' (m n : Nat) : shiftLeft m n = m <<< n := rfl
 @[simp]
 lemma shiftRight_eq (m n : Nat) : shiftRight m n = m >>> n := rfl
 
-theorem shiftLeft_zero (m) : m <<< 0 = m := rfl
-
-theorem shiftLeft_succ (m n) : m <<< (n + 1) = 2 * (m <<< n) := by
-  simp only [shiftLeft_eq, Nat.pow_add, Nat.pow_one, ← Nat.mul_assoc, Nat.mul_comm]
-
 /-- `testBit m n` returns whether the `(n+1)ˢᵗ` least significant bit is `1` or `0`-/
-def testBit (m n : ℕ) : Bool :=
+-- Std has adopted a new and different definition of `testBit`.
+-- This should be removed.
+def testBit' (m n : ℕ) : Bool :=
   bodd (m >>> n)
 #align nat.test_bit Nat.testBit
 
@@ -301,17 +298,17 @@ theorem shiftLeft_sub : ∀ (m : Nat) {n k}, k ≤ n → m <<< (n - k) = (m <<< 
   fun _ _ _ hk => by simp only [← shiftLeft'_false, shiftLeft'_sub false _ hk]
 
 @[simp]
-theorem testBit_zero (b n) : testBit (bit b n) 0 = b :=
+theorem testBit'_zero (b n) : testBit' (bit b n) 0 = b :=
   bodd_bit _ _
-#align nat.test_bit_zero Nat.testBit_zero
+#align nat.test_bit_zero Nat.testBit'_zero
 
-theorem testBit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
+theorem testBit'_succ (m b n) : testBit' (bit b n) (succ m) = testBit' n m := by
   have : bodd (((bit b n) >>> 1) >>> m) = bodd (n >>> m) := by
-    dsimp [shiftRight]
+    simp only [← shiftRight_eq]
     simp [← div2_val, div2_bit]
   rw [← shiftRight_add, Nat.add_comm] at this
   exact this
-#align nat.test_bit_succ Nat.testBit_succ
+#align nat.test_bit_succ Nat.testBit'_succ
 
 theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit b n)}
     (h : f false 0 z = z) (b n) : binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
