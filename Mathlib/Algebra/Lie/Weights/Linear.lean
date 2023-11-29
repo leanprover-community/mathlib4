@@ -64,7 +64,7 @@ def weight.toLinear [LieAlgebra.IsNilpotent R L] [LinearWeights R L M]
 @[simp]
 lemma weight.toLinear_apply_lie [LieAlgebra.IsNilpotent R L] [LinearWeights R L M]
     [NoZeroSMulDivisors R M] [IsNoetherian R M] (χ : weight R L M) (x y : L) :
-    weight.toLinear R L M χ ⁅x, y⁆ = 0 :=
+    (χ : L → R) ⁅x, y⁆ = 0 :=
   LinearWeights.map_lie (χ : L → R) ((Finite.mem_toFinset _).mp χ.property) x y
 
 /-- For an Abelian Lie algebra, the weights of any Lie module are linear. -/
