@@ -136,9 +136,8 @@ def shiftedWeightSpace := weightSpace M χ
 
 namespace shiftedWeightSpace
 
-private lemma aux [Nontrivial (shiftedWeightSpace R L M χ)] : weightSpace M χ ≠ ⊥ :=
-  (LieSubmodule.nontrivial_iff_ne_bot _ _ _).mp <| inferInstanceAs <| Nontrivial <|
-    shiftedWeightSpace R L M χ
+private lemma aux [h : Nontrivial (shiftedWeightSpace R L M χ)] : weightSpace M χ ≠ ⊥ :=
+  (LieSubmodule.nontrivial_iff_ne_bot _ _ _).mp h
 
 instance : LieRingModule L (shiftedWeightSpace R L M χ) where
   bracket x m := ⁅x, m⁆ - χ x • m

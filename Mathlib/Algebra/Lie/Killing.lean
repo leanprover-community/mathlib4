@@ -34,7 +34,7 @@ We define the trace / Killing form in this file and prove some basic properties.
    form on `L` via the trace form construction.
  * `LieAlgebra.IsKilling`: a typeclass encoding the fact that a Lie algebra has a non-singular
    Killing form.
- * `LieAlgebra.IsKilling.ker_restrictBilinear_of_isCartanSubalgebra_eq_bot`: if the Killing form of
+ * `LieAlgebra.IsKilling.ker_restrictBilinear_eq_bot_of_isCartanSubalgebra`: if the Killing form of
    a Lie algebra is non-singular, it remains non-singular when restricted to a Cartan subalgebra.
  * `LieAlgebra.IsKilling.isSemisimple`: if a Lie algebra has non-singular Killing form then it is
    semisimple.
@@ -423,7 +423,7 @@ variable [IsKilling R L]
 
 /-- If the Killing form of a Lie algebra is non-singular, it remains non-singular when restricted
 to a Cartan subalgebra. -/
-lemma ker_restrictBilinear_of_isCartanSubalgebra_eq_bot
+lemma ker_restrictBilinear_eq_bot_of_isCartanSubalgebra
     [IsNoetherian R L] [IsArtinian R L] (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
     LinearMap.ker (H.restrictBilinear (killingForm R L)) = ⊥ := by
   have h : Codisjoint (rootSpace H 0) (LieModule.posFittingComp R H L) :=
@@ -441,10 +441,10 @@ lemma restrictBilinear_killingForm (H : LieSubalgebra R L) :
     H.restrictBilinear (killingForm R L) = LieModule.traceForm R H L :=
   rfl
 
-@[simp] lemma ker_traceForm_of_isCartanSubalgebra_eq_bot
+@[simp] lemma ker_traceForm_eq_bot_of_isCartanSubalgebra
     [IsNoetherian R L] [IsArtinian R L] (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
     LinearMap.ker (LieModule.traceForm R H L) = ⊥ :=
-  ker_restrictBilinear_of_isCartanSubalgebra_eq_bot R L H
+  ker_restrictBilinear_eq_bot_of_isCartanSubalgebra R L H
 
 /-- The converse of this is true over a field of characteristic zero. There are counterexamples
 over fields with positive characteristic. -/
@@ -460,7 +460,7 @@ instance instIsLieAbelianOfIsCartanSubalgebra
     (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
     IsLieAbelian H :=
   LieModule.isLieAbelian_of_ker_traceForm_eq_bot R H L <|
-    ker_restrictBilinear_of_isCartanSubalgebra_eq_bot R L H
+    ker_restrictBilinear_eq_bot_of_isCartanSubalgebra R L H
 
 end IsKilling
 
