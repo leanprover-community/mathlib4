@@ -110,11 +110,11 @@ attribute [pp_dot] Indep E
 @[simps] protected def matroid (M : IndepMatroid α) : Matroid α where
   E := M.E
   Base := (· ∈ maximals (· ⊆ ·) {I | M.Indep I})
-  exists_base := ( by
-      obtain ⟨B, ⟨hB,-,-⟩, hB₁⟩ :=
-        M.indep_maximal M.E rfl.subset ∅ M.indep_empty (empty_subset _)
-      exact ⟨B, ⟨hB, fun B' hB' h' ↦ hB₁ ⟨hB', empty_subset _,M.subset_ground B' hB'⟩ h'⟩⟩)
-  base_exchange := ( by
+  exists_base := by
+    obtain ⟨B, ⟨hB,-,-⟩, hB₁⟩ :=
+      M.indep_maximal M.E rfl.subset ∅ M.indep_empty (empty_subset _)
+    exact ⟨B, ⟨hB, fun B' hB' h' ↦ hB₁ ⟨hB', empty_subset _,M.subset_ground B' hB'⟩ h'⟩⟩
+  base_exchange := by
     rintro B B' ⟨hB, hBmax⟩ ⟨hB',hB'max⟩ e he
     have hnotmax : B \ {e} ∉ maximals (· ⊆ ·) {I | M.Indep I}
     { simp only [mem_maximals_setOf_iff, diff_singleton_subset_iff, not_and, not_forall,
@@ -131,20 +131,19 @@ attribute [pp_dot] Indep E
     simp only [mem_diff, mem_insert_iff, mem_singleton_iff, not_or, not_and, not_not] at hxB
     obtain rfl := hxB.2.2 hxB.1
     rw [insert_comm, insert_diff_singleton, insert_eq_of_mem he.1] at hind
-    exact not_mem_subset (hBmax hind (subset_insert _ _)) hfB' (mem_insert _ _) )
-  maximality :=
-  ( by
-      rintro X hXE I ⟨hB, hB, hIB⟩ hIX
-      obtain ⟨J, ⟨hJ, hIJ, hJX⟩, hJmax⟩ := M.indep_maximal X hXE I (M.indep_subset hB.1 hIB) hIX
-      obtain ⟨BJ, hBJ⟩ := M.indep_maximal M.E rfl.subset J hJ (M.subset_ground J hJ)
-      refine' ⟨J, ⟨⟨BJ,_, hBJ.1.2.1⟩ ,hIJ,hJX⟩, _⟩
-      · exact ⟨hBJ.1.1, fun B' hB' hBJB' ↦ hBJ.2 ⟨hB',hBJ.1.2.1.trans hBJB',
-          M.subset_ground _ hB'⟩ hBJB'⟩
-      simp only [maximals, mem_setOf_eq, and_imp, forall_exists_index]
-      rintro A B' (hBi' : M.Indep _) - hB'' hIA hAX hJA
-      simp only [mem_setOf_eq, and_imp] at hJmax
-      exact hJmax (M.indep_subset hBi' hB'') hIA hAX hJA )
-  subset_ground := ( fun B hB ↦ M.subset_ground B hB.1 )
+    exact not_mem_subset (hBmax hind (subset_insert _ _)) hfB' (mem_insert _ _)
+  maximality := by
+    rintro X hXE I ⟨hB, hB, hIB⟩ hIX
+    obtain ⟨J, ⟨hJ, hIJ, hJX⟩, hJmax⟩ := M.indep_maximal X hXE I (M.indep_subset hB.1 hIB) hIX
+    obtain ⟨BJ, hBJ⟩ := M.indep_maximal M.E rfl.subset J hJ (M.subset_ground J hJ)
+    refine' ⟨J, ⟨⟨BJ,_, hBJ.1.2.1⟩ ,hIJ,hJX⟩, _⟩
+    · exact ⟨hBJ.1.1, fun B' hB' hBJB' ↦ hBJ.2 ⟨hB',hBJ.1.2.1.trans hBJB',
+        M.subset_ground _ hB'⟩ hBJB'⟩
+    simp only [maximals, mem_setOf_eq, and_imp, forall_exists_index]
+    rintro A B' (hBi' : M.Indep _) - hB'' hIA hAX hJA
+    simp only [mem_setOf_eq, and_imp] at hJmax
+    exact hJmax (M.indep_subset hBi' hB'') hIA hAX hJA
+  subset_ground B hB := M.subset_ground B hB.1
 
 @[simp] theorem matroid_indep_iff {M : IndepMatroid α} {I : Set α} :
     M.matroid.Indep I ↔ M.Indep I := by
@@ -302,13 +301,13 @@ theorem _root_.Matroid.existsMaximalSubsetProperty_of_bdd {P : Set α → Prop}
       B ∈ maximals (· ⊆ ·) {I | Indep I} → ∃ x ∈ B \ I, Indep (insert x I))
     (subset_ground : ∀ I, Indep I → I ⊆ E)
     (indep_bdd : ∃ (n : ℕ), ∀ I, Indep I → I.encard ≤ n ) : IndepMatroid α where
-      E := E
-      Indep := Indep
-      indep_empty := indep_empty
-      indep_subset := indep_subset
-      indep_aug := indep_aug
-      indep_maximal := (fun X _ ↦ Matroid.existsMaximalSubsetProperty_of_bdd indep_bdd X)
-      subset_ground := subset_ground
+  E := E
+  Indep := Indep
+  indep_empty := indep_empty
+  indep_subset := indep_subset
+  indep_aug := indep_aug
+  indep_maximal X _ := Matroid.existsMaximalSubsetProperty_of_bdd indep_bdd X
+  subset_ground := subset_ground
 
 @[simp] theorem ofBdd_indep (E : Set α) Indep indep_empty indep_subset indep_aug
     subset_ground h_bdd : (IndepMatroid.ofBdd
