@@ -456,7 +456,7 @@ def Result.eqTrans {α : Q(Type u)} {a b : Q($α)} (eq : Q($a = $b)) : Result b 
     have b : Q(Prop) := b
     have eq : Q($a = $b) := eq
     have proof : Q(¬ $b) := proof
-   Result.isFalse (x := a) q($eq ▸ $proof)
+    Result.isFalse (x := a) q($eq ▸ $proof)
   | .isNat inst lit proof => Result.isNat inst lit q($eq ▸ $proof)
   | .isNegNat inst lit proof => Result.isNegNat inst lit q($eq ▸ $proof)
   | .isRat inst q n d proof => Result.isRat inst q n d q($eq ▸ $proof)
