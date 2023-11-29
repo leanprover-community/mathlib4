@@ -1061,10 +1061,10 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
 -- porting note: `IsPreconnected.subset_clopen` moved up from here
 
 /-- Preconnected sets are either contained in or disjoint to any given clopen set. -/
-theorem disjoint_or_subset_of_clopen {s t : Set α} (hs : IsPreconnected s) (ht : IsClopen t) :
+theorem disjoint_or_subset_of_isClopen {s t : Set α} (hs : IsPreconnected s) (ht : IsClopen t) :
     Disjoint s t ∨ s ⊆ t :=
   (disjoint_or_nonempty_inter s t).imp_right <| hs.subset_clopen ht
-#align disjoint_or_subset_of_clopen disjoint_or_subset_of_clopen
+#align disjoint_or_subset_of_clopen disjoint_or_subset_of_isClopen
 
 /-- A set `s` is preconnected if and only if
 for every cover by two closed sets that are disjoint on `s`,

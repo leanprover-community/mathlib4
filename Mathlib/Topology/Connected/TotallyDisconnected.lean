@@ -90,7 +90,7 @@ instance [∀ i, TopologicalSpace (π i)] [∀ i, TotallyDisconnectedSpace (π i
 -- porting note: reformulated using `Pairwise`
 /-- Let `X` be a topological space, and suppose that for all distinct `x,y ∈ X`, there
   is some clopen set `U` such that `x ∈ U` and `y ∉ U`. Then `X` is totally disconnected. -/
-theorem isTotallyDisconnected_of_clopen_set {X : Type*} [TopologicalSpace X]
+theorem isTotallyDisconnected_of_isClopen_set {X : Type*} [TopologicalSpace X]
     (hX : Pairwise fun x y => ∃ (U : Set X), IsClopen U ∧ x ∈ U ∧ y ∉ U) :
     IsTotallyDisconnected (Set.univ : Set X) := by
   rintro S - hS
@@ -102,7 +102,7 @@ theorem isTotallyDisconnected_of_clopen_set {X : Type*} [TopologicalSpace X]
     hS U Uᶜ h_clopen.1 h_clopen.compl.1 (fun a _ => em (a ∈ U)) ⟨x, hx, hxU⟩ ⟨y, hy, hyU⟩
   rw [inter_compl_self, Set.inter_empty] at hS
   exact Set.not_nonempty_empty hS
-#align is_totally_disconnected_of_clopen_set isTotallyDisconnected_of_clopen_set
+#align is_totally_disconnected_of_clopen_set isTotallyDisconnected_of_isClopen_set
 
 /-- A space is totally disconnected iff its connected components are subsingletons. -/
 theorem totallyDisconnectedSpace_iff_connectedComponent_subsingleton :

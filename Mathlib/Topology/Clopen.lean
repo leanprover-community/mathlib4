@@ -110,11 +110,11 @@ theorem IsClopen.preimage {s : Set Y} (h : IsClopen s) {f : X → Y} (hf : Conti
   ⟨h.1.preimage hf, h.2.preimage hf⟩
 #align is_clopen.preimage IsClopen.preimage
 
-theorem ContinuousOn.preimage_clopen_of_clopen {f : X → Y} {s : Set X} {t : Set Y}
+theorem ContinuousOn.preimage_isClopen_of_isClopen {f : X → Y} {s : Set X} {t : Set Y}
     (hf : ContinuousOn f s) (hs : IsClopen s) (ht : IsClopen t) : IsClopen (s ∩ f ⁻¹' t) :=
   ⟨ContinuousOn.preimage_open_of_open hf hs.1 ht.1,
     ContinuousOn.preimage_isClosed_of_isClosed hf hs.2 ht.2⟩
-#align continuous_on.preimage_clopen_of_clopen ContinuousOn.preimage_clopen_of_clopen
+#align continuous_on.preimage_clopen_of_clopen ContinuousOn.preimage_isClopen_of_isClopen
 
 /-- The intersection of a disjoint covering by two open sets of a clopen set will be clopen. -/
 theorem isClopen_inter_of_disjoint_cover_clopen {s a b : Set X} (h : IsClopen s) (cover : s ⊆ a ∪ b)
