@@ -1814,7 +1814,7 @@ theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
       simp only [Set.mem_preimage, Set.mem_singleton_iff, decide_eq_true_eq]
   · intro a b h
     by_contra hn
-    obtain ⟨C, hC, hh⟩ := exists_clopen_of_totally_separated hn
+    obtain ⟨C, hC, hh⟩ := exists_isClopen_of_totally_separated hn
     apply hh.2 ∘ of_decide_eq_true
     dsimp (config := { unfoldPartialApp := true }) [ι] at h
     rw [← congr_fun h ⟨C, hC⟩]

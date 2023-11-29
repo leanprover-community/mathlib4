@@ -235,16 +235,16 @@ instance (priority := 100) TotallySeparatedSpace.of_discrete (α : Type*) [Topol
     (compl_union_self _).symm.subset, disjoint_compl_left⟩⟩
 #align totally_separated_space.of_discrete TotallySeparatedSpace.of_discrete
 
-theorem exists_clopen_of_totally_separated {α : Type*} [TopologicalSpace α]
+theorem exists_isClopen_of_totally_separated {α : Type*} [TopologicalSpace α]
     [TotallySeparatedSpace α] {x y : α} (hxy : x ≠ y) :
     ∃ U : Set α, IsClopen U ∧ x ∈ U ∧ y ∈ Uᶜ := by
   obtain ⟨U, V, hU, hV, Ux, Vy, f, disj⟩ :=
     TotallySeparatedSpace.isTotallySeparated_univ x (Set.mem_univ x) y (Set.mem_univ y) hxy
-  have clopen_U := isClopen_inter_of_disjoint_cover_clopen isClopen_univ f hU hV disj
-  rw [univ_inter _] at clopen_U
+  have hU := isClopen_inter_of_disjoint_cover_clopen isClopen_univ f hU hV disj
+  rw [univ_inter _] at hU
   rw [← Set.subset_compl_iff_disjoint_right, subset_compl_comm] at disj
-  exact ⟨U, clopen_U, Ux, disj Vy⟩
-#align exists_clopen_of_totally_separated exists_clopen_of_totally_separated
+  exact ⟨U, hU, Ux, disj Vy⟩
+#align exists_clopen_of_totally_separated exists_isClopen_of_totally_separated
 
 end TotallySeparated
 

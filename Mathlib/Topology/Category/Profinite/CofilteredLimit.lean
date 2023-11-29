@@ -18,7 +18,7 @@ This file contains some theorems about cofiltered limits of profinite sets.
 
 ## Main Results
 
-- `exists_clopen_of_cofiltered` shows that any clopen set in a cofiltered limit of profinite
+- `exists_isClopen_of_cofiltered` shows that any clopen set in a cofiltered limit of profinite
   sets is the pullback of a clopen set from one of the factors in the limit.
 - `exists_locally_constant` shows that any locally constant function from a cofiltered limit
   of profinite sets factors through one of the components.
@@ -43,7 +43,7 @@ variable {J : Type u} [SmallCategory J] [IsCofiltered J] {F : J ⥤ Profinite.{u
 /-- If `X` is a cofiltered limit of profinite sets, then any clopen subset of `X` arises from
 a clopen set in one of the terms in the limit.
 -/
-theorem exists_clopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClopen U) :
+theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClopen U) :
     ∃ (j : J) (V : Set (F.obj j)) (_ : IsClopen V), U = C.π.app j ⁻¹' V := by
   -- First, we have the topological basis of the cofiltered limit obtained by pulling back
   -- clopen sets from the factors in the limit. By continuity, all such sets are again clopen.
@@ -113,13 +113,13 @@ theorem exists_clopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClop
       rw [(hV s).2]
       rwa [dif_pos hs, ← Set.preimage_comp, ← Profinite.coe_comp, ← Functor.map_comp, C.w] at hx
 set_option linter.uppercaseLean3 false in
-#align Profinite.exists_clopen_of_cofiltered Profinite.exists_clopen_of_cofiltered
+#align Profinite.exists_clopen_of_cofiltered Profinite.exists_isClopen_of_cofiltered
 
 theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.pt (Fin 2)) :
     ∃ (j : J) (g : LocallyConstant (F.obj j) (Fin 2)), f = g.comap (C.π.app _) := by
   let U := f ⁻¹' {0}
   have hU : IsClopen U := f.isLocallyConstant.isClopen_fiber _
-  obtain ⟨j, V, hV, h⟩ := exists_clopen_of_cofiltered C hC hU
+  obtain ⟨j, V, hV, h⟩ := exists_isClopen_of_cofiltered C hC hU
   use j, LocallyConstant.ofClopen hV
   apply LocallyConstant.locallyConstant_eq_of_fiber_zero_eq
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
