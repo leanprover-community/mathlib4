@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Christopher Hoskin
 -/
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.Algebra.Basic
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -130,6 +131,12 @@ theorem coe_toAddMonoidHom_injective : Injective ((↑) : CentroidHom α → α 
     haveI := FunLike.congr_fun h a
     this
 #align centroid_hom.coe_to_add_monoid_hom_injective CentroidHom.coe_toAddMonoidHom_injective
+
+lemma map_mul_left (f : CentroidHom α) (a b : α) : f (a * b) = a * f b :=
+    CentroidHomClass.map_mul_left _ _ _
+
+lemma map_mul_right (f : CentroidHom α) (a b : α) : f (a * b) = f a * b :=
+    CentroidHomClass.map_mul_right _ _ _
 
 /-- Turn a centroid homomorphism into an additive monoid endomorphism. -/
 def toEnd (f : CentroidHom α) : AddMonoid.End α :=
@@ -398,6 +405,74 @@ theorem comp_mul_comm (T S : CentroidHom α) (a b : α) : (T ∘ S) (a * b) = (S
   simp only [Function.comp_apply]
   rw [map_mul_right, map_mul_left, ← map_mul_right, ← map_mul_left]
 #align centroid_hom.comp_mul_comm CentroidHom.comp_mul_comm
+
+/-
+The following instances show that α is an algebra over (CentroidHom α)
+-/
+
+instance : MulAction (CentroidHom α) α where
+  smul T a := T a
+  one_smul _ := rfl
+  mul_smul _ _ _:= rfl
+
+lemma smul_apply (T : CentroidHom α) (a : α) : T • a = T a := rfl
+
+instance : DistribMulAction (CentroidHom α) α where
+  smul_zero _ := by
+    rw [← zero_mul 0, smul_apply, map_mul_left, zero_mul, zero_mul]
+  smul_add _ _ _ := by
+    rw [smul_apply, smul_apply, smul_apply, map_add]
+
+instance : Module (CentroidHom α) α where
+  add_smul _ _ _ := rfl
+  zero_smul _ := rfl
+
+instance : SMulCommClass (CentroidHom α) α α where
+  smul_comm _ _ _ := by
+    rw [smul_apply, smul_apply, smul_eq_mul, smul_eq_mul, map_mul_left]
+
+instance : IsScalarTower (CentroidHom α) α α where
+  smul_assoc T a b := by
+    rw [smul_apply, smul_apply, smul_eq_mul, smul_eq_mul, map_mul_right]
+
+/-
+Let α be an algebra over R, then (CentroidHom α) is an algebra over R
+-/
+
+variable (R : Type*)
+
+variable [CommSemiring R]
+variable [Module R α] [SMulCommClass R α α] [IsScalarTower R α α]
+
+instance : SMul R (CentroidHom α) where
+  smul r T := ⟨⟨⟨fun a => r • T a,
+    by simp only [map_zero, smul_zero]⟩,
+    by simp only [map_add, smul_add, forall_const]⟩,
+    fun _ _ => by
+      simp only
+      rw [mul_smul_comm, map_mul_left],
+    fun _ _ => by
+      simp only
+      rw [← smul_eq_mul, ← smul_eq_mul, smul_assoc, smul_eq_mul, smul_eq_mul, map_mul_right]⟩
+
+instance : RingHom R (CentroidHom α) where
+  toFun r := ⟨⟨⟨fun a => r • a,
+    smul_zero r⟩,
+    fun _ _ ↦ smul_add r _ _⟩,
+    fun _ _ ↦ (mul_smul_comm r _ _).symm,
+    fun _ _ ↦ (smul_mul_assoc r _ _).symm⟩
+  map_one' := by
+    simp only [one_smul]
+    exact rfl
+  map_mul' r₁ r₂ := by
+    ext a
+    exact smul_assoc r₁ r₂ a
+  map_zero' := by
+    simp only [zero_smul]
+    exact rfl
+  map_add' r₁ r₂ := by
+    ext a
+    exact add_smul r₁ r₂ a
 
 end NonUnitalNonAssocSemiring
 
