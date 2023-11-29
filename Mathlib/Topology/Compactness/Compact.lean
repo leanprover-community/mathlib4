@@ -257,7 +257,7 @@ theorem IsCompact.elim_finite_subfamily_closed {ι : Type v} (hs : IsCompact s)
 
 /-- If `s` is a compact set in a topological space `X` and `f : ι → Set X` is a locally finite
 family of sets, then `f i ∩ s` is nonempty only for a finitely many `i`. -/
-theorem LocallyFinite.finite_nonempty_inter_compact {ι : Type*} {f : ι → Set X}
+theorem LocallyFinite.finite_nonempty_inter_compact {f : ι → Set X}
     (hf : LocallyFinite f) (hs : IsCompact s) : { i | (f i ∩ s).Nonempty }.Finite := by
   choose U hxU hUf using hf
   rcases hs.elim_nhds_subcover U fun x _ => hxU x with ⟨t, -, hsU⟩
@@ -479,7 +479,7 @@ protected theorem IsCompact.insert (hs : IsCompact s) (a) : IsCompact (insert a 
 /-- If `V : ι → Set X` is a decreasing family of closed compact sets then any neighborhood of
 `⋂ i, V i` contains some `V i`. We assume each `V i` is compact *and* closed because `X` is
 not assumed to be Hausdorff. See `exists_subset_nhd_of_compact` for version assuming this. -/
-theorem exists_subset_nhds_of_isCompact' {ι : Type*} [Nonempty ι] {V : ι → Set X}
+theorem exists_subset_nhds_of_isCompact' [Nonempty ι] {V : ι → Set X}
     (hV : Directed (· ⊇ ·) V) (hV_cpct : ∀ i, IsCompact (V i)) (hV_closed : ∀ i, IsClosed (V i))
     {U : Set X} (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U := by
   obtain ⟨W, hsubW, W_op, hWU⟩ := exists_open_set_nhds hU
@@ -818,21 +818,21 @@ theorem finite_cover_nhds [CompactSpace X] {U : X → Set X} (hU : ∀ x, U x �
 
 /-- If `X` is a compact space, then a locally finite family of sets of `X` can have only finitely
 many nonempty elements. -/
-theorem LocallyFinite.finite_nonempty_of_compact {ι : Type*} [CompactSpace X] {f : ι → Set X}
+theorem LocallyFinite.finite_nonempty_of_compact [CompactSpace X] {f : ι → Set X}
     (hf : LocallyFinite f) : { i | (f i).Nonempty }.Finite := by
   simpa only [inter_univ] using hf.finite_nonempty_inter_compact isCompact_univ
 #align locally_finite.finite_nonempty_of_compact LocallyFinite.finite_nonempty_of_compact
 
 /-- If `X` is a compact space, then a locally finite family of nonempty sets of `X` can have only
 finitely many elements, `Set.Finite` version. -/
-theorem LocallyFinite.finite_of_compact {ι : Type*} [CompactSpace X] {f : ι → Set X}
+theorem LocallyFinite.finite_of_compact [CompactSpace X] {f : ι → Set X}
     (hf : LocallyFinite f) (hne : ∀ i, (f i).Nonempty) : (univ : Set ι).Finite := by
   simpa only [hne] using hf.finite_nonempty_of_compact
 #align locally_finite.finite_of_compact LocallyFinite.finite_of_compact
 
 /-- If `X` is a compact space, then a locally finite family of nonempty sets of `X` can have only
 finitely many elements, `Fintype` version. -/
-noncomputable def LocallyFinite.fintypeOfCompact {ι : Type*} [CompactSpace X] {f : ι → Set X}
+noncomputable def LocallyFinite.fintypeOfCompact [CompactSpace X] {f : ι → Set X}
     (hf : LocallyFinite f) (hne : ∀ i, (f i).Nonempty) : Fintype ι :=
   fintypeOfFiniteUniv (hf.finite_of_compact hne)
 #align locally_finite.fintype_of_compact LocallyFinite.fintypeOfCompact
@@ -858,8 +858,8 @@ theorem isCompact_diagonal [CompactSpace X] : IsCompact (diagonal X) :=
 
 -- porting note: renamed, golfed
 /-- If `X` is a compact topological space, then `Prod.snd : X × Y → Y` is a closed map. -/
-theorem isClosedMap_snd_of_compactSpace {X : Type*} [TopologicalSpace X] [CompactSpace X]
-    {Y : Type*} [TopologicalSpace Y] : IsClosedMap (Prod.snd : X × Y → Y) := fun s hs => by
+theorem isClosedMap_snd_of_compactSpace [CompactSpace X] :
+    IsClosedMap (Prod.snd : X × Y → Y) := fun s hs => by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro y hy
   have : univ ×ˢ {y} ⊆ sᶜ
@@ -872,11 +872,10 @@ theorem isClosedMap_snd_of_compactSpace {X : Type*} [TopologicalSpace X] [Compac
 #align is_closed_proj_of_is_compact isClosedMap_snd_of_compactSpace
 
 /-- If `Y` is a compact topological space, then `Prod.fst : X × Y → X` is a closed map. -/
-theorem isClosedMap_fst_of_compactSpace {X Y : Type*} [TopologicalSpace X]
-    [TopologicalSpace Y] [CompactSpace Y] : IsClosedMap (Prod.fst : X × Y → X) :=
+theorem isClosedMap_fst_of_compactSpace [CompactSpace Y] : IsClosedMap (Prod.fst : X × Y → X) :=
   isClosedMap_snd_of_compactSpace.comp isClosedMap_swap
 
-theorem exists_subset_nhds_of_compactSpace [CompactSpace X] {ι : Type*} [Nonempty ι]
+theorem exists_subset_nhds_of_compactSpace [CompactSpace X] [Nonempty ι]
     {V : ι → Set X} (hV : Directed (· ⊇ ·) V) (hV_closed : ∀ i, IsClosed (V i)) {U : Set X}
     (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U :=
   exists_subset_nhds_of_isCompact' hV (fun i => (hV_closed i).isCompact) hV_closed hU
