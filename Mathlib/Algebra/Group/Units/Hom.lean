@@ -131,7 +131,8 @@ theorem val_div_eq_div_val : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u�
 #align add_units.coe_sub AddUnits.val_neg_eq_neg_val
 
 @[to_additive (attr := simp, norm_cast)]
-theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
+theorem val_zpow_eq_zpow_val [Pow α ℤ] [ZPow α] :
+  ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
   (Units.coeHom α).map_zpow
 #align units.coe_zpow Units.val_zpow_eq_zpow_val
 #align add_units.coe_zsmul AddUnits.val_zsmul_eq_zsmul_val

@@ -77,7 +77,8 @@ theorem iterate_map_pow (f : M →* M) (n : ℕ) (a) (m : ℕ) : f^[n] (a ^ m) =
   Commute.iterate_left (fun x => f.map_pow x m) n a
 #align monoid_hom.iterate_map_pow MonoidHom.iterate_map_pow
 
-theorem iterate_map_zpow (f : G →* G) (n : ℕ) (a) (m : ℤ) : f^[n] (a ^ m) = f^[n] a ^ m :=
+theorem iterate_map_zpow [Pow G ℤ] [ZPow G] (f : G →* G) (n : ℕ) (a) (m : ℤ) :
+    f^[n] (a ^ m) = f^[n] a ^ m :=
   Commute.iterate_left (fun x => f.map_zpow x m) n a
 #align monoid_hom.iterate_map_zpow MonoidHom.iterate_map_zpow
 
@@ -103,7 +104,8 @@ theorem iterate_map_smul (f : M →+ M) (n m : ℕ) (x : M) : f^[n] (m • x) = 
 attribute [to_additive (reorder := 5 6)] MonoidHom.iterate_map_pow
 #align add_monoid_hom.iterate_map_nsmul AddMonoidHom.iterate_map_nsmul
 
-theorem iterate_map_zsmul (f : G →+ G) (n : ℕ) (m : ℤ) (x : G) : f^[n] (m • x) = m • f^[n] x :=
+theorem iterate_map_zsmul [SMul ℤ G] [ZSMul G] (f : G →+ G) (n : ℕ) (m : ℤ) (x : G) :
+    f^[n] (m • x) = m • f^[n] x :=
   f.toMultiplicative.iterate_map_zpow n x m
 #align add_monoid_hom.iterate_map_zsmul AddMonoidHom.iterate_map_zsmul
 
@@ -153,7 +155,8 @@ theorem iterate_map_neg : f^[n] (-x) = -f^[n] x :=
   f.toAddMonoidHom.iterate_map_neg n x
 #align ring_hom.iterate_map_neg RingHom.iterate_map_neg
 
-theorem iterate_map_zsmul (n : ℕ) (m : ℤ) (x : R) : f^[n] (m • x) = m • f^[n] x :=
+theorem iterate_map_zsmul [SMul ℤ R] [ZSMul R] (n : ℕ) (m : ℤ) (x : R) :
+    f^[n] (m • x) = m • f^[n] x :=
   f.toAddMonoidHom.iterate_map_zsmul n m x
 #align ring_hom.iterate_map_zsmul RingHom.iterate_map_zsmul
 
@@ -206,7 +209,8 @@ section Group
 variable [Group G]
 
 @[to_additive (attr := simp)]
-theorem zpow_iterate (n : ℤ) (j : ℕ) : (fun x : G => x ^ n)^[j] = fun x => x ^ n ^ j :=
+theorem zpow_iterate [Pow G ℤ] [ZPow G] (n : ℤ) (j : ℕ) :
+    (fun x : G => x ^ n)^[j] = fun x => x ^ n ^ j :=
   letI : MulAction ℤ G :=
     { smul := fun n g => g ^ n
       one_smul := zpow_one

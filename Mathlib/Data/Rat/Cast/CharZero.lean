@@ -23,7 +23,7 @@ open Rat
 
 section WithDivRing
 
-variable [DivisionRing α]
+variable [DivisionRing α] [Pow α ℤ] [ZPow α]
 
 @[simp, norm_cast]
 theorem cast_inj [CharZero α] : ∀ {m n : ℚ}, (m : α) = n ↔ m = n

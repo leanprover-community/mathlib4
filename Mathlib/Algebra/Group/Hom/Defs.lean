@@ -440,7 +440,8 @@ theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
 #align map_nsmul map_nsmul
 
 @[to_additive]
-theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
+theorem map_zpow' [DivInvMonoid G] [Pow G ℤ] [ZPow G] [DivInvMonoid H] [Pow H ℤ] [ZPow H]
+    [MonoidHomClass F G H]
     (f : F) (hf : ∀ x : G, f x⁻¹ = (f x)⁻¹) (a : G) : ∀ n : ℤ, f (a ^ n) = f a ^ n
   | (n : ℕ) => by rw [zpow_ofNat, map_pow, zpow_ofNat]
   | Int.negSucc n => by rw [zpow_negSucc, hf, map_pow, ← zpow_negSucc]
@@ -448,9 +449,10 @@ theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
 #align map_zsmul' map_zsmul'
 
 /-- Group homomorphisms preserve integer power. -/
-@[to_additive (attr := simp) (reorder := 8 9)
+@[to_additive (attr := simp) (reorder := 12 13)
 "Additive group homomorphisms preserve integer scaling."]
-theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
+theorem map_zpow [Group G] [Pow G ℤ] [ZPow G] [DivisionMonoid H] [Pow H ℤ] [ZPow H]
+    [MonoidHomClass F G H]
     (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
 #align map_zpow map_zpow
 #align map_zsmul map_zsmul
@@ -1283,7 +1285,8 @@ protected theorem MonoidHom.map_pow [Monoid M] [Monoid N] (f : M →* N) (a : M)
 #align add_monoid_hom.map_nsmul AddMonoidHom.map_nsmul
 
 @[to_additive]
-protected theorem MonoidHom.map_zpow' [DivInvMonoid M] [DivInvMonoid N] (f : M →* N)
+protected theorem MonoidHom.map_zpow' [DivInvMonoid M] [Pow M ℤ] [ZPow M]
+    [DivInvMonoid N] [Pow N ℤ] [ZPow N] (f : M →* N)
     (hf : ∀ x, f x⁻¹ = (f x)⁻¹) (a : M) (n : ℤ) :
     f (a ^ n) = f a ^ n := map_zpow' f hf a n
 #align monoid_hom.map_zpow' MonoidHom.map_zpow'
@@ -1435,7 +1438,8 @@ protected theorem map_inv [Group α] [DivisionMonoid β] (f : α →* β) (a : �
 
 /-- Group homomorphisms preserve integer power. -/
 @[to_additive "Additive group homomorphisms preserve integer scaling."]
-protected theorem map_zpow [Group α] [DivisionMonoid β] (f : α →* β) (g : α) (n : ℤ) :
+protected theorem map_zpow [Group α] [Pow α ℤ] [ZPow α] [DivisionMonoid β] [Pow β ℤ] [ZPow β]
+    (f : α →* β) (g : α) (n : ℤ) :
     f (g ^ n) = f g ^ n := map_zpow f g n
 #align monoid_hom.map_zpow MonoidHom.map_zpow
 #align add_monoid_hom.map_zsmul AddMonoidHom.map_zsmul

@@ -377,36 +377,44 @@ instance Multiplicative.involutiveInv [InvolutiveNeg α] : InvolutiveInv (Multip
 
 instance Additive.subNegMonoid [DivInvMonoid α] : SubNegMonoid (Additive α) :=
   { Additive.neg, Additive.sub, Additive.addMonoid with
-    sub_eq_add_neg := @div_eq_mul_inv α _
-    zsmul := @DivInvMonoid.zpow α _
-    zsmul_zero' := @DivInvMonoid.zpow_zero' α _
-    zsmul_succ' := @DivInvMonoid.zpow_succ' α _
-    zsmul_neg' := @DivInvMonoid.zpow_neg' α _ }
+    sub_eq_add_neg := @div_eq_mul_inv α _ }
+
+instance Additive.smul [Pow α β] : SMul β (Additive α) where
+  smul n x := Pow.pow (α := α) x n
+
+instance Additive.zsmul [DivInvMonoid α] [Pow α ℤ] [ZPow α] : ZSMul (Additive α) where
+  zsmul_zero := ZPow.zpow_zero (G := α)
+  zsmul_succ' := ZPow.zpow_succ' (G := α)
+  zsmul_neg' := ZPow.zpow_neg' (G := α)
 
 instance Multiplicative.divInvMonoid [SubNegMonoid α] : DivInvMonoid (Multiplicative α) :=
   { Multiplicative.inv, Multiplicative.div, Multiplicative.monoid with
-    div_eq_mul_inv := @sub_eq_add_neg α _
-    zpow := @SubNegMonoid.zsmul α _
-    zpow_zero' := @SubNegMonoid.zsmul_zero' α _
-    zpow_succ' := @SubNegMonoid.zsmul_succ' α _
-    zpow_neg' := @SubNegMonoid.zsmul_neg' α _ }
+    div_eq_mul_inv := @sub_eq_add_neg α _ }
+
+instance Multiplicative.pow [SMul β α] : Pow (Multiplicative α) β where
+  pow x n := SMul.smul (α := α) n x
+
+instance Multiplicative.zpow [SubNegMonoid α] [SMul ℤ α] [ZSMul α] : ZPow (Multiplicative α) where
+  zpow_zero := ZSMul.zsmul_zero (G := α)
+  zpow_succ' := ZSMul.zsmul_succ' (G := α)
+  zpow_neg' := ZSMul.zsmul_neg' (G := α)
 
 @[simp]
-theorem ofMul_zpow [DivInvMonoid α] (z : ℤ) (a : α) : ofMul (a ^ z) = z • ofMul a :=
+theorem ofMul_zpow [Pow α β] (z : β) (a : α) : ofMul (a ^ z) = z • ofMul a :=
   rfl
 #align of_mul_zpow ofMul_zpow
 
 @[simp]
-theorem toMul_zsmul [DivInvMonoid α] (z : ℤ) (a : Additive α) : toMul (z • a) = toMul a ^ z :=
+theorem toMul_zsmul [Pow α β] (z : β) (a : Additive α) : toMul (z • a) = toMul a ^ z :=
   rfl
 
 @[simp]
-theorem ofAdd_zsmul [SubNegMonoid α] (z : ℤ) (a : α) : ofAdd (z • a) = ofAdd a ^ z :=
+theorem ofAdd_zsmul [SMul β α] (z : β) (a : α) : ofAdd (z • a) = ofAdd a ^ z :=
   rfl
 #align of_add_zsmul ofAdd_zsmul
 
 @[simp]
-theorem toAdd_zpow [SubNegMonoid α] (a : Multiplicative α) (z : ℤ) : toAdd (a ^ z) = z • toAdd a :=
+theorem toAdd_zpow [SMul β α] (a : Multiplicative α) (z : β) : toAdd (a ^ z) = z • toAdd a :=
   rfl
 
 instance Additive.subtractionMonoid [DivisionMonoid α] : SubtractionMonoid (Additive α) :=

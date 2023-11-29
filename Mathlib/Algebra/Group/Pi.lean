@@ -114,13 +114,24 @@ instance divInvMonoid [∀ i, DivInvMonoid <| f i] : DivInvMonoid (∀ i : I, f 
   { monoid with
     inv := Inv.inv
     div := Div.div
-    zpow := fun z x i => x i ^ z
     --pi_instance
     div_eq_mul_inv := by intros; ext; exact div_eq_mul_inv _ _
-    zpow_zero' := by intros; ext; exact DivInvMonoid.zpow_zero' _
-    zpow_succ' := by intros; ext; exact DivInvMonoid.zpow_succ' _ _
-    zpow_neg' := by intros; ext; exact DivInvMonoid.zpow_neg' _ _
   }
+
+@[to_additive]
+instance smul {β} [∀ i, SMul β <| f i] : SMul β (∀ i : I, f i) where
+  smul z x i := z • x i
+
+@[to_additive existing smul]
+instance pow {β} [∀ i, Pow (f i) β] : Pow (∀ i : I, f i) β where
+  pow x z i := x i ^ z
+
+@[to_additive]
+instance zpow [∀ i, DivInvMonoid <| f i] [∀ i, Pow (f i) ℤ] [∀ i, ZPow <| f i] :
+    ZPow (∀ i : I, f i) where
+  zpow_zero := by intros; ext; exact ZPow.zpow_zero _
+  zpow_succ' := by intros; ext; exact ZPow.zpow_succ' _ _
+  zpow_neg' := by intros; ext; exact ZPow.zpow_neg' _ _
 
 @[to_additive Pi.subNegZeroMonoid]
 instance divInvOneMonoid [∀ i, DivInvOneMonoid <| f i] : DivInvOneMonoid (∀ i : I, f i) :=

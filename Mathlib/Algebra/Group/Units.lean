@@ -201,6 +201,12 @@ instance : Group αˣ :=
     mul_assoc := fun _ _ _ => ext <| mul_assoc _ _ _,
     inv := Inv.inv, mul_left_inv := fun u => ext u.inv_val }
 
+open ExtraInstances in
+@[to_additive] instance pow : Pow αˣ ℤ := by infer_instance
+
+open ExtraInstances in
+@[to_additive] instance zpow : ZPow αˣ := by infer_instance
+
 /-- Units of a commutative monoid form a commutative group. -/
 @[to_additive "Additive units of an additive commutative monoid form
 an additive commutative group."]

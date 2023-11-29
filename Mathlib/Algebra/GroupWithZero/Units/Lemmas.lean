@@ -292,7 +292,8 @@ end Units
 /-- If a monoid homomorphism `f` between two `GroupWithZero`s maps `0` to `0`, then it maps `x^n`,
 `n : ℤ`, to `(f x)^n`. -/
 @[simp]
-theorem map_zpow₀ {F G₀ G₀' : Type*} [GroupWithZero G₀] [GroupWithZero G₀']
+theorem map_zpow₀ {F G₀ G₀' : Type*} [GroupWithZero G₀] [Pow G₀ ℤ] [ZPow G₀]
+    [GroupWithZero G₀'] [Pow G₀' ℤ] [ZPow G₀']
     [MonoidWithZeroHomClass F G₀ G₀'] (f : F) (x : G₀) (n : ℤ) : f (x ^ n) = f x ^ n :=
   map_zpow' f (map_inv₀ f) x n
 #align map_zpow₀ map_zpow₀

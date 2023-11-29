@@ -122,7 +122,8 @@ theorem smul_inv [Group β] [SMulCommClass α β β] [IsScalarTower α β β] (c
   rw [inv_eq_iff_mul_eq_one, smul_mul_smul, mul_right_inv, mul_right_inv, one_smul]
 #align smul_inv smul_inv
 
-theorem smul_zpow [Group β] [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (x : β) (p : ℤ) :
+theorem smul_zpow [Pow α ℤ] [ZPow α] [Group β] [Pow β ℤ] [ZPow β] [SMulCommClass α β β]
+    [IsScalarTower α β β] (c : α) (x : β) (p : ℤ) :
     (c • x) ^ p = c ^ p • x ^ p := by
   cases p <;>
   simp [smul_pow, smul_inv]

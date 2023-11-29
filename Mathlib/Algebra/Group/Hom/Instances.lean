@@ -58,20 +58,33 @@ instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M 
       intros
       ext
       apply div_eq_mul_inv,
-    mul_left_inv := by intros; ext; apply mul_left_inv,
-    zpow := fun n f =>
-      { toFun := fun x => f x ^ n,
-        map_one' := by simp,
-        map_mul' := fun x y => by simp [mul_zpow] },
-    zpow_zero' := fun f => by
-      ext x
-      simp,
-    zpow_succ' := fun n f => by
-      ext x
-      simp [zpow_ofNat, pow_succ],
-    zpow_neg' := fun n f => by
-      ext x
-      simp [Nat.succ_eq_add_one, zpow_ofNat, -Int.natCast_add] }
+    mul_left_inv := by intros; ext; apply mul_left_inv }
+
+instance AddMonoidHom.smul {M G} [AddZeroClass M] [AddCommGroup G] [SMul ℤ G] [ZSMul G] :
+    SMul ℤ (M →+ G) where
+  smul n f :=
+    { toFun := fun x => n • f x,
+      map_zero' := by simp [_root_.zsmul_zero],
+      map_add' := fun x y => by simp [zsmul_add] }
+
+@[to_additive (attr := simps) existing AddMonoidHom.smul]
+instance MonoidHom.pow {M G} [MulOneClass M] [CommGroup G] [Pow G ℤ] [ZPow G] : Pow (M →* G) ℤ where
+  pow f n :=
+    { toFun := fun x => f x ^ n,
+      map_one' := by simp,
+      map_mul' := fun x y => by simp [mul_zpow] }
+
+@[to_additive (attr := simps)]
+instance MonoidHom.zpow {M G} [MulOneClass M] [CommGroup G] [Pow G ℤ] [ZPow G] : ZPow (M →* G) where
+  zpow_zero := fun f => by
+    ext x
+    simp [MonoidHom.pow]
+  zpow_succ' := fun n f => by
+    ext x
+    simp [zpow_ofNat, pow_succ]
+  zpow_neg' := fun n f => by
+    ext x
+    simp [Nat.succ_eq_add_one, zpow_ofNat, -Int.natCast_add]
 
 instance [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
   AddMonoidHom.addCommMonoid
@@ -96,7 +109,11 @@ theorem AddMonoid.End.natCast_apply [AddCommMonoid M] (n : ℕ) (m : M) :
 instance [AddCommGroup M] : AddCommGroup (AddMonoid.End M) :=
   AddMonoidHom.addCommGroup
 
-instance [AddCommGroup M] : Ring (AddMonoid.End M) :=
+instance [AddCommGroup M] [SMul ℤ M] [ZSMul M] : SMul ℤ (AddMonoid.End M) := AddMonoidHom.smul
+
+instance [AddCommGroup M] [SMul ℤ M] [ZSMul M] : ZSMul (AddMonoid.End M) := AddMonoidHom.zsmul
+
+instance [AddCommGroup M] [SMul ℤ M] [ZSMul M] : Ring (AddMonoid.End M) :=
   { AddMonoid.End.semiring, AddMonoidHom.addCommGroup with
     intCast := fun z => z • (1 : AddMonoid.End M),
     intCast_ofNat := ofNat_zsmul _,
@@ -104,7 +121,7 @@ instance [AddCommGroup M] : Ring (AddMonoid.End M) :=
 
 /-- See also `AddMonoid.End.intCast_def`. -/
 @[simp]
-theorem AddMonoid.End.int_cast_apply [AddCommGroup M] (z : ℤ) (m : M) :
+theorem AddMonoid.End.int_cast_apply [AddCommGroup M] [SMul ℤ M] [ZSMul M] (z : ℤ) (m : M) :
     (↑z : AddMonoid.End M) m = z • m :=
   rfl
 #align add_monoid.End.int_cast_apply AddMonoid.End.int_cast_apply

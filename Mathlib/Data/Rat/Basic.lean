@@ -42,6 +42,12 @@ instance field : Field ℚ :=
     ratCast_mk := fun a b h1 h2 => (num_div_den _).symm
     qsmul := (· * ·) }
 
+open ExtraInstances in
+instance pow : Pow ℚ ℤ := by infer_instance
+
+open ExtraInstances in
+instance zpow : ZPow ℚ := by infer_instance
+
 -- Extra instances to short-circuit type class resolution
 instance divisionRing : DivisionRing ℚ := by infer_instance
 

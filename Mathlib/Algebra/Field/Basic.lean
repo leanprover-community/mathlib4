@@ -287,9 +287,9 @@ protected def Function.Injective.divisionSemiring [DivisionSemiring β] [Zero α
     (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) : DivisionSemiring α :=
-  { hf.groupWithZero f zero one mul inv div npow zpow,
+  { hf.groupWithZero f zero one mul inv div npow,
     hf.semiring f zero one add mul nsmul npow nat_cast with }
 #align function.injective.division_semiring Function.Injective.divisionSemiring
 
@@ -303,12 +303,12 @@ protected def Function.Injective.divisionRing [DivisionRing K] {K'} [Zero K'] [O
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (qsmul : ∀ (x) (n : ℚ), f (n • x) = n • f x)
-    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
+    (qsmul : ∀ (x) (n : ℚ), f (n • x) = n • f x)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) (int_cast : ∀ n : ℤ, f n = n) (rat_cast : ∀ n : ℚ, f n = n) :
     DivisionRing K' :=
-  { hf.groupWithZero f zero one mul inv div npow zpow,
-    hf.ring f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast with
+  { hf.groupWithZero f zero one mul inv div npow,
+    hf.ring f zero one add mul neg sub nsmul npow nat_cast int_cast with
     ratCast := Rat.cast,
     ratCast_mk := fun a b h1 h2 ↦
       hf
@@ -326,9 +326,9 @@ protected def Function.Injective.semifield [Semifield β] [Zero α] [Mul α] [Ad
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) : Semifield α :=
-  { hf.commGroupWithZero f zero one mul inv div npow zpow,
+  { hf.commGroupWithZero f zero one mul inv div npow,
     hf.commSemiring f zero one add mul nsmul npow nat_cast with }
 #align function.injective.semifield Function.Injective.semifield
 
@@ -341,12 +341,12 @@ protected def Function.Injective.field [Field K] {K'} [Zero K'] [Mul K'] [Add K'
     (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (qsmul : ∀ (x) (n : ℚ), f (n • x) = n • f x)
-    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n)
+    (qsmul : ∀ (x) (n : ℚ), f (n • x) = n • f x)
+    (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) (int_cast : ∀ n : ℤ, f n = n) (rat_cast : ∀ n : ℚ, f n = n) :
     Field K' :=
-  { hf.commGroupWithZero f zero one mul inv div npow zpow,
-    hf.commRing f zero one add mul neg sub nsmul zsmul npow nat_cast int_cast with
+  { hf.commGroupWithZero f zero one mul inv div npow,
+    hf.commRing f zero one add mul neg sub nsmul npow nat_cast int_cast with
     ratCast := Rat.cast,
     ratCast_mk := fun a b h1 h2 ↦
       hf

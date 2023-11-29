@@ -124,9 +124,9 @@ instance AddMonoid.natSMulWithZero [AddMonoid M] : SMulWithZero ℕ M where
   zero_smul := zero_nsmul
 #align add_monoid.nat_smul_with_zero AddMonoid.natSMulWithZero
 
-instance AddGroup.intSMulWithZero [AddGroup M] : SMulWithZero ℤ M where
+instance AddGroup.intSMulWithZero [AddGroup M] [SMul ℤ M] [ZSMul M] : SMulWithZero ℤ M where
   smul_zero := zsmul_zero
-  zero_smul := zero_zsmul
+  zero_smul := zsmul_zero -- todo: fix this name in Defs
 #align add_group.int_smul_with_zero AddGroup.intSMulWithZero
 
 section MonoidWithZero

@@ -309,7 +309,8 @@ instance [One α] [Pow α ℤ] : Pow (WithZero α) ℤ :=
     | some x, n => ↑(x ^ n)⟩
 
 @[simp, norm_cast]
-theorem coe_zpow [DivInvMonoid α] {a : α} (n : ℤ) : ↑(a ^ n) = (↑a : WithZero α) ^ n :=
+theorem coe_zpow [DivInvMonoid α] [Pow α ℤ] [ZPow α] {a : α} (n : ℤ) :
+    ↑(a ^ n) = (↑a : WithZero α) ^ n :=
   rfl
 #align with_zero.coe_zpow WithZero.coe_zpow
 
@@ -319,20 +320,21 @@ instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) :=
       match a, b with
       | none, _ => rfl
       | some _, none => rfl
-      | some a, some b => congr_arg some (div_eq_mul_inv a b),
-    zpow := fun n x => x ^ n,
-    zpow_zero' := fun x =>
-      match x with
-      | none => rfl
-      | some x => congr_arg some <| zpow_zero x,
-    zpow_succ' := fun n x =>
-      match x with
-      | none => rfl
-      | some x => congr_arg some <| DivInvMonoid.zpow_succ' n x,
-    zpow_neg' := fun n x =>
-      match x with
-      | none => rfl
-      | some x => congr_arg some <| DivInvMonoid.zpow_neg' n x }
+      | some a, some b => congr_arg some (div_eq_mul_inv a b) }
+
+instance zpow [Mul α] [One α] [Inv α] [Pow α ℤ] [ZPow α] : ZPow (WithZero α) where
+  zpow_zero := fun x =>
+    match x with
+    | none => rfl
+    | some x => congr_arg some <| zpow_zero x
+  zpow_succ' := fun n x =>
+    match x with
+    | none => rfl
+    | some x => congr_arg some <| ZPow.zpow_succ' n x
+  zpow_neg' := fun n x =>
+    match x with
+    | none => rfl
+    | some x => congr_arg some <| ZPow.zpow_neg' n x
 
 instance divInvOneMonoid [DivInvOneMonoid α] : DivInvOneMonoid (WithZero α) :=
   { WithZero.divInvMonoid, WithZero.invOneClass with }

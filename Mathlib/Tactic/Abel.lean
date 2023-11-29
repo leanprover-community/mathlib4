@@ -90,7 +90,7 @@ def iapp (n : Name) (xs : Array Expr) : M Expr := do
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative monoid. -/
 def term {α} [AddCommMonoid α] (n : ℕ) (x a : α) : α := n • x + a
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
-def termg {α} [AddCommGroup α] (n : ℤ) (x a : α) : α := n • x + a
+def termg {α} [AddCommGroup α] [SMul ℤ α] [ZSMul α] (n : ℤ) (x a : α) : α := n • x + a
 
 /-- Evaluate a term with coefficient `n`, atom `x` and successor terms `a`. -/
 def mkTerm (n x a : Expr) : M Expr := iapp ``term #[n, x, a]
@@ -129,33 +129,33 @@ theorem const_add_term {α} [AddCommMonoid α] (k n x a a') (h : k + a = a') :
     k + @term α _ n x a = term n x a' := by
   simp [h.symm, term, add_comm, add_assoc]
 
-theorem const_add_termg {α} [AddCommGroup α] (k n x a a') (h : k + a = a') :
-    k + @termg α _ n x a = termg n x a' := by
+theorem const_add_termg {α} [AddCommGroup α] [SMul ℤ α] [ZSMul α] (k n x a a') (h : k + a = a') :
+    k + @termg α _ _ _ n x a = termg n x a' := by
   simp [h.symm, termg, add_comm, add_assoc]
 
 theorem term_add_const {α} [AddCommMonoid α] (n x a k a') (h : a + k = a') :
     @term α _ n x a + k = term n x a' := by
   simp [h.symm, term, add_assoc]
 
-theorem term_add_constg {α} [AddCommGroup α] (n x a k a') (h : a + k = a') :
-    @termg α _ n x a + k = termg n x a' := by
+theorem term_add_constg {α} [AddCommGroup α] [SMul ℤ α] [ZSMul α] (n x a k a') (h : a + k = a') :
+    @termg α _ _ _ n x a + k = termg n x a' := by
   simp [h.symm, termg, add_assoc]
 
 theorem term_add_term {α} [AddCommMonoid α] (n₁ x a₁ n₂ a₂ n' a') (h₁ : n₁ + n₂ = n')
     (h₂ : a₁ + a₂ = a') : @term α _ n₁ x a₁ + @term α _ n₂ x a₂ = term n' x a' := by
   simp [h₁.symm, h₂.symm, term, add_nsmul, add_assoc, add_left_comm]
 
-theorem term_add_termg {α} [AddCommGroup α] (n₁ x a₁ n₂ a₂ n' a')
+theorem term_add_termg {α} [AddCommGroup α] [SMul ℤ α] [ZSMul α] (n₁ x a₁ n₂ a₂ n' a')
     (h₁ : n₁ + n₂ = n') (h₂ : a₁ + a₂ = a') :
-    @termg α _ n₁ x a₁ + @termg α _ n₂ x a₂ = termg n' x a' := by
+    @termg α _ _ _ n₁ x a₁ + @termg α _ _ _ n₂ x a₂ = termg n' x a' := by
   simp only [termg, h₁.symm, add_zsmul, h₂.symm]
   exact add_add_add_comm (n₁ • x) a₁ (n₂ • x) a₂
 
 theorem zero_term {α} [AddCommMonoid α] (x a) : @term α _ 0 x a = a := by
   simp [term, zero_nsmul, one_nsmul]
 
-theorem zero_termg {α} [AddCommGroup α] (x a) : @termg α _ 0 x a = a := by
-  simp [termg, zero_zsmul]
+theorem zero_termg {α} [AddCommGroup α] [SMul ℤ α] [ZSMul α] (x a) : @termg α _ _ _ 0 x a = a := by
+  simp [termg, ZSMul.zsmul_zero]
 
 /--
 Interpret the sum of two expressions in `abel`'s normal form.
@@ -185,8 +185,8 @@ partial def evalAdd : NormalExpr → NormalExpr → M (NormalExpr × Expr)
       let (a', h) ← evalAdd he₁ a₂
       return (← term' n₂ x₂ a', ← iapp ``const_add_term #[e₁, n₂.1, x₂.2, a₂, a', h])
 
-theorem term_neg {α} [AddCommGroup α] (n x a n' a')
-    (h₁ : -n = n') (h₂ : -a = a') : -@termg α _ n x a = termg n' x a' := by
+theorem term_neg {α} [AddCommGroup α] [SMul ℤ α] [ZSMul α] (n x a n' a')
+    (h₁ : -n = n') (h₂ : -a = a') : -@termg α _ _ _ n x a = termg n' x a' := by
   simp [h₂.symm, h₁.symm, termg]; exact add_comm _ _
 
 /--
@@ -205,22 +205,22 @@ def evalNeg : NormalExpr → M (NormalExpr × Expr)
 /-- A synonym for `•`, used internally in `abel`. -/
 def smul {α} [AddCommMonoid α] (n : ℕ) (x : α) : α := n • x
 /-- A synonym for `•`, used internally in `abel`. -/
-def smulg {α} [AddCommGroup α] (n : ℤ) (x : α) : α := n • x
+def smulg {α} [AddCommGroup α] [SMul ℤ α] [ZSMul α] (n : ℤ) (x : α) : α := n • x
 
 theorem zero_smul {α} [AddCommMonoid α] (c) : smul c (0 : α) = 0 := by
   simp [smul, nsmul_zero]
 
-theorem zero_smulg {α} [AddCommGroup α] (c) : smulg c (0 : α) = 0 := by
-  simp [smulg, zsmul_zero]
+theorem zero_smulg {α} [AddCommGroup α] [SMul ℤ α] [ZSMul α] (c) : smulg c (0 : α) = 0 := by
+  simp [smulg, _root_.zsmul_zero]
 
 theorem term_smul {α} [AddCommMonoid α] (c n x a n' a')
     (h₁ : c * n = n') (h₂ : smul c a = a') :
     smul c (@term α _ n x a) = term n' x a' := by
   simp [h₂.symm, h₁.symm, term, smul, nsmul_add, mul_nsmul']
 
-theorem term_smulg {α} [AddCommGroup α] (c n x a n' a')
+theorem term_smulg {α} [AddCommGroup α] [SMul ℤ α] [ZSMul α] (c n x a n' a')
     (h₁ : c * n = n') (h₂ : smulg c a = a') :
-    smulg c (@termg α _ n x a) = termg n' x a' := by
+    smulg c (@termg α _ _ _ n x a) = termg n' x a' := by
   simp [h₂.symm, h₁.symm, termg, smulg, zsmul_add, mul_zsmul]
 
 /--
@@ -235,10 +235,12 @@ def evalSMul (k : Expr × ℤ) : NormalExpr → M (NormalExpr × Expr)
       ← iapp ``term_smul #[k.1, n.1, x.2, a, n'.expr, a', ← n'.getProof, h₂])
 
 theorem term_atom {α} [AddCommMonoid α] (x : α) : x = term 1 x 0 := by simp [term]
-theorem term_atomg {α} [AddCommGroup α] (x : α) : x = termg 1 x 0 := by simp [termg]
+theorem term_atomg {α} [AddCommGroup α] [SMul ℤ α] [ZSMul α] (x : α) : x = termg 1 x 0 := by
+  simp [termg]
 theorem term_atom_pf {α} [AddCommMonoid α] (x x' : α) (h : x = x') : x = term 1 x' 0 := by
   simp [term, h]
-theorem term_atom_pfg {α} [AddCommGroup α] (x x' : α) (h : x = x') : x = termg 1 x' 0 := by
+theorem term_atom_pfg {α} [AddCommGroup α] [SMul ℤ α] [ZSMul α] (x x' : α) (h : x = x') :
+    x = termg 1 x' 0 := by
   simp [termg, h]
 
 /-- Interpret an expression as an atom for `abel`'s normal form. -/
@@ -256,23 +258,23 @@ theorem unfold_sub {α} [SubtractionMonoid α] (a b c : α) (h : a + -b = c) : a
 theorem unfold_smul {α} [AddCommMonoid α] (n) (x y : α)
     (h : smul n x = y) : n • x = y := h
 
-theorem unfold_smulg {α} [AddCommGroup α] (n : ℕ) (x y : α)
+theorem unfold_smulg {α} [AddCommGroup α] [SMul ℤ α] [ZSMul α] (n : ℕ) (x y : α)
     (h : smulg (Int.ofNat n) x = y) : (n : ℤ) • x = y := h
 
-theorem unfold_zsmul {α} [AddCommGroup α] (n : ℤ) (x y : α)
+theorem unfold_zsmul {α} [AddCommGroup α] [SMul ℤ α] [ZSMul α] (n : ℤ) (x y : α)
     (h : smulg n x = y) : n • x = y := h
 
 lemma subst_into_smul {α} [AddCommMonoid α]
     (l r tl tr t) (prl : l = tl) (prr : r = tr)
     (prt : @smul α _ tl tr = t) : smul l r = t := by simp [prl, prr, prt]
 
-lemma subst_into_smulg {α} [AddCommGroup α]
+lemma subst_into_smulg {α} [AddCommGroup α] [SMul ℤ α] [ZSMul α]
     (l r tl tr t) (prl : l = tl) (prr : r = tr)
-    (prt : @smulg α _ tl tr = t) : smulg l r = t := by simp [prl, prr, prt]
+    (prt : @smulg α _ _ _ tl tr = t) : smulg l r = t := by simp [prl, prr, prt]
 
-lemma subst_into_smul_upcast {α} [AddCommGroup α]
+lemma subst_into_smul_upcast {α} [AddCommGroup α] [SMul ℤ α] [ZSMul α]
     (l r tl zl tr t) (prl₁ : l = tl) (prl₂ : ↑tl = zl) (prr : r = tr)
-    (prt : @smulg α _ zl tr = t) : smul l r = t := by
+    (prt : @smulg α _ _ _ zl tr = t) : smul l r = t := by
   simp [← prt, prl₁, ← prl₂, prr, smul, smulg, coe_nat_zsmul]
 
 lemma subst_into_add {α} [AddCommMonoid α] (l r tl tr t)
@@ -341,10 +343,10 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
     let n ← if (← read).isGroup then mkAppM ``Int.ofNat #[e₁] else pure e₁
     let (e', p) ← eval <| ← iapp ``smul #[n, e₂]
     return (e', ← iapp ``unfold_smul #[e₁, e₂, e', p])
-  | (``SubNegMonoid.zsmul, #[_, _, e₁, e₂]) => do
-      if ¬ (← read).isGroup then failure
-      let (e', p) ← eval <| ← iapp ``smul #[e₁, e₂]
-      return (e', (← read).app ``unfold_zsmul (← read).inst #[e₁, e₂, e', p])
+  -- | (``SubNegMonoid.zsmul, #[_, _, e₁, e₂]) => do
+  --     if ¬ (← read).isGroup then failure
+  --     let (e', p) ← eval <| ← iapp ``smul #[e₁, e₂]
+  --     return (e', (← read).app ``unfold_zsmul (← read).inst #[e₁, e₂, e', p])
   | (``SMul.smul, #[.const ``Int _, _, _, e₁, e₂]) =>
     evalSMul' eval true e e₁ e₂
   | (``SMul.smul, #[.const ``Nat _, _, _, e₁, e₂]) =>
@@ -397,7 +399,8 @@ elab_rules : tactic | `(tactic| abel1 $[!%$tk]?) => withMainContext do
 
 theorem term_eq [AddCommMonoid α] (n : ℕ) (x a : α) : term n x a = n • x + a := rfl
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
-theorem termg_eq [AddCommGroup α] (n : ℤ) (x a : α) : termg n x a = n • x + a := rfl
+theorem termg_eq [AddCommGroup α] [SMul ℤ α] [ZSMul α] (n : ℤ) (x a : α) :
+    termg n x a = n • x + a := rfl
 
 /-- True if this represents an atomic expression. -/
 def NormalExpr.isAtom : NormalExpr → Bool
@@ -439,7 +442,7 @@ partial def abelNFCore
   let simp ← match cfg.mode with
   | .raw => pure pure
   | .term =>
-    let thms := [``term_eq, ``termg_eq, ``add_zero, ``one_nsmul, ``one_zsmul, ``zsmul_zero]
+    let thms := [``term_eq, ``termg_eq, ``add_zero, ``one_nsmul, ``one_zsmul, ``_root_.zsmul_zero]
     let ctx' := { ctx with simpTheorems := #[← thms.foldlM (·.addConst ·) {:_}] }
     pure fun r' : Simp.Result ↦ do
       Simp.mkEqTrans r' (← Simp.main r'.expr ctx' (methods := Simp.DefaultMethods.methods)).1

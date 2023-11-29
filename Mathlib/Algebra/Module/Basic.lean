@@ -209,14 +209,14 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable (R M) [Semiring R] [AddCommGroup M]
+variable (R M) [Semiring R] [AddCommGroup M] [SMul ℤ M] [ZSMul M]
 
 instance AddCommGroup.intModule : Module ℤ M where
   one_smul := one_zsmul
   mul_smul m n a := mul_zsmul a m n
   smul_add n a b := zsmul_add a b n
   smul_zero := zsmul_zero
-  zero_smul := zero_zsmul
+  zero_smul := zsmul_zero
   add_smul r s x := add_zsmul x r s
 #align add_comm_group.int_module AddCommGroup.intModule
 

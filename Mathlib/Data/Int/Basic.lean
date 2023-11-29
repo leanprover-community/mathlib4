@@ -48,11 +48,6 @@ instance instCommRingInt : CommRing ℤ where
   nsmul_succ n x :=
     show (n + 1 : ℤ) * x = x + n * x
     by rw [Int.add_mul, Int.add_comm, Int.one_mul]
-  zsmul := (·*·)
-  zsmul_zero' := Int.zero_mul
-  zsmul_succ' m n := by
-    simp only [ofNat_eq_coe, ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
-  zsmul_neg' m n := by simp only [negSucc_coe, ofNat_succ, Int.neg_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
   natCast := (·)
   natCast_zero := rfl
@@ -60,6 +55,17 @@ instance instCommRingInt : CommRing ℤ where
   intCast := (·)
   intCast_ofNat _ := rfl
   intCast_negSucc _ := rfl
+
+instance instSMul : SMul ℤ ℤ where
+  smul := (·*·)
+
+protected lemma smul_def (x y : ℤ) : x • y = x * y := rfl
+
+instance instZPow : ZSMul ℤ where
+  zsmul_zero := Int.zero_mul
+  zsmul_succ' m n := by
+    simp only [Int.smul_def, ofNat_eq_coe, ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
+  zsmul_neg' m n := by simp only [Int.smul_def, negSucc_coe, neg_mul]; rfl
 
 @[simp, norm_cast] lemma cast_id : Int.cast n = n := rfl
 
@@ -89,7 +95,8 @@ lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
 protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
 @[to_additive (attr := simp, norm_cast) coe_nat_zsmul]
-theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n :=
+theorem _root_.zpow_coe_nat [DivInvMonoid G] [Pow G ℤ] [ZPow G] (a : G) (n : ℕ) :
+    a ^ (Nat.cast n : ℤ) = a ^ n :=
   zpow_ofNat ..
 #align coe_nat_zsmul coe_nat_zsmul
 

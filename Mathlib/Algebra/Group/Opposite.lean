@@ -67,15 +67,15 @@ instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne �
 
 instance subNegMonoid [SubNegMonoid α] : SubNegMonoid αᵐᵒᵖ :=
   unop_injective.subNegMonoid _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl)
 
 instance addGroup [AddGroup α] : AddGroup αᵐᵒᵖ :=
   unop_injective.addGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-  (fun _ _ => rfl) fun _ _ => rfl
+  (fun _ _ => rfl)
 
 instance addCommGroup [AddCommGroup α] : AddCommGroup αᵐᵒᵖ :=
   unop_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl)
 
 instance addGroupWithOne [AddGroupWithOne α] : AddGroupWithOne αᵐᵒᵖ :=
   { MulOpposite.addMonoidWithOne α, MulOpposite.addGroup α with
@@ -153,13 +153,23 @@ instance cancelCommMonoid [CancelCommMonoid α] : CancelCommMonoid αᵐᵒᵖ :
 
 @[to_additive AddOpposite.subNegMonoid]
 instance divInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ :=
-  { MulOpposite.monoid α, MulOpposite.inv α with
-    zpow := fun n x => op <| x.unop ^ n,
-    zpow_zero' := fun x => unop_injective <| DivInvMonoid.zpow_zero' x.unop,
-    zpow_succ' := fun n x => unop_injective <| by
-      simp only [Int.ofNat_eq_coe]
-      rw [unop_op, zpow_ofNat, pow_succ', unop_mul, unop_op, zpow_ofNat],
-    zpow_neg' := fun z x => unop_injective <| DivInvMonoid.zpow_neg' z x.unop }
+  { MulOpposite.monoid α, MulOpposite.inv α with }
+
+instance _root_.AddOpposite.smul {β} [SMul β α] : SMul β αᵃᵒᵖ where smul n x := op (n • unop x)
+@[to_additive existing AddOpposite.smul]
+instance pow {β} [Pow α β] : Pow αᵐᵒᵖ β where pow x n := op (unop x ^ n)
+
+@[to_additive (reorder := 4 5) AddOpposite.smul_def]
+protected lemma pow_def {β} [Pow α β] (x : αᵐᵒᵖ) (n : β) : x ^ n = op (unop x ^ n) := rfl
+
+@[to_additive]
+instance zpow [DivInvMonoid α] [Pow α ℤ] [ZPow α] : ZPow αᵐᵒᵖ where
+  zpow_zero := fun x => unop_injective <| ZPow.zpow_zero x.unop
+  zpow_succ' := fun n x => unop_injective <| by
+    simp only [Int.ofNat_eq_coe]
+    simp_rw [MulOpposite.pow_def, zpow_ofNat, pow_succ', unop_mul, unop_op]
+  zpow_neg' := fun z x => unop_injective <| ZPow.zpow_neg' z x.unop
+
 
 @[to_additive AddOpposite.subtractionMonoid]
 instance divisionMonoid [DivisionMonoid α] : DivisionMonoid αᵐᵒᵖ :=
@@ -327,15 +337,15 @@ instance commMonoid [CommMonoid α] : CommMonoid αᵃᵒᵖ :=
 
 instance divInvMonoid [DivInvMonoid α] : DivInvMonoid αᵃᵒᵖ :=
   unop_injective.divInvMonoid _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl)
 
 instance group [Group α] : Group αᵃᵒᵖ :=
   unop_injective.group _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl)
 
 instance commGroup [CommGroup α] : CommGroup αᵃᵒᵖ :=
   unop_injective.commGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+    (fun _ _ => rfl)
 
 -- NOTE: `addMonoidWithOne α → addMonoidWithOne αᵃᵒᵖ` does not hold
 instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵃᵒᵖ :=

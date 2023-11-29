@@ -969,7 +969,7 @@ end
 
 section
 
-variable [Monoid M] [AddGroup A] [DistribMulAction M A]
+variable [Monoid M] [AddGroup A] [SMul ℤ A] [ZSMul A] [DistribMulAction M A]
 
 instance AddGroup.int_smulCommClass : SMulCommClass ℤ M A where
   smul_comm n x y := ((DistribMulAction.toAddMonoidHom A x).map_zsmul y n).symm

@@ -106,7 +106,7 @@ theorem div_nonpos_of_nonneg_of_nonpos (ha : 0 ≤ a) (hb : b ≤ 0) : a / b ≤
   exact mul_nonpos_of_nonneg_of_nonpos ha (inv_nonpos.2 hb)
 #align div_nonpos_of_nonneg_of_nonpos div_nonpos_of_nonneg_of_nonpos
 
-theorem zpow_nonneg (ha : 0 ≤ a) : ∀ n : ℤ, 0 ≤ a ^ n
+theorem zpow_nonneg [Pow α ℤ] [ZPow α] (ha : 0 ≤ a) : ∀ n : ℤ, 0 ≤ a ^ n
   | (n : ℕ) => by
     rw [zpow_ofNat]
     exact pow_nonneg ha _
@@ -115,7 +115,7 @@ theorem zpow_nonneg (ha : 0 ≤ a) : ∀ n : ℤ, 0 ≤ a ^ n
     exact pow_nonneg ha _
 #align zpow_nonneg zpow_nonneg
 
-theorem zpow_pos_of_pos (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
+theorem zpow_pos_of_pos [Pow α ℤ] [ZPow α] (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
   | (n : ℕ) => by
     rw [zpow_ofNat]
     exact pow_pos ha _

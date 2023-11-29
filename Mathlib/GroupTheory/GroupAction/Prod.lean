@@ -99,6 +99,13 @@ theorem pow_snd (p : α × β) (c : E) : (p ^ c).snd = p.snd ^ c :=
   rfl
 #align prod.pow_snd Prod.pow_snd
 
+@[to_additive]
+instance zpow [DivInvMonoid G] [Pow G ℤ] [ZPow G] [DivInvMonoid H] [Pow H ℤ] [ZPow H] :
+    ZPow (G × H) where
+  zpow_zero := fun _ => ext (zpow_zero _) (zpow_zero _)
+  zpow_succ' := fun _ _ => ext (ZPow.zpow_succ' _ _) (ZPow.zpow_succ' _ _)
+  zpow_neg' := fun _ _ => ext (ZPow.zpow_neg' _ _) (ZPow.zpow_neg' _ _)
+
 /- Note that the `c` arguments to this lemmas cannot be in the more natural right-most positions due
 to limitations in `to_additive` and `to_additive_reorder`, which will silently fail to reorder more
 than two adjacent arguments -/

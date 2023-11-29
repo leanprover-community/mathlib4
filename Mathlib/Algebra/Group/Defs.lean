@@ -655,15 +655,15 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 -- Bug #660
 attribute [to_additive existing] Monoid.toMulOneClass
 
-@[default_instance high] instance Monoid.Pow {M : Type*} [Monoid M] : Pow M ℕ :=
+@[default_instance high] instance Monoid.pow {M : Type*} [Monoid M] : Pow M ℕ :=
   ⟨fun x n ↦ Monoid.npow n x⟩
-#align monoid.has_pow Monoid.Pow
+#align monoid.has_pow Monoid.pow
 
-instance AddMonoid.SMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
+instance AddMonoid.smul {M : Type*} [AddMonoid M] : SMul ℕ M :=
   ⟨AddMonoid.nsmul⟩
-#align add_monoid.has_smul_nat AddMonoid.SMul
+#align add_monoid.has_smul_nat AddMonoid.smul
 
-attribute [to_additive existing SMul] Monoid.Pow
+attribute [to_additive existing smul] Monoid.pow
 
 section
 
@@ -908,15 +908,6 @@ class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
   protected div := DivInvMonoid.div'
   /-- `a / b := a * b⁻¹` -/
   protected div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ := by intros; rfl
-  /-- The power operation: `a ^ n = a * ··· * a`; `a ^ (-n) = a⁻¹ * ··· a⁻¹` (`n` times) -/
-  protected zpow : ℤ → G → G := zpowRec
-  /-- `a ^ 0 = 1` -/
-  protected zpow_zero' : ∀ a : G, zpow 0 a = 1 := by intros; rfl
-  /-- `a ^ (n + 1) = a * a ^ n` -/
-  protected zpow_succ' (n : ℕ) (a : G) : zpow (Int.ofNat n.succ) a = a * zpow (Int.ofNat n) a := by
-    intros; rfl
-  /-- `a ^ -(n + 1) = (a ^ (n + 1))⁻¹` -/
-  protected zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ := by intros; rfl
 #align div_inv_monoid DivInvMonoid
 
 /-- In a class equipped with instances of both `AddMonoid` and `Neg`, this definition records what
@@ -950,64 +941,69 @@ explanations on this.
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
   protected sub := SubNegMonoid.sub'
   protected sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
-  protected zsmul : ℤ → G → G := zsmulRec
-  protected zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
-  protected zsmul_succ' (n : ℕ) (a : G) :
-      zsmul (Int.ofNat n.succ) a = a + zsmul (Int.ofNat n) a := by
-    intros; rfl
-  protected zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by intros; rfl
 #align sub_neg_monoid SubNegMonoid
 
 attribute [to_additive SubNegMonoid] DivInvMonoid
 
-instance DivInvMonoid.Pow {M} [DivInvMonoid M] : Pow M ℤ :=
-  ⟨fun x n ↦ DivInvMonoid.zpow n x⟩
-#align div_inv_monoid.has_pow DivInvMonoid.Pow
+class ZSMul (G : Type u) [Add G] [Zero G] [Neg G] [SMul ℤ G] where
+  zsmul_zero : ∀ x : G, (0 : ℤ) • x = 0
+  zsmul_succ' : ∀ (n : ℕ) (x : G), Int.ofNat n.succ • x = x + Int.ofNat n • x
+  zsmul_neg' : ∀ (n : ℕ) (x : G), Int.negSucc n • x = - (Int.ofNat n.succ • x)
 
-instance SubNegMonoid.SMulInt {M} [SubNegMonoid M] : SMul ℤ M :=
-  ⟨SubNegMonoid.zsmul⟩
-#align sub_neg_monoid.has_smul_int SubNegMonoid.SMulInt
+export ZSMul (zsmul_zero)
+attribute [simp] zsmul_zero
 
-attribute [to_additive existing SubNegMonoid.SMulInt] DivInvMonoid.Pow
+@[to_additive]
+class ZPow (G : Type u) [Mul G] [One G] [Inv G] [Pow G ℤ] where
+  zpow_zero : ∀ x : G, x ^ (0 : ℤ) = 1
+  zpow_succ' : ∀ (n : ℕ) (x : G), x ^ Int.ofNat n.succ = x * x ^ Int.ofNat n
+  zpow_neg' : ∀ (n : ℕ) (x : G), x ^ Int.negSucc n = (x ^ Int.ofNat n.succ)⁻¹
+
+export ZPow (zpow_zero)
+attribute [simp] zpow_zero
+
+scoped instance ExtraInstances.pow {M} [DivInvMonoid M] : Pow M ℤ :=
+  ⟨fun g n ↦ zpowRec n g⟩
+#align div_inv_monoid.has_pow ExtraInstances.pow
+
+scoped instance ExtraInstances.smul {M} [SubNegMonoid M] : SMul ℤ M :=
+  ⟨zsmulRec⟩
+#align sub_neg_monoid.has_smul_int ExtraInstances.smul
+
+attribute [to_additive existing ExtraInstances.smul] ExtraInstances.pow
+
+@[to_additive]
+scoped instance ExtraInstances.zpow {M} [DivInvMonoid M] : ZPow M where
+  zpow_zero _ := rfl
+  zpow_succ' _ _ := rfl
+  zpow_neg' _ _ := rfl
 
 section DivInvMonoid
 
-variable [DivInvMonoid G] {a b : G}
+variable [DivInvMonoid G] [Pow G ℤ] [ZPow G] {a b : G}
 
-@[to_additive (attr := simp) zsmul_eq_smul] theorem zpow_eq_pow (n : ℤ) (x : G) :
-    DivInvMonoid.zpow n x = x ^ n :=
-  rfl
-#align zsmul_eq_smul zsmul_eq_smul
-#align zpow_eq_pow zpow_eq_pow
+-- #align zsmul_eq_smul zsmul_eq_smul
+-- #align zpow_eq_pow zpow_eq_pow
 
-@[to_additive (attr := simp) zero_zsmul] theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
-  DivInvMonoid.zpow_zero' a
-#align zpow_zero zpow_zero
-#align zero_zsmul zero_zsmul
+-- #align zpow_zero zpow_zero
+-- #align zero_zsmul zero_zsmul
 
 @[to_additive (attr := norm_cast) ofNat_zsmul]
 theorem zpow_ofNat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
   | 0 => (zpow_zero _).trans (pow_zero _).symm
   | n + 1 => calc
-    a ^ (↑(n + 1) : ℤ) = a * a ^ (n : ℤ) := DivInvMonoid.zpow_succ' _ _
-    _ = a * a ^ n := congr_arg ((· * ·) a) (zpow_ofNat a n)
+    a ^ (↑(n + 1) : ℤ) = a * a ^ (n : ℤ) := ZPow.zpow_succ' _ _
+    _ = a * a ^ n := congr_arg (a * ·) (zpow_ofNat a n)
     _ = a ^ (n + 1) := (pow_succ _ _).symm
 #align zpow_coe_nat zpow_ofNat
 #align zpow_of_nat zpow_ofNat
 #align of_nat_zsmul ofNat_zsmul
 
+@[to_additive (attr := simp) negSucc_zsmul]
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
-  rw [← zpow_ofNat]
-  exact DivInvMonoid.zpow_neg' n a
+  rw [← zpow_ofNat, ZPow.zpow_neg']
+  rfl
 #align zpow_neg_succ_of_nat zpow_negSucc
-
-theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
-    Int.negSucc n • a = -((n + 1) • a) := by
-  rw [← ofNat_zsmul]
-  exact SubNegMonoid.zsmul_neg' n a
-#align zsmul_neg_succ_of_nat negSucc_zsmul
-
-attribute [to_additive existing (attr := simp) negSucc_zsmul] zpow_negSucc
 
 /-- Dividing by an element is the same as multiplying by its inverse.
 

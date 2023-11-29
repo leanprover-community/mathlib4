@@ -35,6 +35,12 @@ instance permGroup : Group (Perm α) where
   mul_left_inv := self_trans_symm
 #align equiv.perm.perm_group Equiv.Perm.permGroup
 
+open ExtraInstances in
+instance pow : Pow (Perm α) ℤ := by infer_instance
+
+open ExtraInstances in
+instance zpow : ZPow (Perm α) := by infer_instance
+
 @[simp]
 theorem default_eq : (default : Perm α) = 1 :=
   rfl
@@ -599,7 +605,7 @@ theorem swap_mul_swap_mul_swap {x y z : α} (hwz : x ≠ y) (hxz : x ≠ z) :
 end Swap
 
 section AddGroup
-variable [AddGroup α] (a b : α)
+variable [AddGroup α] [SMul ℤ α] [ZSMul α] (a b : α)
 
 @[simp] lemma addLeft_zero : Equiv.addLeft (0 : α) = 1 := ext zero_add
 #align equiv.add_left_zero Equiv.addLeft_zero
@@ -642,7 +648,7 @@ variable [AddGroup α] (a b : α)
 end AddGroup
 
 section Group
-variable [Group α] (a b : α)
+variable [Group α] [Pow α ℤ] [ZPow α] (a b : α)
 
 @[to_additive existing (attr := simp)]
 lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul

@@ -234,16 +234,27 @@ a `SubNegMonoid`. This version takes custom `nsmul` and `zsmul` as `[SMul ℕ M�
 arguments."]
 protected def divInvMonoid [DivInvMonoid M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivInvMonoid M₁ :=
+    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    DivInvMonoid M₁ :=
   { hf.monoid f one mul npow, ‹Inv M₁›, ‹Div M₁› with
-    zpow := fun n x => x ^ n,
-    zpow_zero' := fun x => hf <| by erw [zpow, zpow_zero, one],
-    zpow_succ' := fun n x => hf <| by erw [zpow, mul, zpow_ofNat, pow_succ, zpow, zpow_ofNat],
-    zpow_neg' := fun n x => hf <| by erw [zpow, zpow_negSucc, inv, zpow, zpow_ofNat],
     div_eq_mul_inv := fun x y => hf <| by erw [div, mul, inv, div_eq_mul_inv] }
 #align function.injective.div_inv_monoid Function.Injective.divInvMonoid
 #align function.injective.sub_neg_monoid Function.Injective.subNegMonoid
+
+/-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a `DivInvMonoid` if it admits an injective map
+that preserves `1`, `*`, `⁻¹`, and `/` to a `DivInvMonoid`. See note [reducible non-instances]. -/
+@[to_additive (attr := reducible)
+"A type endowed with `0`, `+`, unary `-`, and binary `-` is a
+`SubNegMonoid` if it admits an injective map that preserves `0`, `+`, unary `-`, and binary `-` to
+a `SubNegMonoid`. This version takes custom `nsmul` and `zsmul` as `[SMul ℕ M₁]` and `[SMul ℤ M₁]`
+arguments."]
+protected def zpow [DivInvMonoid M₂] [Pow M₂ ℤ] [ZPow M₂] (f : M₁ → M₂) (hf : Injective f)
+    (one : f 1 = 1)
+    (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
+    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : ZPow M₁ :=
+  { zpow_zero := fun x => hf <| by erw [zpow, zpow_zero, one],
+    zpow_succ' := fun n x => hf <| by erw [zpow, mul, zpow_ofNat, pow_succ, zpow, zpow_ofNat],
+    zpow_neg' := fun n x => hf <| by erw [zpow, zpow_negSucc, inv, zpow, zpow_ofNat] }
 
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a `DivInvOneMonoid` if it admits an injective
 map that preserves `1`, `*`, `⁻¹`, and `/` to a `DivInvOneMonoid`. See note
@@ -255,9 +266,9 @@ map that preserves `1`, `*`, `⁻¹`, and `/` to a `DivInvOneMonoid`. See note
 `[SMul ℤ M₁]` arguments."]
 protected def divInvOneMonoid [DivInvOneMonoid M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivInvOneMonoid M₁ :=
-  { hf.divInvMonoid f one mul inv div npow zpow, hf.invOneClass f one inv with }
+    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    DivInvOneMonoid M₁ :=
+  { hf.divInvMonoid f one mul inv div npow, hf.invOneClass f one inv with }
 
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a `DivisionMonoid` if it admits an injective map
 that preserves `1`, `*`, `⁻¹`, and `/` to a `DivisionMonoid`. See note [reducible non-instances] -/
@@ -268,9 +279,9 @@ binary `-` to a `SubtractionMonoid`. This version takes custom `nsmul` and `zsmu
 and `[SMul ℤ M₁]` arguments."]
 protected def divisionMonoid [DivisionMonoid M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivisionMonoid M₁ :=
-  { hf.divInvMonoid f one mul inv div npow zpow, hf.involutiveInv f inv with
+    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    DivisionMonoid M₁ :=
+  { hf.divInvMonoid f one mul inv div npow, hf.involutiveInv f inv with
     mul_inv_rev := fun x y => hf <| by erw [inv, mul, mul_inv_rev, mul, inv, inv],
     inv_eq_of_mul := fun x y h => hf <| by
       erw [inv, inv_eq_of_mul_eq_one_right (by erw [← mul, h, one])] }
@@ -287,9 +298,9 @@ and binary `-` to a `SubtractionCommMonoid`. This version takes custom `nsmul` a
 `[SMul ℕ M₁]` and `[SMul ℤ M₁]` arguments."]
 protected def divisionCommMonoid [DivisionCommMonoid M₂] (f : M₁ → M₂) (hf : Injective f)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivisionCommMonoid M₁ :=
-  { hf.divisionMonoid f one mul inv div npow zpow, hf.commSemigroup f mul with }
+    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    DivisionCommMonoid M₁ :=
+  { hf.divisionMonoid f one mul inv div npow, hf.commSemigroup f mul with }
 #align function.injective.division_comm_monoid Function.Injective.divisionCommMonoid
 #align function.injective.subtraction_comm_monoid Function.Injective.subtractionCommMonoid
 
@@ -300,9 +311,9 @@ protected def divisionCommMonoid [DivisionCommMonoid M₂] (f : M₁ → M₂) (
 injective map that preserves `0` and `+` to an additive group."]
 protected def group [Group M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : Group M₁ :=
-  { hf.divInvMonoid f one mul inv div npow zpow with
+    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    Group M₁ :=
+  { hf.divInvMonoid f one mul inv div npow with
     mul_left_inv := fun x => hf <| by erw [mul, inv, mul_left_inv, one] }
 #align function.injective.group Function.Injective.group
 #align function.injective.add_group Function.Injective.addGroup
@@ -315,9 +326,9 @@ protected def addGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ
     [SMul ℤ M₁] [NatCast M₁] [IntCast M₁] [AddGroupWithOne M₂] (f : M₁ → M₂) (hf : Injective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (nat_cast : ∀ n : ℕ, f n = n)
+    (nat_cast : ∀ n : ℕ, f n = n)
     (int_cast : ∀ n : ℤ, f n = n) : AddGroupWithOne M₁ :=
-  { hf.addGroup f zero add neg sub nsmul zsmul,
+  { hf.addGroup f zero add neg sub nsmul,
     hf.addMonoidWithOne f zero one add nsmul nat_cast with
     intCast := Int.cast,
     intCast_ofNat := fun n => hf (by rw [nat_cast, ←Int.cast, int_cast, Int.cast_ofNat]),
@@ -331,9 +342,9 @@ preserves `1`, `*` and `⁻¹` to a commutative group. See note [reducible non-i
 admits an injective map that preserves `0` and `+` to an additive commutative group."]
 protected def commGroup [CommGroup M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : CommGroup M₁ :=
-  { hf.commMonoid f one mul npow, hf.group f one mul inv div npow zpow with }
+    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    CommGroup M₁ :=
+  { hf.commMonoid f one mul npow, hf.group f one mul inv div npow with }
 #align function.injective.comm_group Function.Injective.commGroup
 #align function.injective.add_comm_group Function.Injective.addCommGroup
 
@@ -345,9 +356,9 @@ protected def addCommGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul
     [SMul ℤ M₁] [NatCast M₁] [IntCast M₁] [AddCommGroupWithOne M₂] (f : M₁ → M₂) (hf : Injective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (nat_cast : ∀ n : ℕ, f n = n)
+    (nat_cast : ∀ n : ℕ, f n = n)
     (int_cast : ∀ n : ℤ, f n = n) : AddCommGroupWithOne M₁ :=
-  { hf.addGroupWithOne f zero one add neg sub nsmul zsmul nat_cast int_cast,
+  { hf.addGroupWithOne f zero one add neg sub nsmul nat_cast int_cast,
     hf.addCommMonoid f zero add nsmul with }
 #align function.injective.add_comm_group_with_one Function.Injective.addCommGroupWithOne
 
@@ -477,20 +488,28 @@ that preserves `1`, `*`, `⁻¹`, and `/` to a `DivInvMonoid`. See note [reducib
 a `SubNegMonoid`."]
 protected def divInvMonoid [DivInvMonoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivInvMonoid M₂ :=
+    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    DivInvMonoid M₂ :=
   { hf.monoid f one mul npow, ‹Div M₂›, ‹Inv M₂› with
-    zpow := fun n x => x ^ n,
-    zpow_zero' := hf.forall.2 fun x => by dsimp only; erw [← zpow, zpow_zero, ← one],
-    zpow_succ' := fun n => hf.forall.2 fun x => by
-      dsimp only
-      erw [← zpow, ← zpow, zpow_ofNat, zpow_ofNat, pow_succ, ← mul],
-    zpow_neg' := fun n => hf.forall.2 fun x => by
-      dsimp only
-      erw [← zpow, ← zpow, zpow_negSucc, zpow_ofNat, inv],
     div_eq_mul_inv := hf.forall₂.2 fun x y => by erw [← inv, ← mul, ← div, div_eq_mul_inv] }
 #align function.surjective.div_inv_monoid Function.Surjective.divInvMonoid
 #align function.surjective.sub_neg_monoid Function.Surjective.subNegMonoid
+
+/-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a `DivInvMonoid` if it admits a surjective map
+that preserves `1`, `*`, `⁻¹`, and `/` to a `DivInvMonoid`. See note [reducible non-instances]. -/
+@[to_additive (attr := reducible)
+"A type endowed with `0`, `+`, unary `-`, and binary `-` is a
+`SubNegMonoid` if it admits a surjective map that preserves `0`, `+`, unary `-`, and binary `-` to
+a `SubNegMonoid`."]
+protected def zpow [DivInvMonoid M₁] [Pow M₁ ℤ] [ZPow M₁] (f : M₁ → M₂) (hf : Surjective f)
+    (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
+    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) :
+    ZPow M₂ :=
+  { zpow_zero := hf.forall.2 fun x => by erw [← zpow, zpow_zero, ← one],
+    zpow_succ' := fun n => hf.forall.2 fun x => by
+      erw [← zpow, ← zpow, zpow_ofNat, zpow_ofNat, pow_succ, ← mul],
+    zpow_neg' := fun n => hf.forall.2 fun x => by
+      erw [← zpow, ← zpow, zpow_negSucc, zpow_ofNat, inv] }
 
 /-- A type endowed with `1`, `*` and `⁻¹` is a group, if it admits a surjective map that preserves
 `1`, `*` and `⁻¹` to a group. See note [reducible non-instances]. -/
@@ -499,9 +518,9 @@ protected def divInvMonoid [DivInvMonoid M₁] (f : M₁ → M₂) (hf : Surject
 surjective map that preserves `0` and `+` to an additive group."]
 protected def group [Group M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : Group M₂ :=
-  { hf.divInvMonoid f one mul inv div npow zpow with
+    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    Group M₂ :=
+  { hf.divInvMonoid f one mul inv div npow with
     mul_left_inv := hf.forall.2 fun x => by erw [← inv, ← mul, mul_left_inv, one] }
 #align function.surjective.group Function.Surjective.group
 #align function.surjective.add_group Function.Surjective.addGroup
@@ -514,10 +533,10 @@ protected def addGroupWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [Neg M₂
     [SMul ℤ M₂] [NatCast M₂] [IntCast M₂] [AddGroupWithOne M₁] (f : M₁ → M₂) (hf : Surjective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (nat_cast : ∀ n : ℕ, f n = n)
+    (nat_cast : ∀ n : ℕ, f n = n)
     (int_cast : ∀ n : ℤ, f n = n) : AddGroupWithOne M₂ :=
   { hf.addMonoidWithOne f zero one add nsmul nat_cast,
-    hf.addGroup f zero add neg sub nsmul zsmul with
+    hf.addGroup f zero add neg sub nsmul with
     intCast := Int.cast,
     intCast_ofNat := fun n => by rw [← Int.cast, ← int_cast, Int.cast_ofNat, nat_cast],
     intCast_negSucc := fun n => by
@@ -532,9 +551,9 @@ map that preserves `1`, `*`, `⁻¹`, and `/` from a commutative group. See note
 admits a surjective map that preserves `0` and `+` to an additive commutative group."]
 protected def commGroup [CommGroup M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
-    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : CommGroup M₂ :=
-  { hf.commMonoid f one mul npow, hf.group f one mul inv div npow zpow with }
+    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    CommGroup M₂ :=
+  { hf.commMonoid f one mul npow, hf.group f one mul inv div npow with }
 #align function.surjective.comm_group Function.Surjective.commGroup
 #align function.surjective.add_comm_group Function.Surjective.addCommGroup
 
@@ -546,9 +565,9 @@ protected def addCommGroupWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [Neg 
     [SMul ℤ M₂] [NatCast M₂] [IntCast M₂] [AddCommGroupWithOne M₁] (f : M₁ → M₂) (hf : Surjective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (nat_cast : ∀ n : ℕ, f n = n)
+    (nat_cast : ∀ n : ℕ, f n = n)
     (int_cast : ∀ n : ℤ, f n = n) : AddCommGroupWithOne M₂ :=
-  { hf.addGroupWithOne f zero one add neg sub nsmul zsmul nat_cast int_cast,
+  { hf.addGroupWithOne f zero one add neg sub nsmul nat_cast int_cast,
     hf.addCommMonoid _ zero add nsmul with }
 #align function.surjective.add_comm_group_with_one Function.Surjective.addCommGroupWithOne
 

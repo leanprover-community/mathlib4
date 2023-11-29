@@ -277,7 +277,7 @@ end CommMonoid
 
 section DivInvMonoid
 
-variable [DivInvMonoid G]
+variable [DivInvMonoid G] [Pow G ℤ] [ZPow G]
 
 open Int
 
@@ -311,7 +311,7 @@ end DivInvMonoid
 
 section DivisionMonoid
 
-variable [DivisionMonoid α] {a b : α}
+variable [DivisionMonoid α] [Pow α ℤ] [ZPow α] {a b : α}
 
 @[to_additive (attr := simp)]
 theorem inv_pow (a : α) : ∀ n : ℕ, a⁻¹ ^ n = (a ^ n)⁻¹
@@ -330,7 +330,7 @@ theorem one_zpow : ∀ n : ℤ, (1 : α) ^ n = 1
 
 @[to_additive (attr := simp) neg_zsmul]
 theorem zpow_neg (a : α) : ∀ n : ℤ, a ^ (-n) = (a ^ n)⁻¹
-  | (n + 1 : ℕ) => DivInvMonoid.zpow_neg' _ _
+  | (n + 1 : ℕ) => ZPow.zpow_neg' _ _
   | 0 => by
     change a ^ (0 : ℤ) = (a ^ (0 : ℤ))⁻¹
     simp
@@ -379,7 +379,7 @@ end DivisionMonoid
 
 section DivisionCommMonoid
 
-variable [DivisionCommMonoid α]
+variable [DivisionCommMonoid α] [Pow α ℤ] [ZPow α]
 
 @[to_additive zsmul_add]
 theorem mul_zpow (a b : α) : ∀ n : ℤ, (a * b) ^ n = a ^ n * b ^ n :=
@@ -444,7 +444,7 @@ theorem pow_dvd_pow [Monoid R] (a : R) {m n : ℕ} (h : m ≤ n) : a ^ m ∣ a ^
 #align pow_dvd_pow pow_dvd_pow
 
 @[to_additive (attr := simp)]
-theorem SemiconjBy.zpow_right [Group G] {a x y : G} (h : SemiconjBy a x y) :
+theorem SemiconjBy.zpow_right [Group G] [Pow G ℤ] [ZPow G] {a x y : G} (h : SemiconjBy a x y) :
     ∀ m : ℤ, SemiconjBy a (x ^ m) (y ^ m)
   | (n : ℕ)    => by simp [zpow_ofNat, h.pow_right n]
   | .negSucc n => by
@@ -455,7 +455,7 @@ theorem SemiconjBy.zpow_right [Group G] {a x y : G} (h : SemiconjBy a x y) :
 
 namespace Commute
 
-variable [Group G] {a b : G}
+variable [Group G] [Pow G ℤ] [ZPow G] {a b : G}
 
 @[to_additive (attr := simp)]
 theorem zpow_right (h : Commute a b) (m : ℤ) : Commute a (b ^ m) :=

@@ -127,12 +127,13 @@ theorem smul_pow' [MulDistribMulAction M N] (x : M) (m : N) (n : ℕ) : x • m 
 end Monoid
 
 @[simp]
-theorem zsmul_one [AddGroupWithOne A] (n : ℤ) : n • (1 : A) = n := by cases n <;> simp
+theorem zsmul_one [AddGroupWithOne A] [SMul ℤ A] [ZSMul A] (n : ℤ) :
+    n • (1 : A) = n := by cases n <;> simp
 #align zsmul_one zsmul_one
 
 section DivisionMonoid
 
-variable [DivisionMonoid α]
+variable [DivisionMonoid α] [Pow α ℤ] [ZPow α]
 
 -- Note that `mul_zsmul` and `zpow_mul` have the primes swapped
 -- when additivised since their argument order,
@@ -190,7 +191,7 @@ end DivisionMonoid
 
 section Group
 
-variable [Group G]
+variable [Group G] [Pow G ℤ] [ZPow G]
 
 @[to_additive add_one_zsmul]
 theorem zpow_add_one (a : G) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
@@ -314,7 +315,7 @@ because they require facts from `Mathlib.Data.Int.Basic`.
 
 section OrderedAddCommGroup
 
-variable [OrderedCommGroup α] {m n : ℤ} {a b : α}
+variable [OrderedCommGroup α] [Pow α ℤ] [ZPow α] {m n : ℤ} {a b : α}
 
 @[to_additive zsmul_pos]
 theorem one_lt_zpow' (ha : 1 < a) {k : ℤ} (hk : (0 : ℤ) < k) : 1 < a ^ k := by
@@ -401,7 +402,7 @@ end OrderedAddCommGroup
 
 section LinearOrderedCommGroup
 
-variable [LinearOrderedCommGroup α] {n : ℤ} {a b : α}
+variable [LinearOrderedCommGroup α] [Pow α ℤ] [ZPow α] {n : ℤ} {a b : α}
 
 @[to_additive]
 theorem zpow_le_zpow_iff' (hn : 0 < n) {a b : α} : a ^ n ≤ b ^ n ↔ a ≤ b :=
@@ -446,7 +447,7 @@ end LinearOrderedCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α] {a b : α}
+variable [LinearOrderedAddCommGroup α] [SMul ℤ α] [ZSMul α] {a b : α}
 
 theorem abs_nsmul (n : ℕ) (a : α) : |n • a| = n • |a| := by
   cases' le_total a 0 with hneg hpos
@@ -556,22 +557,26 @@ set_option linter.deprecated false
 
 -- The next four lemmas allow us to replace multiplication by a numeral with a `zsmul` expression.
 -- They are used by the `noncomm_ring` tactic, to normalise expressions before passing to `abel`.
-theorem bit0_mul [NonUnitalNonAssocRing R] {n r : R} : bit0 n * r = (2 : ℤ) • (n * r) := by
+theorem bit0_mul [NonUnitalNonAssocRing R] [SMul ℤ R] [ZSMul R] {n r : R} :
+    bit0 n * r = (2 : ℤ) • (n * r) := by
   dsimp [bit0]
   rw [add_mul, ← one_add_one_eq_two, add_zsmul, one_zsmul]
 #align bit0_mul bit0_mul
 
-theorem mul_bit0 [NonUnitalNonAssocRing R] {n r : R} : r * bit0 n = (2 : ℤ) • (r * n) := by
+theorem mul_bit0 [NonUnitalNonAssocRing R] [SMul ℤ R] [ZSMul R] {n r : R} :
+    r * bit0 n = (2 : ℤ) • (r * n) := by
   dsimp [bit0]
   rw [mul_add, ← one_add_one_eq_two, add_zsmul, one_zsmul]
 #align mul_bit0 mul_bit0
 
-theorem bit1_mul [NonAssocRing R] {n r : R} : bit1 n * r = (2 : ℤ) • (n * r) + r := by
+theorem bit1_mul [NonAssocRing R] [SMul ℤ R] [ZSMul R] {n r : R} :
+    bit1 n * r = (2 : ℤ) • (n * r) + r := by
   dsimp [bit1]
   rw [add_mul, bit0_mul, one_mul]
 #align bit1_mul bit1_mul
 
-theorem mul_bit1 [NonAssocRing R] {n r : R} : r * bit1 n = (2 : ℤ) • (r * n) + r := by
+theorem mul_bit1 [NonAssocRing R] [SMul ℤ R] [ZSMul R] {n r : R} :
+    r * bit1 n = (2 : ℤ) • (r * n) + r := by
   dsimp [bit1]
   rw [mul_add, mul_bit0, mul_one]
 #align mul_bit1 mul_bit1
@@ -579,7 +584,7 @@ theorem mul_bit1 [NonAssocRing R] {n r : R} : r * bit1 n = (2 : ℤ) • (r * n)
 end bit0_bit1
 
 /-- Note this holds in marginally more generality than `Int.cast_mul` -/
-theorem Int.cast_mul_eq_zsmul_cast [AddCommGroupWithOne α] :
+theorem Int.cast_mul_eq_zsmul_cast [AddCommGroupWithOne α] [SMul ℤ α] [ZSMul α] :
     ∀ m n, ((m * n : ℤ) : α) = m • (n : α) :=
   fun m =>
   Int.inductionOn' m 0 (by simp) (fun k _ ih n => by simp [add_mul, add_zsmul, ih]) fun k _ ih n =>
@@ -587,17 +592,17 @@ theorem Int.cast_mul_eq_zsmul_cast [AddCommGroupWithOne α] :
 #align int.cast_mul_eq_zsmul_cast Int.cast_mul_eq_zsmul_cast
 
 @[simp]
-theorem zsmul_eq_mul [Ring R] (a : R) : ∀ n : ℤ, n • a = n * a
+theorem zsmul_eq_mul [Ring R] [SMul ℤ R] [ZSMul R] (a : R) : ∀ n : ℤ, n • a = n * a
   | (n : ℕ) => by rw [coe_nat_zsmul, nsmul_eq_mul, Int.cast_ofNat]
   | -[n+1] => by simp [Nat.cast_succ, neg_add_rev, Int.cast_negSucc, add_mul]
 #align zsmul_eq_mul zsmul_eq_mul
 
-theorem zsmul_eq_mul' [Ring R] (a : R) (n : ℤ) : n • a = a * n := by
+theorem zsmul_eq_mul' [Ring R] [SMul ℤ R] [ZSMul R] (a : R) (n : ℤ) : n • a = a * n := by
   rw [zsmul_eq_mul, (n.cast_commute a).eq]
 #align zsmul_eq_mul' zsmul_eq_mul'
 
 /-- Note that `AddCommGroup.int_smulCommClass` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocRing.int_smulCommClass [NonUnitalNonAssocRing R] :
+instance NonUnitalNonAssocRing.int_smulCommClass [NonUnitalNonAssocRing R] [SMul ℤ R] [ZSMul R] :
     SMulCommClass ℤ R R :=
   ⟨fun n x y =>
     match n with
@@ -606,7 +611,7 @@ instance NonUnitalNonAssocRing.int_smulCommClass [NonUnitalNonAssocRing R] :
 #align non_unital_non_assoc_ring.int_smul_comm_class NonUnitalNonAssocRing.int_smulCommClass
 
 /-- Note that `AddCommGroup.int_isScalarTower` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing R] :
+instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing R] [SMul ℤ R] [ZSMul R] :
     IsScalarTower ℤ R R :=
   ⟨fun n x y =>
     match n with
@@ -814,11 +819,11 @@ def multiplesHom [AddMonoid A] : A ≃ (ℕ →+ A) where
 #align multiples_hom multiplesHom
 
 /-- Additive homomorphisms from `ℤ` are defined by the image of `1`. -/
-def zmultiplesHom [AddGroup A] :
+def zmultiplesHom [AddGroup A] [SMul ℤ A] [ZSMul A] :
     A ≃ (ℤ →+ A) where
   toFun x :=
   { toFun := fun n => n • x
-    map_zero' := zero_zsmul x
+    map_zero' := zsmul_zero x
     map_add' := fun _ _ => add_zsmul _ _ _ }
   invFun f := f 1
   left_inv := one_zsmul
@@ -833,7 +838,7 @@ def powersHom [Monoid M] : M ≃ (Multiplicative ℕ →* M) :=
 
 /-- Monoid homomorphisms from `Multiplicative ℤ` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
-def zpowersHom [Group G] : G ≃ (Multiplicative ℤ →* G) :=
+def zpowersHom [Group G] [Pow G ℤ] [ZPow G] : G ≃ (Multiplicative ℤ →* G) :=
   Additive.ofMul.trans <| (zmultiplesHom _).trans <| AddMonoidHom.toMultiplicative''
 #align zpowers_hom zpowersHom
 
@@ -853,12 +858,12 @@ theorem powersHom_symm_apply [Monoid M] (f : Multiplicative ℕ →* M) :
   rfl
 #align powers_hom_symm_apply powersHom_symm_apply
 
-theorem zpowersHom_apply [Group G] (x : G) (n : Multiplicative ℤ) :
+theorem zpowersHom_apply [Group G] [Pow G ℤ] [ZPow G] (x : G) (n : Multiplicative ℤ) :
     zpowersHom G x n = x ^ (Multiplicative.toAdd n) :=
   rfl
 #align zpowers_hom_apply zpowersHom_apply
 
-theorem zpowersHom_symm_apply [Group G] (f : Multiplicative ℤ →* G) :
+theorem zpowersHom_symm_apply [Group G] [Pow G ℤ] [ZPow G] (f : Multiplicative ℤ →* G) :
     (zpowersHom G).symm f = f (Multiplicative.ofAdd 1) :=
   rfl
 #align zpowers_hom_symm_apply zpowersHom_symm_apply
@@ -877,13 +882,15 @@ theorem multiplesHom_symm_apply [AddMonoid A] (f : ℕ →+ A) : (multiplesHom A
 
 attribute [to_additive existing (attr := simp) multiplesHom_symm_apply] powersHom_symm_apply
 
-theorem zmultiplesHom_apply [AddGroup A] (x : A) (n : ℤ) : zmultiplesHom A x n = n • x :=
+theorem zmultiplesHom_apply [AddGroup A] [SMul ℤ A] [ZSMul A] (x : A) (n : ℤ) :
+    zmultiplesHom A x n = n • x :=
   rfl
 #align zmultiples_hom_apply zmultiplesHom_apply
 
 attribute [to_additive existing (attr := simp) zmultiplesHom_apply] zpowersHom_apply
 
-theorem zmultiplesHom_symm_apply [AddGroup A] (f : ℤ →+ A) : (zmultiplesHom A).symm f = f 1 :=
+theorem zmultiplesHom_symm_apply [AddGroup A] [SMul ℤ A] [ZSMul A] (f : ℤ →+ A) :
+    (zmultiplesHom A).symm f = f 1 :=
   rfl
 #align zmultiples_hom_symm_apply zmultiplesHom_symm_apply
 
@@ -901,7 +908,8 @@ theorem MonoidHom.ext_mnat [Monoid M] ⦃f g : Multiplicative ℕ →* M⦄
   MonoidHom.ext fun n => by rw [f.apply_mnat, g.apply_mnat, h]
 #align monoid_hom.ext_mnat MonoidHom.ext_mnat
 
-theorem MonoidHom.apply_mint [Group M] (f : Multiplicative ℤ →* M) (n : Multiplicative ℤ) :
+theorem MonoidHom.apply_mint [Group M] [Pow M ℤ] [ZPow M]
+    (f : Multiplicative ℤ →* M) (n : Multiplicative ℤ) :
     f n = f (Multiplicative.ofAdd 1) ^ (Multiplicative.toAdd n) := by
   rw [← zpowersHom_symm_apply, ← zpowersHom_apply, Equiv.apply_symm_apply]
 #align monoid_hom.apply_mint MonoidHom.apply_mint
@@ -914,7 +922,8 @@ theorem AddMonoidHom.apply_nat [AddMonoid M] (f : ℕ →+ M) (n : ℕ) : f n = 
 
 /-! `AddMonoidHom.ext_nat` is defined in `Data.Nat.Cast` -/
 
-theorem AddMonoidHom.apply_int [AddGroup M] (f : ℤ →+ M) (n : ℤ) : f n = n • f 1 := by
+theorem AddMonoidHom.apply_int [AddGroup M] [SMul ℤ M] [ZSMul M] (f : ℤ →+ M) (n : ℤ) :
+    f n = n • f 1 := by
   rw [← zmultiplesHom_symm_apply, ← zmultiplesHom_apply, Equiv.apply_symm_apply]
 #align add_monoid_hom.apply_int AddMonoidHom.apply_int
 
@@ -927,7 +936,7 @@ def powersMulHom [CommMonoid M] : M ≃* (Multiplicative ℕ →* M) :=
 #align powers_mul_hom powersMulHom
 
 /-- If `M` is commutative, `zpowersHom` is a multiplicative equivalence. -/
-def zpowersMulHom [CommGroup G] : G ≃* (Multiplicative ℤ →* G) :=
+def zpowersMulHom [CommGroup G] [Pow G ℤ] [ZPow G] : G ≃* (Multiplicative ℤ →* G) :=
   { zpowersHom G with map_mul' := fun a b => MonoidHom.ext fun n => by simp [mul_zpow] }
 #align zpowers_mul_hom zpowersMulHom
 
@@ -937,7 +946,7 @@ def multiplesAddHom [AddCommMonoid A] : A ≃+ (ℕ →+ A) :=
 #align multiples_add_hom multiplesAddHom
 
 /-- If `M` is commutative, `zmultiplesHom` is an additive equivalence. -/
-def zmultiplesAddHom [AddCommGroup A] : A ≃+ (ℤ →+ A) :=
+def zmultiplesAddHom [AddCommGroup A] [SMul ℤ A] [ZSMul A] : A ≃+ (ℤ →+ A) :=
   { zmultiplesHom A with map_add' := fun a b => AddMonoidHom.ext fun n => by simp [zsmul_add] }
 #align zmultiples_add_hom zmultiplesAddHom
 
@@ -956,13 +965,13 @@ theorem powersMulHom_symm_apply [CommMonoid M] (f : Multiplicative ℕ →* M) :
 #align powers_mul_hom_symm_apply powersMulHom_symm_apply
 
 @[simp]
-theorem zpowersMulHom_apply [CommGroup G] (x : G) (n : Multiplicative ℤ) :
+theorem zpowersMulHom_apply [CommGroup G] [Pow G ℤ] [ZPow G] (x : G) (n : Multiplicative ℤ) :
     zpowersMulHom G x n = x ^ (Multiplicative.toAdd n) :=
   rfl
 #align zpowers_mul_hom_apply zpowersMulHom_apply
 
 @[simp]
-theorem zpowersMulHom_symm_apply [CommGroup G] (f : Multiplicative ℤ →* G) :
+theorem zpowersMulHom_symm_apply [CommGroup G] [Pow G ℤ] [ZPow G] (f : Multiplicative ℤ →* G) :
     (zpowersMulHom G).symm f = f (Multiplicative.ofAdd 1) :=
   rfl
 #align zpowers_mul_hom_symm_apply zpowersMulHom_symm_apply
@@ -979,13 +988,13 @@ theorem multiplesAddHom_symm_apply [AddCommMonoid A] (f : ℕ →+ A) :
 #align multiples_add_hom_symm_apply multiplesAddHom_symm_apply
 
 @[simp]
-theorem zmultiplesAddHom_apply [AddCommGroup A] (x : A) (n : ℤ) :
+theorem zmultiplesAddHom_apply [AddCommGroup A] [SMul ℤ A] [ZSMul A] (x : A) (n : ℤ) :
     zmultiplesAddHom A x n = n • x :=
   rfl
 #align zmultiples_add_hom_apply zmultiplesAddHom_apply
 
 @[simp]
-theorem zmultiplesAddHom_symm_apply [AddCommGroup A] (f : ℤ →+ A) :
+theorem zmultiplesAddHom_symm_apply [AddCommGroup A] [SMul ℤ A] [ZSMul A] (f : ℤ →+ A) :
     (zmultiplesAddHom A).symm f = f 1 :=
   rfl
 #align zmultiples_add_hom_symm_apply zmultiplesAddHom_symm_apply
@@ -1233,12 +1242,13 @@ theorem unop_pow [Monoid M] (x : Mᵐᵒᵖ) (n : ℕ) : unop (x ^ n) = unop x ^
 
 /-- Moving to the opposite group or `GroupWithZero` commutes with taking powers. -/
 @[simp]
-theorem op_zpow [DivInvMonoid M] (x : M) (z : ℤ) : op (x ^ z) = op x ^ z :=
+theorem op_zpow [DivInvMonoid M] [Pow M ℤ] [ZPow M] (x : M) (z : ℤ) : op (x ^ z) = op x ^ z :=
   rfl
 #align mul_opposite.op_zpow MulOpposite.op_zpow
 
 @[simp]
-theorem unop_zpow [DivInvMonoid M] (x : Mᵐᵒᵖ) (z : ℤ) : unop (x ^ z) = unop x ^ z :=
+theorem unop_zpow [DivInvMonoid M] [Pow M ℤ] [ZPow M] (x : Mᵐᵒᵖ) (z : ℤ) :
+    unop (x ^ z) = unop x ^ z :=
   rfl
 #align mul_opposite.unop_zpow MulOpposite.unop_zpow
 

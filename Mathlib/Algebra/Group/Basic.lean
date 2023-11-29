@@ -864,7 +864,8 @@ theorem leftInverse_inv_mul_mul_right (c : G) :
 #align left_inverse_neg_add_add_right leftInverse_neg_add_add_right
 
 @[to_additive]
-theorem exists_npow_eq_one_of_zpow_eq_one {n : ℤ} (hn : n ≠ 0) {x : G} (h : x ^ n = 1) :
+theorem exists_npow_eq_one_of_zpow_eq_one [Pow G ℤ] [ZPow G] {n : ℤ} (hn : n ≠ 0) {x : G}
+    (h : x ^ n = 1) :
     ∃ n : ℕ, 0 < n ∧ x ^ n = 1 := by
   cases' n with n n
   · simp only [Int.ofNat_eq_coe] at h
