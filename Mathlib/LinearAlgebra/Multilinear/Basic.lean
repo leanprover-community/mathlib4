@@ -921,6 +921,45 @@ section CommSemiring
 variable [CommSemiring R] [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M i)] [AddCommMonoid M₂]
   [∀ i, Module R (M i)] [∀ i, Module R (M₁ i)] [Module R M₂] (f f' : MultilinearMap R M₁ M₂)
 
+section
+variable {M₁' : ι → Type*} [Π i, AddCommMonoid (M₁' i)] [Π i, Module R (M₁' i)]
+
+/-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
+sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g`. -/
+@[simps] def compLinearMapₗ (f : Π (i : ι), M₁ i →ₗ[R] M₁' i) :
+    (MultilinearMap R M₁' M₂) →ₗ[R] MultilinearMap R M₁ M₂ where
+  toFun := fun g ↦ g.compLinearMap f
+  map_add' := fun _ _ ↦ rfl
+  map_smul' := fun _ _ ↦ rfl
+
+/-- If `f` is a collection of linear maps, then the construction `MultilinearMap.compLinearMap`
+sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g` and multilinear in
+`f₁, ..., fₙ`. -/
+@[simps] def compLinearMapMultilinear :
+  @MultilinearMap R ι (λ i ↦ M₁ i →ₗ[R] M₁' i)
+    ((MultilinearMap R M₁' M₂) →ₗ[R] MultilinearMap R M₁ M₂) _ _ _ (λ i ↦ LinearMap.module) _ where
+  toFun := MultilinearMap.compLinearMapₗ
+  map_add' := by
+    intro _ f i f₁ f₂
+    ext g x
+    change (g fun j ↦ update f i (f₁ + f₂) j <| x j) =
+        (g fun j ↦ update f i f₁ j <|x j) + g fun j ↦ update f i f₂ j (x j)
+    let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := λ i f ↦ f (x i)
+    convert g.map_add (λ j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) with j j j
+    · exact Function.apply_update c f i (f₁ + f₂) j
+    · exact Function.apply_update c f i f₁ j
+    · exact Function.apply_update c f i f₂ j
+  map_smul' := by
+    intro _ f i a f₀
+    ext g x
+    change (g fun j ↦ update f i (a • f₀) j <| x j) = a • g fun j ↦ update f i f₀ j (x j)
+    let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := λ i f ↦ f (x i)
+    convert g.map_smul (λ j ↦ f j (x j)) i a (f₀ (x i)) with j j j
+    · exact Function.apply_update c f i (a • f₀) j
+    · exact Function.apply_update c f i f₀ j
+
+end
+
 /-- If one multiplies by `c i` the coordinates in a finset `s`, then the image under a multilinear
 map is multiplied by `∏ i in s, c i`. This is mainly an auxiliary statement to prove the result when
 `s = univ`, given in `map_smul_univ`, although it can be useful in its own right as it does not
