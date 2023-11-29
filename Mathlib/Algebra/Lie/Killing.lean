@@ -7,6 +7,7 @@ import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.Nilpotent
 import Mathlib.Algebra.Lie.Semisimple
 import Mathlib.Algebra.Lie.Weights.Cartan
+import Mathlib.Algebra.Lie.Weights.Linear
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.LinearAlgebra.PID
 import Mathlib.LinearAlgebra.Trace
@@ -37,17 +38,21 @@ We define the trace / Killing form in this file and prove some basic properties.
    a Lie algebra is non-singular, it remains non-singular when restricted to a Cartan subalgebra.
  * `LieAlgebra.IsKilling.isSemisimple`: if a Lie algebra has non-singular Killing form then it is
    semisimple.
- * `LieAlgebra.IsKilling.instIsLieAbelian_of_isCartanSubalgebra`: if the Killing form of a Lie
+ * `LieAlgebra.IsKilling.instIsLieAbelianOfIsCartanSubalgebra`: if the Killing form of a Lie
    algebra is non-singular, then its Cartan subalgebras are Abelian.
+ * `LieAlgebra.IsKilling.span_weight_eq_top`: given a splitting Cartan subalgebra `H` of a
+   finite-dimensional Lie algebra with non-singular Killing form, the corresponding roots span the
+   dual space of `H`.
 
 ## TODO
 
  * Prove that in characteristic zero, a semisimple Lie algebra has non-singular Killing form.
 -/
 
-variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
   [Module.Free R M] [Module.Finite R M]
+  [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [FiniteDimensional K M]
 
 attribute [local instance] isNoetherian_of_isNoetherianRing_of_finite
 attribute [local instance] Module.free_of_finite_type_torsion_free'
@@ -415,7 +420,7 @@ instance isSemisimple [IsDomain R] [IsPrincipalIdealRing R] : IsSemisimple R L :
 
 -- TODO: formalize a positive-characteristic counterexample to the above instance
 
-instance instIsLieAbelian_of_isCartanSubalgebra
+instance instIsLieAbelianOfIsCartanSubalgebra
     [IsDomain R] [IsPrincipalIdealRing R] [IsArtinian R L]
     (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
     IsLieAbelian H :=
@@ -427,3 +432,81 @@ end IsKilling
 end LieAlgebra
 
 end LieAlgebra
+
+section Field
+
+open LieModule FiniteDimensional
+open Submodule (span)
+
+lemma LieModule.traceForm_eq_sum_finrank_nsmul_mul
+    [IsLieAbelian L] [IsTriangularizable K L M] (x y : L) :
+    traceForm K L M x y = ∑ χ in weight K L M, finrank K (weightSpace M χ) • (χ x * χ y) := by
+  have hxy : ∀ χ : L → K, MapsTo (toEndomorphism K L M x ∘ₗ toEndomorphism K L M y)
+      (weightSpace M χ) (weightSpace M χ) :=
+    fun χ m hm ↦ LieSubmodule.lie_mem _ <| LieSubmodule.lie_mem _ hm
+  have hfin : {χ : L → K | (weightSpace M χ : Submodule K M) ≠ ⊥}.Finite := by
+    convert finite_weightSpace_ne_bot K L M
+    exact LieSubmodule.coeSubmodule_eq_bot_iff (weightSpace M _)
+  classical
+  have hds := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
+    (LieSubmodule.independent_iff_coe_toSubmodule.mp <| independent_weightSpace K L M)
+    (LieSubmodule.iSup_eq_top_iff_coe_toSubmodule.mp <| iSup_weightSpace_eq_top K L M)
+  simp only [LinearMap.coeFn_sum, Finset.sum_apply, traceForm_apply_apply,
+    LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
+  refine Finset.sum_congr (by simp) (fun χ _ ↦ ?_)
+  suffices _root_.IsNilpotent ((toEndomorphism K L M x ∘ₗ toEndomorphism K L M y).restrict (hxy χ) -
+      algebraMap K _ (χ x * χ y)) by
+    replace this := (LinearMap.isNilpotent_trace_of_isNilpotent this).eq_zero
+    rwa [Module.algebraMap_end_eq_smul_id, map_sub, map_smul, LinearMap.trace_id, sub_eq_zero,
+      smul_eq_mul, mul_comm, ← nsmul_eq_mul] at this
+  set nx := toEndomorphism K L (weightSpace M χ) x - algebraMap K _ (χ x)
+  set ny := toEndomorphism K L (weightSpace M χ) y - algebraMap K _ (χ y)
+  have h_np : _root_.IsNilpotent (χ x • ny + χ y • nx + nx * ny) := by
+    -- This subproof would be much prettier if we had tactics for automatically discharging
+    -- `Commute` and `IsNilpotent` goals.
+    have hx : _root_.IsNilpotent nx := isNilpotent_toEndomorphism_sub_algebraMap M χ x
+    have hy : _root_.IsNilpotent ny := isNilpotent_toEndomorphism_sub_algebraMap M χ y
+    have h : Commute nx ny := by
+      refine Commute.sub_left (Commute.sub_right ?_ (Algebra.commute_algebraMap_right (χ y) _))
+        (Algebra.commute_algebraMap_left (χ x) ny)
+      rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero]
+    exact (((h.symm.mul_right rfl).smul_left _).add_left
+      (((Commute.refl _).mul_right h).smul_left _)).isNilpotent_add
+      (((h.symm.smul_right _).smul_left _).isNilpotent_add (hy.smul _) (hx.smul _))
+      (h.isNilpotent_mul_right hy)
+  have : (toEndomorphism K L M x ∘ₗ toEndomorphism K L M y).restrict (hxy χ) -
+      algebraMap K _ (χ x * χ y) = χ x • ny + χ y • nx + nx * ny := by
+    ext; simp [smul_sub, smul_comm (χ x) (χ y)]
+  rwa [this]
+
+lemma LieModule.span_weight_eq_top_of_ker_traceForm_eq_bot
+    [IsLieAbelian L] [IsTriangularizable K L M] [FiniteDimensional K L]
+    (h : LinearMap.ker (traceForm K L M) = ⊥) :
+    span K (range (weight.toLinear K L M)) = ⊤ := by
+  by_contra contra
+  obtain ⟨f : Module.Dual K (Module.Dual K L), hf, hf'⟩ :=
+    Module.exists_dual_map_eq_bot_of_lt_top K (lt_top_iff_ne_top.mpr contra) inferInstance
+  let x : L := (Module.evalEquiv K L).symm f
+  replace hf' : ∀ χ ∈ weight K L M, χ x = 0 := by
+    intro χ hχ
+    change weight.toLinear K L M ⟨χ, hχ⟩ x = 0
+    rw [Module.apply_evalEquiv_symm_apply, ← Submodule.mem_bot (R := K), ← hf', Submodule.mem_map]
+    exact ⟨weight.toLinear K L M ⟨χ, hχ⟩, Submodule.subset_span (mem_range_self _), rfl⟩
+  have hx : x ≠ 0 := (LinearEquiv.map_ne_zero_iff _).mpr hf
+  apply hx
+  rw [← Submodule.mem_bot (R := K), ← h, LinearMap.mem_ker]
+  ext y
+  rw [LieModule.traceForm_eq_sum_finrank_nsmul_mul, LinearMap.zero_apply]
+  exact Finset.sum_eq_zero fun χ hχ ↦ by simp [hf' χ hχ]
+
+/-- Given a splitting Cartan subalgebra `H` of a finite-dimensional Lie algebra with non-singular
+Killing form, the corresponding roots span the dual space of `H`. -/
+@[simp]
+lemma LieAlgebra.IsKilling.span_weight_eq_top [FiniteDimensional K L] [IsKilling K L]
+    (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [IsTriangularizable K H L] :
+    span K (range (weight.toLinear K H L)) = ⊤ := by
+  have : LinearMap.ker (traceForm K H L) = ⊥ := by
+    rw [← restrictBilinear_killingForm, ker_restrictBilinear_of_isCartanSubalgebra_eq_bot]
+  rw [span_weight_eq_top_of_ker_traceForm_eq_bot K H L this]
+
+end Field
