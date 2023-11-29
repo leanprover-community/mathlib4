@@ -383,7 +383,7 @@ theorem IsPreconnected.preimage_of_isOpenMap [TopologicalSpace β] {f : α → �
   · exact ⟨a, has, hau, hinj.mem_set_image.1 hav⟩
 #align is_preconnected.preimage_of_open_map IsPreconnected.preimage_of_isOpenMap
 
-theorem IsPreconnected.preimage_of_isClosed_map [TopologicalSpace β] {s : Set β}
+theorem IsPreconnected.preimage_of_isClosedMap [TopologicalSpace β] {s : Set β}
     (hs : IsPreconnected s) {f : α → β} (hinj : Function.Injective f) (hf : IsClosedMap f)
     (hsf : s ⊆ range f) : IsPreconnected (f ⁻¹' s) :=
   isPreconnected_closed_iff.2 fun u v hu hv hsuv hsu hsv => by
@@ -394,7 +394,7 @@ theorem IsPreconnected.preimage_of_isClosed_map [TopologicalSpace β] {s : Set �
       · simpa only [image_preimage_inter] using hsu.image f
       · simpa only [image_preimage_inter] using hsv.image f
     · exact ⟨a, has, hau, hinj.mem_set_image.1 hav⟩
-#align is_preconnected.preimage_of_closed_map IsPreconnected.preimage_of_isClosed_map
+#align is_preconnected.preimage_of_closed_map IsPreconnected.preimage_of_isClosedMap
 
 theorem IsConnected.preimage_of_isOpenMap [TopologicalSpace β] {s : Set β} (hs : IsConnected s)
     {f : α → β} (hinj : Function.Injective f) (hf : IsOpenMap f) (hsf : s ⊆ range f) :
@@ -405,7 +405,7 @@ theorem IsConnected.preimage_of_isOpenMap [TopologicalSpace β] {s : Set β} (hs
 theorem IsConnected.preimage_of_isClosedMap [TopologicalSpace β] {s : Set β} (hs : IsConnected s)
     {f : α → β} (hinj : Function.Injective f) (hf : IsClosedMap f) (hsf : s ⊆ range f) :
     IsConnected (f ⁻¹' s) :=
-  ⟨hs.nonempty.preimage' hsf, hs.isPreconnected.preimage_of_isClosed_map hinj hf hsf⟩
+  ⟨hs.nonempty.preimage' hsf, hs.isPreconnected.preimage_of_isClosedMap hinj hf hsf⟩
 #align is_connected.preimage_of_closed_map IsConnected.preimage_of_isClosedMap
 
 theorem IsPreconnected.subset_or_subset (hu : IsOpen u) (hv : IsOpen v) (huv : Disjoint u v)
