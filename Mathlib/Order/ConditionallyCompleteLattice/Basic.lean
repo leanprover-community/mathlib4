@@ -1577,8 +1577,8 @@ theorem csSup_image2_eq_csInf_csInf (h₁ : ∀ b, GaloisConnection (swap l b �
 theorem csInf_image2_eq_csInf_csInf (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
     (h₂ : ∀ a, GaloisConnection (l₂ a) (u a)) :
     s.Nonempty → BddBelow s → t.Nonempty → BddBelow t → sInf (image2 u s t) = u (sInf s) (sInf t) :=
-  @csSup_image2_eq_csSup_csSup αᵒᵈ βᵒᵈ γᵒᵈ _ _ _ _ _ _ l₁ l₂ (fun _ => (h₁ _).dual) fun _ =>
-    (h₂ _).dual
+  csSup_image2_eq_csSup_csSup (α := αᵒᵈ) (β := βᵒᵈ) (γ := γᵒᵈ) (u₁ := l₁) (u₂ := l₂)
+    (fun _ => (h₁ _).dual) fun _ => (h₂ _).dual
 #align cInf_image2_eq_cInf_cInf csInf_image2_eq_csInf_csInf
 
 theorem csInf_image2_eq_csInf_csSup (h₁ : ∀ b, GaloisConnection (l₁ b) (swap u b))
