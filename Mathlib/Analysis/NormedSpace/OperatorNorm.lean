@@ -1830,9 +1830,12 @@ def smulRightL : (E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] F�
         ext x
         simp only [smul_smul, coe_smulRightₗ, Algebra.id.smul_eq_mul, coe_smul', smulRight_apply,
           LinearMap.smul_apply, RingHom.id_apply, Pi.smul_apply] }
-    1 fun c x => by
-      simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
-        le_refl]
+    1 fun c x => (norm_smulRight_apply c x).le.trans_eq <| by simp
+    -- was
+    -- simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
+         le_refl]
+    -- after `=>` above
+    -- Now it fails to use `AddHom.coe_mk`. WHY?
 #align continuous_linear_map.smul_rightL ContinuousLinearMap.smulRightL
 
 variable {𝕜 E Fₗ}
