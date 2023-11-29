@@ -442,23 +442,16 @@ section OrderedCancelCommMonoid
 variable [OrderedCancelCommMonoid M] {f g : ι → M} {s t : Finset ι}
 
 @[to_additive sum_lt_sum]
-theorem prod_lt_prod' (Hle : ∀ i ∈ s, f i ≤ g i) (Hlt : ∃ i ∈ s, f i < g i) :
-    ∏ i in s, f i < ∏ i in s, g i := by
-  classical
-    rcases Hlt with ⟨i, hi, hlt⟩
-    rw [← insert_erase hi, prod_insert (not_mem_erase _ _), prod_insert (not_mem_erase _ _)]
-    exact mul_lt_mul_of_lt_of_le hlt (prod_le_prod' fun j hj ↦ Hle j <| mem_of_mem_erase hj)
+theorem prod_lt_prod' (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i) :
+    ∏ i in s, f i < ∏ i in s, g i :=
+  Multiset.prod_lt_prod' hle hlt
 #align finset.prod_lt_prod' Finset.prod_lt_prod'
 #align finset.sum_lt_sum Finset.sum_lt_sum
 
 @[to_additive sum_lt_sum_of_nonempty]
-theorem prod_lt_prod_of_nonempty' (hs : s.Nonempty) (Hlt : ∀ i ∈ s, f i < g i) :
-    ∏ i in s, f i < ∏ i in s, g i := by
-  apply prod_lt_prod'
-  · intro i hi
-    apply le_of_lt (Hlt i hi)
-  cases' hs with i hi
-  exact ⟨i, hi, Hlt i hi⟩
+theorem prod_lt_prod_of_nonempty' (hs : s.Nonempty) (hlt : ∀ i ∈ s, f i < g i) :
+    ∏ i in s, f i < ∏ i in s, g i :=
+  Multiset.prod_lt_prod_of_nonempty' (by aesop) hlt
 #align finset.prod_lt_prod_of_nonempty' Finset.prod_lt_prod_of_nonempty'
 #align finset.sum_lt_sum_of_nonempty Finset.sum_lt_sum_of_nonempty
 
