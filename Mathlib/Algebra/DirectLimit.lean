@@ -198,16 +198,17 @@ family of linear maps `gᵢ : Gᵢ ⟶ G'ᵢ` such that `g ∘ f = f' ∘ g` ind
 -/
 def map (g : (i : ι) → G i →ₗ[R] G' i) (hg : ∀ i j h, g j ∘ₗ f i j h = f' i j h ∘ₗ g i) :
     DirectLimit G f →ₗ[R] DirectLimit G' f' :=
-  lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ g i) fun i j h g ↦ (isEmpty_or_nonempty ι).elim
-    (fun _ ↦ Subsingleton.elim _ _) fun _ ↦ by
-      have eq1 := LinearMap.congr_fun (hg i j h) g
+  lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ g i) fun i j h g ↦ by
+    cases isEmpty_or_nonempty ι
+    · exact Subsingleton.elim _ _
+    · have eq1 := LinearMap.congr_fun (hg i j h) g
       simp only [LinearMap.coe_comp, Function.comp_apply] at eq1 ⊢
       rw [eq1, of_f]
 
 @[simp] lemma map_apply_of (g : (i : ι) → G i →ₗ[R] G' i)
     (hg : ∀ i j h, g j ∘ₗ f i j h = f' i j h ∘ₗ g i)
     {i : ι} (x : G i) :
-    map g hg (of _ _ _ _ _ x) = of R ι G' f' i (g i x) :=
+    map g hg (of _ _ G f _ x) = of R ι G' f' i (g i x) :=
   lift_of _ _ _
 
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
@@ -245,16 +246,14 @@ def congr [IsDirected ι (· ≤ ·)]
 lemma congr_apply_of [IsDirected ι (· ≤ ·)]
     (e : (i : ι) → G i ≃ₗ[R] G' i) (he : ∀ i j h, e j ∘ₗ f i j h = f' i j h ∘ₗ e i)
     {i : ι} (g : G i) :
-    congr e he (of _ _ _ _ i g) =
-    (of _ _ _ _ i (e i g) : DirectLimit G' f') :=
+    congr e he (of _ _ G f i g) = of _ _ G' f' i (e i g) :=
   map_apply_of _ he _
 
 open LinearEquiv LinearMap in
 lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)]
     (e : (i : ι) → G i ≃ₗ[R] G' i) (he : ∀ i j h, e j ∘ₗ f i j h = f' i j h ∘ₗ e i)
     {i : ι} (g : G' i) :
-    (congr e he).symm (of _ _ _ _ i g) =
-    (of _ _ _ _ i ((e i).symm g) : DirectLimit G f) :=
+    (congr e he).symm (of _ _ G' f' i g) = of _ _ G f i ((e i).symm g) :=
   map_apply_of _ (fun i j h ↦ by
     rw [toLinearMap_symm_comp_eq, ← comp_assoc, he i, comp_assoc, comp_coe, symm_trans_self,
       refl_toLinearMap, comp_id]) _
@@ -472,17 +471,17 @@ homomorphism `lim G ⟶ lim G'`.
 def map (g : (i : ι) → G i →+ G' i)
     (hg : ∀ i j h, (g j).comp (f i j h) = (f' i j h).comp (g i)) :
     DirectLimit G f →+ DirectLimit G' f' :=
-  lift _ _ _ (fun i ↦ (of _ _ _).comp (g i)) fun i j h g ↦
-    (isEmpty_or_nonempty ι).elim
-    (fun _ ↦ Subsingleton.elim _ _) fun _ ↦ by
-      have eq1 := FunLike.congr_fun (hg i j h) g
+  lift _ _ _ (fun i ↦ (of _ _ _).comp (g i)) fun i j h g ↦ by
+    cases isEmpty_or_nonempty ι
+    · exact Subsingleton.elim _ _
+    · have eq1 := FunLike.congr_fun (hg i j h) g
       simp only [AddMonoidHom.coe_comp, Function.comp_apply] at eq1 ⊢
       rw [eq1, of_f]
 
 @[simp] lemma map_apply_of (g : (i : ι) → G i →+ G' i)
     (hg : ∀ i j h, (g j).comp (f i j h) = (f' i j h).comp (g i))
     {i : ι} (x : G i) :
-    map g hg (of _ _ _ x) = of G' f' i (g i x) :=
+    map g hg (of G f _ x) = of G' f' i (g i x) :=
   lift_of _ _ _ _ _
 
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
@@ -525,16 +524,14 @@ lemma congr_apply_of [IsDirected ι (· ≤ ·)]
     (e : (i : ι) → G i ≃+ G' i)
     (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G i) :
-    congr e he (of _ _ i g) =
-    (of _ _ i (e i g) : DirectLimit G' f') :=
+    congr e he (of G f i g) = of G' f' i (e i g) :=
   map_apply_of _ he _
 
 lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)]
     (e : (i : ι) → G i ≃+ G' i)
     (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G' i) :
-    (congr e he).symm (of _  _ i g) =
-    (of _ _ i ((e i).symm g) : DirectLimit G f) := by
+    (congr e he).symm (of G' f' i g) = of G f i ((e i).symm g) := by
   simp only [congr, AddMonoidHom.toAddEquiv_symm_apply, map_apply_of, AddMonoidHom.coe_coe]
 
 end functorial
@@ -908,7 +905,7 @@ def map (g : (i : ι) → G i →+* G' i)
 @[simp] lemma map_apply_of (g : (i : ι) → G i →+* G' i)
     (hg : ∀ i j h, (g j).comp (f i j h) = (f' i j h).comp (g i))
     {i : ι} (x : G i) :
-    map g hg (of _ _ _ x) = of G' (fun _ _ h ↦ f' _ _ h) i (g i x) :=
+    map g hg (of G _ _ x) = of G' (fun _ _ h ↦ f' _ _ h) i (g i x) :=
   lift_of _ _ _ _ _
 
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
@@ -950,16 +947,14 @@ lemma congr_apply_of [IsDirected ι (· ≤ ·)]
     (e : (i : ι) → G i ≃+* G' i)
     (he : ∀ i j h, (e j).toRingHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G i) :
-    congr e he (of _ _ i g) =
-    (of _ _ i (e i g) : DirectLimit G' fun _ _ h ↦ f' _ _ h) :=
-  map_apply_of _ equivs_compatible _
+    congr e he (of G _ i g) = of G' (fun _ _ h ↦ f' _ _ h) i (e i g) :=
+  map_apply_of _ he _
 
 lemma congr_symm_apply_of [IsDirected ι (· ≤ ·)]
     (e : (i : ι) → G i ≃+* G' i)
-    (he : ∀ i j h, (equivs j).toRingHom.comp (f i j h) = (f' i j h).comp (equivs i))
+    (he : ∀ i j h, (e j).toRingHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G' i) :
-    (congr e he).symm (of _  _ i g) =
-    (of _ _ i ((e i).symm g) : DirectLimit G fun _ _ h ↦ f _ _ h) := by
+    (congr e he).symm (of G' _ i g) = of G (fun _ _ h ↦ f _ _ h) i ((e i).symm g) := by
   simp only [congr, RingEquiv.ofHomInv_symm_apply, map_apply_of, RingHom.coe_coe]
 
 end functorial
