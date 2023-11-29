@@ -1,4 +1,4 @@
-SHELL=/bin/bash -o pipefail
+SHELL=/usr/bin/env -S bash -o pipefail
 
 TESTS := $(shell find test -name '*.lean')
 
