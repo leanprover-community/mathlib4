@@ -499,7 +499,7 @@ instance stalkFunctor_preserves_mono (x : X) :
         (fun c =>
           (@ConcreteCategory.mono_iff_injective_of_preservesPullback _ _ _ _ _ (f.1.app (op c))).mp
             ((NatTrans.mono_iff_mono_app _ f.1).mp
-                (@CategoryTheory.presheaf_mono_of_mono _ _ _ _ _ _ _ _ _ _ _ _ _ _ m) <|
+                (haveI := m; CategoryTheory.presheaf_mono_of_mono ..) <|
               op c))
         x⟩
 set_option linter.uppercaseLean3 false in
