@@ -475,8 +475,8 @@ def integralClosure_algHom_restrict [Algebra R S] (f : A →ₐ[R] S) :
   (f.restrictDomain (integralClosure R A)).codRestrict (integralClosure R S) (fun ⟨_, h⟩ => h.map f)
 
 @[simp]
-theorem integralClosure_coe_algHom_restrict [Algebra R S] (f : A →ₐ[R] S) (x : integralClosure R A) :
-    (integralClosure_algHom_restrict f x : S) = f (x : A) := rfl
+theorem integralClosure_coe_algHom_restrict [Algebra R S] (f : A →ₐ[R] S)
+    (x : integralClosure R A) : (integralClosure_algHom_restrict f x : S) = f (x : A) := rfl
 
 /-- An `AlgEquiv` between two rings restrict to an `AlgEquiv` between the integral closures inside
 them. -/
@@ -489,8 +489,8 @@ noncomputable def integralClosure_algEquiv_restrict [Algebra R S] (f : A ≃ₐ[
     exact ⟨⟨f.symm y, hy.map f.symm⟩, by rw [Subtype.mk_eq_mk]; simp⟩
 
 @[simp]
-theorem integralClosure_coe_algEquiv_restrict [Algebra R S] (f : A ≃ₐ[R] S) (x : integralClosure R A) :
-    (integralClosure_algEquiv_restrict f x : S) = f (x : A) := rfl
+theorem integralClosure_coe_algEquiv_restrict [Algebra R S] (f : A ≃ₐ[R] S)
+    (x : integralClosure R A) : (integralClosure_algEquiv_restrict f x : S) = f (x : A) := rfl
 
 theorem integralClosure.isIntegral (x : integralClosure R A) : IsIntegral R x :=
   let ⟨p, hpm, hpx⟩ := x.2

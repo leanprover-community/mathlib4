@@ -168,7 +168,7 @@ theorem discr_eq_det_embeddingsMatrixReindex_pow_two [IsSeparable K L] (e : ι �
 #align algebra.discr_eq_det_embeddings_matrix_reindex_pow_two Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two
 
 theorem discr_eq_discr_of_algEquiv {L' : Type*} [Field L'] [Algebra K L'] [IsSeparable K L]
-  (e : ι ≃ (L →ₐ[K] E)) (f : L ≃ₐ[K] L') :
+    (e : ι ≃ (L →ₐ[K] E)) (f : L ≃ₐ[K] L') :
     Algebra.discr K b = Algebra.discr K (f ∘ b) := by
   have : Module.Finite K L' := Module.Finite.equiv f.toLinearEquiv
   have : IsSeparable K L' := IsSeparable.of_algHom K L f.symm
