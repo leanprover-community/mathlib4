@@ -211,8 +211,8 @@ instance [Mono f] : IsIso ((Profinite.limitConeIsLimit ((lightProfiniteDiagramOf
     suffices f a = f b by exact hf this
     apply LightProfinite.ext
     intro n
-    apply_fun fun f : (Profinite.limitCone ((lightProfiniteDiagramOfHom f) ⋙ FintypeCat.toProfinite)).pt =>
-      f.val n at h
+    apply_fun fun f : (Profinite.limitCone ((lightProfiniteDiagramOfHom f) ⋙
+      FintypeCat.toProfinite)).pt ↦ f.val n at h
     erw [ContinuousMap.coe_mk, Subtype.ext_iff] at h
     exact h
   · suffices : ∃ x, ∀ n, lightProfiniteConeOfHom_π_app f (op n) x = a.val (op n)
@@ -224,17 +224,19 @@ instance [Mono f] : IsIso ((Profinite.limitConeIsLimit ((lightProfiniteDiagramOf
       exact h (unop n)
     have : Set.Nonempty (⋂ (n : ℕ), (lightProfiniteConeOfHom_π_app f (op n)) ⁻¹' {a.val (op n)})
     · refine IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
-        (fun n ↦ (lightProfiniteConeOfHom_π_app f (op n)) ⁻¹' {a.val (op n)}) (directed_of_isDirected_le ?_)
+        (fun n ↦ (lightProfiniteConeOfHom_π_app f (op n)) ⁻¹' {a.val (op n)})
+          (directed_of_isDirected_le ?_)
         (fun _ ↦ (Set.singleton_nonempty _).preimage fun ⟨a, ⟨b, hb⟩⟩ ↦ ⟨b, Subtype.ext hb⟩)
-        (fun _ ↦ (IsClosed.preimage (lightProfiniteConeOfHom_π_app _ _).continuous (T1Space.t1 _)).isCompact)
+        (fun _ ↦ (IsClosed.preimage (lightProfiniteConeOfHom_π_app _ _).continuous
+          (T1Space.t1 _)).isCompact)
         (fun _ ↦ IsClosed.preimage (lightProfiniteConeOfHom_π_app _ _).continuous (T1Space.t1 _))
       intro i j h x hx
       simp only [Functor.comp_obj, profiniteToCompHaus_obj, compHausToTop_obj,
         toProfinite_obj_toCompHaus_toTop_α, Functor.comp_map, profiniteToCompHaus_map,
         compHausToTop_map, Set.mem_setOf_eq, Set.mem_preimage, Set.mem_singleton_iff] at hx ⊢
       have := (lightProfiniteConeOfHom f).π.naturality (homOfLE h).op
-      simp only [lightProfiniteConeOfHom, Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map,
-        Category.id_comp, Functor.comp_map] at this
+      simp only [lightProfiniteConeOfHom, Functor.const_obj_obj, Functor.comp_obj,
+        Functor.const_obj_map, Category.id_comp, Functor.comp_map] at this
       rw [this]
       simp only [CategoryTheory.comp_apply]
       rw [hx, ← a.prop (homOfLE h).op]
