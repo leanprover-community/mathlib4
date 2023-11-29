@@ -372,26 +372,11 @@ theorem zero_xor (n : ℕ) : 0 ^^^ n = n := by simp [HXor.hXor, Xor.xor, xor]
 theorem xor_zero (n : ℕ) : n ^^^ 0 = n := by simp [HXor.hXor, Xor.xor, xor]
 #align nat.lxor_zero Nat.xor_zero
 
-@[simp]
-theorem zero_land (n : ℕ) : 0 &&& n = 0 := by
-  simp only [HAnd.hAnd, AndOp.and, land, bitwise_zero_left, ite_false, Bool.and_true];
-#align nat.zero_land Nat.zero_land
+#align nat.zero_land Nat.zero_and
+#align nat.land_zero Nat.and_zero
 
-@[simp]
-theorem land_zero (n : ℕ) : n &&& 0 = 0 := by
-  simp only [HAnd.hAnd, AndOp.and, land, bitwise_zero_right, ite_false, Bool.and_false]
-#align nat.land_zero Nat.land_zero
-
-@[simp]
-theorem zero_lor (n : ℕ) : 0 ||| n = n := by
-  simp only [HOr.hOr, OrOp.or, lor, bitwise_zero_left, ite_true, Bool.or_true]
-#align nat.zero_lor Nat.zero_lor
-
-@[simp]
-theorem lor_zero (n : ℕ) : n ||| 0 = n := by
-  simp only [HOr.hOr, OrOp.or, lor, bitwise_zero_right, ite_true, Bool.or_false]
-#align nat.lor_zero Nat.lor_zero
-
+#align nat.zero_lor Nat.zero_or
+#align nat.lor_zero Nat.or_zero
 
 /-- Proving associativity of bitwise operations in general essentially boils down to a huge case
     distinction, so it is shorter to use this tactic instead of proving it in the general case. -/
