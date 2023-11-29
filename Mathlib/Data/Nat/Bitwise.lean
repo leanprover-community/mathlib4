@@ -282,9 +282,7 @@ theorem testBit_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit (2 ^ n) m = f
   · rw [pow_div hm.le zero_lt_two, ← tsub_add_cancel_of_le (succ_le_of_lt <| tsub_pos_of_lt hm)]
     -- Porting note: XXX why does this make it work?
     rw [(rfl : succ 0 = 1)]
-    simp only [ge_iff_le, tsub_le_iff_right, pow_succ, bodd_mul,
-      Bool.and_eq_false_eq_eq_false_or_eq_false, or_true]
-    exact Or.inr rfl
+    simp [pow_succ, and_one_is_mod, mul_mod_left]
 #align nat.test_bit_two_pow_of_ne Nat.testBit_two_pow_of_ne
 
 theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
@@ -391,8 +389,9 @@ theorem lor_assoc (n m k : ℕ) : (n ||| m) ||| k = n ||| (m ||| k) := by bitwis
 #align nat.lor_assoc Nat.lor_assoc
 
 @[simp]
-theorem xor_self (n : ℕ) : n ^^^ n = 0 :=
-  zero_of_testBit_eq_false fun i => by simp
+theorem xor_self (n : ℕ) : n ^^^ n = 0 := by
+  induction' n using Nat.binaryRec <;> simp_all
+
 #align nat.lxor_self Nat.xor_self
 
 -- These lemmas match `mul_inv_cancel_right` and `mul_inv_cancel_left`.
