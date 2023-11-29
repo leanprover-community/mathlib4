@@ -54,10 +54,10 @@ lemma IsIntegralCurveAt.comp_add {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v 
   obtain ⟨h1, ε, hε, h2⟩ := hγ
   refine ⟨by simp [h1], ε, hε, ?_⟩
   intros t ht
-  rw [sub_right_comm, sub_add_eq_add_sub, ←add_mem_Ioo_iff_left] at ht
+  rw [sub_right_comm, sub_add_eq_add_sub, ← add_mem_Ioo_iff_left] at ht
   have h2' := h2 (t + dt) ht
   rw [Function.comp_apply,
-    ←ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
+    ← ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
   apply HasMFDerivAt.comp t h2'
   /- this makes me think we need lemmas for `HasMFDerivAt 𝓘(E, E) 𝓘(E, E)` of simple operations -/
   refine ⟨(continuous_add_right _).continuousAt, ?_⟩
@@ -80,9 +80,9 @@ lemma IsIntegralCurveAt.comp_mul_pos {γ : ℝ → M} (hγ : IsIntegralCurveAt �
     div_pos hε ha, ?_⟩
   intros t ht
   have ht : t * a ∈ Ioo (t₀ - ε) (t₀ + ε) := by
-    rw [mem_Ioo, ←div_lt_iff ha, ←lt_div_iff ha, sub_div, add_div]
+    rw [mem_Ioo, ← div_lt_iff ha, ← lt_div_iff ha, sub_div, add_div]
     exact ht
-  rw [Function.comp_apply, Pi.smul_apply, ←ContinuousLinearMap.smulRight_comp]
+  rw [Function.comp_apply, Pi.smul_apply, ← ContinuousLinearMap.smulRight_comp]
   refine HasMFDerivAt.comp t (h2 (t * a) ht) ⟨(continuous_mul_right _).continuousAt, ?_⟩
   simp only [mfld_simps, hasFDerivWithinAt_univ]
   apply HasFDerivAt.mul_const' (hasFDerivAt_id _)
@@ -91,7 +91,7 @@ lemma isIntegralCurvAt_comp_mul_pos {γ : ℝ → M} {a : ℝ} (ha : 0 < a) :
     IsIntegralCurveAt γ v t₀ x₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) x₀ := by
   refine ⟨fun hγ => IsIntegralCurveAt.comp_mul_pos hγ ha, fun hγ ↦ ?_⟩
   have := hγ.comp_mul_pos (inv_pos_of_pos ha)
-  rw [smul_smul, inv_mul_eq_div, div_self (ne_of_gt ha), one_smul, ←div_mul_eq_div_div_swap,
+  rw [smul_smul, inv_mul_eq_div, div_self (ne_of_gt ha), one_smul, ← div_mul_eq_div_div_swap,
     inv_mul_eq_div, div_self (ne_of_gt ha), div_one, Function.comp.assoc] at this
   convert this
   ext
@@ -102,9 +102,9 @@ lemma IsIntegralCurveAt.comp_neg {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v 
   obtain ⟨h1, ε, hε, h2⟩ := hγ
   refine ⟨by simp [h1], ε, hε, ?_⟩
   intros t ht
-  rw [←neg_add', neg_add_eq_sub, ←neg_sub, ←neg_mem_Ioo_iff] at ht
-  rw [Function.comp_apply, Pi.neg_apply, ←neg_one_smul ℝ (v (γ (-t))),
-    ←ContinuousLinearMap.smulRight_comp]
+  rw [← neg_add', neg_add_eq_sub, ← neg_sub, ← neg_mem_Ioo_iff] at ht
+  rw [Function.comp_apply, Pi.neg_apply, ← neg_one_smul ℝ (v (γ (-t))),
+    ← ContinuousLinearMap.smulRight_comp]
   apply (h2 (-t) ht).comp t ⟨continuousAt_neg, ?_⟩
   simp only [mfld_simps, hasFDerivWithinAt_univ]
   exact HasDerivAt.hasFDerivAt (hasDerivAt_neg _)
@@ -122,7 +122,7 @@ lemma IsIntegralCurveAt.comp_mul_ne_zero {γ : ℝ → M} (hγ : IsIntegralCurve
   cases' ha with ha ha
   · apply isIntegralCurveAt_comp_neg.mpr
     have : (· * a) ∘ Neg.neg = fun t ↦ t * -a := by ext; simp
-    rw [Function.comp.assoc, this, ←neg_smul, ←div_neg]
+    rw [Function.comp.assoc, this, ← neg_smul, ← div_neg]
     exact hγ.comp_mul_pos (neg_pos_of_neg ha)
   · exact hγ.comp_mul_pos ha
 
@@ -130,7 +130,7 @@ lemma isIntegralCurveAt_comp_mul_ne_zero {γ : ℝ → M} {a : ℝ} (ha : a ≠ 
     IsIntegralCurveAt γ v t₀ x₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) x₀ := by
   refine ⟨fun hγ => IsIntegralCurveAt.comp_mul_ne_zero hγ ha, fun hγ ↦ ?_⟩
   have := hγ.comp_mul_ne_zero (inv_ne_zero ha)
-  rw [smul_smul, inv_mul_eq_div, div_self ha, one_smul, ←div_mul_eq_div_div_swap,
+  rw [smul_smul, inv_mul_eq_div, div_self ha, one_smul, ← div_mul_eq_div_div_swap,
     inv_mul_eq_div, div_self ha, div_one, Function.comp.assoc] at this
   convert this
   ext
@@ -139,7 +139,7 @@ lemma isIntegralCurveAt_comp_mul_ne_zero {γ : ℝ → M} {a : ℝ} (ha : a ≠ 
 variable (t₀) in
 lemma isIntegralCurveAt_const (h : v x₀ = 0) : IsIntegralCurveAt (fun _ => x₀) v t₀ x₀ := by
   refine ⟨rfl, 1, zero_lt_one, fun t _ => ?_⟩
-  rw [h, ←ContinuousLinearMap.zero_apply (R₁ := ℝ) (R₂ := ℝ) (1 : ℝ),
+  rw [h, ← ContinuousLinearMap.zero_apply (R₁ := ℝ) (R₂ := ℝ) (1 : ℝ),
     ContinuousLinearMap.smulRight_one_one]
   exact hasMFDerivAt_const ..
 
@@ -156,7 +156,7 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
   obtain ⟨f, hf1, ε1, hε1, hf2⟩ :=
     exists_forall_hasDerivAt_Ioo_eq_of_contDiffAt t₀
       (hv.contDiffAt (range_mem_nhds_isInteriorPoint hx)).snd
-  rw [←Real.ball_eq_Ioo] at hf2
+  rw [← Real.ball_eq_Ioo] at hf2
   -- use continuity of `f` to extract `ε2` so that for `t ∈ Real.ball t₀ ε2`,
   -- `f t ∈ interior (extChartAt I x₀).target`
   have hcont := (hf2 t₀ (Metric.mem_ball_self hε1)).continuousAt
@@ -172,14 +172,14 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
     min ε1 ε2, lt_min hε1 hε2, ?_⟩
   intros t ht
   -- collect useful terms in convenient forms
-  rw [←Real.ball_eq_Ioo] at ht
+  rw [← Real.ball_eq_Ioo] at ht
   have hf3 := hf3 t <| mem_of_mem_of_subset ht (Metric.ball_subset_ball (min_le_right ..))
   have h : HasDerivAt f
     ((fderivWithin ℝ ((extChartAt I x₀) ∘ (extChartAt I ((extChartAt I x₀).symm (f t))).symm)
         (range I) (extChartAt I ((extChartAt I x₀).symm (f t)) ((extChartAt I x₀).symm (f t))))
       (v ((extChartAt I x₀).symm (f t))))
     t := hf2 t <| mem_of_mem_of_subset ht (Metric.ball_subset_ball (min_le_left ..))
-  rw [←tangentCoordChange_def] at h
+  rw [← tangentCoordChange_def] at h
   have hf3' := mem_of_mem_of_subset hf3 interior_subset
   have hft1 := mem_preimage.mp <|
     mem_of_mem_of_subset hf3' (extChartAt I x₀).target_subset_preimage_source
@@ -192,15 +192,15 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
     (v ((extChartAt I x₀).symm (f t))) t
   -- express `v (γ t)` as `D⁻¹ D (v (γ t))`, where `D` is a change of coordinates, so we can use
   -- `HasFDerivAt.comp_hasDerivAt` on `h`
-  rw [←tangentCoordChange_self (I := I) (x := (extChartAt I x₀).symm (f t))
+  rw [← tangentCoordChange_self (I := I) (x := (extChartAt I x₀).symm (f t))
       (z := (extChartAt I x₀).symm (f t)) (v := v ((extChartAt I x₀).symm (f t))) hft2,
-    ←tangentCoordChange_comp (x := x₀) ⟨⟨hft2, hft1⟩, hft2⟩]
+    ← tangentCoordChange_comp (x := x₀) ⟨⟨hft2, hft1⟩, hft2⟩]
   apply HasFDerivAt.comp_hasDerivAt _ _ h
   apply HasFDerivWithinAt.hasFDerivAt (s := range I) _ <|
     mem_nhds_iff.mpr ⟨interior (extChartAt I x₀).target,
       subset_trans interior_subset (extChartAt_target_subset_range ..),
       isOpen_interior, hf3⟩
-  nth_rw 4 [←(extChartAt I x₀).right_inv hf3']
+  nth_rw 4 [← (extChartAt I x₀).right_inv hf3']
   exact hasFDerivWithinAt_tangentCoordChange ⟨hft1, hft2⟩
 
 /-- For any continuously differentiable vector field defined on a manifold without boundary and any
