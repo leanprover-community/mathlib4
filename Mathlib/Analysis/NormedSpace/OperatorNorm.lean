@@ -315,7 +315,7 @@ private lemma uniformity_eq_seminorm :
     simp only [Seminorm.mem_ball_zero, mem_closedBall_zero_iff] at hf ⊢
     rw [mul_comm] at hδ
     exact le_trans (le_of_op_norm_le_of_le _ hf.le (hε _ hx)) hδ.le
-    
+
 /-- Continuous linear maps themselves form a seminormed space with respect to
     the operator norm. -/
 instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) :=
