@@ -240,23 +240,16 @@ lemma op_norm_pi {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'} [∀ i', 
   ContinuousMultilinearMap.op_norm_pi fun i ↦ (f i).1
 
 section
-variable (𝕜 G)
 
-lemma norm_of_subsingleton_le [Subsingleton ι] (i' : ι) : ‖ofSubsingleton 𝕜 G i'‖ ≤ 1 :=
-  ContinuousMultilinearMap.norm_ofSubsingleton_le 𝕜 G i'
+@[simp] lemma norm_of_subsingleton [Subsingleton ι] (i : ι) (f : E →L[𝕜] G) :
+    ‖ofSubsingleton 𝕜 E G i f‖ = ‖f‖ :=
+  ContinuousMultilinearMap.norm_ofSubsingleton i f
 
-@[simp] lemma norm_of_subsingleton [Subsingleton ι] [Nontrivial G] (i' : ι) :
-    ‖ofSubsingleton 𝕜 G i'‖ = 1 :=
-  ContinuousMultilinearMap.norm_ofSubsingleton 𝕜 G i'
+@[simp] lemma nnnorm_of_subsingleton [Subsingleton ι] (i : ι) (f : E →L[𝕜] G) :
+    ‖ofSubsingleton 𝕜 E G i f‖₊ = ‖f‖₊ :=
+  NNReal.eq <| norm_of_subsingleton i f
 
-lemma nnnorm_of_subsingleton_le [Subsingleton ι] (i' : ι) : ‖ofSubsingleton 𝕜 G i'‖₊ ≤ 1 :=
-  norm_of_subsingleton_le _ _ _
-
-@[simp] lemma nnnorm_of_subsingleton [Subsingleton ι] [Nontrivial G] (i' : ι) :
-    ‖ofSubsingleton 𝕜 G i'‖₊ = 1 :=
-  NNReal.eq <| norm_of_subsingleton _ _ _
-
-variable {G} (E)
+variable (𝕜 E)
 
 @[simp] lemma norm_constOfIsEmpty [IsEmpty ι] (x : G) : ‖constOfIsEmpty 𝕜 E ι x‖ = ‖x‖ :=
   ContinuousMultilinearMap.norm_constOfIsEmpty _ _ _
