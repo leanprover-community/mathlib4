@@ -21,17 +21,17 @@ open Nat
 
 variable {w v : Nat}
 
-theorem toNat_injective {n : Nat} : Function.Injective (@Std.BitVec.toNat n)
-  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
-
-theorem toNat_inj {x y : BitVec w} : x.toNat = y.toNat ↔ x = y :=
-  toNat_injective.eq_iff
-
 theorem toFin_injective {n : Nat} : Function.Injective (@Std.BitVec.toFin n)
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
 theorem toFin_inj {x y : BitVec w} : x.toFin = y.toFin ↔ x = y :=
   toFin_injective.eq_iff
+
+theorem toNat_injective {n : Nat} : Function.Injective (@Std.BitVec.toNat n) :=
+  Function.Injective.comp Fin.val_injective toFin_injective
+
+theorem toNat_inj {x y : BitVec w} : x.toNat = y.toNat ↔ x = y :=
+  toNat_injective.eq_iff
 
 /-- `x < y` as natural numbers if and only if `x < y` as `BitVec w`. -/
 theorem toNat_lt_toNat {x y : BitVec w} : x.toNat < y.toNat ↔ x < y :=
