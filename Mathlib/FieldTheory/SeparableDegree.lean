@@ -348,7 +348,7 @@ end Field
 
 namespace Polynomial
 
--- TODO: remove once #8563 is merged
+/-- TODO: remove once #8563 is merged -/
 axiom one_lt_rootMultiplicity_iff_isRoot_gcd
     {R : Type*} [CommRing R] [IsDomain R] [GCDMonoid R[X]] {p : R[X]} {t : R} (h : p ≠ 0) :
     1 < p.rootMultiplicity t ↔ (gcd p (derivative p)).IsRoot t
