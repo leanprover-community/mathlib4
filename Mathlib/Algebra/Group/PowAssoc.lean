@@ -74,57 +74,8 @@ theorem ppow_mul [PNatPowAssoc M] (x : M) (m n : ℕ+) : x ^ (m * n) = (x ^ m) ^
 
 end PNatPowAssoc
 
-section ppowRec
-
-variable [Mul M]
-
-/-- A strictly positive integer power operation. `ppowRec n a = a * (a * (⋯ * a) ⋯ )` n times. -/
-def ppowRec : ℕ+ → M → M :=
-  fun n => PNat.recOn n (fun x ↦ x) (fun _ y => fun x => x * y x)
-
-@[simp]
-theorem ppowRec_one (x : M) : ppowRec 1 x = x := rfl
-
-theorem ppowRec_succ (x : M) (n : ℕ+) : ppowRec (n + 1) x = x * ppowRec n x := by
-  refine PNat.recOn n rfl ?_
-  intro k _
-  exact rfl
-
-end ppowRec
-
-section Semigroup
-
-variable [Semigroup M]
-
-namespace Semigroup
-
-instance (M: Type u) [Semigroup M] : Pow M ℕ+ :=
-  {
-    pow := fun x n => ppowRec n x
-  }
-
-theorem ppow_eq_ppowRec (x : M) (n : ℕ+) : x ^ n = ppowRec n x := rfl
-
-theorem ppow_add (x : M) (k n : ℕ+) : x ^ (k + n) = x ^ k * x ^ n := by
-  simp only [ppow_eq_ppowRec]
-  refine PNat.recOn k ?_ ?_
-  rw [add_comm, ppowRec_one, ppowRec_succ]
-  intro k hk
-  rw [ppowRec_succ, mul_assoc, ← hk, ← ppowRec_succ, add_right_comm]
-
-instance (M: Type u) [Semigroup M] : PNatPowAssoc M :=
-  {
-    ppow_add := fun k n x => ppow_add x k n
-    ppow_one := ppowRec_one
-  }
-
-end Semigroup
-
-end Semigroup
-
-theorem ppow_eq_pow [Monoid M] (x : M) (n : ℕ+) : x ^ n = x ^ (n : ℕ) := by
+theorem ppow_eq_pow [Monoid M] [Pow M ℕ+] [PNatPowAssoc M] (x : M) (n : ℕ+) : x ^ n = x ^ (n : ℕ) := by
   refine PNat.recOn n ?_ ?_
-  rw [Semigroup.ppow_eq_ppowRec, ppowRec_one, PNat.one_coe, pow_one]
+  rw [ppow_one, PNat.one_coe, pow_one]
   intro k hk
-  rw [Semigroup.ppow_eq_ppowRec, ppowRec_succ, PNat.add_coe, add_comm, pow_add, PNat.one_coe, ← hk,
-    pow_one, Semigroup.ppow_eq_ppowRec]
+  rw [ppow_add, ppow_one, PNat.add_coe, pow_add, PNat.one_coe, pow_one, ← hk]
