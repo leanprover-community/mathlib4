@@ -1832,8 +1832,7 @@ theorem _root_.Function.Surjective.list_map {f : α → β} (h : Surjective f) :
 theorem map_surjective_iff {f : α → β} : Surjective (map f) ↔ Surjective f := by
   refine ⟨fun h x => ?_, (·.list_map)⟩
   let ⟨[y], hxy⟩ := h [x]
-  injection hxy with hxy
-  exact ⟨_, hxy⟩
+  exact ⟨_, List.singleton_injective hxy⟩
 
 theorem _root_.Function.Bijective.list_map {f : α → β} (h : Bijective f) : Bijective (map f) :=
   ⟨h.1.list_map, h.2.list_map⟩
