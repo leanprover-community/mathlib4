@@ -732,7 +732,7 @@ def nameDict : String → List String
   | "prehaar"     => ["add", "Prehaar"]
   | "unit"        => ["add", "Unit"]
   | "units"       => ["add", "Units"]
-  | "cyclic"       => ["add", "Cyclic"]
+  | "cyclic"      => ["add", "Cyclic"]
   | "rootable"    => ["divisible"]
   | x             => [x]
 
