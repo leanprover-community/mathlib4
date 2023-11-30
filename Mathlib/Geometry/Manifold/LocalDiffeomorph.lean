@@ -462,11 +462,13 @@ lemma extChartAt_symm_isLocalDiffeomorphAt {x : M} {y : E} (hy : y ∈ (extChart
 variable {f : M → N} {x : M} (hf : MDifferentiableAt I J f x)
   {e : LocalHomeomorph M H} (hx : x ∈ e.source) {e' : LocalHomeomorph N G} (hx' : (f x) ∈ e'.source)
   (he : e ∈ maximalAtlas I M) (he' : e' ∈ maximalAtlas J N)
-  [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
+  [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N] [J.Boundaryless]
+
+variable {n I J}
 
 /-- If `f : M → N` has surjective differential at `x` iff its local coordinate representation
   `φ ∘ f ∘ ψ.symm`, for any two charts φ, ψ around `x` and `f x`, does. -/
-lemma mfderiv_surjective_iff_in_charts (hn : 1 ≤ n) [J.Boundaryless] : Surjective (mfderiv I J f x)
+lemma mfderiv_surjective_iff_in_charts (hn : 1 ≤ n) : Surjective (mfderiv I J f x)
     ↔ Surjective (fderiv 𝕜 ((e'.extend J) ∘ f ∘ (e.extend I).symm) (e.extend I x)) := by
   rw [← mfderiv_eq_fderiv]
   have h : (e.extend I) x ∈ (e.extend I).symm.source := by
@@ -482,12 +484,11 @@ lemma mfderiv_surjective_iff_in_charts (hn : 1 ≤ n) [J.Boundaryless] : Surject
       apply ContMDiffAt.mdifferentiableAt _ hn
       -- No boundary: this is true, but too strong for our last step: use a weaker version.
       -- apply ContMDiffOn.contMDiffAt _ ((e.isOpen_extend_target I).mem_nhds h0)--(mem_image_of_mem I (e.map_source hx)))
-      have : IsOpen (I '' e.target) := sorry
+      have : IsOpen (I '' e.target) := sorry -- have this on a branch also
       apply ContMDiffOn.contMDiffAt _ (this.mem_nhds (mem_image_of_mem I (e.map_source hx)))
       exact contMDiffOn_extend_symm he
     exact MDifferentiableAt.comp (hg := hf) (hf := aux) (M' := M) (M := E)
 
-  -- Rewrite by the previous lemma twice.
   let r1 := e.extend_symm_isLocalDiffeomorphAt _ n he h
   let s1 := mfderiv_surjective_iff_comp_isLocalDiffeomorph hn _ _ r1 (this.symm ▸ hf)
   rw [e.extend_left_inv I hx] at s1
@@ -497,9 +498,54 @@ lemma mfderiv_surjective_iff_in_charts (hn : 1 ≤ n) [J.Boundaryless] : Surject
   rw [mfderiv_surjective_iff_comp_isLocalDiffeomorph' hn (hφ := this.symm ▸ r2) hf']
   rfl
 
--- corollary: f has injective/surjective/bijective differential iff its local coord rep has
--- for any two charts in that domain
--- corollary: if fin-dim, rank of differential is the same as local coord rep
+/-- If `f : M → N` has injective differential at `x` iff its local coordinate representation
+  `φ ∘ f ∘ ψ.symm`, for any two charts φ, ψ around `x` and `f x`, does. -/
+lemma mfderiv_injective_iff_in_charts (hn : 1 ≤ n) : Injective (mfderiv I J f x)
+    ↔ Injective (fderiv 𝕜 ((e'.extend J) ∘ f ∘ (e.extend I).symm) (e.extend I x)) := by
+  -- TODO: reduce this duplication somehow!
+  rw [← mfderiv_eq_fderiv]
+  have h : (e.extend I) x ∈ (e.extend I).symm.source := by
+    rw [LocalEquiv.symm_source]
+    exact e.mapsTo_extend' I hx
+  let x' := (e.extend I).symm ((e.extend I) x)
+  have eqx' : x' = (e.extend I).symm ((e.extend I) x) := rfl
+  have : x' = x := e.extend_left_inv I hx
+  -- f ∘ e.symm is differentiable at eExt x
+  have hf' : MDifferentiableAt 𝓘(𝕜, E) J (f ∘ (e.extend I).symm) ((e.extend I) x) := by
+    rw [← this] at hf
+    have aux : MDifferentiableAt 𝓘(𝕜, E) I (e.extend I).symm ((e.extend I) x) := by
+      apply ContMDiffAt.mdifferentiableAt _ hn
+      -- No boundary: this is true, but too strong for our last step: use a weaker version.
+      -- apply ContMDiffOn.contMDiffAt _ ((e.isOpen_extend_target I).mem_nhds h0)--(mem_image_of_mem I (e.map_source hx)))
+      have : IsOpen (I '' e.target) := sorry -- have this on a branch also
+      apply ContMDiffOn.contMDiffAt _ (this.mem_nhds (mem_image_of_mem I (e.map_source hx)))
+      exact contMDiffOn_extend_symm he
+    exact MDifferentiableAt.comp (hg := hf) (hf := aux) (M' := M) (M := E)
+  let r1 := e.extend_symm_isLocalDiffeomorphAt _ n he h
+  let s1 := mfderiv_injective_iff_comp_isLocalDiffeomorph hn _ _ r1 (this.symm ▸ hf)
+  rw [e.extend_left_inv I hx] at s1
+  rw [s1]
+  let r2 := e'.extend_isLocalDiffeomorphAt n he' (this ▸ hx')
+  rw [mfderiv_injective_iff_comp_isLocalDiffeomorph' hn (hφ := this.symm ▸ r2) hf']
+  rfl
+
+/-- If `f : M → N` has bijective differential at `x` iff its local coordinate representation
+  `φ ∘ f ∘ ψ.symm`, for any two charts φ, ψ around `x` and `f x`, does. -/
+lemma mfderiv_bijective_iff_in_charts (hf : MDifferentiableAt I J f x) (hn : 1 ≤ n) :
+    Bijective (mfderiv I J f x) ↔ Bijective (fderiv 𝕜 ((e'.extend J) ∘ f ∘ (e.extend I).symm) (e.extend I x)) := by
+  rw [Bijective, Bijective, and_congr]
+  apply (mfderiv_injective_iff_in_charts hf hx hx' he he' hn)
+  apply (mfderiv_surjective_iff_in_charts hf hx hx' he he' hn)
+
+-- corollary: if M is finite-dimensional, rank of differential df_x equals the rank of d(f_loc),
+-- where f_loc is the local coordinate representation
 -- xxx: introduce a definition for local coordinate rep?
+
+-- Sample application of the lemmas above.
+lemma cor (hf : MDifferentiableAt I J f x) (hn : 1 ≤ n) :
+    Bijective (mfderiv I J f x) ↔ Bijective (fderiv 𝕜 ((extChartAt J (f x)) ∘ f ∘ (extChartAt I x).symm) (extChartAt I x x)) := by
+  rw [extChartAt]
+  apply mfderiv_bijective_iff_in_charts /-hf-/ (mem_chart_source H x) (mem_chart_source G (f x))
+    (chart_mem_maximalAtlas I x) (chart_mem_maximalAtlas J (f x)) hf hn
 
 end ChartsDifferentials
