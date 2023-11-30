@@ -1915,10 +1915,10 @@ theorem isLittleO_pure {x} : f'' =o[pure x] g'' ↔ f'' x = 0 :=
     _ ↔ f'' x = 0 := isLittleO_const_const_iff
 #align asymptotics.is_o_pure Asymptotics.isLittleO_pure
 
-theorem isLittleO_const_id_comap_norm_atTop (c : F'') :
-    (fun _x : E'' => c) =o[comap norm atTop] id :=
-  isLittleO_const_left.2 <| Or.inr tendsto_comap
-#align asymptotics.is_o_const_id_comap_norm_at_top Asymptotics.isLittleO_const_id_comap_norm_atTop
+theorem isLittleO_const_id_cobounded (c : F'') :
+    (fun _ => c) =o[Bornology.cobounded E''] id :=
+  isLittleO_const_left.2 <| .inr tendsto_norm_cobounded_atTop
+#align asymptotics.is_o_const_id_comap_norm_at_top Asymptotics.isLittleO_const_id_cobounded
 
 theorem isLittleO_const_id_atTop (c : E'') : (fun _x : ℝ => c) =o[atTop] id :=
   isLittleO_const_left.2 <| Or.inr tendsto_abs_atTop_atTop
