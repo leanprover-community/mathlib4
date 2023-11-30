@@ -487,7 +487,8 @@ instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [Ha
 This is an auxiliary lemma used twice in the definition of  `EffectiveEpiFamilyOfEffectiveEpiDesc`.
 It is the `h` hypothesis of `EffectiveEpi.desc` and `EffectiveEpi.fac`. 
 -/
-theorem effectiveEpiFamilyOfEffectiveEpiDesc_aux {B : C} {α : Type*} {X : α → C}
+
+theorem effectiveEpiFamilyStructOfEffectiveEpiDesc_aux {B : C} {α : Type*} {X : α → C}
     {π : (a : α) → X a ⟶ B} [HasCoproduct X]
     [∀ {Z : C} (g : Z ⟶ ∐ X) (a : α), HasPullback g (Sigma.ι X a)]
     [∀ {Z : C} (g : Z ⟶ ∐ X), HasCoproduct fun a ↦ pullback g (Sigma.ι X a)]
@@ -527,19 +528,19 @@ the coproduct is effective epimorphic whenever `Sigma.desc` induces an effective
 the coproduct itself.
 -/
 noncomputable
-def effectiveEpiFamilyOfEffectiveEpiDesc {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
-    [HasCoproduct X] [EffectiveEpi (Sigma.desc π)]
+def effectiveEpiFamilyStructOfEffectiveEpiDesc {B : C} {α : Type*} (X : α → C)
+    (π : (a : α) → (X a ⟶ B)) [HasCoproduct X] [EffectiveEpi (Sigma.desc π)]
     [∀ {Z : C} (g : Z ⟶ ∐ X) (a : α), HasPullback g (Sigma.ι X a)]
     [∀ {Z : C} (g : Z ⟶ ∐ X), HasCoproduct (fun a ↦ pullback g (Sigma.ι X a))]
     [∀ {Z : C} (g : Z ⟶ ∐ X),
       Epi (Sigma.desc (fun a ↦ pullback.fst (f := g) (g := (Sigma.ι X a))))] :
     EffectiveEpiFamilyStruct X π where
   desc e h := EffectiveEpi.desc (Sigma.desc π) (Sigma.desc e) fun _ _ hg ↦
-    effectiveEpiFamilyOfEffectiveEpiDesc_aux h hg
+    effectiveEpiFamilyStructOfEffectiveEpiDesc_aux h hg
   fac e h a := by
     rw [(by simp : π a = Sigma.ι X a ≫ Sigma.desc π), (by simp : e a = Sigma.ι X a ≫ Sigma.desc e),
       Category.assoc, EffectiveEpi.fac (Sigma.desc π) (Sigma.desc e) (fun g₁ g₂ hg ↦
-      effectiveEpiFamilyOfEffectiveEpiDesc_aux h hg)]
+      effectiveEpiFamilyStructOfEffectiveEpiDesc_aux h hg)]
   uniq _ _ _ hm := by
     apply EffectiveEpi.uniq (Sigma.desc π)
     ext
@@ -619,7 +620,7 @@ instance {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpi f := ⟨⟨effectiveEp
 /--
 A split epi followed by an effective epi is an effective epi. This version takes an explicit section
 to the split epi, and is mainly used to define `effectiveEpiStructCompOfEffectiveEpiSplitEpi`,
-which takes a `SplitEpi` instance instead.
+which takes a `IsSplitEpi` instance instead.
 -/
 noncomputable
 def effectiveEpiStructCompOfEffectiveEpiSplitEpi' {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) (i : X ⟶ Y)
@@ -696,5 +697,22 @@ noncomputable instance regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPull
     uniq := fun _ _ h ↦ EffectiveEpi.uniq f _ _ _ (h WalkingParallelPair.one) }
 
 end Regular
+
+section Epi
+
+variable [HasFiniteCoproducts C] (h : ∀ {α : Type} [Fintype α] {B : C}
+    (X : α → C) (π : (a : α) → (X a ⟶ B)), EffectiveEpiFamily X π ↔ Epi (Sigma.desc π ))
+
+lemma effectiveEpi_iff_epi {X Y : C} (f : X ⟶ Y) : EffectiveEpi f ↔ Epi f := by
+  rw [effectiveEpi_iff_effectiveEpiFamily, h]
+  have w : f = (Limits.Sigma.ι (fun () ↦ X) ()) ≫ (Limits.Sigma.desc (fun () ↦ f))
+  · simp only [Limits.colimit.ι_desc, Limits.Cofan.mk_pt, Limits.Cofan.mk_ι_app]
+  refine ⟨?_, fun _ ↦ epi_of_epi_fac w.symm⟩
+  intro
+  rw [w]
+  have : Epi (Limits.Sigma.ι (fun () ↦ X) ()) := ⟨fun _ _ h ↦ by ext; exact h⟩
+  exact epi_comp _ _
+
+end Epi
 
 end CategoryTheory
