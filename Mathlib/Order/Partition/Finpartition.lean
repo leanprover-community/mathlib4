@@ -47,8 +47,6 @@ not because the parts of `P` and the parts of `Q` have the same elements that `P
 
 ## TODO
 
-Link `Finpartition` and `Setoid.isPartition`.
-
 The order is the wrong way around to make `Finpartition a` a graded order. Is it bad to depart from
 the literature and turn the order around?
 -/
@@ -465,10 +463,19 @@ theorem nonempty_of_mem_parts {a : Finset α} (ha : a ∈ P.parts) : a.Nonempty 
 lemma eq_of_mem_parts (ht : t ∈ P.parts) (hu : u ∈ P.parts) (hat : a ∈ t) (hau : a ∈ u) : t = u :=
   P.disjoint.elim ht hu <| not_disjoint_iff.2 ⟨a, hat, hau⟩
 
-theorem exists_mem {a : α} (ha : a ∈ s) : ∃ t ∈ P.parts, a ∈ t := by
+theorem exists_mem (ha : a ∈ s) : ∃ t ∈ P.parts, a ∈ t := by
   simp_rw [← P.supParts] at ha
   exact mem_sup.1 ha
 #align finpartition.exists_mem Finpartition.exists_mem
+
+theorem exists_unique_mem (ha : a ∈ s) : ∃! t, t ∈ P.parts ∧ a ∈ t := by
+  obtain ⟨t, ht, ht'⟩ := P.exists_mem ha
+  refine' ⟨t, ⟨ht, ht'⟩, _⟩
+  rintro u ⟨hu, hu'⟩
+  exact P.eq_of_mem_parts hu ht hu' ht'
+
+/-- Noncomputably get the part of the `Finpartition` that `a` lies in. -/
+noncomputable def part (ha : a ∈ s) : Finset α := (P.exists_unique_mem ha).choose
 
 theorem biUnion_parts : P.parts.biUnion id = s :=
   (sup_eq_biUnion _ _).symm.trans P.supParts
@@ -556,9 +563,6 @@ def atomise (s : Finset α) (F : Finset (Finset α)) : Finpartition s :=
 
 variable {F : Finset (Finset α)}
 
--- porting note:
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2: warning: expanding binder collection
-   (Q «expr ⊆ » F) -/
 theorem mem_atomise :
     t ∈ (atomise s F).parts ↔
       t.Nonempty ∧ ∃ (Q : _) (_ : Q ⊆ F), (s.filter fun i ↦ ∀ u ∈ F, u ∈ Q ↔ i ∈ u) = t := by
