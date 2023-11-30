@@ -148,13 +148,14 @@ variable (x y : BitVec w)
 @[simp] lemma toFin_sub : toFin (x - y)   = toFin x - toFin y   := rfl
 @[simp] lemma toFin_mul : toFin (x * y)   = toFin x * toFin y   := rfl
 
-@[simp] lemma toFin_zero    : @toFin w 0 = 0 := rfl
-@[simp] lemma toFin_one     : @toFin w 1 = 1 := rfl
+-- These should be simp, but Std's simp-lemmas do not allow this yet.
+lemma toFin_zero    : toFin (0 : BitVec w) = 0 := rfl
+lemma toFin_one     : toFin (1 : BitVec w) = 1 := rfl
 
 variable (n : Nat) (z : Int)
 
-@[simp] lemma toFin_nsmul   : toFin (n • x) = n • x.toFin := rfl
-@[simp] lemma toFin_zsmul   : toFin (z • x) = z • x.toFin := rfl
+lemma toFin_nsmul   : toFin (n • x) = n • x.toFin := rfl
+lemma toFin_zsmul   : toFin (z • x) = z • x.toFin := rfl
 @[simp] lemma toFin_pow     : toFin (x ^ n) = x.toFin ^ n := rfl
 @[simp] lemma toFin_natCast : @toFin w n = n              := rfl
 @[simp] lemma toFin_intCast : @toFin w z = z              := rfl
