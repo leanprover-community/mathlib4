@@ -138,8 +138,10 @@ protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
       exact add _ _ (tmul ..) ih
 #align tensor_product.induction_on TensorProduct.induction_on
 
-/-- Lift a map that is additive in both arguments to the tensor product, provided scalar
-multiplication in either argument is equivalent.
+/-- Lift an `R`-balanced map to the tensor product.
+
+A map `f : M →+ N →+ P` additive in both components is `R`-balanced, or middle linear with respect
+to `R`, if scalar multiplication in either argument is equivalent, `f (r • m) n = f m (r • n)`.
 
 Note that strictly the first action should be a right-action by `R`, but for now `R` is commutative
 so it doesn't matter. -/
