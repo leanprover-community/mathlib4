@@ -527,8 +527,8 @@ the coproduct is effective epimorphic whenever `Sigma.desc` induces an effective
 the coproduct itself.
 -/
 noncomputable
-def effectiveEpiFamilyStructOfEffectiveEpiDesc {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
-    [HasCoproduct X] [EffectiveEpi (Sigma.desc π)]
+def effectiveEpiFamilyStructOfEffectiveEpiDesc {B : C} {α : Type*} (X : α → C)
+    (π : (a : α) → (X a ⟶ B)) [HasCoproduct X] [EffectiveEpi (Sigma.desc π)]
     [∀ {Z : C} (g : Z ⟶ ∐ X) (a : α), HasPullback g (Sigma.ι X a)]
     [∀ {Z : C} (g : Z ⟶ ∐ X), HasCoproduct (fun a ↦ pullback g (Sigma.ι X a))]
     [∀ {Z : C} (g : Z ⟶ ∐ X),
