@@ -52,6 +52,8 @@ variable
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] [SmoothManifoldWithCorners I' M']
   {v : (x : M) → TangentSpace I x} {x₀ : M}
   (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) x₀)
+  {s : Set ℝ} {t₀ : ℝ}
+
 
 /-- If `γ : ℝ → M`, `v : M → TM` is a vector field on `M`, and `s ∈ Set ℝ`,
   `IsIntegralCurveOn γ v s` means `γ t` is tangent to `v (γ t)` for all `t ∈ s`. The value of `γ`
@@ -106,8 +108,6 @@ lemma IsIntegralCurveAt.isIntegralCurveOn {γ : ℝ → M} {v : (x : M) → Tang
 
 /-! ### Translation lemmas -/
 
-variable {s : Set ℝ} {t₀ : ℝ}
-
 lemma IsIntegralCurveOn.comp_add {γ : ℝ → M} (hγ : IsIntegralCurveOn γ v s) (dt : ℝ) :
     IsIntegralCurveOn (γ ∘ (· + dt)) v { t | t + dt ∈ s } := by
   intros t ht
@@ -159,65 +159,60 @@ lemma isIntegralCurve_comp_add {γ : ℝ → M} {dt : ℝ} : IsIntegralCurve γ 
 
 /-! ### Scale lemmas -/
 
-lemma IsIntegralCurveAt.comp_mul_pos {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀) {a : ℝ}
-    (ha : 0 < a) : IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
-  obtain ⟨ε, hε, h2⟩ := hγ
-  refine ⟨ε / a, div_pos hε ha, fun t ht => ?_⟩
-  have ht : t * a ∈ Ioo (t₀ - ε) (t₀ + ε) := by
-    rw [mem_Ioo, ← div_lt_iff ha, ← lt_div_iff ha, sub_div, add_div]
-    exact ht
+lemma IsIntegralCurveOn.comp_mul {γ : ℝ → M} (hγ : IsIntegralCurveOn γ v s) (a : ℝ) :
+    IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
+  intros t ht
   rw [Function.comp_apply, Pi.smul_apply, ← ContinuousLinearMap.smulRight_comp]
-  refine HasMFDerivAt.comp t (h2 (t * a) ht) ⟨(continuous_mul_right _).continuousAt, ?_⟩
+  refine HasMFDerivAt.comp t (hγ (t * a) ht) ⟨(continuous_mul_right _).continuousAt, ?_⟩
   simp only [mfld_simps, hasFDerivWithinAt_univ]
   exact HasFDerivAt.mul_const' (hasFDerivAt_id _) _
 
-lemma isIntegralCurvAt_comp_mul_pos {γ : ℝ → M} {a : ℝ} (ha : 0 < a) :
-    IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
-  refine ⟨fun hγ => IsIntegralCurveAt.comp_mul_pos hγ ha, fun hγ ↦ ?_⟩
-  have := hγ.comp_mul_pos (inv_pos_of_pos ha)
-  rw [smul_smul, inv_mul_eq_div, div_self (ne_of_gt ha), one_smul, ← div_mul_eq_div_div_swap,
-    inv_mul_eq_div, div_self (ne_of_gt ha), div_one, Function.comp.assoc] at this
+lemma isIntegralCurvOn_comp_mul_ne_zero {γ : ℝ → M} {a : ℝ} (ha : a ≠ 0) :
+    IsIntegralCurveOn γ v s ↔ IsIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
+  refine ⟨fun hγ => hγ.comp_mul a, fun hγ ↦ ?_⟩
+  have := hγ.comp_mul a⁻¹
+  simp_rw [smul_smul, inv_mul_eq_div, div_self ha, one_smul, mem_setOf_eq, mul_assoc,
+    inv_mul_eq_div, div_self ha, mul_one, setOf_mem_eq] at this
   convert this
-  ext
-  simp [inv_mul_eq_div, div_self (ne_of_gt ha)]
-
-lemma IsIntegralCurveAt.comp_neg {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀) :
-    IsIntegralCurveAt (γ ∘ Neg.neg) (-v) (-t₀) := by
-  obtain ⟨ε, hε, h2⟩ := hγ
-  refine ⟨ε, hε, fun t ht => ?_⟩
-  rw [← neg_add', neg_add_eq_sub, ← neg_sub, ← neg_mem_Ioo_iff] at ht
-  rw [Function.comp_apply, Pi.neg_apply, ← neg_one_smul ℝ (v (γ (-t))),
-    ← ContinuousLinearMap.smulRight_comp]
-  apply (h2 (-t) ht).comp t ⟨continuousAt_neg, ?_⟩
-  simp only [mfld_simps, hasFDerivWithinAt_univ]
-  exact HasDerivAt.hasFDerivAt (hasDerivAt_neg _)
-
-lemma isIntegralCurveAt_comp_neg {γ : ℝ → M} :
-    IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ Neg.neg) (-v) (-t₀) := by
-  refine ⟨fun hγ => IsIntegralCurveAt.comp_neg hγ, fun hγ ↦ ?_⟩
-  have := hγ.comp_neg
-  rw [Function.comp.assoc, neg_comp_neg, neg_neg, neg_neg] at this
-  exact this
+  ext t
+  rw [Function.comp_apply, Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
 
 lemma IsIntegralCurveAt.comp_mul_ne_zero {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀) {a : ℝ}
     (ha : a ≠ 0) : IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
-  rw [ne_iff_lt_or_gt] at ha
-  cases' ha with ha ha
-  · apply isIntegralCurveAt_comp_neg.mpr
-    have : (· * a) ∘ Neg.neg = fun t ↦ t * -a := by ext; simp
-    rw [Function.comp.assoc, this, ← neg_smul, ← div_neg]
-    exact hγ.comp_mul_pos (neg_pos_of_neg ha)
-  · exact hγ.comp_mul_pos ha
+  obtain ⟨ε, hε, h⟩ := hγ
+  refine ⟨ε / |a|, div_pos hε (abs_pos.mpr ha), ?_⟩
+  convert h.comp_mul a
+  ext t
+  rw [Ioo, Ioo, mem_setOf_eq, mem_setOf_eq, mem_setOf_eq]
+  by_cases ha' : 0 < a
+  · rw [abs_eq_self.mpr (le_of_lt ha'), ← sub_div, ← add_div, div_lt_iff ha', lt_div_iff ha']
+  · rw [abs_eq_neg_self.mpr (not_lt.mp ha'), div_neg, sub_neg_eq_add, ← sub_eq_add_neg, ← sub_div,
+    ← add_div, div_lt_iff_of_neg (ha.lt_of_le (not_lt.mp ha')),
+    lt_div_iff_of_neg (ha.lt_of_le (not_lt.mp ha')), and_comm]
 
 lemma isIntegralCurveAt_comp_mul_ne_zero {γ : ℝ → M} {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
-  refine ⟨fun hγ => IsIntegralCurveAt.comp_mul_ne_zero hγ ha, fun hγ ↦ ?_⟩
+  refine ⟨fun hγ => hγ.comp_mul_ne_zero ha, fun hγ ↦ ?_⟩
   have := hγ.comp_mul_ne_zero (inv_ne_zero ha)
   rw [smul_smul, inv_mul_eq_div, div_self ha, one_smul, ← div_mul_eq_div_div_swap,
     inv_mul_eq_div, div_self ha, div_one, Function.comp.assoc] at this
   convert this
-  ext
+  ext t
   simp [inv_mul_eq_div, div_self ha]
+
+lemma IsIntegralCurve.comp_mul {γ : ℝ → M} (hγ : IsIntegralCurve γ v) (a : ℝ) :
+    IsIntegralCurve (γ ∘ (· * a)) (a • v) := by
+  rw [isIntegralCurve_iff_isIntegralCurveOn] at *
+  exact hγ.comp_mul _
+
+lemma isIntegralCurve_comp_mul_ne_zero {γ : ℝ → M} {a : ℝ} (ha : a ≠ 0) :
+    IsIntegralCurve γ v ↔ IsIntegralCurve (γ ∘ (· * a)) (a • v) := by
+  refine ⟨fun hγ => hγ.comp_mul _, fun hγ => ?_⟩
+  have := hγ.comp_mul a⁻¹
+  rw [smul_smul, inv_mul_eq_div, div_self ha, one_smul] at this
+  convert this
+  ext t
+  rw [Function.comp_apply, Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
 
 variable (t₀) in
 /-- If the vector field `v` vanishes at `x₀`, then the constant curve at `x₀`
