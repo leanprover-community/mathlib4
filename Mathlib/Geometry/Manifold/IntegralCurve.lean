@@ -217,6 +217,6 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt (hx : I.IsInteriorPoint x₀) :
   chosen starting point `x₀ : M`, an integral curve `γ : ℝ → M` exists such that `γ t₀ = x₀` and the
   tangent vector of `γ` at `t` coincides with the vector field at `γ t` for all `t` within an open
   interval around `t₀`. -/
-lemma exists_integralCurve_of_contMDiff_tangent_section_boundaryless [I.Boundaryless] :
+lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [I.Boundaryless] :
     ∃ (γ : ℝ → M), IsIntegralCurveAt γ v t₀ x₀ :=
   exists_isIntegralCurveAt_of_contMDiffAt hv I.isInteriorPoint
