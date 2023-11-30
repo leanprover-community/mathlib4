@@ -49,6 +49,9 @@ theorem IsNilpotent.mk [Zero R] [Pow R ℕ] (x : R) (n : ℕ) (e : x ^ n = 0) : 
   ⟨1, pow_one 0⟩
 #align is_nilpotent.zero IsNilpotent.zero
 
+theorem not_isNilpotent_one [MonoidWithZero R] [Nontrivial R] :
+    ¬ IsNilpotent (1 : R) := fun ⟨_, H⟩ ↦ zero_ne_one (H.symm.trans (one_pow _))
+
 theorem IsNilpotent.neg [Ring R] (h : IsNilpotent x) : IsNilpotent (-x) := by
   obtain ⟨n, hn⟩ := h
   use n
@@ -71,6 +74,13 @@ lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
 theorem isNilpotent_neg_iff [Ring R] : IsNilpotent (-x) ↔ IsNilpotent x :=
   ⟨fun h => neg_neg x ▸ h.neg, fun h => h.neg⟩
 #align is_nilpotent_neg_iff isNilpotent_neg_iff
+
+lemma IsNilpotent.smul [MonoidWithZero R] [MonoidWithZero S] [MulActionWithZero R S]
+    [SMulCommClass R S S] [IsScalarTower R S S] {a : S} (ha : IsNilpotent a) (t : R) :
+    IsNilpotent (t • a) := by
+  obtain ⟨k, ha⟩ := ha
+  use k
+  rw [smul_pow, ha, smul_zero]
 
 theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
     [MonoidWithZeroHomClass F R S] (hr : IsNilpotent r) (f : F) : IsNilpotent (f r) := by

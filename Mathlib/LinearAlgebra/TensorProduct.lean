@@ -138,6 +138,42 @@ protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
       exact add _ _ (tmul ..) ih
 #align tensor_product.induction_on TensorProduct.induction_on
 
+/-- Lift an `R`-balanced map to the tensor product.
+
+A map `f : M →+ N →+ P` additive in both components is `R`-balanced, or middle linear with respect
+to `R`, if scalar multiplication in either argument is equivalent, `f (r • m) n = f m (r • n)`.
+
+Note that strictly the first action should be a right-action by `R`, but for now `R` is commutative
+so it doesn't matter. -/
+-- TODO: use this to implement `lift` and `SMul.aux`. For now we do not do this as it causes
+-- performance issues elsewhere.
+def liftAddHom (f : M →+ N →+ P)
+    (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) :
+    M ⊗[R] N →+ P :=
+  (addConGen (TensorProduct.Eqv R M N)).lift (FreeAddMonoid.lift (fun mn : M × N => f mn.1 mn.2)) <|
+    AddCon.addConGen_le fun x y hxy =>
+      match x, y, hxy with
+      | _, _, .of_zero_left n =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, map_zero,
+          AddMonoidHom.zero_apply]
+      | _, _, .of_zero_right m =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, map_zero]
+      | _, _, .of_add_left m₁ m₂ n =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, map_add,
+          AddMonoidHom.add_apply]
+      | _, _, .of_add_right m n₁ n₂ =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, map_add]
+      | _, _, .of_smul s m n =>
+        (AddCon.ker_rel _).2 <| by rw [FreeAddMonoid.lift_eval_of, FreeAddMonoid.lift_eval_of, hf]
+      | _, _, .add_comm x y =>
+        (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]
+
+@[simp]
+theorem liftAddHom_tmul (f : M →+ N →+ P)
+    (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) (m : M) (n : N) :
+    liftAddHom f hf (m ⊗ₜ n) = f m n :=
+  rfl
+
 variable (M)
 
 @[simp]
