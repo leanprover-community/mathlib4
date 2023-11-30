@@ -2,9 +2,9 @@ import Mathlib.Data.Finset.Basic
 /-!
 Tests that `List.choose` and friends all reduce appropriately.
 
-Previously this was blocked by a `let ⟨x, hx⟩` pattern match.
+Previously this was blocked by reducibility issues with `And.rec`
+(https://leanprover.zulipchat.com/#narrow/stream/236446-Type-theory/topic/And.2Erec/near/398483665).
 -/
-
 
 namespace List
 
