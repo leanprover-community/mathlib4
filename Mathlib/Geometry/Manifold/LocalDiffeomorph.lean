@@ -5,6 +5,7 @@ Authors: Michael Rothgang
 -/
 
 import Mathlib.Geometry.Manifold.Diffeomorph
+import Mathlib.LinearAlgebra.Dimension
 
 /-!
 # Local diffeomorphisms between smooth manifolds
@@ -335,17 +336,24 @@ lemma mfderiv_injective_iff_comp_isLocalDiffeomorph :
   rw [← Injective.of_comp_iff' _ dφiso.bijective]
   exact Iff.rfl
 
-/-- If `M` is finite-dimensional, then rk (df\cdot φ)_x = rk (df_φ(x)). -/
--- TODO: correct statement? rank, finrank, something else?
--- TODO: need the lemma about rank of linear isomorphisms; not searched yet
-lemma mfderiv_rank_eq_comp_isLocalDiffeomorph [FiniteDimensional 𝕜 E] : 0 = 1 := by
+open LinearMap (rank)
+
+/-- If `M` is finite-dimensional, then rk d(f∘φ)_x = rk (df_φ(x)). -/
+-- xxx: is finite-dimensionality required, or obvious by Lean convention?
+lemma mfderiv_rank_eq_comp_isLocalDiffeomorph [FiniteDimensional 𝕜 E] :
+    rank (mfderiv I' J f (φ x)).toLinearMap = rank (mfderiv I J (f ∘ φ) x).toLinearMap := by
+
   let dφ := mfderiv I I' φ x
   let dφiso := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv hφ hn
   have aux : dφiso = dφ := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe hn hφ
   have hφ' : HasMFDerivAt I I' φ x dφ :=
     (mdifferentiableAt_of_isLocalDiffeomorphAt _ _ hn hφ).hasMFDerivAt
-  -- rw [HasMFDerivAt.mfderiv ((hf.hasMFDerivAt).comp hφ' (x := x)), ← aux]
-  sorry
+  rw [HasMFDerivAt.mfderiv ((hf.hasMFDerivAt).comp hφ' (x := x)), ← aux]
+
+  set df := mfderiv I' J f (φ x)
+  apply le_antisymm ?_ (LinearMap.rank_comp_le_left dφiso.toLinearMap df.toLinearMap)
+  sorry -- this is the hard inclusion: why is rank df ≤ rank (df ∘ dφiso)
+  -- probably doable, using LinearMap.le_rank_iff_exists_linearIndependent
 
 variable {f : M → M'} (hf : MDifferentiableAt I I' f x)
   {φ : M' → N} (hφ : IsLocalDiffeomorphAt I' J n φ (f x))
@@ -376,7 +384,20 @@ lemma mfderiv_injective_iff_comp_isLocalDiffeomorph' :
   rw [← Injective.of_comp_iff dφiso.bijective.injective]
   exact Iff.rfl
 
--- TODO: also insert statement about ranks of differential
+/-- If `M` is finite-dimensional, then rk d(φ ∘ f)_x = rk (dφ_f(x)). -/
+lemma mfderiv_rank_eq_comp_isLocalDiffeomorph' [FiniteDimensional 𝕜 E] : 0 = 1 := by
+  -- TODO. this doesn't typecheck, both sides live in different universes
+  -- need to name levels explicitly, then use Cardinal.lift on e.g. the LHS
+  -- rank (mfderiv I' J φ (f x)).toLinearMap = rank (mfderiv I I' f x).toLinearMap := by
+  let dφ := mfderiv I' J φ (f x)
+  let dφiso := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv hφ hn
+  have aux : dφiso = dφ := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe hn hφ
+  have hφ : HasMFDerivAt I' J φ (f x) dφ :=
+    (mdifferentiableAt_of_isLocalDiffeomorphAt _ _ hn hφ).hasMFDerivAt
+  -- rw [HasMFDerivAt.mfderiv (hφ.comp (hf.hasMFDerivAt) (x := x)), ← aux]
+  -- set dφ := mfderiv I' J φ (f x)
+  -- LinearEquiv.rank_map_eq should do the trick here
+  sorry
 
 end Differential
 
