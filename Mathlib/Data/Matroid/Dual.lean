@@ -38,7 +38,7 @@ section dual
 
 /-- Given `M : Matroid α`, the `IndepMatroid α` whose independent sets are
   the subsets of `M.E` that are disjoint from some base of `M` -/
-@[simps] def dual_indepMatroid (M : Matroid α) : IndepMatroid α where
+@[simps] def dualIndepMatroid (M : Matroid α) : IndepMatroid α where
   E := M.E
   Indep I := I ⊆ M.E ∧ ∃ B, M.Base B ∧ Disjoint I B
   indep_empty := ⟨empty_subset M.E, M.exists_base.imp (fun B hB ↦ ⟨hB, empty_disjoint _⟩)⟩
@@ -113,7 +113,7 @@ section dual
   subset_ground := by tauto
 
 /-- The dual of a matroid; the bases are the complements (w.r.t `M.E`) of the bases of `M`. -/
-def dual (M : Matroid α) : Matroid α := M.dual_indepMatroid.matroid
+def dual (M : Matroid α) : Matroid α := M.dualIndepMatroid.matroid
 
 /-- The `﹡` symbol, which denotes matroid duality.
   (This is distinct from the usual `*` symbol for multiplication, due to precedence issues. )-/
@@ -158,11 +158,17 @@ theorem setOf_dual_base_eq : {B | M﹡.Base B} = (fun X ↦ M.E \ X) '' {B | M.B
   eq_of_base_iff_base_forall rfl (fun B (h : B ⊆ M.E) ↦
     by rw [dual_base_iff, dual_base_iff, dual_ground, diff_diff_cancel_left h])
 
-theorem dual_inj {M₁ M₂ : Matroid α} (h : M₁﹡ = M₂﹡) : M₁ = M₂ := by
-  rw [←dual_dual M₁, h, dual_dual]
+theorem dual_involutive : Function.Involutive (dual : Matroid α → Matroid α) := dual_dual
+
+theorem dual_injective : Function.Injective (dual : Matroid α → Matroid α) :=
+  dual_involutive.injective
 
 @[simp] theorem dual_inj_iff {M₁ M₂ : Matroid α} : M₁﹡ = M₂﹡ ↔ M₁ = M₂ :=
-  ⟨dual_inj, congr_arg _⟩
+  dual_injective.eq_iff
+
+theorem dual_inj {M₁ M₂ : Matroid α} (h : M₁﹡ = M₂﹡) : M₁ = M₂ :=
+  dual_inj_iff.1
+
 
 theorem eq_dual_comm {M₁ M₂ : Matroid α} : M₁ = M₂﹡ ↔ M₂ = M₁﹡ := by
   rw [←dual_inj_iff, dual_dual, eq_comm]
@@ -227,6 +233,9 @@ theorem Coindep.indep (hX : M.Coindep X) : M﹡.Indep X :=
 
 @[simp] theorem dual_coindep_iff : M﹡.Coindep X ↔ M.Indep X := by
   rw [Coindep, dual_dual]
+
+theorem Indep.coindep (hI : M.Indep I) : M﹡.Coindep I :=
+    dual_coindep_iff.2 hI
 
 theorem coindep_iff_exists' : M.Coindep X ↔ (∃ B, M.Base B ∧ B ⊆ M.E \ X) ∧ X ⊆ M.E := by
   simp_rw [Coindep, dual_indep_iff_exists', and_comm (a := _ ⊆ _), and_congr_left_iff, subset_diff]
