@@ -26,9 +26,10 @@ Define the interior and boundary of a manifold.
 manifold, interior, boundary
 
 ## TODO
-- if `M` is finite-dimensional, its interior is always open,
-  hence the boundary is closed (and nowhere dense)
-  This requires e.g. the homology of spheres.
+- `x` is an interior point iff *any* chart around `x` maps it to `interior (range I)`;
+similarly for the boundary.
+- the interior of `M` is open, hence the boundary is closed (and nowhere dense)
+  In finite dimensions, this requires e.g. the homology of spheres.
 - the interior of `M` is a smooth manifold without boundary
 - `boundary M` is a smooth submanifold (possibly with boundary and corners):
 follows from the corresponding statement for the model with corners `I`;
@@ -108,10 +109,9 @@ lemma range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
   exact ⟨interior (range I), interior_subset, isOpen_interior, h⟩
 
 section boundaryless
-
 variable [I.Boundaryless]
 
-/-- If `M` has no boundary, every point of `M` is an interior point. -/
+/-- If `I` is boundaryless, every point of `M` is an interior point. -/
 lemma ModelWithCorners.isInteriorPoint {x : M} : I.IsInteriorPoint x := by
   let r := ((chartAt H x).isOpen_extend_target I).interior_eq
   have : extChartAt I x = (chartAt H x).extend I := rfl
@@ -119,7 +119,7 @@ lemma ModelWithCorners.isInteriorPoint {x : M} : I.IsInteriorPoint x := by
   rw [ModelWithCorners.isInteriorPoint_iff, r]
   exact LocalEquiv.map_source _ (mem_extChartAt_source _ _)
 
-/-- If `I` is boundaryless, `M` has full interior interior. -/
+/-- If `I` is boundaryless, `M` has full interior. -/
 lemma ModelWithCorners.interior_eq_univ : SmoothManifoldWithCorners.interior I M = univ := by
   ext
   refine ⟨fun _ ↦ trivial, fun _ ↦ I.isInteriorPoint⟩
