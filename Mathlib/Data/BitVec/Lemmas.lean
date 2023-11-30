@@ -157,7 +157,7 @@ variable (n : Nat) (z : Int)
 lemma toFin_nsmul   : toFin (n • x) = n • x.toFin := rfl
 lemma toFin_zsmul   : toFin (z • x) = z • x.toFin := rfl
 @[simp] lemma toFin_pow     : toFin (x ^ n) = x.toFin ^ n := rfl
-@[simp] lemma toFin_natCast : @toFin w n = n              := rfl
+@[simp] lemma toFin_natCast : toFin (n : BitVector w) = n              := rfl
 @[simp] lemma toFin_intCast : @toFin w z = z              := rfl
 
 end
