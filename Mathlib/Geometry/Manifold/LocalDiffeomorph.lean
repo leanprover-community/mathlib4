@@ -86,30 +86,37 @@ def Diffeomorph.toLocalDiffeomorphAux (h : Diffeomorph I J M N n) : LocalDiffeom
 -- Add the very basic API we need.
 namespace LocalDiffeomorphAux
 variable (Φ : LocalDiffeomorphAux I J M N n) (hn : 1 ≤ n)
+
+/-- The inverse of a local diffeomorphism. -/
+protected def symm : LocalDiffeomorphAux J I N M n := by
+  exact {
+    toLocalHomeomorph := Φ.toLocalHomeomorph.symm
+    contMDiffOn_toFun := Φ.contMDiffOn_invFun
+    contMDiffOn_invFun := Φ.contMDiffOn_toFun
+  }
+
 protected theorem contMDiffOn : ContMDiffOn I J n Φ Φ.source :=
   Φ.contMDiffOn_toFun
 
-protected theorem contMDiffOn_symm : ContMDiffOn J I n Φ.invFun Φ.target :=
+protected theorem contMDiffOn_symm : ContMDiffOn J I n Φ.symm Φ.target :=
   Φ.contMDiffOn_invFun
 
 protected theorem mdifferentiableOn : MDifferentiableOn I J Φ Φ.source :=
   (Φ.contMDiffOn).mdifferentiableOn hn
 
-protected theorem mdifferentiableOn_symm : MDifferentiableOn J I Φ.invFun Φ.target :=
-  (Φ.contMDiffOn_symm).mdifferentiableOn hn
+protected theorem mdifferentiableOn_symm : MDifferentiableOn J I Φ.symm Φ.target :=
+  (Φ.symm).mdifferentiableOn hn
 
 protected theorem mdifferentiableAt {x : M} (hx : x ∈ Φ.source) : MDifferentiableAt I J Φ x :=
   (Φ.mdifferentiableOn hn x hx).mdifferentiableAt (Φ.open_source.mem_nhds hx)
 
--- define symm just to make this easier to write?
 protected theorem mdifferentiableAt_symm {x : M} (hx : x ∈ Φ.source) :
-    MDifferentiableAt J I Φ.invFun (Φ x) :=
-  (Φ.mdifferentiableOn_symm hn (Φ x) (Φ.map_source hx)).mdifferentiableAt
-  (Φ.open_target.mem_nhds (Φ.map_source hx))
+    MDifferentiableAt J I Φ.symm (Φ x) :=
+  (Φ.symm).mdifferentiableAt hn (Φ.map_source hx)
 
 /- We could add lots of additional API (following `Diffeomorph` and `LocalHomeomorph*), such as
 * further continuity and differentiability lemmas
-* refl, symm and trans instances; lemmas between them.
+* refl and trans instances; lemmas between them.
 As this declaration is meant for internal use only, we keep it simple. -/
 end LocalDiffeomorphAux
 end LocalDiffeomorphAux
@@ -130,6 +137,31 @@ lemma isLocalDiffeomorph_iff {f : M → N} :
     IsLocalDiffeomorph I J n f ↔ ∀ x : M, IsLocalDiffeomorphAt I J n f x := by rfl
 
 variable {n}
+
+/-! # Basic properties of local diffeomorphisms -/
+section Basic
+variable {f : M → N} {x : M}
+
+/-- A `C^n` local diffeomorphism at `x` is `C^n` differentiable at `x`. -/
+lemma contMDiffAt_of_isLocalDiffeomorphAt (hf : IsLocalDiffeomorphAt I J n f x) :
+    ContMDiffAt I J n f x := by
+  choose Φ hx heq using hf
+  -- In fact, even `ContMDiffOn I J n f Φ.source`.
+  exact ((Φ.contMDiffOn_toFun).congr heq).contMDiffAt (Φ.open_source.mem_nhds hx)
+
+/-- A local diffeomorphism at `x` is differentiable at `x`. -/
+lemma mdifferentiableAt_of_isLocalDiffeomorphAt (hn : 1 ≤ n) (hf : IsLocalDiffeomorphAt I J n f x) :
+    MDifferentiableAt I J f x :=
+  (contMDiffAt_of_isLocalDiffeomorphAt I J hf).mdifferentiableAt hn
+
+/-- A `C^n` local diffeomorphism is `C^n`. -/
+lemma contMDiff_of_isLocalDiffeomorph (hf : IsLocalDiffeomorph I J n f) : ContMDiff I J n f :=
+  fun x ↦ contMDiffAt_of_isLocalDiffeomorphAt I J (hf x)
+
+/-- A `C^n` local diffeomorphism is differentiable. -/
+lemma mdifferentiable_of_isLocalDiffeomorph (hn : 1 ≤ n) (hf : IsLocalDiffeomorph I J n f) :
+    MDifferentiable I J f :=
+  fun x ↦ mdifferentiableAt_of_isLocalDiffeomorphAt I J hn (hf x)
 
 /-- A `C^n` diffeomorphism is a local diffeomorphism. -/
 lemma Diffeomorph.isLocalDiffeomorph (Φ : M ≃ₘ^n⟮I, J⟯ N) : IsLocalDiffeomorph I J n Φ :=
@@ -157,3 +189,4 @@ def LocalDiffeomorph.image {f : M → N} (hf : IsLocalDiffeomorph I J n f) : Ope
 
 lemma LocalDiffeomorph.image_coe {f : M → N} (hf : IsLocalDiffeomorph I J n f) :
     (LocalDiffeomorph.image I J hf).1 = range f := rfl
+end Basic
