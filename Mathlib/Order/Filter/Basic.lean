@@ -1328,10 +1328,12 @@ theorem frequently_iff {f : Filter α} {P : α → Prop} :
   rfl
 #align filter.frequently_iff Filter.frequently_iff
 
+@[simp]
 theorem not_eventually {p : α → Prop} {f : Filter α} : (¬∀ᶠ x in f, p x) ↔ ∃ᶠ x in f, ¬p x := by
   simp [Filter.Frequently]
 #align filter.not_eventually Filter.not_eventually
 
+@[simp]
 theorem not_frequently {p : α → Prop} {f : Filter α} : (¬∃ᶠ x in f, p x) ↔ ∀ᶠ x in f, ¬p x := by
   simp only [Filter.Frequently, not_not]
 #align filter.not_frequently Filter.not_frequently
@@ -1342,7 +1344,7 @@ theorem frequently_true_iff_neBot (f : Filter α) : (∃ᶠ _ in f, True) ↔ Ne
 #align filter.frequently_true_iff_ne_bot Filter.frequently_true_iff_neBot
 
 @[simp]
-theorem frequently_false (f : Filter α) : ¬∃ᶠ _ in f, False := by simp [not_frequently]
+theorem frequently_false (f : Filter α) : ¬∃ᶠ _ in f, False := by simp
 #align filter.frequently_false Filter.frequently_false
 
 @[simp]
@@ -1364,21 +1366,19 @@ theorem frequently_or_distrib_right {f : Filter α} [NeBot f] {p : α → Prop} 
     (∃ᶠ x in f, p x ∨ q) ↔ (∃ᶠ x in f, p x) ∨ q := by simp
 #align filter.frequently_or_distrib_right Filter.frequently_or_distrib_right
 
-@[simp]
 theorem frequently_imp_distrib {f : Filter α} {p q : α → Prop} :
     (∃ᶠ x in f, p x → q x) ↔ (∀ᶠ x in f, p x) → ∃ᶠ x in f, q x := by
-  simp [imp_iff_not_or, not_eventually, frequently_or_distrib]
+  simp [imp_iff_not_or]
 #align filter.frequently_imp_distrib Filter.frequently_imp_distrib
 
 theorem frequently_imp_distrib_left {f : Filter α} [NeBot f] {p : Prop} {q : α → Prop} :
-    (∃ᶠ x in f, p → q x) ↔ p → ∃ᶠ x in f, q x := by simp
+    (∃ᶠ x in f, p → q x) ↔ p → ∃ᶠ x in f, q x := by simp [frequently_imp_distrib]
 #align filter.frequently_imp_distrib_left Filter.frequently_imp_distrib_left
 
 theorem frequently_imp_distrib_right {f : Filter α} [NeBot f] {p : α → Prop} {q : Prop} :
-    (∃ᶠ x in f, p x → q) ↔ (∀ᶠ x in f, p x) → q := by simp
+    (∃ᶠ x in f, p x → q) ↔ (∀ᶠ x in f, p x) → q := by simp [frequently_imp_distrib]
 #align filter.frequently_imp_distrib_right Filter.frequently_imp_distrib_right
 
-@[simp]
 theorem eventually_imp_distrib_right {f : Filter α} {p : α → Prop} {q : Prop} :
     (∀ᶠ x in f, p x → q) ↔ (∃ᶠ x in f, p x) → q := by
   simp only [imp_iff_not_or, eventually_or_distrib_right, not_frequently]
@@ -1397,7 +1397,7 @@ theorem frequently_and_distrib_right {f : Filter α} {p : α → Prop} {q : Prop
 #align filter.frequently_and_distrib_right Filter.frequently_and_distrib_right
 
 @[simp]
-theorem frequently_bot {p : α → Prop} : ¬∃ᶠ x in ⊥, p x := by simp [not_frequently]
+theorem frequently_bot {p : α → Prop} : ¬∃ᶠ x in ⊥, p x := by simp
 #align filter.frequently_bot Filter.frequently_bot
 
 @[simp]
