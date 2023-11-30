@@ -380,7 +380,6 @@ theorem lor_assoc (n m k : ℕ) : (n ||| m) ||| k = n ||| (m ||| k) := by bitwis
 @[simp]
 theorem xor_self (n : ℕ) : n ^^^ n = 0 :=
   zero_of_testBit_eq_false fun i => by simp
-
 #align nat.lxor_self Nat.xor_self
 
 -- These lemmas match `mul_inv_cancel_right` and `mul_inv_cancel_left`.
