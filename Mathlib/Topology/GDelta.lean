@@ -30,10 +30,10 @@ In this file we define `Gδ` sets and prove their basic properties.
 We prove that finite or countable intersections of Gδ sets are Gδ sets. We also prove that the
 continuity set of a function from a topological space to an (e)metric space is a Gδ set.
 
-- `closed_isNowhereDense_iff_compl`: a closed set is nowhere dense iff
+- `isClosed_isNowhereDense_iff_compl`: a closed set is nowhere dense iff
 its complement is open and dense
-- `meagre_iff_countable_union_nowhereDense`: a set is meagre iff it is contained in a countable
-union of nowhere dense
+- `meagre_iff_countable_union_isNowhereDense`: a set is meagre iff it is contained in a countable
+union of nowhere dense sets
 - subsets of meagre sets are meagre; countable unions of meagre sets are meagre
 
 ## Tags
@@ -256,12 +256,12 @@ protected lemma IsNowhereDense.closure {s : Set X} (hs : IsNowhereDense s) :
   rwa [IsNowhereDense, closure_closure]
 
 /-- A nowhere dense set `s` is contained in a closed nowhere dense set (namely, its closure). -/
-lemma IsNowhereDense.subset_of_closed_nowhereDense {s : Set X} (hs : IsNowhereDense s) :
+lemma IsNowhereDense.subset_of_closed_isNowhereDense {s : Set X} (hs : IsNowhereDense s) :
     ∃ t : Set X, s ⊆ t ∧ IsNowhereDense t ∧ IsClosed t :=
   ⟨closure s, subset_closure, ⟨hs.closure, isClosed_closure⟩⟩
 
 /-- A set `s` is closed and nowhere dense iff its complement `sᶜ` is open and dense. -/
-lemma closed_isNowhereDense_iff_compl {s : Set X} :
+lemma isClosed_isNowhereDense_iff_compl {s : Set X} :
     IsClosed s ∧ IsNowhereDense s ↔ IsOpen sᶜ ∧ Dense sᶜ := by
   rw [and_congr_right IsClosed.isNowhereDense_iff,
     isOpen_compl_iff, interior_eq_empty_iff_dense_compl]
@@ -288,16 +288,17 @@ lemma meagre_iUnion {s : ℕ → Set X} (hs : ∀ n, IsMeagre (s n)) : IsMeagre 
   exact countable_iInter_mem.mpr hs
 
 /-- A set is meagre iff it is contained in a countable union of nowhere dense sets. -/
-lemma meagre_iff_countable_union_nowhereDense {s : Set X} : IsMeagre s ↔
+lemma meagre_iff_countable_union_isNowhereDense {s : Set X} : IsMeagre s ↔
     ∃ S : Set (Set X), (∀ t ∈ S, IsNowhereDense t) ∧ S.Countable ∧ s ⊆ ⋃₀ S := by
   rw [IsMeagre, mem_residual_iff, compl_bijective.surjective.image_surjective.exists]
-  simp_rw [← and_assoc, ← forall_and, ball_image_iff, ← closed_isNowhereDense_iff_compl,
+  simp_rw [← and_assoc, ← forall_and, ball_image_iff, ← isClosed_isNowhereDense_iff_compl,
     sInter_image, ← compl_iUnion₂, compl_subset_compl, ← sUnion_eq_biUnion, and_assoc]
-  refine ⟨fun ⟨S, hS, hc, hsub⟩ ↦ ⟨S, fun s hs ↦ (hS s hs).2, ?_, hsub⟩, fun ⟨S, hS, hc, hsub⟩ ↦ ?_⟩
+  refine ⟨fun ⟨S, hS, hc, hsub⟩ ↦ ⟨S, fun s hs ↦ (hS s hs).2, ?_, hsub⟩, ?_⟩
   · rw [← compl_compl_image S]; exact hc.image _
-  use closure '' S
-  rw [ball_image_iff]
-  exact ⟨fun s hs ↦ ⟨isClosed_closure, (hS s hs).closure⟩,
-    (hc.image _).image _, hsub.trans (sUnion_mono_subsets fun s ↦ subset_closure)⟩
+  · intro ⟨S, hS, hc, hsub⟩
+    use closure '' S
+    rw [ball_image_iff]
+    exact ⟨fun s hs ↦ ⟨isClosed_closure, (hS s hs).closure⟩,
+      (hc.image _).image _, hsub.trans (sUnion_mono_subsets fun s ↦ subset_closure)⟩
 
 end meagre
