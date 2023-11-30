@@ -2,15 +2,12 @@ import Lake
 
 open Lake DSL
 
-def moreServerArgs := #[
-  "-Dpp.unicode.fun=true", -- pretty-prints `fun a ↦ b`
-  "-Dpp.proofs.withType=false",
-  "-DautoImplicit=false",
-  "-DrelaxedAutoImplicit=false"
-]
-
--- These settings only apply during `lake build`, but not in VSCode editor.
-def moreLeanArgs := moreServerArgs
+def leanOptions : Array LeanOption := #[
+    ⟨`pp.unicode.fun, true⟩,
+    ⟨`pp.proofs.withType, false⟩,
+    ⟨`autoImplicit, false⟩,
+    ⟨`relaxedAutoImplicit, false⟩
+  ]
 
 -- These are additional settings which do not affect the lake hash,
 -- so they can be enabled in CI and disabled locally or vice versa.
@@ -23,8 +20,7 @@ def weakLeanArgs : Array String :=
     #[]
 
 package mathlib where
-  moreServerArgs := moreServerArgs
-  moreLeanArgs := moreLeanArgs
+  leanOptions := leanOptions
   weakLeanArgs := weakLeanArgs
 
 /-!
