@@ -336,35 +336,25 @@ lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
       simp only [Nat.zero_eq, finAntidiagonal, Pi.const_zero,
         Matrix.zero_empty, univ_eq_empty, sum_empty]
       by_cases hn : n = 0
-      · rw [if_pos hn, hn]
-        simp only [mem_singleton, eq_iff_true_of_subsingleton]
+      · rw [if_pos hn, hn, mem_singleton, eq_iff_true_of_subsingleton, true_iff]
       · rw [if_neg hn]
-        simp only [not_mem_empty, false_iff]
-        intro hn'; apply hn; rw [← hn'])
+        simp only [not_mem_empty, false_iff, Ne.symm hn])
   | succ d ih => exact fun n f => by (
       simp only [finAntidiagonal, mem_biUnion, mem_map, Embedding.coeFn_mk,
         Prod.exists, exists_and_right]
       constructor
       · rintro ⟨a, b, hab, g, hg, hf⟩
         rw [ih b g] at hg
-        rw [mem_antidiagonal] at hab
-        rw [← Finsupp.sum_fintype f (fun x y => y), ← hf, Finsupp.sum_cons, Finsupp.sum_fintype, hg, hab]
-        exact fun _ => rfl
-        exact fun _ => rfl
+        rw [← Finsupp.sum_fintype f (fun _ y => y) (fun _ => rfl), ← hf, Finsupp.sum_cons,
+          Finsupp.sum_fintype _ _ (fun _ => rfl), hg, mem_antidiagonal.mp hab]
       · intro hf
-        use f 0
-        use Finsupp.sum (Finsupp.tail f) (fun x e => e)
+        use f 0, Finsupp.sum (Finsupp.tail f) (fun _ e => e)
         constructor
-        · rw [mem_antidiagonal]
-          rw [← Finsupp.sum_fintype f (fun x y => y) (fun _ => rfl),
+        · rw [← Finsupp.sum_fintype f (fun _ y => y) (fun _ => rfl),
             ← Finsupp.cons_tail f, Finsupp.sum_cons] at hf
-          exact hf
-        use Finsupp.tail f
-        constructor
-        · rw [Finsupp.sum_of_support_subset, mem_finAntidiagonal]
-          apply subset_univ
-          exact fun _ _ => rfl
-        · exact Finsupp.cons_tail f)
+          exact mem_antidiagonal.mpr hf
+        refine' ⟨Finsupp.tail f, _, Finsupp.cons_tail f⟩
+        · rw [Finsupp.sum_of_support_subset _ (subset_univ _) _ (fun _ _ => rfl), ih])
 
 example (p q : Prop) (h : p ↔ q) : Decidable p ≃ Decidable q := {
   toFun := fun hp => decidable_of_iff p h
