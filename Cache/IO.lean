@@ -70,7 +70,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.8"
+  "0.1.9"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -221,7 +221,7 @@ def validateLeanTar : IO Unit := do
     pure <|
       if System.Platform.getIsOSX () then s!"{arch}-apple-darwin"
       else s!"{arch}-unknown-linux-musl"
-  IO.println s!"leantar is too old; downloading more recent version"
+  IO.println s!"installing leantar {LEANTARVERSION}"
   IO.FS.createDirAll IO.CACHEDIR
   let ext := if win then "zip" else "tar.gz"
   let _ ← runCmd "curl" #[
