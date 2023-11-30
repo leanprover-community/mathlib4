@@ -49,7 +49,7 @@ namespace Int
 
 variable {R : Type u} [AddGroupWithOne R]
 
-@[simp, norm_cast]
+@[simp, norm_cast squash]
 theorem cast_negSucc (n : ℕ) : (-[n+1] : R) = -(n + 1 : ℕ) :=
   AddGroupWithOne.intCast_negSucc n
 #align int.cast_neg_succ_of_nat Int.cast_negSuccₓ

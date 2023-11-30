@@ -23,8 +23,6 @@ We compute the discriminant of a `p ^ n`-th cyclotomic extension.
 
 universe u v
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 open Algebra Polynomial Nat IsPrimitiveRoot PowerBasis
 
 open scoped Polynomial Cyclotomic
@@ -46,9 +44,9 @@ theorem discr_zeta_eq_discr_zeta_sub_one (hζ : IsPrimitiveRoot ζ n) :
     fun i j => toMatrix_isIntegral H₂ _ _ _ _
   · exact hζ.isIntegral n.pos
   · refine' minpoly.isIntegrallyClosed_eq_field_fractions' (K := ℚ) (hζ.isIntegral n.pos)
-  · exact isIntegral_sub (hζ.isIntegral n.pos) isIntegral_one
+  · exact (hζ.isIntegral n.pos).sub isIntegral_one
   · refine' minpoly.isIntegrallyClosed_eq_field_fractions' (K := ℚ) _
-    exact isIntegral_sub (hζ.isIntegral n.pos) isIntegral_one
+    exact (hζ.isIntegral n.pos).sub isIntegral_one
 #align is_primitive_root.discr_zeta_eq_discr_zeta_sub_one IsPrimitiveRoot.discr_zeta_eq_discr_zeta_sub_one
 
 end IsPrimitiveRoot
@@ -72,7 +70,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
   haveI se : IsSeparable K L := (isGalois (p ^ (k + 1)) K L).to_isSeparable
   rw [discr_powerBasis_eq_norm, finrank L hirr, hζ.powerBasis_gen _, ←
     hζ.minpoly_eq_cyclotomic_of_irreducible hirr, PNat.pow_coe,
-    totient_prime_pow hp.out (succ_pos k), succ_sub_one]
+    totient_prime_pow hp.out (succ_pos k), Nat.add_one_sub_one]
   have coe_two : ((2 : ℕ+) : ℕ) = 2 := rfl
   have hp2 : p = 2 → k ≠ 0 := by
     rintro rfl rfl
@@ -92,7 +90,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
       obtain ⟨a, ha⟩ := (hp.out.even_sub_one hp2).two_dvd
       rw [ha, mul_left_comm, mul_assoc, Nat.mul_div_cancel_left _ two_pos,
         Nat.mul_div_cancel_left _ two_pos, mul_right_comm, pow_mul, (hpo.pow.mul _).neg_one_pow,
-        pow_mul, hpo.pow.neg_one_pow]; · norm_cast
+        pow_mul, hpo.pow.neg_one_pow]
       refine' Nat.Even.sub_odd _ (even_two_mul _) odd_one
       rw [mul_left_comm, ← ha]
       exact one_le_mul (one_le_pow _ _ hp.1.pos) (succ_le_iff.2 <| tsub_pos_of_lt hp.1.one_lt)
@@ -106,8 +104,8 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     replace H := congr_arg (Algebra.norm K) H
     have hnorm : (norm K) (ζ ^ (p : ℕ) ^ k - 1) = (p : K) ^ (p : ℕ) ^ k := by
       by_cases hp : p = 2
-      · exact_mod_cast hζ.pow_sub_one_norm_prime_pow_of_ne_zero hirr le_rfl (hp2 hp)
-      · exact_mod_cast hζ.pow_sub_one_norm_prime_ne_two hirr le_rfl hp
+      · exact mod_cast hζ.pow_sub_one_norm_prime_pow_of_ne_zero hirr le_rfl (hp2 hp)
+      · exact mod_cast hζ.pow_sub_one_norm_prime_ne_two hirr le_rfl hp
     rw [MonoidHom.map_mul, hnorm, MonoidHom.map_mul, ← map_natCast (algebraMap K L),
       Algebra.norm_algebraMap, finrank L hirr] at H
     conv_rhs at H => -- Porting note: need to drill down to successfully rewrite the totient
@@ -176,7 +174,7 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact (
       simp only [discr, traceMatrix_apply, Matrix.det_unique, Fin.default_eq_zero, Fin.val_zero,
         _root_.pow_zero, traceForm_apply, mul_one]
       rw [← (algebraMap K L).map_one, trace_algebraMap, finrank _ hirr, hp, hk]; norm_num
-      simp [← coe_two]
+      simp [← coe_two, Even.neg_pow (by decide : Even (1 / 2))]
     · exact discr_prime_pow_ne_two hζ hirr hk
 #align is_cyclotomic_extension.discr_prime_pow IsCyclotomicExtension.discr_prime_pow
 
@@ -203,7 +201,7 @@ theorem discr_odd_prime [IsCyclotomicExtension {p} K L] [hp : Fact (p : ℕ).Pri
   have : IsCyclotomicExtension {p ^ (0 + 1)} K L := by
     rw [zero_add, pow_one]
     infer_instance
-  have hζ' : IsPrimitiveRoot ζ ↑(p ^ (0 + 1)) := by simpa using hζ
+  have hζ' : IsPrimitiveRoot ζ (p ^ (0 + 1) :) := by simpa using hζ
   convert discr_prime_pow_ne_two hζ' (by simpa [hirr]) (by simp [hodd]) using 2
   · rw [zero_add, pow_one, totient_prime hp.out]
   · rw [_root_.pow_zero, one_mul, zero_add, mul_one, Nat.sub_sub]
