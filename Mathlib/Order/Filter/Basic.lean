@@ -1328,12 +1328,10 @@ theorem frequently_iff {f : Filter α} {P : α → Prop} :
   rfl
 #align filter.frequently_iff Filter.frequently_iff
 
-@[simp]
 theorem not_eventually {p : α → Prop} {f : Filter α} : (¬∀ᶠ x in f, p x) ↔ ∃ᶠ x in f, ¬p x := by
   simp [Filter.Frequently]
 #align filter.not_eventually Filter.not_eventually
 
-@[simp]
 theorem not_frequently {p : α → Prop} {f : Filter α} : (¬∃ᶠ x in f, p x) ↔ ∀ᶠ x in f, ¬p x := by
   simp only [Filter.Frequently, not_not]
 #align filter.not_frequently Filter.not_frequently
@@ -1344,7 +1342,7 @@ theorem frequently_true_iff_neBot (f : Filter α) : (∃ᶠ _ in f, True) ↔ Ne
 #align filter.frequently_true_iff_ne_bot Filter.frequently_true_iff_neBot
 
 @[simp]
-theorem frequently_false (f : Filter α) : ¬∃ᶠ _ in f, False := by simp
+theorem frequently_false (f : Filter α) : ¬∃ᶠ _ in f, False := by simp [not_frequently]
 #align filter.frequently_false Filter.frequently_false
 
 @[simp]
@@ -1399,7 +1397,7 @@ theorem frequently_and_distrib_right {f : Filter α} {p : α → Prop} {q : Prop
 #align filter.frequently_and_distrib_right Filter.frequently_and_distrib_right
 
 @[simp]
-theorem frequently_bot {p : α → Prop} : ¬∃ᶠ x in ⊥, p x := by simp
+theorem frequently_bot {p : α → Prop} : ¬∃ᶠ x in ⊥, p x := by simp [not_frequently]
 #align filter.frequently_bot Filter.frequently_bot
 
 @[simp]
