@@ -426,7 +426,7 @@ variable (n) {e : LocalHomeomorph M H} (he : e ∈ maximalAtlas I M)
 
 /-- If `M` has no boundary, every extended chart is a local diffeomorphism
 between its source and target. -/
--- TODO: this holds for every interior point x --> this requires showing the interior is open
+-- TODO: show this for every interior point x (once we know the interior is open)
 def extend_toLocalDiffeomorphAux : LocalDiffeomorphAux I 𝓘(𝕜, E) M E n :=
   {
     toLocalHomeomorph := e.extend_toLocalHomeomorph I
@@ -457,7 +457,7 @@ lemma extend_toLocalDiffeomorphAux_target :
 
 /-- If `M` has no boundary, every inverse extended chart is a local diffeomorphism
 between its source and target. -/
--- TODO: this holds for every interior point x --> this requires showing the interior is open
+-- TODO: show this for every interior point x (once we know the interior is open)
 def extend_symm_toLocalDiffeomorphAux : LocalDiffeomorphAux 𝓘(𝕜, E) I E M n :=
   (extend_toLocalDiffeomorphAux I n he).symm
 
@@ -476,9 +476,11 @@ lemma extend_symm_toLocalDiffeomorphAux_target :
     rfl
 -/
 
-variable {I} in
+variable {I}
+
 /-- If `M` has no boundary, each extended chart is a local diffeomorphism at each point
 in its source. -/
+-- TODO: show this for every interior point x (once we know the interior is open)
 lemma LocalHomeomorph.extend_isLocalDiffeomorphAt {x : M} (hx : x ∈ e.source) :
     IsLocalDiffeomorphAt I 𝓘(𝕜, E) n (e.extend I) x := by
   refine ⟨extend_toLocalDiffeomorphAux I n he,
@@ -488,30 +490,32 @@ lemma LocalHomeomorph.extend_isLocalDiffeomorphAt {x : M} (hx : x ∈ e.source) 
 
 /-- If `M` has no boundary, each inverse extended chart is a local diffeomorphism
 at each point of its source. -/
+-- TODO: show this for every interior point x (once we know the interior is open)
 lemma LocalHomeomorph.extend_symm_isLocalDiffeomorphAt {y : E} (hy : y ∈ (e.extend I).target) :
     IsLocalDiffeomorphAt 𝓘(𝕜, E) I n (e.extend I).symm y :=
   ⟨(extend_toLocalDiffeomorphAux I n he).symm, hy, eqOn_refl _ _⟩
 
-/-- If `M` has no boundary, `exChartAt I x` is a local diffeomorphism at `x`. -/
+/-- If `M` has no boundary, `extChartAt I x` is a local diffeomorphism at `x`. -/
+-- TODO: show this for every interior point x (once we know the interior is open)
 lemma extChartAt_isLocalDiffeomorphAt (x : M) :
     IsLocalDiffeomorphAt I 𝓘(𝕜, E) n (extChartAt I x) x := by
   rw [extChartAt]
   exact (chartAt H x).extend_isLocalDiffeomorphAt n (chart_mem_maximalAtlas I x)
     (mem_chart_source H x)
 
-/-- If `M` has no boundary, each inverse extended chart is a local diffeomorphism
-at each point of its source. -/
+/-- If `M` has no boundary, `(extChartAt I x).symm` is a local diffeomorphism at `x`. -/
+-- TODO: show this for every interior point x (once we know the interior is open)
 lemma extChartAt_symm_isLocalDiffeomorphAt {x : M} {y : E} (hy : y ∈ (extChartAt I x).target) :
     IsLocalDiffeomorphAt 𝓘(𝕜, E) I n (extChartAt I x).symm y := by
   rw [extChartAt]
-  exact (chartAt H x).extend_symm_isLocalDiffeomorphAt I n (chart_mem_maximalAtlas I x) hy
+  exact (chartAt H x).extend_symm_isLocalDiffeomorphAt n (chart_mem_maximalAtlas I x) hy
 
 variable {f : M → N} {x : M} (hf : MDifferentiableAt I J f x)
   {e : LocalHomeomorph M H} (hx : x ∈ e.source) {e' : LocalHomeomorph N G} (hx' : (f x) ∈ e'.source)
   (he : e ∈ maximalAtlas I M) (he' : e' ∈ maximalAtlas J N)
   [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N] [J.Boundaryless]
 
-variable {n I J}
+variable {J n}
 
 /-- If `f : M → N` has surjective differential at `x` iff its local coordinate representation
   `φ ∘ f ∘ ψ.symm`, for any two charts φ, ψ around `x` and `f x`, does. -/
@@ -530,13 +534,13 @@ lemma mfderiv_surjective_iff_in_charts (hn : 1 ≤ n) : Surjective (mfderiv I J 
     have aux : MDifferentiableAt 𝓘(𝕜, E) I (e.extend I).symm ((e.extend I) x) := by
       apply ContMDiffAt.mdifferentiableAt _ hn
       -- No boundary: this is true, but too strong for our last step: use a weaker version.
-      -- apply ContMDiffOn.contMDiffAt _ ((e.isOpen_extend_target I).mem_nhds h0)--(mem_image_of_mem I (e.map_source hx)))
+      -- apply ContMDiffOn.contMDiffAt _ ((e.isOpen_extend_target I).mem_nhds h0)
       have : IsOpen (I '' e.target) := sorry -- have this on a branch also
       apply ContMDiffOn.contMDiffAt _ (this.mem_nhds (mem_image_of_mem I (e.map_source hx)))
       exact contMDiffOn_extend_symm he
-    exact MDifferentiableAt.comp (hg := hf) (hf := aux) (M' := M) (M := E)
+    exact hf.comp _ aux (M := E)
 
-  let r1 := e.extend_symm_isLocalDiffeomorphAt _ n he h
+  let r1 := e.extend_symm_isLocalDiffeomorphAt n he h
   let s1 := mfderiv_surjective_iff_comp_isLocalDiffeomorph hn _ _ r1 (this.symm ▸ hf)
   rw [e.extend_left_inv I hx] at s1
   rw [s1]
@@ -563,12 +567,12 @@ lemma mfderiv_injective_iff_in_charts (hn : 1 ≤ n) : Injective (mfderiv I J f 
     have aux : MDifferentiableAt 𝓘(𝕜, E) I (e.extend I).symm ((e.extend I) x) := by
       apply ContMDiffAt.mdifferentiableAt _ hn
       -- No boundary: this is true, but too strong for our last step: use a weaker version.
-      -- apply ContMDiffOn.contMDiffAt _ ((e.isOpen_extend_target I).mem_nhds h0)--(mem_image_of_mem I (e.map_source hx)))
+      -- apply ContMDiffOn.contMDiffAt _ ((e.isOpen_extend_target I).mem_nhds h0)
       have : IsOpen (I '' e.target) := sorry -- have this on a branch also
       apply ContMDiffOn.contMDiffAt _ (this.mem_nhds (mem_image_of_mem I (e.map_source hx)))
       exact contMDiffOn_extend_symm he
-    exact MDifferentiableAt.comp (hg := hf) (hf := aux) (M' := M) (M := E)
-  let r1 := e.extend_symm_isLocalDiffeomorphAt _ n he h
+    exact hf.comp _ aux (M := E)
+  let r1 := e.extend_symm_isLocalDiffeomorphAt n he h
   let s1 := mfderiv_injective_iff_comp_isLocalDiffeomorph hn _ _ r1 (this.symm ▸ hf)
   rw [e.extend_left_inv I hx] at s1
   rw [s1]
@@ -578,8 +582,8 @@ lemma mfderiv_injective_iff_in_charts (hn : 1 ≤ n) : Injective (mfderiv I J f 
 
 /-- If `f : M → N` has bijective differential at `x` iff its local coordinate representation
   `φ ∘ f ∘ ψ.symm`, for any two charts φ, ψ around `x` and `f x`, does. -/
-lemma mfderiv_bijective_iff_in_charts (hf : MDifferentiableAt I J f x) (hn : 1 ≤ n) :
-    Bijective (mfderiv I J f x) ↔ Bijective (fderiv 𝕜 ((e'.extend J) ∘ f ∘ (e.extend I).symm) (e.extend I x)) := by
+lemma mfderiv_bijective_iff_in_charts (hn : 1 ≤ n) : Bijective (mfderiv I J f x) ↔
+    Bijective (fderiv 𝕜 ((e'.extend J) ∘ f ∘ (e.extend I).symm) (e.extend I x)) := by
   rw [Bijective, Bijective, and_congr]
   apply (mfderiv_injective_iff_in_charts hf hx hx' he he' hn)
   apply (mfderiv_surjective_iff_in_charts hf hx hx' he he' hn)
@@ -589,10 +593,10 @@ lemma mfderiv_bijective_iff_in_charts (hf : MDifferentiableAt I J f x) (hn : 1 �
 -- xxx: introduce a definition for local coordinate rep?
 
 -- Sample application of the lemmas above.
-lemma cor (hf : MDifferentiableAt I J f x) (hn : 1 ≤ n) :
-    Bijective (mfderiv I J f x) ↔ Bijective (fderiv 𝕜 ((extChartAt J (f x)) ∘ f ∘ (extChartAt I x).symm) (extChartAt I x x)) := by
+lemma cor (hn : 1 ≤ n) : Bijective (mfderiv I J f x) ↔
+    Bijective (fderiv 𝕜 ((extChartAt J (f x)) ∘ f ∘ (extChartAt I x).symm) (extChartAt I x x)) := by
   rw [extChartAt]
-  apply mfderiv_bijective_iff_in_charts (mem_chart_source H x) (mem_chart_source G (f x))
-    (chart_mem_maximalAtlas I x) (chart_mem_maximalAtlas J (f x)) hf hn
+  apply mfderiv_bijective_iff_in_charts hf (mem_chart_source H x) (mem_chart_source G (f x))
+    (chart_mem_maximalAtlas I x) (chart_mem_maximalAtlas J (f x)) hn
 
 end ChartsDifferentials
