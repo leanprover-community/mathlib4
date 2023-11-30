@@ -45,7 +45,7 @@ space (e.g. `((ι ⊕ ι') → ℝ) ≃ (ι → ℝ) × (ι' → ℝ)`).
 
 The function `f` can have an arbitrary product as its domain (even infinite products), but the
 set `s` of integration variables is a `Finset`. We are assuming that the function `f` is measurable
-for most of this file. Note that asking whether `AEMeasurable` is not even well-posed, since there
+for most of this file. Note that asking whether it is `AEMeasurable` is not even well-posed, since there
 is no well-behaved measure on the domain of `f`.
 
 ## Todo
