@@ -10,17 +10,17 @@ import Mathlib.MeasureTheory.Integral.Pi
 /-!
 # Volume of balls
 
-Let `E` be a finite dimensional normed `ℝ`-vector space equipped with an Haar measure `μ`. Then, we
+Let `E` be a finite dimensional normed `ℝ`-vector space equipped with an Haar measure `μ`. We
 prove that
 `μ (Metric.ball 0 1) = (∫ (x : E), Real.exp (- ‖x‖ ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)`
 for any real number `p` with `0 < p`, see `MeasureTheorymeasure_unitBall_eq_integral_div_gamma`. We
 also prove the corresponding result to compute `μ {x : E | g x < 1}` where `g : E → ℝ` is a function
 defining a norm on `E`, see `MeasureTheory.measure_lt_one_eq_integral_div_gamma`.
 
-Using these formula, we compute the volume of the unit balls in several cases.
+Using these formulas, we compute the volume of the unit balls in several cases.
 
 * `MeasureTheory.volume_sum_rpow_lt` / `MeasureTheory.volume_sum_rpow_le`: volume of the open and
-  closed balls for the norm `L^p` over a real finite dimensional vector space with `1 ≤ p`. These
+  closed balls for the norm `Lp` over a real finite dimensional vector space with `1 ≤ p`. These
   are computed as `volume {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) < r}` and
   `volume {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) ≤ r}` since the spaces `PiLp` do not have a
   `MeasureSpace` instance.
