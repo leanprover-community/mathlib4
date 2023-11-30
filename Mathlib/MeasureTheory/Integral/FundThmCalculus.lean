@@ -1245,20 +1245,19 @@ theorem integral_deriv_eq_sub' (f) (hderiv : deriv f = f')
 
 /-- A variant of the Fundamental theorem of calculus-2 involving integrating over the
 unit interval. -/
-lemma integral_unitInterval_eq_sub {C E : Type*} [NontriviallyNormedField C]
-    [NormedAlgebra ℝ C] [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace C E]
-    [CompleteSpace E] [IsScalarTower ℝ C E] {f f' : C → E} {z₀ z₁ : C}
+lemma integral_unitInterval_eq_sub [IsROrC 𝕜] [NormedSpace 𝕜 E] [IsScalarTower ℝ 𝕜 E]
+    {f f' : 𝕜 → E} {z₀ z₁ : 𝕜}
     (hcont : ContinuousOn (fun t : ℝ ↦ f' (z₀ + t • z₁)) (Set.Icc 0 1))
     (hderiv : ∀ t ∈ Set.Icc (0 : ℝ) 1, HasDerivAt f (f' (z₀ + t • z₁)) (z₀ + t • z₁)) :
     z₁ • ∫ t in (0 : ℝ)..1, f' (z₀ + t • z₁) = f (z₀ + z₁) - f z₀ := by
-  let γ (t : ℝ) : C := z₀ + t • z₁
+  let γ (t : ℝ) : 𝕜 := z₀ + t • z₁
   have hint : IntervalIntegrable (z₁ • (f' ∘ γ)) MeasureTheory.volume 0 1 :=
     (ContinuousOn.const_smul hcont z₁).intervalIntegrable_of_Icc zero_le_one
   have hderiv' : ∀ t ∈ Set.uIcc (0 : ℝ) 1, HasDerivAt (f ∘ γ) (z₁ • (f' ∘ γ) t) t
   · intro t ht
     refine (hderiv t <| (Set.uIcc_of_le (α := ℝ) zero_le_one).symm ▸ ht).scomp t ?_
     have : HasDerivAt (fun t : ℝ ↦ t • z₁) z₁ t
-    · convert (hasDerivAt_id t).smul_const (F := C) _ using 1
+    · convert (hasDerivAt_id t).smul_const (F := 𝕜) _ using 1
       simp only [one_smul]
     exact this.const_add z₀
   convert (integral_eq_sub_of_hasDerivAt hderiv' hint) using 1
