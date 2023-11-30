@@ -356,6 +356,26 @@ lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
         refine' ⟨Finsupp.tail f, _, Finsupp.cons_tail f⟩
         · rw [Finsupp.sum_of_support_subset _ (subset_univ _) _ (fun _ _ => rfl), ih])
 
+
+/-- `finAntidiagonal' s d n` -- TODO -/
+noncomputable def finAntidiagonal' : (d : ℕ) → (Finset (Fin d))  → μ → Finset (Fin d →₀ μ)
+  | 0 => fun s n => ite (n = 0) {0} ∅
+  | d + 1 => fun s n => by
+      exact Finset.biUnion (antidiagonal n)
+        (fun ab => (finAntidiagonal' d s' ab.2).map { --TODO: define s'
+          toFun := fun f => Finsupp.cons (ab.1) f
+          inj' := fun f g h => by
+            simp only at h
+            rw [← Finsupp.tail_cons ab.1 f, ← Finsupp.tail_cons ab.1 g, h]})
+        sorry
+    /- exact Finset.biUnion (antidiagonal n)
+      (fun ab => (finAntidiagonal d ab.2).map {
+        toFun := fun f => Finsupp.cons (ab.1) f
+        inj' := fun f g h => by
+          simp only at h
+          rw [← Finsupp.tail_cons ab.1 f, ← Finsupp.tail_cons ab.1 g, h]}) -/
+
+
 example (p q : Prop) (h : p ↔ q) : Decidable p ≃ Decidable q := {
   toFun := fun hp => decidable_of_iff p h
   invFun := fun hq => decidable_of_iff q h.symm
@@ -625,29 +645,32 @@ variable {μ : Type*} [AddCommMonoid μ] [HasAntidiagonal μ]
   [DecidableEq μ]
 
 /-- HasPiAntidiagonal for `Fin d` and `Finset.univ` -/
-def _root_.Fin.hasPiAntidiagonal_univ (d : ℕ) :
+noncomputable def _root_.Fin.hasPiAntidiagonal_univ (d : ℕ) :
     HasPiAntidiagonal'' (Fin d) μ /- (Finset.univ : Finset (Fin d)) -/ := {
   piAntidiagonal := fun s => finAntidiagonal d
   mem_piAntidiagonal := fun {s} {n} {f} => by
     simp only
     rw [mem_finAntidiagonal]
-    simp only [coe_univ, Set.le_eq_subset, Set.subset_univ, true_and] }
+    simp only [coe_univ, Set.le_eq_subset, Set.subset_univ, true_and]
+    sorry }
 
 /-- HasPiAntidiagonal for a `Fintype` -/
 noncomputable def _root_.Fintype.hasPiAntidiagonal_univ (ι : Type*) [Fintype ι] :
-    HasPiAntidiagonal' μ (Finset.univ : Finset ι) := { piAntidiagonal := by
-  have e : Finset (ι → μ) ≃ Finset (Fin (Fintype.card ι) → μ) :=
-    Equiv.finsetCongr (Equiv.piCongrLeft' _ (Fintype.equivFin ι))
-  intro n
-  refine e.symm (finAntidiagonal _ n)
+    HasPiAntidiagonal'' (Finset.univ : Finset ι) μ := {
+  piAntidiagonal := by
+    have e : Finset (ι → μ) ≃ Finset (Fin (Fintype.card ι) → μ) :=
+      Equiv.finsetCongr (Equiv.piCongrLeft' _ (Fintype.equivFin ι))
+    intro n
+    sorry --refine e.symm (finAntidiagonal _ n)
   mem_piAntidiagonal := fun {n} {f} => by
     simp only [Equiv.finsetCongr_symm, Equiv.finsetCongr_apply, mem_map_equiv,
       Equiv.symm_symm, coe_univ, Set.le_eq_subset, Set.subset_univ, true_and]
-    rw [mem_finAntidiagonal]
+    sorry
+    /- rw [mem_finAntidiagonal]
     simp only [Equiv.piCongrLeft'_apply]
     let h := Finset.sum_map Finset.univ ((Fintype.equivFin ι).symm.toEmbedding) f
     simp only [map_univ_equiv, Equiv.coe_toEmbedding] at h
-    rw [h] }
+    rw [h] -/ }
 
 /-- general construction of HasPiAntidiagonal
 
@@ -655,8 +678,8 @@ It is noncomputable because it uses an unknown parametrization of `s`
   as well as `Function.extend` -/
 noncomputable
 def hasPiAntidiagonal' (ι : Type*) (s : Finset ι) :
-    HasPiAntidiagonal' s μ := by
-  haveI : HasPiAntidiagonal μ (attach s) := sorry
+    HasPiAntidiagonal'' s μ := by
+  haveI : HasPiAntidiagonal'' (attach s) μ := sorry
   exact {
   piAntidiagonal := fun n => by
     have : Function.Injective (fun f => Function.extend (Subtype.val : s → ι) f (0 : ι → μ))
@@ -666,11 +689,11 @@ def hasPiAntidiagonal' (ι : Type*) (s : Finset ι) :
       specialize h i.val
       simp only [Subtype.coe_injective.extend_apply _ _ _] at h
       exact h
-    · exact ((Fintype.hasPiAntidiagonal_univ s).piAntidiagonal n).map ⟨_, this⟩
-  mem_piAntidiagonal := fun {n} {f} => by
+    · sorry --exact ((Fintype.hasPiAntidiagonal_univ s).piAntidiagonal n).map ⟨_, this⟩
+  mem_piAntidiagonal := fun {s} {n} {f} => by
     simp only [mem_map, Embedding.coeFn_mk, Set.le_eq_subset, support_subset_iff, ne_eq, mem_coe]
     constructor
-    · rintro ⟨g, hg, hgf⟩
+    · sorry/- rintro ⟨g, hg, hgf⟩
       rw [(Fintype.hasPiAntidiagonal_univ _).mem_piAntidiagonal] at hg
       constructor
       · intro i
@@ -685,9 +708,9 @@ def hasPiAntidiagonal' (ι : Type*) (s : Finset ι) :
       · rw [← hgf, ← hg.2, ← Finset.sum_attach]
         apply Finset.sum_congr rfl
         intros
-        rw [Subtype.coe_injective.extend_apply]
+        rw [Subtype.coe_injective.extend_apply] -/
     · rintro ⟨hfs, hf⟩
-      use fun i => f ↑i
+      sorry/- use fun i => f ↑i
       constructor
       · rw [(Fintype.hasPiAntidiagonal_univ _).mem_piAntidiagonal]
         simp only [univ_eq_attach, Set.le_eq_subset, support_subset_iff, ne_eq,
@@ -704,9 +727,14 @@ def hasPiAntidiagonal' (ι : Type*) (s : Finset ι) :
           exact (hfs i (ne_comm.mp hi'))
           rintro ⟨j, rfl⟩
           apply hi
-          exact j.prop }
+          exact j.prop -/ }
 
-end HasAntidiagonal
+end HasPiAntidiagonal''
+end HasPiAntidiagonal''
+end Finset
+--end HasAntidiagonal
+
+#exit
 
 /- Probably what follows can be proved using what precedes -/
 section pi
