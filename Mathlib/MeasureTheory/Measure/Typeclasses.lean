@@ -500,20 +500,10 @@ lemma sfinite_sum_of_countable {ι : Type*} [Countable ι]
   classical
   obtain ⟨f, hf⟩ : ∃ f : ι → ℕ, Function.Injective f := Countable.exists_injective_nat ι
   let e : ι ≃ range f := Equiv.ofInjective f hf
-  let m' : ℕ → Measure α := fun n ↦ if hn : n ∈ range f then m (e.symm ⟨n, hn⟩) else 0
-  have : Measure.sum m = Measure.sum m' := by
-    ext s hs
-    simp only [hs, sum_apply]
-    calc
-    ∑' (i : ι), m i s
-      = ∑' (n : range f), m (e.symm n) s := (e.symm.tsum_eq (fun n ↦ m n s)).symm
-    _ = ∑' (n : range f), m' n s := by congr 1 with n; simp [-mem_range, n.2]
-    _ = ∑' n, m' n s := by
-      apply tsum_subtype_eq_of_support_subset (f := fun n ↦ m' n s)
-      apply Function.support_subset_iff'.2 (fun x hx ↦ by simp [-mem_range, hx])
-  refine ⟨⟨m', fun n ↦ ?_, this⟩⟩
+  let m' : ℕ → Measure α := Function.extend Subtype.val (m ∘ e.symm) 0
+  refine ⟨⟨m', fun n ↦ ?_, by simp⟩⟩
   by_cases hn : n ∈ range f
-  · simp [-mem_range, hn]
+  · simp [-mem_range, hn, Function.extend_def]
     infer_instance
   · simp [-mem_range, hn]
     infer_instance
@@ -523,7 +513,6 @@ instance {ι : Type*} [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m 
   change SFinite (Measure.sum (fun i ↦ m i))
   simp_rw [← sum_sFiniteSeq (m _), Measure.sum_sum]
   apply sfinite_sum_of_countable
-
 
 end SFinite
 

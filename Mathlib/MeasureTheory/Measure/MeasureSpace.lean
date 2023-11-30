@@ -1407,7 +1407,8 @@ theorem le_sum_apply (f : ι → Measure α) (s : Set α) : ∑' i, f i s ≤ su
 #align measure_theory.measure.le_sum_apply MeasureTheory.Measure.le_sum_apply
 
 @[simp]
-theorem sum_apply (f : ι → Measure α) {s : Set α} (hs : MeasurableSet s) : sum f s = ∑' i, f i s :=
+theorem sum_apply (f : ι → Measure α) {s : Set α} (hs : MeasurableSet s) :
+    sum f s = ∑' i, f i s :=
   toMeasure_apply _ _ hs
 #align measure_theory.measure.sum_apply MeasureTheory.Measure.sum_apply
 
@@ -1529,6 +1530,26 @@ theorem sum_add_sum {ι : Type*} (μ ν : ι → Measure α) : sum μ + sum ν =
   simp only [add_apply, sum_apply _ hs, Pi.add_apply, coe_add,
     tsum_add ENNReal.summable ENNReal.summable]
 #align measure_theory.measure.sum_add_sum MeasureTheory.Measure.sum_add_sum
+
+@[simp] lemma sum_comp_equiv {ι ι' : Type*} (e : ι' ≃ ι) (m : ι → Measure α) :
+    sum (m ∘ e) = sum m := by
+  ext s hs
+  simpa [hs, sum_apply] using e.tsum_eq (fun n ↦ m n s)
+
+@[simp] lemma sum_extend_zero {ι : Type*} (a : Set ι) (m : a → Measure α) :
+    sum (Function.extend Subtype.val m 0) = sum m := by
+  classical
+  ext s hs
+  simp only [hs, sum_apply, Subtype.exists, exists_prop, exists_eq_right]
+  calc
+  ∑' (i : ι), Function.extend Subtype.val m 0 i s
+    = ∑' (i : a), Function.extend Subtype.val m 0 i s := by
+    apply (tsum_subtype_eq_of_support_subset _).symm
+    exact Function.support_subset_iff'.2 (fun x hx ↦ by simp [hx])
+  _ = ∑' (i : a), m i s := by
+    congr with i
+    convert Subtype.val_injective.extend_apply (fun n ↦ m n s) 0 i
+    simp [Function.extend_def]
 
 end Sum
 
