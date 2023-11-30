@@ -50,6 +50,12 @@ def Multiset.map.unexpander : Lean.PrettyPrinter.Unexpander
 -- Do we also want these?
 -- attribute [pp_dot] List.get List.length List.sum Multiset.sum Sigma.fst Sigma.snd
 
-example (l : List ℕ) : l.take l.length = l.takeWhile (fun _ => true) := sorry
-example (l : List ℕ) : l.drop 0 = l.dropWhile (fun _ => false) := sorry
-example (l : List ℕ) : (Multiset.ofList l).map Nat.succ = Multiset.ofList (l.map Nat.succ) := sorry
+example (l : List ℕ) : l.take l.length = l.takeWhile (fun _ => true) := by
+  rw [List.take_length]
+  induction l <;> congr
+
+example (l : List ℕ) : l.drop 0 = l.dropWhile (fun _ => false) := by
+  cases l <;> rfl
+
+example (l : List ℕ) : (Multiset.ofList l).map Nat.succ = Multiset.ofList (l.map Nat.succ) := by
+  simp
