@@ -21,14 +21,14 @@ open Nat
 
 variable {w v : Nat}
 
-theorem toFin_injective {n : Nat} : Function.Injective (@Std.BitVec.toFin n)
+theorem toFin_injective {n : Nat} : Function.Injective (toFin : BitVec n → _)
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
 theorem toFin_inj {x y : BitVec w} : x.toFin = y.toFin ↔ x = y :=
   toFin_injective.eq_iff
 
-theorem toNat_injective {n : Nat} : Function.Injective (@Std.BitVec.toNat n) :=
-  Function.Injective.comp Fin.val_injective toFin_injective
+theorem toNat_injective {n : Nat} : Function.Injective (BitVec.toNat : BitVec n → _) :=
+  Fin.val_injective.comp toFin_injective
 
 theorem toNat_inj {x y : BitVec w} : x.toNat = y.toNat ↔ x = y :=
   toNat_injective.eq_iff
@@ -127,9 +127,18 @@ variable (x y : Fin (2^w))
 @[simp] lemma ofFin_sub : ofFin (x - y)   = ofFin x - ofFin y   := rfl
 @[simp] lemma ofFin_mul : ofFin (x * y)   = ofFin x * ofFin y   := rfl
 
-@[simp] lemma ofFin_zero    : @ofFin w 0 = 0 := rfl
-@[simp] lemma ofFin_one     : @ofFin w 1 = 1 := rfl
+@[simp] lemma ofFin_zero : ofFin (0 : Fin (2^w)) = 0 := rfl
+@[simp] lemma ofFin_one  : ofFin (1 : Fin (2^w)) = 1 := rfl
 
+lemma ofFin_nsmul (n : ℕ) (x : Fin (2^w)) : ofFin (n • x) = n • ofFin x := rfl
+lemma ofFin_zsmul (z : ℤ) (x : Fin (2^w)) : ofFin (z • x) = z • ofFin x := rfl
+@[simp] lemma ofFin_pow (n : ℕ) : ofFin (x ^ n) = ofFin x ^ n := rfl
+@[simp] lemma ofFin_natCast (n : ℕ) : ofFin (n : Fin (2^w)) = n := rfl
+@[simp] lemma ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = z := rfl
+
+-- See Note [no_index around OfNat.ofNat]
+@[simp] lemma ofFin_ofNat (n : ℕ) :
+    ofFin (no_index (OfNat.ofNat n : Fin (2^w))) = OfNat.ofNat n := rfl
 end
 
 /-!
@@ -149,16 +158,18 @@ variable (x y : BitVec w)
 @[simp] lemma toFin_mul : toFin (x * y)   = toFin x * toFin y   := rfl
 
 -- These should be simp, but Std's simp-lemmas do not allow this yet.
-lemma toFin_zero    : toFin (0 : BitVec w) = 0 := rfl
-lemma toFin_one     : toFin (1 : BitVec w) = 1 := rfl
+lemma toFin_zero : toFin (0 : BitVec w) = 0 := rfl
+lemma toFin_one  : toFin (1 : BitVec w) = 1 := rfl
 
-variable (n : Nat) (z : Int)
+lemma toFin_nsmul (n : ℕ) (x : BitVec w) : toFin (n • x) = n • x.toFin := rfl
+lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin := rfl
+@[simp] lemma toFin_pow (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := rfl
+@[simp] lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := rfl
+@[simp] lemma toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := rfl
 
-lemma toFin_nsmul   : toFin (n • x) = n • x.toFin := rfl
-lemma toFin_zsmul   : toFin (z • x) = z • x.toFin := rfl
-@[simp] lemma toFin_pow     : toFin (x ^ n) = x.toFin ^ n := rfl
-@[simp] lemma toFin_natCast : toFin (n : BitVector w) = n              := rfl
-@[simp] lemma toFin_intCast : @toFin w z = z              := rfl
+-- See Note [no_index around OfNat.ofNat]
+lemma toFin_ofNat (n : ℕ) :
+    toFin (no_index (OfNat.ofNat n : BitVec w)) = OfNat.ofNat n := rfl
 
 end
 
@@ -166,17 +177,9 @@ end
 ## Ring
 -/
 
-instance : CommRing (BitVec w) := Function.Injective.commRing _ toFin_injective
-    toFin_zero
-    toFin_one
-    toFin_add
-    toFin_mul
-    toFin_neg
-    toFin_sub
-    toFin_nsmul
-    toFin_zsmul
-    toFin_pow
-    toFin_natCast
-    toFin_intCast
+instance : CommRing (BitVec w) :=
+  toFin_injective.commRing _
+    toFin_zero toFin_one toFin_add toFin_mul toFin_neg toFin_sub
+    (Function.swap toFin_nsmul) (Function.swap toFin_zsmul) toFin_pow toFin_natCast toFin_intCast
 
 end Std.BitVec
