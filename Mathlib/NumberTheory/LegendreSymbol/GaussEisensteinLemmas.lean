@@ -60,6 +60,7 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
     (inj_on_of_surj_on_of_card_le _ hmem hsurj le_rfl) hsurj
 #align zmod.Ico_map_val_min_abs_nat_abs_eq_Ico_map_id ZMod.Ico_map_valMinAbs_natAbs_eq_Ico_map_id
 
+/-- **Gauss' Lemma** -/
 private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ}
     (hap : (a : ZMod p) ≠ 0) : (a ^ (p / 2) * (p / 2)! : ZMod p) =
     (-1 : ZMod p) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ =>
@@ -115,6 +116,7 @@ theorem gauss_lemma {p : ℕ} [h : Fact p.Prime] {a : ℤ} (hp : p ≠ 2) (ha0 :
   simp_all [ne_neg_self hp one_ne_zero, (ne_neg_self hp one_ne_zero).symm]
 #align zmod.gauss_lemma ZMod.gauss_lemma
 
+/-- **Eisenstein's lemma** -/
 private theorem eisenstein_lemma_aux₁ (p : ℕ) [Fact p.Prime] [hp2 : Fact (p % 2 = 1)] {a : ℕ}
     (hap : (a : ZMod p) ≠ 0) : ((∑ x in Ico 1 (p / 2).succ, a * x : ℕ) : ZMod 2) =
     ((Ico 1 (p / 2).succ).filter fun x : ℕ => p / 2 < (a * x : ZMod p).val).card +

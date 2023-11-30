@@ -31,7 +31,7 @@ variable {α : Type u} {ι : Type v} [MetricSpace α] [ProperSpace α] {c : ι �
 
 variable {x : α} {r : ℝ} {s : Set α}
 
-/-- Shrinking lemma for coverings by open balls in a proper metric space. A point-finite open cover
+/-- **Shrinking lemma** for coverings by open balls in a proper metric space. A point-finite open cover
 of a closed subset of a proper metric space by open balls can be shrunk to a new cover by open balls
 so that each of the new balls has strictly smaller radius than the old one. This version assumes
 that `fun x ↦ ball (c i) (r i)` is a locally finite covering and provides a covering indexed by the
