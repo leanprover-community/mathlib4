@@ -185,7 +185,7 @@ variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
 
 /-- If `f` is a `C^n` local diffeomorphism at `x`, for `n ≥ 1`,
   the differential `df_x` is a linear equivalence. -/
-lemma LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv
+noncomputable def LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv
     (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
     ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) := by
   choose Φ hyp using hf
@@ -254,7 +254,7 @@ lemma Diffeomorph.mfderiv_toContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯
 
 variable (x) in
 /-- If `f` is a `C^n` local diffeomorphism (`n ≥ 1`), each differential is a linear equivalence. -/
-lemma LocalDiffeomorph.mfderiv_toContinuousLinearEquiv (hf : IsLocalDiffeomorph I J n f) :
+noncomputable def LocalDiffeomorph.mfderiv_toContinuousLinearEquiv (hf : IsLocalDiffeomorph I J n f) :
     ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
   LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv (hf x) hn
 
