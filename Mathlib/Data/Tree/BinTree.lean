@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Wojciech Nawrocki, Brendan Murphy
 -/
 import Std.Data.RBMap
-import Mathlib.Data.Num.Basic
-import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Parity
 import Mathlib.Order.Basic
@@ -94,12 +92,38 @@ def right (p : Path) : Path := ⟨p.length + 1, p.bitvec.cons true⟩
     Path.rec' atHere goLeft goRight (right p)
     = goRight p (Path.rec' atHere goLeft goRight p) := by apply consRecOn_cons
 
+@[elab_as_elim] def cases' {motive : Path → Sort u} (atHere : motive here)
+  (goLeft  : (p : Path) → motive (left  p))
+  (goRight : (p : Path) → motive (right p)) (p : Path) : motive p :=
+  rec' atHere (fun p _ => goLeft p) (fun p _ => goRight p) p
+
+@[simp] lemma casesOn'_left {motive : Path → Sort u} (atHere : motive here)
+  (goLeft  : (p : Path) → motive (left  p))
+  (goRight : (p : Path) → motive (right p)) (p : Path) :
+    Path.cases' atHere goLeft goRight (left p) = goLeft p := by apply rec'_left
+
+@[simp] lemma casesOn'_right {motive : Path → Sort u} (atHere : motive here)
+  (goLeft  : (p : Path) → motive (left  p))
+  (goRight : (p : Path) → motive (right p)) (p : Path) :
+    Path.cases' atHere goLeft goRight (right p) = goRight p := by apply rec'_right
+
 def append (p q : Path) : Path := ⟨p.length + q.length, p.bitvec ++ q.bitvec⟩
 instance : Append Path := ⟨append⟩
 
+@[simp] lemma here_append {q} : here ++ q = q := by
+  have := Nat.zero_add q.length
+  dsimp only [(. ++ .), Append.append, Path.append, BitVec.append, here]
+  simp only [ofNat_eq_ofNat, ofNat_eq_mod_two_pow, pow_zero, Nat.zero_mod,
+             Nat.shiftLeft_eq, zero_mul, Nat.zero_lor, ofNat_toNat' _ this.symm]
+  congr; exact proof_irrel_heq _ _
+
+@[simp] lemma append_here {q} : q ++ here = q := rfl
+
+-- @[simp] lemma append_left {p} : isHere? (left p) = false := rfl
+-- @[simp] lemma append_right {p} : isHere? (right p) = false := rfl
+
 def mirror (p : Path) : Path := ⟨p.length, ~~~p.bitvec⟩
-def reverse (p : Path) : Path :=
-  p.rec' id (fun _ f => f ∘ Path.left) (fun _ f => f ∘ Path.right) Path.here
+def reverse (p : Path) : Path := ⟨p.length, p.bitvec.reverse⟩
 
 def isHere? (p : Path) := p.length == 0
 def startsWithLeft?  (p : Path) := p.length > 0 && !p.bitvec.msb
@@ -107,13 +131,27 @@ def startsWithRight? (p : Path) := p.bitvec.msb
 def endsWithLeft?  (p : Path) := p.length > 0 && !(p.bitvec.getLsb 0)
 def endsWithRight? (p : Path) := p.bitvec.getLsb 0
 
-end Path
+@[simp] lemma isHere?_here : isHere? here = true := rfl
+@[simp] lemma isHere?_left {p} : isHere? (left p) = false := rfl
+@[simp] lemma isHere?_right {p} : isHere? (right p) = false := rfl
 
-@[reducible]
-def PosNum.toPath : PosNum → Path
-  | PosNum.one    => Path.here
-  | PosNum.bit0 b => Path.left (PosNum.toPath b)
-  | PosNum.bit1 b => Path.right (PosNum.toPath b)
+@[simp] lemma startsWithLeft?_here : startsWithLeft? here = false := rfl
+@[simp] lemma startsWithLeft?_left {p} : startsWithLeft? (left p) = true :=
+  by simp [startsWithLeft?, left]
+@[simp] lemma startsWithLeft?_right {p} : startsWithLeft? (right p) = false :=
+  by simp [startsWithLeft?, right]
+
+@[simp] lemma startsWithRight?_here : startsWithRight? here = false := rfl
+@[simp] lemma startsWithRight?_left {p} : startsWithRight? (left p) = false :=
+  by simp [startsWithRight?, left]
+@[simp] lemma startsWithRight?_right {p} : startsWithRight? (right p) = true :=
+  by simp [startsWithRight?, right]
+
+-- lemma isHere?_spec (p : Path) : isHere? p ↔ p = here := by
+--   cases' p using cases' <;> simp
+
+
+end Path
 
 @[simp]
 def numNodes {N L} : BinTree N L → ℕ
