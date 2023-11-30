@@ -163,15 +163,11 @@ theorem dual_involutive : Function.Involutive (dual : Matroid α → Matroid α)
 theorem dual_injective : Function.Injective (dual : Matroid α → Matroid α) :=
   dual_involutive.injective
 
-@[simp] theorem dual_inj_iff {M₁ M₂ : Matroid α} : M₁﹡ = M₂﹡ ↔ M₁ = M₂ :=
+@[simp] theorem dual_inj {M₁ M₂ : Matroid α} : M₁﹡ = M₂﹡ ↔ M₁ = M₂ :=
   dual_injective.eq_iff
 
-theorem dual_inj {M₁ M₂ : Matroid α} (h : M₁﹡ = M₂﹡) : M₁ = M₂ :=
-  dual_inj_iff.1
-
-
 theorem eq_dual_comm {M₁ M₂ : Matroid α} : M₁ = M₂﹡ ↔ M₂ = M₁﹡ := by
-  rw [←dual_inj_iff, dual_dual, eq_comm]
+  rw [←dual_inj, dual_dual, eq_comm]
 
 theorem eq_dual_iff_dual_eq {M₁ M₂ : Matroid α} : M₁ = M₂﹡ ↔ M₁﹡ = M₂ := by
   rw [eq_dual_comm, eq_comm]
