@@ -19,9 +19,9 @@ noncomputable section
 
 namespace Complex
 
-open Set Filter
+open Set Filter Bornology
 
-open Real Topology ComplexConjugate
+open scoped Real Topology ComplexConjugate
 
 /-- Inverse of the `exp` function. Returns values such that `(log x).im > - π` and `(log x).im ≤ π`.
   `log 0 = 0`-/
@@ -85,6 +85,14 @@ theorem log_ofReal_mul {r : ℝ} (hr : 0 < r) {x : ℂ} (hx : x ≠ 0) :
 theorem log_mul_ofReal (r : ℝ) (hr : 0 < r) (x : ℂ) (hx : x ≠ 0) :
     log (x * r) = Real.log r + log x := by rw [mul_comm, log_ofReal_mul hr hx, add_comm]
 #align complex.log_mul_of_real Complex.log_mul_ofReal
+
+lemma log_mul_eq_add_log_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
+    log (x * y) = log x + log y ↔ arg x + arg y ∈ Set.Ioc (-π) π := by
+  refine ext_iff.trans <| Iff.trans ?_ <| arg_mul_eq_add_arg_iff hx₀ hy₀
+  simp_rw [add_re, add_im, log_re, log_im, AbsoluteValue.map_mul,
+    Real.log_mul (abs.ne_zero hx₀) (abs.ne_zero hy₀), true_and]
+
+alias ⟨_, log_mul⟩ := log_mul_eq_add_log_iff
 
 @[simp]
 theorem log_zero : log 0 = 0 := by simp [log]
@@ -213,9 +221,9 @@ theorem map_exp_comap_re_atBot : map exp (comap re atBot) = 𝓝[≠] 0 := by
 #align complex.map_exp_comap_re_at_bot Complex.map_exp_comap_re_atBot
 
 @[simp]
-theorem map_exp_comap_re_atTop : map exp (comap re atTop) = comap abs atTop := by
-  rw [← comap_exp_comap_abs_atTop, map_comap, range_exp, inf_eq_left, le_principal_iff]
-  exact eventually_ne_of_tendsto_norm_atTop tendsto_comap 0
+theorem map_exp_comap_re_atTop : map exp (comap re atTop) = cobounded ℂ := by
+  rw [← comap_exp_cobounded, map_comap, range_exp, inf_eq_left, le_principal_iff]
+  exact eventually_ne_cobounded _
 #align complex.map_exp_comap_re_at_top Complex.map_exp_comap_re_atTop
 
 end Complex
