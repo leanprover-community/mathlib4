@@ -62,8 +62,8 @@ namespace Std.BitVec
 
 See also `Std.BitVec.adc`, which stores the carry bit separately. -/
 def adc' {n} (x y : BitVec n) (c : Bool) : BitVec (n+1) :=
-  ofFin (x.toNat + y.toNat + c.toNat)
-#align bitvec.adc Std.BitVec.adc'
+  let a := x.adc y c; .cons a.1 a.2
+#align bitvec.adc Std.BitVec.adc
 
 #align bitvec.add Std.BitVec.add
 
