@@ -76,6 +76,8 @@ theorem Rel.is_equivalence : Equivalence (Rel α) :=
   { refl := fun (x, y) ↦ Rel.refl x y, symm := Rel.symm, trans := Rel.trans }
 #align sym2.rel.is_equivalence Sym2.Rel.is_equivalence
 
+/-- One can use `attribute [local instance] Sym2.Rel.setoid` to temporarily
+make `Quotient` functionality work for `α × α`. -/
 def Rel.setoid (α : Type u) : Setoid (α × α) :=
   ⟨Rel α, Rel.is_equivalence⟩
 #align sym2.rel.setoid Sym2.Rel.setoid
@@ -103,6 +105,10 @@ def Sym2 (α : Type u) := Quot (Sym2.Rel α)
 /-- Constructor for `Sym2`. This is the quotient map `α × α → Sym2 α`. -/
 protected abbrev Sym2.mk {α : Type*} (p : α × α) : Sym2 α := Quot.mk (Sym2.Rel α) p
 
+/-- `s(x, y)` is an unordered pair,
+which is to say a pair modulo the action of the symmetric group.
+
+It is equal to `Sym2.mk (x, y)`. -/
 notation3 "s(" x ", " y ")" => Sym2.mk (x, y)
 
 namespace Sym2
@@ -135,6 +141,7 @@ protected theorem inductionOn₂ {f : Sym2 α → Sym2 β → Prop} (i : Sym2 α
     exact hf _ _ _ _
 #align sym2.induction_on₂ Sym2.inductionOn₂
 
+/-- Dependent recursion principal for `Sym2`. See `Quot.rec`. -/
 @[elab_as_elim]
 protected def rec {motive : Sym2 α → Sort*}
     (f : (p : α × α) → motive (Sym2.mk p))
@@ -142,6 +149,8 @@ protected def rec {motive : Sym2 α → Sort*}
     (z : Sym2 α) : motive z :=
   Quot.rec f h z
 
+/-- Dependent recursion principal for `Sym2` when the target is a `Subsingleton` type.
+See `Quot.recOnSubsingleton`. -/
 @[elab_as_elim]
 protected abbrev recOnSubsingleton {motive : Sym2 α → Sort*}
     [(p : α × α) → Subsingleton (motive (Sym2.mk p))]
