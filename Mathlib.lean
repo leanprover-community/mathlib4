@@ -2679,6 +2679,7 @@ import Mathlib.NumberTheory.DirichletCharacter.Basic
 import Mathlib.NumberTheory.DirichletCharacter.Bounds
 import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.EulerProduct.Basic
+import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.FLT.Four
 import Mathlib.NumberTheory.FermatPsp
