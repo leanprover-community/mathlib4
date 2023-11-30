@@ -1417,8 +1417,8 @@ import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.Array.Lemmas
 import Mathlib.Data.BinaryHeap
-import Mathlib.Data.Bitvec.Defs
-import Mathlib.Data.Bitvec.Lemmas
+import Mathlib.Data.BitVec.Defs
+import Mathlib.Data.BitVec.Lemmas
 import Mathlib.Data.Bool.AllAny
 import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Bool.Count
@@ -1660,6 +1660,7 @@ import Mathlib.Data.Matrix.Rank
 import Mathlib.Data.Matrix.Reflection
 import Mathlib.Data.Matrix.RowCol
 import Mathlib.Data.Matroid.Basic
+import Mathlib.Data.Matroid.IndepAxioms
 import Mathlib.Data.Matroid.Init
 import Mathlib.Data.Multiset.Antidiagonal
 import Mathlib.Data.Multiset.Basic
