@@ -5,6 +5,18 @@ Authors: Martin Dvorak
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 
+/-!
+
+This file makes infoview display:
+* `List.take n l` as `l.take n`
+* `List.drop n l` as `l.drop n`
+* `List.takeWhile p l` as `l.takeWhile p`
+* `List.dropWhile p l` as `l.dropWhile n`
+* `List.map f l` as `l.map f`
+* `Multiset.map f s` as `s.map f`
+
+-/
+
 @[app_unexpander List.take]
 def List.take.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $n $l) => `($(l).$(Lean.mkIdent `take) $n)
@@ -35,7 +47,8 @@ def Multiset.map.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $f $s) => `($(s).$(Lean.mkIdent `map) $f)
   | _ => throw ()
 
-attribute [pp_dot] List.get List.length List.sum Multiset.sum Sigma.fst Sigma.snd
+-- Do we also want these?
+-- attribute [pp_dot] List.get List.length List.sum Multiset.sum Sigma.fst Sigma.snd
 
 example (l : List ℕ) : l.take l.length = l.takeWhile (fun _ => true) := sorry
 example (l : List ℕ) : l.drop 0 = l.dropWhile (fun _ => false) := sorry
