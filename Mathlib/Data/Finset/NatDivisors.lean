@@ -11,7 +11,7 @@ import Mathlib.Data.Nat.Order.Lemmas
 #  `Nat.divisors` as a multiplicative homomorpism
 
 The main definition of this file is `Nat.divisorsHom : ℕ →* Finset ℕ`,
-exhibiting `Nat.divisors` as a multiplicative homomorpism from `ℕ` to `Finset ℕ`.
+exhibiting `Nat.divisors` as a multiplicative homomorphism from `ℕ` to `Finset ℕ`.
 -/
 
 open Nat Finset
