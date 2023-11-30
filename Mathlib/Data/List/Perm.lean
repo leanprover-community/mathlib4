@@ -878,6 +878,7 @@ theorem perm_iff_count {l₁ l₂ : List α} : l₁ ~ l₂ ↔ ∀ a, count a l�
       · rfl
       specialize H b
       simp at H
+      contradiction
     · have : a ∈ l₂ := count_pos_iff_mem.1 (by rw [← H, count_pos_iff_mem]; simp)
       refine' ((IH fun b => _).cons a).trans (perm_cons_erase this).symm
       specialize H b
