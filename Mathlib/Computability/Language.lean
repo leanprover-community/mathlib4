@@ -335,6 +335,20 @@ lemma reverse_mul : (l * m).reverse = m.reverse * l.reverse := by
   refine exists_congr fun v => ?_
   rw [and_left_comm, ← List.reverse_append, List.reverse_inj]
 
+variable (α) in
+/-- `Language.reverse` as a ring homomorphism to the opposite ring. -/
+@[simps]
+def reverseHom : Language α ≃+* (Language α)ᵐᵒᵖ where
+  toFun l := .op l.reverse
+  invFun l' := l'.unop.reverse
+  left_inv := reverse_reverse
+  right_inv l' := MulOpposite.unop_injective <| reverse_reverse l'.unop
+  map_mul' l₁ l₂ := MulOpposite.unop_injective <| reverse_mul l₁ l₂
+  map_add' l₁ l₂ := MulOpposite.unop_injective <| reverse_add l₁ l₂
+
+lemma reverse_pow (n : ℕ) : (l ^ n).reverse = l.reverse ^ n :=
+  MulOpposite.op_injective <| map_pow (reverseHom α) l n
+
 lemma reverse_kstar : l∗.reverse = l.reverse∗ := by
   ext w
   show
