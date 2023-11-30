@@ -69,7 +69,7 @@ lemma IsIntegralCurveAt.comp_add {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v 
   -- this makes me think we need lemmas for `HasMFDerivAt 𝓘(E, E) 𝓘(E, E)` of simple operations
   refine ⟨(continuous_add_right _).continuousAt, ?_⟩
   simp only [mfld_simps, hasFDerivWithinAt_univ]
-  apply HasFDerivAt.add_const (hasFDerivAt_id _)
+  exact HasFDerivAt.add_const (hasFDerivAt_id _) _
 
 lemma isIntegralCurveAt_comp_add {γ : ℝ → M} {dt : ℝ} : IsIntegralCurveAt γ v t₀ ↔
     IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
@@ -90,7 +90,7 @@ lemma IsIntegralCurveAt.comp_mul_pos {γ : ℝ → M} (hγ : IsIntegralCurveAt �
   rw [Function.comp_apply, Pi.smul_apply, ← ContinuousLinearMap.smulRight_comp]
   refine HasMFDerivAt.comp t (h2 (t * a) ht) ⟨(continuous_mul_right _).continuousAt, ?_⟩
   simp only [mfld_simps, hasFDerivWithinAt_univ]
-  apply HasFDerivAt.mul_const' (hasFDerivAt_id _)
+  exact HasFDerivAt.mul_const' (hasFDerivAt_id _) _
 
 lemma isIntegralCurvAt_comp_mul_pos {γ : ℝ → M} {a : ℝ} (ha : 0 < a) :
     IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
