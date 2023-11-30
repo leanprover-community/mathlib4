@@ -127,7 +127,7 @@ def extensiveCoverage [FinitaryPreExtensive C] : Coverage C where
 theorem effectiveEpi_desc_iff_effectiveEpiFamily [FinitaryPreExtensive C] {α : Type} [Fintype α]
     {B : C} (X : α → C) (π : (a : α) → X a ⟶ B) :
     EffectiveEpi (Sigma.desc π) ↔ EffectiveEpiFamily X π := by
-  exact ⟨fun h ↦ ⟨⟨@effectiveEpiFamilyOfEffectiveEpiDesc _ _ _ _ X π _ h _ _ (fun g ↦
+  exact ⟨fun h ↦ ⟨⟨@effectiveEpiFamilyStructOfEffectiveEpiDesc _ _ _ _ X π _ h _ _ (fun g ↦
     (FinitaryPreExtensive.sigma_desc_iso (fun a ↦ Sigma.ι X a) g inferInstance).epi_of_iso)⟩⟩,
     fun _ ↦ inferInstance⟩
 

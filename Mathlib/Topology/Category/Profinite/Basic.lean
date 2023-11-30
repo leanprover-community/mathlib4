@@ -27,7 +27,7 @@ compact, Hausdorff and totally disconnected.
 
 ## TODO
 
-* Define procategories and prove that `Profinite` is equiavalent to `Pro (FintypeCat)`.
+* Define procategories and prove that `Profinite` is equivalent to `Pro (FintypeCat)`.
 
 ## Tags
 
@@ -241,8 +241,8 @@ end DiscreteTopology
 end Profinite
 
 /--
-Universe inequalities in Mathlib 3 are expressed through use of `max u v`. Unfortunately,
-this leads to unbound universes which cannot be solved for during unification, eg
+Many definitions involving universe inequalities in Mathlib are expressed through use of `max u v`.
+Unfortunately, this leads to unbound universes which cannot be solved for during unification, eg
 `max u v =?= max v ?`.
 The current solution is to wrap `Type max u v` in `TypeMax.{u,v}`
 to expose both universe parameters directly.

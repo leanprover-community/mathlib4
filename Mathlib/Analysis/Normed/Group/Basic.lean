@@ -421,6 +421,10 @@ theorem tendsto_norm_atTop_iff_cobounded' {f : α → E} {l : Filter α} :
 theorem tendsto_norm_cobounded_atTop' : Tendsto norm (cobounded E) atTop :=
   tendsto_norm_atTop_iff_cobounded'.2 tendsto_id
 
+@[to_additive eventually_cobounded_le_norm]
+lemma eventually_cobounded_le_norm' (a : ℝ) : ∀ᶠ x in cobounded E, a ≤ ‖x‖ :=
+  tendsto_norm_cobounded_atTop'.eventually_ge_atTop a
+
 @[to_additive tendsto_norm_cocompact_atTop]
 theorem tendsto_norm_cocompact_atTop' [ProperSpace E] : Tendsto norm (cocompact E) atTop :=
   cobounded_eq_cocompact (α := E) ▸ tendsto_norm_cobounded_atTop'
@@ -467,13 +471,14 @@ theorem dist_div_eq_dist_mul_right (a b c : E) : dist a (b / c) = dist (a * c) b
 #align dist_div_eq_dist_mul_right dist_div_eq_dist_mul_right
 #align dist_sub_eq_dist_add_right dist_sub_eq_dist_add_right
 
-/-- In a (semi)normed group, inversion `x ↦ x⁻¹` tends to infinity at infinity. TODO: use
-`Bornology.cobounded` instead of `Filter.comap Norm.norm Filter.atTop`. -/
-@[to_additive "In a (semi)normed group, negation `x ↦ -x` tends to infinity at infinity. TODO: use
-`Bornology.cobounded` instead of `Filter.comap Norm.norm Filter.atTop`."]
-theorem Filter.tendsto_inv_cobounded :
-    Tendsto (Inv.inv : E → E) (comap norm atTop) (comap norm atTop) := by
-  simpa only [norm_inv', tendsto_comap_iff, (· ∘ ·)] using tendsto_comap
+@[to_additive (attr := simp)]
+lemma Filter.inv_cobounded : (cobounded E)⁻¹ = cobounded E := by
+  simp only [← comap_norm_atTop', ← Filter.comap_inv, comap_comap, (· ∘ ·), norm_inv']
+
+/-- In a (semi)normed group, inversion `x ↦ x⁻¹` tends to infinity at infinity. -/
+@[to_additive "In a (semi)normed group, negation `x ↦ -x` tends to infinity at infinity."]
+theorem Filter.tendsto_inv_cobounded : Tendsto Inv.inv (cobounded E) (cobounded E) :=
+  inv_cobounded.le
 #align filter.tendsto_inv_cobounded Filter.tendsto_inv_cobounded
 #align filter.tendsto_neg_cobounded Filter.tendsto_neg_cobounded
 
