@@ -361,14 +361,6 @@ end Differential
 section ChartsDifferentials
 variable [I.Boundaryless] [SmoothManifoldWithCorners I M]
 
--- I have this on a branch already -> prove it!
-theorem LocalHomeomorph.isOpen_extend_target (e : LocalHomeomorph M H) :
-    IsOpen (e.extend I).target := sorry
-
--- xxx: basically copied from LocalHomeomomorph.isOpen_extend_target in the integral curves PR
-lemma isOpen_extChartAt_target (x : M) : IsOpen (extChartAt I x).target := by
-  sorry
-
 def extChartAt_sourceToOpen (x : M) : Opens M :=
   ⟨(extChartAt I x).source, isOpen_extChartAt_source I x⟩
 
@@ -380,19 +372,12 @@ def LocalHomeomorph.extend_toLocalHomeomorph {e : LocalHomeomorph M H} : LocalHo
   {
     toLocalEquiv := e.extend I
     open_source := isOpen_extend_source e I
-    open_target := isOpen_extend_target I e -- this uses boundarylessness!
+    open_target := isOpen_extend_target e I
     continuous_toFun := continuousOn_extend e I
     continuous_invFun := continuousOn_extend_symm e I
   }
 
-variable (n)
-
--- add to ContMDiff, below contMDiffAt_extend
-theorem contMDiffOn_extend {e : LocalHomeomorph M H} (he : e ∈ maximalAtlas I M) :
-    ContMDiffOn I 𝓘(𝕜, E) n (e.extend I) e.source :=
-  fun _x' hx' => (contMDiffAt_extend he hx').contMDiffWithinAt
-
-variable {e : LocalHomeomorph M H} (he : e ∈ maximalAtlas I M)
+variable (n) {e : LocalHomeomorph M H} (he : e ∈ maximalAtlas I M)
 
 /-- If `M` has no boundary, every extended chart is a local diffeomorphism
 between its source and target. -/
@@ -483,13 +468,12 @@ variable {f : M → N} {x : M} (hf : MDifferentiableAt I J f x)
 
 /-- If `f : M → N` has surjective differential at `x` iff its local coordinate representation
   `φ ∘ f ∘ ψ.symm`, for any two charts φ, ψ around `x` and `f x`, does. -/
-lemma mfderiv_surjective_iff_in_charts (hn : 1 ≤ n) : Surjective (mfderiv I J f x)
+lemma mfderiv_surjective_iff_in_charts (hn : 1 ≤ n) [J.Boundaryless] : Surjective (mfderiv I J f x)
     ↔ Surjective (fderiv 𝕜 ((e'.extend J) ∘ f ∘ (e.extend I).symm) (e.extend I x)) := by
   rw [← mfderiv_eq_fderiv]
-  have h0 : (e.extend I) x ∈ (e.extend I).target := sorry -- proven on another branch
   have h : (e.extend I) x ∈ (e.extend I).symm.source := by
     rw [LocalEquiv.symm_source]
-    exact h0
+    exact e.mapsTo_extend' I hx
   let x' := (e.extend I).symm ((e.extend I) x)
   have eqx' : x' = (e.extend I).symm ((e.extend I) x) := rfl
   have : x' = x := e.extend_left_inv I hx

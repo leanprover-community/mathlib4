@@ -976,12 +976,23 @@ theorem extend_target : (f.extend I).target = I.symm ⁻¹' f.target ∩ range I
   simp_rw [extend, LocalEquiv.trans_target, I.target_eq, I.toLocalEquiv_coe_symm, inter_comm]
 #align local_homeomorph.extend_target LocalHomeomorph.extend_target
 
+lemma isOpen_extend_target [I.Boundaryless] : IsOpen (f.extend I).target := by
+  rw [extend_target, I.range_eq_univ, inter_univ]
+  exact I.continuous_symm.isOpen_preimage _ f.open_target
+
 theorem mapsTo_extend (hs : s ⊆ f.source) :
     MapsTo (f.extend I) s ((f.extend I).symm ⁻¹' s ∩ range I) := by
   rw [mapsTo', extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
     f.image_eq_target_inter_inv_preimage hs]
   exact image_subset _ (inter_subset_right _ _)
 #align local_homeomorph.maps_to_extend LocalHomeomorph.mapsTo_extend
+
+lemma mapsTo_extend' : MapsTo (f.extend I) f.source (f.extend I).target := by
+  intro x hx
+  rw [extend_coe, f.extend_target, comp_apply]
+  refine ⟨?_, mem_range_self (f x)⟩
+  rw [mem_preimage, I.left_inv (f x)]
+  exact map_source f hx
 
 theorem extend_left_inv {x : M} (hxf : x ∈ f.source) : (f.extend I).symm (f.extend I x) = x :=
   (f.extend I).left_inv <| by rwa [f.extend_source]
@@ -1262,6 +1273,10 @@ theorem extChartAt_source : (extChartAt I x).source = (chartAt H x).source :=
 theorem isOpen_extChartAt_source : IsOpen (extChartAt I x).source :=
   isOpen_extend_source _ _
 #align is_open_ext_chart_at_source isOpen_extChartAt_source
+
+lemma isOpen_extChartAt_target [I.Boundaryless] (x : M) : IsOpen (extChartAt I x).target := by
+  rw [extChartAt]
+  apply (chartAt H x).isOpen_extend_target
 
 theorem mem_extChartAt_source : x ∈ (extChartAt I x).source := by
   simp only [extChartAt_source, mem_chart_source]
