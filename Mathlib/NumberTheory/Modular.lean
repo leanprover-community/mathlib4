@@ -435,7 +435,8 @@ theorem eq_zero_of_mem_fdo_of_T_zpow_mem_fdo {n : ℤ} (hz : z ∈ 𝒟ᵒ) (hg 
     _ = 1 := add_halves 1
 #align modular_group.eq_zero_of_mem_fdo_of_T_zpow_mem_fdo ModularGroup.eq_zero_of_mem_fdo_of_T_zpow_mem_fdo
 
-/-- **First Fundamental Domain Lemma**: Any `z : ℍ` can be moved to `𝒟` by an element of `SL(2,ℤ)`  -/
+/-- **First Fundamental Domain Lemma**: Any `z : ℍ` can be moved to `𝒟` by an element of
+`SL(2,ℤ)` -/
 theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := by
   -- obtain a g₀ which maximizes im (g • z),
   obtain ⟨g₀, hg₀⟩ := exists_max_im z
