@@ -333,31 +333,39 @@ end Differential
 section ChartsDifferentials
 variable [I.Boundaryless] [SmoothManifoldWithCorners I M]
 
+-- I have this on a branch already -> prove it!
+theorem LocalHomeomorph.isOpen_extend_target (e : LocalHomeomorph M H) :
+    IsOpen (e.extend I).target := sorry
+
 -- xxx: basically copied from LocalHomeomomorph.isOpen_extend_target in the integral curves PR
-lemma isOpen_extend_target (x : M) : IsOpen (extChartAt I x).target := by
+lemma isOpen_extChartAt_target (x : M) : IsOpen (extChartAt I x).target := by
   sorry
 
 def extChartAt_sourceToOpen (x : M) : Opens M :=
   ⟨(extChartAt I x).source, isOpen_extChartAt_source I x⟩
 
 def extChartAt_targetToOpen (x : M) : Opens E :=
-  ⟨(extChartAt I x).target, isOpen_extend_target I x⟩
+  ⟨(extChartAt I x).target, isOpen_extChartAt_target I x⟩
 
--- xxx: to what extend does this exist already? deduplicate!
-def extChartAt_toLocalHomeomorph (x : M) : LocalHomeomorph M E := by
-  exact {
-    toFun := extChartAt I x
-    invFun := (extChartAt I x).symm
-    source := (extChartAt I x).source
-    target := (extChartAt I x).target
+/-- If `I` is boundaryless, an extended local homeomorphism is a local homeomorph. -/
+def LocalHomeomorph.extend_toLocalHomeomorph {e : LocalHomeomorph M H} : LocalHomeomorph M E :=
+  {
+    toLocalEquiv := e.extend I
+    open_source := isOpen_extend_source e I
+    open_target := isOpen_extend_target I e -- this uses boundarylessness!
+    continuous_toFun := continuousOn_extend e I
+    continuous_invFun := continuousOn_extend_symm e I
+  }
+
+/-- If `I` is boundaryless, each extended chart is a `LocalHomeomorph`. -/
+-- xxx: figure out if/how to deduplicate with the previous lemma
+def extChartAt_toLocalHomeomorph (x : M) : LocalHomeomorph M E :=
+  {
+    toLocalEquiv := extChartAt I x
     open_source := isOpen_extChartAt_source I x
-    open_target := isOpen_extend_target I x -- this uses boundarylessness!
-    map_source' := sorry -- all these are easy/done already!
-    map_target' := sorry
-    left_inv' := sorry
-    right_inv' := sorry
-    continuous_toFun := sorry
-    continuous_invFun := sorry
+    open_target := isOpen_extChartAt_target I x -- this uses boundarylessness!
+    continuous_toFun := continuousOn_extChartAt I x
+    continuous_invFun := continuousOn_extChartAt_symm I x
   }
 
 variable (n)
