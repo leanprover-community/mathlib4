@@ -247,7 +247,7 @@ lemma exponent_eq_prime_iff {G : Type*} [Monoid G] [Nontrivial G] {p : ℕ} (hp 
   · apply Monoid.exponent_dvd_of_forall_pow_eq_one G p fun g ↦ ?_
     by_cases hg : g = 1
     · simp [hg]
-    . simpa [h g hg] using pow_orderOf_eq_one g
+    · simpa [h g hg] using pow_orderOf_eq_one g
   · obtain ⟨g, hg⟩ := exists_ne (1 : G)
     simpa [h g hg] using Monoid.order_dvd_exponent g
 
