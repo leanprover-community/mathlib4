@@ -95,13 +95,13 @@ section dual
     rw [union_comm, ←union_assoc, union_eq_self_of_subset_right (inter_subset_left _ _)] at hB₁I
 
     have : B₁ = B'
-    · refine' hB₁.eq_of_subset_indep hB'.indep (fun e he ↦ _)
-      refine' (hB₁I he).elim (fun heB'' ↦ _) (fun h ↦ h.1)
-      refine' (em (e ∈ X)).elim (fun heX ↦ hI' (Or.inl ⟨heB'', heX⟩)) (fun heX ↦ hIB' _)
-      refine' hI.mem_of_insert_indep ⟨hB₁.subset_ground he, heX⟩
-        (hB₁.indep.subset (insert_subset he _))
-      refine' (subset_union_of_subset_right (subset_diff.mpr ⟨hIB',_⟩) _).trans hI'B₁
-      refine' disjoint_of_subset_left hI.subset disjoint_sdiff_left
+    · refine hB₁.eq_of_subset_indep hB'.indep (fun e he ↦ ?_)
+      refine (hB₁I he).elim (fun heB'' ↦ ?_) (fun h ↦ h.1)
+      refine (em (e ∈ X)).elim (fun heX ↦ hI' (Or.inl ⟨heB'', heX⟩)) (fun heX ↦ hIB' ?_)
+      refine hI.mem_of_insert_indep ⟨hB₁.subset_ground he, heX⟩
+        (hB₁.indep.subset (insert_subset he ?_))
+      refine (subset_union_of_subset_right (subset_diff.mpr ⟨hIB',?_⟩) _).trans hI'B₁
+      refine disjoint_of_subset_left hI.subset disjoint_sdiff_left
 
     subst this
 
@@ -169,8 +169,8 @@ theorem dual_injective : Function.Injective (dual : Matroid α → Matroid α) :
 theorem eq_dual_comm {M₁ M₂ : Matroid α} : M₁ = M₂﹡ ↔ M₂ = M₁﹡ := by
   rw [←dual_inj, dual_dual, eq_comm]
 
-theorem eq_dual_iff_dual_eq {M₁ M₂ : Matroid α} : M₁ = M₂﹡ ↔ M₁﹡ = M₂ := by
-  rw [eq_dual_comm, eq_comm]
+theorem eq_dual_iff_dual_eq {M₁ M₂ : Matroid α} : M₁ = M₂﹡ ↔ M₁﹡ = M₂ :=
+  dual_involutive.eq_iff.symm
 
 theorem Base.compl_base_of_dual (h : M﹡.Base B) : M.Base (M.E \ B) :=
   (dual_base_iff'.1 h).1
@@ -231,7 +231,7 @@ theorem Coindep.indep (hX : M.Coindep X) : M﹡.Indep X :=
   rw [Coindep, dual_dual]
 
 theorem Indep.coindep (hI : M.Indep I) : M﹡.Coindep I :=
-    dual_coindep_iff.2 hI
+  dual_coindep_iff.2 hI
 
 theorem coindep_iff_exists' : M.Coindep X ↔ (∃ B, M.Base B ∧ B ⊆ M.E \ X) ∧ X ⊆ M.E := by
   simp_rw [Coindep, dual_indep_iff_exists', and_comm (a := _ ⊆ _), and_congr_left_iff, subset_diff]
