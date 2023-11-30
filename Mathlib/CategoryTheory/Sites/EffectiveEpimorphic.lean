@@ -535,11 +535,11 @@ def effectiveEpiFamilyStructOfEffectiveEpiDesc {B : C} {α : Type*} (X : α → 
       Epi (Sigma.desc (fun a ↦ pullback.fst (f := g) (g := (Sigma.ι X a))))] :
     EffectiveEpiFamilyStruct X π where
   desc e h := EffectiveEpi.desc (Sigma.desc π) (Sigma.desc e) fun _ _ hg ↦
-    effectiveEpiFamilyOfEffectiveEpiDesc_aux h hg
+    effectiveEpiFamilyStructOfEffectiveEpiDesc_aux h hg
   fac e h a := by
     rw [(by simp : π a = Sigma.ι X a ≫ Sigma.desc π), (by simp : e a = Sigma.ι X a ≫ Sigma.desc e),
       Category.assoc, EffectiveEpi.fac (Sigma.desc π) (Sigma.desc e) (fun g₁ g₂ hg ↦
-      effectiveEpiFamilyOfEffectiveEpiDesc_aux h hg)]
+      effectiveEpiFamilyStructOfEffectiveEpiDesc_aux h hg)]
   uniq _ _ _ hm := by
     apply EffectiveEpi.uniq (Sigma.desc π)
     ext
