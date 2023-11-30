@@ -44,7 +44,7 @@ made essentially invisible by the simplifier when working with `M`.
 Because of this setup, we don't define any API for `IndepMatroid`, as it would be
 a redundant copy of the existing API for `Matroid.Indep`.
 (In particular, one could define a natural equivalence `e : IndepMatroid α ≃ Matroid α`
-with `e.toFun = IndepMatroid.toMatroid`, but this would be pointless, as there is no need
+with `e.toFun = IndepMatroid.matroid`, but this would be pointless, as there is no need
 for the inverse of `e`).
 
 ## Main definitions
