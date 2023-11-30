@@ -487,7 +487,7 @@ instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [Ha
 This is an auxiliary lemma used twice in the definition of  `EffectiveEpiFamilyOfEffectiveEpiDesc`.
 It is the `h` hypothesis of `EffectiveEpi.desc` and `EffectiveEpi.fac`. 
 -/
-theorem effectiveEpiFamilyOfEffectiveEpiDesc_aux {B : C} {α : Type*} {X : α → C}
+theorem effectiveEpiFamilyStructOfEffectiveEpiDesc_aux {B : C} {α : Type*} {X : α → C}
     {π : (a : α) → X a ⟶ B} [HasCoproduct X]
     [∀ {Z : C} (g : Z ⟶ ∐ X) (a : α), HasPullback g (Sigma.ι X a)]
     [∀ {Z : C} (g : Z ⟶ ∐ X), HasCoproduct fun a ↦ pullback g (Sigma.ι X a)]
@@ -527,7 +527,7 @@ the coproduct is effective epimorphic whenever `Sigma.desc` induces an effective
 the coproduct itself.
 -/
 noncomputable
-def effectiveEpiFamilyOfEffectiveEpiDesc {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
+def effectiveEpiFamilyStructOfEffectiveEpiDesc {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [HasCoproduct X] [EffectiveEpi (Sigma.desc π)]
     [∀ {Z : C} (g : Z ⟶ ∐ X) (a : α), HasPullback g (Sigma.ι X a)]
     [∀ {Z : C} (g : Z ⟶ ∐ X), HasCoproduct (fun a ↦ pullback g (Sigma.ι X a))]
@@ -619,7 +619,7 @@ instance {X Y : C} (f : X ⟶ Y) [IsIso f] : EffectiveEpi f := ⟨⟨effectiveEp
 /--
 A split epi followed by an effective epi is an effective epi. This version takes an explicit section
 to the split epi, and is mainly used to define `effectiveEpiStructCompOfEffectiveEpiSplitEpi`,
-which takes a `SplitEpi` instance instead.
+which takes a `IsSplitEpi` instance instead.
 -/
 noncomputable
 def effectiveEpiStructCompOfEffectiveEpiSplitEpi' {B X Y : C} (f : X ⟶ B) (g : Y ⟶ X) (i : X ⟶ Y)
