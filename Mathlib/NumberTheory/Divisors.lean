@@ -202,6 +202,13 @@ theorem one_mem_properDivisors_iff_one_lt : 1 ∈ n.properDivisors ↔ 1 < n := 
 #align nat.one_mem_proper_divisors_iff_one_lt Nat.one_mem_properDivisors_iff_one_lt
 
 @[simp]
+lemma sup_divisors_id (n : ℕ) : n.divisors.sup id = n := by
+  refine le_antisymm (Finset.sup_le fun _ ↦ divisor_le) ?_
+  rcases Decidable.eq_or_ne n 0 with rfl | hn
+  · apply zero_le
+  · exact Finset.le_sup (f := id) <| mem_divisors_self n hn
+
+@[simp]
 theorem divisorsAntidiagonal_zero : divisorsAntidiagonal 0 = ∅ := by
   ext
   simp
@@ -340,19 +347,10 @@ theorem divisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
   · tauto
 #align nat.divisors_prime_pow Nat.divisors_prime_pow
 
-theorem divisors_mem_iff_mem {a b : ℕ} (h : ∀ {y}, y ∈ a.divisors ↔ y ∈ b.divisors) :
-    a = b := by
-  rcases eq_or_ne a 0 with rfl | ha <;> rcases eq_or_ne b 0 with rfl | hb
-  · rfl
-  · simp only [divisors_zero, not_mem_empty, mem_divisors, ne_eq, false_iff, not_and, not_not] at h
-    exact (h (one_dvd _)).symm
-  · simp only [mem_divisors, ne_eq, divisors_zero, not_mem_empty, iff_false, not_and, not_not] at h
-    exact (h (one_dvd _))
-  · exact dvd_left_iff_eq.mp (by simp_all)
-
 theorem divisors_injective : Function.Injective divisors :=
-  fun ⦃_ _⦄ xy ↦ divisors_mem_iff_mem fun {_} ↦ iff_of_eq (congrArg _ xy)
+  Function.LeftInverse.injective sup_divisors_id
 
+@[simp]
 theorem divisors_inj {a b : ℕ} : a.divisors = b.divisors ↔ a = b :=
   ⟨fun x => divisors_injective x, congrArg divisors⟩
 
