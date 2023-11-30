@@ -36,9 +36,9 @@ See `Basic.lean` for further basic properties of smooth functions between smooth
 
 Many properties follow for free from the corresponding properties of functions in vector spaces,
 as being `Cⁿ` is a local property invariant under the smooth groupoid. We take advantage of the
-general machinery developed in `local_invariant_properties.lean` to get these properties
+general machinery developed in `LocalInvariantProperties.lean` to get these properties
 automatically. For instance, the fact that being `Cⁿ` does not depend on the chart one considers
-is given by `lift_prop_within_at_indep_chart`.
+is given by `liftPropWithinAt_indep_chart`.
 
 For this to work, the definition of `ContMDiffWithinAt` and friends has to
 follow definitionally the setup of local invariant properties. Still, we recast the definition
@@ -228,8 +228,8 @@ def ContMDiff (n : ℕ∞) (f : M → M') :=
 #align cont_mdiff ContMDiff
 
 /-- Abbreviation for `ContMDiff I I' ⊤ f`.
-Short note to work with these abbreviations: a lemma of the form `cont_mdiff_foo.bar` will
-apply fine to an assumption `smooth_foo` using dot notation or normal notation.
+Short note to work with these abbreviations: a lemma of the form `ContMDiffFoo.bar` will
+apply fine to an assumption `SmoothFoo` using dot notation or normal notation.
 If the consequence `bar` of the lemma involves `ContDiff`, it is still better to restate
 the lemma replacing `ContDiff` with `Smooth` both in the assumption and in the conclusion,
 to make it possible to use `Smooth` consistently.
