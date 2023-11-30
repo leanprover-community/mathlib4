@@ -87,6 +87,15 @@ def Diffeomorph.toLocalDiffeomorphAux (h : Diffeomorph I J M N n) : LocalDiffeom
 -- Add the very basic API we need.
 namespace LocalDiffeomorphAux
 variable (Φ : LocalDiffeomorphAux I J M N n) (hn : 1 ≤ n)
+
+/-- The inverse of a local diffeomorphism. -/
+protected def symm : LocalDiffeomorphAux J I N M n := by
+  exact {
+    toLocalHomeomorph := Φ.toLocalHomeomorph.symm
+    contMDiffOn_toFun := Φ.contMDiffOn_invFun
+    contMDiffOn_invFun := Φ.contMDiffOn_toFun
+  }
+
 protected theorem contMDiffOn : ContMDiffOn I J n Φ Φ.source :=
   Φ.contMDiffOn_toFun
 
@@ -97,20 +106,18 @@ protected theorem mdifferentiableOn : MDifferentiableOn I J Φ Φ.source :=
   (Φ.contMDiffOn).mdifferentiableOn hn
 
 protected theorem mdifferentiableOn_symm : MDifferentiableOn J I Φ.invFun Φ.target :=
-  (Φ.contMDiffOn_symm).mdifferentiableOn hn
+  (Φ.symm).mdifferentiableOn hn
 
 protected theorem mdifferentiableAt {x : M} (hx : x ∈ Φ.source) : MDifferentiableAt I J Φ x :=
   (Φ.mdifferentiableOn hn x hx).mdifferentiableAt (Φ.open_source.mem_nhds hx)
 
--- define symm just to make this easier to write?
 protected theorem mdifferentiableAt_symm {x : M} (hx : x ∈ Φ.source) :
     MDifferentiableAt J I Φ.invFun (Φ x) :=
-  (Φ.mdifferentiableOn_symm hn (Φ x) (Φ.map_source hx)).mdifferentiableAt
-  (Φ.open_target.mem_nhds (Φ.map_source hx))
+  (Φ.symm).mdifferentiableAt hn (Φ.map_source hx)
 
 /- We could add lots of additional API (following `Diffeomorph` and `LocalHomeomorph*), such as
 * further continuity and differentiability lemmas
-* refl, symm and trans instances; lemmas between them.
+* refl and trans instances; lemmas between them.
 As this declaration is meant for internal use only, we keep it simple. -/
 end LocalDiffeomorphAux
 end LocalDiffeomorphAux
@@ -357,57 +364,96 @@ def LocalHomeomorph.extend_toLocalHomeomorph {e : LocalHomeomorph M H} : LocalHo
     continuous_invFun := continuousOn_extend_symm e I
   }
 
-/-- If `I` is boundaryless, each extended chart is a `LocalHomeomorph`. -/
--- xxx: figure out if/how to deduplicate with the previous lemma
-def extChartAt_toLocalHomeomorph (x : M) : LocalHomeomorph M E :=
-  {
-    toLocalEquiv := extChartAt I x
-    open_source := isOpen_extChartAt_source I x
-    open_target := isOpen_extChartAt_target I x -- this uses boundarylessness!
-    continuous_toFun := continuousOn_extChartAt I x
-    continuous_invFun := continuousOn_extChartAt_symm I x
-  }
-
 variable (n)
+
+-- add to ContMDiff, below contMDiffAt_extend
+theorem contMDiffOn_extend (e : LocalHomeomorph M H) (he : e ∈ maximalAtlas I M) :
+    ContMDiffOn I 𝓘(𝕜, E) n (e.extend I) e.source :=
+  fun _x' hx' => (contMDiffAt_extend he hx').contMDiffWithinAt
+
+variable {e : LocalHomeomorph M H} (he : e ∈ maximalAtlas I M)
 
 /-- If `M` has no boundary, every extended chart is a local diffeomorphism
 between its source and target. -/
 -- TODO: this holds for every interior point x --> this requires showing the interior is open
-def extChartAt_toLocalDiffeomorphAux (x : M) : LocalDiffeomorphAux I 𝓘(𝕜, E) M E n :=
+def extend_toLocalDiffeomorphAux : LocalDiffeomorphAux I 𝓘(𝕜, E) M E n :=
   {
-    toLocalHomeomorph := extChartAt_toLocalHomeomorph I x
+    toLocalHomeomorph := e.extend_toLocalHomeomorph I
     contMDiffOn_toFun := by
-      show ContMDiffOn I 𝓘(𝕜, E) n (extChartAt I x) (extChartAt I x).source
-      rw [extChartAt_source I x]
-      exact contMDiffOn_extChartAt (I := I) (x := x) (n := n)
+      show ContMDiffOn I 𝓘(𝕜, E) n (e.extend I) (e.extend I).source
+      rw [e.extend_source]
+      exact contMDiffOn_extend I _ _ he
     contMDiffOn_invFun := by
-      show ContMDiffOn 𝓘(𝕜, E) I n (extChartAt I x).symm (extChartAt I x).target
-      exact contMDiffOn_extChartAt_symm x
+      show ContMDiffOn 𝓘(𝕜, E) I n (e.extend I).symm (e.extend I).target
+      -- should be a lemma! xxx think: why not the standard form for extend_target?
+      have : (e.extend I).target = I '' e.target := by rw [e.extend_target, I.image_eq]
+      exact this ▸ contMDiffOn_extend_symm he
   }
 
-lemma extChartAt_toLocalDiffeomorphAux_coe (x : M) :
-    (extChartAt_toLocalDiffeomorphAux I n x).toFun = extChartAt I x := by
+lemma LocalHomeomorph.extend_toLocalDiffeomorphAux_coe :
+    (extend_toLocalDiffeomorphAux I n he).toFun = e.extend I := by
   rfl
 
-lemma extChartAt_toLocalDiffeomorphAux_source (x : M) :
-    (extChartAt_toLocalDiffeomorphAux I n x).source = (extChartAt I x).source := by
+lemma extend_toLocalDiffeomorphAux_source :
+    (extend_toLocalDiffeomorphAux I n he).source = e.source := by
+  rw [← e.extend_source I]
   rfl
 
-lemma extChartAt_toLocalDiffeomorphAux_target (x : M) :
-    (extChartAt_toLocalDiffeomorphAux I n x).target = (extChartAt I x).target := by
+-- this is currently unused -> is this useful to keep?
+lemma extend_toLocalDiffeomorphAux_target :
+    (extend_toLocalDiffeomorphAux I n he).target = (e.extend I).target := by
   rfl
 
-/-- If `M` has no boundary, each extended chart is a diffeomorphism between its source and target.
-In particular, `exChartAt I x` is a local diffeomorphism at `x`. -/
-lemma extChartAt_toLocalDiffeomorphAt [I.Boundaryless] (x : M) :
-    IsLocalDiffeomorphAt I 𝓘(𝕜, E) n (extChartAt I x) x := by
-  let r := extChartAt_toLocalDiffeomorphAux I n x
-  have : x ∈ r.source := by
-    rw [extChartAt_toLocalDiffeomorphAux_source I n x]
-    exact mem_extChartAt_source I x
-  refine ⟨r, this, ?_⟩
-  rw [extChartAt_toLocalDiffeomorphAux_source I n x, ← extChartAt_toLocalDiffeomorphAux_coe]
+/-- If `M` has no boundary, every inverse extended chart is a local diffeomorphism
+between its source and target. -/
+-- TODO: this holds for every interior point x --> this requires showing the interior is open
+def extend_symm_toLocalDiffeomorphAux : LocalDiffeomorphAux 𝓘(𝕜, E) I E M n :=
+  (extend_toLocalDiffeomorphAux I n he).symm
+
+/- these lemmas are currently unused --- are they useful?
+lemma LocalHomeomorph.extend_symm_toLocalDiffeomorphAux_coe :
+    (extend_symm_toLocalDiffeomorphAux I n he).toFun = (e.extend I).symm := by
+  rfl
+
+lemma extend_symm_toLocalDiffeomorphAux_source :
+    (extend_symm_toLocalDiffeomorphAux I n he).source = (e.extend I).target := by
+  rfl
+
+lemma extend_symm_toLocalDiffeomorphAux_target :
+    (extend_symm_toLocalDiffeomorphAux I n he).target = e.source := by
+    rw [← e.extend_source I]
+    rfl
+-/
+
+variable {I} in
+/-- If `M` has no boundary, each extended chart is a local diffeomorphism at each point
+in its source. -/
+lemma LocalHomeomorph.extend_isLocalDiffeomorphAt {x : M} (hx : x ∈ e.source) :
+    IsLocalDiffeomorphAt I 𝓘(𝕜, E) n (e.extend I) x := by
+  refine ⟨extend_toLocalDiffeomorphAux I n he,
+    (extend_toLocalDiffeomorphAux_source I n he) ▸ hx, ?_⟩
+  rw [extend_toLocalDiffeomorphAux_source I n he, ← extend_toLocalDiffeomorphAux_coe]
   exact eqOn_refl _ _
+
+/-- If `M` has no boundary, each inverse extended chart is a local diffeomorphism
+at each point of its source. -/
+lemma LocalHomeomorph.extend_symm_isLocalDiffeomorphAt {y : E} (hy : y ∈ (e.extend I).target) :
+    IsLocalDiffeomorphAt 𝓘(𝕜, E) I n (e.extend I).symm y :=
+  ⟨(extend_toLocalDiffeomorphAux I n he).symm, hy, eqOn_refl _ _⟩
+
+/-- If `M` has no boundary, `exChartAt I x` is a local diffeomorphism at `x`. -/
+lemma extChartAt_isLocalDiffeomorphAt (x : M) :
+    IsLocalDiffeomorphAt I 𝓘(𝕜, E) n (extChartAt I x) x := by
+  rw [extChartAt]
+  exact (chartAt H x).extend_isLocalDiffeomorphAt n (chart_mem_maximalAtlas I x)
+    (mem_chart_source H x)
+
+/-- If `M` has no boundary, each inverse extended chart is a local diffeomorphism
+at each point of its source. -/
+lemma extChartAt_symm_isLocalDiffeomorphAt {x : M} {y : E} (hy : y ∈ (extChartAt I x).target) :
+    IsLocalDiffeomorphAt 𝓘(𝕜, E) I n (extChartAt I x).symm y := by
+  rw [extChartAt]
+  exact (chartAt H x).extend_symm_isLocalDiffeomorphAt I n (chart_mem_maximalAtlas I x) hy
 
 -- corollary: f has injective/surjective/bijective differential iff its local coord rep has
 -- for any two charts in that domain
