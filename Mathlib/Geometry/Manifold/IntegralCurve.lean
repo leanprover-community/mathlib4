@@ -19,16 +19,21 @@ without boundary.
 
 ## Main definition
 
-- **`IsIntegralCurveAt γ v t₀`**: If `v : M → TM` is a vector field on `M` and `x : M`,
-`IsIntegralCurveAt γ v t₀` means `γ : ℝ → M` is a local integral curve of `v` in an open interval of
-`t₀`. That is, there exists `ε > 0` such that `γ t` is tangent to `v (γ t)` for all
-`t ∈ Ioo (t₀ - ε) (t₀ + ε)`. Even though `γ` is defined for all time, its value outside of this
-small interval is irrelevant and considered junk.
+Let `v : M → TM` be a vector field on `M`, and let `γ : ℝ → M`.
+- **`IsIntegralCurve γ v`**: `γ t` is tangent to `v (γ t)` for all `t : ℝ`. That is, `γ` is a global
+integral curve of `v`.
+- **`IsIntegralCurveOn γ v s`**: `γ t` is tangent to `v (γ t)` for all `t ∈ s`, where `s : Set ℝ`.
+- **`IsIntegralCurveAt γ v t₀`**: `γ t` is tangent to `v (γ t)` for all `t` in some open interval
+around `t₀`. That is, `γ` is a local integral curve of `v`.
+
+For `IsIntegralCurveOn γ v s` and `IsIntegralCurveAt γ v t₀`, even though `γ` is defined for all
+time, its value outside of the set `s` or a small interval around `t₀` is irrelevant and considered
+junk.
 
 ## To-do
 
-- **`IsIntegralCurveOn γ v s`**: `γ t` is tangent to `v (γ t)` for all `t ∈ s`.
-- **`IsIntegralCurve γ v`**: `γ` is a global integral curve of `v`, defined for all time.
+- Prove `comp_add`, `comp_smul` , etc. lemmas for `IsIntegralCurveOn`, and then derive versions for
+`IsIntegralCurveAt` and `IsIntegralCurve` as corollaries.
 
 ## Tags
 
@@ -48,12 +53,44 @@ variable
   {v : (x : M) → TangentSpace I x} {x₀ : M}
   (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) x₀) (t₀ : ℝ)
 
+def IsIntegralCurveOn (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (s : Set ℝ) :=
+  ∀ (t : ℝ), t ∈ s → HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t)))
+
 /-- If `v : M → TM` is a vector field on `M` and `x : M`, `IsIntegralCurveAt γ v t₀` means
   `γ : ℝ → M` is a local integral curve of `v` in an open interval of `t₀`. That is, there exists
   `ε > 0` such that `γ t` is tangent to `v (γ t)` for all `t ∈ Ioo (t₀ - ε) (t₀ + ε)`. -/
-def IsIntegralCurveAt (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (t₀ : ℝ) :=
-  ∃ ε > (0 : ℝ), ∀ (t : ℝ), t ∈ Ioo (t₀ - ε) (t₀ + ε) →
-    HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t)))
+def IsIntegralCurveAt (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (t : ℝ) :=
+  ∃ ε > (0 : ℝ), IsIntegralCurveOn γ v (Ioo (t - ε) (t + ε))
+
+def IsIntegralCurve (γ : ℝ → M) (v : (x : M) → TangentSpace I x) :=
+  ∀ t : ℝ, HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t)))
+
+lemma IsIntegralCurve.isIntegralCurveOn {γ : ℝ → M} {v : (x : M) → TangentSpace I x}
+    (h : IsIntegralCurve γ v) (s : Set ℝ) : IsIntegralCurveOn γ v s := fun t _ => h t
+
+lemma isIntegralCurve_iff_isIntegralCurveOn {γ : ℝ → M} {v : (x : M) → TangentSpace I x} :
+    IsIntegralCurve γ v ↔ IsIntegralCurveOn γ v univ :=
+  ⟨fun h => h.isIntegralCurveOn _, fun h t => h t (mem_univ _)⟩
+
+lemma IsIntegralCurve.isIntegralCurveAt {γ : ℝ → M} {v : (x : M) → TangentSpace I x}
+    (h : IsIntegralCurve γ v) (t : ℝ) : IsIntegralCurveAt γ v t :=
+  ⟨1, zero_lt_one, fun t _ => h t⟩
+
+lemma isIntegralCurve_iff_isIntegralCurveAt {γ : ℝ → M} {v : (x : M) → TangentSpace I x} :
+    IsIntegralCurve γ v ↔ ∀ t : ℝ, IsIntegralCurveAt γ v t :=
+  ⟨fun h => h.isIntegralCurveAt, fun h t => by
+    obtain ⟨ε, hε, h⟩ := h t
+    exact h t (Real.ball_eq_Ioo _ _ ▸ Metric.mem_ball_self hε)⟩
+
+lemma IsIntegralCurveOn.mono {γ : ℝ → M} {v : (x : M) → TangentSpace I x} {s : Set ℝ}
+    (h : IsIntegralCurveOn γ v s) {s' : Set ℝ} (hs : s' ⊆ s) : IsIntegralCurveOn γ v s' :=
+  fun t ht => h t (mem_of_mem_of_subset ht hs)
+
+lemma IsIntegralCurveOn.isIntegralCurveAt {γ : ℝ → M} {v : (x : M) → TangentSpace I x} {s : Set ℝ}
+    (h : IsIntegralCurveOn γ v s) {t : ℝ} (hs : s ∈ nhds t) : IsIntegralCurveAt γ v t := by
+  rw [Metric.mem_nhds_iff] at hs
+  obtain ⟨ε, hε, hmem⟩ := hs
+  exact ⟨ε, hε, Real.ball_eq_Ioo _ _ ▸ h.mono hmem⟩
 
 variable {t₀}
 
@@ -142,9 +179,9 @@ lemma isIntegralCurveAt_comp_mul_ne_zero {γ : ℝ → M} {a : ℝ} (ha : a ≠ 
 
 variable (t₀) in
 /-- If the vector field `v` vanishes at `x₀`, then the constant curve at `x₀`
-  is an integral curve of `v`. -/
-lemma isIntegralCurveAt_const (h : v x₀ = 0) : IsIntegralCurveAt (fun _ => x₀) v t₀ := by
-  refine ⟨1, zero_lt_one, fun t _ => ?_⟩
+  is a global integral curve of `v`. -/
+lemma isIntegralCurve_const (h : v x₀ = 0) : IsIntegralCurve (fun _ => x₀) v := by
+  intro t
   rw [h, ← ContinuousLinearMap.zero_apply (R₁ := ℝ) (R₂ := ℝ) (1 : ℝ),
     ContinuousLinearMap.smulRight_one_one]
   exact hasMFDerivAt_const ..
