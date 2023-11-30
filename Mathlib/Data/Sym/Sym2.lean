@@ -416,6 +416,7 @@ theorem map_id' : (map fun x : α => x) = id :=
 
 /-! ### Diagonal -/
 
+variable {e : Sym2 α} {f : α → β}
 
 /-- A type `α` is naturally included in the diagonal of `α × α`, and this function gives the image
 of this diagonal in `Sym2 α`.
@@ -442,6 +443,11 @@ theorem mk''_isDiag_iff {x y : α} : IsDiag ⟦(x, y)⟧ ↔ x = y :=
 theorem isDiag_iff_proj_eq (z : α × α) : IsDiag ⟦z⟧ ↔ z.1 = z.2 :=
   Prod.recOn z fun _ _ => mk''_isDiag_iff
 #align sym2.is_diag_iff_proj_eq Sym2.isDiag_iff_proj_eq
+
+protected lemma IsDiag.map : e.IsDiag → (e.map f).IsDiag := Sym2.ind (fun _ _ ↦ congr_arg f) e
+
+lemma isDiag_map (hf : Injective f) : (e.map f).IsDiag ↔ e.IsDiag :=
+  Sym2.ind (fun _ _ ↦ hf.eq_iff) e
 
 @[simp]
 theorem diag_isDiag (a : α) : IsDiag (diag a) :=
@@ -508,6 +514,9 @@ theorem fromRel_top : fromRel (fun (x y : α) z => z : Symmetric ⊤) = Set.univ
   apply Sym2.ind
   simp [-Set.top_eq_univ, Prop.top_eq_true]
 #align sym2.from_rel_top Sym2.fromRel_top
+
+theorem fromRel_ne : fromRel (fun (x y : α) z => z.symm : Symmetric Ne) = {z | ¬IsDiag z} := by
+  ext z; exact z.ind (by simp)
 
 theorem fromRel_irreflexive {sym : Symmetric r} :
     Irreflexive r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z :=

@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Measure.Haar.Basic
 import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Pushing a Haar measure by a linear map
@@ -85,12 +86,12 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
       ∃ c₀ : ℝ≥0∞, c₀ ≠ 0 ∧ c₀ ≠ ∞ ∧ μ.map M.symm = c₀ • μS.prod μT := by
     have : IsAddHaarMeasure (μ.map M.symm) :=
       M.toContinuousLinearEquiv.symm.isAddHaarMeasure_map μ
-    exact isAddHaarMeasure_eq_smul_isAddHaarMeasure _ _
+    exact isAddHaarMeasure_eq_smul _ _
   have J : (μS.prod μT).map P = (μS univ) • μT := map_snd_prod
   obtain ⟨c₁, c₁_pos, c₁_fin, h₁⟩ : ∃ c₁ : ℝ≥0∞, c₁ ≠ 0 ∧ c₁ ≠ ∞ ∧ μT.map L' = c₁ • ν := by
     have : IsAddHaarMeasure (μT.map L') :=
       L'.toContinuousLinearEquiv.isAddHaarMeasure_map μT
-    exact isAddHaarMeasure_eq_smul_isAddHaarMeasure _ _
+    exact isAddHaarMeasure_eq_smul _ _
   refine ⟨c₀ * c₁, by simp [pos_iff_ne_zero, c₀_pos, c₁_pos], ENNReal.mul_lt_top c₀_fin c₁_fin, ?_⟩
   simp only [I, h₀, Measure.map_smul, J, smul_smul, h₁]
   rw [mul_assoc, mul_comm _ c₁, ← mul_assoc]

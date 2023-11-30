@@ -51,6 +51,11 @@ example {α : Type u} {β : Type v} (s : Finset α) (t : Set β) : s ×ˢ' t = s
 example (s : Finset α) (t : Finset (α × ℕ)) : s ×ˢ' {1, 2, 3} = t := test_sorry
 example (s : Finset α) (t : Finset (ℕ × α)) : {1, 2, 3} ×ˢ' s = t := test_sorry
 example (s : Finset α) (_t : Finset (ℕ × α)) : ({1, 2, 3} ×ˢ' s).card = 22 := test_sorry
+
+/--
+info: {1, 2, 3} ×ˢ' {4, 5, 6} : Finset (ℕ × ℕ)
+-/
+#guard_msgs in
 #check ({1,2,3} ×ˢ' {4,5,6} : Finset _)
 
 example (s : Finset α) (t : Set β) (u : Finset γ) : Nat.card (s ×ˢ' t ×ˢ' u) = 0 := test_sorry

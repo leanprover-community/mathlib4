@@ -13,10 +13,6 @@ import Mathlib.Algebra.Group.Defs
 We define the `continuity` tactic using `aesop`. -/
 
 attribute [aesop (rule_sets [Continuous]) unfold norm] Function.comp
--- FIXME: `npowRec` is an internal implementation detail,
--- and `aesop` certainly should not know about it.
--- If anyone is working on the `continuity` tactic, please try to fix this!
-attribute [aesop (rule_sets [Continuous]) norm] npowRec
 
 /--
 The `continuity` attribute used to tag continuity statements for the `continuity` tactic. -/

@@ -199,6 +199,10 @@ theorem toRingEquiv_eq_coe : e.toRingEquiv = e :=
 #align alg_equiv.to_ring_equiv_eq_coe AlgEquiv.toRingEquiv_eq_coe
 
 @[simp, norm_cast]
+lemma toRingEquiv_toRingHom : ((e : A₁ ≃+* A₂) : A₁ →+* A₂) = e :=
+  rfl
+
+@[simp, norm_cast]
 theorem coe_ringEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e :=
   rfl
 #align alg_equiv.coe_ring_equiv AlgEquiv.coe_ringEquiv
@@ -749,6 +753,13 @@ instance applyMulSemiringAction : MulSemiringAction (A₁ ≃ₐ[R] A₁) A₁ w
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 #align alg_equiv.apply_mul_semiring_action AlgEquiv.applyMulSemiringAction
+
+instance : MulDistribMulAction (A₁ ≃ₐ[R] A₁) A₁ˣ where
+  smul := fun f => Units.map f
+  one_smul := fun x => by ext; rfl
+  mul_smul := fun x y z => by ext; rfl
+  smul_mul := fun x y z => by ext; exact x.map_mul _ _
+  smul_one := fun x => by ext; exact x.map_one
 
 @[simp]
 protected theorem smul_def (f : A₁ ≃ₐ[R] A₁) (a : A₁) : f • a = f a :=
