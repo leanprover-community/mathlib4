@@ -978,7 +978,7 @@ theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
     induction' n with n IH generalizing m <;> cases' m with m m <;> dsimp only [PosNum.testBit]
     · rfl
     · simp only [cast_pos, PosNum.cast_bit1, Nat.zero_eq, Nat.shiftRight_zero, Nat.and_one_is_mod]
-      rw[←Nat.bit_true, Nat.bit_mod_two]
+      rw [← Nat.bit_true, Nat.bit_mod_two]
       rfl
     · simp only [cast_pos, PosNum.cast_bit0, Nat.zero_eq, Nat.shiftRight_zero, Nat.and_one_is_mod]
       rw[←Nat.bit_false, Nat.bit_mod_two]
