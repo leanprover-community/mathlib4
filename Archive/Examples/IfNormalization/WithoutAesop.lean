@@ -93,7 +93,7 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
         · have := ht₃ v
           have := he₃ v
           simp_all? says simp_all only [Option.elim, ne_eq, normalized, Bool.and_eq_true,
-            Bool.not_eq_true', AList.lookup_insert, imp_false]
+              Bool.not_eq_true', AList.lookup_insert, imp_false]
           obtain ⟨⟨⟨tn, tc⟩, tr⟩, td⟩ := ht₂
           split <;> rename_i h'
           · subst h'
