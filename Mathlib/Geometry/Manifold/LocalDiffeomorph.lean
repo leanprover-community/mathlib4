@@ -137,6 +137,30 @@ lemma isLocalDiffeomorph_iff {f : M → N} :
 
 variable {n}
 
+section Basic
+variable {f : M → N} {x : M}
+
+/-- A `C^n` local diffeomorphism at `x` is `C^n` differentiable at `x`. -/
+lemma contMDiffAt_of_isLocalDiffeomorphAt (hf : IsLocalDiffeomorphAt I J n f x) :
+    ContMDiffAt I J n f x := by
+  choose Φ hx heq using hf
+  -- In fact, even `ContMDiffOn I J n f Φ.source`.
+  exact ((Φ.contMDiffOn_toFun).congr heq).contMDiffAt (Φ.open_source.mem_nhds hx)
+
+/-- A local diffeomorphism at `x` is differentiable at `x`. -/
+lemma mdifferentiableAt_of_isLocalDiffeomorphAt (hn : 1 ≤ n) (hf : IsLocalDiffeomorphAt I J n f x) :
+    MDifferentiableAt I J f x :=
+  (contMDiffAt_of_isLocalDiffeomorphAt I J hf).mdifferentiableAt hn
+
+/-- A `C^n` local diffeomorphism is `C^n`. -/
+lemma contMDiff_of_isLocalDiffeomorph (hf : IsLocalDiffeomorph I J n f) : ContMDiff I J n f :=
+  fun x ↦ contMDiffAt_of_isLocalDiffeomorphAt I J (hf x)
+
+/-- A `C^n` local diffeomorphism is differentiable. -/
+lemma mdifferentiable_of_isLocalDiffeomorph (hn : 1 ≤ n) (hf : IsLocalDiffeomorph I J n f) :
+    MDifferentiable I J f :=
+  fun x ↦ mdifferentiableAt_of_isLocalDiffeomorphAt I J hn (hf x)
+
 /-- A `C^n` diffeomorphism is a local diffeomorphism. -/
 lemma Diffeomorph.isLocalDiffeomorph (Φ : M ≃ₘ^n⟮I, J⟯ N) : IsLocalDiffeomorph I J n Φ :=
   fun _ ↦ ⟨Φ.toLocalDiffeomorphAux, by trivial, eqOn_refl Φ _⟩
@@ -163,6 +187,7 @@ def LocalDiffeomorph.image {f : M → N} (hf : IsLocalDiffeomorph I J n f) : Ope
 
 lemma LocalDiffeomorph.image_coe {f : M → N} (hf : IsLocalDiffeomorph I J n f) :
     (LocalDiffeomorph.image I J hf).1 = range f := rfl
+end Basic
 
 section helper -- FIXME: move to Algebra.Module.Basic
 variable {R : Type*} [Ring R]
@@ -282,11 +307,7 @@ variable
 variable {φ : M → M'} (hφ : IsLocalDiffeomorphAt I I' n φ x)
   {f : M' → N} (hf : MDifferentiableAt I' J f (φ x))
 
--- TODO: add as basic lemma for local diffeos; also that local diffeos are contMDiffOn!
-lemma fIsDifferentiableAt {φ : M → M'}  (hφ : IsLocalDiffeomorphAt I I' n φ x) :
-    MDifferentiableAt I I' φ x := sorry
-
--- TODO: the next four to six lemmas all start the same -> can I refactor this somehow?
+-- TODO: the next six lemmas all start the same way; can I refactor this somehow?
 
 /-- If `φ` is a local diffeomorphism at `x` and `f` is differentiable at `φ x`,
   `mfderiv (f∘φ) x` is surjective iff `mfderiv f (φ x)` is. -/
@@ -295,7 +316,8 @@ lemma mfderiv_surjective_iff_comp_isLocalDiffeomorph : Surjective (mfderiv I' J 
   let dφ := mfderiv I I' φ x
   let dφiso := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv hφ hn
   have aux : dφiso = dφ := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe hn hφ
-  have hφ' : HasMFDerivAt I I' φ x dφ := (fIsDifferentiableAt (hφ := hφ)).hasMFDerivAt
+  have hφ' : HasMFDerivAt I I' φ x dφ :=
+    (mdifferentiableAt_of_isLocalDiffeomorphAt _ _ hn hφ).hasMFDerivAt
   rw [HasMFDerivAt.mfderiv ((hf.hasMFDerivAt).comp hφ' (x := x)), ← aux]
   rw [← dφiso.bijective.surjective.of_comp_iff]
   exact Iff.rfl
@@ -307,7 +329,8 @@ lemma mfderiv_injective_iff_comp_isLocalDiffeomorph :
   let dφ := mfderiv I I' φ x
   let dφiso := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv hφ hn
   have aux : dφiso = dφ := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe hn hφ
-  have hφ' : HasMFDerivAt I I' φ x dφ := (fIsDifferentiableAt (hφ := hφ)).hasMFDerivAt
+  have hφ' : HasMFDerivAt I I' φ x dφ :=
+    (mdifferentiableAt_of_isLocalDiffeomorphAt _ _ hn hφ).hasMFDerivAt
   rw [HasMFDerivAt.mfderiv ((hf.hasMFDerivAt).comp hφ' (x := x)), ← aux]
   rw [← Injective.of_comp_iff' _ dφiso.bijective]
   exact Iff.rfl
@@ -319,7 +342,8 @@ lemma mfderiv_rank_eq_comp_isLocalDiffeomorph [FiniteDimensional 𝕜 E] : 0 = 1
   let dφ := mfderiv I I' φ x
   let dφiso := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv hφ hn
   have aux : dφiso = dφ := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe hn hφ
-  have hφ' : HasMFDerivAt I I' φ x dφ := (fIsDifferentiableAt (hφ := hφ)).hasMFDerivAt
+  have hφ' : HasMFDerivAt I I' φ x dφ :=
+    (mdifferentiableAt_of_isLocalDiffeomorphAt _ _ hn hφ).hasMFDerivAt
   -- rw [HasMFDerivAt.mfderiv ((hf.hasMFDerivAt).comp hφ' (x := x)), ← aux]
   sorry
 
@@ -333,7 +357,8 @@ lemma mfderiv_surjective_iff_comp_isLocalDiffeomorph' :
   let dφ := mfderiv I' J φ (f x)
   let dφiso := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv hφ hn
   have aux : dφiso = dφ := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe hn hφ
-  have hφ : HasMFDerivAt I' J φ (f x) dφ := (fIsDifferentiableAt (hφ := hφ)).hasMFDerivAt
+  have hφ : HasMFDerivAt I' J φ (f x) dφ :=
+    (mdifferentiableAt_of_isLocalDiffeomorphAt _ _ hn hφ).hasMFDerivAt
   rw [HasMFDerivAt.mfderiv (hφ.comp (hf.hasMFDerivAt) (x := x)), ← aux]
   rw [← Surjective.of_comp_iff' dφiso.bijective]
   exact Iff.rfl
@@ -345,7 +370,8 @@ lemma mfderiv_injective_iff_comp_isLocalDiffeomorph' :
   let dφ := mfderiv I' J φ (f x)
   let dφiso := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv hφ hn
   have aux : dφiso = dφ := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe hn hφ
-  have hφ : HasMFDerivAt I' J φ (f x) dφ := (fIsDifferentiableAt (hφ := hφ)).hasMFDerivAt
+  have hφ : HasMFDerivAt I' J φ (f x) dφ :=
+    (mdifferentiableAt_of_isLocalDiffeomorphAt _ _ hn hφ).hasMFDerivAt
   rw [HasMFDerivAt.mfderiv (hφ.comp (hf.hasMFDerivAt) (x := x)), ← aux]
   rw [← Injective.of_comp_iff dφiso.bijective.injective]
   exact Iff.rfl
@@ -545,7 +571,7 @@ lemma mfderiv_bijective_iff_in_charts (hf : MDifferentiableAt I J f x) (hn : 1 �
 lemma cor (hf : MDifferentiableAt I J f x) (hn : 1 ≤ n) :
     Bijective (mfderiv I J f x) ↔ Bijective (fderiv 𝕜 ((extChartAt J (f x)) ∘ f ∘ (extChartAt I x).symm) (extChartAt I x x)) := by
   rw [extChartAt]
-  apply mfderiv_bijective_iff_in_charts /-hf-/ (mem_chart_source H x) (mem_chart_source G (f x))
+  apply mfderiv_bijective_iff_in_charts (mem_chart_source H x) (mem_chart_source G (f x))
     (chart_mem_maximalAtlas I x) (chart_mem_maximalAtlas J (f x)) hf hn
 
 end ChartsDifferentials
