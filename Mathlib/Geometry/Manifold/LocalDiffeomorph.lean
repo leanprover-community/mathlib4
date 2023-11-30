@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
-import Mathlib.Geometry.Manifold.ContMDiffMap
 import Mathlib.Geometry.Manifold.Diffeomorph
-import Mathlib.Geometry.Manifold.MFDeriv
 
 /-!
 # Local diffeomorphisms between smooth manifolds
@@ -388,7 +386,7 @@ def extend_toLocalDiffeomorphAux : LocalDiffeomorphAux I 𝓘(𝕜, E) M E n :=
     contMDiffOn_toFun := by
       show ContMDiffOn I 𝓘(𝕜, E) n (e.extend I) (e.extend I).source
       rw [e.extend_source]
-      exact contMDiffOn_extend I n he
+      exact contMDiffOn_extend he
     contMDiffOn_invFun := by
       show ContMDiffOn 𝓘(𝕜, E) I n (e.extend I).symm (e.extend I).target
       -- should be a lemma! xxx think: why not the standard form for extend_target?
