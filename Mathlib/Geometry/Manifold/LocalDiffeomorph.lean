@@ -29,7 +29,8 @@ and `t` of `x` and `f x`, respectively such that `f` restricts to a diffeomorphi
 * a local diffeomorphism is a diffeomorphism to its image
 * a bijective local diffeomorphism is a diffeomorphism.
 * each differential of a `C^n` diffeomorphism (`n ≥ 1`) is a linear equivalence.
-* if `f` is a local diffeomorphism at `x`, the differential `mfderiv I J n f x` is a continuous linear isomorphism.
+* if `f` is a local diffeomorphism at `x`, the differential `mfderiv I J n f x`
+is a continuous linear isomorphism.
 * conversely, if `f` is `C^n` at `x` and `mfderiv I J n f x` is a linear isomorphism,
 `f` is a local diffeomorphism at `x`.
 * if `f` is a local diffeomorphism, each differential `mfderiv I J n f x`
@@ -37,9 +38,12 @@ is a continuous linear isomorphism.
 * Conversely, if `f` is `C^n` and each differential is a linear isomorphism,
 `f` is a local diffeomorphism.
 
+## Implementation notes
 
-## Design decisions
-TODO: flesh this out!
+This notion of diffeomorphism is needed although there is already a notion of local structomorphism
+because structomorphisms do not allow the model spaces `H` and `H'` of the two manifolds to be
+different, i.e. for a structomorphism one has to impose `H = H'` which is often not the case in
+practice.
 
 ## Tags
 local diffeomorphism, manifold
@@ -110,6 +114,8 @@ As this declaration is meant for internal use only, we keep it simple. -/
 end LocalDiffeomorphAux
 end LocalDiffeomorphAux
 
+variable {M N}
+
 /-- `f : M → N` is called a **`C^n` local diffeomorphism at *x*** iff there exist
   open sets `U ∋ x` and `V ∋ f x` and a diffeomorphism `Φ : U → V` such that `f = Φ` on `U`. -/
 def IsLocalDiffeomorphAt (f : M → N) (x : M) : Prop :=
@@ -118,17 +124,19 @@ def IsLocalDiffeomorphAt (f : M → N) (x : M) : Prop :=
 /-- `f : M → N` is a **`C^n` local diffeomorphism** iff it is a local diffeomorphism
 at each `x ∈ M`. -/
 def IsLocalDiffeomorph (f : M → N) : Prop :=
-  ∀ x : M, IsLocalDiffeomorphAt I J M N n f x
+  ∀ x : M, IsLocalDiffeomorphAt I J n f x
 
 lemma isLocalDiffeomorph_iff {f : M → N} :
-    IsLocalDiffeomorph I J M N n f ↔ ∀ x : M, IsLocalDiffeomorphAt I J M N n f x := by rfl
+    IsLocalDiffeomorph I J n f ↔ ∀ x : M, IsLocalDiffeomorphAt I J n f x := by rfl
+
+variable {n}
 
 /-- A `C^n` diffeomorphism is a local diffeomorphism. -/
-lemma Diffeomorph.isLocalDiffeomorph (Φ : M ≃ₘ^n⟮I, J⟯ N) : IsLocalDiffeomorph I J M N n Φ :=
+lemma Diffeomorph.isLocalDiffeomorph (Φ : M ≃ₘ^n⟮I, J⟯ N) : IsLocalDiffeomorph I J n Φ :=
   fun _ ↦ ⟨Φ.toLocalDiffeomorphAux, by trivial, eqOn_refl Φ _⟩
 
 /-- The image of a local diffeomorphism is open. -/
-def LocalDiffeomorph.image {f : M → N} (hf : IsLocalDiffeomorph I J M N n f) : Opens N := by
+def LocalDiffeomorph.image {f : M → N} (hf : IsLocalDiffeomorph I J n f) : Opens N := by
   refine ⟨range f, ?_⟩
   apply isOpen_iff_forall_mem_open.mpr
   intro y hy
@@ -147,5 +155,5 @@ def LocalDiffeomorph.image {f : M → N} (hf : IsLocalDiffeomorph I J M N n f) :
   · rw [← hxy, heq hxU]
     exact Φ.toLocalHomeomorph.map_source hxU
 
-lemma LocalDiffeomorph.image_coe {f : M → N} (hf : IsLocalDiffeomorph I J M N n f) :
-    (LocalDiffeomorph.image I J M N n hf).1 = range f := rfl
+lemma LocalDiffeomorph.image_coe {f : M → N} (hf : IsLocalDiffeomorph I J n f) :
+    (LocalDiffeomorph.image I J hf).1 = range f := rfl
