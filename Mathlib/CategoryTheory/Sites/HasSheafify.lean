@@ -21,4 +21,9 @@ noncomputable
 def sheafificationAdjunction [HasSheafify J A] : presheafToSheaf J A ⊣ sheafToPresheaf J A :=
   HasSheafify.isRightAdjoint.some.adj
 
+noncomputable
+instance [HasSheafify J A] : IsLeftAdjoint <| presheafToSheaf J A where
+  right := sheafToPresheaf J A
+  adj := sheafificationAdjunction J A
+
 end CategoryTheory
