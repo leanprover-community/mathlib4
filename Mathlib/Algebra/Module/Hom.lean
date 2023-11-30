@@ -112,14 +112,14 @@ end
 instance instModule [Semiring R] [AddCommMonoid A] [Module R A] : Module R (AddMonoid.End A) :=
   AddMonoidHom.instModule
 
-end AddMonoid.End
-
 /-- The tautological action by `AddMonoid.End α` on `α`.
 
 This generalizes `AddMonoid.End.applyDistribMulAction`. -/
-instance AddMonoid.End.applyModule [AddCommMonoid A] : Module (AddMonoid.End A) A where
+instance applyModule [AddCommMonoid A] : Module (AddMonoid.End A) A where
   add_smul _ _ _ := rfl
   zero_smul _ := rfl
+
+end AddMonoid.End
 
 /-! ### Miscelaneous morphisms -/
 
