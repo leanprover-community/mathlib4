@@ -60,7 +60,7 @@ section Abelian
 
 variable [Abelian C]
 
-lemma exact₀ [Abelian C] {Z : C} (I : InjectiveResolution Z) :
+lemma exact₀ {Z : C} (I : InjectiveResolution Z) :
     (ShortComplex.mk _ _ I.ι_f_zero_comp_complex_d).Exact :=
   ShortComplex.exact_of_f_is_kernel _ I.isLimitKernelFork
 
