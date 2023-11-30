@@ -70,13 +70,12 @@ We use `m ⊓ mΩ` instead of `m` to ensure that it is a sub-σ-algebra of `mΩ`
 `kernel.comap` to get a kernel from `m` to `mΩ` instead of from `m ⊓ mΩ` to `mΩ`. -/
 noncomputable irreducible_def condexpKernel (μ : Measure Ω) [IsFiniteMeasure μ]
     (m : MeasurableSpace Ω) : @kernel Ω Ω m mΩ :=
-  kernel.comap (@condDistrib Ω Ω Ω _ mΩ _ _ _ mΩ (m ⊓ mΩ) id id μ _) id
+  kernel.comap (@condDistrib Ω Ω Ω mΩ _ _ mΩ (m ⊓ mΩ) id id μ _) id
     (measurable_id'' (inf_le_left : m ⊓ mΩ ≤ m))
 #align probability_theory.condexp_kernel ProbabilityTheory.condexpKernel
 
-set_option autoImplicit true in
-lemma condexpKernel_apply_eq_condDistrib :
-    condexpKernel μ m ω = @condDistrib Ω Ω Ω _ mΩ _ _ _ mΩ (m ⊓ mΩ) id id μ _ (id ω) := by
+lemma condexpKernel_apply_eq_condDistrib {ω : Ω} :
+    condexpKernel μ m ω = @condDistrib Ω Ω Ω mΩ _ _ mΩ (m ⊓ mΩ) id id μ _ (id ω) := by
   simp_rw [condexpKernel, kernel.comap_apply]
 
 instance : IsMarkovKernel (condexpKernel μ m) := by simp only [condexpKernel]; infer_instance
