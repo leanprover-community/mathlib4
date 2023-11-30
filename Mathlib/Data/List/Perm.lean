@@ -278,9 +278,11 @@ theorem filter_append_perm (p : α → Bool) (l : List α) :
   induction' l with x l ih
   · rfl
   · by_cases h : p x
-    · simp only [h, filter_cons_of_pos, filter_cons_of_neg, not_true, not_false_iff, cons_append]
+    · simp only [h, filter_cons_of_pos, filter_cons_of_neg, not_true, not_false_iff, cons_append,
+        decide_False]
       exact ih.cons x
-    · simp only [h, filter_cons_of_neg, not_false_iff, filter_cons_of_pos]
+    · simp only [h, filter_cons_of_neg, not_false_iff, filter_cons_of_pos, cons_append,
+        not_false_eq_true, decide_True]
       refine' Perm.trans _ (ih.cons x)
       exact perm_append_comm.trans (perm_append_comm.cons _)
 #align list.filter_append_perm List.filter_append_perm

@@ -281,7 +281,8 @@ theorem Iff.not_right (h : ¬a ↔ b) : a ↔ ¬b := not_not.symm.trans h.not
 
 /-! ### Declarations about `Xor'` -/
 
-@[simp] theorem xor_true : Xor' True = Not := by simp [Xor']
+@[simp] theorem xor_true : Xor' True = Not := by
+  simp (config := { unfoldPartialApp := true }) [Xor']
 #align xor_true xor_true
 
 @[simp] theorem xor_false : Xor' False = id := by ext; simp [Xor']
@@ -681,7 +682,6 @@ theorem exists_swap {p : α → β → Prop} : (∃ x y, p x y) ↔ ∃ y x, p x
 #align forall_exists_index forall_exists_index
 
 #align exists_imp_distrib exists_imp
-alias ⟨_, not_exists_of_forall_not⟩ := exists_imp
 #align not_exists_of_forall_not not_exists_of_forall_not
 
 #align Exists.some Exists.choose
@@ -789,6 +789,12 @@ theorem exists_apply_eq (a : α) (b : β) : ∃ f : α → β, f a = b := ⟨fun
     (∃ b, (∃ a, f a = b) ∧ p b) ↔ ∃ a, p (f a) :=
   ⟨fun ⟨_, ⟨a, ha⟩, hb⟩ ↦ ⟨a, ha.symm ▸ hb⟩, fun ⟨a, ha⟩ ↦ ⟨f a, ⟨a, rfl⟩, ha⟩⟩
 #align exists_exists_eq_and exists_exists_eq_and
+
+@[simp] theorem exists_exists_and_exists_and_eq_and {α β γ : Type*}
+    {f : α → β → γ} {p : α → Prop} {q : β → Prop} {r : γ → Prop} :
+    (∃ c, (∃ a, p a ∧ ∃ b, q b ∧ f a b = c) ∧ r c) ↔ ∃ a, p a ∧ ∃ b, q b ∧ r (f a b) :=
+  ⟨fun ⟨_, ⟨a, ha, b, hb, hab⟩, hc⟩ ↦ ⟨a, ha, b, hb, hab.symm ▸ hc⟩,
+    fun ⟨a, ha, b, hb, hab⟩ ↦ ⟨f a b, ⟨a, ha, b, hb, rfl⟩, hab⟩⟩
 
 @[simp] theorem exists_or_eq_left (y : α) (p : α → Prop) : ∃ x : α, x = y ∨ p x := ⟨y, .inl rfl⟩
 #align exists_or_eq_left exists_or_eq_left

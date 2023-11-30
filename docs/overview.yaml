@@ -217,7 +217,7 @@ Topology:
     Stone-Cech compactification: 'StoneCech'
     topological fiber bundle: 'FiberBundle'
     topological vector bundle: 'VectorBundle'
-    Urysohn's lemma: 'exists_continuous_zero_one_of_closed'
+    Urysohn's lemma: 'exists_continuous_zero_one_of_isClosed'
     Stone-Weierstrass theorem: 'ContinuousMap.subalgebra_topologicalClosure_eq_top_of_separatesPoints'
   Uniform notions:
     uniform space: 'UniformSpace'
