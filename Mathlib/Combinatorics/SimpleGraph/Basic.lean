@@ -540,8 +540,12 @@ theorem edgeSet_bot : (⊥ : SimpleGraph V).edgeSet = ∅ :=
 #align simple_graph.edge_set_bot SimpleGraph.edgeSet_bot
 
 @[simp]
-theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = {e | ¬e.IsDiag} := by
-  ext f; exact f.inductionOn (by simp)
+theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = {e | ¬e.IsDiag} :=
+  Sym2.fromRel_ne
+
+@[simp]
+theorem edgeSet_subset_setOf_not_isDiag : G.edgeSet ⊆ {e | ¬e.IsDiag} :=
+  fun _ h => (Sym2.fromRel_irreflexive (sym := G.symm)).mp G.loopless h
 
 @[simp]
 theorem edgeSet_sup : (G₁ ⊔ G₂).edgeSet = G₁.edgeSet ∪ G₂.edgeSet := by
@@ -975,17 +979,17 @@ variable [Fintype V] [DecidableEq V]
 
 @[simp]
 theorem edgeFinset_top : (⊤ : SimpleGraph V).edgeFinset = univ.filter fun e => ¬e.IsDiag := by
-  ext f; exact f.inductionOn (by simp)
+  rw [← coe_inj]; simp
 
 /-- The complete graph on `n` vertices has `n.choose 2` edges. -/
 theorem card_edgeFinset_top_eq_card_choose_two :
     (⊤ : SimpleGraph V).edgeFinset.card = (Fintype.card V).choose 2 := by
-  simp only [Set.toFinset_card, edgeSet_top, Set.coe_setOf, ← Sym2.card_subtype_not_diag]
+  simp_rw [Set.toFinset_card, edgeSet_top, Set.coe_setOf, ← Sym2.card_subtype_not_diag]
 
 /-- Any graph on `n` vertices has at most `n.choose 2` edges. -/
 theorem card_edgeFinset_le_card_choose_two : G.edgeFinset.card ≤ (Fintype.card V).choose 2 := by
-  apply (card_le_of_subset _).trans_eq card_edgeFinset_top_eq_card_choose_two
-  simp only [Set.subset_toFinset, Set.coe_toFinset, edgeSet_subset_edgeSet, le_top]
+  rw [← card_edgeFinset_top_eq_card_choose_two]
+  exact card_le_of_subset (edgeFinset_mono le_top)
 
 end EdgeFinset
 
