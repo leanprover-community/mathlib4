@@ -167,9 +167,9 @@ lemma mdifferentiable_of_isLocalDiffeomorph (hn : 1 ≤ n) (hf : IsLocalDiffeomo
 lemma Diffeomorph.isLocalDiffeomorph (Φ : M ≃ₘ^n⟮I, J⟯ N) : IsLocalDiffeomorph I J n Φ :=
   fun _ ↦ ⟨Φ.toLocalDiffeomorphAux, by trivial, eqOn_refl Φ _⟩
 
-/-- The image of a local diffeomorphism is open. -/
-def LocalDiffeomorph.image {f : M → N} (hf : IsLocalDiffeomorph I J n f) : Opens N := by
-  refine ⟨range f, ?_⟩
+/-- A local diffeomorphism has open range. -/
+lemma LocalDiffeomorph.isOpen_range {f : M → N} (hf : IsLocalDiffeomorph I J n f) :
+    IsOpen (range f) := by
   apply isOpen_iff_forall_mem_open.mpr
   intro y hy
 
@@ -187,6 +187,11 @@ def LocalDiffeomorph.image {f : M → N} (hf : IsLocalDiffeomorph I J n f) : Ope
   · rw [← hxy, heq hxU]
     exact Φ.toLocalHomeomorph.map_source hxU
 
+/-- The image of a local diffeomorphism is open. -/
+def LocalDiffeomorph.image {f : M → N} (hf : IsLocalDiffeomorph I J n f) : Opens N :=
+  ⟨range f, isOpen_range I J hf⟩
+
 lemma LocalDiffeomorph.image_coe {f : M → N} (hf : IsLocalDiffeomorph I J n f) :
     (LocalDiffeomorph.image I J hf).1 = range f := rfl
+
 end Basic
