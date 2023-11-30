@@ -19,9 +19,9 @@ without boundary.
 
 ## Main definition
 
-- **`IsIntegralCurveAt γ v t₀ x₀`**: If `v : M → TM` is a vector field on `M` and `x : M`,
-`IsIntegralCurveAt γ v t₀ x₀` means `γ : ℝ → M` is a local integral curve of `v` with `γ t₀ = x₀`.
-That is, there exists `ε > 0` such that `γ t` is tangent to `v (γ t)` for all
+- **`IsIntegralCurveAt γ v t₀`**: If `v : M → TM` is a vector field on `M` and `x : M`,
+`IsIntegralCurveAt γ v t₀` means `γ : ℝ → M` is a local integral curve of `v` in an open interval of
+`t₀`. That is, there exists `ε > 0` such that `γ t` is tangent to `v (γ t)` for all
 `t ∈ Ioo (t₀ - ε) (t₀ + ε)`. Even though `γ` is defined for all time, its value outside of this
 small interval is irrelevant and considered junk.
 
@@ -48,20 +48,19 @@ variable
   {v : (x : M) → TangentSpace I x} {x₀ : M}
   (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) x₀) (t₀ : ℝ)
 
-/-- If `v : M → TM` is a vector field on `M` and `x : M`, `IsIntegralCurveAt γ v t₀ x₀` means
-  `γ : ℝ → M` is a local integral curve of `v` with `γ t₀ = x₀`. That is, there exists `ε > 0` such
-  that `γ t` is tangent to `v (γ t)` for all `t ∈ Ioo (t₀ - ε) (t₀ + ε)`. -/
-def IsIntegralCurveAt (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (t₀ : ℝ) (x₀ : M) :=
-  γ t₀ = x₀ ∧ ∃ ε > (0 : ℝ), ∀ (t : ℝ), t ∈ Ioo (t₀ - ε) (t₀ + ε) →
+/-- If `v : M → TM` is a vector field on `M` and `x : M`, `IsIntegralCurveAt γ v t₀` means
+  `γ : ℝ → M` is a local integral curve of `v` in an open interval of `t₀`. That is, there exists
+  `ε > 0` such that `γ t` is tangent to `v (γ t)` for all `t ∈ Ioo (t₀ - ε) (t₀ + ε)`. -/
+def IsIntegralCurveAt (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (t₀ : ℝ) :=
+  ∃ ε > (0 : ℝ), ∀ (t : ℝ), t ∈ Ioo (t₀ - ε) (t₀ + ε) →
     HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t)))
 
 variable {t₀}
 
-lemma IsIntegralCurveAt.comp_add {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀ x₀) (dt : ℝ) :
-    IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) x₀ := by
-  obtain ⟨h1, ε, hε, h2⟩ := hγ
-  refine ⟨by simp [h1], ε, hε, ?_⟩
-  intros t ht
+lemma IsIntegralCurveAt.comp_add {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀) (dt : ℝ) :
+    IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
+  obtain ⟨ε, hε, h2⟩ := hγ
+  refine ⟨ε, hε, fun t ht => ?_⟩
   rw [sub_right_comm, sub_add_eq_add_sub, ← add_mem_Ioo_iff_left] at ht
   have h2' := h2 (t + dt) ht
   rw [Function.comp_apply,
@@ -72,8 +71,8 @@ lemma IsIntegralCurveAt.comp_add {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v 
   simp only [mfld_simps, hasFDerivWithinAt_univ]
   apply HasFDerivAt.add_const (hasFDerivAt_id _)
 
-lemma isIntegralCurveAt_comp_add {γ : ℝ → M} {dt : ℝ} : IsIntegralCurveAt γ v t₀ x₀ ↔
-    IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) x₀ := by
+lemma isIntegralCurveAt_comp_add {γ : ℝ → M} {dt : ℝ} : IsIntegralCurveAt γ v t₀ ↔
+    IsIntegralCurveAt (γ ∘ (· + dt)) v (t₀ - dt) := by
   refine ⟨fun hγ => IsIntegralCurveAt.comp_add hγ _, fun hγ ↦ ?_⟩
   have := hγ.comp_add (-dt)
   rw [sub_neg_eq_add, sub_add_cancel] at this
@@ -81,12 +80,10 @@ lemma isIntegralCurveAt_comp_add {γ : ℝ → M} {dt : ℝ} : IsIntegralCurveAt
   ext
   simp only [Function.comp_apply, neg_add_cancel_right]
 
-lemma IsIntegralCurveAt.comp_mul_pos {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀ x₀) {a : ℝ}
-    (ha : 0 < a) : IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) x₀ := by
-  obtain ⟨h1, ε, hε, h2⟩ := hγ
-  refine ⟨by rw [Function.comp_apply, div_mul_cancel _ (ne_of_gt ha)]; exact h1, ε / a,
-    div_pos hε ha, ?_⟩
-  intros t ht
+lemma IsIntegralCurveAt.comp_mul_pos {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀) {a : ℝ}
+    (ha : 0 < a) : IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
+  obtain ⟨ε, hε, h2⟩ := hγ
+  refine ⟨ε / a, div_pos hε ha, fun t ht => ?_⟩
   have ht : t * a ∈ Ioo (t₀ - ε) (t₀ + ε) := by
     rw [mem_Ioo, ← div_lt_iff ha, ← lt_div_iff ha, sub_div, add_div]
     exact ht
@@ -96,7 +93,7 @@ lemma IsIntegralCurveAt.comp_mul_pos {γ : ℝ → M} (hγ : IsIntegralCurveAt �
   apply HasFDerivAt.mul_const' (hasFDerivAt_id _)
 
 lemma isIntegralCurvAt_comp_mul_pos {γ : ℝ → M} {a : ℝ} (ha : 0 < a) :
-    IsIntegralCurveAt γ v t₀ x₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) x₀ := by
+    IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
   refine ⟨fun hγ => IsIntegralCurveAt.comp_mul_pos hγ ha, fun hγ ↦ ?_⟩
   have := hγ.comp_mul_pos (inv_pos_of_pos ha)
   rw [smul_smul, inv_mul_eq_div, div_self (ne_of_gt ha), one_smul, ← div_mul_eq_div_div_swap,
@@ -105,11 +102,10 @@ lemma isIntegralCurvAt_comp_mul_pos {γ : ℝ → M} {a : ℝ} (ha : 0 < a) :
   ext
   simp [inv_mul_eq_div, div_self (ne_of_gt ha)]
 
-lemma IsIntegralCurveAt.comp_neg {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀ x₀) :
-    IsIntegralCurveAt (γ ∘ Neg.neg) (-v) (-t₀) x₀ := by
-  obtain ⟨h1, ε, hε, h2⟩ := hγ
-  refine ⟨by simp [h1], ε, hε, ?_⟩
-  intros t ht
+lemma IsIntegralCurveAt.comp_neg {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀) :
+    IsIntegralCurveAt (γ ∘ Neg.neg) (-v) (-t₀) := by
+  obtain ⟨ε, hε, h2⟩ := hγ
+  refine ⟨ε, hε, fun t ht => ?_⟩
   rw [← neg_add', neg_add_eq_sub, ← neg_sub, ← neg_mem_Ioo_iff] at ht
   rw [Function.comp_apply, Pi.neg_apply, ← neg_one_smul ℝ (v (γ (-t))),
     ← ContinuousLinearMap.smulRight_comp]
@@ -118,14 +114,14 @@ lemma IsIntegralCurveAt.comp_neg {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v 
   exact HasDerivAt.hasFDerivAt (hasDerivAt_neg _)
 
 lemma isIntegralCurveAt_comp_neg {γ : ℝ → M} :
-    IsIntegralCurveAt γ v t₀ x₀ ↔ IsIntegralCurveAt (γ ∘ Neg.neg) (-v) (-t₀) x₀ := by
+    IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ Neg.neg) (-v) (-t₀) := by
   refine ⟨fun hγ => IsIntegralCurveAt.comp_neg hγ, fun hγ ↦ ?_⟩
   have := hγ.comp_neg
   rw [Function.comp.assoc, neg_comp_neg, neg_neg, neg_neg] at this
   exact this
 
-lemma IsIntegralCurveAt.comp_mul_ne_zero {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀ x₀) {a : ℝ}
-    (ha : a ≠ 0) : IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) x₀ := by
+lemma IsIntegralCurveAt.comp_mul_ne_zero {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v t₀) {a : ℝ}
+    (ha : a ≠ 0) : IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
   rw [ne_iff_lt_or_gt] at ha
   cases' ha with ha ha
   · apply isIntegralCurveAt_comp_neg.mpr
@@ -135,7 +131,7 @@ lemma IsIntegralCurveAt.comp_mul_ne_zero {γ : ℝ → M} (hγ : IsIntegralCurve
   · exact hγ.comp_mul_pos ha
 
 lemma isIntegralCurveAt_comp_mul_ne_zero {γ : ℝ → M} {a : ℝ} (ha : a ≠ 0) :
-    IsIntegralCurveAt γ v t₀ x₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) x₀ := by
+    IsIntegralCurveAt γ v t₀ ↔ IsIntegralCurveAt (γ ∘ (· * a)) (a • v) (t₀ / a) := by
   refine ⟨fun hγ => IsIntegralCurveAt.comp_mul_ne_zero hγ ha, fun hγ ↦ ?_⟩
   have := hγ.comp_mul_ne_zero (inv_ne_zero ha)
   rw [smul_smul, inv_mul_eq_div, div_self ha, one_smul, ← div_mul_eq_div_div_swap,
@@ -147,8 +143,8 @@ lemma isIntegralCurveAt_comp_mul_ne_zero {γ : ℝ → M} {a : ℝ} (ha : a ≠ 
 variable (t₀) in
 /-- If the vector field `v` vanishes at `x₀`, then the constant curve at `x₀`
   is an integral curve of `v`. -/
-lemma isIntegralCurveAt_const (h : v x₀ = 0) : IsIntegralCurveAt (fun _ => x₀) v t₀ x₀ := by
-  refine ⟨rfl, 1, zero_lt_one, fun t _ => ?_⟩
+lemma isIntegralCurveAt_const (h : v x₀ = 0) : IsIntegralCurveAt (fun _ => x₀) v t₀ := by
+  refine ⟨1, zero_lt_one, fun t _ => ?_⟩
   rw [h, ← ContinuousLinearMap.zero_apply (R₁ := ℝ) (R₂ := ℝ) (1 : ℝ),
     ContinuousLinearMap.smulRight_one_one]
   exact hasMFDerivAt_const ..
@@ -158,7 +154,7 @@ lemma isIntegralCurveAt_const (h : v x₀ = 0) : IsIntegralCurveAt (fun _ => x�
   of `γ` at `t` coincides with the vector field at `γ t` for all `t` within an open interval around
   `t₀`.-/
 theorem exists_isIntegralCurveAt_of_contMDiffAt (hx : I.IsInteriorPoint x₀) :
-    ∃ (γ : ℝ → M), IsIntegralCurveAt γ v t₀ x₀ := by
+    ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ := by
   -- express the differentiability of the section `v` in the local charts
   rw [contMDiffAt_iff] at hv
   obtain ⟨_, hv⟩ := hv
@@ -218,5 +214,5 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt (hx : I.IsInteriorPoint x₀) :
   tangent vector of `γ` at `t` coincides with the vector field at `γ t` for all `t` within an open
   interval around `t₀`. -/
 lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [I.Boundaryless] :
-    ∃ (γ : ℝ → M), IsIntegralCurveAt γ v t₀ x₀ :=
+    ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ :=
   exists_isIntegralCurveAt_of_contMDiffAt hv I.isInteriorPoint
