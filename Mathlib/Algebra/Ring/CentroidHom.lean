@@ -258,16 +258,17 @@ instance : Add (CentroidHom α) :=
 instance : Mul (CentroidHom α) :=
   ⟨comp⟩
 
-instance hasNsmul : SMul ℕ (CentroidHom α) :=
-  ⟨fun n f ↦
-    { ((SMul.smul n f) : α →+ α) with
-        map_mul_left' := fun a b ↦ by
-          change n • f (a * b) = a * n • f b
-          rw [map_mul_left f, ← mul_smul_comm]
-        map_mul_right' := fun a b ↦ by
-          change n • f (a * b) = n • f a * b
-          rw [map_mul_right f, ← smul_mul_assoc] }⟩
-#align centroid_hom.has_nsmul CentroidHom.hasNsmul
+instance instSmul {M} [Monoid M] [DistribMulAction M α] [SMulCommClass M α α] [IsScalarTower M α α] :
+    SMul M (CentroidHom α) where
+  smul n f :=
+    { (n • f : α →+ α) with
+      map_mul_left' := fun a b ↦ by
+        change n • f (a * b) = a * n • f b
+        rw [map_mul_left f, ← mul_smul_comm]
+      map_mul_right' := fun a b ↦ by
+        change n • f (a * b) = n • f a * b
+        rw [map_mul_right f, ← smul_mul_assoc] }
+#noalign centroid_hom.has_nsmul
 
 instance hasNpowNat : Pow (CentroidHom α) ℕ :=
   ⟨fun f n ↦
@@ -426,16 +427,7 @@ instance : Sub (CentroidHom α) :=
         change (FunLike.coe f - FunLike.coe g) (a * b) = ((FunLike.coe f - FunLike.coe g) a) * b
         simp [map_mul_right, sub_mul] }⟩
 
-instance hasZsmul : SMul ℤ (CentroidHom α) :=
-  ⟨fun n f ↦
-    { (SMul.smul n f : α →+ α) with
-      map_mul_left' := fun a b ↦ by
-        change n • f (a * b) = a * n • f b
-        rw [map_mul_left f, ← mul_smul_comm]
-      map_mul_right' := fun a b ↦ by
-        change n • f (a * b) = n • f a * b
-        rw [map_mul_right f, ← smul_mul_assoc] }⟩
-#align centroid_hom.has_zsmul CentroidHom.hasZsmul
+#noalign centroid_hom.has_zsmul
 
 instance : IntCast (CentroidHom α) where intCast z := z • (1 : CentroidHom α)
 
