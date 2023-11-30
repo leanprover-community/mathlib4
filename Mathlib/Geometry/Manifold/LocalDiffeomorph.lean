@@ -28,9 +28,9 @@ and `t` of `x` and `f x`, respectively such that `f` restricts to a diffeomorphi
 * `Diffeomorph.mfderiv_toContinuousLinearEquiv`: each differential of a `C^n` diffeomorphism
 (`n ≥ 1`) is a linear equivalence.
 * `LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv`: if `f` is a local diffeomorphism
-at `x`, the differential `mfderiv I J n f x` is a continuous linear isomorphism.
+at `x`, the differential `mfderiv I J n f x` is a continuous linear equivalence.
 * `LocalDiffeomorph.differential_toContinuousLinearEquiv`: if `f` is a local diffeomorphism,
-each differential `mfderiv I J n f x` is a continuous linear isomorphism.
+each differential `mfderiv I J n f x` is a continuous linear equivalence.
 
 ## TODO
 * a local diffeomorphism is a diffeomorphism to its image
@@ -39,8 +39,12 @@ each differential `mfderiv I J n f x` is a continuous linear isomorphism.
 `f` is a local diffeomorphism at `x`.
 * if `f` is `C^n` and each differential is a linear isomorphism, `f` is a local diffeomorphism.
 
-## Design decisions
-TODO: flesh this out!
+## Implementation notes
+
+This notion of diffeomorphism is needed although there is already a notion of local structomorphism
+because structomorphisms do not allow the model spaces `H` and `H'` of the two manifolds to be
+different, i.e. for a structomorphism one has to impose `H = H'` which is often not the case in
+practice.
 
 ## Tags
 local diffeomorphism, manifold
@@ -120,10 +124,13 @@ def IsLocalDiffeomorphAt (f : M → N) (x : M) : Prop :=
 
 /-- `f : M → N` is a **`C^n` local diffeomorphism** iff it is a local diffeomorphism
 at each `x ∈ M`. -/
-def IsLocalDiffeomorph (f : M → N) : Prop := ∀ x : M, IsLocalDiffeomorphAt I J n f x
+def IsLocalDiffeomorph (f : M → N) : Prop :=
+  ∀ x : M, IsLocalDiffeomorphAt I J n f x
 
 lemma isLocalDiffeomorph_iff {f : M → N} :
     IsLocalDiffeomorph I J n f ↔ ∀ x : M, IsLocalDiffeomorphAt I J n f x := by rfl
+
+variable {n}
 
 /-- A `C^n` diffeomorphism is a local diffeomorphism. -/
 lemma Diffeomorph.isLocalDiffeomorph (Φ : M ≃ₘ^n⟮I, J⟯ N) : IsLocalDiffeomorph I J n Φ :=
@@ -150,7 +157,7 @@ def LocalDiffeomorph.image {f : M → N} (hf : IsLocalDiffeomorph I J n f) : Ope
     exact Φ.toLocalHomeomorph.map_source hxU
 
 lemma LocalDiffeomorph.image_coe {f : M → N} (hf : IsLocalDiffeomorph I J n f) :
-    (LocalDiffeomorph.image I J n hf).1 = range f := rfl
+    (LocalDiffeomorph.image I J hf).1 = range f := rfl
 
 section helper -- FIXME: move to Algebra.Module.Basic
 variable {R : Type*} [Ring R]
@@ -173,16 +180,14 @@ lemma RightInverse.of_composition {f : E →L[R] F} {g : F →L[R] E}
 end helper
 
 section Differential
-variable {I J n}
+variable {I J} {f : M → N} {x : M} (hn : 1 ≤ n)
 variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
-  {f : M → N} {x : M} (hn : 1 ≤ n)
 
 /-- If `f` is a `C^n` local diffeomorphism at `x`, for `n ≥ 1`,
   the differential `df_x` is a linear equivalence. -/
 noncomputable def LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv
     (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
-    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
-  by
+    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) := by
   choose Φ hyp using hf
   rcases hyp with ⟨hxU, heq⟩
   let A := mfderiv I J f x
@@ -244,21 +249,21 @@ noncomputable def Diffeomorph.mfderiv_toContinuousLinearEquiv (hn : 1 ≤ n) (Φ
   LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv (Φ.isLocalDiffeomorph x) hn
 
 -- TODO: make `by rfl` work
-lemma Diffeomorph.mfderiv_toContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ N) {x : M} (hn : 1 ≤ n) :
+lemma Diffeomorph.mfderiv_toContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ N) :
     (Φ.mfderiv_toContinuousLinearEquiv hn x).toFun = mfderiv I J Φ x := sorry
 
 variable (x) in
 /-- If `f` is a `C^n` local diffeomorphism (`n ≥ 1`), each differential is a linear equivalence. -/
-noncomputable def LocalDiffeomorph.mfderiv_toContinuousLinearEquiv (hf : IsLocalDiffeomorph I J n f)
-    (hn : 1 ≤ n) : ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
+noncomputable def LocalDiffeomorph.mfderiv_toContinuousLinearEquiv (hf : IsLocalDiffeomorph I J n f) :
+    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
   LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv (hf x) hn
 
 variable (x) in
 lemma LocalDiffeomorph.mfderiv_toContinuousLinearEquiv_coe (hf : IsLocalDiffeomorph I J n f):
-    LocalDiffeomorph.mfderiv_toContinuousLinearEquiv x hf hn = mfderiv I J f x := by
+    LocalDiffeomorph.mfderiv_toContinuousLinearEquiv x hn hf = mfderiv I J f x := by
   let r := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe hn (hf x)
   have : (LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv (hf x) hn) =
-    (LocalDiffeomorph.mfderiv_toContinuousLinearEquiv x hf hn) :=
+    (LocalDiffeomorph.mfderiv_toContinuousLinearEquiv x hn hf) :=
     sorry -- TODO: why doesn't `rfl` work?
   exact this ▸ r
 
@@ -354,6 +359,8 @@ def extChartAt_toLocalHomeomorph (x : M) : LocalHomeomorph M E := by
     continuous_toFun := sorry
     continuous_invFun := sorry
   }
+
+variable (n)
 
 /-- If `M` has no boundary, every extended chart is a local diffeomorphism
 between its source and target. -/
