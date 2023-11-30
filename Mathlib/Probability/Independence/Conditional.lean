@@ -76,7 +76,7 @@ def iCondIndepSets (π : ι → Set (Set Ω)) (μ : Measure Ω := by volume_tac)
   kernel.iIndepSets π (condexpKernel μ m') (μ.trim hm')
 
 /-- Two sets of sets `s₁, s₂` are conditionally independent given `m'` with respect to a measure
-`μ` if for any sets `t₁ ∈ p₁, t₂ ∈ s₂`, then `μ⟦t₁ ∩ t₂ | m'⟧ =ᵐ[μ] μ⟦t₁ | m'⟧ * μ⟦t₂ | m'⟧`.
+`μ` if for any sets `t₁ ∈ s₁, t₂ ∈ s₂`, then `μ⟦t₁ ∩ t₂ | m'⟧ =ᵐ[μ] μ⟦t₁ | m'⟧ * μ⟦t₂ | m'⟧`.
 See `ProbabilityTheory.condIndepSets_iff`. -/
 def CondIndepSets (s1 s2 : Set (Set Ω)) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] :
     Prop :=
