@@ -24,8 +24,6 @@ by using `Module R (Additive M)` in its place, especially since this already has
 `R = ℕ` and `R = ℤ`.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 instance : SMul (ZMod 2) (Additive ℤˣ) where
   smul z au := .ofMul <| Additive.toMul au ^ z.val
 
@@ -61,7 +59,7 @@ instance Int.instUnitsPow : Pow ℤˣ R where
   pow u r := Additive.toMul (r • Additive.ofMul u)
 
 -- The above instance forms no typeclass diamonds with the standard power operators
-example : Int.instUnitsPow = Monoid.Pow := rfl
+example : Int.instUnitsPow = Monoid.toNatPow := rfl
 example : Int.instUnitsPow = DivInvMonoid.Pow := rfl
 
 @[simp] lemma ofMul_uzpow (u : ℤˣ) (r : R) : Additive.ofMul (u ^ r) = r • Additive.ofMul u := rfl
@@ -97,8 +95,6 @@ lemma uzpow_add (s : ℤˣ) (x y : R) : s ^ (x + y) = s ^ x * s ^ y :=
   Additive.ofMul.injective <| add_smul x y (Additive.ofMul s)
 
 end CommSemiring
-
-section CommRing
 
 section CommRing
 variable {R : Type*} [CommRing R] [Module R (Additive ℤˣ)]

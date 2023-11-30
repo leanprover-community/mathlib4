@@ -25,9 +25,6 @@ This file records basic facts about uniformly locally doubling measures.
   appearing in the definition of a uniformly locally doubling measure.
 -/
 
--- Porting note: for 2 ^ n in exists_eventually_forall_measure_closedBall_le_mul
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open Set Filter Metric MeasureTheory TopologicalSpace ENNReal NNReal Topology

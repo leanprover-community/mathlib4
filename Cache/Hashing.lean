@@ -69,8 +69,13 @@ This happens with the `lean-pr-testing-NNNN` toolchains when Lean 4 PRs are upda
 def getRootHash : IO UInt64 := do
   let rootFiles : List FilePath := ["lakefile.lean", "lean-toolchain", "lake-manifest.json"]
   let isMathlibRoot ← isMathlibRoot
+  let qualifyPath ←
+    if isMathlibRoot then
+      pure id
+    else
+      pure ((← mathlibDepPath) / ·)
   let hashs ← rootFiles.mapM fun path =>
-    hashFileContents <$> IO.FS.readFile (if isMathlibRoot then path else mathlibDepPath / path)
+    hashFileContents <$> IO.FS.readFile (qualifyPath path)
   return hash ((hash Lean.versionString) :: hashs)
 
 /--
