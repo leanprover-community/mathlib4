@@ -970,31 +970,19 @@ theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n
 @[simp]
 theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
   -- Porting note: `unfold` → `dsimp only`
-  cases m <;> dsimp only [testBit, Nat.testBit]
+  cases m <;> dsimp only [testBit]
   case zero =>
-    rw [show (Num.zero : Nat) = 0 from rfl, Nat.zero_shiftRight]
-    rfl
+    rw [show (Num.zero : Nat) = 0 from rfl, Nat.zero_testBit]
   case pos m =>
-    induction' n with n IH generalizing m <;> cases' m with m m <;> dsimp only [PosNum.testBit]
+    rw [cast_pos]
+    induction' n with n IH generalizing m <;> cases' m with m m
+        <;> dsimp only [PosNum.testBit, Nat.zero_eq]
     · rfl
-    · simp only [cast_pos, PosNum.cast_bit1, Nat.zero_eq, Nat.shiftRight_zero, Nat.and_one_is_mod]
-      rw[←Nat.bit_true, Nat.bit_mod_two]
-      rfl
-    · simp only [cast_pos, PosNum.cast_bit0, Nat.zero_eq, Nat.shiftRight_zero, Nat.and_one_is_mod]
-      rw[←Nat.bit_false, Nat.bit_mod_two]
-      rfl
-    · change _ = (Nat.bit true 0 >>> (n + 1) &&& 1 != 0)
-      rw [add_comm, Nat.shiftRight_add]
-      simp only [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, Nat.div2_bit,
-        Nat.zero_shiftRight, Nat.and_one_is_mod, Nat.zero_mod, bne_self_eq_false]
-    · change _ = (Nat.bit true m >>> (n + 1) &&& 1 != 0)
-      rw [add_comm, Nat.shiftRight_add]
-      simp only [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, Nat.div2_bit]
-      apply IH
-    · change _ = (Nat.bit false m >>> (n + 1) &&& 1 != 0)
-      rw [add_comm, Nat.shiftRight_add]
-      simp only [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val, Nat.div2_bit]
-      apply IH
+    · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_zero]
+    · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_zero]
+    · rw [PosNum.cast_one', ← bit1_zero, ← Nat.bit_true, Nat.testBit_succ, Nat.zero_testBit]
+    · rw [PosNum.cast_bit1, ← Nat.bit_true, Nat.testBit_succ, IH]
+    · rw [PosNum.cast_bit0, ← Nat.bit_false, Nat.testBit_succ, IH]
 #align num.test_bit_to_nat Num.castNum_testBit
 
 end Num
