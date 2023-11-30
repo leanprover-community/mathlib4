@@ -24,7 +24,6 @@ This file contains some theorems about cofiltered limits of profinite sets.
   of profinite sets factors through one of the components.
 -/
 
-
 namespace Profinite
 
 open scoped Classical
@@ -33,9 +32,14 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-universe u
+universe u v
 
-variable {J : Type u} [SmallCategory J] [IsCofiltered J] {F : J ⥤ Profinite.{u}} (C : Cone F)
+variable {J : Type v} [SmallCategory J] [IsCofiltered J] {F : J ⥤ ProfiniteMax.{u, v}} (C : Cone F)
+
+noncomputable
+instance preserves_smaller_limits_toTopCat :
+    PreservesLimitsOfSize.{v, v} (toTopCat : ProfiniteMax.{v, u} ⥤ TopCatMax.{v, u}) :=
+  Limits.preservesLimitsOfSizeShrink.{v, max u v, v, max u v} _
 
 -- include hC
 -- Porting note: I just add `(hC : IsLimit C)` explicitly as a hypothesis to all the theorems
@@ -45,9 +49,10 @@ a clopen set in one of the terms in the limit.
 -/
 theorem exists_clopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClopen U) :
     ∃ (j : J) (V : Set (F.obj j)) (_ : IsClopen V), U = C.π.app j ⁻¹' V := by
+  have := preserves_smaller_limits_toTopCat.{u, v}
   -- First, we have the topological basis of the cofiltered limit obtained by pulling back
   -- clopen sets from the factors in the limit. By continuity, all such sets are again clopen.
-  have hB := TopCat.isTopologicalBasis_cofiltered_limit.{u, u} (F ⋙ Profinite.toTopCat)
+  have hB := TopCat.isTopologicalBasis_cofiltered_limit.{u, v} (F ⋙ Profinite.toTopCat)
       (Profinite.toTopCat.mapCone C) (isLimitOfPreserves _ hC) (fun j => {W | IsClopen W}) ?_
       (fun i => isClopen_univ) (fun i U1 U2 hU1 hU2 => hU1.inter hU2) ?_
   rotate_left
@@ -214,6 +219,7 @@ set_option linter.uppercaseLean3 false in
 one of the components. -/
 theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstant C.pt α) :
     ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _) := by
+  have := preserves_smaller_limits_toTopCat.{u, v}
   let S := f.discreteQuotient
   let ff : S → α := f.lift
   cases isEmpty_or_nonempty S
@@ -238,7 +244,7 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
     suffices : Nonempty C.pt; exact IsEmpty.false (S.proj this.some)
     let D := Profinite.toTopCat.mapCone C
     have hD : IsLimit D := isLimitOfPreserves Profinite.toTopCat hC
-    have CD := (hD.conePointUniqueUpToIso (TopCat.limitConeIsLimit.{u, u} _)).inv
+    have CD := (hD.conePointUniqueUpToIso (TopCat.limitConeIsLimit.{v, max u v} _)).inv
     exact cond.map CD
   · let f' : LocallyConstant C.pt S := ⟨S.proj, S.proj_isLocallyConstant⟩
     obtain ⟨j, g', hj⟩ := exists_locallyConstant_finite_nonempty _ hC f'
