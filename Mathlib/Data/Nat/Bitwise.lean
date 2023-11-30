@@ -144,6 +144,7 @@ theorem testBit_ldiff : ∀ m n k, testBit (ldiff m n) k = (testBit m k && not (
   testBit_bitwise rfl
 #align nat.test_bit_ldiff Nat.testBit_ldiff
 
+attribute [simp] testBit_xor
 #align nat.test_bit_lxor Nat.testBit_xor
 
 end
@@ -349,17 +350,10 @@ theorem zero_xor (n : ℕ) : 0 ^^^ n = n := by simp [HXor.hXor, Xor.xor, xor]
 theorem xor_zero (n : ℕ) : n ^^^ 0 = n := by simp [HXor.hXor, Xor.xor, xor]
 #align nat.lxor_zero Nat.xor_zero
 
-theorem zero_land (n : ℕ) : 0 &&& n = 0 := by simp
-#align nat.zero_land Nat.zero_land
-
-theorem land_zero (n : ℕ) : n &&& 0 = 0 := by simp
-#align nat.land_zero Nat.land_zero
-
-theorem zero_lor (n : ℕ) : 0 ||| n = n := by simp
-#align nat.zero_lor Nat.zero_lor
-
-theorem lor_zero (n : ℕ) : n ||| 0 = n := by simp
-#align nat.lor_zero Nat.lor_zero
+#align nat.zero_land Nat.zero_and
+#align nat.land_zero Nat.and_zero
+#align nat.zero_lor Nat.zero_or
+#align nat.lor_zero Nat.or_zero
 
 
 /-- Proving associativity of bitwise operations in general essentially boils down to a huge case
@@ -384,8 +378,8 @@ theorem lor_assoc (n m k : ℕ) : (n ||| m) ||| k = n ||| (m ||| k) := by bitwis
 #align nat.lor_assoc Nat.lor_assoc
 
 @[simp]
-theorem xor_self (n : ℕ) : n ^^^ n = 0 := by
-  induction' n using Nat.binaryRec <;> simp_all
+theorem xor_self (n : ℕ) : n ^^^ n = 0 :=
+  zero_of_testBit_eq_false fun i => by simp
 
 #align nat.lxor_self Nat.xor_self
 
