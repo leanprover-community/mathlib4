@@ -214,7 +214,6 @@ lemma isIntegralCurve_comp_mul_ne_zero {γ : ℝ → M} {a : ℝ} (ha : a ≠ 0)
   ext t
   rw [Function.comp_apply, Function.comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
 
-variable (t₀) in
 /-- If the vector field `v` vanishes at `x₀`, then the constant curve at `x₀`
   is a global integral curve of `v`. -/
 lemma isIntegralCurve_const (h : v x₀ = 0) : IsIntegralCurve (fun _ => x₀) v := by
