@@ -92,7 +92,7 @@ initialize librarySearchLemmas : DiscrTreeCache (Name × DeclMod) ← unsafe do
   if (← path.pathExists) then
     -- We can drop the `CompactedRegion` value from `unpickle`; we do not plan to free it
     let d := (·.1) <$> unpickle (DiscrTree (Name × DeclMod)) path
-    DiscrTreeCache.mk "apply?: using cache" processLemma (init := some d)
+    DiscrTreeCache.mk "apply?: using cache" processLemma (init := d)
   else
     buildDiscrTree
 

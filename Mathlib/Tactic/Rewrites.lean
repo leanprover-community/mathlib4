@@ -128,7 +128,7 @@ initialize rewriteLemmas : DiscrTreeCache (Name × Bool × Nat) ← unsafe do
   if (← path.pathExists) then
     -- We can drop the `CompactedRegion` value from `unpickle`; we do not plan to free it
     let d := (·.1) <$> unpickle (DiscrTree (Name × Bool × Nat)) path
-    DiscrTreeCache.mk "rw?: using cache" processLemma (init := some d)
+    DiscrTreeCache.mk "rw?: using cache" processLemma (init := d)
   else
     buildDiscrTree
 
