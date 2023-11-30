@@ -69,7 +69,7 @@ lemma Complex.re_neg_ne_zero_of_one_lt_re (hs : 1 < s.re) : (-s).re ≠ 0 :=
 
 /-- When `s.re > 1`, the map `n ↦ n^(-s)` is norm-summable. -/
 lemma summable_riemannZetaSummand (hs : 1 < s.re) :
-  Summable (fun n ↦ ‖riemannZetaSummandHom (Complex.ne_zero_of_one_lt_re hs) n‖) := by
+    Summable (fun n ↦ ‖riemannZetaSummandHom (Complex.ne_zero_of_one_lt_re hs) n‖) := by
   simp only [riemannZetaSummandHom, riemannZetaSummand, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   convert Real.summable_nat_rpow_inv.mpr hs with n
   rw [n.complex_norm_cpow_eq_rpow_re <| Complex.re_neg_ne_zero_of_one_lt_re hs, neg_re,
@@ -77,7 +77,7 @@ lemma summable_riemannZetaSummand (hs : 1 < s.re) :
 
 /-- When `s.re > 1`, the map `n ↦ χ(n) * n^(-s)` is norm-summable. -/
 lemma summable_dirichletSummand {N : ℕ} (χ : DirichletCharacter ℂ N) (hs : 1 < s.re) :
-  Summable (fun n ↦ ‖dirichletSummandHom χ (Complex.ne_zero_of_one_lt_re hs) n‖) := by
+    Summable (fun n ↦ ‖dirichletSummandHom χ (Complex.ne_zero_of_one_lt_re hs) n‖) := by
   simp only [dirichletSummandHom, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, norm_mul]
   exact (summable_riemannZetaSummand hs).of_nonneg_of_le (fun _ ↦ by positivity)
     (fun n ↦ mul_le_of_le_one_left (norm_nonneg _) <| χ.norm_le_one n)
