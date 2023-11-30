@@ -322,3 +322,81 @@ lemma todostate3 [FiniteDimensional 𝕜 E] : 0 = 1 := sorry
 -- similar results for composition in the other direction
 
 end Differential
+
+
+-- charts have isomorphic differentials: TODO move to different file!
+section ChartsDifferentials
+variable [I.Boundaryless] [SmoothManifoldWithCorners I M]
+
+-- xxx: basically copied from LocalHomeomomorph.isOpen_extend_target in the integral curves PR
+lemma isOpen_extend_target (x : M) : IsOpen (extChartAt I x).target := by
+  sorry
+
+def extChartAt_sourceToOpen (x : M) : Opens M :=
+  ⟨(extChartAt I x).source, isOpen_extChartAt_source I x⟩
+
+def extChartAt_targetToOpen (x : M) : Opens E :=
+  ⟨(extChartAt I x).target, isOpen_extend_target I x⟩
+
+-- xxx: to what extend does this exist already? deduplicate!
+def extChartAt_toLocalHomeomorph (x : M) : LocalHomeomorph M E := by
+  exact {
+    toFun := extChartAt I x
+    invFun := (extChartAt I x).symm
+    source := (extChartAt I x).source
+    target := (extChartAt I x).target
+    open_source := isOpen_extChartAt_source I x
+    open_target := isOpen_extend_target I x -- this uses boundarylessness!
+    map_source' := sorry -- all these are easy/done already!
+    map_target' := sorry
+    left_inv' := sorry
+    right_inv' := sorry
+    continuous_toFun := sorry
+    continuous_invFun := sorry
+  }
+
+/-- If `M` has no boundary, every extended chart is a local diffeomorphism
+between its source and target. -/
+-- TODO: this holds for every interior point x --> this requires showing the interior is open
+def extChartAt_toLocalDiffeomorphAux (x : M) : LocalDiffeomorphAux I 𝓘(𝕜, E) M E n :=
+  {
+    toLocalHomeomorph := extChartAt_toLocalHomeomorph I x
+    contMDiffOn_toFun := by
+      show ContMDiffOn I 𝓘(𝕜, E) n (extChartAt I x) (extChartAt I x).source
+      rw [extChartAt_source I x]
+      exact contMDiffOn_extChartAt (I := I) (x := x) (n := n)
+    contMDiffOn_invFun := by
+      show ContMDiffOn 𝓘(𝕜, E) I n (extChartAt I x).symm (extChartAt I x).target
+      exact contMDiffOn_extChartAt_symm x
+  }
+
+lemma extChartAt_toLocalDiffeomorphAux_coe (x : M) :
+    (extChartAt_toLocalDiffeomorphAux I n x).toFun = extChartAt I x := by
+  rfl
+
+lemma extChartAt_toLocalDiffeomorphAux_source (x : M) :
+    (extChartAt_toLocalDiffeomorphAux I n x).source = (extChartAt I x).source := by
+  rfl
+
+lemma extChartAt_toLocalDiffeomorphAux_target (x : M) :
+    (extChartAt_toLocalDiffeomorphAux I n x).target = (extChartAt I x).target := by
+  rfl
+
+/-- If `M` has no boundary, each extended chart is a diffeomorphism between its source and target.
+In particular, `exChartAt I x` is a local diffeomorphism at `x`. -/
+lemma extChartAt_toLocalDiffeomorphAt [I.Boundaryless] (x : M) :
+    IsLocalDiffeomorphAt I 𝓘(𝕜, E) n (extChartAt I x) x := by
+  let r := extChartAt_toLocalDiffeomorphAux I n x
+  have : x ∈ r.source := by
+    rw [extChartAt_toLocalDiffeomorphAux_source I n x]
+    exact mem_extChartAt_source I x
+  refine ⟨r, this, ?_⟩
+  rw [extChartAt_toLocalDiffeomorphAux_source I n x, ← extChartAt_toLocalDiffeomorphAux_coe]
+  exact eqOn_refl _ _
+
+-- corollary: f has injective/surjective/bijective differential iff its local coord rep has
+-- for any two charts in that domain
+-- corollary: if fin-dim, rank of differential is the same as local coord rep
+-- xxx: introduce a definition for local coordinate rep?
+
+end ChartsDifferentials
