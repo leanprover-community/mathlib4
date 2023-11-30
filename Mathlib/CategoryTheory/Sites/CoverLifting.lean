@@ -380,11 +380,11 @@ variable
 
 /-- The natural isomorphism exhibiting compatibility between pushforward and sheafification. -/
 def Functor.pushforwardContinuousSheafificationCompatibility :
-    (whiskeringLeft _ _ A).obj G.op ⋙ presheafToSheaf J A ≅
-    presheafToSheaf K A ⋙ G.sheafPushforwardContinuous A J K :=
+    (whiskeringLeft _ _ A).obj G.op ⋙ plusPlusSheaf J A ≅
+    plusPlusSheaf K A ⋙ G.sheafPushforwardContinuous A J K :=
   letI A1 : (whiskeringLeft _ _ A).obj G.op ⊣ _ := Ran.adjunction _ _
-  letI A2 : presheafToSheaf J A ⊣ _ := sheafificationAdjunction _ _
-  letI B1 : presheafToSheaf K A ⊣ _ := sheafificationAdjunction _ _
+  letI A2 : plusPlusSheaf J A ⊣ _ := plusPlusAdjunction _ _
+  letI B1 : plusPlusSheaf K A ⊣ _ := plusPlusAdjunction _ _
   letI B2 := G.sheafAdjunctionCocontinuous A J K
   letI A12 := A1.comp A2
   letI B12 := B1.comp B2
@@ -403,7 +403,7 @@ lemma Functor.toSheafify_pullbackSheafificationCompatibility (F : Dᵒᵖ ⥤ A)
   dsimp [Functor.preimage, Full.preimage, coyoneda, Adjunction.leftAdjointsCoyonedaEquiv]
   erw [Adjunction.homEquiv_unit, Adjunction.homEquiv_counit]
   dsimp [Adjunction.comp]
-  simp only [sheafificationAdjunction_unit_app, Category.comp_id, Functor.map_id,
+  simp only [plusPlusAdjunction_unit_app, Category.comp_id, Functor.map_id,
     whiskerLeft_id', GrothendieckTopology.sheafifyMap_comp,
     GrothendieckTopology.sheafifyMap_sheafifyLift, Category.id_comp,
     Category.assoc, GrothendieckTopology.toSheafify_sheafifyLift]
@@ -420,7 +420,7 @@ lemma Functor.toSheafify_pullbackSheafificationCompatibility (F : Dᵒᵖ ⥤ A)
 lemma Functor.pushforwardContinuousSheafificationCompatibility_hom_app_val (F : Dᵒᵖ ⥤ A) :
     ((G.pushforwardContinuousSheafificationCompatibility A J K).hom.app F).val =
     J.sheafifyLift (whiskerLeft G.op <| K.toSheafify F)
-      ((presheafToSheaf K A ⋙ G.sheafPushforwardContinuous A J K).obj F).cond := by
+      ((plusPlusSheaf K A ⋙ G.sheafPushforwardContinuous A J K).obj F).cond := by
   apply J.sheafifyLift_unique
   apply toSheafify_pullbackSheafificationCompatibility
 

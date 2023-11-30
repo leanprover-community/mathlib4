@@ -148,31 +148,9 @@ def sheafCongr : Sheaf J A ≌ Sheaf (e.locallyCoverDense J).inducedTopology A w
       Sheaf.instCategorySheaf_id_val, NatTrans.id_app]
     simp [← Functor.map_comp, ← op_comp]
 
-/-- This would allow to weaken the assumption `HasLimits A`. -/
-proof_wanted hasMultiEqualizer_index_of_equiv
-    [∀ (P : Cᵒᵖ ⥤ A) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
-    (P : Dᵒᵖ ⥤ A) (X : D) (S : (e.locallyCoverDense J).inducedTopology.Cover X) :
-    HasMultiequalizer (S.index P)
+variable [HasSheafify (e.locallyCoverDense J).inducedTopology A]
 
-/-- This would allow to weaken the assumption `HasColimits A`. -/
-proof_wanted hasColimitsOfShape_cover_of_equiv
-    [∀ (X : C), HasColimitsOfShape (J.Cover X)ᵒᵖ A] (X : D) :
-    HasColimitsOfShape ((e.locallyCoverDense J).inducedTopology.Cover X)ᵒᵖ A
-
-variable [HasLimits A] [HasColimits A]
-
-variable [ConcreteCategory A]
-
-/-- This would allow to weaken the assumption `PreservesFilteredColimits (forget A)`. -/
-proof_wanted preservesColimitsOfShape_cover
-    [∀ (X : C), PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget A)] (X : D) :
-    Nonempty (PreservesColimitsOfShape
-      ((e.locallyCoverDense J).inducedTopology.Cover X)ᵒᵖ (forget A))
-
-variable [PreservesLimits (forget A)] [ReflectsIsomorphisms (forget A)]
-  [PreservesFilteredColimits (forget A)]
-
-/-- Transport a preasheaf to the equivalent category and sheafify there. -/
+/-- Transport a presheaf to the equivalent category and sheafify there. -/
 noncomputable
 def transportAndSheafify : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A :=
   e.op.congrLeft.functor ⋙ presheafToSheaf _ _ ⋙ (e.sheafCongr J).inverse
@@ -195,9 +173,7 @@ end Equivalence
 
 variable {C : Type (u+1)} [LargeCategory C] [EssentiallySmall C] (J : GrothendieckTopology C)
 variable (A : Type (u+1)) [LargeCategory A]
-variable [HasLimits A] [HasColimits A] [ConcreteCategory A]
-variable [PreservesLimits (forget A)] [ReflectsIsomorphisms (forget A)]
-  [PreservesFilteredColimits (forget A)]
+variable [HasSheafify ((equivSmallModel C).locallyCoverDense J).inducedTopology A]
 
 /-- Transport to a small model and sheafify there. -/
 noncomputable

@@ -558,8 +558,8 @@ variable
 `sheafEquivOfCoverPreservingCoverLifting` with sheafification. -/
 noncomputable
 abbrev sheafEquivOfCoverPreservingCoverLiftingSheafificationCompatibility :
-    (whiskeringLeft _ _ A).obj G.op ⋙ presheafToSheaf _ _ ≅
-      presheafToSheaf _ _ ⋙ (sheafEquivOfCoverPreservingCoverLifting G J K A).inverse := by
+    (whiskeringLeft _ _ A).obj G.op ⋙ plusPlusSheaf _ _ ≅
+      plusPlusSheaf _ _ ⋙ (sheafEquivOfCoverPreservingCoverLifting G J K A).inverse := by
   apply Functor.pushforwardContinuousSheafificationCompatibility
 
 end CategoryTheory.Functor.IsCoverDense

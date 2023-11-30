@@ -54,7 +54,7 @@ noncomputable section
 /-- This is the functor sending a sheaf `X : Sheaf J E` to the sheafification
 of `X ⋙ G`. -/
 abbrev composeAndSheafify (G : E ⥤ D) : Sheaf J E ⥤ Sheaf J D :=
-  sheafToPresheaf J E ⋙ (whiskeringRight _ _ _).obj G ⋙ presheafToSheaf J D
+  sheafToPresheaf J E ⋙ (whiskeringRight _ _ _).obj G ⋙ plusPlusSheaf J D
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.compose_and_sheafify CategoryTheory.Sheaf.composeAndSheafify
 
