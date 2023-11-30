@@ -239,10 +239,9 @@ variable {L : Type*} [OrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCom
 lemma image_extremePoints (f : L) (s : Set E) :
     f '' extremePoints 𝕜 s = extremePoints 𝕜 (f '' s) := by
   ext b
-  rcases EquivLike.surjective f b with ⟨a, rfl⟩
+  obtain ⟨a, rfl⟩ := EquivLike.surjective f b
   have : ∀ x y, f '' openSegment 𝕜 x y = openSegment 𝕜 (f x) (f y) :=
-    image_openSegment _ <| LinearMap.toAffineMap
-      { toFun := f, map_add' := map_add f, map_smul' := map_smul f}
+    image_openSegment _ (LinearMapClass.linearMap f).toAffineMap
   simp only [mem_extremePoints, (EquivLike.surjective f).forall,
     (EquivLike.injective f).mem_set_image, (EquivLike.injective f).eq_iff, ← this]
 
