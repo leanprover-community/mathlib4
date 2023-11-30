@@ -102,10 +102,8 @@ def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
 
 variable [Group α]
 
-/-- A non-cyclic multiplicative group is non-trivial.
-The additive version is `Nontrivial.of_not_isAddCyclic`. -/
-@[to_additive "A non-cyclic additive group is non-trivial.
-The multiplicative version is `Nontrivial.of_not_isCyclic`."]
+/-- A non-cyclic multiplicative group is non-trivial. -/
+@[to_additive "A non-cyclic additive group is non-trivial."]
 theorem Nontrivial.of_not_isCyclic (nc : ¬IsCyclic α) : Nontrivial α := by
   contrapose! nc
   exact @isCyclic_of_subsingleton _ _ (not_nontrivial_iff_subsingleton.mp nc)
