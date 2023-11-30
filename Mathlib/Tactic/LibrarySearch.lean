@@ -90,8 +90,8 @@ Retrieve the current current of lemmas.
 initialize librarySearchLemmas : DiscrTreeCache (Name × DeclMod) ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
-    let (d, _r) ← unpickle (DiscrTree (Name × DeclMod)) path
-    -- We can drop the `CompactedRegion` value; we do not plan to free it
+    -- We can drop the `CompactedRegion` value from `unpickle`; we do not plan to free it
+    let d := (·.1) <$> unpickle (DiscrTree (Name × DeclMod)) path
     DiscrTreeCache.mk "apply?: using cache" processLemma (init := some d)
   else
     buildDiscrTree
