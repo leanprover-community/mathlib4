@@ -300,67 +300,55 @@ instance : KleeneAlgebra (Language α) :=
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
 def reverse (l : Language α) : Language α := { w : List α | w.reverse ∈ l }
 
-lemma mem_reverse : a ∈ l.reverse ↔ a.reverse ∈ l := by
-  rfl
+lemma mem_reverse : a ∈ l.reverse ↔ a.reverse ∈ l := Iff.rfl
 
 @[simp]
 lemma reverse_mem_reverse : a.reverse ∈ l.reverse ↔ a ∈ l := by
-  show a.reverse.reverse ∈ l ↔ a ∈ l
-  rw [List.reverse_reverse]
+  rw [mem_reverse, List.reverse_reverse]
 
 @[simp]
-lemma reverse_zero : (0 : Language α).reverse = 0 := by
-  rfl
+lemma reverse_zero : (0 : Language α).reverse = 0 := rfl
 
 @[simp]
 lemma reverse_one : (1 : Language α).reverse = 1 := by
   simp [reverse, ← one_def]
 
+variable (l m)
+
 @[simp]
 lemma reverse_reverse : l.reverse.reverse = l := by
   ext w
-  convert_to w.reverse.reverse ∈ l.reverse.reverse ↔ w ∈ l using 5
-  · rw [List.reverse_reverse]
-  rw [reverse_mem_reverse, reverse_mem_reverse]
+  rw [mem_reverse, reverse_mem_reverse]
 
-lemma reverse_add : (l + m).reverse = l.reverse + m.reverse := by
-  ext w
-  apply mem_add
+lemma reverse_involutive : Function.Involutive (reverse : Language α → _) := reverse_reverse
+
+lemma reverse_add : (l + m).reverse = l.reverse + m.reverse := rfl
 
 lemma reverse_mul : (l * m).reverse = m.reverse * l.reverse := by
   ext w
   show
     (∃ u v, u ∈ l ∧ v ∈ m ∧ u ++ v = w.reverse) ↔
     (∃ u v, u.reverse ∈ m ∧ v.reverse ∈ l ∧ u ++ v = w)
-  constructor <;>
-  · rintro ⟨u, v, hul, hvm, huvw⟩
-    use v.reverse, u.reverse
-    simp_all [← List.reverse_append]
+  rw [exists_comm, List.reverse_involutive.surjective.exists]
+  refine exists_congr fun u => ?_
+  rw [List.reverse_involutive.surjective.exists]
+  refine exists_congr fun v => ?_
+  rw [and_left_comm, ← List.reverse_append, List.reverse_inj]
 
 lemma reverse_kstar : l∗.reverse = l.reverse∗ := by
   ext w
-  simp only [reverse, kstar_def]
   show
     (∃ L, w.reverse = join L ∧ ∀ y, y ∈ L → y ∈ l) ↔
     (∃ L, w = join L ∧ ∀ y, y ∈ L → y.reverse ∈ l)
-  constructor
-  · rintro ⟨L, hwL, hLl⟩
-    use (L.map List.reverse).reverse
-    constructor
-    · rw [List.reverse_eq_iff] at hwL
-      simp [hwL, List.join_reverse, List.map_map, reverse_involutive]
-    · intros
-      simp_all [List.mem_reverse, mem_map, reverse_involutive,
-        Function.Involutive.exists_mem_and_apply_eq_iff]
-  · rintro ⟨L, hwL, hLl⟩
-    use (L.map List.reverse).reverse
-    constructor
-    · simp [List.join_reverse, List.map_map, hwL, reverse_involutive]
-    · intro y hy
-      simp only [List.mem_reverse, mem_map, reverse_involutive,
-        Function.Involutive.exists_mem_and_apply_eq_iff] at hy
-      specialize hLl y.reverse hy
-      rwa [List.reverse_reverse] at hLl
+  have :=
+    List.reverse_involutive (α := α).list_map.surjective.comp List.reverse_involutive.surjective
+  rw [this.exists]
+  simp only [Function.comp, List.reverse_involutive.eq_iff, reverse_join, reverse_map,
+    List.reverse_reverse, List.map_map, List.map_id'']
+  refine exists_congr fun a => and_congr_right' ?_
+  rw [List.reverse_involutive.surjective.forall]
+  simp_rw [List.mem_map_of_involutive List.reverse_involutive, List.reverse_reverse,
+    List.mem_reverse]
 
 end Language
 
