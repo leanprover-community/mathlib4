@@ -145,6 +145,12 @@ lemma not_isCyclic : ¬ IsCyclic G :=
 @[to_additive]
 lemma inv_eq_self (x : G) : x⁻¹ = x := inv_eq_self_of_exponent_two (by simp) x
 
+/- this is not an appropriate global `simp` lemma for a `Prop`-mixin class. Indeed, if it were
+then every time Lean sees `·⁻¹` it would try to apply `inv_eq_self` which would trigger
+type class inference to try and synthesize an `IsKleinFour` instance. -/
+scoped[IsKleinFour] attribute [simp] inv_eq_self
+scoped[IsAddKleinFour] attribute [simp] neg_eq_self
+
 @[to_additive]
 lemma mul_self (x : G) : x * x = 1 := by
   rw [mul_eq_one_iff_eq_inv, inv_eq_self]
