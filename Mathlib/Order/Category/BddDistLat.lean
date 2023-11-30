@@ -121,3 +121,8 @@ theorem bddDistLat_dual_comp_forget_to_distLat :
       forget₂ BddDistLat DistLat ⋙ DistLat.dual :=
   rfl
 #align BddDistLat_dual_comp_forget_to_DistLat bddDistLat_dual_comp_forget_to_distLat
+
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF]
+
+#lint

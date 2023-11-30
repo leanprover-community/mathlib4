@@ -383,7 +383,7 @@ theorem IsPreconnected.preimage_of_open_map [TopologicalSpace β] {s : Set β} (
   · exact ⟨a, has, hau, hinj.mem_set_image.1 hav⟩
 #align is_preconnected.preimage_of_open_map IsPreconnected.preimage_of_open_map
 
-theorem IsPreconnected.preimage_of_closed_map [TopologicalSpace β] {s : Set β}
+theorem IsPreconnected.preimage_of_isClosedMap [TopologicalSpace β] {s : Set β}
     (hs : IsPreconnected s) {f : α → β} (hinj : Function.Injective f) (hf : IsClosedMap f)
     (hsf : s ⊆ range f) : IsPreconnected (f ⁻¹' s) :=
   isPreconnected_closed_iff.2 fun u v hu hv hsuv hsu hsv => by
@@ -394,7 +394,7 @@ theorem IsPreconnected.preimage_of_closed_map [TopologicalSpace β] {s : Set β}
       · simpa only [image_preimage_inter] using hsu.image f
       · simpa only [image_preimage_inter] using hsv.image f
     · exact ⟨a, has, hau, hinj.mem_set_image.1 hav⟩
-#align is_preconnected.preimage_of_closed_map IsPreconnected.preimage_of_closed_map
+#align is_preconnected.preimage_of_closed_map IsPreconnected.preimage_of_isClosedMap
 
 theorem IsConnected.preimage_of_openMap [TopologicalSpace β] {s : Set β} (hs : IsConnected s)
     {f : α → β} (hinj : Function.Injective f) (hf : IsOpenMap f) (hsf : s ⊆ range f) :
@@ -402,11 +402,11 @@ theorem IsConnected.preimage_of_openMap [TopologicalSpace β] {s : Set β} (hs :
   ⟨hs.nonempty.preimage' hsf, hs.isPreconnected.preimage_of_open_map hinj hf hsf⟩
 #align is_connected.preimage_of_open_map IsConnected.preimage_of_openMap
 
-theorem IsConnected.preimage_of_closedMap [TopologicalSpace β] {s : Set β} (hs : IsConnected s)
+theorem IsConnected.preimage_of_isClosedMap [TopologicalSpace β] {s : Set β} (hs : IsConnected s)
     {f : α → β} (hinj : Function.Injective f) (hf : IsClosedMap f) (hsf : s ⊆ range f) :
     IsConnected (f ⁻¹' s) :=
-  ⟨hs.nonempty.preimage' hsf, hs.isPreconnected.preimage_of_closed_map hinj hf hsf⟩
-#align is_connected.preimage_of_closed_map IsConnected.preimage_of_closedMap
+  ⟨hs.nonempty.preimage' hsf, hs.isPreconnected.preimage_of_isClosedMap hinj hf hsf⟩
+#align is_connected.preimage_of_closed_map IsConnected.preimage_of_isClosedMap
 
 theorem IsPreconnected.subset_or_subset (hu : IsOpen u) (hv : IsOpen v) (huv : Disjoint u v)
     (hsuv : s ⊆ u ∪ v) (hs : IsPreconnected s) : s ⊆ u ∨ s ⊆ v := by
@@ -714,8 +714,7 @@ theorem Continuous.mapsTo_connectedComponent [TopologicalSpace β] {f : α → �
 theorem irreducibleComponent_subset_connectedComponent {x : α} :
     irreducibleComponent x ⊆ connectedComponent x :=
   isIrreducible_irreducibleComponent.isConnected.subset_connectedComponent mem_irreducibleComponent
-#align irreducible_component_subset_connected_component
-  irreducibleComponent_subset_connectedComponent
+#align irreducible_component_subset_connected_component irreducibleComponent_subset_connectedComponent
 
 @[mono]
 theorem connectedComponentIn_mono (x : α) {F G : Set α} (h : F ⊆ G) :
@@ -977,7 +976,7 @@ lemma PreconnectedSpace.induction₂ [PreconnectedSpace α] (P : α → α → P
     P x y := by
   refine PreconnectedSpace.induction₂' P (fun z ↦ ?_) h' x y
   filter_upwards [h z] with a ha
-  refine ⟨ha, h'' ha⟩
+  exact ⟨ha, h'' ha⟩
 
 /-- In a preconnected set, given a transitive relation `P`, if `P x y` and `P y x` are true
 for `y` close enough to `x`, then `P x y` holds for all `x, y`. This is a version of the fact
@@ -994,7 +993,7 @@ lemma IsPreconnected.induction₂' {s : Set α} (hs : IsPreconnected s) (P : α 
     have Z := h x hx
     rwa [nhdsWithin_eq_map_subtype_coe] at Z
   · rintro ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ hab hbc
-    exact h' a b c ha hb hc  hab hbc
+    exact h' a b c ha hb hc hab hbc
 
 /-- In a preconnected set, if a symmetric transitive relation `P x y` is true for `y` close
 enough to `x`, then it holds for all `x, y`. This is a version of the fact that, if an equivalence
@@ -1017,7 +1016,6 @@ theorem isPreconnected_iff_subset_of_disjoint {s : Set α} :
   · intro u v hu hv hs huv
     specialize h u v hu hv hs
     contrapose! huv
-    rw [← nonempty_iff_ne_empty]
     simp [not_subset] at huv
     rcases huv with ⟨⟨x, hxs, hxu⟩, ⟨y, hys, hyv⟩⟩
     have hxv : x ∈ v := or_iff_not_imp_left.mp (hs hxs) hxu
@@ -1079,7 +1077,6 @@ theorem isPreconnected_iff_subset_of_disjoint_closed :
     rw [isPreconnected_closed_iff] at h
     specialize h u v hu hv hs
     contrapose! huv
-    rw [← nonempty_iff_ne_empty]
     simp [not_subset] at huv
     rcases huv with ⟨⟨x, hxs, hxu⟩, ⟨y, hys, hyv⟩⟩
     have hxv : x ∈ v := or_iff_not_imp_left.mp (hs hxs) hxu
@@ -1114,8 +1111,7 @@ theorem isPreconnected_iff_subset_of_fully_disjoint_closed {s : Set α} (hs : Is
   · rw [← inter_distrib_right]
     exact subset_inter hss Subset.rfl
   · rwa [disjoint_iff_inter_eq_empty, ← inter_inter_distrib_right, inter_comm]
-#align is_preconnected_iff_subset_of_fully_disjoint_closed
-  isPreconnected_iff_subset_of_fully_disjoint_closed
+#align is_preconnected_iff_subset_of_fully_disjoint_closed isPreconnected_iff_subset_of_fully_disjoint_closed
 
 theorem IsClopen.connectedComponent_subset {x} (hs : IsClopen s) (hx : x ∈ s) :
     connectedComponent x ⊆ s :=
@@ -1317,7 +1313,6 @@ theorem isPreconnected_of_forall_constant {s : Set α}
   unfold IsPreconnected
   by_contra'
   rcases this with ⟨u, v, u_op, v_op, hsuv, ⟨x, x_in_s, x_in_u⟩, ⟨y, y_in_s, y_in_v⟩, H⟩
-  rw [not_nonempty_iff_eq_empty] at H
   have hy : y ∉ u := fun y_in_u => eq_empty_iff_forall_not_mem.mp H y ⟨y_in_s, ⟨y_in_u, y_in_v⟩⟩
   have : ContinuousOn u.boolIndicator s := by
     apply (continuousOn_boolIndicator_iff_clopen _ _).mpr ⟨_, _⟩

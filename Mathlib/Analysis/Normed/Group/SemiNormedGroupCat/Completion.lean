@@ -17,17 +17,17 @@ objects and morphisms).
 
 ## Main definitions
 
-- `SemiNormedGroup.Completion : SemiNormedGroup ⥤ SemiNormedGroup` : the completion of a
-  seminormed group (defined as a functor on `SemiNormedGroup` to itself).
-- `SemiNormedGroup.Completion.lift (f : V ⟶ W) : (Completion.obj V ⟶ W)` : a normed group hom
+- `SemiNormedGroupCat.Completion : SemiNormedGroupCat ⥤ SemiNormedGroupCat` : the completion of a
+  seminormed group (defined as a functor on `SemiNormedGroupCat` to itself).
+- `SemiNormedGroupCat.Completion.lift (f : V ⟶ W) : (Completion.obj V ⟶ W)` : a normed group hom
   from `V` to complete `W` extends ("lifts") to a seminormed group hom from the completion of
   `V` to `W`.
 
 ## Projects
 
-1. Construct the category of complete seminormed groups, say `CompleteSemiNormedGroup`
+1. Construct the category of complete seminormed groups, say `CompleteSemiNormedGroupCat`
   and promote the `Completion` functor below to a functor landing in this category.
-2. Prove that the functor `Completion : SemiNormedGroup ⥤ CompleteSemiNormedGroup`
+2. Prove that the functor `Completion : SemiNormedGroupCat ⥤ CompleteSemiNormedGroupCat`
   is left adjoint to the forgetful functor.
 
 -/
@@ -42,7 +42,7 @@ set_option linter.uppercaseLean3 false
 
 namespace SemiNormedGroupCat
 
-/-- The completion of a seminormed group, as an endofunctor on `SemiNormedGroup`. -/
+/-- The completion of a seminormed group, as an endofunctor on `SemiNormedGroupCat`. -/
 @[simps]
 def completion : SemiNormedGroupCat.{u} ⥤ SemiNormedGroupCat.{u} where
   obj V := SemiNormedGroupCat.of (Completion V)
@@ -85,8 +85,8 @@ The difference from the definition obtained from the functoriality of completion
 map sending a morphism `f` to the associated morphism of completions is itself additive. -/
 def completion.mapHom (V W : SemiNormedGroupCat.{u}) :
     -- Porting note: cannot see instances through concrete cats
-    have (V W : SemiNormedGroupCat.{u}) : AddGroup (V ⟶ W) := inferInstanceAs <| AddGroup
-      <| NormedAddGroupHom V W
+    have (V W : SemiNormedGroupCat.{u}) : AddGroup (V ⟶ W) :=
+      inferInstanceAs <| AddGroup <| NormedAddGroupHom V W
     (V ⟶ W) →+ (completion.obj V ⟶ completion.obj W) :=
   @AddMonoidHom.mk' _ _ (_) (_) completion.map fun f g => f.completion_add g
 #align SemiNormedGroup.Completion.map_hom SemiNormedGroupCat.completion.mapHom
@@ -99,8 +99,8 @@ theorem completion.map_zero (V W : SemiNormedGroupCat) : completion.map (0 : V �
 
 instance : Preadditive SemiNormedGroupCat.{u} where
   homGroup P Q := inferInstanceAs <| AddCommGroup <| NormedAddGroupHom P Q
-  add_comp := by
-    intros _ Q _ f f' g; ext x
+  add_comp _ Q _ f f' g := by
+    ext x
     -- Porting note: failing simps probably due to instance synthesis issues with concrete
     -- cats; see the gymnastics below for what used to be
     -- simp only [add_apply, comp_apply. map_add]
@@ -108,8 +108,8 @@ instance : Preadditive SemiNormedGroupCat.{u} where
     rw [NormedAddGroupHom.add_apply]; erw [CategoryTheory.comp_apply, CategoryTheory.comp_apply,
       CategoryTheory.comp_apply, @NormedAddGroupHom.add_apply _ _ (_) (_)]
     convert map_add g (f x) (f' x)
-  comp_add := by
-    intros; ext
+  comp_add _ _ _ _ _ _ := by
+    ext
     -- Porting note: failing simps probably due to instance synthesis issues with concrete
     -- cats; see the gymnastics below for what used to be
     -- simp only [add_apply, comp_apply. map_add]

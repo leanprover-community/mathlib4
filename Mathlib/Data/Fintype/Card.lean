@@ -290,12 +290,12 @@ theorem Finset.card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
 #align finset.card_compl Finset.card_compl
 
 @[simp]
-theorem card_add_card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
+theorem Finset.card_add_card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
     s.card + sᶜ.card = Fintype.card α := by
   rw [Finset.card_compl, ← Nat.add_sub_assoc (card_le_univ s), Nat.add_sub_cancel_left]
 
 @[simp]
-theorem card_compl_add_card [DecidableEq α] [Fintype α] (s : Finset α) :
+theorem Finset.card_compl_add_card [DecidableEq α] [Fintype α] (s : Finset α) :
     sᶜ.card + s.card = Fintype.card α := by
   rw [add_comm, card_add_card_compl]
 
@@ -761,11 +761,20 @@ noncomputable def Finset.equivFinOfCardEq {s : Finset α} {n : ℕ} (h : s.card 
   Fintype.equivFinOfCardEq ((Fintype.card_coe _).trans h)
 #align finset.equiv_fin_of_card_eq Finset.equivFinOfCardEq
 
+theorem Finset.card_eq_of_equiv_fin {s : Finset α} {n : ℕ} (i : s ≃ Fin n) : s.card = n :=
+  Fin.equiv_iff_eq.1 ⟨s.equivFin.symm.trans i⟩
+
+theorem Finset.card_eq_of_equiv_fintype {s : Finset α} [Fintype β] (i : s ≃ β) :
+    s.card = Fintype.card β := card_eq_of_equiv_fin <| i.trans <| Fintype.equivFin β
+
 /-- Noncomputable equivalence between two finsets `s` and `t` as fintypes when there is a proof
 that `s.card = t.card`.-/
-noncomputable def Finset.equivOfCardEq {s t : Finset α} (h : s.card = t.card) : s ≃ t :=
-  Fintype.equivOfCardEq ((Fintype.card_coe _).trans (h.trans (Fintype.card_coe _).symm))
+noncomputable def Finset.equivOfCardEq {s : Finset α} {t : Finset β} (h : s.card = t.card) :
+    s ≃ t := Fintype.equivOfCardEq ((Fintype.card_coe _).trans (h.trans (Fintype.card_coe _).symm))
 #align finset.equiv_of_card_eq Finset.equivOfCardEq
+
+theorem Finset.card_eq_of_equiv {s : Finset α} {t : Finset β} (i : s ≃ t) : s.card = t.card :=
+  (card_eq_of_equiv_fintype i).trans (Fintype.card_coe _)
 
 @[simp]
 theorem Fintype.card_prop : Fintype.card Prop = 2 :=
@@ -1202,6 +1211,58 @@ theorem Finite.exists_infinite_fiber [Infinite α] [Finite β] (f : α → β) :
 theorem not_surjective_finite_infinite {α β} [Finite α] [Infinite β] (f : α → β) : ¬Surjective f :=
   fun hf => (Infinite.of_surjective f hf).not_finite ‹_›
 #align not_surjective_finite_infinite not_surjective_finite_infinite
+
+section Ranges
+
+/-- For any `c : List ℕ` whose sum is at most `Fintype.card α`,
+  we can find `o : List (List α)` whose members have no duplicate,
+  whose lengths given by `c`, and which are pairwise disjoint -/
+theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
+    {c : List ℕ} (hc : c.sum ≤ Fintype.card α) :
+    ∃ o : List (List α),
+      o.map length = c ∧ (∀ s ∈ o, s.Nodup) ∧ Pairwise List.Disjoint o := by
+  let klift (n : ℕ) (hn : n < Fintype.card α) : Fin (Fintype.card α) :=
+    (⟨n, hn⟩ : Fin (Fintype.card α))
+  let klift' (l : List ℕ) (hl : ∀ a ∈ l, a < Fintype.card α) :
+    List (Fin (Fintype.card α)) := List.pmap klift l hl
+  have hc'_lt : ∀ l ∈ c.ranges, ∀ n ∈ l, n < Fintype.card α := by
+    intro l hl n hn
+    apply lt_of_lt_of_le _ hc
+    rw [← mem_mem_ranges_iff_lt_sum]
+    exact ⟨l, hl, hn⟩
+  let l := (ranges c).pmap klift' hc'_lt
+  have hl : ∀ (a : List ℕ) (ha : a ∈ c.ranges),
+    (klift' a (hc'_lt a ha)).map Fin.valEmbedding = a := by
+    intro a ha
+    conv_rhs => rw [← List.map_id a]
+    rw [List.map_pmap]
+    simp only [Fin.valEmbedding_apply, Fin.val_mk, List.pmap_eq_map, List.map_id'', List.map_id]
+  use l.map (List.map (Fintype.equivFin α).symm)
+  constructor
+  · -- length
+    rw [← ranges_length c]
+    simp only [map_map, map_pmap, Function.comp_apply, length_map, length_pmap, pmap_eq_map]
+  constructor
+  · -- nodup
+    intro s
+    rw [mem_map]
+    rintro ⟨t, ht, rfl⟩
+    apply Nodup.map (Equiv.injective _)
+    obtain ⟨u, hu, rfl⟩ := mem_pmap.mp ht
+    apply Nodup.of_map
+    rw [hl u hu]
+    exact ranges_nodup hu
+  · -- pairwise disjoint
+    refine Pairwise.map _ (fun s t ↦ disjoint_map (Equiv.injective _)) ?_
+    · -- List.Pairwise List.disjoint l
+      apply Pairwise.pmap (List.ranges_disjoint c)
+      intro u hu v hv huv
+      apply disjoint_pmap
+      · intro a a' ha ha' h
+        simpa only [Fin.mk_eq_mk] using h
+      exact huv
+
+end Ranges
 
 section Trunc
 

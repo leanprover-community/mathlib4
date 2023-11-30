@@ -9,7 +9,6 @@ import Mathlib.Data.Bool.Basic
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Init.ZeroOne
 import Mathlib.Tactic.Cases
-import Mathlib.Tactic.PermuteGoals
 
 #align_import init.data.nat.bitwise from "leanprover-community/lean"@"53e8520d8964c7632989880372d91ba0cecbaf00"
 
@@ -73,10 +72,7 @@ theorem bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
 
 @[simp]
 theorem bodd_add (m n : ℕ) : bodd (m + n) = bxor (bodd m) (bodd n) := by
-  induction' n with n IH
-  · simp
-  · simp [add_succ, IH]
-    cases bodd m <;> cases bodd n <;> rfl
+  induction n <;> simp_all [add_succ, Bool.xor_not]
 #align nat.bodd_add Nat.bodd_add
 
 @[simp]
@@ -244,7 +240,8 @@ def size : ℕ → ℕ :=
   binaryRec 0 fun _ _ => succ
 #align nat.size Nat.size
 
-/-- `bits n` returns a list of Bools which correspond to the binary representation of n-/
+/-- `bits n` returns a list of Bools which correspond to the binary representation of n, where
+    the head of the list represents the least significant bit -/
 def bits : ℕ → List Bool :=
   binaryRec [] fun b _ IH => b :: IH
 #align nat.bits Nat.bits
@@ -274,7 +271,7 @@ theorem binaryRec_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (b
 theorem bodd_bit (b n) : bodd (bit b n) = b := by
   rw [bit_val]
   simp only [Nat.mul_comm, Nat.add_comm, bodd_add, bodd_mul, bodd_succ, bodd_zero, Bool.not_false,
-    Bool.not_true, Bool.and_false, Bool.xor_false_right]
+    Bool.not_true, Bool.and_false, Bool.xor_false]
   cases b <;> cases bodd n <;> rfl
 #align nat.bodd_bit Nat.bodd_bit
 

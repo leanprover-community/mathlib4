@@ -60,9 +60,6 @@ theorem Ideal.Quotient.index_eq_zero {R : Type*} [CommRing R] (I : Ideal R) :
     (↑I.toAddSubgroup.index : R ⧸ I) = 0 := by
   rw [AddSubgroup.index, Nat.card_eq]
   split_ifs with hq; swap; simp
-  by_contra h
-  -- TODO: can we avoid rewriting the `I.to_add_subgroup` here?
   letI : Fintype (R ⧸ I) := @Fintype.ofFinite _ hq
-  have h : (Fintype.card (R ⧸ I) : R ⧸ I) ≠ 0 := h
-  simp at h
+  exact CharP.cast_card_eq_zero (R ⧸ I)
 #align ideal.quotient.index_eq_zero Ideal.Quotient.index_eq_zero
