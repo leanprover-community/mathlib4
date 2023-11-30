@@ -600,6 +600,32 @@ theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := by
   rfl
 #align bitvec.of_fin_to_fin Std.BitVec.ofFin_toFin
 
+@[simp]
+theorem cons_msb_truncate (xs : BitVec (w+1)) : cons xs.msb (xs.truncate w) = xs := by
+  refine eq_of_getLsb_eq ?_
+  intro i
+  refine Eq.trans (getLsb_cons _ _ _) $ ite_eq_iff'.mpr
+    ⟨?_ ∘ congrArg (getLsb xs) ∘ Eq.symm, ?_ ∘ lt_of_le_of_ne (Fin.is_le i)⟩
+  . refine Eq.trans ?_ ∘ Eq.trans (Bool.true_and _)
+    exact congrArg (. && _) (decide_eq_true (zero_lt_succ w))
+  . intro h
+    refine Eq.trans (getLsb_truncate _ _ _) ?_
+    exact Eq.trans (congrArg (. && _) (decide_eq_true h)) (Bool.true_and _)
+
+@[elab_as_elim]
+def consRecOn {motive : ∀ {w}, BitVec w → Sort*}
+    (nil  : motive BitVec.nil)
+    (cons : ∀ {w} (x : Bool) (xs : BitVec w), motive xs → motive (cons x xs)) :
+    ∀ {w} (x : BitVec w), motive x
+  | 0,    x => _root_.cast (congrArg motive (eq_nil x).symm) nil
+  | w+1,  x => _root_.cast (congrArg motive $ cons_msb_truncate x)
+      $ cons x.msb (x.truncate w) $ consRecOn nil cons $ x.truncate w
+
+@[simp] lemma consRecOn_nil {motive : ∀ {w}, BitVec w → Sort*}
+    (nil  : motive BitVec.nil)
+    (cons : ∀ {w} (x : Bool) (xs : BitVec w), motive xs → motive (cons x xs)) :
+    consRecOn nil cons BitVec.nil = nil := rfl
+
 @[simp] lemma getLsb_cast (h : w = v) (xs : BitVec w) (i : ℕ) :
     getLsb (cast h xs) i = getLsb xs i :=
   congrArg (testBit . i) (toNat_cast h xs)
@@ -635,6 +661,9 @@ lemma getMsb_eq_false_of_width_le {xs : BitVec w} {i} :
 
 @[simp] lemma toNat_nil : BitVec.toNat nil = 0 := rfl
 
+@[simp] lemma getLsb_nil {i} : getLsb nil i = false := zero_testBit i
+@[simp] lemma getMsb_nil {i} : getMsb nil i = false := rfl
+
 lemma append_assoc {w v u} (xs : BitVec w) (ys : BitVec v) (zs : BitVec u) :
     xs ++ (ys ++ zs) = cast (Nat.add_assoc w v u) (xs ++ ys ++ zs) :=
   by simp_rw [toNat_eq, toNat_cast, toNat_append, shiftLeft_add, ← lor_shiftLeft, lor_assoc]
@@ -643,10 +672,10 @@ lemma cons_append (b : Bool) (xs : BitVec w) (ys : BitVec v) :
     cons b xs ++ ys = cast (Nat.add_right_comm _ _ _) (cons b (xs ++ ys)) :=
   Eq.symm $ Eq.trans (cast_cast _ _ _) (congrArg _ $ append_assoc _ _ _)
 
-lemma append_nil (xs : BitVec w) : xs ++ nil = cast (Nat.add_zero _) xs :=
+@[simp] lemma append_nil (xs : BitVec w) : xs ++ nil = cast (Nat.add_zero _) xs :=
   by rw [toNat_eq, toNat_cast, toNat_append, toNat_nil, shiftLeft_zero, Nat.zero_or]
 
-lemma nil_append (xs : BitVec w) : nil ++ xs = cast (Nat.zero_add _).symm xs :=
+@[simp] lemma nil_append (xs : BitVec w) : nil ++ xs = cast (Nat.zero_add _).symm xs :=
   by rw [toNat_eq, toNat_cast, toNat_append, toNat_nil, zero_shiftLeft, Nat.or_zero]
 
 @[simp] lemma reverse_nil : reverse nil = nil := rfl
@@ -688,6 +717,41 @@ lemma getMsb_reverse (xs : BitVec w) {i} (h : i < w) :
 lemma getLsb_reverse (xs : BitVec w) {i} (h : i < w) :
     getLsb (reverse xs) i = getMsb xs i := getLsb'_reverse xs ⟨i, h⟩
 
+lemma getMsb_cons (b : Bool) (xs : BitVec w) (i : ℕ) :
+    getMsb (cons b xs) i = if i = 0 then b else getMsb xs (i - 1) := by
+  by_cases h : i < w + 1
+  . simp only [getMsb, h, getLsb_cons, decide_True, Nat.add_sub_cancel, Bool.true_and]
+    refine ite_congr ?_ (fun _ => rfl) ?_
+    . refine propext ⟨?_, (. ▸ rfl)⟩
+      refine Decidable.not_imp_not.mp (Nat.ne_of_lt ∘ ?_)
+      intro h'
+      have h'' := not_eq_zero_of_lt
+        $ Nat.sub_lt_right_of_lt_add (one_le_iff_ne_zero.mpr h') h
+      refine Nat.sub_lt (pos_iff_ne_zero.mpr h'') (pos_iff_ne_zero.mpr h')
+    . intro h'
+      have h'' : 1 ≤ i := Nat.succ_le.mpr (pos_iff_ne_zero.mpr h')
+      refine Eq.symm $ Eq.trans (congrArg₂ Bool.and ?_ ?_) (Bool.true_and _)
+      . exact decide_eq_true (Nat.sub_lt_right_of_lt_add h'' h)
+      . exact congrArg _ (tsub_tsub_tsub_cancel_right h'')
+  . simp only [getMsb, h, decide_False, Bool.false_and, ite_false,
+               not_eq_zero_of_lt (not_lt.mp h), mt lt_add_of_tsub_lt_right h]
+
+@[simp]
+lemma truncate_cons (b : Bool) (v : BitVec w) : truncate w (cons b v) = v := by
+  apply eq_of_getLsb_eq; intro i
+  simp only [getLsb_truncate, getLsb_cons, Fin.is_lt, decide_True, Bool.true_and]
+  exact ite_eq_right_iff.mpr (Not.elim (Nat.ne_of_lt i.prop))
+
+@[simp] lemma consRecOn_cons {motive : ∀ {w}, BitVec w → Sort*}
+    (nil  : motive BitVec.nil)
+    (cons : ∀ {w} (x : Bool) (xs : BitVec w), motive xs → motive (cons x xs))
+    (b : Bool) (v : BitVec w) :
+    consRecOn nil cons (v.cons b) = cons b v (consRecOn nil cons v) :=
+  cast_eq_iff_heq.mpr $ by
+    congr
+    . apply getMsb_cons
+    all_goals apply truncate_cons
+
 @[simp]
 lemma getLsb_append {xs : BitVec w} {ys : BitVec v} {i} :
     getLsb (xs ++ ys) i = (getLsb ys i || (v ≤ i && getLsb xs (i - v))) := by
@@ -698,34 +762,14 @@ lemma getLsb_append {xs : BitVec w} {ys : BitVec v} {i} :
 @[simp]
 lemma getMsb_append {xs : BitVec w} {ys : BitVec v} {i} :
     getMsb (xs ++ ys) i = (getMsb xs i || (w ≤ i && getMsb ys (i - w))) := by
-  by_cases h : i < w + v
-  . refine Eq.trans (getMsb'_eq_getLsb'_rev _ ⟨i, h⟩) ?_
-    dsimp only [getLsb', Fin.val_rev]
-    rw [getLsb_append, Nat.sub_right_comm, add_tsub_cancel_right]
-    have H : v ≤ w + v - (i + 1) ↔ i + 1 ≤ w :=
-      ⟨(Nat.add_le_add_iff_right _ _ w).mp ∘ Nat.add_le_of_le_sub' h,
-        (Nat.le_sub_of_add_le' ∘ (Nat.add_le_add_right . _))⟩
-    rw [Bool.decide_congr (Iff.trans H succ_le)]
-    rw [lt_add_iff, Decidable.or_iff_not_imp_left] at h
-    by_cases h' : i < w
-    . simp only [not_le, h', decide_eq_false, decide_eq_true,
-                 Bool.false_and, Bool.or_false, Bool.true_and]
-      refine Eq.trans ?_ (Eq.symm $ getMsb'_eq_getLsb'_rev xs ⟨i, h'⟩)
-      refine Eq.trans (congrArg₂ _ ?_ rfl) (Bool.false_or _)
-      exact getLsb_eq_false_of_width_le (H.mpr h')
-    . specialize h h'; rw [not_lt] at h'
-      simp only [decide_True, decide_False, Bool.true_and, Bool.false_or,
-                 getMsb_eq_false_of_width_le h', getLsb_eq_false_of_width_le _,
-                 Bool.false_and, Bool.or_false, not_lt.mpr, getMsb, h', h]
-      rw [Nat.sub_right_comm, ← Nat.sub_sub]
-      refine congrArg (getLsb ys $ . - 1) ?_
-      refine Eq.trans (congrArg₂ _ rfl (Nat.add_sub_cancel' h').symm) ?_
-      rw [← Nat.sub_sub, add_tsub_cancel_left]
-  . have h1 := mt (Nat.lt_add_right i w v) h
-    have h2 := mt lt_add_of_tsub_lt_left h
-    rw [Bool.eq_iff_iff]
-    simp only [getMsb, Bool.and_eq_true, Bool.or_eq_true, decide_eq_true_iff,
-               h, h1, h2, false_and, and_false, false_or]
+  induction' xs using consRecOn with w b xs ih generalizing i
+  . simp only [nil_append, getMsb_cast, getMsb_nil, Bool.false_or,
+               Bool.true_and, Nat.zero_le, decide_True, Nat.sub_zero]
+  . simp only [cons_append, getMsb_cast, getMsb_cons]
+    split_ifs with h
+    . simp only [h, decide_eq_false (not_succ_le_zero w), Bool.false_and, Bool.or_false]
+    . rw [ih, Nat.sub_sub, Nat.add_comm 1 w]
+      simp_rw [Nat.le_sub_iff_add_le (Nat.succ_le.mpr (pos_iff_ne_zero.mpr h))]
 
 lemma reverse_append (xs : BitVec w) (ys : BitVec v) :
     reverse (xs ++ ys) = cast (Nat.add_comm _ _) (reverse ys ++ reverse xs) := by

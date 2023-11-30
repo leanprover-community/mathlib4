@@ -183,12 +183,5 @@ def S (x : α → β → γ) (y : α → β) (z : α) := x z (y z)
 
 end Combinator
 
-@[deprecated] inductive BinTree (α : Type u)
-  | Empty : BinTree α
-  | leaf (val : α) : BinTree α
-  | node (left right : BinTree α) : BinTree α
-
-attribute [elab_without_expected_type] BinTree.node BinTree.leaf
-
 #align function.const_apply Function.const_apply
 #align function.comp_apply Function.comp_apply

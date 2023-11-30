@@ -6,7 +6,7 @@ Authors: Robert Y. Lewis
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Util.SynthesizeUsing
-import Mathlib.Data.Tree
+import Mathlib.Data.Tree.BinTree
 import Mathlib.Util.Qq
 
 /-!
@@ -115,7 +115,7 @@ theorem cancel_factors_ne {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * 
 be able to cancel all the numeric denominators in `e`. The returned `Tree` describes how to
 distribute the value `n` over products inside `e`.
 -/
-partial def findCancelFactor (e : Expr) : ℕ × Tree ℕ :=
+partial def findCancelFactor (e : Expr) : ℕ × BinTree.Leafless ℕ :=
   match e.getAppFnArgs with
   | (``HAdd.hAdd, #[_, _, _, _, e1, e2]) | (``HSub.hSub, #[_, _, _, _, e1, e2]) =>
     let (v1, t1) := findCancelFactor e1
@@ -160,7 +160,7 @@ def synthesizeUsingNormNum (type : Expr) : MetaM Expr := do
 canceled in `e'`, distributing `v` proportionally according to the tree `tr` computed
 by `findCancelFactor`.
 -/
-partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : Tree ℕ)
+partial def mkProdPrf (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (t : BinTree.Leafless ℕ)
     (e : Q($α)) : MetaM Expr := do
   let amwo ← synthInstanceQ q(AddMonoidWithOne $α)
   trace[CancelDenoms] "mkProdPrf {e} {v}"
