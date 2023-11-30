@@ -65,6 +65,7 @@ section PartialDiffeomorph
 /-- A partial diffeomorphism on `s` is a function `f : M → N` such that `f` restricts to a
 diffeomorphism `s → t` between open subsets of `M` and `N`, respectively.
 This is an auxiliary definition and should not be used outside of this file. -/
+-- TODO: rename `LocalHomeomorph` to `PartialHomeomorph` to match this name.
 structure PartialDiffeomorph extends LocalEquiv M N where
   open_source : IsOpen source
   open_target : IsOpen target
