@@ -347,6 +347,9 @@ theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[≠] 0) atBot := by
   simpa [← tendsto_comp_exp_atBot] using tendsto_id
 #align real.tendsto_log_nhds_within_zero Real.tendsto_log_nhdsWithin_zero
 
+lemma tendsto_log_nhdsWithin_zero_right : Tendsto log (𝓝[>] 0) atBot :=
+  tendsto_log_nhdsWithin_zero.mono_left <| nhdsWithin_mono _ fun _ h ↦ ne_of_gt h
+
 theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
   simp (config := { unfoldPartialApp := true }) only [continuousOn_iff_continuous_restrict,
     restrict]
