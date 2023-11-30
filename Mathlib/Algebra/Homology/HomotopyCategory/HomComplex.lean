@@ -545,6 +545,9 @@ def HomComplex : CochainComplex AddCommGroupCat ℤ where
   shape _ _ hij := by ext; apply δ_shape _ _ hij
   d_comp_d' _ _ _ _ _  := by ext; apply δ_δ
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] HomComplex_d_apply
+
 namespace HomComplex
 
 /-- The subgroup of cocycles in `Cochain F G n`. -/

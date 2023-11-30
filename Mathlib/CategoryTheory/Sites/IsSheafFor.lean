@@ -260,6 +260,11 @@ noncomputable def compatibleEquivGenerateSieveCompatible :
   right_inv x := Subtype.ext (extend_restrict x.2)
 #align category_theory.presieve.compatible_equiv_generate_sieve_compatible CategoryTheory.Presieve.compatibleEquivGenerateSieveCompatible
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF]
+  compatibleEquivGenerateSieveCompatible_symm_apply_coe
+  compatibleEquivGenerateSieveCompatible_apply_coe
+
 theorem FamilyOfElements.comp_of_compatible (S : Sieve X) {x : FamilyOfElements P S}
     (t : x.Compatible) {f : Y ⟶ X} (hf : S f) {Z} (g : Z ⟶ Y) :
     x (g ≫ f) (S.downward_closed hf g) = P.map g.op (x f hf) := by

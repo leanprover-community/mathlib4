@@ -235,7 +235,6 @@ def MulEquiv.toMagmaCatIso (e : X ≃* Y) : MagmaCat.of X ≅ MagmaCat.of Y wher
 #align mul_equiv.to_Magma_iso MulEquiv.toMagmaCatIso
 #align add_equiv.to_AddMagma_iso AddEquiv.toAddMagmaCatIso
 
-#lint
 -- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
 attribute [nolint simpNF]
   AddEquiv.toAddMagmaCatIso_inv_apply
@@ -258,6 +257,13 @@ def MulEquiv.toSemigroupCatIso (e : X ≃* Y) : SemigroupCat.of X ≅ SemigroupC
   inv := e.symm.toMulHom
 #align mul_equiv.to_Semigroup_iso MulEquiv.toSemigroupCatIso
 #align add_equiv.to_AddSemigroup_iso AddEquiv.toAddSemigroupCatIso
+
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF]
+  AddEquiv.toAddSemigroupCatIso_inv_apply
+  MulEquiv.toSemigroupCatIso_inv_apply
+  AddEquiv.toAddSemigroupCatIso_hom_apply
+  MulEquiv.toSemigroupCatIso_hom_apply
 
 end
 

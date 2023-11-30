@@ -333,3 +333,8 @@ def IsColimit.ofReflectsCoconeInitial {F : J ⥤ C} {F' : K ⥤ D} (G : Cocone F
 #align category_theory.limits.is_colimit.of_reflects_cocone_initial CategoryTheory.Limits.IsColimit.ofReflectsCoconeInitial
 
 end CategoryTheory.Limits
+
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF]
+  CategoryTheory.Limits.Cone.equivCostructuredArrow_counitIso_hom_app_right
+  CategoryTheory.Limits.Cocone.equivStructuredArrow_counitIso_hom_app_left
