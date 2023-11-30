@@ -4,7 +4,7 @@ open Lake DSL
 
 package mathlib where
   leanOptions := #[
-    ⟨`pp.unicode.fun, true⟩,
+    ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`pp.proofs.withType, false⟩,
     ⟨`autoImplicit, false⟩,
     ⟨`relaxedAutoImplicit, false⟩
