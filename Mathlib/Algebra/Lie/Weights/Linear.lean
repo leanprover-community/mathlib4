@@ -17,6 +17,7 @@ non-linear weights do exist. For example if we take:
  * `R`: the field with two elements (or indeed any perfect field of characteristic two),
  * `L`: `sl₂` (this is nilpotent in characteristic two),
  * `M`: the natural two-dimensional representation of `L`,
+
 then there is a single weight and it is non-linear. (See remark following Proposition 9 of
 chapter VII, §1.3 in [N. Bourbaki, Chapters 7--9](bourbaki1975b).)
 
@@ -31,7 +32,7 @@ or `R` has characteristic zero.
    Abelian Lie algebra, the weights of any Lie module are linear.
  * `LieModule.instLinearWeightsOfIsLieAbelian`: a typeclass instance encoding the fact that in
    characteristic zero, the weights of any finite-dimensional Lie module are linear.
- * `LieModule.exists_forall_lie_eq_smul_ofweightSpace_ne_bot`: existence of simultaneous
+ * `LieModule.exists_forall_lie_eq_smul_of_weightSpace_ne_bot`: existence of simultaneous
    eigenvectors from existence of simultaneous generalized eigenvectors for Noetherian Lie modules
    with linear weights.
 
@@ -193,7 +194,7 @@ end shiftedWeightSpace
 /-- Given a Lie module `M` of a Lie algebra `L` with coefficients in `R`, if a function `χ : L → R`
 has a simultaneous generalized eigenvector for the action of `L` then it has a simultaneous true
 eigenvector, provided `M` is Noetherian and has linear weights. -/
-lemma exists_forall_lie_eq_smul_ofweightSpace_ne_bot
+lemma exists_forall_lie_eq_smul_of_weightSpace_ne_bot
     [IsNoetherian R M] (hχ : weightSpace M χ ≠ ⊥) :
     ∃ m : M, m ≠ 0 ∧ ∀ x : L, ⁅x, m⁆ = χ x • m := by
   replace hχ : Nontrivial (shiftedWeightSpace R L M χ) :=
