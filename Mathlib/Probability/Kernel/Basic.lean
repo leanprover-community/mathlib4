@@ -445,9 +445,14 @@ def const (α : Type*) {β : Type*} [MeasurableSpace α] {_ : MeasurableSpace β
   property := measurable_const
 #align probability_theory.kernel.const ProbabilityTheory.kernel.const
 
+@[simp]
 theorem const_apply (μβ : Measure β) (a : α) : const α μβ a = μβ :=
   rfl
 #align probability_theory.kernel.const_apply ProbabilityTheory.kernel.const_apply
+
+@[simp]
+lemma const_zero : kernel.const α (0 : Measure β) = 0 := by
+  ext x s _; simp [kernel.const_apply]
 
 instance isFiniteKernel_const {μβ : Measure β} [IsFiniteMeasure μβ] :
     IsFiniteKernel (const α μβ) :=

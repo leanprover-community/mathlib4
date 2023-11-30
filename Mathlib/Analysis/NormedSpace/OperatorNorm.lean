@@ -1509,6 +1509,9 @@ theorem norm_id [Nontrivial E] : ‖id 𝕜 E‖ = 1 := by
   exact ⟨x, ne_of_gt (norm_pos_iff.2 hx)⟩
 #align continuous_linear_map.norm_id ContinuousLinearMap.norm_id
 
+@[simp]
+lemma nnnorm_id [Nontrivial E] : ‖id 𝕜 E‖₊ = 1 := NNReal.eq norm_id
+
 instance normOneClass [Nontrivial E] : NormOneClass (E →L[𝕜] E) :=
   ⟨norm_id⟩
 #align continuous_linear_map.norm_one_class ContinuousLinearMap.normOneClass

@@ -353,7 +353,7 @@ theorem IntegralClosure.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal (integr
 
 /-- `comap (algebraMap R S)` is a surjection from the prime spec of `R` to prime spec of `S`.
 `hP : (algebraMap R S).ker ≤ P` is a slight generalization of the extension being injective -/
-theorem exists_ideal_over_prime_of_isIntegral' (H : Algebra.IsIntegral R S) (P : Ideal R)
+theorem exists_ideal_over_prime_of_isIntegral_of_isDomain (H : Algebra.IsIntegral R S) (P : Ideal R)
     [IsPrime P] (hP : RingHom.ker (algebraMap R S) ≤ P) :
     ∃ Q : Ideal S, IsPrime Q ∧ Q.comap (algebraMap R S) = P := by
   have hP0 : (0 : S) ∉ Algebra.algebraMapSubmonoid S P.primeCompl := by
@@ -374,18 +374,19 @@ theorem exists_ideal_over_prime_of_isIntegral' (H : Algebra.IsIntegral R S) (P :
     (M := P.primeCompl) (T := Algebra.algebraMapSubmonoid S P.primeCompl) (S := Rₚ) _
     _ _ _ _ _ (fun p hp => Algebra.mem_algebraMapSubmonoid_of_mem ⟨p, hp⟩) _ _]
   rfl
-#align ideal.exists_ideal_over_prime_of_is_integral' Ideal.exists_ideal_over_prime_of_isIntegral'
+#align ideal.exists_ideal_over_prime_of_is_integral' Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain
 
 end
 
-/-- More general going-up theorem than `exists_ideal_over_prime_of_isIntegral'`.
+/-- More general going-up theorem than `exists_ideal_over_prime_of_isIntegral_of_isDomain`.
 TODO: Version of going-up theorem with arbitrary length chains (by induction on this)?
   Not sure how best to write an ascending chain in Lean -/
-theorem exists_ideal_over_prime_of_isIntegral (H : Algebra.IsIntegral R S) (P : Ideal R) [IsPrime P]
+theorem exists_ideal_over_prime_of_isIntegral_of_isPrime
+    (H : Algebra.IsIntegral R S) (P : Ideal R) [IsPrime P]
     (I : Ideal S) [IsPrime I] (hIP : I.comap (algebraMap R S) ≤ P) :
     ∃ Q ≥ I, IsPrime Q ∧ Q.comap (algebraMap R S) = P := by
   obtain ⟨Q' : Ideal (S ⧸ I), ⟨Q'_prime, hQ'⟩⟩ :=
-    @exists_ideal_over_prime_of_isIntegral' (R ⧸ I.comap (algebraMap R S)) _ (S ⧸ I) _
+    @exists_ideal_over_prime_of_isIntegral_of_isDomain (R ⧸ I.comap (algebraMap R S)) _ (S ⧸ I) _
       Ideal.quotientAlgebra _ H.quotient
       (map (Ideal.Quotient.mk (I.comap (algebraMap R S))) P)
       (map_isPrime_of_surjective Quotient.mk_surjective (by simp [hIP]))
@@ -399,16 +400,63 @@ theorem exists_ideal_over_prime_of_isIntegral (H : Algebra.IsIntegral R S) (P : 
     exact congr_arg (comap . Q') (RingHom.ext fun r => rfl)
   · refine' _root_.trans (comap_map_of_surjective _ Quotient.mk_surjective _) (sup_eq_left.2 _)
     simpa [← RingHom.ker_eq_comap_bot] using hIP
+
+lemma exists_ideal_comap_le_prime (P : Ideal R) [P.IsPrime]
+    (I : Ideal S) (hI : I.comap (algebraMap R S) ≤ P) :
+    ∃ Q ≥ I, Q.IsPrime ∧ Q.comap (algebraMap R S) ≤ P := by
+  let Sₚ := Localization (Algebra.algebraMapSubmonoid S P.primeCompl)
+  let Iₚ := I.map (algebraMap S Sₚ)
+  have hI' : Disjoint (Algebra.algebraMapSubmonoid S P.primeCompl : Set S) I
+  · rw [Set.disjoint_iff]
+    rintro _ ⟨⟨x, hx : x ∉ P, rfl⟩, hx'⟩
+    exact (hx (hI hx')).elim
+  have : Iₚ ≠ ⊤
+  · rw [Ne.def, Ideal.eq_top_iff_one, IsLocalization.mem_map_algebraMap_iff
+      (Algebra.algebraMapSubmonoid S P.primeCompl) Sₚ, not_exists]
+    simp only [one_mul, IsLocalization.eq_iff_exists (Algebra.algebraMapSubmonoid S P.primeCompl),
+      not_exists]
+    exact fun x c ↦ hI'.ne_of_mem (mul_mem c.2 x.2.2) (I.mul_mem_left c x.1.2)
+  obtain ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal _ this
+  refine ⟨_, Ideal.map_le_iff_le_comap.mp hM', hM.isPrime.comap _, ?_⟩
+  intro x hx
+  by_contra hx'
+  exact Set.disjoint_left.mp ((IsLocalization.isPrime_iff_isPrime_disjoint
+    (Algebra.algebraMapSubmonoid S P.primeCompl) Sₚ M).mp hM.isPrime).2 ⟨_, hx', rfl⟩ hx
+
+theorem exists_ideal_over_prime_of_isIntegral (H : Algebra.IsIntegral R S) (P : Ideal R) [IsPrime P]
+    (I : Ideal S) (hIP : I.comap (algebraMap R S) ≤ P) :
+    ∃ Q ≥ I, IsPrime Q ∧ Q.comap (algebraMap R S) = P := by
+  have ⟨P', hP, hP', hP''⟩ := exists_ideal_comap_le_prime P I hIP
+  obtain ⟨Q, hQ, hQ', hQ''⟩ := exists_ideal_over_prime_of_isIntegral_of_isPrime H P P' hP''
+  exact ⟨Q, hP.trans hQ, hQ', hQ''⟩
 #align ideal.exists_ideal_over_prime_of_is_integral Ideal.exists_ideal_over_prime_of_isIntegral
 
 /-- `comap (algebraMap R S)` is a surjection from the max spec of `S` to max spec of `R`.
 `hP : (algebraMap R S).ker ≤ P` is a slight generalization of the extension being injective -/
-theorem exists_ideal_over_maximal_of_isIntegral [IsDomain S] (H : Algebra.IsIntegral R S)
+theorem exists_ideal_over_maximal_of_isIntegral (H : Algebra.IsIntegral R S)
     (P : Ideal R) [P_max : IsMaximal P] (hP : RingHom.ker (algebraMap R S) ≤ P) :
     ∃ Q : Ideal S, IsMaximal Q ∧ Q.comap (algebraMap R S) = P := by
-  obtain ⟨Q, ⟨Q_prime, hQ⟩⟩ := exists_ideal_over_prime_of_isIntegral' H P hP
+  obtain ⟨Q, -, Q_prime, hQ⟩ := exists_ideal_over_prime_of_isIntegral H P ⊥ hP
   exact ⟨Q, isMaximal_of_isIntegral_of_isMaximal_comap H _ (hQ.symm ▸ P_max), hQ⟩
 #align ideal.exists_ideal_over_maximal_of_is_integral Ideal.exists_ideal_over_maximal_of_isIntegral
+
+lemma map_eq_top_iff_of_ker_le
+    (f : R →+* S) {I : Ideal R} (hf₁ : RingHom.ker f ≤ I) (hf₂ : f.IsIntegral) :
+    I.map f = ⊤ ↔ I = ⊤ := by
+  constructor; swap
+  · rintro rfl; exact Ideal.map_top _
+  contrapose
+  intro h
+  obtain ⟨m, _, hm⟩ := Ideal.exists_le_maximal I h
+  letI := f.toAlgebra
+  obtain ⟨m', _, rfl⟩ := exists_ideal_over_maximal_of_isIntegral hf₂ m (hf₁.trans hm)
+  rw [← map_le_iff_le_comap] at hm
+  exact (hm.trans_lt (lt_top_iff_ne_top.mpr (IsMaximal.ne_top ‹_›))).ne
+
+lemma map_eq_top_iff
+    (f : R →+* S) {I : Ideal R} (hf₁ : Function.Injective f) (hf₂ : f.IsIntegral) :
+    I.map f = ⊤ ↔ I = ⊤ :=
+  map_eq_top_iff_of_ker_le f (by simp [f.injective_iff_ker_eq_bot.mp hf₁]) hf₂
 
 end IsDomain
 

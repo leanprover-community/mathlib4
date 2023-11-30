@@ -427,14 +427,14 @@ variable (F G) (R)
 def δ_hom : Cochain F G n →ₗ[R] Cochain F G m where
   toFun := δ n m
   map_add' α β := by
-    by_cases n + 1 = m
+    by_cases h : n + 1 = m
     · ext p q hpq
       dsimp
       simp only [δ_v n m h _ p q hpq _ _ rfl rfl, Cochain.add_v, add_comp, comp_add, smul_add]
       abel
     · simp only [δ_shape _ _ h, add_zero]
   map_smul' r a := by
-    by_cases n + 1 = m
+    by_cases h : n + 1 = m
     · ext p q hpq
       dsimp
       simp only [δ_v n m h _ p q hpq _ _ rfl rfl, Cochain.smul_v, Linear.comp_smul,
@@ -514,7 +514,7 @@ lemma δ_zero_cochain_v (z : Cochain F G 0) (p q : ℤ) (hpq : p + 1 = q) :
 
 @[simp]
 lemma δ_ofHom {p : ℤ} (φ : F ⟶ G) : δ 0 p (Cochain.ofHom φ) = 0 := by
-  by_cases p = 1
+  by_cases h : p = 1
   · subst h
     ext
     simp

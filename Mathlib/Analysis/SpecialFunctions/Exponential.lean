@@ -224,7 +224,7 @@ theorem Complex.exp_eq_exp_ℂ : Complex.exp = NormedSpace.exp ℂ := by
 #align complex.exp_eq_exp_ℂ Complex.exp_eq_exp_ℂ
 
 theorem Real.exp_eq_exp_ℝ : Real.exp = NormedSpace.exp ℝ := by
-  ext x; exact_mod_cast congr_fun Complex.exp_eq_exp_ℂ x
+  ext x; exact mod_cast congr_fun Complex.exp_eq_exp_ℂ x
 #align real.exp_eq_exp_ℝ Real.exp_eq_exp_ℝ
 
 /-! ### Derivative of $\exp (ux)$ by $u$

@@ -1008,7 +1008,7 @@ theorem valMinAbs_mul_two_eq_iff {n : ℕ} (a : ZMod n) : a.valMinAbs * 2 = n �
 theorem valMinAbs_mem_Ioc {n : ℕ} [NeZero n] (x : ZMod n) :
     x.valMinAbs * 2 ∈ Set.Ioc (-n : ℤ) n := by
   simp_rw [valMinAbs_def_pos, Nat.le_div_two_iff_mul_two_le]; split_ifs with h
-  · refine' ⟨(neg_lt_zero.2 <| by exact_mod_cast NeZero.pos n).trans_le (mul_nonneg _ _), h⟩
+  · refine' ⟨(neg_lt_zero.2 <| mod_cast NeZero.pos n).trans_le (mul_nonneg _ _), h⟩
     exacts [Nat.cast_nonneg _, zero_le_two]
   · refine' ⟨_, le_trans (mul_nonpos_of_nonpos_of_nonneg _ zero_le_two) <| Nat.cast_nonneg _⟩
     · linarith only [h]
@@ -1106,13 +1106,13 @@ theorem valMinAbs_natAbs_eq_min {n : ℕ} [hpos : NeZero n] (a : ZMod n) :
   · rw [Int.natAbs_ofNat]
     symm
     apply
-      min_eq_left (le_trans h (le_trans (Nat.half_le_of_sub_le_half _) (Nat.sub_le_sub_left n h)))
+      min_eq_left (le_trans h (le_trans (Nat.half_le_of_sub_le_half _) (Nat.sub_le_sub_left h n)))
     rw [Nat.sub_sub_self (Nat.div_le_self _ _)]
   · rw [← Int.natAbs_neg, neg_sub, ← Nat.cast_sub a.val_le]
     symm
     apply
       min_eq_right
-        (le_trans (le_trans (Nat.sub_le_sub_left n (lt_of_not_ge h)) (Nat.le_half_of_half_lt_sub _))
+        (le_trans (le_trans (Nat.sub_le_sub_left (lt_of_not_ge h) n) (Nat.le_half_of_half_lt_sub _))
           (le_of_not_ge h))
     rw [Nat.sub_sub_self (Nat.div_lt_self (lt_of_le_of_ne' (Nat.zero_le _) hpos.1) one_lt_two)]
     apply Nat.lt_succ_self
