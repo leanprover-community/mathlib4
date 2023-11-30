@@ -318,6 +318,8 @@ theorem condIndep_limsup_atBot_self [TopologicalSpace Ω] [BorelSpace Ω] [Polis
     CondIndep m (limsup s atBot) (limsup s atBot) hm μ :=
   kernel.indep_limsup_atBot_self h_le h_indep
 
+/-- **Kolmogorov's 0-1 law**, kernel version: any event in the tail σ-algebra of an independent
+sequence of sub-σ-algebras has probability 0 or 1 almost surely. -/
 theorem kernel.measure_zero_or_one_of_measurableSet_limsup_atBot (h_le : ∀ n, s n ≤ m0)
     (h_indep : iIndep s κ μα) {t : Set Ω} (ht_tail : MeasurableSet[limsup s atBot] t) :
     ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 :=
@@ -333,6 +335,8 @@ theorem measure_zero_or_one_of_measurableSet_limsup_atBot (h_le : ∀ n, s n ≤
     using kernel.measure_zero_or_one_of_measurableSet_limsup_atBot h_le h_indep ht_tail
 #align probability_theory.measure_zero_or_one_of_measurable_set_limsup_at_bot ProbabilityTheory.measure_zero_or_one_of_measurableSet_limsup_atBot
 
+/-- **Kolmogorov's 0-1 law**, conditional version: any event in the tail σ-algebra of a
+conditinoally independent sequence of sub-σ-algebras has conditional probability 0 or 1. -/
 theorem condexp_zero_or_one_of_measurableSet_limsup_atBot [TopologicalSpace Ω] [BorelSpace Ω]
     [PolishSpace Ω] [Nonempty Ω] (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0)
