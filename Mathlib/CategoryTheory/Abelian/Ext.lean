@@ -63,7 +63,7 @@ open ZeroObject
 
 variable {R C}
 
-/-- Given a chain complex `X` and and object `Y`, this is the cochain complex
+/-- Given a chain complex `X` and an object `Y`, this is the cochain complex
 which in degree `i` consists of the module of morphisms `X.X i ⟶ Y`. -/
 @[simps! X d]
 def ChainComplex.linearYonedaObj {α : Type*} [AddRightCancelSemigroup α] [One α]
