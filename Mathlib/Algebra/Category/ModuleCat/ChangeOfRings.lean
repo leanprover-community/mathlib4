@@ -168,6 +168,18 @@ lemma restrictScalarsId'_inv_apply (M : ModuleCat R) (x : M) :
 lemma restrictScalarsId'_hom_apply (M : ModuleCat R) (x : M) :
     (restrictScalarsId' f hf).hom.app M x = x := by subst hf; rfl
 
+noncomputable instance (S) [Ring S] (e : R ≃+* S) :
+    IsEquivalence (ModuleCat.restrictScalars e.toRingHom) where
+  inverse := ModuleCat.restrictScalars e.symm
+  unitIso := NatIso.ofComponents fun M ↦ LinearEquiv.toModuleIso'
+    { __ := AddEquiv.refl M
+      map_smul' := fun s m ↦ congr_arg (· • m) <| by simp }
+  counitIso := NatIso.ofComponents fun M ↦ LinearEquiv.toModuleIso'
+    { __ := AddEquiv.refl M
+      map_smul' := fun r m ↦ by
+        change M at m
+        exact congr_arg (· • m) (e.symm_apply_apply r) }
+
 variable (R)
 
 /-- The restriction of scalars by the identity morphisms identify to the
