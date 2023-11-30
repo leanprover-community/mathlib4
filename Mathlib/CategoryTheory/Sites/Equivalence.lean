@@ -98,26 +98,31 @@ instance : IsCoverDense e.functor (locallyCoverDense_equiv J e).inducedTopology 
     exact ⟨e.functor.obj Y, (Adjunction.homEquiv e.toAdjunction _ _).symm f,
       Presieve.in_coverByImage _ _, e.unit.app _, (by simp)⟩
 
-variable {A : Type (u + 1)} [LargeCategory A]
-  [∀ (P : Cᵒᵖ ⥤ A) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
-  [∀ (X : C), HasColimitsOfShape (J.Cover X)ᵒᵖ A]
+variable {A : Type (u + 1)} [LargeCategory A] [HasLimits A] [HasColimits A]
 
-instance (P : Dᵒᵖ ⥤ A) (X : D) (S : (locallyCoverDense_equiv J e).inducedTopology.Cover X) :
-    HasMultiequalizer (S.index P) := sorry
+/-- This would allow to weaken the assumption `HasLimits A`. -/
+proof_wanted hasMultiEqualizer_index_of_equiv
+    [∀ (P : Cᵒᵖ ⥤ A) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
+    (P : Dᵒᵖ ⥤ A) (X : D) (S : (locallyCoverDense_equiv J e).inducedTopology.Cover X) :
+    HasMultiequalizer (S.index P)
 
-instance (X : D) :
-    HasColimitsOfShape ((locallyCoverDense_equiv J e).inducedTopology.Cover X)ᵒᵖ A := sorry
+/-- This would allow to weaken the assumption `HasColimits A`. -/
+proof_wanted hasColimitsOfShape_cover_of_equiv
+    [∀ (X : C), HasColimitsOfShape (J.Cover X)ᵒᵖ A] (X : D) :
+    HasColimitsOfShape ((locallyCoverDense_equiv J e).inducedTopology.Cover X)ᵒᵖ A
 
 noncomputable
 def CategoryTheory.GrothendieckTopology.smallSheafify (F : Cᵒᵖ ⥤ A) : Cᵒᵖ ⥤ A :=
   e.functor.op ⋙ (locallyCoverDense_equiv J e).inducedTopology.sheafify (e.inverse.op ⋙ F)
 
 variable [ConcreteCategory A] [PreservesLimits (forget A)] [ReflectsIsomorphisms (forget A)]
-  [∀ (X : C), PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget A)]
+  [PreservesFilteredColimits (forget A)]
 
-instance (X : D) :
-    PreservesColimitsOfShape ((locallyCoverDense_equiv J e).inducedTopology.Cover X)ᵒᵖ (forget A) :=
-  sorry
+/-- This would allow to weaken the assumption `PreservesFilteredColimits (forget A)`. -/
+proof_wanted preservesColimitsOfShape_cover
+    [∀ (X : C), PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget A)] (X : D) :
+    Nonempty (PreservesColimitsOfShape
+      ((locallyCoverDense_equiv J e).inducedTopology.Cover X)ᵒᵖ (forget A))
 
 theorem smallSheafify_isSheaf (F : Cᵒᵖ ⥤ A) : Presheaf.IsSheaf J (J.smallSheafify e F) := by
   have : IsContinuous e.functor J (locallyCoverDense_equiv J e).inducedTopology :=
