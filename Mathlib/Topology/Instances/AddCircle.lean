@@ -366,7 +366,7 @@ lemma div_mul_period_eq_nsmul (m n : ℕ) :
 
 theorem gcd_mul_addOrderOf_div_eq {n : ℕ} (m : ℕ) (hn : 0 < n) :
     m.gcd n * addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by
-  rw [div_mul_period_eq_nsmul, addOrderOf_nsmul'']
+  rw [div_mul_period_eq_nsmul, IsOfFinAddOrder.addOrderOf_nsmul]
   · rw [addOrderOf_period_div hn, Nat.gcd_comm, Nat.mul_div_cancel']
     exact n.gcd_dvd_left m
   · rwa [← addOrderOf_pos_iff, addOrderOf_period_div hn]
@@ -447,7 +447,7 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
       (by
         refine ⟨fun m₁ m₂ h => Subtype.ext ?_, fun u => ?_⟩
         · simp_rw [Subtype.mk_eq_mk, div_mul_period_eq_nsmul] at h
-          refine nsmul_injective_of_lt_addOrderOf _ ?_ ?_ h <;> rw [addOrderOf_period_div hn]
+          refine nsmul_injOn_Iio_addOrderOf ?_ ?_ h <;> rw [addOrderOf_period_div hn]
           exacts [m₁.2.1, m₂.2.1]
         · obtain ⟨m, hmn, hg, he⟩ := (addOrderOf_eq_pos_iff hn).mp u.2
           exact ⟨⟨m, hmn, hg⟩, Subtype.ext he⟩)
