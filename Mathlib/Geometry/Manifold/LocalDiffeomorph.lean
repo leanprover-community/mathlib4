@@ -23,7 +23,7 @@ and `t` of `x` and `f x`, respectively such that `f` restricts to a diffeomorphi
 
 ## Main results
 * Each of `Diffeomorph`, `LocalDiffeomorph`, and `LocalDiffeomorphAt` implies the next condition.
-* `LocalDiffeomorph.image`: the image of a local diffeomorphism is open
+* `LocalDiffeomorph.isOpen_range`: the image of a local diffeomorphism is open
 
 ## TODO
 * a local diffeomorphism is a diffeomorphism to its image
@@ -61,34 +61,26 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
   (N : Type*) [TopologicalSpace N] [ChartedSpace G N] (n : ℕ∞)
 
-section LocalDiffeomorphAux
-/-- A "diffeomorphism on" `s` is a function `f : M → N` such that `f` restricts to a diffeomorphism
-`s → t` between open subsets of `M` and `N`, respectively.
+section PartialDiffeomorph
+/-- A partial diffeomorphism on `s` is a function `f : M → N` such that `f` restricts to a
+diffeomorphism `s → t` between open subsets of `M` and `N`, respectively.
 This is an auxiliary definition and should not be used outside of this file. -/
-structure LocalDiffeomorphAux extends LocalHomeomorph M N where
+structure PartialDiffeomorph extends LocalHomeomorph M N where
   contMDiffOn_toFun : ContMDiffOn I J n toFun source
   contMDiffOn_invFun : ContMDiffOn J I n invFun target
 
-/-- Coercion of a `LocalDiffeomorphAux` to function.
-Note that a `LocalDiffeomorphAux` is not `FunLike` (like `LocalHomeomorph`),
+/-- Coercion of a `PartialDiffeomorph` to function.
+Note that a `PartialDiffeomorph` is not `FunLike` (like `LocalHomeomorph`),
 as `toFun` doesn't determine `invFun` outside of `target`. -/
-instance : CoeFun (LocalDiffeomorphAux I J M N n) fun _ => M → N :=
+instance : CoeFun (PartialDiffeomorph I J M N n) fun _ => M → N :=
   ⟨fun Φ => Φ.toFun'⟩
 
-/-- A diffeomorphism is a local diffeomorphism. -/
-def Diffeomorph.toLocalDiffeomorphAux (h : Diffeomorph I J M N n) : LocalDiffeomorphAux I J M N n :=
-  {
-    toLocalHomeomorph := h.toHomeomorph.toLocalHomeomorph
-    contMDiffOn_toFun := fun x _ ↦ h.contMDiff_toFun x
-    contMDiffOn_invFun := fun _ _ ↦ h.symm.contMDiffWithinAt
-  }
-
 -- Add the very basic API we need.
-namespace LocalDiffeomorphAux
-variable (Φ : LocalDiffeomorphAux I J M N n) (hn : 1 ≤ n)
+namespace PartialDiffeomorph
+variable (Φ : PartialDiffeomorph I J M N n) (hn : 1 ≤ n)
 
 /-- The inverse of a local diffeomorphism. -/
-protected def symm : LocalDiffeomorphAux J I N M n := by
+protected def symm : PartialDiffeomorph J I N M n := by
   exact {
     toLocalHomeomorph := Φ.toLocalHomeomorph.symm
     contMDiffOn_toFun := Φ.contMDiffOn_invFun
@@ -118,15 +110,15 @@ protected theorem mdifferentiableAt_symm {x : M} (hx : x ∈ Φ.source) :
 * further continuity and differentiability lemmas
 * refl and trans instances; lemmas between them.
 As this declaration is meant for internal use only, we keep it simple. -/
-end LocalDiffeomorphAux
-end LocalDiffeomorphAux
+end PartialDiffeomorph
+end PartialDiffeomorph
 
 variable {M N}
 
 /-- `f : M → N` is called a **`C^n` local diffeomorphism at *x*** iff there exist
   open sets `U ∋ x` and `V ∋ f x` and a diffeomorphism `Φ : U → V` such that `f = Φ` on `U`. -/
 def IsLocalDiffeomorphAt (f : M → N) (x : M) : Prop :=
-  ∃ Φ : LocalDiffeomorphAux I J M N n, x ∈ Φ.source ∧ EqOn f Φ Φ.source
+  ∃ Φ : PartialDiffeomorph I J M N n, x ∈ Φ.source ∧ EqOn f Φ Φ.source
 
 /-- `f : M → N` is a **`C^n` local diffeomorphism** iff it is a local diffeomorphism
 at each `x ∈ M`. -/
@@ -163,9 +155,17 @@ lemma mdifferentiable_of_isLocalDiffeomorph (hn : 1 ≤ n) (hf : IsLocalDiffeomo
     MDifferentiable I J f :=
   fun x ↦ mdifferentiableAt_of_isLocalDiffeomorphAt I J hn (hf x)
 
+/-- A diffeomorphism is a partial diffeomorphism. -/
+def Diffeomorph.toPartialDiffeomorph (h : Diffeomorph I J M N n) : PartialDiffeomorph I J M N n :=
+  {
+    toLocalHomeomorph := h.toHomeomorph.toLocalHomeomorph
+    contMDiffOn_toFun := fun x _ ↦ h.contMDiff_toFun x
+    contMDiffOn_invFun := fun _ _ ↦ h.symm.contMDiffWithinAt
+  }
+
 /-- A `C^n` diffeomorphism is a local diffeomorphism. -/
 lemma Diffeomorph.isLocalDiffeomorph (Φ : M ≃ₘ^n⟮I, J⟯ N) : IsLocalDiffeomorph I J n Φ :=
-  fun _ ↦ ⟨Φ.toLocalDiffeomorphAux, by trivial, eqOn_refl Φ _⟩
+  fun _ ↦ ⟨Φ.toPartialDiffeomorph, by trivial, eqOn_refl Φ _⟩
 
 /-- A local diffeomorphism has open range. -/
 lemma LocalDiffeomorph.isOpen_range {f : M → N} (hf : IsLocalDiffeomorph I J n f) :
