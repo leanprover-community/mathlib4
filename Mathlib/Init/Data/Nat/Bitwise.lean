@@ -304,12 +304,10 @@ theorem testBit_zero (b n) : testBit (bit b n) 0 = b := by
 
 #align nat.test_bit_zero Nat.testBit_zero
 
-theorem bodd_eq_and_one_ne_zero : {n : Nat} → bodd n = (n &&& 1 != 0)
+theorem bodd_eq_and_one_ne_zero : ∀ n, bodd n = (n &&& 1 != 0)
   | 0 => rfl
   | 1 => rfl
-  | n + 2 => by
-    have := @bodd_eq_and_one_ne_zero n
-    simp_all
+  | n + 2 => by simpa using bodd_eq_and_one_ne_zero n
 
 theorem testBit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   have : bodd (((bit b n) >>> 1) >>> m) = bodd (n >>> m) := by
