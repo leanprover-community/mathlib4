@@ -87,8 +87,8 @@ open Filter Nat Topology BigOperators EulerProduct
 /-- The Euler product for the Riemann ζ function, valid for `s.re > 1`. -/
 -- TODO: state in terms of `∏'` once this is in Mathlib
 theorem riemannZeta_eulerProduct (hs : 1 < s.re) :
-    Tendsto (fun n : ℕ ↦ ∏ p in primesBelow n, (1 - (p : ℂ) ^ (-s))⁻¹) atTop (𝓝 (riemannZeta s))
-    := by
+    Tendsto (fun n : ℕ ↦ ∏ p in primesBelow n, (1 - (p : ℂ) ^ (-s))⁻¹) atTop
+      (𝓝 (riemannZeta s)) := by
   have hsum := summable_riemannZetaSummand hs
   convert eulerProduct_completely_multiplicative hsum
   rw [zeta_eq_tsum_one_div_nat_add_one_cpow hs, tsum_eq_zero_add hsum.of_norm, map_zero, zero_add]
