@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.ZMod.Parity
 

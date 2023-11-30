@@ -81,8 +81,11 @@ def Rel.setoid (α : Type u) : Setoid (α × α) :=
 #align sym2.rel.setoid Sym2.Rel.setoid
 
 @[simp]
-theorem rel_iff {x y z w : α} : Rel α (x, y) (z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z :=
-  show Rel _ _ _ ↔ _ by aesop (rule_sets [Sym2])
+theorem rel_iff' {p q : α × α} : Rel α p q ↔ p = q ∨ p = q.swap := by
+  aesop (rule_sets [Sym2])
+
+theorem rel_iff {x y z w : α} : Rel α (x, y) (z, w) ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
+  simp
 #align sym2.rel_iff Sym2.rel_iff
 
 end Sym2
