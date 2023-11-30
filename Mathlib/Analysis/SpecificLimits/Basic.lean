@@ -32,12 +32,12 @@ theorem tendsto_inverse_atTop_nhds_0_nat : Tendsto (fun n : ℕ ↦ (n : ℝ)⁻
   tendsto_inv_atTop_zero.comp tendsto_nat_cast_atTop_atTop
 #align tendsto_inverse_at_top_nhds_0_nat tendsto_inverse_atTop_nhds_0_nat
 
-theorem tendsto_one_div_atTop_nhds_0_nat : Tendsto (fun n : ℕ ↦ 1/(n : ℝ)) atTop (𝓝 0) := by
-  simpa using tendsto_inverse_atTop_nhds_0_nat
-
 theorem tendsto_const_div_atTop_nhds_0_nat (C : ℝ) : Tendsto (fun n : ℕ ↦ C / n) atTop (𝓝 0) := by
   simpa only [mul_zero] using tendsto_const_nhds.mul tendsto_inverse_atTop_nhds_0_nat
 #align tendsto_const_div_at_top_nhds_0_nat tendsto_const_div_atTop_nhds_0_nat
+
+theorem tendsto_one_div_atTop_nhds_0_nat : Tendsto (fun n : ℕ ↦ 1/(n : ℝ)) atTop (𝓝 0) :=
+  tendsto_const_div_atTop_nhds_0_nat 1
 
 theorem NNReal.tendsto_inverse_atTop_nhds_0_nat :
     Tendsto (fun n : ℕ ↦ (n : ℝ≥0)⁻¹) atTop (𝓝 0) := by
