@@ -88,8 +88,7 @@ variable [Lattice α] [OrderBot α]
 /-- A `Finpartition` constructor which does not insist on `⊥` not being a part. -/
 @[simps]
 def ofErase [DecidableEq α] {a : α} (parts : Finset α) (sup_indep : parts.SupIndep id)
-    (sup_parts : parts.sup id = a) : Finpartition a
-    where
+    (sup_parts : parts.sup id = a) : Finpartition a where
   parts := parts.erase ⊥
   supIndep := sup_indep.subset (erase_subset _ _)
   supParts := (sup_erase_bot _).trans sup_parts
@@ -140,8 +139,7 @@ variable {α} {a : α}
 
 /-- The finpartition in one part, aka indiscrete finpartition. -/
 @[simps]
-def indiscrete (ha : a ≠ ⊥) : Finpartition a
-    where
+def indiscrete (ha : a ≠ ⊥) : Finpartition a where
   parts := {a}
   supIndep := supIndep_singleton _ _
   supParts := Finset.sup_singleton
@@ -356,8 +354,7 @@ variable {P : Finpartition a} {Q : ∀ i ∈ P.parts, Finpartition i}
 /-- Given a finpartition `P` of `a` and finpartitions of each part of `P`, this yields the
 finpartition of `a` obtained by juxtaposing all the subpartitions. -/
 @[simps]
-def bind (P : Finpartition a) (Q : ∀ i ∈ P.parts, Finpartition i) : Finpartition a
-    where
+def bind (P : Finpartition a) (Q : ∀ i ∈ P.parts, Finpartition i) : Finpartition a where
   parts := P.parts.attach.biUnion fun i ↦ (Q i.1 i.2).parts
   supIndep := by
     rw [supIndep_iff_pairwiseDisjoint]
@@ -474,8 +471,8 @@ theorem exists_unique_mem (ha : a ∈ s) : ∃! t, t ∈ P.parts ∧ a ∈ t := 
   rintro u ⟨hu, hu'⟩
   exact P.eq_of_mem_parts hu ht hu' ht'
 
-/-- Noncomputably get the part of the `Finpartition` that `a` lies in. -/
-noncomputable def part (ha : a ∈ s) : Finset α := (P.exists_unique_mem ha).choose
+/-- The part of the finpartition that `a` lies in. -/
+def part (ha : a ∈ s) : Finset α := choose (hp := P.exists_unique_mem ha)
 
 theorem biUnion_parts : P.parts.biUnion id = s :=
   (sup_eq_biUnion _ _).symm.trans P.supParts
@@ -524,6 +521,40 @@ theorem card_parts_le_card (P : Finpartition s) : P.parts.card ≤ s.card := by
   rw [← card_bot s]
   exact card_mono bot_le
 #align finpartition.card_parts_le_card Finpartition.card_parts_le_card
+
+variable [Fintype α]
+
+/-- A setoid over a finite type induces a finpartition of the type's elements,
+where the parts are the setoid's equivalence classes. -/
+noncomputable def ofSetoid (s : Setoid α) : Finpartition (univ : Finset α) := by
+  classical exact
+  { parts := univ.image fun a => univ.filter (s.r a)
+    supIndep := by
+      simp only [mem_univ, forall_true_left, supIndep_iff_pairwiseDisjoint, Set.PairwiseDisjoint,
+        Set.Pairwise, coe_image, coe_univ, Set.image_univ, Set.mem_range, ne_eq,
+        forall_exists_index, forall_apply_eq_imp_iff]
+      intro _ _ q
+      contrapose! q
+      rw [not_disjoint_iff] at q
+      obtain ⟨c, ⟨d1, d2⟩⟩ := q
+      rw [id_eq, mem_filter] at d1 d2
+      ext y
+      simp only [mem_univ, forall_true_left, mem_filter, true_and]
+      exact ⟨fun r1 => s.iseqv.trans (s.iseqv.trans d2.2 (s.iseqv.symm d1.2)) r1,
+             fun r2 => s.iseqv.trans (s.iseqv.trans d1.2 (s.iseqv.symm d2.2)) r2⟩
+    supParts := by
+      ext a
+      simp only [sup_image, Function.comp.left_id, mem_univ, mem_sup, mem_filter, true_and,
+        iff_true]
+      use a; exact s.iseqv.refl a
+    not_bot_mem := by
+      rw [bot_eq_empty, mem_image, not_exists]
+      intro a
+      simp only [filter_eq_empty_iff, not_forall, mem_univ, forall_true_left, true_and, not_not]
+      use a; exact s.iseqv.refl a}
+
+-- theorem mem_part_iff_rel (s : Setoid α) (b : α) :
+--     b ∈ (ofSetoid s).part (mem_univ a) ↔ s.r a b := sorry
 
 section Atomise
 
