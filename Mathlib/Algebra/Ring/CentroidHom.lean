@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Christopher Hoskin
 -/
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.Algebra.Module.Hom
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -43,7 +44,7 @@ centroid
 
 open Function
 
-variable {F α : Type*}
+variable {F M N R α : Type*}
 
 /-- The type of centroid homomorphisms from `α` to `α`. -/
 structure CentroidHom (α : Type*) [NonUnitalNonAssocSemiring α] extends α →+ α where
@@ -258,16 +259,31 @@ instance : Add (CentroidHom α) :=
 instance : Mul (CentroidHom α) :=
   ⟨comp⟩
 
-instance hasNsmul : SMul ℕ (CentroidHom α) :=
-  ⟨fun n f ↦
-    { ((SMul.smul n f) : α →+ α) with
-        map_mul_left' := fun a b ↦ by
-          change n • f (a * b) = a * n • f b
-          rw [map_mul_left f, ← mul_smul_comm]
-        map_mul_right' := fun a b ↦ by
-          change n • f (a * b) = n • f a * b
-          rw [map_mul_right f, ← smul_mul_assoc] }⟩
-#align centroid_hom.has_nsmul CentroidHom.hasNsmul
+variable [Monoid M] [Monoid N] [Semiring R]
+variable [DistribMulAction M α] [SMulCommClass M α α] [IsScalarTower M α α]
+variable [DistribMulAction N α] [SMulCommClass N α α] [IsScalarTower N α α]
+variable [Module R α] [SMulCommClass R α α] [IsScalarTower R α α]
+
+instance instSMul : SMul M (CentroidHom α) where
+  smul n f :=
+    { (n • f : α →+ α) with
+      map_mul_left' := fun a b ↦ by
+        change n • f (a * b) = a * n • f b
+        rw [map_mul_left f, ← mul_smul_comm]
+      map_mul_right' := fun a b ↦ by
+        change n • f (a * b) = n • f a * b
+        rw [map_mul_right f, ← smul_mul_assoc] }
+
+instance [SMul M N] [IsScalarTower M N α] : IsScalarTower M N (CentroidHom α) where
+  smul_assoc _ _ _ := ext <| fun _ => smul_assoc _ _ _
+
+instance [SMulCommClass M N α] : SMulCommClass M N (CentroidHom α) where
+  smul_comm _ _ _ := ext <| fun _ => smul_comm _ _ _
+
+instance [DistribMulAction Mᵐᵒᵖ α] [IsCentralScalar M α] : IsCentralScalar M (CentroidHom α) where
+  op_smul_eq_smul _ _ := ext <| fun _ => op_smul_eq_smul _ _
+
+#noalign centroid_hom.has_nsmul
 
 instance hasNpowNat : Pow (CentroidHom α) ℕ :=
   ⟨fun f n ↦
@@ -306,11 +322,10 @@ theorem coe_mul (f g : CentroidHom α) : ⇑(f * g) = f ∘ g :=
   rfl
 #align centroid_hom.coe_mul CentroidHom.coe_mul
 
--- Eligible for `dsimp`
-@[simp, norm_cast, nolint simpNF]
-theorem coe_nsmul (f : CentroidHom α) (n : ℕ) : ⇑(n • f) = n • (⇑f) :=
+@[simp, norm_cast]
+theorem coe_smul (n : M) (f : CentroidHom α) : ⇑(n • f) = n • ⇑f :=
   rfl
-#align centroid_hom.coe_nsmul CentroidHom.coe_nsmul
+#align centroid_hom.coe_nsmul CentroidHom.coe_smul
 
 @[simp]
 theorem zero_apply (a : α) : (0 : CentroidHom α) a = 0 :=
@@ -332,11 +347,12 @@ theorem mul_apply (f g : CentroidHom α) (a : α) : (f * g) a = f (g a) :=
   rfl
 #align centroid_hom.mul_apply CentroidHom.mul_apply
 
--- Eligible for `dsimp`
-@[simp, nolint simpNF]
-theorem nsmul_apply (f : CentroidHom α) (n : ℕ) (a : α) : (n • f) a = n • f a :=
+@[simp]
+theorem smul_apply (n : M) (f : CentroidHom α) (a : α) : (n • f) a = n • f a :=
   rfl
-#align centroid_hom.nsmul_apply CentroidHom.nsmul_apply
+#align centroid_hom.nsmul_apply CentroidHom.smul_apply
+
+example : SMul ℕ (CentroidHom α) := instSMul
 
 @[simp]
 theorem toEnd_zero : (0 : CentroidHom α).toEnd = 0 :=
@@ -348,14 +364,12 @@ theorem toEnd_add (x y : CentroidHom α) : (x + y).toEnd = x.toEnd + y.toEnd :=
   rfl
 #align centroid_hom.to_End_add CentroidHom.toEnd_add
 
-theorem toEnd_nsmul (x : CentroidHom α) (n : ℕ) : (n • x).toEnd = n • x.toEnd :=
+theorem toEnd_smul (m : M) (x : CentroidHom α) : (m • x).toEnd = m • x.toEnd :=
   rfl
-#align centroid_hom.to_End_nsmul CentroidHom.toEnd_nsmul
+#align centroid_hom.to_End_nsmul CentroidHom.toEnd_smul
 
--- Porting note: I guess the porter has naming issues still
--- cf.`add_monoid_hom.add_comm_monoid`
 instance : AddCommMonoid (CentroidHom α) :=
-  coe_toAddMonoidHom_injective.addCommMonoid _ toEnd_zero toEnd_add toEnd_nsmul
+  coe_toAddMonoidHom_injective.addCommMonoid _ toEnd_zero toEnd_add (swap toEnd_smul)
 
 instance : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α)
 
@@ -391,13 +405,29 @@ theorem toEnd_nat_cast (n : ℕ) : (n : CentroidHom α).toEnd = ↑n :=
 
 -- cf `add_monoid.End.semiring`
 instance : Semiring (CentroidHom α) :=
-  toEnd_injective.semiring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_nsmul toEnd_pow
+  toEnd_injective.semiring _ toEnd_zero toEnd_one toEnd_add toEnd_mul (swap toEnd_smul) toEnd_pow
     toEnd_nat_cast
+
+variable (α) in
+/-- `CentroidHom.toEnd` as a `RingHom`. -/
+@[simps]
+def toEndRingHom : CentroidHom α →+* AddMonoid.End α where
+  toFun := toEnd
+  map_zero' := toEnd_zero
+  map_one' := toEnd_one
+  map_add' := toEnd_add
+  map_mul' := toEnd_mul
 
 theorem comp_mul_comm (T S : CentroidHom α) (a b : α) : (T ∘ S) (a * b) = (S ∘ T) (a * b) := by
   simp only [Function.comp_apply]
   rw [map_mul_right, map_mul_left, ← map_mul_right, ← map_mul_left]
 #align centroid_hom.comp_mul_comm CentroidHom.comp_mul_comm
+
+instance : DistribMulAction M (CentroidHom α) :=
+  toEnd_injective.distribMulAction (toEndRingHom α).toAddMonoidHom toEnd_smul
+
+instance : Module R (CentroidHom α) :=
+  toEnd_injective.module R (toEndRingHom α).toAddMonoidHom toEnd_smul
 
 end NonUnitalNonAssocSemiring
 
@@ -420,22 +450,13 @@ instance : Sub (CentroidHom α) :=
   ⟨fun f g ↦
     { (f - g : α →+ α) with
       map_mul_left' := fun a b ↦ by
-        change (FunLike.coe f - FunLike.coe g) (a * b) = a * (FunLike.coe f - FunLike.coe g) b
+        change (⇑f - ⇑g) (a * b) = a * (⇑f - ⇑g) b
         simp [map_mul_left, mul_sub]
       map_mul_right' := fun a b ↦ by
-        change (FunLike.coe f - FunLike.coe g) (a * b) = ((FunLike.coe f - FunLike.coe g) a) * b
+        change (⇑f - ⇑g) (a * b) = ((⇑f - ⇑g) a) * b
         simp [map_mul_right, sub_mul] }⟩
 
-instance hasZsmul : SMul ℤ (CentroidHom α) :=
-  ⟨fun n f ↦
-    { (SMul.smul n f : α →+ α) with
-      map_mul_left' := fun a b ↦ by
-        change n • f (a * b) = a * n • f b
-        rw [map_mul_left f, ← mul_smul_comm]
-      map_mul_right' := fun a b ↦ by
-        change n • f (a * b) = n • f a * b
-        rw [map_mul_right f, ← smul_mul_assoc] }⟩
-#align centroid_hom.has_zsmul CentroidHom.hasZsmul
+#noalign centroid_hom.has_zsmul
 
 instance : IntCast (CentroidHom α) where intCast z := z • (1 : CentroidHom α)
 
@@ -459,12 +480,11 @@ theorem toEnd_sub (x y : CentroidHom α) : (x - y).toEnd = x.toEnd - y.toEnd :=
   rfl
 #align centroid_hom.to_End_sub CentroidHom.toEnd_sub
 
-theorem toEnd_zsmul (x : CentroidHom α) (n : ℤ) : (n • x).toEnd = n • x.toEnd :=
-  rfl
-#align centroid_hom.to_End_zsmul CentroidHom.toEnd_zsmul
+#align centroid_hom.to_End_zsmul CentroidHom.toEnd_smul
 
 instance : AddCommGroup (CentroidHom α) :=
-  toEnd_injective.addCommGroup _ toEnd_zero toEnd_add toEnd_neg toEnd_sub toEnd_nsmul toEnd_zsmul
+  toEnd_injective.addCommGroup _
+    toEnd_zero toEnd_add toEnd_neg toEnd_sub (swap toEnd_smul) (swap toEnd_smul)
 
 @[simp, norm_cast]
 theorem coe_neg (f : CentroidHom α) : ⇑(-f) = -f :=
@@ -493,7 +513,7 @@ theorem toEnd_int_cast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
 
 instance instRing : Ring (CentroidHom α) :=
   toEnd_injective.ring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_neg toEnd_sub
-    toEnd_nsmul toEnd_zsmul toEnd_pow toEnd_nat_cast toEnd_int_cast
+    (swap toEnd_smul) (swap toEnd_smul) toEnd_pow toEnd_nat_cast toEnd_int_cast
 
 end NonUnitalNonAssocRing
 
