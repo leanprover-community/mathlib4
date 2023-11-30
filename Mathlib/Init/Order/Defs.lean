@@ -104,6 +104,9 @@ theorem ne_of_lt {a b : α} (h : a < b) : a ≠ b := fun he => absurd h (he ▸ 
 theorem ne_of_gt {a b : α} (h : b < a) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
 #align ne_of_gt ne_of_gt
 
+@[simp] theorem not_eq_of_lt {a b : α} (h : a < b) : ¬ a = b := ne_of_lt h
+@[simp] theorem not_eq_of_gt {a b : α} (h : b < a) : ¬ a = b := ne_of_gt h
+
 theorem lt_asymm {a b : α} (h : a < b) : ¬b < a := fun h1 : b < a => lt_irrefl a (lt_trans h h1)
 #align lt_asymm lt_asymm
 
