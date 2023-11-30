@@ -889,7 +889,7 @@ lemma quasiIso_iff_of_zeros' {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
 variable {S : ShortComplex C}
 
 /-- If `S` is an exact short complex and `f : S.X₂ ⟶ J` is a morphism to an injective object `J`
-such that `S.f ≫ f = 0`, this a morphism `φ : S.X₃ ⟶ J` such that `S.g ≫ φ = f`. -/
+such that `S.f ≫ f = 0`, this is a morphism `φ : S.X₃ ⟶ J` such that `S.g ≫ φ = f`. -/
 noncomputable def Exact.descToInjective
     (hS : S.Exact) {J : C} (f : S.X₂ ⟶ J) [Injective J] (hf : S.f ≫ f = 0) :
     S.X₃ ⟶ J := by
@@ -905,7 +905,7 @@ lemma Exact.comp_descToInjective
   simp only [← p_fromOpcycles, assoc, Injective.comp_factorThru, p_descOpcycles]
 
 /-- If `S` is an exact short complex and `f : P ⟶ S.X₂` is a morphism from a projective object `P`
-such that `f ≫ S.g = 0`, this a morphism `φ : P ⟶ S.X₁` such that `φ ≫ S.f = f`. -/
+such that `f ≫ S.g = 0`, this is a morphism `φ : P ⟶ S.X₁` such that `φ ≫ S.f = f`. -/
 noncomputable def Exact.liftFromProjective
     (hS : S.Exact) {P : C} (f : P ⟶ S.X₂) [Projective P] (hf : f ≫ S.g = 0) :
     P ⟶ S.X₁ := by
