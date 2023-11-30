@@ -19,9 +19,16 @@ without boundary.
 
 ## Main definition
 
-- **IsIntegralCurve γ v t₀ x₀**: If `v : M → TM` is a vector field on `M` and `x : M`,
-`IsIntegralCurveAt γ v t₀ x₀` means `γ : ℝ → M` is a differentiable integral curve of `v` with
-`γ x₀ = t₀`.
+- **`IsIntegralCurveAt γ v t₀ x₀`**: If `v : M → TM` is a vector field on `M` and `x : M`,
+`IsIntegralCurveAt γ v t₀ x₀` means `γ : ℝ → M` is a local integral curve of `v` with `γ t₀ = x₀`.
+That is, there exists `ε > 0` such that `γ t` is tangent to `v (γ t)` for all
+`t ∈ Ioo (t₀ - ε) (t₀ + ε)`. Even though `γ` is defined for all time, its value outside of this
+small interval is irrelevant and considered junk.
+
+## To-do
+
+- **`IsIntegralCurveOn γ v s`**: `γ t` is tangent to `v (γ t)` for all `t ∈ s`.
+- **`IsIntegralCurve γ v`**: `γ` is a global integral curve of `v`, defined for all time.
 
 ## Tags
 
@@ -42,7 +49,8 @@ variable
   (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) x₀) (t₀ : ℝ)
 
 /-- If `v : M → TM` is a vector field on `M` and `x : M`, `IsIntegralCurveAt γ v t₀ x₀` means
-  `γ : ℝ → M` is a differentiable integral curve of `v` with `γ x₀ = t₀`. -/
+  `γ : ℝ → M` is a local integral curve of `v` with `γ t₀ = x₀`. That is, there exists `ε > 0` such
+  that `γ t` is tangent to `v (γ t)` for all `t ∈ Ioo (t₀ - ε) (t₀ + ε)`. -/
 def IsIntegralCurveAt (γ : ℝ → M) (v : (x : M) → TangentSpace I x) (t₀ : ℝ) (x₀ : M) :=
   γ t₀ = x₀ ∧ ∃ ε > (0 : ℝ), ∀ (t : ℝ), t ∈ Ioo (t₀ - ε) (t₀ + ε) →
     HasMFDerivAt 𝓘(ℝ, ℝ) I γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t)))
@@ -59,7 +67,7 @@ lemma IsIntegralCurveAt.comp_add {γ : ℝ → M} (hγ : IsIntegralCurveAt γ v 
   rw [Function.comp_apply,
     ← ContinuousLinearMap.comp_id (ContinuousLinearMap.smulRight 1 (v (γ (t + dt))))]
   apply HasMFDerivAt.comp t h2'
-  /- this makes me think we need lemmas for `HasMFDerivAt 𝓘(E, E) 𝓘(E, E)` of simple operations -/
+  -- this makes me think we need lemmas for `HasMFDerivAt 𝓘(E, E) 𝓘(E, E)` of simple operations
   refine ⟨(continuous_add_right _).continuousAt, ?_⟩
   simp only [mfld_simps, hasFDerivWithinAt_univ]
   apply HasFDerivAt.add_const (hasFDerivAt_id _)
@@ -137,6 +145,8 @@ lemma isIntegralCurveAt_comp_mul_ne_zero {γ : ℝ → M} {a : ℝ} (ha : a ≠ 
   simp [inv_mul_eq_div, div_self ha]
 
 variable (t₀) in
+/-- If the vector field `v` vanishes at `x₀`, then the constant curve at `x₀`
+  is an integral curve of `v`. -/
 lemma isIntegralCurveAt_const (h : v x₀ = 0) : IsIntegralCurveAt (fun _ => x₀) v t₀ x₀ := by
   refine ⟨rfl, 1, zero_lt_one, fun t _ => ?_⟩
   rw [h, ← ContinuousLinearMap.zero_apply (R₁ := ℝ) (R₂ := ℝ) (1 : ℝ),
@@ -147,7 +157,7 @@ lemma isIntegralCurveAt_const (h : v x₀ = 0) : IsIntegralCurveAt (fun _ => x�
   manifold, there exists an integral curve `γ : ℝ → M` such that `γ t₀ = x₀` and the tangent vector
   of `γ` at `t` coincides with the vector field at `γ t` for all `t` within an open interval around
   `t₀`.-/
-theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoint x₀) :
+theorem exists_isIntegralCurveAt_of_contMDiffAt (hx : I.IsInteriorPoint x₀) :
     ∃ (γ : ℝ → M), IsIntegralCurveAt γ v t₀ x₀ := by
   -- express the differentiability of the section `v` in the local charts
   rw [contMDiffAt_iff] at hv
@@ -209,4 +219,4 @@ theorem exists_integralCurve_of_contMDiff_tangent_section (hx : I.IsInteriorPoin
   interval around `t₀`. -/
 lemma exists_integralCurve_of_contMDiff_tangent_section_boundaryless [I.Boundaryless] :
     ∃ (γ : ℝ → M), IsIntegralCurveAt γ v t₀ x₀ :=
-  exists_integralCurve_of_contMDiff_tangent_section hv I.isInteriorPoint
+  exists_isIntegralCurveAt_of_contMDiffAt hv I.isInteriorPoint
