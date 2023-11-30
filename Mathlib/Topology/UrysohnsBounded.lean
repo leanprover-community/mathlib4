@@ -11,7 +11,7 @@ import Mathlib.Topology.ContinuousFunction.Bounded
 /-!
 # Urysohn's lemma for bounded continuous functions
 
-In this file we reformulate Urysohn's lemma `exists_continuous_zero_one_of_closed` in terms of
+In this file we reformulate Urysohn's lemma `exists_continuous_zero_one_of_isClosed` in terms of
 bounded continuous functions `X →ᵇ ℝ`. These lemmas live in a separate file because
 `Topology.ContinuousFunction.Bounded` imports too many other files.
 
@@ -35,7 +35,7 @@ then there exists a continuous function `f : X → ℝ` such that
 theorem exists_bounded_zero_one_of_closed {X : Type*} [TopologicalSpace X] [NormalSpace X]
     {s t : Set X} (hs : IsClosed s) (ht : IsClosed t) (hd : Disjoint s t) :
     ∃ f : X →ᵇ ℝ, EqOn f 0 s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 :=
-  let ⟨f, hfs, hft, hf⟩ := exists_continuous_zero_one_of_closed hs ht hd
+  let ⟨f, hfs, hft, hf⟩ := exists_continuous_zero_one_of_isClosed hs ht hd
   ⟨⟨f, 1, fun _ _ => Real.dist_le_of_mem_Icc_01 (hf _) (hf _)⟩, hfs, hft, hf⟩
 #align exists_bounded_zero_one_of_closed exists_bounded_zero_one_of_closed
 

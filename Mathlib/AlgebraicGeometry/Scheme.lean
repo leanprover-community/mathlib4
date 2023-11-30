@@ -342,7 +342,7 @@ lemma basicOpen_restrict (i : V ⟶ U) (f : X.presheaf.obj (op U)) :
 theorem preimage_basicOpen {X Y : Scheme} (f : X ⟶ Y) {U : Opens Y.carrier}
     (r : Y.presheaf.obj <| op U) :
     (Opens.map f.1.base).obj (Y.basicOpen r) =
-      @Scheme.basicOpen X ((Opens.map f.1.base).obj U) (f.1.c.app _ r) :=
+      @Scheme.basicOpen X ((Opens.map f.1.base).obj U) (f.1.c.app (op U) r) :=
   LocallyRingedSpace.preimage_basicOpen f r
 #align algebraic_geometry.Scheme.preimage_basic_open AlgebraicGeometry.Scheme.preimage_basicOpen
 

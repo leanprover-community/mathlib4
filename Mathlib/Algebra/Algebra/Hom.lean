@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.BigOperators.Finsupp
 
 #align_import algebra.algebra.hom from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 
@@ -569,6 +570,16 @@ instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
 @[ext high]
 theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
 
+section MulDistribMulAction
+
+instance : MulDistribMulAction (A →ₐ[R] A) Aˣ where
+  smul := fun f => Units.map f
+  one_smul := fun x => by ext; rfl
+  mul_smul := fun x y z => by ext; rfl
+  smul_mul := fun x y z => by ext; exact x.map_mul _ _
+  smul_one := fun x => by ext; exact x.map_one
+
+end MulDistribMulAction
 end Algebra
 
 namespace MulSemiringAction

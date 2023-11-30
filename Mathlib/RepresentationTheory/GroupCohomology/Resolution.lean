@@ -446,7 +446,7 @@ cover of the classifying space of `G` as a simplicial set. -/
 def cechNerveTerminalFromIsoCompForget :
     cechNerveTerminalFrom G ≅ classifyingSpaceUniversalCover G ⋙ forget _ :=
   NatIso.ofComponents (fun _ => Types.productIso _) fun _ =>
-    Matrix.ext fun _ _ => Types.Limit.lift_π_apply _ _ _ _
+    Matrix.ext fun _ _ => Types.Limit.lift_π_apply (Discrete.functor fun _ ↦ G) _ _ _
 #align classifying_space_universal_cover.cech_nerve_terminal_from_iso_comp_forget classifyingSpaceUniversalCover.cechNerveTerminalFromIsoCompForget
 
 variable (k)
@@ -640,7 +640,8 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
     rfl
   · congr
     · ext x
-      dsimp [HomotopyEquiv.ofIso, Finsupp.LinearEquiv.finsuppUnique]
+      dsimp (config := { unfoldPartialApp := true }) [HomotopyEquiv.ofIso,
+        Finsupp.LinearEquiv.finsuppUnique]
       rw [Finsupp.total_single, one_smul, @Unique.eq_default _ Types.terminalIso.toEquiv.unique x,
         ChainComplex.single₀_map_f_zero, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
         Finsupp.equivFunOnFinite_apply, Finsupp.single_eq_same]

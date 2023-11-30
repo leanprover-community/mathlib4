@@ -6,7 +6,6 @@ Authors: Alex J. Best
 import Lean.Parser.Term
 import Lean.Parser.Do
 import Lean.Elab.Command
-import Mathlib.Data.KVMap
 
 /-!
 # The `unset_option` command

@@ -226,7 +226,7 @@ theorem hasFTaylorSeriesUpToOn_zero_iff :
     HasFTaylorSeriesUpToOn 0 f p s ↔ ContinuousOn f s ∧ ∀ x ∈ s, (p x 0).uncurry0 = f x := by
   refine ⟨fun H => ⟨H.continuousOn, H.zero_eq⟩, fun H =>
       ⟨H.2, fun m hm => False.elim (not_le.2 hm bot_le), fun m hm ↦ ?_⟩⟩
-  obtain rfl : m = 0 := by exact_mod_cast hm.antisymm (zero_le _)
+  obtain rfl : m = 0 := mod_cast hm.antisymm (zero_le _)
   have : EqOn (p · 0) ((continuousMultilinearCurryFin0 𝕜 E F).symm ∘ f) s := fun x hx ↦
     (continuousMultilinearCurryFin0 𝕜 E F).eq_symm_apply.2 (H.2 x hx)
   rw [continuousOn_congr this, LinearIsometryEquiv.comp_continuousOn_iff]
@@ -1368,6 +1368,10 @@ theorem ContDiffAt.differentiableAt (h : ContDiffAt 𝕜 n f x) (hn : 1 ≤ n) :
     DifferentiableAt 𝕜 f x := by
   simpa [hn, differentiableWithinAt_univ] using h.differentiableWithinAt
 #align cont_diff_at.differentiable_at ContDiffAt.differentiableAt
+
+nonrec lemma ContDiffAt.contDiffOn {m : ℕ} (h : ContDiffAt 𝕜 n f x) (hm : m ≤ n) :
+    ∃ u ∈ 𝓝 x, ContDiffOn 𝕜 m f u := by
+  simpa [nhdsWithin_univ] using h.contDiffOn hm
 
 /-- A function is `C^(n + 1)` at a point iff locally, it has a derivative which is `C^n`. -/
 theorem contDiffAt_succ_iff_hasFDerivAt {n : ℕ} :

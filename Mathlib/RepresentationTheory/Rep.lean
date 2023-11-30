@@ -3,12 +3,13 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.RepresentationTheory.Basic
-import Mathlib.RepresentationTheory.Action
 import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
-import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+import Mathlib.CategoryTheory.Elementwise
+import Mathlib.RepresentationTheory.Action
+import Mathlib.RepresentationTheory.Basic
 
 #align_import representation_theory.Rep from "leanprover-community/mathlib"@"cec81510e48e579bde6acd8568c06a87af045b63"
 
@@ -286,6 +287,41 @@ noncomputable def linearizationOfMulActionIso (H : Type u) [MulAction G H] :
   Iso.refl _
 set_option linter.uppercaseLean3 false in
 #align Rep.linearization_of_mul_action_iso Rep.linearizationOfMulActionIso
+
+section
+
+variable (k G A : Type) [CommRing k] [Monoid G] [AddCommGroup A]
+  [Module k A] [DistribMulAction G A] [SMulCommClass G k A]
+
+/-- Turns a `k`-module `A` with a compatible `DistribMulAction` of a monoid `G` into a
+`k`-linear `G`-representation on `A`. -/
+def ofDistribMulAction : Rep k G := Rep.of (Representation.ofDistribMulAction k G A)
+
+@[simp] theorem ofDistribMulAction_ρ_apply_apply (g : G) (a : A) :
+    (ofDistribMulAction k G A).ρ g a = g • a := rfl
+
+/-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
+`S ≃ₐ[R] S` on `S`. -/
+@[simp] def ofAlgebraAut (R S : Type) [CommRing R] [CommRing S] [Algebra R S] :
+    Rep ℤ (S ≃ₐ[R] S) := ofDistribMulAction ℤ (S ≃ₐ[R] S) S
+
+end
+section
+variable (M G : Type) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
+
+/-- Turns a `CommGroup` `G` with a `MulDistribMulAction` of a monoid `M` into a
+`ℤ`-linear `M`-representation on `Additive G`. -/
+def ofMulDistribMulAction : Rep ℤ M := Rep.of (Representation.ofMulDistribMulAction M G)
+
+@[simp] theorem ofMulDistribMulAction_ρ_apply_apply (g : M) (a : G) :
+    (ofMulDistribMulAction M G).ρ g a = g • a := rfl
+
+/-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
+`S ≃ₐ[R] S` on `Sˣ`. -/
+@[simp] def ofAlgebraAutOnUnits (R S : Type) [CommRing R] [CommRing S] [Algebra R S] :
+    Rep ℤ (S ≃ₐ[R] S) := Rep.ofMulDistribMulAction (S ≃ₐ[R] S) Sˣ
+
+end
 
 variable {k G}
 

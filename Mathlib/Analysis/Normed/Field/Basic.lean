@@ -6,6 +6,7 @@ Authors: Patrick Massot, Johannes Hölzl
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.MetricSpace.DilationEquiv
 
 #align_import analysis.normed.field.basic from "leanprover-community/mathlib"@"f06058e64b7e8397234455038f3f8aec83aaba5a"
 
@@ -16,12 +17,10 @@ In this file we define (semi)normed rings and fields. We also prove some theorem
 definitions.
 -/
 
-
 variable {α : Type*} {β : Type*} {γ : Type*} {ι : Type*}
 
 open Filter Metric Bornology
-
-open Topology BigOperators NNReal ENNReal uniformity Pointwise
+open scoped Topology BigOperators NNReal ENNReal uniformity Pointwise
 
 /-- A non-unital seminormed ring is a not-necessarily-unital ring
 endowed with a seminorm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
@@ -595,45 +594,89 @@ theorem dist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
 #align dist_inv_inv₀ dist_inv_inv₀
 
 theorem nndist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
-    nndist z⁻¹ w⁻¹ = nndist z w / (‖z‖₊ * ‖w‖₊) := by
-  rw [← NNReal.coe_eq]
-  simp [-NNReal.coe_eq, dist_inv_inv₀ hz hw]
+    nndist z⁻¹ w⁻¹ = nndist z w / (‖z‖₊ * ‖w‖₊) :=
+  NNReal.eq <| dist_inv_inv₀ hz hw
 #align nndist_inv_inv₀ nndist_inv_inv₀
 
+lemma antilipschitzWith_mul_left {a : α} (ha : a ≠ 0) : AntilipschitzWith (‖a‖₊⁻¹) (a * ·) :=
+  AntilipschitzWith.of_le_mul_dist fun _ _ ↦ by simp [dist_eq_norm, ← _root_.mul_sub, ha]
+
+lemma antilipschitzWith_mul_right {a : α} (ha : a ≠ 0) : AntilipschitzWith (‖a‖₊⁻¹) (· * a) :=
+  AntilipschitzWith.of_le_mul_dist fun _ _ ↦ by
+    simp [dist_eq_norm, ← _root_.sub_mul, ← mul_comm (‖a‖), ha]
+
+/-- Multiplication by a nonzero element `a` on the left
+as a `DilationEquiv` of a normed division ring. -/
+@[simps!]
+def DilationEquiv.mulLeft (a : α) (ha : a ≠ 0) : α ≃ᵈ α where
+  toEquiv := Equiv.mulLeft₀ a ha
+  edist_eq' := ⟨‖a‖₊, nnnorm_ne_zero_iff.2 ha, fun x y ↦ by
+    simp [edist_nndist, nndist_eq_nnnorm, ← mul_sub]⟩
+
+/-- Multiplication by a nonzero element `a` on the right
+as a `DilationEquiv` of a normed division ring. -/
+@[simps!]
+def DilationEquiv.mulRight (a : α) (ha : a ≠ 0) : α ≃ᵈ α where
+  toEquiv := Equiv.mulRight₀ a ha
+  edist_eq' := ⟨‖a‖₊, nnnorm_ne_zero_iff.2 ha, fun x y ↦ by
+    simp [edist_nndist, nndist_eq_nnnorm, ← sub_mul, ← mul_comm (‖a‖₊)]⟩
+
+namespace Filter
+
+@[simp]
+lemma comap_mul_left_cobounded {a : α} (ha : a ≠ 0) :
+    comap (a * ·) (cobounded α) = cobounded α :=
+  Dilation.comap_cobounded (DilationEquiv.mulLeft a ha)
+
+@[simp]
+lemma map_mul_left_cobounded {a : α} (ha : a ≠ 0) :
+    map (a * ·) (cobounded α) = cobounded α :=
+  DilationEquiv.map_cobounded (DilationEquiv.mulLeft a ha)
+
+@[simp]
+lemma comap_mul_right_cobounded {a : α} (ha : a ≠ 0) :
+    comap (· * a) (cobounded α) = cobounded α :=
+  Dilation.comap_cobounded (DilationEquiv.mulRight a ha)
+
+@[simp]
+lemma map_mul_right_cobounded {a : α} (ha : a ≠ 0) :
+    map (· * a) (cobounded α) = cobounded α :=
+  DilationEquiv.map_cobounded (DilationEquiv.mulRight a ha)
+
 /-- Multiplication on the left by a nonzero element of a normed division ring tends to infinity at
-infinity. TODO: use `Bornology.cobounded` instead of `Filter.comap Norm.norm Filter.atTop`. -/
-theorem Filter.tendsto_mul_left_cobounded {a : α} (ha : a ≠ 0) :
-    Tendsto ((· * ·) a) (comap norm atTop) (comap norm atTop) := by
-  simpa only [tendsto_comap_iff, (· ∘ ·), norm_mul] using
-    tendsto_const_nhds.mul_atTop (norm_pos_iff.2 ha) tendsto_comap
+infinity. -/
+theorem tendsto_mul_left_cobounded {a : α} (ha : a ≠ 0) :
+    Tendsto (a * ·) (cobounded α) (cobounded α) :=
+  (map_mul_left_cobounded ha).le
 #align filter.tendsto_mul_left_cobounded Filter.tendsto_mul_left_cobounded
 
 /-- Multiplication on the right by a nonzero element of a normed division ring tends to infinity at
-infinity. TODO: use `Bornology.cobounded` instead of `Filter.comap Norm.norm Filter.atTop`. -/
-theorem Filter.tendsto_mul_right_cobounded {a : α} (ha : a ≠ 0) :
-    Tendsto (fun x => x * a) (comap norm atTop) (comap norm atTop) := by
-  simpa only [tendsto_comap_iff, (· ∘ ·), norm_mul] using
-    tendsto_comap.atTop_mul (norm_pos_iff.2 ha) tendsto_const_nhds
+infinity. -/
+theorem tendsto_mul_right_cobounded {a : α} (ha : a ≠ 0) :
+    Tendsto (· * a) (cobounded α) (cobounded α) :=
+  (map_mul_right_cobounded ha).le
 #align filter.tendsto_mul_right_cobounded Filter.tendsto_mul_right_cobounded
 
 @[simp]
-lemma Filter.inv_cobounded₀ : (cobounded α)⁻¹ = 𝓝[≠] 0 := by
+lemma inv_cobounded₀ : (cobounded α)⁻¹ = 𝓝[≠] 0 := by
   rw [← comap_norm_atTop, ← Filter.comap_inv, ← comap_norm_nhdsWithin_Ioi_zero,
     ← inv_atTop₀, ← Filter.comap_inv]
   simp only [comap_comap, (· ∘ ·), norm_inv]
 
 @[simp]
-lemma Filter.inv_nhdsWithin_ne_zero : (𝓝[≠] (0 : α))⁻¹ = cobounded α := by
+lemma inv_nhdsWithin_ne_zero : (𝓝[≠] (0 : α))⁻¹ = cobounded α := by
   rw [← inv_cobounded₀, inv_inv]
 
-lemma Filter.tendsto_inv₀_cobounded' : Tendsto Inv.inv (cobounded α) (𝓝[≠] 0) :=
+lemma tendsto_inv₀_cobounded' : Tendsto Inv.inv (cobounded α) (𝓝[≠] 0) :=
   inv_cobounded₀.le
 
-theorem Filter.tendsto_inv₀_cobounded : Tendsto Inv.inv (cobounded α) (𝓝 0) :=
+theorem tendsto_inv₀_cobounded : Tendsto Inv.inv (cobounded α) (𝓝 0) :=
   tendsto_inv₀_cobounded'.mono_right inf_le_left
 
-lemma Filter.tendsto_inv₀_nhdsWithin_ne_zero : Tendsto Inv.inv (𝓝[≠] 0) (cobounded α) :=
+lemma tendsto_inv₀_nhdsWithin_ne_zero : Tendsto Inv.inv (𝓝[≠] 0) (cobounded α) :=
   inv_nhdsWithin_ne_zero.le
+
+end Filter
 
 -- see Note [lower instance priority]
 instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContinuousInv₀ α := by
@@ -783,8 +826,8 @@ theorem exists_lt_norm_lt {r₁ r₂ : ℝ} (h₀ : 0 ≤ r₁) (h : r₁ < r₂
   DenselyNormedField.lt_norm_lt r₁ r₂ h₀ h
 #align normed_field.exists_lt_norm_lt NormedField.exists_lt_norm_lt
 
-theorem exists_lt_nnnorm_lt {r₁ r₂ : ℝ≥0} (h : r₁ < r₂) : ∃ x : α, r₁ < ‖x‖₊ ∧ ‖x‖₊ < r₂ := by
-  exact_mod_cast exists_lt_norm_lt α r₁.prop h
+theorem exists_lt_nnnorm_lt {r₁ r₂ : ℝ≥0} (h : r₁ < r₂) : ∃ x : α, r₁ < ‖x‖₊ ∧ ‖x‖₊ < r₂ :=
+  mod_cast exists_lt_norm_lt α r₁.prop h
 #align normed_field.exists_lt_nnnorm_lt NormedField.exists_lt_nnnorm_lt
 
 instance denselyOrdered_range_norm : DenselyOrdered (Set.range (norm : α → ℝ)) where
@@ -841,7 +884,7 @@ namespace Real
 theorem toNNReal_mul_nnnorm {x : ℝ} (y : ℝ) (hx : 0 ≤ x) : x.toNNReal * ‖y‖₊ = ‖x * y‖₊ := by
   ext
   simp only [NNReal.coe_mul, nnnorm_mul, coe_nnnorm, Real.toNNReal_of_nonneg, norm_of_nonneg, hx,
-    coe_mk]
+    NNReal.coe_mk]
 #align real.to_nnreal_mul_nnnorm Real.toNNReal_mul_nnnorm
 
 theorem nnnorm_mul_toNNReal (x : ℝ) {y : ℝ} (hy : 0 ≤ y) : ‖x‖₊ * y.toNNReal = ‖x * y‖₊ := by
@@ -1057,5 +1100,5 @@ instance toNormedCommRing [NormedCommRing R] [SubringClass S R] (s : S) : Normed
 
 end SubringClass
 
--- Guard again import creep.
+-- Guard against import creep.
 assert_not_exists RestrictScalars
