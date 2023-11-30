@@ -105,7 +105,7 @@ theorem prod_hom_rel (l : List ι) {r : M → N → Prop} {f : ι → M} {g : ι
 #align list.sum_hom_rel List.sum_hom_rel
 
 @[to_additive]
-theorem rel_prod [Monoid M] [Monoid N] {R} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
+theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
     (Forall₂ R ⇒ R) prod prod :=
   rel_foldl hf h
 #align list.rel_prod List.rel_prod
