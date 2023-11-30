@@ -120,13 +120,13 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
   let U := f ⁻¹' {0}
   have hU : IsClopen U := f.isLocallyConstant.isClopen_fiber _
   obtain ⟨j, V, hV, h⟩ := exists_isClopen_of_cofiltered C hC hU
-  use j, LocallyConstant.ofClopen hV
+  use j, LocallyConstant.ofIsClopen hV
   apply LocallyConstant.locallyConstant_eq_of_fiber_zero_eq
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [LocallyConstant.coe_comap _ _ (C.π.app j).continuous]
   conv_rhs => rw [Set.preimage_comp]
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [LocallyConstant.ofClopen_fiber_zero hV, ← h]
+  erw [LocallyConstant.ofIsClopen_fiber_zero hV, ← h]
 set_option linter.uppercaseLean3 false in
 #align Profinite.exists_locally_constant_fin_two Profinite.exists_locallyConstant_fin_two
 
