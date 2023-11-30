@@ -58,10 +58,12 @@ namespace Std.BitVec
 /-! ### Arithmetic operators -/
 
 #align bitvec.neg Std.BitVec.neg
-/-- Add with carry (no overflow) -/
-def adc {n} (x y : BitVec n) (c : Bool) : BitVec (n+1) :=
+/-- Add with carry (no overflow)
+
+See also `Std.BitVec.adc`, which stores the carry bit separately. -/
+def adc' {n} (x y : BitVec n) (c : Bool) : BitVec (n+1) :=
   ofFin (x.toNat + y.toNat + c.toNat)
-#align bitvec.adc Std.BitVec.adc
+#align bitvec.adc Std.BitVec.adc'
 
 #align bitvec.add Std.BitVec.add
 
