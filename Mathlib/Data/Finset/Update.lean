@@ -20,8 +20,8 @@ namespace Function
 
 /-- `updateFinset x s y` is the vector `x` with the coordinates in `s` changed to the values of `y`.
 -/
-def updateFinset (x : ∀ i, π i) (s : Finset ι) (y : ∀ i : ↥s, π i) (i : ι) : π i :=
-  if hi : i ∈ s then y ⟨i, hi⟩ else x i
+def updateFinset (x : ∀ i, π i) (s : Finset ι) (y : ∀ i : ↥s, π i) : (i : ι) → π i :=
+  fun i ↦ if hi : i ∈ s then y ⟨i, hi⟩ else x i
 
 open Finset Equiv
 
