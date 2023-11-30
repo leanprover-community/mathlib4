@@ -66,6 +66,51 @@ theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
   eq_of_smul_eq_smul fun r => RingHom.ext_iff.1 h r
 #align to_ring_hom_injective toRingHom_injective
 
+@[simp]
+theorem MulSemiringAction.ringHom_map_one' (R : Type v) [Semiring R] [MulSemiringAction M R] :
+    MulSemiringAction.toRingHom M R 1 = 1
+  := by
+    ext
+    simp only [MulSemiringAction.toRingHom_apply, one_smul, RingHom.coe_one, id_eq, forall_const]
+
+@[simp]
+theorem MulSemiringAction.ringHom_map_mul' (R : Type v) [Semiring R] [MulSemiringAction M R] :
+    ∀ (x y : M),
+      MulSemiringAction.toRingHom M R (x * y) =
+        MulSemiringAction.toRingHom M R x * MulSemiringAction.toRingHom M R y
+  := by
+    intros x y
+    ext r
+    simp only [MulSemiringAction.toRingHom_apply, RingHom.coe_mul, Function.comp_apply]
+    exact mul_smul x y r
+
+def MulSemiringAction.toEndHom (R : Type v) [Semiring R] [MulSemiringAction M R]:
+  M →* R →+* R where
+    toFun := MulSemiringAction.toRingHom M R
+    map_one' := ringHom_map_one' M R
+    map_mul' := ringHom_map_mul' M R
+
+def MulSemiringAction.ofEndHom (R: Type v) [Semiring R] (ρ : M →* R →+* R) : MulSemiringAction M R where
+  smul m := ρ m
+  one_smul r := by
+    change ρ 1 r = r
+    simp only [map_one, RingHom.coe_one, id_eq, forall_const]
+  mul_smul g h r := by
+    change ρ (g * h) r = (ρ g * ρ h) r
+    simp only [map_mul, RingHom.coe_mul, Function.comp_apply, forall_const]
+  smul_zero g := by
+    change ρ g 0 = 0
+    simp only [map_zero]
+  smul_add g r s := by
+    change ρ g (r + s) = ρ g r + ρ g s
+    simp only [map_add]
+  smul_one g := by
+    change ρ g 1 = 1
+    simp only [map_one]
+  smul_mul g r s := by
+    change ρ g (r * s) = ρ g r * ρ g s
+    simp only [map_mul]
+
 /-- The tautological action by `R →+* R` on `R`.
 
 This generalizes `Function.End.applyMulAction`. -/
@@ -122,6 +167,8 @@ on `x`. -/
 theorem smul_inv'' [MulSemiringAction M F] (x : M) (m : F) : x • m⁻¹ = (x • m)⁻¹ :=
   map_inv₀ (MulSemiringAction.toRingHom M F x) _
 #align smul_inv'' smul_inv''
+
+
 
 end SimpLemmas
 
