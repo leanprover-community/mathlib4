@@ -448,9 +448,9 @@ lemma MeasureTheory.NullMeasurable.aemeasurable_of_aerange {f : α → β} {t : 
     exact (measurable_subtype_coe.comp_aemeasurable hf'm.aemeasurable).congr hff'.symm
 
 namespace MeasureTheory
+namespace Measure
 
-lemma map_sum {ι : Type*} {m : ι → Measure α} {f : α → β}
-    (hf : AEMeasurable f (Measure.sum m)) :
+lemma map_sum {ι : Type*} {m : ι → Measure α} {f : α → β} (hf : AEMeasurable f (Measure.sum m)) :
     Measure.map f (Measure.sum m) = Measure.sum (fun i ↦ Measure.map f (m i)) := by
   ext s hs
   rw [map_apply_of_aemeasurable hf hs, sum_apply₀ _ (hf.nullMeasurable hs), sum_apply _ hs]
@@ -465,4 +465,5 @@ instance (μ : Measure α) (f : α → β) [SFinite μ] : SFinite (μ.map f) := 
   · rw [map_of_not_aemeasurable H]
     infer_instance
 
+end Measure
 end MeasureTheory
