@@ -819,6 +819,12 @@ structure Config where
   attrs : List Name := []
   /-- simplify the right-hand side of generated simp-lemmas using `dsimp, simp`. -/
   simpRhs := false
+  /-- Simplify the left-hand side of generated simp-lemmas using `dsimp`.
+    This is important when structures have data fields depending on other data fields
+    (e.g. `CategoryTheory.Functor`), since the simp lemma of one data-field can be used to
+    simplify the type of the application of another data field.
+    We only use `dsimp` to be conservative (and it's easier to code -/
+  dsimpLhs := true
   /-- TransparencyMode used to reduce the type in order to detect whether it is a structure. -/
   typeMd := TransparencyMode.instances
   /-- TransparencyMode used to reduce the right-hand side in order to detect whether it is a
@@ -912,20 +918,29 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   -- simplify `rhs` if `cfg.simpRhs` is true
   let lvl ← getLevel type
   let mut (rhs, prf) := (rhs, mkAppN (mkConst `Eq.refl [lvl]) #[type, lhs])
-  if cfg.simpRhs then
+  let mut lhs := lhs
+  if cfg.dsimpLhs || cfg.simpRhs then
     let ctx ← mkSimpContext
-    let (rhs2, _) ← dsimp rhs ctx
-    if rhs != rhs2 then
-      trace[simps.debug] "`dsimp` simplified rhs to{indentExpr rhs2}"
-    else
-      trace[simps.debug] "`dsimp` failed to simplify rhs"
-    let (result, _) ← simp rhs2 ctx
-    if rhs2 != result.expr then
-      trace[simps.debug] "`simp` simplified rhs to{indentExpr result.expr}"
-    else
-      trace[simps.debug] "`simp` failed to simplify rhs"
-    rhs := result.expr
-    prf := result.proof?.getD prf
+    if cfg.dsimpLhs then
+      let (lhs2, _) ← dsimp lhs ctx
+      if lhs != lhs2 then
+        trace[simps.debug] "`dsimp` simplified lhs to{indentExpr lhs2}"
+      else
+        trace[simps.debug] "`dsimp` failed to simplify lhs"
+      lhs := lhs2
+    if cfg.simpRhs then
+      let (rhs2, _) ← dsimp rhs ctx
+      if rhs != rhs2 then
+        trace[simps.debug] "`dsimp` simplified rhs to{indentExpr rhs2}"
+      else
+        trace[simps.debug] "`dsimp` failed to simplify rhs"
+      let (result, _) ← simp rhs2 ctx
+      if rhs2 != result.expr then
+        trace[simps.debug] "`simp` simplified rhs to{indentExpr result.expr}"
+      else
+        trace[simps.debug] "`simp` failed to simplify rhs"
+      rhs := result.expr
+      prf := result.proof?.getD prf
   let eqAp := mkApp3 (mkConst `Eq [lvl]) type lhs rhs
   let declType ← mkForallFVars args eqAp
   let declValue ← mkLambdaFVars args prf
