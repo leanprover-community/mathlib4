@@ -76,8 +76,7 @@ instance : ZeroLEOneClass I := ⟨@zero_le_one ℝ _ _ _ _⟩
 
 instance : BoundedOrder I := Set.Icc.boundedOrder zero_le_one
 
-lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := by
-  ext ⟨t, t0, t1⟩; simp_rw [mem_univ, true_iff]; exact ⟨t0, t1⟩
+lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
 theorem coe_ne_zero {x : I} : (x : ℝ) ≠ 0 ↔ x ≠ 0 :=
   not_iff_not.mpr coe_eq_zero
@@ -243,7 +242,7 @@ open scoped unitInterval
 
 /-- Any open cover `c` of a closed interval `[a, b]` in ℝ can be refined to
   a finite partition into subintervals. -/
-lemma lebesgue_number_lemma_Icc {ι} {a b : ℝ} (h : a ≤ b) {c : ι → Set (Icc a b)}
+lemma exists_monotone_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b) {c : ι → Set (Icc a b)}
     (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : univ ⊆ ⋃ i, c i) : ∃ t : ℕ → Icc a b, t 0 = a ∧
       Monotone t ∧ (∃ m, ∀ n ≥ m, t n = b) ∧ ∀ n, ∃ i, Icc (t n) (t (n + 1)) ⊆ c i := by
   obtain ⟨δ, δ_pos, ball_subset⟩ := lebesgue_number_lemma_of_metric isCompact_univ hc₁ hc₂
@@ -254,13 +253,13 @@ lemma lebesgue_number_lemma_Icc {ι} {a b : ℝ} (h : a ≤ b) {c : ι → Set (
   exact ⟨i, fun t ht ↦ hsub ((abs_sub_addNsmul_le h hδ.le n ht).trans_lt <| half_lt_self δ_pos)⟩
 
 /-- Any open cover of the unit interval can be refined to a finite partition into subintervals. -/
-lemma lebesgue_number_lemma_unitInterval {ι} {c : ι → Set I} (hc₁ : ∀ i, IsOpen (c i))
-    (hc₂ : univ ⊆ ⋃ i, c i) : ∃ t : ℕ → I, t 0 = 0 ∧ Monotone t ∧
-      (∃ n, ∀ m ≥ n, t m = 1) ∧ ∀ n, ∃ i, Icc (t n) (t (n + 1)) ⊆ c i := by
+lemma exists_monotone_Icc_subset_open_cover_unitInterval {ι} {c : ι → Set I}
+    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : univ ⊆ ⋃ i, c i) : ∃ t : ℕ → I, t 0 = 0 ∧
+      Monotone t ∧ (∃ n, ∀ m ≥ n, t m = 1) ∧ ∀ n, ∃ i, Icc (t n) (t (n + 1)) ⊆ c i := by
   simp_rw [← Subtype.coe_inj]
-  exact lebesgue_number_lemma_Icc zero_le_one hc₁ hc₂
+  exact exists_monotone_Icc_subset_open_cover_Icc zero_le_one hc₁ hc₂
 
-lemma lebesgue_number_lemma_unitInterval_prod_self {ι} {c : ι → Set (I × I)}
+lemma exists_monotone_Icc_subset_open_cover_unitInterval_prod_self {ι} {c : ι → Set (I × I)}
     (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : univ ⊆ ⋃ i, c i) :
     ∃ t : ℕ → I, t 0 = 0 ∧ Monotone t ∧ (∃ n, ∀ m ≥ n, t m = 1) ∧
       ∀ n m, ∃ i, Icc (t n) (t (n + 1)) ×ˢ Icc (t m) (t (m + 1)) ⊆ c i := by
