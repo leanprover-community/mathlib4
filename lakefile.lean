@@ -2,26 +2,22 @@ import Lake
 
 open Lake DSL
 
-def leanOptions : Array LeanOption := #[
+package mathlib where
+  leanOptions := #[
     ⟨`pp.unicode.fun, true⟩,
     ⟨`pp.proofs.withType, false⟩,
     ⟨`autoImplicit, false⟩,
     ⟨`relaxedAutoImplicit, false⟩
   ]
-
--- These are additional settings which do not affect the lake hash,
--- so they can be enabled in CI and disabled locally or vice versa.
--- Warning: Do not put any options here that actually change the olean files,
--- or inconsistent behavior may result
-def weakLeanArgs : Array String :=
-  if get_config? CI |>.isSome then
-    #["-DwarningAsError=true"]
-  else
-    #[]
-
-package mathlib where
-  leanOptions := leanOptions
-  weakLeanArgs := weakLeanArgs
+  -- These are additional settings which do not affect the lake hash,
+  -- so they can be enabled in CI and disabled locally or vice versa.
+  -- Warning: Do not put any options here that actually change the olean files,
+  -- or inconsistent behavior may result
+  weakLeanArgs :=
+    if get_config? CI |>.isSome then
+      #["-DwarningAsError=true"]
+    else
+      #[]
 
 /-!
 ## Mathlib dependencies on upstream projects.
