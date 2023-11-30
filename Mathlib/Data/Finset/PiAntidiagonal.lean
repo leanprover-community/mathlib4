@@ -341,26 +341,30 @@ lemma mem_finAntidiagonal (d : ℕ) (n : μ) (f : Fin d →₀ μ) :
       · rw [if_neg hn]
         simp only [not_mem_empty, false_iff]
         intro hn'; apply hn; rw [← hn'])
-  | succ d ih => exact fun n f => (by
+  | succ d ih => exact fun n f => by (
       simp only [finAntidiagonal, mem_biUnion, mem_map, Embedding.coeFn_mk,
         Prod.exists, exists_and_right]
       constructor
-      · sorry/- rintro ⟨a, b, hab, g, hg, hf⟩
+      · rintro ⟨a, b, hab, g, hg, hf⟩
         rw [ih b g] at hg
         rw [mem_antidiagonal] at hab
-        rw [← hf, Fin.sum_cons, hg, hab] -/
+        rw [← Finsupp.sum_fintype f (fun x y => y), ← hf, Finsupp.sum_cons, Finsupp.sum_fintype, hg, hab]
+        exact fun _ => rfl
+        exact fun _ => rfl
       · intro hf
-        rw [← Fin.cons_self_tail f, Fin.sum_cons] at hf
-        sorry
-        /- use f 0
-        use ∑ i : Fin d, Fin.tail f i
+        use f 0
+        use Finsupp.sum (Finsupp.tail f) (fun x e => e)
         constructor
         · rw [mem_antidiagonal]
+          rw [← Finsupp.sum_fintype f (fun x y => y) (fun _ => rfl),
+            ← Finsupp.cons_tail f, Finsupp.sum_cons] at hf
           exact hf
-        use Fin.tail f
+        use Finsupp.tail f
         constructor
-        · rw [ih]
-        · apply Fin.cons_self_tail -/)
+        · rw [Finsupp.sum_of_support_subset, mem_finAntidiagonal]
+          apply subset_univ
+          exact fun _ _ => rfl
+        · exact Finsupp.cons_tail f)
 
 example (p q : Prop) (h : p ↔ q) : Decidable p ≃ Decidable q := {
   toFun := fun hp => decidable_of_iff p h
