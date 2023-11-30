@@ -341,7 +341,7 @@ theorem lintegral_nnnorm_eq_of_nonneg {f : α → ℝ} (h_nonneg : 0 ≤ f) :
   lintegral_nnnorm_eq_of_ae_nonneg (Filter.eventually_of_forall h_nonneg)
 #align measure_theory.lintegral_nnnorm_eq_of_nonneg MeasureTheory.lintegral_nnnorm_eq_of_nonneg
 
-/-- Monotone convergence theorem -- sometimes called Beppo-Levi convergence.
+/-- **Monotone convergence theorem** -- sometimes called **Beppo-Levi convergence**.
 See `lintegral_iSup_directed` for a more general form. -/
 theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (f n)) (h_mono : Monotone f) :
     ∫⁻ a, ⨆ n, f n a ∂μ = ⨆ n, ∫⁻ a, f n a ∂μ := by
