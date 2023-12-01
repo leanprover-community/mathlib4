@@ -6,7 +6,6 @@ Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Hom.Units
-import Mathlib.Algebra.Hom.Commute
 
 #align_import algebra.group.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
