@@ -61,7 +61,6 @@ lemma bitwise_zero : bitwise f 0 0 = 0 := by
   simp only [bitwise_zero_right, ite_self]
 #align nat.bitwise_zero Nat.bitwise_zero
 
-@[simp]
 lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
     bitwise f n m = bit (f (bodd n) (bodd m)) (bitwise f (n / 2) (m / 2)) := by
   conv_lhs => unfold bitwise
