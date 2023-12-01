@@ -178,9 +178,8 @@ theorem measurable_measure_prod_mk_left_finite [IsFiniteMeasure ν] {s : Set (α
   is a measurable function. -/
 theorem measurable_measure_prod_mk_left [SFinite ν] {s : Set (α × β)} (hs : MeasurableSet s) :
     Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
-  have M : ∀ x, MeasurableSet (Prod.mk x ⁻¹' s) := fun x => measurable_prod_mk_left hs
   rw [← sum_sFiniteSeq ν]
-  simp_rw [Measure.sum_apply _ (M _)]
+  simp_rw [Measure.sum_apply_of_countable]
   exact Measurable.ennreal_tsum (fun i ↦ measurable_measure_prod_mk_left_finite hs)
 #align measurable_measure_prod_mk_left measurable_measure_prod_mk_left
 

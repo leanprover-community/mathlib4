@@ -452,7 +452,7 @@ theorem measure_iUnion_eq_iSup [Countable ι] {s : ι → Set α} (hd : Directed
   generalize ht : Function.extend Encodable.encode s ⊥ = t
   replace hd : Directed (· ⊆ ·) t := ht ▸ hd.extend_bot Encodable.encode_injective
   suffices μ (⋃ n, t n) = ⨆ n, μ (t n) by
-    simp only [← ht, Encodable.encode_injective.apply_extend μ, ← iSup_eq_iUnion,
+    simp only [← ht, Function.apply_extend μ, ← iSup_eq_iUnion,
       iSup_extend_bot Encodable.encode_injective, (· ∘ ·), Pi.bot_apply, bot_eq_empty,
       measure_empty] at this
     exact this.trans (iSup_extend_bot Encodable.encode_injective _)
@@ -478,7 +478,6 @@ theorem measure_iUnion_eq_iSup [Countable ι] {s : ι → Set α} (hd : Directed
         _ = μ (⋃ n ∈ I, t n) := (measure_biUnion_toMeasurable I.countable_toSet _)
         _ ≤ μ (t N) := (measure_mono (iUnion₂_subset hN))
         _ ≤ ⨆ n, μ (t n) := le_iSup (μ ∘ t) N
-
 #align measure_theory.measure_Union_eq_supr MeasureTheory.measure_iUnion_eq_iSup
 
 theorem measure_biUnion_eq_iSup {s : ι → Set α} {t : Set ι} (ht : t.Countable)
@@ -1536,21 +1535,11 @@ theorem sum_add_sum {ι : Type*} (μ ν : ι → Measure α) : sum μ + sum ν =
   ext s hs
   simpa [hs, sum_apply] using e.tsum_eq (fun n ↦ m n s)
 
-@[simp] lemma sum_extend_zero {ι : Type*} (a : Set ι) (m : a → Measure α) :
-    sum (Function.extend Subtype.val m 0) = sum m := by
-  classical
+@[simp] lemma sum_extend_zero {ι ι' : Type*} {f : ι → ι'} (hf : Injective f) (m : ι → Measure α) :
+    sum (Function.extend f m 0) = sum m := by
   ext s hs
-  simp only [hs, sum_apply, Subtype.exists, exists_prop, exists_eq_right]
-  calc
-  ∑' (i : ι), Function.extend Subtype.val m 0 i s
-    = ∑' (i : a), Function.extend Subtype.val m 0 i s := by
-    apply (tsum_subtype_eq_of_support_subset _).symm
-    exact Function.support_subset_iff'.2 (fun x hx ↦ by simp [hx])
-  _ = ∑' (i : a), m i s := by
-    congr with i
-    convert Subtype.val_injective.extend_apply (fun n ↦ m n s) 0 i
-    simp [Function.extend_def]
-
+  simp [*, Function.apply_extend (fun μ : Measure α ↦ μ s)]
+  
 end Sum
 
 /-! ### Absolute continuity -/

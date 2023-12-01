@@ -494,18 +494,17 @@ instance isFiniteMeasure_sFiniteSeq [h : SFinite μ] (n : ℕ) : IsFiniteMeasure
 lemma sum_sFiniteSeq (μ : Measure α) [h : SFinite μ] : sum (sFiniteSeq μ) = μ :=
   h.1.choose_spec.2.symm
 
-/-- A countable sum of finite measures is s-finite. -/
+/-- A countable sum of finite measures is s-finite.
+This lemma is superseeded by the instance below. -/
 lemma sfinite_sum_of_countable {ι : Type*} [Countable ι]
     (m : ι → Measure α) [∀ n, IsFiniteMeasure (m n)] : SFinite (Measure.sum m) := by
   classical
   obtain ⟨f, hf⟩ : ∃ f : ι → ℕ, Function.Injective f := Countable.exists_injective_nat ι
-  let e : ι ≃ range f := Equiv.ofInjective f hf
-  let m' : ℕ → Measure α := Function.extend Subtype.val (m ∘ e.symm) 0
-  refine ⟨⟨m', fun n ↦ ?_, by simp⟩⟩
-  by_cases hn : n ∈ range f
-  · simp [-mem_range, hn, Function.extend_def]
+  refine ⟨_, fun n ↦ ?_, (sum_extend_zero hf m).symm⟩
+  rcases em (n ∈ range f) with ⟨i, rfl⟩ | hn
+  · rw [hf.extend_apply]
     infer_instance
-  · simp [-mem_range, hn]
+  · rw [Function.extend_apply' _ _ _ hn, Pi.zero_apply]
     infer_instance
 
 instance {ι : Type*} [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] :
