@@ -346,10 +346,8 @@ def AddMonoid.End.mulRight : R →+ AddMonoid.End R :=
 #align add_monoid.End.mul_right_apply_apply AddMonoid.End.mulRight_apply_apply
 
 lemma AddMonoid.End.commute_mulRight_eq_mulLeft (a : R) (h : ∀ (b : R), Commute a b) :
-    mulRight a = mulLeft a := by
-  apply AddMonoidHom.ext
-  intro _
-  rw [mulLeft_apply_apply, mulRight_apply_apply, h]
+    mulRight a = mulLeft a :=
+  AddMonoidHom.ext fun _ ↦ (h _).eq.symm
 
 end Semiring
 
