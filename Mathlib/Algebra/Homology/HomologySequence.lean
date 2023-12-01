@@ -51,8 +51,7 @@ section HasZeroMorphisms
 
 variable {C ι : Type*} [Category C] [HasZeroMorphisms C] {c : ComplexShape ι}
   (K L : HomologicalComplex C c) (φ : K ⟶ L) (i j : ι)
-  [K.HasHomology i] [K.HasHomology j]
-  [L.HasHomology i] [L.HasHomology j]
+  [K.HasHomology i] [K.HasHomology j] [L.HasHomology i] [L.HasHomology j]
 
 /-- The morphism `K.opcycles i ⟶ K.cycles j` that is induced by `K.d i j`. -/
 noncomputable def opcyclesToCycles [K.HasHomology i] [K.HasHomology j] :
@@ -105,14 +104,6 @@ noncomputable def natTransOpCyclesToCycles [CategoryWithHomology C] :
     opcyclesFunctor C c i ⟶ cyclesFunctor C c j where
   app K := K.opcyclesToCycles i j
 
-instance [Mono (φ.f j)] : Mono (cyclesMap φ j) :=
-  mono_of_mono_fac (cyclesMap_i φ j)
-
-attribute [local instance] epi_comp
-
-instance [Epi (φ.f i)] : Epi (opcyclesMap φ i) :=
-  epi_of_epi_fac (p_opcyclesMap φ i)
-
 end HasZeroMorphisms
 
 section Preadditive
@@ -152,7 +143,7 @@ lemma composableArrows₃_exact [CategoryWithHomology C] :
     rw [ShortComplex.exact_iff_of_epi_of_isIso_of_mono ι]
     exact S'.exact_of_f_is_kernel (K.homologyIsKernel i j (c.next_eq' hij))
   let T := ShortComplex.mk (K.opcyclesToCycles i j) (K.homologyπ j) (by simp)
-  let T' := ShortComplex.mk  (K.toCycles i j) (K.homologyπ j) (by simp)
+  let T' := ShortComplex.mk (K.toCycles i j) (K.homologyπ j) (by simp)
   let π : T' ⟶ T :=
     { τ₁ := K.pOpcycles i
       τ₂ := 𝟙 _
