@@ -97,12 +97,10 @@ theorem ofFin_le_ofFin_of_le {n : ℕ} {i j : Fin (2 ^ n)} (h : i ≤ j) : ofFin
   exact h
 #align bitvec.of_fin_le_of_fin_of_le Std.BitVec.ofFin_le_ofFin_of_le
 
-theorem toFin_ofFin {n} (i : Fin <| 2 ^ n) : (ofFin i).toFin = i :=
-  Fin.eq_of_veq (by simp [toFin_val, ofFin, toNat_ofNat, Nat.mod_eq_of_lt, i.is_lt])
+theorem toFin_ofFin {n} (i : Fin <| 2 ^ n) : (ofFin i).toFin = i := rfl
 #align bitvec.to_fin_of_fin Std.BitVec.toFin_ofFin
 
-theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := by
-  rfl
+theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := rfl
 #align bitvec.of_fin_to_fin Std.BitVec.ofFin_toFin
 
 end Std.BitVec
