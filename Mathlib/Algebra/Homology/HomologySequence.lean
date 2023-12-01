@@ -126,7 +126,7 @@ lemma composableArrows₃_exact [CategoryWithHomology C] :
     rw [ShortComplex.exact_iff_of_epi_of_isIso_of_mono ι]
     exact S'.exact_of_f_is_kernel (K.homologyIsKernel i j (c.next_eq' hij))
   let T := ShortComplex.mk (K.opcyclesToCycles i j) (K.homologyπ j) (by simp)
-  let T' := ShortComplex.mk  (K.toCycles i j) (K.homologyπ j) (by simp)
+  let T' := ShortComplex.mk (K.toCycles i j) (K.homologyπ j) (by simp)
   let π : T' ⟶ T :=
     { τ₁ := K.pOpcycles i
       τ₂ := 𝟙 _
