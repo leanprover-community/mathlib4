@@ -391,7 +391,7 @@ lemma CommMagma.IsLeftCancelMul.toIsCancelMul (G : Type u) [CommMagma G] [IsLeft
 `IsRightCancelAdd G` also satisfies `IsCancelAdd G`."]
 lemma CommMagma.IsRightCancelMul.toIsCancelMul (G : Type u) [CommMagma G] [IsRightCancelMul G] :
     IsCancelMul G := { CommMagma.IsRightCancelMul.toIsLeftCancelMul G with }
-#align comm_semigroup.is_right_cancel_mul.to_is_cancel_mul CommSemigroup.IsRightCancelMul.toIsCancelMul
+#align comm_semigroup.is_right_cancel_mul.to_is_cancel_mul CommMagma.IsRightCancelMul.toIsCancelMul
 #align add_comm_semigroup.is_right_cancel_add.to_is_cancel_add AddCommMagma.IsRightCancelAdd.toIsCancelAdd
 
 end CommMagma
