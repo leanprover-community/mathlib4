@@ -359,7 +359,7 @@ namespace AddMonoid.End
 
 lemma comm_mulRight_eq_mulLeft : mulRight = (mulLeft : R →+ AddMonoid.End R) := by
   ext a
-  exact commute_mulRight_eq_mulLeft _ (Commute.all _)
+  exact mulRight_eq_mulLeft_of_commute _ (Commute.all _)
 
 end AddMonoid.End
 
