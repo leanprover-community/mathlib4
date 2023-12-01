@@ -570,6 +570,16 @@ instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
 @[ext high]
 theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
 
+section MulDistribMulAction
+
+instance : MulDistribMulAction (A →ₐ[R] A) Aˣ where
+  smul := fun f => Units.map f
+  one_smul := fun x => by ext; rfl
+  mul_smul := fun x y z => by ext; rfl
+  smul_mul := fun x y z => by ext; exact x.map_mul _ _
+  smul_one := fun x => by ext; exact x.map_one
+
+end MulDistribMulAction
 end Algebra
 
 namespace MulSemiringAction
