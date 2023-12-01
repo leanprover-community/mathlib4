@@ -161,23 +161,28 @@ def librarySearchSymm (goal : MVarId)
       return .nil
 
 /-- A type synonym for our subgoal ranking algorithm. -/
-def subgoalRankType : Type := Bool × Nat × Int
+def subgoalRankType : Type := Bool × Nat × Int × Int
   deriving ToString
 
 instance : Ord subgoalRankType :=
-  have : Ord (Nat × Int) := lexOrd
+  have : Ord (Int × Int) := lexOrd
+  have : Ord (Nat × Int × Int) := lexOrd
   lexOrd
 
 /-- Returns a tuple:
 * are there no remaining goals?
 * how many local hypotheses were used?
 * how many goals remain, negated?
+* what is the length of the pretty printed remaining goals?
 
 Larger values (i.e. no remaining goals, more local hypotheses, fewer remaining goals)
 are better.
 -/
 def subgoalRanking (goal : MVarId) (subgoals : List MVarId) : MetaM subgoalRankType := do
-  return (subgoals.isEmpty, ← countLocalHypsUsed (.mvar goal), - subgoals.length)
+  return (subgoals.isEmpty,
+    ← countLocalHypsUsed (.mvar goal),
+    - subgoals.length,
+    - ((← subgoals.mapM fun g => return (toString (← Meta.ppGoal g)).length).foldl (· + ·) 0 : Nat))
 
 /-- Sort the incomplete results from `librarySearchCore` according to
 * the number of local hypotheses used (the more the better) and
