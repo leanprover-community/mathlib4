@@ -399,10 +399,11 @@ end
 
 section ModelWithCornersProd
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-    {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
+variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
+  {E : Type v} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type w} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
 
 /-- Given two model_with_corners `I` on `(E, H)` and `I'` on `(E', H')`, we define the model with
 corners `I.prod I'` on `(E × E', ModelProd H H')`. This appears in particular for the manifold
@@ -481,39 +482,36 @@ end ModelWithCornersProd
 
 section Boundaryless
 
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
+
 /-- Property ensuring that the model with corners `I` defines manifolds without boundary. -/
-class ModelWithCorners.Boundaryless {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) : Prop where
+class ModelWithCorners.Boundaryless : Prop where
   range_eq_univ : range I = univ
 #align model_with_corners.boundaryless ModelWithCorners.Boundaryless
 
-theorem ModelWithCorners.range_eq_univ {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] :
+theorem ModelWithCorners.range_eq_univ [I.Boundaryless] :
     range I = univ := ModelWithCorners.Boundaryless.range_eq_univ
 
 /-- If `I` is a `ModelWithCorners.Boundaryless` model, then it is a homeomorphism. -/
 @[simps (config := {simpRhs := true})]
-def ModelWithCorners.toHomeomorph {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] : H ≃ₜ E where
+def ModelWithCorners.toHomeomorph [I.Boundaryless] : H ≃ₜ E where
   __ := I
   left_inv := I.left_inv
   right_inv _ := I.right_inv <| I.range_eq_univ.symm ▸ mem_univ _
 
+variable (𝕜 E) in
 /-- The trivial model with corners has no boundary -/
-instance modelWithCornersSelf_boundaryless (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] : (modelWithCornersSelf 𝕜 E).Boundaryless :=
+instance modelWithCornersSelf_boundaryless : (modelWithCornersSelf 𝕜 E).Boundaryless :=
   ⟨by simp⟩
 #align model_with_corners_self_boundaryless modelWithCornersSelf_boundaryless
 
 /-- If two model with corners are boundaryless, their product also is -/
-instance ModelWithCorners.range_eq_univ_prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] {E' : Type v'} [NormedAddCommGroup E']
-    [NormedSpace 𝕜 E'] {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
-    [I'.Boundaryless] : (I.prod I').Boundaryless := by
+instance ModelWithCorners.range_eq_univ_prod [I.Boundaryless] [I'.Boundaryless] :
+    (I.prod I').Boundaryless := by
   constructor
   dsimp [ModelWithCorners.prod, ModelProd]
   rw [← prod_range_range_eq, ModelWithCorners.Boundaryless.range_eq_univ,
@@ -526,13 +524,12 @@ section contDiffGroupoid
 
 /-! ### Smooth functions on models with corners -/
 
+variable {m n : ℕ∞} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  {M : Type*} [TopologicalSpace M]
 
-variable {m n : ℕ∞} {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*}
-  [TopologicalSpace M]
-
-variable (n)
-
+variable (n) in
 /-- Given a model with corners `(E, H)`, we define the groupoid of `C^n` transformations of `H` as
 the maps that are `C^n` when read in `E` through `I`. -/
 def contDiffGroupoid : StructureGroupoid H :=
@@ -574,8 +571,6 @@ def contDiffGroupoid : StructureGroupoid H :=
         simp only [mfld_simps] at hy1 ⊢
         rw [fg _ hy1] }
 #align cont_diff_groupoid contDiffGroupoid
-
-variable {n}
 
 /-- Inclusion of the groupoid of `C^n` local diffeos in the groupoid of `C^m` local diffeos when
 `m ≤ n` -/
@@ -657,9 +652,10 @@ end contDiffGroupoid
 
 section analyticGroupoid
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*}
-  [TopologicalSpace M]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  {M : Type*} [TopologicalSpace M]
 
 /-- Given a model with corners `(E, H)`, we define the groupoid of analytic transformations of `H`
 as the maps that are analytic and map interior to interior when read in `E` through `I`. We also
@@ -922,9 +918,11 @@ namespace TopologicalSpace.Opens
 
 open TopologicalSpace
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*}
-  [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] (s : Opens M)
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
+  (s : Opens M)
 
 instance : SmoothManifoldWithCorners I s :=
   { s.instHasGroupoid (contDiffGroupoid ∞ I) with }
@@ -1214,15 +1212,15 @@ variable {f f'}
 
 open SmoothManifoldWithCorners
 
-theorem contDiffOn_extend_coord_change [ChartedSpace H M] (hf : f ∈ maximalAtlas I M)
-    (hf' : f' ∈ maximalAtlas I M) :
+variable [ChartedSpace H M] (hf : f ∈ maximalAtlas I M) (hf' : f' ∈ maximalAtlas I M)
+
+theorem contDiffOn_extend_coord_change :
     ContDiffOn 𝕜 ⊤ (f.extend I ∘ (f'.extend I).symm) ((f'.extend I).symm ≫ f.extend I).source := by
   rw [extend_coord_change_source, I.image_eq]
   exact (StructureGroupoid.compatible_of_mem_maximalAtlas hf' hf).1
 #align local_homeomorph.cont_diff_on_extend_coord_change LocalHomeomorph.contDiffOn_extend_coord_change
 
-theorem contDiffWithinAt_extend_coord_change [ChartedSpace H M] (hf : f ∈ maximalAtlas I M)
-    (hf' : f' ∈ maximalAtlas I M) {x : E} (hx : x ∈ ((f'.extend I).symm ≫ f.extend I).source) :
+theorem contDiffWithinAt_extend_coord_change {x : E} (hx : x ∈ ((f'.extend I).symm ≫ f.extend I).source) :
     ContDiffWithinAt 𝕜 ⊤ (f.extend I ∘ (f'.extend I).symm) (range I) x := by
   apply (contDiffOn_extend_coord_change I hf hf' x hx).mono_of_mem
   rw [extend_coord_change_source] at hx ⊢
@@ -1230,8 +1228,7 @@ theorem contDiffWithinAt_extend_coord_change [ChartedSpace H M] (hf : f ∈ maxi
   exact I.image_mem_nhdsWithin ((LocalHomeomorph.open_source _).mem_nhds hz)
 #align local_homeomorph.cont_diff_within_at_extend_coord_change LocalHomeomorph.contDiffWithinAt_extend_coord_change
 
-theorem contDiffWithinAt_extend_coord_change' [ChartedSpace H M] (hf : f ∈ maximalAtlas I M)
-    (hf' : f' ∈ maximalAtlas I M) {x : M} (hxf : x ∈ f.source) (hxf' : x ∈ f'.source) :
+theorem contDiffWithinAt_extend_coord_change' {x : M} (hxf : x ∈ f.source) (hxf' : x ∈ f'.source) :
     ContDiffWithinAt 𝕜 ⊤ (f.extend I ∘ (f'.extend I).symm) (range I) (f'.extend I x) := by
   refine' contDiffWithinAt_extend_coord_change I hf hf' _
   rw [← extend_image_source_inter]
