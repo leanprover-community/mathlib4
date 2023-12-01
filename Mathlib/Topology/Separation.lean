@@ -75,7 +75,7 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 If the space is also compact:
 
 * `normalOfCompactT2`: A compact T₂ space is a `NormalSpace`.
-* `connectedComponent_eq_iInter_clopen`: The connected component of a point
+* `connectedComponent_eq_iInter_isClopen`: The connected component of a point
   is the intersection of all its clopen neighbourhoods.
 * `compact_t2_tot_disc_iff_tot_sep`: Being a `TotallyDisconnectedSpace`
   is equivalent to being a `TotallySeparatedSpace`.
@@ -1542,7 +1542,7 @@ theorem isIrreducible_iff_singleton [T2Space X] {S : Set X} : IsIrreducible S �
 /-- There does not exist a nontrivial preirreducible T₂ space. -/
 theorem not_preirreducible_nontrivial_t2 (X) [TopologicalSpace X] [PreirreducibleSpace X]
     [Nontrivial X] [T2Space X] : False :=
-  (PreirreducibleSpace.isPreirreducible_univ (α := X)).subsingleton.not_nontrivial nontrivial_univ
+  (PreirreducibleSpace.isPreirreducible_univ (X := X)).subsingleton.not_nontrivial nontrivial_univ
 #align not_preirreducible_nontrivial_t2 not_preirreducible_nontrivial_t2
 
 end Separation
@@ -1794,7 +1794,7 @@ instance (priority := 80) [LocallyCompactSpace X] [ClosableCompactSubsetOpenSpac
     RegularSpace X := by
   apply RegularSpace.ofExistsMemNhdsIsClosedSubset (fun x s hx ↦ ?_)
   rcases _root_.mem_nhds_iff.1 hx with ⟨u, us, u_open, xu⟩
-  rcases exists_compact_closed_between (isCompact_singleton (a := x)) u_open (by simpa using xu)
+  rcases exists_compact_closed_between (isCompact_singleton (x := x)) u_open (by simpa using xu)
     with ⟨t, -, t_closed, xt, tu⟩
   have : interior t ∈ 𝓝 x := isOpen_interior.mem_nhds (by simpa using xt)
   exact ⟨t, interior_mem_nhds.mp this, t_closed, tu.trans us⟩
@@ -2045,9 +2045,9 @@ end CompletelyNormal
 
 /-- In a compact T₂ space, the connected component of a point equals the intersection of all
 its clopen neighbourhoods. -/
-theorem connectedComponent_eq_iInter_clopen [T2Space X] [CompactSpace X] (x : X) :
+theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : X) :
     connectedComponent x = ⋂ s : { s : Set X // IsClopen s ∧ x ∈ s }, s := by
-  apply Subset.antisymm connectedComponent_subset_iInter_clopen
+  apply Subset.antisymm connectedComponent_subset_iInter_isClopen
   -- Reduce to showing that the clopen intersection is connected.
   refine' IsPreconnected.subset_connectedComponent _ (mem_iInter.2 fun s => s.2.2)
   -- We do this by showing that any disjoint cover by two closed sets implies
@@ -2097,7 +2097,7 @@ theorem connectedComponent_eq_iInter_clopen [T2Space X] [CompactSpace X] (x : X)
       · refine Subset.trans ?_ (inter_subset_right s v)
         exact iInter_subset (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s.1)
           ⟨s ∩ v, H2, mem_inter H.2.1 h1⟩
-#align connected_component_eq_Inter_clopen connectedComponent_eq_iInter_clopen
+#align connected_component_eq_Inter_clopen connectedComponent_eq_iInter_isClopen
 
 section Profinite
 
@@ -2121,7 +2121,7 @@ theorem compact_t2_tot_disc_iff_tot_sep : TotallyDisconnectedSpace X ↔ Totally
   intro hyp
   suffices x ∈ connectedComponent y by
     simpa [totallyDisconnectedSpace_iff_connectedComponent_singleton.1 h y, mem_singleton_iff]
-  rw [connectedComponent_eq_iInter_clopen, mem_iInter]
+  rw [connectedComponent_eq_iInter_isClopen, mem_iInter]
   rintro ⟨w : Set X, hw : IsClopen w, hy : y ∈ w⟩
   by_contra hx
   exact hyp wᶜ w hw.2.isOpen_compl hw.1 hx hy (@isCompl_compl _ w _).symm.codisjoint.top_le
@@ -2138,7 +2138,7 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
     constructor
     · have hx : connectedComponent x = {x} :=
         totallyDisconnectedSpace_iff_connectedComponent_singleton.mp ‹_› x
-      rw [connectedComponent_eq_iInter_clopen] at hx
+      rw [connectedComponent_eq_iInter_isClopen] at hx
       intro hU
       let N := { s // IsClopen s ∧ x ∈ s }
       suffices : ∃ s : N, s.val ⊆ U
@@ -2231,7 +2231,7 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
   rw [ConnectedComponents.coe_ne_coe] at ne
   have h := connectedComponent_disjoint ne
   -- write ↑b as the intersection of all clopen subsets containing it
-  rw [connectedComponent_eq_iInter_clopen b, disjoint_iff_inter_eq_empty] at h
+  rw [connectedComponent_eq_iInter_isClopen b, disjoint_iff_inter_eq_empty] at h
   -- Now we show that this can be reduced to some clopen containing `↑b` being disjoint to `↑a`
   obtain ⟨U, V, hU, ha, hb, rfl⟩ : ∃ (U : Set X) (V : Set (ConnectedComponents X)),
       IsClopen U ∧ connectedComponent a ∩ U = ∅ ∧ connectedComponent b ⊆ U ∧ (↑) ⁻¹' V = U := by
