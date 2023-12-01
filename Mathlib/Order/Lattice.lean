@@ -61,16 +61,12 @@ variable {α : Type u} {β : Type v}
 -- Porting note: no ematch attribute
 --attribute [ematch] le_trans lt_of_le_of_lt lt_of_lt_of_le lt_trans
 
-section
-
+-- Porting note: Without ematch, this is just a copy of `le_antisymm`
 -- TODO: this seems crazy, but it also seems to work reasonably well
--- Porting note: no ematch attribute
---@[ematch]
-theorem le_antisymm' [PartialOrder α] : ∀ {a b : α}, a ≤ b → b ≤ a → a = b :=
-  @le_antisymm _ _
-#align le_antisymm' le_antisymm'
-
-end
+-- @[ematch]
+-- theorem le_antisymm' [PartialOrder α] : ∀ {a b : α}, a ≤ b → b ≤ a → a = b :=
+--   @le_antisymm _ _
+#align le_antisymm' le_antisymm
 
 /-!
 ### Join-semilattices
