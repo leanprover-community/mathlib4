@@ -130,9 +130,9 @@ def continuousLinearMap :
     Pretrivialization (F₁ →SL[σ] F₂) (π (F₁ →SL[σ] F₂) (Bundle.ContinuousLinearMap σ E₁ E₂)) where
   toFun p := ⟨p.1, .comp (e₂.continuousLinearMapAt 𝕜₂ p.1) (p.2.comp (e₁.symmL 𝕜₁ p.1))⟩
   invFun p := ⟨p.1, .comp (e₂.symmL 𝕜₂ p.1) (p.2.comp (e₁.continuousLinearMapAt 𝕜₁ p.1))⟩
-  source := Bundle.TotalSpace.proj ⁻¹' (e₁.baseSet ∩ e₂.baseSet)
-  target := (e₁.baseSet ∩ e₂.baseSet) ×ˢ Set.univ
-  map_source' := fun ⟨x, L⟩ h => ⟨h, Set.mem_univ _⟩
+  source := TotalSpace.proj ⁻¹' (e₁.baseSet ∩ e₂.baseSet)
+  target := (e₁.baseSet ∩ e₂.baseSet) ×ˢ univ
+  map_source' := fun ⟨x, L⟩ h => ⟨h, mem_univ _⟩
   map_target' := fun ⟨x, f⟩ h => h.1
   left_inv' := fun ⟨x, L⟩ ⟨h₁, h₂⟩ => by
     simp only [TotalSpace.mk_inj]

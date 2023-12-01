@@ -56,7 +56,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (𝕜)
 
-instance vectorBundle : VectorBundle 𝕜 F (Bundle.Trivial B F) where
+instance vectorBundle : VectorBundle 𝕜 F (Trivial B F) where
   trivialization_linear' e he := by
     rw [eq_trivialization B F e]
     infer_instance

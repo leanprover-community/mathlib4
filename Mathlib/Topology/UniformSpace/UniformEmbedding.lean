@@ -95,7 +95,7 @@ theorem UniformInducing.uniformContinuous {f : α → β} (hf : UniformInducing 
 theorem UniformInducing.uniformContinuous_iff {f : α → β} {g : β → γ} (hg : UniformInducing g) :
     UniformContinuous f ↔ UniformContinuous (g ∘ f) := by
   dsimp only [UniformContinuous, Tendsto]
-  rw [← hg.comap_uniformity, ← map_le_iff_le_comap, Filter.map_map]; rfl
+  rw [← hg.comap_uniformity, ← map_le_iff_le_comap, map_map]; rfl
 #align uniform_inducing.uniform_continuous_iff UniformInducing.uniformContinuous_iff
 
 theorem UniformInducing.inducing {f : α → β} (h : UniformInducing f) : Inducing f := by
@@ -128,7 +128,7 @@ injective. If `α` is a separated space, then the latter assumption follows from
 @[mk_iff uniformEmbedding_iff]
 structure UniformEmbedding (f : α → β) extends UniformInducing f : Prop where
   /-- A uniform embedding is injective. -/
-  inj : Function.Injective f
+  inj : Injective f
 #align uniform_embedding UniformEmbedding
 #align uniform_embedding_iff uniformEmbedding_iff
 
@@ -293,7 +293,7 @@ theorem isComplete_image_iff {m : α → β} {s : Set α} (hm : UniformInducing 
   suffices IsComplete (range m') by rwa [range_comp, Subtype.range_coe] at this
   have hm' : UniformInducing m' := hm.comp uniformEmbedding_subtype_val.toUniformInducing
   intro f hf hfm
-  rw [Filter.le_principal_iff] at hfm
+  rw [le_principal_iff] at hfm
   have cf' : Cauchy (comap m' f) :=
     hf.comap' hm'.comap_uniformity.le (NeBot.comap_of_range_mem hf.1 hfm)
   rcases CompleteSpace.complete cf' with ⟨x, hx⟩
@@ -368,9 +368,9 @@ theorem completeSpace_extension {m : β → α} (hm : UniformInducing m) (dense 
         (g ×ˢ g).sets_of_superset hg fun ⟨a, b⟩ ⟨⟨c₁, c₁t, hc₁⟩, ⟨c₂, c₂t, hc₂⟩⟩ =>
           have : (c₁, c₂) ∈ t ×ˢ t := ⟨c₁t, c₂t⟩
           comp_s₁ <| prod_mk_mem_compRel hc₁ <| comp_s₂ <| prod_mk_mem_compRel (prod_t this) hc₂⟩
-    have : Cauchy (Filter.comap m g) := ‹Cauchy g›.comap' (le_of_eq hm.comap_uniformity) ‹_›
-    let ⟨x, (hx : map m (Filter.comap m g) ≤ 𝓝 x)⟩ := h _ this
-    have : ClusterPt x (map m (Filter.comap m g)) :=
+    have : Cauchy (comap m g) := ‹Cauchy g›.comap' (le_of_eq hm.comap_uniformity) ‹_›
+    let ⟨x, (hx : map m (comap m g) ≤ 𝓝 x)⟩ := h _ this
+    have : ClusterPt x (map m (comap m g)) :=
       (le_nhds_iff_adhp_of_cauchy (this.map hm.uniformContinuous)).mp hx
     have : ClusterPt x g := this.mono map_comap_le
     ⟨x,
@@ -402,7 +402,7 @@ instance CompleteSpace.sum [CompleteSpace α] [CompleteSpace β] : CompleteSpace
 end
 
 theorem uniformEmbedding_comap {α : Type*} {β : Type*} {f : α → β} [u : UniformSpace β]
-    (hf : Function.Injective f) : @UniformEmbedding α β (UniformSpace.comap f u) u f :=
+    (hf : Injective f) : @UniformEmbedding α β (UniformSpace.comap f u) u f :=
   @UniformEmbedding.mk _ _ (UniformSpace.comap f u) _ _
     (@UniformInducing.mk _ _ (UniformSpace.comap f u) _ _ rfl) hf
 #align uniform_embedding_comap uniformEmbedding_comap
