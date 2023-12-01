@@ -228,8 +228,13 @@ theorem mem_orthogonalGroup_iff' {A : Matrix n n β} :
 the inverse. and the determinant is one -/
 
 def specialOrthogonalGroup :=
-  { A : Matrix n n R // (A.det = 1 ⋀ A ∈ Matrix.orthogonalGroup n n)}
+  { A : Matrix n n β // A ∈ Matrix.orthogonalGroup n β ∧ A.det = 1 }
 
+/-- `Matrix.specialUnitaryGroup n` is the group of `n` by `n` unitary matrices where determinant
+is one -/
+
+def specialUnitaryGroup :=
+  { A : Matrix n n β // A ∈ Matrix.unitaryGroup n β ∧ A.det = 1 }
 
 end OrthogonalGroup
 
