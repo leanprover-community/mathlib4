@@ -369,9 +369,9 @@ lemma CommMagma.IsRightCancelMul.toIsLeftCancelMul (G : Type u) [CommMagma G] [I
 #align comm_semigroup.is_right_cancel_mul.to_is_left_cancel_mul CommMagma.IsRightCancelMul.toIsLeftCancelMul
 #align add_comm_semigroup.is_right_cancel_add.to_is_left_cancel_add AddCommMagma.IsRightCancelAdd.toIsLeftCancelAdd
 
-/-- Any `CommSemigroup G` that satisfies `IsLeftCancelMul G` also satisfies `IsRightCancelMul G`. -/
-@[to_additive AddCommMagma.IsLeftCancelAdd.toIsRightCancelAdd "Any `AddCommSemigroup G` that
-satisfies `IsLeftCancelAdd G` also satisfies `IsRightCancelAdd G`."]
+/-- Any `CommMagma G` that satisfies `IsLeftCancelMul G` also satisfies `IsRightCancelMul G`. -/
+@[to_additive AddCommMagma.IsLeftCancelAdd.toIsRightCancelAdd "Any `AddCommMagma G` that satisfies
+`IsLeftCancelAdd G` also satisfies `IsRightCancelAdd G`."]
 lemma CommMagma.IsLeftCancelMul.toIsRightCancelMul (G : Type u) [CommMagma G] [IsLeftCancelMul G] :
     IsRightCancelMul G :=
   ⟨fun _ _ _ h => mul_left_cancel <| (mul_comm _ _).trans (h.trans (mul_comm _ _))⟩
