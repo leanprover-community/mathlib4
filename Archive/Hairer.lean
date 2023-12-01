@@ -183,6 +183,13 @@ lemma exists_disjoint_balls {E : Type*} [MetricSpace E] (x : E) [Filter.NeBot (�
     rw [← F_zero]
     exact F_anti.antitone (zero_le _)
 
+open scoped BigOperators
+
+lemma blouk (M : Type*) [AddCommGroup M] [Module ℝ M] (N : Submodule ℝ M)
+    (t : Finset ℕ) (f : ℕ → N) :
+    ((∑ i in t, f i : N) : M) = ∑ i in t, (f i : M) := by
+  exact Submodule.coe_sum N (fun i ↦ f i) t
+
 lemma step (ι) [Fintype ι] [Nonempty ι] :
     ∃ f : ℕ → SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1),
     LinearIndependent ℝ f ∧ ∀ n, ∫ x, f n x = 1 := by
@@ -191,13 +198,24 @@ lemma step (ι) [Fintype ι] [Nonempty ι] :
       (∀ i, 0 < r i) ∧ (∀ i, closedBall (s i) (r i) ⊆ ball 0 1) :=
     exists_disjoint_balls _ zero_lt_one
   let f1 n : ContDiffBump (s n) := ⟨r n / 2, r n, half_pos (hr n), half_lt_self (hr n)⟩
-  let f2 n : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1) :=
-    ⟨(f1 n).normed volume, sorry⟩
+  let f2 n : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1) := by
+    refine ⟨(f1 n).normed volume, ⟨?_, (f1 n).contDiff_normed⟩⟩
+    simpa only [ContDiffBump.tsupport_normed_eq] using (h2s n).trans ball_subset_closedBall
   refine ⟨f2, ?_, fun n ↦ (f1 n).integral_normed⟩
-  sorry
+  rw [linearIndependent_iff']
+  intro t g ht i₀ hi₀
+  have : ((∑ i in t, g i • f2 i : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
+    (EuclideanSpace ℝ ι) → ℝ) = (∑ i in t, g i • f2 i : (EuclideanSpace ℝ ι) → ℝ) :=
+      Submodule.coe_sum _ _ _
+  have : (∑ i in t, g i • f2 i) (s i₀) = g i₀ • f2 i₀ (s i₀) := by
+    rw [this, Finset.sum_eq_single i₀]
 
-instance {ι : Type*} [IsEmpty ι] : Subsingleton (EuclideanSpace ℝ ι) :=
-  inferInstanceAs (Subsingleton (ι → ℝ ))
+
+
+open scoped ENNReal
+
+instance (ι : Type*) [IsEmpty ι] (p : ℝ≥0∞) (α : ι → Type*) : Subsingleton (PiLp p α) :=
+  inferInstanceAs (Subsingleton ((∀ i : ι, α i)))
 
 namespace MeasureTheory.Measure
 
