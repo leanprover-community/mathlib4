@@ -310,7 +310,7 @@ theorem minimal_nonempty_open_eq_singleton [T0Space X] {s : Set X} (hs : IsOpen 
 #align minimal_nonempty_open_eq_singleton minimal_nonempty_open_eq_singleton
 
 /-- Given an open finite set `S` in a T₀ space, there is some `x ∈ S` such that `{x}` is open. -/
-theorem exists_open_singleton_of_isOpen_finite [T0Space X] {s : Set X} (hfin : s.Finite)
+theorem exists_isOpen_singleton_of_isOpen_finite [T0Space X] {s : Set X} (hfin : s.Finite)
     (hne : s.Nonempty) (ho : IsOpen s) : ∃ x ∈ s, IsOpen ({x} : Set X) := by
   lift s to Finset X using hfin
   induction' s using Finset.strongInductionOn with s ihs
@@ -325,11 +325,11 @@ theorem exists_open_singleton_of_isOpen_finite [T0Space X] {s : Set X} (hfin : s
     refine' fun t hts htne hto => of_not_not fun hts' => ht _
     lift t to Finset X using s.finite_toSet.subset hts
     exact ⟨t, ssubset_iff_subset_ne.2 ⟨hts, mt Finset.coe_inj.2 hts'⟩, htne, hto⟩
-#align exists_open_singleton_of_open_finite exists_open_singleton_of_isOpen_finite
+#align exists_open_singleton_of_open_finite exists_isOpen_singleton_of_isOpen_finite
 
 theorem exists_open_singleton_of_finite [T0Space X] [Finite X] [Nonempty X] :
     ∃ x : X, IsOpen ({x} : Set X) :=
-  let ⟨x, _, h⟩ := exists_open_singleton_of_isOpen_finite (Set.toFinite _) univ_nonempty isOpen_univ
+  let ⟨x, _, h⟩ := exists_isOpen_singleton_of_isOpen_finite (Set.toFinite _) univ_nonempty isOpen_univ
   ⟨x, h⟩
 #align exists_open_singleton_of_fintype exists_open_singleton_of_finite
 
@@ -2157,21 +2157,21 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
       exact ⟨V, hUV, V_op, hxV⟩⟩
 #align nhds_basis_clopen nhds_basis_clopen
 
-theorem isTopologicalBasis_clopen : IsTopologicalBasis { s : Set X | IsClopen s } := by
+theorem isTopologicalBasis_isClopen : IsTopologicalBasis { s : Set X | IsClopen s } := by
   apply isTopologicalBasis_of_isOpen_of_nhds fun U (hU : IsClopen U) => hU.1
   intro x U hxU U_op
   have : U ∈ 𝓝 x := IsOpen.mem_nhds U_op hxU
   rcases (nhds_basis_clopen x).mem_iff.mp this with ⟨V, ⟨hxV, hV⟩, hVU : V ⊆ U⟩
   use V
   tauto
-#align is_topological_basis_clopen isTopologicalBasis_clopen
+#align is_topological_basis_clopen isTopologicalBasis_isClopen
 
 /-- Every member of an open set in a compact Hausdorff totally disconnected space
   is contained in a clopen set contained in the open set.  -/
-theorem compact_exists_clopen_in_open {x : X} {U : Set X} (is_open : IsOpen U) (memU : x ∈ U) :
+theorem compact_exists_isClopen_in_isOpen {x : X} {U : Set X} (is_open : IsOpen U) (memU : x ∈ U) :
     ∃ V : Set X, IsClopen V ∧ x ∈ V ∧ V ⊆ U :=
-  isTopologicalBasis_clopen.mem_nhds_iff.1 (is_open.mem_nhds memU)
-#align compact_exists_clopen_in_open compact_exists_clopen_in_open
+  isTopologicalBasis_isClopen.mem_nhds_iff.1 (is_open.mem_nhds memU)
+#align compact_exists_clopen_in_open compact_exists_isClopen_in_isOpen
 
 end Profinite
 
@@ -2188,9 +2188,9 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
   have u_open_in_s : IsOpen u := isOpen_interior.preimage continuous_subtype_val
   lift x to s using interior_subset xs
   haveI : CompactSpace s := isCompact_iff_compactSpace.1 comp
-  obtain ⟨V : Set s, clopen_in_s, Vx, V_sub⟩ := compact_exists_clopen_in_open u_open_in_s xs
-  have V_clopen : IsClopen (((↑) : s → H) '' V) := by
-    refine' ⟨_, comp.isClosed.closedEmbedding_subtype_val.closed_iff_image_closed.1 clopen_in_s.2⟩
+  obtain ⟨V : Set s, VisClopen, Vx, V_sub⟩ := compact_exists_isClopen_in_isOpen u_open_in_s xs
+  have VisClopen' : IsClopen (((↑) : s → H) '' V) := by
+    refine' ⟨_, comp.isClosed.closedEmbedding_subtype_val.closed_iff_image_closed.1 VisClopen.2⟩
     let v : Set u := ((↑) : u → s) ⁻¹' V
     have : ((↑) : u → H) = ((↑) : s → H) ∘ ((↑) : u → s) := rfl
     have f0 : Embedding ((↑) : u → H) := embedding_subtype_val.comp embedding_subtype_val
@@ -2201,12 +2201,12 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
           apply Set.inter_eq_self_of_subset_left interior_subset
         rw [this]
         apply isOpen_interior
-    have f2 : IsOpen v := clopen_in_s.1.preimage continuous_subtype_val
+    have f2 : IsOpen v := VisClopen.1.preimage continuous_subtype_val
     have f3 : ((↑) : s → H) '' V = ((↑) : u → H) '' v := by
       rw [this, image_comp, Subtype.image_preimage_coe, inter_eq_self_of_subset_left V_sub]
     rw [f3]
     apply f1.isOpenMap v f2
-  refine' ⟨(↑) '' V, V_clopen, by simp [Vx], Subset.trans _ sU⟩
+  refine' ⟨(↑) '' V, VisClopen', by simp [Vx], Subset.trans _ sU⟩
   simp
 set_option linter.uppercaseLean3 false in
 #align loc_compact_Haus_tot_disc_of_zero_dim loc_compact_Haus_tot_disc_of_zero_dim
