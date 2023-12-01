@@ -93,46 +93,48 @@ abbrev PackageDirs := Lean.RBMap String FilePath compare
 def isMathlibRoot : IO Bool :=
   FilePath.mk "Mathlib" |>.pathExists
 
-def parseMathlibDepPath (json : Lean.Json) : Except String (Option FilePath) := do
+def parseManifestPaths (json : Lean.Json) : Except String (Lean.HashMap String FilePath) := do
   let deps ← (← json.getObjVal? "packages").getArr?
+  let mut paths : Lean.HashMap String FilePath := Lean.mkHashMap
   for d in deps do
     let n := ← (← d.getObjVal? "name").getStr?
-    if n != "mathlib" then
-      continue
     let t := ← (← d.getObjVal? "type").getStr?
     if t == "path" then
-      return some ⟨← (← d.getObjVal? "dir").getStr?⟩
+      paths := paths.insert n ⟨← (← d.getObjVal? "dir").getStr?⟩
     else
-      return LAKEPACKAGESDIR / "mathlib"
-  return none
+      paths := paths.insert n (LAKEPACKAGESDIR / n)
+  return paths
 
-def mathlibDepPath : IO FilePath := do
+def getPackageDirsAndMathlibRoot : IO (PackageDirs × FilePath) := do
   let raw ← IO.FS.readFile "lake-manifest.json"
-  match (Lean.Json.parse raw >>= parseMathlibDepPath) with
-  | .ok (some p) => return p
-  | .ok none =>
-      if ← isMathlibRoot then
-        return ⟨"."⟩
-      else
-        throw $ IO.userError s!"Mathlib not found in dependencies"
+  match (Lean.Json.parse raw >>= parseManifestPaths) with
   | .error e => throw $ IO.userError s!"Cannot parse lake-manifest.json: {e}"
+  | .ok pkgs =>
+    let root := ←
+      if let some p := pkgs.find? "mathlib" then
+        pure p
+      else if ← isMathlibRoot then
+        pure ⟨"."⟩
+      else
+        throw <| IO.userError s!"Mathlib not found in dependencies"
+    -- TODO this should be generated automatically from the information in `lakefile.lean`.
+    let mut entries := #[
+      ("Mathlib", root),
+      ("MathlibExtras", root),
+      ("Archive", root),
+      ("Counterexamples", root)
+    ]
+    if let some pth := pkgs.find? "aesop"        then entries := entries.push ("Aesop", pth)
+    if let some pth := pkgs.find? "std"          then entries := entries.push ("Std", pth)
+    if let some pth := pkgs.find? "Cli"          then entries := entries.push ("Cli", pth)
+    if let some pth := pkgs.find? "proofwidgets" then entries := entries.push ("ProofWidgets", pth)
+    if let some pth := pkgs.find? "Qq"           then entries := entries.push ("Qq", pth)
+    return (.ofList entries.toList, root)
 
--- TODO this should be generated automatically from the information in `lakefile.lean`.
-def getPackageDirs : IO PackageDirs := do
-  let root ← mathlibDepPath
-  return .ofList [
-    ("Mathlib", root),
-    ("MathlibExtras", root),
-    ("Archive", root),
-    ("Counterexamples", root),
-    ("Aesop", LAKEPACKAGESDIR / "aesop"),
-    ("Std", LAKEPACKAGESDIR / "std"),
-    ("Cli", LAKEPACKAGESDIR / "Cli"),
-    ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
-    ("Qq", LAKEPACKAGESDIR / "Qq")
-  ]
+initialize pkgDirsAndMathlibRoot : PackageDirs × FilePath ← getPackageDirsAndMathlibRoot
 
-initialize pkgDirs : PackageDirs ← getPackageDirs
+def pkgDirs : PackageDirs := pkgDirsAndMathlibRoot.1
+def mathlibDepPath : FilePath := pkgDirsAndMathlibRoot.2
 
 def getPackageDir (path : FilePath) : IO FilePath :=
   match path.withExtension "" |>.components.head? with
