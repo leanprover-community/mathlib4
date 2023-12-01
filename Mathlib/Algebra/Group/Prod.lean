@@ -293,6 +293,27 @@ instance instCommGroup [CommGroup G] [CommGroup H] : CommGroup (G × H) :=
 
 end Prod
 
+section
+variable [Mul M] [Mul N]
+
+@[to_additive AddSemiconjBy.prod]
+theorem SemiconjBy.prod {x y z : M × N} (hm : SemiconjBy x.1 y.1 z.1) (hn : SemiconjBy x.2 y.2 z.2) :
+    SemiconjBy x y z :=
+  Prod.ext hm hn
+
+theorem Prod.semiconjBy_iff {x y z : M × N} :
+    SemiconjBy x y z ↔ SemiconjBy x.1 y.1 z.1 ∧ SemiconjBy x.2 y.2 z.2 := Prod.ext_iff
+
+@[to_additive AddCommute.prod]
+theorem Commute.prod {x y : M × N} (hm : Commute x.1 y.1) (hn : Commute x.2 y.2) :
+    Commute x y :=
+  Prod.ext hm hn
+
+theorem Prod.commute_iff {x y : M × N} :
+    Commute x y ↔ Commute x.1 y.1 ∧ Commute x.2 y.2 := Prod.ext_iff
+
+end
+
 namespace MulHom
 
 section Prod
@@ -540,10 +561,8 @@ theorem snd_comp_inr : (snd M N).comp (inr M N) = id N :=
 #align add_monoid_hom.snd_comp_inr AddMonoidHom.snd_comp_inr
 
 @[to_additive]
-theorem inl_inr_commute (m : M) (n : N) :
-    Commute ((inl M N) m) ((inr M N) n) := by
-  rw [Commute, SemiconjBy]
-  simp only [inl_apply, inr_apply, Prod.mk_mul_mk, mul_one, one_mul]
+theorem commute_inl_inr (m : M) (n : N) : Commute (inl M N m) (inr M N n) :=
+  Commute.prod (.one_right m) (.one_left n)
 
 section Prod
 
