@@ -31,20 +31,6 @@ the Liquid Tensor Experiment.
 
 open CategoryTheory Category Limits
 
-def CategoryTheory.Limits.KernelFork.IsLimit.ofι'
-    {C : Type*} [Category C] [HasZeroMorphisms C] {X Y K : C} {f : X ⟶ Y} (i : K ⟶ X) (w : i ≫ f = 0)
-    (h : ∀ {A : C} (k : A ⟶ X) (_ : k ≫ f = 0), { l : A ⟶ K // l ≫ i = k}) [hi : Mono i] :
-    IsLimit (KernelFork.ofι _ w) :=
-  ofι _ _ (fun {A} k hk => (h k hk).1) (fun {A} k hk => (h k hk).2) (fun {A} k hk m hm => by
-    rw [← cancel_mono i, (h k hk).2, hm])
-
-def CategoryTheory.Limits.CokernelCofork.IsColimit.ofπ'
-    {C : Type*} [Category C] [HasZeroMorphisms C] {X Y Q : C} {f : X ⟶ Y} (p : Y ⟶ Q) (w : f ≫ p = 0)
-    (h : ∀ {A : C} (k : Y ⟶ A) (_ : f ≫ k = 0), { l : Q ⟶ A // p ≫ l = k}) [hp : Epi p] :
-    IsColimit (CokernelCofork.ofπ _ w) :=
-  ofπ _ _ (fun {A} k hk => (h k hk).1) (fun {A} k hk => (h k hk).2) (fun {A} k hk m hm => by
-    rw [← cancel_epi p, (h k hk).2, hm])
-
 namespace HomologicalComplex
 
 section HasZeroMorphisms
@@ -176,8 +162,11 @@ section Abelian
 
 variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
 
+/-- If `X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` is an exact sequence of homological complexes, then
+`X₁.opcycles i ⟶ X₂.opcycles i ⟶ X₃.opcycles i ⟶ 0` is exact. This lemma states
+the exactness at `X₂.opcycles i`, while the fact that `X₂.opcycles i ⟶ X₃.opcycles i`
+is an epi is an instance. -/
 lemma opcycles_right_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exact) [Epi S.g]
-    [Balanced C]
     (i : ι) [S.X₁.HasHomology i] [S.X₂.HasHomology i] [S.X₃.HasHomology i] :
     (ShortComplex.mk (opcyclesMap S.f i) (opcyclesMap S.g i)
       (by rw [← opcyclesMap_comp, S.zero, opcyclesMap_zero])).Exact := by
@@ -195,6 +184,10 @@ lemma opcycles_right_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.E
         d_pOpcycles_assoc, zero_comp]
     · rw [← cancel_epi (S.X₂.pOpcycles i), opcyclesMap_comp_descOpcycles, p_descOpcycles, H.2])
 
+/-- If `0 ⟶ X₁ ⟶ X₂ ⟶ X₃` is an exact sequence of homological complex, then
+`0 ⟶ X₁.cycles i ⟶ X₂.cycles i ⟶ X₃.cycles i` is exact. This lemma states
+the exactness at `X₂.cycles i`, while the fact that `X₁.cycles i ⟶ X₂.cycles i`
+is a mono is an instance. -/
 lemma cycles_left_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exact) [Mono S.f]
     (i : ι) [S.X₁.HasHomology i] [S.X₂.HasHomology i] [S.X₃.HasHomology i] :
     (ShortComplex.mk (cyclesMap S.f i) (cyclesMap S.g i)
