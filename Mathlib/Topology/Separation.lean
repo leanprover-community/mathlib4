@@ -1542,7 +1542,7 @@ theorem isIrreducible_iff_singleton [T2Space X] {S : Set X} : IsIrreducible S �
 /-- There does not exist a nontrivial preirreducible T₂ space. -/
 theorem not_preirreducible_nontrivial_t2 (X) [TopologicalSpace X] [PreirreducibleSpace X]
     [Nontrivial X] [T2Space X] : False :=
-  (PreirreducibleSpace.isPreirreducible_univ (α := X)).subsingleton.not_nontrivial nontrivial_univ
+  (PreirreducibleSpace.isPreirreducible_univ (X := X)).subsingleton.not_nontrivial nontrivial_univ
 #align not_preirreducible_nontrivial_t2 not_preirreducible_nontrivial_t2
 
 end Separation
@@ -1794,7 +1794,7 @@ instance (priority := 80) [LocallyCompactSpace X] [ClosableCompactSubsetOpenSpac
     RegularSpace X := by
   apply RegularSpace.ofExistsMemNhdsIsClosedSubset (fun x s hx ↦ ?_)
   rcases _root_.mem_nhds_iff.1 hx with ⟨u, us, u_open, xu⟩
-  rcases exists_compact_closed_between (isCompact_singleton (a := x)) u_open (by simpa using xu)
+  rcases exists_compact_closed_between (isCompact_singleton (x := x)) u_open (by simpa using xu)
     with ⟨t, -, t_closed, xt, tu⟩
   have : interior t ∈ 𝓝 x := isOpen_interior.mem_nhds (by simpa using xt)
   exact ⟨t, interior_mem_nhds.mp this, t_closed, tu.trans us⟩
