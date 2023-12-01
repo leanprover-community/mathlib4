@@ -291,3 +291,15 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt (hx : I.IsInteriorPoint x₀) :
 lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [I.Boundaryless] :
     ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ :=
   exists_isIntegralCurveAt_of_contMDiffAt hv t₀ I.isInteriorPoint
+
+example {γ γ' : ℝ → M} (h : γ t₀ = γ' t₀) (ht : I.IsInteriorPoint (γ t₀))
+    (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
+    (hγ : IsIntegralCurveAt γ v t₀) (hγ' : IsIntegralCurveAt γ' v t₀) :
+    ∃ t₁ > t₀, ∀ t ∈ Icc t₀ t₁, γ t = γ' t := by
+  set v' : E → E := fun x =>
+    tangentCoordChange I ((extChartAt I (γ t₀)).symm x) (γ t₀) ((extChartAt I (γ t₀)).symm x)
+      (v ((extChartAt I (γ t₀)).symm x)) with hv'
+  rw [contMDiffAt_iff] at hv
+  obtain ⟨_, hv⟩ := hv
+  obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ nhds _, LipschitzOnWith K v' s :=
+    ContDiffAt.exists_lipschitzOnWith (hv.contDiffAt (range_mem_nhds_isInteriorPoint ht)).snd
