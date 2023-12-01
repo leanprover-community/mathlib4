@@ -120,25 +120,42 @@ variable (x y : Fin (2^w))
 @[simp] lemma ofFin_neg : ofFin (-x) = -(ofFin x) := by
   rw [neg_eq_zero_sub]; rfl
 
-@[simp] lemma ofFin_and : ofFin (x &&& y) = ofFin x &&& ofFin y := rfl
-@[simp] lemma ofFin_or  : ofFin (x ||| y) = ofFin x ||| ofFin y := rfl
-@[simp] lemma ofFin_xor : ofFin (x ^^^ y) = ofFin x ^^^ ofFin y := rfl
+@[simp] lemma ofFin_and : ofFin (x &&& y) = ofFin x &&& ofFin y := by
+  simp only [HAnd.hAnd, AndOp.and, Fin.land, BitVec.and, toNat_ofFin, ofFin.injEq, Fin.mk.injEq]
+  exact mod_eq_of_lt (Nat.and_lt_two_pow _ y.prop)
+
+@[simp] lemma ofFin_or  : ofFin (x ||| y) = ofFin x ||| ofFin y := by
+  simp only [HOr.hOr, OrOp.or, Fin.lor, BitVec.or, toNat_ofFin, ofFin.injEq, Fin.mk.injEq]
+  exact mod_eq_of_lt (Nat.or_lt_two_pow x.prop y.prop)
+
+@[simp] lemma ofFin_xor : ofFin (x ^^^ y) = ofFin x ^^^ ofFin y := by
+  simp only [HXor.hXor, Xor.xor, Fin.xor, BitVec.xor, toNat_ofFin, ofFin.injEq, Fin.mk.injEq]
+  exact mod_eq_of_lt (Nat.xor_lt_two_pow x.prop y.prop)
+
 @[simp] lemma ofFin_add : ofFin (x + y)   = ofFin x + ofFin y   := rfl
 @[simp] lemma ofFin_sub : ofFin (x - y)   = ofFin x - ofFin y   := rfl
 @[simp] lemma ofFin_mul : ofFin (x * y)   = ofFin x * ofFin y   := rfl
 
-@[simp] lemma ofFin_zero : ofFin (0 : Fin (2^w)) = 0 := rfl
-@[simp] lemma ofFin_one  : ofFin (1 : Fin (2^w)) = 1 := rfl
+-- These should be simp, but Std's simp-lemmas do not allow this yet.
+lemma ofFin_zero : ofFin (0 : Fin (2^w)) = 0 := rfl
+lemma ofFin_one  : ofFin (1 : Fin (2^w)) = 1 := by
+  simp only [OfNat.ofNat, BitVec.ofNat, and_pow_two_is_mod]
+  rfl
 
 lemma ofFin_nsmul (n : ℕ) (x : Fin (2^w)) : ofFin (n • x) = n • ofFin x := rfl
 lemma ofFin_zsmul (z : ℤ) (x : Fin (2^w)) : ofFin (z • x) = z • ofFin x := rfl
 @[simp] lemma ofFin_pow (n : ℕ) : ofFin (x ^ n) = ofFin x ^ n := rfl
-@[simp] lemma ofFin_natCast (n : ℕ) : ofFin (n : Fin (2^w)) = n := rfl
+
+@[simp] lemma ofFin_natCast (n : ℕ) : ofFin (n : Fin (2^w)) = n := by
+  simp only [Nat.cast, NatCast.natCast, OfNat.ofNat, BitVec.ofNat, and_pow_two_is_mod]
+  rfl
+
 @[simp] lemma ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = z := rfl
 
 -- See Note [no_index around OfNat.ofNat]
 @[simp] lemma ofFin_ofNat (n : ℕ) :
-    ofFin (no_index (OfNat.ofNat n : Fin (2^w))) = OfNat.ofNat n := rfl
+    ofFin (no_index (OfNat.ofNat n : Fin (2^w))) = OfNat.ofNat n := by
+  sorry
 end
 
 /-!
@@ -150,9 +167,15 @@ variable (x y : BitVec w)
 @[simp] lemma toFin_neg : toFin (-x) = -(toFin x) := by
   rw [neg_eq_zero_sub]; rfl
 
-@[simp] lemma toFin_and : toFin (x &&& y) = toFin x &&& toFin y := rfl
-@[simp] lemma toFin_or  : toFin (x ||| y) = toFin x ||| toFin y := rfl
-@[simp] lemma toFin_xor : toFin (x ^^^ y) = toFin x ^^^ toFin y := rfl
+@[simp] lemma toFin_and : toFin (x &&& y) = toFin x &&& toFin y := by
+  apply toFin_inj.mpr; simp only [ofFin_and]
+
+@[simp] lemma toFin_or  : toFin (x ||| y) = toFin x ||| toFin y := by
+  apply toFin_inj.mpr; simp only [ofFin_or]
+
+@[simp] lemma toFin_xor : toFin (x ^^^ y) = toFin x ^^^ toFin y := by
+  apply toFin_inj.mpr; simp only [ofFin_xor]
+
 @[simp] lemma toFin_add : toFin (x + y)   = toFin x + toFin y   := rfl
 @[simp] lemma toFin_sub : toFin (x - y)   = toFin x - toFin y   := rfl
 @[simp] lemma toFin_mul : toFin (x * y)   = toFin x * toFin y   := rfl
