@@ -105,10 +105,17 @@ variable {E E' F  : Type*}
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
+-- move this
+theorem tsupport_add {X : Type*} [TopologicalSpace X] {α : Type*}
+  [AddMonoid α] {f g : X → α} : (tsupport fun x ↦ f x + g x) ⊆ tsupport f ∪ tsupport g :=
+  closure_minimal
+    ((support_add f g).trans (union_subset_union (subset_tsupport _) (subset_tsupport _)))
+    (isClosed_closure.union isClosed_closure)
+
 variable (𝕜 E F) in
 def SmoothSupportedOn (n : ℕ∞) (s : Set E) : Submodule 𝕜 (E → F) where
   carrier := { f : E → F | tsupport f ⊆ s ∧ ContDiff 𝕜 n f }
-  add_mem' hf hg := ⟨sorry, hf.2.add hg.2⟩
+  add_mem' hf hg := ⟨tsupport_add.trans <| union_subset hf.1 hg.1, hf.2.add hg.2⟩
   zero_mem' :=
     ⟨(tsupport_eq_empty_iff.mpr rfl).subset.trans (empty_subset _), contDiff_const (c := 0)⟩
   smul_mem' r f hf :=
