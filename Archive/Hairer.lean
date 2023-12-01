@@ -258,9 +258,19 @@ lemma MvPolynomial.continuous_eval (p: MvPolynomial ι ℝ) :
     Continuous fun x ↦ (eval x) p := by
   continuity
 
-lemma hasCompactSupport (f : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
+lemma SmoothSupportedOn.hasCompactSupport (f : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
     HasCompactSupport f :=
   HasCompactSupport.of_support_subset_isCompact (isCompact_closedBall 0 1) (support_subset f)
+
+theorem SmoothSupportedOn.integrable_eval_mul (p : MvPolynomial ι ℝ)
+    (f : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
+    Integrable fun (x : EuclideanSpace ℝ ι) ↦ (eval x) p • f x := by
+  simp only [smul_eq_mul]
+  apply Continuous.integrable_of_hasCompactSupport
+  · apply Continuous.mul
+    · apply p.continuous_eval
+    · apply ContDiff.continuous <| SmoothSupportedOn.contDiff _
+  apply (hasCompactSupport _).mul_left
 
 def L :
   MvPolynomial ι ℝ →ₗ[ℝ] Dual ℝ (SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) where
@@ -269,13 +279,7 @@ def L :
         map_add' := fun f g ↦ by
           rw [← integral_add]
           · simp only [← smul_add]; rfl
-          all_goals
-            simp only [smul_eq_mul]
-            apply Continuous.integrable_of_hasCompactSupport
-            apply Continuous.mul
-            apply MvPolynomial.continuous_eval
-            apply ContDiff.continuous <| SmoothSupportedOn.contDiff _
-            apply (hasCompactSupport _).mul_left
+          all_goals apply SmoothSupportedOn.integrable_eval_mul
         map_smul' := fun r f ↦ by
           rw [← integral_smul]
           dsimp only [id_eq, RingHom.id_apply]
@@ -287,7 +291,7 @@ def L :
         RingHom.id_apply, LinearMap.coe_mk, LinearMap.add_apply]
       rw [← integral_add]
       · simp only [← add_smul, eval_add]
-      all_goals sorry
+      all_goals apply SmoothSupportedOn.integrable_eval_mul
     map_smul' := fun r p ↦ by
       ext f
       dsimp only [id_eq, eq_mpr_eq_cast, AddHom.toFun_eq_coe, AddHom.coe_mk,
