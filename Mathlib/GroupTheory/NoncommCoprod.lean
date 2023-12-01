@@ -7,8 +7,6 @@ Authors: Antoine Chambert-Loir
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Hom.Commute
 
-open Tactic
-
 /-!
 # Canonical homomorphism from a pair of monoids
 
@@ -23,9 +21,11 @@ There is an analogue `MulHom.noncommCoprod` when `f` and `g` are only `MulHom`.
 
 Main theorems :
 
-* `noncommCoprod_comp_inr` and `noncommCoprod_comp_inl` prove that the compositions of `MonoidHom.noncommCoprod f g _` with `inl M N` and `inr M N` coincide with `f` and `g``
+* `noncommCoprod_comp_inr` and `noncommCoprod_comp_inl` prove that the compositions
+of `MonoidHom.noncommCoprod f g _` with `inl M N` and `inr M N` coincide with `f` and `g`.
 
-* `comp_noncommCoprod` proves that the composition of a morphism of monoids `h` with `noncommCoprod f g _` coincides with `noncommCoprod (h.comp f) (h.comp g)`.
+* `comp_noncommCoprod` proves that the composition of a morphism of monoids `h`
+with `noncommCoprod f g _` coincides with `noncommCoprod (h.comp f) (h.comp g)`.
 
 For a product of a family of morphisms of monoids, see `MonoidHom.noncommPiCoprod`.
 
