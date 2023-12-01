@@ -167,15 +167,15 @@ theorem mem_get_of_ne_zero : ∀ {n : ℕ} {as : List α}, get n as ≠ default 
 theorem get_set_eq_of_ne {a : α} :
     ∀ {as : List α} (k : ℕ) (m : ℕ), m ≠ k → get m (as {k ↦ a}) = get m as
   | as, 0, m, h1 => by
-    cases m
+    cases m using Nat.rec
     contradiction
     cases as <;> simp only [set, get, get_nil]
   | as, k + 1, m, h1 => by
     -- porting note : I somewhat rearranged the case split
-    cases as <;> cases m
-    case nil =>
+    cases as <;> cases m using Nat.rec
+    case nil.zero =>
       simp only [set, get]
-    case nil m =>
+    case nil.succ m _ =>
       have h3 : get m (nil {k ↦ a}) = default := by
         rw [get_set_eq_of_ne k m, get_nil]
         intro hc
@@ -184,7 +184,7 @@ theorem get_set_eq_of_ne {a : α} :
       apply h3
     case zero =>
       simp only [set, get]
-    case _ _ m =>
+    case _ _ m _ =>
       apply get_set_eq_of_ne k m
       intro hc
       apply h1

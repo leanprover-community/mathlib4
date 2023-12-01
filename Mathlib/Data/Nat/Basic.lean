@@ -321,7 +321,7 @@ theorem le_of_pred_lt {m n : ℕ} : pred m < n → m ≤ n :=
 #align nat.le_of_pred_lt Nat.le_of_pred_lt
 
 theorem self_add_sub_one (n : ℕ) : n + (n - 1) = 2 * n - 1 := by
-  cases n
+  cases n using Nat.rec
   · rfl
   · rw [two_mul]
     convert (add_succ_sub_one (Nat.succ _) _).symm
@@ -418,7 +418,7 @@ def leRecOn {C : ℕ → Sort u} {n : ℕ} : ∀ {m : ℕ}, n ≤ m → (∀ {k}
 
 theorem leRecOn_self {C : ℕ → Sort u} {n} {h : n ≤ n} {next : ∀ {k}, C k → C (k + 1)} (x : C n) :
     (leRecOn h next x : C n) = x := by
-  cases n <;> unfold leRecOn Eq.recOn
+  cases n using Nat.rec <;> unfold leRecOn Eq.recOn
   · simp
   · unfold Or.by_cases
     rw [dif_neg (Nat.not_succ_le_self _)]

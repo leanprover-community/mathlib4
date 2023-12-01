@@ -744,7 +744,7 @@ lemma to_digits_core_lens_eq_aux (b f : Nat) :
 
 lemma to_digits_core_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Char),
     (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1 := by
-  induction f with (intro n c tl; simp only [Nat.toDigitsCore, List.length])
+  induction f using Nat.rec with (intro n c tl; simp only [Nat.toDigitsCore, List.length])
   | succ f ih =>
     by_cases hnb : (n / b) = 0
     case pos => simp only [hnb, if_true, List.length]
@@ -767,7 +767,7 @@ the number of digits in `n < e` for some base `b`. Since this works with any bas
 than one, it can be used for binary, decimal, and hex. -/
 lemma to_digits_core_length (b : Nat) (h : 2 <= b) (f n e : Nat)
     (hlt : n < b ^ e) (h_e_pos: 0 < e) : (Nat.toDigitsCore b f n []).length <= e := by
-  induction f generalizing n e hlt h_e_pos with
+  induction f using Nat.rec generalizing n e hlt h_e_pos with
     simp only [Nat.toDigitsCore, List.length, Nat.zero_le]
   | succ f ih =>
     cases e with

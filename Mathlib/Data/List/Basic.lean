@@ -455,7 +455,7 @@ theorem subset_singleton_iff {a : α} {L : List α} : L ⊆ [a] ↔ ∃ n, L = r
 
 @[simp] theorem map_replicate (f : α → β) (n) (a : α) :
     map f (replicate n a) = replicate n (f a) := by
-  induction n <;> [rfl; simp only [*, replicate, map]]
+  induction n using Nat.rec <;> [rfl; simp only [*, replicate, map]]
 #align list.map_replicate List.map_replicate
 
 @[simp] theorem tail_replicate (a : α) (n) :
@@ -463,7 +463,7 @@ theorem subset_singleton_iff {a : α} {L : List α} : L ⊆ [a] ↔ ∃ n, L = r
 #align list.tail_replicate List.tail_replicate
 
 @[simp] theorem join_replicate_nil (n : ℕ) : join (replicate n []) = @nil α := by
-  induction n <;> [rfl; simp only [*, replicate, join, append_nil]]
+  induction n using Nat.rec <;> [rfl; simp only [*, replicate, join, append_nil]]
 #align list.join_replicate_nil List.join_replicate_nil
 
 theorem replicate_right_injective {n : ℕ} (hn : n ≠ 0) : Injective (@replicate α n) :=
@@ -1995,7 +1995,7 @@ theorem nthLe_take' (L : List α) {i j : ℕ} (hi : i < (L.take j).length) :
 #align list.nth_le_take' List.nthLe_take'
 
 theorem get?_take {l : List α} {n m : ℕ} (h : m < n) : (l.take n).get? m = l.get? m := by
-  induction' n with n hn generalizing l m
+  induction' n using Nat.rec with n hn generalizing l m
   · simp only [Nat.zero_eq] at h
     exact absurd h (not_lt_of_le m.zero_le)
   · cases' l with hd tl
@@ -2013,7 +2013,7 @@ theorem nth_take_of_succ {l : List α} {n : ℕ} : (l.take (n + 1)).get? n = l.g
 theorem take_succ {l : List α} {n : ℕ} : l.take (n + 1) = l.take n ++ (l.get? n).toList := by
   induction' l with hd tl hl generalizing n
   · simp only [Option.toList, get?, take_nil, append_nil]
-  · cases n
+  · cases n using Nat.casesOn
     · simp only [Option.toList, get?, eq_self_iff_true, and_self_iff, take, nil_append]
     · simp only [hl, cons_append, get?, eq_self_iff_true, and_self_iff, take]
 #align list.take_succ List.take_succ
@@ -2580,7 +2580,7 @@ theorem get?_succ_scanl {i : ℕ} : (scanl f b l).get? (i + 1) =
     simp only [Option.bind_eq_none', get?, forall₂_true_iff, not_false_iff, Option.map_none',
       scanl_nil, Option.not_mem_none, forall_true_iff]
   · simp only [scanl_cons, singleton_append]
-    cases i
+    cases i using Nat.casesOn
     · simp only [Option.map_some', get?_zero_scanl, get?, Option.some_bind']
     · simp only [hl, get?]
 #align list.nth_succ_scanl List.get?_succ_scanl
@@ -2801,7 +2801,7 @@ where
   go_eq_take_drop (n : ℕ) (l xs : List α) (acc : Array α) : splitAt.go l xs n acc =
       if n < xs.length then (acc.toList ++ take n xs, drop n xs) else (l, []) := by
     split_ifs with h
-    · induction n generalizing xs acc with
+    · induction n using Nat.rec generalizing xs acc with
       | zero =>
         rw [splitAt.go, take, drop, append_nil]
         · intros h₁; rw [h₁] at h; contradiction
@@ -2814,7 +2814,7 @@ where
           rw [splitAt.go, take, drop, append_cons, Array.toList_eq, ←Array.push_data,
             ←Array.toList_eq]
           exact ih _ _ <| lt_of_add_lt_add_right h
-    · induction n generalizing xs acc with
+    · induction n using Nat.rec generalizing xs acc with
       | zero =>
         rw [zero_eq, not_lt, nonpos_iff_eq_zero] at h
         rw [eq_nil_of_length_eq_zero h, splitAt.go]

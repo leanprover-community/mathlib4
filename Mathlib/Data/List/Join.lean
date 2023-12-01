@@ -119,7 +119,7 @@ theorem drop_take_succ_eq_cons_nthLe (L : List α) {i : ℕ} (hi : i < L.length)
   induction' L with head tail generalizing i
   · simp only [length] at hi
     exact (Nat.not_succ_le_zero i hi).elim
-  cases' i with i hi
+  cases' i using Nat.casesOn with i hi
   · simp
     rfl
   have : i < tail.length := by

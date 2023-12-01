@@ -391,7 +391,7 @@ theorem scanl_get (i : Fin n) :
     (scanl f b v).get i.succ = f ((scanl f b v).get (Fin.castSucc i)) (v.get i) := by
   cases' n with n
   · exact i.elim0
-  induction' n with n hn generalizing b
+  induction' n using Nat.rec with n hn generalizing b
   · have i0 : i = 0 := Fin.eq_zero _
     simp [scanl_singleton, i0, get_zero]; simp [get_eq_get, List.get]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]

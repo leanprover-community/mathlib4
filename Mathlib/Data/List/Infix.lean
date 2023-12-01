@@ -249,13 +249,13 @@ termination_by decidableInfix l₁ l₂ => (l₁, l₂)
 theorem prefix_take_le_iff {L : List (List (Option α))} (hm : m < L.length) :
     L.take m <+: L.take n ↔ m ≤ n := by
   simp only [prefix_iff_eq_take, length_take]
-  induction m generalizing L n with
+  induction m using Nat.rec generalizing L n with
   | zero => simp [min_eq_left, eq_self_iff_true, Nat.zero_le, take]
   | succ m IH =>
     cases L with
     | nil => exact (not_lt_bot hm).elim
     | cons l ls =>
-      cases n with
+      cases n using Nat.casesOn with
       | zero =>
         refine' iff_of_false _ (zero_lt_succ _).not_le
         rw [take_zero, take_nil]

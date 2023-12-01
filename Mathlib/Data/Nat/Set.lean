@@ -40,7 +40,7 @@ theorem range_rec {α : Type*} (x : α) (f : ℕ → α → α) :
   convert (range_of_succ (fun n => Nat.rec x f n : ℕ → α)).symm using 4
   dsimp
   rename_i n
-  induction' n with n ihn
+  induction' n using Nat.rec with n ihn
   · rfl
   · dsimp at ihn ⊢
     rw [ihn]

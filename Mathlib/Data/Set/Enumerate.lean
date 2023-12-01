@@ -49,10 +49,10 @@ theorem enumerate_eq_none :
   | s, n + 1, m => fun h hm ↦ by
     cases hs : sel s
     · exact enumerate_eq_none_of_sel sel hs
-    · cases m
+    · cases m using Nat.rec
       case zero =>
         contradiction
-      case succ m' =>
+      case succ m' _ =>
         simp [hs, enumerate] at h ⊢
         have hm : n ≤ m' := Nat.le_of_succ_le_succ hm
         exact enumerate_eq_none h hm
@@ -80,11 +80,11 @@ theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, 
   all_goals
     rcases Nat.le.dest hn with ⟨m, rfl⟩
     clear hn
-    induction n₁ generalizing s
+    induction n₁ using Nat.rec generalizing s
     case zero =>
       cases m
       case zero => rfl
-      case succ m =>
+      case succ m _ =>
         have h' : enumerate sel (s \ {a}) m = some a := by
           simp_all only [enumerate, Nat.zero_eq, Nat.add_eq, zero_add]; exact h₂
         have : a ∈ s \ {a} := enumerate_mem sel h_sel h'
