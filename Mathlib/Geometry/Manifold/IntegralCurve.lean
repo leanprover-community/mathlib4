@@ -3,6 +3,7 @@ Copyright (c) 2023 Winston Yin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Winston Yin
 -/
+import Mathlib.Analysis.ODE.Gronwall
 import Mathlib.Analysis.ODE.PicardLindelof
 import Mathlib.Geometry.Manifold.InteriorBoundary
 import Mathlib.Geometry.Manifold.MFDeriv
@@ -296,6 +297,18 @@ example {γ γ' : ℝ → M} (h : γ t₀ = γ' t₀) (ht : I.IsInteriorPoint (�
     (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
     (hγ : IsIntegralCurveAt γ v t₀) (hγ' : IsIntegralCurveAt γ' v t₀) :
     ∃ t₁ > t₀, ∀ t ∈ Icc t₀ t₁, γ t = γ' t := by
+  obtain ⟨ε, hε, hγ⟩ := hγ
+  obtain ⟨ε', hε', hγ'⟩ := hγ'
+  set t₁ := t₀ + (min ε ε') / 2 with ht₁
+  have hf : ContinuousOn ((extChartAt I (γ t₀)) ∘ γ) (Icc t₀ t₁) := sorry
+  have hf' : ContinuousOn ((extChartAt I (γ' t₀)) ∘ γ) (Icc t₀ t₁) := sorry
+
+
+
+  -- need to shrink ε further to fit inside s
+
+
+
   set v' : E → E := fun x =>
     tangentCoordChange I ((extChartAt I (γ t₀)).symm x) (γ t₀) ((extChartAt I (γ t₀)).symm x)
       (v ((extChartAt I (γ t₀)).symm x)) with hv'
@@ -303,3 +316,7 @@ example {γ γ' : ℝ → M} (h : γ t₀ = γ' t₀) (ht : I.IsInteriorPoint (�
   obtain ⟨_, hv⟩ := hv
   obtain ⟨K, s, hs, hlip⟩ : ∃ K, ∃ s ∈ nhds _, LipschitzOnWith K v' s :=
     ContDiffAt.exists_lipschitzOnWith (hv.contDiffAt (range_mem_nhds_isInteriorPoint ht)).snd
+  have hlip : ∀ t : ℝ, LipschitzOnWith K ((fun _ => v') t) ((fun _ => s) t) := fun t => hlip
+
+
+  -- have := ODE_solution_unique_of_mem_set hlip
