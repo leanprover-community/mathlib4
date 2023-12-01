@@ -363,35 +363,22 @@ variable
   (I' : ModelWithCorners 𝕜 E' H') [SmoothManifoldWithCorners I' M'] [SmoothManifoldWithCorners I M]
   [SmoothManifoldWithCorners J N]
 
-variable {φ : M → M'} (hφ : IsLocalDiffeomorphAt I I' n φ x)
-  {f : M' → N} (hf : MDifferentiableAt I' J f (φ x))
-
--- TODO: the next six lemmas all start the same way; can I refactor this somehow?
+variable {φ : M → M'} {dφ : TangentSpace I x ≃L[𝕜] TangentSpace I' (φ x)}
+  (hφ : HasMFDerivAt I I' φ x dφ) {f : M' → N} (hf : MDifferentiableAt I' J f (φ x))
 
 /-- If `φ` is a local diffeomorphism at `x` and `f` is differentiable at `φ x`,
   `mfderiv (f∘φ) x` is surjective iff `mfderiv f (φ x)` is. -/
 lemma mfderiv_surjective_iff_comp_isLocalDiffeomorph : Surjective (mfderiv I' J f (φ x))
     ↔ Surjective (mfderiv I J (f ∘ φ) x) := by
-  let dφ := mfderiv I I' φ x
-  let dφiso := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv hφ hn
-  have aux : dφiso = dφ := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe hn hφ
-  have hφ' : HasMFDerivAt I I' φ x dφ :=
-    (mdifferentiableAt_of_isLocalDiffeomorphAt _ _ hn hφ).hasMFDerivAt
-  rw [HasMFDerivAt.mfderiv ((hf.hasMFDerivAt).comp hφ' (x := x)), ← aux]
-  rw [← dφiso.bijective.surjective.of_comp_iff]
+  rw [HasMFDerivAt.mfderiv ((hf.hasMFDerivAt).comp hφ (x := x)), ← dφ.surjective.of_comp_iff]
   exact Iff.rfl
 
 /-- If `φ` is a local diffeomorphism at `x` and `f` is differentiable at `φ x`,
   `mfderiv (f∘φ) x` is injective iff `mfderiv f (φ x)` is. -/
 lemma mfderiv_injective_iff_comp_isLocalDiffeomorph :
     Injective (mfderiv I' J f (φ x)) ↔ Injective (mfderiv I J (f ∘ φ) x) := by
-  let dφ := mfderiv I I' φ x
-  let dφiso := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv hφ hn
-  have aux : dφiso = dφ := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe hn hφ
-  have hφ' : HasMFDerivAt I I' φ x dφ :=
-    (mdifferentiableAt_of_isLocalDiffeomorphAt _ _ hn hφ).hasMFDerivAt
-  rw [HasMFDerivAt.mfderiv ((hf.hasMFDerivAt).comp hφ' (x := x)), ← aux]
-  rw [← Injective.of_comp_iff' _ dφiso.bijective]
+  rw [HasMFDerivAt.mfderiv ((hf.hasMFDerivAt).comp hφ (x := x)),
+    ← Injective.of_comp_iff' _ dφ.bijective]
   exact Iff.rfl
 
 /-- If `f` is differentiable at `x` and `φ` is a local diffeomorphism at `f x`,
@@ -399,8 +386,8 @@ lemma mfderiv_injective_iff_comp_isLocalDiffeomorph :
 lemma mfderiv_bijective_iff_comp_isLocalDiffeomorph :
     Bijective (mfderiv I' J f (φ x)) ↔ Bijective (mfderiv I J (f ∘ φ) x) := by
   rw [Bijective, Bijective, and_congr]
-  apply mfderiv_injective_iff_comp_isLocalDiffeomorph hn hφ (hf := hf)
-  apply mfderiv_surjective_iff_comp_isLocalDiffeomorph hn hφ (hf := hf)
+  apply mfderiv_injective_iff_comp_isLocalDiffeomorph hφ (hf := hf)
+  apply mfderiv_surjective_iff_comp_isLocalDiffeomorph hφ (hf := hf)
 
 open LinearMap (rank)
 
@@ -408,46 +395,29 @@ open LinearMap (rank)
 -- xxx: is finite-dimensionality required, or obvious by Lean convention?
 lemma mfderiv_rank_eq_comp_isLocalDiffeomorph [FiniteDimensional 𝕜 E] :
     rank (mfderiv I' J f (φ x)).toLinearMap = rank (mfderiv I J (f ∘ φ) x).toLinearMap := by
-
-  let dφ := mfderiv I I' φ x
-  let dφiso := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv hφ hn
-  have aux : dφiso = dφ := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe hn hφ
-  have hφ' : HasMFDerivAt I I' φ x dφ :=
-    (mdifferentiableAt_of_isLocalDiffeomorphAt _ _ hn hφ).hasMFDerivAt
-  rw [HasMFDerivAt.mfderiv ((hf.hasMFDerivAt).comp hφ' (x := x)), ← aux]
-
+  rw [HasMFDerivAt.mfderiv ((hf.hasMFDerivAt).comp hφ (x := x))]
   set df := mfderiv I' J f (φ x)
-  apply le_antisymm ?_ (LinearMap.rank_comp_le_left dφiso.toLinearMap df.toLinearMap)
+  apply le_antisymm ?_ (LinearMap.rank_comp_le_left dφ.toLinearMap df.toLinearMap)
   sorry -- this is the hard inclusion: why is rank df ≤ rank (df ∘ dφiso)
   -- probably doable, using LinearMap.le_rank_iff_exists_linearIndependent
 
 variable {f : M → M'} (hf : MDifferentiableAt I I' f x)
-  {φ : M' → N} (hφ : IsLocalDiffeomorphAt I' J n φ (f x))
+  {φ : M' → N} {dφ : TangentSpace I' (f x) ≃L[𝕜] TangentSpace J (φ (f x))}
+  (hφ : HasMFDerivAt I' J φ (f x) dφ)
 
 /-- If `f` is differentiable at `x` and `φ` is a local diffeomorphism at `f x`,
   `mfderiv (φ∘f) x` is surjective iff `mfderiv φ (f x)` is. -/
 lemma mfderiv_surjective_iff_comp_isLocalDiffeomorph' :
     Surjective (mfderiv I I' f x) ↔ Surjective (mfderiv I J (φ ∘ f) x) := by
-  let dφ := mfderiv I' J φ (f x)
-  let dφiso := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv hφ hn
-  have aux : dφiso = dφ := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe hn hφ
-  have hφ : HasMFDerivAt I' J φ (f x) dφ :=
-    (mdifferentiableAt_of_isLocalDiffeomorphAt _ _ hn hφ).hasMFDerivAt
-  rw [HasMFDerivAt.mfderiv (hφ.comp (hf.hasMFDerivAt) (x := x)), ← aux]
-  rw [← Surjective.of_comp_iff' dφiso.bijective]
+  rw [HasMFDerivAt.mfderiv (hφ.comp (hf.hasMFDerivAt) (x := x)),
+    ← Surjective.of_comp_iff' dφ.bijective]
   exact Iff.rfl
 
 /-- If `f` is differentiable at `x` and `φ` is a local diffeomorphism at `f x`,
   `mfderiv (φ∘f) x` is injective iff `mfderiv φ (f x)` is. -/
 lemma mfderiv_injective_iff_comp_isLocalDiffeomorph' :
     Injective (mfderiv I I' f x) ↔ Injective (mfderiv I J (φ ∘ f) x) := by
-  let dφ := mfderiv I' J φ (f x)
-  let dφiso := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv hφ hn
-  have aux : dφiso = dφ := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe hn hφ
-  have hφ : HasMFDerivAt I' J φ (f x) dφ :=
-    (mdifferentiableAt_of_isLocalDiffeomorphAt _ _ hn hφ).hasMFDerivAt
-  rw [HasMFDerivAt.mfderiv (hφ.comp (hf.hasMFDerivAt) (x := x)), ← aux]
-  rw [← Injective.of_comp_iff dφiso.bijective.injective]
+  rw [HasMFDerivAt.mfderiv (hφ.comp (hf.hasMFDerivAt) (x := x)), ← dφ.injective.of_comp_iff ]
   exact Iff.rfl
 
 /-- If `f` is differentiable at `x` and `φ` is a local diffeomorphism at `f x`,
@@ -455,20 +425,15 @@ lemma mfderiv_injective_iff_comp_isLocalDiffeomorph' :
 lemma mfderiv_bijective_iff_comp_isLocalDiffeomorph' :
     Bijective (mfderiv I I' f x) ↔ Bijective (mfderiv I J (φ ∘ f) x) := by
   rw [Bijective, Bijective, and_congr]
-  apply mfderiv_injective_iff_comp_isLocalDiffeomorph' hn hφ (hf := hf)
-  apply mfderiv_surjective_iff_comp_isLocalDiffeomorph' hn hφ (hf := hf)
+  apply mfderiv_injective_iff_comp_isLocalDiffeomorph' hφ (hf := hf)
+  apply mfderiv_surjective_iff_comp_isLocalDiffeomorph' hφ (hf := hf)
 
 /-- If `M` is finite-dimensional, then rk d(φ ∘ f)_x = rk (dφ_f(x)). -/
 lemma mfderiv_rank_eq_comp_isLocalDiffeomorph' [FiniteDimensional 𝕜 E] : 0 = 1 := by
   -- TODO. this doesn't typecheck, both sides live in different universes
   -- need to name levels explicitly, then use Cardinal.lift on e.g. the LHS
   -- rank (mfderiv I' J φ (f x)).toLinearMap = rank (mfderiv I I' f x).toLinearMap := by
-  let dφ := mfderiv I' J φ (f x)
-  let dφiso := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv hφ hn
-  have aux : dφiso = dφ := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe hn hφ
-  have hφ : HasMFDerivAt I' J φ (f x) dφ :=
-    (mdifferentiableAt_of_isLocalDiffeomorphAt _ _ hn hφ).hasMFDerivAt
-  -- rw [HasMFDerivAt.mfderiv (hφ.comp (hf.hasMFDerivAt) (x := x)), ← aux]
+  -- rw [HasMFDerivAt.mfderiv (hφ.comp (hf.hasMFDerivAt) (x := x))]
   -- set dφ := mfderiv I' J φ (f x)
   -- LinearEquiv.rank_map_eq should do the trick here
   sorry
@@ -616,14 +581,21 @@ lemma mfderiv_surjective_iff_in_charts (hn : 1 ≤ n) : Surjective (mfderiv I J 
       exact contMDiffOn_extend_symm he
     exact hf.comp _ aux (M := E)
 
-  let r1 := e.extend_symm_isLocalDiffeomorphAt n he h
-  let s1 := mfderiv_surjective_iff_comp_isLocalDiffeomorph hn _ _ r1 (this.symm ▸ hf)
-  rw [e.extend_left_inv I hx] at s1
-  rw [s1]
+  let he := e.extend_symm_isLocalDiffeomorphAt n he h
+  let de_iso := LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv he hn
+  have he : HasMFDerivAt 𝓘(𝕜, E) I (e.extend I).symm ((e.extend I) x) de_iso := by
+    rw [LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe hn he]
+    exact (mdifferentiableAt_of_isLocalDiffeomorphAt _ _ hn he).hasMFDerivAt
+  let h := mfderiv_surjective_iff_comp_isLocalDiffeomorph _ _ he (this.symm ▸ hf)
+  rw [e.extend_left_inv I hx] at h
+  rw [h]
 
-  let r2 := e'.extend_isLocalDiffeomorphAt n he' (this ▸ hx')
-  rw [mfderiv_surjective_iff_comp_isLocalDiffeomorph' hn (hφ := this.symm ▸ r2) hf']
-  rfl
+  -- TODO: fix this proof (and its clone below)
+  -- wip: let he' := e'.extend_symm_isLocalDiffeomorphAt n he' (this ▸ hx')
+  --sorry --let r2 := e'.extend_isLocalDiffeomorphAt n he' (this ▸ hx')
+  -- rw [mfderiv_surjective_iff_comp_isLocalDiffeomorph' hn (hφ := this.symm ▸ r2) hf']
+  -- rfl
+  sorry
 
 /-- If `f : M → N` has injective differential at `x` iff its local coordinate representation
   `φ ∘ f ∘ ψ.symm`, for any two charts φ, ψ around `x` and `f x`, does. -/
@@ -648,13 +620,14 @@ lemma mfderiv_injective_iff_in_charts (hn : 1 ≤ n) : Injective (mfderiv I J f 
       apply ContMDiffOn.contMDiffAt _ (this.mem_nhds (mem_image_of_mem I (e.map_source hx)))
       exact contMDiffOn_extend_symm he
     exact hf.comp _ aux (M := E)
-  let r1 := e.extend_symm_isLocalDiffeomorphAt n he h
+  -- TODO: fix this proof, similar to the one below
+  sorry /- let r1 := e.extend_symm_isLocalDiffeomorphAt n he h
   let s1 := mfderiv_injective_iff_comp_isLocalDiffeomorph hn _ _ r1 (this.symm ▸ hf)
   rw [e.extend_left_inv I hx] at s1
   rw [s1]
   let r2 := e'.extend_isLocalDiffeomorphAt n he' (this ▸ hx')
   rw [mfderiv_injective_iff_comp_isLocalDiffeomorph' hn (hφ := this.symm ▸ r2) hf']
-  rfl
+  rfl -/
 
 /-- If `f : M → N` has bijective differential at `x` iff its local coordinate representation
   `φ ∘ f ∘ ψ.symm`, for any two charts φ, ψ around `x` and `f x`, does. -/
@@ -662,8 +635,8 @@ lemma mfderiv_injective_iff_in_charts (hn : 1 ≤ n) : Injective (mfderiv I J f 
 lemma mfderiv_bijective_iff_in_charts (hn : 1 ≤ n) : Bijective (mfderiv I J f x) ↔
     Bijective (fderiv 𝕜 ((e'.extend J) ∘ f ∘ (e.extend I).symm) (e.extend I x)) := by
   rw [Bijective, Bijective, and_congr]
-  apply mfderiv_injective_iff_in_charts hf hx hx' he he' hn
-  apply mfderiv_surjective_iff_in_charts hf hx hx' he he' hn
+  apply mfderiv_injective_iff_in_charts hf hx he hn
+  apply mfderiv_surjective_iff_in_charts hf hx he hn
 
 -- corollary: if M is finite-dimensional, rank of differential df_x equals the rank of d(f_loc),
 -- where f_loc is the local coordinate representation
@@ -673,7 +646,6 @@ lemma mfderiv_bijective_iff_in_charts (hn : 1 ≤ n) : Bijective (mfderiv I J f 
 lemma cor (hn : 1 ≤ n) : Bijective (mfderiv I J f x) ↔
     Bijective (fderiv 𝕜 ((extChartAt J (f x)) ∘ f ∘ (extChartAt I x).symm) (extChartAt I x x)) := by
   rw [extChartAt]
-  apply mfderiv_bijective_iff_in_charts hf (mem_chart_source H x) (mem_chart_source G (f x))
-    (chart_mem_maximalAtlas I x) (chart_mem_maximalAtlas J (f x)) hn
+  exact mfderiv_bijective_iff_in_charts hf (mem_chart_source H x) (chart_mem_maximalAtlas I x) hn
 
 end ChartsDifferentials
