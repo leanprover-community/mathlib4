@@ -21,7 +21,6 @@ with `1`.
 * Characteristic zero implies that the additive monoid is infinite.
 -/
 
-
 namespace Nat
 
 variable {R : Type*} [AddMonoidWithOne R] [CharZero R]
@@ -98,11 +97,11 @@ section
 
 variable {R : Type*} [NonAssocRing R] [NoZeroDivisors R] [CharZero R]
 
-theorem neg_eq_self_iff {a : R} : -a = a ↔ a = 0 :=
+@[simp] theorem neg_eq_self_iff {a : R} : -a = a ↔ a = 0 :=
   neg_eq_iff_add_eq_zero.trans add_self_eq_zero
 #align neg_eq_self_iff neg_eq_self_iff
 
-theorem eq_neg_self_iff {a : R} : a = -a ↔ a = 0 :=
+@[simp] theorem eq_neg_self_iff {a : R} : a = -a ↔ a = 0 :=
   eq_neg_iff_add_eq_zero.trans add_self_eq_zero
 #align eq_neg_self_iff eq_neg_self_iff
 
