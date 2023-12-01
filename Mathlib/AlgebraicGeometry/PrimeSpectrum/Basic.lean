@@ -951,8 +951,8 @@ def closedPoint : PrimeSpectrum R :=
 
 variable {R}
 
-theorem isLocalRingHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S] (f : R →+* S) :
-    IsLocalRingHom f ↔ PrimeSpectrum.comap f (closedPoint S) = closedPoint R := by
+theorem isLocalRingHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S]
+    (f : R →+* S) : IsLocalRingHom f ↔ PrimeSpectrum.comap f (closedPoint S) = closedPoint R := by
   -- Porting note : inline `this` does **not** work
   have := (local_hom_TFAE f).out 0 4
   rw [this, PrimeSpectrum.ext_iff]
@@ -960,8 +960,8 @@ theorem isLocalRingHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [Loca
 #align local_ring.is_local_ring_hom_iff_comap_closed_point LocalRing.isLocalRingHom_iff_comap_closedPoint
 
 @[simp]
-theorem comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S] (f : R →+* S) [IsLocalRingHom f] :
-    PrimeSpectrum.comap f (closedPoint S) = closedPoint R :=
+theorem comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S] (f : R →+* S)
+    [IsLocalRingHom f] : PrimeSpectrum.comap f (closedPoint S) = closedPoint R :=
   (isLocalRingHom_iff_comap_closedPoint f).mp inferInstance
 #align local_ring.comap_closed_point LocalRing.comap_closedPoint
 
