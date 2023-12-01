@@ -868,7 +868,8 @@ theorem localization_away_openEmbedding (S : Type v) [CommRing S] [Algebra R S] 
       exact isOpen_basicOpen }
 #align prime_spectrum.localization_away_open_embedding PrimeSpectrum.localization_away_openEmbedding
 
-theorem isCompact_basicOpen {S : Type v}[CommRing S] (f : S) : IsCompact (basicOpen f : Set (PrimeSpectrum S)) := by
+theorem isCompact_basicOpen {S : Type v}[CommRing S] (f : S) :
+    IsCompact (basicOpen f : Set (PrimeSpectrum S)) := by
   rw [← localization_away_comap_range (Localization (Submonoid.powers f))]
   exact isCompact_range (map_continuous _)
 #align prime_spectrum.is_compact_basic_open PrimeSpectrum.isCompact_basicOpen
@@ -981,8 +982,8 @@ theorem closedPoint_mem_iff (U : TopologicalSpace.Opens <| PrimeSpectrum R) :
 #align local_ring.closed_point_mem_iff LocalRing.closedPoint_mem_iff
 
 @[simp]
-theorem PrimeSpectrum.comap_residue {S : Type v}[CommRing S] [LocalRing S] (x : PrimeSpectrum (ResidueField S)) :
-    PrimeSpectrum.comap (residue S) x = closedPoint S := by
+theorem PrimeSpectrum.comap_residue {S : Type v}[CommRing S] [LocalRing S]
+    (x : PrimeSpectrum (ResidueField S)) : PrimeSpectrum.comap (residue S) x = closedPoint S := by
   rw [Subsingleton.elim x ⊥]
   ext1
   exact Ideal.mk_ker
