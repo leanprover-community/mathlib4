@@ -1220,7 +1220,8 @@ theorem contDiffOn_extend_coord_change :
   exact (StructureGroupoid.compatible_of_mem_maximalAtlas hf' hf).1
 #align local_homeomorph.cont_diff_on_extend_coord_change LocalHomeomorph.contDiffOn_extend_coord_change
 
-theorem contDiffWithinAt_extend_coord_change {x : E} (hx : x ∈ ((f'.extend I).symm ≫ f.extend I).source) :
+theorem contDiffWithinAt_extend_coord_change
+    {x : E} (hx : x ∈ ((f'.extend I).symm ≫ f.extend I).source) :
     ContDiffWithinAt 𝕜 ⊤ (f.extend I ∘ (f'.extend I).symm) (range I) x := by
   apply (contDiffOn_extend_coord_change I hf hf' x hx).mono_of_mem
   rw [extend_coord_change_source] at hx ⊢
