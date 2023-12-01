@@ -876,20 +876,20 @@ variable {R E F}
   the field `exists_coordChange`. -/
 def coordChange (a : VectorPrebundle R F E) {e e' : Pretrivialization F (π F E)}
     (he : e ∈ a.pretrivializationAtlas) (he' : e' ∈ a.pretrivializationAtlas) (b : B) : F →L[R] F :=
-  Classical.choose (a.exists_coordChange e he e' he') b
+  choose (a.exists_coordChange e he e' he') b
 #align vector_prebundle.coord_change VectorPrebundle.coordChange
 
 theorem continuousOn_coordChange (a : VectorPrebundle R F E) {e e' : Pretrivialization F (π F E)}
     (he : e ∈ a.pretrivializationAtlas) (he' : e' ∈ a.pretrivializationAtlas) :
     ContinuousOn (a.coordChange he he') (e.baseSet ∩ e'.baseSet) :=
-  (Classical.choose_spec (a.exists_coordChange e he e' he')).1
+  (choose_spec (a.exists_coordChange e he e' he')).1
 #align vector_prebundle.continuous_on_coord_change VectorPrebundle.continuousOn_coordChange
 
 theorem coordChange_apply (a : VectorPrebundle R F E) {e e' : Pretrivialization F (π F E)}
     (he : e ∈ a.pretrivializationAtlas) (he' : e' ∈ a.pretrivializationAtlas) {b : B}
     (hb : b ∈ e.baseSet ∩ e'.baseSet) (v : F) :
     a.coordChange he he' b v = (e' ⟨b, e.symm b v⟩).2 :=
-  (Classical.choose_spec (a.exists_coordChange e he e' he')).2 b hb v
+  (choose_spec (a.exists_coordChange e he e' he')).2 b hb v
 #align vector_prebundle.coord_change_apply VectorPrebundle.coordChange_apply
 
 theorem mk_coordChange (a : VectorPrebundle R F E) {e e' : Pretrivialization F (π F E)}
