@@ -98,7 +98,7 @@ lemma opcyclesToCycles_naturality :
 
 variable (C c)
 
-/-- The natual transformation `K.opcyclesToCycles i j : K.opcycles i ⟶ K.cycles j` for all
+/-- The natural transformation `K.opcyclesToCycles i j : K.opcycles i ⟶ K.cycles j` for all
 `K : HomologicalComplex C c`. -/
 @[simps]
 noncomputable def natTransOpCyclesToCycles [CategoryWithHomology C] :
