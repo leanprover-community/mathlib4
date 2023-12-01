@@ -15,9 +15,11 @@ import Mathlib.Tactic.DeriveFintype
 # Languages
 
 This file contains the definition and operations on formal languages over an alphabet. Note that
-strings are implemented as lists over the alphabet.
-The operations in this file define a [Kleene algebra](https://en.wikipedia.org/wiki/Kleene_algebra)
+"strings" are implemented as lists over the alphabet.
+Union and concatenation define a [Kleene algebra](https://en.wikipedia.org/wiki/Kleene_algebra)
 over the languages.
+In addition to that, we define a reversal of a language and prove that it behaves well
+with respect to other language operations.
 -/
 
 
