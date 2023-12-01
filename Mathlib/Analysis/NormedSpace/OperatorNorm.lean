@@ -293,6 +293,11 @@ theorem op_norm_smul_le {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F
     exact mul_le_mul_of_nonneg_left (le_op_norm _ _) (norm_nonneg _)
 #align continuous_linear_map.op_norm_smul_le ContinuousLinearMap.op_norm_smul_le
 
+/-- Operator seminorm on the space of continuous (semi)linear maps, as `Seminorm`.
+
+We use this seminorm to define a `SeminormedGroup` structure on `E →SL[σ] F`,
+but we have to override the projection `UniformSpace`
+so that it is definitionally equal to the one coming from the topologies on `E` and `F`. -/
 protected def seminorm : Seminorm 𝕜₂ (E →SL[σ₁₂] F) :=
   .ofSMulLE norm op_norm_zero op_norm_add_le op_norm_smul_le
 
