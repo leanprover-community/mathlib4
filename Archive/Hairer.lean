@@ -22,15 +22,24 @@ lemma exists_affineSpan_zero {ι'} (s : Submodule 𝕜 F) [FiniteDimensional �
 variable (𝕜) in
 def nonConstantTotalDegreeLE (ι : Type*) (N : ℕ) : Submodule 𝕜 (MvPolynomial ι 𝕜) where
   carrier := { p | p.totalDegree ≤ N ∧ constantCoeff p = 0 }
-  add_mem' := sorry
-  zero_mem' := sorry
-  smul_mem' := sorry
+  add_mem' := by
+    rintro p q ⟨hp, hpc⟩ ⟨hq, hqc⟩
+    exact ⟨(totalDegree_add p q).trans (max_le hp hq), by simp [hpc, hqc]⟩
+  zero_mem' := by simp
+  smul_mem' := by
+    rintro c p ⟨hp, hpc⟩
+    exact ⟨(totalDegree_smul_le _ _).trans hp, by simp [hpc]⟩
 
 instance (ι : Type*) [Finite ι] (N : ℕ) :
   FiniteDimensional 𝕜 (nonConstantTotalDegreeLE 𝕜 ι N) := sorry
 
 lemma affineSpan_subset_span {s : Set E} : (affineSpan 𝕜 s : Set E) ⊆ Submodule.span 𝕜 s := by
-  sorry
+  intro x hx
+  apply affineSpan_induction hx (p := fun y ↦ y ∈ Submodule.span 𝕜 s)
+    (fun x hx ↦ Submodule.subset_span hx) (fun c u v w hu hv hw ↦ ?_)
+  simp only [vsub_eq_sub, vadd_eq_add]
+  apply Submodule.add_mem _ _ hw
+  exact Submodule.smul_mem _ _ (Submodule.sub_mem _ hu hv)
 
 variable (𝕜) in
 lemma support_subset_of_mem_span {α β} [Zero β] {s : Set E} {y : E} [FunLike E α (fun _ ↦ β)]
