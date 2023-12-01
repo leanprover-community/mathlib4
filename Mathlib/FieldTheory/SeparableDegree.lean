@@ -491,7 +491,8 @@ theorem natSepDegree_pow {n : ℕ} : (f ^ n).natSepDegree = if n = 0 then 0 else
 theorem natSepDegree_X_pow {n : ℕ} : ((X : F[X]) ^ n).natSepDegree = if n = 0 then 0 else 1 := by
   simp only [natSepDegree_pow, natSepDegree_X]
 
-theorem natSepDegree_X_sub_C_pow {x : F} {n : ℕ} : ((X - C x) ^ n).natSepDegree = if n = 0 then 0 else 1 := by
+theorem natSepDegree_X_sub_C_pow {x : F} {n : ℕ} :
+    ((X - C x) ^ n).natSepDegree = if n = 0 then 0 else 1 := by
   simp only [natSepDegree_pow, natSepDegree_X_sub_C]
 
 theorem natSepDegree_C_mul_X_sub_C_pow {x y : F} {n : ℕ} (hx : x ≠ 0) :
@@ -878,10 +879,9 @@ instance separableClosure.normal [Normal F E] : Normal F (separableClosure F E) 
 separable closure of `F`. -/
 instance separableClosure.isSepClosure [IsAlgClosed E] : IsSepClosure F (separableClosure F E) := by
   refine ⟨IsSepClosed.of_exists_root _ fun p hp hirr hsep ↦ ?_, isSeparable F E⟩
-  obtain ⟨x, hx⟩ := IsAlgClosed.exists_aeval_eq_zero E p (ne_of_gt <| degree_pos_of_irreducible hirr)
-  have halg := IsAlgebraic.isIntegral ⟨p, hp.ne_zero, hx⟩
-  have hsep' := hsep.of_dvd <| minpoly.dvd _ x hx
-  haveI := (isSeparable_adjoin_simple_iff_separable _ E).2 ⟨halg, hsep'⟩
+  obtain ⟨x, hx⟩ := IsAlgClosed.exists_aeval_eq_zero E p (ne_of_gt (degree_pos_of_irreducible hirr))
+  haveI := (isSeparable_adjoin_simple_iff_separable _ E).2
+    ⟨IsAlgebraic.isIntegral ⟨p, hp.ne_zero, hx⟩, hsep.of_dvd <| minpoly.dvd _ x hx⟩
   let L := separableClosure F E
   letI : Algebra L L⟮x⟯ := Subalgebra.algebra L⟮x⟯.toSubalgebra
   letI : Module L L⟮x⟯ := Algebra.toModule
