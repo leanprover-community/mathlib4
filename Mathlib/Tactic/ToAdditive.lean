@@ -810,6 +810,10 @@ def fixAbbreviation : List String → List String
   | "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
   | "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: fixAbbreviation s
   | "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
+  | "function" :: "_" :: "add" :: "Semiconj" :: s
+                                      => "function" :: "_" :: "semiconj" :: fixAbbreviation s
+  | "function" :: "_" :: "add" :: "Commute" :: s
+                                      => "function" :: "_" :: "commute" :: fixAbbreviation s
   | x :: s                            => x :: fixAbbreviation s
   | []                                => []
 
