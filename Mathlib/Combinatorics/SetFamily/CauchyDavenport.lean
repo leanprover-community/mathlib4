@@ -11,6 +11,21 @@ import Mathlib.GroupTheory.Order.Min
 
 This file proves a generalisation of the Cauchy-Davenport theorem to arbitrary groups.
 
+Cauchy-Davenport provides a lower bound on the size of `s + t` in terms of the sizes of `s` and `t`,
+where `s` and `t` are nonempty finite sets in a monoid. Precisely, it says that
+`|s + t| ≥ |s| + |t| - 1` unless the RHS is bigger than the size of the smallest nontrivial subgroup
+(in which case taking `s` and `t` to be that subgroup would yield a counterexample). The motivating
+example is `s = {0, ..., m}`, `t = {0, ..., n}` in the integers, which gives
+`s + t = {0, ..., m + n}` and `|s + t| = m + n + 1 = |s| + |t| - 1`.
+
+There are two kinds of proof of Cauchy-Davenport:
+* The first one works in linear orders by writing `a₁ < ... < aₖ` the elements of `s`,
+  `b₁ < ... < bₗ` the elements of `t`, and arguing that `a₁ + b₁ < ... < aₖ + b₁ < ... < aₖ + bₗ`
+  are distinct elements of `s + t`.
+* The second one works in groups by performing an "e-transform". Replace `s` and `t` by `s ∩ g • s`
+  and `t ∪ g⁻¹ • t`. For a suitably chosen `g`, this decreases `|s + t|` and keeps `|s| + |t|` the
+  same.
+
 ## Main declarations
 
 * `Finset.min_le_card_mul`: A generalisation of the Cauchy-Davenport theorem to arbitrary groups.
@@ -88,8 +103,12 @@ lemma wellFoundedOn_devosMulRel :
     add_le_add ((card_le_card_mul_right _ hx.1.2).trans_eq hx.2) <|
       (card_le_card_mul_left _ hx.1.1).trans_eq hx.2
 
-/-- A generalisation of the **Cauchy-Davenport theorem** to arbitrary groups. -/
-@[to_additive "A generalisation of the **Cauchy-Davenport theorem** to arbitrary groups."]
+/-- A generalisation of the **Cauchy-Davenport theorem** to arbitrary groups. The size of `s * t` is
+lower-bounded by `|s| + |t| - 1` unless this quantity is greater than the size of the smallest
+subgroup. -/
+@[to_additive "A generalisation of the **Cauchy-Davenport theorem** to arbitrary groups. The size of
+`s + t` is lower-bounded by `|s| + |t| - 1` unless this quantity is greater than the size of the
+smallest subgroup."]
 lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
     min (minOrder α) ↑(s.card + t.card - 1) ≤ (s * t).card := by
   -- Set up the induction on `x := (s, t)` along the `DevosMulRel` relation.
@@ -151,16 +170,17 @@ lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
   -- `|s| + |t| ≤ |s'| + |t'|` or `|s| + |t| < |s''| + |t''|`. One of those two inequalities must
   -- hold since `2 * (|s| + |t|) = |s'| + |t'| + |s''| + |t''|`.
   obtain hstg | hstg := le_or_lt_of_add_le_add (MulETransform.card g (s, t)).ge
-  · exact
-      (ih _ _ hgs (hgt.mono inter_subset_union) <| devosMulRel_of_le_of_le aux1 hstg hsg).imp
-        (WithTop.coe_le_coe.2 aux1).trans' fun h ↦ hstg.trans <| h.trans <| add_le_add_right aux1 _
+  · exact (ih _ _ hgs (hgt.mono inter_subset_union) <| devosMulRel_of_le_of_le aux1 hstg hsg).imp
+      (WithTop.coe_le_coe.2 aux1).trans' fun h ↦ hstg.trans <| h.trans <| add_le_add_right aux1 _
   · exact (ih _ _ (hgs.mono inter_subset_union) hgt <| devosMulRel_of_le aux2 hstg).imp
       (WithTop.coe_le_coe.2 aux2).trans' fun h ↦
         hstg.le.trans <| h.trans <| add_le_add_right aux2 _
 
-/-- The **Cauchy-Davenport Theorem** for torsion-free groups. -/
-@[to_additive "The **Cauchy-Davenport theorem** for torsion-free groups."]
-lemma Monoid.IsTorsionFree.card_add_card_sub_one_le_card_mul (h : IsTorsionFree α) {s t : Finset α}
+/-- The **Cauchy-Davenport Theorem** for torsion-free groups. The size of `s * t` is lower-bounded
+by `|s| + |t| - 1`. -/
+@[to_additive "The **Cauchy-Davenport theorem** for torsion-free groups. The size of `s + t` is
+lower-bounded by `|s| + |t| - 1`."]
+lemma Monoid.IsTorsionFree.card_add_card_sub_one_le_card_mul (h : IsTorsionFree α)
     (hs : s.Nonempty) (ht : t.Nonempty) : s.card + t.card - 1 ≤ (s * t).card := by
   simpa only [h.minOrder, min_eq_right, le_top, Nat.cast_le] using Finset.min_le_card_mul hs ht
 
@@ -168,16 +188,19 @@ end General
 
 /-! ### $$ℤ/nℤ$$ -/
 
-/-- The **Cauchy-Davenport Theorem**. -/
+/-- The **Cauchy-Davenport Theorem**. If `s`, `t` are nonempty sets in $$ℤ/pℤ$$, then the size of
+`s + t` is lower-bounded by `|s| + |t| - 1`, unless this quantity is greater than `p`. -/
 lemma ZMod.min_le_card_add {p : ℕ} (hp : p.Prime) {s t : Finset (ZMod p)} (hs : s.Nonempty)
     (ht : t.Nonempty) : min p (s.card + t.card - 1) ≤ (s + t).card := by
   simpa only [ZMod.minOrder_of_prime hp, min_le_iff, Nat.cast_le] using Finset.min_le_card_add hs ht
 
 /-! ### Linearly ordered cancellative semigroups -/
 
-/-- The **Cauchy-Davenport Theorem** for linearly ordered cancellative semigroups. -/
+/-- The **Cauchy-Davenport Theorem** for linearly ordered cancellative semigroups. The size of
+`s * t` is lower-bounded by `|s| + |t| - 1`. -/
 @[to_additive
-"The **Cauchy-Davenport theorem** for linearly ordered additive cancellative semigroups."]
+"The **Cauchy-Davenport theorem** for linearly ordered additive cancellative semigroups. The size of
+`s + t` is lower-bounded by `|s| + |t| - 1`."]
 lemma Finset.card_add_card_sub_one_le_card_mul [LinearOrder α] [Semigroup α] [IsCancelMul α]
     [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
     {s t : Finset α} (hs : s.Nonempty) (ht : t.Nonempty) : s.card + t.card - 1 ≤ (s * t).card := by
