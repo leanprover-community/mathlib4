@@ -76,7 +76,7 @@ This result should be generalized to a `ContMDiffWithinAt` for `mfderivWithin`.
 If we do that, we can deduce `ContMDiffOn.contMDiffOn_tangentMapWithin` from this.
 -/
 protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N → M)
-    (hf : ContMDiffAt (J.prod I) I' n (Function.uncurry f) (x₀, g x₀)) (hg : ContMDiffAt J I m g x₀)
+    (hf : ContMDiffAt (J.prod I) I' n (uncurry f) (x₀, g x₀)) (hg : ContMDiffAt J I m g x₀)
     (hmn : m + 1 ≤ n) :
     ContMDiffAt J 𝓘(𝕜, E →L[𝕜] E') m
       (inTangentCoordinates I I' g (fun x => f x (g x)) (fun x => mfderiv I I' (f x) (g x)) x₀)
@@ -133,9 +133,9 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
             (extChartAt I (g x₀)).symm) x =
           extChartAt I' (f x₀ (g x₀)) (f x₂ ((extChartAt I (g x₀)).symm x)) := by
       rintro x ⟨hx, h2x⟩
-      simp_rw [writtenInExtChartAt, Function.comp_apply]
+      simp_rw [writtenInExtChartAt, comp_apply]
       rw [(extChartAt I (g x₂)).left_inv hx, (extChartAt I' (f x₂ (g x₂))).left_inv h2x]
-    refine' Filter.EventuallyEq.fderivWithin_eq_nhds _
+    refine' EventuallyEq.fderivWithin_eq_nhds _
     refine' eventually_of_mem (inter_mem _ _) this
     · exact extChartAt_preimage_mem_nhds' _ _ hx₂ (extChartAt_source_mem_nhds I (g x₂))
     refine' extChartAt_preimage_mem_nhds' _ _ hx₂ _
@@ -171,9 +171,9 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
     refine' fderivWithin.comp₃ _ hI' h3f hI _ _ _ _ (I.unique_diff _ <| mem_range_self _)
     · exact fun x _ => mem_range_self _
     · exact fun x _ => mem_range_self _
-    · simp_rw [writtenInExtChartAt, Function.comp_apply,
+    · simp_rw [writtenInExtChartAt, comp_apply,
         (extChartAt I (g x₂)).left_inv (mem_extChartAt_source I (g x₂))]
-    · simp_rw [Function.comp_apply, (extChartAt I (g x₀)).left_inv hx₂]
+    · simp_rw [comp_apply, (extChartAt I (g x₀)).left_inv hx₂]
   refine' this.congr_of_eventuallyEq _
   filter_upwards [h2g, h4f] with x hx h2x
   rw [inTangentCoordinates_eq]
@@ -205,7 +205,7 @@ This is similar to `ContMDiffAt.mfderiv`, but where the continuous linear map is
 (variable) vector.
 -/
 theorem ContMDiffAt.mfderiv_apply {x₀ : N'} (f : N → M → M') (g : N → M) (g₁ : N' → N) (g₂ : N' → E)
-    (hf : ContMDiffAt (J.prod I) I' n (Function.uncurry f) (g₁ x₀, g (g₁ x₀)))
+    (hf : ContMDiffAt (J.prod I) I' n (uncurry f) (g₁ x₀, g (g₁ x₀)))
     (hg : ContMDiffAt J I m g (g₁ x₀)) (hg₁ : ContMDiffAt J' J m g₁ x₀)
     (hg₂ : ContMDiffAt J' 𝓘(𝕜, E) m g₂ x₀) (hmn : m + 1 ≤ n) :
     ContMDiffAt J' 𝓘(𝕜, E') m
@@ -507,7 +507,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
       refine' tangentMapWithin_subset (by mfld_set_tac) U'q _
       apply hf.mdifferentiableOn one_le_n
       simp only [hq, mfld_simps]
-    dsimp only [Function.comp_def] at A B C D E ⊢
+    dsimp only [comp_def] at A B C D E ⊢
     simp only [A, B, C, D, ← E]
   exact diff_DrirrflilDl.congr eq_comp
 #align cont_mdiff_on.cont_mdiff_on_tangent_map_within ContMDiffOn.contMDiffOn_tangentMapWithin
@@ -571,19 +571,19 @@ theorem tangentMap_tangentBundle_pure (p : TangentBundle I M) :
     simp only [mfld_simps]
   have A : MDifferentiableAt I I.tangent (fun x => @TotalSpace.mk M E (TangentSpace I) x 0) x :=
     haveI : Smooth I (I.prod 𝓘(𝕜, E)) (zeroSection E (TangentSpace I : M → Type _)) :=
-      Bundle.smooth_zeroSection 𝕜 (TangentSpace I : M → Type _)
+      smooth_zeroSection 𝕜 (TangentSpace I : M → Type _)
     this.mdifferentiableAt
   have B :
-    fderivWithin 𝕜 (fun x' : E => (x', (0 : E))) (Set.range I) (I ((chartAt H x) x)) v = (v, 0)
+    fderivWithin 𝕜 (fun x' : E => (x', (0 : E))) (range I) (I ((chartAt H x) x)) v = (v, 0)
   · rw [fderivWithin_eq_fderiv, DifferentiableAt.fderiv_prod]
     · simp
     · exact differentiableAt_id'
     · exact differentiableAt_const _
     · exact ModelWithCorners.unique_diff_at_image I
     · exact differentiableAt_id'.prod (differentiableAt_const _)
-  simp (config := { unfoldPartialApp := true }) only [Bundle.zeroSection, tangentMap, mfderiv, A,
+  simp (config := { unfoldPartialApp := true }) only [zeroSection, tangentMap, mfderiv, A,
     if_pos, chartAt, FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply,
-    tangentBundleCore, Function.comp_def, ContinuousLinearMap.map_zero, mfld_simps]
+    tangentBundleCore, comp_def, ContinuousLinearMap.map_zero, mfld_simps]
   rw [← fderivWithin_inter N] at B
   rw [← fderivWithin_inter N, ← B]
   congr 1

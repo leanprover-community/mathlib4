@@ -126,7 +126,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 point, when read in the model vector space. This property will be lifted to manifolds to define
 differentiable functions between manifolds. -/
 def DifferentiableWithinAtProp (f : H → H') (s : Set H) (x : H) : Prop :=
-  DifferentiableWithinAt 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ Set.range I) (I x)
+  DifferentiableWithinAt 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I x)
 #align differentiable_within_at_prop DifferentiableWithinAtProp
 
 /-- Being differentiable in the model space is a local property, invariant under smooth maps.
@@ -136,8 +136,8 @@ theorem differentiable_within_at_localInvariantProp :
       (DifferentiableWithinAtProp I I') :=
   { is_local := by
       intro s x u f u_open xu
-      have : I.symm ⁻¹' (s ∩ u) ∩ Set.range I = I.symm ⁻¹' s ∩ Set.range I ∩ I.symm ⁻¹' u := by
-        simp only [Set.inter_right_comm, Set.preimage_inter]
+      have : I.symm ⁻¹' (s ∩ u) ∩ range I = I.symm ⁻¹' s ∩ range I ∩ I.symm ⁻¹' u := by
+        simp only [inter_right_comm, preimage_inter]
       rw [DifferentiableWithinAtProp, DifferentiableWithinAtProp, this]
       symm
       apply differentiableWithinAt_inter

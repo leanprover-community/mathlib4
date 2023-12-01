@@ -84,7 +84,7 @@ namespace LocalInvariantProp
 
 theorem congr_set {s t : Set H} {x : H} {f : H → H'} (hu : s =ᶠ[𝓝 x] t) : P f s x ↔ P f t x := by
   obtain ⟨o, host, ho, hxo⟩ := mem_nhds_iff.mp hu.mem_iff
-  simp_rw [subset_def, mem_setOf, ← and_congr_left_iff, ← mem_inter_iff, ← Set.ext_iff] at host
+  simp_rw [subset_def, mem_setOf, ← and_congr_left_iff, ← mem_inter_iff, ← ext_iff] at host
   rw [hG.is_local ho hxo, host, ← hG.is_local ho hxo]
 #align structure_groupoid.local_invariant_prop.congr_set StructureGroupoid.LocalInvariantProp.congr_set
 
@@ -544,18 +544,18 @@ theorem liftProp_id (hG : G.LocalInvariantProp G Q) (hQ : ∀ y, Q id univ y) :
 
 theorem liftPropAt_iff_comp_inclusion (hG : LocalInvariantProp G G' P) {U V : Opens M} (hUV : U ≤ V)
     (f : V → M') (x : U) :
-    LiftPropAt P f (Set.inclusion hUV x) ↔ LiftPropAt P (f ∘ Set.inclusion hUV : U → M') x := by
+    LiftPropAt P f (inclusion hUV x) ↔ LiftPropAt P (f ∘ inclusion hUV : U → M') x := by
   congrm ?_ ∧ ?_
   · simp [continuousWithinAt_univ,
       (TopologicalSpace.Opens.openEmbedding_of_le hUV).continuousAt_iff]
   · apply hG.congr_iff
     exact (TopologicalSpace.Opens.chartAt_inclusion_symm_eventuallyEq hUV).fun_comp
-      (chartAt H' (f (Set.inclusion hUV x)) ∘ f)
+      (chartAt H' (f (inclusion hUV x)) ∘ f)
 #align structure_groupoid.local_invariant_prop.lift_prop_at_iff_comp_inclusion StructureGroupoid.LocalInvariantProp.liftPropAt_iff_comp_inclusion
 
 theorem liftProp_inclusion {Q : (H → H) → Set H → H → Prop} (hG : LocalInvariantProp G G Q)
     (hQ : ∀ y, Q id univ y) {U V : Opens M} (hUV : U ≤ V) :
-    LiftProp Q (Set.inclusion hUV : U → V) := by
+    LiftProp Q (inclusion hUV : U → V) := by
   intro x
   show LiftPropAt Q (id ∘ inclusion hUV) x
   rw [← hG.liftPropAt_iff_comp_inclusion hUV]
