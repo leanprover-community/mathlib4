@@ -642,13 +642,6 @@ theorem isEmpty_iff_eq_nil {l : List α} : l.isEmpty ↔ l = [] := by cases l <;
 
 /-! ### dropLast -/
 
-@[simp]
-theorem length_dropLast : ∀ l : List α, length l.dropLast = length l - 1
-  | [] | [_] => rfl
-  | a::b::l => by
-    rw [dropLast, length_cons, length_cons, length_dropLast (b::l), succ_sub_one, length_cons,
-      succ_sub_one]
-    simp
 #align list.length_init List.length_dropLast
 
 /-! ### getLast -/
@@ -1772,20 +1765,6 @@ theorem map_eq_map {α β} (f : α → β) (l : List α) : f <$> l = map f l :=
 theorem map_tail (f : α → β) (l) : map f (tail l) = tail (map f l) := by cases l <;> rfl
 #align list.map_tail List.map_tail
 
-@[simp]
-theorem map_injective_iff {f : α → β} : Injective (map f) ↔ Injective f := by
-  constructor <;> intro h x y hxy
-  · suffices [x] = [y] by simpa using this
-    apply h
-    simp [hxy]
-  · induction' y with yh yt y_ih generalizing x
-    · simpa using hxy
-    cases x
-    · simp at hxy
-    · simp only [map, cons.injEq] at hxy
-      simp [y_ih hxy.2, h hxy.1]
-#align list.map_injective_iff List.map_injective_iff
-
 /-- A single `List.map` of a composition of functions is equal to
 composing a `List.map` with another `List.map`, fully applied.
 This is the reverse direction of `List.map_map`.
@@ -1801,6 +1780,68 @@ a single `List.map` of composed functions.
 theorem map_comp_map (g : β → γ) (f : α → β) : map g ∘ map f = map (g ∘ f) := by
   ext l; rw [comp_map, Function.comp_apply]
 #align list.map_comp_map List.map_comp_map
+
+section map_bijectivity
+
+theorem _root_.Function.LeftInverse.list_map {f : α → β} {g : β → α} (h : LeftInverse f g) :
+    LeftInverse (map f) (map g)
+  | [] => by simp_rw [map_nil]
+  | x :: xs => by simp_rw [map_cons, h x, h.list_map xs]
+
+nonrec theorem _root_.Function.RightInverse.list_map {f : α → β} {g : β → α}
+    (h : RightInverse f g) : RightInverse (map f) (map g) :=
+  h.list_map
+
+nonrec theorem _root_.Function.Involutive.list_map {f : α → α}
+    (h : Involutive f) : Involutive (map f) :=
+  Function.LeftInverse.list_map h
+
+@[simp]
+theorem map_leftInverse_iff {f : α → β} {g : β → α} :
+    LeftInverse (map f) (map g) ↔ LeftInverse f g :=
+  ⟨fun h x => by injection h [x], (·.list_map)⟩
+
+@[simp]
+theorem map_rightInverse_iff {f : α → β} {g : β → α} :
+    RightInverse (map f) (map g) ↔ RightInverse f g := map_leftInverse_iff
+
+@[simp]
+theorem map_involutive_iff {f : α → α} :
+    Involutive (map f) ↔ Involutive f := map_leftInverse_iff
+
+theorem _root_.Function.Injective.list_map {f : α → β} (h : Injective f) :
+    Injective (map f)
+  | [], [], _ => rfl
+  | x :: xs, y :: ys, hxy => by
+    injection hxy with hxy hxys
+    rw [h hxy, h.list_map hxys]
+
+@[simp]
+theorem map_injective_iff {f : α → β} : Injective (map f) ↔ Injective f := by
+  refine ⟨fun h x y hxy => ?_, (·.list_map)⟩
+  suffices [x] = [y] by simpa using this
+  apply h
+  simp [hxy]
+#align list.map_injective_iff List.map_injective_iff
+
+theorem _root_.Function.Surjective.list_map {f : α → β} (h : Surjective f) :
+    Surjective (map f) :=
+  let ⟨_, h⟩ := h.hasRightInverse; h.list_map.surjective
+
+@[simp]
+theorem map_surjective_iff {f : α → β} : Surjective (map f) ↔ Surjective f := by
+  refine ⟨fun h x => ?_, (·.list_map)⟩
+  let ⟨[y], hxy⟩ := h [x]
+  exact ⟨_, List.singleton_injective hxy⟩
+
+theorem _root_.Function.Bijective.list_map {f : α → β} (h : Bijective f) : Bijective (map f) :=
+  ⟨h.1.list_map, h.2.list_map⟩
+
+@[simp]
+theorem map_bijective_iff {f : α → β} : Bijective (map f) ↔ Bijective f := by
+  simp_rw [Function.Bijective, map_injective_iff, map_surjective_iff]
+
+end map_bijectivity
 
 theorem map_filter_eq_foldr (f : α → β) (p : α → Bool) (as : List α) :
     map f (filter p as) = foldr (fun a bs => bif p a then f a :: bs else bs) [] as := by
@@ -2441,9 +2482,12 @@ theorem injective_foldl_comp {α : Type*} {l : List (α → α)} {f : α → α}
     apply hl _ (List.mem_cons_self _ _)
 #align list.injective_foldl_comp List.injective_foldl_comp
 
-/- Porting note: couldn't do induction proof because "code generator does not support recursor
-  'List.rec' yet". Earlier proof:
-
+/-- Induction principle for values produced by a `foldr`: if a property holds
+for the seed element `b : β` and for all incremental `op : α → β → β`
+performed on the elements `(a : α) ∈ l`. The principle is given for
+a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
+def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β) (hb : C b)
+    (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op a b)) : C (foldr op b l) := by
   induction l with
   | nil => exact hb
   | cons hd tl IH =>
@@ -2451,46 +2495,17 @@ theorem injective_foldl_comp {α : Type*} {l : List (α → α)} {f : α → α}
     refine' IH _
     intro y hy x hx
     exact hl y hy x (mem_cons_of_mem hd hx)
--/
-/-- Induction principle for values produced by a `foldr`: if a property holds
-for the seed element `b : β` and for all incremental `op : α → β → β`
-performed on the elements `(a : α) ∈ l`. The principle is given for
-a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
-def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β) (hb : C b)
-    (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op a b)) : C (foldr op b l) := by
-  cases l with
-  | nil => exact hb
-  | cons hd tl =>
-    have IH : ((b : β) → C b → (a : α) → a ∈ tl → C (op a b)) → C (foldr op b tl) :=
-      foldrRecOn _ _ _ hb
-    refine' hl _ _ hd (mem_cons_self hd tl)
-    refine' IH _
-    intro y hy x hx
-    exact hl y hy x (mem_cons_of_mem hd hx)
 #align list.foldr_rec_on List.foldrRecOn
 
-/- Porting note: couldn't do induction proof because "code generator does not support recursor
-  'List.rec' yet". Earlier proof:
-
-  induction l generalizing b with
-  | nil => exact hb
-  | cons hd tl IH =>
-    refine' IH _ _ _
-    · exact hl b hb hd (mem_cons_self hd tl)
-    · intro y hy x hx
-      exact hl y hy x (mem_cons_of_mem hd hx)
--/
 /-- Induction principle for values produced by a `foldl`: if a property holds
 for the seed element `b : β` and for all incremental `op : β → α → β`
 performed on the elements `(a : α) ∈ l`. The principle is given for
 a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
 def foldlRecOn {C : β → Sort*} (l : List α) (op : β → α → β) (b : β) (hb : C b)
     (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op b a)) : C (foldl op b l) := by
-  cases l with
+  induction l generalizing b with
   | nil => exact hb
-  | cons hd tl =>
-    have IH : (b : β) → C b → ((b : β) → C b → (a : α) → a ∈ tl → C (op b a)) → C (foldl op b tl) :=
-      foldlRecOn _ _
+  | cons hd tl IH =>
     refine' IH _ _ _
     · exact hl b hb hd (mem_cons_self hd tl)
     · intro y hy x hx
@@ -3897,6 +3912,13 @@ theorem nthLe_enum (l : List α) (i : ℕ) (hi' : i < l.enum.length)
     (hi : i < l.length := (by simpa using hi')) :
     l.enum.nthLe i hi' = (i, l.nthLe i hi) := get_enum ..
 #align list.nth_le_enum List.nthLe_enum
+
+@[simp]
+theorem enumFrom_eq_nil {n : ℕ} {l : List α} : List.enumFrom n l = [] ↔ l = [] := by
+  cases l <;> simp
+
+@[simp]
+theorem enum_eq_nil {l : List α} : List.enum l = [] ↔ l = [] := enumFrom_eq_nil
 
 section Choose
 

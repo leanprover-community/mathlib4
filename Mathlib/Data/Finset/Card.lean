@@ -205,6 +205,13 @@ theorem Multiset.toFinset_card_of_nodup {m : Multiset α} (h : m.Nodup) :
   congr_arg card <| Multiset.dedup_eq_self.mpr h
 #align multiset.to_finset_card_of_nodup Multiset.toFinset_card_of_nodup
 
+theorem Multiset.dedup_card_eq_card_iff_nodup {m : Multiset α} :
+    card m.dedup = card m ↔ m.Nodup :=
+  .trans ⟨fun h ↦ eq_of_le_of_card_le (dedup_le m) h.ge, congr_arg _⟩ dedup_eq_self
+
+theorem Multiset.toFinset_card_eq_card_iff_nodup {m : Multiset α} :
+    m.toFinset.card = card m ↔ m.Nodup := dedup_card_eq_card_iff_nodup
+
 theorem List.card_toFinset : l.toFinset.card = l.dedup.length :=
   rfl
 #align list.card_to_finset List.card_toFinset
