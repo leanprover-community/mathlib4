@@ -53,14 +53,31 @@ namespace ShortExact
 variable {S : ShortComplex (HomologicalComplex C c)}
   (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j)
 
+lemma δ_apply' (x₃ : (forget₂ C Ab).obj (S.X₃.homology i))
+    (x₂ : (forget₂ C Ab).obj (S.X₂.opcycles i))
+    (x₁ : (forget₂ C Ab).obj (S.X₁.cycles j))
+    (h₂ : (forget₂ C Ab).map (HomologicalComplex.opcyclesMap S.g i) x₂ =
+      (forget₂ C Ab).map (S.X₃.homologyι i) x₃)
+    (h₁ : (forget₂ C Ab).map (HomologicalComplex.cyclesMap S.f j) x₁ =
+      (forget₂ C Ab).map (S.X₂.opcyclesToCycles i j) x₂) :
+    (forget₂ C Ab).map (hS.δ i j hij) x₃ = (forget₂ C Ab).map (S.X₁.homologyπ j) x₁ :=
+  (HomologicalComplex.HomologySequence.snakeInput hS i j hij).δ_apply' x₃ x₂ x₁ h₂ h₁
+
 lemma δ_apply (x₃ : (forget₂ C Ab).obj (S.X₃.X i))
     (hx₃ : (forget₂ C Ab).map (S.X₃.d i j) x₃ = 0)
     (x₂ : (forget₂ C Ab).obj (S.X₂.X i)) (hx₂ : (forget₂ C Ab).map (S.g.f i) x₂ = x₃)
     (x₁ : (forget₂ C Ab).obj (S.X₁.X j))
     (hx₁ : (forget₂ C Ab).map (S.f.f j) x₁ = (forget₂ C Ab).map (S.X₂.d i j) x₂)
     (k : ι) (hk : c.next j = k) :
-    (forget₂ C Ab).map (hS.δ i j hij) ((forget₂ C Ab).map (S.X₃.homologyπ i) (S.X₃.cyclesMk x₃ j (c.next_eq' hij) hx₃)) =
-      (forget₂ C Ab).map (S.X₁.homologyπ j) (S.X₁.cyclesMk x₁ k hk sorry) := by
+    (forget₂ C Ab).map (hS.δ i j hij)
+      ((forget₂ C Ab).map (S.X₃.homologyπ i) (S.X₃.cyclesMk x₃ j (c.next_eq' hij) hx₃)) =
+        (forget₂ C Ab).map (S.X₁.homologyπ j) (S.X₁.cyclesMk x₁ k hk (by
+          have := hS.mono_f
+          have : Mono (S.f.f k) := inferInstance
+          rw [Preadditive.mono_iff_injective] at this
+          apply this
+          simp only [map_zero]
+          sorry)) := by
   sorry
 
 end ShortExact
