@@ -230,5 +230,9 @@ example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
 -- Removed until we come up with a way of handling nonspecific lemmas
 -- that does not pollute the output or cause too much slow-down.
 -- -- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Exact.3F.20fails.20on.20le_antisymm/near/388993167
+-- set_option linter.unreachableTactic false in
 -- example {x y : ℝ} (hxy : x ≤ y) (hyx : y ≤ x) : x = y := by
---   exact? says exact le_antisymm hxy hyx
+--   -- This example non-deterministically picks between `le_antisymm hxy hyx` and `ge_antisymm hyx hxy`.
+--   first
+--   | exact? says exact le_antisymm hxy hyx
+--   | exact? says exact ge_antisymm hyx hxy
