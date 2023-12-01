@@ -224,6 +224,13 @@ theorem mem_orthogonalGroup_iff' {A : Matrix n n β} :
   rwa [mul_eq_one_comm] at hA
 #align matrix.mem_orthogonal_group_iff' Matrix.mem_orthogonalGroup_iff'
 
+/-- `Matrix.specialOrthogonalGroup n` is the group of `n` by `n` matrices where the transpose is
+the inverse. and the determinant is one -/
+
+def specialOrthogonalGroup :=
+  { A : Matrix n n R // (A.det = 1 ⋀ A ∈ Matrix.orthogonalGroup n n)}
+
+
 end OrthogonalGroup
 
 end Matrix
