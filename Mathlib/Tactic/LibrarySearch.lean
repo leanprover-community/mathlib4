@@ -49,6 +49,10 @@ deriving DecidableEq, Ord
 instance : ToString DeclMod where
   toString m := match m with | .none => "" | .mp => "mp" | .mpr => "mpr"
 
+open DiscrTree in
+def keySpecific (keys : Array DiscrTree.Key) : Bool :=
+  keys != #[Key.star] && keys != #[Key.const `Eq 3, Key.star, Key.star, Key.star]
+
 /-- Prepare the discrimination tree entries for a lemma. -/
 def processLemma (name : Name) (constInfo : ConstantInfo) :
     MetaM (Array (Array DiscrTree.Key × (Name × DeclMod))) := do
@@ -60,9 +64,10 @@ def processLemma (name : Name) (constInfo : ConstantInfo) :
     let mut r := #[(keys, (name, .none))]
     match type.getAppFnArgs with
     | (``Iff, #[lhs, rhs]) => do
-      return r.push (← DiscrTree.mkPath rhs discrTreeConfig, (name, .mp))
+      r := r.push (← DiscrTree.mkPath rhs discrTreeConfig, (name, .mp))
         |>.push (← DiscrTree.mkPath lhs discrTreeConfig, (name, .mpr))
-    | _ => return r
+    | _ => pure ()
+    return r.filter (keySpecific ·.1)
 
 /-- Construct the discrimination tree of all lemmas. -/
 def buildDiscrTree : IO (DiscrTreeCache (Name × DeclMod)) :=
