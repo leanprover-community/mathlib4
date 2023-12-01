@@ -229,7 +229,7 @@ def applyAddHom (v : ι → M) : M [Λ^ι]→L[R] N →+ N :=
 @[simp]
 theorem sum_apply {α : Type*} (f : α → M [Λ^ι]→L[R] N) (m : ι → M) {s : Finset α} :
     (∑ a in s, f a) m = ∑ a in s, f a m :=
-  (applyAddHom m).map_sum f s
+  map_sum (applyAddHom m) f s
 
 /-- Projection to `ContinuousMultilinearMap`s as a bundled `AddMonoidHom`. -/
 @[simps]

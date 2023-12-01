@@ -280,7 +280,7 @@ theorem abs_sum_of_nonneg' {G : Type*} [LinearOrderedAddCommGroup G] {f : ι →
 
 theorem abs_prod {R : Type*} [LinearOrderedCommRing R] {f : ι → R} {s : Finset ι} :
     |∏ x in s, f x| = ∏ x in s, |f x| :=
-  (absHom.toMonoidHom : R →* R).map_prod _ _
+  map_prod absHom _ _
 #align finset.abs_prod Finset.abs_prod
 
 section Pigeonhole
@@ -815,10 +815,10 @@ theorem IsAbsoluteValue.abv_sum [Semiring R] [OrderedSemiring S] (abv : R → S)
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
 #align is_absolute_value.abv_sum IsAbsoluteValue.abv_sum
 
-theorem AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
+nonrec theorem AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
     (abv : AbsoluteValue R S) (f : ι → R) (s : Finset ι) :
     abv (∏ i in s, f i) = ∏ i in s, abv (f i) :=
-  abv.toMonoidHom.map_prod f s
+  map_prod abv f s
 #align absolute_value.map_prod AbsoluteValue.map_prod
 
 theorem IsAbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]

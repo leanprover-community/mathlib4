@@ -290,7 +290,7 @@ theorem one_le_finprod' {M : Type*} [OrderedCommMonoid M] {f : α → M} (hf : �
 theorem MonoidHom.map_finprod_plift (f : M →* N) (g : α → M)
     (h : (mulSupport <| g ∘ PLift.down).Finite) : f (∏ᶠ x, g x) = ∏ᶠ x, f (g x) := by
   rw [finprod_eq_prod_plift_of_mulSupport_subset h.coe_toFinset.ge,
-    finprod_eq_prod_plift_of_mulSupport_subset, f.map_prod]
+    finprod_eq_prod_plift_of_mulSupport_subset, map_prod]
   rw [h.coe_toFinset]
   exact mulSupport_comp_subset f.map_one (g ∘ PLift.down)
 #align monoid_hom.map_finprod_plift MonoidHom.map_finprod_plift

@@ -765,12 +765,12 @@ instance (priority := 100) NormedField.toNormedCommRing : NormedCommRing α :=
 
 @[simp]
 theorem norm_prod (s : Finset β) (f : β → α) : ‖∏ b in s, f b‖ = ∏ b in s, ‖f b‖ :=
-  (normHom.toMonoidHom : α →* ℝ).map_prod f s
+  map_prod normHom.toMonoidHom f s
 #align norm_prod norm_prod
 
 @[simp]
 theorem nnnorm_prod (s : Finset β) (f : β → α) : ‖∏ b in s, f b‖₊ = ∏ b in s, ‖f b‖₊ :=
-  (nnnormHom.toMonoidHom : α →* ℝ≥0).map_prod f s
+  map_prod nnnormHom.toMonoidHom f s
 #align nnnorm_prod nnnorm_prod
 
 end NormedField
