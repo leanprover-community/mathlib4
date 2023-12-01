@@ -270,10 +270,21 @@ open MvPolynomial Submodule
 
 variable {R σ : Type*} [CommSemiring R] (n : ℕ)
 
-lemma totalDegree_le_iff_mem_span {R σ : Type*} [CommSemiring R] {n : ℕ}
-    {P : MvPolynomial σ R} : totalDegree P ≤ n ↔
-    P ∈ span R ((fun c : σ →₀ ℕ ↦ monomial c (1 : R)) '' {s : σ →₀ ℕ | s.sum (fun _ e ↦ e) ≤ n}) := by
-  sorry
+lemma restrictTotalDegree_eq_span {n : ℕ} :
+    restrictTotalDegree σ R n =
+    span R ((fun c : σ →₀ ℕ ↦ monomial c (1 : R)) '' {s : σ →₀ ℕ | s.sum (fun _ e ↦ e) ≤ n}) := by
+  ext P; constructor <;> intro h
+  · rw [← P.support_sum_monomial_coeff]
+    refine sum_mem fun c hc ↦ ?_
+    rw [← mul_one (coeff c P), ← smul_eq_mul, ← smul_monomial]
+    rw [mem_restrictTotalDegree] at h
+    exact smul_mem _ _ (subset_span <| mem_image_of_mem _ <| (le_totalDegree hc).trans h)
+  · refine span_le.mpr ?_ h
+    rintro x ⟨c, hc, rfl⟩
+    rw [SetLike.mem_coe, mem_restrictTotalDegree]
+    cases subsingleton_or_nontrivial R
+    · rw [Subsingleton.elim ((fun c ↦ monomial c 1) c) 0, totalDegree_zero]; apply zero_le
+    · rw [totalDegree_monomial _ one_ne_zero]; exact hc
 
 /- Is this really missing?? -/
 def evalAtₗ {R σ : Type*} [CommSemiring R] (x : σ → R) : MvPolynomial σ R →ₗ[R] R where
@@ -499,9 +510,10 @@ lemma indep (ι : Type*) [Fintype ι] : LinearIndependent ℝ (L ∘ fun c : ι 
 lemma hairer (N : ℕ) (ι : Type*) [Fintype ι] :
     ∃ (ρ : EuclideanSpace ℝ ι → ℝ), tsupport ρ ⊆ closedBall 0 1 ∧ ContDiff ℝ ⊤ ρ ∧
     ∀ (p : MvPolynomial ι ℝ), p.totalDegree ≤ N →
-    ∫ x : EuclideanSpace ℝ ι, eval x p • ρ x = eval 0 p :=
-  let ⟨⟨φ, supp_φ, diff_φ⟩, hφ⟩ :=  foo (indep ι) (finite_stuff _) (evalAtₗ 0)
-  ⟨φ, supp_φ, diff_φ, fun P hP ↦ (hφ P (totalDegree_le_iff_mem_span.1 hP)).symm⟩
+    ∫ x : EuclideanSpace ℝ ι, eval x p • ρ x = eval 0 p := by
+  simp_rw [← mem_restrictTotalDegree, restrictTotalDegree_eq_span]
+  obtain ⟨⟨φ, supp_φ, diff_φ⟩, hφ⟩ := foo (indep ι) (finite_stuff _) (evalAtₗ 0)
+  exact ⟨φ, supp_φ, diff_φ, fun P hP ↦ (hφ P hP).symm⟩
 
 lemma hairer2 (N : ℕ) (ι : Type*) [Fintype ι] :
     ∃ (ρ : EuclideanSpace ℝ ι → ℝ), tsupport ρ ⊆ closedBall 0 1 ∧ ContDiff ℝ ⊤ ρ ∧
