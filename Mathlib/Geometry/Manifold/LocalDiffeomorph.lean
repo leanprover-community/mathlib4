@@ -18,16 +18,16 @@ and `t` of `x` and `f x`, respectively such that `f` restricts to a diffeomorphi
 `f` is called a **local diffeomorphism** iff it is a local diffeomorphism at every `x ∈ M`.
 
 ## Main definitions
-* `LocalDiffeomorphAt I J M N n f x`: `f` is a `C^n` local diffeomorphism at `x`
-* `LocalDiffeomorph I J M N n f`: `f` is a `C^n` local diffeomorphism
+* `IsLocalDiffeomorphAt I J n f x`: `f` is a `C^n` local diffeomorphism at `x`
+* `IsLocalDiffeomorph I J n f`: `f` is a `C^n` local diffeomorphism
 
 ## Main results
-* Each of `Diffeomorph`, `LocalDiffeomorph`, and `LocalDiffeomorphAt` implies the next condition.
+* Each of `Diffeomorph`, `IsLocalDiffeomorph`, and `IsLocalDiffeomorphAt` implies the next.
 * `LocalDiffeomorph.isOpen_range`: the image of a local diffeomorphism is open
+* `Diffeomorph.of_bijective_isLocalDiffeomorph`: a bijective local diffeomorphism is a diffeomorphism.
 
 ## TODO
-* a local diffeomorphism is a diffeomorphism to its image
-* a bijective local diffeomorphism is a diffeomorphism.
+* an injective local diffeomorphism is a diffeomorphism to its image
 * each differential of a `C^n` diffeomorphism (`n ≥ 1`) is a linear equivalence.
 * if `f` is a local diffeomorphism at `x`, the differential `mfderiv I J n f x`
 is a continuous linear isomorphism.
@@ -82,9 +82,19 @@ instance : CoeFun (PartialDiffeomorph I J M N n) fun _ => M → N :=
 namespace PartialDiffeomorph
 variable (Φ : PartialDiffeomorph I J M N n) (hn : 1 ≤ n)
 
+/-- A partial diffeomorphism is also a local homeomorphism. -/
+def toLocalHomeomorph : LocalHomeomorph M N :=
+  {
+    toLocalEquiv := Φ.toLocalEquiv
+    open_source := Φ.open_source
+    open_target := Φ.open_target
+    continuous_toFun := Φ.contMDiffOn_toFun.continuousOn
+    continuous_invFun := Φ.contMDiffOn_invFun.continuousOn
+  }
+
 /-- The inverse of a local diffeomorphism. -/
-protected def symm : PartialDiffeomorph J I N M n := by
-  exact {
+protected def symm : PartialDiffeomorph J I N M n :=
+  {
     toLocalEquiv := Φ.toLocalEquiv.symm
     open_source := Φ.open_target
     open_target := Φ.open_source
@@ -200,5 +210,36 @@ def LocalDiffeomorph.image {f : M → N} (hf : IsLocalDiffeomorph I J n f) : Ope
 
 lemma LocalDiffeomorph.image_coe {f : M → N} (hf : IsLocalDiffeomorph I J n f) :
     (LocalDiffeomorph.image I J hf).1 = range f := rfl
+
+/-- A bijective local diffeomorphism is a diffeomorphism. -/
+noncomputable def Diffeomorph.of_bijective_isLocalDiffeomorph {f : M → N} (hf' : Function.Bijective f)
+    (hf : IsLocalDiffeomorph I J n f) : Diffeomorph I J M N n := by
+  -- Choose a right inverse `g` of `f`.
+  choose g hgInverse using (Function.bijective_iff_has_inverse).mp hf'
+   -- Choose diffeomorphisms φ_x which coincide which `f` near `x`.
+  choose Φ hyp using (fun x ↦ hf x)
+  -- Two such diffeomorphisms (and their inverses!) coincide on their sources:
+  -- they're both inverses to g. In fact, the latter suffices for our proof.
+  -- have : ∀ x y, EqOn (Φ x).symm (Φ y).symm ((Φ x).target ∩ (Φ y).target) := sorry
+  have aux : ∀ x, EqOn g (Φ x).symm (Φ x).target :=
+    fun x ↦ eqOn_of_leftInvOn_of_rightInvOn (fun x' _ ↦ hgInverse.1 x')
+      (LeftInvOn.congr_left ((Φ x).toLocalHomeomorph).rightInvOn
+        ((Φ x).toLocalHomeomorph).symm_mapsTo (hyp x).2.symm)
+      (fun _y hy ↦(Φ x).map_target hy)
+  exact {
+    toFun := f
+    invFun := g
+    left_inv := hgInverse.1
+    right_inv := hgInverse.2
+    contMDiff_toFun := contMDiff_of_isLocalDiffeomorph I J hf
+    contMDiff_invFun := by
+      intro y
+      let x := g y
+      obtain ⟨hx, hfx⟩ := hyp x
+      apply ((PartialDiffeomorph.contMDiffOn J I N M n (Φ x).symm).congr (aux x)).contMDiffAt
+      apply (((Φ x).open_target).mem_nhds ?_)
+      have : y = (Φ x) x := (Eq.congr (hgInverse.2 y) (hfx hx)).mp rfl
+      exact this ▸ (Φ x).map_source hx
+  }
 
 end Basic
