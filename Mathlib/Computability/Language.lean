@@ -313,18 +313,16 @@ lemma reverse_zero : (0 : Language α).reverse = 0 := rfl
 lemma reverse_one : (1 : Language α).reverse = 1 := by
   simp [reverse, ← one_def]
 
-variable (l m)
-
 @[simp]
-lemma reverse_reverse : l.reverse.reverse = l := by
+lemma reverse_reverse (l : Language α) : l.reverse.reverse = l := by
   ext w
   rw [mem_reverse, reverse_mem_reverse]
 
 lemma reverse_involutive : Function.Involutive (reverse : Language α → _) := reverse_reverse
 
-lemma reverse_add : (l + m).reverse = l.reverse + m.reverse := rfl
+lemma reverse_add (l m : Language α) : (l + m).reverse = l.reverse + m.reverse := rfl
 
-lemma reverse_mul : (l * m).reverse = m.reverse * l.reverse := by
+lemma reverse_mul (l m : Language α) : (l * m).reverse = m.reverse * l.reverse := by
   ext w
   show
     (∃ u v, u ∈ l ∧ v ∈ m ∧ u ++ v = w.reverse) ↔
@@ -346,10 +344,10 @@ def reverseHom : Language α ≃+* (Language α)ᵐᵒᵖ where
   map_mul' l₁ l₂ := MulOpposite.unop_injective <| reverse_mul l₁ l₂
   map_add' l₁ l₂ := MulOpposite.unop_injective <| reverse_add l₁ l₂
 
-lemma reverse_pow (n : ℕ) : (l ^ n).reverse = l.reverse ^ n :=
+lemma reverse_pow (l : Language α) (n : ℕ) : (l ^ n).reverse = l.reverse ^ n :=
   MulOpposite.op_injective <| map_pow (reverseHom α) l n
 
-lemma reverse_kstar : l∗.reverse = l.reverse∗ := by
+lemma reverse_kstar (l : Language α) : l∗.reverse = l.reverse∗ := by
   ext w
   show
     (∃ L, w.reverse = join L ∧ ∀ y, y ∈ L → y ∈ l) ↔
