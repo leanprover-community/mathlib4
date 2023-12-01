@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Heather Macbeth, Winston Yin
 -/
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
+import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 
 #align_import geometry.manifold.instances.units_of_normed_algebra from "leanprover-community/mathlib"@"ef901ea68d3bb1dd08f8bc3034ab6b32b2e6ecdf"
 
