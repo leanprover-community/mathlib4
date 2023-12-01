@@ -133,12 +133,12 @@ theorem sym2_eq_image : s.sym2 = (s ×ˢ s).image Sym2.mk := by
     obtain ⟨h, (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)⟩ := h
       <;> simp [h]
 
-theorem isDiag_mk_of_mem_diag {a : α × α} (h : a ∈ s.diag) : Sym2.IsDiag (Sym2.mk a) :=
+theorem isDiag_mk_of_mem_diag {a : α × α} (h : a ∈ s.diag) : (Sym2.mk a).IsDiag :=
   (Sym2.isDiag_iff_proj_eq _).2 (mem_diag.1 h).2
 #align finset.is_diag_mk_of_mem_diag Finset.isDiag_mk_of_mem_diag
 
 theorem not_isDiag_mk_of_mem_offDiag {a : α × α} (h : a ∈ s.offDiag) :
-    ¬Sym2.IsDiag (Sym2.mk a) := by
+    ¬ (Sym2.mk a).IsDiag := by
   rw [Sym2.isDiag_iff_proj_eq]
   exact (mem_offDiag.1 h).2.2
 #align finset.not_is_diag_mk_of_mem_off_diag Finset.not_isDiag_mk_of_mem_offDiag
