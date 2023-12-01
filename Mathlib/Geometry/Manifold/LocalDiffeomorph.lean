@@ -24,7 +24,8 @@ and `t` of `x` and `f x`, respectively such that `f` restricts to a diffeomorphi
 ## Main results
 * Each of `Diffeomorph`, `IsLocalDiffeomorph`, and `IsLocalDiffeomorphAt` implies the next.
 * `LocalDiffeomorph.isOpen_range`: the image of a local diffeomorphism is open
-* `Diffeomorph.of_bijective_isLocalDiffeomorph`: a bijective local diffeomorphism is a diffeomorphism.
+* `Diffeomorph.of_bijective_isLocalDiffeomorph`:
+  a bijective local diffeomorphism is a diffeomorphism.
 
 ## TODO
 * an injective local diffeomorphism is a diffeomorphism to its image
@@ -212,8 +213,8 @@ lemma LocalDiffeomorph.image_coe {f : M → N} (hf : IsLocalDiffeomorph I J n f)
     (LocalDiffeomorph.image I J hf).1 = range f := rfl
 
 /-- A bijective local diffeomorphism is a diffeomorphism. -/
-noncomputable def Diffeomorph.of_bijective_isLocalDiffeomorph {f : M → N} (hf' : Function.Bijective f)
-    (hf : IsLocalDiffeomorph I J n f) : Diffeomorph I J M N n := by
+noncomputable def Diffeomorph.of_bijective_isLocalDiffeomorph {f : M → N}
+    (hf' : Function.Bijective f) (hf : IsLocalDiffeomorph I J n f) : Diffeomorph I J M N n := by
   -- Choose a right inverse `g` of `f`.
   choose g hgInverse using (Function.bijective_iff_has_inverse).mp hf'
    -- Choose diffeomorphisms φ_x which coincide which `f` near `x`.
