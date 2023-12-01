@@ -329,7 +329,8 @@ theorem exists_isOpen_singleton_of_isOpen_finite [T0Space X] {s : Set X} (hfin :
 
 theorem exists_open_singleton_of_finite [T0Space X] [Finite X] [Nonempty X] :
     ∃ x : X, IsOpen ({x} : Set X) :=
-  let ⟨x, _, h⟩ := exists_isOpen_singleton_of_isOpen_finite (Set.toFinite _) univ_nonempty isOpen_univ
+  let ⟨x, _, h⟩ := exists_isOpen_singleton_of_isOpen_finite (Set.toFinite _)
+    univ_nonempty isOpen_univ
   ⟨x, h⟩
 #align exists_open_singleton_of_fintype exists_open_singleton_of_finite
 
