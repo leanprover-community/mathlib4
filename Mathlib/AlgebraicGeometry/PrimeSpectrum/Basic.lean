@@ -866,8 +866,7 @@ theorem localization_away_openEmbedding (S : Type v) [CommSemiring S] [Algebra R
       exact isOpen_basicOpen }
 #align prime_spectrum.localization_away_open_embedding PrimeSpectrum.localization_away_openEmbedding
 
-theorem isCompact_basicOpen {S : Type v}[CommSemiring S] (f : S) :
-    IsCompact (basicOpen f : Set (PrimeSpectrum S)) := by
+theorem isCompact_basicOpen (f : R) : IsCompact (basicOpen f : Set (PrimeSpectrum R)) := by
   rw [← localization_away_comap_range (Localization (Submonoid.powers f))]
   exact isCompact_range (map_continuous _)
 #align prime_spectrum.is_compact_basic_open PrimeSpectrum.isCompact_basicOpen
