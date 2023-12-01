@@ -7,8 +7,8 @@ Authors: Arthur Paulino
 import Lean.Data.HashMap
 import Lean.Data.RBMap
 import Lean.Data.RBTree
-import Lean.Data.Json.Printer
 import Lean.Data.Json.Parser
+import Lean.Data.Json.Printer
 
 set_option autoImplicit true
 
@@ -336,13 +336,12 @@ def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
     let args := (if force then #["-f"] else #[]) ++ #["-x", "-j", "-"]
     let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
     let (stdin, child) ← child.takeStdin
-    let mathlibDepPath := (← mathlibDepPath).toString
     let config : Array Lean.Json := hashMap.fold (init := #[]) fun config path hash =>
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
       if isMathlibRoot || !isPathFromMathlib path then
         config.push <| .str pathStr
       else -- only mathlib files, when not in the mathlib4 repo, need to be redirected
-        config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath)]
+        config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath.toString)]
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
     if exitCode != 0 then throw $ IO.userError s!"leantar failed with error code {exitCode}"
