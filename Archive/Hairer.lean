@@ -256,7 +256,7 @@ end normed
 variable {ι : Type*} [Fintype ι]
 lemma MvPolynomial.continuous_eval (p: MvPolynomial ι ℝ) :
     Continuous fun x ↦ (eval x) p := by
-  sorry
+  continuity
 
 lemma hasCompactSupport (f : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
     HasCompactSupport f :=
