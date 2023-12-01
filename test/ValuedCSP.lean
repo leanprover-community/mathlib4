@@ -4,7 +4,9 @@ import Mathlib.Tactic.Positivity
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Fin.Tuple.Curry
 
-/-
+/-!
+# VCSP examples
+
 This file shows two simple examples of General-Valued Constraint Satisfaction Problems (see 
 [ValuedCSP definition](Mathlib/Combinatorics/Optimization/ValuedCSP.lean)).
 The first example is an optimization problem. The second example is a decision problem.
