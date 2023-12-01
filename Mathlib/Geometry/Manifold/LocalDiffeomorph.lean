@@ -336,6 +336,14 @@ lemma mfderiv_injective_iff_comp_isLocalDiffeomorph :
   rw [← Injective.of_comp_iff' _ dφiso.bijective]
   exact Iff.rfl
 
+/-- If `f` is differentiable at `x` and `φ` is a local diffeomorphism at `f x`,
+  `mfderiv (φ∘f) x` is bijective iff `mfderiv φ (f x)` is. -/
+lemma mfderiv_bijective_iff_comp_isLocalDiffeomorph :
+    Bijective (mfderiv I' J f (φ x)) ↔ Bijective (mfderiv I J (f ∘ φ) x) := by
+  rw [Bijective, Bijective, and_congr]
+  apply mfderiv_injective_iff_comp_isLocalDiffeomorph hn hφ (hf := hf)
+  apply mfderiv_surjective_iff_comp_isLocalDiffeomorph hn hφ (hf := hf)
+
 open LinearMap (rank)
 
 /-- If `M` is finite-dimensional, then rk d(f∘φ)_x = rk (df_φ(x)). -/
@@ -383,6 +391,14 @@ lemma mfderiv_injective_iff_comp_isLocalDiffeomorph' :
   rw [HasMFDerivAt.mfderiv (hφ.comp (hf.hasMFDerivAt) (x := x)), ← aux]
   rw [← Injective.of_comp_iff dφiso.bijective.injective]
   exact Iff.rfl
+
+/-- If `f` is differentiable at `x` and `φ` is a local diffeomorphism at `f x`,
+  `mfderiv (φ∘f) x` is bijective iff `mfderiv φ (f x)` is. -/
+lemma mfderiv_bijective_iff_comp_isLocalDiffeomorph' :
+    Bijective (mfderiv I I' f x) ↔ Bijective (mfderiv I J (φ ∘ f) x) := by
+  rw [Bijective, Bijective, and_congr]
+  apply mfderiv_injective_iff_comp_isLocalDiffeomorph' hn hφ (hf := hf)
+  apply mfderiv_surjective_iff_comp_isLocalDiffeomorph' hn hφ (hf := hf)
 
 /-- If `M` is finite-dimensional, then rk d(φ ∘ f)_x = rk (dφ_f(x)). -/
 lemma mfderiv_rank_eq_comp_isLocalDiffeomorph' [FiniteDimensional 𝕜 E] : 0 = 1 := by
@@ -582,11 +598,12 @@ lemma mfderiv_injective_iff_in_charts (hn : 1 ≤ n) : Injective (mfderiv I J f 
 
 /-- If `f : M → N` has bijective differential at `x` iff its local coordinate representation
   `φ ∘ f ∘ ψ.symm`, for any two charts φ, ψ around `x` and `f x`, does. -/
+-- this proof is just the chart application of the other statements... can I reuse this?
 lemma mfderiv_bijective_iff_in_charts (hn : 1 ≤ n) : Bijective (mfderiv I J f x) ↔
     Bijective (fderiv 𝕜 ((e'.extend J) ∘ f ∘ (e.extend I).symm) (e.extend I x)) := by
   rw [Bijective, Bijective, and_congr]
-  apply (mfderiv_injective_iff_in_charts hf hx hx' he he' hn)
-  apply (mfderiv_surjective_iff_in_charts hf hx hx' he he' hn)
+  apply mfderiv_injective_iff_in_charts hf hx hx' he he' hn
+  apply mfderiv_surjective_iff_in_charts hf hx hx' he he' hn
 
 -- corollary: if M is finite-dimensional, rank of differential df_x equals the rank of d(f_loc),
 -- where f_loc is the local coordinate representation
