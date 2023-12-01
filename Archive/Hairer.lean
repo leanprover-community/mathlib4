@@ -79,18 +79,23 @@ def SmoothSupportedOn (n : ℕ∞) (s : Set E) : Submodule 𝕜 (E → F) where
   smul_mem' r f hf :=
     ⟨(closure_mono <| support_smul_subset_right r f).trans hf.1, contDiff_const.smul hf.2⟩
 
+namespace SmoothSupportedOn
+
 variable {n : ℕ∞} {s : Set E}
 
 instance : FunLike (SmoothSupportedOn 𝕜 E F n s) E (fun _ ↦ F) where
   coe := Subtype.val
   coe_injective' := Subtype.coe_injective
 
-lemma SmoothSupportedOn.tsupport_subset (f : SmoothSupportedOn 𝕜 E F n s) : tsupport f ⊆ s := f.2.1
+@[simp]
+lemma coe_mk (f : E → F) (h) : (⟨f, h⟩ : SmoothSupportedOn 𝕜 E F n s) = f := rfl
 
-lemma SmoothSupportedOn.support_subset (f : SmoothSupportedOn 𝕜 E F n s) :
+lemma tsupport_subset (f : SmoothSupportedOn 𝕜 E F n s) : tsupport f ⊆ s := f.2.1
+
+lemma support_subset (f : SmoothSupportedOn 𝕜 E F n s) :
   support f ⊆ s := subset_tsupport _ |>.trans (tsupport_subset f)
 
-protected lemma SmoothSupportedOn.contDiff (f : SmoothSupportedOn 𝕜 E F n s) :
+protected lemma contDiff (f : SmoothSupportedOn 𝕜 E F n s) :
     ContDiff 𝕜 n f := f.2.2
 
 variable (𝕜) in
@@ -108,6 +113,9 @@ lemma contDiff_of_mem_affineSpan {a : Set (SmoothSupportedOn 𝕜 E F n s)}
     {y : SmoothSupportedOn 𝕜 E F n s} (hy : y ∈ affineSpan 𝕜 a) (hi : ∀ i ∈ a, ContDiff 𝕜 n i) :
     ContDiff 𝕜 n y :=
   contDiff_of_mem_span 𝕜 (affineSpan_subset_span hy) hi
+
+end SmoothSupportedOn
+open SmoothSupportedOn
 
 end normed
 open SmoothSupportedOn
@@ -132,6 +140,18 @@ instance {ι : Type*} [IsEmpty ι] : Subsingleton (EuclideanSpace ℝ ι) :=
 
 lemma volume_eq_dirac (ι : Type*) [Fintype ι] [IsEmpty ι] :
     (volume : Measure (EuclideanSpace ℝ ι)) = Measure.dirac 0 := by
+  sorry
+
+
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+variable [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+variable [MeasurableSpace E] [BorelSpace E] {f f' : E → F} {μ : Measure E}
+
+-- variant of ae_eq_zero_of_integral_contDiff_smul_eq_zero, not sure what we exactly need on `K`.
+theorem IsClosed.ae_eq_zero_of_integral_contDiff_smul_eq_zero {K : Set E}
+    (hU : IsClosed K) (hf : LocallyIntegrableOn f K μ)
+    (h : ∀ (g : E → ℝ), ContDiff ℝ ⊤ g → tsupport g ⊆ K → ∫ x, g x • f x ∂μ = 0) :
+    ∀ᵐ x ∂μ, x ∈ K → f x = 0 := by
   sorry
 
 end real
@@ -352,17 +372,19 @@ lemma indep (ι : Type*) [Fintype ι] : LinearIndependent ℝ (L ∘ fun c : ι 
   · sorry
   rw [LinearMap.ker_eq_bot']
   intro p hp
-  suffices : ∀ x ∈ ball 0 1, eval x p = 0
+  suffices : ∀ᵐ x : EuclideanSpace ℝ ι, x ∈ closedBall 0 1 → eval x p = 0
   · sorry -- simp_rw [MvPolynomial.funext_iff, map_zero]
-  intro x₀ hx₀
-  by_contra hpx₀
-  have h2p : Continuous (eval · p) := continuous_eval p
-  have h3x₀ : ∀ᶠ x in 𝓝 x₀, eval x p ≠ 0 := h2p.continuousAt.eventually_ne hpx₀
-  have h4x₀ : ∀ᶠ x in 𝓝 x₀, eval x p ≠ 0 ∧ x ∈ ball 0 1 := h3x₀.and (isOpen_ball.mem_nhds hx₀)
-  rw [Metric.eventually_nhds_iff] at h4x₀
-  obtain ⟨ε, hε, h2ε⟩ := h4x₀
-  sorry
-#check Polynomial.eq_zero_of_infinite_isRoot
+    -- Polynomial.eq_zero_of_infinite_isRoot
+  -- intro x₀ hx₀
+  -- by_contra hpx₀
+  have h2p : LocallyIntegrable (fun x : EuclideanSpace ℝ ι ↦ eval x p) :=
+    continuous_eval p |>.locallyIntegrable
+  apply isClosed_ball.ae_eq_zero_of_integral_contDiff_smul_eq_zero (h2p.locallyIntegrableOn _)
+  intro g hg h2g
+  let ϕ : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1) :=
+    ⟨g, h2g, hg⟩
+  apply_fun (· ϕ) at hp
+  simpa [mul_comm (g _), L] using hp
 
 lemma hairer (N : ℕ) (ι : Type*) [Fintype ι] :
     ∃ (ρ : EuclideanSpace ℝ ι → ℝ), tsupport ρ ⊆ closedBall 0 1 ∧ ContDiff ℝ ⊤ ρ ∧
