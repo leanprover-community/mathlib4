@@ -580,8 +580,15 @@ def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α
       simp only [filter_eq_empty_iff, not_forall, mem_univ, forall_true_left, true_and, not_not]
       use a; exact s.iseqv.refl a }
 
--- theorem mem_part_iff_rel (s : Setoid α) (b : α) :
---     b ∈ (ofSetoid s).part (mem_univ a) ↔ s.r a b := sorry
+lemma mem_part_univ_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
+    b ∈ (ofSetoid s).part (mem_univ a) ↔ s.r a b := by
+  simp only [part, ofSetoid, filter_congr_decidable, mem_univ, forall_true_left]
+  generalize_proofs H
+  have := choose_spec _ _ H
+  simp only [mem_univ, forall_true_left, mem_image, true_and] at this
+  obtain ⟨⟨_, hc⟩, this⟩ := this
+  simp only [← hc, mem_univ, forall_true_left, mem_filter, true_and] at this ⊢
+  exact ⟨s.trans (s.symm this), s.trans this⟩
 
 section Atomise
 
