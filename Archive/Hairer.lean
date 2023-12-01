@@ -35,12 +35,10 @@ lemma finite_stuff [Finite σ] (N : ℕ) : {s : σ →₀ ℕ | s.sum (fun _ e �
   change {s : σ →₀ ℕ | s.sum (fun _ => id) ≤ N}.Finite
   simp only [← Finsupp.card_toMultiset]
   refine Set.Finite.of_finite_image ?_ (Multiset.toFinsupp.symm.injective.injOn _)
-  convert finite_stuff' N
-  swap; assumption
+  convert finite_stuff' (σ := σ) N
   ext x
-  rw [← AddEquiv.coe_toEquiv]
+  rw [← AddEquiv.coe_toEquiv, Set.mem_image_equiv]
   simp
-  sorry
 
 end missing_polynomial
 
