@@ -277,9 +277,8 @@ nonrec theorem HasGradientAt.const_sub (hf : HasGradientAt f f' x) (c : 𝕜) :
 
 theorem Gradient_const_sub (c : 𝕜) : ∇ (fun y => c - f y) x = - ∇ f x := by
   calc
-    ∇ (fun y => c - f y) x = ∇ (fun y => - f y + c) x := by simp only [sub_eq_neg_add]
-    _ = ∇ (fun y => - f y) x := by rw [Gradient_add_const c]
-    _ = - ∇ f x := by rw [Gradient_neg]
+    ∇ (fun y => c - f y) x = ∇ (fun y => - f y + c) x := by  congr; ext x; rw [sub_eq_neg_add]
+    _ = - ∇ f x := by rw [Gradient_add_const c, Gradient_neg]
 
 end Sub
 
