@@ -356,9 +356,9 @@ theorem symm_target : e.symm.target = e.source :=
 @[simp, mfld_simps] theorem symm_symm : e.symm.symm = e := rfl
 #align local_homeomorph.symm_symm LocalHomeomorph.symm_symm
 
-theorem symm_bijective : Function.Bijective
+theorem symm_bijective : Bijective
     (LocalHomeomorph.symm : LocalHomeomorph α β → LocalHomeomorph β α) :=
-  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+  bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 /-- A local homeomorphism is continuous at any point of its source -/
 protected theorem continuousAt {x : α} (h : x ∈ e.source) : ContinuousAt e x :=
@@ -384,7 +384,7 @@ theorem symm_map_nhds_eq {x} (hx : x ∈ e.source) : map e.symm (𝓝 (e x)) = �
 #align local_homeomorph.symm_map_nhds_eq LocalHomeomorph.symm_map_nhds_eq
 
 theorem image_mem_nhds {x} (hx : x ∈ e.source) {s : Set α} (hs : s ∈ 𝓝 x) : e '' s ∈ 𝓝 (e x) :=
-  e.map_nhds_eq hx ▸ Filter.image_mem_map hs
+  e.map_nhds_eq hx ▸ image_mem_map hs
 #align local_homeomorph.image_mem_nhds LocalHomeomorph.image_mem_nhds
 
 theorem map_nhdsWithin_eq (e : LocalHomeomorph α β) {x} (hx : x ∈ e.source) (s : Set α) :
@@ -1010,7 +1010,7 @@ theorem Set.EqOn.restr_eqOn_source {e e' : LocalHomeomorph α β}
   constructor
   · rw [e'.restr_source' _ e.open_source]
     rw [e.restr_source' _ e'.open_source]
-    exact Set.inter_comm _ _
+    exact inter_comm _ _
   · rw [e.restr_source' _ e'.open_source]
     refine' (EqOn.trans _ h).trans _ <;> simp only [mfld_simps, eqOn_refl]
 #align local_homeomorph.set.eq_on.restr_eq_on_source LocalHomeomorph.Set.EqOn.restr_eqOn_source
@@ -1071,7 +1071,7 @@ theorem prod_eq_prod_of_nonempty {e₁ e₁' : LocalHomeomorph α β} {e₂ e₂
   haveI : Nonempty γ := ⟨y⟩
   haveI : Nonempty δ := ⟨e₂ y⟩
   simp_rw [LocalHomeomorph.ext_iff, prod_apply, prod_symm_apply, prod_source, Prod.ext_iff,
-    Set.prod_eq_prod_iff_of_nonempty h, forall_and, Prod.forall, forall_const,
+    prod_eq_prod_iff_of_nonempty h, forall_and, Prod.forall, forall_const,
     and_assoc, and_left_comm]
 #align local_homeomorph.prod_eq_prod_of_nonempty LocalHomeomorph.prod_eq_prod_of_nonempty
 
@@ -1289,13 +1289,13 @@ def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set α)) (h' 
 theorem openEmbedding_restrict : OpenEmbedding (e.source.restrict e) := by
   refine openEmbedding_of_continuous_injective_open (e.continuousOn.comp_continuous
     continuous_subtype_val Subtype.prop) e.injOn.injective fun V hV ↦ ?_
-  rw [Set.restrict_eq, Set.image_comp]
+  rw [restrict_eq, image_comp]
   exact e.image_isOpen_of_isOpen (e.open_source.isOpenMap_subtype_val V hV)
     fun _ ⟨x, _, h⟩ ↦ h ▸ x.2
 
 /-- A local homeomorphism whose source is all of `α` defines an open embedding of `α` into `β`.  The
 converse is also true; see `OpenEmbedding.toLocalHomeomorph`. -/
-theorem to_openEmbedding (h : e.source = Set.univ) : OpenEmbedding e :=
+theorem to_openEmbedding (h : e.source = univ) : OpenEmbedding e :=
   e.openEmbedding_restrict.comp
     ((Homeomorph.setCongr h).trans <| Homeomorph.Set.univ α).symm.openEmbedding
 
@@ -1364,7 +1364,7 @@ theorem localHomeomorphSubtypeCoe_coe : (s.localHomeomorphSubtypeCoe : s → α)
 #align topological_space.opens.local_homeomorph_subtype_coe_coe TopologicalSpace.Opens.localHomeomorphSubtypeCoe_coe
 
 @[simp, mfld_simps]
-theorem localHomeomorphSubtypeCoe_source : s.localHomeomorphSubtypeCoe.source = Set.univ :=
+theorem localHomeomorphSubtypeCoe_source : s.localHomeomorphSubtypeCoe.source = univ :=
   rfl
 #align topological_space.opens.local_homeomorph_subtype_coe_source TopologicalSpace.Opens.localHomeomorphSubtypeCoe_source
 
@@ -1396,7 +1396,7 @@ theorem subtypeRestr_def : e.subtypeRestr s = s.localHomeomorphSubtypeCoe.trans 
 
 @[simp, mfld_simps]
 theorem subtypeRestr_coe :
-    ((e.subtypeRestr s : LocalHomeomorph s β) : s → β) = Set.restrict ↑s (e : α → β) :=
+    ((e.subtypeRestr s : LocalHomeomorph s β) : s → β) = restrict ↑s (e : α → β) :=
   rfl
 #align local_homeomorph.subtype_restr_coe LocalHomeomorph.subtypeRestr_coe
 
@@ -1436,9 +1436,9 @@ theorem subtypeRestr_symm_trans_subtypeRestr (f f' : LocalHomeomorph α β) :
 #align local_homeomorph.subtype_restr_symm_trans_subtype_restr LocalHomeomorph.subtypeRestr_symm_trans_subtypeRestr
 
 theorem subtypeRestr_symm_eqOn_of_le {U V : Opens α} [Nonempty U] [Nonempty V] (hUV : U ≤ V) :
-    EqOn (e.subtypeRestr V).symm (Set.inclusion hUV ∘ (e.subtypeRestr U).symm)
+    EqOn (e.subtypeRestr V).symm (inclusion hUV ∘ (e.subtypeRestr U).symm)
       (e.subtypeRestr U).target := by
-  set i := Set.inclusion hUV
+  set i := inclusion hUV
   intro y hy
   dsimp [LocalHomeomorph.subtypeRestr_def] at hy ⊢
   have hyV : e.symm y ∈ V.localHomeomorphSubtypeCoe.target := by

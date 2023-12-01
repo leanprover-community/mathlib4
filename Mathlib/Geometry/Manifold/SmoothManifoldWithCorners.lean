@@ -346,7 +346,7 @@ theorem symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {f : H �
   · have := h.comp I.continuousWithinAt (mapsTo_preimage _ _)
     simp_rw [preimage_inter, preimage_preimage, I.left_inv, preimage_id', preimage_range,
       inter_univ] at this
-    rwa [Function.comp.assoc, I.symm_comp_self] at this
+    rwa [comp.assoc, I.symm_comp_self] at this
   · rw [← I.left_inv x] at h; exact h.comp I.continuousWithinAt_symm (inter_subset_left _ _)
 #align model_with_corners.symm_continuous_within_at_comp_right_iff ModelWithCorners.symm_continuousWithinAt_comp_right_iff
 
@@ -900,7 +900,7 @@ end SmoothManifoldWithCorners
 theorem LocalHomeomorph.singleton_smoothManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] (e : LocalHomeomorph M H)
-    (h : e.source = Set.univ) :
+    (h : e.source = univ) :
     @SmoothManifoldWithCorners 𝕜 _ E _ _ H _ I M _ (e.singletonChartedSpace h) :=
   @SmoothManifoldWithCorners.mk' _ _ _ _ _ _ _ _ _ _ (id _) <|
     e.singleton_hasGroupoid h (contDiffGroupoid ∞ I)
@@ -1164,7 +1164,7 @@ theorem extend_symm_preimage_inter_range_eventuallyEq_aux {s : Set M} {x : M} (h
     rw [← univ_inter (_ ∩ range I)]
   refine' (eventuallyEq_univ.mpr _).symm.inter EventuallyEq.rfl
   refine' I.continuousAt_symm.preimage_mem_nhds (f.open_target.mem_nhds _)
-  simp_rw [f.extend_coe, Function.comp_apply, I.left_inv, f.mapsTo hx]
+  simp_rw [f.extend_coe, comp_apply, I.left_inv, f.mapsTo hx]
 #align local_homeomorph.extend_symm_preimage_inter_range_eventually_eq_aux LocalHomeomorph.extend_symm_preimage_inter_range_eventuallyEq_aux
 
 theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : s ⊆ f.source)
