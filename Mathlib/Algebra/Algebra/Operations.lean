@@ -316,6 +316,16 @@ theorem comap_op_mul (M N : Submodule R Aᵐᵒᵖ) :
   simp_rw [comap_equiv_eq_map_symm, map_unop_mul]
 #align submodule.comap_op_mul Submodule.comap_op_mul
 
+lemma restrictScalars_mul {A B C} [CommSemiring A] [CommSemiring B] [Semiring C]
+    [Algebra A B] [Algebra A C] [Algebra B C] [IsScalarTower A B C] {I J : Submodule B C} :
+  (I * J).restrictScalars A = I.restrictScalars A * J.restrictScalars A := by
+  apply le_antisymm
+  · intro x (hx : x ∈ I * J)
+    refine Submodule.mul_induction_on hx ?_ ?_
+    · exact fun m hm n hn ↦ mul_mem_mul hm hn
+    · exact fun _ _ ↦ add_mem
+  · exact mul_le.mpr (fun _ hm _ hn ↦ mul_mem_mul hm hn)
+
 section
 
 open Pointwise

@@ -761,11 +761,20 @@ noncomputable def Finset.equivFinOfCardEq {s : Finset α} {n : ℕ} (h : s.card 
   Fintype.equivFinOfCardEq ((Fintype.card_coe _).trans h)
 #align finset.equiv_fin_of_card_eq Finset.equivFinOfCardEq
 
+theorem Finset.card_eq_of_equiv_fin {s : Finset α} {n : ℕ} (i : s ≃ Fin n) : s.card = n :=
+  Fin.equiv_iff_eq.1 ⟨s.equivFin.symm.trans i⟩
+
+theorem Finset.card_eq_of_equiv_fintype {s : Finset α} [Fintype β] (i : s ≃ β) :
+    s.card = Fintype.card β := card_eq_of_equiv_fin <| i.trans <| Fintype.equivFin β
+
 /-- Noncomputable equivalence between two finsets `s` and `t` as fintypes when there is a proof
 that `s.card = t.card`.-/
-noncomputable def Finset.equivOfCardEq {s t : Finset α} (h : s.card = t.card) : s ≃ t :=
-  Fintype.equivOfCardEq ((Fintype.card_coe _).trans (h.trans (Fintype.card_coe _).symm))
+noncomputable def Finset.equivOfCardEq {s : Finset α} {t : Finset β} (h : s.card = t.card) :
+    s ≃ t := Fintype.equivOfCardEq ((Fintype.card_coe _).trans (h.trans (Fintype.card_coe _).symm))
 #align finset.equiv_of_card_eq Finset.equivOfCardEq
+
+theorem Finset.card_eq_of_equiv {s : Finset α} {t : Finset β} (i : s ≃ t) : s.card = t.card :=
+  (card_eq_of_equiv_fintype i).trans (Fintype.card_coe _)
 
 @[simp]
 theorem Fintype.card_prop : Fintype.card Prop = 2 :=
