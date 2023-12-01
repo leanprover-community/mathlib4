@@ -318,10 +318,10 @@ private lemma uniformity_eq_seminorm :
 
 /-- Continuous linear maps themselves form a seminormed space with respect to
     the operator norm. -/
-instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) :=
-  { ContinuousLinearMap.seminorm.toSeminormedAddCommGroup with
-    toUniformSpace := inferInstance
-    uniformity_dist := uniformity_eq_seminorm }
+instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
+  toPseudoMetricSpace := .replaceUniformity
+    ContinuousLinearMap.seminorm.toSeminormedAddCommGroup.toPseudoMetricSpace uniformity_eq_seminorm
+  dist_eq _ _ := rfl
 #align continuous_linear_map.to_seminormed_add_comm_group ContinuousLinearMap.toSeminormedAddCommGroup
 
 #noalign continuous_linear_map.tmp_seminormed_add_comm_group
@@ -1830,12 +1830,9 @@ def smulRightL : (E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] F�
         ext x
         simp only [smul_smul, coe_smulRightₗ, Algebra.id.smul_eq_mul, coe_smul', smulRight_apply,
           LinearMap.smul_apply, RingHom.id_apply, Pi.smul_apply] }
-    1 fun c x => (norm_smulRight_apply c x).le.trans_eq <| by simp
-    -- was
-    -- simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
-    --   le_refl]
-    -- after `=>` above
-    -- Now it fails to use `AddHom.coe_mk`. WHY?
+    1 fun c x => by
+      simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
+        le_refl]
 #align continuous_linear_map.smul_rightL ContinuousLinearMap.smulRightL
 
 variable {𝕜 E Fₗ}
