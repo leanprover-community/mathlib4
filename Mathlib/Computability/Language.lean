@@ -334,7 +334,7 @@ lemma reverse_mul (l m : Language α) : (l * m).reverse = m.reverse * l.reverse 
   rw [and_left_comm, ← List.reverse_append, List.reverse_inj]
 
 variable (α) in
-/-- `Language.reverse` as a ring homomorphism to the opposite ring. -/
+/-- `Language.reverse` as a ring isomorphism to the opposite ring. -/
 @[simps]
 def reverseHom : Language α ≃+* (Language α)ᵐᵒᵖ where
   toFun l := .op l.reverse
