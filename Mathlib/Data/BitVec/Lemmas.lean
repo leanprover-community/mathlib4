@@ -155,7 +155,8 @@ lemma ofFin_zsmul (z : ℤ) (x : Fin (2^w)) : ofFin (z • x) = z • ofFin x :=
 -- See Note [no_index around OfNat.ofNat]
 @[simp] lemma ofFin_ofNat (n : ℕ) :
     ofFin (no_index (OfNat.ofNat n : Fin (2^w))) = OfNat.ofNat n := by
-  sorry
+  simp only [OfNat.ofNat, Fin.ofNat', BitVec.ofNat, and_pow_two_is_mod]
+
 end
 
 /-!
@@ -182,17 +183,22 @@ variable (x y : BitVec w)
 
 -- These should be simp, but Std's simp-lemmas do not allow this yet.
 lemma toFin_zero : toFin (0 : BitVec w) = 0 := rfl
-lemma toFin_one  : toFin (1 : BitVec w) = 1 := rfl
+lemma toFin_one  : toFin (1 : BitVec w) = 1 := by
+  apply toFin_inj.mpr; simp only [ofNat_eq_ofNat, ofFin_ofNat]
 
 lemma toFin_nsmul (n : ℕ) (x : BitVec w) : toFin (n • x) = n • x.toFin := rfl
 lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin := rfl
 @[simp] lemma toFin_pow (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := rfl
-@[simp] lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := rfl
+
+@[simp] lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := by
+  apply toFin_inj.mpr; simp only [ofFin_natCast]
+
 @[simp] lemma toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := rfl
 
 -- See Note [no_index around OfNat.ofNat]
 lemma toFin_ofNat (n : ℕ) :
-    toFin (no_index (OfNat.ofNat n : BitVec w)) = OfNat.ofNat n := rfl
+    toFin (no_index (OfNat.ofNat n : BitVec w)) = OfNat.ofNat n := by
+  simp only [OfNat.ofNat, BitVec.ofNat, and_pow_two_is_mod, Fin.ofNat']
 
 end
 
