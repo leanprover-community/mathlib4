@@ -982,7 +982,7 @@ theorem closedPoint_mem_iff (U : TopologicalSpace.Opens <| PrimeSpectrum R) :
 #align local_ring.closed_point_mem_iff LocalRing.closedPoint_mem_iff
 
 @[simp]
-theorem PrimeSpectrum.comap_residue {S : Type v}[CommRing S] [LocalRing S]
+theorem PrimeSpectrum.comap_residue (S : Type v)[CommRing S] [LocalRing S]
     (x : PrimeSpectrum (ResidueField S)) : PrimeSpectrum.comap (residue S) x = closedPoint S := by
   rw [Subsingleton.elim x ⊥]
   ext1
