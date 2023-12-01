@@ -144,8 +144,6 @@ instance : SMul ℕ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
 instance : SMul ℤ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
 instance : Pow (BitVec w) ℕ  := ⟨fun x n => ofFin <| x.toFin ^ n⟩
 instance : NatCast (BitVec w) := ⟨BitVec.ofNat w⟩
-
-/-- The obvious instance would be to define `IntCast` in terms of `Std.BitVec.ofInt`.  -/
-instance : IntCast (BitVec w) := ⟨fun x => ofFin x⟩
+instance : IntCast (BitVec w) := ⟨BitVec.ofInt w⟩
 
 end Std.BitVec
