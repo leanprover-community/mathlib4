@@ -297,7 +297,8 @@ section
 variable [Mul M] [Mul N]
 
 @[to_additive AddSemiconjBy.prod]
-theorem SemiconjBy.prod {x y z : M × N} (hm : SemiconjBy x.1 y.1 z.1) (hn : SemiconjBy x.2 y.2 z.2) :
+theorem SemiconjBy.prod {x y z : M × N}
+    (hm : SemiconjBy x.1 y.1 z.1) (hn : SemiconjBy x.2 y.2 z.2) :
     SemiconjBy x y z :=
   Prod.ext hm hn
 
