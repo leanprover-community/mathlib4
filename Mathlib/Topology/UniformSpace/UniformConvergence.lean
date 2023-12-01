@@ -211,11 +211,11 @@ theorem TendstoUniformlyOnFilter.congr {F' : ι → α → β} (hf : TendstoUnif
 #align tendsto_uniformly_on_filter.congr TendstoUniformlyOnFilter.congr
 
 theorem TendstoUniformlyOn.congr {F' : ι → α → β} (hf : TendstoUniformlyOn F f p s)
-    (hff' : ∀ᶠ n in p, Set.EqOn (F n) (F' n) s) : TendstoUniformlyOn F' f p s := by
+    (hff' : ∀ᶠ n in p, EqOn (F n) (F' n) s) : TendstoUniformlyOn F' f p s := by
   rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter] at hf ⊢
   refine' hf.congr _
   rw [eventually_iff] at hff' ⊢
-  simp only [Set.EqOn] at hff'
+  simp only [EqOn] at hff'
   simp only [mem_prod_principal, hff', mem_setOf_eq]
 #align tendsto_uniformly_on.congr TendstoUniformlyOn.congr
 
@@ -425,7 +425,7 @@ theorem TendstoUniformlyOnFilter.uniformCauchySeqOnFilter (hF : TendstoUniformly
   apply this.diag_of_prod_right.mono
   simp only [and_imp, Prod.forall]
   intro n1 n2 x hl hr
-  exact Set.mem_of_mem_of_subset (prod_mk_mem_compRel (htsymm hl) hr) htmem
+  exact mem_of_mem_of_subset (prod_mk_mem_compRel (htsymm hl) hr) htmem
 #align tendsto_uniformly_on_filter.uniform_cauchy_seq_on_filter TendstoUniformlyOnFilter.uniformCauchySeqOnFilter
 
 /-- A sequence that converges uniformly is also uniformly Cauchy -/
@@ -451,14 +451,14 @@ theorem UniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto [NeBot p]
     rw [eventually_prod_iff]
     refine' ⟨fun _ => True, by simp, _, hF', by simp⟩
   -- To apply filter operations we'll need to do some order manipulation
-  rw [Filter.eventually_swap_iff]
+  rw [eventually_swap_iff]
   have := tendsto_prodAssoc.eventually (tendsto_prod_swap.eventually ((hF t ht).and hmc))
   apply this.curry.mono
   simp only [Equiv.prodAssoc_apply, eventually_and, eventually_const, Prod.snd_swap, Prod.fst_swap,
     and_imp, Prod.forall]
   -- Complete the proof
   intro x n hx hm'
-  refine' Set.mem_of_mem_of_subset (mem_compRel.mpr _) htmem
+  refine' mem_of_mem_of_subset (mem_compRel.mpr _) htmem
   rw [Uniform.tendsto_nhds_right] at hm'
   have := hx.and (hm' ht)
   obtain ⟨m, hm⟩ := this.exists
@@ -475,7 +475,7 @@ theorem UniformCauchySeqOn.tendstoUniformlyOn_of_tendsto [NeBot p] (hF : Uniform
 theorem UniformCauchySeqOnFilter.mono_left {p'' : Filter ι} (hf : UniformCauchySeqOnFilter F p p')
     (hp : p'' ≤ p) : UniformCauchySeqOnFilter F p'' p' := by
   intro u hu
-  have := (hf u hu).filter_mono (p'.prod_mono_left (Filter.prod_mono hp hp))
+  have := (hf u hu).filter_mono (p'.prod_mono_left (prod_mono hp hp))
   exact this.mono (by simp)
 #align uniform_cauchy_seq_on_filter.mono_left UniformCauchySeqOnFilter.mono_left
 
@@ -522,7 +522,7 @@ theorem UniformCauchySeqOn.prod_map {ι' α' β' : Type*} [UniformSpace β'] {F'
   rw [uniformity_prod_eq_prod, mem_map, mem_prod_iff] at hu
   obtain ⟨v, hv, w, hw, hvw⟩ := hu
   simp_rw [mem_prod, Prod_map, and_imp, Prod.forall]
-  rw [← Set.image_subset_iff] at hvw
+  rw [← image_subset_iff] at hvw
   apply (tendsto_swap4_prod.eventually ((h v hv).prod_mk (h' w hw))).mono
   intro x hx a b ha hb
   refine' hvw ⟨_, mk_mem_prod (hx.1 a ha) (hx.2 b hb), rfl⟩
@@ -772,7 +772,7 @@ theorem tendstoLocallyUniformly_iff_filter :
 theorem TendstoLocallyUniformlyOn.tendsto_at (hf : TendstoLocallyUniformlyOn F f p s) {a : α}
     (ha : a ∈ s) : Tendsto (fun i => F i a) p (𝓝 (f a)) := by
   refine' ((tendstoLocallyUniformlyOn_iff_filter.mp hf) a ha).tendsto_at _
-  simpa only [Filter.principal_singleton] using pure_le_nhdsWithin ha
+  simpa only [principal_singleton] using pure_le_nhdsWithin ha
 #align tendsto_locally_uniformly_on.tendsto_at TendstoLocallyUniformlyOn.tendsto_at
 
 theorem TendstoLocallyUniformlyOn.unique [p.NeBot] [T2Space β] {g : α → β}

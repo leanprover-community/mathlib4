@@ -132,7 +132,7 @@ theorem separatedSpace_iff {α : Type u} [UniformSpace α] : SeparatedSpace α �
 
 theorem separated_def {α : Type u} [UniformSpace α] :
     SeparatedSpace α ↔ ∀ x y, (∀ r ∈ 𝓤 α, (x, y) ∈ r) → x = y := by
-  simp only [separatedSpace_iff, Set.ext_iff, Prod.forall, mem_idRel, separationRel, mem_sInter]
+  simp only [separatedSpace_iff, ext_iff, Prod.forall, mem_idRel, separationRel, mem_sInter]
   exact forall₂_congr fun _ _ => ⟨Iff.mp, fun h => ⟨h, fun H U hU => H ▸ refl_mem_uniformity hU⟩⟩
 #align separated_def separated_def
 
@@ -258,7 +258,7 @@ instance separationSetoid.uniformSpace {α : Type u} [UniformSpace α] :
     UniformSpace (Quotient (separationSetoid α)) where
   toTopologicalSpace := instTopologicalSpaceQuotient
   uniformity := map (fun p : α × α => (⟦p.1⟧, ⟦p.2⟧)) (𝓤 α)
-  refl := le_trans (by simp [Quotient.exists_rep]) (Filter.map_mono refl_le_uniformity)
+  refl := le_trans (by simp [Quotient.exists_rep]) (map_mono refl_le_uniformity)
   symm := tendsto_map' <| tendsto_map.comp tendsto_swap_uniformity
   comp s hs := by
     rcases comp_open_symm_mem_uniformity_sets hs with ⟨U, hU, hUo, -, hUs⟩
@@ -304,8 +304,8 @@ theorem uniformContinuous_quotient_lift₂ {f : α → β → γ}
     (hf : UniformContinuous fun p : α × β => f p.1 p.2) :
     UniformContinuous fun p : _ × _ => Quotient.lift₂ f h p.1 p.2 := by
   rw [UniformContinuous, uniformity_prod_eq_prod, uniformity_quotient, uniformity_quotient,
-    Filter.prod_map_map_eq, Filter.tendsto_map'_iff, Filter.tendsto_map'_iff]
-  rwa [UniformContinuous, uniformity_prod_eq_prod, Filter.tendsto_map'_iff] at hf
+    prod_map_map_eq, tendsto_map'_iff, tendsto_map'_iff]
+  rwa [UniformContinuous, uniformity_prod_eq_prod, tendsto_map'_iff] at hf
 #align uniform_space.uniform_continuous_quotient_lift₂ UniformSpace.uniformContinuous_quotient_lift₂
 
 theorem comap_quotient_le_uniformity :
@@ -323,7 +323,7 @@ theorem comap_quotient_eq_uniformity :
 #align uniform_space.comap_quotient_eq_uniformity UniformSpace.comap_quotient_eq_uniformity
 
 instance separated_separation : SeparatedSpace (Quotient (separationSetoid α)) :=
-  ⟨Set.ext fun ⟨a, b⟩ =>
+  ⟨ext fun ⟨a, b⟩ =>
       Quotient.inductionOn₂ a b fun a b =>
         ⟨fun h =>
           have : a ≈ b := fun s hs =>
@@ -411,7 +411,7 @@ theorem map_id : map (@id α) = id :=
 
 theorem map_comp {f : α → β} {g : β → γ} (hf : UniformContinuous f) (hg : UniformContinuous g) :
     map g ∘ map f = map (g ∘ f) :=
-  (map_unique (hg.comp hf) <| by simp only [Function.comp, map_mk, hf, hg]).symm
+  (map_unique (hg.comp hf) <| by simp only [comp, map_mk, hf, hg]).symm
 #align uniform_space.separation_quotient.map_comp UniformSpace.SeparationQuotient.map_comp
 
 end SeparationQuotient
