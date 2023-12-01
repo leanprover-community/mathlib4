@@ -17,7 +17,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 * multiplication of a function by a scalar function
 * multiplication of two scalar functions
-* inverse function (as in `Ring.inverse` or `Inv.inv`, not `Function.LeftInverse`).
+* taking the pointwise multiplicative inverse (i.e. `Inv.inv` or `Ring.inverse`) of a function
 -/
 
 
