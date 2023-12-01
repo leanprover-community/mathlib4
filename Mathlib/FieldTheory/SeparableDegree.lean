@@ -9,6 +9,7 @@ import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.NormalClosure
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.Polynomial.SeparableDegree
+import Mathlib.FieldTheory.IsSepClosed
 
 /-!
 
@@ -330,8 +331,8 @@ theorem lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic
 /-- The same-universe version of `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`.
 See also `rank_mul_rank`. -/
 theorem sepDegree_mul_sepDegree_of_isAlgebraic
-    (A : Type u) (B : Type u) [Field A] [Field B] [Algebra A B]
-    (C : Type u) [Field C] [Algebra A C] [Algebra B C]
+    (A : Type u) (B : Type v) [Field A] [Field B] [Algebra A B]
+    (C : Type v) [Field C] [Algebra A C] [Algebra B C]
     [IsScalarTower A B C] (halg : Algebra.IsAlgebraic B C) :
     sepDegree A B * sepDegree B C = sepDegree A C := by
   simpa only [Cardinal.lift_id] using lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic A B C halg
@@ -384,6 +385,26 @@ theorem natSepDegree_le_natDegree : f.natSepDegree ≤ f.natDegree := by
   have := f.map (algebraMap F f.SplittingField) |>.card_roots'
   rw [← aroots_def, natDegree_map] at this
   exact (f.aroots f.SplittingField).toFinset_card_le.trans this
+
+@[simp]
+theorem natSepDegree_X_sub_C {x : F} : (X - C x).natSepDegree = 1 := by
+  simp only [natSepDegree, aroots_X_sub_C, Multiset.toFinset_singleton, Finset.card_singleton]
+
+@[simp]
+theorem natSepDegree_X : (X : F[X]).natSepDegree = 1 := by
+  simp only [natSepDegree, aroots_X, Multiset.toFinset_singleton, Finset.card_singleton]
+
+@[simp]
+theorem natSepDegree_C {x : F} : (C x).natSepDegree = 0 := by
+  simp only [natSepDegree, aroots_C, Multiset.toFinset_zero, Finset.card_empty]
+
+@[simp]
+theorem natSepDegree_zero : (0 : F[X]).natSepDegree = 0 := by
+  simp only [natSepDegree, aroots_zero, Multiset.toFinset_zero, Finset.card_empty]
+
+@[simp]
+theorem natSepDegree_one : (1 : F[X]).natSepDegree = 0 := by
+  simp only [natSepDegree, aroots_one, Multiset.toFinset_zero, Finset.card_empty]
 
 /-- A constant polynomial has zero separable degree. -/
 theorem natSepDegree_eq_zero (h : f.natDegree = 0) : f.natSepDegree = 0 := by
@@ -450,6 +471,50 @@ theorem natSepDegree_eq_natSepDegree_algebraicClosure :
     f.natSepDegree = (f.aroots (AlgebraicClosure F)).toFinset.card :=
   natSepDegree_eq_of_isAlgClosed f
 
+@[simp]
+theorem natSepDegree_C_mul {x : F} (hx : x ≠ 0) :
+    (C x * f).natSepDegree = f.natSepDegree := by
+  simp only [natSepDegree_eq_natSepDegree_algebraicClosure, aroots_C_mul _ hx]
+
+@[simp]
+theorem natSepDegree_smul_nonzero {x : F} (hx : x ≠ 0) :
+    (x • f).natSepDegree = f.natSepDegree := by
+  simp only [natSepDegree_eq_natSepDegree_algebraicClosure, aroots_smul_nonzero _ hx]
+
+@[simp]
+theorem natSepDegree_pow {n : ℕ} : (f ^ n).natSepDegree = if n = 0 then 0 else f.natSepDegree := by
+  simp only [natSepDegree_eq_natSepDegree_algebraicClosure, aroots_pow]
+  by_cases h : n = 0
+  · simp only [h, zero_smul, Multiset.toFinset_zero, Finset.card_empty, ite_true]
+  simp only [h, Multiset.toFinset_nsmul _ n h, ite_false]
+
+theorem natSepDegree_X_pow {n : ℕ} : ((X : F[X]) ^ n).natSepDegree = if n = 0 then 0 else 1 := by
+  simp only [natSepDegree_pow, natSepDegree_X]
+
+theorem natSepDegree_X_sub_C_pow {x : F} {n : ℕ} : ((X - C x) ^ n).natSepDegree = if n = 0 then 0 else 1 := by
+  simp only [natSepDegree_pow, natSepDegree_X_sub_C]
+
+theorem natSepDegree_C_mul_X_sub_C_pow {x y : F} {n : ℕ} (hx : x ≠ 0) :
+    (C x * (X - C y) ^ n).natSepDegree = if n = 0 then 0 else 1 := by
+  simp only [natSepDegree_C_mul _ hx, natSepDegree_X_sub_C_pow]
+
+theorem natSepDegree_mul (g : F[X]) :
+    (f * g).natSepDegree ≤ f.natSepDegree + g.natSepDegree := by
+  by_cases h : f * g = 0
+  · simp only [h, natSepDegree_zero, zero_le]
+  simp only [natSepDegree_eq_natSepDegree_algebraicClosure, aroots_mul h, Multiset.toFinset_add]
+  exact Finset.card_union_le _ _
+
+theorem natSepDegree_le_of_dvd (g : F[X]) (h1 : f ∣ g) (h2 : g ≠ 0) :
+    f.natSepDegree ≤ g.natSepDegree := by
+  simp only [natSepDegree_eq_natSepDegree_algebraicClosure, aroots]
+  set f' := f.map (algebraMap F (AlgebraicClosure F))
+  set g' := g.map (algebraMap F (AlgebraicClosure F))
+  have : f'.roots.dedup ≤ g'.roots.dedup :=
+    (Multiset.Nodup.le_dedup_iff_le <| Multiset.nodup_dedup _).2 <| (Multiset.dedup_le _).trans <|
+      roots.le_of_dvd (map_ne_zero h2) <| map_dvd _ h1
+  exact Multiset.card_le_of_le this
+
 /-- If `f` is a polynomial over a perfect ring `R` of characteristic `p`, then there is a bijection
 from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
 In fact it's given by `x ↦ x ^ p`, but we don't give a proof here. -/
@@ -497,7 +562,7 @@ def rootsExpandPowEquivRoots
 and `f` have the same separable degree. -/
 theorem natSepDegree_expand_eq_natSepDegree (q : ℕ) [hF : ExpChar F q] {n : ℕ} :
     (expand F (q ^ n) f).natSepDegree = f.natSepDegree := by
-  cases' hF with hchar _ hprime hchar
+  cases' hF with _ _ hprime _
   · simp only [one_pow, expand_one]
   haveI := Fact.mk hprime
   simpa only [natSepDegree_eq_natSepDegree_algebraicClosure, aroots_def, map_expand,
@@ -679,6 +744,44 @@ theorem isSeparable_adjoin_two_of_separable {x y : E}
   change finSepDegree F (restrictScalars F M) = finrank F (restrictScalars F M) at heq
   rwa [adjoin_adjoin_left F {x} {y}, Set.union_comm, Set.union_singleton] at heq
 
+theorem _root_.IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
+    [IsSeparable F E] [IsSeparable E K] : IsSeparable F K := isSeparable_iff.2 fun x ↦ by
+  let f := minpoly E x
+  let E' : IntermediateField F E := adjoin F f.frange
+  haveI : FiniteDimensional F E' := finiteDimensional_adjoin fun x _ ↦ IsSeparable.isIntegral F x
+  have h : f ∈ lifts (algebraMap E' E) := (lifts_iff_coeff_lifts f).2 fun n ↦ Set.mem_range.2 <| by
+    by_cases h : f.coeff n = 0
+    · simp only [h, _root_.map_eq_zero, exists_eq]
+    have : F⟮f.coeff n⟯ ≤ E' := adjoin.mono _ _ _ <|
+      Set.singleton_subset_iff.2 <| f.coeff_mem_frange n h
+    exact ⟨⟨f.coeff n, this <| mem_adjoin_simple_self F (f.coeff n)⟩, rfl⟩
+  obtain ⟨g, h⟩ := f.mem_lifts.1 h
+  have hx : x ∈ restrictScalars F E'⟮x⟯ := mem_adjoin_simple_self _ x
+  have hzero : aeval x g = 0 := by
+    simpa only [← h, aeval_map_algebraMap] using minpoly.aeval E x
+  have halg : IsIntegral E' x := (IsSeparable.isAlgebraic F E).trans
+    (IsSeparable.isAlgebraic E K) x |>.isIntegral.tower_top
+  have hsep : f.Separable := IsSeparable.separable E x
+  rw [← h, separable_map] at hsep
+  replace hsep := hsep.of_dvd <| minpoly.dvd _ _ hzero
+  haveI : IsSeparable F E' := isSeparable_tower_bot_of_isSeparable F E' E
+  haveI := (isSeparable_adjoin_simple_iff_separable _ _).2 ⟨halg, hsep⟩
+  haveI := adjoin.finiteDimensional halg
+  letI : Algebra E' E'⟮x⟯ := Subalgebra.algebra E'⟮x⟯.toSubalgebra
+  letI : Module E' E'⟮x⟯ := Algebra.toModule
+  letI : SMul E' E'⟮x⟯ := Algebra.toSMul
+  haveI : IsScalarTower F E' E'⟮x⟯ := IntermediateField.isScalarTower E'⟮x⟯
+  haveI : FiniteDimensional F E'⟮x⟯ := FiniteDimensional.trans F E' E'⟮x⟯
+  have := finSepDegree_mul_finSepDegree_of_isAlgebraic F E' E'⟮x⟯ (IsSeparable.isAlgebraic _ _)
+  rw [finSepDegree_eq_finrank_of_isSeparable F E',
+    finSepDegree_eq_finrank_of_isSeparable E' E'⟮x⟯,
+    FiniteDimensional.finrank_mul_finrank F E' E'⟮x⟯,
+    eq_comm, finSepDegree_eq_finrank_iff F E'⟮x⟯] at this
+  change IsSeparable F (restrictScalars F E'⟮x⟯) at this
+  exact separable_of_mem_isSeparable F K hx
+
+section separableClosure
+
 /-- If `x` and `y` are both separable elements, then `x * y` is also a separable element. -/
 theorem separable_mul {x y : E}
     (hx : IsIntegral F x ∧ (minpoly F x).Separable)
@@ -771,6 +874,25 @@ instance separableClosure.normal [Normal F E] : Normal F (separableClosure F E) 
   rw [← separableClosure.normalClosure_eq_self]
   exact normalClosure.normal F _ E
 
+/-- If `E` is algebraically closed, then the (relative) separable closure of `E / F` is a
+separable closure of `F`. -/
+instance separableClosure.isSepClosure [IsAlgClosed E] : IsSepClosure F (separableClosure F E) := by
+  refine ⟨IsSepClosed.of_exists_root _ fun p hp hirr hsep ↦ ?_, isSeparable F E⟩
+  obtain ⟨x, hx⟩ := IsAlgClosed.exists_aeval_eq_zero E p (ne_of_gt <| degree_pos_of_irreducible hirr)
+  have halg := IsAlgebraic.isIntegral ⟨p, hp.ne_zero, hx⟩
+  have hsep' := hsep.of_dvd <| minpoly.dvd _ x hx
+  haveI := (isSeparable_adjoin_simple_iff_separable _ E).2 ⟨halg, hsep'⟩
+  let L := separableClosure F E
+  letI : Algebra L L⟮x⟯ := Subalgebra.algebra L⟮x⟯.toSubalgebra
+  letI : Module L L⟮x⟯ := Algebra.toModule
+  letI : SMul L L⟮x⟯ := Algebra.toSMul
+  haveI : IsScalarTower F L L⟮x⟯ := IntermediateField.isScalarTower L⟮x⟯
+  haveI : IsSeparable F (restrictScalars F L⟮x⟯) := IsSeparable.trans F L L⟮x⟯
+  have : x ∈ restrictScalars F L⟮x⟯ := mem_adjoin_simple_self _ x
+  use ⟨x, le_separableClosure F E (restrictScalars F L⟮x⟯) this⟩
+  apply_fun algebraMap L E using (algebraMap L E).injective
+  rwa [map_zero, ← aeval_algebraMap_apply_eq_algebraMap_eval]
+
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
 separable elements. -/
 theorem isSeparable_adjoin_iff_separable {S : Set E} :
@@ -778,5 +900,82 @@ theorem isSeparable_adjoin_iff_separable {S : Set E} :
   simp only [← le_separableClosure_iff, ← mem_separableClosure_iff]
   exact ⟨fun h x hx ↦ (adjoin.mono F _ _ <| Set.singleton_subset_iff.2 hx).trans h <|
     mem_adjoin_simple_self F x, adjoin_le_iff.2⟩
+
+end separableClosure
+
+section IsPurelyInseparable
+
+class IsPurelyInseparable : Prop where
+  isIntegral' (x : E) : IsIntegral F x
+  inseparable' (x : E) : (minpoly F x).Separable → x ∈ (algebraMap F E).range
+
+theorem IsPurelyInseparable_iff : IsPurelyInseparable F E ↔ ∀ x : E,
+    IsIntegral F x ∧ ((minpoly F x).Separable → x ∈ (algebraMap F E).range) :=
+  ⟨fun h x ↦ ⟨h.isIntegral' x, h.inseparable' x⟩, fun h ↦ ⟨fun x ↦ (h x).1, fun x ↦ (h x).2⟩⟩
+
+theorem IsPurelyInseparable.isIntegral [IsPurelyInseparable F E] :
+    ∀ x : E, IsIntegral F x :=
+  IsPurelyInseparable.isIntegral'
+
+theorem IsPurelyInseparable.inseparable [IsPurelyInseparable F E] :
+    ∀ x : E, (minpoly F x).Separable → x ∈ (algebraMap F E).range :=
+  IsPurelyInseparable.inseparable'
+
+theorem IsPurelyInseparable.isAlgebraic [IsPurelyInseparable F E] :
+    Algebra.IsAlgebraic F E := fun x ↦ (IsPurelyInseparable.isIntegral' x).isAlgebraic
+
+instance isPurelyInseparable_self : IsPurelyInseparable F F :=
+  ⟨fun _ ↦ isIntegral_algebraMap, fun x _ ↦ ⟨x, rfl⟩⟩
+
+theorem isPurelyInseparable_iff_mem_pow (q : ℕ) [hF : ExpChar F q] :
+    IsPurelyInseparable F E ↔ ∀ x : E, ∃ n : ℕ, x ^ (q ^ n) ∈ (algebraMap F E).range := by
+  rw [IsPurelyInseparable_iff]
+  constructor
+  · intro h x
+    obtain ⟨g, h1, n, h2⟩ := Irreducible.hasSeparableContraction q _ <|
+      minpoly.irreducible <| (h x).1
+    exact ⟨n, (h _).2 <| Separable.of_dvd h1 <| minpoly.dvd F _ <| by
+      simpa only [expand_aeval, minpoly.aeval] using congr_arg (aeval x) h2⟩
+  intro h x
+  cases' hF with _ _ hprime _
+  · simp only [one_pow, pow_one, exists_const] at h
+    exact ⟨by obtain ⟨_, rfl⟩ := h x; exact isIntegral_algebraMap, fun _ ↦ h x⟩
+  haveI := Fact.mk hprime
+  haveI : ExpChar F q := ExpChar.prime hprime
+  obtain ⟨n, y, hx⟩ := h x
+  let g := X - C y
+  have hzero : aeval x (expand F (q ^ n) g) = 0 := by
+    simp only [map_sub, expand_X, expand_C, map_pow, aeval_X, aeval_C, hx, sub_self]
+  have hnezero : expand F (q ^ n) g ≠ 0 := (expand_ne_zero Fin.size_pos').2 <| X_sub_C_ne_zero y
+  have halg := IsAlgebraic.isIntegral ⟨_, hnezero, hzero⟩
+  use halg
+  have hdeg := natSepDegree_le_of_dvd _ _ (minpoly.dvd F x hzero) hnezero
+  intro hsep
+  rw [natSepDegree_expand_eq_natSepDegree, natSepDegree_X_sub_C,
+    natSepDegree_eq_natDegree_of_separable _ hsep] at hdeg
+  replace hdeg := le_antisymm hdeg (minpoly.natDegree_pos halg)
+  rw [← adjoin.finrank halg, IntermediateField.finrank_eq_one_iff] at hdeg
+  have := hdeg ▸ mem_adjoin_simple_self F x
+  exact this
+
+theorem isPurelyInseparable_of_finSepDegree_eq_one (halg : Algebra.IsAlgebraic F E)
+    (hdeg : finSepDegree F E = 1) : IsPurelyInseparable F E := by
+  rw [IsPurelyInseparable_iff]
+  intro x
+  use (halg x).isIntegral
+  intro hsep
+  have := finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E <| halg.tower_top (L := F⟮x⟯)
+  rw [hdeg, mul_eq_one, (finSepDegree_adjoin_simple_eq_finrank_iff F E x (halg x)).2 hsep,
+    IntermediateField.finrank_eq_one_iff] at this
+  have := this.1 ▸ mem_adjoin_simple_self F x
+  exact this
+
+theorem isPurelyInseparable_of_sepDegree_le_one (halg : Algebra.IsAlgebraic F E)
+    (hdeg : sepDegree F E ≤ 1) : IsPurelyInseparable F E :=
+  isPurelyInseparable_of_finSepDegree_eq_one F E halg <| by
+    simpa only [Cardinal.one_toNat] using congr_arg Cardinal.toNat <| le_antisymm hdeg <|
+      Cardinal.one_le_iff_ne_zero.2 <| NeZero.ne _
+
+end IsPurelyInseparable
 
 end Field

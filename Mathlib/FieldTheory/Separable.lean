@@ -524,6 +524,11 @@ theorem AlgEquiv.isSeparable [IsSeparable F K] : IsSeparable F E :=
 theorem AlgEquiv.isSeparable_iff : IsSeparable F K ↔ IsSeparable F E :=
   ⟨fun _ ↦ e.isSeparable, fun _ ↦ e.symm.isSeparable⟩
 
+variable (F E)
+
+theorem IsSeparable.isAlgebraic [Nontrivial F] [IsSeparable F K] : Algebra.IsAlgebraic F K :=
+  fun x ↦ (IsSeparable.isIntegral F x).isAlgebraic
+
 end CommRing
 
 instance isSeparable_self (F : Type*) [Field F] : IsSeparable F F :=
