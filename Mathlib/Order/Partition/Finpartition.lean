@@ -107,8 +107,7 @@ def ofSubset {a b : α} (P : Finpartition a) {parts : Finset α} (subset : parts
 
 /-- Changes the type of a finpartition to an equal one. -/
 @[simps]
-def copy {a b : α} (P : Finpartition a) (h : a = b) : Finpartition b
-    where
+def copy {a b : α} (P : Finpartition a) (h : a = b) : Finpartition b where
   parts := P.parts
   supIndep := P.supIndep
   supParts := h ▸ P.supParts
@@ -119,8 +118,7 @@ variable (α)
 
 /-- The empty finpartition. -/
 @[simps]
-protected def empty : Finpartition (⊥ : α)
-    where
+protected def empty : Finpartition (⊥ : α) where
   parts := ∅
   supIndep := supIndep_empty _
   supParts := Finset.sup_empty
@@ -474,6 +472,10 @@ theorem exists_unique_mem (ha : a ∈ s) : ∃! t, t ∈ P.parts ∧ a ∈ t := 
 /-- The part of the finpartition that `a` lies in. -/
 def part (ha : a ∈ s) : Finset α := choose (hp := P.exists_unique_mem ha)
 
+theorem part_mem (ha : a ∈ s) : P.part ha ∈ P.parts := choose_mem _ _ _
+
+theorem part_property (ha : a ∈ s) : a ∈ P.part ha := choose_property _ _ _
+
 theorem biUnion_parts : P.parts.biUnion id = s :=
   (sup_eq_biUnion _ _).symm.trans P.supParts
 #align finpartition.bUnion_parts Finpartition.biUnion_parts
@@ -526,8 +528,7 @@ variable [Fintype α]
 
 /-- A setoid over a finite type induces a finpartition of the type's elements,
 where the parts are the setoid's equivalence classes. -/
-noncomputable def ofSetoid (s : Setoid α) : Finpartition (univ : Finset α) := by
-  classical exact
+def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α) :=
   { parts := univ.image fun a => univ.filter (s.r a)
     supIndep := by
       simp only [mem_univ, forall_true_left, supIndep_iff_pairwiseDisjoint, Set.PairwiseDisjoint,
@@ -551,7 +552,7 @@ noncomputable def ofSetoid (s : Setoid α) : Finpartition (univ : Finset α) := 
       rw [bot_eq_empty, mem_image, not_exists]
       intro a
       simp only [filter_eq_empty_iff, not_forall, mem_univ, forall_true_left, true_and, not_not]
-      use a; exact s.iseqv.refl a}
+      use a; exact s.iseqv.refl a }
 
 -- theorem mem_part_iff_rel (s : Setoid α) (b : α) :
 --     b ∈ (ofSetoid s).part (mem_univ a) ↔ s.r a b := sorry
