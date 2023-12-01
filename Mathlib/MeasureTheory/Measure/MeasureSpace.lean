@@ -1539,7 +1539,6 @@ theorem sum_add_sum {ι : Type*} (μ ν : ι → Measure α) : sum μ + sum ν =
     sum (Function.extend f m 0) = sum m := by
   ext s hs
   simp [*, Function.apply_extend (fun μ : Measure α ↦ μ s)]
-  
 end Sum
 
 /-! ### Absolute continuity -/
