@@ -203,7 +203,7 @@ theorem parts_nonempty (P : Finpartition a) (ha : a ≠ ⊥) : P.parts.Nonempty 
 
 @[simp]
 theorem parts_equiv {β : Type*} [Lattice β] [OrderBot β] {e : α ≃o β} :
-  (P.equiv e).parts = P.parts.map e := rfl
+    (P.equiv e).parts = P.parts.map e := rfl
 
 instance : Unique (Finpartition (⊥ : α)) :=
   { (inferInstance : Inhabited (Finpartition (⊥ : α))) with
