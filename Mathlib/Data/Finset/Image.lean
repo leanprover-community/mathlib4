@@ -79,6 +79,13 @@ theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f
       simpa, fun h => ⟨_, h, by simp⟩⟩
 #align finset.mem_map_equiv Finset.mem_map_equiv
 
+theorem subset_map_equiv_iff {t : Finset β} {f : α ≃ β} : t ⊆ s.map f ↔ t.map f.symm ⊆ s := by
+  constructor <;> intro h x hx
+  · simp only [mem_map_equiv, Equiv.symm_symm] at hx
+    simpa using h hx
+  · simp only [mem_map_equiv]
+    exact h (by simp [hx])
+
 -- The simpNF linter says that the LHS can be simplified via `Finset.mem_map`.
 -- However this is a higher priority lemma.
 -- https://github.com/leanprover/std4/issues/207

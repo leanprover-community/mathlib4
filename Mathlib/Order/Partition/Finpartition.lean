@@ -114,6 +114,28 @@ def copy {a b : α} (P : Finpartition a) (h : a = b) : Finpartition b where
   not_bot_mem := P.not_bot_mem
 #align finpartition.copy Finpartition.copy
 
+/-- Transfer a finpartition over an order isomorphism. -/
+def equiv {β : Type*} [Lattice β] [OrderBot β] {a : α} (P : Finpartition a) (e : α ≃o β) :
+    Finpartition (e a) where
+  parts := P.parts.map e
+  supIndep := by
+    intro u hu _ hb hbu _ hx hxu
+    rw [subset_map_equiv_iff] at hu
+    simp only [mem_map_equiv] at hb
+    have := P.supIndep hu hb (by simp [hbu]) (map_rel e.symm hx) ?_
+    · rw [← e.symm.map_bot] at this
+      exact e.symm.map_rel_iff.mp this
+    · convert e.symm.map_rel_iff.mpr hxu
+      simpa [-comp.right_id] using sup_orderIso u e.symm
+  supParts := by
+    simp only [sup_map, Equiv.coe_toEmbedding, comp.left_id]
+    convert sup_orderIso P.parts e
+    exact P.supParts.symm
+  not_bot_mem := by
+    rw [mem_map_equiv]
+    convert P.not_bot_mem
+    exact e.symm.map_bot
+
 variable (α)
 
 /-- The empty finpartition. -/
@@ -178,6 +200,10 @@ theorem parts_nonempty_iff : P.parts.Nonempty ↔ a ≠ ⊥ := by
 theorem parts_nonempty (P : Finpartition a) (ha : a ≠ ⊥) : P.parts.Nonempty :=
   parts_nonempty_iff.2 ha
 #align finpartition.parts_nonempty Finpartition.parts_nonempty
+
+@[simp]
+theorem parts_equiv {β : Type*} [Lattice β] [OrderBot β] {e : α ≃o β} :
+  (P.equiv e).parts = P.parts.map e := rfl
 
 instance : Unique (Finpartition (⊥ : α)) :=
   { (inferInstance : Inhabited (Finpartition (⊥ : α))) with
