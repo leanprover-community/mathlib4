@@ -321,11 +321,13 @@ private lemma uniformity_eq_seminorm :
     rw [mul_comm] at hδ
     exact le_trans (le_of_op_norm_le_of_le _ hf.le (hε _ hx)) hδ.le
 
+instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := .replaceUniformity
+  ContinuousLinearMap.seminorm.toSeminormedAddCommGroup.toPseudoMetricSpace uniformity_eq_seminorm
+#align continuous_linear_map.to_pseudo_metric_space ContinuousLinearMap.toPseudoMetricSpace
+
 /-- Continuous linear maps themselves form a seminormed space with respect to
     the operator norm. -/
 instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
-  toPseudoMetricSpace := .replaceUniformity
-    ContinuousLinearMap.seminorm.toSeminormedAddCommGroup.toPseudoMetricSpace uniformity_eq_seminorm
   dist_eq _ _ := rfl
 #align continuous_linear_map.to_seminormed_add_comm_group ContinuousLinearMap.toSeminormedAddCommGroup
 
@@ -337,9 +339,6 @@ instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F)
 #noalign continuous_linear_map.tmp_closed_ball_div_subset
 #noalign continuous_linear_map.tmp_topology_eq
 #noalign continuous_linear_map.tmp_uniform_space_eq
-
-instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := inferInstance
-#align continuous_linear_map.to_pseudo_metric_space ContinuousLinearMap.toPseudoMetricSpace
 
 theorem nnnorm_def (f : E →SL[σ₁₂] F) : ‖f‖₊ = sInf { c | ∀ x, ‖f x‖₊ ≤ c * ‖x‖₊ } := by
   ext
