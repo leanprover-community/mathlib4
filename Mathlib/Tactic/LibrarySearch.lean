@@ -64,7 +64,7 @@ def processLemma (name : Name) (constInfo : ConstantInfo) :
       r := r.push (← DiscrTree.mkPath rhs discrTreeConfig, (name, .mp))
         |>.push (← DiscrTree.mkPath lhs discrTreeConfig, (name, .mpr))
     | _ => pure ()
-    return r.filter (DiscrTree.keySpecific ·.1)
+    return r.filter (DiscrTree.keysSpecific ·.1)
 
 /-- Construct the discrimination tree of all lemmas. -/
 def buildDiscrTree : IO (DiscrTreeCache (Name × DeclMod)) :=
