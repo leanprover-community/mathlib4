@@ -159,27 +159,7 @@ lemma ofFin_zsmul (z : ℤ) (x : Fin (2^w)) : ofFin (z • x) = z • ofFin x :=
     tsub_le_iff_right]
   · simp only [Neg.neg, BitVec.neg, BitVec.sub, HSub.hSub, Sub.sub, Fin.sub, Nat.sub_eq,
       and_pow_two_is_mod, zero_mod, zero_add, BitVec.ofNat, ofFin.injEq, Fin.mk.injEq]
-    induction' z using Nat.strongInductionOn with z ih
-    by_cases h : z + 1 < 2 ^ w
-    · rw [Nat.mod_eq_of_lt h, Nat.mod_eq_of_lt (lt_of_succ_lt h), Nat.sub_succ', Nat.sub_right_comm]
-    · by_cases h' : z + 1 = 2 ^ w
-      · simp only [h', mod_self, ge_iff_le, nonpos_iff_eq_zero, pow_eq_zero_iff',
-          OfNat.ofNat_ne_zero, ne_eq, false_and, tsub_zero, tsub_le_iff_right]
-        obtain rfl : z = 2 ^ w - 1 := by
-          apply Nat.succ_injective
-          show z + 1 = _ + 1
-          rw [h', Nat.sub_add_cancel (one_le_two_pow _)]
-        have h_lt : 2 ^ w - 1 < 2 ^ w := by
-          sorry
-        simp only [ge_iff_le, Nat.mod_eq_of_lt h_lt, le_refl, tsub_eq_zero_of_le, zero_mod]
-      · have hz : z ≥ 2 ^ w :=
-          sorry
-        rw [
-          Nat.mod_eq_sub_mod (Nat.ge_of_not_lt h),
-          Nat.mod_eq_sub_mod hz,
-          Nat.succ_sub hz
-        ]
-        apply ih _ (Nat.sub_lt (lt_of_lt_of_le (two_pow_pos w) hz) (two_pow_pos w))
+    rw [sub_succ_mod (two_pow_pos w)]
 
 -- See Note [no_index around OfNat.ofNat]
 @[simp] lemma ofFin_ofNat (n : ℕ) :
@@ -222,7 +202,8 @@ lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin := 
 @[simp] lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := by
   apply toFin_inj.mpr; simp only [ofFin_natCast]
 
-@[simp] lemma toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := rfl
+@[simp] lemma toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := by
+  apply toFin_inj.mpr; simp only [ofFin_intCast]
 
 -- See Note [no_index around OfNat.ofNat]
 lemma toFin_ofNat (n : ℕ) :
