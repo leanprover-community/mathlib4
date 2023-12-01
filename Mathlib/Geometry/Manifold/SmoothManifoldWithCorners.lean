@@ -868,8 +868,7 @@ theorem subset_maximalAtlas : atlas H M ⊆ maximalAtlas I M :=
   StructureGroupoid.subset_maximalAtlas _
 #align smooth_manifold_with_corners.subset_maximal_atlas SmoothManifoldWithCorners.subset_maximalAtlas
 
-theorem chart_mem_maximalAtlas (x : M) :
-    chartAt H x ∈ maximalAtlas I M :=
+theorem chart_mem_maximalAtlas (x : M) : chartAt H x ∈ maximalAtlas I M :=
   StructureGroupoid.chart_mem_maximalAtlas _ x
 #align smooth_manifold_with_corners.chart_mem_maximal_atlas SmoothManifoldWithCorners.chart_mem_maximalAtlas
 
@@ -893,7 +892,7 @@ instance prod : SmoothManifoldWithCorners (I.prod I') (M × M') where
 
 end SmoothManifoldWithCorners
 
-section
+section singleton
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -913,7 +912,7 @@ theorem OpenEmbedding.singleton_smoothManifoldWithCorners
   (h.toLocalHomeomorph f).singleton_smoothManifoldWithCorners I (by simp)
 #align open_embedding.singleton_smooth_manifold_with_corners OpenEmbedding.singleton_smoothManifoldWithCorners
 
-end
+end singleton
 
 namespace TopologicalSpace.Opens
 
