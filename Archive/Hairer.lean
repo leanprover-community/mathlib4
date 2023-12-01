@@ -114,13 +114,74 @@ open SmoothSupportedOn
 
 noncomputable section real
 
+open scoped Topology
+
+/-- If a point is not isolated in a metric space, then one can find countably many
+disjoint balls of positive radius close to it. -/
+lemma exists_disjoint_balls {E : Type*} [MetricSpace E] (x : E) [Filter.NeBot (𝓝[≠] x)]
+    {c : ℝ} (hc : 0 < c) : ∃ (p : ℕ → E) (r : ℕ → ℝ),
+    Pairwise (Disjoint on (fun i ↦ closedBall (p i) (r i))) ∧
+    (∀ i, 0 < r i) ∧ (∀ i, closedBall (p i) (r i) ⊆ ball x c) := by
+  have : Nonempty E := ⟨x⟩
+  have A : ∀ r > 0, ∃ y, y ∈ ball x r \ {x} := by
+    intro r hr
+    have : ball x r \ {x} ∈ 𝓝[≠] x := diff_mem_nhdsWithin_compl (ball_mem_nhds x hr) {x}
+    exact Filter.nonempty_of_mem this
+  choose! y hy using A
+  have B : ∀ r > 0, ∃ s > 0, closedBall (y r) s ⊆ ball x r \ closedBall x s ∧ s < r := by
+    intro r hr
+    have : dist (y r) x < r := by
+      have : y r ∈ ball x r := mem_of_mem_diff (hy r hr)
+      rw [mem_ball] at this
+      linarith
+    have : 0 < dist (y r) x := by simpa using not_mem_of_mem_diff (hy r hr)
+    refine ⟨min ((r - dist (y r) x) / 2) ((dist (y r) x)/ 4), ?_, ?_, ?_⟩
+    · apply lt_min
+      · linarith
+      · linarith
+    · refine subset_diff.2 ⟨?_, ?_⟩
+      · apply closedBall_subset_ball'
+        linarith [min_le_left ((r - dist (y r) x) / 2) ((dist (y r) x)/ 4)]
+      · apply closedBall_disjoint_closedBall
+        linarith [min_le_right ((r - dist (y r) x) / 2) ((dist (y r) x)/ 4)]
+    · linarith [min_le_left ((r - dist (y r) x) / 2) ((dist (y r) x)/ 4)]
+  choose! s s_pos hs s_mono using B
+  let F : ℕ → ℝ := fun n ↦ s^[n] c
+  have F_succ n : F (n+1) = s (F n) := iterate_succ_apply' s n c
+  have F_zero : F 0 = c := rfl
+  have F_pos n : 0 < F n := by
+    induction' n with n IH
+    · simp [hc]
+    · simp [F_succ, s_pos, IH]
+  have F_subs n : closedBall (y (F n)) (F (n+1)) ⊆ ball x (F n) \ closedBall x (F (n+1)) := by
+    rw [F_succ n]
+    exact hs _ (F_pos n)
+  have F_anti : StrictAnti F := by
+    apply strictAnti_nat_of_succ_lt (fun n ↦ ?_)
+    rw [F_succ]
+    exact s_mono _ (F_pos _)
+  have I m n (h : n < m) :
+      Disjoint (closedBall (y (F n)) (F (n+1))) (closedBall (y (F m)) (F (m+1))) := by
+    apply (Set.subset_diff.1 (F_subs n)).2.mono_right
+    apply ((F_subs m).trans (diff_subset _ _)).trans (ball_subset_closedBall.trans _)
+    apply closedBall_subset_closedBall (F_anti.antitone h)
+  refine ⟨fun n ↦ y (F n), fun n ↦ F (n+1), ?_, fun n ↦ F_pos _, fun n ↦ ?_⟩
+  · intro m n hmn
+    rcases lt_or_gt_of_ne hmn with h'mn|h'mn
+    · exact I n m h'mn
+    · exact (I m n h'mn).symm
+  · apply (F_subs n).trans ((diff_subset _ _).trans _)
+    apply ball_subset_ball
+    rw [← F_zero]
+    exact F_anti.antitone (zero_le _)
+
 lemma step (ι) [Fintype ι] [Nonempty ι] :
     ∃ f : ℕ → SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1),
     LinearIndependent ℝ f ∧ ∀ n, ∫ x, f n x = 1 := by
   obtain ⟨s, r, hs, hr, h2s⟩ : ∃ (s : ℕ → EuclideanSpace ℝ ι) (r : ℕ → ℝ),
-    Pairwise (Disjoint on (fun i ↦ closedBall (s i) (r i))) ∧
-    (∀ i, 0 < r i) ∧ (∀ i, ball (s i) (r i) ⊆ closedBall 0 1)
-  · sorry
+      Pairwise (Disjoint on (fun i ↦ closedBall (s i) (r i))) ∧
+      (∀ i, 0 < r i) ∧ (∀ i, closedBall (s i) (r i) ⊆ ball 0 1) :=
+    exists_disjoint_balls _ zero_lt_one
   let f1 n : ContDiffBump (s n) := ⟨r n / 2, r n, half_pos (hr n), half_lt_self (hr n)⟩
   let f2 n : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1) :=
     ⟨(f1 n).normed volume, sorry⟩
@@ -130,9 +191,39 @@ lemma step (ι) [Fintype ι] [Nonempty ι] :
 instance {ι : Type*} [IsEmpty ι] : Subsingleton (EuclideanSpace ℝ ι) :=
   inferInstanceAs (Subsingleton (ι → ℝ ))
 
-lemma volume_eq_dirac (ι : Type*) [Fintype ι] [IsEmpty ι] :
+namespace MeasureTheory.Measure
+
+
+/- Replace `pi_of_empty` by this one, which fixes conflicting instances between `Fintype`
+and `IsEmpty`. -/
+attribute [-instance] Fintype.ofIsEmpty in
+theorem pi_of_empty' {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*} {m : ∀ a, MeasurableSpace (β a)}
+    (μ : ∀ a : α, Measure (β a)) (x : ∀ a, β a := isEmptyElim) :
+    Measure.pi μ = Measure.dirac x := by
+  haveI : ∀ a, SigmaFinite (μ a) := isEmptyElim
+  refine' pi_eq fun s _ => _
+  rw [Fintype.prod_empty, dirac_apply_of_mem]
+  exact isEmptyElim (α := α)
+
+end MeasureTheory.Measure
+
+lemma volume_pi_eq_pi (ι : Type*) [Fintype ι] :
+    (volume : Measure (ι → ℝ)) = Measure.pi fun _ => volume := rfl
+
+attribute [-instance] Fintype.ofIsEmpty in
+lemma volume_pi_eq_dirac (ι : Type*) [Fintype ι] [IsEmpty ι] :
+    (volume : Measure (ι → ℝ)) = Measure.dirac 0 :=
+  Measure.pi_of_empty' _ _
+
+attribute [-instance] Fintype.ofIsEmpty in
+lemma volume_euclideanSpace_eq_dirac (ι : Type*) [Fintype ι] [IsEmpty ι] :
     (volume : Measure (EuclideanSpace ℝ ι)) = Measure.dirac 0 := by
-  sorry
+  ext s hs
+  have Z := EuclideanSpace.volume_preserving_measurableEquiv ι
+  rw [← (Z.symm).measure_preimage hs, volume_pi_eq_dirac]
+  simp only [MeasurableEquiv.measurableSet_preimage, hs, Measure.dirac_apply', Set.indicator,
+    mem_preimage, Pi.one_apply]
+  congr
 
 end real
 
@@ -353,7 +444,6 @@ lemma indep (ι : Type*) [Fintype ι] : LinearIndependent ℝ (L ∘ fun c : ι 
   intro p hp
   sorry
 
-
 lemma hairer (N : ℕ) (ι : Type*) [Fintype ι] :
     ∃ (ρ : EuclideanSpace ℝ ι → ℝ), tsupport ρ ⊆ closedBall 0 1 ∧ ContDiff ℝ ⊤ ρ ∧
     ∀ (p : MvPolynomial ι ℝ), p.totalDegree ≤ N →
@@ -372,7 +462,7 @@ lemma hairer2 (N : ℕ) (ι : Type*) [Fintype ι] :
     · intro x _hx
       rw [show x = 0 from Subsingleton.elim _ _]
       exact mem_closedBall_self zero_le_one
-    · simp [volume_eq_dirac ι]
+    · simp [volume_euclideanSpace_eq_dirac ι]
   obtain ⟨f, hf, h2f⟩ := step ι
   obtain ⟨ρ, hρ, h2ρ⟩ := exists_affineSpan_zero (nonConstantTotalDegreeLE ℝ ι N) L f hf
   have h3ρ : ∫ x, ρ x = 1 := by
