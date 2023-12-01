@@ -43,7 +43,7 @@ lemma affineSpan_subset_span {s : Set E} : (affineSpan 𝕜 s : Set E) ⊆ Submo
 
 variable (𝕜) in
 lemma support_subset_of_mem_span {α β} [Zero β] {s : Set E} {y : E} [FunLike E α (fun _ ↦ β)]
-    (hy : y ∈ Submodule.span 𝕜 s) : support y ⊆ ⋃ i ∈ s, support i := by
+    (hy : y ∈ Submodule.span 𝕜 s) : support y ⊆ ⋃ i ∈ s, support i :=
   -- rw [← Subtype.range_coe (s := s), mem_affineSpan_iff_eq_affineCombination] at hy
   sorry
 
@@ -185,11 +185,6 @@ lemma exists_disjoint_balls {E : Type*} [MetricSpace E] (x : E) [Filter.NeBot (�
 
 open scoped BigOperators
 
-lemma blouk (M : Type*) [AddCommGroup M] [Module ℝ M] (N : Submodule ℝ M)
-    (t : Finset ℕ) (f : ℕ → N) :
-    ((∑ i in t, f i : N) : M) = ∑ i in t, (f i : M) := by
-  exact Submodule.coe_sum N (fun i ↦ f i) t
-
 lemma step (ι) [Fintype ι] [Nonempty ι] :
     ∃ f : ℕ → SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1),
     LinearIndependent ℝ f ∧ ∀ n, ∫ x, f n x = 1 := by
@@ -204,13 +199,30 @@ lemma step (ι) [Fintype ι] [Nonempty ι] :
   refine ⟨f2, ?_, fun n ↦ (f1 n).integral_normed⟩
   rw [linearIndependent_iff']
   intro t g ht i₀ hi₀
-  have : ((∑ i in t, g i • f2 i : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
-    (EuclideanSpace ℝ ι) → ℝ) = (∑ i in t, g i • f2 i : (EuclideanSpace ℝ ι) → ℝ) :=
-      Submodule.coe_sum _ _ _
-  have : (∑ i in t, g i • f2 i) (s i₀) = g i₀ • f2 i₀ (s i₀) := by
-    rw [this, Finset.sum_eq_single i₀]
-
-
+  have A : (∑ i in t, g i • f2 i) (s i₀) = g i₀ • f2 i₀ (s i₀) := by
+    have :
+      ((∑ i in t, g i • f2 i : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
+          (EuclideanSpace ℝ ι) → ℝ) = (∑ i in t, g i • f2 i : (EuclideanSpace ℝ ι) → ℝ) :=
+        Submodule.coe_sum _ _ _
+    rw [this, Finset.sum_apply, Finset.sum_eq_single i₀]
+    · rfl
+    · intro i _it hi
+      have : f2 i (s i₀) = 0 := by
+        change (f1 i).normed volume (s i₀) = 0
+        rw [← nmem_support, (f1 i).support_normed_eq]
+        have : s i₀ ∈ closedBall (s i₀) (r i₀) := mem_closedBall_self (hr i₀).le
+        have T := disjoint_right.1 (hs hi) this
+        contrapose! T
+        exact ball_subset_closedBall T
+      simp only [Pi.smul_apply, this, smul_eq_mul, mul_zero]
+    · simp [hi₀]
+  rw [ht, smul_eq_mul, eq_comm] at A
+  change _ = 0 at A
+  have : (f2 i₀) (s i₀) ≠ 0 := by
+    change (f1 i₀).normed volume (s i₀) ≠ 0
+    rw [← mem_support, (f1 i₀).support_normed_eq]
+    exact mem_ball_self (hr i₀)
+  simpa only [mul_eq_zero, this, or_false] using A
 
 open scoped ENNReal
 
