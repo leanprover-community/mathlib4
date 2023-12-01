@@ -253,14 +253,29 @@ instance : FunLike (SmoothSupportedOn 𝕜 E F n s) E (fun _ ↦ F) where
   coe_injective' := Subtype.coe_injective
 end normed
 
-def L {ι : Type*} [Fintype ι] :
+variable {ι : Type*} [Fintype ι]
+lemma MvPolynomial.continuous_eval (p: MvPolynomial ι ℝ) :
+    Continuous fun x ↦ (eval x) p := by
+  sorry
+
+lemma hasCompactSupport (f : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
+    HasCompactSupport f :=
+  HasCompactSupport.of_support_subset_isCompact (isCompact_closedBall 0 1) (support_subset f)
+
+def L :
   MvPolynomial ι ℝ →ₗ[ℝ] Dual ℝ (SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) where
     toFun p :=
       { toFun := fun f ↦ ∫ x : EuclideanSpace ℝ ι, eval x p • f x
         map_add' := fun f g ↦ by
           rw [← integral_add]
           · simp only [← smul_add]; rfl
-          all_goals sorry
+          all_goals
+            simp only [smul_eq_mul]
+            apply Continuous.integrable_of_hasCompactSupport
+            apply Continuous.mul
+            apply MvPolynomial.continuous_eval
+            apply ContDiff.continuous <| SmoothSupportedOn.contDiff _
+            apply (hasCompactSupport _).mul_left
         map_smul' := fun r f ↦ by
           rw [← integral_smul]
           dsimp only [id_eq, RingHom.id_apply]
