@@ -181,6 +181,8 @@ instance Sigma.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
     let shrink1 := shrA.shrink fst |>.map fun x ↦ ⟨x, snd⟩
     let shrink2 := shrB.shrink snd |>.map fun x ↦ ⟨fst, x⟩
     shrink1 ++ shrink2
+instance ULift.shrinkable [shr : Shrinkable α] : Shrinkable (ULift α) where
+  shrink a := shr.shrink a.down |>.map fun x ↦ ⟨x⟩
 
 open Shrinkable
 
@@ -240,16 +242,14 @@ instance Prop.sampleableExt : SampleableExt m Prop where
   interp := Coe.coe
 end univ_zero
 
-@[pp_with_univ]
-class ULiftableFrom (f : outParam <| Type u₀ → Type u₁) (g : Type v₀ → Type v₁) extends ULiftable f g
+instance : ULiftable Id.{u} Id.{v} := inferInstance
 
-instance (f : Type u₀ → Type u₁) [Monad f] [LawfulFunctor f] : ULiftableFrom f f where
-  congr {α β} e := Functor.mapEquiv _ e
+attribute [pp_with_univ] SampleableExt
 
-instance Prod.sampleableExt{α : Type u₁} {β : Type u₂}
-  {m₁ : Type u₁ → Type v} {m₂ : Type u₂ → Type v} {m : Type (max u₁ u₂) → Type v}
-  [ULiftableFrom m₁ m] [ULiftableFrom m₂ m] [Monad m₁] [Monad m₂] [Monad m]
-  [SampleableExt m₁ α] [SampleableExt m₂ β] :
+instance Prod.sampleableExt {α : Type u₁} {β : Type u₂}
+    {m₁ : Type u₁ → Type v} {m₂ : Type u₂ → Type v} {m : Type (max u₁ u₂) → Type v}
+    [ULiftable m₁ m] [ULiftable m₂ m] [Monad m₁] [Monad m₂] [Monad m]
+    [SampleableExt m₁ α] [SampleableExt m₂ β] :
     SampleableExt m (α × β) where
   proxy := Prod (proxy _ α) (proxy _ β)
   proxyRepr := inferInstance
@@ -261,6 +261,16 @@ instance List.sampleableExt [SampleableExt m α] : SampleableExt m (List α) whe
   proxy := List (proxy _ α)
   sample := Gen.listOf sample
   interp := List.map interp
+
+instance ULift.sampleableExt {α : Type u₁}
+    {m₁ : Type u₁ → Type v} {m : Type (max u₁ u₂) → Type v}
+    [ULiftable m₁ m] [Monad m₁] [Monad m] [SampleableExt m₁ α] :
+    SampleableExt m (ULift.{u₂} α) where
+  proxy := ULift.{u₂} (proxy m₁ α)
+  proxyRepr := inferInstance
+  shrink := inferInstance
+  sample := ULiftable.up sample
+  interp := ULift.map interp
 
 end Samplers
 
@@ -283,16 +293,28 @@ instance sampleableExt [SampleableExt m α] [Repr α] : SampleableExt m (NoShrin
 
 end NoShrink
 
-
 /--
 Print (at most) 10 samples of a given type to stdout for debugging.
--/
--- Porting note: if `Control.ULiftable` is ported, make use of that here, as in mathlib3,
--- to enable sampling from higher types.
-def printSamples {t : Type} [Repr t] (g : Gen IO t) : IO PUnit := do
-  for i in List.range 10 do
-    IO.println s!"{repr (← g.run i)}"
 
+The generator must live in a monad `m` such that:
+* There is an analogous monad `m₀` in universe 0
+* `m₀` can be lifted to `IO`
+-/
+def printSamples {t : Type v} [Repr t] {m₀}
+    [MonadLiftT m₀ IO] [MonadLiftT (ST IO.RealWorld) m₀] [ULiftable m₀ m] (g : Gen m t) :
+    IO PUnit := do
+  let f : m₀ (List Lean.Format) := ULiftable.down (do
+    let xs ← (List.range 10).mapM g.run
+    pure <| ULift.up (xs.map repr))
+  -- let xsr ← runRand <| ULiftable.down <| (do
+  --   let xs ← (List.range 10).mapM fun i => ULift.up (g.run ⟨i⟩)
+  --   pure <| Ulift.up (xs.map repr))
+  --     -- let f : Rand m (ULift.{v} Lean.Format) := do return ⟨repr (← g ⟨i⟩)⟩
+  --     -- let f : Rand m' Lean.Format := ULiftable.down f
+      -- let ⟨s⟩ ← ULiftable.up (do repr (← g.run i))
+  let xsr ← f
+  for x in xsr do
+    IO.println x
 open Lean Meta Qq
 
 /-- Create a `Gen IO α` expression from the argument of `#sample` -/
@@ -366,7 +388,23 @@ instance : LawfulFunctor (EStateM ε IO.RealWorld) where
 
 instance : LawfulFunctor IO := inferInstanceAs <| LawfulFunctor (EStateM _ IO.RealWorld)
 
-example : SampleableExt IO (ℕ × ℕ) := Prod.sampleableExt
+@[pp_with_univ]
+abbrev ULiftId.{u1,v1} (α : Type v1) := Id (ULift.{u1} α)
+
+instance : Monad ULiftId where
+  pure a := .up a
+  bind a f := f a.down
+
+#check IO
+
+instance : LawfulMonad ULiftId := .mk' _ (fun _ => rfl) (fun _ _ => rfl) (fun _ _ _ => rfl)
+
+instance : ULiftable ULiftId ULiftId := sorry
+
+instance : ULiftable ULiftId.{u} ULiftId.{u} := sorry
+
+example : SampleableExt.{1} ULiftId.{max 0 1} ( Nat × ULift.{1} Nat) := Prod.sampleableExt
+  -- @Prod.sampleableExt Nat ( ULift.{1} Nat) (ULiftId) Id ULiftId _ _ _ _ _ _ _
 
 #sample Nat × Nat
 end SlimCheck

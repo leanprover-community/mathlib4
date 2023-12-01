@@ -132,10 +132,10 @@ def prodOf {α : Type u₁} {β : Type u₂}
 
 end Gen
 
-variable {m : Type _ → Type _} [Monad m] [MonadLiftT (ST IO.RealWorld) m]
+variable {m : Type* → Type*} {m₀} [ULiftable m₀ m] [Monad m] [MonadLiftT (ST IO.RealWorld) m₀]
 
 /-- Execute a `Gen` inside the monad using `size` as the example size-/
 def Gen.run (x : Gen m α) (size : Nat) : m α :=
-  runRand $ ReaderT.run x ⟨size⟩
+  runRand $ show Rand m α from ReaderT.run x ⟨size⟩
 
 end SlimCheck

@@ -11,6 +11,7 @@ import Mathlib.Control.ULiftable
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Order.ULift
+import Mathlib.Logic.Equiv.Functor
 
 #align_import control.random from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
 
@@ -143,7 +144,8 @@ end Random
 
 open IO
 
-variable {m : Type _ → Type _} [Monad m] [MonadLiftT (ST RealWorld) m]
+variable {m : Type* → Type*} {m₀ : Type → Type}
+variable [Monad m] [MonadLiftT (ST RealWorld) m₀] [ULiftable m₀ m]
 
 /-- Computes a `Rand α` using the global `stdGenRef` as RNG.
     Note that:
@@ -153,13 +155,15 @@ variable {m : Type _ → Type _} [Monad m] [MonadLiftT (ST RealWorld) m]
       at the same time will get the exact same generator.
 -/
 def runRand (cmd : Rand m α) : m α := do
-  let stdGen ← stdGenRef.get
-  let rng := ULift.up stdGen
-  let (res, new) ← StateT.run cmd rng
-  stdGenRef.set new.down
+  let stdGen ← ULiftable.up stdGenRef.get
+  let (res, new) ← StateT.run cmd stdGen
+  let _ ← ULiftable.up (stdGenRef.set new.down)
   pure res
 
-instance : MonadLift (Rand m) m where
+instance (f : Type u₀ → Type u₁) [Monad f] [LawfulFunctor f] : ULiftable f f where
+  congr e := Functor.mapEquiv _ e
+
+instance [LawfulMonad m] : MonadLift (Rand m) m where
   monadLift := runRand
 
 def runRandWith (seed : Nat) (cmd : Rand m α) : m α := do

@@ -118,7 +118,8 @@ def List.toFinmap' (xs : List (α × β)) : List (Σ _ : α, β) :=
 section
 
 universe ua ub
-variable [SampleableExt.{_,u} α] [SampleableExt.{_,ub} β]
+variable {ma : Type* → Type ua} {mb : Type* → Type ub}
+variable [SampleableExt.{_,ua} ma α] [SampleableExt.{_,ub} mb β]
 
 -- porting note: removed, there is no `sizeof` in the new `Sampleable`
 
@@ -141,15 +142,19 @@ def shrink {α β} [DecidableEq α] [Shrinkable α] [Shrinkable β] :
 
 variable [Repr α]
 
-instance Pi.sampleableExt : SampleableExt (α → β) where
-  proxy := TotalFunction α (SampleableExt.proxy β)
+instance Pi.sampleableExt {m} [Monad m] [ULiftableFrom ma m] [ULiftableFrom mb m] :
+    SampleableExt m (α → β) where
+  proxy := TotalFunction α (SampleableExt.proxy mb β)
   interp f := SampleableExt.interp ∘ f.apply
   sample := do
-    let xs : List (_ × _) ← (SampleableExt.sample (α := List (α × β)))
-    let ⟨x⟩ ← (ULiftable.up <|
-      SampleableExt.sample : Gen (ULift.{max u ub} (SampleableExt.proxy β)))
-    pure <| TotalFunction.withDefault (List.toFinmap' <| xs.map <|
-      Prod.map SampleableExt.interp id) x
+    let xs : SampleableExt m (α := α × β) := Prod.sampleableExt
+    let xs : Gen m _ := SampleableExt.sample (α := List (α × β))
+    sorry
+    -- let xs : List (_ × _) ← (SampleableExt.sample (α := List (α × β)))
+    -- let ⟨x⟩ ← (ULiftable.up <|
+    --   SampleableExt.sample : Gen (ULift.{max u ub} (SampleableExt.proxy β)))
+    -- pure <| TotalFunction.withDefault (List.toFinmap' <| xs.map <|
+    --   Prod.map SampleableExt.interp id) x
   -- note: no way of shrinking the domain without an inverse to `interp`
   shrink := { shrink := letI : Shrinkable α := {}; TotalFunction.shrink }
 #align slim_check.total_function.pi.sampleable_ext SlimCheck.TotalFunction.Pi.sampleableExt
@@ -201,7 +206,7 @@ def applyFinsupp (tf : TotalFunction α β) : α →₀ β where
       · simp
 #align slim_check.total_function.apply_finsupp SlimCheck.TotalFunction.applyFinsupp
 
-variable [SampleableExt α] [SampleableExt β] [Repr α]
+variable [SampleableExt ma α] [SampleableExt β] [Repr α]
 
 instance Finsupp.sampleableExt : SampleableExt (α →₀ β) where
   proxy := TotalFunction α (SampleableExt.proxy β)

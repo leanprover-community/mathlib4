@@ -42,14 +42,15 @@ variable {s : Type u₀} {s' : Type u₁} {r r' w w' : Type*}
 /-- Given a universe polymorphic type family `M.{u} : Type u₁ → Type
 u₂`, this class convert between instantiations, from
 `M.{u} : Type u₁ → Type u₂` to `M.{v} : Type v₁ → Type v₂` and back -/
-class ULiftable (f : Type u₀ → Type u₁) (g : Type v₀ → Type v₁) where
+@[pp_with_univ]
+class ULiftable (f : outParam <| Type u₀ → Type u₁) (g : Type v₀ → Type v₁) where
   congr {α β} : α ≃ β → f α ≃ g β
 #align uliftable ULiftable
 
 namespace ULiftable
 
-instance symm (f : Type u₀ → Type u₁) (g : Type v₀ → Type v₁) [ULiftable f g] : ULiftable g f where
-  congr e := (ULiftable.congr e.symm).symm
+-- instance symm (f : Type u₀ → Type u₁) (g : Type v₀ → Type v₁) [ULiftable f g] : ULiftable g f where
+--   congr e := (ULiftable.congr e.symm).symm
 
 /-- The most common practical use `ULiftable` (together with `down`), this function takes
 `x : M.{u} α` and lifts it to `M.{max u v} (ULift.{v} α)` -/
