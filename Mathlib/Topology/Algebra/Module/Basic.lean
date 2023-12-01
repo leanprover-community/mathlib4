@@ -942,9 +942,9 @@ instance applySMulCommClass' : SMulCommClass (M₁ →L[R₁] M₁) R₁ M₁ wh
   smul_comm := ContinuousLinearMap.map_smul
 #align continuous_linear_map.apply_smul_comm_class' ContinuousLinearMap.applySMulCommClass'
 
-instance continuousConstSMul : ContinuousConstSMul (M₁ →L[R₁] M₁) M₁ :=
+instance continuousConstSMul_apply : ContinuousConstSMul (M₁ →L[R₁] M₁) M₁ :=
   ⟨ContinuousLinearMap.continuous⟩
-#align continuous_linear_map.has_continuous_const_smul ContinuousLinearMap.continuousConstSMul
+#align continuous_linear_map.has_continuous_const_smul ContinuousLinearMap.continuousConstSMul_apply
 
 end ApplyAction
 
