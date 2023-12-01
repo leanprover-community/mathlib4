@@ -262,6 +262,15 @@ lemma SmoothSupportedOn.hasCompactSupport (f : SmoothSupportedOn ℝ (EuclideanS
     HasCompactSupport f :=
   HasCompactSupport.of_support_subset_isCompact (isCompact_closedBall 0 1) (support_subset f)
 
+theorem SmoothSupportedOn.continuous
+    (f : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) : Continuous f :=
+  ContDiff.continuous <| SmoothSupportedOn.contDiff _
+
+theorem SmoothSupportedOn.integrable
+    (f : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
+    Integrable f :=
+  Continuous.integrable_of_hasCompactSupport (continuous _) (hasCompactSupport _)
+
 theorem SmoothSupportedOn.integrable_eval_mul (p : MvPolynomial ι ℝ)
     (f : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
     Integrable fun (x : EuclideanSpace ℝ ι) ↦ (eval x) p • f x := by
@@ -317,8 +326,18 @@ lemma hairer2 (N : ℕ) (ι : Type*) [Fintype ι] :
   classical
   obtain ⟨f, hf, h2f⟩ := step ι
   obtain ⟨ρ, hρ, h2ρ⟩ := exists_affineSpan_zero (nonConstantTotalDegreeLE ℝ ι N) L f hf
-  have h3ρ : ∫ x, ρ x = 1
-  · sorry
+  have h3ρ : ∫ x, ρ x = 1 := by
+    apply affineSpan_induction hρ
+    · rintro x ⟨n, rfl⟩
+      exact h2f n
+    · intro c u v w hu hv hw
+      change ∫ (x : EuclideanSpace ℝ ι), c • (u x - v x) + w x = 1
+      rw [integral_add, integral_smul, integral_sub, hu, hv, hw]
+      · simp
+      · exact SmoothSupportedOn.integrable _
+      · exact SmoothSupportedOn.integrable _
+      · exact ((SmoothSupportedOn.integrable _).sub (SmoothSupportedOn.integrable _)).smul c
+      · exact SmoothSupportedOn.integrable _
   refine ⟨ρ, ?_, ?_, ?_⟩
   · refine closure_minimal ?_ isClosed_ball
     refine support_subset_of_mem_affineSpan ℝ hρ |>.trans ?_
