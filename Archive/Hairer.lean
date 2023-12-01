@@ -16,8 +16,8 @@ variable {E E' F  : Type*}
   [AddCommGroup F] [Module 𝕜 F]
 
 lemma exists_affineSpan_zero {ι'} (s : Submodule 𝕜 F) [FiniteDimensional 𝕜 s] [Infinite ι']
-  (L : F →ₗ[𝕜] E →ₗ[𝕜] 𝕜) (x : ι' → E) (hx : LinearIndependent 𝕜 x) :
-  ∃ y ∈ affineSpan 𝕜 (range x), ∀ i ∈ s, L i y = 0 := sorry
+    (L : F →ₗ[𝕜] E →ₗ[𝕜] 𝕜) (x : ι' → E) (hx : LinearIndependent 𝕜 x) :
+    ∃ y ∈ affineSpan 𝕜 (range x), ∀ i ∈ s, L i y = 0 := sorry
 
 variable (𝕜) in
 def nonConstantTotalDegreeLE (ι : Type*) (N : ℕ) : Submodule 𝕜 (MvPolynomial ι 𝕜) where
@@ -326,6 +326,9 @@ lemma finite_stuff [Finite σ] (N : ℕ) : {s : σ →₀ ℕ | s.sum (fun _ e �
   rw [← AddEquiv.coe_toEquiv, Set.mem_image_equiv]
   simp
 
+instance [Finite σ] : Module.Finite R (restrictTotalDegree σ R n) := by
+  rw [Module.finite_def, fg_top, restrictTotalDegree_eq_span]
+  exact Submodule.fg_span ((finite_stuff _).image _)
 
 lemma totalDegree_le_of_support_subset (p q : MvPolynomial σ ℝ) (h : p.support ⊆ q.support) :
     totalDegree p ≤ totalDegree q :=
@@ -353,10 +356,10 @@ variable {K V V' ι : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGro
    {B : V' →ₗ[K] Dual K V} {m : ι → V'}
 
 lemma surj_of_inj (hB : Function.Injective B) [FiniteDimensional K V'] :
-    Function.Surjective (B.dualMap.comp (Module.Dual.eval K V)) := by
+    Function.Surjective B.flip := by
   rw [← LinearMap.range_eq_top]
   apply Submodule.eq_top_of_finrank_eq
-  set W : Subspace K _ := LinearMap.range (B.dualMap.comp (Module.Dual.eval K V))
+  set W : Subspace K _ := LinearMap.range B.flip
   have := W.finrank_add_finrank_dualCoannihilator_eq
   rw [Subspace.dual_finrank_eq, ← this, eq_comm, add_right_eq_self, finrank_eq_zero, eq_bot_iff]
   intro x hx
@@ -365,7 +368,7 @@ lemma surj_of_inj (hB : Function.Injective B) [FiniteDimensional K V'] :
   rw [Submodule.mem_dualCoannihilator] at hx
   simpa using hx _ (LinearMap.mem_range_self _ v)
 
-lemma exists_predual {μ : ι → Dual K V} (hμ : LinearIndependent K μ) {s : Set ι} (hs : s.Finite)
+/- lemma exists_predual {μ : ι → Dual K V} (hμ : LinearIndependent K μ) {s : Set ι} (hs : s.Finite)
     (i : ι) : ∃ v : V, μ i v = 1 ∧ ∀ j ∈ s, j ≠ i → μ j v = 0 := by
   have hμ := hμ.comp (_ : ↑(s ∪ {i}) → ι) Subtype.val_injective
   rw [linearIndependent_iff_injective_total] at hμ
@@ -420,7 +423,7 @@ lemma foo {s : Set ι} (hs : s.Finite) (μ : V' →ₗ[K] K) :
   · intros x y hx hy
     simp [map_add, hx, hy, mul_add, ← Finset.sum_add_distrib]
   · intros a v' hv'
-    simp only [SMulHomClass.map_smul, hv', map_sum, smul_eq_mul, Finset.mul_sum, LinearMap.smul_apply]
+    simp only [SMulHomClass.map_smul, hv', map_sum, smul_eq_mul, Finset.mul_sum, LinearMap.smul_apply] -/
 
 end missing_linear_algebra
 
@@ -499,10 +502,8 @@ def L :
       rfl
 
 open Topology
-lemma indep (ι : Type*) [Fintype ι] : LinearIndependent ℝ (L ∘ fun c : ι →₀ ℕ ↦ monomial c 1) := by
-  rw [L.linearIndependent_iff]
-  · sorry
-  rw [LinearMap.ker_eq_bot']
+lemma inj_L (ι : Type*) [Fintype ι] : Injective (L (ι := ι)) := by
+  rw [injective_iff_map_eq_zero]
   intro p hp
   suffices : ∀ᵐ x : EuclideanSpace ℝ ι, x ∈ closedBall 0 1 → eval x p = 0
   · sorry -- simp_rw [MvPolynomial.funext_iff, map_zero]
@@ -523,9 +524,11 @@ lemma hairer (N : ℕ) (ι : Type*) [Fintype ι] :
     ∃ (ρ : EuclideanSpace ℝ ι → ℝ), tsupport ρ ⊆ closedBall 0 1 ∧ ContDiff ℝ ⊤ ρ ∧
     ∀ (p : MvPolynomial ι ℝ), p.totalDegree ≤ N →
     ∫ x : EuclideanSpace ℝ ι, eval x p • ρ x = eval 0 p := by
-  simp_rw [← mem_restrictTotalDegree, restrictTotalDegree_eq_span]
-  obtain ⟨⟨φ, supp_φ, diff_φ⟩, hφ⟩ := foo (indep ι) (finite_stuff _) (evalAtₗ 0)
-  exact ⟨φ, supp_φ, diff_φ, fun P hP ↦ (hφ P hP).symm⟩
+  have := (inj_L ι).comp (restrictTotalDegree ι ℝ N).injective_subtype
+  rw [← LinearMap.coe_comp] at this
+  obtain ⟨⟨φ, supφ, difφ⟩, hφ⟩ := surj_of_inj this ((evalAtₗ 0).comp <| Submodule.subtype _)
+  refine ⟨φ, supφ, difφ, fun P hP ↦ ?_⟩
+  exact FunLike.congr_fun hφ ⟨P, (mem_restrictTotalDegree ι N P).mpr hP⟩
 
 lemma hairer2 (N : ℕ) (ι : Type*) [Fintype ι] :
     ∃ (ρ : EuclideanSpace ℝ ι → ℝ), tsupport ρ ⊆ closedBall 0 1 ∧ ContDiff ℝ ⊤ ρ ∧
