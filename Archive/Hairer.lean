@@ -346,13 +346,23 @@ def L :
       simp only [← evalₗ_apply, SMulHomClass.map_smul, ← smul_assoc]
       rfl
 
+open Topology
 lemma indep (ι : Type*) [Fintype ι] : LinearIndependent ℝ (L ∘ fun c : ι →₀ ℕ ↦ monomial c 1) := by
   rw [L.linearIndependent_iff]
   · sorry
   rw [LinearMap.ker_eq_bot']
   intro p hp
+  suffices : ∀ x ∈ ball 0 1, eval x p = 0
+  · sorry -- simp_rw [MvPolynomial.funext_iff, map_zero]
+  intro x₀ hx₀
+  by_contra hpx₀
+  have h2p : Continuous (eval · p) := continuous_eval p
+  have h3x₀ : ∀ᶠ x in 𝓝 x₀, eval x p ≠ 0 := h2p.continuousAt.eventually_ne hpx₀
+  have h4x₀ : ∀ᶠ x in 𝓝 x₀, eval x p ≠ 0 ∧ x ∈ ball 0 1 := h3x₀.and (isOpen_ball.mem_nhds hx₀)
+  rw [Metric.eventually_nhds_iff] at h4x₀
+  obtain ⟨ε, hε, h2ε⟩ := h4x₀
   sorry
-
+#check Polynomial.eq_zero_of_infinite_isRoot
 
 lemma hairer (N : ℕ) (ι : Type*) [Fintype ι] :
     ∃ (ρ : EuclideanSpace ℝ ι → ℝ), tsupport ρ ⊆ closedBall 0 1 ∧ ContDiff ℝ ⊤ ρ ∧
