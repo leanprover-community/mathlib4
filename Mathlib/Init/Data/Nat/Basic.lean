@@ -39,4 +39,9 @@ protected theorem bit1_ne_zero (n : ℕ) : bit1 n ≠ 0 :=
   show succ (n + n) ≠ 0 from fun h => Nat.noConfusion h
 #align nat.bit1_ne_zero Nat.bit1_ne_zero
 
+/-- `Nat.rec` but with `0` and `+1` instead of `.zero` and `.succ` -/
+@[eliminator]
+protected def rec'.{u} {motive : ℕ → Sort u} (zero : motive 0) (succ : (n : ℕ) → motive n → motive (n + 1)) (t : ℕ) :
+  motive t := @Nat.rec.{u} motive zero succ t
+
 end Nat
