@@ -133,15 +133,18 @@ scoped[Manifold] notation "∞" => (⊤ : ℕ∞)
 
 /-! ### Models with corners. -/
 
+section ModelWithCorners
+
+variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+  (E : Type*) [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  (H : Type*) [TopologicalSpace H]
 
 /-- A structure containing informations on the way a space `H` embeds in a
 model vector space `E` over the field `𝕜`. This is all what is needed to
 define a smooth manifold with model space `H`, and model vector space `E`.
 -/
 @[ext] -- porting note: was nolint has_nonempty_instance
-structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] extends
-    LocalEquiv H E where
+structure ModelWithCorners extends LocalEquiv H E where
   source_eq : source = univ
   unique_diff' : UniqueDiffOn 𝕜 toLocalEquiv.target
   continuous_toFun : Continuous toFun := by continuity
@@ -151,8 +154,7 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
 
 /-- A vector space is a model with corners. -/
-def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] : ModelWithCorners 𝕜 E E where
+def modelWithCornersSelf : ModelWithCorners 𝕜 E E where
   toLocalEquiv := LocalEquiv.refl E
   source_eq := rfl
   unique_diff' := uniqueDiffOn_univ
@@ -160,13 +162,16 @@ def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type
   continuous_invFun := continuous_id
 #align model_with_corners_self modelWithCornersSelf
 
+end ModelWithCorners
+
 scoped[Manifold] notation "𝓘(" 𝕜 ", " E ")" => modelWithCornersSelf 𝕜 E
 scoped[Manifold] notation "𝓘(" 𝕜 ")" => modelWithCornersSelf 𝕜 𝕜
 
 section
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
 
 namespace ModelWithCorners
 
@@ -182,17 +187,15 @@ protected def symm : LocalEquiv E H :=
   I.toLocalEquiv.symm
 #align model_with_corners.symm ModelWithCorners.symm
 
+variable (𝕜 E H) in
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
-def Simps.apply (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*) [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) : H → E :=
-  I
+def Simps.apply : H → E := I
 #align model_with_corners.simps.apply ModelWithCorners.Simps.apply
 
+variable (𝕜 E H) in
 /-- See Note [custom simps projection] -/
-def Simps.symm_apply (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*) [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) : E → H :=
-  I.symm
+def Simps.symm_apply : E → H := I.symm
 #align model_with_corners.simps.symm_apply ModelWithCorners.Simps.symm_apply
 
 initialize_simps_projections ModelWithCorners (toFun → apply, invFun → symm_apply)
@@ -396,17 +399,18 @@ end
 
 section ModelWithCornersProd
 
+variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
+
 /-- Given two model_with_corners `I` on `(E, H)` and `I'` on `(E', H')`, we define the model with
 corners `I.prod I'` on `(E × E', ModelProd H H')`. This appears in particular for the manifold
 structure on the tangent bundle to a manifold modelled on `(E, H)`: it will be modelled on
 `(E × E, H × E)`. See note [Manifold type tags] for explanation about `ModelProd H H'`
 vs `H × H'`. -/
 @[simps (config := .lemmasOnly)]
-def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-    {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H') :
-    ModelWithCorners 𝕜 (E × E') (ModelProd H H') :=
+def ModelWithCorners.prod : ModelWithCorners 𝕜 (E × E') (ModelProd H H') :=
   { I.toLocalEquiv.prod I'.toLocalEquiv with
     toFun := fun x => (I x.1, I' x.2)
     invFun := fun x => (I.symm x.1, I'.symm x.2)
@@ -420,7 +424,7 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
 /-- Given a finite family of `ModelWithCorners` `I i` on `(E i, H i)`, we define the model with
 corners `pi I` on `(Π i, E i, ModelPi H)`. See note [Manifold type tags] for explanation about
 `ModelPi H`. -/
-def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Type v} [Fintype ι]
+def ModelWithCorners.pi {ι : Type v} [Fintype ι]
     {E : ι → Type w} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {H : ι → Type u'}
     [∀ i, TopologicalSpace (H i)] (I : ∀ i, ModelWithCorners 𝕜 (E i) (H i)) :
     ModelWithCorners 𝕜 (∀ i, E i) (ModelPi H) where
@@ -434,18 +438,18 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
 /-- Special case of product model with corners, which is trivial on the second factor. This shows up
 as the model to tangent bundles. -/
 @[reducible]
-def ModelWithCorners.tangent {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) : ModelWithCorners 𝕜 (E × E) (ModelProd H E) :=
+def ModelWithCorners.tangent : ModelWithCorners 𝕜 (E × E) (ModelProd H E) :=
   I.prod 𝓘(𝕜, E)
 #align model_with_corners.tangent ModelWithCorners.tangent
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {F : Type*}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
-  {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H'] {G : Type*}
-  [TopologicalSpace G] {G' : Type*} [TopologicalSpace G'] {I : ModelWithCorners 𝕜 E H}
-  {J : ModelWithCorners 𝕜 F G}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H']
+  {G : Type*} [TopologicalSpace G] {G' : Type*} [TopologicalSpace G']
+  {I : ModelWithCorners 𝕜 E H} {J : ModelWithCorners 𝕜 F G}
 
 @[simp, mfld_simps]
 theorem modelWithCorners_prod_toLocalEquiv :
@@ -811,25 +815,22 @@ section SmoothManifoldWithCorners
 
 /-! ### Smooth manifolds with corners -/
 
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  (M : Type*) [TopologicalSpace M] [CS : ChartedSpace H M]
 
 /-- Typeclass defining smooth manifolds with corners with respect to a model with corners, over a
 field `𝕜` and with infinite smoothness to simplify typeclass search and statements later on. -/
-class SmoothManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M] extends
-    HasGroupoid M (contDiffGroupoid ∞ I) : Prop
+class SmoothManifoldWithCorners extends HasGroupoid M (contDiffGroupoid ∞ I) : Prop
 #align smooth_manifold_with_corners SmoothManifoldWithCorners
 
-theorem SmoothManifoldWithCorners.mk' {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+theorem SmoothManifoldWithCorners.mk'
     [gr : HasGroupoid M (contDiffGroupoid ∞ I)] : SmoothManifoldWithCorners I M :=
   { gr with }
 #align smooth_manifold_with_corners.mk' SmoothManifoldWithCorners.mk'
 
-theorem smoothManifoldWithCorners_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+theorem smoothManifoldWithCorners_of_contDiffOn
     (h : ∀ e e' : LocalHomeomorph M H, e ∈ atlas H M → e' ∈ atlas H M →
       ContDiffOn 𝕜 ⊤ (I ∘ e.symm ≫ₕ e' ∘ I.symm) (I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I)) :
     SmoothManifoldWithCorners I M where
@@ -838,10 +839,9 @@ theorem smoothManifoldWithCorners_of_contDiffOn {𝕜 : Type*} [NontriviallyNorm
     apply StructureGroupoid.compatible
 #align smooth_manifold_with_corners_of_cont_diff_on smoothManifoldWithCorners_of_contDiffOn
 
+variable {I} in
 /-- For any model with corners, the model space is a smooth manifold -/
-instance model_space_smooth {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    {I : ModelWithCorners 𝕜 E H} : SmoothManifoldWithCorners I H :=
+instance model_space_smooth : SmoothManifoldWithCorners I H :=
   { hasGroupoid_model_space _ _ with }
 #align model_space_smooth model_space_smooth
 
@@ -852,9 +852,13 @@ namespace SmoothManifoldWithCorners
 /- We restate in the namespace `SmoothManifoldWithCorners` some lemmas that hold for general
 charted space with a structure groupoid, avoiding the need to specify the groupoid
 `contDiffGroupoid ∞ I` explicitly. -/
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) (M : Type*)
-  [TopologicalSpace M] [ChartedSpace H M]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  (M : Type*) [TopologicalSpace M] [CS : ChartedSpace H M] [SmoothManifoldWithCorners I M]
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+  (M' : Type*) [TopologicalSpace M'] [ChartedSpace H' M'] [SmoothManifoldWithCorners I' M']
 
 /-- The maximal atlas of `M` for the smooth manifold with corners structure corresponding to the
 model with corners `I`. -/
@@ -864,12 +868,11 @@ def maximalAtlas :=
 
 variable {M}
 
-theorem subset_maximalAtlas [SmoothManifoldWithCorners I M] : atlas H M ⊆ maximalAtlas I M :=
+theorem subset_maximalAtlas : atlas H M ⊆ maximalAtlas I M :=
   StructureGroupoid.subset_maximalAtlas _
 #align smooth_manifold_with_corners.subset_maximal_atlas SmoothManifoldWithCorners.subset_maximalAtlas
 
-theorem chart_mem_maximalAtlas [SmoothManifoldWithCorners I M] (x : M) :
-    chartAt H x ∈ maximalAtlas I M :=
+theorem chart_mem_maximalAtlas (x : M) : chartAt H x ∈ maximalAtlas I M :=
   StructureGroupoid.chart_mem_maximalAtlas _ x
 #align smooth_manifold_with_corners.chart_mem_maximal_atlas SmoothManifoldWithCorners.chart_mem_maximalAtlas
 
@@ -880,13 +883,9 @@ theorem compatible_of_mem_maximalAtlas {e e' : LocalHomeomorph M H} (he : e ∈ 
   StructureGroupoid.compatible_of_mem_maximalAtlas he he'
 #align smooth_manifold_with_corners.compatible_of_mem_maximal_atlas SmoothManifoldWithCorners.compatible_of_mem_maximalAtlas
 
+variable (M) in
 /-- The product of two smooth manifolds with corners is naturally a smooth manifold with corners. -/
-instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
-    [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
-    {I' : ModelWithCorners 𝕜 E' H'} (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    [SmoothManifoldWithCorners I M] (M' : Type*) [TopologicalSpace M'] [ChartedSpace H' M']
-    [SmoothManifoldWithCorners I' M'] : SmoothManifoldWithCorners (I.prod I') (M × M') where
+instance prod : SmoothManifoldWithCorners (I.prod I') (M × M') where
   compatible := by
     rintro f g ⟨f1, f2, hf1, hf2, rfl⟩ ⟨g1, g2, hg1, hg2, rfl⟩
     rw [LocalHomeomorph.prod_symm, LocalHomeomorph.prod_trans]
@@ -897,22 +896,27 @@ instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedA
 
 end SmoothManifoldWithCorners
 
-theorem LocalHomeomorph.singleton_smoothManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] (e : LocalHomeomorph M H)
-    (h : e.source = Set.univ) :
-    @SmoothManifoldWithCorners 𝕜 _ E _ _ H _ I M _ (e.singletonChartedSpace h) :=
-  @SmoothManifoldWithCorners.mk' _ _ _ _ _ _ _ _ _ _ (id _) <|
-    e.singleton_hasGroupoid h (contDiffGroupoid ∞ I)
+section singleton
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  {M : Type*} [TopologicalSpace M]
+
+theorem LocalHomeomorph.singleton_smoothManifoldWithCorners
+    (e : LocalHomeomorph M H) (h : e.source = Set.univ) :
+    SmoothManifoldWithCorners I (M := M) (CS := e.singletonChartedSpace h) :=
+  SmoothManifoldWithCorners.mk' (CS := id _)
+    (gr := e.singleton_hasGroupoid h (contDiffGroupoid ∞ I))
 #align local_homeomorph.singleton_smooth_manifold_with_corners LocalHomeomorph.singleton_smoothManifoldWithCorners
 
-theorem OpenEmbedding.singleton_smoothManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [Nonempty M] {f : M → H}
-    (h : OpenEmbedding f) :
-    @SmoothManifoldWithCorners 𝕜 _ E _ _ H _ I M _ h.singletonChartedSpace :=
+theorem OpenEmbedding.singleton_smoothManifoldWithCorners
+    [Nonempty M] {f : M → H} (h : OpenEmbedding f) :
+    SmoothManifoldWithCorners I (M := M) (CS := h.singletonChartedSpace) :=
   (h.toLocalHomeomorph f).singleton_smoothManifoldWithCorners I (by simp)
 #align open_embedding.singleton_smooth_manifold_with_corners OpenEmbedding.singleton_smoothManifoldWithCorners
+
+end singleton
 
 namespace TopologicalSpace.Opens
 
