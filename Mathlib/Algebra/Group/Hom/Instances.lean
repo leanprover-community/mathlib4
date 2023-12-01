@@ -345,7 +345,7 @@ def AddMonoid.End.mulRight : R →+ AddMonoid.End R :=
 #align add_monoid.End.mul_right AddMonoid.End.mulRight
 #align add_monoid.End.mul_right_apply_apply AddMonoid.End.mulRight_apply_apply
 
-lemma AddMonoid.End.commute_mulRight_eq_mulLeft (a : R) (h : ∀ (b : R), Commute a b) :
+lemma AddMonoid.End.mulRight_eq_mulLeft_of_commute (a : R) (h : ∀ (b : R), Commute a b) :
     mulRight a = mulLeft a :=
   AddMonoidHom.ext fun _ ↦ (h _).eq.symm
 
