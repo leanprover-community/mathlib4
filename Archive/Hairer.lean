@@ -100,7 +100,7 @@ open SmoothSupportedOn
 
 noncomputable section real
 
-lemma step (ι) [Fintype ι] :
+lemma step (ι) [Fintype ι] [Nonempty ι] :
     ∃ f : ℕ → SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1),
     LinearIndependent ℝ f ∧ ∀ n, ∫ x, f n x = 1 := by
   obtain ⟨s, r, hs, hr, h2s⟩ : ∃ (s : ℕ → EuclideanSpace ℝ ι) (r : ℕ → ℝ),
@@ -113,8 +113,14 @@ lemma step (ι) [Fintype ι] :
   refine ⟨f2, ?_, fun n ↦ (f1 n).integral_normed⟩
   sorry
 
-end real
+instance {ι : Type*} [IsEmpty ι] : Subsingleton (EuclideanSpace ℝ ι) :=
+  inferInstanceAs (Subsingleton (ι → ℝ ))
 
+lemma volume_eq_dirac (ι : Type*) [Fintype ι] [IsEmpty ι] :
+    (volume : Measure (EuclideanSpace ℝ ι)) = Measure.dirac 0 := by
+  sorry
+
+end real
 
 section missing_polynomial
 open MvPolynomial Submodule
@@ -153,6 +159,23 @@ lemma finite_stuff [Finite σ] (N : ℕ) : {s : σ →₀ ℕ | s.sum (fun _ e �
   ext x
   rw [← AddEquiv.coe_toEquiv, Set.mem_image_equiv]
   simp
+
+
+lemma totalDegree_le_of_support_subset (p q : MvPolynomial σ ℝ) (h : p.support ⊆ q.support) :
+    totalDegree p ≤ totalDegree q :=
+  Finset.sup_mono h
+
+/- Move this attribute to the right file! -/
+attribute [simp] MvPolynomial.coeff_zero_C
+
+lemma totalDegree_sub_C_zero_le (p : MvPolynomial σ ℝ) :
+    totalDegree (p - C (eval 0 p)) ≤ totalDegree p := by
+  classical
+  apply totalDegree_le_of_support_subset
+  intro i hi
+  rcases eq_or_ne i 0 with rfl|h'i
+  · simp [constantCoeff] at hi
+  · simpa [h'i.symm] using hi
 
 end missing_polynomial
 
@@ -323,7 +346,14 @@ lemma hairer2 (N : ℕ) (ι : Type*) [Fintype ι] :
     ∃ (ρ : EuclideanSpace ℝ ι → ℝ), tsupport ρ ⊆ closedBall 0 1 ∧ ContDiff ℝ ⊤ ρ ∧
     ∀ (p : MvPolynomial ι ℝ), p.totalDegree ≤ N →
     ∫ x : EuclideanSpace ℝ ι, eval x p • ρ x = eval 0 p := by
-  classical
+  -- deal first with the stupid case where the index set is empty, as in this case one can't find
+  -- a sequence of linearly independent functions, but the function `ρ = 1` will do
+  rcases isEmpty_or_nonempty ι with hι|hι
+  · refine ⟨fun _x ↦ 1, ?_, contDiff_const, ?_⟩
+    · intro x _hx
+      rw [show x = 0 from Subsingleton.elim _ _]
+      exact mem_closedBall_self zero_le_one
+    · simp [volume_eq_dirac ι]
   obtain ⟨f, hf, h2f⟩ := step ι
   obtain ⟨ρ, hρ, h2ρ⟩ := exists_affineSpan_zero (nonConstantTotalDegreeLE ℝ ι N) L f hf
   have h3ρ : ∫ x, ρ x = 1 := by
@@ -347,14 +377,11 @@ lemma hairer2 (N : ℕ) (ι : Type*) [Fintype ι] :
     simp only [mem_range, SmoothSupportedOn.contDiff, forall_exists_index, implies_true,
       forall_const, Subtype.forall]
   · intro p hp
-    obtain ⟨q, r, hq, rfl⟩ : ∃ q r, constantCoeff q = 0 ∧ p = q + C r
-    · refine ⟨p - C (eval 0 p), eval 0 p, by simp, by ring⟩
-    have h2q : totalDegree q ≤ N
-    · refine Eq.trans_le ?_ hp
-      sorry
-    simp [hq, add_mul]
+    obtain ⟨q, r, hq, rfl, h2q⟩ : ∃ q r, constantCoeff q = 0 ∧ p = q + C r ∧ totalDegree q ≤ N := by
+      refine ⟨p - C (eval 0 p), eval 0 p, by simp, by ring, (totalDegree_sub_C_zero_le p).trans hp⟩
+    simp only [map_add, eval_C, smul_eq_mul, add_mul, eval_zero, hq, constantCoeff_C, zero_add]
     rw [integral_add]
     · simp [integral_mul_left, h3ρ]
       exact h2ρ q ⟨h2q, hq⟩
-    · sorry
-    · sorry
+    · exact SmoothSupportedOn.integrable_eval_mul _ _
+    · exact (SmoothSupportedOn.integrable _).const_mul _
