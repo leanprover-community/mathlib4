@@ -31,16 +31,35 @@ variable {𝕜 ι B F₁ F₂ M : Type*} {E₁ : B → Type*} {E₂ : B → Type
   -- {e₁ e₁' : Trivialization F₁ (π F₁ E₁)}
   -- {e₂ e₂' : Trivialization F₂ (π F₂ E₂)}
 
-instance Bundle.ContinuousLinearMap.vectorPrebundle.isSmooth :
+variable [SmoothVectorBundle F₁ E₁ IB] [SmoothVectorBundle F₂ E₂ IB]
+
+instance Bundle.continuousAlternatingMap.vectorPrebundle.isSmooth :
     (Bundle.continuousAlternatingMap.vectorPrebundle 𝕜 ι F₁ E₁ F₂ E₂).IsSmooth IB where
   exists_smoothCoordChange := by
     rintro _ ⟨e₁, e₂, he₁, he₂, rfl⟩ _ ⟨e₁', e₂', he₁', he₂', rfl⟩
     refine ⟨continuousAlternatingMapCoordChange 𝕜 ι e₁ e₁' e₂ e₂', ?_, ?_⟩
-    · sorry
-    · rintro b hb v
-      simp at hb
-      sorry
+    · have h₃ := smoothOn_coordChangeL IB e₁' e₁
+      have h₄ := smoothOn_coordChangeL IB e₂ e₂'
+      let s (q : (F₁ →L[𝕜] F₁) × (F₂ →L[𝕜] F₂)) :
+          (F₁ →L[𝕜] F₁) × ((F₁ [Λ^ι]→L[𝕜] F₂) →L[𝕜] (F₁ [Λ^ι]→L[𝕜] F₂)) :=
+        (q.1, ContinuousLinearMap.compContinuousAlternatingMapL 𝕜 F₁ F₂ F₂ q.2)
+      have hs : Smooth 𝓘(𝕜, (F₁ →L[𝕜] F₁) × (F₂ →L[𝕜] F₂))
+          𝓘(𝕜, (F₁ →L[𝕜] F₁) × ((F₁ [Λ^ι]→L[𝕜] F₂) →L[𝕜] (F₁ [Λ^ι]→L[𝕜] F₂))) s :=
+        -- smooth_id.prod_map (ContinuousLinearMap.smooth _)
+        sorry
+  --     have' := ((continuous_snd.clm_comp
+  --       ((ContinuousAlternatingMap.compContinuousLinearMapL_continuous 𝕜 ι F₁ F₂).comp
+  --       continuous_fst)).comp hs).comp_continuousOn
+  --       (s := (e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet))) ((h₃.mono ?_).prod (h₄.mono ?_))
+    -- · exact this
+    -- · mfld_set_tac
+    -- · mfld_set_tac
 
-    -- exact ⟨continuousLinearMapCoordChange (RingHom.id 𝕜) e₁ e₁' e₂ e₂',
-    --   smoothOn_continuousLinearMapCoordChange IB,
-    --   continuousLinearMapCoordChange_apply (RingHom.id 𝕜) e₁ e₁' e₂ e₂'⟩
+      sorry
+    · rintro b hb v
+      apply continuousAlternatingMapCoordChange_apply
+      exact hb
+
+instance SmoothVectorBundle.continuousAlternatingMap :
+    SmoothVectorBundle (F₁ [Λ^ι]→L[𝕜] F₂) (Bundle.continuousAlternatingMap 𝕜 ι F₁ E₁ F₂ E₂) IB :=
+  (Bundle.continuousAlternatingMap.vectorPrebundle 𝕜 ι F₁ E₁ F₂ E₂).smoothVectorBundle IB
