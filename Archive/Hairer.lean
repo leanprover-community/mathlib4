@@ -215,7 +215,7 @@ lemma exists_predual {μ : ι → Dual K V} (hμ : LinearIndependent K μ) {s : 
   · simpa using FunLike.congr_fun hv (Finsupp.single ⟨i, .inr rfl⟩ 1)
   · simpa [if_neg hji] using FunLike.congr_fun hv (Finsupp.single ⟨j, .inl hjs⟩ 1)
 
--- missin in mathlib
+-- missing in mathlib
 def LinearIndependent.fintypeIndex
     {K : Type*} {V : Type*} [DivisionRing K] [AddCommGroup V]
     [Module K V] {ι : Type u_1} [FiniteDimensional K V]
@@ -338,7 +338,12 @@ def L :
       rfl
 
 lemma indep (ι : Type*) [Fintype ι] : LinearIndependent ℝ (L ∘ fun c : ι →₀ ℕ ↦ monomial c 1) := by
+  rw [L.linearIndependent_iff]
+  · sorry
+  rw [LinearMap.ker_eq_bot']
+  intro p hp
   sorry
+
 
 lemma hairer (N : ℕ) (ι : Type*) [Fintype ι] :
     ∃ (ρ : EuclideanSpace ℝ ι → ℝ), tsupport ρ ⊆ closedBall 0 1 ∧ ContDiff ℝ ⊤ ρ ∧
