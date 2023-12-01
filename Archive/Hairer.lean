@@ -29,7 +29,8 @@ def nonConstantTotalDegreeLE (ι : Type*) (N : ℕ) : Submodule 𝕜 (MvPolynomi
 instance (ι : Type*) [Finite ι] (N : ℕ) :
   FiniteDimensional 𝕜 (nonConstantTotalDegreeLE 𝕜 ι N) := sorry
 
-lemma affineSpan_subset_span {s : Set E} : (affineSpan 𝕜 s : Set E) ⊆ Submodule.span 𝕜 s := sorry
+lemma affineSpan_subset_span {s : Set E} : (affineSpan 𝕜 s : Set E) ⊆ Submodule.span 𝕜 s := by
+  sorry
 
 variable (𝕜) in
 lemma support_subset_of_mem_span {α β} [Zero β] {s : Set E} {y : E} [FunLike E α (fun _ ↦ β)]
@@ -84,14 +85,18 @@ protected lemma SmoothSupportedOn.contDiff (f : SmoothSupportedOn 𝕜 E F n s) 
     ContDiff 𝕜 n f := f.2.2
 
 variable (𝕜) in
-lemma contDiff_of_mem_span {V} {n : ℕ∞} [AddCommGroup V] [Module 𝕜 V] {s : Set V} {y : V}
-    [FunLike V E (fun _ ↦ F)] (hy : y ∈ Submodule.span 𝕜 s) (hi : ∀ i ∈ s, ContDiff 𝕜 n i) :
+lemma contDiff_of_mem_span {a : Set (SmoothSupportedOn 𝕜 E F n s)}
+    {y : SmoothSupportedOn 𝕜 E F n s}
+    (hy : y ∈ Submodule.span 𝕜 a) (hi : ∀ i ∈ a, ContDiff 𝕜 n i) :
     ContDiff 𝕜 n y := by
-  sorry
+  apply Submodule.span_induction (p := fun (z : SmoothSupportedOn 𝕜 E F n s) ↦ ContDiff 𝕜 n z)
+    hy hi ?_ (fun x y hx hy ↦ hx.add hy) (fun a x hx ↦ hx.const_smul a)
+  change ContDiff 𝕜 n (0 : E → F)
+  exact contDiff_const
 
 variable (𝕜) in
-lemma contDiff_of_mem_affineSpan {V} {n : ℕ∞} [AddCommGroup V] [Module 𝕜 V] {s : Set V} {y : V}
-    [FunLike V E (fun _ ↦ F)] (hy : y ∈ affineSpan 𝕜 s) (hi : ∀ i ∈ s, ContDiff 𝕜 n i) :
+lemma contDiff_of_mem_affineSpan {a : Set (SmoothSupportedOn 𝕜 E F n s)}
+    {y : SmoothSupportedOn 𝕜 E F n s} (hy : y ∈ affineSpan 𝕜 a) (hi : ∀ i ∈ a, ContDiff 𝕜 n i) :
     ContDiff 𝕜 n y :=
   contDiff_of_mem_span 𝕜 (affineSpan_subset_span hy) hi
 
