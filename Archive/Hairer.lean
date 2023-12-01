@@ -46,17 +46,48 @@ section missing_linear_algebra
 
 open Module Submodule BigOperators
 
-variable {K V V' ι : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommMonoid V'] [Module K V']
+-- variable {K V V' ι : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommMonoid V'] [Module K V']
+--    {B : V' →ₗ[K] Dual K V} {m : ι → V'}
+variable {K V V' ι : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup V'] [Module K V']
    {B : V' →ₗ[K] Dual K V} {m : ι → V'}
+
+lemma surj_of_inj (hB : Function.Injective B) [FiniteDimensional K V'] :
+    Function.Surjective (B.dualMap.comp (Module.Dual.eval K V)) := by
+  rw [← LinearMap.range_eq_top]
+  apply Submodule.eq_top_of_finrank_eq
+  set W : Subspace K _ := LinearMap.range (B.dualMap.comp (Module.Dual.eval K V))
+  have := W.finrank_add_finrank_dualCoannihilator_eq
+  rw [Subspace.dual_finrank_eq, ← this, eq_comm, add_right_eq_self, finrank_eq_zero, eq_bot_iff]
+  intro x hx
+  apply hB
+  ext v
+  rw [Submodule.mem_dualCoannihilator] at hx
+  simpa using hx _ (LinearMap.mem_range_self _ v)
+
+lemma exists_predual {μ : ι → Dual K V} (hμ : LinearIndependent K μ) {s : Set ι} (hs : s.Finite)
+    (i : ι) : ∃ v : V, μ i v = 1 ∧ ∀ j ∈ s, j ≠ i → μ j v = 0 := by
+  have hμ := hμ.comp (_ : ↑(s ∪ {i}) → ι) Subtype.val_injective
+  rw [linearIndependent_iff_injective_total] at hμ
+  have : Finite ↑(s ∪ {i}) := (hs.union <| Set.finite_singleton i).to_subtype
+  classical
+  have ⟨v, hv⟩ := surj_of_inj hμ (Finsupp.total _ _ _ fun j ↦ if j = i then 1 else 0)
+  refine ⟨v, ?_, fun j hjs hji ↦ ?_⟩
+  · simpa using FunLike.congr_fun hv (Finsupp.single ⟨i, .inr rfl⟩ 1)
+  · simpa [if_neg hji] using FunLike.congr_fun hv (Finsupp.single ⟨j, .inl hjs⟩ 1)
+
+-- missin in mathlib
+def LinearIndependent.fintypeIndex
+    {K : Type*} {V : Type*} [DivisionRing K] [AddCommGroup V]
+    [Module K V] {ι : Type u_1} [FiniteDimensional K V]
+    {f : ι → V} (hf : LinearIndependent K f) :
+    Fintype ι :=
+  FiniteDimensional.fintypeBasisIndex <| Basis.span hf
 
 lemma exists_predual_of_finite {μ : ι → Dual K V} [FiniteDimensional K V]
     (hμ : LinearIndependent K μ) {s : Set ι} (i : ι) :
     ∃ v : V, μ i v = 1 ∧ ∀ j ∈ s, j ≠ i → μ j v = 0 := by
-sorry
-
-lemma exists_predual {μ : ι → Dual K V} (hμ : LinearIndependent K μ) {s : Set ι} (hs : s.Finite)
-    (i : ι) : ∃ v : V, μ i v = 1 ∧ ∀ j ∈ s, j ≠ i → μ j v = 0 := by
-  sorry
+  let hι := hμ.fintypeIndex
+  exact exists_predual hμ (Set.toFinite s) _
 
 lemma exists_stuff (hm : LinearIndependent K (B ∘ m)) {s : Set ι} (hs : s.Finite) (i : ι) :
     ∃ v : V, B (m i) v = 1 ∧ ∀ j ∈ s , j ≠ i → B (m j) v = 0 :=
