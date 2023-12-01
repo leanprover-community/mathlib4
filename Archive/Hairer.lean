@@ -132,10 +132,29 @@ def L {ι : Type*} [Fintype ι] :
   MvPolynomial ι ℝ →ₗ[ℝ] Dual ℝ (SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) where
     toFun p :=
       { toFun := fun f ↦ ∫ x : EuclideanSpace ℝ ι, eval x p • f x
-        map_add' := sorry
-        map_smul' := sorry }
-    map_add' := sorry
-    map_smul' := sorry
+        map_add' := fun f g ↦ by
+          rw [← integral_add]
+          · simp only [← smul_add]; rfl
+          all_goals sorry
+        map_smul' := fun r f ↦ by
+          rw [← integral_smul]
+          dsimp only [id_eq, RingHom.id_apply]
+          simp only [smul_comm r]
+          rfl }
+    map_add' := fun p₁ p₂ ↦ by
+      ext f
+      dsimp only [id_eq, eq_mpr_eq_cast, AddHom.toFun_eq_coe, AddHom.coe_mk,
+        RingHom.id_apply, LinearMap.coe_mk, LinearMap.add_apply]
+      rw [← integral_add]
+      · simp only [← add_smul, eval_add]
+      all_goals sorry
+    map_smul' := fun r p ↦ by
+      ext f
+      dsimp only [id_eq, eq_mpr_eq_cast, AddHom.toFun_eq_coe, AddHom.coe_mk,
+        RingHom.id_apply, LinearMap.coe_mk, LinearMap.smul_apply]
+      rw [← integral_smul]
+      simp only [← evalₗ_apply, SMulHomClass.map_smul, ← smul_assoc]
+      rfl
 
 lemma indep (ι : Type*) [Fintype ι] : LinearIndependent ℝ (L ∘ fun c : ι →₀ ℕ ↦ monomial c 1) := by
   sorry
