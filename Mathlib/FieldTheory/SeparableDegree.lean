@@ -644,21 +644,18 @@ theorem finSepDegree_adjoin_simple_eq_finrank_iff (α : E) (halg : IsAlgebraic F
 theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
   by_cases hfd : FiniteDimensional F E
   · let P : IntermediateField F E → Prop := fun K ↦ finSepDegree F K ∣ finrank F K
-    have base : P ⊥ := by
-      simp only [finSepDegree_bot, IntermediateField.finrank_bot, one_dvd]
-    have ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F) := by
-      intro L x h
-      simp only at h ⊢
-      have hdvd := mul_dvd_mul h <| finSepDegree_adjoin_simple_dvd_finrank L E x
-      set M := L⟮x⟯; clear_value M
-      letI : Algebra L M := Subalgebra.algebra M.toSubalgebra
-      letI : Module L M := Algebra.toModule
-      letI : SMul L M := Algebra.toSMul
-      haveI : IsScalarTower F L M := IntermediateField.isScalarTower M
-      rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M (Algebra.IsAlgebraic.of_finite L M),
-        FiniteDimensional.finrank_mul_finrank F L M] at hdvd
     rw [← finSepDegree_top, ← finrank_top F E]
-    exact induction_on_adjoin P base ih ⊤
+    refine induction_on_adjoin P ?_ (fun L x h ↦ ?_) ⊤
+    · simp only [finSepDegree_bot, IntermediateField.finrank_bot, one_dvd]
+    simp only at h ⊢
+    have hdvd := mul_dvd_mul h <| finSepDegree_adjoin_simple_dvd_finrank L E x
+    set M := L⟮x⟯; clear_value M
+    letI : Algebra L M := Subalgebra.algebra M.toSubalgebra
+    letI : Module L M := Algebra.toModule
+    letI : SMul L M := Algebra.toSMul
+    haveI : IsScalarTower F L M := IntermediateField.isScalarTower M
+    rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M (Algebra.IsAlgebraic.of_finite L M),
+      FiniteDimensional.finrank_mul_finrank F L M] at hdvd
   rw [finrank_of_infinite_dimensional hfd]
   exact dvd_zero _
 
@@ -670,24 +667,21 @@ theorem finSepDegree_le_finrank [FiniteDimensional F E] :
 theorem finSepDegree_eq_finrank_of_isSeparable [FiniteDimensional F E] [IsSeparable F E] :
     finSepDegree F E = finrank F E := by
   let P : IntermediateField F E → Prop := fun K ↦ finSepDegree F K = finrank F K
-  have base : P ⊥ := by
-    simp only [finSepDegree_bot, IntermediateField.finrank_bot]
-  have ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F) := by
-    intro L x h
-    simp only at h ⊢
-    have heq : _ * _ = _ * _ := congr_arg₂ (· * ·) h <|
-      (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
-        (IsSeparable.separable F x).map (f := algebraMap F L) |>.of_dvd
-          (minpoly.dvd_map_of_isScalarTower F L x)
-    set M := L⟮x⟯; clear_value M
-    letI : Algebra L M := Subalgebra.algebra M.toSubalgebra
-    letI : Module L M := Algebra.toModule
-    letI : SMul L M := Algebra.toSMul
-    haveI : IsScalarTower F L M := IntermediateField.isScalarTower M
-    rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M (Algebra.IsAlgebraic.of_finite L M),
-      FiniteDimensional.finrank_mul_finrank F L M] at heq
   rw [← finSepDegree_top, ← finrank_top F E]
-  exact induction_on_adjoin P base ih ⊤
+  refine induction_on_adjoin P ?_ (fun L x h ↦ ?_) ⊤
+  · simp only [finSepDegree_bot, IntermediateField.finrank_bot]
+  simp only at h ⊢
+  have heq : _ * _ = _ * _ := congr_arg₂ (· * ·) h <|
+    (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
+      (IsSeparable.separable F x).map (f := algebraMap F L) |>.of_dvd
+        (minpoly.dvd_map_of_isScalarTower F L x)
+  set M := L⟮x⟯; clear_value M
+  letI : Algebra L M := Subalgebra.algebra M.toSubalgebra
+  letI : Module L M := Algebra.toModule
+  letI : SMul L M := Algebra.toSMul
+  haveI : IsScalarTower F L M := IntermediateField.isScalarTower M
+  rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M (Algebra.IsAlgebraic.of_finite L M),
+    FiniteDimensional.finrank_mul_finrank F L M] at heq
 
 /-- If `E / F` is a finite extension, then its separable degree is equal to its degree if and
 only if it is a separable extension. -/
@@ -930,13 +924,11 @@ instance isPurelyInseparable_self : IsPurelyInseparable F F :=
 theorem isPurelyInseparable_iff_mem_pow (q : ℕ) [hF : ExpChar F q] :
     IsPurelyInseparable F E ↔ ∀ x : E, ∃ n : ℕ, x ^ (q ^ n) ∈ (algebraMap F E).range := by
   rw [IsPurelyInseparable_iff]
-  constructor
-  · intro h x
-    obtain ⟨g, h1, n, h2⟩ := Irreducible.hasSeparableContraction q _ <|
+  refine ⟨fun h x ↦ ?_, fun h x ↦ ?_⟩
+  · obtain ⟨g, h1, n, h2⟩ := Irreducible.hasSeparableContraction q _ <|
       minpoly.irreducible <| (h x).1
     exact ⟨n, (h _).2 <| Separable.of_dvd h1 <| minpoly.dvd F _ <| by
       simpa only [expand_aeval, minpoly.aeval] using congr_arg (aeval x) h2⟩
-  intro h x
   cases' hF with _ _ hprime _
   · simp only [one_pow, pow_one, exists_const] at h
     exact ⟨by obtain ⟨_, rfl⟩ := h x; exact isIntegral_algebraMap, fun _ ↦ h x⟩
@@ -948,27 +940,22 @@ theorem isPurelyInseparable_iff_mem_pow (q : ℕ) [hF : ExpChar F q] :
     simp only [map_sub, expand_X, expand_C, map_pow, aeval_X, aeval_C, hx, sub_self]
   have hnezero : expand F (q ^ n) g ≠ 0 := (expand_ne_zero Fin.size_pos').2 <| X_sub_C_ne_zero y
   have halg := IsAlgebraic.isIntegral ⟨_, hnezero, hzero⟩
-  use halg
+  refine ⟨halg, fun hsep ↦ ?_⟩
   have hdeg := natSepDegree_le_of_dvd _ _ (minpoly.dvd F x hzero) hnezero
-  intro hsep
   rw [natSepDegree_expand_eq_natSepDegree, natSepDegree_X_sub_C,
     natSepDegree_eq_natDegree_of_separable _ hsep] at hdeg
   replace hdeg := le_antisymm hdeg (minpoly.natDegree_pos halg)
   rw [← adjoin.finrank halg, IntermediateField.finrank_eq_one_iff] at hdeg
-  have := hdeg ▸ mem_adjoin_simple_self F x
-  exact this
+  simpa only [hdeg] using mem_adjoin_simple_self F x
 
 theorem isPurelyInseparable_of_finSepDegree_eq_one (halg : Algebra.IsAlgebraic F E)
     (hdeg : finSepDegree F E = 1) : IsPurelyInseparable F E := by
   rw [IsPurelyInseparable_iff]
-  intro x
-  use (halg x).isIntegral
-  intro hsep
+  refine fun x ↦ ⟨(halg x).isIntegral, fun hsep ↦ ?_⟩
   have := finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E <| halg.tower_top (L := F⟮x⟯)
   rw [hdeg, mul_eq_one, (finSepDegree_adjoin_simple_eq_finrank_iff F E x (halg x)).2 hsep,
     IntermediateField.finrank_eq_one_iff] at this
-  have := this.1 ▸ mem_adjoin_simple_self F x
-  exact this
+  simpa only [this.1] using mem_adjoin_simple_self F x
 
 theorem isPurelyInseparable_of_sepDegree_le_one (halg : Algebra.IsAlgebraic F E)
     (hdeg : sepDegree F E ≤ 1) : IsPurelyInseparable F E :=
