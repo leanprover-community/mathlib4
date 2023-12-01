@@ -168,9 +168,8 @@ lemma Produces.append_left {v w : List (Symbol T g.NT)}
 /-- Add extra postfix to context-free producing. -/
 lemma Produces.append_right {v w : List (Symbol T g.NT)}
     (hvw : g.Produces v w) (p : List (Symbol T g.NT)) :
-    g.Produces (v ++ p) (w ++ p) := by
-  cases hvw with
-  | intro r hr => exact ⟨r, hr.left, hr.right.append_right p⟩
+    g.Produces (v ++ p) (w ++ p) :=
+  match hvw with | ⟨r, hr⟩ => ⟨r, hr.left, hr.right.append_right p⟩
 
 /-- Add extra prefix to context-free deriving. -/
 lemma Derives.append_left {v w : List (Symbol T g.NT)}
