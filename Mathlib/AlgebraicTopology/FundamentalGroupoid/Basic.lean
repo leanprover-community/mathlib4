@@ -114,7 +114,7 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₁` to
   `p.symm.trans p`. -/
 def reflSymmTrans (p : Path x₀ x₁) : Homotopy (Path.refl x₁) (p.symm.trans p) :=
-  (reflTransSymm p.symm).cast rfl <| congr_arg _ Path.symm_symm
+  (reflTransSymm p.symm).cast rfl <| congr_arg _ (Path.symm_symm _)
 #align path.homotopy.refl_symm_trans Path.Homotopy.reflSymmTrans
 
 end
