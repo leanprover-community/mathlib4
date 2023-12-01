@@ -619,19 +619,19 @@ theorem comap_injective_of_surjective (f : R →+* S) (hf : Function.Surjective 
 
 section CommRing
 
-variable (R : Type u) (S : Type v) [CommRing R] [CommRing S]
+variable (T : Type u) (T' : Type v) [CommRing T] [CommRing T']
 
 
-theorem comap_singleton_isClosed_of_surjective (f : R →+* S) (hf : Function.Surjective f)
-    (x : PrimeSpectrum S) (hx : IsClosed ({x} : Set (PrimeSpectrum S))) :
-    IsClosed ({comap f x} : Set (PrimeSpectrum R)) :=
+theorem comap_singleton_isClosed_of_surjective (f : T →+* T') (hf : Function.Surjective f)
+    (x : PrimeSpectrum T') (hx : IsClosed ({x} : Set (PrimeSpectrum T'))) :
+    IsClosed ({comap f x} : Set (PrimeSpectrum T)) :=
   haveI : x.asIdeal.IsMaximal := (isClosed_singleton_iff_isMaximal x).1 hx
   (isClosed_singleton_iff_isMaximal _).2 (Ideal.comap_isMaximal_of_surjective f hf)
 #align prime_spectrum.comap_singleton_is_closed_of_surjective PrimeSpectrum.comap_singleton_isClosed_of_surjective
 
-theorem comap_singleton_isClosed_of_isIntegral (f : R →+* S) (hf : f.IsIntegral)
-    (x : PrimeSpectrum S) (hx : IsClosed ({x} : Set (PrimeSpectrum S))) :
-    IsClosed ({comap f x} : Set (PrimeSpectrum R)) :=
+theorem comap_singleton_isClosed_of_isIntegral (f : T →+* T') (hf : f.IsIntegral)
+    (x : PrimeSpectrum T') (hx : IsClosed ({x} : Set (PrimeSpectrum T'))) :
+    IsClosed ({comap f x} : Set (PrimeSpectrum T)) :=
   (isClosed_singleton_iff_isMaximal _).2
     (Ideal.isMaximal_comap_of_isIntegral_of_isMaximal' f hf x.asIdeal <|
       (isClosed_singleton_iff_isMaximal x).1 hx)
@@ -712,22 +712,21 @@ theorem comap_inducing_of_surjective (hf : Surjective f) : Inducing (comap f) wh
 #align prime_spectrum.comap_inducing_of_surjective PrimeSpectrum.comap_inducing_of_surjective
 
 
-variable {R' : Type u} (T : Type v)
-variable [CommRing R'][CommRing T]
-variable (f : R' →+* T)
+variable {T : Type u} (T' : Type v) [CommRing T] [CommRing T']
+variable (g : T →+* T')
 
-theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal T) :
-    comap f '' zeroLocus I = zeroLocus (I.comap f) := by
+theorem image_comap_zeroLocus_eq_zeroLocus_comap (hg : Surjective g) (I : Ideal T') :
+    comap g '' zeroLocus I = zeroLocus (I.comap g) := by
   simp only [Set.ext_iff, Set.mem_image, mem_zeroLocus, SetLike.coe_subset_coe]
   refine' fun p => ⟨_, fun h_I_p => _⟩
   · rintro ⟨p, hp, rfl⟩ a ha
     exact hp ha
-  · have hp : ker f ≤ p.asIdeal := (Ideal.comap_mono bot_le).trans h_I_p
-    refine' ⟨⟨p.asIdeal.map f, Ideal.map_isPrime_of_surjective hf hp⟩, fun x hx => _, _⟩
-    · obtain ⟨x', rfl⟩ := hf x
-      exact Ideal.mem_map_of_mem f (h_I_p hx)
+  · have hp : ker g ≤ p.asIdeal := (Ideal.comap_mono bot_le).trans h_I_p
+    refine' ⟨⟨p.asIdeal.map g, Ideal.map_isPrime_of_surjective hg hp⟩, fun x hx => _, _⟩
+    · obtain ⟨x', rfl⟩ := hg x
+      exact Ideal.mem_map_of_mem g (h_I_p hx)
     · ext x
-      rw [comap_asIdeal, Ideal.mem_comap, Ideal.mem_map_iff_of_surjective f hf]
+      rw [comap_asIdeal, Ideal.mem_comap, Ideal.mem_map_iff_of_surjective g hg]
       refine' ⟨_, fun hx => ⟨x, hx, rfl⟩⟩
       rintro ⟨x', hx', heq⟩
       rw [← sub_sub_cancel x' x]
@@ -735,25 +734,24 @@ theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal 
       rwa [mem_ker, map_sub, sub_eq_zero]
 #align prime_spectrum.image_comap_zero_locus_eq_zero_locus_comap PrimeSpectrum.image_comap_zeroLocus_eq_zeroLocus_comap
 
-theorem range_comap_of_surjective (hf : Surjective f) :
-    Set.range (comap f) = zeroLocus (ker f) := by
+theorem range_comap_of_surjective (hg : Surjective g) :
+    Set.range (comap g) = zeroLocus (ker g) := by
   rw [← Set.image_univ]
-  convert image_comap_zeroLocus_eq_zeroLocus_comap _ _ hf _
+  convert image_comap_zeroLocus_eq_zeroLocus_comap _ _ hg _
   rw [zeroLocus_bot]
 #align prime_spectrum.range_comap_of_surjective PrimeSpectrum.range_comap_of_surjective
 
-theorem isClosed_range_comap_of_surjective (hf : Surjective f) :
-    IsClosed (Set.range (comap f)) := by
-  rw [range_comap_of_surjective _ f hf]
+theorem isClosed_range_comap_of_surjective (hg : Surjective g) :
+    IsClosed (Set.range (comap g)) := by
+  rw [range_comap_of_surjective _ g hg]
   exact isClosed_zeroLocus _
 #align prime_spectrum.is_closed_range_comap_of_surjective PrimeSpectrum.isClosed_range_comap_of_surjective
 
-theorem closedEmbedding_comap_of_surjective (hf : Surjective f) : ClosedEmbedding (comap f) :=
-  { induced := (comap_inducing_of_surjective T f hf).induced
-    inj := comap_injective_of_surjective f hf
-    closed_range := isClosed_range_comap_of_surjective T f hf }
+theorem closedEmbedding_comap_of_surjective (hg : Surjective g) : ClosedEmbedding (comap g) :=
+  { induced := (comap_inducing_of_surjective T' g hg).induced
+    inj := comap_injective_of_surjective g hg
+    closed_range := isClosed_range_comap_of_surjective T' g hg }
 #align prime_spectrum.closed_embedding_comap_of_surjective PrimeSpectrum.closedEmbedding_comap_of_surjective
-
 
 end SpecOfSurjective
 
@@ -954,7 +952,7 @@ def closedPoint : PrimeSpectrum R :=
 
 variable {R}
 
-theorem isLocalRingHom_iff_comap_closedPoint {S : Type v} [CommRing S] [LocalRing S] (f : R →+* S) :
+theorem isLocalRingHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S] (f : R →+* S) :
     IsLocalRingHom f ↔ PrimeSpectrum.comap f (closedPoint S) = closedPoint R := by
   -- Porting note : inline `this` does **not** work
   have := (local_hom_TFAE f).out 0 4
@@ -963,7 +961,7 @@ theorem isLocalRingHom_iff_comap_closedPoint {S : Type v} [CommRing S] [LocalRin
 #align local_ring.is_local_ring_hom_iff_comap_closed_point LocalRing.isLocalRingHom_iff_comap_closedPoint
 
 @[simp]
-theorem comap_closedPoint {S : Type v} [CommRing S] [LocalRing S] (f : R →+* S) [IsLocalRingHom f] :
+theorem comap_closedPoint {S : Type v} [CommSemiring S] [LocalRing S] (f : R →+* S) [IsLocalRingHom f] :
     PrimeSpectrum.comap f (closedPoint S) = closedPoint R :=
   (isLocalRingHom_iff_comap_closedPoint f).mp inferInstance
 #align local_ring.comap_closed_point LocalRing.comap_closedPoint
@@ -982,8 +980,8 @@ theorem closedPoint_mem_iff (U : TopologicalSpace.Opens <| PrimeSpectrum R) :
 #align local_ring.closed_point_mem_iff LocalRing.closedPoint_mem_iff
 
 @[simp]
-theorem PrimeSpectrum.comap_residue (S : Type v)[CommRing S] [LocalRing S]
-    (x : PrimeSpectrum (ResidueField S)) : PrimeSpectrum.comap (residue S) x = closedPoint S := by
+theorem PrimeSpectrum.comap_residue (T : Type u)[CommRing T] [LocalRing T]
+    (x : PrimeSpectrum (ResidueField T)) : PrimeSpectrum.comap (residue T) x = closedPoint T := by
   rw [Subsingleton.elim x ⊥]
   ext1
   exact Ideal.mk_ker
