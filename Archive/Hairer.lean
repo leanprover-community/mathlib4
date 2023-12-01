@@ -148,8 +148,8 @@ variable [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
 variable [MeasurableSpace E] [BorelSpace E] {f f' : E → F} {μ : Measure E}
 
 -- variant of ae_eq_zero_of_integral_contDiff_smul_eq_zero, not sure what we exactly need on `K`.
-theorem IsClosed.ae_eq_zero_of_integral_contDiff_smul_eq_zero {K : Set E}
-    (hU : IsClosed K) (hf : LocallyIntegrableOn f K μ)
+theorem IsCompact.ae_eq_zero_of_integral_contDiff_smul_eq_zero {K : Set E}
+    (hU : IsCompact K) (hf : LocallyIntegrableOn f K μ)
     (h : ∀ (g : E → ℝ), ContDiff ℝ ⊤ g → tsupport g ⊆ K → ∫ x, g x • f x ∂μ = 0) :
     ∀ᵐ x ∂μ, x ∈ K → f x = 0 := by
   sorry
@@ -379,7 +379,8 @@ lemma indep (ι : Type*) [Fintype ι] : LinearIndependent ℝ (L ∘ fun c : ι 
   -- by_contra hpx₀
   have h2p : LocallyIntegrable (fun x : EuclideanSpace ℝ ι ↦ eval x p) :=
     continuous_eval p |>.locallyIntegrable
-  apply isClosed_ball.ae_eq_zero_of_integral_contDiff_smul_eq_zero (h2p.locallyIntegrableOn _)
+  apply (ProperSpace.isCompact_closedBall _ _).ae_eq_zero_of_integral_contDiff_smul_eq_zero
+    (h2p.locallyIntegrableOn _)
   intro g hg h2g
   let ϕ : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1) :=
     ⟨g, h2g, hg⟩
