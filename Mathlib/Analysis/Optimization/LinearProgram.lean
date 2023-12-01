@@ -1,11 +1,7 @@
-import Mathlib.Analysis.Convex.Cone.Dual
+-- import Mathlib.Analysis.Convex.Cone.Dual
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 
 open ContinuousLinearMap
-
-/--
-A linear program is an optimization problem with object
--/
 
 structure LinearProgram
   (V : Type _) [NormedOrderedAddGroup V] [InnerProductSpace ℝ V] [CompleteSpace V]
