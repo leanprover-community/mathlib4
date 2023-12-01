@@ -845,7 +845,7 @@ theorem basicOpen_eq_bot_iff (f : R) : basicOpen f = ⊥ ↔ IsNilpotent f := by
   exact ⟨fun h I hI => h ⟨I, hI⟩, fun h ⟨I, hI⟩ => h I hI⟩
 #align prime_spectrum.basic_open_eq_bot_iff PrimeSpectrum.basicOpen_eq_bot_iff
 
-theorem localization_away_comap_range (S : Type v) [CommRing S] [Algebra R S] (r : R)
+theorem localization_away_comap_range (S : Type v) [CommSemiring S] [Algebra R S] (r : R)
     [IsLocalization.Away r S] : Set.range (comap (algebraMap R S)) = basicOpen r := by
   rw [localization_comap_range S (Submonoid.powers r)]
   ext x
@@ -858,7 +858,7 @@ theorem localization_away_comap_range (S : Type v) [CommRing S] [Algebra R S] (r
     exact h₁ (x.2.mem_of_pow_mem _ h₃)
 #align prime_spectrum.localization_away_comap_range PrimeSpectrum.localization_away_comap_range
 
-theorem localization_away_openEmbedding (S : Type v) [CommRing S] [Algebra R S] (r : R)
+theorem localization_away_openEmbedding (S : Type v) [CommSemiring S] [Algebra R S] (r : R)
     [IsLocalization.Away r S] : OpenEmbedding (comap (algebraMap R S)) :=
   { toEmbedding := localization_comap_embedding S (Submonoid.powers r)
     open_range := by
@@ -866,7 +866,7 @@ theorem localization_away_openEmbedding (S : Type v) [CommRing S] [Algebra R S] 
       exact isOpen_basicOpen }
 #align prime_spectrum.localization_away_open_embedding PrimeSpectrum.localization_away_openEmbedding
 
-theorem isCompact_basicOpen {S : Type v}[CommRing S] (f : S) :
+theorem isCompact_basicOpen {S : Type v}[CommSemiring S] (f : S) :
     IsCompact (basicOpen f : Set (PrimeSpectrum S)) := by
   rw [← localization_away_comap_range (Localization (Submonoid.powers f))]
   exact isCompact_range (map_continuous _)
