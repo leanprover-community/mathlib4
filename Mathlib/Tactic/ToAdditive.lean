@@ -734,6 +734,8 @@ def nameDict : String → List String
   | "units"       => ["add", "Units"]
   | "cyclic"      => ["add", "Cyclic"]
   | "rootable"    => ["divisible"]
+  | "commute"     => ["add", "Commute"]
+  | "semiconj"    => ["add", "Semiconj"]
   | x             => [x]
 
 /--
