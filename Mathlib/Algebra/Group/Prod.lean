@@ -419,7 +419,7 @@ variable [Mul M] [Mul N] [CommSemigroup P] (f : M →ₙ* P) (g : N →ₙ* P)
 @[to_additive
     "Coproduct of two `AddHom`s with the same codomain:
     `f.coprod g (p : M × N) = f p.1 + g p.2`.
-    (Commutative codomain; for the general case, see `MulHom.noncommCoprod`)"]
+    (Commutative codomain; for the general case, see `AddHom.noncommCoprod`)"]
 def coprod : M × N →ₙ* P :=
   f.comp (fst M N) * g.comp (snd M N)
 #align mul_hom.coprod MulHom.coprod
