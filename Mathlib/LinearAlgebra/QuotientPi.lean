@@ -27,13 +27,13 @@ namespace Submodule
 
 open LinearMap
 
-variable {ι R : Type _} [CommRing R]
+variable {ι R : Type*} [CommRing R]
 
-variable {Ms : ι → Type _} [∀ i, AddCommGroup (Ms i)] [∀ i, Module R (Ms i)]
+variable {Ms : ι → Type*} [∀ i, AddCommGroup (Ms i)] [∀ i, Module R (Ms i)]
 
-variable {N : Type _} [AddCommGroup N] [Module R N]
+variable {N : Type*} [AddCommGroup N] [Module R N]
 
-variable {Ns : ι → Type _} [∀ i, AddCommGroup (Ns i)] [∀ i, Module R (Ns i)]
+variable {Ns : ι → Type*} [∀ i, AddCommGroup (Ns i)] [∀ i, Module R (Ns i)]
 
 /-- Lift a family of maps to the direct sum of quotients. -/
 def piQuotientLift [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i)) (q : Submodule R N)

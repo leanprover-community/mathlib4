@@ -22,7 +22,7 @@ finite field, trace
 namespace FiniteField
 
 /-- The trace map from a finite field to its prime field is nongedenerate. -/
-theorem trace_to_zmod_nondegenerate (F : Type _) [Field F] [Finite F]
+theorem trace_to_zmod_nondegenerate (F : Type*) [Field F] [Finite F]
     [Algebra (ZMod (ringChar F)) F] {a : F} (ha : a ≠ 0) :
     ∃ b : F, Algebra.trace (ZMod (ringChar F)) F (a * b) ≠ 0 := by
   haveI : Fact (ringChar F).Prime := ⟨CharP.char_is_prime F _⟩

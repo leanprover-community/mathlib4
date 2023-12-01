@@ -101,8 +101,8 @@ def createsLimitFullSubcategoryInclusionOfClosed (h : ClosedUnderLimitsOfShape J
 
 /-- If `P` is closed under limits of shape `J`, then the inclusion creates such limits. -/
 def createsLimitsOfShapeFullSubcategoryInclusion (h : ClosedUnderLimitsOfShape J P)
-    [HasLimitsOfShape J C] : CreatesLimitsOfShape J (fullSubcategoryInclusion P)
-    where CreatesLimit := @fun F => createsLimitFullSubcategoryInclusionOfClosed h F
+    [HasLimitsOfShape J C] : CreatesLimitsOfShape J (fullSubcategoryInclusion P) where
+  CreatesLimit := @fun F => createsLimitFullSubcategoryInclusionOfClosed h F
 #align category_theory.limits.creates_limits_of_shape_full_subcategory_inclusion CategoryTheory.Limits.createsLimitsOfShapeFullSubcategoryInclusion
 
 theorem hasLimit_of_closed_under_limits (h : ClosedUnderLimitsOfShape J P)
@@ -126,8 +126,8 @@ def createsColimitFullSubcategoryInclusionOfClosed (h : ClosedUnderColimitsOfSha
 
 /-- If `P` is closed under colimits of shape `J`, then the inclusion creates such colimits. -/
 def createsColimitsOfShapeFullSubcategoryInclusion (h : ClosedUnderColimitsOfShape J P)
-    [HasColimitsOfShape J C] : CreatesColimitsOfShape J (fullSubcategoryInclusion P)
-    where CreatesColimit := @fun F => createsColimitFullSubcategoryInclusionOfClosed h F
+    [HasColimitsOfShape J C] : CreatesColimitsOfShape J (fullSubcategoryInclusion P) where
+  CreatesColimit := @fun F => createsColimitFullSubcategoryInclusionOfClosed h F
 #align category_theory.limits.creates_colimits_of_shape_full_subcategory_inclusion CategoryTheory.Limits.createsColimitsOfShapeFullSubcategoryInclusion
 
 theorem hasColimit_of_closed_under_colimits (h : ClosedUnderColimitsOfShape J P)

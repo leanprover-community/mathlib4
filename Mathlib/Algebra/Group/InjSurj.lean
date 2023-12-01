@@ -36,7 +36,7 @@ namespace Function
 
 namespace Injective
 
-variable {M₁ : Type _} {M₂ : Type _} [Mul M₁]
+variable {M₁ : Type*} {M₂ : Type*} [Mul M₁]
 
 /-- A type endowed with `*` is a semigroup, if it admits an injective map that preserves `*` to
 a semigroup. See note [reducible non-instances]. -/
@@ -66,7 +66,6 @@ semigroup, if it admits an injective map that preserves `+` to an additive left 
 protected def leftCancelSemigroup [LeftCancelSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : LeftCancelSemigroup M₁ :=
   { hf.semigroup f mul with
-    mul := (· * ·),
     mul_left_cancel := fun x y z H => hf <| (mul_right_inj (f x)).1 <| by erw [← mul, ← mul, H] }
 #align function.injective.left_cancel_semigroup Function.Injective.leftCancelSemigroup
 #align function.injective.add_left_cancel_semigroup Function.Injective.addLeftCancelSemigroup
@@ -79,7 +78,6 @@ semigroup."]
 protected def rightCancelSemigroup [RightCancelSemigroup M₂] (f : M₁ → M₂) (hf : Injective f)
     (mul : ∀ x y, f (x * y) = f x * f y) : RightCancelSemigroup M₁ :=
   { hf.semigroup f mul with
-    mul := (· * ·),
     mul_right_cancel := fun x y z H => hf <| (mul_left_inj (f y)).1 <| by erw [← mul, ← mul, H] }
 #align function.injective.right_cancel_semigroup Function.Injective.rightCancelSemigroup
 #align function.injective.add_right_cancel_semigroup Function.Injective.addRightCancelSemigroup
@@ -206,7 +204,7 @@ which has an involutive inversion. See note [reducible non-instances] -/
 @[to_additive (attr := reducible)
 "A type has an involutive negation if it admits a surjective map that
 preserves `-` to a type which has an involutive negation."]
-protected def involutiveInv {M₁ : Type _} [Inv M₁] [InvolutiveInv M₂] (f : M₁ → M₂)
+protected def involutiveInv {M₁ : Type*} [Inv M₁] [InvolutiveInv M₂] (f : M₁ → M₂)
     (hf : Injective f) (inv : ∀ x, f x⁻¹ = (f x)⁻¹) : InvolutiveInv M₁ where
   inv := Inv.inv
   inv_inv x := hf <| by rw [inv, inv, inv_inv]
@@ -362,7 +360,7 @@ end Injective
 
 namespace Surjective
 
-variable {M₁ : Type _} {M₂ : Type _} [Mul M₂]
+variable {M₁ : Type*} {M₂ : Type*} [Mul M₂]
 
 /-- A type endowed with `*` is a semigroup, if it admits a surjective map that preserves `*` from a
 semigroup. See note [reducible non-instances]. -/
@@ -462,7 +460,7 @@ which has an involutive inversion. See note [reducible non-instances] -/
 @[to_additive (attr := reducible)
 "A type has an involutive negation if it admits a surjective map that
 preserves `-` to a type which has an involutive negation."]
-protected def involutiveInv {M₂ : Type _} [Inv M₂] [InvolutiveInv M₁] (f : M₁ → M₂)
+protected def involutiveInv {M₂ : Type*} [Inv M₂] [InvolutiveInv M₁] (f : M₁ → M₂)
     (hf : Surjective f) (inv : ∀ x, f x⁻¹ = (f x)⁻¹) : InvolutiveInv M₂ where
   inv := Inv.inv
   inv_inv := hf.forall.2 fun x => by erw [← inv, ← inv, inv_inv]

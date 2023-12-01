@@ -27,8 +27,10 @@ We provide a coercion to a function `R → Rᵐᵒᵖ`.
 Ring involution
 -/
 
+set_option autoImplicit true
 
-variable (R : Type _)
+
+variable (R : Type*)
 
 /-- A ring involution -/
 structure RingInvo [Semiring R] extends R ≃+* Rᵐᵒᵖ where
@@ -42,7 +44,7 @@ add_decl_doc RingInvo.toRingEquiv
 
 /-- `RingInvoClass F R` states that `F` is a type of ring involutions.
 You should extend this class when you extend `RingInvo`. -/
-class RingInvoClass (F : Type _) (R : outParam (Type _)) [Semiring R] extends
+class RingInvoClass (F : Type*) (R : outParam (Type*)) [Semiring R] extends
     RingEquivClass F R Rᵐᵒᵖ where
   /-- Every ring involution must be its own inverse -/
   involution : ∀ (f : F) (x), (f (f x).unop).unop = x

@@ -20,10 +20,11 @@ subtypes `selfAdjoint A` and `unitary A`.
   unitaries.
 -/
 
+open NormedSpace -- For `exp`.
 
 section Star
 
-variable {A : Type _} [NormedRing A] [NormedAlgebra ℂ A] [StarRing A] [ContinuousStar A]
+variable {A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [StarRing A] [ContinuousStar A]
   [CompleteSpace A] [StarModule ℂ A]
 
 open Complex

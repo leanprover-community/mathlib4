@@ -24,6 +24,8 @@ transformations.
   between `F` and `G`
 -/
 
+set_option autoImplicit true
+
 
 namespace CategoryTheory
 

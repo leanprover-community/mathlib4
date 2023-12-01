@@ -38,7 +38,7 @@ uniform space, uniform continuity, compact space
 
 open Classical Uniformity Topology Filter UniformSpace Set
 
-variable {α β γ : Type _} [UniformSpace α] [UniformSpace β]
+variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
 
 /-!
 ### Uniformity on compact spaces
@@ -68,7 +68,7 @@ theorem compactSpace_uniformity [CompactSpace α] : 𝓤 α = ⨆ x, 𝓝 (x, x)
 theorem unique_uniformity_of_compact [t : TopologicalSpace γ] [CompactSpace γ]
     {u u' : UniformSpace γ} (h : u.toTopologicalSpace = t) (h' : u'.toTopologicalSpace = t) :
     u = u' := by
-  refine uniformSpace_eq ?_
+  refine UniformSpace.ext ?_
   have : @CompactSpace γ u.toTopologicalSpace := by rwa [h]
   have : @CompactSpace γ u'.toTopologicalSpace := by rwa [h']
   rw [@compactSpace_uniformity _ u, compactSpace_uniformity, h, h']
@@ -103,8 +103,7 @@ def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ]
       rwa [closure_compl] at this
     have diag_subset : diagonal γ ⊆ interior V := subset_interior_iff_mem_nhdsSet.2 V_in
     have x_ne_y : x ≠ y := mt (@diag_subset (x, y)) this
-    -- Since γ is compact and Hausdorff, it is normal, hence T₃.
-    haveI : NormalSpace γ := normalOfCompactT2
+    -- Since γ is compact and Hausdorff, it is T₄, hence T₃.
     -- So there are closed neighborhoods V₁ and V₂ of x and y contained in
     -- disjoint open neighborhoods U₁ and U₂.
     obtain
@@ -252,18 +251,48 @@ theorem ContinuousOn.tendstoUniformly [LocallyCompactSpace α] [CompactSpace β]
   exact this.tendstoUniformly hxK
 #align continuous_on.tendsto_uniformly ContinuousOn.tendstoUniformly
 
-/-- A continuous family of functions `α → β → γ` tends uniformly to its value at `x` if `α` is
-locally compact and `β` is compact. -/
-theorem Continuous.tendstoUniformly [LocallyCompactSpace α] [CompactSpace β] [UniformSpace γ]
+/-- A continuous family of functions `α → β → γ` tends uniformly to its value at `x`
+if `α` is weakly locally compact and `β` is compact. -/
+theorem Continuous.tendstoUniformly [WeaklyLocallyCompactSpace α] [CompactSpace β] [UniformSpace γ]
     (f : α → β → γ) (h : Continuous ↿f) (x : α) : TendstoUniformly f (f x) (𝓝 x) :=
-  h.continuousOn.tendstoUniformly univ_mem
+  let ⟨K, hK, hxK⟩ := exists_compact_mem_nhds x
+  have : UniformContinuousOn (↿f) (K ×ˢ univ) :=
+    IsCompact.uniformContinuousOn_of_continuous (hK.prod isCompact_univ) h.continuousOn
+  this.tendstoUniformly hxK
 #align continuous.tendsto_uniformly Continuous.tendstoUniformly
+
+/-- In a product space `α × β`, assume that a function `f` is continuous on `s × k` where `k` is
+compact. Then, along the fiber above any `q ∈ s`, `f` is transversely uniformly continuous, i.e.,
+if `p ∈ s` is close enough to `q`, then `f p x` is uniformly close to `f q x` for all `x ∈ k`. -/
+lemma IsCompact.mem_uniformity_of_prod
+    {α β E : Type*} [TopologicalSpace α] [TopologicalSpace β] [UniformSpace E]
+    {f : α → β → E} {s : Set α} {k : Set β} {q : α} {u : Set (E × E)}
+    (hk : IsCompact k) (hf : ContinuousOn f.uncurry (s ×ˢ k)) (hq : q ∈ s) (hu : u ∈ 𝓤 E) :
+    ∃ v ∈ 𝓝[s] q, ∀ p ∈ v, ∀ x ∈ k, (f p x, f q x) ∈ u := by
+  apply hk.induction_on (p := fun t ↦ ∃ v ∈ 𝓝[s] q, ∀ p ∈ v, ∀ x ∈ t, (f p x, f q x) ∈ u)
+  · exact ⟨univ, univ_mem, by simp⟩
+  · intro t' t ht't ⟨v, v_mem, hv⟩
+    exact ⟨v, v_mem, fun p hp x hx ↦ hv p hp x (ht't hx)⟩
+  · intro t t' ⟨v, v_mem, hv⟩ ⟨v', v'_mem, hv'⟩
+    refine ⟨v ∩ v', inter_mem v_mem v'_mem, fun p hp x hx ↦ ?_⟩
+    rcases hx with h'x|h'x
+    · exact hv p hp.1 x h'x
+    · exact hv' p hp.2 x h'x
+  · rcases comp_symm_of_uniformity hu with ⟨u', u'_mem, u'_symm, hu'⟩
+    intro x hx
+    obtain ⟨v, hv, w, hw, hvw⟩ :
+      ∃ v ∈ 𝓝[s] q, ∃ w ∈ 𝓝[k] x, v ×ˢ w ⊆ f.uncurry ⁻¹' {z | (f q x, z) ∈ u'} :=
+        mem_nhdsWithin_prod_iff.1 (hf (q, x) ⟨hq, hx⟩ (mem_nhds_left (f q x) u'_mem))
+    refine ⟨w, hw, v, hv, fun p hp y hy ↦ ?_⟩
+    have A : (f q x, f p y) ∈ u' := hvw (⟨hp, hy⟩ : (p, y) ∈ v ×ˢ w)
+    have B : (f q x, f q y) ∈ u' := hvw (⟨mem_of_mem_nhdsWithin hq hv, hy⟩ : (q, y) ∈ v ×ˢ w)
+    exact hu' (prod_mk_mem_compRel (u'_symm A) B)
 
 section UniformConvergence
 
 /-- An equicontinuous family of functions defined on a compact uniform space is automatically
 uniformly equicontinuous. -/
-theorem CompactSpace.uniformEquicontinuous_of_equicontinuous {ι : Type _} {F : ι → β → α}
+theorem CompactSpace.uniformEquicontinuous_of_equicontinuous {ι : Type*} {F : ι → β → α}
     [CompactSpace β] (h : Equicontinuous F) : UniformEquicontinuous F := by
   rw [equicontinuous_iff_continuous] at h
   rw [uniformEquicontinuous_iff_uniformContinuous]

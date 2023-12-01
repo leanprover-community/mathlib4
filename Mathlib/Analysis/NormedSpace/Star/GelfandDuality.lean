@@ -46,7 +46,7 @@ and even an equivalence between C⋆-algebras.
 * From the previous result, construct the **continuous functional calculus**.
 * Show that if `X` is a compact Hausdorff space, then `X` is (canonically) homeomorphic to
   `characterSpace ℂ C(X, ℂ)`.
-* Conclude using the previous fact that the functors `C(⬝, ℂ)` and `characterSpace ℂ ⬝` along with
+* Conclude using the previous fact that the functors `C(·, ℂ)` and `characterSpace ℂ ·` along with
   the canonical homeomorphisms described above constitute a natural contravariant equivalence of
   the categories of compact Hausdorff spaces (with continuous maps) and commutative unital
   C⋆-algebras (with unital ⋆-algebra homomorphisms); this is known as **Gelfand duality**.
@@ -65,7 +65,7 @@ section ComplexBanachAlgebra
 
 open Ideal
 
-variable {A : Type _} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A] (I : Ideal A)
+variable {A : Type*} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A] (I : Ideal A)
   [Ideal.IsMaximal I]
 
 /-- Every maximal ideal in a commutative complex Banach algebra gives rise to a character on that
@@ -128,7 +128,7 @@ end ComplexBanachAlgebra
 
 section ComplexCstarAlgebra
 
-variable {A : Type _} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
+variable {A : Type*} [NormedCommRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
 
 variable [StarRing A] [CstarRing A] [StarModule ℂ A]
 
@@ -149,7 +149,7 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
     roots shows that the norm is preserved. -/
   have : spectralRadius ℂ (gelfandTransform ℂ A (star a * a)) = spectralRadius ℂ (star a * a) := by
     unfold spectralRadius; rw [spectrum.gelfandTransform_eq]
-  rw [map_mul, (IsSelfAdjoint.star_mul_self _).spectralRadius_eq_nnnorm, gelfandTransform_map_star,
+  rw [map_mul, (IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, gelfandTransform_map_star,
     (IsSelfAdjoint.star_mul_self (gelfandTransform ℂ A a)).spectralRadius_eq_nnnorm] at this
   simp only [ENNReal.coe_eq_coe, CstarRing.nnnorm_star_mul_self, ← sq] at this
   simpa only [Function.comp_apply, NNReal.sqrt_sq] using
@@ -206,7 +206,7 @@ namespace WeakDual
 
 namespace CharacterSpace
 
-variable {A B C : Type _}
+variable {A B C : Type*}
 
 variable [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
 

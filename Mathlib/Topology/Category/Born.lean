@@ -27,14 +27,14 @@ set_option linter.uppercaseLean3 false in
 
 namespace Born
 
-instance : CoeSort Born (Type _) :=
+instance : CoeSort Born (Type*) :=
   Bundled.coeSort
 
 instance (X : Born) : Bornology X :=
   X.str
 
 /-- Construct a bundled `Born` from a `Bornology`. -/
-def of (α : Type _) [Bornology α] : Born :=
+def of (α : Type*) [Bornology α] : Born :=
   Bundled.of α
 set_option linter.uppercaseLean3 false in
 #align Born.of Born.of

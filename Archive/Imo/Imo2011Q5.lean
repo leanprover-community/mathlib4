@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alain Verberkmoes
 -/
 import Mathlib.Data.Int.Dvd.Basic
+import Mathlib.Tactic.Common
 
 #align_import imo.imo2011_q5 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
 

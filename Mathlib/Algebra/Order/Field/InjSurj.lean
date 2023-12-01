@@ -17,7 +17,7 @@ import Mathlib.Algebra.Order.Ring.InjSurj
 
 open Function OrderDual
 
-variable {ι α β : Type _}
+variable {ι α β : Type*}
 
 namespace Function
 

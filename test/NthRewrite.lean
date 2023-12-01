@@ -3,6 +3,8 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Vector
 import Mathlib.Data.Nat.Basic
 
+set_option autoImplicit true
+
 example [AddZeroClass G] {a : G} (h : a = a): a = (a + 0) := by
   nth_rewrite 2 [←add_zero a] at h
   exact h

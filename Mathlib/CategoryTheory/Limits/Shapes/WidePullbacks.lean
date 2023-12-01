@@ -26,6 +26,8 @@ Typeclasses `HasWidePullbacks` and `HasFiniteWidePullbacks` assert the existence
 pullbacks and finite wide pullbacks.
 -/
 
+set_option autoImplicit true
+
 
 universe w w' v u
 
@@ -61,6 +63,8 @@ inductive Hom : WidePullbackShape J → WidePullbackShape J → Type w
   deriving DecidableEq
 #align category_theory.limits.wide_pullback_shape.hom CategoryTheory.Limits.WidePullbackShape.Hom
 
+-- This is relying on an automatically generated instance name, generated in a `deriving` handler.
+-- See https://github.com/leanprover/lean4/issues/2343
 attribute [nolint unusedArguments] instDecidableEqHom
 
 instance struct : CategoryStruct (WidePullbackShape J) where
@@ -149,11 +153,11 @@ def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePullbackShape J ≌ W
   functor := wideCospan none (fun j => some (h j)) fun j => Hom.term (h j)
   inverse := wideCospan none (fun j => some (h.invFun j)) fun j => Hom.term (h.invFun j)
   unitIso :=
-    NatIso.ofComponents (fun j => by aesop_cat_nonterminal; repeat rfl) fun f => by
-      simp only [eq_iff_true_of_subsingleton]
+    NatIso.ofComponents (fun j => by aesop_cat) fun f =>
+      by simp only [eq_iff_true_of_subsingleton]
   counitIso :=
-    NatIso.ofComponents (fun j => by aesop_cat_nonterminal; repeat rfl) fun f => by
-      simp only [eq_iff_true_of_subsingleton]
+    NatIso.ofComponents (fun j => by aesop_cat)
+      fun f => by simp only [eq_iff_true_of_subsingleton]
 #align category_theory.limits.wide_pullback_shape.equivalence_of_equiv CategoryTheory.Limits.WidePullbackShape.equivalenceOfEquiv
 
 /-- Lifting universe and morphism levels preserves wide pullback diagrams. -/
@@ -176,6 +180,8 @@ inductive Hom : WidePushoutShape J → WidePushoutShape J → Type w
   deriving DecidableEq
 #align category_theory.limits.wide_pushout_shape.hom CategoryTheory.Limits.WidePushoutShape.Hom
 
+-- This is relying on an automatically generated instance name, generated in a `deriving` handler.
+-- See https://github.com/leanprover/lean4/issues/2343
 attribute [nolint unusedArguments] instDecidableEqHom
 
 instance struct : CategoryStruct (WidePushoutShape J) where
@@ -267,10 +273,10 @@ def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ Wi
   functor := wideSpan none (fun j => some (h j)) fun j => Hom.init (h j)
   inverse := wideSpan none (fun j => some (h.invFun j)) fun j => Hom.init (h.invFun j)
   unitIso :=
-    NatIso.ofComponents (fun j => by aesop_cat_nonterminal; repeat rfl) fun f => by
+    NatIso.ofComponents (fun j => by aesop_cat) fun f => by
       simp only [eq_iff_true_of_subsingleton]
   counitIso :=
-    NatIso.ofComponents (fun j => by aesop_cat_nonterminal; repeat rfl) fun f => by
+    NatIso.ofComponents (fun j => by aesop_cat) fun f => by
       simp only [eq_iff_true_of_subsingleton]
 
 /-- Lifting universe and morphism levels preserves wide pushout diagrams. -/

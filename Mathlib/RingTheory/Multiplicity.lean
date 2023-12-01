@@ -24,7 +24,7 @@ several basic results on it.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Nat Part
 
@@ -295,7 +295,7 @@ theorem finite_nat_iff {a b : ℕ} : Finite a b ↔ a ≠ 1 ∧ 0 < b := by
       fun h => by cases h <;> simp [*]⟩
 #align multiplicity.finite_nat_iff multiplicity.finite_nat_iff
 
-alias dvd_iff_multiplicity_pos ↔ _ _root_.has_dvd.dvd.multiplicity_pos
+alias ⟨_, _root_.has_dvd.dvd.multiplicity_pos⟩ := dvd_iff_multiplicity_pos
 
 end Monoid
 
@@ -582,7 +582,7 @@ protected theorem mul {p a b : α} (hp : Prime p) :
     cases' not_and_or.1 h with h h <;> simp [eq_top_iff_not_finite.2 h]
 #align multiplicity.mul multiplicity.mul
 
-theorem Finset.prod {β : Type _} {p : α} (hp : Prime p) (s : Finset β) (f : β → α) :
+theorem Finset.prod {β : Type*} {p : α} (hp : Prime p) (s : Finset β) (f : β → α) :
     multiplicity p (∏ x in s, f x) = ∑ x in s, multiplicity p (f x) := by
   classical
     induction' s using Finset.induction with a s has ih h
@@ -625,7 +625,7 @@ end CancelCommMonoidWithZero
 
 section Valuation
 
-variable {R : Type _} [CommRing R] [IsDomain R] {p : R} [DecidableRel (Dvd.dvd : R → R → Prop)]
+variable {R : Type*} [CommRing R] [IsDomain R] {p : R} [DecidableRel (Dvd.dvd : R → R → Prop)]
 
 /-- `multiplicity` of a prime in an integral domain as an additive valuation to `PartENat`. -/
 noncomputable def addValuation (hp : Prime p) : AddValuation R PartENat :=
@@ -647,13 +647,13 @@ section Nat
 open multiplicity
 
 theorem multiplicity_eq_zero_of_coprime {p a b : ℕ} (hp : p ≠ 1)
-    (hle : multiplicity p a ≤ multiplicity p b) (hab : Nat.coprime a b) : multiplicity p a = 0 := by
+    (hle : multiplicity p a ≤ multiplicity p b) (hab : Nat.Coprime a b) : multiplicity p a = 0 := by
   rw [multiplicity_le_multiplicity_iff] at hle
   rw [← nonpos_iff_eq_zero, ← not_lt, PartENat.pos_iff_one_le, ← Nat.cast_one, ←
     pow_dvd_iff_le_multiplicity]
   intro h
   have := Nat.dvd_gcd h (hle _ h)
-  rw [coprime.gcd_eq_one hab, Nat.dvd_one, pow_one] at this
+  rw [Coprime.gcd_eq_one hab, Nat.dvd_one, pow_one] at this
   exact hp this
 #align multiplicity_eq_zero_of_coprime multiplicity_eq_zero_of_coprime
 

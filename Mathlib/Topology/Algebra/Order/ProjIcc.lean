@@ -18,7 +18,7 @@ to show that `Set.IccExtend h f` is continuous if and only if `f` is continuous.
 
 open Set Filter Topology
 
-variable {α β γ : Type _} [LinearOrder α] [TopologicalSpace γ] {a b c : α} {h : a ≤ b}
+variable {α β γ : Type*} [LinearOrder α] [TopologicalSpace γ] {a b c : α} {h : a ≤ b}
 
 -- porting note: new lemma
 protected theorem Filter.Tendsto.IccExtend (f : γ → Icc a b → β) {la : Filter α} {lb : Filter β}

@@ -2,45 +2,43 @@
 Tests for norm_cast
 -/
 
-import Mathlib.Tactic.NormCast
+import Std.Tactic.NormCast
 import Mathlib.Tactic.Ring
 import Mathlib.Data.Option.Defs
-import Mathlib.Data.Rat.Cast
--- import data.complex.basic -- ℕ, ℤ, ℚ, ℝ, ℂ
--- import data.real.ennreal
+import Mathlib.Data.Complex.Basic
 
 -- set_option trace.Tactic.norm_cast true
 -- set_option trace.Meta.Tactic.simp true
+set_option autoImplicit true
 
 variable (an bn cn dn : ℕ) (az bz cz dz : ℤ)
 variable (aq bq cq dq : ℚ)
--- variable (ar br cr dr : ℝ) (ac bc cc dc : ℂ)
+variable (ar br cr dr : ℝ) (ac bc cc dc : ℂ)
 
-example : (an : ℤ) = bn → an = bn := by intro h; exact_mod_cast h
-example : an = bn → (an : ℤ) = bn := by intro h; exact_mod_cast h
+example : (an : ℤ) = bn → an = bn := by intro h; exact mod_cast h
+example : an = bn → (an : ℤ) = bn := by intro h; exact mod_cast h
 example : az = bz ↔ (az : ℚ) = bz := by norm_cast
 
--- example : (aq : ℝ) = br ↔ (aq : ℂ) = br := by norm_cast
--- example : (an : ℚ) = bz ↔ (an : ℂ) = bz := by norm_cast
--- example : (((an : ℤ) : ℚ) : ℝ) = bq ↔ ((an : ℚ) : ℂ) = (bq : ℝ) :=
--- by norm_cast
+example : (aq : ℝ) = br ↔ (aq : ℂ) = br := by norm_cast
+example : (an : ℚ) = bz ↔ (an : ℂ) = bz := by norm_cast
+example : (((an : ℤ) : ℚ) : ℝ) = bq ↔ ((an : ℚ) : ℂ) = (bq : ℝ) := by norm_cast
 
 example : (an : ℤ) < bn ↔ an < bn := by norm_cast
--- example : (an : ℚ) < bz ↔ (an : ℝ) < bz := by norm_cast
--- example : ((an : ℤ) : ℝ) < bq ↔ (an : ℚ) < bq := by norm_cast
+example : (an : ℚ) < bz ↔ (an : ℝ) < bz := by norm_cast
+example : ((an : ℤ) : ℝ) < bq ↔ (an : ℚ) < bq := by norm_cast
 example : (an : ℤ) ≠ (bn : ℤ) ↔ an ≠ bn := by norm_cast
 
 -- zero and one cause special problems
--- example : 0 < (bq : ℝ) ↔ 0 < bq := by norm_cast
+example : 0 < (bq : ℝ) ↔ 0 < bq := by norm_cast
 example : az > (1 : ℕ) ↔ az > 1 := by norm_cast
 example : az > (0 : ℕ) ↔ az > 0 := by norm_cast
 example : (an : ℤ) ≠ 0 ↔ an ≠ 0 := by norm_cast
 example : aq < (1 : ℕ) ↔ (aq : ℚ) < (1 : ℤ) := by norm_cast
--- example : aq < (1 : ℕ) ↔ (aq : ℝ) < (1 : ℤ) := by norm_cast
+example : aq < (1 : ℕ) ↔ (aq : ℝ) < (1 : ℤ) := by norm_cast
 
 example : (an : ℤ) + bn = (an + bn : ℕ) := by norm_cast
--- example : (an : ℂ) + bq = ((an + bq) : ℚ) := by norm_cast
--- example : (((an : ℤ) : ℚ) : ℝ) + bn = (an + (bn : ℤ)) := by norm_cast
+example : (an : ℂ) + bq = ((an + bq) : ℚ) := by norm_cast
+example : (((an : ℤ) : ℚ) : ℝ) + bn = (an + (bn : ℤ)) := by norm_cast
 
 example (h : ((an + bn : ℕ) : ℤ) = (an : ℤ) + (bn : ℤ)) : True := by
   push_cast at h
@@ -52,35 +50,32 @@ example (h : ((an * bn : ℕ) : ℤ) = (an : ℤ) * (bn : ℤ)) : True := by
   guard_hyp h : (an : ℤ) * (bn : ℤ) = (an : ℤ) * (bn : ℤ)
   trivial
 
--- example : (((((an : ℚ) : ℝ) * bq) + (cq : ℝ) ^ dn) : ℂ) = (an : ℂ) * (bq : ℝ) + cq ^ dn :=
--- by norm_cast
--- example : ((an : ℤ) : ℝ) < bq ∧ (cr : ℂ) ^ 2 = dz ↔ (an : ℚ) < bq ∧ ((cr ^ 2) : ℂ) = dz :=
--- by norm_cast
+example : (((((an : ℚ) : ℝ) * bq) + (cq : ℝ) ^ dn) : ℂ) = (an : ℂ) * (bq : ℝ) + cq ^ dn :=
+by norm_cast
+example : ((an : ℤ) : ℝ) < bq ∧ (cr : ℂ) ^ 2 = dz ↔ (an : ℚ) < bq ∧ ((cr ^ 2) : ℂ) = dz :=
+by norm_cast
 
 --testing numerals
 example : ((42 : ℕ) : ℤ) = 42 := by norm_cast
--- example : ((42 : ℕ) : ℂ) = 42 := by norm_cast
+example : ((42 : ℕ) : ℂ) = 42 := by norm_cast
 example : ((42 : ℤ) : ℚ) = 42 := by norm_cast
--- example : ((42 : ℚ) : ℝ) = 42 := by norm_cast
+example : ((42 : ℚ) : ℝ) = 42 := by norm_cast
 
 structure p (n : ℤ)
 example : p 42 := by
   norm_cast
-  -- TODO: guard_target_mod_implicit
-  -- guard_target = p 42
+  guard_target = p 42
   exact ⟨⟩
 
--- example (h : (an : ℝ) = 0) : an = 0 := by exact_mod_cast h
--- example (h : (an : ℝ) = 42) : an = 42 := by exact_mod_cast h
--- example (h : (an + 42) ≠ 42) : (an : ℝ) + 42 ≠ 42 := by exact_mod_cast h
+example (h : (an : ℝ) = 0) : an = 0 := mod_cast h
+example (h : (an : ℝ) = 42) : an = 42 := mod_cast h
+example (h : (an + 42) ≠ 42) : (an : ℝ) + 42 ≠ 42 := mod_cast h
 
-example (n : ℤ) (h : n + 1 > 0) : ((n + 1 : ℤ) : ℚ) > 0 := by exact_mod_cast h
+example (n : ℤ) (h : n + 1 > 0) : ((n + 1 : ℤ) : ℚ) > 0 := mod_cast h
 
 -- testing the heuristic
-example (h : bn ≤ an) : an - bn = 1 ↔ (an - bn : ℤ) = 1 :=
-by norm_cast
--- example (h : (cz : ℚ) = az / bz) : (cz : ℝ) = az / bz :=
--- by assumption_mod_cast
+example (h : bn ≤ an) : an - bn = 1 ↔ (an - bn : ℤ) = 1 := by norm_cast
+example (h : (cz : ℚ) = az / bz) : (cz : ℝ) = az / bz := by assumption_mod_cast
 
 namespace hidden
 
@@ -108,8 +103,7 @@ instance [Mul α] : MulZeroClass (WithZero α) where
 @[norm_cast] lemma mul_coe [Mul α] (a b : α) :
   ((a * b : α) : WithZero α) = (a : WithZero α) * b := rfl
 
-example [Mul α] [One α] (x y : α) (h : (x : WithZero α) * y = 1) : x * y = 1 := by
-  exact_mod_cast h
+example [Mul α] [One α] (x y : α) (h : (x : WithZero α) * y = 1) : x * y = 1 := mod_cast h
 
 end hidden
 
@@ -120,8 +114,7 @@ example (k : ℕ) {x y : ℕ} :
 
 example (k : ℕ) {x y : ℕ} (h : ((x + y + k : ℕ) : ℤ) = 0) : x + y + k = 0 := by
   push_cast at h
-  -- TODO: guard_hyp_mod_implicit
-  -- guard_hyp h : (x : ℤ) + y + k = 0
+  guard_hyp h : (x : ℤ) + y + k = 0
   assumption_mod_cast
 
 example (a b : ℕ) (h2 : ((a + b + 0 : ℕ) : ℤ) = 10) :
@@ -147,7 +140,7 @@ namespace ennreal
 
 end ennreal
 
-lemma b (h g : true) : true ∧ true := by
+lemma b (_h g : true) : true ∧ true := by
   constructor
   assumption_mod_cast
   assumption_mod_cast

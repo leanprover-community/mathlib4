@@ -1,6 +1,8 @@
 import Mathlib.Tactic.Says
 import Mathlib.Tactic.RunCmd
+import Aesop
 
+set_option autoImplicit true
 /--
 info: Try this: (show_term exact 37) says exact 37
 -/
@@ -39,7 +41,7 @@ example : true := by
 -- Check that `says` does not reverify the right-hand-side.
 set_option says.no_verify_in_CI true in
 example (x y : List α) : (x ++ y).length = x.length + y.length := by
-  simp? says simp only []
+  simp? says skip
   simp
 
 -- Check that with `says.verify` `says` will reverify that the left-hand-side constructs
@@ -63,6 +65,11 @@ example : True := by
   simp says
   trivial
 
+set_option says.verify true in
+example (x y : List α) : (x ++ y).length = x.length + y.length := by
+  simp? says simp only [List.length_append]
+  -- This is a comment to test that `says` ignores following comments.
+
 set_option says.no_verify_in_CI true in
 example : True := by
   simp says
@@ -83,3 +90,18 @@ example : True := by
     run_tac do guard (← IO.getEnv "CI").isSome
     simp says trivial
   trivial
+
+-- Check that verification works even with multi-line suggestions, as produced by aesop
+def P : Prop := True
+def Q : Prop := True
+@[simp]
+def very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa : Q → P := fun _ => trivial
+@[simp]
+def very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb : Q := trivial
+/--
+info: Try this: aesop? says simp_all only [very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,
+    very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]
+-/
+#guard_msgs in
+example : P := by
+  aesop? says

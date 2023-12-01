@@ -17,7 +17,7 @@ Properties of additive and multiplicative indicator functions involving `=ᶠ` a
 indicator, characteristic, filter
 -/
 
-variable {α β M E : Type _}
+variable {α β M E : Type*}
 
 open Set Filter
 
@@ -31,7 +31,7 @@ theorem mulIndicator_eventuallyEq (hf : f =ᶠ[l ⊓ 𝓟 s] g) (hs : s =ᶠ[l] 
   (eventually_inf_principal.1 hf).mp <| hs.mem_iff.mono fun x hst hfg =>
     by_cases
       (fun hxs : x ∈ s => by simp only [*, hst.1 hxs, mulIndicator_of_mem])
-      (fun hxs => by simp only [mulIndicator_of_not_mem, hxs, mt hst.2 hxs])
+      (fun hxs => by simp only [mulIndicator_of_not_mem, hxs, mt hst.2 hxs, not_false_eq_true])
 #align indicator_eventually_eq indicator_eventuallyEq
 
 end One

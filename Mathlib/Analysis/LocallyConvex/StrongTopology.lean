@@ -30,7 +30,7 @@ locally convex, bounded convergence
 
 open Topology UniformConvergence
 
-variable {R 𝕜₁ 𝕜₂ E F : Type _}
+variable {R 𝕜₁ 𝕜₂ E F : Type*}
 
 namespace ContinuousLinearMap
 

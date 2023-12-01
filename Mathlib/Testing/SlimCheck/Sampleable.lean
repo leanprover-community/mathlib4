@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
 import Mathlib.Testing.SlimCheck.Gen
+import Mathlib.Logic.Equiv.Functor
 import Qq
 
 #align_import testing.slim_check.sampleable from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
@@ -84,6 +85,8 @@ random testing
 * https://hackage.haskell.org/package/QuickCheck
 
 -/
+
+set_option autoImplicit true
 
 namespace SlimCheck
 
@@ -202,9 +205,8 @@ instance Nat.sampleableExt : SampleableExt m Nat :=
 instance Fin.sampleableExt {n : Nat} :
     SampleableExt m (Fin (n.succ)) :=
   mkSelfContained (do choose (Fin n.succ) (Fin.ofNat 0) (Fin.ofNat (←getSize).down) (by
-    simp [Fin.ofNat, LE.le]
-    exact Nat.zero_le _
-  ))
+    simp only [LE.le, Fin.ofNat, Nat.zero_mod, Fin.zero_eta, Fin.val_zero, Nat.le_eq]
+    exact Nat.zero_le _))
 
 instance Int.sampleableExt : SampleableExt m Int :=
   mkSelfContained (do
@@ -238,7 +240,11 @@ instance Prop.sampleableExt : SampleableExt m Prop where
   interp := Coe.coe
 end univ_zero
 
+@[pp_with_univ]
 class ULiftableFrom (f : outParam <| Type u₀ → Type u₁) (g : Type v₀ → Type v₁) extends ULiftable f g
+
+instance (f : Type u₀ → Type u₁) [Monad f] [LawfulFunctor f] : ULiftableFrom f f where
+  congr {α β} e := Functor.mapEquiv _ e
 
 instance Prod.sampleableExt{α : Type u₁} {β : Type u₂}
   {m₁ : Type u₁ → Type v} {m₂ : Type u₂ → Type v} {m : Type (max u₁ u₂) → Type v}
@@ -346,6 +352,21 @@ elab "#sample " e:term : command =>
     let printSamples ← mkAppOptM ``printSamples #[none, repr_inst, gen]
     let code ← unsafe evalExpr (IO PUnit) q(IO PUnit) printSamples
     _ ← code
+
+instance : LawfulFunctor (EStateM ε IO.RealWorld) where
+  map_const {α β} := funext <| fun a => by dsimp [Function.comp, EStateM, EStateM.instMonadEStateM]
+  id_map x := funext <| fun a => by
+    cases h : x a <;>
+      dsimp [Function.comp, EStateM, EStateM.instMonadEStateM, EStateM.map] <;>
+      simp [h]
+  comp_map f g x := funext <| fun a => by
+    cases h : x a <;>
+      dsimp [Function.comp, EStateM, EStateM.instMonadEStateM, EStateM.map] <;>
+      simp [h]
+
+instance : LawfulFunctor IO := inferInstanceAs <| LawfulFunctor (EStateM _ IO.RealWorld)
+
+example : SampleableExt IO (ℕ × ℕ) := Prod.sampleableExt
 
 #sample Nat × Nat
 end SlimCheck

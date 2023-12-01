@@ -22,7 +22,7 @@ For a topological space `α`,
 
 open Order OrderDual Set
 
-variable {ι α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+variable {ι α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 namespace TopologicalSpace
 
@@ -30,7 +30,7 @@ namespace TopologicalSpace
 
 
 /-- The type of closed subsets of a topological space. -/
-structure Closeds (α : Type _) [TopologicalSpace α] where
+structure Closeds (α : Type*) [TopologicalSpace α] where
   carrier : Set α
   closed' : IsClosed carrier
 #align topological_space.closeds TopologicalSpace.Closeds
@@ -273,9 +273,9 @@ theorem Opens.isCoatom_iff [T1Space α] {s : Opens α} :
 
 
 /-- The type of clopen sets of a topological space. -/
-structure Clopens (α : Type _) [TopologicalSpace α] where
+structure Clopens (α : Type*) [TopologicalSpace α] where
   carrier : Set α
-  clopen' : IsClopen carrier
+  isClopen' : IsClopen carrier
 #align topological_space.clopens TopologicalSpace.Clopens
 
 namespace Clopens
@@ -284,9 +284,9 @@ instance : SetLike (Clopens α) α where
   coe s := s.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
-theorem clopen (s : Clopens α) : IsClopen (s : Set α) :=
-  s.clopen'
-#align topological_space.clopens.clopen TopologicalSpace.Clopens.clopen
+theorem isClopen (s : Clopens α) : IsClopen (s : Set α) :=
+  s.isClopen'
+#align topological_space.clopens.clopen TopologicalSpace.Clopens.isClopen
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Clopens α) : Set α := s
@@ -296,7 +296,7 @@ initialize_simps_projections Clopens (carrier → coe)
 /-- Reinterpret a clopen as an open. -/
 @[simps]
 def toOpens (s : Clopens α) : Opens α :=
-  ⟨s, s.clopen.isOpen⟩
+  ⟨s, s.isClopen.isOpen⟩
 #align topological_space.clopens.to_opens TopologicalSpace.Clopens.toOpens
 
 @[ext]
@@ -309,12 +309,12 @@ theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
   rfl
 #align topological_space.clopens.coe_mk TopologicalSpace.Clopens.coe_mk
 
-instance : Sup (Clopens α) := ⟨fun s t => ⟨s ∪ t, s.clopen.union t.clopen⟩⟩
-instance : Inf (Clopens α) := ⟨fun s t => ⟨s ∩ t, s.clopen.inter t.clopen⟩⟩
+instance : Sup (Clopens α) := ⟨fun s t => ⟨s ∪ t, s.isClopen.union t.isClopen⟩⟩
+instance : Inf (Clopens α) := ⟨fun s t => ⟨s ∩ t, s.isClopen.inter t.isClopen⟩⟩
 instance : Top (Clopens α) := ⟨⟨⊤, isClopen_univ⟩⟩
 instance : Bot (Clopens α) := ⟨⟨⊥, isClopen_empty⟩⟩
-instance : SDiff (Clopens α) := ⟨fun s t => ⟨s \ t, s.clopen.diff t.clopen⟩⟩
-instance : HasCompl (Clopens α) := ⟨fun s => ⟨sᶜ, s.clopen.compl⟩⟩
+instance : SDiff (Clopens α) := ⟨fun s t => ⟨s \ t, s.isClopen.diff t.isClopen⟩⟩
+instance : HasCompl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
 
 instance : BooleanAlgebra (Clopens α) :=
   SetLike.coe_injective.booleanAlgebra _ (fun _ _ => rfl) (fun _ _ => rfl) rfl rfl (fun _ => rfl)

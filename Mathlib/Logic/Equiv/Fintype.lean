@@ -28,7 +28,7 @@ sides of the equivalence are `Fintype`s.
 -/
 
 
-variable {α β : Type _} [Fintype α] [DecidableEq β] (e : Equiv.Perm α) (f : α ↪ β)
+variable {α β : Type*} [Fintype α] [DecidableEq β] (e : Equiv.Perm α) (f : α ↪ β)
 
 /-- Computably turn an embedding `f : α ↪ β` into an equiv `α ≃ Set.range f`,
 if `α` is a `Fintype`. Has poor computational performance, due to exhaustive searching in

@@ -16,6 +16,8 @@ Any partially defined Lipschitz map into `ℓ^∞` can be extended to the whole 
 
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 

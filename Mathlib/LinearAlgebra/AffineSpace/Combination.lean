@@ -3,7 +3,6 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Fintype.BigOperators
@@ -44,7 +43,6 @@ These definitions are for sums over a `Finset`; versions for a
 -/
 
 
-
 noncomputable section
 
 open BigOperators Affine
@@ -56,13 +54,13 @@ theorem univ_fin2 : (univ : Finset (Fin 2)) = {0, 1} := by
   fin_cases x <;> simp
 #align finset.univ_fin2 Finset.univ_fin2
 
-variable {k : Type _} {V : Type _} {P : Type _} [Ring k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
 
 variable [S : AffineSpace V P]
 
-variable {ι : Type _} (s : Finset ι)
+variable {ι : Type*} (s : Finset ι)
 
-variable {ι₂ : Type _} (s₂ : Finset ι₂)
+variable {ι₂ : Type*} (s₂ : Finset ι₂)
 
 /-- A weighted sum of the results of subtracting a base point from the
 given points, as a linear map on the weights.  The main cases of
@@ -250,7 +248,7 @@ from the given points, as a linear map on the weights.  This is
 intended to be used when the sum of the weights is 0; that condition
 is specified as a hypothesis on those lemmas that require it. -/
 def weightedVSub (p : ι → P) : (ι → k) →ₗ[k] V :=
-  s.weightedVSubOfPoint p (Classical.choice S.Nonempty)
+  s.weightedVSubOfPoint p (Classical.choice S.nonempty)
 #align finset.weighted_vsub Finset.weightedVSub
 
 /-- Applying `weightedVSub` with given weights.  This is for the case
@@ -260,7 +258,7 @@ that base point will cancel out later); a more typical use case for
 `weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero` and then
 using `weightedVSubOfPoint_apply`. -/
 theorem weightedVSub_apply (w : ι → k) (p : ι → P) :
-    s.weightedVSub p w = ∑ i in s, w i • (p i -ᵥ Classical.choice S.Nonempty) := by
+    s.weightedVSub p w = ∑ i in s, w i • (p i -ᵥ Classical.choice S.nonempty) := by
   simp [weightedVSub, LinearMap.sum_apply]
 #align finset.weighted_vsub_apply Finset.weightedVSub_apply
 
@@ -361,7 +359,7 @@ theorem weightedVSub_const_smul (w : ι → k) (p : ι → P) (c : k) :
   s.weightedVSubOfPoint_const_smul _ _ _ _
 #align finset.weighted_vsub_const_smul Finset.weightedVSub_const_smul
 
-instance : AffineSpace (ι → k) (ι → k) := Pi.instAddTorsorForAllForAllAddGroup
+instance : AffineSpace (ι → k) (ι → k) := Pi.instAddTorsor
 
 variable (k)
 
@@ -373,7 +371,7 @@ points with the given weights; that condition is specified as a
 hypothesis on those lemmas that require it. -/
 def affineCombination (p : ι → P) : (ι → k) →ᵃ[k] P
     where
-  toFun w := s.weightedVSubOfPoint p (Classical.choice S.Nonempty) w +ᵥ Classical.choice S.Nonempty
+  toFun w := s.weightedVSubOfPoint p (Classical.choice S.nonempty) w +ᵥ Classical.choice S.nonempty
   linear := s.weightedVSub p
   map_vadd' w₁ w₂ := by simp_rw [vadd_vadd, weightedVSub, vadd_eq_add, LinearMap.map_add]
 #align finset.affine_combination Finset.affineCombination
@@ -397,7 +395,7 @@ point with
 then using `weightedVSubOfPoint_apply`. -/
 theorem affineCombination_apply (w : ι → k) (p : ι → P) :
     (s.affineCombination k p) w =
-      s.weightedVSubOfPoint p (Classical.choice S.Nonempty) w +ᵥ Classical.choice S.Nonempty :=
+      s.weightedVSubOfPoint p (Classical.choice S.nonempty) w +ᵥ Classical.choice S.nonempty :=
   rfl
 #align finset.affine_combination_apply Finset.affineCombination_apply
 
@@ -440,8 +438,8 @@ theorem attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w 
     s.attach.affineCombination k f (w ∘ f) = (image f univ).affineCombination k id w := by
   simp only [affineCombination, weightedVSubOfPoint_apply, id.def, vadd_right_cancel_iff,
     Function.comp_apply, AffineMap.coe_mk]
-  let g₁ : s → V := fun i => w (f i) • (f i -ᵥ Classical.choice S.Nonempty)
-  let g₂ : P → V := fun i => w i • (i -ᵥ Classical.choice S.Nonempty)
+  let g₁ : s → V := fun i => w (f i) • (f i -ᵥ Classical.choice S.nonempty)
+  let g₂ : P → V := fun i => w i • (i -ᵥ Classical.choice S.nonempty)
   change univ.sum g₁ = (image f univ).sum g₂
   have hgf : g₁ = g₂ ∘ f := by
     ext
@@ -632,16 +630,16 @@ theorem eq_affineCombination_subset_iff_eq_affineCombination_subtype {p0 : P} {s
 variable {k V}
 
 /-- Affine maps commute with affine combinations. -/
-theorem map_affineCombination {V₂ P₂ : Type _} [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
+theorem map_affineCombination {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
     (p : ι → P) (w : ι → k) (hw : s.sum w = 1) (f : P →ᵃ[k] P₂) :
     f (s.affineCombination k p w) = s.affineCombination k (f ∘ p) w := by
-  have b := Classical.choice (inferInstance : AffineSpace V P).Nonempty
-  have b₂ := Classical.choice (inferInstance : AffineSpace V₂ P₂).Nonempty
+  have b := Classical.choice (inferInstance : AffineSpace V P).nonempty
+  have b₂ := Classical.choice (inferInstance : AffineSpace V₂ P₂).nonempty
   rw [s.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w p hw b,
     s.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w (f ∘ p) hw b₂, ←
     s.weightedVSubOfPoint_vadd_eq_of_sum_eq_one w (f ∘ p) hw (f b) b₂]
   simp only [weightedVSubOfPoint_apply, RingHom.id_apply, AffineMap.map_vadd,
-    LinearMap.map_smulₛₗ, AffineMap.linearMap_vsub, LinearMap.map_sum, Function.comp_apply]
+    LinearMap.map_smulₛₗ, AffineMap.linearMap_vsub, map_sum, Function.comp_apply]
 #align finset.map_affine_combination Finset.map_affineCombination
 
 variable (k)
@@ -777,9 +775,9 @@ end Finset
 
 namespace Finset
 
-variable (k : Type _) {V : Type _} {P : Type _} [DivisionRing k] [AddCommGroup V] [Module k V]
+variable (k : Type*) {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
 
-variable [AffineSpace V P] {ι : Type _} (s : Finset ι) {ι₂ : Type _} (s₂ : Finset ι₂)
+variable [AffineSpace V P] {ι : Type*} (s : Finset ι) {ι₂ : Type*} (s₂ : Finset ι₂)
 
 /-- The weights for the centroid of some points. -/
 def centroidWeights : ι → k :=
@@ -986,7 +984,7 @@ end Finset
 
 section AffineSpace'
 
-variable {k V P : Type _} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+variable {ι k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
 /-- A `weightedVSub` with sum of weights 0 is in the `vectorSpan` of
 an indexed family. -/
@@ -1198,9 +1196,9 @@ end AffineSpace'
 
 section DivisionRing
 
-variable {k : Type _} {V : Type _} {P : Type _} [DivisionRing k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V]
 
-variable [AffineSpace V P] {ι : Type _}
+variable [AffineSpace V P] {ι : Type*}
 
 open Set Finset
 
@@ -1238,9 +1236,9 @@ end DivisionRing
 
 namespace AffineMap
 
-variable {k : Type _} {V : Type _} (P : Type _) [CommRing k] [AddCommGroup V] [Module k V]
+variable {k : Type*} {V : Type*} (P : Type*) [CommRing k] [AddCommGroup V] [Module k V]
 
-variable [AffineSpace V P] {ι : Type _} (s : Finset ι)
+variable [AffineSpace V P] {ι : Type*} (s : Finset ι)
 
 -- TODO: define `affineMap.proj`, `affineMap.fst`, `affineMap.snd`
 /-- A weighted sum, as an affine map on the points involved. -/

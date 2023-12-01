@@ -19,14 +19,11 @@ would result in less delta-reduced statements.
 -/
 
 
-alias heq_iff_eq ↔ HEq.eq Eq.heq
+protected alias ⟨HEq.eq, Eq.heq⟩ := heq_iff_eq
 #align heq.eq HEq.eq
 #align eq.heq Eq.heq
 
--- Porting note: we may need to modify `alias` so we can make aliases protected at creation.
--- attribute [protected] HEq.eq Eq.heq
-
-variable {α : Sort _} {p q r : Prop} [Decidable p] [Decidable q] {a b c : α}
+variable {α : Sort*} {p q r : Prop} [Decidable p] [Decidable q] {a b c : α}
 
 theorem dite_dite_distrib_left {a : p → α} {b : ¬p → q → α} {c : ¬p → ¬q → α} :
     (dite p a fun hp ↦ dite q (b hp) (c hp)) =

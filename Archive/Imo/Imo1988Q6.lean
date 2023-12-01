@@ -7,6 +7,7 @@ import Mathlib.Data.Nat.Prime
 import Mathlib.Data.Rat.Defs
 import Mathlib.Order.WellFounded
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 import Mathlib.Tactic.WLOG
 
 #align_import imo.imo1988_q6 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
@@ -183,7 +184,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   · -- For the second condition, we note that it suffices to check that c ≠ m_x.
     suffices hc : c ≠ mx
     · refine' lt_of_le_of_ne _ hc
-      exact_mod_cast c_lt
+      exact mod_cast c_lt
     -- However, recall that B(m_x) ≠ m_x + m_y.
     -- If c = m_x, we can prove B(m_x) = m_x + m_y.
     contrapose! hm_B₂
@@ -207,7 +208,7 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
       hk (fun x => k * x) (fun x => x * x - k) fun _ _ => False <;>
     clear hk a b
   · -- We will now show that the fibers of the solution set are described by a quadratic equation.
-    intro x y; dsimp only
+    intro x y
     rw [← Int.coe_nat_inj', ← sub_eq_zero]
     apply eq_iff_eq_cancel_right.2
     simp; ring
@@ -236,14 +237,14 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
     · have hpos : z * z + x * x > 0 := by
         apply add_pos_of_nonneg_of_pos
         · apply mul_self_nonneg
-        · apply mul_pos <;> exact_mod_cast hx
+        · apply mul_pos <;> exact mod_cast hx
       have hzx : z * z + x * x = (z * x + 1) * k := by
         rw [← sub_eq_zero, ← h_root]
         ring
       rw [hzx] at hpos
       replace hpos : z * x + 1 > 0 := pos_of_mul_pos_left hpos (Int.ofNat_zero_le k)
       replace hpos : z * x ≥ 0 := Int.le_of_lt_add_one hpos
-      apply nonneg_of_mul_nonneg_left hpos (by exact_mod_cast hx)
+      apply nonneg_of_mul_nonneg_left hpos (mod_cast hx)
     · contrapose! hV₀ with x_lt_z
       apply ne_of_gt
       calc
@@ -265,7 +266,7 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
       hk (fun x => k * x) (fun x => x * x + 1) fun x _ => x ≤ 1 <;>
     clear hk a b
   · -- We will now show that the fibers of the solution set are described by a quadratic equation.
-    intro x y; dsimp only
+    intro x y
     rw [← Int.coe_nat_inj', ← sub_eq_zero]
     apply eq_iff_eq_cancel_right.2
     simp; ring
@@ -283,7 +284,7 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
   · -- Show the descent step.
     intro x y _ hx h_base _ z _ _ hV₀
     constructor
-    · have zy_pos : z * y ≥ 0 := by rw [hV₀]; exact_mod_cast Nat.zero_le _
+    · have zy_pos : z * y ≥ 0 := by rw [hV₀]; exact mod_cast Nat.zero_le _
       apply nonneg_of_mul_nonneg_left zy_pos
       linarith
     · contrapose! hV₀ with x_lt_z

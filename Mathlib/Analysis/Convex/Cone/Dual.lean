@@ -19,22 +19,28 @@ all points `x` in a given set `0 ≤ ⟪ x, y ⟫`.
 We prove the following theorems:
 * `ConvexCone.innerDualCone_of_innerDualCone_eq_self`:
   The `innerDualCone` of the `innerDualCone` of a nonempty, closed, convex cone is itself.
-
+* `ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem`:
+  This variant of the
+  [hyperplane separation theorem](https://en.wikipedia.org/wiki/Hyperplane_separation_theorem)
+  states that given a nonempty, closed, convex cone `K` in a complete, real inner product space `H`
+  and a point `b` disjoint from it, there is a vector `y` which separates `b` from `K` in the sense
+  that for all points `x` in `K`, `0 ≤ ⟪x, y⟫_ℝ` and `⟪y, b⟫_ℝ < 0`. This is also a geometric
+  interpretation of the
+  [Farkas lemma](https://en.wikipedia.org/wiki/Farkas%27_lemma#Geometric_interpretation).
 -/
-
 
 open Set LinearMap
 
 open Classical Pointwise
 
-variable {𝕜 E F G : Type _}
+variable {𝕜 E F G : Type*}
 
 /-! ### The dual cone -/
 
 
 section Dual
 
-variable {H : Type _} [NormedAddCommGroup H] [InnerProductSpace ℝ H] (s t : Set H)
+variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℝ H] (s t : Set H)
 
 open RealInnerProductSpace
 
@@ -100,7 +106,7 @@ theorem innerDualCone_insert (x : H) (s : Set H) :
   rw [insert_eq, innerDualCone_union]
 #align inner_dual_cone_insert innerDualCone_insert
 
-theorem innerDualCone_iUnion {ι : Sort _} (f : ι → Set H) :
+theorem innerDualCone_iUnion {ι : Sort*} (f : ι → Set H) :
     (⋃ i, f i).innerDualCone = ⨅ i, (f i).innerDualCone := by
   refine' le_antisymm (le_iInf fun i x hx y hy => hx _ <| mem_iUnion_of_mem _ hy) _
   intro x hx y hy

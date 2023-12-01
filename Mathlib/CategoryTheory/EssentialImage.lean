@@ -75,7 +75,7 @@ theorem obj_mem_essImage (F : D ⥤ C) (Y : D) : F.obj Y ∈ essImage F :=
   ⟨Y, ⟨Iso.refl _⟩⟩
 #align category_theory.functor.obj_mem_ess_image CategoryTheory.Functor.obj_mem_essImage
 
-/-- The essential image of a functor, interpreted of a full subcategory of the target category. -/
+/-- The essential image of a functor, interpreted as a full subcategory of the target category. -/
 -- Porting note: no hasNonEmptyInstance linter yet
 def EssImageSubcategory (F : C ⥤ D) :=
   FullSubcategory F.essImage
@@ -153,12 +153,12 @@ def Functor.objObjPreimageIso (Y : D) : F.obj (F.objPreimage Y) ≅ Y :=
   Functor.essImage.getIso _
 #align category_theory.functor.obj_obj_preimage_iso CategoryTheory.Functor.objObjPreimageIso
 
-/-- The induced functor of a faithful functor is faithful -/
+/-- The induced functor of a faithful functor is faithful. -/
 instance Faithful.toEssImage (F : C ⥤ D) [Faithful F] : Faithful F.toEssImage :=
   Faithful.of_comp_iso F.toEssImageCompEssentialImageInclusion
 #align category_theory.faithful.to_ess_image CategoryTheory.Faithful.toEssImage
 
-/-- The induced functor of a full functor is full -/
+/-- The induced functor of a full functor is full. -/
 instance Full.toEssImage (F : C ⥤ D) [Full F] : Full F.toEssImage :=
   haveI := Full.ofIso F.toEssImageCompEssentialImageInclusion.symm
   Full.ofCompFaithful F.toEssImage F.essImageInclusion

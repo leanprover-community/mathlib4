@@ -31,12 +31,12 @@ variable [DecidablePred p]
 
 /-- Count the number of naturals `k < n` satisfying `p k`. -/
 def count (n : ℕ) : ℕ :=
-  (List.range n).countp p
+  (List.range n).countP p
 #align nat.count Nat.count
 
 @[simp]
 theorem count_zero : count p 0 = 0 := by
-  rw [count, List.range_zero, List.countp, List.countp.go]
+  rw [count, List.range_zero, List.countP, List.countP.go]
 #align nat.count_zero Nat.count_zero
 
 /-- A fintype instance for the set relevant to `Nat.count`. Locally an instance in locale `count` -/
@@ -52,7 +52,7 @@ scoped[Count] attribute [instance] Nat.CountSet.fintype
 open Count
 
 theorem count_eq_card_filter_range (n : ℕ) : count p n = ((range n).filter p).card := by
-  rw [count, List.countp_eq_length_filter]
+  rw [count, List.countP_eq_length_filter]
   rfl
 #align nat.count_eq_card_filter_range Nat.count_eq_card_filter_range
 
@@ -111,10 +111,10 @@ theorem count_succ_eq_count_iff {n : ℕ} : count p (n + 1) = count p n ↔ ¬p 
   by_cases h : p n <;> simp [h, count_succ]
 #align nat.count_succ_eq_count_iff Nat.count_succ_eq_count_iff
 
-alias count_succ_eq_succ_count_iff ↔ _ count_succ_eq_succ_count
+alias ⟨_, count_succ_eq_succ_count⟩ := count_succ_eq_succ_count_iff
 #align nat.count_succ_eq_succ_count Nat.count_succ_eq_succ_count
 
-alias count_succ_eq_count_iff ↔ _ count_succ_eq_count
+alias ⟨_, count_succ_eq_count⟩ := count_succ_eq_count_iff
 #align nat.count_succ_eq_count Nat.count_succ_eq_count
 
 theorem count_le_cardinal (n : ℕ) : (count p n : Cardinal) ≤ Cardinal.mk { k | p k } := by

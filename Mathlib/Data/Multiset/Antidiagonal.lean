@@ -20,7 +20,7 @@ namespace Multiset
 
 open List
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- The antidiagonal of a multiset `s` consists of all pairs `(t₁, t₂)`
     such that `t₁ + t₂ = s`. These pairs are counted with multiplicities. -/
@@ -65,11 +65,8 @@ theorem antidiagonal_map_snd (s : Multiset α) : (antidiagonal s).map Prod.snd =
   Quotient.inductionOn s <| fun l ↦ by simp [powersetAux']
 #align multiset.antidiagonal_map_snd Multiset.antidiagonal_map_snd
 
-/- Porting note: I changed `@antidiagonal` to `@antidiagonal.{u}` because otherwise I got
-`Multiset.antidiagonal_zero.{u_2, u_1} {α : Type (max u_1 u_2)} : ...`, which gave me issues
-and triggered the linter. -/
 @[simp]
-theorem antidiagonal_zero : @antidiagonal.{u} α 0 = {(0, 0)} :=
+theorem antidiagonal_zero : @antidiagonal α 0 = {(0, 0)} :=
   rfl
 #align multiset.antidiagonal_zero Multiset.antidiagonal_zero
 

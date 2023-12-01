@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving
 -/
 
-import Mathlib.Init.Algebra.Order
+import Mathlib.Init.Order.Defs
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Control.ULiftable
@@ -34,6 +34,8 @@ defining objects that can be created randomly.
 * Similar library in Haskell: https://hackage.haskell.org/package/MonadRandom
 
 -/
+
+set_option autoImplicit true
 
 /-- A monad transformer to generate random objects using the generic generator type `g` -/
 abbrev RandG (g : Type) := StateT (ULift g)
@@ -101,24 +103,19 @@ instance {n : Nat} : Random (Fin n.succ) where
 def randBool [RandomGen g] : RandG g m Bool :=
   return (← rand (Fin 2)) == 1
 
-instance {α : Type u} [Random α] : Random (ULift.{v} α) where
-  random {g} := ULiftable.up (random : RandG g Id α)
 
 instance : Random Bool where
   random := randBool
 
-instance {α : Type u} [Preorder α] [BoundedRandom α] : BoundedRandom (ULift.{v} α) where
-  randomR {g} lo hi h := do
-    let v ← (ULiftable.up (BoundedRandom.randomR lo.down hi.down h : RandG g Id _) :
-      RandG g Id (ULift.{v} _))
-    pure ⟨ULift.up v.down.val, v.down.prop⟩
+instance {α : Type u} [Random α] : Random (ULift.{v} α) where
+  random {g} := ULiftable.up (random : RandG g Id α)
 
 instance : BoundedRandom Nat where
   randomR := λ lo hi h _ => do
     let z ← rand (Fin (hi - lo).succ)
     pure ⟨
       lo + z.val, Nat.le_add_right _ _,
-      Nat.add_le_of_le_sub_left h (Nat.le_of_succ_le_succ z.isLt)
+      Nat.add_le_of_le_sub' h (Nat.le_of_succ_le_succ z.isLt)
     ⟩
 
 instance : BoundedRandom Int where
@@ -135,6 +132,12 @@ instance {n : Nat} : BoundedRandom (Fin n) where
   randomR := λ lo hi h _ => do
     let ⟨r, h1, h2⟩ ← randBound Nat lo.val hi.val h
     pure ⟨⟨r, Nat.lt_of_le_of_lt h2 hi.isLt⟩, h1, h2⟩
+
+instance {α : Type u} [Preorder α] [BoundedRandom α] : BoundedRandom (ULift.{v} α) where
+  randomR {g} lo hi h := do
+    let (⟨v⟩ : ULift.{v} _)
+      ← (ULiftable.up (BoundedRandom.randomR lo.down hi.down h : RandG g _ _) : RandG g _ _)
+    pure ⟨ULift.up v.val, v.prop⟩
 
 end Random
 

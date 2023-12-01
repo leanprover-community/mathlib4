@@ -36,7 +36,7 @@ section SlashInvariantForms
 
 open ModularForm
 
-variable (F : Type _) (Γ : outParam <| Subgroup SL(2, ℤ)) (k : outParam ℤ)
+variable (F : Type*) (Γ : outParam <| Subgroup SL(2, ℤ)) (k : outParam ℤ)
 
 /-- Functions `ℍ → ℂ` that are invariant under the `SlashAction`. -/
 structure SlashInvariantForm where
@@ -89,12 +89,7 @@ namespace SlashInvariantForm
 
 open SlashInvariantForm
 
-variable {F : Type _} {Γ : outParam <| Subgroup SL(2, ℤ)} {k : outParam ℤ}
-
-instance (priority := 100) SlashInvariantFormClass.coeToFun [SlashInvariantFormClass F Γ k] :
-    CoeFun F fun _ => ℍ → ℂ :=
-  FunLike.hasCoeToFun
-#align slash_invariant_form.slash_invariant_form_class.coe_to_fun SlashInvariantForm.SlashInvariantFormClass.coeToFun
+variable {F : Type*} {Γ : outParam <| Subgroup SL(2, ℤ)} {k : outParam ℤ}
 
 -- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
 theorem slash_action_eqn [SlashInvariantFormClass F Γ k] (f : F) (γ : Γ) : ↑f ∣[k] γ = ⇑f :=
@@ -146,7 +141,7 @@ theorem coe_zero : ⇑(0 : SlashInvariantForm Γ k) = (0 : ℍ → ℂ) :=
 
 section
 
-variable {α : Type _} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
+variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 
 instance instSMul : SMul α (SlashInvariantForm Γ k) :=
   ⟨fun c f =>

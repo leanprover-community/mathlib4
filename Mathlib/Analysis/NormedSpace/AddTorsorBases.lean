@@ -27,7 +27,7 @@ This file contains results about bases in normed affine spaces.
 
 section Barycentric
 
-variable {ι 𝕜 E P : Type _} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+variable {ι 𝕜 E P : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 
 variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
@@ -61,7 +61,7 @@ to this basis.
 
 TODO Restate this result for affine spaces (instead of vector spaces) once the definition of
 convexity is generalised to this setting. -/
-theorem AffineBasis.interior_convexHull {ι E : Type _} [Finite ι] [NormedAddCommGroup E]
+theorem AffineBasis.interior_convexHull {ι E : Type*} [Finite ι] [NormedAddCommGroup E]
     [NormedSpace ℝ E] (b : AffineBasis ι ℝ E) :
     interior (convexHull ℝ (range b)) = {x | ∀ i, 0 < b.coord i x} := by
   cases subsingleton_or_nontrivial ι
@@ -74,13 +74,13 @@ theorem AffineBasis.interior_convexHull {ι E : Type _} [Finite ι] [NormedAddCo
     have : convexHull ℝ (range b) = ⋂ i, b.coord i ⁻¹' Ici 0 := by
       rw [b.convexHull_eq_nonneg_coord, setOf_forall]; rfl
     ext
-    simp only [this, interior_iInter, ←
+    simp only [this, interior_iInter_of_finite, ←
       IsOpenMap.preimage_interior_eq_interior_preimage (isOpenMap_barycentric_coord b _)
         (continuous_barycentric_coord b _),
       interior_Ici, mem_iInter, mem_setOf_eq, mem_Ioi, mem_preimage]
 #align affine_basis.interior_convex_hull AffineBasis.interior_convexHull
 
-variable {V P : Type _} [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 open AffineMap

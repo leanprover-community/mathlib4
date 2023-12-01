@@ -41,7 +41,7 @@ open Opposite
 
 namespace AlgebraicTopology
 
-variable {C : Type _} [Category C] [Abelian C]
+variable {C : Type*} [Category C] [Abelian C]
 
 attribute [local instance] Abelian.hasPullbacks
 

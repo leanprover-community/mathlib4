@@ -40,6 +40,7 @@ Then, by the Pigeonhole principle, at least two numbers in the triplet must lie 
 which finishes the proof.
 -/
 
+open Finset
 
 namespace Imo2021Q1
 
@@ -123,8 +124,8 @@ theorem imo2021_q1 :
   have hBsub : B ⊆ Finset.Icc n (2 * n) := by
     intro c hcB; simpa only [Finset.mem_Icc] using h₂ c hcB
   have hB' : 2 * 1 < (B ∩ (Finset.Icc n (2 * n) \ A) ∪ B ∩ A).card := by
-    rw [← Finset.inter_distrib_left, Finset.sdiff_union_self_eq_union,
-      Finset.union_eq_left_iff_subset.mpr hA, (Finset.inter_eq_left_iff_subset _ _).mpr hBsub]
+    rw [←inter_distrib_left, sdiff_union_self_eq_union, union_eq_left.2 hA,
+      inter_eq_left.2 hBsub]
     exact Nat.succ_le_iff.mp hB
   -- Since B has cardinality greater or equal to 3, there must exist a subset C ⊆ B such that
   -- for any A ⊆ [n, 2n], either C ⊆ A or C ⊆ [n, 2n] \ A and C has cardinality greater

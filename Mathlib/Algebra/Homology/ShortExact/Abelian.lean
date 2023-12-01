@@ -19,7 +19,7 @@ noncomputable section
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Preadditive
 
-variable {𝒜 : Type _} [Category 𝒜]
+variable {𝒜 : Type*} [Category 𝒜]
 
 namespace CategoryTheory
 
