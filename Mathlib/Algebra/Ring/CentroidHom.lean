@@ -417,8 +417,7 @@ def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α wh
     exact rfl
   map_mul' := fun z₁ z₂ => by
     ext a
-    show  (z₁ * z₂) * a = z₁ * (z₂ * a)
-    rw [((Set.mem_center_iff _).mp z₁.prop).left_assoc]
+    exact (((Set.mem_center_iff _).mp z₁.prop).left_assoc z₂ a).symm
 
 lemma centerToCentroid_apply (z : { x // x ∈ NonUnitalSubsemiring.center α }) (a : α) :
     (centerToCentroid z) a = z * a := rfl
