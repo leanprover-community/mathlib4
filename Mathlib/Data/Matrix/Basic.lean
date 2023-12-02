@@ -588,7 +588,7 @@ instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (Matrix n
   natCast_zero := show diagonal _ = _ by
     rw [Nat.cast_zero, diagonal_zero]
   natCast_succ n := show diagonal _ = diagonal _ + _ by
-    rw [Nat.cast_succ, ←diagonal_add, diagonal_one]
+    rw [Nat.cast_succ, ← diagonal_add, diagonal_one]
 
 instance instAddGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (Matrix n n α) where
   intCast_ofNat n := show diagonal _ = diagonal _ by
@@ -1287,7 +1287,7 @@ theorem scalar_inj [Nonempty n] {r s : α} : scalar n r = scalar n s ↔ r = s :
 theorem scalar_commute [Fintype n] [DecidableEq n] (r : α) (hr : ∀ r', Commute r r')
     (M : Matrix n n α) :
     Commute (scalar n r) M := by
-  simp_rw [Commute, SemiconjBy, scalar_apply, ←smul_eq_diagonal_mul, ←op_smul_eq_mul_diagonal]
+  simp_rw [Commute, SemiconjBy, scalar_apply, ← smul_eq_diagonal_mul, ← op_smul_eq_mul_diagonal]
   ext i j'
   exact hr _
 #align matrix.scalar.commute Matrix.scalar_commuteₓ

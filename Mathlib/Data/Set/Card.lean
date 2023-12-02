@@ -394,7 +394,7 @@ theorem _root_.Function.Embedding.enccard_le (e : s ↪ t) : s.encard ≤ t.enca
 theorem encard_image_le (f : α → β) (s : Set α) : (f '' s).encard ≤ s.encard := by
   obtain (h | h) := isEmpty_or_nonempty α
   · rw [s.eq_empty_of_isEmpty]; simp
-  rw [←(f.invFunOn_injOn_image s).encard_image]
+  rw [← (f.invFunOn_injOn_image s).encard_image]
   apply encard_le_of_subset
   exact f.invFunOn_image_image_subset s
 
@@ -1004,7 +1004,7 @@ theorem exists_eq_insert_iff_ncard (hs : s.Finite := by toFinite_tac) :
   classical
   cases' t.finite_or_infinite with ht ht
   · rw [ncard_eq_toFinset_card _ hs, ncard_eq_toFinset_card _ ht,
-      ←@Finite.toFinset_subset_toFinset _ _ _ hs ht, ← Finset.exists_eq_insert_iff]
+      ← @Finite.toFinset_subset_toFinset _ _ _ hs ht, ← Finset.exists_eq_insert_iff]
     convert Iff.rfl using 2; simp
     ext x
     simp [Finset.ext_iff, Set.ext_iff]

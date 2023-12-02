@@ -450,7 +450,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
     exact (IsLocalization.map_units ((structureSheaf R).presheaf.stalk p) ⟨x, hx⟩).map _
   · apply isLocalizedModule_toPushforwardStalkAlgHom_aux
   · intro x hx
-    rw [toPushforwardStalkAlgHom_apply, ←(toPushforwardStalk (algebraMap R S) p).map_zero,
+    rw [toPushforwardStalkAlgHom_apply, ← (toPushforwardStalk (algebraMap R S) p).map_zero,
       toPushforwardStalk] at hx
     -- Porting note : this `change` is manually rewriting `comp_apply`
     change _ = (TopCat.Presheaf.germ (Spec.topMap (algebraMap ↑R ↑S) _* (structureSheaf ↑S).val)

@@ -420,7 +420,7 @@ instance commSemiring : CommSemiring Num := by
 instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid Num where
   le := (· ≤ ·)
   lt := (· < ·)
-  lt_iff_le_not_le a b := by simp only [←lt_to_nat, ←le_to_nat, lt_iff_le_not_le]
+  lt_iff_le_not_le a b := by simp only [← lt_to_nat, ← le_to_nat, lt_iff_le_not_le]
   le_refl := by transfer
   le_trans a b c := by transfer_rw; apply le_trans
   le_antisymm a b := by transfer_rw; apply le_antisymm

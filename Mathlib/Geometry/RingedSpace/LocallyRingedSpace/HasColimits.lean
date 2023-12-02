@@ -215,7 +215,7 @@ theorem imageBasicOpen_image_preimage :
 
 theorem imageBasicOpen_image_open :
     IsOpen ((coequalizer.π f.1 g.1).base '' (imageBasicOpen f g U s).1) := by
-  rw [←(TopCat.homeoOfIso (PreservesCoequalizer.iso (SheafedSpace.forget _) f.1
+  rw [← (TopCat.homeoOfIso (PreservesCoequalizer.iso (SheafedSpace.forget _) f.1
     g.1)).isOpen_preimage, TopCat.coequalizer_isOpen_iff, ← Set.preimage_comp]
   erw [← coe_comp]
   rw [PreservesCoequalizer.iso_hom, ι_comp_coequalizerComparison]

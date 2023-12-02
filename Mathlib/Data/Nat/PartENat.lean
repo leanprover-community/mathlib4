@@ -561,7 +561,7 @@ theorem add_eq_top_iff {a b : PartENat} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ :=
   refine PartENat.casesOn a ?_ ?_
   <;> refine PartENat.casesOn b ?_ ?_
   <;> simp [top_add, add_top]
-  simp only [←Nat.cast_add, PartENat.natCast_ne_top, forall_const, not_false_eq_true]
+  simp only [← Nat.cast_add, PartENat.natCast_ne_top, forall_const, not_false_eq_true]
 #align part_enat.add_eq_top_iff PartENat.add_eq_top_iff
 
 protected theorem add_right_cancel_iff {a b c : PartENat} (hc : c ≠ ⊤) : a + c = b + c ↔ a = b := by

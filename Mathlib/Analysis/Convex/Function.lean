@@ -1146,7 +1146,7 @@ lemma StrictConvexOn.eq_of_isMinOn (hf : StrictConvexOn 𝕜 s f) (hfx : IsMinOn
   calc
     f z < _ := hf.2 hx hy hxy (by norm_num) (by norm_num) $ by norm_num
     _ ≤ (2 : 𝕜)⁻¹ • f z + (2 : 𝕜)⁻¹ • f z := by gcongr; exacts [hfx hz, hfy hz]
-    _ = f z := by rw [←_root_.add_smul]; norm_num
+    _ = f z := by rw [← _root_.add_smul]; norm_num
 
 /-- A strictly concave function admits at most one global maximum. -/
 lemma StrictConcaveOn.eq_of_isMaxOn (hf : StrictConcaveOn 𝕜 s f) (hfx : IsMaxOn f s x)

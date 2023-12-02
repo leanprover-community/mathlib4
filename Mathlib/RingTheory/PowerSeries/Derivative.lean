@@ -144,8 +144,8 @@ theorem derivative.ext {R} [CommRing R] [NoZeroSMulDivisors ℕ R] {f g} (hD : d
     rw [coeff_zero_eq_constantCoeff, hc]
   | succ n =>
     have equ : coeff R n (d⁄dX R f) = coeff R n (d⁄dX R g) := by rw [hD]
-    rwa [coeff_derivative, coeff_derivative, ←cast_succ, mul_comm, ←nsmul_eq_mul,
-      mul_comm, ←nsmul_eq_mul, smul_right_inj n.succ_ne_zero] at equ
+    rwa [coeff_derivative, coeff_derivative, ← cast_succ, mul_comm, ← nsmul_eq_mul,
+      mul_comm, ← nsmul_eq_mul, smul_right_inj n.succ_ne_zero] at equ
 
 @[simp] theorem derivative_inv {R} [CommRing R] (f : R⟦X⟧ˣ) :
     d⁄dX R ↑f⁻¹ = -(↑f⁻¹ : R⟦X⟧) ^ 2 * d⁄dX R f := by

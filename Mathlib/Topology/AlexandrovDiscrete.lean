@@ -107,7 +107,7 @@ lemma interior_sInter (S : Set (Set α)) : interior (⋂₀ S) = ⋂ s ∈ S, in
 
 lemma closure_iUnion (f : ι → Set α) : closure (⋃ i, f i) = ⋃ i, closure (f i) :=
   compl_injective <| by
-    simpa only [←interior_compl, compl_iUnion] using interior_iInter fun i ↦ (f i)ᶜ
+    simpa only [← interior_compl, compl_iUnion] using interior_iInter fun i ↦ (f i)ᶜ
 
 lemma closure_sUnion (S : Set (Set α)) : closure (⋃₀ S) = ⋃ s ∈ S, closure s := by
   simp_rw [sUnion_eq_biUnion, closure_iUnion]
@@ -196,7 +196,7 @@ lemma gc_exterior_interior : GaloisConnection (exterior : Set α → Set α) int
 
 @[simp] lemma exterior_subset_exterior : exterior s ⊆ exterior t ↔ 𝓝ˢ s ≤ 𝓝ˢ t := by
   refine ⟨?_, fun h ↦ ker_mono h⟩
-  simp_rw [le_def, ←exterior_subset_iff_mem_nhdsSet]
+  simp_rw [le_def, ← exterior_subset_iff_mem_nhdsSet]
   exact fun h u ↦ h.trans
 
 lemma specializes_iff_exterior_subset : x ⤳ y ↔ exterior {x} ⊆ exterior {y} := by

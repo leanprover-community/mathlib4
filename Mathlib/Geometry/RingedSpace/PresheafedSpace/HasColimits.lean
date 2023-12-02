@@ -403,7 +403,7 @@ def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v}
     erw [Category.id_comp]
     rw [Category.assoc]
     erw [← (F.obj (unop Y)).presheaf.map_comp, (F.map f.unop).c.naturality_assoc,
-      ←(F.obj (unop Y)).presheaf.map_comp]
+      ← (F.obj (unop Y)).presheaf.map_comp]
     rfl
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.colimit_presheaf_obj_iso_componentwise_limit AlgebraicGeometry.PresheafedSpace.colimitPresheafObjIsoComponentwiseLimit

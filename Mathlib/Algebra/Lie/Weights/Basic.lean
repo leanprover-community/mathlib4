@@ -662,7 +662,7 @@ lemma iSup_weightSpace_eq_top [IsTriangularizable K L M] :
         rw [← hχ, weightSpace_weightSpaceOf_map_incl]
       simp_rw [biSup_congr this, ← LieSubmodule.map_iSup, ih, LieModuleHom.map_top,
         LieSubmodule.range_incl]
-    simpa only [←ih, iSup_comm (ι := K), iSup_iSup_eq_right] using iSup_weightSpaceOf_eq_top K L M y
+    simpa only [← ih, iSup_comm (ι := K), iSup_iSup_eq_right] using iSup_weightSpaceOf_eq_top K L M y
 
 end field
 

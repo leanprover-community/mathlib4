@@ -210,7 +210,7 @@ lemma sum_collapse (h𝒜 : 𝒜 ⊆ (insert a u).powerset) (hu : a ∉ u) :
     _ = ∑ s in u.powerset ∩ 𝒜, f s + ∑ s in u.powerset.image (insert a) ∩ 𝒜, f s := ?_
     _ = ∑ s in u.powerset ∩ 𝒜, f s + ∑ s in ((insert a u).powerset \ u.powerset) ∩ 𝒜, f s := ?_
     _ = ∑ s in 𝒜, f s := ?_
-  · rw [←sum_ite_mem, ←sum_ite_mem, sum_image, ←sum_add_distrib]
+  · rw [← sum_ite_mem, ← sum_ite_mem, sum_image, ← sum_add_distrib]
     · exact sum_congr rfl fun s hs ↦ collapse_eq (not_mem_mono (mem_powerset.1 hs) hu) _ _
     · exact (insert_erase_invOn.2.injOn).mono fun s hs ↦ not_mem_mono (mem_powerset.1 hs) hu
   · congr with s
@@ -278,7 +278,7 @@ lemma four_functions_theorem (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h₃ : 0 �
     (extend g (f₃ ∘ (↑)) 0) (extend g (f₄ ∘ (↑)) 0) (extend_nonneg (fun _ ↦ h₁ _) le_rfl)
     (extend_nonneg (fun _ ↦ h₂ _) le_rfl) (extend_nonneg (fun _ ↦ h₃ _) le_rfl)
     (extend_nonneg (fun _ ↦ h₄ _) le_rfl) ?_ (s'.map ⟨g, hg⟩) (t'.map ⟨g, hg⟩)
-  simpa only [←hs', ←ht', ←map_sups, ←map_infs, sum_map, Embedding.coeFn_mk, hg.extend_apply]
+  simpa only [← hs', ← ht', ← map_sups, ← map_infs, sum_map, Embedding.coeFn_mk, hg.extend_apply]
     using this
   rintro s t
   classical
@@ -348,7 +348,7 @@ lemma Finset.le_card_diffs_mul_card_diffs (s t : Finset α) :
   · rintro s t
     simp_rw [map_eq_image]
     exact image_image₂_distrib fun a b ↦ rfl
-  simpa [←card_compls (_ ⊻ _), ←map_sup, ←map_inf, ←this] using
+  simpa [← card_compls (_ ⊻ _), ← map_sup, ← map_inf, ← this] using
     (s.map ⟨_, liftLatticeHom_injective⟩).le_card_infs_mul_card_sups
       (t.map ⟨_, liftLatticeHom_injective⟩)ᶜˢ
 

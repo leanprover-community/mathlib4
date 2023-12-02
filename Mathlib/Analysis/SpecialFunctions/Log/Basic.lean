@@ -243,8 +243,8 @@ theorem log_int_cast_nonneg (n : ℤ) : 0 ≤ log n := by
       cases hn with
       | inl hn => simp [hn.symm]
       | inr hn =>
-          have : (1 : ℝ) ≤ -n := by rw [←neg_zero, ←lt_neg] at hn; exact mod_cast hn
-          rw [←log_neg_eq_log]
+          have : (1 : ℝ) ≤ -n := by rw [← neg_zero, ← lt_neg] at hn; exact mod_cast hn
+          rw [← log_neg_eq_log]
           exact log_nonneg this
 
 theorem strictMonoOn_log : StrictMonoOn log (Set.Ioi 0) := fun _ hx _ _ hxy => log_lt_log hx hxy
@@ -557,7 +557,7 @@ def evalLogIntCast : PositivityExt where eval {_ _} _zα _pα e := do
 def evalLogNatLit : PositivityExt where eval {_ _} _zα _pα e := do
   let .app (f : Q(ℝ → ℝ)) (a : Q(ℝ)) ← withReducible (whnf e) | throwError "not Real.log"
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.log)
-  match ←NormNum.derive a with
+  match ← NormNum.derive a with
   | .isNat (_ : Q(AddMonoidWithOne ℝ)) lit p =>
     assumeInstancesCommute
     have p : Q(NormNum.IsNat $a $lit) := p

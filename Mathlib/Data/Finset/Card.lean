@@ -685,7 +685,7 @@ lemma covby_iff_card_sdiff_eq_one : t ⋖ s ↔ t ⊆ s ∧ (s \ t).card = 1 := 
   · simp_rw [card_eq_one]
     rintro ⟨hts, a, ha⟩
     refine ⟨a, (mem_sdiff.1 $ superset_of_eq ha $ mem_singleton_self _).2, ?_⟩
-    rw [insert_eq, ←ha, sdiff_union_of_subset hts]
+    rw [insert_eq, ← ha, sdiff_union_of_subset hts]
 
 end DecidableEq
 

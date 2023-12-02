@@ -92,7 +92,7 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
 
 lemma bit_mod_two (a : Bool) (x : ℕ) :
     bit a x % 2 = if a then 1 else 0 := by
-  simp (config := { unfoldPartialApp := true }) [bit, bit0, bit1, Bool.cond_eq_ite, ←mul_two]
+  simp (config := { unfoldPartialApp := true }) [bit, bit0, bit1, Bool.cond_eq_ite, ← mul_two]
   split_ifs <;> simp [Nat.add_mod]
 
 @[simp]
@@ -463,7 +463,7 @@ theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b <
 #align nat.lt_lxor_cases Nat.lt_xor_cases
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
-  rw [pow_succ', ←bit0_eq_two_mul]
+  rw [pow_succ', ← bit0_eq_two_mul]
   cases b <;> simp
 
 /-- If `x` and `y` fit within `n` bits, then the result of any bitwise operation on `x` and `y` also

@@ -655,7 +655,7 @@ theorem d_comp_ε : (groupCohomology.resolution k G).d 1 0 ≫ ε k G = 0 := by
   have : (forget₂ToModuleCat k G).d 1 0
       ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 := by
     rw [← forget₂ToModuleCatHomotopyEquiv_f_0_eq,
-      ←(forget₂ToModuleCatHomotopyEquiv k G).1.2 1 0 rfl]
+      ← (forget₂ToModuleCatHomotopyEquiv k G).1.2 1 0 rfl]
     exact comp_zero
   exact LinearMap.ext_iff.1 this _
 #align group_cohomology.resolution.d_comp_ε groupCohomology.resolution.d_comp_ε
