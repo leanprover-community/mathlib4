@@ -124,9 +124,9 @@ Retrieve the current cache of lemmas.
 initialize rewriteLemmas : DiscrTreeCache (Name × Bool × Nat) ← unsafe do
   let path ← cachePath
   if (← path.pathExists) then
-    let (d, _r) ← unpickle (DiscrTree (Name × Bool × Nat)) path
-    -- We can drop the `CompactedRegion` value; we do not plan to free it
-    DiscrTreeCache.mk "rw?: using cache" processLemma (init := some d)
+    -- We can drop the `CompactedRegion` value from `unpickle`; we do not plan to free it
+    let d := (·.1) <$> unpickle (DiscrTree (Name × Bool × Nat)) path
+    DiscrTreeCache.mk "rw?: using cache" processLemma (init := d)
   else
     buildDiscrTree
 
