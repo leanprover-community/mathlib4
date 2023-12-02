@@ -195,7 +195,7 @@ def setValue {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = 
         (try simp only [f.injective.eq_iff, not_true_eq_false] at *)
     · rw[h₁,h₂]
     · rw[h₁,h]
-    · rw[h₅,←h]
+    · rw[h₅, ← h]
     · exact h₆.symm
     · exfalso; exact h₅ h.symm
     · exfalso; exact h₁ h

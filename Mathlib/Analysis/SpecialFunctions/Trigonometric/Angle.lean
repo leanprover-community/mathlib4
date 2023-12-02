@@ -229,7 +229,7 @@ theorem two_nsmul_eq_pi_iff {θ : Angle} : (2 : ℕ) • θ = π ↔ θ = (π / 
   rw [coe_nsmul, two_nsmul_eq_iff]
   -- Porting note: `congr` didn't simplify the goal of iff of `Or`s
   convert Iff.rfl
-  rw [add_comm, ← coe_add, ← sub_eq_zero, ← coe_sub, neg_div, ←neg_sub, sub_neg_eq_add, add_assoc,
+  rw [add_comm, ← coe_add, ← sub_eq_zero, ← coe_sub, neg_div, ← neg_sub, sub_neg_eq_add, add_assoc,
     add_halves, ← two_mul, coe_neg, coe_two_pi, neg_zero]
 #align real.angle.two_nsmul_eq_pi_iff Real.Angle.two_nsmul_eq_pi_iff
 
