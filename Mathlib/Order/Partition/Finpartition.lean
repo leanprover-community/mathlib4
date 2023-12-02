@@ -554,7 +554,8 @@ variable [Fintype α]
 
 /-- A setoid over a finite type induces a finpartition of the type's elements,
 where the parts are the setoid's equivalence classes. -/
-def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α) :=
+noncomputable def ofSetoid (s : Setoid α) : Finpartition (univ : Finset α) := by
+  classical exact
   { parts := univ.image fun a => univ.filter (s.r a)
     supIndep := by
       simp only [mem_univ, forall_true_left, supIndep_iff_pairwiseDisjoint, Set.PairwiseDisjoint,
@@ -580,14 +581,14 @@ def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α
       simp only [filter_eq_empty_iff, not_forall, mem_univ, forall_true_left, true_and, not_not]
       use a; exact s.iseqv.refl a }
 
-lemma mem_part_univ_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
+theorem mem_part_univ_iff_rel {s : Setoid α} {b : α} :
     b ∈ (ofSetoid s).part (mem_univ a) ↔ s.r a b := by
-  simp only [part, ofSetoid, filter_congr_decidable, mem_univ, forall_true_left]
+  simp only [part, ofSetoid]
   generalize_proofs H
   have := choose_spec _ _ H
-  simp only [mem_univ, forall_true_left, mem_image, true_and] at this
+  simp only [mem_univ, mem_image, true_and] at this
   obtain ⟨⟨_, hc⟩, this⟩ := this
-  simp only [← hc, mem_univ, forall_true_left, mem_filter, true_and] at this ⊢
+  classical simp only [← hc, mem_univ, mem_filter, true_and] at this ⊢
   exact ⟨s.trans (s.symm this), s.trans this⟩
 
 section Atomise
