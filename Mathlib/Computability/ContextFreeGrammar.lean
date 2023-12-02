@@ -162,7 +162,7 @@ lemma Derives.eq_or_tail {u w : List (Symbol T g.NT)} (huw : g.Derives u w) :
 lemma Produces.append_left {v w : List (Symbol T g.NT)}
     (hvw : g.Produces v w) (p : List (Symbol T g.NT)) :
     g.Produces (p ++ v) (p ++ w) :=
-  match hvw with | ⟨r, hr⟩ => ⟨r, hr.left, hr.right.append_left p⟩
+  match hvw with | ⟨r, hmem, hr⟩ => ⟨r, hmem, hr.append_left p⟩
 
 /-- Add extra postfix to context-free producing. -/
 lemma Produces.append_right {v w : List (Symbol T g.NT)}
