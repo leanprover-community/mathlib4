@@ -191,10 +191,10 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
   let U := Cᶜ
   have hUy : U ∈ nhds y := by
     simp only [Set.mem_range, hy, exists_false, not_false_eq_true, hC.compl_mem_nhds]
-  obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_clopen.mem_nhds_iff.mp hUy
+  obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_isClopen.mem_nhds_iff.mp hUy
   classical
   let g : Y ⟶ mkFinite (ULift (Fin 2)) :=
-    ⟨(LocallyConstant.ofClopen hV).map ULift.up, LocallyConstant.continuous _⟩
+    ⟨(LocallyConstant.ofIsClopen hV).map ULift.up, LocallyConstant.continuous _⟩
   let h : Y ⟶ mkFinite (ULift (Fin 2)) := ⟨fun _ => ⟨1⟩, continuous_const⟩
   have H : h = g := by
     rw [← cancel_epi f]

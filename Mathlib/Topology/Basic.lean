@@ -1457,16 +1457,16 @@ theorem mem_closure_of_mem_closure_union {s₁ s₂ : Set α} {x : α} (h : x �
 #align mem_closure_of_mem_closure_union mem_closure_of_mem_closure_union
 
 /-- The intersection of an open dense set with a dense set is a dense set. -/
-theorem Dense.inter_of_open_left {s t : Set α} (hs : Dense s) (ht : Dense t) (hso : IsOpen s) :
+theorem Dense.inter_of_isOpen_left {s t : Set α} (hs : Dense s) (ht : Dense t) (hso : IsOpen s) :
     Dense (s ∩ t) := fun x =>
   closure_minimal hso.inter_closure isClosed_closure <| by simp [hs.closure_eq, ht.closure_eq]
-#align dense.inter_of_open_left Dense.inter_of_open_left
+#align dense.inter_of_open_left Dense.inter_of_isOpen_left
 
 /-- The intersection of a dense set with an open dense set is a dense set. -/
-theorem Dense.inter_of_open_right {s t : Set α} (hs : Dense s) (ht : Dense t) (hto : IsOpen t) :
+theorem Dense.inter_of_isOpen_right {s t : Set α} (hs : Dense s) (ht : Dense t) (hto : IsOpen t) :
     Dense (s ∩ t) :=
-  inter_comm t s ▸ ht.inter_of_open_left hs hto
-#align dense.inter_of_open_right Dense.inter_of_open_right
+  inter_comm t s ▸ ht.inter_of_isOpen_left hs hto
+#align dense.inter_of_open_right Dense.inter_of_isOpen_right
 
 theorem Dense.inter_nhds_nonempty {s t : Set α} (hs : Dense s) {x : α} (ht : t ∈ 𝓝 x) :
     (s ∩ t).Nonempty :=

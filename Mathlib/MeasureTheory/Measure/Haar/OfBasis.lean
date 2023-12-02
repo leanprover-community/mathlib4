@@ -54,7 +54,7 @@ theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
     f '' parallelepiped v = parallelepiped (f ∘ v) := by
   simp only [parallelepiped, ← image_comp]
   congr 1 with t
-  simp only [Function.comp_apply, map_sum, LinearMap.map_smulₛₗ, RingHom.id_apply]
+  simp only [Function.comp_apply, _root_.map_sum, LinearMap.map_smulₛₗ, RingHom.id_apply]
 #align image_parallelepiped image_parallelepiped
 
 /-- Reindexing a family of vectors does not change their parallelepiped. -/
