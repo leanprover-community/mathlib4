@@ -40,12 +40,19 @@ with an explicit finiteness conditions on the support
 
 -/
 
-def Set.InjOn.embedding {α β : Type*} {f : α → β}  {s : Finset α}
-    (hs : Set.InjOn f s) : s ↪ β := { inj' := hs.injective }
+section Set.InjOn
 
-def Finset.map_of_injOn {α β : Type*} (f : α → β)
-    (s : Finset α) (hs : Set.InjOn f s) : Finset β  :=
+variable {α β : Type*} {f : α → β}  {s : Finset α} (hs : Set.InjOn f s)
+
+def Set.InjOn.embedding : s ↪ β := { inj' := hs.injective }
+
+@[simp]
+lemma Set.InjOn.embedding_apply {a : s} : hs.embedding a = f a := rfl
+
+def Finset.map_of_injOn : Finset β  :=
   s.attach.map { inj' := hs.injective }
+
+end Set.InjOn
 
 namespace Finset
 
@@ -338,8 +345,7 @@ noncomputable def finAntidiagonal' (d : ℕ) (s : Finset (Fin d))  (n :  μ) :
 
 lemma mem_finAntidiagonal' (d) (s) (n : μ) (f) :
     f ∈ finAntidiagonal' d s n ↔ (f.support ⊆ s ∧ Finset.sum univ f = n) := by
-  unfold finAntidiagonal'
-  rw [mem_filter, mem_finAntidiagonal, and_comm]
+  simp only [finAntidiagonal', mem_filter, mem_finAntidiagonal, and_comm]
 
 end Fin
 
@@ -390,12 +396,9 @@ theorem mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
       by_cases hx : x = a
       · rw [hx]
         simp only [Finsupp.coe_update, update_same]
-      · unfold Finsupp.update
-        simp only [Finsupp.mem_support_iff, ne_eq, not_not, Finsupp.support_erase, Finsupp.coe_mk]
-        unfold update
-        rw [dif_neg hx]
-        unfold Finsupp.erase
-        simp only [Finsupp.coe_mk]
+      · simp only [Finsupp.update, Finsupp.mem_support_iff, ne_eq, not_not, Finsupp.support_erase, Finsupp.coe_mk]
+        simp only [update, dif_neg hx]
+        simp only [Finsupp.erase, Finsupp.coe_mk]
         rw [if_neg hx]
     constructor
     · intro x hx
@@ -412,13 +415,11 @@ theorem mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
       rw [Finsupp.mem_support_iff]
       intro hx'
       apply hx
-      unfold Finsupp.erase
-      simp only [Finsupp.coe_mk, ite_eq_left_iff]
+      simp only [Finsupp.erase, Finsupp.coe_mk, ite_eq_left_iff]
       exact fun _ => hx'
     · apply Finset.sum_congr rfl
       intro x hx
-      unfold Finsupp.erase
-      simp only [Finsupp.coe_mk, ite_eq_left_iff, if_neg (ne_of_mem_of_not_mem hx h)]
+      simp only [Finsupp.erase, Finsupp.coe_mk, ite_eq_left_iff, if_neg (ne_of_mem_of_not_mem hx h)]
   · rintro ⟨n1, n2, hn, g, hf, hgsupp, hgsum⟩
     constructor
     · intro x
@@ -439,8 +440,7 @@ theorem mem_piAntidiagonal_insert [DecidableEq ι] {a : ι} {s : Finset ι}
         apply Finset.sum_congr rfl
         intro x hx
         rw [hf]
-        unfold Finsupp.update
-        simp only [Finsupp.coe_mk]
+        simp only [Finsupp.update, Finsupp.coe_mk]
         unfold update
         rw [dif_neg (ne_of_mem_of_not_mem hx h)]
 
@@ -479,13 +479,11 @@ theorem piAntidiagonal_insert [DecidableEq ι] [DecidableEq μ] {a : ι} {s : Fi
     rw [hf]
     apply symm
     ext x
-    unfold Set.InjOn.embedding
     simp
   · rintro ⟨hg, hf⟩
     constructor
     · ext x
       rw [← hf]
-      unfold Set.InjOn.embedding
       simp
     · exact hg
 
@@ -511,7 +509,9 @@ theorem piAntidiagonal_zero (s : Finset ι) :
 
 end CanonicallyOrderedAddCommMonoid
 
-section Test -- not conclusive for the moment
+section Test
+/- Here, we prove that HasPiAntidiagonal'' allows us to state and prove the
+  desired formula for the coefficients of products power series -/
 
 open MvPowerSeries
 
@@ -575,234 +575,72 @@ theorem coeff_prod [HasPiAntidiagonal'' ι (σ →₀ ℕ)]
       rw [FunLike.ext_iff] at hkl
       simpa only [Finsupp.coe_update, update_same] using hkl a
 
-variable (s : Finset ι)
-
-example : Fintype s := by exact FinsetCoe.fintype s
-
 end Test
+
+section Construction
+/- Here, we construct an `HasPiAntidiagonal'' ι μ` whenever we are given `HasAntidiagonal μ` -/
+
+namespace HasAntidiagonal
 
 variable {ι : Type*} [DecidableEq ι]
 
 variable {μ : Type*} [AddCommMonoid μ] [HasAntidiagonal μ]
   [DecidableEq μ]
 
-/-- HasPiAntidiagonal for `Fin d` and `Finset.univ` -/
-noncomputable def _root_.Fin.hasPiAntidiagonal_univ (d : ℕ) :
-    HasPiAntidiagonal'' (Fin d) μ /- (Finset.univ : Finset (Fin d)) -/ := {
-  piAntidiagonal := fun s => finAntidiagonal d
+noncomputable def piAntidiagonal (s : Finset ι) (n : μ) : Finset (ι →₀ μ) := by
+  exact (finAntidiagonal s.card n).map {
+    toFun := Finsupp.embDomain {
+        toFun := Subtype.val.comp (equivFin s).symm,
+        inj' := by
+          rw [Equiv.injective_comp]
+          exact Subtype.val_injective }
+    inj' := Finsupp.embDomain_injective _ }
+      -- fun f g => by simp only [Finsupp.embDomain_inj, imp_self] }
+
+noncomputable def hasPiAntidiagonal'' : HasPiAntidiagonal'' ι μ := {
+  piAntidiagonal := piAntidiagonal
   mem_piAntidiagonal := fun {s} {n} {f} => by
-    simp only
-    rw [mem_finAntidiagonal]
-    simp only [coe_univ, Set.le_eq_subset, Set.subset_univ, true_and]
-    sorry }
-
-/-- HasPiAntidiagonal for a `Fintype` -/
-noncomputable def _root_.Fintype.hasPiAntidiagonal_univ (ι : Type*) [Fintype ι] :
-    HasPiAntidiagonal'' (Finset.univ : Finset ι) μ := {
-  piAntidiagonal := by
-    have e : Finset (ι → μ) ≃ Finset (Fin (Fintype.card ι) → μ) :=
-      Equiv.finsetCongr (Equiv.piCongrLeft' _ (Fintype.equivFin ι))
-    intro n
-    sorry --refine e.symm (finAntidiagonal _ n)
-  mem_piAntidiagonal := fun {n} {f} => by
-    simp only [Equiv.finsetCongr_symm, Equiv.finsetCongr_apply, mem_map_equiv,
-      Equiv.symm_symm, coe_univ, Set.le_eq_subset, Set.subset_univ, true_and]
-    sorry
-    /- rw [mem_finAntidiagonal]
-    simp only [Equiv.piCongrLeft'_apply]
-    let h := Finset.sum_map Finset.univ ((Fintype.equivFin ι).symm.toEmbedding) f
-    simp only [map_univ_equiv, Equiv.coe_toEmbedding] at h
-    rw [h] -/ }
-
-/-- general construction of HasPiAntidiagonal
-
-It is noncomputable because it uses an unknown parametrization of `s`
-  as well as `Function.extend` -/
-noncomputable
-def hasPiAntidiagonal' (ι : Type*) (s : Finset ι) :
-    HasPiAntidiagonal'' s μ := by
-  haveI : HasPiAntidiagonal'' (attach s) μ := sorry
-  exact {
-  piAntidiagonal := fun n => by
-    have : Function.Injective (fun f => Function.extend (Subtype.val : s → ι) f (0 : ι → μ))
-    · intro f g h
-      ext i
-      rw [Function.funext_iff] at h
-      specialize h i.val
-      simp only [Subtype.coe_injective.extend_apply _ _ _] at h
-      exact h
-    · sorry --exact ((Fintype.hasPiAntidiagonal_univ s).piAntidiagonal n).map ⟨_, this⟩
-  mem_piAntidiagonal := fun {s} {n} {f} => by
-    simp only [mem_map, Embedding.coeFn_mk, Set.le_eq_subset, support_subset_iff, ne_eq, mem_coe]
+    simp only [piAntidiagonal, mem_map, Embedding.coeFn_mk, le_eq_subset]
     constructor
-    · sorry/- rintro ⟨g, hg, hgf⟩
-      rw [(Fintype.hasPiAntidiagonal_univ _).mem_piAntidiagonal] at hg
+    · rintro ⟨f, hf, rfl⟩
+      rw [mem_finAntidiagonal] at hf
+      suffices hs : _ ⊆ s
+      apply And.intro hs
+      rw [← Finsupp.sum_of_support_subset _ hs (fun _ y => y) (fun _ _ => rfl),
+        Finsupp.sum_embDomain,
+        Finsupp.sum_of_support_subset _ (Finset.subset_univ _) (fun _ y => y) (fun _ _ => rfl), ← hf]
+      · simp only [Finsupp.support_embDomain]
+        intro i
+        simp only [mem_map]
+        rintro ⟨k, _, rfl⟩
+        simp only [Embedding.coeFn_mk, comp_apply, coe_mem]
+    · rintro ⟨hsupp, hsum⟩
+      use! Finsupp.equivFunOnFinite.symm (fun k => f (s.equivFin.symm k))
       constructor
-      · intro i
-        rw [← hgf, not_imp_comm]
-        intro hi
-        rw [Function.extend_apply']
-        simp only [Pi.zero_apply]
-        rintro ⟨a, ha⟩
-        apply hi
-        rw [← ha]
-        exact a.prop
-      · rw [← hgf, ← hg.2, ← Finset.sum_attach]
-        apply Finset.sum_congr rfl
-        intros
-        rw [Subtype.coe_injective.extend_apply] -/
-    · rintro ⟨hfs, hf⟩
-      sorry/- use fun i => f ↑i
-      constructor
-      · rw [(Fintype.hasPiAntidiagonal_univ _).mem_piAntidiagonal]
-        simp only [univ_eq_attach, Set.le_eq_subset, support_subset_iff, ne_eq,
-          mem_coe, mem_attach, implies_true, Subtype.forall, true_and]
-        rw [Finset.sum_attach]
-        exact hf
+      · rw [mem_finAntidiagonal]
+        rw [← Finset.sum_attach, ← Finset.sum_coe_sort_eq_attach,
+         Finset.Equiv.sum_comp_finset s.equivFin.symm (s := univ) (s' := univ)] at hsum
+        simp only [Finsupp.equivFunOnFinite_symm_apply_toFun]
+        exact hsum
+        exact (image_univ_equiv (equivFin s).symm.symm).symm
       · ext i
         by_cases hi : i ∈ s
-        · rw [Subtype.coe_injective.extend_apply _ _ ⟨i, hi⟩]
-        · rw [Function.extend_apply']
-          simp only [Pi.zero_apply]
-          by_contra hi'
-          apply hi
-          exact (hfs i (ne_comm.mp hi'))
-          rintro ⟨j, rfl⟩
-          apply hi
-          exact j.prop -/ }
+        · convert Finsupp.embDomain_apply _ _ (equivFin s ⟨i, hi⟩)
+          simp only [Embedding.coeFn_mk, comp_apply, Equiv.symm_apply_apply]
+          simp only [Finsupp.equivFunOnFinite_symm_apply_toFun, Equiv.symm_apply_apply]
+        · suffices hi' : f i = 0
+          · rw [hi', ← Finsupp.not_mem_support_iff, Finsupp.support_embDomain, mem_map]
+            rintro ⟨a, _, rfl⟩
+            apply hi
+            simp only [Embedding.coeFn_mk, comp_apply, coe_mem]
+          rw [← Finsupp.not_mem_support_iff]
+          exact not_mem_mono hsupp hi }
+
+end HasAntidiagonal
+
+end Construction
 
 end HasPiAntidiagonal''
-end HasPiAntidiagonal''
-end Finset
---end HasAntidiagonal
-
-#exit
-
-/- Probably what follows can be proved using what precedes -/
-section pi
-
-variable {μ : Type*} [CanonicallyOrderedAddCommMonoid μ]
-  [LocallyFiniteOrder μ] [DecidableEq μ]
-
-variable {ι : Type*} [DecidableEq ι]
-
-/-- The Finset of functions `ι → μ` whose support is contained in `s : Finset ι`
-  and whose sum is `n` -/
-def piAntidiagonal (s : Finset ι) (n : μ) : Finset (ι → μ) :=
-  Finset.filter (fun f => s.sum f = n)
-    ((s.pi fun _ => Iic n).map
-      ⟨fun f i => if h : i ∈ s then f i h else 0,
-        fun f g h => by ext i hi; simpa only [dif_pos hi] using congr_fun h i⟩)
-
-@[simp]
-theorem mem_piAntidiagonal (s : Finset ι) (n : μ) (f : ι → μ) :
-    f ∈ piAntidiagonal s n ↔ s.sum f = n ∧ ∀ (i) (_ : i ∉ s), f i = 0 := by
-  rw [piAntidiagonal, mem_filter, and_comm, and_congr_right]
-  intro h
-  simp only [mem_map, exists_prop, Function.Embedding.coeFn_mk, mem_pi]
-  constructor
-  · rintro ⟨_, _, rfl⟩ _ hi
-    dsimp only
-    rw [dif_neg hi]
-  · intro hf
-    refine' ⟨fun i _ => f i, fun i hi => _, _⟩
-    · rw [mem_Iic, ← h]
-      apply single_le_sum _ hi
-      simp only [zero_le, implies_true]
-    · ext x
-      dsimp only
-      rw [dite_eq_ite, ite_eq_left_iff, eq_comm]
-      exact hf x
-
-variable (μ)
-
--- useless
-def Pi.AddSubmonoid_ofSupport (s : Set ι) : AddSubmonoid (ι → μ) := {
-  carrier := { f | f.support ≤ s}
-  add_mem' := fun {a} {b} ha hb => by
-    simp only [Set.le_eq_subset, support_subset_iff, ne_eq, Set.mem_setOf_eq] at ha hb ⊢
-    intro i h
-    simp only [Pi.add_apply, add_eq_zero_iff, not_and] at h
-    by_cases hi : a i = 0
-    · exact hb i (h hi)
-    · exact ha i hi
-  zero_mem' := by
-    simp only [Set.le_eq_subset, support_subset_iff, ne_eq, Set.mem_setOf_eq,
-      Pi.zero_apply, not_true, IsEmpty.forall_iff, implies_true] }
-
-variable {μ}
-
--- Should this be promoted into a HasAntidiagonal instance?
-theorem piAntidiagonal_equiv_antidiagonal [HasAntidiagonal μ] (n : μ) :
-    Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (piAntidiagonal univ n) =
-      Finset.HasAntidiagonal.antidiagonal n := by
-  ext ⟨x₁, x₂⟩
-  simp_rw [Equiv.finsetCongr_apply, mem_map, Equiv.toEmbedding,
-    Function.Embedding.coeFn_mk, ← Equiv.eq_symm_apply]
-  simp [mem_piAntidiagonal, add_comm, Finset.HasAntidiagonal.mem_antidiagonal]
-
-theorem piAntidiagonal_zero (s : Finset ι) :
-    piAntidiagonal s (0 : μ) = {0} := by
-  ext f
-  rw [mem_piAntidiagonal, mem_singleton, sum_eq_zero_iff, ← forall_and, funext_iff]
-  apply forall_congr'
-  intro i
-  simp only [← or_imp, em (i ∈ s), forall_true_left, Pi.zero_apply]
-
-theorem piAntidiagonal_empty (n : μ) :
-    piAntidiagonal (∅ : Finset ι) n = if n = 0 then {0} else ∅ := by
-  ext f
-  rw [mem_piAntidiagonal]
-  simp only [sum_empty, not_mem_empty, not_false_iff, forall_true_left]
-  split_ifs with hn
-  simp only [hn, mem_singleton, funext_iff, eq_self_iff_true, true_and_iff, Pi.zero_apply]
-  simp only [not_mem_empty, iff_false_iff]
-  intro h'; exact hn h'.1.symm
-
-theorem piAntidiagonal_insert [HasAntidiagonal μ] [DecidableEq (ι → μ)]
-    (n : μ) (a : ι) (s : Finset ι) (h : a ∉ s) :
-    piAntidiagonal (insert a s) n =
-      (Finset.HasAntidiagonal.antidiagonal n).biUnion
-        fun p : μ × μ =>
-          (piAntidiagonal s p.snd).image (fun f => Function.update f a p.fst) := by
-  ext f
-  rw [mem_piAntidiagonal, mem_biUnion, sum_insert h]
-  constructor
-  · rintro ⟨rfl, h₁⟩
-    simp only [exists_prop, Function.Embedding.coeFn_mk, mem_map, mem_piAntidiagonal, Prod.exists]
-    use f a, s.sum f
-    constructor
-    · rw [mem_antidiagonal]
-    rw [mem_image]
-    use Function.update f a 0
-    constructor
-    · rw [mem_piAntidiagonal s (s.sum f)]
-      constructor
-      apply Finset.sum_congr rfl
-      intro i hi; rw [Function.update_apply]; rw [if_neg]; intro hia; apply h; rw [← hia]; exact hi
-      intro i hi; rw [Function.update_apply]; split_ifs with hia
-      rfl
-      apply h₁; simp only [mem_insert, not_or]; exact ⟨hia, hi⟩
-    · ext i
-      rw [Function.update_apply (update f a 0), Function.update_apply]
-      split_ifs with hia
-      rw [hia]
-      rfl
-  · simp only [mem_insert, Finset.HasAntidiagonal.mem_antidiagonal, mem_image, exists_prop,
-      Prod.exists, forall_exists_index, and_imp, mem_piAntidiagonal]
-    rintro d e rfl g hg hg' rfl
-    constructor
-    · simp only [Function.update_same]
-      apply congr_arg₂ _ rfl
-      rw [← hg]
-      apply Finset.sum_congr rfl
-      intro i hi; rw [Function.update_noteq _]
-      intro hia; apply h; simpa only [hia] using hi
-    · intro i hi; rw [not_or] at hi
-      rw [Function.update_noteq hi.1]
-      exact hg' i hi.2
-
-end pi
 
 end HasPiAntidiagonal''
 
