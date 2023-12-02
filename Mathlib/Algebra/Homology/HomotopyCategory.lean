@@ -4,6 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Homology.Homotopy
+<<<<<<< HEAD
+=======
+import Mathlib.Algebra.Homology.Additive
+>>>>>>> origin/homology-sequence-computation
 import Mathlib.CategoryTheory.Quotient.Preadditive
 
 #align_import algebra.homology.homotopy_category from "leanprover-community/mathlib"@"13ff898b0eee75d3cc75d1c06a491720eaaf911d"
@@ -62,13 +66,25 @@ instance : Preadditive (HomotopyCategory V c) := Quotient.preadditive _ (by
 
 namespace HomotopyCategory
 
+instance : Preadditive (HomotopyCategory V c) := Quotient.preadditive _ (by
+  rintro _ _ _ _ _ _ ⟨h⟩ ⟨h'⟩
+  exact ⟨Homotopy.add h h'⟩)
+
 /-- The quotient functor from complexes to the homotopy category. -/
 def quotient : HomologicalComplex V c ⥤ HomotopyCategory V c :=
   CategoryTheory.Quotient.functor _
 #align homotopy_category.quotient HomotopyCategory.quotient
 
+<<<<<<< HEAD
 instance quotient_additive : (quotient V c).Additive :=
   Quotient.functor_additive _ _
+=======
+instance : Full (quotient V c) := Quotient.fullFunctor _
+
+instance : EssSurj (quotient V c) := Quotient.essSurj_functor _
+
+instance : (quotient V c).Additive where
+>>>>>>> origin/homology-sequence-computation
 
 open ZeroObject
 
@@ -174,6 +190,9 @@ lemma isZero_quotient_obj_iff (C : HomologicalComplex V c) :
     simpa using (eq_of_homotopy _ _ h)
 
 variable (V c)
+
+section
+
 variable [HasEqualizers V] [HasImages V] [HasImageMaps V] [HasCokernels V]
 
 /- redundant with the new homology API
@@ -181,7 +200,11 @@ variable [HasEqualizers V] [HasImages V] [HasImageMaps V] [HasCokernels V]
 /-- The `i`-th homology, as a functor from the homotopy category. -/
 def homology'Functor (i : ι) : HomotopyCategory V c ⥤ V :=
   CategoryTheory.Quotient.lift _ (_root_.homology'Functor V c i) fun _ _ _ _ ⟨h⟩ =>
+<<<<<<< HEAD
     homology_map_eq_of_homotopy h i
+=======
+    homology'_map_eq_of_homotopy h i
+>>>>>>> origin/homology-sequence-computation
 #align homotopy_category.homology_functor HomotopyCategory.homology'Functor
 
 /-- The homology functor on the homotopy category is just the usual homology functor. -/
@@ -208,7 +231,37 @@ theorem homology'Functor_map_factors (i : ι) {C D : HomologicalComplex V c} (f 
   (CategoryTheory.Quotient.lift_map_functor_map _ (_root_.homology'Functor V c i) _ f).symm
 #align homotopy_category.homology_functor_map_factors HomotopyCategory.homology'Functor_map_factors
 
+<<<<<<< HEAD
 -/
+=======
+end
+
+section
+
+variable [CategoryWithHomology V]
+
+/-- The `i`-th homology, as a functor from the homotopy category. -/
+noncomputable def homologyFunctor (i : ι) : HomotopyCategory V c ⥤ V :=
+  CategoryTheory.Quotient.lift _ (HomologicalComplex.homologyFunctor V c i) (by
+    rintro K L f g ⟨h⟩
+    exact h.homologyMap_eq i)
+
+/-- The homology functor on the homotopy category is induced by
+the homology functor on homological complexes. -/
+noncomputable def homologyFunctorFactors (i : ι) :
+    quotient V c ⋙ homologyFunctor V c i ≅
+      HomologicalComplex.homologyFunctor V c i :=
+  Quotient.lift.isLift _ _ _
+
+-- this is to prevent any abuse of defeq
+attribute [irreducible] homologyFunctor homologyFunctorFactors
+
+instance (i : ι) : (homologyFunctor V c i).Additive := by
+  have := Functor.additive_of_iso (homologyFunctorFactors V c i).symm
+  exact Functor.additive_of_full_essSurj_comp (quotient V c) _
+
+end
+>>>>>>> origin/homology-sequence-computation
 
 end HomotopyCategory
 
@@ -233,6 +286,13 @@ lemma Functor.mapHomotopyCategory_map (F : V ⥤ W) [F.Additive] {c : ComplexSha
       (HomotopyCategory.quotient W c).map ((F.mapHomologicalComplex c).map f) :=
   rfl
 
+<<<<<<< HEAD
+=======
+/-- The obvious isomorphism between
+`HomotopyCategory.quotient V c ⋙ F.mapHomotopyCategory c` and
+`F.mapHomologicalComplex c ⋙ HomotopyCategory.quotient W c` when `F : V ⥤ W` is
+an additive functor. -/
+>>>>>>> origin/homology-sequence-computation
 def Functor.mapHomotopyCategoryFactors (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
     HomotopyCategory.quotient V c ⋙ F.mapHomotopyCategory c ≅
       F.mapHomologicalComplex c ⋙ HomotopyCategory.quotient W c :=

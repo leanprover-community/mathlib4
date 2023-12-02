@@ -1,10 +1,13 @@
 /-
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Scott Morrison, Joël Riou
 -/
+<<<<<<< HEAD
 import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+=======
+>>>>>>> origin/homology-sequence-computation
 import Mathlib.Algebra.Homology.QuasiIso
 
 #align_import category_theory.preadditive.projective_resolution from "leanprover-community/mathlib"@"324a7502510e835cdbd3de1519b6c66b51fb2467"
@@ -14,38 +17,17 @@ import Mathlib.Algebra.Homology.QuasiIso
 
 A projective resolution `P : ProjectiveResolution Z` of an object `Z : C` consists of
 an `ℕ`-indexed chain complex `P.complex` of projective objects,
-along with a chain map `P.π` from `C` to the chain complex consisting just of `Z` in degree zero,
-so that the augmented chain complex is exact.
+along with a quasi-isomorphism `P.π` from `C` to the chain complex consisting just
+of `Z` in degree zero.
 
-When `C` is abelian, this exactness condition is equivalent to `π` being a quasi-isomorphism.
-It turns out that this formulation allows us to set up the basic theory of derived functors
-without even assuming `C` is abelian.
-
-(Typically, however, to show `HasProjectiveResolutions C`
-one will assume `EnoughProjectives C` and `Abelian C`.
-This construction appears in `CategoryTheory.Abelian.Projective`.)
-
-We show that given `P : ProjectiveResolution X` and `Q : ProjectiveResolution Y`,
-any morphism `X ⟶ Y` admits a lift to a chain map `P.complex ⟶ Q.complex`.
-(It is a lift in the sense that
-the projection maps `P.π` and `Q.π` intertwine the lift and the original morphism.)
-
-Moreover, we show that any two such lifts are homotopic.
-
-As a consequence, if every object admits a projective resolution,
-we can construct a functor `projectiveResolutions C : C ⥤ HomotopyCategory C`.
 -/
 
-
-noncomputable section
-
-open CategoryTheory
-
-open CategoryTheory.Limits
 
 universe v u
 
 namespace CategoryTheory
+
+open Category Limits ChainComplex HomologicalComplex
 
 variable {C : Type u} [Category.{v} C]
 
@@ -71,30 +53,23 @@ end ShortComplex
 
 open Projective
 
+<<<<<<< HEAD
 section
 
 variable [Abelian C]
+=======
+variable [HasZeroObject C] [HasZeroMorphisms C]
+>>>>>>> origin/homology-sequence-computation
 
 -- porting note: removed @[nolint has_nonempty_instance]
 /--
 A `ProjectiveResolution Z` consists of a bundled `ℕ`-indexed chain complex of projective objects,
 along with a quasi-isomorphism to the complex consisting of just `Z` supported in degree `0`.
-
-(We don't actually ask here that the chain map is a quasi-iso, just exactness everywhere:
-that `π` is a quasi-iso is a lemma when the category is abelian.
-Should we just ask for it here?)
-
-Except in situations where you want to provide a particular projective resolution
-(for example to compute a derived functor),
-you will not typically need to use this bundled object, and will instead use
-* `ProjectiveResolution Z`: the `ℕ`-indexed chain complex
-  (equipped with `Projective` and `Exact` instances)
-* `ProjectiveResolution.π Z`: the chain map from `ProjectiveResolution Z` to
-  `(ChainComplex.single₀ C).obj Z` (all the components are equipped with `Epi` instances,
-  and when the category is `Abelian` we will show `π` is a quasi-iso).
 -/
 structure ProjectiveResolution (Z : C) where
+  /-- the chain complex involved in the resolution -/
   complex : ChainComplex C ℕ
+<<<<<<< HEAD
   [hasHomology : ∀ i, complex.HasHomology i]
   π : complex ⟶ ((ChainComplex.single₀ C).obj Z)
   projective : ∀ n, Projective (complex.X n) := by infer_instance
@@ -104,14 +79,27 @@ set_option linter.uppercaseLean3 false in
 
 attribute [instance] ProjectiveResolution.projective ProjectiveResolution.hasHomology
   ProjectiveResolution.hπ
+=======
+  /-- the chain complex must be degreewise projective -/
+  projective : ∀ n, Projective (complex.X n) := by infer_instance
+  /-- the chain complex must have homology -/
+  [hasHomology : ∀ i, complex.HasHomology i]
+  /-- the morphism to the single chain complex with `Z` in degree `0` -/
+  π : complex ⟶ (ChainComplex.single₀ C).obj Z
+  /-- the morphism to the single chain complex with `Z` in degree `0` is a quasi-isomorphism -/
+  quasiIso : QuasiIso π := by infer_instance
+set_option linter.uppercaseLean3 false in
+#align category_theory.ProjectiveResolution CategoryTheory.ProjectiveResolution
+
+open ProjectiveResolution in
+attribute [instance] projective quasiIso hasHomology
+>>>>>>> origin/homology-sequence-computation
 
 /-- An object admits a projective resolution.
 -/
 class HasProjectiveResolution (Z : C) : Prop where
   out : Nonempty (ProjectiveResolution Z)
 #align category_theory.has_projective_resolution CategoryTheory.HasProjectiveResolution
-
-section
 
 variable (C)
 
@@ -125,22 +113,36 @@ class HasProjectiveResolutions : Prop where
 
 attribute [instance 100] HasProjectiveResolutions.out
 
-end
-
 namespace ProjectiveResolution
 
+<<<<<<< HEAD
 lemma complex_exactAt_succ {Z : C} (P : ProjectiveResolution Z) (n : ℕ) :
     P.complex.ExactAt n.succ := by
   rw [← quasiIsoAt_iff_exactAt' P.π n.succ (ChainComplex.single₀_exactAt _ _)]
   · infer_instance
 
+=======
+variable {C}
+variable {Z : C} (P : ProjectiveResolution Z)
+
+lemma complex_exactAt_succ (n : ℕ) :
+    P.complex.ExactAt (n + 1) := by
+  rw [← quasiIsoAt_iff_exactAt' P.π (n + 1) (exactAt_succ_single_obj _ _)]
+  · infer_instance
+
+lemma exact_succ (n : ℕ):
+    (ShortComplex.mk _ _ (P.complex.d_comp_d (n + 2) (n + 1) n)).Exact :=
+  ((HomologicalComplex.exactAt_iff' _ (n + 2) (n + 1) n) (by simp only [prev]; rfl)
+    (by simp)).1 (P.complex_exactAt_succ n)
+
+>>>>>>> origin/homology-sequence-computation
 @[simp]
-theorem π_f_succ {Z : C} (P : ProjectiveResolution Z) (n : ℕ) : P.π.f (n + 1) = 0 := by
-  apply zero_of_target_iso_zero
-  dsimp; rfl
+theorem π_f_succ (n : ℕ) : P.π.f (n + 1) = 0 :=
+  (isZero_single_obj_X _ _ _ _ (by simp)).eq_of_tgt _ _
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.π_f_succ CategoryTheory.ProjectiveResolution.π_f_succ
 
+<<<<<<< HEAD
 @[simp]
 theorem complex_d_comp_π_f_zero {Z : C} (P : ProjectiveResolution Z) :
     P.complex.d 1 0 ≫ P.π.f 0 = 0 := by
@@ -178,13 +180,55 @@ instance {Z : C} (P : ProjectiveResolution Z) (n : ℕ) : CategoryTheory.Epi (P.
   cases n
   · exact epi_of_isColimit_cofork P.isColimitCofork
   · rw [π_f_succ]; infer_instance
+=======
+@[reassoc (attr := simp)]
+theorem complex_d_comp_π_f_zero :
+    P.complex.d 1 0 ≫ P.π.f 0 = 0 := by
+  rw [← P.π.comm 1 0, single_obj_d, comp_zero]
+set_option linter.uppercaseLean3 false in
+#align category_theory.ProjectiveResolution.complex_d_comp_π_f_zero CategoryTheory.ProjectiveResolution.complex_d_comp_π_f_zero
+
+-- Porting note: removed @[simp] simp can prove this
+theorem complex_d_succ_comp (n : ℕ) :
+    P.complex.d n (n + 1) ≫ P.complex.d (n + 1) (n + 2) = 0 := by
+  simp
+set_option linter.uppercaseLean3 false in
+#align category_theory.ProjectiveResolution.complex_d_succ_comp CategoryTheory.ProjectiveResolution.complex_d_succ_comp
+
+/-- The (limit) cokernel cofork given by the composition
+`P.complex.X 1 ⟶ P.complex.X 0 ⟶ Z` when `P : ProjectiveResolution Z`. -/
+@[simp]
+noncomputable def cokernelCofork : CokernelCofork (P.complex.d 1 0) :=
+  CokernelCofork.ofπ _ P.complex_d_comp_π_f_zero
+
+/-- `Z` is the cokernel of `P.complex.X 1 ⟶ P.complex.X 0` when `P : ProjectiveResolution Z`. -/
+noncomputable def isColimitCokernelCofork : IsColimit (P.cokernelCofork) := by
+  refine IsColimit.ofIsoColimit (P.complex.opcyclesIsCokernel 1 0 (by simp)) ?_
+  refine Cofork.ext (P.complex.isoHomologyι₀.symm ≪≫ isoOfQuasiIsoAt P.π 0 ≪≫
+    singleObjHomologySelfIso _ _ _) ?_
+  rw [← cancel_mono (singleObjHomologySelfIso (ComplexShape.down ℕ) 0 _).inv,
+    ← cancel_mono (isoHomologyι₀ _).hom]
+  dsimp
+  simp only [isoHomologyι₀_inv_naturality_assoc, p_opcyclesMap_assoc, single₀_obj_zero, assoc,
+    Iso.hom_inv_id, comp_id, isoHomologyι_inv_hom_id, singleObjHomologySelfIso_inv_homologyι,
+    singleObjOpcyclesSelfIso_hom, single₀ObjXSelf, Iso.refl_inv, id_comp]
+
+instance (n : ℕ) : Epi (P.π.f n) := by
+  cases n
+  · exact epi_of_isColimit_cofork P.isColimitCokernelCofork
+  · rw [π_f_succ]; infer_instance
+
+variable (Z)
+>>>>>>> origin/homology-sequence-computation
 
 /-- A projective object admits a trivial projective resolution: itself in degree 0. -/
-def self (Z : C) [CategoryTheory.Projective Z] : ProjectiveResolution Z where
+@[simps]
+noncomputable def self [Projective Z] : ProjectiveResolution Z where
   complex := (ChainComplex.single₀ C).obj Z
   π := 𝟙 ((ChainComplex.single₀ C).obj Z)
   projective n := by
     cases n
+<<<<<<< HEAD
     · dsimp
       infer_instance
     · dsimp
@@ -473,4 +517,15 @@ lemma ProjectiveResolution.iso_hom_naturality {X Y : C} (f : X ⟶ Y)
     ProjectiveResolution.iso_inv_naturality_assoc f P Q φ comm,
     Iso.inv_hom_id, Category.comp_id, Iso.inv_hom_id_assoc]
 
+=======
+    · simpa
+    · apply IsZero.projective
+      apply HomologicalComplex.isZero_single_obj_X
+      simp
+set_option linter.uppercaseLean3 false in
+#align category_theory.ProjectiveResolution.self CategoryTheory.ProjectiveResolution.self
+
+end ProjectiveResolution
+
+>>>>>>> origin/homology-sequence-computation
 end CategoryTheory

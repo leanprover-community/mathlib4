@@ -1037,6 +1037,7 @@ instance : (isomorphisms C).IsMultiplicative where
 
 end IsMultiplicative
 
+<<<<<<< HEAD
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 section
@@ -1044,6 +1045,16 @@ section
 variable {C₁ : Type u₁} {C₂ : Type u₂} [Category.{v₁} C₁] [Category.{v₂} C₂]
 
 def prod (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) : MorphismProperty (C₁ × C₂) :=
+=======
+section
+
+variable {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+
+/-- If `W₁` and `W₂` are morphism properties on two categories `C₁` and `C₂`,
+this is the induced morphism property on `C₁ × C₂`. -/
+def prod (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) :
+    MorphismProperty (C₁ × C₂) :=
+>>>>>>> origin/homology-sequence-computation
   fun _ _ f => W₁ f.1 ∧ W₂ f.2
 
 instance Prod.containsIdentities (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
@@ -1051,14 +1062,20 @@ instance Prod.containsIdentities (W₁ : MorphismProperty C₁) (W₂ : Morphism
   ⟨fun _ => ⟨W₁.id_mem _, W₂.id_mem _⟩⟩
 
 lemma IsInvertedBy.prod {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
+<<<<<<< HEAD
   {E₁ : Type u₃} [Category.{v₃} E₁] {E₂ : Type u₄} [Category.{v₄} E₂] {F₁ : C₁ ⥤ E₁} {F₂ : C₂ ⥤ E₂}
   (h₁ : W₁.IsInvertedBy F₁) (h₂ : W₂.IsInvertedBy F₂) :
+=======
+    {E₁ E₂ : Type*} [Category E₁] [Category E₂] {F₁ : C₁ ⥤ E₁} {F₂ : C₂ ⥤ E₂}
+    (h₁ : W₁.IsInvertedBy F₁) (h₂ : W₂.IsInvertedBy F₂) :
+>>>>>>> origin/homology-sequence-computation
     (W₁.prod W₂).IsInvertedBy (F₁.prod F₂) := fun _ _ f hf => by
   rw [isIso_prod_iff]
   exact ⟨h₁ _ hf.1, h₂ _ hf.2⟩
 
 end
 
+<<<<<<< HEAD
 section
 
 variable {J : Type u₃} {C : J → Type u₁} {D : J → Type u₂}
@@ -1160,6 +1177,8 @@ lemma IsStableUnderFiniteProducts.isStableUnderProductsOfShape
   W.IsStableUnderProductsOfShape J := IsStableUnderFiniteProducts.isStableUnderProductsOfShape' J
 
 
+=======
+>>>>>>> origin/homology-sequence-computation
 end MorphismProperty
 
 namespace NatTrans

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import Mathlib.Algebra.Homology.Single
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
@@ -65,6 +66,39 @@ variable {C c}
 
 section
 
+=======
+/-
+Copyright (c) 2023 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+import Mathlib.Algebra.Homology.HomologicalComplex
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
+
+/-!
+# Limits and colimits in the category of homological complexes
+
+In this file, it is shown that if a category `C` has (co)limits of shape `J`,
+then it is also the case of the categories `HomologicalComplex C c`,
+and the evaluation functors `eval C c i : HomologicalComplex C c ⥤ C`
+commute to these.
+
+-/
+
+open CategoryTheory Category Limits
+
+namespace HomologicalComplex
+
+variable {C ι J : Type*} [Category C] [Category J] {c : ComplexShape ι} [HasZeroMorphisms C]
+
+section
+
+variable (F : J ⥤ HomologicalComplex C c)
+
+/-- A cone in `HomologicalComplex C c` is limit if the induced cones obtained
+by applying `eval C c i : HomologicalComplex C c ⥤ C` for all `i` are limit. -/
+>>>>>>> origin/homology-sequence-computation
 def isLimitOfEval (s : Cone F)
     (hs : ∀ (i : ι), IsLimit ((eval C c i).mapCone s)) : IsLimit s where
   lift t :=
@@ -88,6 +122,11 @@ def isLimitOfEval (s : Cone F)
 
 variable [∀ (n : ι), HasLimit (F ⋙ eval C c n)]
 
+<<<<<<< HEAD
+=======
+/-- A cone for a functor `F : J ⥤ HomologicalComplex C c` which is given in degree `n` by
+the limit `F ⋙ eval C c n`. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 noncomputable def coneOfHasLimitEval : Cone F where
   pt :=
@@ -105,10 +144,16 @@ noncomputable def coneOfHasLimitEval : Cone F where
         dsimp
         erw [limit.w, id_comp] }
 
+<<<<<<< HEAD
 noncomputable def isLimitConeOfHasLimitEval : IsLimit (coneOfHasLimitEval F) := by
   apply isLimitOfEval
   intro i
   exact limit.isLimit _
+=======
+/-- The cone `coneOfHasLimitEval F` is limit. -/
+noncomputable def isLimitConeOfHasLimitEval : IsLimit (coneOfHasLimitEval F) :=
+  isLimitOfEval _ _ (fun _ => limit.isLimit _)
+>>>>>>> origin/homology-sequence-computation
 
 instance : HasLimit F := ⟨⟨⟨_, isLimitConeOfHasLimitEval F⟩⟩⟩
 
@@ -128,8 +173,22 @@ instance [HasFiniteLimits C] : HasFiniteLimits (HomologicalComplex C c) :=
 noncomputable instance [HasFiniteLimits C] (n : ι) :
   PreservesFiniteLimits (eval C c n) := ⟨fun _ _ _ => inferInstance⟩
 
+<<<<<<< HEAD
 section
 
+=======
+instance [HasFiniteLimits C] {K L : HomologicalComplex C c} (φ : K ⟶ L) [Mono φ] (n : ι) :
+    Mono (φ.f n) := by
+  change Mono ((HomologicalComplex.eval C c n).map φ)
+  infer_instance
+
+section
+
+variable (F : J ⥤ HomologicalComplex C c)
+
+/-- A cocone in `HomologicalComplex C c` is colimit if the induced cocones obtained
+by applying `eval C c i : HomologicalComplex C c ⥤ C` for all `i` are colimit. -/
+>>>>>>> origin/homology-sequence-computation
 def isColimitOfEval (s : Cocone F)
     (hs : ∀ (i : ι), IsColimit ((eval C c i).mapCocone s)) : IsColimit s where
   desc t :=
@@ -154,6 +213,11 @@ def isColimitOfEval (s : Cocone F)
 
 variable [∀ (n : ι), HasColimit (F ⋙ HomologicalComplex.eval C c n)]
 
+<<<<<<< HEAD
+=======
+/-- A cocone for a functor `F : J ⥤ HomologicalComplex C c` which is given in degree `n` by
+the colimit of `F ⋙ eval C c n`. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 noncomputable def coconeOfHasColimitEval : Cocone F where
   pt :=
@@ -171,10 +235,16 @@ noncomputable def coconeOfHasColimitEval : Cocone F where
         dsimp
         erw [colimit.w (F ⋙ eval C c n) φ, comp_id] }
 
+<<<<<<< HEAD
 noncomputable def isColimitCoconeOfHasColimitEval : IsColimit (coconeOfHasColimitEval F) := by
   apply isColimitOfEval
   intro i
   exact colimit.isColimit _
+=======
+/-- The cocone `coconeOfHasLimitEval F` is colimit. -/
+noncomputable def isColimitCoconeOfHasColimitEval : IsColimit (coconeOfHasColimitEval F) :=
+  isColimitOfEval _ _ (fun _ => colimit.isColimit _)
+>>>>>>> origin/homology-sequence-computation
 
 instance : HasColimit F := ⟨⟨⟨_, isColimitCoconeOfHasColimitEval F⟩⟩⟩
 
@@ -195,20 +265,38 @@ instance [HasFiniteColimits C] : HasFiniteColimits (HomologicalComplex C c) :=
 noncomputable instance [HasFiniteColimits C] (n : ι) :
   PreservesFiniteColimits (eval C c n) := ⟨fun _ _ _ => inferInstance⟩
 
+<<<<<<< HEAD
 def preservesLimitsOfShapeOfEval {D : Type _} [Category D]
+=======
+instance [HasFiniteColimits C] {K L : HomologicalComplex C c} (φ : K ⟶ L) [Epi φ] (n : ι) :
+    Epi (φ.f n) := by
+  change Epi ((HomologicalComplex.eval C c n).map φ)
+  infer_instance
+
+/-- A functor `D ⥤ HomologicalComplex C c` preserves limits of shape `J`
+if for any `i`, `G ⋙ eval C c i` does. -/
+def preservesLimitsOfShapeOfEval {D : Type*} [Category D]
+>>>>>>> origin/homology-sequence-computation
     (G : D ⥤ HomologicalComplex C c)
     (_ : ∀ (i : ι), PreservesLimitsOfShape J (G ⋙ eval C c i)) :
     PreservesLimitsOfShape J G :=
   ⟨fun {_} => ⟨fun hs =>  isLimitOfEval _ _
     (fun i => isLimitOfPreserves (G ⋙ eval C c i) hs)⟩⟩
 
+<<<<<<< HEAD
 def preservesColimitsOfShapeOfEval {D : Type _} [Category D]
+=======
+/-- A functor `D ⥤ HomologicalComplex C c` preserves colimits of shape `J`
+if for any `i`, `G ⋙ eval C c i` does. -/
+def preservesColimitsOfShapeOfEval {D : Type*} [Category D]
+>>>>>>> origin/homology-sequence-computation
     (G : D ⥤ HomologicalComplex C c)
     (_ : ∀ (i : ι), PreservesColimitsOfShape J (G ⋙ eval C c i)) :
     PreservesColimitsOfShape J G :=
   ⟨fun {_} => ⟨fun hs =>  isColimitOfEval _ _
     (fun i => isColimitOfPreserves (G ⋙ eval C c i) hs)⟩⟩
 
+<<<<<<< HEAD
 section
 
 variable [HasZeroObject C] [DecidableEq ι]
@@ -237,4 +325,6 @@ noncomputable instance [HasFiniteColimits C] (i : ι) :
 
 end
 
+=======
+>>>>>>> origin/homology-sequence-computation
 end HomologicalComplex

@@ -214,6 +214,9 @@ lemma HasHomology.mk' (h : S.HomologyData) : HasHomology S :=
 instance [HasHomology S] : HasHomology S.op :=
   HasHomology.mk' S.homologyData.op
 
+instance (S : ShortComplex Cᵒᵖ) [HasHomology S] : HasHomology S.unop :=
+  HasHomology.mk' S.homologyData.unop
+
 instance hasLeftHomology_of_hasHomology [S.HasHomology] : S.HasLeftHomology :=
   HasLeftHomology.mk' S.homologyData.left
 
@@ -1123,7 +1126,7 @@ lemma asIsoHomologyπ_inv_comp_homologyπ (hf : S.f = 0) [S.HasHomology] :
 
 @[reassoc (attr := simp)]
 lemma homologyπ_comp_asIsoHomologyπ_inv (hf : S.f = 0) [S.HasHomology] :
-    S.homologyπ ≫ (S.asIsoHomologyπ hf).inv  = 𝟙 _ := (S.asIsoHomologyπ hf).hom_inv_id
+    S.homologyπ ≫ (S.asIsoHomologyπ hf).inv = 𝟙 _ := (S.asIsoHomologyπ hf).hom_inv_id
 
 /-- The canonical isomorphism `S.homology ≅ S.opcycles` when `S.g = 0`. -/
 @[simps! hom]

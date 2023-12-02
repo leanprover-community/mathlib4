@@ -71,7 +71,7 @@ abbrev ofHom {X : Type v} [AddCommGroup X] [Module R X]
     (f ≫ g).toIsometry = g.toIsometry.comp f.toIsometry :=
   rfl
 
-@[simp] theorem toIsometry_id {M : QuadraticModuleCat.{v} R}  :
+@[simp] theorem toIsometry_id {M : QuadraticModuleCat.{v} R} :
     Hom.toIsometry (𝟙 M) = Isometry.id _ :=
   rfl
 

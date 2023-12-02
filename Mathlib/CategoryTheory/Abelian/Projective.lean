@@ -1,37 +1,34 @@
 /-
-Copyright (c) 2020 Markus Himmel. All rights reserved.
+Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel, Scott Morrison, Jakob von Raumer
+Authors: Jakob von Raumer
 -/
-import Mathlib.Algebra.Homology.QuasiIso
-import Mathlib.CategoryTheory.Preadditive.ProjectiveResolution
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
+<<<<<<< HEAD
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 
 #align_import category_theory.abelian.projective from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
+=======
+import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
+>>>>>>> origin/homology-sequence-computation
 
 /-!
-# Abelian categories with enough projectives have projective resolutions
+# Projective objects in abelian categories
 
-When `C` is abelian `Projective.d f` and `f` are exact.
-Hence, starting from an epimorphism `P ⟶ X`, where `P` is projective,
-we can apply `Projective.d` repeatedly to obtain a projective resolution of `X`.
+In an abelian category, an object `P` is projective iff the functor
+`preadditiveCoyonedaObj (op P)` preserves finite colimits.
+
 -/
 
-
-noncomputable section
-
-open CategoryTheory CategoryTheory.Limits Opposite
-
-universe v u v' u'
+universe v u
 
 namespace CategoryTheory
 
-open CategoryTheory.Projective
+open Limits Projective Opposite
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
+<<<<<<< HEAD
 /-- When `C` is abelian, `Projective.d f` and `f` are exact. -/
 theorem exact_d_f [EnoughProjectives C] {X Y : C} (f : X ⟶ Y) :
     (ShortComplex.mk (d f) f (by simp)).Exact := by
@@ -48,6 +45,11 @@ theorem exact_d_f [EnoughProjectives C] {X Y : C} (f : X ⟶ Y) :
 
 /-- The preadditive Co-Yoneda functor on `P` preserves colimits if `P` is projective. -/
 def preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective (P : C) [hP : Projective P] :
+=======
+/-- The preadditive Co-Yoneda functor on `P` preserves finite colimits if `P` is projective. -/
+noncomputable def preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective
+    (P : C) [hP : Projective P] :
+>>>>>>> origin/homology-sequence-computation
     PreservesFiniteColimits (preadditiveCoyonedaObj (op P)) := by
   haveI := (projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj' P).mp hP
   -- porting note: this next instance wasn't necessary in Lean 3
@@ -64,6 +66,7 @@ theorem projective_of_preservesFiniteColimits_preadditiveCoyonedaObj (P : C)
   infer_instance
 #align category_theory.projective_of_preserves_finite_colimits_preadditive_coyoneda_obj CategoryTheory.projective_of_preservesFiniteColimits_preadditiveCoyonedaObj
 
+<<<<<<< HEAD
 namespace ProjectiveResolution
 
 /-!
@@ -168,4 +171,6 @@ instance (priority := 100) : HasProjectiveResolutions C where out Z := by infer_
 
 end ProjectiveResolution
 
+=======
+>>>>>>> origin/homology-sequence-computation
 end CategoryTheory

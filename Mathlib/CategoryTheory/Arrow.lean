@@ -189,13 +189,13 @@ variable {f g : Arrow T} (sq : f ⟶ g)
 instance isIso_left [IsIso sq] : IsIso sq.left where
   out := by
     apply Exists.intro (inv sq).left
-    simp only [← comp_left, IsIso.hom_inv_id, IsIso.inv_hom_id, id_left]
+    simp only [← comp_left, IsIso.hom_inv_id, IsIso.inv_hom_id, id_left, and_self]
 #align category_theory.arrow.is_iso_left CategoryTheory.Arrow.isIso_left
 
 instance isIso_right [IsIso sq] : IsIso sq.right where
   out := by
     apply Exists.intro (inv sq).right
-    simp only [← comp_right, IsIso.hom_inv_id, IsIso.inv_hom_id, id_right]
+    simp only [← comp_right, IsIso.hom_inv_id, IsIso.inv_hom_id, id_right, and_self]
 #align category_theory.arrow.is_iso_right CategoryTheory.Arrow.isIso_right
 
 @[simp]
@@ -246,6 +246,22 @@ instance epi_right [Epi sq] : Epi sq.right where
     · rw [Comma.comp_left, Comma.comp_left, Arrow.w_assoc, Arrow.w_assoc, h]
     · exact h
 #align category_theory.arrow.epi_right CategoryTheory.Arrow.epi_right
+
+@[reassoc (attr := simp)]
+lemma hom_inv_id_left (e : f ≅ g) : e.hom.left ≫ e.inv.left = 𝟙 _ := by
+  rw [← comp_left, e.hom_inv_id, id_left]
+
+@[reassoc (attr := simp)]
+lemma inv_hom_id_left (e : f ≅ g) : e.inv.left ≫ e.hom.left = 𝟙 _ := by
+  rw [← comp_left, e.inv_hom_id, id_left]
+
+@[reassoc (attr := simp)]
+lemma hom_inv_id_right (e : f ≅ g) : e.hom.right ≫ e.inv.right = 𝟙 _ := by
+  rw [← comp_right, e.hom_inv_id, id_right]
+
+@[reassoc (attr := simp)]
+lemma inv_hom_id_right (e : f ≅ g) : e.inv.right ≫ e.hom.right = 𝟙 _ := by
+  rw [← comp_right, e.inv_hom_id, id_right]
 
 end
 

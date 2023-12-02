@@ -12,14 +12,21 @@ import Mathlib.CategoryTheory.GradedObject
 /-!
 # The homology of a complex
 
-Given `C : HomologicalComplex V c`, we have `C.cycles i` and `C.boundaries i`,
+Given `C : HomologicalComplex V c`, we have `C.cycles' i` and `C.boundaries i`,
 both defined as subobjects of `C.X i`.
 
 We show these are functorial with respect to chain maps,
-as `C.cyclesMap f i` and `C.boundariesMap f i`.
+as `cyclesMap' f i` and `boundariesMap f i`.
 
-As a consequence we construct `homologyFunctor i : HomologicalComplex V c ⥤ V`,
+As a consequence we construct `homologyFunctor' i : HomologicalComplex V c ⥤ V`,
 computing the `i`-th homology.
+
+Note: Some definitions (specifically, names containing components `homology`, `cycles`)
+in this file have the suffix `'` so as to allow the development of the
+new homology API of homological complex (starting from
+`Algebra.Homology.ShortComplex.HomologicalComplex`). It is planned that these definitions
+shall be removed and replaced by the new API.
+
 -/
 
 /- redundant with the new homology API
@@ -60,7 +67,11 @@ def cycles'IsoKernel {i j : ι} (r : c.Rel i j) : (C.cycles' i : V) ≅ kernel (
   Subobject.isoOfEq _ _ (C.cycles'_eq_kernelSubobject r) ≪≫ kernelSubobjectIso (C.d i j)
 #align homological_complex.cycles_iso_kernel HomologicalComplex.cycles'IsoKernel
 
+<<<<<<< HEAD
 theorem cycles'_eq_top {i} (h : ¬c.Rel i (c.next i)) : C.cycles' i = ⊤ := by
+=======
+theorem cycles_eq_top {i} (h : ¬c.Rel i (c.next i)) : C.cycles' i = ⊤ := by
+>>>>>>> origin/homology-sequence-computation
   rw [eq_top_iff]
   apply le_kernelSubobject
   rw [C.dFrom_eq_zero h, comp_zero]
@@ -101,7 +112,12 @@ section
 
 variable [HasKernels V] [HasImages V]
 
+<<<<<<< HEAD
 theorem boundaries_le_cycles' (C : HomologicalComplex V c) (i : ι) : C.boundaries i ≤ C.cycles' i :=
+=======
+theorem boundaries_le_cycles' (C : HomologicalComplex V c) (i : ι) :
+    C.boundaries i ≤ C.cycles' i :=
+>>>>>>> origin/homology-sequence-computation
   image_le_kernel _ _ (C.dTo_comp_dFrom i)
 #align homological_complex.boundaries_le_cycles HomologicalComplex.boundaries_le_cycles'
 
@@ -111,7 +127,7 @@ abbrev boundariesToCycles' (C : HomologicalComplex V c) (i : ι) :
   imageToKernel _ _ (C.dTo_comp_dFrom i)
 #align homological_complex.boundaries_to_cycles HomologicalComplex.boundariesToCycles'
 
-/-- Prefer `boundariesToCycles`. -/
+/-- Prefer `boundariesToCycles'`. -/
 @[simp 1100]
 theorem imageToKernel_as_boundariesToCycles' (C : HomologicalComplex V c) (i : ι) (h) :
     (C.boundaries i).ofLE (C.cycles' i) h = C.boundariesToCycles' i := rfl
@@ -143,7 +159,12 @@ end HomologicalComplex
 
 /-- The 0th homology of a chain complex is isomorphic to the cokernel of `d : C₁ ⟶ C₀`. -/
 def ChainComplex.homology'ZeroIso [HasKernels V] [HasImages V] [HasCokernels V]
+<<<<<<< HEAD
     (C : ChainComplex V ℕ) [Epi (factorThruImage (C.d 1 0))] : C.homology' 0 ≅ cokernel (C.d 1 0) :=
+=======
+    (C : ChainComplex V ℕ) [Epi (factorThruImage (C.d 1 0))] :
+    C.homology' 0 ≅ cokernel (C.d 1 0) :=
+>>>>>>> origin/homology-sequence-computation
   (homology'.mapIso _ _
       (Arrow.isoMk (C.xPrevIso rfl) (Iso.refl _) <| by
         rw [C.dTo_eq rfl]
@@ -272,7 +293,12 @@ variable {C₁ C₂ : HomologicalComplex V c} (f : C₁ ⟶ C₂)
 -- Porting note: Originally `@[simp, reassoc.1]`
 @[reassoc (attr := simp)]
 theorem boundariesToCycles'_naturality (i : ι) :
+<<<<<<< HEAD
     boundariesMap f i ≫ C₂.boundariesToCycles' i = C₁.boundariesToCycles' i ≫ cycles'Map f i := by
+=======
+    boundariesMap f i ≫ C₂.boundariesToCycles' i =
+      C₁.boundariesToCycles' i ≫ cycles'Map f i := by
+>>>>>>> origin/homology-sequence-computation
   ext
   simp
 #align boundaries_to_cycles_naturality boundariesToCycles'_naturality
@@ -281,10 +307,17 @@ variable (V c)
 
 /-- The natural transformation from the boundaries functor to the cycles functor. -/
 @[simps]
+<<<<<<< HEAD
 def boundariesToCyclesNatTrans (i : ι) : boundariesFunctor V c i ⟶ cycles'Functor V c i where
   app C := C.boundariesToCycles' i
   naturality _ _ f := boundariesToCycles'_naturality f i
 #align boundaries_to_cycles_nat_trans boundariesToCyclesNatTrans
+=======
+def boundariesToCycles'NatTrans (i : ι) : boundariesFunctor V c i ⟶ cycles'Functor V c i where
+  app C := C.boundariesToCycles' i
+  naturality _ _ f := boundariesToCycles'_naturality f i
+#align boundaries_to_cycles_nat_trans boundariesToCycles'NatTrans
+>>>>>>> origin/homology-sequence-computation
 
 /-- The `i`-th homology, as a functor to `V`. -/
 @[simps]
@@ -294,6 +327,7 @@ def homology'Functor [HasCokernels V] (i : ι) : HomologicalComplex V c ⥤ V wh
   -- here, but universe implementation details get in the way...
   obj C := C.homology' i
   map {C₁ C₂} f := homology'.map _ _ (f.sqTo i) (f.sqFrom i) rfl
+<<<<<<< HEAD
   map_id _ := by
     simp only
     ext1
@@ -304,10 +338,13 @@ def homology'Functor [HasCokernels V] (i : ι) : HomologicalComplex V c ⥤ V wh
     ext1
     simp only [Hom.sqFrom_comp, kernelSubobjectMap_comp, homology'.π_map_assoc, homology'.π_map,
       Category.assoc]
+=======
+>>>>>>> origin/homology-sequence-computation
 #align homology_functor homology'Functor
 
 /-- The homology functor from `ι`-indexed complexes to `ι`-graded objects in `V`. -/
 @[simps]
+<<<<<<< HEAD
 def gradedhomology'Functor [HasCokernels V] : HomologicalComplex V c ⥤ GradedObject ι V where
   obj C i := C.homology' i
   map {C C'} f i := (homology'Functor V c i).map f
@@ -324,6 +361,12 @@ def gradedhomology'Functor [HasCokernels V] : HomologicalComplex V c ⥤ GradedO
     simp only [Hom.sqFrom_comp, kernelSubobjectMap_comp, homology'.π_map_assoc, homology'.π_map,
       homology'Functor_map, Category.assoc]
 #align graded_homology_functor gradedhomology'Functor
+=======
+def gradedHomology'Functor [HasCokernels V] : HomologicalComplex V c ⥤ GradedObject ι V where
+  obj C i := C.homology' i
+  map {C C'} f i := (homology'Functor V c i).map f
+#align graded_homology_functor gradedHomology'Functor
+>>>>>>> origin/homology-sequence-computation
 
 end
 -/

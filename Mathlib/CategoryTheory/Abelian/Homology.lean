@@ -12,19 +12,23 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Images
 
 /-!
 
-The object `homology f g w`, where `w : f ≫ g = 0`, can be identified with either a
-cokernel or a kernel. The isomorphism with a cokernel is `homologyIsoCokernelLift`, which
+The object `homology' f g w`, where `w : f ≫ g = 0`, can be identified with either a
+cokernel or a kernel. The isomorphism with a cokernel is `homology'IsoCokernelLift`, which
 was obtained elsewhere. In the case of an abelian category, this file shows the isomorphism
 with a kernel as well.
 
-We use these isomorphisms to obtain the analogous api for `homology`:
-- `homology.ι` is the map from `homology f g w` into the cokernel of `f`.
-- `homology.π'` is the map from `kernel g` to `homology f g w`.
-- `homology.desc'` constructs a morphism from `homology f g w`, when it is viewed as a cokernel.
-- `homology.lift` constructs a morphism to `homology f g w`, when it is viewed as a kernel.
+We use these isomorphisms to obtain the analogous api for `homology'`:
+- `homology'.ι` is the map from `homology' f g w` into the cokernel of `f`.
+- `homology'.π'` is the map from `kernel g` to `homology' f g w`.
+- `homology'.desc'` constructs a morphism from `homology' f g w`, when it is viewed as a cokernel.
+- `homology'.lift` constructs a morphism to `homology' f g w`, when it is viewed as a kernel.
 - Various small lemmas are proved as well, mimicking the API for (co)kernels.
 With these definitions and lemmas, the isomorphisms between homology and a (co)kernel need not
 be used directly.
+
+Note: As part of the homology refactor, it is planned to remove the definitions in this file,
+because it can be replaced by the content of `Algebra.Homology.ShortComplex.Homology`.
+
 -/
 
 /- redundant with the new homology API

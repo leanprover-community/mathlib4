@@ -16,7 +16,12 @@ we have `image_le_kernel f g w : imageSubobject f ≤ kernelSubobject g`
 
 `imageToKernel f g w` is the corresponding morphism between objects in `C`.
 
-We define `homology f g w` of such a pair as the cokernel of `imageToKernel f g w`.
+We define `homology' f g w` of such a pair as the cokernel of `imageToKernel f g w`.
+
+Note: As part of the transition to the new homology API, `homology` is temporarily
+renamed `homology'`. It is planned that this definition shall be removed and replaced by
+`ShortComplex.homology`.
+
 -/
 
 /- redundant with the new homology API
@@ -217,7 +222,7 @@ theorem homology'.π_desc {D : V} (k : (kernelSubobject g : V) ⟶ D)
   simp [homology'.π, homology'.desc]
 #align homology.π_desc homology'.π_desc
 
-/-- To check two morphisms out of `homology f g w` are equal, it suffices to check on cycles. -/
+/-- To check two morphisms out of `homology' f g w` are equal, it suffices to check on cycles. -/
 @[ext]
 theorem homology'.ext {D : V} {k k' : homology' f g w ⟶ D}
     (p : homology'.π f g w ≫ k = homology'.π f g w ≫ k') : k = k' :=
@@ -293,7 +298,12 @@ def homology'.map (p : α.right = β.left) : homology' f g w ⟶ homology' f' g'
 -- the correct lemma is stated below
 @[reassoc (attr := simp)]
 theorem homology'.π_map (p : α.right = β.left) :
+<<<<<<< HEAD
     homology'.π f g w ≫ homology'.map w w' α β p = kernelSubobjectMap β ≫ homology'.π f' g' w' := by
+=======
+    homology'.π f g w ≫ homology'.map w w' α β p =
+      kernelSubobjectMap β ≫ homology'.π f' g' w' := by
+>>>>>>> origin/homology-sequence-computation
   simp only [homology'.π, homology'.map, cokernel.π_desc]
 #align homology.π_map homology'.π_map
 
@@ -327,7 +337,11 @@ theorem homology'.map_id : homology'.map w w (𝟙 _) (𝟙 _) rfl = 𝟙 _ := b
 #align homology.map_id homology'.map_id
 
 /-- Auxiliary lemma for homology computations. -/
+<<<<<<< HEAD
 theorem homology'.comp_right_eq_comp_left {V : Type _} [Category V] {A₁ B₁ C₁ A₂ B₂ C₂ A₃ B₃ C₃ : V}
+=======
+theorem homology'.comp_right_eq_comp_left {V : Type*} [Category V] {A₁ B₁ C₁ A₂ B₂ C₂ A₃ B₃ C₃ : V}
+>>>>>>> origin/homology-sequence-computation
     {f₁ : A₁ ⟶ B₁} {g₁ : B₁ ⟶ C₁} {f₂ : A₂ ⟶ B₂} {g₂ : B₂ ⟶ C₂} {f₃ : A₃ ⟶ B₃} {g₃ : B₃ ⟶ C₃}
     {α₁ : Arrow.mk f₁ ⟶ Arrow.mk f₂} {β₁ : Arrow.mk g₁ ⟶ Arrow.mk g₂}
     {α₂ : Arrow.mk f₂ ⟶ Arrow.mk f₃} {β₂ : Arrow.mk g₂ ⟶ Arrow.mk g₃} (p₁ : α₁.right = β₁.left)
@@ -456,7 +470,11 @@ def homology'IsoCokernelImageToKernel' (w : f ≫ g = 0) :
     ext
     simp only [Iso.inv_hom_id_assoc, cokernel.π_desc, Category.comp_id, cokernel.π_desc_assoc,
       Category.assoc]
+<<<<<<< HEAD
 #align homology'iso_cokernel_image_to_kernel' homology'IsoCokernelImageToKernel'
+=======
+#align homology_iso_cokernel_image_to_kernel' homology'IsoCokernelImageToKernel'
+>>>>>>> origin/homology-sequence-computation
 
 variable [HasEqualizers V]
 

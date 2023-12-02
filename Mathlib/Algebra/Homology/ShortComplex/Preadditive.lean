@@ -13,8 +13,6 @@ import Mathlib.CategoryTheory.Preadditive.Opposite
 In this file, it is shown that if `C` is a preadditive category, then
 `ShortComplex C` is a preadditive category.
 
-TODO: Introduce the notion of homotopy of morphisms of short complexes.
-
 -/
 
 namespace CategoryTheory
@@ -95,15 +93,15 @@ namespace LeftHomologyMapData
 
 variable (γ : LeftHomologyMapData φ h₁ h₂) (γ' : LeftHomologyMapData φ' h₁ h₂)
 
-/-- Given a left homology map data for morphism `φ`, this is induced left homology
+/-- Given a left homology map data for morphism `φ`, this is the induced left homology
 map data for `-φ`. -/
 @[simps]
 def neg : LeftHomologyMapData (-φ) h₁ h₂ where
   φK := -γ.φK
   φH := -γ.φH
 
-/-- Given left homology map data for morphisms `φ` and `φ'`, this is induced left homology
-map data for `φ + φ'`. -/
+/-- Given left homology map data for morphisms `φ` and `φ'`, this is
+the induced left homology map data for `φ + φ'`. -/
 @[simps]
 def add : LeftHomologyMapData (φ + φ') h₁ h₂ where
   φK := γ.φK + γ'.φK
@@ -179,7 +177,7 @@ lemma cyclesMap_add : cyclesMap (φ + φ') = cyclesMap φ + cyclesMap φ' :=
 
 @[simp]
 lemma leftHomologyMap_sub : leftHomologyMap (φ - φ') = leftHomologyMap φ - leftHomologyMap φ' :=
-  leftHomologyMap'_sub  _ _
+  leftHomologyMap'_sub _ _
 
 @[simp]
 lemma cyclesMap_sub : cyclesMap (φ - φ') = cyclesMap φ - cyclesMap φ' :=
@@ -195,6 +193,10 @@ instance cyclesFunctor_additive [HasKernels C] [HasCokernels C] :
 
 end LeftHomology
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/homology-sequence-computation
 section RightHomology
 
 variable {φ φ' : S₁ ⟶ S₂} {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}
@@ -203,11 +205,21 @@ namespace RightHomologyMapData
 
 variable (γ : RightHomologyMapData φ h₁ h₂) (γ' : RightHomologyMapData φ' h₁ h₂)
 
+<<<<<<< HEAD
+=======
+/-- Given a right homology map data for morphism `φ`, this is the induced right homology
+map data for `-φ`. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 def neg : RightHomologyMapData (-φ) h₁ h₂ where
   φQ := -γ.φQ
   φH := -γ.φH
 
+<<<<<<< HEAD
+=======
+/-- Given right homology map data for morphisms `φ` and `φ'`, this is the induced
+right homology map data for `φ + φ'`. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 def add : RightHomologyMapData (φ + φ') h₁ h₂ where
   φQ := γ.φQ + γ'.φQ
@@ -274,7 +286,12 @@ lemma opcyclesMap_neg : opcyclesMap (-φ) = -opcyclesMap φ :=
   opcyclesMap'_neg _ _
 
 @[simp]
+<<<<<<< HEAD
 lemma rightHomologyMap_add : rightHomologyMap (φ + φ')  = rightHomologyMap φ + rightHomologyMap φ' :=
+=======
+lemma rightHomologyMap_add :
+    rightHomologyMap (φ + φ')  = rightHomologyMap φ + rightHomologyMap φ' :=
+>>>>>>> origin/homology-sequence-computation
   rightHomologyMap'_add _ _
 
 @[simp]
@@ -282,8 +299,14 @@ lemma opcyclesMap_add : opcyclesMap (φ + φ') = opcyclesMap φ + opcyclesMap φ
   opcyclesMap'_add _ _
 
 @[simp]
+<<<<<<< HEAD
 lemma rightHomologyMap_sub : rightHomologyMap (φ - φ') = rightHomologyMap φ - rightHomologyMap φ' :=
   rightHomologyMap'_sub  _ _
+=======
+lemma rightHomologyMap_sub :
+    rightHomologyMap (φ - φ') = rightHomologyMap φ - rightHomologyMap φ' :=
+  rightHomologyMap'_sub _ _
+>>>>>>> origin/homology-sequence-computation
 
 @[simp]
 lemma opcyclesMap_sub : opcyclesMap (φ - φ') = opcyclesMap φ - opcyclesMap φ' :=
@@ -307,11 +330,21 @@ namespace HomologyMapData
 
 variable (γ : HomologyMapData φ h₁ h₂) (γ' : HomologyMapData φ' h₁ h₂)
 
+<<<<<<< HEAD
+=======
+/-- Given a homology map data for a morphism `φ`, this is the induced homology
+map data for `-φ`. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 def neg : HomologyMapData (-φ) h₁ h₂ where
   left := γ.left.neg
   right := γ.right.neg
 
+<<<<<<< HEAD
+=======
+/-- Given homology map data for morphisms `φ` and `φ'`, this is the induced homology
+map data for `φ + φ'`. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 def add : HomologyMapData (φ + φ') h₁ h₂ where
   left := γ.left.add γ'.left
@@ -328,14 +361,22 @@ lemma homologyMap'_neg :
 
 @[simp]
 lemma homologyMap'_add :
+<<<<<<< HEAD
     homologyMap' (φ + φ') h₁ h₂ = homologyMap' φ h₁ h₂ +
       homologyMap' φ' h₁ h₂ :=
+=======
+    homologyMap' (φ + φ') h₁ h₂ = homologyMap' φ h₁ h₂ + homologyMap' φ' h₁ h₂ :=
+>>>>>>> origin/homology-sequence-computation
   leftHomologyMap'_add _ _
 
 @[simp]
 lemma homologyMap'_sub :
+<<<<<<< HEAD
     homologyMap' (φ - φ') h₁ h₂ = homologyMap' φ h₁ h₂ -
       homologyMap' φ' h₁ h₂ :=
+=======
+    homologyMap' (φ - φ') h₁ h₂ = homologyMap' φ h₁ h₂ - homologyMap' φ' h₁ h₂ :=
+>>>>>>> origin/homology-sequence-computation
   leftHomologyMap'_sub _ _
 
 variable (φ φ')
@@ -354,7 +395,11 @@ lemma homologyMap_add : homologyMap (φ + φ')  = homologyMap φ + homologyMap �
 
 @[simp]
 lemma homologyMap_sub : homologyMap (φ - φ') = homologyMap φ - homologyMap φ' :=
+<<<<<<< HEAD
   homologyMap'_sub  _ _
+=======
+  homologyMap'_sub _ _
+>>>>>>> origin/homology-sequence-computation
 
 end
 
@@ -367,12 +412,28 @@ section Homotopy
 
 variable (φ₁ φ₂ φ₃ φ₄ : S₁ ⟶ S₂)
 
+<<<<<<< HEAD
 @[ext]
 structure Homotopy where
   h₀ : S₁.X₁ ⟶ S₂.X₁
   h₀_f : h₀ ≫ S₂.f = 0 := by aesop_cat
   h₁ : S₁.X₂ ⟶ S₂.X₁
   h₂ : S₁.X₃ ⟶ S₂.X₂
+=======
+/-- A homotopy between two morphisms of short complexes `S₁ ⟶ S₂` consists of various
+maps and conditions which will be sufficient to show that they induce the same morphism
+in homology. -/
+@[ext]
+structure Homotopy where
+  /-- a morphism `S₁.X₁ ⟶ S₂.X₁` -/
+  h₀ : S₁.X₁ ⟶ S₂.X₁
+  h₀_f : h₀ ≫ S₂.f = 0 := by aesop_cat
+  /-- a morphism `S₁.X₂ ⟶ S₂.X₁` -/
+  h₁ : S₁.X₂ ⟶ S₂.X₁
+  /-- a morphism `S₁.X₃ ⟶ S₂.X₂` -/
+  h₂ : S₁.X₃ ⟶ S₂.X₂
+  /-- a morphism `S₁.X₃ ⟶ S₂.X₃` -/
+>>>>>>> origin/homology-sequence-computation
   h₃ : S₁.X₃ ⟶ S₂.X₃
   g_h₃ : S₁.g ≫ h₃ = 0 := by aesop_cat
   comm₁ : φ₁.τ₁ = S₁.f ≫ h₁ + h₀ + φ₂.τ₁ := by aesop_cat
@@ -383,6 +444,11 @@ attribute [reassoc (attr := simp)] Homotopy.h₀_f Homotopy.g_h₃
 
 variable (S₁ S₂)
 
+<<<<<<< HEAD
+=======
+/-- Constructor for null homotopic morphisms, see also `Homotopy.ofNullHomotopic`
+and `Homotopy.eq_add_nullHomotopic`. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 def nullHomotopic (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
     (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
@@ -397,6 +463,10 @@ attribute [local simp] neg_comp
 
 variable {S₁ S₂ φ₁ φ₂ φ₃ φ₄}
 
+<<<<<<< HEAD
+=======
+/-- The obvious homotopy between two equal morphisms of short complexes. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 def ofEq (h : φ₁ = φ₂) : Homotopy φ₁ φ₂ where
   h₀ := 0
@@ -404,61 +474,111 @@ def ofEq (h : φ₁ = φ₂) : Homotopy φ₁ φ₂ where
   h₂ := 0
   h₃ := 0
 
+<<<<<<< HEAD
 @[simps!]
 def refl (φ : S₁ ⟶ S₂) : Homotopy φ φ := ofEq rfl
 
+=======
+/-- The obvious homotopy between a morphism of short complexes and itself. -/
+@[simps!]
+def refl (φ : S₁ ⟶ S₂) : Homotopy φ φ := ofEq rfl
+
+/-- The symmetry of homotopy between morphisms of short complexes. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 def symm (h : Homotopy φ₁ φ₂) : Homotopy φ₂ φ₁ where
   h₀ := -h.h₀
   h₁ := -h.h₁
   h₂ := -h.h₂
   h₃ := -h.h₃
+<<<<<<< HEAD
   comm₁ := by rw [h.comm₁, comp_neg] ; abel
   comm₂ := by rw [h.comm₂, comp_neg, neg_comp] ; abel
   comm₃ := by rw [h.comm₃, neg_comp] ; abel
 
+=======
+  comm₁ := by rw [h.comm₁, comp_neg]; abel
+  comm₂ := by rw [h.comm₂, comp_neg, neg_comp]; abel
+  comm₃ := by rw [h.comm₃, neg_comp]; abel
+
+/-- If two maps of short complexes are homotopic, their opposites also are. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 def neg (h : Homotopy φ₁ φ₂) : Homotopy (-φ₁) (-φ₂) where
   h₀ := -h.h₀
   h₁ := -h.h₁
   h₂ := -h.h₂
   h₃ := -h.h₃
+<<<<<<< HEAD
   comm₁ := by rw [neg_τ₁, neg_τ₁, h.comm₁, neg_add_rev, comp_neg] ; abel
   comm₂ := by rw [neg_τ₂, neg_τ₂, h.comm₂, neg_add_rev, comp_neg, neg_comp] ; abel
   comm₃ := by rw [neg_τ₃, neg_τ₃, h.comm₃, neg_comp] ; abel
 
+=======
+  comm₁ := by rw [neg_τ₁, neg_τ₁, h.comm₁, neg_add_rev, comp_neg]; abel
+  comm₂ := by rw [neg_τ₂, neg_τ₂, h.comm₂, neg_add_rev, comp_neg, neg_comp]; abel
+  comm₃ := by rw [neg_τ₃, neg_τ₃, h.comm₃, neg_comp]; abel
+
+/-- The transitivity of homotopy between morphisms of short complexes. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 def trans (h₁₂ : Homotopy φ₁ φ₂) (h₂₃ : Homotopy φ₂ φ₃) : Homotopy φ₁ φ₃ where
   h₀ := h₁₂.h₀ + h₂₃.h₀
   h₁ := h₁₂.h₁ + h₂₃.h₁
   h₂ := h₁₂.h₂ + h₂₃.h₂
   h₃ := h₁₂.h₃ + h₂₃.h₃
+<<<<<<< HEAD
   comm₁ := by rw [h₁₂.comm₁, h₂₃.comm₁, comp_add] ; abel
   comm₂ := by rw [h₁₂.comm₂, h₂₃.comm₂, comp_add, add_comp] ; abel
   comm₃ := by rw [h₁₂.comm₃, h₂₃.comm₃, add_comp] ; abel
 
+=======
+  comm₁ := by rw [h₁₂.comm₁, h₂₃.comm₁, comp_add]; abel
+  comm₂ := by rw [h₁₂.comm₂, h₂₃.comm₂, comp_add, add_comp]; abel
+  comm₃ := by rw [h₁₂.comm₃, h₂₃.comm₃, add_comp]; abel
+
+/-- Homotopy between morphisms of short complexes is compatible withe addition. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 def add (h : Homotopy φ₁ φ₂) (h' : Homotopy φ₃ φ₄) : Homotopy (φ₁ + φ₃) (φ₂ + φ₄) where
   h₀ := h.h₀ + h'.h₀
   h₁ := h.h₁ + h'.h₁
   h₂ := h.h₂ + h'.h₂
   h₃ := h.h₃ + h'.h₃
+<<<<<<< HEAD
   comm₁ := by rw [add_τ₁, add_τ₁, h.comm₁, h'.comm₁, comp_add] ; abel
   comm₂ := by rw [add_τ₂, add_τ₂, h.comm₂, h'.comm₂, comp_add, add_comp] ; abel
   comm₃ := by rw [add_τ₃, add_τ₃, h.comm₃, h'.comm₃, add_comp] ; abel
 
+=======
+  comm₁ := by rw [add_τ₁, add_τ₁, h.comm₁, h'.comm₁, comp_add]; abel
+  comm₂ := by rw [add_τ₂, add_τ₂, h.comm₂, h'.comm₂, comp_add, add_comp]; abel
+  comm₃ := by rw [add_τ₃, add_τ₃, h.comm₃, h'.comm₃, add_comp]; abel
+
+/-- Homotopy between morphisms of short complexes is compatible withe substraction. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 def sub (h : Homotopy φ₁ φ₂) (h' : Homotopy φ₃ φ₄) : Homotopy (φ₁ - φ₃) (φ₂ - φ₄) where
   h₀ := h.h₀ - h'.h₀
   h₁ := h.h₁ - h'.h₁
   h₂ := h.h₂ - h'.h₂
   h₃ := h.h₃ - h'.h₃
+<<<<<<< HEAD
   comm₁ := by rw [sub_τ₁, sub_τ₁, h.comm₁, h'.comm₁, comp_sub] ; abel
   comm₂ := by rw [sub_τ₂, sub_τ₂, h.comm₂, h'.comm₂, comp_sub, sub_comp] ; abel
   comm₃ := by rw [sub_τ₃, sub_τ₃, h.comm₃, h'.comm₃, sub_comp] ; abel
 
 @[simps]
 def comp_left (h : Homotopy φ₁ φ₂) (ψ : S₃ ⟶ S₁) : Homotopy (ψ ≫ φ₁) (ψ ≫ φ₂) where
+=======
+  comm₁ := by rw [sub_τ₁, sub_τ₁, h.comm₁, h'.comm₁, comp_sub]; abel
+  comm₂ := by rw [sub_τ₂, sub_τ₂, h.comm₂, h'.comm₂, comp_sub, sub_comp]; abel
+  comm₃ := by rw [sub_τ₃, sub_τ₃, h.comm₃, h'.comm₃, sub_comp]; abel
+
+/-- Homotopy between morphisms of short complexes is compatible with precomposition. -/
+@[simps]
+def compLeft (h : Homotopy φ₁ φ₂) (ψ : S₃ ⟶ S₁) : Homotopy (ψ ≫ φ₁) (ψ ≫ φ₂) where
+>>>>>>> origin/homology-sequence-computation
   h₀ := ψ.τ₁ ≫ h.h₀
   h₁ := ψ.τ₂ ≫ h.h₁
   h₂ := ψ.τ₃ ≫ h.h₂
@@ -468,8 +588,14 @@ def comp_left (h : Homotopy φ₁ φ₂) (ψ : S₃ ⟶ S₁) : Homotopy (ψ ≫
   comm₂ := by rw [comp_τ₂, comp_τ₂, h.comm₂, comp_add, comp_add, assoc, ψ.comm₂₃_assoc]
   comm₃ := by rw [comp_τ₃, comp_τ₃, h.comm₃, comp_add, comp_add, assoc]
 
+<<<<<<< HEAD
 @[simps]
 def comp_right (h : Homotopy φ₁ φ₂) (ψ : S₂ ⟶ S₃) : Homotopy (φ₁ ≫ ψ) (φ₂ ≫ ψ) where
+=======
+/-- Homotopy between morphisms of short complexes is compatible with postcomposition. -/
+@[simps]
+def compRight (h : Homotopy φ₁ φ₂) (ψ : S₂ ⟶ S₃) : Homotopy (φ₁ ≫ ψ) (φ₂ ≫ ψ) where
+>>>>>>> origin/homology-sequence-computation
   h₀ := h.h₀ ≫ ψ.τ₁
   h₁ := h.h₁ ≫ ψ.τ₁
   h₂ := h.h₂ ≫ ψ.τ₂
@@ -478,6 +604,17 @@ def comp_right (h : Homotopy φ₁ φ₂) (ψ : S₂ ⟶ S₃) : Homotopy (φ₁
   comm₂ := by rw [comp_τ₂, comp_τ₂, h.comm₂, add_comp, add_comp, assoc, assoc, assoc, ψ.comm₁₂]
   comm₃ := by rw [comp_τ₃, comp_τ₃, h.comm₃, add_comp, add_comp, assoc, assoc, ψ.comm₂₃]
 
+<<<<<<< HEAD
+=======
+/-- Homotopy between morphisms of short complexes is compatible with composition. -/
+@[simps!]
+def comp (h : Homotopy φ₁ φ₂) {ψ₁ ψ₂ : S₂ ⟶ S₃} (h' : Homotopy ψ₁ ψ₂) :
+    Homotopy (φ₁ ≫ ψ₁) (φ₂ ≫ ψ₂) :=
+  (h.compRight ψ₁).trans (h'.compLeft φ₂)
+
+/-- The homotopy between morphisms in `ShortComplex Cᵒᵖ` that is induced by a homotopy
+between morphisms in `ShortComplex C`. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 def op (h : Homotopy φ₁ φ₂) : Homotopy (opMap φ₁) (opMap φ₂) where
   h₀ := h.h₃.op
@@ -486,10 +623,19 @@ def op (h : Homotopy φ₁ φ₂) : Homotopy (opMap φ₁) (opMap φ₂) where
   h₃ := h.h₀.op
   h₀_f := Quiver.Hom.unop_inj h.g_h₃
   g_h₃ := Quiver.Hom.unop_inj h.h₀_f
+<<<<<<< HEAD
   comm₁ := Quiver.Hom.unop_inj (by dsimp ; rw [h.comm₃] ; abel)
   comm₂ := Quiver.Hom.unop_inj (by dsimp ; rw [h.comm₂] ; abel)
   comm₃ := Quiver.Hom.unop_inj (by dsimp ; rw [h.comm₁] ; abel)
 
+=======
+  comm₁ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₃]; abel)
+  comm₂ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₂]; abel)
+  comm₃ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₁]; abel)
+
+/-- The homotopy between morphisms in `ShortComplex C` that is induced by a homotopy
+between morphisms in `ShortComplex Cᵒᵖ`. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 def unop {S₁ S₂ : ShortComplex Cᵒᵖ} {φ₁ φ₂ : S₁ ⟶ S₂}  (h : Homotopy φ₁ φ₂) :
     Homotopy (unopMap φ₁) (unopMap φ₂) where
@@ -499,12 +645,23 @@ def unop {S₁ S₂ : ShortComplex Cᵒᵖ} {φ₁ φ₂ : S₁ ⟶ S₂}  (h : 
   h₃ := h.h₀.unop
   h₀_f := Quiver.Hom.op_inj h.g_h₃
   g_h₃ := Quiver.Hom.op_inj h.h₀_f
+<<<<<<< HEAD
   comm₁ := Quiver.Hom.op_inj (by dsimp ; rw [h.comm₃] ; abel)
   comm₂ := Quiver.Hom.op_inj (by dsimp ; rw [h.comm₂] ; abel)
   comm₃ := Quiver.Hom.op_inj (by dsimp ; rw [h.comm₁] ; abel)
 
 variable (φ₁ φ₂)
 
+=======
+  comm₁ := Quiver.Hom.op_inj (by dsimp; rw [h.comm₃]; abel)
+  comm₂ := Quiver.Hom.op_inj (by dsimp; rw [h.comm₂]; abel)
+  comm₃ := Quiver.Hom.op_inj (by dsimp; rw [h.comm₁]; abel)
+
+variable (φ₁ φ₂)
+
+/-- Equivalence expressing that two morphisms are homotopic iff
+their difference is homotopic to zero. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 def equivSubZero : Homotopy φ₁ φ₂ ≃ Homotopy (φ₁ - φ₂) 0 where
   toFun h := (h.sub (refl φ₂)).trans (ofEq (sub_self φ₂))
@@ -515,6 +672,7 @@ def equivSubZero : Homotopy φ₁ φ₂ ≃ Homotopy (φ₁ - φ₂) 0 where
 
 variable {φ₁ φ₂}
 
+<<<<<<< HEAD
 lemma eq_add_null_homotopic (h : Homotopy φ₁ φ₂) :
     φ₁ = φ₂ + nullHomotopic _ _ h.h₀ h.h₀_f h.h₁ h.h₂ h.h₃ h.g_h₃ := by
   ext
@@ -527,6 +685,21 @@ variable (S₁ S₂)
 @[simps]
 def ofNullHomotopic (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
   (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
+=======
+lemma eq_add_nullHomotopic (h : Homotopy φ₁ φ₂) :
+    φ₁ = φ₂ + nullHomotopic _ _ h.h₀ h.h₀_f h.h₁ h.h₂ h.h₃ h.g_h₃ := by
+  ext
+  · dsimp; rw [h.comm₁]; abel
+  · dsimp; rw [h.comm₂]; abel
+  · dsimp; rw [h.comm₃]; abel
+
+variable (S₁ S₂)
+
+/-- A morphism constructed with `nullHomotopic` is homotopic to zero. -/
+@[simps]
+def ofNullHomotopic (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
+    (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
+>>>>>>> origin/homology-sequence-computation
   Homotopy (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) 0 where
   h₀ := h₀
   h₁ := h₁
@@ -534,14 +707,25 @@ def ofNullHomotopic (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f =
   h₃ := h₃
   h₀_f := h₀_f
   g_h₃ := g_h₃
+<<<<<<< HEAD
   comm₁ := by rw [nullHomotopic_τ₁, zero_τ₁, add_zero] ; abel
   comm₂ := by rw [nullHomotopic_τ₂, zero_τ₂, add_zero] ; abel
   comm₃ := by rw [nullHomotopic_τ₃, zero_τ₃, add_zero] ; abel
+=======
+  comm₁ := by rw [nullHomotopic_τ₁, zero_τ₁, add_zero]; abel
+  comm₂ := by rw [nullHomotopic_τ₂, zero_τ₂, add_zero]; abel
+  comm₃ := by rw [nullHomotopic_τ₃, zero_τ₃, add_zero]; abel
+>>>>>>> origin/homology-sequence-computation
 
 end Homotopy
 
 variable {S₁ S₂}
 
+<<<<<<< HEAD
+=======
+/-- The left homology map data expressing that null homotopic maps induce the zero
+morphism in left homology. -/
+>>>>>>> origin/homology-sequence-computation
 def LeftHomologyMapData.ofNullHomotopic
     (H₁ : S₁.LeftHomologyData) (H₂ : S₂.LeftHomologyData)
     (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
@@ -556,6 +740,11 @@ def LeftHomologyMapData.ofNullHomotopic
   commπ := by
     rw [H₂.liftK_π_eq_zero_of_boundary (H₁.i ≫ h₁ ≫ S₂.f) (H₁.i ≫ h₁) (by rw [assoc]), comp_zero]
 
+<<<<<<< HEAD
+=======
+/-- The right homology map data expressing that null homotopic maps induce the zero
+morphism in right homology. -/
+>>>>>>> origin/homology-sequence-computation
 def RightHomologyMapData.ofNullHomotopic
     (H₁ : S₁.RightHomologyData) (H₂ : S₂.RightHomologyData)
     (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
@@ -620,6 +809,7 @@ namespace Homotopy
 
 variable {φ₁ φ₂ S₁ S₂}
 
+<<<<<<< HEAD
 lemma congr_leftHomologyMap' (h : Homotopy φ₁ φ₂) (h₁ : S₁.LeftHomologyData)
     (h₂ : S₂.LeftHomologyData) : leftHomologyMap' φ₁ h₁ h₂ = leftHomologyMap' φ₂ h₁ h₂ := by
   rw [h.eq_add_null_homotopic, leftHomologyMap'_add, leftHomologyMap'_nullHomotopic, add_zero]
@@ -651,13 +841,60 @@ structure HomotopyEquiv where
   hom : S₁ ⟶ S₂
   inv : S₂ ⟶ S₁
   homotopyHomInvId : Homotopy (hom ≫ inv) (𝟙 S₁)
+=======
+lemma leftHomologyMap'_congr (h : Homotopy φ₁ φ₂) (h₁ : S₁.LeftHomologyData)
+    (h₂ : S₂.LeftHomologyData) : leftHomologyMap' φ₁ h₁ h₂ = leftHomologyMap' φ₂ h₁ h₂ := by
+  rw [h.eq_add_nullHomotopic, leftHomologyMap'_add, leftHomologyMap'_nullHomotopic, add_zero]
+
+lemma rightHomologyMap'_congr (h : Homotopy φ₁ φ₂) (h₁ : S₁.RightHomologyData)
+    (h₂ : S₂.RightHomologyData) : rightHomologyMap' φ₁ h₁ h₂ = rightHomologyMap' φ₂ h₁ h₂ := by
+  rw [h.eq_add_nullHomotopic, rightHomologyMap'_add, rightHomologyMap'_nullHomotopic, add_zero]
+
+lemma homologyMap'_congr (h : Homotopy φ₁ φ₂) (h₁ : S₁.HomologyData)
+    (h₂ : S₂.HomologyData) : homologyMap' φ₁ h₁ h₂ = homologyMap' φ₂ h₁ h₂ := by
+  rw [h.eq_add_nullHomotopic, homologyMap'_add, homologyMap'_nullHomotopic, add_zero]
+
+lemma leftHomologyMap_congr (h : Homotopy φ₁ φ₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    leftHomologyMap φ₁ = leftHomologyMap φ₂ :=
+  h.leftHomologyMap'_congr _ _
+
+lemma rightHomologyMap_congr (h : Homotopy φ₁ φ₂) [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    rightHomologyMap φ₁ = rightHomologyMap φ₂ :=
+  h.rightHomologyMap'_congr _ _
+
+lemma homologyMap_congr (h : Homotopy φ₁ φ₂) [S₁.HasHomology] [S₂.HasHomology] :
+    homologyMap φ₁ = homologyMap φ₂ :=
+  h.homologyMap'_congr _ _
+
+end Homotopy
+
+/-- An homotopy equivalence between two short complexes `S₁` and `S₂` consists
+of morphisms `hom : S₁ ⟶ S₂` and `inv : S₂ ⟶ S₁` such that both compositions
+`hom ≫ inv` and `inv ≫ hom` are homotopic to the identity. -/
+@[ext]
+structure HomotopyEquiv where
+  /-- the forward direction of a homotopy equivalence. -/
+  hom : S₁ ⟶ S₂
+  /-- the backwards direction of a homotopy equivalence. -/
+  inv : S₂ ⟶ S₁
+  /-- the composition of the two directions of a homotopy equivalence is
+  homotopic to the identity of the source -/
+  homotopyHomInvId : Homotopy (hom ≫ inv) (𝟙 S₁)
+  /-- the composition of the two directions of a homotopy equivalence is
+  homotopic to the identity of the target -/
+>>>>>>> origin/homology-sequence-computation
   homotopyInvHomId : Homotopy (inv ≫ hom) (𝟙 S₂)
 
 namespace HomotopyEquiv
 
 variable {S₁ S₂}
 
+<<<<<<< HEAD
 
+=======
+/-- The homotopy equivalence from a short complex to itself that is induced
+by the identity. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 def refl (S : ShortComplex C) : HomotopyEquiv S S where
   hom := 𝟙 S
@@ -665,6 +902,10 @@ def refl (S : ShortComplex C) : HomotopyEquiv S S where
   homotopyHomInvId := Homotopy.ofEq (by simp)
   homotopyInvHomId := Homotopy.ofEq (by simp)
 
+<<<<<<< HEAD
+=======
+/-- The inverse of a homotopy equivalence. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 def symm (e : HomotopyEquiv S₁ S₂) : HomotopyEquiv S₂ S₁ where
   hom := e.inv
@@ -672,12 +913,17 @@ def symm (e : HomotopyEquiv S₁ S₂) : HomotopyEquiv S₂ S₁ where
   homotopyHomInvId := e.homotopyInvHomId
   homotopyInvHomId := e.homotopyHomInvId
 
+<<<<<<< HEAD
+=======
+/-- The composition of homotopy equivalences. -/
+>>>>>>> origin/homology-sequence-computation
 @[simps]
 def trans (e : HomotopyEquiv S₁ S₂) (e' : HomotopyEquiv S₂ S₃) :
     HomotopyEquiv S₁ S₃ where
   hom := e.hom ≫ e'.hom
   inv := e'.inv ≫ e.inv
   homotopyHomInvId := (Homotopy.ofEq (by simp)).trans
+<<<<<<< HEAD
     (((e'.homotopyHomInvId.comp_right e.inv).comp_left e.hom).trans
       ((Homotopy.ofEq (by simp)).trans e.homotopyHomInvId))
   homotopyInvHomId := (Homotopy.ofEq (by simp)).trans
@@ -752,10 +998,19 @@ instance quasiIso_hom [S₁.HasHomology] [S₂.HasHomology] : QuasiIso e.hom := 
 instance quasiIso_inv [S₁.HasHomology] [S₂.HasHomology] : QuasiIso e.inv :=
   (inferInstance : QuasiIso (e.symm).hom)
 
+=======
+    (((e'.homotopyHomInvId.compRight e.inv).compLeft e.hom).trans
+      ((Homotopy.ofEq (by simp)).trans e.homotopyHomInvId))
+  homotopyInvHomId := (Homotopy.ofEq (by simp)).trans
+    (((e.homotopyInvHomId.compRight e'.hom).compLeft e'.inv).trans
+      ((Homotopy.ofEq (by simp)).trans e'.homotopyInvHomId))
+
+>>>>>>> origin/homology-sequence-computation
 end HomotopyEquiv
 
 end Homotopy
 
+<<<<<<< HEAD
 variable (S : ShortComplex C)
 
 lemma add_liftCycles {A : C} (k k' : A ⟶ S.X₂) (hk : k ≫ S.g = 0) (hk' : k' ≫ S.g = 0)
@@ -768,6 +1023,8 @@ lemma sub_liftCycles {A : C} (k k' : A ⟶ S.X₂) (hk : k ≫ S.g = 0) (hk' : k
       S.liftCycles (k - k') (by rw [sub_comp, hk, hk', sub_zero]) := by
   simp only [← cancel_mono S.iCycles, liftCycles_i, sub_comp]
 
+=======
+>>>>>>> origin/homology-sequence-computation
 end ShortComplex
 
 end CategoryTheory

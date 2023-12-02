@@ -48,15 +48,15 @@ namespace Functor
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
-  [Functor.Additive F]
+variable {C D E : Type*} [Category C] [Category D] [Category E]
+  [Preadditive C] [Preadditive D] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
 
 @[simp]
 theorem map_add {X Y : C} {f g : X ⟶ Y} : F.map (f + g) = F.map f + F.map g :=
   Functor.Additive.map_add
 #align category_theory.functor.map_add CategoryTheory.Functor.map_add
 
--- porting note: it was originally @[simps (config := { fullyApplied := false })]
+-- porting note: it was originally @[simps (config := .asFn)]
 /-- `F.mapAddHom` is an additive homomorphism whose underlying function is `F.map`. -/
 @[simps!]
 def mapAddHom {X Y : C} : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y) :=
@@ -105,7 +105,11 @@ theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
 
 variable {F}
 
+<<<<<<< HEAD
 lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) [F.Additive] : G.Additive := by
+=======
+lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) : G.Additive := by
+>>>>>>> origin/homology-sequence-computation
   constructor
   intro X Y f g
   simp only [← NatIso.naturality_1 e (f + g), map_add, Preadditive.add_comp,
@@ -113,6 +117,7 @@ lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) [F.Additive] : G.Additive := b
 
 variable (F)
 
+<<<<<<< HEAD
 lemma additive_of_full_essSurj_comp {E : Type _} [Category E] [Preadditive E]
   (F : C ⥤ D) [Full F] [EssSurj F] [F.Additive] (G : D ⥤ E)
     [(F ⋙ G).Additive] : G.Additive := by
@@ -134,6 +139,27 @@ lemma additive_of_comp_faithful {E : Type _} [Category E] [Preadditive E]
     F.Additive := ⟨fun {_ _ f₁ f₂} => by
   apply G.map_injective
   rw [← Functor.comp_map, G.map_add, (F ⋙ G).map_add, Functor.comp_map, Functor.comp_map]⟩
+=======
+lemma additive_of_full_essSurj_comp [Full F] [EssSurj F] (G : D ⥤ E)
+    [(F ⋙ G).Additive] : G.Additive where
+  map_add {X Y f g} := by
+    obtain ⟨f', hf'⟩ := F.map_surjective ((F.objObjPreimageIso X).hom ≫ f ≫
+      (F.objObjPreimageIso Y).inv)
+    obtain ⟨g', hg'⟩ := F.map_surjective ((F.objObjPreimageIso X).hom ≫ g ≫
+      (F.objObjPreimageIso Y).inv)
+    simp only [← cancel_mono (G.map (F.objObjPreimageIso Y).inv),
+      ← cancel_epi (G.map (F.objObjPreimageIso X).hom),
+      Preadditive.add_comp, Preadditive.comp_add, ← Functor.map_comp]
+    erw [← hf', ← hg', ← (F ⋙ G).map_add]
+    dsimp
+    rw [F.map_add]
+
+lemma additive_of_comp_faithful
+    (F : C ⥤ D) (G : D ⥤ E) [G.Additive] [(F ⋙ G).Additive] [Faithful G] :
+    F.Additive where
+  map_add {_ _ f₁ f₂} := G.map_injective (by
+    rw [← Functor.comp_map, G.map_add, (F ⋙ G).map_add, Functor.comp_map, Functor.comp_map])
+>>>>>>> origin/homology-sequence-computation
 
 end
 

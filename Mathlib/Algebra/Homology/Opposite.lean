@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2022 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Amelia Livingston
+Authors: Johan Commelin, Amelia Livingston, Joël Riou
 -/
 import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Abelian.Homology
 import Mathlib.Algebra.Homology.Additive
+import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 #align_import algebra.homology.opposite from "leanprover-community/mathlib"@"8c75ef3517d4106e89fe524e6281d0b0545f47fc"
 
@@ -77,12 +78,21 @@ def homology'Op {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
 /-- Given morphisms `f, g` in `Vᵒᵖ` with `f ≫ g = 0`, the homology of `g.unop, f.unop` is the
 opposite of the homology of `f, g`. -/
 def homology'Unop {X Y Z : Vᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
+<<<<<<< HEAD
     homology' g.unop f.unop (by rw [← unop_comp, w, unop_zero]) ≅ Opposite.unop (homology' f g w) :=
+=======
+    homology' g.unop f.unop (by rw [← unop_comp, w, unop_zero]) ≅
+      Opposite.unop (homology' f g w) :=
+>>>>>>> origin/homology-sequence-computation
   cokernelIsoOfEq (imageToKernel_unop _ _ w) ≪≫ cokernelEpiComp _ _ ≪≫ cokernelCompIsIso _ _ ≪≫
     cokernelUnopUnop _ ≪≫ (homology'IsoKernelDesc _ _ _ ≪≫
     kernelIsoOfEq (by ext; simp only [image.fac, cokernel.π_desc, cokernel.π_desc_assoc]) ≪≫
     kernelCompMono _ (image.ι g)).unop
+<<<<<<< HEAD
 #align homology_unop homology'Unop-/
+=======
+#align homology_unop homology'Unop
+>>>>>>> origin/homology-sequence-computation
 
 end
 
@@ -252,6 +262,26 @@ instance opFunctor_additive : (@opFunctor ι V _ c _).Additive where
 instance unopFunctor_additive : (@unopFunctor ι V _ c _).Additive where
 #align homological_complex.unop_functor_additive HomologicalComplex.unopFunctor_additive
 
+instance (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
+    K.op.HasHomology i :=
+  (inferInstance : (K.sc i).op.HasHomology)
+
+instance (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
+    K.unop.HasHomology i :=
+  (inferInstance : (K.sc i).unop.HasHomology)
+
+/-- If `K` is a homological complex, then the homology of `K.op` identifies to
+the opposite of the homology of `K`. -/
+def homologyOp (K : HomologicalComplex V c) (i : ι) [K.HasHomology i] :
+    K.op.homology i ≅ op (K.homology i) :=
+  (K.sc i).homologyOpIso
+
+/-- If `K` is a homological complex in the opposite category,
+then the homology of `K.unop` identifies to the opposite of the homology of `K`. -/
+def homologyUnop (K : HomologicalComplex Vᵒᵖ c) (i : ι) [K.HasHomology i] :
+    K.unop.homology i ≅ unop (K.homology i) :=
+  (K.unop.homologyOp i).unop
+
 end
 
 /- redundant with the new homology API
@@ -283,6 +313,10 @@ objects in `V`) is the opposite of the `i`th homology of `C`. -/
 nonrec def homology'Unop (C : HomologicalComplex Vᵒᵖ c) :
     C.unop.homology' i ≅ Opposite.unop (C.homology' i) :=
   homology'UnopDef _ _ ≪≫ homology'Unop _ _ _
+<<<<<<< HEAD
 #align homological_complex.homology_unop HomologicalComplex.homology'Unop-/
+=======
+#align homological_complex.homology_unop HomologicalComplex.homology'Unop
+>>>>>>> origin/homology-sequence-computation
 
 end HomologicalComplex

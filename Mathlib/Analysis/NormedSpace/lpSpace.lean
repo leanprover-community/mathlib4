@@ -14,7 +14,7 @@ import Mathlib.Topology.Algebra.Order.LiminfLimsup
 # ℓp space
 
 This file describes properties of elements `f` of a pi-type `∀ i, E i` with finite "norm",
-defined for `p:ℝ≥0∞` as the size of the support of `f` if `p=0`, `(∑' a, ‖f a‖^p) ^ (1/p)` for
+defined for `p : ℝ≥0∞` as the size of the support of `f` if `p=0`, `(∑' a, ‖f a‖^p) ^ (1/p)` for
 `0 < p < ∞` and `⨆ a, ‖f a‖` for `p=∞`.
 
 The Prop-valued `Memℓp f p` states that a function `f : ∀ i, E i` has finite norm according
@@ -56,9 +56,6 @@ say that `‖-f‖ = ‖f‖`, instead of the non-working `f.norm_neg`.
 -/
 
 set_option autoImplicit true
-
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
 
 noncomputable section
 
@@ -198,12 +195,12 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
     obtain ⟨A, hA⟩ := (hfq.summable hq).tendsto_cofinite_zero.bddAbove_range_of_cofinite
     use A ^ q.toReal⁻¹
     rintro x ⟨i, rfl⟩
-    have : 0 ≤ ‖f i‖ ^ q.toReal := Real.rpow_nonneg_of_nonneg (norm_nonneg _) _
+    have : 0 ≤ ‖f i‖ ^ q.toReal := by positivity
     simpa [← Real.rpow_mul, mul_inv_cancel hq.ne'] using
       Real.rpow_le_rpow this (hA ⟨i, rfl⟩) (inv_nonneg.mpr hq.le)
   · apply memℓp_gen
     have hf' := hfq.summable hq
-    refine' summable_of_norm_bounded_eventually _ hf' (@Set.Finite.subset _ { i | 1 ≤ ‖f i‖ } _ _ _)
+    refine' .of_norm_bounded_eventually _ hf' (@Set.Finite.subset _ { i | 1 ≤ ‖f i‖ } _ _ _)
     · have H : { x : α | 1 ≤ ‖f x‖ ^ q.toReal }.Finite := by
         simpa using eventually_lt_of_tendsto_lt (by norm_num) hf'.tendsto_cofinite_zero
       exact H.subset fun i hi => Real.one_le_rpow hi hq.le
@@ -231,9 +228,8 @@ theorem add {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
     exact le_trans (norm_add_le _ _) (add_le_add (hA ⟨i, rfl⟩) (hB ⟨i, rfl⟩))
   apply memℓp_gen
   let C : ℝ := if p.toReal < 1 then 1 else (2 : ℝ) ^ (p.toReal - 1)
-  refine'
-    summable_of_nonneg_of_le _ (fun i => _) (((hf.summable hp).add (hg.summable hp)).mul_left C)
-  · exact fun b => Real.rpow_nonneg_of_nonneg (norm_nonneg (f b + g b)) p.toReal
+  refine' .of_nonneg_of_le _ (fun i => _) (((hf.summable hp).add (hg.summable hp)).mul_left C)
+  · intro; positivity
   · refine' (Real.rpow_le_rpow (norm_nonneg _) (norm_add_le _ _) hp.le).trans _
     dsimp only
     split_ifs with h
@@ -272,14 +268,16 @@ theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c �
     refine' memℓp_infty ⟨‖c‖ * A, _⟩
     rintro a ⟨i, rfl⟩
     refine' (norm_smul_le _ _).trans _
-    exact mul_le_mul_of_nonneg_left (hA ⟨i, rfl⟩) (norm_nonneg c)
+    gcongr
+    exact hA ⟨i, rfl⟩
   · apply memℓp_gen
     have := (hf.summable hp).mul_left (↑(‖c‖₊ ^ p.toReal) : ℝ)
     simp_rw [← coe_nnnorm, ← NNReal.coe_rpow, ← NNReal.coe_mul, NNReal.summable_coe,
       ← NNReal.mul_rpow] at this ⊢
     refine' NNReal.summable_of_le _ this
     intro i
-    exact NNReal.rpow_le_rpow (nnnorm_smul_le _ _) ENNReal.toReal_nonneg
+    gcongr
+    apply nnnorm_smul_le
 #align mem_ℓp.const_smul Memℓp.const_smul
 
 theorem const_mul {f : α → 𝕜} (hf : Memℓp f p) (c : 𝕜) : Memℓp (fun x => c * f x) p :=
@@ -422,7 +420,7 @@ theorem norm_rpow_eq_tsum (hp : 0 < p.toReal) (f : lp E p) :
   intro i
   calc
     (0 : ℝ) = (0 : ℝ) ^ p.toReal := by rw [Real.zero_rpow hp.ne']
-    _ ≤ _ := Real.rpow_le_rpow rfl.le (norm_nonneg (f i)) hp.le
+    _ ≤ _ := by gcongr; apply norm_nonneg
 #align lp.norm_rpow_eq_tsum lp.norm_rpow_eq_tsum
 
 theorem hasSum_norm (hp : 0 < p.toReal) (f : lp E p) :
@@ -462,7 +460,7 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
     have : (¬f i = 0) = False := congr_fun this i
     tauto
   · cases' isEmpty_or_nonempty α with _i _i
-    · simp
+    · simp [eq_iff_true_of_subsingleton]
     have H : IsLUB (Set.range fun i => ‖f i‖) 0 := by simpa [h] using lp.isLUB_norm f
     ext i
     have : ‖f i‖ = 0 := le_antisymm (H.1 ⟨i, rfl⟩) (norm_nonneg _)
@@ -525,7 +523,8 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
           rw [← Real.rpow_le_rpow_iff (norm_nonneg' (f + g)) hC₁ hp'']
           refine' hasSum_le _ (lp.hasSum_norm hp'' (f + g)) hCfg
           intro i
-          exact Real.rpow_le_rpow (norm_nonneg _) (norm_add_le _ _) hp''.le
+          gcongr
+          apply norm_add_le
       eq_zero_of_map_eq_zero' := fun f => norm_eq_zero_iff.1 }
 
 -- TODO: define an `ENNReal` version of `IsConjugateExponent`, and then express this inequality
@@ -688,7 +687,8 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     rw [← NNReal.mul_rpow]
     -- Porting note: added
     rw [lp.coeFn_smul, Pi.smul_apply]
-    exact NNReal.rpow_le_rpow (nnnorm_smul_le _ _) ENNReal.toReal_nonneg
+    gcongr
+    apply nnnorm_smul_le
 #align lp.norm_const_smul_le lp.norm_const_smul_le
 
 instance [Fact (1 ≤ p)] : BoundedSMul 𝕜 (lp E p) :=
@@ -1155,7 +1155,7 @@ theorem sum_rpow_le_of_tendsto (hp : p ≠ ∞) {C : ℝ} {F : ι → lp E p} (h
   refine' hCF.mono _
   intro k hCFk
   refine' (lp.sum_rpow_le_norm_rpow hp'' (F k) s).trans _
-  exact Real.rpow_le_rpow (norm_nonneg _) hCFk hp''.le
+  gcongr
 #align lp.sum_rpow_le_of_tendsto lp.sum_rpow_le_of_tendsto
 
 /-- "Semicontinuity of the `lp` norm": If all sufficiently large elements of a sequence in `lp E p`

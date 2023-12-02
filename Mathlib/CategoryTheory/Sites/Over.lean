@@ -17,7 +17,11 @@ is covering for `J`. As a result, the forgetful functor
 
 -/
 
+<<<<<<< HEAD
 universe v v' u u'
+=======
+universe v' v u' u
+>>>>>>> origin/homology-sequence-computation
 
 namespace CategoryTheory
 
@@ -90,6 +94,7 @@ lemma overEquiv_iff {X : C} {Y : Over X} (S : Sieve Y) {Z : C} (f : Z ⟶ Y.left
   obtain ⟨S, rfl⟩ := (overEquiv Y).symm.surjective S
   simp
 
+<<<<<<< HEAD
 @[simp]
 lemma functorPushforward_over_map {X Y : C} (f : X ⟶ Y) (Z : Over X) (S : Sieve Z.left) :
     Sieve.functorPushforward (Over.map f) ((Sieve.overEquiv Z).symm S) =
@@ -102,6 +107,8 @@ lemma functorPushforward_over_map {X Y : C} (f : X ⟶ Y) (Z : Over X) (S : Siev
     exact ⟨Over.mk (g.left ≫ Z.hom), Over.homMk g.left,
       Over.homMk (𝟙 _) (by simpa using Over.w g), hg, by aesop_cat⟩
 
+=======
+>>>>>>> origin/homology-sequence-computation
 end Sieve
 
 variable (J : GrothendieckTopology C)
@@ -111,7 +118,11 @@ namespace GrothendieckTopology
 /-- The Grothendieck topology on the category `Over X` for any `X : C` that is
 induced by a Grothendieck topology on `C`. -/
 def over (X : C) : GrothendieckTopology (Over X) where
+<<<<<<< HEAD
   sieves Y S := Sieve.overEquiv _ S ∈ J _
+=======
+  sieves Y S := Sieve.overEquiv Y S ∈ J Y.left
+>>>>>>> origin/homology-sequence-computation
   top_mem' Y := by
     change _ ∈ J Y.left
     simp
@@ -136,6 +147,7 @@ lemma over_forget_coverPreserving (X : C) :
     CoverPreserving (J.over X) J (Over.forget X) where
   cover_preserve hS := hS
 
+<<<<<<< HEAD
 lemma over_forget_coverLifting (X : C) :
     CoverLifting (J.over X) J (Over.forget X) where
   cover_lift hS := J.overEquiv_symm_mem_over _ _ hS
@@ -143,11 +155,17 @@ lemma over_forget_coverLifting (X : C) :
 lemma over_forget_compatiblePreserving (X : C) :
     CompatiblePreserving J (Over.forget X) where
   Compatible {F Z T x hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by
+=======
+lemma over_forget_compatiblePreserving (X : C) :
+    CompatiblePreserving J (Over.forget X) where
+  compatible {F Z T x hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by
+>>>>>>> origin/homology-sequence-computation
     let W' : Over X := Over.mk (f₁ ≫ Y₁.hom)
     let g₁' : W' ⟶ Y₁ := Over.homMk f₁
     let g₂' : W' ⟶ Y₂ := Over.homMk f₂ (by simpa using h.symm =≫ Z.hom)
     exact hx g₁' g₂' hg₁ hg₂ (by ext; exact h)
 
+<<<<<<< HEAD
 abbrev overPullback (A : Type u') [Category.{v'} A] (X : C) :
     Sheaf J A ⥤ Sheaf (J.over X) A :=
   Sites.pullback A (J.over_forget_compatiblePreserving X) (J.over_forget_coverPreserving X)
@@ -189,6 +207,20 @@ abbrev overMapPullback (A : Type u') [Category.{v'} A] {X Y : C} (f : X ⟶ Y) :
 lemma overMapPullback_map_overPullback_map {A : Type u'} [Category.{v'} A] {X Y : C} (f : X ⟶ Y)
     {F G : Sheaf J A} (φ : F ⟶ G) :
     (J.overMapPullback A f).map ((J.overPullback A Y).map φ) = (J.overPullback A X).map φ := rfl
+=======
+instance (X : C) : (Over.forget X).IsCocontinuous (J.over X) J where
+  cover_lift hS := J.overEquiv_symm_mem_over _ _ hS
+
+instance (X : C) : (Over.forget X).IsContinuous (J.over X) J :=
+  Functor.isContinuous_of_coverPreserving
+    (over_forget_compatiblePreserving J X)
+    (over_forget_coverPreserving J X)
+
+/-- The pullback functor `Sheaf J A ⥤ Sheaf (J.over X) A` -/
+abbrev overPullback (A : Type u') [Category.{v'} A] (X : C) :
+    Sheaf J A ⥤ Sheaf (J.over X) A :=
+  (Over.forget X).sheafPushforwardContinuous _ _ _
+>>>>>>> origin/homology-sequence-computation
 
 end GrothendieckTopology
 

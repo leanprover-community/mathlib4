@@ -55,14 +55,14 @@ theorem zip_swap : ∀ (l₁ : List α) (l₂ : List β), (zip l₁ l₂).map Pr
 
 #align list.length_zip List.length_zip
 
-theorem all₂_zipWith {f : α → β → γ} {p : γ → Prop} :
+theorem forall_zipWith {f : α → β → γ} {p : γ → Prop} :
     ∀ {l₁ : List α} {l₂ : List β} (_h : length l₁ = length l₂),
-      All₂ p (zipWith f l₁ l₂) ↔ Forall₂ (fun x y => p (f x y)) l₁ l₂
+      Forall p (zipWith f l₁ l₂) ↔ Forall₂ (fun x y => p (f x y)) l₁ l₂
   | [], [], _ => by simp
   | a :: l₁, b :: l₂, h => by
     simp only [length_cons, succ_inj'] at h
-    simp [all₂_zipWith h]
-#align list.all₂_zip_with List.all₂_zipWith
+    simp [forall_zipWith h]
+#align list.all₂_zip_with List.forall_zipWith
 
 theorem lt_length_left_of_zipWith {f : α → β → γ} {i : ℕ} {l : List α} {l' : List β}
     (h : i < (zipWith f l l').length) : i < l.length := by

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
+import Mathlib.Algebra.Homology.Homology
 import Mathlib.Algebra.Homology.ShortComplex.Homology
 import Mathlib.Algebra.Homology.ShortComplex.Preadditive
 import Mathlib.Algebra.Homology.ShortComplex.Limits
@@ -185,6 +186,7 @@ instance _root_.CategoryTheory.categoryWithHomology_of_abelian :
     CategoryWithHomology C where
   hasHomology S := HasHomology.mk' (HomologyData.ofAbelian S)
 
+<<<<<<< HEAD
 noncomputable def _root_.CategoryTheory.Limits.isLimit_mapCone_of_kernelFork_ofι_cokernel_condition_of_mono
     {X Y : D} (i : X ⟶ Y) [HasCokernel i] (F : D ⥤ C)
     [F.PreservesZeroMorphisms] [Mono (F.map i)]
@@ -381,6 +383,12 @@ noncomputable def ofEpiMonoFactorisation {kf : KernelFork S.g} {cc : CokernelCof
   iso := Iso.refl _
 
 end HomologyData
+=======
+/-- Comparison isomorphism between two definitions of homology. -/
+noncomputable def homology'IsoHomology :
+    _root_.homology' S.f S.g S.zero ≅ S.homology :=
+  homology'IsoCokernelLift S.f S.g S.zero ≪≫ S.homologyIsoCokernelLift.symm
+>>>>>>> origin/homology-sequence-computation
 
 end ShortComplex
 

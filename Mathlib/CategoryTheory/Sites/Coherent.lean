@@ -63,7 +63,7 @@ def coherentCoverage [Precoherent C] : Coverage C where
     obtain ⟨β,_,X₂,π₂,h,i,ι,hh⟩ := Precoherent.pullback f α X₁ π₁ hS
     refine ⟨Presieve.ofArrows X₂ π₂, ⟨β, inferInstance, X₂, π₂, rfl, h⟩, ?_⟩
     rintro _ _ ⟨b⟩
-    refine ⟨(X₁ (i b)), ι _, π₁ _, ⟨_⟩, hh _⟩
+    exact ⟨(X₁ (i b)), ι _, π₁ _, ⟨_⟩, hh _⟩
 
 /--
 The coherent Grothendieck topology on a precoherent category `C`.
@@ -129,7 +129,7 @@ theorem isSheaf_yoneda_obj (W : C) : Presieve.IsSheaf (coherentTopology C) (yone
   · exact fun y hy ↦ t_uniq y <| Presieve.isAmalgamation_sieveExtend x y hy
 
 /-- The coherent topology on a precoherent category is subcanonical. -/
-theorem isSubcanonical : Sheaf.Subcanonical (coherentTopology C) :=
+theorem subcanonical : Sheaf.Subcanonical (coherentTopology C) :=
   Sheaf.Subcanonical.of_yoneda_isSheaf _ isSheaf_yoneda_obj
 
 end coherentTopology
