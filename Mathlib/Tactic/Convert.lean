@@ -96,11 +96,11 @@ convert (config := {transparency := .default}) h
 ```
 These are passed to `congr!`. See `Congr!.Config` for options.
 -/
-syntax (name := convert) "convert" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
+syntax (name := convert) "convert" (Parser.Tactic.config)? " ← "? ppSpace term (" using " num)?
   (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 elab_rules : tactic
-| `(tactic| convert $[$cfg:config]? $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
+| `(tactic| convert $[$cfg:config]? $[← %$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
     let config ← Congr!.elabConfig (mkOptionalNode cfg)
     let patterns := (Std.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
@@ -136,14 +136,14 @@ That is, `convert_to g using n` is equivalent to `convert (?_ : g) using n`.
 The syntax for `convert_to` is the same as for `convert`, and it has variations such as
 `convert_to ← g` and `convert_to (config := {transparency := .default}) g`.
 -/
-syntax (name := convertTo) "convert_to" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
+syntax (name := convertTo) "convert_to" (Parser.Tactic.config)? " ← "? ppSpace term (" using " num)?
   (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 macro_rules
-| `(tactic| convert_to $[$cfg]? $[←%$sym]? $term $[with $ps?*]?) =>
-  `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using 1 $[with $ps?*]?)
-| `(tactic| convert_to $[$cfg]? $[←%$sym]? $term using $n $[with $ps?*]?) =>
-  `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using $n $[with $ps?*]?)
+| `(tactic| convert_to $[$cfg]? $[← %$sym]? $term $[with $ps?*]?) =>
+  `(tactic| convert $[$cfg]? $[← %$sym]? (?_ : $term) using 1 $[with $ps?*]?)
+| `(tactic| convert_to $[$cfg]? $[← %$sym]? $term using $n $[with $ps?*]?) =>
+  `(tactic| convert $[$cfg]? $[← %$sym]? (?_ : $term) using $n $[with $ps?*]?)
 
 /--
 `ac_change g using n` is `convert_to g using n` followed by `ac_rfl`. It is useful for
