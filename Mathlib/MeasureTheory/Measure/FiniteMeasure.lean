@@ -730,7 +730,7 @@ lemma map_apply_of_aemeasurable (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_aemb
   have := ν.map_apply' f_aemble A_mble
   exact (ENNReal.toNNReal_eq_toNNReal_iff' (measure_ne_top _ _) (measure_ne_top _ _)).mpr this
 
-@[simp] lemma map_apply (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
+lemma map_apply (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
     {A : Set Ω'} (A_mble : MeasurableSet A) :
     ν.map f A = ν (f ⁻¹' A) :=
   map_apply_of_aemeasurable ν f_mble.aemeasurable A_mble
