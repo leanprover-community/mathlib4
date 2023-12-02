@@ -42,7 +42,6 @@ representation on `A` is trivial.
 ## TODO
 
 * Identify `Hn A` as defined in this file with `groupCohomology A n` for `n = 0, 1, 2`.
-* Hilbert's theorem 90
 * The relationship between `H2` and group extensions
 * The inflation-restriction exact sequence
 * Nonabelian group cohomology
@@ -328,7 +327,7 @@ noncomputable def oneCocyclesOfGenerator [Fintype G] (x : A) (g : G)
     rw [smul_zero]
 
 theorem oneCocyclesOfGenerator_self [Fintype G] (x : A) (g : G) {hg : ∀ h, h ∈ Submonoid.powers g}
-    {hx : (norm A).hom x = (0 : A)} : (oneCocyclesOfGenerator A x g hg hx).1 g = x := by
+    {hx : (norm A).hom x = (0 : A)} : (oneCocyclesOfGenerator x g hg hx).1 g = x := by
   by_cases h1 : g = 1
   · cases h1
     simp only [oneCocyclesOfGenerator, oneCocycles_map_one]
