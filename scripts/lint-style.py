@@ -305,7 +305,7 @@ def left_arrow_check(lines, path):
         if is_comment or in_string:
             newlines.append((line_nr, line))
             continue
-        new_line = re.sub(r'←(\S)', r'← \1', line)
+        new_line = re.sub(r'←(?!%)(\S)', r'← \1', line)
         if new_line != line:
             errors += [(ERR_ARR, line_nr, path)]
         newlines.append((line_nr, new_line))
