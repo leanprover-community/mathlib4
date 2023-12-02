@@ -5,6 +5,14 @@ Authors: Fangming Li, Jujian Zhang
 -/
 import Mathlib.Algebra.Module.GradedModule
 
+/-!
+# The i-th grade of a graded module over a graded semiring.
+
+The main results of this file:
+1. If `A` is a graded semiring and `M` is a graded `A`-module, then each grade
+   of `M` is a module over the 0-th grade of `A`.
+-/
+
 variable {ιA ιM A M σ' σ : Type*}
 variable [AddMonoid ιA] [DecidableEq ιA] [AddAction ιA ιM] [DecidableEq ιM]
 variable [Semiring A] [SetLike σ' A] [AddSubmonoidClass σ' A]
