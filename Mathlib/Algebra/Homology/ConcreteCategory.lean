@@ -26,21 +26,22 @@ variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C] [HasForget₂ C 
   [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
   {ι : Type*} {c : ComplexShape ι}
 
---attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
-
 namespace HomologicalComplex
 
 variable (K : HomologicalComplex C c)
 
 /-- Constructor for cycles of a homological complex in a concrete category. -/
-def cyclesMk {i : ι} (x : (forget₂ C Ab).obj (K.X i)) (j : ι) (hj : c.next i = j)
+noncomputable def cyclesMk {i : ι} (x : (forget₂ C Ab).obj (K.X i)) (j : ι) (hj : c.next i = j)
     (hx : ((forget₂ C Ab).map (K.d i j)) x = 0) :
-    (forget₂ C Ab).obj (K.cycles i) := sorry
+    (forget₂ C Ab).obj (K.cycles i) :=
+  (K.sc i).cyclesMk x (by subst hj; exact hx)
 
 @[simp]
-lemma d_cyclesMk {i : ι} (x : (forget₂ C Ab).obj (K.X i)) (j : ι) (hj : c.next i = j)
+lemma i_cyclesMk {i : ι} (x : (forget₂ C Ab).obj (K.X i)) (j : ι) (hj : c.next i = j)
     (hx : ((forget₂ C Ab).map (K.d i j)) x = 0) :
-    ((forget₂ C Ab).map (K.iCycles i)) (K.cyclesMk x j hj hx) = x := sorry
+    ((forget₂ C Ab).map (K.iCycles i)) (K.cyclesMk x j hj hx) = x := by
+  subst hj
+  apply (K.sc i).i_cyclesMk
 
 end HomologicalComplex
 
@@ -73,12 +74,21 @@ lemma δ_apply (x₃ : (forget₂ C Ab).obj (S.X₃.X i))
       ((forget₂ C Ab).map (S.X₃.homologyπ i) (S.X₃.cyclesMk x₃ j (c.next_eq' hij) hx₃)) =
         (forget₂ C Ab).map (S.X₁.homologyπ j) (S.X₁.cyclesMk x₁ k hk (by
           have := hS.mono_f
-          have : Mono (S.f.f k) := inferInstance
-          rw [Preadditive.mono_iff_injective] at this
-          apply this
-          simp only [map_zero]
-          sorry)) := by
-  sorry
+          apply (Preadditive.mono_iff_injective (S.f.f k)).1 inferInstance
+          erw [← forget₂_comp_apply, ← HomologicalComplex.Hom.comm, forget₂_comp_apply, hx₁,
+            ← forget₂_comp_apply, HomologicalComplex.d_comp_d, Functor.map_zero, map_zero,
+            AddMonoidHom.zero_apply])) := by
+  refine hS.δ_apply' i j hij _ ((forget₂ C Ab).map (S.X₂.pOpcycles i) x₂) _ ?_ ?_
+  · erw [← forget₂_comp_apply, ← forget₂_comp_apply,
+      HomologicalComplex.p_opcyclesMap, Functor.map_comp, comp_apply,
+      HomologicalComplex.homology_π_ι, forget₂_comp_apply, hx₂, HomologicalComplex.i_cyclesMk]
+  · apply (Preadditive.mono_iff_injective (S.X₂.iCycles j)).1 inferInstance
+    conv_lhs =>
+      erw [← forget₂_comp_apply, HomologicalComplex.cyclesMap_i, forget₂_comp_apply,
+        HomologicalComplex.i_cyclesMk, hx₁]
+    conv_rhs =>
+      erw [← forget₂_comp_apply, ← forget₂_comp_apply,
+        HomologicalComplex.pOpcycles_opcyclesToCycles_assoc, HomologicalComplex.toCycles_i]
 
 end ShortExact
 

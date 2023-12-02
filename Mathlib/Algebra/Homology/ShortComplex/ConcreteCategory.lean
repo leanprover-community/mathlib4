@@ -94,6 +94,22 @@ lemma ShortExact.surjective_g (hS : S.ShortExact) :
   rw [← Preadditive.epi_iff_surjective]
   exact hS.epi_g
 
+variable (S)
+
+/-- Constructor for cycles of short complexes in a concrete category. -/
+noncomputable def cyclesMk [S.HasHomology] (x₂ : (forget₂ C Ab).obj S.X₂)
+    (hx₂ : ((forget₂ C Ab).map S.g) x₂ = 0) :
+    (forget₂ C Ab).obj S.cycles :=
+  (S.mapCyclesIso (forget₂ C Ab)).hom ((ShortComplex.abCyclesIso _).inv ⟨x₂, hx₂⟩)
+
+@[simp]
+lemma i_cyclesMk [S.HasHomology] (x₂ : (forget₂ C Ab).obj S.X₂)
+    (hx₂ : ((forget₂ C Ab).map S.g) x₂ = 0) :
+    (forget₂ C Ab).map S.iCycles (S.cyclesMk x₂ hx₂) = x₂ := by
+  dsimp [cyclesMk]
+  erw [← comp_apply, S.mapCyclesIso_hom_iCycles (forget₂ C Ab),
+    ← comp_apply, abCyclesIso_inv_apply_iCycles ]
+
 end ShortComplex
 
 end preadditive
@@ -143,7 +159,23 @@ lemma δ_apply' (x₃ : (forget₂ C Ab).obj D.L₀.X₃)
     (h₂ : (forget₂ C Ab).map D.L₁.g x₂ = (forget₂ C Ab).map D.v₀₁.τ₃ x₃)
     (h₁ : (forget₂ C Ab).map D.L₂.f x₁ = (forget₂ C Ab).map D.v₁₂.τ₂ x₂) :
     (forget₂ C Ab).map D.δ x₃ = (forget₂ C Ab).map D.v₂₃.τ₁ x₁ := by
-  sorry
+  have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
+  apply (mono_iff_injective (e.hom.app _)).1 inferInstance
+  refine (congr_hom (e.hom.naturality D.δ) x₃).trans
+    ((D.δ_apply (e.hom.app _ x₃) (e.hom.app _ x₂) (e.hom.app _ x₁) ?_ ?_ ).trans
+    (congr_hom (e.hom.naturality D.v₂₃.τ₁).symm x₁))
+  · refine ((congr_hom (e.hom.naturality D.L₁.g) x₂).symm.trans ?_).trans
+      (congr_hom (e.hom.naturality D.v₀₁.τ₃) x₃)
+    dsimp
+    rw [comp_apply, comp_apply]
+    erw [h₂]
+    rfl
+  · refine ((congr_hom (e.hom.naturality D.L₂.f) x₁).symm.trans ?_).trans
+      (congr_hom (e.hom.naturality D.v₁₂.τ₂) x₂)
+    dsimp
+    rw [comp_apply, comp_apply]
+    erw [h₁]
+    rfl
 
 end SnakeInput
 
