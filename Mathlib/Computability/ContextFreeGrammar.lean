@@ -162,13 +162,13 @@ lemma Derives.eq_or_tail {u w : List (Symbol T g.NT)} (huw : g.Derives u w) :
 lemma Produces.append_left {v w : List (Symbol T g.NT)}
     (hvw : g.Produces v w) (p : List (Symbol T g.NT)) :
     g.Produces (p ++ v) (p ++ w) :=
-  match hvw with | ⟨r, hmem, hr⟩ => ⟨r, hmem, hr.append_left p⟩
+  match hvw with | ⟨r, hrmem, hrvw⟩ => ⟨r, hrmem, hrvw.append_left p⟩
 
 /-- Add extra postfix to context-free producing. -/
 lemma Produces.append_right {v w : List (Symbol T g.NT)}
     (hvw : g.Produces v w) (p : List (Symbol T g.NT)) :
     g.Produces (v ++ p) (w ++ p) :=
-  match hvw with | ⟨r, hr⟩ => ⟨r, hr.left, hr.right.append_right p⟩
+  match hvw with | ⟨r, hrmem, hrvw⟩ => ⟨r, hrmem, hrvw.append_right p⟩
 
 /-- Add extra prefix to context-free deriving. -/
 lemma Derives.append_left {v w : List (Symbol T g.NT)}
@@ -178,7 +178,7 @@ lemma Derives.append_left {v w : List (Symbol T g.NT)}
   | refl => rfl
   | tail _ last ih =>
     apply trans_produces ih
-    exact last.append_left _
+    exact last.append_left p
 
 /-- Add extra prefix to context-free deriving. -/
 lemma Derives.append_right {v w : List (Symbol T g.NT)}
@@ -188,7 +188,7 @@ lemma Derives.append_right {v w : List (Symbol T g.NT)}
   | refl => rfl
   | tail _ last ih =>
     apply trans_produces ih
-    apply ContextFreeGrammar.Produces.append_right last
+    exact last.append_right p
 
 end ContextFreeGrammar
 
