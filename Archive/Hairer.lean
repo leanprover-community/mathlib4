@@ -269,14 +269,10 @@ variable [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
 variable [MeasurableSpace E] [BorelSpace E] {f f' : E → F} {μ : Measure E}
 
 -- variant of ae_eq_zero_of_integral_contDiff_smul_eq_zero, not sure what we exactly need on `K`.
-nonrec theorem IsClosed.ae_eq_zero_of_integral_contDiff_smul_eq_zero {K : Set E}
-    (hU : IsClosed K) (hf : LocallyIntegrableOn f K μ)
+nonrec theorem IsCompact.ae_eq_zero_of_integral_contDiff_smul_eq_zero {K : Set E}
+    (hU : IsCompact K) (hf : LocallyIntegrableOn f K μ)
     (h : ∀ (g : E → ℝ), ContDiff ℝ ⊤ g → tsupport g ⊆ K → ∫ x, g x • f x ∂μ = 0) :
     ∀ᵐ x ∂μ, x ∈ K → f x = 0 := by
-  rw [← ae_restrict_iff'₀]
-  · rw [locallyIntegrableOn_iff_locallyIntegrable_restrict hU] at hf
-    refine ae_eq_zero_of_integral_contDiff_smul_eq_zero hf fun g diff_g supp_g ↦ ?_
-
   sorry
 
 end real
@@ -310,11 +306,10 @@ def evalAtₗ {R σ : Type*} [CommSemiring R] (x : σ → R) : MvPolynomial σ R
 
 lemma analyticOn_eval (R σ) [Fintype σ] [NontriviallyNormedField R] (P : MvPolynomial σ R) :
     AnalyticOn R (eval · P) univ := fun x _ ↦ by
-  apply P.induction_on (fun r ↦ ?_) (fun p q hp hq ↦ ?_) fun p i hp ↦ ?_
+  apply P.induction_on (fun r ↦ ?_) (fun p q hp hq ↦ ?_) fun p i hp ↦ ?_ -- refine doesn't work
   · simp_rw [eval_C]; exact analyticAt_const
   · simp_rw [eval_add]; exact hp.add hq
-  · simp_rw [eval_mul, eval_X]
-    exact hp.mul ((ContinuousLinearMap.proj (R := R) (φ := fun _ ↦ R) i).analyticAt _)
+  · simp_rw [eval_mul, eval_X]; exact hp.mul ((ContinuousLinearMap.proj (R := R) i).analyticAt x)
 
 lemma finite_stuff' [Finite σ] (N : ℕ) : {s : Multiset σ | Multiset.card s ≤ N}.Finite := by
   classical
@@ -537,7 +532,7 @@ lemma hairer (N : ℕ) (ι : Type*) [Fintype ι] :
     ∫ x : EuclideanSpace ℝ ι, eval x p • ρ x = eval 0 p := by
   have := (inj_L ι).comp (restrictTotalDegree ι ℝ N).injective_subtype
   rw [← LinearMap.coe_comp] at this
-  obtain ⟨⟨φ, supφ, difφ⟩, hφ⟩ := surj_of_inj this ((evalAtₗ 0).comp <| Submodule.subtype _)
+  obtain ⟨⟨φ, supφ, difφ⟩, hφ⟩ := flip_surj_of_inj this ((evalAtₗ 0).comp <| Submodule.subtype _)
   refine ⟨φ, supφ, difφ, fun P hP ↦ ?_⟩
   exact FunLike.congr_fun hφ ⟨P, (mem_restrictTotalDegree ι N P).mpr hP⟩
 
