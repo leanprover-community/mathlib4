@@ -58,7 +58,7 @@ theorem contDiffOn_fderiv_coord_change (i j : atlas H M) :
     rw [i.1.extend_coord_change_source]; apply image_subset_range
   intro x hx
   refine' (ContDiffWithinAt.fderivWithin_right _ I.unique_diff le_top <| h hx).mono h
-  refine' (LocalHomeomorph.contDiffOn_extend_coord_change I (subset_maximalAtlas I j.2)
+  refine' (contDiffOn_extend_coord_change I (subset_maximalAtlas I j.2)
     (subset_maximalAtlas I i.2) x hx).mono_of_mem _
   exact i.1.extend_coord_change_source_mem_nhdsWithin j.1 I hx
 #align cont_diff_on_fderiv_coord_change contDiffOn_fderiv_coord_change
@@ -349,7 +349,7 @@ theorem tangentBundle_model_space_coe_chartAt (p : TangentBundle I H) :
 theorem tangentBundle_model_space_coe_chartAt_symm (p : TangentBundle I H) :
     ((chartAt (ModelProd H E) p).symm : ModelProd H E → TangentBundle I H) =
       (TotalSpace.toProd H E).symm := by
-  rw [← LocalHomeomorph.coe_coe, LocalHomeomorph.symm_toLocalEquiv,
+  rw [← LocalHomeomorph.coe_coe, symm_toLocalEquiv,
     tangentBundle_model_space_chartAt]; rfl
 #align tangent_bundle_model_space_coe_chart_at_symm tangentBundle_model_space_coe_chartAt_symm
 

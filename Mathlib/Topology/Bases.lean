@@ -215,7 +215,7 @@ lemma IsTopologicalBasis.subset_of_forall_subset {t : Set α} (hB : IsTopologica
 lemma IsTopologicalBasis.eq_of_forall_subset_iff {t : Set α} (hB : IsTopologicalBasis B)
     (hs : IsOpen s) (ht : IsOpen t) (h : ∀ U ∈ B, U ⊆ s ↔ U ⊆ t) : s = t := by
   rw [hB.open_eq_sUnion' hs, hB.open_eq_sUnion' ht]
-  exact congr_arg _ (Set.ext λ U ↦ and_congr_right $ h _)
+  exact congr_arg _ (ext λ U ↦ and_congr_right $ h _)
 
 /-- A point `a` is in the closure of `s` iff all basis sets containing `a` intersect `s`. -/
 theorem IsTopologicalBasis.mem_closure_iff {b : Set (Set α)} (hb : IsTopologicalBasis b) {s : Set α}
@@ -271,7 +271,7 @@ protected theorem IsTopologicalBasis.inducing {β} [TopologicalSpace β] {f : α
     obtain ⟨V, hV, rfl⟩ := hU
     obtain ⟨S, hS, rfl⟩ := h.open_eq_sUnion hV
     obtain ⟨W, hW, ha⟩ := ha
-    refine' ⟨f ⁻¹' W, ⟨_, hS hW, rfl⟩, ha, Set.preimage_mono <| Set.subset_sUnion_of_mem hW⟩
+    refine' ⟨f ⁻¹' W, ⟨_, hS hW, rfl⟩, ha, preimage_mono <| subset_sUnion_of_mem hW⟩
 #align topological_space.is_topological_basis.inducing TopologicalSpace.IsTopologicalBasis.inducing
 
 theorem isTopologicalBasis_of_cover {ι} {U : ι → Set α} (Uo : ∀ i, IsOpen (U i))
@@ -327,7 +327,7 @@ If `α` might be empty, then `TopologicalSpace.exists_countable_dense` is the ma
 separability of `α`. -/
 theorem exists_dense_seq [SeparableSpace α] [Nonempty α] : ∃ u : ℕ → α, DenseRange u := by
   obtain ⟨s : Set α, hs, s_dense⟩ := exists_countable_dense α
-  cases' Set.countable_iff_exists_subset_range.mp hs with u hu
+  cases' countable_iff_exists_subset_range.mp hs with u hu
   exact ⟨u, s_dense.mono hu⟩
 #align topological_space.exists_dense_seq TopologicalSpace.exists_dense_seq
 
@@ -348,7 +348,7 @@ theorem denseRange_denseSeq [SeparableSpace α] [Nonempty α] : DenseRange (dens
 variable {α}
 
 instance (priority := 100) Countable.to_separableSpace [Countable α] : SeparableSpace α where
-  exists_countable_dense := ⟨Set.univ, Set.countable_univ, dense_univ⟩
+  exists_countable_dense := ⟨univ, countable_univ, dense_univ⟩
 #align topological_space.countable.to_separable_space TopologicalSpace.Countable.to_separableSpace
 
 /-- If `f` has a dense range and its domain is countable, then its codomain is a separable space.
@@ -474,7 +474,7 @@ lemma isSeparable_pi {ι : Type*} [Fintype ι] {α : ∀ (_ : ι), Type*} {s : �
   simp_rw [← mem_univ_pi]
   dsimp
   rw [closure_pi_set]
-  exact Set.pi_mono (fun i _ ↦ hc i)
+  exact pi_mono (fun i _ ↦ hc i)
 
 lemma IsSeparable.prod {β : Type*} [TopologicalSpace β]
     {s : Set α} {t : Set β} (hs : IsSeparable s) (ht : IsSeparable t) :
@@ -483,7 +483,7 @@ lemma IsSeparable.prod {β : Type*} [TopologicalSpace β]
   rcases ht with ⟨ct, ct_count, hct⟩
   refine ⟨cs ×ˢ ct, cs_count.prod ct_count, ?_⟩
   rw [closure_prod_eq]
-  exact Set.prod_mono hcs hct
+  exact prod_mono hcs hct
 
 theorem _root_.Set.Countable.isSeparable {s : Set α} (hs : s.Countable) : IsSeparable s :=
   ⟨s, hs, subset_closure⟩
@@ -535,8 +535,8 @@ theorem isTopologicalBasis_pi {ι : Type*} {X : ι → Type*} [∀ i, Topologica
     exact (cond i).isOpen (h1 i hi)
   · intro a U ha hU
     obtain ⟨I, t, hta, htU⟩ : ∃ (I : Finset ι) (t : ∀ i : ι, Set (X i)),
-        (∀ i, t i ∈ 𝓝 (a i)) ∧ Set.pi (↑I) t ⊆ U := by
-      rw [← Filter.mem_pi', ← nhds_pi]
+        (∀ i, t i ∈ 𝓝 (a i)) ∧ pi (↑I) t ⊆ U := by
+      rw [← mem_pi', ← nhds_pi]
       exact hU.mem_nhds ha
     have : ∀ i, ∃ V ∈ T i, a i ∈ V ∧ V ⊆ t i := fun i => (cond i).mem_nhds_iff.1 (hta i)
     choose V hVT haV hVt using this
@@ -555,11 +555,11 @@ theorem isTopologicalBasis_iInf {β : Type*} {ι : Type*} {X : ι → Type*}
   constructor
   · rintro ⟨U, F, h1, rfl⟩
     refine' ⟨(F : Set ι).pi U, ⟨U, F, h1, rfl⟩, _⟩
-    simp_rw [pi_def, Set.preimage_iInter]
+    simp_rw [pi_def, preimage_iInter]
     rfl
   · rintro ⟨U, ⟨U, F, h1, rfl⟩, rfl⟩
     refine' ⟨U, F, h1, _⟩
-    simp_rw [pi_def, Set.preimage_iInter]
+    simp_rw [pi_def, preimage_iInter]
     rfl
 #align is_topological_basis_infi isTopologicalBasis_iInf
 
@@ -908,7 +908,7 @@ variable {X : Type*} [TopologicalSpace X] {Y : Type*} [TopologicalSpace Y] {π :
 
 /-- The image of a topological basis under an open quotient map is a topological basis. -/
 theorem IsTopologicalBasis.quotientMap {V : Set (Set X)} (hV : IsTopologicalBasis V)
-    (h' : QuotientMap π) (h : IsOpenMap π) : IsTopologicalBasis (Set.image π '' V) := by
+    (h' : QuotientMap π) (h : IsOpenMap π) : IsTopologicalBasis (image π '' V) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
   · rintro - ⟨U, U_in_V, rfl⟩
     apply h U (hV.isOpen U_in_V)
@@ -918,7 +918,7 @@ theorem IsTopologicalBasis.quotientMap {V : Set (Set X)} (hV : IsTopologicalBasi
     have x_in_W : x ∈ W := y_in_U
     have W_open : IsOpen W := U_open.preimage h'.continuous
     obtain ⟨Z, Z_in_V, x_in_Z, Z_in_W⟩ := hV.exists_subset_of_mem_open x_in_W W_open
-    have πZ_in_U : π '' Z ⊆ U := (Set.image_subset _ Z_in_W).trans (image_preimage_subset π U)
+    have πZ_in_U : π '' Z ⊆ U := (image_subset _ Z_in_W).trans (image_preimage_subset π U)
     exact ⟨π '' Z, ⟨Z, Z_in_V, rfl⟩, ⟨x, x_in_Z, rfl⟩, πZ_in_U⟩
 #align topological_space.is_topological_basis.quotient_map TopologicalSpace.IsTopologicalBasis.quotientMap
 
@@ -927,7 +927,7 @@ theorem _root_.QuotientMap.secondCountableTopology [SecondCountableTopology X] (
     (h : IsOpenMap π) : SecondCountableTopology Y where
   is_open_generated_countable := by
     obtain ⟨V, V_countable, -, V_generates⟩ := exists_countable_basis X
-    exact ⟨Set.image π '' V, V_countable.image (Set.image π),
+    exact ⟨image π '' V, V_countable.image (image π),
       (V_generates.quotientMap h' h).eq_generateFrom⟩
 #align topological_space.quotient_map.second_countable_topology QuotientMap.secondCountableTopology
 
@@ -936,7 +936,7 @@ variable {S : Setoid X}
 /-- The image of a topological basis "downstairs" in an open quotient is a topological basis. -/
 theorem IsTopologicalBasis.quotient {V : Set (Set X)} (hV : IsTopologicalBasis V)
     (h : IsOpenMap (Quotient.mk' : X → Quotient S)) :
-    IsTopologicalBasis (Set.image (Quotient.mk' : X → Quotient S) '' V) :=
+    IsTopologicalBasis (image (Quotient.mk' : X → Quotient S) '' V) :=
   hV.quotientMap quotientMap_quotient_mk' h
 #align topological_space.is_topological_basis.quotient TopologicalSpace.IsTopologicalBasis.quotient
 

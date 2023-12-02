@@ -30,10 +30,10 @@ partially defined functions.
 * `𝓝 x`: the filter `nhds x` of neighborhoods of a point `x`;
 * `𝓟 s`: the principal filter of a set `s`;
 * `𝓝[s] x`: the filter `nhdsWithin x s` of neighborhoods of a point `x` within a set `s`;
-* `𝓝[≤] x`: the filter `nhdsWithin x (Set.Iic x)` of left-neighborhoods of `x`;
-* `𝓝[≥] x`: the filter `nhdsWithin x (Set.Ici x)` of right-neighborhoods of `x`;
-* `𝓝[<] x`: the filter `nhdsWithin x (Set.Iio x)` of punctured left-neighborhoods of `x`;
-* `𝓝[>] x`: the filter `nhdsWithin x (Set.Ioi x)` of punctured right-neighborhoods of `x`;
+* `𝓝[≤] x`: the filter `nhdsWithin x (Iic x)` of left-neighborhoods of `x`;
+* `𝓝[≥] x`: the filter `nhdsWithin x (Ici x)` of right-neighborhoods of `x`;
+* `𝓝[<] x`: the filter `nhdsWithin x (Iio x)` of punctured left-neighborhoods of `x`;
+* `𝓝[>] x`: the filter `nhdsWithin x (Ioi x)` of punctured right-neighborhoods of `x`;
 * `𝓝[≠] x`: the filter `nhdsWithin x {x}ᶜ` of punctured neighborhoods of `x`.
 
 ## Implementation notes
@@ -89,7 +89,7 @@ def TopologicalSpace.ofClosed {α : Type u} (T : Set (Set α)) (empty_mem : ∅ 
   isOpen_univ := by simp [empty_mem]
   isOpen_inter s t hs ht := by simpa only [compl_inter] using union_mem sᶜ hs tᶜ ht
   isOpen_sUnion s hs := by
-    simp only [Set.compl_sUnion]
+    simp only [compl_sUnion]
     exact sInter_mem (compl '' s) fun z ⟨y, hy, hz⟩ => hz ▸ hs y hy
 #align topological_space.of_closed TopologicalSpace.ofClosed
 
@@ -468,7 +468,7 @@ theorem IsClosed.closure_subset_iff {s t : Set α} (h₁ : IsClosed t) : closure
 
 theorem IsClosed.mem_iff_closure_subset {s : Set α} (hs : IsClosed s) {x : α} :
     x ∈ s ↔ closure ({x} : Set α) ⊆ s :=
-  (hs.closure_subset_iff.trans Set.singleton_subset_iff).symm
+  (hs.closure_subset_iff.trans singleton_subset_iff).symm
 #align is_closed.mem_iff_closure_subset IsClosed.mem_iff_closure_subset
 
 @[mono]
@@ -851,16 +851,16 @@ scoped[Topology] notation "𝓝[" s "] " x:100 => nhdsWithin x s
 scoped[Topology] notation3 "𝓝[≠] " x:100 => nhdsWithin x (@singleton _ (Set _) instSingletonSet x)ᶜ
 
 /-- Notation for the filter of right neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[≥] " x:100 => nhdsWithin x (Set.Ici x)
+scoped[Topology] notation3 "𝓝[≥] " x:100 => nhdsWithin x (Ici x)
 
 /-- Notation for the filter of left neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[≤] " x:100 => nhdsWithin x (Set.Iic x)
+scoped[Topology] notation3 "𝓝[≤] " x:100 => nhdsWithin x (Iic x)
 
 /-- Notation for the filter of punctured right neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[>] " x:100 => nhdsWithin x (Set.Ioi x)
+scoped[Topology] notation3 "𝓝[>] " x:100 => nhdsWithin x (Ioi x)
 
 /-- Notation for the filter of punctured left neighborhoods of a point. -/
-scoped[Topology] notation3 "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
+scoped[Topology] notation3 "𝓝[<] " x:100 => nhdsWithin x (Iio x)
 
 end
 
@@ -1224,7 +1224,7 @@ theorem AccPt.mono {x : α} {F G : Filter α} (h : AccPt x F) (hFG : F ≤ G) : 
 -/
 
 theorem interior_eq_nhds' {s : Set α} : interior s = { a | s ∈ 𝓝 a } :=
-  Set.ext fun x => by simp only [mem_interior, mem_nhds_iff, mem_setOf_eq]
+  ext fun x => by simp only [mem_interior, mem_nhds_iff, mem_setOf_eq]
 #align interior_eq_nhds' interior_eq_nhds'
 
 theorem interior_eq_nhds {s : Set α} : interior s = { a | 𝓝 a ≤ 𝓟 s } :=
@@ -1348,7 +1348,7 @@ theorem not_isOpen_singleton (x : α) [NeBot (𝓝[≠] x)] : ¬IsOpen ({x} : Se
 #align not_is_open_singleton not_isOpen_singleton
 
 theorem closure_eq_cluster_pts {s : Set α} : closure s = { a | ClusterPt a (𝓟 s) } :=
-  Set.ext fun _ => mem_closure_iff_clusterPt
+  ext fun _ => mem_closure_iff_clusterPt
 #align closure_eq_cluster_pts closure_eq_cluster_pts
 
 theorem mem_closure_iff_nhds {s : Set α} {a : α} : a ∈ closure s ↔ ∀ t ∈ 𝓝 a, (t ∩ s).Nonempty :=
@@ -1356,12 +1356,12 @@ theorem mem_closure_iff_nhds {s : Set α} {a : α} : a ∈ closure s ↔ ∀ t �
 #align mem_closure_iff_nhds mem_closure_iff_nhds
 
 theorem mem_closure_iff_nhds' {s : Set α} {a : α} : a ∈ closure s ↔ ∀ t ∈ 𝓝 a, ∃ y : s, ↑y ∈ t := by
-  simp only [mem_closure_iff_nhds, Set.inter_nonempty_iff_exists_right, SetCoe.exists, exists_prop]
+  simp only [mem_closure_iff_nhds, inter_nonempty_iff_exists_right, SetCoe.exists, exists_prop]
 #align mem_closure_iff_nhds' mem_closure_iff_nhds'
 
 theorem mem_closure_iff_comap_neBot {A : Set α} {x : α} :
     x ∈ closure A ↔ NeBot (comap ((↑) : A → α) (𝓝 x)) := by
-  simp_rw [mem_closure_iff_nhds, comap_neBot_iff, Set.inter_nonempty_iff_exists_right,
+  simp_rw [mem_closure_iff_nhds, comap_neBot_iff, inter_nonempty_iff_exists_right,
     SetCoe.exists, exists_prop]
 #align mem_closure_iff_comap_ne_bot mem_closure_iff_comap_neBot
 
@@ -1811,7 +1811,7 @@ theorem closure_image_closure {f : α → β} {s : Set α} (h : Continuous f) :
 
 theorem closure_subset_preimage_closure_image {f : α → β} {s : Set α} (h : Continuous f) :
     closure s ⊆ f ⁻¹' closure (f '' s) := by
-  rw [← Set.image_subset_iff]
+  rw [← image_subset_iff]
   exact image_closure_subset_closure_image h
 #align closure_subset_preimage_closure_image closure_subset_preimage_closure_image
 
