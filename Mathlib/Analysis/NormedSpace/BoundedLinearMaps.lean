@@ -39,9 +39,10 @@ is normed) that `‖f x‖` is bounded by a multiple of `‖x‖`. Hence the "bo
 
 ## Notes
 
-The main use of this file is `IsBoundedBilinearMap`. The file `Analysis.NormedSpace.Multilinear.Basic`
-already expounds the theory of multilinear maps, but the `2`-variables case is sufficiently simpler
-to currently deserve its own treatment.
+The main use of this file is `IsBoundedBilinearMap`.
+The file `Analysis.NormedSpace.Multilinear.Basic`
+already expounds the theory of multilinear maps,
+but the `2`-variables case is sufficiently simpler to currently deserve its own treatment.
 
 `IsBoundedLinearMap` is effectively an unbundled version of `ContinuousLinearMap` (defined
 in `Topology.Algebra.Module.Basic`, theory over normed spaces developed in
