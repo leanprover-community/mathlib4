@@ -46,7 +46,7 @@ theorem nhdsSet_diagonal (α) [TopologicalSpace (α × α)] :
 #align nhds_set_diagonal nhdsSet_diagonal
 
 theorem mem_nhdsSet_iff_forall : s ∈ 𝓝ˢ t ↔ ∀ x : α, x ∈ t → s ∈ 𝓝 x := by
-  simp_rw [nhdsSet, Filter.mem_sSup, ball_image_iff]
+  simp_rw [nhdsSet, mem_sSup, ball_image_iff]
 #align mem_nhds_set_iff_forall mem_nhdsSet_iff_forall
 
 lemma nhdsSet_le : 𝓝ˢ s ≤ f ↔ ∀ a ∈ s, 𝓝 a ≤ f := by simp [nhdsSet]

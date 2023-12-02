@@ -162,7 +162,7 @@ theorem exists_forall_eventually_eq_prod {π : X → Sort*} {f : ℕ → ∀ x :
   replace hN : ∀ (x), ∀ n ≥ N x + 1, ∀ y ∈ U x, f n y = f (N x + 1) y
   exact fun x n hn y hy => Nat.le_induction rfl (fun k hle => (hN x _ hle _ hy).trans) n hn
   refine ⟨fun x => f (N x + 1) x, fun x => ?_⟩
-  filter_upwards [Filter.prod_mem_prod (eventually_gt_atTop (N x)) (hUx x)]
+  filter_upwards [prod_mem_prod (eventually_gt_atTop (N x)) (hUx x)]
   rintro ⟨n, y⟩ ⟨hn : N x < n, hy : y ∈ U x⟩
   calc
     f n y = f (N x + 1) y := hN _ _ hn _ hy

@@ -135,7 +135,7 @@ theorem Inducing.continuous_iff {f : α → β} {g : β → γ} (hg : Inducing g
 
 theorem Inducing.continuousAt_iff' {f : α → β} {g : β → γ} (hf : Inducing f) {x : α}
     (h : range f ∈ 𝓝 (f x)) : ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) := by
-  simp_rw [ContinuousAt, Filter.Tendsto, ← hf.map_nhds_of_mem _ h, Filter.map_map, comp]
+  simp_rw [ContinuousAt, Tendsto, ← hf.map_nhds_of_mem _ h, map_map, comp]
 #align inducing.continuous_at_iff' Inducing.continuousAt_iff'
 
 protected theorem Inducing.continuous {f : α → β} (hf : Inducing f) : Continuous f :=
@@ -152,7 +152,7 @@ protected theorem Inducing.inducing_iff {f : α → β} {g : β → γ} (hg : In
 theorem Inducing.closure_eq_preimage_closure_image {f : α → β} (hf : Inducing f) (s : Set α) :
     closure s = f ⁻¹' closure (f '' s) := by
   ext x
-  rw [Set.mem_preimage, ← closure_induced, hf.induced]
+  rw [mem_preimage, ← closure_induced, hf.induced]
 #align inducing.closure_eq_preimage_closure_image Inducing.closure_eq_preimage_closure_image
 
 theorem Inducing.isClosed_iff {f : α → β} (hf : Inducing f) {s : Set α} :
@@ -174,7 +174,7 @@ theorem Inducing.isOpen_iff {f : α → β} (hf : Inducing f) {s : Set α} :
 
 theorem Inducing.setOf_isOpen {f : α → β} (hf : Inducing f) :
     {s : Set α | IsOpen s} = preimage f '' {t | IsOpen t} :=
-  Set.ext fun _ ↦ hf.isOpen_iff
+  ext fun _ ↦ hf.isOpen_iff
 
 theorem Inducing.dense_iff {f : α → β} (hf : Inducing f) {s : Set α} :
     Dense s ↔ ∀ x, f x ∈ closure (f '' s) := by

@@ -47,7 +47,7 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
       rcases ih _ Subset.rfl with ⟨v, hv, hvss⟩
       exact
         ⟨u::v, List.Forall₂.cons hu hv,
-          Subset.trans (Set.seq_mono (Set.image_subset _ hut) hvss) hus⟩
+          Subset.trans (seq_mono (image_subset _ hut) hvss) hus⟩
     rcases this with ⟨v, hv, hvs⟩
     refine' ⟨sequence v, mem_traverse _ _ _, hvs, _⟩
     · exact hv.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha
@@ -88,9 +88,9 @@ theorem tendsto_cons_iff {β : Type*} {f : List α → β} {b : Filter β} {a : 
     Tendsto f (𝓝 (a::l)) b ↔ Tendsto (fun p : α × List α => f (p.1::p.2)) (𝓝 a ×ˢ 𝓝 l) b := by
   have : 𝓝 (a::l) = (𝓝 a ×ˢ 𝓝 l).map fun p : α × List α => p.1::p.2 := by
     simp only [nhds_cons, Filter.prod_eq, (Filter.map_def _ _).symm,
-      (Filter.seq_eq_filter_seq _ _).symm]
-    simp [-Filter.map_def, (· ∘ ·), functor_norm]
-  rw [this, Filter.tendsto_map'_iff]; rfl
+      (seq_eq_filter_seq _ _).symm]
+    simp [-map_def, (· ∘ ·), functor_norm]
+  rw [this, tendsto_map'_iff]; rfl
 #align list.tendsto_cons_iff List.tendsto_cons_iff
 
 theorem continuous_cons : Continuous fun x : α × List α => (x.1::x.2 : List α) :=
@@ -127,7 +127,7 @@ theorem tendsto_insertNth' {a : α} :
   | n + 1, a'::l => by
     have : 𝓝 a ×ˢ 𝓝 (a'::l) =
         (𝓝 a ×ˢ (𝓝 a' ×ˢ 𝓝 l)).map fun p : α × α × List α => (p.1, p.2.1::p.2.2) := by
-      simp only [nhds_cons, Filter.prod_eq, ← Filter.map_def, ← Filter.seq_eq_filter_seq]
+      simp only [nhds_cons, Filter.prod_eq, ← Filter.map_def, ← seq_eq_filter_seq]
       simp [-Filter.map_def, (· ∘ ·), functor_norm]
     rw [this, tendsto_map'_iff]
     exact

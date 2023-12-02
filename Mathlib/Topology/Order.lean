@@ -423,7 +423,7 @@ theorem preimage_nhds_coinduced [TopologicalSpace α] {π : α → β} {s : Set 
     (hs : s ∈ @nhds β (TopologicalSpace.coinduced π ‹_›) (π a)) : π ⁻¹' s ∈ 𝓝 a := by
   letI := TopologicalSpace.coinduced π ‹_›
   rcases mem_nhds_iff.mp hs with ⟨V, hVs, V_op, mem_V⟩
-  exact mem_nhds_iff.mpr ⟨π ⁻¹' V, Set.preimage_mono hVs, V_op, mem_V⟩
+  exact mem_nhds_iff.mpr ⟨π ⁻¹' V, preimage_mono hVs, V_op, mem_V⟩
 #align preimage_nhds_coinduced preimage_nhds_coinduced
 
 variable {t t₁ t₂ : TopologicalSpace α} {t' : TopologicalSpace β} {f : α → β} {g : β → α}
@@ -852,12 +852,12 @@ theorem continuous_id_of_le {t t' : TopologicalSpace α} (h : t ≤ t') : Contin
 theorem mem_nhds_induced [T : TopologicalSpace α] (f : β → α) (a : β) (s : Set β) :
     s ∈ @nhds β (TopologicalSpace.induced f T) a ↔ ∃ u ∈ 𝓝 (f a), f ⁻¹' u ⊆ s := by
   letI := T.induced f
-  simp only [mem_nhds_iff, isOpen_induced_iff, exists_prop, Set.mem_setOf_eq]
+  simp only [mem_nhds_iff, isOpen_induced_iff, exists_prop, mem_setOf_eq]
   constructor
   · rintro ⟨u, usub, ⟨v, openv, rfl⟩, au⟩
     exact ⟨v, ⟨v, Subset.rfl, openv, au⟩, usub⟩
   · rintro ⟨u, ⟨v, vsubu, openv, amem⟩, finvsub⟩
-    exact ⟨f ⁻¹' v, (Set.preimage_mono vsubu).trans finvsub, ⟨⟨v, openv, rfl⟩, amem⟩⟩
+    exact ⟨f ⁻¹' v, (preimage_mono vsubu).trans finvsub, ⟨⟨v, openv, rfl⟩, amem⟩⟩
 #align mem_nhds_induced mem_nhds_induced
 
 theorem nhds_induced [T : TopologicalSpace α] (f : β → α) (a : β) :
@@ -897,11 +897,11 @@ theorem isOpen_induced {s : Set β} (h : IsOpen s) : IsOpen[induced f t] (f ⁻�
 #align is_open_induced isOpen_induced
 
 theorem map_nhds_induced_eq (a : α) : map f (@nhds α (induced f t) a) = 𝓝[range f] f a := by
-  rw [nhds_induced, Filter.map_comap, nhdsWithin]
+  rw [nhds_induced, map_comap, nhdsWithin]
 #align map_nhds_induced_eq map_nhds_induced_eq
 
 theorem map_nhds_induced_of_mem {a : α} (h : range f ∈ 𝓝 (f a)) :
-    map f (@nhds α (induced f t) a) = 𝓝 (f a) := by rw [nhds_induced, Filter.map_comap_of_mem h]
+    map f (@nhds α (induced f t) a) = 𝓝 (f a) := by rw [nhds_induced, map_comap_of_mem h]
 #align map_nhds_induced_of_mem map_nhds_induced_of_mem
 
 theorem closure_induced [t : TopologicalSpace β] {f : α → β} {a : α} {s : Set α} :
