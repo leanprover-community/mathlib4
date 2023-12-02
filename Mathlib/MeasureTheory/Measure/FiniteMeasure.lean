@@ -549,16 +549,55 @@ theorem tendsto_iff_forall_lintegral_tendsto {γ : Type*} {F : Filter γ} {μs :
     ENNReal.toNNReal_coe]
 #align measure_theory.finite_measure.tendsto_iff_forall_lintegral_tendsto MeasureTheory.FiniteMeasure.tendsto_iff_forall_lintegral_tendsto
 
+lemma exists_isOpen_isOpen_mem_mem_disjoint_of_testAgainstNN_lt {f : Ω →ᵇ ℝ≥0}
+    {μ ν : FiniteMeasure Ω} (h : testAgainstNN μ f < testAgainstNN ν f) :
+    ∃ u v, IsOpen u ∧ IsOpen v ∧ μ ∈ u ∧ ν ∈ v ∧ Disjoint u v := by
+  let T : FiniteMeasure Ω → ℝ≥0 := fun κ ↦ testAgainstNN κ f
+  have T_cont : Continuous T := continuous_testAgainstNN_eval f
+  obtain ⟨z, ⟨lt_z, z_lt⟩⟩ := exists_between h
+  let U : Set (FiniteMeasure Ω) := T ⁻¹' (Iio z)
+  let V : Set (FiniteMeasure Ω) := T ⁻¹' (Ioi z)
+  have U_open : IsOpen U := (continuous_def.mp T_cont) _ isOpen_Iio
+  have V_open : IsOpen V := (continuous_def.mp T_cont) _ isOpen_Ioi
+  refine ⟨U, V, U_open, V_open, lt_z, z_lt, ?_⟩
+  apply Disjoint.preimage
+  rw [@disjoint_iff_forall_ne]
+  intro x x_in_Iio y y_in_Ioi
+  simp only [mem_Iio, mem_Ioi, ne_eq] at x_in_Iio y_in_Ioi
+  exact (x_in_Iio.trans y_in_Ioi).ne
+
+lemma t2Space {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterApproxClosed Ω]
+    [BorelSpace Ω] : T2Space (FiniteMeasure Ω) where
+  t2 := by
+    intro μ ν μ_ne_ν
+    have key : ¬ ∀ (f : Ω →ᵇ ℝ≥0), ∫⁻ x, f x ∂μ = ∫⁻ x, f x ∂ν := by
+      by_contra maybe_eq
+      exact μ_ne_ν (ext_of_forall_lintegral_eq maybe_eq)
+    obtain ⟨f, hf⟩ := not_forall.mp key
+    let T : FiniteMeasure Ω → ℝ≥0 := fun κ ↦ testAgainstNN κ f
+    have hf' : T μ ≠ T ν := by
+      by_contra maybe_eq
+      apply hf
+      exact (ENNReal.toNNReal_eq_toNNReal_iff'
+          (f.lintegral_lt_top_of_nnreal (μ := μ)).ne (f.lintegral_lt_top_of_nnreal (μ := ν)).ne).mp
+        (by simpa only [maybe_eq])
+    have hf'' : T μ < T ν ∨ T μ > T ν := by
+      simp_all only [ne_eq, gt_iff_lt, lt_or_lt_iff_ne, not_false_eq_true]
+    cases hf''
+    · exact exists_isOpen_isOpen_mem_mem_disjoint_of_testAgainstNN_lt (by assumption)
+    · rename_i h
+      obtain ⟨V, U, V_open, U_open, mem_V, mem_U, disj⟩ :=
+        exists_isOpen_isOpen_mem_mem_disjoint_of_testAgainstNN_lt (μ := ν) (ν := μ) (f := f) h
+      refine ⟨U, V, U_open, V_open, mem_U, mem_V, Disjoint.symm disj⟩
+
 /-- Weak limits of finite Borel measures are unique. -/
 theorem tendsto_nhds_unique' {Ω ι : Type*} {L : Filter ι} [NeBot L]
     [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterApproxClosed Ω]
     [BorelSpace Ω] {μs : ι → FiniteMeasure Ω} {μ₁ μ₂ : FiniteMeasure Ω}
     (h₁ : L.Tendsto μs (𝓝 μ₁)) (h₂ : L.Tendsto μs (𝓝 μ₂)) :
     μ₁ = μ₂ := by
-  apply FiniteMeasure.ext_of_forall_lintegral_eq
-  rw [tendsto_iff_forall_lintegral_tendsto] at h₁ h₂
-  intro f
-  exact tendsto_nhds_unique (h₁ f) (h₂ f)
+  have t2 := t2Space (Ω := Ω)
+  exact tendsto_nhds_unique h₁ h₂
 
 end FiniteMeasure
 

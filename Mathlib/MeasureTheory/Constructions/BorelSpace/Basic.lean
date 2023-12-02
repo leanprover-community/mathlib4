@@ -105,7 +105,7 @@ theorem isPiSystem_isOpen [TopologicalSpace α] : IsPiSystem (IsOpen : Set α �
   fun _s hs _t ht _ => IsOpen.inter hs ht
 #align is_pi_system_is_open isPiSystem_isOpen
 
-lemma isPiSystem_set_isClosed [TopologicalSpace α] : IsPiSystem (IsClosed : Set α →Prop ) :=
+lemma isPiSystem_isClosed [TopologicalSpace α] : IsPiSystem (IsClosed : Set α → Prop) :=
   fun _s hs _t ht _ ↦ IsClosed.inter hs ht
 
 theorem borel_eq_generateFrom_isClosed [TopologicalSpace α] :
