@@ -322,7 +322,8 @@ variable {A}
 /-- Makes a 1-coboundary out of `f ∈ Im(d⁰)`. -/
 def oneCoboundariesOfMemRange (f : G → A) (h : f ∈ LinearMap.range (dZero A)) :
     oneCoboundaries A :=
-  ⟨⟨f, LinearMap.range_le_ker_iff.2 (dOne_comp_dZero A) h⟩, by rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩⟩
+  ⟨⟨f, LinearMap.range_le_ker_iff.2 (dOne_comp_dZero A) h⟩,
+    by rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩⟩
 
 theorem oneCoboundaries_of_mem_range_apply (f : G → A) {h : f ∈ LinearMap.range (dZero A)} :
     (oneCoboundariesOfMemRange f h).1.1 = f := rfl
@@ -348,7 +349,8 @@ theorem oneCoboundaries_eq_bot_of_isTrivial (A : Rep k G) [A.IsTrivial] :
 /-- Makes a 2-coboundary out of `f ∈ Im(d¹)`. -/
 def twoCoboundariesOfMemRange (f : G × G → A) (h : f ∈ LinearMap.range (dOne A)) :
     twoCoboundaries A :=
-  ⟨⟨f, LinearMap.range_le_ker_iff.2 (dTwo_comp_dOne A) h⟩, by rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩⟩
+  ⟨⟨f, LinearMap.range_le_ker_iff.2 (dTwo_comp_dOne A) h⟩,
+    by rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩⟩
 
 theorem twoCoboundariesOfMemRange_apply (f : G × G → A) {h : f ∈ LinearMap.range (dOne A)} :
     (twoCoboundariesOfMemRange f h).1.1 = f := rfl
