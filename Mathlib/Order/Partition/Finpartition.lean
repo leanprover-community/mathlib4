@@ -554,8 +554,7 @@ variable [Fintype α]
 
 /-- A setoid over a finite type induces a finpartition of the type's elements,
 where the parts are the setoid's equivalence classes. -/
-noncomputable def ofSetoid (s : Setoid α) : Finpartition (univ : Finset α) := by
-  classical exact
+def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α) :=
   { parts := univ.image fun a => univ.filter (s.r a)
     supIndep := by
       simp only [mem_univ, forall_true_left, supIndep_iff_pairwiseDisjoint, Set.PairwiseDisjoint,
@@ -568,27 +567,27 @@ noncomputable def ofSetoid (s : Setoid α) : Finpartition (univ : Finset α) := 
       rw [id_eq, mem_filter] at d1 d2
       ext y
       simp only [mem_univ, forall_true_left, mem_filter, true_and]
-      exact ⟨fun r1 => s.iseqv.trans (s.iseqv.trans d2.2 (s.iseqv.symm d1.2)) r1,
-             fun r2 => s.iseqv.trans (s.iseqv.trans d1.2 (s.iseqv.symm d2.2)) r2⟩
+      exact ⟨fun r1 => s.trans (s.trans d2.2 (s.symm d1.2)) r1,
+             fun r2 => s.trans (s.trans d1.2 (s.symm d2.2)) r2⟩
     supParts := by
       ext a
       simp only [sup_image, Function.comp.left_id, mem_univ, mem_sup, mem_filter, true_and,
         iff_true]
-      use a; exact s.iseqv.refl a
+      use a; exact s.refl a
     not_bot_mem := by
       rw [bot_eq_empty, mem_image, not_exists]
       intro a
       simp only [filter_eq_empty_iff, not_forall, mem_univ, forall_true_left, true_and, not_not]
-      use a; exact s.iseqv.refl a }
+      use a; exact s.refl a }
 
-theorem mem_part_univ_iff_rel {s : Setoid α} {b : α} :
+theorem mem_part_univ_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
     b ∈ (ofSetoid s).part (mem_univ a) ↔ s.r a b := by
   simp only [part, ofSetoid]
   generalize_proofs H
   have := choose_spec _ _ H
   simp only [mem_univ, mem_image, true_and] at this
   obtain ⟨⟨_, hc⟩, this⟩ := this
-  classical simp only [← hc, mem_univ, mem_filter, true_and] at this ⊢
+  simp only [← hc, mem_univ, mem_filter, true_and] at this ⊢
   exact ⟨s.trans (s.symm this), s.trans this⟩
 
 section Atomise
