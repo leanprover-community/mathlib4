@@ -285,7 +285,7 @@ theorem sumρPowers_orderOf_eq_norm [Fintype G] (g : G) (hg : ∀ h, h ∈ Submo
 theorem sumρPowers_add (g : G) (m n : ℕ) :
     sumρPowers A g (m + n) = sumρPowers A g m + (A.ρ g) ^ m * sumρPowers A g n := by
   simp only [sumρPowers_def, map_pow, Finset.sum_range_add, pow_add, add_right_inj,
-    ←Finset.mul_sum]
+    ← Finset.mul_sum]
 
 theorem sumρPowers_orderOf_mul (g : G) (i : ℕ) :
     sumρPowers A g (orderOf g * i) = i * sumρPowers A g (orderOf g) := by
@@ -295,7 +295,7 @@ theorem sumρPowers_orderOf_mul (g : G) (i : ℕ) :
       Finset.sum_empty, Nat.cast_zero, zero_mul]
   | succ i hi =>
     simp only [sumρPowers_def] at *
-    simp only [Nat.cast_succ, mul_add, add_mul, ←hi, one_mul, mul_one, Nat.succ_eq_add_one,
+    simp only [Nat.cast_succ, mul_add, add_mul, ← hi, one_mul, mul_one, Nat.succ_eq_add_one,
       Finset.sum_range_add, pow_add, pow_mul, pow_orderOf_eq_one g, one_pow]
 
 /-- Given a generator `g` of a finite cyclic group `G`, a representation `A` of `G`, and an element
@@ -320,8 +320,8 @@ noncomputable def oneCocyclesOfGenerator [Fintype G] (x : A) (g : G)
     rcases Nat.dvd_sub_mod (n := orderOf g) j with ⟨b, hb⟩
     nth_rw 2 [(Nat.sub_eq_iff_eq_add (Nat.mod_le _ _)).1 hb]
     simp only [finEquivPowers_symm_apply, finEquivPowers_symm_self g h1, sumρPowers_one,
-      LinearMap.one_apply, ←LinearMap.sum_apply, ←sumρPowers_def, sumρPowers_add,
-      sumρPowers_orderOf_mul, ←map_pow, pow_mul, pow_orderOf_eq_one, one_pow, map_one, one_mul,
+      LinearMap.one_apply, ← LinearMap.sum_apply, ← sumρPowers_def, sumρPowers_add,
+      sumρPowers_orderOf_mul, ← map_pow, pow_mul, pow_orderOf_eq_one, one_pow, map_one, one_mul,
       LinearMap.add_apply, LinearMap.mul_apply, Module.End.natCast_apply, self_eq_add_left,
       Nat.isUnit_iff, sumρPowers_orderOf_eq_norm g hg]
     erw [hx] -- erw with `norm` again :(
@@ -520,7 +520,7 @@ def oneCoboundariesOfIsOneCoboundary (f : G → A) (hf : IsOneCoboundary f) :
 theorem isOneCoboundary_of_oneCoboundaries (f : oneCoboundaries (Rep.ofDistribMulAction k G A)) :
     IsOneCoboundary (A := A) f.1.1 := by
   rcases mem_range_of_mem_oneCoboundaries f.1 f.2 with ⟨x, hx⟩
-  exact ⟨x, by rw [←hx]; intro g; rfl⟩
+  exact ⟨x, by rw [← hx]; intro g; rfl⟩
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G × G → A` satisfying the 2-cocycle condition, produces a 2-cocycle for the representation on
@@ -594,7 +594,7 @@ theorem isMulOneCoboundary_of_oneCoboundaries
     (f : oneCoboundaries (Rep.ofMulDistribMulAction G M)) :
     IsMulOneCoboundary (M := M) (Additive.ofMul ∘ f.1.1) := by
   rcases mem_range_of_mem_oneCoboundaries f.1 f.2 with ⟨x, hx⟩
-  exact ⟨x, by rw [←hx]; intro g; rfl⟩
+  exact ⟨x, by rw [← hx]; intro g; rfl⟩
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G × G → M` satisfying the multiplicative 2-cocycle condition, produces a 2-cocycle for the
