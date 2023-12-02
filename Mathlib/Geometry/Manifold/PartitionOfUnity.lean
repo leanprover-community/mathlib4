@@ -624,7 +624,7 @@ theorem Metric.exists_smooth_forall_closedBall_subset {M} [MetricSpace M] [Chart
 #align metric.exists_smooth_forall_closed_ball_subset Metric.exists_smooth_forall_closedBall_subset
 
 lemma IsOpen.exists_msmooth_support_eq_aux {s : Set H} (hs : IsOpen s) :
-    ∃ f : H → ℝ, f.support = s ∧ Smooth I 𝓘(ℝ) f ∧ Set.range f ⊆ Set.Icc 0 1 := by
+    ∃ f : H → ℝ, f.support = s ∧ Smooth I 𝓘(ℝ) f ∧ range f ⊆ Icc 0 1 := by
   have h's : IsOpen (I.symm ⁻¹' s) := I.continuous_symm.isOpen_preimage _ hs
   rcases h's.exists_smooth_support_eq with ⟨f, f_supp, f_diff, f_range⟩
   refine ⟨f ∘ I, ?_, ?_, ?_⟩
@@ -640,7 +640,7 @@ theorem IsOpen.exists_msmooth_support_eq (hs : IsOpen s) :
   rcases SmoothPartitionOfUnity.exists_isSubordinate_chartAt_source I M with ⟨f, hf⟩
   have A : ∀ (c : M), ∃ g : H → ℝ,
       g.support = (chartAt H c).target ∩ (chartAt H c).symm ⁻¹' s ∧
-      Smooth I 𝓘(ℝ) g ∧ Set.range g ⊆ Set.Icc 0 1 := by
+      Smooth I 𝓘(ℝ) g ∧ range g ⊆ Icc 0 1 := by
     intro i
     apply IsOpen.exists_msmooth_support_eq_aux
     exact LocalHomeomorph.isOpen_inter_preimage_symm _ hs

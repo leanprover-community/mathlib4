@@ -99,7 +99,7 @@ set_option autoImplicit true
 noncomputable section
 
 open scoped Classical Topology Manifold Bundle
-open Set Bundle ChartedSpace
+open Function Set Bundle ChartedSpace
 
 universe u
 
@@ -150,14 +150,14 @@ theorem differentiable_within_at_localInvariantProp :
       rw [DifferentiableWithinAtProp] at h ⊢
       have : I x = (I ∘ e.symm ∘ I.symm) (I (e x)) := by simp only [hx, mfld_simps]
       rw [this] at h
-      have : I (e x) ∈ I.symm ⁻¹' e.target ∩ Set.range I := by simp only [hx, mfld_simps]
+      have : I (e x) ∈ I.symm ⁻¹' e.target ∩ range I := by simp only [hx, mfld_simps]
       have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
       convert (h.comp' _ (this.differentiableWithinAt le_top)).mono_of_mem _ using 1
       · ext y; simp only [mfld_simps]
       refine'
         mem_nhdsWithin.mpr
           ⟨I.symm ⁻¹' e.target, e.open_target.preimage I.continuous_symm, by
-            simp_rw [Set.mem_preimage, I.left_inv, e.mapsTo hx], _⟩
+            simp_rw [mem_preimage, I.left_inv, e.mapsTo hx], _⟩
       mfld_set_tac
     congr_of_forall := by
       intro s x f g h hx hf
@@ -169,7 +169,7 @@ theorem differentiable_within_at_localInvariantProp :
     left_invariance' := by
       intro s x f e' he' hs hx h
       rw [DifferentiableWithinAtProp] at h ⊢
-      have A : (I' ∘ f ∘ I.symm) (I x) ∈ I'.symm ⁻¹' e'.source ∩ Set.range I' := by
+      have A : (I' ∘ f ∘ I.symm) (I x) ∈ I'.symm ⁻¹' e'.source ∩ range I' := by
         simp only [hx, mfld_simps]
       have := (mem_groupoid_of_pregroupoid.2 he').1.contDiffWithinAt A
       convert (this.differentiableWithinAt le_top).comp _ h _
@@ -225,7 +225,7 @@ theorem mdifferentiableAt_iff_liftPropAt (f : M → M') (x : M) :
   congrm ?_ ∧ ?_
   · rw [continuousWithinAt_univ]
   · -- porting note: `rfl` wasn't needed
-    simp [DifferentiableWithinAtProp, Set.univ_inter]; rfl
+    simp [DifferentiableWithinAtProp, univ_inter]; rfl
 #align mdifferentiable_at_iff_lift_prop_at mdifferentiableAt_iff_liftPropAt
 
 /-- `MDifferentiableOn I I' f s` indicates that the function `f` between manifolds
@@ -437,7 +437,7 @@ theorem mdifferentiableWithinAt_iff_of_mem_source {x' : M} {y : M'}
     MDifferentiableWithinAt I I' f s x' ↔
       ContinuousWithinAt f s x' ∧
         DifferentiableWithinAt 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
-          ((extChartAt I x).symm ⁻¹' s ∩ Set.range I) ((extChartAt I x) x') :=
+          ((extChartAt I x).symm ⁻¹' s ∩ range I) ((extChartAt I x) x') :=
   (differentiable_within_at_localInvariantProp I I').liftPropWithinAt_indep_chart
     (StructureGroupoid.chart_mem_maximalAtlas _ x) hx (StructureGroupoid.chart_mem_maximalAtlas _ y)
     hy
@@ -655,11 +655,11 @@ theorem mdifferentiableAt_iff_of_mem_source {x' : M} {y : M'}
     (hx : x' ∈ (chartAt H x).source) (hy : f x' ∈ (chartAt H' y).source) :
     MDifferentiableAt I I' f x' ↔
       ContinuousAt f x' ∧
-        DifferentiableWithinAt 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm) (Set.range I)
+        DifferentiableWithinAt 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm) (range I)
           ((extChartAt I x) x') :=
   mdifferentiableWithinAt_univ.symm.trans <|
     (mdifferentiableWithinAt_iff_of_mem_source hx hy).trans <| by
-      rw [continuousWithinAt_univ, Set.preimage_univ, Set.univ_inter]
+      rw [continuousWithinAt_univ, preimage_univ, univ_inter]
 #align mdifferentiable_at_iff_of_mem_source mdifferentiableAt_iff_of_mem_source
 
 /-! ### Deducing differentiability from smoothness -/
@@ -1956,15 +1956,15 @@ protected def mfderiv {x : M} (hx : x ∈ e.source) : TangentSpace I x ≃L[𝕜
       rfl }
 #align local_homeomorph.mdifferentiable.mfderiv LocalHomeomorph.MDifferentiable.mfderiv
 
-theorem mfderiv_bijective {x : M} (hx : x ∈ e.source) : Function.Bijective (mfderiv I I' e x) :=
+theorem mfderiv_bijective {x : M} (hx : x ∈ e.source) : Bijective (mfderiv I I' e x) :=
   (he.mfderiv hx).bijective
 #align local_homeomorph.mdifferentiable.mfderiv_bijective LocalHomeomorph.MDifferentiable.mfderiv_bijective
 
-theorem mfderiv_injective {x : M} (hx : x ∈ e.source) : Function.Injective (mfderiv I I' e x) :=
+theorem mfderiv_injective {x : M} (hx : x ∈ e.source) : Injective (mfderiv I I' e x) :=
   (he.mfderiv hx).injective
 #align local_homeomorph.mdifferentiable.mfderiv_injective LocalHomeomorph.MDifferentiable.mfderiv_injective
 
-theorem mfderiv_surjective {x : M} (hx : x ∈ e.source) : Function.Surjective (mfderiv I I' e x) :=
+theorem mfderiv_surjective {x : M} (hx : x ∈ e.source) : Surjective (mfderiv I I' e x) :=
   (he.mfderiv hx).surjective
 #align local_homeomorph.mdifferentiable.mfderiv_surjective LocalHomeomorph.MDifferentiable.mfderiv_surjective
 

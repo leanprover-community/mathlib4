@@ -61,7 +61,7 @@ def StructureGroupoid.LocalInvariantProp.localPredicate (hG : LocalInvariantProp
   res := by
     intro U V i f h x
     have hUV : U ≤ V := CategoryTheory.leOfHom i
-    show ChartedSpace.LiftPropAt P (f ∘ Set.inclusion hUV) x
+    show ChartedSpace.LiftPropAt P (f ∘ inclusion hUV) x
     rw [← hG.liftPropAt_iff_comp_inclusion hUV]
     apply h
   locality := by
