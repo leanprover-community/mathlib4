@@ -1786,10 +1786,10 @@ theorem choice_mem (y : ZFSet.{u}) (yx : y ∈ x) : (choice x ′ y : Class.{u})
 private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
   (mk $ PSet.mk (Shrink s) fun x ↦ ((equivShrink s).symm x).1.out).toSet = s := by
     ext x
-    rw [mem_toSet, ←mk_out x, mk_mem_iff, mk_out]
+    rw [mem_toSet, ← mk_out x, mk_mem_iff, mk_out]
     refine' ⟨_, λ xs ↦ ⟨equivShrink s (Subtype.mk x xs), _⟩⟩
     · rintro ⟨b, h2⟩
-      rw [←ZFSet.eq, ZFSet.mk_out] at h2
+      rw [← ZFSet.eq, ZFSet.mk_out] at h2
       simp [h2]
     · simp [PSet.Equiv.refl]
 
