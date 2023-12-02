@@ -325,7 +325,7 @@ def oneCoboundariesOfMemRange (f : G → A) (h : f ∈ LinearMap.range (dZero A)
   ⟨⟨f, LinearMap.range_le_ker_iff.2 (dOne_comp_dZero A) h⟩, by rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩⟩
 
 theorem oneCoboundaries_of_mem_range_apply (f : G → A) {h : f ∈ LinearMap.range (dZero A)} :
-  (oneCoboundariesOfMemRange f h).1.1 = f := rfl
+    (oneCoboundariesOfMemRange f h).1.1 = f := rfl
 
 /-- Makes a 1-coboundary out of `f : G → A` and `x` such that
 `ρ(g)(x) - x = f(g)` for all `g : G`. -/
@@ -351,7 +351,7 @@ def twoCoboundariesOfMemRange (f : G × G → A) (h : f ∈ LinearMap.range (dOn
   ⟨⟨f, LinearMap.range_le_ker_iff.2 (dTwo_comp_dOne A) h⟩, by rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩⟩
 
 theorem twoCoboundariesOfMemRange_apply (f : G × G → A) {h : f ∈ LinearMap.range (dOne A)} :
-  (twoCoboundariesOfMemRange f h).1.1 = f := rfl
+    (twoCoboundariesOfMemRange f h).1.1 = f := rfl
 
 /-- Makes a 2-coboundary out of `f : G × G → A` and `x : G → A` such that
 `ρ(g)(x(h)) - x(gh) + x(g) = f(g, h)` for all `g, h : G`. -/
@@ -405,8 +405,7 @@ def oneCocyclesOfIsOneCocycle (f : G → A) (hf : IsOneCocycle f) :
   ⟨f, (mem_oneCocycles_iff (A := Rep.ofDistribMulAction k G A) f).2 hf⟩
 
 theorem isOneCocycle_of_oneCocycles (f : oneCocycles (Rep.ofDistribMulAction k G A)) :
-    IsOneCocycle (A := A) f.1 :=
-  (mem_oneCocycles_iff f.1).1 f.2
+    IsOneCocycle (A := A) f.1 := (mem_oneCocycles_iff f.1).1 f.2
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G → A` satisfying the 1-coboundary condition, produces a 1-coboundary for the representation
@@ -428,8 +427,7 @@ def twoCocyclesOfIsTwoCocycle (f : G × G → A) (hf : IsTwoCocycle f) :
   ⟨f, (mem_twoCocycles_iff (A := Rep.ofDistribMulAction k G A) f).2 hf⟩
 
 theorem isTwoCocycle_of_twoCocycles (f : twoCocycles (Rep.ofDistribMulAction k G A)) :
-    IsTwoCocycle (A := A) f.1 :=
-  (mem_twoCocycles_iff f.1).1 f.2
+    IsTwoCocycle (A := A) f.1 := (mem_twoCocycles_iff f.1).1 f.2
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G × G → A` satisfying the 2-coboundary condition, produces a 2-coboundary for the
@@ -479,8 +477,7 @@ def oneCocyclesOfIsMulOneCocycle (f : G → M) (hf : IsMulOneCocycle f) :
   ⟨Additive.ofMul ∘ f, (mem_oneCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).2 hf⟩
 
 theorem isMulOneCocycle_of_oneCocycles (f : oneCocycles (Rep.ofMulDistribMulAction G M)) :
-    IsMulOneCocycle (M := M) (Additive.toMul ∘ f.1) :=
-  (mem_oneCocycles_iff f.1).1 f.2
+    IsMulOneCocycle (M := M) (Additive.toMul ∘ f.1) := (mem_oneCocycles_iff f.1).1 f.2
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G → M` satisfying the multiplicative 1-coboundary condition, produces a
@@ -504,8 +501,7 @@ def twoCocyclesOfIsMulTwoCocycle (f : G × G → M) (hf : IsMulTwoCocycle f) :
   ⟨Additive.ofMul ∘ f, (mem_twoCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).2 hf⟩
 
 theorem isMulTwoCocycle_of_twoCocycles (f : twoCocycles (Rep.ofMulDistribMulAction G M)) :
-    IsMulTwoCocycle (M := M) (Additive.toMul ∘ f.1) :=
-  (mem_twoCocycles_iff f.1).1 f.2
+    IsMulTwoCocycle (M := M) (Additive.toMul ∘ f.1) := (mem_twoCocycles_iff f.1).1 f.2
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G × G → M` satisfying the multiplicative 2-coboundary condition, produces a
