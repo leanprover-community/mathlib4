@@ -889,6 +889,34 @@ theorem corec_id_id_eq_const (a : α) : corec id id a = const a := by
   simp
 #align stream.corec_id_id_eq_const Stream'.corec_id_id_eq_const
 
+@[simp]
+theorem zipWith_const_left (f : α → β → δ) (a : α) (s₂ : Stream' β) :
+    zipWith f (const a) s₂ = map (f a) s₂ := by
+  ext1; simp
+
+@[simp]
+theorem zipWith_const_right (f : α → β → δ) (s₁ : Stream' α) (b : β) :
+    zipWith f s₁ (const b) = map (f · b) s₁ := by
+  ext1; simp
+
+theorem zipWith_const (f : α → β → δ) (a : α) (b : β) :
+    zipWith f (const a) (const b) = const (f a b) := by
+  simp
+
+@[simp]
+theorem zip_const_left (a : α) (s₂ : Stream' β) :
+    zip (const a) s₂ = map (Prod.mk a) s₂ := by
+  ext1; simp
+
+@[simp]
+theorem zip_const_right (s₁ : Stream' α) (b : β) :
+    zip s₁ (const b) = map ((·, b)) s₁ := by
+  ext1; simp
+
+theorem zip_const (a : α) (b : β) :
+    zip  (const a) (const b) = const (a, b) := by
+  simp
+
 end Const
 
 @[inherit_doc const, simp]

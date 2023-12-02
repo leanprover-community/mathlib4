@@ -48,6 +48,32 @@ theorem fractParts_dest :
       if fract v = 0 then none else some (fract v, fractParts (fract v)⁻¹) := by
   by_cases hv : fract v = 0 <;> simp [fractParts, hv]
 
+@[simp]
+theorem fractParts_int (a : ℤ) : fractParts (a : K) = nil := by
+  apply dest_eq_nil
+  simp
+
+@[simp]
+theorem fractParts_zero : fractParts (0 : K) = nil := by
+  apply dest_eq_nil
+  simp
+
+@[simp]
+theorem head_fractParts :
+    head (fractParts v) =
+      if fract v = 0 then none else some (fract v) := by
+  by_cases hv : fract v = 0 <;> simp [head_eq_dest, hv]
+
+@[simp]
+theorem tail_fractParts :
+    tail (fractParts v) = fractParts (fract v)⁻¹ := by
+  by_cases hv : fract v = 0 <;> simp [tail_eq_dest, hv]
+
+@[simp]
+theorem fractParts_fract : fractParts (fract v) = fractParts v := by
+  apply dest_injective
+  simp
+
 #noalign generalized_continued_fraction.int_fract_pair.succ_nth_stream_eq_none_iff
 
 #noalign generalized_continued_fraction.int_fract_pair.succ_nth_stream_eq_some_iff
@@ -138,9 +164,7 @@ theorem of_s_dest :
     dest (of v).s =
       if hv : fract v = 0 then none else
         some (⟨⌊(fract v)⁻¹⌋₊,
-          by
-            rw [Nat.floor_pos, one_le_inv_iff, lt_iff_le_and_ne, ne_comm]
-            simp [hv, le_of_lt (fract_lt_one v)]⟩, (of (fract v)⁻¹).s) := by
+          of.proof ⟨fract_nonneg v, fract_lt_one v⟩ hv⟩, (of (fract v)⁻¹).s) := by
   by_cases hv : fract v = 0 <;> simp [of, hv]
 
 /-- This gives the first pair of coefficients of the continued fraction of a non-integer `v`.
@@ -150,9 +174,7 @@ theorem of_s_head :
     head (of v).s =
       if hv : fract v = 0 then none else
         some ⟨⌊(fract v)⁻¹⌋₊,
-          by
-            rw [Nat.floor_pos, one_le_inv_iff, lt_iff_le_and_ne, ne_comm]
-            simp [hv, le_of_lt (fract_lt_one v)]⟩ := by
+          of.proof ⟨fract_nonneg v, fract_lt_one v⟩ hv⟩ := by
   by_cases hv : fract v = 0 <;> simp [head_eq_dest, hv]
 #align generalized_continued_fraction.of_s_head CF.of_s_head
 
@@ -164,6 +186,11 @@ fractional part of `v`.
 theorem of_s_tail : (of v).s.tail = (of (fract v)⁻¹).s := by
   by_cases hv : fract v = 0 <;> simp [tail_eq_dest, hv]
 #align generalized_continued_fraction.of_s_tail CF.of_s_tail
+
+@[simp]
+theorem of_fract_s : (of (fract v)).s = (of v).s := by
+  apply dest_injective
+  simp
 
 /-- Recurrence for the `CF.of` an element `v` of `K` in terms of
 that of the inverse of the fractional part of `v`.
@@ -181,10 +208,9 @@ theorem map_coe_of_s_eq_map_nat_floor_comp_inv_fractParts :
   exists (fract v)⁻¹
 
 theorem of_terminatedAt_iff_fractParts_terminatedAt (n : ℕ) :
-    (↑(of v) : GCF K).TerminatedAt n ↔ (fractParts v).TerminatedAt n := by
-  simpa [GCF.TerminatedAt]
-    using congr_arg (fun s : Seq' ℕ => s.TerminatedAt n)
-      (map_coe_of_s_eq_map_nat_floor_comp_inv_fractParts v)
+    (of v).s.TerminatedAt n ↔ (fractParts v).TerminatedAt n := by
+  simpa using congr_arg (fun s : Seq' ℕ => s.TerminatedAt n)
+    (map_coe_of_s_eq_map_nat_floor_comp_inv_fractParts v)
 
 variable (K) (n)
 
@@ -193,7 +219,7 @@ are all equal to `a`.
 -/
 @[simp]
 theorem convergents_mk_nil (a : ℤ) : (⟨a, nil⟩ : CF K).convergents n = a := by
-  simp [CF.convergents, GCF.convergents, - gcf_convergents_eq]
+  simp [CF.convergents]
 #align generalized_continued_fraction.convergents'_of_int CF.convergents_mk_nil
 
 variable {K}
@@ -208,15 +234,20 @@ theorem convergents_succ :
     simp [Int.fract_eq_iff] at hv; rcases hv with ⟨m, rfl⟩
     simp
   case neg =>
-    have hn₁ := (dom_gcf_convergents (of (fract v)⁻¹)).symm ▸ Set.mem_univ n
-    have hn₂ := (dom_gcf_convergents (of v)).symm ▸ Set.mem_univ (n + 1)
-    unfold CF.convergents GCF.convergents at hn₁ hn₂ ⊢
-    simp [Part.ofOption_eq_get, GCF.take, Seq'.take, hv, FGCF.eval?_eq_evalF?, FGCF.evalF?,
-      Option.bind_eq_bind] at hn₁ hn₂ ⊢
-    simp [Option.isSome_iff_exists] at hn₁ hn₂; rcases hn₁ with ⟨_, w₁, hw₁, rfl⟩
-    simp [hw₁, ite_eq_iff] at hn₂ ⊢; rcases hn₂ with ⟨_, _, ⟨hv₂, rfl⟩, rfl⟩
-    simp [hv₂]
-    apply Nat.cast_floor_eq_cast_int_floor; simp
+    have hn₁ : (of (fract v)⁻¹).convergents n = (of (fract v)⁻¹).convergents n := rfl
+    have hn₂ : (of v).convergents (n + 1) = (of v).convergents (n + 1) := rfl
+    rw [← Option.some_inj] at hn₁ hn₂ ⊢
+    conv_lhs at hn₁ => rw [CF.convergents]
+    conv_lhs at hn₂ => rw [CF.convergents]
+    rw [CF.convergents, CF.convergents]
+    simp [← FCF.eval?_toFGCF, Seq'.take, FGCF.eval?_eq_evalF?,
+      FGCF.evalF?, Option.bind_eq_bind, - Part.coe_some, hv] at hn₁ hn₂ ⊢
+    rcases hn₁ with ⟨w, hw₁, -⟩
+    simp [hw₁, Option.bind_eq_bind, ite_eq_iff] at hn₂ ⊢
+    rcases hn₂ with ⟨_, ⟨hv₂, rfl⟩, -⟩
+    conv_rhs => rw [← Option.some_inj, ← FCF.eval?_toFGCF, FGCF.eval?_eq_evalF?, eq_comm]
+    simp [hv₂, FGCF.evalF?, hw₁]
+    symm; apply Nat.cast_floor_eq_cast_int_floor; simp
 #align generalized_continued_fraction.convergents'_succ CF.convergents_succ
 
 end Values

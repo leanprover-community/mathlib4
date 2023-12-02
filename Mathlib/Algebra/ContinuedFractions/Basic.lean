@@ -86,32 +86,15 @@ namespace GCF
 instance [Inhabited α] : Inhabited (GCF α) where
   default := ⟨default, nil⟩
 
-/-- Returns the sequence of partial numerators `aᵢ` of `g`. -/
-def partNums (g : GCF α) : Seq' α :=
-  g.s.map Prod.fst
-#align generalized_continued_fraction.partial_numerators GCF.partNums
+#noalign generalized_continued_fraction.partial_numerators
 
-/-- Returns the sequence of partial denominators `bᵢ` of `g`. -/
-def partDenoms (g : GCF α) : Seq' α :=
-  g.s.map Prod.snd
-#align generalized_continued_fraction.partial_denominators GCF.partDenoms
+#noalign generalized_continued_fraction.partial_denominators
 
-/-- A gcf terminated at position `n` if its sequence terminates at position `n`. -/
-def TerminatedAt (g : GCF α) (n : ℕ) : Prop :=
-  g.s.TerminatedAt n
-#align generalized_continued_fraction.terminated_at GCF.TerminatedAt
+#noalign generalized_continued_fraction.terminated_at
 
-/-- It is decidable whether a gcf terminated at a given position. -/
-instance terminatedAtDecidable (g : GCF α) (n : ℕ) :
-    Decidable (g.TerminatedAt n) := by
-  unfold TerminatedAt
-  infer_instance
-#align generalized_continued_fraction.terminated_at_decidable GCF.terminatedAtDecidable
+#noalign generalized_continued_fraction.terminated_at_decidable
 
-/-- A gcf terminates if its sequence terminates. -/
-def Terminates (g : GCF α) : Prop :=
-  g.s.Terminates
-#align generalized_continued_fraction.terminates GCF.Terminates
+#noalign generalized_continued_fraction.terminates
 
 end GCF
 
@@ -154,17 +137,14 @@ theorem toGCF_injective : Injective ((↑) : FGCF α → GCF α) := by
 theorem toGCF_inj {f₁ f₂ : FGCF α} : (↑f₁ : GCF α) = ↑f₂ ↔ f₁ = f₂ :=
   toGCF_injective.eq_iff
 
-@[simp]
-theorem toGCF_terminates (f : FGCF α) : (↑f : GCF α).Terminates := by simp [GCF.Terminates]
-
-theorem _root_.GCF.exists_eq_FGCF_iff {g : GCF α} : (∃ f : FGCF α, ↑f = g) ↔ g.Terminates where
-  mp  := by rintro ⟨f, rfl⟩; exact f.toGCF_terminates
+theorem _root_.GCF.exists_eq_FGCF_iff {g : GCF α} : (∃ f : FGCF α, ↑f = g) ↔ g.s.Terminates where
+  mp  := by rintro ⟨f, rfl⟩; simp
   mpr := by
     intro hg; rcases g with ⟨h, s⟩
     use ⟨h, s.toList hg⟩
     simp [comp]
 
-instance : CanLift (GCF α) (FGCF α) (↑) GCF.Terminates where
+instance : CanLift (GCF α) (FGCF α) (↑) (·.s.Terminates) where
   prf _ h := GCF.exists_eq_FGCF_iff.mpr h
 
 /-- Take the head term and the first `n` pairs of a partial numerator and denominator. -/
@@ -175,6 +155,28 @@ def _root_.GCF.take (n : ℕ) (g : GCF α) : FGCF α where
 
 @[simp]
 theorem _root_.GCF.take_mk (n : ℕ) (h : α) (s : Seq' (α × α)) : GCF.take n ⟨h, s⟩ = ⟨h, s.take n⟩ :=
+  rfl
+
+def hAppend (f : FGCF α) (l : List (α × α)) : FGCF α where
+  h := f.h
+  l := f.l ++ l
+
+instance : HAppend (FGCF α) (List (α × α)) (FGCF α) where
+  hAppend := hAppend
+
+theorem hAppend_def (f : FGCF α) (l : List (α × α)) : f ++ l = ⟨f.h, f.l ++ l⟩ :=
+  rfl
+
+@[simp]
+theorem hAppend_h (f : FGCF α) (l : List (α × α)) : (f ++ l).h = f.h :=
+  rfl
+
+@[simp]
+theorem hAppend_l (f : FGCF α) (l : List (α × α)) : (f ++ l).l = f.l ++ l :=
+  rfl
+
+@[simp]
+theorem mk_hAppend (h : α) (l₁ l₂ : List (α × α)) : (⟨h, l₁⟩ : FGCF α) ++ l₂ = ⟨h, l₁ ++ l₂⟩ :=
   rfl
 
 open Std in
@@ -201,7 +203,7 @@ $$
                                                    {b_3 + \dots}}}}
 $$
 -/
-def GCF.IsSCF [One α] (g : GCF α) : Prop := ∀ aₙ ∈ g.partNums, aₙ = 1
+def GCF.IsSCF [One α] (g : GCF α) : Prop := ∀ ⦃a b⦄, (a, b) ∈ g.s → a = 1
 #align generalized_continued_fraction.is_simple_continued_fraction GCF.IsSCF
 
 /-- A *simple continued fraction* (scf) is a generalized continued fraction (gcf) whose partial
@@ -257,7 +259,7 @@ theorem toGCF_inj {s₁ s₂ : SCF α} : (↑s₁ : GCF α) = ↑s₂ ↔ s₁ =
   toGCF_injective.eq_iff
 
 @[simp]
-theorem toGCF_isSCF (s : SCF α) : (↑s : GCF α).IsSCF := by simp [IsSCF, partNums]
+theorem toGCF_isSCF (s : SCF α) : (↑s : GCF α).IsSCF := by simp [IsSCF]
 
 theorem _root_.GCF.exists_eq_SCF_iff {g : GCF α} : (∃ s : SCF α, ↑s = g) ↔ g.IsSCF where
   mp  := by rintro ⟨s, rfl⟩; exact s.toGCF_isSCF
@@ -267,7 +269,7 @@ theorem _root_.GCF.exists_eq_SCF_iff {g : GCF α} : (∃ s : SCF α, ↑s = g) �
     simp [comp]
     convert Seq'.map_id s using 1
     symm; apply Seq'.map_congr
-    simpa [IsSCF, partNums] using hg
+    simpa [IsSCF] using hg
 
 instance : CanLift (GCF α) (SCF α) (↑) IsSCF where
   prf _ h := GCF.exists_eq_SCF_iff.mpr h
@@ -278,12 +280,153 @@ end SCF
 
 open SCF
 
+@[ext]
+structure FSCF (α : Type*) where
+  protected h : α
+  protected l : List α
+
+namespace FSCF
+
+variable [One α]
+
+instance [Inhabited α] : Inhabited (FSCF α) where
+  default := ⟨default, []⟩
+
+@[coe, simps]
+def toSCF (f : FSCF α) : SCF α where
+  h := f.h
+  s := ↑f.l
+
+instance : Coe (FSCF α) (SCF α) where
+  coe := toSCF
+
+@[simp, norm_cast]
+theorem toSCF_mk (h : α) (l : List α) : (↑(⟨h, l⟩ : FSCF α) : SCF α) = ⟨h, ↑l⟩ :=
+  rfl
+
+theorem toSCF_injective : Injective ((↑) : FSCF α → SCF α) := by
+  rintro ⟨h₁, l₁⟩ ⟨h₂, l₂⟩ h
+  simpa using h
+
+@[simp, norm_cast]
+theorem toSCF_inj {f₁ f₂ : FSCF α} : (↑f₁ : SCF α) = ↑f₂ ↔ f₁ = f₂ :=
+  toSCF_injective.eq_iff
+
+theorem _root_.SCF.exists_eq_FSCF_iff {s : SCF α} : (∃ f : FSCF α, ↑f = s) ↔ s.s.Terminates where
+  mp  := by rintro ⟨f, rfl⟩; simp
+  mpr := by
+    intro hs; rcases s with ⟨h, s⟩
+    use ⟨h, s.toList hs⟩
+    simp [comp]
+
+instance : CanLift (SCF α) (FSCF α) (↑) (·.s.Terminates) where
+  prf _ h := SCF.exists_eq_FSCF_iff.mpr h
+
+@[coe, simps]
+def toFGCF (f : FSCF α) : FGCF α where
+  h := f.h
+  l := f.l.map ((1, ·))
+
+instance : Coe (FSCF α) (FGCF α) where
+  coe := toFGCF
+
+@[simp]
+theorem toFGCF_mk (h : α) (l : List α) : (↑(⟨h, l⟩ : FSCF α) : FGCF α) = ⟨h, l.map ((1, ·))⟩ :=
+  rfl
+
+theorem toFGCF_injective : Injective ((↑) : FSCF α → FGCF α) := by
+  rintro ⟨h₁, l₁⟩ ⟨h₂, l₂⟩ h
+  have hi : Injective (List.map (((1, ·)) : α → α × α)) :=
+    List.map_injective_iff.mpr (Prod.mk.inj_left 1)
+  simpa [hi.eq_iff] using h
+
+@[simp, norm_cast]
+theorem toFGCF_inj {f₁ f₂ : FSCF α} : (↑f₁ : FGCF α) = ↑f₂ ↔ f₁ = f₂ :=
+  toFGCF_injective.eq_iff
+
+theorem toFGCF_toGCF_eq_toSCF_toGCF (f : FSCF α) :
+    (↑(↑f : FGCF α) : GCF α) = (↑(↑f : SCF α) : GCF α) := by
+  rcases f with ⟨h, l⟩
+  simp
+
+theorem _root_.FGCF.exists_eq_FSCF_iff {f : FGCF α} :
+    (∃ f' : FSCF α, ↑f' = f) ↔ (↑f : GCF α).IsSCF where
+  mp  := by
+    rintro ⟨f', rfl⟩
+    rw [toFGCF_toGCF_eq_toSCF_toGCF]
+    exact (↑f' : SCF α).toGCF_isSCF
+  mpr := by
+    intro hf; rcases f with ⟨h, l⟩
+    use ⟨h, l.map Prod.snd⟩
+    simp [comp]
+    convert List.map_id l using 1
+    symm; apply List.map_congr
+    simpa [IsSCF] using hf
+
+instance : CanLift (FGCF α) (FSCF α) (↑) (fun f => (↑f : GCF α).IsSCF) where
+  prf _ h := FGCF.exists_eq_FSCF_iff.mpr h
+
+@[simps]
+def _root_.SCF.take (n : ℕ) (s : SCF α) : FSCF α where
+  h := s.h
+  l := s.s.take n
+
+@[simp]
+theorem _root_.SCF.take_mk (n : ℕ) (h : α) (s : Seq' α) : SCF.take n ⟨h, s⟩ = ⟨h, s.take n⟩ :=
+  rfl
+
+@[simp, norm_cast]
+theorem _root_.SCF.take_toGCF (n : ℕ) (s : SCF α) :
+    GCF.take n (↑s : GCF α) = ↑(SCF.take n s) := by
+  simp [GCF.take, SCF.take]
+
+def hAppend (f : FSCF α) (l : List α) : FSCF α where
+  h := f.h
+  l := f.l ++ l
+
+instance : HAppend (FSCF α) (List α) (FSCF α) where
+  hAppend := hAppend
+
+theorem hAppend_def (f : FSCF α) (l : List α) : f ++ l = ⟨f.h, f.l ++ l⟩ :=
+  rfl
+
+@[simp]
+theorem hAppend_h (f : FSCF α) (l : List α) : (f ++ l).h = f.h :=
+  rfl
+
+@[simp]
+theorem hAppend_l (f : FSCF α) (l : List α) : (f ++ l).l = f.l ++ l :=
+  rfl
+
+@[simp]
+theorem mk_hAppend (h : α) (l₁ l₂ : List α) : (⟨h, l₁⟩ : FSCF α) ++ l₂ = ⟨h, l₁ ++ l₂⟩ :=
+  rfl
+
+@[simp]
+theorem toFGCF_hAppend (f : FSCF α) (l : List α) :
+    (↑(f ++ l) : FGCF α) = (↑f : FGCF α) ++ l.map (((1 : α), ·)) := by
+  simp [FGCF.hAppend_def, FSCF.hAppend_def]
+
+open Std in
+instance [Repr α] : Repr (FSCF α) where
+  reprPrec a _ :=
+    let _ : ToFormat α := ⟨repr⟩
+    match a with
+    | { h, l := [] } => Format.bracket "CF[" (format h) "]"
+    | { h, l := as } =>
+      Format.bracket "CF["
+        (format h ++ (";" ++ Format.line) ++ Format.joinSep as ("," ++ Format.line)) "]"
+
+end FSCF
+
+open FSCF hiding toSCF toFGCF
+
 /--
 A simple continued fraction is a *(regular) continued fraction* ((r)cf) if the head term is integer
 and all partial denominators `bᵢ` are positive naturals.
 -/
 def SCF.IsCF [NatCast α] [IntCast α] (s : SCF α) : Prop :=
-  (∃ n : ℤ, ↑n = s.h) ∧ (∀ bₙ ∈ s.s, ∃ p : ℕ+, ↑p = bₙ)
+  (∃ n : ℤ, ↑n = s.h) ∧ (∀ {b}, b ∈ s.s → ∃ p : ℕ+, ↑p = b)
 #align simple_continued_fraction.is_continued_fraction SCF.IsCF
 
 /-- A *(regular) continued fraction* ((r)cf) is a simple continued fraction (scf) whose head term
@@ -342,7 +485,7 @@ theorem _root_.SCF.exists_eq_CF_iff [AddGroupWithOne α] [CharZero α] {s : SCF 
     simp [comp]
     convert Seq'.map_id s using 1
     symm; apply Seq'.map_congr; intro a ha
-    simp [invFun_eq (hs a ha)]
+    simp [invFun_eq (hs ha)]
 
 instance [AddGroupWithOne α] [CharZero α] : CanLift (SCF α) (CF α) (↑) IsCF where
   prf _ h := SCF.exists_eq_CF_iff.mpr h
@@ -354,6 +497,151 @@ instance [AddGroupWithOne α] [CharZero α] : CanLift (SCF α) (CF α) (↑) IsC
 end CF
 
 open CF
+
+@[ext]
+structure FCF (α : Type*) where
+  protected h : ℤ
+  protected l : List ℕ+
+
+namespace FCF
+
+variable [One α]
+
+instance [Inhabited α] : Inhabited (FCF α) where
+  default := ⟨default, []⟩
+
+@[coe, simps]
+def toCF (f : FCF α) : CF α where
+  h := f.h
+  s := ↑f.l
+
+instance : Coe (FCF α) (CF α) where
+  coe := toCF
+
+@[simp, norm_cast]
+theorem toCF_mk (h : ℤ) (l : List ℕ+) : (↑(⟨h, l⟩ : FCF α) : CF α) = ⟨↑h, ↑l⟩ :=
+  rfl
+
+theorem toCF_injective : Injective ((↑) : FCF α → CF α) := by
+  rintro ⟨h₁, l₁⟩ ⟨h₂, l₂⟩ h
+  simpa using h
+
+@[simp, norm_cast]
+theorem toCF_inj {f₁ f₂ : FCF α} : (↑f₁ : CF α) = ↑f₂ ↔ f₁ = f₂ :=
+  toCF_injective.eq_iff
+
+theorem _root_.CF.exists_eq_FCF_iff {c : CF α} : (∃ f : FCF α, ↑f = c) ↔ c.s.Terminates where
+  mp  := by rintro ⟨f, rfl⟩; simp
+  mpr := by
+    intro hc; rcases c with ⟨h, s⟩
+    use ⟨h, s.toList hc⟩
+    simp [comp]
+
+instance : CanLift (CF α) (FCF α) (↑) (·.s.Terminates) where
+  prf _ h := CF.exists_eq_FCF_iff.mpr h
+
+@[coe, simps]
+def toFSCF [NatCast α] [IntCast α] (f : FCF α) : FSCF α where
+  h := ↑f.h
+  l := f.l.map (↑)
+
+instance [NatCast α] [IntCast α] : Coe (FCF α) (FSCF α) where
+  coe := toFSCF
+
+@[simp]
+theorem toFSCF_mk [NatCast α] [IntCast α] (h : ℤ) (l : List ℕ+) :
+    (↑(⟨h, l⟩ : FCF α) : FSCF α) = ⟨↑h, l.map (↑)⟩ :=
+  rfl
+
+theorem toFSCF_injective [AddGroupWithOne α] [CharZero α] : Injective ((↑) : FCF α → FSCF α) := by
+  rintro ⟨h₁, l₁⟩ ⟨h₂, l₂⟩ h
+  have hi : Injective (List.map ((↑) : ℕ+ → α)) :=
+    List.map_injective_iff.mpr (Nat.cast_injective.comp PNat.coe_injective)
+  simpa [hi.eq_iff] using h
+
+@[simp, norm_cast]
+theorem toFSCF_inj [AddGroupWithOne α] [CharZero α] {f₁ f₂ : FCF α} :
+    (↑f₁ : FSCF α) = ↑f₂ ↔ f₁ = f₂ :=
+  toFSCF_injective.eq_iff
+
+theorem toFSCF_toSCF_eq_toCF_toSCF [NatCast α] [IntCast α] (f : FCF α) :
+    (↑(↑f : FSCF α) : SCF α) = (↑(↑f : CF α) : SCF α) := by
+  rcases f with ⟨h, l⟩
+  simp
+
+theorem _root_.FSCF.exists_eq_FCF_iff [AddGroupWithOne α] [CharZero α] {f : FSCF α} :
+    (∃ f' : FCF α, ↑f' = f) ↔ (↑f : SCF α).IsCF where
+  mp  := by
+    rintro ⟨f', rfl⟩
+    rw [toFSCF_toSCF_eq_toCF_toSCF]
+    exact (↑f' : CF α).toSCF_isCF
+  mpr := by
+    rcases f with ⟨h, l⟩; rintro ⟨⟨lh, rfl⟩, hl⟩
+    use ⟨lh, l.map (invFun (↑))⟩
+    simp [comp]
+    convert List.map_id l using 1
+    symm; apply List.map_congr; intro a ha
+    simp [invFun_eq (hl (Seq'.mem_ofList.mpr ha))]
+
+instance [AddGroupWithOne α] [CharZero α] :
+    CanLift (FSCF α) (FCF α) (↑) (fun f => (↑f : SCF α).IsCF) where
+  prf _ h := FSCF.exists_eq_FCF_iff.mpr h
+
+@[simps]
+def _root_.CF.take (n : ℕ) (c : CF α) : FCF α where
+  h := c.h
+  l := c.s.take n
+
+@[simp]
+theorem _root_.CF.take_mk (n : ℕ) (h : ℤ) (s : Seq' ℕ+) :
+    CF.take n (⟨h, s⟩ : CF α) = ⟨h, s.take n⟩ :=
+  rfl
+
+@[simp, norm_cast]
+theorem _root_.CF.take_toSCF [NatCast α] [IntCast α] (n : ℕ) (c : CF α) :
+    SCF.take n (↑c : SCF α) = ↑(CF.take n c) := by
+  simp [SCF.take, CF.take]
+
+def hAppend (f : FCF α) (l : List ℕ+) : FCF α where
+  h := f.h
+  l := f.l ++ l
+
+instance : HAppend (FCF α) (List ℕ+) (FCF α) where
+  hAppend := hAppend
+
+theorem hAppend_def (f : FCF α) (l : List ℕ+) : f ++ l = ⟨f.h, f.l ++ l⟩ :=
+  rfl
+
+@[simp]
+theorem hAppend_h (f : FCF α) (l : List ℕ+) : (f ++ l).h = f.h :=
+  rfl
+
+@[simp]
+theorem hAppend_l (f : FCF α) (l : List ℕ+) : (f ++ l).l = f.l ++ l :=
+  rfl
+
+@[simp]
+theorem mk_hAppend (h : ℤ) (l₁ l₂ : List ℕ+) : (⟨h, l₁⟩ : FCF α) ++ l₂ = ⟨h, l₁ ++ l₂⟩ :=
+  rfl
+
+@[simp]
+theorem toFSCF_hAppend [NatCast α] [IntCast α] (f : FCF α) (l : List ℕ+) :
+    (↑(f ++ l) : FSCF α) = (↑f : FSCF α) ++ l.map ((↑) : ℕ+ → α) := by
+  simp [FSCF.hAppend_def, FCF.hAppend_def]
+
+open Std in
+instance : Repr (FCF α) where
+  reprPrec a _ :=
+    let _ : ToFormat ℕ+ := ⟨repr⟩
+    match a with
+    | { h, l := [] } => Format.bracket "CF[" (format h) "]"
+    | { h, l := as } =>
+      Format.bracket "CF["
+        (format h ++ (";" ++ Format.line) ++ Format.joinSep as ("," ++ Format.line)) "]"
+
+end FCF
+
+open FCF hiding toCF toFSCF
 
 variable {K : Type*} [DivisionRing K]
 
@@ -386,7 +674,7 @@ Returns the next continuants `((Aₙ₋₁, Bₙ₋₁), (Aₙ, Bₙ))` using th
 where `c` is `(aₙ₋₁, bₙ₋₁)` and `p` is `((Aₙ₋₂, Bₙ₋₂), (Aₙ₋₁, Bₙ₋₁))`.
 We should give previous continuants because it is used in the next calculation.
 -/
-@[simps]
+@[simp]
 def nextContinuants (p : (K × K) × (K × K)) (c : K × K) : (K × K) × (K × K) :=
   (p.2, (c.2 * p.2.1 + c.1 * p.1.1, c.2 * p.2.2 + c.1 * p.1.2))
 #align generalized_continued_fraction.next_continuants FGCF.nextContinuantsₓ
@@ -463,6 +751,31 @@ where
 
 end FGCF
 
+namespace FCF
+
+theorem nextContinuants.proof (k m : ℕ+) (n : ℕ) : 0 < ↑k * ↑m + n := calc
+  (0 : ℕ) < ↑(k * m)    := PNat.pos _
+  _       = ↑k * ↑m     := PNat.mul_coe _ _
+  _       ≤ ↑k * ↑m + n := Nat.le_add_right _ _
+
+@[simps]
+def nextContinuants (p : (ℤ × ℕ) × (ℤ × ℕ+)) (n : ℕ+) : (ℤ × ℕ) × (ℤ × ℕ+) :=
+  ((p.2.1, ↑p.2.2), (↑n * p.2.1 + p.1.1, ⟨↑n * ↑p.2.2 + p.1.2, nextContinuants.proof _ _ _⟩))
+
+def continuant (f : FCF K) : ℤ × ℕ+ :=
+  Prod.snd (f.l.foldl nextContinuants ((1, 0), (f.h, 1)))
+
+abbrev numerator (f : FCF K) : ℤ :=
+  f.continuant.1
+
+abbrev denominator (f : FCF K) : ℕ+ :=
+  f.continuant.2
+
+def eval (f : FCF K) : ℚ :=
+  mkRat f.numerator f.denominator
+
+end FCF
+
 /-!
 ### Computation of potentially infinite gcfs
 
@@ -485,3 +798,10 @@ def HasValue [DecidableEq K] [TopologicalSpace K] (g : GCF K) (v : K) : Prop :=
   PTendsto g.convergents atTop (nhds v)
 
 end GCF
+
+namespace CF
+
+def convergents (c : CF K) : ℕ → K :=
+  fun n => ↑(c.take n).eval
+
+end CF

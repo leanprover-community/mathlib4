@@ -17,65 +17,28 @@ Some simple translation lemmas between the different definitions of functions de
 -/
 
 
-section General
 
-/-!
-### Translations Between General Access Functions
+open FGCF GCF List Filter Set
 
-Here we give some basic translations that hold by definition between the various methods that allow
-us to access the numerators and denominators of a continued fraction.
--/
+#noalign generalized_continued_fraction.terminated_at_iff_s_terminated_at
 
-namespace GCF
+#noalign generalized_continued_fraction.terminated_at_iff_s_none
 
-variable {α : Type*} {g : GCF α} {n : ℕ}
+#noalign generalized_continued_fraction.part_num_none_iff_s_none
 
-theorem terminatedAt_iff_s_terminatedAt : g.TerminatedAt n ↔ g.s.TerminatedAt n := Iff.rfl
-#align generalized_continued_fraction.terminated_at_iff_s_terminated_at GCF.terminatedAt_iff_s_terminatedAt
+#noalign generalized_continued_fraction.terminated_at_iff_part_num_none
 
-theorem terminatedAt_iff_s_none : g.TerminatedAt n ↔ g.s.get? n = none := Iff.rfl
-#align generalized_continued_fraction.terminated_at_iff_s_none GCF.terminatedAt_iff_s_none
+#noalign generalized_continued_fraction.part_denom_none_iff_s_none
 
-theorem partNum_none_iff_s_none : g.partNums.get? n = none ↔ g.s.get? n = none := by
-  cases s_nth_eq : g.s.get? n <;> simp [partNums, s_nth_eq]
-#align generalized_continued_fraction.part_num_none_iff_s_none GCF.partNum_none_iff_s_none
+#noalign generalized_continued_fraction.terminated_at_iff_part_denom_none
 
-theorem terminatedAt_iff_partNum_none : g.TerminatedAt n ↔ g.partNums.get? n = none := by
-  rw [terminatedAt_iff_s_none, partNum_none_iff_s_none]
-#align generalized_continued_fraction.terminated_at_iff_part_num_none GCF.terminatedAt_iff_partNum_none
+#noalign generalized_continued_fraction.part_num_eq_s_a
 
-theorem partDenom_none_iff_s_none : g.partDenoms.get? n = none ↔ g.s.get? n = none := by
-  cases s_nth_eq : g.s.get? n <;> simp [partDenoms, s_nth_eq]
-#align generalized_continued_fraction.part_denom_none_iff_s_none GCF.partDenom_none_iff_s_none
+#noalign generalized_continued_fraction.part_denom_eq_s_b
 
-theorem terminatedAt_iff_partDenom_none : g.TerminatedAt n ↔ g.partDenoms.get? n = none :=
-  by rw [terminatedAt_iff_s_none, partDenom_none_iff_s_none]
-#align generalized_continued_fraction.terminated_at_iff_part_denom_none GCF.terminatedAt_iff_partDenom_none
+#noalign generalized_continued_fraction.exists_s_a_of_part_num
 
-theorem partNum_eq_s_fst {gp : α × α} (s_nth_eq : g.s.get? n = some gp) :
-    g.partNums.get? n = some gp.1 := by simp [partNums, s_nth_eq]
-#align generalized_continued_fraction.part_num_eq_s_a GCF.partNum_eq_s_fst
-
-theorem partDenom_eq_s_snd {gp : α × α} (s_nth_eq : g.s.get? n = some gp) :
-    g.partDenoms.get? n = some gp.2 := by simp [partDenoms, s_nth_eq]
-#align generalized_continued_fraction.part_denom_eq_s_b GCF.partDenom_eq_s_snd
-
-theorem exists_s_fst_of_partNum {a : α} (nth_partNum_eq : g.partNums.get? n = some a) :
-    ∃ gp, g.s.get? n = some gp ∧ gp.1 = a := by
-  simpa [partNums] using nth_partNum_eq
-#align generalized_continued_fraction.exists_s_a_of_part_num GCF.exists_s_fst_of_partNum
-
-theorem exists_s_snd_of_partDenom {b : α}
-    (nth_partDenom_eq : g.partDenoms.get? n = some b) :
-    ∃ gp, g.s.get? n = some gp ∧ gp.2 = b := by
-  simpa [partDenoms] using nth_partDenom_eq
-#align generalized_continued_fraction.exists_s_b_of_part_denom GCF.exists_s_snd_of_partDenom
-
-end GCF
-
-end General
-
-section WithDivisionRing
+#noalign generalized_continued_fraction.exists_s_b_of_part_denom
 
 /-!
 ### Translations Between Computational Functions
@@ -86,7 +49,8 @@ continued fraction.
 
 namespace FGCF
 
-variable {K : Type*} (f : FGCF K) (h : K) (l : List (K × K)) (p : K × K) [DivisionRing K]
+variable {K : Type*} [DivisionRing K] [DecidableEq K]
+  (f : FGCF K) (h : K) (l : List (K × K)) (p : K × K)
 
 #noalign generalized_continued_fraction.nth_cont_eq_succ_nth_cont_aux
 
@@ -126,7 +90,7 @@ theorem denominator_mk_nil : denominator ⟨h, []⟩ = 1 :=
 #align generalized_continued_fraction.zeroth_denominator_eq_one FGCF.denominator_mk_nilₓ
 
 @[simp]
-theorem eval?_mk_nil [DecidableEq K] : eval? ⟨h, []⟩ = some h := by
+theorem eval?_mk_nil : eval? ⟨h, []⟩ = some h := by
   simp [eval?]
 #align generalized_continued_fraction.zeroth_convergent_eq_h FGCF.eval?_mk_nilₓ
 
@@ -150,7 +114,7 @@ theorem denominator_mk_singleton : denominator ⟨h, [p]⟩ = p.2 := by
 #noalign generalized_continued_fraction.zeroth_convergent'_aux_eq_zero
 
 @[simp]
-theorem evalF?_mk_nil [DecidableEq K] : evalF? ⟨h, []⟩ = some h := by
+theorem evalF?_mk_nil : evalF? ⟨h, []⟩ = some h := by
   simp [evalF?]
 #align generalized_continued_fraction.zeroth_convergent'_eq_h FGCF.evalF?_mk_nilₓ
 
@@ -160,4 +124,88 @@ theorem evalF?_mk_nil [DecidableEq K] : evalF? ⟨h, []⟩ = some h := by
 
 end FGCF
 
-end WithDivisionRing
+namespace FCF
+
+variable {K : Type*} [DivisionRing K] [CharZero K] [DecidableEq K]
+  (f : FCF K) (h : ℤ) (l : List ℕ+) (n : ℕ+)
+
+theorem num_eq_cont_fst : f.numerator = f.continuant.1 :=
+  rfl
+
+theorem denom_eq_cont_snd : f.denominator = f.continuant.2 :=
+  rfl
+
+@[simp]
+theorem continuant_mk_nil : continuant (⟨h, []⟩ : FCF K) = (h, 1) :=
+  rfl
+
+@[simp]
+theorem numerator_mk_nil : numerator (⟨h, []⟩ : FCF K) = h :=
+  rfl
+
+@[simp]
+theorem denominator_mk_nil : denominator (⟨h, []⟩ : FCF K) = 1 :=
+  rfl
+
+@[simp]
+theorem eval_mk_nil : eval (⟨h, []⟩ : FCF K) = h := by
+  simp [eval, Rat.mkRat_one]
+
+@[simp]
+theorem continuant_mk_singleton : continuant (⟨h, [n]⟩ : FCF K) = (↑n * h + 1, n) := by
+  simp [continuant, - PNat.coe_inj, ← PNat.coe_inj]
+
+@[simp]
+theorem numerator_mk_singleton : numerator (⟨h, [n]⟩ : FCF K) = ↑n * h + 1 := by
+  rw [numerator, continuant_mk_singleton]
+
+@[simp]
+theorem denominator_mk_singleton : denominator (⟨h, [n]⟩ : FCF K) = n := by
+  rw [denominator, continuant_mk_singleton]
+
+@[simp]
+theorem continuant_toFGCF : (↑f : FGCF K).continuant = (↑f.numerator, ↑f.denominator) := by
+  suffices hf :
+      f.l.foldl (fun (x : (K × K) × (K × K)) (y : ℕ+) ↦ FGCF.nextContinuants x (1, ↑y))
+        ((1, 0), (↑f.h, 1)) =
+          Prod.map (Prod.map (↑) (↑)) (Prod.map (↑) (↑))
+            (f.l.foldl FCF.nextContinuants ((1, 0), (f.h, 1)))
+  · simp [FGCF.continuant, FCF.numerator, FCF.denominator, FCF.continuant, List.foldl_map, hf,
+      - FGCF.nextContinuants]
+  have h : (((1, 0), (↑f.h, 1)) : (K × K) × (K × K)) =
+      Prod.map (Prod.map (↑) (↑)) (Prod.map (↑) (↑)) (((1 : ℤ), (0 : ℕ)), (f.h, (1 : ℕ+)))
+  · simp
+  rw [h]
+  apply List.foldl_hom
+  simp
+
+@[simp]
+theorem numerator_toFGCF : (↑f : FGCF K).numerator = ↑f.numerator := by
+  simp [FGCF.numerator]
+
+@[simp]
+theorem denominator_toFGCF : (↑f : FGCF K).denominator = ↑f.denominator := by
+  simp [FGCF.denominator]
+
+@[simp]
+theorem eval?_toFGCF : (↑f : FGCF K).eval? = some ↑f.eval := by
+  simp [FGCF.eval?, FCF.eval]
+  norm_cast
+
+end FCF
+
+namespace CF
+
+variable {K : Type*} [DivisionRing K] [CharZero K] [DecidableEq K]
+
+@[simp]
+theorem convergents_toGCF (c : CF K) : GCF.convergents (↑c : GCF K) = ↑(CF.convergents c) := by
+  apply PFun.ext
+  intro v₁ v₂
+  simp [GCF.convergents, CF.convergents]
+
+theorem hasValue_iff_convergents_tendsto [TopologicalSpace K] {c : CF K} {v : K} :
+    HasValue (↑c : GCF K) v ↔ Tendsto (convergents c) atTop (nhds v) := by
+  rw [HasValue, convergents_toGCF, ← PFun.res_univ, ← tendsto_iff_ptendsto_univ]
+
+end CF

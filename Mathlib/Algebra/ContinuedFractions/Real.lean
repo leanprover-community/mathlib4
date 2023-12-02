@@ -5,7 +5,8 @@ Authors: Miyahara Kō
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
 import Mathlib.Data.Nat.Parity
-import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.List
+import Mathlib.Topology.Instances.Irrational
 
 /-!
 # Correspondence between integer continued fractions and real numbers
@@ -15,26 +16,26 @@ This file proves that integer continued fractions converge to a real number.
 
 universe u v
 
-open Nat Filter
+open Nat Real Equiv Stream' Seq' Set Filter Topology TopologicalSpace
 
-open GeneralizedContinuedFraction (of)
+open CF (of)
 
 noncomputable section
 
-namespace GeneralizedContinuedFraction
+namespace CF
 
 variable {K : Type u} [LinearOrderedField K]
 
-theorem convergents_sub_convergents_succ
-    {g : GeneralizedContinuedFraction K} [g.IsContinuedFraction] {n : ℕ}
-    (hg : ¬g.TerminatedAt n) :
-    convergents g n - convergents g (n + 1) =
-      (-1) ^ (n + 1) * (denominators g n)⁻¹ * (denominators g (n + 1))⁻¹ := by
-  have hdn1 := _root_.ne_of_gt (g.zero_lt_denom (n + 1))
-  have hdn := _root_.ne_of_gt (g.zero_lt_denom n)
-  apply mul_left_injective₀ hdn1
-  apply mul_left_injective₀ hdn
-  simp only [convergents]
+theorem convergents_sub_convergents_succ {c : CF K} {n : ℕ} (hg : ¬c.s.TerminatedAt n) :
+    c.convergents n - c.convergents (n + 1) =
+      (-1) ^ (n + 1) * (↑(c.take (n + 1)).denominator)⁻¹ * (↑(c.take n).denominator)⁻¹ := by
+  have hnz₁ : (↑(c.take (n + 1)).denominator : K) ≠ 0 :=
+    mod_cast Nat.ne_of_gt (c.take (n + 1)).denominator.pos
+  have hnz₂ : (↑(c.take n).denominator : K) ≠ 0 :=
+    mod_cast Nat.ne_of_gt (c.take n).denominator.pos
+  apply mul_left_injective₀ hnz₂
+  apply mul_left_injective₀ hnz₁
+  simp [convergents, FCF.eval, Rat.mkRat_eq_div]
   convert g.determinant hg using 1 <;> field_simp <;> ring
 
 theorem convergents_lt_convergents_succ_of_even
@@ -231,9 +232,8 @@ theorem convergents_ge_convergents_of_odd
           exact le_of_lt (convergents_gt_convergents_of_odd hg'' hme hmf)
     · exact le_of_lt (convergents_gt_convergents_of_odd hg hme hmn)
 
-theorem cauchySeq'_convergents [Archimedean K]
-    {g : GeneralizedContinuedFraction K} [g.IsIntegerContinuedFraction] :
-    ∀ ε > (0 : K), ∃ N : ℕ, ∀ᵉ (m ≥ N) (n ≥ N), |g.convergents m - g.convergents n| < ε := by
+theorem cauchySeq'_convergents [Archimedean K] {c : CF K} :
+    ∀ n m : ℕ, n ≤ m → |c.convergents n - c.convergents m| < ε := by
   intro ε hε
   rcases exists_nat_gt ε⁻¹ with ⟨N', hN'⟩
   let N := max N' 5
@@ -283,15 +283,29 @@ theorem cauchySeq'_convergents [Archimedean K]
             (by exact_mod_cast (fib (N + 2)).zero_le)
             zero_le_denom
 
-theorem cauchySeq_convergents
-    {g : GeneralizedContinuedFraction ℝ} [g.IsIntegerContinuedFraction] :
-    CauchySeq g.convergents :=
-  Metric.cauchySeq_iff.2 cauchySeq'_convergents
+theorem cauchySeq_convergents {c : CF ℝ} : CauchySeq c.convergents := by
+  by_cases hct : c.s.Terminates
+  · lift c to FCF ℝ using hct with f
+    have hf : (↑f : CF ℝ).convergents =ᶠ[atTop] (fun _ => f.eval) := by
+      rw [EventuallyEq, eventually_atTop]
+      use f.l.length
+      intro n hn
+      simp [convergents, CF.take]
+      rw [Seq'.take_stable ?_ hn]
+      · congr
+        ext1
+        simp [eq_comm (a := none)]
+      · simp [Seq'.TerminatedAt]
+    apply Filter.Tendsto.cauchySeq
+    rw [Filter.tendsto_congr' hf, tendsto_const_nhds_iff]
+  · apply cauchySeq_of_le_tendsto_0'
+      (fun n => (↑(c.take (n + 1)).denominator)⁻¹ * (↑(c.take n).denominator)⁻¹)
+    · sorry
+    · sorry
 
 /-- Convert integer continued fraction to a real number by considering limit. -/
-@[nolint unusedArguments]
-def toReal (g : GeneralizedContinuedFraction ℝ) [g.IsIntegerContinuedFraction] : ℝ :=
-  limUnder atTop g.convergents
+def toReal (c : CF ℝ) : ℝ :=
+  limUnder atTop c.convergents
 
 variable {g : GeneralizedContinuedFraction ℝ} [g.IsIntegerContinuedFraction]
 
@@ -353,6 +367,48 @@ theorem floor_toReal
             rw [hn] at hgpb''; exact_mod_cast hgpb''
           · symm; rw [hn] at hgpb'; exact_mod_cast hgpb'
 
-end GeneralizedContinuedFraction
+def IsC0' (c : CF K) : Prop :=
+  (none, some 1) ∉ c.s.tail.toStream'.zip c.s.toStream'
+
+theorem of_isC0' [FloorRing K] (v : K) : (of v).IsC0' :=
+  sorry
+
+instance : TopologicalSpace ℕ+ := ⊥
+instance : DiscreteTopology ℕ+ := ⟨rfl⟩
+
+@[simps]
+def toRealE : { c : CF ℝ // c.IsC0' } ≃ ℝ where
+  toFun s := s.1.toReal
+  invFun r := ⟨of r, of_isC0' r⟩
+  left_inv := sorry
+  right_inv := sorry
+
+@[simps ! apply_coe symm_apply_coe]
+def toIrrE : { c : CF ℝ // ¬c.s.Terminates } ≃ { x // Irrational x } :=
+  ((subtypeSubtypeEquivSubtype sorry).symm).trans (toRealE.subtypeEquiv sorry)
+
+@[simps apply symm_apply_coe]
+def toIrrH.equiv : { c : CF ℝ // ¬c.s.Terminates } ≃ ℤ × (ℕ → ℕ+) where
+  toFun s := (s.1.1, get (s.1.2.toStream s.2))
+  invFun p := ⟨⟨p.1, ↑(⟨p.2⟩ : Stream' ℕ+)⟩, sorry⟩
+  left_inv s := sorry
+  right_inv p := sorry
+
+def toIrrH : ℤ × (ℕ → ℕ+) ≃ₜ { x // Irrational x } where
+  toEquiv := toIrrH.equiv.symm.trans toIrrE
+  continuous_toFun := by
+    apply Continuous.subtype_mk
+    let F (n : ℕ) (p : ℤ × (ℕ → ℕ+)) : ℝ := convergents (⟨p.1, ↑(⟨p.2⟩ : Stream' ℕ+)⟩ : CF ℝ) n
+    let f (p : ℤ × (ℕ → ℕ+)) : ℝ := toReal ⟨p.1, ↑(⟨p.2⟩ : Stream' ℕ+)⟩
+    have hctt : TendstoUniformly F f atTop
+    · simp_rw [tendstoUniformly_iff_tendsto, tendsto_uniformity_iff_dist_tendsto_zero, dist_eq,
+        abs_sub_comm]
+      sorry
+    have hcc : ∀ n, Continuous (F n)
+    · sorry
+    exact hctt.continuous (eventually_of_forall hcc)
+  continuous_invFun := sorry
+
+end CF
 
 end

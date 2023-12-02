@@ -38,11 +38,12 @@ variable [DivisionRing K] [DecidableEq K]
 
 #noalign generalized_continued_fraction.denominators_stable_of_terminated
 
-theorem take_stable (n_le_m : n ≤ m) (terminatedAt_n : g.TerminatedAt n) : g.take m = g.take n := by
+theorem take_stable (n_le_m : n ≤ m) (terminatedAt_n : g.s.TerminatedAt n) :
+    g.take m = g.take n := by
   unfold take
   rw [Seq'.take_stable terminatedAt_n n_le_m]
 
-theorem convergents_stable (n_le_m : n ≤ m) (terminatedAt_n : g.TerminatedAt n) :
+theorem convergents_stable (n_le_m : n ≤ m) (terminatedAt_n : g.s.TerminatedAt n) :
     g.convergents m = g.convergents n := by
   unfold convergents
   rw [take_stable n_le_m terminatedAt_n]
@@ -51,3 +52,32 @@ theorem convergents_stable (n_le_m : n ≤ m) (terminatedAt_n : g.TerminatedAt n
 #noalign generalized_continued_fraction.convergents'_stable_of_terminated
 
 end GCF
+
+namespace SCF
+
+variable {K : Type*} {s : SCF K} {n m : ℕ}
+
+theorem take_stable (n_le_m : n ≤ m) (terminatedAt_n : s.s.TerminatedAt n) :
+    s.take m = s.take n := by
+  unfold take
+  rw [Seq'.take_stable terminatedAt_n n_le_m]
+
+end SCF
+
+namespace CF
+
+variable {K : Type*} {c : CF K} {n m : ℕ}
+
+variable [DivisionRing K]
+
+theorem take_stable (n_le_m : n ≤ m) (terminatedAt_n : c.s.TerminatedAt n) :
+    c.take m = c.take n := by
+  unfold take
+  rw [Seq'.take_stable terminatedAt_n n_le_m]
+
+theorem convergents_stable (n_le_m : n ≤ m) (terminatedAt_n : c.s.TerminatedAt n) :
+    c.convergents m = c.convergents n := by
+  unfold convergents
+  rw [take_stable n_le_m terminatedAt_n]
+
+end CF

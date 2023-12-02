@@ -75,6 +75,10 @@ set_option linter.uppercaseLean3 false in
 
 #noalign generalized_continued_fraction.int_fract_pair.seq1
 
+theorem of.proof {v : K} (hv₁ : 0 ≤ v ∧ v < 1) (hv₂ : v ≠ 0) : 0 < ⌊v⁻¹⌋₊ := by
+  rw [Nat.floor_pos, one_le_inv_iff, lt_iff_le_and_ne, ne_comm]
+  exact ⟨⟨hv₁.1, hv₂⟩, le_of_lt hv₁.2⟩
+
 /-- Returns the `CF` of a value. In fact, the returned cf terminates if and only if `v` is rational.
 
 The continued fraction representation of `v` is given by `CF[⌊v⌋; b₀, b₁, b₂,...]`, where
@@ -110,11 +114,7 @@ where
       if hvn : v = 0 then
         none
       else
-        have hvo : 0 < ⌊v⁻¹⌋₊ := by
-          rcases hv with ⟨hvge, hvlt⟩
-          rw [Nat.floor_pos, one_le_inv_iff, lt_iff_le_and_ne, ne_comm]
-          exact ⟨⟨hvge, hvn⟩, le_of_lt hvlt⟩
-        some (⟨⌊v⁻¹⌋₊, hvo⟩, ⟨fract v⁻¹, ⟨fract_nonneg v⁻¹, fract_lt_one v⁻¹⟩⟩)
+        some (⟨⌊v⁻¹⌋₊, of.proof hv hvn⟩, ⟨fract v⁻¹, ⟨fract_nonneg v⁻¹, fract_lt_one v⁻¹⟩⟩)
 #align generalized_continued_fraction.of CF.ofₓ
 
 /-- Returns the fractional parts which is used in the calculation of `CF.of`.

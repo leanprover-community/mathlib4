@@ -369,6 +369,25 @@ theorem mem_rec_on {a} {C : (s : Seq' α) → a ∈ s → Prop} {s} (M : a ∈ s
         exact mem_cons_of_mem b _ (IH e)
 #align stream.seq.mem_rec_on Seq'.mem_rec_onₓ
 
+def All (p : α → Prop) (s : Seq' α) :=
+  ∃ (q : Seq' α → Prop), q s ∧
+    ∀ {s}, q s → match dest s with | none => True | some (a, s) => p a ∧ q s
+
+theorem all_iff (p : α → Prop) (s : Seq' α) : All p s ↔ ∀ a ∈ s, p a := by
+  constructor
+  · rintro ⟨q, hs, hq⟩ a ha
+    induction ha using mem_rec_on with
+    | mem_cons s =>
+      exact (hq hs).1
+    | @mem_cons_of_mem b s _ hs₂ =>
+      exact hs₂ (hq hs).2
+  · intro hs
+    refine ⟨fun s => ∀ {a}, a ∈ s → p a, @(hs), ?_⟩
+    intro s hs
+    cases s using recOn' with
+    | nil => constructor
+    | cons a s => exact ⟨hs (mem_cons a s), fun {b} hb => hs (mem_cons_of_mem a hb)⟩
+
 @[inherit_doc head]
 def headComputable (s : Seq' α) : Option α :=
   Option.map Prod.fst (dest s)
@@ -1154,6 +1173,10 @@ theorem toList_ofList {l : List α} (hl : (↑l : Seq' α).Terminates) : toList 
 theorem ofList_toList {s : Seq' α} (hs : s.Terminates) : (toList s hs : List α) = s := by
   ext1 n; rw [get?_ofList, get?_toList]
 
+@[simp]
+theorem mem_ofList {a : α} {l : List α} : a ∈ (↑l : Seq' α) ↔ a ∈ l := by
+  rw [mem_def, List.mem_iff_get?]; simp
+
 /-- Corecursive verseion of `toList`. -/
 @[inline, simp]
 def toListCorec (s : Seq' α) (hs : s.Terminates) : List α :=
@@ -1233,6 +1256,10 @@ theorem toStream_ofStream {s : Stream' α} (h : ¬(↑s : Seq' α).Terminates) :
 @[simp, norm_cast]
 theorem ofStream_toStream {s : Seq' α} (h : ¬s.Terminates) : (toStream s h : Seq' α) = s := by
   ext1 n; rw [ofStream_get?, get_toStream, Option.some_get]
+
+@[simp]
+theorem mem_ofStream {a : α} {s : Stream' α} : a ∈ (↑s : Seq' α) ↔ a ∈ s := by
+  rw [mem_def, Stream'.mem_def, Stream'.any_def]; simp [eq_comm (a := a)]
 
 instance : CanLift (Seq' α) (Stream' α) (↑) (¬·.Terminates) where
   prf s h := ⟨toStream s h, ofStream_toStream h⟩
@@ -1457,6 +1484,16 @@ theorem get_toStream' (s : Seq' α) (n : ℕ) : Stream'.get (toStream' s) n = ge
   | zero => simp [Stream'.get_zero, get?_zero]
   | succ n hn => cases s using recOn' <;> simp [Stream'.get_succ, get?_succ, hn]
 
+@[simp]
+theorem toStream'_nil : toStream' (nil : Seq' α) = Stream'.const none := by
+  apply Stream'.dest_injective
+  simp
+
+@[simp]
+theorem toStream'_cons (a : α) (s : Seq' α) : toStream' (a ::ₑ s) = some a ::ₛ toStream' s := by
+  apply Stream'.dest_injective
+  simp
+
 /-- Tails of a sequences, starting with `s`. -/
 def tails (s : Seq' α) : Stream' (Seq' α) :=
   Stream'.iterate tail s
@@ -1501,6 +1538,17 @@ theorem tail_initsCore (l : List α) (s : Seq' α) :
     Stream'.tail (initsCore l s) =
       Option.elim (dest s) (Stream'.const l) (fun (a, s') => initsCore (l ++ [a]) s') := by
   cases s using recOn' <;> simp [initsCore]
+
+@[simp]
+theorem initsCore_nil (l : List α) : initsCore l nil = Stream'.const l := by
+  apply Stream'.dest_injective
+  simp
+
+@[simp]
+theorem initsCore_cons (l : List α) (a : α) (s : Seq' α) :
+    initsCore l (a ::ₑ s) = l ::ₛ initsCore (l ++ [a]) s := by
+  apply Stream'.dest_injective
+  simp
 
 @[simp]
 theorem cons_get_initsCore (a : α) (n : ℕ) (l : List α) (s : Seq' α) :
