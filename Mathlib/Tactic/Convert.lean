@@ -100,7 +100,7 @@ syntax (name := convert) "convert" (Parser.Tactic.config)? " ← "? ppSpace term
   (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 elab_rules : tactic
-| `(tactic| convert $[$cfg:config]? $[← %$sym]? $term $[using $n]? $[with $ps?*]?) =>
+| `(tactic| convert $[$cfg:config]? $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
     let config ← Congr!.elabConfig (mkOptionalNode cfg)
     let patterns := (Std.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
@@ -140,10 +140,10 @@ syntax (name := convertTo) "convert_to" (Parser.Tactic.config)? " ← "? ppSpace
   (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 macro_rules
-| `(tactic| convert_to $[$cfg]? $[← %$sym]? $term $[with $ps?*]?) =>
-  `(tactic| convert $[$cfg]? $[← %$sym]? (?_ : $term) using 1 $[with $ps?*]?)
-| `(tactic| convert_to $[$cfg]? $[← %$sym]? $term using $n $[with $ps?*]?) =>
-  `(tactic| convert $[$cfg]? $[← %$sym]? (?_ : $term) using $n $[with $ps?*]?)
+| `(tactic| convert_to $[$cfg]? $[←%$sym]? $term $[with $ps?*]?) =>
+  `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using 1 $[with $ps?*]?)
+| `(tactic| convert_to $[$cfg]? $[←%$sym]? $term using $n $[with $ps?*]?) =>
+  `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using $n $[with $ps?*]?)
 
 /--
 `ac_change g using n` is `convert_to g using n` followed by `ac_rfl`. It is useful for

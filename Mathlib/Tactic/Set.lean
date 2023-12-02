@@ -39,7 +39,7 @@ h2 : x = y
 
 -/
 elab_rules : tactic
-| `(tactic| set%$tk $[!%$rw]? $a:ident $[: $ty:term]? := $val:term $[with $[← %$rev]? $h:ident]?) =>
+| `(tactic| set%$tk $[!%$rw]? $a:ident $[: $ty:term]? := $val:term $[with $[←%$rev]? $h:ident]?) =>
   withMainContext do
     let (ty, vale) ← match ty with
     | some ty =>
