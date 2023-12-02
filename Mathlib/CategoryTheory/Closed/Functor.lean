@@ -160,7 +160,7 @@ at `A` is an isomorphism.
 theorem frobeniusMorphism_iso_of_expComparison_iso (h : L ⊣ F) (A : C)
     [i : IsIso (expComparison F A)] : IsIso (frobeniusMorphism F h A) := by
   rw [← frobeniusMorphism_mate F h] at i
-  exact @transferNatTransSelf_of_iso _ _ _ _ _ _ _ _ _ _ _ i
+  exact transferNatTransSelf_of_iso (i := i)
 #align category_theory.frobenius_morphism_iso_of_exp_comparison_iso CategoryTheory.frobeniusMorphism_iso_of_expComparison_iso
 
 /--
