@@ -310,7 +310,7 @@ theorem prod_map_inv' (m : Multiset α) : (m.map Inv.inv).prod = m.prod⁻¹ :=
 @[to_additive (attr := simp)]
 theorem prod_map_inv : (m.map fun i => (f i)⁻¹).prod = (m.map f).prod⁻¹ := by
   -- Porting note: used `convert`
-  simp_rw [←(m.map f).prod_map_inv', map_map, Function.comp_apply]
+  simp_rw [← (m.map f).prod_map_inv', map_map, Function.comp_apply]
 #align multiset.prod_map_inv Multiset.prod_map_inv
 #align multiset.sum_map_neg Multiset.sum_map_neg
 

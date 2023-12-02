@@ -256,7 +256,7 @@ theorem exponent_ne_zero_iff_range_orderOf_finite (h : ∀ g : G, 0 < orderOf g)
       rw [h, zero_dvd_iff] at this
       exact htpos.ne' this
     refine' exponent_dvd_of_forall_pow_eq_one _ _ fun g => _
-    rw [←pow_mod_orderOf, Nat.mod_eq_zero_of_dvd, pow_zero g]
+    rw [← pow_mod_orderOf, Nat.mod_eq_zero_of_dvd, pow_zero g]
     apply Finset.dvd_prod_of_mem
     rw [← Finset.mem_coe, ht]
     exact Set.mem_range_self g
@@ -428,7 +428,7 @@ theorem MonoidHom.exponent_dvd {F M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂]
     {f : F} (hf : Function.Surjective f) : exponent M₂ ∣ exponent M₁ := by
   refine Monoid.exponent_dvd_of_forall_pow_eq_one M₂ _ fun m₂ ↦ ?_
   obtain ⟨m₁, rfl⟩ := hf m₂
-  rw [←map_pow, pow_exponent_eq_one, map_one]
+  rw [← map_pow, pow_exponent_eq_one, map_one]
 
 /-- The exponent of finite product of monoids is the `Finset.lcm` of the exponents of the
 constituent monoids. -/

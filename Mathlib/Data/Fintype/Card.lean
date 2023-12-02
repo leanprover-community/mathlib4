@@ -1313,7 +1313,7 @@ private theorem card_univ_pos (α : Type*) [Fintype α] [Nonempty α] :
 -- unsafe def positivity_finset_card : expr → tactic strictness
 --   | q(Finset.card $(s)) => do
 --     let p
---       ←-- TODO: Partial decision procedure for `Finset.nonempty`
+--       ← -- TODO: Partial decision procedure for `Finset.nonempty`
 --             to_expr
 --             ``(Finset.Nonempty $(s)) >>=
 --           find_assumption
