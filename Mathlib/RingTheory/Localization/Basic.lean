@@ -1247,8 +1247,7 @@ variable (S M) (Q : Type*) [CommRing Q] {g : R →+* P} [Algebra P Q]
 /-- Injectivity of a map descends to the map induced on localizations. -/
 theorem map_injective_of_injective (hg : Function.Injective g)
     [i : IsLocalization (M.map g : Submonoid P) Q] :
-    --Porting note: Why does `i` need to be given explicitly?
-    Function.Injective (@map _ _ _ _ _ _ _ _ _ _ Q _ _ i g (Submonoid.le_comap_map M) : S → Q) := by
+    Function.Injective (map Q g (Submonoid.le_comap_map M) : S → Q) := by
   rw [injective_iff_map_eq_zero]
   intro z hz
   obtain ⟨a, b, rfl⟩ := mk'_surjective M z
