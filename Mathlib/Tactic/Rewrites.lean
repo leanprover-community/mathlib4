@@ -56,9 +56,7 @@ def backwardWeight := 1
 /-- Configuration for `DiscrTree`. -/
 def discrTreeConfig : WhnfCoreConfig := {}
 
-/-- We will discard -/
-def keysSpecific (keys : Array DiscrTree.Key) : Bool :=
-  !(keys == #[.star] || keys == #[.const `Eq 3, .star, .star, .star])
+open Lean.Meta.DiscrTree (keysSpecific)
 
 /-- Prepare the discrimination tree entries for a lemma. -/
 def processLemma (name : Name) (constInfo : ConstantInfo) :
