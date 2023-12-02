@@ -270,9 +270,38 @@ variable [MeasurableSpace E] [BorelSpace E] {f f' : E → F} {μ : Measure E}
 
 -- variant of ae_eq_zero_of_integral_contDiff_smul_eq_zero, not sure what we exactly need on `K`.
 nonrec theorem IsCompact.ae_eq_zero_of_integral_contDiff_smul_eq_zero {K : Set E}
-    (hU : IsCompact K) (hf : LocallyIntegrableOn f K μ)
+    (hK : IsCompact K) (hf : LocallyIntegrableOn f K μ)
     (h : ∀ (g : E → ℝ), ContDiff ℝ ⊤ g → tsupport g ⊆ K → ∫ x, g x • f x ∂μ = 0) :
     ∀ᵐ x ∂μ, x ∈ K → f x = 0 := by
+  sorry
+
+open scoped Manifold in
+theorem IsOpen.ae_eq_zero_of_integral_contDiff_smul_eq_zero {U : Set E}
+    (hU : IsOpen U) (hf : LocallyIntegrableOn f U μ)
+    (h : ∀ (g : E → ℝ), ContDiff ℝ ⊤ g → tsupport g ⊆ U → ∫ x, g x • f x ∂μ = 0) :
+    ∀ᵐ x ∂μ, x ∈ U → f x = 0 := by
+  let U : TopologicalSpace.Opens E := ⟨U, hU⟩
+  have meas_U := U.isOpen.measurableSet
+  change ∀ᵐ x ∂μ, x ∈ (U : Set E) → _
+  rw [← ae_restrict_iff'₀ meas_U.nullMeasurableSet, ae_restrict_iff_subtype meas_U]
+  haveI := U.isOpen.locallyCompactSpace
+  apply ae_eq_zero_of_integral_smooth_smul_eq_zero 𝓘(ℝ, E)
+  · rw [locallyIntegrable_iff]
+    intro K hK
+    have hK' := hK.image continuous_induced_dom
+    have emb := MeasurableEmbedding.subtype_coe meas_U
+    exact (MeasurePreserving.integrableOn_image
+      ⟨measurable_subtype_coe, (emb.map_comap μ).trans <| by rw [Subtype.range_val]⟩ emb).mp
+        (((locallyIntegrableOn_iff <| .inr U.isOpen).mp hf K image_val_subset hK').restrict
+          hK'.measurableSet)
+  intro g g_diff g_supp
+  obtain ⟨G, G_diff, -, G0, G1⟩ := exists_msmooth_zero_iff_one_iff_of_closed 𝓘(ℝ, E)
+    U.isOpen.isClosed_compl (g_supp.image continuous_induced_dom).isClosed
+    image_val_subset.disjoint_compl_left
+  classical
+  specialize h (fun x ↦ if hx : x ∈ U then G x * g ⟨x, hx⟩ else 0) _ _
+  sorry
+  sorry
   sorry
 
 end real
@@ -519,13 +548,13 @@ open Topology
 lemma inj_L (ι : Type*) [Fintype ι] : Injective (L (ι := ι)) := by
   rw [injective_iff_map_eq_zero]
   intro p hp
-  suffices : ∀ᵐ x : EuclideanSpace ℝ ι, x ∈ closedBall 0 1 → eval x p = 0
+  suffices : ∀ᵐ x : EuclideanSpace ℝ ι, x ∈ ball 0 1 → eval x p = 0
   · simp_rw [MvPolynomial.funext_iff, map_zero]
     refine fun x ↦ (analyticOn_eval p).eqOn_zero_of_preconnected_of_eventuallyEq_zero
       ?_ (z₀ := 0) trivial ?_ trivial
     · rw [← preconnectedSpace_iff_univ]; infer_instance
     · refine Filter.mem_of_superset (Metric.ball_mem_nhds 0 zero_lt_one) ?_
-      have := this.mono fun x hx mem_ball ↦ hx (Metric.ball_subset_closedBall mem_ball)
+      --have := this.mono fun x hx mem_ball ↦ hx (Metric.ball_subset_closedBall mem_ball)
       rw [← ae_restrict_iff'₀ measurableSet_ball.nullMeasurableSet] at this
       apply Measure.eqOn_of_ae_eq this
       · exact (analyticOn_eval p).continuous.continuousOn
@@ -533,11 +562,10 @@ lemma inj_L (ι : Type*) [Fintype ι] : Injective (L (ι := ι)) := by
       · rw [isOpen_ball.interior_eq]; apply subset_closure
   have h2p : LocallyIntegrable (fun x : EuclideanSpace ℝ ι ↦ eval x p) :=
     continuous_eval p |>.locallyIntegrable
-  apply (ProperSpace.isCompact_closedBall _ _).ae_eq_zero_of_integral_contDiff_smul_eq_zero
-    (h2p.locallyIntegrableOn _)
+  apply isOpen_ball.ae_eq_zero_of_integral_contDiff_smul_eq_zero (h2p.locallyIntegrableOn _)
   intro g hg h2g
   let ϕ : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1) :=
-    ⟨g, h2g, hg⟩
+    ⟨g, h2g.trans Metric.ball_subset_closedBall, hg⟩
   apply_fun (· ϕ) at hp
   simpa [mul_comm (g _), L] using hp
 
