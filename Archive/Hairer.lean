@@ -588,8 +588,6 @@ lemma hairer (N : ℕ) (ι : Type*) [Fintype ι] :
   refine ⟨φ, supφ, difφ, fun P hP ↦ ?_⟩
   exact FunLike.congr_fun hφ ⟨P, (mem_restrictTotalDegree ι N P).mpr hP⟩
 
-#printaxioms hairer
-
 lemma hairer2 (N : ℕ) (ι : Type*) [Fintype ι] :
     ∃ (ρ : EuclideanSpace ℝ ι → ℝ), tsupport ρ ⊆ closedBall 0 1 ∧ ContDiff ℝ ⊤ ρ ∧
     ∀ (p : MvPolynomial ι ℝ), p.totalDegree ≤ N →
