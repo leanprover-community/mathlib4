@@ -239,6 +239,17 @@ theorem mem_oneCocycles_iff (f : G → A) :
   rw [← add_eq_zero_iff_eq_neg, ← oneCocycles_map_one f, ← mul_inv_self g,
     (mem_oneCocycles_iff f.1).1 f.2 g g⁻¹]
 
+open BigOperators
+
+theorem mem_oneCocycles_of_map_generator (f : G → A) (g : G) (hgmem : ∀ x, x ∈ Submonoid.powers g)
+    (hg : ∀ n : ℕ, f (g ^ n) = ∑ i in Finset.range n, A.ρ (g ^ i) (f g)) :
+    f ∈ oneCocycles A := (mem_oneCocycles_iff f).2 fun x y => by
+  rcases hgmem x with ⟨m, rfl⟩
+  rcases hgmem y with ⟨n, rfl⟩
+  simp only [← pow_add, hg, map_pow, map_sum, add_comm ((Finset.range n).sum _)]
+  convert Finset.sum_range_add _ _ _ using 3
+  simp only [pow_add, LinearMap.mul_apply]
+
 theorem oneCocycles_map_mul_of_isTrivial [A.IsTrivial] (f : oneCocycles A) (g h : G) :
     f.1 (g * h) = f.1 g + f.1 h := by
   rw [(mem_oneCocycles_iff f.1).1 f.2, apply_eq_self A.ρ g (f.1 h), add_comm]

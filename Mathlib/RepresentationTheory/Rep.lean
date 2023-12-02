@@ -121,6 +121,12 @@ theorem hom_comm_apply {A B : Rep k G} (f : A ⟶ B) (g : G) (x : A) :
 set_option linter.uppercaseLean3 false in
 #align Rep.hom_comm_apply Rep.hom_comm_apply
 
+/-- Alternative constructor for representation morphisms with less categorical terms. -/
+@[simps] def Rep.homMk (A B : Rep k G) (f : A →ₗ[k] B)
+    (hf : ∀ g, f.comp (A.ρ g) = (B.ρ g).comp f) : A ⟶ B where
+  hom := f
+  comm := hf
+
 variable (k G)
 
 /-- The trivial `k`-linear `G`-representation on a `k`-module `V.` -/
@@ -392,7 +398,23 @@ set_option linter.uppercaseLean3 false in
 #align Rep.left_regular_hom_equiv_symm_single Rep.leftRegularHomEquiv_symm_single
 
 end Linearization
+section Morphisms
+open BigOperators
 
+/-- The norm map associated to a `k`-linear `G`-representation on `A`, when `G` is a finite group.
+Sends `x : A` to `∑ ρ(g)(x)` for `g : G`. -/
+def norm {G : Type u} [Group G] [Fintype G] (A : Rep k G) : A ⟶ A :=
+Rep.homMk A A (∑ g : G, A.ρ g) fun h => by
+  ext
+  simp_rw [LinearMap.coe_comp, LinearMap.coeFn_sum, Function.comp_apply, Finset.sum_apply,
+    map_sum, ←LinearMap.mul_apply, ←map_mul]
+  exact Fintype.sum_bijective (fun g => h⁻¹ * g * h)
+    ((Group.mulRight_bijective h).comp (Group.mulLeft_bijective h⁻¹)) _ _ (fun g => by simp)
+
+@[simp] theorem norm_apply {G : Type u} [Group G] [Fintype G] {A : Rep k G} (x : A) :
+    (norm A).hom x = ∑ g : G, A.ρ g x := LinearMap.sum_apply _ _ _
+
+end Morphisms
 end
 
 section MonoidalClosed
