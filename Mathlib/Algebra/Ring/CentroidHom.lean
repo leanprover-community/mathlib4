@@ -405,17 +405,10 @@ local notation "R" => AddMonoid.End.mulRight
 
 /-- The canonical homomorphism from the center into the centroid -/
 def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α where
-  toFun z := {L (z : α) with
-    map_mul_left' := fun _ _ => by
-      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
-        AddMonoid.End.mulLeft_apply_apply]
-      rw [((Set.mem_center_iff _).mp z.prop).comm, ((Set.mem_center_iff _).mp z.prop).right_assoc,
-        ((Set.mem_center_iff _).mp z.prop).comm]
-    map_mul_right' := fun _ _ => by
-      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
-        AddMonoid.End.mulLeft_apply_apply]
-      rw [((Set.mem_center_iff _).mp z.prop).left_assoc]
-  }
+  toFun z :=
+    { L (z : α) with
+      map_mul_left' := ((Set.mem_center_iff _).mp z.prop).left_comm
+      map_mul_right' := ((Set.mem_center_iff _).mp z.prop).left_assoc }
   map_zero' := by
     simp only [ZeroMemClass.coe_zero, map_zero]
     exact rfl
