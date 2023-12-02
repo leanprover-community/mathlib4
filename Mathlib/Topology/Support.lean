@@ -232,7 +232,7 @@ theorem hasCompactMulSupport_comp_left (hg : ∀ {x}, g x = 1 ↔ x = 1) :
 @[to_additive]
 theorem HasCompactMulSupport.comp_closedEmbedding (hf : HasCompactMulSupport f) {g : α' → α}
     (hg : ClosedEmbedding g) : HasCompactMulSupport (f ∘ g) := by
-  rw [hasCompactMulSupport_def, Function.mulSupport_comp_eq_preimage]
+  rw [hasCompactMulSupport_def, mulSupport_comp_eq_preimage]
   refine' IsCompact.of_isClosed_subset (hg.isCompact_preimage hf) isClosed_closure _
   rw [hg.toEmbedding.closure_eq_preimage_closure_image]
   exact preimage_mono (closure_mono <| image_preimage_subset _ _)
@@ -337,7 +337,7 @@ theorem exists_finset_nhd_mulSupport_subset {f : ι → X → R}
       ⟨is, (n ∩ ⋂ j ∈ js, (mulTSupport (f j))ᶜ) ∩ ⋂ i ∈ is, U i, inter_mem (inter_mem hn _) _,
         inter_subset_right _ _, fun z hz => _⟩
     · exact (biInter_finset_mem js).mpr fun j hj => IsClosed.compl_mem_nhds (isClosed_mulTSupport _)
-        (Set.not_mem_subset (hso j) (Finset.mem_filter.mp hj).2)
+        (not_mem_subset (hso j) (Finset.mem_filter.mp hj).2)
     · exact (biInter_finset_mem is).mpr fun i hi => (ho i).mem_nhds (Finset.mem_filter.mp hi).2
     · have hzn : z ∈ n := by
         rw [inter_assoc] at hz

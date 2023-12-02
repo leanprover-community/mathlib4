@@ -31,7 +31,7 @@ open Set Int Set.Icc
 
 /-- The unit interval `[0,1]` in ℝ. -/
 abbrev unitInterval : Set ℝ :=
-  Set.Icc 0 1
+  Icc 0 1
 #align unit_interval unitInterval
 
 @[inherit_doc]
@@ -74,7 +74,7 @@ instance hasOne : One I :=
 
 instance : ZeroLEOneClass I := ⟨@zero_le_one ℝ _ _ _ _⟩
 
-instance : BoundedOrder I := Set.Icc.boundedOrder zero_le_one
+instance : BoundedOrder I := Icc.boundedOrder zero_le_one
 
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
@@ -182,7 +182,7 @@ theorem le_one' {t : I} : t ≤ 1 :=
 
 instance : NeZero (1 : I) := ⟨fun h ↦ one_ne_zero <| congrArg Subtype.val h⟩
 
-theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc (0 : ℝ) (1 / a) := by
+theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Icc (0 : ℝ) (1 / a) := by
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor
   · exact nonneg_of_mul_nonneg_right h₁ ha
   · rwa [le_div_iff ha, mul_comm]
@@ -190,7 +190,7 @@ theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc
   · rwa [le_div_iff ha, mul_comm] at h₂
 #align unit_interval.mul_pos_mem_iff unitInterval.mul_pos_mem_iff
 
-theorem two_mul_sub_one_mem_iff {t : ℝ} : 2 * t - 1 ∈ I ↔ t ∈ Set.Icc (1 / 2 : ℝ) 1 := by
+theorem two_mul_sub_one_mem_iff {t : ℝ} : 2 * t - 1 ∈ I ↔ t ∈ Icc (1 / 2 : ℝ) 1 := by
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
 #align unit_interval.two_mul_sub_one_mem_iff unitInterval.two_mul_sub_one_mem_iff
 
@@ -313,14 +313,14 @@ variable {𝕜 : Type*} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [Topol
 /-- The image of `[0,1]` under the homeomorphism `fun x ↦ a * x + b` is `[b, a+b]`.
 -/
 theorem affineHomeomorph_image_I (a b : 𝕜) (h : 0 < a) :
-    affineHomeomorph a b h.ne.symm '' Set.Icc 0 1 = Set.Icc b (a + b) := by simp [h]
+    affineHomeomorph a b h.ne.symm '' Icc 0 1 = Icc b (a + b) := by simp [h]
 set_option linter.uppercaseLean3 false in
 #align affine_homeomorph_image_I affineHomeomorph_image_I
 
 /-- The affine homeomorphism from a nontrivial interval `[a,b]` to `[0,1]`.
 -/
-def iccHomeoI (a b : 𝕜) (h : a < b) : Set.Icc a b ≃ₜ Set.Icc (0 : 𝕜) (1 : 𝕜) := by
-  let e := Homeomorph.image (affineHomeomorph (b - a) a (sub_pos.mpr h).ne.symm) (Set.Icc 0 1)
+def iccHomeoI (a b : 𝕜) (h : a < b) : Icc a b ≃ₜ Icc (0 : 𝕜) (1 : 𝕜) := by
+  let e := Homeomorph.image (affineHomeomorph (b - a) a (sub_pos.mpr h).ne.symm) (Icc 0 1)
   refine' (e.trans _).symm
   apply Homeomorph.setCongr
   rw [affineHomeomorph_image_I _ _ (sub_pos.2 h)]
@@ -329,14 +329,14 @@ set_option linter.uppercaseLean3 false in
 #align Icc_homeo_I iccHomeoI
 
 @[simp]
-theorem iccHomeoI_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc a b) :
+theorem iccHomeoI_apply_coe (a b : 𝕜) (h : a < b) (x : Icc a b) :
     ((iccHomeoI a b h) x : 𝕜) = (x - a) / (b - a) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Icc_homeo_I_apply_coe iccHomeoI_apply_coe
 
 @[simp]
-theorem iccHomeoI_symm_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc (0 : 𝕜) (1 : 𝕜)) :
+theorem iccHomeoI_symm_apply_coe (a b : 𝕜) (h : a < b) (x : Icc (0 : 𝕜) (1 : 𝕜)) :
     ((iccHomeoI a b h).symm x : 𝕜) = (b - a) * x + a :=
   rfl
 set_option linter.uppercaseLean3 false in

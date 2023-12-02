@@ -51,7 +51,7 @@ theorem isGenericPoint_closure {x : α} : IsGenericPoint x (closure ({x} : Set �
 variable {x y : α} {S U Z : Set α}
 
 theorem isGenericPoint_iff_specializes : IsGenericPoint x S ↔ ∀ y, x ⤳ y ↔ y ∈ S := by
-  simp only [specializes_iff_mem_closure, IsGenericPoint, Set.ext_iff]
+  simp only [specializes_iff_mem_closure, IsGenericPoint, ext_iff]
 #align is_generic_point_iff_specializes isGenericPoint_iff_specializes
 
 namespace IsGenericPoint
@@ -237,7 +237,7 @@ theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s :
   refine' (subset_closure_inter_of_isPreirreducible_of_isOpen h.2 (hS ⟨U, hU⟩) ⟨x, hx, hU'⟩).trans
     (closure_mono _)
   rw [← Subtype.image_preimage_coe]
-  exact Set.image_subset _ subset_closure
+  exact image_subset _ subset_closure
 #align quasi_sober_of_open_cover quasiSober_of_open_cover
 
 /-- Any Hausdorff space is a quasi-sober space because any irreducible set is a singleton. -/
