@@ -1442,7 +1442,7 @@ protected theorem mul_div_cancel' (h0 : a ≠ 0) (hI : a ≠ ∞) : a * (b / a) 
 
 -- porting note: `simp only [div_eq_mul_inv, mul_comm, mul_assoc]` doesn't work in the following two
 protected theorem mul_comm_div : a / b * c = a * (c / b) := by
-  simp only [div_eq_mul_inv, mul_right_comm, ←mul_assoc]
+  simp only [div_eq_mul_inv, mul_right_comm, ← mul_assoc]
 #align ennreal.mul_comm_div ENNReal.mul_comm_div
 
 protected theorem mul_div_right_comm : a * b / c = a / c * b := by

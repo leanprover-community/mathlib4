@@ -247,7 +247,7 @@ theorem transpose_le_iff {μ ν : YoungDiagram} : μ.transpose ≤ ν.transpose 
   ⟨fun h => by
     convert YoungDiagram.le_of_transpose_le h
     simp, fun h => by
-    rw [←transpose_transpose μ] at h
+    rw [← transpose_transpose μ] at h
     exact YoungDiagram.le_of_transpose_le h ⟩
 #align young_diagram.transpose_le_iff YoungDiagram.transpose_le_iff
 
