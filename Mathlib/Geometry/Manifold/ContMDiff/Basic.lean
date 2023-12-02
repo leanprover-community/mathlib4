@@ -193,12 +193,12 @@ nonrec theorem SmoothAt.comp {g : M' → M''} (x : M) (hg : SmoothAt I' I'' g (f
 
 theorem ContMDiff.comp_contMDiffOn {f : M → M'} {g : M' → M''} {s : Set M}
     (hg : ContMDiff I' I'' n g) (hf : ContMDiffOn I I' n f s) : ContMDiffOn I I'' n (g ∘ f) s :=
-  hg.contMDiffOn.comp hf subset_preimage_univ
+  hg.contMDiffOn.comp hf Set.subset_preimage_univ
 #align cont_mdiff.comp_cont_mdiff_on ContMDiff.comp_contMDiffOn
 
 theorem Smooth.comp_smoothOn {f : M → M'} {g : M' → M''} {s : Set M} (hg : Smooth I' I'' g)
     (hf : SmoothOn I I' f s) : SmoothOn I I'' (g ∘ f) s :=
-  hg.smoothOn.comp hf subset_preimage_univ
+  hg.smoothOn.comp hf Set.subset_preimage_univ
 #align smooth.comp_smooth_on Smooth.comp_smoothOn
 
 theorem ContMDiffOn.comp_contMDiff {t : Set M'} {g : M' → M''} (hg : ContMDiffOn I' I'' n g t)
@@ -357,18 +357,18 @@ section Inclusion
 open TopologicalSpace
 
 theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
-    ContMDiff I I n (inclusion h : U → V) := by
+    ContMDiff I I n (Set.inclusion h : U → V) := by
   rintro ⟨x, hx : x ∈ U⟩
   apply (contDiffWithinAt_localInvariantProp I I n).liftProp_inclusion
   intro y
   dsimp [ContDiffWithinAtProp]
-  rw [univ_inter]
+  rw [Set.univ_inter]
   refine' contDiffWithinAt_id.congr _ _
   · exact I.rightInvOn
   · exact congr_arg I (I.left_inv y)
 #align cont_mdiff_inclusion contMDiff_inclusion
 
-theorem smooth_inclusion {U V : Opens M} (h : U ≤ V) : Smooth I I (inclusion h : U → V) :=
+theorem smooth_inclusion {U V : Opens M} (h : U ≤ V) : Smooth I I (Set.inclusion h : U → V) :=
   contMDiff_inclusion h
 #align smooth_inclusion smooth_inclusion
 
