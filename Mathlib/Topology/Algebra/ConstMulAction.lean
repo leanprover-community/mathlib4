@@ -169,7 +169,7 @@ instance Units.continuousConstSMul : ContinuousConstSMul Mˣ α where
 
 @[to_additive]
 theorem smul_closure_subset (c : M) (s : Set α) : c • closure s ⊆ closure (c • s) :=
-  ((Set.mapsTo_image _ _).closure <| continuous_const_smul c).image_subset
+  ((mapsTo_image _ _).closure <| continuous_const_smul c).image_subset
 #align smul_closure_subset smul_closure_subset
 #align vadd_closure_subset vadd_closure_subset
 
@@ -183,7 +183,7 @@ theorem smul_closure_orbit_subset (c : M) (x : α) :
 theorem isClosed_setOf_map_smul [Monoid N] (α β) [MulAction M α] [MulAction N β]
     [TopologicalSpace β] [T2Space β] [ContinuousConstSMul N β] (σ : M → N) :
     IsClosed { f : α → β | ∀ c x, f (c • x) = σ c • f x } := by
-  simp only [Set.setOf_forall]
+  simp only [setOf_forall]
   exact isClosed_iInter fun c => isClosed_iInter fun x =>
     isClosed_eq (continuous_apply _) ((continuous_apply _).const_smul _)
 #align is_closed_set_of_map_smul isClosed_setOf_map_smulₓ
@@ -477,7 +477,7 @@ variable {Γ : Type*} [Group Γ] {T : Type*} [TopologicalSpace T] [MulAction Γ 
 /-- A finite group action is always properly discontinuous. -/
 @[to_additive "A finite group action is always properly discontinuous."]
 instance (priority := 100) Finite.to_properlyDiscontinuousSMul [Finite Γ] :
-    ProperlyDiscontinuousSMul Γ T where finite_disjoint_inter_image _ _ := Set.toFinite _
+    ProperlyDiscontinuousSMul Γ T where finite_disjoint_inter_image _ _ := toFinite _
 #align finite.to_properly_discontinuous_smul Finite.to_properlyDiscontinuousSMul
 #align finite.to_properly_discontinuous_vadd Finite.to_properlyDiscontinuousVAdd
 
@@ -556,7 +556,7 @@ theorem set_smul_mem_nhds_smul {c : G₀} {s : Set α} {x : α} (hs : s ∈ 𝓝
     c • s ∈ 𝓝 (c • x : α) := by
   rw [mem_nhds_iff] at hs ⊢
   obtain ⟨U, hs', hU, hU'⟩ := hs
-  exact ⟨c • U, Set.smul_set_mono hs', hU.smul₀ hc, Set.smul_mem_smul_set hU'⟩
+  exact ⟨c • U, smul_set_mono hs', hU.smul₀ hc, smul_mem_smul_set hU'⟩
 #align set_smul_mem_nhds_smul set_smul_mem_nhds_smul
 
 theorem set_smul_mem_nhds_smul_iff {c : G₀} {s : Set α} {x : α} (hc : c ≠ 0) :
