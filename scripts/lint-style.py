@@ -301,8 +301,8 @@ def isolated_by_dot_semicolon_check(lines, path):
 def left_arrow_check(lines, path):
     errors = []
     newlines = []
-    for line_nr, line, is_comment in annotate_comments(lines):
-        if is_comment:
+    for line_nr, line, is_comment, in_string in annotate_strings(annotate_comments(lines)):
+        if is_comment or in_string:
             newlines.append((line_nr, line))
             continue
         new_line = re.sub(r'←(\S)', r'← \1', line)
