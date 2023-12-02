@@ -443,30 +443,12 @@ section NonAssocSemiring
 variable [NonAssocSemiring α]
 
 /-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
-def centerIsoCentroid : NonUnitalSubsemiring.center α ≃+* CentroidHom α := {
-  centerToCentroid with
-  invFun := fun T => ⟨T 1, {
-      comm := fun a => by
-        rw [← map_mul_left, mul_one, ← map_mul_right, one_mul]
-      left_assoc := fun b c => by
-        rw [← map_mul_right, one_mul, ← map_mul_right, one_mul, map_mul_right]
-      mid_assoc := fun a c => by
-        rw [← map_mul_left, mul_one, ← map_mul_right, ← map_mul_right, one_mul, map_mul_left]
-      right_assoc := fun a b => by
-        rw [← map_mul_left, mul_one, ← map_mul_left, mul_one, map_mul_left]
-    }⟩
-  left_inv := by
-    intro z
-    simp only [MulHom.toFun_eq_coe, NonUnitalRingHom.coe_toMulHom]
-    ext
-    simp only
-    rw [centerToCentroid_apply, mul_one]
-  right_inv := by
-    intro T
-    simp only [MulHom.toFun_eq_coe, NonUnitalRingHom.coe_toMulHom]
-    ext a
-    rw [centerToCentroid_apply, ← map_mul_right, one_mul]
-}
+def centerIsoCentroid : NonUnitalSubsemiring.center α ≃+* CentroidHom α :=
+  { centerToCentroid with
+    invFun := fun T ↦
+      ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
+    left_inv := fun z ↦ Subtype.ext <| by simp [centerToCentroid_apply]
+    right_inv := fun T ↦ CentroidHom.ext <| by simp [centerToCentroid_apply, ← map_mul_right] }
 
 end NonAssocSemiring
 
