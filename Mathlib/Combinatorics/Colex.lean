@@ -232,8 +232,8 @@ lemma le_iff_sdiff_subset_lowerClosure {s t : Colex α} :
 /-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_le_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
     toColex (s \ u) ≤ toColex (t \ u) ↔ toColex s ≤ toColex t := by
-  simp_rw [toColex_le_toColex, ← and_imp, ← and_assoc, ← mem_sdiff, sdiff_sdiff_sdiff_cancel_right hus,
-    sdiff_sdiff_sdiff_cancel_right hut]
+  simp_rw [toColex_le_toColex, ← and_imp, ← and_assoc, ← mem_sdiff,
+    sdiff_sdiff_sdiff_cancel_right hus, sdiff_sdiff_sdiff_cancel_right hut]
 
 /-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_lt_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
