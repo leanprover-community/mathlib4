@@ -256,10 +256,10 @@ def createsGSplitCoequalizersOfMonadic [MonadicRightAdjoint G] ⦃A B⦄ (f g : 
     [G.IsSplitPair f g] : CreatesColimit (parallelPair f g) G := by
   apply (config := {allowSynthFailures := true}) monadicCreatesColimitOfPreservesColimit
     -- Porting note: oddly (config := {allowSynthFailures := true}) had no effect here and below
-  · apply preservesColimitOfIsoDiagram _ (diagramIsoParallelPair.{v₁} _).symm (pc := ?_)
+  · apply preservesColimitOfIsoDiagram (diagramIsoParallelPair.{v₁} _).symm (pc := ?_)
     dsimp
     infer_instance
-  · apply preservesColimitOfIsoDiagram _ (diagramIsoParallelPair.{v₁} _).symm (pc := ?_)
+  · apply preservesColimitOfIsoDiagram (diagramIsoParallelPair.{v₁} _).symm (pc := ?_)
     dsimp
     infer_instance
 set_option linter.uppercaseLean3 false in
