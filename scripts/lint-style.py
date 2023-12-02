@@ -87,7 +87,7 @@ def annotate_comments(enumerate_lines):
     """
     in_comment = False
     for line_nr, line, *rem in enumerate_lines:
-        if line.startswith("--"):
+        if line.lstrip().startswith("--"):
             yield line_nr, line, *rem, True
             continue
         if "/-" in line:
@@ -308,9 +308,7 @@ def left_arrow_check(lines, path):
         new_line = re.sub(r'←(\S)', r'← \1', line)
         if new_line != line:
             errors += [(ERR_ARR, line_nr, path)]
-            newlines.append((line_nr, new_line))
-        else:
-            newlines.append((line_nr, line))
+        newlines.append((line_nr, new_line))
     return errors, newlines
 
 def output_message(path, line_nr, code, msg):
