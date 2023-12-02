@@ -8,6 +8,7 @@ import Std.Util.Cache
 import Mathlib.Tactic.SolveByElim
 import Std.Data.MLList.Heartbeats
 import Mathlib.Lean.Name
+import Mathlib.Lean.Meta.DiscrTree
 
 /-!
 # Library search
@@ -60,9 +61,10 @@ def processLemma (name : Name) (constInfo : ConstantInfo) :
     let mut r := #[(keys, (name, .none))]
     match type.getAppFnArgs with
     | (``Iff, #[lhs, rhs]) => do
-      return r.push (← DiscrTree.mkPath rhs discrTreeConfig, (name, .mp))
+      r := r.push (← DiscrTree.mkPath rhs discrTreeConfig, (name, .mp))
         |>.push (← DiscrTree.mkPath lhs discrTreeConfig, (name, .mpr))
-    | _ => return r
+    | _ => pure ()
+    return r.filter (DiscrTree.keysSpecific ·.1)
 
 /-- Construct the discrimination tree of all lemmas. -/
 def buildDiscrTree : IO (DiscrTreeCache (Name × DeclMod)) :=
