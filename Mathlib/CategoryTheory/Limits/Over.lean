@@ -137,7 +137,7 @@ namespace CategoryTheory.Under
 
 instance hasLimit_of_hasLimit_comp_forget (F : J ⥤ Under X) [i : HasLimit (F ⋙ forget X)] :
     HasLimit F :=
-  @StructuredArrow.hasLimit _ _ _ _ _ _ _ _ _ i _
+  StructuredArrow.hasLimit (i₁ := i)
 #align category_theory.under.has_limit_of_has_limit_comp_forget CategoryTheory.Under.hasLimit_of_hasLimit_comp_forget
 
 instance [HasLimitsOfShape J C] : HasLimitsOfShape J (Under X) where
