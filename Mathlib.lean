@@ -307,6 +307,7 @@ import Mathlib.Algebra.Module.Bimodule
 import Mathlib.Algebra.Module.DedekindDomain
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.Algebra.Module.GradedModule
+import Mathlib.Algebra.Module.GradeZeroModule
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.LinearMap
