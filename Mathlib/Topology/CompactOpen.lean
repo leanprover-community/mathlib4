@@ -50,12 +50,12 @@ def CompactOpen.gen (s : Set α) (u : Set β) : Set C(α, β) :=
 #align continuous_map.compact_open.gen ContinuousMap.CompactOpen.gen
 
 @[simp]
-theorem gen_empty (u : Set β) : CompactOpen.gen (∅ : Set α) u = Set.univ :=
+theorem gen_empty (u : Set β) : CompactOpen.gen (∅ : Set α) u = univ :=
   Set.ext fun f => iff_true_intro ((congr_arg (· ⊆ u) (image_empty f)).mpr u.empty_subset)
 #align continuous_map.gen_empty ContinuousMap.gen_empty
 
 @[simp]
-theorem gen_univ (s : Set α) : CompactOpen.gen s (Set.univ : Set β) = Set.univ :=
+theorem gen_univ (s : Set α) : CompactOpen.gen s (univ : Set β) = univ :=
   Set.ext fun f => iff_true_intro (f '' s).subset_univ
 #align continuous_map.gen_univ ContinuousMap.gen_univ
 
@@ -83,7 +83,7 @@ instance compactOpen : TopologicalSpace C(α, β) :=
 
 /-- Definition of `ContinuousMap.compactOpen` in terms of `Set.image2`. -/
 theorem compactOpen_eq : @compactOpen α β _ _ =
-    .generateFrom (Set.image2 CompactOpen.gen {s | IsCompact s} {t | IsOpen t}) :=
+    .generateFrom (image2 CompactOpen.gen {s | IsCompact s} {t | IsOpen t}) :=
   congr_arg TopologicalSpace.generateFrom <| Set.ext fun _ ↦ by simp [eq_comm]
 
 protected theorem isOpen_gen {s : Set α} (hs : IsCompact s) {u : Set β} (hu : IsOpen u) :
@@ -125,7 +125,7 @@ private theorem image_gen {s : Set α} (_ : IsCompact s) {u : Set γ} (_ : IsOpe
     (fun g : C(β, γ) => g.comp f) ⁻¹' CompactOpen.gen s u = CompactOpen.gen (f '' s) u := by
   ext ⟨g, _⟩
   change g ∘ f '' s ⊆ u ↔ g '' (f '' s) ⊆ u
-  rw [Set.image_comp]
+  rw [image_comp]
 
 /-- C(-, γ) is a functor. -/
 theorem continuous_comp_left : Continuous (fun g => g.comp f : C(β, γ) → C(α, γ)) :=
