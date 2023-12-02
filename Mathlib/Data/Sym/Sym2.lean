@@ -515,6 +515,9 @@ theorem fromRel_top : fromRel (fun (x y : α) z => z : Symmetric ⊤) = Set.univ
   simp [-Set.top_eq_univ, Prop.top_eq_true]
 #align sym2.from_rel_top Sym2.fromRel_top
 
+theorem fromRel_ne : fromRel (fun (x y : α) z => z.symm : Symmetric Ne) = {z | ¬IsDiag z} := by
+  ext z; exact z.ind (by simp)
+
 theorem fromRel_irreflexive {sym : Symmetric r} :
     Irreflexive r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z :=
   { mp := by intro h; apply Sym2.ind; aesop

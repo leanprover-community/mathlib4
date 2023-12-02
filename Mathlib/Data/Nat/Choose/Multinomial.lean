@@ -23,7 +23,7 @@ This file defines the multinomial coefficient and several small lemma's for mani
 
 ## Main results
 
-- `Finest.sum_pow`: The expansion of `(s.sum x) ^ n` using multinomial coefficients
+- `Finset.sum_pow`: The expansion of `(s.sum x) ^ n` using multinomial coefficients
 
 -/
 
@@ -179,7 +179,7 @@ theorem multinomial_update (a : α) (f : α →₀ ℕ) :
     f.multinomial = (f.sum fun _ => id).choose (f a) * (f.update a 0).multinomial := by
   simp only [multinomial_eq]
   classical
-    by_cases a ∈ f.support
+    by_cases h : a ∈ f.support
     · rw [← Finset.insert_erase h, Nat.multinomial_insert _ f (Finset.not_mem_erase a _),
         Finset.add_sum_erase _ f h, support_update_zero]
       congr 1

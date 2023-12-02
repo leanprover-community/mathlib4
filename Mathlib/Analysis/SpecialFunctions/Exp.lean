@@ -23,9 +23,9 @@ exp
 
 noncomputable section
 
-open Finset Filter Metric Asymptotics Set Function
+open Finset Filter Metric Asymptotics Set Function Bornology
 
-open Classical Topology
+open scoped Classical Topology
 
 namespace Complex
 
@@ -225,8 +225,8 @@ theorem tendsto_exp_div_pow_atTop (n : ℕ) : Tendsto (fun x => exp x / x ^ n) a
   have hx₀ : 0 < x := (Nat.cast_nonneg N).trans_lt hx
   rw [Set.mem_Ici, le_div_iff (pow_pos hx₀ _), ← le_div_iff' hC₀]
   calc
-    x ^ n ≤ ⌈x⌉₊ ^ n := by exact_mod_cast pow_le_pow_of_le_left hx₀.le (Nat.le_ceil _) _
-    _ ≤ exp ⌈x⌉₊ / (exp 1 * C) := by exact_mod_cast (hN _ (Nat.lt_ceil.2 hx).le).le
+    x ^ n ≤ ⌈x⌉₊ ^ n := mod_cast pow_le_pow_of_le_left hx₀.le (Nat.le_ceil _) _
+    _ ≤ exp ⌈x⌉₊ / (exp 1 * C) := mod_cast (hN _ (Nat.lt_ceil.2 hx).le).le
     _ ≤ exp (x + 1) / (exp 1 * C) :=
       (div_le_div_of_le (mul_pos (exp_pos _) hC₀).le
         (exp_le_exp.2 <| (Nat.ceil_lt_add_one hx₀.le).le))
@@ -420,20 +420,20 @@ end Real
 
 namespace Complex
 
-theorem comap_exp_comap_abs_atTop : comap exp (comap abs atTop) = comap re atTop :=
+@[simp]
+theorem comap_exp_cobounded : comap exp (cobounded ℂ) = comap re atTop :=
   calc
-    comap exp (comap abs atTop) = comap re (comap Real.exp atTop) := by
-      simp only [comap_comap, (· ∘ ·), abs_exp]
+    comap exp (cobounded ℂ) = comap re (comap Real.exp atTop) := by
+      simp only [← comap_norm_atTop, Complex.norm_eq_abs, comap_comap, (· ∘ ·), abs_exp]
     _ = comap re atTop := by rw [Real.comap_exp_atTop]
+#align complex.comap_exp_comap_abs_at_top Complex.comap_exp_cobounded
 
-#align complex.comap_exp_comap_abs_at_top Complex.comap_exp_comap_abs_atTop
-
+@[simp]
 theorem comap_exp_nhds_zero : comap exp (𝓝 0) = comap re atBot :=
   calc
     comap exp (𝓝 0) = comap re (comap Real.exp (𝓝 0)) := by
       simp only [comap_comap, ← comap_abs_nhds_zero, (· ∘ ·), abs_exp]
     _ = comap re atBot := by rw [Real.comap_exp_nhds_zero]
-
 #align complex.comap_exp_nhds_zero Complex.comap_exp_nhds_zero
 
 theorem comap_exp_nhdsWithin_zero : comap exp (𝓝[≠] 0) = comap re atBot := by
@@ -447,9 +447,9 @@ theorem tendsto_exp_nhds_zero_iff {α : Type*} {l : Filter α} {f : α → ℂ} 
   rfl
 #align complex.tendsto_exp_nhds_zero_iff Complex.tendsto_exp_nhds_zero_iff
 
-/-- `Complex.abs (Complex.exp z) → ∞` as `Complex.re z → ∞`. TODO: use `Bornology.cobounded`. -/
-theorem tendsto_exp_comap_re_atTop : Tendsto exp (comap re atTop) (comap abs atTop) :=
-  comap_exp_comap_abs_atTop ▸ tendsto_comap
+/-- `Complex.abs (Complex.exp z) → ∞` as `Complex.re z → ∞`. -/
+theorem tendsto_exp_comap_re_atTop : Tendsto exp (comap re atTop) (cobounded ℂ) :=
+  comap_exp_cobounded ▸ tendsto_comap
 #align complex.tendsto_exp_comap_re_at_top Complex.tendsto_exp_comap_re_atTop
 
 /-- `Complex.exp z → 0` as `Complex.re z → -∞`.-/

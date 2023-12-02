@@ -427,6 +427,25 @@ theorem pow_card_le_prod (h : ∀ x ∈ s, a ≤ x) : a ^ card s ≤ s.prod := b
 
 end OrderedCommMonoid
 
+section OrderedCancelCommMonoid
+
+variable [OrderedCancelCommMonoid α] {s : Multiset ι} {f g : ι → α}
+
+@[to_additive sum_lt_sum]
+theorem prod_lt_prod' (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i) :
+    (s.map f).prod < (s.map g).prod := by
+  obtain ⟨l⟩ := s
+  simp only [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.coe_prod]
+  exact List.prod_lt_prod' f g hle hlt
+
+@[to_additive sum_lt_sum_of_nonempty]
+theorem prod_lt_prod_of_nonempty' (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) :
+    (s.map f).prod < (s.map g).prod := by
+  obtain ⟨i, hi⟩ := exists_mem_of_ne_zero hs
+  exact prod_lt_prod' (fun i hi => le_of_lt (hfg i hi)) ⟨i, hi, hfg i hi⟩
+
+end OrderedCancelCommMonoid
+
 theorem prod_nonneg [OrderedCommSemiring α] {m : Multiset α} (h : ∀ a ∈ m, (0 : α) ≤ a) :
     0 ≤ m.prod := by
   revert h

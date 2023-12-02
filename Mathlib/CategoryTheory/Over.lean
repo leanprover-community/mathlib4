@@ -183,6 +183,8 @@ theorem map_map_left : ((map f).map g).left = g.left :=
   rfl
 #align category_theory.over.map_map_left CategoryTheory.Over.map_map_left
 
+variable (Y)
+
 /-- Mapping by the identity morphism is just the identity functor. -/
 def mapId : map (𝟙 Y) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => isoMk (Iso.refl _)

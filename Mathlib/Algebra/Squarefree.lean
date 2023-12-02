@@ -199,7 +199,7 @@ theorem Squarefree.isRadical {x : R} (hx : Squarefree x) : IsRadical x :=
     And.right <|
       (dvd_gcd_iff x x y).1
         (by
-          by_cases gcd x y = 0
+          by_cases h : gcd x y = 0
           · rw [h]
             apply dvd_zero
           replace hy := ((dvd_gcd_iff x x _).2 ⟨dvd_rfl, hy⟩).trans gcd_pow_right_dvd_pow_gcd

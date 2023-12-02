@@ -61,14 +61,14 @@ namespace FreeAlgebra
 -/
 inductive Pre
   | of : X → Pre
-  | of_scalar : R → Pre
+  | ofScalar : R → Pre
   | add : Pre → Pre → Pre
   | mul : Pre → Pre → Pre
 #align free_algebra.pre FreeAlgebra.Pre
 
 namespace Pre
 
-instance : Inhabited (Pre R X) := ⟨of_scalar 0⟩
+instance : Inhabited (Pre R X) := ⟨ofScalar 0⟩
 
 -- Note: These instances are only used to simplify the notation.
 /-- Coercion from `X` to `Pre R X`. Note: Used for notation only. -/
@@ -76,7 +76,7 @@ def hasCoeGenerator : Coe X (Pre R X) := ⟨of⟩
 #align free_algebra.pre.has_coe_generator FreeAlgebra.Pre.hasCoeGenerator
 
 /-- Coercion from `R` to `Pre R X`. Note: Used for notation only. -/
-def hasCoeSemiring : Coe R (Pre R X) := ⟨of_scalar⟩
+def hasCoeSemiring : Coe R (Pre R X) := ⟨ofScalar⟩
 #align free_algebra.pre.has_coe_semiring FreeAlgebra.Pre.hasCoeSemiring
 
 /-- Multiplication in `Pre R X` defined as `Pre.mul`. Note: Used for notation only. -/
@@ -88,17 +88,17 @@ def hasAdd : Add (Pre R X) := ⟨add⟩
 #align free_algebra.pre.has_add FreeAlgebra.Pre.hasAdd
 
 /-- Zero in `Pre R X` defined as the image of `0` from `R`. Note: Used for notation only. -/
-def hasZero : Zero (Pre R X) := ⟨of_scalar 0⟩
+def hasZero : Zero (Pre R X) := ⟨ofScalar 0⟩
 #align free_algebra.pre.has_zero FreeAlgebra.Pre.hasZero
 
 /-- One in `Pre R X` defined as the image of `1` from `R`. Note: Used for notation only. -/
-def hasOne : One (Pre R X) := ⟨of_scalar 1⟩
+def hasOne : One (Pre R X) := ⟨ofScalar 1⟩
 #align free_algebra.pre.has_one FreeAlgebra.Pre.hasOne
 
 /-- Scalar multiplication defined as multiplication by the image of elements from `R`.
 Note: Used for notation only.
 -/
-def hasSmul : SMul R (Pre R X) := ⟨fun r m ↦ mul (of_scalar r) m⟩
+def hasSmul : SMul R (Pre R X) := ⟨fun r m ↦ mul (ofScalar r) m⟩
 #align free_algebra.pre.has_smul FreeAlgebra.Pre.hasSmul
 
 end Pre
@@ -115,14 +115,14 @@ def liftFun {A : Type*} [Semiring A] [Algebra R A] (f : X → A) :
   | .of t => f t
   | .add a b => liftFun f a + liftFun f b
   | .mul a b => liftFun f a * liftFun f b
-  | .of_scalar c => algebraMap _ _ c
+  | .ofScalar c => algebraMap _ _ c
 #align free_algebra.lift_fun FreeAlgebra.liftFun
 
 /-- An inductively defined relation on `Pre R X` used to force the initial algebra structure on
 the associated quotient.
 -/
 inductive Rel : Pre R X → Pre R X → Prop
-  -- force `of_scalar` to be a central semiring morphism
+  -- force `ofScalar` to be a central semiring morphism
   | add_scalar {r s : R} : Rel (↑(r + s)) (↑r + ↑s)
   | mul_scalar {r s : R} : Rel (↑(r * s)) (↑r * ↑s)
   | central_scalar {r : R} {a : Pre R X} : Rel (r * a) (a * r)
@@ -375,7 +375,7 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
       case of =>
         change ((F : FreeAlgebra R X → A) ∘ ι R) _ = _
         simp only [Function.comp_apply, ι_def]
-      case of_scalar x =>
+      case ofScalar x =>
         change algebraMap _ _ x = F (algebraMap _ _ x)
         rw [AlgHom.commutes F _]
       case add a b ha hb =>

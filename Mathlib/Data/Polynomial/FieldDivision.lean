@@ -59,7 +59,7 @@ theorem derivative_rootMultiplicity_of_root [CharZero R] {p : R[X]} {t : R} (hpt
 
 theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity [CharZero R] (p : R[X]) (t : R) :
     p.rootMultiplicity t - 1 ≤ p.derivative.rootMultiplicity t := by
-  by_cases p.IsRoot t
+  by_cases h : p.IsRoot t
   · exact (derivative_rootMultiplicity_of_root h).symm.le
   · rw [rootMultiplicity_eq_zero h, zero_tsub]
     exact zero_le _

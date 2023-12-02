@@ -135,7 +135,7 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
     contrapose! hq
     have hqd : ∀ y, ∃ x : q.domain, (x : E) + y ∈ s := fun y ↦
       let ⟨x, hx⟩ := hp_dense y
-      ⟨ofLe hpq.left x, hx⟩
+      ⟨Submodule.inclusion hpq.left x, hx⟩
     rcases step s q hqs hqd hq with ⟨r, hqr, hr⟩
     exact ⟨r, hr, hqr.le, hqr.ne'⟩
 #align riesz_extension.exists_top RieszExtension.exists_top

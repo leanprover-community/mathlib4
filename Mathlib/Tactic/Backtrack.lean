@@ -160,7 +160,7 @@ where
     -- Partition the remaining goals into "independent" goals
     -- (which should be solvable without affecting the solvability of other goals)
     -- and all the others.
-    let (igs, ogs) ← remaining.partitionM (MVarId.independent? goals)
+    let (igs, ogs) ← remaining.partitionM (MVarId.isIndependentOf goals)
     if igs.isEmpty then
       -- If there are no independent goals, we solve all the goals together via backtracking search.
       return (← run cfg.maxDepth remaining [])

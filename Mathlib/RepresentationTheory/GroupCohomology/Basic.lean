@@ -85,8 +85,7 @@ variable [Monoid G]
 /-- The complex `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `k`-linear
 `G`-representation. -/
 abbrev linearYonedaObjResolution (A : Rep k G) : CochainComplex (ModuleCat.{u} k) ℕ :=
-  HomologicalComplex.unop
-    ((((linearYoneda k (Rep k G)).obj A).rightOp.mapHomologicalComplex _).obj (resolution k G))
+  (groupCohomology.resolution k G).linearYonedaObj k A
 #align group_cohomology.linear_yoneda_obj_resolution groupCohomology.linearYonedaObjResolution
 
 theorem linearYonedaObjResolution_d_apply {A : Rep k G} (i j : ℕ) (x : (resolution k G).X i ⟶ A) :
@@ -235,8 +234,7 @@ def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
 `Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
 def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
-  ((inhomogeneousCochains A).homology'IsoHomology n).symm ≪≫
-    homologyObjIsoOfHomotopyEquiv (HomotopyEquiv.ofIso (inhomogeneousCochainsIso _)) _ ≪≫
-    HomologicalComplex.homology'Unop _ _ ≪≫ (extIso k G A n).symm
+  isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
+    (extIso k G A n).symm
 set_option linter.uppercaseLean3 false in
 #align group_cohomology_iso_Ext groupCohomologyIsoExt

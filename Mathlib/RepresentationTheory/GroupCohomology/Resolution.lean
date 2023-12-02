@@ -446,7 +446,7 @@ cover of the classifying space of `G` as a simplicial set. -/
 def cechNerveTerminalFromIsoCompForget :
     cechNerveTerminalFrom G ≅ classifyingSpaceUniversalCover G ⋙ forget _ :=
   NatIso.ofComponents (fun _ => Types.productIso _) fun _ =>
-    Matrix.ext fun _ _ => Types.Limit.lift_π_apply _ _ _ _
+    Matrix.ext fun _ _ => Types.Limit.lift_π_apply (Discrete.functor fun _ ↦ G) _ _ _
 #align classifying_space_universal_cover.cech_nerve_terminal_from_iso_comp_forget classifyingSpaceUniversalCover.cechNerveTerminalFromIsoCompForget
 
 variable (k)
@@ -542,7 +542,7 @@ def xIso (n : ℕ) : (groupCohomology.resolution k G).X n ≅ Rep.ofMulAction k 
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.X_iso groupCohomology.resolution.xIso
 
-theorem x_projective (G : Type u) [Group G] (n : ℕ) :
+instance x_projective (G : Type u) [Group G] (n : ℕ) :
     Projective ((groupCohomology.resolution k G).X n) :=
   Rep.equivalenceModuleMonoidAlgebra.toAdjunction.projective_of_map_projective _ <|
     @ModuleCat.projective_of_free.{u} _ _
@@ -677,17 +677,16 @@ theorem εToSingle₀_comp_eq :
   simpa using (forget₂ToModuleCatHomotopyEquiv_f_0_eq k G).symm
 #align group_cohomology.resolution.ε_to_single₀_comp_eq groupCohomology.resolution.εToSingle₀_comp_eq
 
-theorem quasiIso'OfForget₂εToSingle₀ :
-    QuasiIso' (((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G)) := by
-  have h : QuasiIso' (forget₂ToModuleCatHomotopyEquiv k G).hom := HomotopyEquiv.toQuasiIso' _
+theorem quasiIso_forget₂_εToSingle₀ :
+    QuasiIso (((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G)) := by
+  have h : QuasiIso (forget₂ToModuleCatHomotopyEquiv k G).hom := inferInstance
   rw [← εToSingle₀_comp_eq k G] at h
-  haveI := h
-  exact quasiIso'_of_comp_right _
-    ((HomologicalComplex.singleMapHomologicalComplex _ _ _).hom.app _)
-#align group_cohomology.resolution.quasi_iso_of_forget₂_ε_to_single₀ groupCohomology.resolution.quasiIso'OfForget₂εToSingle₀
+  exact quasiIso_of_comp_right (hφφ' := h)
+#align group_cohomology.resolution.quasi_iso_of_forget₂_ε_to_single₀ groupCohomology.resolution.quasiIso_forget₂_εToSingle₀
 
-instance : QuasiIso' (εToSingle₀ k G) :=
-  (forget₂ _ (ModuleCat.{u} k)).quasiIso'_of_map_quasiIso' _ (quasiIso'OfForget₂εToSingle₀ k G)
+instance : QuasiIso (εToSingle₀ k G) := by
+  rw [← HomologicalComplex.quasiIso_map_iff_of_preservesHomology _ (forget₂ _ (ModuleCat.{u} k))]
+  apply quasiIso_forget₂_εToSingle₀
 
 end Exactness
 
@@ -698,8 +697,8 @@ open groupCohomology.resolution HomologicalComplex.Hom
 variable [Group G]
 
 /-- The standard projective resolution of `k` as a trivial `k`-linear `G`-representation. -/
-def groupCohomology.projectiveResolution : ProjectiveResolution (Rep.trivial k G k) :=
-  toSingle₀ProjectiveResolution (εToSingle₀ k G) (x_projective k G)
+def groupCohomology.projectiveResolution : ProjectiveResolution (Rep.trivial k G k) where
+  π := εToSingle₀ k G
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.ProjectiveResolution groupCohomology.projectiveResolution
 
@@ -712,9 +711,7 @@ instance : EnoughProjectives (Rep k G) :=
 standard resolution of `k` called `groupCohomology.resolution k G`. -/
 def groupCohomology.extIso (V : Rep k G) (n : ℕ) :
     ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
-      (((((linearYoneda k (Rep k G)).obj V).rightOp.mapHomologicalComplex _).obj
-              (groupCohomology.resolution k G)).homology'
-          n).unop := (((linearYoneda k (Rep k G)).obj V).rightOp.leftDerivedObjIso n
-     (groupCohomology.projectiveResolution k G)).unop.symm
+      ((groupCohomology.resolution k G).linearYonedaObj k V).homology n :=
+  (groupCohomology.projectiveResolution k G).isoExt n V
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.Ext_iso groupCohomology.extIso

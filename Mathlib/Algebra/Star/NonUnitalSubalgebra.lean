@@ -823,7 +823,7 @@ theorem range_val : NonUnitalStarAlgHom.range (NonUnitalStarSubalgebraClass.subt
 The map `S → T` when `S` is a non-unital star subalgebra contained in the non-unital star
 algebra `T`.
 
-This is the non-unital star subalgebra version of `Submodule.ofLe`, or
+This is the non-unital star subalgebra version of `Submodule.inclusion`, or
 `NonUnitalSubalgebra.inclusion`  -/
 def inclusion {S T : NonUnitalStarSubalgebra R A} (h : S ≤ T) : S →⋆ₙₐ[R] T where
   toNonUnitalAlgHom := NonUnitalSubalgebra.inclusion h
