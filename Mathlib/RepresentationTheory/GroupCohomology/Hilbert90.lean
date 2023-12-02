@@ -133,7 +133,7 @@ theorem hilbert90_cyclic (x : L) (hx : Algebra.norm K x = 1) : ∃ y : Lˣ, g y 
      (h0 ▸ hx))) : IsUnit x).unit
   have hx' : algebraMap K L (Algebra.norm K (xu : L)) = _ := congrArg (algebraMap K L) hx
   rw [← norm_ofAlgebraAutOnUnits_eq xu, map_one] at hx'
-  let f := oneCocyclesOfGenerator (Rep.ofAlgebraAutOnUnits K L) (Additive.ofMul xu) g hg
+  let f := oneCocyclesOfGenerator (A := Rep.ofAlgebraAutOnUnits K L) (Additive.ofMul xu) g hg
     (Additive.toMul.injective (Units.ext hx'))
   obtain ⟨ε, hε⟩ := groupCohomology.hilbert90 _ (isMulOneCocycle_of_oneCocycles f)
   use ε
