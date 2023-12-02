@@ -3,11 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-
 import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Basic
 
 #align_import algebra.group.defs from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
@@ -41,7 +40,7 @@ actions and register the following instances:
 
 -/
 
-set_option autoImplicit true
+universe u v w
 
 open Function
 
@@ -57,10 +56,18 @@ class HVAdd (α : Type u) (β : Type v) (γ : outParam (Type w)) where
 /--
 The notation typeclass for heterogeneous scalar multiplication.
 This enables the notation `a • b : γ` where `a : α`, `b : β`.
+
+It is assumed to represent a left action in some sense.
+The notation `a • b` is augmented with a macro (below) to have it elaborate as a left action.
+Only the `b` argument participates in the elaboration algorithm: the algorithm uses the type of `b`
+when calculating the type of the surrounding arithmetic expression
+and it tries to insert coercions into `b` to get some `b'`
+such that `a • b'` has the same type as `b'`.
+See the module documentation near the macro for more details.
 -/
 class HSMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   /-- `a • b` computes the product of `a` and `b`.
-  The meaning of this notation is type-dependent. -/
+  The meaning of this notation is type-dependent, but it is intended to be used for left actions. -/
   hSMul : α → β → γ
 
 attribute [notation_class  smul Simps.copySecond] HSMul
@@ -68,7 +75,7 @@ attribute [notation_class nsmul Simps.nsmulArgs]  HSMul
 attribute [notation_class zsmul Simps.zsmulArgs]  HSMul
 
 /-- Type class for the `+ᵥ` notation. -/
-class VAdd (G : Type*) (P : Type _) where
+class VAdd (G : Type u) (P : Type v) where
   vadd : G → P → P
 #align has_vadd VAdd
 
@@ -79,13 +86,48 @@ class VSub (G : outParam (Type*)) (P : Type*) where
 
 /-- Typeclass for types with a scalar multiplication operation, denoted `•` (`\bu`) -/
 @[to_additive (attr := ext)]
-class SMul (M : Type*) (α : Type _) where
+class SMul (M : Type u) (α : Type v) where
   smul : M → α → α
 #align has_smul SMul
 
 infixl:65 " +ᵥ " => HVAdd.hVAdd
 infixl:65 " -ᵥ " => VSub.vsub
 infixr:73 " • " => HSMul.hSMul
+
+/-!
+We have a macro to make `x • y` notation participate in the expression tree elaborator,
+like other arithmetic expressions such as `+`, `*`, `/`, `^`, `=`, inequalities, etc.
+The macro is using the `leftact%` elaborator introduced in
+[this RFC](https://github.com/leanprover/lean4/issues/2854).
+
+As a concrete example of the effect of this macro, consider
+```lean
+variable [Ring R] [AddCommMonoid M] [Module R M] (r : R) (N : Submodule R M) (m : M) (n : N)
+#check m + r • n
+```
+Without the macro, the expression would elaborate as `m + ↑(r • n : ↑N) : M`.
+With the macro, the expression elaborates as `m + r • (↑n : M) : M`.
+To get the first intepretation, one can write `m + (r • n :)`.
+
+Here is a quick review of the expression tree elaborator:
+1. It builds up an expression tree of all the immediately accessible operations
+   that are marked with `binop%`, `unop%`, `leftact%`, `rightact%`, `binrel%`, etc.
+2. It elaborates every leaf term of this tree
+   (without an expected type, so as if it were temporarily wrapped in `(... :)`).
+3. Using the types of each elaborated leaf, it computes a supremum type they can all be
+   coerced to, if such a supremum exists.
+4. It inserts coercions around leaf terms wherever needed.
+
+The hypothesis is that individual expression trees tend to be calculations with respect
+to a single algebraic structure.
+
+Note(kmill): If we were to remove `HSMul` and switch to using `SMul` directly,
+then the expression tree elaborator would not be able to insert coercions within the right operand;
+they would likely appear as `↑(x • y)` rather than `x • ↑y`, unlike other arithmetic operations.
+-/
+
+@[inherit_doc HSMul.hSMul]
+macro_rules | `($x • $y) => `(leftact% HSMul.hSMul $x $y)
 
 attribute [to_additive existing] Mul Div HMul instHMul HDiv instHDiv HSMul
 attribute [to_additive (reorder := 1 2) SMul] Pow
@@ -94,12 +136,10 @@ attribute [to_additive existing (reorder := 1 2, 5 6) hSMul] HPow.hPow
 attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
 
 @[to_additive (attr := default_instance)]
-instance instHSMul [SMul α β] : HSMul α β β where
+instance instHSMul {α β} [SMul α β] : HSMul α β β where
   hSMul := SMul.smul
 
 attribute [to_additive existing (reorder := 1 2)] instHPow
-
-universe u
 
 variable {G : Type*}
 
@@ -339,7 +379,7 @@ lemma CommSemigroup.IsLeftCancelMul.toIsRightCancelMul (G : Type u) [CommSemigro
 `AddCommSemigroup G` that satisfies `IsLeftCancelAdd G` also satisfies
 `IsCancelAdd G`."]
 lemma CommSemigroup.IsLeftCancelMul.toIsCancelMul (G : Type u) [CommSemigroup G]
-  [IsLeftCancelMul G] : IsCancelMul G :=
+    [IsLeftCancelMul G] : IsCancelMul G :=
   { CommSemigroup.IsLeftCancelMul.toIsRightCancelMul G with }
 #align comm_semigroup.is_left_cancel_mul.to_is_cancel_mul CommSemigroup.IsLeftCancelMul.toIsCancelMul
 #align add_comm_semigroup.is_left_cancel_add.to_is_cancel_add AddCommSemigroup.IsLeftCancelAdd.toIsCancelAdd
@@ -615,15 +655,15 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 -- Bug #660
 attribute [to_additive existing] Monoid.toMulOneClass
 
-@[default_instance high] instance Monoid.Pow {M : Type*} [Monoid M] : Pow M ℕ :=
+@[default_instance high] instance Monoid.toNatPow {M : Type*} [Monoid M] : Pow M ℕ :=
   ⟨fun x n ↦ Monoid.npow n x⟩
-#align monoid.has_pow Monoid.Pow
+#align monoid.has_pow Monoid.toNatPow
 
-instance AddMonoid.SMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
+instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
   ⟨AddMonoid.nsmul⟩
-#align add_monoid.has_smul_nat AddMonoid.SMul
+#align add_monoid.has_smul_nat AddMonoid.toNatSMul
 
-attribute [to_additive existing SMul] Monoid.Pow
+attribute [to_additive existing toNatSMul] Monoid.toNatPow
 
 section
 
@@ -962,7 +1002,7 @@ theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻�
 #align zpow_neg_succ_of_nat zpow_negSucc
 
 theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
-  Int.negSucc n • a = -((n + 1) • a) := by
+    Int.negSucc n • a = -((n + 1) • a) := by
   rw [← ofNat_zsmul]
   exact SubNegMonoid.zsmul_neg' n a
 #align zsmul_neg_succ_of_nat negSucc_zsmul
@@ -1058,6 +1098,18 @@ theorem inv_eq_of_mul_eq_one_right : a * b = 1 → a⁻¹ = b :=
   DivisionMonoid.inv_eq_of_mul _ _
 #align inv_eq_of_mul_eq_one_right inv_eq_of_mul_eq_one_right
 #align neg_eq_of_add_eq_zero_right neg_eq_of_add_eq_zero_right
+
+@[to_additive]
+theorem inv_eq_of_mul_eq_one_left (h : a * b = 1) : b⁻¹ = a :=
+  by rw [← inv_eq_of_mul_eq_one_right h, inv_inv]
+#align inv_eq_of_mul_eq_one_left inv_eq_of_mul_eq_one_left
+#align neg_eq_of_add_eq_zero_left neg_eq_of_add_eq_zero_left
+
+@[to_additive]
+theorem eq_inv_of_mul_eq_one_left (h : a * b = 1) : a = b⁻¹ :=
+  (inv_eq_of_mul_eq_one_left h).symm
+#align eq_inv_of_mul_eq_one_left eq_inv_of_mul_eq_one_left
+#align eq_neg_of_add_eq_zero_left eq_neg_of_add_eq_zero_left
 
 end DivisionMonoid
 

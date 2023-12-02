@@ -5,7 +5,8 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Ring.Aut
 import Mathlib.Algebra.Ring.CompTypeclasses
-import Mathlib.Data.Rat.Cast
+import Mathlib.Algebra.Field.Opposite
+import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.GroupTheory.GroupAction.Opposite
 import Mathlib.Data.SetLike.Basic
 
@@ -60,6 +61,8 @@ class StarMemClass (S R : Type*) [Star R] [SetLike S R] : Prop where
 #align star_mem_class StarMemClass
 
 export StarMemClass (star_mem)
+
+attribute [aesop safe apply (rule_sets [SetLike])] star_mem
 
 namespace StarMemClass
 
@@ -460,7 +463,6 @@ See note [reducible non-instances].
 @[reducible]
 def starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
   { starMulOfComm with
-    star := id
     star_add := fun _ _ => rfl }
 #align star_ring_of_comm starRingOfComm
 

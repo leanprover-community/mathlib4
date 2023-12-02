@@ -387,7 +387,7 @@ theorem maximum_le_of_forall_le {b : WithBot α} (h : ∀ a ∈ l, a ≤ b) : l.
     exact ⟨h a (by simp), ih fun a w => h a (mem_cons.mpr (Or.inr w))⟩
 
 theorem le_minimum_of_forall_le {b : WithTop α} (h : ∀ a ∈ l, b ≤ a) : b ≤ l.minimum :=
-  maximum_le_of_forall_le (α:= αᵒᵈ) h
+  maximum_le_of_forall_le (α := αᵒᵈ) h
 
 theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m := by
   rw [maximum, ← WithBot.some_eq_coe, argmax_eq_some_iff]
@@ -449,13 +449,22 @@ theorem minimum_of_length_pos_le_iff (h : 0 < l.length) :
     minimum_of_length_pos h ≤ b ↔ l.minimum ≤ b :=
   le_maximum_of_length_pos_iff (α := αᵒᵈ) h
 
+theorem maximum_of_length_pos_mem (h : 0 < l.length) :
+    maximum_of_length_pos h ∈ l := by
+  apply maximum_mem
+  simp only [coe_maximum_of_length_pos]
+
+theorem minimum_of_length_pos_mem (h : 0 < l.length) :
+    minimum_of_length_pos h ∈ l :=
+  maximum_of_length_pos_mem (α := αᵒᵈ) h
+
 theorem le_maximum_of_length_pos_of_mem (h : a ∈ l) (w : 0 < l.length) :
-     a ≤ l.maximum_of_length_pos w := by
-  simp [le_maximum_of_length_pos_iff]
+    a ≤ l.maximum_of_length_pos w := by
+  simp only [le_maximum_of_length_pos_iff]
   exact le_maximum_of_mem' h
 
 theorem minimum_of_length_pos_le_of_mem (h : a ∈ l) (w : 0 < l.length) :
-     l.minimum_of_length_pos w ≤ a :=
+    l.minimum_of_length_pos w ≤ a :=
   le_maximum_of_length_pos_of_mem (α := αᵒᵈ) h w
 
 theorem getElem_le_maximum_of_length_pos (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :

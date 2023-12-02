@@ -108,12 +108,15 @@ def mapPullbackAdj {A B : C} (f : A ⟶ B) : Over.map f ⊣ pullback f :=
               simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
             · dsimp
               simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, ← Over.w Y ]
-              rfl } }
+              rfl }
+      -- This used to be automatic before leanprover/lean4#2644
+      homEquiv_naturality_right := by intros; dsimp; congr 1; aesop_cat
+      }
 #align category_theory.over.map_pullback_adj CategoryTheory.Over.mapPullbackAdj
 
 /-- pullback (𝟙 A) : over A ⥤ over A is the identity functor. -/
 def pullbackId {A : C} : pullback (𝟙 A) ≅ 𝟭 _ :=
-  Adjunction.rightAdjointUniq (mapPullbackAdj _) (Adjunction.id.ofNatIsoLeft Over.mapId.symm)
+  Adjunction.rightAdjointUniq (mapPullbackAdj _) (Adjunction.id.ofNatIsoLeft (Over.mapId A).symm)
 #align category_theory.over.pullback_id CategoryTheory.Over.pullbackId
 
 /-- pullback commutes with composition (up to natural isomorphism). -/

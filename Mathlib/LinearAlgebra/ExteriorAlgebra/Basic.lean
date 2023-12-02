@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhangir Azerbayev, Adam Topaz, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
-import Mathlib.LinearAlgebra.Alternating
+import Mathlib.LinearAlgebra.Alternating.Basic
 
 #align_import linear_algebra.exterior_algebra.basic from "leanprover-community/mathlib"@"b8d2eaa69d69ce8f03179a5cda774fc0cde984e4"
 
@@ -138,7 +138,7 @@ theorem induction {C : ExteriorAlgebra R M → Prop}
 
 /-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : ExteriorAlgebra R M →ₐ[R] R :=
-  ExteriorAlgebra.lift R ⟨(0 : M →ₗ[R] R), fun m => by simp⟩
+  ExteriorAlgebra.lift R ⟨(0 : M →ₗ[R] R), fun _ => by simp⟩
 #align exterior_algebra.algebra_map_inv ExteriorAlgebra.algebraMapInv
 
 variable (M)
@@ -279,7 +279,7 @@ variable (R)
 
 This is a special case of `MultilinearMap.mkPiAlgebraFin`, and the exterior algebra version of
 `TensorAlgebra.tprod`. -/
-def ιMulti (n : ℕ) : AlternatingMap R M (ExteriorAlgebra R M) (Fin n) :=
+def ιMulti (n : ℕ) : M [Λ^Fin n]→ₗ[R] ExteriorAlgebra R M :=
   let F := (MultilinearMap.mkPiAlgebraFin R n (ExteriorAlgebra R M)).compLinearMap fun _ => ι R
   { F with
     map_eq_zero_of_eq' := fun f x y hfxy hxy => by
@@ -332,6 +332,10 @@ theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
       simp_rw [Matrix.tail_cons]
       rfl
 #align exterior_algebra.ι_multi_succ_curry_left ExteriorAlgebra.ιMulti_succ_curryLeft
+
+/-- An `ExteriorAlgebra` over a nontrivial ring is nontrivial. -/
+instance [Nontrivial R] : Nontrivial (ExteriorAlgebra R M) :=
+  (algebraMap_leftInverse M).injective.nontrivial
 
 end ExteriorAlgebra
 

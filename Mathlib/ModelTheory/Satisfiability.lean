@@ -228,8 +228,8 @@ section
 -- Porting note: This instance interrupts synthesizing instances.
 attribute [-instance] FirstOrder.Language.withConstants_expansion
 
-/-- The Upward Löwenheim–Skolem Theorem: If `κ` is a cardinal greater than the cardinalities of `L`
-and an infinite `L`-structure `M`, then `M` has an elementary extension of cardinality `κ`. -/
+/-- The **Upward Löwenheim–Skolem Theorem**: If `κ` is a cardinal greater than the cardinalities of
+`L` and an infinite `L`-structure `M`, then `M` has an elementary extension of cardinality `κ`. -/
 theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [iM : Infinite M]
     (κ : Cardinal.{w}) (h1 : Cardinal.lift.{w} L.card ≤ Cardinal.lift.{max u v} κ)
     (h2 : Cardinal.lift.{w} #M ≤ Cardinal.lift.{w'} κ) :
@@ -352,6 +352,15 @@ theorem ModelsBoundedFormula.realize_sentence {φ : L.Sentence} (h : T ⊨ᵇ φ
     exact ⟨h, inferInstance⟩
   exact Model.isSatisfiable M
 #align first_order.language.Theory.models_bounded_formula.realize_sentence FirstOrder.Language.Theory.ModelsBoundedFormula.realize_sentence
+
+theorem models_of_models_theory {T' : L.Theory}
+    (h : ∀ φ : L.Sentence, φ ∈ T' → T ⊨ᵇ φ)
+    {φ : L.Formula α} (hφ : T' ⊨ᵇ φ) : T ⊨ᵇ φ := by
+  simp only [models_sentence_iff] at h
+  intro M
+  have hM : M ⊨ T' := T'.model_iff.2 (fun ψ hψ => h ψ hψ M)
+  let M' : ModelType T' := ⟨M⟩
+  exact hφ M'
 
 /-- An alternative statement of the Compactness Theorem. A formula `φ` is modeled by a
 theory iff there is a finite subset `T0` of the theory such that `φ` is modeled by `T0` -/

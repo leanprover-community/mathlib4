@@ -294,8 +294,8 @@ theorem map_op_mul :
 theorem comap_unop_mul :
     comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) (M * N) =
       comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) N *
-        comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) M :=
-  by simp_rw [← map_equiv_eq_comap_symm, map_op_mul]
+        comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) M := by
+  simp_rw [← map_equiv_eq_comap_symm, map_op_mul]
 #align submodule.comap_unop_mul Submodule.comap_unop_mul
 
 theorem map_unop_mul (M N : Submodule R Aᵐᵒᵖ) :
@@ -312,9 +312,19 @@ theorem map_unop_mul (M N : Submodule R Aᵐᵒᵖ) :
 theorem comap_op_mul (M N : Submodule R Aᵐᵒᵖ) :
     comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (M * N) =
       comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) N *
-        comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M :=
-  by simp_rw [comap_equiv_eq_map_symm, map_unop_mul]
+        comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M := by
+  simp_rw [comap_equiv_eq_map_symm, map_unop_mul]
 #align submodule.comap_op_mul Submodule.comap_op_mul
+
+lemma restrictScalars_mul {A B C} [CommSemiring A] [CommSemiring B] [Semiring C]
+    [Algebra A B] [Algebra A C] [Algebra B C] [IsScalarTower A B C] {I J : Submodule B C} :
+  (I * J).restrictScalars A = I.restrictScalars A * J.restrictScalars A := by
+  apply le_antisymm
+  · intro x (hx : x ∈ I * J)
+    refine Submodule.mul_induction_on hx ?_ ?_
+    · exact fun m hm n hn ↦ mul_mem_mul hm hn
+    · exact fun _ _ ↦ add_mem
+  · exact mul_le.mpr (fun _ hm _ hn ↦ mul_mem_mul hm hn)
 
 section
 
@@ -463,10 +473,7 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
     obtain ⟨r, rfl⟩ := hx
     exact hr r
   revert hx
-  -- porting note: workaround for lean4#1926, was `simp_rw [pow_succ']`
-  suffices h_lean4_1926 : ∀ (hx' : x ∈ M ^ n * M), C (Nat.succ n) x (by rwa [pow_succ']) from
-    fun hx => h_lean4_1926 (by rwa [← pow_succ'])
-  -- porting note: end workaround
+  simp_rw [pow_succ']
   intro hx
   exact
     Submodule.mul_induction_on' (fun m hm x ih => hmul _ _ hm (n_ih _) _ ih)
@@ -537,14 +544,14 @@ theorem comap_op_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
 
 theorem map_op_pow (n : ℕ) :
     map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (M ^ n) =
-      map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M ^ n :=
-  by rw [map_equiv_eq_comap_symm, map_equiv_eq_comap_symm, comap_unop_pow]
+      map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M ^ n := by
+  rw [map_equiv_eq_comap_symm, map_equiv_eq_comap_symm, comap_unop_pow]
 #align submodule.map_op_pow Submodule.map_op_pow
 
 theorem map_unop_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
     map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) (M ^ n) =
-      map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) M ^ n :=
-  by rw [← comap_equiv_eq_map_symm, ← comap_equiv_eq_map_symm, comap_op_pow]
+      map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) M ^ n := by
+  rw [← comap_equiv_eq_map_symm, ← comap_equiv_eq_map_symm, comap_op_pow]
 #align submodule.map_unop_pow Submodule.map_unop_pow
 
 /-- `span` is a semiring homomorphism (recall multiplication is pointwise multiplication of subsets
@@ -638,7 +645,7 @@ instance moduleSet : Module (SetSemiring A) (Submodule R A) where
 variable {R A}
 
 theorem smul_def (s : SetSemiring A) (P : Submodule R A) :
-  s • P = span R (SetSemiring.down s) * P :=
+    s • P = span R (SetSemiring.down s) * P :=
   rfl
 #align submodule.smul_def Submodule.smul_def
 

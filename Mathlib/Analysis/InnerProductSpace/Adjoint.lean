@@ -40,8 +40,6 @@ adjoint
 
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open IsROrC
@@ -65,10 +63,12 @@ namespace ContinuousLinearMap
 
 variable [CompleteSpace E] [CompleteSpace G]
 
+-- Note: made noncomputable to stop excess compilation
+-- leanprover-community/mathlib4#7103
 /-- The adjoint, as a continuous conjugate-linear map. This is only meant as an auxiliary
 definition for the main definition `adjoint`, where this is bundled as a conjugate-linear isometric
 equivalence. -/
-def adjointAux : (E →L[𝕜] F) →L⋆[𝕜] F →L[𝕜] E :=
+noncomputable def adjointAux : (E →L[𝕜] F) →L⋆[𝕜] F →L[𝕜] E :=
   (ContinuousLinearMap.compSL _ _ _ _ _ ((toDual 𝕜 E).symm : NormedSpace.Dual 𝕜 E →L⋆[𝕜] E)).comp
     (toSesqForm : (E →L[𝕜] F) →L[𝕜] F →L⋆[𝕜] NormedSpace.Dual 𝕜 E)
 #align continuous_linear_map.adjoint_aux ContinuousLinearMap.adjointAux
@@ -222,7 +222,6 @@ theorem isSelfAdjoint_iff' {A : E →L[𝕜] E} : IsSelfAdjoint A ↔ Continuous
   Iff.rfl
 #align continuous_linear_map.is_self_adjoint_iff' ContinuousLinearMap.isSelfAdjoint_iff'
 
-set_option maxHeartbeats 300000 in -- Porting note: Added to prevent timeout.
 instance : CstarRing (E →L[𝕜] E) :=
   ⟨by
     intro A
@@ -244,25 +243,12 @@ instance : CstarRing (E →L[𝕜] E) :=
           simp_rw [mul_assoc, Real.sqrt_mul (norm_nonneg _) (‖x‖ * ‖x‖),
             Real.sqrt_mul_self (norm_nonneg x)] ⟩
 
-section Real
-
-variable {E' : Type*} {F' : Type*}
-
-variable [NormedAddCommGroup E'] [NormedAddCommGroup F']
-
-variable [InnerProductSpace ℝ E'] [InnerProductSpace ℝ F']
-
-variable [CompleteSpace E'] [CompleteSpace F']
-
--- Todo: Generalize this to `IsROrC`.
-theorem isAdjointPair_inner (A : E' →L[ℝ] F') :
-    LinearMap.IsAdjointPair (sesqFormOfInner : E' →ₗ[ℝ] E' →ₗ[ℝ] ℝ)
-      (sesqFormOfInner : F' →ₗ[ℝ] F' →ₗ[ℝ] ℝ) A (A†) := by
+theorem isAdjointPair_inner (A : E →L[𝕜] F) :
+    LinearMap.IsAdjointPair (sesqFormOfInner : E →ₗ[𝕜] E →ₗ⋆[𝕜] 𝕜)
+      (sesqFormOfInner : F →ₗ[𝕜] F →ₗ⋆[𝕜] 𝕜) A (A†) := by
   intro x y
   simp only [sesqFormOfInner_apply_apply, adjoint_inner_left, coe_coe]
 #align continuous_linear_map.is_adjoint_pair_inner ContinuousLinearMap.isAdjointPair_inner
-
-end Real
 
 end ContinuousLinearMap
 
@@ -356,47 +342,58 @@ namespace LinearMap
 
 variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 G]
 
-section synthOrder
-
-/- porting note: Lean correctly determines that there is no good synthesization order for this
-instance, but in this case it is only a local instance with low priority so we circumvent the
-check. In addition, note that this instance is not actually needed for the *statement* of
-`LinearMap.adjoint`. -/
-set_option synthInstance.checkSynthOrder false
-attribute [local instance 20] FiniteDimensional.complete
+/- Porting note: Lean can't use `FiniteDimensional.complete` since it was generalized to topological
+vector spaces. Use local instances instead. -/
 
 /-- The adjoint of an operator from the finite-dimensional inner product space `E` to the
 finite-dimensional inner product space `F`. -/
 def adjoint : (E →ₗ[𝕜] F) ≃ₗ⋆[𝕜] F →ₗ[𝕜] E :=
+  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.complete 𝕜 F
+  /- Note: Instead of the two instances above, the following works:
+    ```
+      have := FiniteDimensional.complete 𝕜
+      have := FiniteDimensional.complete 𝕜
+    ```
+    But removing one of the `have`s makes it fail. The reason is that `E` and `F` don't live
+    in the same universe, so the first `have` can no longer be used for `F` after its universe
+    metavariable has been assigned to that of `E`!
+  -/
   ((LinearMap.toContinuousLinearMap : (E →ₗ[𝕜] F) ≃ₗ[𝕜] E →L[𝕜] F).trans
       ContinuousLinearMap.adjoint.toLinearEquiv).trans
     LinearMap.toContinuousLinearMap.symm
 #align linear_map.adjoint LinearMap.adjoint
 
 theorem adjoint_toContinuousLinearMap (A : E →ₗ[𝕜] F) :
+    haveI := FiniteDimensional.complete 𝕜 E
+    haveI := FiniteDimensional.complete 𝕜 F
     LinearMap.toContinuousLinearMap (LinearMap.adjoint A) =
       ContinuousLinearMap.adjoint (LinearMap.toContinuousLinearMap A) :=
   rfl
 #align linear_map.adjoint_to_continuous_linear_map LinearMap.adjoint_toContinuousLinearMap
 
 theorem adjoint_eq_toClm_adjoint (A : E →ₗ[𝕜] F) :
+    haveI := FiniteDimensional.complete 𝕜 E
+    haveI := FiniteDimensional.complete 𝕜 F
     LinearMap.adjoint A = ContinuousLinearMap.adjoint (LinearMap.toContinuousLinearMap A) :=
   rfl
 #align linear_map.adjoint_eq_to_clm_adjoint LinearMap.adjoint_eq_toClm_adjoint
 
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_left (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪adjoint A y, x⟫ = ⟪y, A x⟫ := by
+  haveI := FiniteDimensional.complete 𝕜 E
+  haveI := FiniteDimensional.complete 𝕜 F
   rw [← coe_toContinuousLinearMap A, adjoint_eq_toClm_adjoint]
   exact ContinuousLinearMap.adjoint_inner_left _ x y
 #align linear_map.adjoint_inner_left LinearMap.adjoint_inner_left
 
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_right (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪x, adjoint A y⟫ = ⟪A x, y⟫ := by
+  haveI := FiniteDimensional.complete 𝕜 E
+  haveI := FiniteDimensional.complete 𝕜 F
   rw [← coe_toContinuousLinearMap A, adjoint_eq_toClm_adjoint]
   exact ContinuousLinearMap.adjoint_inner_right _ x y
 #align linear_map.adjoint_inner_right LinearMap.adjoint_inner_right
-
-end synthOrder
 
 /-- The adjoint is involutive. -/
 @[simp]
@@ -478,25 +475,12 @@ theorem isSymmetric_iff_isSelfAdjoint (A : E →ₗ[𝕜] E) : IsSymmetric A ↔
   exact eq_comm
 #align linear_map.is_symmetric_iff_is_self_adjoint LinearMap.isSymmetric_iff_isSelfAdjoint
 
-section Real
-
-variable {E' : Type*} {F' : Type*}
-
-variable [NormedAddCommGroup E'] [NormedAddCommGroup F']
-
-variable [InnerProductSpace ℝ E'] [InnerProductSpace ℝ F']
-
-variable [FiniteDimensional ℝ E'] [FiniteDimensional ℝ F']
-
--- Todo: Generalize this to `IsROrC`.
-theorem isAdjointPair_inner (A : E' →ₗ[ℝ] F') :
-    IsAdjointPair (sesqFormOfInner : E' →ₗ[ℝ] E' →ₗ[ℝ] ℝ) (sesqFormOfInner : F' →ₗ[ℝ] F' →ₗ[ℝ] ℝ) A
+theorem isAdjointPair_inner (A : E →ₗ[𝕜] F) :
+    IsAdjointPair (sesqFormOfInner : E →ₗ[𝕜] E →ₗ⋆[𝕜] 𝕜) (sesqFormOfInner : F →ₗ[𝕜] F →ₗ⋆[𝕜] 𝕜) A
       (LinearMap.adjoint A) := by
   intro x y
   simp only [sesqFormOfInner_apply_apply, adjoint_inner_left]
 #align linear_map.is_adjoint_pair_inner LinearMap.isAdjointPair_inner
-
-end Real
 
 /-- The Gram operator T†T is symmetric. -/
 theorem isSymmetric_adjoint_mul_self (T : E →ₗ[𝕜] E) : IsSymmetric (LinearMap.adjoint T * T) := by

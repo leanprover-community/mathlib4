@@ -55,7 +55,7 @@ def choose (α : Type u) [Preorder α] [BoundedRandom α] (lo hi : α) (h : lo �
 
 lemma chooseNatLt_aux {lo hi : Nat} (a : Nat) (h : Nat.succ lo ≤ a ∧ a ≤ hi) :
     lo ≤ Nat.pred a ∧ Nat.pred a < hi :=
-  And.intro (Nat.le_pred_of_lt (Nat.lt_of_succ_le h.left)) <|
+  And.intro (Nat.le_sub_one_of_lt (Nat.lt_of_succ_le h.left)) <|
     show a.pred.succ ≤ hi by
        rw [Nat.succ_pred_eq_of_pos]
        exact h.right

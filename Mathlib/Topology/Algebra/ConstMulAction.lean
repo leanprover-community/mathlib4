@@ -162,8 +162,8 @@ variable [TopologicalSpace α]
 variable [Monoid M] [MulAction M α] [ContinuousConstSMul M α]
 
 @[to_additive]
-instance Units.continuousConstSMul : ContinuousConstSMul Mˣ α
-    where continuous_const_smul m := (continuous_const_smul (m : M) : _)
+instance Units.continuousConstSMul : ContinuousConstSMul Mˣ α where
+  continuous_const_smul m := (continuous_const_smul (m : M) : _)
 #align units.has_continuous_const_smul Units.continuousConstSMul
 #align add_units.has_continuous_const_vadd AddUnits.continuousConstVAdd
 

@@ -3,10 +3,11 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Logic.Pairwise
-import Mathlib.Algebra.Hom.GroupInstances
+import Mathlib.Init.CCLemmas
+import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Data.Set.Function
+import Mathlib.Logic.Pairwise
 
 #align_import algebra.group.pi from "leanprover-community/mathlib"@"e4bc74cbaf429d706cb9140902f7ca6c431e75a4"
 
@@ -169,24 +170,27 @@ instance commGroup [∀ i, CommGroup <| f i] : CommGroup (∀ i : I, f i) :=
 #align pi.add_comm_group Pi.addCommGroup
 
 @[to_additive]
+instance [∀ i, Mul <| f i] [∀ i, IsLeftCancelMul <| f i] : IsLeftCancelMul (∀ i : I, f i) where
+  mul_left_cancel  _ _ _ h := funext <| fun _ => mul_left_cancel (congr_fun h _)
+
+@[to_additive]
+instance [∀ i, Mul <| f i] [∀ i, IsRightCancelMul <| f i] : IsRightCancelMul (∀ i : I, f i) where
+  mul_right_cancel  _ _ _ h := funext <| fun _ => mul_right_cancel (congr_fun h _)
+
+@[to_additive]
+instance [∀ i, Mul <| f i] [∀ i, IsCancelMul <| f i] : IsCancelMul (∀ i : I, f i) where
+
+@[to_additive]
 instance leftCancelSemigroup [∀ i, LeftCancelSemigroup <| f i] :
     LeftCancelSemigroup (∀ i : I, f i) :=
-  { semigroup with
-    --pi_instance
-    mul_left_cancel := by
-      intros _ _ _ h; ext; exact LeftCancelSemigroup.mul_left_cancel _ _ _ (congr_fun h _);
-  }
+  { semigroup with mul_left_cancel := fun _ _ _ => mul_left_cancel }
 #align pi.left_cancel_semigroup Pi.leftCancelSemigroup
 #align pi.add_left_cancel_semigroup Pi.addLeftCancelSemigroup
 
 @[to_additive]
 instance rightCancelSemigroup [∀ i, RightCancelSemigroup <| f i] :
     RightCancelSemigroup (∀ i : I, f i) :=
-  { semigroup with
-    --pi_instance
-    mul_right_cancel := by
-      intros _ _ _ h; ext; exact RightCancelSemigroup.mul_right_cancel _ _ _ (congr_fun h _)
-  }
+  { semigroup with mul_right_cancel := fun _ _ _ => mul_right_cancel }
 #align pi.right_cancel_semigroup Pi.rightCancelSemigroup
 #align pi.add_right_cancel_semigroup Pi.addRightCancelSemigroup
 
@@ -245,7 +249,7 @@ namespace MulHom
 
 @[to_additive]
 theorem coe_mul {M N} {_ : Mul M} {_ : CommSemigroup N} (f g : M →ₙ* N) : (f * g : M → N) =
-  fun x => f x * g x := rfl
+    fun x => f x * g x := rfl
 #align mul_hom.coe_mul MulHom.coe_mul
 #align add_hom.coe_add AddHom.coe_add
 

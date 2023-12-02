@@ -579,7 +579,7 @@ def localTriv (i : ι) : Trivialization F Z.proj where
     simp only [exists_prop, mem_iUnion, mem_singleton_iff]
     exact ⟨i, s, s_open, rfl⟩
   continuous_invFun := by
-    refine continuousOn_open_of_generateFrom fun t ht ↦ ?_
+    refine continuousOn_isOpen_of_generateFrom fun t ht ↦ ?_
     simp only [exists_prop, mem_iUnion, mem_singleton_iff] at ht
     obtain ⟨j, s, s_open, ts⟩ : ∃ j s, IsOpen s ∧
       t = (localTrivAsLocalEquiv Z j).source ∩ localTrivAsLocalEquiv Z j ⁻¹' s := ht
@@ -845,7 +845,7 @@ theorem totalSpaceMk_preimage_source (b : B) :
 
 @[continuity]
 theorem continuous_totalSpaceMk (b : B) :
-  Continuous[_, a.totalSpaceTopology] (TotalSpace.mk b) := by
+    Continuous[_, a.totalSpaceTopology] (TotalSpace.mk b) := by
   letI := a.totalSpaceTopology
   let e := a.trivializationOfMemPretrivializationAtlas (a.pretrivialization_mem_atlas b)
   rw [e.toLocalHomeomorph.continuous_iff_continuous_comp_left

@@ -6,6 +6,7 @@ Authors: Jujian Zhang
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.ULift
 
 #align_import group_theory.divisible from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
@@ -161,6 +162,16 @@ instance Prod.rootableBy : RootableBy (B × B') β where
 
 end Prod
 
+section ULift
+
+@[to_additive]
+instance ULift.instRootableBy [RootableBy A α] : RootableBy (ULift A) α where
+  root x a := ULift.up <| RootableBy.root x.down a
+  root_zero x := ULift.ext _ _ <| RootableBy.root_zero x.down
+  root_cancel _ h := ULift.ext _ _ <| RootableBy.root_cancel _ h
+
+end ULift
+
 end Monoid
 
 namespace AddCommGroup
@@ -215,7 +226,7 @@ def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
       norm_num
       rw [RootableBy.root_cancel]
       rw [Int.ofNat_eq_coe] at hn
-      exact_mod_cast hn
+      exact mod_cast hn
     · change (RootableBy.root a _)⁻¹ ^ _ = a
       norm_num
       rw [RootableBy.root_cancel]
@@ -231,7 +242,7 @@ def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ where
   root_zero a := RootableBy.root_zero a
   root_cancel {n} a hn := by
     -- Porting note: replaced `norm_num`
-    simpa only [zpow_coe_nat] using RootableBy.root_cancel a (show (n : ℤ) ≠ 0 by exact_mod_cast hn)
+    simpa only [zpow_coe_nat] using RootableBy.root_cancel a (show (n : ℤ) ≠ 0 from mod_cast hn)
 #align group.rootable_by_nat_of_rootable_by_int Group.rootableByNatOfRootableByInt
 #align add_group.divisible_by_nat_of_divisible_by_int AddGroup.divisibleByNatOfDivisibleByInt
 

@@ -15,6 +15,9 @@ In this file, we show that the following are all equivalent:
 - The induced map `∐ X ⟶ B` is epimorphic.
 - The family `π` is jointly surjective.
 
+As a consequence, we show (see `effectiveEpi_iff_surjective`) that all epimorphisms in `Stonean` 
+are effective, and that `Stonean` is preregular.
+
 ## Main results
 - `Stonean.effectiveEpiFamily_tfae`: characterise being an effective epimorphic family.
 - `Stonean.instPrecoherent`: `Stonean` is precoherent.
@@ -35,67 +38,6 @@ namespace Stonean
 variable {α : Type} [Fintype α] {B : Stonean}
   {X : α → Stonean} (π : (a : α) → (X a ⟶ B))
   (surj : ∀ b : B, ∃ (a : α) (x : X a), π a x = b)
-
-/--
-`Fin 2` as an extremally disconnected space.
-Implementation: This is only used in the proof below.
--/
-protected
-def two : Stonean where
-  compHaus := CompHaus.of <| ULift <| Fin 2
-  extrDisc := by
-    dsimp
-    constructor
-    intro U _
-    apply isOpen_discrete (closure U)
-
-lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
-    Epi f ↔ Function.Surjective f := by
-  constructor
-  · dsimp [Function.Surjective]
-    contrapose!
-    rintro ⟨y, hy⟩ h
-    let C := Set.range f
-    have hC : IsClosed C := (isCompact_range f.continuous).isClosed
-    let U := Cᶜ
-    have hyU : y ∈ U := by
-      refine' Set.mem_compl _
-      rintro ⟨y', hy'⟩
-      exact hy y' hy'
-    have hUy : U ∈ nhds y := hC.compl_mem_nhds hyU
-    haveI : TotallyDisconnectedSpace ((forget CompHaus).obj (toCompHaus.obj Y)) :=
-      show TotallyDisconnectedSpace Y from inferInstance
-    obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_clopen.mem_nhds_iff.mp hUy
-    classical
-    let g : Y ⟶ Stonean.two :=
-      ⟨(LocallyConstant.ofClopen hV).map ULift.up, LocallyConstant.continuous _⟩
-    let h : Y ⟶ Stonean.two := ⟨fun _ => ⟨1⟩, continuous_const⟩
-    have H : h = g := by
-      rw [← cancel_epi f]
-      apply ContinuousMap.ext
-      intro x
-      apply ULift.ext
-      change 1 =  _
-      dsimp [LocallyConstant.ofClopen]
-      -- BUG: Should not have to provide instance `(Stonean.instTopologicalSpace Y)` explicitely
-      rw [comp_apply, @ContinuousMap.coe_mk _ _ (Stonean.instTopologicalSpace Y),
-      Function.comp_apply, if_neg]
-      refine mt (hVU ·) ?_
-      simp only [Set.mem_compl_iff, Set.mem_range, not_exists, not_forall, not_not]
-      exact ⟨x, rfl⟩
-    apply_fun fun e => (e y).down at H
-    dsimp only [LocallyConstant.ofClopen] at H
-    change 1 = ite _ _ _ at H
-    rw [if_pos hyV] at H
-    exact top_ne_bot H
-  · intro (h : Function.Surjective (toCompHaus.map f))
-    rw [← CompHaus.epi_iff_surjective] at h
-    constructor
-    intro W a b h
-    apply Functor.map_injective toCompHaus
-    apply_fun toCompHaus.map at h
-    simp only [Functor.map_comp] at h
-    rwa [← cancel_epi (toCompHaus.map f)]
 
 /-!
 This section contains exclusively technical definitions and results that are used
@@ -121,13 +63,13 @@ takes this condition (for all `Z` in `C`) as an assumption.
 
 In the construction in this file we start with this descent condition for all `Z : Stonean` but
 to apply the analogue result on `CompHaus` we need extend this condition to all
-`Z : CompHaus`. We do this by considering the Stone-Czech compactification `βZ → Z`
+`Z : CompHaus`. We do this by considering the Stone-Cech compactification `βZ → Z`
 which is an epi in `CompHaus` covering `Z` where `βZ` lies in the image of `Stonean`.
 -/
 lemma lift_desc_condition {W : Stonean} {e : (a : α) → X a ⟶ W}
     (h : ∀ {Z : Stonean} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
-      g₁ ≫ π a₁ = g₂ ≫ π a₂ → g₁ ≫ e a₁ = g₂ ≫ e a₂)
-    : ∀ {Z : CompHaus} (a₁ a₂ : α) (g₁ : Z ⟶ F.obj (X a₁)) (g₂ : Z ⟶ F.obj (X a₂)),
+      g₁ ≫ π a₁ = g₂ ≫ π a₂ → g₁ ≫ e a₁ = g₂ ≫ e a₂) :
+    ∀ {Z : CompHaus} (a₁ a₂ : α) (g₁ : Z ⟶ F.obj (X a₁)) (g₂ : Z ⟶ F.obj (X a₂)),
         g₁ ≫ (π a₁) = g₂ ≫ (π a₂) → g₁ ≫ e a₁ = g₂ ≫ e a₂ := by
   intro Z a₁ a₂ g₁ g₂ hg
   -- The Stone-Cech-compactification `βZ` of `Z : CompHaus` is in `Stonean`
@@ -158,8 +100,7 @@ def struct : EffectiveEpiFamilyStruct X π where
     -- The `fac` on `CompHaus`
     have fac₁ :  F.map (π a ≫ _) = F.map (e a) :=
       EffectiveEpiFamily.fac (F.obj <| X ·) π e (lift_desc_condition π he) a
-    replace fac₁ := Faithful.map_injective fac₁
-    exact fac₁
+    exact Faithful.map_injective fac₁
   uniq := by
     -- The `EffectiveEpiFamily F(X) F(π)` on `CompHaus`
     let fam : EffectiveEpiFamily (F.obj <| X ·) π :=
@@ -170,8 +111,7 @@ def struct : EffectiveEpiFamilyStruct X π where
       simp_all only [toCompHaus_map]
     have uniq₁ : F.map m = F.map _ :=
       EffectiveEpiFamily.uniq (F.obj <| X ·) π e (lift_desc_condition π he) (F.map m) Fhm
-    replace uniq₁ := Faithful.map_injective uniq₁
-    exact uniq₁
+    exact Faithful.map_injective uniq₁
 
 end EffectiveEpiFamily
 
@@ -228,6 +168,16 @@ theorem effectiveEpiFamily_tfae {α : Type} [Fintype α] {B : Stonean}
   · apply effectiveEpiFamily_of_jointly_surjective
   tfae_finish
 
+lemma effectiveEpi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
+    EffectiveEpi f ↔ Function.Surjective f := by
+  rw [← epi_iff_surjective]
+  exact effectiveEpi_iff_epi (fun _ _ ↦ (effectiveEpiFamily_tfae _ _).out 0 1) f
+
+instance : Preregular Stonean where
+  exists_fac := by
+    intro X Y Z f π hπ
+    exact ⟨X, 𝟙 X, inferInstance, Projective.factors f π⟩
+
 end JointlySurjective
 
 section Coherent
@@ -241,12 +191,12 @@ theorem _root_.CategoryTheory.EffectiveEpiFamily.toCompHaus
   refine' ((CompHaus.effectiveEpiFamily_tfae _ _).out 0 2).2 (fun b => _)
   exact (((effectiveEpiFamily_tfae _ _).out 0 2).1 H : ∀ _, ∃ _, _) _
 
-instance instPrecoherent: Precoherent Stonean.{u} := by
+instance instPrecoherent : Precoherent Stonean.{u} := by
   constructor
   intro B₁ B₂ f α _ X₁ π₁ h₁
-  refine ⟨α, inferInstance, fun a => (pullback f (π₁ a)).presentation, fun a =>
-    toCompHaus.preimage (presentation.π _ ≫ (pullback.fst _ _)), ?_, id, fun a =>
-    toCompHaus.preimage (presentation.π _ ≫ (pullback.snd _ _ )), fun a => ?_⟩
+  refine ⟨α, inferInstance, fun a => (CompHaus.pullback f (π₁ a)).presentation, fun a =>
+    toCompHaus.preimage (presentation.π _ ≫ (CompHaus.pullback.fst _ _)), ?_, id, fun a =>
+    toCompHaus.preimage (presentation.π _ ≫ (CompHaus.pullback.snd _ _ )), fun a => ?_⟩
   · refine ((effectiveEpiFamily_tfae _ _).out 0 2).2 (fun b => ?_)
     have h₁' := ((CompHaus.effectiveEpiFamily_tfae _ _).out 0 2).1 h₁.toCompHaus
     obtain ⟨a, x, h⟩ := h₁' (f b)

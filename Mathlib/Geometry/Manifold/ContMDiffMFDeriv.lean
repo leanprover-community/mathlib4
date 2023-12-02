@@ -70,7 +70,7 @@ where the derivative is taken as a continuous linear map.
 We have to assume that `f` is `C^n` at `(x₀, g(x₀))` for `n ≥ m + 1` and `g` is `C^m` at `x₀`.
 We have to insert a coordinate change from `x₀` to `x` to make the derivative sensible.
 This result is used to show that maps into the 1-jet bundle and cotangent bundle are smooth.
-`cont_mdiff_at.mfderiv_id` and `ContMDiffAt.mfderiv_const` are special cases of this.
+`ContMDiffAt.mfderiv_const` is a special case of this.
 
 This result should be generalized to a `ContMDiffWithinAt` for `mfderivWithin`.
 If we do that, we can deduce `ContMDiffOn.contMDiffOn_tangentMapWithin` from this.
@@ -261,7 +261,7 @@ theorem ContMDiffOn.continuousOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
   suffices h : ContinuousOn (fderivWithin 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)) (I '' s)
   · have C := ContinuousOn.comp h I.continuous_toFun.continuousOn Subset.rfl
     have A : Continuous fun q : (E →L[𝕜] E') × E => q.1 q.2 :=
-      isBoundedBilinearMapApply.continuous
+      isBoundedBilinearMap_apply.continuous
     have B :
       ContinuousOn
         (fun p : H × E => (fderivWithin 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I p.1), p.2))
@@ -328,6 +328,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
     refine C.congr fun p hp => ?_
     simp only [mfld_simps] at hp
     simp only [mfderivWithin, hf.mdifferentiableOn one_le_n _ hp.2, hp.1, if_pos, mfld_simps]
+    rfl
   have D :
     ContDiffOn 𝕜 m (fun x => fderivWithin 𝕜 (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) x)
       (range I ∩ I.symm ⁻¹' s) := by
@@ -506,7 +507,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
       refine' tangentMapWithin_subset (by mfld_set_tac) U'q _
       apply hf.mdifferentiableOn one_le_n
       simp only [hq, mfld_simps]
-    dsimp only [(· ∘ ·)] at A B C D E ⊢
+    dsimp only [Function.comp_def] at A B C D E ⊢
     simp only [A, B, C, D, ← E]
   exact diff_DrirrflilDl.congr eq_comp
 #align cont_mdiff_on.cont_mdiff_on_tangent_map_within ContMDiffOn.contMDiffOn_tangentMapWithin
@@ -580,9 +581,9 @@ theorem tangentMap_tangentBundle_pure (p : TangentBundle I M) :
     · exact differentiableAt_const _
     · exact ModelWithCorners.unique_diff_at_image I
     · exact differentiableAt_id'.prod (differentiableAt_const _)
-  simp only [Bundle.zeroSection, tangentMap, mfderiv, A, if_pos, chartAt,
-    FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply, tangentBundleCore,
-    Function.comp, ContinuousLinearMap.map_zero, mfld_simps]
+  simp (config := { unfoldPartialApp := true }) only [Bundle.zeroSection, tangentMap, mfderiv, A,
+    if_pos, chartAt, FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply,
+    tangentBundleCore, Function.comp_def, ContinuousLinearMap.map_zero, mfld_simps]
   rw [← fderivWithin_inter N] at B
   rw [← fderivWithin_inter N, ← B]
   congr 1
@@ -596,9 +597,9 @@ end TangentBundle
 
 namespace ContMDiffMap
 
--- These helpers for dot notation have been moved here from `geometry.manifold.cont_mdiff_map`
--- to avoid needing to import `geometry.manifold.cont_mdiff_mfderiv` there.
--- (However as a consequence we import `geometry.manifold.cont_mdiff_map` here now.)
+-- These helpers for dot notation have been moved here from
+-- `Mathlib/Geometry/Manifold/ContMDiffMap.lean` to avoid needing to import this file there.
+-- (However as a consequence we import `Mathlib/Geometry/Manifold/ContMDiffMap.lean` here now.)
 -- They could be moved to another file (perhaps a new file) if desired.
 open scoped Manifold
 

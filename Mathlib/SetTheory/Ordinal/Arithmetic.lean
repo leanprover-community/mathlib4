@@ -1003,7 +1003,8 @@ theorem le_of_dvd : ∀ {a b : Ordinal}, b ≠ 0 → a ∣ b → a ≤ b
     -- Porting note: `Ne` is required.
     simpa only [mul_one] using
       mul_le_mul_left'
-        (one_le_iff_ne_zero.2 fun h : b = 0 => by simp only [h, mul_zero, Ne] at b0) a
+        (one_le_iff_ne_zero.2 fun h : b = 0 => by
+          simp only [h, mul_zero, Ne, not_true_eq_false] at b0) a
 #align ordinal.le_of_dvd Ordinal.le_of_dvd
 
 theorem dvd_antisymm {a b : Ordinal} (h₁ : a ∣ b) (h₂ : b ∣ a) : a = b :=
@@ -1459,7 +1460,8 @@ theorem sSup_eq_bsup {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
 @[simp]
 theorem bsup_eq_sup' {ι : Type u} (r : ι → ι → Prop) [IsWellOrder ι r] (f : ι → Ordinal.{max u v}) :
     bsup.{_, v} _ (bfamilyOfFamily' r f) = sup.{_, v} f := by
-  simp only [← sup_eq_bsup' r, enum_typein, familyOfBFamily', bfamilyOfFamily']
+  simp (config := { unfoldPartialApp := true }) only [← sup_eq_bsup' r, enum_typein,
+    familyOfBFamily', bfamilyOfFamily']
 #align ordinal.bsup_eq_sup' Ordinal.bsup_eq_sup'
 
 theorem bsup_eq_bsup {ι : Type u} (r r' : ι → ι → Prop) [IsWellOrder ι r] [IsWellOrder ι r']
@@ -2584,12 +2586,11 @@ theorem rank_lt_of_rel (h : r a b) : hwf.rank a < hwf.rank b :=
 #align well_founded.rank_lt_of_rel WellFounded.rank_lt_of_rel
 
 theorem rank_strictMono [Preorder α] [WellFoundedLT α] :
-    StrictMono (rank <| @IsWellFounded.wf α (· < ·) _) := fun _ _ => rank_lt_of_rel _
+    StrictMono (rank <| @wellFounded_lt α _ _) := fun _ _ => rank_lt_of_rel _
 #align well_founded.rank_strict_mono WellFounded.rank_strictMono
 
 theorem rank_strictAnti [Preorder α] [WellFoundedGT α] :
-    StrictAnti (rank <| @IsWellFounded.wf α (· > ·) _) := fun _ _ =>
-  rank_lt_of_rel <| @IsWellFounded.wf α (· > ·) _
+    StrictAnti (rank <| @wellFounded_gt α _ _) := fun _ _ => rank_lt_of_rel wellFounded_gt
 #align well_founded.rank_strict_anti WellFounded.rank_strictAnti
 
 end WellFounded

@@ -27,8 +27,6 @@ open Set Metric MeasureTheory Filter Complex intervalIntegral
 
 open scoped Real Topology
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 variable {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E] {U K : Set ℂ}
   {z : ℂ} {M r δ : ℝ} {φ : Filter ι} {F : ι → ℂ → E} {f g : ℂ → E}
 
@@ -121,8 +119,7 @@ theorem tendstoUniformlyOn_deriv_of_cthickening_subset (hf : TendstoLocallyUnifo
     TendstoUniformlyOn (deriv ∘ F) (cderiv δ f) φ K := by
   have h1 : ∀ᶠ n in φ, ContinuousOn (F n) (cthickening δ K) := by
     filter_upwards [hF] with n h using h.continuousOn.mono hKU
-  have h2 : IsCompact (cthickening δ K) :=
-    isCompact_of_isClosed_bounded isClosed_cthickening hK.bounded.cthickening
+  have h2 : IsCompact (cthickening δ K) := hK.cthickening
   have h3 : TendstoUniformlyOn F f φ (cthickening δ K) :=
     (tendstoLocallyUniformlyOn_iff_forall_isCompact hU).mp hf (cthickening δ K) hKU h2
   apply (h3.cderiv hδ h1).congr

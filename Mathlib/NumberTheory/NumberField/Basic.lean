@@ -57,7 +57,7 @@ variable (K L : Type*) [Field K] [Field L] [nf : NumberField K]
 attribute [instance] NumberField.to_charZero NumberField.to_finiteDimensional
 
 protected theorem isAlgebraic : Algebra.IsAlgebraic ℚ K :=
-  Algebra.isAlgebraic_of_finite _ _
+  Algebra.IsAlgebraic.of_finite _ _
 #align number_field.is_algebraic NumberField.isAlgebraic
 
 /-- The ring of integers (or number ring) corresponding to a number field

@@ -28,8 +28,8 @@ section One
 
 variable [Monoid R] [MulAction R M] [One M]
 
-instance : One (SubMulAction R M)
-    where one :=
+instance : One (SubMulAction R M) where
+  one :=
     { carrier := Set.range fun r : R => r • (1 : M)
       smul_mem' := fun r _ ⟨r', hr'⟩ => hr' ▸ ⟨r * r', mul_smul _ _ _⟩ }
 
@@ -52,8 +52,8 @@ section Mul
 
 variable [Monoid R] [MulAction R M] [Mul M] [IsScalarTower R M M]
 
-instance : Mul (SubMulAction R M)
-    where mul p q :=
+instance : Mul (SubMulAction R M) where
+  mul p q :=
     { carrier := Set.image2 (· * ·) p q
       smul_mem' := fun r _ ⟨m₁, m₂, hm₁, hm₂, h⟩ =>
         h ▸ smul_mul_assoc r m₁ m₂ ▸ Set.mul_mem_mul (p.smul_mem _ hm₁) hm₂ }
@@ -113,18 +113,16 @@ variable [Monoid R] [MulAction R M] [Monoid M] [IsScalarTower R M M] [SMulCommCl
 
 instance : Monoid (SubMulAction R M) :=
   { SubMulAction.semiGroup,
-    SubMulAction.mulOneClass with
-    mul := (· * ·)
-    one := 1 }
+    SubMulAction.mulOneClass with }
 
-theorem coe_pow (p : SubMulAction R M) : ∀ {n : ℕ} (_ : n ≠ 0), (p ^ n : Set M) = ((p : Set M) ^ n)
+theorem coe_pow (p : SubMulAction R M) : ∀ {n : ℕ} (_ : n ≠ 0), ↑(p ^ n) = (p : Set M) ^ n
   | 0, hn => (hn rfl).elim
   | 1, _ => by rw [pow_one, pow_one]
   | n + 2, _ => by
     rw [pow_succ _ (n + 1), pow_succ _ (n + 1), coe_mul, coe_pow _ n.succ_ne_zero]
 #align sub_mul_action.coe_pow SubMulAction.coe_pow
 
-theorem subset_coe_pow (p : SubMulAction R M) : ∀ {n : ℕ}, ((p : Set M) ^ n) ⊆ (p ^ n : Set M)
+theorem subset_coe_pow (p : SubMulAction R M) : ∀ {n : ℕ}, (p : Set M) ^ n ⊆ ↑(p ^ n)
   | 0 => by
     rw [pow_zero, pow_zero]
     exact subset_coe_one

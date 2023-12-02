@@ -57,13 +57,6 @@ all intermediate fields `E` with `E/K` finite dimensional.
 
 open scoped Classical
 
-/-- Mapping intermediate fields along algebra equivalences preserves the partial order -/
-theorem IntermediateField.map_mono {K L M : Type*} [Field K] [Field L] [Field M] [Algebra K L]
-    [Algebra K M] {E1 E2 : IntermediateField K L} (e : L ≃ₐ[K] M) (h12 : E1 ≤ E2) :
-    E1.map e.toAlgHom ≤ E2.map e.toAlgHom :=
-  Set.image_subset e h12
-#align intermediate_field.map_mono IntermediateField.map_mono
-
 /-- Mapping intermediate fields along the identity does not change them -/
 theorem IntermediateField.map_id {K L : Type*} [Field K] [Field L] [Algebra K L]
     (E : IntermediateField K L) : E.map (AlgHom.id K L) = E :=
@@ -267,7 +260,7 @@ section TotallyDisconnected
   totally disconnected. -/
 theorem krullTopology_totallyDisconnected {K L : Type*} [Field K] [Field L] [Algebra K L]
     (h_int : Algebra.IsIntegral K L) : IsTotallyDisconnected (Set.univ : Set (L ≃ₐ[K] L)) := by
-  apply isTotallyDisconnected_of_clopen_set
+  apply isTotallyDisconnected_of_isClopen_set
   intro σ τ h_diff
   have hστ : σ⁻¹ * τ ≠ 1 := by rwa [Ne.def, inv_mul_eq_one]
   rcases FunLike.exists_ne hστ with ⟨x, hx : (σ⁻¹ * τ) x ≠ x⟩
