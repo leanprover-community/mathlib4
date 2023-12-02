@@ -304,8 +304,16 @@ def evalAtₗ {R σ : Type*} [CommSemiring R] (x : σ → R) : MvPolynomial σ R
   map_add' := by simp
   map_smul' := by simp
 
-lemma analyticOn_eval (R σ) [Fintype σ] [NontriviallyNormedField R] (P : MvPolynomial σ R) :
+/-lemma analyticOn_eval' {R σ} [Fintype σ] [NontriviallyNormedField R] (P : MvPolynomial σ R) :
     AnalyticOn R (eval · P) univ := fun x _ ↦ by
+  apply P.induction_on (fun r ↦ ?_) (fun p q hp hq ↦ ?_) fun p i hp ↦ ?_ -- refine doesn't work
+  · simp_rw [eval_C]; exact analyticAt_const
+  · simp_rw [eval_add]; exact hp.add hq
+  · simp_rw [eval_mul, eval_X]; exact hp.mul ((ContinuousLinearMap.proj (R := R) i).analyticAt x) -/
+
+/- what we actually want -/
+lemma analyticOn_eval {R σ} [Fintype σ] [IsROrC R] (P : MvPolynomial σ R) :
+    AnalyticOn R (fun x ↦ eval (EuclideanSpace.equiv σ R x) P) univ := fun x _ ↦ by
   apply P.induction_on (fun r ↦ ?_) (fun p q hp hq ↦ ?_) fun p i hp ↦ ?_ -- refine doesn't work
   · simp_rw [eval_C]; exact analyticAt_const
   · simp_rw [eval_add]; exact hp.add hq
@@ -512,10 +520,17 @@ lemma inj_L (ι : Type*) [Fintype ι] : Injective (L (ι := ι)) := by
   rw [injective_iff_map_eq_zero]
   intro p hp
   suffices : ∀ᵐ x : EuclideanSpace ℝ ι, x ∈ closedBall 0 1 → eval x p = 0
-  · sorry -- simp_rw [MvPolynomial.funext_iff, map_zero]
-    -- Polynomial.eq_zero_of_infinite_isRoot
-  -- intro x₀ hx₀
-  -- by_contra hpx₀
+  · simp_rw [MvPolynomial.funext_iff, map_zero]
+    refine fun x ↦ (analyticOn_eval p).eqOn_zero_of_preconnected_of_eventuallyEq_zero
+      ?_ (z₀ := 0) trivial ?_ trivial
+    · rw [← preconnectedSpace_iff_univ]; infer_instance
+    · refine Filter.mem_of_superset (Metric.ball_mem_nhds 0 zero_lt_one) ?_
+      have := this.mono fun x hx mem_ball ↦ hx (Metric.ball_subset_closedBall mem_ball)
+      rw [← ae_restrict_iff'₀ measurableSet_ball.nullMeasurableSet] at this
+      apply Measure.eqOn_of_ae_eq this
+      · exact (analyticOn_eval p).continuous.continuousOn
+      · exact continuousOn_const
+      · rw [isOpen_ball.interior_eq]; apply subset_closure
   have h2p : LocallyIntegrable (fun x : EuclideanSpace ℝ ι ↦ eval x p) :=
     continuous_eval p |>.locallyIntegrable
   apply (ProperSpace.isCompact_closedBall _ _).ae_eq_zero_of_integral_contDiff_smul_eq_zero
