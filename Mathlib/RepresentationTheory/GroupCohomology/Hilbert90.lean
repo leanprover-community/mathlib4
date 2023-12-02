@@ -128,7 +128,7 @@ variable (g : L ≃ₐ[K] L) (hg : ∀ h, h ∈ Submonoid.powers g)
 
 /-- Given a finite cyclic Galois extension `L/K`, an element `x : L` such that `N_{L/K}(x) = 1`,
 and a generator `g` of `Gal(L/K)`, there exists `y : Lˣ` such that `g(y)/y = x`. -/
-theorem hilbert90Cyclic (x : L) (hx : Algebra.norm K x = 1) : ∃ y : Lˣ, g y / y = x := by
+theorem hilbert90_cyclic (x : L) (hx : Algebra.norm K x = 1) : ∃ y : Lˣ, g y / y = x := by
   let xu : Lˣ := (Ne.isUnit (fun h0 => zero_ne_one ((Algebra.norm_zero).symm.trans
      (h0 ▸ hx))) : IsUnit x).unit
   have hx' : algebraMap K L (Algebra.norm K (xu : L)) = _ := congrArg (algebraMap K L) hx
