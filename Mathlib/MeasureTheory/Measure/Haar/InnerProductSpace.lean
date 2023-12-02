@@ -139,7 +139,7 @@ theorem volume_ball (x : EuclideanSpace ℝ (Fin 2)) (r : ℝ) :
         have : MeasurePreserving (_ : ℝ × ℝ ≃ᵐ EuclideanSpace ℝ (Fin 2)) :=
           MeasurePreserving.trans
             (volume_preserving_finTwoArrow ℝ).symm (volume_preserving_measurableEquiv (Fin 2)).symm
-        rw [←this.measure_preimage_emb (MeasurableEquiv.measurableEmbedding _),
+        rw [← this.measure_preimage_emb (MeasurableEquiv.measurableEmbedding _),
           ball_zero_eq _ zero_le_one, preimage_setOf_eq]
         simp only [MeasurableEquiv.finTwoArrow_symm_apply, Fin.sum_univ_two, preimage_setOf_eq,
           Fin.cons_zero, Fin.cons_one, one_pow, Function.comp_apply, coe_measurableEquiv_symm,
