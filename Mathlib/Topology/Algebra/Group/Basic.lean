@@ -820,24 +820,24 @@ theorem nhds_translation_mul_inv (x : G) : comap (fun y : G => y * x⁻¹) (𝓝
 #align nhds_translation_add_neg nhds_translation_add_neg
 
 @[to_additive (attr := simp)]
-theorem map_mul_left_nhds (x y : G) : map ((· * ·) x) (𝓝 y) = 𝓝 (x * y) :=
+theorem map_mul_left_nhds (x y : G) : map (x * ·) (𝓝 y) = 𝓝 (x * y) :=
   (Homeomorph.mulLeft x).map_nhds_eq y
 #align map_mul_left_nhds map_mul_left_nhds
 #align map_add_left_nhds map_add_left_nhds
 
 @[to_additive]
-theorem map_mul_left_nhds_one (x : G) : map ((· * ·) x) (𝓝 1) = 𝓝 x := by simp
+theorem map_mul_left_nhds_one (x : G) : map (x * ·) (𝓝 1) = 𝓝 x := by simp
 #align map_mul_left_nhds_one map_mul_left_nhds_one
 #align map_add_left_nhds_zero map_add_left_nhds_zero
 
 @[to_additive (attr := simp)]
-theorem map_mul_right_nhds (x y : G) : map (fun z => z * x) (𝓝 y) = 𝓝 (y * x) :=
+theorem map_mul_right_nhds (x y : G) : map (· * x) (𝓝 y) = 𝓝 (y * x) :=
   (Homeomorph.mulRight x).map_nhds_eq y
 #align map_mul_right_nhds map_mul_right_nhds
 #align map_add_right_nhds map_add_right_nhds
 
 @[to_additive]
-theorem map_mul_right_nhds_one (x : G) : map (fun y => y * x) (𝓝 1) = 𝓝 x := by simp
+theorem map_mul_right_nhds_one (x : G) : map (· * x) (𝓝 1) = 𝓝 x := by simp
 #align map_mul_right_nhds_one map_mul_right_nhds_one
 #align map_add_right_nhds_zero map_add_right_nhds_zero
 
@@ -1595,11 +1595,23 @@ theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1)
   _ ⊆ V * V := mul_subset_mul hW hW
   _ ⊆ U := hV
 
-variable (S : Subgroup G) [Subgroup.Normal S] [IsClosed (S : Set G)]
+namespace Subgroup
+
+variable (S : Subgroup G)
+
+@[to_additive] lemma disjoint_nhds_of_discrete [d : DiscreteTopology S] :
+    ∃ U ∈ 𝓝 (1 : G), ∀ g ∈ S, (g * ·) '' U ∩ U ≠ ∅ ∨ (· * g) '' U ∩ U ≠ ∅ → g = 1 := by
+  simp_rw [← Set.nonempty_iff_ne_empty]
+  obtain ⟨V, hV⟩ := nhds_inter_eq_singleton_of_mem_discrete S.one_mem
+  obtain ⟨U, hU, -, hUinv, hUV⟩ := exists_closed_nhds_one_inv_eq_mul_subset hV.1
+  refine ⟨U, hU, fun g hgS ↦ ?_⟩
+  rintro (⟨_, ⟨x, hx, rfl⟩, hgx⟩|⟨_, ⟨x, hx, rfl⟩, hxg⟩) <;>
+    refine hV.2.subset ⟨hUV ?_, hgS⟩ <;> rw [← hUinv] at hx
+  · exact ⟨_, _, hgx, hx, by simp⟩
+  · exact ⟨_, _, hx, hxg, by simp⟩
 
 @[to_additive]
-instance Subgroup.t3_quotient_of_isClosed (S : Subgroup G) [Subgroup.Normal S]
-    [hS : IsClosed (S : Set G)] : T3Space (G ⧸ S) := by
+instance t3_quotient_of_isClosed [S.Normal] [hS : IsClosed (S : Set G)] : T3Space (G ⧸ S) := by
   rw [← QuotientGroup.ker_mk' S] at hS
   haveI := TopologicalGroup.t1Space (G ⧸ S) (quotientMap_quotient_mk'.isClosed_preimage.mp hS)
   infer_instance
@@ -1613,7 +1625,7 @@ it is discrete in the sense that `S ∩ K` is finite for all compact `K`. (See a
   "A subgroup `S` of an additive topological group `G` acts on `G` properly
   discontinuously on the left, if it is discrete in the sense that `S ∩ K` is finite for all compact
   `K`. (See also `DiscreteTopology`."]
-theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
+theorem properlyDiscontinuousSMul_of_tendsto_cofinite
     (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul S G :=
   { finite_disjoint_inter_image := by
       intro K L hK hL
@@ -1641,7 +1653,7 @@ to show that the quotient group `G ⧸ S` is Hausdorff. -/
 
   If `G` is Hausdorff, this can be combined with `t2Space_of_properlyDiscontinuousVAdd_of_t2Space`
   to show that the quotient group `G ⧸ S` is Hausdorff."]
-theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Subgroup G)
+theorem properlyDiscontinuousSMul_opposite_of_tendsto_cofinite
     (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul S.op G :=
   { finite_disjoint_inter_image := by
       intro K L hK hL
@@ -1656,6 +1668,8 @@ theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Sub
       exact Set.op_smul_inter_ne_empty_iff }
 #align subgroup.properly_discontinuous_smul_opposite_of_tendsto_cofinite Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite
 #align add_subgroup.properly_discontinuous_vadd_opposite_of_tendsto_cofinite AddSubgroup.properlyDiscontinuousVAdd_opposite_of_tendsto_cofinite
+
+end Subgroup
 
 end
 
