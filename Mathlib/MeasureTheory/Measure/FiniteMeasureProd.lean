@@ -40,7 +40,7 @@ variable {α : Type*} [MeasurableSpace α] {β : Type*} [MeasurableSpace β]
 
 /-- The binary product of finite measures. -/
 noncomputable def prod (μ : FiniteMeasure α) (ν : FiniteMeasure β) : FiniteMeasure (α × β) :=
-  ⟨μ.toMeasure.prod ν.toMeasure, Measure.prod.instIsFiniteMeasure μ.toMeasure ν.toMeasure⟩
+  ⟨μ.toMeasure.prod ν.toMeasure, inferInstance⟩
 
 variable (μ : FiniteMeasure α) (ν : FiniteMeasure β)
 
@@ -48,11 +48,11 @@ variable (μ : FiniteMeasure α) (ν : FiniteMeasure β)
 
 lemma prod_apply (s : Set (α × β)) (s_mble : MeasurableSet s) :
     μ.prod ν s = ENNReal.toNNReal (∫⁻ x, ν.toMeasure (Prod.mk x ⁻¹' s) ∂μ) := by
-  simp [@Measure.prod_apply α β _ _ μ ν _ s s_mble]
+  simp [Measure.prod_apply s_mble]
 
 lemma prod_apply_symm (s : Set (α × β)) (s_mble : MeasurableSet s) :
     μ.prod ν s = ENNReal.toNNReal (∫⁻ y, μ.toMeasure ((fun x ↦ ⟨x, y⟩) ⁻¹' s) ∂ν) := by
-  simp [@Measure.prod_apply_symm α β _ _ μ ν _ _ s s_mble]
+  simp [Measure.prod_apply_symm s_mble]
 
 lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by simp
 
@@ -67,21 +67,21 @@ lemma zero_prod : (0 : FiniteMeasure α).prod ν = 0 := by
 lemma prod_zero : μ.prod (0 : FiniteMeasure β) = 0 := by
   rw [← mass_zero_iff, mass_prod, zero_mass, mul_zero]
 
-@[simp] lemma map_fst_prod : (μ.prod ν).map Prod.fst = (ν univ) • μ := by
+@[simp] lemma map_fst_prod : (μ.prod ν).map Prod.fst = ν univ • μ := by
   apply Subtype.ext
   simp only [val_eq_toMeasure, toMeasure_map, toMeasure_prod, Measure.map_fst_prod]
   ext s _
   simp only [Measure.smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply, smul_eq_mul]
-  have aux := @coeFn_smul_apply α _ ℝ≥0 _ _ _ _ _ (ν univ) μ s
+  have aux := coeFn_smul_apply (ν univ) μ s
   simpa using congr_arg ENNReal.ofNNReal aux.symm
 
-@[simp] lemma map_snd_prod : (μ.prod ν).map Prod.snd = (μ univ) • ν := by
+@[simp] lemma map_snd_prod : (μ.prod ν).map Prod.snd = μ univ • ν := by
   apply Subtype.ext
   simp only [val_eq_toMeasure, toMeasure_map, toMeasure_prod, Measure.map_fst_prod]
   ext s _
   simp only [Measure.map_snd_prod, Measure.smul_toOuterMeasure, OuterMeasure.coe_smul,
     Pi.smul_apply, smul_eq_mul]
-  have aux := @coeFn_smul_apply β _ ℝ≥0 _ _ _ _ _ (μ univ) ν s
+  have aux := coeFn_smul_apply (μ univ) ν s
   simpa using congr_arg ENNReal.ofNNReal aux.symm
 
 lemma map_prod_map {α' : Type*} [MeasurableSpace α'] {β' : Type*} [MeasurableSpace β']
@@ -89,7 +89,7 @@ lemma map_prod_map {α' : Type*} [MeasurableSpace α'] {β' : Type*} [Measurable
     (μ.map f).prod (ν.map g) = (μ.prod ν).map (Prod.map f g) := by
   apply Subtype.ext
   simp only [val_eq_toMeasure, toMeasure_prod, toMeasure_map]
-  rw [Measure.map_prod_map _ _ f_mble g_mble] <;> exact IsFiniteMeasure.toSigmaFinite _
+  rw [Measure.map_prod_map _ _ f_mble g_mble] <;> infer_instance
 
 lemma prod_swap : (μ.prod ν).map Prod.swap = ν.prod μ := by
   apply Subtype.ext
@@ -116,11 +116,11 @@ variable (μ : ProbabilityMeasure α) (ν : ProbabilityMeasure β)
 
 lemma prod_apply (s : Set (α × β)) (s_mble : MeasurableSet s) :
     μ.prod ν s = ENNReal.toNNReal (∫⁻ x, ν.toMeasure (Prod.mk x ⁻¹' s) ∂μ) := by
-  simp [@Measure.prod_apply α β _ _ μ ν _ s s_mble]
+  simp [Measure.prod_apply s_mble]
 
 lemma prod_apply_symm (s : Set (α × β)) (s_mble : MeasurableSet s) :
     μ.prod ν s = ENNReal.toNNReal (∫⁻ y, μ.toMeasure ((fun x ↦ ⟨x, y⟩) ⁻¹' s) ∂ν) := by
-  simp [@Measure.prod_apply_symm α β _ _ μ ν _ _ s s_mble]
+  simp [Measure.prod_apply_symm s_mble]
 
 lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by simp
 
@@ -142,8 +142,7 @@ lemma map_prod_map {α' : Type*} [MeasurableSpace α'] {β' : Type*} [Measurable
       = (μ.prod ν).map (f_mble.prod_map g_mble).aemeasurable := by
   apply Subtype.ext
   simp only [val_eq_to_measure, toMeasure_prod, toMeasure_map]
-  rw [Measure.map_prod_map _ _ f_mble g_mble] <;>
-    exact IsFiniteMeasure.toSigmaFinite (Measure.map _ _)
+  rw [Measure.map_prod_map _ _ f_mble g_mble] <;> infer_instance
 
 lemma prod_swap : (μ.prod ν).map measurable_swap.aemeasurable = ν.prod μ := by
   apply Subtype.ext
