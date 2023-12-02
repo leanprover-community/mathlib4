@@ -283,7 +283,7 @@ theorem IsOpen.ae_eq_zero_of_integral_contDiff_smul_eq_zero {U : Set E}
     ∀ᵐ x ∂μ, x ∈ U → f x = 0 := by
   rcases exists_contDiff_support_eq_eq_one_iff hU isClosed_empty (empty_subset _) with
     ⟨u, u_smooth, u_range, u_supp, -⟩
-  let f' := fun x ↦ u x • f x
+  let f' x := u x • f x
   have A : ∀ (g : E → ℝ), ContDiff ℝ ⊤ g → HasCompactSupport g → ∫ x, g x • f' x ∂μ = 0 := by
     intro g g_smooth _g_comp
     simp only [smul_smul]
@@ -298,11 +298,10 @@ theorem IsOpen.ae_eq_zero_of_integral_contDiff_smul_eq_zero {U : Set E}
     apply Integrable.mono hv
       (AEStronglyMeasurable.smul u_smooth.continuous.aestronglyMeasurable hv.1)
     apply Filter.eventually_of_forall (fun y ↦ ?_)
-    simp only [norm_smul, Real.norm_eq_abs, gt_iff_lt, norm_pos_iff, ne_eq]
+    rw [norm_smul]
     apply mul_le_of_le_one_left (norm_nonneg _)
-    simp only [ge_iff_le, zero_le_one, not_true_eq_false, gt_iff_lt, range_subset_iff, mem_Icc]
-      at u_range
-    rw [abs_of_nonneg (u_range y).1]
+    rw [range_subset_iff] at u_range
+    rw [Real.norm_eq_abs, abs_of_nonneg (u_range y).1]
     exact (u_range y).2
   have : ∀ᵐ x ∂μ, f' x = 0 := _root_.ae_eq_zero_of_integral_contDiff_smul_eq_zero B A
   filter_upwards [this] with x hx xU
