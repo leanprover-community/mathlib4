@@ -269,10 +269,14 @@ variable [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
 variable [MeasurableSpace E] [BorelSpace E] {f f' : E → F} {μ : Measure E}
 
 -- variant of ae_eq_zero_of_integral_contDiff_smul_eq_zero, not sure what we exactly need on `K`.
-theorem IsCompact.ae_eq_zero_of_integral_contDiff_smul_eq_zero {K : Set E}
-    (hU : IsCompact K) (hf : LocallyIntegrableOn f K μ)
+nonrec theorem IsClosed.ae_eq_zero_of_integral_contDiff_smul_eq_zero {K : Set E}
+    (hU : IsClosed K) (hf : LocallyIntegrableOn f K μ)
     (h : ∀ (g : E → ℝ), ContDiff ℝ ⊤ g → tsupport g ⊆ K → ∫ x, g x • f x ∂μ = 0) :
     ∀ᵐ x ∂μ, x ∈ K → f x = 0 := by
+  rw [← ae_restrict_iff'₀]
+  · rw [locallyIntegrableOn_iff_locallyIntegrable_restrict hU] at hf
+    refine ae_eq_zero_of_integral_contDiff_smul_eq_zero hf fun g diff_g supp_g ↦ ?_
+
   sorry
 
 end real
@@ -298,11 +302,19 @@ lemma restrictTotalDegree_eq_span {n : ℕ} :
     · rw [Subsingleton.elim ((fun c ↦ monomial c 1) c) 0, totalDegree_zero]; apply zero_le
     · rw [totalDegree_monomial _ one_ne_zero]; exact hc
 
-/- Is this really missing?? -/
+/- Can be obtained by combining `LinearMap.proj` and `MvPolynomial.evalₗ`. -/
 def evalAtₗ {R σ : Type*} [CommSemiring R] (x : σ → R) : MvPolynomial σ R →ₗ[R] R where
   toFun P := eval x P
   map_add' := by simp
   map_smul' := by simp
+
+lemma analyticOn_eval (R σ) [Fintype σ] [NontriviallyNormedField R] (P : MvPolynomial σ R) :
+    AnalyticOn R (eval · P) univ := fun x _ ↦ by
+  apply P.induction_on (fun r ↦ ?_) (fun p q hp hq ↦ ?_) fun p i hp ↦ ?_
+  · simp_rw [eval_C]; exact analyticAt_const
+  · simp_rw [eval_add]; exact hp.add hq
+  · simp_rw [eval_mul, eval_X]
+    exact hp.mul ((ContinuousLinearMap.proj (R := R) (φ := fun _ ↦ R) i).analyticAt _)
 
 lemma finite_stuff' [Finite σ] (N : ℕ) : {s : Multiset σ | Multiset.card s ≤ N}.Finite := by
   classical
@@ -355,8 +367,7 @@ open Module Submodule BigOperators
 variable {K V V' ι : Type*} [Field K] [AddCommGroup V] [Module K V] [AddCommGroup V'] [Module K V']
    {B : V' →ₗ[K] Dual K V} {m : ι → V'}
 
-lemma surj_of_inj (hB : Function.Injective B) [FiniteDimensional K V'] :
-    Function.Surjective B.flip := by
+lemma flip_surj_of_inj (hB : Injective B) [FiniteDimensional K V'] : Surjective B.flip := by
   rw [← LinearMap.range_eq_top]
   apply Submodule.eq_top_of_finrank_eq
   set W : Subspace K _ := LinearMap.range B.flip
