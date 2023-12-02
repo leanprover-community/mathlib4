@@ -268,41 +268,46 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensi
 variable [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
 variable [MeasurableSpace E] [BorelSpace E] {f f' : E → F} {μ : Measure E}
 
--- variant of ae_eq_zero_of_integral_contDiff_smul_eq_zero, not sure what we exactly need on `K`.
-nonrec theorem IsCompact.ae_eq_zero_of_integral_contDiff_smul_eq_zero {K : Set E}
-    (hK : IsCompact K) (hf : LocallyIntegrableOn f K μ)
-    (h : ∀ (g : E → ℝ), ContDiff ℝ ⊤ g → tsupport g ⊆ K → ∫ x, g x • f x ∂μ = 0) :
-    ∀ᵐ x ∂μ, x ∈ K → f x = 0 := by
-  sorry
+open scoped Topology Manifold
 
-open scoped Manifold in
+theorem exists_contDiff_support_eq_eq_one_iff
+    {s t : Set E} (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
+    ∃ f : E → ℝ, ContDiff ℝ ⊤ f ∧ range f ⊆ Icc 0 1 ∧ support f = s
+      ∧ (∀ x, x ∈ t ↔ f x = 1) := by
+  rcases exists_msmooth_support_eq_eq_one_iff 𝓘(ℝ, E) hs ht h with ⟨f, f_smooth, hf⟩
+  exact ⟨f, f_smooth.contDiff, hf⟩
+
 theorem IsOpen.ae_eq_zero_of_integral_contDiff_smul_eq_zero {U : Set E}
-    (hU : IsOpen U) (hf : LocallyIntegrableOn f U μ)
-    (h : ∀ (g : E → ℝ), ContDiff ℝ ⊤ g → tsupport g ⊆ U → ∫ x, g x • f x ∂μ = 0) :
+    (hU : IsOpen U) (hf : LocallyIntegrable f μ)
+    (h : ∀ (g : E → ℝ), ContDiff ℝ ⊤ g → support g ⊆ U → ∫ x, g x • f x ∂μ = 0) :
     ∀ᵐ x ∂μ, x ∈ U → f x = 0 := by
-  let U : TopologicalSpace.Opens E := ⟨U, hU⟩
-  have meas_U := U.isOpen.measurableSet
-  change ∀ᵐ x ∂μ, x ∈ (U : Set E) → _
-  rw [← ae_restrict_iff'₀ meas_U.nullMeasurableSet, ae_restrict_iff_subtype meas_U]
-  haveI := U.isOpen.locallyCompactSpace
-  apply ae_eq_zero_of_integral_smooth_smul_eq_zero 𝓘(ℝ, E)
-  · rw [locallyIntegrable_iff]
-    intro K hK
-    have hK' := hK.image continuous_induced_dom
-    have emb := MeasurableEmbedding.subtype_coe meas_U
-    exact (MeasurePreserving.integrableOn_image
-      ⟨measurable_subtype_coe, (emb.map_comap μ).trans <| by rw [Subtype.range_val]⟩ emb).mp
-        (((locallyIntegrableOn_iff <| .inr U.isOpen).mp hf K image_val_subset hK').restrict
-          hK'.measurableSet)
-  intro g g_diff g_supp
-  obtain ⟨G, G_diff, -, G0, G1⟩ := exists_msmooth_zero_iff_one_iff_of_closed 𝓘(ℝ, E)
-    U.isOpen.isClosed_compl (g_supp.image continuous_induced_dom).isClosed
-    image_val_subset.disjoint_compl_left
-  classical
-  specialize h (fun x ↦ if hx : x ∈ U then G x * g ⟨x, hx⟩ else 0) _ _
-  sorry
-  sorry
-  sorry
+  rcases exists_contDiff_support_eq_eq_one_iff hU isClosed_empty (empty_subset _) with
+    ⟨u, u_smooth, u_range, u_supp, -⟩
+  let f' := fun x ↦ u x • f x
+  have A : ∀ (g : E → ℝ), ContDiff ℝ ⊤ g → HasCompactSupport g → ∫ x, g x • f' x ∂μ = 0 := by
+    intro g g_smooth _g_comp
+    simp only [smul_smul]
+    apply h _ (g_smooth.mul u_smooth)
+    rw [← u_supp]
+    exact support_mul_subset_right _ _
+  have B : LocallyIntegrable f' μ := by
+    /- Should extract a lemma `LocallyIntegrableOn.mono_function` -/
+    intro x
+    rcases hf x with ⟨v, v_mem, hv⟩
+    refine ⟨v, v_mem, ?_⟩
+    apply Integrable.mono hv
+      (AEStronglyMeasurable.smul u_smooth.continuous.aestronglyMeasurable hv.1)
+    apply Filter.eventually_of_forall (fun y ↦ ?_)
+    simp only [norm_smul, Real.norm_eq_abs, gt_iff_lt, norm_pos_iff, ne_eq]
+    apply mul_le_of_le_one_left (norm_nonneg _)
+    simp only [ge_iff_le, zero_le_one, not_true_eq_false, gt_iff_lt, range_subset_iff, mem_Icc]
+      at u_range
+    rw [abs_of_nonneg (u_range y).1]
+    exact (u_range y).2
+  have : ∀ᵐ x ∂μ, f' x = 0 := _root_.ae_eq_zero_of_integral_contDiff_smul_eq_zero B A
+  filter_upwards [this] with x hx xU
+  rw [← u_supp, Function.mem_support] at xU
+  simpa [xU] using hx
 
 end real
 
@@ -544,28 +549,32 @@ def L :
       simp only [← evalₗ_apply, SMulHomClass.map_smul, ← smul_assoc]
       rfl
 
+lemma foo {E : Type*} [NormedAddCommGroup E]
+    (g : E → ℝ) (hg : support g ⊆ ball 0 1) :  tsupport g ⊆ closedBall 0 1 := by
+  exact (closure_mono hg).trans closure_ball_subset_closedBall
+
 open Topology
 lemma inj_L (ι : Type*) [Fintype ι] : Injective (L (ι := ι)) := by
   rw [injective_iff_map_eq_zero]
   intro p hp
-  suffices : ∀ᵐ x : EuclideanSpace ℝ ι, x ∈ ball 0 1 → eval x p = 0
-  · simp_rw [MvPolynomial.funext_iff, map_zero]
+  suffices H : ∀ᵐ x : EuclideanSpace ℝ ι, x ∈ ball 0 1 → eval x p = 0 by
+    simp_rw [MvPolynomial.funext_iff, map_zero]
     refine fun x ↦ (analyticOn_eval p).eqOn_zero_of_preconnected_of_eventuallyEq_zero
       ?_ (z₀ := 0) trivial ?_ trivial
     · rw [← preconnectedSpace_iff_univ]; infer_instance
     · refine Filter.mem_of_superset (Metric.ball_mem_nhds 0 zero_lt_one) ?_
       --have := this.mono fun x hx mem_ball ↦ hx (Metric.ball_subset_closedBall mem_ball)
-      rw [← ae_restrict_iff'₀ measurableSet_ball.nullMeasurableSet] at this
-      apply Measure.eqOn_of_ae_eq this
+      rw [← ae_restrict_iff'₀ measurableSet_ball.nullMeasurableSet] at H
+      apply Measure.eqOn_of_ae_eq H
       · exact (analyticOn_eval p).continuous.continuousOn
       · exact continuousOn_const
       · rw [isOpen_ball.interior_eq]; apply subset_closure
   have h2p : LocallyIntegrable (fun x : EuclideanSpace ℝ ι ↦ eval x p) :=
     continuous_eval p |>.locallyIntegrable
-  apply isOpen_ball.ae_eq_zero_of_integral_contDiff_smul_eq_zero (h2p.locallyIntegrableOn _)
+  apply isOpen_ball.ae_eq_zero_of_integral_contDiff_smul_eq_zero h2p
   intro g hg h2g
   let ϕ : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1) :=
-    ⟨g, h2g.trans Metric.ball_subset_closedBall, hg⟩
+    ⟨g, (closure_mono h2g).trans closure_ball_subset_closedBall, hg⟩
   apply_fun (· ϕ) at hp
   simpa [mul_comm (g _), L] using hp
 
@@ -578,6 +587,8 @@ lemma hairer (N : ℕ) (ι : Type*) [Fintype ι] :
   obtain ⟨⟨φ, supφ, difφ⟩, hφ⟩ := flip_surj_of_inj this ((evalAtₗ 0).comp <| Submodule.subtype _)
   refine ⟨φ, supφ, difφ, fun P hP ↦ ?_⟩
   exact FunLike.congr_fun hφ ⟨P, (mem_restrictTotalDegree ι N P).mpr hP⟩
+
+#printaxioms hairer
 
 lemma hairer2 (N : ℕ) (ι : Type*) [Fintype ι] :
     ∃ (ρ : EuclideanSpace ℝ ι → ℝ), tsupport ρ ⊆ closedBall 0 1 ∧ ContDiff ℝ ⊤ ρ ∧
