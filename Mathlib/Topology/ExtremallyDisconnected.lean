@@ -58,11 +58,11 @@ instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
     obtain ⟨U, V, hUV⟩ := T2Space.t2 x y hxy
     refine ⟨closure U, (closure U)ᶜ, ExtremallyDisconnected.open_closure U hUV.1,
       by simp only [isOpen_compl_iff, isClosed_closure], subset_closure hUV.2.2.1, ?_,
-      by simp only [Set.union_compl_self, Set.subset_univ], disjoint_compl_right⟩
-    rw [Set.mem_compl_iff, mem_closure_iff]
+      by simp only [union_compl_self, subset_univ], disjoint_compl_right⟩
+    rw [mem_compl_iff, mem_closure_iff]
     push_neg
     refine' ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, _⟩⟩
-    rw [← Set.disjoint_iff_inter_eq_empty, disjoint_comm]
+    rw [← disjoint_iff_inter_eq_empty, disjoint_comm]
     exact hUV.2.2.2.2 }
 
 end TotallySeparated
@@ -83,8 +83,8 @@ variable {X}
 
 theorem StoneCech.projective [DiscreteTopology X] : CompactT2.Projective (StoneCech X) := by
   intro Y Z _tsY _tsZ _csY _t2Y _csZ _csZ f g hf hg g_sur
-  let s : Z → Y := fun z => Classical.choose <| g_sur z
-  have hs : g ∘ s = id := funext fun z => Classical.choose_spec (g_sur z)
+  let s : Z → Y := fun z => choose <| g_sur z
+  have hs : g ∘ s = id := funext fun z => choose_spec (g_sur z)
   let t := s ∘ f ∘ stoneCechUnit
   have ht : Continuous t := continuous_of_discreteTopology
   let h : StoneCech X → Y := stoneCechExtend ht

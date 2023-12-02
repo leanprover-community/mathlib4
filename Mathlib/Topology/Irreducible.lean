@@ -129,14 +129,14 @@ theorem irreducibleComponents_eq_maximals_closed (X : Type*) [TopologicalSpace X
 
 /-- A maximal irreducible set that contains a given point. -/
 def irreducibleComponent (x : X) : Set X :=
-  Classical.choose (exists_preirreducible {x} isPreirreducible_singleton)
+  choose (exists_preirreducible {x} isPreirreducible_singleton)
 #align irreducible_component irreducibleComponent
 
 theorem irreducibleComponent_property (x : X) :
     IsPreirreducible (irreducibleComponent x) ∧
       {x} ⊆ irreducibleComponent x ∧
         ∀ u, IsPreirreducible u → irreducibleComponent x ⊆ u → u = irreducibleComponent x :=
-  Classical.choose_spec (exists_preirreducible {x} isPreirreducible_singleton)
+  choose_spec (exists_preirreducible {x} isPreirreducible_singleton)
 #align irreducible_component_property irreducibleComponent_property
 
 theorem mem_irreducibleComponent {x : X} : x ∈ irreducibleComponent x :=
@@ -227,7 +227,7 @@ theorem Subtype.preirreducibleSpace (h : IsPreirreducible s) : PreirreducibleSpa
   isPreirreducible_univ := by
     rintro _ _ ⟨u, hu, rfl⟩ ⟨v, hv, rfl⟩ ⟨⟨x, hxs⟩, -, hxu⟩ ⟨⟨y, hys⟩, -, hyv⟩
     rcases h u v hu hv ⟨x, hxs, hxu⟩ ⟨y, hys, hyv⟩ with ⟨x, hxs, ⟨hxu, hxv⟩⟩
-    exact ⟨⟨x, hxs⟩, ⟨Set.mem_univ _, ⟨hxu, hxv⟩⟩⟩
+    exact ⟨⟨x, hxs⟩, ⟨mem_univ _, ⟨hxu, hxv⟩⟩⟩
 #align subtype.preirreducible_space Subtype.preirreducibleSpace
 
 theorem Subtype.irreducibleSpace (h : IsIrreducible s) : IrreducibleSpace s where
@@ -333,8 +333,8 @@ theorem IsPreirreducible.preimage (ht : IsPreirreducible t) {f : Y → X}
     (hf : OpenEmbedding f) : IsPreirreducible (f ⁻¹' t) := by
   rintro U V hU hV ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
   obtain ⟨_, h₁, ⟨y, h₂, rfl⟩, ⟨y', h₃, h₄⟩⟩ :=
-    ht _ _ (hf.isOpenMap _ hU) (hf.isOpenMap _ hV) ⟨f x, hx, Set.mem_image_of_mem f hx'⟩
-      ⟨f y, hy, Set.mem_image_of_mem f hy'⟩
+    ht _ _ (hf.isOpenMap _ hU) (hf.isOpenMap _ hV) ⟨f x, hx, mem_image_of_mem f hx'⟩
+      ⟨f y, hy, mem_image_of_mem f hy'⟩
   cases hf.inj h₄
   exact ⟨y, h₁, h₂, h₃⟩
 #align is_preirreducible.preimage IsPreirreducible.preimage

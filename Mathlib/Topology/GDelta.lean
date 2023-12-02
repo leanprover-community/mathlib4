@@ -61,7 +61,7 @@ def IsGδ (s : Set X) : Prop :=
 
 /-- An open set is a Gδ set. -/
 theorem IsOpen.isGδ {s : Set X} (h : IsOpen s) : IsGδ s :=
-  ⟨{s}, by simp [h], countable_singleton _, (Set.sInter_singleton _).symm⟩
+  ⟨{s}, by simp [h], countable_singleton _, (sInter_singleton _).symm⟩
 #align is_open.is_Gδ IsOpen.isGδ
 
 @[simp]
@@ -204,7 +204,7 @@ variable [TopologicalSpace X]
 
 /-- A set `s` is called *residual* if it includes a countable intersection of dense open sets. -/
 def residual (X : Type*) [TopologicalSpace X] : Filter X :=
-  Filter.countableGenerate { t | IsOpen t ∧ Dense t }
+  countableGenerate { t | IsOpen t ∧ Dense t }
 #align residual residual
 
 instance countableInterFilter_residual : CountableInterFilter (residual X) := by
@@ -272,11 +272,11 @@ def IsMeagre (s : Set X) := sᶜ ∈ residual X
 /-- The empty set is meagre. -/
 lemma meagre_empty : IsMeagre (∅ : Set X) := by
   rw [IsMeagre, compl_empty]
-  exact Filter.univ_mem
+  exact univ_mem
 
 /-- Subsets of meagre sets are meagre. -/
 lemma IsMeagre.mono {s t : Set X} (hs : IsMeagre s) (hts: t ⊆ s) : IsMeagre t :=
-  Filter.mem_of_superset hs (compl_subset_compl.mpr hts)
+  mem_of_superset hs (compl_subset_compl.mpr hts)
 
 /-- An intersection with a meagre set is meagre. -/
 lemma IsMeagre.inter {s t : Set X} (hs : IsMeagre s) : IsMeagre (s ∩ t) :=

@@ -110,7 +110,7 @@ def proj : X → S := Quotient.mk''
 #align discrete_quotient.proj DiscreteQuotient.proj
 
 theorem fiber_eq (x : X) : S.proj ⁻¹' {S.proj x} = setOf (S.Rel x) :=
-  Set.ext fun _ => eq_comm.trans Quotient.eq''
+  ext fun _ => eq_comm.trans Quotient.eq''
 #align discrete_quotient.fiber_eq DiscreteQuotient.fiber_eq
 
 theorem proj_surjective : Function.Surjective S.proj :=

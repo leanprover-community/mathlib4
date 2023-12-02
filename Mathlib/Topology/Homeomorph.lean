@@ -28,7 +28,7 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 
 -/
 
-open Set Filter
+open Set Filter Function
 
 open Topology
 
@@ -52,7 +52,7 @@ namespace Homeomorph
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
   {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 
-theorem toEquiv_injective : Function.Injective (toEquiv : X ≃ₜ Y → X ≃ Y)
+theorem toEquiv_injective : Injective (toEquiv : X ≃ₜ Y → X ≃ Y)
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 #align homeomorph.to_equiv_injective Homeomorph.toEquiv_injective
 
@@ -79,8 +79,8 @@ protected def symm (h : X ≃ₜ Y) : Y ≃ₜ X where
 @[simp] theorem symm_symm (h : X ≃ₜ Y) : h.symm.symm = h := rfl
 #align homeomorph.symm_symm Homeomorph.symm_symm
 
-theorem symm_bijective : Function.Bijective (Homeomorph.symm : (X ≃ₜ Y) → Y ≃ₜ X) :=
-  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+theorem symm_bijective : Bijective (Homeomorph.symm : (X ≃ₜ Y) → Y ≃ₜ X) :=
+  bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (h : X ≃ₜ Y) : Y → X :=
@@ -172,20 +172,20 @@ theorem symm_trans_self (h : X ≃ₜ Y) : h.symm.trans h = Homeomorph.refl Y :=
   apply apply_symm_apply
 #align homeomorph.symm_trans_self Homeomorph.symm_trans_self
 
-protected theorem bijective (h : X ≃ₜ Y) : Function.Bijective h :=
+protected theorem bijective (h : X ≃ₜ Y) : Bijective h :=
   h.toEquiv.bijective
 #align homeomorph.bijective Homeomorph.bijective
 
-protected theorem injective (h : X ≃ₜ Y) : Function.Injective h :=
+protected theorem injective (h : X ≃ₜ Y) : Injective h :=
   h.toEquiv.injective
 #align homeomorph.injective Homeomorph.injective
 
-protected theorem surjective (h : X ≃ₜ Y) : Function.Surjective h :=
+protected theorem surjective (h : X ≃ₜ Y) : Surjective h :=
   h.toEquiv.surjective
 #align homeomorph.surjective Homeomorph.surjective
 
 /-- Change the homeomorphism `f` to make the inverse function definitionally equal to `g`. -/
-def changeInv (f : X ≃ₜ Y) (g : Y → X) (hg : Function.RightInverse g f) : X ≃ₜ Y :=
+def changeInv (f : X ≃ₜ Y) (g : Y → X) (hg : RightInverse g f) : X ≃ₜ Y :=
   haveI : g = f.symm := (f.left_inv.eq_rightInverse hg).symm
   { toFun := f
     invFun := g
@@ -251,7 +251,7 @@ protected theorem embedding (h : X ≃ₜ Y) : Embedding h :=
 #align homeomorph.embedding Homeomorph.embedding
 
 /-- Homeomorphism given an embedding. -/
-noncomputable def ofEmbedding (f : X → Y) (hf : Embedding f) : X ≃ₜ Set.range f where
+noncomputable def ofEmbedding (f : X → Y) (hf : Embedding f) : X ≃ₜ range f where
   continuous_toFun := hf.continuous.subtype_mk _
   continuous_invFun := hf.continuous_iff.2 <| by simp [continuous_subtype_val]
   toEquiv := Equiv.ofInjective f hf.inj
@@ -491,7 +491,7 @@ theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (
 theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) ↔ IsOpenMap f := by
   refine' ⟨_, fun hf => h.isOpenMap.comp hf⟩
   intro hf
-  rw [← Function.comp.left_id f, ← h.symm_comp_self, Function.comp.assoc]
+  rw [← comp.left_id f, ← h.symm_comp_self, comp.assoc]
   exact h.symm.isOpenMap.comp hf
 #align homeomorph.comp_is_open_map_iff Homeomorph.comp_isOpenMap_iff
 
@@ -499,7 +499,7 @@ theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) 
 theorem comp_isOpenMap_iff' (h : X ≃ₜ Y) {f : Y → Z} : IsOpenMap (f ∘ h) ↔ IsOpenMap f := by
   refine' ⟨_, fun hf => hf.comp h.isOpenMap⟩
   intro hf
-  rw [← Function.comp.right_id f, ← h.self_comp_symm, ← Function.comp.assoc]
+  rw [← comp.right_id f, ← h.self_comp_symm, ← comp.assoc]
   exact hf.comp h.symm.isOpenMap
 #align homeomorph.comp_is_open_map_iff' Homeomorph.comp_isOpenMap_iff'
 

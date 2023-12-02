@@ -100,7 +100,7 @@ protected theorem tendsto_pure_self (l : Filter X) :
 /-- Neighborhoods of a countably generated filter is a countably generated filter. -/
 instance {l : Filter α} [IsCountablyGenerated l] : IsCountablyGenerated (𝓝 l) :=
   let ⟨_b, hb⟩ := l.exists_antitone_basis
-  HasCountableBasis.isCountablyGenerated <| ⟨hb.nhds, Set.to_countable _⟩
+  HasCountableBasis.isCountablyGenerated <| ⟨hb.nhds, to_countable _⟩
 
 theorem HasBasis.nhds' {l : Filter α} {p : ι → Prop} {s : ι → Set α} (h : HasBasis l p s) :
     HasBasis (𝓝 l) p fun i => { l' | s i ∈ l' } := by simpa only [Iic_principal] using h.nhds
@@ -168,7 +168,7 @@ protected theorem mem_interior {s : Set (Filter α)} {l : Filter α} :
 protected theorem mem_closure {s : Set (Filter α)} {l : Filter α} :
     l ∈ closure s ↔ ∀ t ∈ l, ∃ l' ∈ s, t ∈ l' := by
   simp only [closure_eq_compl_interior_compl, Filter.mem_interior, mem_compl_iff, not_exists,
-    not_forall, Classical.not_not, exists_prop, not_and, and_comm, subset_def, mem_Iic,
+    not_forall, not_not, exists_prop, not_and, and_comm, subset_def, mem_Iic,
     le_principal_iff]
 #align filter.mem_closure Filter.mem_closure
 
