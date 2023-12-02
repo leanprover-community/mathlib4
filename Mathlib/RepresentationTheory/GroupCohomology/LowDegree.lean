@@ -253,8 +253,8 @@ theorem mem_oneCocycles_of_map_generator (f : G → A) (g : G) (hgmem : ∀ x, x
 
 variable (A)
 
-/-- The `k`-linear map sending `x : A` to `∑ ρ_A(gⁱ)(x)` for `0 ≤ i < n.` Used for defining one
-cocycles when `G` is finite and cyclic. -/
+/-- The `k`-linear map sending `x : A` to `∑ ρ_A(gⁱ)(x)` for `0 ≤ i < n.` Used for defining
+1-cocycles when `G` is finite and cyclic. -/
 noncomputable def sumρPowers (g : G) (n : ℕ) : A →ₗ[k] A :=
 ∑ i in Finset.range n, A.ρ (g ^ i)
 

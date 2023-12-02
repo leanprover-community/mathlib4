@@ -11,15 +11,15 @@ import Mathlib.LinearAlgebra.LinearIndependent
 /-!
 # Hilbert's Theorem 90
 
-Let `L/K` be a finite extension of fields. Then this file proves 2 versions of Hilbert's theorem 90.
-The first is due to Noether, and a generalization of Hilbert's original statement. It says that the
-1st group cohomology $H^1(Aut_K(L), Lˣ)$ is trivial. We state it both in terms of $H^1$ and in
-terms of cocycles being coboundaries.
+This file proves 2 versions of Hilbert's theorem 90.
+The first is due to Noether, and is a generalization of Hilbert's original statement. It says that
+given a finite extension of fields $L/K,$ the 1st group cohomology $H^1(Aut_K(L), Lˣ)$ is trivial.
+We state it both in terms of $H^1$ and in terms of cocycles being coboundaries.
 Noether's generalization also holds for infinite Galois extensions.
 
-We then deduce Hilbert's original statement: if $L/K$ is Galois, and $Gal(L/K)$ is cyclic
-with a generator `σ`, then for every `x : L` such that $N_{L/K}(x) = 1,$ there exists `y : L` such
-that $x = σ(y)/y.$ We prove this using the fact that the function $Gal(L/K) → L^\times$
+We then deduce Hilbert's original statement: if $L/K$ is finite and Galois, and $Gal(L/K)$ is
+cyclic with a generator `σ`, then for every `x : L` such that $N_{L/K}(x) = 1,$ there exists `y : L`
+such that $x = σ(y)/y.$ We prove this by showing that the function $Gal(L/K) → L^\times$
 sending $σ^i \mapsto xσ(x)σ^2(x)...σ^{i-1}(x)$ is a 1-cocycle. Alternatively, we could derive it by
 analyzing the cohomology of finite cyclic groups in general.
 
@@ -48,7 +48,6 @@ for all $1 ≤ n.$
 
 -/
 
-universe u
 open BigOperators
 namespace groupCohomology
 namespace Hilbert90
