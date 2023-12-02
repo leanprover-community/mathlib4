@@ -655,15 +655,15 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 -- Bug #660
 attribute [to_additive existing] Monoid.toMulOneClass
 
-@[default_instance high] instance Monoid.Pow {M : Type*} [Monoid M] : Pow M ℕ :=
+@[default_instance high] instance Monoid.toNatPow {M : Type*} [Monoid M] : Pow M ℕ :=
   ⟨fun x n ↦ Monoid.npow n x⟩
-#align monoid.has_pow Monoid.Pow
+#align monoid.has_pow Monoid.toNatPow
 
-instance AddMonoid.SMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
+instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
   ⟨AddMonoid.nsmul⟩
-#align add_monoid.has_smul_nat AddMonoid.SMul
+#align add_monoid.has_smul_nat AddMonoid.toNatSMul
 
-attribute [to_additive existing SMul] Monoid.Pow
+attribute [to_additive existing toNatSMul] Monoid.toNatPow
 
 section
 

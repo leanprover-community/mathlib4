@@ -799,7 +799,7 @@ theorem secondCountable_of_separable [SeparableSpace α] : SecondCountableTopolo
     (@uniformity_hasBasis_open_symmetric α _).exists_antitone_subbasis
   choose ht_mem hto hts using hto
   refine' ⟨⟨⋃ x ∈ s, range fun k => ball x (t k), hsc.biUnion fun x _ => countable_range _, _⟩⟩
-  refine' (isTopologicalBasis_of_open_of_nhds _ _).eq_generateFrom
+  refine' (isTopologicalBasis_of_isOpen_of_nhds _ _).eq_generateFrom
   · simp only [mem_iUnion₂, mem_range]
     rintro _ ⟨x, _, k, rfl⟩
     exact isOpen_ball x (hto k)

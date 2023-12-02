@@ -310,7 +310,7 @@ theorem prod_map_inv' (m : Multiset α) : (m.map Inv.inv).prod = m.prod⁻¹ :=
 @[to_additive (attr := simp)]
 theorem prod_map_inv : (m.map fun i => (f i)⁻¹).prod = (m.map f).prod⁻¹ := by
   -- Porting note: used `convert`
-  simp_rw [←(m.map f).prod_map_inv', map_map, Function.comp_apply]
+  simp_rw [← (m.map f).prod_map_inv', map_map, Function.comp_apply]
 #align multiset.prod_map_inv Multiset.prod_map_inv
 #align multiset.sum_map_neg Multiset.sum_map_neg
 
@@ -426,6 +426,25 @@ theorem pow_card_le_prod (h : ∀ x ∈ s, a ≤ x) : a ^ card s ≤ s.prod := b
 #align multiset.card_nsmul_le_sum Multiset.card_nsmul_le_sum
 
 end OrderedCommMonoid
+
+section OrderedCancelCommMonoid
+
+variable [OrderedCancelCommMonoid α] {s : Multiset ι} {f g : ι → α}
+
+@[to_additive sum_lt_sum]
+theorem prod_lt_prod' (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i) :
+    (s.map f).prod < (s.map g).prod := by
+  obtain ⟨l⟩ := s
+  simp only [Multiset.quot_mk_to_coe'', Multiset.coe_map, Multiset.coe_prod]
+  exact List.prod_lt_prod' f g hle hlt
+
+@[to_additive sum_lt_sum_of_nonempty]
+theorem prod_lt_prod_of_nonempty' (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) :
+    (s.map f).prod < (s.map g).prod := by
+  obtain ⟨i, hi⟩ := exists_mem_of_ne_zero hs
+  exact prod_lt_prod' (fun i hi => le_of_lt (hfg i hi)) ⟨i, hi, hfg i hi⟩
+
+end OrderedCancelCommMonoid
 
 theorem prod_nonneg [OrderedCommSemiring α] {m : Multiset α} (h : ∀ a ∈ m, (0 : α) ≤ a) :
     0 ≤ m.prod := by

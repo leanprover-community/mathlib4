@@ -170,24 +170,27 @@ instance commGroup [∀ i, CommGroup <| f i] : CommGroup (∀ i : I, f i) :=
 #align pi.add_comm_group Pi.addCommGroup
 
 @[to_additive]
+instance [∀ i, Mul <| f i] [∀ i, IsLeftCancelMul <| f i] : IsLeftCancelMul (∀ i : I, f i) where
+  mul_left_cancel  _ _ _ h := funext <| fun _ => mul_left_cancel (congr_fun h _)
+
+@[to_additive]
+instance [∀ i, Mul <| f i] [∀ i, IsRightCancelMul <| f i] : IsRightCancelMul (∀ i : I, f i) where
+  mul_right_cancel  _ _ _ h := funext <| fun _ => mul_right_cancel (congr_fun h _)
+
+@[to_additive]
+instance [∀ i, Mul <| f i] [∀ i, IsCancelMul <| f i] : IsCancelMul (∀ i : I, f i) where
+
+@[to_additive]
 instance leftCancelSemigroup [∀ i, LeftCancelSemigroup <| f i] :
     LeftCancelSemigroup (∀ i : I, f i) :=
-  { semigroup with
-    --pi_instance
-    mul_left_cancel := by
-      intros _ _ _ h; ext; exact LeftCancelSemigroup.mul_left_cancel _ _ _ (congr_fun h _);
-  }
+  { semigroup with mul_left_cancel := fun _ _ _ => mul_left_cancel }
 #align pi.left_cancel_semigroup Pi.leftCancelSemigroup
 #align pi.add_left_cancel_semigroup Pi.addLeftCancelSemigroup
 
 @[to_additive]
 instance rightCancelSemigroup [∀ i, RightCancelSemigroup <| f i] :
     RightCancelSemigroup (∀ i : I, f i) :=
-  { semigroup with
-    --pi_instance
-    mul_right_cancel := by
-      intros _ _ _ h; ext; exact RightCancelSemigroup.mul_right_cancel _ _ _ (congr_fun h _)
-  }
+  { semigroup with mul_right_cancel := fun _ _ _ => mul_right_cancel }
 #align pi.right_cancel_semigroup Pi.rightCancelSemigroup
 #align pi.add_right_cancel_semigroup Pi.addRightCancelSemigroup
 

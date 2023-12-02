@@ -226,7 +226,7 @@ theorem hasDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ ρ a) :
 #noalign spectrum.norm_resolvent_le_forall
 
 theorem eventually_isUnit_resolvent (a : A) : ∀ᶠ z in cobounded 𝕜, IsUnit (resolvent a z) := by
-  rw [←comap_norm_atTop, atTop_basis.comap (‖·‖) |>.eventually_iff]
+  rw [← comap_norm_atTop, atTop_basis.comap (‖·‖) |>.eventually_iff]
   refine ⟨‖a‖ * ‖(1 : A)‖ + 1, by trivial, fun z hz ↦ ?_⟩
   exact isUnit_resolvent.mp <| mem_resolventSet_of_norm_lt_mul <| (lt_add_one (‖a‖ * _)).trans_le hz
 
