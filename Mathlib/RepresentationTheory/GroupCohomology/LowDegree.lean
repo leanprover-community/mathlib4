@@ -239,7 +239,8 @@ theorem mem_oneCocycles_iff (f : G → A) :
   rw [← add_eq_zero_iff_eq_neg, ← oneCocycles_map_one f, ← mul_inv_self g,
     (mem_oneCocycles_iff f.1).1 f.2 g g⁻¹]
 
-open BigOperators
+section oneCocyclesOfFiniteCyclic
+open BigOperators Rep
 
 theorem mem_oneCocycles_of_map_generator (f : G → A) (g : G) (hgmem : ∀ x, x ∈ Submonoid.powers g)
     (hg : ∀ n : ℕ, f (g ^ n) = ∑ i in Finset.range n, A.ρ (g ^ i) (f g)) :
@@ -249,6 +250,95 @@ theorem mem_oneCocycles_of_map_generator (f : G → A) (g : G) (hgmem : ∀ x, x
   simp only [← pow_add, hg, map_pow, map_sum, add_comm ((Finset.range n).sum _)]
   convert Finset.sum_range_add _ _ _ using 3
   simp only [pow_add, LinearMap.mul_apply]
+
+variable (A)
+
+/-- The `k`-linear map sending `x : A` to `∑ ρ_A(gⁱ)(x)` for `0 ≤ i < n.` Used for defining one
+cocycles when `G` is finite and cyclic. -/
+noncomputable def sumρPowers (g : G) (n : ℕ) : A →ₗ[k] A :=
+∑ i in Finset.range n, A.ρ (g ^ i)
+
+variable {A}
+
+theorem sumρPowers_def (g : G) (n : ℕ) :
+    sumρPowers A g n = ∑ i in Finset.range n, A.ρ (g ^ i) := rfl
+
+@[simp] theorem sumρPowers_zero (g : G) : sumρPowers A g 0 = 0 := by
+  simp only [sumρPowers_def, Finset.range_zero, map_pow, Finset.sum_empty]
+
+@[simp] theorem sumρPowers_one (g : G) : sumρPowers A g 1 = 1 := by
+  simp only [sumρPowers_def, Finset.range_one, map_pow, Finset.sum_singleton, pow_zero]
+
+theorem sumρPowers_orderOf_eq_norm [Fintype G] (g : G) (hg : ∀ h, h ∈ Submonoid.powers g) :
+    sumρPowers A g (orderOf g) = (norm A).hom := by
+  ext
+  simp only [sumρPowers, norm, map_pow, LinearMap.coeFn_sum, Finset.sum_apply, Rep.homMk_hom]
+  exact Finset.sum_bij (fun n _ => g ^ n) (fun a ha => Finset.mem_univ _)
+    (fun a _ => by simp only [map_pow])
+    (fun a b ha hb (hab : g ^ a = g ^ b) => Nat.ModEq.eq_of_lt_of_lt (pow_eq_pow_iff_modEq.1 hab)
+      (Finset.mem_range.1 ha) (Finset.mem_range.1 hb))
+    (fun b _ => by
+    { rcases hg b with ⟨i, hi⟩
+      exact ⟨i % orderOf g, Finset.mem_range.2 (Nat.mod_lt i $ IsOfFinOrder.orderOf_pos
+        (isOfFinOrder_of_finite g)), by simp only [Finset.mem_univ, pow_mod_orderOf, hi] at *⟩ })
+
+theorem sumρPowers_add (g : G) (m n : ℕ) :
+    sumρPowers A g (m + n) = sumρPowers A g m + (A.ρ g) ^ m * sumρPowers A g n := by
+  simp only [sumρPowers_def, map_pow, Finset.sum_range_add, pow_add, add_right_inj,
+    ←Finset.mul_sum]
+
+theorem sumρPowers_orderOf_mul (g : G) (i : ℕ) :
+    sumρPowers A g (orderOf g * i) = i * sumρPowers A g (orderOf g) := by
+  induction i with
+  | zero =>
+    simp only [Nat.zero_eq, mul_zero, sumρPowers_def, Finset.range_zero, map_pow,
+      Finset.sum_empty, Nat.cast_zero, zero_mul]
+  | succ i hi =>
+    simp only [sumρPowers_def] at *
+    simp only [Nat.cast_succ, mul_add, add_mul, ←hi, one_mul, mul_one, Nat.succ_eq_add_one,
+      Finset.sum_range_add, pow_add, pow_mul, pow_orderOf_eq_one g, one_pow]
+
+/-- Given a generator `g` of a finite cyclic group `G`, a representation `A` of `G`, and an element
+`x : A` of norm zero, the map `G → A` sending `gⁱ ↦ ∑ ρ_A(gʲ)(x)` for `0 ≤ j < i` is
+a 1-cocycle. -/
+noncomputable def oneCocyclesOfGenerator [Fintype G] (x : A) (g : G)
+    (hg : ∀ h, h ∈ Submonoid.powers g) (hx : (norm A).hom x = 0) :
+    oneCocycles A where
+  val :=
+    let φ := (finEquivPowers _ (isOfFinOrder_of_finite g)).symm
+    fun h => sumρPowers A g (φ ⟨h, hg h⟩) x
+  property := by
+    by_cases h1 : g = 1
+    · cases h1
+      rw [mem_oneCocycles_iff]
+      intro g h
+      rcases hg g with ⟨n, rfl⟩
+      rcases hg h with ⟨m, rfl⟩
+      simp only [one_pow, mul_one, finEquivPowers_symm_one, sumρPowers_zero,
+        LinearMap.zero_apply, map_one, map_zero, add_zero]
+    refine' mem_oneCocycles_of_map_generator _ g hg fun j => _
+    rcases Nat.dvd_sub_mod (n := orderOf g) j with ⟨b, hb⟩
+    nth_rw 2 [(Nat.sub_eq_iff_eq_add (Nat.mod_le _ _)).1 hb]
+    simp only [finEquivPowers_symm_apply, finEquivPowers_symm_self g h1, sumρPowers_one,
+      LinearMap.one_apply, ←LinearMap.sum_apply, ←sumρPowers_def, sumρPowers_add,
+      sumρPowers_orderOf_mul, ←map_pow, pow_mul, pow_orderOf_eq_one, one_pow, map_one, one_mul,
+      LinearMap.add_apply, LinearMap.mul_apply, Module.End.natCast_apply, self_eq_add_left,
+      Nat.isUnit_iff, sumρPowers_orderOf_eq_norm g hg]
+    erw [hx] -- erw with `norm` again :(
+    rw [smul_zero]
+
+theorem oneCocyclesOfGenerator_self [Fintype G] (x : A) (g : G) {hg : ∀ h, h ∈ Submonoid.powers g}
+    {hx : (norm A).hom x = (0 : A)} : (oneCocyclesOfGenerator A x g hg hx).1 g = x := by
+  by_cases h1 : g = 1
+  · cases h1
+    simp only [oneCocyclesOfGenerator, oneCocycles_map_one]
+    have hU : Unique G := ⟨⟨1⟩, fun a => by rcases hg a with ⟨n, rfl⟩; simp only [one_pow]⟩
+    erw [norm_of_unique (hU := hU)] at hx -- :(
+    exact hx.symm
+  simp_rw [oneCocyclesOfGenerator, finEquivPowers_symm_self _ h1, sumρPowers_one]
+  rfl
+
+end oneCocyclesOfFiniteCyclic
 
 theorem oneCocycles_map_mul_of_isTrivial [A.IsTrivial] (f : oneCocycles A) (g h : G) :
     f.1 (g * h) = f.1 g + f.1 h := by
