@@ -130,7 +130,7 @@ def UpperSemicontinuous (f : α → β) :=
 
 theorem LowerSemicontinuousWithinAt.mono (h : LowerSemicontinuousWithinAt f s x) (hst : t ⊆ s) :
     LowerSemicontinuousWithinAt f t x := fun y hy =>
-  Filter.Eventually.filter_mono (nhdsWithin_mono _ hst) (h y hy)
+  Eventually.filter_mono (nhdsWithin_mono _ hst) (h y hy)
 #align lower_semicontinuous_within_at.mono LowerSemicontinuousWithinAt.mono
 
 theorem lowerSemicontinuousWithinAt_univ_iff :
@@ -140,7 +140,7 @@ theorem lowerSemicontinuousWithinAt_univ_iff :
 
 theorem LowerSemicontinuousAt.lowerSemicontinuousWithinAt (s : Set α)
     (h : LowerSemicontinuousAt f x) : LowerSemicontinuousWithinAt f s x := fun y hy =>
-  Filter.Eventually.filter_mono nhdsWithin_le_nhds (h y hy)
+  Eventually.filter_mono nhdsWithin_le_nhds (h y hy)
 #align lower_semicontinuous_at.lower_semicontinuous_within_at LowerSemicontinuousAt.lowerSemicontinuousWithinAt
 
 theorem LowerSemicontinuousOn.lowerSemicontinuousWithinAt (h : LowerSemicontinuousOn f s)
@@ -174,11 +174,11 @@ theorem LowerSemicontinuous.lowerSemicontinuousOn (h : LowerSemicontinuous f) (s
 
 
 theorem lowerSemicontinuousWithinAt_const : LowerSemicontinuousWithinAt (fun _x => z) s x :=
-  fun _y hy => Filter.eventually_of_forall fun _x => hy
+  fun _y hy => eventually_of_forall fun _x => hy
 #align lower_semicontinuous_within_at_const lowerSemicontinuousWithinAt_const
 
 theorem lowerSemicontinuousAt_const : LowerSemicontinuousAt (fun _x => z) x := fun _y hy =>
-  Filter.eventually_of_forall fun _x => hy
+  eventually_of_forall fun _x => hy
 #align lower_semicontinuous_at_const lowerSemicontinuousAt_const
 
 theorem lowerSemicontinuousOn_const : LowerSemicontinuousOn (fun _x => z) s := fun _x _hx =>
@@ -202,7 +202,7 @@ theorem IsOpen.lowerSemicontinuous_indicator (hs : IsOpen s) (hy : 0 ≤ y) :
   by_cases h : x ∈ s <;> simp [h] at hz
   · filter_upwards [hs.mem_nhds h]
     simp (config := { contextual := true }) [hz]
-  · refine Filter.eventually_of_forall fun x' => ?_
+  · refine eventually_of_forall fun x' => ?_
     by_cases h' : x' ∈ s <;> simp [h', hz.trans_le hy, hz]
 #align is_open.lower_semicontinuous_indicator IsOpen.lowerSemicontinuous_indicator
 
@@ -225,7 +225,7 @@ theorem IsClosed.lowerSemicontinuous_indicator (hs : IsClosed s) (hy : y ≤ 0) 
     LowerSemicontinuous (indicator s fun _x => y) := by
   intro x z hz
   by_cases h : x ∈ s <;> simp [h] at hz
-  · refine Filter.eventually_of_forall fun x' => ?_
+  · refine eventually_of_forall fun x' => ?_
     by_cases h' : x' ∈ s <;> simp [h', hz, hz.trans_le hy]
   · filter_upwards [hs.isOpen_compl.mem_nhds h]
     simp (config := { contextual := true }) [hz]
@@ -319,7 +319,7 @@ theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α �
       _ ≤ g (f a) := gmon (min_le_right _ _)
 
   · simp only [not_exists, not_lt] at h
-    exact Filter.eventually_of_forall fun a => hy.trans_le (gmon (h (f a)))
+    exact eventually_of_forall fun a => hy.trans_le (gmon (h (f a)))
 #align continuous_at.comp_lower_semicontinuous_within_at ContinuousAt.comp_lowerSemicontinuousWithinAt
 
 theorem ContinuousAt.comp_lowerSemicontinuousAt {g : γ → δ} {f : α → γ} (hg : ContinuousAt g (f x))
@@ -435,7 +435,7 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
         y < f x + min (g z) (g x) := h this
         _ ≤ f z + g z := add_le_add (hx₁ (f z)) (min_le_left _ _)
     · simp only [not_exists, not_lt] at hx₁ hx₂
-      apply Filter.eventually_of_forall
+      apply eventually_of_forall
       intro z
       have : (f x, g x) ∈ u ×ˢ v := ⟨xu, xv⟩
       calc
@@ -666,7 +666,7 @@ end
 
 theorem UpperSemicontinuousWithinAt.mono (h : UpperSemicontinuousWithinAt f s x) (hst : t ⊆ s) :
     UpperSemicontinuousWithinAt f t x := fun y hy =>
-  Filter.Eventually.filter_mono (nhdsWithin_mono _ hst) (h y hy)
+  Eventually.filter_mono (nhdsWithin_mono _ hst) (h y hy)
 #align upper_semicontinuous_within_at.mono UpperSemicontinuousWithinAt.mono
 
 theorem upperSemicontinuousWithinAt_univ_iff :
@@ -676,7 +676,7 @@ theorem upperSemicontinuousWithinAt_univ_iff :
 
 theorem UpperSemicontinuousAt.upperSemicontinuousWithinAt (s : Set α)
     (h : UpperSemicontinuousAt f x) : UpperSemicontinuousWithinAt f s x := fun y hy =>
-  Filter.Eventually.filter_mono nhdsWithin_le_nhds (h y hy)
+  Eventually.filter_mono nhdsWithin_le_nhds (h y hy)
 #align upper_semicontinuous_at.upper_semicontinuous_within_at UpperSemicontinuousAt.upperSemicontinuousWithinAt
 
 theorem UpperSemicontinuousOn.upperSemicontinuousWithinAt (h : UpperSemicontinuousOn f s)
@@ -710,11 +710,11 @@ theorem UpperSemicontinuous.upperSemicontinuousOn (h : UpperSemicontinuous f) (s
 
 
 theorem upperSemicontinuousWithinAt_const : UpperSemicontinuousWithinAt (fun _x => z) s x :=
-  fun _y hy => Filter.eventually_of_forall fun _x => hy
+  fun _y hy => eventually_of_forall fun _x => hy
 #align upper_semicontinuous_within_at_const upperSemicontinuousWithinAt_const
 
 theorem upperSemicontinuousAt_const : UpperSemicontinuousAt (fun _x => z) x := fun _y hy =>
-  Filter.eventually_of_forall fun _x => hy
+  eventually_of_forall fun _x => hy
 #align upper_semicontinuous_at_const upperSemicontinuousAt_const
 
 theorem upperSemicontinuousOn_const : UpperSemicontinuousOn (fun _x => z) s := fun _x _hx =>
@@ -1073,7 +1073,7 @@ theorem continuousWithinAt_iff_lower_upperSemicontinuousWithinAt {f : α → γ}
   refine' ⟨fun h => ⟨h.lowerSemicontinuousWithinAt, h.upperSemicontinuousWithinAt⟩, _⟩
   rintro ⟨h₁, h₂⟩
   intro v hv
-  simp only [Filter.mem_map]
+  simp only [mem_map]
   by_cases Hl : ∃ l, l < f x
   · rcases exists_Ioc_subset_of_mem_nhds hv Hl with ⟨l, lfx, hl⟩
     by_cases Hu : ∃ u, f x < u
@@ -1091,7 +1091,7 @@ theorem continuousWithinAt_iff_lower_upperSemicontinuousWithinAt {f : α → γ}
       apply hu
       exact ⟨Hl (f a), lfa⟩
     · simp only [not_exists, not_lt] at Hu
-      apply Filter.eventually_of_forall
+      apply eventually_of_forall
       intro a
       have : f a = f x := le_antisymm (Hu _) (Hl _)
       rw [this]

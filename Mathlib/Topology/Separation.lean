@@ -329,13 +329,13 @@ theorem exists_isOpen_singleton_of_isOpen_finite [T0Space X] {s : Set X} (hfin :
 
 theorem exists_open_singleton_of_finite [T0Space X] [Finite X] [Nonempty X] :
     ∃ x : X, IsOpen ({x} : Set X) :=
-  let ⟨x, _, h⟩ := exists_isOpen_singleton_of_isOpen_finite (Set.toFinite _)
+  let ⟨x, _, h⟩ := exists_isOpen_singleton_of_isOpen_finite (toFinite _)
     univ_nonempty isOpen_univ
   ⟨x, h⟩
 #align exists_open_singleton_of_fintype exists_open_singleton_of_finite
 
 theorem t0Space_of_injective_of_continuous [TopologicalSpace Y] {f : X → Y}
-    (hf : Function.Injective f) (hf' : Continuous f) [T0Space Y] : T0Space X :=
+    (hf : Injective f) (hf' : Continuous f) [T0Space Y] : T0Space X :=
   ⟨fun _ _ h => hf <| (h.map hf').eq⟩
 #align t0_space_of_injective_of_continuous t0Space_of_injective_of_continuous
 
@@ -442,7 +442,7 @@ theorem TopologicalSpace.IsTopologicalBasis.exists_mem_of_ne [T1Space X] {b : Se
 #align topological_space.is_topological_basis.exists_mem_of_ne TopologicalSpace.IsTopologicalBasis.exists_mem_of_ne
 
 theorem Filter.coclosedCompact_le_cofinite [T1Space X] :
-    Filter.coclosedCompact X ≤ Filter.cofinite := fun s hs =>
+    coclosedCompact X ≤ cofinite := fun s hs =>
   compl_compl s ▸ hs.isCompact.compl_mem_coclosedCompact_of_isClosed hs.isClosed
 #align filter.coclosed_compact_le_cofinite Filter.coclosedCompact_le_cofinite
 
@@ -452,16 +452,16 @@ variable (X)
 `Filter.coclosedCompact`. See also `Bornology.inCompact` the bornology of sets contained
 in a compact set. -/
 def Bornology.relativelyCompact [T1Space X] : Bornology X where
-  cobounded' := Filter.coclosedCompact X
-  le_cofinite' := Filter.coclosedCompact_le_cofinite
+  cobounded' := coclosedCompact X
+  le_cofinite' := coclosedCompact_le_cofinite
 #align bornology.relatively_compact Bornology.relativelyCompact
 
 variable {X}
 
 theorem Bornology.relativelyCompact.isBounded_iff [T1Space X] {s : Set X} :
     @Bornology.IsBounded _ (Bornology.relativelyCompact X) s ↔ IsCompact (closure s) := by
-  change sᶜ ∈ Filter.coclosedCompact X ↔ _
-  rw [Filter.mem_coclosedCompact]
+  change sᶜ ∈ coclosedCompact X ↔ _
+  rw [mem_coclosedCompact]
   constructor
   · rintro ⟨t, ht₁, ht₂, hst⟩
     rw [compl_subset_compl] at hst
@@ -577,22 +577,22 @@ theorem t1Space_antitone : Antitone (@T1Space X) := fun a _ h _ =>
 
 theorem continuousWithinAt_update_of_ne [T1Space X] [DecidableEq X] [TopologicalSpace Y] {f : X → Y}
     {s : Set X} {x x' : X} {y : Y} (hne : x' ≠ x) :
-    ContinuousWithinAt (Function.update f x y) s x' ↔ ContinuousWithinAt f s x' :=
+    ContinuousWithinAt (update f x y) s x' ↔ ContinuousWithinAt f s x' :=
   EventuallyEq.congr_continuousWithinAt
     (mem_nhdsWithin_of_mem_nhds <| mem_of_superset (isOpen_ne.mem_nhds hne) fun _y' hy' =>
-      Function.update_noteq hy' _ _)
-    (Function.update_noteq hne _ _)
+      update_noteq hy' _ _)
+    (update_noteq hne _ _)
 #align continuous_within_at_update_of_ne continuousWithinAt_update_of_ne
 
 theorem continuousAt_update_of_ne [T1Space X] [DecidableEq X] [TopologicalSpace Y]
     {f : X → Y} {x x' : X} {y : Y} (hne : x' ≠ x) :
-    ContinuousAt (Function.update f x y) x' ↔ ContinuousAt f x' := by
+    ContinuousAt (update f x y) x' ↔ ContinuousAt f x' := by
   simp only [← continuousWithinAt_univ, continuousWithinAt_update_of_ne hne]
 #align continuous_at_update_of_ne continuousAt_update_of_ne
 
 theorem continuousOn_update_iff [T1Space X] [DecidableEq X] [TopologicalSpace Y] {f : X → Y}
     {s : Set X} {x : X} {y : Y} :
-    ContinuousOn (Function.update f x y) s ↔
+    ContinuousOn (update f x y) s ↔
       ContinuousOn f (s \ {x}) ∧ (x ∈ s → Tendsto f (𝓝[s \ {x}] x) (𝓝 y)) := by
   rw [ContinuousOn, ← and_forall_ne x, and_comm]
   refine' and_congr ⟨fun H z hz => _, fun H z hzx hzs => _⟩ (forall_congr' fun _ => _)
@@ -606,7 +606,7 @@ theorem continuousOn_update_iff [T1Space X] [DecidableEq X] [TopologicalSpace Y]
 #align continuous_on_update_iff continuousOn_update_iff
 
 theorem t1Space_of_injective_of_continuous [TopologicalSpace Y] {f : X → Y}
-    (hf : Function.Injective f) (hf' : Continuous f) [T1Space Y] : T1Space X :=
+    (hf : Injective f) (hf' : Continuous f) [T1Space Y] : T1Space X :=
   t1Space_iff_specializes_imp_eq.2 fun _ _ h => hf (h.map hf').eq
 #align t1_space_of_injective_of_continuous t1Space_of_injective_of_continuous
 
@@ -658,13 +658,13 @@ theorem subsingleton_closure [T1Space X] {s : Set X} : (closure s).Subsingleton 
 #align subsingleton_closure subsingleton_closure
 
 theorem isClosedMap_const {X Y} [TopologicalSpace X] [TopologicalSpace Y] [T1Space Y] {y : Y} :
-    IsClosedMap (Function.const X y) :=
+    IsClosedMap (const X y) :=
   IsClosedMap.of_nonempty fun s _ h2s => by simp_rw [const, h2s.image_const, isClosed_singleton]
 #align is_closed_map_const isClosedMap_const
 
 theorem nhdsWithin_insert_of_ne [T1Space X] {x y : X} {s : Set X} (hxy : x ≠ y) :
     𝓝[insert y s] x = 𝓝[s] x := by
-  refine' le_antisymm (Filter.le_def.2 fun t ht => _) (nhdsWithin_mono x <| subset_insert y s)
+  refine' le_antisymm (le_def.2 fun t ht => _) (nhdsWithin_mono x <| subset_insert y s)
   obtain ⟨o, ho, hxo, host⟩ := mem_nhdsWithin.mp ht
   refine' mem_nhdsWithin.mpr ⟨o \ {y}, ho.sdiff isClosed_singleton, ⟨hxo, hxy⟩, _⟩
   rw [inter_insert_of_not_mem <| not_mem_diff_of_mem (mem_singleton y)]
@@ -699,7 +699,7 @@ theorem compl_singleton_mem_nhdsSet_iff [T1Space X] {x : X} {s : Set X} : {x}ᶜ
 @[simp]
 theorem nhdsSet_le_iff [T1Space X] {s t : Set X} : 𝓝ˢ s ≤ 𝓝ˢ t ↔ s ⊆ t := by
   refine' ⟨_, fun h => monotone_nhdsSet h⟩
-  simp_rw [Filter.le_def]; intro h x hx
+  simp_rw [le_def]; intro h x hx
   specialize h {x}ᶜ
   simp_rw [compl_singleton_mem_nhdsSet_iff] at h
   by_contra hxt
@@ -712,7 +712,7 @@ theorem nhdsSet_inj_iff [T1Space X] {s t : Set X} : 𝓝ˢ s = 𝓝ˢ t ↔ s = 
   exact and_congr nhdsSet_le_iff nhdsSet_le_iff
 #align nhds_set_inj_iff nhdsSet_inj_iff
 
-theorem injective_nhdsSet [T1Space X] : Function.Injective (𝓝ˢ : Set X → Filter X) := fun _ _ hst =>
+theorem injective_nhdsSet [T1Space X] : Injective (𝓝ˢ : Set X → Filter X) := fun _ _ hst =>
   nhdsSet_inj_iff.mp hst
 #align injective_nhds_set injective_nhdsSet
 
@@ -775,7 +775,7 @@ theorem eventually_ne_nhds [T1Space X] {a b : X} (h : a ≠ b) : ∀ᶠ x in �
 
 theorem eventually_ne_nhdsWithin [T1Space X] {a b : X} {s : Set X} (h : a ≠ b) :
     ∀ᶠ x in 𝓝[s] a, x ≠ b :=
-  Filter.Eventually.filter_mono nhdsWithin_le_nhds <| eventually_ne_nhds h
+  Eventually.filter_mono nhdsWithin_le_nhds <| eventually_ne_nhds h
 
 /-- To prove a function to a `T1Space` is continuous at some point `x`, it suffices to prove that
 `f` admits *some* limit at `x`. -/
@@ -842,7 +842,7 @@ instance ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_of_t1space
   by_contra contra
   rw [not_neBot, ← isOpen_singleton_iff_punctured_nhds] at contra
   replace contra := nonempty_inter isOpen_compl_singleton
-    contra (compl_union_self _) (Set.nonempty_compl_of_nontrivial _) (singleton_nonempty _)
+    contra (compl_union_self _) (nonempty_compl_of_nontrivial _) (singleton_nonempty _)
   simp [compl_inter_self {x}] at contra
 
 theorem singleton_mem_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
@@ -880,9 +880,9 @@ theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology 
     (hx : x ∈ s) : ∃ U : Set X, IsOpen U ∧ U ∩ s = {x} := by
   obtain ⟨U, hU_nhds, hU_inter⟩ := nhds_inter_eq_singleton_of_mem_discrete hx
   obtain ⟨t, ht_sub, ht_open, ht_x⟩ := mem_nhds_iff.mp hU_nhds
-  refine ⟨t, ht_open, Set.Subset.antisymm ?_ ?_⟩
-  · exact hU_inter ▸ Set.inter_subset_inter_left s ht_sub
-  · rw [Set.subset_inter_iff, Set.singleton_subset_iff, Set.singleton_subset_iff]
+  refine ⟨t, ht_open, Subset.antisymm ?_ ?_⟩
+  · exact hU_inter ▸ inter_subset_inter_left s ht_sub
+  · rw [subset_inter_iff, singleton_subset_iff, singleton_subset_iff]
     exact ⟨ht_x, hx⟩
 
 /-- For point `x` in a discrete subset `s` of a topological space, there is a set `U`
@@ -903,7 +903,7 @@ obtained by the induced topological space structure on `s`. Use `embedding_inclu
 @[deprecated embedding_inclusion]
 theorem TopologicalSpace.subset_trans {s t : Set X} (ts : t ⊆ s) :
     (instTopologicalSpaceSubtype : TopologicalSpace t) =
-      (instTopologicalSpaceSubtype : TopologicalSpace s).induced (Set.inclusion ts) :=
+      (instTopologicalSpaceSubtype : TopologicalSpace s).induced (inclusion ts) :=
   (embedding_inclusion ts).induced
 #align topological_space.subset_trans TopologicalSpace.subset_trans
 
@@ -1040,7 +1040,7 @@ theorem Set.InjOn.exists_mem_nhdsSet {X Y : Type*} [TopologicalSpace X] [Topolog
   have : ∀ x ∈ s ×ˢ s, ∀ᶠ y in 𝓝 x, f y.1 = f y.2 → y.1 = y.2 := fun (x, y) ⟨hx, hy⟩ ↦ by
     rcases eq_or_ne x y with rfl | hne
     · rcases loc x hx with ⟨u, hu, hf⟩
-      exact Filter.mem_of_superset (prod_mem_nhds hu hu) <| forall_prod_set.2 hf
+      exact mem_of_superset (prod_mem_nhds hu hu) <| forall_prod_set.2 hf
     · suffices ∀ᶠ z in 𝓝 (x, y), f z.1 ≠ f z.2 from this.mono fun _ hne h ↦ absurd h hne
       refine (fc x hx).prod_map' (fc y hy) <| isClosed_diagonal.isOpen_compl.mem_nhds ?_
       exact inj.ne hx hy hne
@@ -1291,7 +1291,7 @@ theorem eqOn_closure₂' [T2Space Z] {s : Set X} {t : Set Y} {f g : X → Y → 
     (hf₂ : ∀ y, Continuous fun x => f x y) (hg₁ : ∀ x, Continuous (g x))
     (hg₂ : ∀ y, Continuous fun x => g x y) : ∀ x ∈ closure s, ∀ y ∈ closure t, f x y = g x y :=
   suffices closure s ⊆ ⋂ y ∈ closure t, { x | f x y = g x y } by simpa only [subset_def, mem_iInter]
-  (closure_minimal fun x hx => mem_iInter₂.2 <| Set.EqOn.closure (h x hx) (hf₁ _) (hg₁ _)) <|
+  (closure_minimal fun x hx => mem_iInter₂.2 <| EqOn.closure (h x hx) (hf₁ _) (hg₁ _)) <|
     isClosed_biInter fun y _ => isClosed_eq (hf₂ _) (hg₂ _)
 #align eq_on_closure₂' eqOn_closure₂'
 
@@ -1315,14 +1315,14 @@ theorem Set.EqOn.of_subset_closure [T2Space Y] {s t : Set X} {f g : X → Y} (h 
 #align set.eq_on.of_subset_closure Set.EqOn.of_subset_closure
 
 theorem Function.LeftInverse.closed_range [T2Space X] {f : X → Y} {g : Y → X}
-    (h : Function.LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : IsClosed (range g) :=
+    (h : LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : IsClosed (range g) :=
   have : EqOn (g ∘ f) id (closure <| range g) :=
     h.rightInvOn_range.eqOn.closure (hg.comp hf) continuous_id
   isClosed_of_closure_subset fun x hx => ⟨f x, this hx⟩
 #align function.left_inverse.closed_range Function.LeftInverse.closed_range
 
 theorem Function.LeftInverse.closedEmbedding [T2Space X] {f : X → Y} {g : Y → X}
-    (h : Function.LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : ClosedEmbedding g :=
+    (h : LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : ClosedEmbedding g :=
   ⟨h.embedding hf hg, h.closed_range hf hg⟩
 #align function.left_inverse.closed_embedding Function.LeftInverse.closedEmbedding
 
@@ -1363,7 +1363,7 @@ theorem Filter.coclosedCompact_eq_cocompact [T2Space X] : coclosedCompact X = co
 @[simp]
 theorem Bornology.relativelyCompact_eq_inCompact [T2Space X] :
     Bornology.relativelyCompact X = Bornology.inCompact X :=
-  Bornology.ext _ _ Filter.coclosedCompact_eq_cocompact
+  Bornology.ext _ _ coclosedCompact_eq_cocompact
 #align bornology.relatively_compact_eq_in_compact Bornology.relativelyCompact_eq_inCompact
 
 theorem IsCompact.preimage_continuous [CompactSpace X] [T2Space Y] {f : X → Y} {s : Set Y}
@@ -1426,7 +1426,7 @@ protected theorem Continuous.isClosedMap [CompactSpace X] [T2Space Y] {f : X →
 
 /-- A continuous injective map from a compact space to a Hausdorff space is a closed embedding. -/
 theorem Continuous.closedEmbedding [CompactSpace X] [T2Space Y] {f : X → Y} (h : Continuous f)
-    (hf : Function.Injective f) : ClosedEmbedding f :=
+    (hf : Injective f) : ClosedEmbedding f :=
   closedEmbedding_of_continuous_injective_closed h hf h.isClosedMap
 #align continuous.closed_embedding Continuous.closedEmbedding
 
@@ -1483,7 +1483,7 @@ instance WeaklyLocallyCompactSpace.locallyCompactSpace [WeaklyLocallyCompactSpac
         (disjoint_singleton_left.2 fun h => h.2 xu)
     have wn : wᶜ ∈ 𝓝 x :=
       mem_nhds_iff.mpr ⟨v, vw.subset_compl_right, vo, singleton_subset_iff.mp xv⟩
-    ⟨k \ w, Filter.inter_mem kx wn, Subset.trans (diff_subset_comm.mp kuw) un, kc.diff wo⟩⟩
+    ⟨k \ w, inter_mem kx wn, Subset.trans (diff_subset_comm.mp kuw) un, kc.diff wo⟩⟩
 #align locally_compact_of_compact_nhds WeaklyLocallyCompactSpace.locallyCompactSpace
 
 @[deprecated WeaklyLocallyCompactSpace.locallyCompactSpace]
@@ -1523,7 +1523,7 @@ theorem exists_open_between_and_isCompact_closure [LocallyCompactSpace X] [T2Spa
 
 theorem isPreirreducible_iff_subsingleton [T2Space X] {S : Set X} :
     IsPreirreducible S ↔ S.Subsingleton := by
-  refine' ⟨fun h x hx y hy => _, Set.Subsingleton.isPreirreducible⟩
+  refine' ⟨fun h x hx y hy => _, Subsingleton.isPreirreducible⟩
   by_contra e
   obtain ⟨U, V, hU, hV, hxU, hyV, h'⟩ := t2_separation e
   exact ((h U V hU hV ⟨x, hx, hxU⟩ ⟨y, hy, hyV⟩).mono <| inter_subset_right _ _).not_disjoint h'
@@ -1569,7 +1569,7 @@ theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
       ∀ x : X , (𝓝 x).lift' closure = 𝓝 x] := by
   tfae_have 1 ↔ 5
   · rw [regularSpace_iff, (@compl_surjective (Set X) _).forall, forall_swap]
-    simp only [isClosed_compl_iff, mem_compl_iff, Classical.not_not, @and_comm (_ ∈ _),
+    simp only [isClosed_compl_iff, mem_compl_iff, not_not, @and_comm (_ ∈ _),
       (nhds_basis_opens _).lift'_closure.le_basis_iff (nhds_basis_opens _), and_imp,
       (nhds_basis_opens _).disjoint_iff_right, exists_prop, ← subset_interior_iff_mem_nhdsSet,
       interior_compl, compl_subset_compl]
@@ -1884,7 +1884,7 @@ theorem disjoint_nhdsSet_nhdsSet [NormalSpace X] {s t : Set X} (hs : IsClosed s)
 
 theorem normal_exists_closure_subset [NormalSpace X] {s t : Set X} (hs : IsClosed s) (ht : IsOpen t)
     (hst : s ⊆ t) : ∃ u, IsOpen u ∧ s ⊆ u ∧ closure u ⊆ t := by
-  have : Disjoint s tᶜ := Set.disjoint_left.mpr fun x hxs hxt => hxt (hst hxs)
+  have : Disjoint s tᶜ := disjoint_left.mpr fun x hxs hxt => hxt (hst hxs)
   rcases normal_separation hs (isClosed_compl_iff.2 ht) this with
     ⟨s', t', hs', ht', hss', htt', hs't'⟩
   refine ⟨s', hs', hss', Subset.trans (closure_minimal ?_ (isClosed_compl_iff.2 ht'))
@@ -2197,9 +2197,9 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
     have f0 : Embedding ((↑) : u → H) := embedding_subtype_val.comp embedding_subtype_val
     have f1 : OpenEmbedding ((↑) : u → H) := by
       refine' ⟨f0, _⟩
-      · have : Set.range ((↑) : u → H) = interior s := by
-          rw [this, Set.range_comp, Subtype.range_coe, Subtype.image_preimage_coe]
-          apply Set.inter_eq_self_of_subset_left interior_subset
+      · have : range ((↑) : u → H) = interior s := by
+          rw [this, range_comp, Subtype.range_coe, Subtype.image_preimage_coe]
+          apply inter_eq_self_of_subset_left interior_subset
         rw [this]
         apply isOpen_interior
     have f2 : IsOpen v := VisClopen.1.preimage continuous_subtype_val
@@ -2247,5 +2247,5 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
       (connectedComponents_preimage_image U).symm ▸ hU.biUnion_connectedComponent_eq⟩
   rw [ConnectedComponents.quotientMap_coe.isClopen_preimage] at hU
   refine' ⟨Vᶜ, V, hU.compl.isOpen, hU.isOpen, _, hb mem_connectedComponent, disjoint_compl_left⟩
-  exact fun h => flip Set.Nonempty.ne_empty ha ⟨a, mem_connectedComponent, h⟩
+  exact fun h => flip Nonempty.ne_empty ha ⟨a, mem_connectedComponent, h⟩
 #align connected_components.t2 ConnectedComponents.t2
