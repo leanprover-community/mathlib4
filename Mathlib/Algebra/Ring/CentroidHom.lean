@@ -425,33 +425,16 @@ lemma centerToCentroid_apply (z : { x // x ∈ NonUnitalSubsemiring.center α })
 lemma center_iff_op_centroid (a : α) :
     a ∈ NonUnitalSubsemiring.center α ↔ L a = R a ∧ (L a) ∈ Set.range CentroidHom.toEnd := by
   constructor
-  · intro ha
+  · exact fun ha ↦ ⟨AddMonoidHom.ext <| IsMulCentral.comm ha, ⟨centerToCentroid ⟨a, ha⟩, rfl⟩⟩
+  · rintro ⟨hc, ⟨T, hT⟩⟩
+    have e1 (d : α) : T d = a * d := congr($hT d)
+    have e2 (d : α) : T d = d * a := congr($(hT.trans hc) d)
     constructor
-    · apply AddMonoidHom.ext
-      intro b
-      rw [AddMonoid.End.mulLeft_apply_apply, AddMonoid.End.mulRight_apply_apply]
-      exact IsMulCentral.comm ha b
-    · rw [Set.mem_range]
-      use centerToCentroid ⟨a, ha⟩
-      rfl
-  · intro hla
-    simp at hla
-    obtain ⟨hc,⟨T,hT⟩⟩  := hla
-    have e1 (d : α) : T d = a * d := (FunLike.congr (id hT.symm) rfl).symm
-    have e2 (d : α) : a * d = d * a := FunLike.congr (hc) rfl
-    constructor
-    case comm =>
-      intro b
-      exact e2 b
-    case left_assoc =>
-      intro b c
-      rw [← e1, map_mul_right, e1]
-    case mid_assoc =>
-      intro b c
-      rw [← e2, ← e1, ←e1, ← map_mul_left, ← map_mul_right]
-    case right_assoc =>
-      intro b c
-      rw [← e2, ← e2, ← e1, ← e1, ← map_mul_left]
+    case comm => exact (congr($hc ·))
+    case left_assoc => simpa [e1] using (map_mul_right T · ·)
+    case mid_assoc => exact fun b c ↦ by simpa [e1 c, e2 b] using
+      (map_mul_right T b c).symm.trans <| map_mul_left T b c
+    case right_assoc => simpa [e2] using (map_mul_left T · ·)
 
 end NonUnitalNonAssocSemiring
 
