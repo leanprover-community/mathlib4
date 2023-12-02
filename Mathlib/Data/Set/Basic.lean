@@ -2659,7 +2659,7 @@ protected lemma subsingleton_or_nontrivial (s : Set α) : s.Subsingleton ∨ s.N
 #align set.subsingleton_or_nontrivial Set.subsingleton_or_nontrivial
 
 lemma eq_singleton_or_nontrivial (ha : a ∈ s) : s = {a} ∨ s.Nontrivial := by
-  rw [←subsingleton_iff_singleton ha]; exact s.subsingleton_or_nontrivial
+  rw [← subsingleton_iff_singleton ha]; exact s.subsingleton_or_nontrivial
 #align set.eq_singleton_or_nontrivial Set.eq_singleton_or_nontrivial
 
 lemma nontrivial_iff_ne_singleton (ha : a ∈ s) : s.Nontrivial ↔ s ≠ {a} :=

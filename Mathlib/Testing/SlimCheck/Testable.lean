@@ -334,7 +334,7 @@ partial def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (
         slimTrace s!"{var} shrunk to {repr candidate} from {repr x}"
       let currentStep := OptionT.lift $ pure $ Sigma.mk candidate (addShrinks (n + 1) res)
       let nextStep := minimizeAux cfg var candidate (n + 1)
-      return ←(nextStep <|> currentStep)
+      return ← (nextStep <|> currentStep)
   if cfg.traceShrink then
     slimTrace s!"No shrinking possible for {var} := {repr x}"
   failure

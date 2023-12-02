@@ -51,7 +51,7 @@ theorem radius_eq_liminf :
     obtain ⟨a, ha, H⟩ := this
     apply le_liminf_of_le
     · infer_param
-    · rw [←eventually_map]
+    · rw [← eventually_map]
       refine'
         H.mp ((eventually_gt_atTop 0).mono fun n hn₀ hn => (this _ hn₀).2 (NNReal.coe_le_coe.1 _))
       push_cast
