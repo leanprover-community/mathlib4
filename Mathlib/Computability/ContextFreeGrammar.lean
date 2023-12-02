@@ -178,7 +178,7 @@ lemma Derives.append_left {v w : List (Symbol T g.NT)}
   | refl => rfl
   | tail _ last ih =>
     apply trans_produces ih
-    apply ContextFreeGrammar.Produces.append_left last
+    exact last.append_left _
 
 /-- Add extra prefix to context-free deriving. -/
 lemma Derives.append_right {v w : List (Symbol T g.NT)}
