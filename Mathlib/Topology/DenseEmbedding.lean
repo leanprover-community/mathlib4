@@ -109,7 +109,8 @@ protected theorem separableSpace [SeparableSpace α] : SeparableSpace β :=
 
 variable [TopologicalSpace δ] {f : γ → α} {g : γ → δ} {h : δ → β}
 
-/-- ```
+/--
+```
  γ -f→ α
 g↓     ↓e
  δ -h→ β
@@ -119,7 +120,7 @@ theorem tendsto_comap_nhds_nhds {d : δ} {a : α} (di : DenseInducing i)
     (H : Tendsto h (𝓝 d) (𝓝 (i a))) (comm : h ∘ g = i ∘ f) : Tendsto f (comap g (𝓝 d)) (𝓝 a) := by
   have lim1 : map g (comap g (𝓝 d)) ≤ 𝓝 d := map_comap_le
   replace lim1 : map h (map g (comap g (𝓝 d))) ≤ map h (𝓝 d) := map_mono lim1
-  rw [Filter.map_map, comm, ← Filter.map_map, map_le_iff_le_comap] at lim1
+  rw [map_map, comm, ← map_map, map_le_iff_le_comap] at lim1
   have lim2 : comap i (map h (𝓝 d)) ≤ comap i (𝓝 (i a)) := comap_mono H
   rw [← di.nhds_eq_comap] at lim2
   exact le_trans lim1 lim2
@@ -221,7 +222,7 @@ theorem continuous_extend [T3Space γ] {f : α → γ} (di : DenseInducing i)
 theorem mk' (i : α → β) (c : Continuous i) (dense : ∀ x, x ∈ closure (range i))
     (H : ∀ (a : α), ∀ s ∈ 𝓝 a, ∃ t ∈ 𝓝 (i a), ∀ b, i b ∈ t → b ∈ s) : DenseInducing i :=
   { toInducing := inducing_iff_nhds.2 fun a =>
-      le_antisymm (c.tendsto _).le_comap (by simpa [Filter.le_def] using H a)
+      le_antisymm (c.tendsto _).le_comap (by simpa [le_def] using H a)
     dense }
 #align dense_inducing.mk' DenseInducing.mk'
 
@@ -367,7 +368,7 @@ end
 theorem Filter.HasBasis.hasBasis_of_denseInducing [TopologicalSpace α] [TopologicalSpace β]
     [T3Space β] {ι : Type*} {s : ι → Set α} {p : ι → Prop} {x : α} (h : (𝓝 x).HasBasis p s)
     {f : α → β} (hf : DenseInducing f) : (𝓝 (f x)).HasBasis p fun i => closure <| f '' s i := by
-  rw [Filter.hasBasis_iff] at h ⊢
+  rw [hasBasis_iff] at h ⊢
   intro T
   refine' ⟨fun hT => _, fun hT => _⟩
   · obtain ⟨T', hT₁, hT₂, hT₃⟩ := exists_mem_nhds_isClosed_subset hT
