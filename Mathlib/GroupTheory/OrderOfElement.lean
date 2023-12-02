@@ -592,12 +592,14 @@ lemma finEquivPowers_symm_apply (x : G) (hx) (n : ℕ) {hn : ∃ m : ℕ, x ^ m 
 #align fin_equiv_powers_symm_apply finEquivPowers_symm_apply
 #align fin_equiv_multiples_symm_apply finEquivMultiples_symm_apply
 
+@[to_additive finEquivMultiples_symm_zero]
 theorem finEquivPowers_symm_one (x : G) {hx : IsOfFinOrder x} :
     (finEquivPowers _ hx).symm ⟨1, 0, pow_zero _⟩ = (0 : ℕ) := by
   convert Fin.ext_iff.1 (finEquivPowers_symm_apply x hx 0)
   · rw [_root_.pow_zero]
   · exact ⟨0, rfl⟩
 
+@[to_additive finEquivMultiples_symm_self]
 theorem finEquivPowers_symm_self (x : G) {hx : IsOfFinOrder x} (h1 : x ≠ 1) :
     (finEquivPowers _ hx).symm ⟨x, 1, pow_one _⟩ = (1 : ℕ) := by
   convert Fin.ext_iff.1 (finEquivPowers_symm_apply x hx 1)
