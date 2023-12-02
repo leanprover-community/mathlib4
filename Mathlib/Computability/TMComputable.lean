@@ -326,7 +326,7 @@ def PolyTimeLanguageIndicator {α: Type} {ea : FinEncoding α} {ebool : FinEncod
 /-- Relationship indicates that "x" has a certificate with encoded length polynomially bounded as
 a function of the encoded length of x. -/
 def verification {α γ: Type} {ea : FinEncoding α} {eg : FinEncoding γ} {p: Polynomial ℕ}
-  (certified : Rel α γ) : Prop :=
+    (certified : Rel α γ) : Prop :=
   ∀ (x : α) (certificate : γ), certified x certificate →
   (ea.encode x).length > p.eval (eg.encode certificate).length
 
