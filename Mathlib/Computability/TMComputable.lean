@@ -321,7 +321,7 @@ def PolyTimeFunction {α β: Type} {ea : FinEncoding α} {eb : FinEncoding β} (
 
 /-- Indicator function for a language decidable in polynomial time -/
 def PolyTimeLanguageIndicator {α: Type} {ea : FinEncoding α} {ebool : FinEncoding Bool}
-  (f : α → Bool) := @TM2ComputableInPolyTime α Bool ea ebool f
+    (f : α → Bool) := @TM2ComputableInPolyTime α Bool ea ebool f
 
 /-- Relationship indicates that "x" has a certificate with encoded length polynomially bounded as
 a function of the encoded length of x. -/
