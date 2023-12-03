@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 import Std.Data.Int.DivMod
 import Mathlib.Data.Nat.ModEq
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GRW.Core
 import Mathlib.Tactic.Ring
 
 #align_import data.int.modeq from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
@@ -66,6 +66,9 @@ protected theorem trans : a ≡ b [ZMOD n] → b ≡ c [ZMOD n] → a ≡ c [ZMO
 
 instance : IsTrans ℤ (ModEq n) where
   trans := @Int.ModEq.trans n
+
+@[grw] lemma rewrite_modeq {a b a' b' : ℤ} (H : a ≡ b [ZMOD n]) (ha : a ≡ a' [ZMOD n])
+    (hb' : b ≡ b' [ZMOD n]) : a' ≡ b' [ZMOD n] := (ha.symm.trans H).trans hb'
 
 protected theorem eq : a ≡ b [ZMOD n] → a % n = b % n := id
 #align int.modeq.eq Int.ModEq.eq
