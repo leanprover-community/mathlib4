@@ -170,6 +170,13 @@ instance instNeZeroSepDegree : NeZero (sepDegree F E) := ⟨Cardinal.mk_ne_zero 
 instance instNeZeroFinSepDegree [FiniteDimensional F E] : NeZero (finSepDegree F E) :=
   ⟨Nat.card_ne_zero.2 ⟨inferInstance, Fintype.finite <| minpoly.AlgHom.fintype _ _ _⟩⟩
 
+variable {F E}
+
+theorem sepDegree_le_one_iff : sepDegree F E ≤ 1 ↔ sepDegree F E = 1 :=
+  ⟨fun h ↦ le_antisymm h <| Cardinal.one_le_iff_ne_zero.2 <| NeZero.ne _, le_of_eq⟩
+
+variable (F E)
+
 /-- A random bijection between `Field.Emb F E` and `Field.Emb F K` when `E` and `K` are isomorphic
 as `F`-algebras. -/
 def embEquivOfEquiv (i : E ≃ₐ[F] K) :
@@ -585,17 +592,7 @@ theorem natSepDegree_eq_hasSeparableContraction_degree
 /-- The separable degree of an irreducible polynomial divides its degree. -/
 theorem natSepDegree_dvd_natDegree_of_irreducible (h : Irreducible f) :
     f.natSepDegree ∣ f.natDegree := by
-  let p := ringChar F
-  let q := if p = 0 then 1 else p
-  haveI hchar : CharP F p := ringChar.of_eq rfl
-  haveI hexpchar : ExpChar F q := by
-    by_cases hp : p = 0
-    · simp only [hp, ite_true] at hchar ⊢
-      haveI := CharP.charP_to_charZero F
-      exact ExpChar.zero
-    simp only [hp, ite_false]
-    haveI := NeZero.mk hp
-    exact ExpChar.prime (CharP.char_is_prime_of_pos F p).out
+  obtain ⟨q, _⟩ := ExpChar.exists F
   have hf := Irreducible.hasSeparableContraction q f h
   rw [natSepDegree_eq_hasSeparableContraction_degree f q hf]
   exact HasSeparableContraction.dvd_degree hf
@@ -923,7 +920,7 @@ theorem IsPurelyInseparable.inseparable [IsPurelyInseparable F E] :
 
 variable {F K}
 
-theorem IsPurelyInseparable_iff : IsPurelyInseparable F E ↔ ∀ x : E,
+theorem isPurelyInseparable_iff : IsPurelyInseparable F E ↔ ∀ x : E,
     IsIntegral F x ∧ ((minpoly F x).Separable → x ∈ (algebraMap F E).range) :=
   ⟨fun h x ↦ ⟨h.isIntegral' x, h.inseparable' x⟩, fun h ↦ ⟨fun x ↦ (h x).1, fun x ↦ (h x).2⟩⟩
 
@@ -949,10 +946,9 @@ if and only if for every element `x` of `E`, there exists a natural number `n` s
 `x ^ (q ^ n)` is contained in `F`. -/
 theorem isPurelyInseparable_iff_mem_pow (q : ℕ) [hF : ExpChar F q] :
     IsPurelyInseparable F E ↔ ∀ x : E, ∃ n : ℕ, x ^ (q ^ n) ∈ (algebraMap F E).range := by
-  rw [IsPurelyInseparable_iff]
+  rw [isPurelyInseparable_iff]
   refine ⟨fun h x ↦ ?_, fun h x ↦ ?_⟩
-  · obtain ⟨g, h1, n, h2⟩ := Irreducible.hasSeparableContraction q _ <|
-      minpoly.irreducible <| (h x).1
+  · obtain ⟨g, h1, n, h2⟩ := Irreducible.hasSeparableContraction q _ (minpoly.irreducible (h x).1)
     exact ⟨n, (h _).2 <| Separable.of_dvd h1 <| minpoly.dvd F _ <| by
       simpa only [expand_aeval, minpoly.aeval] using congr_arg (aeval x) h2⟩
   cases' hF with _ _ hprime _
@@ -976,7 +972,7 @@ theorem isPurelyInseparable_iff_mem_pow (q : ℕ) [hF : ExpChar F q] :
 
 theorem isPurelyInseparable_of_finSepDegree_eq_one (halg : Algebra.IsAlgebraic F E)
     (hdeg : finSepDegree F E = 1) : IsPurelyInseparable F E := by
-  rw [IsPurelyInseparable_iff]
+  rw [isPurelyInseparable_iff]
   refine fun x ↦ ⟨(halg x).isIntegral, fun hsep ↦ ?_⟩
   have := finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E <| halg.tower_top (L := F⟮x⟯)
   rw [hdeg, mul_eq_one, (finSepDegree_adjoin_simple_eq_finrank_iff F E x (halg x)).2 hsep,
@@ -986,8 +982,7 @@ theorem isPurelyInseparable_of_finSepDegree_eq_one (halg : Algebra.IsAlgebraic F
 theorem isPurelyInseparable_of_sepDegree_le_one (halg : Algebra.IsAlgebraic F E)
     (hdeg : sepDegree F E ≤ 1) : IsPurelyInseparable F E :=
   isPurelyInseparable_of_finSepDegree_eq_one F E halg <| by
-    simpa only [Cardinal.one_toNat] using congr_arg Cardinal.toNat <| le_antisymm hdeg <|
-      Cardinal.one_le_iff_ne_zero.2 <| NeZero.ne _
+    simpa only [Cardinal.one_toNat] using congr_arg Cardinal.toNat (sepDegree_le_one_iff.1 hdeg)
 
 
 end IsPurelyInseparable
