@@ -236,7 +236,7 @@ theorem exist_mem_orbit_add_eq_zero (x y : GalConjClasses F E) :
     rw [← mk_neg, eq, add_eq_zero_iff_eq_neg.mp h]
   · rintro rfl
     refine' ⟨-y.out, y.out, _⟩
-    simp_rw [mk_neg, out_eq, neg_add_self]
+    simp_rw [mk_neg, out_eq, neg_add_self, and_self]
 #align gal_conj_classes.exist_mem_orbit_add_eq_zero GalConjClasses.exist_mem_orbit_add_eq_zero
 
 noncomputable nonrec def minpoly : GalConjClasses F E → F[X] :=

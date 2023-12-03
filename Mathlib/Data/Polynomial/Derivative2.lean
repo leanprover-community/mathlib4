@@ -238,7 +238,6 @@ theorem sumIderiv_sl' [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q : ℕ} (hq
   rw [sumIderiv_apply, map_sum, map_sum, this]
   have : range q = range (q - 1 + 1) := by rw [tsub_add_cancel_of_le (Nat.one_le_of_lt hq)]
   rw [sum_union, this, sum_range_succ]
-  rw [sum_union, sum_range_succ] -- why do we need to do this again?
   congr 1; congr 1
   · apply sum_eq_zero
     exact fun x hx => iterate_derivative_small p _ r hp (mem_range.mp hx)

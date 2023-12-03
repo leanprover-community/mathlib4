@@ -101,7 +101,7 @@ lemma surjective_accumulate {n m} (hmn : m ≤ n) {s : Fin m → ℕ} (hs : Anti
   revert hi
   refine Nat.decreasingInduction' (fun i hi _ ih ↦ ?_) this ?_
   · intro him
-    rw [m.sub_one, Nat.lt_pred_iff] at hi
+    rw [Nat.lt_pred_iff] at hi
     rw [accumulate_rec (him.trans_le hmn) hi, ih hi, inv_accumulate, dif_pos him, dif_pos hi]
     exact Nat.sub_add_cancel (hs i.le_succ)
   · intro hm
@@ -232,7 +232,7 @@ lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (h
     Antitone (ofLex <| p.supDegree toLex) := by
   obtain rfl | h0 := eq_or_ne p 0
   · rw [supDegree_zero]; exact fun _ _ _ ↦ le_rfl
-  rw [Antitone]; by_contra' h
+  rw [Antitone]; by_contra! h
   obtain ⟨i, j, hle, hlt⟩ := h
   apply (le_sup (s := p.support) (f := toLex) _).not_lt
   pick_goal 3
