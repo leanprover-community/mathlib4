@@ -284,7 +284,7 @@ theorem leadingCoeff_single (hD : D.Injective) (a : A) (r : R) :
   rw [leadingCoeff, supDegree_single]
   split_ifs with hr
   · simp [hr]
-  · rw [if_neg hr, Function.leftInverse_invFun hD, single_apply, if_pos rfl]
+  · rw [Function.leftInverse_invFun hD, single_apply, if_pos rfl]
 
 variable {p q : R[A]}
 
@@ -469,7 +469,7 @@ lemma Monic.supDegree_mul_of_ne_zero (hq : q.Monic D) (hp : p ≠ 0) :
   · rw [← AddHom.mem_srange_mk hadd]
     exact add_mem (supDegree_mem_range D hp) (supDegree_mem_range D hq.ne_zero)
   · simp_rw [Finsupp.mem_support_iff, apply_supDegree_add_supDegree hD hadd, hq, mul_one,
-             Ne, leadingCoeff_eq_zero hD, hp]
+             Ne, leadingCoeff_eq_zero hD, hp, not_false_eq_true]
   · have := covariantClass_le_of_lt B B (· + ·)
     have := covariantClass_le_of_lt B B (Function.swap (· + ·))
     exact fun a ha => (Finset.le_sup ha).trans (supDegree_mul_le hadd)
