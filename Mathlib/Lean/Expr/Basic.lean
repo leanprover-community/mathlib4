@@ -445,7 +445,7 @@ def mkDirectProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
 /-- If `e` has a structure as type with field `fieldName` (either directly or in a parent
 structure), `mkProjection e fieldName` creates the projection expression `e.fieldName` -/
 def mkProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
-  let .const structName _ := (← whnf (←inferType e)).getAppFn |
+  let .const structName _ := (← whnf (← inferType e)).getAppFn |
     throwError "{e} doesn't have a structure as type"
   let some baseStruct := findField? (← getEnv) structName fieldName |
     throwError "No parent of {structName} has field {fieldName}"

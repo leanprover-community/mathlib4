@@ -20,12 +20,9 @@ In this file we define and prove properties about finite products of measures
 * `MeasureTheory.Measure.pi`: The product of finitely many σ-finite measures.
   Given `μ : (i : ι) → Measure (α i)` for `[Fintype ι]` it has type `Measure ((i : ι) → α i)`.
 
-To apply Fubini along some subset of the variables, use
-`MeasureTheory.measurePreserving_piEquivPiSubtypeProd` to reduce to the situation of a product
-of two measures: this lemma states that the bijection
-`MeasurableEquiv.piEquivPiSubtypeProd α p` between `(∀ i : ι, α i)` and
-`((i : {i // p i}) → α i) × ((i : {i // ¬ p i}) → α i)` maps a product measure to a direct product
-of product measures, to which one can apply the usual Fubini for direct product of measures.
+To apply Fubini's theorem or Tonelli's theorem along some subset, we recommend using the marginal
+construction `MeasureTheory.lmarginal` and (todo) `MeasureTheory.marginal`. This allows you to
+apply the theorems without any bookkeeping with measurable equivalences.
 
 ## Implementation Notes
 
@@ -246,7 +243,7 @@ instance sigmaFinite_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, Si
     SigmaFinite (Measure.tprod l μ) := by
   induction l with
   | nil => rw [tprod_nil]; infer_instance
-  | cons i l ih => rw [tprod_cons]; exact @prod.instSigmaFinite _ _ _ _ _ _ ih _
+  | cons i l ih => rw [tprod_cons]; exact @prod.instSigmaFinite _ _ _ _ _ _ _ ih
 #align measure_theory.measure.sigma_finite_tprod MeasureTheory.Measure.sigmaFinite_tprod
 
 theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, SigmaFinite (μ i)]

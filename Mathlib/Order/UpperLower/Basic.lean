@@ -416,7 +416,7 @@ section LinearOrder
 variable [LinearOrder α] {s t : Set α}
 
 theorem IsUpperSet.total (hs : IsUpperSet s) (ht : IsUpperSet t) : s ⊆ t ∨ t ⊆ s := by
-  by_contra' h
+  by_contra! h
   simp_rw [Set.not_subset] at h
   obtain ⟨⟨a, has, hat⟩, b, hbt, hbs⟩ := h
   obtain hab | hba := le_total a b
@@ -1660,9 +1660,9 @@ lemma sdiff_le_left : s.sdiff t ≤ s := diff_subset _ _
 lemma erase_le : s.erase a ≤ s := diff_subset _ _
 
 @[simp] protected lemma sdiff_eq_left : s.sdiff t = s ↔ Disjoint ↑s t := by
-  simp [←SetLike.coe_set_eq]
+  simp [← SetLike.coe_set_eq]
 
-@[simp] lemma erase_eq : s.erase a = s ↔ a ∉ s := by rw [←sdiff_singleton]; simp [-sdiff_singleton]
+@[simp] lemma erase_eq : s.erase a = s ↔ a ∉ s := by rw [← sdiff_singleton]; simp [-sdiff_singleton]
 
 @[simp] lemma sdiff_lt_left : s.sdiff t < s ↔ ¬ Disjoint ↑s t :=
   sdiff_le_left.lt_iff_ne.trans LowerSet.sdiff_eq_left.not
@@ -1688,7 +1688,7 @@ lemma lowerClosure_sup_sdiff (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, c 
     lowerClosure t ⊔ s.sdiff t = s := by rw [sup_comm, sdiff_sup_lowerClosure hts hst]
 
 lemma erase_sup_Iic (ha : a ∈ s) (has : ∀ b ∈ s, a ≤ b → b = a) : s.erase a ⊔ Iic a = s := by
-  rw [←lowerClosure_singleton, ←sdiff_singleton, sdiff_sup_lowerClosure] <;> simpa
+  rw [← lowerClosure_singleton, ← sdiff_singleton, sdiff_sup_lowerClosure] <;> simpa
 
 lemma Iic_sup_erase (ha : a ∈ s) (has : ∀ b ∈ s, a ≤ b → b = a) : Iic a ⊔ s.erase a = s := by
   rw [sup_comm, erase_sup_Iic ha has]
@@ -1721,9 +1721,9 @@ lemma le_sdiff_left : s ≤ s.sdiff t := diff_subset _ _
 lemma le_erase : s ≤ s.erase a := diff_subset _ _
 
 @[simp] protected lemma sdiff_eq_left : s.sdiff t = s ↔ Disjoint ↑s t := by
-  simp [←SetLike.coe_set_eq]
+  simp [← SetLike.coe_set_eq]
 
-@[simp] lemma erase_eq : s.erase a = s ↔ a ∉ s := by rw [←sdiff_singleton]; simp [-sdiff_singleton]
+@[simp] lemma erase_eq : s.erase a = s ↔ a ∉ s := by rw [← sdiff_singleton]; simp [-sdiff_singleton]
 
 @[simp] lemma lt_sdiff_left : s < s.sdiff t ↔ ¬ Disjoint ↑s t :=
   le_sdiff_left.gt_iff_ne.trans UpperSet.sdiff_eq_left.not
@@ -1749,7 +1749,7 @@ lemma upperClosure_inf_sdiff (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, b 
     upperClosure t ⊓ s.sdiff t = s := by rw [inf_comm, sdiff_inf_upperClosure hts hst]
 
 lemma erase_inf_Ici (ha : a ∈ s) (has : ∀ b ∈ s, b ≤ a → b = a) : s.erase a ⊓ Ici a = s := by
-  rw [←upperClosure_singleton, ←sdiff_singleton, sdiff_inf_upperClosure] <;> simpa
+  rw [← upperClosure_singleton, ← sdiff_singleton, sdiff_inf_upperClosure] <;> simpa
 
 lemma Ici_inf_erase (ha : a ∈ s) (has : ∀ b ∈ s, b ≤ a → b = a) : Ici a ⊓ s.erase a = s := by
   rw [inf_comm, erase_inf_Ici ha has]
