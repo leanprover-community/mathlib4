@@ -127,6 +127,42 @@ theorem ae_eq_of_integral_smooth_smul_eq
   filter_upwards [this] with x hx
   simpa [sub_eq_zero] using hx
 
+/-- If a locally integrable function `f` on a finite-dimensional real manifold has zero integral
+when multiplied by any smooth compactly supported function supported in an open set `U`,
+then `f` vanishes almost everywhere in `U`. -/
+theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero {U : Set M} (hU : IsOpen U)
+    (hf : LocallyIntegrable f μ)
+    (h : ∀ (g : M → ℝ), Smooth I 𝓘(ℝ) g → HasCompactSupport g → support g ⊆ U →
+        ∫ x, g x • f x ∂μ = 0) :
+    ∀ᵐ x ∂μ, x ∈ U → f x = 0 := by
+  rcases exists_msmooth_support_eq_eq_one_iff I hU isClosed_empty (empty_subset _) with
+    ⟨u, u_smooth, u_range, u_supp, -⟩
+  let f' x := u x • f x
+  have A : ∀ (g : M → ℝ), Smooth I 𝓘(ℝ) g → HasCompactSupport g → ∫ x, g x • f' x ∂μ = 0 := by
+    intro g g_smooth g_comp
+    simp only [smul_smul]
+    apply h _ (g_smooth.mul u_smooth) g_comp.mul_right
+    rw [← u_supp]
+    exact support_mul_subset_right _ _
+  have B : LocallyIntegrable f' μ := by
+    /- Should extract a lemma `LocallyIntegrableOn.mono_function` -/
+    apply hf.mono
+    intro x
+    rcases hf x with ⟨v, v_mem, hv⟩
+    refine ⟨v, v_mem, ?_⟩
+    apply Integrable.mono hv
+      (AEStronglyMeasurable.smul u_smooth.continuous.aestronglyMeasurable hv.1)
+    apply Filter.eventually_of_forall (fun y ↦ ?_)
+    rw [norm_smul]
+    apply mul_le_of_le_one_left (norm_nonneg _)
+    rw [range_subset_iff] at u_range
+    rw [Real.norm_eq_abs, abs_of_nonneg (u_range y).1]
+    exact (u_range y).2
+  have : ∀ᵐ x ∂μ, f' x = 0 := _root_.ae_eq_zero_of_integral_smooth_smul_eq_zero I B A
+  filter_upwards [this] with x hx xU
+  rw [← u_supp, Function.mem_support] at xU
+  simpa [xU] using hx
+
 end Manifold
 
 section VectorSpace
@@ -149,6 +185,17 @@ theorem ae_eq_of_integral_contDiff_smul_eq
       ContDiff ℝ ⊤ g → HasCompactSupport g → ∫ x, g x • f x ∂μ = ∫ x, g x • f' x ∂μ) :
     ∀ᵐ x ∂μ, f x = f' x :=
   ae_eq_of_integral_smooth_smul_eq 𝓘(ℝ, E) hf hf'
+    (fun g g_diff g_supp ↦ h g g_diff.contDiff g_supp)
+
+/-- If a locally integrable function `f` on a finite-dimensional real vector space has zero integral
+when multiplied by any smooth compactly supported function supported in an open set `U`,
+then `f` vanishes almost everywhere in `U`. -/
+theorem IsOpen.ae_eq_zero_of_integral_contDiff_smul_eq_zero {U : Set E} (hU : IsOpen U)
+    (hf : LocallyIntegrable f μ)
+    (h : ∀ (g : E → ℝ), ContDiff ℝ ⊤ g → HasCompactSupport g → support g ⊆ U →
+        ∫ x, g x • f x ∂μ = 0) :
+    ∀ᵐ x ∂μ, x ∈ U → f x = 0 :=
+  hU.ae_eq_zero_of_integral_smooth_smul_eq_zero 𝓘(ℝ, E) hf
     (fun g g_diff g_supp ↦ h g g_diff.contDiff g_supp)
 
 end VectorSpace
