@@ -467,16 +467,14 @@ def shortComplexH1 : ShortComplex (ModuleCat k) :=
 
 /-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous cochains of `A`. -/
-def shortComplexH1Iso :
-    (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
+def shortComplexH1Iso : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
   (inhomogeneousCochains A).isoSc' 0 1 2 (CochainComplex.prev_nat_succ _) (CochainComplex.next _ _)
     ≪≫ isoMk (zeroCochainsLequiv A).toModuleIso (oneCochainsLequiv A).toModuleIso
       (twoCochainsLequiv A).toModuleIso (dZero_comp_eq A) (dOne_comp_eq A)
 
 /-- The 1-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `oneCocycles A`, which is a simpler type. -/
-def isoOneCocycles :
-    cocycles A 1 ≅ ModuleCat.of k (oneCocycles A) :=
+def isoOneCocycles : cocycles A 1 ≅ ModuleCat.of k (oneCocycles A) :=
   cyclesMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatCyclesIso
 
 lemma isoOneCocycles_hom_comp_subtype :
@@ -487,11 +485,11 @@ lemma isoOneCocycles_hom_comp_subtype :
     Iso.trans_hom, LeftHomologyData.cyclesIso_hom_comp_i, cyclesMap_i]
   rfl
 
-lemma toCocycles_comp_isoOneCocycles :
+lemma toCocycles_comp_isoOneCocycles_hom :
     toCocycles A 0 1 ≫ (isoOneCocycles A).hom =
-      (zeroCochainsLequiv A).toModuleIso.hom ≫
-      ModuleCat.ofHom ((dZero A).codRestrict (oneCocycles A) fun c =>
-    LinearMap.ext_iff.1 (dOne_comp_dZero.{u} A) c) := by
+      (zeroCochainsLequiv A).toModuleIso.hom
+        ≫ ModuleCat.ofHom ((dZero A).codRestrict (oneCocycles A) fun c =>
+          LinearMap.ext_iff.1 (dOne_comp_dZero.{u} A) c) := by
   rw [←cancel_mono (moduleCatLeftHomologyData (shortComplexH1 A)).i, Category.assoc]
   show _ ≫ (_ ≫ ModuleCat.ofHom (oneCocycles A).subtype) = _
   rw [isoOneCocycles_hom_comp_subtype, toCocycles, iCocycles, HomologicalComplex.toCycles_i_assoc]
@@ -527,8 +525,7 @@ def shortComplexH2Iso :
 
 /-- The 2-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `twoCocycles A`, which is a simpler type. -/
-def isoTwoCocycles :
-    cocycles A 2 ≅ ModuleCat.of k (twoCocycles A) :=
+def isoTwoCocycles : cocycles A 2 ≅ ModuleCat.of k (twoCocycles A) :=
   cyclesMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatCyclesIso
 
 lemma isoTwoCocycles_hom_comp_subtype :
@@ -539,11 +536,11 @@ lemma isoTwoCocycles_hom_comp_subtype :
     Iso.trans_hom, LeftHomologyData.cyclesIso_hom_comp_i, cyclesMap_i]
   rfl
 
-lemma toCocycles_comp_isoTwoCocycles :
+lemma toCocycles_comp_isoTwoCocycles_hom :
     toCocycles A 1 2 ≫ (isoTwoCocycles A).hom =
-      (oneCochainsLequiv A).toModuleIso.hom ≫
-      ModuleCat.ofHom ((dOne A).codRestrict (twoCocycles A) fun c =>
-    LinearMap.ext_iff.1 (dTwo_comp_dOne.{u} A) c) := by
+      (oneCochainsLequiv A).toModuleIso.hom
+        ≫ ModuleCat.ofHom ((dOne A).codRestrict (twoCocycles A) fun c =>
+          LinearMap.ext_iff.1 (dTwo_comp_dOne.{u} A) c) := by
   rw [←cancel_mono (moduleCatLeftHomologyData (shortComplexH2 A)).i, Category.assoc]
   show _ ≫ (_ ≫ ModuleCat.ofHom (twoCocycles A).subtype) = _
   rw [isoTwoCocycles_hom_comp_subtype, toCocycles, iCocycles, HomologicalComplex.toCycles_i_assoc]
