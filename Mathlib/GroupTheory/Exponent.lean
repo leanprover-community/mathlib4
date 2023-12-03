@@ -155,7 +155,7 @@ theorem exponent_min' (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n = 1) : exp
 
 @[to_additive]
 theorem exponent_min (m : ℕ) (hpos : 0 < m) (hm : m < exponent G) : ∃ g : G, g ^ m ≠ 1 := by
-  by_contra' h
+  by_contra! h
   have hcon : exponent G ≤ m := exponent_min' m hpos h
   linarith
 #align monoid.exponent_min Monoid.exponent_min
@@ -314,7 +314,7 @@ theorem exponent_eq_iSup_orderOf (h : ∀ g : G, 0 < orderOf g) :
     apply order_dvd_exponent
   refine' Nat.dvd_of_factors_subperm he _
   rw [List.subperm_ext_iff]
-  by_contra' h
+  by_contra! h
   obtain ⟨p, hp, hpe⟩ := h
   replace hp := Nat.prime_of_mem_factors hp
   simp only [Nat.factors_count_eq] at hpe

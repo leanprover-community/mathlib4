@@ -68,7 +68,7 @@ theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [LocalRing 
       exact Associated.mul_mul (this _ (Multiset.mem_cons_self _ _)) hn
   have : ∃ n : ℕ, x ^ n ∈ I := by
     obtain ⟨r, hr₁, hr₂⟩ : ∃ r : R, r ∈ I ∧ r ≠ 0 := by
-      by_contra' h; apply hI; rw [eq_bot_iff]; exact h
+      by_contra! h; apply hI; rw [eq_bot_iff]; exact h
     obtain ⟨n, u, rfl⟩ := H' r hr₂ (le_maximalIdeal hI' hr₁)
     use n
     rwa [← I.unit_mul_mem_iff_mem u.isUnit, mul_comm]
@@ -95,7 +95,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
   by_cases ne_bot : maximalIdeal R = ⊥
   · rw [ne_bot]; infer_instance
   obtain ⟨a, ha₁, ha₂⟩ : ∃ a ∈ maximalIdeal R, a ≠ (0 : R) := by
-    by_contra' h'; apply ne_bot; rwa [eq_bot_iff]
+    by_contra! h'; apply ne_bot; rwa [eq_bot_iff]
   have hle : Ideal.span {a} ≤ maximalIdeal R := by rwa [Ideal.span_le, Set.singleton_subset_iff]
   have : (Ideal.span {a}).radical = maximalIdeal R := by
     rw [Ideal.radical_eq_sInf]
@@ -112,7 +112,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [LocalRing R] [IsDomain R]
     rw [hn, pow_zero, Ideal.one_eq_top] at this
     exact (Ideal.IsMaximal.ne_top inferInstance (eq_top_iff.mpr <| this.trans hle)).elim
   obtain ⟨b, hb₁, hb₂⟩ : ∃ b ∈ maximalIdeal R ^ n, ¬b ∈ Ideal.span {a} := by
-    by_contra' h'; rw [Nat.find_eq_iff] at hn; exact hn.2 n n.lt_succ_self fun x hx => h' x hx
+    by_contra! h'; rw [Nat.find_eq_iff] at hn; exact hn.2 n n.lt_succ_self fun x hx => h' x hx
   have hb₃ : ∀ m ∈ maximalIdeal R, ∃ k : R, k * a = b * m := by
     intro m hm; rw [← Ideal.mem_span_singleton']; apply Nat.find_spec this
     rw [hn, pow_succ']; exact Ideal.mul_mem_mul hb₁ hm
