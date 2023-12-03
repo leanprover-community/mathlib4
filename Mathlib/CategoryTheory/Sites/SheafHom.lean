@@ -198,3 +198,38 @@ lemma Presheaf.IsSheaf.hom (hG : Presheaf.IsSheaf J G) :
     (fun _ _ => ((Presheaf.isSheaf_iff_isLimit J G).1 hG _ (J.pullback_stable _ hS)).some)
 
 end CategoryTheory
+
+/-
+Wait until #8737 is merged
+
+variable {F G : Sheaf J A} (φ : F ⟶ G) {I : Type*} (Y : I → C)
+
+lemma isIso_of_isIso_pullback (hY : J.ObjectsCoverTop Y)
+    (hφ : ∀ (i : I), IsIso ((J.overPullback A (Y i)).map φ)) :
+    IsIso φ := by
+  let e : ∀ (i : I), ((J.overPullback A (Y i)).obj F) ≅
+    ((J.overPullback A (Y i)).obj G) := fun i =>
+      asIso ((J.overPullback A (Y i)).map φ)
+  have hφ : ∀ {Z : C} {i : I} (_ : Z ⟶ Y i), IsIso ((J.overPullback A Z).map φ) := by
+    intro Z i g
+    rw [← J.overMapPullback_map_overPullback_map g φ]
+    infer_instance
+  let f : Presheaf.FamilyOfElementsOnObjects (internalHom G F).1 Y :=
+    fun i => (e i).inv
+  have hf : f.IsCompatible := fun Z i j a b => by
+    have := hφ a
+    rw [← cancel_mono ((J.overPullback A Z).map φ)]
+    simp [internalHom, internalHom']
+  refine' ⟨(internalHomSectionsEquiv G F).1 (hf.section_ hY (Sheaf.cond _)), _, _⟩
+  · refine' (internalHomSectionsEquiv F F).symm.injective
+      (hY.ext (Sheaf.cond _) (fun i => Eq.trans _ (e i).hom_inv_id))
+    dsimp
+    simp only [Equiv.symm_apply_apply, IsIso.hom_inv_id,
+      Presheaf.FamilyOfElementsOnObjects.IsCompatible.section_apply]
+    exact IsIso.hom_inv_id ((GrothendieckTopology.overPullback J A (Y i)).map φ)
+  · refine' (internalHomSectionsEquiv G G).symm.injective
+      (hY.ext (Sheaf.cond _) (fun i => Eq.trans _ (e i).inv_hom_id))
+    dsimp
+    simp only [Equiv.symm_apply_apply, IsIso.inv_hom_id,
+      Presheaf.FamilyOfElementsOnObjects.IsCompatible.section_apply]
+    exact IsIso.inv_hom_id ((GrothendieckTopology.overPullback J A (Y i)).map φ)-/

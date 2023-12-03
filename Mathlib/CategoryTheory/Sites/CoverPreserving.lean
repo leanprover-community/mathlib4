@@ -112,7 +112,7 @@ structure CompatiblePreserving (K : GrothendieckTopology D) (G : C ⥤ D) : Prop
 lemma CompatiblePreserving.of_iso {G : C ⥤ D} (hG : CompatiblePreserving.{w} K G) {G' : C ⥤ D}
     (e : G ≅ G') :
     CompatiblePreserving.{w} K G' where
-  Compatible ℱ Z T x hx Y₁ Y₂ X f₁ f₂ g₁ g₂ hg₁ hg₂ fac := by
+  compatible ℱ Z T x hx Y₁ Y₂ X f₁ f₂ g₁ g₂ hg₁ hg₂ fac := by
     let x' : FamilyOfElements (G.op ⋙ ℱ.val) T := fun Y f hf =>
       ℱ.val.map (e.hom.app Y).op (x f hf)
     have hx' : x'.Compatible := fun Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ fac => by
@@ -126,7 +126,7 @@ lemma CompatiblePreserving.of_iso {G : C ⥤ D} (hG : CompatiblePreserving.{w} K
       dsimp at H
       rw [H]
     simpa only [← FunctorToTypes.map_comp_apply, ← op_comp, Category.assoc,
-      e.inv_hom_id_app, Category.comp_id] using hG.Compatible ℱ hx'
+      e.inv_hom_id_app, Category.comp_id] using hG.compatible ℱ hx'
       (f₁ ≫ e.inv.app Y₁) (f₂ ≫ e.inv.app Y₂) hg₁ hg₂
       (by simp only [Category.assoc, ← e.inv.naturality, reassoc_of% fac])
 
