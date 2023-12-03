@@ -11,33 +11,6 @@ import Mathlib.Tactic.Ring
 This file shows various equivalences of bitvectors.
 -/
 
-namespace Nat
-
-theorem bit_add_bit (x₀ y₀ : Bool) (x y : Nat) :
-    bit x₀ x + bit y₀ y = bit (Bool.xor x₀ y₀) (x + y + (x₀ && y₀).toNat) := by
-  simp only [bit_val]
-  cases x₀
-  <;> cases y₀
-  <;> simp only [
-        cond_true, cond_false, Bool.toNat_true, Bool.toNat_false, add_zero,
-        Bool.and_false, Bool.false_and, Bool.and_self,
-        Bool.xor_false, Bool.xor_true, Bool.xor_self, Bool.not_false]
-  <;> ring_nf
-
-/-- If two numbers have no bits in common (i.e., `x &&& y = 0`),
-then addition is the same as bitwise disjunction -/
-theorem add_eq_lor_of_and_eq_zero {x y : Nat} (h : x &&& y = 0) : x + y = x ||| y := by
-  induction' x using Nat.binaryRec with x₀ x ih generalizing y
-  · simp only [zero_add, or_zero]
-  · cases' y using Nat.binaryRec with y₀ y
-    · simp only [add_zero, zero_or]
-    · obtain ⟨h₁, (h₂ : x₀ = false ∨ y₀ = false)⟩ := by simpa using h
-      have hand : (x₀ && y₀) = false := by rcases h₂ with rfl|rfl <;> simp
-      simp [bit_add_bit, hand, ih h₁]
-      cases x₀ <;> cases y₀ <;> simp_all
-
-end Nat
-
 namespace Std.BitVec
 
 variable {w : ℕ}

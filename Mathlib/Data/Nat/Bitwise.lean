@@ -6,6 +6,7 @@ Authors: Markus Himmel, Alex Keizer
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Nat.Size
 import Mathlib.Tactic.Set
+import Mathlib.Tactic.Ring
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
 
@@ -491,5 +492,28 @@ lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy : y < 2 ^ m) : y <<< n ||| x < 2 
   apply bitwise_lt
   · rw [add_comm]; apply shiftLeft_lt hy
   · apply lt_of_lt_of_le hx <| pow_le_pow (le_succ _) (le_add_right _ _)
+
+theorem bit_add_bit (x₀ y₀ : Bool) (x y : Nat) :
+    bit x₀ x + bit y₀ y = bit (Bool.xor x₀ y₀) (x + y + (x₀ && y₀).toNat) := by
+  simp only [bit_val]
+  cases x₀
+  <;> cases y₀
+  <;> simp only [
+        cond_true, cond_false, Bool.toNat_true, Bool.toNat_false, add_zero,
+        Bool.and_false, Bool.false_and, Bool.and_self,
+        Bool.xor_false, Bool.xor_true, Bool.xor_self, Bool.not_false]
+  <;> ring_nf
+
+/-- If two numbers have no bits in common (i.e., `x &&& y = 0`),
+then addition is the same as bitwise disjunction -/
+theorem add_eq_lor_of_and_eq_zero {x y : Nat} (h : x &&& y = 0) : x + y = x ||| y := by
+  induction' x using Nat.binaryRec with x₀ x ih generalizing y
+  · simp only [zero_add, or_zero]
+  · cases' y using Nat.binaryRec with y₀ y
+    · simp only [add_zero, zero_or]
+    · obtain ⟨h₁, (h₂ : x₀ = false ∨ y₀ = false)⟩ := by simpa using h
+      have hand : (x₀ && y₀) = false := by rcases h₂ with rfl|rfl <;> simp
+      simp [bit_add_bit, hand, ih h₁]
+      cases x₀ <;> cases y₀ <;> simp_all
 
 end Nat
