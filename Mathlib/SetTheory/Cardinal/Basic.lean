@@ -1449,7 +1449,7 @@ theorem isLimit_aleph0 : IsLimit ℵ₀ :=
 #align cardinal.is_limit_aleph_0 Cardinal.isLimit_aleph0
 
 theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c := by
-  by_contra' h'
+  by_contra! h'
   rcases lt_aleph0.1 h' with ⟨_ | n, rfl⟩
   · exact h.ne_zero.irrefl
   · rw [nat_succ] at h
