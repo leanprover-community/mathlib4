@@ -354,7 +354,7 @@ theorem WithSeminorms.T1_of_separating (hp : WithSeminorms p)
 theorem WithSeminorms.separating_of_T1 [T1Space E] (hp : WithSeminorms p) (x : E) (hx : x ≠ 0) :
     ∃ i, p i x ≠ 0 := by
   have := ((t1Space_TFAE E).out 0 9).mp (inferInstanceAs <| T1Space E)
-  by_contra' h
+  by_contra! h
   refine' hx (this _)
   rw [hp.hasBasis_zero_ball.specializes_iff]
   rintro ⟨s, r⟩ (hr : 0 < r)
@@ -468,7 +468,7 @@ theorem SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf [u : UniformSpace 
     WithSeminorms p ↔ u = ⨅ i, (p i).toSeminormedAddCommGroup.toUniformSpace := by
   rw [p.withSeminorms_iff_nhds_eq_iInf,
     UniformAddGroup.ext_iff inferInstance (uniformAddGroup_iInf fun i => inferInstance),
-    toTopologicalSpace_iInf, nhds_iInf]
+    UniformSpace.toTopologicalSpace_iInf, nhds_iInf]
   congrm _ = ⨅ i, ?_
   exact @comap_norm_nhds_zero _ (p i).toAddGroupSeminorm.toSeminormedAddGroup
 #align seminorm_family.with_seminorms_iff_uniform_space_eq_infi SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf
@@ -968,7 +968,7 @@ variable [TopologicalSpace E]
 /-- If the topology of a space is induced by a countable family of seminorms, then the topology
 is first countable. -/
 theorem WithSeminorms.first_countable (hp : WithSeminorms p) :
-    TopologicalSpace.FirstCountableTopology E := by
+    FirstCountableTopology E := by
   have := hp.topologicalAddGroup
   let _ : UniformSpace E := TopologicalAddGroup.toUniformSpace E
   have : UniformAddGroup E := comm_topologicalAddGroup_is_uniform

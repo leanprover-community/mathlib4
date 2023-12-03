@@ -333,7 +333,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
       rw [pow_lt_pow_iff_of_lt_one (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num)] at this
       linarith
     set m := k - 1
-    have m_ge : n e ≤ m := Nat.le_pred_of_lt k_gt
+    have m_ge : n e ≤ m := Nat.le_sub_one_of_lt k_gt
     have km : k = m + 1 := (Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (zero_le _) k_gt)).symm
     rw [km] at hk h'k
     -- `f` is well approximated by `L e (n e) k` at the relevant scale
@@ -701,7 +701,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
       rw [pow_lt_pow_iff_of_lt_one (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num)] at this
       linarith
     set m := k - 1
-    have m_ge : n e ≤ m := Nat.le_pred_of_lt k_gt
+    have m_ge : n e ≤ m := Nat.le_sub_one_of_lt k_gt
     have km : k = m + 1 := (Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (zero_le _) k_gt)).symm
     rw [km] at hk h'k
     -- `f` is well approximated by `L e (n e) k` at the relevant scale

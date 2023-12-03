@@ -264,18 +264,25 @@ theorem eventually_forall_le_atBot [Preorder α] {p : α → Prop} :
 theorem Tendsto.eventually_forall_ge_atTop {α β : Type*} [Preorder β] {l : Filter α}
     {p : β → Prop} {f : α → β} (hf : Tendsto f l atTop) (h_evtl : ∀ᶠ x in atTop, p x) :
     ∀ᶠ x in l, ∀ y, f x ≤ y → p y := by
-  rw [←Filter.eventually_forall_ge_atTop] at h_evtl; exact (h_evtl.comap f).filter_mono hf.le_comap
+  rw [← Filter.eventually_forall_ge_atTop] at h_evtl; exact (h_evtl.comap f).filter_mono hf.le_comap
 
 theorem Tendsto.eventually_forall_le_atBot {α β : Type*} [Preorder β] {l : Filter α}
     {p : β → Prop} {f : α → β} (hf : Tendsto f l atBot) (h_evtl : ∀ᶠ x in atBot, p x) :
     ∀ᶠ x in l, ∀ y, y ≤ f x → p y := by
-  rw [←Filter.eventually_forall_le_atBot] at h_evtl; exact (h_evtl.comap f).filter_mono hf.le_comap
+  rw [← Filter.eventually_forall_le_atBot] at h_evtl; exact (h_evtl.comap f).filter_mono hf.le_comap
 
 theorem atTop_basis_Ioi [Nonempty α] [SemilatticeSup α] [NoMaxOrder α] :
     (@atTop α _).HasBasis (fun _ => True) Ioi :=
   atTop_basis.to_hasBasis (fun a ha => ⟨a, ha, Ioi_subset_Ici_self⟩) fun a ha =>
     (exists_gt a).imp fun _b hb => ⟨ha, Ici_subset_Ioi.2 hb⟩
 #align filter.at_top_basis_Ioi Filter.atTop_basis_Ioi
+
+lemma atTop_basis_Ioi' [SemilatticeSup α] [NoMaxOrder α] (a : α) : atTop.HasBasis (a < ·) Ioi :=
+  have : Nonempty α := ⟨a⟩
+  atTop_basis_Ioi.to_hasBasis (fun b _ ↦
+      let ⟨c, hc⟩ := exists_gt (a ⊔ b)
+      ⟨c, le_sup_left.trans_lt hc, Ioi_subset_Ioi <| le_sup_right.trans hc.le⟩) fun b _ ↦
+    ⟨b, trivial, Subset.rfl⟩
 
 theorem atTop_countable_basis [Nonempty α] [SemilatticeSup α] [Countable α] :
     HasCountableBasis (atTop : Filter α) (fun _ => True) Ici :=
@@ -884,12 +891,10 @@ theorem map_neg_atTop : map (Neg.neg : β → β) atTop = atBot :=
   (OrderIso.neg β).map_atTop
 #align filter.map_neg_at_top Filter.map_neg_atTop
 
-@[simp]
 theorem comap_neg_atBot : comap (Neg.neg : β → β) atBot = atTop :=
   (OrderIso.neg β).comap_atTop
 #align filter.comap_neg_at_bot Filter.comap_neg_atBot
 
-@[simp]
 theorem comap_neg_atTop : comap (Neg.neg : β → β) atTop = atBot :=
   (OrderIso.neg β).comap_atBot
 #align filter.comap_neg_at_top Filter.comap_neg_atTop
@@ -1063,7 +1068,7 @@ theorem tendsto_mul_const_atTop_of_pos (hr : 0 < r) :
   simpa only [mul_comm] using tendsto_const_mul_atTop_of_pos hr
 #align filter.tendsto_mul_const_at_top_of_pos Filter.tendsto_mul_const_atTop_of_pos
 
-/-- If `r` is a positive constant, then `x ↦ f x * r` tends to infinity along a filter if and only
+/-- If `r` is a positive constant, then `x ↦ f x / r` tends to infinity along a filter if and only
 if `f` tends to infinity along the same filter. -/
 lemma tendsto_div_const_atTop_of_pos (hr : 0 < r) :
     Tendsto (λ x ↦ f x / r) l atTop ↔ Tendsto f l atTop := by
@@ -2053,7 +2058,8 @@ theorem Monotone.piecewise_eventually_eq_iUnion {β : α → Type*} [Preorder ι
   · refine (eventually_ge_atTop i).mono fun j hij ↦ ?_
     simp only [Set.piecewise_eq_of_mem, hs hij hi, subset_iUnion _ _ hi]
   · refine eventually_of_forall fun i ↦ ?_
-    simp only [Set.piecewise_eq_of_not_mem, not_exists.1 ha i, mt mem_iUnion.1 ha]
+    simp only [Set.piecewise_eq_of_not_mem, not_exists.1 ha i, mt mem_iUnion.1 ha,
+      not_false_eq_true, exists_false]
 
 theorem Antitone.piecewise_eventually_eq_iInter {β : α → Type*} [Preorder ι] {s : ι → Set α}
     [∀ i, DecidablePred (· ∈ s i)] [DecidablePred (· ∈ ⋂ i, s i)]

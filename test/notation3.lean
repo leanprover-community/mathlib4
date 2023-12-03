@@ -162,3 +162,17 @@ error: failed to reduce to 'true'
 #guard_msgs in example : Fin 5 := #6
 
 end
+
+section test_scoped
+
+scoped[MyNotation] notation3 "π" => (3 : Nat)
+
+/-- error: unknown identifier 'π' -/
+#guard_msgs in #check π
+
+open scoped MyNotation
+
+/-- info: π : ℕ -/
+#guard_msgs in #check π
+
+end test_scoped

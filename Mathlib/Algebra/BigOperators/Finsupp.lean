@@ -220,7 +220,7 @@ theorem prod_eq_single {f : α →₀ M} (a : α) {g : α → M → N}
   · exact h₀ b (mem_support_iff.mp hb₁) hb₂
   · simp only [not_mem_support_iff] at h
     rw [h]
-    refine h₁ h
+    exact h₁ h
 
 end SumProd
 
@@ -502,7 +502,7 @@ theorem univ_sum_single_apply' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
 
 theorem equivFunOnFinite_symm_eq_sum [Fintype α] [AddCommMonoid M] (f : α → M) :
     equivFunOnFinite.symm f = ∑ a, Finsupp.single a (f a) := by
-  rw [←univ_sum_single (equivFunOnFinite.symm f)]
+  rw [← univ_sum_single (equivFunOnFinite.symm f)]
   ext
   simp
 

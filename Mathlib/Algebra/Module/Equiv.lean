@@ -519,9 +519,7 @@ theorem symm_symm (e : M ≃ₛₗ[σ] M₂) : e.symm.symm = e := by
 
 theorem symm_bijective [Module R M] [Module S M₂] [RingHomInvPair σ' σ] [RingHomInvPair σ σ'] :
     Function.Bijective (symm : (M ≃ₛₗ[σ] M₂) → M₂ ≃ₛₗ[σ'] M) :=
-  Equiv.bijective
-    ⟨(symm : (M ≃ₛₗ[σ] M₂) → M₂ ≃ₛₗ[σ'] M), (symm : (M₂ ≃ₛₗ[σ'] M) → M ≃ₛₗ[σ] M₂), symm_symm,
-      symm_symm⟩
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 #align linear_equiv.symm_bijective LinearEquiv.symm_bijective
 
 @[simp]
@@ -721,7 +719,7 @@ def ofSubsingleton : M ≃ₗ[R] M₂ :=
 @[simp]
 theorem ofSubsingleton_self : ofSubsingleton M M = refl R M := by
   ext
-  simp
+  simp [eq_iff_true_of_subsingleton]
 #align linear_equiv.of_subsingleton_self LinearEquiv.ofSubsingleton_self
 
 end OfSubsingleton
@@ -893,3 +891,29 @@ theorem toIntLinearEquiv_trans (e₂ : M₂ ≃+ M₃) :
 end AddCommGroup
 
 end AddEquiv
+
+namespace LinearMap
+
+variable (R S M)
+variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
+
+/-- The equivalence between R-linear maps from `R` to `M`, and points of `M` itself.
+This says that the forgetful functor from `R`-modules to types is representable, by `R`.
+
+This is an `S`-linear equivalence, under the assumption that `S` acts on `M` commuting with `R`.
+When `R` is commutative, we can take this to be the usual action with `S = R`.
+Otherwise, `S = ℕ` shows that the equivalence is additive.
+See note [bundled maps over different rings].
+-/
+@[simps]
+def ringLmapEquivSelf [Module S M] [SMulCommClass R S M] : (R →ₗ[R] M) ≃ₗ[S] M :=
+  { applyₗ' S (1 : R) with
+    toFun := fun f => f 1
+    invFun := smulRight (1 : R →ₗ[R] R)
+    left_inv := fun f => by
+      ext
+      simp only [coe_smulRight, one_apply, smul_eq_mul, ← map_smul f, mul_one]
+    right_inv := fun x => by simp }
+#align linear_map.ring_lmap_equiv_self LinearMap.ringLmapEquivSelf
+
+end LinearMap

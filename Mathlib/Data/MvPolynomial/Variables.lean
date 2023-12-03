@@ -307,7 +307,6 @@ theorem vars_mul [DecidableEq σ] (φ ψ : MvPolynomial σ R) : (φ * ψ).vars �
   simp_rw [vars]
   convert Multiset.toFinset_subset.mpr <| Multiset.Le.subset (degrees_mul φ ψ)
   convert (Multiset.toFinset_add φ.degrees ψ.degrees).symm
-
 #align mv_polynomial.vars_mul MvPolynomial.vars_mul
 
 @[simp]

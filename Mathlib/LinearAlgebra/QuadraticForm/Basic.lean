@@ -7,7 +7,7 @@ import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 
-#align_import linear_algebra.quadratic_form.basic from "leanprover-community/mathlib"@"11b92770e4d49ff3982504c4dab918ac0887fe33"
+#align_import linear_algebra.quadratic_form.basic from "leanprover-community/mathlib"@"d11f435d4e34a6cea0a1797d6b625b0c170be845"
 
 /-!
 # Quadratic forms
@@ -828,7 +828,7 @@ theorem associated_apply (x y : M) : associatedHom S Q x y = ⅟ 2 * (Q (x + y) 
 @[simp] theorem two_nsmul_associated : 2 • associatedHom S Q = Q.polarBilin := by
   ext
   dsimp
-  rw [←smul_mul_assoc, two_nsmul, invOf_two_add_invOf_two, one_mul, polar]
+  rw [← smul_mul_assoc, two_nsmul, invOf_two_add_invOf_two, one_mul, polar]
 
 theorem associated_isSymm : (associatedHom S Q).IsSymm := fun x y => by
   simp only [associated_apply, add_comm, add_left_comm, sub_eq_add_neg, add_assoc]

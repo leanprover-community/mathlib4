@@ -78,7 +78,7 @@ theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommRing R] [LocalRing 
   have h2 : ¬IsUnit ϖ := show ϖ ∈ maximalIdeal R from h.symm ▸ Submodule.mem_span_singleton_self ϖ
   refine' ⟨h2, _⟩
   intro a b hab
-  by_contra' h
+  by_contra! h
   obtain ⟨ha : a ∈ maximalIdeal R, hb : b ∈ maximalIdeal R⟩ := h
   rw [h, mem_span_singleton'] at ha hb
   rcases ha with ⟨a, rfl⟩
@@ -386,7 +386,7 @@ theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m 
   rw [← sub_mul, mul_eq_zero] at h
   cases' h with h h
   · rw [sub_eq_zero] at h
-    exact_mod_cast h
+    exact mod_cast h
   · apply (hirr.ne_zero (pow_eq_zero h)).elim
 #align discrete_valuation_ring.unit_mul_pow_congr_unit DiscreteValuationRing.unit_mul_pow_congr_unit
 

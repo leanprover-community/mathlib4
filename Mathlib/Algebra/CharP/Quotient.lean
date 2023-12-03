@@ -46,7 +46,7 @@ theorem quotient' {R : Type*} [CommRing R] (p : ℕ) [CharP R p] (I : Ideal R)
 theorem quotient_iff {R : Type*} [CommRing R] (n : ℕ) [CharP R n] (I : Ideal R) :
     CharP (R ⧸ I) n ↔ ∀ x : ℕ, ↑x ∈ I → (x : R) = 0 := by
   refine ⟨fun _ x hx => ?_, CharP.quotient' n I⟩
-  rw [CharP.cast_eq_zero_iff R n, ←CharP.cast_eq_zero_iff (R ⧸ I) n _]
+  rw [CharP.cast_eq_zero_iff R n, ← CharP.cast_eq_zero_iff (R ⧸ I) n _]
   exact (Submodule.Quotient.mk_eq_zero I).mpr hx
 
 /-- `CharP.quotient_iff`, but stated in terms of inclusions of ideals. -/
@@ -60,9 +60,6 @@ theorem Ideal.Quotient.index_eq_zero {R : Type*} [CommRing R] (I : Ideal R) :
     (↑I.toAddSubgroup.index : R ⧸ I) = 0 := by
   rw [AddSubgroup.index, Nat.card_eq]
   split_ifs with hq; swap; simp
-  by_contra h
-  -- TODO: can we avoid rewriting the `I.to_add_subgroup` here?
   letI : Fintype (R ⧸ I) := @Fintype.ofFinite _ hq
-  have h : (Fintype.card (R ⧸ I) : R ⧸ I) ≠ 0 := h
-  simp at h
+  exact CharP.cast_card_eq_zero (R ⧸ I)
 #align ideal.quotient.index_eq_zero Ideal.Quotient.index_eq_zero

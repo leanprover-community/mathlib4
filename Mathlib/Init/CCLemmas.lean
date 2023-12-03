@@ -31,7 +31,7 @@ theorem and_eq_of_eq_false_right {a b : Prop} (h : b = False) : (a ∧ b) = Fals
   h.symm ▸ propext (and_false_iff _)
 
 theorem and_eq_of_eq {a b : Prop} (h : a = b) : (a ∧ b) = a :=
-  h ▸ propext (and_self_iff _)
+  h ▸ propext and_self_iff
 
 theorem or_eq_of_eq_true_left {a b : Prop} (h : a = True) : (a ∨ b) = True :=
   h.symm ▸ propext (true_or_iff _)
@@ -46,7 +46,7 @@ theorem or_eq_of_eq_false_right {a b : Prop} (h : b = False) : (a ∨ b) = a :=
   h.symm ▸ propext (or_false_iff _)
 
 theorem or_eq_of_eq {a b : Prop} (h : a = b) : (a ∨ b) = a :=
-  h ▸ propext (or_self_iff _)
+  h ▸ propext or_self_iff
 
 theorem imp_eq_of_eq_true_left {a b : Prop} (h : a = True) : (a → b) = b :=
   h.symm ▸ propext ⟨fun h ↦ h trivial, fun h₁ _ ↦ h₁⟩

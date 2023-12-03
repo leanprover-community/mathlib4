@@ -261,7 +261,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     In this proof, we use explicit coercions `↑s` for `s : A` as otherwise the system tries to find
     a `CoeFun` instance on `↥A`, which is too costly.
     -/
-  by_contra' h
+  by_contra! h
   -- We will formulate things in terms of the type of countable subsets of `α`, as this is more
   -- convenient to formalize the inductive construction.
   let A : Set (Set α) := {t | t.Countable}
@@ -571,7 +571,7 @@ theorem countable_ne (Hcont : #ℝ = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ
       {x | φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x ≠ ∅} := by
     intro x hx
     contrapose! hx
-    simp only [Classical.not_not, mem_setOf_eq] at hx
+    simp only [Classical.not_not, mem_setOf_eq, not_nonempty_iff_eq_empty] at hx
     simp [apply_f_eq_continuousPart Hcont φ x hx]
   have B :
     {x | φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x ≠ ∅} ⊆

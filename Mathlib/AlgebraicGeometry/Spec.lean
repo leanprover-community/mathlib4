@@ -196,7 +196,7 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
     specialize h r
     simp only [sheafedSpaceObj_carrier, Functor.op_obj, unop_op, TopCat.Presheaf.pushforwardObj_obj,
       sheafedSpaceObj_presheaf, Category.assoc] at h
-    rw [NatTrans.comp_app, ←h]
+    rw [NatTrans.comp_app, ← h]
     congr
     simp
 set_option linter.uppercaseLean3 false in
@@ -262,9 +262,9 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat} (f : R ⟶ S) :
       replace ha := (stalkIso S p).hom.isUnit_map ha
       rw [← comp_apply, show localizationToStalk S p = (stalkIso S p).inv from rfl,
         Iso.inv_hom_id, id_apply] at ha
-      -- Porting note : `R` had to be made explicit
+      -- Porting note : `f` had to be made explicit
       replace ha := IsLocalRingHom.map_nonunit
-        (R := Localization.AtPrime (PrimeSpectrum.comap f p).asIdeal) _ ha
+        (f := (Localization.localRingHom (PrimeSpectrum.comap f p).asIdeal p.asIdeal f _)) _ ha
       convert RingHom.isUnit_map (stalkIso R (PrimeSpectrum.comap f p)).inv ha
       erw [← comp_apply, show stalkToFiberRingHom R _ = (stalkIso _ _).hom from rfl,
         Iso.hom_inv_id, id_apply]
@@ -450,7 +450,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
     exact (IsLocalization.map_units ((structureSheaf R).presheaf.stalk p) ⟨x, hx⟩).map _
   · apply isLocalizedModule_toPushforwardStalkAlgHom_aux
   · intro x hx
-    rw [toPushforwardStalkAlgHom_apply, ←(toPushforwardStalk (algebraMap R S) p).map_zero,
+    rw [toPushforwardStalkAlgHom_apply, ← (toPushforwardStalk (algebraMap R S) p).map_zero,
       toPushforwardStalk] at hx
     -- Porting note : this `change` is manually rewriting `comp_apply`
     change _ = (TopCat.Presheaf.germ (Spec.topMap (algebraMap ↑R ↑S) _* (structureSheaf ↑S).val)

@@ -336,7 +336,8 @@ theorem testAgainstNN_const (μ : FiniteMeasure Ω) (c : ℝ≥0) :
 theorem testAgainstNN_mono (μ : FiniteMeasure Ω) {f g : Ω →ᵇ ℝ≥0} (f_le_g : (f : Ω → ℝ≥0) ≤ g) :
     μ.testAgainstNN f ≤ μ.testAgainstNN g := by
   simp only [← ENNReal.coe_le_coe, testAgainstNN_coe_eq]
-  exact lintegral_mono fun ω => ENNReal.coe_mono (f_le_g ω)
+  gcongr
+  apply f_le_g
 #align measure_theory.finite_measure.test_against_nn_mono MeasureTheory.FiniteMeasure.testAgainstNN_mono
 
 @[simp]
@@ -732,12 +733,12 @@ lemma map_apply_of_aemeasurable (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_aemb
     ν.map f A = ν (f ⁻¹' A) :=
   map_apply_of_aemeasurable ν f_mble.aemeasurable A_mble
 
-@[simp] lemma map_add {f : Ω → Ω'} (f_mble : Measurable f) (ν₁ ν₂ : FiniteMeasure Ω)  :
+@[simp] lemma map_add {f : Ω → Ω'} (f_mble : Measurable f) (ν₁ ν₂ : FiniteMeasure Ω) :
     (ν₁ + ν₂).map f = ν₁.map f + ν₂.map f := by
   ext s s_mble
   simp [map_apply' _ f_mble.aemeasurable s_mble, toMeasure_add]
 
-@[simp] lemma map_smul {f : Ω → Ω'} (f_mble : Measurable f) (c : ℝ≥0) (ν : FiniteMeasure Ω)  :
+@[simp] lemma map_smul {f : Ω → Ω'} (f_mble : Measurable f) (c : ℝ≥0) (ν : FiniteMeasure Ω) :
     (c • ν).map f = c • (ν.map f) := by
   ext s s_mble
   simp [map_apply' _ f_mble.aemeasurable s_mble, toMeasure_smul]
