@@ -314,8 +314,8 @@ variable [TopologicalSpace Ω] [HasOuterApproxClosed Ω] [BorelSpace Ω]
 variable (Ω)
 
 /-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
-continuous functions (`HasOuterApproxClosed`), the topology of weak convergence of Borel probability
-measures is Hausdorff (`T2Space`). -/
+continuous functions (`HasOuterApproxClosed`), the topology of convergence in distribution of Borel
+probability measures is Hausdorff (`T2Space`). -/
 instance t2Space : T2Space (ProbabilityMeasure Ω) :=
   Embedding.t2Space (toFiniteMeasure_embedding Ω)
 
