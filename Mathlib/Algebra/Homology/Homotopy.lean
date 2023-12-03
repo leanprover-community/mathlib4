@@ -788,11 +788,7 @@ end HomotopyEquiv
 
 /-- Homotopic maps induce the same map on homology.
 -/
-<<<<<<< HEAD
-theorem homology_map_eq_of_homotopy (h : Homotopy f g) (i : ι) :
-=======
 theorem homology'_map_eq_of_homotopy (h : Homotopy f g) (i : ι) :
->>>>>>> origin/homology-sequence-computation
     (homology'Functor V c i).map f = (homology'Functor V c i).map g := by
   dsimp [homology'Functor]
   apply eq_of_sub_eq_zero
@@ -811,11 +807,7 @@ theorem homology'_map_eq_of_homotopy (h : Homotopy f g) (i : ι) :
 #align homology_map_eq_of_homotopy homology'_map_eq_of_homotopy
 
 /-- Homotopy equivalent complexes have isomorphic homologies. -/
-<<<<<<< HEAD
-def homology'ObjIsoOfHomotopyEquiv (f : HomotopyEquiv C D) (i : ι) :
-=======
 def homologyObjIsoOfHomotopyEquiv (f : HomotopyEquiv C D) (i : ι) :
->>>>>>> origin/homology-sequence-computation
     (homology'Functor V c i).obj C ≅ (homology'Functor V c i).obj D where
   hom := (homology'Functor V c i).map f.hom
   inv := (homology'Functor V c i).map f.inv
@@ -826,12 +818,6 @@ def homologyObjIsoOfHomotopyEquiv (f : HomotopyEquiv C D) (i : ι) :
     rw [← Functor.map_comp, homology'_map_eq_of_homotopy f.homotopyInvHomId,
       CategoryTheory.Functor.map_id]
 #align homology_obj_iso_of_homotopy_equiv homology'ObjIsoOfHomotopyEquiv-/
-
-variable (V c)
-
-def HomologicalComplex.homotopyEquivalences :
-    MorphismProperty (HomologicalComplex V c) := fun X Y f =>
-  ∃ (e : HomotopyEquiv X Y), e.hom = f
 
 end
 
