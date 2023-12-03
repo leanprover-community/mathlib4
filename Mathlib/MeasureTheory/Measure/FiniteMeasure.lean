@@ -380,6 +380,8 @@ theorem smul_testAgainstNN_apply (c : ℝ≥0) (μ : FiniteMeasure Ω) (f : Ω �
     lintegral_smul_measure]
 #align measure_theory.finite_measure.smul_test_against_nn_apply MeasureTheory.FiniteMeasure.smul_testAgainstNN_apply
 
+section weak_convergence
+
 variable [OpensMeasurableSpace Ω]
 
 theorem testAgainstNN_add (μ : FiniteMeasure Ω) (f₁ f₂ : Ω →ᵇ ℝ≥0) :
@@ -552,50 +554,41 @@ theorem tendsto_iff_forall_lintegral_tendsto {γ : Type*} {F : Filter γ} {μs :
     ENNReal.toNNReal_coe]
 #align measure_theory.finite_measure.tendsto_iff_forall_lintegral_tendsto MeasureTheory.FiniteMeasure.tendsto_iff_forall_lintegral_tendsto
 
-lemma exists_isOpen_isOpen_mem_mem_disjoint_of_testAgainstNN_lt {f : Ω →ᵇ ℝ≥0}
-    {μ ν : FiniteMeasure Ω} (h : testAgainstNN μ f < testAgainstNN ν f) :
-    ∃ u v, IsOpen u ∧ IsOpen v ∧ μ ∈ u ∧ ν ∈ v ∧ Disjoint u v := by
-  let T : FiniteMeasure Ω → ℝ≥0 := fun κ ↦ testAgainstNN κ f
-  have T_cont : Continuous T := continuous_testAgainstNN_eval f
-  obtain ⟨z, lt_z, z_lt⟩ := exists_between h
-  let U : Set (FiniteMeasure Ω) := T ⁻¹' (Iio z)
-  let V : Set (FiniteMeasure Ω) := T ⁻¹' (Ioi z)
-  have U_open : IsOpen U := (continuous_def.mp T_cont) _ isOpen_Iio
-  have V_open : IsOpen V := (continuous_def.mp T_cont) _ isOpen_Ioi
-  refine ⟨U, V, U_open, V_open, lt_z, z_lt, ?_⟩
-  apply Disjoint.preimage
-  rw [disjoint_iff_forall_ne]
-  intro x x_in_Iio y y_in_Ioi
-  simp only [mem_Iio, mem_Ioi, ne_eq] at x_in_Iio y_in_Ioi
-  exact (x_in_Iio.trans y_in_Ioi).ne
+end weak_convergence -- section
+
+section Hausdorff
+
+variable [HasOuterApproxClosed Ω] [BorelSpace Ω]
+
+open Function
+
+/-- The mapping `toWeakDualBCNN` from finite Borel measures to the weak dual of `Ω →ᵇ ℝ≥0` is
+injective, if in the underlying space `Ω`, indicator functions of closed sets have decreasing
+approximations by sequences of continuous functions (in particular if `Ω` is pseudometrizable). -/
+lemma injective_toWeakDualBCNN :
+    Injective (toWeakDualBCNN : FiniteMeasure Ω → WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)) := by
+  intro μ ν hμν
+  apply ext_of_forall_lintegral_eq
+  intro f
+  have key := congr_fun (congrArg FunLike.coe hμν) f
+  apply (ENNReal.toNNReal_eq_toNNReal_iff' ?_ ?_).mp key
+  · exact (lintegral_lt_top_of_nnreal μ f).ne
+  · exact (lintegral_lt_top_of_nnreal ν f).ne
+
+variable (Ω)
+
+lemma embedding_toWeakDualBCNN :
+    Embedding (toWeakDualBCNN : FiniteMeasure Ω → WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)) where
+  induced := rfl
+  inj := injective_toWeakDualBCNN
 
 /-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
 continuous functions (`HasOuterApproxClosed`), the topology of weak convergence of finite Borel
 measures is Hausdorff (`T2Space`). -/
-instance t2Space {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterApproxClosed Ω]
-    [BorelSpace Ω] :
-    T2Space (FiniteMeasure Ω) where
-  t2 := by
-    intro μ ν μ_ne_ν
-    have key : ¬ ∀ (f : Ω →ᵇ ℝ≥0), ∫⁻ x, f x ∂μ = ∫⁻ x, f x ∂ν := by
-      by_contra maybe_eq
-      exact μ_ne_ν (ext_of_forall_lintegral_eq maybe_eq)
-    obtain ⟨f, hf⟩ := not_forall.mp key
-    let T : FiniteMeasure Ω → ℝ≥0 := fun κ ↦ testAgainstNN κ f
-    have hf' : T μ ≠ T ν := by
-      by_contra maybe_eq
-      apply hf
-      exact (ENNReal.toNNReal_eq_toNNReal_iff'
-          (f.lintegral_lt_top_of_nnreal (μ := μ)).ne (f.lintegral_lt_top_of_nnreal (μ := ν)).ne).mp
-        (by simpa only [maybe_eq])
-    have hf'' : T μ < T ν ∨ T μ > T ν := by
-      simp_all only [ne_eq, gt_iff_lt, lt_or_lt_iff_ne, not_false_eq_true]
-    cases hf''
-    · exact exists_isOpen_isOpen_mem_mem_disjoint_of_testAgainstNN_lt (by assumption)
-    · rename_i h
-      obtain ⟨V, U, V_open, U_open, mem_V, mem_U, disj⟩ :=
-        exists_isOpen_isOpen_mem_mem_disjoint_of_testAgainstNN_lt (μ := ν) (ν := μ) (f := f) h
-      refine ⟨U, V, U_open, V_open, mem_U, mem_V, Disjoint.symm disj⟩
+instance t2Space : T2Space (FiniteMeasure Ω) :=
+  Embedding.t2Space (embedding_toWeakDualBCNN Ω)
+
+end Hausdorff -- section
 
 end FiniteMeasure
 

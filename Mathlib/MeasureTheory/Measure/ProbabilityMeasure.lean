@@ -217,6 +217,8 @@ theorem toFiniteMeasure_nonzero (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasur
   exact one_ne_zero
 #align measure_theory.probability_measure.to_finite_measure_nonzero MeasureTheory.ProbabilityMeasure.toFiniteMeasure_nonzero
 
+section convergence_in_distribution
+
 variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 
 theorem testAgainstNN_lipschitz (μ : ProbabilityMeasure Ω) :
@@ -303,12 +305,21 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ}
   rfl
 #align measure_theory.probability_measure.tendsto_iff_forall_integral_tendsto MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_integral_tendsto
 
+end convergence_in_distribution -- section
+
+section Hausdorff
+
+variable [TopologicalSpace Ω] [HasOuterApproxClosed Ω] [BorelSpace Ω]
+
+variable (Ω)
+
 /-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
 continuous functions (`HasOuterApproxClosed`), the topology of weak convergence of Borel probability
 measures is Hausdorff (`T2Space`). -/
-instance t2Space {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterApproxClosed Ω]
-    [BorelSpace Ω] :
-    T2Space (ProbabilityMeasure Ω) := Embedding.t2Space (toFiniteMeasure_embedding Ω)
+instance t2Space : T2Space (ProbabilityMeasure Ω) :=
+  Embedding.t2Space (toFiniteMeasure_embedding Ω)
+
+end Hausdorff -- section
 
 end ProbabilityMeasure
 
