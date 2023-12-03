@@ -554,20 +554,24 @@ lemma exists_isOpen_isOpen_mem_mem_disjoint_of_testAgainstNN_lt {f : Ω →ᵇ �
     ∃ u v, IsOpen u ∧ IsOpen v ∧ μ ∈ u ∧ ν ∈ v ∧ Disjoint u v := by
   let T : FiniteMeasure Ω → ℝ≥0 := fun κ ↦ testAgainstNN κ f
   have T_cont : Continuous T := continuous_testAgainstNN_eval f
-  obtain ⟨z, ⟨lt_z, z_lt⟩⟩ := exists_between h
+  obtain ⟨z, lt_z, z_lt⟩ := exists_between h
   let U : Set (FiniteMeasure Ω) := T ⁻¹' (Iio z)
   let V : Set (FiniteMeasure Ω) := T ⁻¹' (Ioi z)
   have U_open : IsOpen U := (continuous_def.mp T_cont) _ isOpen_Iio
   have V_open : IsOpen V := (continuous_def.mp T_cont) _ isOpen_Ioi
   refine ⟨U, V, U_open, V_open, lt_z, z_lt, ?_⟩
   apply Disjoint.preimage
-  rw [@disjoint_iff_forall_ne]
+  rw [disjoint_iff_forall_ne]
   intro x x_in_Iio y y_in_Ioi
   simp only [mem_Iio, mem_Ioi, ne_eq] at x_in_Iio y_in_Ioi
   exact (x_in_Iio.trans y_in_Ioi).ne
 
-lemma t2Space {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterApproxClosed Ω]
-    [BorelSpace Ω] : T2Space (FiniteMeasure Ω) where
+/-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
+continuous functions (`HasOuterApproxClosed`), the topology of weak convergence of finite Borel
+measures is Hausdorff (`T2Space`). -/
+instance {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterApproxClosed Ω]
+    [BorelSpace Ω] :
+    T2Space (FiniteMeasure Ω) where
   t2 := by
     intro μ ν μ_ne_ν
     have key : ¬ ∀ (f : Ω →ᵇ ℝ≥0), ∫⁻ x, f x ∂μ = ∫⁻ x, f x ∂ν := by
@@ -589,15 +593,6 @@ lemma t2Space {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterA
       obtain ⟨V, U, V_open, U_open, mem_V, mem_U, disj⟩ :=
         exists_isOpen_isOpen_mem_mem_disjoint_of_testAgainstNN_lt (μ := ν) (ν := μ) (f := f) h
       refine ⟨U, V, U_open, V_open, mem_U, mem_V, Disjoint.symm disj⟩
-
-/-- Weak limits of finite Borel measures are unique. -/
-theorem tendsto_nhds_unique' {Ω ι : Type*} {L : Filter ι} [NeBot L]
-    [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterApproxClosed Ω]
-    [BorelSpace Ω] {μs : ι → FiniteMeasure Ω} {μ₁ μ₂ : FiniteMeasure Ω}
-    (h₁ : L.Tendsto μs (𝓝 μ₁)) (h₂ : L.Tendsto μs (𝓝 μ₂)) :
-    μ₁ = μ₂ := by
-  have t2 := t2Space (Ω := Ω)
-  exact tendsto_nhds_unique h₁ h₂
 
 end FiniteMeasure
 
