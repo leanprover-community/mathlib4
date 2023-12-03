@@ -179,7 +179,7 @@ end HomologicalComplex
 
 variable (C)
 
-namespace ChainComplex
+/-namespace ChainComplex
 
 variable [HasEqualizers C] [HasCokernels C] [HasImages C] [HasImageMaps C]
 
@@ -237,7 +237,7 @@ noncomputable def homology'FunctorSuccSingle₀ (n : ℕ) :
     fun f => (Functor.zero_obj _).eq_of_tgt _ _
 #align cochain_complex.homology_functor_succ_single₀ CochainComplex.homology'FunctorSuccSingle₀
 
-end CochainComplex
+end CochainComplex-/
 
 namespace ChainComplex
 

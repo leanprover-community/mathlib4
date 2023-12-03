@@ -124,15 +124,9 @@ theorem span_exact (huv : u ∘ Sum.inl = S.f ∘ v)
   rw [← hn, map_finsupp_sum] at hnm
   rw [← sub_add_cancel m m', ← hnm,]
   simp only [SMulHomClass.map_smul]
-<<<<<<< HEAD
   have hn' : (Finsupp.sum cn fun a b ↦ b • S.f (v a)) =
       (Finsupp.sum cn fun a b ↦ b • u (Sum.inl a)) :=
     by congr; ext a b; change b • (S.f ∘ v) a = _; rw [← huv]; rfl
-=======
-  have hn' : (Finsupp.sum cn fun a b ↦ b • f (v a)) =
-      (Finsupp.sum cn fun a b ↦ b • u (Sum.inl a)) := by
-    congr; ext a b; change b • (f ∘ v) a = _; rw [← huv]; rfl
->>>>>>> origin/homology-sequence-computation
   rw [hn']
   apply add_mem
   · rw [Finsupp.mem_span_range_iff_exists_finsupp]
@@ -176,7 +170,6 @@ theorem free_shortExact' (_ : Module.Free R S.X₁) (_ : Module.Free R S.X₃) :
     Module.Free R S.X₂ :=
   free_shortExact hS'
 
-<<<<<<< HEAD
 theorem free_shortExact_rank_add [Module.Free R S.X₁] [Module.Free R S.X₃] [StrongRankCondition R] :
     Module.rank R S.X₂ = Module.rank R S.X₁ + Module.rank R S.X₃ := by
   haveI := free_shortExact hS'
@@ -196,15 +189,6 @@ theorem free_shortExact_finrank_add [Module.Free R S.X₁] [Module.Finite R S.X�
     (hP : FiniteDimensional.finrank R S.X₃ = p)
     [StrongRankCondition R]:
     FiniteDimensional.finrank R S.X₂ = n + p := by
-=======
-theorem free_shortExact_finrank_add {M : ModuleCat R} {f : N ⟶ M}
-    {g : M ⟶ P} (h : ShortExact f g) [Module.Free R N] [Module.Finite R N]
-    [Module.Free R P] [Module.Finite R P]
-    (hN : FiniteDimensional.finrank R N = n)
-    (hP : FiniteDimensional.finrank R P = p)
-    [StrongRankCondition R] :
-    FiniteDimensional.finrank R M = n + p := by
->>>>>>> origin/homology-sequence-computation
   apply FiniteDimensional.finrank_eq_of_rank_eq
   rw [free_shortExact_rank_add hS', ← hN, ← hP]
   simp only [Nat.cast_add, FiniteDimensional.finrank_eq_rank]

@@ -72,26 +72,6 @@ set_option linter.uppercaseLean3 false in
 -- porting note: both proofs by `rw` were proofs by `simp` which no longer worked
 -- see https://github.com/leanprover-community/mathlib4/issues/5026
 @[simp]
-<<<<<<< HEAD
-theorem cycles'Map_toCycles (f : C ⟶ D) {i : ι} (x : LinearMap.ker (C.dFrom i)) :
-    (cycles'Map f i) (toCycles' x) = toCycles' ⟨f.f i x.1, by
-      rw [LinearMap.mem_ker, Hom.comm_from_apply, x.2, map_zero]⟩ := by
-  ext
-  rw [cycles'Map_arrow_apply, toKernelSubobject_arrow, toKernelSubobject_arrow]
-set_option linter.uppercaseLean3 false in
-#align Module.cycles_map_to_cycles ModuleCat.cycles'Map_toCycles
-
-/-- Build a term of `C.homology' i` from an element `C.X i` such that `C.d_from i x = 0`. -/
-abbrev tohomology' {C : HomologicalComplex (ModuleCat.{u} R) c} {i : ι}
-    (x : LinearMap.ker (C.dFrom i)) : C.homology' i :=
-  homology'.π (C.dTo i) (C.dFrom i) _ (toCycles' x)
-set_option linter.uppercaseLean3 false in
-#align Module.to_homology ModuleCat.tohomology'
-
-@[ext]
-theorem homology'_ext' {M : ModuleCat R} (i : ι) {h k : C.homology' i ⟶ M}
-    (w : ∀ x : LinearMap.ker (C.dFrom i), h (tohomology' x) = k (tohomology' x)) : h = k :=
-=======
 theorem cycles'Map_toCycles' (f : C ⟶ D) {i : ι} (x : LinearMap.ker (C.dFrom i)) :
     (cycles'Map f i) (toCycles' x) = toCycles' ⟨f.f i x.1, by
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -113,12 +93,11 @@ set_option linter.uppercaseLean3 false in
 @[ext]
 theorem homology'_ext' {M : ModuleCat R} (i : ι) {h k : C.homology' i ⟶ M}
     (w : ∀ x : LinearMap.ker (C.dFrom i), h (toHomology' x) = k (toHomology' x)) : h = k :=
->>>>>>> origin/homology-sequence-computation
   homology'_ext _ w
 set_option linter.uppercaseLean3 false in
 #align Module.homology_ext' ModuleCat.homology'_ext'
 
-/-set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 400000 in
 -- porting note: `erw` had to be used instead of `simp`
 -- see https://github.com/leanprover-community/mathlib4/issues/5026
 /-- We give an alternative proof of `homology_map_eq_of_homotopy`,
@@ -146,11 +125,6 @@ example (f g : C ⟶ D) (h : Homotopy f g) (i : ι) :
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [comp_apply, comp_apply]
   erw [x.2, map_zero]
-<<<<<<< HEAD
-  dsimp
-  abel-/
-=======
   abel
->>>>>>> origin/homology-sequence-computation
 
 end ModuleCat-/

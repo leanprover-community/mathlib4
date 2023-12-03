@@ -298,12 +298,8 @@ def homology'.map (p : α.right = β.left) : homology' f g w ⟶ homology' f' g'
 -- the correct lemma is stated below
 @[reassoc (attr := simp)]
 theorem homology'.π_map (p : α.right = β.left) :
-<<<<<<< HEAD
-    homology'.π f g w ≫ homology'.map w w' α β p = kernelSubobjectMap β ≫ homology'.π f' g' w' := by
-=======
     homology'.π f g w ≫ homology'.map w w' α β p =
       kernelSubobjectMap β ≫ homology'.π f' g' w' := by
->>>>>>> origin/homology-sequence-computation
   simp only [homology'.π, homology'.map, cokernel.π_desc]
 #align homology.π_map homology'.π_map
 
@@ -337,11 +333,7 @@ theorem homology'.map_id : homology'.map w w (𝟙 _) (𝟙 _) rfl = 𝟙 _ := b
 #align homology.map_id homology'.map_id
 
 /-- Auxiliary lemma for homology computations. -/
-<<<<<<< HEAD
-theorem homology'.comp_right_eq_comp_left {V : Type _} [Category V] {A₁ B₁ C₁ A₂ B₂ C₂ A₃ B₃ C₃ : V}
-=======
 theorem homology'.comp_right_eq_comp_left {V : Type*} [Category V] {A₁ B₁ C₁ A₂ B₂ C₂ A₃ B₃ C₃ : V}
->>>>>>> origin/homology-sequence-computation
     {f₁ : A₁ ⟶ B₁} {g₁ : B₁ ⟶ C₁} {f₂ : A₂ ⟶ B₂} {g₂ : B₂ ⟶ C₂} {f₃ : A₃ ⟶ B₃} {g₃ : B₃ ⟶ C₃}
     {α₁ : Arrow.mk f₁ ⟶ Arrow.mk f₂} {β₁ : Arrow.mk g₁ ⟶ Arrow.mk g₂}
     {α₂ : Arrow.mk f₂ ⟶ Arrow.mk f₃} {β₂ : Arrow.mk g₂ ⟶ Arrow.mk g₃} (p₁ : α₁.right = β₁.left)
@@ -470,11 +462,7 @@ def homology'IsoCokernelImageToKernel' (w : f ≫ g = 0) :
     ext
     simp only [Iso.inv_hom_id_assoc, cokernel.π_desc, Category.comp_id, cokernel.π_desc_assoc,
       Category.assoc]
-<<<<<<< HEAD
-#align homology'iso_cokernel_image_to_kernel' homology'IsoCokernelImageToKernel'
-=======
 #align homology_iso_cokernel_image_to_kernel' homology'IsoCokernelImageToKernel'
->>>>>>> origin/homology-sequence-computation
 
 variable [HasEqualizers V]
 
