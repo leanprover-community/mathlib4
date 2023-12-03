@@ -10,7 +10,7 @@ import Mathlib.Analysis.Calculus.IteratedDeriv
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Topology.ContinuousFunction.Bounded
-import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.GRW
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 #align_import analysis.schwartz_space from "leanprover-community/mathlib"@"e137999b2c6f2be388f4cd3bbf8523de1910cd2b"
@@ -252,13 +252,10 @@ instance instSMul : SMul 𝕜 𝓢(E, F) :=
       smooth' := (f.smooth _).const_smul c
       decay' := fun k n => by
         refine' ⟨f.seminormAux k n * (‖c‖ + 1), fun x => _⟩
-        have hc : 0 ≤ ‖c‖ := by positivity
-        refine' le_trans _ ((mul_le_mul_of_nonneg_right (f.le_seminormAux k n x) hc).trans _)
-        · apply Eq.le
-          rw [mul_comm _ ‖c‖, ← mul_assoc]
-          exact decay_smul_aux k n f c x
-        · apply mul_le_mul_of_nonneg_left _ (f.seminormAux_nonneg k n)
-          linarith }⟩
+        grw [← f.le_seminormAux _ _ x, decay_smul_aux]
+        rw [← mul_comm _ ‖c‖, mul_assoc, mul_assoc, mul_comm ‖c‖]
+        gcongr
+        linarith }⟩
 #align schwartz_map.has_smul SchwartzMap.instSMul
 
 @[simp]
@@ -280,8 +277,7 @@ theorem seminormAux_smul_le (k n : ℕ) (c : 𝕜) (f : 𝓢(E, F)) :
     (c • f).seminormAux_le_bound k n (mul_nonneg (norm_nonneg _) (seminormAux_nonneg _ _ _))
       fun x => (decay_smul_aux k n f c x).le.trans _
   rw [mul_assoc]
-  gcongr
-  apply f.le_seminormAux
+  grw [f.le_seminormAux]
 #align schwartz_map.seminorm_aux_smul_le SchwartzMap.seminormAux_smul_le
 
 instance instNSMul : SMul ℕ 𝓢(E, F) :=
@@ -547,8 +543,7 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
   gcongr Finset.sum _ ?_ with i hi
   rw [mul_comm (‖x‖ ^ i), mul_assoc]
   gcongr
-  trans
-  · exact le_seminorm 𝕜 i n f x
+  grw [le_seminorm 𝕜]
   apply Seminorm.le_def.1
   exact
     Finset.le_sup_of_le (Finset.mem_Iic.2 <|
@@ -628,11 +623,11 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   use C', hC'
   intro N hN x
   rw [← Finset.mem_range_succ_iff] at hN
-  refine' le_trans (f N x) (mul_le_mul _ _ (by positivity) hC')
+  grw [f]
+  gcongr ?_ * _ ^ ?_
   · simp only [Finset.le_sup'_iff, le_max_iff]
     right
     exact ⟨N, hN, rfl.le⟩
-  gcongr
   · simp only [le_add_iff_nonneg_right, norm_nonneg]
   · exact Finset.le_sup hN
 #align function.has_temperate_growth.norm_iterated_fderiv_le_uniform_aux Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux
@@ -711,11 +706,7 @@ protected def evalCLM (m : E) : 𝓢(E, E →L[ℝ] F) →L[𝕜] 𝓢(E, F) :=
       rintro ⟨k, n⟩
       use {(k, n)}, ‖m‖, norm_nonneg _
       intro f x
-      refine'
-        le_trans
-          (mul_le_mul_of_nonneg_left (norm_iteratedFDeriv_clm_apply_const f.2 le_top)
-            (by positivity))
-          _
+      grw [norm_iteratedFDeriv_clm_apply_const (f.smooth _) le_top]
       rw [← mul_assoc, ← mul_comm ‖m‖, mul_assoc]
       gcongr
       simp only [Finset.sup_singleton, schwartzSeminormFamily_apply, le_seminorm])
@@ -751,10 +742,7 @@ def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
         Finset.Iic (l + k, n), ‖B‖ * ((n : ℝ) + (1 : ℝ)) * n.choose (n / 2) * (C * 2 ^ (l + k)),
         by positivity
       intro f x
-      have hxk : 0 ≤ ‖x‖ ^ k := by positivity
-      have hnorm_mul :=
-        ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear B f.smooth' hg.1 x (n := n) le_top
-      refine' le_trans (mul_le_mul_of_nonneg_left hnorm_mul hxk) _
+      grw [ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear B (f.smooth _) hg.1 x le_top]
       rw [← mul_assoc (‖x‖ ^ k), mul_comm (‖x‖ ^ k)]
       simp_rw [mul_assoc ‖B‖]
       gcongr _ * ?_
@@ -770,7 +758,7 @@ def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
         exact i.choose_le_middle n
       specialize hgrowth (n - i) (by simp only [tsub_le_self]) x
       rw [← mul_assoc]
-      refine' le_trans (mul_le_mul_of_nonneg_left hgrowth (by positivity)) _
+      grw [hgrowth]
       rw [mul_comm _ (C * _), mul_assoc, mul_assoc C]
       gcongr _ * ?_
       rw [mul_comm _ (‖x‖ ^ k)]
@@ -846,10 +834,10 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
         · exact le_trans (by simp [hC]) (le_self_pow (by simp [hC]) hN₁')
         · refine' le_self_pow (one_le_pow_of_one_le _ l) hN₁'
           simp only [le_add_iff_nonneg_right, norm_nonneg]
-      have := norm_iteratedFDeriv_comp_le f.smooth' hg.1 le_top x hbound hgrowth'
-      have hxk : ‖x‖ ^ k ≤ (1 + ‖x‖) ^ k :=
-        pow_le_pow_of_le_left (norm_nonneg _) (by simp only [zero_le_one, le_add_iff_nonneg_left]) _
-      refine' le_trans (mul_le_mul hxk this (by positivity) (by positivity)) _
+      have hxk : ‖x‖ ≤ 1 + ‖x‖ := by simp only [zero_le_one, le_add_iff_nonneg_left]
+      dsimp only
+      grw [←Function.comp_def f g, hxk,
+        norm_iteratedFDeriv_comp_le (f.smooth _) hg.1 le_top x hbound hgrowth']
       have rearrange :
         (1 + ‖x‖) ^ k *
             (n ! * (2 ^ k' * seminorm_f / (1 + ‖g x‖) ^ k') * ((C + 1) * (1 + ‖x‖) ^ l) ^ n) =
@@ -860,9 +848,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
       rw [rearrange]
       have hgxk' : 0 < (1 + ‖g x‖) ^ k' := by positivity
       rw [← div_le_iff hgxk'] at hg_upper''
-      have hpos : (0 : ℝ) ≤ (C + 1) ^ n * n ! * 2 ^ k' * seminorm_f := by
-        positivity
-      refine' le_trans (mul_le_mul_of_nonneg_right hg_upper'' hpos) _
+      grw [hg_upper'']
       rw [← mul_assoc])
 #align schwartz_map.comp_clm SchwartzMap.compCLM
 

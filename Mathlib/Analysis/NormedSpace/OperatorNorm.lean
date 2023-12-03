@@ -10,6 +10,7 @@ import Mathlib.Analysis.NormedSpace.LinearIsometry
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.Module.StrongTopology
 import Mathlib.Tactic.SuppressCompilation
+import Mathlib.Tactic.GRW
 
 #align_import analysis.normed_space.operator_norm from "leanprover-community/mathlib"@"f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f"
 
@@ -658,8 +659,8 @@ theorem mkContinuous_norm_le (f : E →ₛₗ[σ₁₂] F) {C : ℝ} (hC : 0 ≤
 then its norm is bounded by the bound or zero if bound is negative. -/
 theorem mkContinuous_norm_le' (f : E →ₛₗ[σ₁₂] F) {C : ℝ} (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
     ‖f.mkContinuous C h‖ ≤ max C 0 :=
-  ContinuousLinearMap.op_norm_le_bound _ (le_max_right _ _) fun x =>
-    (h x).trans <| mul_le_mul_of_nonneg_right (le_max_left _ _) (norm_nonneg x)
+  ContinuousLinearMap.op_norm_le_bound _ (le_max_right _ _) fun x => by
+    grw [← le_max_left]; apply h -- FIXME `grw [h]` fails from non-syntactic equality
 #align linear_map.mk_continuous_norm_le' LinearMap.mkContinuous_norm_le'
 
 variable [RingHomIsometric σ₂₃]
@@ -938,7 +939,7 @@ local instance : NormedSpace 𝕜 ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[�
 theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR Eₗ L‖ ≤ ‖L‖ :=
   calc
     ‖precompR Eₗ L‖ ≤ ‖compL 𝕜 Eₗ Fₗ Gₗ‖ * ‖L‖ := op_norm_comp_le _ _
-    _ ≤ 1 * ‖L‖ := (mul_le_mul_of_nonneg_right (norm_compL_le _ _ _ _) (norm_nonneg _))
+    _ ≤ 1 * ‖L‖ := by grw [norm_compL_le]
     _ = ‖L‖ := by rw [one_mul]
 #align continuous_linear_map.norm_precompR_le ContinuousLinearMap.norm_precompR_le
 
@@ -1096,6 +1097,7 @@ theorem mulLeftRight_apply (x y z : 𝕜') : mulLeftRight 𝕜 𝕜' x y z = x *
 theorem op_norm_mulLeftRight_apply_apply_le (x y : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x y‖ ≤ ‖x‖ * ‖y‖ :=
   (op_norm_comp_le _ _).trans <|
     (mul_comm _ _).trans_le <|
+      -- grw [op_norm_mul_apply_le] -- FIXME not syntactically equal
       mul_le_mul (op_norm_mul_apply_le _ _ _)
         (op_norm_le_bound _ (norm_nonneg _) fun _ => (norm_mul_le _ _).trans_eq (mul_comm _ _))
         (norm_nonneg _) (norm_nonneg _)
@@ -1423,7 +1425,7 @@ theorem antilipschitz_of_comap_nhds_le [h : RingHomIsometric σ₁₂] (f : E �
   calc
     ‖x‖ = ‖c ^ n‖⁻¹ * ‖c ^ n • x‖ := by
       rwa [← norm_inv, ← norm_smul, inv_smul_smul₀ (zpow_ne_zero _ _)]
-    _ ≤ ‖c ^ n‖⁻¹ * 1 := (mul_le_mul_of_nonneg_left (hε _ hlt).le (inv_nonneg.2 (norm_nonneg _)))
+    _ ≤ ‖c ^ n‖⁻¹ * 1 := by grw [hε _ hlt] -- FIXME `grw [hε]` doesn't report side goals correctly
     _ ≤ ε⁻¹ * ‖c‖ * ‖f x‖ := by rwa [mul_one]
 #align linear_map.antilipschitz_of_comap_nhds_le LinearMap.antilipschitz_of_comap_nhds_le
 
@@ -1726,7 +1728,7 @@ theorem op_norm_extend_le :
   · rw [extend_eq]
     calc
       ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_op_norm _ _
-      _ ≤ ‖f‖ * (N * ‖e x‖) := (mul_le_mul_of_nonneg_left (h_e x) (norm_nonneg _))
+      _ ≤ ‖f‖ * (N * ‖e x‖) := by grw [h_e]
       _ ≤ N * ‖f‖ * ‖e x‖ := by rw [mul_comm ↑N ‖f‖, mul_assoc]
 #align continuous_linear_map.op_norm_extend_le ContinuousLinearMap.op_norm_extend_le
 
@@ -1797,7 +1799,7 @@ theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c
   · refine' op_norm_le_bound _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) fun x => _
     calc
       ‖c x • f‖ = ‖c x‖ * ‖f‖ := norm_smul _ _
-      _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := (mul_le_mul_of_nonneg_right (le_op_norm _ _) (norm_nonneg _))
+      _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := by grw [le_op_norm]
       _ = ‖c‖ * ‖f‖ * ‖x‖ := by ring
   · by_cases h : f = 0
     · simp [h]
@@ -2030,6 +2032,7 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
     · intro ⟨C, hC⟩
       refine ⟨C.toNNReal • normSeminorm 𝕜 E,
         ((norm_withSeminorms 𝕜 E).continuous_seminorm 0).const_smul C.toNNReal, fun i x ↦ ?_⟩
+      -- no grw here, some defeq tricks going on
       refine (hC i x).trans (mul_le_mul_of_nonneg_right (C.le_coe_toNNReal) (norm_nonneg x))
   tfae_finish
 

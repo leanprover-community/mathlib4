@@ -148,11 +148,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
       have K : ‖d⁻¹ • x‖ ≤ (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ :=
         calc
           ‖d⁻¹ • x‖ = ‖d‖⁻¹ * ‖x₁ - x₂‖ := by rw [norm_smul, norm_inv]
-          _ ≤ (ε / 2)⁻¹ * ‖c‖ * ‖y‖ * (n + n) := by
-            refine' mul_le_mul dinv _ (norm_nonneg _) _
-            · exact le_trans (norm_sub_le _ _) (add_le_add (le_of_lt hx₁) (le_of_lt hx₂))
-            · apply mul_nonneg (mul_nonneg _ (norm_nonneg _)) (norm_nonneg _)
-              exact inv_nonneg.2 (le_of_lt (half_pos εpos))
+          _ ≤ (ε / 2)⁻¹ * ‖c‖ * ‖y‖ * (n + n) := by grw [norm_sub_le, dinv, hx₁, hx₂]
           _ = (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ := by ring
 
       exact ⟨d⁻¹ • x, J, K⟩
@@ -192,7 +188,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     intro n
     apply le_trans (hg _).2 _
     calc
-      C * ‖h^[n] y‖ ≤ C * ((1 / 2) ^ n * ‖y‖) := mul_le_mul_of_nonneg_left (hnle n) C0
+      C * ‖h^[n] y‖ ≤ C * ((1 / 2) ^ n * ‖y‖) := by grw [hnle]
       _ = (1 / 2) ^ n * (C * ‖y‖) := by ring
   have sNu : Summable fun n => ‖u n‖ := by
     refine' .of_nonneg_of_le (fun n => norm_nonneg _) ule _

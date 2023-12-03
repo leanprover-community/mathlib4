@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Tactic.GRW
 
 #align_import analysis.specific_limits.floor_pow from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
 
@@ -43,7 +44,8 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       tendsto_const_nhds.div_atTop (tendsto_nat_cast_atTop_iff.2 ctop)
     apply le_of_tendsto_of_tendsto' this clim fun n => _
     simp_rw [div_eq_inv_mul]
-    exact fun n => mul_le_mul_of_nonneg_left (hmono (zero_le _)) (inv_nonneg.2 (Nat.cast_nonneg _))
+    intro n
+    grw [hmono (zero_le _)]
   have A : ∀ ε : ℝ, 0 < ε → ∀ᶠ n in atTop, u n - n * l ≤ ε * (1 + ε + l) * n := by
     intro ε εpos
     rcases hlim (1 + ε) ((lt_add_iff_pos_right _).2 εpos) with ⟨c, cgrowth, ctop, clim⟩
@@ -89,7 +91,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       have := (ha _ A).1
       rwa [B] at this
     calc
-      u n - n * l ≤ u (c N) - c (N - 1) * l := by gcongr; apply hmono ncN.le
+      u n - n * l ≤ u (c N) - c (N - 1) * l := by grw [hmono ncN.le, cNn]
       _ = u (c N) - c N * l + (c N - c (N - 1)) * l := by ring
       _ ≤ ε * c N + ε * c (N - 1) * l := by
         gcongr ?_ + ?_ * _
@@ -142,13 +144,14 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       simpa only [not_lt] using Nat.find_min exN this
     calc
       (n : ℝ) * l - u n ≤ c N * l - u (c (N - 1)) := by gcongr; exact (hmono cNn)
+                                                      -- FIXME why not grw here?
       _ ≤ (1 + ε) * c (N - 1) * l - u (c (N - 1)) := by
         gcongr
         have B : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
         have := (ha _ aN').1
         rwa [B] at this
       _ = c (N - 1) * l - u (c (N - 1)) + ε * c (N - 1) * l := by ring
-      _ ≤ ε * c (N - 1) + ε * c (N - 1) * l := (add_le_add (ha _ aN').2 le_rfl)
+      _ ≤ ε * c (N - 1) + ε * c (N - 1) * l := by grw [(ha _ aN').2]
       _ = ε * (1 + l) * c (N - 1) := by ring
       _ ≤ ε * (1 + l) * n := by gcongr
   refine' tendsto_order.2 ⟨fun d hd => _, fun d hd => _⟩

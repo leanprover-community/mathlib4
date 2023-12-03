@@ -6,6 +6,7 @@ Authors: Patrick Massot, Johannes Hölzl
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Tactic.GRW
 
 #align_import analysis.normed_space.bounded_linear_maps from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
@@ -77,8 +78,7 @@ theorem IsLinearMap.with_bound {f : E → F} (hf : IsLinearMap 𝕜 f) (M : ℝ)
   ⟨hf,
     by_cases
       (fun (this : M ≤ 0) =>
-        ⟨1, zero_lt_one, fun x =>
-          (h x).trans <| mul_le_mul_of_nonneg_right (this.trans zero_le_one) (norm_nonneg x)⟩)
+        ⟨1, zero_lt_one, fun x => by grw [h, this, zero_le_one]⟩)
       fun (this : ¬M ≤ 0) => ⟨M, lt_of_not_ge this, h⟩⟩
 #align is_linear_map.with_bound IsLinearMap.with_bound
 
@@ -129,7 +129,7 @@ theorem smul (c : 𝕜) (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap �
   (c • hlf.mk' f).isLinear.with_bound (‖c‖ * M) fun x =>
     calc
       ‖c • f x‖ = ‖c‖ * ‖f x‖ := norm_smul c (f x)
-      _ ≤ ‖c‖ * (M * ‖x‖) := (mul_le_mul_of_nonneg_left (hM _) (norm_nonneg _))
+      _ ≤ ‖c‖ * (M * ‖x‖) := by grw [hM]
       _ = ‖c‖ * M * ‖x‖ := (mul_assoc _ _ _).symm
 
 #align is_bounded_linear_map.smul IsBoundedLinearMap.smul
@@ -229,10 +229,10 @@ theorem isBoundedLinearMap_prod_multilinear {E : ι → Type*} [∀ i, NormedAdd
         intro m
         rw [ContinuousMultilinearMap.prod_apply, norm_prod_le_iff]
         constructor
-        · exact (p.1.le_op_norm m).trans (mul_le_mul_of_nonneg_right (norm_fst_le p)
-            (Finset.prod_nonneg fun i _ => norm_nonneg _))
-        · exact (p.2.le_op_norm m).trans (mul_le_mul_of_nonneg_right (norm_snd_le p)
-            (Finset.prod_nonneg fun i _ => norm_nonneg _))⟩ }
+        · grw [← norm_fst_le, p.1.le_op_norm]
+          exact Finset.prod_nonneg fun i _ => norm_nonneg _
+        · grw [← norm_snd_le, p.2.le_op_norm]
+          exact Finset.prod_nonneg fun i _ => norm_nonneg _⟩ }
 #align is_bounded_linear_map_prod_multilinear isBoundedLinearMap_prod_multilinear
 
 /-- Given a fixed continuous linear map `g`, associating to a continuous multilinear map `f` the
@@ -251,6 +251,7 @@ theorem isBoundedLinearMap_continuousMultilinearMap_comp_linear (g : G →L[𝕜
   calc
     ‖f (g ∘ m)‖ ≤ ‖f‖ * ∏ i, ‖g (m i)‖ := f.le_op_norm _
     _ ≤ ‖f‖ * ∏ i, ‖g‖ * ‖m i‖ := by
+      -- FIXME would like `grw [g.le_op_norm]`
       gcongr with i
       · exact fun i _ => norm_nonneg _
       · exact g.le_op_norm _
@@ -350,8 +351,7 @@ theorem ContinuousLinearMap.isBoundedBilinearMap (f : E →L[𝕜] F →L[𝕜] 
     smul_right := fun c x => (f x).map_smul c
     bound :=
       ⟨max ‖f‖ 1, zero_lt_one.trans_le (le_max_right _ _), fun x y =>
-        (f.le_op_norm₂ x y).trans <| by
-          apply_rules [mul_le_mul_of_nonneg_right, norm_nonneg, le_max_left] ⟩ }
+        by grw [f.le_op_norm₂, ← le_max_left] ⟩ }
 #align continuous_linear_map.is_bounded_bilinear_map ContinuousLinearMap.isBoundedBilinearMap
 
 -- porting note: new definition

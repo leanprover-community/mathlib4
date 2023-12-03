@@ -228,7 +228,7 @@ theorem continuous_of_bound (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m 
   have D_pos : 0 ≤ D := le_trans zero_le_one (le_max_right _ _)
   replace H : ∀ m, ‖f m‖ ≤ D * ∏ i, ‖m i‖
   · intro m
-    apply le_trans (H m) (mul_le_mul_of_nonneg_right (le_max_left _ _) _)
+    grw [H, le_max_left C 1]
     exact prod_nonneg fun (i : ι) _ => norm_nonneg (m i)
   refine' continuous_iff_continuousAt.2 fun m => _
   refine'
@@ -408,8 +408,7 @@ variable {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' G] [SMulCommClas
 
 theorem op_norm_smul_le (c : 𝕜') : ‖c • f‖ ≤ ‖c‖ * ‖f‖ :=
   (c • f).op_norm_le_bound (mul_nonneg (norm_nonneg _) (op_norm_nonneg _)) fun m ↦ by
-    rw [smul_apply, norm_smul, mul_assoc]
-    exact mul_le_mul_of_nonneg_left (le_op_norm _ _) (norm_nonneg _)
+    grw [smul_apply, norm_smul, mul_assoc, le_op_norm]
 #align continuous_multilinear_map.op_norm_smul_le ContinuousMultilinearMap.op_norm_smul_le
 
 theorem op_norm_neg : ‖-f‖ = ‖f‖ := by
@@ -455,8 +454,8 @@ theorem le_op_nnnorm : ‖f m‖₊ ≤ ‖f‖₊ * ∏ i, ‖m i‖₊ :=
     exact f.le_op_norm m
 #align continuous_multilinear_map.le_op_nnnorm ContinuousMultilinearMap.le_op_nnnorm
 
-theorem le_of_op_nnnorm_le {C : ℝ≥0} (h : ‖f‖₊ ≤ C) : ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊ :=
-  (f.le_op_nnnorm m).trans <| mul_le_mul' h le_rfl
+theorem le_of_op_nnnorm_le {C : ℝ≥0} (h : ‖f‖₊ ≤ C) : ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊ := by
+  grw [f.le_op_nnnorm, h]
 #align continuous_multilinear_map.le_of_op_nnnorm_le ContinuousMultilinearMap.le_of_op_nnnorm_le
 
 theorem op_nnnorm_le_iff {C : ℝ≥0} : ‖f‖₊ ≤ C ↔ ∀ m, ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊ := by

@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Bound
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Equitabilise
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
+import Mathlib.Tactic.GRW
 
 #align_import combinatorics.simple_graph.regularity.chunk from "leanprover-community/mathlib"@"bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d"
 
@@ -141,10 +142,11 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
         calc
           (↑10 ^ 2) = 100 := by norm_num
           _ ≤ ↑4 ^ P.parts.card * ε ^ 5 := hPε
-          _ ≤ ↑4 ^ P.parts.card * ε ^ 4 :=
-            (mul_le_mul_of_nonneg_left (pow_le_pow_of_le_one (by sz_positivity) hε₁ <| le_succ _)
-              (by positivity))
+          _ ≤ ↑4 ^ P.parts.card * ε ^ 4 := by
+            grw [pow_le_pow_of_le_one ?_ hε₁]
+            norm_num
           _ = (↑2 ^ 2) ^ P.parts.card * ε ^ (2 * 2) := by norm_num
+        sz_positivity -- FIXME `grw` reports this goal in the wrong place
       _ = ↑2 ^ P.parts.card * (ε * (ε / 10)) := by rw [mul_div_assoc, sq, mul_div_assoc]
   calc
     (↑1 - ε / 10) * (G.nonuniformWitness ε U V).card ≤
@@ -277,8 +279,7 @@ private theorem density_sub_eps_le_sum_density_div_card [Nonempty α]
   · refine' mul_le_of_le_one_right (cast_nonneg _) _
     rw [div_mul_eq_mul_div, ← mul_assoc, mul_assoc]
     refine' div_le_one_of_le _ (by positivity)
-    refine' (mul_le_mul_of_nonneg_right (one_sub_le_m_div_m_add_one_sq hPα hPε) _).trans _
-    · exact mod_cast _root_.zero_le _
+    grw [one_sub_le_m_div_m_add_one_sq hPα hPε]
     rw [sq, mul_mul_mul_comm, mul_comm ((m : ℝ) / _), mul_comm ((m : ℝ) / _)]
     gcongr
     apply le_sum_card_subset_chunk_parts hA hx
@@ -312,12 +313,11 @@ private theorem sum_density_div_card_le_density_add_eps [Nonempty α]
   rw [mul_mul_mul_comm, mul_comm (x.card : ℝ), mul_comm (y.card : ℝ), div_le_iff, mul_assoc]
   · refine' le_mul_of_one_le_right (cast_nonneg _) _
     rw [div_mul_eq_mul_div, one_le_div]
-    refine' le_trans _ (mul_le_mul_of_nonneg_right (m_add_one_div_m_le_one_add hPα hPε hε₁) _)
-    · rw [sq, mul_mul_mul_comm, mul_comm (_ / (m : ℝ)), mul_comm (_ / (m : ℝ))]
-      gcongr
+    grw [← m_add_one_div_m_le_one_add hPα hPε hε₁]
+    rw [sq, mul_mul_mul_comm, mul_comm (_ / (m : ℝ)), mul_comm (_ / (m : ℝ))]
+    · gcongr
       · exact sum_card_subset_chunk_parts_le (by sz_positivity) hA hx
       · exact sum_card_subset_chunk_parts_le (by sz_positivity) hB hy
-    · exact mod_cast _root_.zero_le _
     rw [← cast_mul, cast_pos]
     apply mul_pos <;> rw [Finset.card_pos, sup_eq_biUnion, biUnion_nonempty]
     · exact ⟨_, hx, nonempty_of_mem_parts _ (hA hx)⟩
@@ -481,23 +481,13 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ 
         (star hP G ε hU V).card * (star hP G ε hV U).card / ↑16 ^ P.parts.card *
           (↑9 / ↑16) * ε ^ 2 := by
       apply add_le_add_left
-      have Ul : 4 / 5 * ε ≤ (star hP G ε hU V).card / _ :=
-        eps_le_card_star_div hPα hPε hε₁ hU hV hUVne hUV
-      have Vl : 4 / 5 * ε ≤ (star hP G ε hV U).card / _ :=
-        eps_le_card_star_div hPα hPε hε₁ hV hU hUVne.symm fun h => hUV h.symm
       rw [show (16 : ℝ) = ↑4 ^ 2 by norm_num, pow_right_comm, sq ((4 : ℝ) ^ _), ←
         _root_.div_mul_div_comm, mul_assoc]
       have : 0 < ε := by sz_positivity
-      have UVl := mul_le_mul Ul Vl (by positivity) ?_
-      swap
-      · -- This seems faster than `exact div_nonneg (by positivity) (by positivity)` and *much*
-        -- (tens of seconds) faster than `positivity` on its own.
-        apply div_nonneg <;> positivity
-      refine' le_trans _ (mul_le_mul_of_nonneg_right UVl _)
-      · norm_num
-        nlinarith
-      · norm_num
-        positivity
+      grw [← eps_le_card_star_div hPα hPε hε₁ hU hV hUVne hUV,
+        ← eps_le_card_star_div hPα hPε hε₁ hV hU hUVne.symm fun h => hUV h.symm]
+      norm_num
+      nlinarith
     _ ≤ (∑ ab in (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
         (G.edgeDensity ab.1 ab.2 : ℝ) ^ 2) / ↑16 ^ P.parts.card := by
       have t : (star hP G ε hU V).product (star hP G ε hV U) ⊆
