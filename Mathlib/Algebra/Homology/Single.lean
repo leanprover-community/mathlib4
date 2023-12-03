@@ -93,6 +93,19 @@ theorem single_map_f_self (j : ι) {A B : V} (f : A ⟶ B) :
   rfl
 #align homological_complex.single_map_f_self HomologicalComplex.single_map_f_self
 
+variable (V)
+
+@[simps!]
+noncomputable def singleCompEvalIsoSelf (j : ι) : single V c j ⋙ eval V c j ≅ 𝟭 V :=
+  NatIso.ofComponents (singleObjXSelf c j) (fun {A B} f => by simp [single_map_f_self])
+
+lemma isZero_single_comp_eval (j i : ι) (hi : i ≠ j) : IsZero (single V c j ⋙ eval V c i) := by
+  rw [Functor.isZero_iff]
+  intro A
+  exact isZero_single_obj_X c _ _ _ hi
+
+variable {V c}
+
 @[ext]
 lemma from_single_hom_ext {K : HomologicalComplex V c} {j : ι} {A : V}
     {f g : (single V c j).obj A ⟶ K} (hfg : f.f j = g.f j) : f = g := by
@@ -122,8 +135,6 @@ noncomputable instance (j : ι) : Full (single V c j) where
   witness f := by
     ext
     simp [single_map_f_self]
-
-variable {c}
 
 /-- Constructor for morphisms to a single homological complex. -/
 noncomputable def mkHomToSingle {K : HomologicalComplex V c} {j : ι} {A : V} (φ : K.X j ⟶ A)

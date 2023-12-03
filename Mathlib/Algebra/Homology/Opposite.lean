@@ -78,21 +78,13 @@ def homology'Op {X Y Z : V} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
 /-- Given morphisms `f, g` in `Vᵒᵖ` with `f ≫ g = 0`, the homology of `g.unop, f.unop` is the
 opposite of the homology of `f, g`. -/
 def homology'Unop {X Y Z : Vᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0) :
-<<<<<<< HEAD
-    homology' g.unop f.unop (by rw [← unop_comp, w, unop_zero]) ≅ Opposite.unop (homology' f g w) :=
-=======
     homology' g.unop f.unop (by rw [← unop_comp, w, unop_zero]) ≅
       Opposite.unop (homology' f g w) :=
->>>>>>> origin/homology-sequence-computation
   cokernelIsoOfEq (imageToKernel_unop _ _ w) ≪≫ cokernelEpiComp _ _ ≪≫ cokernelCompIsIso _ _ ≪≫
     cokernelUnopUnop _ ≪≫ (homology'IsoKernelDesc _ _ _ ≪≫
     kernelIsoOfEq (by ext; simp only [image.fac, cokernel.π_desc, cokernel.π_desc_assoc]) ≪≫
     kernelCompMono _ (image.ι g)).unop
-<<<<<<< HEAD
 #align homology_unop homology'Unop-/
-=======
-#align homology_unop homology'Unop
->>>>>>> origin/homology-sequence-computation
 
 end
 
@@ -313,10 +305,6 @@ objects in `V`) is the opposite of the `i`th homology of `C`. -/
 nonrec def homology'Unop (C : HomologicalComplex Vᵒᵖ c) :
     C.unop.homology' i ≅ Opposite.unop (C.homology' i) :=
   homology'UnopDef _ _ ≪≫ homology'Unop _ _ _
-<<<<<<< HEAD
 #align homological_complex.homology_unop HomologicalComplex.homology'Unop-/
-=======
-#align homological_complex.homology_unop HomologicalComplex.homology'Unop
->>>>>>> origin/homology-sequence-computation
 
 end HomologicalComplex

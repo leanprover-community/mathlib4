@@ -91,11 +91,7 @@ open ZeroObject
 composable morphisms `f g` are exact iff they compose to zero and the homology vanishes.
 -/
 theorem Preadditive.exact_iff_homology'_zero {A B C : V} (f : A ⟶ B) (g : B ⟶ C) :
-<<<<<<< HEAD
-    Exact' f g ↔ ∃ w : f ≫ g = 0, Nonempty (homology' f g w ≅ 0) :=
-=======
     Exact f g ↔ ∃ w : f ≫ g = 0, Nonempty (homology' f g w ≅ 0) :=
->>>>>>> origin/homology-sequence-computation
   ⟨fun h => ⟨h.w, ⟨by
     haveI := h.epi
     exact cokernel.ofEpi _⟩⟩,
@@ -106,11 +102,7 @@ theorem Preadditive.exact_iff_homology'_zero {A B C : V} (f : A ⟶ B) (g : B �
 
 theorem Preadditive.exact_of_iso_of_exact {A₁ B₁ C₁ A₂ B₂ C₂ : V} (f₁ : A₁ ⟶ B₁) (g₁ : B₁ ⟶ C₁)
     (f₂ : A₂ ⟶ B₂) (g₂ : B₂ ⟶ C₂) (α : Arrow.mk f₁ ≅ Arrow.mk f₂) (β : Arrow.mk g₁ ≅ Arrow.mk g₂)
-<<<<<<< HEAD
-    (p : α.hom.right = β.hom.left) (h : Exact' f₁ g₁) : Exact' f₂ g₂ := by
-=======
     (p : α.hom.right = β.hom.left) (h : Exact f₁ g₁) : Exact f₂ g₂ := by
->>>>>>> origin/homology-sequence-computation
   rw [Preadditive.exact_iff_homology'_zero] at h ⊢
   rcases h with ⟨w₁, ⟨i⟩⟩
   suffices w₂ : f₂ ≫ g₂ = 0; exact ⟨w₂, ⟨(homology'.mapIso w₁ w₂ α β p).symm.trans i⟩⟩

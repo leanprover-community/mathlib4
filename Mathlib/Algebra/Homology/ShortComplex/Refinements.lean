@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.Exact
+import Mathlib.CategoryTheory.Abelian.Refinements
 
 -- It seems I have rediscovered the point of view on "pseudoelements"
 -- described in the first page of:
@@ -21,44 +22,7 @@ attribute [local instance] epi_comp
 
 -- see also `Preadditive.mono_iff_cancel_zero`
 
-lemma epi_iff_surjective_up_to_refinements (f : X ⟶ Y) :
-    Epi f ↔ ∀ ⦃A : C⦄ (a : A ⟶ Y),
-      ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (a' : A' ⟶ X), π ≫ a = a' ≫ f := by
-  constructor
-  · intro _ A a
-    exact ⟨pullback a f, pullback.fst, inferInstance, pullback.snd, pullback.condition⟩
-  · intro hf
-    obtain ⟨A, π, hπ, a', fac⟩ := hf (𝟙 Y)
-    rw [comp_id] at fac
-    exact epi_of_epi_fac fac.symm
-
-lemma surjective_up_to_refinements_of_epi (f : X ⟶ Y) [Epi f] :
-    ∀ ⦃A : C⦄ (a : A ⟶ Y),
-      ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (a' : A' ⟶ X), π ≫ a = a' ≫ f :=
-  (epi_iff_surjective_up_to_refinements f).1 inferInstance
-
-lemma ShortComplex.exact_iff_exact_up_to_refinements :
-    S.Exact ↔ ∀ ⦃A : C⦄ (x₂ : A ⟶ S.X₂) (_ : x₂ ≫ S.g = 0),
-      ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₁ : A' ⟶ S.X₁), π ≫ x₂ = x₁ ≫ S.f := by
-  rw [S.exact_iff_epi_toCycles, epi_iff_surjective_up_to_refinements]
-  constructor
-  · intro hS
-    intro _ a ha
-    obtain ⟨A', π, hπ, x₁, fac⟩ := hS (S.liftCycles a ha)
-    exact ⟨A', π, hπ, x₁, by simpa only [assoc, liftCycles_i, toCycles_i] using fac =≫ S.iCycles⟩
-  · intro hS
-    intro _ a
-    obtain ⟨A', π, hπ, x₁, fac⟩ := hS (a ≫ S.iCycles) (by simp)
-    exact ⟨A', π, hπ, x₁, by simp only [← cancel_mono S.iCycles, assoc, toCycles_i, fac]⟩
-
-variable {S}
-
-lemma ShortComplex.Exact.exact_up_to_refinements (hS : S.Exact) :
-    ∀ ⦃A : C⦄ (x₂ : A ⟶ S.X₂) (_ : x₂ ≫ S.g = 0),
-      ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₁ : A' ⟶ S.X₁), π ≫ x₂ = x₁ ≫ S.f := by
-  simpa only [ShortComplex.exact_iff_exact_up_to_refinements] using hS
-
-variable (S)
+-- this should be moved to CategoryTheory.Abelian.Refinements
 
 lemma Limits.CokernelCofork.IsColimit.comp_π_eq_zero_iff_up_to_refinements {f : X ⟶ Y}
     {c : CokernelCofork f} (hc : IsColimit c) {A : C} (y : A ⟶ Y) :
