@@ -5,6 +5,7 @@ Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth
 -/
 import Mathlib.Tactic.GRW
 import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.NormNum.Ineq
 
 private axiom test_sorry : ∀ {α}, α
 
@@ -134,3 +135,9 @@ example {s s' : Set ℕ} (h : s' ⊆ s) (h2 : BddAbove s) : BddAbove s' := by
   grw [h]; exact h2
 
 end nontransitive_grw_lemmas
+
+example {x y a b : ℤ} (h1 : |x| ≤ a) (h2 : |y| ≤ b) :
+    |x ^ 2 + 2 * x * y| ≤ a ^ 2 + 2 * a * b := by
+  have : 0 ≤ a := by grw [← h1]; positivity
+  grw [abs_add, abs_mul, abs_mul, abs_pow, h1, h2, abs_of_nonneg]
+  norm_num

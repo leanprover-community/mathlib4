@@ -26,8 +26,8 @@ open Lean Meta Elab Parser Tactic Mathlib.Tactic.GRW
 If `rev` is true, rewrite from right to left instead of left to right. -/
 def grwAtLocal (rev : Bool) (rule : Term) (fvar : FVarId) : TacticM Unit := do
   let goal ← getMainGoal
-  goal.withContext do
-    let rulePrf ← elabTerm rule none
+  Term.withSynthesize <| goal.withContext do
+    let rulePrf ← elabTerm rule none true
     let (newType, implication, newSubgoals) ← goal.grw (← fvar.getType) rulePrf rev false
     let name ← fvar.getUserName
     let ⟨_, goal', _⟩ ← goal.assertAfter fvar name newType <| .betaRev implication #[.fvar fvar]
@@ -38,8 +38,8 @@ def grwAtLocal (rev : Bool) (rule : Term) (fvar : FVarId) : TacticM Unit := do
 If `rev` is true, rewrite from right to left instead of left to right. -/
 def grwAtTarget (rev : Bool) (rule : Term) : TacticM Unit := do
   let goal ← getMainGoal
-  goal.withContext do
-    let rulePrf ← elabTerm rule none
+  Term.withSynthesize <| goal.withContext do
+    let rulePrf ← elabTerm rule none true
     let (newType, implication, newSubgoals) ← goal.grw (← goal.getType) rulePrf rev true
     let newGoal ← mkFreshExprSyntheticOpaqueMVar newType (← goal.getTag)
     goal.assign <| .betaRev implication #[newGoal]
