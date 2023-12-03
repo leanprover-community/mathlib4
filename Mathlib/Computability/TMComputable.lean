@@ -328,7 +328,7 @@ a function of the encoded length of x. -/
 def verification {α γ: Type} {ea : FinEncoding α} {eg : FinEncoding γ} {p: Polynomial ℕ}
     (certified : Rel α γ) : Prop :=
   ∀ (x : α) (certificate : γ), certified x certificate →
-  (ea.encode certificate).length < p.eval (eg.encode x).length
+  (eg.encode certificate).length < p.eval (ea.encode x).length
 
 end
 
