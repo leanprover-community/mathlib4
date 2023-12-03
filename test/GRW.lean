@@ -80,7 +80,7 @@ section subsets
 variable (X Y Z W : Set α)
 
 example (h₁ : X = Y) (h₂ : Y ⊆ Z) (h₃ : a ∈ X) : False := by
-  rw [h₁] at h₃
+  grw [h₁] at h₃
   guard_hyp h₃ :ₛ a ∈ Y
   grw [h₂] at h₃
   guard_hyp h₃ :ₛ a ∈ Z
@@ -98,10 +98,10 @@ example (h₁ : W ⊂ Y) (h₂ : X ⊂ (W ∪ Z)) : X ⊂ (Y ∪ Z) := by
 
 end subsets
 
-section reals
+section rationals
 
-example (x x' y z w : ℚ) (h0 : x' = x) (h₁ : x < z) (h₂ : w ≤ y + 4) (h₃ : z + 1 < 5 * w)
-  : x' + 1 < 5 * (y + 4) := by
+example (x x' y z w : ℚ) (h0 : x' = x) (h₁ : x < z) (h₂ : w ≤ y + 4) (h₃ : z + 1 < 5 * w) :
+    x' + 1 < 5 * (y + 4) := by
   grw [h0, h₁, ← h₂]
   exact h₃
 
@@ -123,10 +123,14 @@ example {x y a b : ℚ} (h : x ≤ y) (h1 : a ≤ 3 * x) : 2 * x ≤ b := by
     guard_target = y ≤ x
     exact test_sorry
 
+end rationals
+
+section nontransitive_grw_lemmas
+
 example {s s' t : Set ℕ} (h : s' ⊆ s) (h2 : BddAbove (s ∩ t)) : BddAbove (s' ∩ t) := by
   grw [h]; exact h2
 
 example {s s' : Set ℕ} (h : s' ⊆ s) (h2 : BddAbove s) : BddAbove s' := by
   grw [h]; exact h2
 
-end reals
+end nontransitive_grw_lemmas
