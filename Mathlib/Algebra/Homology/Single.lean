@@ -80,24 +80,11 @@ noncomputable def singleObjXSelf (j : ι) (A : V) : ((single V c j).obj A).X j �
 set_option linter.uppercaseLean3 false in
 #align homological_complex.single_obj_X_self HomologicalComplex.singleObjXSelf
 
-<<<<<<< HEAD
-def singleObjXIsoOfEq (j : ι) (A : V) (i : ι) (hi : i = j) :
-    ((single V c j).obj A).X i ≅ A := eqToIso (by subst hi ; simp)
-
-lemma isZeroSingleObjX (j : ι) (A : V) (i : ι) (hi : i ≠ j) :
-    IsZero (((single V c j).obj A).X i) := by
-  dsimp
-  rw [if_neg hi]
-  apply Limits.isZero_zero
-
-@[simp 1100]
-=======
 @[simp]
 lemma single_obj_d (j : ι) (A : V) (k l : ι) :
     ((single V c j).obj A).d k l = 0 := rfl
 
 @[reassoc]
->>>>>>> origin/homology-sequence-computation
 theorem single_map_f_self (j : ι) {A B : V} (f : A ⟶ B) :
     ((single V c j).map f).f j = (singleObjXSelf c j A).hom ≫
       f ≫ (singleObjXSelf c j B).inv := by
@@ -190,113 +177,9 @@ end HomologicalComplex
 
 namespace ChainComplex
 
-<<<<<<< HEAD
-/-- `ChainComplex.single₀ V` is the embedding of `V` into `ChainComplex V ℕ`
-as chain complexes supported in degree 0.
-
-This is naturally isomorphic to `single V _ 0`, but has better definitional properties.
--/
-def single₀ : V ⥤ ChainComplex V ℕ where
-  obj X :=
-    { X := fun n =>
-        match n with
-        | 0 => X
-        | _ + 1 => 0
-      d := fun i j => 0 }
-  map f :=
-    { f := fun n =>
-        match n with
-        | 0 => f
-        | n + 1 => 0 }
-  map_id X := by
-    ext (_|_)
-    · rfl
-    · simp
-  map_comp f g := by
-    ext (_|_)
-    · rfl
-    · simp
-#align chain_complex.single₀ ChainComplex.single₀
-
-@[simp]
-theorem single₀_obj_X_0 (X : V) : ((single₀ V).obj X).X 0 = X :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align chain_complex.single₀_obj_X_0 ChainComplex.single₀_obj_X_0
-
-@[simp]
-theorem single₀_obj_X_succ (X : V) (n : ℕ) : ((single₀ V).obj X).X (n + 1) = 0 :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align chain_complex.single₀_obj_X_succ ChainComplex.single₀_obj_X_succ
-
-@[simp]
-theorem single₀_obj_X_d (X : V) (i j : ℕ) : ((single₀ V).obj X).d i j = 0 :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align chain_complex.single₀_obj_X_d ChainComplex.single₀_obj_X_d
-
-@[simp]
-theorem single₀_obj_X_dTo (X : V) (j : ℕ) : ((single₀ V).obj X).dTo j = 0 := by
-  rw [dTo_eq ((single₀ V).obj X) rfl]
-  simp
-set_option linter.uppercaseLean3 false in
-#align chain_complex.single₀_obj_X_d_to ChainComplex.single₀_obj_X_dTo
-
-@[simp]
-theorem single₀_obj_x_dFrom (X : V) (i : ℕ) : ((single₀ V).obj X).dFrom i = 0 := by
-  cases i
-  · rw [dFrom_eq_zero]
-    simp
-  · erw [dFrom_eq ((single₀ V).obj X) rfl]
-    simp
-set_option linter.uppercaseLean3 false in
-#align chain_complex.single₀_obj_X_d_from ChainComplex.single₀_obj_x_dFrom
-
-@[simp]
-theorem single₀_map_f_0 {X Y : V} (f : X ⟶ Y) : ((single₀ V).map f).f 0 = f :=
-  rfl
-#align chain_complex.single₀_map_f_0 ChainComplex.single₀_map_f_0
-
-@[simp]
-theorem single₀_map_f_succ {X Y : V} (f : X ⟶ Y) (n : ℕ) : ((single₀ V).map f).f (n + 1) = 0 :=
-  rfl
-#align chain_complex.single₀_map_f_succ ChainComplex.single₀_map_f_succ
-
-/-section
-
-variable [HasEqualizers V] [HasCokernels V] [HasImages V] [HasImageMaps V]
-
-/-- Sending objects to chain complexes supported at `0` then taking `0`-th homology
-is the same as doing nothing.
--/
-noncomputable def homology'Functor0Single₀ : single₀ V ⋙ homology'Functor V _ 0 ≅ 𝟭 V :=
-  NatIso.ofComponents (fun X => homology'.congr _ _ (by simp) (by simp) ≪≫ homology'ZeroZero)
-    fun f => by
-      -- Porting note: why can't `aesop_cat` do this?
-      dsimp
-      ext
-      simp
-#align chain_complex.homology_functor_0_single₀ ChainComplex.homology'Functor0Single₀
-
-/-- Sending objects to chain complexes supported at `0` then taking `(n+1)`-st homology
-is the same as the zero functor.
--/
-noncomputable def homology'FunctorSuccSingle₀ (n : ℕ) :
-    single₀ V ⋙ homology'Functor V _ (n + 1) ≅ 0 :=
-  NatIso.ofComponents
-    (fun X =>
-      homology'.congr _ _ (by simp) (by simp) ≪≫
-        homology'ZeroZero ≪≫ (Functor.zero_obj _).isoZero.symm)
-    fun f => (Functor.zero_obj _).eq_of_tgt _ _
-#align chain_complex.homology_functor_succ_single₀ ChainComplex.homology'FunctorSuccSingle₀
-
-end-/
-=======
 /-- The functor `V ⥤ ChainComplex V ℕ` creating a chain complex supported in degree zero. -/
 noncomputable abbrev single₀ : V ⥤ ChainComplex V ℕ :=
   HomologicalComplex.single V (ComplexShape.down ℕ) 0
->>>>>>> origin/homology-sequence-computation
 
 variable {V}
 
@@ -363,113 +246,9 @@ end ChainComplex
 
 namespace CochainComplex
 
-<<<<<<< HEAD
-/-- `CochainComplex.single₀ V` is the embedding of `V` into `CochainComplex V ℕ`
-as cochain complexes supported in degree 0.
-
-This is naturally isomorphic to `single V _ 0`, but has better definitional properties.
--/
-def single₀ : V ⥤ CochainComplex V ℕ where
-  obj X :=
-    { X := fun n =>
-        match n with
-        | 0 => X
-        | _ + 1 => 0
-      d := fun i j => 0 }
-  map f :=
-    { f := fun n =>
-        match n with
-        | 0 => f
-        | n + 1 => 0 }
-  map_id X := by
-    ext (_|_)
-    · rfl
-    · simp
-  map_comp f g := by
-    ext (_|_)
-    · rfl
-    · simp
-#align cochain_complex.single₀ CochainComplex.single₀
-
-@[simp]
-theorem single₀_obj_X_0 (X : V) : ((single₀ V).obj X).X 0 = X :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align cochain_complex.single₀_obj_X_0 CochainComplex.single₀_obj_X_0
-
-@[simp]
-theorem single₀_obj_X_succ (X : V) (n : ℕ) : ((single₀ V).obj X).X (n + 1) = 0 :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align cochain_complex.single₀_obj_X_succ CochainComplex.single₀_obj_X_succ
-
-@[simp]
-theorem single₀_obj_X_d (X : V) (i j : ℕ) : ((single₀ V).obj X).d i j = 0 :=
-  rfl
-set_option linter.uppercaseLean3 false in
-#align cochain_complex.single₀_obj_X_d CochainComplex.single₀_obj_X_d
-
-@[simp]
-theorem single₀_obj_x_dFrom (X : V) (j : ℕ) : ((single₀ V).obj X).dFrom j = 0 := by
-  rw [dFrom_eq ((single₀ V).obj X) rfl]
-  simp
-set_option linter.uppercaseLean3 false in
-#align cochain_complex.single₀_obj_X_d_from CochainComplex.single₀_obj_x_dFrom
-
-@[simp]
-theorem single₀_obj_x_dTo (X : V) (i : ℕ) : ((single₀ V).obj X).dTo i = 0 := by
-  cases i
-  · rw [dTo_eq_zero]
-    simp
-  · erw [dTo_eq ((single₀ V).obj X) rfl]
-    simp
-set_option linter.uppercaseLean3 false in
-#align cochain_complex.single₀_obj_X_d_to CochainComplex.single₀_obj_x_dTo
-
-@[simp]
-theorem single₀_map_f_0 {X Y : V} (f : X ⟶ Y) : ((single₀ V).map f).f 0 = f :=
-  rfl
-#align cochain_complex.single₀_map_f_0 CochainComplex.single₀_map_f_0
-
-@[simp]
-theorem single₀_map_f_succ {X Y : V} (f : X ⟶ Y) (n : ℕ) : ((single₀ V).map f).f (n + 1) = 0 :=
-  rfl
-#align cochain_complex.single₀_map_f_succ CochainComplex.single₀_map_f_succ
-
-/-section
-
-variable [HasEqualizers V] [HasCokernels V] [HasImages V] [HasImageMaps V]
-
-/-- Sending objects to cochain complexes supported at `0` then taking `0`-th homology
-is the same as doing nothing.
--/
-noncomputable def homology'Functor0Single₀ : single₀ V ⋙ homology'Functor V _ 0 ≅ 𝟭 V :=
-  NatIso.ofComponents (fun X => homology'.congr _ _ (by simp) (by simp) ≪≫ homology'ZeroZero)
-    fun f => by
-      -- Porting note: why can't `aesop_cat` do this?
-      dsimp
-      ext
-      simp
-#align cochain_complex.homology_functor_0_single₀ CochainComplex.homology'Functor0Single₀
-
-/-- Sending objects to cochain complexes supported at `0` then taking `(n+1)`-st homology
-is the same as the zero functor.
--/
-noncomputable def homology'FunctorSuccSingle₀ (n : ℕ) :
-    single₀ V ⋙ homology'Functor V _ (n + 1) ≅ 0 :=
-  NatIso.ofComponents
-    (fun X =>
-      homology'.congr _ _ (by simp) (by simp) ≪≫
-        homology'ZeroZero ≪≫ (Functor.zero_obj _).isoZero.symm)
-    fun f => (Functor.zero_obj _).eq_of_tgt _ _
-#align cochain_complex.homology_functor_succ_single₀ CochainComplex.homology'FunctorSuccSingle₀
-
-end-/
-=======
 /-- The functor `V ⥤ CochainComplex V ℕ` creating a cochain complex supported in degree zero. -/
 noncomputable abbrev single₀ : V ⥤ CochainComplex V ℕ :=
   HomologicalComplex.single V (ComplexShape.up ℕ) 0
->>>>>>> origin/homology-sequence-computation
 
 variable {V}
 

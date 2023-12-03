@@ -116,11 +116,7 @@ namespace HomologicalComplex
 instance eval_additive (i : ι) : (eval V c i).Additive where
 #align homological_complex.eval_additive HomologicalComplex.eval_additive
 
-<<<<<<< HEAD
 /-instance cycles'_additive [HasEqualizers V] : (cycles'Functor V c i).Additive where
-=======
-instance cycles'_additive [HasEqualizers V] : (cycles'Functor V c i).Additive where
->>>>>>> origin/homology-sequence-computation
 #align homological_complex.cycles_additive HomologicalComplex.cycles'_additive
 
 variable [HasImages V] [HasImageMaps V]
