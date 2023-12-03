@@ -2,6 +2,7 @@ import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
+import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 namespace CategoryTheory
 
@@ -64,13 +65,14 @@ noncomputable def mapTriangleCommShiftIso [F.Additive] (n : ℤ) :
     (by aesop_cat)
     (by
       dsimp
-      simp only [map_zsmul, map_comp, zsmul_comp, assoc, comp_zsmul,
-        ← F.commShiftIso_hom_naturality_assoc]
-      congr 2
+      simp only [map_units_smul, map_comp, Linear.units_smul_comp, assoc, Linear.comp_units_smul,
+        smul_left_cancel_iff, ← F.commShiftIso_hom_naturality_assoc]
+      congr 1
       rw [F.map_shiftFunctorComm T.obj₁ 1 n]
-      simp only [assoc, Iso.inv_hom_id_app_assoc, ← Functor.map_comp, Iso.inv_hom_id_app]
+      simp only [comp_obj, assoc, Iso.inv_hom_id_app_assoc, NatIso.cancel_natIso_hom_left]
+      rw [← Functor.map_comp, Iso.inv_hom_id_app]
       dsimp
-      simp only [Functor.map_id, comp_id]))
+      simp only [map_id, comp_id]))
     (by aesop_cat)
 
 set_option maxHeartbeats 400000 in

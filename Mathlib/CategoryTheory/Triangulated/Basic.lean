@@ -218,7 +218,6 @@ lemma Triangle.isIso_of_isIsos {A B : Triangle C} (f : A ⟶ B)
     (by simp) (by simp) (by simp)
   exact (inferInstance : IsIso e.hom)
 
-<<<<<<< HEAD
 instance Triangle.instIsIso_of_isIso {A B : Triangle C} (f : A ⟶ B)
     [IsIso f.hom₁] [IsIso f.hom₂] [IsIso f.hom₃] : IsIso f :=
   Triangle.isIso_of_isIsos f inferInstance inferInstance inferInstance
@@ -244,19 +243,11 @@ lemma _root_.CategoryTheory.Iso.inv_hom_id_triangle_hom₃ {A B : Triangle C} (e
     e.inv.hom₃ ≫ e.hom.hom₃ = 𝟙 _ := by rw [← comp_hom₃, e.inv_hom_id, id_hom₃]
 
 lemma Triangle.eqToHom_hom₁ {A B : Triangle C} (h : A = B) :
-  (eqToHom h).hom₁ = eqToHom (by subst h ; rfl) := by subst h ; rfl
-lemma Triangle.eqToHom_hom₂ {A B : Triangle C} (h : A = B) :
-  (eqToHom h).hom₂ = eqToHom (by subst h ; rfl) := by subst h ; rfl
-lemma Triangle.eqToHom_hom₃ {A B : Triangle C} (h : A = B) :
-  (eqToHom h).hom₃ = eqToHom (by subst h ; rfl) := by subst h ; rfl
-=======
-lemma Triangle.eqToHom_hom₁ {A B : Triangle C} (h : A = B) :
     (eqToHom h).hom₁ = eqToHom (by subst h; rfl) := by subst h; rfl
 lemma Triangle.eqToHom_hom₂ {A B : Triangle C} (h : A = B) :
     (eqToHom h).hom₂ = eqToHom (by subst h; rfl) := by subst h; rfl
 lemma Triangle.eqToHom_hom₃ {A B : Triangle C} (h : A = B) :
     (eqToHom h).hom₃ = eqToHom (by subst h; rfl) := by subst h; rfl
->>>>>>> origin/homology-sequence-computation
 
 @[simps!]
 def binaryBiproductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] : Triangle C :=
@@ -441,6 +432,7 @@ end Preadditive
 
 section
 
+variable {C}
 variable {J : Type*} (T : J → Triangle C)
   [HasProduct (fun j => (T j).obj₁)] [HasProduct (fun j => (T j).obj₂)]
   [HasProduct (fun j => (T j).obj₃)] [HasProduct (fun j => (T j).obj₁⟦(1 : ℤ)⟧)]
@@ -487,7 +479,10 @@ def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
     intro s m hm
     ext1
     all_goals
-      exact Pi.hom_ext _ _ (fun j => (by simp [← hm])))
+    · dsimp
+      ext1 j
+      dsimp
+      simp [← hm])
 
 lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
     (h : ∀ j, (T j).mor₃ ≫ (T j).mor₁⟦(1 : ℤ)⟧' = 0) :
