@@ -490,7 +490,7 @@ lemma toCocycles_comp_isoOneCocycles_hom :
       (zeroCochainsLequiv A).toModuleIso.hom
         ≫ ModuleCat.ofHom ((dZero A).codRestrict (oneCocycles A) fun c =>
           LinearMap.ext_iff.1 (dOne_comp_dZero.{u} A) c) := by
-  rw [←cancel_mono (moduleCatLeftHomologyData (shortComplexH1 A)).i, Category.assoc]
+  rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 A)).i, Category.assoc]
   show _ ≫ (_ ≫ ModuleCat.ofHom (oneCocycles A).subtype) = _
   rw [isoOneCocycles_hom_comp_subtype, toCocycles, iCocycles, HomologicalComplex.toCycles_i_assoc]
   apply (dZero_comp_eq A).symm
@@ -541,7 +541,7 @@ lemma toCocycles_comp_isoTwoCocycles_hom :
       (oneCochainsLequiv A).toModuleIso.hom
         ≫ ModuleCat.ofHom ((dOne A).codRestrict (twoCocycles A) fun c =>
           LinearMap.ext_iff.1 (dTwo_comp_dOne.{u} A) c) := by
-  rw [←cancel_mono (moduleCatLeftHomologyData (shortComplexH2 A)).i, Category.assoc]
+  rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH2 A)).i, Category.assoc]
   show _ ≫ (_ ≫ ModuleCat.ofHom (twoCocycles A).subtype) = _
   rw [isoTwoCocycles_hom_comp_subtype, toCocycles, iCocycles, HomologicalComplex.toCycles_i_assoc]
   apply (dOne_comp_eq A).symm
