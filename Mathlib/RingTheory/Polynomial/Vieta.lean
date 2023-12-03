@@ -171,7 +171,7 @@ theorem MvPolynomial.prod_C_add_X_eq_sum_esymm :
         (MvPolynomial.esymm σ R j) * Polynomial.X ^ (card σ - j) := by
   let s := Finset.univ.val.map fun i : σ => (MvPolynomial.X i : MvPolynomial σ R)
   have : Fintype.card σ = Multiset.card s := by
-    rw [Multiset.card_map, ←Finset.card_univ, Finset.card_def]
+    rw [Multiset.card_map, ← Finset.card_univ, Finset.card_def]
   simp_rw [this, MvPolynomial.esymm_eq_multiset_esymm σ R, Finset.prod_eq_multiset_prod]
   convert Multiset.prod_X_add_C_eq_sum_esymm s
   simp_rw [Multiset.map_map, Function.comp_apply]
@@ -183,7 +183,7 @@ theorem MvPolynomial.prod_X_add_C_coeff (k : ℕ) (h : k ≤ card σ) :
     MvPolynomial.esymm σ R (card σ - k) := by
   let s := Finset.univ.val.map fun i => (MvPolynomial.X i : MvPolynomial σ R)
   have : Fintype.card σ = Multiset.card s := by
-    rw [Multiset.card_map, ←Finset.card_univ, Finset.card_def]
+    rw [Multiset.card_map, ← Finset.card_univ, Finset.card_def]
   rw [this] at h ⊢
   rw [MvPolynomial.esymm_eq_multiset_esymm σ R, Finset.prod_eq_multiset_prod]
   convert Multiset.prod_X_add_C_coeff s h

@@ -58,7 +58,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
   rotate_left
   · intro i
     change TopologicalSpace.IsTopologicalBasis {W : Set (F.obj i) | IsClopen W}
-    apply isTopologicalBasis_clopen
+    apply isTopologicalBasis_isClopen
   · rintro i j f V (hV : IsClopen _)
     exact ⟨hV.1.preimage ((F ⋙ toTopCat).map f).continuous,
       hV.2.preimage ((F ⋙ toTopCat).map f).continuous⟩
