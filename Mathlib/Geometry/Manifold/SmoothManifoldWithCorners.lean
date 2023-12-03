@@ -133,18 +133,15 @@ scoped[Manifold] notation "∞" => (⊤ : ℕ∞)
 
 /-! ### Models with corners. -/
 
-section ModelWithCorners
-
-variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-  (E : Type*) [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  (H : Type*) [TopologicalSpace H]
 
 /-- A structure containing informations on the way a space `H` embeds in a
 model vector space `E` over the field `𝕜`. This is all what is needed to
 define a smooth manifold with model space `H`, and model vector space `E`.
 -/
 @[ext] -- porting note: was nolint has_nonempty_instance
-structure ModelWithCorners extends LocalEquiv H E where
+structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] extends
+    LocalEquiv H E where
   source_eq : source = univ
   unique_diff' : UniqueDiffOn 𝕜 toLocalEquiv.target
   continuous_toFun : Continuous toFun := by continuity
@@ -154,15 +151,14 @@ structure ModelWithCorners extends LocalEquiv H E where
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
 
 /-- A vector space is a model with corners. -/
-def modelWithCornersSelf : ModelWithCorners 𝕜 E E where
+def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] : ModelWithCorners 𝕜 E E where
   toLocalEquiv := LocalEquiv.refl E
   source_eq := rfl
   unique_diff' := uniqueDiffOn_univ
   continuous_toFun := continuous_id
   continuous_invFun := continuous_id
 #align model_with_corners_self modelWithCornersSelf
-
-end ModelWithCorners
 
 scoped[Manifold] notation "𝓘(" 𝕜 ", " E ")" => modelWithCornersSelf 𝕜 E
 scoped[Manifold] notation "𝓘(" 𝕜 ")" => modelWithCornersSelf 𝕜 𝕜
@@ -187,15 +183,17 @@ protected def symm : LocalEquiv E H :=
   I.toLocalEquiv.symm
 #align model_with_corners.symm ModelWithCorners.symm
 
-variable (𝕜 E H) in
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
-def Simps.apply : H → E := I
+def Simps.apply (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*) [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) : H → E :=
+  I
 #align model_with_corners.simps.apply ModelWithCorners.Simps.apply
 
-variable (𝕜 E H) in
 /-- See Note [custom simps projection] -/
-def Simps.symm_apply : E → H := I.symm
+def Simps.symm_apply (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*) [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) : E → H :=
+  I.symm
 #align model_with_corners.simps.symm_apply ModelWithCorners.Simps.symm_apply
 
 initialize_simps_projections ModelWithCorners (toFun → apply, invFun → symm_apply)
@@ -399,19 +397,17 @@ end
 
 section ModelWithCornersProd
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-  {E : Type v} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {H : Type w} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
-  {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
-
 /-- Given two model_with_corners `I` on `(E, H)` and `I'` on `(E', H')`, we define the model with
 corners `I.prod I'` on `(E × E', ModelProd H H')`. This appears in particular for the manifold
 structure on the tangent bundle to a manifold modelled on `(E, H)`: it will be modelled on
 `(E × E, H × E)`. See note [Manifold type tags] for explanation about `ModelProd H H'`
 vs `H × H'`. -/
 @[simps (config := .lemmasOnly)]
-def ModelWithCorners.prod : ModelWithCorners 𝕜 (E × E') (ModelProd H H') :=
+def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H') :
+    ModelWithCorners 𝕜 (E × E') (ModelProd H H') :=
   { I.toLocalEquiv.prod I'.toLocalEquiv with
     toFun := fun x => (I x.1, I' x.2)
     invFun := fun x => (I.symm x.1, I'.symm x.2)
@@ -425,7 +421,7 @@ def ModelWithCorners.prod : ModelWithCorners 𝕜 (E × E') (ModelProd H H') :=
 /-- Given a finite family of `ModelWithCorners` `I i` on `(E i, H i)`, we define the model with
 corners `pi I` on `(Π i, E i, ModelPi H)`. See note [Manifold type tags] for explanation about
 `ModelPi H`. -/
-def ModelWithCorners.pi {ι : Type v} [Fintype ι]
+def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Type v} [Fintype ι]
     {E : ι → Type w} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {H : ι → Type u'}
     [∀ i, TopologicalSpace (H i)] (I : ∀ i, ModelWithCorners 𝕜 (E i) (H i)) :
     ModelWithCorners 𝕜 (∀ i, E i) (ModelPi H) where
@@ -439,7 +435,9 @@ def ModelWithCorners.pi {ι : Type v} [Fintype ι]
 /-- Special case of product model with corners, which is trivial on the second factor. This shows up
 as the model to tangent bundles. -/
 @[reducible]
-def ModelWithCorners.tangent : ModelWithCorners 𝕜 (E × E) (ModelProd H E) :=
+def ModelWithCorners.tangent {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) : ModelWithCorners 𝕜 (E × E) (ModelProd H E) :=
   I.prod 𝓘(𝕜, E)
 #align model_with_corners.tangent ModelWithCorners.tangent
 
@@ -482,36 +480,39 @@ end ModelWithCornersProd
 
 section Boundaryless
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
-  {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
-
 /-- Property ensuring that the model with corners `I` defines manifolds without boundary. -/
-class ModelWithCorners.Boundaryless : Prop where
+class ModelWithCorners.Boundaryless {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) : Prop where
   range_eq_univ : range I = univ
 #align model_with_corners.boundaryless ModelWithCorners.Boundaryless
 
-theorem ModelWithCorners.range_eq_univ [I.Boundaryless] :
+theorem ModelWithCorners.range_eq_univ {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] :
     range I = univ := ModelWithCorners.Boundaryless.range_eq_univ
 
 /-- If `I` is a `ModelWithCorners.Boundaryless` model, then it is a homeomorphism. -/
 @[simps (config := {simpRhs := true})]
-def ModelWithCorners.toHomeomorph [I.Boundaryless] : H ≃ₜ E where
+def ModelWithCorners.toHomeomorph {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] : H ≃ₜ E where
   __ := I
   left_inv := I.left_inv
   right_inv _ := I.right_inv <| I.range_eq_univ.symm ▸ mem_univ _
 
-variable (𝕜 E) in
 /-- The trivial model with corners has no boundary -/
-instance modelWithCornersSelf_boundaryless : (modelWithCornersSelf 𝕜 E).Boundaryless :=
+instance modelWithCornersSelf_boundaryless (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] : (modelWithCornersSelf 𝕜 E).Boundaryless :=
   ⟨by simp⟩
 #align model_with_corners_self_boundaryless modelWithCornersSelf_boundaryless
 
 /-- If two model with corners are boundaryless, their product also is -/
-instance ModelWithCorners.range_eq_univ_prod [I.Boundaryless] [I'.Boundaryless] :
-    (I.prod I').Boundaryless := by
+instance ModelWithCorners.range_eq_univ_prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] {E' : Type v'} [NormedAddCommGroup E']
+    [NormedSpace 𝕜 E'] {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
+    [I'.Boundaryless] : (I.prod I').Boundaryless := by
   constructor
   dsimp [ModelWithCorners.prod, ModelProd]
   rw [← prod_range_range_eq, ModelWithCorners.Boundaryless.range_eq_univ,
