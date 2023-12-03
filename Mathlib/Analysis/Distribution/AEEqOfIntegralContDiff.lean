@@ -135,6 +135,10 @@ theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero {U : Set M} (hU : IsOp
     (h : ∀ (g : M → ℝ), Smooth I 𝓘(ℝ) g → HasCompactSupport g → support g ⊆ U →
         ∫ x, g x • f x ∂μ = 0) :
     ∀ᵐ x ∂μ, x ∈ U → f x = 0 := by
+  have := I.locallyCompactSpace
+  have := ChartedSpace.locallyCompactSpace H M
+  have := I.secondCountableTopology
+  have := ChartedSpace.secondCountable_of_sigma_compact H M
   rcases exists_msmooth_support_eq_eq_one_iff I hU isClosed_empty (empty_subset _) with
     ⟨u, u_smooth, u_range, u_supp, -⟩
   let f' x := u x • f x
@@ -145,14 +149,8 @@ theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero {U : Set M} (hU : IsOp
     rw [← u_supp]
     exact support_mul_subset_right _ _
   have B : LocallyIntegrable f' μ := by
-    /- Should extract a lemma `LocallyIntegrableOn.mono_function` -/
-    apply hf.mono
-    intro x
-    rcases hf x with ⟨v, v_mem, hv⟩
-    refine ⟨v, v_mem, ?_⟩
-    apply Integrable.mono hv
-      (AEStronglyMeasurable.smul u_smooth.continuous.aestronglyMeasurable hv.1)
-    apply Filter.eventually_of_forall (fun y ↦ ?_)
+    apply hf.mono (AEStronglyMeasurable.smul u_smooth.continuous.aestronglyMeasurable
+      hf.aestronglyMeasurable) (eventually_of_forall (fun y ↦ ?_))
     rw [norm_smul]
     apply mul_le_of_le_one_left (norm_nonneg _)
     rw [range_subset_iff] at u_range
