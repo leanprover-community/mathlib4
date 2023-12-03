@@ -516,4 +516,8 @@ theorem add_eq_lor_of_and_eq_zero {x y : Nat} (h : x &&& y = 0) : x + y = x ||| 
       simp [bit_add_bit, hand, ih h₁]
       cases x₀ <;> cases y₀ <;> simp_all
 
+theorem mul_two_eq_bit (x : ℕ) :
+    x * 2 = Nat.bit false x := by
+  simp only [mul_two, Nat.bit_false, bit0]
+
 end Nat

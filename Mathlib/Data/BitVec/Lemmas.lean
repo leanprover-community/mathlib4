@@ -103,4 +103,12 @@ theorem toFin_ofFin {n} (i : Fin <| 2 ^ n) : (ofFin i).toFin = i := rfl
 theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := rfl
 #align bitvec.of_fin_to_fin Std.BitVec.ofFin_toFin
 
+/-! ### ofLEFn -/
+
+@[simp] lemma ofLEFn_zero (f : Fin 0 → Bool) : ofLEFn f = nil := rfl
+
+@[simp] lemma ofLEFn_cons {w} (b : Bool) (f : Fin w → Bool) :
+    ofLEFn (Fin.cons b f) = concat (ofLEFn f) b :=
+  rfl
+
 end Std.BitVec

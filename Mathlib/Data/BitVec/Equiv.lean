@@ -29,27 +29,12 @@ def finFunctionEquiv : BitVec w ≃ (Fin w → Bool) := calc
   _         ≃ (Fin w -> Fin 2)  := finFunctionFinEquiv.symm
   _         ≃ (Fin w -> Bool)   := Equiv.arrowCongr (.refl _) finTwoEquiv
 
--- TODO: I think this lemma exists in some PR already
-@[simp] lemma val_toFin (x : BitVec w) : x.toFin.val = x.toNat := rfl
-
-/-- Create a bitvector from a function that maps index `i` to the `i`-th least significant bit -/
-def ofLEFn {w} (f : Fin w → Bool) : BitVec w :=
-  match w with
-  | 0   => .nil
-  | w+1 => .concat (ofLEFn <| Fin.tail f) (f ⟨0, Nat.succ_pos w⟩)
-
-@[simp] lemma ofLEFn_zero (f : Fin 0 → Bool) : ofLEFn f = nil := rfl
-
-@[simp] lemma ofLEFn_cons {w} (b : Bool) (f : Fin w → Bool) :
-    ofLEFn (Fin.cons b f) = concat (ofLEFn f) b :=
-  rfl
-
 theorem coe_finFunctionEquiv_eq_getLsb' :
     (finFunctionEquiv : BitVec w → Fin w → Bool) = getLsb' := by
   funext x i
   simp only [finFunctionEquiv, finEquiv, finFunctionFinEquiv, ← Nat.shiftRight_eq_div_pow,
     Equiv.instTransSortSortSortEquivEquivEquiv_trans, finTwoEquiv, Matrix.vecCons, Matrix.vecEmpty,
-    Equiv.trans_apply, Equiv.coe_fn_mk, Equiv.ofRightInverseOfCardLE_symm_apply, val_toFin,
+    Equiv.trans_apply, Equiv.coe_fn_mk, Equiv.ofRightInverseOfCardLE_symm_apply, toFin_val,
     Equiv.arrowCongr_apply, Equiv.refl_symm, Equiv.coe_refl, Function.comp.right_id,
     Function.comp_apply, getLsb', getLsb, Nat.testBit, Nat.and_one_is_mod]
   cases (x.toNat >>> i.val).mod_two_eq_zero_or_one
@@ -59,11 +44,6 @@ theorem coe_finFunctionEquiv_eq_getLsb' :
 private theorem Bool.val_rec_eq_toNat (b : Bool) :
     (Fin.val (n:=2) <| Bool.rec 0 1 b) = b.toNat := by
   cases b <;> rfl
-
-set_option linter.deprecated false in
-private theorem Nat.mul_two_eq_bit (x : ℕ) :
-    x * 2 = Nat.bit false x := by
-  simp only [mul_two, Nat.bit_false, bit0]
 
 theorem Bool.toNat_eq_bit_zero (b : Bool) : b.toNat = Nat.bit b 0 := by
   cases b <;> rfl
@@ -98,7 +78,5 @@ theorem ofLEFn_getLsb' (x : BitVec w) : ofLEFn (x.getLsb') = x := by
 @[simp]
 theorem getLsb'_ofLEFn (f : Fin w → Bool) : getLsb' (ofLEFn f) = f := by
   simp [← coe_symm_finFunctionEquiv_eq_ofLEFn, ← coe_finFunctionEquiv_eq_getLsb']
-
-
 
 end Std.BitVec
