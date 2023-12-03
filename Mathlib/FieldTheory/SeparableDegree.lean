@@ -990,6 +990,35 @@ theorem isPurelyInseparable_iff_mem_pow (q : ℕ) [hF : ExpChar F q] :
   rw [← adjoin.finrank halg, IntermediateField.finrank_eq_one_iff] at hdeg
   simpa only [hdeg] using mem_adjoin_simple_self F x
 
+theorem IsPurelyInseparable.tower_bot [Algebra E K] [IsScalarTower F E K]
+    [IsPurelyInseparable F K] : IsPurelyInseparable F E := by
+  refine ⟨fun x ↦ (isIntegral F (algebraMap E K x)).tower_bot_of_field, fun x h ↦ ?_⟩
+  rw [← minpoly.algebraMap_eq (algebraMap E K).injective] at h
+  obtain ⟨y, h⟩ := inseparable F _ h
+  use y
+  apply_fun algebraMap E K using (algebraMap E K).injective
+  exact h.symm ▸ (IsScalarTower.algebraMap_apply F E K y).symm
+
+theorem IsPurelyInseparable.tower_top [Algebra E K] [IsScalarTower F E K]
+    [h : IsPurelyInseparable F K] : IsPurelyInseparable E K := by
+  obtain ⟨q, _⟩ := ExpChar.exists F
+  haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
+  rw [isPurelyInseparable_iff_mem_pow _ _ q] at h ⊢
+  intro x
+  obtain ⟨n, y, h⟩ := h x
+  exact ⟨n, (algebraMap F E) y, h.symm ▸ (IsScalarTower.algebraMap_apply F E K y).symm⟩
+
+theorem IsPurelyInseparable.trans [Algebra E K] [IsScalarTower F E K]
+    [h1 : IsPurelyInseparable F E] [h2 : IsPurelyInseparable E K] : IsPurelyInseparable F K := by
+  obtain ⟨q, _⟩ := ExpChar.exists F
+  haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
+  rw [isPurelyInseparable_iff_mem_pow _ _ q] at h1 h2 ⊢
+  intro x
+  obtain ⟨n, y, h2⟩ := h2 x
+  obtain ⟨m, z, h1⟩ := h1 y
+  refine ⟨n + m, z, ?_⟩
+  rw [IsScalarTower.algebraMap_apply F E K, h1, map_pow, h2, ← pow_mul, ← pow_add]
+
 theorem isPurelyInseparable_of_finSepDegree_eq_one (halg : Algebra.IsAlgebraic F E)
     (hdeg : finSepDegree F E = 1) : IsPurelyInseparable F E := by
   rw [isPurelyInseparable_iff]
