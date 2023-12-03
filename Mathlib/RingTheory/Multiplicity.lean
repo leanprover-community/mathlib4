@@ -440,7 +440,7 @@ theorem multiplicity_add_of_gt {p a b : α} (h : multiplicity p b < multiplicity
     rw_mod_cast [multiplicity_lt_iff_neg_dvd, dvd_add_right]
     intro h_dvd
     · apply multiplicity.is_greatest _ h_dvd
-      rw [hk, ←Nat.succ_eq_add_one]
+      rw [hk, ← Nat.succ_eq_add_one]
       norm_cast
       apply Nat.lt_succ_self k
     · rw [pow_dvd_iff_le_multiplicity, Nat.cast_add, ← hk, Nat.cast_one]

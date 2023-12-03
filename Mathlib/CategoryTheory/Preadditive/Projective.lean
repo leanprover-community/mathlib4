@@ -83,7 +83,7 @@ def factorThru {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] : 
   (Projective.factors f e).choose
 #align category_theory.projective.factor_thru CategoryTheory.Projective.factorThru
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem factorThru_comp {P X E : C} [Projective P] (f : P ⟶ X) (e : E ⟶ X) [Epi e] :
     factorThru f e ≫ e = f :=
   (Projective.factors f e).choose_spec
@@ -93,7 +93,7 @@ section
 
 open ZeroObject
 
-instance zero_projective [HasZeroObject C] [HasZeroMorphisms C] : Projective (0 : C) :=
+instance zero_projective [HasZeroObject C] : Projective (0 : C) :=
   (isZero_zero C).projective
 #align category_theory.projective.zero_projective CategoryTheory.Projective.zero_projective
 

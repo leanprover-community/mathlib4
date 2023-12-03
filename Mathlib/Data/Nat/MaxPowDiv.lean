@@ -51,7 +51,7 @@ theorem go_eq {k p n : ℕ} :
 theorem go_succ {k p n : ℕ} : go (k+1) p n = go k p n + 1 := by
   rw [go_eq]
   conv_rhs => rw [go_eq]
-  by_cases (1 < p ∧ 0 < n ∧ n % p = 0); swap
+  by_cases h : (1 < p ∧ 0 < n ∧ n % p = 0); swap
   · simp only [if_neg h]
   · have : n / p < n := by apply Nat.div_lt_self <;> aesop
     simp only [if_pos h]
@@ -90,12 +90,12 @@ theorem base_pow_mul {p n exp : ℕ} (hp : 1 < p) (hn : 0 < n) :
 theorem pow_dvd (p n : ℕ) : p ^ (p.maxPowDiv n) ∣ n := by
   dsimp [maxPowDiv]
   rw [go_eq]
-  by_cases (1 < p ∧ 0 < n ∧ n % p = 0)
+  by_cases h : (1 < p ∧ 0 < n ∧ n % p = 0)
   · have : n / p < n := by apply Nat.div_lt_self <;> aesop
     rw [if_pos h]
     have ⟨c,hc⟩ := pow_dvd p (n / p)
     rw [go_succ, pow_succ]
-    nth_rw 2 [←mod_add_div' n p]
+    nth_rw 2 [← mod_add_div' n p]
     rw [h.right.right, zero_add]
     exact ⟨c,by nth_rw 1 [hc]; ac_rfl⟩
   · rw [if_neg h]

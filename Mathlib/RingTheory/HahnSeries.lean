@@ -798,7 +798,7 @@ private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
     obtain ⟨⟨nx, H, rfl⟩, ny, nz, rfl⟩ := H1
     exact
       ⟨i + k, l, i, k, ⟨⟨Set.add_mem_add nx ny, nz, add_assoc _ _ _⟩ , nx, ny, rfl⟩,
-        fun h => H2 <| by rw [←h, mul_assoc], rfl⟩
+        fun h => H2 <| by rw [← h, mul_assoc], rfl⟩
   · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩ _ _
     simp [mul_assoc]
 
@@ -1202,7 +1202,7 @@ theorem ofPowerSeries_X_pow {R} [CommSemiring R] (n : ℕ) :
   induction' n with n ih
   · simp
     rfl
-  · rw [pow_succ, pow_succ, ih, ofPowerSeries_X, mul_comm, single_mul_single, one_mul,
+  · rw [pow_succ, ih, ofPowerSeries_X, mul_comm, single_mul_single, one_mul,
       Nat.cast_succ, add_comm]
 #align hahn_series.of_power_series_X_pow HahnSeries.ofPowerSeries_X_pow
 

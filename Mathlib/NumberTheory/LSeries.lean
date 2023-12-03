@@ -65,7 +65,7 @@ theorem LSeriesSummable_of_bounded_of_one_lt_real {f : ArithmeticFunction ℂ} {
     have hf : f = 0 := ArithmeticFunction.ext fun n =>
       Complex.abs.eq_zero.1 (le_antisymm (h n) (Complex.abs.nonneg _))
     simp [hf]
-  refine' summable_of_norm_bounded (fun n : ℕ => m / n ^ z) _ _
+  refine' .of_norm_bounded (fun n : ℕ => m / n ^ z) _ _
   · simp_rw [div_eq_mul_inv]
     exact (summable_mul_left_iff h0).2 (Real.summable_nat_rpow_inv.2 hz)
   · intro n

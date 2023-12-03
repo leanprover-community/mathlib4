@@ -70,7 +70,9 @@ theorem totient_lt (n : ℕ) (hn : 1 < n) : φ n < n :=
 theorem totient_pos : ∀ {n : ℕ}, 0 < n → 0 < φ n
   | 0 => by decide
   | 1 => by simp [totient]
-  | n + 2 => fun _ => card_pos.2 ⟨1, mem_filter.2 ⟨mem_range.2 (by simp), coprime_one_right _⟩⟩
+  | n + 2 => fun _ =>
+  -- Must qualify `Finset.card_pos` because of leanprover/lean4#2849
+    Finset.card_pos.2 ⟨1, mem_filter.2 ⟨mem_range.2 (by simp), coprime_one_right _⟩⟩
 #align nat.totient_pos Nat.totient_pos
 
 theorem filter_coprime_Ico_eq_totient (a n : ℕ) :
@@ -129,7 +131,7 @@ theorem totient_even {n : ℕ} (hn : 2 < n) : Even n.totient := by
   haveI : NeZero n := NeZero.of_gt hn
   suffices 2 = orderOf (-1 : (ZMod n)ˣ) by
     rw [← ZMod.card_units_eq_totient, even_iff_two_dvd, this]
-    exact orderOf_dvd_card_univ
+    exact orderOf_dvd_card
   rw [← orderOf_units, Units.coe_neg_one, orderOf_neg_one, ringChar.eq (ZMod n) n, if_neg hn.ne']
 #align nat.totient_even Nat.totient_even
 

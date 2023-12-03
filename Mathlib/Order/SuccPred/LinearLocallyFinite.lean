@@ -134,8 +134,7 @@ instance (priority := 100) LinearLocallyFiniteOrder.isSuccArchimedean [LocallyFi
     swap
     · refine' ⟨0, _⟩
       simpa only [Function.iterate_zero, id.def] using hij
-    by_contra h
-    push_neg at h
+    by_contra! h
     have h_lt : ∀ n, succ^[n] i < j := by
       intro n
       induction' n with n hn

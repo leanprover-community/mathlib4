@@ -49,7 +49,7 @@ It must be the case that `projectObj id (LiftObj.lift x) = x` by defeq. -/
 class LiftObj (X : C) where
   protected lift : FreeMonoidalCategory C
 
-instance LiftObj_unit : LiftObj (𝟙_ C) := ⟨Unit⟩
+instance LiftObj_unit : LiftObj (𝟙_ C) := ⟨unit⟩
 
 instance LiftObj_tensor (X Y : C) [LiftObj X] [LiftObj Y] : LiftObj (X ⊗ Y) where
   lift := LiftObj.lift X ⊗ LiftObj.lift Y
