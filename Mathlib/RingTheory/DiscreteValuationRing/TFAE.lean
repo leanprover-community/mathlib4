@@ -75,8 +75,7 @@ theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [LocalRing 
   use Nat.find this
   apply le_antisymm
   · change ∀ s ∈ I, s ∈ _
-    by_contra hI''
-    push_neg at hI''
+    by_contra' hI''
     obtain ⟨s, hs₁, hs₂⟩ := hI''
     apply hs₂
     by_cases hs₃ : s = 0; · rw [hs₃]; exact zero_mem _

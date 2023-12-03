@@ -546,8 +546,7 @@ theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
       exact zero_lt_one
   · rintro hω i
     rw [Set.mem_setOf_eq, tendsto_atTop_atTop] at hω
-    by_contra hcon
-    push_neg at hcon
+    by_contra' hcon
     obtain ⟨j, h⟩ := hω (i + 1)
     have : (∑ k in Finset.range j, (s (k + 1)).indicator 1 ω) ≤ i := by
       have hle : ∀ j ≤ i, (∑ k in Finset.range j, (s (k + 1)).indicator 1 ω) ≤ i := by
