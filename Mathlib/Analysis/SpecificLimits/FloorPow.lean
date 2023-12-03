@@ -56,7 +56,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
         u (c n) - c n * l = (u (c n) / c n - l) * c n := by
           simp only [cnpos.ne', Ne.def, Nat.cast_eq_zero, not_false_iff, field_simps]
         _ ≤ ε * c n := by
-          refine' mul_le_mul_of_nonneg_right _ (Nat.cast_nonneg _)
+          gcongr
           simp only [mul_one, Real.norm_eq_abs, abs_one] at hn
           exact le_trans (le_abs_self _) hn
     obtain ⟨a, ha⟩ :
@@ -89,23 +89,16 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       have := (ha _ A).1
       rwa [B] at this
     calc
-      u n - n * l ≤ u (c N) - c (N - 1) * l := by
-        apply sub_le_sub (hmono ncN.le)
-        apply mul_le_mul_of_nonneg_right (Nat.cast_le.2 cNn) lnonneg
+      u n - n * l ≤ u (c N) - c (N - 1) * l := by gcongr; apply hmono ncN.le
       _ = u (c N) - c N * l + (c N - c (N - 1)) * l := by ring
       _ ≤ ε * c N + ε * c (N - 1) * l := by
-        apply add_le_add
+        gcongr ?_ + ?_ * _
         · apply (ha _ _).2
           exact le_trans (by simp only [le_add_iff_nonneg_right, zero_le']) aN
-        · apply mul_le_mul_of_nonneg_right _ lnonneg
-          linarith only [IcN]
-      _ ≤ ε * ((1 + ε) * c (N - 1)) + ε * c (N - 1) * l :=
-        (add_le_add (mul_le_mul_of_nonneg_left IcN εpos.le) le_rfl)
+        · linarith only [IcN]
+      _ ≤ ε * ((1 + ε) * c (N - 1)) + ε * c (N - 1) * l := by gcongr
       _ = ε * (1 + ε + l) * c (N - 1) := by ring
-      _ ≤ ε * (1 + ε + l) * n := by
-        refine' mul_le_mul_of_nonneg_left (Nat.cast_le.2 cNn) _
-        apply mul_nonneg εpos.le
-        linarith only [εpos, lnonneg]
+      _ ≤ ε * (1 + ε + l) * n := by gcongr
   have B : ∀ ε : ℝ, 0 < ε → ∀ᶠ n : ℕ in atTop, (n : ℝ) * l - u n ≤ ε * (1 + l) * n := by
     intro ε εpos
     rcases hlim (1 + ε) ((lt_add_iff_pos_right _).2 εpos) with ⟨c, cgrowth, ctop, clim⟩
@@ -118,7 +111,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
         (c n : ℝ) * l - u (c n) = -(u (c n) / c n - l) * c n := by
           simp only [cnpos.ne', Ne.def, Nat.cast_eq_zero, not_false_iff, neg_sub, field_simps]
         _ ≤ ε * c n := by
-          refine' mul_le_mul_of_nonneg_right _ (Nat.cast_nonneg _)
+          gcongr
           simp only [mul_one, Real.norm_eq_abs, abs_one] at hn
           exact le_trans (neg_le_abs_self _) hn
     obtain ⟨a, ha⟩ :
@@ -148,20 +141,16 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       have : N - 1 < N := Nat.pred_lt Npos.ne'
       simpa only [not_lt] using Nat.find_min exN this
     calc
-      (n : ℝ) * l - u n ≤ c N * l - u (c (N - 1)) := by
-        refine' add_le_add (mul_le_mul_of_nonneg_right (Nat.cast_le.2 ncN.le) lnonneg) _
-        exact neg_le_neg (hmono cNn)
+      (n : ℝ) * l - u n ≤ c N * l - u (c (N - 1)) := by gcongr; exact (hmono cNn)
       _ ≤ (1 + ε) * c (N - 1) * l - u (c (N - 1)) := by
-        refine' add_le_add (mul_le_mul_of_nonneg_right _ lnonneg) le_rfl
+        gcongr
         have B : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
         have := (ha _ aN').1
         rwa [B] at this
       _ = c (N - 1) * l - u (c (N - 1)) + ε * c (N - 1) * l := by ring
       _ ≤ ε * c (N - 1) + ε * c (N - 1) * l := (add_le_add (ha _ aN').2 le_rfl)
       _ = ε * (1 + l) * c (N - 1) := by ring
-      _ ≤ ε * (1 + l) * n := by
-        refine' mul_le_mul_of_nonneg_left (Nat.cast_le.2 cNn) _
-        exact mul_nonneg εpos.le (add_nonneg zero_le_one lnonneg)
+      _ ≤ ε * (1 + l) * n := by gcongr
   refine' tendsto_order.2 ⟨fun d hd => _, fun d hd => _⟩
   · obtain ⟨ε, hε, εpos⟩ : ∃ ε : ℝ, d + ε * (1 + l) < l ∧ 0 < ε := by
       have L : Tendsto (fun ε => d + ε * (1 + l)) (𝓝[>] 0) (𝓝 (d + 0 * (1 + l))) := by
@@ -177,9 +166,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
         · linarith only [hε]
         · exact Nat.cast_ne_zero.2 (ne_of_gt npos)
       _ = (n : ℝ)⁻¹ * (n * l - ε * (1 + l) * n) := by ring
-      _ ≤ (n : ℝ)⁻¹ * u n := by
-        refine' mul_le_mul_of_nonneg_left _ (inv_nonneg.2 (Nat.cast_nonneg _))
-        linarith only [hn]
+      _ ≤ (n : ℝ)⁻¹ * u n := by gcongr; linarith only [hn]
   · obtain ⟨ε, hε, εpos⟩ : ∃ ε : ℝ, l + ε * (1 + ε + l) < d ∧ 0 < ε := by
       have L : Tendsto (fun ε => l + ε * (1 + ε + l)) (𝓝[>] 0) (𝓝 (l + 0 * (1 + 0 + l))) := by
         apply Tendsto.mono_left _ nhdsWithin_le_nhds
@@ -191,9 +178,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     filter_upwards [A ε εpos, Ioi_mem_atTop 0] with n hn npos
     simp_rw [div_eq_inv_mul]
     calc
-      (n : ℝ)⁻¹ * u n ≤ (n : ℝ)⁻¹ * (n * l + ε * (1 + ε + l) * n) := by
-        refine' mul_le_mul_of_nonneg_left _ (inv_nonneg.2 (Nat.cast_nonneg _))
-        linarith only [hn]
+      (n : ℝ)⁻¹ * u n ≤ (n : ℝ)⁻¹ * (n * l + ε * (1 + ε + l) * n) := by gcongr; linarith only [hn]
       _ = (n : ℝ)⁻¹ * n * (l + ε * (1 + ε + l)) := by ring
       _ < d := by
         rwa [inv_mul_cancel, one_mul]
@@ -271,13 +256,12 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
       rw [sq_lt_one_iff (inv_nonneg.2 (zero_le_one.trans hc.le))]
       exact inv_lt_one hc
     _ ≤ (c⁻¹ ^ 2) ^ (Real.log j / Real.log c - 1) / ((1 : ℝ) - c⁻¹ ^ 2) := by
-      apply div_le_div _ _ _ le_rfl
-      · apply Real.rpow_nonneg_of_nonneg (sq_nonneg _)
+      gcongr
+      · simpa only [inv_pow, sub_nonneg] using inv_le_one (one_lt_pow hc two_ne_zero).le
       · rw [← Real.rpow_nat_cast]
         apply Real.rpow_le_rpow_of_exponent_ge A
         · exact pow_le_one _ (inv_nonneg.2 (zero_le_one.trans hc.le)) (inv_le_one hc.le)
         · exact (Nat.sub_one_lt_floor _).le
-      · simpa only [inv_pow, sub_pos] using inv_lt_one (one_lt_pow hc two_ne_zero)
     _ = c ^ 2 * ((1 : ℝ) - c⁻¹ ^ 2)⁻¹ / j ^ 2 := by
       have I : (c⁻¹ ^ 2) ^ (Real.log j / Real.log c) = (1 : ℝ) / j ^ 2 := by
         apply Real.log_injOn_pos (Real.rpow_pos_of_pos A _)
@@ -292,9 +276,7 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
       have : c ^ 2 - 1 ≠ 0 := (sub_pos.2 (one_lt_pow hc two_ne_zero)).ne'
       field_simp [hj.ne', (zero_lt_one.trans hc).ne']
       ring
-    _ ≤ c ^ 3 * (c - 1)⁻¹ / j ^ 2 := by
-      apply div_le_div _ B (sq_pos_of_pos hj) le_rfl
-      exact mul_nonneg (pow_nonneg cpos.le _) (inv_nonneg.2 (sub_pos.2 hc).le)
+    _ ≤ c ^ 3 * (c - 1)⁻¹ / j ^ 2 := by gcongr
 
 #align sum_div_pow_sq_le_div_sq sum_div_pow_sq_le_div_sq
 
@@ -328,21 +310,21 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
         simpa only [hi.1, mem_filter, mem_range, true_and_iff] using
           hi.2.trans_le (Nat.floor_le (pow_nonneg cpos.le _))
       · intro i _hi _hident
-        exact div_nonneg zero_le_one (sq_nonneg _)
+        positivity
     _ ≤ ∑ i in (range N).filter (j < c ^ ·), (1 - c⁻¹)⁻¹ ^ 2 * ((1 : ℝ) / (c ^ i) ^ 2) := by
-      refine' sum_le_sum fun i _hi => _
+      gcongr with i _hi
       rw [mul_div_assoc', mul_one, div_le_div_iff]; rotate_left
       · apply sq_pos_of_pos
         refine' zero_lt_one.trans_le _
         simp only [Nat.le_floor, one_le_pow_of_one_le, hc.le, Nat.one_le_cast, Nat.cast_one]
       · exact sq_pos_of_pos (pow_pos cpos _)
       rw [one_mul, ← mul_pow]
-      apply pow_le_pow_of_le_left (pow_nonneg cpos.le _)
+      gcongr
       rw [← div_eq_inv_mul, le_div_iff A, mul_comm]
       exact mul_pow_le_nat_floor_pow hc i
     _ ≤ (1 - c⁻¹)⁻¹ ^ 2 * (c ^ 3 * (c - 1)⁻¹) / j ^ 2 := by
       rw [← mul_sum, ← mul_div_assoc']
-      refine' mul_le_mul_of_nonneg_left _ (sq_nonneg _)
+      gcongr
       exact sum_div_pow_sq_le_div_sq N hj hc
     _ = c ^ 5 * (c - 1)⁻¹ ^ 3 / j ^ 2 := by
       congr 1

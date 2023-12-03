@@ -95,8 +95,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
   rcases this with ⟨n, a, ε, ⟨εpos, H⟩⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   refine' ⟨(ε / 2)⁻¹ * ‖c‖ * 2 * n, _, fun y => _⟩
-  · refine' mul_nonneg (mul_nonneg (mul_nonneg _ (norm_nonneg _)) (by norm_num)) _
-    exacts [inv_nonneg.2 (div_nonneg (le_of_lt εpos) (by norm_num)), n.cast_nonneg]
+  · positivity
   · by_cases hy : y = 0
     · use 0
       simp [hy]
@@ -137,10 +136,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
             rwa [f.map_smul _, inv_mul_cancel, one_smul]
           _ = ‖d⁻¹ • (f x - d • y)‖ := by rw [mul_smul, smul_sub]
           _ = ‖d‖⁻¹ * ‖f x - d • y‖ := by rw [norm_smul, norm_inv]
-          _ ≤ ‖d‖⁻¹ * (2 * δ) := by
-            apply mul_le_mul_of_nonneg_left I
-            rw [inv_nonneg]
-            exact norm_nonneg _
+          _ ≤ ‖d‖⁻¹ * (2 * δ) := by gcongr
           _ = ‖d‖⁻¹ * ‖d‖ * ‖y‖ / 2 := by
             simp only
             ring
