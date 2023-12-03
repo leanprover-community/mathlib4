@@ -15,12 +15,15 @@ namespace Std.BitVec
 
 variable {w : ℕ}
 
+/-- Equivalence between `BitVec w` and `Fin (2 ^ w)` -/
 def finEquiv : BitVec w ≃ Fin (2 ^ w) where
   toFun     := toFin
   invFun    := ofFin
   left_inv  := ofFin_toFin
   right_inv := toFin_ofFin
 
+/-- Equivalence between `BitVec w` and `Fin w → Bool`, composed from existing equivalences,
+rather than defined through `Std.BitVec.getLsb'` and `Std.BitVec.ofLEFn` -/
 def finFunctionEquiv : BitVec w ≃ (Fin w → Bool) := calc
   BitVec w  ≃ (Fin (2 ^ w))     := finEquiv
   _         ≃ (Fin w -> Fin 2)  := finFunctionFinEquiv.symm
