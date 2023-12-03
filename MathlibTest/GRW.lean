@@ -1,13 +1,10 @@
 /-
 Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sebastian Zimmer
+Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth
 -/
 import Mathlib.Tactic.GRW
-import Mathlib.Tactic.GRW.Core
-import Mathlib.Data.Set.Basic
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Complex.Exponential
+import Mathlib.Tactic.GCongr
 
 private axiom test_sorry : ∀ {α}, α
 
@@ -61,11 +58,11 @@ example (h₁ : a ≥ b) (h₂ : 0 ≤ c) : a * c ≥ 100 - a := by
   exact test_sorry
 
 example {n : ℕ} (bound : n ≤ 5) : n ≤ 10 := by
-  have h' := (show 5 ≤ 10 by norm_num)
+  have h' : 5 ≤ 10 := by decide
   grw [h'] at bound
   assumption
 
-example (h₁ : a ≤ b) : a + 5 ≤ b + 6 := by grw [h₁, show (5 : α) ≤ 6 by norm_num]
+example (h₁ : a ≤ b) : a + 5 ≤ b + 6 := by grw [h₁, show (5 : α) ≤ 6 from test_sorry]
 
 example (h₁ : a ≤ b) : a * 5 ≤ b * 5 := by grw [h₁]
 
@@ -82,8 +79,8 @@ section subsets
 
 variable (X Y Z W : Set α)
 
-example (h₁ : X ⊆ Y) (h₂ : Y ⊆ Z) (h₃ : a ∈ X) : true := by
-  grw [h₁] at h₃
+example (h₁ : X = Y) (h₂ : Y ⊆ Z) (h₃ : a ∈ X) : False := by
+  rw [h₁] at h₃
   guard_hyp h₃ :ₛ a ∈ Y
   grw [h₂] at h₃
   guard_hyp h₃ :ₛ a ∈ Z
@@ -103,9 +100,33 @@ end subsets
 
 section reals
 
-example (x y z w : ℝ) (h₁ : x < z) (h₂ : w ≤ y + 4) (h₃ : Real.exp z < 5 * w)
-  : Real.exp x < 5 * (y + 4) := by
-  grw [h₁, ← h₂]
+example (x x' y z w : ℚ) (h0 : x' = x) (h₁ : x < z) (h₂ : w ≤ y + 4) (h₃ : z + 1 < 5 * w)
+  : x' + 1 < 5 * (y + 4) := by
+  grw [h0, h₁, ← h₂]
   exact h₃
+
+example {x y z : ℚ} (f g : ℚ → ℚ) (h : ∀ t, f t = g t) : 2 * f x * f y * f x ≤ z := by
+  grw [h]
+  guard_target =ₛ 2 * g x * f y * g x ≤ z
+  exact test_sorry
+
+example {x y a b : ℚ} (h : x ≤ y) (h1 : a ≤ 3 * x) : 2 * x ≤ b := by
+  grw [h] at *
+  next =>
+    guard_hyp h :ₛ y ≤ y
+    guard_hyp h1 :ₛ a ≤ 3 * y
+    guard_target =ₛ 2 * y ≤ b
+    exact test_sorry
+  case ha => -- FIXME maybe error instead of giving this subgoal
+    guard_hyp h :ₛ x ≤ y
+    guard_hyp h1 :ₛ a ≤ 3 * y
+    guard_target = y ≤ x
+    exact test_sorry
+
+example {s s' t : Set ℕ} (h : s' ⊆ s) (h2 : BddAbove (s ∩ t)) : BddAbove (s' ∩ t) := by
+  grw [h]; exact h2
+
+example {s s' : Set ℕ} (h : s' ⊆ s) (h2 : BddAbove s) : BddAbove s' := by
+  grw [h]; exact h2
 
 end reals

@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sebastian Zimmer
+Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth
 -/
 import Mathlib.Tactic.Core
 import Lean.LabelAttribute
-import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Data.Prod.Basic
 
 /-!
 # GRW Tactic
@@ -48,186 +49,125 @@ introducing side goals. These side goals will be solved with `gcongr`"
   let grw := `grw
   registerLabelAttr grw descr grw)
 
-/--
-Lemmas marked `@[grw_weaken]` are used to 'weaken' rules in the `grw` tactic, for example by
-converting `a < b` into `a ≤ b`. The lemma should take a single explicit argument.
-
-The `grw` tactic currently tries all weakening lemmas and stops when one works. There is no
-backtracking or recursion.
-
-The weakening process does not affect the type of the resulting target/hypothesis, so it is safe
-to convert `b > a` into `a ≤ b`, for example.
-
--/
-initialize extWeaken : LabelExtension ← (
-  let descr := "A lemma that goes from a strict relation to a non strict one."
-  let grw_weaken := `grw_weaken
-  registerLabelAttr grw_weaken descr grw_weaken)
-
-
 open GCongr
 
-private partial def getNeedleReplacement (relation_type : Expr) : MetaM (Expr × Expr) := do
-  let ⟨_, args⟩ := relation_type.getAppFnArgs
+/-- Given `relationType := R a b`, returns `(a, b)` -/
+def getNeedleReplacement (relationType : Expr) : MetaM (Expr × Expr) := do
+  let args := relationType.getAppArgs
   if args.size < 2 then
-    throwError "Expecting relation but got {relation_type}"
+    throwError "Expecting relation but got {relationType}"
+  return (args[args.size - 2]!, args[args.size - 1]!)
 
-  return ⟨args[args.size - 2]!, args[args.size - 1]!⟩
-
-private partial def getNewType (rule : Expr) (rev : Bool) (oldType : Expr) : MetaM Expr := do
+/--
+Constructs the new expression after rewriting occurrences of the LHS of `rule` with the RHS
+in `oldExpr` (or vice versa when `rev` is true). Returns `(template, newExpr)` where `newExpr` is
+the replaced expression and `template` is the rewrite motive with the bound variable replaced with
+a fresh mvar (used as input to gcongr).
+-/
+def getNewExpr (rule : Expr) (rev : Bool) (oldExpr : Expr) : MetaM (Expr × Expr) := do
   let ruleType ← instantiateMVars (← inferType rule)
-  let ⟨needle, replacement⟩ := ← if rev then do
-    return (← getNeedleReplacement ruleType).swap
+  let (needle, replacement) ← if rev then
+    Prod.swap <$> getNeedleReplacement ruleType
   else
     getNeedleReplacement ruleType
   trace[GRW] "Got needle = {needle} replacement = {replacement}"
-  let abst ← withReducible $ kabstract oldType needle
+  let abst ← withReducible <| kabstract oldExpr needle
   if !abst.hasLooseBVars then
-    throwError "Could not find pattern {needle} in {oldType}"
-  let newType := abst.instantiate1 replacement
-  trace[GRW] "old type {oldType} new type {newType}"
-  return newType
+    throwError "Could not find pattern {needle} in {oldExpr}"
+  let newExpr := abst.instantiate1 replacement
+  trace[GRW] "old expr {oldExpr} new expr {newExpr}"
+  let template := abst.instantiate1 (← mkFreshExprSyntheticOpaqueMVar ruleType)
+  return (← whnfR template, newExpr)
 
--- TODO make this extensible
-private partial def dischargeSideGoal (mvar : MVarId) : MetaM Unit := Term.TermElabM.run' do
-  trace[GRW] "Attempting to discharge side goal {mvar}"
-  let [] ← Tactic.run mvar <| evalTactic (Unhygienic.run `(tactic| gcongr_discharger))
-    | failure
-
-private partial def dischargeMainGoal (rule : Expr) (mvar : MVarId) : MetaM Unit := do
-  trace[GRW] "Discharging main goal {mvar}"
-  try do
-    commitIfNoEx mvar.applyRfl
+/-- Try to discharge the goal `goal` using `gcongr` using the provided `template` and using only
+`rule` for discharging the main subgoals. -/
+def useRule (template rule : Expr) (goal : MVarId) : MetaM (Array MVarId) := do
+  let template ← instantiateMVars template
+  try
+    if template.hasExprMVar then failure
+    goal.applyRfl
     trace[GRW] "used reflexivity"
-    return
-  catch _ =>
-  try do
-    commitIfNoEx <| mvar.assignIfDefeq rule
-    trace[GRW] "used rule {rule}"
-    return
-  catch _ =>
+    return #[]
+  catch _ => pure ()
+  let (_, _, subgoals) ← goal.gcongr template []
+    (mainGoalDischarger := fun g => g.gcongrForward #[rule])
 
-  throwError "Could not discharge main goal"
-
-private partial def useRule (rule : Expr) (mvar : MVarId) : MetaM (Array MVarId) := do
-  let ⟨progress, _, subgoals⟩ ← mvar.gcongr
-    none
-    []
-    (sideGoalDischarger := dischargeSideGoal)
-    (mainGoalDischarger := dischargeMainGoal rule)
-
-  let subgoals := subgoals
-  if !progress then
-    throwError "gcongr could not make progress on {mvar}"
-  trace[GRW] "Got proof {← instantiateMVars (Expr.mvar mvar)}"
+  trace[GRW] "Got proof {← instantiateMVars (.mvar goal)}"
   return subgoals
-
-private def weaken (rule : Expr) : MetaM Expr := do
-  let lemmas ← labelled `grw_weaken
-
-  for lem in lemmas do
-    try do
-      let result ← commitIfNoEx $ mkAppM lem #[rule]
-      trace[GRW] "weakened to {← inferType result}"
-      return result
-    catch _ => pure ⟨⟩
-
-  return rule
-
-private partial def runGrw (expr rule : Expr) (rev isTarget : Bool) :
-    MetaM (Expr × Expr × MVarId × Array MVarId) := do
-  let oldType ← instantiateMVars (← inferType expr)
-  let ⟨ruleArgs, _, _⟩ ← forallMetaTelescope (← inferType rule)
-  let metaRule := mkAppN rule ruleArgs
-  let newType ← getNewType metaRule rev oldType
-  let weakRule ← weaken metaRule
-  let lemmas ← labelled `grw
-
-  let result ← mkFreshExprMVar newType
-
-  -- TODO surely this can be faster
-  for lem in lemmas do
-    let lemResult : Option (Expr × Array MVarId)
-        ← withTraceNode `GRW (λ _ ↦ return m!"trying lemma {lem}") do
-      let (lemResult : Option (Expr × Array Expr)) ← try commitIfNoEx do
-        let lemExpr ← mkConstWithFreshMVarLevels lem
-        let lemType ← inferType lemExpr
-        let ⟨metas, binders, _⟩ ← forallMetaTelescopeReducing lemType
-        let mvarToAssign := if isTarget then expr.mvarId! else result.mvarId!
-        withReducible $ mvarToAssign.assignIfDefeq (mkAppN lemExpr metas)
-
-        let firstDefaultArg := binders.findIdx? (λ x ↦ x == .default)
-        if let some firstDefaultArg := firstDefaultArg then do
-          let valueToAssign := if isTarget then result else expr
-          withReducible $ metas[firstDefaultArg]!.mvarId!.assignIfDefeq valueToAssign
-        else
-          throwError "Lemma {lem} did not have a default argument"
-
-        trace[GRW] "Lemma {lem} matches, trying to fill args"
-        pure $ some ⟨lemExpr, metas⟩
-      catch ex => do
-        trace[GRW] "error in lemma {ex.toMessageData}"
-        pure none
-
-      if let some ⟨lemExpr, metas⟩ := lemResult then
-        let subgoals ← metas.concatMapM fun arg => do
-          let mvar := arg.mvarId!
-          let type ← instantiateMVars (← inferType arg)
-          if ← mvar.isAssigned then
-            trace[GRW] "mvar already assigned to {← instantiateMVars arg} : {type}"
-            pure #[]
-          else
-            withTraceNode `GRW (λ _ ↦ return m!"Looking for value of type {type}") do
-              withReducibleAndInstances $ useRule weakRule mvar
-        trace[GRW] "Got subgoals {subgoals}"
-        return some ⟨(← instantiateMVars <| mkAppN lemExpr metas), subgoals⟩
-      else
-        return none
-
-    if let some ⟨prf, subgoals⟩ := lemResult then
-      trace[GRW] "Got proof {prf}"
-      return ⟨newType, prf, result.mvarId!, subgoals⟩
-  throwError "No grw lemmas worked"
-
-/--
-Use the relation `rule` to convert an expression of type `p` into an expression of type `p[x/y]` by
-using a relation `x ~ y`
-
-Parameters
-* `hyp` The hypothesis whose type should be rewritten
-* `rule` An expression of type `x ~ y` where `~` is some relation
-* `rev` if true, we will produce a value of type p[y/x], otherwise p[x/y]
-
-Produces three values
-* `newType` Either `p[y/x]` or `p[x/y]` depending on `rev`
-* `newHyp` A new expression of type `newType`
-* `subgoals` a list of side goals created by `gcongr`. This does not include goals successfully
-filled by `gcongr_discharger`
-
--/
-partial def grwHyp (hyp : Expr) (rule : Expr) (rev : Bool) :
-    MetaM (Expr × Expr × Array MVarId) := do
-  let ⟨newType, newHyp, _, subgoals⟩ ← runGrw hyp rule rev false
-  return ⟨newType, newHyp, subgoals⟩
-
 
 /--
 Use the relation `rule : x ~ y` to rewrite the type of an mvar. Assigns the mvar and returns a new
 mvar of type either `p[x/y]` or `p[y/x]` depending on the value of the `rev` parameter
 
-Parameters
-* `goal` The mvar that should be filled in
+Parameters:
+* `goal` The mvar for the current goal
+* `expr` the expression to rewrite in
 * `rule` An expression of type `x ~ y` where `~` is some relation
-* `rev` if true, we will produce a value of type p[y/x], otherwise p[x/y]
+* `rev` if true, we will rewrite `expr` to `newExpr := expr[y/x]`, otherwise `newExpr := expr[x/y]`
+* `isTarget` if true we are proving `newExpr → expr` otherwise we are proving `expr → newExpr`
 
-Produces three values
-* `newType` The type of the new goal
-* `newGoal` The new unfilled mvar of type `newType`
-* `subgoals` list of side goals created by `gcongr`. This does not include `newGoal` or the goals
-successfully filled by `gcongr_discharger`
-
+Returns:
+* `newExpr` The rewritten version of `expr`
+* `proof` if `isTarget` is true this is a value of type `newExpr → expr`,
+  otherwise it has type `expr → newExpr`
+* `subgoals` list of side goals created by `gcongr`. This does not include the goals
+  successfully filled by `gcongr_discharger`
 -/
-partial def _root_.Lean.MVarId.grw (goal : MVarId) (rule : Expr) (rev : Bool := false) :
-    MetaM (Expr ×MVarId × Array MVarId) := do
-  let ⟨newType, _, newGoal, subgoals⟩ ← runGrw (Expr.mvar goal) rule rev true
-  return ⟨newType, newGoal, subgoals⟩
+def _root_.Lean.MVarId.grw (goal : MVarId) (expr rule : Expr) (rev isTarget : Bool) :
+    MetaM (Expr × Expr × Array MVarId) := do
+  let oldExpr ← instantiateMVars expr
+  let (ruleArgs, _, resultType) ← forallMetaTelescope (← inferType rule)
+  if (← whnfR resultType).isEq then
+    let ⟨newExpr, eqProof, subgoals⟩ ← goal.rewrite expr rule rev
+    let proof ← if isTarget then
+      mkAppOptM ``cast #[newExpr, expr, ← mkEqSymm eqProof]
+    else
+      mkAppOptM ``cast #[expr, newExpr, eqProof]
+    return ⟨newExpr, proof, subgoals.toArray⟩
+  let rule := mkAppN rule ruleArgs
+  let (template, newExpr) ← getNewExpr rule rev oldExpr
+  let lemmas ← labelled `grw
+  let (lhsExpr, rhsExpr) := if isTarget then (newExpr, oldExpr) else (oldExpr, newExpr)
+
+  -- TODO surely this can be faster
+  for lem in lemmas do
+    let lemResult ← withTraceNode `GRW (fun _ ↦ return m!"trying lemma {lem}") do
+      let lemResult ← try commitIfNoEx do
+        let lemExpr ← mkConstWithFreshMVarLevels lem
+        let lemType ← inferType lemExpr
+        let (metas, binders, _) ← withReducible <| forallMetaTelescopeReducing lemType
+        guard <| ← isDefEq rhsExpr (← inferType (mkAppN lemExpr metas))
+
+        withLocalDeclD (← mkFreshUserName `h) lhsExpr fun value => do
+          if let some firstDefaultArg := binders.findIdx? (· == .default) then
+            withReducible <| metas[firstDefaultArg]!.mvarId!.assignIfDefeq value
+          else
+            throwError "Lemma {lem} did not have a default argument"
+
+          trace[GRW] "Lemma {lem} matches, trying to fill args"
+          pure <| some ⟨← mkLambdaFVars #[value] (mkAppN lemExpr metas), metas⟩
+      catch ex => do
+        trace[GRW] "error in lemma {lem}: {ex.toMessageData}"
+        pure none
+
+      if let some (lemExpr, metas) := lemResult then
+        let metas ← metas.filterM fun x => not <$> x.mvarId!.isAssigned
+        let args := template.getAppArgs
+        -- HACK: we are assuming the side goals of the grw lemma come in the same order
+        -- as they appear in the function, and all the fixed args (e.g. type, instances)
+        -- come before the ones to rewrite
+        let args := args[args.size - metas.size:].toArray
+        let subgoals ← (metas.zip args).concatMapM fun (arg, template) => do
+          let mvar := arg.mvarId!
+          let type ← instantiateMVars (← inferType arg)
+          withTraceNode `GRW (fun _ ↦ return m!"Looking for value of type {type}") do
+            withReducibleAndInstances <| useRule template rule mvar
+        trace[GRW] "Got subgoals {subgoals}"
+        return some (lemExpr, subgoals)
+      else
+        return none
+
+    if let some (proof, subgoals) := lemResult then
+      trace[GRW] "Got proof {proof}"
+      return (newExpr, proof, subgoals)
+  throwError "No grw lemmas worked"
