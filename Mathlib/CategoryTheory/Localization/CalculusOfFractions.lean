@@ -724,7 +724,7 @@ section
 
 variable [W.HasLeftCalculusOfFractions]
 
-lemma Localization.leftFraction_fac {X Y : C} (f : L.obj X ⟶ L.obj Y) :
+lemma Localization.exists_leftFraction {X Y : C} (f : L.obj X ⟶ L.obj Y) :
     ∃ (φ : W.LeftFraction X Y), f = φ.map L (Localization.inverts L W) := by
   let E := Localization.uniq (MorphismProperty.LeftFraction.Localization.Q W) L W
   let e : _ ⋙ E.functor ≅ L := Localization.compUniqFunctor _ _ _
@@ -774,7 +774,7 @@ lemma Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions :
       ⟨_, ⟨L.objObjPreimageIso f.left⟩⟩
     obtain ⟨Y, ⟨eY⟩⟩ : ∃ (Y : C), Nonempty (L.obj Y ≅ f.right) :=
       ⟨_, ⟨L.objObjPreimageIso f.right⟩⟩
-    obtain ⟨φ, hφ⟩ := Localization.leftFraction_fac L W (eX.hom ≫ f.hom ≫ eY.inv)
+    obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction L W (eX.hom ≫ f.hom ≫ eY.inv)
     refine' ⟨Arrow.mk φ.f, ⟨Iso.symm _⟩⟩
     refine' Arrow.isoMk eX.symm (eY.symm ≪≫ Localization.isoOfHom L W φ.s φ.hs) _
     dsimp
@@ -933,57 +933,53 @@ instance equivalenceRightFractionRel (X Y : C)
   symm := RightFractionRel.symm
   trans := RightFractionRel.trans
 
-#exit
-namespace RightFraction
+end MorphismProperty
 
-variable [L.IsLocalization W]
+section
+
 variable [W.HasRightCalculusOfFractions]
 
-variable (W)
-
-lemma fac {X Y : C} (f : L.obj X ⟶ L.obj Y) :
+lemma Localization.exists_rightFraction {X Y : C} (f : L.obj X ⟶ L.obj Y) :
     ∃ (φ : W.RightFraction X Y), f = φ.map L (Localization.inverts L W) := by
-  obtain ⟨φ, eq⟩ := LeftFraction.fac L.op W.op f.op
+  obtain ⟨φ, eq⟩ := Localization.exists_leftFraction L.op W.op f.op
   refine' ⟨φ.unop, Quiver.Hom.op_inj _⟩
-  rw [eq, op_map]
+  rw [eq, MorphismProperty.RightFraction.op_map]
   rfl
 
-variable {W}
+lemma MorphismProperty.RightFraction.map_eq_iff
+    {X Y : C} (φ ψ : W.RightFraction X Y) :
+    φ.map L (Localization.inverts _ _) = ψ.map L (Localization.inverts _ _) ↔
+      RightFractionRel φ ψ := by
+  rw [← leftFractionRel_op_iff, ← LeftFraction.map_eq_iff L.op W.op φ.op ψ.op,
+    ← φ.op_map L (Localization.inverts _ _), ← ψ.op_map L (Localization.inverts _ _)]
+  constructor
+  · apply Quiver.Hom.unop_inj
+  · apply Quiver.Hom.op_inj
 
-lemma map_eq_iff {X Y : C} (φ₁ φ₂ : W.RightFraction X Y) :
-    φ₁.map L (Localization.inverts L W) = φ₂.map L (Localization.inverts L W) ↔
-      RightFractionRel φ₁ φ₂ := by
-  simp only [← leftFractionRel_op_iff, ← LeftFraction.map_eq_iff L.op φ₁.op φ₂.op,
-    ← RightFraction.op_map _ L (Localization.inverts L W)]
+lemma MorphismProperty.map_eq_iff_precomp {Y Z : C} (f₁ f₂ : Y ⟶ Z) :
+    L.map f₁ = L.map f₂ ↔ ∃ (X : C) (s : X ⟶ Y) (_ : W s), s ≫ f₁ = s ≫ f₂ := by
   constructor
   · intro h
-    rw [h]
-  · intro h
-    exact Quiver.Hom.op_inj h
-
-variable (W)
-
-lemma map_eq_iff' {X Y : C} (f₁ f₂ : X ⟶ Y) :
-    L.map f₁ = L.map f₂ ↔ ∃ (Z : C) (s : Z ⟶ X) (_ : W s), s ≫ f₁ = s ≫ f₂ := by
-  constructor
-  · intro h
-    obtain ⟨Z, s, hs, fac⟩ := (LeftFraction.map_eq_iff' L.op W.op f₁.op f₂.op).1
-      (Quiver.Hom.unop_inj h)
-    exact ⟨Opposite.unop Z, s.unop, hs, Quiver.Hom.op_inj fac⟩
+    rw [← RightFraction.map_ofHom W _ L (Localization.inverts _ _),
+      ← RightFraction.map_ofHom W _ L (Localization.inverts _ _),
+      RightFraction.map_eq_iff] at h
+    obtain ⟨Z, t₁, t₂, hst, hft, ht⟩ := h
+    dsimp at t₁ t₂ hst hft ht
+    simp only [comp_id] at hst
+    exact ⟨Z, t₁, by simpa using ht, by rw [hft, hst]⟩
   · rintro ⟨Z, s, hs, fac⟩
-    have := Localization.inverts L W s hs
-    simp only [← cancel_epi (L.map s), ← L.map_comp, fac]
+    simp only [← cancel_epi (Localization.isoOfHom L W s hs).hom,
+      Localization.isoOfHom_hom, ← L.map_comp, fac]
 
-lemma essSurj_mapArrow : EssSurj L.mapArrow where
+lemma Localization.essSurj_mapArrow_of_hasRightCalculusofFractions :
+    EssSurj L.mapArrow where
   mem_essImage f := by
-    have := LeftFraction.essSurj_mapArrow L.op W.op
+    have := Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions L.op W.op
     obtain ⟨g, ⟨e⟩⟩ : ∃ (g : _), Nonempty (L.op.mapArrow.obj g ≅ Arrow.mk f.hom.op) :=
       ⟨_, ⟨Functor.objObjPreimageIso _ _⟩⟩
     exact ⟨Arrow.mk g.hom.unop, ⟨Arrow.isoMk (Arrow.rightFunc.mapIso e.symm).unop
       (Arrow.leftFunc.mapIso e.symm).unop (Quiver.Hom.op_inj e.inv.w.symm)⟩⟩
 
-end RightFraction
-
-end MorphismProperty
+end
 
 end CategoryTheory
