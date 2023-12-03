@@ -300,6 +300,13 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ}
   rfl
 #align measure_theory.probability_measure.tendsto_iff_forall_integral_tendsto MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_integral_tendsto
 
+/-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
+continuous functions (`HasOuterApproxClosed`), the topology of weak convergence of Borel probability
+measures is Hausdorff (`T2Space`). -/
+instance {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterApproxClosed Ω]
+    [BorelSpace Ω] :
+    T2Space (ProbabilityMeasure Ω) := Embedding.t2Space (toFiniteMeasure_embedding Ω)
+
 end ProbabilityMeasure
 
 -- namespace
