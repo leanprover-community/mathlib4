@@ -990,6 +990,8 @@ theorem isPurelyInseparable_iff_mem_pow (q : ℕ) [hF : ExpChar F q] :
   rw [← adjoin.finrank halg, IntermediateField.finrank_eq_one_iff] at hdeg
   simpa only [hdeg] using mem_adjoin_simple_self F x
 
+/-- If `K / E / F` is a field extension tower such that `K / F` is purely inseparable,
+then `E / F` is also purely inseparable. -/
 theorem IsPurelyInseparable.tower_bot [Algebra E K] [IsScalarTower F E K]
     [IsPurelyInseparable F K] : IsPurelyInseparable F E := by
   refine ⟨fun x ↦ (isIntegral F (algebraMap E K x)).tower_bot_of_field, fun x h ↦ ?_⟩
@@ -999,6 +1001,8 @@ theorem IsPurelyInseparable.tower_bot [Algebra E K] [IsScalarTower F E K]
   apply_fun algebraMap E K using (algebraMap E K).injective
   exact h.symm ▸ (IsScalarTower.algebraMap_apply F E K y).symm
 
+/-- If `K / E / F` is a field extension tower such that `K / F` is purely inseparable,
+then `K / E` is also purely inseparable. -/
 theorem IsPurelyInseparable.tower_top [Algebra E K] [IsScalarTower F E K]
     [h : IsPurelyInseparable F K] : IsPurelyInseparable E K := by
   obtain ⟨q, _⟩ := ExpChar.exists F
@@ -1008,6 +1012,8 @@ theorem IsPurelyInseparable.tower_top [Algebra E K] [IsScalarTower F E K]
   obtain ⟨n, y, h⟩ := h x
   exact ⟨n, (algebraMap F E) y, h.symm ▸ (IsScalarTower.algebraMap_apply F E K y).symm⟩
 
+/-- If `E / F` and `K / E` are both purely inseparable extensions, then `K / F` is also
+purely inseparable. -/
 theorem IsPurelyInseparable.trans [Algebra E K] [IsScalarTower F E K]
     [h1 : IsPurelyInseparable F E] [h2 : IsPurelyInseparable E K] : IsPurelyInseparable F K := by
   obtain ⟨q, _⟩ := ExpChar.exists F
@@ -1018,6 +1024,32 @@ theorem IsPurelyInseparable.trans [Algebra E K] [IsScalarTower F E K]
   obtain ⟨m, z, h1⟩ := h1 y
   refine ⟨n + m, z, ?_⟩
   rw [IsScalarTower.algebraMap_apply F E K, h1, map_pow, h2, ← pow_mul, ← pow_add]
+
+/-- A field extension `E / F` is purely inseparable if and only if for every element `x` of `E`,
+its minimal polynomial has separable degree one. -/
+theorem isPurelyInseparable_iff_natSepDegree_eq_one :
+    IsPurelyInseparable F E ↔ ∀ x : E, (minpoly F x).natSepDegree = 1 := by
+  obtain ⟨q, _⟩ := ExpChar.exists F
+  have hq : 0 < q := by
+    rcases expChar_is_prime_or_one F q with h | rfl
+    exacts [Nat.Prime.pos h, Nat.one_pos]
+  refine ⟨fun h x ↦ ?_, fun h ↦ isPurelyInseparable_iff.2 fun x ↦ ?_⟩
+  · rw [isPurelyInseparable_iff_mem_pow _ _ q] at h
+    obtain ⟨n, y, hx⟩ := h x
+    let g := X - C y
+    have hzero : aeval x (expand F (q ^ n) g) = 0 := by
+      simp only [map_sub, expand_X, expand_C, map_pow, aeval_X, aeval_C, hx, sub_self]
+    have hnezero : expand F (q ^ n) g ≠ 0 :=
+      (expand_ne_zero (Nat.pos_pow_of_pos n hq)).2 <| X_sub_C_ne_zero y
+    have hdeg := natSepDegree_le_of_dvd _ _ (minpoly.dvd F x hzero) hnezero
+    rw [natSepDegree_expand_eq_natSepDegree, natSepDegree_X_sub_C] at hdeg
+    have := minpoly.natDegree_pos <| IsAlgebraic.isIntegral ⟨_, hnezero, hzero⟩
+    rw [Nat.pos_iff_ne_zero, ← natSepDegree_ne_zero_iff, ← Nat.pos_iff_ne_zero] at this
+    exact le_antisymm hdeg this
+  refine ⟨by_contra fun g ↦ (ne_of_apply_ne natDegree <| (natSepDegree_ne_zero_iff _).1 <|
+    ne_zero_of_eq_one (h x)) (minpoly.eq_zero g), fun g ↦ minpoly.mem_range_of_degree_eq_one F x ?_⟩
+  simpa only [natSepDegree_eq_natDegree_of_separable _ g,
+    ← degree_eq_iff_natDegree_eq_of_pos Nat.one_pos] using h x
 
 theorem isPurelyInseparable_of_finSepDegree_eq_one (halg : Algebra.IsAlgebraic F E)
     (hdeg : finSepDegree F E = 1) : IsPurelyInseparable F E := by
