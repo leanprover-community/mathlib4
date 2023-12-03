@@ -18,6 +18,10 @@
   title  : Prime Number Theorem
 6:
   title  : Gödel’s Incompleteness Theorem
+  author : Shogo Saito
+  links  :
+    result : https://github.com/iehality/lean4-logic/blob/master/Logic/Summary.lean
+  note   : see the `README` file in the [linked repository](https://github.com/iehality/lean4-logic/).
 7:
   title  : Law of Quadratic Reciprocity
   decls  :
