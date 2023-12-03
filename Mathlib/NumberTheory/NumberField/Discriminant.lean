@@ -41,7 +41,6 @@ theorem discr_eq_discr {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι 
   let b₀ := Basis.reindex (RingOfIntegers.basis K) (Basis.indexEquiv (RingOfIntegers.basis K) b)
   rw [Algebra.discr_eq_discr (𝓞 K) b b₀, Basis.coe_reindex, Algebra.discr_reindex]
 
-set_option maxHeartbeats 4600000 in
 theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃ₐ[ℚ] L) :
     discr K = discr L := by
   let f₀ : 𝓞 K ≃ₗ[ℤ] 𝓞 L := (integralClosure_algEquiv_restrict (f.restrictScalars ℤ)).toLinearEquiv
@@ -49,7 +48,7 @@ theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K 
     refine Fintype.equivOfCardEq ?_
     rw [← FiniteDimensional.finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, AlgHom.card]
   rw [← Rat.intCast_inj, coe_discr, Algebra.discr_eq_discr_of_algEquiv ℚ ℂ (integralBasis K) e f,
-    ← discr_eq_discr _ ((RingOfIntegers.basis K).map f₀)]
+    ← discr_eq_discr L ((RingOfIntegers.basis K).map f₀)]
   change _ = algebraMap ℤ ℚ _
   rw [← Algebra.discr_localizationLocalization ℤ (nonZeroDivisors ℤ) L]
   congr
