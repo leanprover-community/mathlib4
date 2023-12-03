@@ -107,8 +107,8 @@ theorem coe_symm_finFunctionEquiv_eq_ofLEFn :
       Function.comp_apply, Fin.cons_zero, Bool.val_rec_eq_toNat, Fin.cons_succ,
       Nat.add_comm x₀.toNat, ofLEFn_cons, concat, HAppend.hAppend, append, HOr.hOr, OrOp.or,
       BitVec.or, shiftLeftZeroExtend, ← ih, toNat_ofFin, Nat.shiftLeft_eq_mul_pow,
-      zeroExtend', toNat_ofBool, ofFin.injEq, Fin.mk.injEq]
-    rw [Nat.add_eq_lor_of_and_eq_zero ?_, Finset.sum_mul]
+      zeroExtend', toNat_ofBool, ofFin.injEq, Fin.mk.injEq, Finset.sum_mul]
+    rw [Nat.add_eq_lor_of_and_eq_zero ?_]
     · congr! 2; ring
     · have (i) : (f i).toNat * (2 * 2 ^ i.val) = (f i).toNat * 2 ^ i.val * 2 := by ring
       simp only [this, ← Finset.sum_mul]
