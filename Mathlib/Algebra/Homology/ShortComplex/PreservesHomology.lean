@@ -762,8 +762,6 @@ instance quasiIso_map_of_preservesLeftHomology
   rw [(γ.map F).quasiIso_iff, LeftHomologyMapData.map_φH]
   infer_instance
 
-<<<<<<< HEAD
-=======
 lemma quasiIso_map_iff_of_preservesLeftHomology
     [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂]
     [ReflectsIsomorphisms F] :
@@ -776,7 +774,6 @@ lemma quasiIso_map_iff_of_preservesLeftHomology
   · intro
     infer_instance
 
->>>>>>> origin/homology-sequence-computation
 instance quasiIso_map_of_preservesRightHomology
     [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂]
     [QuasiIso φ] : QuasiIso (F.mapShortComplex.map φ) := by
@@ -807,39 +804,27 @@ namespace Functor
 
 variable (F : C ⥤ D) [F.PreservesZeroMorphisms] (S : ShortComplex C)
 
-<<<<<<< HEAD
-noncomputable def preservesLeftHomologyOf_of_zero_left (hf : S.f = 0)
-=======
 /-- If a short complex `S` is such that `S.f = 0` and that the kernel of `S.g` is preserved
 by a functor `F`, then `F` preserves the left homology of `S`. -/
 noncomputable def preservesLeftHomologyOfZerof (hf : S.f = 0)
->>>>>>> origin/homology-sequence-computation
     [PreservesLimit (parallelPair S.g 0) F] :
     F.PreservesLeftHomologyOf S := ⟨fun h =>
   { g := by infer_instance
     f' := Limits.preservesCokernelZero' _ _
       (by rw [← cancel_mono h.i, h.f'_i, zero_comp, hf]) }⟩
 
-<<<<<<< HEAD
-noncomputable def preservesRightHomologyOf_of_zero_right (hg : S.g = 0)
-=======
 /-- If a short complex `S` is such that `S.g = 0` and that the cokernel of `S.f` is preserved
 by a functor `F`, then `F` preserves the right homology of `S`. -/
 noncomputable def preservesRightHomologyOfZerog (hg : S.g = 0)
->>>>>>> origin/homology-sequence-computation
     [PreservesColimit (parallelPair S.f 0) F] :
     F.PreservesRightHomologyOf S := ⟨fun h =>
   { f := by infer_instance
     g' := Limits.preservesKernelZero' _ _
       (by rw [← cancel_epi h.p, h.p_g', comp_zero, hg]) }⟩
 
-<<<<<<< HEAD
-noncomputable def preservesLeftHomologyOf_of_zero_right (hg : S.g = 0)
-=======
 /-- If a short complex `S` is such that `S.g = 0` and that the cokernel of `S.f` is preserved
 by a functor `F`, then `F` preserves the left homology of `S`. -/
 noncomputable def preservesLeftHomologyOfZerog (hg : S.g = 0)
->>>>>>> origin/homology-sequence-computation
     [PreservesColimit (parallelPair S.f 0) F] :
     F.PreservesLeftHomologyOf S := ⟨fun h =>
   { g := by
@@ -851,13 +836,9 @@ noncomputable def preservesLeftHomologyOfZerog (hg : S.g = 0)
         parallelPair.ext (Iso.refl _) (asIso h.i) (by aesop_cat) (by aesop_cat)
       exact Limits.preservesColimitOfIsoDiagram F e.symm}⟩
 
-<<<<<<< HEAD
-noncomputable def preservesRightHomologyOf_of_zero_left (hf : S.f = 0)
-=======
 /-- If a short complex `S` is such that `S.f = 0` and that the kernel of `S.g` is preserved
 by a functor `F`, then `F` preserves the right homology of `S`. -/
 noncomputable def preservesRightHomologyOfZerof (hf : S.f = 0)
->>>>>>> origin/homology-sequence-computation
     [PreservesLimit (parallelPair S.g 0) F] :
     F.PreservesRightHomologyOf S := ⟨fun h =>
   { f := by

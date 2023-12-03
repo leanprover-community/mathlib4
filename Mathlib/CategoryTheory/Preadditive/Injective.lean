@@ -88,16 +88,11 @@ section
 
 open ZeroObject
 
-<<<<<<< HEAD
 lemma injective_of_isZero (X : C) (hX : IsZero X) : Injective X where
   factors _ _ _ := ⟨hX.from_ _, hX.eq_of_tgt _ _⟩
 
-instance zero_injective [HasZeroObject C] [HasZeroMorphisms C] : Injective (0 : C) where
-  factors g f := ⟨0, by ext⟩
-=======
 instance zero_injective [HasZeroObject C] : Injective (0 : C) :=
   (isZero_zero C).injective
->>>>>>> origin/homology-sequence-computation
 #align category_theory.injective.zero_injective CategoryTheory.Injective.zero_injective
 
 end
@@ -224,7 +219,7 @@ section EnoughInjectives
 variable [EnoughInjectives C]
 
 lemma exists_presentation' (X : C) : ∃ (I : InjectivePresentation X), IsZero X → IsZero I.J := by
-  by_cases IsZero X
+  by_cases h : IsZero X
   · have := injective_of_isZero _ h
     exact ⟨{ J := X, f := 𝟙 X}, by tauto⟩
   · exact ⟨(EnoughInjectives.presentation X).some, by tauto⟩

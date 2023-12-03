@@ -18,11 +18,7 @@ namespace CategoryTheory
 
 open Category Limits ZeroObject
 
-<<<<<<< HEAD
-variable {C D : Type _} [Category C] [Category D]
-=======
 variable {C D : Type*} [Category C] [Category D]
->>>>>>> origin/homology-sequence-computation
 
 namespace ShortComplex
 
@@ -171,25 +167,13 @@ noncomputable def ShortExact.gIsCokernel [Balanced C] {S : ShortComplex C} (hS :
   have := hS.epi_g
   exact hS.exact.gIsCokernel
 
-<<<<<<< HEAD
-namespace Splitting
-
-/-- A split short complex is short exact. -/
-lemma shortExact {S : ShortComplex C} [HasZeroObject C] (s : S.Splitting) :
-=======
 /-- A split short complex is short exact. -/
 lemma Splitting.shortExact {S : ShortComplex C} [HasZeroObject C] (s : S.Splitting) :
->>>>>>> origin/homology-sequence-computation
     S.ShortExact where
   exact := s.exact
   mono_f := s.mono_f
   epi_g := s.epi_g
 
-<<<<<<< HEAD
-end Splitting
-
-=======
->>>>>>> origin/homology-sequence-computation
 namespace ShortExact
 
 /-- A choice of splitting for a short exact short complex `S` in a balanced category

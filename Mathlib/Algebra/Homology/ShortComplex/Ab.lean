@@ -1,48 +1,3 @@
-<<<<<<< HEAD
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Category.GroupCat.Abelian
-import Mathlib.Algebra.Category.GroupCat.EpiMono
-
-universe u
-
-open CategoryTheory Category Limits
-
-/-@[ext]
-lemma AddCommGroupCat.hom_ext_from_uliftℤ
-    {X : Ab.{u}} (f g : AddCommGroupCat.of (ULift.{u} ℤ) ⟶ X)
-    (h : f (ULift.up 1) = g (ULift.up 1)) :
-    f = g := by
-  let f' : ℤ →+ X := AddMonoidHom.mk' (fun n => f (ULift.up n)) (fun _ _ => f.map_add _ _)
-  let g' : ℤ →+ X := AddMonoidHom.mk' (fun n => g (ULift.up n)) (fun _ _ => g.map_add _ _)
-  have : f' = g' := by ext; exact h
-  ext n
-  change f' (ULift.down n) = g' (ULift.down n)
-  rw [this]
-
-@[simps]
-def AddCommGroupCat.homEquivFromUliftℤ (X : Ab.{u}) :
-    (AddCommGroupCat.of (ULift.{u} ℤ) ⟶ X) ≃ (X : Type u) where
-  toFun f := f (ULift.up 1)
-  invFun x :=
-    { toFun := fun n => ULift.down n • x
-      map_zero' := zero_smul _ _
-      map_add' := fun n₁ n₂ => add_smul _ _ _ }
-  left_inv f := by
-    apply hom_ext_from_uliftℤ
-    dsimp
-    rw [one_smul]
-  right_inv x := by
-    dsimp
-    rw [one_smul]
-
-@[simp 1100]
-lemma AddCommGroupCat.homEquivFromUliftℤ_symm_one {X : Ab.{u}} (x : X) :
-    (homEquivFromUliftℤ X).symm x (ULift.up 1) = x := by
-  dsimp
-  rw [one_smul]-/
-
-=======
 /-
 Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -72,7 +27,6 @@ is exact iff any element in the kernel of `S.g` belongs to the image of `S.f`.
 
 universe u
 
->>>>>>> origin/homology-sequence-computation
 namespace CategoryTheory
 
 namespace ShortComplex
@@ -84,19 +38,13 @@ lemma ab_zero_apply (x : S.X₁) : S.g (S.f x) = 0 := by
   erw [← comp_apply, S.zero]
   rfl
 
-<<<<<<< HEAD
-=======
 /-- The canonical additive morphism `S.X₁ →+ AddMonoidHom.ker S.g` induced by `S.f`. -/
->>>>>>> origin/homology-sequence-computation
 @[simps!]
 def abToCycles : S.X₁ →+ AddMonoidHom.ker S.g :=
     AddMonoidHom.mk' (fun x => ⟨S.f x, S.ab_zero_apply x⟩) (by aesop)
 
-<<<<<<< HEAD
-=======
 /-- The explicit left homology data of a short complex of abelian group that is
 given by a kernel and a quotient given by the `AddMonoidHom` API. -/
->>>>>>> origin/homology-sequence-computation
 @[simps]
 def abLeftHomologyData : S.LeftHomologyData where
   K := AddCommGroupCat.of (AddMonoidHom.ker S.g)
@@ -117,11 +65,6 @@ def abLeftHomologyData : S.LeftHomologyData where
 @[simp]
 lemma abLeftHomologyData_f' : S.abLeftHomologyData.f' = S.abToCycles := rfl
 
-<<<<<<< HEAD
-noncomputable def abCyclesIso : S.cycles ≅ AddCommGroupCat.of (AddMonoidHom.ker S.g) :=
-  S.abLeftHomologyData.cyclesIso
-
-=======
 /-- Given a short complex `S` of abelian groups, this is the isomorphism between
 the abstract `S.cycles` of the homology API and the more concrete description as
 `AddMonoidHom.ker S.g`. -/
@@ -139,7 +82,6 @@ lemma abCyclesIso_inv_apply_iCycles (x : AddMonoidHom.ker S.g) :
 the abstract `S.homology` of the homology API and the more explicit
 quotient of `AddMonoidHom.ker S.g` by the image of
 `S.abToCycles : S.X₁ →+ AddMonoidHom.ker S.g`. -/
->>>>>>> origin/homology-sequence-computation
 noncomputable def abHomologyIso : S.homology ≅
     AddCommGroupCat.of ((AddMonoidHom.ker S.g) ⧸ AddMonoidHom.range S.abToCycles) :=
   S.abLeftHomologyData.homologyIso
@@ -151,36 +93,19 @@ lemma exact_iff_surjective_abToCycles :
   rfl
 
 lemma ab_exact_iff :
-<<<<<<< HEAD
-    S.Exact ↔ ∀ (x₂ : S.X₂) (_ : S.g x₂ = 0),
-      ∃ (x₁ : S.X₁), S.f x₁ = x₂ := by
-=======
     S.Exact ↔ ∀ (x₂ : S.X₂) (_ : S.g x₂ = 0), ∃ (x₁ : S.X₁), S.f x₁ = x₂ := by
->>>>>>> origin/homology-sequence-computation
   rw [exact_iff_surjective_abToCycles]
   constructor
   · intro h x₂ hx₂
     obtain ⟨x₁, hx₁⟩ := h ⟨x₂, hx₂⟩
     exact ⟨x₁, by simpa only [Subtype.ext_iff, abToCycles_apply_coe] using hx₁⟩
   · rintro h ⟨x₂, hx₂⟩
-<<<<<<< HEAD
-    obtain ⟨x₁, hx₁⟩ := h x₂ hx₂
-    exact ⟨x₁, by simpa only [Subtype.ext_iff, abToCycles_apply_coe] using hx₁⟩
-
-lemma ab_exact_iff_ker_le_range :
-    S.Exact ↔ S.g.ker ≤ S.f.range :=
-  S.ab_exact_iff
-
-lemma ab_exact_iff_range_eq_ker :
-    S.Exact ↔ S.f.range = S.g.ker := by
-=======
     obtain ⟨x₁, rfl⟩ := h x₂ hx₂
     exact ⟨x₁, rfl⟩
 
 lemma ab_exact_iff_ker_le_range : S.Exact ↔ S.g.ker ≤ S.f.range := S.ab_exact_iff
 
 lemma ab_exact_iff_range_eq_ker : S.Exact ↔ S.f.range = S.g.ker := by
->>>>>>> origin/homology-sequence-computation
   rw [ab_exact_iff_ker_le_range]
   constructor
   · intro h

@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-import Mathlib.Algebra.Homology.ShortComplex.Ab
-
-namespace CategoryTheory
-
-namespace ShortComplex
-
-section
-
-variable {C : Type _} [Category C] [ConcreteCategory C] [Limits.HasZeroMorphisms C]
-  [HasForget₂ C Ab] [(forget₂ C Ab).PreservesZeroMorphisms]-- [(forget₂ C Ab).PreservesHomology]
-  (S : ShortComplex C)
-
-@[simp]
-lemma zero_apply (x : (forget₂ C Ab).obj S.X₁) :
-=======
 /-
 Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -47,31 +31,16 @@ variable {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C] [HasForget₂ C 
 lemma ShortComplex.zero_apply
     [Limits.HasZeroMorphisms C] [(forget₂ C Ab).PreservesZeroMorphisms]
     (S : ShortComplex C) (x : (forget₂ C Ab).obj S.X₁) :
->>>>>>> origin/homology-sequence-computation
     ((forget₂ C Ab).map S.g) (((forget₂ C Ab).map S.f) x) = 0 := by
   erw [← comp_apply, ← Functor.map_comp, S.zero, Functor.map_zero]
   rfl
 
-<<<<<<< HEAD
-end
-
-end ShortComplex
-
-section abelian
-
-variable {C : Type _} [Category C] [ConcreteCategory C]
-  [HasForget₂ C Ab] [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
-  (S : ShortComplex C)
-
-lemma Abelian.mono_iff_injective {X Y : C} (f : X ⟶ Y) :
-=======
 section preadditive
 
 variable [Preadditive C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
   [HasZeroObject C] (S : ShortComplex C)
 
 lemma Preadditive.mono_iff_injective {X Y : C} (f : X ⟶ Y) :
->>>>>>> origin/homology-sequence-computation
     Mono f ↔ Function.Injective ((forget₂ C Ab).map f) := by
   rw [← AddCommGroupCat.mono_iff_injective]
   constructor
@@ -79,9 +48,6 @@ lemma Preadditive.mono_iff_injective {X Y : C} (f : X ⟶ Y) :
     infer_instance
   · apply Functor.mono_of_mono_map
 
-<<<<<<< HEAD
-lemma Abelian.epi_iff_injective {X Y : C} (f : X ⟶ Y) :
-=======
 lemma Preadditive.mono_iff_injective' {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective ((forget C).map f) := by
   simp only [mono_iff_injective, ← CategoryTheory.mono_iff_injective]
@@ -90,7 +56,6 @@ lemma Preadditive.mono_iff_injective' {X Y : C} (f : X ⟶ Y) :
   exact Arrow.isoOfNatIso e (Arrow.mk f)
 
 lemma Preadditive.epi_iff_surjective {X Y : C} (f : X ⟶ Y) :
->>>>>>> origin/homology-sequence-computation
     Epi f ↔ Function.Surjective ((forget₂ C Ab).map f) := by
   rw [← AddCommGroupCat.epi_iff_surjective]
   constructor
@@ -98,16 +63,6 @@ lemma Preadditive.epi_iff_surjective {X Y : C} (f : X ⟶ Y) :
     infer_instance
   · apply Functor.epi_of_epi_map
 
-<<<<<<< HEAD
-namespace ShortComplex
-
-lemma exact_iff_exact_map_forget₂ : S.Exact ↔ (S.map (forget₂ C Ab)).Exact :=
-  (S.exact_map_iff_of_faithful (forget₂ C Ab)).symm
-
-lemma exact_iff_of_concrete_category :
-  S.Exact ↔ ∀ (x₂ : (forget₂ C Ab).obj S.X₂) (_ : ((forget₂ C Ab).map S.g) x₂ = 0),
-    ∃ (x₁ : (forget₂ C Ab).obj S.X₁), ((forget₂ C Ab).map S.f) x₁ = x₂ := by
-=======
 lemma Preadditive.epi_iff_surjective' {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective ((forget C).map f) := by
   simp only [epi_iff_surjective, ← CategoryTheory.epi_iff_surjective]
@@ -124,7 +79,6 @@ lemma exact_iff_exact_map_forget₂ [S.HasHomology] :
 lemma exact_iff_of_concreteCategory [S.HasHomology] :
     S.Exact ↔ ∀ (x₂ : (forget₂ C Ab).obj S.X₂) (_ : ((forget₂ C Ab).map S.g) x₂ = 0),
       ∃ (x₁ : (forget₂ C Ab).obj S.X₁), ((forget₂ C Ab).map S.f) x₁ = x₂ := by
->>>>>>> origin/homology-sequence-computation
   rw [S.exact_iff_exact_map_forget₂, ab_exact_iff]
   rfl
 
@@ -132,20 +86,11 @@ variable {S}
 
 lemma ShortExact.injective_f (hS : S.ShortExact) :
     Function.Injective ((forget₂ C Ab).map S.f) := by
-<<<<<<< HEAD
-  rw [← Abelian.mono_iff_injective]
-=======
   rw [← Preadditive.mono_iff_injective]
->>>>>>> origin/homology-sequence-computation
   exact hS.mono_f
 
 lemma ShortExact.surjective_g (hS : S.ShortExact) :
     Function.Surjective ((forget₂ C Ab).map S.g) := by
-<<<<<<< HEAD
-  rw [← Abelian.epi_iff_injective]
-  exact hS.epi_g
-
-=======
   rw [← Preadditive.epi_iff_surjective]
   exact hS.epi_g
 
@@ -234,7 +179,6 @@ lemma δ_apply' (x₃ : (forget₂ C Ab).obj D.L₀.X₃)
 
 end SnakeInput
 
->>>>>>> origin/homology-sequence-computation
 end ShortComplex
 
 end abelian

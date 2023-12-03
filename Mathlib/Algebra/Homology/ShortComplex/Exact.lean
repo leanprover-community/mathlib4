@@ -5,17 +5,12 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
-<<<<<<< HEAD
 import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Balanced
 import Mathlib.Algebra.Homology.ShortComplex.Homology
-=======
-import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
-import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.MorphismProperty
 import Mathlib.CategoryTheory.Preadditive.Injective
->>>>>>> origin/homology-sequence-computation
 
 /-!
 # Exact short complexes
@@ -121,11 +116,10 @@ lemma exact_of_iso (e : S₁ ≅ S₂) (h : S₁.Exact) : S₂.Exact := by
 lemma exact_iff_of_iso (e : S₁ ≅ S₂) : S₁.Exact ↔ S₂.Exact :=
   ⟨exact_of_iso e, exact_of_iso e.symm⟩
 
-<<<<<<< HEAD
 def exact_of_arrow₂Iso {D : Arrow₂ C} {S : ShortComplex C} (e : D ≅ S.arrow₂)
     (hS : S.Exact) : (mkOfArrow₂Iso e).Exact :=
   exact_of_iso (isoOfArrow₂Iso e).symm hS
-=======
+
 lemma exact_and_mono_f_iff_of_iso (e : S₁ ≅ S₂) :
     S₁.Exact ∧ Mono S₁.f ↔ S₂.Exact ∧ Mono S₂.f := by
   have : Mono S₁.f ↔ Mono S₂.f :=
@@ -141,7 +135,6 @@ lemma exact_and_epi_g_iff_of_iso (e : S₁ ≅ S₂) :
       (MorphismProperty.RespectsIso.epimorphisms C)
       (Arrow.isoMk (ShortComplex.π₂.mapIso e) (ShortComplex.π₃.mapIso e) e.hom.comm₂₃)
   rw [exact_iff_of_iso e, this]
->>>>>>> origin/homology-sequence-computation
 
 lemma exact_of_isZero_X₂ (h : IsZero S.X₂) : S.Exact := by
   rw [(HomologyData.ofZeros S (IsZero.eq_of_tgt h _ _) (IsZero.eq_of_src h _ _)).exact_iff]
@@ -291,11 +284,7 @@ lemma exact_iff_mono [HasZeroObject C] (hf : S.f = 0) :
     S.Exact ↔ Mono S.g := by
   constructor
   · intro h
-<<<<<<< HEAD
-    have : S.HasHomology := HasHomology.mk' h.condition.choose
-=======
     have := h.hasHomology
->>>>>>> origin/homology-sequence-computation
     simp only [exact_iff_isZero_homology] at h
     have := S.isIso_pOpcycles hf
     have := mono_of_isZero_kernel' _ S.homologyIsKernel h
@@ -311,11 +300,7 @@ lemma exact_iff_epi [HasZeroObject C] (hg : S.g = 0) :
     S.Exact ↔ Epi S.f := by
   constructor
   · intro h
-<<<<<<< HEAD
-    haveI : S.HasHomology := HasHomology.mk' h.condition.choose
-=======
     have := h.hasHomology
->>>>>>> origin/homology-sequence-computation
     simp only [exact_iff_isZero_homology] at h
     haveI := S.isIso_iCycles hg
     haveI : Epi S.toCycles := epi_of_isZero_cokernel' _ S.homologyIsCokernel h
@@ -365,11 +350,8 @@ lemma RightHomologyData.exact_iff_mono_g' [S.HasHomology] (h : RightHomologyData
     simp only [h.exact_iff, IsZero.iff_id_eq_zero, ← cancel_mono h.ι, ← cancel_mono h.g',
       id_comp, h.ι_g', zero_comp]
 
-<<<<<<< HEAD
-=======
 /-- Given an exact short complex `S` and a limit kernel fork `kf` for `S.g`, this is the
 left homology data for `S` with `K := kf.pt` and `H := 0`. -/
->>>>>>> origin/homology-sequence-computation
 @[simps]
 noncomputable def Exact.leftHomologyDataOfIsLimitKernelFork
     (hS : S.Exact) [HasZeroObject C] (kf : KernelFork S.g) (hkf : IsLimit kf) :
@@ -383,21 +365,6 @@ noncomputable def Exact.leftHomologyDataOfIsLimitKernelFork
   wπ := comp_zero
   hπ := CokernelCofork.IsColimit.ofEpiOfIsZero _ (by
     have := hS.hasHomology
-<<<<<<< HEAD
-    have := hS.epi_toCycles
-    have fac : hkf.lift (KernelFork.ofι _ S.zero) = S.toCycles ≫
-        (IsLimit.conePointUniqueUpToIso S.cyclesIsKernel hkf).hom := by
-      apply Fork.IsLimit.hom_ext hkf
-      simp only [Fork.ofι_pt, parallelPair_obj_zero, Fork.IsLimit.lift_ι, Fork.ι_ofι, assoc,
-        ← toCycles_i]
-      congr 1
-      exact (IsLimit.conePointUniqueUpToIso_hom_comp S.cyclesIsKernel hkf
-        WalkingParallelPair.zero).symm
-    dsimp
-    rw [comp_id, fac]
-    apply epi_comp) (isZero_zero C)
-
-=======
     refine' ((MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff _).1
       hS.epi_toCycles
     refine' Arrow.isoMk (Iso.refl _)
@@ -407,7 +374,6 @@ noncomputable def Exact.leftHomologyDataOfIsLimitKernelFork
 
 /-- Given an exact short complex `S` and a colimit cokernel cofork `cc` for `S.f`, this is the
 right homology data for `S` with `Q := cc.pt` and `H := 0`. -/
->>>>>>> origin/homology-sequence-computation
 @[simps]
 noncomputable def Exact.rightHomologyDataOfIsColimitCokernelCofork
     (hS : S.Exact) [HasZeroObject C] (cc : CokernelCofork S.f) (hcc : IsColimit cc) :
@@ -421,26 +387,12 @@ noncomputable def Exact.rightHomologyDataOfIsColimitCokernelCofork
   wι := zero_comp
   hι := KernelFork.IsLimit.ofMonoOfIsZero _ (by
     have := hS.hasHomology
-<<<<<<< HEAD
-    have := hS.mono_fromOpcycles
-    have fac : hcc.desc (CokernelCofork.ofπ _ S.zero) =
-      (IsColimit.coconePointUniqueUpToIso hcc S.opcyclesIsCokernel ).hom ≫ S.fromOpcycles := by
-      apply Cofork.IsColimit.hom_ext hcc
-      simp only [Cofork.IsColimit.π_desc, Cofork.π_ofπ, ← p_fromOpcycles, ← assoc]
-      congr 1
-      exact (IsColimit.comp_coconePointUniqueUpToIso_hom hcc S.opcyclesIsCokernel
-        WalkingParallelPair.one).symm
-    dsimp
-    rw [id_comp, fac]
-    apply mono_comp) (isZero_zero C)
-=======
     refine' ((MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff _).2
       hS.mono_fromOpcycles
     refine' Arrow.isoMk (IsColimit.coconePointUniqueUpToIso hcc S.opcyclesIsCokernel)
       (Iso.refl _) _
     apply Cofork.IsColimit.hom_ext hcc
     simp [IsColimit.coconePointUniqueUpToIso]) (isZero_zero C)
->>>>>>> origin/homology-sequence-computation
 
 variable (S)
 
@@ -453,69 +405,27 @@ lemma exact_iff_mono_fromOpcycles [S.HasHomology] : S.Exact ↔ Mono S.fromOpcyc
 lemma exact_iff_epi_kernel_lift [S.HasHomology] [HasKernel S.g] :
     S.Exact ↔ Epi (kernel.lift S.g S.f S.zero) := by
   rw [exact_iff_epi_toCycles]
-<<<<<<< HEAD
-  have eq₁ : kernel.lift S.g S.f S.zero = S.toCycles ≫ S.cyclesIsoKernel.hom := by
-    simp only [cyclesIsoKernel_hom, ← cancel_mono (kernel.ι S.g), kernel.lift_ι,
-      assoc, toCycles_i]
-  have eq₂ : S.toCycles = kernel.lift S.g S.f S.zero ≫ S.cyclesIsoKernel.inv := by
-    rw [eq₁, assoc, Iso.hom_inv_id, comp_id]
-  constructor
-  · intro
-    rw [eq₁]
-    apply epi_comp
-  · intro
-    rw [eq₂]
-    apply epi_comp
-=======
   apply (MorphismProperty.RespectsIso.epimorphisms C).arrow_mk_iso_iff
   exact Arrow.isoMk (Iso.refl _) S.cyclesIsoKernel (by aesop_cat)
->>>>>>> origin/homology-sequence-computation
 
 lemma exact_iff_mono_cokernel_desc [S.HasHomology] [HasCokernel S.f] :
     S.Exact ↔ Mono (cokernel.desc S.f S.g S.zero) := by
   rw [exact_iff_mono_fromOpcycles]
-<<<<<<< HEAD
-  have eq₁ : cokernel.desc S.f S.g S.zero = S.opcyclesIsoCokernel.inv ≫ S.fromOpcycles := by
-    simp only [← cancel_epi (cokernel.π S.f), cokernel.π_desc, opcyclesIsoCokernel_inv,
-      cokernel.π_desc_assoc, p_fromOpcycles]
-  have eq₂ : S.fromOpcycles = S.opcyclesIsoCokernel.hom ≫ cokernel.desc S.f S.g S.zero := by
-    rw [eq₁, Iso.hom_inv_id_assoc]
-  constructor
-  · intro
-    rw [eq₁]
-    apply mono_comp
-  · intro
-    rw [eq₂]
-    apply mono_comp
-=======
   refine' (MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff (Iso.symm _)
   exact Arrow.isoMk S.opcyclesIsoCokernel.symm (Iso.refl _) (by aesop_cat)
->>>>>>> origin/homology-sequence-computation
 
 lemma QuasiIso.exact_iff {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     [S₁.HasHomology] [S₂.HasHomology] [QuasiIso φ] : S₁.Exact ↔ S₂.Exact := by
   simp only [exact_iff_isZero_homology]
   exact Iso.isZero_iff (asIso (homologyMap φ))
 
-<<<<<<< HEAD
-lemma HomotopyEquiv.exact_iff {S₁ S₂ : ShortComplex C} (e : HomotopyEquiv S₁ S₂)
-    [S₁.HasHomology] [S₂.HasHomology] : S₁.Exact ↔ S₂.Exact :=
-  QuasiIso.exact_iff e.hom
-
-=======
->>>>>>> origin/homology-sequence-computation
 lemma exact_of_f_is_kernel (hS : IsLimit (KernelFork.ofι S.f S.zero))
     [S.HasHomology] : S.Exact := by
   rw [exact_iff_epi_toCycles]
   have : IsSplitEpi S.toCycles :=
     ⟨⟨{ section_ := hS.lift (KernelFork.ofι S.iCycles S.iCycles_g)
         id := by
-<<<<<<< HEAD
-          rw [← cancel_mono S.iCycles]
-          simp only [assoc, toCycles_i, id_comp]
-=======
           rw [← cancel_mono S.iCycles, assoc, toCycles_i, id_comp]
->>>>>>> origin/homology-sequence-computation
           exact Fork.IsLimit.lift_ι hS }⟩⟩
   infer_instance
 
@@ -525,18 +435,6 @@ lemma exact_of_g_is_cokernel (hS : IsColimit (CokernelCofork.ofπ S.g S.zero))
   have : IsSplitMono S.fromOpcycles :=
     ⟨⟨{ retraction := hS.desc (CokernelCofork.ofπ S.pOpcycles S.f_pOpcycles)
         id := by
-<<<<<<< HEAD
-          rw [← cancel_epi S.pOpcycles]
-          simp only [assoc, p_fromOpcycles_assoc, comp_id]
-          exact Cofork.IsColimit.π_desc hS }⟩⟩
-  infer_instance
-
-structure Splitting (S : ShortComplex C) where
-  r : S.X₂ ⟶ S.X₁
-  s : S.X₃ ⟶ S.X₂
-  f_r : S.f ≫ r = 𝟙 _ := by aesop_cat
-  s_g : s ≫ S.g = 𝟙 _ := by aesop_cat
-=======
           rw [← cancel_epi S.pOpcycles, p_fromOpcycles_assoc, comp_id]
           exact Cofork.IsColimit.π_desc hS }⟩⟩
   infer_instance
@@ -596,7 +494,6 @@ structure Splitting (S : ShortComplex C) where
   /-- the condition that `s` is a section of `S.g` -/
   s_g : s ≫ S.g = 𝟙 _ := by aesop_cat
   /-- the compatibility between the given section and retraction -/
->>>>>>> origin/homology-sequence-computation
   id : r ≫ S.f + S.g ≫ s = 𝟙 _ := by aesop_cat
 
 namespace Splitting
@@ -611,30 +508,20 @@ lemma r_f (s : S.Splitting) : s.r ≫ S.f = 𝟙 _ - S.g ≫ s.s := by rw [← s
 @[reassoc]
 lemma g_s (s : S.Splitting) : S.g ≫ s.s = 𝟙 _ - s.r ≫ S.f := by rw [← s.id, add_sub_cancel']
 
-<<<<<<< HEAD
-@[simps] def splitMono_f (s : S.Splitting) : SplitMono S.f := ⟨s.r, s.f_r⟩
-lemma isSplitMono_f (s : S.Splitting) : IsSplitMono S.f := ⟨⟨s.splitMono_f⟩⟩
-=======
 /-- Given a splitting of a short complex `S`, this shows that `S.f` is a split monomorphism. -/
 @[simps] def splitMono_f (s : S.Splitting) : SplitMono S.f := ⟨s.r, s.f_r⟩
 
 lemma isSplitMono_f (s : S.Splitting) : IsSplitMono S.f := ⟨⟨s.splitMono_f⟩⟩
 
->>>>>>> origin/homology-sequence-computation
 lemma mono_f (s : S.Splitting) : Mono S.f := by
   have := s.isSplitMono_f
   infer_instance
 
-<<<<<<< HEAD
-@[simps] def splitEpi_g (s : S.Splitting) : SplitEpi S.g := ⟨s.s, s.s_g⟩
-lemma isSplitEpi_g (s : S.Splitting) : IsSplitEpi S.g := ⟨⟨s.splitEpi_g⟩⟩
-=======
 /-- Given a splitting of a short complex `S`, this shows that `S.g` is a split epimorphism. -/
 @[simps] def splitEpi_g (s : S.Splitting) : SplitEpi S.g := ⟨s.s, s.s_g⟩
 
 lemma isSplitEpi_g (s : S.Splitting) : IsSplitEpi S.g := ⟨⟨s.splitEpi_g⟩⟩
 
->>>>>>> origin/homology-sequence-computation
 lemma epi_g (s : S.Splitting) : Epi S.g := by
   have := s.isSplitEpi_g
   infer_instance
@@ -647,12 +534,7 @@ lemma s_r (s : S.Splitting) : s.s ≫ s.r = 0 := by
 
 lemma ext_r (s s' : S.Splitting) (h : s.r = s'.r) : s = s' := by
   have := s.epi_g
-<<<<<<< HEAD
-  have eq : 𝟙 S.X₂ = 𝟙 S.X₂ := rfl
-  nth_rw 1 [← s.id] at eq
-=======
   have eq := s.id
->>>>>>> origin/homology-sequence-computation
   rw [← s'.id, h, add_right_inj, cancel_epi S.g] at eq
   cases s
   cases s'
@@ -662,12 +544,7 @@ lemma ext_r (s s' : S.Splitting) (h : s.r = s'.r) : s = s' := by
 
 lemma ext_s (s s' : S.Splitting) (h : s.s = s'.s) : s = s' := by
   have := s.mono_f
-<<<<<<< HEAD
-  have eq : 𝟙 S.X₂ = 𝟙 S.X₂ := rfl
-  nth_rw 1 [← s.id] at eq
-=======
   have eq := s.id
->>>>>>> origin/homology-sequence-computation
   rw [← s'.id, h, add_left_inj, cancel_mono S.f] at eq
   cases s
   cases s'
@@ -675,12 +552,8 @@ lemma ext_s (s s' : S.Splitting) (h : s.s = s'.s) : s = s' := by
   obtain rfl := h
   rfl
 
-<<<<<<< HEAD
-@[simp]
-=======
 /-- The left homology data on a short complex equipped with a splitting. -/
 @[simps]
->>>>>>> origin/homology-sequence-computation
 noncomputable def leftHomologyData [HasZeroObject C] (s : S.Splitting) :
     LeftHomologyData S := by
   have hi := KernelFork.IsLimit.ofι S.f S.zero
@@ -696,20 +569,6 @@ noncomputable def leftHomologyData [HasZeroObject C] (s : S.Splitting) :
     simp only [Fork.ι_ofι, id_comp]
   have wπ : f' ≫ (0 : S.X₁ ⟶ 0) = 0 := comp_zero
   have hπ : IsColimit (CokernelCofork.ofπ 0 wπ) := CokernelCofork.IsColimit.ofEpiOfIsZero _
-<<<<<<< HEAD
-      (by rw [hf'] ; infer_instance) (isZero_zero _)
-  exact
-  { K := S.X₁
-    H := 0
-    i := S.f
-    wi := S.zero
-    hi := hi
-    π := 0
-    wπ := wπ
-    hπ := hπ }
-
-@[simp]
-=======
       (by rw [hf']; infer_instance) (isZero_zero _)
   exact
     { K := S.X₁
@@ -723,7 +582,6 @@ noncomputable def leftHomologyData [HasZeroObject C] (s : S.Splitting) :
 
 /-- The right homology data on a short complex equipped with a splitting. -/
 @[simps]
->>>>>>> origin/homology-sequence-computation
 noncomputable def rightHomologyData [HasZeroObject C] (s : S.Splitting) :
     RightHomologyData S := by
   have hp := CokernelCofork.IsColimit.ofπ S.g S.zero
@@ -738,19 +596,6 @@ noncomputable def rightHomologyData [HasZeroObject C] (s : S.Splitting) :
     simp only [Cofork.π_ofπ, comp_id]
   have wι : (0 : 0 ⟶ S.X₃) ≫ g' = 0 := zero_comp
   have hι : IsLimit (KernelFork.ofι 0 wι) := KernelFork.IsLimit.ofMonoOfIsZero _
-<<<<<<< HEAD
-      (by rw [hg'] ; dsimp ; infer_instance) (isZero_zero _)
-  exact
-  { Q := S.X₃
-    H := 0
-    p := S.g
-    wp := S.zero
-    hp := hp
-    ι := 0
-    wι := wι
-    hι := hι }
-
-=======
       (by rw [hg']; dsimp; infer_instance) (isZero_zero _)
   exact
     { Q := S.X₃
@@ -763,41 +608,28 @@ noncomputable def rightHomologyData [HasZeroObject C] (s : S.Splitting) :
       hι := hι }
 
 /-- The homology data on a short complex equipped with a splitting. -/
->>>>>>> origin/homology-sequence-computation
 @[simps]
 noncomputable def homologyData [HasZeroObject C] (s : S.Splitting) : S.HomologyData where
   left := s.leftHomologyData
   right := s.rightHomologyData
   iso := Iso.refl 0
 
-<<<<<<< HEAD
-lemma exact [HasZeroObject C] (s : S.Splitting) : S.Exact :=
-  ⟨s.homologyData, isZero_zero _⟩
-
-=======
 /-- A short complex equipped with a splitting is exact. -/
 lemma exact [HasZeroObject C] (s : S.Splitting) : S.Exact :=
   ⟨s.homologyData, isZero_zero _⟩
 
 /-- If a short complex `S` is equipped with a splitting, then `S.X₁` is the kernel of `S.g`. -/
->>>>>>> origin/homology-sequence-computation
 noncomputable def fIsKernel [HasZeroObject C] (s : S.Splitting) :
     IsLimit (KernelFork.ofι S.f S.zero) :=
   s.homologyData.left.hi
 
-<<<<<<< HEAD
-=======
 /-- If a short complex `S` is equipped with a splitting, then `S.X₃` is the cokernel of `S.f`. -/
->>>>>>> origin/homology-sequence-computation
 noncomputable def gIsCokernel [HasZeroObject C] (s : S.Splitting) :
     IsColimit (CokernelCofork.ofπ S.g S.zero) :=
   s.homologyData.right.hp
 
-<<<<<<< HEAD
-=======
 /-- If a short complex `S` has a splitting and `F` is an additive functor, then
 `S.map F` also has a splitting. -/
->>>>>>> origin/homology-sequence-computation
 @[simps]
 def map (s : S.Splitting) (F : C ⥤ D) [F.Additive] : (S.map F).Splitting where
   r := F.map s.r
@@ -812,10 +644,7 @@ def map (s : S.Splitting) (F : C ⥤ D) [F.Additive] : (S.map F).Splitting where
     dsimp [ShortComplex.map]
     simp only [← F.map_id, ← s.id, Functor.map_comp, Functor.map_add]
 
-<<<<<<< HEAD
-=======
 /-- A splitting on a short complex induces splittings on isomorphic short complexes. -/
->>>>>>> origin/homology-sequence-computation
 @[simps]
 def ofIso {S₁ S₂ : ShortComplex C} (s : S₁.Splitting) (e : S₁ ≅ S₂) : S₂.Splitting where
   r := e.inv.τ₂ ≫ s.r ≫ e.hom.τ₁
@@ -828,10 +657,7 @@ def ofIso {S₁ S₂ : ShortComplex C} (s : S₁.Splitting) (e : S₁ ≅ S₂) 
     rw [← eq, assoc, assoc, add_comp, assoc, assoc, comp_add,
       e.hom.comm₁₂, e.inv.comm₂₃_assoc]
 
-<<<<<<< HEAD
-=======
 /-- The obvious splitting of the short complex `X₁ ⟶ X₁ ⊞ X₂ ⟶ X₂`. -/
->>>>>>> origin/homology-sequence-computation
 noncomputable def ofHasBinaryBiproduct (X₁ X₂ : C) [HasBinaryBiproduct X₁ X₂] :
     Splitting (ShortComplex.mk (biprod.inl : X₁ ⟶ _) (biprod.snd : _ ⟶ X₂) (by simp)) where
   r := biprod.fst
@@ -839,19 +665,13 @@ noncomputable def ofHasBinaryBiproduct (X₁ X₂ : C) [HasBinaryBiproduct X₁ 
 
 variable (S)
 
-<<<<<<< HEAD
-=======
 /-- The obvious splitting of a short complex when `S.X₁` is zero and `S.g` is an isomorphism. -/
->>>>>>> origin/homology-sequence-computation
 noncomputable def ofIsZeroOfIsIso (hf : IsZero S.X₁) (hg : IsIso S.g) : Splitting S where
   r := 0
   s := inv S.g
   f_r := hf.eq_of_src _ _
 
-<<<<<<< HEAD
-=======
 /-- The obvious splitting of a short complex when `S.f` is an isomorphism and `S.X₃` is zero. -/
->>>>>>> origin/homology-sequence-computation
 noncomputable def ofIsIsoOfIsZero (hf : IsIso S.f) (hg : IsZero S.X₃) : Splitting S where
   r := inv S.f
   s := 0
@@ -859,10 +679,7 @@ noncomputable def ofIsIsoOfIsZero (hf : IsIso S.f) (hg : IsZero S.X₃) : Splitt
 
 variable {S}
 
-<<<<<<< HEAD
-=======
 /-- The splitting of the short complex `S.op` deduced from a splitting of `S`. -/
->>>>>>> origin/homology-sequence-computation
 @[simps]
 def op (h : Splitting S) : Splitting S.op where
   r := h.s.op
@@ -874,10 +691,7 @@ def op (h : Splitting S) : Splitting S.op where
       Quiver.Hom.unop_op, unop_id, ← h.id]
     abel)
 
-<<<<<<< HEAD
-=======
 /-- The splitting of the short complex `S.unop` deduced from a splitting of `S`. -/
->>>>>>> origin/homology-sequence-computation
 @[simps]
 def unop {S : ShortComplex Cᵒᵖ} (h : Splitting S) : Splitting S.unop where
   r := h.s.unop
@@ -889,10 +703,7 @@ def unop {S : ShortComplex Cᵒᵖ} (h : Splitting S) : Splitting S.unop where
       op_comp, Quiver.Hom.op_unop, op_id, ← h.id]
     abel)
 
-<<<<<<< HEAD
-=======
 /-- The isomorphism `S.X₂ ≅ S.X₁ ⊞ S.X₃` induced by a splitting of the short complex `S`. -/
->>>>>>> origin/homology-sequence-computation
 @[simps]
 noncomputable def isoBinaryBiproduct (h : Splitting S) [HasBinaryBiproduct S.X₁ S.X₃] :
     S.X₂ ≅ S.X₁ ⊞ S.X₃ where
@@ -913,26 +724,6 @@ variable (hS : S.Exact)
 
 lemma isIso_f' (h : S.LeftHomologyData) [Mono S.f] :
     IsIso h.f' := by
-<<<<<<< HEAD
-    have := hS.epi_f' h
-    have := mono_of_mono_fac h.f'_i
-    exact isIso_of_mono_of_epi h.f'
-
-lemma isIso_toCycles [Mono S.f] [S.HasLeftHomology] :
-    IsIso S.toCycles := by
-    exact hS.isIso_f' _
-
-lemma isIso_g' (h : S.RightHomologyData) [Epi S.g] :
-    IsIso h.g' := by
-    have := hS.mono_g' h
-    have := epi_of_epi_fac h.p_g'
-    exact isIso_of_mono_of_epi h.g'
-
-lemma isIso_fromOpcycles [Epi S.g] [S.HasRightHomology] :
-    IsIso S.fromOpcycles := by
-    exact hS.isIso_g' _
-
-=======
   have := hS.epi_f' h
   have := mono_of_mono_fac h.f'_i
   exact isIso_of_mono_of_epi h.f'
@@ -953,16 +744,11 @@ lemma isIso_fromOpcycles [Epi S.g] [S.HasRightHomology] :
 
 /-- In a balanced category, if a short complex `S` is exact and `S.f` is a mono, then
 `S.X₁` is the kernel of `S.g`. -/
->>>>>>> origin/homology-sequence-computation
 noncomputable def fIsKernel [Mono S.f] : IsLimit (KernelFork.ofι S.f S.zero) := by
   have := hS.hasHomology
   have := hS.isIso_toCycles
   exact IsLimit.ofIsoLimit S.cyclesIsKernel
-<<<<<<< HEAD
-    (Iso.symm (Fork.ext (asIso S.toCycles) (by simp)))
-=======
     (Fork.ext (asIso S.toCycles).symm (by simp))
->>>>>>> origin/homology-sequence-computation
 
 lemma map_of_mono_of_preservesKernel (F : C ⥤ D)
     [F.PreservesZeroMorphisms] [(S.map F).HasHomology] (_ : Mono S.f)
@@ -970,20 +756,13 @@ lemma map_of_mono_of_preservesKernel (F : C ⥤ D)
     (S.map F).Exact :=
   exact_of_f_is_kernel _ (KernelFork.mapIsLimit _ hS.fIsKernel F)
 
-<<<<<<< HEAD
-=======
 /-- In a balanced category, if a short complex `S` is exact and `S.g` is an epi, then
 `S.X₃` is the cokernel of `S.g`. -/
->>>>>>> origin/homology-sequence-computation
 noncomputable def gIsCokernel [Epi S.g] : IsColimit (CokernelCofork.ofπ S.g S.zero) := by
   have := hS.hasHomology
   have := hS.isIso_fromOpcycles
   exact IsColimit.ofIsoColimit S.opcyclesIsCokernel
-<<<<<<< HEAD
-    ((Cofork.ext (asIso S.fromOpcycles) (by simp)))
-=======
     (Cofork.ext (asIso S.fromOpcycles) (by simp))
->>>>>>> origin/homology-sequence-computation
 
 lemma map_of_epi_of_preservesCokernel (F : C ⥤ D)
     [F.PreservesZeroMorphisms] [(S.map F).HasHomology] (_ : Epi S.g)
@@ -991,11 +770,8 @@ lemma map_of_epi_of_preservesCokernel (F : C ⥤ D)
     (S.map F).Exact :=
   exact_of_g_is_cokernel _ (CokernelCofork.mapIsColimit _ hS.gIsCokernel F)
 
-<<<<<<< HEAD
-=======
 /-- If a short complex `S` in a balanced category is exact and such that `S.f` is a mono,
 then a morphism `k : A ⟶ S.X₂` such that `k ≫ S.g = 0` lifts to a morphism `A ⟶ S.X₁`. -/
->>>>>>> origin/homology-sequence-computation
 noncomputable def lift {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) [Mono S.f] :
     A ⟶ S.X₁ := hS.fIsKernel.lift (KernelFork.ofι k hk)
 
@@ -1008,11 +784,8 @@ lemma lift' {A : C} (k : A ⟶ S.X₂) (hk : k ≫ S.g = 0) [Mono S.f] :
     ∃ (l : A ⟶ S.X₁), l ≫ S.f = k :=
   ⟨hS.lift k hk, by simp⟩
 
-<<<<<<< HEAD
-=======
 /-- If a short complex `S` in a balanced category is exact and such that `S.g` is an epi,
 then a morphism `k : S.X₂ ⟶ A` such that `S.f ≫ k = 0` descends to a morphism `S.X₃ ⟶ A`. -/
->>>>>>> origin/homology-sequence-computation
 noncomputable def desc {A : C} (k : S.X₂ ⟶ A) (hk : S.f ≫ k = 0) [Epi S.g] :
     S.X₃ ⟶ A := hS.gIsCokernel.desc (CokernelCofork.ofπ k hk)
 
@@ -1037,24 +810,10 @@ lemma mono_τ₂_of_exact_of_mono {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S�
   simp only [← cancel_mono φ.τ₁, ← cancel_mono S₂.f, assoc, φ.comm₁₂, zero_comp,
     reassoc_of% hx₁, hx₂]
 
-<<<<<<< HEAD
-lemma mono_τ₂_of_exact_of_mono' {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
-    (h₁ : S₁.Exact) (hf₁ : Mono S₁.f) (hf₂ : Mono S₂.f) (hτ₁ : Mono φ.τ₁) (hτ₂ : Mono φ.τ₃) :
-    Mono φ.τ₂ := by
-  apply mono_τ₂_of_exact_of_mono φ h₁
-
-=======
->>>>>>> origin/homology-sequence-computation
 attribute [local instance] balanced_opposite
 
 lemma epi_τ₂_of_exact_of_epi {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     (h₂ : S₂.Exact) [Epi S₁.g] [Epi S₂.g] [Epi φ.τ₁] [Epi φ.τ₃] : Epi φ.τ₂ := by
-<<<<<<< HEAD
-  have := mono_τ₂_of_exact_of_mono' (opMap φ) h₂.op (op_mono_of_epi S₂.g)
-    (op_mono_of_epi S₁.g) (op_mono_of_epi φ.τ₃) (op_mono_of_epi φ.τ₁)
-  exact unop_epi_of_mono (opMap φ).τ₂
-
-=======
   have : Mono S₁.op.f := by dsimp; infer_instance
   have : Mono S₂.op.f := by dsimp; infer_instance
   have : Mono (opMap φ).τ₁ := by dsimp; infer_instance
@@ -1080,7 +839,6 @@ lemma exact_and_epi_g_iff_g_is_cokernel [S.HasHomology] :
   · intro ⟨hS⟩
     exact ⟨S.exact_of_g_is_cokernel hS, epi_of_isColimit_cofork hS⟩
 
->>>>>>> origin/homology-sequence-computation
 end Balanced
 
 end Preadditive
@@ -1089,12 +847,6 @@ section Abelian
 
 variable [Abelian C]
 
-<<<<<<< HEAD
-lemma quasiIso_iff_of_zeros {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
-    (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) [S₁.HasHomology] [S₂.HasHomology] :
-    QuasiIso φ ↔
-      Mono φ.τ₂ ∧ (ShortComplex.mk φ.τ₂ S₂.g (by rw [φ.comm₂₃, hg₁, zero_comp])).Exact := by
-=======
 /-- Given a morphism of short complexes `φ : S₁ ⟶ S₂` in an abelian category, if `S₁.f`
 and `S₁.g` are zero (e.g. when `S₁` is of the form `0 ⟶ S₁.X₂ ⟶ 0`) and `S₂.f = 0`
 (e.g when `S₂` is of the form `0 ⟶ S₂.X₂ ⟶ S₂.X₃`), then `φ` is a quasi-isomorphism iff
@@ -1103,7 +855,6 @@ lemma quasiIso_iff_of_zeros {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) :
     QuasiIso φ ↔
       (ShortComplex.mk φ.τ₂ S₂.g (by rw [φ.comm₂₃, hg₁, zero_comp])).Exact ∧ Mono φ.τ₂ := by
->>>>>>> origin/homology-sequence-computation
   have w : φ.τ₂ ≫ S₂.g = 0 := by rw [φ.comm₂₃, hg₁, zero_comp]
   rw [quasiIso_iff_isIso_liftCycles φ hf₁ hg₁ hf₂]
   constructor
@@ -1111,25 +862,11 @@ lemma quasiIso_iff_of_zeros {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     have : Mono φ.τ₂ := by
       rw [← S₂.liftCycles_i φ.τ₂ w]
       apply mono_comp
-<<<<<<< HEAD
-    refine' ⟨this, _⟩
-=======
     refine' ⟨_, this⟩
->>>>>>> origin/homology-sequence-computation
     apply exact_of_f_is_kernel
     exact IsLimit.ofIsoLimit S₂.cyclesIsKernel
       (Fork.ext (asIso (S₂.liftCycles φ.τ₂ w)).symm (by simp))
   · rintro ⟨h₁, h₂⟩
-<<<<<<< HEAD
-    refine' ⟨⟨h₂.lift S₂.iCycles (by simp), _, _⟩⟩
-    · rw [← cancel_mono φ.τ₂, assoc, h₂.lift_f, liftCycles_i, id_comp]
-    · rw [← cancel_mono S₂.iCycles, assoc, liftCycles_i, h₂.lift_f, id_comp]
-
-lemma quasiIso_iff_of_zeros' {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
-    (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) [S₁.HasHomology] [S₂.HasHomology] :
-    QuasiIso φ ↔
-      Epi φ.τ₂ ∧ (ShortComplex.mk S₁.f φ.τ₂ (by rw [← φ.comm₁₂, hf₂, comp_zero])).Exact := by
-=======
     refine' ⟨⟨h₁.lift S₂.iCycles (by simp), _, _⟩⟩
     · rw [← cancel_mono φ.τ₂, assoc, h₁.lift_f, liftCycles_i, id_comp]
     · rw [← cancel_mono S₂.iCycles, assoc, liftCycles_i, h₁.lift_f, id_comp]
@@ -1142,7 +879,6 @@ lemma quasiIso_iff_of_zeros' {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     (hg₁ : S₁.g = 0) (hf₂ : S₂.f = 0) (hg₂ : S₂.g = 0) :
     QuasiIso φ ↔
       (ShortComplex.mk S₁.f φ.τ₂ (by rw [← φ.comm₁₂, hf₂, comp_zero])).Exact ∧ Epi φ.τ₂ := by
->>>>>>> origin/homology-sequence-computation
   rw [← quasiIso_opMap_iff, quasiIso_iff_of_zeros]
   rotate_left
   · dsimp
@@ -1156,8 +892,6 @@ lemma quasiIso_iff_of_zeros' {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     ⟨fun _ => unop_epi_of_mono φ.τ₂.op, fun _ => op_mono_of_epi _⟩
   tauto
 
-<<<<<<< HEAD
-=======
 variable {S : ShortComplex C}
 
 /-- If `S` is an exact short complex and `f : S.X₂ ⟶ J` is a morphism to an injective object `J`
@@ -1192,7 +926,6 @@ lemma Exact.liftFromProjective_comp
   dsimp [liftFromProjective]
   rw [← toCycles_i, Projective.factorThru_comp_assoc, liftCycles_i]
 
->>>>>>> origin/homology-sequence-computation
 end Abelian
 
 end ShortComplex
@@ -1236,11 +969,8 @@ namespace Splitting
 
 variable [Preadditive C] [Balanced C]
 
-<<<<<<< HEAD
-=======
 /-- This is the splitting of a short complex `S` in a balanced category induced by
 a section of the morphism `S.g : S.X₂ ⟶ S.X₃` -/
->>>>>>> origin/homology-sequence-computation
 noncomputable def ofExactOfSection (S : ShortComplex C) (hS : S.Exact) (s : S.X₃ ⟶ S.X₂)
     (s_g : s ≫ S.g = 𝟙 S.X₃) (hf : Mono S.f) :
     S.Splitting where
@@ -1250,11 +980,8 @@ noncomputable def ofExactOfSection (S : ShortComplex C) (hS : S.Exact) (s : S.X�
     zero_assoc, zero_comp, sub_zero, id_comp]
   s_g := s_g
 
-<<<<<<< HEAD
-=======
 /-- This is the splitting of a short complex `S` in a balanced category induced by
 a retraction of the morphism `S.f : S.X₁ ⟶ S.X₂` -/
->>>>>>> origin/homology-sequence-computation
 noncomputable def ofExactOfRetraction (S : ShortComplex C) (hS : S.Exact) (r : S.X₂ ⟶ S.X₁)
     (f_r : S.f ≫ r = 𝟙 S.X₁) (hg : Epi S.g) :
     S.Splitting where
@@ -1267,53 +994,6 @@ noncomputable def ofExactOfRetraction (S : ShortComplex C) (hS : S.Exact) (r : S
 
 end Splitting
 
-<<<<<<< HEAD
-end ShortComplex
-
-namespace ShortComplex
-
-variable {C : Type*} [Category C] [Preadditive C] {S : ShortComplex C}
-  (hS : S.Exact)
-
-lemma Exact.mono_g [S.HasLeftHomology] (hf : S.f = 0) : Mono S.g := by
-  have := hS.epi_toCycles
-  have : S.iCycles = 0 := by rw [← cancel_epi S.toCycles, comp_zero, toCycles_i, hf]
-  apply Preadditive.mono_of_cancel_zero
-  intro A x₂ hx₂
-  rw [← S.liftCycles_i x₂ hx₂, this, comp_zero]
-
-lemma Exact.epi_f [S.HasRightHomology] (hg : S.g = 0) : Epi S.f := by
-  have := hS.mono_fromOpcycles
-  have : S.pOpcycles = 0 := by rw [← cancel_mono S.fromOpcycles, zero_comp, p_fromOpcycles, hg]
-  apply Preadditive.epi_of_cancel_zero
-  intro A x₂ hx₂
-  rw [← S.p_descOpcycles x₂ hx₂, this, zero_comp]
-
-lemma Exact.mono_g_iff [S.HasLeftHomology] : Mono S.g ↔ S.f = 0 := by
-  constructor
-  · intro
-    rw [← cancel_mono S.g, zero, zero_comp]
-  · exact hS.mono_g
-
-lemma Exact.epi_f_iff [S.HasRightHomology] : Epi S.f ↔ S.g = 0 := by
-  constructor
-  · intro
-    rw [← cancel_epi S.f, zero, comp_zero]
-  · exact hS.epi_f
-
-lemma Exact.isZero_X₂ [S.HasLeftHomology] (hf : S.f = 0) (hg : S.g = 0) : IsZero S.X₂ := by
-  have := hS.mono_g hf
-  rw [IsZero.iff_id_eq_zero, ← cancel_mono S.g, hg, comp_zero, comp_zero]
-
-lemma Exact.isZero_X₂_iff [S.HasLeftHomology] : IsZero S.X₂ ↔ S.f = 0 ∧ S.g = 0 := by
-  constructor
-  · intro h
-    exact ⟨h.eq_of_tgt _ _, h.eq_of_src _ _⟩
-  · rintro ⟨hf, hg⟩
-    exact hS.isZero_X₂ hf hg
-
-=======
->>>>>>> origin/homology-sequence-computation
 end ShortComplex
 
 end CategoryTheory
