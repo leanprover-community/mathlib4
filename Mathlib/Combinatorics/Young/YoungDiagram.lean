@@ -247,7 +247,7 @@ theorem transpose_le_iff {μ ν : YoungDiagram} : μ.transpose ≤ ν.transpose 
   ⟨fun h => by
     convert YoungDiagram.le_of_transpose_le h
     simp, fun h => by
-    rw [←transpose_transpose μ] at h
+    rw [← transpose_transpose μ] at h
     exact YoungDiagram.le_of_transpose_le h ⟩
 #align young_diagram.transpose_le_iff YoungDiagram.transpose_le_iff
 
@@ -499,7 +499,7 @@ theorem rowLens_length_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hpo
     (ofRowLens w hw).rowLens.length = w.length := by
   simp only [length_rowLens, colLen, Nat.find_eq_iff, mem_cells, mem_ofRowLens,
     lt_self_iff_false, IsEmpty.exists_iff, Classical.not_not]
-  refine' ⟨True.intro, fun n hn => ⟨hn, hpos _ (List.get_mem _ _ hn)⟩⟩
+  refine' ⟨not_false, fun n hn => ⟨hn, hpos _ (List.get_mem _ _ hn)⟩⟩
 #align young_diagram.row_lens_length_of_row_lens YoungDiagram.rowLens_length_ofRowLens
 
 -- Porting note: use `List.get` instead of `List.nthLe` because it has been deprecated

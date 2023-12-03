@@ -413,7 +413,7 @@ instance Subsingleton.measurableSingletonClass {α} [MeasurableSpace α] [Subsin
     MeasurableSingletonClass α := by
   refine' ⟨fun i => _⟩
   convert MeasurableSet.univ
-  simp [Set.eq_univ_iff_forall]
+  simp [Set.eq_univ_iff_forall, eq_iff_true_of_subsingleton]
 #noalign empty.measurable_singleton_class
 #noalign punit.measurable_singleton_class
 
@@ -928,7 +928,7 @@ theorem measurable_uniqueElim [Unique δ] [∀ i, MeasurableSpace (π i)] :
 
 theorem measurable_updateFinset [DecidableEq δ] {s : Finset δ} {x : ∀ i, π i} :
     Measurable (updateFinset x s) := by
-  simp_rw [updateFinset, measurable_pi_iff]
+  simp (config := { unfoldPartialApp := true }) only [updateFinset, measurable_pi_iff]
   intro i
   by_cases h : i ∈ s <;> simp [h, measurable_pi_apply]
 
@@ -1372,6 +1372,10 @@ attribute [simps! apply toEquiv] trans refl
 
 @[simp]
 theorem symm_symm (e : α ≃ᵐ β) : e.symm.symm = e := rfl
+
+theorem symm_bijective :
+    Function.Bijective (MeasurableEquiv.symm : (α ≃ᵐ β) → β ≃ᵐ α) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
 theorem symm_refl (α : Type*) [MeasurableSpace α] : (refl α).symm = refl α :=
@@ -1861,7 +1865,7 @@ theorem MeasurableSpace.comap_compl {m' : MeasurableSpace β} [BooleanAlgebra β
     (h : Measurable (compl : β → β)) (f : α → β) :
     MeasurableSpace.comap (fun a => (f a)ᶜ) inferInstance =
       MeasurableSpace.comap f inferInstance := by
-  rw [←Function.comp_def, ←MeasurableSpace.comap_comp]
+  rw [← Function.comp_def, ← MeasurableSpace.comap_comp]
   congr
   exact (MeasurableEquiv.ofInvolutive _ compl_involutive h).measurableEmbedding.comap_eq
 #align measurable_space.comap_compl MeasurableSpace.comap_compl

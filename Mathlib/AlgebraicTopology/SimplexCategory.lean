@@ -512,7 +512,7 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
   rw [epi_iff_surjective]
   intro b
   simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
-  by_cases b ≤ i
+  by_cases h : b ≤ i
   · use b
     -- This was not needed before leanprover/lean4#2644
     dsimp
@@ -661,7 +661,7 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
 
 theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ ⟶ mk (n + 1))
     (i : Fin (n + 2)) (hi : ∀ x, θ.toOrderHom x ≠ i) : ∃ θ' : Δ ⟶ mk n, θ = θ' ≫ δ i := by
-  by_cases i < Fin.last (n + 1)
+  by_cases h : i < Fin.last (n + 1)
   · use θ ≫ σ (Fin.castPred i)
     ext1
     ext1
