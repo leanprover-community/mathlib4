@@ -449,6 +449,7 @@ theorem coe_constrL (v : Basis ι 𝕜 E) (f : ι → F) : (v.constrL f : E →�
 
 /-- The continuous linear equivalence between a vector space over `𝕜` with a finite basis and
 functions from its basis indexing type to `𝕜`. -/
+@[simps! apply]
 def equivFunL (v : Basis ι 𝕜 E) : E ≃L[𝕜] ι → 𝕜 :=
   { v.equivFun with
     continuous_toFun :=
@@ -458,6 +459,11 @@ def equivFunL (v : Basis ι 𝕜 E) : E ≃L[𝕜] ι → 𝕜 :=
       change Continuous v.equivFun.symm.toFun
       exact v.equivFun.symm.toLinearMap.continuous_of_finiteDimensional }
 #align basis.equiv_funL Basis.equivFunL
+
+@[simp]
+lemma equivFunL_symm_apply_repr (v : Basis ι 𝕜 E) (x : E) :
+    v.equivFunL.symm (v.repr x) = x :=
+  v.equivFunL.symm_apply_apply x
 
 @[simp]
 theorem constrL_apply (v : Basis ι 𝕜 E) (f : ι → F) (e : E) :
