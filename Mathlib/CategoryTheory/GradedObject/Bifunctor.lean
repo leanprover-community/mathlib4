@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-/-import Mathlib.CategoryTheory.GradedObject.Map
-
-namespace CategoryTheory
-
-=======
 /-
 Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -29,21 +23,15 @@ namespace CategoryTheory
 
 open Category
 
->>>>>>> origin/homology-sequence-computation
 variable {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
   (F : C₁ ⥤ C₂ ⥤ C₃)
 
 namespace GradedObject
 
-<<<<<<< HEAD
-@[simps]
-def mapBifunctorFunctor (I J : Type*) :
-=======
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` and types `I` and `J`, this is the obvious
 functor `GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃`. -/
 @[simps]
 def mapBifunctor (I J : Type*) :
->>>>>>> origin/homology-sequence-computation
     GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃ where
   obj X :=
     { obj := fun Y ij => (F.obj (X ij.1)).obj (Y ij.2)
@@ -55,26 +43,6 @@ section
 
 variable {I J K : Type*} (p : I × J → K)
 
-<<<<<<< HEAD
-@[simp]
-noncomputable def mapBifunctorMapObj (X : GradedObject I C₁) (Y : GradedObject J C₂)
-  [HasMap (((mapBifunctorFunctor F I J).obj X).obj Y) p] : GradedObject K C₃ :=
-    (((mapBifunctorFunctor F I J).obj X).obj Y).mapObj p
-
-noncomputable def ιMapBifunctorMapObj (p : I × J → K) (X : GradedObject I C₁) (Y : GradedObject J C₂)
-    [HasMap (((mapBifunctorFunctor F I J).obj X).obj Y) p]
-    (i : I) (j : J) (k : K) (h : p ⟨i, j⟩ = k) :
-    (F.obj (X i)).obj (Y j) ⟶ mapBifunctorMapObj F p X Y k :=
-  (((mapBifunctorFunctor F I J).obj X).obj Y).ιMapObj p ⟨i, j⟩ k h
-
-@[simp]
-noncomputable def mapBifunctorMapMap {X₁ X₂ : GradedObject I C₁} (f : X₁ ⟶ X₂)
-    {Y₁ Y₂ : GradedObject J C₂} (g : Y₁ ⟶ Y₂)
-    [HasMap (((mapBifunctorFunctor F I J).obj X₁).obj Y₁) p]
-    [HasMap (((mapBifunctorFunctor F I J).obj X₂).obj Y₂) p] :
-    mapBifunctorMapObj F p X₁ Y₁ ⟶ mapBifunctorMapObj F p X₂ Y₂ :=
-  GradedObject.mapMap (((mapBifunctorFunctor F I J).map f).app Y₁ ≫ ((mapBifunctorFunctor F I J).obj X₂).map g) p
-=======
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃`, graded objects `X : GradedObject I C₁` and
  `Y : GradedObject J C₂` and a map `p : I × J → K`, this is the `K`-graded object sending
 `k` to the coproduct of `(F.obj (X i)).obj (Y j)` for `p ⟨i, j⟩ = k`. -/
@@ -101,22 +69,10 @@ noncomputable def mapBifunctorMapMap {X₁ X₂ : GradedObject I C₁} (f : X₁
     mapBifunctorMapObj F p X₁ Y₁ ⟶ mapBifunctorMapObj F p X₂ Y₂ :=
   GradedObject.mapMap (((mapBifunctor F I J).map f).app Y₁ ≫
     ((mapBifunctor F I J).obj X₂).map g) p
->>>>>>> origin/homology-sequence-computation
 
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorMapMap {X₁ X₂ : GradedObject I C₁} (f : X₁ ⟶ X₂)
     {Y₁ Y₂ : GradedObject J C₂} (g : Y₁ ⟶ Y₂)
-<<<<<<< HEAD
-    [HasMap (((mapBifunctorFunctor F I J).obj X₁).obj Y₁) p]
-    [HasMap (((mapBifunctorFunctor F I J).obj X₂).obj Y₂) p]
-    (i : I) (j : J) (k : K) (h : p ⟨i, j⟩ = k) :
-    ιMapBifunctorMapObj F p X₁ Y₁ i j k h ≫ mapBifunctorMapMap F p f g k =
-      (F.map (f i)).app (Y₁ j) ≫ (F.obj (X₂ i)).map (g j) ≫ ιMapBifunctorMapObj F p X₂ Y₂ i j k h := by
-  simp [ιMapBifunctorMapObj, mapBifunctorMapMap]
-
-@[simps]
-noncomputable def mapBifunctorMapFunctor [∀ X Y, HasMap (((mapBifunctorFunctor F I J).obj X).obj Y) p] :
-=======
     [HasMap (((mapBifunctor F I J).obj X₁).obj Y₁) p]
     [HasMap (((mapBifunctor F I J).obj X₂).obj Y₂) p]
     (i : I) (j : J) (k : K) (h : p ⟨i, j⟩ = k) :
@@ -133,7 +89,6 @@ functor `GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject K C₃` se
 `k` to the coproduct of `(F.obj (X i)).obj (Y j)` for `p ⟨i, j⟩ = k`. -/
 @[simps]
 noncomputable def mapBifunctorMap [∀ X Y, HasMap (((mapBifunctor F I J).obj X).obj Y) p] :
->>>>>>> origin/homology-sequence-computation
     GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject K C₃ where
   obj X :=
     { obj := fun Y => mapBifunctorMapObj F p X Y
@@ -142,11 +97,7 @@ noncomputable def mapBifunctorMap [∀ X Y, HasMap (((mapBifunctor F I J).obj X)
     { app := fun Y => mapBifunctorMapMap F p φ (𝟙 Y)
       naturality := fun {Y₁ Y₂} ψ => by
         dsimp
-<<<<<<< HEAD
-        simp only [Functor.map_id, NatTrans.id_app, Category.id_comp, Category.comp_id,
-=======
         simp only [Functor.map_id, NatTrans.id_app, id_comp, comp_id,
->>>>>>> origin/homology-sequence-computation
           ← mapMap_comp, NatTrans.naturality] }
 
 end
@@ -154,7 +105,3 @@ end
 end GradedObject
 
 end CategoryTheory
-<<<<<<< HEAD
--/
-=======
->>>>>>> origin/homology-sequence-computation

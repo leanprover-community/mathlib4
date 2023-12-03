@@ -32,15 +32,8 @@ open CategoryTheory.MonoidalCategory
 
 namespace CategoryTheory
 
-<<<<<<< HEAD
-variable {C : Type _} [Category C] [MonoidalCategory C] [Abelian C] [MonoidalPreadditive C]
-  [HasProjectiveResolutions C]
-
-variable (C)
-=======
 variable (C : Type*) [Category C] [MonoidalCategory C]
   [Abelian C] [MonoidalPreadditive C] [HasProjectiveResolutions C]
->>>>>>> origin/homology-sequence-computation
 
 /-- We define `Tor C n : C ⥤ C ⥤ C` by left-deriving in the second factor of `(X, Y) ↦ X ⊗ Y`. -/
 @[simps]

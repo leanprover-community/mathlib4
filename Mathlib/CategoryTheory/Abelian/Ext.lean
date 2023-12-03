@@ -7,13 +7,8 @@ import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.CategoryTheory.Abelian.LeftDerived
 import Mathlib.CategoryTheory.Abelian.Opposite
-<<<<<<< HEAD
-import Mathlib.CategoryTheory.Abelian.Projective
-import Mathlib.Algebra.Homology.Opposite
-=======
 import Mathlib.CategoryTheory.Abelian.ProjectiveResolution
 import Mathlib.CategoryTheory.Linear.Yoneda
->>>>>>> origin/homology-sequence-computation
 
 #align_import category_theory.abelian.ext from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -93,43 +88,6 @@ end ProjectiveResolution
 end CategoryTheory
 
 /-- If `X : C` is projective and `n : ℕ`, then `Ext^(n + 1) X Y ≅ 0` for any `Y`. -/
-<<<<<<< HEAD
-def extSuccOfProjective (X Y : C) [Projective X] (n : ℕ) :
-    ((Ext R C (n + 1)).obj (Opposite.op X)).obj Y ≅ 0 :=
-  let E := (((linearYoneda R C).obj Y).rightOp.leftDerivedObjProjectiveSucc n X).unop.symm
-  E ≪≫
-    { hom := 0
-      inv := 0
-      hom_inv_id := by
-        let Z : (ModuleCat R)ᵒᵖ := 0
-        rw [← (0 : 0 ⟶ Z.unop).unop_op, ← (0 : Z.unop ⟶ 0).unop_op, ← unop_id, ← unop_comp]
-        aesop }
-set_option linter.uppercaseLean3 false in
-#align Ext_succ_of_projective extSuccOfProjective
-
-end
-
-namespace CategoryTheory
-
-namespace ProjectiveResolution
-
-variable {C : Type _} [Category C] [Abelian C] [EnoughProjectives C]
-  {X : C} (P : ProjectiveResolution X) (R : Type _) [Ring R]  [Linear R C]
-
-def cochainComplexExt (Y : C) : CochainComplex (ModuleCat R) ℕ :=
-  ((((linearYoneda R C).obj Y).rightOp.mapHomologicalComplex _).obj P.complex).unop
-
-noncomputable def ExtIsoObj (Y : C) (n : ℕ) :
-    ((Ext R C n).obj (Opposite.op X)).obj Y ≅ (P.cochainComplexExt R Y).homology n :=
-  (P.isoLeftDerivedObj ((linearYoneda R C).obj Y).rightOp n).unop.symm ≪≫
-    HomologicalComplex.homologyUnopIso _ _
-
--- TODO functoriality of ExtIsoObj
-
-end ProjectiveResolution
-
-end CategoryTheory
-=======
 lemma isZero_Ext_succ_of_projective (X Y : C) [Projective X] (n : ℕ) :
     IsZero (((Ext R C (n + 1)).obj (Opposite.op X)).obj Y) := by
   refine IsZero.of_iso ?_ ((ProjectiveResolution.self X).isoExt (n + 1) Y)
@@ -141,4 +99,3 @@ lemma isZero_Ext_succ_of_projective (X Y : C) [Projective X] (n : ℕ) :
   obtain rfl : x = 0 := (HomologicalComplex.isZero_single_obj_X
     (ComplexShape.down ℕ) 0 X (n + 1) (by simp)).eq_of_src _ _
   rfl
->>>>>>> origin/homology-sequence-computation

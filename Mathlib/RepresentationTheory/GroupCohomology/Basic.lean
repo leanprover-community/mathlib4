@@ -234,12 +234,7 @@ def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
 `Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
 def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
-<<<<<<< HEAD
-  (HomologicalComplex.homologyFunctor _ _ n).mapIso (inhomogeneousCochainsIso A) ≪≫
-    (extIso k G A n).symm
-=======
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
     (extIso k G A n).symm
 set_option linter.uppercaseLean3 false in
 #align group_cohomology_iso_Ext groupCohomologyIsoExt
->>>>>>> origin/homology-sequence-computation

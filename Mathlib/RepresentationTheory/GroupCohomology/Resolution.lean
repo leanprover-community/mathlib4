@@ -684,15 +684,9 @@ theorem quasiIso_forget₂_εToSingle₀ :
   exact quasiIso_of_comp_right (hφφ' := h)
 #align group_cohomology.resolution.quasi_iso_of_forget₂_ε_to_single₀ groupCohomology.resolution.quasiIso_forget₂_εToSingle₀
 
-<<<<<<< HEAD
-instance : QuasiIso (εToSingle₀ k G) :=
-  (forget₂ _ (ModuleCat.{u} k)).quasiIso_of_map_quasiIso_of_preservesHomology _
-    (quasiIsoOfForget₂εToSingle₀ k G)
-=======
 instance : QuasiIso (εToSingle₀ k G) := by
   rw [← HomologicalComplex.quasiIso_map_iff_of_preservesHomology _ (forget₂ _ (ModuleCat.{u} k))]
   apply quasiIso_forget₂_εToSingle₀
->>>>>>> origin/homology-sequence-computation
 
 end Exactness
 
@@ -703,14 +697,8 @@ open groupCohomology.resolution HomologicalComplex.Hom
 variable [Group G]
 
 /-- The standard projective resolution of `k` as a trivial `k`-linear `G`-representation. -/
-<<<<<<< HEAD
-def GroupCohomology.projectiveResolution : ProjectiveResolution (Rep.trivial k G k) where
-  π := εToSingle₀ k G
-  projective := x_projective k G
-=======
 def groupCohomology.projectiveResolution : ProjectiveResolution (Rep.trivial k G k) where
   π := εToSingle₀ k G
->>>>>>> origin/homology-sequence-computation
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.ProjectiveResolution groupCohomology.projectiveResolution
 
@@ -723,12 +711,7 @@ instance : EnoughProjectives (Rep k G) :=
 standard resolution of `k` called `groupCohomology.resolution k G`. -/
 def groupCohomology.extIso (V : Rep k G) (n : ℕ) :
     ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
-<<<<<<< HEAD
-      ((GroupCohomology.projectiveResolution k G).cochainComplexExt k V).homology n :=
-  (GroupCohomology.projectiveResolution k G).ExtIsoObj k V n
-=======
       ((groupCohomology.resolution k G).linearYonedaObj k V).homology n :=
   (groupCohomology.projectiveResolution k G).isoExt n V
->>>>>>> origin/homology-sequence-computation
 set_option linter.uppercaseLean3 false in
 #align group_cohomology.Ext_iso groupCohomology.extIso
