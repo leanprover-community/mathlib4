@@ -135,8 +135,6 @@ theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero {U : Set M} (hU : IsOp
     (h : ∀ (g : M → ℝ), Smooth I 𝓘(ℝ) g → HasCompactSupport g → support g ⊆ U →
         ∫ x, g x • f x ∂μ = 0) :
     ∀ᵐ x ∂μ, x ∈ U → f x = 0 := by
-  have := I.locallyCompactSpace
-  have := ChartedSpace.locallyCompactSpace H M
   have := I.secondCountableTopology
   have := ChartedSpace.secondCountable_of_sigma_compact H M
   rcases exists_msmooth_support_eq_eq_one_iff I hU isClosed_empty (empty_subset _) with
