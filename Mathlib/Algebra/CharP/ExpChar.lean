@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scholbach
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Data.Nat.Prime
 
 #align_import algebra.char_p.exp_char from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -111,3 +112,19 @@ end NoZeroDivisors
 end Nontrivial
 
 end Semiring
+
+theorem ExpChar.exists [Ring R] [NoZeroDivisors R] [Nontrivial R] :
+    ∃ q, ExpChar R q := by
+  obtain ⟨p, h⟩ := CharP.exists R
+  by_cases hp : p = 0
+  · exact ⟨1, by rw [hp] at h; haveI := CharP.charP_to_charZero R; exact .zero⟩
+  exact ⟨p, haveI := NeZero.mk hp; .prime (CharP.char_is_prime_of_pos R p).out⟩
+
+/-- If the algebra map `R →+* A` is injective then `A` has the same exponential characteristic
+as `R`. -/
+theorem expChar_of_injective_algebraMap {R A : Type*}
+    [CommSemiring R] [Semiring A] [Algebra R A] (h : Function.Injective (algebraMap R A))
+    (q : ℕ) [hR : ExpChar R q] : ExpChar A q := by
+  cases' hR with _ _ hprime _
+  · haveI := charZero_of_injective_algebraMap h; exact .zero
+  haveI := charP_of_injective_algebraMap h q; exact .prime hprime
