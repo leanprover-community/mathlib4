@@ -164,7 +164,7 @@ theorem inter_extremePoints_subset_extremePoints_of_subset (hBA : B ⊆ A) :
 
 theorem IsExtreme.extremePoints_subset_extremePoints (hAB : IsExtreme 𝕜 A B) :
     B.extremePoints 𝕜 ⊆ A.extremePoints 𝕜 :=
-  fun _ ↦ by simpa only [←isExtreme_singleton] using hAB.trans
+  fun _ ↦ by simpa only [← isExtreme_singleton] using hAB.trans
 #align is_extreme.extreme_points_subset_extreme_points IsExtreme.extremePoints_subset_extremePoints
 
 theorem IsExtreme.extremePoints_eq (hAB : IsExtreme 𝕜 A B) :

@@ -76,7 +76,7 @@ private def solveLevel (expr : Expr) (path : List Nat) : MetaM SolveReturn := ma
 
   | _ => do
     return {
-      expr := ←(Lean.Core.viewSubexpr path.head! expr)
+      expr := ← (Lean.Core.viewSubexpr path.head! expr)
       val? := toString (path.head! + 1)
       listRest := path.tail!
     }

@@ -139,8 +139,8 @@ instance : NoZeroDivisors R[X] where
     rw [← leadingCoeff_zero, ← leadingCoeff_mul, h]
 
 theorem natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegree + q.natDegree := by
-  rw [← Nat.cast_inj (R := WithBot ℕ), ←degree_eq_natDegree (mul_ne_zero hp hq),
-    Nat.cast_add,  ←degree_eq_natDegree hp, ← degree_eq_natDegree hq, degree_mul]
+  rw [← Nat.cast_inj (R := WithBot ℕ), ← degree_eq_natDegree (mul_ne_zero hp hq),
+    Nat.cast_add, ← degree_eq_natDegree hp, ← degree_eq_natDegree hq, degree_mul]
 #align polynomial.nat_degree_mul Polynomial.natDegree_mul
 
 theorem trailingDegree_mul : (p * q).trailingDegree = p.trailingDegree + q.trailingDegree := by
@@ -1172,7 +1172,7 @@ theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (
     IsCoprime (X - C a) (X - C b) :=
   ⟨-C h.unit⁻¹.val, C h.unit⁻¹.val, by
     rw [neg_mul_comm, ← left_distrib, neg_add_eq_sub, sub_sub_sub_cancel_left, ← C_sub, ← C_mul]
-    rw [←C_1]
+    rw [← C_1]
     congr
     exact h.val_inv_mul⟩
 set_option linter.uppercaseLean3 false in

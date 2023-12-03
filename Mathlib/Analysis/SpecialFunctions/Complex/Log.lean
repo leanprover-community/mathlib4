@@ -169,7 +169,7 @@ theorem exp_eq_exp_iff_exists_int {x y : ℂ} : exp x = exp y ↔ ∃ n : ℤ, x
 theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Countable := by
   refine' ⟨fun hs => _, fun hs => _⟩
   · refine' ((hs.image exp).insert 0).mono _
-    rw [Set.image_preimage_eq_inter_range, range_exp, ←Set.diff_eq, ←Set.union_singleton,
+    rw [Set.image_preimage_eq_inter_range, range_exp, ← Set.diff_eq, ← Set.union_singleton,
         Set.diff_union_self]
     exact Set.subset_union_left _ _
   · rw [← Set.biUnion_preimage_singleton]

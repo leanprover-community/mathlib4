@@ -713,7 +713,7 @@ theorem exists_dist_eq_circumradius_of_subset_insert_orthocenter {t : Triangle �
     have h₁₂₃ := h₁₂₃ i
     repeat' cases' h₁₂₃ with h₁₂₃ h₁₂₃
     · convert Triangle.dist_orthocenter_reflection_circumcenter t hj₂₃
-    · rw [←h₂, dist_reflection_eq_of_mem _
+    · rw [← h₂, dist_reflection_eq_of_mem _
        (mem_affineSpan ℝ (Set.mem_image_of_mem _ (Set.mem_insert _ _)))]
       exact t.dist_circumcenter_eq_circumradius _
     · rw [← h₃,

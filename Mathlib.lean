@@ -805,8 +805,8 @@ import Mathlib.Analysis.NormedSpace.LpEquiv
 import Mathlib.Analysis.NormedSpace.MStructure
 import Mathlib.Analysis.NormedSpace.MatrixExponential
 import Mathlib.Analysis.NormedSpace.MazurUlam
-import Mathlib.Analysis.NormedSpace.Multilinear
-import Mathlib.Analysis.NormedSpace.MultilinearCurrying
+import Mathlib.Analysis.NormedSpace.Multilinear.Basic
+import Mathlib.Analysis.NormedSpace.Multilinear.Curry
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 import Mathlib.Analysis.NormedSpace.PiLp
 import Mathlib.Analysis.NormedSpace.Pointwise
@@ -3384,7 +3384,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.Algebra.Localization
-import Mathlib.Topology.Algebra.Module.Alternating
+import Mathlib.Topology.Algebra.Module.Alternating.Basic
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.Module.Cardinality
 import Mathlib.Topology.Algebra.Module.CharacterSpace
@@ -3392,7 +3392,7 @@ import Mathlib.Topology.Algebra.Module.Determinant
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.Module.LinearPMap
 import Mathlib.Topology.Algebra.Module.LocallyConvex
-import Mathlib.Topology.Algebra.Module.Multilinear
+import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Module.Star
 import Mathlib.Topology.Algebra.Module.StrongTopology
