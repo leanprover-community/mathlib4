@@ -68,7 +68,6 @@ def ofLEFn {w} (f : Fin w → Bool) : BitVec w :=
     ofLEFn (Fin.cons b f) = concat (ofLEFn f) b :=
   rfl
 
-@[simp]
 theorem coe_finFunctionEquiv_eq_getLsb' :
     (finFunctionEquiv : BitVec w → Fin w → Bool) = getLsb' := by
   funext x i
@@ -116,7 +115,13 @@ theorem coe_symm_finFunctionEquiv_eq_ofLEFn :
       simp only [Bool.toNat_eq_bit_zero, Nat.mul_two_eq_bit, Nat.land_bit, Bool.false_and,
         Nat.and_zero, Nat.bit_eq_zero, and_self]
 
+@[simp]
+theorem ofLEFn_getLsb' (x : BitVec w) : ofLEFn (x.getLsb') = x := by
+  simp [← coe_symm_finFunctionEquiv_eq_ofLEFn, ← coe_finFunctionEquiv_eq_getLsb']
 
+@[simp]
+theorem getLsb'_ofLEFn (f : Fin w → Bool) : getLsb' (ofLEFn f) = f := by
+  simp [← coe_symm_finFunctionEquiv_eq_ofLEFn, ← coe_finFunctionEquiv_eq_getLsb']
 
 
 
