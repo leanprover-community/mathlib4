@@ -343,7 +343,7 @@ theorem minimalPeriod_apply (hx : x ∈ periodicPts f) : minimalPeriod f (f x) =
 
 theorem le_of_lt_minimalPeriod_of_iterate_eq {m n : ℕ} (hm : m < minimalPeriod f x)
     (hmn : f^[m] x = f^[n] x) : m ≤ n := by
-  by_contra' hmn'
+  by_contra! hmn'
   rw [← Nat.add_sub_of_le hmn'.le, add_comm, iterate_add_apply] at hmn
   exact
     ((IsPeriodicPt.minimalPeriod_le (tsub_pos_of_lt hmn')

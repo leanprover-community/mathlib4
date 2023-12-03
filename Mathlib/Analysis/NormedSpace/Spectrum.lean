@@ -380,7 +380,7 @@ variable [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [Nontrivial A] (
 protected theorem nonempty : (spectrum ℂ a).Nonempty := by
   /- Suppose `σ a = ∅`, then resolvent set is `ℂ`, any `(z • 1 - a)` is a unit, and `resolvent a`
     is differentiable on `ℂ`. -/
-  by_contra' h
+  by_contra! h
   have H₀ : resolventSet ℂ a = Set.univ := by rwa [spectrum, Set.compl_empty_iff] at h
   have H₁ : Differentiable ℂ fun z : ℂ => resolvent a z := fun z =>
     (hasDerivAt_resolvent (H₀.symm ▸ Set.mem_univ z : z ∈ resolventSet ℂ a)).differentiableAt

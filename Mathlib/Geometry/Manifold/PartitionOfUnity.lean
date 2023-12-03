@@ -159,7 +159,7 @@ theorem sum_eq_one {x} (hx : x ∈ s) : ∑ᶠ i, f i x = 1 :=
 #align smooth_partition_of_unity.sum_eq_one SmoothPartitionOfUnity.sum_eq_one
 
 theorem exists_pos_of_mem {x} (hx : x ∈ s) : ∃ i, 0 < f i x := by
-  by_contra' h
+  by_contra! h
   have H : ∀ i, f i x = 0 := fun i ↦ le_antisymm (h i) (f.nonneg i x)
   have := f.sum_eq_one hx
   simp_rw [H] at this

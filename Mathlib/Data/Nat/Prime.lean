@@ -174,7 +174,7 @@ theorem prime_three : Prime 3 := by decide
 
 theorem Prime.five_le_of_ne_two_of_ne_three {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2)
     (h_three : p ≠ 3) : 5 ≤ p := by
-  by_contra' h
+  by_contra! h
   revert h_two h_three hp
   -- Porting note: was `decide!`
   match p with
