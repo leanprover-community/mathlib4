@@ -46,6 +46,9 @@ The main definitions are
  * `MeasureTheory.ProbabilityMeasure.continuous_map`: For a continuous function `f : Ω → Ω'`, the
    push-forward of probability measures `f* : ProbabilityMeasure Ω → ProbabilityMeasure Ω'` is
    continuous.
+ * `MeasureTheory.ProbabilityMeasure.t2Space`: The topology of convergence in distribution is
+   Hausdorff on Borel spaces where indicators of closed sets have continuous decreasing
+   approximating sequences (in particular on any pseudo-metrizable spaces).
 
 TODO:
  * Probability measures form a convex space.
@@ -303,7 +306,7 @@ theorem tendsto_iff_forall_integral_tendsto {γ : Type*} {F : Filter γ}
 /-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
 continuous functions (`HasOuterApproxClosed`), the topology of weak convergence of Borel probability
 measures is Hausdorff (`T2Space`). -/
-instance {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterApproxClosed Ω]
+instance t2Space {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterApproxClosed Ω]
     [BorelSpace Ω] :
     T2Space (ProbabilityMeasure Ω) := Embedding.t2Space (toFiniteMeasure_embedding Ω)
 

@@ -46,6 +46,9 @@ The main definitions are
    `MeasureTheory.FiniteMeasure.tendsto_iff_forall_lintegral_tendsto`.
  * `MeasureTheory.FiniteMeasure.continuous_map`: For a continuous function `f : Ω → Ω'`, the
    push-forward of finite measures `f* : FiniteMeasure Ω → FiniteMeasure Ω'` is continuous.
+ * `MeasureTheory.FiniteMeasure.t2Space`: The topology of weak convergence of finite Borel measures
+   is Hausdorff on spaces where indicators of closed sets have continuous decreasing approximating
+   sequences (in particular on any pseudo-metrizable spaces).
 
 ## Implementation notes
 
@@ -569,7 +572,7 @@ lemma exists_isOpen_isOpen_mem_mem_disjoint_of_testAgainstNN_lt {f : Ω →ᵇ �
 /-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
 continuous functions (`HasOuterApproxClosed`), the topology of weak convergence of finite Borel
 measures is Hausdorff (`T2Space`). -/
-instance {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterApproxClosed Ω]
+instance t2Space {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterApproxClosed Ω]
     [BorelSpace Ω] :
     T2Space (FiniteMeasure Ω) where
   t2 := by
