@@ -114,6 +114,7 @@ theorem mul_apply (ψ φ : AddChar R R') (a : R) : (ψ * φ) a = ψ a * φ a :=
 @[simp]
 theorem one_apply (a : R) : (1 : AddChar R R') a = 1 := rfl
 
+-- this instance was a bad idea and conflicted with `instFunLike` above
 #noalign add_char.monoid_hom_class
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5229): added.
