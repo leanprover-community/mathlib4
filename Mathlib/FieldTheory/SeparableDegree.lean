@@ -895,6 +895,12 @@ theorem Field.isSeparable_adjoin_iff_separable {S : Set E} :
   exact ⟨fun h x hx ↦ (adjoin.mono F _ _ <| Set.singleton_subset_iff.2 hx).trans h <|
     mem_adjoin_simple_self F x, adjoin_le_iff.2⟩
 
+/-- The (relative) separable closure of `E / F` is equal to `E` if and only if `E / F` is
+separable. -/
+theorem separableClosure.eq_top_iff : separableClosure F E = ⊤ ↔ IsSeparable F E :=
+  ⟨fun h ↦ isSeparable_iff.2 fun _ ↦ (mem_separableClosure_iff F E).1 (h ▸ mem_top),
+    fun h ↦ top_unique <| fun x _ ↦ (mem_separableClosure_iff F E).2 ((isSeparable_iff.1 h) x)⟩
+
 end separableClosure
 
 section IsPurelyInseparable
@@ -937,6 +943,20 @@ theorem AlgEquiv.isPurelyInseparable_iff (e : K ≃ₐ[F] E) :
   ⟨fun _ ↦ e.isPurelyInseparable, fun _ ↦ e.symm.isPurelyInseparable⟩
 
 variable (F E K)
+
+/-- If `E / F` is purely inseparable, then the (relative) separable closure of `E / F` is
+equal to `F`. -/
+theorem separableClosure.eq_bot_of_isPurelyInseparable [IsPurelyInseparable F E] :
+    separableClosure F E = ⊥ :=
+  bot_unique fun x h ↦ IsPurelyInseparable.inseparable F x ((mem_separableClosure_iff F E).1 h).2
+
+/-- If `E / F` is an algebraic extension, then the (relative) separable closure of `E / F` is
+equal to `F` if and only if `E / F` is purely inseparable. -/
+theorem separableClosure.eq_bot_iff (halg : Algebra.IsAlgebraic F E) :
+    separableClosure F E = ⊥ ↔ IsPurelyInseparable F E :=
+  ⟨fun h ↦ isPurelyInseparable_iff.2 fun x ↦ have hx := (halg x).isIntegral; ⟨hx, fun hs ↦ by
+    simpa only [h] using (mem_separableClosure_iff F E).2 ⟨hx, hs⟩⟩,
+      fun _ ↦ eq_bot_of_isPurelyInseparable F E⟩
 
 instance isPurelyInseparable_self : IsPurelyInseparable F F :=
   ⟨fun _ ↦ isIntegral_algebraMap, fun x _ ↦ ⟨x, rfl⟩⟩
