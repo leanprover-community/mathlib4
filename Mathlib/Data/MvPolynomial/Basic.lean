@@ -247,7 +247,7 @@ theorem C_injective (σ : Type*) (R : Type*) [CommSemiring R] :
 theorem C_surjective {R : Type*} [CommSemiring R] (σ : Type*) [IsEmpty σ] :
     Function.Surjective (C : R → MvPolynomial σ R) := by
   refine' fun p => ⟨p.toFun 0, Finsupp.ext fun a => _⟩
-  simp only [C_apply, ←single_eq_monomial, (Finsupp.ext isEmptyElim (α := σ) : a = 0),
+  simp only [C_apply, ← single_eq_monomial, (Finsupp.ext isEmptyElim (α := σ) : a = 0),
     single_eq_same]
   rfl
 #align mv_polynomial.C_surjective MvPolynomial.C_surjective
@@ -533,7 +533,7 @@ theorem finsupp_support_eq_support (p : MvPolynomial σ R) : Finsupp.support p =
 
 theorem support_monomial [h : Decidable (a = 0)] :
     (monomial s a).support = if a = 0 then ∅ else {s} := by
-  rw [←Subsingleton.elim (Classical.decEq R a 0) h]
+  rw [← Subsingleton.elim (Classical.decEq R a 0) h]
   rfl
   -- porting note: the proof in Lean 3 wasn't fundamentally better and needed `by convert rfl`
   -- the issue is the different decidability instances in the `ite` expressions
