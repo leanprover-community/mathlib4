@@ -164,14 +164,15 @@ variable {n : Type*} [Fintype n]
 
 theorem posDef_of_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)}
     (hQ : Q.toMatrix'.PosDef) : Q.PosDef := by
-  rw [← toQuadraticForm_associated ℝ Q, ← BilinForm.toMatrix'.left_inv ((associatedHom ℝ) Q)]
+  rw [← toQuadraticForm_associated ℝ Q,
+    ← BilinForm.toMatrix'.left_inv ((associatedHom (R := ℝ) ℝ) Q)]
   apply Matrix.posDef_toQuadraticForm' hQ
 #align quadratic_form.pos_def_of_to_matrix' QuadraticForm.posDef_of_toMatrix'
 
 theorem posDef_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)} (hQ : Q.PosDef) :
     Q.toMatrix'.PosDef := by
   rw [← toQuadraticForm_associated ℝ Q, ←
-    BilinForm.toMatrix'.left_inv ((associatedHom ℝ) Q)] at hQ
+    BilinForm.toMatrix'.left_inv ((associatedHom (R := ℝ) ℝ) Q)] at hQ
   apply Matrix.posDef_of_toQuadraticForm' (isSymm_toMatrix' Q) hQ
 #align quadratic_form.pos_def_to_matrix' QuadraticForm.posDef_toMatrix'
 
@@ -196,7 +197,7 @@ noncomputable def NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosD
         · simp [h]
         · exact le_of_lt (hM.re_dotProduct_pos h)
       definite := fun x (hx : dotProduct _ _ = 0) => by
-        by_contra' h
+        by_contra! h
         simpa [hx, lt_irrefl] using hM.re_dotProduct_pos h
       add_left := by simp only [star_add, add_dotProduct, eq_self_iff_true, forall_const]
       smul_left := fun x y r => by

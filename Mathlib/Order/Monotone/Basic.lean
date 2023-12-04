@@ -246,23 +246,23 @@ theorem monotone_dual_iff : Monotone (toDual ∘ f ∘ ofDual : αᵒᵈ → β�
 theorem antitone_dual_iff : Antitone (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ Antitone f := by
   rw [antitone_toDual_comp_iff, monotone_comp_ofDual_iff]
 
-theorem monotone_on_dual_iff : MonotoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ MonotoneOn f s := by
+theorem monotoneOn_dual_iff : MonotoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ MonotoneOn f s := by
   rw [monotoneOn_toDual_comp_iff, antitoneOn_comp_ofDual_iff]
 
-theorem antitone_on_dual_iff : AntitoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ AntitoneOn f s := by
+theorem antitoneOn_dual_iff : AntitoneOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ AntitoneOn f s := by
   rw [antitoneOn_toDual_comp_iff, monotoneOn_comp_ofDual_iff]
 
-theorem strict_mono_dual_iff : StrictMono (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ StrictMono f := by
+theorem strictMono_dual_iff : StrictMono (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ StrictMono f := by
   rw [strictMono_toDual_comp_iff, strictAnti_comp_ofDual_iff]
 
-theorem strict_anti_dual_iff : StrictAnti (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ StrictAnti f := by
+theorem strictAnti_dual_iff : StrictAnti (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) ↔ StrictAnti f := by
   rw [strictAnti_toDual_comp_iff, strictMono_comp_ofDual_iff]
 
-theorem strict_mono_on_dual_iff :
+theorem strictMonoOn_dual_iff :
     StrictMonoOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ StrictMonoOn f s := by
   rw [strictMonoOn_toDual_comp_iff, strictAntiOn_comp_ofDual_iff]
 
-theorem strict_anti_on_dual_iff :
+theorem strictAntiOn_dual_iff :
     StrictAntiOn (toDual ∘ f ∘ ofDual : αᵒᵈ → βᵒᵈ) s ↔ StrictAntiOn f s := by
   rw [strictAntiOn_toDual_comp_iff, strictMonoOn_comp_ofDual_iff]
 
@@ -320,22 +320,22 @@ alias ⟨_, Monotone.dual⟩ := monotone_dual_iff
 alias ⟨_, Antitone.dual⟩ := antitone_dual_iff
 #align antitone.dual Antitone.dual
 
-alias ⟨_, MonotoneOn.dual⟩ := monotone_on_dual_iff
+alias ⟨_, MonotoneOn.dual⟩ := monotoneOn_dual_iff
 #align monotone_on.dual MonotoneOn.dual
 
-alias ⟨_, AntitoneOn.dual⟩ := antitone_on_dual_iff
+alias ⟨_, AntitoneOn.dual⟩ := antitoneOn_dual_iff
 #align antitone_on.dual AntitoneOn.dual
 
-alias ⟨_, StrictMono.dual⟩ := strict_mono_dual_iff
+alias ⟨_, StrictMono.dual⟩ := strictMono_dual_iff
 #align strict_mono.dual StrictMono.dual
 
-alias ⟨_, StrictAnti.dual⟩ := strict_anti_dual_iff
+alias ⟨_, StrictAnti.dual⟩ := strictAnti_dual_iff
 #align strict_anti.dual StrictAnti.dual
 
-alias ⟨_, StrictMonoOn.dual⟩ := strict_mono_on_dual_iff
+alias ⟨_, StrictMonoOn.dual⟩ := strictMonoOn_dual_iff
 #align strict_mono_on.dual StrictMonoOn.dual
 
-alias ⟨_, StrictAntiOn.dual⟩ := strict_anti_on_dual_iff
+alias ⟨_, StrictAntiOn.dual⟩ := strictAntiOn_dual_iff
 #align strict_anti_on.dual StrictAntiOn.dual
 
 end OrderDual
@@ -959,7 +959,7 @@ downright. -/
 lemma not_monotone_not_antitone_iff_exists_lt_lt :
     ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a < b ∧ b < c ∧
     (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
-  simp_rw [not_monotone_not_antitone_iff_exists_le_le, ←and_assoc]
+  simp_rw [not_monotone_not_antitone_iff_exists_le_le, ← and_assoc]
   refine' exists₃_congr (fun a b c ↦ and_congr_left $
     fun h ↦ (Ne.le_iff_lt _).and $ Ne.le_iff_lt _) <;>
   (rintro rfl; simp at h)
