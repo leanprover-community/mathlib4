@@ -1659,19 +1659,19 @@ def DistribMulActionHom.single (a : α) : M →+[R] α →₀ M :=
       simp only [smul_single] }
 #align finsupp.distrib_mul_action_hom.single Finsupp.DistribMulActionHom.single
 
-theorem distribMulActionSemiHom_ext {f g : (α →₀ M) →+[R] N}
+theorem distribMulActionHom_ext {f g : (α →₀ M) →+[R] N}
     (h : ∀ (a : α) (m : M), f (single a m) = g (single a m)) : f = g :=
   DistribMulActionSemiHom.toAddMonoidHom_injective <| addHom_ext h
-#align finsupp.distrib_mul_action_hom_ext Finsupp.distribMulActionSemiHom_ext
+#align finsupp.distrib_mul_action_hom_ext Finsupp.distribMulActionHom_ext
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext]
-theorem distribMulActionSemiHom_ext' {f g : (α →₀ M) →+[R] N}
-    (h : ∀ a : α, f.comp (DistribMulActionSemiHom.single a) =
-      g.comp (DistribMulActionSemiHom.single a)) :
+theorem distribMulActionHom_ext' {f g : (α →₀ M) →+[R] N}
+    (h : ∀ a : α, f.comp (DistribMulActionHom.single a) =
+      g.comp (DistribMulActionHom.single a)) :
     f = g :=
-  distribMulActionSemiHom_ext fun a => DistribMulActionSemiHom.congr_fun (h a)
-#align finsupp.distrib_mul_action_hom_ext' Finsupp.distribMulActionSemiHom_ext'
+  distribMulActionHom_ext fun a => DistribMulActionSemiHom.congr_fun (h a)
+#align finsupp.distrib_mul_action_hom_ext' Finsupp.distribMulActionHom_ext'
 
 end DistribMulActionSemiHom
 
