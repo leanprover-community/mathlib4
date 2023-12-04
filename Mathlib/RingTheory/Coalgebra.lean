@@ -34,9 +34,9 @@ class Coalgebra (R : Type u) (A : Type v) [CommRing R] [AddCommGroup A] [Module 
   /-- The comultiplication is coassociative -/
   coassoc : TensorProduct.assoc R A A A ∘ₗ comul.rTensor A ∘ₗ comul = comul.lTensor A ∘ₗ comul
   /-- The counit satisfies the left counitality law -/
-  counit_id : TensorProduct.lid R A ∘ₗ counit.rTensor A ∘ₗ comul = .id
+  rTensor_counit_comp_comul : counit.rTensor A ∘ₗ comul = TensorProduct.mk R _ _ 1
   /-- The counit satisfies the right counitality law -/
-  id_counit : TensorProduct.rid R A ∘ₗ counit.lTensor A ∘ₗ comul = .id
+  lTensor_counit_comp_comul : counit.lTensor A ∘ₗ comul = (TensorProduct.mk R _ _).flip 1
 
 namespace Coalgebra
 
@@ -56,12 +56,20 @@ theorem coassoc_symm_apply (a : A) :
   rw [(TensorProduct.assoc R A A A).symm_apply_eq, coassoc_apply a]
 
 @[simp]
-theorem counit_id_apply (a : A) : TensorProduct.lid R A (counit.rTensor A (comul a)) = a :=
-  LinearMap.congr_fun counit_id a
+theorem counit_id_apply (a : A) : counit.rTensor A (comul a) = TensorProduct.mk R _ _ 1 a :=
+  LinearMap.congr_fun rTensor_counit_comp_comul a
 
 @[simp]
-theorem id_counit_apply (a : A) : TensorProduct.rid R A (counit.lTensor A (comul a)) = a :=
-  LinearMap.congr_fun id_counit a
+theorem id_counit_apply (a : A) : counit.lTensor A (comul a) = (TensorProduct.mk R _ _).flip 1 a :=
+  LinearMap.congr_fun lTensor_counit_comp_comul a
+
+@[simp]
+theorem lid_counit_id_apply (a : A) : TensorProduct.lid R A (counit.rTensor A (comul a)) = a := by
+  simp
+
+@[simp]
+theorem rid_id_counit_apply (a : A) : TensorProduct.rid R A (counit.lTensor A (comul a)) = a := by
+  simp
 
 end CommRingAddCommGroup
 
@@ -79,8 +87,8 @@ instance toCoalgebra : Coalgebra R R where
   comul := (TensorProduct.mk R R R) 1
   counit := .id
   coassoc := rfl
-  counit_id := by ext; simp
-  id_counit := by ext; simp
+  rTensor_counit_comp_comul := by ext; simp
+  lTensor_counit_comp_comul := by ext; simp
 
 @[simp]
 theorem comul_apply (r : R) : comul r = 1 ⊗ₜ[R] r := rfl
@@ -105,9 +113,9 @@ instance instCoalgebra : Coalgebra R (ι →₀ R) where
   counit := Finsupp.total ι R R (fun _ ↦ 1)
   coassoc := by
     ext; simp
-  counit_id := by
+  rTensor_counit_comp_comul := by
     ext; simp
-  id_counit := by
+  lTensor_counit_comp_comul := by
     ext; simp
 
 @[simp]
