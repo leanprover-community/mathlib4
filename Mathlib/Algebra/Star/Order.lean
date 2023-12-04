@@ -185,4 +185,13 @@ theorem conjugate_le_conjugate' {a b : R} (hab : a ≤ b) (c : R) : c * a * star
   by simpa only [star_star] using conjugate_le_conjugate hab (star c)
 #align conjugate_le_conjugate' conjugate_le_conjugate'
 
+lemma star_eq_self_of_nonneg {x : R} (hx : 0 ≤ x) : star x = x := by
+  rw [StarOrderedRing.nonneg_iff] at hx
+  induction hx using AddSubmonoid.closure_induction' with
+  | Hs y hy =>
+    obtain ⟨z, rfl⟩ := Set.mem_range.mpr hy
+    rw [star_mul, star_star]
+  | H1 => exact star_zero _
+  | Hmul z _ w _ hz hw => rw [star_add, hz, hw]
+
 end NonUnitalSemiring
