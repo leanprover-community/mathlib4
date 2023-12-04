@@ -48,22 +48,21 @@ open MonoidalPredicate
 
 variable [MonoidalPredicate P]
 
-@[simps]
+@[simps?]
 instance : MonoidalCategoryStruct (FullSubcategory P) where
   tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
   whiskerLeft X _ _ f :=
     (fullSubcategoryInclusion P).preimage <| X.1 ◁ (fullSubcategoryInclusion P).map f
-  whiskerRight {X₁ X₂} (f : X₁.1 ⟶ X₂.1) Y :=
+  whiskerRight f Y :=
     (fullSubcategoryInclusion P).preimage <| (fullSubcategoryInclusion P).map f ▷ Y.1
   tensorHom f g :=
     (fullSubcategoryInclusion P).preimage <|
-      (fullSubcategoryInclusion P).map f ⊗ (fullSubcategoryInclusion P).map ga
+      (fullSubcategoryInclusion P).map f ⊗ (fullSubcategoryInclusion P).map g
   tensorUnit := ⟨𝟙_ C, prop_id⟩
   associator X Y Z :=
-    ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv, hom_inv_id (α_ X.1 Y.1 Z.1),
-      inv_hom_id (α_ X.1 Y.1 Z.1)⟩
-  leftUnitor X := ⟨(λ_ X.1).hom, (λ_ X.1).inv, hom_inv_id (λ_ X.1), inv_hom_id (λ_ X.1)⟩
-  rightUnitor X := ⟨(ρ_ X.1).hom, (ρ_ X.1).inv, hom_inv_id (ρ_ X.1), inv_hom_id (ρ_ X.1)⟩
+    (fullSubcategoryInclusion P).preimageIso (α_ X.1 Y.1 Z.1)
+  leftUnitor X := (fullSubcategoryInclusion P).preimageIso (λ_ X.1)
+  rightUnitor X := (fullSubcategoryInclusion P).preimageIso (ρ_ X.1)
 
 /--
 When `P` is a monoidal predicate, the full subcategory for `P` inherits the monoidal structure of
@@ -121,7 +120,7 @@ end
 variable {P} {P' : C → Prop} [MonoidalPredicate P']
 
 -- needed for `aesop_cat`
-attribute [local simp] FullSubcategory.comp_def FullSubcategory.id_def in
+attribute [local simp] FullSubcategory.comp_def FullSubcategory.id_def FullSubcategory.map in
 /-- An implication of predicates `P → P'` induces a monoidal functor between full monoidal
 subcategories. -/
 @[simps]
@@ -130,7 +129,6 @@ def fullMonoidalSubcategory.map (h : ∀ ⦃X⦄, P X → P' X) :
   toFunctor := FullSubcategory.map h
   ε := 𝟙 _
   μ X Y := 𝟙 _
-
 #align category_theory.monoidal_category.full_monoidal_subcategory.map CategoryTheory.MonoidalCategory.fullMonoidalSubcategory.map
 
 instance fullMonoidalSubcategory.mapFull (h : ∀ ⦃X⦄, P X → P' X) :
