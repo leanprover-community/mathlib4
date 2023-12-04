@@ -7,8 +7,8 @@ import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Hom.NonUnitalAlg
 import Mathlib.Algebra.Module.BigOperators
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.Data.Finsupp.Basic
+import Mathlib.LinearAlgebra.Finsupp
 
 #align_import algebra.monoid_algebra.basic from "leanprover-community/mathlib"@"949dc57e616a621462062668c9f39e4e17b64b69"
 
