@@ -318,7 +318,7 @@ theorem comp_eq : (f ≫ show B ⟶ GroupCat.of SX' from g) = f ≫ show B ⟶ G
   ext a
   change g (f a) = h (f a)
   have : f a ∈ { b | h b = g b } := by
-    rw [←agree]
+    rw [← agree]
     use a
   rw [this]
 #align Group.surjective_of_epi_auxs.comp_eq GroupCat.SurjectiveOfEpiAuxs.comp_eq

@@ -69,7 +69,7 @@ noncomputable def normBound : ℤ :=
 
 theorem normBound_pos : 0 < normBound abv bS := by
   obtain ⟨i, j, k, hijk⟩ : ∃ i j k, Algebra.leftMulMatrix bS (bS i) j k ≠ 0 := by
-    by_contra' h
+    by_contra! h
     obtain ⟨i⟩ := bS.index_nonempty
     apply bS.ne_zero i
     apply
@@ -355,7 +355,7 @@ set_option linter.uppercaseLean3 false in
 
 open scoped Classical
 
-/-- The main theorem: the class group of an integral closure `S` of `R` in an
+/-- The **class number theorem**: the class group of an integral closure `S` of `R` in an
 algebraic extension `L` is finite if there is an admissible absolute value.
 
 See also `ClassGroup.fintypeOfAdmissibleOfFinite` where `L` is a finite
