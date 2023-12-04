@@ -568,6 +568,9 @@ variable {F G R}
 @[simp] lemma δ_smul (k : R) (z : Cochain F G n) : δ n m (k • z) = k • δ n m z :=
   (δ_hom R F G n m).map_smul k z
 
+@[simp] lemma δ_units_smul (k : Rˣ) (z : Cochain F G n) : δ n m (k • z) = k • δ n m z :=
+  (δ_hom R F G n m).map_smul k z
+
 lemma δ_δ (n₀ n₁ n₂ : ℤ) (z : Cochain F G n₀) : δ n₁ n₂ (δ n₀ n₁ z) = 0 := by
   by_cases h₁₂ : n₁ + 1 = n₂; swap; rw [δ_shape _ _ h₁₂]
   by_cases h₀₁ : n₀ + 1 = n₁; swap; rw [δ_shape _ _ h₀₁, δ_zero]
@@ -721,6 +724,10 @@ lemma coe_neg (z : Cocycle F G n) :
 
 @[simp]
 lemma coe_smul (z : Cocycle F G n) (x : R) :
+    (↑(x • z) : Cochain F G n) = x • (z : Cochain F G n) := rfl
+
+@[simp]
+lemma coe_units_smul (z : Cocycle F G n) (x : Rˣ) :
     (↑(x • z) : Cochain F G n) = x • (z : Cochain F G n) := rfl
 
 @[simp]

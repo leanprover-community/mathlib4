@@ -21,6 +21,9 @@ instance : SMul R (X ⟶ Y) where
 @[simp]
 lemma smul_f (r : R) (f : X ⟶ Y) (n : ι) : (r • f).f n = r • f.f n := rfl
 
+@[simp]
+lemma units_smul_f (r : Rˣ) (f : X ⟶ Y) (n : ι) : (r • f).f n = r • f.f n := rfl
+
 instance (X Y : HomologicalComplex C c) : Module R (X ⟶ Y) where
   one_smul a := by aesop_cat
   smul_zero := by aesop_cat
