@@ -48,7 +48,7 @@ lemma pow_smul_esymm (s : S) (n : ℕ) (m : Multiset R) :
   dsimp [(· ∘ ·)]
   refine (?_ : _ = ((powersetCard n m).map (fun x : Multiset R ↦ s ^ card x • x.prod)).sum).trans ?_
   · refine congr_arg _ (map_congr rfl (fun x hx ↦ ?_))
-    rw [(mem_powersetCard.1 hx).2]
+    rw [Function.comp_apply, (mem_powersetCard.1 hx).2]
   simp_rw [← prod_map_smul, esymm, powersetCard_map, map_map, (· ∘ ·)]
 
 end Multiset
