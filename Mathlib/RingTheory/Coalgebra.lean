@@ -63,14 +63,6 @@ theorem counit_id_apply (a : A) : counit.rTensor A (comul a) = TensorProduct.mk 
 theorem id_counit_apply (a : A) : counit.lTensor A (comul a) = (TensorProduct.mk R _ _).flip 1 a :=
   LinearMap.congr_fun lTensor_counit_comp_comul a
 
-@[simp]
-theorem lid_counit_id_apply (a : A) : TensorProduct.lid R A (counit.rTensor A (comul a)) = a := by
-  simp
-
-@[simp]
-theorem rid_id_counit_apply (a : A) : TensorProduct.rid R A (counit.lTensor A (comul a)) = a := by
-  simp
-
 end CommRingAddCommGroup
 
 end Coalgebra
