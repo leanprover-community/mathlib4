@@ -16,7 +16,7 @@ However, when one of the factors is compact, a clopen subset can be written as s
 Our argument in `exists_clopen_box` follows the one given in [buzyakovaClopenBox].
 
 We deduce that in a product of compact spaces, a clopen subset is a finite union of clopen boxes,
-and use that to prove that the property of having finitely many clopens is preserved by taking
+and use that to prove that the property of having countably many clopens is preserved by taking
 cartesian products of compact spaces (this is relevant to the theory of light profinite sets).
 
 ## References
@@ -150,21 +150,13 @@ theorem exists_finset_clopen_box :
     ext x
     refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
     · replace h := hI h
-      rw [Set.mem_iUnion] at h ⊢
-      obtain ⟨i, hi⟩ := h
-      use fI i
-      rw [Set.mem_iUnion] at hi ⊢
-      obtain ⟨hi, hi'⟩ := hi
-      have hfi : fI i ∈ (fI '' I).toFinset := by
-        rw [Set.mem_toFinset]
-        exact Set.mem_image_of_mem fI hi
-      use hfi
-    · rw [Set.mem_iUnion] at h
-      obtain ⟨i, hi⟩ := h
-      rw [Set.mem_iUnion] at hi
-      obtain ⟨hi, h⟩ := hi
-      rw [Set.mem_toFinset] at hi
-      obtain ⟨w, hw⟩ := hi
+      simp only [Set.mem_iUnion] at h ⊢
+      obtain ⟨i, hi, h⟩ := h
+      refine ⟨fI i, ?_, h⟩
+      rw [Set.mem_toFinset]
+      exact Set.mem_image_of_mem fI hi
+    · simp only [Set.mem_iUnion, Set.mem_toFinset] at h
+      obtain ⟨s, ⟨w, hw⟩, h⟩ := h
       apply (exists_clopen_box W hW w.val.1 w.val.2 w.prop).choose_spec.choose_spec.2.2.2.2
       rw [← hw.2] at h
       exact h
