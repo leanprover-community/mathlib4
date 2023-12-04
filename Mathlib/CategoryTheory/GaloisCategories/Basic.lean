@@ -375,6 +375,28 @@ instance : PreGaloisCategory (Action FintypeCat (MonCat.of G)) where
       intro g
       aesop
     use u
+    let s : BinaryCofan X Z := BinaryCofan.mk ⟨i, hi⟩ u
+    let t : IsColimit s := {
+      desc := by
+        intro s
+        show Y ⟶ s.pt
+        constructor
+        swap
+        --let v1 : Z.V ⟶ s.pt.V := (BinaryCofan.inl s).hom
+        admit
+        admit
+      fac := sorry
+      uniq := sorry
+    }
+    admit
+
+instance : FibreFunctor (forget₂ (Action FintypeCat (MonCat.of G)) FintypeCat) := sorry
+
+instance (X : Action FintypeCat (MonCat.of G)) : MulAction G X.V := sorry
+
+lemma Action.connected_iff_transitive (X : Action FintypeCat (MonCat.of G)) :
+    ConnectedObject X ↔ MulAction.IsPretransitive G X.V :=
+  sorry
 
 end Examples
 

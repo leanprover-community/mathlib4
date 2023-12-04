@@ -195,7 +195,7 @@ lemma lift_transitive_subobjects (X : C) (Y : FintypeCat) (i : Y ⟶ F.obj X)
     ConnectedObject Z ∧ Mono f ∧ u.hom ≫ i = F.map f := by
   obtain ⟨i, f, t, h1, h2, h3⟩ := hasDecompConnectedComponents F X
   have : X ≅ ∐ f := sorry
-  have : F.obj X ≅ ∐ fun j => F.obj (f j) := sorry
+  have : F.obj (∐ f) ≅ ∐ fun j => F.obj (f j) := sorry
   admit
 
 lemma lift_subobjects (X : C) (Y : FintypeCat) (i : Y ⟶ F.obj X)

@@ -38,7 +38,7 @@ theorem hasDecompConnectedComponents (X : C) : ∃ (ι : Type) (f : ι → C)
   constructor
   infer_instance
   rfl
-  by_cases (IsInitial X → False)
+  by_cases h : (IsInitial X → False)
   swap
   simp only [not_forall] at h
   obtain ⟨hin⟩ := h

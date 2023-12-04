@@ -37,9 +37,9 @@ instance : IsFilteredOrEmpty (Idx F) where
     let φ : F.obj (A ⨯ B) ≅ F.obj A ⨯ F.obj B := PreservesLimitPair.iso F A B
     let ψ : F.obj A ⨯ F.obj B ≅ FintypeCat.of (F.obj A × F.obj B) := FintypeCat.binaryProductIso _ _
     obtain ⟨Y, i, y, h1, _, _⟩ := fibre_in_connected_component F (A ⨯ B) (φ.inv (ψ.inv (a, b)))
-    have hp1 : φ.hom ≫ prod.fst = F.map prod.fst := prodComparison_fst F
+    have hp1 : φ.hom ≫ prod.fst = F.map prod.fst := prodComparison_fst F (A : C) (B : C)
     have hp2 : prod.fst = φ.inv ≫ F.map prod.fst := (Iso.eq_inv_comp φ).mpr hp1
-    have hq1 : φ.hom ≫ prod.snd = F.map prod.snd := prodComparison_snd F
+    have hq1 : φ.hom ≫ prod.snd = F.map prod.snd := prodComparison_snd F (A : C) (B : C)
     have hq2 : prod.snd = φ.inv ≫ F.map prod.snd := (Iso.eq_inv_comp φ).mpr hq1
     obtain ⟨Z, f, z, hgal, hfz⟩ := exists_map_from_galois_of_fibre F Y y
     let hf : F.map (f ≫ i ≫ prod.fst) z = a := by

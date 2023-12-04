@@ -115,8 +115,8 @@ def myEq : WalkingPair ≃ Bool where
   invFun
     | Bool.false => WalkingPair.left
     | Bool.true => WalkingPair.right
-  left_inv := by simp
-  right_inv := by simp
+  left_inv := by decide
+  right_inv := by decide
 
 def combEquiv (α β : Type w) : α ⊕ β ≃ (i : WalkingPair) × (WalkingPair.casesOn i α β) := by
   trans
