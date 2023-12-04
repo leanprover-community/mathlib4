@@ -25,8 +25,9 @@ def finEquiv : BitVec w ≃ Fin (2 ^ w) where
 /-- Equivalence between `BitVec w` and `Fin w → Bool`.
 This version of the equivalence, composed from existing equivalences, is just a private
 implementation detail.
-See `Std.BitVec.finFunctionEquiv` for the public equivalence, defined in terms of
-`Std.BitVec.getLsb'` and `Std.BitVec.ofLEFn` -/
+See `Std.BitVec.finFunctionEquivLE` or `Std.BitVec.finFunctionEquivBE` for the public equivalence,
+defined in terms of `Std.BitVec.getLsb'` (resp. `Std.BitVec.getMsb'`) and `Std.BitVec.ofLEFn` (resp.
+`Std.BitVec.ofBEFn`)  -/
 private def finFunctionEquivAux : BitVec w ≃ (Fin w → Bool) := calc
   BitVec w  ≃ (Fin (2 ^ w))     := finEquiv
   _         ≃ (Fin w -> Fin 2)  := finFunctionFinEquiv.symm
