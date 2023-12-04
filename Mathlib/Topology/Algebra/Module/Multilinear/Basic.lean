@@ -220,7 +220,7 @@ def applyAddHom (m : ∀ i, M₁ i) : ContinuousMultilinearMap R M₁ M₂ →+ 
 @[simp]
 theorem sum_apply {α : Type*} (f : α → ContinuousMultilinearMap R M₁ M₂) (m : ∀ i, M₁ i)
     {s : Finset α} : (∑ a in s, f a) m = ∑ a in s, f a m :=
-  (applyAddHom m).map_sum f s
+  map_sum (applyAddHom m) f s
 #align continuous_multilinear_map.sum_apply ContinuousMultilinearMap.sum_apply
 
 end ContinuousAdd

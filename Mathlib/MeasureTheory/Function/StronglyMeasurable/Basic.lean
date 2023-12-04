@@ -546,14 +546,14 @@ open Filter
 protected theorem sup [Sup β] [ContinuousSup β] (hf : StronglyMeasurable f)
     (hg : StronglyMeasurable g) : StronglyMeasurable (f ⊔ g) :=
   ⟨fun n => hf.approx n ⊔ hg.approx n, fun x =>
-    (hf.tendsto_approx x).sup_right_nhds (hg.tendsto_approx x)⟩
+    (hf.tendsto_approx x).sup_nhds (hg.tendsto_approx x)⟩
 #align measure_theory.strongly_measurable.sup MeasureTheory.StronglyMeasurable.sup
 
 @[aesop safe 20 (rule_sets [Measurable])]
 protected theorem inf [Inf β] [ContinuousInf β] (hf : StronglyMeasurable f)
     (hg : StronglyMeasurable g) : StronglyMeasurable (f ⊓ g) :=
   ⟨fun n => hf.approx n ⊓ hg.approx n, fun x =>
-    (hf.tendsto_approx x).inf_right_nhds (hg.tendsto_approx x)⟩
+    (hf.tendsto_approx x).inf_nhds (hg.tendsto_approx x)⟩
 #align measure_theory.strongly_measurable.inf MeasureTheory.StronglyMeasurable.inf
 
 end Order
@@ -1120,7 +1120,7 @@ protected theorem sup [SemilatticeSup β] [ContinuousSup β] (hf : FinStronglyMe
     (hg : FinStronglyMeasurable g μ) : FinStronglyMeasurable (f ⊔ g) μ := by
   refine'
     ⟨fun n => hf.approx n ⊔ hg.approx n, fun n => _, fun x =>
-      (hf.tendsto_approx x).sup_right_nhds (hg.tendsto_approx x)⟩
+      (hf.tendsto_approx x).sup_nhds (hg.tendsto_approx x)⟩
   refine' (measure_mono (support_sup _ _)).trans_lt _
   exact measure_union_lt_top_iff.mpr ⟨hf.fin_support_approx n, hg.fin_support_approx n⟩
 #align measure_theory.fin_strongly_measurable.sup MeasureTheory.FinStronglyMeasurable.sup
@@ -1130,7 +1130,7 @@ protected theorem inf [SemilatticeInf β] [ContinuousInf β] (hf : FinStronglyMe
     (hg : FinStronglyMeasurable g μ) : FinStronglyMeasurable (f ⊓ g) μ := by
   refine'
     ⟨fun n => hf.approx n ⊓ hg.approx n, fun n => _, fun x =>
-      (hf.tendsto_approx x).inf_right_nhds (hg.tendsto_approx x)⟩
+      (hf.tendsto_approx x).inf_nhds (hg.tendsto_approx x)⟩
   refine' (measure_mono (support_inf _ _)).trans_lt _
   exact measure_union_lt_top_iff.mpr ⟨hf.fin_support_approx n, hg.fin_support_approx n⟩
 #align measure_theory.fin_strongly_measurable.inf MeasureTheory.FinStronglyMeasurable.inf

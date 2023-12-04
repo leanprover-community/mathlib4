@@ -196,7 +196,7 @@ theorem dTwo_comp_dOne : dTwo A ∘ₗ dOne A = 0 := by
   show ModuleCat.ofHom (dOne A) ≫ ModuleCat.ofHom (dTwo A) = _
   have h1 : _ ≫ ModuleCat.ofHom (dOne A) = _ ≫ _ := congr_arg ModuleCat.ofHom (dOne_comp_eq A)
   have h2 : _ ≫ ModuleCat.ofHom (dTwo A) = _ ≫ _ := congr_arg ModuleCat.ofHom (dTwo_comp_eq A)
-  simp only [←LinearEquiv.toModuleIso_hom] at h1 h2
+  simp only [← LinearEquiv.toModuleIso_hom] at h1 h2
   simp only [(Iso.eq_inv_comp _).2 h2, (Iso.eq_inv_comp _).2 h1,
     Category.assoc, Iso.hom_inv_id_assoc, HomologicalComplex.d_comp_d_assoc, zero_comp, comp_zero]
 

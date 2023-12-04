@@ -95,7 +95,7 @@ lemma integrable_gaussianPdfReal (μ : ℝ) (v : ℝ≥0) :
 /-- The gaussian distribution pdf integrates to 1 when the variance is not zero.  -/
 lemma lintegral_gaussianPdfReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ∫⁻ x, ENNReal.ofReal (gaussianPdfReal μ v x) = 1 := by
-  rw [←ENNReal.toReal_eq_one_iff]
+  rw [← ENNReal.toReal_eq_one_iff]
   have hfm : AEStronglyMeasurable (gaussianPdfReal μ v) volume :=
     (stronglyMeasurable_gaussianPdfReal μ v).aestronglyMeasurable
   have hf : 0 ≤ₐₛ gaussianPdfReal μ v := ae_of_all _ (gaussianPdfReal_nonneg μ v)
@@ -105,8 +105,8 @@ lemma lintegral_gaussianPdfReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
   rw [integral_sub_right_eq_self (μ := volume) (fun a ↦ rexp (-a ^ 2 / ((2 : ℝ) * v))) μ]
   simp only [gt_iff_lt, zero_lt_two, zero_le_mul_right, ge_iff_le, div_eq_inv_mul, mul_inv_rev,
     mul_neg]
-  simp_rw [←neg_mul]
-  rw [neg_mul, integral_gaussian, ← Real.sqrt_inv, ←Real.sqrt_mul]
+  simp_rw [← neg_mul]
+  rw [neg_mul, integral_gaussian, ← Real.sqrt_inv, ← Real.sqrt_mul]
   · field_simp
     ring
   · positivity
