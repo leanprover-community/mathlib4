@@ -150,14 +150,11 @@ abbrev LinearMapClass (F : Type*) (R M M₂ : outParam (Type*)) [Semiring R] [Ad
 #align linear_map_class LinearMapClass
 
 @[simp]
-lemma LinearMapClass.map_smul {R M M₂ : outParam (Type*)} [Semiring R] [AddCommMonoid M]
+protected lemma LinearMapClass.map_smul {R M M₂ : outParam (Type*)} [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M₂] [Module R M] [Module R M₂]
     {F : Type*} [LinearMapClass F R M M₂] (f : F) (r : R) (x : M) :
     f (r • x) = r • f x := by
       rw [map_smulₛₗ, RingHom.id_apply]
-
-
-export LinearMapClass (map_smul)
 
 namespace SemilinearMapClass
 

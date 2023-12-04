@@ -176,6 +176,11 @@ abbrev MulActionHomClass (F : Type _) (M : outParam (Type _))
 (X Y : outParam (Type _)) [SMul M X] [SMul M Y] :=
   MulActionSemiHomClass F (@id M) X Y
 
+@[simp]
+theorem map_smul {F M X Y : Type*} [SMul M X] [SMul M Y] [MulActionHomClass F M X Y]
+    (f : F) (c : M) (x : X) : f (c • x) = c • f x :=
+  map_smulₛₗ f c x
+
 attribute [simp] map_smulₛₗ
 
 -- porting note: removed has_coe_to_fun instance, coercions handled differently now
