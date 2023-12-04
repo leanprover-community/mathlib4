@@ -108,7 +108,7 @@ variable {α : Type*} [MeasurableSpace α] {β : Type*} [MeasurableSpace β]
 /-- The binary product of probability measures. -/
 noncomputable def prod (μ : ProbabilityMeasure α) (ν : ProbabilityMeasure β) :
     ProbabilityMeasure (α × β) :=
-  ⟨μ.toMeasure.prod ν.toMeasure, Measure.prod.instIsProbabilityMeasure μ.toMeasure ν.toMeasure⟩
+  ⟨μ.toMeasure.prod ν.toMeasure, by infer_instance⟩
 
 variable (μ : ProbabilityMeasure α) (ν : ProbabilityMeasure β)
 
