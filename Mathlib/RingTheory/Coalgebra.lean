@@ -10,7 +10,7 @@ import Mathlib.RingTheory.TensorProduct
 
 In this file we define `Coalgebra`, and provide instances for:
 
-* Commutative rings: `CommSemiring.toCoalgebra`
+* Commutative semirings: `CommSemiring.toCoalgebra`
 * Finitely supported functions: `Finsupp.instCoalgebra`
 
 ## References
@@ -24,7 +24,7 @@ universe u v
 
 open scoped TensorProduct
 
-/-- A coalgebra over a commutative ring `R` is a module over `R` equipped with a coassociative
+/-- A coalgebra over a commutative (semi)ring `R` is an `R`-module equipped with a coassociative
 comultiplication `Δ` and a counit `ε` obeying the left and right conunitality laws. -/
 class Coalgebra (R : Type u) (A : Type v) [CommSemiring R] [AddCommMonoid A] [Module R A] where
   /-- The comultiplication of the coalgebra -/
