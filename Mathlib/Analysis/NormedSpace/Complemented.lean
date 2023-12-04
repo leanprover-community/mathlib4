@@ -122,23 +122,25 @@ theorem coe_continuous_linearProjOfClosedCompl' (h : IsCompl p q) (hp : IsClosed
     ⇑(p.linearProjOfClosedCompl q h hp hq) = p.linearProjOfIsCompl q h := rfl
 #align subspace.coe_continuous_linear_proj_of_closed_compl' Submodule.coe_continuous_linearProjOfClosedCompl'
 
-theorem ClosedComplemented.of_isClosed_isCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
+theorem ClosedComplemented.of_isCompl_isClosed (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : p.ClosedComplemented :=
   ⟨p.linearProjOfClosedCompl q h hp hq, Submodule.linearProjOfIsCompl_apply_left h⟩
-#align subspace.closed_complemented_of_closed_compl Submodule.ClosedComplemented.of_isClosed_isCompl
+#align subspace.closed_complemented_of_closed_compl Submodule.ClosedComplemented.of_isCompl_isClosed
+
+alias IsCompl.closedComplemented_of_isClosed := ClosedComplemented.of_isCompl_isClosed
 
 theorem closedComplemented_iff_isClosed_exists_isClosed_isCompl :
     p.ClosedComplemented ↔
       IsClosed (p : Set E) ∧ ∃ q : Submodule 𝕜 E, IsClosed (q : Set E) ∧ IsCompl p q :=
   ⟨fun h => ⟨h.isClosed, h.exists_isClosed_isCompl⟩,
-    fun ⟨hp, ⟨_, hq, hpq⟩⟩ => .of_isClosed_isCompl hpq hp hq⟩
+    fun ⟨hp, ⟨_, hq, hpq⟩⟩ => .of_isCompl_isClosed hpq hp hq⟩
 #align subspace.closed_complemented_iff_has_closed_compl Submodule.closedComplemented_iff_isClosed_exists_isClosed_isCompl
 
 theorem ClosedComplemented.of_quotient_finiteDimensional [CompleteSpace 𝕜]
     [FiniteDimensional 𝕜 (E ⧸ p)] (hp : IsClosed (p : Set E)) : p.ClosedComplemented := by
   obtain ⟨q, hq⟩ : ∃ q, IsCompl p q := p.exists_isCompl
   haveI : FiniteDimensional 𝕜 q := (p.quotientEquivOfIsCompl q hq).finiteDimensional
-  exact .of_isClosed_isCompl hq hp q.closed_of_finiteDimensional
+  exact .of_isCompl_isClosed hq hp q.closed_of_finiteDimensional
 #align subspace.closed_complemented_of_quotient_finite_dimensional Submodule.ClosedComplemented.of_quotient_finiteDimensional
 
 end Submodule
