@@ -60,7 +60,7 @@ theorem coe_multiset_prod {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] 
 @[to_additive (attr := norm_cast)] --Porting note: removed `simp`, `simp` can prove it
 theorem coe_finset_prod {ι M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (f : ι → S)
     (s : Finset ι) : ↑(∏ i in s, f i) = (∏ i in s, f i : M) :=
-  (SubmonoidClass.subtype S : _ →* M).map_prod f s
+  map_prod (SubmonoidClass.subtype S) f s
 #align submonoid_class.coe_finset_prod SubmonoidClass.coe_finset_prod
 #align add_submonoid_class.coe_finset_sum AddSubmonoidClass.coe_finset_sum
 
@@ -122,7 +122,7 @@ theorem coe_multiset_prod {M} [CommMonoid M] (S : Submonoid M) (m : Multiset S) 
 @[to_additive (attr := norm_cast, simp)]
 theorem coe_finset_prod {ι M} [CommMonoid M] (S : Submonoid M) (f : ι → S) (s : Finset ι) :
     ↑(∏ i in s, f i) = (∏ i in s, f i : M) :=
-  S.subtype.map_prod f s
+  map_prod S.subtype f s
 #align submonoid.coe_finset_prod Submonoid.coe_finset_prod
 #align add_submonoid.coe_finset_sum AddSubmonoid.coe_finset_sum
 
@@ -232,14 +232,14 @@ theorem coe_sSup_of_directedOn {S : Set (Submonoid M)} (Sne : S.Nonempty)
 
 @[to_additive]
 theorem mem_sup_left {S T : Submonoid M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T := by
-  rw [←SetLike.le_def]
+  rw [← SetLike.le_def]
   exact le_sup_left
 #align submonoid.mem_sup_left Submonoid.mem_sup_left
 #align add_submonoid.mem_sup_left AddSubmonoid.mem_sup_left
 
 @[to_additive]
 theorem mem_sup_right {S T : Submonoid M} : ∀ {x : M}, x ∈ T → x ∈ S ⊔ T := by
-  rw [←SetLike.le_def]
+  rw [← SetLike.le_def]
   exact le_sup_right
 #align submonoid.mem_sup_right Submonoid.mem_sup_right
 #align add_submonoid.mem_sup_right AddSubmonoid.mem_sup_right
@@ -253,7 +253,7 @@ theorem mul_mem_sup {S T : Submonoid M} {x y : M} (hx : x ∈ S) (hy : y ∈ T) 
 @[to_additive]
 theorem mem_iSup_of_mem {ι : Sort*} {S : ι → Submonoid M} (i : ι) :
     ∀ {x : M}, x ∈ S i → x ∈ iSup S := by
-  rw [←SetLike.le_def]
+  rw [← SetLike.le_def]
   exact le_iSup _ _
 #align submonoid.mem_supr_of_mem Submonoid.mem_iSup_of_mem
 #align add_submonoid.mem_supr_of_mem AddSubmonoid.mem_iSup_of_mem
@@ -261,7 +261,7 @@ theorem mem_iSup_of_mem {ι : Sort*} {S : ι → Submonoid M} (i : ι) :
 @[to_additive]
 theorem mem_sSup_of_mem {S : Set (Submonoid M)} {s : Submonoid M} (hs : s ∈ S) :
     ∀ {x : M}, x ∈ s → x ∈ sSup S := by
-  rw [←SetLike.le_def]
+  rw [← SetLike.le_def]
   exact le_sSup hs
 #align submonoid.mem_Sup_of_mem Submonoid.mem_sSup_of_mem
 #align add_submonoid.mem_Sup_of_mem AddSubmonoid.mem_sSup_of_mem

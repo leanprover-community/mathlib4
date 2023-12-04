@@ -145,7 +145,7 @@ map. -/
 @[simps (config := .asFn)]
 def map (f : ι →ᵇᵃ[I₀] M) (g : M →+ N) : ι →ᵇᵃ[I₀] N where
   toFun := g ∘ f
-  sum_partition_boxes' I hI π hπ := by simp_rw [comp, ← g.map_sum, f.sum_partition_boxes hI hπ]
+  sum_partition_boxes' I hI π hπ := by simp_rw [comp, ← map_sum, f.sum_partition_boxes hI hπ]
 #align box_integral.box_additive_map.map BoxIntegral.BoxAdditiveMap.map
 
 /-- If `f` is a box additive function on subboxes of `I` and `π₁`, `π₂` are two prepartitions of

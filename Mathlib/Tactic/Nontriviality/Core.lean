@@ -70,19 +70,19 @@ a list of additional `simp` lemmas that can be passed to `nontriviality` using t
 
 ```
 example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 0 < a := by
-  nontriviality -- There is now a `nontrivial R` hypothesis available.
+  nontriviality -- There is now a `Nontrivial R` hypothesis available.
   assumption
 ```
 
 ```
 example {R : Type} [CommRing R] {r s : R} : r * s = s * r := by
-  nontriviality -- There is now a `nontrivial R` hypothesis available.
+  nontriviality -- There is now a `Nontrivial R` hypothesis available.
   apply mul_comm
 ```
 
 ```
 example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : (2 : ℕ) ∣ 4 := by
-  nontriviality R -- there is now a `nontrivial R` hypothesis available.
+  nontriviality R -- there is now a `Nontrivial R` hypothesis available.
   dec_trivial
 ```
 
@@ -91,7 +91,7 @@ def myeq {α : Type} (a b : α) : Prop := a = b
 
 example {α : Type} (a b : α) (h : a = b) : myeq a b := by
   success_if_fail nontriviality α -- Fails
-  nontriviality α using myeq -- There is now a `nontrivial α` hypothesis available
+  nontriviality α using myeq -- There is now a `Nontrivial α` hypothesis available
   assumption
 ```
 -/

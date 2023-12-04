@@ -298,7 +298,7 @@ noncomputable def isEquivalencePre (S : D) (F : B ⥤ C) (G : C ⥤ D) [IsEquiva
 def post (S : C) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S F ⥤ StructuredArrow (G.obj S) (F ⋙ G)
     where
   obj X := StructuredArrow.mk (G.map X.hom)
-  map f := StructuredArrow.homMk f.right (by simp [Functor.comp_map, ←G.map_comp, ← f.w])
+  map f := StructuredArrow.homMk f.right (by simp [Functor.comp_map, ← G.map_comp, ← f.w])
 #align category_theory.structured_arrow.post CategoryTheory.StructuredArrow.post
 
 instance (S : C) (F : B ⥤ C) (G : C ⥤ D) : Faithful (post S F G) where
@@ -626,7 +626,7 @@ noncomputable def isEquivalencePre (F : B ⥤ C) (G : C ⥤ D) (S : D) [IsEquiva
 def post (F : B ⥤ C) (G : C ⥤ D) (S : C) :
     CostructuredArrow F S ⥤ CostructuredArrow (F ⋙ G) (G.obj S) where
   obj X := CostructuredArrow.mk (G.map X.hom)
-  map f := CostructuredArrow.homMk f.left (by simp [Functor.comp_map, ←G.map_comp, ← f.w])
+  map f := CostructuredArrow.homMk f.left (by simp [Functor.comp_map, ← G.map_comp, ← f.w])
 #align category_theory.costructured_arrow.post CategoryTheory.CostructuredArrow.post
 
 instance (F : B ⥤ C) (G : C ⥤ D) (S : C) : Faithful (post F G S) where
