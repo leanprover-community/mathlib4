@@ -196,6 +196,16 @@ theorem thickenedIndicator_one_of_mem_closure {δ : ℝ} (δ_pos : 0 < δ) (E : 
   rw [thickenedIndicator_apply, thickenedIndicatorAux_one_of_mem_closure δ E x_mem, one_toNNReal]
 #align thickened_indicator_one_of_mem_closure thickenedIndicator_one_of_mem_closure
 
+lemma one_le_thickenedIndicator_apply' {X : Type _} [PseudoEMetricSpace X]
+    {δ : ℝ} (δ_pos : 0 < δ) {F : Set X} {x : X} (hxF : x ∈ closure F) :
+    1 ≤ thickenedIndicator δ_pos F x := by
+  rw [thickenedIndicator_one_of_mem_closure δ_pos F hxF]
+
+lemma one_le_thickenedIndicator_apply (X : Type _) [PseudoEMetricSpace X]
+    {δ : ℝ} (δ_pos : 0 < δ) {F : Set X} {x : X} (hxF : x ∈ F) :
+    1 ≤ thickenedIndicator δ_pos F x :=
+  one_le_thickenedIndicator_apply' δ_pos (subset_closure hxF)
+
 theorem thickenedIndicator_one {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) {x : α} (x_in_E : x ∈ E) :
     thickenedIndicator δ_pos E x = 1 :=
   thickenedIndicator_one_of_mem_closure _ _ (subset_closure x_in_E)

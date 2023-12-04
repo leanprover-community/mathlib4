@@ -491,13 +491,13 @@ section Sum
 @[simp]
 theorem coeFn_sum {ι : Type*} (Q : ι → QuadraticForm R M N) (s : Finset ι) :
     ⇑(∑ i in s, Q i) = ∑ i in s, ⇑(Q i) :=
-  (coeFnAddMonoidHom : QuadraticForm R M N →+ M → N).map_sum Q s
+  map_sum coeFnAddMonoidHom Q s
 #align quadratic_form.coe_fn_sum QuadraticForm.coeFn_sum
 
 @[simp]
 theorem sum_apply {ι : Type*} (Q : ι → QuadraticForm R M N) (s : Finset ι) (x : M) :
     (∑ i in s, Q i) x = ∑ i in s, Q i x :=
-  (evalAddMonoidHom x : _ →+ N).map_sum Q s
+  map_sum (evalAddMonoidHom x : _ →+ R) Q s
 #align quadratic_form.sum_apply QuadraticForm.sum_apply
 
 end Sum

@@ -932,7 +932,7 @@ theorem ciInf_eq_of_forall_ge_of_forall_gt_exists_lt [Nonempty ι] {f : ι → �
   exact @ciSup_eq_of_forall_le_of_forall_lt_exists_gt αᵒᵈ _ _ _ _ ‹_› ‹_› ‹_›
 #align cinfi_eq_of_forall_ge_of_forall_gt_exists_lt ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
 
-/-- Nested intervals lemma: if `f` is a monotone sequence, `g` is an antitone sequence, and
+/-- **Nested intervals lemma**: if `f` is a monotone sequence, `g` is an antitone sequence, and
 `f n ≤ g n` for all `n`, then `⨆ n, f n` belongs to all the intervals `[f n, g n]`. -/
 theorem Monotone.ciSup_mem_iInter_Icc_of_antitone [SemilatticeSup β] {f g : β → α} (hf : Monotone f)
     (hg : Antitone g) (h : f ≤ g) : (⨆ n, f n) ∈ ⋂ n, Icc (f n) (g n) := by

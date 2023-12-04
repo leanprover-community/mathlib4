@@ -160,7 +160,7 @@ theorem residue_eq_zero_iff_sMod_eq_zero (p : ℕ) (w : 1 < p) :
     simp
 #align lucas_lehmer.residue_eq_zero_iff_s_mod_eq_zero LucasLehmer.residue_eq_zero_iff_sMod_eq_zero
 
-/-- A Mersenne number `2^p-1` is prime if and only if
+/-- **Lucas-Lehmer Test**: a Mersenne number `2^p-1` is prime if and only if
 the Lucas-Lehmer residue `s p (p-2) % (2^p - 1)` is zero.
 -/
 def LucasLehmerTest (p : ℕ) : Prop :=

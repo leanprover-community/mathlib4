@@ -185,9 +185,10 @@ theorem natCast_mem_center [NonAssocSemiring M] (n : ℕ) : (n : M) ∈ Set.cent
     | zero => rw [Nat.zero_eq, Nat.cast_zero, mul_zero, mul_zero, mul_zero]
     | succ n ihn => rw [Nat.cast_succ, mul_add, ihn, mul_add, mul_add, mul_one, mul_one]
 
+-- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_mem_center [NonAssocSemiring M] (n : ℕ) [n.AtLeastTwo] :
-    OfNat.ofNat n ∈ Set.center M :=
+    (no_index (OfNat.ofNat n)) ∈ Set.center M :=
   natCast_mem_center M n
 
 @[simp]
