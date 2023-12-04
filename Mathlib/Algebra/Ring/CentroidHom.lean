@@ -444,30 +444,28 @@ instance : Module R (CentroidHom α) :=
 The following instances show that `α` is an algebra over `CentroidHom α`
 -/
 
-instance : MulAction (CentroidHom α) α where
+/-- The tautological action by `CentroidHom α` on `α`.
+
+This generalizes `Function.End.applyMulAction`. -/
+instance applyModule : Module (CentroidHom α) α where
   smul T a := T a
-  one_smul _ := rfl
-  mul_smul _ _ _:= rfl
-
-lemma smul_apply (T : CentroidHom α) (a : α) : T • a = T a := rfl
-
-instance : DistribMulAction (CentroidHom α) α where
-  smul_zero _ := by
-    rw [← zero_mul 0, smul_apply, map_mul_left, zero_mul, zero_mul]
-  smul_add _ _ _ := by
-    rw [smul_apply, smul_apply, smul_apply, map_add]
-
-instance : Module (CentroidHom α) α where
   add_smul _ _ _ := rfl
   zero_smul _ := rfl
+  one_smul _ := rfl
+  mul_smul _ _ _:= rfl
+  smul_zero := map_zero
+  smul_add := map_add
+
+@[simp]
+lemma smul_def (T : CentroidHom α) (a : α) : T • a = T a := rfl
 
 instance : SMulCommClass (CentroidHom α) α α where
-  smul_comm _ _ _ := by
-    rw [smul_apply, smul_apply, smul_eq_mul, smul_eq_mul, map_mul_left]
+  smul_comm _ _ _ := map_mul_left _ _ _
+
+instance : SMulCommClass α (CentroidHom α) α := SMulCommClass.symm _ _ _
 
 instance : IsScalarTower (CentroidHom α) α α where
-  smul_assoc T a b := by
-    rw [smul_apply, smul_apply, smul_eq_mul, smul_eq_mul, map_mul_right]
+  smul_assoc _ _ _ := (map_mul_right _ _ _).symm
 
 /-
 Let α be an algebra over R, such that the canonical ring homomorphism of R into CentroidHom α lies
