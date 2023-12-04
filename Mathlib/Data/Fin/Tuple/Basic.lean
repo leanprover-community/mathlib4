@@ -710,18 +710,6 @@ theorem snoc_rev {α n} (a : α) (f : Fin n → α) (i : Fin <| n + 1) :
   show (Fin.snoc f a ∘ Fin.rev) i = _
   rw [snoc_comp_rev]
 
-@[simp]
-theorem empty_append {α} (a : Fin 0 → α) (b : Fin n → α) :
-    Fin.append a b = b ∘ (cast <| Nat.zero_add n) := by
-  funext;
-  simp only [append, addCases, not_lt_zero', Nat.add_zero, cast, subNat_mk, Nat.sub_zero, natAdd_mk,
-    subNat, ge_iff_le, nonpos_iff_eq_zero, tsub_zero, eq_rec_constant, dite_false, comp_apply]
-
-@[simp]
-theorem append_empty {α} (a : Fin n → α) (b : Fin 0 → α) :
-    Fin.append a b = a := by
-  funext; simp [Fin.append, addCases, castLT]
-
 theorem append_cons {α} (a : α) (as : Fin n → α) (bs : Fin m → α) :
     Fin.append (cons a as) bs
     = cons a (Fin.append as bs) ∘ (Fin.cast <| Nat.add_right_comm n 1 m) := by
