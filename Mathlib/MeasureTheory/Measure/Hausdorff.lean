@@ -617,12 +617,12 @@ theorem hausdorffMeasure_le_liminf_sum {β : Type*} {ι : β → Type*} [∀ n, 
 /-- If `d₁ < d₂`, then for any set `s` we have either `μH[d₂] s = 0`, or `μH[d₁] s = ∞`. -/
 theorem hausdorffMeasure_zero_or_top {d₁ d₂ : ℝ} (h : d₁ < d₂) (s : Set X) :
     μH[d₂] s = 0 ∨ μH[d₁] s = ∞ := by
-  by_contra' H
+  by_contra! H
   suffices ∀ c : ℝ≥0, c ≠ 0 → μH[d₂] s ≤ c * μH[d₁] s by
     rcases ENNReal.exists_nnreal_pos_mul_lt H.2 H.1 with ⟨c, hc0, hc⟩
     exact hc.not_le (this c (pos_iff_ne_zero.1 hc0))
   intro c hc
-  refine' le_iff'.1 (mkMetric_mono_smul ENNReal.coe_ne_top (by exact_mod_cast hc) _) s
+  refine' le_iff'.1 (mkMetric_mono_smul ENNReal.coe_ne_top (mod_cast hc) _) s
   have : 0 < ((c : ℝ≥0∞) ^ (d₂ - d₁)⁻¹) := by
     rw [ENNReal.coe_rpow_of_ne_zero hc, pos_iff_ne_zero, Ne.def, ENNReal.coe_eq_zero,
       NNReal.rpow_eq_zero_iff]

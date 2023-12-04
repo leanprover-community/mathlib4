@@ -873,7 +873,7 @@ theorem associated_apply (x y : M) : associatedHom S Q x y = ⅟ (2 : R) • (Q 
 @[simp] theorem two_nsmul_associated : 2 • associatedHom S Q = Q.polarBilin := by
   ext
   dsimp
-  rw [←smul_mul_assoc, two_nsmul, invOf_two_add_invOf_two, one_mul, polar]
+  rw [← smul_mul_assoc, two_nsmul, invOf_two_add_invOf_two, one_mul, polar]
 
 theorem associated_isSymm : (associatedHom S Q).IsSymm := fun x y => by
   simp only [associated_apply, smul_eq_mul, sub_eq_add_neg, add_assoc, map_mul, RingHom.id_apply,
