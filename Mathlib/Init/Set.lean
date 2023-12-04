@@ -38,9 +38,9 @@ set_option autoImplicit true
 
 /-- A set is a collection of elements of some type `α`.
 
-    Although `Set` is defined as `α → Prop`, this is an implementation detail which should not be
-    relied on. Instead, `setOf` and membership of a set (`∈`) should be used to convert between sets
-    and predicates.
+Although `Set` is defined as `α → Prop`, this is an implementation detail which should not be
+relied on. Instead, `setOf` and membership of a set (`∈`) should be used to convert between sets
+and predicates.
 -/
 def Set (α : Type u) := α → Prop
 #align set Set

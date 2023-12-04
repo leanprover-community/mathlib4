@@ -452,7 +452,7 @@ theorem lift_bot (K : IntermediateField F E) :
 
 @[simp]
 theorem lift_top (K : IntermediateField F E) :
-    lift (F := K) ⊤ = K := by rw [lift, ←AlgHom.fieldRange_eq_map, fieldRange_val]
+    lift (F := K) ⊤ = K := by rw [lift, ← AlgHom.fieldRange_eq_map, fieldRange_val]
 
 @[simp]
 theorem adjoin_self (K : IntermediateField F E) :
