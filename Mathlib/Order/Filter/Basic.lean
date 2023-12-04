@@ -1202,10 +1202,9 @@ theorem eventually_or_distrib_right {f : Filter α} {p : α → Prop} {q : Prop}
   simp only [@or_comm _ q, eventually_or_distrib_left]
 #align filter.eventually_or_distrib_right Filter.eventually_or_distrib_right
 
-@[simp]
 theorem eventually_imp_distrib_left {f : Filter α} {p : Prop} {q : α → Prop} :
-    (∀ᶠ x in f, p → q x) ↔ p → ∀ᶠ x in f, q x := by
-  simp only [imp_iff_not_or, eventually_or_distrib_left]
+    (∀ᶠ x in f, p → q x) ↔ p → ∀ᶠ x in f, q x :=
+  eventually_all
 #align filter.eventually_imp_distrib_left Filter.eventually_imp_distrib_left
 
 @[simp]
