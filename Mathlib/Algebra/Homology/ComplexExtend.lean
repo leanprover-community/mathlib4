@@ -156,7 +156,7 @@ lemma r_φ (x₁ : ι₁) :
 
 lemma r_cases (x₂ : ι₂) :
     e.r x₂ = none ∨ ∃ (x₁ : ι₁), e.r x₂ = some x₁ := by
-  by_cases x₂ ∈ Set.image e.φ Set.univ
+  by_cases h : x₂ ∈ Set.image e.φ Set.univ
   · refine' Or.inr _
     obtain ⟨x₁, _, hx₁⟩ := h
     exact ⟨x₁, by simpa only [e.r_eq_some_iff x₁ x₂] using hx₁⟩
@@ -353,7 +353,7 @@ noncomputable def extendSc'Map : K.sc' x₁ y₁ z₁ ⟶ (K.extend e).sc' x₂ 
     · have hz : e.φ z₁ = z₂ := by rw [← c₂.next_eq' ((e.iff _ _).1 h), hy, hyz₂]
       rw [K.extendXMap_eq e _ _ hz, K.extend_d_eq _ _ _ _ _ hy hz, Iso.inv_hom_id_assoc]
     · rw [K.shape _ _ h, zero_comp]
-      by_cases e.r z₂ = none
+      by_cases h : e.r z₂ = none
       · dsimp [extend]
         rw [K.extendd_eq_zero' _ _ h, comp_zero]
       · obtain ⟨u, _, rfl⟩ := (e.r_neq_none_iff z₂).1 h
@@ -378,7 +378,7 @@ noncomputable def extendSc'Map' : (K.extend e).sc' x₂ y₂ z₂ ⟶ K.sc' x₁
       rw [K.extendXMap'_eq e _ _ hx, K.extend_d_eq _ _ _ _ _ hx hy,
         assoc, assoc, Iso.inv_hom_id, comp_id]
     · rw [K.shape _ _ h, comp_zero]
-      by_cases e.r x₂ = none
+      by_cases h : e.r x₂ = none
       · dsimp [extend]
         rw [K.extendd_eq_zero _ _ h, zero_comp]
       · obtain ⟨u, _, rfl⟩ := (e.r_neq_none_iff x₂).1 h

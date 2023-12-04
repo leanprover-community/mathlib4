@@ -1,5 +1,5 @@
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Homology.HomotopyCategory
+import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.CategoryTheory.Localization.HasLocalization
 import Mathlib.CategoryTheory.Localization.Composition
 
@@ -21,7 +21,10 @@ abbrev HomologicalComplexUpToQis.Q :
 variable (C c)
 
 lemma HomologicalComplex.homologyFunctor_inverts_qis (i : ι) :
-    (qis C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => hf i
+    (qis C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => by
+      rw [qis_iff] at hf
+      dsimp -- this could already be an instance
+      infer_instance
 
 namespace HomologicalComplexUpToQis
 
@@ -37,7 +40,10 @@ variable {C c}
 lemma isIso_Q_map_iff {K L : HomologicalComplex C c} (f : K ⟶ L) :
     IsIso (Q.map f) ↔ HomologicalComplex.qis C c f := by
   constructor
-  · intro _ i
+  · intro h
+    rw [HomologicalComplex.qis_iff, quasiIso_iff]
+    intro i
+    rw [quasiIsoAt_iff_isIso_homologyMap]
     refine' (NatIso.isIso_map_iff (homologyFunctorFactors C c i) f).1 _
     dsimp
     infer_instance
@@ -66,7 +72,7 @@ lemma HomologicalComplexUpToQis.Q_inverts_homotopyEquivalences :
       HomologicalComplexUpToQis.Q :=
   MorphismProperty.IsInvertedBy.of_subset _ _ _
     (Localization.inverts Q (HomologicalComplex.qis C c))
-    (HomologicalComplex.homotopyEquivalences_subset_qis C c)
+    (homotopyEquivalences_subset_qis C c)
 
 namespace HomotopyCategory
 
@@ -90,10 +96,10 @@ lemma mem_qis_iff {X Y : HomotopyCategory C c} (f : X ⟶ Y) :
 
 lemma quotient_map_mem_qis_iff {K L : HomologicalComplex C c} (f : K ⟶ L) :
     qis C c ((quotient C c).map f) ↔ HomologicalComplex.qis C c f := by
-  dsimp [qis, HomologicalComplex.qis]
   have eq := fun (i : ι) => NatIso.isIso_map_iff (homologyFunctorFactors C c i) f
   dsimp at eq
-  simp only [eq]
+  simp only [HomologicalComplex.qis_iff, mem_qis_iff, quasiIso_iff,
+    quasiIsoAt_iff_isIso_homologyMap, eq]
 
 variable (C c)
 
@@ -153,7 +159,7 @@ instance : HomologicalComplexUpToQis.Qh.IsLocalization (HomotopyCategory.qis C c
   Functor.IsLocalization.of_comp (HomotopyCategory.quotient C c)
     Qh (HomologicalComplex.homotopyEquivalences C c)
     (HomotopyCategory.qis C c) (HomologicalComplex.qis C c)
-    (HomologicalComplex.homotopyEquivalences_subset_qis C c)
+    (homotopyEquivalences_subset_qis C c)
     (HomotopyCategory.qis_eq_qis_map_quotient C c)
 
 end
