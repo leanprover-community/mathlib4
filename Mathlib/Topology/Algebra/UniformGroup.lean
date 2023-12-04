@@ -228,8 +228,8 @@ theorem uniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @UniformGroup β 
 #align uniform_add_group_inf uniformAddGroup_inf
 
 @[to_additive]
-lemma UniformInducing.uniformGroup {H : Type*} [Group H] [UniformSpace H] [UniformGroup H]
-    [UniformSpace β] {F : Type*} [MonoidHomClass F β H] (f : F) (hf : UniformInducing f) :
+lemma UniformInducing.uniformGroup {γ : Type*} [Group γ] [UniformSpace γ] [UniformGroup γ]
+    [UniformSpace β] {F : Type*} [MonoidHomClass F β γ] (f : F) (hf : UniformInducing f) :
     UniformGroup β where
   uniformContinuous_div := by
     simp_rw [hf.uniformContinuous_iff, Function.comp_def, map_div]
