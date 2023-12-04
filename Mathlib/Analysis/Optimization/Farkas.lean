@@ -9,8 +9,10 @@ variable {m n : Type*}
 
 variable [Fintype m] [Fintype n]
 
-theorem dotProduct_pos {v w : n → ℝ} (hv : 0 ≤ v) (hw : 0 ≤ w) : 0 ≤ v ⬝ᵥ w := by
-  sorry
+theorem dotProduct_nonneg {v w : n → ℝ} (hv : 0 ≤ v) (hw : 0 ≤ w) : 0 ≤ v ⬝ᵥ w := by
+  apply Finset.sum_nonneg
+  simp only [mem_univ, gt_iff_lt, forall_true_left]
+  exact fun _ => mul_nonneg (hv _) (hw _)
 
 variable (A : Matrix m n ℝ) (b : m → ℝ)
 
@@ -36,23 +38,37 @@ noncomputable def mulVec_convexCone : PointedCone ℝ (EuclideanSpace ℝ m) whe
 
 theorem isClosed_mulVec_convexCone :
     IsClosed (mulVec_convexCone A : Set (EuclideanSpace ℝ m)) := by
-  sorry
+  have : IsClosedMap (mulVec A) := by
+    /-
+    theorem extracted_1.{u_1, u_2} {m : Type u_1} {n : Type u_2} [inst : Fintype m] [inst_1 : Fintype n]
+      (A : Matrix m n ℝ) : IsClosedMap (mulVec A) := sorry
+    -/
+    extract_goal
+    sorry
+  exact this _ isClosed_Ici
 
-theorem farkas_aux {y : EuclideanSpace ℝ m}
-    (h : ∀ x ∈ mulVec_convexCone A, 0 ≤ x ⬝ᵥ y) :
+variable [DecidableEq n]
+
+theorem farkas_aux {y : EuclideanSpace ℝ m} (h : ∀ x ∈ mulVec_convexCone A, 0 ≤ x ⬝ᵥ y) :
     0 ≤ vecMul y A := by
-  sorry
+  rintro i
+  simp_rw [mulVec_convexCone, Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk,
+    Set.mem_image, Set.mem_Ici, dotProduct_comm, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂, dotProduct_mulVec] at h
+  specialize h (Pi.single i 1)
+  simp_rw [dotProduct_single, Pi.single, le_update_self_iff, Pi.zero_apply, zero_le_one, mul_one,
+    forall_true_left] at h
+  exact h
 
-theorem farkas :
-    Xor'
-      (∃ x : EuclideanSpace ℝ n, mulVec A x = b ∧ (0 : n → ℝ) ≤ x)
-      (∃ y : EuclideanSpace ℝ m, 0 ≤ vecMul y A ∧ y ⬝ᵥ b < 0) := by
+theorem farkas : Xor'
+    (∃ x : EuclideanSpace ℝ n, mulVec A x = b ∧ (0 : n → ℝ) ≤ x)
+    (∃ y : EuclideanSpace ℝ m, 0 ≤ vecMul y A ∧ y ⬝ᵥ b < 0) := by
   rw [xor_iff_iff_not]
   push_neg
   constructor
   . rintro ⟨x, hx₁, hx₂⟩ y hy
     rw [← hx₁, dotProduct_mulVec]
-    exact dotProduct_pos hy hx₂
+    exact dotProduct_nonneg hy hx₂
   . contrapose!
     rintro h
 
