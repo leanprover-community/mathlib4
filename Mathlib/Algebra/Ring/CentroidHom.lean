@@ -451,13 +451,13 @@ lemma centroid_eq_centralizer_mul_op :
   · intro ⟨f,hf⟩ S hS
     cases' hS with h₁ h₂
     · cases' h₁ with a ha
-      rw [← ha, ← hf, toEnd'_apply]
+      rw [← ha, ← hf, toEndRingHom_apply]
       apply AddMonoidHom.ext
       intro b
       rw [AddMonoid.mul_apply, AddMonoid.mul_apply, AddMonoid.End.mulLeft_apply_apply,
         AddMonoid.End.mulLeft_apply_apply, toEnd, AddMonoidHom.coe_coe, f.map_mul_left]
     · cases' h₂ with b hb
-      rw [← hb, ← hf, toEnd'_apply]
+      rw [← hb, ← hf, toEndRingHom_apply]
       apply AddMonoidHom.ext
       intro a
       rw [AddMonoid.mul_apply, AddMonoid.mul_apply, AddMonoid.End.mulRight_apply_apply,
