@@ -203,8 +203,8 @@ namespace Real
 
 open scoped Real
 
-theorem cos_eq_zero_iff {θ : ℝ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1) * π / 2 := by
-  exact_mod_cast @Complex.cos_eq_zero_iff θ
+theorem cos_eq_zero_iff {θ : ℝ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1) * π / 2 :=
+  mod_cast @Complex.cos_eq_zero_iff θ
 #align real.cos_eq_zero_iff Real.cos_eq_zero_iff
 
 theorem cos_ne_zero_iff {θ : ℝ} : cos θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ (2 * k + 1) * π / 2 := by
@@ -212,12 +212,12 @@ theorem cos_ne_zero_iff {θ : ℝ} : cos θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ (2 * k
 #align real.cos_ne_zero_iff Real.cos_ne_zero_iff
 
 theorem cos_eq_cos_iff {x y : ℝ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x :=
-  by exact_mod_cast @Complex.cos_eq_cos_iff x y
+  mod_cast @Complex.cos_eq_cos_iff x y
 #align real.cos_eq_cos_iff Real.cos_eq_cos_iff
 
 theorem sin_eq_sin_iff {x y : ℝ} :
-    sin x = sin y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = (2 * k + 1) * π - x := by
-  exact_mod_cast @Complex.sin_eq_sin_iff x y
+    sin x = sin y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = (2 * k + 1) * π - x :=
+  mod_cast @Complex.sin_eq_sin_iff x y
 #align real.sin_eq_sin_iff Real.sin_eq_sin_iff
 
 theorem lt_sin_mul {x : ℝ} (hx : 0 < x) (hx' : x < 1) : x < sin (π / 2 * x) := by
