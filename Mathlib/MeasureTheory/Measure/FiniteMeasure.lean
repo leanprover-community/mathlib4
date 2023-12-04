@@ -5,6 +5,7 @@ Authors: Kalle Kytölä
 -/
 import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 
 #align_import measure_theory.measure.finite_measure from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -45,6 +46,9 @@ The main definitions are
    `MeasureTheory.FiniteMeasure.tendsto_iff_forall_lintegral_tendsto`.
  * `MeasureTheory.FiniteMeasure.continuous_map`: For a continuous function `f : Ω → Ω'`, the
    push-forward of finite measures `f* : FiniteMeasure Ω → FiniteMeasure Ω'` is continuous.
+ * `MeasureTheory.FiniteMeasure.t2Space`: The topology of weak convergence of finite Borel measures
+   is Hausdorff on spaces where indicators of closed sets have continuous decreasing approximating
+   sequences (in particular on any pseudo-metrizable spaces).
 
 ## Implementation notes
 
@@ -315,6 +319,15 @@ theorem restrict_nonzero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict 
 
 variable [TopologicalSpace Ω]
 
+/-- Two finite Borel measures are equal if the integrals of all bounded continuous functions with
+respect to both agree. -/
+theorem ext_of_forall_lintegral_eq [HasOuterApproxClosed Ω] [BorelSpace Ω]
+    {μ ν : FiniteMeasure Ω} (h : ∀ (f : Ω →ᵇ ℝ≥0), ∫⁻ x, f x ∂μ = ∫⁻ x, f x ∂ν) :
+    μ = ν := by
+  apply Subtype.ext
+  change (μ : Measure Ω) = (ν : Measure Ω)
+  exact ext_of_forall_lintegral_eq_of_IsFiniteMeasure h
+
 /-- The pairing of a finite (Borel) measure `μ` with a nonnegative bounded continuous
 function is obtained by (Lebesgue) integrating the (test) function against the measure.
 This is `MeasureTheory.FiniteMeasure.testAgainstNN`. -/
@@ -336,7 +349,8 @@ theorem testAgainstNN_const (μ : FiniteMeasure Ω) (c : ℝ≥0) :
 theorem testAgainstNN_mono (μ : FiniteMeasure Ω) {f g : Ω →ᵇ ℝ≥0} (f_le_g : (f : Ω → ℝ≥0) ≤ g) :
     μ.testAgainstNN f ≤ μ.testAgainstNN g := by
   simp only [← ENNReal.coe_le_coe, testAgainstNN_coe_eq]
-  exact lintegral_mono fun ω => ENNReal.coe_mono (f_le_g ω)
+  gcongr
+  apply f_le_g
 #align measure_theory.finite_measure.test_against_nn_mono MeasureTheory.FiniteMeasure.testAgainstNN_mono
 
 @[simp]
@@ -366,6 +380,8 @@ theorem smul_testAgainstNN_apply (c : ℝ≥0) (μ : FiniteMeasure Ω) (f : Ω �
   simp only [testAgainstNN, toMeasure_smul, smul_eq_mul, ← ENNReal.smul_toNNReal, ENNReal.smul_def,
     lintegral_smul_measure]
 #align measure_theory.finite_measure.smul_test_against_nn_apply MeasureTheory.FiniteMeasure.smul_testAgainstNN_apply
+
+section weak_convergence
 
 variable [OpensMeasurableSpace Ω]
 
@@ -539,6 +555,42 @@ theorem tendsto_iff_forall_lintegral_tendsto {γ : Type*} {F : Filter γ} {μs :
     ENNReal.toNNReal_coe]
 #align measure_theory.finite_measure.tendsto_iff_forall_lintegral_tendsto MeasureTheory.FiniteMeasure.tendsto_iff_forall_lintegral_tendsto
 
+end weak_convergence -- section
+
+section Hausdorff
+
+variable [HasOuterApproxClosed Ω] [BorelSpace Ω]
+
+open Function
+
+/-- The mapping `toWeakDualBCNN` from finite Borel measures to the weak dual of `Ω →ᵇ ℝ≥0` is
+injective, if in the underlying space `Ω`, indicator functions of closed sets have decreasing
+approximations by sequences of continuous functions (in particular if `Ω` is pseudometrizable). -/
+lemma injective_toWeakDualBCNN :
+    Injective (toWeakDualBCNN : FiniteMeasure Ω → WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)) := by
+  intro μ ν hμν
+  apply ext_of_forall_lintegral_eq
+  intro f
+  have key := congr_fun (congrArg FunLike.coe hμν) f
+  apply (ENNReal.toNNReal_eq_toNNReal_iff' ?_ ?_).mp key
+  · exact (lintegral_lt_top_of_nnreal μ f).ne
+  · exact (lintegral_lt_top_of_nnreal ν f).ne
+
+variable (Ω)
+
+lemma embedding_toWeakDualBCNN :
+    Embedding (toWeakDualBCNN : FiniteMeasure Ω → WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)) where
+  induced := rfl
+  inj := injective_toWeakDualBCNN
+
+/-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
+continuous functions (`HasOuterApproxClosed`), the topology of weak convergence of finite Borel
+measures is Hausdorff (`T2Space`). -/
+instance t2Space : T2Space (FiniteMeasure Ω) :=
+  Embedding.t2Space (embedding_toWeakDualBCNN Ω)
+
+end Hausdorff -- section
+
 end FiniteMeasure
 
 -- section
@@ -553,34 +605,12 @@ This section is about bounded convergence theorems for finite measures.
 variable {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 
 /-- A bounded convergence theorem for a finite measure:
-If bounded continuous non-negative functions are uniformly bounded by a constant and tend to a
-limit, then their integrals against the finite measure tend to the integral of the limit.
-This formulation assumes:
- * the functions tend to a limit along a countably generated filter;
- * the limit is in the almost everywhere sense;
- * boundedness holds almost everywhere;
- * integration is `MeasureTheory.lintegral`, i.e., the functions and their integrals are
-   `ℝ≥0∞`-valued.
--/
-theorem tendsto_lintegral_nn_filter_of_le_const {ι : Type*} {L : Filter ι} [L.IsCountablyGenerated]
-    (μ : Measure Ω) [IsFiniteMeasure μ] {fs : ι → Ω →ᵇ ℝ≥0} {c : ℝ≥0}
-    (fs_le_const : ∀ᶠ i in L, ∀ᵐ ω : Ω ∂μ, fs i ω ≤ c) {f : Ω → ℝ≥0}
-    (fs_lim : ∀ᵐ ω : Ω ∂μ, Tendsto (fun i => fs i ω) L (𝓝 (f ω))) :
-    Tendsto (fun i => ∫⁻ ω, fs i ω ∂μ) L (𝓝 (∫⁻ ω, f ω ∂μ)) := by
-  refine tendsto_lintegral_filter_of_dominated_convergence (fun _ => c)
-    (eventually_of_forall fun i => (ENNReal.continuous_coe.comp (fs i).continuous).measurable) ?_
-    (@lintegral_const_lt_top _ _ μ _ _ (@ENNReal.coe_ne_top c)).ne ?_
-  · simpa only [Function.comp_apply, ENNReal.coe_le_coe] using fs_le_const
-  · simpa only [Function.comp_apply, ENNReal.tendsto_coe] using fs_lim
-#align measure_theory.finite_measure.tendsto_lintegral_nn_filter_of_le_const MeasureTheory.FiniteMeasure.tendsto_lintegral_nn_filter_of_le_const
-
-/-- A bounded convergence theorem for a finite measure:
 If a sequence of bounded continuous non-negative functions are uniformly bounded by a constant
 and tend pointwise to a limit, then their integrals (`MeasureTheory.lintegral`) against the finite
 measure tend to the integral of the limit.
 
 A related result with more general assumptions is
-`MeasureTheory.FiniteMeasure.tendsto_lintegral_nn_filter_of_le_const`.
+`MeasureTheory.tendsto_lintegral_nn_filter_of_le_const`.
 -/
 theorem tendsto_lintegral_nn_of_le_const (μ : FiniteMeasure Ω) {fs : ℕ → Ω →ᵇ ℝ≥0} {c : ℝ≥0}
     (fs_le_const : ∀ n ω, fs n ω ≤ c) {f : Ω → ℝ≥0}

@@ -137,7 +137,7 @@ lemma lintegral_exponentialPdf_eq_one (r : ℝ) (hr : 0 < r) : ∫⁻ x, exponen
     exact set_lintegral_congr_fun isClosed_Ici.measurableSet
       (ae_of_all _ (fun x (hx : 0 ≤ x) ↦ exponentialPdf_of_nonneg hx))
   simp only [leftSide, add_zero]
-  rw [rightSide, ENNReal.toReal_eq_one_iff, ←ENNReal.toReal_eq_one_iff]
+  rw [rightSide, ENNReal.toReal_eq_one_iff, ← ENNReal.toReal_eq_one_iff]
   rw [← integral_eq_lintegral_of_nonneg_ae (ae_of_all _ (fun _ ↦ by positivity))]
   · have IntegrOn : IntegrableOn (fun x ↦ rexp (-(r * x))) (Ioi 0) := by
       simp only [← neg_mul, exp_neg_integrableOn_Ioi 0 hr]
@@ -199,7 +199,7 @@ lemma lintegral_exponentialPdf_eq_antiDeriv (r x : ℝ) (hr : 0 < r) :
     simp only [exponentialPdf_eq]
     rw[set_lintegral_congr_fun measurableSet_Icc (ae_of_all _
         (by intro a ⟨(hle : _ ≤ a), _⟩; rw [if_pos hle]))]
-    rw [←ENNReal.toReal_eq_toReal _ ENNReal.ofReal_ne_top, ←integral_eq_lintegral_of_nonneg_ae
+    rw [← ENNReal.toReal_eq_toReal _ ENNReal.ofReal_ne_top, ← integral_eq_lintegral_of_nonneg_ae
         (eventually_of_forall fun _ ↦ le_of_lt (mul_pos hr (exp_pos _)))]
     have : ∫ a in uIoc 0 x, r * rexp (-(r * a)) = ∫ a in (0)..x, r * rexp (-(r * a)) := by
       rw [intervalIntegral.intervalIntegral_eq_integral_uIoc, smul_eq_mul, if_pos h, one_mul]

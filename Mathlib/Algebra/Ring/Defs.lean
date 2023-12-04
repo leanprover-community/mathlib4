@@ -238,6 +238,9 @@ theorem boole_mul {α} [MulZeroOneClass α] (P : Prop) [Decidable P] (a : α) :
     (if P then 1 else 0) * a = if P then a else 0 := by simp
 #align boole_mul boole_mul
 
+/-- A not-necessarily-unital, not-necessarily-associative, but commutative semiring. -/
+class NonUnitalNonAssocCommSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, CommMagma α
+
 /-- A non-unital commutative semiring is a `NonUnitalSemiring` with commutative multiplication.
 In other words, it is a type with the following structures: additive commutative monoid
 (`AddCommMonoid`), commutative semigroup (`CommSemigroup`), distributive laws (`Distrib`), and
@@ -423,8 +426,13 @@ instance (priority := 200) : Semiring α :=
 
 end Ring
 
+/-- A non-unital non-associative commutative ring is a `NonUnitalNonAssocRing` with commutative
+multiplication. -/
+class NonUnitalNonAssocCommRing (α : Type u)
+  extends NonUnitalNonAssocRing α, NonUnitalNonAssocCommSemiring α
+
 /-- A non-unital commutative ring is a `NonUnitalRing` with commutative multiplication. -/
-class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, CommSemigroup α
+class NonUnitalCommRing (α : Type u) extends NonUnitalRing α, NonUnitalNonAssocCommRing α
 #align non_unital_comm_ring NonUnitalCommRing
 
 -- see Note [lower instance priority]

@@ -5,7 +5,7 @@ Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Sites.Plus
-import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 #align_import category_theory.sites.sheafification from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
@@ -196,7 +196,7 @@ theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (
   dsimp only [toPlus, plusObj]
   delta Cover.toMultiequalizer
   dsimp [mk]
-  erw [←comp_apply]
+  erw [← comp_apply]
   rw [ι_colimMap_assoc, colimit.ι_pre, comp_apply, comp_apply]
   dsimp only [Functor.op]
   let e : (J.pullback I.f).obj (unop (op S)) ⟶ ⊤ := homOfLE (OrderTop.le_top _)
@@ -206,7 +206,7 @@ theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (
   apply Concrete.multiequalizer_ext
   intro i
   dsimp [diagram]
-  rw [←comp_apply, ←comp_apply, ←comp_apply, Multiequalizer.lift_ι, Multiequalizer.lift_ι,
+  rw [← comp_apply, ← comp_apply, ← comp_apply, Multiequalizer.lift_ι, Multiequalizer.lift_ι,
     Multiequalizer.lift_ι]
   erw [Meq.equiv_symm_eq_apply]
   let RR : S.Relation :=
@@ -224,7 +224,7 @@ theorem toPlus_eq_mk {X : C} {P : Cᵒᵖ ⥤ D} (x : P.obj (op X)) :
   apply congr_arg
   apply (Meq.equiv P ⊤).injective
   ext i
-  rw [Meq.equiv_apply, Equiv.apply_symm_apply, ←comp_apply, Multiequalizer.lift_ι]
+  rw [Meq.equiv_apply, Equiv.apply_symm_apply, ← comp_apply, Multiequalizer.lift_ι]
   rfl
 #align category_theory.grothendieck_topology.plus.to_plus_eq_mk CategoryTheory.GrothendieckTopology.Plus.toPlus_eq_mk
 
