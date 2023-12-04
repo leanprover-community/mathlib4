@@ -96,7 +96,7 @@ convert (config := {transparency := .default}) h
 ```
 These are passed to `congr!`. See `Congr!.Config` for options.
 -/
-syntax (name := convert) "convert" (Parser.Tactic.config)? " ← "? ppSpace term (" using " num)?
+syntax (name := convert) "convert" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
   (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 elab_rules : tactic
