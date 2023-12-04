@@ -227,14 +227,12 @@ lemma primitiveCharacter_one (hn : n ≠ 0) :
 /-- Primitive character associated to multiplication of Dirichlet characters,
 after changing both levels to the same -/
 noncomputable def mul {m : ℕ} (χ₁ : DirichletCharacter R n) (χ₂ : DirichletCharacter R m) :
-    DirichletCharacter R ((changeLevel <| Nat.dvd_lcm_left n m) χ₁ *
-    (changeLevel <| Nat.dvd_lcm_right n m) χ₂).conductor :=
-  primitiveCharacter (changeLevel (Nat.dvd_lcm_left n m) χ₁ *
-    changeLevel (Nat.dvd_lcm_right n m) χ₂)
+    DirichletCharacter R
+      (changeLevel (Nat.dvd_lcm_left n m) χ₁ * changeLevel (Nat.dvd_lcm_right n m) χ₂).conductor :=
+  primitiveCharacter _
 
 lemma mul_def {n m : ℕ} {χ : DirichletCharacter R n} {ψ : DirichletCharacter R m} :
-    χ.mul ψ = (changeLevel (Nat.dvd_lcm_left n m) χ *
-    changeLevel (Nat.dvd_lcm_right n m) ψ).primitiveCharacter :=
+    χ.mul ψ = primitiveCharacter _ :=
   rfl
 
 namespace isPrimitive
