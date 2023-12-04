@@ -214,6 +214,10 @@ theorem totalDegree_sub (a b : MvPolynomial σ R) :
     _ = max a.totalDegree b.totalDegree := by rw [totalDegree_neg]
 #align mv_polynomial.total_degree_sub MvPolynomial.totalDegree_sub
 
+theorem totalDegree_sub_C_zero_le (p : MvPolynomial σ R) :
+    totalDegree (p - C (eval 0 p)) ≤ totalDegree p :=
+  (totalDegree_sub _ _).trans_eq <| by rw [totalDegree_C, Nat.max_zero]
+
 end TotalDegree
 
 end CommRing
