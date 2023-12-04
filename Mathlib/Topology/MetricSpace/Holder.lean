@@ -114,7 +114,7 @@ theorem edist_le (h : HolderOnWith C r f s) {x y : X} (hx : x ∈ s) (hy : y ∈
 
 theorem edist_le_of_le (h : HolderOnWith C r f s) {x y : X} (hx : x ∈ s) (hy : y ∈ s) {d : ℝ≥0∞}
     (hd : edist x y ≤ d) : edist (f x) (f y) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
-  (h.edist_le hx hy).trans (mul_le_mul_left' (ENNReal.rpow_le_rpow hd r.coe_nonneg) _)
+  (h.edist_le hx hy).trans <| by gcongr
 #align holder_on_with.edist_le_of_le HolderOnWith.edist_le_of_le
 
 theorem comp {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t) {Cf rf : ℝ≥0}
