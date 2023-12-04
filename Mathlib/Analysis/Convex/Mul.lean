@@ -41,8 +41,8 @@ lemma ConvexOn.smul' (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) (hf₀ : 
         simp only [mul_add, add_smul, smul_add, mul_comm _ a]; abel
     _ = _ := by simp_rw [hab, mul_one]
   simp only [mul_add, add_smul, smul_add]
-  rw [←smul_smul_smul_comm a, ←smul_smul_smul_comm b, ←smul_smul_smul_comm a b,
-    ←smul_smul_smul_comm b b, smul_eq_mul, smul_eq_mul, smul_eq_mul, smul_eq_mul, mul_comm b,
+  rw [← smul_smul_smul_comm a, ← smul_smul_smul_comm b, ← smul_smul_smul_comm a b,
+    ← smul_smul_smul_comm b b, smul_eq_mul, smul_eq_mul, smul_eq_mul, smul_eq_mul, mul_comm b,
     add_comm _ ((b * b) • f y • g y), add_add_add_comm, add_comm ((a * b) • f y • g x)]
 
 lemma ConcaveOn.smul' (hf : ConcaveOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g) (hf₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ f x)
@@ -59,44 +59,44 @@ lemma ConcaveOn.smul' (hf : ConcaveOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g) (hf₀
         gcongr _ + (a * b) • ?_; exact hfg.smul_add_smul_le_smul_add_smul hx hy
     _ = _ := ?_
   simp only [mul_add, add_smul, smul_add]
-  rw [←smul_smul_smul_comm a, ←smul_smul_smul_comm b, ←smul_smul_smul_comm a b,
-    ←smul_smul_smul_comm b b, smul_eq_mul, smul_eq_mul, smul_eq_mul, smul_eq_mul, mul_comm b a,
+  rw [← smul_smul_smul_comm a, ← smul_smul_smul_comm b, ← smul_smul_smul_comm a b,
+    ← smul_smul_smul_comm b b, smul_eq_mul, smul_eq_mul, smul_eq_mul, smul_eq_mul, mul_comm b a,
     add_comm ((a * b) • f x • g y), add_comm ((a * b) • f x • g y), add_add_add_comm]
 
 lemma ConvexOn.smul'' (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) (hf₀ : ∀ ⦃x⦄, x ∈ s → f x ≤ 0)
     (hg₀ : ∀ ⦃x⦄, x ∈ s → g x ≤ 0) (hfg : AntivaryOn f g s) : ConcaveOn 𝕜 s (f • g) := by
-  rw [←neg_smul_neg]
+  rw [← neg_smul_neg]
   exact hf.neg.smul' hg.neg (fun x hx ↦ neg_nonneg.2 <| hf₀ hx) (fun x hx ↦ neg_nonneg.2 <| hg₀ hx)
     hfg.neg
 
 lemma ConcaveOn.smul'' (hf : ConcaveOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g) (hf₀ : ∀ ⦃x⦄, x ∈ s → f x ≤ 0)
     (hg₀ : ∀ ⦃x⦄, x ∈ s → g x ≤ 0) (hfg : MonovaryOn f g s) : ConvexOn 𝕜 s (f • g) := by
-  rw [←neg_smul_neg]
+  rw [← neg_smul_neg]
   exact hf.neg.smul' hg.neg (fun x hx ↦ neg_nonneg.2 <| hf₀ hx) (fun x hx ↦ neg_nonneg.2 <| hg₀ hx)
     hfg.neg
 
 lemma ConvexOn.smul_concaveOn (hf : ConvexOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g)
     (hf₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ f x) (hg₀ : ∀ ⦃x⦄, x ∈ s → g x ≤ 0) (hfg : AntivaryOn f g s) :
     ConcaveOn 𝕜 s (f • g) := by
-  rw [←neg_convexOn_iff, ←smul_neg]
+  rw [← neg_convexOn_iff, ← smul_neg]
   exact hf.smul' hg.neg hf₀ (fun x hx ↦ neg_nonneg.2 <| hg₀ hx) hfg.neg_right
 
 lemma ConcaveOn.smul_convexOn (hf : ConcaveOn 𝕜 s f) (hg : ConvexOn 𝕜 s g)
     (hf₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ f x) (hg₀ : ∀ ⦃x⦄, x ∈ s → g x ≤ 0) (hfg : MonovaryOn f g s) :
     ConvexOn 𝕜 s (f • g) := by
-  rw [←neg_concaveOn_iff, ←smul_neg]
+  rw [← neg_concaveOn_iff, ← smul_neg]
   exact hf.smul' hg.neg hf₀ (fun x hx ↦ neg_nonneg.2 <| hg₀ hx) hfg.neg_right
 
 lemma ConvexOn.smul_concaveOn' (hf : ConvexOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g)
     (hf₀ : ∀ ⦃x⦄, x ∈ s → f x ≤ 0) (hg₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ g x) (hfg : MonovaryOn f g s) :
     ConvexOn 𝕜 s (f • g) := by
-  rw [←neg_concaveOn_iff, ←smul_neg]
+  rw [← neg_concaveOn_iff, ← smul_neg]
   exact hf.smul'' hg.neg hf₀ (fun x hx ↦ neg_nonpos.2 $ hg₀ hx) hfg.neg_right
 
 lemma ConcaveOn.smul_convexOn' (hf : ConcaveOn 𝕜 s f) (hg : ConvexOn 𝕜 s g)
     (hf₀ : ∀ ⦃x⦄, x ∈ s → f x ≤ 0) (hg₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ g x) (hfg : AntivaryOn f g s) :
     ConcaveOn 𝕜 s (f • g) := by
-  rw [←neg_convexOn_iff, ←smul_neg]
+  rw [← neg_convexOn_iff, ← smul_neg]
   exact hf.smul'' hg.neg hf₀ (fun x hx ↦ neg_nonpos.2 $ hg₀ hx) hfg.neg_right
 
 variable [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E] {f g : 𝕜 → E}
@@ -146,7 +146,7 @@ lemma convexOn_pow : ∀ n, ConvexOn 𝕜 (Ici 0) fun x : 𝕜 ↦ x ^ n :=
 /-- `x^n`, `n : ℕ` is convex on the whole real line whenever `n` is even. -/
 protected lemma Even.convexOn_pow {n : ℕ} (hn : Even n) : ConvexOn 𝕜 univ fun x : 𝕜 ↦ x ^ n := by
   obtain ⟨n, rfl⟩ := hn
-  simp_rw [←two_mul, pow_mul]
+  simp_rw [← two_mul, pow_mul]
   refine ConvexOn.pow ⟨convex_univ, fun x _ y _ a b ha hb hab ↦ sub_nonneg.1 ?_⟩
     (fun _ _ ↦ by positivity) _
   calc
@@ -165,11 +165,11 @@ lemma convexOn_zpow : ∀ n : ℤ, ConvexOn 𝕜 (Ioi 0) fun x : 𝕜 ↦ x ^ n
     simp_rw [zpow_ofNat]
     exact (convexOn_pow n).subset Ioi_subset_Ici_self (convex_Ioi _)
   | -[n+1] => by
-    simp_rw [zpow_negSucc, ←inv_pow]
+    simp_rw [zpow_negSucc, ← inv_pow]
     refine (convexOn_iff_forall_pos.2 ⟨convex_Ioi _, ?_⟩).pow (fun x (hx : 0 < x) ↦ by positivity) _
     rintro x (hx : 0 < x) y (hy : 0 < y) a b ha hb hab
     field_simp
-    rw [div_le_div_iff, ←sub_nonneg]
+    rw [div_le_div_iff, ← sub_nonneg]
     calc
       0 ≤ a * b * (x - y) ^ 2 := by positivity
       _ = _ := by obtain rfl := eq_sub_of_add_eq hab; ring

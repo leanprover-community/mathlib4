@@ -362,7 +362,7 @@ theorem symm_symm (e : A₁ ≃ₐ[R] A₂) : e.symm.symm = e := by
 #align alg_equiv.symm_symm AlgEquiv.symm_symm
 
 theorem symm_bijective : Function.Bijective (symm : (A₁ ≃ₐ[R] A₂) → A₂ ≃ₐ[R] A₁) :=
-  Equiv.bijective ⟨symm, symm, symm_symm, symm_symm⟩
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 #align alg_equiv.symm_bijective AlgEquiv.symm_bijective
 
 @[simp]
