@@ -229,7 +229,7 @@ lemma supDegree_esymmAlgHom_monomial (t : Fin n →₀ ℕ) (hnm : n ≤ m) :
   · rwa [Ne, ← leadingCoeff_eq_zero toLex.injective, leadingCoeff_esymmAlgHom_monomial _ hnm]
 
 lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (hp : p.IsSymmetric) :
-    Antitone (ofLex <| p.supDegree toLex) := by
+    Antitone ↑(ofLex <| p.supDegree toLex) := by
   obtain rfl | h0 := eq_or_ne p 0
   · rw [supDegree_zero]; exact fun _ _ _ ↦ le_rfl
   rw [Antitone]; by_contra! h
@@ -286,7 +286,7 @@ lemma bijective_esymmAlgHom_fin (n : ℕ) :
   rintro ⟨p, hp⟩; rw [← AlgHom.mem_range]
   obtain rfl | h0 := eq_or_ne p 0; apply Subalgebra.zero_mem
   induction' he : p.supDegree toLex using WellFoundedLT.induction with t ih generalizing p; subst he
-  let t := Finsupp.equivFunOnFinite.symm (inv_accumulate n n <| ofLex <| p.supDegree toLex)
+  let t := Finsupp.equivFunOnFinite.symm (inv_accumulate n n <| ↑(ofLex <| p.supDegree toLex))
   have hd : (esymmAlgHom_monomial _ t <| p.leadingCoeff toLex).supDegree toLex = p.supDegree toLex
   · rw [← ofLex_inj, FunLike.ext'_iff, supDegree_esymmAlgHom_monomial _ _ le_rfl]
     · exact surjective_accumulate le_rfl hp.antitone_supDegree
