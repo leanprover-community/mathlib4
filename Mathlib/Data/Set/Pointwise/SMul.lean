@@ -563,7 +563,7 @@ scoped[Pointwise] attribute [instance] Set.distribMulActionSet Set.mulDistribMul
 instance [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors (Set α) (Set β) :=
   ⟨fun {s t} h ↦ by
-    by_contra' H
+    by_contra! H
     have hst : (s • t).Nonempty := h.symm.subst zero_nonempty
     rw [Ne.def, ← hst.of_smul_left.subset_zero_iff, Ne.def,
       ← hst.of_smul_right.subset_zero_iff] at H
@@ -574,7 +574,7 @@ instance [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
 instance noZeroSMulDivisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
     NoZeroSMulDivisors α (Set β) :=
   ⟨fun {a s} h ↦ by
-    by_contra' H
+    by_contra! H
     have hst : (a • s).Nonempty := h.symm.subst zero_nonempty
     rw [Ne.def, Ne.def, ← hst.of_image.subset_zero_iff, not_subset] at H
     obtain ⟨ha, b, ht, hb⟩ := H
@@ -857,9 +857,9 @@ theorem op_smul_set_mul_eq_mul_smul_set (a : α) (s : Set α) (t : Set α) :
 
 end Semigroup
 
-section LeftCancelSemigroup
+section IsLeftCancelMul
 
-variable [LeftCancelSemigroup α] {s t : Set α}
+variable [Mul α] [IsLeftCancelMul α] {s t : Set α}
 
 @[to_additive]
 theorem pairwiseDisjoint_smul_iff :
@@ -868,7 +868,7 @@ theorem pairwiseDisjoint_smul_iff :
 #align set.pairwise_disjoint_smul_iff Set.pairwiseDisjoint_smul_iff
 #align set.pairwise_disjoint_vadd_iff Set.pairwiseDisjoint_vadd_iff
 
-end LeftCancelSemigroup
+end IsLeftCancelMul
 
 section Group
 

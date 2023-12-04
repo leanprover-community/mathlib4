@@ -27,9 +27,7 @@ compact, Hausdorff and totally disconnected.
 
 ## TODO
 
-0. Link to category of projective limits of finite discrete sets.
-1. finite coproducts
-2. Clausen/Scholze topology on the category `Profinite`.
+* Define procategories and prove that `Profinite` is equivalent to `Pro (FintypeCat)`.
 
 ## Tags
 
@@ -39,7 +37,7 @@ profinite
 
 set_option linter.uppercaseLean3 false
 
-universe u
+universe v u
 
 open CategoryTheory
 
@@ -50,7 +48,7 @@ structure Profinite where
   /-- The underlying compact Hausdorff space of a profinite space. -/
   toCompHaus : CompHaus
   /-- A profinite space is totally disconnected. -/
-  [IsTotallyDisconnected : TotallyDisconnectedSpace toCompHaus]
+  [isTotallyDisconnected : TotallyDisconnectedSpace toCompHaus]
 #align Profinite Profinite
 
 namespace Profinite
@@ -88,7 +86,7 @@ lemma forget_ContinuousMap_mk {X Y : Profinite} (f : X → Y) (hf : Continuous f
   rfl
 
 instance {X : Profinite} : TotallyDisconnectedSpace X :=
-  X.IsTotallyDisconnected
+  X.isTotallyDisconnected
 
 -- We check that we automatically infer that Profinite sets are compact and Hausdorff.
 example {X : Profinite} : CompactSpace X :=
@@ -151,7 +149,7 @@ show Faithful <| inducedFunctor _ from inferInstance
 
 -- Porting note: added, as it is not found otherwise.
 instance {X : Profinite} : TotallyDisconnectedSpace (profiniteToCompHaus.obj X) :=
-  X.IsTotallyDisconnected
+  X.isTotallyDisconnected
 
 /-- The fully faithful embedding of `Profinite` in `TopCat`.
 This is definitionally the same as the obvious composite. -/
@@ -188,7 +186,7 @@ def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
     { toTop := TopCat.of (ConnectedComponents X)
       is_compact := Quotient.compactSpace
       is_hausdorff := ConnectedComponents.t2 }
-  IsTotallyDisconnected := ConnectedComponents.totallyDisconnectedSpace
+  isTotallyDisconnected := ConnectedComponents.totallyDisconnectedSpace
 #align CompHaus.to_Profinite_obj CompHaus.toProfiniteObj
 
 /-- (Implementation) The bijection of homsets to establish the reflective adjunction of Profinite
@@ -242,20 +240,31 @@ end DiscreteTopology
 
 end Profinite
 
+/--
+Many definitions involving universe inequalities in Mathlib are expressed through use of `max u v`.
+Unfortunately, this leads to unbound universes which cannot be solved for during unification, eg
+`max u v =?= max v ?`.
+The current solution is to wrap `Type max u v` in `TypeMax.{u,v}`
+to expose both universe parameters directly.
+
+Similarly, for other concrete categories for which we need to refer to the maximum of two universes
+(e.g. any category for which we are constructing limits), we need an analogous abbreviation.
+-/
+@[nolint checkUnivs]
+abbrev ProfiniteMax.{w, w'} := Profinite.{max w w'}
+
 namespace Profinite
 
--- TODO the following construction of limits could be generalised
--- to allow diagrams in lower universes.
 /-- An explicit limit cone for a functor `F : J ⥤ Profinite`, defined in terms of
 `CompHaus.limitCone`, which is defined in terms of `TopCat.limitCone`. -/
-def limitCone {J : Type u} [SmallCategory J] (F : J ⥤ Profinite.{u}) : Limits.Cone F where
+def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ ProfiniteMax.{v, u}) : Limits.Cone F where
   pt :=
-    { toCompHaus := (CompHaus.limitCone.{u, u} (F ⋙ profiniteToCompHaus)).pt
-      IsTotallyDisconnected := by
+    { toCompHaus := (CompHaus.limitCone.{v, u} (F ⋙ profiniteToCompHaus)).pt
+      isTotallyDisconnected := by
         change TotallyDisconnectedSpace ({ u : ∀ j : J, F.obj j | _ } : Type _)
         exact Subtype.totallyDisconnectedSpace }
   π :=
-  { app := (CompHaus.limitCone.{u, u} (F ⋙ profiniteToCompHaus)).π.app
+  { app := (CompHaus.limitCone.{v, u} (F ⋙ profiniteToCompHaus)).π.app
     -- Porting note: was `by tidy`:
     naturality := by
       intro j k f
@@ -264,12 +273,12 @@ def limitCone {J : Type u} [SmallCategory J] (F : J ⥤ Profinite.{u}) : Limits.
 #align Profinite.limit_cone Profinite.limitCone
 
 /-- The limit cone `Profinite.limitCone F` is indeed a limit cone. -/
-def limitConeIsLimit {J : Type u} [SmallCategory J] (F : J ⥤ Profinite.{u}) :
+def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ ProfiniteMax.{v, u}) :
     Limits.IsLimit (limitCone F) where
   lift S :=
-    (CompHaus.limitConeIsLimit.{u, u} (F ⋙ profiniteToCompHaus)).lift
+    (CompHaus.limitConeIsLimit.{v, u} (F ⋙ profiniteToCompHaus)).lift
       (profiniteToCompHaus.mapCone S)
-  uniq S m h := (CompHaus.limitConeIsLimit.{u, u} _).uniq (profiniteToCompHaus.mapCone S) _ h
+  uniq S m h := (CompHaus.limitConeIsLimit.{v, u} _).uniq (profiniteToCompHaus.mapCone S) _ h
 #align Profinite.limit_cone_is_limit Profinite.limitConeIsLimit
 
 /-- The adjunction between CompHaus.to_Profinite and Profinite.to_CompHaus -/
@@ -370,23 +379,23 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
       rintro ⟨y', hy'⟩
       exact hy y' hy'
     have hUy : U ∈ 𝓝 y := hC.compl_mem_nhds hyU
-    obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_clopen.mem_nhds_iff.mp hUy
+    obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_isClopen.mem_nhds_iff.mp hUy
     classical
       let Z := of (ULift.{u} <| Fin 2)
-      let g : Y ⟶ Z := ⟨(LocallyConstant.ofClopen hV).map ULift.up, LocallyConstant.continuous _⟩
+      let g : Y ⟶ Z := ⟨(LocallyConstant.ofIsClopen hV).map ULift.up, LocallyConstant.continuous _⟩
       let h : Y ⟶ Z := ⟨fun _ => ⟨1⟩, continuous_const⟩
       have H : h = g := by
         rw [← cancel_epi f]
         ext x
         apply ULift.ext
-        dsimp [LocallyConstant.ofClopen]
+        dsimp [LocallyConstant.ofIsClopen]
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk,
           Function.comp_apply, if_neg]
         refine' mt (fun α => hVU α) _
         simp only [Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
       apply_fun fun e => (e y).down at H
-      dsimp [LocallyConstant.ofClopen] at H
+      dsimp [LocallyConstant.ofIsClopen] at H
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H
