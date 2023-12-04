@@ -54,9 +54,15 @@ by simp_rw [h1, h2]
 ```
 -/
 elab s:"simp_rw " cfg:(config)? rws:rwRuleSeq g:(location)? : tactic => do
-  -- TODO We should use the passed `cfg` here too,
-  -- but I don't know how to convert it back and forth from `Syntax`.
-  evalTactic (← `(tactic| simp%$s (config := { failIfUnchanged := false }) only $g ?))
+  let cfg' : TSyntax `Lean.Parser.Tactic.config ← do
+    match cfg with
+    | Option.none =>
+      `(config| (config := ({ failIfUnchanged := false } : Lean.Meta.Simp.Config)))
+    | Option.some c => match c with
+      | `(config| (config := $cfg)) =>
+        `(config| (config := ({ ($cfg : Lean.Meta.Simp.Config) with failIfUnchanged := false })))
+      | _ => throwError "malformed cfg"
+  evalTactic (← `(tactic| simp%$s $cfg' only $g ?))
   withSimpRWRulesSeq s rws fun symm term => do
     evalTactic (← match term with
     | `(term| $e:term) =>

@@ -3,6 +3,7 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.Lie.BaseChange
 import Mathlib.Algebra.Lie.Solvable
 import Mathlib.Algebra.Lie.Quotient
 import Mathlib.Algebra.Lie.Normalizer
@@ -29,7 +30,6 @@ carries a natural concept of nilpotency. We define these here via the lower cent
 
 lie algebra, lower central series, nilpotent
 -/
-
 
 universe u v w w₁ w₂
 
@@ -856,3 +856,25 @@ theorem _root_.LieAlgebra.isNilpotent_ad_of_isNilpotent {L : LieSubalgebra R A} 
 #align lie_algebra.is_nilpotent_ad_of_is_nilpotent LieAlgebra.isNilpotent_ad_of_isNilpotent
 
 end OfAssociative
+
+section ExtendScalars
+
+open LieModule TensorProduct
+
+variable (R A L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+  [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+  [CommRing A] [Algebra R A]
+
+@[simp]
+lemma LieSubmodule.lowerCentralSeries_tensor_eq_baseChange (k : ℕ) :
+    lowerCentralSeries A (A ⊗[R] L) (A ⊗[R] M) k =
+    (lowerCentralSeries R L M k).baseChange A := by
+  induction' k with k ih; simp
+  simp only [lowerCentralSeries_succ, ih, ← baseChange_top, lie_baseChange]
+
+instance LieModule.instIsNilpotentTensor [IsNilpotent R L M] :
+    IsNilpotent A (A ⊗[R] L) (A ⊗[R] M) := by
+  obtain ⟨k, hk⟩ := inferInstanceAs (IsNilpotent R L M)
+  exact ⟨k, by simp [hk]⟩
+
+end ExtendScalars

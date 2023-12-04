@@ -848,19 +848,19 @@ scoped[Topology] notation "𝓝" => nhds
 scoped[Topology] notation "𝓝[" s "] " x:100 => nhdsWithin x s
 
 /-- Notation for the filter of punctured neighborhoods of a point. -/
-scoped[Topology] notation "𝓝[≠] " x:100 => nhdsWithin x (@singleton _ (Set _) instSingletonSet x)ᶜ
+scoped[Topology] notation3 "𝓝[≠] " x:100 => nhdsWithin x (@singleton _ (Set _) instSingletonSet x)ᶜ
 
 /-- Notation for the filter of right neighborhoods of a point. -/
-scoped[Topology] notation "𝓝[≥] " x:100 => nhdsWithin x (Set.Ici x)
+scoped[Topology] notation3 "𝓝[≥] " x:100 => nhdsWithin x (Set.Ici x)
 
 /-- Notation for the filter of left neighborhoods of a point. -/
-scoped[Topology] notation "𝓝[≤] " x:100 => nhdsWithin x (Set.Iic x)
+scoped[Topology] notation3 "𝓝[≤] " x:100 => nhdsWithin x (Set.Iic x)
 
 /-- Notation for the filter of punctured right neighborhoods of a point. -/
-scoped[Topology] notation "𝓝[>] " x:100 => nhdsWithin x (Set.Ioi x)
+scoped[Topology] notation3 "𝓝[>] " x:100 => nhdsWithin x (Set.Ioi x)
 
 /-- Notation for the filter of punctured left neighborhoods of a point. -/
-scoped[Topology] notation "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
+scoped[Topology] notation3 "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
 
 end
 
@@ -1457,16 +1457,16 @@ theorem mem_closure_of_mem_closure_union {s₁ s₂ : Set α} {x : α} (h : x �
 #align mem_closure_of_mem_closure_union mem_closure_of_mem_closure_union
 
 /-- The intersection of an open dense set with a dense set is a dense set. -/
-theorem Dense.inter_of_open_left {s t : Set α} (hs : Dense s) (ht : Dense t) (hso : IsOpen s) :
+theorem Dense.inter_of_isOpen_left {s t : Set α} (hs : Dense s) (ht : Dense t) (hso : IsOpen s) :
     Dense (s ∩ t) := fun x =>
   closure_minimal hso.inter_closure isClosed_closure <| by simp [hs.closure_eq, ht.closure_eq]
-#align dense.inter_of_open_left Dense.inter_of_open_left
+#align dense.inter_of_open_left Dense.inter_of_isOpen_left
 
 /-- The intersection of a dense set with an open dense set is a dense set. -/
-theorem Dense.inter_of_open_right {s t : Set α} (hs : Dense s) (ht : Dense t) (hto : IsOpen t) :
+theorem Dense.inter_of_isOpen_right {s t : Set α} (hs : Dense s) (ht : Dense t) (hto : IsOpen t) :
     Dense (s ∩ t) :=
-  inter_comm t s ▸ ht.inter_of_open_left hs hto
-#align dense.inter_of_open_right Dense.inter_of_open_right
+  inter_comm t s ▸ ht.inter_of_isOpen_left hs hto
+#align dense.inter_of_open_right Dense.inter_of_isOpen_right
 
 theorem Dense.inter_nhds_nonempty {s t : Set α} (hs : Dense s) {x : α} (ht : t ∈ 𝓝 x) :
     (s ∩ t).Nonempty :=
