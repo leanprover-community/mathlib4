@@ -299,8 +299,8 @@ def preservesColimitOfPreservesColimitCocone {F : C ⥤ D} {t : Cocone K} (h : I
 #align category_theory.limits.preserves_colimit_of_preserves_colimit_cocone CategoryTheory.Limits.preservesColimitOfPreservesColimitCocone
 
 /-- Transfer preservation of colimits along a natural isomorphism in the shape. -/
-def preservesColimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂)
-    [pc : PreservesColimit K₁ F] : PreservesColimit K₂ F where
+def preservesColimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂) [PreservesColimit K₁ F] :
+    PreservesColimit K₂ F where
   preserves {c} t := by
     apply IsColimit.precomposeHomEquiv (isoWhiskerRight h F : _) _ _
     have := (IsColimit.precomposeHomEquiv h c).symm t

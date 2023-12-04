@@ -253,7 +253,7 @@ instance transferNatTransSelf_symm_iso (f : R₁ ⟶ R₂) [IsIso f] :
 then `f` is an isomorphism.
 The converse is given in `transferNatTransSelf_iso`.
 -/
-theorem transferNatTransSelf_of_iso (f : L₂ ⟶ L₁) [i : IsIso (transferNatTransSelf adj₁ adj₂ f)] :
+theorem transferNatTransSelf_of_iso (f : L₂ ⟶ L₁) [IsIso (transferNatTransSelf adj₁ adj₂ f)] :
     IsIso f := by
   suffices IsIso ((transferNatTransSelf adj₁ adj₂).symm (transferNatTransSelf adj₁ adj₂ f))
     by simpa using this
