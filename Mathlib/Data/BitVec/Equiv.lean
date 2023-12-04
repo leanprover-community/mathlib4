@@ -22,17 +22,20 @@ def finEquiv : BitVec w ≃ Fin (2 ^ w) where
   left_inv  := ofFin_toFin
   right_inv := toFin_ofFin
 
-/-- Equivalence between `BitVec w` and `Fin w → Bool`, composed from existing equivalences,
-rather than defined through `Std.BitVec.getLsb'` and `Std.BitVec.ofLEFn` -/
-def finFunctionEquiv : BitVec w ≃ (Fin w → Bool) := calc
+/-- Equivalence between `BitVec w` and `Fin w → Bool`.
+This version of the equivalence, composed from existing equivalences, is just a private
+implementation detail.
+See `Std.BitVec.finFunctionEquiv` for the public equivalence, defined in terms of
+`Std.BitVec.getLsb'` and `Std.BitVec.ofLEFn` -/
+private def finFunctionEquivAux : BitVec w ≃ (Fin w → Bool) := calc
   BitVec w  ≃ (Fin (2 ^ w))     := finEquiv
   _         ≃ (Fin w -> Fin 2)  := finFunctionFinEquiv.symm
   _         ≃ (Fin w -> Bool)   := Equiv.arrowCongr (.refl _) finTwoEquiv
 
-theorem coe_finFunctionEquiv_eq_getLsb' :
-    (finFunctionEquiv : BitVec w → Fin w → Bool) = getLsb' := by
+theorem coe_finFunctionEquivAux_eq_getLsb' :
+    (finFunctionEquivAux : BitVec w → Fin w → Bool) = getLsb' := by
   funext x i
-  simp only [finFunctionEquiv, finEquiv, finFunctionFinEquiv, ← Nat.shiftRight_eq_div_pow,
+  simp only [finFunctionEquivAux, finEquiv, finFunctionFinEquiv, ← Nat.shiftRight_eq_div_pow,
     Equiv.instTransSortSortSortEquivEquivEquiv_trans, finTwoEquiv, Matrix.vecCons, Matrix.vecEmpty,
     Equiv.trans_apply, Equiv.coe_fn_mk, Equiv.ofRightInverseOfCardLE_symm_apply, toFin_val,
     Equiv.arrowCongr_apply, Equiv.refl_symm, Equiv.coe_refl, Function.comp.right_id,
@@ -48,12 +51,12 @@ private theorem Bool.val_rec_eq_toNat (b : Bool) :
 theorem Bool.toNat_eq_bit_zero (b : Bool) : b.toNat = Nat.bit b 0 := by
   cases b <;> rfl
 
-theorem coe_symm_finFunctionEquiv_eq_ofLEFn :
-    (finFunctionEquiv.symm : (Fin w → Bool) → BitVec w) = ofLEFn := by
+theorem coe_symm_finFunctionEquivAux_eq_ofLEFn :
+    (finFunctionEquivAux.symm : (Fin w → Bool) → BitVec w) = ofLEFn := by
   funext f
   induction' f using Fin.consInduction with w x₀ f ih
   · rw [ofLEFn_zero]; rfl
-  · simp only [finFunctionEquiv, finEquiv, finFunctionFinEquiv, Fin.univ_succ,
+  · simp only [finFunctionEquivAux, finEquiv, finFunctionFinEquiv, Fin.univ_succ,
       Finset.cons_eq_insert, Finset.mem_map, Finset.mem_univ, Function.Embedding.coeFn_mk, true_and,
       Fin.exists_succ_eq_iff, ne_eq, not_true_eq_false, not_false_eq_true, Finset.sum_insert,
       Fin.val_zero, pow_zero, mul_one, Finset.sum_map, Fin.val_succ, pow_succ,
@@ -73,10 +76,17 @@ theorem coe_symm_finFunctionEquiv_eq_ofLEFn :
 
 @[simp]
 theorem ofLEFn_getLsb' (x : BitVec w) : ofLEFn (x.getLsb') = x := by
-  simp [← coe_symm_finFunctionEquiv_eq_ofLEFn, ← coe_finFunctionEquiv_eq_getLsb']
+  simp [← coe_symm_finFunctionEquivAux_eq_ofLEFn, ← coe_finFunctionEquivAux_eq_getLsb']
 
 @[simp]
 theorem getLsb'_ofLEFn (f : Fin w → Bool) : getLsb' (ofLEFn f) = f := by
-  simp [← coe_symm_finFunctionEquiv_eq_ofLEFn, ← coe_finFunctionEquiv_eq_getLsb']
+  simp [← coe_symm_finFunctionEquivAux_eq_ofLEFn, ← coe_finFunctionEquivAux_eq_getLsb']
+
+/-- Equivalence between `BitVec w` and `Fin w → Bool` -/
+def finFunctionEquiv : BitVec w ≃ (Fin w → Bool) where
+  toFun     := getLsb'
+  invFun    := ofLEFn
+  left_inv  := ofLEFn_getLsb'
+  right_inv := getLsb'_ofLEFn
 
 end Std.BitVec
