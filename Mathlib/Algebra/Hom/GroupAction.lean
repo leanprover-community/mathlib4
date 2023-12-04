@@ -8,6 +8,8 @@ import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Ring.Equiv
 
+#align_import algebra.hom.group_action from "leanprover-community/mathlib"@"e7bab9a85e92cf46c02cb4725a7be2f04691e3a7"
+
 /-!
 # Equivariant homomorphisms
 
