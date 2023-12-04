@@ -457,8 +457,8 @@ theorem sInf_toSetoid (S : Set (RingCon R)) : (sInf S).toSetoid = sInf ((·.toSe
 
 /-- The infimum of a set of congruence relations is the same as the infimum of the set's image
     under the map to the underlying binary relation. -/
-theorem sInf_def (S : Set (RingCon R)) :
-    ⇑(sInf S) = sInf (@Set.image (RingCon R) (R → R → Prop) (⇑) S) := by
+@[simp, norm_cast]
+theorem coe_sInf (S : Set (RingCon R)) : ⇑(sInf S) = sInf ((⇑) '' S) := by
   ext; simp only [sInf_image, iInf_apply, iInf_Prop_eq]; rfl
 
 instance : PartialOrder (RingCon R) where
