@@ -385,14 +385,9 @@ lemma totalDegree_le_of_support_subset (p q : MvPolynomial σ ℝ) (h : p.suppor
 /- Move this attribute to the right file! -/
 attribute [simp] MvPolynomial.coeff_zero_C
 
-lemma totalDegree_sub_C_zero_le (p : MvPolynomial σ ℝ) :
-    totalDegree (p - C (eval 0 p)) ≤ totalDegree p := by
-  classical
-  apply totalDegree_le_of_support_subset
-  intro i hi
-  rcases eq_or_ne i 0 with rfl|h'i
-  · simp [constantCoeff] at hi
-  · simpa [h'i.symm] using hi
+theorem totalDegree_sub_C_le {R' : Type*} [CommRing R'] (p : MvPolynomial σ R') (r : R') :
+    totalDegree (p - C r) ≤ totalDegree p :=
+  (totalDegree_sub _ _).trans_eq <| by rw [totalDegree_C, Nat.max_zero]
 
 end missing_polynomial
 
@@ -623,7 +618,7 @@ lemma hairer2 (N : ℕ) (ι : Type*) [Fintype ι] :
       forall_const, Subtype.forall]
   · intro p hp
     obtain ⟨q, r, hq, rfl, h2q⟩ : ∃ q r, constantCoeff q = 0 ∧ p = q + C r ∧ totalDegree q ≤ N := by
-      refine ⟨p - C (eval 0 p), eval 0 p, by simp, by ring, (totalDegree_sub_C_zero_le p).trans hp⟩
+      refine ⟨p - C (eval 0 p), eval 0 p, by simp, by ring, (totalDegree_sub_C_le p _).trans hp⟩
     simp only [map_add, eval_C, smul_eq_mul, add_mul, eval_zero, hq, constantCoeff_C, zero_add]
     rw [integral_add]
     · simp [integral_mul_left, h3ρ]
