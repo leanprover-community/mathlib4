@@ -19,8 +19,6 @@ open Finset Nat
 
 open scoped BigOperators Nat
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 section GaussEisenstein
 
 namespace ZMod
@@ -69,7 +67,7 @@ private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ}
   calc
     (a ^ (p / 2) * (p / 2)! : ZMod p) = ∏ x in Ico 1 (p / 2).succ, a * x := by
       rw [prod_mul_distrib, ← prod_natCast, prod_Ico_id_eq_factorial, prod_const, card_Ico,
-        succ_sub_one]; simp
+        Nat.add_one_sub_one]; simp
     _ = ∏ x in Ico 1 (p / 2).succ, ↑((a * x : ZMod p).val) := by simp
     _ = ∏ x in Ico 1 (p / 2).succ, (if (a * x : ZMod p).val ≤ p / 2 then (1 : ZMod p) else -1) *
         (a * x : ZMod p).valMinAbs.natAbs :=
@@ -95,7 +93,7 @@ private theorem gauss_lemma_aux₁ (p : ℕ) [Fact p.Prime] {a : ℤ}
 
 theorem gauss_lemma_aux (p : ℕ) [hp : Fact p.Prime] {a : ℤ}
     (hap : (a : ZMod p) ≠ 0) : (↑a ^ (p / 2) : ZMod p) =
-    (-1) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ => p / 2 < (a * x : ZMod p).val).card :=
+    ((-1) ^ ((Ico 1 (p / 2).succ).filter fun x : ℕ => p / 2 < (a * x : ZMod p).val).card :) :=
   (mul_left_inj' (show ((p / 2)! : ZMod p) ≠ 0 by
     rw [Ne.def, CharP.cast_eq_zero_iff (ZMod p) p, hp.1.dvd_factorial, not_le]
     exact Nat.div_lt_self hp.1.pos (by decide))).1 <| by

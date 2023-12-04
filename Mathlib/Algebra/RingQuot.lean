@@ -218,7 +218,7 @@ instance : Add (RingQuot r) :=
 instance : Mul (RingQuot r) :=
   ⟨mul r⟩
 
-instance : Pow (RingQuot r) ℕ :=
+instance : NatPow (RingQuot r) :=
   ⟨fun x n ↦ npow r n x⟩
 
 instance {R : Type uR} [Ring R] (r : R → R → Prop) : Neg (RingQuot r) :=
@@ -623,8 +623,9 @@ theorem mkAlgHom_coe (s : A → A → Prop) : (mkAlgHom S s : A →+* RingQuot s
   rfl
 #align ring_quot.mk_alg_hom_coe RingQuot.mkAlgHom_coe
 
-theorem mkAlgHom_rel {s : A → A → Prop} {x y : A} (w : s x y) : mkAlgHom S s x = mkAlgHom S s y :=
-  by simp [mkAlgHom_def, mkRingHom_def, Quot.sound (Rel.of w)]
+theorem mkAlgHom_rel {s : A → A → Prop} {x y : A} (w : s x y) :
+    mkAlgHom S s x = mkAlgHom S s y := by
+  simp [mkAlgHom_def, mkRingHom_def, Quot.sound (Rel.of w)]
 #align ring_quot.mk_alg_hom_rel RingQuot.mkAlgHom_rel
 
 theorem mkAlgHom_surjective (s : A → A → Prop) : Function.Surjective (mkAlgHom S s) := by

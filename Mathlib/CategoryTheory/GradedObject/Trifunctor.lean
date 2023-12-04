@@ -27,9 +27,8 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C₁ C₂ C₃ C₄ C₁₂ C₂₃ : Type*}
-  [Category C₁] [Category C₂] [Category C₃] [Category C₄]
-  [Category C₁₂] [Category C₂₃]
+variable {C₁ C₂ C₃ C₄ C₁₂ : Type*}
+  [Category C₁] [Category C₂] [Category C₃] [Category C₄] [Category C₁₂]
   (F F' : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄)
 
 namespace GradedObject

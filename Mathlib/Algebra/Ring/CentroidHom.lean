@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Christopher Hoskin
 -/
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.GroupPower.Lemmas
+import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -399,7 +400,57 @@ theorem comp_mul_comm (T S : CentroidHom α) (a b : α) : (T ∘ S) (a * b) = (S
   rw [map_mul_right, map_mul_left, ← map_mul_right, ← map_mul_left]
 #align centroid_hom.comp_mul_comm CentroidHom.comp_mul_comm
 
+local notation "L" => AddMonoid.End.mulLeft
+local notation "R" => AddMonoid.End.mulRight
+
+/-- The canonical homomorphism from the center into the centroid -/
+def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α where
+  toFun z :=
+    { L (z : α) with
+      map_mul_left' := ((Set.mem_center_iff _).mp z.prop).left_comm
+      map_mul_right' := ((Set.mem_center_iff _).mp z.prop).left_assoc }
+  map_zero' := by
+    simp only [ZeroMemClass.coe_zero, map_zero]
+    exact rfl
+  map_add' := fun _ _ => by
+    simp only [AddSubmonoid.coe_add, NonUnitalSubsemiring.coe_toAddSubmonoid, map_add]
+    exact rfl
+  map_mul' := fun z₁ z₂ => by
+    ext a
+    exact (((Set.mem_center_iff _).mp z₁.prop).left_assoc z₂ a).symm
+
+lemma centerToCentroid_apply (z : { x // x ∈ NonUnitalSubsemiring.center α }) (a : α) :
+    (centerToCentroid z) a = z * a := rfl
+
+lemma center_iff_op_centroid (a : α) :
+    a ∈ NonUnitalSubsemiring.center α ↔ L a = R a ∧ (L a) ∈ Set.range CentroidHom.toEnd := by
+  constructor
+  · exact fun ha ↦ ⟨AddMonoidHom.ext <| IsMulCentral.comm ha, ⟨centerToCentroid ⟨a, ha⟩, rfl⟩⟩
+  · rintro ⟨hc, ⟨T, hT⟩⟩
+    have e1 (d : α) : T d = a * d := congr($hT d)
+    have e2 (d : α) : T d = d * a := congr($(hT.trans hc) d)
+    constructor
+    case comm => exact (congr($hc ·))
+    case left_assoc => simpa [e1] using (map_mul_right T · ·)
+    case mid_assoc => exact fun b c ↦ by simpa [e1 c, e2 b] using
+      (map_mul_right T b c).symm.trans <| map_mul_left T b c
+    case right_assoc => simpa [e2] using (map_mul_left T · ·)
+
 end NonUnitalNonAssocSemiring
+
+section NonAssocSemiring
+
+variable [NonAssocSemiring α]
+
+/-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
+def centerIsoCentroid : NonUnitalSubsemiring.center α ≃+* CentroidHom α :=
+  { centerToCentroid with
+    invFun := fun T ↦
+      ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
+    left_inv := fun z ↦ Subtype.ext <| by simp [centerToCentroid_apply]
+    right_inv := fun T ↦ CentroidHom.ext <| by simp [centerToCentroid_apply, ← map_mul_right] }
+
+end NonAssocSemiring
 
 section NonUnitalNonAssocRing
 

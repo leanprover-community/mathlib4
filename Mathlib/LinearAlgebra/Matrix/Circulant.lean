@@ -86,13 +86,13 @@ theorem conjTranspose_circulant [Star α] [AddGroup n] (v : n → α) :
 #align matrix.conj_transpose_circulant Matrix.conjTranspose_circulant
 
 theorem Fin.transpose_circulant : ∀ {n} (v : Fin n → α), (circulant v)ᵀ = circulant fun i => v (-i)
-  | 0 => by simp [Injective]
+  | 0 => by simp [Injective, eq_iff_true_of_subsingleton]
   | n + 1 => Matrix.transpose_circulant
 #align matrix.fin.transpose_circulant Matrix.Fin.transpose_circulant
 
 theorem Fin.conjTranspose_circulant [Star α] :
     ∀ {n} (v : Fin n → α), (circulant v)ᴴ = circulant (star fun i => v (-i))
-  | 0 => by simp [Injective]
+  | 0 => by simp [Injective, eq_iff_true_of_subsingleton]
   | n + 1 => Matrix.conjTranspose_circulant
 #align matrix.fin.conj_transpose_circulant Matrix.Fin.conjTranspose_circulant
 
@@ -133,7 +133,7 @@ theorem circulant_mul [Semiring α] [Fintype n] [AddGroup n] (v w : n → α) :
 
 theorem Fin.circulant_mul [Semiring α] :
     ∀ {n} (v w : Fin n → α), circulant v * circulant w = circulant (mulVec (circulant v) w)
-  | 0 => by simp [Injective]
+  | 0 => by simp [Injective, eq_iff_true_of_subsingleton]
   | n + 1 => Matrix.circulant_mul
 #align matrix.fin.circulant_mul Matrix.Fin.circulant_mul
 
@@ -171,14 +171,14 @@ theorem circulant_single_one (α n) [Zero α] [One α] [DecidableEq n] [AddGroup
 theorem circulant_single (n) [Semiring α] [DecidableEq n] [AddGroup n] [Fintype n] (a : α) :
     circulant (Pi.single 0 a : n → α) = scalar n a := by
   ext i j
-  simp [Pi.single_apply, one_apply, sub_eq_zero]
+  simp [Pi.single_apply, diagonal_apply, sub_eq_zero]
 #align matrix.circulant_single Matrix.circulant_single
 
 /-- Note we use `↑i = 0` instead of `i = 0` as `Fin 0` has no `0`.
 This means that we cannot state this with `Pi.single` as we did with `Matrix.circulant_single`. -/
 theorem Fin.circulant_ite (α) [Zero α] [One α] :
     ∀ n, circulant (fun i => ite (i.1 = 0) 1 0 : Fin n → α) = 1
-  | 0 => by simp [Injective]
+  | 0 => by simp [Injective, eq_iff_true_of_subsingleton]
   | n + 1 => by
     rw [← circulant_single_one]
     congr with j

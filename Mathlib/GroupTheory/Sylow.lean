@@ -430,7 +430,7 @@ theorem not_dvd_index_sylow' [hp : Fact p.Prime] (P : Sylow p G) [(P : Subgroup 
   letI : Fintype (G ⧸ (P : Subgroup G)) := (P : Subgroup G).fintypeQuotientOfFiniteIndex
   rw [index_eq_card (P : Subgroup G)] at h
   obtain ⟨x, hx⟩ := exists_prime_orderOf_dvd_card (G := G ⧸ (P : Subgroup G)) p h
-  have h := IsPGroup.of_card ((orderOf_eq_card_zpowers.symm.trans hx).trans (pow_one p).symm)
+  have h := IsPGroup.of_card ((Fintype.card_zpowers.trans hx).trans (pow_one p).symm)
   let Q := (zpowers x).comap (QuotientGroup.mk' (P : Subgroup G))
   have hQ : IsPGroup p Q := by
     apply h.comap_of_ker_isPGroup
@@ -612,7 +612,7 @@ theorem exists_subgroup_card_pow_succ [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact
     rw [Set.card_image_of_injective
         (Subgroup.comap (mk' (H.subgroupOf H.normalizer)) (zpowers x) : Set H.normalizer)
         Subtype.val_injective,
-      pow_succ', ← hH, Fintype.card_congr hequiv, ← hx, orderOf_eq_card_zpowers, ←
+      pow_succ', ← hH, Fintype.card_congr hequiv, ← hx, ← Fintype.card_zpowers, ←
       Fintype.card_prod]
     exact @Fintype.card_congr _ _ (_) (_)
       (preimageMkEquivSubgroupProdSet (H.subgroupOf H.normalizer) (zpowers x)), by
@@ -710,15 +710,15 @@ theorem coe_ofCard [Fintype G] {p : ℕ} [Fact p.Prime] (H : Subgroup G) [Fintyp
   rfl
 #align sylow.coe_of_card Sylow.coe_ofCard
 
-theorem subsingleton_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
-    (h : (P : Subgroup G).Normal) : Subsingleton (Sylow p G) := by
-  apply Subsingleton.intro
-  intro Q R
+/-- If `G` has a normal Sylow `p`-subgroup, then it is the only Sylow `p`-subgroup. -/
+noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
+    (h : (P : Subgroup G).Normal) : Unique (Sylow p G) := by
+  refine { uniq := fun Q ↦ ?_ }
   obtain ⟨x, h1⟩ := exists_smul_eq G P Q
-  obtain ⟨x, h2⟩ := exists_smul_eq G P R
+  obtain ⟨x, h2⟩ := exists_smul_eq G P default
   rw [Sylow.smul_eq_of_normal] at h1 h2
   rw [← h1, ← h2]
-#align sylow.subsingleton_of_normal Sylow.subsingleton_of_normal
+#align sylow.subsingleton_of_normal Sylow.unique_of_normal
 
 section Pointwise
 
@@ -726,12 +726,12 @@ open Pointwise
 
 theorem characteristic_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (h : (P : Subgroup G).Normal) : (P : Subgroup G).Characteristic := by
-  haveI := Sylow.subsingleton_of_normal P h
+  haveI := Sylow.unique_of_normal P h
   rw [characteristic_iff_map_eq]
   intro Φ
   show (Φ • P).toSubgroup = P.toSubgroup
   congr
-  simp
+  simp [eq_iff_true_of_subsingleton]
 #align sylow.characteristic_of_normal Sylow.characteristic_of_normal
 
 end Pointwise
@@ -796,9 +796,8 @@ noncomputable def directProductOfNormal [Fintype G]
     apply @MulEquiv.piCongrRight ps (fun p => ∀ P : Sylow p G, P) (fun p => P p) _ _
     rintro ⟨p, hp⟩
     haveI hp' := Fact.mk (Nat.prime_of_mem_primeFactors hp)
-    haveI := subsingleton_of_normal _ (hn (P p))
-    change (∀ P : Sylow p G, P) ≃* P p
-    exact MulEquiv.piSubsingleton _ _
+    letI := unique_of_normal _ (hn (P p))
+    apply MulEquiv.piUnique
   show (∀ p : ps, P p) ≃* G
   apply MulEquiv.ofBijective (Subgroup.noncommPiCoprod hcomm)
   apply (bijective_iff_injective_and_card _).mpr

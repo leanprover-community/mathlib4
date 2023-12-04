@@ -296,9 +296,13 @@ theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringCha
   let τ : FF := ψ₈char 1
   have τ_spec : τ ^ 4 = -1 := by
     refine (sq_eq_one_iff.1 ?_).resolve_left ?_
-    · rw [← pow_mul, ← map_nsmul_pow ψ₈char, AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim]
+    · rw [← pow_mul, ← map_nsmul_pow ψ₈char]
+      -- doesn't match syntactically for `rw`
+      refine (AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim _).2 ?_
       decide
-    · rw [← map_nsmul_pow ψ₈char, AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim]
+    · rw [← map_nsmul_pow ψ₈char]
+      -- doesn't match syntactically for `rw`
+      refine (AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim _).not.2 ?_
       decide
 
   -- we consider `χ₈` as a multiplicative character `ℤ/8ℤ → FF`
