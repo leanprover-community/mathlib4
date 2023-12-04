@@ -3,7 +3,7 @@ Copyright (c) 2023 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Boris Bolvig Kjær, Jon Eugster, Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.Sites.Coherent
+import Mathlib.CategoryTheory.Sites.RegularExtensive
 import Mathlib.Topology.Category.Profinite.Limits
 
 /-!
@@ -14,6 +14,9 @@ In this file, we show that the following are all equivalent:
 - The family `π` is effective epimorphic.
 - The induced map `∐ X ⟶ B` is epimorphic.
 - The family `π` is jointly surjective.
+
+As a consequence, we show (see `effectiveEpi_iff_surjective`) that all epimorphisms in `Profinite` 
+are effective, and that `Profinite` is preregular.
 
 ## Main results
 
@@ -119,7 +122,7 @@ def ιIso' : (QB' π) ≅ B.toCompHaus :=
 /-- Implementation: The quotient of `relation π`, considered as an object of `Profinite`. -/
 def QB : Profinite where
   toCompHaus := QB' π
-  IsTotallyDisconnected := ⟨(CompHaus.homeoOfIso (ιIso' π surj)).embedding.isTotallyDisconnected
+  isTotallyDisconnected := ⟨(CompHaus.homeoOfIso (ιIso' π surj)).embedding.isTotallyDisconnected
     (isTotallyDisconnected_of_totallyDisconnectedSpace _)⟩
 
 /-- Implementation: The function `ιFun`, considered as a morphism in `Profinite`. -/
@@ -268,6 +271,15 @@ lemma effectiveEpi_iff_surjective {X Y : Profinite} (f : X ⟶ Y) :
     EffectiveEpi f ↔ Function.Surjective f := by
   rw [← epi_iff_surjective]
   exact effectiveEpi_iff_epi (fun _ _ ↦ (effectiveEpiFamily_tfae _ _).out 0 1) f
+
+instance : Preregular Profinite where
+  exists_fac := by
+    intro X Y Z f π hπ
+    refine ⟨pullback f π, pullback.fst f π, ?_, pullback.snd f π, (pullback.condition _ _).symm⟩
+    rw [Profinite.effectiveEpi_iff_surjective] at hπ ⊢
+    intro y
+    obtain ⟨z,hz⟩ := hπ (f y)
+    exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
 
 end JointlySurjective
 

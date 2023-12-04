@@ -73,7 +73,7 @@ theorem neg_eq' : Neg.neg = (id : R → R) :=
 theorem sub_eq_add (x y : R) : x - y = x + y := by rw [sub_eq_add_neg, neg_eq]
 #align char_two.sub_eq_add CharTwo.sub_eq_add
 
-theorem sub_eq_add' : Sub.sub = ((· + ·) : R → R → R) :=
+theorem sub_eq_add' : HSub.hSub = ((· + ·) : R → R → R) :=
   funext fun x => funext fun y => sub_eq_add x y
 #align char_two.sub_eq_add' CharTwo.sub_eq_add'
 

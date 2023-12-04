@@ -37,6 +37,10 @@ theorem coe_zpowers (g : G) : ↑(zpowers g) = Set.range (g ^ · : ℤ → G) :=
   rfl
 #align subgroup.coe_zpowers Subgroup.coe_zpowers
 
+noncomputable instance decidableMemZpowers {a : G} : DecidablePred (· ∈ Subgroup.zpowers a) :=
+  Classical.decPred _
+#align decidable_zpowers Subgroup.decidableMemZpowers
+
 theorem zpowers_eq_closure (g : G) : zpowers g = closure {g} := by
   ext
   exact mem_closure_singleton.symm
@@ -97,6 +101,9 @@ attribute [to_additive (attr := simp) AddSubgroup.mem_zmultiples] Subgroup.mem_z
 #align add_subgroup.mem_zmultiples AddSubgroup.mem_zmultiples
 
 attribute [to_additive (attr := norm_cast) AddSubgroup.coe_zmultiples] Subgroup.coe_zpowers
+
+attribute [to_additive AddSubgroup.decidableMemZmultiples] Subgroup.decidableMemZpowers
+#align decidable_zmultiples AddSubgroup.decidableMemZmultiples
 
 attribute [to_additive AddSubgroup.zmultiples_eq_closure] Subgroup.zpowers_eq_closure
 #align add_subgroup.zmultiples_eq_closure AddSubgroup.zmultiples_eq_closure
