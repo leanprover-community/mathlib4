@@ -596,19 +596,16 @@ theorem univ_ofSubsingleton (a : α) [Subsingleton α] : @univ _ (ofSubsingleton
   rfl
 #align fintype.univ_of_subsingleton Fintype.univ_ofSubsingleton
 
--- see Note [lower instance priority]
-instance (priority := 100) ofIsEmpty [IsEmpty α] : Fintype α :=
+/-- An empty type is a fintype. Not registered as an instance, to avoid diamonds for empty types
+which are fintypes for another reason (for instance `Fin 0`). -/
+def ofIsEmpty [IsEmpty α] : Fintype α :=
   ⟨∅, isEmptyElim⟩
 #align fintype.of_is_empty Fintype.ofIsEmpty
 
--- no-lint since while `Finset.univ_eq_empty` can prove this, it isn't applicable for `dsimp`.
-/-- Note: this lemma is specifically about `Fintype.of_isEmpty`. For a statement about
-arbitrary `Fintype` instances, use `Finset.univ_eq_empty`. -/
-@[simp, nolint simpNF]
-theorem univ_of_isEmpty [IsEmpty α] : @univ α _ = ∅ :=
-  rfl
-#align fintype.univ_of_is_empty Fintype.univ_of_isEmpty
+instance : Fintype Empty := Fintype.ofIsEmpty
+instance : Fintype PEmpty := Fintype.ofIsEmpty
 
+#noalign fintype.univ_of_is_empty
 end Fintype
 
 namespace Set
@@ -755,6 +752,7 @@ theorem toFinset_univ [Fintype α] [Fintype (Set.univ : Set α)] :
   simp
 #align set.to_finset_univ Set.toFinset_univ
 
+attribute [local instance] Fintype.ofIsEmpty in
 @[simp]
 theorem toFinset_eq_empty [Fintype s] : s.toFinset = ∅ ↔ s = ∅ := by
   rw [← toFinset_empty, toFinset_inj]
