@@ -46,7 +46,7 @@ open Affine BigOperators Classical
 
 open Finset Function
 
-variable {𝕜 E ι : Type _}
+variable {𝕜 E ι : Type*}
 
 section OrderedSemiring
 
@@ -78,7 +78,7 @@ protected theorem ConvexIndependent.injective {p : ι → E} (hc : ConvexIndepen
 
 /-- If a family is convex independent, so is any subfamily given by composition of an embedding into
 index type with the original family. -/
-theorem ConvexIndependent.comp_embedding {ι' : Type _} (f : ι' ↪ ι) {p : ι → E}
+theorem ConvexIndependent.comp_embedding {ι' : Type*} (f : ι' ↪ ι) {p : ι → E}
     (hc : ConvexIndependent 𝕜 p) : ConvexIndependent 𝕜 (p ∘ f) := by
   intro s x hx
   rw [← f.injective.mem_set_image]

@@ -19,7 +19,7 @@ prove versions of this lemma for `Antitone`, `StrictMono`, and `StrictAnti`.
 
 open Set
 
-variable {G H : Type _} [LinearOrderedAddCommGroup G] [OrderedAddCommGroup H]
+variable {G H : Type*} [LinearOrderedAddCommGroup G] [OrderedAddCommGroup H]
 
 /-- An odd function on a linear ordered additive commutative group is strictly monotone on the whole
 group provided that it is strictly monotone on `Set.Ici 0`. -/

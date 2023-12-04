@@ -32,7 +32,7 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 
 namespace FinVec
 
-variable {m n : ℕ} {α β γ : Type _}
+variable {m n : ℕ} {α β γ : Type*}
 
 /-- Evaluate `FinVec.seq f v = ![(f 0) (v 0), (f 1) (v 1), ...]` -/
 def seq : ∀ {m}, (Fin m → α → β) → (Fin m → α) → Fin m → β

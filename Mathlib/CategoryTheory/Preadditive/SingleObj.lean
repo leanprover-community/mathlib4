@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.SingleObj
 
 namespace CategoryTheory
 
-variable {α : Type _} [Ring α]
+variable {α : Type*} [Ring α]
 
 instance : Preadditive (SingleObj α) where
   add_comp _ _ _ f f' g := mul_add g f f'

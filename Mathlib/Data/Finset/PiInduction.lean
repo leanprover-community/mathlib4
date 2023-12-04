@@ -29,7 +29,7 @@ finite set, finite type, induction, function
 
 open Function
 
-variable {ι : Type _} {α : ι → Type _} [Finite ι] [DecidableEq ι] [∀ i, DecidableEq (α i)]
+variable {ι : Type*} {α : ι → Type*} [Finite ι] [DecidableEq ι] [∀ i, DecidableEq (α i)]
 
 namespace Finset
 

@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.Monoidal.Category
 
 namespace CategoryTheory
 
-variable {C : Type _} [Bicategory C]
+variable {C : Type*} [Bicategory C]
 
 /-- The endomorphisms of an object in a bicategory can be considered as a monoidal category. -/
 def EndMonoidal (X : C) :=
@@ -39,8 +39,9 @@ open Bicategory
 attribute [local simp] EndMonoidal in
 instance (X : C) : MonoidalCategory (EndMonoidal X) where
   tensorObj f g := f ≫ g
-  tensorHom {f g} h i η θ := η ▷ h ≫ g ◁ θ
-  tensorUnit' := 𝟙 _
+  whiskerLeft {f g h} η := f ◁ η
+  whiskerRight {f g} η h := η ▷ h
+  tensorUnit := 𝟙 _
   associator f g h := α_ f g h
   leftUnitor f := λ_ f
   rightUnitor f := ρ_ f

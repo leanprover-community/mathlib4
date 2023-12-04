@@ -50,7 +50,7 @@ open Function Set
 
 namespace Order
 
-variable {P : Type _}
+variable {P : Type*}
 
 /-- An ideal on an order `P` is a subset of `P` that is
   - nonempty
@@ -143,7 +143,7 @@ theorem mem_compl_of_ge {x y : P} : x ≤ y → x ∈ (I : Set P)ᶜ → y ∈ (
 #align order.ideal.mem_compl_of_ge Order.Ideal.mem_compl_of_ge
 
 /-- The partial ordering by subset inclusion, inherited from `Set P`. -/
-instance : PartialOrder (Ideal P) :=
+instance instPartialOrderIdeal : PartialOrder (Ideal P) :=
   PartialOrder.lift SetLike.coe SetLike.coe_injective
 
 -- @[simp] -- Porting note: simp can prove this
@@ -546,7 +546,7 @@ end Cofinal
 
 section IdealOfCofinals
 
-variable [Preorder P] (p : P) {ι : Type _} [Encodable ι] (𝒟 : ι → Cofinal P)
+variable [Preorder P] (p : P) {ι : Type*} [Encodable ι] (𝒟 : ι → Cofinal P)
 
 /-- Given a starting point, and a countable family of cofinal sets,
   this is an increasing sequence that intersects each cofinal set. -/

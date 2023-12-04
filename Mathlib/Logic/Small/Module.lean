@@ -10,6 +10,8 @@ import Mathlib.Logic.Small.Ring
 # Transfer module and algebra structures from `α` to `Shrink α`.
 -/
 
+set_option autoImplicit true
+
 noncomputable section
 
 instance [Semiring α] [AddCommMonoid β] [Module α β] [Small β] : Module α (Shrink β) :=

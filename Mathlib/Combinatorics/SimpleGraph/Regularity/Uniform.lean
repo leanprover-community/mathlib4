@@ -41,7 +41,7 @@ is less than `ε`.
 
 open Finset
 
-variable {α 𝕜 : Type _} [LinearOrderedField 𝕜]
+variable {α 𝕜 : Type*} [LinearOrderedField 𝕜]
 
 /-! ###  Graph uniformity -/
 
@@ -220,7 +220,7 @@ theorem nonUniforms_bot (hε : 0 < ε) : (⊥ : Finpartition A).nonUniforms G ε
   simp only [Finpartition.mk_mem_nonUniforms_iff, Finpartition.parts_bot, mem_map, not_and,
     Classical.not_not, exists_imp]; dsimp
   rintro x ⟨_,xu⟩ y ⟨_,yv⟩ _
-  rw [←xu, ←yv]
+  rw [← xu, ← yv]
   exact G.isUniform_singleton hε
 #align finpartition.non_uniforms_bot Finpartition.nonUniforms_bot
 

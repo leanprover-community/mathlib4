@@ -96,7 +96,7 @@ theorem lift_self {c : Cone F} (t : IsLimit c) : t.lift c = 𝟙 c.pt :=
 -- Repackaging the definition in terms of cone morphisms.
 /-- The universal morphism from any other cone to a limit cone. -/
 @[simps]
-def liftConeMorphism {t : Cone F} (h : IsLimit t) (s : Cone F) : s ⟶ t where Hom := h.lift s
+def liftConeMorphism {t : Cone F} (h : IsLimit t) (s : Cone F) : s ⟶ t where hom := h.lift s
 #align category_theory.limits.is_limit.lift_cone_morphism CategoryTheory.Limits.IsLimit.liftConeMorphism
 
 theorem uniq_cone_morphism {s t : Cone F} (h : IsLimit t) {f f' : s ⟶ t} : f = f' :=
@@ -126,10 +126,10 @@ and separately the factorisation condition.
 def mkConeMorphism {t : Cone F} (lift : ∀ s : Cone F, s ⟶ t)
     (uniq : ∀ (s : Cone F) (m : s ⟶ t), m = lift s) : IsLimit t
     where
-  lift s := (lift s).Hom
+  lift s := (lift s).hom
   uniq s m w :=
     have : ConeMorphism.mk m w = lift s := by apply uniq
-    congrArg ConeMorphism.Hom this
+    congrArg ConeMorphism.hom this
 #align category_theory.limits.is_limit.mk_cone_morphism CategoryTheory.Limits.IsLimit.mkConeMorphism
 
 /-- Limit cones on `F` are unique up to isomorphism. -/
@@ -184,7 +184,7 @@ def ofIsoLimit {r t : Cone F} (P : IsLimit r) (i : r ≅ t) : IsLimit t :=
 
 @[simp]
 theorem ofIsoLimit_lift {r t : Cone F} (P : IsLimit r) (i : r ≅ t) (s) :
-    (P.ofIsoLimit i).lift s = P.lift s ≫ i.hom.Hom :=
+    (P.ofIsoLimit i).lift s = P.lift s ≫ i.hom.hom :=
   rfl
 #align category_theory.limits.is_limit.of_iso_limit_lift CategoryTheory.Limits.IsLimit.ofIsoLimit_lift
 
@@ -213,7 +213,7 @@ first cone was limiting also.
 -/
 def ofPointIso {r t : Cone F} (P : IsLimit r) [i : IsIso (P.lift t)] : IsLimit t :=
   ofIsoLimit P (by
-    haveI : IsIso (P.liftConeMorphism t).Hom := i
+    haveI : IsIso (P.liftConeMorphism t).hom := i
     haveI : IsIso (P.liftConeMorphism t) := Cones.cone_iso_of_hom_iso _
     symm
     apply asIso (P.liftConeMorphism t))
@@ -259,8 +259,8 @@ def ofConeEquiv {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} (h : Cone G �
 theorem ofConeEquiv_apply_desc {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} (h : Cone G ≌ Cone F)
     {c : Cone G} (P : IsLimit (h.functor.obj c)) (s) :
     (ofConeEquiv h P).lift s =
-      ((h.unitIso.hom.app s).Hom ≫ (h.functor.inv.map (P.liftConeMorphism (h.functor.obj s))).Hom) ≫
-        (h.unitIso.inv.app c).Hom :=
+      ((h.unitIso.hom.app s).hom ≫ (h.functor.inv.map (P.liftConeMorphism (h.functor.obj s))).hom) ≫
+        (h.unitIso.inv.app c).hom :=
   rfl
 #align category_theory.limits.is_limit.of_cone_equiv_apply_desc CategoryTheory.Limits.IsLimit.ofConeEquiv_apply_desc
 
@@ -268,7 +268,7 @@ theorem ofConeEquiv_apply_desc {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D}
 theorem ofConeEquiv_symm_apply_desc {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D}
     (h : Cone G ≌ Cone F) {c : Cone G} (P : IsLimit c) (s) :
     ((ofConeEquiv h).symm P).lift s =
-      (h.counitIso.inv.app s).Hom ≫ (h.functor.map (P.liftConeMorphism (h.inverse.obj s))).Hom :=
+      (h.counitIso.inv.app s).hom ≫ (h.functor.map (P.liftConeMorphism (h.inverse.obj s))).hom :=
   rfl
 #align category_theory.limits.is_limit.of_cone_equiv_symm_apply_desc CategoryTheory.Limits.IsLimit.ofConeEquiv_symm_apply_desc
 
@@ -377,7 +377,7 @@ def conePointsIsoOfEquivalence {F : J ⥤ C} {s : Cone F} {G : K ⥤ C} {t : Con
       dsimp
       simp only [Limits.Cone.whisker_π, Limits.Cones.postcompose_obj_π, fac, whiskerLeft_app,
         assoc, id_comp, invFunIdAssoc_hom_app, fac_assoc, NatTrans.comp_app]
-      rw [counit_app_functor, ←Functor.comp_map]
+      rw [counit_app_functor, ← Functor.comp_map]
       have l :
         NatTrans.app w.hom j = NatTrans.app w.hom (Prefunctor.obj (𝟭 J).toPrefunctor j) := by dsimp
       rw [l,w.hom.naturality]
@@ -458,8 +458,8 @@ def isoUniqueConeMorphism {t : Cone F} : IsLimit t ≅ ∀ s, Unique (s ⟶ t) w
     { default := h.liftConeMorphism s
       uniq := fun _ => h.uniq_cone_morphism }
   inv h :=
-    { lift := fun s => (h s).default.Hom
-      uniq := fun s f w => congrArg ConeMorphism.Hom ((h s).uniq ⟨f, w⟩) }
+    { lift := fun s => (h s).default.hom
+      uniq := fun s f w => congrArg ConeMorphism.hom ((h s).uniq ⟨f, w⟩) }
 #align category_theory.limits.is_limit.iso_unique_cone_morphism CategoryTheory.Limits.IsLimit.isoUniqueConeMorphism
 
 namespace OfNatIso
@@ -597,12 +597,12 @@ theorem desc_self {t : Cocone F} (h : IsColimit t) : h.desc t = 𝟙 t.pt :=
 -- Repackaging the definition in terms of cocone morphisms.
 /-- The universal morphism from a colimit cocone to any other cocone. -/
 @[simps]
-def descCoconeMorphism {t : Cocone F} (h : IsColimit t) (s : Cocone F) : t ⟶ s where Hom := h.desc s
+def descCoconeMorphism {t : Cocone F} (h : IsColimit t) (s : Cocone F) : t ⟶ s where hom := h.desc s
 #align category_theory.limits.is_colimit.desc_cocone_morphism CategoryTheory.Limits.IsColimit.descCoconeMorphism
 
 theorem uniq_cocone_morphism {s t : Cocone F} (h : IsColimit t) {f f' : t ⟶ s} : f = f' :=
   have : ∀ {g : t ⟶ s}, g = h.descCoconeMorphism s := by
-    intro g; aesop_cat_nonterminal; exact h.uniq _ _ g.w
+    intro g; ext; exact h.uniq _ _ g.w
   this.trans this.symm
 #align category_theory.limits.is_colimit.uniq_cocone_morphism CategoryTheory.Limits.IsColimit.uniq_cocone_morphism
 
@@ -627,10 +627,10 @@ and separately the factorisation condition.
 def mkCoconeMorphism {t : Cocone F} (desc : ∀ s : Cocone F, t ⟶ s)
     (uniq' : ∀ (s : Cocone F) (m : t ⟶ s), m = desc s) : IsColimit t
     where
-  desc s := (desc s).Hom
+  desc s := (desc s).hom
   uniq s m w :=
     have : CoconeMorphism.mk m w = desc s := by apply uniq'
-    congrArg CoconeMorphism.Hom this
+    congrArg CoconeMorphism.hom this
 #align category_theory.limits.is_colimit.mk_cocone_morphism CategoryTheory.Limits.IsColimit.mkCoconeMorphism
 
 /-- Colimit cocones on `F` are unique up to isomorphism. -/
@@ -685,7 +685,7 @@ def ofIsoColimit {r t : Cocone F} (P : IsColimit r) (i : r ≅ t) : IsColimit t 
 
 @[simp]
 theorem ofIsoColimit_desc {r t : Cocone F} (P : IsColimit r) (i : r ≅ t) (s) :
-    (P.ofIsoColimit i).desc s = i.inv.Hom ≫ P.desc s :=
+    (P.ofIsoColimit i).desc s = i.inv.hom ≫ P.desc s :=
   rfl
 #align category_theory.limits.is_colimit.of_iso_colimit_desc CategoryTheory.Limits.IsColimit.ofIsoColimit_desc
 
@@ -714,7 +714,7 @@ first cocone was colimiting also.
 -/
 def ofPointIso {r t : Cocone F} (P : IsColimit r) [i : IsIso (P.desc t)] : IsColimit t :=
   ofIsoColimit P (by
-    haveI : IsIso (P.descCoconeMorphism t).Hom := i
+    haveI : IsIso (P.descCoconeMorphism t).hom := i
     haveI : IsIso (P.descCoconeMorphism t) := Cocones.cocone_iso_of_hom_iso _
     apply asIso (P.descCoconeMorphism t))
 #align category_theory.limits.is_colimit.of_point_iso CategoryTheory.Limits.IsColimit.ofPointIso
@@ -769,8 +769,8 @@ def ofCoconeEquiv {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} (h : Cocone 
 theorem ofCoconeEquiv_apply_desc {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D}
     (h : Cocone G ≌ Cocone F) {c : Cocone G} (P : IsColimit (h.functor.obj c)) (s) :
     (ofCoconeEquiv h P).desc s =
-      (h.unit.app c).Hom ≫
-        (h.inverse.map (P.descCoconeMorphism (h.functor.obj s))).Hom ≫ (h.unitInv.app s).Hom :=
+      (h.unit.app c).hom ≫
+        (h.inverse.map (P.descCoconeMorphism (h.functor.obj s))).hom ≫ (h.unitInv.app s).hom :=
   rfl
 #align category_theory.limits.is_colimit.of_cocone_equiv_apply_desc CategoryTheory.Limits.IsColimit.ofCoconeEquiv_apply_desc
 
@@ -778,7 +778,7 @@ theorem ofCoconeEquiv_apply_desc {D : Type u₄} [Category.{v₄} D] {G : K ⥤ 
 theorem ofCoconeEquiv_symm_apply_desc {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D}
     (h : Cocone G ≌ Cocone F) {c : Cocone G} (P : IsColimit c) (s) :
     ((ofCoconeEquiv h).symm P).desc s =
-      (h.functor.map (P.descCoconeMorphism (h.inverse.obj s))).Hom ≫ (h.counit.app s).Hom :=
+      (h.functor.map (P.descCoconeMorphism (h.inverse.obj s))).hom ≫ (h.counit.app s).hom :=
   rfl
 #align category_theory.limits.is_colimit.of_cocone_equiv_symm_apply_desc CategoryTheory.Limits.IsColimit.ofCoconeEquiv_symm_apply_desc
 
@@ -972,8 +972,8 @@ def isoUniqueCoconeMorphism {t : Cocone F} : IsColimit t ≅ ∀ s, Unique (t �
     { default := h.descCoconeMorphism s
       uniq := fun _ => h.uniq_cocone_morphism }
   inv h :=
-    { desc := fun s => (h s).default.Hom
-      uniq := fun s f w => congrArg CoconeMorphism.Hom ((h s).uniq ⟨f, w⟩) }
+    { desc := fun s => (h s).default.hom
+      uniq := fun s f w => congrArg CoconeMorphism.hom ((h s).uniq ⟨f, w⟩) }
 #align category_theory.limits.is_colimit.iso_unique_cocone_morphism CategoryTheory.Limits.IsColimit.isoUniqueCoconeMorphism
 
 namespace OfNatIso

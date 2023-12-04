@@ -20,7 +20,7 @@ open Set
 
 section Ixx
 
-variable {α β : Type _} [Preorder α] [Preorder β] {f g : α → β} {s : Set α}
+variable {α β : Type*} [Preorder α] [Preorder β] {f g : α → β} {s : Set α}
 
 theorem antitone_Ici : Antitone (Ici : α → Set α) := fun _ _ => Ici_subset_Ici.2
 #align antitone_Ici antitone_Ici
@@ -182,7 +182,7 @@ end Ixx
 
 section iUnion
 
-variable {α β : Type _} [SemilatticeSup α] [LinearOrder β] {f g : α → β} {a b : β}
+variable {α β : Type*} [SemilatticeSup α] [LinearOrder β] {f g : α → β} {a b : β}
 
 theorem iUnion_Ioo_of_mono_of_isGLB_of_isLUB (hf : Antitone f) (hg : Monotone g)
     (ha : IsGLB (range f) a) (hb : IsLUB (range g) b) : ⋃ x, Ioo (f x) (g x) = Ioo a b :=
@@ -198,7 +198,7 @@ section SuccOrder
 
 open Order
 
-variable {α β : Type _} [PartialOrder α]
+variable {α β : Type*} [PartialOrder α]
 
 theorem StrictMonoOn.Iic_id_le [SuccOrder α] [IsSuccArchimedean α] [OrderBot α] {n : α} {φ : α → α}
     (hφ : StrictMonoOn φ (Set.Iic n)) : ∀ m ≤ n, m ≤ φ m := by

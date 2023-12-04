@@ -27,7 +27,7 @@ namespace HomologicalComplex
 
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V]
 
-variable {ι : Type _} {c : ComplexShape ι} {ι' : Type _} {c' : ComplexShape ι'}
+variable {ι : Type*} {c : ComplexShape ι} {ι' : Type*} {c' : ComplexShape ι'}
 
 /-- Flip a complex of complexes over the diagonal,
 exchanging the horizontal and vertical directions.
@@ -39,7 +39,7 @@ def flipObj (C : HomologicalComplex (HomologicalComplex V c) c') :
     { X := fun j => (C.X j).X i
       d := fun j j' => (C.d j j').f i
       shape := fun j j' w => by
-        simp_all only [shape, zero_f]
+        simp_all only [not_false_eq_true, shape, zero_f]
       d_comp_d' := fun j₁ j₂ j₃ _ _ => congr_hom (C.d_comp_d j₁ j₂ j₃) i }
   d i i' :=
     { f := fun j => (C.X j).d i i'

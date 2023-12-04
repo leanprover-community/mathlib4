@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
-import Mathlib.Algebra.Hom.Equiv.Basic
 
 #align_import algebra.group.with_one.basic from "leanprover-community/mathlib"@"4dc134b97a3de65ef2ed881f3513d56260971562"
 
@@ -26,6 +26,12 @@ universe u v w
 variable {α : Type u} {β : Type v} {γ : Type w}
 
 namespace WithOne
+
+@[to_additive]
+instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) :=
+  { WithOne.inv with
+    inv_inv := fun a =>
+      (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
 
 section
 
@@ -164,3 +170,31 @@ theorem _root_.MulEquiv.withOneCongr_trans (e₁ : α ≃* β) (e₂ : β ≃* �
 end Map
 
 end WithOne
+
+namespace WithZero
+
+instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithZero α) :=
+  { WithZero.inv with
+    inv_inv := fun a =>
+      (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
+
+instance divisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) :=
+  { WithZero.divInvMonoid, WithZero.involutiveInv with
+    mul_inv_rev := fun a b =>
+      match a, b with
+      | none, none => rfl
+      | none, some b => rfl
+      | some a, none => rfl
+      | some a, some b => congr_arg some <| mul_inv_rev _ _,
+    inv_eq_of_mul := fun a b ↦
+      match a, b with
+      | none, none => fun _ ↦ rfl
+      | none, some b => fun _ ↦ by contradiction
+      | some a, none => fun _ ↦ by contradiction
+      | some a, some b => fun h ↦
+        congr_arg some <| inv_eq_of_mul_eq_one_right <| Option.some_injective _ h }
+
+instance divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (WithZero α) :=
+  { WithZero.divisionMonoid, WithZero.commSemigroup with }
+
+end WithZero

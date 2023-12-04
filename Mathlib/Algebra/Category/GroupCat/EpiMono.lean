@@ -120,7 +120,7 @@ instance : SMul B X' where
     match x with
     | fromCoset y => fromCoset ⟨b *l y, by
           rw [← y.2.choose_spec, leftCoset_assoc]
-          -- Porting: should we make `Bundled.α` reducible?
+          -- Porting note: should we make `Bundled.α` reducible?
           let b' : B := y.2.choose
           use b * b'⟩
     | ∞ => ∞
@@ -318,7 +318,7 @@ theorem comp_eq : (f ≫ show B ⟶ GroupCat.of SX' from g) = f ≫ show B ⟶ G
   ext a
   change g (f a) = h (f a)
   have : f a ∈ { b | h b = g b } := by
-    rw [←agree]
+    rw [← agree]
     use a
   rw [this]
 #align Group.surjective_of_epi_auxs.comp_eq GroupCat.SurjectiveOfEpiAuxs.comp_eq

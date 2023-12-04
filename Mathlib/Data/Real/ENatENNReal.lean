@@ -35,13 +35,13 @@ theorem map_coe_nnreal : WithTop.map ((↑) : ℕ → ℝ≥0) = ((↑) : ℕ∞
 #align enat.map_coe_nnreal ENat.map_coe_nnreal
 
 /-- Coercion `ℕ∞ → ℝ≥0∞` as an `OrderEmbedding`. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def toENNRealOrderEmbedding : ℕ∞ ↪o ℝ≥0∞ :=
   Nat.castOrderEmbedding.withTopMap
 #align enat.to_ennreal_order_embedding ENat.toENNRealOrderEmbedding
 
 /-- Coercion `ℕ∞ → ℝ≥0∞` as a ring homomorphism. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def toENNRealRingHom : ℕ∞ →+* ℝ≥0∞ :=
   .withTopMap (Nat.castRingHom ℝ≥0) Nat.cast_injective
 #align enat.to_ennreal_ring_hom ENat.toENNRealRingHom
@@ -56,8 +56,10 @@ theorem toENNReal_coe (n : ℕ) : ((n : ℕ∞) : ℝ≥0∞) = n :=
   rfl
 #align enat.coe_ennreal_coe ENat.toENNReal_coe
 
+-- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
-theorem toENNReal_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℕ∞) : ℝ≥0∞) = OfNat.ofNat n :=
+theorem toENNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index (OfNat.ofNat n : ℕ∞)) : ℝ≥0∞) = OfNat.ofNat n :=
   rfl
 
 @[simp, norm_cast]
@@ -119,4 +121,3 @@ theorem toENNReal_sub (m n : ℕ∞) : ↑(m - n) = (m - n : ℝ≥0∞) :=
 #align enat.coe_ennreal_sub ENat.toENNReal_sub
 
 end ENat
-

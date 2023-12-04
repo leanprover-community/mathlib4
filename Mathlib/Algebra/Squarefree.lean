@@ -29,7 +29,7 @@ squarefree, multiplicity
 -/
 
 
-variable {R : Type _}
+variable {R : Type*}
 
 /-- An element of a monoid is squarefree if the only squares that
   divide it are the squares of units. -/
@@ -87,7 +87,7 @@ theorem Squarefree.squarefree_of_dvd [CommMonoid R] {x y : R} (hdvd : x ∣ y) (
 
 section SquarefreeGcdOfSquarefree
 
-variable {α : Type _} [CancelCommMonoidWithZero α] [GCDMonoid α]
+variable {α : Type*} [CancelCommMonoidWithZero α] [GCDMonoid α]
 
 theorem Squarefree.gcd_right (a : α) {b : α} (hb : Squarefree b) : Squarefree (gcd a b) :=
   hb.squarefree_of_dvd (gcd_dvd_right _ _)
@@ -109,7 +109,7 @@ theorem squarefree_iff_multiplicity_le_one (r : R) :
     Squarefree r ↔ ∀ x : R, multiplicity x r ≤ 1 ∨ IsUnit x := by
   refine' forall_congr' fun a => _
   rw [← sq, pow_dvd_iff_le_multiplicity, or_iff_not_imp_left, not_le, imp_congr _ Iff.rfl]
-  rw [←one_add_one_eq_two]
+  rw [← one_add_one_eq_two]
   simpa using PartENat.add_one_le_iff_lt (PartENat.natCast_ne_top 1)
 #align multiplicity.squarefree_iff_multiplicity_le_one multiplicity.squarefree_iff_multiplicity_le_one
 
@@ -163,7 +163,7 @@ theorem irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree (r 
   have : x ≠ 0 := by
     rintro rfl
     apply hr
-    simpa only [zero_dvd_iff, MulZeroClass.mul_zero] using hx
+    simpa only [zero_dvd_iff, mul_zero] using hx
   obtain ⟨j, hj₁, hj₂⟩ := WfDvdMonoid.exists_irreducible_factor i this
   exact h _ hj₁ ((mul_dvd_mul hj₂ hj₂).trans hx)
 #align irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree irreducible_sq_not_dvd_iff_eq_zero_and_no_irreducibles_or_squarefree
@@ -199,7 +199,7 @@ theorem Squarefree.isRadical {x : R} (hx : Squarefree x) : IsRadical x :=
     And.right <|
       (dvd_gcd_iff x x y).1
         (by
-          by_cases gcd x y = 0
+          by_cases h : gcd x y = 0
           · rw [h]
             apply dvd_zero
           replace hy := ((dvd_gcd_iff x x _).2 ⟨dvd_rfl, hy⟩).trans gcd_pow_right_dvd_pow_gcd

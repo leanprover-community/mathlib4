@@ -16,6 +16,8 @@ operation. Note that these only apply when the field that the derivative is resp
 star operation; which as should be expected rules out `𝕜 = ℂ`.
 -/
 
+set_option autoImplicit true
+
 
 universe u v w
 

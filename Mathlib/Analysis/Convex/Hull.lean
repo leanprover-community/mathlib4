@@ -26,7 +26,7 @@ open Set
 
 open Pointwise
 
-variable {𝕜 E F : Type _}
+variable {𝕜 E F : Type*}
 
 section convexHull
 
@@ -82,8 +82,7 @@ theorem convexHull_mono (hst : s ⊆ t) : convexHull 𝕜 s ⊆ convexHull 𝕜 
   (convexHull 𝕜).monotone hst
 #align convex_hull_mono convexHull_mono
 
-theorem Convex.convexHull_eq (hs : Convex 𝕜 s) : convexHull 𝕜 s = s :=
-  ClosureOperator.mem_mk₃_closed hs
+theorem Convex.convexHull_eq : Convex 𝕜 s → convexHull 𝕜 s = s := ClosureOperator.mem_mk₃_closed.2
 #align convex.convex_hull_eq Convex.convexHull_eq
 
 @[simp]
@@ -112,11 +111,7 @@ theorem convexHull_nonempty_iff : (convexHull 𝕜 s).Nonempty ↔ s.Nonempty :=
   exact not_congr convexHull_empty_iff
 #align convex_hull_nonempty_iff convexHull_nonempty_iff
 
--- Porting note: `alias` cannot be protected.
---alias convexHull_nonempty_iff ↔ _ Set.Nonempty.convexHull
---attribute [protected] Set.Nonempty.convexHull
-protected theorem Set.Nonempty.convexHull (h : s.Nonempty) : (convexHull 𝕜 s).Nonempty :=
-convexHull_nonempty_iff.2 h
+protected alias ⟨_, Set.Nonempty.convexHull⟩ := convexHull_nonempty_iff
 #align set.nonempty.convex_hull Set.Nonempty.convexHull
 
 theorem segment_subset_convexHull (hx : x ∈ s) (hy : y ∈ s) : segment 𝕜 x y ⊆ convexHull 𝕜 s :=

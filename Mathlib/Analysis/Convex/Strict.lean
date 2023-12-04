@@ -21,7 +21,7 @@ open Set
 
 open Convex Pointwise
 
-variable {𝕜 𝕝 E F β : Type _}
+variable {𝕜 𝕝 E F β : Type*}
 
 open Function Set
 
@@ -81,7 +81,7 @@ protected theorem StrictConvex.inter {t : Set E} (hs : StrictConvex 𝕜 s) (ht 
   exact ⟨hs hx.1 hy.1 hxy ha hb hab, ht hx.2 hy.2 hxy ha hb hab⟩
 #align strict_convex.inter StrictConvex.inter
 
-theorem Directed.strictConvex_iUnion {ι : Sort _} {s : ι → Set E} (hdir : Directed (· ⊆ ·) s)
+theorem Directed.strictConvex_iUnion {ι : Sort*} {s : ι → Set E} (hdir : Directed (· ⊆ ·) s)
     (hs : ∀ ⦃i : ι⦄, StrictConvex 𝕜 (s i)) : StrictConvex 𝕜 (⋃ i, s i) := by
   rintro x hx y hy hxy a b ha hb hab
   rw [mem_iUnion] at hx hy
@@ -109,12 +109,13 @@ protected theorem StrictConvex.convex (hs : StrictConvex 𝕜 s) : Convex 𝕜 s
 #align strict_convex.convex StrictConvex.convex
 
 /-- An open convex set is strictly convex. -/
-protected theorem Convex.strictConvex_of_open (h : IsOpen s) (hs : Convex 𝕜 s) : StrictConvex 𝕜 s :=
+protected theorem Convex.strictConvex_of_isOpen (h : IsOpen s) (hs : Convex 𝕜 s) :
+    StrictConvex 𝕜 s :=
   fun _ hx _ hy _ _ _ ha hb hab => h.interior_eq.symm ▸ hs hx hy ha.le hb.le hab
-#align convex.strict_convex_of_open Convex.strictConvex_of_open
+#align convex.strict_convex_of_open Convex.strictConvex_of_isOpen
 
 theorem IsOpen.strictConvex_iff (h : IsOpen s) : StrictConvex 𝕜 s ↔ Convex 𝕜 s :=
-  ⟨StrictConvex.convex, Convex.strictConvex_of_open h⟩
+  ⟨StrictConvex.convex, Convex.strictConvex_of_isOpen h⟩
 #align is_open.strict_convex_iff IsOpen.strictConvex_iff
 
 theorem strictConvex_singleton (c : E) : StrictConvex 𝕜 ({c} : Set E) :=
@@ -443,7 +444,7 @@ theorem strictConvex_iff_ordConnected : StrictConvex 𝕜 s ↔ s.OrdConnected :
   strictConvex_iff_convex.trans convex_iff_ordConnected
 #align strict_convex_iff_ord_connected strictConvex_iff_ordConnected
 
-alias strictConvex_iff_ordConnected ↔ StrictConvex.ordConnected _
+alias ⟨StrictConvex.ordConnected, _⟩ := strictConvex_iff_ordConnected
 #align strict_convex.ord_connected StrictConvex.ordConnected
 
 end

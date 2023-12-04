@@ -3,11 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Associated
-import Mathlib.LinearAlgebra.Basic
-import Mathlib.Order.Atoms
-import Mathlib.Order.CompactlyGenerated
-import Mathlib.Tactic.Abel
+import Mathlib.Tactic.FinCases
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.LinearAlgebra.Finsupp
 
@@ -72,7 +68,7 @@ theorem ext {I J : Ideal α} (h : ∀ x, x ∈ I ↔ x ∈ J) : I = J :=
   Submodule.ext h
 #align ideal.ext Ideal.ext
 
-theorem sum_mem (I : Ideal α) {ι : Type _} {t : Finset ι} {f : ι → α} :
+theorem sum_mem (I : Ideal α) {ι : Type*} {t : Finset ι} {f : ι → α} :
     (∀ c ∈ t, f c ∈ I) → (∑ i in t, f i) ∈ I :=
   Submodule.sum_mem I
 #align ideal.sum_mem Ideal.sum_mem
@@ -160,6 +156,9 @@ theorem span_singleton_one : span ({1} : Set α) = ⊤ :=
   (eq_top_iff_one _).2 <| subset_span <| mem_singleton _
 #align ideal.span_singleton_one Ideal.span_singleton_one
 
+theorem isCompactElement_top : CompleteLattice.IsCompactElement (⊤ : Ideal α) := by
+  simpa only [← span_singleton_one] using Submodule.singleton_span_isCompactElement 1
+
 theorem mem_span_insert {s : Set α} {x y} :
     x ∈ span (insert y s) ↔ ∃ a, ∃ z ∈ span s, x = a * y + z :=
   Submodule.mem_span_insert
@@ -192,7 +191,7 @@ theorem span_singleton_eq_bot {x} : span ({x} : Set α) = ⊥ ↔ x = 0 :=
   Submodule.span_singleton_eq_bot
 #align ideal.span_singleton_eq_bot Ideal.span_singleton_eq_bot
 
-theorem span_singleton_ne_top {α : Type _} [CommSemiring α] {x : α} (hx : ¬IsUnit x) :
+theorem span_singleton_ne_top {α : Type*} [CommSemiring α] {x : α} (hx : ¬IsUnit x) :
     Ideal.span ({x} : Set α) ≠ ⊤ :=
   (Ideal.ne_top_iff_one _).mpr fun h1 =>
     let ⟨y, hy⟩ := Ideal.mem_span_singleton'.mp h1
@@ -213,7 +212,7 @@ theorem span_eq_top_iff_finite (s : Set α) :
   exact ⟨Submodule.mem_span_finite_of_mem_span, fun ⟨s', h₁, h₂⟩ => span_mono h₁ h₂⟩
 #align ideal.span_eq_top_iff_finite Ideal.span_eq_top_iff_finite
 
-theorem mem_span_singleton_sup {S : Type _} [CommSemiring S] {x y : S} {I : Ideal S} :
+theorem mem_span_singleton_sup {S : Type*} [CommSemiring S] {x y : S} {I : Ideal S} :
     x ∈ Ideal.span {y} ⊔ I ↔ ∃ a : S, ∃ b ∈ I, a * y + b = x := by
   rw [Submodule.mem_sup]
   constructor
@@ -277,7 +276,7 @@ theorem zero_ne_one_of_proper {I : Ideal α} (h : I ≠ ⊤) : (0 : α) ≠ 1 :=
   I.ne_top_iff_one.1 h <| hz ▸ I.zero_mem
 #align ideal.zero_ne_one_of_proper Ideal.zero_ne_one_of_proper
 
-theorem bot_prime {R : Type _} [Ring R] [IsDomain R] : (⊥ : Ideal R).IsPrime :=
+theorem bot_prime [IsDomain α] : (⊥ : Ideal α).IsPrime :=
   ⟨fun h => one_ne_zero (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
     mul_eq_zero.mp (by simpa only [Submodule.mem_bot] using h)⟩
 #align ideal.bot_prime Ideal.bot_prime
@@ -348,8 +347,8 @@ instance [Nontrivial α] : Nontrivial (Ideal α) := by
 
 /-- If P is not properly contained in any maximal ideal then it is not properly contained
   in any proper ideal -/
-theorem maximal_of_no_maximal {R : Type u} [Semiring R] {P : Ideal R}
-    (hmax : ∀ m : Ideal R, P < m → ¬IsMaximal m) (J : Ideal R) (hPJ : P < J) : J = ⊤ := by
+theorem maximal_of_no_maximal {P : Ideal α}
+    (hmax : ∀ m : Ideal α, P < m → ¬IsMaximal m) (J : Ideal α) (hPJ : P < J) : J = ⊤ := by
   by_contra hnonmax
   rcases exists_le_maximal J hnonmax with ⟨M, hM1, hM2⟩
   exact hmax M (lt_of_lt_of_le hPJ hM2) hM1
@@ -409,7 +408,7 @@ theorem mem_sup_right {S T : Ideal R} : ∀ {x : R}, x ∈ T → x ∈ S ⊔ T :
   @le_sup_right _ _ S T
 #align ideal.mem_sup_right Ideal.mem_sup_right
 
-theorem mem_iSup_of_mem {ι : Sort _} {S : ι → Ideal R} (i : ι) : ∀ {x : R}, x ∈ S i → x ∈ iSup S :=
+theorem mem_iSup_of_mem {ι : Sort*} {S : ι → Ideal R} (i : ι) : ∀ {x : R}, x ∈ S i → x ∈ iSup S :=
   @le_iSup _ _ _ S _
 #align ideal.mem_supr_of_mem Ideal.mem_iSup_of_mem
 
@@ -428,7 +427,7 @@ theorem mem_inf {I J : Ideal R} {x : R} : x ∈ I ⊓ J ↔ x ∈ I ∧ x ∈ J 
 #align ideal.mem_inf Ideal.mem_inf
 
 @[simp 1001] -- porting note: increased priority to appease `simpNF`
-theorem mem_iInf {ι : Sort _} {I : ι → Ideal R} {x : R} : x ∈ iInf I ↔ ∀ i, x ∈ I i :=
+theorem mem_iInf {ι : Sort*} {I : ι → Ideal R} {x : R} : x ∈ iInf I ↔ ∀ i, x ∈ I i :=
   Submodule.mem_iInf _
 #align ideal.mem_infi Ideal.mem_iInf
 
@@ -543,14 +542,14 @@ instance (priority := 100) IsMaximal.isPrime' (I : Ideal α) : ∀ [_H : I.IsMax
   @IsMaximal.isPrime _ _ _
 #align ideal.is_maximal.is_prime' Ideal.IsMaximal.isPrime'
 
-theorem span_singleton_lt_span_singleton [CommRing β] [IsDomain β] {x y : β} :
-    span ({x} : Set β) < span ({y} : Set β) ↔ DvdNotUnit y x := by
+theorem span_singleton_lt_span_singleton [IsDomain α] {x y : α} :
+    span ({x} : Set α) < span ({y} : Set α) ↔ DvdNotUnit y x := by
   rw [lt_iff_le_not_le, span_singleton_le_span_singleton, span_singleton_le_span_singleton,
     dvd_and_not_dvd_iff]
 #align ideal.span_singleton_lt_span_singleton Ideal.span_singleton_lt_span_singleton
 
-theorem factors_decreasing [CommRing β] [IsDomain β] (b₁ b₂ : β) (h₁ : b₁ ≠ 0) (h₂ : ¬IsUnit b₂) :
-    span ({b₁ * b₂} : Set β) < span {b₁} :=
+theorem factors_decreasing [IsDomain α] (b₁ b₂ : α) (h₁ : b₁ ≠ 0) (h₂ : ¬IsUnit b₂) :
+    span ({b₁ * b₂} : Set α) < span {b₁} :=
   lt_of_le_not_le
     (Ideal.span_le.2 <| singleton_subset_iff.2 <| Ideal.mem_span_singleton.2 ⟨b₂, rfl⟩) fun h =>
     h₂ <| isUnit_of_dvd_one <|
@@ -641,6 +640,30 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
   exact ⟨f x ^ (n + 1), mul_comm _ _⟩
 #align ideal.span_pow_eq_top Ideal.span_pow_eq_top
 
+lemma isPrime_of_maximally_disjoint (I : Ideal α)
+    (S : Submonoid α)
+    (disjoint : Disjoint (I : Set α) S)
+    (maximally_disjoint : ∀ (J : Ideal α), I < J → ¬ Disjoint (J : Set α) S) :
+    I.IsPrime where
+  ne_top' := by
+    rintro rfl
+    have : 1 ∈ (S : Set α) := S.one_mem
+    aesop
+  mem_or_mem' {x y} hxy := by
+    by_contra! rid
+    have hx := maximally_disjoint (I ⊔ span {x}) (Submodule.lt_sup_iff_not_mem.mpr rid.1)
+    have hy := maximally_disjoint (I ⊔ span {y}) (Submodule.lt_sup_iff_not_mem.mpr rid.2)
+    simp only [Set.not_disjoint_iff, mem_inter_iff, SetLike.mem_coe, Submodule.mem_sup,
+      mem_span_singleton] at hx hy
+    obtain ⟨s₁, ⟨i₁, hi₁, ⟨_, ⟨r₁, rfl⟩, hr₁⟩⟩, hs₁⟩ := hx
+    obtain ⟨s₂, ⟨i₂, hi₂, ⟨_, ⟨r₂, rfl⟩, hr₂⟩⟩, hs₂⟩ := hy
+    refine disjoint.ne_of_mem
+      (I.add_mem (I.mul_mem_left (i₁ + x * r₁) hi₂) <| I.add_mem (I.mul_mem_right (y * r₂) hi₁) <|
+        I.mul_mem_right (r₁ * r₂) hxy)
+      (S.mul_mem hs₁ hs₂) ?_
+    rw [← hr₁, ← hr₂]
+    ring
+
 end Ideal
 
 end CommSemiring
@@ -700,6 +723,17 @@ theorem eq_bot_or_top : I = ⊥ ∨ I = ⊤ := by
   simpa [H, h1] using I.mul_mem_left r⁻¹ hr
 #align ideal.eq_bot_or_top Ideal.eq_bot_or_top
 
+variable (K) in
+/-- A bijection between between (left) ideals of a division ring and `{0, 1}`, sending `⊥` to `0`
+and `⊤` to `1`. -/
+def equivFinTwo [DecidableEq (Ideal K)] : Ideal K ≃ Fin 2 where
+  toFun := fun I ↦ if I = ⊥ then 0 else 1
+  invFun := ![⊥, ⊤]
+  left_inv := fun I ↦ by rcases eq_bot_or_top I with rfl | rfl <;> simp
+  right_inv := fun i ↦ by fin_cases i <;> simp
+
+instance : Finite (Ideal K) := let _i := Classical.decEq (Ideal K); ⟨equivFinTwo K⟩
+
 /-- Ideals of a `DivisionSemiring` are a simple order. Thanks to the way abbreviations work,
 this automatically gives an `IsSimpleModule K` instance. -/
 instance isSimpleOrder : IsSimpleOrder (Ideal K) :=
@@ -723,7 +757,7 @@ section CommRing
 
 namespace Ideal
 
-theorem mul_sub_mul_mem {R : Type _} [CommRing R] (I : Ideal R) {a b c d : R} (h1 : a - b ∈ I)
+theorem mul_sub_mul_mem {R : Type*} [CommRing R] (I : Ideal R) {a b c d : R} (h1 : a - b ∈ I)
     (h2 : c - d ∈ I) : a * c - b * d ∈ I := by
   rw [show a * c - b * d = (a - b) * c + b * (c - d) by rw [sub_mul, mul_sub]; abel]
   exact I.add_mem (I.mul_mem_right _ h1) (I.mul_mem_left _ h2)
@@ -737,7 +771,7 @@ end CommRing
 -- about `CommSemiring`s.
 namespace Ring
 
-variable {R : Type _} [CommSemiring R]
+variable {R : Type*} [CommSemiring R]
 
 theorem exists_not_isUnit_of_not_isField [Nontrivial R] (hf : ¬IsField R) :
     ∃ (x : R) (_hx : x ≠ (0 : R)), ¬IsUnit x := by
@@ -802,7 +836,7 @@ end Ring
 
 namespace Ideal
 
-variable {R : Type u} [CommRing R] [Nontrivial R]
+variable {R : Type u} [CommSemiring R] [Nontrivial R]
 
 theorem bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsField R) : ⊥ < M := by
   rcases Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top.1 non_field with ⟨I, Ibot, Itop⟩
@@ -810,7 +844,7 @@ theorem bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsFiel
   intro mle
   apply lt_irrefl (⊤ : Ideal R)
   have : M = ⊥ := eq_bot_iff.mpr mle
-  rw [←this] at Ibot
+  rw [← this] at Ibot
   rwa [hm.1.2 I Ibot] at Itop
 #align ideal.bot_lt_of_maximal Ideal.bot_lt_of_maximal
 

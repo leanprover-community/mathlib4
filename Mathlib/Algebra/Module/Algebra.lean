@@ -17,11 +17,11 @@ namespace LinearMap
 
 section RestrictScalars
 
-variable (k : Type _) [CommSemiring k] (A : Type _) [Semiring A] [Algebra k A]
+variable (k : Type*) [CommSemiring k] (A : Type*) [Semiring A] [Algebra k A]
 
-variable (M : Type _) [AddCommMonoid M] [Module k M] [Module A M] [IsScalarTower k A M]
+variable (M : Type*) [AddCommMonoid M] [Module k M] [Module A M] [IsScalarTower k A M]
 
-variable (N : Type _) [AddCommMonoid N] [Module k N] [Module A N] [IsScalarTower k A N]
+variable (N : Type*) [AddCommMonoid N] [Module k N] [Module A N] [IsScalarTower k A N]
 
 /-- Restriction of scalars for linear maps between modules over a `k`-algebra is itself `k`-linear.
 -/

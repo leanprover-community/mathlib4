@@ -13,7 +13,7 @@ import Mathlib.Data.Fintype.Card
 
 open Set
 
-variable (M : Type _) [AddMonoidWithOne M] [CharZero M]
+variable (M : Type*) [AddMonoidWithOne M] [CharZero M]
 
 -- see Note [lower instance priority]
 instance (priority := 100) CharZero.infinite : Infinite M :=

@@ -21,7 +21,7 @@ open Function
 
 namespace Positive
 
-variable {M R K : Type _}
+variable {M R K : Type*}
 
 section AddBasic
 
@@ -39,17 +39,17 @@ instance addSemigroup : AddSemigroup { x : M // 0 < x } :=
   Subtype.coe_injective.addSemigroup _ coe_add
 #align positive.subtype.add_semigroup Positive.addSemigroup
 
-instance addCommSemigroup {M : Type _} [AddCommMonoid M] [Preorder M]
+instance addCommSemigroup {M : Type*} [AddCommMonoid M] [Preorder M]
     [CovariantClass M M (· + ·) (· < ·)] : AddCommSemigroup { x : M // 0 < x } :=
   Subtype.coe_injective.addCommSemigroup _ coe_add
 #align positive.subtype.add_comm_semigroup Positive.addCommSemigroup
 
-instance addLeftCancelSemigroup {M : Type _} [AddLeftCancelMonoid M] [Preorder M]
+instance addLeftCancelSemigroup {M : Type*} [AddLeftCancelMonoid M] [Preorder M]
     [CovariantClass M M (· + ·) (· < ·)] : AddLeftCancelSemigroup { x : M // 0 < x } :=
   Subtype.coe_injective.addLeftCancelSemigroup _ coe_add
 #align positive.subtype.add_left_cancel_semigroup Positive.addLeftCancelSemigroup
 
-instance addRightCancelSemigroup {M : Type _} [AddRightCancelMonoid M] [Preorder M]
+instance addRightCancelSemigroup {M : Type*} [AddRightCancelMonoid M] [Preorder M]
     [CovariantClass M M (· + ·) (· < ·)] : AddRightCancelSemigroup { x : M // 0 < x } :=
   Subtype.coe_injective.addRightCancelSemigroup _ coe_add
 #align positive.subtype.add_right_cancel_semigroup Positive.addRightCancelSemigroup
@@ -109,7 +109,7 @@ instance : Pow { x : R // 0 < x } ℕ :=
 
 @[simp]
 theorem val_pow (x : { x : R // 0 < x }) (n : ℕ) :
-    (x ^ n : R) = (x : R) ^ n :=
+    ↑(x ^ n) = (x : R) ^ n :=
   rfl
 #align positive.coe_pow Positive.val_pow
 

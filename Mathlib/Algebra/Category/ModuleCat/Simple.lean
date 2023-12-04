@@ -18,7 +18,7 @@ We prove simple modules are exactly simple objects in the category of `R`-module
 -/
 
 
-variable {R M : Type _} [Ring R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 
 open CategoryTheory ModuleCat
 
@@ -45,7 +45,7 @@ open FiniteDimensional
 attribute [local instance] moduleOfAlgebraModule isScalarTower_of_algebra_moduleCat
 
 /-- Any `k`-algebra module which is 1-dimensional over `k` is simple. -/
-theorem simple_of_finrank_eq_one {k : Type _} [Field k] [Algebra k R] {V : ModuleCat R}
+theorem simple_of_finrank_eq_one {k : Type*} [Field k] [Algebra k R] {V : ModuleCat R}
     (h : finrank k V = 1) : Simple V :=
   (simple_iff_isSimpleModule' V).mpr (is_simple_module_of_finrank_eq_one h)
 #align simple_of_finrank_eq_one simple_of_finrank_eq_one

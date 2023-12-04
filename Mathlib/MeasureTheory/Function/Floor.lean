@@ -19,7 +19,7 @@ open Set
 
 section FloorRing
 
-variable {α R : Type _} [MeasurableSpace α] [LinearOrderedRing R] [FloorRing R] [TopologicalSpace R]
+variable {α R : Type*} [MeasurableSpace α] [LinearOrderedRing R] [FloorRing R] [TopologicalSpace R]
   [OrderTopology R] [MeasurableSpace R]
 
 theorem Int.measurable_floor [OpensMeasurableSpace R] : Measurable (Int.floor : R → ℤ) :=
@@ -66,7 +66,7 @@ end FloorRing
 
 section FloorSemiring
 
-variable {α R : Type _} [MeasurableSpace α] [LinearOrderedSemiring R] [FloorSemiring R]
+variable {α R : Type*} [MeasurableSpace α] [LinearOrderedSemiring R] [FloorSemiring R]
   [TopologicalSpace R] [OrderTopology R] [MeasurableSpace R] [OpensMeasurableSpace R] {f : α → R}
 
 theorem Nat.measurable_floor : Measurable (Nat.floor : R → ℕ) :=

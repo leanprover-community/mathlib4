@@ -14,7 +14,7 @@ import Mathlib.Analysis.InnerProductSpace.Basic
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace MeasureTheory
 
@@ -23,7 +23,7 @@ namespace MeasureTheory
 
 namespace StronglyMeasurable
 
-protected theorem inner {𝕜 : Type _} {E : Type _} [IsROrC 𝕜] [NormedAddCommGroup E]
+protected theorem inner {𝕜 : Type*} {E : Type*} [IsROrC 𝕜] [NormedAddCommGroup E]
     [InnerProductSpace 𝕜 E] {_ : MeasurableSpace α} {f g : α → E} (hf : StronglyMeasurable f)
     (hg : StronglyMeasurable g) : StronglyMeasurable fun t => @inner 𝕜 _ _ (f t) (g t) :=
   Continuous.comp_stronglyMeasurable continuous_inner (hf.prod_mk hg)
@@ -33,7 +33,7 @@ end StronglyMeasurable
 
 namespace AEStronglyMeasurable
 
-variable {m : MeasurableSpace α} {μ : Measure α} {𝕜 : Type _} {E : Type _} [IsROrC 𝕜]
+variable {m : MeasurableSpace α} {μ : Measure α} {𝕜 : Type*} {E : Type*} [IsROrC 𝕜]
   [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y

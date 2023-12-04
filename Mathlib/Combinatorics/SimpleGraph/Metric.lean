@@ -39,7 +39,7 @@ graph metric, distance
 
 namespace SimpleGraph
 
-variable {V : Type _} (G : SimpleGraph V)
+variable {V : Type*} (G : SimpleGraph V)
 
 /-! ## Metric -/
 

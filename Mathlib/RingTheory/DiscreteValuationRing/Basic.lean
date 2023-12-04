@@ -5,8 +5,7 @@ Authors: Kevin Buzzard
 -/
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.Ideal.LocalRing
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.RingTheory.Valuation.Basic
+import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 import Mathlib.LinearAlgebra.AdicCompletion
 
 #align_import ring_theory.discrete_valuation_ring.basic from "leanprover-community/mathlib"@"c163ec99dfc664628ca15d215fce0a5b9c265b68"
@@ -73,12 +72,12 @@ variable {R}
 
 open PrincipalIdealRing
 
-theorem irreducible_of_span_eq_maximalIdeal {R : Type _} [CommRing R] [LocalRing R] [IsDomain R]
+theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommRing R] [LocalRing R] [IsDomain R]
     (ϖ : R) (hϖ : ϖ ≠ 0) (h : maximalIdeal R = Ideal.span {ϖ}) : Irreducible ϖ := by
   have h2 : ¬IsUnit ϖ := show ϖ ∈ maximalIdeal R from h.symm ▸ Submodule.mem_span_singleton_self ϖ
   refine' ⟨h2, _⟩
   intro a b hab
-  by_contra' h
+  by_contra! h
   obtain ⟨ha : a ∈ maximalIdeal R, hb : b ∈ maximalIdeal R⟩ := h
   rw [h, mem_span_singleton'] at ha hb
   rcases ha with ⟨a, rfl⟩
@@ -156,7 +155,7 @@ end DiscreteValuationRing
 
 namespace DiscreteValuationRing
 
-variable (R : Type _)
+variable (R : Type*)
 
 /-- Alternative characterisation of discrete valuation rings. -/
 def HasUnitMulPowIrreducibleFactorization [CommRing R] : Prop :=
@@ -386,7 +385,7 @@ theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m 
   rw [← sub_mul, mul_eq_zero] at h
   cases' h with h h
   · rw [sub_eq_zero] at h
-    exact_mod_cast h
+    exact mod_cast h
   · apply (hirr.ne_zero (pow_eq_zero h)).elim
 #align discrete_valuation_ring.unit_mul_pow_congr_unit DiscreteValuationRing.unit_mul_pow_congr_unit
 
@@ -478,7 +477,7 @@ theorem addVal_add {a b : R} : min (addVal R a) (addVal R b) ≤ addVal R (a + b
 
 end
 
-instance (R : Type _) [CommRing R] [IsDomain R] [DiscreteValuationRing R] :
+instance (R : Type*) [CommRing R] [IsDomain R] [DiscreteValuationRing R] :
     IsHausdorff (maximalIdeal R) R where
   haus' x hx := by
     obtain ⟨ϖ, hϖ⟩ := exists_irreducible R

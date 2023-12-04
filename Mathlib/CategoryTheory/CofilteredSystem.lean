@@ -3,7 +3,7 @@ Copyright (c) 2022 Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu
 -/
-import Mathlib.CategoryTheory.Filtered
+import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Topology.Category.TopCat.Limits.Konig
 
@@ -184,11 +184,11 @@ def toPreimages : J ⥤ Type v where
     rw [← mem_preimage, preimage_preimage, mem_preimage]
     convert h (g ≫ f); rw [F.map_comp]; rfl
   map_id j := by
-    simp_rw [MapsTo.restrict, Subtype.map, F.map_id]
+    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_id]
     ext
     rfl
   map_comp f g := by
-    simp_rw [MapsTo.restrict, Subtype.map, F.map_comp]
+    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_comp]
     rfl
 #align category_theory.functor.to_preimages CategoryTheory.Functor.toPreimages
 
@@ -246,7 +246,7 @@ theorem IsMittagLeffler.toPreimages (h : F.IsMittagLeffler) : (F.toPreimages s).
       rw [mem_preimage, ← map_comp_apply, h₄, ← Category.assoc, map_comp_apply, h₃,
         ← map_comp_apply]
       apply mem_iInter.1 hx
-    · simp_rw [toPreimages_map, MapsTo.val_restrict_apply, Subtype.coe_mk]
+    · simp_rw [toPreimages_map, MapsTo.val_restrict_apply]
       rw [← Category.assoc, map_comp_apply, h₃, map_comp_apply]
 #align category_theory.functor.is_mittag_leffler.to_preimages CategoryTheory.Functor.IsMittagLeffler.toPreimages
 
@@ -271,11 +271,11 @@ def toEventualRanges : J ⥤ Type v where
   obj j := F.eventualRange j
   map f := (F.eventualRange_mapsTo f).restrict _ _ _
   map_id i := by
-    simp_rw [MapsTo.restrict, Subtype.map, F.map_id]
+    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_id]
     ext
     rfl
   map_comp _ _ := by
-    simp_rw [MapsTo.restrict, Subtype.map, F.map_comp]
+    simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_comp]
     rfl
 #align category_theory.functor.to_eventual_ranges CategoryTheory.Functor.toEventualRanges
 

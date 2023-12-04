@@ -52,6 +52,8 @@ This file introduces notation in the locale `isocrystal`.
 
 -/
 
+set_option autoImplicit true
+
 
 noncomputable section
 
@@ -61,7 +63,7 @@ namespace WittVector
 
 variable (p : ℕ) [Fact p.Prime]
 
-variable (k : Type _) [CommRing k]
+variable (k : Type*) [CommRing k]
 
 scoped[Isocrystal] notation "K(" p ", " k ")" => FractionRing (WittVector p k)
 
@@ -109,15 +111,15 @@ scoped[Isocrystal]
 /-- An isocrystal is a vector space over the field `K(p, k)` additionally equipped with a
 Frobenius-linear automorphism.
 -/
-class Isocrystal (V : Type _) [AddCommGroup V] extends Module K(p, k) V where
+class Isocrystal (V : Type*) [AddCommGroup V] extends Module K(p, k) V where
   frob : V ≃ᶠˡ[p, k] V
 #align witt_vector.isocrystal WittVector.Isocrystal
 
 open WittVector
 
-variable (V : Type _) [AddCommGroup V] [Isocrystal p k V]
+variable (V : Type*) [AddCommGroup V] [Isocrystal p k V]
 
-variable (V₂ : Type _) [AddCommGroup V₂] [Isocrystal p k V₂]
+variable (V₂ : Type*) [AddCommGroup V₂] [Isocrystal p k V₂]
 
 variable {V}
 
@@ -195,18 +197,14 @@ instance (m : ℤ) : Isocrystal p k (StandardOneDimIsocrystal p k m) where
 
 @[simp]
 theorem StandardOneDimIsocrystal.frobenius_apply (m : ℤ) (x : StandardOneDimIsocrystal p k m) :
-    Φ(p, k) x = (p : K(p, k)) ^ m • φ(p, k) x := by
-  -- Porting note: was just `rfl`
-  erw [smul_eq_mul]
-  simp only [map_zpow₀, map_natCast]
-  rfl
+    Φ(p, k) x = (p : K(p, k)) ^ m • φ(p, k) x := rfl
 #align witt_vector.standard_one_dim_isocrystal.frobenius_apply WittVector.StandardOneDimIsocrystal.frobenius_apply
 
 end PerfectRing
 
 /-- A one-dimensional isocrystal over an algebraically closed field
 admits an isomorphism to one of the standard (indexed by `m : ℤ`) one-dimensional isocrystals. -/
-theorem isocrystal_classification (k : Type _) [Field k] [IsAlgClosed k] [CharP k p] (V : Type _)
+theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k p] (V : Type*)
     [AddCommGroup V] [Isocrystal p k V] (h_dim : finrank K(p, k) V = 1) :
     ∃ m : ℤ, Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V) := by
   haveI : Nontrivial V := FiniteDimensional.nontrivial_of_finrank_eq_succ h_dim
@@ -246,9 +244,6 @@ theorem isocrystal_classification (k : Type _) [Field k] [IsAlgClosed k] [CharP 
     LinearEquiv.map_smulₛₗ, StandardOneDimIsocrystal.frobenius_apply, Algebra.id.smul_eq_mul]
   simp only [← mul_smul]
   congr 1
-  -- Porting note: added the next two lines
-  erw [smul_eq_mul]
-  simp only [map_zpow₀, map_natCast]
   linear_combination φ(p, k) c * hmb
 #align witt_vector.isocrystal_classification WittVector.isocrystal_classification
 

@@ -3,7 +3,7 @@ Copyright (c) 2022 Rishikesh Vaishnav. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rishikesh Vaishnav
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.Typeclasses
 
 #align_import probability.conditional_probability from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -60,7 +60,7 @@ noncomputable section
 
 open ENNReal MeasureTheory MeasurableSpace
 
-variable {Ω : Type _} {m : MeasurableSpace Ω} (μ : Measure Ω) {s t : Set Ω}
+variable {Ω : Type*} {m : MeasurableSpace Ω} (μ : Measure Ω) {s t : Set Ω}
 
 namespace ProbabilityTheory
 

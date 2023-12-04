@@ -65,12 +65,12 @@ variable {α : Type v} [CommRing α] [StarRing α] {A : Matrix n n α}
 
 theorem mem_unitaryGroup_iff : A ∈ Matrix.unitaryGroup n α ↔ A * star A = 1 := by
   refine' ⟨And.right, fun hA => ⟨_, hA⟩⟩
-  simpa only [mul_eq_mul, mul_eq_one_comm] using hA
+  simpa only [mul_eq_one_comm] using hA
 #align matrix.mem_unitary_group_iff Matrix.mem_unitaryGroup_iff
 
 theorem mem_unitaryGroup_iff' : A ∈ Matrix.unitaryGroup n α ↔ star A * A = 1 := by
   refine' ⟨And.left, fun hA => ⟨hA, _⟩⟩
-  rwa [mul_eq_mul, mul_eq_one_comm] at hA
+  rwa [mul_eq_one_comm] at hA
 #align matrix.mem_unitary_group_iff' Matrix.mem_unitaryGroup_iff'
 
 theorem det_of_mem_unitary {A : Matrix n n α} (hA : A ∈ Matrix.unitaryGroup n α) :
@@ -107,8 +107,7 @@ theorem ext (A B : unitaryGroup n α) : (∀ i j, A i j = B i j) → A = B :=
   (UnitaryGroup.ext_iff A B).mpr
 #align matrix.unitary_group.ext Matrix.UnitaryGroup.ext
 
-@[simp]
-theorem star_mul_self (A : unitaryGroup n α) : star A.1 ⬝ A.1 = 1 :=
+theorem star_mul_self (A : unitaryGroup n α) : star A.1 * A.1 = 1 :=
   A.2.1
 #align matrix.unitary_group.star_mul_self Matrix.UnitaryGroup.star_mul_self
 
@@ -122,10 +121,10 @@ variable (A B : unitaryGroup n α)
 @[simp] theorem inv_apply : ⇑A⁻¹ = (star A : Matrix n n α) := rfl
 #align matrix.unitary_group.inv_apply Matrix.UnitaryGroup.inv_apply
 
-@[simp] theorem mul_val : ↑(A * B) = A.1 ⬝ B.1 := rfl
+@[simp] theorem mul_val : ↑(A * B) = A.1 * B.1 := rfl
 #align matrix.unitary_group.mul_val Matrix.UnitaryGroup.mul_val
 
-@[simp] theorem mul_apply : ⇑(A * B) = A.1 ⬝ B.1 := rfl
+@[simp] theorem mul_apply : ⇑(A * B) = A.1 * B.1 := rfl
 #align matrix.unitary_group.mul_apply Matrix.UnitaryGroup.mul_apply
 
 @[simp] theorem one_val : ↑(1 : unitaryGroup n α) = (1 : Matrix n n α) := rfl
@@ -216,16 +215,15 @@ abbrev orthogonalGroup := unitaryGroup n β
 theorem mem_orthogonalGroup_iff {A : Matrix n n β} :
     A ∈ Matrix.orthogonalGroup n β ↔ A * star A = 1 := by
   refine' ⟨And.right, fun hA => ⟨_, hA⟩⟩
-  simpa only [mul_eq_mul, mul_eq_one_comm] using hA
+  simpa only [mul_eq_one_comm] using hA
 #align matrix.mem_orthogonal_group_iff Matrix.mem_orthogonalGroup_iff
 
 theorem mem_orthogonalGroup_iff' {A : Matrix n n β} :
     A ∈ Matrix.orthogonalGroup n β ↔ star A * A = 1 := by
   refine' ⟨And.left, fun hA => ⟨hA, _⟩⟩
-  rwa [mul_eq_mul, mul_eq_one_comm] at hA
+  rwa [mul_eq_one_comm] at hA
 #align matrix.mem_orthogonal_group_iff' Matrix.mem_orthogonalGroup_iff'
 
 end OrthogonalGroup
 
 end Matrix
-
