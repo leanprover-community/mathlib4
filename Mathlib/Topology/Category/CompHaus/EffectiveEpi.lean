@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Sites.RegularExtensive
 import Mathlib.Topology.Category.CompHaus.Limits
 /-!
 
-# Effective epimorhpisms and finite effective epimorphic families in `CompHaus`
+# Effective epimorphisms and finite effective epimorphic families in `CompHaus`
 
 This file proves that `CompHaus` is `Preregular`. Together with the fact that it is
 `FinitaryPreExtensive`, this implies that `CompHaus` is `Precoherent`.
