@@ -56,9 +56,9 @@ noncomputable def inr : G ⟶ mappingCone φ :=
       dsimp [mappingCone]
       simp only [δ_v 0 1 (zero_add 1) _ p _ rfl p (p+1) (by linarith) rfl, zero_add,
         Int.negOnePow_one,
-        neg_smul, one_smul, ← sub_eq_add_neg, sub_eq_zero, Cochain.mk_v,
+        one_smul, ← sub_eq_add_neg, sub_eq_zero, Cochain.mk_v,
         Cochain.ofHom_v, HomologicalComplex.id_f, id_comp, not_true, dite_eq_ite,
-        ite_true, comp_add, comp_neg, biprod.inr_fst_assoc,
+        ite_true, comp_add, comp_neg, biprod.inr_fst_assoc, Units.neg_smul,
         zero_comp, neg_zero, add_zero, biprod.inr_snd_assoc, zero_add]))
 
 noncomputable def fst : Cocycle (mappingCone φ) F 1 :=
@@ -67,7 +67,7 @@ noncomputable def fst : Cocycle (mappingCone φ) F 1 :=
     ext p q hpq
     obtain rfl : q = p + 1 + 1 := by linarith
     dsimp [mappingCone]
-    have : Int.negOnePow 2 = 1 := by simp
+    have : Int.negOnePow 2 = 1 := rfl
     simp only [δ_v 1 2 (by linarith) _ p (p+1+1) (by linarith) (p+1) (p+1) (by linarith) rfl,
       Int.negOnePow_succ, Int.negOnePow_one, Cochain.mk_v, Cochain.ofHom_v, HomologicalComplex.id_f, comp_id, not_true,
       neg_neg, dite_eq_ite, ite_true, add_comp, neg_comp, assoc,
@@ -342,8 +342,8 @@ lemma δ_inl : δ (-1) 0 (inl φ) = Cochain.ofHom (φ ≫ inr φ) := by
 @[simp]
 lemma δ_snd : δ 0 1 (snd φ) =
     -(fst φ : Cochain (mappingCone φ) F 1) •[add_zero 1] (Cochain.ofHom φ) := by
-  simp only [δ_eq 0 1 (zero_add 1), zero_add, Int.negOnePow_one,
-    diff_comp_snd, smul_add, neg_smul, one_smul, add_neg_cancel_comm_assoc]
+  simp only [δ_eq 0 1 (zero_add 1), zero_add, Int.negOnePow_one, Units.neg_smul,
+    diff_comp_snd, smul_add, one_smul, add_neg_cancel_comm_assoc]
 
 attribute [irreducible] mappingCone inl inr fst snd
 
@@ -401,12 +401,12 @@ lemma δ_descCochain {K : CochainComplex C ℤ} {n m n' : ℤ} (α : Cochain F K
     (n+1).negOnePow • (Cochain.ofHom φ) •[zero_add n] β) +
       (snd φ) •[zero_add n'] (δ n n' β) := by
   dsimp only [descCochain]
-  simp only [δ_add, Cochain.comp_add, Cochain.comp_zsmul,
-    δ_zero_cochain_comp _ _ _ hn', δ_snd, Cochain.neg_comp, smul_neg,
+  simp only [δ_add, Cochain.comp_add,
+    δ_zero_cochain_comp _ _ _ hn', δ_snd, Cochain.neg_comp,
     δ_comp _ _ (show 1 + m = n by linarith) 2 n _ hn' rfl h, Int.negOnePow_succ,
     Cochain.comp_assoc_of_second_is_zero_cochain, Cochain.zero_comp,
-    Cocycle.δ_eq_zero, smul_zero, add_zero, neg_smul,
-    Cochain.comp_neg, Cochain.comp_zsmul]
+    Cocycle.δ_eq_zero, smul_zero, add_zero,
+    Cochain.comp_neg, Units.neg_smul, smul_neg, Cochain.comp_units_smul]
   abel
 
 @[simps!]
@@ -415,8 +415,8 @@ noncomputable def descCocycle {K : CochainComplex C ℤ} {n m : ℤ}
     (h : m + 1 = n) (eq : δ m n α = n.negOnePow • (Cochain.ofHom φ) •[zero_add n] (β : Cochain G K n)) :
     Cocycle (mappingCone φ) K n :=
   Cocycle.mk (descCochain φ α (β : Cochain G K n) h) (n+1) rfl
-    (by simp only [δ_descCochain _ _ _ _ rfl, eq, Int.negOnePow_succ, neg_smul, add_right_neg,
-      Cochain.comp_zero, Cocycle.δ_eq_zero, add_zero])
+    (by simp only [δ_descCochain _ _ _ _ rfl, eq, Int.negOnePow_succ, Units.neg_smul,
+          add_right_neg, Cochain.comp_zero, Cocycle.δ_eq_zero, add_zero])
 
 noncomputable def desc {K : CochainComplex C ℤ} (α : Cochain F K (-1)) (β : G ⟶ K)
     (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β)) : mappingCone φ ⟶ K :=
@@ -522,9 +522,9 @@ lemma δ_liftCochain {K : CochainComplex C ℤ} {n m : ℤ} (α : Cochain K F m)
     δ n m (liftCochain φ α β h) = -(δ m m' α) •[by rw [← hm', add_neg_cancel_right]] (inl φ) +
       (δ n m β + α •[add_zero m] (Cochain.ofHom φ)) •[add_zero m] (Cochain.ofHom (inr φ)) := by
   dsimp only [liftCochain]
-  simp only [δ_add, δ_comp _ _ (show m + (-1) = n by linarith) m' 0 m h hm' (neg_add_self 1),
-    δ_inl, Cochain.ofHom_comp, Int.negOnePow_neg, Int.negOnePow_one, neg_smul, one_smul, δ_comp_ofHom, Cochain.add_comp,
-    Cochain.comp_assoc_of_second_is_zero_cochain]
+  simp only [δ_add, δ_comp _ _ (show m + (-1) = n by linarith) m' 0 m h hm' (neg_add_self 1), δ_inl,
+    Cochain.ofHom_comp, Int.negOnePow_neg, Int.negOnePow_one, Units.neg_smul, one_smul,
+    δ_comp_ofHom, Cochain.add_comp, Cochain.comp_assoc_of_second_is_zero_cochain]
   abel
 
 @[simps!]

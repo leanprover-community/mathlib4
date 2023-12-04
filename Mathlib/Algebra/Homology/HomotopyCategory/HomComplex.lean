@@ -354,6 +354,12 @@ protected lemma smul_comp {n₁ n₂ n₁₂ : ℤ} (k : R) (z₁ : Cochain F G 
   simp only [comp_v _ _ h p _ q rfl (by linarith), smul_v, Linear.smul_comp]
 
 @[simp]
+protected lemma units_smul_comp {n₁ n₂ n₁₂ : ℤ} (k : Rˣ) (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂)
+    (h : n₁ + n₂ = n₁₂) : (k • z₁).comp z₂ h = k • (z₁.comp z₂ h) := by
+  ext p q hpq
+  simp only [comp_v _ _ h p _ q rfl (by linarith), units_smul_v, Linear.units_smul_comp]
+
+@[simp]
 protected lemma id_comp {n : ℤ} (z₂ : Cochain F G n) :
     (Cochain.ofHom (𝟙 F)).comp z₂ (zero_add n) = z₂ := by
   ext p q hpq
@@ -388,6 +394,12 @@ protected lemma comp_smul {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (k
     (h : n₁ + n₂ = n₁₂ ) : z₁.comp (k • z₂) h = k • (z₁.comp z₂ h) := by
   ext p q hpq
   simp only [comp_v _ _ h p _ q rfl (by linarith), smul_v, Linear.comp_smul]
+
+@[simp]
+protected lemma comp_units_smul {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (k : Rˣ) (z₂ : Cochain G K n₂)
+    (h : n₁ + n₂ = n₁₂ ) : z₁.comp (k • z₂) h = k • (z₁.comp z₂ h) := by
+  ext p q hpq
+  simp only [comp_v _ _ h p _ q rfl (by linarith), units_smul_v, Linear.comp_units_smul]
 
 @[simp]
 protected lemma comp_id {n : ℤ} (z₁ : Cochain F G n) :
