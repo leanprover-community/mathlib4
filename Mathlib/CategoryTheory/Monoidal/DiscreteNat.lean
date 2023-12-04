@@ -46,14 +46,14 @@ abbrev toDiscreteNat : MonoidalFunctor (FreeMonoidalCategory _root_.Unit) (Discr
 
 @[simp]
 def len {X : Type*} : FreeMonoidalCategory X → ℕ
-  | Unit => 0
+  | unit => 0
   | of _ => 1
   | tensor x y => x.len + y.len
 
 def isoPowerNatOf :
     ∀ (A : FreeMonoidalCategory _root_.Unit),
       A ≅ powerNat (FreeMonoidalCategory.of Unit.unit) A.len
-  | Unit => Iso.refl _
+  | unit => Iso.refl _
   | of _ => Iso.refl _
   | tensor x y => (isoPowerNatOf x ⊗ isoPowerNatOf y) ≪≫
       (powerNatAdd (FreeMonoidalCategory.of Unit.unit) x.len y.len).symm

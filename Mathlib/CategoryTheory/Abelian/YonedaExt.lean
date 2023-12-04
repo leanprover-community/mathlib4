@@ -1,7 +1,7 @@
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.LargeExt
 import Mathlib.Algebra.Homology.QuasiIso
-import Mathlib.Algebra.Homology.SingleExtra
+import Mathlib.Algebra.Homology.Single
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 namespace CategoryTheory

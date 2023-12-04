@@ -166,17 +166,17 @@ of modules.-/
 noncomputable def lequivProdOfRightSplitExact {f : B →ₗ[R] M} (hj : Function.Injective j)
     (exac : LinearMap.range j = LinearMap.ker g) (h : g.comp f = LinearMap.id) : (A × B) ≃ₗ[R] M :=
   ((ShortComplex.Splitting.ofExactOfSection _
-    (ShortComplex.Exact.moduleCat_mk_of_range_eq_ker (ModuleCat.ofHom j)
+    (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.ofHom j)
     (ModuleCat.ofHom g) exac) (asHom f) h
-    (by simpa only [ModuleCat.mono_iff_injective] using hj)).isoBinaryBiproduct ≪≫
-    biprodIsoProd _ _).symm.toLinearEquiv
+    (by simpa only [ModuleCat.mono_iff_injective])).isoBinaryBiproduct ≪≫
+    biprodIsoProd _ _ ).symm.toLinearEquiv
 
 /-- The isomorphism `A × B ≃ₗ[R] M` coming from a left split exact sequence `0 ⟶ A ⟶ M ⟶ B ⟶ 0`
 of modules.-/
 noncomputable def lequivProdOfLeftSplitExact {f : M →ₗ[R] A} (hg : Function.Surjective g)
     (exac : LinearMap.range j = LinearMap.ker g) (h : f.comp j = LinearMap.id) : (A × B) ≃ₗ[R] M :=
   ((ShortComplex.Splitting.ofExactOfRetraction _
-    (ShortComplex.Exact.moduleCat_mk_of_range_eq_ker (ModuleCat.ofHom j)
+    (ShortComplex.Exact.moduleCat_of_range_eq_ker (ModuleCat.ofHom j)
     (ModuleCat.ofHom g) exac) (ModuleCat.ofHom f) h
     (by simpa only [ModuleCat.epi_iff_surjective] using hg)).isoBinaryBiproduct ≪≫
     biprodIsoProd _ _).symm.toLinearEquiv
