@@ -144,7 +144,7 @@ def toBEList (x : BitVec w) : List Bool :=
 def ofLEFn {w} (f : Fin w → Bool) : BitVec w :=
   match w with
   | 0   => .nil
-  | w+1 => .concat (ofLEFn <| Fin.tail f) (f ⟨0, Nat.succ_pos w⟩)
+  | _+1 => .concat (ofLEFn <| Fin.tail f) (f 0)
 
 /-- Create a bitvector from a function that maps index `i` to the `i`-th most significant bit -/
 def ofBEFn {w} (f : Fin w → Bool) : BitVec w :=
