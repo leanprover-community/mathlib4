@@ -104,6 +104,26 @@ theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := rfl
 #align bitvec.of_fin_to_fin Std.BitVec.ofFin_toFin
 
 /-!
+### Indexing
+Lemmas about `Std.BitVec.getLsb'` and `Std.BitVec.getMsb'`
+-/
+
+proof_wanted toNat_concat {n} (x : BitVec n) (b : Bool) :
+    (concat x b).toNat = bit b x.toNat
+
+proof_wanted getLsb'_concat {n} (x : BitVec n) (b : Bool) :
+    getLsb' (concat x b) = Fin.cons b x.getLsb'
+
+proof_wanted getLsb'_cons {n} (x : BitVec n) (b : Bool) :
+    getLsb' (cons b x) = Fin.snoc x.getLsb' b
+
+proof_wanted getMsb'_concat {n} (x : BitVec n) (b : Bool) :
+    getMsb' (concat x b) = Fin.snoc x.getMsb' b
+
+proof_wanted getMsb'_cons {n} (x : BitVec n) (b : Bool) :
+    getMsb' (cons b x) = Fin.cons b x.getMsb'
+
+/-!
 ### `Std.BitVec.ofLEFn` and `Std.BitVec.ofBEFn`
 -/
 
