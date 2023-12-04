@@ -436,7 +436,8 @@ theorem lift.unique {φ' : (⨂[R] i, s i) →ₗ[R] E} (H : ∀ f, φ' (PiTenso
 
 -- Why is it necessary to replace `lift.symm` with `lift.symm.toLinearMap` here?
 @[simp]
-theorem lift_symm (φ' : (⨂[R] i, s i) →ₗ[R] E) : lift.symm.toLinearMap φ' = φ'.compMultilinearMap (tprod R) :=
+theorem lift_symm (φ' : (⨂[R] i, s i) →ₗ[R] E) :
+    lift.symm.toLinearMap φ' = φ'.compMultilinearMap (tprod R) :=
   rfl
 #align pi_tensor_product.lift_symm PiTensorProduct.lift_symm
 
@@ -456,7 +457,8 @@ variable (R M)
 For simplicity, this is defined only for homogeneously- (rather than dependently-) typed components.
 -/
 def reindex (e : ι ≃ ι₂) : (⨂[R] _ : ι, M) ≃ₗ[R] ⨂[R] _ : ι₂, M :=
-  LinearEquiv.ofLinear (lift.toLinearMap (domDomCongr e.symm (tprod R : MultilinearMap R _ (⨂[R] _ : ι₂, M))))
+  LinearEquiv.ofLinear (lift.toLinearMap
+    (domDomCongr e.symm (tprod R : MultilinearMap R _ (⨂[R] _ : ι₂, M))))
     (lift.toLinearMap (domDomCongr e (tprod R : MultilinearMap R _ (⨂[R] _ : ι, M))))
     (by
       ext
@@ -492,7 +494,8 @@ theorem reindex_comp_tprod (e : ι ≃ ι₂) :
 
 @[simp]
 theorem lift_comp_reindex (e : ι ≃ ι₂) (φ : MultilinearMap R (fun _ : ι₂ ↦ M) E) :
-    lift.toLinearMap φ ∘ₗ (reindex R M e).toLinearMap = lift.toLinearMap (φ.domDomCongr e.symm) := by
+    lift.toLinearMap φ ∘ₗ (reindex R M e).toLinearMap =
+      lift.toLinearMap (φ.domDomCongr e.symm) := by
   ext
   simp
 #align pi_tensor_product.lift_comp_reindex PiTensorProduct.lift_comp_reindex
