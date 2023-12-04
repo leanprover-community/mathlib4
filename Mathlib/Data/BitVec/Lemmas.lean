@@ -144,4 +144,16 @@ proof_wanted ofBEFn_cons {w} (b : Bool) (f : Fin w → Bool) :
 proof_wanted ofBEFn_snoc {w} (b : Bool) (f : Fin w → Bool) :
     ofBEFn (Fin.snoc f b) = concat (ofBEFn f) b
 
+proof_wanted ofLEFn_eq_finRange_map_fold (f : Fin w → Bool) :
+    ofLEFn f = (
+      List.finRange w
+        |>.map (fun i =>
+            shiftLeftZeroExtend (ofBool (f i)) i.val |>.zeroExtend' (by
+              rw [Nat.add_comm]; exact i.prop
+            )
+          )
+        |>.foldr (· ||| ·) 0#w
+      )
+
+
 end Std.BitVec
