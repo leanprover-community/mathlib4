@@ -12,7 +12,7 @@ A category is countable in this sense if it has countably many objects and count
 
 -/
 
-universe w v
+universe w v u
 
 open Classical
 
@@ -24,7 +24,7 @@ instance discreteCountable {α : Type*} [Countable α] : Countable (Discrete α)
   Countable.of_equiv α discreteEquiv.symm
 
 /-- A category with countably many objects and morphisms. -/
-class CountableCategory (J : Type*) [SmallCategory J] : Prop where
+class CountableCategory (J : Type*) [Category J] : Prop where
   countableObj : Countable J := by infer_instance
   countableHom : ∀ j j' : J, Countable (j ⟶ j') := by infer_instance
 
@@ -35,7 +35,7 @@ instance countablerCategoryDiscreteOfCountable (J : Type*) [Countable J] :
 
 namespace CountableCategory
 
-variable (α : Type*) [Countable α] [SmallCategory α] [CountableCategory α]
+variable (α : Type*) [Countable α] [Category α] [CountableCategory α]
 
 /-- A countable category `α` is equivalent to a category with objects in `Type`. -/
 abbrev ObjAsType : Type :=
@@ -64,6 +64,8 @@ instance countableCategoryOpposite {J : Type*} [SmallCategory J] [CountableCateg
 instance countableCategoryUlift {J : Type v} [SmallCategory J] [CountableCategory J] :
     CountableCategory.{max w v} (ULiftHom.{w, max w v} (ULift.{w, v} J)) where
   countableObj := instCountableULift
-  countableHom := fun _ _ => instCountableULift
+  countableHom := fun i j =>
+    have : Countable ((ULiftHom.objDown i).down ⟶ (ULiftHom.objDown j).down) := inferInstance
+    instCountableULift
 
 end CategoryTheory
