@@ -3,6 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel, Heather Macbeth
 -/
+import Mathlib.Analysis.Convex.Mul
 import Mathlib.Analysis.Convex.Slope
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Tactic.LinearCombination
@@ -15,9 +16,6 @@ import Mathlib.Tactic.LinearCombination
 In this file we prove that the following functions are convex or strictly convex:
 
 * `strictConvexOn_exp` : The exponential function is strictly convex.
-* `Even.convexOn_pow`: For an even `n : ℕ`, `fun x ↦ x ^ n` is convex.
-* `convexOn_pow`: For `n : ℕ`, `fun x ↦ x ^ n` is convex on $[0, +∞)$.
-* `convexOn_zpow`: For `m : ℤ`, `fun x ↦ x ^ m` is convex on $[0, +∞)$.
 * `strictConcaveOn_log_Ioi`, `strictConcaveOn_log_Iio`: `Real.log` is strictly concave on
   $(0, +∞)$ and $(-∞, 0)$ respectively.
 * `convexOn_rpow`, `strictConvexOn_rpow` : For `p : ℝ`, `fun x ↦ x ^ p` is convex on $[0, +∞)$ when
@@ -32,6 +30,10 @@ theory.
 
 For `p : ℝ`, prove that `fun x ↦ x ^ p` is concave when `0 ≤ p ≤ 1` and strictly concave when
 `0 < p < 1`.
+
+## See also
+
+`Analysis.Convex.Mul` for convexity of `x ↦ x ^ n``
 -/
 
 open Real Set BigOperators NNReal
@@ -67,83 +69,8 @@ theorem convexOn_exp : ConvexOn ℝ univ exp :=
   strictConvexOn_exp.convexOn
 #align convex_on_exp convexOn_exp
 
-/-- `x^n`, `n : ℕ` is convex on `[0, +∞)` for all `n`.
-
-We give an elementary proof rather than using the second derivative test, since this lemma is
-needed early in the analysis library. -/
-theorem convexOn_pow (n : ℕ) : ConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
-  induction' n with k IH
-  · exact convexOn_const (1 : ℝ) (convex_Ici _)
-  refine' ⟨convex_Ici _, _⟩
-  rintro a (ha : 0 ≤ a) b (hb : 0 ≤ b) μ ν hμ hν h
-  have H := IH.2 ha hb hμ hν h
-  have : 0 ≤ (b ^ k - a ^ k) * (b - a) * μ * ν := by
-    cases' le_or_lt a b with hab hab
-    · have : a ^ k ≤ b ^ k := by gcongr
-      have : 0 ≤ (b ^ k - a ^ k) * (b - a) := by nlinarith
-      positivity
-    · have : b ^ k ≤ a ^ k := by gcongr
-      have : 0 ≤ (b ^ k - a ^ k) * (b - a) := by nlinarith
-      positivity
-  calc
-    (μ * a + ν * b) ^ k.succ = (μ * a + ν * b) * (μ * a + ν * b) ^ k := pow_succ _ _
-    _ ≤ (μ * a + ν * b) * (μ * a ^ k + ν * b ^ k) := by gcongr; exact H
-    _ ≤ (μ * a + ν * b) * (μ * a ^ k + ν * b ^ k) + (b ^ k - a ^ k) * (b - a) * μ * ν := by linarith
-    _ = (μ + ν) * (μ * a ^ k.succ + ν * b ^ k.succ) := by rw [Nat.succ_eq_add_one]; ring
-    _ = μ * a ^ k.succ + ν * b ^ k.succ := by rw [h]; ring
 #align convex_on_pow convexOn_pow
-
-/-- `x^n`, `n : ℕ` is convex on the whole real line whenever `n` is even.
-
-We give an elementary proof rather than using the second derivative test, since this lemma is
-needed early in the analysis library. -/
-nonrec theorem Even.convexOn_pow {n : ℕ} (hn : Even n) :
-    ConvexOn ℝ Set.univ fun x : ℝ => x ^ n := by
-  refine' ⟨convex_univ, _⟩
-  rintro a - b - μ ν hμ hν h
-  obtain ⟨k, rfl⟩ := hn.exists_two_nsmul _
-  -- Porting note: added type ascription to LHS
-  have : (0 : ℝ) ≤ (a - b) ^ 2 * μ * ν := by positivity
-  calc
-    (μ * a + ν * b) ^ (2 * k) = ((μ * a + ν * b) ^ 2) ^ k := by rw [pow_mul]
-    _ ≤ ((μ + ν) * (μ * a ^ 2 + ν * b ^ 2)) ^ k := by gcongr; linarith
-    _ = (μ * a ^ 2 + ν * b ^ 2) ^ k := by rw [h]; ring
-    _ ≤ μ * (a ^ 2) ^ k + ν * (b ^ 2) ^ k := ?_
-    _ ≤ μ * a ^ (2 * k) + ν * b ^ (2 * k) := by ring_nf; rfl
-  -- Porting note: `rw [mem_Ici]` was `dsimp`
-  refine' (convexOn_pow k).2 _ _ hμ hν h <;> rw [mem_Ici] <;> positivity
 #align even.convex_on_pow Even.convexOn_pow
-
-open Int in
-/-- `x^m`, `m : ℤ` is convex on `(0, +∞)` for all `m`.
-
-We give an elementary proof rather than using the second derivative test, since this lemma is
-needed early in the analysis library. -/
-theorem convexOn_zpow : ∀ m : ℤ, ConvexOn ℝ (Ioi 0) fun x : ℝ => x ^ m
-  | (n : ℕ) => by
-    simp_rw [zpow_ofNat]
-    exact (convexOn_pow n).subset Ioi_subset_Ici_self (convex_Ioi _)
-  | -[n+1] => by
-    simp_rw [zpow_negSucc]
-    refine' ⟨convex_Ioi _, _⟩
-    rintro a (ha : 0 < a) b (hb : 0 < b) μ ν hμ hν h
-    field_simp
-    rw [div_le_div_iff]
-    · -- Porting note: added type ascription to LHS
-      calc
-        (1 : ℝ) * (a ^ (n + 1) * b ^ (n + 1)) = ((μ + ν) ^ 2 * (a * b)) ^ (n + 1) := by rw [h]; ring
-        _ ≤ ((μ * b + ν * a) * (μ * a + ν * b)) ^ (n + 1) := ?_
-        _ = (μ * b + ν * a) ^ (n + 1) * (μ * a + ν * b) ^ (n + 1) := by rw [mul_pow]
-        _ ≤ (μ * b ^ (n + 1) + ν * a ^ (n + 1)) * (μ * a + ν * b) ^ (n + 1) := ?_
-      · -- Porting note: added type ascription to LHS
-        gcongr (?_ : ℝ) ^ _
-        have : (0 : ℝ) ≤ μ * ν * (a - b) ^ 2 := by positivity
-        linarith
-      · gcongr
-        apply (convexOn_pow (n + 1)).2 hb.le ha.le hμ hν h
-    · have : 0 < μ * a + ν * b := by cases le_or_lt a b <;> nlinarith
-      positivity
-    · positivity
 #align convex_on_zpow convexOn_zpow
 
 /- `Real.log` is strictly concave on $(0, +∞)$.

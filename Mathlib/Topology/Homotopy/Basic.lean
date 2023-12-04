@@ -231,6 +231,10 @@ theorem symm_symm {f₀ f₁ : C(X, Y)} (F : Homotopy f₀ f₁) : F.symm.symm =
   simp
 #align continuous_map.homotopy.symm_symm ContinuousMap.Homotopy.symm_symm
 
+theorem symm_bijective {f₀ f₁ : C(X, Y)} :
+    Function.Bijective (Homotopy.symm : Homotopy f₀ f₁ → Homotopy f₁ f₀) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 /--
 Given `Homotopy f₀ f₁` and `Homotopy f₁ f₂`, we can define a `Homotopy f₀ f₂` by putting the first
 homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
@@ -503,6 +507,10 @@ theorem symm_symm {f₀ f₁ : C(X, Y)} (F : HomotopyWith f₀ f₁ P) : F.symm.
   ext <| Homotopy.congr_fun <| Homotopy.symm_symm _
 #align continuous_map.homotopy_with.symm_symm ContinuousMap.HomotopyWith.symm_symm
 
+theorem symm_bijective {f₀ f₁ : C(X, Y)} :
+    Function.Bijective (HomotopyWith.symm : HomotopyWith f₀ f₁ P → HomotopyWith f₁ f₀ P) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 /--
 Given `HomotopyWith f₀ f₁ P` and `HomotopyWith f₁ f₂ P`, we can define a `HomotopyWith f₀ f₂ P`
 by putting the first homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
@@ -628,6 +636,10 @@ def symm (F : HomotopyRel f₀ f₁ S) : HomotopyRel f₁ f₀ S where
 theorem symm_symm (F : HomotopyRel f₀ f₁ S) : F.symm.symm = F :=
   HomotopyWith.symm_symm F
 #align continuous_map.homotopy_rel.symm_symm ContinuousMap.HomotopyRel.symm_symm
+
+theorem symm_bijective :
+    Function.Bijective (HomotopyRel.symm : HomotopyRel f₀ f₁ S → HomotopyRel f₁ f₀ S) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 /-- Given `HomotopyRel f₀ f₁ S` and `HomotopyRel f₁ f₂ S`, we can define a `HomotopyRel f₀ f₂ S`
 by putting the first homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
