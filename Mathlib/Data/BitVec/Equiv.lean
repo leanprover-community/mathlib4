@@ -82,11 +82,15 @@ theorem ofLEFn_getLsb' (x : BitVec w) : ofLEFn (x.getLsb') = x := by
 theorem getLsb'_ofLEFn (f : Fin w → Bool) : getLsb' (ofLEFn f) = f := by
   simp [← coe_symm_finFunctionEquivAux_eq_ofLEFn, ← coe_finFunctionEquivAux_eq_getLsb']
 
-/-- Equivalence between `BitVec w` and `Fin w → Bool` -/
-def finFunctionEquiv : BitVec w ≃ (Fin w → Bool) where
+/-- Equivalence between `BitVec w` and `Fin w → Bool`, using `Std.BitVec.getLsb'` and
+`Std.BitVec.ofLEFn` as isomorphisms -/
+def finFunctionEquivLE : BitVec w ≃ (Fin w → Bool) where
   toFun     := getLsb'
   invFun    := ofLEFn
   left_inv  := ofLEFn_getLsb'
   right_inv := getLsb'_ofLEFn
+
+proof_wanted ofBEFn_getMsb' (x : BitVec w) : ofBEFn (x.getMsb') = x
+proof_wanted getMsb'_ofBEFn (f : Fin w → Bool) : getMsb' (ofBEFn f) = f
 
 end Std.BitVec

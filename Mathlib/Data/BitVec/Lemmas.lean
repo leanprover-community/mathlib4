@@ -113,4 +113,15 @@ theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := rfl
     ofLEFn (Fin.cons b f) = concat (ofLEFn f) b :=
   rfl
 
+proof_wanted ofLEFn_snoc {w} (b : Bool) (f : Fin w → Bool) :
+    ofLEFn (Fin.snoc f b) = cons b (ofLEFn f)
+
+@[simp] lemma ofBEFn_zero (f : Fin 0 → Bool) : ofBEFn f = nil := rfl
+
+proof_wanted ofBEFn_cons {w} (b : Bool) (f : Fin w → Bool) :
+    ofBEFn (Fin.cons b f) = cons b (ofBEFn f)
+
+proof_wanted ofBEFn_snoc {w} (b : Bool) (f : Fin w → Bool) :
+    ofBEFn (Fin.snoc f b) = concat (ofBEFn f) b
+
 end Std.BitVec
