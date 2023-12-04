@@ -32,12 +32,11 @@ class Coalgebra (R : Type u) (A : Type v) [CommRing R] [AddCommGroup A] [Module 
   /-- The counit of the coalgebra -/
   counit : A →ₗ[R] R
   /-- The comultiplication is coassociative -/
-  coassoc : TensorProduct.assoc R A A A ∘ₗ TensorProduct.map comul .id ∘ₗ comul =
-    TensorProduct.map .id comul ∘ₗ comul
+  coassoc : TensorProduct.assoc R A A A ∘ₗ comul.rTensor A ∘ₗ comul = comul.lTensor A ∘ₗ comul
   /-- The counit satisfies the left counitality law -/
-  counit_id : TensorProduct.lid R A ∘ₗ TensorProduct.map counit .id ∘ₗ comul = .id
+  counit_id : TensorProduct.lid R A ∘ₗ counit.rTensor A ∘ₗ comul = .id
   /-- The counit satisfies the right counitality law -/
-  id_counit : TensorProduct.rid R A ∘ₗ TensorProduct.map .id counit ∘ₗ comul = .id
+  id_counit : TensorProduct.rid R A ∘ₗ counit.lTensor A ∘ₗ comul = .id
 
 namespace Coalgebra
 
@@ -48,18 +47,15 @@ variable [CommRing R] [AddCommGroup A] [Module R A] [Coalgebra R A]
 
 @[simp]
 theorem coassoc_apply (a : A) :
-    TensorProduct.assoc R A A A (TensorProduct.map comul .id (comul a)) =
-    TensorProduct.map .id comul (comul a) :=
+    TensorProduct.assoc R A A A (comul.rTensor A (comul a)) = comul.lTensor A (comul a) :=
   LinearMap.congr_fun coassoc a
 
 @[simp]
-theorem counit_id_apply (a : A) :
-    TensorProduct.lid R A (TensorProduct.map counit .id (comul a)) = a :=
+theorem counit_id_apply (a : A) : TensorProduct.lid R A (counit.rTensor A (comul a)) = a :=
   LinearMap.congr_fun counit_id a
 
 @[simp]
-theorem id_counit_apply (a : A) :
-    TensorProduct.rid R A (TensorProduct.map .id counit (comul a)) = a :=
+theorem id_counit_apply (a : A) : TensorProduct.rid R A (counit.lTensor A (comul a)) = a :=
   LinearMap.congr_fun id_counit a
 
 end CommRingAddCommGroup
