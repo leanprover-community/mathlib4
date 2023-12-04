@@ -56,11 +56,17 @@ theorem coassoc_symm_apply (a : A) :
   rw [(TensorProduct.assoc R A A A).symm_apply_eq, coassoc_apply a]
 
 @[simp]
-theorem counit_id_apply (a : A) : counit.rTensor A (comul a) = TensorProduct.mk R _ _ 1 a :=
+theorem coassoc_symm :
+    (TensorProduct.assoc R A A A).symm ∘ₗ comul.lTensor A ∘ₗ comul =
+    comul.rTensor A ∘ₗ (comul (R := R)) := by
+  ext a; exact coassoc_symm_apply a
+
+@[simp]
+theorem rTensor_counit_comul (a : A) : counit.rTensor A (comul a) = 1 ⊗ₜ[R] a :=
   LinearMap.congr_fun rTensor_counit_comp_comul a
 
 @[simp]
-theorem id_counit_apply (a : A) : counit.lTensor A (comul a) = (TensorProduct.mk R _ _).flip 1 a :=
+theorem lTensor_counit_comul (a : A) : counit.lTensor A (comul a) = a ⊗ₜ[R] 1 :=
   LinearMap.congr_fun lTensor_counit_comp_comul a
 
 end CommRingAddCommGroup
