@@ -28,16 +28,16 @@ open scoped TensorProduct
 comultiplication `Δ` and a counit `ε` obeying the left and right conunitality laws. -/
 class Coalgebra (R : Type u) (A : Type v) [CommRing R] [AddCommGroup A] [Module R A] where
   /-- The comultiplication of the coalgebra -/
-  Δ : A →ₗ[R] A ⊗[R] A
+  comul : A →ₗ[R] A ⊗[R] A
   /-- The counit of the coalgebra -/
-  ε : A →ₗ[R] R
+  counit : A →ₗ[R] R
   /-- The comultiplication is coassociative -/
-  coassoc : TensorProduct.assoc R A A A ∘ₗ TensorProduct.map Δ .id ∘ₗ Δ =
-    TensorProduct.map .id Δ ∘ₗ Δ
+  coassoc : TensorProduct.assoc R A A A ∘ₗ TensorProduct.map comul .id ∘ₗ comul =
+    TensorProduct.map .id comul ∘ₗ comul
   /-- The counit satisfies the left counitality law -/
-  ε_id : TensorProduct.lid R A ∘ₗ TensorProduct.map ε .id ∘ₗ Δ = .id
+  counit_id : TensorProduct.lid R A ∘ₗ TensorProduct.map counit .id ∘ₗ comul = .id
   /-- The counit satisfies the right counitality law -/
-  id_ε : TensorProduct.rid R A ∘ₗ TensorProduct.map .id ε ∘ₗ Δ = .id
+  id_counit : TensorProduct.rid R A ∘ₗ TensorProduct.map .id counit ∘ₗ comul = .id
 
 namespace Coalgebra
 
@@ -47,16 +47,20 @@ variable {R : Type u} {A : Type v}
 variable [CommRing R] [AddCommGroup A] [Module R A] [Coalgebra R A]
 
 @[simp]
-theorem coassoc_apply (a : A) : TensorProduct.assoc R A A A (TensorProduct.map Δ .id (Δ a)) =
-    TensorProduct.map .id Δ (Δ a) := LinearMap.congr_fun coassoc a
+theorem coassoc_apply (a : A) :
+    TensorProduct.assoc R A A A (TensorProduct.map comul .id (comul a)) =
+    TensorProduct.map .id comul (comul a) :=
+  LinearMap.congr_fun coassoc a
 
 @[simp]
-theorem ε_id_apply (a : A) : TensorProduct.lid R A (TensorProduct.map ε .id (Δ a)) = a :=
-    LinearMap.congr_fun ε_id a
+theorem counit_id_apply (a : A) :
+    TensorProduct.lid R A (TensorProduct.map counit .id (comul a)) = a :=
+  LinearMap.congr_fun counit_id a
 
 @[simp]
-theorem id_ε_apply (a : A) : TensorProduct.rid R A (TensorProduct.map .id ε (Δ a)) = a :=
-    LinearMap.congr_fun id_ε a
+theorem id_counit_apply (a : A) :
+    TensorProduct.rid R A (TensorProduct.map .id counit (comul a)) = a :=
+  LinearMap.congr_fun id_counit a
 
 end CommRingAddCommGroup
 
@@ -71,17 +75,17 @@ variable (R : Type u) [CommRing R]
 namespace CommRing
 
 instance toCoalgebra : Coalgebra R R where
-  Δ := (TensorProduct.mk R R R) 1
-  ε := .id
+  comul := (TensorProduct.mk R R R) 1
+  counit := .id
   coassoc := rfl
-  ε_id := by ext; simp
-  id_ε := by ext; simp
+  counit_id := by ext; simp
+  id_counit := by ext; simp
 
 @[simp]
-theorem Δ_apply (r : R) : Δ r = 1 ⊗ₜ[R] r := rfl
+theorem comul_apply (r : R) : comul r = 1 ⊗ₜ[R] r := rfl
 
 @[simp]
-theorem ε_apply (r : R) : ε r = r := rfl
+theorem counit_apply (r : R) : counit r = r := rfl
 
 end CommRing
 
@@ -90,30 +94,30 @@ namespace Finsupp
 variable (ι : Type v)
 
 /-- The `R`-module whose elements are functions `ι → R` which are zero on all but finitely many
-elements of `ι` has a coalgebra structure. The coproduct is given by `Δ(fᵢ) = fᵢ ⊗ fᵢ` and the
-counit by `ε(fᵢ) =  1`, where `fᵢ` is the function sending `i` to `1` and all other elements of `ι`
-to zero. -/
+elements of `ι` has a coalgebra structure. The coproduct `Δ` is given by `Δ(fᵢ) = fᵢ ⊗ fᵢ` and the
+counit `ε` by `ε(fᵢ) =  1`, where `fᵢ` is the function sending `i` to `1` and all other elements of
+`ι` to zero. -/
 noncomputable
 instance instCoalgebra : Coalgebra R (ι →₀ R) where
-  Δ := Finsupp.total ι ((ι →₀ R) ⊗[R] (ι →₀ R)) R
+  comul := Finsupp.total ι ((ι →₀ R) ⊗[R] (ι →₀ R)) R
     (fun i ↦ Finsupp.single i 1 ⊗ₜ Finsupp.single i 1)
-  ε := Finsupp.total ι R R (fun _ ↦ 1)
+  counit := Finsupp.total ι R R (fun _ ↦ 1)
   coassoc := by
     ext; simp
-  ε_id := by
+  counit_id := by
     ext; simp
-  id_ε := by
+  id_counit := by
     ext; simp
 
 @[simp]
-theorem Δ_single (i : ι) (r : R) : Δ (Finsupp.single i r) =
+theorem comul_single (i : ι) (r : R) : comul (Finsupp.single i r) =
     (Finsupp.single i r) ⊗ₜ[R] (Finsupp.single i 1) := by
-  unfold Δ; unfold instCoalgebra; simp
+  unfold comul; unfold instCoalgebra; simp
   rw [TensorProduct.smul_tmul', smul_single_one i r]
 
 @[simp]
-theorem ε_single (i : ι) (r : R) : ε (Finsupp.single i r) = r := by
-  unfold ε; unfold instCoalgebra; simp
+theorem counit_single (i : ι) (r : R) : counit (Finsupp.single i r) = r := by
+  unfold counit; unfold instCoalgebra; simp
 
 end Finsupp
 
