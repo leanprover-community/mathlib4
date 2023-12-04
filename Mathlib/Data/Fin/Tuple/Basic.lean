@@ -691,6 +691,14 @@ theorem cons_comp_rev {α n} (a : α) (f : Fin n → α) :
         · exact lt_succ_n
       simp only [Fin.rev_last, Fin.zero_eta, Fin.cons_zero]
 
+theorem snoc_comp_rev {α n} (a : α) (f : Fin n → α) :
+    Fin.snoc f a ∘ Fin.rev = Fin.cons a (f ∘ Fin.rev) := by
+  have comp_rev_inj : Function.Injective (· ∘ Fin.rev : (Fin (n+1) → α) → _) :=
+    ((Fin.revPerm).arrowCongr (Equiv.refl _)).injective
+  apply comp_rev_inj
+  simp only [cons_comp_rev]
+  simp only [comp_def, rev_rev]
+
 theorem comp_init {α : Type*} {β : Type*} (g : α → β) (q : Fin n.succ → α) :
     g ∘ init q = init (g ∘ q) := by
   ext j
