@@ -15,14 +15,10 @@ If `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` is a short exact sequence in a category 
 `HomologicalComplex C c` in an abelian category (i.e. `S` is a short complex in
 that category and satisfies `hS : S.ShortExact`), then whenever `i` and `j` are degrees
 such that `hij : c.Rel i j`, then there is a long exact sequence :
-<<<<<<< HEAD
 `... ⟶ S.X₁.homology i ⟶ S.X₂.homology i ⟶ S.X₃.homology i ⟶ S.X₁.homology j ⟶ ...`.
 The connecting homomorphism `S.X₃.homology i ⟶ S.X₁.homology j` is `hS.δ i j hij`, and
 the exactness is asserted as lemmas `hS.homology_exact₁`, `hS.homology_exact₂` and
 `hS.homology_exact₃`.
-=======
-`... ⟶ S.X₁.homology i ⟶ S.X₂.homology i ⟶ S.X₃.homology i ⟶ S.X₁.homology j ⟶ ...` (TODO).
->>>>>>> origin
 
 The proof is based on the snake lemma, similarly as it was originally done in
 the Liquid Tensor Experiment.
@@ -162,7 +158,6 @@ end HomologySequence
 
 end Preadditive
 
-<<<<<<< HEAD
 section Abelian
 
 variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
@@ -312,6 +307,3 @@ end ShortExact
 end ShortComplex
 
 end CategoryTheory
-=======
-end HomologicalComplex
->>>>>>> origin
