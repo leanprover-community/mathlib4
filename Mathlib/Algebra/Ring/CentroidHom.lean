@@ -435,20 +435,14 @@ theorem comp_mul_comm (T S : CentroidHom α) (a b : α) : (T ∘ S) (a * b) = (S
   rw [map_mul_right, map_mul_left, ← map_mul_right, ← map_mul_left]
 #align centroid_hom.comp_mul_comm CentroidHom.comp_mul_comm
 
+instance : DistribMulAction M (CentroidHom α) :=
+  toEnd_injective.distribMulAction (toEndRingHom α).toAddMonoidHom toEnd_smul
+
+instance : Module R (CentroidHom α) :=
+  toEnd_injective.module R (toEndRingHom α).toAddMonoidHom toEnd_smul
+
 local notation "L" => AddMonoid.End.mulLeft
 local notation "R" => AddMonoid.End.mulRight
-
-/-- The canonical ring homomorphism from the centroid into the additive monoid
-endomorphisms. This is `CentroidHom.toEnd` upgraded to a ring homomorphism. -/
-def toEndRingHom (α : Type*) [NonUnitalNonAssocSemiring α] :
-    CentroidHom α →+* AddMonoid.End α where
-  toFun := toEnd
-  map_add' := toEnd_add
-  map_zero' := toEnd_zero
-  map_one' := toEnd_one
-  map_mul' := toEnd_mul
-
-lemma toEnd'_apply (f : CentroidHom α) : toEndRingHom α f = f.toEnd := rfl
 
 lemma centroid_eq_centralizer_mul_op :
     MonoidHom.mrange (toEndRingHom α) = Submonoid.centralizer (Set.range L ∪ Set.range R) := by
@@ -486,14 +480,6 @@ lemma centroid_eq_centralizer_mul_op :
       apply (Set.mem_union _ _ _).mpr
       simp only [Set.mem_range, exists_apply_eq_apply, or_true] ⟩
     exact rfl
-instance : DistribMulAction M (CentroidHom α) :=
-  toEnd_injective.distribMulAction (toEndRingHom α).toAddMonoidHom toEnd_smul
-
-instance : Module R (CentroidHom α) :=
-  toEnd_injective.module R (toEndRingHom α).toAddMonoidHom toEnd_smul
-
-local notation "L" => AddMonoid.End.mulLeft
-local notation "R" => AddMonoid.End.mulRight
 
 /-- The canonical homomorphism from the center into the centroid -/
 def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α where
