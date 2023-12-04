@@ -478,6 +478,7 @@ variable [CommSemiring R]
 variable [Module R α] [SMulCommClass R α α] [IsScalarTower R α α]
 
 /-- The natural ring homomorphism from `R` into `CentroidHom α` -/
+@[simps apply_toFun]
 def algHom : R →+* CentroidHom α where
   toFun r := r • 1
   map_one' := one_smul _ _
