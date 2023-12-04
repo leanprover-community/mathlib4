@@ -140,7 +140,7 @@ lemma map_mul_right (f : CentroidHom α) (a b : α) : f (a * b) = f a * b :=
     CentroidHomClass.map_mul_right _ _ _
 
 /-- Turn a centroid homomorphism into an additive monoid endomorphism. -/
-def toEnd  (f : CentroidHom α) : AddMonoid.End α :=
+def toEnd (f : CentroidHom α) : AddMonoid.End α :=
   (f : α →+ α)
 #align centroid_hom.to_End CentroidHom.toEnd
 
