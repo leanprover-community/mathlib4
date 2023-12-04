@@ -140,9 +140,8 @@ nonrec theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero' {U : Set M} (h
   · by_cases hxU : x ∈ U
     · rw [show x = (⟨x, hxU⟩ : U) from rfl, ← contMdiffAt_subtype_iff]
       exact (g_smth _).congr_of_eventuallyEq (eventually_of_forall g'g)
-    · refine contMDiffAt_const (c := 0) |>.congr_of_eventuallyEq (EqOn.eventuallyEq_of_mem this <|
-        cpt.isClosed.isOpen_compl.mem_nhds ?_)
-      apply mt _ hxU; apply Subtype.coe_image_subset
+    · exact contMDiffAt_const.congr_of_eventuallyEq (EqOn.eventuallyEq_of_mem this <|
+        cpt.isClosed.isOpen_compl.mem_nhds <| mt (by apply Subtype.coe_image_subset) hxU)
   · exact HasCompactSupport.of_support_subset_isCompact cpt fun x ↦ Not.imp_symm (this x)
   · exact (cpt.isClosed.closure_subset_iff.mpr fun x ↦ Not.imp_symm (this x)).trans
       (Subtype.coe_image_subset _ _)
