@@ -104,8 +104,52 @@ theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := rfl
 #align bitvec.of_fin_to_fin Std.BitVec.ofFin_toFin
 
 /-!
+### Zero and empty
+Theorems about `0#_`, and empty bitvectors (i.e., `x : BitVec 0`)
+-/
+
+@[simp]
+theorem toNat_empty : ∀ (x : BitVec 0), x.toNat = 0
+  | ⟨⟨0, _⟩⟩ => rfl
+
+@[simp]
+theorem shiftLeftZeroExtend_empty (m) (x : BitVec 0) : shiftLeftZeroExtend x m = 0#(0 + m) := by
+  simp [← toNat_inj, shiftLeftZeroExtend]
+
+@[simp]
+theorem zeroExtend'_empty (m) (x : BitVec 0) : zeroExtend' (Nat.zero_le m) x = 0#m := by
+  simp [← toNat_inj]
+
+@[simp] lemma shiftLeftZeroExtend_zero (x : BitVec w) : shiftLeftZeroExtend x 0 = x := rfl
+
+@[simp] lemma ofNat_zero_or (x : BitVec w) : 0#w ||| x = x := rfl
+
+@[simp] lemma or_ofNat_zero (x : BitVec w) : x ||| 0#w = x := by
+  apply toNat_inj.mp
+  show x.toNat ||| _ = _
+  simp only [toNat_ofNat, zero_mod, zero_or]
+
+theorem cast_eq_zeroExtend' {w w'} (h : w = w') :
+    cast h = zeroExtend' (Nat.le_of_eq h) := by
+  funext x; simp [← toNat_inj]
+
+@[simp]
+theorem empty_append (msbs : BitVec 0) (lsbs : BitVec w) :
+    msbs ++ lsbs = lsbs.cast (Nat.zero_add ..).symm := by
+  simp [(· ++ ·), BitVec.append, cast_eq_zeroExtend']
+
+@[simp]
+theorem append_empty (msbs : BitVec w) (lsbs : BitVec 0) :
+    msbs ++ lsbs = msbs := by
+  simp [(· ++ ·), BitVec.append, cast_eq_zeroExtend']
+
+/-!
 ### `Std.BitVec.ofLEFn` and `Std.BitVec.ofBEFn`
 -/
+
+theorem cons_concat_comm (a b : Bool) (x : BitVec w) :
+    cons a (concat x b) = concat (cons a x) b := by
+  simp [cons, concat]
 
 @[simp] lemma ofLEFn_zero (f : Fin 0 → Bool) : ofLEFn f = nil := rfl
 
@@ -113,47 +157,17 @@ theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := rfl
     ofLEFn (Fin.cons b f) = concat (ofLEFn f) b :=
   rfl
 
+@[simp] lemma ofLEFn_snoc {w} (b : Bool) (f : Fin w → Bool) :
+    ofLEFn (Fin.snoc f b) = cons b (ofLEFn f) := by
+  induction' f using Fin.consInduction with w b f ih
+  · simp [ofLEFn, concat, Fin.snoc, cons]
+  · simp [←Fin.cons_snoc_eq_snoc_cons, ih, cons_concat_comm]
+
 @[simp] lemma ofBEFn_zero (f : Fin 0 → Bool) : ofBEFn f = nil := rfl
 
 @[simp] lemma ofBEFn_cons {w} (b : Bool) (f : Fin w → Bool) :
-    ofBEFn (Fin.cons b f) = cons b (ofBEFn f) :=
-  rfl
+    ofBEFn (Fin.cons b f) = cons b (ofBEFn f) := by
+  simp [ofBEFn, Fin.cons_comp_rev]
 
-@[simp] lemma Fin.rev_last (n : ℕ) : Fin.rev (Fin.last n) = ⟨0, succ_pos n⟩ := by
-  sorry
-
-theorem Fin.cons_comp_rev {α n} (a : α) (f : Fin n → α) :
-    Fin.cons a f ∘ Fin.rev = Fin.snoc (f ∘ Fin.rev) a := by
-  funext i
-  simp only [Function.comp_apply, Function.comp_def]
-  induction' f using Fin.consInduction with n b f ih generalizing a
-  · funext; simp [Fin.rev, Fin.snoc]
-  · simp [Fin.snoc, ih]
-    split_ifs with lt_succ_n lt_n
-    · have isLt := Nat.sub_lt_self (succ_pos ↑i) (lt_n)
-      suffices ∀ h,
-          (⟨n + 1 - i.val, h⟩ : Fin (n + 2))
-          = Fin.succ (Fin.succ ⟨(n - (i.val + 1)), isLt⟩)
-      by simp only [Fin.rev, succ_sub_succ_eq_sub, this, Fin.cons_succ, Fin.coe_castLT];
-      intro _
-      have one_le_sub : 1 ≤ n - ↑i := Nat.le_sub_of_add_le' lt_n
-      simp only [ge_iff_le, sub_succ', tsub_le_iff_right, nonpos_iff_eq_zero, tsub_eq_zero_iff_le,
-        tsub_zero, Fin.succ_mk, Fin.mk.injEq,
-        Nat.sub_add_cancel (n := n - i.val - 0) one_le_sub,
-        Nat.sub_add_comm (lt_succ.mp lt_succ_n)
-      ]
-    · obtain rfl : i = ⟨n, .step <| .base n⟩ :=
-        eq_of_le_of_not_lt (Fin.succ_le_succ_iff.mp lt_succ_n) lt_n
-      simp only [Fin.rev, ge_iff_le, add_le_iff_nonpos_right, nonpos_iff_eq_zero,
-        add_tsub_cancel_left, Fin.mk_one, Fin.cons_one, Fin.cons_zero]
-    · obtain rfl : i = Fin.last (n + 1) := sorry
-      simp only [rev_last, Fin.zero_eta, Fin.cons_zero]
-
-lemma ofBEFn_eq_ofLEFn_rev (f : Fin w → Bool) :
-    ofBEFn f = ofLEFn (f ∘ Fin.rev) := by
-  induction' f using Fin.consInduction with w b f ih
-  · rw [ofLEFn_zero, ofBEFn_zero]
-  · simp [Fin.cons_comp_rev]
-    sorry
 
 end Std.BitVec
