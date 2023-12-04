@@ -27,8 +27,6 @@ import Mathlib.Algebra.MonoidAlgebra.Equiv
 # The Lindemann-Weierstrass theorem
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open scoped BigOperators Classical Polynomial Nat
@@ -179,7 +177,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
       ∀ q > (eval 0 p).natAbs,
         ∀ (prime_q : Nat.Prime q),
           ∃ (n : ℤ) (hn : n % q ≠ 0) (gp : ℤ[X]) (gp_le : gp.natDegree ≤ q * p.natDegree - 1),
-            ∀ {r : ℂ} (hr : r ∈ p.[ℂ]-roots),
+            ∀ {r : ℂ}, r ∈ p.[ℂ]-roots →
               Complex.abs (n • exp r - q • aeval r gp : ℂ) ≤ c ^ q / (q - 1)! := by
   let p' q := (X ^ (q - 1) * p ^ q).map (algebraMap ℤ ℂ)
   have :
@@ -1111,7 +1109,7 @@ theorem linear_independent_exp_exists_prime_nat (n : ℕ) (a : ℕ) (c : ℕ) :
   use p, hp, prime_p
   refine' lt_of_le_of_lt _ h
   rcases Nat.eq_zero_or_pos a with (rfl | a0)
-  · simp_rw [MulZeroClass.zero_mul, zero_pow' _ prime_p.ne_zero]
+  · simp_rw [MulZeroClass.zero_mul, zero_pow' _ prime_p.ne_zero, le_rfl]
   rw [mul_pow]
   apply Nat.mul_le_mul_right
   convert_to a ^ 1 ≤ a ^ p; · rw [pow_one]
@@ -1168,7 +1166,7 @@ theorem exists_sum_map_aroot_smul_eq {R S : Type _} [CommRing R] [Field S] [Alge
 theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i))
     (h : ∑ i, v i * exp (u i) = 0) : v = 0 := by
-  by_contra' v0
+  by_contra! v0
   obtain ⟨w, w0, m, p, p0, w', h⟩ := linear_independent_exp_aux u hu u_inj v hv v0 h
   have m0 : m ≠ 0 := by
     rintro rfl; rw [Fin.sum_univ_zero, add_zero, Int.cast_eq_zero] at h
@@ -1277,6 +1275,9 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
           repeat rw [smul_comm n]
           repeat rw [smul_comm (k ^ t)]
           repeat rw [smul_comm q]
+          simp only [algebraMap_int_eq, nsmul_eq_mul, zsmul_eq_mul, comp_mul_left, Int.cast_pow,
+            Int.cast_prod, Function.comp_apply]
+          ring
       _ = ‖(k ^ t • n • (w : ℂ) +
                   k ^ t •
                     ∑ j,
@@ -1386,7 +1387,7 @@ set_option linter.uppercaseLean3 false in
 #align complex.is_integral_int_I Complex.isIntegral_int_i
 
 theorem Complex.isIntegral_rat_i : IsIntegral ℚ I :=
-  isIntegral_of_isScalarTower Complex.isIntegral_int_i
+  Complex.isIntegral_int_i.tower_top
 set_option linter.uppercaseLean3 false in
 #align complex.is_integral_rat_I Complex.isIntegral_rat_i
 
@@ -1395,22 +1396,20 @@ theorem transcendental_exp {a : ℂ} (a0 : a ≠ 0) (ha : IsAlgebraic ℤ a) :
   intro h
   have is_integral_a : IsIntegral ℚ a :=
     isAlgebraic_iff_isIntegral.mp
-      (isAlgebraic_of_larger_base_of_injective (algebraMap ℤ ℚ).injective_int ha)
+      (ha.tower_top_of_injective (algebraMap ℤ ℚ).injective_int)
   have is_integral_expa : IsIntegral ℚ (exp a) :=
     isAlgebraic_iff_isIntegral.mp
-      (isAlgebraic_of_larger_base_of_injective (algebraMap ℤ ℚ).injective_int h)
+      (h.tower_top_of_injective (algebraMap ℤ ℚ).injective_int)
   have :=
     linear_independent_exp (fun i : Prop => if i then a else 0) ?_ ?_
       (fun i : Prop => if i then 1 else -exp a) ?_ ?_
   · simpa [ite_eq_iff] using congr_fun this True
   · intro i; dsimp only; split_ifs
     exacts [is_integral_a, isIntegral_zero]
-  · intro i j; dsimp; split_ifs with h_1 h_2 h_2
-    all_goals
-      simp only [IsEmpty.forall_iff, forall_true_left, a0, *]
-    simp_rw [imp_false, ← Ne.def]
-    exact a0.symm
-  · intro i; dsimp; split_ifs; exacts [isIntegral_one, isIntegral_neg is_integral_expa]
+  · intro i j; dsimp
+    split_ifs with h_1 h_2 h_2 <;>
+      simp only [IsEmpty.forall_iff, forall_true_left, a0, a0.symm, *]
+  · intro i; dsimp; split_ifs; exacts [isIntegral_one, is_integral_expa.neg]
   simp
 #align transcendental_exp transcendental_exp
 
@@ -1421,7 +1420,7 @@ theorem transcendental_pi : Transcendental ℤ Real.pi := by
   intro h
   have is_integral_pi' : IsIntegral ℚ Real.pi :=
     isAlgebraic_iff_isIntegral.mp
-      (isAlgebraic_of_larger_base_of_injective (algebraMap ℤ ℚ).injective_int h)
+      (h.tower_top_of_injective (algebraMap ℤ ℚ).injective_int)
   have is_integral_pi : IsIntegral ℚ (algebraMap ℝ ℂ Real.pi) :=
     (isIntegral_algebraMap_iff (algebraMap ℝ ℂ).injective).mpr is_integral_pi'
   have :=
@@ -1429,14 +1428,12 @@ theorem transcendental_pi : Transcendental ℤ Real.pi := by
       (fun _ : Prop => 1) ?_ ?_
   · simpa only [Pi.zero_apply, one_ne_zero] using congr_fun this False
   · intro i; dsimp only; split_ifs
-    · exact isIntegral_mul is_integral_pi Complex.isIntegral_rat_i
+    · exact is_integral_pi.mul Complex.isIntegral_rat_i
     · exact isIntegral_zero
-  · intro i j; dsimp; split_ifs
-    all_goals
-      simp only [IsEmpty.forall_iff, forall_true_left, *]
-    all_goals simp_rw [imp_false, ← Ne.def]
-    any_goals rw [@ne_comm ℂ 0]
-    all_goals rw [mul_ne_zero_iff]; norm_cast; simp [Real.pi_ne_zero, I_ne_zero]
+  · intro i j; dsimp
+    split_ifs <;>
+      simp only [IsEmpty.forall_iff, forall_true_left, *, ofReal_eq_zero, mul_eq_zero,
+        Real.pi_ne_zero, I_ne_zero, or_false, zero_eq_mul]
   · intro i; dsimp; exact isIntegral_one
   simp
 #align transcendental_pi transcendental_pi
