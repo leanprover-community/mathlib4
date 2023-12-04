@@ -60,7 +60,7 @@ lemma FormalMultilinearSeries.radius_prod_eq_min
     have := ((p.isLittleO_one_of_lt_radius hr.1).add
       (q.isLittleO_one_of_lt_radius hr.2)).isBigO
     refine (p.prod q).le_radius_of_isBigO ((isBigO_of_le _ λ n ↦ ?_).trans this)
-    rw [norm_mul, norm_norm, ←add_mul, norm_mul]
+    rw [norm_mul, norm_norm, ← add_mul, norm_mul]
     refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
     rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.op_norm_prod]
     refine (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _)).trans ?_
@@ -209,7 +209,7 @@ lemma formalMultilinearSeries_geometric_radius (𝕜) [NontriviallyNormedField �
     (formalMultilinearSeries_geometric 𝕜 A).radius = 1 := by
   apply le_antisymm
   · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [←coe_one, ENNReal.coe_le_coe]
+    rw [← coe_one, ENNReal.coe_le_coe]
     have := FormalMultilinearSeries.isLittleO_one_of_lt_radius _ hr
     simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul] at this
     contrapose! this
@@ -220,10 +220,10 @@ lemma formalMultilinearSeries_geometric_radius (𝕜) [NontriviallyNormedField �
     intro n hn
     push_neg
     rwa [norm_pow, one_lt_pow_iff_of_nonneg (norm_nonneg _) hn,
-      Real.norm_of_nonneg (NNReal.coe_nonneg _), ←NNReal.coe_one,
+      Real.norm_of_nonneg (NNReal.coe_nonneg _), ← NNReal.coe_one,
       NNReal.coe_lt_coe]
   · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [←Nat.cast_one, ENNReal.coe_lt_coe_nat, Nat.cast_one] at hr
+    rw [← Nat.cast_one, ENNReal.coe_lt_coe_nat, Nat.cast_one] at hr
     apply FormalMultilinearSeries.le_radius_of_isBigO
     simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul]
     refine isBigO_of_le atTop (fun n ↦ ?_)
@@ -242,7 +242,7 @@ lemma hasFPowerSeriesOnBall_inv_one_sub
         List.prod_ofFn, Finset.prod_const,
         Finset.card_univ, Fintype.card_fin]
     apply hasSum_geometric_of_norm_lt_1
-    simpa only [←ofReal_one, Metric.emetric_ball, Metric.ball,
+    simpa only [← ofReal_one, Metric.emetric_ball, Metric.ball,
       dist_eq_norm, sub_zero] using hy
 
 lemma analyticAt_inv_one_sub (𝕝 : Type*) [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :

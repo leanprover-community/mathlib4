@@ -42,7 +42,7 @@ instance : Decidable (ModEq n a b) := decEq (a % n) (b % n)
 
 namespace ModEq
 
-@[refl]
+@[refl, simp]
 protected theorem refl (a : ℤ) : a ≡ a [ZMOD n] :=
   @rfl _ _
 #align int.modeq.refl Int.ModEq.refl

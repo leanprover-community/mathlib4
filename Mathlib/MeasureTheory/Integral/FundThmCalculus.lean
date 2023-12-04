@@ -1261,7 +1261,7 @@ theorem integrableOn_deriv_right_of_nonneg (hcont : ContinuousOn g (Icc a b))
     exact (hderiv x hx).derivWithin (uniqueDiffWithinAt_Ioi _)
   suffices H : (∫⁻ x in Ioo a b, ‖g' x‖₊) ≤ ENNReal.ofReal (g b - g a) from
     ⟨meas_g'.aestronglyMeasurable, H.trans_lt ENNReal.ofReal_lt_top⟩
-  by_contra' H
+  by_contra! H
   obtain ⟨f, fle, fint, hf⟩ :
     ∃ f : SimpleFunc ℝ ℝ≥0,
       (∀ x, f x ≤ ‖g' x‖₊) ∧
