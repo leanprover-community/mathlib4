@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
+import Mathlib.LinearAlgebra.Dual
 
 /-!
 # Spaces with separating dual
@@ -22,7 +23,7 @@ equivalences acts transitively on the set of nonzero vectors.
 
 /-- When `E` is a topological module over a topological ring `R`, the class `SeparatingDual R E`
 registers that continuous linear forms on `E` separate points of `E`. -/
-class SeparatingDual (R V : Type*) [Ring R] [AddCommGroup V] [TopologicalSpace V]
+@[mk_iff] class SeparatingDual (R V : Type*) [Ring R] [AddCommGroup V] [TopologicalSpace V]
     [TopologicalSpace R] [Module R V] : Prop :=
   /-- Any nonzero vector can be mapped by a continuous linear map to a nonzero scalar. -/
   exists_ne_zero' : ∀ (x : V), x ≠ 0 → ∃ f : V →L[R] R, f x ≠ 0
@@ -72,6 +73,21 @@ section Field
 
 variable {R V : Type*} [Field R] [AddCommGroup V] [TopologicalSpace R] [TopologicalSpace V]
   [TopologicalRing R] [TopologicalAddGroup V] [Module R V] [SeparatingDual R V]
+
+-- this could generalize to CommRing R if we were to add a section
+theorem _root_.separatingDual_iff_injective : SeparatingDual R V ↔
+    Function.Injective (ContinuousLinearMap.coeLM (R := R) R (M := V) (N₃ := R)).flip := by
+  simp_rw [SeparatingDual_iff, Ne, injective_iff_map_eq_zero]
+  refine forall_congr' fun v ↦ ?_
+  rw [not_imp_comm, LinearMap.ext_iff]
+  push_neg; rfl
+
+open Function in
+theorem dualMap_surjective {W} [AddCommGroup W] [Module R W] [FiniteDimensional R W] {f : W →ₗ[R] V}
+    (hf : Injective f) : Surjective (f.dualMap ∘ ContinuousLinearMap.toLinearMap) := by
+  have := (separatingDual_iff_injective.mp ‹_›).comp hf
+  rw [← LinearMap.coe_comp] at this
+  exact LinearMap.flip_surjective_of_injective this
 
 lemma exists_eq_one {x : V} (hx : x ≠ 0) :
     ∃ f : V →L[R] R, f x = 1 := by

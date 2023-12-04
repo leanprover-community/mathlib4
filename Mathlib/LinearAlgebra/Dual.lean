@@ -1231,6 +1231,15 @@ theorem finrank_add_finrank_dualCoannihilator_eq (W : Subspace K (Module.Dual K 
   rw [eq.symm, add_comm, Submodule.finrank_quotient_add_finrank, Subspace.dual_finrank_eq]
 #align subspace.finrank_add_finrank_dual_coannihilator_eq Subspace.finrank_add_finrank_dualCoannihilator_eq
 
+theorem _root_.LinearMap.flip_surjective_of_injective {B : V →ₗ[K] Module.Dual K V₁}
+    (hB : Function.Injective B) : Function.Surjective B.flip := by
+  rw [← range_eq_top]
+  apply eq_top_of_finrank_eq
+  rw [dual_finrank_eq, eq_comm, ← finrank_add_finrank_dualCoannihilator_eq,
+      add_right_eq_self, finrank_eq_zero, eq_bot_iff]
+  refine fun x hx ↦ hB (ext fun v ↦ ?_)
+  simpa using (mem_dualCoannihilator x).mp hx _ (mem_range_self _ v)
+
 end
 
 end Subspace
