@@ -423,7 +423,9 @@ def subalgebra : Subalgebra S R where
 /-- The `S`-algebra `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instAlgebra : Algebra S (A 0) := inferInstanceAs <| Algebra S (subalgebra A)
 
-@[simp, norm_cast] theorem coe_algebraMap (s : S) :
+/- The liner message "error: SetLike.GradeZero.coe_algebraMap.{u_4, u_3, u_1} Left-hand side
+  does not simplify, when using the simp lemma on itself" is wrong. The LHS does simplify. -/
+@[nolint simpNF, simp, norm_cast] theorem coe_algebraMap (s : S) :
     ↑(algebraMap _ (A 0) s) = algebraMap _ R s := rfl
 
 end Algebra
