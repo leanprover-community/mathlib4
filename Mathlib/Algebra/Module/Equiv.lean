@@ -92,13 +92,10 @@ A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ :
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearEquivClass (F : Type*) {R S : outParam (Type*)} [Semiring R] [Semiring S]
-  (σ : outParam (R →+* S)) {σ' : outParam (S →+* R)}
-  [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+  (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   (M M₂ : outParam (Type*)) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
-  AddEquivClass F M M₂
-  where
-  -- TO DO : call it map_smulₛₗ ?
-  /-- Applying a semilinear equivalence `f` over `σ` to `r • x ` equals `σ r • f x`. -/
+  AddEquivClass F M M₂ where
+  /-- Applying a semilinear equivalence `f` over `σ` to `r • x` equals `σ r • f x`. -/
   map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
 #align semilinear_equiv_class SemilinearEquivClass
 

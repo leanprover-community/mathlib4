@@ -58,6 +58,7 @@ namespace NonUnitalSubalgebra
 variable {F : Type v'} {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
 variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [Module R A] [NonUnitalNonAssocSemiring B] [Module R B]
+-- TODO : should there be an abbreviation for the non semilinear stuff?
 variable [NonUnitalNonAssocSemiring C] [Module R C] [NonUnitalAlgHomClass F (@id R) A B]
 
 instance : SetLike (NonUnitalSubalgebra R A) A

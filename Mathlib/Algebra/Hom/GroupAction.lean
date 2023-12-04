@@ -2,13 +2,16 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Antoine Chambert-Loir
+
+! This file was ported from Lean 3 source module algebra.hom.group_action
+! leanprover-community/mathlib commit e7bab9a85e92cf46c02cb4725a7be2f04691e3a7
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 
 import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Ring.Equiv
-
-#align_import algebra.hom.group_action from "leanprover-community/mathlib"@"e7bab9a85e92cf46c02cb4725a7be2f04691e3a7"
 
 /-!
 # Equivariant homomorphisms
@@ -164,9 +167,6 @@ class MulActionSemiHomClass (F : Type _) {M N : outParam (Type _)}
   map_smulₛₗ : ∀ (f : F) (c : M) (x : X), f (c • x) = (φ c) • (f x)
 #align smul_hom_class MulActionSemiHomClass
 
-/- porting note: Removed a @[nolint dangerousInstance] for MulActionHomClass
- not dangerous due to outParam -/
-
 export MulActionSemiHomClass (map_smulₛₗ)
 
 /-- `MulActionHomClass F M X Y` states that `F` is a type of
@@ -220,7 +220,7 @@ protected lemma map_smul {F M X Y : Type*} [SMul M X] [SMul M Y] [MulActionHomCl
     f (m • x) = m • (f x) := map_smulₛₗ f m x
 
 @[ext]
-theorem ext {f g : X →[M'] Y} :
+theorem ext [MulActionSemiHomClass F φ X Y] {f g : F} :
     (∀ x, f x = g x) → f = g :=
   FunLike.ext f g
 #align mul_action_hom.ext MulActionHom.ext
