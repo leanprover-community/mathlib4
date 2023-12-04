@@ -165,7 +165,7 @@ theorem Irrational.beattySeq'_pos_eq {r : ℝ} (hr : Irrational r) :
   refine ⟨(Int.floor_le _).lt_of_ne fun h ↦ ?_, (Int.lt_floor_add_one _).le⟩
   exact (hr.int_mul hk.ne').ne_int ⌊k * r⌋ h.symm
 
-/-- Rayleigh's theorem on Beatty sequences. Let `r` be an irrational number greater than 1, and
+/-- **Rayleigh's theorem** on Beatty sequences. Let `r` be an irrational number greater than 1, and
 `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺_s` partition the positive integers. -/
 theorem Irrational.beattySeq_symmDiff_beattySeq_pos {r s : ℝ}
     (hrs : r.IsConjugateExponent s) (hr : Irrational r) :
