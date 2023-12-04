@@ -383,32 +383,6 @@ theorem compr₂_apply (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R]
     f.compr₂ g m n = g (f m n) := rfl
 #align linear_map.compr₂_apply LinearMap.compr₂_apply
 
-/-- Apply linear equivalences on the arguments of a bilinear map. -/
-def congrl₁₂ (e₁ : Mₗ ≃ₗ[R] Nₗ) (e₂ : Pₗ ≃ₗ[R] Qₗ) :
-    (Mₗ →ₗ[R] Pₗ →ₗ[R] M) ≃ₗ[R] (Nₗ →ₗ[R] Qₗ →ₗ[R] M) where
-  toFun B := B.compl₁₂ e₁.symm e₂.symm
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-  invFun B := B.compl₁₂ e₁ e₂
-  left_inv _ := by
-    ext
-    simp only [compl₁₂_apply, LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
-  right_inv _ := by
-    ext
-    simp only [compl₁₂_apply, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply]
-
-@[simp]
-theorem congrl₁₂_apply (e₁ : Mₗ ≃ₗ[R] Nₗ) (e₂ : Pₗ ≃ₗ[R] Qₗ) (B : Mₗ →ₗ[R] Pₗ →ₗ[R] M)
-    (x : Nₗ) (y : Qₗ) : congrl₁₂ e₁ e₂ B x y = B (e₁.symm x) (e₂.symm y) :=
-  rfl
-
-@[simp]
-theorem congrl₁₂_symm (e₁ : Mₗ ≃ₗ[R] Nₗ) (e₂ : Pₗ ≃ₗ[R] Qₗ) :
-    (congrl₁₂ e₁ e₂).symm = congrl₁₂ (M := M) e₁.symm e₂.symm := by
-  ext
-  simp only [congrl₁₂_apply, LinearEquiv.symm_symm]
-  rfl
-
 variable (R M)
 
 /-- Scalar multiplication as a bilinear map `R → M → M`. -/
