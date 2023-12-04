@@ -74,12 +74,13 @@ open Coalgebra
 
 namespace CommSemiring
 
+/-- Every commutative (semi)ring is a coalgebra over itself, with `Δ r = 1 ⊗ₜ r`. -/
 instance toCoalgebra : Coalgebra R R where
   comul := (TensorProduct.mk R R R) 1
   counit := .id
   coassoc := rfl
-  rTensor_counit_comp_comul := by ext; simp
-  lTensor_counit_comp_comul := by ext; simp
+  rTensor_counit_comp_comul := by ext; rfl
+  lTensor_counit_comp_comul := by ext; rfl
 
 @[simp]
 theorem comul_apply (r : R) : comul r = 1 ⊗ₜ[R] r := rfl
