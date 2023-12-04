@@ -109,12 +109,9 @@ instance instCoalgebra : Coalgebra R (ι →₀ R) where
   comul := Finsupp.total ι ((ι →₀ R) ⊗[R] (ι →₀ R)) R
     (fun i ↦ Finsupp.single i 1 ⊗ₜ Finsupp.single i 1)
   counit := Finsupp.total ι R R (fun _ ↦ 1)
-  coassoc := by
-    ext; simp
-  rTensor_counit_comp_comul := by
-    ext; simp
-  lTensor_counit_comp_comul := by
-    ext; simp
+  coassoc := by ext; simp
+  rTensor_counit_comp_comul := by ext; simp
+  lTensor_counit_comp_comul := by ext; simp
 
 @[simp]
 theorem comul_single (i : ι) (r : R) : comul (Finsupp.single i r) =
