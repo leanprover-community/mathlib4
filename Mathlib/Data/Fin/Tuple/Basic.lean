@@ -661,6 +661,36 @@ theorem append_right_cons {n m} {α : Type*} (xs : Fin n → α) (y : α) (ys : 
       Fin.append (Fin.snoc xs y) ys ∘ Fin.cast (Nat.succ_add_eq_succ_add ..).symm := by
   rw [append_left_snoc]; rfl
 
+theorem cons_comp_rev {α n} (a : α) (f : Fin n → α) :
+    Fin.cons a f ∘ Fin.rev = Fin.snoc (f ∘ Fin.rev) a := by
+  funext i
+  simp only [Function.comp_apply, Function.comp_def]
+  induction' f using Fin.consInduction with n b f ih generalizing a
+  · funext; simp [Fin.rev, Fin.snoc]
+  · simp [Fin.snoc, ih]
+    split_ifs with lt_succ_n lt_n
+    · have isLt := Nat.sub_lt_self (succ_pos ↑i) (lt_n)
+      suffices ∀ h,
+          (⟨n + 1 - i.val, h⟩ : Fin (n + 2))
+          = Fin.succ (Fin.succ ⟨(n - (i.val + 1)), isLt⟩)
+      by simp only [Fin.rev, Nat.succ_sub_succ_eq_sub, this, Fin.cons_succ, Fin.coe_castLT];
+      intro _
+      have one_le_sub : 1 ≤ n - ↑i := Nat.le_sub_of_add_le' lt_n
+      simp only [ge_iff_le, Nat.sub_succ', tsub_le_iff_right, nonpos_iff_eq_zero,
+        tsub_eq_zero_iff_le, tsub_zero, Fin.succ_mk, Fin.mk.injEq,
+        Nat.sub_add_cancel (n := n - i.val - 0) one_le_sub,
+        Nat.sub_add_comm (Nat.lt_succ.mp lt_succ_n)
+      ]
+    · obtain rfl : i = ⟨n, .step <| .base n⟩ :=
+        eq_of_le_of_not_lt (Fin.succ_le_succ_iff.mp lt_succ_n) lt_n
+      simp only [Fin.rev, ge_iff_le, add_le_iff_nonpos_right, nonpos_iff_eq_zero,
+        add_tsub_cancel_left, Fin.mk_one, Fin.cons_one, Fin.cons_zero]
+    · obtain rfl : i = Fin.last (n + 1) := by
+        apply eq_of_le_of_not_lt
+        · exact Nat.le_of_lt_succ i.prop
+        · exact lt_succ_n
+      simp only [Fin.rev_last, Fin.zero_eta, Fin.cons_zero]
+
 theorem comp_init {α : Type*} {β : Type*} (g : α → β) (q : Fin n.succ → α) :
     g ∘ init q = init (g ∘ q) := by
   ext j
