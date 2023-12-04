@@ -13,22 +13,22 @@ variable {r₀ : ℤ} (E : CohomologicalSpectralSequence C r₀) [E.IsFirstQuadr
 lemma rMin_zero_zero_le_of_isFirstQuadrant [E.HasPage 2] :
     E.rMin ⟨0, 0⟩ ≤ 2 := by
   have := E.le_of_hasPage 2
-  exact (E.rMin_le_of_isFirstQuadrant ⟨0, 0⟩).trans (by aesop)
+  exact (E.rMin_le_of_isFirstQuadrant ⟨0, 0⟩).trans (by aesop_cat)
 
 lemma rMin_one_zero_le_of_isFirstQuadrant [E.HasPage 2] :
     E.rMin ⟨1, 0⟩ ≤ 2 := by
   have := E.le_of_hasPage 2
-  exact (E.rMin_le_of_isFirstQuadrant _).trans (by aesop)
+  exact (E.rMin_le_of_isFirstQuadrant _).trans (by aesop_cat)
 
 lemma rMin_two_zero_le_of_isFirstQuadrant [E.HasPage 3] :
     E.rMin ⟨2, 0⟩ ≤ 3 :=
   have := E.le_of_hasPage 3
-  (E.rMin_le_of_isFirstQuadrant _).trans (by aesop)
+  (E.rMin_le_of_isFirstQuadrant _).trans (by aesop_cat)
 
 lemma rMin_zero_one_le_of_isFirstQuadrant [E.HasPage 3] :
     E.rMin ⟨0, 1⟩ ≤ 3 :=
   have := E.le_of_hasPage 3
-  (E.rMin_le_of_isFirstQuadrant _).trans (by aesop)
+  (E.rMin_le_of_isFirstQuadrant _).trans (by aesop_cat)
 
 instance : E.CollapsesAt 0 1 where
   condition := fun k hk => by
@@ -45,7 +45,7 @@ variable {H : ℤ → C} (h : E.StronglyConvergesTo H)
 
 lemma hasEdgeMonoAtVerticalLine (p q r : ℤ) [E.HasPage r] (hr : p + 1 ≤ r) :
     E.HasEdgeMonoAt ⟨p, q⟩ r := by
-  by_cases 0 ≤ q
+  by_cases h : 0 ≤ q
   · obtain ⟨q, rfl⟩ := Int.eq_ofNat_of_zero_le h
     apply hasEdgeMonoAt_of_isFirstQuadrant
     exact hr
@@ -58,7 +58,7 @@ lemma hasEdgeMonoAtVerticalLine (p q r : ℤ) [E.HasPage r] (hr : p + 1 ≤ r) :
 
 lemma hasEdgeEpiAtHorizontalLine (p q r : ℤ) [E.HasPage r] (hr : q + 2 ≤ r) :
     E.HasEdgeEpiAt ⟨p, q⟩ r := by
-  by_cases 0 ≤ p
+  by_cases h : 0 ≤ p
   · obtain ⟨p, rfl⟩ := Int.eq_ofNat_of_zero_le h
     apply hasEdgeEpiAt_of_isFirstQuadrant
     dsimp

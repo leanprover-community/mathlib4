@@ -38,7 +38,7 @@ structure SpectralSequence where
   iso' (r r' : ℤ) (hr : r₀ ≤ r) (hr' : r + 1 = r') (pq₁ pq₂ pq₃ : ℤ × ℤ)
     (h₁₂ : pq₁ + degrees r = pq₂) (h₂₃ : pq₂ + degrees r = pq₃) :
       (ShortComplex.mk _ _ (d_comp_d' r hr pq₁ pq₂ pq₃ h₁₂ h₂₃)).homology ≅
-        page' r' (hr.trans (by simp only [← hr', le_add_iff_nonneg_right])) pq₂
+        page' r' (hr.trans (by simp only [← hr', le_add_iff_nonneg_right]; linarith)) pq₂
 
 abbrev CohomologicalSpectralSequence :=
   SpectralSequence C (fun r => ⟨r, 1-r⟩)
@@ -90,10 +90,10 @@ instance (a b : ℤ) [E.HasPage b] : E.HasPage (max a b) :=
   E.hasPage_of_le b (max a b) (le_max_right _ _)
 
 instance [E.HasPage 0] : E.HasPage 1 := E.hasPage_of_le 0 1 (by simp)
-instance [E.HasPage 1] : E.HasPage 2 := E.hasPage_of_le 1 2 (by simp)
-instance [E.HasPage 2] : E.HasPage 3 := E.hasPage_of_le 2 3 (by simp)
-instance [E.HasPage 3] : E.HasPage 4 := E.hasPage_of_le 3 4 (by simp)
-instance [E.HasPage 4] : E.HasPage 5 := E.hasPage_of_le 4 5 (by simp)
+instance [E.HasPage 1] : E.HasPage 2 := E.hasPage_of_le 1 2 (by linarith)
+instance [E.HasPage 2] : E.HasPage 3 := E.hasPage_of_le 2 3 (by linarith)
+instance [E.HasPage 3] : E.HasPage 4 := E.hasPage_of_le 3 4 (by linarith)
+instance [E.HasPage 4] : E.HasPage 5 := E.hasPage_of_le 4 5 (by linarith)
 
 @[pp_dot]
 def page (r : ℤ) [E.HasPage r] (pq : ℤ × ℤ):= E.page' r (E.le_of_hasPage r) pq
@@ -527,7 +527,7 @@ lemma isIso_filtration_map_iff {i j : ℤ} (φ : i ⟶ j) :
       rw [h.isIso_filtration_map_succ_iff _ rfl] at h₁
       rw [hd _ rfl] at h₂
       intro k hk hk'
-      by_cases k ≤ i + d
+      by_cases h : k ≤ i + d
       · exact h₂ _ hk h
       · obtain rfl : k = i + d + 1 := by linarith
         exact h₁
@@ -827,7 +827,7 @@ lemma hasEdgeEpiAt_of_isFirstQuadrant (pq : ℤ × ℤ) (r : ℤ) [E.HasPage r] 
 
 instance (pq : ℤ × ℤ) : E.HasInfinityPageAt pq where
   nonempty_hasEdgeEpiSet' := by
-    by_cases pq.2 < 0
+    by_cases h : pq.2 < 0
     · refine' ⟨max r₀ 1, _⟩
       intro r' hr'
       have : E.HasPage r' := E.hasPage_of_le r₀ _ ((le_max_left _ _ ).trans hr')
@@ -838,7 +838,7 @@ instance (pq : ℤ × ℤ) : E.HasInfinityPageAt pq where
       have : E.HasPage r' := E.hasPage_of_le r₀ _ ((le_max_left _ _ ).trans hr')
       exact ⟨this, E.hasEdgeEpiAt_of_isFirstQuadrant pq r' ((le_max_right _ _).trans hr')⟩
   nonempty_hasEdgeMonoSet' := by
-    by_cases pq.1 < 0
+    by_cases h : pq.1 < 0
     · refine' ⟨max r₀ 0, _⟩
       intro r' hr'
       have : E.HasPage r' := E.hasPage_of_le r₀ _ ((le_max_left _ _ ).trans hr')
