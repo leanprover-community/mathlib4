@@ -373,7 +373,7 @@ theorem sum_C {A : Type*} [AddCommMonoid A] {b : (σ →₀ ℕ) → R → A} (w
 
 theorem monomial_sum_one {α : Type*} (s : Finset α) (f : α → σ →₀ ℕ) :
     (monomial (∑ i in s, f i) 1 : MvPolynomial σ R) = ∏ i in s, monomial (f i) 1 :=
-  (monomialOneHom R σ).map_prod (fun i => Multiplicative.ofAdd (f i)) s
+  map_prod (monomialOneHom R σ) (fun i => Multiplicative.ofAdd (f i)) s
 #align mv_polynomial.monomial_sum_one MvPolynomial.monomial_sum_one
 
 theorem monomial_sum_index {α : Type*} (s : Finset α) (f : α → σ →₀ ℕ) (a : R) :
@@ -642,7 +642,7 @@ def coeffAddMonoidHom (m : σ →₀ ℕ) : MvPolynomial σ R →+ R
 
 theorem coeff_sum {X : Type*} (s : Finset X) (f : X → MvPolynomial σ R) (m : σ →₀ ℕ) :
     coeff m (∑ x in s, f x) = ∑ x in s, coeff m (f x) :=
-  (@coeffAddMonoidHom R σ _ _).map_sum _ s
+  map_sum (@coeffAddMonoidHom R σ _ _) _ s
 #align mv_polynomial.coeff_sum MvPolynomial.coeff_sum
 
 theorem monic_monomial_eq (m) :
