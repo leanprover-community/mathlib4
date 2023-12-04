@@ -152,7 +152,7 @@ theorem gaugeSeminormFamily_ball (s : AbsConvexOpenSets 𝕜 E) :
   dsimp only [gaugeSeminormFamily]
   rw [Seminorm.ball_zero_eq]
   simp_rw [gaugeSeminorm_toFun]
-  exact gauge_lt_one_eq_self_of_open s.coe_convex s.coe_zero_mem s.coe_isOpen
+  exact gauge_lt_one_eq_self_of_isOpen s.coe_convex s.coe_zero_mem s.coe_isOpen
 #align gauge_seminorm_family_ball gaugeSeminormFamily_ball
 
 variable [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
@@ -164,7 +164,7 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
   refine' SeminormFamily.withSeminorms_of_hasBasis _ _
   refine' (nhds_basis_abs_convex_open 𝕜 E).to_hasBasis (fun s hs => _) fun s hs => _
   · refine' ⟨s, ⟨_, rfl.subset⟩⟩
-    convert(gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
+    convert (gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
     rw [gaugeSeminormFamily_ball, Subtype.coe_mk]
   refine' ⟨s, ⟨_, rfl.subset⟩⟩
   rw [SeminormFamily.basisSets_iff] at hs

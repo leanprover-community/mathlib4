@@ -8,7 +8,7 @@ import Mathlib.Logic.Encodable.Lattice
 import Mathlib.Order.Disjointed
 import Mathlib.Tactic.Measurability
 
-#align_import measure_theory.measurable_space_def from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
+#align_import measure_theory.measurable_space_def from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
 
 /-!
 # Measurable spaces and measurable functions
@@ -68,7 +68,7 @@ def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
 -- porting note: todo: `scoped[MeasureTheory]` doesn't work for unknown reason
 namespace MeasureTheory
 set_option quotPrecheck false in
-/-- Notation for `MeasurableSet` with respect to a non-standanrd σ-algebra. -/
+/-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
 scoped notation "MeasurableSet[" m "]" => @MeasurableSet _ m
 
 end MeasureTheory
@@ -238,7 +238,6 @@ protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, Meas
   disjointedRec (fun _ _ ht => MeasurableSet.diff ht <| h _) (h n)
 #align measurable_set.disjointed MeasurableSet.disjointed
 
-@[simp]
 protected theorem MeasurableSet.const (p : Prop) : MeasurableSet { _a : α | p } := by
   by_cases p <;> simp [*]
 #align measurable_set.const MeasurableSet.const
@@ -445,12 +444,10 @@ theorem generateFrom_sup_generateFrom {s t : Set (Set α)} :
   (@giGenerateFrom α).gc.l_sup.symm
 #align measurable_space.generate_from_sup_generate_from MeasurableSpace.generateFrom_sup_generateFrom
 
-@[simp]
 theorem generateFrom_singleton_empty : generateFrom {∅} = (⊥ : MeasurableSpace α) :=
   bot_unique $ generateFrom_le <| by simp [@MeasurableSet.empty α ⊥]
 #align measurable_space.generate_from_singleton_empty MeasurableSpace.generateFrom_singleton_empty
 
-@[simp]
 theorem generateFrom_singleton_univ : generateFrom {Set.univ} = (⊥ : MeasurableSpace α) :=
   bot_unique $ generateFrom_le <| by simp
 #align measurable_space.generate_from_singleton_univ MeasurableSpace.generateFrom_singleton_univ

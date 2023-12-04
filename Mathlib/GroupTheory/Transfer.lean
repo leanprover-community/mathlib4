@@ -187,7 +187,8 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
 
 theorem transfer_center_eq_pow [FiniteIndex (center G)] (g : G) :
     transfer (MonoidHom.id (center G)) g = ⟨g ^ (center G).index, (center G).pow_index_mem g⟩ :=
-  transfer_eq_pow (id (center G)) g fun k _ hk => by rw [← mul_right_inj, hk, mul_inv_cancel_right]
+  transfer_eq_pow (id (center G)) g fun k _ hk => by rw [← mul_right_inj, ← hk.comm,
+    mul_inv_cancel_right]
 #align monoid_hom.transfer_center_eq_pow MonoidHom.transfer_center_eq_pow
 
 variable (G)
@@ -242,7 +243,7 @@ theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
 #align monoid_hom.transfer_sylow_eq_pow MonoidHom.transferSylow_eq_pow
 
 theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : Subgroup G)) =
-  (fun x : P => x ^ (P : Subgroup G).index) :=
+    (fun x : P => x ^ (P : Subgroup G).index) :=
   funext fun g => transferSylow_eq_pow P hP g g.2
 #align monoid_hom.transfer_sylow_restrict_eq_pow MonoidHom.transferSylow_restrict_eq_pow
 

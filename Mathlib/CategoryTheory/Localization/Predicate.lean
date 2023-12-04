@@ -249,7 +249,7 @@ def functorEquivalence : D ⥤ E ≌ W.FunctorsInverting E :=
 functor `L : C ⥤ D` with respect to `W : MorphismProperty C`. -/
 @[nolint unusedArguments]
 def whiskeringLeftFunctor' (_ : MorphismProperty C) (E : Type*) [Category E] :
-  (D ⥤ E) ⥤ C ⥤ E :=
+    (D ⥤ E) ⥤ C ⥤ E :=
   (whiskeringLeft C D E).obj L
 #align category_theory.localization.whiskering_left_functor' CategoryTheory.Localization.whiskeringLeftFunctor'
 

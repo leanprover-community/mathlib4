@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, David Renshaw
 -/
 import Lean
+import Std.Tactic.LeftRight
 import Mathlib.Lean.Meta
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.LeftRight
 
 /-!
 # mk_iff_of_inductive_prop
@@ -35,12 +35,14 @@ Fails if `n < m`. -/
 private def select (m n : Nat) (goal : MVarId) : MetaM MVarId :=
   match m,n with
   | 0, 0             => pure goal
-  | 0, (_ + 1)       => do let [new_goal] ← Mathlib.Tactic.LeftRight.leftRightMeta `left 0 2 goal
-                                | throwError "expected only one new goal"
-                           pure new_goal
-  | (m + 1), (n + 1) => do let [new_goal] ← Mathlib.Tactic.LeftRight.leftRightMeta `right 1 2 goal
-                                | throwError "expected only one new goal"
-                           select m n new_goal
+  | 0, (_ + 1)       => do
+    let [new_goal] ← Std.Tactic.NthConstructor.nthConstructor `left 0 (some 2) goal
+      | throwError "expected only one new goal"
+    pure new_goal
+  | (m + 1), (n + 1) => do
+    let [new_goal] ← Std.Tactic.NthConstructor.nthConstructor `right 1 (some 2) goal
+      | throwError "expected only one new goal"
+    select m n new_goal
   | _, _             => failure
 
 /-- `compactRelation bs as_ps`: Produce a relation of the form:
@@ -76,16 +78,16 @@ args.foldrM (λarg i:Expr => do
     let l := (← inferType t).sortLevel!
     if arg.occurs i || l != Level.zero
       then pure (mkApp2 (mkConst `Exists [l] : Expr) t
-        (updateLambdaBinderInfoD! <| ←mkLambdaFVars #[arg] i))
+        (updateLambdaBinderInfoD! <| ← mkLambdaFVars #[arg] i))
       else pure <| mkApp2 (mkConst `And [] : Expr) t i)
   inner
 
 /-- `mkOpList op empty [x1, x2, ...]` is defined as `op x1 (op x2 ...)`.
   Returns `empty` if the list is empty. -/
 def mkOpList (op : Expr) (empty : Expr) : List Expr → Expr
-| []        => empty
-| [e]       => e
-| (e :: es) => mkApp2 op e $ mkOpList op empty es
+  | []        => empty
+  | [e]       => e
+  | (e :: es) => mkApp2 op e $ mkOpList op empty es
 
 /-- `mkAndList [x1, x2, ...]` is defined as `x1 ∧ (x2 ∧ ...)`, or `True` if the list is empty. -/
 def mkAndList : List Expr → Expr := mkOpList (mkConst `And) (mkConst `True)
@@ -95,9 +97,9 @@ def mkOrList : List Expr → Expr := mkOpList (mkConst `Or) (mkConst `False)
 
 /-- Drops the final element of a list. -/
 def List.init : List α → List α
-| []     => []
-| [_]    => []
-| a::l => a::init l
+  | []     => []
+  | [_]    => []
+  | a::l => a::init l
 
 /-- Auxiliary data associated with a single constructor of an inductive declaration.
 -/
@@ -131,7 +133,7 @@ structure Shape : Type where
 while proving the iff theorem, and a proposition representing the constructor.
 -/
 def constrToProp (univs : List Level) (params : List Expr) (idxs : List Expr) (c : Name) :
-  MetaM (Shape × Expr)  :=
+    MetaM (Shape × Expr) :=
 do let type := (← getConstInfo c).instantiateTypeLevelParams univs
    let type' ← Meta.forallBoundedTelescope type (params.length) fun fvars ty ↦ do
      pure $ ty.replaceFVars fvars params.toArray
@@ -239,16 +241,16 @@ listBoolMerge [false, true, false, true] [0, 1, 2, 3, 4] = [none, (some 0), none
 ```
 -/
 def listBoolMerge {α : Type*} : List Bool → List α → List (Option α)
-| [], _ => []
-| false :: xs, ys => none :: listBoolMerge xs ys
-| true :: xs, y :: ys => some y :: listBoolMerge xs ys
-| true :: _, [] => []
+  | [], _ => []
+  | false :: xs, ys => none :: listBoolMerge xs ys
+  | true :: xs, y :: ys => some y :: listBoolMerge xs ys
+  | true :: _, [] => []
 
 /-- Proves the right to left direction of a generated iff theorem.
 -/
 def toInductive (mvar : MVarId) (cs : List Name)
-  (gs : List Expr) (s : List Shape) (h : FVarId) :
-  MetaM Unit := do
+    (gs : List Expr) (s : List Shape) (h : FVarId) :
+    MetaM Unit := do
   match s.length with
   | 0       => do let _ ← mvar.cases h
                   pure ()

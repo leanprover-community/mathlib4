@@ -140,11 +140,11 @@ instance [∀ i, OrderedAddCommMonoid (α i)] [∀ i, ContravariantClass (α i) 
     ContravariantClass (Π₀ i, α i) (Π₀ i, α i) (· + ·) (· ≤ ·) :=
   ⟨fun _ _ _ H i ↦ le_of_add_le_add_left (H i)⟩
 
-section CanonicallyOrderedAddMonoid
+section CanonicallyOrderedAddCommMonoid
 
 -- porting note: Split into 2 lines to satisfy the unusedVariables linter.
 variable (α)
-variable [∀ i, CanonicallyOrderedAddMonoid (α i)]
+variable [∀ i, CanonicallyOrderedAddCommMonoid (α i)]
 
 instance : OrderBot (Π₀ i, α i) where
   bot := 0
@@ -173,6 +173,11 @@ theorem le_iff' (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
 theorem le_iff : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' <| Subset.refl _
 #align dfinsupp.le_iff DFinsupp.le_iff
+
+lemma support_monotone : Monotone (support (ι := ι) (β := α)) :=
+  fun f g h a ha ↦ by rw [mem_support_iff, ← pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
+
+lemma support_mono (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg
 
 variable (α)
 
@@ -216,7 +221,7 @@ variable (α)
 instance : OrderedSub (Π₀ i, α i) :=
   ⟨fun _ _ _ ↦ forall_congr' fun _ ↦ tsub_le_iff_right⟩
 
-instance : CanonicallyOrderedAddMonoid (Π₀ i, α i) :=
+instance : CanonicallyOrderedAddCommMonoid (Π₀ i, α i) :=
   { (inferInstance : OrderBot (DFinsupp α)),
     (inferInstance : OrderedAddCommMonoid (DFinsupp α)) with
     exists_add_of_le := by
@@ -247,11 +252,11 @@ theorem subset_support_tsub : f.support \ g.support ⊆ (f - g).support := by
   simp (config := { contextual := true }) [subset_iff]
 #align dfinsupp.subset_support_tsub DFinsupp.subset_support_tsub
 
-end CanonicallyOrderedAddMonoid
+end CanonicallyOrderedAddCommMonoid
 
-section CanonicallyLinearOrderedAddMonoid
+section CanonicallyLinearOrderedAddCommMonoid
 
-variable [∀ i, CanonicallyLinearOrderedAddMonoid (α i)] [DecidableEq ι] {f g : Π₀ i, α i}
+variable [∀ i, CanonicallyLinearOrderedAddCommMonoid (α i)] [DecidableEq ι] {f g : Π₀ i, α i}
 
 @[simp]
 theorem support_inf : (f ⊓ g).support = f.support ∩ g.support := by
@@ -273,6 +278,6 @@ nonrec theorem disjoint_iff : Disjoint f g ↔ Disjoint f.support g.support := b
   rfl
 #align dfinsupp.disjoint_iff DFinsupp.disjoint_iff
 
-end CanonicallyLinearOrderedAddMonoid
+end CanonicallyLinearOrderedAddCommMonoid
 
 end DFinsupp

@@ -5,8 +5,10 @@ Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Multiplicity
+import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Cast.Prod
+import Mathlib.Algebra.Group.ULift
 import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.RingTheory.Nilpotent
 
 #align_import algebra.char_p.basic from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 
@@ -439,23 +441,6 @@ end CommRing
 
 end frobenius
 
-theorem frobenius_inj [CommRing R] [IsReduced R] (p : ℕ) [Fact p.Prime] [CharP R p] :
-    Function.Injective (frobenius R p) := fun x h H => by
-  rw [← sub_eq_zero] at H ⊢
-  rw [← frobenius_sub] at H
-  exact IsReduced.eq_zero _ ⟨_, H⟩
-#align frobenius_inj frobenius_inj
-
-/-- If `ringChar R = 2`, where `R` is a finite reduced commutative ring,
-then every `a : R` is a square. -/
-theorem isSquare_of_charTwo' {R : Type*} [Finite R] [CommRing R] [IsReduced R] [CharP R 2]
-    (a : R) : IsSquare a := by
-  cases nonempty_fintype R
-  exact
-    Exists.imp (fun b h => pow_two b ▸ Eq.symm h)
-      (((Fintype.bijective_iff_injective_and_card _).mpr ⟨frobenius_inj R 2, rfl⟩).surjective a)
-#align is_square_of_char_two' isSquare_of_charTwo'
-
 namespace CharP
 
 section
@@ -492,26 +477,7 @@ theorem ringChar_zero_iff_CharZero [NonAssocRing R] : ringChar R = 0 ↔ CharZer
 
 end
 
-section CommRing
-
-variable [CommRing R] [IsReduced R] {R}
-
-@[simp]
-theorem pow_prime_pow_mul_eq_one_iff (p k m : ℕ) [Fact p.Prime] [CharP R p] (x : R) :
-    x ^ (p ^ k * m) = 1 ↔ x ^ m = 1 := by
-  induction' k with k hk
-  · rw [pow_zero, one_mul]
-  · refine' ⟨fun h => _, fun h => _⟩
-    · rw [pow_succ, mul_assoc, pow_mul', ← frobenius_def, ← frobenius_one p] at h
-      exact hk.1 (frobenius_inj R p h)
-    · rw [pow_mul', h, one_pow]
-#align char_p.pow_prime_pow_mul_eq_one_iff CharP.pow_prime_pow_mul_eq_one_iff
-
-end CommRing
-
 section Semiring
-
-open Nat
 
 variable [NonAssocSemiring R]
 
@@ -529,7 +495,7 @@ theorem char_is_prime_of_two_le (p : ℕ) [hc : CharP R p] (hp : 2 ≤ p) : Nat.
   fun (d : ℕ) (hdvd : ∃ e, p = d * e) =>
   let ⟨e, hmul⟩ := hdvd
   have : (p : R) = 0 := (cast_eq_zero_iff R p p).mpr (dvd_refl p)
-  have : (d : R) * e = 0 := @cast_mul R _ d e ▸ hmul ▸ this
+  have : (d : R) * e = 0 := @Nat.cast_mul R _ d e ▸ hmul ▸ this
   Or.elim (eq_zero_or_eq_zero_of_mul_eq_zero this)
     (fun hd : (d : R) = 0 =>
       have : p ∣ d := (cast_eq_zero_iff R p d).mp hd
@@ -718,8 +684,8 @@ theorem Int.cast_injOn_of_ringChar_ne_two {R : Type*} [NonAssocRing R] [Nontrivi
   rintro _ (rfl | rfl | rfl) _ (rfl | rfl | rfl) h <;>
   simp only
     [cast_neg, cast_one, cast_zero, neg_eq_zero, one_ne_zero, zero_ne_one, zero_eq_neg] at h ⊢
-  · exact (Ring.neg_one_ne_one_of_char_ne_two hR).symm h
-  · exact (Ring.neg_one_ne_one_of_char_ne_two hR) h
+  · exact ((Ring.neg_one_ne_one_of_char_ne_two hR).symm h).elim
+  · exact ((Ring.neg_one_ne_one_of_char_ne_two hR) h).elim
 #align int.cast_inj_on_of_ring_char_ne_two Int.cast_injOn_of_ringChar_ne_two
 
 end

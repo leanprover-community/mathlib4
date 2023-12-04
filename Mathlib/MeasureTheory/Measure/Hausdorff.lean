@@ -617,12 +617,12 @@ theorem hausdorffMeasure_le_liminf_sum {β : Type*} {ι : β → Type*} [∀ n, 
 /-- If `d₁ < d₂`, then for any set `s` we have either `μH[d₂] s = 0`, or `μH[d₁] s = ∞`. -/
 theorem hausdorffMeasure_zero_or_top {d₁ d₂ : ℝ} (h : d₁ < d₂) (s : Set X) :
     μH[d₂] s = 0 ∨ μH[d₁] s = ∞ := by
-  by_contra' H
+  by_contra! H
   suffices ∀ c : ℝ≥0, c ≠ 0 → μH[d₂] s ≤ c * μH[d₁] s by
     rcases ENNReal.exists_nnreal_pos_mul_lt H.2 H.1 with ⟨c, hc0, hc⟩
     exact hc.not_le (this c (pos_iff_ne_zero.1 hc0))
   intro c hc
-  refine' le_iff'.1 (mkMetric_mono_smul ENNReal.coe_ne_top (by exact_mod_cast hc) _) s
+  refine' le_iff'.1 (mkMetric_mono_smul ENNReal.coe_ne_top (mod_cast hc) _) s
   have : 0 < ((c : ℝ≥0∞) ^ (d₂ - d₁)⁻¹) := by
     rw [ENNReal.coe_rpow_of_ne_zero hc, pos_iff_ne_zero, Ne.def, ENNReal.coe_eq_zero,
       NNReal.rpow_eq_zero_iff]
@@ -880,7 +880,7 @@ theorem hausdorffMeasure_image (hf : Isometry f) (hd : 0 ≤ d ∨ Surjective f)
   simp only [hausdorffMeasure, ← OuterMeasure.coe_mkMetric, ← OuterMeasure.comap_apply]
   -- porting note: this proof was slightly nicer before the port
   simp only [mkMetric_toOuterMeasure]
-  have : 0 ≤ d → Monotone fun r ↦ @HPow.hPow ℝ≥0∞ ℝ ℝ≥0∞ instHPow r d := by
+  have : 0 ≤ d → Monotone fun r : ℝ≥0∞ ↦ r ^ d := by
     exact fun hd x y hxy => ENNReal.rpow_le_rpow hxy hd
   have := OuterMeasure.isometry_comap_mkMetric (fun (r : ℝ≥0∞) => r ^ d) hf (hd.imp_left this)
   congr
@@ -1042,14 +1042,14 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
 variable (ι X)
 
 theorem hausdorffMeasure_measurePreserving_funUnique [Unique ι]
-    [TopologicalSpace.SecondCountableTopology X] (d : ℝ) :
+    [SecondCountableTopology X] (d : ℝ) :
     MeasurePreserving (MeasurableEquiv.funUnique ι X) μH[d] μH[d] :=
   (IsometryEquiv.funUnique ι X).measurePreserving_hausdorffMeasure _
 #align measure_theory.hausdorff_measure_measure_preserving_fun_unique MeasureTheory.hausdorffMeasure_measurePreserving_funUnique
 
 theorem hausdorffMeasure_measurePreserving_piFinTwo (α : Fin 2 → Type*)
     [∀ i, MeasurableSpace (α i)] [∀ i, EMetricSpace (α i)] [∀ i, BorelSpace (α i)]
-    [∀ i, TopologicalSpace.SecondCountableTopology (α i)] (d : ℝ) :
+    [∀ i, SecondCountableTopology (α i)] (d : ℝ) :
     MeasurePreserving (MeasurableEquiv.piFinTwo α) μH[d] μH[d] :=
   (IsometryEquiv.piFinTwo α).measurePreserving_hausdorffMeasure _
 #align measure_theory.hausdorff_measure_measure_preserving_pi_fin_two MeasureTheory.hausdorffMeasure_measurePreserving_piFinTwo
@@ -1093,7 +1093,7 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
     convert this
     · simp only [image_smul, LinearMap.toSpanSingleton_apply, Set.image_image]
       ext e
-      simp
+      simp only [mem_image]
       refine' ⟨fun ⟨x, h⟩ => ⟨x, _⟩, fun ⟨x, h⟩ => ⟨x, _⟩⟩
       · rw [smul_comm (norm _), smul_comm (norm _), inv_smul_smul₀ hn]
         exact h

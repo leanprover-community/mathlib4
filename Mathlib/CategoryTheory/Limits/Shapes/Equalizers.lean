@@ -85,7 +85,7 @@ open WalkingParallelPairHom
 
 /-- Composition of morphisms in the indexing diagram for (co)equalizers. -/
 def WalkingParallelPairHom.comp :
-  -- Porting note: changed X Y Z to implicit to match comp fields in precategory
+    -- Porting note: changed X Y Z to implicit to match comp fields in precategory
     ∀ { X Y Z : WalkingParallelPair } (_ : WalkingParallelPairHom X Y)
       (_ : WalkingParallelPairHom Y Z), WalkingParallelPairHom X Z
   | _, _, _, id _, h => h
@@ -169,7 +169,7 @@ def walkingParallelPairOpEquiv : WalkingParallelPair ≌ WalkingParallelPairᵒ�
   counitIso :=
     NatIso.ofComponents (fun j => eqToIso (by
             induction' j with X
-            cases X <;> rfl ))
+            cases X <;> rfl))
       (fun {i} {j} f => by
       induction' i with i
       induction' j with j
@@ -1228,7 +1228,7 @@ variable {C f g}
 /-- The fork obtained by postcomposing an equalizer fork with a monomorphism is an equalizer. -/
 def isEqualizerCompMono {c : Fork f g} (i : IsLimit c) {Z : C} (h : Y ⟶ Z) [hm : Mono h] :
     have : Fork.ι c ≫ f ≫ h = Fork.ι c ≫ g ≫ h := by
-      simp only [←Category.assoc]
+      simp only [← Category.assoc]
       exact congrArg (· ≫ h) c.condition;
     IsLimit (Fork.ofι c.ι (by simp [this]) : Fork (f ≫ h) (g ≫ h)) :=
   Fork.IsLimit.mk' _ fun s =>

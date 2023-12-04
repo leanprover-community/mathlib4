@@ -34,7 +34,7 @@ namespace SignType
 
 -- Porting note: Added Fintype SignType manually
 instance : Fintype SignType :=
-   Fintype.ofMultiset (zero :: neg :: pos :: List.nil) (fun x ↦ by cases x <;> simp only)
+   Fintype.ofMultiset (zero :: neg :: pos :: List.nil) (fun x ↦ by cases x <;> decide)
 
 instance : Zero SignType :=
   ⟨zero⟩
@@ -155,7 +155,7 @@ def fin3Equiv : SignType ≃* Fin 3 where
     | ⟨2, _⟩ => by simp
     | ⟨n + 3, h⟩ => by simp at h
   map_mul' a b := by
-    cases a <;> cases b <;> simp
+    cases a <;> cases b <;> rfl
 #align sign_type.fin3_equiv SignType.fin3Equiv
 
 section CaseBashing
@@ -360,7 +360,7 @@ theorem sign_ne_zero : sign a ≠ 0 ↔ a ≠ 0 :=
 theorem sign_nonneg_iff : 0 ≤ sign a ↔ 0 ≤ a := by
   rcases lt_trichotomy 0 a with (h | h | h)
   · simp [h, h.le]
-  · simp [←h]
+  · simp [← h]
   · simp [h, h.not_le]
 #align sign_nonneg_iff sign_nonneg_iff
 
@@ -368,7 +368,7 @@ theorem sign_nonneg_iff : 0 ≤ sign a ↔ 0 ≤ a := by
 theorem sign_nonpos_iff : sign a ≤ 0 ↔ a ≤ 0 := by
   rcases lt_trichotomy 0 a with (h | h | h)
   · simp [h, h.not_le]
-  · simp [←h]
+  · simp [← h]
   · simp [h, h.le]
 #align sign_nonpos_iff sign_nonpos_iff
 
@@ -515,7 +515,7 @@ theorem exists_signed_sum {α : Type u_1} [DecidableEq α] (s : Finset α) (f : 
 
 /-- We can decompose a sum of absolute value less than `n` into a sum of at most `n` signs. -/
 theorem exists_signed_sum' {α : Type u_1} [Nonempty α] [DecidableEq α] (s : Finset α) (f : α → ℤ)
-  (n : ℕ) (h : (∑ i in s, (f i).natAbs) ≤ n) :
+    (n : ℕ) (h : (∑ i in s, (f i).natAbs) ≤ n) :
     ∃ (β : Type u_1) (_ : Fintype β) (sgn : β → SignType) (g : β → α),
       (∀ b, g b ∉ s → sgn b = 0) ∧
         Fintype.card β = n ∧ ∀ a ∈ s, (∑ i, if g i = a then (sgn i : ℤ) else 0) = f a := by

@@ -5,6 +5,7 @@ Authors: Antoine Labelle
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.CategoryTheory.Monoidal.Linear
+import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Closed.Monoidal
@@ -47,32 +48,31 @@ open MonoidalPredicate
 
 variable [MonoidalPredicate P]
 
+@[simps]
+instance : MonoidalCategoryStruct (FullSubcategory P) where
+  tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
+  whiskerLeft X _ _ f :=
+    (fullSubcategoryInclusion P).preimage <| X.1 ◁ (fullSubcategoryInclusion P).map f
+  whiskerRight {X₁ X₂} (f : X₁.1 ⟶ X₂.1) Y :=
+    (fullSubcategoryInclusion P).preimage <| (fullSubcategoryInclusion P).map f ▷ Y.1
+  tensorHom f g :=
+    (fullSubcategoryInclusion P).preimage <|
+      (fullSubcategoryInclusion P).map f ⊗ (fullSubcategoryInclusion P).map ga
+  tensorUnit := ⟨𝟙_ C, prop_id⟩
+  associator X Y Z :=
+    ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv, hom_inv_id (α_ X.1 Y.1 Z.1),
+      inv_hom_id (α_ X.1 Y.1 Z.1)⟩
+  leftUnitor X := ⟨(λ_ X.1).hom, (λ_ X.1).inv, hom_inv_id (λ_ X.1), inv_hom_id (λ_ X.1)⟩
+  rightUnitor X := ⟨(ρ_ X.1).hom, (ρ_ X.1).inv, hom_inv_id (ρ_ X.1), inv_hom_id (ρ_ X.1)⟩
+
 /--
 When `P` is a monoidal predicate, the full subcategory for `P` inherits the monoidal structure of
   `C`.
 -/
-instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) where
-  tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
-  tensorHom f g := (fullSubcategoryInclusion P).preimage <|
-    (fullSubcategoryInclusion P).map f ⊗ (fullSubcategoryInclusion P).map g
-  tensorHom_def _f _g := tensorHom_def _ _
-  whiskerLeft := fun X _ _ f ↦ (fullSubcategoryInclusion P).preimage <|
-    X.1 ◁ (fullSubcategoryInclusion P).map f
-  whiskerRight := fun f Y ↦ (fullSubcategoryInclusion P).preimage <|
-    (fullSubcategoryInclusion P).map f ▷ Y.1
-  tensorUnit' := ⟨𝟙_ C, prop_id⟩
-  associator X Y Z := (fullSubcategoryInclusion P).preimageIso (α_ X.1 Y.1 Z.1)
-  whiskerLeft_id X Y := whiskerLeft_id X.1 Y.1
-  id_whiskerRight X Y := id_whiskerRight X.1 Y.1
-  leftUnitor X := (fullSubcategoryInclusion P).preimageIso (λ_ X.1)
-  rightUnitor X := (fullSubcategoryInclusion P).preimageIso (ρ_ X.1)
-  tensor_id X Y := tensor_id X.1 Y.1
-  tensor_comp _f₁ _f₂ _g₁ _g₂ := tensor_comp _ _ _ _
-  associator_naturality _f₁ _f₂ _f₃ := associator_naturality _ _ _
-  leftUnitor_naturality _f := leftUnitor_naturality _
-  rightUnitor_naturality _f := rightUnitor_naturality _
-  pentagon W X Y Z := pentagon W.1 X.1 Y.1 Z.1
-  triangle X Y := triangle X.1 Y.1
+instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
+  Monoidal.induced (fullSubcategoryInclusion P)
+    { μIso := fun X Y => eqToIso rfl
+      εIso := eqToIso rfl }
 #align category_theory.monoidal_category.full_monoidal_subcategory CategoryTheory.MonoidalCategory.fullMonoidalSubcategory
 
 /-- The forgetful monoidal functor from a full monoidal subcategory into the original category
@@ -120,6 +120,8 @@ end
 
 variable {P} {P' : C → Prop} [MonoidalPredicate P']
 
+-- needed for `aesop_cat`
+attribute [local simp] FullSubcategory.comp_def FullSubcategory.id_def in
 /-- An implication of predicates `P → P'` induces a monoidal functor between full monoidal
 subcategories. -/
 @[simps]
@@ -128,6 +130,7 @@ def fullMonoidalSubcategory.map (h : ∀ ⦃X⦄, P X → P' X) :
   toFunctor := FullSubcategory.map h
   ε := 𝟙 _
   μ X Y := 𝟙 _
+
 #align category_theory.monoidal_category.full_monoidal_subcategory.map CategoryTheory.MonoidalCategory.fullMonoidalSubcategory.map
 
 instance fullMonoidalSubcategory.mapFull (h : ∀ ⦃X⦄, P X → P' X) :
@@ -229,8 +232,8 @@ instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) wher
           counit :=
           { app := fun Y => (ihom.ev X.1).app Y.1
             naturality := fun Y Z f => ihom.ev_naturality X.1 f }
-          left_triangle := by ext Y; simp; exact ihom.ev_coev X.1 Y.1
-          right_triangle := by ext Y; simp; exact ihom.coev_ev X.1 Y.1 } } }
+          left_triangle := by ext Y; simp [FullSubcategory.comp_def, FullSubcategory.id_def]
+          right_triangle := by ext Y; simp [FullSubcategory.comp_def, FullSubcategory.id_def] } } }
 #align category_theory.monoidal_category.full_monoidal_closed_subcategory CategoryTheory.MonoidalCategory.fullMonoidalClosedSubcategory
 
 @[simp]

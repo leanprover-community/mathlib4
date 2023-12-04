@@ -38,7 +38,7 @@ open Classical Set Filter TopologicalSpace Function Topology Pointwise MulOpposi
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {G : Type w} {H : Type x}
+variable {G : Type w} {H : Type x} {α : Type u} {β : Type v}
 
 section ContinuousMulGroup
 
@@ -145,7 +145,8 @@ theorem IsClosed.rightCoset {U : Set G} (h : IsClosed U) (x : G) : IsClosed (rig
 #align is_closed.right_add_coset IsClosed.right_addCoset
 
 @[to_additive]
-theorem discreteTopology_of_open_singleton_one (h : IsOpen ({1} : Set G)) : DiscreteTopology G := by
+theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :
+    DiscreteTopology G := by
   rw [← singletons_open_iff_discrete]
   intro g
   suffices {g} = (fun x : G => g⁻¹ * x) ⁻¹' {1} by
@@ -153,14 +154,14 @@ theorem discreteTopology_of_open_singleton_one (h : IsOpen ({1} : Set G)) : Disc
     exact (continuous_mul_left g⁻¹).isOpen_preimage _ h
   simp only [mul_one, Set.preimage_mul_left_singleton, eq_self_iff_true, inv_inv,
     Set.singleton_eq_singleton_iff]
-#align discrete_topology_of_open_singleton_one discreteTopology_of_open_singleton_one
-#align discrete_topology_of_open_singleton_zero discreteTopology_of_open_singleton_zero
+#align discrete_topology_of_open_singleton_one discreteTopology_of_isOpen_singleton_one
+#align discrete_topology_of_open_singleton_zero discreteTopology_of_isOpen_singleton_zero
 
 @[to_additive]
-theorem discreteTopology_iff_open_singleton_one : DiscreteTopology G ↔ IsOpen ({1} : Set G) :=
-  ⟨fun h => forall_open_iff_discrete.mpr h {1}, discreteTopology_of_open_singleton_one⟩
-#align discrete_topology_iff_open_singleton_one discreteTopology_iff_open_singleton_one
-#align discrete_topology_iff_open_singleton_zero discreteTopology_iff_open_singleton_zero
+theorem discreteTopology_iff_isOpen_singleton_one : DiscreteTopology G ↔ IsOpen ({1} : Set G) :=
+  ⟨fun h => forall_open_iff_discrete.mpr h {1}, discreteTopology_of_isOpen_singleton_one⟩
+#align discrete_topology_iff_open_singleton_one discreteTopology_iff_isOpen_singleton_one
+#align discrete_topology_iff_open_singleton_zero discreteTopology_iff_isOpen_singleton_zero
 
 end ContinuousMulGroup
 
@@ -499,7 +500,7 @@ instance AddGroup.continuousConstSMul_int {A} [AddGroup A] [TopologicalSpace A]
 
 instance AddGroup.continuousSMul_int {A} [AddGroup A] [TopologicalSpace A]
     [TopologicalAddGroup A] : ContinuousSMul ℤ A :=
-  ⟨continuous_uncurry_of_discreteTopology continuous_zsmul⟩
+  ⟨continuous_prod_of_discrete_left.mpr continuous_zsmul⟩
 #align add_group.has_continuous_smul_int AddGroup.continuousSMul_int
 
 @[to_additive (attr := continuity)]
@@ -694,11 +695,11 @@ instance (S : Subgroup G) : TopologicalGroup S :=
 
 end Subgroup
 
-/-- The (topological-space) closure of a subgroup of a space `M` with `ContinuousMul` is
+/-- The (topological-space) closure of a subgroup of a topological group is
 itself a subgroup. -/
 @[to_additive
-  "The (topological-space) closure of an additive subgroup of a space `M` with
-  `ContinuousAdd` is itself an additive subgroup."]
+  "The (topological-space) closure of an additive subgroup of an additive topological group is
+  itself an additive subgroup."]
 def Subgroup.topologicalClosure (s : Subgroup G) : Subgroup G :=
   { s.toSubmonoid.topologicalClosure with
     carrier := _root_.closure (s : Set G)
@@ -796,6 +797,11 @@ def Subgroup.commGroupTopologicalClosure [T2Space G] (s : Subgroup G)
   { s.topologicalClosure.toGroup, s.toSubmonoid.commMonoidTopologicalClosure hs with }
 #align subgroup.comm_group_topological_closure Subgroup.commGroupTopologicalClosure
 #align add_subgroup.add_comm_group_topological_closure AddSubgroup.addCommGroupTopologicalClosure
+
+variable (G) in
+@[to_additive]
+lemma Subgroup.coe_topologicalClosure_bot :
+    ((⊥ : Subgroup G).topologicalClosure : Set G) = _root_.closure ({1} : Set G) := by simp
 
 @[to_additive exists_nhds_half_neg]
 theorem exists_nhds_split_inv {s : Set G} (hs : s ∈ 𝓝 (1 : G)) :
@@ -1017,7 +1023,7 @@ which `(u (n + 1)) ^ 2 ⊆ u n`. The existence of such a neighborhood basis is a
   The existence of such a neighborhood basis is a key tool for `QuotientAddGroup.completeSpace`"]
 theorem TopologicalGroup.exists_antitone_basis_nhds_one :
     ∃ u : ℕ → Set G, (𝓝 1).HasAntitoneBasis u ∧ ∀ n, u (n + 1) * u (n + 1) ⊆ u n := by
-  rcases(𝓝 (1 : G)).exists_antitone_basis with ⟨u, hu, u_anti⟩
+  rcases (𝓝 (1 : G)).exists_antitone_basis with ⟨u, hu, u_anti⟩
   have :=
     ((hu.prod_nhds hu).tendsto_iff hu).mp
       (by simpa only [mul_one] using continuous_mul.tendsto ((1, 1) : G × G))
@@ -1295,7 +1301,7 @@ theorem MulAction.isClosedMap_quotient [CompactSpace α] :
     IsClosedMap (Quotient.mk' : β → Quotient (orbitRel α β)) := by
   intro t ht
   rw [← quotientMap_quotient_mk'.isClosed_preimage, MulAction.quotient_preimage_image_eq_union_mul]
-  convert ht.smul_left_of_isCompact (isCompact_univ (α := α))
+  convert ht.smul_left_of_isCompact (isCompact_univ (X := α))
   rw [← biUnion_univ, ← iUnion_smul_left_image]
   rfl
 
@@ -1378,7 +1384,7 @@ end ContinuousConstSMulOp
 
 section TopologicalGroup
 
-variable [TopologicalSpace α] [Group α] [TopologicalGroup α] {s t : Set α}
+variable [TopologicalSpace G] [Group G] [TopologicalGroup G] {s t : Set G}
 
 @[to_additive]
 theorem IsOpen.div_left (ht : IsOpen t) : IsOpen (s / t) := by
@@ -1413,7 +1419,7 @@ theorem subset_interior_div : interior s / interior t ⊆ interior (s / t) :=
 #align subset_interior_sub subset_interior_sub
 
 @[to_additive]
-theorem IsOpen.mul_closure (hs : IsOpen s) (t : Set α) : s * closure t = s * t := by
+theorem IsOpen.mul_closure (hs : IsOpen s) (t : Set G) : s * closure t = s * t := by
   refine' (mul_subset_iff.2 fun a ha b hb => _).antisymm (mul_subset_mul_left subset_closure)
   rw [mem_closure_iff] at hb
   have hbU : b ∈ s⁻¹ * {a * b} := ⟨a⁻¹, a * b, Set.inv_mem_inv.2 ha, rfl, inv_mul_cancel_left _ _⟩
@@ -1423,20 +1429,20 @@ theorem IsOpen.mul_closure (hs : IsOpen s) (t : Set α) : s * closure t = s * t 
 #align is_open.add_closure IsOpen.add_closure
 
 @[to_additive]
-theorem IsOpen.closure_mul (ht : IsOpen t) (s : Set α) : closure s * t = s * t := by
+theorem IsOpen.closure_mul (ht : IsOpen t) (s : Set G) : closure s * t = s * t := by
   rw [← inv_inv (closure s * t), mul_inv_rev, inv_closure, ht.inv.mul_closure, mul_inv_rev, inv_inv,
     inv_inv]
 #align is_open.closure_mul IsOpen.closure_mul
 #align is_open.closure_add IsOpen.closure_add
 
 @[to_additive]
-theorem IsOpen.div_closure (hs : IsOpen s) (t : Set α) : s / closure t = s / t := by
+theorem IsOpen.div_closure (hs : IsOpen s) (t : Set G) : s / closure t = s / t := by
   simp_rw [div_eq_mul_inv, inv_closure, hs.mul_closure]
 #align is_open.div_closure IsOpen.div_closure
 #align is_open.sub_closure IsOpen.sub_closure
 
 @[to_additive]
-theorem IsOpen.closure_div (ht : IsOpen t) (s : Set α) : closure s / t = s / t := by
+theorem IsOpen.closure_div (ht : IsOpen t) (s : Set G) : closure s / t = s / t := by
   simp_rw [div_eq_mul_inv, ht.inv.closure_mul]
 #align is_open.closure_div IsOpen.closure_div
 #align is_open.closure_sub IsOpen.closure_sub
@@ -1452,14 +1458,65 @@ theorem IsClosed.mul_right_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
   exact IsClosed.smul_left_of_isCompact ht (hs.image continuous_op)
 
 @[to_additive]
-theorem QuotientGroup.isClosedMap_coe {H : Subgroup α} (hH : IsCompact (H : Set α)) :
-    IsClosedMap ((↑) : α → α ⧸ H) := by
+theorem QuotientGroup.isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set G)) :
+    IsClosedMap ((↑) : G → G ⧸ H) := by
   intro t ht
   rw [← quotientMap_quotient_mk'.isClosed_preimage]
   convert ht.mul_right_of_isCompact hH
   refine (QuotientGroup.preimage_image_mk_eq_iUnion_image _ _).trans ?_
   rw [iUnion_subtype, ← iUnion_mul_right_image]
   rfl
+
+@[to_additive]
+lemma subset_mul_closure_one (s : Set G) : s ⊆ s * (closure {1} : Set G) := by
+  have : s ⊆ s * ({1} : Set G) := by simpa using Subset.rfl
+  exact this.trans (smul_subset_smul_left subset_closure)
+
+@[to_additive]
+lemma IsCompact.mul_closure_one_eq_closure {K : Set G} (hK : IsCompact K) :
+    K * (closure {1} : Set G) = closure K := by
+  apply Subset.antisymm ?_ ?_
+  · calc
+    K * (closure {1} : Set G) ⊆ closure K * (closure {1} : Set G) :=
+      smul_subset_smul_right subset_closure
+    _ ⊆ closure (K * ({1} : Set G)) := smul_set_closure_subset _ _
+    _ = closure K := by simp
+  · have : IsClosed (K * (closure {1} : Set G)) :=
+      IsClosed.smul_left_of_isCompact isClosed_closure hK
+    rw [IsClosed.closure_subset_iff this]
+    exact subset_mul_closure_one K
+
+@[to_additive]
+lemma IsClosed.mul_closure_one_eq {F : Set G} (hF : IsClosed F) :
+    F * (closure {1} : Set G) = F := by
+  refine Subset.antisymm ?_ (subset_mul_closure_one F)
+  calc
+  F * (closure {1} : Set G) = closure F * closure ({1} : Set G) := by rw [hF.closure_eq]
+  _ ⊆ closure (F * ({1} : Set G)) := smul_set_closure_subset _ _
+  _ = F := by simp [hF.closure_eq]
+
+@[to_additive]
+lemma compl_mul_closure_one_eq {t : Set G} (ht : t * (closure {1} : Set G) = t) :
+    tᶜ * (closure {1} : Set G) = tᶜ := by
+  refine Subset.antisymm ?_ (subset_mul_closure_one tᶜ)
+  rintro - ⟨x, g, hx, hg, rfl⟩
+  by_contra H
+  have : x ∈ t * (closure {1} : Set G) := by
+    rw [← Subgroup.coe_topologicalClosure_bot G] at hg ⊢
+    simp only [smul_eq_mul, mem_compl_iff, not_not] at H
+    exact ⟨x * g, g⁻¹, H, Subgroup.inv_mem _ hg, by simp⟩
+  rw [ht] at this
+  exact hx this
+
+@[to_additive]
+lemma compl_mul_closure_one_eq_iff {t : Set G} :
+    tᶜ * (closure {1} : Set G) = tᶜ ↔ t * (closure {1} : Set G) = t :=
+  ⟨fun h ↦ by simpa using compl_mul_closure_one_eq h, fun h ↦ compl_mul_closure_one_eq h⟩
+
+@[to_additive]
+lemma IsOpen.mul_closure_one_eq {U : Set G} (hU : IsOpen U) :
+    U * (closure {1} : Set G) = U :=
+  compl_mul_closure_one_eq_iff.1 (hU.isClosed_compl.mul_closure_one_eq)
 
 end TopologicalGroup
 
@@ -1522,6 +1579,22 @@ theorem TopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U �
 #align topological_group.t2_space_of_one_sep TopologicalGroup.t2Space_of_one_sep
 #align topological_add_group.t2_space_of_zero_sep TopologicalAddGroup.t2Space_of_zero_sep
 
+/-- Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the identity which
+is closed, symmetric, and satisfies `V * V ⊆ U`. -/
+@[to_additive "Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the
+identity which is closed, symmetric, and satisfies `V + V ⊆ U`."]
+theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1) :
+    ∃ V ∈ 𝓝 1, IsClosed V ∧ V⁻¹ = V ∧ V * V ⊆ U := by
+  rcases exists_open_nhds_one_mul_subset hU with ⟨V, V_open, V_mem, hV⟩
+  rcases exists_mem_nhds_isClosed_subset (V_open.mem_nhds V_mem) with ⟨W, W_mem, W_closed, hW⟩
+  refine ⟨W ∩ W⁻¹, Filter.inter_mem W_mem (inv_mem_nhds_one G W_mem), W_closed.inter W_closed.inv,
+    by simp [inter_comm], ?_⟩
+  calc
+  W ∩ W⁻¹ * (W ∩ W⁻¹)
+    ⊆ W * W := mul_subset_mul (inter_subset_left _ _) (inter_subset_left _ _)
+  _ ⊆ V * V := mul_subset_mul hW hW
+  _ ⊆ U := hV
+
 variable (S : Subgroup G) [Subgroup.Normal S] [IsClosed (S : Set G)]
 
 @[to_additive]
@@ -1569,14 +1642,14 @@ to show that the quotient group `G ⧸ S` is Hausdorff. -/
   If `G` is Hausdorff, this can be combined with `t2Space_of_properlyDiscontinuousVAdd_of_t2Space`
   to show that the quotient group `G ⧸ S` is Hausdorff."]
 theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Subgroup G)
-    (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul (opposite S) G :=
+    (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul S.op G :=
   { finite_disjoint_inter_image := by
       intro K L hK hL
       have : Continuous fun p : G × G => (p.1⁻¹, p.2) := continuous_inv.prod_map continuous_id
       have H : Set.Finite _ :=
         hS ((hK.prod hL).image (continuous_mul.comp this)).compl_mem_cocompact
       simp only [preimage_compl, compl_compl, coeSubtype, comp_apply] at H
-      apply Finite.of_preimage _ (oppositeEquiv S).surjective
+      apply Finite.of_preimage _ (equivOp S).surjective
       convert H using 1
       ext x
       simp only [image_smul, mem_setOf_eq, coeSubtype, mem_preimage, mem_image, Prod.exists]
@@ -1707,16 +1780,61 @@ admits a closed compact subset that is a neighborhood of `0`."]
 theorem exists_isCompact_isClosed_subset_isCompact_nhds_one
     {L : Set G} (Lcomp : IsCompact L) (L1 : L ∈ 𝓝 (1 : G)) :
     ∃ K : Set G, IsCompact K ∧ IsClosed K ∧ K ⊆ L ∧ K ∈ 𝓝 (1 : G) := by
-  rcases exists_open_nhds_one_mul_subset L1 with ⟨V, hVo, hV₁, hVL⟩
-  have hcVL : closure V ⊆ L :=
-    calc
-      closure V = 1 * closure V := (one_mul _).symm
-      _ ⊆ V * closure V :=
-        mul_subset_mul_right <| singleton_subset_iff.2 hV₁
-      _ = V * V := hVo.mul_closure _
-      _ ⊆ L := hVL
-  exact ⟨closure V, isCompact_of_isClosed_subset Lcomp isClosed_closure hcVL, isClosed_closure,
-    hcVL, mem_of_superset (hVo.mem_nhds hV₁) subset_closure⟩
+  rcases exists_mem_nhds_isClosed_subset L1 with ⟨K, hK, K_closed, KL⟩
+  exact ⟨K, Lcomp.of_isClosed_subset K_closed KL, K_closed, KL, hK⟩
+
+/-- If a point in a topological group has a compact neighborhood, then the group is
+locally compact. -/
+@[to_additive]
+theorem IsCompact.locallyCompactSpace_of_mem_nhds_of_group {K : Set G} (hK : IsCompact K) {x : G}
+    (h : K ∈ 𝓝 x) : LocallyCompactSpace G := by
+  refine ⟨fun y n hn ↦ ?_⟩
+  have A : (y * x⁻¹) • K ∈ 𝓝 y := by
+    rw [← preimage_smul_inv]
+    exact (continuous_const_smul _).continuousAt.preimage_mem_nhds (by simpa using h)
+  rcases exists_mem_nhds_isClosed_subset (inter_mem A hn) with ⟨L, hL, L_closed, LK⟩
+  refine ⟨L, hL, LK.trans (inter_subset_right _ _), ?_⟩
+  exact (hK.smul (y * x⁻¹)).of_isClosed_subset L_closed (LK.trans (inter_subset_left _ _))
+
+-- The next instance creates a loop between weakly locally compact space and locally compact space
+-- for topological groups. Hopefully, it shouldn't create problems.
+/-- A topological group which is weakly locally compact is automatically locally compact. -/
+@[to_additive]
+instance (priority := 90) instLocallyCompactSpaceOfWeaklyOfGroup [WeaklyLocallyCompactSpace G] :
+    LocallyCompactSpace G := by
+  rcases exists_compact_mem_nhds (1 : G) with ⟨K, K_comp, hK⟩
+  exact K_comp.locallyCompactSpace_of_mem_nhds_of_group hK
+
+/-- If a function defined on a topological group has a support contained in a
+compact set, then either the function is trivial or the group is locally compact. -/
+@[to_additive
+      "If a function defined on a topological additive group has a support contained in a compact
+      set, then either the function is trivial or the group is locally compact."]
+theorem eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group
+    [TopologicalSpace α] [Zero α] [T1Space α]
+    {f : G → α} {k : Set G} (hk : IsCompact k) (hf : support f ⊆ k) (h'f : Continuous f) :
+    f = 0 ∨ LocallyCompactSpace G := by
+  by_cases h : ∀ x, f x = 0
+  · apply Or.inl
+    ext x
+    exact h x
+  apply Or.inr
+  push_neg at h
+  obtain ⟨x, hx⟩ : ∃ x, f x ≠ 0 := h
+  have : k ∈ 𝓝 x :=
+    mem_of_superset (h'f.isOpen_support.mem_nhds hx) hf
+  exact IsCompact.locallyCompactSpace_of_mem_nhds_of_group hk this
+
+/-- If a function defined on a topological group has compact support, then either
+the function is trivial or the group is locally compact. -/
+@[to_additive
+      "If a function defined on a topological additive group has compact support,
+      then either the function is trivial or the group is locally compact."]
+theorem HasCompactSupport.eq_zero_or_locallyCompactSpace_of_group
+    [TopologicalSpace α] [Zero α] [T1Space α]
+    {f : G → α} (hf : HasCompactSupport f) (h'f : Continuous f) :
+    f = 0 ∨ LocallyCompactSpace G :=
+  eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group hf (subset_tsupport f) h'f
 
 /-- In a locally compact group, any neighborhood of the identity contains a compact closed
 neighborhood of the identity, even without separation assumptions on the space. -/
@@ -1742,6 +1860,18 @@ theorem exists_isCompact_isClosed_nhds_one [WeaklyLocallyCompactSpace G] :
   let ⟨K, Kcl, Kcomp, _, K1⟩ := exists_isCompact_isClosed_subset_isCompact_nhds_one Lcomp L1
   ⟨K, Kcl, Kcomp, K1⟩
 
+/-- A quotient of a locally compact group is locally compact. -/
+@[to_additive]
+instance [LocallyCompactSpace G] (N : Subgroup G) : LocallyCompactSpace (G ⧸ N) := by
+  refine ⟨fun x n hn ↦ ?_⟩
+  let π := ((↑) : G → G ⧸ N)
+  have C : Continuous π := continuous_coinduced_rng
+  obtain ⟨y, rfl⟩ : ∃ y, π y = x := Quot.exists_rep x
+  have : π ⁻¹' n ∈ 𝓝 y := preimage_nhds_coinduced hn
+  rcases local_compact_nhds this with ⟨s, s_mem, hs, s_comp⟩
+  exact ⟨π '' s, (QuotientGroup.isOpenMap_coe N).image_mem_nhds s_mem, mapsTo'.mp hs,
+    s_comp.image C⟩
+
 end
 
 section
@@ -1754,8 +1884,8 @@ theorem nhds_mul (x y : G) : 𝓝 (x * y) = 𝓝 x * 𝓝 y :=
     𝓝 (x * y) = map (x * ·) (map (· * y) (𝓝 1 * 𝓝 1)) := by simp
     _ = map₂ (fun a b => x * (a * b * y)) (𝓝 1) (𝓝 1) := by rw [← map₂_mul, map_map₂, map_map₂]
     _ = map₂ (fun a b => x * a * (b * y)) (𝓝 1) (𝓝 1) := by simp only [mul_assoc]
-    _ = 𝓝 x * 𝓝 y :=
-    by rw [← map_mul_left_nhds_one x, ← map_mul_right_nhds_one y, ← map₂_mul, map₂_map_left,
+    _ = 𝓝 x * 𝓝 y := by
+      rw [← map_mul_left_nhds_one x, ← map_mul_right_nhds_one y, ← map₂_mul, map₂_map_left,
         map₂_map_right]
 #align nhds_mul nhds_mul
 #align nhds_add nhds_add

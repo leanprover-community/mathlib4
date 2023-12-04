@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Combinatorics.SimpleGraph.Prod
 import Mathlib.Data.Fin.SuccPred
+import Mathlib.Data.ZMod.Basic
 import Mathlib.Order.SuccPred.Relation
 
 #align_import combinatorics.simple_graph.hasse from "leanprover-community/mathlib"@"8a38a697305292b37a61650e2c3bd3502d98c805"
@@ -103,6 +104,11 @@ def pathGraph (n : ℕ) : SimpleGraph (Fin n) :=
   hasse _
 #align simple_graph.path_graph SimpleGraph.pathGraph
 
+theorem pathGraph_adj {n : ℕ} {u v : Fin n} :
+    (pathGraph n).Adj u v ↔ u.val + 1 = v.val ∨ v.val + 1 = u.val := by
+  simp only [pathGraph, hasse]
+  simp_rw [← Fin.coe_covby_iff, Nat.covby_iff_succ_eq]
+
 theorem pathGraph_preconnected (n : ℕ) : (pathGraph n).Preconnected :=
   hasse_preconnected_of_succ _
 #align simple_graph.path_graph_preconnected SimpleGraph.pathGraph_preconnected
@@ -110,5 +116,9 @@ theorem pathGraph_preconnected (n : ℕ) : (pathGraph n).Preconnected :=
 theorem pathGraph_connected (n : ℕ) : (pathGraph (n + 1)).Connected :=
   ⟨pathGraph_preconnected _⟩
 #align simple_graph.path_graph_connected SimpleGraph.pathGraph_connected
+
+theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
+  ext u v
+  fin_cases u <;> fin_cases v <;> simp [pathGraph, ← Fin.coe_covby_iff, Nat.covby_iff_succ_eq]
 
 end SimpleGraph

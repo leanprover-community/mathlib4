@@ -192,10 +192,10 @@ def setValue {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = 
     -- split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> cc
     split_ifs at h with h₁ h₂ _ _ h₅ h₆ <;>
         (try subst b) <;>
-        (try simp only [f.injective.eq_iff] at *)
+        (try simp only [f.injective.eq_iff, not_true_eq_false] at *)
     · rw[h₁,h₂]
     · rw[h₁,h]
-    · rw[h₅,←h]
+    · rw[h₅, ← h]
     · exact h₆.symm
     · exfalso; exact h₅ h.symm
     · exfalso; exact h₁ h
@@ -208,7 +208,7 @@ theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable
 #align function.embedding.set_value_eq Function.Embedding.setValue_eq
 
 /-- Embedding into `Option α` using `some`. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 protected def some {α} : α ↪ Option α :=
   ⟨some, Option.some_injective α⟩
 #align function.embedding.some Function.Embedding.some
@@ -219,7 +219,7 @@ protected def some {α} : α ↪ Option α :=
 #align function.embedding.coe_option Function.Embedding.some
 
 /-- A version of `Option.map` for `Function.Embedding`s. -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def optionMap {α β} (f : α ↪ β) : Option α ↪ Option β :=
   ⟨Option.map f, Option.map_injective f.injective⟩
 #align function.embedding.option_map Function.Embedding.optionMap
@@ -266,7 +266,7 @@ def sectr {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
 #align function.embedding.sectr Function.Embedding.sectr
 #align function.embedding.sectr_apply Function.Embedding.sectr_apply
 
-/-- If `e₁` and `e₂` are embeddings, then so is `prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. -/
+/-- If `e₁` and `e₂` are embeddings, then so is `Prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. -/
 def prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α × γ ↪ β × δ :=
   ⟨Prod.map e₁ e₂, e₁.injective.Prod_map e₂.injective⟩
 #align function.embedding.prod_map Function.Embedding.prodMap
