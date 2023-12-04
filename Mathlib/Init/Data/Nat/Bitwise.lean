@@ -221,7 +221,7 @@ def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) 
       let n' := div2 n
       have _x : bit (bodd n) n' = n := by
         apply bit_decomp n
-      rw [←_x]
+      rw [← _x]
       exact f (bodd n) n' (binaryRec z f n')
   decreasing_by exact binaryRec_decreasing n0
 #align nat.binary_rec Nat.binaryRec

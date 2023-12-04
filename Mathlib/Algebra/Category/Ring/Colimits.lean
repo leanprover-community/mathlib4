@@ -310,7 +310,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   map_add' x y := by
     refine Quot.induction_on₂ x y fun a b => ?_
     dsimp [descFun]
-    rw [←quot_add]
+    rw [← quot_add]
     rfl
   map_mul' x y := by exact Quot.induction_on₂ x y fun a b => rfl
 #align CommRing.colimits.desc_morphism CommRingCat.Colimits.descMorphism
