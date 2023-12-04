@@ -66,7 +66,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedea
     [ConditionallyCompleteLinearOrderedField α] : Archimedean α :=
   archimedean_iff_nat_lt.2
     (by
-      by_contra' h
+      by_contra! h
       obtain ⟨x, h⟩ := h
       have := csSup_le _ _ (range_nonempty Nat.cast)
         (forall_range_iff.2 fun m =>
