@@ -139,9 +139,9 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
 /-- A set is affinely independent if and only if the differences from
 a base point in that set are linearly independent. -/
 theorem affineIndependent_set_iff_linearIndependent_vsub {s : Set P} {p₁ : P} (hp₁ : p₁ ∈ s) :
-    AffineIndependent k (fun p => p : s → P) ↔
-      LinearIndependent k (fun v => v : (fun p => (p -ᵥ p₁ : V)) '' (s \ {p₁}) → V) := by
-  rw [affineIndependent_iff_linearIndependent_vsub k (fun p => p : s → P) ⟨p₁, hp₁⟩]
+    AffineIndependent k s.incl ↔
+      LinearIndependent k ((fun p => (p -ᵥ p₁ : V)) '' (s \ {p₁})).incl := by
+  rw [affineIndependent_iff_linearIndependent_vsub k s.incl ⟨p₁, hp₁⟩]
   constructor
   · intro h
     have hv : ∀ v : (fun p => (p -ᵥ p₁ : V)) '' (s \ {p₁}), (v : V) +ᵥ p₁ ∈ s \ {p₁} := fun v =>
@@ -164,8 +164,8 @@ theorem affineIndependent_set_iff_linearIndependent_vsub {s : Set P} {p₁ : P} 
 given a point `p₁`, the vectors added to `p₁` and `p₁` itself are
 affinely independent. -/
 theorem linearIndependent_set_iff_affineIndependent_vadd_union_singleton {s : Set V}
-    (hs : ∀ v ∈ s, v ≠ (0 : V)) (p₁ : P) : LinearIndependent k (fun v => v : s → V) ↔
-    AffineIndependent k (fun p => p : ({p₁} ∪ (fun v => v +ᵥ p₁) '' s : Set P) → P) := by
+    (hs : ∀ v ∈ s, v ≠ (0 : V)) (p₁ : P) : LinearIndependent k s.incl ↔
+    AffineIndependent k ({p₁} ∪ (fun v => v +ᵥ p₁) '' s : Set P).incl := by
   rw [affineIndependent_set_iff_linearIndependent_vsub k
       (Set.mem_union_left _ (Set.mem_singleton p₁))]
   have h : (fun p => (p -ᵥ p₁ : V)) '' (({p₁} ∪ (fun v => v +ᵥ p₁) '' s) \ {p₁}) = s := by
@@ -173,6 +173,7 @@ theorem linearIndependent_set_iff_affineIndependent_vadd_union_singleton {s : Se
       Set.image_singleton, vsub_self, vadd_vsub, Set.image_id']
     exact Set.diff_singleton_eq_self fun h => hs 0 h rfl
   rw [h]
+
 #align linear_independent_set_iff_affine_independent_vadd_union_singleton linearIndependent_set_iff_affineIndependent_vadd_union_singleton
 
 /-- A family is affinely independent if and only if any affine
@@ -309,14 +310,14 @@ theorem AffineIndependent.comp_embedding {ι2 : Type*} (f : ι2 ↪ ι) {p : ι 
 /-- If a family is affinely independent, so is any subfamily indexed
 by a subtype of the index type. -/
 protected theorem AffineIndependent.subtype {p : ι → P} (ha : AffineIndependent k p) (s : Set ι) :
-    AffineIndependent k fun i : s => p i :=
+    AffineIndependent k (s.restrict p):=
   ha.comp_embedding (Embedding.subtype _)
 #align affine_independent.subtype AffineIndependent.subtype
 
 /-- If an indexed family of points is affinely independent, so is the
 corresponding set of points. -/
 protected theorem AffineIndependent.range {p : ι → P} (ha : AffineIndependent k p) :
-    AffineIndependent k (fun x => x : Set.range p → P) := by
+    AffineIndependent k (Set.range p).incl := by
   let f : Set.range p → ι := fun x => x.property.choose
   have hf : ∀ x, p (f x) = x := fun x => x.property.choose_spec
   let fe : Set.range p ↪ ι := ⟨f, fun x₁ x₂ he => Subtype.ext (hf x₁ ▸ hf x₂ ▸ he ▸ rfl)⟩
@@ -338,15 +339,14 @@ theorem affineIndependent_equiv {ι' : Type*} (e : ι ≃ ι') {p : ι' → P} :
 
 /-- If a set of points is affinely independent, so is any subset. -/
 protected theorem AffineIndependent.mono {s t : Set P}
-    (ha : AffineIndependent k (fun x => x : t → P)) (hs : s ⊆ t) :
-    AffineIndependent k (fun x => x : s → P) :=
+    (ha : AffineIndependent k t.incl) (hs : s ⊆ t) : AffineIndependent k s.incl :=
   ha.comp_embedding (s.embeddingOfSubset t hs)
 #align affine_independent.mono AffineIndependent.mono
 
 /-- If the range of an injective indexed family of points is affinely
 independent, so is that family. -/
 theorem AffineIndependent.of_set_of_injective {p : ι → P}
-    (ha : AffineIndependent k (fun x => x : Set.range p → P)) (hi : Function.Injective p) :
+    (ha : AffineIndependent k (Set.range p).incl) (hi : Function.Injective p) :
     AffineIndependent k p :=
   ha.comp_embedding
     (⟨fun i => ⟨p i, Set.mem_range_self _⟩, fun _ _ h => hi (Subtype.mk_eq_mk.1 h)⟩ :
@@ -400,8 +400,8 @@ theorem AffineEquiv.affineIndependent_iff {p : ι → P} (e : P ≃ᵃ[k] P₂) 
 
 /-- Affine equivalences preserve affine independence of subsets. -/
 theorem AffineEquiv.affineIndependent_set_of_eq_iff {s : Set P} (e : P ≃ᵃ[k] P₂) :
-    AffineIndependent k ((↑) : e '' s → P₂) ↔ AffineIndependent k ((↑) : s → P) := by
-  have : e ∘ ((↑) : s → P) = ((↑) : e '' s → P₂) ∘ (e : P ≃ P₂).image s := rfl
+    AffineIndependent k (e '' s).incl ↔ AffineIndependent k s.incl := by
+  have : e ∘ s.incl = (e '' s).incl ∘ (e : P ≃ P₂).image s := rfl
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [← e.affineIndependent_iff, this, affineIndependent_equiv]
 #align affine_equiv.affine_independent_set_of_eq_iff AffineEquiv.affineIndependent_set_of_eq_iff
@@ -465,13 +465,13 @@ theorem AffineIndependent.not_mem_affineSpan_diff [Nontrivial k] {p : ι → P}
 #align affine_independent.not_mem_affine_span_diff AffineIndependent.not_mem_affineSpan_diff
 
 theorem exists_nontrivial_relation_sum_zero_of_not_affine_ind {t : Finset V}
-    (h : ¬AffineIndependent k ((↑) : t → V)) :
+    (h : ¬AffineIndependent k (t : Set V).incl) :
     ∃ f : V → k, ∑ e in t, f e • e = 0 ∧ ∑ e in t, f e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
   classical
     rw [affineIndependent_iff_of_fintype] at h
     simp only [exists_prop, not_forall] at h
     obtain ⟨w, hw, hwt, i, hi⟩ := h
-    simp only [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero _ w ((↑) : t → V) hw 0,
+    simp only [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero _ w (t : Set V).incl hw 0,
       vsub_eq_sub, Finset.weightedVSubOfPoint_apply, sub_zero] at hwt
     let f : ∀ x : V, x ∈ t → k := fun x hx => w ⟨x, hx⟩
     refine' ⟨fun x => if hx : x ∈ t then f x hx else (0 : k), _, _, by use i; simp [hi]⟩
@@ -481,6 +481,8 @@ theorem exists_nontrivial_relation_sum_zero_of_not_affine_ind {t : Finset V}
       by_cases hx : x ∈ t <;> simp [hx]
     all_goals
       simp only [Finset.sum_dite_of_true fun _ h => h, Finset.mk_coe, hwt, hw]
+    · simpa using hwt
+    simpa using hw
 #align exists_nontrivial_relation_sum_zero_of_not_affine_ind exists_nontrivial_relation_sum_zero_of_not_affine_ind
 
 /-- Viewing a module as an affine space modelled on itself, we can characterise affine independence
@@ -548,8 +550,8 @@ variable [AffineSpace V P] {ι : Type*}
 /-- An affinely independent set of points can be extended to such a
 set that spans the whole space. -/
 theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
-    (h : AffineIndependent k (fun p => p : s → P)) :
-    ∃ t : Set P, s ⊆ t ∧ AffineIndependent k (fun p => p : t → P) ∧ affineSpan k t = ⊤ := by
+    (h : AffineIndependent k s.incl) :
+    ∃ t : Set P, s ⊆ t ∧ AffineIndependent k t.incl ∧ affineSpan k t = ⊤ := by
   rcases s.eq_empty_or_nonempty with (rfl | ⟨p₁, hp₁⟩)
   · have p₁ : P := AddTorsor.nonempty.some
     let hsv := Basis.ofVectorSpace k V
@@ -583,7 +585,8 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
 variable (k V)
 
 theorem exists_affineIndependent (s : Set P) :
-    ∃ (t : _) (_ : t ⊆ s), affineSpan k t = affineSpan k s ∧ AffineIndependent k ((↑) : t → P) := by
+    ∃ (t : _) (_ : t ⊆ s),
+      affineSpan k t = affineSpan k s ∧ AffineIndependent k t.incl := by
   rcases s.eq_empty_or_nonempty with (rfl | ⟨p, hp⟩)
   · exact ⟨∅, Set.empty_subset ∅, rfl, affineIndependent_of_subsingleton k _⟩
   obtain ⟨b, hb₁, hb₂, hb₃⟩ := exists_linearIndependent k ((Equiv.vaddConst p).symm '' s)

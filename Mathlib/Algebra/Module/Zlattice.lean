@@ -368,7 +368,7 @@ theorem Zlattice.FG : AddSubgroup.FG L := by
     refine fg_def.mpr ⟨map (span ℤ s).mkQ (AddSubgroup.toIntSubmodule L), ?_, span_eq _⟩
     let b := Basis.mk h_lind (by
       rw [← hs, ← h_span]
-      exact span_mono (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, subset_rfl]))
+      exact span_mono <| by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, subset_rfl])
     rw [show span ℤ s = span ℤ (Set.range b) by simp [Basis.coe_mk, Subtype.range_coe_subtype]]
     have : Fintype s := Set.Finite.fintype h_lind.finite
     refine Set.Finite.of_finite_image (f := ((↑) : _ →  E) ∘ Zspan.quotientEquiv b) ?_
@@ -384,8 +384,10 @@ theorem Zlattice.FG : AddSubgroup.FG L := by
       refine AddSubgroup.add_mem _ h_mem
         (neg_mem (Set.mem_of_subset_of_mem ?_ (Subtype.mem (Zspan.floor b x))))
       rw [show (L : Set E) = AddSubgroup.toIntSubmodule L by rfl]
-      rw [SetLike.coe_subset_coe, Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq]
-      exact span_le.mpr h_incl
+      simp only [Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+      rw [SetLike.coe_subset_coe]
+      apply span_le.2
+      simpa only [AddSubgroup.coe_toIntSubmodule]
   · -- `span ℤ s` is finitely generated because `s` is finite
     rw [ker_mkQ, inf_of_le_right (span_le.mpr h_incl)]
     exact fg_span (LinearIndependent.finite h_lind)

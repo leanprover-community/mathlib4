@@ -48,6 +48,8 @@ Definitions in the file:
 
 * `inclusion s₁ s₂ : ↥s₁ → ↥s₂` : the map `↥s₁ → ↥s₂` induced by an inclusion `s₁ ⊆ s₂`.
 
+* `incl s : ↥(s : Set α) → α` : the inclusion of a set into its type. Defeq to `Subtype.val`
+
 ## Notation
 
 * `sᶜ` for the complement of `s`
@@ -2864,6 +2866,14 @@ theorem inclusion_le_inclusion [Preorder α] {s t : Set α} (h : s ⊆ t) {x y :
 @[simp]
 theorem inclusion_lt_inclusion [Preorder α] {s t : Set α} (h : s ⊆ t) {x y : s} :
     inclusion h x < inclusion h y ↔ x < y := Iff.rfl
+
+/-- An alias for `Subtype.val` from sets, which takes `s` as an explicit argument to make it clear
+  what the set in question is.
+
+See also `Set.inclusion`, for when the codomain is also a set.  -/
+abbrev incl (s : Set α) : s → α := Subtype.val
+
+@[simp] theorem incl_apply (s : Set α) (x : s) : Set.incl s x = x := rfl
 
 end Inclusion
 
