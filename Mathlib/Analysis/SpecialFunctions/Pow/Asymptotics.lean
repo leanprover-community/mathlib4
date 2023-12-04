@@ -58,12 +58,12 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
   rcases lt_trichotomy b 0 with hb|rfl|hb
   case inl =>   -- b < 0
     simp_rw [Real.rpow_def_of_nonpos hb.le, hb.ne, ite_false]
-    rw [←isLittleO_const_iff (c := (1:ℝ)) one_ne_zero, (one_mul (1 : ℝ)).symm]
+    rw [← isLittleO_const_iff (c := (1:ℝ)) one_ne_zero, (one_mul (1 : ℝ)).symm]
     refine IsLittleO.mul_isBigO ?exp ?cos
     case exp =>
       rw [isLittleO_const_iff one_ne_zero]
       refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_neg ?_).mpr tendsto_id
-      rw [←log_neg_eq_log, log_neg_iff (by linarith)]
+      rw [← log_neg_eq_log, log_neg_iff (by linarith)]
       linarith
     case cos =>
       rw [isBigO_iff]
@@ -166,7 +166,7 @@ nonrec theorem NNReal.tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) :
   obtain ⟨c, hc⟩ := tendsto_atTop_atTop.mp (tendsto_rpow_atTop hy) b
   use c.toNNReal
   intro a ha
-  exact_mod_cast hc a (Real.toNNReal_le_iff_le_coe.mp ha)
+  exact mod_cast hc a (Real.toNNReal_le_iff_le_coe.mp ha)
 #align nnreal.tendsto_rpow_at_top NNReal.tendsto_rpow_atTop
 
 theorem ENNReal.tendsto_rpow_at_top {y : ℝ} (hy : 0 < y) :
@@ -184,7 +184,7 @@ theorem ENNReal.tendsto_rpow_at_top {y : ℝ} (hy : 0 < y) :
   -- Porting note: reduced defeq abuse
   simp only [Set.mem_Ioi, coe_lt_coe] at ha hc
   rw [ENNReal.coe_rpow_of_nonneg _ hy.le]
-  exact_mod_cast hc a ha
+  exact mod_cast hc a ha
 #align ennreal.tendsto_rpow_at_top ENNReal.tendsto_rpow_at_top
 
 end Limits

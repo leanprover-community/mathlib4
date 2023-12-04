@@ -1901,7 +1901,7 @@ theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n 
   intros
   rw [coeff_trunc]
   split_ifs with h
-  · rw [lt_succ, ←not_lt] at h
+  · rw [lt_succ, ← not_lt] at h
     contradiction
   · rfl
 
@@ -1912,7 +1912,7 @@ theorem degree_trunc_lt (f : R⟦X⟧) (n) : (trunc n f).degree < n := by
   intros
   rw [coeff_trunc]
   split_ifs with h
-  · rw [←not_le] at h
+  · rw [← not_le] at h
     contradiction
   · rfl
 
@@ -2760,8 +2760,8 @@ theorem coe_pow (n : ℕ) : ((φ ^ n : R[X]) : PowerSeries R) = (φ : PowerSerie
 #align polynomial.coe_pow Polynomial.coe_pow
 
 theorem eval₂_C_X_eq_coe : φ.eval₂ (PowerSeries.C R) PowerSeries.X = ↑φ := by
-  nth_rw 2 [←eval₂_C_X (p := φ)]
-  rw [←coeToPowerSeries.ringHom_apply, eval₂_eq_sum_range, eval₂_eq_sum_range, map_sum]
+  nth_rw 2 [← eval₂_C_X (p := φ)]
+  rw [← coeToPowerSeries.ringHom_apply, eval₂_eq_sum_range, eval₂_eq_sum_range, map_sum]
   apply Finset.sum_congr rfl
   intros
   rw [map_mul, map_pow, coeToPowerSeries.ringHom_apply,
@@ -2864,10 +2864,10 @@ theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
   | zero =>
     rw [pow_zero, pow_zero]
   | succ a ih =>
-    rw [pow_succ, pow_succ, trunc_trunc_mul, ←trunc_trunc_mul_trunc, ih, trunc_trunc_mul_trunc]
+    rw [pow_succ, pow_succ, trunc_trunc_mul, ← trunc_trunc_mul_trunc, ih, trunc_trunc_mul_trunc]
 
 theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) : trunc n (f : R⟦X⟧) = f := by
-  rw [←Polynomial.coe_inj]
+  rw [← Polynomial.coe_inj]
   ext m
   rw [coeff_coe, coeff_trunc]
   split
@@ -2888,7 +2888,7 @@ from the truncations of `f` and `g`.-/
 theorem coeff_mul_eq_coeff_trunc_mul_trunc₂ {n a b} (f g) (ha : n < a) (hb : n < b) :
     coeff R n (f * g) = coeff R n (trunc a f * trunc b g) := by
   symm
-  rw [←coeff_coe_trunc_of_lt n.lt_succ_self, ←trunc_trunc_mul_trunc, trunc_trunc_of_le f ha,
+  rw [← coeff_coe_trunc_of_lt n.lt_succ_self, ← trunc_trunc_mul_trunc, trunc_trunc_of_le f ha,
     trunc_trunc_of_le g hb, trunc_trunc_mul_trunc, coeff_coe_trunc_of_lt n.lt_succ_self]
 
 theorem coeff_mul_eq_coeff_trunc_mul_trunc {d n} (f g) (h : d < n) :

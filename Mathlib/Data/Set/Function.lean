@@ -1302,7 +1302,7 @@ theorem injOn_iff_invFunOn_image_image_eq_self [Nonempty α] :
 theorem _root_.Function.invFunOn_injOn_image [Nonempty α] (f : α → β) (s : Set α) :
     Set.InjOn (invFunOn f s) (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨x', hx', rfl⟩ he
-  rw [←invFunOn_apply_eq (f := f) hx, he, invFunOn_apply_eq (f := f) hx']
+  rw [← invFunOn_apply_eq (f := f) hx, he, invFunOn_apply_eq (f := f) hx']
 
 theorem _root_.Function.invFunOn_image_image_subset [Nonempty α] (f : α → β) (s : Set α) :
     (invFunOn f s) '' (f '' s) ⊆ s := by
@@ -1444,7 +1444,7 @@ instance Compl.decidableMem (j : α) : Decidable (j ∈ sᶜ) :=
 
 theorem piecewise_insert [DecidableEq α] (j : α) [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g = Function.update (s.piecewise f g) j (f j) := by
-  simp only [piecewise, mem_insert_iff]
+  simp (config := { unfoldPartialApp := true }) only [piecewise, mem_insert_iff]
   ext i
   by_cases h : i = j
   · rw [h]

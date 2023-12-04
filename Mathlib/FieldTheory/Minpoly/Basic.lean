@@ -86,11 +86,9 @@ variable (A x)
 @[simp]
 theorem aeval : aeval x (minpoly A x) = 0 := by
   delta minpoly
-  split_ifs with hx -- Porting note: `split_ifs` doesn't remove the `if`s
-  · rw [dif_pos hx]
-    exact (degree_lt_wf.min_mem _ hx).2
-  · rw [dif_neg hx]
-    exact aeval_zero _
+  split_ifs with hx
+  · exact (degree_lt_wf.min_mem _ hx).2
+  · exact aeval_zero _
 #align minpoly.aeval minpoly.aeval
 
 /-- A minimal polynomial is not `1`. -/
@@ -246,7 +244,7 @@ variable [IsDomain A] [IsDomain B]
 theorem irreducible (hx : IsIntegral A x) : Irreducible (minpoly A x) := by
   refine' (irreducible_of_monic (monic hx) <| ne_one A x).2 fun f g hf hg he => _
   rw [← hf.isUnit_iff, ← hg.isUnit_iff]
-  by_contra' h
+  by_contra! h
   have heval := congr_arg (Polynomial.aeval x) he
   rw [aeval A x, aeval_mul, mul_eq_zero] at heval
   cases' heval with heval heval

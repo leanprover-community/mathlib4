@@ -34,8 +34,6 @@ open scoped ENNReal NNReal Real
 
 open MeasureTheory
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace ProbabilityTheory
 
 section GaussianPdf
@@ -97,7 +95,7 @@ lemma integrable_gaussianPdfReal (μ : ℝ) (v : ℝ≥0) :
 /-- The gaussian distribution pdf integrates to 1 when the variance is not zero.  -/
 lemma lintegral_gaussianPdfReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ∫⁻ x, ENNReal.ofReal (gaussianPdfReal μ v x) = 1 := by
-  rw [←ENNReal.toReal_eq_one_iff]
+  rw [← ENNReal.toReal_eq_one_iff]
   have hfm : AEStronglyMeasurable (gaussianPdfReal μ v) volume :=
     (stronglyMeasurable_gaussianPdfReal μ v).aestronglyMeasurable
   have hf : 0 ≤ₐₛ gaussianPdfReal μ v := ae_of_all _ (gaussianPdfReal_nonneg μ v)
@@ -107,8 +105,8 @@ lemma lintegral_gaussianPdfReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
   rw [integral_sub_right_eq_self (μ := volume) (fun a ↦ rexp (-a ^ 2 / ((2 : ℝ) * v))) μ]
   simp only [gt_iff_lt, zero_lt_two, zero_le_mul_right, ge_iff_le, div_eq_inv_mul, mul_inv_rev,
     mul_neg]
-  simp_rw [←neg_mul]
-  rw [neg_mul, integral_gaussian, ← Real.sqrt_inv, ←Real.sqrt_mul]
+  simp_rw [← neg_mul]
+  rw [neg_mul, integral_gaussian, ← Real.sqrt_inv, ← Real.sqrt_mul]
   · field_simp
     ring
   · positivity
@@ -285,7 +283,7 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
     rw [Measure.map_const]
     simp only [ne_eq, measure_univ, one_smul, mul_eq_zero]
     convert (gaussianReal_zero_var 0).symm
-    simp only [ne_eq, zero_pow', mul_eq_zero, hv, or_false]
+    simp only [ne_eq, zero_pow', mul_eq_zero, hv, or_false, not_false_eq_true]
     rfl
   let e : ℝ ≃ᵐ ℝ := (Homeomorph.mulLeft₀ c hc).symm.toMeasurableEquiv
   have he' : ∀ x, HasDerivAt e ((fun _ ↦ c⁻¹) x) x := by
