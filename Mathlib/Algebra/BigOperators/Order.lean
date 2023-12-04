@@ -280,7 +280,7 @@ theorem abs_sum_of_nonneg' {G : Type*} [LinearOrderedAddCommGroup G] {f : ι →
 
 theorem abs_prod {R : Type*} [LinearOrderedCommRing R] {f : ι → R} {s : Finset ι} :
     |∏ x in s, f x| = ∏ x in s, |f x| :=
-  (absHom.toMonoidHom : R →* R).map_prod _ _
+  map_prod absHom _ _
 #align finset.abs_prod Finset.abs_prod
 
 section Pigeonhole
@@ -545,13 +545,15 @@ variable [DecidableEq ι]
 
 @[to_additive] lemma prod_sdiff_le_prod_sdiff :
     ∏ i in s \ t, f i ≤ ∏ i in t \ s, f i ↔ ∏ i in s, f i ≤ ∏ i in t, f i := by
-  rw [←mul_le_mul_iff_right, ←prod_union (disjoint_sdiff_inter _ _), sdiff_union_inter, ←prod_union,
-    inter_comm, sdiff_union_inter]; simpa only [inter_comm] using disjoint_sdiff_inter t s
+  rw [← mul_le_mul_iff_right, ← prod_union (disjoint_sdiff_inter _ _), sdiff_union_inter,
+    ← prod_union, inter_comm, sdiff_union_inter];
+  simpa only [inter_comm] using disjoint_sdiff_inter t s
 
 @[to_additive] lemma prod_sdiff_lt_prod_sdiff :
     ∏ i in s \ t, f i < ∏ i in t \ s, f i ↔ ∏ i in s, f i < ∏ i in t, f i := by
-  rw [←mul_lt_mul_iff_right, ←prod_union (disjoint_sdiff_inter _ _), sdiff_union_inter, ←prod_union,
-    inter_comm, sdiff_union_inter]; simpa only [inter_comm] using disjoint_sdiff_inter t s
+  rw [← mul_lt_mul_iff_right, ← prod_union (disjoint_sdiff_inter _ _), sdiff_union_inter,
+    ← prod_union, inter_comm, sdiff_union_inter];
+  simpa only [inter_comm] using disjoint_sdiff_inter t s
 
 end OrderedCancelCommMonoid
 
@@ -815,10 +817,10 @@ theorem IsAbsoluteValue.abv_sum [Semiring R] [OrderedSemiring S] (abv : R → S)
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
 #align is_absolute_value.abv_sum IsAbsoluteValue.abv_sum
 
-theorem AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
+nonrec theorem AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
     (abv : AbsoluteValue R S) (f : ι → R) (s : Finset ι) :
     abv (∏ i in s, f i) = ∏ i in s, abv (f i) :=
-  abv.toMonoidHom.map_prod f s
+  map_prod abv f s
 #align absolute_value.map_prod AbsoluteValue.map_prod
 
 theorem IsAbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
