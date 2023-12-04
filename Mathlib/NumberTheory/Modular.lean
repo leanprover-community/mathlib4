@@ -435,7 +435,8 @@ theorem eq_zero_of_mem_fdo_of_T_zpow_mem_fdo {n : ℤ} (hz : z ∈ 𝒟ᵒ) (hg 
     _ = 1 := add_halves 1
 #align modular_group.eq_zero_of_mem_fdo_of_T_zpow_mem_fdo ModularGroup.eq_zero_of_mem_fdo_of_T_zpow_mem_fdo
 
-/-- Any `z : ℍ` can be moved to `𝒟` by an element of `SL(2,ℤ)`  -/
+/-- First Fundamental Domain Lemma: Any `z : ℍ` can be moved to `𝒟` by an element of
+`SL(2,ℤ)` -/
 theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := by
   -- obtain a g₀ which maximizes im (g • z),
   obtain ⟨g₀, hg₀⟩ := exists_max_im z
@@ -527,7 +528,7 @@ theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : (↑ₘg) 1 
   rcases Int.abs_le_one_iff.mp <| abs_c_le_one hz hg with ⟨⟩ <;> tauto
 #align modular_group.c_eq_zero ModularGroup.c_eq_zero
 
-/-- Second Main Fundamental Domain Lemma: if both `z` and `g • z` are in the open domain `𝒟ᵒ`,
+/-- Second Fundamental Domain Lemma: if both `z` and `g • z` are in the open domain `𝒟ᵒ`,
 where `z : ℍ` and `g : SL(2,ℤ)`, then `z = g • z`. -/
 theorem eq_smul_self_of_mem_fdo_mem_fdo (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : z = g • z := by
   obtain ⟨n, hn⟩ := exists_eq_T_zpow_of_c_eq_zero (c_eq_zero hz hg)

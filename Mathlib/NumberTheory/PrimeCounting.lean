@@ -73,7 +73,7 @@ theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
   nth_mem_of_infinite infinite_setOf_prime _
 #align nat.prime_nth_prime Nat.prime_nth_prime
 
-/-- The cardninality of the finset `primesBelow n` equals the counting function
+/-- The cardinality of the finset `primesBelow n` equals the counting function
 `primeCounting'` at `n`. -/
 lemma primesBelow_card_eq_primeCounting' (n : ℕ) : n.primesBelow.card = primeCounting' n := by
   simp only [primesBelow, primeCounting']

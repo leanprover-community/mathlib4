@@ -165,16 +165,16 @@ def topEquiv : (⊤ : Sublattice α) ≃o α where
 @[simp, norm_cast] lemma coe_iInf (f : ι → Sublattice α) : ⨅ i, f i = ⋂ i, (f i : Set α) := by
   simp [iInf]
 
-@[simp, norm_cast] lemma coe_eq_univ : L = (univ : Set α) ↔ L = ⊤ := by rw [←coe_top, coe_inj]
-@[simp, norm_cast] lemma coe_eq_empty : L = (∅ : Set α) ↔ L = ⊥ := by rw [←coe_bot, coe_inj]
+@[simp, norm_cast] lemma coe_eq_univ : L = (univ : Set α) ↔ L = ⊤ := by rw [← coe_top, coe_inj]
+@[simp, norm_cast] lemma coe_eq_empty : L = (∅ : Set α) ↔ L = ⊥ := by rw [← coe_bot, coe_inj]
 
 @[simp] lemma not_mem_bot (a : α) : a ∉ (⊥ : Sublattice α) := id
 @[simp] lemma mem_top (a : α) : a ∈ (⊤ : Sublattice α) := mem_univ _
 @[simp] lemma mem_inf : a ∈ L ⊓ M ↔ a ∈ L ∧ a ∈ M := Iff.rfl
 @[simp] lemma mem_sInf {S : Set (Sublattice α)} : a ∈ sInf S ↔ ∀ L ∈ S, a ∈ L := by
-  rw [←SetLike.mem_coe]; simp
+  rw [← SetLike.mem_coe]; simp
 @[simp] lemma mem_iInf {f : ι → Sublattice α} : a ∈ ⨅ i, f i ↔ ∀ i, a ∈ f i := by
-  rw [←SetLike.mem_coe]; simp
+  rw [← SetLike.mem_coe]; simp
 
 /-- Sublattices of a lattice form a complete lattice. -/
 instance instCompleteLattice : CompleteLattice (Sublattice α) where
@@ -246,7 +246,7 @@ lemma comap_equiv_eq_map_symm (f : β ≃o α) (L : Sublattice α) :
 
 lemma map_symm_eq_iff_eq_map {M : Sublattice β} {e : β ≃o α} :
     L.map ↑e.symm = M ↔ L = M.map ↑e := by
-  simp_rw [←coe_inj]; exact (Equiv.eq_image_iff_symm_image_eq _ _ _).symm
+  simp_rw [← coe_inj]; exact (Equiv.eq_image_iff_symm_image_eq _ _ _).symm
 
 lemma map_le_iff_le_comap {f : LatticeHom α β} {M : Sublattice β} : L.map f ≤ M ↔ L ≤ M.comap f :=
   image_subset_iff

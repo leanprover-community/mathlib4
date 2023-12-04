@@ -747,7 +747,7 @@ theorem Integrable.bdd_mul {F : Type*} [NormedDivisionRing F] {f g : α → F} (
     exact ENNReal.mul_lt_top ENNReal.coe_ne_top (ne_of_lt hint.2)
 #align measure_theory.integrable.bdd_mul MeasureTheory.Integrable.bdd_mul
 
-/-- Hölder's inequality for integrable functions: the scalar multiplication of an integrable
+/-- **Hölder's inequality for integrable functions**: the scalar multiplication of an integrable
 vector-valued function by a scalar function with finite essential supremum is integrable. -/
 theorem Integrable.essSup_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β] {f : α → β}
     (hf : Integrable f μ) {g : α → 𝕜} (g_aestronglyMeasurable : AEStronglyMeasurable g μ)
