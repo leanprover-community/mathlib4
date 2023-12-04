@@ -51,6 +51,14 @@ theorem coassoc_apply (a : A) :
   LinearMap.congr_fun coassoc a
 
 @[simp]
+theorem coassoc_symm_apply (a : A) :
+    (TensorProduct.assoc R A A A).symm (comul.lTensor A (comul a)) = comul.rTensor A (comul a) := by
+  have key : (TensorProduct.assoc R A A A).symm
+  (TensorProduct.assoc R A A A (comul.rTensor A (comul a))) = (comul.rTensor A (comul a)) :=
+    LinearEquiv.symm_apply_apply (TensorProduct.assoc R A A A) (comul.rTensor A (comul a))
+  rw [← key, coassoc_apply a]
+
+@[simp]
 theorem counit_id_apply (a : A) : TensorProduct.lid R A (counit.rTensor A (comul a)) = a :=
   LinearMap.congr_fun counit_id a
 
