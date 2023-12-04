@@ -170,8 +170,10 @@ theorem liftFun_tmul (f : M → N → P)
     liftFun f hf_zero_left hf_zero_right hf_add_left hf_add_right hf (m ⊗ₜ n) = f m n :=
   rfl
 
-/-- Lift a map that is additive in both arguments, such that scalar multiplication in either
-argument is equivalent, to the tensor product.
+/-- Lift an `R`-balanced map to the tensor product.
+
+A map `f : M →+ N →+ P` additive in both components is `R`-balanced, or middle linear with respect
+to `R`, if scalar multiplication in either argument is equivalent, `f (r • m) n = f m (r • n)`.
 
 Note that strictly the first action should be a right-action by `R`, but for now `R` is commutative
 so it doesn't matter. -/

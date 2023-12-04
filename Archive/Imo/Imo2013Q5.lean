@@ -35,7 +35,7 @@ namespace Imo2013Q5
 
 theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
     (h : ∀ n : ℕ, 0 < n → x ^ n - 1 < y ^ n) : x ≤ y := by
-  by_contra' hxy
+  by_contra! hxy
   have hxmy : 0 < x - y := sub_pos.mpr hxy
   have hn : ∀ n : ℕ, 0 < n → (x - y) * (n : ℝ) ≤ x ^ n - y ^ n := by
     intro n _
@@ -68,7 +68,7 @@ theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
 theorem le_of_all_pow_lt_succ' {x y : ℝ} (hx : 1 < x) (hy : 0 < y)
     (h : ∀ n : ℕ, 0 < n → x ^ n - 1 < y ^ n) : x ≤ y := by
   refine' le_of_all_pow_lt_succ hx _ h
-  by_contra' hy'' : y ≤ 1
+  by_contra! hy'' : y ≤ 1
   -- Then there exists y' such that 0 < y ≤ 1 < y' < x.
   let y' := (x + 1) / 2
   have h_y'_lt_x : y' < x :=
@@ -163,7 +163,7 @@ theorem fixed_point_of_gt_1 {f : ℚ → ℝ} {x : ℚ} (hx : 1 < x)
       (x : ℝ) + (a ^ N - x : ℚ) ≤ f x + (a ^ N - x : ℚ) := by gcongr; exact H5 x hx
       _ ≤ f x + f (a ^ N - x) := by gcongr; exact H5 _ h_big_enough
   have hxp : 0 < x := by positivity
-  have hNp : 0 < N := by by_contra' H; rw [le_zero_iff.mp H] at hN; linarith
+  have hNp : 0 < N := by by_contra! H; rw [le_zero_iff.mp H] at hN; linarith
   have h2 :=
     calc
       f x + f (a ^ N - x) ≤ f (x + (a ^ N - x)) := H2 x (a ^ N - x) hxp (by positivity)
