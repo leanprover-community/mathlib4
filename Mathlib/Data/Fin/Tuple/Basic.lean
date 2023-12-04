@@ -707,6 +707,54 @@ theorem snoc_rev {α n} (a : α) (f : Fin n → α) (i : Fin <| n + 1) :
   show (Fin.snoc f a ∘ Fin.rev) i = _
   rw [snoc_comp_rev]
 
+@[simp]
+theorem empty_append {α} (a : Fin 0 → α) (b : Fin n → α) :
+    Fin.append a b = b ∘ (cast <| Nat.zero_add n) := by
+  funext;
+  simp only [append, addCases, not_lt_zero', Nat.add_zero, cast, subNat_mk, Nat.sub_zero, natAdd_mk,
+    subNat, ge_iff_le, nonpos_iff_eq_zero, tsub_zero, eq_rec_constant, dite_false, comp_apply]
+
+@[simp]
+theorem append_empty {α} (a : Fin n → α) (b : Fin 0 → α) :
+    Fin.append a b = a := by
+  funext; simp [Fin.append, addCases, castLT]
+
+theorem append_cons {α} (a : α) (as : Fin n → α) (bs : Fin m → α) :
+    Fin.append (cons a as) bs
+    = cons a (Fin.append as bs) ∘ (Fin.cast <| Nat.add_right_comm n 1 m) := by
+  funext i
+  rcases i with ⟨i, -⟩
+  simp only [append, addCases, cons, castLT, cast, comp_apply]
+  cases' i with i
+  · simp
+  · split_ifs with h
+    · have : i < n := Nat.lt_of_succ_lt_succ h
+      simp [addCases, this]
+    · have : ¬i < n := Nat.not_le.mpr <| Nat.lt_succ.mp <| Nat.not_le.mp h
+      simp [addCases, this]
+
+theorem append_snoc {α} (as : Fin n → α) (bs : Fin m → α) (b : α) :
+    Fin.append as (snoc bs b) = snoc (Fin.append as bs) b := by
+  funext i
+  rcases i with ⟨i, isLt⟩
+  simp only [append, addCases, castLT, cast_mk, subNat_mk, natAdd_mk, cast, ge_iff_le, snoc._eq_1,
+    cast_eq, eq_rec_constant, Nat.add_eq, Nat.add_zero, castLT_mk]
+  split_ifs with lt_n lt_add sub_lt nlt_add lt_add <;> (try rfl)
+  · have := Nat.lt_add_right _ _ m lt_n
+    contradiction
+  · obtain rfl := Nat.eq_of_le_of_lt_succ (Nat.not_lt.mp nlt_add) isLt
+    simp [Nat.add_comm n m] at sub_lt
+  · have := Nat.sub_lt_left_of_lt_add (Nat.not_lt.mp lt_n) lt_add
+    contradiction
+
+proof_wanted append_rev {α} (a : Fin n → α) (b : Fin m → α) (i : Fin (n + m)) :
+    Fin.append a b i.rev
+    = Fin.append (b ∘ Fin.rev) (a ∘ Fin.rev) (i.cast <| Nat.add_comm ..)
+
+proof_wanted append_comp_rev {α} (a : Fin n → α) (b : Fin m → α) :
+    (Fin.append a b) ∘ Fin.rev
+    = Fin.append (b ∘ Fin.rev) (a ∘ Fin.rev) ∘ (Fin.cast <| Nat.add_comm ..)
+
 theorem comp_init {α : Type*} {β : Type*} (g : α → β) (q : Fin n.succ → α) :
     g ∘ init q = init (g ∘ q) := by
   ext j
