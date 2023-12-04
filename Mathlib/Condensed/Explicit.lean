@@ -29,7 +29,7 @@ continuous surjection), the presheaf `F` exhibits `F(B)` as the equalizer of th
 
 universe v u
 
-open CategoryTheory Limits Opposite Functor Presieve
+open CategoryTheory Limits Opposite Functor Presieve regularCoverage
 
 namespace CategoryTheory
 
@@ -53,7 +53,7 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
   rw [isSheaf_coherent_iff_regular_and_extensive]
   apply and_congr
   · exact isSheaf_iff_preservesFiniteProducts F
-  · exact isSheaf_iff_equalizerCondition F
+  · exact EqualizerCondition.isSheaf_iff F
 
 theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
     {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1))
@@ -63,6 +63,7 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
   rw [Presheaf.isSheaf_iff_isSheaf_forget (coherentTopology CompHaus) F G,
     isSheaf_iff_isSheaf_of_type, isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
 
+noncomputable
 instance {A B : Type*} [Category A] [Category B] (F : B ⥤ A) (E : A)  [PreservesFiniteProducts F] :
     PreservesFiniteProducts (F ⋙ coyoneda.obj (op E)) :=
   ⟨fun J _ ↦ @compPreservesLimitsOfShape _ _ _ _ _ _ _ _ F (coyoneda.obj (op E))
@@ -79,7 +80,7 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
   rw [isSheaf_coherent_iff_regular_and_extensive]
   apply and_congr
   · exact isSheaf_iff_preservesFiniteProducts F
-  · exact isSheaf_iff_equalizerCondition F
+  · exact EqualizerCondition.isSheaf_iff F
 
 theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition'
     {A : Type (u+2)} [Category.{u+1} A] (G : A ⥤ Type (u+1))
