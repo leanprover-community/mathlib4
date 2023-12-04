@@ -413,7 +413,7 @@ theorem opow_mul_add_lt_opow_succ {b u v w : Ordinal} (hvb : v < b) (hw : w < b 
 theorem log_opow_mul_add {b u v w : Ordinal} (hb : 1 < b) (hv : v ≠ 0) (hvb : v < b)
     (hw : w < b ^ u) : log b (b ^ u * v + w) = u := by
   have hne' := (opow_mul_add_pos (zero_lt_one.trans hb).ne' u hv w).ne'
-  by_contra' hne
+  by_contra! hne
   cases' lt_or_gt_of_ne hne with h h
   · rw [← lt_opow_iff_log_lt hb hne'] at h
     exact h.not_le ((le_mul_left _ (Ordinal.pos_iff_ne_zero.2 hv)).trans (le_add_right _ _))

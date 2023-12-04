@@ -1056,7 +1056,7 @@ theorem map_apply {c d : Con M} (h : c ≤ d) (x) :
 
 variable (c)
 
-/-- The first isomorphism theorem for monoids. -/
+/-- The **first isomorphism theorem for monoids**. -/
 @[to_additive "The first isomorphism theorem for `AddMonoid`s."]
 noncomputable def quotientKerEquivRange (f : M →* P) : (ker f).Quotient ≃* MonoidHom.mrange f :=
   { Equiv.ofBijective
@@ -1105,7 +1105,7 @@ noncomputable def quotientKerEquivOfSurjective (f : M →* P) (hf : Surjective f
 #align con.quotient_ker_equiv_of_surjective Con.quotientKerEquivOfSurjective
 #align add_con.quotient_ker_equiv_of_surjective AddCon.quotientKerEquivOfSurjective
 
-/-- The second isomorphism theorem for monoids. -/
+/-- The **second isomorphism theorem for monoids**. -/
 @[to_additive "The second isomorphism theorem for `AddMonoid`s."]
 noncomputable def comapQuotientEquiv (f : N →* M) :
     (comap f f.map_mul c).Quotient ≃* MonoidHom.mrange (c.mk'.comp f) :=
@@ -1113,7 +1113,7 @@ noncomputable def comapQuotientEquiv (f : N →* M) :
 #align con.comap_quotient_equiv Con.comapQuotientEquiv
 #align add_con.comap_quotient_equiv AddCon.comapQuotientEquiv
 
-/-- The third isomorphism theorem for monoids. -/
+/-- The **third isomorphism theorem for monoids**. -/
 @[to_additive "The third isomorphism theorem for `AddMonoid`s."]
 def quotientQuotientEquivQuotient (c d : Con M) (h : c ≤ d) :
     (ker (c.map d h)).Quotient ≃* d.Quotient :=

@@ -174,7 +174,7 @@ theorem prime_three : Prime 3 := by decide
 
 theorem Prime.five_le_of_ne_two_of_ne_three {p : ℕ} (hp : p.Prime) (h_two : p ≠ 2)
     (h_three : p ≠ 3) : 5 ≤ p := by
-  by_contra' h
+  by_contra! h
   revert h_two h_three hp
   -- Porting note: was `decide!`
   match p with
@@ -430,7 +430,7 @@ theorem minFac_eq_one_iff {n : ℕ} : minFac n = 1 ↔ n = 1 := by
 theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
   constructor
   · intro h
-    rw [←h]
+    rw [← h]
     exact minFac_dvd n
   · intro h
     have ub := minFac_le_of_dvd (le_refl 2) h

@@ -579,7 +579,7 @@ def localTriv (i : ι) : Trivialization F Z.proj where
     simp only [exists_prop, mem_iUnion, mem_singleton_iff]
     exact ⟨i, s, s_open, rfl⟩
   continuous_invFun := by
-    refine continuousOn_open_of_generateFrom fun t ht ↦ ?_
+    refine continuousOn_isOpen_of_generateFrom fun t ht ↦ ?_
     simp only [exists_prop, mem_iUnion, mem_singleton_iff] at ht
     obtain ⟨j, s, s_open, ts⟩ : ∃ j s, IsOpen s ∧
       t = (localTrivAsLocalEquiv Z j).source ∩ localTrivAsLocalEquiv Z j ⁻¹' s := ht
