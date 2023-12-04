@@ -106,8 +106,8 @@ instance instCoalgebra : Coalgebra R (ι →₀ R) where
   lTensor_counit_comp_comul := by ext; simp
 
 @[simp]
-theorem comul_single (i : ι) (r : R) : comul (Finsupp.single i r) =
-    (Finsupp.single i r) ⊗ₜ[R] (Finsupp.single i 1) := by
+theorem comul_single (i : ι) (r : R) :
+    comul (Finsupp.single i r) = (Finsupp.single i r) ⊗ₜ[R] (Finsupp.single i 1) := by
   unfold comul instCoalgebra
   rw [total_single, TensorProduct.smul_tmul', smul_single_one i r]
 
