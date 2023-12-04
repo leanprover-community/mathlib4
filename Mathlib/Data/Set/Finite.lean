@@ -286,6 +286,7 @@ protected theorem toFinset_compl [DecidableEq α] [Fintype α] (hs : s.Finite) (
   simp
 #align set.finite.to_finset_compl Set.Finite.toFinset_compl
 
+attribute [local instance] Fintype.ofIsEmpty in
 -- porting note: was `@[simp]`, now `simp` can prove it
 protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ :=
   toFinite_toFinset _

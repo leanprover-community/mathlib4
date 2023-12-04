@@ -920,6 +920,7 @@ theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, (2^x) < #α) {r : α �
       simpa [singleton_eq_singleton_iff] using hab
 #align cardinal.mk_bounded_subset Cardinal.mk_bounded_subset
 
+attribute [local instance] Fintype.ofIsEmpty in
 theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, (2^x) < #α) :
     #{ s : Set α // #s < cof (#α).ord } = #α := by
   rcases eq_or_ne #α 0 with (ha | ha)

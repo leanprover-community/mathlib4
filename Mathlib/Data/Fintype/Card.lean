@@ -525,7 +525,7 @@ theorem card_eq_one_iff : card α = 1 ↔ ∃ x : α, ∀ y, y = x := by
           Subsingleton.elim _ _⟩⟩⟩
 #align fintype.card_eq_one_iff Fintype.card_eq_one_iff
 
-theorem card_eq_zero_iff : card α = 0 ↔ IsEmpty α := by
+@[simp] theorem card_eq_zero_iff : card α = 0 ↔ IsEmpty α := by
   rw [card, Finset.card_eq_zero, univ_eq_empty_iff]
 #align fintype.card_eq_zero_iff Fintype.card_eq_zero_iff
 
