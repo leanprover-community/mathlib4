@@ -162,7 +162,7 @@ theorem exists_lt_add_of_not_principal_add {a} (ha : ¬Principal (· + ·) a) :
 theorem principal_add_iff_add_lt_ne_self {a} :
     Principal (· + ·) a ↔ ∀ ⦃b c⦄, b < a → c < a → b + c ≠ a :=
   ⟨fun ha b c hb hc => (ha hb hc).ne, fun H => by
-    by_contra' ha
+    by_contra! ha
     rcases exists_lt_add_of_not_principal_add ha with ⟨b, c, hb, hc, rfl⟩
     exact (H hb hc).irrefl⟩
 #align ordinal.principal_add_iff_add_lt_ne_self Ordinal.principal_add_iff_add_lt_ne_self
@@ -202,7 +202,7 @@ theorem principal_add_omega_opow (o : Ordinal) : Principal (· + ·) (omega^o) :
 
 /-- The main characterization theorem for additive principal ordinals. -/
 theorem principal_add_iff_zero_or_omega_opow {o : Ordinal} :
-    Principal (· + ·) o ↔ o = 0 ∨ ∃ a, o = (omega^a) := by
+    Principal (· + ·) o ↔ o = 0 ∨ ∃ a : Ordinal, o = (omega^a) := by
   rcases eq_or_ne o 0 with (rfl | ho)
   · simp only [principal_zero, Or.inl]
   · rw [principal_add_iff_add_left_eq_self]
@@ -371,7 +371,7 @@ theorem principal_add_of_principal_mul_opow {o b : Ordinal} (hb : 1 < b)
 
 /-- The main characterization theorem for multiplicative principal ordinals. -/
 theorem principal_mul_iff_le_two_or_omega_opow_opow {o : Ordinal} :
-    Principal (· * ·) o ↔ o ≤ 2 ∨ ∃ a, o = (omega^omega^a) := by
+    Principal (· * ·) o ↔ o ≤ 2 ∨ ∃ a : Ordinal, o = (omega^omega^a) := by
   refine' ⟨fun ho => _, _⟩
   · cases' le_or_lt o 2 with ho₂ ho₂
     · exact Or.inl ho₂

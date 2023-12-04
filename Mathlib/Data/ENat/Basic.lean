@@ -187,13 +187,17 @@ theorem top_sub_one : (⊤ : ℕ∞) - 1 = ⊤ :=
 theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - (no_index (OfNat.ofNat a)) = ⊤ :=
   top_sub_coe a
 
+@[simp]
+theorem zero_lt_top : (0 : ℕ∞) < ⊤ :=
+  WithTop.zero_lt_top
+
 --Porting note: new theorem copied from `WithTop`
 theorem sub_top (a : ℕ∞) : a - ⊤ = 0 :=
   WithTop.sub_top
 
 @[simp]
 theorem coe_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
-  ENat.recTopCoe (by simp) (fun _ => by simp [toNat_coe]) n
+  ENat.recTopCoe (by decide) (fun _ => by simp [toNat_coe]) n
 #align enat.coe_to_nat_eq_self ENat.coe_toNat_eq_self
 
 alias ⟨_, coe_toNat⟩ := coe_toNat_eq_self
