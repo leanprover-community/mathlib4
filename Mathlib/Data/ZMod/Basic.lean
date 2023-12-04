@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Data.Fintype.Units
 import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.FinCases

@@ -71,7 +71,7 @@ private theorem derivativeFun_coe_mul_coe (f g : R[X]) : derivativeFun (f * g : 
   rw [← coe_mul, derivativeFun_coe, derivative_mul,
     add_comm, mul_comm _ g, ← coe_mul, ← coe_mul, Polynomial.coe_add]
 
-/-- Leibniz rule for formal power series.-/
+/-- **Leibniz rule for formal power series**.-/
 theorem derivativeFun_mul (f g : R⟦X⟧) :
     derivativeFun (f * g) = f • g.derivativeFun + g • f.derivativeFun := by
   ext n

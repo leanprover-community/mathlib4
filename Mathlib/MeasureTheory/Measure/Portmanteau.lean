@@ -102,6 +102,7 @@ of measures.
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 
+/-- **Portmanteau theorem** -/
 theorem le_measure_compl_liminf_of_limsup_measure_le {ι : Type*} {L : Filter ι} {μ : Measure Ω}
     {μs : ι → Measure Ω} [IsProbabilityMeasure μ] [∀ i, IsProbabilityMeasure (μs i)] {E : Set Ω}
     (E_mble : MeasurableSet E) (h : (L.limsup fun i => μs i E) ≤ μ E) :
@@ -274,98 +275,37 @@ Combining with a earlier proven implications, we get that (T) implies also both
 -/
 
 
-variable {Ω : Type*} [MeasurableSpace Ω]
-
-/-- If bounded continuous functions tend to the indicator of a measurable set and are
-uniformly bounded, then their integrals against a finite measure tend to the measure of the set.
-This formulation assumes:
- * the functions tend to a limit along a countably generated filter;
- * the limit is in the almost everywhere sense;
- * boundedness holds almost everywhere.
--/
-theorem measure_of_cont_bdd_of_tendsto_filter_indicator {ι : Type*} {L : Filter ι}
-    [L.IsCountablyGenerated] [TopologicalSpace Ω] [OpensMeasurableSpace Ω] (μ : Measure Ω)
-    [IsFiniteMeasure μ] {c : ℝ≥0} {E : Set Ω} (E_mble : MeasurableSet E) (fs : ι → Ω →ᵇ ℝ≥0)
-    (fs_bdd : ∀ᶠ i in L, ∀ᵐ ω : Ω ∂μ, fs i ω ≤ c)
-    (fs_lim : ∀ᵐ ω : Ω ∂μ, Tendsto (fun i : ι => ((⇑) : (Ω →ᵇ ℝ≥0) → Ω → ℝ≥0) (fs i) ω) L
-      (𝓝 (indicator E (fun _ => (1 : ℝ≥0)) ω))) :
-    Tendsto (fun n => lintegral μ fun ω => fs n ω) L (𝓝 (μ E)) := by
-  convert FiniteMeasure.tendsto_lintegral_nn_filter_of_le_const μ fs_bdd fs_lim
-  have aux : ∀ ω, indicator E (fun _ => (1 : ℝ≥0∞)) ω = ↑(indicator E (fun _ => (1 : ℝ≥0)) ω) :=
-    fun ω => by simp only [ENNReal.coe_indicator, ENNReal.coe_one]
-  simp_rw [← aux, lintegral_indicator _ E_mble]
-  simp only [lintegral_one, Measure.restrict_apply, MeasurableSet.univ, univ_inter]
-#align measure_theory.measure_of_cont_bdd_of_tendsto_filter_indicator MeasureTheory.measure_of_cont_bdd_of_tendsto_filter_indicator
-
-/-- If a sequence of bounded continuous functions tends to the indicator of a measurable set and
-the functions are uniformly bounded, then their integrals against a finite measure tend to the
-measure of the set.
-
-A similar result with more general assumptions is
-`MeasureTheory.measure_of_cont_bdd_of_tendsto_filter_indicator`.
--/
-theorem measure_of_cont_bdd_of_tendsto_indicator [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
-    (μ : Measure Ω) [IsFiniteMeasure μ] {c : ℝ≥0} {E : Set Ω} (E_mble : MeasurableSet E)
-    (fs : ℕ → Ω →ᵇ ℝ≥0) (fs_bdd : ∀ n ω, fs n ω ≤ c)
-    (fs_lim : Tendsto (fun n : ℕ => ((⇑) : (Ω →ᵇ ℝ≥0) → Ω → ℝ≥0) (fs n)) atTop
-      (𝓝 (indicator E fun _ => (1 : ℝ≥0)))) :
-    Tendsto (fun n => lintegral μ fun ω => fs n ω) atTop (𝓝 (μ E)) := by
-  have fs_lim' :
-    ∀ ω, Tendsto (fun n : ℕ => (fs n ω : ℝ≥0)) atTop (𝓝 (indicator E (fun _ => (1 : ℝ≥0)) ω)) := by
-    rw [tendsto_pi_nhds] at fs_lim
-    exact fun ω => fs_lim ω
-  apply measure_of_cont_bdd_of_tendsto_filter_indicator μ E_mble fs
-    (eventually_of_forall fun n => eventually_of_forall (fs_bdd n)) (eventually_of_forall fs_lim')
-#align measure_theory.measure_of_cont_bdd_of_tendsto_indicator MeasureTheory.measure_of_cont_bdd_of_tendsto_indicator
-
-/-- The integrals of thickened indicators of a closed set against a finite measure tend to the
-measure of the closed set if the thickening radii tend to zero.
--/
-theorem tendsto_lintegral_thickenedIndicator_of_isClosed {Ω : Type*} [MeasurableSpace Ω]
-    [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] (μ : Measure Ω) [IsFiniteMeasure μ] {F : Set Ω}
-    (F_closed : IsClosed F) {δs : ℕ → ℝ} (δs_pos : ∀ n, 0 < δs n)
-    (δs_lim : Tendsto δs atTop (𝓝 0)) :
-    Tendsto (fun n => lintegral μ fun ω => (thickenedIndicator (δs_pos n) F ω : ℝ≥0∞)) atTop
-      (𝓝 (μ F)) := by
-  apply measure_of_cont_bdd_of_tendsto_indicator μ F_closed.measurableSet
-    (fun n => thickenedIndicator (δs_pos n) F) fun n ω => thickenedIndicator_le_one (δs_pos n) F ω
-  have key := thickenedIndicator_tendsto_indicator_closure δs_pos δs_lim F
-  rwa [F_closed.closure_eq] at key
-#align measure_theory.tendsto_lintegral_thickened_indicator_of_is_closed MeasureTheory.tendsto_lintegral_thickenedIndicator_of_isClosed
-
 /-- One implication of the portmanteau theorem:
 Weak convergence of finite measures implies that the limsup of the measures of any closed set is
 at most the measure of the closed set under the limit measure.
 -/
 theorem FiniteMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type*} {L : Filter ι}
-    [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {μ : FiniteMeasure Ω}
+    [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterApproxClosed Ω]
+    [OpensMeasurableSpace Ω] {μ : FiniteMeasure Ω}
     {μs : ι → FiniteMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ)) {F : Set Ω} (F_closed : IsClosed F) :
     (L.limsup fun i => (μs i : Measure Ω) F) ≤ (μ : Measure Ω) F := by
   rcases L.eq_or_neBot with rfl | hne
   · simp only [limsup_bot, bot_le]
   apply ENNReal.le_of_forall_pos_le_add
   intro ε ε_pos _
-  let δs := fun n : ℕ => (1 : ℝ) / (n + 1)
-  have δs_pos : ∀ n, 0 < δs n := fun n => Nat.one_div_pos_of_nat
-  have δs_lim : Tendsto δs atTop (𝓝 0) := tendsto_one_div_add_atTop_nhds_0_nat
-  have key₁ :=
-    tendsto_lintegral_thickenedIndicator_of_isClosed (μ : Measure Ω) F_closed δs_pos δs_lim
+  let fs := F_closed.apprSeq
+  have key₁ : Tendsto (fun n ↦ ∫⁻  ω, (fs n ω : ℝ≥0∞) ∂μ) atTop (𝓝 ((μ : Measure Ω) F)) :=
+    HasOuterApproxClosed.tendsto_lintegral_apprSeq F_closed (μ : Measure Ω)
   have room₁ : (μ : Measure Ω) F < (μ : Measure Ω) F + ε / 2 := by
     apply
       ENNReal.lt_add_right (measure_lt_top (μ : Measure Ω) F).ne
         (ENNReal.div_pos_iff.mpr ⟨(ENNReal.coe_pos.mpr ε_pos).ne.symm, ENNReal.two_ne_top⟩).ne.symm
   rcases eventually_atTop.mp (eventually_lt_of_tendsto_lt room₁ key₁) with ⟨M, hM⟩
-  have key₂ :=
-    FiniteMeasure.tendsto_iff_forall_lintegral_tendsto.mp μs_lim (thickenedIndicator (δs_pos M) F)
+  have key₂ := FiniteMeasure.tendsto_iff_forall_lintegral_tendsto.mp μs_lim (fs M)
   have room₂ :
-    (lintegral (μ : Measure Ω) fun a => thickenedIndicator (δs_pos M) F a) <
-      (lintegral (μ : Measure Ω) fun a => thickenedIndicator (δs_pos M) F a) + ε / 2 := by
+    (lintegral (μ : Measure Ω) fun a => fs M a) <
+      (lintegral (μ : Measure Ω) fun a => fs M a) + ε / 2 := by
     apply ENNReal.lt_add_right (ne_of_lt ?_)
         (ENNReal.div_pos_iff.mpr ⟨(ENNReal.coe_pos.mpr ε_pos).ne.symm, ENNReal.two_ne_top⟩).ne.symm
     apply BoundedContinuousFunction.lintegral_lt_top_of_nnreal
   have ev_near := Eventually.mono (eventually_lt_of_tendsto_lt room₂ key₂) fun n => le_of_lt
-  have ev_near' := Eventually.mono ev_near fun n => le_trans
-    (measure_le_lintegral_thickenedIndicator (μs n : Measure Ω) F_closed.measurableSet (δs_pos M))
+  have ev_near' := Eventually.mono ev_near
+    (fun n ↦ le_trans (HasOuterApproxClosed.measure_le_lintegral F_closed (μs n) M))
   apply (Filter.limsup_le_limsup ev_near').trans
   rw [limsup_const]
   apply le_trans (add_le_add (hM M rfl.le).le (le_refl (ε / 2 : ℝ≥0∞)))
@@ -377,9 +317,10 @@ Weak convergence of probability measures implies that the limsup of the measures
 set is at most the measure of the closed set under the limit probability measure.
 -/
 theorem ProbabilityMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type*} {L : Filter ι}
-    [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {μ : ProbabilityMeasure Ω}
-    {μs : ι → ProbabilityMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ)) {F : Set Ω}
-    (F_closed : IsClosed F) : (L.limsup fun i => (μs i : Measure Ω) F) ≤ (μ : Measure Ω) F := by
+    [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] [HasOuterApproxClosed Ω]
+    {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ))
+    {F : Set Ω} (F_closed : IsClosed F) :
+    (L.limsup fun i => (μs i : Measure Ω) F) ≤ (μ : Measure Ω) F := by
   apply FiniteMeasure.limsup_measure_closed_le_of_tendsto
     ((ProbabilityMeasure.tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds L).mp μs_lim) F_closed
 #align measure_theory.probability_measure.limsup_measure_closed_le_of_tendsto MeasureTheory.ProbabilityMeasure.limsup_measure_closed_le_of_tendsto
@@ -389,8 +330,9 @@ Weak convergence of probability measures implies that the liminf of the measures
 is at least the measure of the open set under the limit probability measure.
 -/
 theorem ProbabilityMeasure.le_liminf_measure_open_of_tendsto {Ω ι : Type*} {L : Filter ι}
-    [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {μ : ProbabilityMeasure Ω}
-    {μs : ι → ProbabilityMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ)) {G : Set Ω} (G_open : IsOpen G) :
+    [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] [HasOuterApproxClosed Ω]
+    {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ))
+    {G : Set Ω} (G_open : IsOpen G) :
     (μ : Measure Ω) G ≤ L.liminf fun i => (μs i : Measure Ω) G :=
   haveI h_closeds : ∀ F, IsClosed F → (L.limsup fun i ↦ (μs i : Measure Ω) F) ≤ (μ : Measure Ω) F :=
     fun _ F_closed => ProbabilityMeasure.limsup_measure_closed_le_of_tendsto μs_lim F_closed
@@ -400,8 +342,8 @@ theorem ProbabilityMeasure.le_liminf_measure_open_of_tendsto {Ω ι : Type*} {L 
 
 theorem ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto' {Ω ι : Type*}
     {L : Filter ι} [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω]
-    {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ))
-    {E : Set Ω} (E_nullbdry : (μ : Measure Ω) (frontier E) = 0) :
+    [HasOuterApproxClosed Ω] {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω}
+    (μs_lim : Tendsto μs L (𝓝 μ)) {E : Set Ω} (E_nullbdry : (μ : Measure Ω) (frontier E) = 0) :
     Tendsto (fun i => (μs i : Measure Ω) E) L (𝓝 ((μ : Measure Ω) E)) :=
   haveI h_opens : ∀ G, IsOpen G → (μ : Measure Ω) G ≤ L.liminf fun i => (μs i : Measure Ω) G :=
     fun _ G_open => ProbabilityMeasure.le_liminf_measure_open_of_tendsto μs_lim G_open
@@ -417,9 +359,9 @@ A version with coercions to ordinary `ℝ≥0∞`-valued measures is
 `MeasureTheory.ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto'`.
 -/
 theorem ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto {Ω ι : Type*} {L : Filter ι}
-    [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {μ : ProbabilityMeasure Ω}
-    {μs : ι → ProbabilityMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ)) {E : Set Ω}
-    (E_nullbdry : μ (frontier E) = 0) : Tendsto (fun i => μs i E) L (𝓝 (μ E)) := by
+    [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] [HasOuterApproxClosed Ω]
+    {μ : ProbabilityMeasure Ω} {μs : ι → ProbabilityMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ))
+    {E : Set Ω} (E_nullbdry : μ (frontier E) = 0) : Tendsto (fun i => μs i E) L (𝓝 (μ E)) := by
   have E_nullbdry' : (μ : Measure Ω) (frontier E) = 0 := by
     rw [← ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, E_nullbdry, ENNReal.coe_zero]
   have key := ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto' μs_lim E_nullbdry'

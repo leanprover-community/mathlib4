@@ -25,7 +25,6 @@ Main definitions:
 
 ## TODO
 
-- even, odd
 - add
   `lemma unitsMap_surjective {n m : ℕ} (h : n ∣ m) (hm : m ≠ 0) : Function.Surjective (unitsMap h)`
   and then
@@ -224,5 +223,36 @@ lemma primitiveCharacter_one (hn : n ≠ 0) :
   rw [eq_one_iff_conductor_eq_one <| (@conductor_one R _ _ hn) ▸ Nat.one_ne_zero,
       (isPrimitive_def _).1 (1 : DirichletCharacter R n).primitiveCharacter_isPrimitive,
       conductor_one hn]
+
+variable {S : Type} [CommRing S] {m : ℕ} (ψ : DirichletCharacter S m)
+
+/-- A Dirichlet character is odd if its value at -1 is -1. -/
+def Odd : Prop := ψ (-1) = -1
+
+/-- A Dirichlet character is even if its value at -1 is 1. -/
+def Even : Prop := ψ (-1) = 1
+
+lemma even_or_odd [NoZeroDivisors S] : ψ.Even ∨ ψ.Odd := by
+  suffices : ψ (-1) ^ 2 = 1
+  · convert sq_eq_one_iff.mp this
+  · rw [← map_pow _, neg_one_sq, map_one]
+
+lemma Odd.toUnitHom_eval_neg_one (hψ : ψ.Odd) : ψ.toUnitHom (-1) = -1 := by
+  rw [← Units.eq_iff, MulChar.coe_toUnitHom]
+  exact hψ
+
+lemma Even.toUnitHom_eval_neg_one (hψ : ψ.Even) : ψ.toUnitHom (-1) = 1 := by
+  rw [← Units.eq_iff, MulChar.coe_toUnitHom]
+  exact hψ
+
+lemma Odd.eval_neg (x : ZMod m) (hψ : ψ.Odd) : ψ (- x) = - ψ x := by
+  rw [Odd] at hψ
+  rw [← neg_one_mul, map_mul]
+  simp [hψ]
+
+lemma Even.eval_neg (x : ZMod m) (hψ : ψ.Even) : ψ (- x) = ψ x := by
+  rw [Even] at hψ
+  rw [← neg_one_mul, map_mul]
+  simp [hψ]
 
 end DirichletCharacter

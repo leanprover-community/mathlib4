@@ -598,9 +598,9 @@ theorem addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero (hf : Diffe
     _ = 0 := by simp only [tsum_zero, mul_zero]
 #align measure_theory.add_haar_image_eq_zero_of_differentiable_on_of_add_haar_eq_zero MeasureTheory.addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero
 
-/-- A version of Sard lemma in fixed dimension: given a differentiable function from `E` to `E` and
-a set where the differential is not invertible, then the image of this set has zero measure.
-Here, we give an auxiliary statement towards this result. -/
+/-- A version of **Sard's lemma** in fixed dimension: given a differentiable function from `E`
+to `E` and a set where the differential is not invertible, then the image of this set has
+zero measure. Here, we give an auxiliary statement towards this result. -/
 theorem addHaar_image_eq_zero_of_det_fderivWithin_eq_zero_aux
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (R : ℝ) (hs : s ⊆ closedBall 0 R) (ε : ℝ≥0)
     (εpos : 0 < ε) (h'f' : ∀ x ∈ s, (f' x).det = 0) : μ (f '' s) ≤ ε * μ (closedBall 0 R) := by
