@@ -406,7 +406,7 @@ theorem revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDu
 @[simp] lemma rev_zero (n : ℕ) : (0 : Fin (n + 1)).rev = (last n) := rfl
 
 @[simp] lemma rev_last (n : ℕ) : Fin.rev (Fin.last n) = 0 := by
-  rw [ext_iff, val_rev, val_last, tsub_self]
+  rw [ext_iff, val_rev, val_last, val_zero, tsub_self]
 
 #align fin.last Fin.last
 #align fin.coe_last Fin.val_last
