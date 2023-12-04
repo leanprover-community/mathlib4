@@ -205,7 +205,9 @@ protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) (h_comm : ∀ i j, i ∈ s → j ∈ s → Commute (f i) (f j)) :
     IsNilpotent (∑ i in s, f i) := by
   classical
-  induction' s using Finset.induction with j s hj ih; simp
+  induction s using Finset.induction with
+  | empty => simp
+  | @insert j s hj ih => ?_
   rw [Finset.sum_insert hj]
   apply Commute.isNilpotent_add
   · exact Commute.sum_right _ _ _ (fun i hi ↦ h_comm _ _ (by simp) (by simp [hi]))
