@@ -461,6 +461,10 @@ theorem sInf_toSetoid (S : Set (RingCon R)) : (sInf S).toSetoid = sInf ((·.toSe
 theorem coe_sInf (S : Set (RingCon R)) : ⇑(sInf S) = sInf ((⇑) '' S) := by
   ext; simp only [sInf_image, iInf_apply, iInf_Prop_eq]; rfl
 
+@[simp, norm_cast]
+theorem coe_iInf {ι : Sort*} (f : ι → RingCon R) : ⇑(iInf f) = ⨅ i, ⇑(f i) := by
+  rw [iInf, coe_sInf, ←Set.range_comp, sInf_range, Function.comp]
+
 instance : PartialOrder (RingCon R) where
   le_refl _c _ _ := id
   le_trans _c1 _c2 _c3 h1 h2 _x _y h := h2 <| h1 h
