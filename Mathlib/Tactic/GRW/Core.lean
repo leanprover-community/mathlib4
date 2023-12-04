@@ -169,5 +169,6 @@ def _root_.Lean.MVarId.grw (goal : MVarId) (expr rule : Expr) (rev isTarget : Bo
 
     if let some (proof, subgoals) := lemResult then
       trace[GRW] "Got proof {proof}"
-      return (newExpr, proof, subgoals)
+      let ruleSubgoals ← (ruleArgs.map Expr.mvarId!).filterM fun x => not <$> x.isAssigned
+      return (newExpr, proof, ruleSubgoals ++ subgoals)
   throwError "No grw lemmas worked"
