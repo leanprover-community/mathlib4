@@ -32,7 +32,7 @@ private def finFunctionEquivAux : BitVec w ≃ (Fin w → Bool) := calc
   _         ≃ (Fin w -> Fin 2)  := finFunctionFinEquiv.symm
   _         ≃ (Fin w -> Bool)   := Equiv.arrowCongr (.refl _) finTwoEquiv
 
-theorem coe_finFunctionEquivAux_eq_getLsb' :
+private theorem coe_finFunctionEquivAux_eq_getLsb' :
     (finFunctionEquivAux : BitVec w → Fin w → Bool) = getLsb' := by
   funext x i
   simp only [finFunctionEquivAux, finEquiv, finFunctionFinEquiv, ← Nat.shiftRight_eq_div_pow,
@@ -51,7 +51,7 @@ private theorem Bool.val_rec_eq_toNat (b : Bool) :
 theorem Bool.toNat_eq_bit_zero (b : Bool) : b.toNat = Nat.bit b 0 := by
   cases b <;> rfl
 
-theorem coe_symm_finFunctionEquivAux_eq_ofLEFn :
+private theorem coe_symm_finFunctionEquivAux_eq_ofLEFn :
     (finFunctionEquivAux.symm : (Fin w → Bool) → BitVec w) = ofLEFn := by
   funext f
   induction' f using Fin.consInduction with w x₀ f ih
