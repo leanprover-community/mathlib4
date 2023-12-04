@@ -222,7 +222,7 @@ protected def Map (r : α → β → Prop) (f : α → γ) (g : β → δ) : γ 
 @[simp] lemma map_map (r : α → β → Prop) (f₁ : α → γ) (g₁ : β → δ) (f₂ : γ → ε) (g₂ : δ → ζ) :
     Relation.Map (Relation.Map r f₁ g₁) f₂ g₂ = Relation.Map r (f₂ ∘ f₁) (g₂ ∘ g₁) := by
   ext a b
-  simp_rw [Relation.Map, Function.comp_apply, ←exists_and_right, @exists_comm γ, @exists_comm δ]
+  simp_rw [Relation.Map, Function.comp_apply, ← exists_and_right, @exists_comm γ, @exists_comm δ]
   refine' exists₂_congr fun a b ↦ ⟨_, fun h ↦ ⟨_, _, ⟨⟨h.1, rfl, rfl⟩, h.2⟩⟩⟩
   rintro ⟨_, _, ⟨hab, rfl, rfl⟩, h⟩
   exact ⟨hab, h⟩
