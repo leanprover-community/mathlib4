@@ -17,7 +17,7 @@ Our argument in `exists_clopen_box` follows the one given in [buzyakovaClopenBox
 
 We deduce that in a product of compact spaces, a clopen subset is a finite union of clopen boxes,
 and use that to prove that the property of having finitely many clopens is preserved by taking
-cartesian products of compact spaces (this is relevand to the theory of light profinite sets).
+cartesian products of compact spaces (this is relevant to the theory of light profinite sets).
 
 ## References
 
