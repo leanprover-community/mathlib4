@@ -1895,6 +1895,33 @@ theorem Homeomorph.contDiff_symm_deriv [CompleteSpace 𝕜] (f : 𝕜 ≃ₜ �
     f.toLocalHomeomorph.contDiffAt_symm_deriv (h₀ _) (mem_univ x) (hf' _) hf.contDiffAt
 #align homeomorph.cont_diff_symm_deriv Homeomorph.contDiff_symm_deriv
 
+namespace LocalHomeomorph
+
+variable (𝕜)
+
+/-- Restrict a local homeomorphism to the subsets of the source and target
+that consist of points `x ∈ f.source`, `y = f x ∈ f.target`
+such that `f` is `C^n` at `x` and `f.symm` is `C^n` at `y`.
+
+Note that `n` is a natural number, not `∞`,
+because the set of points of `C^∞`-smoothness of `f` is not guaranteed to be open. -/
+@[simps! apply symm_apply source target]
+def restrContDiff (f : LocalHomeomorph E F) (n : ℕ) : LocalHomeomorph E F :=
+  haveI H : f.IsImage {x | ContDiffAt 𝕜 n f x ∧ ContDiffAt 𝕜 n f.symm (f x)}
+      {y | ContDiffAt 𝕜 n f.symm y ∧ ContDiffAt 𝕜 n f (f.symm y)} := fun x hx ↦ by
+    simp [hx, and_comm]
+  H.restr <| isOpen_iff_mem_nhds.2 <| fun x ⟨hxs, hxf, hxf'⟩ ↦
+    inter_mem (f.open_source.mem_nhds hxs) <| hxf.eventually.and <|
+    f.continuousAt hxs hxf'.eventually
+
+lemma contDiffOn_restrContDiff_source (f : LocalHomeomorph E F) (n : ℕ) :
+    ContDiffOn 𝕜 n f (f.restrContDiff 𝕜 n).source := fun _x hx ↦ hx.2.1.contDiffWithinAt
+
+lemma contDiffOn_restrContDiff_target (f : LocalHomeomorph E F) (n : ℕ) :
+    ContDiffOn 𝕜 n f.symm (f.restrContDiff 𝕜 n).target := fun _x hx ↦ hx.2.1.contDiffWithinAt
+
+end LocalHomeomorph
+
 end FunctionInverse
 
 section deriv
