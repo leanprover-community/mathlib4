@@ -180,8 +180,8 @@ instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
 -- TODO : was map_smulₛₗ
   map_smulₛₗ := (·.map_smul') --map_smul' Porting note: TODO why did I need to change this?
 
--- TODO : Necessary ?
-instance {R S M N : Type*} [Semiring R] [Semiring S]
+-- TODO : Necessary ? Try to remove it!
+example {R S M N : Type*} [Semiring R] [Semiring S]
     {φ : R →+* S} {ψ : S →+* R}
     [RingHomInvPair ψ φ] [RingHomInvPair φ ψ]
     [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S N] :
