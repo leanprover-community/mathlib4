@@ -84,9 +84,8 @@ theorem Basis.parallelepiped_eq_map  {ι E : Type*} [Fintype ι] [NormedAddCommG
       b.equivFunL.symm.continuous b.equivFunL.symm.isOpenMap := by
   classical
   rw [← Basis.parallelepiped_basisFun, ← Basis.parallelepiped_map]
-  congr
-  ext; simp only [map_apply, Pi.basisFun_apply, equivFun_symm_apply, LinearMap.stdBasis_apply',
-    Finset.sum_univ_ite]
+  congr with x
+  simp
 
 open MeasureTheory MeasureTheory.Measure
 
