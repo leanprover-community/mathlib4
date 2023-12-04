@@ -1717,7 +1717,7 @@ lemma isZero_overAbutment_obj (n : ℤ) (i : ι) (α : i ⟶ B.γ₁ n) :
   let φ : Arrow.mkOfLE ⊥ i bot_le ⟶ Arrow.mk (𝟙 i) :=
     { left := homOfLE bot_le
       right := 𝟙 _
-      w := by simp }
+      w := by simp; rfl }
   have := X.mono_H_map₁ B n φ (by dsimp ; infer_instance) α
   rw [IsZero.iff_id_eq_zero, ← cancel_mono ((X.H n).map φ)]
   exact IsZero.eq_of_tgt (X.isZero_H_of_isIso n _ (by dsimp ; infer_instance)) _ _

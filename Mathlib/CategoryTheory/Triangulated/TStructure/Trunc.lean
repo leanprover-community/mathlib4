@@ -1088,7 +1088,7 @@ lemma isIso_truncGTmap_iff {Y Z : C} (g : Y ⟶ Z) (n : ℤ) :
   t.isIso_truncGEmap_iff g n (n+1) rfl
 
 instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncLE a).obj X) b := by
-  by_cases a ≤ b
+  by_cases h : a ≤ b
   · exact t.isLE_of_LE _ _ _ h
   · simp only [not_le] at h
     have : t.IsLE X a := t.isLE_of_LE X b a (by linarith)
@@ -1098,7 +1098,7 @@ instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncLT a).obj X) b :=
   t.isLE_of_iso ((t.truncLEIsoTruncLT (a-1) a (by linarith)).app X) b
 
 instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncGE b).obj X) a := by
-  by_cases a ≤ b
+  by_cases h : a ≤ b
   · exact t.isGE_of_GE _ _ _ h
   · simp only [not_le] at h
     have : t.IsGE X b := t.isGE_of_GE X b a (by linarith)
@@ -1479,7 +1479,7 @@ lemma triangleLTLTGELT_distinguished (a b : ℤ) (h : a ≤ b) (X : C) :
     simp only [Functor.map_inv, assoc, IsIso.hom_inv_id, comp_id, id_comp]
 
 instance (a b : ℤ) (X : C) : IsIso ((t.natTransTruncGELTTruncLTGE a b).app X) := by
-  by_cases a ≤ b
+  by_cases h : a ≤ b
   · let u₁₂ := (t.natTransTruncLTOfLE a b h).app X
     let u₂₃ : (t.truncLT b).obj X ⟶ X := (t.truncLTι b).app X
     let u₁₃ : _ ⟶ X := (t.truncLTι a).app X

@@ -65,22 +65,6 @@ namespace ShortComplex
 
 variable {C : Type*} [Category C]
 
-lemma exact_and_mono_f_iff_of_iso [HasZeroMorphisms C] {S T : ShortComplex C} (e : S ≅ T) :
-    (S.Exact ∧ Mono S.f) ↔ (T.Exact ∧ Mono T.f) := by
-  have : Mono S.f ↔ Mono T.f :=
-    MorphismProperty.RespectsIso.arrow_mk_iso_iff
-      (MorphismProperty.RespectsIso.monomorphisms C)
-      (Arrow.isoMk (ShortComplex.π₁.mapIso e) (ShortComplex.π₂.mapIso e) e.hom.comm₁₂)
-  rw [exact_iff_of_iso e, this]
-
-lemma exact_and_epi_g_iff_of_iso [HasZeroMorphisms C] {S T : ShortComplex C} (e : S ≅ T) :
-    (S.Exact ∧ Epi S.g) ↔ (T.Exact ∧ Epi T.g) := by
-  have : Epi S.g ↔ Epi T.g :=
-    MorphismProperty.RespectsIso.arrow_mk_iso_iff
-      (MorphismProperty.RespectsIso.epimorphisms C)
-      (Arrow.isoMk (ShortComplex.π₂.mapIso e) (ShortComplex.π₃.mapIso e) e.hom.comm₂₃)
-  rw [exact_iff_of_iso e, this]
-
 variable [Preadditive C]
 
 lemma exact_and_epi_g_iff (S : ShortComplex C) [Balanced C] [S.HasHomology] :
@@ -943,7 +927,7 @@ noncomputable def ιHeartHomology_zero : t.ιHeart ⋙ t.homology 0 ≅ 𝟭 _ :
 
 instance {A B : t.Heart} (f : A ⟶ B) [Mono f] (n : ℤ) :
     Mono ((t.homology n).map (t.ιHeart.map f)) := by
-  by_cases n = 0
+  by_cases h : n = 0
   · subst h
     exact ((MorphismProperty.RespectsIso.monomorphisms _).arrow_mk_iso_iff
       (((Functor.mapArrowFunctor _ _).mapIso t.ιHeartHomology_zero).app (Arrow.mk f))).2

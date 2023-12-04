@@ -212,12 +212,16 @@ lemma homology_sequence_exact₂ :
   (ShortComplex.mk _ _ (F.homology_sequence_comp T hT n₀)).Exact := by
   refine' ShortComplex.exact_of_iso _ (F.map_distinguished_exact _ (Triangle.shift_distinguished _ hT n₀))
   refine' ShortComplex.isoMk ((F.isoShift n₀).app _)
-    (((-1 : Units ℤ)^n₀) • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _) _ _
+    (n₀.negOnePow • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _) _ _
   · dsimp
-    simp only [comp_zsmul, zsmul_comp, Functor.map_zsmul, smul_smul,
-      ← Int.negOnePow_def, Int.negOnePow_mul_self, one_smul, isoShift_hom_naturality]
+    simp only [map_units_smul, Linear.comp_smul, Linear.units_smul_comp, isoShift_hom_naturality,
+      comp_obj]
+    erw [smul_smul]
+    simp only [Int.units_coe_mul_self, one_smul]
   · dsimp
-    simp only [zsmul_comp, map_zsmul, isoShift_hom_naturality, ← Int.negOnePow_def]
+    simp only [Linear.smul_comp, map_units_smul, Linear.units_smul_comp, isoShift_hom_naturality,
+      comp_obj]
+    rfl
 
 lemma homology_sequence_exact₃ :
     (ShortComplex.mk _ _ (F.comp_homology_sequence_δ T hT _ _ h)).Exact := by

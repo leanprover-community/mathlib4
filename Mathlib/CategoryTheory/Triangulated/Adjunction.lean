@@ -60,9 +60,9 @@ lemma isTriangulated_rightAdjoint : F.IsTriangulated where
       obtain ⟨α, hα⟩ := T.coyoneda_exact₂ hT ((adj.homEquiv _ _).symm ψ)
         ((adj.homEquiv _ _).injective (by simpa [← h₁'] using hφ))
       have eq := congr_arg (adj.homEquiv _ _ ).toFun hα
-      simp only [homEquiv_counit, Functor.id_obj, Equiv.toFun_as_coe_apply,
-        homEquiv_unit, Functor.comp_obj,
-        Functor.map_comp, unit_naturality_assoc, right_triangle_components, comp_id] at eq
+      simp only [homEquiv_counit, Functor.id_obj, Equiv.toFun_as_coe, homEquiv_unit,
+        Functor.comp_obj, Functor.map_comp, unit_naturality_assoc, right_triangle_components,
+        comp_id] at eq
       rw [eq, assoc, assoc]
       erw [comp_distTriang_mor_zero₁₂ _ mem, comp_zero, comp_zero]
     have := isIso_of_yoneda_map_bijective (adj.homEquiv _ _ h) (fun Y => by
@@ -94,7 +94,7 @@ lemma isTriangulated_rightAdjoint : F.IsTriangulated where
         refine' ⟨adj.homEquiv _ _ β ≫ f, _⟩
         simpa [h₁'] using congr_arg (adj.homEquiv _ _).toFun hβ.symm)
     refine' isomorphic_distinguished _ mem _ (Iso.symm _)
-    refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (asIso (adj.homEquiv _ _ h)) _ _ _
+    refine' Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (asIso (adj.homEquiv Z T.obj₃ h)) _ _ _
     · dsimp
       simp
     · apply (adj.homEquiv _ _).symm.injective

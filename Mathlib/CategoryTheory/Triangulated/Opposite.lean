@@ -617,11 +617,11 @@ scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ := by
             simp [← hm₃]
           · dsimp
             simp only [Int.negOnePow_neg, Int.negOnePow_one, Functor.map_comp, assoc,
-              neg_smul, one_smul, neg_comp, comp_neg, Functor.map_neg, neg_inj]
+              one_smul, neg_comp, comp_neg, Functor.map_neg, neg_inj, Units.neg_smul]
             erw [(shiftFunctorComm Cᵒᵖ 1 (-1)).hom.naturality_assoc v₂₃.op]
             dsimp
             rw [shiftFunctor_op_map _ _ (neg_add_self 1) v₂₃.op]
-            rw [opShiftFunctorEquivalence_symm_homEquiv_apply]
+            erw [opShiftFunctorEquivalence_symm_homEquiv_apply]
             simp
             nth_rewrite 1 [← Functor.map_comp]
             rw [Iso.inv_hom_id_app]

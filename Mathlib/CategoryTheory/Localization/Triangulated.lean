@@ -80,7 +80,7 @@ variable [Preadditive D] [HasZeroObject D]
 lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
     ∃ (Z : D) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
       Triangle.mk f g h ∈ L.essImageDistTriang := by
-  have := MorphismProperty.LeftFraction.essSurj_mapArrow L W
+  have := Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions L W
   obtain ⟨φ, ⟨e⟩⟩ : ∃ (φ : Arrow C), Nonempty (L.mapArrow.obj φ ≅ Arrow.mk f) :=
     ⟨_, ⟨Functor.objObjPreimageIso _ _⟩⟩
   obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle φ.hom
@@ -127,13 +127,13 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
         h₃, comm₃', Iso.inv_hom_id_triangle_hom₃_assoc]
   clear a b fac hT₁ hT₂ T₁ T₂
   intro T₁ T₂ hT₁ hT₂ a b fac
-  obtain ⟨α, hα⟩ := MorphismProperty.LeftFraction.fac L W a
+  obtain ⟨α, hα⟩ := Localization.exists_leftFraction L W a
   obtain ⟨β, hβ⟩ := (MorphismProperty.RightFraction.mk α.s α.hs T₂.mor₁).exists_leftFraction
-  obtain ⟨γ, hγ⟩ := MorphismProperty.LeftFraction.fac L W (b ≫ L.map β.s)
+  obtain ⟨γ, hγ⟩ := Localization.exists_leftFraction L W (b ≫ L.map β.s)
   have := Localization.inverts L W β.s β.hs
   have := Localization.inverts L W γ.s γ.hs
   dsimp at hβ
-  obtain ⟨Z₂, σ, hσ, fac⟩ := (MorphismProperty.LeftFraction.map_eq_iff' L W
+  obtain ⟨Z₂, σ, hσ, fac⟩ := (MorphismProperty.map_eq_iff_postcomp L W
     (α.f ≫ β.f ≫ γ.s) (T₁.mor₁ ≫ γ.f)).1 (by
       rw [← cancel_mono (L.map β.s), assoc, assoc, hγ, ← cancel_mono (L.map γ.s),
         assoc, assoc, assoc, hα, MorphismProperty.LeftFraction.map_comp_map_s,
@@ -176,7 +176,7 @@ lemma isTriangulated_functor :
     letI : Pretriangulated D := pretriangulated L W ; ⟨fun T hT => ⟨T, Iso.refl _, hT⟩⟩
 
 lemma essSurj_mapArrow : EssSurj L.mapArrow :=
-  MorphismProperty.LeftFraction.essSurj_mapArrow L W
+  Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions L W
 
 lemma isTriangulated_of_exists_lifting_composable_morphisms [Pretriangulated D]
     [L.IsTriangulated] [IsTriangulated C]
@@ -222,10 +222,9 @@ lemma isTriangulated [Pretriangulated D] [L.IsTriangulated] [IsTriangulated C] :
   have := Localization.essSurj L W
   apply isTriangulated_of_exists_lifting_composable_morphisms L
   intros X₁ X₂ X₃ f g
-  --let Y₂ := L.objPreimage X₂
-  obtain ⟨φ₁, hφ₁⟩ := MorphismProperty.RightFraction.fac L W
+  obtain ⟨φ₁, hφ₁⟩ := Localization.exists_rightFraction L W
     ((L.objObjPreimageIso X₁).hom ≫ f ≫ (L.objObjPreimageIso X₂).inv)
-  obtain ⟨φ₂, hφ₂⟩ := MorphismProperty.LeftFraction.fac L W
+  obtain ⟨φ₂, hφ₂⟩ := Localization.exists_leftFraction L W
     ((L.objObjPreimageIso X₂).hom ≫ g ≫ (L.objObjPreimageIso X₃).inv)
   refine' ⟨_, _, _, φ₁.f, φ₂.f,
     (Localization.isoOfHom L W φ₁.s φ₁.hs) ≪≫ L.objObjPreimageIso X₁,

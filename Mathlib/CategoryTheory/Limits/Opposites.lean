@@ -451,6 +451,7 @@ theorem opCoproductIsoProduct'_inv_comp_inj {c : Cofan Z} {f : Fan (op <| Z ·)}
   IsLimit.conePointUniqueUpToIso_inv_comp (Cofan.IsColimit.op hc) hf ⟨b⟩
 
 variable (Z) in
+@[reassoc]
 theorem opCoproductIsoProduct_inv_comp_ι (b : α) :
     (opCoproductIsoProduct Z).inv ≫ (Sigma.ι Z b).op = Pi.π (op <| Z ·) b :=
   opCoproductIsoProduct'_inv_comp_inj _ _ b
@@ -464,12 +465,37 @@ theorem desc_op_comp_opCoproductIsoProduct'_hom {c : Cofan Z} {f : Fan (op <| Z 
   erw [opCoproductIsoProduct'_inv_comp_inj, IsLimit.fac]
   rfl
 
+variable (Z)
+
 theorem desc_op_comp_opCoproductIsoProduct_hom {X : C} (π : (a : α) → Z a ⟶ X) :
     (Sigma.desc π).op ≫ (opCoproductIsoProduct Z).hom = Pi.lift (fun a ↦ (π a).op) := by
   convert desc_op_comp_opCoproductIsoProduct'_hom (coproductIsCoproduct Z)
     (productIsProduct (op <| Z ·)) (Cofan.mk _ π)
   · ext; simp [Sigma.desc, colimit.desc, coproductIsCoproduct]
   · ext; simp [Pi.lift, limit.lift, productIsProduct]
+
+variable {Z}
+
+@[reassoc (attr := simp)]
+lemma opCoproductIsoProduct_hom_comm_π (b : α) :
+    (opCoproductIsoProduct Z).hom ≫ Pi.π _ b = (Sigma.ι Z b).op := by
+  rw [← cancel_epi (opCoproductIsoProduct Z).inv, Iso.inv_hom_id_assoc,
+    opCoproductIsoProduct_inv_comp_ι]
+
+
+lemma opCoproductIsoProduct_inv_comp_map {Z' : α → C} [HasCoproduct Z']
+    (φ : ∀ a, Z' a ⟶ Z a) :
+  (opCoproductIsoProduct Z).inv ≫ (Sigma.map φ).op =
+    Pi.map (fun a => (φ a).op) ≫ (opCoproductIsoProduct Z').inv := Quiver.Hom.unop_inj (by
+  dsimp
+  ext j
+  rw [ι_colimMap_assoc, Discrete.natTrans_app]
+  apply Quiver.Hom.op_inj
+  conv_rhs =>
+    rw [← Category.assoc, op_comp, op_comp, Quiver.Hom.op_unop, Quiver.Hom.op_unop,
+      opCoproductIsoProduct_inv_comp_ι]
+  simp only [op_unop, op_comp, Quiver.Hom.op_unop, Category.assoc, limMap_π, Discrete.functor_obj,
+    Discrete.natTrans_app, opCoproductIsoProduct_inv_comp_ι_assoc])
 
 end OppositeCoproducts
 
