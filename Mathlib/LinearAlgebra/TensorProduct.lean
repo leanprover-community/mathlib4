@@ -515,21 +515,8 @@ variable (f : M →ₗ[R] N →ₗ[R] P)
 with the property that its composition with the canonical bilinear map `M → N → M ⊗ N` is
 the given bilinear map `M → N → P`. -/
 def liftAux : M ⊗[R] N →+ P :=
-  (addConGen (TensorProduct.Eqv R M N)).lift (FreeAddMonoid.lift fun p : M × N => f p.1 p.2) <|
-    AddCon.addConGen_le fun x y hxy =>
-      match x, y, hxy with
-      | _, _, Eqv.of_zero_left n =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, f.map_zero₂]
-      | _, _, Eqv.of_zero_right m =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_zero, FreeAddMonoid.lift_eval_of, (f m).map_zero]
-      | _, _, Eqv.of_add_left m₁ m₂ n =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, f.map_add₂]
-      | _, _, Eqv.of_add_right m n₁ n₂ =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_add, FreeAddMonoid.lift_eval_of, (f m).map_add]
-      | _, _, Eqv.of_smul r m n =>
-        (AddCon.ker_rel _).2 <| by simp_rw [FreeAddMonoid.lift_eval_of, f.map_smul₂, (f m).map_smul]
-      | _, _, Eqv.add_comm x y =>
-        (AddCon.ker_rel _).2 <| by simp_rw [map_add, add_comm]
+  liftAddHom (LinearMap.toAddMonoidHom'.comp <| f.toAddMonoidHom)
+    fun r m n => by dsimp; rw [LinearMap.map_smul₂, map_smul]
 #align tensor_product.lift_aux TensorProduct.liftAux
 
 theorem liftAux_tmul (m n) : liftAux f (m ⊗ₜ n) = f m n :=
