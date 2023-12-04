@@ -468,8 +468,8 @@ instance : IsScalarTower (CentroidHom α) α α where
   smul_assoc _ _ _ := (map_mul_right _ _ _).symm
 
 /-!
-Let α be an algebra over R, such that the canonical ring homomorphism of R into CentroidHom α lies
-in the center of CentroidHom α. Then CentroidHom α is an algebra over R
+Let `α` be an algebra over `R`, such that the canonical ring homomorphism of `R` into
+`CentroidHom α` lies in the center of `CentroidHom α`. Then `CentroidHom α` is an algebra over `R`
 -/
 
 variable {R : Type*}
