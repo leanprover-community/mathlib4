@@ -5,6 +5,8 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Attr.Register
+import Mathlib.Data.Int.Cast.Basic
+import Mathlib.Order.Basic
 
 /-!
 # `zify` tactic
