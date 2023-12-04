@@ -3,9 +3,8 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.FieldTheory.SplittingField.Construction
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.FieldTheory.Separable
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.FieldTheory.NormalClosure
 import Mathlib.RingTheory.IntegralDomain
 
 #align_import field_theory.primitive_element from "leanprover-community/mathlib"@"df76f43357840485b9d04ed5dee5ab115d420e87"
@@ -348,13 +347,21 @@ end FiniteIntermediateField
 
 end Field
 
+variable (F E : Type*) [Field F] [Field E] [Algebra F E] [FiniteDimensional F E] [IsSeparable F E]
+
 @[simp]
-theorem AlgHom.card (F E K : Type*) [Field F] [Field E] [Field K] [IsAlgClosed K] [Algebra F E]
-    [FiniteDimensional F E] [IsSeparable F E] [Algebra F K] :
+theorem AlgHom.card (K : Type*) [Field K] [IsAlgClosed K] [Algebra F K] :
     Fintype.card (E →ₐ[F] K) = finrank F E := by
   convert (AlgHom.card_of_powerBasis (L := K) (Field.powerBasisOfFiniteOfSeparable F E)
     (IsSeparable.separable _ _) (IsAlgClosed.splits_codomain _)).trans (PowerBasis.finrank _).symm
 #align alg_hom.card AlgHom.card
+
+@[simp]
+theorem IsNormalClosure.algHom.card (L : Type*) [Field L] [Algebra F L] [IsNormalClosure F E L]  :
+    Fintype.card (E →ₐ[F] L) = FiniteDimensional.finrank F E := by
+  rw [← Fintype.ofEquiv_card <|
+    IsNormalClosure.algHom_equiv_algHom_isAlgClosed F E L (AlgebraicClosure F)]
+  convert AlgHom.card F E (AlgebraicClosure F)
 
 section iff
 
@@ -376,46 +383,45 @@ theorem primitive_element_of_minpoly_degree_eq (α : E) :
   rw [degree_eq_iff_natDegree_eq, primitive_element_of_minpoly_natDegree_eq]
   exact minpoly.ne_zero_of_finite F α
 
-variable [IsSeparable F E] (A : Type*) [Field A] [IsAlgClosed A] [Algebra F A]
+variable [IsSeparable F E] (A : Type*) [Field A] [Algebra F A] [hA : IsNormalClosure F E A]
 
 theorem primitive_element_iff_algHom_eq_of_eval' (α : E) :
     F⟮α⟯ = ⊤ ↔ ∀ φ ψ : E →ₐ[F] A, φ α = ψ α → φ = ψ := by
   classical
   simp_rw [primitive_element_of_minpoly_natDegree_eq, ← card_rootSet_eq_natDegree (K := A)
-    (IsSeparable.separable F α) (IsAlgClosed.splits_codomain (minpoly F α)), ← toFinset_card,
-    ← IsAlgebraic.range_eval_eq_rootSet_minpoly A (Algebra.IsAlgebraic.of_finite F E) α,
-    ← AlgHom.card F E A, Fintype.card, toFinset_range, Finset.card_image_iff, Finset.coe_univ,
-    ← injective_iff_injOn_univ, Function.Injective]
+    (IsSeparable.separable F α) (hA.splits _), ← toFinset_card,
+    ← (Algebra.IsAlgebraic.of_finite F E).isNormalClosure_range_eval_eq_rootSet_minpoly  α,
+    ← IsNormalClosure.algHom.card F E A, Fintype.card, toFinset_range, Finset.card_image_iff,
+    Finset.coe_univ, ← injective_iff_injOn_univ, Function.Injective]
 
 theorem primitive_element_iff_algHom_eq_of_eval (α : E) (φ : E →ₐ[F] A) :
     F⟮α⟯ = ⊤ ↔ ∀ ψ : E →ₐ[F] A, φ α = ψ α → φ = ψ := by
   rw [Field.primitive_element_iff_algHom_eq_of_eval' F A]
-  refine ⟨fun h ψ =>  h φ ψ, fun h φ₀ ψ₀ h' => ?_⟩
-  let K := IntermediateField.adjoin F (⋃ ν : E →ₐ[F] A, Set.range ν)
-  have hK_mem : ∀ (ψ : E →ₐ[F] A) (x : E), ψ x ∈ K := fun ψ x =>
-    Subfield.subset_closure (mem_union_right _ (mem_iUnion.mpr ⟨ψ, mem_range_self x⟩))
-  let res : (E →ₐ[F] A) → (E →ₐ[F] K) := fun ψ => AlgHom.codRestrict ψ K.toSubalgebra (hK_mem ψ)
-  rsuffices ⟨σ, hσ⟩ : ∃ σ : K →ₐ[F] A, σ (⟨φ₀ α, hK_mem _ _⟩) = φ α
-  · suffices res φ₀ = res ψ₀ by
-      ext x
-      exact Subtype.mk_eq_mk.mp (AlgHom.congr_fun this x)
-    have eq₁ : φ = AlgHom.comp σ (res φ₀) := h (AlgHom.comp σ (res φ₀)) hσ.symm
-    have eq₂ : φ = AlgHom.comp σ (res ψ₀) := by
-      refine h (AlgHom.comp σ (res ψ₀)) ?_
+  refine ⟨fun h ψ ↦ h φ ψ, fun h φ₀ ψ₀ h' => ?_⟩
+  rsuffices ⟨σ, hσ⟩ : ∃ σ : A →ₐ[F] A, σ (φ₀ α) = φ α
+  · have eq₁ : φ = AlgHom.comp σ φ₀ := h (AlgHom.comp σ φ₀) hσ.symm
+    have eq₂ : φ = AlgHom.comp σ ψ₀ := by
+      refine h (AlgHom.comp σ ψ₀) ?_
       simp_rw [← hσ, h']
       rfl
     ext1 x
-    exact (RingHom.injective σ.toRingHom) <| AlgHom.congr_fun (eq₁.symm.trans eq₂) x
-  refine IntermediateField.exists_algHom_of_splits_of_aeval ?_ ?_
-  · refine fun x => ⟨IsAlgebraic.isIntegral ?_, IsAlgClosed.splits_codomain (minpoly F x)⟩
-    refine (isAlgebraic_adjoin fun a ha => IsAlgebraic.isIntegral ?_) x
-    obtain ⟨ψ, x, rfl⟩ := Set.mem_iUnion.mp ha
-    exact (IsAlgebraic.of_finite F x).algHom ψ
+    exact σ.toRingHom.injective <| AlgHom.congr_fun (eq₁.symm.trans eq₂) x
+  refine IntermediateField.exists_algHom_of_adjoin_splits_of_aeval
+    (S := ⋃ ν : E →ₐ[F] A, Set.range ν) ?_ ?_ ?_
+  · refine fun x hx ↦ ⟨IsAlgebraic.isIntegral ?_, ?_⟩
+    · obtain ⟨ψ, x, rfl⟩ := Set.mem_iUnion.mp hx
+      exact (IsAlgebraic.of_finite F x).algHom ψ
+    · obtain ⟨ψ, x, rfl⟩ := Set.mem_iUnion.mp hx
+      rw [minpoly.algHom_eq _ ψ.toRingHom.injective]
+      exact hA.splits x
+  · rw [_root_.eq_top_iff, ← ((IsAlgebraic.isNormalClosure_iff
+      (Algebra.IsAlgebraic.of_finite F E)).mp hA).2, normalClosure_le_iff]
+    exact fun f _ hx => Subfield.subset_closure (mem_union_right _ (mem_iUnion.mpr ⟨f, hx⟩))
   · rw [aeval_algHom_apply, _root_.map_eq_zero]
     convert minpoly.aeval F α
-    letI : Algebra E K := (res φ₀).toAlgebra
+    letI : Algebra E A := φ₀.toAlgebra
     refine minpoly.algebraMap_eq ?_ α
-    exact NoZeroSMulDivisors.algebraMap_injective E K
+    exact NoZeroSMulDivisors.algebraMap_injective E A
 
 end Field
 
