@@ -112,12 +112,12 @@ instance instCoalgebra : Coalgebra R (ι →₀ R) where
 @[simp]
 theorem comul_single (i : ι) (r : R) : comul (Finsupp.single i r) =
     (Finsupp.single i r) ⊗ₜ[R] (Finsupp.single i 1) := by
-  unfold comul; unfold instCoalgebra; simp
-  rw [TensorProduct.smul_tmul', smul_single_one i r]
+  unfold comul instCoalgebra
+  rw [total_single, TensorProduct.smul_tmul', smul_single_one i r]
 
 @[simp]
 theorem counit_single (i : ι) (r : R) : counit (Finsupp.single i r) = r := by
-  unfold counit; unfold instCoalgebra; simp
+  unfold counit instCoalgebra; simp
 
 end Finsupp
 
