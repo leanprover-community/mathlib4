@@ -11,6 +11,8 @@ import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.RepresentationTheory.Action.Basic
 
 /-!
+# Categorical properties of `Action V G`
+
 We show:
 
 * When `V` has (co)limits so does `Action V G`.
@@ -205,4 +207,3 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.functor.map_Action_linear CategoryTheory.Functor.mapAction_linear
 
 end CategoryTheory.Functor
-

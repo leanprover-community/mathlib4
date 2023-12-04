@@ -13,6 +13,8 @@ import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.CategoryTheory.Monoidal.Types.Symmetric
 
 /-!
+# Induced monoidal structure on `Action V G`
+
 We show:
 
 * When `V` is monoidal, braided, or symmetric, so is `Action V G`.
