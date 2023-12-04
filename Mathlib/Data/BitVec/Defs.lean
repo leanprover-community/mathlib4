@@ -148,8 +148,6 @@ def ofLEFn {w} (f : Fin w → Bool) : BitVec w :=
 
 /-- Create a bitvector from a function that maps index `i` to the `i`-th most significant bit -/
 def ofBEFn {w} (f : Fin w → Bool) : BitVec w :=
-  match w with
-  | 0   => .nil
-  | w+1 => .cons (f ⟨0, Nat.succ_pos w⟩) (ofBEFn <| Fin.tail f)
+  ofLEFn (f ∘ Fin.rev)
 
 end Std.BitVec
