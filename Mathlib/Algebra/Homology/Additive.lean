@@ -21,10 +21,6 @@ TODO: similarly for `R`-linear.
 
 universe v u
 
-open Classical
-
-noncomputable section
-
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits HomologicalComplex
 
 variable {ι : Type*}
@@ -120,8 +116,8 @@ namespace HomologicalComplex
 instance eval_additive (i : ι) : (eval V c i).Additive where
 #align homological_complex.eval_additive HomologicalComplex.eval_additive
 
-instance cycles_additive [HasEqualizers V] : (cyclesFunctor V c i).Additive where
-#align homological_complex.cycles_additive HomologicalComplex.cycles_additive
+instance cycles'_additive [HasEqualizers V] : (cycles'Functor V c i).Additive where
+#align homological_complex.cycles_additive HomologicalComplex.cycles'_additive
 
 variable [HasImages V] [HasImageMaps V]
 
@@ -130,11 +126,11 @@ instance boundaries_additive : (boundariesFunctor V c i).Additive where
 
 variable [HasEqualizers V] [HasCokernels V]
 
-instance homology_additive : (homologyFunctor V c i).Additive where
+instance homology_additive : (homology'Functor V c i).Additive where
   map_add {_ _ f g} := by
-    dsimp [homologyFunctor]
+    dsimp [homology'Functor]
     ext
-    simp only [homology.π_map, Preadditive.comp_add, ← Preadditive.add_comp]
+    simp only [homology'.π_map, Preadditive.comp_add, ← Preadditive.add_comp]
     congr
     ext
     simp
@@ -276,12 +272,11 @@ variable [HasZeroObject V] {W : Type*} [Category W] [Preadditive W] [HasZeroObje
 
 namespace HomologicalComplex
 
-attribute [local simp] eqToHom_map
-
 /-- Turning an object into a complex supported at `j` then applying a functor is
 the same as applying the functor then forming the complex.
 -/
-def singleMapHomologicalComplex (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) (j : ι) :
+noncomputable def singleMapHomologicalComplex (F : V ⥤ W) [F.Additive] (c : ComplexShape ι)
+    [DecidableEq ι] (j : ι) :
     single V c j ⋙ F.mapHomologicalComplex _ ≅ F ⋙ single W c j :=
   NatIso.ofComponents
     (fun X =>
@@ -292,27 +287,30 @@ def singleMapHomologicalComplex (F : V ⥤ W) [F.Additive] (c : ComplexShape ι)
           dsimp
           split_ifs with h
           · simp [h]
-          · rw [zero_comp, if_neg h]
-            exact (zero_of_source_iso_zero _ F.mapZeroObject).symm
+          · rw [zero_comp, ← F.map_id,
+              (isZero_single_obj_X c j X _ h).eq_of_src (𝟙 _) 0, F.map_zero]
         inv_hom_id := by
           ext i
           dsimp
           split_ifs with h
           · simp [h]
-          · rw [zero_comp, if_neg h]
-            simp })
+          · apply (isZero_single_obj_X c j _ _ h).eq_of_src })
     fun f => by
-    ext i
-    dsimp
-    split_ifs with h <;> simp [h]
+      ext i
+      dsimp
+      split_ifs with h
+      · subst h
+        simp [single_map_f_self, singleObjXSelf, singleObjXIsoOfEq, eqToHom_map]
+      · apply (isZero_single_obj_X c j _ _ h).eq_of_tgt
 #align homological_complex.single_map_homological_complex HomologicalComplex.singleMapHomologicalComplex
 
-variable (F : V ⥤ W) [Functor.Additive F] (c)
+variable (F : V ⥤ W) [Functor.Additive F] (c) [DecidableEq ι]
 
 @[simp]
 theorem singleMapHomologicalComplex_hom_app_self (j : ι) (X : V) :
-    ((singleMapHomologicalComplex F c j).hom.app X).f j = eqToHom (by simp) := by
-  simp [singleMapHomologicalComplex]
+    ((singleMapHomologicalComplex F c j).hom.app X).f j =
+      F.map (singleObjXSelf c j X).hom ≫ (singleObjXSelf c j (F.obj X)).inv := by
+  simp [singleMapHomologicalComplex, singleObjXSelf, singleObjXIsoOfEq, eqToHom_map]
 #align homological_complex.single_map_homological_complex_hom_app_self HomologicalComplex.singleMapHomologicalComplex_hom_app_self
 
 @[simp]
@@ -323,8 +321,9 @@ theorem singleMapHomologicalComplex_hom_app_ne {i j : ι} (h : i ≠ j) (X : V) 
 
 @[simp]
 theorem singleMapHomologicalComplex_inv_app_self (j : ι) (X : V) :
-    ((singleMapHomologicalComplex F c j).inv.app X).f j = eqToHom (by simp) := by
-  simp [singleMapHomologicalComplex]
+    ((singleMapHomologicalComplex F c j).inv.app X).f j =
+      (singleObjXSelf c j (F.obj X)).hom ≫ F.map (singleObjXSelf c j X).inv := by
+  simp [singleMapHomologicalComplex, singleObjXSelf, singleObjXIsoOfEq, eqToHom_map]
 #align homological_complex.single_map_homological_complex_inv_app_self HomologicalComplex.singleMapHomologicalComplex_inv_app_self
 
 @[simp]
@@ -334,115 +333,3 @@ theorem singleMapHomologicalComplex_inv_app_ne {i j : ι} (h : i ≠ j) (X : V) 
 #align homological_complex.single_map_homological_complex_inv_app_ne HomologicalComplex.singleMapHomologicalComplex_inv_app_ne
 
 end HomologicalComplex
-
-namespace ChainComplex
-
-/-- Turning an object into a chain complex supported at zero then applying a functor is
-the same as applying the functor then forming the complex.
--/
-def single₀MapHomologicalComplex (F : V ⥤ W) [F.Additive] :
-    single₀ V ⋙ F.mapHomologicalComplex _ ≅ F ⋙ single₀ W :=
-  NatIso.ofComponents
-    (fun X =>
-      { hom :=
-          { f := fun i =>
-              match i with
-              | 0 => 𝟙 _
-              | _ + 1 => F.mapZeroObject.hom }
-        inv :=
-          { f := fun i =>
-              match i with
-              | 0 => 𝟙 _
-              | _ + 1 => F.mapZeroObject.inv }
-        hom_inv_id := by
-          ext (_|_)
-          · simp
-          · exact IsZero.eq_of_src (IsZero.of_iso (isZero_zero _) F.mapZeroObject) _ _
-        inv_hom_id := by
-          ext (_|_)
-          · simp
-          · exact IsZero.eq_of_src (isZero_zero _) _ _ })
-    fun f => by ext (_|_) <;> simp
-#align chain_complex.single₀_map_homological_complex ChainComplex.single₀MapHomologicalComplex
-
-@[simp]
-theorem single₀MapHomologicalComplex_hom_app_zero (F : V ⥤ W) [F.Additive] (X : V) :
-    ((single₀MapHomologicalComplex F).hom.app X).f 0 = 𝟙 _ :=
-  rfl
-#align chain_complex.single₀_map_homological_complex_hom_app_zero ChainComplex.single₀MapHomologicalComplex_hom_app_zero
-
-@[simp]
-theorem single₀MapHomologicalComplex_hom_app_succ (F : V ⥤ W) [F.Additive] (X : V) (n : ℕ) :
-    ((single₀MapHomologicalComplex F).hom.app X).f (n + 1) = 0 :=
-  rfl
-#align chain_complex.single₀_map_homological_complex_hom_app_succ ChainComplex.single₀MapHomologicalComplex_hom_app_succ
-
-@[simp]
-theorem single₀MapHomologicalComplex_inv_app_zero (F : V ⥤ W) [F.Additive] (X : V) :
-    ((single₀MapHomologicalComplex F).inv.app X).f 0 = 𝟙 _ :=
-  rfl
-#align chain_complex.single₀_map_homological_complex_inv_app_zero ChainComplex.single₀MapHomologicalComplex_inv_app_zero
-
-@[simp]
-theorem single₀MapHomologicalComplex_inv_app_succ (F : V ⥤ W) [F.Additive] (X : V) (n : ℕ) :
-    ((single₀MapHomologicalComplex F).inv.app X).f (n + 1) = 0 :=
-  rfl
-#align chain_complex.single₀_map_homological_complex_inv_app_succ ChainComplex.single₀MapHomologicalComplex_inv_app_succ
-
-end ChainComplex
-
-namespace CochainComplex
-
-/-- Turning an object into a cochain complex supported at zero then applying a functor is
-the same as applying the functor then forming the cochain complex.
--/
-def single₀MapHomologicalComplex (F : V ⥤ W) [F.Additive] :
-    single₀ V ⋙ F.mapHomologicalComplex _ ≅ F ⋙ single₀ W :=
-  NatIso.ofComponents
-    (fun X =>
-      { hom :=
-          { f := fun i =>
-              match i with
-              | 0 => 𝟙 _
-              | _ + 1 => F.mapZeroObject.hom }
-        inv :=
-          { f := fun i =>
-              match i with
-              | 0 => 𝟙 _
-              | _ + 1 => F.mapZeroObject.inv }
-        hom_inv_id := by
-          ext (_|_)
-          · simp
-          · exact IsZero.eq_of_src (IsZero.of_iso (isZero_zero _) F.mapZeroObject) _ _
-        inv_hom_id := by
-          ext (_|_)
-          · simp
-          · exact IsZero.eq_of_src (isZero_zero _) _ _ })
-    fun f => by ext (_|_) <;> simp
-#align cochain_complex.single₀_map_homological_complex CochainComplex.single₀MapHomologicalComplex
-
-@[simp]
-theorem single₀MapHomologicalComplex_hom_app_zero (F : V ⥤ W) [F.Additive] (X : V) :
-    ((single₀MapHomologicalComplex F).hom.app X).f 0 = 𝟙 _ :=
-  rfl
-#align cochain_complex.single₀_map_homological_complex_hom_app_zero CochainComplex.single₀MapHomologicalComplex_hom_app_zero
-
-@[simp]
-theorem single₀MapHomologicalComplex_hom_app_succ (F : V ⥤ W) [F.Additive] (X : V) (n : ℕ) :
-    ((single₀MapHomologicalComplex F).hom.app X).f (n + 1) = 0 :=
-  rfl
-#align cochain_complex.single₀_map_homological_complex_hom_app_succ CochainComplex.single₀MapHomologicalComplex_hom_app_succ
-
-@[simp]
-theorem single₀MapHomologicalComplex_inv_app_zero (F : V ⥤ W) [F.Additive] (X : V) :
-    ((single₀MapHomologicalComplex F).inv.app X).f 0 = 𝟙 _ :=
-  rfl
-#align cochain_complex.single₀_map_homological_complex_inv_app_zero CochainComplex.single₀MapHomologicalComplex_inv_app_zero
-
-@[simp]
-theorem single₀MapHomologicalComplex_inv_app_succ (F : V ⥤ W) [F.Additive] (X : V) (n : ℕ) :
-    ((single₀MapHomologicalComplex F).inv.app X).f (n + 1) = 0 :=
-  rfl
-#align cochain_complex.single₀_map_homological_complex_inv_app_succ CochainComplex.single₀MapHomologicalComplex_inv_app_succ
-
-end CochainComplex

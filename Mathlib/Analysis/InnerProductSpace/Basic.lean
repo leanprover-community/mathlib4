@@ -1167,7 +1167,7 @@ theorem inner_eq_sum_norm_sq_div_four (x y : E) :
 #align inner_eq_sum_norm_sq_div_four inner_eq_sum_norm_sq_div_four
 
 /-- Formula for the distance between the images of two nonzero points under an inversion with center
-zero. See also `euclidean_geometry.dist_inversion_inversion` for inversions around a general
+zero. See also `EuclideanGeometry.dist_inversion_inversion` for inversions around a general
 point. -/
 theorem dist_div_norm_sq_smul {x y : F} (hx : x ≠ 0) (hy : y ≠ 0) (R : ℝ) :
     dist ((R / ‖x‖) ^ 2 • x) ((R / ‖y‖) ^ 2 • y) = R ^ 2 / (‖x‖ * ‖y‖) * dist x y :=
@@ -1822,7 +1822,6 @@ namespace ContinuousLinearMap
 variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 
 -- Note: odd and expensive build behavior is explicitly turned off using `noncomputable`
-set_option synthInstance.maxHeartbeats 40000 in
 /-- Given `f : E →L[𝕜] E'`, construct the continuous sesquilinear form `fun x y ↦ ⟪x, A y⟫`, given
 as a continuous linear map. -/
 noncomputable def toSesqForm : (E →L[𝕜] E') →L[𝕜] E' →L⋆[𝕜] E →L[𝕜] 𝕜 :=
@@ -1893,7 +1892,7 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
   rw [@norm_sub_sq 𝕜, sub_add]
   classical
     simp only [@InnerProductSpace.norm_sq_eq_inner 𝕜, _root_.inner_sum, _root_.sum_inner]
-    simp only [inner_smul_right, two_mul, inner_smul_left, inner_conj_symm, ←mul_assoc, h₂,
+    simp only [inner_smul_right, two_mul, inner_smul_left, inner_conj_symm, ← mul_assoc, h₂,
       add_sub_cancel, sub_right_inj]
     simp only [map_sum, ← inner_conj_symm x, ← h₃]
 
@@ -2056,7 +2055,7 @@ theorem OrthogonalFamily.norm_sum (l : ∀ i, G i) (s : Finset ι) :
     ‖∑ i in s, V i (l i)‖ ^ 2 = ∑ i in s, ‖l i‖ ^ 2 := by
   have : ((‖∑ i in s, V i (l i)‖ : ℝ) : 𝕜) ^ 2 = ∑ i in s, ((‖l i‖ : ℝ) : 𝕜) ^ 2 := by
     simp only [← inner_self_eq_norm_sq_to_K, hV.inner_sum]
-  exact_mod_cast this
+  exact mod_cast this
 #align orthogonal_family.norm_sum OrthogonalFamily.norm_sum
 
 /-- The composition of an orthogonal family of subspaces with an injective function is also an

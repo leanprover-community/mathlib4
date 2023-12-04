@@ -52,7 +52,7 @@ def Fintype.groupWithZeroOfCancel (M : Type*) [CancelMonoidWithZero M] [Decidabl
     ‹CancelMonoidWithZero M› with
     inv := fun a => if h : a = 0 then 0 else Fintype.bijInv (mul_right_bijective_of_finite₀ h) 1
     mul_inv_cancel := fun a ha => by
-      simp [Inv.inv, dif_neg ha]
+      simp only [Inv.inv, dif_neg ha]
       exact Fintype.rightInverse_bijInv _ _
     inv_zero := by simp [Inv.inv, dif_pos rfl] }
 #align fintype.group_with_zero_of_cancel Fintype.groupWithZeroOfCancel
@@ -120,7 +120,7 @@ variable [CommRing R] [IsDomain R] [Group G]
 -- porting note: Finset doesn't seem to have `{g ∈ univ | g^n = g₀}` notation anymore,
 -- so we have to use `Finset.filter` instead
 theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) (hf : Injective f)
-  {n : ℕ} (hn : 0 < n) (g₀ : G) :
+    {n : ℕ} (hn : 0 < n) (g₀ : G) :
     Finset.card (Finset.univ.filter (fun g ↦ g^n = g₀)) ≤ Multiset.card (nthRoots n (f g₀)) := by
   haveI : DecidableEq R := Classical.decEq _
   refine' le_trans _ (nthRoots n (f g₀)).toFinset_card_le
@@ -261,13 +261,12 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
           sum_bij (fun n _ => x ^ n) (by simp only [mem_univ, forall_true_iff])
             (by simp only [imp_true_iff, eq_self_iff_true, Subgroup.coe_pow,
                 Units.val_pow_eq_pow_val])
-            (fun m n hm hn =>
-              pow_injective_of_lt_orderOf _ (by simpa only [mem_range] using hm)
+            (fun m n hm hn => pow_injOn_Iio_orderOf (by simpa only [mem_range] using hm)
                 (by simpa only [mem_range] using hn))
             (fun b _ => let ⟨n, hn⟩ := hx b
               ⟨n % orderOf x, mem_range.2 (Nat.mod_lt _ (orderOf_pos _)),
                -- Porting note: have to use `dsimp` to apply the function
-               by dsimp at hn ⊢; rw [← pow_eq_mod_orderOf, hn]⟩)
+               by dsimp at hn ⊢; rw [pow_mod_orderOf, hn]⟩)
       _ = 0 := ?_
 
     rw [← mul_left_inj' hx1, zero_mul, geom_sum_mul]

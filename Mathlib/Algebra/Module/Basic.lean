@@ -5,6 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Data.Int.Units
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Basic
 import Mathlib.GroupTheory.GroupAction.Group
@@ -156,7 +157,7 @@ See note [reducible non-instances]. -/
 @[reducible]
 def Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
   { MulActionWithZero.compHom M f.toMonoidWithZeroHom, DistribMulAction.compHom M (f : S →* R) with
-    -- Porting note: the `show f (r + s) • x = f r • x + f s • x ` wasn't needed in mathlib3.
+    -- Porting note: the `show f (r + s) • x = f r • x + f s • x` wasn't needed in mathlib3.
     -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
     -- use in later fields.  See
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
@@ -318,7 +319,7 @@ def Module.addCommMonoidToAddCommGroup [Ring R] [AddCommMonoid M] [Module R M] :
     zsmul := fun z a => (z : R) • a
     zsmul_zero' := fun a => by simpa only [Int.cast_zero] using zero_smul R a
     zsmul_succ' := fun z a => by simp [add_comm, add_smul]
-    zsmul_neg' := fun z a => by simp [←smul_assoc, neg_one_smul] }
+    zsmul_neg' := fun z a => by simp [← smul_assoc, neg_one_smul] }
 #align module.add_comm_monoid_to_add_comm_group Module.addCommMonoidToAddCommGroup
 
 variable {R}
@@ -356,27 +357,6 @@ instance (priority := 910) Semiring.toOppositeModule [Semiring R] : Module Rᵐ�
 def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
 #align ring_hom.to_module RingHom.toModule
-
-/-- The tautological action by `R →+* R` on `R`.
-
-This generalizes `Function.End.applyMulAction`. -/
-instance RingHom.applyDistribMulAction [Semiring R] : DistribMulAction (R →+* R) R where
-  smul := (· <| ·)
-  smul_zero := RingHom.map_zero
-  smul_add := RingHom.map_add
-  one_smul _ := rfl
-  mul_smul _ _ _ := rfl
-#align ring_hom.apply_distrib_mul_action RingHom.applyDistribMulAction
-
-@[simp]
-protected theorem RingHom.smul_def [Semiring R] (f : R →+* R) (a : R) : f • a = f a :=
-  rfl
-#align ring_hom.smul_def RingHom.smul_def
-
-/-- `RingHom.applyDistribMulAction` is faithful. -/
-instance RingHom.applyFaithfulSMul [Semiring R] : FaithfulSMul (R →+* R) R :=
-  ⟨fun {_ _} h => RingHom.ext h⟩
-#align ring_hom.apply_has_faithful_smul RingHom.applyFaithfulSMul
 
 section AddCommMonoid
 

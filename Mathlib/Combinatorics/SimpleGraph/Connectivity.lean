@@ -1079,8 +1079,8 @@ theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.
 #align simple_graph.walk.is_cycle.not_of_nil SimpleGraph.Walk.IsCycle.not_of_nil
 
 lemma IsCycle.ne_bot : ∀ {p : G.Walk u u}, p.IsCycle → G ≠ ⊥
-| nil, hp => by cases hp.ne_nil rfl
-| cons h _, hp => by rintro rfl; exact h
+  | nil, hp => by cases hp.ne_nil rfl
+  | cons h _, hp => by rintro rfl; exact h
 
 theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
     (Walk.cons h p).IsCycle ↔ p.IsPath ∧ ¬⟦(u, v)⟧ ∈ p.edges := by
@@ -1612,7 +1612,8 @@ theorem map_isPath_of_injective (hinj : Function.Injective f) (hp : p.IsPath) :
   | nil => simp
   | cons _ _ ih =>
     rw [Walk.cons_isPath_iff] at hp
-    simp [ih hp.1]
+    simp only [map_cons, cons_isPath_iff, ih hp.1, support_map, List.mem_map, not_exists, not_and,
+      true_and]
     intro x hx hf
     cases hinj hf
     exact hp.2 hx
@@ -2622,7 +2623,7 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
     · simp only [Sym2.eq_swap, Walk.edges_cons, List.mem_cons, eq_self_iff_true, true_or_iff]
   · rintro ⟨u, c, hc, he⟩
     refine ⟨c.adj_of_mem_edges he, ?_⟩
-    by_contra' hb
+    by_contra! hb
     have hb' : ∀ p : G.Walk w v, ⟦(w, v)⟧ ∈ p.edges := by
       intro p
       simpa [Sym2.eq_swap] using hb p.reverse

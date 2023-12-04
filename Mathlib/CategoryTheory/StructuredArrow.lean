@@ -96,6 +96,7 @@ theorem comp_right {X Y Z : StructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
 @[simp]
 theorem id_right (X : StructuredArrow S T) : (𝟙 X : X ⟶ X).right = 𝟙 X.right := rfl
 
+@[simp]
 theorem eqToHom_right {X Y : StructuredArrow S T} (h : X = Y) :
     (eqToHom h).right = eqToHom (by rw [h]) := by
   subst h
@@ -297,7 +298,7 @@ noncomputable def isEquivalencePre (S : D) (F : B ⥤ C) (G : C ⥤ D) [IsEquiva
 def post (S : C) (F : B ⥤ C) (G : C ⥤ D) : StructuredArrow S F ⥤ StructuredArrow (G.obj S) (F ⋙ G)
     where
   obj X := StructuredArrow.mk (G.map X.hom)
-  map f := StructuredArrow.homMk f.right (by simp [Functor.comp_map, ←G.map_comp, ← f.w])
+  map f := StructuredArrow.homMk f.right (by simp [Functor.comp_map, ← G.map_comp, ← f.w])
 #align category_theory.structured_arrow.post CategoryTheory.StructuredArrow.post
 
 instance (S : C) (F : B ⥤ C) (G : C ⥤ D) : Faithful (post S F G) where
@@ -427,6 +428,7 @@ theorem comp_left {X Y Z : CostructuredArrow S T} (f : X ⟶ Y) (g : Y ⟶ Z) :
 @[simp]
 theorem id_left (X : CostructuredArrow S T) : (𝟙 X : X ⟶ X).left = 𝟙 X.left := rfl
 
+@[simp]
 theorem eqToHom_left {X Y : CostructuredArrow S T} (h : X = Y) :
     (eqToHom h).left = eqToHom (by rw [h]) := by
   subst h
@@ -624,7 +626,7 @@ noncomputable def isEquivalencePre (F : B ⥤ C) (G : C ⥤ D) (S : D) [IsEquiva
 def post (F : B ⥤ C) (G : C ⥤ D) (S : C) :
     CostructuredArrow F S ⥤ CostructuredArrow (F ⋙ G) (G.obj S) where
   obj X := CostructuredArrow.mk (G.map X.hom)
-  map f := CostructuredArrow.homMk f.left (by simp [Functor.comp_map, ←G.map_comp, ← f.w])
+  map f := CostructuredArrow.homMk f.left (by simp [Functor.comp_map, ← G.map_comp, ← f.w])
 #align category_theory.costructured_arrow.post CategoryTheory.CostructuredArrow.post
 
 instance (F : B ⥤ C) (G : C ⥤ D) (S : C) : Faithful (post F G S) where
@@ -832,12 +834,12 @@ def structuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
       (fun X => (StructuredArrow.isoMk (Iso.refl _)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
-          dsimp [StructuredArrow.isoMk, Comma.isoMk,StructuredArrow.homMk]; simp )
+          dsimp [StructuredArrow.isoMk, Comma.isoMk,StructuredArrow.homMk]; simp)
     (NatIso.ofComponents
       (fun X => CostructuredArrow.isoMk (Iso.refl _))
       fun {X Y} f => by
         apply CommaMorphism.ext <;>
-          dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]; simp )
+          dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]; simp)
 #align category_theory.structured_arrow_op_equivalence CategoryTheory.structuredArrowOpEquivalence
 
 /-- For a functor `F : C ⥤ D` and an object `d : D`, the category of costructured arrows
@@ -852,12 +854,12 @@ def costructuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
       (fun X => (CostructuredArrow.isoMk (Iso.refl _)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
-          dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk]; simp )
+          dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk]; simp)
     (NatIso.ofComponents
       (fun X => StructuredArrow.isoMk (Iso.refl _))
       fun {X Y} f => by
         apply CommaMorphism.ext <;>
-          dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk]; simp )
+          dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk]; simp)
 #align category_theory.costructured_arrow_op_equivalence CategoryTheory.costructuredArrowOpEquivalence
 
 end CategoryTheory

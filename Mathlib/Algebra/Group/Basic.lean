@@ -280,7 +280,7 @@ theorem leftInverse_inv : LeftInverse (fun a : G ↦ a⁻¹) fun a ↦ a⁻¹ :=
 #align left_inverse_neg leftInverse_neg
 
 @[to_additive]
-theorem rightInverse_inv : LeftInverse (fun a : G ↦ a⁻¹) fun a ↦ a⁻¹ :=
+theorem rightInverse_inv : RightInverse (fun a : G ↦ a⁻¹) fun a ↦ a⁻¹ :=
   inv_inv
 #align right_inverse_inv rightInverse_inv
 #align right_inverse_neg rightInverse_neg
@@ -893,7 +893,7 @@ theorem div_eq_of_eq_mul' {a b c : G} (h : a = b * c) : a / b = c := by
 
 @[to_additive (attr := simp)]
 theorem mul_div_mul_left_eq_div (a b c : G) : c * a / (c * b) = a / b := by
-  rw [div_eq_mul_inv, mul_inv_rev, mul_comm b⁻¹ c⁻¹, mul_comm c a, mul_assoc, ←mul_assoc c,
+  rw [div_eq_mul_inv, mul_inv_rev, mul_comm b⁻¹ c⁻¹, mul_comm c a, mul_assoc, ← mul_assoc c,
     mul_right_inv, one_mul, div_eq_mul_inv]
 #align mul_div_mul_left_eq_div mul_div_mul_left_eq_div
 #align add_sub_add_left_eq_sub add_sub_add_left_eq_sub
@@ -910,8 +910,7 @@ theorem eq_mul_of_div_eq' (h : a / b = c) : a = b * c := by simp [h.symm]
 
 @[to_additive]
 theorem mul_eq_of_eq_div' (h : b = c / a) : a * b = c := by
-  simp [h]
-  rw [mul_comm c, mul_inv_cancel_left]
+  rw [h, div_eq_mul_inv, mul_comm c, mul_inv_cancel_left]
 #align mul_eq_of_eq_div' mul_eq_of_eq_div'
 #align add_eq_of_eq_sub' add_eq_of_eq_sub'
 

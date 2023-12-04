@@ -58,9 +58,9 @@ def NatOrdinal : Type _ :=
   Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
 #align nat_ordinal NatOrdinal
 
-instance NatOrdinal.linearOrder: LinearOrder NatOrdinal := {Ordinal.linearOrder with}
+instance NatOrdinal.linearOrder : LinearOrder NatOrdinal := {Ordinal.linearOrder with}
 
-instance NatOrdinal.succOrder: SuccOrder NatOrdinal := {Ordinal.succOrder with}
+instance NatOrdinal.succOrder : SuccOrder NatOrdinal := {Ordinal.succOrder with}
 
 /-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]
@@ -373,7 +373,7 @@ instance add_covariantClass_le : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (�
 instance add_contravariantClass_le :
     ContravariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· ≤ ·) :=
   ⟨fun a b c h => by
-    by_contra' h'
+    by_contra! h'
     exact h.not_lt (add_lt_add_left h' a)⟩
 #align nat_ordinal.add_contravariant_class_le NatOrdinal.add_contravariantClass_le
 

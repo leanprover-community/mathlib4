@@ -504,7 +504,7 @@ instance Tape.inhabited {Γ} [Inhabited Γ] : Inhabited (Tape Γ) :=
   ⟨by constructor <;> apply default⟩
 #align turing.tape.inhabited Turing.Tape.inhabited
 
-/-- A direction for the turing machine `move` command, either
+/-- A direction for the Turing machine `move` command, either
   left or right. -/
 inductive Dir
   | left
@@ -978,7 +978,7 @@ theorem tr_eval' {σ₁ σ₂} (f₁ : σ₁ → Option σ₁) (f₂ : σ₂ →
       let ⟨b₁, bb, hb⟩ := tr_eval_rev H rfl h
       (Part.mem_map_iff _).2 ⟨b₁, hb, bb⟩,
       fun h ↦ by
-      rcases(Part.mem_map_iff _).1 h with ⟨b₁, ab, bb⟩
+      rcases (Part.mem_map_iff _).1 h with ⟨b₁, ab, bb⟩
       rcases tr_eval H rfl ab with ⟨_, rfl, h⟩
       rwa [bb] at h⟩
 #align turing.tr_eval' Turing.tr_eval'
@@ -986,7 +986,7 @@ theorem tr_eval' {σ₁ σ₂} (f₁ : σ₁ → Option σ₁) (f₂ : σ₂ →
 /-!
 ## The TM0 model
 
-A TM0 turing machine is essentially a Post-Turing machine, adapted for type theory.
+A TM0 Turing machine is essentially a Post-Turing machine, adapted for type theory.
 
 A Post-Turing machine with symbol type `Γ` and label type `Λ` is a function
 `Λ → Γ → Option (Λ × Stmt)`, where a `Stmt` can be either `move left`, `move right` or `write a`
@@ -1349,7 +1349,7 @@ theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt₁} (h : q�
   case halt => subst h; trivial
 #align turing.TM1.stmts₁_supports_stmt_mono Turing.TM1.stmts₁_supportsStmt_mono
 
-/-- The set of all statements in a turing machine, plus one extra value `none` representing the
+/-- The set of all statements in a Turing machine, plus one extra value `none` representing the
 halt state. This is used in the TM1 to TM0 reduction. -/
 noncomputable def stmts (M : Λ → Stmt₁) (S : Finset Λ) : Finset (Option Stmt₁) :=
   Finset.insertNone (S.biUnion fun q ↦ stmts₁ (M q))
@@ -1501,11 +1501,11 @@ theorem tr_respects :
   fun_respects.2 fun ⟨l₁, v, T⟩ ↦ by
     cases' l₁ with l₁; · exact rfl
     simp only [trCfg, TM1.step, FRespects, Option.map]
-    induction' M l₁ with _ q IH _ q IH _ q IH generalizing v T
-    case move d q IH => exact TransGen.head rfl (IH _ _)
-    case write a q IH => exact TransGen.head rfl (IH _ _)
-    case load a q IH => exact (reaches₁_eq (by rfl)).2 (IH _ _)
-    case branch p q₁ q₂ IH₁ IH₂ =>
+    induction' M l₁ with _ _ IH _ _ IH _ _ IH generalizing v T
+    case move _ _ IH => exact TransGen.head rfl (IH _ _)
+    case write _ _ IH => exact TransGen.head rfl (IH _ _)
+    case load _ _ IH => exact (reaches₁_eq (by rfl)).2 (IH _ _)
+    case branch p _ _ IH₁ IH₂ =>
       unfold TM1.stepAux; cases e : p T.1 v
       · exact (reaches₁_eq (by simp only [TM0.step, tr, trAux, e]; rfl)).2 (IH₂ _ _)
       · exact (reaches₁_eq (by simp only [TM0.step, tr, trAux, e]; rfl)).2 (IH₁ _ _)
@@ -1840,7 +1840,7 @@ theorem stepAux_read (f : Γ → Stmt'₁) (v : σ) (L R : ListBlank Γ) :
     stepAux (readAux l₂.length fun v ↦ f (a ::ᵥ v)) v
       (Tape.mk' ((L'.append l₁).cons a) (R'.append l₂))
   · dsimp [readAux, stepAux]
-    simp
+    simp only [ListBlank.head_cons, Tape.move_right_mk', ListBlank.tail_cons]
     cases a <;> rfl
   rw [← ListBlank.append, IH]
   rfl

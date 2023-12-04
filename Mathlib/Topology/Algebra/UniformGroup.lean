@@ -26,7 +26,7 @@ group naturally induces a uniform structure.
 
 ## Main results
 
-* `TopologicalAddGroup.to_uniformSpace` and `comm_topologicalAddGroup_is_uniform` can be used
+* `TopologicalAddGroup.toUniformSpace` and `comm_topologicalAddGroup_is_uniform` can be used
   to construct a canonical uniformity for a topological add group.
 
 * extension of ℤ-bilinear maps to complete groups (useful for ring completions)
@@ -168,8 +168,7 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
     (calc
       𝓤 α =
           ((𝓤 α).map fun x : α × α => (x.1 * a⁻¹, x.2 * a⁻¹)).map fun x : α × α =>
-            (x.1 * a, x.2 * a) :=
-        by simp [Filter.map_map, (· ∘ ·)]
+            (x.1 * a, x.2 * a) := by simp [Filter.map_map, (· ∘ ·)]
       _ ≤ (𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a) :=
         Filter.map_mono (uniformContinuous_id.mul uniformContinuous_const)
       )
@@ -431,28 +430,28 @@ theorem uniformContinuous_monoidHom_of_continuous {hom : Type*} [UniformSpace β
 #align uniform_continuous_add_monoid_hom_of_continuous uniformContinuous_addMonoidHom_of_continuous
 
 @[to_additive]
-theorem CauchySeq.mul {ι : Type*} [SemilatticeSup ι] {u v : ι → α} (hu : CauchySeq u)
+theorem CauchySeq.mul {ι : Type*} [Preorder ι] {u v : ι → α} (hu : CauchySeq u)
     (hv : CauchySeq v) : CauchySeq (u * v) :=
   uniformContinuous_mul.comp_cauchySeq (hu.prod hv)
 #align cauchy_seq.mul CauchySeq.mul
 #align cauchy_seq.add CauchySeq.add
 
 @[to_additive]
-theorem CauchySeq.mul_const {ι : Type*} [SemilatticeSup ι] {u : ι → α} {x : α} (hu : CauchySeq u) :
+theorem CauchySeq.mul_const {ι : Type*} [Preorder ι] {u : ι → α} {x : α} (hu : CauchySeq u) :
     CauchySeq fun n => u n * x :=
   (uniformContinuous_id.mul uniformContinuous_const).comp_cauchySeq hu
 #align cauchy_seq.mul_const CauchySeq.mul_const
 #align cauchy_seq.add_const CauchySeq.add_const
 
 @[to_additive]
-theorem CauchySeq.const_mul {ι : Type*} [SemilatticeSup ι] {u : ι → α} {x : α} (hu : CauchySeq u) :
+theorem CauchySeq.const_mul {ι : Type*} [Preorder ι] {u : ι → α} {x : α} (hu : CauchySeq u) :
     CauchySeq fun n => x * u n :=
   (uniformContinuous_const.mul uniformContinuous_id).comp_cauchySeq hu
 #align cauchy_seq.const_mul CauchySeq.const_mul
 #align cauchy_seq.const_add CauchySeq.const_add
 
 @[to_additive]
-theorem CauchySeq.inv {ι : Type*} [SemilatticeSup ι] {u : ι → α} (h : CauchySeq u) :
+theorem CauchySeq.inv {ι : Type*} [Preorder ι] {u : ι → α} (h : CauchySeq u) :
     CauchySeq u⁻¹ :=
   uniformContinuous_inv.comp_cauchySeq h
 #align cauchy_seq.inv CauchySeq.inv
@@ -687,7 +686,7 @@ theorem comm_topologicalGroup_is_uniform : UniformGroup G := by
     tendsto_comap_iff, prod_comap_comap_eq]
   simp only [Function.comp, div_eq_mul_inv, mul_inv_rev, inv_inv, mul_comm, mul_left_comm] at *
   simp only [inv_one, mul_one, ← mul_assoc] at this
-  simp_rw [←mul_assoc, mul_comm]
+  simp_rw [← mul_assoc, mul_comm]
   assumption
 #align topological_comm_group_is_uniform comm_topologicalGroup_is_uniform
 #align topological_add_comm_group_is_uniform comm_topologicalAddGroup_is_uniform
@@ -820,9 +819,8 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (
   rcases extend_Z_bilin_aux df cont_flip W_nhd y₀ x₁ with ⟨V₂, V₂_nhd, HV⟩
   exists U₁ ∩ U₂, inter_mem U₁_nhd U₂_nhd, V₁ ∩ V₂, inter_mem V₁_nhd V₂_nhd
   rintro x ⟨xU₁, xU₂⟩ x' ⟨x'U₁, x'U₂⟩ y ⟨yV₁, yV₂⟩ y' ⟨y'V₁, y'V₂⟩
-  have key_formula :
-    φ x' y' - φ x y = φ (x' - x) y₁ + φ (x' - x) (y' - y₁) + φ x₁ (y' - y) + φ (x - x₁) (y' - y) :=
-    by simp; abel
+  have key_formula : φ x' y' - φ x y
+    = φ (x' - x) y₁ + φ (x' - x) (y' - y₁) + φ x₁ (y' - y) + φ (x - x₁) (y' - y) := by simp; abel
   rw [key_formula]
   have h₁ := HU x xU₂ x' x'U₂
   have h₂ := H x xU₁ x' x'U₁ y₁ y₁_in y' y'V₁
@@ -982,7 +980,7 @@ already equipped with a uniform structure.
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
-uniform structure, so it is still provided manually via `TopologicalGroup.to_uniformSpace`.
+uniform structure, so it is still provided manually via `TopologicalGroup.toUniformSpace`.
 In the most common use cases, this coincides (definitionally) with the uniform structure on the
 quotient obtained via other means.  -/
 @[to_additive "The quotient `G ⧸ N` of a complete first countable uniform additive group
@@ -992,7 +990,7 @@ subspaces are complete. In contrast to `QuotientAddGroup.completeSpace'`, in thi
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
-uniform structure, so it is still provided manually via `TopologicalAddGroup.to_uniformSpace`.
+uniform structure, so it is still provided manually via `TopologicalAddGroup.toUniformSpace`.
 In the most common use case ─ quotients of normed additive commutative groups by subgroups ─
 significant care was taken so that the uniform structure inherent in that setting coincides
 (definitionally) with the uniform structure provided here."]

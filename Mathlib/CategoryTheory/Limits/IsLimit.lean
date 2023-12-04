@@ -377,7 +377,7 @@ def conePointsIsoOfEquivalence {F : J ⥤ C} {s : Cone F} {G : K ⥤ C} {t : Con
       dsimp
       simp only [Limits.Cone.whisker_π, Limits.Cones.postcompose_obj_π, fac, whiskerLeft_app,
         assoc, id_comp, invFunIdAssoc_hom_app, fac_assoc, NatTrans.comp_app]
-      rw [counit_app_functor, ←Functor.comp_map]
+      rw [counit_app_functor, ← Functor.comp_map]
       have l :
         NatTrans.app w.hom j = NatTrans.app w.hom (Prefunctor.obj (𝟭 J).toPrefunctor j) := by dsimp
       rw [l,w.hom.naturality]
@@ -602,7 +602,7 @@ def descCoconeMorphism {t : Cocone F} (h : IsColimit t) (s : Cocone F) : t ⟶ s
 
 theorem uniq_cocone_morphism {s t : Cocone F} (h : IsColimit t) {f f' : t ⟶ s} : f = f' :=
   have : ∀ {g : t ⟶ s}, g = h.descCoconeMorphism s := by
-    intro g; aesop_cat_nonterminal; exact h.uniq _ _ g.w
+    intro g; ext; exact h.uniq _ _ g.w
   this.trans this.symm
 #align category_theory.limits.is_colimit.uniq_cocone_morphism CategoryTheory.Limits.IsColimit.uniq_cocone_morphism
 

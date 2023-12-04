@@ -623,7 +623,7 @@ theorem singleton_div (a : α) : {a} / s = s.image ((· / ·) a) :=
 #align finset.singleton_div Finset.singleton_div
 #align finset.singleton_sub Finset.singleton_sub
 
--- @[to_additive (attr := simp )] -- Porting note: simp can prove this & the additive version
+-- @[to_additive (attr := simp)] -- Porting note: simp can prove this & the additive version
 @[to_additive]
 theorem singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :=
   image₂_singleton
@@ -854,7 +854,7 @@ section Monoid
 variable [Monoid α] {s t : Finset α} {a : α} {m n : ℕ}
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n  := by
+theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n := by
   change ↑(npowRec n s) = (s: Set α) ^ n
   induction' n with n ih
   · rw [npowRec, pow_zero, coe_one]
@@ -1869,9 +1869,9 @@ theorem op_smul_finset_mul_eq_mul_smul_finset (a : α) (s : Finset α) (t : Fins
 
 end Semigroup
 
-section LeftCancelSemigroup
+section IsLeftCancelMul
 
-variable [LeftCancelSemigroup α] [DecidableEq α] (s t : Finset α) (a : α)
+variable [Mul α] [IsLeftCancelMul α] [DecidableEq α] (s t : Finset α) (a : α)
 
 @[to_additive]
 theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset α} :
@@ -1898,11 +1898,11 @@ theorem card_le_card_mul_left {s : Finset α} (hs : s.Nonempty) : t.card ≤ (s 
 #align finset.card_le_card_mul_left Finset.card_le_card_mul_left
 #align finset.card_le_card_add_left Finset.card_le_card_add_left
 
-end LeftCancelSemigroup
+end IsLeftCancelMul
 
 section
 
-variable [RightCancelSemigroup α] [DecidableEq α] (s t : Finset α) (a : α)
+variable [Mul α] [IsRightCancelMul α] [DecidableEq α] (s t : Finset α) (a : α)
 
 @[to_additive (attr := simp)]
 theorem card_mul_singleton : (s * {a}).card = s.card :=

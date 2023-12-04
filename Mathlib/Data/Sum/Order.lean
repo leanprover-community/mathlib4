@@ -737,10 +737,18 @@ namespace WithBot
 `a`. -/
 def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
   ⟨(Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm _ _).trans toLex, @fun a b => by
-    rcases a with (a | _) <;> rcases b with (b | _) <;>
-    simp [swap, Equiv.optionEquivSumPUnit]
-    exact not_coe_le_bot _⟩
+    simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
+      Equiv.sumComm_apply, swap, Lex.toLex_le_toLex, le_refl]
+    rcases a with (a | _) <;> rcases b with (b | _)
+    · simp only [elim_inr, lex_inl_inl, none_le]
+    · simp only [elim_inr, elim_inl, Lex.sep, none_le]
+    · simp only [elim_inl, elim_inr, lex_inr_inl, false_iff]
+      exact not_coe_le_bot _
+    · simp only [elim_inl, lex_inr_inr, some_le_some]
+  ⟩
 #align with_bot.order_iso_punit_sum_lex WithBot.orderIsoPUnitSumLex
+
+
 
 @[simp]
 theorem orderIsoPUnitSumLex_bot : @orderIsoPUnitSumLex α _ ⊥ = toLex (inl PUnit.unit) :=
@@ -771,9 +779,16 @@ namespace WithTop
 `a`. -/
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
   ⟨(Equiv.optionEquivSumPUnit α).trans toLex, @fun a b => by
-    rcases a with (a | _) <;> rcases b with (b | _) <;>
-    simp [swap, Equiv.optionEquivSumPUnit]
-    exact not_top_le_coe _⟩
+    simp only [Equiv.optionEquivSumPUnit, Option.elim, Equiv.trans_apply, Equiv.coe_fn_mk,
+      ge_iff_le, Lex.toLex_le_toLex, le_refl, lex_inr_inr, le_none]
+    rcases a with (a | _) <;> rcases b with (b | _)
+    · simp only [lex_inr_inr, le_none]
+    · simp only [lex_inr_inl, false_iff]
+      exact not_top_le_coe _
+    · simp only [Lex.sep, le_none]
+    · simp only [lex_inl_inl, some_le_some]
+
+  ⟩
 #align with_top.order_iso_sum_lex_punit WithTop.orderIsoSumLexPUnit
 
 @[simp]

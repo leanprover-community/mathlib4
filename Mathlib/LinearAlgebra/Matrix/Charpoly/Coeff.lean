@@ -50,12 +50,12 @@ variable {M : Matrix n n R}
 
 theorem charmatrix_apply_natDegree [Nontrivial R] (i j : n) :
     (charmatrix M i j).natDegree = ite (i = j) 1 0 := by
-  by_cases i = j <;> simp [h, ← degree_eq_iff_natDegree_eq_of_pos (Nat.succ_pos 0)]
+  by_cases h : i = j <;> simp [h, ← degree_eq_iff_natDegree_eq_of_pos (Nat.succ_pos 0)]
 #align charmatrix_apply_nat_degree charmatrix_apply_natDegree
 
 theorem charmatrix_apply_natDegree_le (i j : n) :
     (charmatrix M i j).natDegree ≤ ite (i = j) 1 0 := by
-  split_ifs with h <;> simp [h, natDegree_X_sub_C_le]
+  split_ifs with h <;> simp [h, natDegree_X_le]
 #align charmatrix_apply_nat_degree_le charmatrix_apply_natDegree_le
 
 namespace Matrix
@@ -157,27 +157,25 @@ theorem trace_eq_neg_charpoly_coeff [Nonempty n] (M : Matrix n n R) :
   simp_rw [diag_apply]
 #align matrix.trace_eq_neg_charpoly_coeff Matrix.trace_eq_neg_charpoly_coeff
 
+theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
+    (matPolyEquiv.symm M).map (eval r) = M.eval (scalar n r) := by
+  suffices ((aeval r).mapMatrix.comp matPolyEquiv.symm.toAlgHom : (Matrix n n R)[X] →ₐ[R] _) =
+      (eval₂AlgHom' (AlgHom.id R _) (scalar n r)
+        fun x => (scalar_commute _ (Commute.all _) _).symm) from
+    FunLike.congr_fun this M
+  ext : 1
+  · ext M : 1
+    simp [Function.comp]
+  · simp [smul_eq_diagonal_mul]
+
+theorem matPolyEquiv_eval_eq_map (M : Matrix n n R[X]) (r : R) :
+    (matPolyEquiv M).eval (scalar n r) = M.map (eval r) := by
+  simpa only [AlgEquiv.symm_apply_apply] using (matPolyEquiv_symm_map_eval (matPolyEquiv M) r).symm
+
 -- I feel like this should use `Polynomial.algHom_eval₂_algebraMap`
 theorem matPolyEquiv_eval (M : Matrix n n R[X]) (r : R) (i j : n) :
-    (matPolyEquiv M).eval ((scalar n) r) i j = (M i j).eval r := by
-  unfold Polynomial.eval
-  rw [Polynomial.eval₂_def, Polynomial.eval₂_def]  -- porting note: was `unfold eval₂`
-  trans Polynomial.sum (matPolyEquiv M) fun (e : ℕ) (a : Matrix n n R) => (a * (scalar n) r ^ e) i j
-  · unfold Polynomial.sum
-    simp only [sum_apply]
-    dsimp
-  · simp_rw [← RingHom.map_pow, ← (scalar.commute _ _).eq]
-    simp only [coe_scalar, Matrix.one_mul, RingHom.id_apply, Pi.smul_apply, smul_eq_mul,
-      Algebra.smul_mul_assoc]
-    -- porting note: the `have` was present and unused also in the original
-    --have h : ∀ x : ℕ, (fun (e : ℕ) (a : R) => r ^ e * a) x 0 = 0 := by simp
-    simp only [Polynomial.sum, matPolyEquiv_coeff_apply, mul_comm]
-    simp only [smul_apply, matPolyEquiv_coeff_apply, smul_eq_mul]  -- porting note: added
-    apply (Finset.sum_subset (support_subset_support_matPolyEquiv _ _ _) _).symm
-    intro n _hn h'n
-    rw [not_mem_support_iff] at h'n
-    simp only [h'n, zero_mul]
-    simp only [mul_zero]  -- porting note: added
+    (matPolyEquiv M).eval (scalar n r) i j = (M i j).eval r := by
+  rw [matPolyEquiv_eval_eq_map, map_apply]
 #align matrix.mat_poly_equiv_eval Matrix.matPolyEquiv_eval
 
 theorem eval_det (M : Matrix n n R[X]) (r : R) :
@@ -252,7 +250,8 @@ theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k
   apply coeff_prod_mem_ideal_pow_tsub
   rintro i - (_ | k)
   · rw [Nat.zero_eq]  -- porting note: `rw [Nat.zero_eq]` was not present
-    rw [tsub_zero, pow_one, charmatrix_apply, coeff_sub, coeff_X_mul_zero, coeff_C_zero, zero_sub]
+    rw [tsub_zero, pow_one, charmatrix_apply, coeff_sub, ← smul_one_eq_diagonal, smul_apply,
+      smul_eq_mul, coeff_X_mul_zero, coeff_C_zero, zero_sub]
     apply neg_mem  -- porting note: was `rw [neg_mem_iff]`, but Lean could not synth `NegMemClass`
     exact h (c i) i
   · rw [Nat.succ_eq_one_add, tsub_self_add, pow_zero, Ideal.one_eq_top]
@@ -286,14 +285,15 @@ lemma reverse_charpoly (M : Matrix n n R) :
   have hp : toLaurentAlg M.charpoly = p := by
     simp [charpoly, charmatrix, AlgHom.map_det, map_sub, map_smul']
   have hq : toLaurentAlg M.charpolyRev = q := by
-    simp [charpolyRev, AlgHom.map_det, map_sub, map_smul']
+    simp [charpolyRev, AlgHom.map_det, map_sub, map_smul', smul_eq_diagonal_mul]
   suffices : t_inv ^ Fintype.card n * p = invert q
   · apply toLaurent_injective
     rwa [toLaurent_reverse, ← coe_toLaurentAlg, hp, hq, ← involutive_invert.injective.eq_iff,
       invert.map_mul, involutive_invert p, charpoly_natDegree_eq_dim,
       ← mul_one (Fintype.card n : ℤ), ← T_pow, invert.map_pow, invert_T, mul_comm]
-  rw [← det_smul, smul_sub, coe_scalar, ← smul_assoc, smul_eq_mul, ht, one_smul, invert.map_det]
-  simp [map_smul']
+  rw [← det_smul, smul_sub, scalar_apply, ← diagonal_smul, Pi.smul_def, smul_eq_mul, ht,
+    diagonal_one, invert.map_det]
+  simp [map_smul', smul_eq_diagonal_mul]
 
 @[simp] lemma eval_charpolyRev :
     eval 0 M.charpolyRev = 1 := by

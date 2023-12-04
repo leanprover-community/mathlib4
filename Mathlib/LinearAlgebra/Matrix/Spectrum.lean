@@ -24,7 +24,7 @@ spectral theorem, diagonalization theorem
 
 namespace Matrix
 
-variable {𝕜 : Type*} [IsROrC 𝕜] [DecidableEq 𝕜] {n : Type*} [Fintype n] [DecidableEq n]
+variable {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n] [DecidableEq n]
 
 variable {A : Matrix n n 𝕜}
 
@@ -99,7 +99,7 @@ theorem conjTranspose_eigenvectorMatrix : hA.eigenvectorMatrixᴴ = hA.eigenvect
   rw [← conjTranspose_eigenvectorMatrixInv, conjTranspose_conjTranspose]
 #align matrix.is_hermitian.conj_transpose_eigenvector_matrix Matrix.IsHermitian.conjTranspose_eigenvectorMatrix
 
-/-- *Diagonalization theorem*, *spectral theorem* for matrices; A hermitian matrix can be
+/-- **Diagonalization theorem**, **spectral theorem** for matrices; A hermitian matrix can be
 diagonalized by a change of basis.
 
 For the spectral theorem on linear maps, see

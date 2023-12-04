@@ -19,8 +19,8 @@ open Equiv
 
 instance EquivFunctorUnique : EquivFunctor Unique where
   map e := Equiv.uniqueCongr e
-  map_refl' α := by simp
-  map_trans' := by simp
+  map_refl' α := by simp [eq_iff_true_of_subsingleton]
+  map_trans' := by simp [eq_iff_true_of_subsingleton]
 #align equiv_functor_unique EquivFunctorUnique
 
 instance EquivFunctorPerm : EquivFunctor Perm where
@@ -44,6 +44,6 @@ instance EquivFunctorFinset : EquivFunctor Finset where
 
 instance EquivFunctorFintype : EquivFunctor Fintype where
   map e s := Fintype.ofBijective e e.bijective
-  map_refl' α := by ext; simp
-  map_trans' := by simp
+  map_refl' α := by ext; simp [eq_iff_true_of_subsingleton]
+  map_trans' := by simp [eq_iff_true_of_subsingleton]
 #align equiv_functor_fintype EquivFunctorFintype
