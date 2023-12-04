@@ -90,7 +90,20 @@ def finFunctionEquivLE : BitVec w ≃ (Fin w → Bool) where
   left_inv  := ofLEFn_getLsb'
   right_inv := getLsb'_ofLEFn
 
-proof_wanted ofBEFn_getMsb' (x : BitVec w) : ofBEFn (x.getMsb') = x
-proof_wanted getMsb'_ofBEFn (f : Fin w → Bool) : getMsb' (ofBEFn f) = f
+@[simp]
+theorem ofBEFn_getMsb' (x : BitVec w) : ofBEFn (x.getMsb') = x := by
+  ext i; simp [ofBEFn, getLsb'_ofLEFn, getMsb'_eq_getLsb']
+
+@[simp]
+theorem getMsb'_ofBEFn (f : Fin w → Bool) : getMsb' (ofBEFn f) = f := by
+  ext i; simp [ofBEFn, getLsb'_ofLEFn, getMsb'_eq_getLsb']
+
+/-- Equivalence between `BitVec w` and `Fin w → Bool`, using `Std.BitVec.getMsb'` and
+`Std.BitVec.ofBEFn` as isomorphisms -/
+def finFunctionEquivBE : BitVec w ≃ (Fin w → Bool) where
+  toFun     := getMsb'
+  invFun    := ofBEFn
+  left_inv  := ofBEFn_getMsb'
+  right_inv := getMsb'_ofBEFn
 
 end Std.BitVec
