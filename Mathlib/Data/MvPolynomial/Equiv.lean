@@ -214,9 +214,7 @@ and the ground ring. -/
 @[simps!]
 def isEmptyAlgEquiv [he : IsEmpty σ] : MvPolynomial σ R ≃ₐ[R] R :=
   AlgEquiv.ofAlgHom (aeval (IsEmpty.elim he)) (Algebra.ofId _ _)
-    (by
-      ext
-      simp [Algebra.ofId_apply, algebraMap_eq])
+    (by ext)
     (by
       ext i m
       exact IsEmpty.elim' he i)
@@ -441,7 +439,7 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
   let σ' : Fin (n+1) →₀ ℕ := cons i σ
   convert le_totalDegree (s := σ') _
   · rw [totalDegree, hσ2, sum_cons, add_comm]
-  · rw [←support_coeff_finSuccEquiv]
+  · rw [← support_coeff_finSuccEquiv]
     exact hσ1
 
 theorem finSuccEquiv_support (f : MvPolynomial (Fin (n + 1)) R) :

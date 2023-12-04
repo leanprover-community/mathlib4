@@ -70,7 +70,7 @@ lemma of_aeval_smul (f : R[X]) (m : M) : of R M a (aeval a f • m) = f • of R
     (of R M a).symm (f • m) = aeval a f • (of R M a).symm m := rfl
 
 lemma X_smul_of (m : M) : (X : R[X]) • (of R M a m) = of R M a (a • m) := by
-  rw [←of_aeval_smul, aeval_X]
+  rw [← of_aeval_smul, aeval_X]
 
 lemma of_symm_X_smul (m : AEval R M a) :
     (of R M a).symm ((X : R[X]) • m) = a • (of R M a).symm m := by
@@ -230,7 +230,7 @@ theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
   | succ n hn =>
     rw [Function.iterate_succ, Function.comp_apply, Nat.succ_eq_add_one, add_assoc, ← hn]
     congr 2
-    rw [← Nat.succ_eq_one_add]
+    rw [Nat.one_add]
     exact Finsupp.mapDomain_single
 #align polynomial_module.monomial_smul_single PolynomialModule.monomial_smul_single
 
@@ -306,7 +306,7 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
             · dsimp at H
               exfalso
               apply hpq2
-              rw [←hpq1, H]
+              rw [← hpq1, H]
               simp only [add_le_iff_nonpos_left, nonpos_iff_eq_zero, add_tsub_cancel_right]
             · rfl
           · intro H

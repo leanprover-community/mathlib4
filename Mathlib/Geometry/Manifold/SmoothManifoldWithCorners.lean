@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.Calculus.ContDiff
+import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Geometry.Manifold.ChartedSpace
 
@@ -987,6 +987,10 @@ theorem extend_left_inv {x : M} (hxf : x ∈ f.source) : (f.extend I).symm (f.ex
   (f.extend I).left_inv <| by rwa [f.extend_source]
 #align local_homeomorph.extend_left_inv LocalHomeomorph.extend_left_inv
 
+/-- Variant of `f.extend_left_inv I`, stated in terms of images. -/
+lemma extend_left_inv' (ht: t ⊆ f.source) : ((f.extend I).symm ∘ (f.extend I)) '' t = t :=
+  EqOn.image_eq_self (fun _ hx ↦ f.extend_left_inv I (ht hx))
+
 theorem extend_source_mem_nhds {x : M} (h : x ∈ f.source) : (f.extend I).source ∈ 𝓝 x :=
   (isOpen_extend_source f I).mem_nhds <| by rwa [f.extend_source I]
 #align local_homeomorph.extend_source_mem_nhds LocalHomeomorph.extend_source_mem_nhds
@@ -1048,7 +1052,7 @@ theorem extend_symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {
 
 theorem isOpen_extend_preimage' {s : Set E} (hs : IsOpen s) :
     IsOpen ((f.extend I).source ∩ f.extend I ⁻¹' s) :=
-  (continuousOn_extend f I).preimage_open_of_open (isOpen_extend_source _ _) hs
+  (continuousOn_extend f I).isOpen_inter_preimage (isOpen_extend_source _ _) hs
 #align local_homeomorph.is_open_extend_preimage' LocalHomeomorph.isOpen_extend_preimage'
 
 theorem isOpen_extend_preimage {s : Set E} (hs : IsOpen s) : IsOpen (f.source ∩ f.extend I ⁻¹' s) :=
@@ -1563,3 +1567,21 @@ theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
   simp_all only [mfld_simps, chartAt_comp]
 
 end ExtendedCharts
+
+section Topology
+-- Let `M` be a topological manifold over the field 𝕜.
+variable
+  {E : Type*} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  [HasGroupoid M (contDiffGroupoid 0 I)]
+
+/-- A finite-dimensional manifold modelled on a locally compact field
+  (such as ℝ, ℂ or the `p`-adic numbers) is locally compact. -/
+lemma Manifold.locallyCompact_of_finiteDimensional [LocallyCompactSpace 𝕜]
+    [FiniteDimensional 𝕜 E] : LocallyCompactSpace M := by
+  have : ProperSpace E := FiniteDimensional.proper 𝕜 E
+  have : LocallyCompactSpace H := I.locallyCompactSpace
+  exact ChartedSpace.locallyCompactSpace H M
+
+end Topology

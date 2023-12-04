@@ -79,10 +79,16 @@ instance : MvQPF (Comp F G) where
   abs := Comp.mk ∘ (map fun i ↦ abs) ∘ abs ∘ MvPFunctor.comp.get
   repr {α} := MvPFunctor.comp.mk ∘ repr ∘
               (map fun i ↦ (repr : G i α → (fun i : Fin2 n ↦ Obj (P (G i)) α) i)) ∘ Comp.get
-  abs_repr := by intros; simp only [(· ∘ ·), comp.get_mk, abs_repr, map_map,
-                                    TypeVec.comp, MvFunctor.id_map', Comp.mk_get]
-  abs_map := by intros; simp only [(· ∘ ·)]; rw [← abs_map]
-                simp only [comp.get_map, map_map, TypeVec.comp, abs_map, map_mk]
+  abs_repr := by
+    intros
+    simp (config := { unfoldPartialApp := true }) only [Function.comp_def, comp.get_mk, abs_repr,
+      map_map, TypeVec.comp, MvFunctor.id_map', Comp.mk_get]
+  abs_map := by
+    intros
+    simp only [(· ∘ ·)]
+    rw [← abs_map]
+    simp (config := { unfoldPartialApp := true }) only [comp.get_map, map_map, TypeVec.comp,
+      abs_map, map_mk]
 
 end Comp
 

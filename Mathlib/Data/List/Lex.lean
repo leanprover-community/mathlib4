@@ -231,7 +231,7 @@ theorem cons_le_cons [LinearOrder α] (a : α) {l l' : List α} (h : l' ≤ l) :
   rw [le_iff_lt_or_eq] at h ⊢
   refine h.imp ?_ (congr_arg _)
   intro h
-  have haa : ¬(a < a) := gt_irrefl a
+  have haa := lt_irrefl a
   exact (List.lt_iff_lex_lt _ _).mp
     (List.lt.tail haa haa ((List.lt_iff_lex_lt _ _).mpr h))
 

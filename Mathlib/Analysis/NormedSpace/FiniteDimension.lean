@@ -653,39 +653,44 @@ summable if and only if the series `∑ x, f x` is unconditionally summable. One
 any complete normed space, while the other holds only in finite dimensional spaces. -/
 theorem summable_norm_iff {α E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : α → E} : (Summable fun x => ‖f x‖) ↔ Summable f := by
-  refine' ⟨summable_of_summable_norm, fun hf => _⟩
+  refine ⟨Summable.of_norm, fun hf ↦ ?_⟩
   -- First we use a finite basis to reduce the problem to the case `E = Fin N → ℝ`
   suffices ∀ {N : ℕ} {g : α → Fin N → ℝ}, Summable g → Summable fun x => ‖g x‖ by
     obtain v := finBasis ℝ E
     set e := v.equivFunL
-    have : Summable fun x => ‖e (f x)‖ := this (e.summable.2 hf)
-    refine'
-      summable_of_norm_bounded _ (this.mul_left ↑‖(e.symm : (Fin (finrank ℝ E) → ℝ) →L[ℝ] E)‖₊)
-        fun i => _
+    have H : Summable fun x => ‖e (f x)‖ := this (e.summable.2 hf)
+    refine .of_norm_bounded _ (H.mul_left ↑‖(e.symm : (Fin (finrank ℝ E) → ℝ) →L[ℝ] E)‖₊) fun i ↦ ?_
     simpa using (e.symm : (Fin (finrank ℝ E) → ℝ) →L[ℝ] E).le_op_norm (e <| f i)
   clear! E
   -- Now we deal with `g : α → Fin N → ℝ`
   intro N g hg
   have : ∀ i, Summable fun x => ‖g x i‖ := fun i => (Pi.summable.1 hg i).abs
-  refine'
-    summable_of_norm_bounded _ (summable_sum fun i (_ : i ∈ Finset.univ) => this i) fun x => _
+  refine' .of_norm_bounded _ (summable_sum fun i (_ : i ∈ Finset.univ) => this i) fun x => _
   rw [norm_norm, pi_norm_le_iff_of_nonneg]
   · refine' fun i => Finset.single_le_sum (f := fun i => ‖g x i‖) (fun i _ => _) (Finset.mem_univ i)
     exact norm_nonneg (g x i)
   · exact Finset.sum_nonneg fun _ _ => norm_nonneg _
 #align summable_norm_iff summable_norm_iff
 
+alias ⟨_, Summable.norm⟩ := summable_norm_iff
+
 theorem summable_of_isBigO' {ι E F : Type*} [NormedAddCommGroup E] [CompleteSpace E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {f : ι → E} {g : ι → F}
     (hg : Summable g) (h : f =O[cofinite] g) : Summable f :=
-  summable_of_isBigO (summable_norm_iff.mpr hg) h.norm_right
+  summable_of_isBigO hg.norm h.norm_right
 set_option linter.uppercaseLean3 false in
 #align summable_of_is_O' summable_of_isBigO'
+
+lemma Asymptotics.IsBigO.comp_summable {ι E F : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    [NormedAddCommGroup F] [CompleteSpace F]
+    {f : E → F} (hf : f =O[𝓝 0] id) {g : ι → E} (hg : Summable g) : Summable (f ∘ g) :=
+  .of_norm <| hf.comp_summable_norm hg.norm
 
 theorem summable_of_isBigO_nat' {E F : Type*} [NormedAddCommGroup E] [CompleteSpace E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {f : ℕ → E} {g : ℕ → F}
     (hg : Summable g) (h : f =O[atTop] g) : Summable f :=
-  summable_of_isBigO_nat (summable_norm_iff.mpr hg) h.norm_right
+  summable_of_isBigO_nat hg.norm h.norm_right
 set_option linter.uppercaseLean3 false in
 #align summable_of_is_O_nat' summable_of_isBigO_nat'
 

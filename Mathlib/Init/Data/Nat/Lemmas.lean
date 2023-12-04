@@ -187,9 +187,9 @@ instance linearOrder : LinearOrder ℕ where
 
 #align nat.le_succ_of_pred_le Nat.le_succ_of_pred_le
 
-#align nat.le_lt_antisymm Nat.le_lt_antisymm
+#align nat.le_lt_antisymm Nat.le_lt_asymm
 
-#align nat.lt_le_antisymm Nat.lt_le_antisymm
+#align nat.lt_le_antisymm Nat.lt_le_asymm
 
 #align nat.lt_asymm Nat.lt_asymm
 
@@ -416,7 +416,7 @@ Many lemmas are proven more generally in mathlib `algebra/order/sub` -/
 
 #align nat.sub_one Nat.sub_one
 
-#align nat.succ_sub_one Nat.succ_sub_one
+#align nat.succ_sub_one Nat.add_one_sub_one
 
 #align nat.succ_pred_eq_of_pos Nat.succ_pred_eq_of_pos
 
@@ -784,11 +784,11 @@ lemma to_digits_core_length (b : Nat) (h : 2 <= b) (f n e : Nat)
             to_digits_core_lens_eq b f (n / b) (Nat.digitChar $ n % b), if_false]
           exact Nat.succ_le_succ ih
       case neg =>
-        have _ : e = 0 := Nat.eq_zero_of_nonpos e h_pred_pos
+        have _ : e = 0 := Nat.eq_zero_of_not_pos h_pred_pos
         rw [‹e = 0›]
         have _ : b ^ 1 = b := by simp only [pow_succ, pow_zero, Nat.one_mul]
         have _ : n < b := ‹b ^ 1 = b› ▸ (‹e = 0› ▸ hlt : n < b ^ Nat.succ 0)
-        simp only [(@Nat.div_eq_of_lt n b ‹n < b› : n / b = 0), if_true, List.length]
+        simp [(@Nat.div_eq_of_lt n b ‹n < b› : n / b = 0)]
 
 /-- The core implementation of `Nat.repr` returns a String with length less than or equal to the
 number of digits in the decimal number (represented by `e`). For example, the decimal string

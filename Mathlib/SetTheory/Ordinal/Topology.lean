@@ -229,7 +229,7 @@ theorem enumOrd_isNormal_iff_isClosed (hs : s.Unbounded (· < ·)) :
       b hb
     rw [← hb]
     apply Hs.monotone
-    by_contra' hba
+    by_contra! hba
     apply (Hs (lt_succ b)).not_le
     rw [hb]
     exact le_bsup.{u, u} _ _ (ha.2 _ hba)

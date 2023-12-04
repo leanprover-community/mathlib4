@@ -49,6 +49,9 @@ theorem IsNilpotent.mk [Zero R] [Pow R ℕ] (x : R) (n : ℕ) (e : x ^ n = 0) : 
   ⟨1, pow_one 0⟩
 #align is_nilpotent.zero IsNilpotent.zero
 
+theorem not_isNilpotent_one [MonoidWithZero R] [Nontrivial R] :
+    ¬ IsNilpotent (1 : R) := fun ⟨_, H⟩ ↦ zero_ne_one (H.symm.trans (one_pow _))
+
 theorem IsNilpotent.neg [Ring R] (h : IsNilpotent x) : IsNilpotent (-x) := by
   obtain ⟨n, hn⟩ := h
   use n
@@ -59,7 +62,7 @@ lemma IsNilpotent.pow {n : ℕ} {S : Type*} [MonoidWithZero S] {x : S}
     (hx : IsNilpotent x) : IsNilpotent (x ^ n.succ) := by
   obtain ⟨N,hN⟩ := hx
   use N
-  rw [←pow_mul, Nat.succ_mul, pow_add, hN, mul_zero]
+  rw [← pow_mul, Nat.succ_mul, pow_add, hN, mul_zero]
 
 lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
     (hx : IsNilpotent x) (hn : n ≠ 0) : IsNilpotent (x ^ n) := by
@@ -72,11 +75,23 @@ theorem isNilpotent_neg_iff [Ring R] : IsNilpotent (-x) ↔ IsNilpotent x :=
   ⟨fun h => neg_neg x ▸ h.neg, fun h => h.neg⟩
 #align is_nilpotent_neg_iff isNilpotent_neg_iff
 
+lemma IsNilpotent.smul [MonoidWithZero R] [MonoidWithZero S] [MulActionWithZero R S]
+    [SMulCommClass R S S] [IsScalarTower R S S] {a : S} (ha : IsNilpotent a) (t : R) :
+    IsNilpotent (t • a) := by
+  obtain ⟨k, ha⟩ := ha
+  use k
+  rw [smul_pow, ha, smul_zero]
+
 theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
     [MonoidWithZeroHomClass F R S] (hr : IsNilpotent r) (f : F) : IsNilpotent (f r) := by
   use hr.choose
   rw [← map_pow, hr.choose_spec, map_zero]
 #align is_nilpotent.map IsNilpotent.map
+
+lemma IsNilpotent.map_iff [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
+    [MonoidWithZeroHomClass F R S] {f : F} (hf : Function.Injective f) :
+    IsNilpotent (f r) ↔ IsNilpotent r :=
+  ⟨fun ⟨k, hk⟩ ↦ ⟨k, (map_eq_zero_iff f hf).mp <| by rwa [map_pow]⟩, fun h ↦ h.map f⟩
 
 theorem IsNilpotent.sub_one_isUnit [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r - 1) := by
   obtain ⟨n, hn⟩ := hnil
@@ -190,7 +205,9 @@ protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) (h_comm : ∀ i j, i ∈ s → j ∈ s → Commute (f i) (f j)) :
     IsNilpotent (∑ i in s, f i) := by
   classical
-  induction' s using Finset.induction with j s hj ih; simp
+  induction s using Finset.induction with
+  | empty => simp
+  | @insert j s hj ih => ?_
   rw [Finset.sum_insert hj]
   apply Commute.isNilpotent_add
   · exact Commute.sum_right _ _ _ (fun i hi ↦ h_comm _ _ (by simp) (by simp [hi]))
@@ -322,3 +339,16 @@ theorem IsNilpotent.mapQ (hnp : IsNilpotent f) : IsNilpotent (p.mapQ p f hp) := 
 #align module.End.is_nilpotent.mapq Module.End.IsNilpotent.mapQ
 
 end Module.End
+
+lemma NoZeroSMulDivisors.isReduced (R M : Type*)
+    [MonoidWithZero R] [Zero M] [MulActionWithZero R M] [Nontrivial M] [NoZeroSMulDivisors R M] :
+    IsReduced R := by
+  refine ⟨fun x ⟨k, hk⟩ ↦ ?_⟩
+  induction' k with k ih
+  · rw [Nat.zero_eq, pow_zero] at hk
+    exact eq_zero_of_zero_eq_one hk.symm x
+  · obtain ⟨m : M, hm : m ≠ 0⟩ := exists_ne (0 : M)
+    have : x ^ (k + 1) • m = 0 := by simp only [hk, zero_smul]
+    rw [pow_succ, mul_smul] at this
+    rcases eq_zero_or_eq_zero_of_smul_eq_zero this with rfl | hx; rfl
+    exact ih <| (eq_zero_or_eq_zero_of_smul_eq_zero hx).resolve_right hm
