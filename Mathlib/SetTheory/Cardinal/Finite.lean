@@ -119,7 +119,6 @@ theorem card_eq_two_iff' (x : α) : Nat.card α = 2 ↔ ∃! y, y ≠ x :=
 @[simp] theorem card_of_isEmpty [IsEmpty α] : Nat.card α = 0 := by
   let A : Fintype α := Fintype.ofIsEmpty
   simp [Nat.card]
-  infer_instance
 #align nat.card_of_is_empty Nat.card_of_isEmpty
 
 @[simp]

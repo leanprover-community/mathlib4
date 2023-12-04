@@ -235,6 +235,7 @@ instance subsingleton_mk₂_relations {c f₁ f₂ : Type u} {r₁ r₂ : Type v
     Nat.casesOn n h1 fun n => Nat.casesOn n h2 fun _ => ⟨fun x => PEmpty.elim x⟩
 #align first_order.language.subsingleton_mk₂_relations FirstOrder.Language.subsingleton_mk₂_relations
 
+attribute [local instance] Fintype.ofIsEmpty in
 @[simp]
 theorem empty_card : Language.empty.card = 0 := by
   simp [card_eq_card_functions_add_card_relations]
