@@ -134,12 +134,6 @@ theorem coe_toAddMonoidHom_injective : Injective ((↑) : CentroidHom α → α 
     this
 #align centroid_hom.coe_to_add_monoid_hom_injective CentroidHom.coe_toAddMonoidHom_injective
 
-lemma map_mul_left (f : CentroidHom α) (a b : α) : f (a * b) = a * f b :=
-    CentroidHomClass.map_mul_left _ _ _
-
-lemma map_mul_right (f : CentroidHom α) (a b : α) : f (a * b) = f a * b :=
-    CentroidHomClass.map_mul_right _ _ _
-
 /-- Turn a centroid homomorphism into an additive monoid endomorphism. -/
 def toEnd (f : CentroidHom α) : AddMonoid.End α :=
   (f : α →+ α)
