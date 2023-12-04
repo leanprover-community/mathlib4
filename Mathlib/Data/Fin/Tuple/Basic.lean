@@ -661,9 +661,8 @@ theorem append_right_cons {n m} {α : Type*} (xs : Fin n → α) (y : α) (ys : 
       Fin.append (Fin.snoc xs y) ys ∘ Fin.cast (Nat.succ_add_eq_succ_add ..).symm := by
   rw [append_left_snoc]; rfl
 
-theorem cons_comp_rev {α n} (a : α) (f : Fin n → α) :
-    Fin.cons a f ∘ Fin.rev = Fin.snoc (f ∘ Fin.rev) a := by
-  funext i
+theorem cons_rev {α n} (a : α) (f : Fin n → α) (i : Fin <| n + 1) :
+    cons (α := fun _ => α) a f i.rev = snoc (α := fun _ => α) (f ∘ Fin.rev : Fin _ → α) a i := by
   simp only [Function.comp_apply, Function.comp_def]
   induction' f using Fin.consInduction with n b f ih generalizing a
   · funext; simp [Fin.rev, Fin.snoc]
@@ -691,6 +690,10 @@ theorem cons_comp_rev {α n} (a : α) (f : Fin n → α) :
         · exact lt_succ_n
       simp only [Fin.rev_last, Fin.zero_eta, Fin.cons_zero]
 
+theorem cons_comp_rev {α n} (a : α) (f : Fin n → α) :
+    Fin.cons a f ∘ Fin.rev = Fin.snoc (f ∘ Fin.rev) a := by
+  funext i; exact cons_rev ..
+
 theorem snoc_comp_rev {α n} (a : α) (f : Fin n → α) :
     Fin.snoc f a ∘ Fin.rev = Fin.cons a (f ∘ Fin.rev) := by
   have comp_rev_inj : Function.Injective (· ∘ Fin.rev : (Fin (n+1) → α) → _) :=
@@ -698,6 +701,11 @@ theorem snoc_comp_rev {α n} (a : α) (f : Fin n → α) :
   apply comp_rev_inj
   simp only [cons_comp_rev]
   simp only [comp_def, rev_rev]
+
+theorem snoc_rev {α n} (a : α) (f : Fin n → α) (i : Fin <| n + 1) :
+    snoc (α := fun _ => α) f a i.rev = cons (α := fun _ => α) a (f ∘ Fin.rev : Fin _ → α) i := by
+  show (Fin.snoc f a ∘ Fin.rev) i = _
+  rw [snoc_comp_rev]
 
 theorem comp_init {α : Type*} {β : Type*} (g : α → β) (q : Fin n.succ → α) :
     g ∘ init q = init (g ∘ q) := by
