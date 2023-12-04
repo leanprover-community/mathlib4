@@ -293,9 +293,9 @@ lemma exists_isIntegralCurveAt_of_contMDiffAt_boundaryless [I.Boundaryless] :
     ∃ (γ : ℝ → M), γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ :=
   exists_isIntegralCurveAt_of_contMDiffAt hv t₀ I.isInteriorPoint
 
-example {γ γ' : ℝ → M} (h : γ t₀ = γ' t₀) (ht : I.IsInteriorPoint (γ t₀))
+example {γ γ' : ℝ → M}
     (hv : ContMDiffAt I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)) (γ t₀))
-    (hγ : IsIntegralCurveAt γ v t₀) (hγ' : IsIntegralCurveAt γ' v t₀) :
+    (hγ : IsIntegralCurveAt γ v t₀) (hγ' : IsIntegralCurveAt γ' v t₀) (h : γ t₀ = γ' t₀) :
     ∃ t₁ > t₀, ∀ t ∈ Icc t₀ t₁, γ t = γ' t := by
   obtain ⟨ε, hε, hγ⟩ := hγ
   obtain ⟨ε', hε', hγ'⟩ := hγ'

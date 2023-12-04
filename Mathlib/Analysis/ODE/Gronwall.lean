@@ -239,11 +239,47 @@ theorem ODE_solution_unique_of_mem_set {v : ℝ → E → E} {s : ℝ → Set E}
     {f g : ℝ → E} {a b : ℝ} (hf : ContinuousOn f (Icc a b))
     (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (v t (f t)) (Ici t) t) (hfs : ∀ t ∈ Ico a b, f t ∈ s t)
     (hg : ContinuousOn g (Icc a b)) (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t)
-    (hgs : ∀ t ∈ Ico a b, g t ∈ s t) (ha : f a = g a) : ∀ t ∈ Icc a b, f t = g t := fun t ht ↦ by
+    (hgs : ∀ t ∈ Ico a b, g t ∈ s t) (ha : f a = g a) : EqOn f g (Icc a b) := fun t ht ↦ by
   have := dist_le_of_trajectories_ODE_of_mem_set hv hf hf' hfs hg hg' hgs (dist_le_zero.2 ha) t ht
   rwa [zero_mul, dist_le_zero] at this
 set_option linter.uppercaseLean3 false in
 #align ODE_solution_unique_of_mem_set ODE_solution_unique_of_mem_set
+
+-- Ico rather than Icc
+theorem ODE_solution_unique_of_mem_set_Ioo {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
+    (hv : ∀ t, LipschitzOnWith K (v t) (s t))
+    {f g : ℝ → E} {a b : ℝ} (hf : ContinuousOn f (Ico a b))
+    (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (v t (f t)) (Ici t) t) (hfs : ∀ t ∈ Ico a b, f t ∈ s t)
+    (hg : ContinuousOn g (Ico a b)) (hg' : ∀ t ∈ Ico a b, HasDerivWithinAt g (v t (g t)) (Ici t) t)
+    (hgs : ∀ t ∈ Ico a b, g t ∈ s t) (ha : f a = g a) : EqOn f g (Ico a b) := fun _ ht ↦
+  ODE_solution_unique_of_mem_set hv
+    (hf.mono (Icc_subset_Ico_right ht.2)) (fun _ ht' ↦ hf' _ ⟨ht'.1, lt_trans ht'.2 ht.2⟩)
+    (fun _ ht' ↦ hfs _ ⟨ht'.1, lt_trans ht'.2 ht.2⟩)
+    (hg.mono (Icc_subset_Ico_right ht.2)) (fun _ ht' ↦ hg' _ ⟨ht'.1, lt_trans ht'.2 ht.2⟩)
+    (fun _ ht' ↦ hgs _ ⟨ht'.1, lt_trans ht'.2 ht.2⟩) ha ⟨ht.1, le_refl _⟩
+
+-- starting point t₀ can be inside [a, b]
+example {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
+    (hv : ∀ t, LipschitzOnWith K (v t) (s t))
+    {f g : ℝ → E} {a b t₀ : ℝ} (ht : t₀ ∈ Ioo a b) (hf : ContinuousOn f (Ioo a b))
+    (hf' : ∀ t ∈ Ioo a b, HasDerivAt f (v t (f t)) t) (hfs : ∀ t ∈ Ioo a b, f t ∈ s t)
+    (hg : ContinuousOn g (Ioo a b)) (hg' : ∀ t ∈ Ioo a b, HasDerivAt g (v t (g t)) t)
+    (hgs : ∀ t ∈ Ioo a b, g t ∈ s t) (ha : f t₀ = g t₀) : EqOn f g (Ioo a b) := by
+  have hu : Ioo a b ⊆ Ioc a t₀ ∪ Ico t₀ b := sorry
+  apply EqOn.mono hu
+  apply EqOn.union
+  · sorry -- need to reverse time
+  · exact ODE_solution_unique_of_mem_set_Ioo hv
+      (hf.mono (Ico_subset_Ioo_left ht.1))
+      (fun _ ht' => HasDerivAt.hasDerivWithinAt <| hf' _ <|
+        mem_of_mem_of_subset ht' (Ico_subset_Ioo_left ht.1))
+      (fun _ ht' => hfs _ <| mem_of_mem_of_subset ht' (Ico_subset_Ioo_left ht.1))
+      (hg.mono (Ico_subset_Ioo_left ht.1))
+      (fun _ ht' => HasDerivAt.hasDerivWithinAt <| hg' _ <|
+        mem_of_mem_of_subset ht' (Ico_subset_Ioo_left ht.1))
+      (fun _ ht' => hgs _ <| mem_of_mem_of_subset ht' (Ico_subset_Ioo_left ht.1)) ha
+
+-- another Ioo version t₀ ∈ (a, b)
 
 /-- There exists only one solution of an ODE \(\dot x=v(t, x)\) with
 a given initial value provided that RHS is Lipschitz continuous in `x`. -/
