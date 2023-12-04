@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Sites.RegularExtensive
 import Mathlib.Topology.Category.Profinite.Limits
 
 /-!
-# Effective epimorhpisms and finite effective epimorphic families in `Profinite`
+# Effective epimorphisms and finite effective epimorphic families in `Profinite`
 
 This file proves that `Profinite` is `Preregular`. Together with the fact that it is
 `FinitaryPreExtensive`, this implies that `Profinite` is `Precoherent`.
