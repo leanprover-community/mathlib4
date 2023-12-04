@@ -410,7 +410,8 @@ theorem comp_mul_comm (T S : CentroidHom α) (a b : α) : (T ∘ S) (a * b) = (S
 local notation "L" => AddMonoid.End.mulLeft
 local notation "R" => AddMonoid.End.mulRight
 
-/-- Ring hom from the centroid into the additive monoid endomorphisms. -/
+/-- The canonical ring homomorphism from the centroid into the additive monoid
+endomorphisms. This is `CentroidHom.toEnd` upgraded to a ring homomorphism. -/
 def toEndRingHom (α : Type*) [NonUnitalNonAssocSemiring α] :
     CentroidHom α →+* AddMonoid.End α where
   toFun := toEnd
