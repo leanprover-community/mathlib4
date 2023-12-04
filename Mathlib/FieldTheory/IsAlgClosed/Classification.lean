@@ -213,8 +213,6 @@ theorem ringEquivOfCardinalEqOfCharEq (p : ℕ) [CharP K p] [CharP L p] (hK : �
   · haveI : Fact p.Prime := ⟨hp⟩
     exact ringEquivOfCardinalEqOfCharP p hK hKL
   · simp only [hp] at *
-    letI : CharZero K := CharP.charP_to_charZero K
-    letI : CharZero L := CharP.charP_to_charZero L
     exact ringEquivOfCardinalEqOfCharZero hK hKL
 #align is_alg_closed.ring_equiv_of_cardinal_eq_of_char_eq IsAlgClosed.ringEquivOfCardinalEqOfCharEq
 

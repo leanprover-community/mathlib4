@@ -60,7 +60,6 @@ theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [LocalRing R] (q : �
     -- Definition of prime power: `∃ r n, Prime r ∧ 0 < n ∧ r ^ n = q`.
     exact ⟨r, ⟨n, ⟨r_prime.prime, ⟨pos_iff_ne_zero.mpr n_pos, q_eq_rn.symm⟩⟩⟩⟩
   · haveI K_char_p_0 := ringChar.of_eq r_zero
-    haveI K_char_zero : CharZero K := CharP.charP_to_charZero K
     haveI R_char_zero := RingHom.charZero (LocalRing.residue R)
     -- Finally, `r = 0` would lead to a contradiction:
     have q_zero := CharP.eq R char_R_q (CharP.ofCharZero R)

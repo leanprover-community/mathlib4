@@ -75,6 +75,9 @@ local macro "map_simp" : tactic =>
 
 universe u v w
 
+-- Disabled locally for performance reasons
+attribute [-instance] StrictOrderedSemiring.to_charZero
+
 namespace WeierstrassCurve
 
 open CoordinateRing Ideal Polynomial
