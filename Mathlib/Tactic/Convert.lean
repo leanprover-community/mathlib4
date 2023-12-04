@@ -136,7 +136,7 @@ That is, `convert_to g using n` is equivalent to `convert (?_ : g) using n`.
 The syntax for `convert_to` is the same as for `convert`, and it has variations such as
 `convert_to ← g` and `convert_to (config := {transparency := .default}) g`.
 -/
-syntax (name := convertTo) "convert_to" (Parser.Tactic.config)? " ← "? ppSpace term (" using " num)?
+syntax (name := convertTo) "convert_to" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
   (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 macro_rules
