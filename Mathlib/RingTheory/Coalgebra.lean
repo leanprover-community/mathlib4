@@ -10,7 +10,7 @@ import Mathlib.RingTheory.TensorProduct
 
 In this file we define `Coalgebra`, and provide instances for:
 
-* Commutative rings: `CommRing.toCoalgebra`
+* Commutative rings: `CommSemiring.toCoalgebra`
 * Finitely supported functions: `Finsupp.instCoalgebra`
 
 ## References
@@ -26,7 +26,7 @@ open scoped TensorProduct
 
 /-- A coalgebra over a commutative ring `R` is a module over `R` equipped with a coassociative
 comultiplication `Δ` and a counit `ε` obeying the left and right conunitality laws. -/
-class Coalgebra (R : Type u) (A : Type v) [CommRing R] [AddCommGroup A] [Module R A] where
+class Coalgebra (R : Type u) (A : Type v) [CommSemiring R] [AddCommMonoid A] [Module R A] where
   /-- The comultiplication of the coalgebra -/
   comul : A →ₗ[R] A ⊗[R] A
   /-- The counit of the coalgebra -/
@@ -40,7 +40,7 @@ class Coalgebra (R : Type u) (A : Type v) [CommRing R] [AddCommGroup A] [Module 
 
 namespace Coalgebra
 variable {R : Type u} {A : Type v}
-variable [CommRing R] [AddCommGroup A] [Module R A] [Coalgebra R A]
+variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
 
 @[simp]
 theorem coassoc_apply (a : A) :
@@ -67,12 +67,12 @@ theorem lTensor_counit_comul (a : A) : counit.lTensor A (comul a) = a ⊗ₜ[R] 
   LinearMap.congr_fun lTensor_counit_comp_comul a
 
 end Coalgebra
-section CommRing
-variable (R : Type u) [CommRing R]
+section CommSemiring
+variable (R : Type u) [CommSemiring R]
 
 open Coalgebra
 
-namespace CommRing
+namespace CommSemiring
 
 instance toCoalgebra : Coalgebra R R where
   comul := (TensorProduct.mk R R R) 1
@@ -87,7 +87,7 @@ theorem comul_apply (r : R) : comul r = 1 ⊗ₜ[R] r := rfl
 @[simp]
 theorem counit_apply (r : R) : counit r = r := rfl
 
-end CommRing
+end CommSemiring
 
 namespace Finsupp
 variable (ι : Type v)
@@ -116,4 +116,4 @@ theorem counit_single (i : ι) (r : R) : counit (Finsupp.single i r) = r := by
 
 end Finsupp
 
-end CommRing
+end CommSemiring
