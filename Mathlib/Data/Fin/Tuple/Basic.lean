@@ -439,6 +439,9 @@ theorem repeat_add {α : Type*} (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repea
   · simp [modNat, Nat.add_mod]
 #align fin.repeat_add Fin.repeat_add
 
+proof_wanted repeat_comp_rev {α} (a : Fin n → α) :
+  (Fin.repeat m a) ∘ Fin.rev = Fin.repeat m (a ∘ Fin.rev)
+
 end Repeat
 
 end Tuple
@@ -986,6 +989,9 @@ theorem preimage_insertNth_Icc_of_not_mem {i : Fin (n + 1)} {x : α i} {q₁ q�
   Set.ext fun p ↦ by
     simp only [mem_preimage, insertNth_mem_Icc, hx, false_and_iff, mem_empty_iff_false]
 #align fin.preimage_insert_nth_Icc_of_not_mem Fin.preimage_insertNth_Icc_of_not_mem
+
+proof_wanted insertNth_comp_rev {α} (i : Fin (n + 1)) (x : α) (p : Fin n → α) :
+  (Fin.insertNth i x p) ∘ Fin.rev = Fin.insertNth (Fin.rev i) x (p ∘ Fin.rev)
 
 end InsertNth
 
