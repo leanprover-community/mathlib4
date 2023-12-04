@@ -180,6 +180,15 @@ instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
 -- TODO : was map_smulₛₗ
   map_smulₛₗ := (·.map_smul') --map_smul' Porting note: TODO why did I need to change this?
 
+-- TODO : Necessary ?
+instance {R S M N : Type*} [Semiring R] [Semiring S]
+    {φ : R →+* S} {ψ : S →+* R}
+    [RingHomInvPair ψ φ] [RingHomInvPair φ ψ]
+    [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S N] :
+    FunLike (M ≃ₛₗ[φ] N) M (fun _ => N) :=
+  -- MulActionSemiHomClass.toFunLike
+  AddHomClass.toFunLike
+
 -- Porting note: moved to a lower line since there is no shortcut `CoeFun` instance any more
 @[simp]
 theorem coe_mk {to_fun inv_fun map_add map_smul left_inv right_inv} :
