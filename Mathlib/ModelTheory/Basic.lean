@@ -96,7 +96,7 @@ theorem lift_mk {i : ℕ} :
     Cardinal.lift.{v,u} #(Sequence₂ a₀ a₁ a₂ i)
       = #(Sequence₂ (ULift.{v,u} a₀) (ULift.{v,u} a₁) (ULift.{v,u} a₂) i) := by
   rcases i with (_ | _ | _ | i) <;>
-    simp only [Sequence₂, mk_uLift, mk_fintype, Fintype.card_of_isEmpty, Nat.cast_zero, lift_zero]
+    simp only [Sequence₂, mk_uLift, mk_fintype, Nat.cast_zero, lift_zero, Fintype.card_pempty]
 #align first_order.sequence₂.lift_mk FirstOrder.Sequence₂.lift_mk
 
 @[simp]
@@ -236,7 +236,9 @@ instance subsingleton_mk₂_relations {c f₁ f₂ : Type u} {r₁ r₂ : Type v
 #align first_order.language.subsingleton_mk₂_relations FirstOrder.Language.subsingleton_mk₂_relations
 
 @[simp]
-theorem empty_card : Language.empty.card = 0 := by simp [card_eq_card_functions_add_card_relations]
+theorem empty_card : Language.empty.card = 0 := by
+  simp [card_eq_card_functions_add_card_relations]
+
 #align first_order.language.empty_card FirstOrder.Language.empty_card
 
 instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
