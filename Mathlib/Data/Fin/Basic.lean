@@ -408,6 +408,10 @@ theorem revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDu
 @[simp] lemma rev_last (n : ℕ) : Fin.rev (Fin.last n) = 0 := by
   rw [ext_iff, val_rev, val_last, val_zero, tsub_self]
 
+theorem cast_rev (i : Fin n) (h : n = m) :
+    cast h i.rev = (i.cast h).rev := by
+  simp [cast, rev, h]
+
 #align fin.last Fin.last
 #align fin.coe_last Fin.val_last
 
