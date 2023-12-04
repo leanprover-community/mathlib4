@@ -24,14 +24,6 @@ for Dirichlet L-functions.
 
 open Complex
 
--- should perhaps go to `Mathlib.Analysis.SpecialFunctions.Pow.Real`
-lemma Nat.complex_norm_cpow_eq_rpow_re (n : ℕ) {s : ℂ} (h : s.re ≠ 0) :
-    ‖(n : ℂ) ^ s‖ = (n : ℝ) ^ s.re := by
-  rcases n.eq_zero_or_pos with rfl | H
-  · have hs : s ≠ 0 := fun H ↦ H ▸ h <| rfl
-    simp [zero_cpow hs, Real.zero_rpow h]
-  · exact abs_cpow_eq_rpow_re_of_pos (Nat.cast_pos.mpr H) s
-
 /-- The `n`th summand in the Dirichlet series giving the Riemann ζ function at `s`. -/
 noncomputable
 def riemannZetaSummand (s : ℂ) (n : ℕ) : ℂ := (n : ℂ) ^ (-s)
@@ -61,23 +53,18 @@ def dirichletSummandHom {n : ℕ} (χ : DirichletCharacter ℂ n) (hs : s ≠ 0)
     simpa only [Nat.cast_mul, IsUnit.mul_iff, not_and, map_mul, riemannZetaSummand.mul]
       using mul_mul_mul_comm ..
 
-lemma Complex.ne_zero_of_one_lt_re (hs : 1 < s.re) : s ≠ 0 :=
-  fun h ↦ ((zero_re ▸ h ▸ hs).trans zero_lt_one).false
-
-lemma Complex.re_neg_ne_zero_of_one_lt_re (hs : 1 < s.re) : (-s).re ≠ 0 :=
-  ne_iff_lt_or_gt.mpr <| Or.inl <| neg_re s ▸ by linarith
-
 /-- When `s.re > 1`, the map `n ↦ n^(-s)` is norm-summable. -/
 lemma summable_riemannZetaSummand (hs : 1 < s.re) :
-    Summable (fun n ↦ ‖riemannZetaSummandHom (Complex.ne_zero_of_one_lt_re hs) n‖) := by
+    Summable (fun n ↦ ‖riemannZetaSummandHom (ne_zero_of_one_lt_re hs) n‖) := by
   simp only [riemannZetaSummandHom, riemannZetaSummand, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   convert Real.summable_nat_rpow_inv.mpr hs with n
-  rw [n.complex_norm_cpow_eq_rpow_re <| Complex.re_neg_ne_zero_of_one_lt_re hs, neg_re,
-    Real.rpow_neg <| Nat.cast_nonneg _]
+  rw [(show (n : ℂ) = (n : ℝ) from rfl), Complex.norm_eq_abs,
+    abs_cpow_eq_rpow_re_of_nonneg (Nat.cast_nonneg n) <| re_neg_ne_zero_of_one_lt_re hs,
+    neg_re, Real.rpow_neg <| Nat.cast_nonneg n]
 
 /-- When `s.re > 1`, the map `n ↦ χ(n) * n^(-s)` is norm-summable. -/
 lemma summable_dirichletSummand {N : ℕ} (χ : DirichletCharacter ℂ N) (hs : 1 < s.re) :
-    Summable (fun n ↦ ‖dirichletSummandHom χ (Complex.ne_zero_of_one_lt_re hs) n‖) := by
+    Summable (fun n ↦ ‖dirichletSummandHom χ (ne_zero_of_one_lt_re hs) n‖) := by
   simp only [dirichletSummandHom, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, norm_mul]
   exact (summable_riemannZetaSummand hs).of_nonneg_of_le (fun _ ↦ by positivity)
     (fun n ↦ mul_le_of_le_one_left (norm_nonneg _) <| χ.norm_le_one n)
