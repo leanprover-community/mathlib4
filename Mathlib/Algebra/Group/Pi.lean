@@ -563,7 +563,7 @@ theorem Pi.mulSingle_commute [∀ i, MulOneClass <| f i] :
     simp [hij]
   simp [h1, h2]
 #align pi.mul_single_commute Pi.mulSingle_commute
-#align pi.single_commute Pi.single_commute
+#align pi.single_commute Pi.single_addCommute
 
 /-- The injection into a pi group with the same values commutes. -/
 @[to_additive "The injection into an additive pi group with the same values commutes."]
@@ -573,7 +573,7 @@ theorem Pi.mulSingle_apply_commute [∀ i, MulOneClass <| f i] (x : ∀ i, f i) 
   · rfl
   · exact Pi.mulSingle_commute hij _ _
 #align pi.mul_single_apply_commute Pi.mulSingle_apply_commute
-#align pi.single_apply_commute Pi.single_apply_commute
+#align pi.single_apply_commute Pi.single_apply_addCommute
 
 @[to_additive]
 theorem Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i) (x : f i) :
