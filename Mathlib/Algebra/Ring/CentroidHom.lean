@@ -467,7 +467,7 @@ instance : SMulCommClass α (CentroidHom α) α := SMulCommClass.symm _ _ _
 instance : IsScalarTower (CentroidHom α) α α where
   smul_assoc _ _ _ := (map_mul_right _ _ _).symm
 
-/-
+/-!
 Let α be an algebra over R, such that the canonical ring homomorphism of R into CentroidHom α lies
 in the center of CentroidHom α. Then CentroidHom α is an algebra over R
 -/
@@ -477,31 +477,15 @@ variable {R : Type*}
 variable [CommSemiring R]
 variable [Module R α] [SMulCommClass R α α] [IsScalarTower R α α]
 
-/--
-The natural ring homomorphism from R into CentroidHom α
--/
-def algHom : R →+* (CentroidHom α) where
-  toFun r := ⟨⟨⟨fun a => r • a,
-    smul_zero r⟩,
-    fun _ _ ↦ smul_add r _ _⟩,
-    fun _ _ ↦ (mul_smul_comm r _ _).symm,
-    fun _ _ ↦ (smul_mul_assoc r _ _).symm⟩
-  map_one' := by
-    simp only [one_smul]
-    exact rfl
-  map_mul' r₁ r₂ := by
-    ext a
-    exact smul_assoc r₁ r₂ a
-  map_zero' := by
-    simp only [zero_smul]
-    exact rfl
-  map_add' r₁ r₂ := by
-    ext a
-    exact add_smul r₁ r₂ a
+/-- The natural ring homomorphism from `R` into `CentroidHom α` -/
+def algHom : R →+* CentroidHom α where
+  toFun r := r • 1
+  map_one' := one_smul _ _
+  map_mul' r₁ r₂ := ext fun a => smul_assoc r₁ r₂ a
+  map_zero' := zero_smul _ _
+  map_add' r₁ r₂ := ext fun a => add_smul r₁ r₂ a
 
-/--
-CentroidHom α as an algebra over R
--/
+/-- `CentroidHom α` as an algebra over `R` -/
 def ringtoAlg (h : ∀ (r : R) (T : CentroidHom α), algHom r * T = T * algHom r) :
     Algebra R (CentroidHom α) := algHom.toAlgebra' h
 
