@@ -412,7 +412,7 @@ local notation "R" => AddMonoid.End.mulRight
 
 /-- Ring hom from the centroid into the additive monoid endomorphisms. -/
 def toEndRingHom (α : Type*) [NonUnitalNonAssocSemiring α] :
-    RingHom (CentroidHom α) (AddMonoid.End α) where
+    CentroidHom α →+* AddMonoid.End α where
   toFun := toEnd
   map_add' := toEnd_add
   map_zero' := toEnd_zero
