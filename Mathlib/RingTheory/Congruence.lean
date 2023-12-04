@@ -492,6 +492,7 @@ instance : CompleteLattice (RingCon R) where
 
 /-- The infimum of two congruence relations equals the infimum of the underlying binary
 operations. -/
+@[simp, norm_cast]
 theorem coe_inf {c d : RingCon R} : ⇑(c ⊓ d) = ⇑c ⊓ ⇑d :=
   rfl
 
