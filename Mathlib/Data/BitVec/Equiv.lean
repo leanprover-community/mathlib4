@@ -16,6 +16,7 @@ namespace Std.BitVec
 variable {w : ℕ}
 
 /-- Equivalence between `BitVec w` and `Fin (2 ^ w)` -/
+@[simps]
 def finEquiv : BitVec w ≃ Fin (2 ^ w) where
   toFun     := toFin
   invFun    := ofFin
@@ -84,6 +85,7 @@ theorem getLsb'_ofLEFn (f : Fin w → Bool) : getLsb' (ofLEFn f) = f := by
 
 /-- Equivalence between `BitVec w` and `Fin w → Bool`, using `Std.BitVec.getLsb'` and
 `Std.BitVec.ofLEFn` as isomorphisms -/
+@[simps]
 def finFunctionEquivLE : BitVec w ≃ (Fin w → Bool) where
   toFun     := getLsb'
   invFun    := ofLEFn
