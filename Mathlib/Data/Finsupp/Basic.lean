@@ -1649,7 +1649,7 @@ variable [AddCommMonoid M] [AddCommMonoid N] [DistribMulAction R M] [DistribMulA
 /-- `Finsupp.single` as a `DistribMulActionSemiHom`.
 
 See also `Finsupp.lsingle` for the version as a linear map. -/
-def DistribMulActionSemiHom.single (a : α) : M →+[R] α →₀ M :=
+def DistribMulActionHom.single (a : α) : M →+[R] α →₀ M :=
   { singleAddHom a with
     map_smul' := fun k m => by
       simp only
@@ -1657,7 +1657,7 @@ def DistribMulActionSemiHom.single (a : α) : M →+[R] α →₀ M :=
       change Finsupp.single a (k • m) = k • (Finsupp.single a m)
       -- porting note: because `singleAddHom_apply` is missing
       simp only [smul_single] }
-#align finsupp.distrib_mul_action_hom.single Finsupp.DistribMulActionSemiHom.single
+#align finsupp.distrib_mul_action_hom.single Finsupp.DistribMulActionHom.single
 
 theorem distribMulActionSemiHom_ext {f g : (α →₀ M) →+[R] N}
     (h : ∀ (a : α) (m : M), f (single a m) = g (single a m)) : f = g :=
