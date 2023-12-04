@@ -203,7 +203,7 @@ abbrev restrictScalarsComp := restrictScalarsComp'.{v} f g _ rfl
 
 end
 
-noncomputable instance x {R S} [Ring R] [Ring S] (e : R ≃+* S) :
+instance restrictScalarsIsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S) :
     IsEquivalence (ModuleCat.restrictScalars e.toRingHom) where
   inverse := ModuleCat.restrictScalars e.symm
   unitIso := NatIso.ofComponents fun M ↦ LinearEquiv.toModuleIso'
