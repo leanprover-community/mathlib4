@@ -9,6 +9,7 @@ import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Algebra.Module.Hom
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+import Mathlib.RingTheory.Subsemiring.Basic
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -439,7 +440,7 @@ local notation "L" => AddMonoid.End.mulLeft
 local notation "R" => AddMonoid.End.mulRight
 
 lemma centroid_eq_centralizer_mul_op :
-    MonoidHom.mrange (toEndRingHom α) = Submonoid.centralizer (Set.range L ∪ Set.range R) := by
+    RingHom.rangeS (toEndRingHom α) = Subsemiring.centralizer (Set.range L ∪ Set.range R) := by
   ext T
   constructor
   · intro ⟨f,hf⟩ S hS
