@@ -86,6 +86,33 @@ def composeEquiv (adj : G ⊣ F) (X : Sheaf J E) (Y : Sheaf J D) :
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.compose_equiv CategoryTheory.Sheaf.composeEquiv
 
+def composeEquiv' (adj : G ⊣ F) (X : Sheaf J E) (Y : Sheaf J D) :
+    ((composeAndSheafify J G).obj X ⟶ Y) ≃ (X ⟶ (sheafCompose J F).obj Y) where
+  toFun η :=
+    ⟨(adj.whiskerRight Cᵒᵖ).homEquiv _ _ ((sheafificationAdjunction _ _).unit.app _ ≫ η.val)⟩
+  invFun γ := ((sheafificationAdjunction J D).homEquiv _ Y).symm
+    (((adj.whiskerRight Cᵒᵖ).homEquiv _ _).symm ((sheafToPresheaf _ _).map γ))
+  left_inv := by
+    intro η
+    simp only [sheafToPresheaf_obj, whiskeringRight_obj_obj, Functor.comp_obj, sheafToPresheaf_map,
+      Equiv.symm_apply_apply]
+    erw [← Adjunction.eq_homEquiv_apply (adj := sheafificationAdjunction J D),
+      Adjunction.homEquiv_unit]
+    rfl
+  right_inv := by
+    intro γ
+    ext1
+    simp only [sheafCompose_obj_val, whiskeringRight_obj_obj, Functor.comp_obj, sheafToPresheaf_obj,
+      sheafToPresheaf_map]
+    erw [Adjunction.homEquiv_apply_eq]
+    rw [@Adjunction.homEquiv_counit]
+    ext
+    simp only [Functor.comp_obj, NatTrans.comp_app, comp_apply, whiskeringRight_obj_obj,
+      Functor.id_obj, whiskeringRight_obj_map, whiskerRight_app,
+      Adjunction.whiskerRight_counit_app_app]
+    sorry
+    -- erw [← Adjunction.eq_homEquiv_apply (adj := sheafificationAdjunction J D)]
+
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] CategoryTheory.Sheaf.composeEquiv_apply_val
   CategoryTheory.Sheaf.composeEquiv_symm_apply_val
@@ -118,6 +145,13 @@ def adjunction (adj : G ⊣ F) : composeAndSheafify J G ⊣ sheafCompose J F :=
     (presheafToSheafIsoPlusPlus _ _)) ≪≫ (Functor.associator _ _ _))
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.adjunction CategoryTheory.Sheaf.adjunction
+
+def adjunction' (adj : G ⊣ F) : composeAndSheafify J G ⊣ sheafCompose J F := by
+  let A := adj.whiskerRight Cᵒᵖ
+  refine Adjunction.restrictFullyFaithful (sheafToPresheaf _ _) (sheafToPresheaf _ _)
+    A ?_ ?_
+  sorry
+  sorry
 
 instance [IsRightAdjoint F] : IsRightAdjoint (sheafCompose J F) :=
   ⟨_, adjunction J (Adjunction.ofRightAdjoint F)⟩
