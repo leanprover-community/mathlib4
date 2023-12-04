@@ -12,7 +12,7 @@ In general, a clopen subset in a cartesian product of topological spaces cannot 
 union of "clopen boxes", i.e. products of clopen subsets of the components (see
 [buzyakovaClopenBox] for counterexamples).
 
-However, when one of the components is compact, a clopen subset can be written as such a union.
+However, when one of the factors is compact, a clopen subset can be written as such a union.
 Our argument in `exists_clopen_box` follows the one given in [buzyakovaClopenBox].
 
 We deduce that in a product of compact spaces, a clopen subset is a finite union of clopen boxes,
