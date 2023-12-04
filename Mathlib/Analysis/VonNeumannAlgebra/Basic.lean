@@ -44,7 +44,7 @@ One the other hand, not picking one means that the weak-* topology
 and we may be unhappy with the resulting opaqueness of the definition.
 -/
 class WStarAlgebra (M : Type u) [NormedRing M] [StarRing M] [CstarRing M] [Module ℂ M]
-    [NormedAlgebra ℂ M] [StarModule ℂ M] where
+    [NormedAlgebra ℂ M] [StarModule ℂ M] : Prop where
   /-- There is a Banach space `X` whose dual is isometrically (conjugate-linearly) isomorphic
   to the `WStarAlgebra`. -/
   exists_predual :
@@ -143,7 +143,7 @@ theorem coe_commutant (S : VonNeumannAlgebra H) :
 @[simp]
 theorem mem_commutant_iff {S : VonNeumannAlgebra H} {z : H →L[ℂ] H} :
     z ∈ S.commutant ↔ ∀ g ∈ S, g * z = z * g := by
-  rw [←SetLike.mem_coe, coe_commutant]
+  rw [← SetLike.mem_coe, coe_commutant]
   rfl
 #align von_neumann_algebra.mem_commutant_iff VonNeumannAlgebra.mem_commutant_iff
 

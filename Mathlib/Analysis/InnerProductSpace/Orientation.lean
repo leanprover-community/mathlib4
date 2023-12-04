@@ -38,7 +38,7 @@ This file provides definitions and proves lemmas about orientations of real inne
 
 noncomputable section
 
-variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 open FiniteDimensional
 
@@ -46,7 +46,7 @@ open scoped BigOperators RealInnerProductSpace
 
 namespace OrthonormalBasis
 
-variable {ι : Type _} [Fintype ι] [DecidableEq ι] [ne : Nonempty ι] (e f : OrthonormalBasis ι ℝ E)
+variable {ι : Type*} [Fintype ι] [DecidableEq ι] [ne : Nonempty ι] (e f : OrthonormalBasis ι ℝ E)
   (x : Orientation ℝ E ι)
 
 /-- The change-of-basis matrix between two orthonormal bases with the same orientation has
@@ -93,7 +93,7 @@ theorem det_eq_neg_det_of_opposite_orientation (h : e.toBasis.orientation ≠ f.
   rw [e.toBasis.det.eq_smul_basis_det f.toBasis]
   -- Porting note: added `neg_one_smul` with explicit type
   simp [e.det_to_matrix_orthonormalBasis_of_opposite_orientation f h,
-    neg_one_smul ℝ (M := AlternatingMap ℝ E ℝ ι)]
+    neg_one_smul ℝ (M := E [Λ^ι]→ₗ[ℝ] ℝ)]
 #align orthonormal_basis.det_eq_neg_det_of_opposite_orientation OrthonormalBasis.det_eq_neg_det_of_opposite_orientation
 
 section AdjustToOrientation
@@ -175,16 +175,13 @@ section VolumeForm
 
 variable [_i : Fact (finrank ℝ E = n)] (o : Orientation ℝ E (Fin n))
 
--- Porting note: added instance
-instance : IsEmpty (Fin Nat.zero) := by simp only [Nat.zero_eq]; infer_instance
-
 /-- The volume form on an oriented real inner product space, a nonvanishing top-dimensional
 alternating form uniquely defined by compatibility with the orientation and inner product structure.
 -/
-irreducible_def volumeForm : AlternatingMap ℝ E ℝ (Fin n) := by
+irreducible_def volumeForm : E [Λ^Fin n]→ₗ[ℝ] ℝ := by
   classical
     cases' n with n
-    · let opos : AlternatingMap ℝ E ℝ (Fin 0) := AlternatingMap.constOfIsEmpty ℝ E (Fin 0) (1 : ℝ)
+    · let opos : E [Λ^Fin 0]→ₗ[ℝ] ℝ := .constOfIsEmpty ℝ E (Fin 0) (1 : ℝ)
       exact o.eq_or_eq_neg_of_isEmpty.by_cases (fun _ => opos) fun _ => -opos
     · exact (o.finOrthonormalBasis n.succ_pos _i.out).toBasis.det
 #align orientation.volume_form Orientation.volumeForm
@@ -315,7 +312,7 @@ theorem abs_volumeForm_apply_of_orthonormal (v : OrthonormalBasis (Fin n) ℝ E)
   simpa [o.volumeForm_robust' v v] using congr_arg abs v.toBasis.det_self
 #align orientation.abs_volume_form_apply_of_orthonormal Orientation.abs_volumeForm_apply_of_orthonormal
 
-theorem volumeForm_map {F : Type _} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+theorem volumeForm_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
     [Fact (finrank ℝ F = n)] (φ : E ≃ₗᵢ[ℝ] F) (x : Fin n → F) :
     (Orientation.map (Fin n) φ.toLinearEquiv o).volumeForm x = o.volumeForm (φ.symm ∘ x) := by
   cases' n with n

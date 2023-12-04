@@ -74,7 +74,7 @@ protected def mk₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} (φ₀ : c → L
 variable (ϕ : L →ᴸ L')
 
 /-- Pulls a structure back along a language map. -/
-def reduct (M : Type _) [L'.Structure M] : L.Structure M where
+def reduct (M : Type*) [L'.Structure M] : L.Structure M where
   funMap f xs := funMap (ϕ.onFunction f) xs
   RelMap r xs := RelMap (ϕ.onRelation r) xs
 #align first_order.language.Lhom.reduct FirstOrder.Language.LHom.reduct
@@ -231,7 +231,7 @@ protected structure Injective : Prop where
 noncomputable def defaultExpansion (ϕ : L →ᴸ L')
     [∀ (n) (f : L'.Functions n), Decidable (f ∈ Set.range fun f : L.Functions n => onFunction ϕ f)]
     [∀ (n) (r : L'.Relations n), Decidable (r ∈ Set.range fun r : L.Relations n => onRelation ϕ r)]
-    (M : Type _) [Inhabited M] [L.Structure M] : L'.Structure M where
+    (M : Type*) [Inhabited M] [L.Structure M] : L'.Structure M where
   funMap {n} f xs :=
     if h' : f ∈ Set.range fun f : L.Functions n => onFunction ϕ f then funMap h'.choose xs
     else default
@@ -242,52 +242,52 @@ noncomputable def defaultExpansion (ϕ : L →ᴸ L')
 
 /-- A language homomorphism is an expansion on a structure if it commutes with the interpretation of
 all symbols on that structure. -/
-class IsExpansionOn (M : Type _) [L.Structure M] [L'.Structure M] : Prop where
+class IsExpansionOn (M : Type*) [L.Structure M] [L'.Structure M] : Prop where
   map_onFunction : ∀ {n} (f : L.Functions n) (x : Fin n → M), funMap (ϕ.onFunction f) x = funMap f x
   map_onRelation : ∀ {n} (R : L.Relations n) (x : Fin n → M),
     RelMap (ϕ.onRelation R) x = RelMap R x
 #align first_order.language.Lhom.is_expansion_on FirstOrder.Language.LHom.IsExpansionOn
 
 @[simp]
-theorem map_onFunction {M : Type _} [L.Structure M] [L'.Structure M] [ϕ.IsExpansionOn M] {n}
+theorem map_onFunction {M : Type*} [L.Structure M] [L'.Structure M] [ϕ.IsExpansionOn M] {n}
     (f : L.Functions n) (x : Fin n → M) : funMap (ϕ.onFunction f) x = funMap f x :=
   IsExpansionOn.map_onFunction f x
 #align first_order.language.Lhom.map_on_function FirstOrder.Language.LHom.map_onFunction
 
 @[simp]
-theorem map_onRelation {M : Type _} [L.Structure M] [L'.Structure M] [ϕ.IsExpansionOn M] {n}
+theorem map_onRelation {M : Type*} [L.Structure M] [L'.Structure M] [ϕ.IsExpansionOn M] {n}
     (R : L.Relations n) (x : Fin n → M) : RelMap (ϕ.onRelation R) x = RelMap R x :=
   IsExpansionOn.map_onRelation R x
 #align first_order.language.Lhom.map_on_relation FirstOrder.Language.LHom.map_onRelation
 
-instance id_isExpansionOn (M : Type _) [L.Structure M] : IsExpansionOn (LHom.id L) M :=
+instance id_isExpansionOn (M : Type*) [L.Structure M] : IsExpansionOn (LHom.id L) M :=
   ⟨fun _ _ => rfl, fun _ _ => rfl⟩
 #align first_order.language.Lhom.id_is_expansion_on FirstOrder.Language.LHom.id_isExpansionOn
 
-instance ofIsEmpty_isExpansionOn (M : Type _) [L.Structure M] [L'.Structure M] [L.IsAlgebraic]
+instance ofIsEmpty_isExpansionOn (M : Type*) [L.Structure M] [L'.Structure M] [L.IsAlgebraic]
     [L.IsRelational] : IsExpansionOn (LHom.ofIsEmpty L L') M :=
   ⟨fun {n} => (IsRelational.empty_functions n).elim,
    fun {n} => (IsAlgebraic.empty_relations n).elim⟩
 #align first_order.language.Lhom.of_is_empty_is_expansion_on FirstOrder.Language.LHom.ofIsEmpty_isExpansionOn
 
-instance sumElim_isExpansionOn {L'' : Language} (ψ : L'' →ᴸ L') (M : Type _) [L.Structure M]
+instance sumElim_isExpansionOn {L'' : Language} (ψ : L'' →ᴸ L') (M : Type*) [L.Structure M]
     [L'.Structure M] [L''.Structure M] [ϕ.IsExpansionOn M] [ψ.IsExpansionOn M] :
     (ϕ.sumElim ψ).IsExpansionOn M :=
   ⟨fun f _ => Sum.casesOn f (by simp) (by simp), fun R _ => Sum.casesOn R (by simp) (by simp)⟩
 #align first_order.language.Lhom.sum_elim_is_expansion_on FirstOrder.Language.LHom.sumElim_isExpansionOn
 
-instance sumMap_isExpansionOn {L₁ L₂ : Language} (ψ : L₁ →ᴸ L₂) (M : Type _) [L.Structure M]
+instance sumMap_isExpansionOn {L₁ L₂ : Language} (ψ : L₁ →ᴸ L₂) (M : Type*) [L.Structure M]
     [L'.Structure M] [L₁.Structure M] [L₂.Structure M] [ϕ.IsExpansionOn M] [ψ.IsExpansionOn M] :
     (ϕ.sumMap ψ).IsExpansionOn M :=
   ⟨fun f _ => Sum.casesOn f (by simp) (by simp), fun R _ => Sum.casesOn R (by simp) (by simp)⟩
 #align first_order.language.Lhom.sum_map_is_expansion_on FirstOrder.Language.LHom.sumMap_isExpansionOn
 
-instance sumInl_isExpansionOn (M : Type _) [L.Structure M] [L'.Structure M] :
+instance sumInl_isExpansionOn (M : Type*) [L.Structure M] [L'.Structure M] :
     (LHom.sumInl : L →ᴸ L.sum L').IsExpansionOn M :=
   ⟨fun _f _ => rfl, fun _R _ => rfl⟩
 #align first_order.language.Lhom.sum_inl_is_expansion_on FirstOrder.Language.LHom.sumInl_isExpansionOn
 
-instance sumInr_isExpansionOn (M : Type _) [L.Structure M] [L'.Structure M] :
+instance sumInr_isExpansionOn (M : Type*) [L.Structure M] [L'.Structure M] :
     (LHom.sumInr : L' →ᴸ L.sum L').IsExpansionOn M :=
   ⟨fun _f _ => rfl, fun _R _ => rfl⟩
 #align first_order.language.Lhom.sum_inr_is_expansion_on FirstOrder.Language.LHom.sumInr_isExpansionOn
@@ -312,7 +312,7 @@ theorem sumInr_injective : (LHom.sumInr : L' →ᴸ L.sum L').Injective :=
   ⟨fun h => Sum.inr_injective h, fun h => Sum.inr_injective h⟩
 #align first_order.language.Lhom.sum_inr_injective FirstOrder.Language.LHom.sumInr_injective
 
-instance (priority := 100) isExpansionOn_reduct (ϕ : L →ᴸ L') (M : Type _) [L'.Structure M] :
+instance (priority := 100) isExpansionOn_reduct (ϕ : L →ᴸ L') (M : Type*) [L'.Structure M] :
     @IsExpansionOn L L' ϕ M (ϕ.reduct M) _ :=
   letI := ϕ.reduct M
   ⟨fun _f _ => rfl, fun _R _ => rfl⟩
@@ -321,7 +321,7 @@ instance (priority := 100) isExpansionOn_reduct (ϕ : L →ᴸ L') (M : Type _) 
 theorem Injective.isExpansionOn_default {ϕ : L →ᴸ L'}
     [∀ (n) (f : L'.Functions n), Decidable (f ∈ Set.range fun f : L.Functions n => ϕ.onFunction f)]
     [∀ (n) (r : L'.Relations n), Decidable (r ∈ Set.range fun r : L.Relations n => ϕ.onRelation r)]
-    (h : ϕ.Injective) (M : Type _) [Inhabited M] [L.Structure M] :
+    (h : ϕ.Injective) (M : Type*) [Inhabited M] [L.Structure M] :
     @IsExpansionOn L L' ϕ M _ (ϕ.defaultExpansion M) := by
   letI := ϕ.defaultExpansion M
   refine' ⟨fun {n} f xs => _, fun {n} r xs => _⟩
@@ -501,7 +501,7 @@ def LEquiv.addEmptyConstants [ie : IsEmpty α] : L ≃ᴸ L[[α]] where
     exact _root_.trans (congr rfl (Subsingleton.elim _ _)) LHom.sumElim_inl_inr
 #align first_order.lanugage.Lequiv.add_empty_constants FirstOrder.Language.LEquiv.addEmptyConstants
 
-variable {α} {β : Type _}
+variable {α} {β : Type*}
 
 @[simp]
 theorem withConstants_funMap_sum_inl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
@@ -541,7 +541,7 @@ instance withConstants_self_expansion : (lhomWithConstants L M).IsExpansionOn M 
   ⟨fun _ _ => rfl, fun _ _ => rfl⟩
 #align first_order.language.with_constants_self_expansion FirstOrder.Language.withConstants_self_expansion
 
-variable (α : Type _) [(constantsOn α).Structure M]
+variable (α : Type*) [(constantsOn α).Structure M]
 
 instance withConstantsStructure : L[[α]].Structure M :=
   Language.sumStructure _ _ _

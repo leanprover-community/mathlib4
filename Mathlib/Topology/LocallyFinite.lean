@@ -20,7 +20,7 @@ In this file we give the definition and prove basic properties of locally finite
 -- locally finite family [General Topology (Bourbaki, 1995)]
 open Set Function Filter Topology
 
-variable {ι ι' α X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] {f g : ι → Set X}
+variable {ι ι' α X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f g : ι → Set X}
 
 /-- A family of sets in `Set X` is locally finite if at every point `x : X`,
 there is a neighborhood of `x` which meets only finitely many sets in the family. -/
@@ -59,7 +59,7 @@ theorem comp_injective {g : ι' → ι} (hf : LocallyFinite f) (hg : Injective g
 theorem _root_.locallyFinite_iff_smallSets :
     LocallyFinite f ↔ ∀ x, ∀ᶠ s in (𝓝 x).smallSets, { i | (f i ∩ s).Nonempty }.Finite :=
   forall_congr' fun _ => Iff.symm <|
-    eventually_small_sets' fun _s _t hst ht =>
+    eventually_smallSets' fun _s _t hst ht =>
       ht.subset fun _i hi => hi.mono <| inter_subset_inter_right _ hst
 #align locally_finite_iff_small_sets locallyFinite_iff_smallSets
 
@@ -68,7 +68,7 @@ protected theorem eventually_smallSets (hf : LocallyFinite f) (x : X) :
   locallyFinite_iff_smallSets.mp hf x
 #align locally_finite.eventually_small_sets LocallyFinite.eventually_smallSets
 
-theorem exists_mem_basis {ι' : Sort _} (hf : LocallyFinite f) {p : ι' → Prop} {s : ι' → Set X}
+theorem exists_mem_basis {ι' : Sort*} (hf : LocallyFinite f) {p : ι' → Prop} {s : ι' → Set X}
     {x : X} (hb : (𝓝 x).HasBasis p s) : ∃ i, p i ∧ { j | (f j ∩ s i).Nonempty }.Finite :=
   let ⟨i, hpi, hi⟩ := hb.smallSets.eventually_iff.mp (hf.eventually_smallSets x)
   ⟨i, hpi, hi Subset.rfl⟩
@@ -152,7 +152,7 @@ function `F : Π a, β a` such that for any `x`, we have `f n x = F x` on the pr
 interval `[N, +∞)` and a neighbourhood of `x`.
 
 We formulate the conclusion in terms of the product of filter `Filter.atTop` and `𝓝 x`. -/
-theorem exists_forall_eventually_eq_prod {π : X → Sort _} {f : ℕ → ∀ x : X, π x}
+theorem exists_forall_eventually_eq_prod {π : X → Sort*} {f : ℕ → ∀ x : X, π x}
     (hf : LocallyFinite fun n => { x | f (n + 1) x ≠ f n x }) :
     ∃ F : ∀ x : X, π x, ∀ x, ∀ᶠ p : ℕ × X in atTop ×ˢ 𝓝 x, f p.1 p.2 = F p.2 := by
   choose U hUx hU using hf
@@ -174,7 +174,7 @@ theorem exists_forall_eventually_eq_prod {π : X → Sort _} {f : ℕ → ∀ x 
 that the family of sets `s n = {x | f (n + 1) x ≠ f n x}` is locally finite. Then there exists a
 function `F : Π a, β a` such that for any `x`, for sufficiently large values of `n`, we have
 `f n y = F y` in a neighbourhood of `x`. -/
-theorem exists_forall_eventually_atTop_eventually_eq' {π : X → Sort _} {f : ℕ → ∀ x : X, π x}
+theorem exists_forall_eventually_atTop_eventually_eq' {π : X → Sort*} {f : ℕ → ∀ x : X, π x}
     (hf : LocallyFinite fun n => { x | f (n + 1) x ≠ f n x }) :
     ∃ F : ∀ x : X, π x, ∀ x, ∀ᶠ n : ℕ in atTop, ∀ᶠ y : X in 𝓝 x, f n y = F y :=
   hf.exists_forall_eventually_eq_prod.imp fun _F hF x => (hF x).curry
@@ -199,7 +199,7 @@ theorem preimage_continuous {g : Y → X} (hf : LocallyFinite f) (hg : Continuou
 theorem prod_right (hf : LocallyFinite f) (g : ι → Set Y) : LocallyFinite (fun i ↦ f i ×ˢ g i) :=
   (hf.preimage_continuous continuous_fst).subset fun _ ↦ prod_subset_preimage_fst _ _
 
-theorem prod_left {g : ι → Set Y} (hg : LocallyFinite g) (f : ι → Set Y) :
+theorem prod_left {g : ι → Set Y} (hg : LocallyFinite g) (f : ι → Set X) :
     LocallyFinite (fun i ↦ f i ×ˢ g i) :=
   (hg.preimage_continuous continuous_snd).subset fun _ ↦ prod_subset_preimage_snd _ _
 

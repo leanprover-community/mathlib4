@@ -143,7 +143,10 @@ protected theorem traverse_eq_map_id (f : α → β) (x : t' α) :
 protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : t' α) :
     Equiv.traverse eqv (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Equiv.traverse eqv f <$> Equiv.traverse eqv g x) := by
-  simp [Equiv.traverse, comp_traverse, functor_norm]; congr; ext; simp
+  simp (config := { unfoldPartialApp := true }) [Equiv.traverse, comp_traverse, functor_norm]
+  congr
+  ext
+  simp
 #align equiv.comp_traverse Equiv.comp_traverse
 
 protected theorem naturality (f : α → F β) (x : t' α) :
@@ -154,7 +157,7 @@ protected theorem naturality (f : α → F β) (x : t' α) :
 /-- The fact that `t` is a lawful traversable functor carries over the
 equivalences to `t'`, with the traversable functor structure given by
 `Equiv.traversable`. -/
-protected def isLawfulTraversable : @LawfulTraversable t' (Equiv.traversable eqv) :=
+protected theorem isLawfulTraversable : @LawfulTraversable t' (Equiv.traversable eqv) :=
   -- Porting note: Same `_inst` local variable problem.
   let _inst := Equiv.traversable eqv; {
     toLawfulFunctor := Equiv.lawfulFunctor eqv
@@ -169,7 +172,7 @@ protected def isLawfulTraversable : @LawfulTraversable t' (Equiv.traversable eqv
 carrying the traversable functor structure from `t` over the
 equivalences, then the fact that `t` is a lawful traversable functor
 carries over as well. -/
-protected def isLawfulTraversable' [Traversable t']
+protected theorem isLawfulTraversable' [Traversable t']
     (h₀ : ∀ {α β} (f : α → β), map f = Equiv.map eqv f)
     (h₁ : ∀ {α β} (f : β), mapConst f = (Equiv.map eqv ∘ Function.const α) f)
     (h₂ :

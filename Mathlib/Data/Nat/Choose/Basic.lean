@@ -183,8 +183,8 @@ theorem factorial_mul_factorial_dvd_factorial {n k : ℕ} (hk : k ≤ n) : k ! *
 #align nat.factorial_mul_factorial_dvd_factorial Nat.factorial_mul_factorial_dvd_factorial
 
 theorem factorial_mul_factorial_dvd_factorial_add (i j : ℕ) : i ! * j ! ∣ (i + j)! := by
-  suffices : i ! * (i + j - i) ! ∣ (i + j)!
-  · rwa [add_tsub_cancel_left i j] at this
+  suffices i ! * (i + j - i) ! ∣ (i + j)! by
+    rwa [add_tsub_cancel_left i j] at this
   exact factorial_mul_factorial_dvd_factorial (Nat.le_add_right _ _)
 #align nat.factorial_mul_factorial_dvd_factorial_add Nat.factorial_mul_factorial_dvd_factorial_add
 
@@ -195,8 +195,8 @@ theorem choose_symm {n k : ℕ} (hk : k ≤ n) : choose n (n - k) = choose n k :
 #align nat.choose_symm Nat.choose_symm
 
 theorem choose_symm_of_eq_add {n a b : ℕ} (h : n = a + b) : Nat.choose n a = Nat.choose n b := by
-  suffices : choose n (n - b) = choose n b
-  · rw [h, add_tsub_cancel_right] at this; rwa [h]
+  suffices choose n (n - b) = choose n b by
+    rw [h, add_tsub_cancel_right] at this; rwa [h]
   exact choose_symm (h ▸ le_add_left _ _)
 #align nat.choose_symm_of_eq_add Nat.choose_symm_of_eq_add
 
@@ -210,8 +210,8 @@ theorem choose_symm_half (m : ℕ) : choose (2 * m + 1) (m + 1) = choose (2 * m 
 #align nat.choose_symm_half Nat.choose_symm_half
 
 theorem choose_succ_right_eq (n k : ℕ) : choose n (k + 1) * (k + 1) = choose n k * (n - k) := by
-  have e : (n + 1) * choose n k = choose n k * (k + 1) + choose n (k + 1) * (k + 1)
-  rw [← right_distrib, ← choose_succ_succ, succ_mul_choose_eq]
+  have e : (n + 1) * choose n k = choose n k * (k + 1) + choose n (k + 1) * (k + 1) := by
+    rw [← right_distrib, ← choose_succ_succ, succ_mul_choose_eq]
   rw [← tsub_eq_of_eq_add_rev e, mul_comm, ← mul_tsub, add_tsub_add_eq_tsub_right]
 #align nat.choose_succ_right_eq Nat.choose_succ_right_eq
 

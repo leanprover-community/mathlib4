@@ -16,7 +16,7 @@ This file gathers a few double counting arguments.
 
 In a bipartite graph (considered as a relation `r : α → β → Prop`), we can bound the number of edges
 between `s : Finset α` and `t : Finset β` by the minimum/maximum of edges over all `a ∈ s` times the
-the size of `s`. Similarly for `t`. Combining those two yields inequalities between the sizes of `s`
+size of `s`. Similarly for `t`. Combining those two yields inequalities between the sizes of `s`
 and `t`.
 
 * `bipartiteBelow`: `s.bipartiteBelow r b` are the elements of `s` below `b` wrt to `r`. Its size
@@ -33,7 +33,7 @@ open Finset Function Relator
 
 open BigOperators
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-! ### Bipartite graph -/
 

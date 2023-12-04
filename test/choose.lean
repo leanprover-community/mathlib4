@@ -6,6 +6,8 @@ import Mathlib.Tactic.Choose
 # Tests for the `choose` tactic
 -/
 
+set_option autoImplicit true
+
 example {α : Type} (h : ∀ n m : α, ∀ (h : n = m), ∃ i j : α, i ≠ j ∧ h = h) : True := by
   choose! i j _x _y using h
   trivial

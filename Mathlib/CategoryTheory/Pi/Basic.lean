@@ -172,11 +172,8 @@ variable {C}
 pair of corresponding components. -/
 @[simps]
 def isoApp {X Y : ∀ i, C i} (f : X ≅ Y) (i : I) : X i ≅ Y i :=
-  ⟨f.hom i, f.inv i, by
-    dsimp
-    rw [← comp_apply, Iso.hom_inv_id, id_apply], by
-    dsimp
-    rw [← comp_apply, Iso.inv_hom_id, id_apply]⟩
+  ⟨f.hom i, f.inv i,
+    by rw [← comp_apply, Iso.hom_inv_id, id_apply], by rw [← comp_apply, Iso.inv_hom_id, id_apply]⟩
 #align category_theory.pi.iso_app CategoryTheory.Pi.isoApp
 
 @[simp]
@@ -242,8 +239,8 @@ theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i :=
 #align category_theory.functor.pi'_eval CategoryTheory.Functor.pi'_eval
 
 /-- Two functors to a product category are equal iff they agree on every coordinate. -/
-theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙ (Pi.eval C i) = f' ⋙ (Pi.eval C i))
-    : f = f' := by
+theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙ (Pi.eval C i) = f' ⋙ (Pi.eval C i)) :
+    f = f' := by
   apply Functor.ext; rotate_left
   · intro X
     ext i

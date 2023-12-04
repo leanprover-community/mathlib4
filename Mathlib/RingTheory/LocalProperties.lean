@@ -38,8 +38,6 @@ The following properties are covered:
 
 -/
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
 open scoped Pointwise Classical BigOperators
 
 universe u
@@ -63,7 +61,7 @@ def LocalizationPreserves : Prop :=
     [IsLocalization M S], @P R hR → @P S hS
 #align localization_preserves LocalizationPreserves
 
-/-- A property `P` of comm rings satisfies `OfLocalizationMaximal` if
+/-- A property `P` of comm rings satisfies `OfLocalizationMaximal`
   if `P` holds for `R` whenever `P` holds for `Rₘ` for all maximal ideal `m`. -/
 def OfLocalizationMaximal : Prop :=
   ∀ (R : Type u) [CommRing R],
@@ -137,8 +135,8 @@ def RingHom.OfLocalizationSpanTarget : Prop :=
     (_ : ∀ r : s, P ((algebraMap S (Localization.Away (r : S))).comp f)), P f
 #align ring_hom.of_localization_span_target RingHom.OfLocalizationSpanTarget
 
-/-- A property `P` of ring homs satisfies `RingHom.OfLocalizationPrime` if
-  if `P` holds for `R` whenever `P` holds for `Rₘ` for all prime ideals `p`. -/
+/-- A property `P` of ring homs satisfies `RingHom.OfLocalizationPrime`
+if `P` holds for `R` whenever `P` holds for `Rₘ` for all prime ideals `p`. -/
 def RingHom.OfLocalizationPrime : Prop :=
   ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S),
     (∀ (J : Ideal S) (_ : J.IsPrime), P (Localization.localRingHom _ J f rfl)) → P f
@@ -211,6 +209,20 @@ theorem RingHom.PropertyIsLocal.ofLocalizationSpan (hP : RingHom.PropertyIsLocal
     _ _ (hP.HoldsForLocalizationAway (Localization.Away r) r) (hs' ⟨r, hr⟩) using 1
   exact (IsLocalization.map_comp _).symm
 #align ring_hom.property_is_local.of_localization_span RingHom.PropertyIsLocal.ofLocalizationSpan
+
+lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
+    (hP : RingHom.OfLocalizationSpanTarget P) (hP' : RingHom.RespectsIso P)
+    {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (s : Set S) (hs : Ideal.span s = ⊤)
+    (hT : ∀ r : s, ∃ (T : Type u) (_ : CommRing T) (_ : Algebra S T)
+      (_ : IsLocalization.Away (r : S) T), P ((algebraMap S T).comp f)) : P f := by
+  apply hP _ s hs
+  intros r
+  obtain ⟨T, _, _, _, hT⟩ := hT r
+  convert hP'.1 _
+    (Localization.algEquiv (R := S) (Submonoid.powers (r : S)) T).symm.toRingEquiv hT
+  rw [← RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe,
+    AlgEquiv.toRingEquiv_toRingHom, Localization.coe_algEquiv_symm, IsLocalization.map_comp,
+    RingHom.comp_id]
 
 end RingHom
 
@@ -301,14 +313,14 @@ theorem localization_isReduced : LocalizationPreserves fun R hR => IsReduced R :
   obtain ⟨⟨y, m⟩, hx⟩ := IsLocalization.surj M x
   dsimp only at hx
   let hx' := congr_arg (· ^ n.succ) hx
-  simp only [mul_pow, e, MulZeroClass.zero_mul, ← RingHom.map_pow] at hx'
+  simp only [mul_pow, e, zero_mul, ← RingHom.map_pow] at hx'
   rw [← (algebraMap R S).map_zero] at hx'
   obtain ⟨m', hm'⟩ := (IsLocalization.eq_iff_exists M S).mp hx'
   apply_fun (· * (m' : R) ^ n) at hm'
-  simp only [mul_assoc, MulZeroClass.zero_mul, MulZeroClass.mul_zero] at hm'
+  simp only [mul_assoc, zero_mul, mul_zero] at hm'
   rw [← mul_left_comm, ← pow_succ, ← mul_pow] at hm'
   replace hm' := IsNilpotent.eq_zero ⟨_, hm'.symm⟩
-  rw [← (IsLocalization.map_units S m).mul_left_inj, hx, MulZeroClass.zero_mul,
+  rw [← (IsLocalization.map_units S m).mul_left_inj, hx, zero_mul,
     IsLocalization.map_eq_zero_iff M]
   exact ⟨m', by rw [← hm', mul_comm]⟩
 #align localization_is_reduced localization_isReduced
@@ -346,7 +358,7 @@ theorem surjective_ofLocalizationSpan :
   letI := f.toAlgebra
   intro x
   apply Submodule.mem_of_span_eq_top_of_smul_pow_mem
-    (LinearMap.range (Algebra.ofId R S).toLinearMap) s e
+    (LinearMap.range (Algebra.linearMap R S)) s e
   intro r
   obtain ⟨a, e'⟩ := H r (algebraMap _ _ x)
   obtain ⟨b, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.mk'_surjective (Submonoid.powers (r : R)) a

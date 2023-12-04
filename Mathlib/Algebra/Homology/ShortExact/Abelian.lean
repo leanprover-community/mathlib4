@@ -19,7 +19,7 @@ noncomputable section
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Preadditive
 
-variable {𝒜 : Type _} [Category 𝒜]
+variable {𝒜 : Type*} [Category 𝒜]
 
 namespace CategoryTheory
 
@@ -35,7 +35,7 @@ theorem isIso_of_shortExact_of_isIso_of_isIso (h : ShortExact f g) (h' : ShortEx
     (comm₂ : i₂ ≫ g' = g ≫ i₃ := by aesop_cat) [IsIso i₁] [IsIso i₃] : IsIso i₂ := by
   obtain ⟨_⟩ := h
   obtain ⟨_⟩ := h'
-  refine @Abelian.isIso_of_isIso_of_isIso_of_isIso_of_isIso 𝒜 _ _ 0 _ _ _ 0 _ _ _ 0 f g 0 f' g'
+  refine @Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono 𝒜 _ _ 0 _ _ _ 0 _ _ _ 0 f g 0 f' g'
       0 i₁ i₂ i₃ ?_ comm₁ comm₂ 0 0 0 0 0 ?_ ?_ ?_ ?_ ?_ ?_ ?_ _ _ _ _
   all_goals try simp
   all_goals try assumption

@@ -25,7 +25,7 @@ filter (see `Filter.curry_le_prod` and `Filter.eventually.curry`), but the conve
 
 Another way to think about the curried versus the product filter is that tending to some limit on
 the product filter is a version of uniform convergence (see `tendsto_prod_filter_iff`) whereas
-tending to some limit on a curried filter is just iterated limits (see `tendsto.curry`).
+tending to some limit on a curried filter is just iterated limits (see `Filter.Tendsto.curry`).
 
 ## Main definitions
 
@@ -45,12 +45,12 @@ uniform convergence, curried filters, product filters
 
 namespace Filter
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 /-- This filter is characterized by `Filter.eventually_curry_iff`:
 `(∀ᶠ (x : α × β) in f.curry g, p x) ↔ ∀ᶠ (x : α) in f, ∀ᶠ (y : β) in g, p (x, y)`. Useful
-in adding quantifiers to the middle of `tendsto`s. See
-`has_fderiv_at_of_tendsto_uniformly_on_filter`. -/
+in adding quantifiers to the middle of `Tendsto`s. See
+`hasFDerivAt_of_tendstoUniformlyOnFilter`. -/
 def curry (f : Filter α) (g : Filter β) : Filter (α × β) where
   sets := { s | ∀ᶠ a : α in f, ∀ᶠ b : β in g, (a, b) ∈ s }
   univ_sets := by simp only [Set.mem_setOf_eq, Set.mem_univ, eventually_true]

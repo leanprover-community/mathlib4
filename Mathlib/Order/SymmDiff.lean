@@ -2,7 +2,6 @@
 Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
-Ported by: Frédéric Dupuis
 -/
 import Mathlib.Order.BooleanAlgebra
 import Mathlib.Logic.Equiv.Basic
@@ -55,7 +54,7 @@ Heyting
 
 open Function OrderDual
 
-variable {ι α β : Type _} {π : ι → Type _}
+variable {ι α β : Type*} {π : ι → Type*}
 
 /-- The symmetric difference operator on a type with `⊔` and `\` is `(A \ B) ⊔ (B \ A)`. -/
 def symmDiff [Sup α] [SDiff α] (a b : α) : α :=

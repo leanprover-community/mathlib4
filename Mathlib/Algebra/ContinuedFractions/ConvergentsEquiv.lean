@@ -5,6 +5,7 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
@@ -44,7 +45,7 @@ position `n + 1` is equal to evaluating `c'` up to `n`. This is shown in lemma
 `succ_nth_convergent'_eq_squashGCF_nth_convergent'`.
 
 By the inductive hypothesis, the two computations for the `n`th convergent of `c` coincide.
-So all that is left to show is that the recurrence relation for `c` at `n + 1` and and `c'` at
+So all that is left to show is that the recurrence relation for `c` at `n + 1` and `c'` at
 `n` coincide. This can be shown by another induction.
 The corresponding lemma in this file is `succ_nth_convergent_eq_squashGCF_nth_convergent`.
 
@@ -52,7 +53,7 @@ The corresponding lemma in this file is `succ_nth_convergent_eq_squashGCF_nth_co
 
 - `GeneralizedContinuedFraction.convergents_eq_convergents'` shows the equivalence under a strict
 positivity restriction on the sequence.
-- `continued_fractions.convergents_eq_convergents'` shows the equivalence for (regular) continued
+- `ContinuedFraction.convergents_eq_convergents'` shows the equivalence for (regular) continued
 fractions.
 
 ## References
@@ -66,7 +67,7 @@ fractions, recurrence, equivalence
 -/
 
 
-variable {K : Type _} {n : ℕ}
+variable {K : Type*} {n : ℕ}
 
 namespace GeneralizedContinuedFraction
 

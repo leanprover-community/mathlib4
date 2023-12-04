@@ -26,7 +26,7 @@ namespace PowerSeries
 
 section Ring
 
-variable {R S : Type _} [Ring R] [Ring S]
+variable {R S : Type*} [Ring R] [Ring S]
 
 /-- The power series for `1 / (u - x)`. -/
 def invUnitsSub (u : Rˣ) : PowerSeries R :=
@@ -68,7 +68,7 @@ end Ring
 
 section Field
 
-variable (A A' : Type _) [Ring A] [Ring A'] [Algebra ℚ A] [Algebra ℚ A']
+variable (A A' : Type*) [Ring A] [Ring A'] [Algebra ℚ A] [Algebra ℚ A']
 
 open Nat
 
@@ -150,7 +150,7 @@ open RingHom
 
 open Finset Nat
 
-variable {A : Type _} [CommRing A]
+variable {A : Type*} [CommRing A]
 
 /-- Shows that $e^{aX} * e^{bX} = e^{(a + b)X}$ -/
 theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
@@ -203,7 +203,7 @@ theorem exp_pow_sum [Algebra ℚ A] (n : ℕ) :
   simp only [exp_pow_eq_rescale_exp, rescale]
   ext
   simp only [one_div, coeff_mk, cast_pow, coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-    coeff_exp, factorial, LinearMap.map_sum]
+    coeff_exp, factorial, map_sum]
 #align power_series.exp_pow_sum PowerSeries.exp_pow_sum
 
 end PowerSeries

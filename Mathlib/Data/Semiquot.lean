@@ -25,7 +25,7 @@ predicate `S`) but are not completely determined.
   is hidden by a quotient construction, allowing for the representation
   of nondeterministic functions. -/
   -- porting notes: removed universe parameter
-structure Semiquot (α : Type _) where mk' ::
+structure Semiquot (α : Type*) where mk' ::
   /-- Set containing some element of `α`-/
   s : Set α
   /-- Assertion of non-emptiness via `Trunc`-/
@@ -34,7 +34,7 @@ structure Semiquot (α : Type _) where mk' ::
 
 namespace Semiquot
 
-variable {α : Type _} {β : Type _}
+variable {α : Type*} {β : Type*}
 
 instance : Membership α (Semiquot α) :=
   ⟨fun a q => a ∈ q.s⟩
@@ -226,7 +226,7 @@ theorem eq_pure {q : Semiquot α} (p) : q = pure (get q p) :=
 theorem pure_isPure (a : α) : IsPure (pure a)
   | b, ab, c, ac => by
     rw [mem_pure] at ab ac
-    rwa [←ac] at ab
+    rwa [← ac] at ab
 #align semiquot.pure_is_pure Semiquot.pure_isPure
 
 theorem isPure_iff {s : Semiquot α} : IsPure s ↔ ∃ a, s = pure a :=

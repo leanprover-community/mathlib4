@@ -23,7 +23,7 @@ Jensen's inequalities:
 * `ConcaveOn.le_map_centerMass`, `ConcaveOn.le_map_sum`: Concave Jensen's inequality.
 
 As corollaries, we get:
-* `ConvexOn.exists_ge_of_mem_convexHull `: Maximum principle for convex functions.
+* `ConvexOn.exists_ge_of_mem_convexHull`: Maximum principle for convex functions.
 * `ConcaveOn.exists_le_of_mem_convexHull`: Minimum principle for concave functions.
 -/
 
@@ -32,7 +32,7 @@ open Finset LinearMap Set
 
 open BigOperators Classical Convex Pointwise
 
-variable {𝕜 E F β ι : Type _}
+variable {𝕜 E F β ι : Type*}
 
 /-! ### Jensen's inequality -/
 
@@ -48,7 +48,7 @@ theorem ConvexOn.map_centerMass_le (hf : ConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t,
     f (t.centerMass w p) ≤ t.centerMass w (f ∘ p) := by
   have hmem' : ∀ i ∈ t, (p i, (f ∘ p) i) ∈ { p : E × β | p.1 ∈ s ∧ f p.1 ≤ p.2 } := fun i hi =>
     ⟨hmem i hi, le_rfl⟩
-  convert(hf.convex_epigraph.centerMass_mem h₀ h₁ hmem').2 <;>
+  convert (hf.convex_epigraph.centerMass_mem h₀ h₁ hmem').2 <;>
     simp only [centerMass, Function.comp, Prod.smul_fst, Prod.fst_sum, Prod.smul_snd, Prod.snd_sum]
 #align convex_on.map_center_mass_le ConvexOn.map_centerMass_le
 
@@ -125,9 +125,8 @@ theorem ConcaveOn.exists_le_of_centerMass (h : ConcaveOn 𝕜 s f) (hw₀ : ∀ 
 /-- Maximum principle for convex functions. If a function `f` is convex on the convex hull of `s`,
 then the eventual maximum of `f` on `convexHull 𝕜 s` lies in `s`. -/
 theorem ConvexOn.exists_ge_of_mem_convexHull (hf : ConvexOn 𝕜 (convexHull 𝕜 s) f) {x}
-    (hx : x ∈ convexHull.{u, v} 𝕜 s) : ∃ y ∈ s, f x ≤ f y := by
-  -- Porting note: `convexHull_eq` has an unspecified universe value that we need to pick.
-  rw [_root_.convexHull_eq.{u, v, 0}] at hx
+    (hx : x ∈ convexHull 𝕜 s) : ∃ y ∈ s, f x ≤ f y := by
+  rw [_root_.convexHull_eq] at hx
   obtain ⟨α, t, w, p, hw₀, hw₁, hp, rfl⟩ := hx
   rcases hf.exists_ge_of_centerMass hw₀ (hw₁.symm ▸ zero_lt_one) fun i hi =>
       subset_convexHull 𝕜 s (hp i hi) with

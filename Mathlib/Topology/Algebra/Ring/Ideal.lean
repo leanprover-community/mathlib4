@@ -19,7 +19,7 @@ ideal and prove that the quotient is a topological ring.
 
 section Ring
 
-variable {R : Type _} [TopologicalSpace R] [Ring R] [TopologicalRing R]
+variable {R : Type*} [TopologicalSpace R] [Ring R] [TopologicalRing R]
 
 /-- The closure of an ideal in a topological ring as an ideal. -/
 protected def Ideal.closure (I : Ideal R) : Ideal R :=
@@ -47,7 +47,7 @@ end Ring
 
 section CommRing
 
-variable {R : Type _} [TopologicalSpace R] [CommRing R] (N : Ideal R)
+variable {R : Type*} [TopologicalSpace R] [CommRing R] (N : Ideal R)
 
 open Ideal.Quotient
 

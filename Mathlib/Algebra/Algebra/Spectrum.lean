@@ -87,6 +87,8 @@ noncomputable def IsUnit.subInvSMul {r : Rˣ} {s : R} {a : A} (h : IsUnit <| r �
   val_inv := by rw [mul_smul_comm, ← smul_mul_assoc, smul_sub, smul_inv_smul, h.mul_val_inv]
   inv_val := by rw [smul_mul_assoc, ← mul_smul_comm, smul_sub, smul_inv_smul, h.val_inv_mul]
 #align is_unit.sub_inv_smul IsUnit.subInvSMul
+#align is_unit.coe_sub_inv_smul IsUnit.val_subInvSMul
+#align is_unit.coe_inv_sub_inv_smul IsUnit.val_inv_subInvSMul
 
 end Defs
 
@@ -158,8 +160,8 @@ theorem units_smul_resolvent {r : Rˣ} {s : R} {a : A} :
   · simp only [resolvent]
     have h' : IsUnit (r • algebraMap R A (r⁻¹ • s) - a) := by
       simpa [Algebra.algebraMap_eq_smul_one, smul_assoc] using not_mem_iff.mp h
-    rw [← h'.subInvSMul_val, ← (not_mem_iff.mp h).unit_spec, Ring.inverse_unit, Ring.inverse_unit,
-      ←h'.subInvSMul.inv_eq_val_inv, h'.subInvSMul_inv]
+    rw [← h'.val_subInvSMul, ← (not_mem_iff.mp h).unit_spec, Ring.inverse_unit, Ring.inverse_unit,
+      h'.val_inv_subInvSMul]
     simp only [Algebra.algebraMap_eq_smul_one, smul_assoc, smul_inv_smul]
 #align spectrum.units_smul_resolvent spectrum.units_smul_resolvent
 
@@ -228,13 +230,11 @@ theorem unit_mem_mul_iff_mem_swap_mul {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) 
     refine' fun x y h => ⟨⟨1 - y * x, 1 + y * h.unit.inv * x, _, _⟩, rfl⟩
     calc
       (1 - y * x) * (1 + y * (IsUnit.unit h).inv * x) =
-          1 - y * x + y * ((1 - x * y) * h.unit.inv) * x :=
-        by noncomm_ring
+          1 - y * x + y * ((1 - x * y) * h.unit.inv) * x := by noncomm_ring
       _ = 1 := by simp only [Units.inv_eq_val_inv, IsUnit.mul_val_inv, mul_one, sub_add_cancel]
     calc
       (1 + y * (IsUnit.unit h).inv * x) * (1 - y * x) =
-          1 - y * x + y * (h.unit.inv * (1 - x * y)) * x :=
-        by noncomm_ring
+          1 - y * x + y * (h.unit.inv * (1 - x * y)) * x := by noncomm_ring
       _ = 1 := by simp only [Units.inv_eq_val_inv, IsUnit.val_inv_mul, mul_one, sub_add_cancel]
   have := Iff.intro (h₁ (r⁻¹ • a) b) (h₁ b (r⁻¹ • a))
   rw [mul_smul_comm r⁻¹ b a] at this
@@ -388,7 +388,7 @@ namespace AlgHom
 
 section CommSemiring
 
-variable {F R A B : Type _} [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable {F R A B : Type*} [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 
 variable [AlgHomClass F R A B]
 
@@ -409,7 +409,7 @@ end CommSemiring
 
 section CommRing
 
-variable {F R A B : Type _} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable {F R A B : Type*} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 
 variable [AlgHomClass F R A R]
 
@@ -430,7 +430,7 @@ end CommRing
 end AlgHom
 
 @[simp]
-theorem AlgEquiv.spectrum_eq {F R A B : Type _} [CommSemiring R] [Ring A] [Ring B] [Algebra R A]
+theorem AlgEquiv.spectrum_eq {F R A B : Type*} [CommSemiring R] [Ring A] [Ring B] [Algebra R A]
     [Algebra R B] [AlgEquivClass F R A B] (f : F) (a : A) :
     spectrum R (f a) = spectrum R a :=
   Set.Subset.antisymm (AlgHom.spectrum_apply_subset _ _) <| by

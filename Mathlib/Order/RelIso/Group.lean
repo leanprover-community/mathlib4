@@ -13,7 +13,7 @@ import Mathlib.Order.RelIso.Basic
 -/
 
 
-variable {α : Type _} {r : α → α → Prop}
+variable {α : Type*} {r : α → α → Prop}
 
 namespace RelIso
 

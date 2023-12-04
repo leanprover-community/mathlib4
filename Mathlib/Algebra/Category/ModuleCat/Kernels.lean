@@ -39,8 +39,9 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
     -- Porting note: broken dot notation on LinearMap.ker
       LinearMap.codRestrict (LinearMap.ker f) (Fork.ι s) fun c =>
         LinearMap.mem_ker.2 <| by
-          rw [← @Function.comp_apply _ _ _ f (Fork.ι s) c, ← coe_comp, Fork.condition,
-            HasZeroMorphisms.comp_zero (Fork.ι s) N]
+          -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+          erw [← @Function.comp_apply _ _ _ f (Fork.ι s) c, ← coe_comp]
+          rw [Fork.condition, HasZeroMorphisms.comp_zero (Fork.ι s) N]
           rfl)
     (fun s => LinearMap.subtype_comp_codRestrict _ _ _) fun s m h =>
     LinearMap.ext fun x => Subtype.ext_iff_val.2 (by simp [← h]; rfl)
@@ -74,7 +75,7 @@ theorem hasKernels_moduleCat : HasKernels (ModuleCat R) :=
   ⟨fun f => HasLimit.mk ⟨_, kernelIsLimit f⟩⟩
 #align Module.has_kernels_Module ModuleCat.hasKernels_moduleCat
 
-/-- The category or R-modules has cokernels, given by the projection onto the quotient. -/
+/-- The category of R-modules has cokernels, given by the projection onto the quotient. -/
 theorem hasCokernels_moduleCat : HasCokernels (ModuleCat R) :=
   ⟨fun f => HasColimit.mk ⟨_, cokernelIsColimit f⟩⟩
 #align Module.has_cokernels_Module ModuleCat.hasCokernels_moduleCat

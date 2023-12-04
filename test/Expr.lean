@@ -1,6 +1,7 @@
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Tactic.RunCmd
 import Mathlib.Init.Data.Nat.Notation
+import Std.Tactic.GuardMsgs
 
 open Lean Meta Elab Command
 
@@ -20,6 +21,17 @@ def reorderLastArguments : Expr → Expr :=
 def foo (f : ℕ → ℕ → ℕ) (n₁ n₂ n₃ n₄ : ℕ) : ℕ := f (f n₁ n₂) (f n₃ n₄)
 def bar (f : ℕ → ℕ → ℕ) (n₁ n₂ n₃ n₄ : ℕ) : ℕ := f (f n₄ n₃) (f n₂ n₁)
 
+set_option pp.unicode.fun true in
+/--
+info: before: fun f n₁ n₂ n₃ n₄ ↦ f (f n₁ n₂) (f n₃ n₄)
+---
+info: after: fun f n₁ n₂ n₃ n₄ ↦ f (f n₄ n₃) (f n₂ n₁)
+---
+info: new type: (ℕ → ℕ → ℕ) → ℕ → ℕ → ℕ → ℕ → ℕ
+---
+info: after: fun f n₁ n₂ n₃ n₄ ↦ f (f n₄ n₃) (f n₂ n₁)
+-/
+#guard_msgs in
 run_cmd liftTermElabM <| do
   let d ← getConstInfo `foo
   let e := d.value!

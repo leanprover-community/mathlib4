@@ -1,6 +1,7 @@
 import Mathlib.Tactic.TFAE
 
 open List
+set_option autoImplicit true
 
 section zeroOne
 

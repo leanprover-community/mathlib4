@@ -19,7 +19,7 @@ namespace Set
 
 open Pointwise
 
-variable {α : Type _} {s t : Set α}
+variable {α : Type*} {s t : Set α}
 
 @[to_additive]
 theorem IsPwo.mul [OrderedCancelCommMonoid α] (hs : s.IsPwo) (ht : t.IsPwo) : IsPwo (s * t) := by
@@ -52,7 +52,7 @@ namespace Finset
 
 open Pointwise
 
-variable {α : Type _}
+variable {α : Type*}
 
 variable [OrderedCancelCommMonoid α] {s t : Set α} (hs : s.IsPwo) (ht : t.IsPwo) (a : α)
 

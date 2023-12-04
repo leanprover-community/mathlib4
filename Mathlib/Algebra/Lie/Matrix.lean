@@ -45,8 +45,8 @@ def lieEquivMatrix' : Module.End R (n → R) ≃ₗ⁅R⁆ Matrix n n R :=
     map_lie' := fun {T S} => by
       let f := @LinearMap.toMatrix' R _ n n _ _
       change f (T.comp S - S.comp T) = f T * f S - f S * f T
-      have h : ∀ T S : Module.End R _, f (T.comp S) = f T ⬝ f S := LinearMap.toMatrix'_comp
-      rw [LinearEquiv.map_sub, h, h, Matrix.mul_eq_mul, Matrix.mul_eq_mul] }
+      have h : ∀ T S : Module.End R _, f (T.comp S) = f T * f S := LinearMap.toMatrix'_comp
+      rw [LinearEquiv.map_sub, h, h] }
 #align lie_equiv_matrix' lieEquivMatrix'
 
 @[simp]
@@ -68,14 +68,14 @@ def Matrix.lieConj (P : Matrix n n R) (h : Invertible P) : Matrix n n R ≃ₗ�
 
 @[simp]
 theorem Matrix.lieConj_apply (P A : Matrix n n R) (h : Invertible P) :
-    P.lieConj h A = P ⬝ A ⬝ P⁻¹ := by
+    P.lieConj h A = P * A * P⁻¹ := by
   simp [LinearEquiv.conj_apply, Matrix.lieConj, LinearMap.toMatrix'_comp,
     LinearMap.toMatrix'_toLin']
 #align matrix.lie_conj_apply Matrix.lieConj_apply
 
 @[simp]
 theorem Matrix.lieConj_symm_apply (P A : Matrix n n R) (h : Invertible P) :
-    (P.lieConj h).symm A = P⁻¹ ⬝ A ⬝ P := by
+    (P.lieConj h).symm A = P⁻¹ * A * P := by
   simp [LinearEquiv.symm_conj_apply, Matrix.lieConj, LinearMap.toMatrix'_comp,
     LinearMap.toMatrix'_toLin']
 #align matrix.lie_conj_symm_apply Matrix.lieConj_symm_apply
@@ -89,7 +89,7 @@ def Matrix.reindexLieEquiv : Matrix n n R ≃ₗ⁅R⁆ Matrix m m R :=
     toFun := Matrix.reindex e e
     map_lie' := fun {_ _} => by
       simp only [LieRing.of_associative_ring_bracket, Matrix.reindex_apply,
-        Matrix.submatrix_mul_equiv, Matrix.mul_eq_mul, Matrix.submatrix_sub, Pi.sub_apply] }
+        Matrix.submatrix_mul_equiv, Matrix.submatrix_sub, Pi.sub_apply] }
 #align matrix.reindex_lie_equiv Matrix.reindexLieEquiv
 
 @[simp]

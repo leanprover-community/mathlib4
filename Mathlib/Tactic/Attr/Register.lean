@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Lean.Meta.Tactic.Simp
-import Mathlib.Tactic.LabelAttr
+import Std.Tactic.LabelAttr
 
 /-!
 # Attributes used in `Mathlib`

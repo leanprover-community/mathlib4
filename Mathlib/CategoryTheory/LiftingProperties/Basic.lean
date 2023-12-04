@@ -32,14 +32,14 @@ namespace CategoryTheory
 
 open Category
 
-variable {C : Type _} [Category C] {A B B' X Y Y' : C} (i : A ⟶ B) (i' : B ⟶ B') (p : X ⟶ Y)
+variable {C : Type*} [Category C] {A B B' X Y Y' : C} (i : A ⟶ B) (i' : B ⟶ B') (p : X ⟶ Y)
   (p' : Y ⟶ Y')
 
 /-- `HasLiftingProperty i p` means that `i` has the left lifting
 property with respect to `p`, or equivalently that `p` has
 the right lifting property with respect to `i`. -/
 class HasLiftingProperty : Prop where
-  /-- Unique field expressing the any commutative square built from `f` and `g` has a lift -/
+  /-- Unique field expressing that any commutative square built from `f` and `g` has a lift -/
   sq_hasLift : ∀ {f : A ⟶ X} {g : B ⟶ Y} (sq : CommSq f i p g), sq.HasLift
 #align category_theory.has_lifting_property CategoryTheory.HasLiftingProperty
 #align category_theory.has_lifting_property.sq_has_lift CategoryTheory.HasLiftingProperty.sq_hasLift

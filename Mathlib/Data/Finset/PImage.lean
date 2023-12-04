@@ -21,7 +21,7 @@ finite set, image, partial function
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Part
 
@@ -82,8 +82,8 @@ theorem pimage_some (s : Finset α) (f : α → β) [∀ x, Decidable (Part.some
 theorem pimage_congr (h₁ : s = t) (h₂ : ∀ x ∈ t, f x = g x) : s.pimage f = t.pimage g := by
   subst s
   ext y
-  -- Porting note: `←exists_prop` required because `∃ x ∈ s, p x` is defined differently
-  simp (config := { contextual := true }) only [mem_pimage, ←exists_prop, h₂]
+  -- Porting note: `← exists_prop` required because `∃ x ∈ s, p x` is defined differently
+  simp (config := { contextual := true }) only [mem_pimage, ← exists_prop, h₂]
 #align finset.pimage_congr Finset.pimage_congr
 
 /-- Rewrite `s.pimage f` in terms of `Finset.filter`, `Finset.attach`, and `Finset.image`. -/
@@ -93,8 +93,8 @@ theorem pimage_eq_image_filter : s.pimage f =
         (f x).get (mem_filter.mp x.coe_prop).2 := by
   ext x
   simp [Part.mem_eq, And.exists]
-  -- Porting note: `←exists_prop` required because `∃ x ∈ s, p x` is defined differently
-  simp only [←exists_prop]
+  -- Porting note: `← exists_prop` required because `∃ x ∈ s, p x` is defined differently
+  simp only [← exists_prop]
 #align finset.pimage_eq_image_filter Finset.pimage_eq_image_filter
 
 theorem pimage_union [DecidableEq α] : (s ∪ t).pimage f = s.pimage f ∪ t.pimage f :=

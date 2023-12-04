@@ -23,7 +23,7 @@ instance : TopologicalSpace SignType :=
 instance : DiscreteTopology SignType :=
   ⟨rfl⟩
 
-variable {α : Type _} [Zero α] [TopologicalSpace α]
+variable {α : Type*} [Zero α] [TopologicalSpace α]
 
 section PartialOrder
 

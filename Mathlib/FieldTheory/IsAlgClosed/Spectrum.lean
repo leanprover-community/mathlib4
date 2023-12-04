@@ -35,8 +35,6 @@ eigenvalue.
 * `σ a` : `spectrum R a` of `a : A`
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
 namespace spectrum
 
 open Set Polynomial

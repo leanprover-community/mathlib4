@@ -34,6 +34,7 @@ We verify that `FdRep k G` is a `k`-linear monoidal category, and rigid when `G`
 
 -/
 
+suppress_compilation
 
 universe u
 
@@ -102,8 +103,8 @@ def of {V : Type u} [AddCommGroup V] [Module k V] [FiniteDimensional k V]
   ⟨FGModuleCat.of k V, ρ⟩
 #align fdRep.of FdRep.of
 
-instance : HasForget₂ (FdRep k G) (Rep k G)
-    where forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)
+instance : HasForget₂ (FdRep k G) (Rep k G) where
+  forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)
 
 theorem forget₂_ρ (V : FdRep k G) : ((forget₂ (FdRep k G) (Rep k G)).obj V).ρ = V.ρ := by
   ext g v; rfl

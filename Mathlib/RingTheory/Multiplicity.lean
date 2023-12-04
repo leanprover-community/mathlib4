@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes
 -/
 import Mathlib.Algebra.Associated
-import Mathlib.Algebra.BigOperators.Basic
-import Mathlib.RingTheory.Valuation.Basic
+import Mathlib.Algebra.SMulWithZero
+import Mathlib.Data.Nat.PartENat
+import Mathlib.Tactic.Linarith
 
 #align_import ring_theory.multiplicity from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
@@ -24,7 +25,7 @@ several basic results on it.
 -/
 
 
-variable {α : Type _}
+variable {α : Type*}
 
 open Nat Part
 
@@ -295,7 +296,7 @@ theorem finite_nat_iff {a b : ℕ} : Finite a b ↔ a ≠ 1 ∧ 0 < b := by
       fun h => by cases h <;> simp [*]⟩
 #align multiplicity.finite_nat_iff multiplicity.finite_nat_iff
 
-alias dvd_iff_multiplicity_pos ↔ _ _root_.has_dvd.dvd.multiplicity_pos
+alias ⟨_, _root_.has_dvd.dvd.multiplicity_pos⟩ := dvd_iff_multiplicity_pos
 
 end Monoid
 
@@ -440,7 +441,7 @@ theorem multiplicity_add_of_gt {p a b : α} (h : multiplicity p b < multiplicity
     rw_mod_cast [multiplicity_lt_iff_neg_dvd, dvd_add_right]
     intro h_dvd
     · apply multiplicity.is_greatest _ h_dvd
-      rw [hk, ←Nat.succ_eq_add_one]
+      rw [hk, ← Nat.succ_eq_add_one]
       norm_cast
       apply Nat.lt_succ_self k
     · rw [pow_dvd_iff_le_multiplicity, Nat.cast_add, ← hk, Nat.cast_one]
@@ -582,7 +583,7 @@ protected theorem mul {p a b : α} (hp : Prime p) :
     cases' not_and_or.1 h with h h <;> simp [eq_top_iff_not_finite.2 h]
 #align multiplicity.mul multiplicity.mul
 
-theorem Finset.prod {β : Type _} {p : α} (hp : Prime p) (s : Finset β) (f : β → α) :
+theorem Finset.prod {β : Type*} {p : α} (hp : Prime p) (s : Finset β) (f : β → α) :
     multiplicity p (∏ x in s, f x) = ∑ x in s, multiplicity p (f x) := by
   classical
     induction' s using Finset.induction with a s has ih h
@@ -623,23 +624,6 @@ theorem multiplicity_pow_self_of_prime {p : α} (hp : Prime p) (n : ℕ) :
 
 end CancelCommMonoidWithZero
 
-section Valuation
-
-variable {R : Type _} [CommRing R] [IsDomain R] {p : R} [DecidableRel (Dvd.dvd : R → R → Prop)]
-
-/-- `multiplicity` of a prime in an integral domain as an additive valuation to `PartENat`. -/
-noncomputable def addValuation (hp : Prime p) : AddValuation R PartENat :=
-  AddValuation.of (multiplicity p) (multiplicity.zero _) (one_right hp.not_unit)
-    (fun _ _ => min_le_multiplicity_add) fun _ _ => multiplicity.mul hp
-#align multiplicity.add_valuation multiplicity.addValuation
-
-@[simp]
-theorem addValuation_apply {hp : Prime p} {r : R} : addValuation hp r = multiplicity p r :=
-  rfl
-#align multiplicity.add_valuation_apply multiplicity.addValuation_apply
-
-end Valuation
-
 end multiplicity
 
 section Nat
@@ -647,13 +631,13 @@ section Nat
 open multiplicity
 
 theorem multiplicity_eq_zero_of_coprime {p a b : ℕ} (hp : p ≠ 1)
-    (hle : multiplicity p a ≤ multiplicity p b) (hab : Nat.coprime a b) : multiplicity p a = 0 := by
+    (hle : multiplicity p a ≤ multiplicity p b) (hab : Nat.Coprime a b) : multiplicity p a = 0 := by
   rw [multiplicity_le_multiplicity_iff] at hle
   rw [← nonpos_iff_eq_zero, ← not_lt, PartENat.pos_iff_one_le, ← Nat.cast_one, ←
     pow_dvd_iff_le_multiplicity]
   intro h
   have := Nat.dvd_gcd h (hle _ h)
-  rw [coprime.gcd_eq_one hab, Nat.dvd_one, pow_one] at this
+  rw [Coprime.gcd_eq_one hab, Nat.dvd_one, pow_one] at this
   exact hp this
 #align multiplicity_eq_zero_of_coprime multiplicity_eq_zero_of_coprime
 

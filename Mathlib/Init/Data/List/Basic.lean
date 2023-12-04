@@ -11,6 +11,8 @@ import Std.Data.List.Basic
 Definitions for `List` not (yet) in `Std`
 -/
 
+set_option autoImplicit true
+
 
 open Decidable List
 
@@ -80,6 +82,3 @@ theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂
 #align list.le_eq_not_gt List.le_eq_not_gt
 
 end List
-
-#align list.replicate List.replicate
-#align list.length_replicate List.length_replicate

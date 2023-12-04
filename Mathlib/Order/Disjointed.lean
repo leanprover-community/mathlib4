@@ -37,7 +37,7 @@ Related to the TODO in the module docstring of `Mathlib.Order.PartialSups`.
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section GeneralizedBooleanAlgebra
 
@@ -83,12 +83,11 @@ theorem disjoint_disjointed (f : ℕ → α) : Pairwise (Disjoint on disjointed 
 -- Porting note: `disjointedRec` had a change in universe level.
 /-- An induction principle for `disjointed`. To define/prove something on `disjointed f n`, it's
 enough to define/prove it for `f n` and being able to extend through diffs. -/
-def disjointedRec {f : ℕ → α} {p : α → Sort _} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i)) :
+def disjointedRec {f : ℕ → α} {p : α → Sort*} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i)) :
     ∀ ⦃n⦄, p (f n) → p (disjointed f n)
   | 0 => id
   | n + 1 => fun h => by
-    suffices H : ∀ k, p (f (n + 1) \ partialSups f k)
-    · exact H n
+    suffices H : ∀ k, p (f (n + 1) \ partialSups f k) from H n
     rintro k
     induction' k with k ih
     · exact hdiff h
@@ -97,7 +96,7 @@ def disjointedRec {f : ℕ → α} {p : α → Sort _} (hdiff : ∀ ⦃t i⦄, p
 #align disjointed_rec disjointedRec
 
 @[simp]
-theorem disjointedRec_zero {f : ℕ → α} {p : α → Sort _} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i))
+theorem disjointedRec_zero {f : ℕ → α} {p : α → Sort*} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i))
     (h₀ : p (f 0)) : disjointedRec hdiff h₀ = h₀ :=
   rfl
 #align disjointed_rec_zero disjointedRec_zero
@@ -122,11 +121,10 @@ theorem disjointed_unique {f d : ℕ → α} (hdisj : Pairwise (Disjoint on d))
   ext n
   cases' n with n
   · rw [← partialSups_zero d, hsups, partialSups_zero, disjointed_zero]
-  suffices h : d n.succ = partialSups d n.succ \ partialSups d n
-  · rw [h, hsups, partialSups_succ, disjointed_succ, sup_sdiff, sdiff_self, bot_sup_eq]
+  suffices h : d n.succ = partialSups d n.succ \ partialSups d n by
+    rw [h, hsups, partialSups_succ, disjointed_succ, sup_sdiff, sdiff_self, bot_sup_eq]
   rw [partialSups_succ, sup_sdiff, sdiff_self, bot_sup_eq, eq_comm, sdiff_eq_self_iff_disjoint]
-  suffices h : ∀ m ≤ n, Disjoint (partialSups d m) (d n.succ)
-  · exact h n le_rfl
+  suffices h : ∀ m ≤ n, Disjoint (partialSups d m) (d n.succ) from h n le_rfl
   rintro m hm
   induction' m with m ih
   · exact hdisj (Nat.succ_ne_zero _).symm

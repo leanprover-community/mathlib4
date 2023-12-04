@@ -46,9 +46,9 @@ open scoped EuclideanGeometry RealInnerProductSpace Real
 
 namespace EuclideanGeometry
 
-variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
-variable {P : Type _} [MetricSpace P] [NormedAddTorsor V P]
+variable {P : Type*} [MetricSpace P] [NormedAddTorsor V P]
 
 /-- **Ptolemy’s Theorem**. -/
 theorem mul_dist_add_mul_dist_eq_mul_dist_of_cospherical {a b c d p : P}

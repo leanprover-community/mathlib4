@@ -3,7 +3,7 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDerivAnalytic
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 import Mathlib.Analysis.Complex.CauchyIntegral
 
@@ -22,8 +22,6 @@ function `update f c (limUnder (𝓝[≠] c) f)` is complex differentiable in a 
 open TopologicalSpace Metric Set Filter Asymptotics Function
 
 open scoped Topology Filter NNReal Real
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 universe u
 

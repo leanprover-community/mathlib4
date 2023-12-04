@@ -67,12 +67,12 @@ def det : GL n R →* Rˣ where
   toFun A :=
     { val := (↑A : Matrix n n R).det
       inv := (↑A⁻¹ : Matrix n n R).det
-      val_inv := by rw [← det_mul, ← mul_eq_mul, A.mul_inv, det_one]
-      inv_val := by rw [← det_mul, ← mul_eq_mul, A.inv_mul, det_one] }
+      val_inv := by rw [← det_mul, A.mul_inv, det_one]
+      inv_val := by rw [← det_mul, A.inv_mul, det_one] }
   map_one' := Units.ext det_one
   map_mul' A B := Units.ext <| det_mul _ _
 #align matrix.general_linear_group.det Matrix.GeneralLinearGroup.det
-#align matrix.general_linear_group.coe_det_apply Matrix.GeneralLinearGroup.det_apply_val
+#align matrix.general_linear_group.coe_det_apply Matrix.GeneralLinearGroup.val_det_apply
 
 /-- The `GL n R` and `Matrix.GeneralLinearGroup R n` groups are multiplicatively equivalent-/
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
@@ -90,7 +90,7 @@ noncomputable def mk'' (A : Matrix n n R) (h : IsUnit (Matrix.det A)) : GL n R :
 #align matrix.general_linear_group.mk'' Matrix.GeneralLinearGroup.mk''
 
 /-- Given a matrix with non-zero determinant over a field, we get an element of `GL n K`-/
-def mkOfDetNeZero {K : Type _} [Field K] (A : Matrix n n K) (h : Matrix.det A ≠ 0) : GL n K :=
+def mkOfDetNeZero {K : Type*} [Field K] (A : Matrix n n K) (h : Matrix.det A ≠ 0) : GL n K :=
   mk' A (invertibleOfNonzero h)
 #align matrix.general_linear_group.mk_of_det_ne_zero Matrix.GeneralLinearGroup.mkOfDetNeZero
 
@@ -108,7 +108,7 @@ section CoeLemmas
 variable (A B : GL n R)
 
 @[simp]
-theorem coe_mul : ↑(A * B) = (↑A : Matrix n n R) ⬝ (↑B : Matrix n n R) :=
+theorem coe_mul : ↑(A * B) = (↑A : Matrix n n R) * (↑B : Matrix n n R) :=
   rfl
 #align matrix.general_linear_group.coe_mul Matrix.GeneralLinearGroup.coe_mul
 
@@ -213,7 +213,7 @@ each element. -/
 instance : Neg (GLPos n R) :=
   ⟨fun g =>
     ⟨-g, by
-      rw [mem_glpos, GeneralLinearGroup.det_apply_val, Units.val_neg, det_neg,
+      rw [mem_glpos, GeneralLinearGroup.val_det_apply, Units.val_neg, det_neg,
         (Fact.out (p := Even <| Fintype.card n)).neg_one_pow, one_mul]
       exact g.prop⟩⟩
 
@@ -298,7 +298,7 @@ section Examples
 
 /-- The matrix [a, -b; b, a] (inspired by multiplication by a complex number); it is an element of
 $GL_2(R)$ if `a ^ 2 + b ^ 2` is nonzero. -/
-@[simps! (config := { fullyApplied := false }) val]
+@[simps! (config := .asFn) val]
 def planeConformalMatrix {R} [Field R] (a b : R) (hab : a ^ 2 + b ^ 2 ≠ 0) :
     Matrix.GeneralLinearGroup (Fin 2) R :=
   GeneralLinearGroup.mkOfDetNeZero !![a, -b; b, a] (by simpa [det_fin_two, sq] using hab)

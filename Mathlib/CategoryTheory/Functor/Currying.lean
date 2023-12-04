@@ -19,10 +19,10 @@ and verify that they provide an equivalence of categories
 
 namespace CategoryTheory
 
-universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
+universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 variable {B : Type u₁} [Category.{v₁} B] {C : Type u₂} [Category.{v₂} C] {D : Type u₃}
-  [Category.{v₃} D] {E : Type u₄} [Category.{v₄} E]
+  [Category.{v₃} D] {E : Type u₄} [Category.{v₄} E] {H : Type u₅} [Category.{v₅} H]
 
 /-- The uncurrying functor, taking a functor `C ⥤ (D ⥤ E)` and producing a functor `(C × D) ⥤ E`.
 -/
@@ -54,13 +54,13 @@ def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E
   obj X :=
     { obj := fun Y => F.obj (X, Y)
       map := fun g => F.map (𝟙 X, g)
-      map_id := fun Y => by simp only [F.map_id]; rw [←prod_id]; exact F.map_id ⟨X,Y⟩
-      map_comp := fun f g => by simp [←F.map_comp]}
+      map_id := fun Y => by simp only [F.map_id]; rw [← prod_id]; exact F.map_id ⟨X,Y⟩
+      map_comp := fun f g => by simp [← F.map_comp]}
   map f :=
     { app := fun Y => F.map (f, 𝟙 Y)
-      naturality := fun {Y} {Y'} g => by simp [←F.map_comp] }
+      naturality := fun {Y} {Y'} g => by simp [← F.map_comp] }
   map_id := fun X => by ext Y; exact F.map_id _
-  map_comp := fun f g => by ext Y; dsimp; simp [←F.map_comp]
+  map_comp := fun f g => by ext Y; dsimp; simp [← F.map_comp]
 #align category_theory.curry_obj CategoryTheory.curryObj
 
 /-- The currying functor, taking a functor `(C × D) ⥤ E` and producing a functor `C ⥤ (D ⥤ E)`.
@@ -88,7 +88,7 @@ def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E :=
     (NatIso.ofComponents fun F =>
         NatIso.ofComponents fun X => NatIso.ofComponents fun Y => Iso.refl _)
     (NatIso.ofComponents fun F => NatIso.ofComponents (fun X => eqToIso (by simp))
-      (by intros X Y f; cases X; cases Y; cases f; dsimp at *; rw [←F.map_comp]; simp ))
+      (by intros X Y f; cases X; cases Y; cases f; dsimp at *; rw [← F.map_comp]; simp))
 #align category_theory.currying CategoryTheory.currying
 
 /-- `F.flip` is isomorphic to uncurrying `F`, swapping the variables, and currying. -/
@@ -114,5 +114,45 @@ def whiskeringRight₂ : (C ⥤ D ⥤ E) ⥤ (B ⥤ C) ⥤ (B ⥤ D) ⥤ B ⥤ E
   uncurry ⋙
     whiskeringRight _ _ _ ⋙ (whiskeringLeft _ _ _).obj (prodFunctorToFunctorProd _ _ _) ⋙ curry
 #align category_theory.whiskering_right₂ CategoryTheory.whiskeringRight₂
+
+namespace Functor
+
+variable {B C D E}
+
+lemma uncurry_obj_curry_obj (F : B × C ⥤ D) : uncurry.obj (curry.obj F) = F :=
+  Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ => by
+    dsimp
+    simp only [← F.map_comp, Category.id_comp, Category.comp_id, prod_comp])
+
+lemma curry_obj_injective {F₁ F₂ : C × D ⥤ E} (h : curry.obj F₁ = curry.obj F₂) :
+    F₁ = F₂ := by
+  rw [← uncurry_obj_curry_obj F₁, ← uncurry_obj_curry_obj F₂, h]
+
+lemma curry_obj_uncurry_obj (F : B ⥤ C ⥤ D) : curry.obj (uncurry.obj F) = F :=
+  Functor.ext (fun _ => Functor.ext (by simp) (by simp)) (by aesop_cat)
+
+lemma uncurry_obj_injective {F₁ F₂ : B ⥤ C ⥤ D} (h : uncurry.obj F₁ = uncurry.obj F₂) :
+    F₁ = F₂ := by
+  rw [← curry_obj_uncurry_obj F₁, ← curry_obj_uncurry_obj F₂, h]
+
+lemma flip_flip (F : B ⥤ C ⥤ D) : F.flip.flip = F := rfl
+
+lemma flip_injective {F₁ F₂ : B ⥤ C ⥤ D} (h : F₁.flip = F₂.flip) :
+    F₁ = F₂ := by
+  rw [← flip_flip F₁, ← flip_flip F₂, h]
+
+lemma uncurry_obj_curry_obj_flip_flip (F₁ : B ⥤ C) (F₂ : D ⥤ E) (G : C × E ⥤ H) :
+    uncurry.obj (F₂ ⋙ (F₁ ⋙ curry.obj G).flip).flip = (F₁.prod F₂) ⋙ G :=
+  Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ => by
+    dsimp
+    simp only [Category.id_comp, Category.comp_id, ← G.map_comp, prod_comp])
+
+lemma uncurry_obj_curry_obj_flip_flip' (F₁ : B ⥤ C) (F₂ : D ⥤ E) (G : C × E ⥤ H) :
+    uncurry.obj (F₁ ⋙ (F₂ ⋙ (curry.obj G).flip).flip) = (F₁.prod F₂) ⋙ G :=
+  Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ => by
+    dsimp
+    simp only [Category.id_comp, Category.comp_id, ← G.map_comp, prod_comp])
+
+end Functor
 
 end CategoryTheory

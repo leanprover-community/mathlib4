@@ -27,9 +27,9 @@ commutative ring, field of fractions
 -/
 
 
-variable {R : Type _} [CommRing R] (M : Submonoid R) (S : Type _) [CommRing S]
+variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
 
-variable [Algebra R S] {P : Type _} [CommRing P]
+variable [Algebra R S] {P : Type*} [CommRing P]
 
 open Function
 

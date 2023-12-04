@@ -2,10 +2,10 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
-Ported by: Kevin Buzzard, Johan Commelin, Siddhartha Gadgil, Anand Rao
 -/
 
 import Mathlib.Data.Nat.Size
+import Mathlib.Tactic.Common
 
 /-!
 
@@ -80,8 +80,8 @@ lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) 
   let m := (guess + n / guess) / 2
   by_cases h : m < guess
   case pos =>
-    suffices : n < (m + 1) * (m + 1)
-    · simpa only [dif_pos h] using sqrt.lt_iter_succ_sq n m this
+    suffices n < (m + 1) * (m + 1) by
+      simpa only [dif_pos h] using sqrt.lt_iter_succ_sq n m this
     refine lt_of_mul_lt_mul_left ?_ (4 * (guess * guess)).zero_le
     apply lt_of_le_of_lt AM_GM
     rw [show (4 : ℕ) = 2 * 2 from rfl]
