@@ -351,12 +351,10 @@ theorem Fintype.card_subtype_eq' (y : α) [Fintype { x // y = x }] :
   Fintype.card_unique
 #align fintype.card_subtype_eq' Fintype.card_subtype_eq'
 
-@[simp]
 theorem Fintype.card_empty : Fintype.card Empty = 0 :=
   rfl
 #align fintype.card_empty Fintype.card_empty
 
-@[simp]
 theorem Fintype.card_pempty : Fintype.card PEmpty = 0 :=
   rfl
 #align fintype.card_pempty Fintype.card_pempty

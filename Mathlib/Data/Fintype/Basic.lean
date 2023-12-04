@@ -596,8 +596,8 @@ theorem univ_ofSubsingleton (a : α) [Subsingleton α] : @univ _ (ofSubsingleton
   rfl
 #align fintype.univ_of_subsingleton Fintype.univ_ofSubsingleton
 
-/-- An empty type is a fintype. Not registered as an instance, to avoid diamonds for empty types
-which are fintypes for another reason (for instance `Fin 0`). -/
+/-- An empty type is a fintype. Not registered as an instance, to make sure that there aren't two
+conflicting `Fintype ι` instances around when casing over wheter a fintype `ι` is empty or not. -/
 def ofIsEmpty [IsEmpty α] : Fintype α :=
   ⟨∅, isEmptyElim⟩
 #align fintype.of_is_empty Fintype.ofIsEmpty
