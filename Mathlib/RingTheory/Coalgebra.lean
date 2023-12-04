@@ -39,9 +39,6 @@ class Coalgebra (R : Type u) (A : Type v) [CommRing R] [AddCommGroup A] [Module 
   lTensor_counit_comp_comul : counit.lTensor A ∘ₗ comul = (TensorProduct.mk R _ _).flip 1
 
 namespace Coalgebra
-
-section CommRingAddCommGroup
-
 variable {R : Type u} {A : Type v}
 variable [CommRing R] [AddCommGroup A] [Module R A] [Coalgebra R A]
 
@@ -58,8 +55,8 @@ theorem coassoc_symm_apply (a : A) :
 @[simp]
 theorem coassoc_symm :
     (TensorProduct.assoc R A A A).symm ∘ₗ comul.lTensor A ∘ₗ comul =
-    comul.rTensor A ∘ₗ (comul (R := R)) := by
-  ext a; exact coassoc_symm_apply a
+    comul.rTensor A ∘ₗ (comul (R := R)) :=
+  LinearMap.ext coassoc_symm_apply
 
 @[simp]
 theorem rTensor_counit_comul (a : A) : counit.rTensor A (comul a) = 1 ⊗ₜ[R] a :=
@@ -69,15 +66,11 @@ theorem rTensor_counit_comul (a : A) : counit.rTensor A (comul a) = 1 ⊗ₜ[R] 
 theorem lTensor_counit_comul (a : A) : counit.lTensor A (comul a) = a ⊗ₜ[R] 1 :=
   LinearMap.congr_fun lTensor_counit_comp_comul a
 
-end CommRingAddCommGroup
-
 end Coalgebra
+section CommRing
+variable (R : Type u) [CommRing R]
 
 open Coalgebra
-
-section CommRing
-
-variable (R : Type u) [CommRing R]
 
 namespace CommRing
 
@@ -97,7 +90,6 @@ theorem counit_apply (r : R) : counit r = r := rfl
 end CommRing
 
 namespace Finsupp
-
 variable (ι : Type v)
 
 /-- The `R`-module whose elements are functions `ι → R` which are zero on all but finitely many
@@ -106,8 +98,7 @@ counit `ε` by `ε(fᵢ) =  1`, where `fᵢ` is the function sending `i` to `1` 
 `ι` to zero. -/
 noncomputable
 instance instCoalgebra : Coalgebra R (ι →₀ R) where
-  comul := Finsupp.total ι ((ι →₀ R) ⊗[R] (ι →₀ R)) R
-    (fun i ↦ Finsupp.single i 1 ⊗ₜ Finsupp.single i 1)
+  comul := Finsupp.total ι ((ι →₀ R) ⊗[R] (ι →₀ R)) R (fun i ↦ .single i 1 ⊗ₜ .single i 1)
   counit := Finsupp.total ι R R (fun _ ↦ 1)
   coassoc := by ext; simp
   rTensor_counit_comp_comul := by ext; simp
