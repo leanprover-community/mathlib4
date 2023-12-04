@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.InnerProductSpace.Orientation
+import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
 #align_import measure_theory.measure.haar.inner_product_space from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -17,7 +19,6 @@ rise to a canonical volume form. We show that the measure coming from this volum
 measure `1` to the parallelepiped spanned by any orthonormal basis, and that it coincides with
 the canonical `volume` from the `MeasureSpace` instance.
 -/
-
 
 open FiniteDimensional MeasureTheory MeasureTheory.Measure Set
 
@@ -77,7 +78,27 @@ theorem OrthonormalBasis.addHaar_eq_volume {ι F : Type*} [Fintype ι] [NormedAd
   rw [Basis.addHaar_eq_iff]
   exact b.volume_parallelepiped
 
+/-- An orthonormal basis of a finite-dimensional inner product space defines a measurable
+equivalence between the space and the Euclidean space of the same dimension. -/
+noncomputable def OrthonormalBasis.measurableEquiv (b : OrthonormalBasis ι ℝ F) :
+    F ≃ᵐ EuclideanSpace ℝ ι := b.repr.toHomeomorph.toMeasurableEquiv
+
+/-- The measurable equivalence defined by an orthonormal basis is volume preserving. -/
+theorem OrthonormalBasis.measurePreserving_measurableEquiv (b : OrthonormalBasis ι ℝ F) :
+    MeasurePreserving b.measurableEquiv volume volume := by
+  convert (b.measurableEquiv.symm.measurable.measurePreserving _).symm
+  rw [← (EuclideanSpace.basisFun ι ℝ).addHaar_eq_volume]
+  erw [MeasurableEquiv.coe_toEquiv_symm, Basis.map_addHaar _ b.repr.symm.toContinuousLinearEquiv]
+  exact b.addHaar_eq_volume.symm
+
+theorem OrthonormalBasis.measurePreserving_repr (b : OrthonormalBasis ι ℝ F) :
+    MeasurePreserving b.repr volume volume := b.measurePreserving_measurableEquiv
+
+theorem OrthonormalBasis.measurePreserving_repr_symm (b : OrthonormalBasis ι ℝ F) :
+    MeasurePreserving b.repr.symm volume volume := b.measurePreserving_measurableEquiv.symm
+
 section PiLp
+
 variable (ι : Type*) [Fintype ι]
 
 /-- The measure equivalence between `EuclideanSpace ℝ ι` and `ι → ℝ` is volume preserving. -/
@@ -100,3 +121,45 @@ theorem PiLp.volume_preserving_equiv_symm : MeasurePreserving (WithLp.equiv 2 (�
   (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
 
 end PiLp
+
+namespace EuclideanSpace
+
+open BigOperators ENNReal
+
+@[simp]
+theorem volume_ball (x : EuclideanSpace ℝ (Fin 2)) (r : ℝ) :
+    volume (Metric.ball x r) = NNReal.pi * (ENNReal.ofReal r) ^ 2 := by
+  obtain hr | hr := le_total r 0
+  · rw [Metric.ball_eq_empty.mpr hr, measure_empty, ← zero_eq_ofReal.mpr hr, zero_pow zero_lt_two,
+      mul_zero]
+  · suffices volume (Metric.ball (0 : EuclideanSpace ℝ (Fin 2)) 1) = NNReal.pi by
+      rw [Measure.addHaar_ball _ _ hr, finrank_euclideanSpace_fin, ofReal_pow hr, this, mul_comm]
+    calc
+      _ = volume {p : ℝ × ℝ | p.1 ^ 2 + p.2 ^ 2 < 1} := by
+        have : MeasurePreserving (_ : ℝ × ℝ ≃ᵐ EuclideanSpace ℝ (Fin 2)) :=
+          MeasurePreserving.trans
+            (volume_preserving_finTwoArrow ℝ).symm (volume_preserving_measurableEquiv (Fin 2)).symm
+        rw [← this.measure_preimage_emb (MeasurableEquiv.measurableEmbedding _),
+          ball_zero_eq _ zero_le_one, preimage_setOf_eq]
+        simp only [MeasurableEquiv.finTwoArrow_symm_apply, Fin.sum_univ_two, preimage_setOf_eq,
+          Fin.cons_zero, Fin.cons_one, one_pow, Function.comp_apply, coe_measurableEquiv_symm,
+          MeasurableEquiv.trans_apply, WithLp.equiv_symm_pi_apply]
+      _ = volume {p : ℝ × ℝ | (- 1 < p.1 ∧ p.1 ≤ 1) ∧ p.1 ^ 2 + p.2 ^ 2 < 1} := by
+        congr
+        refine Set.ext fun _ => iff_and_self.mpr fun h => And.imp_right le_of_lt ?_
+        rw [← abs_lt, ← sq_lt_one_iff_abs_lt_one]
+        exact lt_of_add_lt_of_nonneg_left h (sq_nonneg _)
+      _ = volume (regionBetween (fun x => - Real.sqrt (1 - x ^ 2)) (fun x => Real.sqrt (1 - x ^ 2))
+          (Set.Ioc (-1) 1)) := by
+        simp_rw [regionBetween, Set.mem_Ioo, Set.mem_Ioc, ← Real.sq_lt, lt_tsub_iff_left]
+      _ = ENNReal.ofReal ((2 : ℝ) * ∫ (a : ℝ) in Set.Ioc (-1) 1, Real.sqrt (1 - a ^ 2)) := by
+        rw [volume_eq_prod, volume_regionBetween_eq_integral (Continuous.integrableOn_Ioc
+          (by continuity)) (Continuous.integrableOn_Ioc (by continuity)) measurableSet_Ioc
+          (fun _ _ => neg_le_self (Real.sqrt_nonneg _))]
+        simp_rw [Pi.sub_apply, sub_neg_eq_add, ← two_mul, integral_mul_left]
+      _ = NNReal.pi := by
+        rw [← intervalIntegral.integral_of_le (by norm_num : (-1 : ℝ) ≤ 1),
+          integral_sqrt_one_sub_sq, two_mul, add_halves, ← NNReal.coe_real_pi,
+          ofReal_coe_nnreal]
+
+end EuclideanSpace

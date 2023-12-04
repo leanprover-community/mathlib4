@@ -245,7 +245,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
       simp [dg0 (Or.inl <| mem_range_self _), ← hgf]
     refine' ⟨g + dg, fun y => _, funext hgf⟩
     · have hay : a < (g + dg) y := by
-        rcases(hg_mem y).1.eq_or_lt with (rfl | hlt)
+        rcases (hg_mem y).1.eq_or_lt with (rfl | hlt)
         · refine' (lt_add_iff_pos_right _).2 _
           calc
             0 < c - g y := sub_pos.2 hac
@@ -278,7 +278,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
     simp [dg0 (Or.inl <| mem_range_self _), ← hgf]
   refine' ⟨g - dg, fun y => _, funext hgf⟩
   · have hyb : (g - dg) y < b := by
-      rcases(hgb y).eq_or_lt with (rfl | hlt)
+      rcases (hgb y).eq_or_lt with (rfl | hlt)
       · refine' (sub_lt_self_iff _).2 _
         calc
           0 < g y - c := sub_pos.2 hcb

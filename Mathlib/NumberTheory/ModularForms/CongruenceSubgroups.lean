@@ -72,7 +72,7 @@ theorem Gamma_normal (N : ℕ) : Subgroup.Normal (Gamma N) :=
 
 theorem Gamma_one_top : Gamma 1 = ⊤ := by
   ext
-  simp
+  simp [eq_iff_true_of_subsingleton]
 #align Gamma_one_top Gamma_one_top
 
 theorem Gamma_zero_bot : Gamma 0 = ⊥ := by

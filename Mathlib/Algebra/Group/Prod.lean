@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Hom.Units
 
 #align_import algebra.group.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
@@ -241,14 +241,25 @@ instance instGroup [Group G] [Group H] : Group (G × H) :=
   { mul_left_inv := fun _ => mk.inj_iff.mpr ⟨mul_left_inv _, mul_left_inv _⟩ }
 
 @[to_additive]
+instance [Mul G] [Mul H] [IsLeftCancelMul G] [IsLeftCancelMul H] : IsLeftCancelMul (G × H) where
+  mul_left_cancel _ _ _ h :=
+      Prod.ext (mul_left_cancel (Prod.ext_iff.1 h).1) (mul_left_cancel (Prod.ext_iff.1 h).2)
+
+@[to_additive]
+instance [Mul G] [Mul H] [IsRightCancelMul G] [IsRightCancelMul H] : IsRightCancelMul (G × H) where
+  mul_right_cancel _ _ _ h :=
+      Prod.ext (mul_right_cancel (Prod.ext_iff.1 h).1) (mul_right_cancel (Prod.ext_iff.1 h).2)
+
+@[to_additive]
+instance [Mul G] [Mul H] [IsCancelMul G] [IsCancelMul H] : IsCancelMul (G × H) where
+
+@[to_additive]
 instance [LeftCancelSemigroup G] [LeftCancelSemigroup H] : LeftCancelSemigroup (G × H) :=
-  { mul_left_cancel := fun _ _ _ h =>
-      Prod.ext (mul_left_cancel (Prod.ext_iff.1 h).1) (mul_left_cancel (Prod.ext_iff.1 h).2) }
+  { mul_left_cancel := fun _ _ _ => mul_left_cancel }
 
 @[to_additive]
 instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigroup (G × H) :=
-  { mul_right_cancel := fun _ _ _ h =>
-      Prod.ext (mul_right_cancel (Prod.ext_iff.1 h).1) (mul_right_cancel (Prod.ext_iff.1 h).2) }
+  { mul_right_cancel := fun _ _ _ => mul_right_cancel }
 
 @[to_additive]
 instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) :=
@@ -378,7 +389,7 @@ variable {M' : Type*} {N' : Type*} [Mul M] [Mul N] [Mul M'] [Mul N'] [Mul P] (f 
   (g : N →ₙ* N')
 
 /-- `Prod.map` as a `MonoidHom`. -/
-@[to_additive prodMap "`prod.map` as an `AddMonoidHom`"]
+@[to_additive prodMap "`Prod.map` as an `AddMonoidHom`"]
 def prodMap : M × N →ₙ* M' × N' :=
   (f.comp (fst M N)).prod (g.comp (snd M N))
 #align mul_hom.prod_map MulHom.prodMap

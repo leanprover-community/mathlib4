@@ -29,8 +29,6 @@ open Complex UpperHalfPlane
 
 open scoped UpperHalfPlane
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 local notation "GL(" n ", " R ")" "⁺" => Matrix.GLPos (Fin n) R
 
 local notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (Fin n) R
@@ -221,7 +219,6 @@ theorem mul_slash (k1 k2 : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
   ring
 #align modular_form.mul_slash ModularForm.mul_slash
 
-set_option maxHeartbeats 600000 in
 -- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
 theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A :=

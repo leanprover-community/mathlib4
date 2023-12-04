@@ -7,7 +7,7 @@ import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Finite.Basic
 
-#align_import data.set.finite from "leanprover-community/mathlib"@"ffde2d8a6e689149e44fd95fa862c23a57f8c780"
+#align_import data.set.finite from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-!
 # Finite sets
@@ -167,27 +167,34 @@ protected theorem infinite_or_finite (s : Set α) : s.Infinite ∨ s.Finite :=
 
 namespace Finite
 
-variable {s t : Set α} {a : α} {hs : s.Finite} {ht : t.Finite}
+variable {s t : Set α} {a : α} (hs : s.Finite) {ht : t.Finite}
 
 @[simp]
-protected theorem mem_toFinset (h : s.Finite) : a ∈ h.toFinset ↔ a ∈ s :=
-  @mem_toFinset _ _ h.fintype _
+protected theorem mem_toFinset : a ∈ hs.toFinset ↔ a ∈ s :=
+  @mem_toFinset _ _ hs.fintype _
 #align set.finite.mem_to_finset Set.Finite.mem_toFinset
 
 @[simp]
-protected theorem coe_toFinset (h : s.Finite) : (h.toFinset : Set α) = s :=
-  @coe_toFinset _ _ h.fintype
+protected theorem coe_toFinset : (hs.toFinset : Set α) = s :=
+  @coe_toFinset _ _ hs.fintype
 #align set.finite.coe_to_finset Set.Finite.coe_toFinset
 
 @[simp]
-protected theorem toFinset_nonempty (h : s.Finite) : h.toFinset.Nonempty ↔ s.Nonempty := by
+protected theorem toFinset_nonempty : hs.toFinset.Nonempty ↔ s.Nonempty := by
   rw [← Finset.coe_nonempty, Finite.coe_toFinset]
 #align set.finite.to_finset_nonempty Set.Finite.toFinset_nonempty
 
 /-- Note that this is an equality of types not holding definitionally. Use wisely. -/
-theorem coeSort_toFinset (h : s.Finite) : ↥h.toFinset = ↥s := by
-  rw [← Finset.coe_sort_coe _, h.coe_toFinset]
+theorem coeSort_toFinset : ↥hs.toFinset = ↥s := by
+  rw [← Finset.coe_sort_coe _, hs.coe_toFinset]
 #align set.finite.coe_sort_to_finset Set.Finite.coeSort_toFinset
+
+/-- The identity map, bundled as an equivalence between the subtypes of `s : Set α` and of
+`h.toFinset : Finset α`, where `h` is a proof of finiteness of `s`. -/
+@[simps!] def subtypeEquivToFinset : {x // x ∈ s} ≃ {x // x ∈ hs.toFinset} :=
+  (Equiv.refl α).subtypeEquiv <| fun _ ↦ hs.mem_toFinset.symm
+
+variable {hs}
 
 @[simp]
 protected theorem toFinset_inj : hs.toFinset = ht.toFinset ↔ s = t :=
@@ -400,6 +407,9 @@ instance fintypeBiUnion' [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] 
   Fintype.ofFinset (s.toFinset.biUnion fun x => (t x).toFinset) <| by simp
 #align set.fintype_bUnion' Set.fintypeBiUnion'
 
+section monad
+attribute [local instance] Set.monad
+
 /-- If `s : Set α` is a set with `Fintype` instance and `f : α → Set β` is a function such that
 each `f a`, `a ∈ s`, has a `Fintype` structure, then `s >>= f` has a `Fintype` structure. -/
 def fintypeBind {α β} [DecidableEq β] (s : Set α) [Fintype s] (f : α → Set β)
@@ -411,6 +421,8 @@ instance fintypeBind' {α β} [DecidableEq β] (s : Set α) [Fintype s] (f : α 
     [∀ a, Fintype (f a)] : Fintype (s >>= f) :=
   Set.fintypeBiUnion' s f
 #align set.fintype_bind' Set.fintypeBind'
+
+end monad
 
 instance fintypeEmpty : Fintype (∅ : Set α) :=
   Fintype.ofFinset ∅ <| by simp
@@ -828,10 +840,15 @@ theorem Finite.iUnion {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Fini
     contradiction
 #align set.finite.Union Set.Finite.iUnion
 
+section monad
+attribute [local instance] Set.monad
+
 theorem Finite.bind {α β} {s : Set α} {f : α → Set β} (h : s.Finite) (hf : ∀ a ∈ s, (f a).Finite) :
     (s >>= f).Finite :=
   h.biUnion hf
 #align set.finite.bind Set.Finite.bind
+
+end monad
 
 @[simp]
 theorem finite_empty : (∅ : Set α).Finite :=
@@ -867,6 +884,9 @@ theorem Finite.image {s : Set α} (f : α → β) (hs : s.Finite) : (f '' s).Fin
 theorem finite_range (f : ι → α) [Finite ι] : (range f).Finite :=
   toFinite _
 #align set.finite_range Set.finite_range
+
+lemma Finite.of_surjOn {s : Set α} {t : Set β} (f : α → β) (hf : SurjOn f s t) (hs : s.Finite) :
+    t.Finite := (hs.image _).subset hf
 
 theorem Finite.dependent_image {s : Set α} (hs : s.Finite) (F : ∀ i ∈ s, β) :
     { y : β | ∃ (x : _) (hx : x ∈ s), y = F x hx }.Finite := by
@@ -944,7 +964,7 @@ protected theorem infinite_prod :
     (s ×ˢ t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty := by
   refine' ⟨fun h => _, _⟩
   · simp_rw [Set.Infinite, @and_comm ¬_, ← not_imp]
-    by_contra'
+    by_contra!
     exact h ((this.1 h.nonempty.snd).prod $ this.2 h.nonempty.fst)
   · rintro (h | h)
     · exact h.1.prod_left h.2
@@ -1208,10 +1228,7 @@ theorem empty_card' {h : Fintype.{u} (∅ : Set α)} : @Fintype.card (∅ : Set 
 
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
-  rw [fintypeInsertOfNotMem, Fintype.card_ofFinset]
-  simp only [Finset.card, toFinset, Finset.map_val, Embedding.coe_subtype,
-             Multiset.card_cons, Multiset.card_map, add_left_inj]
-  rfl
+  simp [fintypeInsertOfNotMem, Fintype.card_ofFinset]
 #align set.card_fintype_insert_of_not_mem Set.card_fintypeInsertOfNotMem
 
 @[simp]
@@ -1276,6 +1293,8 @@ theorem card_ne_eq [Fintype α] (a : α) [Fintype { x : α | x ≠ a }] :
 
 /-! ### Infinite sets -/
 
+variable {s t : Set α}
+
 theorem infinite_univ_iff : (@univ α).Infinite ↔ Infinite α := by
   rw [Set.Infinite, finite_univ_iff, not_finite_iff_infinite]
 #align set.infinite_univ_iff Set.infinite_univ_iff
@@ -1291,6 +1310,23 @@ theorem infinite_coe_iff {s : Set α} : Infinite s ↔ s.Infinite :=
 -- porting note: something weird happened here
 alias ⟨_, Infinite.to_subtype⟩ := infinite_coe_iff
 #align set.infinite.to_subtype Set.Infinite.to_subtype
+
+lemma Infinite.exists_not_mem_finite (hs : s.Infinite) (ht : t.Finite) : ∃ a, a ∈ s ∧ a ∉ t := by
+  by_contra! h; exact hs $ ht.subset h
+
+lemma Infinite.exists_not_mem_finset (hs : s.Infinite) (t : Finset α) : ∃ a ∈ s, a ∉ t :=
+  hs.exists_not_mem_finite t.finite_toSet
+#align set.infinite.exists_not_mem_finset Set.Infinite.exists_not_mem_finset
+
+section Infinite
+variable [Infinite α]
+
+lemma Finite.exists_not_mem (hs : s.Finite) : ∃ a, a ∉ s := by
+  by_contra! h; exact infinite_univ (hs.subset fun a _ ↦ h _)
+
+lemma _root_.Finset.exists_not_mem (s : Finset α) : ∃ a, a ∉ s := s.finite_toSet.exists_not_mem
+
+end Infinite
 
 /-- Embedding of `ℕ` into an infinite set. -/
 noncomputable def Infinite.natEmbedding (s : Set α) (h : s.Infinite) : ℕ ↪ s :=
@@ -1386,12 +1422,6 @@ theorem infinite_of_injective_forall_mem [Infinite α] {s : Set β} {f : α → 
   rw [← range_subset_iff] at hf
   exact (infinite_range_of_injective hi).mono hf
 #align set.infinite_of_injective_forall_mem Set.infinite_of_injective_forall_mem
-
-theorem Infinite.exists_not_mem_finset {s : Set α} (hs : s.Infinite) (f : Finset α) :
-    ∃ a ∈ s, a ∉ f :=
-  let ⟨a, has, haf⟩ := (hs.diff (toFinite f)).nonempty
-  ⟨a, has, fun h => haf <| Finset.mem_coe.1 h⟩
-#align set.infinite.exists_not_mem_finset Set.Infinite.exists_not_mem_finset
 
 theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.Infinite)
     (h_fin : (f '' s).Finite) : ¬InjOn f s := by
@@ -1653,6 +1683,14 @@ end
 end Set
 
 namespace Finset
+
+lemma exists_card_eq [Infinite α] : ∀ n : ℕ, ∃ s : Finset α, s.card = n
+  | 0 => ⟨∅, card_empty⟩
+  | n + 1 => by
+    classical
+    obtain ⟨s, rfl⟩ := exists_card_eq n
+    obtain ⟨a, ha⟩ := s.exists_not_mem
+    exact ⟨insert a s, card_insert_of_not_mem ha⟩
 
 /-- A finset is bounded above. -/
 protected theorem bddAbove [SemilatticeSup α] [Nonempty α] (s : Finset α) : BddAbove (↑s : Set α) :=

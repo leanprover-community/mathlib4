@@ -113,12 +113,12 @@ instance : Inhabited (ValuationSubring K) :=
 
 instance : ValuationRing A where
   cond' a b := by
-    by_cases (b : K) = 0
+    by_cases h : (b : K) = 0
     · use 0
       left
       ext
       simp [h]
-    by_cases (a : K) = 0
+    by_cases h : (a : K) = 0
     · use 0; right
       ext
       simp [h]
@@ -149,14 +149,12 @@ instance : IsFractionRing A K where
   map_units' := fun ⟨y, hy⟩ =>
     (Units.mk0 (y : K) fun c => nonZeroDivisors.ne_zero hy <| Subtype.ext c).isUnit
   surj' z := by
-    by_cases z = 0; · use (0, 1); simp [h]
+    by_cases h : z = 0; · use (0, 1); simp [h]
     cases' A.mem_or_inv_mem z with hh hh
     · use (⟨z, hh⟩, 1); simp
     · refine ⟨⟨1, ⟨⟨_, hh⟩, ?_⟩⟩, mul_inv_cancel h⟩
       exact mem_nonZeroDivisors_iff_ne_zero.2 fun c => h (inv_eq_zero.mp (congr_arg Subtype.val c))
-  eq_iff_exists' {a b} :=
-    ⟨fun h => ⟨1, by ext; simpa using h⟩, fun ⟨c, h⟩ =>
-      congr_arg Subtype.val ((mul_eq_mul_left_iff.1 h).resolve_right (nonZeroDivisors.ne_zero c.2))⟩
+  exists_of_eq {a b} h := ⟨1, by ext; simpa using h⟩
 
 /-- The value group of the valuation associated to `A`. Note: it is actually a group with zero. -/
 def ValueGroup :=
@@ -379,7 +377,7 @@ theorem idealOfLE_le_of_le (R S : ValuationSubring K) (hR : A ≤ R) (hS : A ≤
 
 /-- The equivalence between coarsenings of a valuation ring and its prime ideals.-/
 @[simps]
-def primeSpectrumEquiv : PrimeSpectrum A ≃ {S | A ≤ S} where
+def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
   toFun P := ⟨ofPrime A P.asIdeal, le_ofPrime _ _⟩
   invFun S := ⟨idealOfLE _ S S.2, inferInstance⟩
   left_inv P := by ext1; simp
@@ -388,7 +386,7 @@ def primeSpectrumEquiv : PrimeSpectrum A ≃ {S | A ≤ S} where
 
 /-- An ordered variant of `primeSpectrumEquiv`. -/
 @[simps]
-def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S | A ≤ S} :=
+def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
   { primeSpectrumEquiv A with
     map_rel_iff' :=
       ⟨fun h => by
@@ -400,13 +398,7 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S | A ≤ S} :=
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 #align valuation_subring.prime_spectrum_order_equiv ValuationSubring.primeSpectrumOrderEquiv
 
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] ValuationSubring.primeSpectrumEquiv_symm_apply_asIdeal
-  ValuationSubring.primeSpectrumEquiv_apply_coe
-  ValuationSubring.primeSpectrumOrderEquiv_apply
-  ValuationSubring.primeSpectrumOrderEquiv_symm_apply
-
-instance linearOrderOverring : LinearOrder {S | A ≤ S} :=
+instance linearOrderOverring : LinearOrder {S // A ≤ S} :=
   { (inferInstance : PartialOrder _) with
     le_total :=
       let i : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩

@@ -36,8 +36,6 @@ open scoped Topology Real BigOperators Nat
 
 open Finset Filter Nat Real
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 namespace Stirling
 
 /-!
@@ -80,7 +78,7 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
     HasSum (fun k : ℕ => ↑1 / (↑2 * ↑(k + 1) + ↑1) * (((1:ℝ)/(↑2 * ↑(m + 1) + ↑1)) ^ 2) ^ ↑(k + 1))
       (log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))) := by
   change HasSum
-    ((fun b : ℕ => (1:ℝ) / ((2:ℝ) * b + (1:ℝ)) * (((1:ℝ) / (2 * ↑(m + 1) + 1)) ^ 2) ^ b) ∘ succ) _
+    ((fun b : ℕ => (1:ℝ) / ((2:ℝ) * b + (1:ℝ)) * (((1:ℝ) / (2 * (m + 1 :) + 1)) ^ 2) ^ b) ∘ succ) _
   refine' (hasSum_nat_add_iff (a := _ - _) -- Porting note: must give implicit arguments
     (f := (fun b : ℕ => ↑1 / (↑2 * b + ↑1) * (((1:ℝ) / (2 * ↑(m + 1) + 1)) ^ 2) ^ b)) 1).mpr _
   convert (hasSum_log_one_add_inv <|
@@ -166,7 +164,7 @@ theorem log_stirlingSeq_bounded_aux :
       rw [← sum_range_sub' log_stirlingSeq' n]
     _ ≤ ∑ k in range n, ↑1 / ↑4 * (↑1 / ↑((k + 1)) ^ 2) := (sum_le_sum fun k _ => h₁ k)
     _ = ↑1 / ↑4 * ∑ k in range n, ↑1 / ↑((k + 1)) ^ 2 := by rw [mul_sum]
-    _ ≤ 1 / 4 * d := mul_le_mul_of_nonneg_left h₂ <| by positivity
+    _ ≤ 1 / 4 * d := by gcongr
 #align stirling.log_stirling_seq_bounded_aux Stirling.log_stirlingSeq_bounded_aux
 
 /-- The sequence `log_stirlingSeq` is bounded below for `n ≥ 1`. -/

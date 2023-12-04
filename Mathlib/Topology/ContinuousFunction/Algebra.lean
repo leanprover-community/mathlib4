@@ -55,7 +55,8 @@ variable {α : Type*} {β : Type*} {γ : Type*}
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
--- ### "mul" and "add"
+/-! ### `mul` and `add` -/
+
 @[to_additive]
 instance instMul [Mul β] [ContinuousMul β] : Mul C(α, β) :=
   ⟨fun f g => ⟨f * g, continuous_mul.comp (f.continuous.prod_mk g.continuous : _)⟩⟩
@@ -81,7 +82,8 @@ theorem mul_comp [Mul γ] [ContinuousMul γ] (f₁ f₂ : C(β, γ)) (g : C(α, 
 #align continuous_map.mul_comp ContinuousMap.mul_comp
 #align continuous_map.add_comp ContinuousMap.add_comp
 
--- ### "one"
+/-! ### `one` -/
+
 @[to_additive]
 instance [One β] : One C(α, β) :=
   ⟨const α 1⟩
@@ -104,7 +106,8 @@ theorem one_comp [One γ] (g : C(α, β)) : (1 : C(β, γ)).comp g = 1 :=
 #align continuous_map.one_comp ContinuousMap.one_comp
 #align continuous_map.zero_comp ContinuousMap.zero_comp
 
--- ### "nat_cast"
+/-! ### `Nat.cast` -/
+
 instance [NatCast β] : NatCast C(α, β) :=
   ⟨fun n => ContinuousMap.const _ n⟩
 
@@ -118,7 +121,8 @@ theorem nat_cast_apply [NatCast β] (n : ℕ) (x : α) : (n : C(α, β)) x = n :
   rfl
 #align continuous_map.nat_cast_apply ContinuousMap.nat_cast_apply
 
--- ### "int_cast"
+/-! ### `Int.cast` -/
+
 instance [IntCast β] : IntCast C(α, β) :=
   ⟨fun n => ContinuousMap.const _ n⟩
 
@@ -132,7 +136,8 @@ theorem int_cast_apply [IntCast β] (n : ℤ) (x : α) : (n : C(α, β)) x = n :
   rfl
 #align continuous_map.int_cast_apply ContinuousMap.int_cast_apply
 
--- ### "nsmul" and "pow"
+/-! ### `nsmul` and `pow` -/
+
 instance instNSMul [AddMonoid β] [ContinuousAdd β] : SMul ℕ C(α, β) :=
   ⟨fun n f => ⟨n • ⇑f, f.continuous.nsmul n⟩⟩
 #align continuous_map.has_nsmul ContinuousMap.instNSMul
@@ -169,7 +174,8 @@ theorem pow_comp [Monoid γ] [ContinuousMul γ] (f : C(β, γ)) (n : ℕ) (g : C
 -- don't make `nsmul_comp` simp as the linter complains it's redundant WRT `smul_comp`
 attribute [simp] pow_comp
 
--- ### "inv" and "neg"
+/-! ### `inv` and `neg` -/
+
 @[to_additive]
 instance [Group β] [TopologicalGroup β] : Inv C(α, β) where inv f := ⟨f⁻¹, f.continuous.inv⟩
 
@@ -192,7 +198,8 @@ theorem inv_comp [Group γ] [TopologicalGroup γ] (f : C(β, γ)) (g : C(α, β)
 #align continuous_map.inv_comp ContinuousMap.inv_comp
 #align continuous_map.neg_comp ContinuousMap.neg_comp
 
--- ### "div" and "sub"
+/-! ### `div` and `sub` -/
+
 @[to_additive]
 instance [Div β] [ContinuousDiv β] : Div C(α, β) where
   div f g := ⟨f / g, f.continuous.div' g.continuous⟩
@@ -216,7 +223,8 @@ theorem div_comp [Div γ] [ContinuousDiv γ] (f g : C(β, γ)) (h : C(α, β)) :
 #align continuous_map.div_comp ContinuousMap.div_comp
 #align continuous_map.sub_comp ContinuousMap.sub_comp
 
--- ### "zpow" and "zsmul"
+/-! ### `zpow` and `zsmul` -/
+
 instance instZSMul [AddGroup β] [TopologicalAddGroup β] : SMul ℤ C(α, β) where
   smul z f := ⟨z • ⇑f, f.continuous.zsmul z⟩
 #align continuous_map.has_zsmul ContinuousMap.instZSMul
@@ -856,7 +864,7 @@ instance ContinuousMap.subsingleton_subalgebra (α : Type*) [TopologicalSpace α
         ext x'
         simp only [mul_one, Algebra.id.smul_eq_mul, algebraMap_apply]
         congr
-        simp
+        simp [eq_iff_true_of_subsingleton]
       rw [h]
       simp only [Subalgebra.algebraMap_mem]⟩
 #align continuous_map.subsingleton_subalgebra ContinuousMap.subsingleton_subalgebra
@@ -1034,10 +1042,10 @@ theorem periodic_tsum_comp_add_zsmul [AddCommGroup X] [TopologicalAddGroup X] [A
   by_cases h : Summable fun n : ℤ => f.comp (ContinuousMap.addRight (n • p))
   · convert congr_arg (fun f : C(X, Y) => f x) ((Equiv.addRight (1 : ℤ)).tsum_eq _) using 1
     -- Porting note: in mathlib3 the proof from here was:
-    -- simp_rw [←tsum_apply h, ←tsum_apply ((equiv.add_right (1 : ℤ)).summable_iff.mpr h),
+    -- simp_rw [← tsum_apply h, ← tsum_apply ((equiv.add_right (1 : ℤ)).summable_iff.mpr h),
     --   equiv.coe_add_right, comp_apply, coe_add_right, add_one_zsmul, add_comm (_ • p) p,
-    --   ←add_assoc]
-    -- However now the second `←tsum_apply` doesn't fire unless we use `erw`.
+    --   ← add_assoc]
+    -- However now the second `← tsum_apply` doesn't fire unless we use `erw`.
     simp_rw [← tsum_apply h]
     erw [← tsum_apply ((Equiv.addRight (1 : ℤ)).summable_iff.mpr h)]
     simp [coe_addRight, add_one_zsmul, add_comm (_ • p) p, ← add_assoc]

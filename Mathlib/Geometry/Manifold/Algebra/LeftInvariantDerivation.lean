@@ -146,7 +146,6 @@ instance : Neg (LeftInvariantDerivation I G) where
     rw [map_neg (Derivation.evalAt (𝕜 := 𝕜) (1 : G)), map_neg (𝒅ₕ (smoothLeftMul_one I g)),
       left_invariant', map_neg (Derivation.evalAt (𝕜 := 𝕜) g)]⟩
 
-set_option maxHeartbeats 300000 in
 instance : Sub (LeftInvariantDerivation I G) where
   sub X Y := ⟨X - Y, fun g => by
     -- porting note: was simp [left_invariant']

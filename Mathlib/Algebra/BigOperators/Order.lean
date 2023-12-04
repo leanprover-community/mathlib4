@@ -9,7 +9,7 @@ import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic.GCongr.Core
 
-#align_import algebra.big_operators.order from "leanprover-community/mathlib"@"824f9ae93a4f5174d2ea948e2d75843dd83447bb"
+#align_import algebra.big_operators.order from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-!
 # Results about big operators with values in an ordered algebraic structure.
@@ -208,13 +208,21 @@ theorem single_le_prod' (hf : ∀ i ∈ s, 1 ≤ f i) {a} (h : a ∈ s) : f a �
 #align finset.single_le_prod' Finset.single_le_prod'
 #align finset.single_le_sum Finset.single_le_sum
 
+@[to_additive]
+lemma mul_le_prod {i j : ι} (hf : ∀ i ∈ s, 1 ≤ f i) (hi : i ∈ s) (hj : j ∈ s) (hne : i ≠ j) :
+    f i * f j ≤ ∏ k in s, f k :=
+  calc
+    f i * f j = ∏ k in .cons i {j} (by simpa), f k := by rw [prod_cons, prod_singleton]
+    _ ≤ ∏ k in s, f k := by
+      refine prod_le_prod_of_subset_of_one_le' ?_ fun k hk _ ↦ hf k hk
+      simp [cons_subset, *]
+
 @[to_additive sum_le_card_nsmul]
 theorem prod_le_pow_card (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s, f x ≤ n) :
     s.prod f ≤ n ^ s.card := by
   refine' (Multiset.prod_le_pow_card (s.val.map f) n _).trans _
   · simpa using h
   · simp
-    rfl
 #align finset.prod_le_pow_card Finset.prod_le_pow_card
 #align finset.sum_le_card_nsmul Finset.sum_le_card_nsmul
 
@@ -434,23 +442,16 @@ section OrderedCancelCommMonoid
 variable [OrderedCancelCommMonoid M] {f g : ι → M} {s t : Finset ι}
 
 @[to_additive sum_lt_sum]
-theorem prod_lt_prod' (Hle : ∀ i ∈ s, f i ≤ g i) (Hlt : ∃ i ∈ s, f i < g i) :
-    ∏ i in s, f i < ∏ i in s, g i := by
-  classical
-    rcases Hlt with ⟨i, hi, hlt⟩
-    rw [← insert_erase hi, prod_insert (not_mem_erase _ _), prod_insert (not_mem_erase _ _)]
-    exact mul_lt_mul_of_lt_of_le hlt (prod_le_prod' fun j hj ↦ Hle j <| mem_of_mem_erase hj)
+theorem prod_lt_prod' (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i) :
+    ∏ i in s, f i < ∏ i in s, g i :=
+  Multiset.prod_lt_prod' hle hlt
 #align finset.prod_lt_prod' Finset.prod_lt_prod'
 #align finset.sum_lt_sum Finset.sum_lt_sum
 
 @[to_additive sum_lt_sum_of_nonempty]
-theorem prod_lt_prod_of_nonempty' (hs : s.Nonempty) (Hlt : ∀ i ∈ s, f i < g i) :
-    ∏ i in s, f i < ∏ i in s, g i := by
-  apply prod_lt_prod'
-  · intro i hi
-    apply le_of_lt (Hlt i hi)
-  cases' hs with i hi
-  exact ⟨i, hi, Hlt i hi⟩
+theorem prod_lt_prod_of_nonempty' (hs : s.Nonempty) (hlt : ∀ i ∈ s, f i < g i) :
+    ∏ i in s, f i < ∏ i in s, g i :=
+  Multiset.prod_lt_prod_of_nonempty' (by aesop) hlt
 #align finset.prod_lt_prod_of_nonempty' Finset.prod_lt_prod_of_nonempty'
 #align finset.sum_lt_sum_of_nonempty Finset.sum_lt_sum_of_nonempty
 
@@ -539,6 +540,20 @@ theorem prod_eq_prod_iff_of_le {f g : ι → M} (h : ∀ i ∈ s, f i ≤ g i) :
         (Finset.prod_le_prod' fun i ↦ H i ∘ Finset.mem_insert_of_mem)
 #align finset.prod_eq_prod_iff_of_le Finset.prod_eq_prod_iff_of_le
 #align finset.sum_eq_sum_iff_of_le Finset.sum_eq_sum_iff_of_le
+
+variable [DecidableEq ι]
+
+@[to_additive] lemma prod_sdiff_le_prod_sdiff :
+    ∏ i in s \ t, f i ≤ ∏ i in t \ s, f i ↔ ∏ i in s, f i ≤ ∏ i in t, f i := by
+  rw [← mul_le_mul_iff_right, ← prod_union (disjoint_sdiff_inter _ _), sdiff_union_inter,
+    ← prod_union, inter_comm, sdiff_union_inter];
+  simpa only [inter_comm] using disjoint_sdiff_inter t s
+
+@[to_additive] lemma prod_sdiff_lt_prod_sdiff :
+    ∏ i in s \ t, f i < ∏ i in t \ s, f i ↔ ∏ i in s, f i < ∏ i in t, f i := by
+  rw [← mul_lt_mul_iff_right, ← prod_union (disjoint_sdiff_inter _ _), sdiff_union_inter,
+    ← prod_union, inter_comm, sdiff_union_inter];
+  simpa only [inter_comm] using disjoint_sdiff_inter t s
 
 end OrderedCancelCommMonoid
 
@@ -642,12 +657,31 @@ end OrderedCommSemiring
 
 section StrictOrderedCommSemiring
 
-variable [StrictOrderedCommSemiring R] [Nontrivial R] {f : ι → R} {s : Finset ι}
+variable [StrictOrderedCommSemiring R] {f g : ι → R} {s : Finset ι}
 
 -- This is also true for an ordered commutative multiplicative monoid with zero
 theorem prod_pos (h0 : ∀ i ∈ s, 0 < f i) : 0 < ∏ i in s, f i :=
   prod_induction f (fun x ↦ 0 < x) (fun _ _ ha hb ↦ mul_pos ha hb) zero_lt_one h0
 #align finset.prod_pos Finset.prod_pos
+
+theorem prod_lt_prod (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f i ≤ g i)
+    (hlt : ∃ i ∈ s, f i < g i) :
+    ∏ i in s, f i < ∏ i in s, g i := by
+  classical
+  obtain ⟨i, hi, hilt⟩ := hlt
+  rw [← insert_erase hi, prod_insert (not_mem_erase _ _), prod_insert (not_mem_erase _ _)]
+  apply mul_lt_mul hilt
+  · exact prod_le_prod (fun j hj => le_of_lt (hf j (mem_of_mem_erase hj)))
+      (fun _ hj ↦ hfg _ <| mem_of_mem_erase hj)
+  · exact prod_pos fun j hj => hf j (mem_of_mem_erase hj)
+  · exact le_of_lt <| (hf i hi).trans hilt
+
+theorem prod_lt_prod_of_nonempty (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f i < g i)
+    (h_ne : s.Nonempty) :
+    ∏ i in s, f i < ∏ i in s, g i := by
+  apply prod_lt_prod hf fun i hi => le_of_lt (hfg i hi)
+  obtain ⟨i, hi⟩ := h_ne
+  exact ⟨i, hi, hfg i hi⟩
 
 end StrictOrderedCommSemiring
 

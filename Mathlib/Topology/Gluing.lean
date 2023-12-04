@@ -208,18 +208,17 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     rw [←
       show _ = Sigma.mk j y from ConcreteCategory.congr_hom (sigmaIsoSigma.{_, u} D.U).inv_hom_id _]
     change InvImage D.Rel (sigmaIsoSigma.{_, u} D.U).hom _ _
-    simp only [TopCat.sigmaIsoSigma_inv_apply]
     rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
     refine' EqvGen.mono _ (D.eqvGen_of_π_eq h : _)
     rintro _ _ ⟨x⟩
-    rw [←show (sigmaIsoSigma.{u, u} _).inv _ = x from
+    rw [← show (sigmaIsoSigma.{u, u} _).inv _ = x from
         ConcreteCategory.congr_hom (sigmaIsoSigma.{u, u} _).hom_inv_id x]
     generalize (sigmaIsoSigma.{u, u} D.V).hom x = x'
     obtain ⟨⟨i, j⟩, y⟩ := x'
     unfold InvImage MultispanIndex.fstSigmaMap MultispanIndex.sndSigmaMap
     simp only [Opens.inclusion_apply, TopCat.comp_app, sigmaIsoSigma_inv_apply,
       Cofan.mk_ι_app]
-    rw [←comp_apply, colimit.ι_desc, ←comp_apply, colimit.ι_desc]
+    rw [← comp_apply, colimit.ι_desc, ← comp_apply, colimit.ι_desc]
     erw [sigmaIsoSigma_hom_ι_apply, sigmaIsoSigma_hom_ι_apply]
     exact Or.inr ⟨y, ⟨rfl, rfl⟩⟩
   · rintro (⟨⟨⟩⟩ | ⟨z, e₁, e₂⟩)
@@ -233,7 +232,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem ι_injective (i : D.J) : Function.Injective (𝖣.ι i) := by
   intro x y h
-  rcases(D.ι_eq_iff_rel _ _ _ _).mp h with (⟨⟨⟩⟩ | ⟨_, e₁, e₂⟩)
+  rcases (D.ι_eq_iff_rel _ _ _ _).mp h with (⟨⟨⟩⟩ | ⟨_, e₁, e₂⟩)
   · rfl
   · dsimp only at *
     -- porting note: there were `cases e₁` and `cases e₂`, instead of the `rw`
