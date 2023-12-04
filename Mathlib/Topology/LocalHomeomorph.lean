@@ -1435,6 +1435,14 @@ theorem subtypeRestr_symm_trans_subtypeRestr (f f' : LocalHomeomorph α β) :
   simp only [mfld_simps, Setoid.refl]
 #align local_homeomorph.subtype_restr_symm_trans_subtype_restr LocalHomeomorph.subtypeRestr_symm_trans_subtypeRestr
 
+theorem subtypeRestr_symm_eqOn (U : Opens α) [Nonempty U] :
+    EqOn e.symm (Subtype.val ∘ (e.subtypeRestr U).symm) (e.subtypeRestr U).target := by
+  intro y hy
+  rw [eq_comm, eq_symm_apply _ _ hy.1]
+  · change restrict _ e _ = _
+    rw [← subtypeRestr_coe, (e.subtypeRestr U).right_inv hy]
+  · have := map_target _ hy; rwa [subtypeRestr_source] at this
+
 theorem subtypeRestr_symm_eqOn_of_le {U V : Opens α} [Nonempty U] [Nonempty V] (hUV : U ≤ V) :
     EqOn (e.subtypeRestr V).symm (Set.inclusion hUV ∘ (e.subtypeRestr U).symm)
       (e.subtypeRestr U).target := by

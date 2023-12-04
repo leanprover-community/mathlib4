@@ -353,6 +353,13 @@ section Inclusion
 
 open TopologicalSpace
 
+theorem contMdiffAt_subtype_iff {n : ℕ∞} {U : Opens M} {f : M → M'} {x : U} :
+    ContMDiffAt I I' n (fun x : U ↦ f x) x ↔ ContMDiffAt I I' n f x :=
+  ((contDiffWithinAt_localInvariantProp I I' n).liftPropAt_iff_comp_subtype_val _ _).symm
+
+theorem contMDiff_subtype_val {n : ℕ∞} {U : Opens M} : ContMDiff I I n (Subtype.val : U → M) :=
+  fun _ ↦ contMdiffAt_subtype_iff.mpr contMDiffAt_id
+
 theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
     ContMDiff I I n (Set.inclusion h : U → V) := by
   rintro ⟨x, hx : x ∈ U⟩
@@ -364,6 +371,11 @@ theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
   · exact I.rightInvOn
   · exact congr_arg I (I.left_inv y)
 #align cont_mdiff_inclusion contMDiff_inclusion
+
+theorem smooth_subtype_iff {U : Opens M} {f : M → M'} {x : U} :
+    SmoothAt I I' (fun x : U ↦ f x) x ↔ SmoothAt I I' f x := contMdiffAt_subtype_iff
+
+theorem smooth_subtype_val {U : Opens M} : Smooth I I (Subtype.val : U → M) := contMDiff_subtype_val
 
 theorem smooth_inclusion {U V : Opens M} (h : U ≤ V) : Smooth I I (Set.inclusion h : U → V) :=
   contMDiff_inclusion h
