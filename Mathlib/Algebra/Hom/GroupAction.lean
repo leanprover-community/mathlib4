@@ -220,7 +220,7 @@ protected lemma map_smul {F M X Y : Type*} [SMul M X] [SMul M Y] [MulActionHomCl
     f (m • x) = m • (f x) := map_smulₛₗ f m x
 
 @[ext]
-theorem ext [MulActionSemiHomClass F φ X Y] {f g : F} :
+theorem ext {f g : X →[M'] Y} :
     (∀ x, f x = g x) → f = g :=
   FunLike.ext f g
 #align mul_action_hom.ext MulActionHom.ext
