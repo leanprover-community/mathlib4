@@ -1164,9 +1164,8 @@ theorem eventually_congr {f : Filter α} {p q : α → Prop} (h : ∀ᶠ x in f,
 #align filter.eventually_congr Filter.eventually_congr
 
 @[simp]
-theorem eventually_all {ι : Type*} [Finite ι] {l} {p : ι → α → Prop} :
+theorem eventually_all {ι : Sort*} [Finite ι] {l} {p : ι → α → Prop} :
     (∀ᶠ x in l, ∀ i, p i x) ↔ ∀ i, ∀ᶠ x in l, p i x := by
-  cases nonempty_fintype ι
   simpa only [Filter.Eventually, setOf_forall] using iInter_mem
 #align filter.eventually_all Filter.eventually_all
 
