@@ -135,12 +135,6 @@ theorem coe_toAddMonoidHom_injective : Injective ((↑) : CentroidHom α → α 
     this
 #align centroid_hom.coe_to_add_monoid_hom_injective CentroidHom.coe_toAddMonoidHom_injective
 
-lemma map_mul_left (f : CentroidHom α) (a b : α) : f (a * b) = a * f b :=
-    CentroidHomClass.map_mul_left _ _ _
-
-lemma map_mul_right (f : CentroidHom α) (a b : α) : f (a * b) = f a * b :=
-    CentroidHomClass.map_mul_right _ _ _
-
 /-- Turn a centroid homomorphism into an additive monoid endomorphism. -/
 def toEnd (f : CentroidHom α) : AddMonoid.End α :=
   (f : α →+ α)
@@ -455,13 +449,13 @@ lemma centroid_eq_centralizer_mul_op :
       apply AddMonoidHom.ext
       intro b
       rw [AddMonoid.mul_apply, AddMonoid.mul_apply, AddMonoid.End.mulLeft_apply_apply,
-        AddMonoid.End.mulLeft_apply_apply, toEnd, AddMonoidHom.coe_coe, f.map_mul_left]
+        AddMonoid.End.mulLeft_apply_apply, toEnd, AddMonoidHom.coe_coe, map_mul_left]
     · cases' h₂ with b hb
       rw [← hb, ← hf, toEndRingHom_apply]
       apply AddMonoidHom.ext
       intro a
       rw [AddMonoid.mul_apply, AddMonoid.mul_apply, AddMonoid.End.mulRight_apply_apply,
-        AddMonoid.End.mulRight_apply_apply, toEnd, AddMonoidHom.coe_coe, f.map_mul_right]
+        AddMonoid.End.mulRight_apply_apply, toEnd, AddMonoidHom.coe_coe, map_mul_right]
   · intro h
     use ⟨T, fun a b => by
       simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
