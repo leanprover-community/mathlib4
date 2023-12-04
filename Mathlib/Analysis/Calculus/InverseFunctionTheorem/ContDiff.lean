@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Analysis.Calculus.ContDiff.IsROrC
-import Mathlib.Analysis.Calculus.Inverse.FDeriv
+import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 
 /-!
 # Inverse function theorem, smooth case
