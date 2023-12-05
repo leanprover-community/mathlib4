@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.Prod
+import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Set.Pointwise.SMul
@@ -55,86 +56,27 @@ class OrderedSMul (R M : Type*) [OrderedSemiring R] [OrderedAddCommMonoid M] [SM
 
 variable {ι α β γ 𝕜 R M N : Type*}
 
-namespace OrderDual
-
-instance OrderDual.instSMulWithZero [Zero R] [AddZeroClass M] [SMulWithZero R M] :
-    SMulWithZero R Mᵒᵈ :=
-  { OrderDual.instSMul with
-    zero_smul := fun m => OrderDual.rec (zero_smul _) m
-    smul_zero := fun r => OrderDual.rec (@smul_zero R M _ _) r }
-
-@[to_additive]
-instance OrderDual.instMulAction [Monoid R] [MulAction R M] : MulAction R Mᵒᵈ :=
-  { OrderDual.instSMul with
-    one_smul := fun m => OrderDual.rec (one_smul _) m
-    mul_smul := fun r => OrderDual.rec (@mul_smul R M _ _) r }
-
-@[to_additive]
-instance OrderDual.instSMulCommClass [SMul β γ] [SMul α γ] [SMulCommClass α β γ] :
-    SMulCommClass αᵒᵈ β γ := ‹SMulCommClass α β γ›
-
-@[to_additive]
-instance OrderDual.instSMulCommClass' [SMul β γ] [SMul α γ] [SMulCommClass α β γ] :
-    SMulCommClass α βᵒᵈ γ := ‹SMulCommClass α β γ›
-
-@[to_additive]
-instance OrderDual.instSMulCommClass'' [SMul β γ] [SMul α γ] [SMulCommClass α β γ] :
-    SMulCommClass α β γᵒᵈ := ‹SMulCommClass α β γ›
-
-@[to_additive OrderDual.instVAddAssocClass]
-instance OrderDual.instIsScalarTower [SMul α β] [SMul β γ] [SMul α γ] [IsScalarTower α β γ] :
-   IsScalarTower αᵒᵈ β γ := ‹IsScalarTower α β γ›
-
-@[to_additive OrderDual.instVAddAssocClass']
-instance OrderDual.instIsScalarTower' [SMul α β] [SMul β γ] [SMul α γ] [IsScalarTower α β γ] :
-    IsScalarTower α βᵒᵈ γ := ‹IsScalarTower α β γ›
-
-@[to_additive OrderDual.instVAddAssocClass'']
-instance OrderDual.IsScalarTower'' [SMul α β] [SMul β γ] [SMul α γ] [IsScalarTower α β γ] :
-    IsScalarTower α β γᵒᵈ := ‹IsScalarTower α β γ›
-
-instance [MonoidWithZero R] [AddMonoid M] [MulActionWithZero R M] : MulActionWithZero R Mᵒᵈ :=
-  { OrderDual.instMulAction, OrderDual.instSMulWithZero with }
-
-instance [MonoidWithZero R] [AddMonoid M] [DistribMulAction R M] : DistribMulAction R Mᵒᵈ where
-  smul_add _ a := OrderDual.rec (fun _ b => OrderDual.rec (smul_add _ _) b) a
-  smul_zero r := OrderDual.rec (@smul_zero _ M _ _) r
-
-instance [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] [OrderedSMul R M] :
-    OrderedSMul R Mᵒᵈ where
-  smul_lt_smul_of_pos {a b} := @OrderedSMul.smul_lt_smul_of_pos R M _ _ _ _ b a
-  lt_of_smul_lt_smul_of_pos {a b} := @OrderedSMul.lt_of_smul_lt_smul_of_pos R M _ _ _ _ b a
-
-end OrderDual
-
 section OrderedSMul
 
 variable [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] [OrderedSMul R M]
   {s : Set M} {a b : M} {c : R}
 
-@[gcongr] theorem smul_lt_smul_of_pos : a < b → 0 < c → c • a < c • b :=
-  OrderedSMul.smul_lt_smul_of_pos
+instance : PosSMulStrictMono R M where
+  elim a _b₁ _b₂ hb := OrderedSMul.smul_lt_smul_of_pos hb a.2
+
+instance : PosSMulReflectLT R M :=
+  posSMulReflectLT_iff_contravariant_pos.2 $
+    ⟨fun a _b₁ _b₂ h ↦ OrderedSMul.lt_of_smul_lt_smul_of_pos h a.2⟩
+
+@[gcongr] theorem smul_lt_smul_of_pos : a < b → 0 < c → c • a < c • b := smul_lt_smul_of_pos_left
 #align smul_lt_smul_of_pos smul_lt_smul_of_pos
 
-@[gcongr] theorem smul_le_smul_of_nonneg (h₁ : a ≤ b) (h₂ : 0 ≤ c) : c • a ≤ c • b := by
-  rcases h₁.eq_or_lt with (rfl | hab)
-  · rfl
-  · rcases h₂.eq_or_lt with (rfl | hc)
-    · rw [zero_smul, zero_smul]
-    · exact (smul_lt_smul_of_pos hab hc).le
+-- TODO: Remove `smul_le_smul_of_nonneg` completely
+@[gcongr] theorem smul_le_smul_of_nonneg (h₁ : a ≤ b) (h₂ : 0 ≤ c) : c • a ≤ c • b :=
+  smul_le_smul_of_nonneg_left h₁ h₂
 #align smul_le_smul_of_nonneg smul_le_smul_of_nonneg
 
--- TODO: Remove `smul_le_smul_of_nonneg` completely
-alias smul_le_smul_of_nonneg_left := smul_le_smul_of_nonneg
-
-theorem smul_nonneg (hc : 0 ≤ c) (ha : 0 ≤ a) : 0 ≤ c • a :=
-  calc
-    (0 : M) = c • (0 : M) := (smul_zero c).symm
-    _ ≤ c • a := smul_le_smul_of_nonneg ha hc
 #align smul_nonneg smul_nonneg
-
-theorem smul_nonpos_of_nonneg_of_nonpos (hc : 0 ≤ c) (ha : a ≤ 0) : c • a ≤ 0 :=
-  @smul_nonneg R Mᵒᵈ _ _ _ _ _ _ hc ha
 #align smul_nonpos_of_nonneg_of_nonpos smul_nonpos_of_nonneg_of_nonpos
 
 theorem eq_of_smul_eq_smul_of_pos_of_le (h₁ : c • a = c • b) (hc : 0 < c) (hle : a ≤ b) : a = b :=
@@ -142,22 +84,16 @@ theorem eq_of_smul_eq_smul_of_pos_of_le (h₁ : c • a = c • b) (hc : 0 < c) 
 #align eq_of_smul_eq_smul_of_pos_of_le eq_of_smul_eq_smul_of_pos_of_le
 
 theorem lt_of_smul_lt_smul_of_nonneg (h : c • a < c • b) (hc : 0 ≤ c) : a < b :=
-  hc.eq_or_lt.elim
-    (fun hc => False.elim <| lt_irrefl (0 : M) <| by rwa [← hc, zero_smul, zero_smul] at h)
-    (OrderedSMul.lt_of_smul_lt_smul_of_pos h)
+  lt_of_smul_lt_smul_of_nonneg_left h hc
 #align lt_of_smul_lt_smul_of_nonneg lt_of_smul_lt_smul_of_nonneg
 
 theorem smul_lt_smul_iff_of_pos (hc : 0 < c) : c • a < c • b ↔ a < b :=
-  ⟨fun h => lt_of_smul_lt_smul_of_nonneg h hc.le, fun h => smul_lt_smul_of_pos h hc⟩
+  smul_lt_smul_iff_of_pos_left hc
 #align smul_lt_smul_iff_of_pos smul_lt_smul_iff_of_pos
 
-theorem smul_pos_iff_of_pos (hc : 0 < c) : 0 < c • a ↔ 0 < a :=
-  calc
-    0 < c • a ↔ c • (0 : M) < c • a := by rw [smul_zero]
-    _ ↔ 0 < a := smul_lt_smul_iff_of_pos hc
+theorem smul_pos_iff_of_pos (hc : 0 < c) : 0 < c • a ↔ 0 < a := smul_pos_iff_of_pos_left hc
 #align smul_pos_iff_of_pos smul_pos_iff_of_pos
 
-alias ⟨_, smul_pos⟩ := smul_pos_iff_of_pos
 #align smul_pos smul_pos
 
 theorem monotone_smul_left (hc : 0 ≤ c) : Monotone (SMul.smul c : M → M) := fun _ _ h =>

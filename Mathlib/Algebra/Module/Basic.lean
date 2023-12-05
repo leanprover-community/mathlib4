@@ -649,7 +649,7 @@ section SMulInjective
 variable (M)
 
 theorem smul_right_injective [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) :
-    Function.Injective ((· • ·) c : M → M) :=
+    Injective ((c • ·) : M → M) :=
   (injective_iff_map_eq_zero (smulAddHom R M c)).2 fun _ ha => (smul_eq_zero.mp ha).resolve_left hc
 #align smul_right_injective smul_right_injective
 
