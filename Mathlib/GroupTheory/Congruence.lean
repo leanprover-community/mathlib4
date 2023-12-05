@@ -1326,7 +1326,7 @@ def liftOnUnits (u : Units c.Quotient) (f : ∀ x y : M, c (x * y) 1 → c (y * 
     (Hf : ∀ x y hxy hyx x' y' hxy' hyx',
       c x x' → c y y' → f x y hxy hyx = f x' y' hxy' hyx') : α := by
   refine'
-    @Con.hrecOn₂ M M _ _ c c (fun x y => x * y = 1 → y * x = 1 → α) (u : c.Quotient)
+    Con.hrecOn₂ (cN := c) (φ := fun x y => x * y = 1 → y * x = 1 → α) (u : c.Quotient)
       (↑u⁻¹ : c.Quotient)
       (fun (x y : M) (hxy : (x * y : c.Quotient) = 1) (hyx : (y * x : c.Quotient) = 1) =>
         f x y (c.eq.1 hxy) (c.eq.1 hyx))

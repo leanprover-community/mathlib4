@@ -342,7 +342,7 @@ theorem Gamma_eq_integral {s : ℂ} (hs : 0 < s.re) : Gamma s = GammaIntegral s 
 #align complex.Gamma_eq_integral Complex.Gamma_eq_integral
 
 @[simp]
-theorem Gamma_one : Gamma 1 = 1 := by rw [Gamma_eq_integral]; simp; simp
+theorem Gamma_one : Gamma 1 = 1 := by rw [Gamma_eq_integral] <;> simp
 #align complex.Gamma_one Complex.Gamma_one
 
 theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by

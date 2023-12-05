@@ -4396,7 +4396,7 @@ theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length)
 
 theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :
     (l ++ l').getD n d = l'.getD (n - l.length) d := by
-  cases lt_or_le n (l ++l').length with
+  cases lt_or_le n (l ++ l').length with
   | inl h' =>
     rw [getD_eq_get (l ++ l') d h', get_append_right, getD_eq_get]
     · rw [length_append] at h'
