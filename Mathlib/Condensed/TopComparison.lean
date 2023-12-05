@@ -17,6 +17,13 @@ condition for the regular and extensive topologies respectively.
 
 We then apply this API to `CompHaus` and define the functor
 `topCatToCondensed : TopCat.{u+1} ⥤ CondensedSet.{u}`.
+
+## Projects
+
+* Prove that `topCatToCondensed` is faithful.
+* Define compactly generated topological spaces.
+* Prove that `topCatToCondensed` restricted to compactly generated spaces is fully faithful.
+* Define the left adjoint of the restriction mentioned in the previous point.
 -/
 
 universe w w' v u
