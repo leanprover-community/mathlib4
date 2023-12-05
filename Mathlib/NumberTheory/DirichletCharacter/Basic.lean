@@ -233,8 +233,8 @@ noncomputable def mul {m : ℕ} (χ₁ : DirichletCharacter R n) (χ₂ : Dirich
 
 /-- Primitive character associated to multiplication of Dirichlet characters,
 after changing both levels to the same -/
-noncomputable def primitive_mul {m : ℕ} (χ₁ : DirichletCharacter R n) (χ₂ : DirichletCharacter R m) :
-    DirichletCharacter R (mul χ₁ χ₂).conductor :=
+noncomputable def primitive_mul {m : ℕ} (χ₁ : DirichletCharacter R n)
+    (χ₂ : DirichletCharacter R m) : DirichletCharacter R (mul χ₁ χ₂).conductor :=
   primitiveCharacter (mul χ₁ χ₂)
 
 lemma mul_def {n m : ℕ} {χ : DirichletCharacter R n} {ψ : DirichletCharacter R m} :
