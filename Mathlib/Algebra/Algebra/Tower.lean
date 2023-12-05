@@ -232,10 +232,9 @@ namespace AlgEquiv
 
 /-- R ⟶ S induces S-Alg ⥤ R-Alg -/
 def restrictScalars (f : A ≃ₐ[S] B) : A ≃ₐ[R] B :=
-  { (f : A ≃+* B) with
-    commutes' := fun r => by
-      rw [algebraMap_apply R S A, algebraMap_apply R S B]
-      exact f.commutes (algebraMap R S r) }
+  AlgEquiv.ofCommutes f fun r => by
+    rw [algebraMap_apply R S A, algebraMap_apply R S B]
+    exact f.commutes (algebraMap R S r)
 #align alg_equiv.restrict_scalars AlgEquiv.restrictScalars
 
 theorem restrictScalars_apply (f : A ≃ₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl

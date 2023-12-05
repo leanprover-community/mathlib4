@@ -227,7 +227,7 @@ def toAlgEquiv {X Y : AlgebraCat R} (i : X ≅ Y) : X ≃ₐ[R] Y where
     erw [id_apply]
   map_add' := i.hom.map_add -- Porting note: was `by tidy`
   map_mul' := i.hom.map_mul -- Porting note: was `by tidy`
-  commutes' := i.hom.commutes -- Porting note: was `by tidy`
+  map_smul' := i.hom.map_smul -- Porting note: was `by tidy`
 #align category_theory.iso.to_alg_equiv CategoryTheory.Iso.toAlgEquiv
 
 end CategoryTheory.Iso
@@ -248,6 +248,6 @@ instance (X : Type u) [Ring X] [Algebra R X] : CoeOut (Subalgebra R X) (AlgebraC
 instance AlgebraCat.forget_reflects_isos : ReflectsIsomorphisms (forget (AlgebraCat.{u} R)) where
   reflects {X Y} f _ := by
     let i := asIso ((forget (AlgebraCat.{u} R)).map f)
-    let e : X ≃ₐ[R] Y := { f, i.toEquiv with }
+    let e : X ≃ₐ[R] Y := { f, f.toLinearMap, i.toEquiv with }
     exact ⟨(IsIso.of_iso e.toAlgebraIso).1⟩
 #align Algebra.forget_reflects_isos AlgebraCat.forget_reflects_isos

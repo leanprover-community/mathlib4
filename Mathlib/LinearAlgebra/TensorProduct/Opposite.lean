@@ -35,7 +35,7 @@ def opAlgEquiv : Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ ≃ₐ[S] (A ⊗[R] B)ᵐᵒᵖ :=
       (opLinearEquiv S).symm (opLinearEquiv R).symm ≪≫ₗ opLinearEquiv S
   letI e₂ : A ⊗[R] B ≃ₗ[S] (Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ)ᵐᵒᵖ :=
     TensorProduct.AlgebraTensorModule.congr (opLinearEquiv S) (opLinearEquiv R) ≪≫ₗ opLinearEquiv S
-  AlgEquiv.ofAlgHom
+  AlgEquiv.ofAlgHom (R := S) (A₂ := (A ⊗[R] B)ᵐᵒᵖ)
     (algHomOfLinearMapTensorProduct e₁.toLinearMap
       (fun a₁ a₂ b₁ b₂ => unop_injective rfl) (unop_injective rfl))
     (AlgHom.opComm <| algHomOfLinearMapTensorProduct e₂.toLinearMap

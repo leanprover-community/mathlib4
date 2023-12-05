@@ -571,7 +571,10 @@ def algEquiv (e : α ≃ β) [Semiring β] [Algebra R β] : by
   intros
   exact
     { Equiv.ringEquiv e with
-      commutes' := fun r => by
+      map_smul' := fun r a => by
+        simp only [RingEquiv.toEquiv_eq_coe, Algebra.smul_def, toFun_as_coe,
+          RingEquiv.coe_toEquiv, map_mul, ringEquiv_apply]
+        congr
         apply e.symm.injective
         simp
         rfl }

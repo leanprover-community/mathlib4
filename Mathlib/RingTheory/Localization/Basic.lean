@@ -737,8 +737,8 @@ variable (M S Q)
 there is an isomorphism of localizations `S ≃ₐ[R] Q`. -/
 @[simps!]
 noncomputable def algEquiv : S ≃ₐ[R] Q :=
-  { ringEquivOfRingEquiv S Q (RingEquiv.refl R) M.map_id with
-    commutes' := ringEquivOfRingEquiv_eq _ }
+  AlgEquiv.ofCommutes (ringEquivOfRingEquiv S Q (RingEquiv.refl R) M.map_id) <|
+    ringEquivOfRingEquiv_eq _
 #align is_localization.alg_equiv IsLocalization.algEquiv
 
 end
@@ -814,7 +814,7 @@ theorem isLocalization_iff_of_ringEquiv (h : S ≃+* P) :
     IsLocalization M S ↔ have := (h.toRingHom.comp <| algebraMap R S).toAlgebra;
       IsLocalization M P :=
   letI := (h.toRingHom.comp <| algebraMap R S).toAlgebra
-  isLocalization_iff_of_algEquiv M { h with commutes' := fun _ => rfl }
+  isLocalization_iff_of_algEquiv M <| .ofCommutes h fun _ => rfl
 #align is_localization.is_localization_iff_of_ring_equiv IsLocalization.isLocalization_iff_of_ringEquiv
 
 variable (S)

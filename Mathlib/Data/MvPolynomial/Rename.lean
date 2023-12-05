@@ -153,7 +153,7 @@ variable (R)
 /-- `MvPolynomial.rename e` is an equivalence when `e` is. -/
 @[simps apply]
 def renameEquiv (f : σ ≃ τ) : MvPolynomial σ R ≃ₐ[R] MvPolynomial τ R :=
-  { rename f with
+  { rename f, (rename f).toLinearMap with
     toFun := rename f
     invFun := rename f.symm
     left_inv := fun p => by rw [rename_rename, f.symm_comp_self, rename_id]

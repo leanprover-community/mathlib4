@@ -196,8 +196,8 @@ theorem mvPolynomial_of_finitePresentation (hfp : FinitePresentation.{w₁, w₂
   cases nonempty_fintype (Sum ι ι')
   refine
     ⟨Sum ι ι', by infer_instance, g,
-      (MvPolynomial.map_surjective f.toRingHom hf_surj).comp (AlgEquiv.surjective _),
-      Ideal.fg_ker_comp _ _ ?_ ?_ (AlgEquiv.surjective _)⟩
+      (MvPolynomial.map_surjective f.toRingHom hf_surj).comp (by simpa using AlgEquiv.surjective _),
+      Ideal.fg_ker_comp _ _ ?_ ?_ (by simpa using AlgEquiv.surjective _)⟩
   · erw [RingHom.ker_coe_equiv (MvPolynomial.sumAlgEquiv R ι ι').toRingEquiv]
     exact Submodule.fg_bot
     -- Porting note: was

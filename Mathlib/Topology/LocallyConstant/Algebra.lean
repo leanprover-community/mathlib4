@@ -422,6 +422,7 @@ def congrLeftₐ (R : Type*) [CommSemiring R] [Semiring Z] [Algebra R Z] (e : X 
     LocallyConstant X Z ≃ₐ[R] LocallyConstant Y Z where
   toEquiv := congrLeft e
   __ := comapₐ R _ e.symm.continuous
+  __ := comapₗ R _ e.symm.continuous
 
 end Comap
 

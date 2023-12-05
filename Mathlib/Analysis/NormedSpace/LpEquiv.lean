@@ -209,7 +209,7 @@ variable (α)
 -- `one_memℓp_infty` to get the `Ring` instance on `lp`.
 /-- The canonical map between `lp (λ (_ : α), A) ∞` and `α →ᵇ A` as an `AlgEquiv`. -/
 noncomputable def AlgEquiv.lpBcf : lp (fun _ : α => A) ∞ ≃ₐ[𝕜] α →ᵇ A :=
-  { RingEquiv.lpBcf A with commutes' := fun _k => rfl }
+  { RingEquiv.lpBcf A with map_smul' := fun _ _ => rfl }
 #align alg_equiv.lp_bcf AlgEquiv.lpBcf
 
 variable {α A 𝕜}
