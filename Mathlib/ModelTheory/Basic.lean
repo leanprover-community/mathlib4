@@ -236,8 +236,7 @@ instance subsingleton_mk₂_relations {c f₁ f₂ : Type u} {r₁ r₂ : Type v
 #align first_order.language.subsingleton_mk₂_relations FirstOrder.Language.subsingleton_mk₂_relations
 
 @[simp]
-theorem empty_card : Language.empty.card = 0 := by
-  simp [card_eq_card_functions_add_card_relations]
+theorem empty_card : Language.empty.card = 0 := by simp [card_eq_card_functions_add_card_relations]
 #align first_order.language.empty_card FirstOrder.Language.empty_card
 
 instance isEmpty_empty : IsEmpty Language.empty.Symbols := by

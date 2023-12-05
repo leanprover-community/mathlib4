@@ -116,9 +116,7 @@ theorem card_eq_two_iff' (x : α) : Nat.card α = 2 ↔ ∃! y, y ≠ x :=
   toNat_eq_ofNat.trans (mk_eq_two_iff' x)
 #align nat.card_eq_two_iff' Nat.card_eq_two_iff'
 
-@[simp] theorem card_of_isEmpty [IsEmpty α] : Nat.card α = 0 := by
-  let A : Fintype α := Fintype.ofIsEmpty
-  simp [Nat.card]
+@[simp] theorem card_of_isEmpty [IsEmpty α] : Nat.card α = 0 := by simp [Nat.card]
 #align nat.card_of_is_empty Nat.card_of_isEmpty
 
 @[simp]
