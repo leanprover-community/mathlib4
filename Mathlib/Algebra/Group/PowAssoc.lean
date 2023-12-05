@@ -80,34 +80,12 @@ theorem ppowRec_succ (x : M) (n : ℕ+) : ppowRec (n + 1) x = x * ppowRec n x :=
 
 end ppowRec
 
-section Semigroup
-
-variable [Semigroup M]
-
-instance (M: Type u) [Semigroup M] : Pow M ℕ+ :=
-  {
-    pow := fun x n => ppowRec n x
-  }
-
-theorem ppow_eq_ppowRec (x : M) (n : ℕ+) : x ^ n = ppowRec n x := rfl
-
-theorem semigroup_ppow_add (x : M) (k n : ℕ+) : x ^ (k + n) = x ^ k * x ^ n := by
-  simp only [ppow_eq_ppowRec]
-  refine PNat.recOn k ?_ ?_
-  rw [add_comm, ppowRec_one, ppowRec_succ]
+theorem ppow_eq_pow [Monoid M] [Pow M ℕ+] [PNatPowAssoc M] (x : M) (n : ℕ+) :
+    x ^ n = x ^ (n : ℕ) := by
+  refine PNat.recOn n ?_ ?_
+  rw [ppow_one, PNat.one_coe, pow_one]
   intro k hk
-  rw [ppowRec_succ, mul_assoc, ← hk, ← ppowRec_succ, add_right_comm]
-
-instance (M: Type u) [Semigroup M] : PNatPowAssoc M :=
-  {
-    ppow_add := by
-      intro k n x
-      exact semigroup_ppow_add x k n
-    ppow_one := by
-      exact ppowRec_one
-  }
-
-end Semigroup
+  rw [ppow_add, ppow_one, PNat.add_coe, pow_add, PNat.one_coe, pow_one, ← hk]
 
 section NatPowAssoc
 

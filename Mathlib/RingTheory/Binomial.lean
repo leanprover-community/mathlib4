@@ -60,13 +60,22 @@ replacement. -/
 def multichoose [BinomialSemiring R] (r : R) (n : ℕ) : R :=
   BinomialSemiring.multichoose r n
 
-theorem factorial_mul_multichoose_eq_ascPochhammer [BinomialSemiring R] (r : R) (n : ℕ) :
+theorem factorial_smul_multichoose_eq_ascPochhammer [BinomialSemiring R] (r : R) (n : ℕ) :
     n.factorial • multichoose r n = Polynomial.smeval (ascPochhammer ℕ n) r :=
   BinomialSemiring.factorial_smul_multichoose r n
 
-theorem ascPochhammer_smeval_eq_eval (n k : ℕ) :
-    Polynomial.smeval (ascPochhammer ℕ k) n = Polynomial.eval n (ascPochhammer ℕ k) := by
-  rw [Polynomial.smeval_eq_eval]
+theorem ascPochhammer_smeval_eq_eval [Semiring R] (r : R) (k : ℕ) :
+    Polynomial.smeval (ascPochhammer ℕ k) r = Polynomial.eval r (ascPochhammer R k) := by
+  induction k with
+  | zero =>
+    rw [ascPochhammer_zero, ascPochhammer_zero, Polynomial.eval_one, Polynomial.smeval_one,
+      nsmul_eq_mul, pow_zero, mul_one, Nat.cast_one]
+  | succ n ih =>
+    rw [ascPochhammer_succ_right, ascPochhammer_succ_right, Polynomial.smeval_mul r, ih,
+      mul_add (ascPochhammer R n), Polynomial.smeval_add, Polynomial.smeval_X r, pow_one,
+      ←Polynomial.C_eq_nat_cast, Polynomial.smeval_C, pow_zero, nsmul_one, Nat.cast_id,
+      Polynomial.eval_add, Polynomial.eval_mul_X, ← Nat.cast_comm, Polynomial.eval_nat_cast_mul,
+      mul_add, Nat.cast_comm]
 
 instance naturals_binomial_semiring : BinomialSemiring ℕ := by
   refine BinomialSemiring.mk ?inj_smul_pos ?multichoose ?factorial_mul_multichoose
@@ -75,11 +84,11 @@ instance naturals_binomial_semiring : BinomialSemiring ℕ := by
   use fun n k => Nat.multichoose n k
   intro n k
   rw [Nat.multichoose_eq, smul_eq_mul, ← Nat.descFactorial_eq_factorial_mul_choose,
-    ascPochhammer_smeval_eq_eval, ascPochhammer_nat_eq_descFactorial]
+    Polynomial.smeval_eq_eval, ascPochhammer_nat_eq_descFactorial]
 
 theorem multichoose_eq_nat_multichoose (n k : ℕ) : multichoose n k = Nat.multichoose n k := by
   refine eq_of_smul_factorial_eq k ?_
-  rw [factorial_mul_multichoose_eq_ascPochhammer, Nat.multichoose_eq, ascPochhammer_smeval_eq_eval,
+  rw [factorial_smul_multichoose_eq_ascPochhammer, Nat.multichoose_eq, ascPochhammer_smeval_eq_eval,
     ascPochhammer_nat_eq_descFactorial, Nat.descFactorial_eq_factorial_mul_choose, smul_eq_mul]
 
 end Ring
@@ -89,6 +98,32 @@ end BinomialSemiring
 /-- A ring is binomial if multiplication by factorials is injective and ascending factorials
   are divisible by the corresponding factorial. -/
 class BinomialRing (R: Type u) extends Ring R, BinomialSemiring R
+
+/-- This is multichoose for integers, but only for the purpose of proving the instance. -/
+def mcAux : ℤ → ℕ → ℤ
+  | (n : ℕ) => fun k => ((Nat.multichoose n k):ℤ)
+  | Int.negSucc n => fun k => (-1)^k * Nat.choose n.succ k
+
+instance integers_binomial_ring : BinomialRing ℤ := by
+  refine BinomialRing.mk ?_ ?_ ?_
+  intro _ _ _ hn hmul
+  exact nat_mul_inj' hmul hn
+  use mcAux
+  intro r k
+  cases r with
+  | ofNat n => {
+    have h₁ : mcAux (Int.ofNat n) k = ((Nat.multichoose n k):ℤ) := rfl
+    rw [h₁, nsmul_eq_mul, Int.ofNat_mul_out, ← Ring.multichoose_eq_nat_multichoose,
+    ← Nat.nsmul_eq_mul, Ring.factorial_smul_multichoose_eq_ascPochhammer]
+    simp only [Ring.ascPochhammer_smeval_eq_eval, ascPochhammer_eval_cast, Int.ofNat_eq_coe]
+  }
+  | negSucc n => {
+    have h₂ : mcAux (Int.negSucc n) k = (-1)^k * Nat.choose n.succ k := rfl
+    rw [h₂, nsmul_eq_mul, mul_comm, mul_assoc, ← Nat.cast_mul, mul_comm _ (k.factorial),
+      ← Nat.descFactorial_eq_factorial_mul_choose, ←descPochhammer_int_eq_descFactorial,
+      Ring.ascPochhammer_smeval_eq_eval, ← Int.neg_ofNat_succ,
+      ascPochhammer_eval_neg_eq_descPochhammer]
+  }
 
 section choose
 
@@ -115,7 +150,7 @@ def choose {R: Type _} [BinomialRing R] (r : R) (n : ℕ): R :=
 theorem descPochhammer_eq_factorial_mul_choose (r : R) (n : ℕ) :
     Polynomial.smeval (descPochhammer ℤ n) r = n.factorial • choose r n := by
   unfold choose
-  rw [factorial_mul_multichoose_eq_ascPochhammer, descPochhammer_eq_ascPochhammer,
+  rw [factorial_smul_multichoose_eq_ascPochhammer, descPochhammer_eq_ascPochhammer,
     Polynomial.smeval_comp r, add_comm_sub, Polynomial.smeval_add, Polynomial.smeval_X, pow_one]
   have h : Polynomial.smeval (1 - n : Polynomial ℤ) r = 1 - n := by
     rw [← Polynomial.C_eq_nat_cast, ←Polynomial.C_1, ← Polynomial.C_sub, Polynomial.smeval_C]
@@ -132,8 +167,19 @@ theorem choose_zero_succ (k : ℕ) : choose (0 : R) (Nat.succ k) = 0 := by
   rw [← descPochhammer_eq_factorial_mul_choose, smul_zero, descPochhammer_succ_left, mul_comm,
     Polynomial.smeval_mul_X (0 : R), mul_zero]
 
-theorem choose_zero_pos (k : ℕ) (h_pos: 0 < k) : choose (0:R) k = 0 := by
+theorem choose_zero_pos (k : ℕ) (h_pos: 0 < k) : choose (0 : R) k = 0 := by
   rw [← Nat.succ_pred_eq_of_pos h_pos, choose_zero_succ]
+
+theorem choose_zero_ite (k : ℕ) : choose (0 : R) k = if k = 0 then 1 else 0 := by
+  rw [eq_ite_iff]
+  by_cases hk: k = 0
+  constructor
+  rw [hk, choose_zero_right, ← Prod.mk.inj_iff]
+  right
+  constructor
+  exact hk
+  rw [← @Nat.le_zero, Nat.not_le] at hk
+  rw [choose_zero_pos k hk]
 
 end Ring
 

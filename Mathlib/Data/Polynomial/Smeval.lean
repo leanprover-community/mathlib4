@@ -107,14 +107,14 @@ theorem smeval_eq_sum : p.smeval x = p.sum (smul_pow x) := by rw [smeval_def]
 theorem smeval_zero : (0 : R[X]).smeval x = 0 := by
   simp only [smeval_eq_sum, smul_pow, sum_zero_index]
 
-theorem smeval_C : (C r).smeval x = r • x^0 := by
+theorem smeval_C : (C r).smeval x = r • x ^ 0 := by
   simp only [smeval_eq_sum, smul_pow, zero_smul, sum_C_index]
 
-theorem smeval_one : (1 : R[X]).smeval x = 1 • x^0 := by
+theorem smeval_one : (1 : R[X]).smeval x = 1 • x ^ 0 := by
   rw [← C_1, smeval_C]
   simp only [Nat.cast_one, one_smul]
 
-theorem smeval_X : (X:R[X]).smeval x = x^1 := by
+theorem smeval_X : (X : R[X]).smeval x = x ^ 1 := by
   simp only [smeval_eq_sum, smul_pow, zero_smul, sum_X_index, one_smul]
 
 theorem smeval_monomial (n : ℕ) : (monomial n r).smeval x = r • x ^ n := by
