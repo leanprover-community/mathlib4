@@ -19,20 +19,20 @@ the tactic framework.
 
 @[simp]
 theorem if_true_right_eq_or (p : Prop) [h : Decidable p] (q : Prop) :
-    (if p then q else True) = (¬p ∨ q) := by by_cases p <;> simp [h]
+    (if p then q else True) = (¬p ∨ q) := by by_cases h : p <;> simp [h]
 #align if_true_right_eq_or if_true_right_eq_or
 
 @[simp]
 theorem if_true_left_eq_or (p : Prop) [h : Decidable p] (q : Prop) :
-    (if p then True else q) = (p ∨ q) := by by_cases p <;> simp [h]
+    (if p then True else q) = (p ∨ q) := by by_cases h : p <;> simp [h]
 #align if_true_left_eq_or if_true_left_eq_or
 
 @[simp]
 theorem if_false_right_eq_and (p : Prop) [h : Decidable p] (q : Prop) :
-    (if p then q else False) = (p ∧ q) := by by_cases p <;> simp [h]
+    (if p then q else False) = (p ∧ q) := by by_cases h : p <;> simp [h]
 #align if_false_right_eq_and if_false_right_eq_and
 
 @[simp]
 theorem if_false_left_eq_and (p : Prop) [h : Decidable p] (q : Prop) :
-    (if p then False else q) = (¬p ∧ q) := by by_cases p <;> simp [h]
+    (if p then False else q) = (¬p ∧ q) := by by_cases h : p <;> simp [h]
 #align if_false_left_eq_and if_false_left_eq_and

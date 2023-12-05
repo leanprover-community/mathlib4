@@ -121,8 +121,9 @@ theorem span_exact (he : Exact f g) (huv : u ∘ Sum.inl = f ∘ v)
   rw [← sub_add_cancel m m', ← hnm,]
   simp only [SMulHomClass.map_smul]
   have hn' : (Finsupp.sum cn fun a b ↦ b • f (v a)) =
-      (Finsupp.sum cn fun a b ↦ b • u (Sum.inl a)) :=
-    by congr; ext a b; change b • (f ∘ v) a = _; rw [← huv]; rfl
+      (Finsupp.sum cn fun a b ↦ b • u (Sum.inl a)) := by
+    congr with a b
+    rw [← Function.comp_apply (f := f) (g := v), ← huv, Function.comp_apply]
   rw [hn']
   apply add_mem
   · rw [Finsupp.mem_span_range_iff_exists_finsupp]

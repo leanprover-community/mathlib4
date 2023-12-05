@@ -220,13 +220,13 @@ variable (φ)
 canonical element of each coset. We also need all the maps in the diagram to be injective  -/
 structure Transversal : Type _ where
   /-- All maps in the diagram are injective -/
-  ( injective : ∀ i, Injective (φ i) )
+  injective : ∀ i, Injective (φ i)
   /-- The underlying set, containing exactly one element of each coset of the base group -/
-  ( set : ∀ i, Set (G i) )
+  set : ∀ i, Set (G i)
   /-- The chosen element of the base group itself is the identity -/
-  ( one_mem : ∀ i, 1 ∈ set i )
+  one_mem : ∀ i, 1 ∈ set i
   /-- We have exactly one element of each coset of the base group -/
-  ( compl : ∀ i, IsComplement (φ i).range (set i) )
+  compl : ∀ i, IsComplement (φ i).range (set i)
 
 theorem transversal_nonempty (hφ : ∀ i, Injective (φ i)) : Nonempty (Transversal φ) := by
   have := fun i => exists_right_transversal (H := (φ i).range) 1
@@ -669,7 +669,7 @@ theorem inf_of_range_eq_base_range (hφ : ∀ i, Injective (φ i)) {i j : ι} (h
     (by
       intro x ⟨⟨g₁, hg₁⟩, ⟨g₂, hg₂⟩⟩
       by_contra hx
-      have hx1 : x ≠ 1 := by rintro rfl; simp_all only [map_one, one_mem]
+      have hx1 : x ≠ 1 := by rintro rfl; simp_all only [ne_eq, one_mem, not_true_eq_false]
       have hg₁1 : g₁ ≠ 1 :=
         ne_of_apply_ne (of (φ := φ) i) (by simp_all)
       have hg₂1 : g₂ ≠ 1 :=

@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert A. Spencer, Markus Himmel
 -/
 import Mathlib.Algebra.Category.GroupCat.Preadditive
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.LinearAlgebra.Basic
 import Mathlib.CategoryTheory.Conj
+import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 #align_import algebra.category.Module.basic from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
@@ -97,8 +95,7 @@ instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
   comp f g := g.comp f
   id_comp _ := LinearMap.id_comp _
   comp_id _ := LinearMap.comp_id _
-  assoc f g h := @LinearMap.comp_assoc _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-    RingHomCompTriple.ids RingHomCompTriple.ids RingHomCompTriple.ids f g h
+  assoc f g h := LinearMap.comp_assoc (f := f) (g := g) (h := h)
 #align Module.Module_category ModuleCat.moduleCategory
 
 -- porting note: was not necessary in mathlib

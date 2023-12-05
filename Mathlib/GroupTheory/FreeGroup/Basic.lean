@@ -530,6 +530,9 @@ instance : Inhabited (FreeGroup α) :=
   ⟨1⟩
 
 @[to_additive]
+instance [IsEmpty α] : Unique (FreeGroup α) := by unfold FreeGroup; infer_instance
+
+@[to_additive]
 instance : Mul (FreeGroup α) :=
   ⟨fun x y =>
     Quot.liftOn x
@@ -945,7 +948,7 @@ theorem sum_mk : sum (mk L) = List.sum (L.map fun x => cond x.2 x.1 (-x.1)) :=
 
 @[simp]
 theorem sum.of {x : α} : sum (of x) = x :=
-  prod.of
+  @prod.of _ (_) _
 #align free_group.sum.of FreeGroup.sum.of
 
 -- note: there are no bundled homs with different notation in the domain and codomain, so we copy
@@ -1340,8 +1343,8 @@ theorem toWord_inv {x : FreeGroup α} : x⁻¹.toWord = invRev x.toWord := by
 #align free_group.to_word_inv FreeGroup.toWord_inv
 #align free_add_group.to_word_neg FreeAddGroup.toWord_neg
 
-/-- Constructive Church-Rosser theorem (compare `church_rosser`). -/
-@[to_additive "Constructive Church-Rosser theorem (compare `church_rosser`)."]
+/-- **Constructive Church-Rosser theorem** (compare `church_rosser`). -/
+@[to_additive "**Constructive Church-Rosser theorem** (compare `church_rosser`)."]
 def reduce.churchRosser (H12 : Red L₁ L₂) (H13 : Red L₁ L₃) : { L₄ // Red L₂ L₄ ∧ Red L₃ L₄ } :=
   ⟨reduce L₁, reduce.rev H12, reduce.rev H13⟩
 #align free_group.reduce.church_rosser FreeGroup.reduce.churchRosser
