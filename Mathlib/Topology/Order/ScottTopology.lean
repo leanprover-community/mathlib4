@@ -241,7 +241,7 @@ lemma isUpperSet_of_isOpen {s : Set α} : IsOpen s → IsUpperSet s := fun h =>
 lemma isLowerSet_of_isClosed {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
   (isClosed_iff_lower_and_subset_implies_LUB_mem.mp h).left
 
-lemma lowerClosure_le_closure {s : Set α} : lowerClosure s ≤ closure s := by
+lemma lowerClosure_subset_closure {s : Set α} : lowerClosure s ⊆ closure s := by
   convert closure.mono (@upperSet_le_scott α _)
   rw [@Topology.IsUpperSet.closure_eq_lowerClosure α _ (upperSet α) ?_ s]
   · exact instIsUpperSetUpperSet
