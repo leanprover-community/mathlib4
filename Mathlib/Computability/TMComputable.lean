@@ -316,19 +316,19 @@ instance inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) :=
 #align turing.inhabited_tm2_computable_aux Turing.inhabitedTM2ComputableAux
 
 /-- Generalize to functions computable in polynomial time -/
-def PolyTimeFunction {α β: Type} {ea : FinEncoding α} {eb : FinEncoding β} (f : α → β) :=
+def PolyTimeFunction {α β : Type} {ea : FinEncoding α} {eb : FinEncoding β} (f : α → β) :=
   @TM2ComputableInPolyTime α β ea eb f
 
 /-- Indicator function for a language decidable in polynomial time -/
-def PolyTimeLanguageIndicator {α: Type} {ea : FinEncoding α} {ebool : FinEncoding Bool}
+def PolyTimeLanguageIndicator {α : Type} {ea : FinEncoding α} {ebool : FinEncoding Bool}
     (f : α → Bool) := @TM2ComputableInPolyTime α Bool ea ebool f
 
-/-- Relationship indicates that "x" has a certificate with encoded length polynomially bounded as
-a function of the encoded length of x. -/
-def verification {α γ: Type} {ea : FinEncoding α} {eg : FinEncoding γ} {p: Polynomial ℕ}
+/-- Relationship indicates that `x` has a certificate with encoded length polynomially bounded as
+a function of the encoded length of `x`. -/
+def verification {α γ : Type} {ea : FinEncoding α} {eg : FinEncoding γ} {p : Polynomial ℕ}
     (certified : Rel α γ) : Prop :=
   ∀ (x : α) (certificate : γ), certified x certificate →
-  (eg.encode certificate).length < p.eval (ea.encode x).length
+    (eg.encode certificate).length < p.eval (ea.encode x).length
 
 end
 
