@@ -79,7 +79,7 @@ variable {R V : Type*} [Field R] [AddCommGroup V] [TopologicalSpace R] [Topologi
 theorem _root_.separatingDual_iff_injective : SeparatingDual R V ↔
     Function.Injective (ContinuousLinearMap.coeLM (R := R) R (M := V) (N₃ := R)).flip := by
   simp_rw [separatingDual_def, Ne, injective_iff_map_eq_zero]
-  refine forall_congr' fun v ↦ ?_
+  congrm ∀ v, ?_
   rw [not_imp_comm, LinearMap.ext_iff]
   push_neg; rfl
 
