@@ -113,7 +113,7 @@ theorem isLocallySurjective_of_iso {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [IsIso f]
   apply isLocallySurjective_of_surjective
   intro U
   apply Function.Bijective.surjective
-  rw [← isIso_iff_bijective, ←forget_map_eq_coe]
+  rw [← isIso_iff_bijective, ← forget_map_eq_coe]
   infer_instance
 #align category_theory.is_locally_surjective_of_iso CategoryTheory.isLocallySurjective_of_iso
 

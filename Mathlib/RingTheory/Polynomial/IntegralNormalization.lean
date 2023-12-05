@@ -99,7 +99,7 @@ theorem support_integralNormalization {f : R[X]} :
   refine' ⟨fun h => integralNormalization_support h, _⟩
   simp only [integralNormalization_coeff, mem_support_iff]
   intro hfi
-  split_ifs with hi <;> simp [hfi, hi, pow_ne_zero _ (leadingCoeff_ne_zero.mpr hf)]
+  split_ifs with hi <;> simp [hf, hfi, hi]
 #align polynomial.support_integral_normalization Polynomial.support_integralNormalization
 
 end IsDomain
