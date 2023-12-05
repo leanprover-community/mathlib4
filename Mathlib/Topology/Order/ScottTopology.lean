@@ -109,7 +109,7 @@ def scott : TopologicalSpace α := upperSet α ⊔ scottHausdorff
 
 lemma upperSet_le_scott : upperSet α ≤ scott := le_sup_left
 
-lemma scottHausdorff_le_Scott : @scottHausdorff α ≤ @scott α := le_sup_right
+lemma scottHausdorff_le_scott : @scottHausdorff α ≤ @scott α := le_sup_right
 
 end Topology
 
@@ -161,10 +161,10 @@ where a set `u` is open if, when the least upper bound of a directed set `d` lie
 is a tail of `d` which is a subset of `u`.
 -/
 class IsScott (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
-  topology_eq_ScottTopology : t = scott
+  topology_eq_scott : t = scott
 
 attribute [nolint docBlame]
-  IsScott.topology_eq_ScottTopology
+  IsScott.topology_eq_scott
 
 instance [Preorder α] : IsScott (WithScott α) :=
   ⟨rfl⟩
@@ -175,14 +175,14 @@ section preorder
 
 variable [Preorder α]
 
-lemma isOpen_iff_upper_and_Scott_Hausdorff_Open' {u : Set α} :
+lemma isOpen_iff_upper_and_scottHausdorff_Open' {u : Set α} :
     IsOpen (WithScott.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ scottHausdorff.IsOpen u := Iff.rfl
 
 variable [TopologicalSpace α] [IsScott α]
 
 variable (α)
 
-lemma topology_eq : ‹_› = scott := topology_eq_ScottTopology
+lemma topology_eq : ‹_› = scott := topology_eq_scott
 
 variable {α}
 
@@ -197,12 +197,12 @@ section preorder
 
 variable [Preorder α] [TopologicalSpace α] [IsScott α] {u : Set α}
 
-lemma isOpen_iff_upper_and_Scott_Hausdorff_Open :
+lemma isOpen_iff_upper_and_scottHausdorff_Open :
     IsOpen u ↔ IsUpperSet u ∧ scottHausdorff.IsOpen u := by erw [topology_eq α]; rfl
 
 lemma isOpen_iff_upper_and_DirSupInacc {u : Set α} :
     IsOpen u ↔ IsUpperSet u ∧ DirSupInacc u := by
-  rw [isOpen_iff_upper_and_Scott_Hausdorff_Open]
+  rw [isOpen_iff_upper_and_scottHausdorff_Open]
   constructor
   · refine' And.imp_right _
     intros h _ d₁ d₂ _ d₃ ha
@@ -237,7 +237,7 @@ lemma isClosed_iff_lower_and_subset_implies_LUB_mem {s : Set α} : IsClosed s
     contradiction
 
 lemma isUpperSet_of_isOpen {s : Set α} : IsOpen s → IsUpperSet s := fun h =>
-  (isOpen_iff_upper_and_Scott_Hausdorff_Open.mp h).left
+  (isOpen_iff_upper_and_scottHausdorff_Open.mp h).left
 
 lemma isLowerSet_of_isClosed {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
   (isClosed_iff_lower_and_subset_implies_LUB_mem.mp h).left
@@ -328,7 +328,7 @@ variable [CompleteLattice α] [TopologicalSpace α] [Topology.IsScott α]
 lemma isOpen_iff_isUpperSet_and_sup_mem_implies_tail_subset {u : Set α} :
     IsOpen u ↔ IsUpperSet u ∧ ∀ ⦃d : Set α⦄,
     d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u := by
-  rw [Topology.IsScott.isOpen_iff_upper_and_Scott_Hausdorff_Open]
+  rw [Topology.IsScott.isOpen_iff_upper_and_scottHausdorff_Open]
   apply and_congr_right'
   exact ⟨fun h d hd₁ hd₂ hd₃ => h hd₁ hd₂ (isLUB_sSup d) hd₃,
     fun h d hd₁ hd₂ a hd₃ ha => h hd₁ hd₂ (Set.mem_of_eq_of_mem (IsLUB.sSup_eq hd₃) ha)⟩
@@ -354,11 +354,11 @@ end complete_lattice
 
 variable [Preorder α]
 
-lemma scottHausdorffTopology_le_of_scottTopology [TopologicalSpace α] [Topology.IsScott α] :
+lemma scottHausdorff_le_of_scott [TopologicalSpace α] [Topology.IsScott α] :
     Topology.scottHausdorff ≤ ‹TopologicalSpace α› := by
   rw [Topology.IsScott.topology_eq α, Topology.scott]
   apply le_sup_right
 
-lemma scottHausdorffTopology_le_Lower [TopologicalSpace α] [Topology.IsLower α] :
+lemma scottHausdorff_le_lower [TopologicalSpace α] [Topology.IsLower α] :
     Topology.scottHausdorff ≤ ‹TopologicalSpace α› :=
   fun _ h => Topology.ScottHausdorff.isOpen_of_isLowerSet (Topology.IsLower.isLowerSet_of_isOpen h)
