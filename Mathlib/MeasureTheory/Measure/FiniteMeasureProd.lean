@@ -56,15 +56,15 @@ lemma prod_apply_symm (s : Set (α × β)) (s_mble : MeasurableSet s) :
 
 lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by simp
 
-lemma mass_prod : (μ.prod ν).mass = μ.mass * ν.mass := by
+@[simp] lemma mass_prod : (μ.prod ν).mass = μ.mass * ν.mass := by
   simp only [mass, univ_prod_univ.symm, toMeasure_prod]
   rw [← ENNReal.toNNReal_mul]
   exact congr_arg ENNReal.toNNReal (Measure.prod_prod univ univ)
 
-lemma zero_prod : (0 : FiniteMeasure α).prod ν = 0 := by
+@[simp] lemma zero_prod : (0 : FiniteMeasure α).prod ν = 0 := by
   rw [← mass_zero_iff, mass_prod, zero_mass, zero_mul]
 
-lemma prod_zero : μ.prod (0 : FiniteMeasure β) = 0 := by
+@[simp] lemma prod_zero : μ.prod (0 : FiniteMeasure β) = 0 := by
   rw [← mass_zero_iff, mass_prod, zero_mass, mul_zero]
 
 @[simp] lemma map_fst_prod : (μ.prod ν).map Prod.fst = ν univ • μ := by
