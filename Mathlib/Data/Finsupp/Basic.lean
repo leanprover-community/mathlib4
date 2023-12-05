@@ -1507,6 +1507,9 @@ instance faithfulSMul [Nonempty α] [Zero M] [SMulZeroClass R M] [FaithfulSMul R
     eq_of_smul_eq_smul fun m : M => by simpa using FunLike.congr_fun (h (single a m)) a
 #align finsupp.faithful_smul Finsupp.faithfulSMul
 
+instance smulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (α →₀ M) where
+  zero_smul f := by ext i; exact zero_smul _ _
+
 variable (α M)
 
 instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →₀ M) where

@@ -176,7 +176,7 @@ namespace Finsupp
 variable [OrderedAddCommMonoid α] [OrderedAddCommMonoid β] [SMulZeroClass α β]
 
 section FloorDiv
-variable [FloorDiv α β]
+variable [FloorDiv α β] {f : ι →₀ β} {a : α}
 
 noncomputable instance instFloorDiv : FloorDiv α (ι →₀ β) where
   floorDiv f a := f.mapRange (· ⌊/⌋ a) $ zero_floorDiv _
@@ -188,10 +188,13 @@ noncomputable instance instFloorDiv : FloorDiv α (ι →₀ β) where
 lemma floorDiv_def (f : ι →₀ β) (a : α) : f ⌊/⌋ a = fun i ↦ f i ⌊/⌋ a := rfl
 @[simp] lemma floorDiv_apply (f : ι →₀ β) (a : α) (i : ι) : (f ⌊/⌋ a) i = f i ⌊/⌋ a := rfl
 
+lemma support_floorDiv_subset : (f ⌊/⌋ a).support ⊆ f.support := by
+  simp (config := { contextual := true}) [Finset.subset_iff, not_imp_not]
+
 end FloorDiv
 
 section CeilDiv
-variable [CeilDiv α β]
+variable [CeilDiv α β] {f : ι →₀ β} {a : α}
 
 noncomputable instance instCeilDiv : CeilDiv α (ι →₀ β) where
   ceilDiv f a := f.mapRange (· ⌈/⌉ a) $ by simp
@@ -202,6 +205,9 @@ noncomputable instance instCeilDiv : CeilDiv α (ι →₀ β) where
 
 lemma ceilDiv_def (f : ι →₀ β) (a : α) : f ⌈/⌉ a = fun i ↦ f i ⌈/⌉ a := rfl
 @[simp] lemma ceilDiv_apply (f : ι →₀ β) (a : α) (i : ι) : (f ⌈/⌉ a) i = f i ⌈/⌉ a := rfl
+
+lemma support_ceilDiv_subset : (f ⌈/⌉ a).support ⊆ f.support := by
+  simp (config := { contextual := true}) [Finset.subset_iff, not_imp_not]
 
 end CeilDiv
 end Finsupp

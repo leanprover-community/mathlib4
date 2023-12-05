@@ -56,6 +56,11 @@ class OrderedSMul (R M : Type*) [OrderedSemiring R] [OrderedAddCommMonoid M] [SM
 
 variable {ι α β γ 𝕜 R M N : Type*}
 
+instance [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] [OrderedSMul R M] :
+    OrderedSMul R Mᵒᵈ where
+  smul_lt_smul_of_pos {a b} := @OrderedSMul.smul_lt_smul_of_pos R M _ _ _ _ b a
+  lt_of_smul_lt_smul_of_pos {a b} := @OrderedSMul.lt_of_smul_lt_smul_of_pos R M _ _ _ _ b a
+
 section OrderedSMul
 
 variable [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] [OrderedSMul R M]

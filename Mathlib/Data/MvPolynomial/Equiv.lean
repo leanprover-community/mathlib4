@@ -445,7 +445,7 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
 theorem finSuccEquiv_support (f : MvPolynomial (Fin (n + 1)) R) :
     (finSuccEquiv R n f).support = Finset.image (fun m : Fin (n + 1) →₀ ℕ => m 0) f.support := by
   ext i
-  rw [Polynomial.mem_support_iff, Finset.mem_image, nonzero_iff_exists]
+  rw [Polynomial.mem_support_iff, Finset.mem_image, FunLike.ne_iff]
   constructor
   · rintro ⟨m, hm⟩
     refine' ⟨cons i m, _, cons_zero _ _⟩

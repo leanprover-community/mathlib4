@@ -3,7 +3,8 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Aaron Anderson
 -/
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Data.Finsupp.Basic
 
 #align_import data.finsupp.order from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
@@ -30,7 +31,7 @@ open BigOperators
 
 open Finset
 
-variable {ι α : Type*}
+variable {ι α β : Type*}
 
 namespace Finsupp
 
@@ -42,15 +43,15 @@ section Zero
 variable [Zero α]
 
 section LE
-
-variable [LE α]
+variable [LE α] {f g : ι →₀ α}
 
 instance instLEFinsupp : LE (ι →₀ α) :=
   ⟨fun f g => ∀ i, f i ≤ g i⟩
 
-theorem le_def {f g : ι →₀ α} : f ≤ g ↔ ∀ i, f i ≤ g i :=
-  Iff.rfl
+lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
 #align finsupp.le_def Finsupp.le_def
+
+@[simp, norm_cast] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := Iff.rfl
 
 /-- The order on `Finsupp`s over a partial order embeds into the order on functions -/
 def orderEmbeddingToFun : (ι →₀ α) ↪o (ι → α) where
@@ -59,7 +60,7 @@ def orderEmbeddingToFun : (ι →₀ α) ↪o (ι → α) where
     Finsupp.ext fun i => by
       dsimp at h
       rw [h]
-  map_rel_iff' {a b} := (@le_def _ _ _ _ a b).symm
+  map_rel_iff' := coe_le_coe
 #align finsupp.order_embedding_to_fun Finsupp.orderEmbeddingToFun
 
 @[simp]
@@ -71,16 +72,20 @@ end LE
 
 section Preorder
 
-variable [Preorder α]
+variable [Preorder α] {f g : ι →₀ α}
 
 instance preorder : Preorder (ι →₀ α) :=
   { Finsupp.instLEFinsupp with
     le_refl := fun f i => le_rfl
     le_trans := fun f g h hfg hgh i => (hfg i).trans (hgh i) }
 
-theorem monotone_toFun : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) :=
-    fun _f _g h a => le_def.1 h a
-#align finsupp.monotone_to_fun Finsupp.monotone_toFun
+lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
+@[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := Iff.rfl
+
+lemma monotone_coe : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) := fun _ _ ↦ id
+#align finsupp.monotone_to_fun Finsupp.monotone_coe
+
+lemma strictMono_coe : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) := fun _ _ ↦ id
 
 end Preorder
 
@@ -145,6 +150,61 @@ instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
 instance contravariantClass [OrderedAddCommMonoid α] [ContravariantClass α α (· + ·) (· ≤ ·)] :
     ContravariantClass (ι →₀ α) (ι →₀ α) (· + ·) (· ≤ ·) :=
   ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
+
+section
+variable [Zero α] [Preorder α] [Zero β] [Preorder β] [SMulZeroClass α β]
+
+instance instPosSMulMono [PosSMulMono α β] : PosSMulMono α (ι →₀ β) where
+  elim a _b₁ _b₂ hb i := smul_le_smul_of_nonneg_left (hb i) a.2
+
+instance instSMulPosMono [SMulPosMono α β] : SMulPosMono α (ι →₀ β) where
+  elim b _a₁ _a₂ ha i := smul_le_smul_of_nonneg_right ha $ b.2 i
+
+instance instPosSMulMonoRev [PosSMulMonoRev α β] : PosSMulMonoRev α (ι →₀ β) where
+  elim a _b₁ _b₂ h i := le_of_smul_le_smul_left (h i) a.2
+
+instance instSMulPosMonoRev [SMulPosMonoRev α β] : SMulPosMonoRev α (ι →₀ β) where
+  elim b _a₁ _a₂ h := by obtain ⟨-, i, hi⟩ := lt_def.1 b.2; exact le_of_smul_le_smul_right (h _) hi
+
+end
+
+section
+variable [Zero α] [PartialOrder α] [Zero β] [PartialOrder β] [SMulWithZero α β]
+
+instance instPosSMulStrictMono [PosSMulStrictMono α β] : PosSMulStrictMono α (ι →₀ β) where
+  elim := by
+    simp_rw [lt_def]
+    rintro a _b₁ _b₂ ⟨hb, i, hi⟩
+    exact ⟨smul_le_smul_of_nonneg_left hb a.2.le, i, smul_lt_smul_of_pos_left hi a.2⟩
+
+instance instSMulPosStrictMono [SMulPosStrictMono α β] : SMulPosStrictMono α (ι →₀ β) where
+  elim := by
+    simp_rw [Subtype.forall, lt_def]
+    rintro a ⟨ha, i, hi⟩ _b₁ _b₂ hb
+    exact ⟨smul_le_smul_of_nonneg_right hb.le ha, i, smul_lt_smul_of_pos_right hb hi⟩
+
+instance instSMulPosReflectLT [SMulPosReflectLT α β] : SMulPosReflectLT α (ι →₀ β) where
+  elim := by
+    simp_rw [Subtype.forall, lt_def]
+    rintro b hb _a₁ _a₂ ⟨-, i, hi⟩
+    exact lt_of_smul_lt_smul_right hi $ hb _
+
+end
+
+section
+variable [Semiring α] [PartialOrder α] [AddCommGroup β] [PartialOrder β] [Module α β]
+  [NoZeroSMulDivisors α β]
+
+instance instPosSMulReflectLT [PosSMulReflectLT α β] : PosSMulReflectLT α (ι →₀ β) :=
+  posSMulReflectLT_iff_contravariant_pos.2 $ by
+    constructor
+    simp_rw [Contravariant, Subtype.forall, lt_def]
+    rintro a ha _b₁ _b₂ ⟨hb, i, hi⟩
+    -- TODO: Why is the below instance not synthesized?
+    have : PosSMulMonoRev α β := PosSMulReflectLT.toPosSMulMonoRev
+    exact ⟨le_of_smul_le_smul_left hb ha, i, lt_of_smul_lt_smul_left hi ha.le⟩
+
+end
 
 section CanonicallyOrderedAddCommMonoid
 

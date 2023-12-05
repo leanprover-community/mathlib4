@@ -1,6 +1,5 @@
 /-
-Copyright (c) 2023 Yaël Dillies.
-All rights reserved.
+Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
@@ -126,11 +125,18 @@ variable [Preorder α] [Preorder β]
 section Left
 variable [Zero α]
 
+lemma monotone_smul_left_of_nonneg [PosSMulMono α β] (ha : 0 ≤ a) : Monotone ((a • ·) : β → β) :=
+  @CovariantClass.elim α≥0 β (fun a b ↦ (a : α) • b) (· ≤ ·) _ ⟨a, ha⟩
+
+lemma strictMono_smul_left_of_pos [PosSMulStrictMono α β] (ha : 0 < a) :
+     StrictMono ((a • ·) : β → β) :=
+  @CovariantClass.elim α>0 β (fun a b ↦ (a : α) • b) (· < ·) _ ⟨a, ha⟩
+
 lemma smul_le_smul_of_nonneg_left [PosSMulMono α β] (hb : b₁ ≤ b₂) (ha : 0 ≤ a) : a • b₁ ≤ a • b₂ :=
-  @CovariantClass.elim α≥0 β (fun a b ↦ (a : α) • b) (· ≤ ·) _ ⟨a, ha⟩ _ _ hb
+  monotone_smul_left_of_nonneg ha hb
 
 lemma smul_lt_smul_of_pos_left [PosSMulStrictMono α β] (hb : b₁ < b₂) (ha : 0 < a) :
-    a • b₁ < a • b₂ := @CovariantClass.elim α>0 β (fun a b ↦ (a : α) • b) (· < ·) _ ⟨a, ha⟩ _ _ hb
+    a • b₁ < a • b₂ := strictMono_smul_left_of_pos ha hb
 
 lemma lt_of_smul_lt_smul_left [PosSMulReflectLT α β] (h : a • b₁ < a • b₂) (ha : 0 ≤ a) : b₁ < b₂ :=
   @ContravariantClass.elim α≥0 β (fun a b ↦ (a : α) • b) (· < ·) _ ⟨a, ha⟩ _ _ h
@@ -164,13 +170,18 @@ end Left
 section Right
 variable [Zero β]
 
+lemma monotone_smul_right_of_nonneg [SMulPosMono α β] (hb : 0 ≤ b) : Monotone ((· • b) : α → β) :=
+  @CovariantClass'.elim α β≥0 β (fun a b ↦ (a : α) • b) _ _ _ ⟨b, hb⟩
+
+lemma strictMono_smul_right_of_pos [SMulPosStrictMono α β] (hb : 0 < b) :
+     StrictMono ((· • b) : α → β) :=
+  @CovariantClass'.elim α β>0 β (fun a b ↦ a • b) _ _ _ ⟨b, hb⟩
+
 lemma smul_le_smul_of_nonneg_right [SMulPosMono α β] (ha : a₁ ≤ a₂) (hb : 0 ≤ b) :
-    a₁ • b ≤ a₂ • b :=
-  @CovariantClass'.elim α β≥0 β (fun a b ↦ (a : α) • b) _ _ _ ⟨b, hb⟩ _ _ ha
+    a₁ • b ≤ a₂ • b := monotone_smul_right_of_nonneg hb ha
 
 lemma smul_lt_smul_of_pos_right [SMulPosStrictMono α β] (ha : a₁ < a₂) (hb : 0 < b) :
-    a₁ • b < a₂ • b :=
-  @CovariantClass'.elim α β>0 β (fun a b ↦ a • b) _ _ _ ⟨b, hb⟩ _ _ ha
+    a₁ • b < a₂ • b := strictMono_smul_right_of_pos hb ha
 
 lemma lt_of_smul_lt_smul_right [SMulPosReflectLT α β] (h : a₁ • b < a₂ • b) (hb : 0 ≤ b) :
     a₁ < a₂ :=
