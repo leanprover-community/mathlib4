@@ -53,6 +53,12 @@ namespace CategoryTheory
 
 open Category Limits
 
+-- is this a duplicate lemma???
+lemma NatTrans.naturality' {C D : Type*} [Category C] [Category D]
+    {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
+    α.app X = F.map e.hom ≫ α.app Y ≫ G.map e.inv := by
+  simp only [naturality_assoc, ← G.map_comp, e.hom_inv_id, G.map_id, comp_id]
+
 @[simp]
 lemma sheafToPresheaf_preimage_val {C : Type*} [Category C] {J : GrothendieckTopology C}
     {A : Type*} [Category A] {F G : Sheaf J A} (φ : F.1 ⟶ G.1) :
@@ -177,6 +183,31 @@ lemma pullback_iso' ⦃X Z : C⦄ (h : X ⟶ Z) ⦃i₁ : I⦄
   subst fac₁ fac₂
   apply pullback_iso
 
+lemma pullback_iso'' ⦃X Z : C⦄ (h : X ⟶ Z) ⦃i₁ : I⦄
+    (f₁ : X ⟶ Y i₁) (g₁ : Z ⟶ Y i₁) (fac₁ : h ≫ g₁ = f₁)
+      ⦃i₂ : I⦄ (f₂ : X ⟶ Y i₂) (g₂ : Z ⟶ Y i₂) (fac₂ : h ≫ g₂ = f₂)
+      (W : Over X) (W' : Over Z) (e : W' ≅ (Over.map h).obj W):
+    (D.iso f₁ f₂).hom.val.app (Opposite.op W) =
+      (D.sheaf i₁).val.map (Quiver.Hom.op (Over.homMk e.hom.left
+          (by simp [← Over.w e.hom, fac₁]))) ≫
+        (D.iso g₁ g₂).hom.val.app (Opposite.op W') ≫
+          (D.sheaf i₂).val.map (Quiver.Hom.op (Over.homMk e.inv.left
+            (by simp [← Over.w e.inv, fac₂]))) := by
+  rw [D.pullback_iso' h f₁ g₁ fac₁ f₂ g₂ fac₂]
+  dsimp
+  rw [NatTrans.naturality' (D.iso g₁ g₂).hom.val e.op]
+  dsimp [overMapPullbackComp', Functor.sheafPushforwardContinuousComp',
+    Functor.sheafPushforwardContinuousComp, Functor.sheafPushforwardContinuousIso]
+  rw [id_comp, assoc, assoc, assoc]
+  erw [id_comp]
+  rw [← Functor.map_comp_assoc, ← Functor.map_comp, ← op_comp, ← op_comp]
+  congr 3
+  · ext
+    simp [Over.mapComp'] -- there should exists a simp lemma Over.mapComp'_left
+  · congr 1
+    ext
+    simp [Over.mapComp']
+
 @[reassoc]
 lemma isoSections_naturality ⦃X Z : C⦄ (h : X ⟶ Z) ⦃i₁ : I⦄ (f₁ : X ⟶ Y i₁)
     (g₁ : Z ⟶ Y i₁) (fac₁ : h ≫ g₁ = f₁) ⦃i₂ : I⦄ (f₂ : X ⟶ Y i₂) (g₂ : Z ⟶ Y i₂)
@@ -227,12 +258,26 @@ lemma isoSections_naturality' ⦃X Z : C⦄ (h : X ⟶ Z) ⦃i₁ : I⦄ (f₁ :
           (D.isoSections f₁ f₂).inv := by
   rw [← D.isoSections_naturality_assoc h f₁ g₁ fac₁ f₂ g₂ fac₂, Iso.hom_inv_id, comp_id]
 
-
 lemma iso_hom_val_app ⦃X : C⦄ (Z : (Over X)ᵒᵖ) ⦃i₁ i₂ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂) :
     (D.iso f₁ f₂).hom.val.app Z =
       (D.sheaf i₁).val.map (Over.homMk (𝟙 _)).op ≫
         (D.isoSections (Z.unop.hom ≫ f₁) (Z.unop.hom ≫ f₂)).hom := by
-  sorry
+  have eq := D.pullback_iso'' Z.unop.hom _ f₁ rfl _ f₂ rfl (Over.mk (𝟙 _)) Z.unop
+    (Over.isoMk (Iso.refl _))
+  dsimp [isoSections] at eq ⊢
+  rw [eq, assoc,
+    ← cancel_epi ((D.sheaf i₁).val.map (𝟙 (Opposite.op ((Over.map f₁).obj Z.unop)))),
+    ← cancel_mono ((D.sheaf i₂).val.map (𝟙 (Opposite.op ((Over.map f₂).obj Z.unop))))]
+  dsimp [overMapPullbackSectionsIso]
+  simp only [assoc, ← Functor.map_comp_assoc, ← Functor.map_comp, ← op_comp]
+  congr 2
+  · apply Quiver.Hom.unop_inj
+    ext
+    simp
+  · congr 1
+    apply Quiver.Hom.unop_inj
+    ext
+    simp
 
 /-- The type of morphisms between families of sheaves equipped with a descent data. -/
 @[ext]
