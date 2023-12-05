@@ -27,59 +27,61 @@ cartesian products of compact spaces (this is relevant to the theory of light pr
 -/
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-  [CompactSpace Y] (W : Set (X × Y)) (hW : IsClopen W)
+
+theorem isOpen_set_of_singleton_prod_contained {V : Set Y} (hV : IsCompact V) {W : Set (X × Y)}
+    (hW : IsOpen W) : IsOpen {x : X | {x} ×ˢ V ⊆ W} := by
+  -- This argument is a version of [engelking1989], Lemma 3.1.15
+  let U := {x : X | {x} ×ˢ V ⊆ W}
+  have hUV : U ×ˢ V ⊆ W := fun ⟨_, _⟩ hw ↦ hw.1 (by simpa using hw.2)
+  rw [isOpen_iff_mem_nhds]
+  intro x hx
+  rw [mem_nhds_iff]
+  -- We show that `U` contains an open neighbourhood of each of its points.
+  rw [isOpen_prod_iff] at hW
+  -- The fact that `W` is open gives an open cover of the compact set `V`, together with a
+  -- collection of open neighbourhoods of `x`, such that the collection of products is contained
+  -- in `W`. We extract a finite subcover and the desired open neighbourhood of `x` is the
+  -- (finite, thus open) intersection of the corresponding neighbourhoods.
+  rw [isCompact_iff_finite_subcover] at hV
+  obtain ⟨I, hI⟩ := hV
+    (fun (v : V) ↦ (hW x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose)
+    (fun v ↦ (hW x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.2.1)
+    (fun v hv ↦ Set.mem_iUnion.mpr ⟨⟨v, hv⟩,
+      (hW x v (hUV (Set.mk_mem_prod hx hv))).choose_spec.choose_spec.2.2.2.1⟩)
+  let t := ⋂ i ∈ I, (fun v ↦ (hW x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose) i
+  refine ⟨t, ?_, ?_, ?_⟩
+  -- The intersection is indeed contained in `U`:
+  · intro x' hx'
+    have hxt : {x'} ×ˢ V ⊆ t ×ˢ V := fun _ h ↦ ⟨Set.singleton_subset_iff.mpr hx' h.1, h.2⟩
+    refine subset_trans hxt ?_
+    intro ⟨z, w⟩ ⟨hz, hw⟩
+    replace hw := hI hw
+    simp only [Set.mem_iUnion] at hw
+    obtain ⟨i, hi, hw⟩ := hw
+    apply (hW x i.val (hUV (Set.mk_mem_prod hx i.prop))).choose_spec.choose_spec.2.2.2.2
+    refine ⟨?_, hw⟩
+    simp only [Set.mem_iInter] at hz
+    exact hz _ hi
+  -- The intersection is open:
+  · exact Set.Finite.isOpen_biInter (Set.Finite.ofFinset I (fun _ ↦ Iff.rfl))
+      fun v _ ↦ (hW x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.1
+  -- The intersection contains `x`
+  · simp only [Set.mem_iInter]
+    exact fun v _ ↦ (hW x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.2.2.1
+
+variable [CompactSpace Y] (W : Set (X × Y)) (hW : IsClopen W)
 
 theorem exists_clopen_box (a : X) (b : Y) (h : (a, b) ∈ W) :
     ∃ (U : Set X) (V : Set Y) (_ : IsClopen U) (_ : IsClopen V),
     a ∈ U ∧ b ∈ V ∧ (U ×ˢ V : Set (X × Y)) ⊆ W := by
   let V : Set Y := {y | (a, y) ∈ W}
-  let U : Set X := {x | ({x} : Set X) ×ˢ V ⊆ W}
+  let U : Set X := {x | {x} ×ˢ V ⊆ W}
   have hp : Continuous (fun (y : Y) ↦ (a, y)) := Continuous.Prod.mk _
-  have hVC : IsCompact V := (hW.2.preimage hp).isCompact
   have hUV : U ×ˢ V ⊆ W := fun ⟨_, _⟩ hw ↦ hw.1 (by simpa using hw.2)
-  -- The hard part of the proof is to show that `U` is clopen. The fact that it is closed is proved
-  -- in [buzyakovaClopenBox], Lemma 2, and the fact that it is open can be deduced from the proof of
-  -- [engelking1989], Lemma 3.1.15.
-  refine ⟨U, V, ⟨?_, ?_⟩, ⟨hW.1.preimage hp, hW.2.preimage hp⟩, ?_, h, hUV⟩
-  -- `U` is open:
-  · rw [isOpen_iff_mem_nhds]
-    intro x hx
-    rw [mem_nhds_iff]
-    -- We show that `U` contains an open neighbourhood of each of its points.
-    have := hW.1
-    rw [isOpen_prod_iff] at this
-    -- The fact that `W` is open gives an open cover of the compact set `V`, together with a
-    -- collection of open neighbourhoods of `x`, such that the collection of products is contained
-    -- in `W`. We extract a finite subcover and the desired open neighbourhood of `x` is the
-    -- (finite, thus open) intersection of the corresponding neighbourhoods.
-    rw [isCompact_iff_finite_subcover] at hVC
-    obtain ⟨I, hI⟩ := hVC
-      (fun (v : V) ↦ (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose)
-      (fun v ↦ (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.2.1)
-      (fun v hv ↦ Set.mem_iUnion.mpr ⟨⟨v, hv⟩,
-        (this x v (hUV (Set.mk_mem_prod hx hv))).choose_spec.choose_spec.2.2.2.1⟩)
-    let t := ⋂ i ∈ I, (fun v ↦ (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose) i
-    refine ⟨t, ?_, ?_, ?_⟩
-    -- The intersection is indeed contained in `U`:
-    · intro x' hx'
-      have hxt : {x'} ×ˢ V ⊆ t ×ˢ V := fun _ h ↦ ⟨Set.singleton_subset_iff.mpr hx' h.1, h.2⟩
-      refine subset_trans hxt ?_
-      intro ⟨z, w⟩ ⟨hz, hw⟩
-      replace hw := hI hw
-      simp only [Set.mem_iUnion] at hw
-      obtain ⟨i, hi, hw⟩ := hw
-      apply (this x i.val (hUV (Set.mk_mem_prod hx i.prop))).choose_spec.choose_spec.2.2.2.2
-      refine ⟨?_, hw⟩
-      simp only [Set.mem_iInter] at hz
-      exact hz _ hi
-    -- The intersection is open:
-    · exact Set.Finite.isOpen_biInter (Set.Finite.ofFinset I (fun _ ↦ Iff.rfl))
-        fun v _ ↦ (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.1
-    -- The intersection contains `x`
-    · simp only [Set.mem_iInter]
-      exact fun v _ ↦ (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.2.2.1
+  refine ⟨U, V, ⟨isOpen_set_of_singleton_prod_contained (hW.2.preimage hp).isCompact hW.1, ?_⟩,
+    ⟨hW.1.preimage hp, hW.2.preimage hp⟩, fun ⟨_, _⟩ hw ↦ ?_, h, hUV⟩
   -- `U` is closed. This is a fairly simple calculation using the fact that `W` is closed and the
-  -- definition of `U`.
+  -- definition of `U`. It is the proof of [buzyakovaClopenBox], Lemma 2.
   · apply isClosed_of_closure_subset
     intro x hx
     have hxV : {x} ×ˢ V ⊆ (closure U) ×ˢ V :=  fun _ h ↦ ⟨Set.singleton_subset_iff.mpr hx h.1, h.2⟩
@@ -87,9 +89,7 @@ theorem exists_clopen_box (a : X) (b : Y) (h : (a, b) ∈ W) :
       rw [closure_prod_eq]
       exact ⟨h.1, subset_closure h.2⟩
     exact subset_trans hxV (subset_trans hU (subset_trans (closure_mono hUV) hW.2.closure_subset))
-  -- `a ∈ U`
-  · intro ⟨_, _⟩ hw
-    simp only [Set.prod_mk_mem_set_prod_eq, Set.mem_singleton_iff, Set.mem_setOf_eq] at hw
+  · simp only [Set.prod_mk_mem_set_prod_eq, Set.mem_singleton_iff, Set.mem_setOf_eq] at hw
     simpa [hw.1] using hw
 
 variable [CompactSpace X]
