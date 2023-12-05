@@ -353,7 +353,7 @@ theorem basis_card_eq
     simp only [mem_sdiff] at hx₁
     exact hx₁.2 (hb₂.2.2 (hb₁.2.1 hx₁.1) hx₂)
 
-theorem mem_base_iff_feasible_and_card_eq_base
+theorem mem_base_iff_feasible_and_card_eq_basis_of_base
   {b : Finset α} (hb : b ∈ G.base)
   {a : Finset α} (ha₁ : a ∈ G) (ha₂ : a.card = b.card) :
     a ∈ G.base := by
