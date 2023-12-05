@@ -1458,29 +1458,6 @@ theorem dualMap_surjective_iff {f : V₁ →ₗ[K] V₂} :
       ← Submodule.dualAnnihilator_bot, Subspace.dualAnnihilator_inj, LinearMap.ker_eq_bot]
 #align linear_map.dual_map_surjective_iff LinearMap.dualMap_surjective_iff
 
-variable {B : V₁ →ₗ[K] V₂ →ₗ[K] K}
-
-theorem flip_injective_iff₁ [FiniteDimensional K V₁] :
-    Function.Injective B.flip ↔ Function.Surjective B := by
-  rw [← dualMap_surjective_iff, ← (evalEquiv K V₁).toEquiv.surjective_comp]; rfl
-
-theorem flip_surjective_iff₂ [FiniteDimensional K V₂] :
-    Function.Surjective B.flip ↔ Function.Injective B := flip_injective_iff₁.symm
-
-theorem flip_surjective_iff₁ [FiniteDimensional K V₁] :
-    Function.Surjective B.flip ↔ Function.Injective B := by
-  constructor <;> intro hB
-  · exact (dualMap_injective_of_surjective hB).comp (evalEquiv K V₁).injective
-  rw [← range_eq_top]
-  apply Submodule.eq_top_of_finrank_eq
-  rw [Subspace.dual_finrank_eq, eq_comm, ← Subspace.finrank_add_finrank_dualCoannihilator_eq,
-      add_right_eq_self, finrank_eq_zero, eq_bot_iff]
-  refine fun x hx ↦ hB (ext fun v ↦ ?_)
-  simpa using (Submodule.mem_dualCoannihilator x).mp hx _ (mem_range_self _ v)
-
-theorem flip_injective_iff₂ [FiniteDimensional K V₂] :
-    Function.Injective B.flip ↔ Function.Surjective B := flip_surjective_iff₁.symm
-
 end LinearMap
 
 namespace Subspace
@@ -1577,9 +1554,11 @@ section FiniteDimensional
 
 open FiniteDimensional LinearMap
 
-variable [FiniteDimensional K V₂]
-
 namespace LinearMap
+
+section
+
+variable [FiniteDimensional K V₂]
 
 -- TODO(kmill) remove finite_dimensional if possible
 -- see https://github.com/leanprover-community/mathlib/pull/17521#discussion_r1083242551
@@ -1620,6 +1599,24 @@ theorem dualMap_bijective_iff {f : V₁ →ₗ[K] V₂} :
     Function.Bijective f.dualMap ↔ Function.Bijective f := by
   simp_rw [Function.Bijective, dualMap_surjective_iff, dualMap_injective_iff, and_comm]
 #align linear_map.dual_map_bijective_iff LinearMap.dualMap_bijective_iff
+
+end
+
+variable {B : V₁ →ₗ[K] V₂ →ₗ[K] K}
+
+theorem flip_injective_iff₁ [FiniteDimensional K V₁] :
+    Function.Injective B.flip ↔ Function.Surjective B := by
+  rw [← dualMap_surjective_iff, ← (evalEquiv K V₁).toEquiv.surjective_comp]; rfl
+
+theorem flip_surjective_iff₂ [FiniteDimensional K V₂] :
+    Function.Surjective B.flip ↔ Function.Injective B := flip_injective_iff₁.symm
+
+theorem flip_injective_iff₂ [FiniteDimensional K V₂] :
+    Function.Injective B.flip ↔ Function.Surjective B := by
+  rw [← dualMap_injective_iff]; exact (evalEquiv K V₂).toEquiv.injective_comp B.dualMap
+
+theorem flip_surjective_iff₁ [FiniteDimensional K V₁] :
+    Function.Surjective B.flip ↔ Function.Injective B := flip_injective_iff₂.symm
 
 end LinearMap
 
