@@ -83,7 +83,7 @@ abbrev NonUnitalAlgHomClass (F : Type*) (R : outParam (Type*))
     (A : outParam (Type*)) (B : outParam (Type*))
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction R B] :=
-  NonUnitalAlgSemiHomClass F (@id R)
+  NonUnitalAlgSemiHomClass F (@id R) A B
 
 -- Porting note: commented out, not dangerous
 -- attribute [nolint dangerousInstance] NonUnitalAlgHomClass.toMulHomClass
@@ -476,7 +476,7 @@ variable {A B} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
   [Algebra R B]
 
 -- see Note [lower instance priority]
-instance (priority := 100) [AlgHomClass F R A B] : NonUnitalAlgHomClass F (@id R) A B :=
+instance (priority := 100) [AlgHomClass F R A B] : NonUnitalAlgHomClass F R A B :=
   { ‹AlgHomClass F R A B› with map_smulₛₗ := map_smul }
 
 /-- A unital morphism of algebras is a `NonUnitalAlgHom`. -/
