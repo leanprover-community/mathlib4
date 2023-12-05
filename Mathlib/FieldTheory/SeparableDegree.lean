@@ -514,7 +514,7 @@ theorem natSepDegree_expand_eq_natSepDegree (q : ℕ) [hF : ExpChar F q] {n : �
 /-- If a polynomial has separable contraction, then its separable degree is equal to its
 separable contraction degree. -/
 theorem natSepDegree_eq_hasSeparableContraction_degree
-    (q : ℕ) [hF : ExpChar F q] (hf : f.HasSeparableContraction q) :
+    (q : ℕ) [ExpChar F q] (hf : f.HasSeparableContraction q) :
     f.natSepDegree = hf.degree := by
   have hf' := hf
   obtain ⟨g, h1⟩ := hf'
@@ -530,6 +530,38 @@ theorem natSepDegree_dvd_natDegree_of_irreducible (h : Irreducible f) :
   have hf := Irreducible.hasSeparableContraction q f h
   rw [natSepDegree_eq_hasSeparableContraction_degree f q hf]
   exact HasSeparableContraction.dvd_degree hf
+
+/-- A monic irreducible polynomial over a field `F` of exponential characteristic `q` has
+separable degree one if and only if it is of form `Polynomial.expand F (q ^ n) (X - C y)`
+for some `n ∈ ℕ` and `y ∈ F`. -/
+theorem natSepDegree_eq_one_iff_of_monic_irreducible' (q : ℕ) [ExpChar F q] (hm : f.Monic)
+    (hi : Irreducible f) : f.natSepDegree = 1 ↔ ∃ (n : ℕ) (y : F),
+      f = expand F (q ^ n) (X - C y) := by
+  have hq : 0 < q := by
+    rcases expChar_is_prime_or_one F q with h | rfl
+    exacts [Nat.Prime.pos h, Nat.one_pos]
+  refine ⟨fun h ↦ ?_, fun ⟨n, y, h⟩ ↦ ?_⟩
+  · obtain ⟨g, h1, n, h2⟩ := Irreducible.hasSeparableContraction q _ hi
+    have h3 : g.natDegree = 1 := by
+      rwa [← h2, natSepDegree_expand_eq_natSepDegree _ q,
+        natSepDegree_eq_natDegree_of_separable g h1] at h
+    replace h3 : g.degree = 1 := (degree_eq_iff_natDegree_eq_of_pos Nat.one_pos).2 h3
+    have hg := eq_X_add_C_of_degree_eq_one h3
+    -- TODO: should extract this as a converse to `Polynomial.Monic.expand`
+    have : g.leadingCoeff = 1 := by
+      have hq' : 0 < q ^ n := Nat.pos_pow_of_pos n hq
+      rw [Monic, leadingCoeff, ← h2, natDegree_expand, coeff_expand hq'] at hm
+      simpa only [dvd_mul_left, ite_true, Nat.mul_div_cancel _ hq'] using hm
+    rw [this, map_one, one_mul] at hg
+    exact ⟨n, -(g.coeff 0), by rw [map_neg, sub_neg_eq_add, ← hg, h2]⟩
+  rw [h, natSepDegree_expand_eq_natSepDegree _ q, natSepDegree_X_sub_C]
+
+/-- A monic irreducible polynomial over a field `F` of exponential characteristic `q` has
+separable degree one if and only if it is of form `X ^ (q ^ n) - C y`
+for some `n ∈ ℕ` and `y ∈ F`. -/
+theorem natSepDegree_eq_one_iff_of_monic_irreducible (q : ℕ) [ExpChar F q] (hm : f.Monic)
+    (hi : Irreducible f) : f.natSepDegree = 1 ↔ ∃ (n : ℕ) (y : F), f = X ^ (q ^ n) - C y := by
+  simp only [natSepDegree_eq_one_iff_of_monic_irreducible' f q hm hi, map_sub, expand_X, expand_C]
 
 end Polynomial
 
@@ -984,6 +1016,20 @@ theorem isPurelyInseparable_iff_natSepDegree_eq_one :
     ne_zero_of_eq_one (h x)) (minpoly.eq_zero g), fun g ↦ minpoly.mem_range_of_degree_eq_one F x ?_⟩
   simpa only [natSepDegree_eq_natDegree_of_separable _ g,
     ← degree_eq_iff_natDegree_eq_of_pos Nat.one_pos] using h x
+
+/-- A field extension `E / F` of exponential characteristic `q` is purely inseparable
+if and only if for every element `x` of `E`, the minimal polynomial of `x` over `F` is of form
+`X ^ (q ^ n) - y` for some natural number `n` and some element `y` of `F`. -/
+theorem isPurelyInseparable_iff_minpoly_eq (q : ℕ) [hF : ExpChar F q] :
+    IsPurelyInseparable F E ↔ ∀ x : E, ∃ (n : ℕ) (y : F), minpoly F x = X ^ (q ^ n) - C y := by
+  refine ⟨fun h x ↦ ?_, fun h ↦ (isPurelyInseparable_iff_natSepDegree_eq_one F E).2 fun x ↦ ?_⟩
+  · have halg := h.isIntegral' x
+    exact natSepDegree_eq_one_iff_of_monic_irreducible _ q (minpoly.monic halg)
+      (minpoly.irreducible halg) |>.1 <| (isPurelyInseparable_iff_natSepDegree_eq_one F E).1 h x
+  obtain ⟨n, y, h⟩ := h x
+  replace h : minpoly F x = expand F (q ^ n) (X - C y) := by rwa [map_sub, expand_X, expand_C]
+  apply_fun natSepDegree at h
+  rwa [natSepDegree_expand_eq_natSepDegree, natSepDegree_X_sub_C] at h
 
 theorem isPurelyInseparable_of_finSepDegree_eq_one (halg : Algebra.IsAlgebraic F E)
     (hdeg : finSepDegree F E = 1) : IsPurelyInseparable F E := by
