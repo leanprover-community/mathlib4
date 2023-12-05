@@ -3,7 +3,9 @@ Copyright (c) 2023 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey
 -/
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Prod
+import Mathlib.LinearAlgebra.TensorProduct
 
 /-!
 # Coalgebras
@@ -95,8 +97,6 @@ variable (R : Type u) (A : Type v) (B : Type w)
 variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
 variable [Coalgebra R A] [Coalgebra R B]
 
-notation f " ∘ₗ' " g => LinearMap.comp f g
-
 open LinearMap in
 instance instCoalgebra : Coalgebra R (A × B) where
   comul := .coprod
@@ -106,46 +106,43 @@ instance instCoalgebra : Coalgebra R (A × B) where
   rTensor_counit_comp_comul := by
     ext x : 2 <;> dsimp
     · simp only [map_zero, add_zero]
-      simp_rw [←LinearMap.comp_apply, ←LinearMap.comp_assoc, ←LinearMap.lTensor_comp_rTensor,
-        ←LinearMap.comp_assoc, LinearMap.rTensor_comp_lTensor, ←LinearMap.lTensor_comp_rTensor,
-        LinearMap.comp_assoc _ (.rTensor _ _), ←LinearMap.rTensor_comp, LinearMap.coprod_inl,
-        LinearMap.comp_assoc, rTensor_counit_comp_comul]
+      simp_rw [←comp_apply, ←comp_assoc, ←lTensor_comp_rTensor, ←comp_assoc, rTensor_comp_lTensor,
+        ←lTensor_comp_rTensor, comp_assoc _ (.rTensor _ _), ←rTensor_comp, coprod_inl, comp_assoc,
+        rTensor_counit_comp_comul]
       rfl
     · simp only [map_zero, zero_add]
-      simp_rw [←LinearMap.comp_apply, ←LinearMap.comp_assoc, ←LinearMap.lTensor_comp_rTensor,
-        ←LinearMap.comp_assoc, LinearMap.rTensor_comp_lTensor, ←LinearMap.lTensor_comp_rTensor,
-        LinearMap.comp_assoc _ (.rTensor _ _), ←LinearMap.rTensor_comp, LinearMap.coprod_inr,
-        LinearMap.comp_assoc, rTensor_counit_comp_comul]
+      simp_rw [←comp_apply, ←comp_assoc, ←lTensor_comp_rTensor, ←comp_assoc, rTensor_comp_lTensor,
+        ←lTensor_comp_rTensor, comp_assoc _ (.rTensor _ _), ←rTensor_comp, coprod_inr, comp_assoc,
+        rTensor_counit_comp_comul]
       rfl
   lTensor_counit_comp_comul := by
     ext x : 2 <;> dsimp
     · simp only [map_zero, add_zero]
-      simp_rw [←LinearMap.comp_apply, ←LinearMap.comp_assoc, ←LinearMap.rTensor_comp_lTensor,
-        ←LinearMap.comp_assoc, LinearMap.lTensor_comp_rTensor, ←LinearMap.rTensor_comp_lTensor,
-        LinearMap.comp_assoc _ (.lTensor _ _), ←LinearMap.lTensor_comp, LinearMap.coprod_inl,
-        LinearMap.comp_assoc, lTensor_counit_comp_comul]
+      simp_rw [←comp_apply, ←comp_assoc, ←rTensor_comp_lTensor, ←comp_assoc, lTensor_comp_rTensor,
+        ←rTensor_comp_lTensor, comp_assoc _ (.lTensor _ _), ←lTensor_comp, coprod_inl, comp_assoc,
+        lTensor_counit_comp_comul]
       rfl
     · simp only [map_zero, zero_add]
-      simp_rw [←LinearMap.comp_apply, ←LinearMap.comp_assoc, ←LinearMap.rTensor_comp_lTensor,
-        ←LinearMap.comp_assoc, LinearMap.lTensor_comp_rTensor, ←LinearMap.rTensor_comp_lTensor,
-        LinearMap.comp_assoc _ (.lTensor _ _), ←LinearMap.lTensor_comp, LinearMap.coprod_inr,
-        LinearMap.comp_assoc, lTensor_counit_comp_comul]
+      simp_rw [←comp_apply, ←comp_assoc, ←rTensor_comp_lTensor, ←comp_assoc, lTensor_comp_rTensor,
+        ←rTensor_comp_lTensor, comp_assoc _ (.lTensor _ _), ←lTensor_comp, coprod_inr, comp_assoc,
+        lTensor_counit_comp_comul]
       rfl
   coassoc := by
     ext x : 2 <;> dsimp
     · simp only [map_zero, add_zero]
-      simp_rw [←LinearMap.comp_apply, ←LinearMap.comp_assoc, rTensor_comp_map, lTensor_comp_map,
-        coprod_inl, ←map_comp_rTensor, ←map_comp_lTensor, comp_assoc, ←coassoc, assoc_map]
-      simp?
-      have := coassoc (R := R) (A := A)
-      sorry
-    · sorry
+      simp_rw [←comp_apply, ←comp_assoc, rTensor_comp_map, lTensor_comp_map, coprod_inl,
+        ←map_comp_rTensor, ←map_comp_lTensor, comp_assoc, ←coassoc, ←comp_assoc,
+        TensorProduct.map_map_comp_assoc_eq, comp_apply, LinearEquiv.coe_coe]
+    · simp only [map_zero, zero_add]
+      simp_rw [←comp_apply, ←comp_assoc, rTensor_comp_map, lTensor_comp_map, coprod_inr,
+        ←map_comp_rTensor, ←map_comp_lTensor, comp_assoc, ←coassoc, ←comp_assoc,
+        TensorProduct.map_map_comp_assoc_eq, comp_apply, LinearEquiv.coe_coe]
 
 @[simp]
 theorem comul_apply (r : A × B) :
-  comul r =
-    TensorProduct.map (.inl R A B) (.inl R A B) (comul r.1) +
-    TensorProduct.map (.inr R A B) (.inr R A B) (comul r.2) := rfl
+    comul r =
+      TensorProduct.map (.inl R A B) (.inl R A B) (comul r.1) +
+      TensorProduct.map (.inr R A B) (.inr R A B) (comul r.2) := rfl
 
 @[simp]
 theorem counit_apply (r : A × B) : (counit r : R) = counit r.1 + counit r.2 := rfl

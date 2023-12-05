@@ -807,10 +807,20 @@ lemma map_map_comp_assoc_eq (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →�
       TensorProduct.assoc R Q S T ∘ₗ map (map f g) h :=
   ext <| ext <| LinearMap.ext fun _ => LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
 
+lemma map_map_assoc (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) (x : (M ⊗[R] N) ⊗[R] P) :
+    map f (map g h) (TensorProduct.assoc R M N P x) =
+      TensorProduct.assoc R Q S T (map (map f g) h x) :=
+  FunLike.congr_fun (map_map_comp_assoc_eq _ _ _) _
+
 lemma map_map_comp_assoc_symm_eq (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) :
     map (map f g) h ∘ₗ (TensorProduct.assoc R M N P).symm =
       (TensorProduct.assoc R Q S T).symm ∘ₗ map f (map g h) :=
   ext <| LinearMap.ext fun _ => ext <| LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
+
+lemma map_map_assoc_symm (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) (x : M ⊗[R] (N ⊗[R] P)) :
+    map (map f g) h ((TensorProduct.assoc R M N P).symm x) =
+      (TensorProduct.assoc R Q S T).symm (map f (map g h) x) :=
+  FunLike.congr_fun (map_map_comp_assoc_symm_eq _ _ _) _
 
 theorem map_range_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     range (map f g) = Submodule.span R { t | ∃ m n, f m ⊗ₜ g n = t } := by
