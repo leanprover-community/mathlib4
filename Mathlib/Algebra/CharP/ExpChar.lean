@@ -128,3 +128,63 @@ theorem expChar_of_injective_algebraMap {R A : Type*}
   cases' hR with _ _ hprime _
   · haveI := charZero_of_injective_algebraMap h; exact .zero
   haveI := charP_of_injective_algebraMap h q; exact .prime hprime
+
+theorem add_pow_expChar_of_commute [Semiring R] {q : ℕ} [hR : ExpChar R q]
+    (x y : R) (h : Commute x y) : (x + y) ^ q = x ^ q + y ^ q := by
+  cases' hR with _ _ hprime _
+  · simp only [pow_one]
+  haveI := Fact.mk hprime; exact add_pow_char_of_commute R x y h
+
+theorem add_pow_expChar_pow_of_commute [Semiring R] {q : ℕ} [hR : ExpChar R q]
+    {n : ℕ} (x y : R) (h : Commute x y) : (x + y) ^ (q ^ n) = x ^ (q ^ n) + y ^ (q ^ n) := by
+  cases' hR with _ _ hprime _
+  · simp only [one_pow, pow_one]
+  haveI := Fact.mk hprime; exact add_pow_char_pow_of_commute R x y h
+
+theorem sub_pow_expChar_of_commute [Ring R] {q : ℕ} [hR : ExpChar R q]
+    (x y : R) (h : Commute x y) : (x - y) ^ q = x ^ q - y ^ q := by
+  cases' hR with _ _ hprime _
+  · simp only [pow_one]
+  haveI := Fact.mk hprime; exact sub_pow_char_of_commute R x y h
+
+theorem sub_pow_expChar_pow_of_commute [Ring R] {q : ℕ} [hR : ExpChar R q]
+    {n : ℕ} (x y : R) (h : Commute x y) : (x - y) ^ (q ^ n) = x ^ (q ^ n) - y ^ (q ^ n) := by
+  cases' hR with _ _ hprime _
+  · simp only [one_pow, pow_one]
+  haveI := Fact.mk hprime; exact sub_pow_char_pow_of_commute R x y h
+
+theorem add_pow_expChar [CommSemiring R] {q : ℕ} [hR : ExpChar R q]
+    (x y : R) : (x + y) ^ q = x ^ q + y ^ q := by
+  cases' hR with _ _ hprime _
+  · simp only [pow_one]
+  haveI := Fact.mk hprime; exact add_pow_char R x y
+
+theorem add_pow_expChar_pow [CommSemiring R] {q : ℕ} [hR : ExpChar R q]
+    {n : ℕ} (x y : R) : (x + y) ^ (q ^ n) = x ^ (q ^ n) + y ^ (q ^ n) := by
+  cases' hR with _ _ hprime _
+  · simp only [one_pow, pow_one]
+  haveI := Fact.mk hprime; exact add_pow_char_pow R x y
+
+theorem sub_pow_expChar [CommRing R] {q : ℕ} [hR : ExpChar R q]
+    (x y : R) : (x - y) ^ q = x ^ q - y ^ q := by
+  cases' hR with _ _ hprime _
+  · simp only [pow_one]
+  haveI := Fact.mk hprime; exact sub_pow_char R x y
+
+theorem sub_pow_expChar_pow [CommRing R] {q : ℕ} [hR : ExpChar R q]
+    {n : ℕ} (x y : R) : (x - y) ^ (q ^ n) = x ^ (q ^ n) - y ^ (q ^ n) := by
+  cases' hR with _ _ hprime _
+  · simp only [one_pow, pow_one]
+  haveI := Fact.mk hprime; exact sub_pow_char_pow R x y
+
+theorem ExpChar.neg_one_pow_expChar [Ring R] (q : ℕ) [hR : ExpChar R q] :
+    (-1 : R) ^ q = -1 := by
+  cases' hR with _ _ hprime _
+  · simp only [pow_one]
+  haveI := Fact.mk hprime; exact CharP.neg_one_pow_char R q
+
+theorem ExpChar.neg_one_pow_expChar_pow [Ring R] (q n : ℕ) [hR : ExpChar R q] :
+    (-1 : R) ^ (q ^ n) = -1 := by
+  cases' hR with _ _ hprime _
+  · simp only [one_pow, pow_one]
+  haveI := Fact.mk hprime; exact CharP.neg_one_pow_char_pow R q n
