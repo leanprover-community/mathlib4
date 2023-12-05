@@ -78,7 +78,7 @@ class NonUnitalAlgSemiHomClass (F : Type*)
     extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B
 #align non_unital_alg_hom_class NonUnitalAlgSemiHomClass
 
--- TODO : what doesn't it work later?
+-- TODO (ACL) : why doesn't it work later?
 /-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
   from `A` to `B` which are `R`-linear.
 
@@ -113,6 +113,11 @@ instance (priority := 100) {F : Type*} [NonUnitalAlgSemiHomClass F φ A B] :
     SemilinearMapClass F φ A B :=
   { ‹NonUnitalAlgSemiHomClass F φ A B› with map_smulₛₗ := map_smulₛₗ }
 
+-- TODO (ACL) : Why is this needed? Adjust priority?
+instance (priority := 100) {F : Type*} [Module R B] [NonUnitalAlgHomClass F R A B] :
+    LinearMapClass F R A B :=
+  { ‹NonUnitalAlgHomClass F R A B› with map_smulₛₗ := map_smulₛₗ }
+
 instance {F R S : Type*} {φ : R → S} {A B : Type*} [Monoid R] [Monoid S]
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction S B] [NonUnitalAlgSemiHomClass F φ A B] :
@@ -121,6 +126,18 @@ instance {F R S : Type*} {φ : R → S} {A B : Type*} [Monoid R] [Monoid S]
     { (f : A →ₙ+* B) with
       toFun := f
       map_smul' := map_smulₛₗ f }
+
+-- TODO (ACL) : Why is this needed ? Adjust priority ?
+instance {F R : Type*} {A B : Type*} [Monoid R]
+    [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+    [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
+    [NonUnitalAlgHomClass F R A B] :
+    CoeTC F (A →ₙₐ[R] B)
+    where coe f :=
+    { (f : A →ₙ+* B) with
+      toFun := f
+      map_smul' := map_smulₛₗ f }
+
 
 end NonUnitalAlgHomClass
 
