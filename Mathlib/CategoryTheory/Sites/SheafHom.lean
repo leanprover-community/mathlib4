@@ -9,12 +9,19 @@ import Mathlib.CategoryTheory.Sites.Over
 /-! Internal hom of sheaves
 
 In this file, given two sheaves `F` and `G` on a site `(C, J)` with values
-in a category `A`, we shall define a sheaf of types
+in a category `A`, we define a sheaf of types
 `sheafHom F G` which sends `X : C` to the type of morphisms
 between the restrictions of `F` and `G` to the categories `Over X`.
 
 We first define `presheafHom F G` when `F` and `G` are
 presheaves `Cᵒᵖ ⥤ A` and show that it is a sheaf when `G` is a sheaf.
+
+TODO:
+- turn both `presheafHom` and `sheafHom` into bifunctors
+- for a sheaf of types `F`, the `sheafHom` functor from `F` is right-adjoint to
+the product functor with `F`, i.e. for all `X` and `Y`, there is a
+natural bijection `(X ⨯ F ⟶ Y) ≃ (X ⟶ sheafHom F Y)`.
+- use these results in order to show that the category of sheaves of types is Cartesian closed
 
 -/
 
@@ -197,9 +204,9 @@ lemma Presheaf.IsSheaf.hom (hG : Presheaf.IsSheaf J G) :
   exact presheafHom_isSheafFor F G S
     (fun _ _ => ((Presheaf.isSheaf_iff_isLimit J G).1 hG _ (J.pullback_stable _ hS)).some)
 
-/-- Given two sheaves `F` and `G`, this is the underlying presheaf of `sheafHom F G`:
-it is isomorphic to `presheafHom F.1 G.1` (see `sheafHom'Iso`), but it is better
-definitional properties. -/
+
+/-- The underlying presheaf of `sheafHom F G`. It is isomorphic to `presheafHom F.1 G.1`
+(see `sheafHom'Iso`), but has better definitional properties. -/
 def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ Type _ where
   obj X := (J.overPullback A X.unop).obj F ⟶ (J.overPullback A X.unop).obj G
   map f := fun φ => (J.overMapPullback A f.unop).map φ
@@ -210,29 +217,29 @@ def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ Type _ where
     ext φ : 2
     exact congr_fun ((presheafHom F.1 G.1).map_comp f g) φ.1
 
-/-- Auxiliary isomorphism for the definition of `sheafHom`. -/
+/-- The canonical isomorphism `sheafHom' F G ≅ presheafHom F.1 G.1`. -/
 def sheafHom'Iso (F G : Sheaf J A) :
     sheafHom' F G ≅ presheafHom F.1 G.1 :=
-  NatIso.ofComponents (fun _ => (equivOfFullyFaithful (sheafToPresheaf _ _)).toIso)
-    (fun _ => rfl)
+  NatIso.ofComponents
+    (fun _ => Equiv.toIso (equivOfFullyFaithful (sheafToPresheaf _ _))) (fun _ => rfl)
 
-/-- The sheaf of morphisms `F ⟶ G`: its sections on an object `X` are the morphisms
-between the "restrictions" of `F` and `G` to the category `Over X`. -/
+/-- Given two sheaves `F` and `G` on a site `(C, J)` with values in a category `A`,
+this `sheafHom F G` is the sheaf of types which sends an object `X : C`
+to the type of morphisms between the "restrictions" of `F` and `G` to the category `Over X`. -/
 def sheafHom (F G : Sheaf J A) : Sheaf J (Type _) where
   val := sheafHom' F G
-  cond := (Presheaf.isSheaf_of_iso_iff (sheafHom'Iso F G)).2
-    (Presheaf.IsSheaf.hom F.1 G.1 G.2)
+  cond := (Presheaf.isSheaf_of_iso_iff (sheafHom'Iso F G)).2 (G.2.hom F.1)
 
 /-- The sections of the sheaf `sheafHom F G` identify to morphisms `F ⟶ G`. -/
 def sheafHomSectionsEquiv (F G : Sheaf J A) :
     (sheafHom F G).1.sections ≃ (F ⟶ G) :=
   ((Functor.sectionsFunctor Cᵒᵖ).mapIso (sheafHom'Iso F G)).toEquiv.trans
-    ((presheafHomSectionsEquiv F.1 G.1).trans (equivOfFullyFaithful (sheafToPresheaf J A)).symm)
+    ((presheafHomSectionsEquiv F.1 G.1).trans
+    ((equivOfFullyFaithful (sheafToPresheaf _ _)).symm))
 
 @[simp]
-lemma sheafHomSectionsEquiv_symm_apply_coe_apply {F G : Sheaf J A} (φ : F ⟶ G) (X : Cᵒᵖ):
-    ((sheafHomSectionsEquiv F G).symm φ).1 X = (J.overPullback A X.unop).map φ := by
-  rfl
+lemma sheafHomSectionsEquiv_symm_apply_coe_apply {F G : Sheaf J A} (φ : F ⟶ G) (X : Cᵒᵖ) :
+    ((sheafHomSectionsEquiv F G).symm φ).1 X = (J.overPullback A X.unop).map φ := rfl
 
 @[simp]
 lemma overPullback_map_sheafHomSectionsEquiv_apply {F G : Sheaf J A}

@@ -191,7 +191,8 @@ instance {X Y : C} (f : X ⟶ Y) : (Over.map f).IsContinuous (J.over X) (J.over 
     (over_map_compatiblePreserving J f)
     (over_map_coverPreserving J f)
 
-/-- The functor `Sheaf (J.over Y) A ⥤ Sheaf (J.over X) A` induced by a morphism `f : X ⟶ Y`. -/
+/-- The pullback functor `Sheaf (J.over Y) A ⥤ Sheaf (J.over X) A` induced
+by a morphism `f : X ⟶ Y`. -/
 abbrev overMapPullback (A : Type u') [Category.{v'} A] {X Y : C} (f : X ⟶ Y) :
     Sheaf (J.over Y) A ⥤ Sheaf (J.over X) A :=
   (Over.map f).sheafPushforwardContinuous _ _ _
