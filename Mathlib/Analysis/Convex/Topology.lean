@@ -333,7 +333,7 @@ theorem Convex.subset_interior_image_homothety_of_one_lt {s : Set E} (hs : Conve
   subset_closure.trans <| hs.closure_subset_interior_image_homothety_of_one_lt hx t ht
 #align convex.subset_interior_image_homothety_of_one_lt Convex.subset_interior_image_homothety_of_one_lt
 
-theorem JoinedIn_of_segment_subset {E : Type*} [AddCommGroup E] [Module ℝ E]
+theorem JoinedIn.of_segment_subset {E : Type*} [AddCommGroup E] [Module ℝ E]
     [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
     {x y : E} {s : Set E} (h : [x -[ℝ] y] ⊆ s) : JoinedIn s x y := by
   have A : Continuous (fun t ↦ (1 - t) • x + t • y : ℝ → E) := by continuity
@@ -346,7 +346,7 @@ protected theorem Convex.isPathConnected {s : Set E} (hconv : Convex ℝ s) (hne
     IsPathConnected s := by
   refine' isPathConnected_iff.mpr ⟨hne, _⟩
   intro x x_in y y_in
-  exact JoinedIn_of_segment_subset ((segment_subset_iff ℝ).2 (hconv x_in y_in))
+  exact JoinedIn.of_segment_subset ((segment_subset_iff ℝ).2 (hconv x_in y_in))
 #align convex.is_path_connected Convex.isPathConnected
 
 /-- A nonempty convex set is connected. -/

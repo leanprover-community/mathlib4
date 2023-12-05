@@ -231,8 +231,8 @@ theorem eventually_codisjoint_ker_pow_range_pow (f : M →ₗ[R] M) :
   refine eventually_atTop.mpr ⟨n, fun m hm ↦ codisjoint_iff.mpr ?_⟩
   simp_rw [← hn _ hm, Submodule.eq_top_iff', Submodule.mem_sup]
   intro x
-  suffices : ∃ y, (f ^ m) ((f ^ n) y) = (f ^ m) x
-  · obtain ⟨y, hy⟩ := this; exact ⟨x - (f ^ n) y, by simp [hy], (f ^ n) y, by simp⟩
+  rsuffices ⟨y, hy⟩ : ∃ y, (f ^ m) ((f ^ n) y) = (f ^ m) x
+  · exact ⟨x - (f ^ n) y, by simp [hy], (f ^ n) y, by simp⟩
   simp_rw [f.pow_apply n, f.pow_apply m, ← iterate_add_apply, ← f.pow_apply (m + n),
     ← f.pow_apply m, ← mem_range, ← hn _ (n.le_add_left m), hn _ hm]
   exact LinearMap.mem_range_self (f ^ m) x
@@ -260,7 +260,7 @@ theorem eventually_isCompl_ker_pow_range_pow [IsNoetherian R M] (f : M →ₗ[R]
 
 See also `LinearMap.eventually_isCompl_ker_pow_range_pow` for an alternative spelling. -/
 theorem isCompl_iSup_ker_pow_iInf_range_pow [IsNoetherian R M] (f : M →ₗ[R] M) :
-    IsCompl (⨆ n,LinearMap.ker (f ^ n)) (⨅ n, LinearMap.range (f ^ n)) := by
+    IsCompl (⨆ n, LinearMap.ker (f ^ n)) (⨅ n, LinearMap.range (f ^ n)) := by
   obtain ⟨k, hk⟩ := eventually_atTop.mp <| f.eventually_isCompl_ker_pow_range_pow.and <|
     f.eventually_iInf_range_pow_eq.and f.eventually_iSup_ker_pow_eq
   obtain ⟨h₁, h₂, h₃⟩ := hk k (le_refl k)
