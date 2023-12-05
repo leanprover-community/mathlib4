@@ -36,14 +36,7 @@ theorem exists_clopen_box (a : X) (b : Y) (h : (a, b) ∈ W) :
   let U : Set X := {x | ({x} : Set X) ×ˢ V ⊆ W}
   have hp : Continuous (fun (y : Y) ↦ (a, y)) := Continuous.Prod.mk _
   have hVC : IsCompact V := (hW.2.preimage hp).isCompact
-  have hUV : U ×ˢ V ⊆ W := by
-    intro ⟨w₁, w₂⟩ hw
-    rw [Set.prod_mk_mem_set_prod_eq] at hw
-    simp only [Set.mem_setOf_eq] at hw
-    apply hw.1
-    simp only [Set.singleton_prod, Set.mem_image, Set.mem_setOf_eq, Prod.mk.injEq, true_and,
-      exists_eq_right]
-    exact hw.2
+  have hUV : U ×ˢ V ⊆ W := fun ⟨_, _⟩ hw ↦ hw.1 (by simpa using hw.2)
   -- The hard part of the proof is to show that `U` is clopen. The fact that it is closed is proved
   -- in [buzyakovaClopenBox], Lemma 2, and the fact that it is open can be deduced from the proof of
   -- [engelking1989], Lemma 3.1.15.
@@ -60,66 +53,44 @@ theorem exists_clopen_box (a : X) (b : Y) (h : (a, b) ∈ W) :
     -- in `W`. We extract a finite subcover and the desired open neighbourhood of `x` is the
     -- (finite, thus open) intersection of the corresponding neighbourhoods.
     rw [isCompact_iff_finite_subcover] at hVC
-    specialize @hVC V
-      (fun (v : V) ↦ (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose) ?_ ?_
-    · intro v
-      exact (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.2.1
-    · intro v hv
-      rw [Set.mem_iUnion]
-      exact ⟨⟨v, hv⟩, (this x v (hUV (Set.mk_mem_prod hx hv))).choose_spec.choose_spec.2.2.2.1⟩
     obtain ⟨I, hI⟩ := hVC
+      (fun (v : V) ↦ (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose)
+      (fun v ↦ (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.2.1)
+      (fun v hv ↦ Set.mem_iUnion.mpr ⟨⟨v, hv⟩,
+        (this x v (hUV (Set.mk_mem_prod hx hv))).choose_spec.choose_spec.2.2.2.1⟩)
     let t := ⋂ i ∈ I, (fun v ↦ (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose) i
     refine ⟨t, ?_, ?_, ?_⟩
+    -- The intersection is indeed contained in `U`:
     · intro x' hx'
-      have hxt : {x'} ×ˢ V ⊆ t ×ˢ V := by
-        rw [Set.prod_subset_prod_iff]
-        left
-        exact ⟨Set.singleton_subset_iff.mpr hx' , subset_refl _⟩
+      have hxt : {x'} ×ˢ V ⊆ t ×ˢ V := fun _ h ↦ ⟨Set.singleton_subset_iff.mpr hx' h.1, h.2⟩
       refine subset_trans hxt ?_
-      intro ⟨z, w⟩ hz
-      rw [Set.mem_prod] at hz
-      have hz' := hI hz.2
-      rw [Set.mem_iUnion] at hz'
-      obtain ⟨i, hi⟩ := hz'
-      rw [Set.mem_iUnion] at hi
-      obtain ⟨hhi, hi⟩ := hi
+      intro ⟨z, w⟩ ⟨hz, hw⟩
+      replace hw := hI hw
+      simp only [Set.mem_iUnion] at hw
+      obtain ⟨i, hi, hw⟩ := hw
       apply (this x i.val (hUV (Set.mk_mem_prod hx i.prop))).choose_spec.choose_spec.2.2.2.2
-      rw [Set.mem_prod]
-      refine ⟨?_, hi⟩
-      rw [Set.mem_iInter] at hz
-      have hhz := hz.1 i
-      rw [Set.mem_iInter] at hhz
-      exact hhz hhi
-    · apply Set.Finite.isOpen_biInter (Set.Finite.ofFinset I (fun _ ↦ Iff.rfl))
-      intro v _
-      exact (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.1
-    · rw [Set.mem_iInter]
-      intro v
-      rw [Set.mem_iInter]
-      intro
-      exact (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.2.2.1
+      refine ⟨?_, hw⟩
+      simp only [Set.mem_iInter] at hz
+      exact hz _ hi
+    -- The intersection is open:
+    · exact Set.Finite.isOpen_biInter (Set.Finite.ofFinset I (fun _ ↦ Iff.rfl))
+        fun v _ ↦ (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.1
+    -- The intersection contains `x`
+    · simp only [Set.mem_iInter]
+      exact fun v _ ↦ (this x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.2.2.1
   -- `U` is closed. This is a fairly simple calculation using the fact that `W` is closed and the
   -- definition of `U`.
   · apply isClosed_of_closure_subset
     intro x hx
-    have hhx : {x} ×ˢ V ⊆ (closure U) ×ˢ V := by
-      rw [Set.prod_subset_prod_iff]
-      left
-      exact ⟨Set.singleton_subset_iff.mpr hx , subset_refl _⟩
-    refine subset_trans hhx ?_
-    have hU : (closure U) ×ˢ V ⊆ closure (U ×ˢ V) := by
-      rw [closure_prod_eq, Set.prod_subset_prod_iff]
-      left
-      exact ⟨subset_refl _, subset_closure⟩
-    refine subset_trans hU ?_
-    refine subset_trans ?_ hW.2.closure_subset
-    exact closure_mono hUV
+    have hxV : {x} ×ˢ V ⊆ (closure U) ×ˢ V :=  fun _ h ↦ ⟨Set.singleton_subset_iff.mpr hx h.1, h.2⟩
+    have hU : (closure U) ×ˢ V ⊆ closure (U ×ˢ V) := fun _ h ↦ by
+      rw [closure_prod_eq]
+      exact ⟨h.1, subset_closure h.2⟩
+    exact subset_trans hxV (subset_trans hU (subset_trans (closure_mono hUV) hW.2.closure_subset))
   -- `a ∈ U`
-  · intro ⟨w₁, w₂⟩ hw
-    rw [Set.prod_mk_mem_set_prod_eq] at hw
-    simp only [Set.mem_singleton_iff, Set.mem_setOf_eq] at hw
-    rw [hw.1]
-    exact hw.2
+  · intro ⟨_, _⟩ hw
+    simp only [Set.prod_mk_mem_set_prod_eq, Set.mem_singleton_iff, Set.mem_setOf_eq] at hw
+    simpa [hw.1] using hw
 
 variable [CompactSpace X]
 
@@ -136,30 +107,28 @@ theorem exists_finset_clopen_box :
       (exists_clopen_box W hW a b hab).choose_spec.choose_spec.2.1.1
   · intro ⟨a, b⟩ hab
     rw [Set.mem_iUnion]
-    use ⟨⟨a, b⟩, hab⟩
-    rw [Set.mem_prod]
-    exact ⟨(exists_clopen_box W hW a b hab).choose_spec.choose_spec.2.2.1,
-      (exists_clopen_box W hW a b hab).choose_spec.choose_spec.2.2.2.1⟩
-  · obtain ⟨I, hI⟩ := hW'
-    let fI : W → {s : Set X // IsClopen s} × {t : Set Y // IsClopen t} :=
-      fun (⟨⟨a, b⟩, hab⟩ : W) ↦ (⟨(exists_clopen_box W hW a b hab).choose,
-        (exists_clopen_box W hW a b hab).choose_spec.choose_spec.1⟩,
-        ⟨(exists_clopen_box W hW a b hab).choose_spec.choose,
-        (exists_clopen_box W hW a b hab).choose_spec.choose_spec.2.1⟩)
-    use (fI '' I).toFinset
-    ext x
-    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · replace h := hI h
-      simp only [Set.mem_iUnion] at h ⊢
-      obtain ⟨i, hi, h⟩ := h
-      refine ⟨fI i, ?_, h⟩
-      rw [Set.mem_toFinset]
-      exact Set.mem_image_of_mem fI hi
-    · simp only [Set.mem_iUnion, Set.mem_toFinset] at h
-      obtain ⟨s, ⟨w, hw⟩, h⟩ := h
-      apply (exists_clopen_box W hW w.val.1 w.val.2 w.prop).choose_spec.choose_spec.2.2.2.2
-      rw [← hw.2] at h
-      exact h
+    exact ⟨⟨⟨a, b⟩, hab⟩, ⟨(exists_clopen_box W hW a b hab).choose_spec.choose_spec.2.2.1,
+      (exists_clopen_box W hW a b hab).choose_spec.choose_spec.2.2.2.1⟩⟩
+  obtain ⟨I, hI⟩ := hW'
+  let fI : W → {s : Set X // IsClopen s} × {t : Set Y // IsClopen t} :=
+    fun (⟨⟨a, b⟩, hab⟩ : W) ↦ (⟨(exists_clopen_box W hW a b hab).choose,
+      (exists_clopen_box W hW a b hab).choose_spec.choose_spec.1⟩,
+      ⟨(exists_clopen_box W hW a b hab).choose_spec.choose,
+      (exists_clopen_box W hW a b hab).choose_spec.choose_spec.2.1⟩)
+  refine ⟨(fI '' I).toFinset, ?_⟩
+  ext x
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · replace h := hI h
+    simp only [Set.mem_iUnion] at h ⊢
+    obtain ⟨i, hi, h⟩ := h
+    refine ⟨fI i, ?_, h⟩
+    rw [Set.mem_toFinset]
+    exact Set.mem_image_of_mem fI hi
+  · simp only [Set.mem_iUnion, Set.mem_toFinset] at h
+    obtain ⟨s, ⟨w, hw⟩, h⟩ := h
+    apply (exists_clopen_box W hW w.val.1 w.val.2 w.prop).choose_spec.choose_spec.2.2.2.2
+    rw [← hw.2] at h
+    exact h
 
 instance countable_clopens_prod [Countable {s : Set X // IsClopen s}]
     [Countable {t : Set Y // IsClopen t}] : Countable {w : Set (X × Y) // IsClopen w} := by
