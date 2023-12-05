@@ -24,41 +24,38 @@ for Dirichlet L-functions.
 
 open Complex
 
-/-- The `n`th summand in the Dirichlet series giving the Riemann ζ function at `s`. -/
-noncomputable
-def riemannZetaSummand (s : ℂ) (n : ℕ) : ℂ := (n : ℂ) ^ (-s)
-
-lemma riemannZetaSummand.mul (s : ℂ) (m n : ℕ) :
-    riemannZetaSummand s (m * n) = riemannZetaSummand s m * riemannZetaSummand s n := by
-  simpa [riemannZetaSummand] using mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg _
-
 variable {s : ℂ}
 
 /-- When `s ≠ 0`, the map `n ↦ n^(-s)` is completely multiplicative and vanishes at zero. -/
 noncomputable
 def riemannZetaSummandHom (hs : s ≠ 0) : ℕ →*₀ ℂ where
-  toFun := riemannZetaSummand s
-  map_zero' := by simpa [riemannZetaSummand]
-  map_one' := by simp [riemannZetaSummand]
-  map_mul' := riemannZetaSummand.mul s
+  toFun n := (n : ℂ) ^ (-s)
+  map_zero' := by simp [hs]
+  map_one' := by simp
+  map_mul' m n := by
+    simpa only [Nat.cast_mul, ofReal_nat_cast]
+      using mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg _
 
 /-- When `χ` is a Dirichlet character and `s ≠ 0`, the map `n ↦ χ n * n^(-s)` is completely
 multiplicative and vanishes at zero. -/
 noncomputable
 def dirichletSummandHom {n : ℕ} (χ : DirichletCharacter ℂ n) (hs : s ≠ 0) : ℕ →*₀ ℂ where
-  toFun n := χ n * riemannZetaSummand s n
-  map_zero' := by simp [riemannZetaSummand, hs]
-  map_one' := by simp [riemannZetaSummand]
+  toFun n := χ n * (n : ℂ) ^ (-s)
+  map_zero' := by simp [hs]
+  map_one' := by simp
   map_mul' m n := by
-    simpa only [Nat.cast_mul, IsUnit.mul_iff, not_and, map_mul, riemannZetaSummand.mul]
+    simp_rw [← ofReal_nat_cast]
+    simpa only [Nat.cast_mul, IsUnit.mul_iff, not_and, map_mul, ofReal_mul,
+      mul_cpow_ofReal_nonneg m.cast_nonneg n.cast_nonneg _]
       using mul_mul_mul_comm ..
 
+example (n : ℕ) : (n : ℂ) = (n : ℝ) := by rw [ofReal_nat_cast]
 /-- When `s.re > 1`, the map `n ↦ n^(-s)` is norm-summable. -/
 lemma summable_riemannZetaSummand (hs : 1 < s.re) :
     Summable (fun n ↦ ‖riemannZetaSummandHom (ne_zero_of_one_lt_re hs) n‖) := by
-  simp only [riemannZetaSummandHom, riemannZetaSummand, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+  simp only [riemannZetaSummandHom, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   convert Real.summable_nat_rpow_inv.mpr hs with n
-  rw [(show (n : ℂ) = (n : ℝ) from rfl), Complex.norm_eq_abs,
+  rw [← ofReal_nat_cast, Complex.norm_eq_abs,
     abs_cpow_eq_rpow_re_of_nonneg (Nat.cast_nonneg n) <| re_neg_ne_zero_of_one_lt_re hs,
     neg_re, Real.rpow_neg <| Nat.cast_nonneg n]
 
@@ -79,7 +76,7 @@ theorem riemannZeta_eulerProduct (hs : 1 < s.re) :
   have hsum := summable_riemannZetaSummand hs
   convert eulerProduct_completely_multiplicative hsum
   rw [zeta_eq_tsum_one_div_nat_add_one_cpow hs, tsum_eq_zero_add hsum.of_norm, map_zero, zero_add]
-  simp [riemannZetaSummandHom, riemannZetaSummand, cpow_neg]
+  simp [riemannZetaSummandHom, cpow_neg]
 
 /-- The Euler product for Dirichlet L-series, valid for `s.re > 1`. -/
 -- TODO: state in terms of `∏'` once this is in Mathlib
