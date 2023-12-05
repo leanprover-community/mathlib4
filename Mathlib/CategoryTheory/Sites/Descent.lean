@@ -43,7 +43,7 @@ compatibilites, then the sheaves `F i` can be glued in order to obtain a sheaf o
 whose restriction of `Y i` identifies to `F i`, in a way that is compatible
 with the given isomorphisms.
 
-* Giraud, Jean, Mémoires de la Société Mathématique de France, no. 2 (1964) , 156 p.
+* Giraud, Jean, Mémoires de la Société Mathématique de France, no. 2 (1964), 156 p.
 
 -/
 
@@ -172,7 +172,7 @@ lemma pullback_iso' ⦃X Z : C⦄ (h : X ⟶ Z) ⦃i₁ : I⦄
     (f₁ : X ⟶ Y i₁) (g₁ : Z ⟶ Y i₁) (fac₁ : h ≫ g₁ = f₁)
       ⦃i₂ : I⦄ (f₂ : X ⟶ Y i₂) (g₂ : Z ⟶ Y i₂) (fac₂ : h ≫ g₂ = f₂) :
       D.iso f₁ f₂ = (J.overMapPullbackComp' A h g₁ f₁ fac₁).symm.app _ ≪≫
-          (J.overMapPullback A h).mapIso (D.iso g₁ g₂)  ≪≫
+          (J.overMapPullback A h).mapIso (D.iso g₁ g₂) ≪≫
           (J.overMapPullbackComp' A h g₂ f₂ fac₂).app _ := by
   subst fac₁ fac₂
   apply pullback_iso
@@ -227,6 +227,13 @@ lemma isoSections_naturality' ⦃X Z : C⦄ (h : X ⟶ Z) ⦃i₁ : I⦄ (f₁ :
           (D.isoSections f₁ f₂).inv := by
   rw [← D.isoSections_naturality_assoc h f₁ g₁ fac₁ f₂ g₂ fac₂, Iso.hom_inv_id, comp_id]
 
+
+lemma iso_hom_val_app ⦃X : C⦄ (Z : (Over X)ᵒᵖ) ⦃i₁ i₂ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂) :
+    (D.iso f₁ f₂).hom.val.app Z =
+      (D.sheaf i₁).val.map (Over.homMk (𝟙 _)).op ≫
+        (D.isoSections (Z.unop.hom ≫ f₁) (Z.unop.hom ≫ f₂)).hom := by
+  sorry
+
 /-- The type of morphisms between families of sheaves equipped with a descent data. -/
 @[ext]
 structure Hom where
@@ -249,7 +256,7 @@ variable {D₁ D₂ D₃}
 
 /-- The composition of morphisms in `hY.SheafDescentData A`. -/
 @[simps]
-def comp (α : Hom D₁ D₂) (β : Hom D₂ D₃): Hom D₁ D₃ where
+def comp (α : Hom D₁ D₂) (β : Hom D₂ D₃) : Hom D₁ D₃ where
   hom i := α.hom i ≫ β.hom i
 
 instance : Category (hY.SheafDescentData A) where
@@ -259,7 +266,15 @@ instance : Category (hY.SheafDescentData A) where
 
 end Hom
 
-variable {D₁ D₂}
+@[simp, reassoc]
+lemma id_hom (i : I) :
+    Hom.hom (𝟙 D₁) i = 𝟙 _ := rfl
+
+variable {D₁ D₂ D₃}
+
+@[simp, reassoc]
+lemma comp_hom {α : D₁ ⟶ D₂} {β : D₂ ⟶ D₃} (i : I) :
+    (α ≫ β).hom i = α.hom i ≫ β.hom i := rfl
 
 lemma congr_hom {f g : D₁ ⟶ D₂} (h : f = g) (i : I) : f.hom i = g.hom i := by
   subst h
@@ -293,6 +308,30 @@ lemma isoSections_inv_naturality₂ {D₁ D₂ : hY.SheafDescentData A}
   rw [← cancel_mono (D₂.isoSections f₁ f₂).hom, assoc, assoc,
     Iso.inv_hom_id, comp_id, isoSections_hom_naturality₂ φ f₁ f₂,
     Iso.inv_hom_id_assoc]
+
+/-- Constructor for isomorphisms in `hY.SheafDescentData A`. -/
+@[simps]
+def isoMk {D₁ D₂ : hY.SheafDescentData A} (e : ∀ i, D₁.sheaf i ≅ D₂.sheaf i)
+  (comm : ∀ ⦃X : C⦄ ⦃i₁ i₂ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂),
+    (J.overMapPullback A f₁).map (e i₁).hom ≫ (D₂.iso f₁ f₂).hom =
+      (D₁.iso f₁ f₂).hom ≫ (J.overMapPullback A f₂).map (e i₂).hom) : D₁ ≅ D₂ where
+  hom :=
+    { hom := fun i => (e i).hom
+      comm := comm }
+  inv :=
+    { hom := fun i => (e i).inv
+      comm := by
+        intro X i₁ i₂ f₁ f₂
+        dsimp
+        rw [← cancel_mono ((J.overMapPullback A f₂).map (e i₂).hom), assoc, assoc,
+          ← Functor.map_comp, Iso.inv_hom_id, Functor.map_id, comp_id, ← comm,
+          ← Functor.map_comp_assoc, Iso.inv_hom_id, Functor.map_id, id_comp] }
+  hom_inv_id := by
+    ext1 i
+    exact (e i).hom_inv_id
+  inv_hom_id := by
+    ext1 i
+    exact (e i).inv_hom_id
 
 end SheafDescentData
 
@@ -460,6 +499,24 @@ abbrev overSomeRestriction (i : I) :
 by the composition with `hY.overSomeForget : hY.OverSome ⥤ C`. -/
 abbrev pullbackOverSome : Sheaf J A ⥤ Sheaf hY.overSomeTopology A :=
   (hY.overSomeForget).sheafPushforwardContinuous _ _ _
+
+/-- The isomorphism `Over.map f₁ ⋙ hY.toOverSome i₁ ≅ Over.map f₂ ⋙ hY.toOverSome i₂`
+when we have two maps `f₁ : X ⟶ Y i₁` and `f₂ : X ⟶ Y i₂`. -/
+def overMapCompToOverSomeIso ⦃X : C⦄ ⦃i₁ i₂ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂) :
+    Over.map f₁ ⋙ hY.toOverSome i₁ ≅
+      Over.map f₂ ⋙ hY.toOverSome i₂ :=
+  NatIso.ofComponents (fun Z => hY.overSomeForget.preimageIso (Iso.refl _))
+    (fun φ => hY.overSomeForget.map_injective (by aesop_cat))
+
+@[simp]
+lemma overSomeForget_map_overMapCompToOverSomeIso_hom_app
+    ⦃X : C⦄ ⦃i₁ i₂ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂) (Z : Over X) :
+    (hY.overMapCompToOverSomeIso f₁ f₂).hom.app Z = 𝟙 _ := rfl
+
+@[simp]
+lemma overSomeForget_map_overMapCompToOverSomeIso_inv_app
+    ⦃X : C⦄ ⦃i₁ i₂ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂) (Z : Over X) :
+    (hY.overMapCompToOverSomeIso f₁ f₂).inv.app Z = 𝟙 _ := rfl
 
 variable {A hY}
 
@@ -692,6 +749,16 @@ def overSomeRestrictionToSheafOverSome (F : hY.SheafDescentData A) (i : I) :
     (hY.overSomeRestriction A i).obj F.toSheafOverSome ≅ F.sheaf i :=
   (sheafToPresheaf _ _).preimageIso (toOverSomeOpToPresheafSheafOverSome F i)
 
+@[simp]
+lemma overSomeRestrictionToSheafOverSome_hom_val_app (F : hY.SheafDescentData A) (i : I)
+    (Z : (Over (Y i))ᵒᵖ) :
+    (F.overSomeRestrictionToSheafOverSome i).hom.val.app Z = 𝟙 _ := rfl
+
+@[simp]
+lemma overSomeRestrictionToSheafOverSome_inv_val_app (F : hY.SheafDescentData A) (i : I)
+    (Z : (Over (Y i))ᵒᵖ) :
+    (F.overSomeRestrictionToSheafOverSome i).inv.val.app Z = 𝟙 _ := rfl
+
 end SheafDescentData
 
 variable (hY A)
@@ -747,6 +814,177 @@ which under suitable assumptions is an equivalence of categories
 (see `Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting`, we can deduce
 that `Sheaf J A ⥤ hY.SheafDescentData A` is an equivalence.)
 -/
+
+namespace SheafDescentData
+
+variable {hY A}
+variable (F : Sheaf hY.overSomeTopology A)
+
+namespace OfSheafOverSome
+
+/-- The descent data for `ObjectsCoverTop.SheafDescentData.ofSheafOverSome`. -/
+def iso ⦃X : C⦄ ⦃i₁ i₂ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂) :
+    (J.overMapPullback A f₁).obj ((hY.overSomeRestriction A i₁).obj F) ≅
+      (J.overMapPullback A f₂).obj ((hY.overSomeRestriction A i₂).obj F) :=
+  (sheafToPresheaf _ _).preimageIso
+    (NatIso.ofComponents (fun Z => F.val.mapIso
+      ((hY.overMapCompToOverSomeIso f₁ f₂).app Z.unop).symm.op) (by
+      intros Z₁ Z₂ α
+      dsimp
+      simp only [← Functor.map_comp, ← op_comp]
+      congr 2
+      erw [id_comp, comp_id]))
+
+@[simp]
+lemma iso_hom_val_app ⦃X : C⦄ ⦃i₁ i₂ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂) (Z : (Over X)ᵒᵖ) :
+    (iso F f₁ f₂).hom.val.app Z = F.1.map (Quiver.Hom.op (𝟙 Z.unop.left)) := rfl
+
+@[simp]
+lemma iso_inv_val_app ⦃X : C⦄ ⦃i₁ i₂ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂) (Z : (Over X)ᵒᵖ) :
+    (iso F f₁ f₂).inv.val.app Z = F.1.map (Quiver.Hom.op (𝟙 Z.unop.left)) := rfl
+
+end OfSheafOverSome
+
+/-- The sheaves with descent data attached to a sheaf for `hY.overSomeTopology`. -/
+@[simps]
+def ofSheafOverSome : hY.SheafDescentData A where
+  sheaf i := (hY.overSomeRestriction A i).obj F
+  iso {X i₁ i₂} f₁ f₂ := OfSheafOverSome.iso F f₁ f₂
+  pullback_iso X X' g i₁ i₂ f₁ f₂ := by
+    ext Z
+    dsimp [overMapPullbackComp, overMapPullbackComp',
+      Functor.sheafPushforwardContinuousComp',
+      Functor.sheafPushforwardContinuousIso, Over.mapComp',
+      Functor.sheafPushforwardContinuousComp]
+    simp only [id_comp, assoc]
+    erw [id_comp]
+    simp only [← Functor.map_comp, ← op_comp]
+    congr 2
+    erw [id_comp, id_comp]
+  iso_trans X i₁ i₂ i₃ f₁ f₂ f₃ := by
+    ext Z
+    dsimp
+    rw [← Functor.map_comp, ← op_comp]
+    congr 2
+    erw [id_comp]
+
+@[simp]
+lemma ofSheafOverSome_toPresheafOverSome_map {Z₁ Z₂ : hY.OverSome} (φ : Z₁ ⟶ Z₂) :
+    ToPresheafOverSome.map (ofSheafOverSome F) φ = F.1.map φ.op := by
+  dsimp [ToPresheafOverSome.map, overSomeForget, isoSections,
+    overMapPullbackSectionsIso]
+  simp only [← Functor.map_comp, ← op_comp]
+  congr 2
+  erw [id_comp, id_comp, id_comp]
+
+end SheafDescentData
+
+/-- The obvious functor `Sheaf hY.overSomeTopology A ⥤ hY.SheafDescentData A`. -/
+@[simps]
+def fromSheafOverSomeFunctor : Sheaf hY.overSomeTopology A ⥤ hY.SheafDescentData A where
+  obj := SheafDescentData.ofSheafOverSome
+  map {F₁ F₂} φ :=
+    { hom := fun i => (hY.overSomeRestriction A i).map φ }
+
+namespace SheafOverFunctorEquivalence
+
+variable {hY A}
+
+/-- Auxiliary definition for `ObjectsCoverTop.sheafOverSomeEquivalence`. -/
+@[simps!]
+def unitIsoApp (F : hY.SheafDescentData A) :
+    F ≅ (hY.fromSheafOverSomeFunctor A).obj ((hY.toSheafOverSomeFunctor A).obj F) :=
+  SheafDescentData.isoMk
+    (fun i => (F.overSomeRestrictionToSheafOverSome i).symm) (by
+      intros X i₁ i₂ f₁ f₂
+      dsimp
+      ext Z
+      dsimp
+      rw [id_comp, comp_id]
+      let α : ((hY.toOverSome i₂).obj ((Over.map f₂).obj Z.unop)) ⟶
+        ((hY.toOverSome i₁).obj ((Over.map f₁).obj Z.unop)) := 𝟙 Z.unop.left
+      rw [SheafDescentData.ToPresheafOverSome.map_eq F α (Z.unop.hom ≫ f₁)
+        (Z.unop.hom ≫ f₁) (by erw [id_comp])]
+      dsimp
+      rw [SheafDescentData.isoSections_refl, Iso.refl_hom, id_comp,
+        SheafDescentData.isoSections_inv]
+      exact (F.iso_hom_val_app Z f₁ f₂).symm)
+
+/-- Auxiliary definition for `ObjectsCoverTop.sheafOverSomeEquivalence`. -/
+def counitIsoApp (F : Sheaf hY.overSomeTopology A) :
+    (hY.toSheafOverSomeFunctor A).obj ((hY.fromSheafOverSomeFunctor A).obj F) ≅ F :=
+  (sheafToPresheaf _ _).preimageIso (NatIso.ofComponents (fun Z => Iso.refl _)
+    (by aesop_cat))
+
+@[simp]
+lemma counitIsoApp_hom (F : Sheaf hY.overSomeTopology A) (Z : hY.OverSomeᵒᵖ) :
+    (counitIsoApp F).hom.val.app Z = 𝟙 _ := rfl
+
+@[simp]
+lemma counitIsoApp_inv (F : Sheaf hY.overSomeTopology A) (Z : hY.OverSomeᵒᵖ) :
+    (counitIsoApp F).inv.val.app Z = 𝟙 _ := rfl
+
+variable (hY A)
+
+/-- Auxiliary definition for `ObjectsCoverTop.sheafOverSomeEquivalence`. -/
+@[simps!]
+def unitIso : 𝟭 _ ≅ hY.toSheafOverSomeFunctor A ⋙ hY.fromSheafOverSomeFunctor A :=
+  NatIso.ofComponents unitIsoApp (by
+    intro F G φ
+    ext i Z
+    dsimp
+    erw [comp_id, id_comp]
+    rfl)
+
+/-- Auxiliary definition for `ObjectsCoverTop.sheafOverSomeEquivalence`. -/
+@[simps!]
+def counitIso : hY.fromSheafOverSomeFunctor A ⋙ hY.toSheafOverSomeFunctor A ≅ 𝟭 _ :=
+  NatIso.ofComponents counitIsoApp (by aesop_cat)
+
+end SheafOverFunctorEquivalence
+
+/-- The equivalence `hY.SheafDescentData A ≌ Sheaf hY.overSomeTopology A` between
+sheaves equipped with descent data and the category of sheaves
+over `hY.overSomeTopology`. -/
+def sheafOverSomeEquivalence :
+    hY.SheafDescentData A ≌ Sheaf hY.overSomeTopology A where
+  functor := hY.toSheafOverSomeFunctor A
+  inverse := hY.fromSheafOverSomeFunctor A
+  unitIso := SheafOverFunctorEquivalence.unitIso hY A
+  counitIso := SheafOverFunctorEquivalence.counitIso hY A
+
+namespace SheafDescentData
+
+instance : IsEquivalence (hY.toSheafOverSomeFunctor A) := by
+  change IsEquivalence (hY.sheafOverSomeEquivalence A).functor
+  infer_instance
+
+instance : IsEquivalence (hY.fromSheafOverSomeFunctor A) := by
+  change IsEquivalence (hY.sheafOverSomeEquivalence A).inverse
+  infer_instance
+
+instance [IsEquivalence (hY.pullbackOverSome A)] :
+    IsEquivalence (hY.sheafToDescentData A) :=
+  IsEquivalence.cancelCompRight (hY.sheafToDescentData A)
+    (hY.toSheafOverSomeFunctor A) inferInstance
+    (IsEquivalence.ofIso (hY.sheafToDescentDataCompToSheafOverSomeFunctorIso A).symm
+      inferInstance)
+
+section
+
+variable {D : Type u} [Category.{u} D] {K : GrothendieckTopology D}
+  {J : Type} {Z : J → D} (hZ : K.ObjectsCoverTop Z)
+  (B : Type v) [Category.{u} B] [HasLimits B]
+
+noncomputable instance : IsEquivalence (hZ.pullbackOverSome B) :=
+  (inferInstance : IsEquivalence (Functor.IsCoverDense.sheafEquivOfCoverPreservingCoverLifting
+    hZ.overSomeForget hZ.overSomeTopology K B).inverse)
+
+noncomputable example : IsEquivalence (hZ.sheafToDescentData B) := inferInstance
+
+end
+
+end SheafDescentData
 
 end ObjectsCoverTop
 
