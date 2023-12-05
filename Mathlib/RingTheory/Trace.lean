@@ -13,6 +13,7 @@ import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.FieldTheory.Galois
 import Mathlib.RingTheory.PowerBasis
+import Mathlib.FieldTheory.Minpoly.MinpolyDiv
 
 #align_import ring_theory.trace from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
@@ -607,5 +608,29 @@ theorem traceForm_nondegenerate [FiniteDimensional K L] [IsSeparable K L] :
   BilinForm.nondegenerate_of_det_ne_zero (traceForm K L) _
     (det_traceForm_ne_zero (FiniteDimensional.finBasis K L))
 #align trace_form_nondegenerate traceForm_nondegenerate
+
+variable {K L}
+
+lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [IsSeparable K L]
+    (pb : PowerBasis K L) (i) :
+    (Algebra.traceForm K L).dualBasis (traceForm_nondegenerate K L) pb.basis i =
+      (minpolyDiv K pb.gen).coeff i / aeval pb.gen (derivative <| minpoly K pb.gen) := by
+  classical
+  apply ((Algebra.traceForm K L).toDual (traceForm_nondegenerate K L)).injective
+  apply pb.basis.ext
+  intro j
+  simp only [BilinForm.toDual_def, BilinForm.apply_dualBasis_left]
+  apply (algebraMap K (AlgebraicClosure K)).injective
+  have := congr_arg (coeff · i) (sum_smul_minpolyDiv_eq_X_pow (AlgebraicClosure K)
+    pb.gen pb.adjoin_gen_eq_top j (pb.finrank.symm ▸ j.prop))
+  simp only [AlgEquiv.toAlgHom_eq_coe, Polynomial.map_smul, map_div₀,
+    map_pow, RingHom.coe_coe, AlgHom.coe_coe, finset_sum_coeff, coeff_smul, coeff_map, smul_eq_mul,
+    coeff_X_pow, ← Fin.ext_iff, @eq_comm _ i] at this
+  rw [PowerBasis.coe_basis, Algebra.traceForm_apply, RingHom.map_ite_one_zero,
+  ← this, trace_eq_sum_embeddings (E := AlgebraicClosure K)]
+  apply Finset.sum_congr rfl
+  intro σ _
+  simp only [_root_.map_mul, map_div₀, map_pow]
+  ring
 
 end DetNeZero
