@@ -9,8 +9,6 @@ import Mathlib.Algebra.Module.LinearMap
 import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.HahnSeries
 
-set_option autoImplicit false
-
 /-!
 # Vertex algebras
 
@@ -36,6 +34,8 @@ We postpone the proofs of equivalences of various identities to a different file
 G. Mason `Vertex rings and Pierce bundles` ArXiv 1707.00328
 
 -/
+
+set_option autoImplicit false
 
 universe u v
 
@@ -88,8 +88,8 @@ def coeff [Semiring R] [AddCommMonoid V] [Module R V] (A : VertexOperator R V) (
 def index [Semiring R] [AddCommMonoid V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
     Module.End R V := coeff A (-n-1)
 
-theorem index_eq_coeff_neg [Semiring R] [AddCommMonoid V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
-    index A n = coeff A (-n-1) := rfl
+theorem index_eq_coeff_neg [Semiring R] [AddCommMonoid V] [Module R V] (A : VertexOperator R V)
+    (n : ℤ) : index A n = coeff A (-n-1) := rfl
 
 scoped[VertexAlg] notation A "⁅" n "⁆" => index A n
 
@@ -125,7 +125,7 @@ instance [AddCommMonoid R] : AddCommMonoid (HahnSeries Γ R) :=
     (0 : VertexOperator R V) ⁅n⁆ = 0 := by
   exact rfl
 
-instance [Semiring R] [AddCommMonoid V] [Module R V] : Add (VertexOperator R V) :=--by inferInstance?
+instance [Semiring R] [AddCommMonoid V] [Module R V] : Add (VertexOperator R V) :=--inferInstance?
   {
     add := fun a b =>
       {
@@ -142,12 +142,12 @@ instance [Semiring R] [AddCommMonoid V] [Module R V] : Add (VertexOperator R V) 
       }
   }
 
-@[simp] lemma add_toMap_eq [Semiring R] [AddCommMonoid V] [Module R V] (a b : VertexOperator R V) (x : V):
-  (a + b).toMap x = a.toMap x + b.toMap x := rfl
+@[simp] lemma add_toMap_eq [Semiring R] [AddCommMonoid V] [Module R V] (a b : VertexOperator R V)
+  (x : V): (a + b).toMap x = a.toMap x + b.toMap x := rfl
 
 /-!
-@[simp] lemma add_coef_eq [Semiring R] [AddCommMonoid V] [Module R V] (a b : VertexOperator R V) (n : ℤ) :
-  (a + b) ⁅n⁆ = a ⁅n⁆ + b ⁅n⁆ := by exact rfl
+@[simp] lemma add_coef_eq [Semiring R] [AddCommMonoid V] [Module R V] (a b : VertexOperator R V)
+  (n : ℤ) : (a + b) ⁅n⁆ = a ⁅n⁆ + b ⁅n⁆ := by exact rfl
 -/
 
 -- can I use LinearMap.addCommMonoid here?
@@ -272,8 +272,9 @@ theorem coeff_nonzero_at_order [CommRing R] [AddCommGroup V] [NonAssocNonUnitalV
   simp only [LinearMap.coe_mk, AddHom.coe_mk]
   exact HahnSeries.coeff_order_ne_zero h
 
-theorem index_zero_if_neg_order_leq [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
-    (a b : V) (n : ℤ) (h: - order R a b ≤ n) : index (Y R a) n b = 0 := by
+theorem index_zero_if_neg_order_leq [CommRing R] [AddCommGroup V]
+    [NonAssocNonUnitalVertexAlgebra R V] (a b : V) (n : ℤ) (h: - order R a b ≤ n) :
+    index (Y R a) n b = 0 := by
   rw [index_eq_coeff_neg]
   refine coeff_zero_if_lt_order a b (-n-1) ?_
   rw [Int.sub_one_lt_iff, neg_le]
@@ -327,7 +328,7 @@ theorem unit_comm (R : Type v) [CommRing R] [AddCommGroupWithOne V] [VertexAlgeb
     order R a 1 = 0 := VertexAlgebra.unit_comm a
 
 theorem unit_right (R : Type v) [CommRing R] [AddCommGroupWithOne V] [VertexAlgebra R V] (a : V) :
-  coeff (Y R a) 0 1 = a := VertexAlgebra.unit_right a
+    coeff (Y R a) 0 1 = a := VertexAlgebra.unit_right a
 
 
 

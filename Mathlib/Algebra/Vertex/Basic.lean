@@ -1,7 +1,43 @@
+/-
+Copyright (c) 2023 Scott Carnahan. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Scott Carnahan
+-/
+
 import Mathlib.Algebra.Module.LinearMap
 import Mathlib.RingTheory.HahnSeries
 import Mathlib.Algebra.Vertex.Defs
 
+/-!
+# Basic results on Vertex algebras
+
+In this file we prove some basic results about vertex algebras.
+
+## Main results
+
+* The Borcherds identity implies assocativity
+
+## To do
+
+In the non-unital setting:
+* Commutator formula from Borcherds identity
+* Locality from Borcherds identity
+* Weak associativity from Borcherds identity
+* Borcherds identity from (commutator or locality) and (associativity or weak associativity)
+
+In the unital setting:
+* Skew-symmetry
+* Hasse-Schmidt differential
+* creative fields?
+* reconstruction?
+
+## References
+
+G. Mason `Vertex rings and Pierce bundles` ArXiv 1707.00328
+Matsuo-Nagatomo?
+Borcherds's original paper?
+
+-/
 universe u v
 
 variable {V : Type u} {R : Type v}
@@ -40,9 +76,11 @@ theorem associativity_right [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVert
 
 /-- The associativity property of vertex algebras - maybe put this in defs? -/
 def associativity (R : Type v) [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVertexAlgebra R V]
-    (a b c : V) (s t : ℤ) : Prop := ((Y R) (((Y R) a⁅t⁆) b)⁅s⁆) c = Finset.sum (Finset.range (Int.toNat (-s - order R b c)))
-    (fun i ↦ (-1)^i • (Ring.choose (0 : ℤ)  i) • index (Y R a) (t-i) (index (Y R b) (s+i) c)) + Finset.sum (Finset.range (Int.toNat (- order R a c)))
-    (fun i ↦ (-1: ℤˣ)^(t+i) • (Ring.choose t i) • index (Y R b) (s+t-i) (index (Y R a) i c))
+    (a b c : V) (s t : ℤ) : Prop := ((Y R) (((Y R) a⁅t⁆) b)⁅s⁆) c = Finset.sum (Finset.range
+    (Int.toNat (-s - order R b c))) (fun i ↦ (-1)^i • (Ring.choose (0 : ℤ)  i) •
+    index (Y R a) (t-i) (index (Y R b) (s+i) c)) + Finset.sum (Finset.range (Int.toNat
+    (- order R a c))) (fun i ↦ (-1: ℤˣ)^(t+i) • (Ring.choose t i) • index (Y R b) (s+t-i)
+    (index (Y R a) i c))
 
 theorem Borcherds_id_implies_associativity [CommRing R] [AddCommGroup V]
     [NonAssocNonUnitalVertexAlgebra R V] (a b c : V) (s t : ℤ) : Borcherds_id R a b c 0 s t →
@@ -91,6 +129,6 @@ theorem borcherds3Induction [CommRing R] [AddCommGroup V] [NonAssocNonUnitalVert
   -- compare resulting sums with component sums.
   sorry
 
--- get borcherds_id from (commutator or locality) and (associativity or weak associativity)
+
 
 -/
