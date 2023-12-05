@@ -21,28 +21,29 @@ This file introduces the Scott topology on a preorder.
 
 ## Main statements
 
-- `IsScott.isUpperSet_of_isOpen`: Scott open sets are upper.
-- `IsScott.isLowerSet_of_isClosed`: Scott closed sets are lower.
-- `IsScott.monotone_of_continuous`: Functions continuous wrt the Scott topology are monotone.
-- `IsScott.scottContinuous_iff_continuous` - a function is Scott continuous (preserves least upper
+- `Topology.IsScott.isUpperSet_of_isOpen`: Scott open sets are upper.
+- `Topology.IsScott.isLowerSet_of_isClosed`: Scott closed sets are lower.
+- `Topology.IsScott.monotone_of_continuous`: Functions continuous wrt the Scott topology are monotone.
+- `Topology.IsScott.scottContinuous_iff_continuous` - a function is Scott continuous (preserves least upper
   bounds of directed sets) if and only if it is continuous wrt the Scott topology.
-- `IsScott.instT0Space` - the Scott topology on a partial order is T₀.
+- `Topology.IsScott.instT0Space` - the Scott topology on a partial order is T₀.
 
 ## Implementation notes
 
 A type synonym `WithScott` is introduced and for a preorder `α`, `WithScott α` is made an instance
-of `TopologicalSpace` by the `Scott` topology.
+of `TopologicalSpace` by the `scott` topology.
 
 We define a mixin class `IsScott` for the class of types which are both a preorder and a
-topology and where the topology is the `Scott` topology. It is shown that `WithScott α` is an
+topology and where the topology is the `scott` topology. It is shown that `WithScott α` is an
 instance of `IsScott`.
 
-A class `Scott` is defined in `Topology.OmegaCompletePartialOrder` and made an instance of a
+A class `Scott` is defined in `Topology/OmegaCompletePartialOrder` and made an instance of a
 topological space by defining the open sets to be those which have characteristic functions which
 are monotone and preserve limits of countable chains (`OmegaCompletePartialOrder.Continuous'`).
 A Scott continuous function between `OmegaCompletePartialOrder`s is always
-`OmegaCompletePartialOrder.Continuous'` (`ScottContinuous.continuous'`). The converse is true in
-some special cases, but not in general ([Domain Theory, 2.2.4][abramsky_gabbay_maibaum_1994]).
+`OmegaCompletePartialOrder.Continuous'` (`OmegaCompletePartialOrder.ScottContinuous.continuous'`).
+The converse is true in some special cases, but not in general
+([Domain Theory, 2.2.4][abramsky_gabbay_maibaum_1994]).
 
 ## References
 
