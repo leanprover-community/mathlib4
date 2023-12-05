@@ -31,7 +31,7 @@ namespace IteratedExtCategory
 variable {X₁ X₂ : C} {n : ℕ} (E : IteratedExtCategory X₁ X₂ n)
 
 lemma hK' (i : ℤ) : IsZero (E.K.homology i) := by
-  rw [E.K.isZero_homology_iff i]
+  rw [← E.K.exactAt_iff_isZero_homology i]
   exact E.hK i
 
 lemma epi_d (i j : ℤ) (hij : i + 1 = j) (hm : i = n + 1) :
@@ -132,7 +132,7 @@ noncomputable def ZToX₁ : E.Z ⟶ (HomologicalComplex.single C (ComplexShape.u
 @[simp]
 lemma ZToX₁_f_0 : E.ZToX₁.f 0 =
     (Z.XIso E 0 (n+1) (by linarith) (by linarith)).hom ≫ E.K.d (n+1) (n+2) ≫ E.iso₁.hom ≫
-        (HomologicalComplex.singleObjXSelf C (ComplexShape.up ℤ) 0 X₁).inv := by
+        (HomologicalComplex.singleObjXSelf (ComplexShape.up ℤ) 0 X₁).inv := by
   dsimp [ZToX₁, HomologicalComplex.toSingleEquiv]
   simp
 
@@ -146,13 +146,13 @@ noncomputable def ZToX₂ (n' : ℤ) (hn' : n' + n + 1 = 0) :
 
 lemma ZToX₂_f_self (n' : ℤ) (hn' : n' + n + 1 = 0) :
     (E.ZToX₂ n' hn').f n' = (Z.XIso E n' 0 hn' (by linarith)).hom ≫ E.iso₂.hom ≫
-      (HomologicalComplex.singleObjXSelf C (ComplexShape.up ℤ) n' X₂).inv := by
+      (HomologicalComplex.singleObjXSelf (ComplexShape.up ℤ) n' X₂).inv := by
   dsimp [ZToX₂, HomologicalComplex.toSingleEquiv]
-  simp only [comp_id, assoc, id_comp, ite_true]
+  simp
 
 lemma isZero_homology_ZToX₁ (d : ℤ) (hd : d ≠ 0) :
     IsZero (E.Z.homology d) := by
-  by_cases 0 < d
+  by_cases h : 0 < d
   · apply ShortComplex.isZero_homology_of_isZero_X₂
     dsimp
     apply isZero_Z_X_of_ge
@@ -221,22 +221,21 @@ noncomputable def leftHomologyMapData : ShortComplex.LeftHomologyMapData
     ((HomologicalComplex.shortComplexFunctor' _ _ (-1) 0 1).map E.ZToX₁) E.leftHomologyData
     (ShortComplex.LeftHomologyData.ofZeros _ (by simp) (by simp)) where
   φK := (Z.XIso E 0 (n+1) (by linarith) (by linarith)).hom ≫ E.K.d (n+1) (n+2) ≫ E.iso₁.hom ≫
-      (HomologicalComplex.singleObjXSelf C (ComplexShape.up ℤ) 0 X₁).hom
-  φH := (HomologicalComplex.singleObjXSelf C (ComplexShape.up ℤ) 0 X₁).hom
+      (HomologicalComplex.singleObjXSelf (ComplexShape.up ℤ) 0 X₁).hom
+  φH := (HomologicalComplex.singleObjXSelf (ComplexShape.up ℤ) 0 X₁).hom
   commf' := by
     dsimp
     simp only [leftHomologyData_f', ShortComplex.LeftHomologyData.ofZeros_f', comp_zero,
       E.Z_d_eq (-1) 0 n (n+1) (by linarith) (by linarith) (by linarith) (by linarith), assoc,
       Iso.inv_hom_id_assoc, E.K.d_comp_d_assoc, zero_comp]
   commi := by
-    dsimp [ZToX₁, HomologicalComplex.toSingleEquiv]
-    simp only [comp_id, id_comp, ite_true, Iso.cancel_iso_hom_left]
+    simp [ZToX₁, HomologicalComplex.toSingleEquiv]
     erw [comp_id]
 
 instance : QuasiIso E.ZToX₁ where
-  quasiIso n := by
+  quasiIsoAt n := by
     rw [quasiIsoAt_iff_isIso_homologyMap]
-    by_cases n = 0
+    by_cases h : n = 0
     · subst h
       suffices IsIso (ShortComplex.homologyMap
           ((HomologicalComplex.shortComplexFunctor' _ _ (-1) 0 1).map E.ZToX₁)) from
@@ -249,7 +248,7 @@ instance : QuasiIso E.ZToX₁ where
       infer_instance
     · refine' ⟨0, IsZero.eq_of_src (E.isZero_homology_ZToX₁ n h) _ _,
         IsZero.eq_of_src (ShortComplex.isZero_homology_of_isZero_X₂ _ _) _ _⟩
-      dsimp
+      dsimp [HomologicalComplex.single]
       rw [if_neg h]
       exact isZero_zero _
 
@@ -386,7 +385,7 @@ lemma compShortComplex₄_exact :
   apply ShortComplex₄.connectShortComplex_exact
   · rw [← E'.K.exactAt_iff' n' (n'+1) (n'+2) (by simp) (by simp; linarith)]
     exact E'.hK _
-  · rw [← E.K.exactAt_iff' 0 1 2 (by simp) (by simp)]
+  · rw [← E.K.exactAt_iff' 0 1 2 (by simp) (by simp; rfl)]
     exact E.hK _
 
 def comp : IteratedExtCategory X₁ X₃ n'' where
@@ -532,10 +531,10 @@ lemma compZToZ_comp_ZToX₁ : compZToZ E E' hn'' ≫ E.ZToX₁ = (comp E E' hn''
   dsimp [HomologicalComplex.toSingleEquiv, compZToZ]
   simp only [comp_id,
     compZToZf_eq E E' hn'' 0 (n+1) (n''+1) (by linarith) (by linarith) (by linarith) (by linarith),
-    ZToX₁_f_0, HomologicalComplex.single_obj_X, ComplexShape.up_Rel, HomologicalComplex.singleObjXSelf_inv,
+    ZToX₁_f_0, HomologicalComplex.single, ComplexShape.up_Rel, HomologicalComplex.singleObjXSelf,
     eqToHom_refl, assoc, Iso.inv_hom_id_assoc, Iso.cancel_iso_hom_left,
     comp_K_d_eq_d E E' hn'' (n''+1) (n''+2) (by linarith) (by linarith) (n+1) (n+2)
-      (by linarith) (by linarith)]
+      (by linarith) (by linarith), Iso.inv_hom_id, comp_id]
   dsimp [comp]
   simp only [Iso.inv_hom_id_assoc]
 
@@ -547,7 +546,7 @@ def sgn₁ (m m' i : ℤ) : ℤ := (m * (i + m + m')).negOnePow
 
 lemma sgn₁_rel₁ (m m' i : ℤ) : sgn₁ m m' (i+1) = m.negOnePow * sgn₁ m m' i := by
   dsimp [sgn₁]
-  rw [← Int.negOnePow_add]
+  erw [← Int.negOnePow_add]
   congr 1
   linarith
 
