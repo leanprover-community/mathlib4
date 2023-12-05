@@ -264,8 +264,7 @@ variable {r} (ρ₁₂ : BifunctorComp₁₂IndexData r)
 `X₁ : GradedObject I₁ C₁`, `X₂ : GradedObject I₂ C₂`, `X₃ : GradedObject I₃ C₃` and
 `ρ₁₂ : BifunctorComp₁₂IndexData r`, this asserts that for all `i₁₂ : ρ₁₂.I₁₂` and `i₃ : I₃`,
 the functor `G(-, X₃ i₃)` commutes wich the coproducts of the `F₁₂(X₁ i₁, X₂ i₂)`
-for `ρ₁₂.p ⟨i₁, i₂⟩ = i₁₂`.
-  -/
+such that `ρ₁₂.p ⟨i₁, i₂⟩ = i₁₂`. -/
 abbrev HasGoodTrifunctor₁₂Obj :=
   ∀ (i₁₂ : ρ₁₂.I₁₂) (i₃ : I₃), PreservesColimit
     (Discrete.functor (mapObjFun (((mapBifunctor F₁₂ I₁ I₂).obj X₁).obj X₂) ρ₁₂.p i₁₂))
