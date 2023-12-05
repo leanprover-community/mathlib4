@@ -196,7 +196,7 @@ section preorder
 
 variable [Preorder α] [TopologicalSpace α] [IsScott α] {u : Set α}
 
-lemma isOpen_iff_upper_and_scottHausdorff_Open :
+lemma isOpen_iff_upper_and_scottHausdorff_open :
     IsOpen u ↔ IsUpperSet u ∧ scottHausdorff.IsOpen u := by erw [topology_eq α]; rfl
 
 lemma isOpen_iff_upper_and_DirSupInacc {u : Set α} :
