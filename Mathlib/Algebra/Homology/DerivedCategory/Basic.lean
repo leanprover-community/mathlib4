@@ -33,11 +33,9 @@ lemma mem_subcategoryAcyclic_iff (X : HomotopyCategory C (ComplexShape.up ℤ)) 
 lemma mem_subcategoryAcyclic_iff_exactAt (K : CochainComplex C ℤ) :
     (quotient _ _).obj K ∈ (subcategoryAcyclic C).set ↔ ∀ (n : ℤ), K.ExactAt n := by
   rw [mem_subcategoryAcyclic_iff]
-  have H : ∀ (n : ℤ), IsZero ((homologyFunctor _ _ n).obj ((quotient _ _).obj K)) ↔
-      K.ExactAt n := fun n => by
-    simp only [← HomologicalComplex.isZero_homology_iff]
-    exact ((homologyFunctorFactors C (ComplexShape.up ℤ) n).app K).isZero_iff
-  simp only [H]
+  refine forall_congr' (fun n => ?_)
+  simp only [HomologicalComplex.exactAt_iff_isZero_homology]
+  exact ((homologyFunctorFactors C (ComplexShape.up ℤ) n).app K).isZero_iff
 
 variable (C)
 
@@ -305,7 +303,7 @@ noncomputable def singleFunctorCompHomologyFunctorIso (n : ℤ) :
     singleFunctor C n ⋙ homologyFunctor C n ≅ 𝟭 C :=
   isoWhiskerRight ((SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostCompQIso C)) _ ≪≫ Functor.associator _ _ _ ≪≫
     isoWhiskerLeft _ (homologyFunctorFactors C n) ≪≫
-    HomologicalComplex.singleCompHomologyFunctorIso C (ComplexShape.up ℤ) n
+      HomologicalComplex.homologyFunctorSingleIso _ _ _
 
 instance (n : ℤ) : (homologyFunctor C n).PreservesZeroMorphisms :=
   Functor.preservesZeroMorphisms_of_fac_of_essSurj _ _ _
@@ -340,18 +338,21 @@ lemma isIso_Qh_map_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X �
   · intro hf
     exact Localization.inverts Qh (HomotopyCategory.qis _ _) _ hf
 
+lemma isIso_Q_map_iff_quasiIso {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
+    IsIso (Q.map φ) ↔ QuasiIso φ := by
+  apply HomologicalComplexUpToQis.isIso_Q_map_iff
+
 lemma isIso_Q_map_iff {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
     IsIso (Q.map φ) ↔
       ∀ (n : ℤ), IsIso ((HomologicalComplex.homologyFunctor C _ n).map φ) := by
-  apply HomologicalComplexUpToQis.isIso_Q_map_iff
+  simp only [isIso_Q_map_iff_quasiIso, quasiIso_iff,
+    quasiIsoAt_iff_isIso_homologyMap]
+  rfl
 
 lemma isIso_Q_map_iff' {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
-    IsIso (Q.map φ) ↔ HomologicalComplex.qis _ _ φ :=
-  isIso_Q_map_iff φ
-
-lemma isIso_Q_map_iff_quasiIso {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
-    IsIso (Q.map φ) ↔ QuasiIso φ := by
-  simp only [isIso_Q_map_iff', quasiIso_iff_mem_qis]
+    IsIso (Q.map φ) ↔ HomologicalComplex.qis _ _ φ := by
+  rw [isIso_Q_map_iff_quasiIso]
+  rfl
 
 instance {K L : CochainComplex C ℤ} (φ : K ⟶ L) [QuasiIso φ] : IsIso (Q.map φ) := by
   simpa only [isIso_Q_map_iff_quasiIso]
@@ -475,7 +476,7 @@ end
 lemma right_fac (X Y : CochainComplex C ℤ) (f : Q.obj X ⟶ Q.obj Y) :
     ∃ (X' : CochainComplex C ℤ) (s : X' ⟶ X) (hs : IsIso (Q.map s)) (g : X' ⟶ Y),
       f = inv (Q.map s) ≫ Q.map g := by
-  have ⟨φ, hφ⟩ := MorphismProperty.RightFraction.fac Qh (HomotopyCategory.qis C _) f
+  have ⟨φ, hφ⟩ := Localization.exists_rightFraction Qh (HomotopyCategory.qis C _) f
   obtain ⟨X', s, hs, g, rfl⟩ := φ.cases
   obtain ⟨X', rfl⟩ := HomotopyCategory.quotient_obj_surjective X'
   obtain ⟨s, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective s
@@ -486,7 +487,7 @@ lemma right_fac (X Y : CochainComplex C ℤ) (f : Q.obj X ⟶ Q.obj Y) :
 lemma left_fac (X Y : CochainComplex C ℤ) (f : Q.obj X ⟶ Q.obj Y) :
     ∃ (Y' : CochainComplex C ℤ) (g : X ⟶ Y') (s : Y ⟶ Y') (hs : IsIso (Q.map s)),
       f = Q.map g ≫ inv (Q.map s) := by
-  have ⟨φ, hφ⟩ := MorphismProperty.LeftFraction.fac Qh (HomotopyCategory.qis C _) f
+  have ⟨φ, hφ⟩ := Localization.exists_leftFraction Qh (HomotopyCategory.qis C _) f
   obtain ⟨X', g, s, hs, rfl⟩ := φ.cases
   obtain ⟨X', rfl⟩ := HomotopyCategory.quotient_obj_surjective X'
   obtain ⟨s, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective s

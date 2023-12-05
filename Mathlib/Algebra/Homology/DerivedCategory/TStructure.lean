@@ -81,10 +81,9 @@ lemma right_fac_of_isStrictlyLE_of_isStrictlyGE
     (s : X' ⟶ X) (hs : IsIso (Q.map s)) (g : X' ⟶ Y), f = inv (Q.map s) ≫ Q.map g := by
   obtain ⟨X', hX', s, hs, g, fac⟩ := right_fac_of_isStrictlyLE _ _ f b
   have : IsIso (Q.map (CochainComplex.truncGEmap s a)) := by
-    rw [isIso_Q_map_iff'] at hs
-    rw [isIso_Q_map_iff', CochainComplex.qis_truncGEmap_iff]
-    intro i _
-    apply hs
+    rw [isIso_Q_map_iff_quasiIso] at hs
+    rw [isIso_Q_map_iff_quasiIso, CochainComplex.quasiIso_truncGEmap_iff]
+    infer_instance
   refine' ⟨X'.truncGE a, inferInstance, inferInstance,
     CochainComplex.truncGEmap s a ≫ inv (X.truncGEπ a), _,
       CochainComplex.truncGEmap g a ≫ inv (Y.truncGEπ a), _⟩
@@ -104,10 +103,9 @@ lemma left_fac_of_isStrictlyLE_of_isStrictlyGE
     (g : X ⟶ Y') (s : Y ⟶ Y') (hs : IsIso (Q.map s)) , f = Q.map g ≫ inv (Q.map s) := by
   obtain ⟨Y', hY', g, s, hs, fac⟩ := left_fac_of_isStrictlyGE _ _ f a
   have : IsIso (Q.map (CochainComplex.truncLEmap s b)) := by
-    rw [isIso_Q_map_iff'] at hs
-    rw [isIso_Q_map_iff', CochainComplex.qis_truncLEmap_iff]
-    intro i _
-    apply hs
+    rw [isIso_Q_map_iff_quasiIso] at hs
+    rw [isIso_Q_map_iff_quasiIso, CochainComplex.quasiIso_truncLEmap_iff]
+    infer_instance
   refine' ⟨Y'.truncLE b, inferInstance, inferInstance,
     inv (X.truncLEι b) ≫ CochainComplex.truncLEmap g b,
     inv (Y.truncLEι b) ≫ CochainComplex.truncLEmap s b, _, _⟩

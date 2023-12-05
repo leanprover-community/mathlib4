@@ -305,7 +305,7 @@ noncomputable def double : HomologicalComplex C c where
     exact hij h)
   d_comp_d' i j k _ _ := by
     dsimp
-    by_cases i = n₀ ∧ j = n₁
+    by_cases h : i = n₀ ∧ j = n₁
     · rw [dif_pos h]
       by_cases h'' : j = n₀ ∧ k = n₁
       · exfalso
@@ -685,8 +685,8 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     rw [epiWithInjectiveKernel_iff]
     refine' ⟨S.X n, _, (biprod.inl : _ ⟶ M).f n, (biprod.inr : _ ⟶ M).f n,
         (biprod.fst : M ⟶ _).f n, _, _, _ , _, _⟩
-    · dsimp
-      by_cases n = n₁
+    · dsimp [single]
+      by_cases h : n = n₁
       · rw [if_pos h]
         infer_instance
       · rw [if_neg h]
@@ -702,7 +702,7 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     · rw [← cancel_mono ((HomologicalComplex.eval C (ComplexShape.up ℤ) n).mapBiprod _ _).hom]
       ext
       · apply IsZero.eq_of_tgt
-        dsimp
+        dsimp [single]
         rw [if_neg (by linarith)]
         exact isZero_zero C
       · dsimp
@@ -722,7 +722,7 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
       · have : cyclesMap (biprod.inl : _ ⟶ M) n = 0 := by
           have : (biprod.inl : _ ⟶ M).f n = 0 := by
             apply IsZero.eq_of_src
-            dsimp
+            dsimp [single]
             rw [if_neg (by linarith)]
             exact Limits.isZero_zero C
           rw [← cancel_mono (M.iCycles n), zero_comp, cyclesMap_i, this, comp_zero]
@@ -745,7 +745,7 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₁ = n₀ + 1)
     M.comp_homologyπ_eq_zero_iff_up_to_refinements (x₁ ≫ cyclesMap i n₁) n₀ (by simp [hn₁])] at hx₀
   have : Mono (opcyclesMap i₁ n₁) := by
     let α : Injective.under (K.opcycles n₁) ⟶ S.X n₁ :=
-      (singleObjXSelf C (ComplexShape.up ℤ) n₁ (Injective.under (K.opcycles n₁))).inv
+      (singleObjXSelf (ComplexShape.up ℤ) n₁ (Injective.under (K.opcycles n₁))).inv
     have := S.isIso_pOpcycles _ n₁ rfl rfl
     have : opcyclesMap i₁ n₁ = Injective.ι (K.opcycles n₁) ≫ α ≫ S.pOpcycles n₁ := by
       rw [← (cancel_epi (K.pOpcycles n₁)), p_opcyclesMap, ← assoc, ← assoc]
@@ -786,8 +786,8 @@ noncomputable def homologyShortComplex : ShortComplex C :=
 lemma shortExact : (ShortComplex.mk _ _ (cokernel.condition f)).ShortExact where
   exact := ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel f)
 
-lemma homologyShortComplex_exact : (homologyShortComplex f n).Exact := by
-  exact (shortExact f).exact₂ n
+lemma homologyShortComplex_exact : (homologyShortComplex f n).Exact :=
+  (shortExact f).homology_exact₂ n
 
 instance mono_homologyShortComplex_f : Mono (homologyShortComplex f n).f := by
   dsimp
@@ -796,14 +796,14 @@ instance mono_homologyShortComplex_f : Mono (homologyShortComplex f n).f := by
 noncomputable def I := (single C (ComplexShape.up ℤ) n).obj (Injective.under (((cokernel f).truncGE n).X n))
 
 lemma isZero_homology_I (q : ℤ) (hq : q ≠ n) : IsZero ((I f n).homology q) := by
-  rw [isZero_homology_iff, exactAt_iff]
+  rw [← exactAt_iff_isZero_homology, exactAt_iff]
   apply ShortComplex.exact_of_isZero_X₂
-  dsimp [I]
+  dsimp [I, single]
   rw [if_neg hq]
   exact Limits.isZero_zero C
 
 instance (p : ℤ) : Injective ((I f n).X p) := by
-  dsimp [I]
+  dsimp [I, single]
   split_ifs <;> infer_instance
 
 noncomputable def π' : (cokernel f).truncGE n ⟶ I f n :=
@@ -828,7 +828,7 @@ lemma mono_homologyMap_π' : Mono (homologyMap (π' f n) n) := by
     (IsZero.eq_of_src (isZero_truncGEX _ _ _ (by linarith)) _ _)
   have := (I f n).isIso_homologyπ  (n-1) n (by simp) (by
       apply IsZero.eq_of_src
-      dsimp [I]
+      dsimp [I, single]
       rw [if_neg (by linarith)]
       exact isZero_zero C)
   have : Mono ((truncGE (cokernel f) n).homologyπ n ≫ homologyMap (π' f n) n) := by
@@ -901,7 +901,7 @@ lemma isIso_p_f (q : ℤ) (hq : q ≤ n) : IsIso ((p f n).f q) := by
   refine' ⟨(MappingCocone.inl _).v q q (add_zero _), _, by simp [p]⟩
   have : (MappingCocone.snd (α f n)).v q (q-1) (by linarith) = 0 := by
     apply IsZero.eq_of_tgt
-    dsimp [I]
+    dsimp [I, single]
     rw [if_neg (by linarith)]
     exact Limits.isZero_zero C
   erw [← MappingCocone.id _ q (q - 1) (by linarith), self_eq_add_right, this, zero_comp]
@@ -926,21 +926,21 @@ noncomputable def cofFibFactorization : CofFibFactorization f where
 variable (hf : ∀ (i : ℤ) (_ : i ≤ n - 1), QuasiIsoAt f i)
 
 lemma isGE_cokernel : (cokernel f).IsGE n := ⟨fun i hi => by
-  apply ((shortExact f).exact₃ i (i+1) (by simp)).isZero_X₂
-  · apply ((shortExact f).exact₂ i).epi_f_iff.1
+  apply ((shortExact f).homology_exact₃ i (i+1) (by simp)).isZero_X₂
+  · apply ((shortExact f).homology_exact₂ i).epi_f_iff.1
     dsimp
     have := hf i (by linarith)
     infer_instance
-  · apply ((shortExact f).exact₁ i (i+1) (by simp)).mono_g_iff.1
+  · apply ((shortExact f).homology_exact₁ i (i+1) (by simp)).mono_g_iff.1
     dsimp
-    by_cases i + 1 ≤ n-1
+    by_cases h : i + 1 ≤ n-1
     · have := hf (i+1) h
       infer_instance
     · obtain rfl : n = i + 1 := by linarith
       infer_instance⟩
 
 lemma quasiIso_truncGEπ : QuasiIso ((cokernel f).truncGEπ n) := by
-  rw [quasiIso_iff_mem_qis, qis_truncGEπ_iff]
+  rw [quasiIso_truncGEπ_iff]
   exact isGE_cokernel f n hf
 
 variable [HasDerivedCategory C]
@@ -1057,7 +1057,7 @@ def zero [Mono f] (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE (n + 1)] :
     refine' ⟨0, _, _⟩
     all_goals
       apply IsZero.eq_of_src
-      rw [isZero_homology_iff, exactAt_iff]
+      rw [← exactAt_iff_isZero_homology, exactAt_iff]
       apply ShortComplex.exact_of_isZero_X₂
       apply isZero_of_isStrictlyGE _ (n + 1) i (by linarith)⟩
 
@@ -1226,7 +1226,7 @@ lemma i_π (n : ℕ) : i f n₀ ≫ (limit.π (inverseSystemI f n₀) (Opposite.
   apply limit.lift_π
 
 instance : QuasiIso (i f n₀) where
-  quasiIso q := by
+  quasiIsoAt q := by
     obtain ⟨n, hq⟩ : ∃ (n : ℕ), q + 1 ≤ n₀ + n :=
       ⟨Int.toNat (q + 1 - n₀), by linarith [Int.self_le_toNat (q + 1 - n₀)]⟩
     have := quasiIsoAt_π_f f n₀ n q hq
@@ -1272,7 +1272,7 @@ lemma exists_injective_resolution' (n : ℤ) [K.IsStrictlyGE n] :
     simp only [sub_add_cancel]
     infer_instance
   obtain ⟨L, hL, i, p, hi, hi', hp, _⟩ := CM5a (0 : K ⟶ 0) (n - 1)
-  have hp₀ : p = 0 := by simp
+  have hp₀ : p = 0 := (isZero_zero _).eq_of_tgt _ _
   refine' ⟨L, i, hi, hi', fun n => Injective.of_iso _ ((hp n).2), hL⟩
   exact
     { hom := kernel.ι _
@@ -1290,7 +1290,7 @@ lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
     rw [← DerivedCategory.isGE_Q_obj_iff] at hK ⊢
     exact DerivedCategory.isGE_of_iso (asIso (DerivedCategory.Q.map i)) n
   have : QuasiIso (L.truncGEπ n) := by
-    rw [quasiIso_iff_mem_qis, L.qis_truncGEπ_iff n]
+    rw [L.quasiIso_truncGEπ_iff n]
     infer_instance
   have : Injective (L.opcycles n) := by
     let S : ShortComplex C := ShortComplex.mk (L.d (n-1) n) (L.pOpcycles n) (by simp)
@@ -1299,7 +1299,7 @@ lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
       let T := L.sc' (n-2) (n-1) n
       have hT : T.Exact := by
         rw [← L.exactAt_iff' (n-2) (n-1) n (by simp; linarith) (by simp),
-          ← L.isZero_homology_iff]
+          exactAt_iff_isZero_homology]
         exact L.isZero_of_isGE n (n-1) (by linarith)
       apply hT.mono_g
       apply IsZero.eq_of_src
@@ -1311,7 +1311,7 @@ lemma exists_injective_resolution (n : ℤ) [K.IsStrictlyGE n] :
   -- note: this `i ≫ L.truncGEπ n` is a mono in degrees > n, but it may not be in degree n
   refine' ⟨L.truncGE n, i ≫ L.truncGEπ n, inferInstance, _, inferInstance⟩
   intro q
-  by_cases q < n
+  by_cases h : q < n
   · apply Injective.injective_of_isZero
     apply isZero_truncGEX
     exact h

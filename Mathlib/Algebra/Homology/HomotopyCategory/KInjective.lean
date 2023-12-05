@@ -87,10 +87,10 @@ lemma homComplex_exactAt_of_KInjective [L.IsKInjective] (hK : ∀ (n : ℤ), K.E
   refine' ⟨n.negOnePow • α.rightUnshift (n-1) (by linarith), _⟩
   apply (Cochain.rightShiftAddEquiv K L n n 0 (zero_add n)).injective
   dsimp [HomComplex]
-  simp only [hα, δ_zsmul, Cochain.rightShift_zsmul,
+  simp only [hα, δ_smul, Cochain.rightShift_smul,
     α.δ_rightUnshift (n-1) (by linarith) n 0 (by linarith),
-    Cochain.rightShift_rightUnshift, smul_smul,
-    Int.negOnePow_mul_self, one_smul]
+    Cochain.rightShift_rightUnshift, smul_smul, δ_units_smul,
+    Int.units_mul_self, one_smul]
 
 namespace HomComplex
 

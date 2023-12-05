@@ -11,7 +11,10 @@ namespace CochainComplex
 -- this should be moved (and generalized)
 
 instance {ι : Type*} [DecidableEq ι] (c : ComplexShape ι) (n : ι) :
-  (HomologicalComplex.single C c n).Additive where
+    (HomologicalComplex.single C c n).Additive where
+  map_add {X Y} f g := by
+    ext
+    simp [HomologicalComplex.single]
 
 open HomologicalComplex
 
@@ -20,9 +23,9 @@ variable {C}
 lemma singleFunctor_aux (n a a' : ℤ) (ha' : n + a = a') (X : C) (i : ℤ) :
     (((single C (ComplexShape.up ℤ) a').obj X)⟦n⟧).X i =
       ((single C (ComplexShape.up ℤ) a).obj X).X i := by
-  dsimp [CategoryTheory.shiftFunctor, shiftMonoidalFunctor]
+  dsimp [CategoryTheory.shiftFunctor, shiftMonoidalFunctor, single]
   obtain rfl : a' = a + n := by linarith
-  by_cases i = a
+  by_cases h : i = a
   · subst h
     simp only [ite_true]
   · rw [if_neg h, if_neg (fun h' => h (by linarith))]
@@ -36,26 +39,14 @@ noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ w
       (fun i => eqToIso (singleFunctor_aux n a a' ha' X i)) (by simp))
     (fun {X Y} f => by
       obtain rfl : a' = a + n := by linarith
-      ext i
-      dsimp
-      by_cases i = a
-      · subst h
-        simp only [dite_true, assoc, eqToHom_trans, eqToHom_trans_assoc]
-      · rw [dif_neg h, dif_neg (fun _ => h (by linarith)), zero_comp, comp_zero])
+      ext
+      simp [single])
   shiftIso_zero a := by
-    ext X i
-    by_cases i = a
-    · subst h
-      dsimp
-      simp [shiftFunctorZero_eq, XIsoOfEq]
-    · exact (isZeroSingleObjX _ _ _ _ _ h).eq_of_tgt _ _
+    ext
+    simp [single, shiftFunctorZero_eq, XIsoOfEq]
   shiftIso_add n m a a' a'' ha' ha'' := by
-    ext X i
-    by_cases i = a
-    · subst h
-      dsimp
-      simp [shiftFunctorAdd_eq, XIsoOfEq]
-    · exact (isZeroSingleObjX _ _ _ _ _ h).eq_of_tgt _ _
+    ext
+    simp [single, shiftFunctorAdd_eq, XIsoOfEq]
 
 instance (n : ℤ) : ((singleFunctors C).functor n).Additive := by
   dsimp only [singleFunctors]
@@ -67,15 +58,15 @@ variable {C}
 
 lemma singleFunctors_shiftIso_hom_app_f (n a a' : ℤ) (ha' : n + a = a') (X : C) (i : ℤ) (hi : i = a) :
     (((singleFunctors C).shiftIso n a a' ha').hom.app X).f i =
-      (singleObjXIsoOfEq C (ComplexShape.up ℤ) a' X (i + n) (by rw [hi, add_comm a, ha'])).hom ≫
-        (singleObjXIsoOfEq C (ComplexShape.up ℤ) a X i hi).inv := by
+      (singleObjXIsoOfEq (ComplexShape.up ℤ) a' X (i + n) (by rw [hi, add_comm a, ha'])).hom ≫
+        (singleObjXIsoOfEq (ComplexShape.up ℤ) a X i hi).inv := by
   dsimp [singleObjXIsoOfEq, singleFunctors]
   rw [eqToHom_trans]
 
 lemma singleFunctors_shiftIso_inv_app_f (n a a' : ℤ) (ha' : n + a = a') (X : C) (i : ℤ) (hi : i = a) :
     (((singleFunctors C).shiftIso n a a' ha').inv.app X).f i =
-        (singleObjXIsoOfEq C (ComplexShape.up ℤ) a X i hi).hom ≫
-      (singleObjXIsoOfEq C (ComplexShape.up ℤ) a' X (i + n) (by rw [hi, add_comm a, ha'])).inv := by
+        (singleObjXIsoOfEq (ComplexShape.up ℤ) a X i hi).hom ≫
+      (singleObjXIsoOfEq (ComplexShape.up ℤ) a' X (i + n) (by rw [hi, add_comm a, ha'])).inv := by
   dsimp [singleObjXIsoOfEq, singleFunctors]
   rw [eqToHom_trans]
 

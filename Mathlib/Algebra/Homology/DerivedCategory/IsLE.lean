@@ -57,32 +57,27 @@ lemma exists_iso_single [HasZeroObject C] (n : ℤ) [K.IsStrictlyGE n] [K.IsStri
   refine' ⟨K.X n, ⟨_⟩⟩
   refine' HomologicalComplex.Hom.isoOfComponents _ _
   · intro i
-    by_cases i = n
+    by_cases h : i = n
     · subst h
-      exact (singleObjXSelf _ _ _ _).symm
+      exact (singleObjXSelf _ _ _).symm
     · refine' IsZero.isoZero _ ≪≫ (IsZero.isoZero _).symm
       · by_cases hi' : i ≤ n
         · refine' K.isZero_of_isStrictlyGE n i _
           cases hi'.lt_or_eq <;> tauto
         · exact K.isZero_of_isStrictlyLE n i (by linarith)
-      · dsimp
-        rw [if_neg h]
-        exact isZero_zero _
+      · exact isZero_single_obj_X _ _ _ _ h
   · intro i j (hij : i + 1 = j)
     simp only [single_obj_d, comp_zero]
-    by_cases i < n
+    by_cases h : i < n
     · apply (K.isZero_of_isStrictlyGE n i h).eq_of_src
     · apply IsZero.eq_of_tgt
-      dsimp
-      rw [if_neg]
-      · exact isZero_zero _
-      · linarith
+      apply isZero_single_obj_X
+      linarith
 
 instance [HasZeroObject C] (A : C) (n : ℤ) :
     IsStrictlyLE ((single C (ComplexShape.up ℤ) n).obj A) n := ⟨fun i hi => by
-    dsimp
-    rw [if_neg (by linarith)]
-    exact isZero_zero _⟩
+    apply isZero_single_obj_X
+    linarith⟩
 
 instance [HasZeroObject C] (A : C) (n : ℤ) :
     IsStrictlyLE ((singleFunctor C n).obj A) n :=
@@ -90,9 +85,8 @@ instance [HasZeroObject C] (A : C) (n : ℤ) :
 
 instance [HasZeroObject C] (A : C) (n : ℤ) :
     IsStrictlyGE ((single C (ComplexShape.up ℤ) n).obj A) n := ⟨fun i hi => by
-    dsimp
-    rw [if_neg (by linarith)]
-    exact isZero_zero _⟩
+    apply isZero_single_obj_X
+    linarith⟩
 
 instance [HasZeroObject C] (A : C) (n : ℤ) :
     IsStrictlyGE ((singleFunctor C n).obj A) n :=

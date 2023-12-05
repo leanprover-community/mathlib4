@@ -19,9 +19,7 @@ def shiftEval (n i i' : ℤ) (hi : n + i = i') :
       HomologicalComplex.eval C (ComplexShape.up ℤ) i ≅
       HomologicalComplex.eval C (ComplexShape.up ℤ) i' :=
   NatIso.ofComponents
-    (fun K => K.XIsoOfEq (by dsimp ; rw [← hi, add_comm i])) (fun _ => by
-      dsimp
-      simp only [XIsoOfEq_hom_naturality])
+    (fun K => K.XIsoOfEq (by dsimp ; rw [← hi, add_comm i])) (by aesop_cat)
 
 @[simps!]
 def shiftShortComplexFunctor' (n i j k i' j' k' : ℤ)
@@ -29,17 +27,10 @@ def shiftShortComplexFunctor' (n i j k i' j' k' : ℤ)
   (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n) ⋙ shortComplexFunctor' C _ i j k ≅
     shortComplexFunctor' C _ i' j' k' :=
   NatIso.ofComponents (fun K => ShortComplex.isoMk
-    (((-1 : Units ℤ)^n) • ((shiftEval C n i i' hi).app K))
-    ((shiftEval C n j j' hj).app K) (((-1 : Units ℤ)^n) • ((shiftEval C n k k' hk).app K))
-    (by
-      dsimp
-      simp only [zsmul_comp, XIsoOfEq_hom_comp_d, d_comp_XIsoOfEq_hom, n.negOnePow_def])
-    (by
-      dsimp
-      simp only [XIsoOfEq_hom_comp_d, comp_zsmul, zsmul_comp,
-        d_comp_XIsoOfEq_hom, smul_smul, ← Int.negOnePow_def, Int.negOnePow_mul_self, one_smul]))
-      (fun _ => by
-        ext <;> dsimp <;> simp only [comp_zsmul, XIsoOfEq_hom_naturality, zsmul_comp])
+    (n.negOnePow • ((shiftEval C n i i' hi).app K))
+    ((shiftEval C n j j' hj).app K) (n.negOnePow • ((shiftEval C n k k' hk).app K))
+    (by aesop_cat) (by aesop_cat))
+      (fun _ => by ext <;> dsimp <;> simp)
 
 @[simps!]
 noncomputable def shiftShortComplexFunctorIso (n i i' : ℤ) (hi : n + i = i') :
@@ -61,10 +52,9 @@ lemma shiftShortComplexFunctorIso_add'_hom_app
       (shortComplexFunctor C (ComplexShape.up ℤ) a).map
         ((CategoryTheory.shiftFunctorAdd' (CochainComplex C ℤ) m n mn hmn).hom.app K) ≫ (shiftShortComplexFunctorIso C n a a' ha').hom.app (K⟦m⟧) ≫
         (shiftShortComplexFunctorIso C m a' a'' ha'' ).hom.app K := by
-  ext <;> dsimp <;>
-    simp only [comp_zsmul, zsmul_comp, smul_smul,
-      shiftFunctorAdd'_hom_app_f', ← hmn, ← Int.negOnePow_def, Int.negOnePow_add,
-      XIsoOfEq_shift, XIsoOfEq_hom_comp_XIsoOfEq_hom]
+  ext <;> dsimp <;> simp only [← hmn, Int.negOnePow_add, shiftFunctorAdd'_hom_app_f',
+    XIsoOfEq_shift, Linear.comp_units_smul, Linear.units_smul_comp,
+    XIsoOfEq_hom_comp_XIsoOfEq_hom, smul_smul]
 
 variable [CategoryWithHomology C]
 
@@ -114,7 +104,7 @@ noncomputable instance :
       shiftShortComplexFunctorIso_add'_hom_app n m _ rfl a a' a'' ha' ha'' K]
 
 instance {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n : ℤ) [QuasiIso φ] : QuasiIso (φ⟦n⟧') where
-  quasiIso a := by
+  quasiIsoAt a := by
     rw [quasiIsoAt_iff_isIso_homologyMap]
     refine' (NatIso.isIso_map_iff
       ((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso n a (n+a) rfl) φ).2 _

@@ -288,16 +288,15 @@ lemma W_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : S.W f := by
   exact Triangle.isoMk _ _ (asIso f) (Iso.refl _) (Iso.refl _)
     (by aesop_cat) (by aesop_cat) (by aesop_cat)
 
-lemma mul_mem_W_iff {X Y : C} (f : X ⟶ Y) (n : ℤ) :
-    S.W ((↑((-1 : Units ℤ)^n) : ℤ)  • f) ↔ S.W f :=
+lemma mul_mem_W_iff {X Y : C} (f : X ⟶ Y) (n : ℤˣ) :
+    S.W (n • f) ↔ S.W f :=
   S.respectsIsoW.arrow_mk_iso_iff
-    (Arrow.isoMk (((-1 : Units ℤ)^n) • (Iso.refl _)) (Iso.refl _)
-      (by dsimp ; simp only [Preadditive.zsmul_comp, id_comp, comp_id]))
+    (Arrow.isoMk (n • (Iso.refl _)) (Iso.refl _))
 
 instance WIsCompatibleWithShift : S.W.IsCompatibleWithShift ℤ := ⟨by
   have : ∀ {X Y : C} (f : X ⟶ Y) (hf : S.W f) (n : ℤ), S.W (f⟦n⟧') := by
     rintro X Y f ⟨Z, g, h, H, mem⟩ n
-    rw [← mul_mem_W_iff S _ n]
+    rw [← mul_mem_W_iff S _ n.negOnePow]
     exact ⟨_, _, _, Triangle.shift_distinguished _ H n, S.shift _ n mem⟩
   intro n
   apply MorphismProperty.ext

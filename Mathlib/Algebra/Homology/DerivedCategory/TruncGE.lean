@@ -241,7 +241,7 @@ variable (K L)
 
 lemma isZero_homology_truncGE (n i : ℤ) (hi : i < n) :
     IsZero ((K.truncGE n).homology i) := by
-  rw [isZero_homology_iff]
+  rw [← exactAt_iff_isZero_homology]
   exact ShortComplex.exact_of_isZero_X₂ _ (K.isZero_truncGEX _ _ hi)
 
 lemma isIso_homologyMap_truncGEπ (n i : ℤ) (hi : n ≤ i) :
@@ -293,13 +293,16 @@ lemma isIso_homologyMap_truncGEmap_iff (n i : ℤ) (hi : n ≤ i) :
   dsimp
   simp only [← homologyMap_comp, truncGEπ_naturality]
 
-lemma qis_truncGEmap_iff (n : ℤ) :
-    qis _ _ (truncGEmap φ n) ↔ ∀ (i : ℤ) (_ : n ≤ i), IsIso (homologyMap φ i) := by
+lemma quasiIso_truncGEmap_iff (n : ℤ) :
+    QuasiIso (truncGEmap φ n) ↔ ∀ (i : ℤ) (_ : n ≤ i), IsIso (homologyMap φ i) := by
   constructor
   · intro h i hi
     rw [← isIso_homologyMap_truncGEmap_iff φ n i hi]
-    apply h
-  · intro h i
+    infer_instance
+  · intro h
+    rw [quasiIso_iff]
+    intro i
+    rw [quasiIsoAt_iff_isIso_homologyMap]
     by_cases hi : n ≤ i
     · rw [isIso_homologyMap_truncGEmap_iff φ n i hi]
       exact h _ hi
@@ -308,18 +311,21 @@ lemma qis_truncGEmap_iff (n : ℤ) :
       · apply (K.isZero_homology_truncGE n i hi).eq_of_src
       · apply (L.isZero_homology_truncGE n i hi).eq_of_src
 
+
 variable (K)
 
-lemma qis_truncGEπ_iff (n : ℤ) :
-    qis _ _ (K.truncGEπ n) ↔ K.IsGE n := by
+lemma quasiIso_truncGEπ_iff (n : ℤ) :
+    QuasiIso (K.truncGEπ n) ↔ K.IsGE n := by
   constructor
   · intro h
     constructor
     intro i hi
-    have h' := h i
     exact IsZero.of_iso (K.isZero_homology_truncGE _ _ hi)
       (asIso (homologyMap (truncGEπ K n) i))
-  · intro h i
+  · intro h
+    rw [quasiIso_iff]
+    intro i
+    rw [quasiIsoAt_iff_isIso_homologyMap]
     by_cases hi : n ≤ i
     · exact K.isIso_homologyMap_truncGEπ n i hi
     · simp only [not_le] at hi
@@ -327,9 +333,10 @@ lemma qis_truncGEπ_iff (n : ℤ) :
       · apply (K.isZero_of_isGE n i hi).eq_of_src
       · apply (K.isZero_homology_truncGE n i hi).eq_of_src
 
+
 instance (n : ℤ) [K.IsGE n] : IsIso (DerivedCategory.Q.map (K.truncGEπ n)) := by
   apply Localization.inverts DerivedCategory.Q (qis C _)
-  rw [qis_truncGEπ_iff]
+  rw [qis_iff, quasiIso_truncGEπ_iff]
   infer_instance
 
 variable (C)
@@ -346,9 +353,9 @@ noncomputable def natTransTruncGEπ (n : ℤ) : 𝟭 _ ⟶ functorTruncGE C n wh
 lemma qis_isInvertedBy_functorTruncGE_comp_Q (n : ℤ) :
     (qis C _).IsInvertedBy (functorTruncGE C n ⋙ DerivedCategory.Q) := fun K L f hf => by
   dsimp
-  rw [DerivedCategory.isIso_Q_map_iff', qis_truncGEmap_iff]
-  intro i _
-  exact hf i
+  rw [qis_iff] at hf
+  rw [DerivedCategory.isIso_Q_map_iff_quasiIso, quasiIso_truncGEmap_iff]
+  infer_instance
 
 instance (n : ℤ)  : (K.truncGE n).IsStrictlyGE n := ⟨K.isZero_truncGEX n⟩
 
@@ -529,10 +536,9 @@ lemma left_fac_of_isStrictlyGE (X Y : CochainComplex C ℤ) (f : Q.obj X ⟶ Q.o
       (hs : IsIso (Q.map s)), f = Q.map g ≫ inv (Q.map s) := by
   obtain ⟨Y', g, s, hs, rfl⟩ := left_fac X Y f
   have : IsIso (Q.map (CochainComplex.truncGEmap s n)) := by
-    rw [isIso_Q_map_iff', CochainComplex.qis_truncGEmap_iff]
-    rw [isIso_Q_map_iff'] at hs
-    intro i _
-    exact hs i
+    rw [isIso_Q_map_iff_quasiIso, CochainComplex.quasiIso_truncGEmap_iff]
+    rw [isIso_Q_map_iff_quasiIso] at hs
+    infer_instance
   refine' ⟨Y'.truncGE n, inferInstance, X.truncGEπ n ≫ CochainComplex.truncGEmap g n,
     Y.truncGEπ n ≫ CochainComplex.truncGEmap s n, _, _⟩
   · rw [Q.map_comp]

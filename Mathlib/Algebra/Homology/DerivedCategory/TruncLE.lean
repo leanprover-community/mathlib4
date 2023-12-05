@@ -236,7 +236,7 @@ variable (K L)
 
 lemma isZero_homology_truncLE (n i : ℤ) (hi : n < i) :
     IsZero ((K.truncLE n).homology i) := by
-  rw [isZero_homology_iff]
+  rw [← exactAt_iff_isZero_homology]
   exact ShortComplex.exact_of_isZero_X₂ _ (K.isZero_truncLEX _ _ hi)
 
 lemma isIso_homologyMap_truncLEι (n i : ℤ) (hi : i ≤ n) :
@@ -287,13 +287,16 @@ lemma isIso_homologyMap_truncLEmap_iff (n i : ℤ) (hi : i ≤ n) :
   dsimp
   simp only [← homologyMap_comp, truncLEι_naturality]
 
-lemma qis_truncLEmap_iff (n : ℤ) :
-    qis _ _ (truncLEmap φ n) ↔ ∀ (i : ℤ) (_ : i ≤ n), IsIso (homologyMap φ i) := by
+lemma quasiIso_truncLEmap_iff (n : ℤ) :
+    QuasiIso (truncLEmap φ n) ↔ ∀ (i : ℤ) (_ : i ≤ n), IsIso (homologyMap φ i) := by
   constructor
   · intro h i hi
     rw [← isIso_homologyMap_truncLEmap_iff φ n i hi]
-    apply h
-  · intro h i
+    infer_instance
+  · intro h
+    rw [quasiIso_iff]
+    intro i
+    rw [quasiIsoAt_iff_isIso_homologyMap]
     by_cases hi : i ≤ n
     · rw [isIso_homologyMap_truncLEmap_iff φ n i hi]
       exact h _ hi
@@ -304,16 +307,18 @@ lemma qis_truncLEmap_iff (n : ℤ) :
 
 variable (K)
 
-lemma qis_truncLEι_iff (n : ℤ) :
-    qis _ _ (K.truncLEι n) ↔ K.IsLE n := by
+lemma quasiIso_truncLEι_iff (n : ℤ) :
+    QuasiIso (K.truncLEι n) ↔ K.IsLE n := by
   constructor
   · intro h
     constructor
     intro i hi
-    have h' := h i
     exact IsZero.of_iso (K.isZero_homology_truncLE _ _ hi)
       (asIso (homologyMap (truncLEι K n) i)).symm
-  · intro h i
+  · intro h
+    rw [quasiIso_iff]
+    intro i
+    rw [quasiIsoAt_iff_isIso_homologyMap]
     by_cases hi : i ≤ n
     · exact K.isIso_homologyMap_truncLEι n i hi
     · simp only [not_le] at hi
@@ -323,7 +328,7 @@ lemma qis_truncLEι_iff (n : ℤ) :
 
 instance (n : ℤ) [K.IsLE n] : IsIso (DerivedCategory.Q.map (K.truncLEι n)) := by
   apply Localization.inverts DerivedCategory.Q (qis C _)
-  rw [qis_truncLEι_iff]
+  rw [qis_iff, quasiIso_truncLEι_iff]
   infer_instance
 
 variable (C)
@@ -340,9 +345,9 @@ noncomputable def natTransTruncLEι (n : ℤ) : functorTruncLE C n ⟶ 𝟭 _ wh
 lemma qis_isInvertedBy_functorTruncLE_comp_Q (n : ℤ) :
     (qis C _).IsInvertedBy (functorTruncLE C n ⋙ DerivedCategory.Q) := fun K L f hf => by
   dsimp
-  rw [DerivedCategory.isIso_Q_map_iff', qis_truncLEmap_iff]
-  intro i _
-  exact hf i
+  rw [qis_iff] at hf
+  rw [DerivedCategory.isIso_Q_map_iff_quasiIso, quasiIso_truncLEmap_iff]
+  infer_instance
 
 instance (n : ℤ) : (K.truncLE n).IsStrictlyLE n := ⟨K.isZero_truncLEX n⟩
 
@@ -524,10 +529,9 @@ lemma right_fac_of_isStrictlyLE (X Y : CochainComplex C ℤ) (f : Q.obj X ⟶ Q.
       (g : X' ⟶ Y), f = inv (Q.map s) ≫ Q.map g := by
   obtain ⟨X', s, hs, g, rfl⟩ := right_fac X Y f
   have : IsIso (Q.map (CochainComplex.truncLEmap s n)) := by
-    rw [isIso_Q_map_iff', CochainComplex.qis_truncLEmap_iff]
-    rw [isIso_Q_map_iff'] at hs
-    intro i _
-    exact hs i
+    rw [isIso_Q_map_iff_quasiIso, CochainComplex.quasiIso_truncLEmap_iff]
+    rw [isIso_Q_map_iff_quasiIso] at hs
+    infer_instance
   refine' ⟨X'.truncLE n, inferInstance, CochainComplex.truncLEmap s n ≫ X.truncLEι n, _,
       CochainComplex.truncLEmap g n ≫ Y.truncLEι n, _⟩
   · rw [Q.map_comp]
