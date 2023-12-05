@@ -1390,6 +1390,7 @@ import Mathlib.Condensed.Explicit
 import Mathlib.Condensed.Functors
 import Mathlib.Condensed.Limits
 import Mathlib.Condensed.Solid
+import Mathlib.Condensed.TopComparison
 import Mathlib.Control.Applicative
 import Mathlib.Control.Basic
 import Mathlib.Control.Bifunctor
