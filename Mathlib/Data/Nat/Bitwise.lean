@@ -513,12 +513,9 @@ theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b <
   (or_iff_right fun h' => (h.asymm h').elim).1 <| xor_trichotomy h.ne
 #align nat.lt_lxor_cases Nat.lt_xor_cases
 
-
-set_option linter.deprecated false in
 @[simp] lemma bit0_bne_zero (x : Nat) : (bit0 x != 0) = (x != 0) := by
   cases x <;> rfl
 
-set_option linter.deprecated false in
 lemma lt_pow_of_bit_lt_pow_succ {w x : Nat} {x₀ : Bool} :
     bit x₀ x < 2 ^ (w + 1) → x < 2 ^ w := by
   have h0 : bit0 x < 2 ^ w * 2 → x < 2 ^ w := by
