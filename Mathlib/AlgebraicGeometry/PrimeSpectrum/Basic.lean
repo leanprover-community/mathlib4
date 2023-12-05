@@ -713,20 +713,20 @@ theorem comap_inducing_of_surjective (hf : Surjective f) : Inducing (comap f) wh
 
 
 variable {T : Type u} (T' : Type v) [CommRing T] [CommRing T']
-variable (g : T →+* T')
+variable (f : T →+* T')
 
-theorem image_comap_zeroLocus_eq_zeroLocus_comap (hg : Surjective g) (I : Ideal T') :
-    comap g '' zeroLocus I = zeroLocus (I.comap g) := by
+theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal T') :
+    comap f '' zeroLocus I = zeroLocus (I.comap f) := by
   simp only [Set.ext_iff, Set.mem_image, mem_zeroLocus, SetLike.coe_subset_coe]
   refine' fun p => ⟨_, fun h_I_p => _⟩
   · rintro ⟨p, hp, rfl⟩ a ha
     exact hp ha
-  · have hp : ker g ≤ p.asIdeal := (Ideal.comap_mono bot_le).trans h_I_p
-    refine' ⟨⟨p.asIdeal.map g, Ideal.map_isPrime_of_surjective hg hp⟩, fun x hx => _, _⟩
-    · obtain ⟨x', rfl⟩ := hg x
-      exact Ideal.mem_map_of_mem g (h_I_p hx)
+  · have hp : ker f ≤ p.asIdeal := (Ideal.comap_mono bot_le).trans h_I_p
+    refine' ⟨⟨p.asIdeal.map f, Ideal.map_isPrime_of_surjective hf hp⟩, fun x hx => _, _⟩
+    · obtain ⟨x', rfl⟩ := hf x
+      exact Ideal.mem_map_of_mem f (h_I_p hx)
     · ext x
-      rw [comap_asIdeal, Ideal.mem_comap, Ideal.mem_map_iff_of_surjective g hg]
+      rw [comap_asIdeal, Ideal.mem_comap, Ideal.mem_map_iff_of_surjective f hf]
       refine' ⟨_, fun hx => ⟨x, hx, rfl⟩⟩
       rintro ⟨x', hx', heq⟩
       rw [← sub_sub_cancel x' x]
@@ -734,23 +734,23 @@ theorem image_comap_zeroLocus_eq_zeroLocus_comap (hg : Surjective g) (I : Ideal 
       rwa [mem_ker, map_sub, sub_eq_zero]
 #align prime_spectrum.image_comap_zero_locus_eq_zero_locus_comap PrimeSpectrum.image_comap_zeroLocus_eq_zeroLocus_comap
 
-theorem range_comap_of_surjective (hg : Surjective g) :
-    Set.range (comap g) = zeroLocus (ker g) := by
+theorem range_comap_of_surjective (hf : Surjective f) :
+    Set.range (comap f) = zeroLocus (ker f) := by
   rw [← Set.image_univ]
-  convert image_comap_zeroLocus_eq_zeroLocus_comap _ _ hg _
+  convert image_comap_zeroLocus_eq_zeroLocus_comap _ _ hf _
   rw [zeroLocus_bot]
 #align prime_spectrum.range_comap_of_surjective PrimeSpectrum.range_comap_of_surjective
 
-theorem isClosed_range_comap_of_surjective (hg : Surjective g) :
-    IsClosed (Set.range (comap g)) := by
-  rw [range_comap_of_surjective _ g hg]
+theorem isClosed_range_comap_of_surjective (hf : Surjective f) :
+    IsClosed (Set.range (comap f)) := by
+  rw [range_comap_of_surjective _ f hf]
   exact isClosed_zeroLocus _
 #align prime_spectrum.is_closed_range_comap_of_surjective PrimeSpectrum.isClosed_range_comap_of_surjective
 
-theorem closedEmbedding_comap_of_surjective (hg : Surjective g) : ClosedEmbedding (comap g) :=
-  { induced := (comap_inducing_of_surjective T' g hg).induced
-    inj := comap_injective_of_surjective g hg
-    closed_range := isClosed_range_comap_of_surjective T' g hg }
+theorem closedEmbedding_comap_of_surjective (hf : Surjective f) : ClosedEmbedding (comap f) :=
+  { induced := (comap_inducing_of_surjective T' f hf).induced
+    inj := comap_injective_of_surjective f hf
+    closed_range := isClosed_range_comap_of_surjective T' f hf }
 #align prime_spectrum.closed_embedding_comap_of_surjective PrimeSpectrum.closedEmbedding_comap_of_surjective
 
 end SpecOfSurjective
@@ -819,7 +819,7 @@ theorem basicOpen_pow (f : R) (n : ℕ) (hn : 0 < n) : basicOpen (f ^ n) = basic
 theorem isTopologicalBasis_basic_opens :
     TopologicalSpace.IsTopologicalBasis
       (Set.range fun r : R => (basicOpen r : Set (PrimeSpectrum R))) := by
-  apply TopologicalSpace.isTopologicalBasis_of_open_of_nhds
+  apply TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds
   · rintro _ ⟨r, rfl⟩
     exact isOpen_basicOpen
   · rintro p U hp ⟨s, hs⟩
