@@ -187,7 +187,7 @@ variable {α}
 
 /-- If `α` is equipped with the Scott topology, then it is homeomorphic to `WithScott α`.
 -/
-def WithScottHomeomorph : WithScott α ≃ₜ α :=
+def withScottHomeomorph : WithScott α ≃ₜ α :=
   WithScott.ofScott.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 end preorder
