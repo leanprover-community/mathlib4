@@ -27,7 +27,7 @@ namespace Complex
 /-- **Fundamental theorem of algebra**: every non constant complex polynomial
   has a root -/
 theorem exists_root {f : ℂ[X]} (hf : 0 < degree f) : ∃ z : ℂ, IsRoot f z := by
-  by_contra' hf'
+  by_contra! hf'
   /- Since `f` has no roots, `f⁻¹` is differentiable. And since `f` is a polynomial, it tends to
   infinity at infinity, thus `f⁻¹` tends to zero at infinity. By Liouville's theorem, `f⁻¹ = 0`. -/
   have (z : ℂ) : (f.eval z)⁻¹ = 0 :=

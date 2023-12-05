@@ -612,7 +612,7 @@ theorem exists_subgroup_card_pow_succ [Fintype G] {p : ℕ} {n : ℕ} [hp : Fact
     rw [Set.card_image_of_injective
         (Subgroup.comap (mk' (H.subgroupOf H.normalizer)) (zpowers x) : Set H.normalizer)
         Subtype.val_injective,
-      pow_succ', ← hH, Fintype.card_congr hequiv, ← hx, ←Fintype.card_zpowers, ←
+      pow_succ', ← hH, Fintype.card_congr hequiv, ← hx, ← Fintype.card_zpowers, ←
       Fintype.card_prod]
     exact @Fintype.card_congr _ _ (_) (_)
       (preimageMkEquivSubgroupProdSet (H.subgroupOf H.normalizer) (zpowers x)), by

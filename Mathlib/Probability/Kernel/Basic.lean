@@ -97,7 +97,7 @@ theorem zero_apply (a : α) : (0 : kernel α β) a = 0 :=
 
 @[simp]
 theorem coe_finset_sum (I : Finset ι) (κ : ι → kernel α β) : ⇑(∑ i in I, κ i) = ∑ i in I, ⇑(κ i) :=
-  (coeAddHom α β).map_sum _ _
+  map_sum (coeAddHom α β) _ _
 #align probability_theory.kernel.coe_finset_sum ProbabilityTheory.kernel.coe_finset_sum
 
 theorem finset_sum_apply (I : Finset ι) (κ : ι → kernel α β) (a : α) :
