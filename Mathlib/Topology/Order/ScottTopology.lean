@@ -165,9 +165,6 @@ is a tail of `d` which is a subset of `u`.
 class IsScott (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
   topology_eq_scott : t = scott
 
-attribute [nolint docBlame]
-  IsScott.topology_eq_scott
-
 instance [Preorder α] : IsScott (WithScott α) :=
   ⟨rfl⟩
 
