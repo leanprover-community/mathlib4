@@ -246,7 +246,7 @@ set_option linter.uppercaseLean3 false in
 #align ODE_solution_unique_of_mem_set ODE_solution_unique_of_mem_set
 
 -- Ico rather than Icc
-theorem ODE_solution_unique_of_mem_set_Ioo {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
+theorem ODE_solution_unique_of_mem_set_Ico {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
     (hv : ∀ t, LipschitzOnWith K (v t) (s t))
     {f g : ℝ → E} {a b : ℝ} (hf : ContinuousOn f (Ico a b))
     (hf' : ∀ t ∈ Ico a b, HasDerivWithinAt f (v t (f t)) (Ici t) t) (hfs : ∀ t ∈ Ico a b, f t ∈ s t)
@@ -258,18 +258,42 @@ theorem ODE_solution_unique_of_mem_set_Ioo {v : ℝ → E → E} {s : ℝ → Se
     (hg.mono (Icc_subset_Ico_right ht.2)) (fun _ ht' ↦ hg' _ ⟨ht'.1, lt_trans ht'.2 ht.2⟩)
     (fun _ ht' ↦ hgs _ ⟨ht'.1, lt_trans ht'.2 ht.2⟩) ha ⟨ht.1, le_refl _⟩
 
--- starting point t₀ can be inside [a, b]
-example {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
+-- starting point t₀ can be inside (a, b)
+theorem ODE_solution_unique_of_mem_set_Ioo {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0}
     (hv : ∀ t, LipschitzOnWith K (v t) (s t))
     {f g : ℝ → E} {a b t₀ : ℝ} (ht : t₀ ∈ Ioo a b) (hf : ContinuousOn f (Ioo a b))
     (hf' : ∀ t ∈ Ioo a b, HasDerivAt f (v t (f t)) t) (hfs : ∀ t ∈ Ioo a b, f t ∈ s t)
     (hg : ContinuousOn g (Ioo a b)) (hg' : ∀ t ∈ Ioo a b, HasDerivAt g (v t (g t)) t)
     (hgs : ∀ t ∈ Ioo a b, g t ∈ s t) (ha : f t₀ = g t₀) : EqOn f g (Ioo a b) := by
-  have hu : Ioo a b ⊆ Ioc a t₀ ∪ Ico t₀ b := sorry
-  apply EqOn.mono hu
+  apply EqOn.mono (Ioo_subset_Ioc_union_Ico (b := t₀))
   apply EqOn.union
-  · sorry -- need to reverse time
-  · exact ODE_solution_unique_of_mem_set_Ioo hv
+  · have hv' : ∀ t, LipschitzOnWith K (Neg.neg ∘ (v (-t))) (s (-t)) := fun t ↦ by
+      rw [← one_mul K]
+      apply LipschitzWith.comp_lipschitzOnWith (LipschitzWith.neg LipschitzWith.id)
+      exact hv _
+    have : EqOn (f ∘ Neg.neg) (g ∘ Neg.neg) (Ico (-t₀) (-a)) := by
+      apply ODE_solution_unique_of_mem_set_Ico hv'
+        (hf.comp continuousOn_neg
+          fun _ ht' ↦ ⟨lt_neg.mp ht'.2, lt_of_le_of_lt (neg_le.mp ht'.1) ht.2⟩) _
+        (fun _ ht' ↦ hfs _ ⟨lt_neg.mp ht'.2, lt_of_le_of_lt (neg_le.mp ht'.1) ht.2⟩)
+        (hg.comp continuousOn_neg
+          fun _ ht' ↦ ⟨lt_neg.mp ht'.2, lt_of_le_of_lt (neg_le.mp ht'.1) ht.2⟩) _
+        (fun _ ht' ↦ hgs _ ⟨lt_neg.mp ht'.2, lt_of_le_of_lt (neg_le.mp ht'.1) ht.2⟩)
+        (by simp [ha])
+      · intros t' ht'
+        apply HasDerivAt.hasDerivWithinAt
+        have := hf' (-t') ⟨lt_neg.mp ht'.2, lt_of_le_of_lt (neg_le.mp ht'.1) ht.2⟩
+        convert HasFDerivAt.comp_hasDerivAt t' this (hasDerivAt_neg t')
+        simp
+      · intros t' ht'
+        apply HasDerivAt.hasDerivWithinAt
+        have := hg' (-t') ⟨lt_neg.mp ht'.2, lt_of_le_of_lt (neg_le.mp ht'.1) ht.2⟩
+        convert HasFDerivAt.comp_hasDerivAt t' this (hasDerivAt_neg t')
+        simp
+    rw [eqOn_comp_right_iff] at this
+    convert this
+    simp
+  · exact ODE_solution_unique_of_mem_set_Ico hv
       (hf.mono (Ico_subset_Ioo_left ht.1))
       (fun _ ht' => HasDerivAt.hasDerivWithinAt <| hf' _ <|
         mem_of_mem_of_subset ht' (Ico_subset_Ioo_left ht.1))
