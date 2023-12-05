@@ -736,7 +736,7 @@ lemma pageInfinityToAbutment_abutmentToPageInfinity_eq_zero :
   dsimp [pageInfinityToAbutment, abutmentToPageInfinity]
   rw [assoc, Preadditive.IsIso.comp_left_eq_zero,
     ι_filtrationIsoAbutment_inv'_assoc _ _ _ i (leOfHom φ), comp_π]
-  by_contra'
+  by_contra!
   apply hij
   linarith [leOfHom φ]
 
@@ -751,7 +751,7 @@ def shortComplexPageInfinityToAbutmentAbutmentToPageInfinity_exact :
   have := (h.isIso_π_iff i pqi hpqi).2 Hi
   have := (h.isIso_filtrationι_iff j).2 Hj
   let φ₁ : i ⟶ j-1 := homOfLE (by
-    by_contra'
+    by_contra!
     apply hij
     linarith [leOfHom φ])
   let φ₂ : j-1 ⟶ j := homOfLE (by linarith)
