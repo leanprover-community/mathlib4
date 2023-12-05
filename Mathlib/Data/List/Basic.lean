@@ -10,7 +10,7 @@ import Mathlib.Init.Core
 import Std.Data.List.Lemmas
 import Mathlib.Tactic.Common
 
-#align_import data.list.basic from "leanprover-community/mathlib"@"9da1b3534b65d9661eb8f42443598a92bbb49211"
+#align_import data.list.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-!
 # Basic properties of lists
@@ -642,13 +642,6 @@ theorem isEmpty_iff_eq_nil {l : List α} : l.isEmpty ↔ l = [] := by cases l <;
 
 /-! ### dropLast -/
 
-@[simp]
-theorem length_dropLast : ∀ l : List α, length l.dropLast = length l - 1
-  | [] | [_] => rfl
-  | a::b::l => by
-    rw [dropLast, length_cons, length_cons, length_dropLast (b::l), succ_sub_one, length_cons,
-      succ_sub_one]
-    simp
 #align list.length_init List.length_dropLast
 
 /-! ### getLast -/
@@ -1752,7 +1745,9 @@ theorem map_join (f : α → β) (L : List (List α)) : map f (join L) = join (m
 
 theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) = map f l := by
   unfold List.bind
-  induction l <;> simp [map, join, List.ret, cons_append, nil_append, *] at *
+  induction l <;>
+    simp (config := { unfoldPartialApp := true })
+      [map, join, List.ret, cons_append, nil_append, *] at *
   assumption
 #align list.bind_ret_eq_map List.bind_ret_eq_map
 
@@ -1770,20 +1765,6 @@ theorem map_eq_map {α β} (f : α → β) (l : List α) : f <$> l = map f l :=
 theorem map_tail (f : α → β) (l) : map f (tail l) = tail (map f l) := by cases l <;> rfl
 #align list.map_tail List.map_tail
 
-@[simp]
-theorem map_injective_iff {f : α → β} : Injective (map f) ↔ Injective f := by
-  constructor <;> intro h x y hxy
-  · suffices [x] = [y] by simpa using this
-    apply h
-    simp [hxy]
-  · induction' y with yh yt y_ih generalizing x
-    · simpa using hxy
-    cases x
-    · simp at hxy
-    · simp only [map, cons.injEq] at hxy
-      simp [y_ih hxy.2, h hxy.1]
-#align list.map_injective_iff List.map_injective_iff
-
 /-- A single `List.map` of a composition of functions is equal to
 composing a `List.map` with another `List.map`, fully applied.
 This is the reverse direction of `List.map_map`.
@@ -1799,6 +1780,68 @@ a single `List.map` of composed functions.
 theorem map_comp_map (g : β → γ) (f : α → β) : map g ∘ map f = map (g ∘ f) := by
   ext l; rw [comp_map, Function.comp_apply]
 #align list.map_comp_map List.map_comp_map
+
+section map_bijectivity
+
+theorem _root_.Function.LeftInverse.list_map {f : α → β} {g : β → α} (h : LeftInverse f g) :
+    LeftInverse (map f) (map g)
+  | [] => by simp_rw [map_nil]
+  | x :: xs => by simp_rw [map_cons, h x, h.list_map xs]
+
+nonrec theorem _root_.Function.RightInverse.list_map {f : α → β} {g : β → α}
+    (h : RightInverse f g) : RightInverse (map f) (map g) :=
+  h.list_map
+
+nonrec theorem _root_.Function.Involutive.list_map {f : α → α}
+    (h : Involutive f) : Involutive (map f) :=
+  Function.LeftInverse.list_map h
+
+@[simp]
+theorem map_leftInverse_iff {f : α → β} {g : β → α} :
+    LeftInverse (map f) (map g) ↔ LeftInverse f g :=
+  ⟨fun h x => by injection h [x], (·.list_map)⟩
+
+@[simp]
+theorem map_rightInverse_iff {f : α → β} {g : β → α} :
+    RightInverse (map f) (map g) ↔ RightInverse f g := map_leftInverse_iff
+
+@[simp]
+theorem map_involutive_iff {f : α → α} :
+    Involutive (map f) ↔ Involutive f := map_leftInverse_iff
+
+theorem _root_.Function.Injective.list_map {f : α → β} (h : Injective f) :
+    Injective (map f)
+  | [], [], _ => rfl
+  | x :: xs, y :: ys, hxy => by
+    injection hxy with hxy hxys
+    rw [h hxy, h.list_map hxys]
+
+@[simp]
+theorem map_injective_iff {f : α → β} : Injective (map f) ↔ Injective f := by
+  refine ⟨fun h x y hxy => ?_, (·.list_map)⟩
+  suffices [x] = [y] by simpa using this
+  apply h
+  simp [hxy]
+#align list.map_injective_iff List.map_injective_iff
+
+theorem _root_.Function.Surjective.list_map {f : α → β} (h : Surjective f) :
+    Surjective (map f) :=
+  let ⟨_, h⟩ := h.hasRightInverse; h.list_map.surjective
+
+@[simp]
+theorem map_surjective_iff {f : α → β} : Surjective (map f) ↔ Surjective f := by
+  refine ⟨fun h x => ?_, (·.list_map)⟩
+  let ⟨[y], hxy⟩ := h [x]
+  exact ⟨_, List.singleton_injective hxy⟩
+
+theorem _root_.Function.Bijective.list_map {f : α → β} (h : Bijective f) : Bijective (map f) :=
+  ⟨h.1.list_map, h.2.list_map⟩
+
+@[simp]
+theorem map_bijective_iff {f : α → β} : Bijective (map f) ↔ Bijective f := by
+  simp_rw [Function.Bijective, map_injective_iff, map_surjective_iff]
+
+end map_bijectivity
 
 theorem map_filter_eq_foldr (f : α → β) (p : α → Bool) (as : List α) :
     map f (filter p as) = foldr (fun a bs => bif p a then f a :: bs else bs) [] as := by
@@ -2439,9 +2482,12 @@ theorem injective_foldl_comp {α : Type*} {l : List (α → α)} {f : α → α}
     apply hl _ (List.mem_cons_self _ _)
 #align list.injective_foldl_comp List.injective_foldl_comp
 
-/- Porting note: couldn't do induction proof because "code generator does not support recursor
-  'List.rec' yet". Earlier proof:
-
+/-- Induction principle for values produced by a `foldr`: if a property holds
+for the seed element `b : β` and for all incremental `op : α → β → β`
+performed on the elements `(a : α) ∈ l`. The principle is given for
+a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
+def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β) (hb : C b)
+    (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op a b)) : C (foldr op b l) := by
   induction l with
   | nil => exact hb
   | cons hd tl IH =>
@@ -2449,46 +2495,17 @@ theorem injective_foldl_comp {α : Type*} {l : List (α → α)} {f : α → α}
     refine' IH _
     intro y hy x hx
     exact hl y hy x (mem_cons_of_mem hd hx)
--/
-/-- Induction principle for values produced by a `foldr`: if a property holds
-for the seed element `b : β` and for all incremental `op : α → β → β`
-performed on the elements `(a : α) ∈ l`. The principle is given for
-a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
-def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β) (hb : C b)
-    (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op a b)) : C (foldr op b l) := by
-  cases l with
-  | nil => exact hb
-  | cons hd tl =>
-    have IH : ((b : β) → C b → (a : α) → a ∈ tl → C (op a b)) → C (foldr op b tl) :=
-      foldrRecOn _ _ _ hb
-    refine' hl _ _ hd (mem_cons_self hd tl)
-    refine' IH _
-    intro y hy x hx
-    exact hl y hy x (mem_cons_of_mem hd hx)
 #align list.foldr_rec_on List.foldrRecOn
 
-/- Porting note: couldn't do induction proof because "code generator does not support recursor
-  'List.rec' yet". Earlier proof:
-
-  induction l generalizing b with
-  | nil => exact hb
-  | cons hd tl IH =>
-    refine' IH _ _ _
-    · exact hl b hb hd (mem_cons_self hd tl)
-    · intro y hy x hx
-      exact hl y hy x (mem_cons_of_mem hd hx)
--/
 /-- Induction principle for values produced by a `foldl`: if a property holds
 for the seed element `b : β` and for all incremental `op : β → α → β`
 performed on the elements `(a : α) ∈ l`. The principle is given for
 a `Sort`-valued predicate, i.e., it can also be used to construct data. -/
 def foldlRecOn {C : β → Sort*} (l : List α) (op : β → α → β) (b : β) (hb : C b)
     (hl : ∀ (b : β) (_ : C b) (a : α) (_ : a ∈ l), C (op b a)) : C (foldl op b l) := by
-  cases l with
+  induction l generalizing b with
   | nil => exact hb
-  | cons hd tl =>
-    have IH : (b : β) → C b → ((b : β) → C b → (a : α) → a ∈ tl → C (op b a)) → C (foldl op b tl) :=
-      foldlRecOn _ _
+  | cons hd tl IH =>
     refine' IH _ _ _
     · exact hl b hb hd (mem_cons_self hd tl)
     · intro y hy x hx
@@ -2523,7 +2540,7 @@ variable {f : β → α → β} {b : β} {a : α} {l : List α}
 theorem length_scanl : ∀ a l, length (scanl f a l) = l.length + 1
   | a, [] => rfl
   | a, x :: l => by
-    rw [scanl, length_cons, length_cons, ←succ_eq_add_one, congr_arg succ]
+    rw [scanl, length_cons, length_cons, ← succ_eq_add_one, congr_arg succ]
     exact length_scanl _ _
 #align list.length_scanl List.length_scanl
 
@@ -2576,7 +2593,7 @@ theorem nthLe_succ_scanl {i : ℕ} {h : i + 1 < (scanl f b l).length} :
   induction i generalizing b l with
   | zero =>
     cases l
-    · simp only [length, zero_add, scanl_nil] at h
+    · simp only [length, zero_eq, lt_self_iff_false] at h
     · simp [scanl_cons, singleton_append, nthLe_zero_scanl, nthLe_cons]
   | succ i hi =>
     cases l
@@ -2735,7 +2752,7 @@ theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
     by simp [← h (pure b)]
   induction l with
   | nil => intro; simp
-  | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ←l_ih, functor_norm]
+  | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ← l_ih, functor_norm]
 #align list.mfoldl_eq_foldl List.foldlM_eq_foldl
 
 -- Porting note: now in std
@@ -2794,8 +2811,8 @@ where
         | nil => contradiction
         | cons hd tl =>
           rw [length, succ_eq_add_one] at h
-          rw [splitAt.go, take, drop, append_cons, Array.toList_eq, ←Array.push_data,
-            ←Array.toList_eq]
+          rw [splitAt.go, take, drop, append_cons, Array.toList_eq, ← Array.push_data,
+            ← Array.toList_eq]
           exact ih _ _ <| lt_of_add_lt_add_right h
     · induction n generalizing xs acc with
       | zero =>
@@ -2977,7 +2994,7 @@ theorem modifyLast_append (f : α → α) (l₁ l₂ : List α) (_ : l₂ ≠ []
     cases tl with
     | nil => exact modifyLast_append_one _ hd _
     | cons hd' tl' =>
-      rw [append_cons, ←nil_append (hd :: hd' :: tl'), append_cons [], nil_append,
+      rw [append_cons, ← nil_append (hd :: hd' :: tl'), append_cons [], nil_append,
         modifyLast_append _ (l₁ ++ [hd]) (hd' :: tl') _, modifyLast_append _ [hd] (hd' :: tl') _,
         append_assoc]
       all_goals { exact cons_ne_nil _ _ }
@@ -2988,6 +3005,9 @@ end ModifyLast
 
 #align list.pmap List.pmap
 #align list.attach List.attach
+
+@[simp] lemma attach_nil : ([] : List α).attach = [] := rfl
+#align list.attach_nil List.attach_nil
 
 theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l) :
     SizeOf.sizeOf x < SizeOf.sizeOf l := by
@@ -3331,7 +3351,7 @@ theorem reduceOption_map {l : List (Option α)} {f : α → β} :
     reduceOption (map (Option.map f) l) = map f (reduceOption l) := by
   induction' l with hd tl hl
   · simp only [reduceOption_nil, map_nil]
-  ·cases hd <;>
+  · cases hd <;>
       simpa [true_and_iff, Option.map_some', map, eq_self_iff_true,
         reduceOption_cons_of_some] using hl
 #align list.reduce_option_map List.reduceOption_map
@@ -3343,7 +3363,7 @@ theorem reduceOption_append (l l' : List (Option α)) :
 
 theorem reduceOption_length_le (l : List (Option α)) : l.reduceOption.length ≤ l.length := by
   induction' l with hd tl hl
-  · simp only [reduceOption_nil, length]
+  · simp [reduceOption_nil, length]
   · cases hd
     · exact Nat.le_succ_of_le hl
     · simpa only [length, add_le_add_iff_right, reduceOption_cons_of_some] using hl
@@ -3480,7 +3500,34 @@ theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
 
 #align list.map_filter List.map_filter
 
+lemma map_filter' {f : α → β} (hf : Injective f) (l : List α)
+    [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
+    (l.filter p).map f = (l.map f).filter fun b => ∃ a, p a ∧ f a = b := by
+  simp [(· ∘ ·), map_filter, hf.eq_iff]
+#align list.map_filter' List.map_filter'
+
+lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α] :
+    l.attach.filter p =
+      (l.filter fun x => ∃ h, p ⟨x, h⟩).attach.map (Subtype.map id fun x => mem_of_mem_filter) := by
+  classical
+  refine' map_injective_iff.2 Subtype.coe_injective _
+  simp [(· ∘ ·), map_filter' _ Subtype.coe_injective]
+#align list.filter_attach' List.filter_attach'
+
+-- porting note: `Lean.Internal.coeM` forces us to type-ascript `{x // x ∈ l}`
+lemma filter_attach (l : List α) (p : α → Bool) :
+    (l.attach.filter fun x => p x : List {x // x ∈ l}) =
+      (l.filter p).attach.map (Subtype.map id fun x => mem_of_mem_filter) :=
+  map_injective_iff.2 Subtype.coe_injective <| by
+    simp_rw [map_map, (· ∘ ·), Subtype.map, id.def, ← Function.comp_apply (g := Subtype.val),
+      ← map_filter, attach_map_val]
+#align list.filter_attach List.filter_attach
+
 #align list.filter_filter List.filter_filter
+
+lemma filter_comm (q) (l : List α) : filter p (filter q l) = filter q (filter p l) := by
+  simp [and_comm]
+#align list.filter_comm List.filter_comm
 
 @[simp]
 theorem filter_true (l : List α) :
@@ -3722,14 +3769,8 @@ end Diff
 
 /-! ### enum -/
 
-theorem length_enumFrom : ∀ (n) (l : List α), length (enumFrom n l) = length l
-  | _, [] => rfl
-  | _, _ :: _ => congr_arg Nat.succ (length_enumFrom _ _)
-#align list.length_enum_from List.length_enumFrom
-
-theorem length_enum : ∀ l : List α, length (enum l) = length l :=
-  length_enumFrom _
-#align list.length_enum List.length_enum
+#align list.length_enum_from List.enumFrom_length
+#align list.length_enum List.enum_length
 
 @[simp]
 theorem enumFrom_get? :
@@ -3846,7 +3887,7 @@ theorem enum_map (l : List α) (f : α → β) : (l.map f).enum = l.enum.map (Pr
 #align list.enum_map List.enum_map
 
 theorem get_enumFrom (l : List α) (n) (i : Fin (l.enumFrom n).length)
-    (hi : i.1 < l.length := (by simpa [length_enumFrom] using i.2)) :
+    (hi : i.1 < l.length := (by simpa using i.2)) :
     (l.enumFrom n).get i = (n + i, l.get ⟨i, hi⟩) := by
   rw [← Option.some_inj, ← get?_eq_get]
   simp [enumFrom_get?, get?_eq_get hi]
@@ -3854,13 +3895,13 @@ theorem get_enumFrom (l : List α) (n) (i : Fin (l.enumFrom n).length)
 set_option linter.deprecated false in
 @[deprecated get_enumFrom]
 theorem nthLe_enumFrom (l : List α) (n i : ℕ) (hi' : i < (l.enumFrom n).length)
-    (hi : i < l.length := (by simpa [length_enumFrom] using hi')) :
+    (hi : i < l.length := (by simpa using hi')) :
     (l.enumFrom n).nthLe i hi' = (n + i, l.nthLe i hi) :=
   get_enumFrom ..
 #align list.nth_le_enum_from List.nthLe_enumFrom
 
 theorem get_enum (l : List α) (i : Fin l.enum.length)
-    (hi : i < l.length := (by simpa [length_enum] using i.2)) :
+    (hi : i < l.length := (by simpa using i.2)) :
     l.enum.get i = (i.1, l.get ⟨i, hi⟩) := by
   convert get_enumFrom _ _ i
   exact (zero_add _).symm
@@ -3868,9 +3909,16 @@ theorem get_enum (l : List α) (i : Fin l.enum.length)
 set_option linter.deprecated false in
 @[deprecated get_enum]
 theorem nthLe_enum (l : List α) (i : ℕ) (hi' : i < l.enum.length)
-    (hi : i < l.length := (by simpa [length_enum] using hi')) :
+    (hi : i < l.length := (by simpa using hi')) :
     l.enum.nthLe i hi' = (i, l.nthLe i hi) := get_enum ..
 #align list.nth_le_enum List.nthLe_enum
+
+@[simp]
+theorem enumFrom_eq_nil {n : ℕ} {l : List α} : List.enumFrom n l = [] ↔ l = [] := by
+  cases l <;> simp
+
+@[simp]
+theorem enum_eq_nil {l : List α} : List.enum l = [] ↔ l = [] := enumFrom_eq_nil
 
 section Choose
 
@@ -4179,7 +4227,7 @@ theorem forall_iff_forall_mem : ∀ {l : List α}, Forall p l ↔ ∀ x ∈ l, p
 
 theorem Forall.imp (h : ∀ x, p x → q x) : ∀ {l : List α}, Forall p l → Forall q l
   | [] => id
-  | x :: l => by simp; rw [←and_imp]; exact And.imp (h x) (Forall.imp h)
+  | x :: l => by simp; rw [← and_imp]; exact And.imp (h x) (Forall.imp h)
 #align list.all₂.imp List.Forall.imp
 
 @[simp]
@@ -4262,7 +4310,7 @@ theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) 
           cases n
           · simp
           · simp [drop]
-            rw [←Nat.zero_add (sizeOf (drop _ xs_tl))]
+            rw [← Nat.zero_add (sizeOf (drop _ xs_tl))]
             exact Nat.add_le_add (Nat.zero_le _) (drop_sizeOf_le xs_tl _)
         · simp
     · simp
@@ -4348,7 +4396,7 @@ theorem getD_append (l l' : List α) (d : α) (n : ℕ) (h : n < l.length)
 
 theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ n) :
     (l ++ l').getD n d = l'.getD (n - l.length) d := by
-  cases lt_or_le n (l ++l').length with
+  cases lt_or_le n (l ++ l').length with
   | inl h' =>
     rw [getD_eq_get (l ++ l') d h', get_append_right, getD_eq_get]
     · rw [length_append] at h'
@@ -4426,7 +4474,7 @@ section Disjoint
 
 variable {α β : Type*}
 
-/-- The images of disjoint maps under a map are disjoint -/
+/-- The images of disjoint lists under an injective map are disjoint -/
 theorem disjoint_map {f : α → β} {s t : List α} (hf : Function.Injective f)
     (h : Disjoint s t) : Disjoint (s.map f) (t.map f) := by
   simp only [Disjoint]

@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.Algebra.Homology.ShortComplex.Homology
+import Mathlib.Algebra.Homology.Additive
+import Mathlib.Algebra.Homology.ShortComplex.Exact
+import Mathlib.Algebra.Homology.ShortComplex.Preadditive
+import Mathlib.Tactic.Linarith
 
 /-!
 # The short complexes attached to homological complexes
@@ -51,6 +53,9 @@ noncomputable def natIsoSc' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
     (by aesop_cat) (by aesop_cat)) (by aesop_cat)
 
 variable {C c}
+
+section
+
 variable (K L M : HomologicalComplex C c) (φ : K ⟶ L) (ψ : L ⟶ M) (i j k : ι)
 
 /-- The short complex `K.X i ⟶ K.X j ⟶ K.X k` for arbitrary indices `i`, `j` and `k`. -/
@@ -71,6 +76,12 @@ variable [K.HasHomology i]
 
 /-- The homology in degree `i` of a homological complex. -/
 noncomputable def homology := (K.sc i).homology
+
+/-- Comparison isomorphism between the homology for the two homology API. -/
+noncomputable def homology'IsoHomology {A : Type*} [Category A] [Abelian A]
+    (K : HomologicalComplex A c) (i : ι) :
+    K.homology' i ≅ K.homology i :=
+  (K.sc i).homology'IsoHomology
 
 /-- The cycles in degree `i` of a homological complex. -/
 noncomputable def cycles := (K.sc i).cycles
@@ -152,7 +163,7 @@ lemma comp_liftCycles {A' A : C} (k : A ⟶ K.X i) (j : ι) (hj : c.next i = j)
 lemma liftCycles_homologyπ_eq_zero_of_boundary {A : C} (k : A ⟶ K.X i) (j : ι)
     (hj : c.next i = j) {i' : ι} (x : A ⟶ K.X i') (hx : k = x ≫ K.d i' i) :
     K.liftCycles k j hj (by rw [hx, assoc, K.d_comp_d, comp_zero]) ≫ K.homologyπ i = 0 := by
-  by_cases c.Rel i' i
+  by_cases h : c.Rel i' i
   · obtain rfl := c.prev_eq' h
     exact (K.sc i).liftCycles_homologyπ_eq_zero_of_boundary _ x hx
   · have : liftCycles K k j hj (by rw [hx, assoc, K.d_comp_d, comp_zero]) = 0 := by
@@ -255,7 +266,7 @@ lemma descOpcycles_comp {A A' : C} (k : K.X i ⟶ A) (j : ι) (hj : c.prev i = j
 lemma homologyι_descOpcycles_eq_zero_of_boundary {A : C} (k : K.X i ⟶ A) (j : ι)
     (hj : c.prev i = j) {i' : ι} (x : K.X i' ⟶ A) (hx : k = K.d i i' ≫ x) :
     K.homologyι i ≫ K.descOpcycles k j hj (by rw [hx, K.d_comp_d_assoc, zero_comp]) = 0 := by
-  by_cases c.Rel i i'
+  by_cases h : c.Rel i i'
   · obtain rfl := c.next_eq' h
     exact (K.sc i).homologyι_descOpcycles_eq_zero_of_boundary _ x hx
   · have : K.descOpcycles k j hj (by rw [hx, K.d_comp_d_assoc, zero_comp]) = 0 := by
@@ -277,4 +288,412 @@ noncomputable def homologyIsKernel (hi : c.next i = j) :
   subst hi
   exact (K.sc i).homologyIsKernel
 
+variable {K L M}
+variable [L.HasHomology i] [M.HasHomology i]
+
+/-- The map `K.homology i ⟶ L.homology i` induced by a morphism in `HomologicalComplex`. -/
+noncomputable def homologyMap : K.homology i ⟶ L.homology i :=
+  ShortComplex.homologyMap ((shortComplexFunctor C c i).map φ)
+
+/-- The map `K.cycles i ⟶ L.cycles i` induced by a morphism in `HomologicalComplex`. -/
+noncomputable def cyclesMap : K.cycles i ⟶ L.cycles i :=
+  ShortComplex.cyclesMap ((shortComplexFunctor C c i).map φ)
+
+/-- The map `K.opcycles i ⟶ L.opcycles i` induced by a morphism in `HomologicalComplex`. -/
+noncomputable def opcyclesMap : K.opcycles i ⟶ L.opcycles i :=
+  ShortComplex.opcyclesMap ((shortComplexFunctor C c i).map φ)
+
+@[reassoc (attr := simp)]
+lemma cyclesMap_i : cyclesMap φ i ≫ L.iCycles i = K.iCycles i ≫ φ.f i :=
+  ShortComplex.cyclesMap_i _
+
+@[reassoc (attr := simp)]
+lemma p_opcyclesMap : K.pOpcycles i ≫ opcyclesMap φ i = φ.f i ≫ L.pOpcycles i :=
+  ShortComplex.p_opcyclesMap _
+
+instance [Mono (φ.f i)] : Mono (cyclesMap φ i) := mono_of_mono_fac (cyclesMap_i φ i)
+
+attribute [local instance] epi_comp
+
+instance [Epi (φ.f i)] : Epi (opcyclesMap φ i) := epi_of_epi_fac (p_opcyclesMap φ i)
+
+variable (K)
+
+@[simp]
+lemma homologyMap_id : homologyMap (𝟙 K) i = 𝟙 _ :=
+  ShortComplex.homologyMap_id _
+
+@[simp]
+lemma cyclesMap_id : cyclesMap (𝟙 K) i = 𝟙 _ :=
+  ShortComplex.cyclesMap_id _
+
+@[simp]
+lemma opcyclesMap_id : opcyclesMap (𝟙 K) i = 𝟙 _ :=
+  ShortComplex.opcyclesMap_id _
+
+variable {K}
+
+@[reassoc]
+lemma homologyMap_comp : homologyMap (φ ≫ ψ) i = homologyMap φ i ≫ homologyMap ψ i := by
+  dsimp [homologyMap]
+  rw [Functor.map_comp, ShortComplex.homologyMap_comp]
+
+@[reassoc]
+lemma cyclesMap_comp : cyclesMap (φ ≫ ψ) i = cyclesMap φ i ≫ cyclesMap ψ i := by
+  dsimp [cyclesMap]
+  rw [Functor.map_comp, ShortComplex.cyclesMap_comp]
+
+@[reassoc]
+lemma opcyclesMap_comp : opcyclesMap (φ ≫ ψ) i = opcyclesMap φ i ≫ opcyclesMap ψ i := by
+  dsimp [opcyclesMap]
+  rw [Functor.map_comp, ShortComplex.opcyclesMap_comp]
+
+variable (K L)
+
+@[simp]
+lemma homologyMap_zero : homologyMap (0 : K ⟶ L) i = 0 :=
+  ShortComplex.homologyMap_zero _ _
+
+@[simp]
+lemma cyclesMap_zero : cyclesMap (0 : K ⟶ L) i = 0 :=
+  ShortComplex.cyclesMap_zero _ _
+
+@[simp]
+lemma opcyclesMap_zero : opcyclesMap (0 : K ⟶ L) i = 0 :=
+  ShortComplex.opcyclesMap_zero _ _
+
+variable {K L}
+
+@[reassoc (attr := simp)]
+lemma homologyπ_naturality :
+    K.homologyπ i ≫ homologyMap φ i = cyclesMap φ i ≫ L.homologyπ i :=
+  ShortComplex.homologyπ_naturality _
+
+@[reassoc (attr := simp)]
+lemma homologyι_naturality :
+    homologyMap φ i ≫ L.homologyι i = K.homologyι i ≫ opcyclesMap φ i :=
+  ShortComplex.homologyι_naturality _
+
+@[reassoc (attr := simp)]
+lemma homology_π_ι :
+    K.homologyπ i ≫ K.homologyι i = K.iCycles i ≫ K.pOpcycles i :=
+  (K.sc i).homology_π_ι
+
+variable {i}
+
+@[reassoc (attr := simp)]
+lemma opcyclesMap_comp_descOpcycles {A : C} (k : L.X i ⟶ A) (j : ι) (hj : c.prev i = j)
+    (hk : L.d j i ≫ k = 0) (φ : K ⟶ L) :
+    opcyclesMap φ i ≫ L.descOpcycles k j hj hk = K.descOpcycles (φ.f i ≫ k) j hj
+      (by rw [← φ.comm_assoc, hk, comp_zero]) := by
+  simp only [← cancel_epi (K.pOpcycles i), p_opcyclesMap_assoc, p_descOpcycles]
+
+@[reassoc (attr := simp)]
+lemma liftCycles_comp_cyclesMap {A : C} (k : A ⟶ K.X i) (j : ι) (hj : c.next i = j)
+    (hk : k ≫ K.d i j = 0) (φ : K ⟶ L) :
+    K.liftCycles k j hj hk ≫ cyclesMap φ i = L.liftCycles (k ≫ φ.f i) j hj
+      (by rw [assoc, φ.comm, reassoc_of% hk, zero_comp]) := by
+  simp only [← cancel_mono (L.iCycles i), assoc, cyclesMap_i, liftCycles_i_assoc, liftCycles_i]
+
+section
+
+variable (C c i)
+
+attribute [local simp] homologyMap_comp cyclesMap_comp opcyclesMap_comp
+
+/-- The `i`th homology functor `HomologicalComplex C c ⥤ C`. -/
+@[simps]
+noncomputable def homologyFunctor [CategoryWithHomology C] : HomologicalComplex C c ⥤ C where
+  obj K := K.homology i
+  map f := homologyMap f i
+
+/-- The homology functor to graded objects. -/
+@[simps]
+noncomputable def gradedHomologyFunctor [CategoryWithHomology C] :
+    HomologicalComplex C c ⥤ GradedObject ι C where
+  obj K i := K.homology i
+  map f i := homologyMap f i
+
+/-- The `i`th cycles functor `HomologicalComplex C c ⥤ C`. -/
+@[simps]
+noncomputable def cyclesFunctor [CategoryWithHomology C] : HomologicalComplex C c ⥤ C where
+  obj K := K.cycles i
+  map f := cyclesMap f i
+
+/-- The `i`th opcycles functor `HomologicalComplex C c ⥤ C`. -/
+@[simps]
+noncomputable def opcyclesFunctor [CategoryWithHomology C] : HomologicalComplex C c ⥤ C where
+  obj K := K.opcycles i
+  map f := opcyclesMap f i
+
+/-- The natural transformation `K.homologyπ i : K.cycles i ⟶ K.homology i`
+for all `K : HomologicalComplex C c`. -/
+@[simps]
+noncomputable def natTransHomologyπ [CategoryWithHomology C] :
+    cyclesFunctor C c i ⟶ homologyFunctor C c i where
+  app K := K.homologyπ i
+
+/-- The natural transformation `K.homologyι i : K.homology i ⟶ K.opcycles i`
+for all `K : HomologicalComplex C c`. -/
+@[simps]
+noncomputable def natTransHomologyι [CategoryWithHomology C] :
+    homologyFunctor C c i ⟶ opcyclesFunctor C c i where
+  app K := K.homologyι i
+
+/-- The natural isomorphism `K.homology i ≅ (K.sc i).homology`
+for all homological complexes `K`. -/
+@[simps!]
+noncomputable def homologyFunctorIso [CategoryWithHomology C] :
+    homologyFunctor C c i ≅
+      shortComplexFunctor C c i ⋙ ShortComplex.homologyFunctor C :=
+  Iso.refl _
+
+/-- The natural isomorphism `K.homology j ≅ (K.sc' i j k).homology`
+for all homological complexes `K` when `c.prev j = i` and `c.next j = k`. -/
+noncomputable def homologyFunctorIso' [CategoryWithHomology C]
+    (hi : c.prev j = i) (hk : c.next j = k) :
+    homologyFunctor C c j ≅
+      shortComplexFunctor' C c i j k ⋙ ShortComplex.homologyFunctor C :=
+  homologyFunctorIso C c j ≪≫ isoWhiskerRight (natIsoSc' C c i j k hi hk) _
+
+instance [CategoryWithHomology C] : (homologyFunctor C c i).PreservesZeroMorphisms where
+instance [CategoryWithHomology C] : (opcyclesFunctor C c i).PreservesZeroMorphisms where
+instance [CategoryWithHomology C] : (cyclesFunctor C c i).PreservesZeroMorphisms where
+
+end
+
+end
+
+variable (K : HomologicalComplex C c) (i j k : ι)
+
+section
+
+variable (hj : c.next i = j) (h : K.d i j = 0) [K.HasHomology i]
+
+lemma isIso_iCycles : IsIso (K.iCycles i) := by
+  subst hj
+  exact ShortComplex.isIso_iCycles _ h
+
+/-- The canonical isomorphism `K.cycles i ≅ K.X i` when the differential from `i` is zero. -/
+@[simps! hom]
+noncomputable def iCyclesIso : K.cycles i ≅ K.X i :=
+  have := K.isIso_iCycles i j hj h
+  asIso (K.iCycles i)
+
+@[reassoc (attr := simp)]
+lemma iCyclesIso_hom_inv_id :
+    K.iCycles i ≫ (K.iCyclesIso i j hj h).inv = 𝟙 _ :=
+  (K.iCyclesIso i j hj h).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma iCyclesIso_inv_hom_id :
+    (K.iCyclesIso i j hj h).inv ≫ K.iCycles i = 𝟙 _ :=
+  (K.iCyclesIso i j hj h).inv_hom_id
+
+lemma isIso_homologyι : IsIso (K.homologyι i) :=
+  ShortComplex.isIso_homologyι _ (by aesop_cat)
+
+/-- The canonical isomorphism `K.homology i ≅ K.opcycles i`
+when the differential from `i` is zero. -/
+@[simps! hom]
+noncomputable def isoHomologyι : K.homology i ≅ K.opcycles i :=
+  have := K.isIso_homologyι i j hj h
+  asIso (K.homologyι i)
+
+@[reassoc (attr := simp)]
+lemma isoHomologyι_hom_inv_id :
+    K.homologyι i ≫ (K.isoHomologyι i j hj h).inv = 𝟙 _ :=
+  (K.isoHomologyι i j hj h).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma isoHomologyι_inv_hom_id :
+    (K.isoHomologyι i j hj h).inv ≫ K.homologyι i = 𝟙 _ :=
+  (K.isoHomologyι i j hj h).inv_hom_id
+
+end
+
+section
+
+variable (hi : c.prev j = i) (h : K.d i j = 0) [K.HasHomology j]
+
+lemma isIso_pOpcycles : IsIso (K.pOpcycles j) := by
+  obtain rfl := hi
+  exact ShortComplex.isIso_pOpcycles _ h
+
+/-- The canonical isomorphism `K.X j ≅ K.opCycles j` when the differential to `j` is zero. -/
+@[simps! hom]
+noncomputable def pOpcyclesIso : K.X j ≅ K.opcycles j :=
+  have := K.isIso_pOpcycles i j hi h
+  asIso (K.pOpcycles j)
+
+@[reassoc (attr := simp)]
+lemma pOpcyclesIso_hom_inv_id :
+    K.pOpcycles j ≫ (K.pOpcyclesIso i j hi h).inv = 𝟙 _ :=
+  (K.pOpcyclesIso i j hi h).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma pOpcyclesIso_inv_hom_id :
+    (K.pOpcyclesIso i j hi h).inv ≫ K.pOpcycles j = 𝟙 _ :=
+  (K.pOpcyclesIso i j hi h).inv_hom_id
+
+lemma isIso_homologyπ : IsIso (K.homologyπ j) :=
+  ShortComplex.isIso_homologyπ _ (by aesop_cat)
+
+/-- The canonical isomorphism `K.cycles j ≅ K.homology j`
+when the differential to `j` is zero. -/
+@[simps! hom]
+noncomputable def isoHomologyπ : K.cycles j ≅ K.homology j :=
+  have := K.isIso_homologyπ i j hi h
+  asIso (K.homologyπ j)
+
+@[reassoc (attr := simp)]
+lemma isoHomologyπ_hom_inv_id :
+    K.homologyπ j ≫ (K.isoHomologyπ i j hi h).inv = 𝟙 _ :=
+  (K.isoHomologyπ i j hi h).hom_inv_id
+
+@[reassoc (attr := simp)]
+lemma isoHomologyπ_inv_hom_id :
+    (K.isoHomologyπ i j hi h).inv ≫ K.homologyπ j = 𝟙 _ :=
+  (K.isoHomologyπ i j hi h).inv_hom_id
+
+end
+
+/-- A homological complex `K` is exact at `i` if the short complex `K.sc i` is exact. -/
+def ExactAt := (K.sc i).Exact
+
+lemma exactAt_iff :
+    K.ExactAt i ↔ (K.sc i).Exact := by rfl
+
+lemma exactAt_iff' (hi : c.prev j = i) (hk : c.next j = k) :
+    K.ExactAt j ↔ (K.sc' i j k).Exact :=
+  ShortComplex.exact_iff_of_iso (K.isoSc' i j k hi hk)
+
+lemma exactAt_iff_isZero_homology [K.HasHomology i] :
+    K.ExactAt i ↔ IsZero (K.homology i) := by
+  dsimp [homology]
+  rw [exactAt_iff, ShortComplex.exact_iff_isZero_homology]
+
 end HomologicalComplex
+
+namespace ChainComplex
+
+variable {C : Type*} [Category C] [HasZeroMorphisms C]
+  (K L : ChainComplex C ℕ) (φ : K ⟶ L) [K.HasHomology 0]
+
+instance isIso_homologyι₀ :
+    IsIso (K.homologyι 0) :=
+  K.isIso_homologyι 0 _ rfl (by simp)
+
+/-- The canonical isomorphism `K.homology 0 ≅ K.opcycles 0` for a chain complex `K`
+indexed by `ℕ`. -/
+noncomputable abbrev isoHomologyι₀ :
+  K.homology 0 ≅ K.opcycles 0 := K.isoHomologyι 0 _ rfl (by simp)
+
+variable {K L}
+
+@[reassoc (attr := simp)]
+lemma isoHomologyι₀_inv_naturality [L.HasHomology 0] :
+    K.isoHomologyι₀.inv ≫ HomologicalComplex.homologyMap φ 0 =
+      HomologicalComplex.opcyclesMap φ 0 ≫ L.isoHomologyι₀.inv := by
+  simp only [assoc, ← cancel_mono (L.homologyι 0),
+    HomologicalComplex.homologyι_naturality, HomologicalComplex.isoHomologyι_inv_hom_id_assoc,
+    HomologicalComplex.isoHomologyι_inv_hom_id, comp_id]
+
+end ChainComplex
+
+namespace CochainComplex
+
+variable {C : Type*} [Category C] [HasZeroMorphisms C]
+  (K L : CochainComplex C ℕ) (φ : K ⟶ L) [K.HasHomology 0]
+
+instance isIso_homologyπ₀ :
+    IsIso (K.homologyπ 0) :=
+  K.isIso_homologyπ _ 0 rfl (by simp)
+
+/-- The canonical isomorphism `K.cycles 0 ≅ K.homology 0` for a cochain complex `K`
+indexed by `ℕ`. -/
+noncomputable abbrev isoHomologyπ₀ :
+  K.cycles 0 ≅ K.homology 0 := K.isoHomologyπ _ 0 rfl (by simp)
+
+variable {K L}
+
+@[reassoc (attr := simp)]
+lemma isoHomologyπ₀_inv_naturality [L.HasHomology 0] :
+    HomologicalComplex.homologyMap φ 0 ≫ L.isoHomologyπ₀.inv =
+      K.isoHomologyπ₀.inv ≫ HomologicalComplex.cyclesMap φ 0 := by
+  simp only [← cancel_epi (K.homologyπ 0), HomologicalComplex.homologyπ_naturality_assoc,
+    HomologicalComplex.isoHomologyπ_hom_inv_id, comp_id,
+    HomologicalComplex.isoHomologyπ_hom_inv_id_assoc]
+
+end CochainComplex
+
+namespace HomologicalComplex
+
+variable {C ι : Type*} [Category C] [Preadditive C] {c : ComplexShape ι}
+  {K L : HomologicalComplex C c} {f g : K ⟶ L}
+
+variable (φ ψ : K ⟶ L) (i : ι) [K.HasHomology i] [L.HasHomology i]
+
+@[simp]
+lemma homologyMap_neg : homologyMap (-φ) i = -homologyMap φ i := by
+  dsimp [homologyMap]
+  rw [← ShortComplex.homologyMap_neg]
+  rfl
+
+@[simp]
+lemma homologyMap_add : homologyMap (φ + ψ) i = homologyMap φ i + homologyMap ψ i := by
+  dsimp [homologyMap]
+  rw [← ShortComplex.homologyMap_add]
+  rfl
+
+@[simp]
+lemma homologyMap_sub : homologyMap (φ - ψ) i = homologyMap φ i - homologyMap ψ i := by
+  dsimp [homologyMap]
+  rw [← ShortComplex.homologyMap_sub]
+  rfl
+
+instance [CategoryWithHomology C] : (homologyFunctor C c i).Additive where
+
+end HomologicalComplex
+
+namespace CochainComplex
+
+variable {C : Type*} [Category C] [Abelian C]
+
+lemma isIso_liftCycles_iff (K : CochainComplex C ℕ) {X : C} (φ : X ⟶ K.X 0)
+    [K.HasHomology 0] (hφ : φ ≫ K.d 0 1 = 0) :
+    IsIso (K.liftCycles φ 1 (by simp) hφ) ↔
+      (ShortComplex.mk _ _ hφ).Exact ∧ Mono φ := by
+  suffices ∀ (i : ℕ) (hx : (ComplexShape.up ℕ).next 0 = i)
+    (hφ : φ ≫ K.d 0 i = 0), IsIso (K.liftCycles φ i hx hφ) ↔
+      (ShortComplex.mk _ _ hφ).Exact ∧ Mono φ from this 1 (by simp) hφ
+  rintro _ rfl hφ
+  let α : ShortComplex.mk (0 : X ⟶ X) (0 : X ⟶ X) (by simp) ⟶ K.sc 0 :=
+    { τ₁ := 0
+      τ₂ := φ
+      τ₃ := 0 }
+  exact (ShortComplex.quasiIso_iff_isIso_liftCycles α rfl rfl (by simp)).symm.trans
+    (ShortComplex.quasiIso_iff_of_zeros α rfl rfl (by simp))
+
+end CochainComplex
+
+namespace ChainComplex
+
+variable {C : Type*} [Category C] [Abelian C]
+
+lemma isIso_descOpcycles_iff (K : ChainComplex C ℕ) {X : C} (φ : K.X 0 ⟶ X)
+    [K.HasHomology 0] (hφ : K.d 1 0 ≫ φ = 0) :
+    IsIso (K.descOpcycles φ 1 (by simp) hφ) ↔
+      (ShortComplex.mk _ _ hφ).Exact ∧ Epi φ := by
+  suffices ∀ (i : ℕ) (hx : (ComplexShape.down ℕ).prev 0 = i)
+    (hφ : K.d i 0 ≫ φ = 0), IsIso (K.descOpcycles φ i hx hφ) ↔
+      (ShortComplex.mk _ _ hφ).Exact ∧ Epi φ from this 1 (by simp) hφ
+  rintro _ rfl hφ
+  let α : K.sc 0 ⟶ ShortComplex.mk (0 : X ⟶ X) (0 : X ⟶ X) (by simp) :=
+    { τ₁ := 0
+      τ₂ := φ
+      τ₃ := 0 }
+  exact (ShortComplex.quasiIso_iff_isIso_descOpcycles α (by simp) rfl rfl).symm.trans
+    (ShortComplex.quasiIso_iff_of_zeros' α (by simp) rfl rfl)
+
+end ChainComplex

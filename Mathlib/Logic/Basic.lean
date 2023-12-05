@@ -39,7 +39,7 @@ section Miscellany
 --   And.decidable Or.decidable Decidable.false Xor.decidable Iff.decidable Decidable.true
 --   Implies.decidable Not.decidable Ne.decidable Bool.decidableEq Decidable.toBool
 
-attribute [simp] cast_eq cast_heq
+attribute [simp] cast_eq cast_heq imp_false
 
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
 if it is applied to a large term, so it can be used for elision,
@@ -279,9 +279,19 @@ theorem Iff.not_left (h : a ↔ ¬b) : ¬a ↔ b := h.not.trans not_not
 theorem Iff.not_right (h : ¬a ↔ b) : a ↔ ¬b := not_not.symm.trans h.not
 #align iff.not_right Iff.not_right
 
+protected lemma Iff.ne {α β : Sort*} {a b : α} {c d : β} : (a = b ↔ c = d) → (a ≠ b ↔ c ≠ d) :=
+  Iff.not
+
+lemma Iff.ne_left {α β : Sort*} {a b : α} {c d : β} : (a = b ↔ c ≠ d) → (a ≠ b ↔ c = d) :=
+  Iff.not_left
+
+lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) → (a = b ↔ c ≠ d) :=
+  Iff.not_right
+
 /-! ### Declarations about `Xor'` -/
 
-@[simp] theorem xor_true : Xor' True = Not := by simp [Xor']
+@[simp] theorem xor_true : Xor' True = Not := by
+  simp (config := { unfoldPartialApp := true }) [Xor']
 #align xor_true xor_true
 
 @[simp] theorem xor_false : Xor' False = id := by ext; simp [Xor']
@@ -356,11 +366,9 @@ theorem Or.imp3 (had : a → d) (hbe : b → e) (hcf : c → f) : a ∨ b ∨ c 
 
 #align or_imp_distrib or_imp
 
-theorem or_iff_not_imp_left : a ∨ b ↔ ¬a → b := Decidable.or_iff_not_imp_left
-#align or_iff_not_imp_left or_iff_not_imp_left
-
-theorem or_iff_not_imp_right : a ∨ b ↔ ¬b → a := Decidable.or_iff_not_imp_right
-#align or_iff_not_imp_right or_iff_not_imp_right
+export Classical (or_iff_not_imp_left or_iff_not_imp_right)
+#align or_iff_not_imp_left Classical.or_iff_not_imp_left
+#align or_iff_not_imp_right Classical.or_iff_not_imp_right
 
 theorem not_or_of_imp : (a → b) → ¬a ∨ b := Decidable.not_or_of_imp
 #align not_or_of_imp not_or_of_imp
@@ -467,7 +475,7 @@ theorem not_and_not_right : ¬(a ∧ ¬b) ↔ a → b := Decidable.not_and_not_r
 #align decidable.not_and_distrib Decidable.not_and
 #align decidable.not_and_distrib' Decidable.not_and'
 
-/-- One of de Morgan's laws: the negation of a conjunction is logically equivalent to the
+/-- One of **de Morgan's laws**: the negation of a conjunction is logically equivalent to the
 disjunction of the negations. -/
 theorem not_and_or : ¬(a ∧ b) ↔ ¬a ∨ ¬b := Decidable.not_and
 #align not_and_distrib not_and_or
@@ -683,7 +691,6 @@ theorem exists_swap {p : α → β → Prop} : (∃ x y, p x y) ↔ ∃ y x, p x
 #align forall_exists_index forall_exists_index
 
 #align exists_imp_distrib exists_imp
-alias ⟨_, not_exists_of_forall_not⟩ := exists_imp
 #align not_exists_of_forall_not not_exists_of_forall_not
 
 #align Exists.some Exists.choose
@@ -792,6 +799,12 @@ theorem exists_apply_eq (a : α) (b : β) : ∃ f : α → β, f a = b := ⟨fun
   ⟨fun ⟨_, ⟨a, ha⟩, hb⟩ ↦ ⟨a, ha.symm ▸ hb⟩, fun ⟨a, ha⟩ ↦ ⟨f a, ⟨a, rfl⟩, ha⟩⟩
 #align exists_exists_eq_and exists_exists_eq_and
 
+@[simp] theorem exists_exists_and_exists_and_eq_and {α β γ : Type*}
+    {f : α → β → γ} {p : α → Prop} {q : β → Prop} {r : γ → Prop} :
+    (∃ c, (∃ a, p a ∧ ∃ b, q b ∧ f a b = c) ∧ r c) ↔ ∃ a, p a ∧ ∃ b, q b ∧ r (f a b) :=
+  ⟨fun ⟨_, ⟨a, ha, b, hb, hab⟩, hc⟩ ↦ ⟨a, ha, b, hb, hab.symm ▸ hc⟩,
+    fun ⟨a, ha, b, hb, hab⟩ ↦ ⟨f a b, ⟨a, ha, b, hb, rfl⟩, hab⟩⟩
+
 @[simp] theorem exists_or_eq_left (y : α) (p : α → Prop) : ∃ x : α, x = y ∨ p x := ⟨y, .inl rfl⟩
 #align exists_or_eq_left exists_or_eq_left
 
@@ -887,8 +900,6 @@ theorem exists_unique_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∃! h
   @exists_unique_const (q h) p ⟨h⟩ _
 #align exists_unique_prop_of_true exists_unique_prop_of_true
 
-theorem forall_prop_of_false {p : Prop} {q : p → Prop} (hn : ¬p) : (∀ h' : p, q h') ↔ True :=
-  iff_true_intro fun h ↦ hn.elim h
 #align forall_prop_of_false forall_prop_of_false
 
 theorem exists_prop_of_false {p : Prop} {q : p → Prop} : ¬p → ¬∃ h' : p, q h' :=
@@ -1147,18 +1158,9 @@ theorem dite_eq_iff' : dite P A B = c ↔ (∀ h, A h = c) ∧ ∀ h, B h = c :=
 theorem ite_eq_iff' : ite P a b = c ↔ (P → a = c) ∧ (¬P → b = c) := dite_eq_iff'
 #align ite_eq_iff' ite_eq_iff'
 
-@[simp] theorem dite_eq_left_iff : dite P (fun _ ↦ a) B = a ↔ ∀ h, B h = a := by
-  by_cases P <;> simp [*, forall_prop_of_true, forall_prop_of_false]
 #align dite_eq_left_iff dite_eq_left_iff
-
-@[simp] theorem dite_eq_right_iff : (dite P A fun _ ↦ b) = b ↔ ∀ h, A h = b := by
-  by_cases P <;> simp [*, forall_prop_of_true, forall_prop_of_false]
 #align dite_eq_right_iff dite_eq_right_iff
-
-@[simp] theorem ite_eq_left_iff : ite P a b = a ↔ ¬P → b = a := dite_eq_left_iff
 #align ite_eq_left_iff ite_eq_left_iff
-
-@[simp] theorem ite_eq_right_iff : ite P a b = b ↔ P → a = b := dite_eq_right_iff
 #align ite_eq_right_iff ite_eq_right_iff
 
 theorem dite_ne_left_iff : dite P (fun _ ↦ a) B ≠ a ↔ ∃ h, a ≠ B h := by

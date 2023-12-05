@@ -64,7 +64,7 @@ theorem coeff_derivative (p : R[X]) (n : ℕ) :
     · intros
       rw [Nat.cast_zero, mul_zero, zero_mul]
     · intro _ H
-      rw [Nat.succ_sub_one, if_neg (mt (congr_arg Nat.succ) H.symm), mul_zero]
+      rw [Nat.add_one_sub_one, if_neg (mt (congr_arg Nat.succ) H.symm), mul_zero]
   · rw [if_pos (add_tsub_cancel_right n 1).symm, mul_one, Nat.cast_add, Nat.cast_one,
       mem_support_iff]
     intro h
@@ -216,7 +216,7 @@ theorem natDegree_derivative_lt {p : R[X]} (hp : p.natDegree ≠ 0) :
 theorem natDegree_derivative_le (p : R[X]) : p.derivative.natDegree ≤ p.natDegree - 1 := by
   by_cases p0 : p.natDegree = 0
   · simp [p0, derivative_of_natDegree_zero]
-  · exact Nat.le_pred_of_lt (natDegree_derivative_lt p0)
+  · exact Nat.le_sub_one_of_lt (natDegree_derivative_lt p0)
 #align polynomial.nat_degree_derivative_le Polynomial.natDegree_derivative_le
 
 theorem natDegree_iterate_derivative (p : R[X]) (k : ℕ) :
@@ -273,7 +273,7 @@ theorem natDegree_eq_zero_of_derivative_eq_zero [NoZeroSMulDivisors ℕ R] {f : 
   rcases eq_or_ne f 0 with (rfl | hf)
   · exact natDegree_zero
   rw [natDegree_eq_zero_iff_degree_le_zero]
-  by_contra' f_nat_degree_pos
+  by_contra! f_nat_degree_pos
   rw [← natDegree_pos_iff_degree_pos] at f_nat_degree_pos
   let m := f.natDegree - 1
   have hm : m + 1 = f.natDegree := tsub_add_cancel_of_le f_nat_degree_pos
@@ -314,7 +314,7 @@ theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f 
           cases n <;> cases m <;>
             simp_rw [add_smul, mul_smul_comm, smul_mul_assoc, X_pow_mul_assoc, ← mul_assoc, ←
               C_mul, mul_assoc, ← pow_add] <;>
-            simp [Nat.add_succ, Nat.succ_add, Nat.succ_sub_one, zero_smul, add_comm])
+            simp [Nat.add_succ, Nat.succ_add, Nat.add_one_sub_one, zero_smul, add_comm])
     _ = derivative f * g + f * derivative g := by
       conv =>
         rhs
@@ -468,7 +468,7 @@ theorem derivative_pow_succ (p : R[X]) (n : ℕ) :
 theorem derivative_pow (p : R[X]) (n : ℕ) :
     derivative (p ^ n) = C (n : R) * p ^ (n - 1) * derivative p :=
   Nat.casesOn n (by rw [pow_zero, derivative_one, Nat.cast_zero, C_0, zero_mul, zero_mul]) fun n =>
-    by rw [p.derivative_pow_succ n, n.succ_sub_one, n.cast_succ]
+    by rw [p.derivative_pow_succ n, Nat.add_one_sub_one, n.cast_succ]
 #align polynomial.derivative_pow Polynomial.derivative_pow
 
 theorem derivative_sq (p : R[X]) : derivative (p ^ 2) = C 2 * p * derivative p := by

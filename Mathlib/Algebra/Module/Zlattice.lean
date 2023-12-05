@@ -5,7 +5,6 @@ Authors: Xavier Roblot
 -/
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.MeasureTheory.Group.FundamentalDomain
-import Mathlib.MeasureTheory.Group.Measure
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.RingTheory.Localization.Module
 
@@ -316,6 +315,13 @@ protected theorem isAddFundamentalDomain [Finite ι] [MeasurableSpace E] [OpensM
   exact IsAddFundamentalDomain.mk' (nullMeasurableSet (fundamentalDomain_measurableSet b))
     fun x => exist_unique_vadd_mem_fundamentalDomain b x
 #align zspan.is_add_fundamental_domain Zspan.isAddFundamentalDomain
+
+theorem measure_fundamentalDomain_ne_zero [Finite ι] [MeasurableSpace E] [BorelSpace E]
+    {μ : Measure E} [Measure.IsAddHaarMeasure μ] :
+    μ (fundamentalDomain b) ≠ 0 := by
+  convert (Zspan.isAddFundamentalDomain b μ).measure_ne_zero (NeZero.ne μ)
+  simp only [mem_toAddSubgroup]
+  infer_instance
 
 theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] (b₀ : Basis ι ℝ E) :

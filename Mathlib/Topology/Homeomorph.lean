@@ -79,6 +79,9 @@ protected def symm (h : X ≃ₜ Y) : Y ≃ₜ X where
 @[simp] theorem symm_symm (h : X ≃ₜ Y) : h.symm.symm = h := rfl
 #align homeomorph.symm_symm Homeomorph.symm_symm
 
+theorem symm_bijective : Function.Bijective (Homeomorph.symm : (X ≃ₜ Y) → Y ≃ₜ X) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (h : X ≃ₜ Y) : Y → X :=
   h.symm
@@ -102,7 +105,7 @@ theorem ext {h h' : X ≃ₜ Y} (H : ∀ x, h x = h' x) : h = h' :=
 #align homeomorph.ext Homeomorph.ext
 
 /-- Identity map as a homeomorphism. -/
-@[simps! (config := { fullyApplied := false }) apply]
+@[simps! (config := .asFn) apply]
 protected def refl (X : Type*) [TopologicalSpace X] : X ≃ₜ X where
   continuous_toFun := continuous_id
   continuous_invFun := continuous_id
@@ -254,8 +257,8 @@ noncomputable def ofEmbedding (f : X → Y) (hf : Embedding f) : X ≃ₜ Set.ra
   toEquiv := Equiv.ofInjective f hf.inj
 #align homeomorph.of_embedding Homeomorph.ofEmbedding
 
-protected theorem secondCountableTopology [TopologicalSpace.SecondCountableTopology Y]
-    (h : X ≃ₜ Y) : TopologicalSpace.SecondCountableTopology X :=
+protected theorem secondCountableTopology [SecondCountableTopology Y]
+    (h : X ≃ₜ Y) : SecondCountableTopology X :=
   h.inducing.secondCountableTopology
 #align homeomorph.second_countable_topology Homeomorph.secondCountableTopology
 
@@ -561,7 +564,7 @@ def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where
 #align homeomorph.prod_assoc Homeomorph.prodAssoc
 
 /-- `X × {*}` is homeomorphic to `X`. -/
-@[simps! (config := { fullyApplied := false }) apply]
+@[simps! (config := .asFn) apply]
 def prodPUnit : X × PUnit ≃ₜ X where
   toEquiv := Equiv.prodPUnit X
   continuous_toFun := continuous_fst
@@ -659,7 +662,7 @@ def sigmaProdDistrib : (Σi, X i) × Y ≃ₜ Σi, X i × Y :=
 end Distrib
 
 /-- If `ι` has a unique element, then `ι → X` is homeomorphic to `X`. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def funUnique (ι X : Type*) [Unique ι] [TopologicalSpace X] : (ι → X) ≃ₜ X where
   toEquiv := Equiv.funUnique ι X
   continuous_toFun := continuous_apply _
@@ -667,7 +670,7 @@ def funUnique (ι X : Type*) [Unique ι] [TopologicalSpace X] : (ι → X) ≃�
 #align homeomorph.fun_unique Homeomorph.funUnique
 
 /-- Homeomorphism between dependent functions `Π i : Fin 2, X i` and `X 0 × X 1`. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def piFinTwo.{u} (X : Fin 2 → Type u) [∀ i, TopologicalSpace (X i)] : (∀ i, X i) ≃ₜ X 0 × X 1 where
   toEquiv := piFinTwoEquiv X
   continuous_toFun := (continuous_apply 0).prod_mk (continuous_apply 1)
@@ -675,7 +678,7 @@ def piFinTwo.{u} (X : Fin 2 → Type u) [∀ i, TopologicalSpace (X i)] : (∀ i
 #align homeomorph.pi_fin_two Homeomorph.piFinTwo
 
 /-- Homeomorphism between `X² = Fin 2 → X` and `X × X`. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def finTwoArrow : (Fin 2 → X) ≃ₜ X × X :=
   { piFinTwo fun _ => X with toEquiv := finTwoArrowEquiv X }
 #align homeomorph.fin_two_arrow Homeomorph.finTwoArrow
@@ -691,7 +694,7 @@ def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
 #align homeomorph.image Homeomorph.image
 
 /-- `Set.univ X` is homeomorphic to `X`. -/
-@[simps! (config := { fullyApplied := false })]
+@[simps! (config := .asFn)]
 def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where
   toEquiv := Equiv.Set.univ X
   continuous_toFun := continuous_subtype_val

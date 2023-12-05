@@ -241,14 +241,25 @@ instance instGroup [Group G] [Group H] : Group (G × H) :=
   { mul_left_inv := fun _ => mk.inj_iff.mpr ⟨mul_left_inv _, mul_left_inv _⟩ }
 
 @[to_additive]
+instance [Mul G] [Mul H] [IsLeftCancelMul G] [IsLeftCancelMul H] : IsLeftCancelMul (G × H) where
+  mul_left_cancel _ _ _ h :=
+      Prod.ext (mul_left_cancel (Prod.ext_iff.1 h).1) (mul_left_cancel (Prod.ext_iff.1 h).2)
+
+@[to_additive]
+instance [Mul G] [Mul H] [IsRightCancelMul G] [IsRightCancelMul H] : IsRightCancelMul (G × H) where
+  mul_right_cancel _ _ _ h :=
+      Prod.ext (mul_right_cancel (Prod.ext_iff.1 h).1) (mul_right_cancel (Prod.ext_iff.1 h).2)
+
+@[to_additive]
+instance [Mul G] [Mul H] [IsCancelMul G] [IsCancelMul H] : IsCancelMul (G × H) where
+
+@[to_additive]
 instance [LeftCancelSemigroup G] [LeftCancelSemigroup H] : LeftCancelSemigroup (G × H) :=
-  { mul_left_cancel := fun _ _ _ h =>
-      Prod.ext (mul_left_cancel (Prod.ext_iff.1 h).1) (mul_left_cancel (Prod.ext_iff.1 h).2) }
+  { mul_left_cancel := fun _ _ _ => mul_left_cancel }
 
 @[to_additive]
 instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigroup (G × H) :=
-  { mul_right_cancel := fun _ _ _ h =>
-      Prod.ext (mul_right_cancel (Prod.ext_iff.1 h).1) (mul_right_cancel (Prod.ext_iff.1 h).2) }
+  { mul_right_cancel := fun _ _ _ => mul_right_cancel }
 
 @[to_additive]
 instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) :=
@@ -289,6 +300,26 @@ instance instCommGroup [CommGroup G] [CommGroup H] : CommGroup (G × H) :=
   { mul_comm := fun ⟨g₁, h₁⟩ ⟨_, _⟩ => by rw [mk_mul_mk, mk_mul_mk, mul_comm g₁, mul_comm h₁] }
 
 end Prod
+
+section
+variable [Mul M] [Mul N]
+
+@[to_additive AddSemiconjBy.prod]
+theorem SemiconjBy.prod {x y z : M × N}
+    (hm : SemiconjBy x.1 y.1 z.1) (hn : SemiconjBy x.2 y.2 z.2) : SemiconjBy x y z :=
+  Prod.ext hm hn
+
+theorem Prod.semiconjBy_iff {x y z : M × N} :
+    SemiconjBy x y z ↔ SemiconjBy x.1 y.1 z.1 ∧ SemiconjBy x.2 y.2 z.2 := ext_iff
+
+@[to_additive AddCommute.prod]
+theorem Commute.prod {x y : M × N} (hm : Commute x.1 y.1) (hn : Commute x.2 y.2) : Commute x y :=
+  .prod hm hn
+
+theorem Prod.commute_iff {x y : M × N} :
+    Commute x y ↔ Commute x.1 y.1 ∧ Commute x.2 y.2 := semiconjBy_iff
+
+end
 
 namespace MulHom
 

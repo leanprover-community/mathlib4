@@ -37,8 +37,7 @@ instance : WfDvdMonoid ℕ :=
   ⟨by
     refine'
       RelHomClass.wellFounded
-        (⟨fun x : ℕ => if x = 0 then (⊤ : ℕ∞) else x, _⟩ : DvdNotUnit →r (· < ·))
-        (WithTop.wellFounded_lt Nat.lt_wfRel.wf)
+        (⟨fun x : ℕ => if x = 0 then (⊤ : ℕ∞) else x, _⟩ : DvdNotUnit →r (· < ·)) wellFounded_lt
     intro a b h
     cases' a with a
     · exfalso
@@ -266,7 +265,7 @@ def associatesIntEquivNat : Associates ℤ ≃ ℕ := by
 
 theorem Int.Prime.dvd_mul {m n : ℤ} {p : ℕ} (hp : Nat.Prime p) (h : (p : ℤ) ∣ m * n) :
     p ∣ m.natAbs ∨ p ∣ n.natAbs := by
-  rwa [← hp.dvd_mul, ← Int.natAbs_mul, ←Int.coe_nat_dvd_left]
+  rwa [← hp.dvd_mul, ← Int.natAbs_mul, ← Int.coe_nat_dvd_left]
 #align int.prime.dvd_mul Int.Prime.dvd_mul
 
 theorem Int.Prime.dvd_mul' {m n : ℤ} {p : ℕ} (hp : Nat.Prime p) (h : (p : ℤ) ∣ m * n) :

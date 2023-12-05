@@ -812,7 +812,7 @@ theorem Disjoint.frontier_right (hs : IsOpen s) (hd : Disjoint s t) : Disjoint s
 
 theorem frontier_eq_inter_compl_interior {s : Set α} :
     frontier s = (interior s)ᶜ ∩ (interior sᶜ)ᶜ := by
-  rw [← frontier_compl, ← closure_compl]; rfl
+  rw [← frontier_compl, ← closure_compl, ← diff_eq, closure_diff_interior]
 #align frontier_eq_inter_compl_interior frontier_eq_inter_compl_interior
 
 theorem compl_frontier_eq_union_interior {s : Set α} :
@@ -848,19 +848,19 @@ scoped[Topology] notation "𝓝" => nhds
 scoped[Topology] notation "𝓝[" s "] " x:100 => nhdsWithin x s
 
 /-- Notation for the filter of punctured neighborhoods of a point. -/
-scoped[Topology] notation "𝓝[≠] " x:100 => nhdsWithin x {x}ᶜ
+scoped[Topology] notation3 "𝓝[≠] " x:100 => nhdsWithin x (@singleton _ (Set _) instSingletonSet x)ᶜ
 
 /-- Notation for the filter of right neighborhoods of a point. -/
-scoped[Topology] notation "𝓝[≥] " x:100 => nhdsWithin x (Set.Ici x)
+scoped[Topology] notation3 "𝓝[≥] " x:100 => nhdsWithin x (Set.Ici x)
 
 /-- Notation for the filter of left neighborhoods of a point. -/
-scoped[Topology] notation "𝓝[≤] " x:100 => nhdsWithin x (Set.Iic x)
+scoped[Topology] notation3 "𝓝[≤] " x:100 => nhdsWithin x (Set.Iic x)
 
 /-- Notation for the filter of punctured right neighborhoods of a point. -/
-scoped[Topology] notation "𝓝[>] " x:100 => nhdsWithin x (Set.Ioi x)
+scoped[Topology] notation3 "𝓝[>] " x:100 => nhdsWithin x (Set.Ioi x)
 
 /-- Notation for the filter of punctured left neighborhoods of a point. -/
-scoped[Topology] notation "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
+scoped[Topology] notation3 "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
 
 end
 
@@ -1195,8 +1195,9 @@ theorem acc_iff_cluster (x : α) (F : Filter α) : AccPt x F ↔ ClusterPt x (�
 #align acc_iff_cluster acc_iff_cluster
 
 /-- `x` is an accumulation point of a set `C` iff it is a cluster point of `C ∖ {x}`.-/
-theorem acc_principal_iff_cluster (x : α) (C : Set α) : AccPt x (𝓟 C) ↔ ClusterPt x (𝓟 (C \ {x})) :=
-  by rw [acc_iff_cluster, inf_principal, inter_comm]; rfl
+theorem acc_principal_iff_cluster (x : α) (C : Set α) :
+    AccPt x (𝓟 C) ↔ ClusterPt x (𝓟 (C \ {x})) := by
+  rw [acc_iff_cluster, inf_principal, inter_comm, diff_eq]
 #align acc_principal_iff_cluster acc_principal_iff_cluster
 
 /-- `x` is an accumulation point of a set `C` iff every neighborhood
@@ -1251,7 +1252,7 @@ theorem subset_interior_iff_nhds {s V : Set α} : s ⊆ interior V ↔ ∀ x ∈
 theorem isOpen_iff_nhds {s : Set α} : IsOpen s ↔ ∀ a ∈ s, 𝓝 a ≤ 𝓟 s :=
   calc
     IsOpen s ↔ s ⊆ interior s := subset_interior_iff_isOpen.symm
-    _ ↔ ∀ a ∈ s, 𝓝 a ≤ 𝓟 s := by rw [interior_eq_nhds]; rfl
+    _ ↔ ∀ a ∈ s, 𝓝 a ≤ 𝓟 s := by simp_rw [interior_eq_nhds, subset_def, mem_setOf]
 #align is_open_iff_nhds isOpen_iff_nhds
 
 theorem isOpen_iff_mem_nhds {s : Set α} : IsOpen s ↔ ∀ a ∈ s, s ∈ 𝓝 a :=
@@ -1286,7 +1287,7 @@ theorem isOpen_singleton_iff_punctured_nhds {α : Type*} [TopologicalSpace α] (
 
 theorem mem_closure_iff_frequently {s : Set α} {a : α} : a ∈ closure s ↔ ∃ᶠ x in 𝓝 a, x ∈ s := by
   rw [Filter.Frequently, Filter.Eventually, ← mem_interior_iff_mem_nhds,
-      closure_eq_compl_interior_compl]; rfl
+    closure_eq_compl_interior_compl, mem_compl_iff, compl_def]
 #align mem_closure_iff_frequently mem_closure_iff_frequently
 
 alias ⟨_, Filter.Frequently.mem_closure⟩ := mem_closure_iff_frequently
@@ -1409,8 +1410,9 @@ theorem isClosed_iff_clusterPt {s : Set α} : IsClosed s ↔ ∀ a, ClusterPt a 
     _ ↔ ∀ a, ClusterPt a (𝓟 s) → a ∈ s := by simp only [subset_def, mem_closure_iff_clusterPt]
 #align is_closed_iff_cluster_pt isClosed_iff_clusterPt
 
-theorem isClosed_iff_nhds {s : Set α} : IsClosed s ↔ ∀ x, (∀ U ∈ 𝓝 x, (U ∩ s).Nonempty) → x ∈ s :=
-  by simp_rw [isClosed_iff_clusterPt, ClusterPt, inf_principal_neBot_iff]
+theorem isClosed_iff_nhds {s : Set α} :
+    IsClosed s ↔ ∀ x, (∀ U ∈ 𝓝 x, (U ∩ s).Nonempty) → x ∈ s := by
+  simp_rw [isClosed_iff_clusterPt, ClusterPt, inf_principal_neBot_iff]
 #align is_closed_iff_nhds isClosed_iff_nhds
 
 theorem IsClosed.interior_union_left {s t : Set α} (_ : IsClosed s) :
@@ -1455,16 +1457,16 @@ theorem mem_closure_of_mem_closure_union {s₁ s₂ : Set α} {x : α} (h : x �
 #align mem_closure_of_mem_closure_union mem_closure_of_mem_closure_union
 
 /-- The intersection of an open dense set with a dense set is a dense set. -/
-theorem Dense.inter_of_open_left {s t : Set α} (hs : Dense s) (ht : Dense t) (hso : IsOpen s) :
+theorem Dense.inter_of_isOpen_left {s t : Set α} (hs : Dense s) (ht : Dense t) (hso : IsOpen s) :
     Dense (s ∩ t) := fun x =>
   closure_minimal hso.inter_closure isClosed_closure <| by simp [hs.closure_eq, ht.closure_eq]
-#align dense.inter_of_open_left Dense.inter_of_open_left
+#align dense.inter_of_open_left Dense.inter_of_isOpen_left
 
 /-- The intersection of a dense set with an open dense set is a dense set. -/
-theorem Dense.inter_of_open_right {s t : Set α} (hs : Dense s) (ht : Dense t) (hto : IsOpen t) :
+theorem Dense.inter_of_isOpen_right {s t : Set α} (hs : Dense s) (ht : Dense t) (hto : IsOpen t) :
     Dense (s ∩ t) :=
-  inter_comm t s ▸ ht.inter_of_open_left hs hto
-#align dense.inter_of_open_right Dense.inter_of_open_right
+  inter_comm t s ▸ ht.inter_of_isOpen_left hs hto
+#align dense.inter_of_open_right Dense.inter_of_isOpen_right
 
 theorem Dense.inter_nhds_nonempty {s t : Set α} (hs : Dense s) {x : α} (ht : t ∈ 𝓝 x) :
     (s ∩ t).Nonempty :=
@@ -1653,7 +1655,9 @@ theorem ContinuousAt.preimage_mem_nhds {f : α → β} {x : α} {t : Set β} (h 
 
 theorem eventuallyEq_zero_nhds {M₀} [Zero M₀] {a : α} {f : α → M₀} :
     f =ᶠ[𝓝 a] 0 ↔ a ∉ closure (Function.support f) := by
-  rw [← mem_compl_iff, ← interior_compl, mem_interior_iff_mem_nhds, Function.compl_support]; rfl
+  rw [← mem_compl_iff, ← interior_compl, mem_interior_iff_mem_nhds, Function.compl_support,
+    EventuallyEq, eventually_iff]
+  simp only [Pi.zero_apply]
 #align eventually_eq_zero_nhds eventuallyEq_zero_nhds
 
 theorem ClusterPt.map {x : α} {la : Filter α} {lb : Filter β} (H : ClusterPt x la) {f : α → β}

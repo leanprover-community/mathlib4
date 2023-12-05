@@ -18,8 +18,6 @@ We construct the power functions `x ^ y` where
 We also prove basic properties of these functions.
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue lean4#2220
-
 noncomputable section
 
 open Classical Real NNReal ENNReal BigOperators ComplexConjugate
@@ -129,9 +127,11 @@ theorem rpow_nat_cast (x : ℝ≥0) (n : ℕ) : x ^ (n : ℝ) = x ^ n :=
 #align nnreal.rpow_nat_cast NNReal.rpow_nat_cast
 
 @[simp]
-theorem rpow_two (x : ℝ≥0) : x ^ (2 : ℝ) = x ^ 2 := by
-  rw [← rpow_nat_cast]
-  simp only [Nat.cast_ofNat]
+lemma rpow_ofNat (x : ℝ≥0) (n : ℕ) [n.AtLeastTwo] :
+    x ^ (no_index (OfNat.ofNat n) : ℝ) = x ^ (OfNat.ofNat n : ℕ) :=
+  rpow_nat_cast x n
+
+theorem rpow_two (x : ℝ≥0) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
 #align nnreal.rpow_two NNReal.rpow_two
 
 theorem mul_rpow {x y : ℝ≥0} {z : ℝ} : (x * y) ^ z = x ^ z * y ^ z :=
@@ -152,7 +152,7 @@ theorem list_prod_map_rpow (l : List ℝ≥0) (r : ℝ) :
 
 theorem list_prod_map_rpow' {ι} (l : List ι) (f : ι → ℝ≥0) (r : ℝ) :
     (l.map (f · ^ r)).prod = (l.map f).prod ^ r := by
-  rw [←list_prod_map_rpow, List.map_map]; rfl
+  rw [← list_prod_map_rpow, List.map_map]; rfl
 
 /-- `rpow` version of `Multiset.prod_map_pow` for `ℝ≥0`. -/
 lemma multiset_prod_map_rpow {ι} (s : Multiset ι) (f : ι → ℝ≥0) (r : ℝ) :
@@ -175,12 +175,12 @@ theorem _root_.Real.list_prod_map_rpow (l : List ℝ) (hl : ∀ x ∈ l, (0 : �
   have := congr_arg ((↑) : ℝ≥0 → ℝ) (NNReal.list_prod_map_rpow l r)
   push_cast at this
   rw [List.map_map] at this ⊢
-  exact_mod_cast this
+  exact mod_cast this
 
 theorem _root_.Real.list_prod_map_rpow' {ι} (l : List ι) (f : ι → ℝ)
     (hl : ∀ i ∈ l, (0 : ℝ) ≤ f i) (r : ℝ) :
     (l.map (f · ^ r)).prod = (l.map f).prod ^ r := by
-  rw [←Real.list_prod_map_rpow (l.map f) _ r, List.map_map]; rfl
+  rw [← Real.list_prod_map_rpow (l.map f) _ r, List.map_map]; rfl
   simpa using hl
 
 /-- `rpow` version of `Multiset.prod_map_pow`. -/
@@ -442,7 +442,7 @@ theorem coe_rpow_of_nonneg (x : ℝ≥0) {y : ℝ} (h : 0 ≤ y) : (x : ℝ≥0�
 #align ennreal.coe_rpow_of_nonneg ENNReal.coe_rpow_of_nonneg
 
 theorem coe_rpow_def (x : ℝ≥0) (y : ℝ) :
-    (x : ℝ≥0∞) ^ y = if x = 0 ∧ y < 0 then ⊤ else (x ^ y : ℝ≥0∞) :=
+    (x : ℝ≥0∞) ^ y = if x = 0 ∧ y < 0 then ⊤ else ↑(x ^ y) :=
   rfl
 #align ennreal.coe_rpow_def ENNReal.coe_rpow_def
 
@@ -486,6 +486,9 @@ theorem rpow_eq_top_iff {x : ℝ≥0∞} {y : ℝ} : x ^ y = ⊤ ↔ x = 0 ∧ y
 theorem rpow_eq_top_iff_of_pos {x : ℝ≥0∞} {y : ℝ} (hy : 0 < y) : x ^ y = ⊤ ↔ x = ⊤ := by
   simp [rpow_eq_top_iff, hy, asymm hy]
 #align ennreal.rpow_eq_top_iff_of_pos ENNReal.rpow_eq_top_iff_of_pos
+
+lemma rpow_lt_top_iff_of_pos {x : ℝ≥0∞} {y : ℝ} (hy : 0 < y) : x ^ y < ∞ ↔ x < ∞ := by
+  simp only [lt_top_iff_ne_top, Ne.def, rpow_eq_top_iff_of_pos hy]
 
 theorem rpow_eq_top_of_nonneg (x : ℝ≥0∞) {y : ℝ} (hy0 : 0 ≤ y) : x ^ y = ⊤ → x = ⊤ := by
   rw [ENNReal.rpow_eq_top_iff]
@@ -552,9 +555,11 @@ theorem rpow_nat_cast (x : ℝ≥0∞) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by
 #align ennreal.rpow_nat_cast ENNReal.rpow_nat_cast
 
 @[simp]
-theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := by
-  rw [← rpow_nat_cast]
-  simp only [Nat.cast_ofNat]
+lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
+    x ^ (no_index (OfNat.ofNat n) : ℝ) = x ^ (OfNat.ofNat n) :=
+  rpow_nat_cast x n
+
+theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
 #align ennreal.rpow_two ENNReal.rpow_two
 
 theorem mul_rpow_eq_ite (x y : ℝ≥0∞) (z : ℝ) :
@@ -587,6 +592,12 @@ theorem coe_mul_rpow (x y : ℝ≥0) (z : ℝ) : ((x : ℝ≥0∞) * y) ^ z = (x
   mul_rpow_of_ne_top coe_ne_top coe_ne_top z
 #align ennreal.coe_mul_rpow ENNReal.coe_mul_rpow
 
+theorem prod_coe_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
+    ∏ i in s, (f i : ℝ≥0∞) ^ r = ((∏ i in s, f i : ℝ≥0) : ℝ≥0∞) ^ r := by
+  induction s using Finset.induction
+  case empty => simp
+  case insert i s hi ih => simp_rw [prod_insert hi, ih, ← coe_mul_rpow, coe_mul]
+
 theorem mul_rpow_of_ne_zero {x y : ℝ≥0∞} (hx : x ≠ 0) (hy : y ≠ 0) (z : ℝ) :
     (x * y) ^ z = x ^ z * y ^ z := by simp [*, mul_rpow_eq_ite]
 #align ennreal.mul_rpow_of_ne_zero ENNReal.mul_rpow_of_ne_zero
@@ -594,6 +605,21 @@ theorem mul_rpow_of_ne_zero {x y : ℝ≥0∞} (hx : x ≠ 0) (hy : y ≠ 0) (z 
 theorem mul_rpow_of_nonneg (x y : ℝ≥0∞) {z : ℝ} (hz : 0 ≤ z) : (x * y) ^ z = x ^ z * y ^ z := by
   simp [hz.not_lt, mul_rpow_eq_ite]
 #align ennreal.mul_rpow_of_nonneg ENNReal.mul_rpow_of_nonneg
+
+theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : ∀ i ∈ s, f i ≠ ∞) (r : ℝ) :
+    ∏ i in s, f i ^ r = (∏ i in s, f i) ^ r := by
+  induction s using Finset.induction
+  case empty => simp
+  case insert i s hi ih =>
+    have h2f : ∀ i ∈ s, f i ≠ ∞ := fun i hi ↦ hf i <| mem_insert_of_mem hi
+    rw [prod_insert hi, prod_insert hi, ih h2f, ← mul_rpow_of_ne_top <| hf i <| mem_insert_self ..]
+    apply prod_lt_top h2f |>.ne
+
+theorem prod_rpow_of_nonneg {ι} {s : Finset ι} {f : ι → ℝ≥0∞} {r : ℝ} (hr : 0 ≤ r) :
+    ∏ i in s, f i ^ r = (∏ i in s, f i) ^ r := by
+  induction s using Finset.induction
+  case empty => simp
+  case insert i s hi ih => simp_rw [prod_insert hi, ih, ← mul_rpow_of_nonneg _ _ hr]
 
 theorem inv_rpow (x : ℝ≥0∞) (y : ℝ) : x⁻¹ ^ y = (x ^ y)⁻¹ := by
   rcases eq_or_ne y 0 with (rfl | hy); · simp only [rpow_zero, inv_one]
