@@ -105,7 +105,7 @@ lemma ScottHausdorff.isOpen_of_isLowerSet {s : Set α} (h : IsLowerSet s) :
 The Scott topology is defined as the join of the topology of upper sets and the Scott Hausdorff
 topology.
 -/
-def Scott : TopologicalSpace α := upperSet α ⊔ scottHausdorff
+def scott : TopologicalSpace α := upperSet α ⊔ scottHausdorff
 
 lemma upperSet_le_Scott : upperSet α ≤ Scott := le_sup_left
 
