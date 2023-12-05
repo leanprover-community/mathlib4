@@ -137,9 +137,11 @@ namespace WithScott
 @[simp] lemma ofScott_symm_eq : (@ofScott α).symm = toScott := rfl
 @[simp] lemma toScott_ofScott (a : WithScott α) : toScott (ofScott a) = a := rfl
 @[simp] lemma ofScott_toScott (a : α) : ofScott (toScott a) = a := rfl
--- porting note: removed @[simp] to make linter happy
+
+@[simp, nolint simpNF]
 lemma toScott_inj {a b : α} : toScott a = toScott b ↔ a = b := Iff.rfl
--- porting note: removed @[simp] to make linter happy
+
+@[simp, nolint simpNF]
 lemma ofScott_inj {a b : WithScott α} : ofScott a = ofScott b ↔ a = b := Iff.rfl
 
 /-- A recursor for `WithScott`. Use as `induction x using WithScott.rec`. -/
