@@ -20,7 +20,7 @@ In this file we define `Coalgebra`, and provide instances for:
 
 suppress_compilation
 
-universe u v
+universe u v w
 
 open scoped TensorProduct
 
@@ -89,6 +89,62 @@ theorem comul_apply (r : R) : comul r = 1 ⊗ₜ[R] r := rfl
 theorem counit_apply (r : R) : counit r = r := rfl
 
 end CommSemiring
+
+namespace Prod
+variable (R : Type u) (A : Type v) (B : Type w)
+variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
+variable [Coalgebra R A] [Coalgebra R B]
+
+notation f " ∘ₗ' " g => LinearMap.comp f g
+
+open LinearMap in
+instance instCoalgebra : Coalgebra R (A × B) where
+  comul := .coprod
+    (TensorProduct.map (.inl R A B) (.inl R A B) ∘ₗ comul)
+    (TensorProduct.map (.inr R A B) (.inr R A B) ∘ₗ comul)
+  counit := .coprod counit counit
+  rTensor_counit_comp_comul := by
+    ext x : 2 <;> dsimp
+    · simp only [map_zero, add_zero]
+      simp_rw [←LinearMap.comp_apply, ←LinearMap.comp_assoc, ←LinearMap.lTensor_comp_rTensor,
+        ←LinearMap.comp_assoc, LinearMap.rTensor_comp_lTensor, ←LinearMap.lTensor_comp_rTensor,
+        LinearMap.comp_assoc _ (.rTensor _ _), ←LinearMap.rTensor_comp, LinearMap.coprod_inl,
+        LinearMap.comp_assoc, rTensor_counit_comp_comul]
+      rfl
+    · simp only [map_zero, zero_add]
+      simp_rw [←LinearMap.comp_apply, ←LinearMap.comp_assoc, ←LinearMap.lTensor_comp_rTensor,
+        ←LinearMap.comp_assoc, LinearMap.rTensor_comp_lTensor, ←LinearMap.lTensor_comp_rTensor,
+        LinearMap.comp_assoc _ (.rTensor _ _), ←LinearMap.rTensor_comp, LinearMap.coprod_inr,
+        LinearMap.comp_assoc, rTensor_counit_comp_comul]
+      rfl
+  lTensor_counit_comp_comul := by
+    ext x : 2 <;> dsimp
+    · simp only [map_zero, add_zero]
+      simp_rw [←LinearMap.comp_apply, ←LinearMap.comp_assoc, ←LinearMap.rTensor_comp_lTensor,
+        ←LinearMap.comp_assoc, LinearMap.lTensor_comp_rTensor, ←LinearMap.rTensor_comp_lTensor,
+        LinearMap.comp_assoc _ (.lTensor _ _), ←LinearMap.lTensor_comp, LinearMap.coprod_inl,
+        LinearMap.comp_assoc, lTensor_counit_comp_comul]
+      rfl
+    · simp only [map_zero, zero_add]
+      simp_rw [←LinearMap.comp_apply, ←LinearMap.comp_assoc, ←LinearMap.rTensor_comp_lTensor,
+        ←LinearMap.comp_assoc, LinearMap.lTensor_comp_rTensor, ←LinearMap.rTensor_comp_lTensor,
+        LinearMap.comp_assoc _ (.lTensor _ _), ←LinearMap.lTensor_comp, LinearMap.coprod_inr,
+        LinearMap.comp_assoc, lTensor_counit_comp_comul]
+      rfl
+  coassoc := by
+    ext x : 2 <;> dsimp
+    sorry
+
+@[simp]
+theorem comul_apply (r : A × B) :
+  comul r =
+    TensorProduct.map (.inl R A B) (.inl R A B) (comul r.1) +
+    TensorProduct.map (.inr R A B) (.inr R A B) (comul r.2) := rfl
+
+@[simp]
+theorem counit_apply (r : A × B) : (counit r : R) = counit r.1 + counit r.2 := rfl
+
+end Prod
 
 namespace Finsupp
 variable (ι : Type v)
