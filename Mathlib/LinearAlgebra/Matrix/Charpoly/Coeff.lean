@@ -227,6 +227,7 @@ lemma derivative_det_one_add_X_smul_aux {n} (M : Matrix (Fin n) (Fin n) R) :
         · rw [Fin.castSucc_zero]; exact lt_of_le_of_ne (Fin.zero_le _) hi.symm
     · exact fun H ↦ (H <| Finset.mem_univ _).elim
 
+/-- The derivative of `det (1 + M X)` at `0` is the trace of `M`. -/
 lemma derivative_det_one_add_X_smul (M : Matrix n n R) :
     (derivative <| det (1 + (X : R[X]) • M.map C)).eval 0 = trace M := by
   let e := Matrix.reindexLinearEquiv R R (Fintype.equivFin n) (Fintype.equivFin n)
@@ -237,16 +238,21 @@ lemma derivative_det_one_add_X_smul (M : Matrix n n R) :
     rw [← (Fintype.equivFin n).symm.sum_comp]
     rfl
 
+lemma coeff_det_one_add_X_smul_one (M : Matrix n n R) :
+    (det (1 + (X : R[X]) • M.map C)).coeff 1 = trace M := by
+  simp only [← derivative_det_one_add_X_smul, ← coeff_zero_eq_eval_zero,
+    coeff_derivative, zero_add, Nat.cast_zero, mul_one]
+
 lemma det_one_add_X_smul (M : Matrix n n R) :
     det (1 + (X : R[X]) • M.map C) =
       (1 : R[X]) + trace M • X + (det (1 + (X : R[X]) • M.map C)).divX.divX * X ^ 2 := by
   rw [Algebra.smul_def (trace M), ← C_eq_algebraMap, pow_two, ← mul_assoc, add_assoc,
-    ← add_mul, ← derivative_det_one_add_X_smul, ← coeff_zero_eq_eval_zero, coeff_derivative,
-    Nat.cast_zero, @zero_add R, mul_one, ← coeff_divX, add_comm (C _), divX_mul_X_add,
+    ← add_mul, ← coeff_det_one_add_X_smul_one, ← coeff_divX, add_comm (C _), divX_mul_X_add,
     add_comm (1 : R[X]), ← C.map_one]
   convert (divX_mul_X_add _).symm
   rw [coeff_zero_eq_eval_zero, eval_det_add_X_smul, det_one, eval_one]
 
+/-- The first two terms of the taylor expansion of `det (1 + r • M)` at `r = 0`. -/
 lemma det_one_add_smul (r : R) (M : Matrix n n R) :
     det (1 + r • M) =
       1 + trace M * r + (det (1 + (X : R[X]) • M.map C)).divX.divX.eval r * r ^ 2 := by
