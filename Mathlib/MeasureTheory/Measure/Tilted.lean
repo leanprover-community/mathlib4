@@ -43,7 +43,7 @@ lemma integral_exp_pos {μ : Measure α} {f : α → ℝ} [hμ : NeZero μ]
     0 < ∫ x, exp (f x) ∂μ := by
   rw [integral_pos_iff_support_of_nonneg (fun x ↦ (exp_pos _).le) hf]
   suffices (Function.support fun x ↦ exp (f x)) = Set.univ by
-    simp only [this, Measure.measure_univ_pos, ne_eq, hμ.out]
+    simp only [this, Measure.measure_univ_pos, ne_eq, hμ.out, not_false_eq_true]
   ext1 x
   simp only [Function.mem_support, ne_eq, Set.mem_univ, iff_true]
   exact (exp_pos _).ne'
