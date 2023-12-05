@@ -188,7 +188,7 @@ theorem contDiffOn_arccos {n : ℕ∞} : ContDiffOn ℝ n arccos {-1, 1}ᶜ :=
 theorem contDiffAt_arccos_iff {x : ℝ} {n : ℕ∞} :
     ContDiffAt ℝ n arccos x ↔ n = 0 ∨ x ≠ -1 ∧ x ≠ 1 := by
   refine' Iff.trans ⟨fun h => _, fun h => _⟩ contDiffAt_arcsin_iff <;>
-    simpa [arccos] using (@contDiffAt_const _ _ _ _ _ _ _ _ _ _ (π / 2)).sub h
+    simpa [arccos] using (contDiffAt_const (c := π / 2)).sub h
 #align real.cont_diff_at_arccos_iff Real.contDiffAt_arccos_iff
 
 end Arccos

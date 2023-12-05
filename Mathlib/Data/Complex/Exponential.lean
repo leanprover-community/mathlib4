@@ -142,7 +142,7 @@ theorem isCauSeq_geo_series {β : Type*} [Ring β] [Nontrivial β] {abv : β →
         refine' div_nonneg (sub_nonneg.2 _) (sub_nonneg.2 <| le_of_lt hx1)
         exact pow_le_one _ (by positivity) hx1.le
       · intro n _
-        rw [←one_mul (abv x ^ n), pow_succ]
+        rw [← one_mul (abv x ^ n), pow_succ]
         gcongr)
 #align is_cau_geo_series isCauSeq_geo_series
 

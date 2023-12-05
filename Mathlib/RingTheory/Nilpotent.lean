@@ -49,6 +49,9 @@ theorem IsNilpotent.mk [Zero R] [Pow R ℕ] (x : R) (n : ℕ) (e : x ^ n = 0) : 
   ⟨1, pow_one 0⟩
 #align is_nilpotent.zero IsNilpotent.zero
 
+theorem not_isNilpotent_one [MonoidWithZero R] [Nontrivial R] :
+    ¬ IsNilpotent (1 : R) := fun ⟨_, H⟩ ↦ zero_ne_one (H.symm.trans (one_pow _))
+
 theorem IsNilpotent.neg [Ring R] (h : IsNilpotent x) : IsNilpotent (-x) := by
   obtain ⟨n, hn⟩ := h
   use n
@@ -59,7 +62,7 @@ lemma IsNilpotent.pow {n : ℕ} {S : Type*} [MonoidWithZero S] {x : S}
     (hx : IsNilpotent x) : IsNilpotent (x ^ n.succ) := by
   obtain ⟨N,hN⟩ := hx
   use N
-  rw [←pow_mul, Nat.succ_mul, pow_add, hN, mul_zero]
+  rw [← pow_mul, Nat.succ_mul, pow_add, hN, mul_zero]
 
 lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
     (hx : IsNilpotent x) (hn : n ≠ 0) : IsNilpotent (x ^ n) := by
@@ -71,6 +74,13 @@ lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
 theorem isNilpotent_neg_iff [Ring R] : IsNilpotent (-x) ↔ IsNilpotent x :=
   ⟨fun h => neg_neg x ▸ h.neg, fun h => h.neg⟩
 #align is_nilpotent_neg_iff isNilpotent_neg_iff
+
+lemma IsNilpotent.smul [MonoidWithZero R] [MonoidWithZero S] [MulActionWithZero R S]
+    [SMulCommClass R S S] [IsScalarTower R S S] {a : S} (ha : IsNilpotent a) (t : R) :
+    IsNilpotent (t • a) := by
+  obtain ⟨k, ha⟩ := ha
+  use k
+  rw [smul_pow, ha, smul_zero]
 
 theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
     [MonoidWithZeroHomClass F R S] (hr : IsNilpotent r) (f : F) : IsNilpotent (f r) := by
@@ -195,7 +205,9 @@ protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) (h_comm : ∀ i j, i ∈ s → j ∈ s → Commute (f i) (f j)) :
     IsNilpotent (∑ i in s, f i) := by
   classical
-  induction' s using Finset.induction with j s hj ih; simp
+  induction s using Finset.induction with
+  | empty => simp
+  | @insert j s hj ih => ?_
   rw [Finset.sum_insert hj]
   apply Commute.isNilpotent_add
   · exact Commute.sum_right _ _ _ (fun i hi ↦ h_comm _ _ (by simp) (by simp [hi]))
