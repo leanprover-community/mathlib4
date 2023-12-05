@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.GradedObject.Bifunctor
+import Mathlib.CategoryTheory.Functor.Trifunctor
 /-!
 # The action of trifunctors on graded objects
 
@@ -244,7 +245,7 @@ section
 
 variable (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C₄)
 
-@[simps]
+/-@[simps]
 def _root_.CategoryTheory.bifunctorComp₁₂Obj (X₁ : C₁) : C₂ ⥤ C₃ ⥤ C₄ where
   obj X₂ :=
     { obj := fun X₃ => (G.obj ((F₁₂.obj X₁).obj X₂)).obj X₃
@@ -261,7 +262,7 @@ def _root_.CategoryTheory.bifunctorComp₁₂ : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄ 
       naturality := fun {X₂ Y₂} ψ => by
         ext X₃
         dsimp
-        simp only [← NatTrans.comp_app, ← G.map_comp, NatTrans.naturality] }
+        simp only [← NatTrans.comp_app, ← G.map_comp, NatTrans.naturality] }-/
 
 variable
   {I₁ I₂ I₁₂ I₃ J : Type*} (p : I₁ × I₂ → I₁₂) (q : I₁₂ × I₃ → J)
