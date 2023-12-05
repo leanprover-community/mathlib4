@@ -133,7 +133,13 @@ instance instCoalgebra : Coalgebra R (A × B) where
       rfl
   coassoc := by
     ext x : 2 <;> dsimp
-    sorry
+    · simp only [map_zero, add_zero]
+      simp_rw [←LinearMap.comp_apply, ←LinearMap.comp_assoc, rTensor_comp_map, lTensor_comp_map,
+        coprod_inl, ←map_comp_rTensor, ←map_comp_lTensor, comp_assoc, ←coassoc, assoc_map]
+      simp?
+      have := coassoc (R := R) (A := A)
+      sorry
+    · sorry
 
 @[simp]
 theorem comul_apply (r : A × B) :

@@ -41,9 +41,10 @@ section Semiring
 variable {R : Type*} [CommSemiring R]
 variable {R' : Type*} [Monoid R']
 variable {R'' : Type*} [Semiring R'']
-variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*} {S : Type*}
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q] [AddCommMonoid S]
-variable [Module R M] [Module R N] [Module R P] [Module R Q] [Module R S]
+variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*} {S : Type*} {T : Type*}
+variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
+variable [AddCommMonoid Q] [AddCommMonoid S] [AddCommMonoid T]
+variable [Module R M] [Module R N] [Module R P] [Module R Q] [Module R S] [Module R T]
 variable [DistribMulAction R' M]
 variable [Module R'' M]
 variable (M N)
@@ -800,6 +801,16 @@ lemma map_comp_comm_eq (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     map f g ∘ₗ TensorProduct.comm R N M =
       TensorProduct.comm R Q P ∘ₗ map g f :=
   ext rfl
+
+lemma map_map_comp_assoc_eq (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) :
+    map f (map g h) ∘ₗ TensorProduct.assoc R M N P =
+      TensorProduct.assoc R Q S T ∘ₗ map (map f g) h :=
+  ext <| ext <| LinearMap.ext fun _ => LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
+
+lemma map_map_comp_assoc_symm_eq (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R] T) :
+    map (map f g) h ∘ₗ (TensorProduct.assoc R M N P).symm =
+      (TensorProduct.assoc R Q S T).symm ∘ₗ map f (map g h) :=
+  ext <| LinearMap.ext fun _ => ext <| LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
 
 theorem map_range_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     range (map f g) = Submodule.span R { t | ∃ m n, f m ⊗ₜ g n = t } := by
