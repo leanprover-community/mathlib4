@@ -44,11 +44,11 @@ theorem isOpen_set_of_singleton_prod_contained {V : Set Y} (hV : IsCompact V) {W
   -- (finite, thus open) intersection of the corresponding neighbourhoods.
   rw [isCompact_iff_finite_subcover] at hV
   obtain ⟨I, hI⟩ := hV
-    (fun (v : V) ↦ (hW x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose)
-    (fun v ↦ (hW x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.2.1)
+    (fun (v : V) ↦ (hW x v.val (hUV ⟨hx, v.prop⟩)).choose_spec.choose)
+    (fun v ↦ (hW x v.val (hUV ⟨hx, v.prop⟩)).choose_spec.choose_spec.2.1)
     (fun v hv ↦ Set.mem_iUnion.mpr ⟨⟨v, hv⟩,
-      (hW x v (hUV (Set.mk_mem_prod hx hv))).choose_spec.choose_spec.2.2.2.1⟩)
-  let t := ⋂ i ∈ I, (fun v ↦ (hW x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose) i
+      (hW x v (hUV ⟨hx, hv⟩)).choose_spec.choose_spec.2.2.2.1⟩)
+  let t := ⋂ i ∈ I, (fun v ↦ (hW x v.val (hUV ⟨hx, v.prop⟩)).choose) i
   refine ⟨t, ?_, ?_, ?_⟩
   -- The intersection is indeed contained in `U`:
   · intro x' hx'
@@ -58,16 +58,16 @@ theorem isOpen_set_of_singleton_prod_contained {V : Set Y} (hV : IsCompact V) {W
     replace hw := hI hw
     simp only [Set.mem_iUnion] at hw
     obtain ⟨i, hi, hw⟩ := hw
-    apply (hW x i.val (hUV (Set.mk_mem_prod hx i.prop))).choose_spec.choose_spec.2.2.2.2
+    apply (hW x i.val (hUV ⟨hx, i.prop⟩)).choose_spec.choose_spec.2.2.2.2
     refine ⟨?_, hw⟩
     simp only [Set.mem_iInter] at hz
     exact hz _ hi
   -- The intersection is open:
   · exact Set.Finite.isOpen_biInter (Set.Finite.ofFinset I (fun _ ↦ Iff.rfl))
-      fun v _ ↦ (hW x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.1
+      fun v _ ↦ (hW x v.val (hUV ⟨hx, v.prop⟩)).choose_spec.choose_spec.1
   -- The intersection contains `x`
   · simp only [Set.mem_iInter]
-    exact fun v _ ↦ (hW x v.val (hUV (Set.mk_mem_prod hx v.prop))).choose_spec.choose_spec.2.2.1
+    exact fun v _ ↦ (hW x v.val (hUV ⟨hx, v.prop⟩)).choose_spec.choose_spec.2.2.1
 
 variable [CompactSpace Y] (W : Set (X × Y)) (hW : IsClopen W)
 
