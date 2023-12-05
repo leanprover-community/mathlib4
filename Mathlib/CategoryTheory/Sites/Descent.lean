@@ -312,7 +312,7 @@ lemma isoSections_inv_naturality₂ {D₁ D₂ : hY.SheafDescentData A}
 /-- Constructor for isomorphisms in `hY.SheafDescentData A`. -/
 @[simps]
 def isoMk {D₁ D₂ : hY.SheafDescentData A} (e : ∀ i, D₁.sheaf i ≅ D₂.sheaf i)
-  (comm : ∀ ⦃X : C⦄ ⦃i₁ i₂ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂),
+    (comm : ∀ ⦃X : C⦄ ⦃i₁ i₂ : I⦄ (f₁ : X ⟶ Y i₁) (f₂ : X ⟶ Y i₂),
     (J.overMapPullback A f₁).map (e i₁).hom ≫ (D₂.iso f₁ f₂).hom =
       (D₁.iso f₁ f₂).hom ≫ (J.overMapPullback A f₂).map (e i₂).hom) : D₁ ≅ D₂ where
   hom :=
