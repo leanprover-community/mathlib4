@@ -149,8 +149,7 @@ noncomputable def rightResolution_localizerMorphism (K : CochainComplex C ℤ) (
   w := (HomotopyCategory.quotient _ _).map (K.ιInjectiveResolution n)
   hw := by
     dsimp [HomotopyCategory.Plus.qis, MorphismProperty.inverseImage, HomotopyCategory.Plus.ι, Triangulated.Subcategory.ι]
-    rw [HomotopyCategory.quotient_map_mem_qis_iff]
-    intro q
+    rw [HomotopyCategory.quotient_map_mem_qis_iff, HomologicalComplex.qis_iff]
     infer_instance
 
 instance [EnoughInjectives C] : (Injectives.localizerMorphism C).HasRightResolutions := by

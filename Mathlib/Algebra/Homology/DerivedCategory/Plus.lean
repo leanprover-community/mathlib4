@@ -132,7 +132,7 @@ lemma right_localizing {K K' : HomotopyCategory C (ComplexShape.up ℤ)} (φ : K
     dsimp [HomotopyCategory.quotient, Quotient.functor]
     infer_instance
   · change IsIso (DerivedCategory.Q.map _)
-    rw [isIso_Q_map_iff', K'.qis_truncGEπ_iff n]
+    rw [isIso_Q_map_iff_quasiIso, K'.quasiIso_truncGEπ_iff n]
     infer_instance
 
 -- it would be better to formalize right-localizing subcategories...
@@ -144,7 +144,7 @@ noncomputable instance : Full (π C) := Functor.fullOfSurjective _ (fun K L => b
     ψ = (QhObjIso K hK).inv ≫ DerivedCategory.Plus.ι.map φ ≫ (QhObjIso L hL).hom := ⟨_, rfl⟩
   have hψ' : DerivedCategory.Plus.ι.map φ =
     (QhObjIso K hK).hom ≫ ψ ≫ (QhObjIso L hL).inv := by simp [hψ]
-  obtain ⟨γ, hγ⟩ :=  MorphismProperty.LeftFraction.fac DerivedCategory.Qh (HomotopyCategory.qis C _) ψ
+  obtain ⟨γ, hγ⟩ :=  Localization.exists_leftFraction DerivedCategory.Qh (HomotopyCategory.qis C _) ψ
   obtain ⟨K', g, s, hs, rfl⟩ := γ.cases
   dsimp only [MorphismProperty.LeftFraction.map] at hγ
   rw [← isIso_Qh_map_iff] at hs
@@ -185,7 +185,7 @@ instance : Faithful (π C ⋙ Plus.ι) := by
     refine' ⟨fun {K L} f₁ f₂ h => _⟩
     obtain ⟨f, rfl⟩ : ∃ f, f₁ = f + f₂ := ⟨f₁-f₂, by simp⟩
     simp only [add_left_eq_self, Functor.map_add] at h ⊢
-    obtain ⟨φ, hφ⟩ := MorphismProperty.LeftFraction.fac LocQ
+    obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction LocQ
       (HomotopyCategory.Plus.subcategoryAcyclic C).W f
     have := this φ.f (by
       have : LocQ.map φ.f = f ≫ (Localization.isoOfHom LocQ (Subcategory.W (HomotopyCategory.Plus.subcategoryAcyclic C)) φ.s φ.hs).hom := by
@@ -199,7 +199,7 @@ instance : Faithful (π C ⋙ Plus.ι) := by
   rw [ι_π_LocQ_map_eq φ K.2 L.2, ← cancel_mono (QhObjIso L.1 L.2).hom,
     ← cancel_epi (QhObjIso K.1 K.2).inv, assoc, assoc, zero_comp, comp_zero,
     Iso.inv_hom_id, comp_id, Iso.inv_hom_id_assoc, ← DerivedCategory.Qh.map_zero,
-    MorphismProperty.LeftFraction.map_eq_iff' DerivedCategory.Qh
+    MorphismProperty.map_eq_iff_postcomp DerivedCategory.Qh
     (HomotopyCategory.subcategoryAcyclic C).W] at hφ
   simp only [zero_comp] at hφ
   obtain ⟨L', s, hs, eq⟩ := hφ
@@ -207,7 +207,7 @@ instance : Faithful (π C ⋙ Plus.ι) := by
     rw [isIso_Qh_map_iff, HomotopyCategory.qis_eq_subcategoryAcyclic_W]
     exact hs
   obtain ⟨L'', hL'', t, ht⟩ := right_localizing s L.2 inferInstance
-  rw [← LocQ.map_zero, MorphismProperty.LeftFraction.map_eq_iff' LocQ
+  rw [← LocQ.map_zero, MorphismProperty.map_eq_iff_postcomp LocQ
       (HomotopyCategory.Plus.subcategoryAcyclic C).W]
   refine' ⟨⟨L'', hL''⟩, (s ≫ t : L.1 ⟶ L''), _, _⟩
   · rw [← HomotopyCategory.Plus.qis_eq_subcategoryAcyclic_W]
@@ -228,7 +228,7 @@ instance : EssSurj (π C) where
     obtain ⟨L, ⟨e⟩⟩ : ∃ (L : CochainComplex C ℤ), Nonempty (Q.obj L ≅ K) :=
       ⟨_, ⟨Q.objObjPreimageIso K⟩⟩
     have : IsIso (Q.map (L.truncGEπ n)) := by
-      rw [isIso_Q_map_iff', CochainComplex.qis_truncGEπ_iff, ← isGE_Q_obj_iff]
+      rw [isIso_Q_map_iff_quasiIso, CochainComplex.quasiIso_truncGEπ_iff, ← isGE_Q_obj_iff]
       have : K.IsGE n := hn.mem
       exact isGE_of_iso e.symm n
     let L' : Loc C := LocQ.obj

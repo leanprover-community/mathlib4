@@ -292,13 +292,13 @@ lemma largeExtAddEquivLargeExt_γhmul [HasDerivedCategory.{w} C] [HasDerivedCate
   dsimp only [largeExtAddEquivLargeExt, ShiftedHom.map'AddEquiv, FunLike.coe, EquivLike.coe,
     ShiftedHom.map'Equiv, AddEquiv.trans]
   simp only [AddEquiv.toEquiv_eq_coe, Iso.app_hom, Iso.app_inv, ShiftedHom.γhmul_mk₀,
-    ShiftedHom.mk₀_γhmul, Equiv.toFun_as_coe_apply, AddEquiv.toEquiv_symm, Equiv.toFun_as_coe,
-    Equiv.coe_trans, AddEquiv.coe_toEquiv_symm, Equiv.coe_fn_mk, Equiv.invFun_as_coe,
-    Equiv.trans_apply, AddEquiv.coe_toEquiv, LargeExt.addEquiv_apply, LargeExt.γhmul_hom,
-    Nat.cast_mul, LargeExt.equiv_symm_apply_hom, Function.comp_apply,
-    LargeExt.addEquiv_symm_apply_hom]
+    ShiftedHom.mk₀_γhmul, Equiv.toFun_as_coe, AddEquiv.toEquiv_symm, Equiv.coe_trans,
+    AddEquiv.coe_toEquiv_symm, Equiv.coe_fn_mk, Equiv.invFun_as_coe, Equiv.trans_apply,
+    AddEquiv.coe_toEquiv, LargeExt.addEquiv_apply, LargeExt.γhmul_hom, Nat.cast_mul,
+    LargeExt.equiv_symm_apply_hom, Function.comp_apply, LargeExt.addEquiv_symm_apply_hom]
   erw [← ShiftedHom.map'_comp]
-  rw [ShiftedHom.map'_zsmul]
+  erw [ShiftedHom.map'_zsmul]
+  rfl
 
 lemma smallExtAddEquivLargeExt_γhmul [HasDerivedCategory.{w'} C] {X Y Z : C} {p q r : ℕ}
     (α : SmallExt.{w} Y Z p) (β : SmallExt.{w} X Y q) (h : p + q = r) :
@@ -367,7 +367,7 @@ lemma smallExtAddEquivLargeExt_smallExtClass [HasDerivedCategory.{w'} C] [HasSma
       FunLike.coe, EquivLike.coe, Equiv.toFun, addEquivShrink, Equiv.symm, Equiv.trans,
       Function.comp]
     simp only [AddEquiv.toEquiv_eq_coe, Equiv.invFun_as_coe, AddEquiv.coe_toEquiv_symm,
-      Equiv.toFun_as_coe_apply, Equiv.symm_apply_apply, AddEquiv.coe_toEquiv]
+      Equiv.toFun_as_coe, Equiv.symm_apply_apply, AddEquiv.coe_toEquiv]
   rw [h, ← largeExtAddEquivLargeExt_largeExtClass.{max u v, max u v} hS,
     AddEquiv.symm_apply_apply, largeExtAddEquivLargeExt_largeExtClass.{max u v, w'} hS]
 

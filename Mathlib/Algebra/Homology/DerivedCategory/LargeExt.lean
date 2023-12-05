@@ -9,11 +9,6 @@ section
 
 variable {X Y : Type*} [AddCommGroup X] [AddCommGroup Y]
 
-@[simp]
-lemma Units.mul_self (a : ℤˣ) : a * a = 1 := by
-  obtain rfl | rfl := Int.units_eq_one_or a
-  all_goals simp
-
 instance : Neg (AddEquiv X Y) where
   neg e :=
     { toFun := fun x => -e x
@@ -32,11 +27,11 @@ instance : SMul ℤˣ (AddEquiv X Y) where
       left_inv := fun x => by
         dsimp
         erw [map_zsmul, smul_smul]
-        rw [Units.mul_self, AddEquiv.symm_apply_apply, one_smul]
+        simp only [Int.units_mul_self, AddEquiv.symm_apply_apply, one_smul]
       right_inv := fun y => by
         dsimp
         erw [map_zsmul, smul_smul]
-        rw [Units.mul_self, AddEquiv.apply_symm_apply, one_smul]
+        simp only [Int.units_mul_self, AddEquiv.apply_symm_apply, one_smul]
       map_add' := fun x y => by
         dsimp
         rw [e.map_add, smul_add] }
@@ -214,13 +209,44 @@ lemma γhmul_one {n : ℕ} (α : LargeExt X Y n) :
   simp only [mul_zero, Int.negOnePow_zero, Int.ofNat_zero, one_smul]
   apply ShiftedHom.one_γhmul'
 
+section
+
+variable {R : Type*} [Ring R] [Linear R C]
+
+noncomputable instance : Module R (LargeExt X Y n) := (equiv X Y n).module R
+
+@[simp]
+lemma smul_hom (a : R) (x : LargeExt X Y n) :
+    (a • x).hom = a • x.hom := rfl
+
+lemma smul_γhmul (a : R) {p q n : ℕ} (α : LargeExt Y Z p) (β : LargeExt X Y q) (hpq : p + q = n) :
+    (a • α) •[hpq] β = a • (α •[hpq] β) := by
+  apply hom_injective
+  simp only [γhmul_hom, Nat.cast_mul, smul_hom, ShiftedHom.γhmul_smul, smul_smul]
+  rw [smul_comm]
+
+lemma units_smul_γhmul (a : Rˣ) {p q n : ℕ} (α : LargeExt Y Z p) (β : LargeExt X Y q) (hpq : p + q = n) :
+    (a • α) •[hpq] β = a • (α •[hpq] β) :=
+  smul_γhmul (a : R) α β hpq
+
+lemma γhmul_smul {p q n : ℕ} (α : LargeExt Y Z p) (a : R) (β : LargeExt X Y q) (hpq : p + q = n) :
+    α •[hpq] (a • β) = a • (α •[hpq] β) := by
+  apply hom_injective
+  simp only [γhmul_hom, Nat.cast_mul, smul_hom, ShiftedHom.smul_γhmul]
+  rw [smul_comm]
+
+lemma γhmul_units_smul {p q n : ℕ} (α : LargeExt Y Z p) (a : Rˣ) (β : LargeExt X Y q) (hpq : p + q = n) :
+    α •[hpq] (a • β) = a • (α •[hpq] β) :=
+  γhmul_smul α (a : R) β hpq
+
+end
+
 instance {X₁ X₂ X₃ X₄ : C} : IsAssocGradedHMul (LargeExt X₃ X₄)
     (LargeExt X₂ X₃) (LargeExt X₁ X₂) (LargeExt X₂ X₄) (LargeExt X₁ X₃)
     (LargeExt X₁ X₄) where
   γhmul_assoc p₁ p₂ p₃ α β γ p₁₂ p₂₃ p₁₂₃ h₁₂ h₂₃ h₁₂₃ := by
     apply hom_injective
-    rw [γhmul_hom, γhmul_hom, γhmul_hom, γhmul_hom]
-    simp only [ShiftedHom.zsmul_γhmul, ShiftedHom.γhmul_zsmul, smul_smul,
+    simp only [γhmul_hom, Nat.cast_mul, ShiftedHom.γhmul_units_smul, ShiftedHom.units_smul_γhmul, smul_smul,
       ← Int.negOnePow_add]
     congr 1
     · congr 1
@@ -257,61 +283,7 @@ section Linear
 
 namespace LargeExt
 
-section
-
-variable {R : Type*} [Ring R] {M : Type*} [AddCommGroup M] [Module R M]
-
-lemma Module.zsmul_smul (a : ℤ) (b : R) (m : M) :
-    a • (b • m) = (a • b) • m := by
-  let φ₁ : ℤ →+ M :=
-    { toFun := fun a => a • (b • m)
-      map_zero' := by simp
-      map_add' := fun a₁ a₂ => by simp only [add_zsmul] }
-  let φ₂ : ℤ →+ M :=
-    { toFun := fun a => (a • b) • m
-      map_zero' := by simp
-      map_add' := fun a₁ a₂ => by simp only [add_smul] }
-  change φ₁ a = φ₂ a
-  congr
-  ext
-  simp
-
-lemma Module.smul_zsmul (a : R) (b : ℤ) (m : M) :
-    a • (b • m) = (b • a) • m := by
-  let φ₁ : ℤ →+ M :=
-    { toFun := fun b => a • (b • m)
-      map_zero' := by simp
-      map_add' := fun b₁ b₂ => by simp only [add_smul, smul_add] }
-  let φ₂ : ℤ →+ M :=
-    { toFun := fun b => (b • a) • m
-      map_zero' := by simp
-      map_add' := fun b₁ b₂ => by simp only [add_smul] }
-  change φ₁ b = φ₂ b
-  congr
-  ext
-  simp
-
-end
-
 variable {R : Type*} [Ring R] [Linear R C]
-
-noncomputable instance : Module R (LargeExt X Y n) := (equiv X Y n).module R
-
-@[simp]
-lemma smul_hom (a : R) (x : LargeExt X Y n) :
-    (a • x).hom = a • x.hom := rfl
-
-lemma smul_γhmul (a : R) {p q n : ℕ} (α : LargeExt Y Z p) (β : LargeExt X Y q) (hpq : p + q = n) :
-    (a • α) •[hpq] β = a • (α •[hpq] β) := by
-  apply hom_injective
-  simp only [γhmul_hom, smul_hom, ShiftedHom.γhmul_smul,
-    Module.smul_zsmul, Module.zsmul_smul]
-
-lemma γhmul_smul {p q n : ℕ} (α : LargeExt Y Z p) (a : R) (β : LargeExt X Y q) (hpq : p + q = n) :
-    α •[hpq] (a • β) = a • (α •[hpq] β) := by
-  apply hom_injective
-  simp only [γhmul_hom, smul_hom, ShiftedHom.smul_γhmul,
-    Module.smul_zsmul, Module.zsmul_smul]
 
 @[simps!]
 noncomputable def leftSMul {Y Z : C} {p : ℕ} (α : LargeExt Y Z p)

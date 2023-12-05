@@ -9,10 +9,15 @@ open Category Preadditive
 
 variable {C D : Type _} [Category C] [Category D]
   (M : Type _) [AddCommMonoid M] [HasShift C M] [HasShift D M]
+  {R : Type _} [Semiring R]
 
 def ShiftedHom (X Y : C) : GradedType M := fun (n : M) => X ⟶ (Y⟦n⟧)
 
 instance [Preadditive C] (X Y : C) (n : M) : AddCommGroup (ShiftedHom M X Y n) := by
+  dsimp only [ShiftedHom]
+  infer_instance
+
+instance [Preadditive C] [Linear R C] (X Y : C) (n : M) : Module R (ShiftedHom M X Y n) := by
   dsimp only [ShiftedHom]
   infer_instance
 
@@ -102,19 +107,34 @@ lemma add_γhmul [Preadditive C]
   rw [γhmul_eq, γhmul_eq, γhmul_eq, add_comp]
 
 @[simp]
-lemma γhmul_zsmul [Preadditive C] [∀ (a : M), (shiftFunctor C a).Additive]
-    {p q n : M} (α : ShiftedHom M X Y p) (x : ℤ)
+lemma γhmul_smul [Preadditive C] [Linear R C] [∀ (a : M), (shiftFunctor C a).Additive]
+    [∀ (a : M), (shiftFunctor C a).Linear R]
+    {p q n : M} (α : ShiftedHom M X Y p) (x : R)
     (β : ShiftedHom M Y Z q) (hpq : p + q = n) :
     α •[hpq] (x • β) = x • (α •[hpq] β) := by
-  rw [γhmul_eq, γhmul_eq, Functor.map_zsmul, Preadditive.zsmul_comp,
-    Preadditive.comp_zsmul]
+  rw [γhmul_eq, γhmul_eq, Functor.map_smul, Linear.smul_comp, Linear.comp_smul]
 
 @[simp]
-lemma zsmul_γhmul [Preadditive C]
-    {p q n : M} (x : ℤ) (α : ShiftedHom M X Y p)
+lemma γhmul_units_smul [Preadditive C] [Linear R C] [∀ (a : M), (shiftFunctor C a).Additive]
+    [∀ (a : M), (shiftFunctor C a).Linear R]
+    {p q n : M} (α : ShiftedHom M X Y p) (x : Rˣ)
+    (β : ShiftedHom M Y Z q) (hpq : p + q = n) :
+    α •[hpq] (x • β) = x • (α •[hpq] β) := by
+  apply γhmul_smul
+
+@[simp]
+lemma smul_γhmul [Preadditive C] [Linear R C]
+    {p q n : M} (x : R) (α : ShiftedHom M X Y p)
     (β : ShiftedHom M Y Z q) (hpq : p + q = n) :
     (x • α) •[hpq] β = x • (α •[hpq] β) := by
-  rw [γhmul_eq, γhmul_eq, Preadditive.zsmul_comp]
+  rw [γhmul_eq, γhmul_eq, Linear.smul_comp]
+
+@[simp]
+lemma units_smul_γhmul [Preadditive C] [Linear R C]
+    {p q n : M} (x : Rˣ) (α : ShiftedHom M X Y p)
+    (β : ShiftedHom M Y Z q) (hpq : p + q = n) :
+    (x • α) •[hpq] β = x • (α •[hpq] β) := by
+  apply smul_γhmul
 
 instance {X₁ X₂ X₃ X₄ : C} : IsAssocGradedHMul (ShiftedHom M X₁ X₂)
     (ShiftedHom M X₂ X₃) (ShiftedHom M X₃ X₄) (ShiftedHom M X₁ X₃) (ShiftedHom M X₂ X₄)
@@ -139,31 +159,6 @@ lemma mk₀_comp_injective (f : X ⟶ Y) {n : M} (α β : ShiftedHom M Y Z n) [I
   rw [← one_γhmul α, ← one_γhmul β, one_eq, ← IsIso.inv_hom_id f,
     ← mk₀_comp (inv f) f (0 : M) 0 0 rfl rfl (add_zero 0),
     γhmul_assoc_of_second_degree_eq_zero, γhmul_assoc_of_second_degree_eq_zero, h]
-
-section Linear
-
-variable {R : Type*} [Ring R] [Preadditive C] [Linear R C]
-
-instance (X Y : C) (n : M) : Module R (ShiftedHom M X Y n) := by
-  dsimp [ShiftedHom]
-  infer_instance
-
-variable [∀ (a : M), (shiftFunctor C a).Additive]
-  [∀ (a : M), Functor.Linear R (shiftFunctor C a)]
-
-lemma γhmul_smul {p q n : M} (α : ShiftedHom M X Y p) (x : R)
-    (β : ShiftedHom M Y Z q) (hpq : p + q = n) :
-    α •[hpq] (x • β) = x • (α •[hpq] β) := by
-  rw [γhmul_eq, γhmul_eq, Functor.map_smul,
-    Linear.smul_comp, Linear.comp_smul]
-
-@[simp]
-lemma smul_γhmul {p q n : M} (x : R) (α : ShiftedHom M X Y p)
-    (β : ShiftedHom M Y Z q) (hpq : p + q = n) :
-    (x • α) •[hpq] β = x • (α •[hpq] β) := by
-  rw [γhmul_eq, γhmul_eq, Linear.smul_comp]
-
-end Linear
 
 def map {X Y : C} {m : M} (x : ShiftedHom M X Y m) (F : C ⥤ D) [F.CommShift M] :
     ShiftedHom M (F.obj X) (F.obj Y) m :=
@@ -204,7 +199,7 @@ lemma map'_zsmul (a : ℤ) {X Y : C} {m : M} (x : ShiftedHom M X Y m) (F : C ⥤
     [∀ (a : M), (shiftFunctor D a).Additive]
     {X' Y' : D} (e₁ : F.obj X ≅ X') (e₂ : F.obj Y ≅ Y') :
     (a • x).map' F e₁ e₂ = a • (x.map' F e₁ e₂) := by
-  rw [map'_eq, map'_eq, map_zsmul, zsmul_γhmul, γhmul_zsmul]
+  rw [map'_eq, map'_eq, map_zsmul, smul_γhmul, γhmul_smul]
 
 lemma map'_comp {X Y Z : C} {p q r : M} (h : p + q = r)
     (α : ShiftedHom M X Y p) (β : ShiftedHom M Y Z q) (F : C ⥤ D) [F.CommShift M]
