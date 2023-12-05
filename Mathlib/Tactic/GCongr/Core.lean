@@ -208,6 +208,70 @@ initialize registerBuiltinAttribute {
 
 initialize registerTraceClass `Meta.gcongr
 
+syntax "gcongr_discharger" : tactic
+
+/--
+This is used as the default side-goal discharger,
+it calls the `gcongr_discharger` extensible tactic.
+-/
+def gcongrDischarger (goal : MVarId) : MetaM Unit := Elab.Term.TermElabM.run' do
+  trace[Meta.gcongr] "Attempting to discharge side goal {goal}"
+  let [] ← Elab.Tactic.run goal <|
+      Elab.Tactic.evalTactic (Unhygienic.run `(tactic| gcongr_discharger))
+    | failure
+
+open Elab Tactic
+
+/-- See if the term is `a = b` and the goal is `a ∼ b` or `b ∼ a`, with `∼` reflexive. -/
+@[gcongr_forward] def exactRefl : ForwardExt where
+  eval h goal := do
+    let m ← mkFreshExprMVar none
+    goal.assignIfDefeq (← mkAppOptM ``Eq.subst #[h, m])
+    goal.applyRfl
+
+/-- See if the term is `a < b` and the goal is `a ≤ b`. -/
+@[gcongr_forward] def exactLeOfLt : ForwardExt where
+  eval h goal := do goal.assignIfDefeq (← mkAppM ``le_of_lt #[h])
+
+/-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
+@[gcongr_forward] def symmExact : ForwardExt where
+  eval h goal := do (← goal.applySymm).assignIfDefeq h
+
+@[gcongr_forward] def exact : ForwardExt where
+  eval e m := m.assignIfDefeq e
+
+/-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
+either with such a hypothesis directly or by a limited palette of relational forward-reasoning from
+these hypotheses. -/
+def _root_.Lean.MVarId.gcongrForward (hs : Array Expr) (g : MVarId) : MetaM Unit :=
+  withReducible do
+    let s ← saveState
+    withTraceNode `Meta.gcongr (fun _ => return m!"gcongr_forward: ⊢ {← g.getType}") do
+    -- Iterate over a list of terms
+    let tacs := (forwardExt.getState (← getEnv)).2
+    for h in hs do
+      try
+        tacs.firstM fun (n, tac) =>
+          withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
+            tac.eval h g
+        return
+      catch _ => s.restore
+    throwError "gcongr_forward failed"
+
+/--
+This is used as the default main-goal discharger,
+consisting of running `Lean.MVarId.gcongrForward` (trying a term together with limited
+forward-reasoning on that term) on each nontrivial hypothesis.
+-/
+def gcongrForwardDischarger (goal : MVarId) : MetaM Unit := Elab.Term.TermElabM.run' do
+  let mut hs := #[]
+  -- collect the nontrivial hypotheses
+  for h in ← getLCtx do
+    if !h.isImplementationDetail then
+      hs := hs.push (.fvar h.fvarId)
+  -- run `Lean.MVarId.gcongrForward` on each one
+  goal.gcongrForward hs
+
 /-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
 look up any relevant @[gcongr] lemmas, try to apply them, recursively run the tactic itself on
 "main" goals which are generated, and run the discharger on side goals which are generated. If there
@@ -215,24 +279,24 @@ is a user-provided template, first check that the template asks us to descend th
 match. -/
 partial def _root_.Lean.MVarId.gcongr
     (g : MVarId) (template : Option Expr) (names : List (TSyntax ``binderIdent))
-    (side_goal_discharger : MVarId → MetaM Unit)
-    (main_goal_discharger : MVarId → MetaM Unit := fun g => g.assumption) :
+    (mainGoalDischarger : MVarId → MetaM Unit := gcongrForwardDischarger)
+    (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
     MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
   withTraceNode `Meta.gcongr (fun _ => return m!"gcongr: ⊢ {← g.getType}") do
   match template with
   | none =>
     -- A. If there is no template, try to resolve the goal by the provided tactic
-    -- `main_goal_discharger`, and continue on if this fails.
-    try main_goal_discharger g; return (true, names, #[])
+    -- `mainGoalDischarger`, and continue on if this fails.
+    try mainGoalDischarger g; return (true, names, #[])
     catch _ => pure ()
   | some tpl =>
     -- B. If there is a template:
     -- (i) if the template is `?_` (or `?_ x1 x2`, created by entering binders)
-    -- then try to resolve the goal by the provided tactic `main_goal_discharger`;
+    -- then try to resolve the goal by the provided tactic `mainGoalDischarger`;
     -- if this fails, stop and report the existing goal.
     if let .mvar mvarId := tpl.getAppFn then
       if let .syntheticOpaque ← mvarId.getKind then
-        try main_goal_discharger g; return (true, names, #[])
+        try mainGoalDischarger g; return (true, names, #[])
         catch _ => return (false, names, #[g])
     -- (ii) if the template is *not* `?_` then continue on.
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
@@ -322,15 +386,14 @@ partial def _root_.Lean.MVarId.gcongr
           pure e
         -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
         -- appropriate template
-        let (_, names2, subgoals2) :=
-          ← mvarId.gcongr tpl names2 side_goal_discharger main_goal_discharger
+        let (_, names2, subgoals2) ← mvarId.gcongr tpl names2 mainGoalDischarger sideGoalDischarger
         (names, subgoals) := (names2, subgoals ++ subgoals2)
       let mut out := #[]
       -- Also try the discharger on any "side" (i.e., non-"main") goals which were not resolved
       -- by the `apply`.
       for g in gs do
         if !(← g.isAssigned) && !subgoals.contains g then
-          try side_goal_discharger g
+          try sideGoalDischarger g
           catch _ => out := out.push g
       -- Return all unresolved subgoals, "main" or "side"
       return (true, names, out ++ subgoals)
@@ -348,46 +411,6 @@ partial def _root_.Lean.MVarId.gcongr
   -- lemma.
   sErr.restore
   throw e
-
-open Elab Tactic
-
-/-- See if the term is `a = b` and the goal is `a ∼ b` or `b ∼ a`, with `∼` reflexive. -/
-@[gcongr_forward] def exactRefl : ForwardExt where
-  eval h goal := do
-    let m ← mkFreshExprMVar none
-    goal.assignIfDefeq (← mkAppOptM ``Eq.subst #[h, m])
-    goal.applyRfl
-
-/-- See if the term is `a < b` and the goal is `a ≤ b`. -/
-@[gcongr_forward] def exactLeOfLt : ForwardExt where
-  eval h goal := do goal.assignIfDefeq (← mkAppM ``le_of_lt #[h])
-
-/-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
-@[gcongr_forward] def symmExact : ForwardExt where
-  eval h goal := do (← goal.applySymm).assignIfDefeq h
-
-@[gcongr_forward] def exact : ForwardExt where
-  eval e m := m.assignIfDefeq e
-
-/-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
-either with such a hypothesis directly or by a limited palette of relational forward-reasoning from
-these hypotheses. -/
-def _root_.Lean.MVarId.gcongrForward (hs : Array Expr) (g : MVarId) : MetaM Unit :=
-  withReducible do
-    let s ← saveState
-    withTraceNode `Meta.gcongr (fun _ => return m!"gcongr_forward: ⊢ {← g.getType}") do
-    -- Iterate over a list of terms
-    let tacs := (forwardExt.getState (← getEnv)).2
-    for h in hs do
-      try
-        tacs.firstM fun (n, tac) =>
-          withTraceNode `Meta.gcongr (return m!"{·.emoji} trying {n} on {h} : {← inferType h}") do
-            tac.eval h g
-        return
-      catch _ => s.restore
-    throwError "gcongr_forward failed"
-
-syntax "gcongr_discharger" : tactic
 
 /-- The `gcongr` tactic applies "generalized congruence" rules, reducing a relational goal
 between a LHS and RHS matching the same pattern to relational subgoals between the differing
@@ -436,24 +459,8 @@ elab "gcongr" template:(colGt term)?
     Term.elabTerm e (← inferType lhs)
   -- Get the names from the `with x y z` list
   let names := (withArg.raw[1].getArgs.map TSyntax.mk).toList
-  -- The core tactic `Lean.MVarId.gcongr` will be run with side-goal discharger being
-  -- `gcongr_discharger`
-  let disch g := Term.TermElabM.run' do
-    let [] ← Tactic.run g <| evalTactic (Unhygienic.run `(tactic| gcongr_discharger))
-      | failure
-  -- The core tactic `Lean.MVarId.gcongr` will be run with main-goal discharger being the tactic
-  -- consisting of running `Lean.MVarId.gcongrForward` (trying a term together with limited
-  -- forward-reasoning on that term) on each nontrivial hypothesis.
-  let assum g := do
-    let mut hs := #[]
-    -- collect the nontrivial hypotheses
-    for h in ← getLCtx do
-      if !h.isImplementationDetail then
-        hs := hs.push (.fvar h.fvarId)
-    -- run `Lean.MVarId.gcongrForward` on each one
-    g.gcongrForward hs
   -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-  let (progress, _, unsolvedGoalStates) ← g.gcongr template names disch assum
+  let (progress, _, unsolvedGoalStates) ← g.gcongr template names
   if progress then
     replaceMainGoal unsolvedGoalStates.toList
   else
@@ -492,17 +499,12 @@ elab_rules : tactic
       | throwError "rel failed, goal not a relation"
     unless ← isDefEq (← inferType lhs) (← inferType rhs) do
       throwError "rel failed, goal not a relation"
-    -- The core tactic `Lean.MVarId.gcongr` will be run with side-goal discharger being
-    -- `gcongr_discharger`
-    let disch g := Term.TermElabM.run' do
-      let [] ← Tactic.run g <| evalTactic (Unhygienic.run `(tactic| gcongr_discharger))
-        | failure
     -- The core tactic `Lean.MVarId.gcongr` will be run with main-goal discharger being the tactic
     -- consisting of running `Lean.MVarId.gcongrForward` (trying a term together with limited
     -- forward-reasoning on that term) on each of the listed terms.
     let assum g := g.gcongrForward hyps
     -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-    let (_, _, unsolvedGoalStates) ← g.gcongr none [] disch assum
+    let (_, _, unsolvedGoalStates) ← g.gcongr none [] (mainGoalDischarger := assum)
     match unsolvedGoalStates.toList with
     -- if all goals are solved, succeed!
     | [] => pure ()
