@@ -87,6 +87,8 @@ instance : Preregular CompHaus where
     obtain ⟨z,hz⟩ := hπ (f y)
     exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
 
+example : Precoherent CompHaus.{u} := inferInstance
+
 -- TODO: prove this for `Type*`
 open List in
 theorem effectiveEpiFamily_tfae
