@@ -50,7 +50,7 @@ theorem exchangeProperty_exists_superset_of_card_le {α : Type _} [DecidableEq �
     ∃ s ∈ Sys, s₂ ⊆ s ∧ s ⊆ s₁ ∪ s₂ ∧ s.card = n := by
   by_cases h : s₂.card = n
   · exists s₂
-    simp_all only [Finset.Subset.refl, Finset.subset_union_right]
+    simp_all only [Finset.Subset.refl, Finset.subset_union_right, and_self, hn₁, hs₂]
   · have ⟨x, hx₁, hx₂⟩ := hSys hs₁ hs₂ (Nat.lt_iff_le_and_ne.mpr ⟨hs, by
       intro h₁
       apply h
@@ -76,7 +76,7 @@ theorem exchangeProperty_exists_superset_of_card_le {α : Type _} [DecidableEq �
       apply h.elim _ (fun h => h)
       intro h
       simp only [← h, Finset.mem_sdiff] at hx₁
-      simp only [hx₁], hb.2.2.2⟩
+      simp only [hx₁, or_false], hb.2.2.2⟩
 termination_by exchangeProperty_exists_superset_of_card_le => s₁.card - s₂.card
 decreasing_by
   simp_wf
@@ -112,7 +112,8 @@ theorem induction_on_accessible {α : Type _} [DecidableEq α]
   have h' := Finset.sdiff_insert_insert_of_mem_of_not_mem hx₁ (Finset.not_mem_empty x)
   simp only [insert_emptyc_eq, Finset.mem_sdiff, Finset.mem_singleton, Finset.sdiff_empty] at h'
   have : p (Insert.insert x (s \ {x})) := insert (by
-      simp only [Finset.mem_sdiff, Finset.mem_singleton, and_false] : x ∉ s \ {x}) hx₂ (by
+      simp only [Finset.mem_sdiff, Finset.mem_singleton, not_true_eq_false, and_false,
+        not_false_eq_true] : x ∉ s \ {x}) hx₂ (by
       simp only [Finset.mem_sdiff, Finset.mem_singleton, h', hs₀])
     (induction_on_accessible hx₂ empty insert)
   exact h' ▸ this
@@ -120,7 +121,7 @@ termination_by induction_on_accessible => s.card
 decreasing_by
   simp_wf
   rw [Finset.card_sdiff (Finset.singleton_subset_iff.mpr hx₁), Finset.card_singleton]
-  simp only [Nat.sub_lt (Finset.card_pos.mpr ⟨x, hx₁⟩)]
+  simp only [zero_lt_one, Nat.sub_lt (Finset.card_pos.mpr ⟨x, hx₁⟩)]
 
 theorem construction_of_accessible {α : Type _} [DecidableEq α]
   {Sys : Finset (Finset α)} [Accessible Sys] (hSys : ∅ ∈ Sys)
@@ -133,7 +134,7 @@ theorem construction_of_accessible {α : Type _} [DecidableEq α]
     exists a :: l
     simp only [List.nodup_cons, hl₁, and_true, List.toFinset_cons, hl₂, true_and]
     have : a ∉ l := by simp only [← hl₂, List.mem_toFinset] at ha; exact ha
-    simp only [this, true_and]
+    simp only [this, not_false_eq_true, true_and]
     intro l' hl'
     rw [List.suffix_cons_iff] at hl'
     apply hl'.elim <;> intro hl'
@@ -343,7 +344,7 @@ theorem basis_card_eq
   {b₁ : Finset α} (hb₁ : b₁ ∈ G.bases s)
   {b₂ : Finset α} (hb₂ : b₂ ∈ G.bases s) :
     b₁.card = b₂.card := by
-  by_contra' h'
+  by_contra h'
   apply (lt_or_gt_of_ne h').elim <;> intro h' <;> simp only [bases, Finset.mem_filter] at hb₁ hb₂
   · let ⟨x, hx₁, hx₂⟩ := G.exchangeProperty hb₂.1 hb₁.1 h'
     simp only [mem_sdiff] at hx₁
@@ -460,7 +461,8 @@ theorem basis_card_le_of_subset_bases
   (h₃ : s₁ ⊆ s₂) :
     b₁.card ≤ b₂.card := by
   simp only [bases, system_feasible_set_mem_mem, Finset.mem_filter] at h₁ h₂
-  by_contra' h'
+  by_contra h'
+  rw [not_le] at h'
   have ⟨x, hx₁, hx₂⟩ := G.exchangeProperty h₁.1 h₂.1 h'
   rw [mem_sdiff] at hx₁
   exact hx₁.2 (h₂.2.2 (subset_trans h₁.2.1 h₃ hx₁.1) hx₂)
@@ -470,13 +472,14 @@ theorem basis_of_basis_card_eq_of_subset
     b' ∈ G.bases s := by
   simp only [basis_def, hb'₃, hb'₂, true_and]
   intro a ha₁ ha₂
-  by_contra' h'
+  by_contra h'
   have h := basis_max_card_of_feasible hb ha₂ (by
     intro x hx
     simp only [mem_insert] at hx
     apply hx.elim _ (fun h => hb'₂ h)
     intro h; rw [h]; exact ha₁)
-  simp only [h', card_insert_of_not_mem, hb'₁, add_le_iff_nonpos_right] at h
+  simp only [h', not_false_eq_true, card_insert_of_not_mem, hb'₁, add_le_iff_nonpos_right,
+    nonpos_iff_eq_zero] at h
 
 theorem exists_subset_basis_of_subset_bases
   {s₁ b₁ : Finset α} (h₁ : b₁ ∈ G.bases s₁)
@@ -487,7 +490,8 @@ theorem exists_subset_basis_of_subset_bases
   · have ⟨b, hb⟩ := G.bases_nonempty s₂
     have h₃: b₁.card < b.card := by
       have h₃ := subset_trans (basis_subset h₁) h₂
-      by_contra' h'
+      by_contra h'
+      simp only [not_lt] at h'
       apply h; clear h
       have h₅ := basis_card_le_of_subset_bases h₁ hb h₂
       exact basis_of_basis_card_eq_of_subset hb (Nat.le_antisymm h₅ h') h₃ (basis_mem_feasible h₁)
@@ -508,7 +512,8 @@ theorem exists_subset_basis_of_subset_bases
 termination_by exists_subset_basis_of_subset_bases => s₂.card - b₁.card
 decreasing_by
   simp_wf
-  simp_all only [mem_sdiff, system_feasible_set_mem_mem, card_insert_of_not_mem, h₄]
+  simp_all only [PSigma.forall, mem_sdiff, system_feasible_set_mem_mem,
+    not_false_eq_true, card_insert_of_not_mem]
   rw [← Nat.sub_sub]
   apply sub_lt _ (by decide)
   rw [tsub_pos_iff_lt]
@@ -520,7 +525,7 @@ end Bases
 def rank (G : Greedoid α) (s : Finset α) :=
   ((G.feasibleSet.filter (fun s' => s' ⊆ s)).image (fun t => t.card)).max' ⟨0, by
     simp only [system_feasible_set_mem_mem, mem_image, Finset.mem_filter, card_eq_zero,
-      exists_eq_right, empty_subset, G.emptyset_mem]⟩
+      exists_eq_right, G.emptyset_mem, empty_subset, and_self]⟩
 
 section Rank
 
@@ -535,7 +540,7 @@ theorem rank_eq_basis_card {b : Finset α} (hb : b ∈ G.bases s) :
     apply Finset.le_max'
     simp only [system_feasible_set_mem_mem, mem_image, Finset.mem_filter]
     exists b
-    simp only [G.basis_mem_feasible hb, G.basis_subset hb]
+    simp only [G.basis_mem_feasible hb, G.basis_subset hb, and_self]
   · simp only [rank]
     apply Finset.max'_le
     intro n hn
@@ -558,7 +563,8 @@ theorem rank_of_empty : G.rank ∅ = 0 := by
 theorem rank_of_singleton_le_one {a : α} : G.rank {a} ≤ 1 := by
   have ⟨_, h⟩ := G.bases_nonempty {a}
   rw [rank_eq_basis_card h]
-  apply (bases_of_singleton h).elim <;> intro h <;> simp only [h, card_empty, card_singleton]
+  apply (bases_of_singleton h).elim <;> intro h <;>
+    simp only [h, card_empty, card_singleton, _root_.zero_le, le_refl]
 
 @[simp]
 theorem rank_of_singleton_of_feasible {a : α} (ha : {a} ∈ G) : G.rank {a} = 1 := by
@@ -609,7 +615,8 @@ theorem rank_of_feasible (hs : s ∈ G) : G.rank s = s.card :=
       simp only [system_feasible_set_mem_mem]
       intro _ _ h₁ _ h₂ _
       rw [card_insert_of_not_mem h₁]
-      simp only [h₁, rank_eq_basis_card (mem_bases_self_iff.mp h₂), card_insert_of_not_mem])
+      simp only [h₁, rank_eq_basis_card (mem_bases_self_iff.mp h₂), not_false_eq_true,
+        card_insert_of_not_mem])
 
 theorem rank_of_infeasible (hs : s ∉ G) : G.rank s < s.card := by
   apply lt_of_le_of_ne (rank_le_card _)
@@ -640,7 +647,7 @@ theorem bases_subset_of_rank_eq_of_subset
   rw [basis_def]
   simp only [basis_mem_feasible hb, subset_trans (basis_subset hb) h₁, true_and]
   intro a ha₁ ha₂
-  by_contra' h'
+  by_contra h'
   have ⟨b', hb'⟩ := G.bases_nonempty t
   have h₃ := basis_max_card_of_feasible hb' ha₂ (by
     intro x hx
@@ -649,8 +656,9 @@ theorem bases_subset_of_rank_eq_of_subset
     · rw [h]
       exact ha₁
     · exact h₁ (basis_subset hb h))
-  simp only [h', card_insert_of_not_mem, ← rank_eq_basis_card hb, ← rank_eq_basis_card hb'] at h₃
-  simp only [h₂, add_le_iff_nonpos_right] at h₃
+  simp only [h', not_false_eq_true, card_insert_of_not_mem, ← rank_eq_basis_card hb, ←
+    rank_eq_basis_card hb'] at h₃
+  simp only [h₂, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at h₃
 
 theorem rank_eq_of_subset_of_subset {s t u : Finset α}
   (hst : s ⊆ t) (htu : t ⊆ u) (hsu : G.rank s = G.rank u) :
@@ -673,8 +681,10 @@ theorem local_submodularity
   have h : G.rank s ≤ G.rank (insert x (insert y s)) :=
     rank_le_of_subset (subset_trans (subset_insert y _) (subset_insert _ _))
   have h := le_iff_lt_or_eq.mp h
-  by_contra' h'
-  simp only [mem_insert, h'.symm, or_false] at h; clear h'
+  symm
+  by_contra h'
+  simp only [mem_insert] at h'
+  simp only [mem_insert, h', or_false] at h ; clear h'
   have ⟨b₁, hb₁₁⟩ := G.bases_nonempty s
   have hb₁₂ := rank_eq_basis_card hb₁₁
   have hb₁₃ := basis_mem_feasible hb₁₁
@@ -698,7 +708,8 @@ theorem local_submodularity
         intro e; simp only [mem_insert]; intro he
         exact he.elim (fun h => Or.inl h) (fun h => Or.inr ((basis_subset hb₁₁) h))
       have h₆ : G.rank s < (insert x b₁).card := by
-        simp only [hb₁₂, ha₁, card_insert_of_not_mem, lt_add_iff_pos_right]
+        simp only [hb₁₂, ha₁, not_false_eq_true, card_insert_of_not_mem, lt_add_iff_pos_right,
+          zero_lt_one]
       have h₇ := lt_of_lt_of_le h₆ h₅
       simp only [h₁, lt_self_iff_false] at h₇
     · have h₅ : (insert y b₁).card ≤ G.rank (insert y s) := by
@@ -707,7 +718,8 @@ theorem local_submodularity
         intro e; simp only [mem_insert]; intro he
         exact he.elim (fun h => Or.inl h) (fun h => Or.inr ((basis_subset hb₁₁) h))
       have h₆ : G.rank s < (insert y b₁).card := by
-        simp only [hb₁₂, ha₁, card_insert_of_not_mem, lt_add_iff_pos_right]
+        simp only [hb₁₂, ha₁, not_false_eq_true, card_insert_of_not_mem, lt_add_iff_pos_right,
+          zero_lt_one]
       have h₇ := lt_of_lt_of_le h₆ h₅
       simp only [h₂, lt_self_iff_false] at h₇
 
@@ -715,13 +727,14 @@ theorem stronger_local_submodularity_left
   (h₁ : G.rank s = G.rank (s ∩ t))
   (h₂ : G.rank t = G.rank (s ∩ t)) :
     G.rank (s ∪ t) = G.rank s := by
-  by_contra' h'
+  symm
+  by_contra h'
   have ⟨_, hb₁₁⟩ := G.bases_nonempty (s ∪ t)
   have ⟨_, hb₂₁⟩ := G.bases_nonempty s
   have hb₂₂ := rank_eq_basis_card hb₂₁
   have ⟨b₃, hb₃₁⟩ := G.bases_nonempty (s ∩ t)
   have hb₃₂ := rank_eq_basis_card hb₃₁
-  have h' := lt_of_le_of_ne (G.rank_le_of_subset (subset_union_left s t)) h'.symm
+  have h' := lt_of_le_of_ne (G.rank_le_of_subset (subset_union_left s t)) h'
   rw [rank_eq_basis_card hb₁₁] at h'
   have ⟨x, hx₁, hx₂⟩ := G.exchangeProperty
     (basis_mem_feasible hb₁₁) (basis_mem_feasible hb₃₁) (hb₃₂ ▸ h₁ ▸ h')
@@ -734,16 +747,16 @@ theorem stronger_local_submodularity_left
       exact (mem_insert.mp ha).elim
         (fun h => h ▸ h₃)
         (fun h => inter_subset_left s t (basis_subset hb₃₁ h))
-    simp_all only
-      [rank_of_feasible, card_insert_of_not_mem, lt_add_iff_pos_right, add_le_iff_nonpos_right]
+    simp_all only [rank_of_basis_eq_card, not_false_eq_true, card_insert_of_not_mem,
+      add_le_iff_nonpos_right, nonpos_iff_eq_zero]
   · have h₅ : G.rank (insert x b₃) ≤ G.rank t := by
       apply rank_le_of_subset
       intro _ ha
       exact (mem_insert.mp ha).elim
         (fun h => h ▸ h₃)
         (fun h => inter_subset_right s t (basis_subset hb₃₁ h))
-    simp_all only
-      [rank_of_feasible, card_insert_of_not_mem, lt_add_iff_pos_right, add_le_iff_nonpos_right]
+    simp_all only [rank_of_basis_eq_card, not_false_eq_true, card_insert_of_not_mem,
+      add_le_iff_nonpos_right, nonpos_iff_eq_zero]
 
 theorem stronger_local_submodularity_right
   (h₁ : G.rank s = G.rank (s ∩ t))
@@ -763,7 +776,8 @@ theorem ssubset_of_feasible_rank (hs : s ∈ G) (h : t ⊂ s) : G.rank t < G.ran
   rw [hb₂, hb₁] at h'
   have h₂ : s.card ≤ t.card := h' ▸ (rank_le_card _)
   rw [ssubset_def] at h
-  exact absurd ((eq_of_subset_of_card_le h.1 h₂) ▸ h.2) (by simp only [Finset.Subset.refl])
+  exact absurd ((eq_of_subset_of_card_le h.1 h₂) ▸ h.2) (by simp only [Finset.Subset.refl,
+    not_true_eq_false, not_false_eq_true])
 
 /-- List of axioms for rank of greedoid· -/
 def greedoidRankAxioms (r : Finset α → ℕ) :=
@@ -789,9 +803,9 @@ theorem feasibleContinuations_eq {s : Finset α} (hs : s ∈ G):
   · intro h'
     let ⟨h₁, h₂⟩ := h
     rw [← rank_eq_card_iff_feasible, h'] at h₂
-    simp only [h₁, card_insert_of_not_mem] at h₂
+    simp only [h₁, not_false_eq_true, card_insert_of_not_mem] at h₂
     have := G.rank_le_card s
-    simp only [h₂, add_le_iff_nonpos_right] at this
+    simp only [h₂, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
   · constructor
     · intro h'; apply h; rw [insert_eq_of_mem h']
     · have h₁ := Nat.lt_of_le_of_ne (rank_le_of_subset (subset_insert _ _)) (Ne.symm h)
@@ -813,7 +827,8 @@ theorem mem_closure : x ∈ G.closure s ↔ G.rank (insert x s) = G.rank s :=
 
 theorem rank_lt_of_insert_of_not_mem_closure {e : α} (h : e ∉ G.closure s) :
     G.rank s < G.rank (insert e s) := by
-  by_contra' h'
+  by_contra h'
+  rw [not_lt] at h'
   apply h
   exact mem_closure.mpr (_root_.le_antisymm h' (G.rank_le_of_subset (subset_insert e s)))
 
@@ -865,8 +880,8 @@ theorem rank_closure_eq_rank_self (s : Finset α) : G.rank (G.closure s) = G.ran
       · exact card_le_of_subset self_subset_closure
       · exact fun h' => h (eq_of_subset_of_card_le self_subset_closure (by rw [h']))
     have ⟨x, hx⟩ : ∃ x, x ∈ G.closure s \ s := by
-      by_contra' h'
-      simp only [mem_sdiff, not_and, not_not] at h'
+      by_contra h'
+      simp [mem_sdiff, not_exists, not_and, not_not] at h'
       simp only [← subset_antisymm self_subset_closure h', lt_self_iff_false] at h₁
     have h₂ := rank_closure_eq_rank_self (insert x s)
     simp only [mem_sdiff, mem_closure] at hx
@@ -885,7 +900,7 @@ termination_by rank_closure_eq_rank_self => (@univ α _).card - s.card
 decreasing_by
   simp_wf
   rw [mem_sdiff] at hx
-  simp only [hx.2, card_insert_of_not_mem]
+  simp only [hx.2, not_false_eq_true, card_insert_of_not_mem]
   rw [← Nat.sub_sub]
   exact Nat.sub_lt (tsub_pos_iff_lt.mpr (card_lt_univ_of_not_mem hx.2)) (by decide)
 
@@ -926,10 +941,11 @@ theorem feasible_iff_elem_notin_closure_minus_elem :
     have : s.card - 1 < s.card := sub_lt (card_pos.mpr ⟨x, hx⟩) (by decide)
     rw [lt_iff_not_ge] at this
     exact this h₃
-  · by_contra' h'
+  · by_contra h'
     have ⟨b, hb₁⟩ := G.bases_nonempty s
     have ⟨y, hy₁, hy₂⟩ : ∃ y ∈ s, y ∉ b := by
-      by_contra' h'
+      by_contra h'
+      simp only [not_exists, not_and, not_not] at h'
       rw [subset_antisymm (basis_subset hb₁) h', ← mem_bases_self_iff] at hb₁
       contradiction
     apply h y hy₁
@@ -940,7 +956,7 @@ theorem feasible_iff_elem_notin_closure_minus_elem :
       · exact h.elim (fun h => h ▸ hy₁) (fun h => h.1)
       · by_cases h₁ : x = y
         · simp only [h₁, true_or]
-        · simp only [h, h₁]
+        · simp only [h₁, h, not_false_eq_true, and_self, or_true]
     rw [this]
     apply Nat.le_antisymm _ (rank_le_of_subset (sdiff_subset _ _))
     rw [rank_eq_basis_card hb₁, ← rank_of_feasible (basis_mem_feasible hb₁)]
@@ -993,9 +1009,9 @@ theorem closure_exchange_property
     · rw [mem_closure, Finset.Insert.comm] at h
       rw [h]
       apply le_of_le_of_eq _ (rank_eq_card_iff_feasible.mpr hs).symm
-      simp only [hx, card_insert_of_not_mem]
+      simp only [hx, not_false_eq_true, card_insert_of_not_mem]
       apply le_of_le_of_eq (rank_le_card _)
-      simp only [hy, card_insert_of_not_mem]
+      simp only [hy, not_false_eq_true, card_insert_of_not_mem]
     · simp only [mem_insert, Insert.comm, true_or]
     · intro _ _; simp; tauto
   exact mem_closure.mpr this
@@ -1051,12 +1067,13 @@ theorem cospanning_rel_ex
   (h₂ : ¬ G.cospanning (insert x s) (insert x (insert y s))) :
     ∃ z ∈ insert x s, G.cospanning ((insert x s) \ {z}) (insert x s) := by
   simp only [mem_insert, exists_eq_or_imp, insert_sdiff_of_mem, Finset.mem_singleton]
-  by_contra' h'
+  by_contra h'
+  rw [not_or] at h'
   have h₃ : insert x s ∈ G := by
     rw [feasible_iff_elem_notin_closure_minus_elem]
     intro a ha₁ ha₂
     rw [mem_insert] at ha₁
-    simp only [cospanning, mem_insert] at h'
+    simp only [cospanning, mem_insert, not_exists, not_and] at h'
     apply ha₁.elim <;> intro ha₁
     · simp only [ha₁, insert_sdiff_of_mem, Finset.mem_singleton] at ha₂
       apply h'.1 (closure_eq_of_subset_adj_closure _ _)
@@ -1068,7 +1085,8 @@ theorem cospanning_rel_ex
         intro hy
         by_cases h₃ : y = x
         · exact h₃.symm ▸ ha₂
-        · have : y ∈ s \ {x} := by simp only [mem_sdiff, hy, Finset.mem_singleton, h₃]
+        · have : y ∈ s \ {x} := by simp only [mem_sdiff, hy, Finset.mem_singleton, h₃,
+            not_false_eq_true, and_self]
           exact self_subset_closure this
     · apply h'.2 _ ha₁
       apply closure_eq_of_subset_adj_closure
@@ -1077,7 +1095,10 @@ theorem cospanning_rel_ex
       · intro y hy
         by_cases h : y = a
         · simp only [h, ha₂]
-        · have : y ∈ insert x s \ {a} := by simp only [mem_sdiff, hy, Finset.mem_singleton, h]
+        · have : y ∈ insert x s \ {a} := by
+            rw [mem_insert] at hy
+            simp only [mem_insert, mem_sdiff, hy, Finset.mem_singleton, h, not_false_eq_true,
+              and_self]
           exact self_subset_closure this
   have h := closure_exchange_property hx₀ hy₀ h₃ (by
     rw [h₁]
@@ -1211,7 +1232,7 @@ theorem bases_subset_bases_kernel : G.bases s ⊆ G.bases (G.kernel s) := by
   constructor <;> intro _ hx
   · rw [mem_kernel]
     exists b
-    simp only [hb, hx]
+    simp only [hb, hx, and_self]
   · intro h
     let ⟨_, h'⟩ := mem_kernel.mp hx
     exact hb.2.2 _ (h'.2.1 h'.2.2) h
@@ -1422,7 +1443,7 @@ theorem rank_le_basisRank : G.rank s ≤ G.basisRank s := by
   simp only [mem_image, system_feasible_set_mem_mem]
   exists t
   rw [← inter_eq_right] at h₂
-  simp only [h₂, h₁]
+  simp only [h₁, h₂, and_self]
 
 theorem basisRank_le_rank_iff : G.basisRank s ≤ G.rank s ↔ G.rankFeasible s :=
   ⟨fun h => le_antisymm h rank_le_basisRank, fun h => h ▸ le_rfl⟩
@@ -1492,11 +1513,11 @@ theorem exists_superset_feasible_satisfying_basisRank {t : Finset α} (ht₁ : t
       apply le_max'
       simp only [mem_image, system_feasible_set_mem_mem]
       exists b
-      simp only [G.basis_mem_feasible hb₁, inter_eq_right.mpr (G.basis_subset hb₁)]
+      simp only [G.basis_mem_feasible hb₁, inter_eq_right.mpr (G.basis_subset hb₁), and_self]
     have h₂ : G.basisRank s ≤ c.card := hc₂ ▸ card_le_of_subset (Finset.inter_subset_right _ _)
     have h₃ : G.basisRank s = t.card := le_antisymm (le_trans h₂ h) h₁
     exists t
-    simp only [ht₂, Finset.Subset.refl, inter_eq_right.mpr ht₁, h₃]
+    simp only [ht₂, Finset.Subset.refl, h₃, inter_eq_right.mpr ht₁, and_self]
   · simp only [not_le] at h
     have ⟨b, hb₁, hb₂, hb₃, hb₄⟩ :=
       exchangeProperty_exists_superset_of_card_le G.exchangeProperty hc₁ ht₂ (le_of_lt h) le_rfl
@@ -1529,7 +1550,7 @@ theorem exists_superset_feasible_satisfying_basisRank {t : Finset α} (ht₁ : t
         exfalso
         exact h₂ (ht₁ h₁)
       · simp only [mem_sdiff] at h
-        simp only [mem_sdiff, mem_union, h, true_or]
+        simp only [mem_sdiff, mem_union, h, true_or, not_false_eq_true, and_self]
     rw [h]
 
 theorem rankFeasible_TFAE :
@@ -1555,7 +1576,7 @@ theorem rankFeasible_TFAE :
         · rw [mem_inter]
           exact ⟨(hb'₂ h), G.basis_subset h₂ h⟩
         · rw [mem_inter] at h
-          by_contra' h'
+          by_contra h'
           have : b.card < (b' ∩ s).card := by
             apply card_lt_card
             apply ssubset_def.mpr (And.intro _ _)
@@ -1598,7 +1619,7 @@ theorem rankFeasible_TFAE :
   tfae_have 2 → 1
   {
     intro h
-    by_contra' h'
+    by_contra h'
     simp only [rankFeasible, ne_iff_lt_or_gt, gt_iff_lt] at h'
     apply h'.elim <;> intro h'
     · simp only [basisRank, max'_lt_iff, mem_image, system_feasible_set_mem_mem, and_imp,
@@ -1683,7 +1704,7 @@ theorem rankFeasible_iff_subset_subset_monotoneClosure :
   · intro x hx
     rw [subset_monoconeClosureOperator_iff]
     intro y hy
-    by_contra' h'
+    by_contra h'
     let ⟨b, hb⟩ := G.bases_nonempty y
     have h₁ : x.card ≤ b.card :=
       G.basis_card_le_of_subset_bases (mem_bases_self_iff.mp (G.basis_mem_feasible hx)) hb hy
@@ -1701,9 +1722,9 @@ theorem rankFeasible_iff_subset_subset_monotoneClosure :
         (fun h => h ▸ ha₁) (fun h => union_subset (basis_subset hb) hy (hc₃ h))
       have h₃ := basis_max_card_of_feasible hb ha₂ h₂
       rw [← hc₄] at h₃
-      by_contra' h'
+      by_contra h'
       rw [card_insert_of_not_mem h'] at h₃
-      simp only [add_le_iff_nonpos_right] at h₃
+      simp only [add_le_iff_nonpos_right, nonpos_iff_eq_zero] at h₃
     have h₃ : e ∉ G.closure c := by
       intro h
       apply he₂
