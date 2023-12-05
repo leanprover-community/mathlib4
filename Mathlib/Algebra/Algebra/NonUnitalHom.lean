@@ -70,20 +70,24 @@ attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 
 /-- `NonUnitalAlgSemiHomClass F φ A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B` which are equivariant with respect to `φ`.  -/
-class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam (Type*)} (φ : outParam (R → S))
-    [Monoid R] [Monoid S]
+class NonUnitalAlgSemiHomClass (F : Type*)
+    {R S : outParam (Type*)} (φ : outParam (R → S)) [Monoid R] [Monoid S]
     (A : outParam (Type*)) (B : outParam (Type*))
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction S B]
     extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B
 #align non_unital_alg_hom_class NonUnitalAlgSemiHomClass
 
-abbrev NonUnitalAlgHomClass (F : Type*) (R : outParam (Type*))
-    [Monoid R]
+-- TODO : what doesn't it work later?
+/-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
+  from `A` to `B` which are `R`-linear.
+
+  This is an abbreviation to `NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B` -/
+abbrev NonUnitalAlgHomClass (F : Type*) (R : outParam (Type*)) [Monoid R]
     (A : outParam (Type*)) (B : outParam (Type*))
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction R B] :=
-  NonUnitalAlgSemiHomClass F (@id R) A B
+  NonUnitalAlgSemiHomClass F (MonoidHom.id R) A B
 
 -- Porting note: commented out, not dangerous
 -- attribute [nolint dangerousInstance] NonUnitalAlgHomClass.toMulHomClass
