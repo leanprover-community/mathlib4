@@ -6,6 +6,7 @@ Authors: Jean Lo, Bhavik Mehta, Yaël Dillies
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.Convex.Hull
 import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Topology.Bornology.Absorbs
 
 #align_import analysis.locally_convex.basic from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -51,71 +52,9 @@ variable [SeminormedRing 𝕜]
 
 section SMul
 
-variable (𝕜) [SMul 𝕜 E]
-
-/-- A set `A` absorbs another set `B` if `B` is contained in all scalings of `A` by elements of
-sufficiently large norm. -/
-def Absorbs (A B : Set E) :=
-  ∃ r, 0 < r ∧ ∀ a : 𝕜, r ≤ ‖a‖ → B ⊆ a • A
-#align absorbs Absorbs
-
-variable {𝕜} {s t u v A B : Set E}
-
-@[simp]
-theorem absorbs_empty {s : Set E} : Absorbs 𝕜 s (∅ : Set E) :=
-  ⟨1, one_pos, fun _a _ha => Set.empty_subset _⟩
-#align absorbs_empty absorbs_empty
-
-theorem Absorbs.mono (hs : Absorbs 𝕜 s u) (hst : s ⊆ t) (hvu : v ⊆ u) : Absorbs 𝕜 t v :=
-  let ⟨r, hr, h⟩ := hs
-  ⟨r, hr, fun _a ha => hvu.trans <| (h _ ha).trans <| smul_set_mono hst⟩
-#align absorbs.mono Absorbs.mono
-
-theorem Absorbs.mono_left (hs : Absorbs 𝕜 s u) (h : s ⊆ t) : Absorbs 𝕜 t u :=
-  hs.mono h Subset.rfl
-#align absorbs.mono_left Absorbs.mono_left
-
-theorem Absorbs.mono_right (hs : Absorbs 𝕜 s u) (h : v ⊆ u) : Absorbs 𝕜 s v :=
-  hs.mono Subset.rfl h
-#align absorbs.mono_right Absorbs.mono_right
-
-theorem Absorbs.union (hu : Absorbs 𝕜 s u) (hv : Absorbs 𝕜 s v) : Absorbs 𝕜 s (u ∪ v) := by
-  obtain ⟨a, ha, hu⟩ := hu
-  obtain ⟨b, _hb, hv⟩ := hv
-  exact
-    ⟨max a b, lt_max_of_lt_left ha, fun c hc =>
-      union_subset (hu _ <| le_of_max_le_left hc) (hv _ <| le_of_max_le_right hc)⟩
-#align absorbs.union Absorbs.union
-
-@[simp]
-theorem absorbs_union : Absorbs 𝕜 s (u ∪ v) ↔ Absorbs 𝕜 s u ∧ Absorbs 𝕜 s v :=
-  ⟨fun h => ⟨h.mono_right <| subset_union_left _ _, h.mono_right <| subset_union_right _ _⟩,
-    fun h => h.1.union h.2⟩
-#align absorbs_union absorbs_union
-
-theorem absorbs_iUnion_finset {ι : Type*} {t : Finset ι} {f : ι → Set E} :
-    Absorbs 𝕜 s (⋃ i ∈ t, f i) ↔ ∀ i ∈ t, Absorbs 𝕜 s (f i) := by
-  classical
-    induction' t using Finset.induction_on with i t _ht hi
-    · simp only [Finset.not_mem_empty, Set.iUnion_false, Set.iUnion_empty, absorbs_empty,
-        IsEmpty.forall_iff, imp_true_iff]
-    rw [Finset.set_biUnion_insert, absorbs_union, hi]
-    constructor <;> intro h
-    · refine' fun _ hi' => (Finset.mem_insert.mp hi').elim _ (h.2 _)
-      exact fun hi'' => by
-        rw [hi'']
-        exact h.1
-    exact ⟨h i (Finset.mem_insert_self i t), fun i' hi' => h i' (Finset.mem_insert_of_mem hi')⟩
-#align absorbs_Union_finset absorbs_iUnion_finset
-
-theorem Set.Finite.absorbs_iUnion {ι : Type*} {s : Set E} {t : Set ι} {f : ι → Set E}
-    (hi : t.Finite) : Absorbs 𝕜 s (⋃ i ∈ t, f i) ↔ ∀ i ∈ t, Absorbs 𝕜 s (f i) := by
-  lift t to Finset ι using hi
-  simp only [Finset.mem_coe]
-  exact absorbs_iUnion_finset
-#align set.finite.absorbs_Union Set.Finite.absorbs_iUnion
-
 variable (𝕜)
+variable [SMul 𝕜 E] {s t u v A B : Set E}
+
 
 /-- A set is absorbent if it absorbs every singleton. -/
 def Absorbent (A : Set E) :=
@@ -148,7 +87,7 @@ theorem absorbent_iff_nonneg_lt :
 theorem Absorbent.absorbs_finite {s : Set E} (hs : Absorbent 𝕜 s) {v : Set E} (hv : v.Finite) :
     Absorbs 𝕜 s v := by
   rw [← Set.biUnion_of_singleton v]
-  exact hv.absorbs_iUnion.mpr fun _ _ => hs.absorbs
+  exact hv.absorbs_biUnion.mpr fun _ _ => hs.absorbs
 #align absorbent.absorbs_finite Absorbent.absorbs_finite
 
 variable (𝕜)
