@@ -93,19 +93,19 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
 #align nat.bitwise_bit Nat.bitwise_bit
 
 lemma bit_mod_two (a : Bool) (x : ℕ) :
-    bit a x % 2 = if a then 1 else 0 := by
-  simp (config := { unfoldPartialApp := true }) [bit, bit0, bit1, Bool.cond_eq_ite, ← mul_two]
-  split_ifs <;> simp [Nat.add_mod]
+    bit a x % 2 = a.toNat := by
+  simp only [bit_val, add_mod, mul_mod_right, zero_add, mod_mod]
+  cases a <;> rfl
 
 @[simp]
 lemma bit_mod_two_eq_zero_iff (a x) :
     bit a x % 2 = 0 ↔ !a := by
-  rw [bit_mod_two]; split_ifs <;> simp_all
+  rw [bit_mod_two]; cases a <;> simp_all
 
 @[simp]
 lemma bit_mod_two_eq_one_iff (a x) :
     bit a x % 2 = 1 ↔ a := by
-  rw [bit_mod_two]; split_ifs <;> simp_all
+  rw [bit_mod_two]; cases a <;> simp_all
 
 @[simp]
 theorem lor_bit : ∀ a m b n, bit a m ||| bit b n = bit (a || b) (m ||| n) :=
@@ -533,13 +533,6 @@ lemma two_pow_succ_eq_bit (x : Nat) :
     bit x₀ x &&& 2^(n + 1) = bit false (x &&& 2^n) := by
   show bitwise .. = bit _ (bitwise ..)
   rw [two_pow_succ_eq_bit, bitwise_bit, Bool.and_false]
-
-@[simp]
-lemma bit_land_one (x₀ : Bool) (x : Nat) :
-    bit x₀ x &&& 1 = x₀.toNat := by
-  show bitwise _ _ (bit true 0) = _
-  rw [bitwise_bit, Bool.and_true, bitwise_zero_right]
-  cases x₀ <;> rfl
 
 @[simp] theorem bit_mod_two_pow_succ (b x w) :
     bit b x % 2 ^ (w + 1) = bit b (x % 2 ^ w) := by
