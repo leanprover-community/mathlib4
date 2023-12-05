@@ -15,7 +15,7 @@ This file introduces the Scott topology on a preorder.
 
 - `DirSupInacc` - a set `u` is said to be inaccessible by directed joins if, when the least upper
   bound of a directed set `d` lies in `u` then `d` has non-empty intersection with `u`.
-- `Scott` - the Scott topology is defined as the join of the topology of upper sets and the
+- `Topology.scott` - the Scott topology is defined as the join of the topology of upper sets and the
   Scott-Hausdorff topology (the topological space where a set `u` is open if, when the least upper
   bound of a directed set `d` lies in `u` then there is a tail of `d` which is a subset of `u`).
 
