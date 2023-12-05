@@ -476,60 +476,6 @@ lemma centroid_eq_centralizer_mul_op :
       apply (Set.mem_union _ _ _).mpr
       simp only [Set.mem_range, exists_apply_eq_apply, or_true] ⟩
     exact rfl
-/-- The canonical homomorphism from the center into the centroid -/
-def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α where
-  toFun z := {L (z : α) with
-    map_mul_left' := fun _ _ => by
-      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
-        AddMonoid.End.mulLeft_apply_apply]
-      rw [((Set.mem_center_iff _).mp z.prop).comm, ((Set.mem_center_iff _).mp z.prop).right_assoc,
-        ((Set.mem_center_iff _).mp z.prop).comm]
-    map_mul_right' := fun _ _ => by
-      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
-        AddMonoid.End.mulLeft_apply_apply]
-      rw [((Set.mem_center_iff _).mp z.prop).left_assoc]
-  }
-  map_zero' := by
-    simp only [ZeroMemClass.coe_zero, map_zero]
-    exact rfl
-  map_add' := fun _ _ => by
-    simp only [AddSubmonoid.coe_add, NonUnitalSubsemiring.coe_toAddSubmonoid, map_add]
-    exact rfl
-  map_mul' := fun z₁ z₂ => by
-    ext a
-    show  (z₁ * z₂) * a = z₁ * (z₂ * a)
-    rw [((Set.mem_center_iff _).mp z₁.prop).left_assoc]
-
-lemma centerToCentroid_apply (z : { x // x ∈ NonUnitalSubsemiring.center α }) (a : α) :
-    (centerToCentroid z) a = z * a := rfl
-
-lemma center_iff_op_centroid (a : α) :
-    a ∈ NonUnitalSubsemiring.center α ↔ R a = L a ∧ (L a) ∈ MonoidHom.mrange (toEndRingHom α) := by
-  constructor
-  · intro ha
-    constructor
-    · exact AddMonoid.End.commute_mulRight_eq_mulLeft a (IsMulCentral.comm ha)
-    · rw [MonoidHom.mem_mrange]
-      use centerToCentroid ⟨a, ha⟩
-      rfl
-  · intro hla
-    simp at hla
-    obtain ⟨hc,⟨T,hT⟩⟩  := hla
-    have e1 (d : α) : T d = a * d := (FunLike.congr (id hT.symm) rfl).symm
-    have e2 (d : α) : d * a = a * d := FunLike.congr (hc) rfl
-    constructor
-    case comm =>
-      intro b
-      exact (e2 b).symm
-    case left_assoc =>
-      intro b c
-      rw [← e1, map_mul_right, e1]
-    case mid_assoc =>
-      intro b c
-      rw [e2, ← e1, ← e1, ← map_mul_left, ← map_mul_right]
-    case right_assoc =>
-      intro b c
-      rw [e2, e2, ← e1, ← e1, ← map_mul_left]
 
 /-- The canonical homomorphism from the center into the centroid -/
 def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α where
@@ -551,14 +497,15 @@ lemma centerToCentroid_apply (z : { x // x ∈ NonUnitalSubsemiring.center α })
     (centerToCentroid z) a = z * a := rfl
 
 lemma center_iff_op_centroid (a : α) :
-    a ∈ NonUnitalSubsemiring.center α ↔ L a = R a ∧ (L a) ∈ Set.range CentroidHom.toEnd := by
+    a ∈ NonUnitalSubsemiring.center α ↔ R a = L a ∧ (L a) ∈ RingHom.rangeS (toEndRingHom α) := by
   constructor
-  · exact fun ha ↦ ⟨AddMonoidHom.ext <| IsMulCentral.comm ha, ⟨centerToCentroid ⟨a, ha⟩, rfl⟩⟩
+  · exact fun ha ↦ ⟨AddMonoidHom.ext <| fun _ => (IsMulCentral.comm ha _).symm,
+      ⟨centerToCentroid ⟨a, ha⟩, rfl⟩⟩
   · rintro ⟨hc, ⟨T, hT⟩⟩
     have e1 (d : α) : T d = a * d := congr($hT d)
-    have e2 (d : α) : T d = d * a := congr($(hT.trans hc) d)
+    have e2 (d : α) : T d = d * a := congr($(hT.trans hc.symm) d)
     constructor
-    case comm => exact (congr($hc ·))
+    case comm => exact (congr($hc.symm ·))
     case left_assoc => simpa [e1] using (map_mul_right T · ·)
     case mid_assoc => exact fun b c ↦ by simpa [e1 c, e2 b] using
       (map_mul_right T b c).symm.trans <| map_mul_left T b c
@@ -575,7 +522,7 @@ local notation "R" => AddMonoid.End.mulRight
 
 lemma center_iff_op_mul_commute (a : α) :
     a ∈ NonUnitalSubsemiring.center α ↔ ∀ b : α, Commute (L b) (L a) := by
-  rw [center_iff_op_centroid, centroid_eq_centralizer_mul_op, Submonoid.mem_centralizer_iff,
+  rw [center_iff_op_centroid, centroid_eq_centralizer_mul_op, Subsemiring.mem_centralizer_iff,
     AddMonoid.End.comm_mulRight_eq_mulLeft, Set.union_self]
   simp_rw [true_and]
   constructor
