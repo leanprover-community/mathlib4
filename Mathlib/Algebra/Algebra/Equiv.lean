@@ -794,6 +794,11 @@ lemma pow_toLinearMap (σ : A₁ ≃ₐ[R] A₁) (n : ℕ) :
     (σ ^ n).toLinearMap = σ.toLinearMap ^ n :=
   (AlgEquiv.toLinearMapHom R A₁).map_pow σ n
 
+lemma zpow_toLinearMap (σ : A₁ ≃ₐ[R] A₁) (n : ℤ) :
+    (σ ^ n).toLinearMap = σ.toLinearMap ^ n :=
+  (AlgEquiv.toLinearMapHom R A₁).map_zpow σ n
+
+@[simp]
 lemma one_toLinearMap :
     (1 : A₁ ≃ₐ[R] A₁).toLinearMap = 1 := rfl
 
