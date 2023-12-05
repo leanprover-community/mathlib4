@@ -192,7 +192,7 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_big : 2 < n)
 
 namespace Nat
 
-/-- Proves that Bertrand's postulate holds for all sufficiently large `n`.
+/-- Proves that **Bertrand's postulate** holds for all sufficiently large `n`.
 -/
 theorem exists_prime_lt_and_le_two_mul_eventually (n : ℕ) (n_big : 512 ≤ n) :
     ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n := by

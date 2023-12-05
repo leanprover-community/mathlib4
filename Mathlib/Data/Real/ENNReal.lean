@@ -640,7 +640,7 @@ theorem mul_lt_top_iff {a b : ℝ≥0∞} : a * b < ∞ ↔ a < ∞ ∧ b < ∞ 
 theorem mul_self_lt_top_iff {a : ℝ≥0∞} : a * a < ⊤ ↔ a < ⊤ := by
   rw [ENNReal.mul_lt_top_iff, and_self, or_self, or_iff_left_iff_imp]
   rintro rfl
-  decide
+  exact zero_lt_top
 #align ennreal.mul_self_lt_top_iff ENNReal.mul_self_lt_top_iff
 
 theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b :=
@@ -1801,7 +1801,7 @@ theorem add_thirds (a : ℝ≥0∞) : a / 3 + a / 3 + a / 3 = a := by
 #align ennreal.div_pos_iff ENNReal.div_pos_iff
 
 protected theorem half_pos (h : a ≠ 0) : 0 < a / 2 := by
-  simp only [div_pos_iff, ne_eq, h, not_false_eq_true]; decide
+  simp only [div_pos_iff, ne_eq, h, not_false_eq_true, two_ne_top, and_self]
 #align ennreal.half_pos ENNReal.half_pos
 
 protected theorem one_half_lt_one : (2⁻¹ : ℝ≥0∞) < 1 :=

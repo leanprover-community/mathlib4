@@ -20,8 +20,8 @@ import Mathlib.Data.Set.UnionLift
 /-!
 # Measurable spaces and measurable functions
 
-This file provides properties of measurable spaces and the functions and isomorphisms
-between them. The definition of a measurable space is in `MeasureTheory.MeasurableSpace.Defs`.
+This file provides properties of measurable spaces and the functions and isomorphisms between them.
+The definition of a measurable space is in `Mathlib/MeasureTheory/MeasurableSpace/Defs.lean`.
 
 A measurable space is a set equipped with a σ-algebra, a collection of
 subsets closed under complementation and countable union. A function

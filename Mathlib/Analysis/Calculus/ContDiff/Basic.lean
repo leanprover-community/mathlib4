@@ -1437,7 +1437,7 @@ theorem ContDiff.mul {f g : E → 𝔸} (hf : ContDiff 𝕜 n f) (hg : ContDiff 
 theorem contDiffWithinAt_prod' {t : Finset ι} {f : ι → E → 𝔸'}
     (h : ∀ i ∈ t, ContDiffWithinAt 𝕜 n (f i) s x) : ContDiffWithinAt 𝕜 n (∏ i in t, f i) s x :=
   Finset.prod_induction f (fun f => ContDiffWithinAt 𝕜 n f s x) (fun _ _ => ContDiffWithinAt.mul)
-    (@contDiffWithinAt_const _ _ _ _ _ _ _ _ _ _ _ 1) h
+    (contDiffWithinAt_const (c := 1)) h
 #align cont_diff_within_at_prod' contDiffWithinAt_prod'
 
 theorem contDiffWithinAt_prod {t : Finset ι} {f : ι → E → 𝔸'}

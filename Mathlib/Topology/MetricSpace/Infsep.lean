@@ -99,7 +99,7 @@ theorem Subsingleton.einfsep (hs : s.Subsingleton) : s.einfsep = ∞ := by
 #align set.subsingleton.einfsep Set.Subsingleton.einfsep
 
 theorem le_einfsep_image_iff {d} {f : β → α} {s : Set β} : d ≤ einfsep (f '' s)
-    ↔ ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s), f x ≠ f y → d ≤ edist (f x) (f y) := by
+    ↔ ∀ x ∈ s, ∀ y ∈ s, f x ≠ f y → d ≤ edist (f x) (f y) := by
   simp_rw [le_einfsep_iff, ball_image_iff]
 #align set.le_einfsep_image_iff Set.le_einfsep_image_iff
 
