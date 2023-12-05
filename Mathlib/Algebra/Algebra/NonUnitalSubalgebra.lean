@@ -58,7 +58,7 @@ namespace NonUnitalSubalgebra
 variable {F : Type v'} {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'}
 
 section NonUnitalNonAssocSemiring
--- variable [CommSemiring R]
+variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [NonUnitalNonAssocSemiring C]
 variable [Module R A] [Module R B] [Module R C]
 
@@ -309,8 +309,7 @@ we define it as a `LinearEquiv` to avoid type equalities. -/
 def toSubmoduleEquiv (S : NonUnitalSubalgebra R A) : S.toSubmodule ≃ₗ[R] S :=
   LinearEquiv.ofEq _ _ rfl
 
--- TODO : should there be an abbreviation for the non semilinear stuff?
-variable [NonUnitalAlgHomClass F (@id R) A B)]
+variable [NonUnitalAlgHomClass F R A B]
 
 /-- Transport a non-unital subalgebra via an algebra homomorphism. -/
 def map (f : F) (S : NonUnitalSubalgebra R A) : NonUnitalSubalgebra R B :=

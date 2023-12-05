@@ -479,7 +479,7 @@ class DistribMulActionSemiHomClass (F : Type _)
 abbrev DistribMulActionHomClass (F : Type _)
   (M : outParam (Type _)) (A B : outParam (Type _))
   [Monoid M] [Monoid N] [AddMonoid A] [AddMonoid B] [DistribMulAction M A] [DistribMulAction M B] :=
-  DistribMulActionSemiHomClass F (@id M) A B
+  DistribMulActionSemiHomClass F (MonoidHom.id M) A B
 
 /- porting note: Removed a @[nolint dangerousInstance] for
 DistribMulActionHomClass.toAddMonoidHomClass not dangerous due to `outParam`s -/
@@ -770,7 +770,7 @@ notation:25 (name := «MulSemiringActionHomLocal≺»)
 
 @[inherit_doc]
 notation:25 (name := «MulSemiringActionHomIdLocal≺»)
-  R " →+*[" M:25 "] " S:0 => MulSemiringActionHom (@id M) R S
+  R " →+*[" M:25 "] " S:0 => MulSemiringActionHom (MonoidHom.id M) R S
 
 /-- `MulSemiringActionHomClass F φ R S` states that `F` is a type of morphisms preserving
 the ring structure and equivariant with respect to `φ`.
@@ -792,7 +792,7 @@ abbrev MulSemiringActionHomClass
     {M : outParam (Type _)} [Monoid M]
     (R S : outParam (Type _)) [Semiring R] [Semiring S]
     [DistribMulAction M R] [DistribMulAction M S] :=
-  MulSemiringActionSemiHomClass F (@id M) R S
+  MulSemiringActionSemiHomClass F (MonoidHom.id M) R S
 
 /- porting note: Removed a @[nolint dangerousInstance] for MulSemiringActionHomClass.toRingHomClass
  not dangerous due to outParam -/
