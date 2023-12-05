@@ -659,7 +659,7 @@ theorem translationNumber_eq_of_tendsto₀ {τ' : ℝ}
 
 theorem translationNumber_eq_of_tendsto₀' {τ' : ℝ}
     (h : Tendsto (fun n : ℕ => f^[n + 1] 0 / (n + 1)) atTop (𝓝 τ')) : τ f = τ' :=
-  f.translationNumber_eq_of_tendsto₀ <| (tendsto_add_atTop_iff_nat 1).1 (by exact_mod_cast h)
+  f.translationNumber_eq_of_tendsto₀ <| (tendsto_add_atTop_iff_nat 1).1 (mod_cast h)
 #align circle_deg1_lift.translation_number_eq_of_tendsto₀' CircleDeg1Lift.translationNumber_eq_of_tendsto₀'
 
 theorem transnumAuxSeq_zero : f.transnumAuxSeq 0 = f 0 := by simp [transnumAuxSeq]
@@ -783,7 +783,7 @@ theorem tendsto_translation_number₀' :
 #align circle_deg1_lift.tendsto_translation_number₀' CircleDeg1Lift.tendsto_translation_number₀'
 
 theorem tendsto_translation_number₀ : Tendsto (fun n : ℕ => (f ^ n) 0 / n) atTop (𝓝 <| τ f) :=
-  (tendsto_add_atTop_iff_nat 1).1 (by exact_mod_cast f.tendsto_translation_number₀')
+  (tendsto_add_atTop_iff_nat 1).1 (mod_cast f.tendsto_translation_number₀')
 #align circle_deg1_lift.tendsto_translation_number₀ CircleDeg1Lift.tendsto_translation_number₀
 
 /-- For any `x : ℝ` the sequence $\frac{f^n(x)-x}{n}$ tends to the translation number of `f`.
@@ -796,8 +796,8 @@ theorem tendsto_translationNumber (x : ℝ) :
 #align circle_deg1_lift.tendsto_translation_number CircleDeg1Lift.tendsto_translationNumber
 
 theorem tendsto_translation_number' (x : ℝ) :
-    Tendsto (fun n : ℕ => ((f ^ (n + 1) : CircleDeg1Lift) x - x) / (n + 1)) atTop (𝓝 <| τ f) := by
-  exact_mod_cast (tendsto_add_atTop_iff_nat 1).2 (f.tendsto_translationNumber x)
+    Tendsto (fun n : ℕ => ((f ^ (n + 1) : CircleDeg1Lift) x - x) / (n + 1)) atTop (𝓝 <| τ f) :=
+  mod_cast (tendsto_add_atTop_iff_nat 1).2 (f.tendsto_translationNumber x)
 #align circle_deg1_lift.tendsto_translation_number' CircleDeg1Lift.tendsto_translation_number'
 
 theorem translationNumber_mono : Monotone τ := fun f g h =>
@@ -927,10 +927,10 @@ theorem lt_translationNumber_of_forall_add_lt (hf : Continuous f) {z : ℝ} (hz 
 such that `f x = x + τ f`. -/
 theorem exists_eq_add_translationNumber (hf : Continuous f) : ∃ x, f x = x + τ f := by
   obtain ⟨a, ha⟩ : ∃ x, f x ≤ x + τ f := by
-    by_contra' H
+    by_contra! H
     exact lt_irrefl _ (f.lt_translationNumber_of_forall_add_lt hf H)
   obtain ⟨b, hb⟩ : ∃ x, x + τ f ≤ f x := by
-    by_contra' H
+    by_contra! H
     exact lt_irrefl _ (f.translationNumber_lt_of_forall_lt_add hf H)
   exact intermediate_value_univ₂ hf (continuous_id.add continuous_const) ha hb
 #align circle_deg1_lift.exists_eq_add_translation_number CircleDeg1Lift.exists_eq_add_translationNumber

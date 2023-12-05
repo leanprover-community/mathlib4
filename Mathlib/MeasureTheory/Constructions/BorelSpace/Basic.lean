@@ -105,6 +105,9 @@ theorem isPiSystem_isOpen [TopologicalSpace α] : IsPiSystem (IsOpen : Set α �
   fun _s hs _t ht _ => IsOpen.inter hs ht
 #align is_pi_system_is_open isPiSystem_isOpen
 
+lemma isPiSystem_isClosed [TopologicalSpace α] : IsPiSystem (IsClosed : Set α → Prop) :=
+  fun _s hs _t ht _ ↦ IsClosed.inter hs ht
+
 theorem borel_eq_generateFrom_isClosed [TopologicalSpace α] :
     borel α = .generateFrom { s | IsClosed s } :=
   le_antisymm
@@ -282,6 +285,12 @@ instance Subtype.borelSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace 
     [hα : BorelSpace α] (s : Set α) : BorelSpace s :=
   ⟨by borelize α; symm; apply borel_comap⟩
 #align subtype.borel_space Subtype.borelSpace
+
+instance Countable.instBorelSpace [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α]
+    [TopologicalSpace α] [DiscreteTopology α] : BorelSpace α := by
+  have : ∀ s, @MeasurableSet α inferInstance s := fun s ↦ s.to_countable.measurableSet
+  have : ∀ s, @MeasurableSet α (borel α) s := fun s ↦ measurableSet_generateFrom (isOpen_discrete s)
+  exact ⟨by aesop⟩
 
 instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
     [h : OpensMeasurableSpace α] (s : Set α) : OpensMeasurableSpace s :=
@@ -1632,10 +1641,17 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow [MeasurableSpace �
     · exact hs.inter (hf measurableSet_Ioi)
   have B : μ (s ∩ f ⁻¹' Ioi 0) = μ (s ∩ f ⁻¹' {∞}) + μ (s ∩ f ⁻¹' Ioo 0 ∞) := by
     rw [← measure_union]
-    · rw [← inter_union_distrib_left, ← preimage_union,
-      ← Ioo_union_Ici_eq_Ioi ENNReal.zero_ne_top.lt_top, Ici_top, union_comm]
-    · refine disjoint_singleton_left.mpr right_mem_Ioo.mp
-        |>.preimage f |>.inter_right' s |>.inter_left' s
+    · rw [← inter_union_distrib_left]
+      congr
+      ext x
+      simp only [mem_singleton_iff, mem_union, mem_Ioo, mem_Ioi, mem_preimage]
+      have H : f x = ∞ ∨ f x < ∞ := eq_or_lt_of_le le_top
+      cases' H with H H
+      · simp only [H, eq_self_iff_true, or_false_iff, zero_lt_top, not_top_lt, and_false_iff]
+      · simp only [H, H.ne, and_true_iff, false_or_iff]
+    · refine disjoint_left.2 fun x hx h'x => ?_
+      have : f x < ∞ := h'x.2.2
+      exact lt_irrefl _ (this.trans_le (le_of_eq hx.2.symm))
     · exact hs.inter (hf measurableSet_Ioo)
   have C : μ (s ∩ f ⁻¹' Ioo 0 ∞) =
       ∑' n : ℤ, μ (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) := by
@@ -2269,7 +2285,7 @@ theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → �
       refine' Set.iUnion_inter_of_monotone (monotone_spanningSets μ) fun i j hij x => _
       simp only [Set.mem_setOf_eq]
       refine' fun hif => hif.trans _
-      exact_mod_cast hij
+      exact mod_cast hij
     rw [this, norm_sets_spanning, iUnion_spanningSets μ, Set.inter_univ]
 
 section NormedAddCommGroup

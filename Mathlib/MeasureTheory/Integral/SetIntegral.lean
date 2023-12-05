@@ -1179,8 +1179,8 @@ theorem integral_comp_comm' (L : E →L[𝕜] F) {K} (hL : AntilipschitzWith K L
   by_cases h : Integrable φ μ
   · exact integral_comp_comm L h
   have : ¬Integrable (fun a => L (φ a)) μ := by
-    erw [LipschitzWith.integrable_comp_iff_of_antilipschitz L.lipschitz hL L.map_zero]
-    assumption
+    rwa [← Function.comp_def,
+      LipschitzWith.integrable_comp_iff_of_antilipschitz L.lipschitz hL L.map_zero]
   simp [integral_undef, h, this]
 #align continuous_linear_map.integral_comp_comm' ContinuousLinearMap.integral_comp_comm'
 
@@ -1291,10 +1291,10 @@ theorem integral_smul_const {𝕜 : Type*} [IsROrC 𝕜] [NormedSpace 𝕜 E] [C
   by_cases hf : Integrable f μ
   · exact ((1 : 𝕜 →L[𝕜] 𝕜).smulRight c).integral_comp_comm hf
   · by_cases hc : c = 0
-    · simp only [hc, integral_zero, smul_zero]
+    · simp [hc, integral_zero, smul_zero]
     rw [integral_undef hf, integral_undef, zero_smul]
     rw [integrable_smul_const hc]
-    simp_rw [hf]
+    simp_rw [hf, not_false_eq_true]
 #align integral_smul_const integral_smul_const
 
 theorem integral_withDensity_eq_integral_smul {f : α → ℝ≥0} (f_meas : Measurable f) (g : α → E) :

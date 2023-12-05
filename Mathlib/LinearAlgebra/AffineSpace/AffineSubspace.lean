@@ -390,7 +390,6 @@ def toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction s 
     ext
     apply add_vadd
   vsub a b := ⟨(a : P) -ᵥ (b : P), (vsub_left_mem_direction_iff_mem a.2 _).mpr b.2⟩
-  Nonempty := by infer_instance
   vsub_vadd' a b := by
     ext
     apply AddTorsor.vsub_vadd'
@@ -767,7 +766,7 @@ variable (P)
 /-- The direction of `⊤` is the whole module as a submodule. -/
 @[simp]
 theorem direction_top : (⊤ : AffineSubspace k P).direction = ⊤ := by
-  cases' S.Nonempty with p
+  cases' S.nonempty with p
   ext v
   refine' ⟨imp_intro Submodule.mem_top, fun _hv => _⟩
   have hpv : (v +ᵥ p -ᵥ p : V) ∈ (⊤ : AffineSubspace k P).direction :=
@@ -827,6 +826,17 @@ theorem card_pos_of_affineSpan_eq_top {ι : Type*} [Fintype ι] {p : ι → P}
   obtain ⟨-, ⟨i, -⟩⟩ := nonempty_of_affineSpan_eq_top k V P h
   exact Fintype.card_pos_iff.mpr ⟨i⟩
 #align affine_subspace.card_pos_of_affine_span_eq_top AffineSubspace.card_pos_of_affineSpan_eq_top
+
+attribute [local instance] toAddTorsor
+
+/-- The top affine subspace is linearly equivalent to the affine space.
+
+This is the affine version of `Submodule.topEquiv`. -/
+@[simps! linear apply symm_apply_coe]
+def topEquiv : (⊤ : AffineSubspace k P) ≃ᵃ[k] P where
+  toEquiv := Equiv.Set.univ P
+  linear := .ofEq _ _ (direction_top _ _ _) ≪≫ₗ Submodule.topEquiv
+  map_vadd' _p _v := rfl
 
 variable {P}
 
@@ -1194,7 +1204,7 @@ preserved under certain affine combinations, then `p` holds for all elements of 
 theorem affineSpan_induction {x : P} {s : Set P} {p : P → Prop} (h : x ∈ affineSpan k s)
     (Hs : ∀ x : P, x ∈ s → p x)
     (Hc : ∀ (c : k) (u v w : P), p u → p v → p w → p (c • (u -ᵥ v) +ᵥ w)) : p x :=
-  (@affineSpan_le _ _ _ _ _ _ _ _ ⟨p, Hc⟩).mpr Hs h
+  (affineSpan_le (Q := ⟨p, Hc⟩)).mpr Hs h
 #align affine_span_induction affineSpan_induction
 
 /-- A dependent version of `affineSpan_induction`. -/
@@ -1207,7 +1217,7 @@ theorem affineSpan_induction' {s : Set P} {p : ∀ x, x ∈ affineSpan k s → P
     {x : P} (h : x ∈ affineSpan k s) : p x h := by
   refine' Exists.elim _ fun (hx : x ∈ affineSpan k s) (hc : p x hx) => hc
   -- porting note: Lean couldn't infer the motive
-  refine' @affineSpan_induction k V P _ _ _ _ _ _ (fun y => ∃ z, p y z) h _ _
+  refine' affineSpan_induction (p := fun y => ∃ z, p y z) h _ _
   · exact fun y hy => ⟨subset_affineSpan _ _ hy, Hs y hy⟩
   · exact fun c u v w hu hv hw =>
       Exists.elim hu fun hu' hu =>
@@ -1588,6 +1598,29 @@ theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s)
         subset_affineSpan k _ (mem_image_of_mem f hp)⟩
 #align affine_subspace.map_span AffineSubspace.map_span
 
+section inclusion
+variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁] [Nonempty S₂]
+
+attribute [local instance] AffineSubspace.toAddTorsor
+
+/-- Affine map from a smaller to a larger subspace of the same space.
+
+This is the affine version of `Submodule.inclusion`. -/
+@[simps linear]
+def inclusion (h : S₁ ≤ S₂) : S₁ →ᵃ[k] S₂ where
+  toFun := Set.inclusion h
+  linear := Submodule.inclusion <| AffineSubspace.direction_le h
+  map_vadd' _ _ := rfl
+
+@[simp]
+theorem coe_inclusion_apply (h : S₁ ≤ S₂) (x : S₁) : (inclusion h x : P₁) = x :=
+  rfl
+
+@[simp]
+theorem inclusion_rfl : inclusion (le_refl S₁) = AffineMap.id k S₁ := rfl
+
+end inclusion
+
 end AffineSubspace
 
 namespace AffineMap
@@ -1606,6 +1639,33 @@ theorem span_eq_top_of_surjective {s : Set P₁} (hf : Function.Surjective f)
 end AffineMap
 
 namespace AffineEquiv
+
+section ofEq
+variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
+
+attribute [local instance] AffineSubspace.toAddTorsor
+
+/-- Affine equivalence between two equal affine subspace.
+
+This is the affine version of `LinearEquiv.ofEq`. -/
+@[simps linear]
+def ofEq (h : S₁ = S₂) : S₁ ≃ᵃ[k] S₂ where
+  toEquiv := Equiv.Set.ofEq <| congr_arg _ h
+  linear := .ofEq _ _ <| congr_arg _ h
+  map_vadd' _ _ := rfl
+
+@[simp]
+theorem coe_ofEq_apply (h : S₁ = S₂) (x : S₁) : (ofEq S₁ S₂ h x : P₁) = x :=
+  rfl
+
+@[simp]
+theorem ofEq_symm (h : S₁ = S₂) : (ofEq S₁ S₂ h).symm = ofEq S₂ S₁ h.symm :=
+  rfl
+
+@[simp]
+theorem ofEq_rfl : ofEq S₁ S₁ rfl = AffineEquiv.refl k S₁ := rfl
+
+end ofEq
 
 theorem span_eq_top_iff {s : Set P₁} (e : P₁ ≃ᵃ[k] P₂) :
     affineSpan k s = ⊤ ↔ affineSpan k (e '' s) = ⊤ := by

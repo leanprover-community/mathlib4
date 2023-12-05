@@ -152,8 +152,8 @@ end
 theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂)
     (f₃ : X₃ ⟶ Y₃) :
     tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
-      (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) :=
-  by convert associator_naturality_aux f₁ f₂ f₃ using 1
+      (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by
+  convert associator_naturality_aux f₁ f₂ f₃ using 1
 #align Module.monoidal_category.associator_naturality ModuleCat.MonoidalCategory.associator_naturality
 
 theorem pentagon (W X Y Z : ModuleCat R) :
@@ -233,13 +233,13 @@ theorem hom_apply {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K
 @[simp]
 theorem whiskerLeft_apply (L : ModuleCat.{u} R) {M N : ModuleCat.{u} R} (f : M ⟶ N)
     (l : L) (m : M) :
-      (L ◁ f) (l ⊗ₜ m) = l ⊗ₜ f m :=
+    (L ◁ f) (l ⊗ₜ m) = l ⊗ₜ f m :=
   rfl
 
 @[simp]
 theorem whiskerRight_apply {L M : ModuleCat.{u} R} (f : L ⟶ M) (N : ModuleCat.{u} R)
     (l : L) (n : N) :
-      (f ▷ N) (l ⊗ₜ n) = f l ⊗ₜ n :=
+    (f ▷ N) (l ⊗ₜ n) = f l ⊗ₜ n :=
   rfl
 
 @[simp]
