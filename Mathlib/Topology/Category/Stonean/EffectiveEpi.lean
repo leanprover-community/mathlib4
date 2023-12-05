@@ -80,6 +80,8 @@ instance : Preregular Stonean where
     have := epiOfEffectiveEpi π
     exact ⟨X, 𝟙 X, inferInstance, Projective.factors f π⟩
 
+example : Precoherent Stonean.{u} := inferInstance
+
 -- TODO: prove this for `Type*`
 open List in
 theorem effectiveEpiFamily_tfae
