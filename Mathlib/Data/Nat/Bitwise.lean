@@ -410,7 +410,7 @@ theorem bitwise_self_eq_self (f : Bool → Bool → Bool) (hf : f false false = 
 /-- `land` with a fixed left operand is idempotent -/
 @[simp] lemma land_land_left (x y : Nat) :
     x &&& (x &&& y) = x &&& y := by
-  rw [←land_assoc, land_self]
+  rw [← land_assoc, land_self]
 
 /-- `lor` with a fixed right operand is idempotent -/
 @[simp] lemma lor_lor_right (x y : Nat) :
@@ -420,7 +420,7 @@ theorem bitwise_self_eq_self (f : Bool → Bool → Bool) (hf : f false false = 
 /-- `lor` with a fixed left operand is idempotent -/
 @[simp] lemma lor_lor_left (x y : Nat) :
     x ||| (x ||| y) = x ||| y := by
-  rw [←lor_assoc, lor_self]
+  rw [← lor_assoc, lor_self]
 
 /-- `xor` with a fixed right operand is a no-op -/
 @[simp] lemma xor_xor_right (x y : Nat) :
@@ -430,7 +430,7 @@ theorem bitwise_self_eq_self (f : Bool → Bool → Bool) (hf : f false false = 
 /-- `xor` with a fixed left operand is a no-op -/
 @[simp] lemma xor_xor_left (x y : Nat) :
     x ^^^ (x ^^^ y) = y := by
-  rw [←xor_assoc, xor_self, zero_xor]
+  rw [← xor_assoc, xor_self, zero_xor]
 
 -- These lemmas match `mul_inv_cancel_right` and `mul_inv_cancel_left`.
 theorem lxor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := by
@@ -548,12 +548,12 @@ lemma bit_land_one (x₀ : Bool) (x : Nat) :
   · have h1 : 1 = 1 % (2 ^ w * 2) :=
       (mod_eq_of_lt <| one_lt_mul (one_le_two_pow w) (by decide)).symm
     conv_rhs => {
-      rw [←mul_mod_mul_right, h1, ←add_mod_of_add_mod_lt <| by
+      rw [← mul_mod_mul_right, h1, ← add_mod_of_add_mod_lt <| by
         rw [mul_mod_mul_right, mul_two, mul_two, add_assoc, add_comm]
         have : x % 2 ^ w < 2 ^ w :=
           mod_lt x (Nat.pow_two_pos w)
         apply add_lt_add_of_le_of_lt _ this
-        · rw [←mul_two, ←h1]; exact this
+        · rw [← mul_two, ← h1]; exact this
       ]
     }
 
@@ -565,11 +565,11 @@ theorem two_pow_succ_sub_one_eq_bit (w : Nat) : 2^(w + 1) - 1 = bit true (2^w - 
   · simp only [Nat.pow_succ, Nat.mul_two, Nat.add_sub_assoc (one_le_two_pow _), ih, bit_val,
       Nat.two_mul, Bool.cond_true]
     conv_rhs => {
-      rw [←add_assoc]
+      rw [← add_assoc]
       change 2 ^ w + (2 ^ w - 1) + 2 ^ w + ((2 ^ w - 1) + 1)
       rw [
         Nat.sub_add_cancel (one_le_two_pow _),
-        add_assoc, ←two_mul (2 ^ w),
+        add_assoc, ← two_mul (2 ^ w),
         Nat.self_add_sub_one, Nat.sub_one_add_self
       ]
     }
