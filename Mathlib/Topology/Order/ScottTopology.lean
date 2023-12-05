@@ -353,11 +353,11 @@ end complete_lattice
 
 variable [Preorder α]
 
-lemma scottHausdorff_le_of_scott [TopologicalSpace α] [Topology.IsScott α] :
-    Topology.scottHausdorff ≤ ‹TopologicalSpace α› := by
+lemma IsScott.scottHausdorff_le [TopologicalSpace α] [IsScott α] :
+    scottHausdorff ≤ ‹TopologicalSpace α› := by
   rw [Topology.IsScott.topology_eq α, Topology.scott]
   apply le_sup_right
 
-lemma scottHausdorff_le_lower [TopologicalSpace α] [Topology.IsLower α] :
+lemma IsLower.scottHausdorff_le [TopologicalSpace α] [IsLower α] :
     Topology.scottHausdorff ≤ ‹TopologicalSpace α› :=
   fun _ h => Topology.ScottHausdorff.isOpen_of_isLowerSet (Topology.IsLower.isLowerSet_of_isOpen h)
