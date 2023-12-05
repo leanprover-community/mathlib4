@@ -86,8 +86,8 @@ theorem add_one (n : PosNum) : n + 1 = succ n := by cases n <;> rfl
 
 @[norm_cast]
 theorem add_to_nat : ∀ m n, ((m + n : PosNum) : ℕ) = m + n
-  | 1, b => by rw [one_add b, succ_to_nat, add_comm]; rfl
-  | a, 1 => by rw [add_one a, succ_to_nat]; rfl
+  | 1, b => by rw [one_add b, succ_to_nat, add_comm, cast_one]
+  | a, 1 => by rw [add_one a, succ_to_nat, cast_one]
   | bit0 a, bit0 b => (congr_arg _root_.bit0 (add_to_nat a b)).trans <| add_add_add_comm _ _ _ _
   | bit0 a, bit1 b =>
     (congr_arg _root_.bit1 (add_to_nat a b)).trans <|
@@ -113,11 +113,11 @@ theorem add_succ : ∀ m n : PosNum, m + succ n = succ (m + n)
 theorem bit0_of_bit0 : ∀ n, _root_.bit0 n = bit0 n
   | 1 => rfl
   | bit0 p => congr_arg bit0 (bit0_of_bit0 p)
-  | bit1 p => show bit0 (succ (_root_.bit0 p)) = _ by rw [bit0_of_bit0 p]; rfl
+  | bit1 p => show bit0 (succ (_root_.bit0 p)) = _ by rw [bit0_of_bit0 p, succ]
 #align pos_num.bit0_of_bit0 PosNum.bit0_of_bit0
 
 theorem bit1_of_bit1 (n : PosNum) : _root_.bit1 n = bit1 n :=
-  show _root_.bit0 n + 1 = bit1 n by rw [add_one, bit0_of_bit0]; rfl
+  show _root_.bit0 n + 1 = bit1 n by rw [add_one, bit0_of_bit0, succ]
 #align pos_num.bit1_of_bit1 PosNum.bit1_of_bit1
 
 @[norm_cast]
@@ -218,7 +218,7 @@ theorem add_one : ∀ n : Num, n + 1 = succ n
 
 theorem add_succ : ∀ m n : Num, m + succ n = succ (m + n)
   | 0, n => by simp [zero_add]
-  | pos p, 0 => show pos (p + 1) = succ (pos p + 0) by rw [PosNum.add_one, add_zero]; rfl
+  | pos p, 0 => show pos (p + 1) = succ (pos p + 0) by rw [PosNum.add_one, add_zero, succ, succ']
   | pos p, pos q => congr_arg pos (PosNum.add_succ _ _)
 #align num.add_succ Num.add_succ
 
@@ -250,7 +250,7 @@ theorem bit1_succ : ∀ n : Num, n.bit1.succ = n.succ.bit0
 #align num.bit1_succ Num.bit1_succ
 
 theorem ofNat'_succ : ∀ {n}, ofNat' (n + 1) = ofNat' n + 1 :=
-  @(Nat.binaryRec (by simp; rfl) fun b n ih => by
+  @(Nat.binaryRec (by simp [zero_add]) fun b n ih => by
     cases b
     · erw [ofNat'_bit true n, ofNat'_bit]
       simp only [← bit1_of_bit1, ← bit0_of_bit0, cond, _root_.bit1]
