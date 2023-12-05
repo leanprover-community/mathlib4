@@ -109,7 +109,7 @@ def scott : TopologicalSpace α := upperSet α ⊔ scottHausdorff
 
 lemma upperSet_le_scott : upperSet α ≤ scott := le_sup_left
 
-lemma scottHausdorff_le_Scott : @scottHausdorff α ≤ @Scott α := le_sup_right
+lemma scottHausdorff_le_Scott : @scottHausdorff α ≤ @scott α := le_sup_right
 
 end Topology
 
@@ -151,7 +151,7 @@ variable [Preorder α]
 
 instance : Preorder (WithScott α) := ‹Preorder α›
 
-instance : TopologicalSpace (WithScott α) := Scott
+instance : TopologicalSpace (WithScott α) := scott
 
 end WithScott
 
@@ -161,7 +161,7 @@ where a set `u` is open if, when the least upper bound of a directed set `d` lie
 is a tail of `d` which is a subset of `u`.
 -/
 class IsScott (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop where
-  topology_eq_ScottTopology : t = Scott
+  topology_eq_ScottTopology : t = scott
 
 attribute [nolint docBlame]
   IsScott.topology_eq_ScottTopology
@@ -182,7 +182,7 @@ variable [TopologicalSpace α] [IsScott α]
 
 variable (α)
 
-lemma topology_eq : ‹_› = Scott := topology_eq_ScottTopology
+lemma topology_eq : ‹_› = scott := topology_eq_ScottTopology
 
 variable {α}
 
@@ -243,7 +243,7 @@ lemma isLowerSet_of_isClosed {s : Set α} : IsClosed s → IsLowerSet s := fun h
   (isClosed_iff_lower_and_subset_implies_LUB_mem.mp h).left
 
 lemma lowerClosure_le_closure {s : Set α} : lowerClosure s ≤ closure s := by
-  convert closure.mono (@upperSet_le_Scott α _)
+  convert closure.mono (@upperSet_le_scott α _)
   rw [@Topology.IsUpperSet.closure_eq_lowerClosure α _ (upperSet α) ?_ s]
   · exact instIsUpperSetUpperSet
   · exact topology_eq α
@@ -356,7 +356,7 @@ variable [Preorder α]
 
 lemma scottHausdorffTopology_le_of_scottTopology [TopologicalSpace α] [Topology.IsScott α] :
     Topology.scottHausdorff ≤ ‹TopologicalSpace α› := by
-  rw [Topology.IsScott.topology_eq α, Topology.Scott]
+  rw [Topology.IsScott.topology_eq α, Topology.scott]
   apply le_sup_right
 
 lemma scottHausdorffTopology_le_Lower [TopologicalSpace α] [Topology.IsLower α] :
