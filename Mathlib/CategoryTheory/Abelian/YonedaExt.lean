@@ -542,7 +542,7 @@ instance : QuasiIso (compZToZ E E' hn'') := by
   rw [← quasiIso_iff_comp_right _ E.ZToX₁, compZToZ_comp_ZToX₁]
   infer_instance
 
-def sgn₁ (m m' i : ℤ) : ℤ := (m * (i + m + m')).negOnePow
+def sgn₁ (m m' i : ℤ) : ℤˣ := (m * (i + m + m')).negOnePow
 
 lemma sgn₁_rel₁ (m m' i : ℤ) : sgn₁ m m' (i+1) = m.negOnePow * sgn₁ m m' i := by
   dsimp [sgn₁]
@@ -603,13 +603,13 @@ lemma compZToShiftZ_comp_ZToZ₂ :
   rw [CochainComplex.singleFunctors_shiftIso_hom_app_f _ _ _ _ _ _ rfl]
   rw [ZToX₂_f_self, ZToX₂_f_self]
   dsimp [comp, ZXIso, Z.XIso, compKXIso', HomologicalComplex.XIsoOfEq,
-    HomologicalComplex.singleObjXIsoOfEq]
+    HomologicalComplex.singleObjXIsoOfEq, HomologicalComplex.singleObjXSelf]
   simp only [eqToHom_trans, id_comp, assoc, eqToHom_trans_assoc, eqToHom_refl, comp_id]
 
-def sgn₂ (a b : ℤ) : ℤ := (a * b).negOnePow
+def sgn₂ (a b : ℤ) : ℤˣ := (a * b).negOnePow
 
 @[simp]
-lemma sgn₂_mul_self (a b : ℤ) : sgn₂ a b * sgn₂ a b = 1 := Int.negOnePow_mul_self _
+lemma sgn₂_mul_self (a b : ℤ) : sgn₂ a b * sgn₂ a b = 1 := by simp [sgn₂]
 
 @[reassoc]
 lemma compZ_comm : compZToZ E E' hn'' ≫ E.ZToX₂ k (by linarith) =
@@ -618,21 +618,22 @@ lemma compZ_comm : compZToZ E E' hn'' ≫ E.ZToX₂ k (by linarith) =
   obtain rfl : k = -n-1 := by linarith
   have sgn₂_rel : sgn₂ m m' * sgn₁ m (n' + 1) (-n - 1) = 1 := by
     rw [show (n' : ℤ)+1 = m' by linarith, show -(n : ℤ)-1 = -m by linarith]
-    dsimp [sgn₂, sgn₁]
-    simp only [← Int.negOnePow_add, add_left_neg, zero_add, ← two_mul, Int.negOnePow_two_mul]
+    simp [sgn₂, sgn₁]
   apply (HomologicalComplex.toSingleEquiv _ _ (-(n : ℤ)-2) (-n-1) (by simp; linarith)).injective
   ext
   dsimp [HomologicalComplex.toSingleEquiv, compZToShiftZ, compZToZ]
   simp only [compZToZf_eq' E E' hn'',
     compZToShiftZf_eq E E' hn'' m hm (-n-1) (n'+1) 0 (by linarith) (by linarith) (by linarith),
     assoc, Preadditive.zsmul_comp, smul_smul, sgn₂_rel, one_smul, ZToX₂_f_self,
-    HomologicalComplex.singleObjXSelf_inv, assoc,
+    HomologicalComplex.singleObjXSelf, assoc,
     eqToHom_trans, eqToHom_refl, comp_id, Iso.inv_hom_id_assoc, Iso.inv_hom_id,
     CochainComplex.shiftFunctorObjXIso, Iso.cancel_iso_hom_left,
-    ← HomologicalComplex.XIsoOfEq_inv_naturality_assoc, ZToX₁_f_0]
+    ← HomologicalComplex.XIsoOfEq_inv_naturality_assoc, ZToX₁_f_0, smul_smul,
+    Linear.units_smul_comp]
   rw [CochainComplex.singleFunctors_shiftIso_hom_app_f _ _ _ _ _ _ rfl]
   dsimp [HomologicalComplex.XIsoOfEq, HomologicalComplex.singleObjXIsoOfEq]
   simp only [eqToHom_trans, eqToHom_refl, comp_id]
+  erw [comp_id]
 
 @[reassoc]
 lemma compZ_comm' :
@@ -643,9 +644,9 @@ lemma compZ_comm' :
           inv (DerivedCategory.Q.map (E'.ZToX₁⟦(m : ℤ)⟧')) := by
   simp only [← cancel_epi (DerivedCategory.Q.map (compZToZ E E' hn'')), IsIso.hom_inv_id_assoc,
     ← Functor.map_comp_assoc, Preadditive.comp_zsmul, compZ_comm_assoc E E' hn'' m m' hm hm' k hk,
-    Preadditive.zsmul_comp, Functor.map_zsmul, assoc]
-  erw [Iso.hom_inv_id_app, comp_id, Functor.map_comp, assoc, IsIso.hom_inv_id, comp_id]
-  simp only [smul_smul, sgn₂_mul_self, one_smul]
+    Preadditive.zsmul_comp, Functor.map_units_smul, assoc, Linear.comp_units_smul,
+    Linear.units_smul_comp, Iso.hom_inv_id_app, smul_smul, sgn₂_mul_self, one_smul]
+  erw [comp_id, Functor.map_comp, assoc, IsIso.hom_inv_id, comp_id]
 
 lemma compatibility :
     sgn₂ m m' • E.shiftedHom m hm •[show (m : ℤ) + m' = m'' by linarith] E'.shiftedHom m' hm' =
@@ -655,7 +656,8 @@ lemma compatibility :
   simp only [assoc, Functor.map_comp, ← compZToZ_comp_ZToX₁, IsIso.inv_comp,
     ← compZToShiftZ_comp_ZToZ₂ E E' hn'' m m' m'' hm hm' hm'' (-m') (by linarith) (-m'') (by linarith),
     compZ_comm'_assoc E E' hn'' m m' hm hm' (-m) (by linarith),
-    Functor.map_inv, Functor.comp_obj, Preadditive.zsmul_comp, assoc, Preadditive.comp_zsmul]
+    Functor.map_inv, Functor.comp_obj, assoc,
+    Linear.units_smul_comp, Linear.comp_units_smul]
   congr 4
   simp only [SingleFunctors.postComp_shiftIso_inv_app' _ (DerivedCategory.singleFunctorsPostCompQIso C), assoc,
     SingleFunctors.postComp_functor, Functor.comp_obj, ← Functor.map_comp_assoc,
@@ -694,7 +696,6 @@ lemma compatibility :
 -- then, anyway, if the composition of newExt is defined by (-1)^{m•m'} the composition
 -- of ShiftedHom (in the opposite direction), then we have a compatibility between
 -- the composition of newExt and the composition on Yoneda Exts.
-
 
 end composition
 
