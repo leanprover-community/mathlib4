@@ -103,8 +103,8 @@ theorem toFunLinear_mul_tmul_mul (a₁ a₂ : A) (p₁ p₂ : R[X]) :
     conv_rhs => rw [coeff_mul]
     simp_rw [finset_sum_coeff, coeff_monomial, Finset.sum_ite_eq', mem_support_iff, Ne.def, mul_ite,
       mul_zero, ite_mul, zero_mul]
-    simp_rw [←ite_zero_mul (¬coeff p₁ _ = 0) (a₁ * (algebraMap R A) (coeff p₁ _))]
-    simp_rw [←mul_ite_zero (¬coeff p₂ _ = 0) _ (_ * _)]
+    simp_rw [← ite_zero_mul (¬coeff p₁ _ = 0) (a₁ * (algebraMap R A) (coeff p₁ _))]
+    simp_rw [← mul_ite_zero (¬coeff p₂ _ = 0) _ (_ * _)]
     simp_rw [toFunLinear_mul_tmul_mul_aux_1, toFunLinear_mul_tmul_mul_aux_2]
 #align poly_equiv_tensor.to_fun_linear_mul_tmul_mul PolyEquivTensor.toFunLinear_mul_tmul_mul
 

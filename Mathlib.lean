@@ -2947,7 +2947,9 @@ import Mathlib.Probability.Process.HittingTime
 import Mathlib.Probability.Process.Stopping
 import Mathlib.Probability.StrongLaw
 import Mathlib.Probability.Variance
-import Mathlib.RepresentationTheory.Action
+import Mathlib.RepresentationTheory.Action.Basic
+import Mathlib.RepresentationTheory.Action.Limits
+import Mathlib.RepresentationTheory.Action.Monoidal
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Character
 import Mathlib.RepresentationTheory.FdRep
