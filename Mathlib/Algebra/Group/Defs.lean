@@ -369,14 +369,14 @@ lemma CommMagma.IsRightCancelMul.toIsLeftCancelMul (G : Type u) [CommMagma G] [I
 #align comm_semigroup.is_right_cancel_mul.to_is_left_cancel_mul CommMagma.IsRightCancelMul.toIsLeftCancelMul
 #align add_comm_semigroup.is_right_cancel_add.to_is_left_cancel_add AddCommMagma.IsRightCancelAdd.toIsLeftCancelAdd
 
-/-- Any `CommSemigroup G` that satisfies `IsLeftCancelMul G` also satisfies `IsRightCancelMul G`. -/
-@[to_additive AddCommSemigroup.IsLeftCancelAdd.toIsRightCancelAdd "Any `AddCommSemigroup G` that
-satisfies `IsLeftCancelAdd G` also satisfies `IsRightCancelAdd G`."]
+/-- Any `CommMagma G` that satisfies `IsLeftCancelMul G` also satisfies `IsRightCancelMul G`. -/
+@[to_additive AddCommMagma.IsLeftCancelAdd.toIsRightCancelAdd "Any `AddCommMagma G` that satisfies
+`IsLeftCancelAdd G` also satisfies `IsRightCancelAdd G`."]
 lemma CommMagma.IsLeftCancelMul.toIsRightCancelMul (G : Type u) [CommMagma G] [IsLeftCancelMul G] :
     IsRightCancelMul G :=
   ⟨fun _ _ _ h => mul_left_cancel <| (mul_comm _ _).trans (h.trans (mul_comm _ _))⟩
 #align comm_semigroup.is_left_cancel_mul.to_is_right_cancel_mul CommMagma.IsLeftCancelMul.toIsRightCancelMul
-#align add_comm_semigroup.is_left_cancel_add.to_is_right_cancel_add AddCommSemigroup.IsLeftCancelAdd.toIsRightCancelAdd
+#align add_comm_semigroup.is_left_cancel_add.to_is_right_cancel_add AddCommMagma.IsLeftCancelAdd.toIsRightCancelAdd
 
 /-- Any `CommMagma G` that satisfies `IsLeftCancelMul G` also satisfies `IsCancelMul G`. -/
 @[to_additive AddCommMagma.IsLeftCancelAdd.toIsCancelAdd "Any `AddCommMagma G` that satisfies
@@ -389,9 +389,9 @@ lemma CommMagma.IsLeftCancelMul.toIsCancelMul (G : Type u) [CommMagma G] [IsLeft
 /-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsCancelMul G`. -/
 @[to_additive AddCommMagma.IsRightCancelAdd.toIsCancelAdd "Any `AddCommMagma G` that satisfies
 `IsRightCancelAdd G` also satisfies `IsCancelAdd G`."]
-lemma CommSemigroup.IsRightCancelMul.toIsCancelMul (G : Type u) [CommMagma G] [IsRightCancelMul G] :
+lemma CommMagma.IsRightCancelMul.toIsCancelMul (G : Type u) [CommMagma G] [IsRightCancelMul G] :
     IsCancelMul G := { CommMagma.IsRightCancelMul.toIsLeftCancelMul G with }
-#align comm_semigroup.is_right_cancel_mul.to_is_cancel_mul CommSemigroup.IsRightCancelMul.toIsCancelMul
+#align comm_semigroup.is_right_cancel_mul.to_is_cancel_mul CommMagma.IsRightCancelMul.toIsCancelMul
 #align add_comm_semigroup.is_right_cancel_add.to_is_cancel_add AddCommMagma.IsRightCancelAdd.toIsCancelAdd
 
 end CommMagma
@@ -654,15 +654,15 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 -- Bug #660
 attribute [to_additive existing] Monoid.toMulOneClass
 
-@[default_instance high] instance Monoid.Pow {M : Type*} [Monoid M] : Pow M ℕ :=
+@[default_instance high] instance Monoid.toNatPow {M : Type*} [Monoid M] : Pow M ℕ :=
   ⟨fun x n ↦ Monoid.npow n x⟩
-#align monoid.has_pow Monoid.Pow
+#align monoid.has_pow Monoid.toNatPow
 
-instance AddMonoid.SMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
+instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
   ⟨AddMonoid.nsmul⟩
-#align add_monoid.has_smul_nat AddMonoid.SMul
+#align add_monoid.has_smul_nat AddMonoid.toNatSMul
 
-attribute [to_additive existing SMul] Monoid.Pow
+attribute [to_additive existing toNatSMul] Monoid.toNatPow
 
 section
 

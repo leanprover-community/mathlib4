@@ -59,7 +59,7 @@ instance : SecondCountableTopology ℝ := secondCountable_of_proper
 
 theorem Real.isTopologicalBasis_Ioo_rat :
     @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) b}) :=
-  isTopologicalBasis_of_open_of_nhds (by simp (config := { contextual := true }) [isOpen_Ioo])
+  isTopologicalBasis_of_isOpen_of_nhds (by simp (config := { contextual := true }) [isOpen_Ioo])
     fun a v hav hv =>
     let ⟨l, u, ⟨hl, hu⟩, h⟩ := mem_nhds_iff_exists_Ioo_subset.mp (IsOpen.mem_nhds hv hav)
     let ⟨q, hlq, hqa⟩ := exists_rat_btwn hl
@@ -230,7 +230,7 @@ instance {a : ℝ} : DiscreteTopology (AddSubgroup.zmultiples a) := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · rw [AddSubgroup.zmultiples_zero_eq_bot]
     exact Subsingleton.discreteTopology (α := (⊥ : Submodule ℤ ℝ))
-  rw [discreteTopology_iff_open_singleton_zero, isOpen_induced_iff]
+  rw [discreteTopology_iff_isOpen_singleton_zero, isOpen_induced_iff]
   refine' ⟨ball 0 |a|, isOpen_ball, _⟩
   ext ⟨x, hx⟩
   obtain ⟨k, rfl⟩ := AddSubgroup.mem_zmultiples_iff.mp hx
