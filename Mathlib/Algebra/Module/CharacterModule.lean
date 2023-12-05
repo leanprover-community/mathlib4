@@ -78,7 +78,7 @@ variable {R}
 /--
 For a linear map `L : M → N`, `(· ∘ L)` defines map from `CharacterModule N` to `CharacterModule M`
 -/
-@[simps] def LinearMap.characterfy
+@[simps] def LinearMap.characterify
     (L : M →ₗ[R] N) :
     CharacterModule N →ₗ[R] CharacterModule M where
   toFun f := ULift.moduleEquiv'.toLinearMap ∘ₗ f ∘ₗ L.toAddMonoidHom.toIntLinearMap
@@ -90,9 +90,9 @@ For a linear map `L : M → N`, `(· ∘ L)` defines map from `CharacterModule N
     aesop
 
 variable {M N} in
-lemma LinearMap.charaterfy_surjective_of_injective
+lemma LinearMap.characterify_surjective_of_injective
     (L : M →ₗ[R] N) (inj : Function.Injective L) :
-    Function.Surjective L.characterfy := by
+    Function.Surjective L.characterify := by
   rintro (g : _ →ₗ[_] _)
   let g'' : (ULift.{max w w'} M) →ₗ[ℤ] (ULift.{max w w'} (AddCircle (1 : ℚ))) :=
     ULift.moduleEquiv'.toLinearMap ∘ₗ g ∘ₗ ULift.moduleEquiv.toLinearMap
@@ -121,7 +121,7 @@ endofunctor on `R`-modules.
 def CharacterModuleFunctor :
     (ModuleCat R)ᵒᵖ ⥤ ModuleCat R where
   obj M := ModuleCat.of R <| CharacterModule M.unop
-  map L := L.unop.characterfy
+  map L := L.unop.characterify
   map_id {_} := LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ rfl
   map_comp _ _ := LinearMap.ext fun _ ↦ LinearMap.ext fun _ ↦ rfl
 
@@ -169,7 +169,7 @@ let l' :  CharacterModule <| ℤ ⧸ Ideal.span {(addOrderOf a : ℤ)} :=
         split_ifs with h
         · rw [h, Nat.cast_zero, map_zero]
         · apply IntCharacterModule.divByNat_self
-  LinearMap.characterfy (R := ℤ) _ _ (equivZModSpanAddOrderOf a).toLinearMap l'
+  LinearMap.characterify (R := ℤ) _ _ (equivZModSpanAddOrderOf a).toLinearMap l'
 
 lemma CharacterModule.eq_zero_of_ofSpanSingleton_apply_self (a : M)
     (h : ofSpanSingleton a ⟨a, Submodule.mem_span_singleton_self a⟩ = 0) : a = 0 := by
@@ -244,9 +244,9 @@ Equivalent modules have equivalent character modules
 -/
 @[simps!]
 def CharacterModule.cong (e : M ≃ₗ[R] N) : CharacterModule M ≃ₗ[R] CharacterModule N := by
-  refine LinearEquiv.ofLinear e.symm.toLinearMap.characterfy e.toLinearMap.characterfy ?_ ?_ <;>
+  refine LinearEquiv.ofLinear e.symm.toLinearMap.characterify e.toLinearMap.characterify ?_ ?_ <;>
   refine LinearMap.ext <| fun _ ↦ LinearMap.ext fun _ ↦ ?_ <;>
-  simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.characterfy_apply,
+  simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.characterify_apply,
     AddMonoidHom.coe_toIntLinearMap, LinearMap.toAddMonoidHom_coe, LinearEquiv.coe_coe,
     LinearEquiv.apply_symm_apply, LinearMap.id_coe, id_eq] <;>
   aesop
