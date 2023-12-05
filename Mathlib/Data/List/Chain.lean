@@ -457,7 +457,7 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
       refine gt_of_gt_of_ge ha.1 ?_
       rw [le_iff_lt_or_eq] at hmas
       cases' hmas with hmas hmas
-      · by_contra' hh
+      · by_contra! hh
         rw [← not_le] at hmas
         apply hmas
         apply le_of_lt

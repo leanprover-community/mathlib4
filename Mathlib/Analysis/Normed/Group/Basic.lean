@@ -182,15 +182,16 @@ instance as a special case of a more general `SeminormedGroup` instance. -/
 satisfying `∀ x, ‖x‖ = 0 → x = 0`. This avoids having to go back to the `(Pseudo)MetricSpace`
 level when declaring a `NormedAddGroup` instance as a special case of a more general
 `SeminormedAddGroup` instance."]
-def NormedGroup.ofSeparation [SeminormedGroup E] (h : ∀ x : E, ‖x‖ = 0 → x = 1) : NormedGroup E :=
-  { ‹SeminormedGroup E› with
-    toMetricSpace :=
-      { eq_of_dist_eq_zero := fun hxy =>
-          div_eq_one.1 <| h _ <| by exact (‹SeminormedGroup E›.dist_eq _ _).symm.trans hxy } }
-        -- porting note: the `rwa` no longer worked, but it was easy enough to provide the term.
-        -- however, notice that if you make `x` and `y` accessible, then the following does work:
-        -- `have := ‹SeminormedGroup E›.dist_eq x y; rwa [←this]`, so I'm not sure why the `rwa`
-        -- was broken.
+def NormedGroup.ofSeparation [SeminormedGroup E] (h : ∀ x : E, ‖x‖ = 0 → x = 1) :
+    NormedGroup E where
+  dist_eq := ‹SeminormedGroup E›.dist_eq
+  toMetricSpace :=
+    { eq_of_dist_eq_zero := fun hxy =>
+        div_eq_one.1 <| h _ <| by exact (‹SeminormedGroup E›.dist_eq _ _).symm.trans hxy }
+      -- porting note: the `rwa` no longer worked, but it was easy enough to provide the term.
+      -- however, notice that if you make `x` and `y` accessible, then the following does work:
+      -- `have := ‹SeminormedGroup E›.dist_eq x y; rwa [← this]`, so I'm not sure why the `rwa`
+      -- was broken.
 #align normed_group.of_separation NormedGroup.ofSeparation
 #align normed_add_group.of_separation NormedAddGroup.ofSeparation
 
@@ -2004,7 +2005,7 @@ theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n
   let d : ℕ → E := fun n => ∏ k in range (n + 1), u k / v k
   rw [show (fun n => ∏ k in range (n + 1), u k) = d * fun n => ∏ k in range (n + 1), v k
       by ext n; simp]
-  suffices ∀ n ≥ N, d n = d N by exact (tendsto_atTop_of_eventually_const this).cauchySeq.mul hv
+  suffices ∀ n ≥ N, d n = d N from (tendsto_atTop_of_eventually_const this).cauchySeq.mul hv
   intro n hn
   dsimp
   rw [eventually_constant_prod _ (add_le_add_right hn 1)]
