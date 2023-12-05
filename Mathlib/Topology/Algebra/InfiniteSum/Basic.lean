@@ -619,6 +619,11 @@ theorem tsum_eq_tsum_of_ne_zero_bij {g : γ → α} (i : support g → β)
   tsum_eq_tsum_of_hasSum_iff_hasSum (hasSum_iff_hasSum_of_ne_zero_bij i hi hf hfg)
 #align tsum_eq_tsum_of_ne_zero_bij tsum_eq_tsum_of_ne_zero_bij
 
+@[simp]
+lemma tsum_extend_zero {γ : Type*} {g : γ → β} (hg : Injective g) (f : γ → α) :
+    ∑' y, extend g f 0 y = ∑' x, f x :=
+  tsum_eq_tsum_of_hasSum_iff_hasSum <| hasSum_extend_zero hg
+
 /-! ### `tsum` on subsets -/
 
 theorem tsum_subtype (s : Set β) (f : β → α) : ∑' x : s, f x = ∑' x, s.indicator f x :=
