@@ -5,7 +5,9 @@ Authors: Markus Himmel, Alex Keizer
 -/
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Nat.Size
+import Mathlib.Data.Nat.ModEq
 import Mathlib.Tactic.Set
+import Mathlib.Tactic.Ring
 
 #align_import data.nat.bitwise from "leanprover-community/mathlib"@"6afc9b06856ad973f6a2619e3e8a0a8d537a58f2"
 
@@ -376,10 +378,59 @@ theorem land_assoc (n m k : ℕ) : (n &&& m) &&& k = n &&& (m &&& k) := by bitwi
 theorem lor_assoc (n m k : ℕ) : (n ||| m) ||| k = n ||| (m ||| k) := by bitwise_assoc_tac
 #align nat.lor_assoc Nat.lor_assoc
 
-@[simp]
-theorem xor_self (n : ℕ) : n ^^^ n = 0 :=
+@[simp (low)] -- low priority, so that `bitwise_zero` takes precedence when `x = 0`
+theorem bitwise_self (f : Bool → Bool → Bool) (x : ℕ) (hf : f false false = false) :
+    bitwise f x x = if f true true = true then x else 0 := by
+  split_ifs with hf' <;> (
+    induction' x using Nat.binaryRec with x₀ x ih
+    · simp only [ne_eq, not_true_eq_false, bitwise_zero_right, ite_self]
+    · rw [bitwise_bit (h:=hf), ih]
+      cases x₀ <;> simp [hf, hf']
+  )
+
+theorem bitwise_self_eq_self (f : Bool → Bool → Bool) (hf : f false false = false)
+    (hf' : f true true = true) (x : ℕ) : bitwise f x x = x := by
+  simp [bitwise_self _ _ hf, hf']
+
+@[simp] lemma land_self (x : Nat) : x &&& x = x :=
+  bitwise_self_eq_self _ rfl rfl _
+
+@[simp] lemma lor_self (x : Nat) : x ||| x = x :=
+  bitwise_self_eq_self _ rfl rfl _
+
+@[simp] lemma xor_self (n : ℕ) : n ^^^ n = 0 :=
   zero_of_testBit_eq_false fun i => by simp
 #align nat.lxor_self Nat.xor_self
+
+/-- `land` with a fixed right operand is idempotent -/
+@[simp] lemma land_land_right (x y : Nat) :
+    x &&& y &&& y = x &&& y := by
+  rw [land_assoc, land_self]
+
+/-- `land` with a fixed left operand is idempotent -/
+@[simp] lemma land_land_left (x y : Nat) :
+    x &&& (x &&& y) = x &&& y := by
+  rw [← land_assoc, land_self]
+
+/-- `lor` with a fixed right operand is idempotent -/
+@[simp] lemma lor_lor_right (x y : Nat) :
+    x ||| y ||| y = x ||| y := by
+  rw [lor_assoc, lor_self]
+
+/-- `lor` with a fixed left operand is idempotent -/
+@[simp] lemma lor_lor_left (x y : Nat) :
+    x ||| (x ||| y) = x ||| y := by
+  rw [← lor_assoc, lor_self]
+
+/-- `xor` with a fixed right operand is a no-op -/
+@[simp] lemma xor_xor_right (x y : Nat) :
+    x ^^^ y ^^^ y = x := by
+  rw [xor_assoc, xor_self, xor_zero]
+
+/-- `xor` with a fixed left operand is a no-op -/
+@[simp] lemma xor_xor_left (x y : Nat) :
+    x ^^^ (x ^^^ y) = y := by
+  rw [← xor_assoc, xor_self, zero_xor]
 
 -- These lemmas match `mul_inv_cancel_right` and `mul_inv_cancel_left`.
 theorem lxor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := by
@@ -461,6 +512,68 @@ theorem xor_trichotomy {a b c : ℕ} (h : a ≠ b ^^^ c) :
 theorem lt_xor_cases {a b c : ℕ} (h : a < b ^^^ c) : a ^^^ c < b ∨ a ^^^ b < c :=
   (or_iff_right fun h' => (h.asymm h').elim).1 <| xor_trichotomy h.ne
 #align nat.lt_lxor_cases Nat.lt_xor_cases
+
+@[simp] lemma bit0_bne_zero (x : Nat) : (bit0 x != 0) = (x != 0) := by
+  cases x <;> rfl
+
+lemma lt_pow_of_bit_lt_pow_succ {w x : Nat} {x₀ : Bool} :
+    bit x₀ x < 2 ^ (w + 1) → x < 2 ^ w := by
+  have h0 : bit0 x < 2 ^ w * 2 → x < 2 ^ w := by
+    simp only [bit0, ← mul_two, gt_iff_lt, zero_lt_two, mul_lt_mul_right, imp_self]
+  cases x₀
+  · exact h0
+  · intro h
+    apply h0 <| Nat.lt_trans (Nat.bit0_lt_bit1 le_rfl) h
+
+lemma two_pow_succ_eq_bit (x : Nat) :
+    2^(x+1) = bit false (2^x) := by
+  rw [Nat.pow_succ, Nat.mul_two]; rfl
+
+@[simp] lemma bit_land_two_pow_succ (x₀ : Bool) (x n : Nat) :
+    bit x₀ x &&& 2^(n + 1) = bit false (x &&& 2^n) := by
+  show bitwise .. = bit _ (bitwise ..)
+  rw [two_pow_succ_eq_bit, bitwise_bit, Bool.and_false]
+
+@[simp]
+lemma bit_land_one (x₀ : Bool) (x : Nat) :
+    bit x₀ x &&& 1 = x₀.toNat := by
+  show bitwise _ _ (bit true 0) = _
+  rw [bitwise_bit, Bool.and_true, bitwise_zero_right]
+  cases x₀ <;> rfl
+
+@[simp] theorem bit_mod_two_pow_succ (b x w) :
+    bit b x % 2 ^ (w + 1) = bit b (x % 2 ^ w) := by
+  simp [bit_val, Nat.pow_succ, mul_comm 2]
+  cases b <;> simp [mul_mod_mul_right]
+  · have h1 : 1 = 1 % (2 ^ w * 2) :=
+      (mod_eq_of_lt <| one_lt_mul (one_le_two_pow w) (by decide)).symm
+    conv_rhs => {
+      rw [← mul_mod_mul_right, h1, ← add_mod_of_add_mod_lt <| by
+        rw [mul_mod_mul_right, mul_two, mul_two, add_assoc, add_comm]
+        have : x % 2 ^ w < 2 ^ w :=
+          mod_lt x (Nat.pow_two_pos w)
+        apply add_lt_add_of_le_of_lt _ this
+        · rw [← mul_two, ← h1]; exact this
+      ]
+    }
+
+/-- Values `2^w - 1` consist of exactly `w` true bits (in the least significant positions), and
+    the rest all false bits -/
+theorem two_pow_succ_sub_one_eq_bit (w : Nat) : 2^(w + 1) - 1 = bit true (2^w - 1) := by
+  induction' w with w ih
+  · rfl
+  · simp only [Nat.pow_succ, Nat.mul_two, Nat.add_sub_assoc (one_le_two_pow _), ih, bit_val,
+      Nat.two_mul, Bool.cond_true]
+    conv_rhs => {
+      rw [← add_assoc]
+      change 2 ^ w + (2 ^ w - 1) + 2 ^ w + ((2 ^ w - 1) + 1)
+      rw [
+        Nat.sub_add_cancel (one_le_two_pow _),
+        add_assoc, ← two_mul (2 ^ w),
+        Nat.self_add_sub_one, Nat.sub_one_add_self
+      ]
+    }
+    ring_nf
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   rw [pow_succ', ← bit0_eq_two_mul]
