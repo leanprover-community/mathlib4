@@ -301,6 +301,26 @@ instance instCommGroup [CommGroup G] [CommGroup H] : CommGroup (G × H) :=
 
 end Prod
 
+section
+variable [Mul M] [Mul N]
+
+@[to_additive AddSemiconjBy.prod]
+theorem SemiconjBy.prod {x y z : M × N}
+    (hm : SemiconjBy x.1 y.1 z.1) (hn : SemiconjBy x.2 y.2 z.2) : SemiconjBy x y z :=
+  Prod.ext hm hn
+
+theorem Prod.semiconjBy_iff {x y z : M × N} :
+    SemiconjBy x y z ↔ SemiconjBy x.1 y.1 z.1 ∧ SemiconjBy x.2 y.2 z.2 := ext_iff
+
+@[to_additive AddCommute.prod]
+theorem Commute.prod {x y : M × N} (hm : Commute x.1 y.1) (hn : Commute x.2 y.2) : Commute x y :=
+  .prod hm hn
+
+theorem Prod.commute_iff {x y : M × N} :
+    Commute x y ↔ Commute x.1 y.1 ∧ Commute x.2 y.2 := semiconjBy_iff
+
+end
+
 namespace MulHom
 
 section Prod

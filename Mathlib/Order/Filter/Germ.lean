@@ -457,14 +457,16 @@ theorem coe_nat [NatCast M] (n : ℕ) : ((fun _ ↦ n : α → M) : Germ l M) = 
 @[simp, norm_cast]
 theorem const_nat [NatCast M] (n : ℕ) : ((n : M) : Germ l M) = n := rfl
 
+-- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem coe_ofNat [NatCast M] (n : ℕ) [n.AtLeastTwo] :
-    ((OfNat.ofNat n : α → M) : Germ l M) = OfNat.ofNat n :=
+    ((no_index (OfNat.ofNat n : α → M)) : Germ l M) = OfNat.ofNat n :=
   rfl
 
+-- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem const_ofNat [NatCast M] (n : ℕ) [n.AtLeastTwo] :
-    ((OfNat.ofNat n : M) : Germ l M) = OfNat.ofNat n :=
+    ((no_index (OfNat.ofNat n : M)) : Germ l M) = OfNat.ofNat n :=
   rfl
 
 instance intCast [IntCast M] : IntCast (Germ l M) where

@@ -318,7 +318,7 @@ theorem vadd_ae_eq_self_of_mem_zmultiples {G : Type u} {α : Type w} {s : Set α
       measurable_smul_const := fun a =>
         @measurable_vadd_const (Multiplicative G) α (inferInstanceAs (VAdd G α)) _ _
           (inferInstanceAs (MeasurableVAdd G α)) a }
-  exact @smul_ae_eq_self_of_mem_zpowers (Multiplicative G) α _ _ _ _ _ _ _ _ _ _ hs hy
+  exact smul_ae_eq_self_of_mem_zpowers (G := Multiplicative G) hs hy
 #align measure_theory.vadd_ae_eq_self_of_mem_zmultiples MeasureTheory.vadd_ae_eq_self_of_mem_zmultiples
 
 attribute [to_additive existing vadd_ae_eq_self_of_mem_zmultiples] smul_ae_eq_self_of_mem_zpowers

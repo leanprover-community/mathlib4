@@ -954,7 +954,7 @@ theorem coe_max (r p : ℝ≥0) : ((max r p : ℝ≥0) : ℝ≥0∞) = max (r : 
 
 theorem le_of_top_imp_top_of_toNNReal_le {a b : ℝ≥0∞} (h : a = ⊤ → b = ⊤)
     (h_nnreal : a ≠ ⊤ → b ≠ ⊤ → a.toNNReal ≤ b.toNNReal) : a ≤ b := by
-  by_contra' hlt
+  by_contra! hlt
   lift b to ℝ≥0 using hlt.ne_top
   lift a to ℝ≥0 using mt h coe_ne_top
   refine hlt.not_le ?_
@@ -2362,7 +2362,7 @@ theorem toNNReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toNNReal = a.toNNReal 
 @[simp]
 theorem toNNReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
     (∏ i in s, f i).toNNReal = ∏ i in s, (f i).toNNReal :=
-  toNNRealHom.map_prod _ _
+  map_prod toNNRealHom _ _
 #align ennreal.to_nnreal_prod ENNReal.toNNReal_prod
 
 -- porting note: todo: upgrade to `→*₀`
@@ -2386,7 +2386,7 @@ theorem toReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toReal = a.toReal ^ n :=
 @[simp]
 theorem toReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
     (∏ i in s, f i).toReal = ∏ i in s, (f i).toReal :=
-  toRealHom.map_prod _ _
+  map_prod toRealHom _ _
 #align ennreal.to_real_prod ENNReal.toReal_prod
 
 theorem toReal_ofReal_mul (c : ℝ) (a : ℝ≥0∞) (h : 0 ≤ c) :

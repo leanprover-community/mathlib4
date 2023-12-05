@@ -3,6 +3,7 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
+import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.NumberTheory.Padics.PadicNorm
 import Mathlib.Analysis.Normed.Field.Basic
 
@@ -601,7 +602,7 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
     ∃ N, ∀ i ≥ N, padicNormE (Padic.mk f - f i : ℚ_[p]) < ε := by
   dsimp [padicNormE]
   change ∃ N, ∀ i ≥ N, (f - const _ (f i)).norm < ε
-  by_contra' h
+  by_contra! h
   cases' cauchy₂ f hε with N hN
   rcases h N with ⟨i, hi, hge⟩
   have hne : ¬f - const (padicNorm p) (f i) ≈ 0 := fun h ↦ by

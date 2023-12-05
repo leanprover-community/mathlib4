@@ -307,7 +307,7 @@ theorem one_lt_encard_iff : 1 < s.encard ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a 
   rw [← not_iff_not, not_exists, not_lt, encard_le_one_iff]; aesop
 
 theorem exists_ne_of_one_lt_encard (h : 1 < s.encard) (a : α) : ∃ b ∈ s, b ≠ a := by
-  by_contra' h'
+  by_contra! h'
   obtain ⟨b, b', hb, hb', hne⟩ := one_lt_encard_iff.1 h
   apply hne
   rw [h' b hb, h' b' hb']
