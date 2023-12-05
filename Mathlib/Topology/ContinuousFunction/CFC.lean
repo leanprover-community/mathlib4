@@ -7,7 +7,7 @@ import Mathlib.Analysis.NormedSpace.Star.Spectrum
 import Mathlib.Topology.ContinuousFunction.Polynomial
 import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
 import Mathlib.Topology.TietzeExtension
-import Mathlib.Topology.MetricSpace.EMetricParacompact
+import Mathlib.Topology.Compactness.Paracompact
 
 /-! # Continuous Functional Calculus
 
@@ -90,30 +90,30 @@ def ContinuousMap.complexIm : C(ℂ, ℝ) :=
   ContinuousMap.mk Complex.im Complex.continuous_im
 #align continuous_map.complex_im ContinuousMap.complexIm
 
-instance ContinuousMap.trivialStar {X R : Type _} [TopologicalSpace X] [TopologicalSpace R] [Star R]
+instance ContinuousMap.trivialStar {X R : Type*} [TopologicalSpace X] [TopologicalSpace R] [Star R]
     [ContinuousStar R] [TrivialStar R] : TrivialStar C(X, R) where
   star_trivial _ := ContinuousMap.ext fun _ => star_trivial _
 #align continuous_map.has_trivial_star ContinuousMap.trivialStar
 
-instance {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] [Add Y] [ContinuousAdd Y]
+instance {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [Add Y] [ContinuousAdd Y]
     [PartialOrder Y] [CovariantClass Y Y (· + ·) (· ≤ ·)] :
     CovariantClass C(X, Y) C(X, Y) (· + ·) (· ≤ ·) where
   elim _ _ _ h' x := add_le_add_left (h' x) _
 
-instance IsScalarTower.complexToReal {M E : Type _} [AddCommGroup M] [Module ℂ M] [AddCommGroup E]
+instance IsScalarTower.complexToReal {M E : Type*} [AddCommGroup M] [Module ℂ M] [AddCommGroup E]
     [Module ℂ E] [SMul M E] [IsScalarTower ℂ M E] : IsScalarTower ℝ M E
     where smul_assoc x _ _ := (smul_assoc (x : ℂ) _ _ : _)
 #align is_scalar_tower.complex_to_real IsScalarTower.complexToReal
 
 -- this is not so crazy, we already have the `•` in `Module.complexToReal`
-noncomputable instance Algebra.complexToReal {A : Type _} [Ring A] [Algebra ℂ A] : Algebra ℝ A :=
-  instAlgebraRestrictScalarsInstSemiringRestrictScalars ℝ ℂ A
+noncomputable instance Algebra.complexToReal {A : Type*} [Ring A] [Algebra ℂ A] : Algebra ℝ A :=
+  RestrictScalars.algebra ℝ ℂ A
 #align algebra.complex_to_real Algebra.complexToReal
 
 /-- Post-composition with a continuous star algebra homomorphism is a star algebra homomorphism
 between space of continuous maps. -/
 @[simps]
-def ContinuousMap.compStarAlgHom (X : Type _) {R B C : Type _} [TopologicalSpace X] [CommSemiring R]
+def ContinuousMap.compStarAlgHom (X : Type*) {R B C : Type*} [TopologicalSpace X] [CommSemiring R]
     [Semiring B] [Algebra R B] [Star B] [TopologicalSpace B] [TopologicalSemiring B]
     [ContinuousStar B] [Semiring C] [Algebra R C] [Star C] [TopologicalSpace C]
     [TopologicalSemiring C] [ContinuousStar C] (φ : B →⋆ₐ[R] C) (hφ : Continuous φ) :
@@ -143,7 +143,7 @@ instance : ContinuousStar ℝ≥0 where
 instance : StarModule ℝ≥0 ℝ where
   star_smul := by simp only [star_trivial, eq_self_iff_true, forall_const]
 
-theorem Polynomial.X_toContinuousMap (R : Type _) [Semiring R] [TopologicalSpace R]
+theorem Polynomial.X_toContinuousMap (R : Type*) [Semiring R] [TopologicalSpace R]
     [TopologicalSemiring R] : (X : R[X]).toContinuousMap = ContinuousMap.id R := by
   ext
   simp only [toContinuousMap_apply, eval_X, ContinuousMap.id_apply]
@@ -151,16 +151,16 @@ set_option linter.uppercaseLean3 false in
 #align X_to_continuous_map Polynomial.X_toContinuousMap
 
 -- these aliases should exist but don't
-alias spectrum.zero_mem_iff ↔ spectrum.not_isUnit_of_zero_mem spectrum.zero_mem
-alias spectrum.zero_not_mem_iff ↔ spectrum.isUnit_of_zero_not_mem spectrum.zero_not_mem
+alias ⟨spectrum.not_isUnit_of_zero_mem, spectrum.zero_mem⟩ := spectrum.zero_mem_iff
+alias ⟨spectrum.isUnit_of_zero_not_mem, spectrum.zero_not_mem⟩ := spectrum.zero_not_mem_iff
 
-lemma spectrum.subset_singleton_zero_compl (R : Type _) {A : Type _} [CommSemiring R] [Ring A]
+lemma spectrum.subset_singleton_zero_compl (R : Type*) {A : Type*} [CommSemiring R] [Ring A]
     [Algebra R A] {a : A} (ha : IsUnit a) : spectrum R a ⊆ {0}ᶜ :=
   Set.subset_compl_singleton_iff.mpr <| spectrum.zero_not_mem R ha
 
 /-- `x ↦ x⁻¹` bundled as a continuous map whose domain is a set not containing zero. -/
 @[simps]
-def ContinuousMap.inv₀On {G : Type _} [Zero G] [Inv G] [TopologicalSpace G] [HasContinuousInv₀ G]
+def ContinuousMap.inv₀On {G : Type*} [Zero G] [Inv G] [TopologicalSpace G] [HasContinuousInv₀ G]
     {s : Set G} (hs : 0 ∉ s) : C(s, G) :=
   ⟨(·⁻¹), (continuousOn_inv₀.mono <| Set.subset_compl_singleton_iff.mpr hs).restrict⟩
 
@@ -174,7 +174,7 @@ end prereqs
 In general, one should create instances of `CFCClass` instead as that is in general the more
 useful class. -/
 @[ext (flat := false)]
-class CFCCoreClass (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [TopologicalSpace R]
+class CFCCoreClass (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [TopologicalSpace R]
     [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
     [Algebra R A] (a : A) extends C(spectrum R a, R) →⋆ₐ[R] A where
   /-- A continuous functional calculus is a continuous map. -/
@@ -189,7 +189,7 @@ class CFCCoreClass (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [Topo
 continuous and extends the polynomial functional calculus. More precisely, this latter statement
 is encapsulated in -/
 @[ext (flat := false)]
-class CFCClass (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [TopologicalSpace R]
+class CFCClass (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [TopologicalSpace R]
     [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
     [Algebra R A] (a : A) extends C(spectrum R a, R) →⋆ₐ[R] A where
   /-- A continuous functional calculus is a closed embedding. -/
@@ -201,7 +201,7 @@ class CFCClass (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [Topologi
 #align cfc_class CFCClass
 
 -- see note [lower instance priority]
-instance (priority := 100) CFCClass.toCFCCoreClass {R A : Type _} [CommSemiring R] [StarRing R]
+instance (priority := 100) CFCClass.toCFCCoreClass {R A : Type*} [CommSemiring R] [StarRing R]
     [TopologicalSpace R] [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [TopologicalSpace A] [Algebra R A] (a : A) [CFCClass R a] : CFCCoreClass R a :=
   { (‹_› : CFCClass R a) with
@@ -209,9 +209,9 @@ instance (priority := 100) CFCClass.toCFCCoreClass {R A : Type _} [CommSemiring 
 #align cfc_class.to_cfc_core_class CFCClass.toCFCCoreClass
 
 -- see note [lower instance priority]
-instance (priority := 100) CFCClass.subsingleton {R A : Type _} [CommSemiring R] [StarRing R]
+instance (priority := 100) CFCClass.subsingleton {R A : Type*} [CommSemiring R] [StarRing R]
     [TopologicalSpace R] [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
-    [TopologicalSpace A] [Algebra R A] (a : A) [CFCClass R a] [Subsingleton (CFCCoreClass R a)] :
+    [TopologicalSpace A] [Algebra R A] (a : A) [Subsingleton (CFCCoreClass R a)] :
     Subsingleton (CFCClass R a) :=
   have : Function.Injective (@CFCClass.toCFCCoreClass R _ _ _ _ _ _ _ _ _ _ a ·) :=
     fun _ _ h => CFCClass.ext _ _ <| (CFCCoreClass.ext_iff _ _).mp h
@@ -219,7 +219,7 @@ instance (priority := 100) CFCClass.subsingleton {R A : Type _} [CommSemiring R]
 
 section generic
 
-variable (R : Type _) {A : Type _} [CommSemiring R]
+variable (R : Type*) {A : Type*} [CommSemiring R]
     [StarRing R] [TopologicalSpace R] [TopologicalSemiring R] [ContinuousStar R] [Ring A]
     [StarRing A] [TopologicalSpace A] [Algebra R A] (a : A)
 
@@ -490,7 +490,7 @@ lemma cfc₂_star_comm [CFCCoreClass R (star a)] [Subsingleton (CFCCoreClass R (
     (f : C(R, R)) : cfc₂ R a (f.comp (star (ContinuousMap.id R))) = cfc₂ R (star a) f :=
   cfc₁_star_comm a f
 
-lemma cfc₁_neg_comm {R A : Type _} [CommRing R] [StarRing R] [TopologicalSpace R]
+lemma cfc₁_neg_comm {R A : Type*} [CommRing R] [StarRing R] [TopologicalSpace R]
     [TopologicalRing R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A]
     (a : A) [CFCClass R a] [h : CFCCoreClass R (-a)]
     [h' : Subsingleton (CFCCoreClass R (-a))] (f : C(R, R)) :
@@ -503,7 +503,7 @@ lemma cfc₁_neg_comm {R A : Type _} [CommRing R] [StarRing R] [TopologicalSpace
   convert cfc₁₂_comp a (-(ContinuousMap.id R).restrict (spectrum R a)) f
   exact key.symm
 
-lemma cfc₂_neg_comm {R A : Type _} [CommRing R] [StarRing R] [TopologicalSpace R]
+lemma cfc₂_neg_comm {R A : Type*} [CommRing R] [StarRing R] [TopologicalSpace R]
     [TopologicalRing R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A]
     (a : A) [CFCClass R a] [CFCCoreClass R (-a)] [Subsingleton (CFCCoreClass R (-a))]
     (f : C(R, R)) : cfc₂ R a (f.comp (-ContinuousMap.id R)) = cfc₂ R (-a) f :=
@@ -511,7 +511,7 @@ lemma cfc₂_neg_comm {R A : Type _} [CommRing R] [StarRing R] [TopologicalSpace
 
 section Field
 
-variable {F A : Type _} [Field F] [StarRing F] [TopologicalSpace F]
+variable {F A : Type*} [Field F] [StarRing F] [TopologicalSpace F]
     [TopologicalRing F] [ContinuousStar F] [Ring A] [StarRing A] [TopologicalSpace A] [Algebra F A]
     (a : A) [CFCClass F a] [h : CFCClass F (1 : A)] [h' : Subsingleton (CFCCoreClass F (1 : A))]
 
@@ -541,8 +541,6 @@ lemma cfc₂_algebraMap_comm (f : C(F, F)) (x : F) :
   cfc₁_algebraMap_comm a f x
 
 variable [HasContinuousInv₀ F]
-
-#check continuousOn_inv₀
 
 lemma cfc₁_inv₀On (ha : IsUnit a) :
     cfc₁ F a (ContinuousMap.inv₀On <| spectrum.zero_not_mem F ha) = Ring.inverse a := by
@@ -583,8 +581,6 @@ lemma cfc₁_inv_comm (a : Aˣ) [CFCClass F (a : A)] [h : CFCClass F (↑a⁻¹ 
   convert cfc₁₂_comp (a : A) (ContinuousMap.inv₀On <| spectrum.zero_not_mem F a.isUnit) f
   exact key.symm
 
-#exit
-
 end Field
 
 end CFC
@@ -595,7 +591,7 @@ section IsROrC
 
 section Core
 
-variable {𝕜 A : Type _} [IsROrC 𝕜] [Ring A] [StarRing A] [Algebra 𝕜 A] [TopologicalSpace A]
+variable {𝕜 A : Type*} [IsROrC 𝕜] [Ring A] [StarRing A] [Algebra 𝕜 A] [TopologicalSpace A]
     [StarModule 𝕜 A]
 
 /-- A continuous functional calculus (over either `ℝ` or `ℂ`) for an element with compact
@@ -649,7 +645,7 @@ end Core
 
 section Normed
 
-variable (𝕜 : Type _) {A : Type _} [IsROrC 𝕜] [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A]
+variable (𝕜 : Type*) {A : Type*} [IsROrC 𝕜] [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A]
     [StarModule 𝕜 A] [NormedStarGroup A] (a : A) [CompactSpace (spectrum 𝕜 a)] [CFCClass 𝕜 a]
 
 /-- For an isometric continuous functional calculus for `a` over `is_R_or_C 𝕜`, the range is
@@ -723,17 +719,17 @@ over the ring `R`.
 -/
 
 
-theorem spectrum.algebraMap_mem_iff (R S : Type _) {A : Type _} [CommSemiring R] [CommSemiring S]
+theorem spectrum.algebraMap_mem_iff (R S : Type*) {A : Type*} [CommSemiring R] [CommSemiring S]
     [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] {a : A} {r : R} :
     algebraMap R S r ∈ spectrum S a ↔ r ∈ spectrum R a := by
   simp only [spectrum.mem_iff, Algebra.algebraMap_eq_smul_one, smul_assoc, one_smul]
 #align spectrum.algebra_map_mem_iff spectrum.algebraMap_mem_iff
 
-alias spectrum.algebraMap_mem_iff ↔ spectrum.of_algebraMap_mem spectrum.algebraMap_mem
+alias ⟨spectrum.of_algebraMap_mem, spectrum.algebraMap_mem⟩ := spectrum.algebraMap_mem_iff
 #align spectrum.of_algebra_map_mem spectrum.of_algebraMap_mem
 #align spectrum.algebra_map_mem spectrum.algebraMap_mem
 
-theorem spectrum.preimage_algebraMap {R S A : Type _} [CommSemiring R] [CommSemiring S] [Ring A]
+theorem spectrum.preimage_algebraMap {R S A : Type*} [CommSemiring R] [CommSemiring S] [Ring A]
     [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] {a : A} :
     algebraMap R S ⁻¹' spectrum S a = spectrum R a :=
   Set.ext fun _ => spectrum.algebraMap_mem_iff _ _
@@ -745,7 +741,7 @@ the spectrum of `a` restricts via a function `f : S → R` if `f` is a left inve
 
 This is the predicate which allows us to restrict a continuous functional calculus on over `S` to a
 continuous functional calculus over `R`. -/
-class SpectrumRestricts {R : Type _} {S : semiOutParam (Type _)} {A : Type _} [CommSemiring R]
+class SpectrumRestricts {R : Type*} {S : semiOutParam (Type*)} {A : Type*} [CommSemiring R]
     [CommSemiring S] [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] (a : A) (f : S → R) :
     Prop where
   /-- `f` is a right inverse of `algebraMap R S` when restricted to `spectrum S a`. -/
@@ -754,7 +750,7 @@ class SpectrumRestricts {R : Type _} {S : semiOutParam (Type _)} {A : Type _} [C
   left_inv : Function.LeftInverse f (algebraMap R S)
 #align spectrum_restricts SpectrumRestricts
 
-variable {R S A : Type _} [CommSemiring R] [CommSemiring S] [Ring A]
+variable {R S A : Type*} [CommSemiring R] [CommSemiring S] [Ring A]
     [Algebra R S] [Algebra R A] [Algebra S A]
 
 -- not an instance because reasons.
@@ -799,7 +795,7 @@ theorem SpectrumRestricts.subset_preimage : spectrum S a ⊆ f ⁻¹' spectrum R
 #align spectrum_restricts.subset_preimage SpectrumRestricts.subset_preimage
 
 -- TODO: Move or stash me
-theorem IsSelfAdjoint.spectrumRestricts {A : Type _} [NormedRing A] [NormedAlgebra ℂ A]
+theorem IsSelfAdjoint.spectrumRestricts {A : Type*} [NormedRing A] [NormedAlgebra ℂ A]
     [CompleteSpace A] [StarRing A] [CstarRing A] [StarModule ℂ A] {a : A} (ha : IsSelfAdjoint a) :
     SpectrumRestricts a ContinuousMap.complexRe where
   rightInvOn := fun _x hx => (ha.mem_spectrum_eq_re hx).symm
@@ -809,8 +805,8 @@ theorem IsSelfAdjoint.spectrumRestricts {A : Type _} [NormedRing A] [NormedAlgeb
 -- TODO: Move me to `Algebra.Star.StarAlgHom`
 /-- `algebraMap R A` as a `StarAlgHom` when `A` is a star algebra over `R`. -/
 @[simps]
-def StarAlgHom.ofId (R : Type _) (A : Type _) [CommSemiring R] [StarRing R] [Semiring A]
-    [Algebra R A] [StarSemigroup A] [StarModule R A] : R →⋆ₐ[R] A :=
+def StarAlgHom.ofId (R : Type*) (A : Type*) [CommSemiring R] [StarRing R] [Semiring A]
+    [Algebra R A] [StarMul A] [StarModule R A] : R →⋆ₐ[R] A :=
   { Algebra.ofId R A with
     toFun := algebraMap R A
     map_star' := algebraMap_star_comm }
@@ -856,8 +852,6 @@ def SpectrumRestricts.starAlgHom {R : Type u} {S : Type v} {A : Type w} [CommSem
         ⟨Subtype.map f h.subset_preimage,
           (map_continuous f).subtype_map fun x (hx : x ∈ spectrum S a) => h.subset_preimage hx⟩)
 #align spectrum_restricts.star_alg_hom SpectrumRestricts.starAlgHom
-
-#lint
 
 /-- If the spectrum of an element restricts to a smaller scalar ring, then a continuous functional
 calculus over the larger scalar ring descends to the smaller one. -/
@@ -966,19 +960,19 @@ end Universal
 
 section ComplexToReal
 
-noncomputable instance CfcCore.complexToReal {A : Type _} [Ring A] [StarRing A] [TopologicalSpace A]
+noncomputable instance CfcCore.complexToReal {A : Type*} [Ring A] [StarRing A] [TopologicalSpace A]
     [Algebra ℂ A] {a : A} [CFCCoreClass ℂ a] [h : SpectrumRestricts a ContinuousMap.complexRe] :
     CFCCoreClass ℝ a :=
   h.cfcCore _
 #align cfc_core.complex_to_real CfcCore.complexToReal
 
-noncomputable instance Cfc.complexToReal {A : Type _} [Ring A] [StarRing A] [MetricSpace A]
+noncomputable instance Cfc.complexToReal {A : Type*} [Ring A] [StarRing A] [MetricSpace A]
     [Algebra ℂ A] {a : A} [CompactSpace (spectrum ℂ a)] [CFCClass ℂ a]
     [h : SpectrumRestricts a ContinuousMap.complexRe] : CFCClass ℝ a :=
   h.cfc _ (algebraMap_isometry ℝ ℂ)
 #align cfc.complex_to_real Cfc.complexToReal
 
-instance CfcSpectrumRestricts.complexToReal {A : Type _} [Ring A] [StarRing A] [TopologicalSpace A]
+instance CfcSpectrumRestricts.complexToReal {A : Type*} [Ring A] [StarRing A] [TopologicalSpace A]
     [Algebra ℂ A] {a : A} [CFCClass ℂ a] [CompactSpace (spectrum ℂ a)]
     [h : SpectrumRestricts a ContinuousMap.complexRe] (g : C(spectrum ℝ a, ℝ)) :
     SpectrumRestricts (@cfc₁ _ _ _ _ _ _ _ _ _ _ _ _ (h.cfcCore ContinuousMap.complexRe) g)
@@ -986,7 +980,7 @@ instance CfcSpectrumRestricts.complexToReal {A : Type _} [Ring A] [StarRing A] [
   h.cfc_spectrumRestricts _ g
 #align cfc_spectrum_restricts.complex_to_real CfcSpectrumRestricts.complexToReal
 
-instance CfcSpectrumRestricts.complexToReal' {A : Type _} [Ring A] [StarRing A]
+instance CfcSpectrumRestricts.complexToReal' {A : Type*} [Ring A] [StarRing A]
     [TopologicalSpace A] [Algebra ℂ A] {a : A} [CFCClass ℂ a] [CompactSpace (spectrum ℂ a)]
     [h : SpectrumRestricts a ContinuousMap.complexRe] (g : C(ℝ, ℝ)) :
     SpectrumRestricts (@cfc₂ _ _ _ _ _ _ _ _ _ _ _ _ (h.cfcCore ContinuousMap.complexRe) g)
@@ -1008,19 +1002,19 @@ noncomputable def ContinuousMap.toNNReal : C(ℝ, ℝ≥0) :=
       (continuous_id'.max continuous_const)⟩
 #align continuous_map.to_nnreal ContinuousMap.toNNReal
 
-noncomputable instance CfcCore.realToNNReal {A : Type _} [Ring A] [StarRing A] [TopologicalSpace A]
+noncomputable instance CfcCore.realToNNReal {A : Type*} [Ring A] [StarRing A] [TopologicalSpace A]
     [Algebra ℝ A] {a : A} [CFCCoreClass ℝ a]
     [h : SpectrumRestricts a ContinuousMap.toNNReal] : CFCCoreClass ℝ≥0 a :=
   h.cfcCore _
 #align cfc_core.real_to_nnreal CfcCore.realToNNReal
 
-noncomputable instance Cfc.realToNNReal {A : Type _} [Ring A] [StarRing A] [TopologicalSpace A]
+noncomputable instance Cfc.realToNNReal {A : Type*} [Ring A] [StarRing A] [TopologicalSpace A]
     [Algebra ℝ A] {a : A} [CompactSpace (spectrum ℝ a)] [CFCClass ℝ a]
     [h : SpectrumRestricts a ContinuousMap.toNNReal] : CFCClass ℝ≥0 a :=
   h.cfc _ isometry_subtype_coe
 #align cfc.real_to_nnreal Cfc.realToNNReal
 
-instance CfcSpectrumRestricts.realToNNReal {A : Type _} [Ring A] [StarRing A] [TopologicalSpace A]
+instance CfcSpectrumRestricts.realToNNReal {A : Type*} [Ring A] [StarRing A] [TopologicalSpace A]
     [Algebra ℝ A] {a : A} [CFCClass ℝ a] [CompactSpace (spectrum ℝ a)]
     [h : SpectrumRestricts a ContinuousMap.toNNReal] (g : C(spectrum ℝ≥0 a, ℝ≥0)) :
     SpectrumRestricts (@cfc₁ _ _ _ _ _ _ _ _ _ _ _ _ (h.cfcCore ContinuousMap.toNNReal) g)
@@ -1028,7 +1022,7 @@ instance CfcSpectrumRestricts.realToNNReal {A : Type _} [Ring A] [StarRing A] [T
   h.cfc_spectrumRestricts _ g
 #align cfc_spectrum_restricts.real_to_nnreal CfcSpectrumRestricts.realToNNReal
 
-instance CfcSpectrumRestricts.realToNNReal' {A : Type _} [Ring A] [StarRing A]
+instance CfcSpectrumRestricts.realToNNReal' {A : Type*} [Ring A] [StarRing A]
     [TopologicalSpace A] [Algebra ℝ A] {a : A} [CFCClass ℝ a] [CompactSpace (spectrum ℝ a)]
     [h : SpectrumRestricts a ContinuousMap.toNNReal] (g : C(ℝ≥0, ℝ≥0)) :
     SpectrumRestricts (@cfc₂ _ _ _ _ _ _ _ _ _ _ _ _ (h.cfcCore ContinuousMap.toNNReal) g)
@@ -1048,13 +1042,13 @@ instance self_adjoint.spectrum_restricts {A : Type*} [ring A] [star_ring A] [top
   [algebra ℂ A] {a : self_adjoint A} : spectrum_restricts (a : A) continuous_map.complex_re :=
 sorry
 -/
-theorem cfc₂_real_isSelfAdjoint {A : Type _} [Ring A] [StarRing A] [TopologicalSpace A]
+theorem cfc₂_real_isSelfAdjoint {A : Type*} [Ring A] [StarRing A] [TopologicalSpace A]
     [Algebra ℝ A] (a : A) [CFCClass ℝ a] (f : C(ℝ, ℝ)) : IsSelfAdjoint (cfc₂ ℝ a f) :=
   show star _ = _ by rw [← map_star, star_trivial]
 #align cfc₂_real_is_self_adjoint cfc₂_real_isSelfAdjoint
 
 -- composition still works as long as we have propositinal equality of the intermediate elements.
-theorem selfAdjoint.cfc₂_comp {A : Type _} [Ring A] [StarRing A] [TopologicalSpace A] [Algebra ℝ A]
+theorem selfAdjoint.cfc₂_comp {A : Type*} [Ring A] [StarRing A] [TopologicalSpace A] [Algebra ℝ A]
     (a b : selfAdjoint A) (f g : C(ℝ, ℝ)) [CFCClass ℝ (a : A)]
     [Subsingleton (CFCCoreClass ℝ (cfc₂ ℝ (a : A) f))]
     -- alternatively: [compact_space (spectrum ℝ (cfc₂ (a : A) f))] [t2_space A]
@@ -1067,7 +1061,7 @@ theorem selfAdjoint.cfc₂_comp {A : Type _} [Ring A] [StarRing A] [TopologicalS
   simp only [cast_heq]
 #align self_adjoint.cfc₂_comp selfAdjoint.cfc₂_comp
 
-theorem selfAdjoint.cfc₂_comp_coe_mk {A : Type _} [Ring A] [StarRing A] [TopologicalSpace A]
+theorem selfAdjoint.cfc₂_comp_coe_mk {A : Type*} [Ring A] [StarRing A] [TopologicalSpace A]
     [Algebra ℝ A] (a : selfAdjoint A) (f g : C(ℝ, ℝ)) [∀ b : selfAdjoint A, CFCClass ℝ (b : A)]
     [Subsingleton (CFCCoreClass ℝ (cfc₂ ℝ (a : A) f))]
     -- alternatively: [compact_space (spectrum ℝ (cfc₂ (a : A) f))] [t2_space A]
@@ -1080,7 +1074,7 @@ theorem selfAdjoint.cfc₂_comp_coe_mk {A : Type _} [Ring A] [StarRing A] [Topol
 `selfAdjoint A`. The multiplicative properties are lost in this bundling because `selfAdjoint A`
 in general does not have a multiplicative structure. -/
 @[simps]
-def cfcℝ {A : Type _} [Ring A] [StarRing A] [TopologicalSpace A] [Algebra ℝ A] [StarModule ℝ A]
+def cfcℝ {A : Type*} [Ring A] [StarRing A] [TopologicalSpace A] [Algebra ℝ A] [StarModule ℝ A]
     (a : selfAdjoint A) [CFCClass ℝ (a : A)] : C(ℝ, ℝ) →L[ℝ] selfAdjoint A where
   toFun f := ⟨cfc₂ ℝ (a : A) f, cfc₂_real_isSelfAdjoint (a : A) f⟩
   map_add' f g := Subtype.ext <| by
@@ -1090,7 +1084,7 @@ def cfcℝ {A : Type _} [Ring A] [StarRing A] [TopologicalSpace A] [Algebra ℝ 
   cont := continuous_induced_rng.mpr (cfc₂_continuous ℝ (a : A))
 #align cfcℝ cfcℝ
 
-theorem cfcℝ_comp {A : Type _} [Ring A] [StarRing A] [TopologicalSpace A] [Algebra ℝ A]
+theorem cfcℝ_comp {A : Type*} [Ring A] [StarRing A] [TopologicalSpace A] [Algebra ℝ A]
     [StarModule ℝ A] (a : selfAdjoint A) (f g : C(ℝ, ℝ)) [∀ b : selfAdjoint A, CFCClass ℝ (b : A)]
     [h : ∀ b : selfAdjoint A, Subsingleton (CFCCoreClass ℝ (b : A))] :
     cfcℝ a (g.comp f) = cfcℝ (cfcℝ a f) g := by
@@ -1103,7 +1097,7 @@ theorem cfcℝ_comp {A : Type _} [Ring A] [StarRing A] [TopologicalSpace A] [Alg
 
 section Selfadjoint
 
-variable {A : Type _} [Ring A] [StarRing A] [TopologicalSpace A] [Algebra ℝ A] [StarModule ℝ A]
+variable {A : Type*} [Ring A] [StarRing A] [TopologicalSpace A] [Algebra ℝ A] [StarModule ℝ A]
   [∀ b : selfAdjoint A, CFCClass ℝ (b : A)]
   [∀ b : selfAdjoint A, Subsingleton (CFCCoreClass ℝ (b : A))]
 
