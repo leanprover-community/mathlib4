@@ -63,8 +63,8 @@ instance instOfNat [NatCast R] [Nat.AtLeastTwo n] : OfNat R n where
 
 library_note "no_index around OfNat.ofNat"
 /--
-When writing lemmas about `OfNat.ofNat` that assume `Nat.AtLeastTwo`, the term need to be wrapped in
-`no_index` so as not to confuse `simp`, as `no_index (OfNat.ofNat n)`.
+When writing lemmas about `OfNat.ofNat` that assume `Nat.AtLeastTwo`, the term needs to be wrapped
+in `no_index` so as not to confuse `simp`, as `no_index (OfNat.ofNat n)`.
 
 Some discussion is [on Zulip here](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20Polynomial.2Ecoeff.20example/near/395438147).
 -/
