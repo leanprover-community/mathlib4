@@ -70,13 +70,20 @@ attribute [nolint docBlame] NonUnitalAlgHom.toMulHom
 
 /-- `NonUnitalAlgSemiHomClass F φ A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B` which are equivariant with respect to `φ`.  -/
-class NonUnitalAlgHomClass (F : Type*) {R S : outParam (Type*)} (φ : outParam (R → S))
+class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam (Type*)} (φ : outParam (R → S))
     [Monoid R] [Monoid S]
     (A : outParam (Type*)) (B : outParam (Type*))
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
     [DistribMulAction R A] [DistribMulAction S B]
     extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B
-#align non_unital_alg_hom_class NonUnitalAlgHomClass
+#align non_unital_alg_hom_class NonUnitalAlgSemiHomClass
+
+abbrev NonUnitalAlgHomClass (F : Type*) (R : outParam (Type*))
+    [Monoid R]
+    (A : outParam (Type*)) (B : outParam (Type*))
+    [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
+    [DistribMulAction R A] [DistribMulAction R B] :=
+  NonUnitalAlgSemiHomClass F (@id R)
 
 -- Porting note: commented out, not dangerous
 -- attribute [nolint dangerousInstance] NonUnitalAlgHomClass.toMulHomClass
@@ -89,8 +96,8 @@ instance (priority := 100) toNonUnitalRingHomClass
   {F R S : Type*} {φ : outParam (R → S)} {A B : Type*}
     [Monoid R] [Monoid S] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
-    [NonUnitalAlgHomClass F φ A B] : NonUnitalRingHomClass F A B :=
-  { ‹NonUnitalAlgHomClass F φ A B› with coe := (⇑) }
+    [NonUnitalAlgSemiHomClass F φ A B] : NonUnitalRingHomClass F A B :=
+  { ‹NonUnitalAlgSemiHomClass F φ A B› with coe := (⇑) }
 #align non_unital_alg_hom_class.non_unital_alg_hom_class.to_non_unital_ring_hom_class NonUnitalAlgHomClass.toNonUnitalRingHomClass
 
 variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
@@ -98,13 +105,13 @@ variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
   {φ : R →+* S}
 
 -- see Note [lower instance priority]
-instance (priority := 100) {F : Type*} [NonUnitalAlgHomClass F φ A B] :
+instance (priority := 100) {F : Type*} [NonUnitalAlgSemiHomClass F φ A B] :
     SemilinearMapClass F φ A B :=
-  { ‹NonUnitalAlgHomClass F φ A B› with map_smulₛₗ := map_smulₛₗ }
+  { ‹NonUnitalAlgSemiHomClass F φ A B› with map_smulₛₗ := map_smulₛₗ }
 
 instance {F R S : Type*} {φ : R → S} {A B : Type*} [Monoid R] [Monoid S]
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-    [NonUnitalNonAssocSemiring B] [DistribMulAction S B] [NonUnitalAlgHomClass F φ A B] :
+    [NonUnitalNonAssocSemiring B] [DistribMulAction S B] [NonUnitalAlgSemiHomClass F φ A B] :
     CoeTC F (A →ₛₙₐ[φ] B)
     where coe f :=
     { (f : A →ₙ+* B) with
@@ -143,7 +150,7 @@ initialize_simps_projections NonUnitalAlgHom
   (toDistribMulActionSemiHom_toMulActionHom_toFun → apply, -toDistribMulActionSemiHom)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [NonUnitalAlgHomClass F φ A B] (f : F) :
+protected theorem coe_coe {F : Type*} [NonUnitalAlgSemiHomClass F φ A B] (f : F) :
     ⇑(f : A →ₛₙₐ[φ] B) = f :=
   rfl
 #align non_unital_alg_hom.coe_coe NonUnitalAlgHom.coe_coe
@@ -152,7 +159,7 @@ theorem coe_injective : @Function.Injective (A →ₛₙₐ[φ] B) (A → B) (�
   rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 #align non_unital_alg_hom.coe_injective NonUnitalAlgHom.coe_injective
 
-instance : NonUnitalAlgHomClass (A →ₛₙₐ[φ] B) φ A B
+instance : NonUnitalAlgSemiHomClass (A →ₛₙₐ[φ] B) φ A B
     where
   coe f := f.toFun
   coe_injective' := coe_injective
