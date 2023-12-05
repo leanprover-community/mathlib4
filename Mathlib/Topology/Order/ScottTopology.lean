@@ -174,7 +174,7 @@ section preorder
 
 variable [Preorder α]
 
-lemma isOpen_iff_upper_and_scottHausdorff_Open' {u : Set α} :
+lemma isOpen_iff_isUpperSet_and_scottHausdorff_open' {u : Set α} :
     IsOpen (WithScott.ofScott ⁻¹' u) ↔ IsUpperSet u ∧ scottHausdorff.IsOpen u := Iff.rfl
 
 variable [TopologicalSpace α] [IsScott α]
