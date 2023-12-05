@@ -34,7 +34,7 @@ instance : E.CollapsesAt 0 1 where
   condition := fun k hk => by
     apply E.isZero_pageInfinity_of_isFirstQuadrant
     dsimp [cohomologicalStripes]
-    by_contra'
+    by_contra!
     apply hk
     linarith
 
@@ -93,12 +93,12 @@ noncomputable def EInfinityShortComplexDegreeOne : ShortComplex C :=
     (fun k hk => by
       apply E.isZero_pageInfinity_of_isFirstQuadrant
       dsimp [cohomologicalStripes]
-      by_contra'
+      by_contra!
       linarith)
     (fun k hk => by
       apply E.isZero_pageInfinity_of_isFirstQuadrant
       dsimp [cohomologicalStripes]
-      by_contra'
+      by_contra!
       linarith)
 
 lemma EInfinityShortComplexDegreeOne_shortExact :
