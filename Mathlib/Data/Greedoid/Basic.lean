@@ -353,6 +353,21 @@ theorem basis_card_eq
     simp only [mem_sdiff] at hx₁
     exact hx₁.2 (hb₂.2.2 (hb₁.2.1 hx₁.1) hx₂)
 
+theorem mem_base_iff_feasible_and_card_eq_base
+  {b : Finset α} (hb : b ∈ G.base)
+  {a : Finset α} (ha₁ : a ∈ G) (ha₂ : a.card = b.card) :
+    a ∈ G.base := by
+  simp only [base_bases_eq, bases, subset_univ, mem_univ, system_feasible_set_mem_mem,
+    forall_true_left, true_and, not_forall, exists_prop, Finset.mem_filter, ha₁]
+  intro x hx
+  have ⟨b', hb'₁, hb'₂⟩ := exists_basis_containing_feasible_set hx (subset_univ _)
+  rw [base_bases_eq] at hb
+  rw [basis_card_eq hb hb'₁] at ha₂
+  by_contra h
+  rw [subset_iff_eq_of_card_le] at hb'₂
+  · simp only [← hb'₂, card_insert_of_not_mem h, self_eq_add_right] at ha₂
+  · simp only [← ha₂, card_insert_of_not_mem h, le_add_iff_nonneg_right, _root_.zero_le]
+
 theorem bases_empty (h : ∅ ∈ G.bases s) :
     G.bases s = {∅} := by
   ext t; constructor <;> intro h₁ <;> simp_all
