@@ -229,17 +229,11 @@ theorem LinearMap.dualMap_injective_of_surjective {f : M₁ →ₗ[R] M₂} (hf 
 #align linear_map.dual_map_injective_of_surjective LinearMap.dualMap_injective_of_surjective
 
 /-- The `Linear_equiv` version of `LinearMap.dualMap`. -/
-def LinearEquiv.dualMap (f : M₁ ≃ₗ[R] M₂) : Dual R M₂ ≃ₗ[R] Dual R M₁ :=
-  { f.toLinearMap.dualMap with
-    invFun := f.symm.toLinearMap.dualMap
-    left_inv := by
-      intro φ; ext x
-      simp only [LinearMap.dualMap_apply, LinearEquiv.coe_toLinearMap, LinearMap.toFun_eq_coe,
-        LinearEquiv.apply_symm_apply]
-    right_inv := by
-      intro φ; ext x
-      simp only [LinearMap.dualMap_apply, LinearEquiv.coe_toLinearMap, LinearMap.toFun_eq_coe,
-        LinearEquiv.symm_apply_apply] }
+def LinearEquiv.dualMap (f : M₁ ≃ₗ[R] M₂) : Dual R M₂ ≃ₗ[R] Dual R M₁ where
+  __ := f.toLinearMap.dualMap
+  invFun := f.symm.toLinearMap.dualMap
+  left_inv φ := LinearMap.ext fun x ↦ congr_arg φ (f.right_inv x)
+  right_inv φ := LinearMap.ext fun x ↦ congr_arg φ (f.left_inv x)
 #align linear_equiv.dual_map LinearEquiv.dualMap
 
 @[simp]
@@ -1604,19 +1598,25 @@ end
 
 variable {B : V₁ →ₗ[K] V₂ →ₗ[K] K}
 
-theorem flip_injective_iff₁ [FiniteDimensional K V₁] :
-    Function.Injective B.flip ↔ Function.Surjective B := by
+open Function
+
+theorem flip_injective_iff₁ [FiniteDimensional K V₁] : Injective B.flip ↔ Surjective B := by
   rw [← dualMap_surjective_iff, ← (evalEquiv K V₁).toEquiv.surjective_comp]; rfl
 
-theorem flip_surjective_iff₂ [FiniteDimensional K V₂] :
-    Function.Surjective B.flip ↔ Function.Injective B := flip_injective_iff₁.symm
-
-theorem flip_injective_iff₂ [FiniteDimensional K V₂] :
-    Function.Injective B.flip ↔ Function.Surjective B := by
+theorem flip_injective_iff₂ [FiniteDimensional K V₂] : Injective B.flip ↔ Surjective B := by
   rw [← dualMap_injective_iff]; exact (evalEquiv K V₂).toEquiv.injective_comp B.dualMap
 
-theorem flip_surjective_iff₁ [FiniteDimensional K V₁] :
-    Function.Surjective B.flip ↔ Function.Injective B := flip_injective_iff₂.symm
+theorem flip_surjective_iff₁ [FiniteDimensional K V₁] : Surjective B.flip ↔ Injective B :=
+  flip_injective_iff₂.symm
+
+theorem flip_surjective_iff₂ [FiniteDimensional K V₂] : Surjective B.flip ↔ Injective B :=
+  flip_injective_iff₁.symm
+
+theorem flip_bijective_iff₁ [FiniteDimensional K V₁] : Bijective B.flip ↔ Bijective B := by
+  simp_rw [Bijective, flip_injective_iff₁, flip_surjective_iff₁, and_comm]
+
+theorem flip_bijective_iff₂ [FiniteDimensional K V₂] : Bijective B.flip ↔ Bijective B :=
+  flip_bijective_iff₁.symm
 
 end LinearMap
 
