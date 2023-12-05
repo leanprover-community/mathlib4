@@ -34,7 +34,7 @@ namespace SignType
 
 -- Porting note: Added Fintype SignType manually
 instance : Fintype SignType :=
-   Fintype.ofMultiset (zero :: neg :: pos :: List.nil) (fun x ↦ by cases x <;> decide)
+   Fintype.ofMultiset (zero :: neg :: pos :: List.nil) (fun x ↦ by cases x <;> simp)
 
 instance : Zero SignType :=
   ⟨zero⟩
