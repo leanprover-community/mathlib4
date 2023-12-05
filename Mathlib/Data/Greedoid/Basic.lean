@@ -353,7 +353,7 @@ theorem basis_card_eq
     simp only [mem_sdiff] at hx₁
     exact hx₁.2 (hb₂.2.2 (hb₁.2.1 hx₁.1) hx₂)
 
-theorem mem_base_iff_feasible_and_card_eq_basis_of_base
+theorem mem_base_if_feasible_and_card_eq_basis_of_base
   {b : Finset α} (hb : b ∈ G.base)
   {a : Finset α} (ha₁ : a ∈ G) (ha₂ : a.card = b.card) :
     a ∈ G.base := by
@@ -367,6 +367,14 @@ theorem mem_base_iff_feasible_and_card_eq_basis_of_base
   rw [subset_iff_eq_of_card_le] at hb'₂
   · simp only [← hb'₂, card_insert_of_not_mem h, self_eq_add_right] at ha₂
   · simp only [← ha₂, card_insert_of_not_mem h, le_add_iff_nonneg_right, _root_.zero_le]
+
+theorem mem_base_iff_feasible_and_card_eq_basis_of_base
+  {b : Finset α} (hb : b ∈ G.base) {a : Finset α} :
+    a ∈ G.base ↔ (a ∈ G ∧ a.card = b.card) := by
+  constructor <;> intro h
+  · rw [base_bases_eq] at h hb
+    simp only [basis_mem_feasible h, basis_card_eq h hb, and_self]
+  · exact mem_base_if_feasible_and_card_eq_basis_of_base hb h.1 h.2
 
 theorem bases_empty (h : ∅ ∈ G.bases s) :
     G.bases s = {∅} := by
