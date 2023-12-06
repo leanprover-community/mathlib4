@@ -193,7 +193,8 @@ theorem map_ratCast [DivisionRing α] [DivisionRing β] [RingHomClass F α β] (
 #align map_rat_cast map_ratCast
 
 @[simp]
-theorem eq_ratCast {k} [DivisionRing k] [NDFunLike F ℚ k] [RingHomClass F ℚ k] (f : F) (r : ℚ) : f r = r := by
+theorem eq_ratCast {k} [DivisionRing k] [NDFunLike F ℚ k] [RingHomClass F ℚ k] (f : F) (r : ℚ) :
+    f r = r := by
   rw [← map_ratCast f, Rat.cast_id]
 #align eq_rat_cast eq_ratCast
 

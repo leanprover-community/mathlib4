@@ -166,7 +166,8 @@ structure AffineTargetMorphismProperty.IsLocal (P : AffineTargetMorphismProperty
       (∀ r : s, @P _ _ (f ∣_ Y.basicOpen r.1) ((topIsAffineOpen Y).basicOpenIsAffine _)) → P f
 #align algebraic_geometry.affine_target_morphism_property.is_local AlgebraicGeometry.AffineTargetMorphismProperty.IsLocal
 
--- HACK: This seems to be needed because `simp` can't use `ConcreteCategory.id_apply` for some reason?
+-- HACK: This seems to be needed because `simp` can't use `ConcreteCategory.id_apply`
+-- for some reason?
 @[simp] lemma CommRingCat.id_apply (R : CommRingCat) (x : R) : 𝟙 R x = x := rfl
 
 theorem targetAffineLocallyOfOpenCover {P : AffineTargetMorphismProperty} (hP : P.IsLocal)

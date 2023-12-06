@@ -217,7 +217,8 @@ def Invertible.map {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [MulOneCl
 /-- Note that the `Invertible (f r)` argument can be satisfied by using `letI := Invertible.map f r`
 before applying this lemma. -/
 theorem map_invOf {R : Type*} {S : Type*} {F : Type*} [MulOneClass R] [Monoid S]
-    [NDFunLike F R S] [MonoidHomClass F R S] (f : F) (r : R) [Invertible r] [ifr : Invertible (f r)] :
+    [NDFunLike F R S] [MonoidHomClass F R S] (f : F) (r : R)
+    [Invertible r] [ifr : Invertible (f r)] :
     f (⅟ r) = ⅟ (f r) :=
   have h : ifr = Invertible.map f r := Subsingleton.elim _ _
   by subst h; rfl

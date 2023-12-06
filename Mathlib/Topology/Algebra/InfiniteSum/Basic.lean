@@ -273,7 +273,8 @@ theorem Equiv.summable_iff_of_support {g : γ → α} (e : support f ≃ support
 #align equiv.summable_iff_of_support Equiv.summable_iff_of_support
 
 protected theorem HasSum.map [AddCommMonoid γ] [TopologicalSpace γ] (hf : HasSum f a) {G}
-    [NDFunLike G α γ] [AddMonoidHomClass G α γ] (g : G) (hg : Continuous g) : HasSum (g ∘ f) (g a) :=
+    [NDFunLike G α γ] [AddMonoidHomClass G α γ] (g : G) (hg : Continuous g) :
+    HasSum (g ∘ f) (g a) :=
   have : (g ∘ fun s : Finset β => ∑ b in s, f b) = fun s : Finset β => ∑ b in s, g (f b) :=
     funext <| map_sum g _
   show Tendsto (fun s : Finset β => ∑ b in s, g (f b)) atTop (𝓝 (g a)) from

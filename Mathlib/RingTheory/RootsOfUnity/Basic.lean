@@ -250,7 +250,8 @@ theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k :=
 
 variable {k R}
 
-theorem map_rootsOfUnity_eq_pow_self [NDFunLike F R R] [RingHomClass F R R] (σ : F) (ζ : rootsOfUnity k R) :
+theorem map_rootsOfUnity_eq_pow_self [NDFunLike F R R] [RingHomClass F R R] (σ : F)
+    (ζ : rootsOfUnity k R) :
     ∃ m : ℕ, σ (ζ : Rˣ) = ((ζ : Rˣ) : R) ^ m := by
   obtain ⟨m, hm⟩ := MonoidHom.map_cyclic (restrictRootsOfUnity σ k)
   rw [← restrictRootsOfUnity_coe_apply, hm, ← zpow_mod_orderOf, ← Int.toNat_of_nonneg

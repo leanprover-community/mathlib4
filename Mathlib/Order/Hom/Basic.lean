@@ -129,7 +129,8 @@ attribute [simp] map_le_map_iff
 /-- Turn an element of a type `F` satisfying `OrderIsoClass F α β` into an actual
 `OrderIso`. This is declared as the default coercion from `F` to `α ≃o β`. -/
 @[coe]
-def OrderIsoClass.toOrderIso [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β] (f : F) : α ≃o β :=
+def OrderIsoClass.toOrderIso [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β] (f : F) :
+    α ≃o β :=
   { EquivLike.toEquiv f with map_rel_iff' := map_le_map_iff f }
 
 /-- Any type satisfying `OrderIsoClass` can be cast into `OrderIso` via
