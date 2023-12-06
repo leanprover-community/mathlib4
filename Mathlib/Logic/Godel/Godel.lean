@@ -34,6 +34,7 @@ Gödel, Logic
 namespace List
 
 section
+universe u
 variable {α : Type u} [SemilatticeSup α] [OrderBot α]
 
 /-- These lemmas set the stage for Gödel's Beta Function Lemma, -/
@@ -43,8 +44,9 @@ def sup : List α → α
 
 @[simp] lemma sup_cons (a : α) (as : List α) : (a :: as).sup = a ⊔ as.sup := rfl
 
-lemma le_sup {a} {l : List α} : a ∈ l → a ≤ l.sup :=
-  by induction' l with a l ih <;> simp[*]; rintro (rfl | h); { simp }; { exact le_sup_of_le_right $ ih h }
+lemma le_sup {a} {l : List α} : a ∈ l → a ≤ l.sup := by
+  induction' l
+    with a l ih <;> simp[*]; rintro (rfl | h); { simp }; { exact le_sup_of_le_right $ ih h }
 
 end
 
@@ -69,14 +71,15 @@ lemma coprimes_of_nodup {l : List ℕ} (hl : l.Nodup) (H : ∀ n ∈ l, ∀ m �
     Coprimes l := by
   induction' l with n l ih
   · exact Coprimes.nil
-  · have : Coprimes l := ih (List.Nodup.of_cons hl) (fun m hm k hk => H m (by simp[hm]) k (by simp[hk]))
+  · have : Coprimes l := ih (List.Nodup.of_cons hl)
+      (fun m hm k hk => H m (by simp[hm]) k (by simp[hk]))
     exact Coprimes.cons (fun m hm => coprime_comm.mp
       (H m (by simp[hm]) n (by simp) (by rintro rfl; exact (List.nodup_cons.mp hl).1 hm))) this
 
 lemma coprimes_cons_iff_coprimes_coprime_prod {n} {l : List ℕ} :
     Coprimes (n :: l) ↔ Coprimes l ∧ Coprime n l.prod := by
   simp[coprime_list_prod_iff_right]; constructor
-  · rintro ⟨⟩ ; simpa[*]
+  · rintro ⟨⟩; simpa[*]
   · rintro ⟨hl, hn⟩; exact Coprimes.cons hn hl
 
 lemma modEq_iff_modEq_list_prod {a b} {l : List ℕ} (co : Coprimes l) :
@@ -114,7 +117,8 @@ def listSup (l : List ℕ) := max l.length l.sup + 1
 def coprimeList (l : List ℕ) : List (ℕ × ℕ) :=
   List.ofFn (fun i : Fin l.length => (l.get i, (i + 1) * (listSup l)! + 1))
 
-@[simp] lemma coprimeList_length (l : List ℕ) : (coprimeList l).length = l.length := by simp[coprimeList]
+@[simp] lemma coprimeList_length (l : List ℕ) : (coprimeList l).length = l.length :=
+    by simp[coprimeList]
 
 lemma coprimeList_lt (l : List ℕ) (i) : ((coprimeList l).get i).1 < ((coprimeList l).get i).2 := by
   have h₁ : l.get (i.cast $ by simp[coprimeList]) < listSup l :=
@@ -136,11 +140,13 @@ lemma coprime_mul_succ {n m a} (h : n ≤ m) (ha : m - n ∣ a) : Coprime (n * a
       · exact Nat.dvd_trans hp ha
       · exact hp
     have : p = 1 := by
-      simpa[Nat.add_sub_cancel_left] using Nat.dvd_sub (le_add_right _ _) hn (Dvd.dvd.mul_left this n)
+      simpa[Nat.add_sub_cancel_left]
+        using Nat.dvd_sub (le_add_right _ _) hn (Dvd.dvd.mul_left this n)
     simp[this] at pp)
 
 lemma coprimes_coprimeList (l : List ℕ) : Coprimes ((coprimeList l).map Prod.snd) := by
-  have : (coprimeList l).map Prod.snd = List.ofFn (fun i : Fin l.length => (i + 1) * (listSup l)! + 1) := by
+  have : (coprimeList l).map Prod.snd = List.ofFn
+      (fun i : Fin l.length => (i + 1) * (listSup l)! + 1) := by
     simp[coprimeList, Function.comp]
   rw[this]
   exact coprimes_of_nodup
@@ -148,7 +154,8 @@ lemma coprimes_coprimeList (l : List ℕ) : Coprimes ((coprimeList l).map Prod.s
        intro i j; simp[listSup, ←Fin.ext_iff, Nat.factorial_ne_zero])
     (by
       simp[←Fin.ext_iff, not_or]
-      suffices : ∀ i j : Fin l.length, i < j → Coprime ((i + 1) * (listSup l)! + 1) ((j + 1) * (listSup l)! + 1)
+      suffices : ∀ i j : Fin l.length, i < j → Coprime ((i + 1) * (listSup l)! + 1) ((j + 1) *
+          (listSup l)! + 1)
       · intro i j hij _
         have : i < j ∨ j < i := Ne.lt_or_lt hij; rcases this with (hij | hij)
         · exact this i j hij
@@ -162,7 +169,8 @@ lemma coprimes_coprimeList (l : List ℕ) : Coprimes ((coprimeList l).map Prod.s
 
 def beta (n i : ℕ) := n.unpair.1 % ((i + 1) * n.unpair.2 + 1)
 
-def unbeta (l : List ℕ) := (chineseRemainderList (coprimeList l) (coprimes_coprimeList l) : ℕ).pair (listSup l)!
+def unbeta (l : List ℕ) := (chineseRemainderList (coprimeList l) (coprimes_coprimeList l) : ℕ).pair
+    (listSup l)!
 
 /-- **Gödel's Beta Function Lemma** -/
 lemma beta_function_lemma (l : List ℕ) (i : Fin l.length) :
