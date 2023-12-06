@@ -492,7 +492,7 @@ theorem coeff_prod [HasPiAntidiagonal ι (σ →₀ ℕ)]
     intro d
     rw [piAntidiagonal_insert ha]
     rw [prod_insert ha, coeff_mul, sum_biUnion]
-    . apply Finset.sum_congr rfl
+    · apply Finset.sum_congr rfl
       · rintro ⟨u, v⟩ huv
         simp only [mem_antidiagonal] at huv
         simp only [sum_map, Set.InjOn.embedding_apply, Finsupp.coe_update, ne_eq,
