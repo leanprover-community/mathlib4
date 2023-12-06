@@ -109,6 +109,10 @@ make `p` come out true.  If `X` can be inferred, then `{ pat | p }` can be used.
 
 For example, `{ (m, n) : ℕ × ℕ | m * n = 12 }` denotes the set of all ordered pairs of
 natural numbers whose product is 12.
+
+Note that if the type ascription is left out and `p` can be interpreted as an extended binder,
+then the extended binder interpretation will be used.  For example, `{ n + 1 | n < 3 }` will
+be interpreted as `{ x : Nat | ∃ n < 3, n + 1 = x }` rather than `{ x | match x with | n + 1 => n < 3 }`.
 -/
 macro (name := macroPattSetBuilder) (priority := low-1) "{" pat:term " : " t:term " | " p:term "}" : term =>
   `({ x : $t | match x with | $pat => $p })
