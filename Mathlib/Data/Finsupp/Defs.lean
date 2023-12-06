@@ -219,7 +219,9 @@ theorem support_nonempty_iff {f : α →₀ M} : f.support.Nonempty ↔ f ≠ 0 
   simp only [Finsupp.support_eq_empty, Finset.nonempty_iff_ne_empty, Ne.def]
 #align finsupp.support_nonempty_iff Finsupp.support_nonempty_iff
 
-#align finsupp.nonzero_iff_exists FunLike.ne_iff
+theorem nonzero_iff_exists {f : α →₀ M} : f ≠ 0 ↔ ∃ a : α, f a ≠ 0 := by
+  simp [← Finsupp.support_eq_empty, Finset.eq_empty_iff_forall_not_mem]
+#align finsupp.nonzero_iff_exists Finsupp.nonzero_iff_exists
 
 theorem card_support_eq_zero {f : α →₀ M} : card f.support = 0 ↔ f = 0 := by simp
 #align finsupp.card_support_eq_zero Finsupp.card_support_eq_zero

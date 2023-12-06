@@ -352,6 +352,7 @@ import Mathlib.Algebra.Order.Field.InjSurj
 import Mathlib.Algebra.Order.Field.Pi
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Algebra.Order.Floor
+import Mathlib.Algebra.Order.Floor.Div
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.Bounds
 import Mathlib.Algebra.Order.Group.Defs
@@ -372,6 +373,8 @@ import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Algebra.Order.LatticeGroup
 import Mathlib.Algebra.Order.Module
+import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.Defs
@@ -1734,6 +1737,7 @@ import Mathlib.Data.Nat.Factorial.DoubleFactorial
 import Mathlib.Data.Nat.Factorial.SuperFactorial
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.PrimePow
+import Mathlib.Data.Nat.Factorization.Root
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Data.Nat.Fib.Zeckendorf
