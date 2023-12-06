@@ -3,6 +3,7 @@ Copyright (c) 2020 Pim Spelier, Daan van Gent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Spelier, Daan van Gent
 -/
+import Mathlib.Computability.Language
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Num.Lemmas
 import Mathlib.SetTheory.Cardinal.Ordinal
@@ -239,6 +240,24 @@ instance inhabitedEncoding : Inhabited (Encoding Bool) :=
   ⟨finEncodingBoolBool.toEncoding⟩
 #align computability.inhabited_encoding Computability.inhabitedEncoding
 
+def BString := List Bool
+
+/-- An encoding function of `List Bool` in `List Bool`. -/
+def encodeBString : BString → BString := id
+
+/-- A decoding function from `List Bool` to `List Bool`. -/
+def decodeBString : BString → BString := id
+
+theorem decode_encodeBString : ∀ b, id (encodeBString b) = b := fun b ↦ rfl
+
+/-- A fin_encoding of `List Bool` in `List Bool`. -/
+def finEncodingBString : FinEncoding (BString) where
+  Γ := Bool
+  encode := encodeBString
+  decode x := some (decodeBString x)
+  decode_encode x := congr_arg _ (decode_encodeBString x)
+  ΓFin := Bool.fintype
+
 theorem Encoding.card_le_card_list {α : Type u} (e : Encoding.{u, v} α) :
     Cardinal.lift.{v} #α ≤ Cardinal.lift.{u} #(List e.Γ) :=
   Cardinal.lift_mk_le'.2 ⟨⟨e.encode, e.encode_injective⟩⟩
@@ -257,5 +276,6 @@ theorem FinEncoding.card_le_aleph0 {α : Type u} (e : FinEncoding α) : #α ≤ 
   haveI : Encodable e.Γ := Fintype.toEncodable _
   e.toEncoding.card_le_aleph0
 #align computability.fin_encoding.card_le_aleph_0 Computability.FinEncoding.card_le_aleph0
+
 
 end Computability

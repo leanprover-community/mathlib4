@@ -5,8 +5,10 @@ Authors: Pim Spelier, Daan van Gent
 -/
 import Mathlib.Computability.Encoding
 import Mathlib.Computability.TuringMachine
+import Mathlib.Computability.Language
 import Mathlib.Data.Polynomial.Basic
 import Mathlib.Data.Polynomial.Eval
+import Mathlib.Data.Real.Basic
 
 #align_import computability.tm_computable from "leanprover-community/mathlib"@"6f9cb03e8a39ea345796a13c6639cb330e50869b"
 
@@ -315,20 +317,39 @@ instance inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) :=
   ⟨(default : TM2Computable finEncodingBoolBool finEncodingBoolBool id).toTM2ComputableAux⟩
 #align turing.inhabited_tm2_computable_aux Turing.inhabitedTM2ComputableAux
 
-/-- Generalize to functions computable in polynomial time -/
-def PolyTimeFunction {α β: Type} {ea : FinEncoding α} {eb : FinEncoding β} (f : α → β) :=
-  @TM2ComputableInPolyTime α β ea eb f
+/-- Defines polynomial time function of a type, assuming an acceptable coding the input type e.g.
+not unary -/
+def isPolyTimeFunctionByType {α β: Type} {ea : FinEncoding α} {eb : FinEncoding β} (f : α → β) :Prop :=
+    Nonempty (@TM2ComputableInPolyTime α β ea eb f)
 
-/-- Indicator function for a language decidable in polynomial time -/
-def PolyTimeLanguageIndicator {α: Type} {ea : FinEncoding α} {ebool : FinEncoding Bool}
-    (f : α → Bool) := @TM2ComputableInPolyTime α Bool ea ebool f
+/-- Defines polynomial time functions on binary strings to binary strings -/
+def isPolyTimeFunction (f : BString → BString) : Prop :=
+    Nonempty (@TM2ComputableInPolyTime BString BString finEncodingBString
+     finEncodingBString f)
+
+/-- Defines a function with output strings of length polynomially bounded as a function of input
+length -/
+def isPolyBoundedFunction (f : BString → BString)  : Prop :=
+    ∃ (p: Polynomial ℕ ), ∀ (a b : BString), p.eval (f b).length < a.length
+
+/-- The set of poly bounded functions -/
+def PBoundedFunctions : Set (BString → BString) := {f | isPolyBoundedFunction f}
+
+open Set
+
+/-- The domain of a poly bounded function -/
+def PBoundedFunctionDomain (f : BString → BString) : Set BString  := preimage f {[true]}
+
+def PBoundedFunctionDomains : Set (Set BString) :=
+    {PBoundedFunctionDomain f | f : PBoundedFunctions}
+
+def L_f (f : BString → BString )  : Set BString := preimage f {[true]}
 
 /-- Relationship indicates that "x" has a certificate with encoded length polynomially bounded as
 a function of the encoded length of x. -/
-def verification {α γ: Type} {ea : FinEncoding α} {eg : FinEncoding γ} {p: Polynomial ℕ}
-    (certified : Rel α γ) : Prop :=
-  ∀ (x : α) (certificate : γ), certified x certificate →
-  (eg.encode certificate).length < p.eval (ea.encode x).length
+def verification {p: Polynomial ℕ} (certified : Rel BString BString) : Prop :=
+    ∀ (x : BString) (certificate : BString), certified x certificate →
+    certificate.length < p.eval x.length
 
 end
 
