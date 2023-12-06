@@ -31,20 +31,6 @@ namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ : Measure α} {f : α → ℝ}
 
-lemma aemeasurable_of_aemeasurable_exp (hf : AEMeasurable (fun x ↦ exp (f x)) μ) :
-    AEMeasurable f μ := by
-  have : f = fun x ↦ log (exp (f x)) := by ext; rw [log_exp]
-  rw [this]
-  exact measurable_log.comp_aemeasurable hf
-
-lemma integral_exp_pos {μ : Measure α} {f : α → ℝ} [hμ : NeZero μ]
-    (hf : Integrable (fun x ↦ exp (f x)) μ) :
-    0 < ∫ x, exp (f x) ∂μ := by
-  rw [integral_pos_iff_support_of_nonneg (fun x ↦ (exp_pos _).le) hf]
-  suffices (Function.support fun x ↦ exp (f x)) = Set.univ by simp [this, hμ.out]
-  ext1 x
-  simp only [Function.mem_support, ne_eq, (exp_pos _).ne', not_false_eq_true, Set.mem_univ]
-
 /-- Exponentially tilted measure. When `x ↦ exp (f x)` is integrable, `μ.tilted f` is the
 probability measure with density with respect to `μ` proportional to `exp (f x)`. Otherwise it is 0.
 -/
