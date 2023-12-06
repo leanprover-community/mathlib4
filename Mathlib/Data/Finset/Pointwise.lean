@@ -1571,7 +1571,7 @@ variable [DecidableEq β] [SMul α β] {s s₁ s₂ t u : Finset β} {a : α} {b
 /-- The scaling of a finset `s` by a scalar `a`: `a • s = {a • x | x ∈ s}`. -/
 @[to_additive "The translation of a finset `s` by a vector `a`: `a +ᵥ s = {a +ᵥ x | x ∈ s}`."]
 protected def smulFinset : SMul α (Finset β) :=
-  ⟨fun a => image <| (· • ·) a⟩
+  ⟨fun a => image <| (a • ·)⟩
 #align finset.has_smul_finset Finset.smulFinset
 #align finset.has_vadd_finset Finset.vaddFinset
 

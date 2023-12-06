@@ -2407,11 +2407,8 @@ namespace Ordinal
 
 theorem lt_add_of_limit {a b c : Ordinal.{u}} (h : IsLimit c) :
     a < b + c ↔ ∃ c' < c, a < b + c' := by
-  -- Porting note: `have` & `dsimp` are required for beta reduction.
-  have := IsNormal.bsup_eq.{u, u} (add_isNormal b) h
-  dsimp only at this
   -- Porting note: `bex_def` is required.
-  rw [← this, lt_bsup, bex_def]
+  rw [← IsNormal.bsup_eq.{u, u} (add_isNormal b) h, lt_bsup, bex_def]
 #align ordinal.lt_add_of_limit Ordinal.lt_add_of_limit
 
 theorem lt_omega {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by

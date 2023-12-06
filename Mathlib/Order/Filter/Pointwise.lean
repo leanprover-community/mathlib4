@@ -1186,7 +1186,7 @@ theorem map_smul : map (fun b => a • b) f = a • f :=
 #align filter.map_vadd Filter.map_vadd
 
 @[to_additive]
-theorem mem_smul_filter : s ∈ a • f ↔ (· • ·) a ⁻¹' s ∈ f :=
+theorem mem_smul_filter : s ∈ a • f ↔ (a • ·) ⁻¹' s ∈ f :=
   Iff.rfl
 #align filter.mem_smul_filter Filter.mem_smul_filter
 #align filter.mem_vadd_filter Filter.mem_vadd_filter
@@ -1329,7 +1329,7 @@ multiplicative action on `Filter β`. -/
 protected def distribMulActionFilter [Monoid α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction α (Filter β) where
   smul_add _ _ _ := map_map₂_distrib <| smul_add _
-  smul_zero _ := (map_pure _ _).trans <| by dsimp only; rw [smul_zero, pure_zero]
+  smul_zero _ := (map_pure _ _).trans <| by rw [smul_zero, pure_zero]
 #align filter.distrib_mul_action_filter Filter.distribMulActionFilter
 
 /-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
@@ -1368,7 +1368,6 @@ theorem zero_smul_filter_nonpos : (0 : α) • g ≤ 0 := by
   refine' fun s hs => mem_smul_filter.2 _
   convert @univ_mem _ g
   refine' eq_univ_iff_forall.2 fun a => _
-  dsimp only
   rwa [mem_preimage, zero_smul]
 #align filter.zero_smul_filter_nonpos Filter.zero_smul_filter_nonpos
 
