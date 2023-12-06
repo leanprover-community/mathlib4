@@ -849,7 +849,7 @@ structure ChartedSpaceCore (H : Type*) [TopologicalSpace H] (M : Type*) where
   mem_chart_source : ∀ x, x ∈ (chartAt x).source
   chart_mem_atlas : ∀ x, chartAt x ∈ atlas
   open_source : ∀ e e' : LocalEquiv M H, e ∈ atlas → e' ∈ atlas → IsOpen (e.symm.trans e').source
-  continuous_toFun : ∀ e e' : LocalEquiv M H, e ∈ atlas → e' ∈ atlas →
+  continuousOn_toFun : ∀ e e' : LocalEquiv M H, e ∈ atlas → e' ∈ atlas →
     ContinuousOn (e.symm.trans e') (e.symm.trans e').source
 #align charted_space_core ChartedSpaceCore
 
@@ -904,7 +904,7 @@ protected def localHomeomorph (e : LocalEquiv M H) (he : e ∈ c.atlas) :
       let f := e.symm.trans e'
       have : IsOpen (f ⁻¹' s ∩ f.source) := by
         simpa [inter_comm] using (continuousOn_open_iff (c.open_source e e' he e'_atlas)).1
-          (c.continuous_toFun e e' he e'_atlas) s s_open
+          (c.continuousOn_toFun e e' he e'_atlas) s s_open
       have A : e' ∘ e.symm ⁻¹' s ∩ (e.target ∩ e.symm ⁻¹' e'.source) =
           e.target ∩ (e' ∘ e.symm ⁻¹' s ∩ e.symm ⁻¹' e'.source) := by
         rw [← inter_assoc, ← inter_assoc]
