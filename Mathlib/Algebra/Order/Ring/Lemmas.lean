@@ -44,14 +44,25 @@ We use the following four typeclasses to reason about right multiplication (`a �
 
 As `α` gets more and more structure, those typeclasses end up being equivalent. The commonly used
 implications are:
-* `PosMulStrictMono → PosMulMono`, `MulPosStrictMono → MulPosMono`,
-  `PosMulMonoRev → PosMulReflectLT`, `MulPosMonoRev → MulPosReflectLT` when `α` is a partial order.
-* `PosMulStrictMono → PosMulMonoRev`, `MulPosStrictMono → MulPosMonoRev` when `α` is a linear order.
-* `PosMulMono → MulPosMono`, `PosMulStrictMono → MulPosStrictMono`, `PosMulMonoRev → MulPosMonoRev`,
-  `PosMulReflectLT → MulPosReflectLT` when the multiplication of `α` is commutative.
-* `PosMulMono → MulPosMono`, `PosMulStrictMono → MulPosStrictMono` when `α` is an ordered ring.
-* `PosMulStrictMono → PosMulReflectLT`, `PosMulMono → PosMulMonoRev` when `α` is an ordered
-  semifield.
+*  When `α` is a partial order:
+  * `PosMulStrictMono → PosMulMono`
+  * `MulPosStrictMono → MulPosMono`
+  * `PosMulMonoRev → PosMulReflectLT`
+  * `MulPosMonoRev → MulPosReflectLT`
+* When `α` is a linear order:
+  * `PosMulStrictMono → PosMulMonoRev`
+  * `MulPosStrictMono → MulPosMonoRev` .
+* When the multiplication of `α` is commutative:
+  * `PosMulMono → MulPosMono`
+  * `PosMulStrictMono → MulPosStrictMono`
+  * `PosMulMonoRev → MulPosMonoRev`
+  * `PosMulReflectLT → MulPosReflectLT`
+* When `α` is an ordered ring:
+  * `PosMulMono → MulPosMono`
+  * `PosMulStrictMono → MulPosStrictMono`
+* When `α` is an ordered semifield:
+  * `PosMulStrictMono → PosMulReflectLT`
+  * `PosMulMono → PosMulMonoRev`
 
 All these are registered as instances, which means that in practice you should not worry about these
 implications. However, if you encounter a case where you think a statement is true but not covered
