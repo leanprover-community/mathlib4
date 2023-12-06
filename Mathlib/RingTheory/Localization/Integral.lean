@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.IntegralClosure
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
-import Mathlib.RingTheory.NonZeroDivisors
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 
 #align_import ring_theory.localization.integral from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
