@@ -467,7 +467,7 @@ def shortComplexH1 : ShortComplex (ModuleCat k) :=
 
 /-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous cochains of `A`. -/
-@[simps!]
+@[simps! hom inv]
 def shortComplexH1Iso : (inhomogeneousCochains A).sc' 0 1 2 ≅ shortComplexH1 A :=
     isoMk (zeroCochainsLequiv A).toModuleIso (oneCochainsLequiv A).toModuleIso
       (twoCochainsLequiv A).toModuleIso (dZero_comp_eq A) (dOne_comp_eq A)
@@ -485,7 +485,6 @@ lemma isoOneCocycles_hom_comp_subtype :
   rw [Category.assoc, Category.assoc]
   erw [(shortComplexH1 A).moduleCatCyclesIso_hom_subtype]
   rw [cyclesMap_i, HomologicalComplex.cyclesIsoSc'_hom_iCycles_assoc]
-  rfl
 
 lemma toCocycles_comp_isoOneCocycles_hom :
     toCocycles A 0 1 ≫ (isoOneCocycles A).hom =
@@ -503,7 +502,7 @@ def isoH1 : groupCohomology A 1 ≅ ModuleCat.of k (H1 A) :=
 lemma groupCohomologyπ_comp_isoH1_hom  :
     groupCohomologyπ A 1 ≫ (isoH1 A).hom =
       (isoOneCocycles A).hom ≫ (shortComplexH1 A).moduleCatHomologyπ := by
-  simp [groupCohomologyπ, isoH1, isoOneCocycles]
+  simp [isoH1]
 
 end H1
 section H2
@@ -515,47 +514,43 @@ def shortComplexH2 : ShortComplex (ModuleCat k) :=
 /-- The short complex `Fun(G, A) --dOne--> Fun(G × G, A) --dTwo--> Fun(G × G × G, A)` is
 isomorphic to the 2nd short complex associated to the complex of inhomogeneous cochains of `A`. -/
 def shortComplexH2Iso :
-    (inhomogeneousCochains A).sc 2 ≅ shortComplexH2 A :=
-  (inhomogeneousCochains A).isoSc' 1 2 3 (CochainComplex.prev_nat_succ _) (CochainComplex.next _ _)
-    ≪≫ isoMk (oneCochainsLequiv A).toModuleIso (twoCochainsLequiv A).toModuleIso
+    (inhomogeneousCochains A).sc' 1 2 3 ≅ shortComplexH2 A :=
+    isoMk (oneCochainsLequiv A).toModuleIso (twoCochainsLequiv A).toModuleIso
       (threeCochainsLequiv A).toModuleIso (dOne_comp_eq A) (dTwo_comp_eq A)
 
 /-- The 2-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `twoCocycles A`, which is a simpler type. -/
+@[simps! hom inv]
 def isoTwoCocycles : cocycles A 2 ≅ ModuleCat.of k (twoCocycles A) :=
-  cyclesMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatCyclesIso
+  (inhomogeneousCochains A).cyclesIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
+    cyclesMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatCyclesIso
 
 lemma isoTwoCocycles_hom_comp_subtype :
     (isoTwoCocycles A).hom ≫ ModuleCat.ofHom (twoCocycles A).subtype =
       iCocycles A 2 ≫ (twoCochainsLequiv A).toModuleIso.hom := by
-  show _ ≫ (moduleCatLeftHomologyData (shortComplexH2 A)).i = _
-  simp only [isoTwoCocycles, cyclesMapIso_hom, Category.assoc, moduleCatCyclesIso,
-    Iso.trans_hom, LeftHomologyData.cyclesIso_hom_comp_i, cyclesMap_i]
+  dsimp [isoTwoCocycles]
+  rw [Category.assoc, Category.assoc]
+  erw [(shortComplexH2 A).moduleCatCyclesIso_hom_subtype]
+  rw [cyclesMap_i, HomologicalComplex.cyclesIsoSc'_hom_iCycles_assoc]
   rfl
 
 lemma toCocycles_comp_isoTwoCocycles_hom :
     toCocycles A 1 2 ≫ (isoTwoCocycles A).hom =
-      (oneCochainsLequiv A).toModuleIso.hom
-        ≫ ModuleCat.ofHom ((dOne A).codRestrict (twoCocycles A) fun c =>
-          LinearMap.ext_iff.1 (dTwo_comp_dOne.{u} A) c) := by
-  rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH2 A)).i, Category.assoc]
-  show _ ≫ (_ ≫ ModuleCat.ofHom (twoCocycles A).subtype) = _
-  rw [isoTwoCocycles_hom_comp_subtype, toCocycles, iCocycles, HomologicalComplex.toCycles_i_assoc]
-  apply (dOne_comp_eq A).symm
+      (oneCochainsLequiv A).toModuleIso.hom ≫
+        ModuleCat.ofHom (shortComplexH2 A).moduleCatToCycles := by
+  simp [isoTwoCocycles]
+  rfl
 
 /-- The 2nd group cohomology of `A`, defined as the 2nd cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `twoCocycles A ⧸ twoCoboundaries A`, which is a simpler type. -/
 def isoH2 : groupCohomology A 2 ≅ ModuleCat.of k (H2 A) :=
-  ShortComplex.homologyMapIso (shortComplexH2Iso A)
-    ≪≫ (shortComplexH2 A).moduleCatHomologyIso
+  (inhomogeneousCochains A).homologyIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
+    homologyMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatHomologyIso
 
 lemma groupCohomologyπ_comp_isoH2_hom  :
     groupCohomologyπ A 2 ≫ (isoH2 A).hom =
-      (isoTwoCocycles A).hom ≫ ModuleCat.ofHom ((twoCoboundaries A).mkQ) := by
-  simp only [groupCohomologyπ, isoH2, Iso.trans_hom, homologyMapIso_hom,
-    HomologicalComplex.homologyπ, homologyπ_naturality_assoc,
-    moduleCatHomologyIso, LeftHomologyData.homologyπ_comp_homologyIso_hom]
-  rfl
+      (isoTwoCocycles A).hom ≫ (shortComplexH2 A).moduleCatHomologyπ := by
+  simp [isoH2]
 
 end H2
 end groupCohomologyIso
