@@ -707,13 +707,14 @@ theorem toSubalgebra_eq_iff : F.toSubalgebra = E.toSubalgebra ↔ F = E := by
   rfl
 #align intermediate_field.to_subalgebra_eq_iff IntermediateField.toSubalgebra_eq_iff
 
-nonrec theorem eq_of_le_of_finrank_le [FiniteDimensional K L] (h_le : F ≤ E)
+theorem eq_of_le_of_finrank_le [hfin : FiniteDimensional K E] (h_le : F ≤ E)
     (h_finrank : finrank K E ≤ finrank K F) : F = E :=
+  haveI : Module.Finite K (Subalgebra.toSubmodule E.toSubalgebra) := hfin
   toSubalgebra_injective <|
-    Subalgebra.toSubmodule.injective <| eq_of_le_of_finrank_le h_le h_finrank
+    Subalgebra.toSubmodule.injective <| FiniteDimensional.eq_of_le_of_finrank_le h_le h_finrank
 #align intermediate_field.eq_of_le_of_finrank_le IntermediateField.eq_of_le_of_finrank_le
 
-theorem eq_of_le_of_finrank_eq [FiniteDimensional K L] (h_le : F ≤ E)
+theorem eq_of_le_of_finrank_eq [FiniteDimensional K E] (h_le : F ≤ E)
     (h_finrank : finrank K F = finrank K E) : F = E :=
   eq_of_le_of_finrank_le h_le h_finrank.ge
 #align intermediate_field.eq_of_le_of_finrank_eq IntermediateField.eq_of_le_of_finrank_eq
