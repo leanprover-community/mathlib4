@@ -78,7 +78,7 @@ variable {α : Type u}
 /-- Create an `Array` of examples using `x`. The size is controlled
 by the size parameter of `Gen`. -/
 def arrayOf (x : Gen α) : Gen (Array α) := do
-  let ⟨sz⟩ ← (ULiftable.up <| do choose Nat 0 (← getSize) (Nat.zero_le _) : Gen (ULift ℕ))
+  let (⟨sz⟩ : ULift ℕ) ← ULiftable.up do choose Nat 0 (← getSize) (Nat.zero_le _)
   let mut res := #[]
   for _ in [0:sz] do
     res := res.push (← x)
@@ -110,8 +110,8 @@ def permutationOf : (xs : List α) → Gen { ys // xs ~ ys }
 
 /-- Given two generators produces a tuple consisting out of the result of both -/
 def prodOf {α : Type u} {β : Type v} (x : Gen α) (y : Gen β) : Gen (α × β) := do
-  let ⟨a⟩ ← (ULiftable.up x : Gen (ULift.{max u v} α))
-  let ⟨b⟩ ← (ULiftable.up y : Gen (ULift.{max u v} β))
+  let ⟨a⟩ ← ULiftable.up.{max u v} x
+  let ⟨b⟩ ← ULiftable.up.{max u v} y
   pure (a, b)
 
 end Gen
