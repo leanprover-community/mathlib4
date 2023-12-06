@@ -133,21 +133,21 @@ theorem comul_comp_inr :
     comul ∘ₗ inr R A B = TensorProduct.map (.inr R A B) (.inr R A B) ∘ₗ comul := by
   ext; simp
 
-theorem map_fst_fst_comp_comul :
-    TensorProduct.map (.fst R A B) (.fst R A B) ∘ₗ comul = comul ∘ₗ .fst R A B := by
+theorem comul_comp_fst :
+    comul ∘ₗ .fst R A B = TensorProduct.map (.fst R A B) (.fst R A B) ∘ₗ comul := by
   ext : 1
-  · rw [comp_assoc, comul_comp_inl, ← comp_assoc, ← TensorProduct.map_comp, fst_comp_inl,
-      TensorProduct.map_id, id_comp, comp_assoc, fst_comp_inl, comp_id]
-  · rw [comp_assoc, comul_comp_inr, ← comp_assoc, ← TensorProduct.map_comp, fst_comp_inr,
-      TensorProduct.map_zero_left, zero_comp, comp_assoc, fst_comp_inr, comp_zero]
+  · rw [comp_assoc, fst_comp_inl, comp_id, comp_assoc, comul_comp_inl, ← comp_assoc,
+      ← TensorProduct.map_comp, fst_comp_inl, TensorProduct.map_id, id_comp]
+  · rw [comp_assoc, fst_comp_inr, comp_zero, comp_assoc, comul_comp_inr, ← comp_assoc,
+      ← TensorProduct.map_comp, fst_comp_inr, TensorProduct.map_zero_left, zero_comp]
 
-theorem map_snd_snd_comp_comul :
-    TensorProduct.map (.snd R A B) (.snd R A B) ∘ₗ comul = comul ∘ₗ .snd R A B := by
+theorem comul_comp_snd :
+    comul ∘ₗ .snd R A B = TensorProduct.map (.snd R A B) (.snd R A B) ∘ₗ comul := by
   ext : 1
-  · rw [comp_assoc, comul_comp_inl, ← comp_assoc, ← TensorProduct.map_comp, snd_comp_inl,
-      TensorProduct.map_zero_left, zero_comp, comp_assoc, snd_comp_inl, comp_zero]
-  · rw [comp_assoc, comul_comp_inr, ← comp_assoc, ← TensorProduct.map_comp, snd_comp_inr,
-      TensorProduct.map_id, id_comp, comp_assoc, snd_comp_inr, comp_id]
+  · rw [comp_assoc, snd_comp_inl, comp_zero, comp_assoc, comul_comp_inl, ← comp_assoc,
+      ← TensorProduct.map_comp, snd_comp_inl, TensorProduct.map_zero_left, zero_comp]
+  · rw [comp_assoc, snd_comp_inr, comp_id, comp_assoc, comul_comp_inr, ← comp_assoc,
+      ← TensorProduct.map_comp, snd_comp_inr, TensorProduct.map_id, id_comp]
 
 @[simp] theorem counit_comp_inr : counit ∘ₗ inr R A B = counit := by ext; simp
 
