@@ -93,25 +93,25 @@ abbrev MulPosStrictMono : Prop :=
   CovariantClass α>0 α (fun x y => y * x) (· < ·)
 #align mul_pos_strict_mono MulPosStrictMono
 
-/-- `PosMulReflectLT α` is an abbreviation for `ContravariantClass α≥0 α (fun x y ↦ x * y) (<)`,
+/-- `PosMulReflectLT α` is an abbreviation for `ContravariantClas α≥0 α (fun x y ↦ x * y) (<)`,
 expressing that multiplication by nonnegative elements on the left is strictly reverse monotone. -/
 abbrev PosMulReflectLT : Prop :=
   ContravariantClass α≥0 α (fun x y => x * y) (· < ·)
 #align pos_mul_reflect_lt PosMulReflectLT
 
-/-- `MulPosReflectLT α` is an abbreviation for `ContravariantClass α≥0 α (fun x y ↦ y * x) (<)`,
+/-- `MulPosReflectLT α` is an abbreviation for `ContravariantClas α≥0 α (fun x y ↦ y * x) (<)`,
 expressing that multiplication by nonnegative elements on the right is strictly reverse monotone. -/
 abbrev MulPosReflectLT : Prop :=
   ContravariantClass α≥0 α (fun x y => y * x) (· < ·)
 #align mul_pos_reflect_lt MulPosReflectLT
 
-/-- `PosMulMonoRev α` is an abbreviation for `ContravariantClass α>0 α (fun x y ↦ x * y) (≤)`,
+/-- `PosMulMonoRev α` is an abbreviation for `ContravariantClas α>0 α (fun x y ↦ x * y) (≤)`,
 expressing that multiplication by positive elements on the left is reverse monotone. -/
 abbrev PosMulMonoRev : Prop :=
   ContravariantClass α>0 α (fun x y => x * y) (· ≤ ·)
 #align pos_mul_mono_rev PosMulMonoRev
 
-/-- `MulPosMonoRev α` is an abbreviation for `ContravariantClass α>0 α (fun x y ↦ y * x) (≤)`,
+/-- `MulPosMonoRev α` is an abbreviation for `ContravariantClas α>0 α (fun x y ↦ y * x) (≤)`,
 expressing that multiplication by positive elements on the right is reverse monotone. -/
 abbrev MulPosMonoRev : Prop :=
   ContravariantClass α>0 α (fun x y => y * x) (· ≤ ·)

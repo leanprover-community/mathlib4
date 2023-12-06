@@ -39,6 +39,15 @@ We use the following four typeclasses to reason about right scalar multiplicatio
 * `SMulPosReflectLT`: If `b ≥ 0`, then `a₁ • b < a₂ • b` implies `a₁ < a₂`.
 * `SMulPosMonoRev`: If `b > 0`, then `a₁ • b ≤ a₂ • b` implies `a₁ ≤ a₂`.
 
+## Constructors
+
+The four typeclasses about nonnegativity can usually be checked only on positive inputs due to their
+condition becoming trivial when `a = 0` or `b = 0`. We therefore make the following constructors
+available: `PosSMulMono.of_pos`, `PosSMulReflectLT.of_pos`, `SMulPosMono.of_pos`,
+`SMulPosReflectLT.of_pos`
+
+## Implications
+
 As `α` and `β` get more and more structure, those typeclasses end up being equivalent. The commonly
 used implications are:
 * `PosSMulStrictMono → PosSMulMono`, `SMulPosStrictMono → SMulPosMono`,
@@ -198,14 +207,6 @@ lemma le_of_smul_le_smul_left [PosSMulMonoRev α β] (h : a • b₁ ≤ a • b
 alias lt_of_smul_lt_smul_of_nonneg_left := lt_of_smul_lt_smul_left
 alias le_of_smul_le_smul_of_pos_left := le_of_smul_le_smul_left
 
-instance PosSMulMono.to_covariantClass_pos_smul_le [PosSMulMono α β] :
-    CovariantClass α>0 β (fun a b ↦ (a : α) • b) (· ≤ ·) :=
-  ⟨fun a _ _ hb ↦ smul_le_smul_of_nonneg_left hb a.2.le⟩
-
-instance PosSMulReflectLT.to_contravariantClass_pos_smul_lt [PosSMulReflectLT α β] :
-    ContravariantClass α>0 β (fun a b ↦ (a : α) • b) (· < ·) :=
-  ⟨fun a _ _ hb ↦ lt_of_smul_lt_smul_of_nonneg_left hb a.2.le⟩
-
 @[simp]
 lemma smul_le_smul_iff_of_pos_left [PosSMulMono α β] [PosSMulMonoRev α β] (ha : 0 < a) :
     a • b₁ ≤ a • b₂ ↔ b₁ ≤ b₂ :=
@@ -242,14 +243,6 @@ lemma le_of_smul_le_smul_right [SMulPosMonoRev α β] (h : a₁ • b ≤ a₂ �
 
 alias lt_of_smul_lt_smul_of_nonneg_right := lt_of_smul_lt_smul_right
 alias le_of_smul_le_smul_of_pos_right := le_of_smul_le_smul_right
-
-instance SMulPosMono.to_covariantClass_pos_smul_le [SMulPosMono α β] :
-    CovariantClass' α β>0 β (fun a b ↦ a • b) (· ≤ ·) (· ≤ ·) :=
-  ⟨fun a _ _ hb ↦ smul_le_smul_of_nonneg_right hb a.2.le⟩
-
-instance SMulPosReflectLT.to_contravariantClass_pos_smul_lt [SMulPosReflectLT α β] :
-    ContravariantClass' α β>0 β (fun a b ↦ a • b) (· < ·) (· < ·) :=
-  ⟨fun b _ _ h ↦ lt_of_smul_lt_smul_right h b.2.le⟩
 
 @[simp]
 lemma smul_le_smul_iff_of_pos_right [SMulPosMono α β] [SMulPosMonoRev α β] (hb : 0 < b) :
@@ -444,42 +437,46 @@ end Preorder
 section PartialOrder
 variable [PartialOrder α] [Preorder β]
 
-lemma posSMulMono_iff_covariant_pos :
-    PosSMulMono α β ↔ CovariantClass α>0 β (fun a b ↦ (a : α) • b) (· ≤ ·) :=
-  ⟨fun _ ↦ PosSMulMono.to_covariantClass_pos_smul_le, fun h ↦
-    ⟨fun a ha b₁ b₂ h ↦ by
+/-- A constructor for `PosSMulMono` requiring you to prove `b₁ ≤ b₂ → a • b₁ ≤ a • b₂` only when
+`0 < a`-/
+lemma PosSMulMono.of_pos (h₀ : ∀ a : α, 0 < a → ∀ b₁ b₂ : β, b₁ ≤ b₂ → a • b₁ ≤ a • b₂) :
+    PosSMulMono α β where
+  elim a ha b₁ b₂ h := by
       obtain ha | ha := ha.eq_or_lt
       · simp [← ha]
-      · exact @CovariantClass.elim α>0 β (fun a b ↦ (a : α) • b) (· ≤ ·) _ ⟨_, ha⟩ _ _ h⟩⟩
+      · exact h₀ _ ha _ _ h
 
-lemma posSMulReflectLT_iff_contravariant_pos :
-    PosSMulReflectLT α β ↔ ContravariantClass α>0 β (fun a b ↦ (a : α) • b) (· < ·) :=
-  ⟨fun _ ↦ PosSMulReflectLT.to_contravariantClass_pos_smul_lt, fun h ↦
-    ⟨fun a ha b₁ b₂ h ↦ by
-      obtain ha | ha := ha.eq_or_lt
-      · simp [← ha] at h
-      · exact @ContravariantClass.elim α>0 β (fun a b ↦ (a : α) • b) (· < ·) _ ⟨_, ha⟩ _ _ h⟩⟩
+/-- A constructor for `PosSMulReflectLT` requiring you to prove `a • b₁ < a • b₂ → b₁ < b₂` only
+when `0 < a`-/
+lemma PosSMulReflectLT.of_pos (h₀ : ∀ a : α, 0 < a → ∀ b₁ b₂ : β, a • b₁ < a • b₂ → b₁ < b₂) :
+    PosSMulReflectLT α β where
+  elim a ha b₁ b₂ h := by
+    obtain ha | ha := ha.eq_or_lt
+    · simp [← ha] at h
+    · exact h₀ _ ha _ _ h
 
 end PartialOrder
 
 section PartialOrder
 variable [Preorder α] [PartialOrder β]
 
-lemma smulPosMono_iff_covariant_pos :
-    SMulPosMono α β ↔ CovariantClass' α β>0 β (fun a b ↦ a • b) (· ≤ ·) (· ≤ ·) :=
-  ⟨fun _ ↦ SMulPosMono.to_covariantClass_pos_smul_le, fun h ↦
-    ⟨fun b hb a₁ a₂ h ↦ by
-      obtain hb | hb := hb.eq_or_lt
-      · simp [← hb]
-      · exact @CovariantClass'.elim α β>0 β (fun a b ↦ a • b) _ _ _ ⟨_, hb⟩ _ _ h⟩⟩
+/-- A constructor for `SMulPosMono` requiring you to prove `a₁ ≤ a₂ → a₁ • b ≤ a₂ • b` only when
+`0 < b`-/
+lemma SMulPosMono.of_pos (h₀ : ∀ b : β, 0 < b → ∀ a₁ a₂ : α, a₁ ≤ a₂ → a₁ • b ≤ a₂ • b) :
+    SMulPosMono α β where
+  elim b hb a₁ a₂ h := by
+    obtain hb | hb := hb.eq_or_lt
+    · simp [← hb]
+    · exact h₀ _ hb _ _ h
 
-lemma smulPosReflectLT_iff_contravariant_pos :
-    SMulPosReflectLT α β ↔ ContravariantClass' α β>0 β (fun a b ↦ a • b) (· < ·) (· < ·) :=
-  ⟨fun _ ↦ SMulPosReflectLT.to_contravariantClass_pos_smul_lt, fun h ↦
-    ⟨fun b hb a₁ a₂ h ↦ by
-      obtain hb | hb := hb.eq_or_lt
-      · simp [← hb] at h
-      · exact @ContravariantClass'.elim α β>0 β (fun a b ↦ a • b) _ _ _ ⟨_, hb⟩ _ _ h⟩⟩
+/-- A constructor for `SMulPosReflectLT` requiring you to prove `a₁ • b < a₂ • b → a₁ < a₂` only
+when `0 < b`-/
+lemma SMulPosReflectLT.of_pos (h₀ : ∀ b : β, 0 < b → ∀ a₁ a₂ : α, a₁ • b < a₂ • b → a₁ < a₂) :
+    SMulPosReflectLT α β where
+  elim  b hb a₁ a₂ h := by
+    obtain hb | hb := hb.eq_or_lt
+    · simp [← hb] at h
+    · exact h₀ _ hb _ _ h
 
 end PartialOrder
 
@@ -489,25 +486,24 @@ variable [PartialOrder α] [PartialOrder β]
 -- See note [lower instance priority]
 instance (priority := 100) PosSMulStrictMono.toPosSMulMono [PosSMulStrictMono α β] :
     PosSMulMono α β :=
-  posSMulMono_iff_covariant_pos.2 ⟨fun a _ _ hb ↦ (strictMono_smul_left_of_pos a.2).monotone hb⟩
+  PosSMulMono.of_pos fun _a ha ↦ (strictMono_smul_left_of_pos ha).monotone
 
 -- See note [lower instance priority]
 instance (priority := 100) SMulPosStrictMono.toSMulPosMono [SMulPosStrictMono α β] :
     SMulPosMono α β :=
-  smulPosMono_iff_covariant_pos.2
-    ⟨fun b ↦ StrictMono.monotone $ fun _a₁ _a₂ ha ↦ smul_lt_smul_of_pos_right ha b.2⟩
+  SMulPosMono.of_pos fun _b hb ↦ (strictMono_smul_right_of_pos hb).monotone
 
 -- See note [lower instance priority]
 instance (priority := 100) PosSMulMonoRev.toPosSMulReflectLT [PosSMulMonoRev α β] :
     PosSMulReflectLT α β :=
-  posSMulReflectLT_iff_contravariant_pos.2
-    ⟨fun a b₁ b₂ h ↦ (le_of_smul_le_smul_of_pos_left h.le a.2).lt_of_ne $ by rintro rfl; simp at h⟩
+  PosSMulReflectLT.of_pos fun a ha b₁ b₂ h ↦
+    (le_of_smul_le_smul_of_pos_left h.le ha).lt_of_ne $ by rintro rfl; simp at h
 
 -- See note [lower instance priority]
 instance (priority := 100) SMulPosMonoRev.toSMulPosReflectLT [SMulPosMonoRev α β] :
     SMulPosReflectLT α β :=
-  smulPosReflectLT_iff_contravariant_pos.2
-    ⟨fun b a₁ a₂ h ↦ (le_of_smul_le_smul_of_pos_right h.le b.2).lt_of_ne $ by rintro rfl; simp at h⟩
+  SMulPosReflectLT.of_pos fun b hb a₁ a₂ h ↦
+    (le_of_smul_le_smul_of_pos_right h.le hb).lt_of_ne $ by rintro rfl; simp at h
 
 lemma smul_eq_smul_iff_eq_and_eq_of_pos [PosSMulStrictMono α β] [SMulPosStrictMono α β]
     (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) (h₁ : 0 < a₁) (h₂ : 0 < b₂) :
@@ -694,8 +690,8 @@ instance (priority := 100) PosSMulMono.toPosSMulMonoRev [MulAction α β] [PosSM
 -- See note [lower instance priority]
 instance (priority := 100) PosSMulStrictMono.toPosSMulReflectLT [MulActionWithZero α β]
     [PosSMulStrictMono α β] : PosSMulReflectLT α β :=
-  posSMulReflectLT_iff_contravariant_pos.2
-    ⟨fun a b₁ b₂ h ↦ by simpa [a.2.ne'] using smul_lt_smul_of_pos_left h $ inv_pos.2 a.2⟩
+  PosSMulReflectLT.of_pos fun a ha b₁ b₂ h ↦ by
+    simpa [ha.ne'] using smul_lt_smul_of_pos_left h $ inv_pos.2 ha
 
 end LinearOrderedSemifield
 

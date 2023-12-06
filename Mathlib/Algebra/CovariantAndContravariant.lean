@@ -124,20 +124,6 @@ class ContravariantClass : Prop where
   protected elim : Contravariant M N μ r
 #align contravariant_class ContravariantClass
 
-/-- A slight generalisation of `CovariantClass`.
-
-TODO: Merge with `CovariantClass`. -/
-class CovariantClass' (α β γ : Type*) (μ : α → β → γ) (r : α → α → Prop) (s : γ → γ → Prop) : Prop
-    where
-  elim : ∀ b ⦃a₁ a₂⦄, r a₁ a₂ → s (μ a₁ b) (μ a₂ b)
-
-/-- A slight generalisation of `ContravariantClass`.
-
-TODO: Merge with `ContravariantClass`. -/
-class ContravariantClass' (α β γ : Type*) (μ : α → β → γ) (r : α → α → Prop) (s : γ → γ → Prop) :
-    Prop where
-  elim : ∀ b ⦃a₁ a₂⦄, s (μ a₁ b) (μ a₂ b) → r a₁ a₂
-
 theorem rel_iff_cov [CovariantClass M N μ r] [ContravariantClass M N μ r] (m : M) {a b : N} :
     r (μ m a) (μ m b) ↔ r a b :=
   ⟨ContravariantClass.elim _, CovariantClass.elim _⟩
